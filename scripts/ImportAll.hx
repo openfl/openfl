@@ -1,6 +1,5 @@
 package;
 
-
 import openfl.desktop.Clipboard;
 import openfl.desktop.ClipboardFormats;
 import openfl.desktop.ClipboardTransferMode;
@@ -236,7 +235,6 @@ import openfl.utils.Timer;
 import openfl.Lib;
 import openfl.Memory;
 import openfl.Vector;
-
 #if !display
 import openfl._internal.formats.swf.SWFLiteLibrary;
 #end

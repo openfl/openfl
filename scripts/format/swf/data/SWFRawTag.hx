@@ -6,15 +6,17 @@ class SWFRawTag
 {
 	public var header:SWFRecordHeader;
 	public var bytes:SWFData;
-	
+
 	public function new(data:SWFData = null)
 	{
-		if (data != null) {
+		if (data != null)
+		{
 			parse(data);
 		}
 	}
-	
-	public function parse(data:SWFData):Void {
+
+	public function parse(data:SWFData):Void
+	{
 		var pos:Int = data.position;
 		header = data.readTagHeader();
 		bytes = new SWFData();
@@ -23,8 +25,9 @@ class SWFRawTag
 		data.readBytes(bytes, 0, header.tagLength);
 		data.position = posContent;
 	}
-	
-	public function publish(data:SWFData):Void {
+
+	public function publish(data:SWFData):Void
+	{
 		// Header is part of the byte array
 		data.writeBytes(bytes);
 	}

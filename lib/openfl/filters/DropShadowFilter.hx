@@ -1,8 +1,7 @@
-package openfl.filters; #if (display || !flash)
+package openfl.filters;
 
-
+#if (display || !flash)
 @:jsRequire("openfl/filters/DropShadowFilter", "default")
-
 /**
  * The DropShadowFilter class lets you add a drop shadow to display objects.
  * The shadow algorithm is based on the same box filter that the blur filter
@@ -15,17 +14,17 @@ package openfl.filters; #if (display || !flash)
  * The use of filters depends on the object to which you apply the
  * filter:
  *
- * 
+ *
  *  * To apply filters to display objects use the `filters`
  * property(inherited from DisplayObject). Setting the `filters`
  * property of an object does not modify the object, and you can remove the
- * filter by clearing the `filters` property. 
+ * filter by clearing the `filters` property.
  *  * To apply filters to BitmapData objects, use the
  * `BitmapData.applyFilter()` method. Calling
  * `applyFilter()` on a BitmapData object takes the source
  * BitmapData object and the filter object and generates a filtered image as a
  * result.
- * 
+ *
  *
  * If you apply a filter to a display object, the value of the
  * `cacheAsBitmap` property of the display object is set to
@@ -48,53 +47,52 @@ package openfl.filters; #if (display || !flash)
  * filter is turned off if the resulting image exceeds the maximum
  * dimensions.
  */
-@:final extern class DropShadowFilter extends BitmapFilter {
-	
-	
+@:final extern class DropShadowFilter extends BitmapFilter
+{
 	/**
 	 * The alpha transparency value for the shadow color. Valid values are 0.0 to
 	 * 1.0. For example, .25 sets a transparency value of 25%. The default value
 	 * is 1.0.
 	 */
 	public var alpha:Float;
-	
+
 	/**
 	 * The angle of the shadow. Valid values are 0 to 360 degrees(floating
 	 * point). The default value is 45.
 	 */
 	public var angle:Float;
-	
+
 	/**
 	 * The amount of horizontal blur. Valid values are 0 to 255.0(floating
 	 * point). The default value is 4.0.
 	 */
 	public var blurX:Float;
-	
+
 	/**
 	 * The amount of vertical blur. Valid values are 0 to 255.0(floating point).
 	 * The default value is 4.0.
 	 */
 	public var blurY:Float;
-	
+
 	/**
 	 * The color of the shadow. Valid values are in hexadecimal format
 	 * _0xRRGGBB_. The default value is 0x000000.
 	 */
 	public var color:Int;
-	
+
 	/**
 	 * The offset distance for the shadow, in pixels. The default value is 4.0
 	 * (floating point).
 	 */
 	public var distance:Float;
-	
+
 	/**
 	 * Indicates whether or not the object is hidden. The value `true`
 	 * indicates that the object itself is not drawn; only the shadow is visible.
 	 * The default is `false`(the object is shown).
 	 */
-	public var hideObject (default, set):Bool;
-	
+	public var hideObject(default, set):Bool;
+
 	/**
 	 * Indicates whether or not the shadow is an inner shadow. The value
 	 * `true` indicates an inner shadow. The default is
@@ -102,14 +100,14 @@ package openfl.filters; #if (display || !flash)
 	 * the object).
 	 */
 	public var inner:Bool;
-	
+
 	/**
 	 * Applies a knockout effect(`true`), which effectively makes the
 	 * object's fill transparent and reveals the background color of the
 	 * document. The default is `false`(no knockout).
 	 */
-	public var knockout (default, set):Bool;
-	
+	public var knockout(default, set):Bool;
+
 	/**
 	 * The number of times to apply the filter. The default value is
 	 * `BitmapFilterQuality.LOW`, which is equivalent to applying the
@@ -124,19 +122,18 @@ package openfl.filters; #if (display || !flash)
 	 * similar effect, and with faster rendering, by simply increasing the values
 	 * of the `blurX` and `blurY` properties.
 	 */
-	public var quality (default, set):Int;
-	
+	public var quality(default, set):Int;
+
 	/**
 	 * The strength of the imprint or spread. The higher the value, the more
 	 * color is imprinted and the stronger the contrast between the shadow and
 	 * the background. Valid values are from 0 to 255.0. The default is 1.0.
 	 */
 	public var strength:Float;
-	
-	
+
 	/**
 	 * Creates a new DropShadowFilter instance with the specified parameters.
-	 * 
+	 *
 	 * @param distance   Offset distance for the shadow, in pixels.
 	 * @param angle      Angle of the shadow, 0 to 360 degrees(floating point).
 	 * @param color      Color of the shadow, in hexadecimal format
@@ -154,11 +151,11 @@ package openfl.filters; #if (display || !flash)
 	 *                   values are 0 to 255.0.
 	 * @param quality    The number of times to apply the filter. Use the
 	 *                   BitmapFilterQuality constants:
-	 *                   
+	 *
 	 *                    * `BitmapFilterQuality.LOW`
 	 *                    * `BitmapFilterQuality.MEDIUM`
 	 *                    * `BitmapFilterQuality.HIGH`
-	 *                   
+	 *
 	 *
 	 *                   For more information about these values, see the
 	 *                   `quality` property description.
@@ -173,12 +170,9 @@ package openfl.filters; #if (display || !flash)
 	 *                   of `true` indicates that the object itself is
 	 *                   not drawn; only the shadow is visible.
 	 */
-	public function new (distance:Float = 4, angle:Float = 45, color:Int = 0, alpha:Float = 1, blurX:Float = 4, blurY:Float = 4, strength:Float = 1, quality:Int = 1, inner:Bool = false, knockout:Bool = false, hideObject:Bool = false);
-	
-	
+	public function new(distance:Float = 4, angle:Float = 45, color:Int = 0, alpha:Float = 1, blurX:Float = 4, blurY:Float = 4, strength:Float = 1,
+		quality:Int = 1, inner:Bool = false, knockout:Bool = false, hideObject:Bool = false);
 }
-
-
 #else
 typedef DropShadowFilter = flash.filters.DropShadowFilter;
 #end

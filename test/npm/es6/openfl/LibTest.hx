@@ -1,10 +1,1 @@
-
-
-
-describe ("TypeScript | Lib", function () {
-	
-	
-	
-	
-	
-});
+describe("TypeScript | Lib", function() {});

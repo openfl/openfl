@@ -1,11 +1,11 @@
-﻿package format.swf.factories;
+package format.swf.factories;
 
-//import format.swf.data.actions.*;
-//import format.swf.data.actions.swf3.*;
-//import format.swf.data.actions.swf4.*;
-//import format.swf.data.actions.swf5.*;
-//import format.swf.data.actions.swf6.*;
-//import format.swf.data.actions.swf7.*;
+// import format.swf.data.actions.*;
+// import format.swf.data.actions.swf3.*;
+// import format.swf.data.actions.swf4.*;
+// import format.swf.data.actions.swf5.*;
+// import format.swf.data.actions.swf6.*;
+// import format.swf.data.actions.swf7.*;
 import format.swf.data.actions.ActionUnknown;
 import format.swf.data.actions.IAction;
 import format.swf.data.actions.swf3.ActionStop;
@@ -14,12 +14,14 @@ class SWFActionFactory
 {
 	public static function create(code:Int, length:Int, pos:Int):IAction
 	{
-		switch(code)
+		switch (code)
 		{
 			///* 0x04 */ case ActionNextFrame.CODE: 		return new ActionNextFrame(code, length, pos);
 			///* 0x05 */ case ActionPreviousFrame.CODE: 	return new ActionPreviousFrame(code, length, pos);
 			///* 0x06 */ case ActionPlay.CODE: 			return new ActionPlay(code, length, pos);
-			/* 0x07 */ case ActionStop.CODE: 			return new ActionStop(code, length, pos);
+			/* 0x07 */
+			case ActionStop.CODE:
+				return new ActionStop(code, length, pos);
 			///* 0x08 */ case ActionToggleQuality.CODE: 	return new ActionToggleQuality(code, length, pos);
 			///* 0x09 */ case ActionStopSounds.CODE: 		return new ActionStopSounds(code, length, pos);
 			///* 0x0a */ case ActionAdd.CODE: 			return new ActionAdd(code, length, pos);
@@ -115,7 +117,8 @@ class SWFActionFactory
 			///* 0x9d */ case ActionIf.CODE: 				return new ActionIf(code, length, pos);
 			///* 0x9e */ case ActionCall.CODE: 			return new ActionCall(code, length, pos);
 			///* 0x9f */ case ActionGotoFrame2.CODE: 		return new ActionGotoFrame2(code, length, pos);
-					   default: 						return new ActionUnknown(code, length, pos);
+			default:
+				return new ActionUnknown(code, length, pos);
 		}
 	}
 }

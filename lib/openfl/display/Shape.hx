@@ -1,8 +1,7 @@
-package openfl.display; #if (display || !flash)
+package openfl.display;
 
-
+#if (display || !flash)
 @:jsRequire("openfl/display/Shape", "default")
-
 /**
  * This class is used to create lightweight shapes using the ActionScript
  * drawing application program interface(API). The Shape class includes a
@@ -17,27 +16,20 @@ package openfl.display; #if (display || !flash)
  * However, a Sprite object supports user input events, while a Shape object
  * does not.
  */
-extern class Shape extends DisplayObject {
-	
-	
+extern class Shape extends DisplayObject
+{
 	/**
 	 * Specifies the Graphics object belonging to this Shape object, where vector
 	 * drawing commands can occur.
 	 */
-	public var graphics (get, never):Graphics;
-	
-	@:noCompletion private function get_graphics ():Graphics;
-	
-	
+	public var graphics(get, never):Graphics;
+	@:noCompletion private function get_graphics():Graphics;
+
 	/**
 	 * Creates a new Shape object.
 	 */
-	public function new ();
-	
-	
+	public function new();
 }
-
-
 #else
 typedef Shape = flash.display.Shape;
 #end

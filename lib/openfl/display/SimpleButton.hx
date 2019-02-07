@@ -1,10 +1,9 @@
-package openfl.display; #if (display || !flash)
+package openfl.display;
 
-
+#if (display || !flash)
 import openfl.media.SoundTransform;
 
 @:jsRequire("openfl/display/SimpleButton", "default")
-
 
 /**
  * The SimpleButton class lets you control all instances of button symbols in
@@ -22,19 +21,17 @@ import openfl.media.SoundTransform;
  *
  * The SimpleButton class inherits from the InteractiveObject class.
  */
-extern class SimpleButton extends InteractiveObject {
-	
-	
+extern class SimpleButton extends InteractiveObject
+{
 	/**
 	 * Specifies a display object that is used as the visual object for the
 	 * button "Down" state  - the state that the button is in when the user
 	 * selects the `hitTestState` object.
 	 */
-	public var downState (get, set):DisplayObject;
-	
-	@:noCompletion private function get_downState ():DisplayObject;
-	@:noCompletion private function set_downState (value:DisplayObject):DisplayObject;
-	
+	public var downState(get, set):DisplayObject;
+	@:noCompletion private function get_downState():DisplayObject;
+	@:noCompletion private function set_downState(value:DisplayObject):DisplayObject;
+
 	/**
 	 * A Boolean value that specifies whether a button is enabled. When a button
 	 * is disabled(the enabled property is set to `false`), the
@@ -49,7 +46,7 @@ extern class SimpleButton extends InteractiveObject {
 	 * `false`.
 	 */
 	public var enabled:Bool;
-	
+
 	/**
 	 * Specifies a display object that is used as the hit testing object for the
 	 * button. For a basic button, set the `hitTestState` property to
@@ -57,21 +54,19 @@ extern class SimpleButton extends InteractiveObject {
 	 * not set the `hitTestState` property, the SimpleButton is
 	 * inactive  -  it does not respond to user input events.
 	 */
-	public var hitTestState (get, set):DisplayObject;
-	
-	@:noCompletion private function get_hitTestState ():DisplayObject;
-	@:noCompletion private function set_hitTestState (value:DisplayObject):DisplayObject;
-	
+	public var hitTestState(get, set):DisplayObject;
+	@:noCompletion private function get_hitTestState():DisplayObject;
+	@:noCompletion private function set_hitTestState(value:DisplayObject):DisplayObject;
+
 	/**
 	 * Specifies a display object that is used as the visual object for the
 	 * button over state  -  the state that the button is in when the pointer is
 	 * positioned over the button.
 	 */
-	public var overState (get, set):DisplayObject;
-	
-	@:noCompletion private function get_overState ():DisplayObject;
-	@:noCompletion private function set_overState (value:DisplayObject):DisplayObject;
-	
+	public var overState(get, set):DisplayObject;
+	@:noCompletion private function get_overState():DisplayObject;
+	@:noCompletion private function set_overState(value:DisplayObject):DisplayObject;
+
 	/**
 	 * The SoundTransform object assigned to this button. A SoundTransform object
 	 * includes properties for setting volume, panning, left speaker assignment,
@@ -79,11 +74,10 @@ extern class SimpleButton extends InteractiveObject {
 	 * states of the button. This SoundTransform object affects only embedded
 	 * sounds.
 	 */
-	public var soundTransform (get, set):SoundTransform;
-	
-	@:noCompletion private function get_soundTransform ():SoundTransform;
-	@:noCompletion private function set_soundTransform (value:SoundTransform):SoundTransform;
-	
+	public var soundTransform(get, set):SoundTransform;
+	@:noCompletion private function get_soundTransform():SoundTransform;
+	@:noCompletion private function set_soundTransform(value:SoundTransform):SoundTransform;
+
 	/**
 	 * Indicates whether other display objects that are SimpleButton or MovieClip
 	 * objects can receive user input release events. The
@@ -93,20 +87,19 @@ extern class SimpleButton extends InteractiveObject {
 	 * behavior is `false`.
 	 *
 	 * You can change the `trackAsMenu` property at any time; the
-	 * modified button immediately takes on the new behavior. 
+	 * modified button immediately takes on the new behavior.
 	 */
 	public var trackAsMenu:Bool;
-	
+
 	/**
 	 * Specifies a display object that is used as the visual object for the
 	 * button up state  -  the state that the button is in when the pointer is
 	 * not positioned over the button.
 	 */
-	public var upState (get, set):DisplayObject;
-	
-	@:noCompletion private function get_upState ():DisplayObject;
-	@:noCompletion private function set_upState (value:DisplayObject):DisplayObject;
-	
+	public var upState(get, set):DisplayObject;
+	@:noCompletion private function get_upState():DisplayObject;
+	@:noCompletion private function set_upState(value:DisplayObject):DisplayObject;
+
 	/**
 	 * A Boolean value that, when set to `true`, indicates whether the
 	 * hand cursor is shown when the pointer rolls over a button. If this
@@ -114,27 +107,22 @@ extern class SimpleButton extends InteractiveObject {
 	 * displayed instead. The default is `true`.
 	 *
 	 * You can change the `useHandCursor` property at any time; the
-	 * modified button immediately uses the new cursor behavior. 
+	 * modified button immediately uses the new cursor behavior.
 	 */
 	public var useHandCursor:Bool;
-	
-	
+
 	/**
 	 * Creates a new SimpleButton instance. Any or all of the display objects
 	 * that represent the various button states can be set as parameters in the
 	 * constructor.
-	 * 
+	 *
 	 * @param upState      The initial value for the SimpleButton up state.
 	 * @param overState    The initial value for the SimpleButton over state.
 	 * @param downState    The initial value for the SimpleButton down state.
 	 * @param hitTestState The initial value for the SimpleButton hitTest state.
 	 */
-	public function new (upState:DisplayObject = null, overState:DisplayObject = null, downState:DisplayObject = null, hitTestState:DisplayObject = null);
-	
-	
+	public function new(upState:DisplayObject = null, overState:DisplayObject = null, downState:DisplayObject = null, hitTestState:DisplayObject = null);
 }
-
-
 #else
 typedef SimpleButton = flash.display.SimpleButton;
 #end

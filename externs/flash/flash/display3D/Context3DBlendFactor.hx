@@ -1,8 +1,8 @@
-package flash.display3D; #if flash
+package flash.display3D;
 
-
-@:enum abstract Context3DBlendFactor(String) from String to String {
-	
+#if flash
+@:enum abstract Context3DBlendFactor(String) from String to String
+{
 	public var DESTINATION_ALPHA = "destinationAlpha";
 	public var DESTINATION_COLOR = "destinationColor";
 	public var ONE = "one";
@@ -13,10 +13,7 @@ package flash.display3D; #if flash
 	public var SOURCE_ALPHA = "sourceAlpha";
 	public var SOURCE_COLOR = "sourceColor";
 	public var ZERO = "zero";
-	
 }
-
-
 #else
 typedef Context3DBlendFactor = openfl.display3D.Context3DBlendFactor;
 #end

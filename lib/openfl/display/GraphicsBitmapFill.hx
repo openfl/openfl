@@ -1,26 +1,17 @@
-package openfl.display; #if (display || !flash)
+package openfl.display;
 
-
+#if (display || !flash)
 import openfl.geom.Matrix;
 
 @:jsRequire("openfl/display/GraphicsBitmapFill", "default")
-
-
-@:final extern class GraphicsBitmapFill implements IGraphicsData implements IGraphicsFill {
-	
-	
+@:final extern class GraphicsBitmapFill implements IGraphicsData implements IGraphicsFill
+{
 	public var bitmapData:BitmapData;
 	public var matrix:Matrix;
 	public var repeat:Bool;
 	public var smooth:Bool;
-	
-	
-	public function new (bitmapData:BitmapData = null, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false);
-	
-	
+	public function new(bitmapData:BitmapData = null, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false);
 }
-
-
 #else
 typedef GraphicsBitmapFill = flash.display.GraphicsBitmapFill;
 #end

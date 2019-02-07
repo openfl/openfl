@@ -1,42 +1,33 @@
 package openfl.display;
 
+class GraphicsSolidFillTest
+{
+	@Test public function alpha()
+	{
+		// TODO: Confirm functionality
 
-class GraphicsSolidFillTest {
-	
-	
-	@Test public function alpha () {
-		
-		// TODO: Confirm functionality
-		
-		var solidFill = new GraphicsSolidFill ();
+		var solidFill = new GraphicsSolidFill();
 		var exists = solidFill.alpha;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function color () {
-		
+
+	@Test public function color()
+	{
 		// TODO: Confirm functionality
-		
-		var solidFill = new GraphicsSolidFill ();
+
+		var solidFill = new GraphicsSolidFill();
 		var exists = solidFill.color;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function new_ () {
-		
+
+	@Test public function new_()
+	{
 		// TODO: Confirm functionality
-		
-		var solidFill = new GraphicsSolidFill ();
-		
-		Assert.isNotNull (solidFill);
-		
+
+		var solidFill = new GraphicsSolidFill();
+
+		Assert.isNotNull(solidFill);
 	}
-	
-	
 }

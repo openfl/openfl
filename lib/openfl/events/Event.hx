@@ -1,8 +1,7 @@
-package openfl.events; #if (display || !flash)
+package openfl.events;
 
-
+#if (display || !flash)
 @:jsRequire("openfl/events/Event", "default")
-
 /**
  * The Event class is used as the base class for the creation of Event
  * objects, which are passed as parameters to event listeners when an event
@@ -33,7 +32,7 @@ package openfl.events; #if (display || !flash)
  *
  * Other sources of information include:
  *
- * 
+ *
  *  * A useful description about the timing of events, code execution, and
  * rendering at runtime in Ted Patrick's blog entry: <a
  * [Flash Player Mental Model - The Elastic](http://www.onflex.org/ted/2005/07/flash-player-mental-model-elastic.php).
@@ -44,9 +43,8 @@ package openfl.events; #if (display || !flash)
  *  * A blog entry by Matt Przybylski on creating custom events:
  * [AS3: Custom Events](http://evolve.reintroducing.com/2007/10/23/as3/as3-custom-events/).
  */
-extern class Event {
-	
-	
+extern class Event
+{
 	/**
 	 * The `ACTIVATE` constant defines the value of the
 	 * `type` property of an `activate` event object.
@@ -61,7 +59,7 @@ extern class Event {
 	 * This event has the following properties:
 	 */
 	public static inline var ACTIVATE = "activate";
-	
+
 	/**
 	 * The `Event.ADDED` constant defines the value of the
 	 * `type` property of an `added` event object.
@@ -69,7 +67,7 @@ extern class Event {
 	 * This event has the following properties:
 	 */
 	public static inline var ADDED = "added";
-	
+
 	/**
 	 * The `Event.ADDED_TO_STAGE` constant defines the value of the
 	 * `type` property of an `addedToStage` event object.
@@ -77,11 +75,10 @@ extern class Event {
 	 * This event has the following properties:
 	 */
 	public static inline var ADDED_TO_STAGE = "addedToStage";
-	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash15) public static var BROWSER_ZOOM_CHANGE:String;
 	#end
-	
+
 	/**
 	 * The `Event.CANCEL` constant defines the value of the
 	 * `type` property of a `cancel` event object.
@@ -89,7 +86,7 @@ extern class Event {
 	 * This event has the following properties:
 	 */
 	public static inline var CANCEL = "cancel";
-	
+
 	/**
 	 * The `Event.CHANGE` constant defines the value of the
 	 * `type` property of a `change` event object.
@@ -97,17 +94,14 @@ extern class Event {
 	 * This event has the following properties:
 	 */
 	public static inline var CHANGE = "change";
-	
 	#if flash
 	@:noCompletion @:dox(hide) public static var CHANNEL_MESSAGE:String;
 	#end
-	
 	#if flash
 	@:noCompletion @:dox(hide) public static var CHANNEL_STATE:String;
 	#end
-	
 	public static inline var CLEAR = "clear";
-	
+
 	/**
 	 * The `Event.CLOSE` constant defines the value of the
 	 * `type` property of a `close` event object.
@@ -115,7 +109,7 @@ extern class Event {
 	 * This event has the following properties:
 	 */
 	public static inline var CLOSE = "close";
-	
+
 	/**
 	 * The `Event.COMPLETE` constant defines the value of the
 	 * `type` property of a `complete` event object.
@@ -123,7 +117,7 @@ extern class Event {
 	 * This event has the following properties:
 	 */
 	public static inline var COMPLETE = "complete";
-	
+
 	/**
 	 * The `Event.CONNECT` constant defines the value of the
 	 * `type` property of a `connect` event object.
@@ -131,13 +125,10 @@ extern class Event {
 	 * This event has the following properties:
 	 */
 	public static inline var CONNECT = "connect";
-	
 	public static inline var CONTEXT3D_CREATE = "context3DCreate";
-	
 	public static inline var COPY = "copy";
-	
 	public static inline var CUT = "cut";
-	
+
 	/**
 	 * The `Event.DEACTIVATE` constant defines the value of the
 	 * `type` property of a `deactivate` event object.
@@ -152,7 +143,7 @@ extern class Event {
 	 * This event has the following properties:
 	 */
 	public static inline var DEACTIVATE = "deactivate";
-	
+
 	/**
 	 * The `Event.ENTER_FRAME` constant defines the value of the
 	 * `type` property of an `enterFrame` event object.
@@ -164,19 +155,14 @@ extern class Event {
 	 * This event has the following properties:
 	 */
 	public static inline var ENTER_FRAME = "enterFrame";
-	
 	#if (flash && air)
-	public static var EXITING : String;
+	public static var EXITING:String;
 	#end
-	
 	public static inline var EXIT_FRAME = "exitFrame";
-	
 	public static inline var FRAME_CONSTRUCTED = "frameConstructed";
-	
 	public static inline var FRAME_LABEL = "frameLabel";
-	
 	public static inline var FULLSCREEN = "fullScreen";
-	
+
 	/**
 	 * The `Event.ID3` constant defines the value of the
 	 * `type` property of an `id3` event object.
@@ -184,7 +170,7 @@ extern class Event {
 	 * This event has the following properties:
 	 */
 	public static inline var ID3 = "id3";
-	
+
 	/**
 	 * The `Event.INIT` constant defines the value of the
 	 * `type` property of an `init` event object.
@@ -192,7 +178,7 @@ extern class Event {
 	 * This event has the following properties:
 	 */
 	public static inline var INIT = "init";
-	
+
 	/**
 	 * The `Event.MOUSE_LEAVE` constant defines the value of the
 	 * `type` property of a `mouseLeave` event object.
@@ -200,7 +186,7 @@ extern class Event {
 	 * This event has the following properties:
 	 */
 	public static inline var MOUSE_LEAVE = "mouseLeave";
-	
+
 	/**
 	 * The `Event.OPEN` constant defines the value of the
 	 * `type` property of an `open` event object.
@@ -208,9 +194,8 @@ extern class Event {
 	 * This event has the following properties:
 	 */
 	public static inline var OPEN = "open";
-	
 	public static inline var PASTE = "paste";
-	
+
 	/**
 	 * The `Event.REMOVED` constant defines the value of the
 	 * `type` property of a `removed` event object.
@@ -218,7 +203,7 @@ extern class Event {
 	 * This event has the following properties:
 	 */
 	public static inline var REMOVED = "removed";
-	
+
 	/**
 	 * The `Event.REMOVED_FROM_STAGE` constant defines the value of
 	 * the `type` property of a `removedFromStage` event
@@ -227,7 +212,7 @@ extern class Event {
 	 * This event has the following properties:
 	 */
 	public static inline var REMOVED_FROM_STAGE = "removedFromStage";
-	
+
 	/**
 	 * The `Event.RENDER` constant defines the value of the
 	 * `type` property of a `render` event object.
@@ -239,7 +224,7 @@ extern class Event {
 	 * This event has the following properties:
 	 */
 	public static inline var RENDER = "render";
-	
+
 	/**
 	 * The `Event.RESIZE` constant defines the value of the
 	 * `type` property of a `resize` event object.
@@ -247,7 +232,7 @@ extern class Event {
 	 * This event has the following properties:
 	 */
 	public static inline var RESIZE = "resize";
-	
+
 	/**
 	 * The `Event.SCROLL` constant defines the value of the
 	 * `type` property of a `scroll` event object.
@@ -255,7 +240,7 @@ extern class Event {
 	 * This event has the following properties:
 	 */
 	public static inline var SCROLL = "scroll";
-	
+
 	/**
 	 * The `Event.SELECT` constant defines the value of the
 	 * `type` property of a `select` event object.
@@ -263,9 +248,8 @@ extern class Event {
 	 * This event has the following properties:
 	 */
 	public static inline var SELECT = "select";
-	
 	public static inline var SELECT_ALL = "selectAll";
-	
+
 	/**
 	 * The `Event.SOUND_COMPLETE` constant defines the value of the
 	 * `type` property of a `soundComplete` event object.
@@ -273,11 +257,10 @@ extern class Event {
 	 * This event has the following properties:
 	 */
 	public static inline var SOUND_COMPLETE = "soundComplete";
-	
 	#if (flash && air)
 	@:noCompletion @:dox(hide) @:require(flash11_3) public static var SUSPEND:String;
 	#end
-	
+
 	/**
 	 * The `Event.TAB_CHILDREN_CHANGE` constant defines the value of
 	 * the `type` property of a `tabChildrenChange` event
@@ -286,7 +269,7 @@ extern class Event {
 	 * This event has the following properties:
 	 */
 	public static inline var TAB_CHILDREN_CHANGE = "tabChildrenChange";
-	
+
 	/**
 	 * The `Event.TAB_ENABLED_CHANGE` constant defines the value of
 	 * the `type` property of a `tabEnabledChange` event
@@ -295,7 +278,7 @@ extern class Event {
 	 * This event has the following properties:
 	 */
 	public static inline var TAB_ENABLED_CHANGE = "tabEnabledChange";
-	
+
 	/**
 	 * The `Event.TAB_INDEX_CHANGE` constant defines the value of the
 	 * `type` property of a `tabIndexChange` event object.
@@ -303,13 +286,11 @@ extern class Event {
 	 * This event has the following properties:
 	 */
 	public static inline var TAB_INDEX_CHANGE = "tabIndexChange";
-	
 	public static inline var TEXTURE_READY = "textureReady";
-	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash11) public static var TEXT_INTERACTION_MODE_CHANGE:String;
 	#end
-	
+
 	/**
 	 * The `Event.UNLOAD` constant defines the value of the
 	 * `type` property of an `unload` event object.
@@ -317,16 +298,13 @@ extern class Event {
 	 * This event has the following properties:
 	 */
 	public static inline var UNLOAD = "unload";
-	
 	#if flash
 	@:noCompletion @:dox(hide) public static var VIDEO_FRAME:String;
 	#end
-	
 	#if flash
 	@:noCompletion @:dox(hide) public static var WORKER_STATE:String;
 	#end
-	
-	
+
 	/**
 	 * Indicates whether an event is a bubbling event. If the event can bubble,
 	 * this value is `true`; otherwise it is `false`.
@@ -342,50 +320,49 @@ extern class Event {
 	 * has a value of `false` for events that do not have a bubbling
 	 * phase.
 	 */
-	public var bubbles (default, null):Bool;
-	
+	public var bubbles(default, null):Bool;
+
 	/**
 	 * Indicates whether the behavior associated with the event can be prevented.
 	 * If the behavior can be canceled, this value is `true`;
 	 * otherwise it is `false`.
 	 */
-	public var cancelable (default, null):Bool;
-	
+	public var cancelable(default, null):Bool;
+
 	/**
 	 * The object that is actively processing the Event object with an event
 	 * listener. For example, if a user clicks an OK button, the current target
 	 * could be the node containing that button or one of its ancestors that has
 	 * registered an event listener for that event.
 	 */
-	public var currentTarget (default, null):Dynamic;
-	
+	public var currentTarget(default, null):Dynamic;
+
 	/**
 	 * The current phase in the event flow. This property can contain the
 	 * following numeric values:
-	 * 
+	 *
 	 *  *  The capture phase(`EventPhase.CAPTURING_PHASE`).
 	 *  *  The target phase(`EventPhase.AT_TARGET`).
 	 *  *  The bubbling phase(`EventPhase.BUBBLING_PHASE`).
-	 * 
+	 *
 	 */
-	public var eventPhase (default, null):EventPhase;
-	
+	public var eventPhase(default, null):EventPhase;
+
 	/**
 	 * The event target. This property contains the target node. For example, if
 	 * a user clicks an OK button, the target node is the display list node
 	 * containing that button.
 	 */
-	public var target (default, null):Dynamic;
-	
+	public var target(default, null):Dynamic;
+
 	/**
 	 * The type of event. The type is case-sensitive.
 	 */
-	public var type (default, null):String;
-	
-	
+	public var type(default, null):String;
+
 	/**
 	 * Creates an Event object to pass as a parameter to event listeners.
-	 * 
+	 *
 	 * @param type       The type of the event, accessible as
 	 *                   `Event.type`.
 	 * @param bubbles    Determines whether the Event object participates in the
@@ -394,9 +371,8 @@ extern class Event {
 	 * @param cancelable Determines whether the Event object can be canceled. The
 	 *                   default values is `false`.
 	 */
-	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false);
-	
-	
+	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false);
+
 	/**
 	 * Duplicates an instance of an Event subclass.
 	 *
@@ -417,35 +393,30 @@ extern class Event {
 	 * In this example, `PingEvent` is a subclass of
 	 * `Event` and therefore implements its own version of
 	 * `clone()`.
-	 * 
+	 *
 	 * @return A new Event object that is identical to the original.
 	 */
-	public function clone ():Event;
-	
-	
-	public function formatToString (className:String, ?p1:Dynamic, ?p2:Dynamic, ?p3:Dynamic, ?p4:Dynamic, ?p5:Dynamic):String;
-	
-	
+	public function clone():Event;
+	public function formatToString(className:String, ?p1:Dynamic, ?p2:Dynamic, ?p3:Dynamic, ?p4:Dynamic, ?p5:Dynamic):String;
+
 	/**
 	 * Checks whether the `preventDefault()` method has been called on
 	 * the event. If the `preventDefault()` method has been called,
 	 * returns `true`; otherwise, returns `false`.
-	 * 
+	 *
 	 * @return If `preventDefault()` has been called, returns
 	 *         `true`; otherwise, returns `false`.
 	 */
-	public function isDefaultPrevented ():Bool;
-	
-	
+	public function isDefaultPrevented():Bool;
+
 	/**
 	 * Cancels an event's default behavior if that behavior can be canceled.
 	 * Many events have associated behaviors that are carried out by default. For example, if a user types a character into a text field, the default behavior is that the character is displayed in the text field. Because the `TextEvent.TEXT_INPUT` event's default behavior can be canceled, you can use the `preventDefault()` method to prevent the character from appearing.
 	 * An example of a behavior that is not cancelable is the default behavior associated with the Event.REMOVED event, which is generated whenever Flash Player is about to remove a display object from the display list. The default behavior (removing the element) cannot be canceled, so the `preventDefault()` method has no effect on this default behavior.
 	 * You can use the `Event.cancelable` property to check whether you can prevent the default behavior associated with a particular event. If the value of `Event.cancelable` is true, then `preventDefault()` can be used to cancel the event; otherwise, `preventDefault()` has no effect.
 	 */
-	public function preventDefault ():Void;
-	
-	
+	public function preventDefault():Void;
+
 	/**
 	 * Prevents processing of any event listeners in the current node and any
 	 * subsequent nodes in the event flow. This method takes effect immediately,
@@ -455,11 +426,10 @@ extern class Event {
 	 *
 	 * **Note: ** This method does not cancel the behavior associated with
 	 * this event; see `preventDefault()` for that functionality.
-	 * 
+	 *
 	 */
-	public function stopImmediatePropagation ():Void;
-	
-	
+	public function stopImmediatePropagation():Void;
+
 	/**
 	 * Prevents processing of any event listeners in nodes subsequent to the
 	 * current node in the event flow. This method does not affect any event
@@ -471,26 +441,21 @@ extern class Event {
 	 *
 	 * **Note: ** This method does not cancel the behavior associated with
 	 * this event; see `preventDefault()` for that functionality.
-	 * 
+	 *
 	 */
-	public function stopPropagation ():Void;
-	
-	
+	public function stopPropagation():Void;
+
 	/**
 	 * Returns a string containing all the properties of the Event object. The
 	 * string is in the following format:
 	 *
 	 * `[Event type=_value_ bubbles=_value_
 	 * cancelable=_value_]`
-	 * 
+	 *
 	 * @return A string containing all the properties of the Event object.
 	 */
-	public function toString ():String;
-	
-	
+	public function toString():String;
 }
-
-
 #else
 typedef Event = flash.events.Event;
 #end

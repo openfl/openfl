@@ -1,6 +1,6 @@
-package openfl.text; #if (display || !flash)
+package openfl.text;
 
-
+#if (display || !flash)
 import openfl.display.InteractiveObject;
 import openfl.geom.Rectangle;
 
@@ -22,7 +22,7 @@ import openfl.geom.Rectangle;
  *
  * The methods of the TextField class let you set, select, and manipulate
  * text in a dynamic or input text field that you create during authoring or
- * at runtime. 
+ * at runtime.
  *
  * ActionScript provides several ways to format your text at runtime. The
  * TextFormat class lets you set character and paragraph formatting for
@@ -34,12 +34,12 @@ import openfl.geom.Rectangle;
  * assign to a text field can contain embedded media(movie clips, SWF files,
  * GIF files, PNG files, and JPEG files). The text wraps around the embedded
  * media in the same way that a web browser wraps text around media embedded
- * in an HTML document. 
+ * in an HTML document.
  *
  * Flash Player supports a subset of HTML tags that you can use to format
  * text. See the list of supported HTML tags in the description of the
  * `htmlText` property.
- * 
+ *
  * @event change                    Dispatched after a control value is
  *                                  modified, unlike the
  *                                  `textInput` event, which is
@@ -85,9 +85,8 @@ import openfl.geom.Rectangle;
  *                                  to SELECTION mode using context menu
  *                                  options
  */
-extern class TextField extends InteractiveObject {
-	
-	
+extern class TextField extends InteractiveObject
+{
 	/**
 	 * The type of anti-aliasing used for this text field. Use
 	 * `flash.text.AntiAliasType` constants for this property. You can
@@ -97,11 +96,10 @@ extern class TextField extends InteractiveObject {
 	 *
 	 * To set values for this property, use the following string values:
 	 */
-	public var antiAliasType (get, set):AntiAliasType;
-	
-	@:noCompletion private function get_antiAliasType ():AntiAliasType;
-	@:noCompletion private function set_antiAliasType (value:AntiAliasType):AntiAliasType;
-	
+	public var antiAliasType(get, set):AntiAliasType;
+	@:noCompletion private function get_antiAliasType():AntiAliasType;
+	@:noCompletion private function set_antiAliasType(value:AntiAliasType):AntiAliasType;
+
 	/**
 	 * Controls automatic sizing and alignment of text fields. Acceptable values
 	 * for the `TextFieldAutoSize` constants:
@@ -140,29 +138,27 @@ extern class TextField extends InteractiveObject {
 	 * text. If `wordWrap` is also set to `true`, only the
 	 * bottom of the text field is resized and the left and right sides remain
 	 * fixed.
-	 * 
+	 *
 	 * @throws ArgumentError The `autoSize` specified is not a member
 	 *                       of flash.text.TextFieldAutoSize.
 	 */
-	public var autoSize (get, set):TextFieldAutoSize;
-	
-	@:noCompletion private function get_autoSize ():TextFieldAutoSize;
-	@:noCompletion private function set_autoSize (value:TextFieldAutoSize):TextFieldAutoSize;
-	
+	public var autoSize(get, set):TextFieldAutoSize;
+	@:noCompletion private function get_autoSize():TextFieldAutoSize;
+	@:noCompletion private function set_autoSize(value:TextFieldAutoSize):TextFieldAutoSize;
+
 	/**
 	 * Specifies whether the text field has a background fill. If
 	 * `true`, the text field has a background fill. If
 	 * `false`, the text field has no background fill. Use the
 	 * `backgroundColor` property to set the background color of a
 	 * text field.
-	 * 
+	 *
 	 * @default false
 	 */
-	public var background (get, set):Bool;
-	
-	@:noCompletion private function get_background ():Bool;
-	@:noCompletion private function set_background (value:Bool):Bool;
-	
+	public var background(get, set):Bool;
+	@:noCompletion private function get_background():Bool;
+	@:noCompletion private function set_background(value:Bool):Bool;
+
 	/**
 	 * The color of the text field background. The default value is
 	 * `0xFFFFFF`(white). This property can be retrieved or set, even
@@ -170,34 +166,31 @@ extern class TextField extends InteractiveObject {
 	 * text field has the `background` property set to
 	 * `true`.
 	 */
-	public var backgroundColor (get, set):Int;
-	
-	@:noCompletion private function get_backgroundColor ():Int;
-	@:noCompletion private function set_backgroundColor (value:Int):Int;
-	
+	public var backgroundColor(get, set):Int;
+	@:noCompletion private function get_backgroundColor():Int;
+	@:noCompletion private function set_backgroundColor(value:Int):Int;
+
 	/**
 	 * Specifies whether the text field has a border. If `true`, the
 	 * text field has a border. If `false`, the text field has no
 	 * border. Use the `borderColor` property to set the border color.
-	 * 
+	 *
 	 * @default false
 	 */
-	public var border (get, set):Bool;
-	
-	@:noCompletion private function get_border ():Bool;
-	@:noCompletion private function set_border (value:Bool):Bool;
-	
+	public var border(get, set):Bool;
+	@:noCompletion private function get_border():Bool;
+	@:noCompletion private function set_border(value:Bool):Bool;
+
 	/**
 	 * The color of the text field border. The default value is
 	 * `0x000000`(black). This property can be retrieved or set, even
 	 * if there currently is no border, but the color is visible only if the text
 	 * field has the `border` property set to `true`.
 	 */
-	public var borderColor (get, set):Int;
-	
-	@:noCompletion private function get_borderColor ():Int;
-	@:noCompletion private function set_borderColor (value:Int):Int;
-	
+	public var borderColor(get, set):Int;
+	@:noCompletion private function get_borderColor():Int;
+	@:noCompletion private function set_borderColor(value:Int):Int;
+
 	/**
 	 * An integer(1-based index) that indicates the bottommost line that is
 	 * currently visible in the specified text field. Think of the text field as
@@ -207,10 +200,9 @@ extern class TextField extends InteractiveObject {
 	 * All the text between the lines indicated by `scrollV` and
 	 * `bottomScrollV` is currently visible in the text field.
 	 */
-	public var bottomScrollV (get, never):Int;
-	
-	@:noCompletion private function get_bottomScrollV ():Int;
-	
+	public var bottomScrollV(get, never):Int;
+	@:noCompletion private function get_bottomScrollV():Int;
+
 	/**
 	 * The index of the insertion point(caret) position. If no insertion point
 	 * is displayed, the value is the position the insertion point would be if
@@ -220,11 +212,10 @@ extern class TextField extends InteractiveObject {
 	 * Selection span indexes are zero-based(for example, the first position
 	 * is 0, the second position is 1, and so on).
 	 */
-	public var caretIndex (get, never):Int;
-	
-	@:noCompletion private function get_caretIndex ():Int;
-	@:noCompletion private function set_caretIndex (value:Int):Int;
-	
+	public var caretIndex(get, never):Int;
+	@:noCompletion private function get_caretIndex():Int;
+	@:noCompletion private function set_caretIndex(value:Int):Int;
+
 	/**
 	 * Specifies the format applied to newly inserted text, such as text entered
 	 * by a user or text inserted with the `replaceSelectedText()`
@@ -254,15 +245,14 @@ extern class TextField extends InteractiveObject {
 	 *
 	 * **Note:** You can't set this property if a style sheet is applied to
 	 * the text field.
-	 * 
+	 *
 	 * @throws Error This method cannot be used on a text field with a style
 	 *               sheet.
 	 */
-	public var defaultTextFormat (get, set):TextFormat;
-	
-	@:noCompletion private function get_defaultTextFormat ():TextFormat;
-	@:noCompletion private function set_defaultTextFormat (value:TextFormat):TextFormat;
-	
+	public var defaultTextFormat(get, set):TextFormat;
+	@:noCompletion private function get_defaultTextFormat():TextFormat;
+	@:noCompletion private function set_defaultTextFormat(value:TextFormat):TextFormat;
+
 	/**
 	 * Specifies whether the text field is a password text field. If the value of
 	 * this property is `true`, the text field is treated as a
@@ -272,14 +262,13 @@ extern class TextField extends InteractiveObject {
 	 * and Copy commands and their corresponding keyboard shortcuts will not
 	 * function. This security mechanism prevents an unscrupulous user from using
 	 * the shortcuts to discover a password on an unattended computer.
-	 * 
+	 *
 	 * @default false
 	 */
-	public var displayAsPassword (get, set):Bool;
-	
-	@:noCompletion private function get_displayAsPassword ():Bool;
-	@:noCompletion private function set_displayAsPassword (value:Bool):Bool;
-	
+	public var displayAsPassword(get, set):Bool;
+	@:noCompletion private function get_displayAsPassword():Bool;
+	@:noCompletion private function set_displayAsPassword(value:Bool):Bool;
+
 	/**
 	 * Specifies whether to render by using embedded font outlines. If
 	 * `false`, Flash Player renders the text field by using device
@@ -290,14 +279,13 @@ extern class TextField extends InteractiveObject {
 	 * `font` property of a TextFormat object applied to the text
 	 * field. If the specified font is not embedded in the SWF file, the text is
 	 * not displayed.
-	 * 
+	 *
 	 * @default false
 	 */
-	public var embedFonts (get, set):Bool;
-	
-	@:noCompletion private function get_embedFonts ():Bool;
-	@:noCompletion private function set_embedFonts (value:Bool):Bool;
-	
+	public var embedFonts(get, set):Bool;
+	@:noCompletion private function get_embedFonts():Bool;
+	@:noCompletion private function set_embedFonts(value:Bool):Bool;
+
 	/**
 	 * The type of grid fitting used for this text field. This property applies
 	 * only if the `flash.text.AntiAliasType` property of the text
@@ -309,69 +297,61 @@ extern class TextField extends InteractiveObject {
 	 *
 	 * For the `flash.text.GridFitType` property, you can use the
 	 * following string values:
-	 * 
+	 *
 	 * @default pixel
 	 */
-	public var gridFitType (get, set):GridFitType;
-	
-	@:noCompletion private function get_gridFitType ():GridFitType;
-	@:noCompletion private function set_gridFitType (value:GridFitType):GridFitType;
-	
+	public var gridFitType(get, set):GridFitType;
+	@:noCompletion private function get_gridFitType():GridFitType;
+	@:noCompletion private function set_gridFitType(value:GridFitType):GridFitType;
+
 	/**
 	 * Contains the HTML representation of the text field contents.
 	 *
 	 * Flash Player supports the following HTML tags:
 	 *
 	 * Flash Player and AIR also support explicit character codes, such as
-	 * &#38;(ASCII ampersand) and &#x20AC;(Unicode € symbol). 
+	 * &#38;(ASCII ampersand) and &#x20AC;(Unicode € symbol).
 	 */
-	public var htmlText (get, set):String;
-	
-	@:noCompletion private function get_htmlText ():String;
-	@:noCompletion private function set_htmlText (value:String):String;
-	
+	public var htmlText(get, set):String;
+	@:noCompletion private function get_htmlText():String;
+	@:noCompletion private function set_htmlText(value:String):String;
+
 	/**
 	 * The number of characters in a text field. A character such as tab
 	 * (`\t`) counts as one character.
 	 */
-	public var length (get, never):Int;
-	
-	@:noCompletion private function get_length ():Int;
-	@:noCompletion private function set_length (value:Int):Int;
-	
+	public var length(get, never):Int;
+	@:noCompletion private function get_length():Int;
+	@:noCompletion private function set_length(value:Int):Int;
+
 	/**
 	 * The maximum number of characters that the text field can contain, as
 	 * entered by a user. A script can insert more text than
 	 * `maxChars` allows; the `maxChars` property indicates
 	 * only how much text a user can enter. If the value of this property is
 	 * `0`, a user can enter an unlimited amount of text.
-	 * 
+	 *
 	 * @default 0
 	 */
-	public var maxChars (get, set):Int;
-	
-	@:noCompletion private function get_maxChars ():Int;
-	@:noCompletion private function set_maxChars (value:Int):Int;
-	
+	public var maxChars(get, set):Int;
+	@:noCompletion private function get_maxChars():Int;
+	@:noCompletion private function set_maxChars(value:Int):Int;
+
 	/**
 	 * The maximum value of `scrollH`.
 	 */
-	public var maxScrollH (get, never):Int;
-	
-	@:noCompletion private function get_maxScrollH ():Int;
-	
+	public var maxScrollH(get, never):Int;
+	@:noCompletion private function get_maxScrollH():Int;
+
 	/**
 	 * The maximum value of `scrollV`.
 	 */
-	public var maxScrollV (get, never):Int;
-	
-	@:noCompletion private function get_maxScrollV ():Int;
-	
-	public var mouseWheelEnabled (get, set):Bool;
-	
-	@:noCompletion private function get_mouseWheelEnabled ():Bool;
-	@:noCompletion private function set_mouseWheelEnabled (value:Bool):Bool;
-	
+	public var maxScrollV(get, never):Int;
+	@:noCompletion private function get_maxScrollV():Int;
+	public var mouseWheelEnabled(get, set):Bool;
+	@:noCompletion private function get_mouseWheelEnabled():Bool;
+	@:noCompletion private function set_mouseWheelEnabled(value:Bool):Bool;
+
 	/**
 	 * Indicates whether field is a multiline text field. If the value is
 	 * `true`, the text field is multiline; if the value is
@@ -381,23 +361,21 @@ extern class TextField extends InteractiveObject {
 	 * of `false`, and the `Enter` key is ignored). If you
 	 * paste text into a `TextField` with a `multiline`
 	 * value of `false`, newlines are stripped out of the text.
-	 * 
+	 *
 	 * @default false
 	 */
-	public var multiline (get, set):Bool;
-	
-	@:noCompletion private function get_multiline ():Bool;
-	@:noCompletion private function set_multiline (value:Bool):Bool;
-	
+	public var multiline(get, set):Bool;
+	@:noCompletion private function get_multiline():Bool;
+	@:noCompletion private function set_multiline(value:Bool):Bool;
+
 	/**
 	 * Defines the number of text lines in a multiline text field. If
 	 * `wordWrap` property is set to `true`, the number of
 	 * lines increases when text wraps.
 	 */
-	public var numLines (get, never):Int;
-	
-	@:noCompletion private function get_numLines ():Int;
-	
+	public var numLines(get, never):Int;
+	@:noCompletion private function get_numLines():Int;
+
 	/**
 	 * Indicates the set of characters that a user can enter into the text field.
 	 * If the value of the `restrict` property is `null`,
@@ -441,14 +419,13 @@ extern class TextField extends InteractiveObject {
 	 * `restrict` strings. The following code includes only the
 	 * characters from ASCII 32(space) to ASCII 126(tilde).
 	 * `my_txt.restrict = "\u0020-\u007E";`
-	 * 
+	 *
 	 * @default null
 	 */
-	public var restrict (get, set):String;
-	
-	@:noCompletion private function get_restrict ():String;
-	@:noCompletion private function set_restrict (value:String):String;
-	
+	public var restrict(get, set):String;
+	@:noCompletion private function get_restrict():String;
+	@:noCompletion private function set_restrict(value:String):String;
+
 	/**
 	 * The current horizontal scrolling position. If the `scrollH`
 	 * property is 0, the text is not horizontally scrolled. This property value
@@ -465,11 +442,10 @@ extern class TextField extends InteractiveObject {
 	 * **Note: **The `scrollH` property is zero-based, not
 	 * 1-based like the `scrollV` vertical scrolling property.
 	 */
-	public var scrollH (get, set):Int;
-	
-	@:noCompletion private function get_scrollH ():Int;
-	@:noCompletion private function set_scrollH (value:Int):Int;
-	
+	public var scrollH(get, set):Int;
+	@:noCompletion private function get_scrollH():Int;
+	@:noCompletion private function set_scrollH(value:Int):Int;
+
 	/**
 	 * The vertical position of text in a text field. The `scrollV`
 	 * property is useful for directing users to a specific paragraph in a long
@@ -484,11 +460,10 @@ extern class TextField extends InteractiveObject {
 	 * text rather than a partial line. Even if there are multiple fonts on a
 	 * line, the height of the line adjusts to fit the largest font in use.
 	 */
-	public var scrollV (get, set):Int;
-	
-	@:noCompletion private function get_scrollV ():Int;
-	@:noCompletion private function set_scrollV (value:Int):Int;
-	
+	public var scrollV(get, set):Int;
+	@:noCompletion private function get_scrollV():Int;
+	@:noCompletion private function set_scrollV(value:Int):Int;
+
 	/**
 	 * A Boolean value that indicates whether the text field is selectable. The
 	 * value `true` indicates that the text is selectable. The
@@ -503,35 +478,32 @@ extern class TextField extends InteractiveObject {
 	 * `selectable` is set to `true`, the text in the text
 	 * field can be selected with the mouse or keyboard, and the text can be
 	 * copied with the Copy command. You can select text this way even if the
-	 * text field is a dynamic text field instead of an input text field. 
-	 * 
+	 * text field is a dynamic text field instead of an input text field.
+	 *
 	 * @default true
 	 */
-	public var selectable (get, set):Bool;
-	
-	@:noCompletion private function get_selectable ():Bool;
-	@:noCompletion private function set_selectable (value:Bool):Bool;
-	
+	public var selectable(get, set):Bool;
+	@:noCompletion private function get_selectable():Bool;
+	@:noCompletion private function set_selectable(value:Bool):Bool;
+
 	/**
 	 * The zero-based character index value of the first character in the current
 	 * selection. For example, the first character is 0, the second character is
 	 * 1, and so on. If no text is selected, this property is the value of
 	 * `caretIndex`.
 	 */
-	public var selectionBeginIndex (get, never):Int;
-	
-	@:noCompletion private function get_selectionBeginIndex ():Int;
-	
+	public var selectionBeginIndex(get, never):Int;
+	@:noCompletion private function get_selectionBeginIndex():Int;
+
 	/**
 	 * The zero-based character index value of the last character in the current
 	 * selection. For example, the first character is 0, the second character is
 	 * 1, and so on. If no text is selected, this property is the value of
 	 * `caretIndex`.
 	 */
-	public var selectionEndIndex (get, never):Int;
-	
-	@:noCompletion private function get_selectionEndIndex ():Int;
-	
+	public var selectionEndIndex(get, never):Int;
+	@:noCompletion private function get_selectionEndIndex():Int;
+
 	/**
 	 * The sharpness of the glyph edges in this text field. This property applies
 	 * only if the `flash.text.AntiAliasType` property of the text
@@ -539,14 +511,13 @@ extern class TextField extends InteractiveObject {
 	 * for `sharpness` is a number from -400 to 400. If you attempt to
 	 * set `sharpness` to a value outside that range, Flash sets the
 	 * property to the nearest value in the range(either -400 or 400).
-	 * 
+	 *
 	 * @default 0
 	 */
-	public var sharpness (get, set):Float;
-	
-	@:noCompletion private function get_sharpness ():Float;
-	@:noCompletion private function set_sharpness (value:Float):Float;
-	
+	public var sharpness(get, set):Float;
+	@:noCompletion private function get_sharpness():Float;
+	@:noCompletion private function set_sharpness(value:Float):Float;
+
 	/**
 	 * A string that is the current text in the text field. Lines are separated
 	 * by the carriage return character(`'\r'`, ASCII 13). This
@@ -555,66 +526,59 @@ extern class TextField extends InteractiveObject {
 	 * To get the text in HTML form, use the `htmlText`
 	 * property.
 	 */
-	public var text (get, set):String;
-	
-	@:noCompletion private function get_text ():String;
-	@:noCompletion private function set_text (value:String):String;
-	
+	public var text(get, set):String;
+	@:noCompletion private function get_text():String;
+	@:noCompletion private function set_text(value:String):String;
+
 	/**
 	 * The color of the text in a text field, in hexadecimal format. The
 	 * hexadecimal color system uses six digits to represent color values. Each
 	 * digit has 16 possible values or characters. The characters range from 0-9
 	 * and then A-F. For example, black is `0x000000`; white is
 	 * `0xFFFFFF`.
-	 * 
+	 *
 	 * @default 0(0x000000)
 	 */
-	public var textColor (get, set):Int;
-	
-	@:noCompletion private function get_textColor ():Int;
-	@:noCompletion private function set_textColor (value:Int):Int;
-	
+	public var textColor(get, set):Int;
+	@:noCompletion private function get_textColor():Int;
+	@:noCompletion private function set_textColor(value:Int):Int;
+
 	/**
 	 * The height of the text in pixels.
 	 */
-	public var textHeight (get, never):Float;
-	
-	@:noCompletion private function get_textHeight ():Float;
-	
+	public var textHeight(get, never):Float;
+	@:noCompletion private function get_textHeight():Float;
+
 	/**
 	 * The width of the text in pixels.
 	 */
-	public var textWidth (get, never):Float;
-	
-	@:noCompletion private function get_textWidth ():Float;
-	
+	public var textWidth(get, never):Float;
+	@:noCompletion private function get_textWidth():Float;
+
 	/**
 	 * The type of the text field. Either one of the following TextFieldType
 	 * constants: `TextFieldType.DYNAMIC`, which specifies a dynamic
 	 * text field, which a user cannot edit, or `TextFieldType.INPUT`,
 	 * which specifies an input text field, which a user can edit.
-	 * 
+	 *
 	 * @default dynamic
 	 * @throws ArgumentError The `type` specified is not a member of
 	 *                       flash.text.TextFieldType.
 	 */
-	public var type (get, set):TextFieldType;
-	
-	@:noCompletion private function get_type ():TextFieldType;
-	@:noCompletion private function set_type (value:TextFieldType):TextFieldType;
-	
+	public var type(get, set):TextFieldType;
+	@:noCompletion private function get_type():TextFieldType;
+	@:noCompletion private function set_type(value:TextFieldType):TextFieldType;
+
 	/**
 	 * A Boolean value that indicates whether the text field has word wrap. If
 	 * the value of `wordWrap` is `true`, the text field
 	 * has word wrap; if the value is `false`, the text field does not
 	 * have word wrap. The default value is `false`.
 	 */
-	public var wordWrap (get, set):Bool;
-	
-	@:noCompletion private function get_wordWrap ():Bool;
-	@:noCompletion private function set_wordWrap (value:Bool):Bool;
-	
-	
+	public var wordWrap(get, set):Bool;
+	@:noCompletion private function get_wordWrap():Bool;
+	@:noCompletion private function set_wordWrap(value:Bool):Bool;
+
 	/**
 	 * Creates a new TextField instance. After you create the TextField instance,
 	 * call the `addChild()` or `addChildAt()` method of
@@ -623,105 +587,89 @@ extern class TextField extends InteractiveObject {
 	 *
 	 * The default size for a text field is 100 x 100 pixels.
 	 */
-	public function new ();
-	
-	
+	public function new();
+
 	/**
 	 * Appends the string specified by the `newText` parameter to the
 	 * end of the text of the text field. This method is more efficient than an
 	 * addition assignment(`+=`) on a `text` property
 	 * (such as `someTextField.text += moreText`), particularly for a
 	 * text field that contains a significant amount of content.
-	 * 
+	 *
 	 * @param newText The string to append to the existing text.
 	 */
-	public function appendText (text:String):Void;
-	
-	
+	public function appendText(text:String):Void;
+
 	/**
 	 * Returns a rectangle that is the bounding box of the character.
-	 * 
+	 *
 	 * @param charIndex The zero-based index value for the character(for
 	 *                  example, the first position is 0, the second position is
 	 *                  1, and so on).
 	 * @return A rectangle with `x` and `y` minimum and
 	 *         maximum values defining the bounding box of the character.
 	 */
-	public function getCharBoundaries (charIndex:Int):Rectangle;
-	
-	
+	public function getCharBoundaries(charIndex:Int):Rectangle;
+
 	/**
 	 * Returns the zero-based index value of the character at the point specified
 	 * by the `x` and `y` parameters.
-	 * 
+	 *
 	 * @param x The _x_ coordinate of the character.
 	 * @param y The _y_ coordinate of the character.
 	 * @return The zero-based index value of the character(for example, the
 	 *         first position is 0, the second position is 1, and so on). Returns
 	 *         -1 if the point is not over any character.
 	 */
-	public function getCharIndexAtPoint (x:Float, y:Float):Int;
-	
-	
-	public function getFirstCharInParagraph (charIndex:Int):Int;
-	
-	
+	public function getCharIndexAtPoint(x:Float, y:Float):Int;
+	public function getFirstCharInParagraph(charIndex:Int):Int;
+
 	/**
 	 * Returns the zero-based index value of the line at the point specified by
 	 * the `x` and `y` parameters.
-	 * 
+	 *
 	 * @param x The _x_ coordinate of the line.
 	 * @param y The _y_ coordinate of the line.
 	 * @return The zero-based index value of the line(for example, the first
 	 *         line is 0, the second line is 1, and so on). Returns -1 if the
 	 *         point is not over any line.
 	 */
-	public function getLineIndexAtPoint (x:Float, y:Float):Int;
-	
-	
-	public function getLineIndexOfChar (charIndex:Int):Int;
-	
-	
-	public function getLineLength (lineIndex:Int):Int;
-	
-	
+	public function getLineIndexAtPoint(x:Float, y:Float):Int;
+	public function getLineIndexOfChar(charIndex:Int):Int;
+	public function getLineLength(lineIndex:Int):Int;
+
 	/**
 	 * Returns metrics information about a given text line.
-	 * 
+	 *
 	 * @param lineIndex The line number for which you want metrics information.
 	 * @return A TextLineMetrics object.
 	 * @throws RangeError The line number specified is out of range.
 	 */
-	public function getLineMetrics (lineIndex:Int):TextLineMetrics;
-	
-	
+	public function getLineMetrics(lineIndex:Int):TextLineMetrics;
+
 	/**
 	 * Returns the character index of the first character in the line that the
 	 * `lineIndex` parameter specifies.
-	 * 
+	 *
 	 * @param lineIndex The zero-based index value of the line(for example, the
 	 *                  first line is 0, the second line is 1, and so on).
 	 * @return The zero-based index value of the first character in the line.
 	 * @throws RangeError The line number specified is out of range.
 	 */
-	public function getLineOffset (lineIndex:Int):Int;
-	
-	
+	public function getLineOffset(lineIndex:Int):Int;
+
 	/**
 	 * Returns the text of the line specified by the `lineIndex`
 	 * parameter.
-	 * 
+	 *
 	 * @param lineIndex The zero-based index value of the line(for example, the
 	 *                  first line is 0, the second line is 1, and so on).
 	 * @return The text string contained in the specified line.
 	 * @throws RangeError The line number specified is out of range.
 	 */
-	public function getLineText (lineIndex:Int):String;
-	
-	
-	public function getParagraphLength (charIndex:Int):Int;
-	
-	
+	public function getLineText(lineIndex:Int):String;
+	public function getParagraphLength(charIndex:Int):Int;
+
 	/**
 	 * Returns a TextFormat object that contains formatting information for the
 	 * range of text that the `beginIndex` and `endIndex`
@@ -731,40 +679,34 @@ extern class TextField extends InteractiveObject {
 	 * the text, has a value of `null`.
 	 *
 	 * If you do not specify values for these parameters, this method is
-	 * applied to all the text in the text field. 
+	 * applied to all the text in the text field.
 	 *
 	 * The following table describes three possible usages:
-	 * 
+	 *
 	 * @return The TextFormat object that represents the formatting properties
 	 *         for the specified text.
 	 * @throws RangeError The `beginIndex` or `endIndex`
 	 *                    specified is out of range.
 	 */
-	public function getTextFormat (beginIndex:Int = 0, endIndex:Int = 0):TextFormat;
-	
-	
-	public function replaceSelectedText (value:String):Void;
-	
-	
-	public function replaceText (beginIndex:Int, endIndex:Int, newText:String):Void;
-	
-	
+	public function getTextFormat(beginIndex:Int = 0, endIndex:Int = 0):TextFormat;
+	public function replaceSelectedText(value:String):Void;
+	public function replaceText(beginIndex:Int, endIndex:Int, newText:String):Void;
+
 	/**
 	 * Sets as selected the text designated by the index values of the first and
 	 * last characters, which are specified with the `beginIndex` and
 	 * `endIndex` parameters. If the two parameter values are the
 	 * same, this method sets the insertion point, as if you set the
 	 * `caretIndex` property.
-	 * 
+	 *
 	 * @param beginIndex The zero-based index value of the first character in the
 	 *                   selection(for example, the first character is 0, the
 	 *                   second character is 1, and so on).
 	 * @param endIndex   The zero-based index value of the last character in the
 	 *                   selection.
 	 */
-	public function setSelection (beginIndex:Int, endIndex:Int):Void;
-	
-	
+	public function setSelection(beginIndex:Int, endIndex:Int):Void;
+
 	/**
 	 * Applies the text formatting that the `format` parameter
 	 * specifies to the specified text in a text field. The value of
@@ -802,7 +744,7 @@ extern class TextField extends InteractiveObject {
 	 * formatting for new text, and not the formatting specified for the text
 	 * insertion point. To set the default formatting for new text, use
 	 * `defaultTextFormat`.
-	 * 
+	 *
 	 * @param format A TextFormat object that contains character and paragraph
 	 *               formatting information.
 	 * @throws Error      This method cannot be used on a text field with a style
@@ -810,12 +752,8 @@ extern class TextField extends InteractiveObject {
 	 * @throws RangeError The `beginIndex` or `endIndex`
 	 *                    specified is out of range.
 	 */
-	public function setTextFormat (format:TextFormat, beginIndex:Int = 0, endIndex:Int = 0):Void;
-	
-	
+	public function setTextFormat(format:TextFormat, beginIndex:Int = 0, endIndex:Int = 0):Void;
 }
-
-
 #else
 typedef TextField = flash.text.TextField;
 #end

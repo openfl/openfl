@@ -1,16 +1,15 @@
-package openfl.media; #if (display || !flash)
+package openfl.media;
 
-
+#if (display || !flash)
 @:jsRequire("openfl/media/SoundLoaderContext", "default")
-
 /**
  * The SoundLoaderContext class provides security checks for files that load
  * sound. SoundLoaderContext objects are passed as an argument to the
  * constructor and the `load()` method of the Sound class.
  *
- * When you use this class, consider the following security model: 
+ * When you use this class, consider the following security model:
  *
- * 
+ *
  *  * Loading and playing a sound is not allowed if the calling file is in
  * a network sandbox and the sound file to be loaded is local.
  *  * By default, loading and playing a sound is not allowed if the calling
@@ -23,7 +22,7 @@ package openfl.media; #if (display || !flash)
  * `SoundMixer.computeSpectrum()`,
  * `SoundMixer.bufferTime`, and `SoundTransform()`
  * methods.
- * 
+ *
  *
  * However, in Adobe AIR, content in the `application` security
  * sandbox(content installed with the AIR application) are not restricted by
@@ -32,9 +31,8 @@ package openfl.media; #if (display || !flash)
  * For more information related to security, see the Flash Player Developer
  * Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
  */
-extern class SoundLoaderContext {
-	
-	
+extern class SoundLoaderContext
+{
 	/**
 	 * The number of milliseconds to preload a streaming sound into a buffer
 	 * before the sound starts to stream.
@@ -48,7 +46,7 @@ extern class SoundLoaderContext {
 	 * ActionScript).
 	 */
 	public var bufferTime:Float;
-	
+
 	/**
 	 * Specifies whether the application should try to download a URL policy file
 	 * from the loaded sound's server before beginning to load the sound. This
@@ -79,7 +77,7 @@ extern class SoundLoaderContext {
 	 * following actions, in this order, to verify the existence of a policy
 	 * file:
 	 *
-	 * 
+	 *
 	 *  * Flash Player or AIR considers policy files that have already been
 	 * downloaded.
 	 *  * Flash Player or AIR tries to download any pending policy files
@@ -90,20 +88,20 @@ extern class SoundLoaderContext {
 	 * `URLRequest.url`.(The sound's URL is specified in the
 	 * `url` property of the URLRequest object passed to
 	 * `Sound.load()` or the Sound() constructor function.)
-	 * 
+	 *
 	 *
 	 * In all cases, Flash Player or AIR requires that an appropriate policy
 	 * file exist on the sound's server, that it provide access to the sound file
 	 * at `URLRequest.url` by virtue of the policy file's location,
 	 * and that it allow the domain of the calling file to access the sound,
-	 * through one or more `<allow-access-from>` tags. 
+	 * through one or more `<allow-access-from>` tags.
 	 *
 	 * If you set `checkPolicyFile` to `true`, Flash
 	 * Player or AIR waits until the policy file is verified before loading the
 	 * sound. You should wait to perform any low-level operations on the sound
 	 * data, such as calling `Sound.id3` or
 	 * `SoundMixer.computeSpectrum()`, until `progress` and
-	 * `complete` events are dispatched from the Sound object. 
+	 * `complete` events are dispatched from the Sound object.
 	 *
 	 * If you set `checkPolicyFile` to `true` but no
 	 * appropriate policy file is found, you will not receive an error until you
@@ -139,23 +137,18 @@ extern class SoundLoaderContext {
 	 * Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
 	 */
 	public var checkPolicyFile:Bool;
-	
-	
+
 	/**
 	 * Creates a new sound loader context object.
-	 * 
+	 *
 	 * @param bufferTime      The number of seconds to preload a streaming sound
 	 *                        into a buffer before the sound starts to stream.
 	 * @param checkPolicyFile Specifies whether the existence of a URL policy
 	 *                        file should be checked upon loading the object
 	 *                       (`true`) or not.
 	 */
-	public function new (bufferTime:Float = 1000, checkPolicyFile:Bool = false);
-	
-	
+	public function new(bufferTime:Float = 1000, checkPolicyFile:Bool = false);
 }
-
-
 #else
 typedef SoundLoaderContext = flash.media.SoundLoaderContext;
 #end

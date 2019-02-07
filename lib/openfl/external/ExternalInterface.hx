@@ -1,8 +1,7 @@
-package openfl.external; #if (display || !flash)
+package openfl.external;
 
-
+#if (display || !flash)
 @:jsRequire("openfl/external/ExternalInterface", "default")
-
 /**
  * The ExternalInterface class is an application programming interface that
  * enables straightforward communication between ActionScript and the SWF
@@ -23,7 +22,7 @@ package openfl.external; #if (display || !flash)
  * either ActiveX<sup>®</sup> or the NPRuntime API that is exposed by some
  * browsers for plug-in scripting. Even if a browser and operating system
  * combination are not listed above, they should support the ExternalInterface
- * class if they support the NPRuntime API. See 
+ * class if they support the NPRuntime API. See
  * [http://www.mozilla.org/projects/plugins/npruntime.html](http://www.mozilla.org/projects/plugins/npruntime.html)..
  *
  * **Note:** When embedding SWF files within an HTML page, make sure
@@ -46,21 +45,21 @@ package openfl.external; #if (display || !flash)
  * or key-press event.)
  *
  * From ActionScript, you can do the following on the HTML page:
- * 
+ *
  *  * Call any JavaScript function.
  *  * Pass any number of arguments, with any names.
  *  * Pass various data types(Boolean, Number, String, and so on).
  *  * Receive a return value from the JavaScript function.
- * 
- * 
+ *
+ *
  *
  * From JavaScript on the HTML page, you can:
- * 
+ *
  *  * Call an ActionScript function.
  *  * Pass arguments using standard function call notation.
  *  * Return a value to the JavaScript function.
- * 
- * 
+ *
+ *
  *
  * **Note for Flash Player applications:** Flash Player does not
  * currently support SWF files embedded within HTML forms.
@@ -70,9 +69,8 @@ package openfl.external; #if (display || !flash)
  * in the HTMLLoader control and ActionScript in SWF content embedded in that
  * HTML page.
  */
-@:final extern class ExternalInterface {
-	
-	
+@:final extern class ExternalInterface
+{
 	/**
 	 * Indicates whether this player is in a container that offers an external
 	 * interface. If the external interface is available, this property is
@@ -82,8 +80,8 @@ package openfl.external; #if (display || !flash)
 	 * the HTML has finished loading before you attempt to call any JavaScript
 	 * methods.
 	 */
-	public static var available (default, null):Bool;
-	
+	public static var available(default, null):Bool;
+
 	/**
 	 * Indicates whether the external interface should attempt to pass
 	 * ActionScript exceptions to the current browser and JavaScript exceptions
@@ -92,15 +90,14 @@ package openfl.external; #if (display || !flash)
 	 * exceptions in JavaScript.
 	 */
 	public static var marshallExceptions:Bool;
-	
+
 	/**
 	 * Returns the `id` attribute of the `object` tag in
 	 * Internet Explorer, or the `name` attribute of the
 	 * `embed` tag in Netscape.
 	 */
-	public static var objectID (default, null):String;
-	
-	
+	public static var objectID(default, null):String;
+
 	/**
 	 * Registers an ActionScript method as callable from the container. After a
 	 * successful invocation of `addCallBack()`, the registered
@@ -112,7 +109,7 @@ package openfl.external; #if (display || !flash)
 	 * SWF file and the containing web page are in the local-trusted security
 	 * sandbox. For more information, see the Flash Player Developer Center
 	 * Topic: [Security](http://www.adobe.com/go/devnet_security_en).
-	 * 
+	 *
 	 * @param functionName The name by which the container can invoke the
 	 *                     function.
 	 * @param closure      The function closure to invoke. This could be a
@@ -141,23 +138,22 @@ package openfl.external; #if (display || !flash)
 	 * @throws SecurityError The containing environment belongs to a security
 	 *                       sandbox to which the calling code does not have
 	 *                       access. To fix this problem, follow these steps:
-	 *                       
+	 *
 	 *                        1. In the `object` tag for the SWF
 	 *                       file in the containing HTML page, set the following
 	 *                       parameter:
 	 *
 	 *                       `<param name="allowScriptAccess"
 	 *                       value="always" />`
-	 *                       
+	 *
 	 *                        2. In the SWF file, add the following
 	 *                       ActionScript:
 	 *
 	 *
 	 *                       `flash.system.Security.allowDomain(_sourceDomain_)`
 	 */
-	public static function addCallback (functionName:String, closure:Dynamic):Void;
-	
-	
+	public static function addCallback(functionName:String, closure:Dynamic):Void;
+
 	/**
 	 * Calls a function exposed by the SWF container, passing zero or more
 	 * arguments. If the function is not available, the call returns
@@ -193,7 +189,7 @@ package openfl.external; #if (display || !flash)
 	 * blocker is enabled. In this scenario, you can only call this method
 	 * successfully in response to a user event(for example, in an event handler
 	 * for a mouse click or keypress event).
-	 * 
+	 *
 	 * @param functionName The alphanumeric name of the function to call in the
 	 *                     container. Using a non-alphanumeric function name
 	 *                     causes a runtime error(error 2155). You can use a
@@ -211,26 +207,22 @@ package openfl.external; #if (display || !flash)
 	 * @throws SecurityError The containing environment belongs to a security
 	 *                       sandbox to which the calling code does not have
 	 *                       access. To fix this problem, follow these steps:
-	 *                       
+	 *
 	 *                        1. In the `object` tag for the SWF
 	 *                       file in the containing HTML page, set the following
 	 *                       parameter:
 	 *
 	 *                       `<param name="allowScriptAccess"
 	 *                       value="always" />`
-	 *                       
+	 *
 	 *                        2. In the SWF file, add the following
 	 *                       ActionScript:
 	 *
 	 *
 	 *                       `flash.system.Security.allowDomain(_sourceDomain_)`
 	 */
-	public static function call (functionName:String, ?p1:Dynamic, ?p2:Dynamic, ?p3:Dynamic, ?p4:Dynamic, ?p5:Dynamic):Dynamic;
-	
-	
+	public static function call(functionName:String, ?p1:Dynamic, ?p2:Dynamic, ?p3:Dynamic, ?p4:Dynamic, ?p5:Dynamic):Dynamic;
 }
-
-
 #else
 typedef ExternalInterface = flash.external.ExternalInterface;
 #end

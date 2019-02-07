@@ -1,8 +1,7 @@
 package openfl.display3D;
 
-
-@:enum abstract Context3DBlendFactor(String) from String to String {
-	
+@:enum abstract Context3DBlendFactor(String) from String to String
+{
 	public var DESTINATION_ALPHA = "destinationAlpha";
 	public var DESTINATION_COLOR = "destinationColor";
 	public var ONE = "one";
@@ -13,5 +12,4 @@ package openfl.display3D;
 	public var SOURCE_ALPHA = "sourceAlpha";
 	public var SOURCE_COLOR = "sourceColor";
 	public var ZERO = "zero";
-	
 }

@@ -1,103 +1,84 @@
 package openfl.display;
 
+class GraphicsStrokeTest
+{
+	@Test public function caps()
+	{
+		// TODO: Confirm functionality
 
-class GraphicsStrokeTest {
-	
-	
-	@Test public function caps () {
-		
-		// TODO: Confirm functionality
-		
-		var stroke = new GraphicsStroke ();
+		var stroke = new GraphicsStroke();
 		var exists = stroke.caps;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function fill () {
-		
+
+	@Test public function fill()
+	{
 		// TODO: Confirm functionality
-		
-		var stroke = new GraphicsStroke ();
-		stroke.fill = new GraphicsSolidFill ();
+
+		var stroke = new GraphicsStroke();
+		stroke.fill = new GraphicsSolidFill();
 		var exists = stroke.fill;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function joints () {
-		
+
+	@Test public function joints()
+	{
 		// TODO: Confirm functionality
-		
-		var stroke = new GraphicsStroke ();
+
+		var stroke = new GraphicsStroke();
 		var exists = stroke.joints;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function miterLimit () {
-		
+
+	@Test public function miterLimit()
+	{
 		// TODO: Confirm functionality
-		
-		var stroke = new GraphicsStroke ();
+
+		var stroke = new GraphicsStroke();
 		var exists = stroke.miterLimit;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function pixelHinting () {
-		
+
+	@Test public function pixelHinting()
+	{
 		// TODO: Confirm functionality
-		
-		var stroke = new GraphicsStroke ();
+
+		var stroke = new GraphicsStroke();
 		var exists = stroke.pixelHinting;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function scaleMode () {
-		
+
+	@Test public function scaleMode()
+	{
 		// TODO: Confirm functionality
-		
-		var stroke = new GraphicsStroke ();
+
+		var stroke = new GraphicsStroke();
 		var exists = stroke.scaleMode;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function thickness () {
-		
+
+	@Test public function thickness()
+	{
 		// TODO: Confirm functionality
-		
-		var stroke = new GraphicsStroke ();
+
+		var stroke = new GraphicsStroke();
 		var exists = stroke.thickness;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function new_ () {
-		
+
+	@Test public function new_()
+	{
 		// TODO: Confirm functionality
-		
-		var stroke = new GraphicsStroke ();
-		
-		Assert.isNotNull (stroke);
-		
+
+		var stroke = new GraphicsStroke();
+
+		Assert.isNotNull(stroke);
 	}
-	
-	
 }

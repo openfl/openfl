@@ -1,10 +1,9 @@
-package openfl.display; #if (display || !flash)
+package openfl.display;
 
-
+#if (display || !flash)
 import openfl.geom.Rectangle;
 
 @:jsRequire("openfl/display/InteractiveObject", "default")
-
 
 /**
  * The InteractiveObject class is the abstract base class for all display
@@ -20,7 +19,7 @@ import openfl.geom.Rectangle;
  * InteractiveObject class, extend one of the subclasses that do have APIs for
  * rendering content onscreen, such as the Sprite, SimpleButton, TextField, or
  * MovieClip classes.
- * 
+ *
  * @event clear                  Dispatched when the user selects 'Clear'(or
  *                               'Delete') from the text context menu. This
  *                               event is dispatched to the object that
@@ -93,7 +92,7 @@ import openfl.geom.Rectangle;
  *                               `click` events.
  *
  *                               The `doubleClickEnabled`
- *                               property defaults to `false`. 
+ *                               property defaults to `false`.
  *
  *                               The double-click text selection behavior
  *                               of a TextField object is not related to the
@@ -743,7 +742,7 @@ import openfl.geom.Rectangle;
  *                               area of any child object of the display
  *                               object container, even if the mouse was
  *                               already over another child object of the
- *                               display object container. 
+ *                               display object container.
  * @event selectAll              Dispatched when the user activates the
  *                               platform-specific accelerator key combination
  *                               for a select all operation or selects 'Select
@@ -1045,17 +1044,15 @@ import openfl.geom.Rectangle;
  *                               **Note:** See the Multitouch class for
  *                               environment compatibility information.
  */
-extern class InteractiveObject extends DisplayObject {
-	
-	
+extern class InteractiveObject extends DisplayObject
+{
 	#if flash
 	@:noCompletion @:dox(hide) public var accessibilityImplementation:flash.accessibility.AccessibilityImplementation;
 	#end
-	
 	#if flash
 	@:noCompletion @:dox(hide) public var contextMenu:flash.ui.ContextMenu;
 	#end
-	
+
 	/**
 	 * Specifies whether the object receives `doubleClick` events. The
 	 * default value is `false`, which means that by default an
@@ -1071,9 +1068,8 @@ extern class InteractiveObject extends DisplayObject {
 	 * `doubleClick` event.
 	 */
 	public var doubleClickEnabled:Bool;
-	
 	public var focusRect:Null<Bool>;
-	
+
 	/**
 	 * Specifies whether this object receives mouse, or other user input,
 	 * messages. The default value is `true`, which means that by
@@ -1091,7 +1087,7 @@ extern class InteractiveObject extends DisplayObject {
 	 * functionality.
 	 */
 	public var mouseEnabled:Bool;
-	
+
 	/**
 	 * Specifies whether a virtual keyboard(an on-screen, software keyboard)
 	 * should display when this InteractiveObject instance receives focus.
@@ -1116,33 +1112,27 @@ extern class InteractiveObject extends DisplayObject {
 	 */
 	public var needsSoftKeyboard:Bool;
 	public var softKeyboardInputAreaOfInterest:Rectangle;
-	
-	public var tabEnabled (get, set):Bool;
-	
-	@:noCompletion private function get_tabEnabled ():Bool;
-	@:noCompletion private function set_tabEnabled (value:Bool):Bool;
-	
-	public var tabIndex (get, set):Int;
-	
-	@:noCompletion private function get_tabIndex ():Int;
-	@:noCompletion private function set_tabIndex (value:Int):Int;
-	
-	
+	public var tabEnabled(get, set):Bool;
+	@:noCompletion private function get_tabEnabled():Bool;
+	@:noCompletion private function set_tabEnabled(value:Bool):Bool;
+	public var tabIndex(get, set):Int;
+	@:noCompletion private function get_tabIndex():Int;
+	@:noCompletion private function set_tabIndex(value:Int):Int;
+
 	/**
 	 * Calling the `new InteractiveObject()` constructor throws an
 	 * `ArgumentError` exception. You can, however, call constructors
 	 * for the following subclasses of InteractiveObject:
-	 * 
+	 *
 	 *  * `new SimpleButton()`
 	 *  * `new TextField()`
 	 *  * `new Loader()`
 	 *  * `new Sprite()`
 	 *  * `new MovieClip()`
-	 * 
+	 *
 	 */
-	private function new ();
-	
-	
+	private function new();
+
 	/**
 	 * Raises a virtual keyboard.
 	 *
@@ -1154,17 +1144,13 @@ extern class InteractiveObject extends DisplayObject {
 	 *
 	 * **Note:** This method is not supported in AIR applications on
 	 * iOS.
-	 * 
+	 *
 	 * @return A value of `true` means that the soft keyboard request
 	 *         was granted; `false` means that the soft keyboard was
 	 *         not raised.
 	 */
-	public function requestSoftKeyboard ():Bool;
-	
-	
+	public function requestSoftKeyboard():Bool;
 }
-
-
 #else
 typedef InteractiveObject = flash.display.InteractiveObject;
 #end

@@ -1,8 +1,8 @@
-package flash.display; #if flash
+package flash.display;
 
-
-@:enum abstract ShaderParameterType(String) from String to String {
-	
+#if flash
+@:enum abstract ShaderParameterType(String) from String to String
+{
 	public var BOOL = "bool";
 	public var BOOL2 = "bool2";
 	public var BOOL3 = "bool3";
@@ -24,10 +24,7 @@ package flash.display; #if flash
 	public var MATRIX4X2 = "matrix4x2";
 	public var MATRIX4X3 = "matrix4x3";
 	public var MATRIX4X4 = "matrix4x4";
-	
 }
-
-
 #else
 typedef ShaderParameterType = openfl.display.ShaderParameterType;
 #end

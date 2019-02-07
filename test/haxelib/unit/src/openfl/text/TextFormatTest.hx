@@ -1,14 +1,11 @@
 package openfl.text;
 
-
 import massive.munit.Assert;
 
-
-class TextFormatTest {
-	
-	
-	@Test public function _new() {
-		
+class TextFormatTest
+{
+	@Test public function _new()
+	{
 		var font:String = 'Text Font';
 		var size:Int = 123;
 		var color:Int = 0xFF00FF;
@@ -22,11 +19,9 @@ class TextFormatTest {
 		var rightMargin:Int = 5;
 		var indent:Int = 3;
 		var leading:Int = 7;
-		
-		var format:TextFormat = new TextFormat(
-			font, size, color, bold, italic, underline, url, target, align, leftMargin, rightMargin, indent, leading
-		);
-		
+
+		var format:TextFormat = new TextFormat(font, size, color, bold, italic, underline, url, target, align, leftMargin, rightMargin, indent, leading);
+
 		Assert.areEqual(font, format.font);
 		Assert.areEqual(size, format.size);
 		Assert.areEqual(color, format.color);
@@ -41,232 +36,192 @@ class TextFormatTest {
 		Assert.areEqual(indent, format.indent);
 		Assert.areEqual(leading, format.leading);
 	}
-	
-	
-	@Test public function align () {
-		
+
+	@Test public function align()
+	{
 		// TODO: Confirm functionality
-		
-		var textFormat = new TextFormat ();
+
+		var textFormat = new TextFormat();
 		var exists = textFormat.align;
-		
-		Assert.isNull (exists);
-		
+
+		Assert.isNull(exists);
 	}
-	
-	
-	@Test public function blockIndent () {
-		
+
+	@Test public function blockIndent()
+	{
 		// TODO: Confirm functionality
-		
-		var textFormat = new TextFormat ();
+
+		var textFormat = new TextFormat();
 		var exists = textFormat.blockIndent;
-		
-		Assert.isNull (exists);
-		
+
+		Assert.isNull(exists);
 	}
-	
-	
-	@Test public function bold () {
-		
+
+	@Test public function bold()
+	{
 		// TODO: Confirm functionality
-		
-		var textFormat = new TextFormat ();
+
+		var textFormat = new TextFormat();
 		var exists = textFormat.bold;
-		
-		Assert.isNull (exists);
-		
+
+		Assert.isNull(exists);
 	}
-	
-	
-	@Test public function bullet () {
-		
+
+	@Test public function bullet()
+	{
 		// TODO: Confirm functionality
-		
-		var textFormat = new TextFormat ();
+
+		var textFormat = new TextFormat();
 		var exists = textFormat.bullet;
-		
-		Assert.isNull (exists);
-		
+
+		Assert.isNull(exists);
 	}
-	
-	
-	@Test public function color () {
-		
+
+	@Test public function color()
+	{
 		// TODO: Confirm functionality
-		
-		var textFormat = new TextFormat ();
+
+		var textFormat = new TextFormat();
 		var exists = textFormat.color;
-		
-		Assert.isNull (exists);
-		
+
+		Assert.isNull(exists);
 	}
-	
-	
-	@Test public function font () {
-		
+
+	@Test public function font()
+	{
 		// TODO: Confirm functionality
-		
-		var textFormat = new TextFormat ();
+
+		var textFormat = new TextFormat();
 		var exists = textFormat.font;
-		
-		Assert.isNull (exists);
-		
+
+		Assert.isNull(exists);
 	}
-	
-	
-	@Test public function indent () {
-		
+
+	@Test public function indent()
+	{
 		// TODO: Confirm functionality
-		
-		var textFormat = new TextFormat ();
+
+		var textFormat = new TextFormat();
 		var exists = textFormat.indent;
-		
-		Assert.isNull (exists);
-		
+
+		Assert.isNull(exists);
 	}
-	
-	
-	@Test public function italic () {
-		
+
+	@Test public function italic()
+	{
 		// TODO: Confirm functionality
-		
-		var textFormat = new TextFormat ();
+
+		var textFormat = new TextFormat();
 		var exists = textFormat.italic;
-		
-		Assert.isNull (exists);
-		
+
+		Assert.isNull(exists);
 	}
-	
-	
-	@Test public function kerning () {
-		
+
+	@Test public function kerning()
+	{
 		// TODO: Confirm functionality
-		
-		var textFormat = new TextFormat ();
+
+		var textFormat = new TextFormat();
 		var exists = textFormat.kerning;
-		
-		Assert.isNull (exists);
-		
+
+		Assert.isNull(exists);
 	}
-	
-	
-	@Test public function leading () {
-		
+
+	@Test public function leading()
+	{
 		// TODO: Confirm functionality
-		
-		var textFormat = new TextFormat ();
+
+		var textFormat = new TextFormat();
 		var exists = textFormat.leading;
-		
-		Assert.isNull (exists);
-		
+
+		Assert.isNull(exists);
 	}
-	
-	
-	@Test public function leftMargin () {
-		
+
+	@Test public function leftMargin()
+	{
 		// TODO: Confirm functionality
-		
-		var textFormat = new TextFormat ();
+
+		var textFormat = new TextFormat();
 		var exists = textFormat.leftMargin;
-		
-		Assert.isNull (exists);
-		
+
+		Assert.isNull(exists);
 	}
-	
-	
-	@Test public function letterSpacing () {
-		
+
+	@Test public function letterSpacing()
+	{
 		// TODO: Confirm functionality
-		
-		var textFormat = new TextFormat ();
+
+		var textFormat = new TextFormat();
 		var exists = textFormat.letterSpacing;
-		
-		Assert.isNull (exists);
-		
+
+		Assert.isNull(exists);
 	}
-	
-	
-	@Test public function rightMargin () {
-		
+
+	@Test public function rightMargin()
+	{
 		// TODO: Confirm functionality
-		
-		var textFormat = new TextFormat ();
+
+		var textFormat = new TextFormat();
 		var exists = textFormat.rightMargin;
-		
-		Assert.isNull (exists);
-		
+
+		Assert.isNull(exists);
 	}
-	
-	
-	@Test public function size () {
-		
+
+	@Test public function size()
+	{
 		// TODO: Confirm functionality
-		
-		var textFormat = new TextFormat ();
+
+		var textFormat = new TextFormat();
 		var exists = textFormat.size;
-		
-		Assert.isNull (exists);
-		
+
+		Assert.isNull(exists);
 	}
-	
-	
-	@Test public function tabStops () {
-		
+
+	@Test public function tabStops()
+	{
 		// TODO: Confirm functionality
-		
-		var textFormat = new TextFormat ();
+
+		var textFormat = new TextFormat();
 		var exists = textFormat.tabStops;
-		
-		Assert.isNull (exists);
-		
+
+		Assert.isNull(exists);
 	}
-	
-	
-	@Test public function target () {
-		
+
+	@Test public function target()
+	{
 		// TODO: Confirm functionality
-		
-		var textFormat = new TextFormat ();
+
+		var textFormat = new TextFormat();
 		var exists = textFormat.target;
-		
-		Assert.isNull (exists);
-		
+
+		Assert.isNull(exists);
 	}
-	
-	
-	@Test public function underline () {
-		
+
+	@Test public function underline()
+	{
 		// TODO: Confirm functionality
-		
-		var textFormat = new TextFormat ();
+
+		var textFormat = new TextFormat();
 		var exists = textFormat.underline;
-		
-		Assert.isNull (exists);
-		
+
+		Assert.isNull(exists);
 	}
-	
-	
-	@Test public function url () {
-		
+
+	@Test public function url()
+	{
 		// TODO: Confirm functionality
-		
-		var textFormat = new TextFormat ();
+
+		var textFormat = new TextFormat();
 		var exists = textFormat.url;
-		
-		Assert.isNull (exists);
-		
+
+		Assert.isNull(exists);
 	}
-	
-	
-	@Test public function new_ () {
-		
+
+	@Test public function new_()
+	{
 		// TODO: Confirm functionality
-		
-		var textFormat = new TextFormat ();
-		Assert.isNotNull (textFormat);
-		
+
+		var textFormat = new TextFormat();
+		Assert.isNotNull(textFormat);
 	}
-	
-	
 }

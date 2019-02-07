@@ -1,10 +1,9 @@
-package openfl.display; #if (display || !flash)
+package openfl.display;
 
-
+#if (display || !flash)
 import openfl.geom.Point;
 
 @:jsRequire("openfl/display/DisplayObjectContainer", "default")
-
 
 /**
  * The DisplayObjectContainer class is the base class for all objects that can
@@ -27,9 +26,8 @@ import openfl.geom.Point;
  * For more information, see the "Display Programming" chapter of the
  * _ActionScript 3.0 Developer's Guide_.
  */
-extern class DisplayObjectContainer extends InteractiveObject {
-	
-	
+extern class DisplayObjectContainer extends InteractiveObject
+{
 	/**
 	 * Determines whether or not the children of the object are mouse, or user
 	 * input device, enabled. If an object is enabled, a user can interact with
@@ -52,15 +50,13 @@ extern class DisplayObjectContainer extends InteractiveObject {
 	 * functionality.
 	 */
 	public var mouseChildren:Bool;
-	
+
 	/**
 	 * Returns the number of children of this object.
 	 */
-	public var numChildren (get, never):Int;
-	
-	@:noCompletion private function get_numChildren ():Int;
-	
-	
+	public var numChildren(get, never):Int;
+	@:noCompletion private function get_numChildren():Int;
+
 	/**
 	 * Determines whether the children of the object are tab enabled. Enables or
 	 * disables tabbing for the children of the object. The default is
@@ -69,31 +65,28 @@ extern class DisplayObjectContainer extends InteractiveObject {
 	 * **Note:** Do not use the `tabChildren` property with
 	 * Flex. Instead, use the
 	 * `mx.core.UIComponent.hasFocusableChildren` property.
-	 * 
+	 *
 	 * @throws IllegalOperationError Calling this property of the Stage object
 	 *                               throws an exception. The Stage object does
 	 *                               not implement this property.
 	 */
 	public var tabChildren:Bool;
-	
 	#if flash
-	@:noCompletion @:dox(hide) public var textSnapshot (default, null):flash.text.TextSnapshot;
+	@:noCompletion @:dox(hide) public var textSnapshot(default, null):flash.text.TextSnapshot;
 	#end
-	
-	
+
 	/**
 	 * Calling the `new DisplayObjectContainer()` constructor throws
 	 * an `ArgumentError` exception. You _can_, however, call
 	 * constructors for the following subclasses of DisplayObjectContainer:
-	 * 
+	 *
 	 *  * `new Loader()`
 	 *  * `new Sprite()`
 	 *  * `new MovieClip()`
-	 * 
+	 *
 	 */
-	private function new ();
-	
-	
+	private function new();
+
 	/**
 	 * Adds a child DisplayObject instance to this DisplayObjectContainer
 	 * instance. The child is added to the front(top) of all other children in
@@ -102,7 +95,7 @@ extern class DisplayObjectContainer extends InteractiveObject {
 	 *
 	 * If you add a child object that already has a different display object
 	 * container as a parent, the object is removed from the child list of the
-	 * other display object container. 
+	 * other display object container.
 	 *
 	 * **Note:** The command `stage.addChild()` can cause
 	 * problems with a published SWF file, including security problems and
@@ -113,7 +106,7 @@ extern class DisplayObjectContainer extends InteractiveObject {
 	 * object. Create a DisplayObjectContainer to contain all of the items on the
 	 * display list. Then, if necessary, add that DisplayObjectContainer instance
 	 * to the Stage.
-	 * 
+	 *
 	 * @param child The DisplayObject instance to add as a child of this
 	 *              DisplayObjectContainer instance.
 	 * @return The DisplayObject instance that you pass in the `child`
@@ -124,9 +117,8 @@ extern class DisplayObjectContainer extends InteractiveObject {
 	 * @event added Dispatched when a display object is added to the display
 	 *              list.
 	 */
-	public function addChild (child:DisplayObject):DisplayObject;
-	
-	
+	public function addChild(child:DisplayObject):DisplayObject;
+
 	/**
 	 * Adds a child DisplayObject instance to this DisplayObjectContainer
 	 * instance. The child is added at the index position specified. An index of
@@ -138,8 +130,8 @@ extern class DisplayObjectContainer extends InteractiveObject {
 	 *
 	 * If you add a child object that already has a different display object
 	 * container as a parent, the object is removed from the child list of the
-	 * other display object container. 
-	 * 
+	 * other display object container.
+	 *
 	 * @param child The DisplayObject instance to add as a child of this
 	 *              DisplayObjectContainer instance.
 	 * @param index The index position to which the child is added. If you
@@ -156,9 +148,8 @@ extern class DisplayObjectContainer extends InteractiveObject {
 	 * @event added Dispatched when a display object is added to the display
 	 *              list.
 	 */
-	public function addChildAt (child:DisplayObject, index:Int):DisplayObject;
-	
-	
+	public function addChildAt(child:DisplayObject, index:Int):DisplayObject;
+
 	/**
 	 * Indicates whether the security restrictions would cause any display
 	 * objects to be omitted from the list returned by calling the
@@ -174,33 +165,31 @@ extern class DisplayObjectContainer extends InteractiveObject {
 	 * container(unless the display object container is the Stage). You can use
 	 * the `globalToLocal()` and the `localToGlobal()`
 	 * methods to convert points between these coordinate spaces.
-	 * 
+	 *
 	 * @param point The point under which to look.
 	 * @return `true` if the point contains child display objects with
 	 *         security restrictions.
 	 */
-	public function areInaccessibleObjectsUnderPoint (point:Point):Bool;
-	
-	
+	public function areInaccessibleObjectsUnderPoint(point:Point):Bool;
+
 	/**
 	 * Determines whether the specified display object is a child of the
 	 * DisplayObjectContainer instance or the instance itself. The search
 	 * includes the entire display list including this DisplayObjectContainer
 	 * instance. Grandchildren, great-grandchildren, and so on each return
 	 * `true`.
-	 * 
+	 *
 	 * @param child The child object to test.
 	 * @return `true` if the `child` object is a child of
 	 *         the DisplayObjectContainer or the container itself; otherwise
 	 *         `false`.
 	 */
-	public function contains (child:DisplayObject):Bool;
-	
-	
+	public function contains(child:DisplayObject):Bool;
+
 	/**
 	 * Returns the child display object instance that exists at the specified
 	 * index.
-	 * 
+	 *
 	 * @param index The index position of the child object.
 	 * @return The child display object at the specified index position.
 	 * @throws RangeError    Throws if the index does not exist in the child
@@ -210,9 +199,8 @@ extern class DisplayObjectContainer extends InteractiveObject {
 	 *                       situation by having the child movie call
 	 *                       `Security.allowDomain()`.
 	 */
-	public function getChildAt (index:Int):DisplayObject;
-	
-	
+	public function getChildAt(index:Int):DisplayObject;
+
 	/**
 	 * Returns the child display object that exists with the specified name. If
 	 * more that one child display object has the specified name, the method
@@ -223,7 +211,7 @@ extern class DisplayObjectContainer extends InteractiveObject {
 	 * accesses a child from a cached array, whereas the
 	 * `getChildByName()` method has to traverse a linked list to
 	 * access a child.
-	 * 
+	 *
 	 * @param name The name of the child to return.
 	 * @return The child display object with the specified name.
 	 * @throws SecurityError This child display object belongs to a sandbox to
@@ -231,20 +219,18 @@ extern class DisplayObjectContainer extends InteractiveObject {
 	 *                       situation by having the child movie call the
 	 *                       `Security.allowDomain()` method.
 	 */
-	public function getChildByName (name:String):DisplayObject;
-	
-	
+	public function getChildByName(name:String):DisplayObject;
+
 	/**
 	 * Returns the index position of a `child` DisplayObject instance.
-	 * 
+	 *
 	 * @param child The DisplayObject instance to identify.
 	 * @return The index position of the child display object to identify.
 	 * @throws ArgumentError Throws if the child parameter is not a child of this
 	 *                       object.
 	 */
-	public function getChildIndex (child:DisplayObject):Int;
-	
-	
+	public function getChildIndex(child:DisplayObject):Int;
+
 	/**
 	 * Returns an array of objects that lie under the specified point and are
 	 * children(or grandchildren, and so on) of this DisplayObjectContainer
@@ -258,15 +244,14 @@ extern class DisplayObjectContainer extends InteractiveObject {
 	 * container(unless the display object container is the Stage). You can use
 	 * the `globalToLocal()` and the `localToGlobal()`
 	 * methods to convert points between these coordinate spaces.
-	 * 
+	 *
 	 * @param point The point under which to look.
 	 * @return An array of objects that lie under the specified point and are
 	 *         children(or grandchildren, and so on) of this
 	 *         DisplayObjectContainer instance.
 	 */
-	public function getObjectsUnderPoint (point:Point):Array<DisplayObject>;
-	
-	
+	public function getObjectsUnderPoint(point:Point):Array<DisplayObject>;
+
 	/**
 	 * Removes the specified `child` DisplayObject instance from the
 	 * child list of the DisplayObjectContainer instance. The `parent`
@@ -279,16 +264,15 @@ extern class DisplayObjectContainer extends InteractiveObject {
 	 * or object is no longer actively referenced or stored somewhere, the
 	 * garbage collector sweeps through and wipes out the memory space it used to
 	 * occupy if no other references to it exist.
-	 * 
+	 *
 	 * @param child The DisplayObject instance to remove.
 	 * @return The DisplayObject instance that you pass in the `child`
 	 *         parameter.
 	 * @throws ArgumentError Throws if the child parameter is not a child of this
 	 *                       object.
 	 */
-	public function removeChild (child:DisplayObject):DisplayObject;
-	
-	
+	public function removeChild(child:DisplayObject):DisplayObject;
+
 	/**
 	 * Removes a child DisplayObject from the specified `index`
 	 * position in the child list of the DisplayObjectContainer. The
@@ -301,7 +285,7 @@ extern class DisplayObjectContainer extends InteractiveObject {
 	 * or object is no longer actively referenced or stored somewhere, the
 	 * garbage collector sweeps through and wipes out the memory space it used to
 	 * occupy if no other references to it exist.
-	 * 
+	 *
 	 * @param index The child index of the DisplayObject to remove.
 	 * @return The DisplayObject instance that was removed.
 	 * @throws RangeError    Throws if the index does not exist in the child
@@ -311,12 +295,9 @@ extern class DisplayObjectContainer extends InteractiveObject {
 	 *                       can avoid this situation by having the child movie
 	 *                       call the `Security.allowDomain()` method.
 	 */
-	public function removeChildAt (index:Int):DisplayObject;
-	
-	
-	public function removeChildren (beginIndex:Int = 0, endIndex:Int = 0x7FFFFFFF):Void;
-	
-	
+	public function removeChildAt(index:Int):DisplayObject;
+	public function removeChildren(beginIndex:Int = 0, endIndex:Int = 0x7FFFFFFF):Void;
+
 	/**
 	 * Changes the position of an existing child in the display object container.
 	 * This affects the layering of child objects. For example, the following
@@ -335,7 +316,7 @@ extern class DisplayObjectContainer extends InteractiveObject {
 	 * labeled a and b by calling the following code:
 	 *
 	 * This code results in the following arrangement of objects:
-	 * 
+	 *
 	 * @param child The child DisplayObject instance for which you want to change
 	 *              the index number.
 	 * @param index The resulting index number for the `child` display
@@ -345,40 +326,32 @@ extern class DisplayObjectContainer extends InteractiveObject {
 	 * @throws RangeError    Throws if the index does not exist in the child
 	 *                       list.
 	 */
-	public function setChildIndex (child:DisplayObject, index:Int):Void;
-	
-	
-	public function stopAllMovieClips ():Void;
-	
-	
+	public function setChildIndex(child:DisplayObject, index:Int):Void;
+	public function stopAllMovieClips():Void;
+
 	/**
 	 * Swaps the z-order(front-to-back order) of the two specified child
 	 * objects. All other child objects in the display object container remain in
 	 * the same index positions.
-	 * 
+	 *
 	 * @param child1 The first child object.
 	 * @param child2 The second child object.
 	 * @throws ArgumentError Throws if either child parameter is not a child of
 	 *                       this object.
 	 */
-	public function swapChildren (child1:DisplayObject, child2:DisplayObject):Void;
-	
-	
+	public function swapChildren(child1:DisplayObject, child2:DisplayObject):Void;
+
 	/**
 	 * Swaps the z-order(front-to-back order) of the child objects at the two
 	 * specified index positions in the child list. All other child objects in
 	 * the display object container remain in the same index positions.
-	 * 
+	 *
 	 * @param index1 The index position of the first child object.
 	 * @param index2 The index position of the second child object.
 	 * @throws RangeError If either index does not exist in the child list.
 	 */
-	public function swapChildrenAt (index1:Int, index2:Int):Void;
-	
-	
+	public function swapChildrenAt(index1:Int, index2:Int):Void;
 }
-
-
 #else
 typedef DisplayObjectContainer = flash.display.DisplayObjectContainer;
 #end

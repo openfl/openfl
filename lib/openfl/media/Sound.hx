@@ -1,6 +1,6 @@
-package openfl.media; #if (display || !flash)
+package openfl.media;
 
-
+#if (display || !flash)
 // import lime.app.Future;
 import openfl.utils.Future;
 // import lime.media.AudioBuffer;
@@ -11,7 +11,6 @@ import openfl.utils.ByteArray;
 typedef AudioBuffer = Dynamic;
 
 @:jsRequire("openfl/media/Sound", "default")
-
 
 /**
  * The Sound class lets you work with sound in an application. The Sound class
@@ -39,9 +38,9 @@ typedef AudioBuffer = Dynamic;
  * 2.0. In ActionScript 3.0, you cannot take sound objects and arrange them in
  * a hierarchy to control their properties.
  *
- * When you use this class, consider the following security model: 
+ * When you use this class, consider the following security model:
  *
- * 
+ *
  *  * Loading and playing a sound is not allowed if the calling file is in
  * a network sandbox and the sound file to be loaded is local.
  *  * By default, loading and playing a sound is not allowed if the calling
@@ -54,7 +53,7 @@ typedef AudioBuffer = Dynamic;
  * `SoundMixer.computeSpectrum()`,
  * `SoundMixer.bufferTime`, and the `SoundTransform`
  * class.
- * 
+ *
  *
  * However, in Adobe AIR, content in the `application` security
  * sandbox(content installed with the AIR application) are not restricted by
@@ -62,7 +61,7 @@ typedef AudioBuffer = Dynamic;
  *
  * For more information related to security, see the Flash Player Developer
  * Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
- * 
+ *
  * @event complete   Dispatched when data has loaded successfully.
  * @event id3        Dispatched by a Sound object when ID3 data is available
  *                   for an MP3 sound.
@@ -73,20 +72,19 @@ typedef AudioBuffer = Dynamic;
  *                   progresses.
  * @event sampleData Dispatched when the runtime requests new audio data.
  */
-extern class Sound extends EventDispatcher {
-	
-	
+extern class Sound extends EventDispatcher
+{
 	/**
 	 * Returns the currently available number of bytes in this sound object. This
 	 * property is usually useful only for externally loaded files.
 	 */
-	public var bytesLoaded (default, null):Int;
-	
+	public var bytesLoaded(default, null):Int;
+
 	/**
 	 * Returns the total number of bytes in this sound object.
 	 */
-	public var bytesTotal (default, null):Int;
-	
+	public var bytesTotal(default, null):Int;
+
 	/**
 	 * Provides access to the metadata that is part of an MP3 file.
 	 *
@@ -103,11 +101,11 @@ extern class Sound extends EventDispatcher {
 	 * The first table describes tags that can be accessed either through the ID3
 	 * 2.0 property name or the ActionScript property name. The second table
 	 * describes ID3 tags that are supported but do not have predefined
-	 * properties in ActionScript. 
+	 * properties in ActionScript.
 	 *
 	 * When using this property, consider the Flash Player security model:
 	 *
-	 * 
+	 *
 	 *  * The `id3` property of a Sound object is always permitted
 	 * for SWF files that are in the same security sandbox as the sound file. For
 	 * files in other sandboxes, there are security checks.
@@ -119,7 +117,7 @@ extern class Sound extends EventDispatcher {
 	 * loaded. If a policy file exists and permits access from the domain of the
 	 * loading SWF file, then the file is allowed to access the `id3`
 	 * property of the Sound object; otherwise it is not.
-	 * 
+	 *
 	 *
 	 * However, in Adobe AIR, content in the `application` security
 	 * sandbox(content installed with the AIR application) are not restricted by
@@ -128,28 +126,25 @@ extern class Sound extends EventDispatcher {
 	 * For more information related to security, see the Flash Player
 	 * Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
 	 */
-	public var id3 (get, never):ID3Info;
-	
-	@:noCompletion private function get_id3 ():ID3Info;
-	
+	public var id3(get, never):ID3Info;
+	@:noCompletion private function get_id3():ID3Info;
+
 	/**
 	 * Returns the buffering state of external MP3 files. If the value is
 	 * `true`, any playback is currently suspended while the object
 	 * waits for more data.
 	 */
-	public var isBuffering (default, null):Bool;
-	
+	public var isBuffering(default, null):Bool;
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10_1) public var isURLInaccessible (default, null):Bool;
+	@:noCompletion @:dox(hide) @:require(flash10_1) public var isURLInaccessible(default, null):Bool;
 	#end
-	
+
 	/**
 	 * The length of the current sound in milliseconds.
 	 */
-	public var length (get, never):Float;
-	
-	@:noCompletion private function get_length ():Float;
-	
+	public var length(get, never):Float;
+	@:noCompletion private function get_length():Float;
+
 	/**
 	 * The URL from which this sound was loaded. This property is applicable only
 	 * to Sound objects that were loaded using the `Sound.load()`
@@ -177,9 +172,8 @@ extern class Sound extends EventDispatcher {
 	 * In some cases, the value of the `url` property is truncated;
 	 * see the `isURLInaccessible` property for details.
 	 */
-	public var url (default, null):String;
-	
-	
+	public var url(default, null):String;
+
 	/**
 	 * Creates a new Sound object. If you pass a valid URLRequest object to the
 	 * Sound constructor, the constructor automatically calls the
@@ -194,7 +188,7 @@ extern class Sound extends EventDispatcher {
 	 * In Flash Player 10 and later and AIR 1.5 and later, instead of using
 	 * `load()`, you can use the `sampleData` event handler
 	 * to load sound dynamically into the Sound object.
-	 * 
+	 *
 	 * @param stream  The URL that points to an external MP3 file.
 	 * @param context An optional SoundLoader context object, which can define
 	 *                the buffer time(the minimum number of milliseconds of MP3
@@ -202,30 +196,22 @@ extern class Sound extends EventDispatcher {
 	 *                whether the application should check for a cross-domain
 	 *                policy file prior to loading the sound.
 	 */
-	public function new (stream:URLRequest = null, context:SoundLoaderContext = null);
-	
-	
+	public function new(stream:URLRequest = null, context:SoundLoaderContext = null);
+
 	/**
 	 * Closes the stream, causing any download of data to cease. No data may be
 	 * read from the stream after the `close()` method is called.
-	 * 
+	 *
 	 * @throws IOError The stream could not be closed, or the stream was not
 	 *                 open.
 	 */
-	public function close ():Void;
-	
-	
+	public function close():Void;
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10) public function extract (target:ByteArray, length:Float, startPosition:Float = -1):Float;
+	@:noCompletion @:dox(hide) @:require(flash10) public function extract(target:ByteArray, length:Float, startPosition:Float = -1):Float;
 	#end
-	
-	
-	public static function fromAudioBuffer (buffer:AudioBuffer):Sound;
-	
-	
-	public static function fromFile (path:String):Sound;
-	
-	
+	public static function fromAudioBuffer(buffer:AudioBuffer):Sound;
+	public static function fromFile(path:String):Sound;
+
 	/**
 	 * Initiates loading of an external MP3 file from the specified URL. If you
 	 * provide a valid URLRequest object to the Sound constructor, the
@@ -239,7 +225,7 @@ extern class Sound extends EventDispatcher {
 	 *
 	 * When using this method, consider the following security model:
 	 *
-	 * 
+	 *
 	 *  * Calling `Sound.load()` is not allowed if the calling file
 	 * is in the local-with-file-system sandbox and the sound is in a network
 	 * sandbox.
@@ -252,7 +238,7 @@ extern class Sound extends EventDispatcher {
 	 * `allowNetworking` parameter of the `object` and
 	 * `embed` tags in the HTML page that contains the SWF
 	 * content.
-	 * 
+	 *
 	 *
 	 *  In Flash Player 10 and later, if you use a multipart Content-Type(for
 	 * example "multipart/form-data") that contains an upload(indicated by a
@@ -260,14 +246,14 @@ extern class Sound extends EventDispatcher {
 	 * body), the POST operation is subject to the security rules applied to
 	 * uploads:
 	 *
-	 * 
+	 *
 	 *  * The POST operation must be performed in response to a user-initiated
 	 * action, such as a mouse click or key press.
 	 *  * If the POST operation is cross-domain(the POST target is not on the
 	 * same server as the SWF file that is sending the POST request), the target
 	 * server must provide a URL policy file that permits cross-domain
 	 * access.
-	 * 
+	 *
 	 *
 	 * Also, for any multipart Content-Type, the syntax must be valid
 	 * (according to the RFC2046 standards). If the syntax appears to be invalid,
@@ -280,7 +266,7 @@ extern class Sound extends EventDispatcher {
 	 *
 	 * For more information related to security, see the Flash Player
 	 * Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
-	 * 
+	 *
 	 * @param stream  A URL that points to an external MP3 file.
 	 * @param context An optional SoundLoader context object, which can define
 	 *                the buffer time(the minimum number of milliseconds of MP3
@@ -302,25 +288,18 @@ extern class Sound extends EventDispatcher {
 	 *                       Networking APIs" in the _ActionScript 3.0
 	 *                       Developer's Guide_.
 	 */
-	public function load (stream:URLRequest, context:SoundLoaderContext = null):Void;
-	
-	
-	public function loadCompressedDataFromByteArray (bytes:ByteArray, bytesLength:Int, forcePlayAsMusic:Bool = false):Void;
-	
-	
-	public static function loadFromFile (path:String):Future<Sound>;
-	public static function loadFromFiles (paths:Array<String>):Future<Sound>;
-	
-	
-	public function loadPCMFromByteArray (bytes:ByteArray, samples:Int, format:String = null, stereo:Bool = true, sampleRate:Float = 44100):Void;
-	
-	
+	public function load(stream:URLRequest, context:SoundLoaderContext = null):Void;
+	public function loadCompressedDataFromByteArray(bytes:ByteArray, bytesLength:Int, forcePlayAsMusic:Bool = false):Void;
+	public static function loadFromFile(path:String):Future<Sound>;
+	public static function loadFromFiles(paths:Array<String>):Future<Sound>;
+	public function loadPCMFromByteArray(bytes:ByteArray, samples:Int, format:String = null, stereo:Bool = true, sampleRate:Float = 44100):Void;
+
 	/**
 	 * Generates a new SoundChannel object to play back the sound. This method
 	 * returns a SoundChannel object, which you access to stop the sound and to
 	 * monitor volume.(To control the volume, panning, and balance, access the
 	 * SoundTransform object assigned to the sound channel.)
-	 * 
+	 *
 	 * @param startTime    The initial position in milliseconds at which playback
 	 *                     should start.
 	 * @param loops        Defines the number of times a sound loops back to the
@@ -333,12 +312,8 @@ extern class Sound extends EventDispatcher {
 	 *         you run out of available sound channels. The maximum number of
 	 *         sound channels available at once is 32.
 	 */
-	public function play (startTime:Float = 0.0, loops:Int = 0, sndTransform:SoundTransform = null):SoundChannel;
-	
-	
+	public function play(startTime:Float = 0.0, loops:Int = 0, sndTransform:SoundTransform = null):SoundChannel;
 }
-
-
 #else
 typedef Sound = flash.media.Sound;
 #end

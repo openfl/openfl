@@ -1,8 +1,7 @@
-package openfl.net; #if (display || !flash)
+package openfl.net;
 
-
+#if (display || !flash)
 @:jsRequire("openfl/net/URLRequestHeader", "default")
-
 /**
  * A URLRequestHeader object encapsulates a single HTTP request header and
  * consists of a name/value pair. URLRequestHeader objects are used in the
@@ -15,7 +14,7 @@ package openfl.net; #if (display || !flash)
  * in Flash<sup>®</sup> Player, using following request headers cause a
  * runtime error to be thrown, and the restricted terms are not case-sensitive
  * (for example, `Get`, `get`, and `GET` are
- * each not allowed): 
+ * each not allowed):
  *
  * In Flash Player and in Adobe AIR content outside of the application
  * security sandbox, the following request headers cannot be used, and the
@@ -23,7 +22,7 @@ package openfl.net; #if (display || !flash)
  * `get`, and `GET` are all not allowed). Also,
  * hyphenated terms apply if an underscore character is used(for example,
  * both `Content-Length` and `Content_Length` are not
- * allowed): 
+ * allowed):
  *
  * `Accept-Charset`, `Accept-Encoding`,
  * `Accept-Ranges`, `Age`, `Allow`,
@@ -70,38 +69,32 @@ package openfl.net; #if (display || !flash)
  * supported for `POST` requests, not for `GET`
  * requests.
  */
-@:final extern class URLRequestHeader {
-	
-	
+@:final extern class URLRequestHeader
+{
 	/**
 	 * An HTTP request header name(such as `Content-Type` or
 	 * `SOAPAction`).
 	 */
 	public var name:String;
-	
+
 	/**
 	 * The value associated with the `name` property(such as
 	 * `text/plain`).
 	 */
 	public var value:String;
-	
-	
+
 	/**
 	 * Creates a new URLRequestHeader object that encapsulates a single HTTP
 	 * request header. URLRequestHeader objects are used in the
 	 * `requestHeaders` property of the URLRequest class.
-	 * 
+	 *
 	 * @param name  An HTTP request header name(such as
 	 *              `Content-Type` or `SOAPAction`).
 	 * @param value The value associated with the `name` property
 	 *             (such as `text/plain`).
 	 */
-	public function new (name:String = "", value:String = "");
-	
-	
+	public function new(name:String = "", value:String = "");
 }
-
-
 #else
 typedef URLRequestHeader = flash.net.URLRequestHeader;
 #end

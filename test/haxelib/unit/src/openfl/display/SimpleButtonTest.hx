@@ -4,9 +4,11 @@ import openfl.events.MouseEvent;
 import massive.munit.Assert;
 import openfl.display.SimpleButton;
 
-class SimpleButtonTest {
-	@Test public function new_() {
-		var button = new SimpleButton ();
+class SimpleButtonTest
+{
+	@Test public function new_()
+	{
+		var button = new SimpleButton();
 
 		Assert.isTrue(button.enabled);
 		Assert.isTrue(button.useHandCursor);
@@ -25,13 +27,13 @@ class SimpleButtonTest {
 		Assert.isTrue(button.hasEventListener(MouseEvent.MOUSE_OVER));
 		Assert.isTrue(button.hasEventListener(MouseEvent.MOUSE_UP));
 		#end
-
 	}
 
-	@Test public function downState() {
+	@Test public function downState()
+	{
 		var down = new Sprite();
 
-		var button = new SimpleButton ();
+		var button = new SimpleButton();
 
 		Assert.isNull(button.downState);
 
@@ -40,8 +42,9 @@ class SimpleButtonTest {
 		Assert.areSame(down, cast(button.downState, Sprite));
 	}
 
-	@Test public function enabled() {
-		var button = new SimpleButton ();
+	@Test public function enabled()
+	{
+		var button = new SimpleButton();
 
 		Assert.isTrue(button.enabled);
 
@@ -50,10 +53,11 @@ class SimpleButtonTest {
 		Assert.isFalse(button.enabled);
 	}
 
-	@Test public function hitTestState() {
+	@Test public function hitTestState()
+	{
 		var hit = new Sprite();
 
-		var button = new SimpleButton ();
+		var button = new SimpleButton();
 
 		#if flash
 		Assert.isNull(button.hitTestState);
@@ -67,10 +71,11 @@ class SimpleButtonTest {
 		Assert.areSame(hit, cast(button.hitTestState, Sprite));
 	}
 
-	@Test public function overState() {
+	@Test public function overState()
+	{
 		var over = new Sprite();
 
-		var button = new SimpleButton ();
+		var button = new SimpleButton();
 
 		Assert.isNull(button.overState);
 
@@ -79,8 +84,9 @@ class SimpleButtonTest {
 		Assert.areSame(over, cast(button.overState, Sprite));
 	}
 
-	@Test public function soundTransform() {
-		var button = new SimpleButton ();
+	@Test public function soundTransform()
+	{
+		var button = new SimpleButton();
 
 		var t1 = button.soundTransform;
 		var t2 = button.soundTransform;
@@ -94,9 +100,9 @@ class SimpleButtonTest {
 		Assert.areEqual(t1.pan, t2.pan);
 	}
 
-	@Test public function tabEnabled() {
-
-		var simpleButton = new SimpleButton ();
+	@Test public function tabEnabled()
+	{
+		var simpleButton = new SimpleButton();
 		Assert.isTrue(simpleButton.tabEnabled);
 
 		simpleButton.tabEnabled = false;
@@ -104,11 +110,11 @@ class SimpleButtonTest {
 
 		simpleButton.tabEnabled = true;
 		Assert.isTrue(simpleButton.tabEnabled);
-
 	}
 
-	@Test public function trackAsMenu() {
-		var button = new SimpleButton ();
+	@Test public function trackAsMenu()
+	{
+		var button = new SimpleButton();
 
 		Assert.isFalse(button.trackAsMenu);
 
@@ -117,10 +123,11 @@ class SimpleButtonTest {
 		Assert.isTrue(button.trackAsMenu);
 	}
 
-	@Test public function upState() {
+	@Test public function upState()
+	{
 		var up = new Sprite();
 
-		var button = new SimpleButton ();
+		var button = new SimpleButton();
 
 		#if flash
 		Assert.isNull(button.upState);
@@ -134,8 +141,9 @@ class SimpleButtonTest {
 		Assert.areSame(up, cast(button.upState, Sprite));
 	}
 
-	@Test public function useHandCursor() {
-		var button = new SimpleButton ();
+	@Test public function useHandCursor()
+	{
+		var button = new SimpleButton();
 
 		Assert.isTrue(button.useHandCursor);
 
@@ -143,5 +151,4 @@ class SimpleButtonTest {
 
 		Assert.isFalse(button.useHandCursor);
 	}
-
 }

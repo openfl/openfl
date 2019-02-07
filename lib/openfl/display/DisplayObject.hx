@@ -1,6 +1,6 @@
-package openfl.display; #if (display || !flash)
+package openfl.display;
 
-
+#if (display || !flash)
 import openfl.events.EventDispatcher;
 import openfl.filters.BitmapFilter;
 import openfl.geom.Matrix;
@@ -10,7 +10,6 @@ import openfl.geom.Transform;
 import openfl.geom.Vector3D;
 
 @:jsRequire("openfl/display/DisplayObject", "default")
-
 
 /**
  * The DisplayObject class is the base class for all objects that can be
@@ -23,11 +22,11 @@ import openfl.geom.Vector3D;
  *
  * The DisplayObject class supports basic functionality like the _x_
  * and _y_ position of an object, as well as more advanced properties of
- * the object such as its transformation matrix. 
+ * the object such as its transformation matrix.
  *
  * DisplayObject is an abstract base class; therefore, you cannot call
  * DisplayObject directly. Invoking `new DisplayObject()` throws an
- * `ArgumentError` exception. 
+ * `ArgumentError` exception.
  *
  * All display objects inherit from the DisplayObject class.
  *
@@ -60,7 +59,7 @@ import openfl.geom.Vector3D;
  *
  * For more information, see the "Display Programming" chapter of the
  * _ActionScript 3.0 Developer's Guide_.
- * 
+ *
  * @event added            Dispatched when a display object is added to the
  *                         display list. The following methods trigger this
  *                         event:
@@ -107,7 +106,7 @@ import openfl.geom.Vector3D;
  *                         event if an object must be removed to make room for
  *                         the new object: `addChild()`,
  *                         `addChildAt()`, and
- *                         `setChildIndex()`. 
+ *                         `setChildIndex()`.
  * @event removedFromStage Dispatched when a display object is about to be
  *                         removed from the display list, either directly or
  *                         through the removal of a sub tree in which the
@@ -121,7 +120,7 @@ import openfl.geom.Vector3D;
  *                         event if an object must be removed to make room for
  *                         the new object: `addChild()`,
  *                         `addChildAt()`, and
- *                         `setChildIndex()`. 
+ *                         `setChildIndex()`.
  * @event render           [broadcast event] Dispatched when the display list
  *                         is about to be updated and rendered. This event
  *                         provides the last opportunity for objects listening
@@ -139,26 +138,24 @@ import openfl.geom.Vector3D;
  *
  *                         **Note: **This event is not dispatched if the
  *                         display is not rendering. This is the case when the
- *                         content is either minimized or obscured. 
+ *                         content is either minimized or obscured.
  */
-extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openfl_dynamic implements Dynamic<DisplayObject> #end {
-	
-	
+extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openfl_dynamic implements Dynamic<DisplayObject> #end
+{
 	#if flash
 	@:noCompletion @:dox(hide) public var accessibilityProperties:flash.accessibility.AccessibilityProperties;
 	#end
-	
+
 	/**
 	 * Indicates the alpha transparency value of the object specified. Valid
 	 * values are 0(fully transparent) to 1(fully opaque). The default value is
 	 * 1. Display objects with `alpha` set to 0 _are_ active,
 	 * even though they are invisible.
 	 */
-	public var alpha (get, set):Float;
-	
-	@:noCompletion private function get_alpha ():Float;
-	@:noCompletion private function set_alpha (value:Float):Float;
-	
+	public var alpha(get, set):Float;
+	@:noCompletion private function get_alpha():Float;
+	@:noCompletion private function set_alpha(value:Float):Float;
+
 	/**
 	 * A value from the BlendMode class that specifies which blend mode to use. A
 	 * bitmap can be drawn internally in two ways. If you have a blend mode
@@ -183,15 +180,13 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * the table show `blendMode` values applied to a circular display
 	 * object(2) superimposed on another display object(1).
 	 */
-	public var blendMode (get, set):BlendMode;
-	
-	@:noCompletion private function get_blendMode ():BlendMode;
-	@:noCompletion private function set_blendMode (value:BlendMode):BlendMode;
-	
+	public var blendMode(get, set):BlendMode;
+	@:noCompletion private function get_blendMode():BlendMode;
+	@:noCompletion private function set_blendMode(value:BlendMode):BlendMode;
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10) public var blendShader (null, default):Shader;
+	@:noCompletion @:dox(hide) @:require(flash10) public var blendShader(null, default):Shader;
 	#end
-	
+
 	/**
 	 * All vector data for a display object that has a cached bitmap is drawn
 	 * to the bitmap instead of the main display. If
@@ -213,7 +208,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * `true`, the rendering does not change, however the display
 	 * object performs pixel snapping automatically. The animation speed can be
 	 * significantly faster depending on the complexity of the vector content.
-	 * 
+	 *
 	 *
 	 * The `cacheAsBitmap` property is automatically set to
 	 * `true` whenever you apply a filter to a display object(when
@@ -227,15 +222,15 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * `cacheAsBitmap` property is set to `true` and
 	 * instead renders from vector data in the following cases:
 	 *
-	 * 
+	 *
 	 *  * The bitmap is too large. In AIR 1.5 and Flash Player 10, the maximum
 	 * size for a bitmap image is 8,191 pixels in width or height, and the total
 	 * number of pixels cannot exceed 16,777,215 pixels.(So, if a bitmap image
 	 * is 8,191 pixels wide, it can only be 2,048 pixels high.) In Flash Player 9
 	 * and earlier, the limitation is is 2880 pixels in height and 2,880 pixels
 	 * in width.
-	 *  * The bitmap fails to allocate(out of memory error). 
-	 * 
+	 *  * The bitmap fails to allocate(out of memory error).
+	 *
 	 *
 	 * The `cacheAsBitmap` property is best used with movie clips
 	 * that have mostly static content and that do not scale and rotate
@@ -243,16 +238,13 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * performance increases when the movie clip is translated(when its _x_
 	 * and _y_ position is changed).
 	 */
-	public var cacheAsBitmap (get, set):Bool;
-	
-	@:noCompletion private function get_cacheAsBitmap ():Bool;
-	@:noCompletion private function set_cacheAsBitmap (value:Bool):Bool;
-	
-	public var cacheAsBitmapMatrix (get, set):Matrix;
-	
-	@:noCompletion private function get_cacheAsBitmapMatrix ():Matrix;
-	@:noCompletion private function set_cacheAsBitmapMatrix (value:Matrix):Matrix;
-	
+	public var cacheAsBitmap(get, set):Bool;
+	@:noCompletion private function get_cacheAsBitmap():Bool;
+	@:noCompletion private function set_cacheAsBitmap(value:Bool):Bool;
+	public var cacheAsBitmapMatrix(get, set):Matrix;
+	@:noCompletion private function get_cacheAsBitmapMatrix():Matrix;
+	@:noCompletion private function set_cacheAsBitmapMatrix(value:Matrix):Matrix;
+
 	/**
 	 * An indexed array that contains each filter object currently associated
 	 * with the display object. The openfl.filters package contains several
@@ -308,7 +300,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 *
 	 * The openfl.filters package includes classes for filters. For example, to
 	 * create a DropShadow filter, you would write:
-	 * 
+	 *
 	 * @throws ArgumentError When `filters` includes a ShaderFilter
 	 *                       and the shader output type is not compatible with
 	 *                       this operation(the shader must specify a
@@ -328,11 +320,10 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 *                       See the `ShaderInput.input` property for
 	 *                       more information.
 	 */
-	public var filters (get, set):Array<BitmapFilter>;
-	
-	@:noCompletion private function get_filters ():Array<BitmapFilter>;
-	@:noCompletion private function set_filters (value:Array<BitmapFilter>):Array<BitmapFilter>;
-	
+	public var filters(get, set):Array<BitmapFilter>;
+	@:noCompletion private function get_filters():Array<BitmapFilter>;
+	@:noCompletion private function set_filters(value:Array<BitmapFilter>):Array<BitmapFilter>;
+
 	/**
 	 * Indicates the height of the display object, in pixels. The height is
 	 * calculated based on the bounds of the content of the display object. When
@@ -343,11 +334,10 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * content(such as an empty sprite) has a height of 0, even if you try to
 	 * set `height` to a different value.
 	 */
-	public var height (get, set):Float;
-	
-	@:noCompletion private function get_height ():Float;
-	@:noCompletion private function set_height (value:Float):Float;
-	
+	public var height(get, set):Float;
+	@:noCompletion private function get_height():Float;
+	@:noCompletion private function set_height(value:Float):Float;
+
 	/**
 	 * Returns a LoaderInfo object containing information about loading the file
 	 * to which this display object belongs. The `loaderInfo` property
@@ -361,10 +351,9 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * `this.root.loaderInfo.addEventListener(Event.COMPLETE,
 	 * func)`.
 	 */
-	public var loaderInfo (get, never):LoaderInfo;
-	
-	@:noCompletion private function get_loaderInfo ():LoaderInfo;
-	
+	public var loaderInfo(get, never):LoaderInfo;
+	@:noCompletion private function get_loaderInfo():LoaderInfo;
+
 	/**
 	 * The calling display object is masked by the specified `mask`
 	 * object. To ensure that masking works when the Stage is scaled, the
@@ -396,11 +385,10 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * first object, and that object's `mask` property becomes
 	 * `null`.
 	 */
-	public var mask (get, set):DisplayObject;
-	
-	@:noCompletion private function get_mask ():DisplayObject;
-	@:noCompletion private function set_mask (value:DisplayObject):DisplayObject;
-	
+	public var mask(get, set):DisplayObject;
+	@:noCompletion private function get_mask():DisplayObject;
+	@:noCompletion private function set_mask(value:DisplayObject):DisplayObject;
+
 	/**
 	 * Indicates the x coordinate of the mouse or user input device position, in
 	 * pixels.
@@ -408,10 +396,9 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * **Note**: For a DisplayObject that has been rotated, the returned x
 	 * coordinate will reflect the non-rotated object.
 	 */
-	public var mouseX (get, never):Float;
-	
-	@:noCompletion private function get_mouseX ():Float;
-	
+	public var mouseX(get, never):Float;
+	@:noCompletion private function get_mouseX():Float;
+
 	/**
 	 * Indicates the y coordinate of the mouse or user input device position, in
 	 * pixels.
@@ -419,25 +406,23 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * **Note**: For a DisplayObject that has been rotated, the returned y
 	 * coordinate will reflect the non-rotated object.
 	 */
-	public var mouseY (get, never):Float;
-	
-	@:noCompletion private function get_mouseY ():Float;
-	
+	public var mouseY(get, never):Float;
+	@:noCompletion private function get_mouseY():Float;
+
 	/**
 	 * Indicates the instance name of the DisplayObject. The object can be
 	 * identified in the child list of its parent display object container by
 	 * calling the `getChildByName()` method of the display object
 	 * container.
-	 * 
+	 *
 	 * @throws IllegalOperationError If you are attempting to set this property
 	 *                               on an object that was placed on the timeline
 	 *                               in the Flash authoring tool.
 	 */
-	public var name (get, set):String;
-	
-	@:noCompletion private function get_name ():String;
-	@:noCompletion private function set_name (value:String):String;
-	
+	public var name(get, set):String;
+	@:noCompletion private function get_name():String;
+	@:noCompletion private function set_name(value:String):String;
+
 	/**
 	 * Specifies whether the display object is opaque with a certain background
 	 * color. A transparent bitmap contains alpha channel data and is drawn
@@ -463,7 +448,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * The opaque background region does not respond to mouse events.
 	 */
 	public var opaqueBackground:Null<UInt>;
-	
+
 	/**
 	 * Indicates the DisplayObjectContainer object that contains this display
 	 * object. Use the `parent` property to specify a relative path to
@@ -472,14 +457,14 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 *
 	 * You can use `parent` to move up multiple levels in the
 	 * display list as in the following:
-	 * 
+	 *
 	 * @throws SecurityError The parent display object belongs to a security
 	 *                       sandbox to which you do not have access. You can
 	 *                       avoid this situation by having the parent movie call
 	 *                       the `Security.allowDomain()` method.
 	 */
-	public var parent (default, null):DisplayObjectContainer;
-	
+	public var parent(default, null):DisplayObjectContainer;
+
 	/**
 	 * For a display object in a loaded SWF file, the `root` property
 	 * is the top-most display object in the portion of the display list's tree
@@ -506,10 +491,9 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * as a child of a display object for which the `root` property is
 	 * set.
 	 */
-	public var root (get, never):DisplayObject;
-	
-	@:noCompletion private function get_root ():DisplayObject;
-	
+	public var root(get, never):DisplayObject;
+	@:noCompletion private function get_root():DisplayObject;
+
 	/**
 	 * Indicates the rotation of the DisplayObject instance, in degrees, from its
 	 * original orientation. Values from 0 to 180 represent clockwise rotation;
@@ -518,23 +502,19 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * the range. For example, the statement `my_video.rotation = 450`
 	 * is the same as ` my_video.rotation = 90`.
 	 */
-	public var rotation (get, set):Float;
-	
-	@:noCompletion private function get_rotation ():Float;
-	@:noCompletion private function set_rotation (value:Float):Float;
-	
+	public var rotation(get, set):Float;
+	@:noCompletion private function get_rotation():Float;
+	@:noCompletion private function set_rotation(value:Float):Float;
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10) public var rotationX:Float;
 	#end
-	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10) public var rotationY:Float;
 	#end
-	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10) public var rotationZ:Float;
 	#end
-	
+
 	/**
 	 * The current scaling grid that is in effect. If set to `null`,
 	 * the entire display object is scaled normally when any scale transformation
@@ -543,18 +523,18 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * When you define the `scale9Grid` property, the display
 	 * object is divided into a grid with nine regions based on the
 	 * `scale9Grid` rectangle, which defines the center region of the
-	 * grid. The eight other regions of the grid are the following areas: 
+	 * grid. The eight other regions of the grid are the following areas:
 	 *
-	 * 
+	 *
 	 *  * The upper-left corner outside of the rectangle
-	 *  * The area above the rectangle 
+	 *  * The area above the rectangle
 	 *  * The upper-right corner outside of the rectangle
 	 *  * The area to the left of the rectangle
 	 *  * The area to the right of the rectangle
 	 *  * The lower-left corner outside of the rectangle
 	 *  * The area below the rectangle
 	 *  * The lower-right corner outside of the rectangle
-	 * 
+	 *
 	 *
 	 * You can think of the eight regions outside of the center(defined by
 	 * the rectangle) as being like a picture frame that has special rules
@@ -564,14 +544,14 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * is scaled, all text and gradients are scaled normally; however, for other
 	 * types of objects the following rules apply:
 	 *
-	 * 
-	 *  * Content in the center region is scaled normally. 
-	 *  * Content in the corners is not scaled. 
+	 *
+	 *  * Content in the center region is scaled normally.
+	 *  * Content in the corners is not scaled.
 	 *  * Content in the top and bottom regions is scaled horizontally only.
 	 * Content in the left and right regions is scaled vertically only.
 	 *  * All fills(including bitmaps, video, and gradients) are stretched to
 	 * fit their shapes.
-	 * 
+	 *
 	 *
 	 * If a display object is rotated, all subsequent scaling is normal(and
 	 * the `scale9Grid` property is ignored).
@@ -582,41 +562,38 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * A common use for setting `scale9Grid` is to set up a display
 	 * object to be used as a component, in which edge regions retain the same
 	 * width when the component is scaled.
-	 * 
+	 *
 	 * @throws ArgumentError If you pass an invalid argument to the method.
 	 */
 	public var scale9Grid:Rectangle;
-	
+
 	/**
 	 * Indicates the horizontal scale(percentage) of the object as applied from
 	 * the registration point. The default registration point is(0,0). 1.0
 	 * equals 100% scale.
 	 *
 	 * Scaling the local coordinate system changes the `x` and
-	 * `y` property values, which are defined in whole pixels. 
+	 * `y` property values, which are defined in whole pixels.
 	 */
-	public var scaleX (get, set):Float;
-	
-	@:noCompletion private function get_scaleX ():Float;
-	@:noCompletion private function set_scaleX (value:Float):Float;
-	
+	public var scaleX(get, set):Float;
+	@:noCompletion private function get_scaleX():Float;
+	@:noCompletion private function set_scaleX(value:Float):Float;
+
 	/**
 	 * Indicates the vertical scale(percentage) of an object as applied from the
 	 * registration point of the object. The default registration point is(0,0).
 	 * 1.0 is 100% scale.
 	 *
 	 * Scaling the local coordinate system changes the `x` and
-	 * `y` property values, which are defined in whole pixels. 
+	 * `y` property values, which are defined in whole pixels.
 	 */
-	public var scaleY (get, set):Float;
-	
-	@:noCompletion private function get_scaleY ():Float;
-	@:noCompletion private function set_scaleY (value:Float):Float;
-	
+	public var scaleY(get, set):Float;
+	@:noCompletion private function get_scaleY():Float;
+	@:noCompletion private function set_scaleY(value:Float):Float;
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10) public var scaleZ:Float;
 	#end
-	
+
 	/**
 	 * The scroll rectangle bounds of the display object. The display object is
 	 * cropped to the size defined by the rectangle, and it scrolls within the
@@ -630,7 +607,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * defined by the width and height of the rectangle. They are not centered
 	 * around the origin, but use the origin to define the upper-left corner of
 	 * the area. A scrolled display object always scrolls in whole pixel
-	 * increments. 
+	 * increments.
 	 *
 	 * You can scroll an object left and right by setting the `x`
 	 * property of the `scrollRect` Rectangle object. You can scroll
@@ -639,16 +616,13 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * 90° and you scroll it left and right, the display object actually scrolls
 	 * up and down.
 	 */
-	public var scrollRect (get, set):Rectangle;
-	
-	@:noCompletion private function get_scrollRect ():Rectangle;
-	@:noCompletion private function set_scrollRect (value:Rectangle):Rectangle;
-	
-	@:beta public var shader (get, set):Shader;
-	
-	@:noCompletion private function get_shader ():Shader;
-	@:noCompletion private function set_shader (value:Shader):Shader;
-	
+	public var scrollRect(get, set):Rectangle;
+	@:noCompletion private function get_scrollRect():Rectangle;
+	@:noCompletion private function set_scrollRect(value:Rectangle):Rectangle;
+	@:beta public var shader(get, set):Shader;
+	@:noCompletion private function get_shader():Shader;
+	@:noCompletion private function set_shader(value:Shader):Shader;
+
 	/**
 	 * The Stage of the display object. A Flash runtime application has only one
 	 * Stage object. For example, you can create and load multiple display
@@ -659,11 +633,10 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * If a display object is not added to the display list, its
 	 * `stage` property is set to `null`.
 	 */
-	public var stage (default, null):Stage;
-	
-	@:noCompletion private function get_stage ():Stage;
-	@:noCompletion private function set_stage (value:Stage):Stage;
-	
+	public var stage(default, null):Stage;
+	@:noCompletion private function get_stage():Stage;
+	@:noCompletion private function set_stage(value:Stage):Stage;
+
 	/**
 	 * An object with properties pertaining to a display object's matrix, color
 	 * transform, and pixel bounds. The specific properties  -  matrix,
@@ -685,7 +658,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * myDisplayObject.transform.matrix = myMatrix; `
 	 *
 	 * You cannot directly set the `tx` property. The following
-	 * code has no effect on `myDisplayObject`: 
+	 * code has no effect on `myDisplayObject`:
 	 * ` myDisplayObject.transform.matrix.tx +=
 	 * 10; `
 	 *
@@ -702,21 +675,19 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * Note that AIR for TV devices use hardware acceleration, if it is
 	 * available, for color transforms.
 	 */
-	public var transform (get, set):Transform;
-	
-	@:noCompletion private function get_transform ():Transform;
-	@:noCompletion private function set_transform (value:Transform):Transform;
-	
+	public var transform(get, set):Transform;
+	@:noCompletion private function get_transform():Transform;
+	@:noCompletion private function set_transform(value:Transform):Transform;
+
 	/**
 	 * Whether or not the display object is visible. Display objects that are not
 	 * visible are disabled. For example, if `visible=false` for an
 	 * InteractiveObject instance, it cannot be clicked.
 	 */
-	public var visible (get, set):Bool;
-	
-	@:noCompletion private function get_visible ():Bool;
-	@:noCompletion private function set_visible (value:Bool):Bool;
-	
+	public var visible(get, set):Bool;
+	@:noCompletion private function get_visible():Bool;
+	@:noCompletion private function set_visible(value:Bool):Bool;
+
 	/**
 	 * Indicates the width of the display object, in pixels. The width is
 	 * calculated based on the bounds of the content of the display object. When
@@ -727,11 +698,10 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * content(such as an empty sprite) has a width of 0, even if you try to set
 	 * `width` to a different value.
 	 */
-	public var width (get, set):Float;
-	
-	@:noCompletion private function get_width ():Float;
-	@:noCompletion private function set_width (value:Float):Float;
-	
+	public var width(get, set):Float;
+	@:noCompletion private function get_width():Float;
+	@:noCompletion private function set_width(value:Float):Float;
+
 	/**
 	 * Indicates the _x_ coordinate of the DisplayObject instance relative
 	 * to the local coordinates of the parent DisplayObjectContainer. If the
@@ -742,11 +712,10 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * rotated 90° counterclockwise. The object's coordinates refer to the
 	 * registration point position.
 	 */
-	public var x (get, set):Float;
-	
-	@:noCompletion private function get_x ():Float;
-	@:noCompletion private function set_x (value:Float):Float;
-	
+	public var x(get, set):Float;
+	@:noCompletion private function get_x():Float;
+	@:noCompletion private function set_x(value:Float):Float;
+
 	/**
 	 * Indicates the _y_ coordinate of the DisplayObject instance relative
 	 * to the local coordinates of the parent DisplayObjectContainer. If the
@@ -757,15 +726,13 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * rotated 90° counterclockwise. The object's coordinates refer to the
 	 * registration point position.
 	 */
-	public var y (get, set):Float;
-	
-	@:noCompletion private function get_y ():Float;
-	@:noCompletion private function set_y (value:Float):Float;
-	
+	public var y(get, set):Float;
+	@:noCompletion private function get_y():Float;
+	@:noCompletion private function set_y(value:Float):Float;
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10) var z:Float;
 	#end
-	
+
 	/**
 	 * Returns a rectangle that defines the area of the display object relative
 	 * to the coordinate system of the `targetCoordinateSpace` object.
@@ -783,16 +750,15 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * `getBounds()` method includes any strokes on shapes, whereas
 	 * the Rectangle returned by the `getRect()` method does not. For
 	 * an example, see the description of the `getRect()` method.
-	 * 
+	 *
 	 * @param targetCoordinateSpace The display object that defines the
 	 *                              coordinate system to use.
 	 * @return The rectangle that defines the area of the display object relative
 	 *         to the `targetCoordinateSpace` object's coordinate
 	 *         system.
 	 */
-	public function getBounds (targetCoordinateSpace:DisplayObject):Rectangle;
-	
-	
+	public function getBounds(targetCoordinateSpace:DisplayObject):Rectangle;
+
 	/**
 	 * Returns a rectangle that defines the boundary of the display object, based
 	 * on the coordinate system defined by the `targetCoordinateSpace`
@@ -804,16 +770,15 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * `globalToLocal()` methods to convert the display object's local
 	 * coordinates to Stage coordinates, or Stage coordinates to local
 	 * coordinates, respectively.
-	 * 
+	 *
 	 * @param targetCoordinateSpace The display object that defines the
 	 *                              coordinate system to use.
 	 * @return The rectangle that defines the area of the display object relative
 	 *         to the `targetCoordinateSpace` object's coordinate
 	 *         system.
 	 */
-	public function getRect (targetCoordinateSpace:DisplayObject):Rectangle;
-	
-	
+	public function getRect(targetCoordinateSpace:DisplayObject):Rectangle;
+
 	/**
 	 * Converts the `point` object from the Stage(global) coordinates
 	 * to the display object's(local) coordinates.
@@ -825,31 +790,27 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * `globalToLocal()` method. The method returns a new Point object
 	 * with _x_ and _y_ values that relate to the origin of the display
 	 * object instead of the origin of the Stage.
-	 * 
+	 *
 	 * @param point An object created with the Point class. The Point object
 	 *              specifies the _x_ and _y_ coordinates as
 	 *              properties.
 	 * @return A Point object with coordinates relative to the display object.
 	 */
-	public function globalToLocal (pos:Point):Point;
-	
-	
+	public function globalToLocal(pos:Point):Point;
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10) public function globalToLocal3D (point:Point):Vector3D;
+	@:noCompletion @:dox(hide) @:require(flash10) public function globalToLocal3D(point:Point):Vector3D;
 	#end
-	
-	
+
 	/**
 	 * Evaluates the bounding box of the display object to see if it overlaps or
 	 * intersects with the bounding box of the `obj` display object.
-	 * 
+	 *
 	 * @param obj The display object to test against.
 	 * @return `true` if the bounding boxes of the display objects
 	 *         intersect; `false` if not.
 	 */
-	public function hitTestObject (obj:DisplayObject):Bool;
-	
-	
+	public function hitTestObject(obj:DisplayObject):Bool;
+
 	/**
 	 * Evaluates the display object to see if it overlaps or intersects with the
 	 * point specified by the `x` and `y` parameters. The
@@ -857,7 +818,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * coordinate space of the Stage, not the display object container that
 	 * contains the display object(unless that display object container is the
 	 * Stage).
-	 * 
+	 *
 	 * @param x         The _x_ coordinate to test against this object.
 	 * @param y         The _y_ coordinate to test against this object.
 	 * @param shapeFlag Whether to check against the actual pixels of the object
@@ -866,16 +827,14 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * @return `true` if the display object overlaps or intersects
 	 *         with the specified point; `false` otherwise.
 	 */
-	public function hitTestPoint (x:Float, y:Float, shapeFlag:Bool = false):Bool;
-	
-	
+	public function hitTestPoint(x:Float, y:Float, shapeFlag:Bool = false):Bool;
+
 	/**
-	 * Calling the `invalidate()` method signals to have the current object 
+	 * Calling the `invalidate()` method signals to have the current object
 	 * redrawn the next time the object is eligible to be rendered.
 	**/
-	public function invalidate ():Void;
-	
-	
+	public function invalidate():Void;
+
 	/**
 	 * Converts the `point` object from the display object's(local)
 	 * coordinates to the Stage(global) coordinates.
@@ -893,23 +852,17 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * the `localToGlobal()` method. The method returns a new Point
 	 * object with _x_ and _y_ values that relate to the origin of the
 	 * Stage instead of the origin of the display object.
-	 * 
+	 *
 	 * @param point The name or identifier of a point created with the Point
 	 *              class, specifying the _x_ and _y_ coordinates as
 	 *              properties.
 	 * @return A Point object with coordinates relative to the Stage.
 	 */
-	public function localToGlobal (point:Point):Point;
-	
-	
+	public function localToGlobal(point:Point):Point;
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10) public function local3DToGlobal (point3d:Vector3D):Point;
+	@:noCompletion @:dox(hide) @:require(flash10) public function local3DToGlobal(point3d:Vector3D):Point;
 	#end
-	
-	
 }
-
-
 #else
 typedef DisplayObject = flash.display.DisplayObject;
 #end
