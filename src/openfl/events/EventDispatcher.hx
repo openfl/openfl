@@ -328,8 +328,7 @@ class EventDispatcher implements IEventDispatcher
 	{
 		var full = Type.getClassName(Type.getClass(this));
 		var short = full.split(".").pop();
-
-		return untyped "[object " + short + "]";
+		return "[object " + short + "]";
 	}
 
 	/**
