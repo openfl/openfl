@@ -267,40 +267,34 @@ class ColorTransform
 
 	@:noCompletion private function __equals(ct:ColorTransform, ignoreAlphaMultiplier:Bool):Bool
 	{
-		return (ct != null &&
-			redMultiplier == ct.redMultiplier &&
-			greenMultiplier == ct.greenMultiplier &&
-			blueMultiplier == ct.blueMultiplier &&
-			(ignoreAlphaMultiplier || alphaMultiplier == ct.alphaMultiplier) &&
-			redOffset == ct.redOffset &&
-			greenOffset == ct.greenOffset &&
-			blueOffset == ct.blueOffset &&
-			alphaOffset == ct.alphaOffset);
+		return (ct != null
+			&& redMultiplier == ct.redMultiplier
+			&& greenMultiplier == ct.greenMultiplier
+			&& blueMultiplier == ct.blueMultiplier
+			&& (ignoreAlphaMultiplier || alphaMultiplier == ct.alphaMultiplier)
+			&& redOffset == ct.redOffset
+			&& greenOffset == ct.greenOffset
+			&& blueOffset == ct.blueOffset
+			&& alphaOffset == ct.alphaOffset);
 	}
 
 	@:noCompletion private function __isDefault(ignoreAlphaMultiplier:Bool):Bool
 	{
 		if (ignoreAlphaMultiplier)
 		{
-			return (redMultiplier == 1 &&
-				greenMultiplier == 1 &&
-				blueMultiplier == 1 &&
-				/*alphaMultiplier == 1 &&*/
-				redOffset == 0 &&
-				greenOffset == 0 &&
-				blueOffset == 0 &&
-				alphaOffset == 0);
+			return (redMultiplier == 1
+				&& greenMultiplier == 1
+				&& blueMultiplier == 1
+				&& /*alphaMultiplier == 1 &&*/
+				redOffset == 0
+				&& greenOffset == 0
+				&& blueOffset == 0
+				&& alphaOffset == 0);
 		}
 		else
 		{
-			return (redMultiplier == 1 &&
-				greenMultiplier == 1 &&
-				blueMultiplier == 1 &&
-				alphaMultiplier == 1 &&
-				redOffset == 0 &&
-				greenOffset == 0 &&
-				blueOffset == 0 &&
-				alphaOffset == 0);
+			return (redMultiplier == 1 && greenMultiplier == 1 && blueMultiplier == 1 && alphaMultiplier == 1 && redOffset == 0 && greenOffset == 0
+				&& blueOffset == 0 && alphaOffset == 0);
 		}
 	}
 

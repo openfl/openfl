@@ -15,6 +15,7 @@ import lime.text.Glyph;
 #else
 import openfl.text.Font;
 #end
+
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug

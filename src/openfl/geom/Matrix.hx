@@ -436,13 +436,7 @@ class Matrix
 
 	public function equals(matrix:Matrix):Bool
 	{
-		return (matrix != null &&
-			tx == matrix.tx &&
-			ty == matrix.ty &&
-			a == matrix.a &&
-			b == matrix.b &&
-			c == matrix.c &&
-			d == matrix.d);
+		return (matrix != null && tx == matrix.tx && ty == matrix.ty && a == matrix.a && b == matrix.b && c == matrix.c && d == matrix.d);
 	}
 
 	/**

@@ -1605,7 +1605,7 @@ class BitmapData implements IBitmapDrawable
 	{
 		var rect = hRect != null ? hRect : new Rectangle(0, 0, width, height);
 		var pixels = getPixels(rect);
-		var result = [for (i in 0...4)[for (j in 0...256) 0]];
+		var result = [for (i in 0...4) [for (j in 0...256) 0]];
 
 		for (i in 0...pixels.length)
 		{
@@ -2177,11 +2177,11 @@ class BitmapData implements IBitmapDrawable
 	public function threshold(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, operation:String, threshold:Int, color:Int = 0x00000000,
 			mask:Int = 0xFFFFFFFF, copySource:Bool = false):Int
 	{
-		if (sourceBitmapData == null || sourceRect == null || destPoint == null ||
-			sourceRect.x > sourceBitmapData.width ||
-			sourceRect.y > sourceBitmapData.height ||
-			destPoint.x > width ||
-			destPoint.y > height) return 0;
+		if (sourceBitmapData == null || sourceRect == null || destPoint == null
+			|| sourceRect.x > sourceBitmapData.width
+			|| sourceRect.y > sourceBitmapData.height
+			|| destPoint.x > width
+			|| destPoint.y > height) return 0;
 
 		#if lime
 		return image.threshold(sourceBitmapData.image, sourceRect.__toLimeRectangle(), destPoint.__toLimeVector2(), operation, threshold, color, mask,
@@ -2652,10 +2652,7 @@ class BitmapData implements IBitmapDrawable
 	{
 		var buffer = getVertexBuffer(context);
 
-		if (buffer != null && (width != __uvRect.width ||
-			height != __uvRect.height ||
-			x != __uvRect.x ||
-			y != __uvRect.y))
+		if (buffer != null && (width != __uvRect.width || height != __uvRect.height || x != __uvRect.x || y != __uvRect.y))
 		{
 			var gl = context.gl;
 

@@ -1479,7 +1479,9 @@ class TextEngine
 					previousSpaceIndex = spaceIndex;
 					spaceIndex = nextSpaceIndex;
 
-					if ((breakIndex > -1 && breakIndex <= textIndex && (spaceIndex > breakIndex || spaceIndex == -1)) || textIndex > text.length)
+					if ((breakIndex > -1
+						&& breakIndex <= textIndex
+						&& (spaceIndex > breakIndex || spaceIndex == -1)) || textIndex > text.length)
 					{
 						break;
 					}

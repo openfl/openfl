@@ -77,10 +77,7 @@ class DOMTextField
 		{
 			if (textField.__dirty || textField.__renderTransformChanged || textField.__div == null)
 			{
-				if (textEngine.text != "" ||
-					textEngine.background ||
-					textEngine.border ||
-					textEngine.type == INPUT)
+				if (textEngine.text != "" || textEngine.background || textEngine.border || textEngine.type == INPUT)
 				{
 					if (textField.__div == null)
 					{

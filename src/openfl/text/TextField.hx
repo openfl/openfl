@@ -1171,10 +1171,8 @@ class TextField extends InteractiveObject
 	{
 		var format = null;
 
-		if (beginIndex >= text.length ||
-			beginIndex < -1 ||
-			endIndex > text.length ||
-			endIndex < -1) throw new RangeError("The supplied index is out of bounds");
+		if (beginIndex >= text.length || beginIndex < -1 || endIndex > text.length || endIndex < -1)
+			throw new RangeError("The supplied index is out of bounds");
 
 		if (beginIndex == -1) beginIndex = 0;
 		if (endIndex == -1) endIndex = text.length;
@@ -2208,10 +2206,7 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function __replaceText(beginIndex:Int, endIndex:Int, newText:String, restrict:Bool):Void
 	{
-		if (endIndex < beginIndex ||
-			beginIndex < 0 ||
-			endIndex > __text.length ||
-			newText == null) return;
+		if (endIndex < beginIndex || beginIndex < 0 || endIndex > __text.length || newText == null) return;
 
 		if (restrict)
 		{
@@ -3206,10 +3201,7 @@ class TextField extends InteractiveObject
 	@:noCompletion private function this_onKeyDown(event:KeyboardEvent):Void
 	{
 		#if (lime && !openfl_doc_gen)
-		if (selectable &&
-			type != INPUT &&
-			event.keyCode == Keyboard.C &&
-			(event.commandKey || event.ctrlKey))
+		if (selectable && type != INPUT && event.keyCode == Keyboard.C && (event.commandKey || event.ctrlKey))
 		{
 			if (__caretIndex != __selectionIndex)
 			{

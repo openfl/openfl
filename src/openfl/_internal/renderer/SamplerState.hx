@@ -58,10 +58,6 @@ class SamplerState
 			return false;
 		}
 
-		return (wrap == other.wrap &&
-			filter == other.filter &&
-			mipfilter == other.mipfilter &&
-			lodBias == other.lodBias &&
-			textureAlpha == other.textureAlpha);
+		return (wrap == other.wrap && filter == other.filter && mipfilter == other.mipfilter && lodBias == other.lodBias && textureAlpha == other.textureAlpha);
 	}
 }

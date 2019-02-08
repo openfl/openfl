@@ -20,6 +20,7 @@ import lime.utils.AssetManifest;
 #else
 import openfl.utils.AssetManifest;
 #end
+
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug

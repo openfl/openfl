@@ -24,10 +24,10 @@ class CairoDisplayObject
 		var alpha = renderer.__getAlpha(displayObject.__worldAlpha);
 		if (alpha <= 0) return;
 
-		if (displayObject.opaqueBackground != null &&
-				!displayObject.__isCacheBitmapRender &&
-				displayObject.width > 0 &&
-				displayObject.height > 0)
+		if (displayObject.opaqueBackground != null
+				&& !displayObject.__isCacheBitmapRender
+				&& displayObject.width > 0
+				&& displayObject.height > 0)
 		{
 			var cairo = renderer.cairo;
 

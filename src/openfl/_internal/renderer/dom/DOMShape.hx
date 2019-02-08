@@ -28,10 +28,7 @@ class DOMShape
 		#if (js && html5)
 		var graphics = shape.__graphics;
 
-		if (shape.stage != null &&
-				shape.__worldVisible &&
-				shape.__renderable &&
-				graphics != null)
+		if (shape.stage != null && shape.__worldVisible && shape.__renderable && graphics != null)
 		{
 			CanvasGraphics.render(graphics, renderer.__canvasRenderer);
 

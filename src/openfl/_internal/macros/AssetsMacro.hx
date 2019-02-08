@@ -177,8 +177,7 @@ class AssetsMacro
 									resourceType = "image/gif";
 								}
 
-								var fieldValue =
-									{pos: position, expr: EConst(CString(resourceType))};
+								var fieldValue = {pos: position, expr: EConst(CString(resourceType))};
 								fields.push(
 									{
 										kind: FVar(macro:String, fieldValue),
@@ -195,8 +194,7 @@ class AssetsMacro
 								Context.addResource(resourceName, bytes);
 							}
 
-							var fieldValue =
-								{pos: position, expr: EConst(CString(resourceName))};
+							var fieldValue = {pos: position, expr: EConst(CString(resourceName))};
 							fields.push(
 								{
 									kind: FVar(macro:String, fieldValue),
@@ -298,8 +296,7 @@ class AssetsMacro
 
 			Context.addResource(resourceName, bytes);
 
-			var fieldValue =
-				{pos: position, expr: EConst(CString(resourceName))};
+			var fieldValue = {pos: position, expr: EConst(CString(resourceName))};
 			fields.push(
 				{
 					kind: FVar(macro:String, fieldValue),

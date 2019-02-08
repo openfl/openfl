@@ -28,10 +28,7 @@ class FlashTilemap
 		// TODO: Do not render if top-level group is not dirty
 
 		#if flash
-		if (tilemap.stage == null ||
-				!tilemap.visible ||
-				tilemap.alpha <= 0 ||
-				tilemap.__group.__tiles.length == 0) return;
+		if (tilemap.stage == null || !tilemap.visible || tilemap.alpha <= 0 || tilemap.__group.__tiles.length == 0) return;
 
 		var bitmapData = tilemap.bitmapData;
 
@@ -153,12 +150,7 @@ class FlashTilemap
 
 					colorTransform.alphaMultiplier = cacheAlpha;
 				}
-				else if (alpha == 1 &&
-					tileTransform.a == 1 &&
-					tileTransform.b == 0 &&
-					tileTransform.c == 0 &&
-					tileTransform.d == 1 &&
-					blendMode == NORMAL)
+				else if (alpha == 1 && tileTransform.a == 1 && tileTransform.b == 0 && tileTransform.c == 0 && tileTransform.d == 1 && blendMode == NORMAL)
 				{
 					destPoint.x = tileTransform.tx;
 					destPoint.y = tileTransform.ty;

@@ -216,10 +216,7 @@ class CairoGraphics
 		CairoGraphics.graphics = graphics;
 		bounds = graphics.__bounds;
 
-		if (graphics.__commands.length == 0 || bounds == null ||
-			bounds.width == 0 ||
-			bounds.height == 0 ||
-			!bounds.contains(x, y))
+		if (graphics.__commands.length == 0 || bounds == null || bounds.width == 0 || bounds.height == 0 || !bounds.contains(x, y))
 		{
 			return false;
 		}
@@ -701,8 +698,8 @@ class CairoGraphics
 						fillPatternMatrix = null;
 					}
 
-					fillPattern = createGradientPattern(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c
-						.focalPointRatio);
+					fillPattern = createGradientPattern(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
+						c.focalPointRatio);
 
 					hasFill = true;
 					bitmapFill = null;

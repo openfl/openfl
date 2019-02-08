@@ -611,7 +611,7 @@ class Context3DGraphics
 									if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, graphics.__quadBuffer
 										.vertexBuffer, (quadBufferPosition * 16) + 2, FLOAT_2);
 
-									context.drawTriangles(context.__quadIndexBuffer, 0, length * 2);
+									context.drawTriangles(context.__quadIndexBuffer, 0, length);
 
 									shaderBufferOffset += length * 4;
 									quadBufferPosition += length;

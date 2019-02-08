@@ -462,7 +462,7 @@ import lime.math.Vector2;
 		var count = (numTriangles == -1) ? indexBuffer.__numIndices : (numTriangles * 3);
 
 		__bindGLElementArrayBuffer(indexBuffer.__id);
-		gl.drawElements(gl.TRIANGLES, count, indexBuffer.__elementType, firstIndex);
+		gl.drawElements(gl.TRIANGLES, count, gl.UNSIGNED_SHORT, firstIndex * 2);
 	}
 
 	public function present():Void
@@ -925,10 +925,10 @@ import lime.math.Vector2;
 
 	@:noCompletion private function __flushGLBlend():Void
 	{
-		if (#if openfl_disable_context_cache true #else __contextState.blendDestinationRGBFactor != __state.blendDestinationRGBFactor ||
-			__contextState.blendSourceRGBFactor != __state.blendSourceRGBFactor ||
-			__contextState.blendDestinationAlphaFactor != __state.blendDestinationAlphaFactor ||
-			__contextState.blendSourceAlphaFactor != __state.blendSourceAlphaFactor #end)
+		if (#if openfl_disable_context_cache true #else __contextState.blendDestinationRGBFactor != __state.blendDestinationRGBFactor
+			|| __contextState.blendSourceRGBFactor != __state.blendSourceRGBFactor
+			|| __contextState.blendDestinationAlphaFactor != __state.blendDestinationAlphaFactor
+			|| __contextState.blendSourceAlphaFactor != __state.blendSourceAlphaFactor #end)
 		{
 			__setGLBlend(true);
 
@@ -951,10 +951,10 @@ import lime.math.Vector2;
 
 	@:noCompletion private inline function __flushGLColor():Void
 	{
-		if (#if openfl_disable_context_cache true #else __contextState.colorMaskRed != __state.colorMaskRed ||
-			__contextState.colorMaskGreen != __state.colorMaskGreen ||
-			__contextState.colorMaskBlue != __state.colorMaskBlue ||
-			__contextState.colorMaskAlpha != __state.colorMaskAlpha #end)
+		if (#if openfl_disable_context_cache true #else __contextState.colorMaskRed != __state.colorMaskRed
+			|| __contextState.colorMaskGreen != __state.colorMaskGreen
+			|| __contextState.colorMaskBlue != __state.colorMaskBlue
+			|| __contextState.colorMaskAlpha != __state.colorMaskAlpha #end)
 		{
 			gl.colorMask(__state.colorMaskRed, __state.colorMaskGreen, __state.colorMaskBlue, __state.colorMaskAlpha);
 			__contextState.colorMaskRed = __state.colorMaskRed;
@@ -1062,8 +1062,9 @@ import lime.math.Vector2;
 				throw new Error("Context3D backbuffer has not been configured");
 			}
 
-			if (#if openfl_disable_context_cache true #else __contextState
-				.renderToTexture != null || __contextState.__currentGLFramebuffer != __state.__primaryGLFramebuffer || __contextState.backBufferEnableDepthAndStencil != __state.backBufferEnableDepthAndStencil #end
+			if (#if openfl_disable_context_cache true #else __contextState.renderToTexture != null
+					|| __contextState.__currentGLFramebuffer != __state.__primaryGLFramebuffer
+					|| __contextState.backBufferEnableDepthAndStencil != __state.backBufferEnableDepthAndStencil #end
 			)
 			{
 				__bindGLFramebuffer(__state.__primaryGLFramebuffer);
@@ -1149,10 +1150,10 @@ import lime.math.Vector2;
 				scissorY = contextHeight - Std.int(__state.scissorRectangle.height) - scissorY;
 			}
 
-			if (#if openfl_disable_context_cache true #else __contextState.scissorRectangle.x != scissorX ||
-				__contextState.scissorRectangle.y != scissorY ||
-				__contextState.scissorRectangle.width != scissorWidth ||
-				__contextState.scissorRectangle.height != scissorHeight #end)
+			if (#if openfl_disable_context_cache true #else __contextState.scissorRectangle.x != scissorX
+				|| __contextState.scissorRectangle.y != scissorY
+				|| __contextState.scissorRectangle.width != scissorWidth
+				|| __contextState.scissorRectangle.height != scissorHeight #end)
 			{
 				gl.scissor(scissorX, scissorY, scissorWidth, scissorHeight);
 				__contextState.scissorRectangle.setTo(scissorX, scissorY, scissorWidth, scissorHeight);
@@ -1162,10 +1163,10 @@ import lime.math.Vector2;
 
 	@:noCompletion private function __flushGLStencil():Void
 	{
-		if (#if openfl_disable_context_cache true #else __contextState.stencilTriangleFace != __state.stencilTriangleFace ||
-			__contextState.stencilPass != __state.stencilPass ||
-			__contextState.stencilDepthFail != __state.stencilDepthFail ||
-			__contextState.stencilFail != __state.stencilFail #end)
+		if (#if openfl_disable_context_cache true #else __contextState.stencilTriangleFace != __state.stencilTriangleFace
+			|| __contextState.stencilPass != __state.stencilPass
+			|| __contextState.stencilDepthFail != __state.stencilDepthFail
+			|| __contextState.stencilFail != __state.stencilFail #end)
 		{
 			gl.stencilOpSeparate(__getGLTriangleFace(__state.stencilTriangleFace), __getGLStencilAction(__state.stencilFail),
 				__getGLStencilAction(__state.stencilDepthFail), __getGLStencilAction(__state.stencilPass));
@@ -1181,7 +1182,9 @@ import lime.math.Vector2;
 			__contextState.stencilWriteMask = __state.stencilWriteMask;
 		}
 
-		if (#if openfl_disable_context_cache true #else __contextState.stencilCompareMode != __state.stencilCompareMode || __contextState.stencilReferenceValue != __state.stencilReferenceValue || __contextState.stencilReadMask != __state.stencilReadMask #end
+		if (#if openfl_disable_context_cache true #else __contextState.stencilCompareMode != __state.stencilCompareMode
+			|| __contextState.stencilReferenceValue != __state.stencilReferenceValue
+			|| __contextState.stencilReadMask != __state.stencilReadMask #end
 		)
 		{
 			gl.stencilFunc(__getGLCompareMode(__state.stencilCompareMode), __state.stencilReferenceValue, __state.stencilReadMask);
@@ -1398,10 +1401,9 @@ import lime.math.Vector2;
 
 		var context = stage3D.context3D;
 
-		if (context != null && context != this && context.__frontBufferTexture != null &&
-				stage3D.visible &&
-				backBufferHeight > 0 &&
-				backBufferWidth > 0)
+		if (context != null
+			&& context != this
+			&& context.__frontBufferTexture != null && stage3D.visible && backBufferHeight > 0 && backBufferWidth > 0)
 		{
 			// if (!__stage.__renderer.__cleared) __stage.__renderer.__clear ();
 

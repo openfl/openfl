@@ -1198,11 +1198,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				}
 
 			case RenderEvent.CLEAR_DOM, RenderEvent.RENDER_CAIRO, RenderEvent.RENDER_CANVAS, RenderEvent.RENDER_DOM, RenderEvent.RENDER_OPENGL:
-				if (!hasEventListener(RenderEvent.CLEAR_DOM) &&
-					!hasEventListener(RenderEvent.RENDER_CAIRO) &&
-					!hasEventListener(RenderEvent.RENDER_CANVAS) &&
-					!hasEventListener(RenderEvent.RENDER_DOM) &&
-					!hasEventListener(RenderEvent.RENDER_OPENGL))
+				if (!hasEventListener(RenderEvent.CLEAR_DOM)
+					&& !hasEventListener(RenderEvent.RENDER_CAIRO)
+					&& !hasEventListener(RenderEvent.RENDER_CANVAS)
+					&& !hasEventListener(RenderEvent.RENDER_DOM)
+					&& !hasEventListener(RenderEvent.RENDER_OPENGL))
 				{
 					__customRenderEvent = null;
 				}
@@ -1730,11 +1730,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	{
 		var renderParent = __renderParent != null ? __renderParent : parent;
 		if (__isMask && renderParent == null) renderParent = __maskTarget;
-		__renderable = (__visible &&
-			__scaleX != 0 &&
-			__scaleY != 0 &&
-			!__isMask &&
-			(renderParent == null || !renderParent.__isMask));
+		__renderable = (__visible
+			&& __scaleX != 0
+			&& __scaleY != 0
+			&& !__isMask
+			&& (renderParent == null || !renderParent.__isMask));
 		__updateTransforms();
 
 		// if (updateChildren && __transformDirty) {
@@ -1859,9 +1859,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		{
 			var rect = null;
 
-			var needRender = (__cacheBitmap == null || (__renderDirty && (force || (__children != null && __children
-				.length > 0))) || opaqueBackground != __cacheBitmapBackground);
-			var softwareDirty = needRender || (__graphics != null && __graphics.__softwareDirty) || !__cacheBitmapColorTransform.__equals(colorTransform, true);
+			var needRender = (__cacheBitmap == null
+				|| (__renderDirty && (force || (__children != null && __children.length > 0)))
+				|| opaqueBackground != __cacheBitmapBackground);
+			var softwareDirty = needRender
+				|| (__graphics != null && __graphics.__softwareDirty)
+				|| !__cacheBitmapColorTransform.__equals(colorTransform, true);
 			var hardwareDirty = needRender || (__graphics != null && __graphics.__hardwareDirty);
 
 			var renderType = renderer.__type;
@@ -1908,15 +1911,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 			var bitmapMatrix = (__cacheAsBitmapMatrix != null ? __cacheAsBitmapMatrix : __renderTransform);
 
-			if (!needRender && (bitmapMatrix.a != __cacheBitmapMatrix.a ||
-				bitmapMatrix.b != __cacheBitmapMatrix.b ||
-				bitmapMatrix.c != __cacheBitmapMatrix.c ||
-				bitmapMatrix.d != __cacheBitmapMatrix.d))
+			if (!needRender && (bitmapMatrix.a != __cacheBitmapMatrix.a
+				|| bitmapMatrix.b != __cacheBitmapMatrix.b
+				|| bitmapMatrix.c != __cacheBitmapMatrix.c
+				|| bitmapMatrix.d != __cacheBitmapMatrix.d))
 			{
 				needRender = true;
 			}
 
-			if (!needRender && renderer.__type != OPENGL && __cacheBitmapData != null && __cacheBitmapData.image != null && __cacheBitmapData.image.version < __cacheBitmapData.__textureVersion)
+			if (!needRender
+				&& renderer.__type != OPENGL
+				&& __cacheBitmapData != null && __cacheBitmapData.image != null && __cacheBitmapData.image.version < __cacheBitmapData.__textureVersion)
 			{
 				needRender = true;
 			}
@@ -1976,7 +1981,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 					var bitmapColor = needsFill ? 0 : fillColor;
 					var allowFramebuffer = (renderer.__type == OPENGL);
 
-					if (__cacheBitmapData == null || bitmapWidth > __cacheBitmapData.width || bitmapHeight > __cacheBitmapData.height)
+					if (__cacheBitmapData == null
+						|| bitmapWidth > __cacheBitmapData.width
+						|| bitmapHeight > __cacheBitmapData.height)
 					{
 						__cacheBitmapData = new BitmapData(bitmapWidth, bitmapHeight, true, bitmapColor);
 
@@ -2144,7 +2151,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 						var bitmap3 = null;
 
 						// if (needSecondBitmapData) {
-						if (__cacheBitmapData2 == null || bitmapWidth > __cacheBitmapData2.width || bitmapHeight > __cacheBitmapData2.height)
+						if (__cacheBitmapData2 == null
+							|| bitmapWidth > __cacheBitmapData2.width
+							|| bitmapHeight > __cacheBitmapData2.height)
 						{
 							__cacheBitmapData2 = new BitmapData(bitmapWidth, bitmapHeight, true, 0);
 						}
@@ -2164,7 +2173,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 						if (needCopyOfOriginal)
 						{
-							if (__cacheBitmapData3 == null || bitmapWidth > __cacheBitmapData3.width || bitmapHeight > __cacheBitmapData3.height)
+							if (__cacheBitmapData3 == null
+								|| bitmapWidth > __cacheBitmapData3.width
+								|| bitmapHeight > __cacheBitmapData3.height)
 							{
 								__cacheBitmapData3 = new BitmapData(bitmapWidth, bitmapHeight, true, 0);
 							}
@@ -2275,8 +2286,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 						if (needSecondBitmapData)
 						{
-							if (__cacheBitmapData2 == null || __cacheBitmapData2
-								.image == null || bitmapWidth > __cacheBitmapData2.width || bitmapHeight > __cacheBitmapData2.height)
+							if (__cacheBitmapData2 == null || __cacheBitmapData2.image == null
+									|| bitmapWidth > __cacheBitmapData2.width
+									|| bitmapHeight > __cacheBitmapData2.height)
 							{
 								__cacheBitmapData2 = new BitmapData(bitmapWidth, bitmapHeight, true, 0);
 							}
@@ -2293,8 +2305,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 						if (needCopyOfOriginal)
 						{
-							if (__cacheBitmapData3 == null || __cacheBitmapData3
-								.image == null || bitmapWidth > __cacheBitmapData3.width || bitmapHeight > __cacheBitmapData3.height)
+							if (__cacheBitmapData3 == null || __cacheBitmapData3.image == null
+									|| bitmapWidth > __cacheBitmapData3.width
+									|| bitmapHeight > __cacheBitmapData3.height)
 							{
 								__cacheBitmapData3 = new BitmapData(bitmapWidth, bitmapHeight, true, 0);
 							}

@@ -426,10 +426,7 @@ class Video extends DisplayObject
 
 		__globalToLocal(point, point);
 
-		var hit = (point.x > 0 &&
-			point.y > 0 &&
-			point.x <= __width &&
-			point.y <= __height);
+		var hit = (point.x > 0 && point.y > 0 && point.x <= __width && point.y <= __height);
 
 		Point.__pool.release(point);
 		return hit;

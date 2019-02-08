@@ -348,7 +348,7 @@ class Context3DTilemap
 					}
 				}
 
-				context.drawTriangles(context.__quadIndexBuffer, 0, length * 2);
+				context.drawTriangles(context.__quadIndexBuffer, 0, length);
 				lastFlushedPosition += length;
 			}
 
@@ -452,9 +452,9 @@ class Context3DTilemap
 					if (tileData == null) continue;
 				}
 
-				if (
-					(shader != currentShader && currentShader != null) || (bitmapData != currentBitmapData && currentBitmapData != null) || (currentBlendMode != blendMode)
-				)
+				if ((shader != currentShader && currentShader != null)
+					|| (bitmapData != currentBitmapData && currentBitmapData != null)
+					|| (currentBlendMode != blendMode))
 				{
 					flush(tilemap, renderer, currentBlendMode);
 				}

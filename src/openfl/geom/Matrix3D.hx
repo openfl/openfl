@@ -779,10 +779,7 @@ class Matrix3D
 
 	public function recompose(components:Vector<Vector3D>, ?orientationStyle:Orientation3D):Bool
 	{
-		if (components.length < 3 ||
-			components[2].x == 0 ||
-			components[2].y == 0 ||
-			components[2].z == 0)
+		if (components.length < 3 || components[2].x == 0 || components[2].y == 0 || components[2].z == 0)
 		{
 			return false;
 		}
@@ -882,8 +879,9 @@ class Matrix3D
 		var y = v.y;
 		var z = v.z;
 
-		return new Vector3D((x * rawData[0] + y * rawData[4] + z * rawData[8] + rawData[12]), (x * rawData[1] + y * rawData[5] + z * rawData[9] + rawData[13]),
-			(x * rawData[2] + y * rawData[6] + z * rawData[10] + rawData[14]), (x * rawData[3] + y * rawData[7] + z * rawData[11] + rawData[15]));
+		return new Vector3D((x * rawData[0] + y * rawData[4] + z * rawData[8] + rawData[12]),
+			(x * rawData[1] + y * rawData[5] + z * rawData[9] + rawData[13]), (x * rawData[2] + y * rawData[6] + z * rawData[10] + rawData[14]),
+			(x * rawData[3] + y * rawData[7] + z * rawData[11] + rawData[15]));
 	}
 
 	public function transformVectors(vin:Vector<Float>, vout:Vector<Float>):Void

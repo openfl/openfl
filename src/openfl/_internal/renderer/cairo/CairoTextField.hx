@@ -78,10 +78,12 @@ class CairoTextField
 			}
 		}
 
-		if (width <= 0 ||
-			height <= 0 ||
-			(!textField.__dirty && !graphics.__softwareDirty && (!graphics.__visible || graphics.__bitmap != null)) ||
-			!renderable)
+		if (width <= 0
+			|| height <= 0
+			|| (!textField.__dirty
+				&& !graphics.__softwareDirty
+				&& (!graphics.__visible || graphics.__bitmap != null))
+			|| !renderable)
 		{
 			textField.__dirty = false;
 			return;
@@ -253,7 +255,9 @@ class CairoTextField
 					{
 						if (textField.__selectionIndex == textField.__caretIndex)
 						{
-							if (textField.__showCursor && group.startIndex <= textField.__caretIndex && group.endIndex >= textField.__caretIndex)
+							if (textField.__showCursor
+								&& group.startIndex <= textField.__caretIndex
+								&& group.endIndex >= textField.__caretIndex)
 							{
 								advance = 0.0;
 
@@ -277,10 +281,10 @@ class CairoTextField
 								cairo.stroke();
 							}
 						}
-						else if ((group.startIndex <= textField.__caretIndex && group.endIndex >= textField.__caretIndex) ||
-							(group.startIndex <= textField.__selectionIndex && group.endIndex >= textField.__selectionIndex) ||
-							(group.startIndex > textField.__caretIndex && group.endIndex < textField.__selectionIndex) ||
-							(group.startIndex > textField.__selectionIndex && group.endIndex < textField.__caretIndex))
+						else if ((group.startIndex <= textField.__caretIndex && group.endIndex >= textField.__caretIndex)
+							|| (group.startIndex <= textField.__selectionIndex && group.endIndex >= textField.__selectionIndex)
+							|| (group.startIndex > textField.__caretIndex && group.endIndex < textField.__selectionIndex)
+							|| (group.startIndex > textField.__selectionIndex && group.endIndex < textField.__caretIndex))
 						{
 							var selectionStart = Std.int(Math.min(textField.__selectionIndex, textField.__caretIndex));
 							var selectionEnd = Std.int(Math.max(textField.__selectionIndex, textField.__caretIndex));

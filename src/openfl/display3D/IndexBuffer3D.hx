@@ -16,7 +16,6 @@ import openfl.Vector;
 @:final class IndexBuffer3D
 {
 	@:noCompletion private var __context:Context3D;
-	@:noCompletion private var __elementType:Int;
 	@:noCompletion private var __id:GLBuffer;
 	@:noCompletion private var __memoryUsage:Int;
 	@:noCompletion private var __numIndices:Int;
@@ -29,7 +28,6 @@ import openfl.Vector;
 		__numIndices = numIndices;
 
 		var gl = __context.gl;
-		__elementType = gl.UNSIGNED_SHORT;
 		__id = gl.createBuffer();
 
 		__usage = (bufferUsage == Context3DBufferUsage.DYNAMIC_DRAW) ? gl.DYNAMIC_DRAW : gl.STATIC_DRAW;

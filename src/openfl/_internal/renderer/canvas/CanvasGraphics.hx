@@ -1027,11 +1027,7 @@ class CanvasGraphics
 							sr = c.x + c.width;
 						}
 
-						if (canOptimizeMatrix &&
-							st >= 0 &&
-							sl >= 0 &&
-							sr <= bitmapFill.width &&
-							sb <= bitmapFill.height)
+						if (canOptimizeMatrix && st >= 0 && sl >= 0 && sr <= bitmapFill.width && sb <= bitmapFill.height)
 						{
 							optimizationUsed = true;
 							if (!hitTesting) context.drawImage(bitmapFill.image.src, sl, st, sr - sl, sb - st, c.x - offsetX, c.y - offsetY, c.width, c.height);

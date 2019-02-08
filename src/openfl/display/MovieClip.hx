@@ -704,8 +704,9 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 
 						for (activeInstance in __activeInstances)
 						{
-							if (activeInstance
-								.displayObject != null && activeInstance.characterID == frameObject.symbol && activeInstance.depth == frameObject.depth)
+							if (activeInstance.displayObject != null
+									&& activeInstance.characterID == frameObject.symbol
+									&& activeInstance.depth == frameObject.depth)
 							{
 								// TODO: Fix duplicates in exporter
 								instance = activeInstance;

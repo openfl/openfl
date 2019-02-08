@@ -409,10 +409,10 @@ class Loader extends DisplayObjectContainer
 		}
 
 		#if (js && html5)
-		if (contentLoaderInfo.contentType.indexOf("image/") > -1 &&
-			request.method == URLRequestMethod.GET &&
-			(request.requestHeaders == null || request.requestHeaders.length == 0) &&
-			request.userAgent == null)
+		if (contentLoaderInfo.contentType.indexOf("image/") > -1
+			&& request.method == URLRequestMethod.GET
+			&& (request.requestHeaders == null || request.requestHeaders.length == 0)
+			&& request.userAgent == null)
 		{
 			BitmapData.loadFromFile(request.url)
 				.onComplete(BitmapData_onLoad)
@@ -425,7 +425,9 @@ class Loader extends DisplayObjectContainer
 		var loader = new URLLoader();
 		loader.dataFormat = URLLoaderDataFormat.BINARY;
 
-		if (contentLoaderInfo.contentType.indexOf("/json") > -1 || contentLoaderInfo.contentType.indexOf("/javascript") > -1 || contentLoaderInfo.contentType.indexOf("/ecmascript") > -1)
+		if (contentLoaderInfo.contentType.indexOf("/json") > -1
+			|| contentLoaderInfo.contentType.indexOf("/javascript") > -1
+			|| contentLoaderInfo.contentType.indexOf("/ecmascript") > -1)
 		{
 			loader.dataFormat = TEXT;
 		}

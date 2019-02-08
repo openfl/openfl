@@ -86,10 +86,7 @@ class Tileset
 	{
 		for (tileData in __data)
 		{
-			if (rect.x == tileData.x &&
-				rect.y == tileData.y &&
-				rect.width == tileData.height &&
-				rect.height == tileData.height)
+			if (rect.x == tileData.x && rect.y == tileData.y && rect.width == tileData.height && rect.height == tileData.height)
 			{
 				return true;
 			}
@@ -116,10 +113,7 @@ class Tileset
 		{
 			tileData = __data[i];
 
-			if (rect.x == tileData.x &&
-				rect.y == tileData.y &&
-				rect.width == tileData.height &&
-				rect.height == tileData.height)
+			if (rect.x == tileData.x && rect.y == tileData.y && rect.width == tileData.height && rect.height == tileData.height)
 			{
 				return i;
 			}

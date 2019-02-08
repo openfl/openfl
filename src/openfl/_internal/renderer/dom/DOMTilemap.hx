@@ -30,10 +30,7 @@ class DOMTilemap
 		// TODO: Support GL-based Tilemap?
 
 		#if (js && html5)
-		if (tilemap.stage != null &&
-				tilemap.__worldVisible &&
-				tilemap.__renderable &&
-				tilemap.__group.__tiles.length > 0)
+		if (tilemap.stage != null && tilemap.__worldVisible && tilemap.__renderable && tilemap.__group.__tiles.length > 0)
 		{
 			if (tilemap.__canvas == null)
 			{

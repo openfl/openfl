@@ -262,17 +262,11 @@ class Rectangle
 	{
 		if (rect.width <= 0 || rect.height <= 0)
 		{
-			return rect.x > x &&
-				rect.y > y &&
-				rect.right < right &&
-				rect.bottom < bottom;
+			return rect.x > x && rect.y > y && rect.right < right && rect.bottom < bottom;
 		}
 		else
 		{
-			return rect.x >= x &&
-				rect.y >= y &&
-				rect.right <= right &&
-				rect.bottom <= bottom;
+			return rect.x >= x && rect.y >= y && rect.right <= right && rect.bottom <= bottom;
 		}
 	}
 
@@ -301,11 +295,7 @@ class Rectangle
 	{
 		if (toCompare == this) return true;
 		else
-			return toCompare != null &&
-				x == toCompare.x &&
-				y == toCompare.y &&
-				width == toCompare.width &&
-				height == toCompare.height;
+			return toCompare != null && x == toCompare.x && y == toCompare.y && width == toCompare.width && height == toCompare.height;
 	}
 
 	/**

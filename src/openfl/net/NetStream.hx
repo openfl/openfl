@@ -1831,8 +1831,7 @@ class NetStream extends EventDispatcher
 		}
 
 		__seeking = true;
-		__connection.dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, false,
-			{code: "NetStream.SeekStart.Notify"}));
+		__connection.dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, false, {code: "NetStream.SeekStart.Notify"}));
 		__video.currentTime = time;
 		#end
 	}
@@ -1980,17 +1979,14 @@ class NetStream extends EventDispatcher
 
 	@:noCompletion private function video_onEnd(event:Dynamic):Void
 	{
-		__connection.dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, false,
-			{code: "NetStream.Play.Stop"}));
-		__connection.dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, false,
-			{code: "NetStream.Play.Complete"}));
+		__connection.dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, false, {code: "NetStream.Play.Stop"}));
+		__connection.dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, false, {code: "NetStream.Play.Complete"}));
 		__playStatus("NetStream.Play.Complete");
 	}
 
 	@:noCompletion private function video_onError(event:Dynamic):Void
 	{
-		__connection.dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, false,
-			{code: "NetStream.Play.Stop"}));
+		__connection.dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, false, {code: "NetStream.Play.Stop"}));
 		__playStatus("NetStream.Play.error");
 	}
 
@@ -2028,8 +2024,7 @@ class NetStream extends EventDispatcher
 
 	@:noCompletion private function video_onPlaying(event:Dynamic):Void
 	{
-		__connection.dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, false,
-			{code: "NetStream.Play.Start"}));
+		__connection.dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, false, {code: "NetStream.Play.Start"}));
 		__playStatus("NetStream.Play.playing");
 	}
 
@@ -2037,8 +2032,7 @@ class NetStream extends EventDispatcher
 	{
 		__playStatus("NetStream.Play.seeking");
 
-		__connection.dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, false,
-			{code: "NetStream.Seek.Complete"}));
+		__connection.dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, false, {code: "NetStream.Seek.Complete"}));
 	}
 
 	@:noCompletion private function video_onStalled(event:Dynamic):Void

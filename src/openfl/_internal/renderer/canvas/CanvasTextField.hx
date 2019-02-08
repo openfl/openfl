@@ -51,11 +51,11 @@ class CanvasTextField
 			var width = graphics.__width;
 			var height = graphics.__height;
 
-			if (((textEngine.text == null || textEngine.text == "") &&
-				!textEngine.background &&
-				!textEngine.border &&
-				!textEngine.__hasFocus &&
-				(textEngine.type != INPUT || !textEngine.selectable)) || ((textEngine.width <= 0 || textEngine.height <= 0) && textEngine
+			if (((textEngine.text == null || textEngine.text == "")
+				&& !textEngine.background
+				&& !textEngine.border
+				&& !textEngine.__hasFocus
+				&& (textEngine.type != INPUT || !textEngine.selectable)) || ((textEngine.width <= 0 || textEngine.height <= 0) && textEngine
 					.autoSize != TextFieldAutoSize.NONE))
 			{
 				textField.__graphics.__canvas = null;
@@ -173,7 +173,9 @@ class CanvasTextField
 						{
 							if (textField.__selectionIndex == textField.__caretIndex)
 							{
-								if (textField.__showCursor && group.startIndex <= textField.__caretIndex && group.endIndex >= textField.__caretIndex)
+								if (textField.__showCursor
+									&& group.startIndex <= textField.__caretIndex
+									&& group.endIndex >= textField.__caretIndex)
 								{
 									advance = 0.0;
 
@@ -202,10 +204,10 @@ class CanvasTextField
 									// context.fillRect (group.offsetX + advance - textField.scrollH, scrollY + 2, 1, TextEngine.getFormatHeight (textField.defaultTextFormat) - 1);
 								}
 							}
-							else if ((group.startIndex <= textField.__caretIndex && group.endIndex >= textField.__caretIndex) ||
-								(group.startIndex <= textField.__selectionIndex && group.endIndex >= textField.__selectionIndex) ||
-								(group.startIndex > textField.__caretIndex && group.endIndex < textField.__selectionIndex) ||
-								(group.startIndex > textField.__selectionIndex && group.endIndex < textField.__caretIndex))
+							else if ((group.startIndex <= textField.__caretIndex && group.endIndex >= textField.__caretIndex)
+								|| (group.startIndex <= textField.__selectionIndex && group.endIndex >= textField.__selectionIndex)
+								|| (group.startIndex > textField.__caretIndex && group.endIndex < textField.__selectionIndex)
+								|| (group.startIndex > textField.__selectionIndex && group.endIndex < textField.__caretIndex))
 							{
 								var selectionStart = Std.int(Math.min(textField.__selectionIndex, textField.__caretIndex));
 								var selectionEnd = Std.int(Math.max(textField.__selectionIndex, textField.__caretIndex));

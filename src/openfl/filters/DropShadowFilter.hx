@@ -262,8 +262,8 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 
 		var point = new Point(destPoint.x + __offsetX, destPoint.y + __offsetY);
 
-		var finalImage = ImageDataUtil.gaussianBlur(bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle(), point.__toLimeVector2(), __blurX,
-			__blurY, __quality, __strength);
+		var finalImage = ImageDataUtil.gaussianBlur(bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle(), point.__toLimeVector2(),
+			__blurX, __blurY, __quality, __strength);
 		finalImage.colorTransform(finalImage.rect, new ColorTransform(0, 0, 0, __alpha, r, g, b, 0).__toLimeColorMatrix());
 
 		if (finalImage == bitmapData.image) return bitmapData;
