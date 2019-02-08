@@ -3,7 +3,7 @@
         "editor.formatOnSave": true,
         "files.eol": "\n",
         "files.insertFinalNewline": true
-    }
+    },
     "codedox": {
         "commentprefix": "    ",
         "commentdescription": "",
@@ -21,5 +21,6 @@
         [ "scripts/completion.hxml" ],
         [ "-main", "TestMain", "-cp", "src", "-cp", "test/haxelib/unit/src", "-lib", "munit", "-D", "openfl-unit-testing" ]
     ],
+    "haxe.enableMethodsView": true,
     "lime.projectFile": "test/haxelib/functional/project.xml"
 }
