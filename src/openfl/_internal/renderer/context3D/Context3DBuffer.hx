@@ -48,7 +48,7 @@ class Context3DBuffer
 
 				if (start < MAX_QUADS_PER_INDEX_BUFFER && length - start < MAX_QUADS_PER_INDEX_BUFFER)
 				{
-					context3D.drawTriangles(indexBuffers[0], start * 2, length);
+					context3D.drawTriangles(indexBuffers[0], start, length * 2);
 				}
 				else
 				{
@@ -63,7 +63,7 @@ class Context3DBuffer
 
 						// TODO: Need to advance all vertex buffer bindings past start of 0xFFFF
 
-						context3D.drawTriangles(indexBuffers[arrayBufferIndex], (start - (arrayBufferIndex * MAX_QUADS_PER_INDEX_BUFFER)) * 6, length);
+						context3D.drawTriangles(indexBuffers[arrayBufferIndex], (start - (arrayBufferIndex * MAX_QUADS_PER_INDEX_BUFFER)) * 3, length * 2);
 						start += length;
 					}
 				}
