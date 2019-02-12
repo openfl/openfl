@@ -13,6 +13,7 @@ import openfl.net.NetStream;
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.Stage)
 @:access(openfl.net.NetStream)
+@:access(openfl.events.Event)
 @:final class VideoTexture extends TextureBase
 {
 	public var videoHeight(default, null):Int;
@@ -73,7 +74,19 @@ import openfl.net.NetStream;
 		videoHeight = __netStream.__video.videoHeight;
 		#end
 
-		dispatchEvent(new Event(Event.TEXTURE_READY));
+		var event:Event = null;
+
+		#if openfl_pool_events
+		event = Event.__pool.get(Event.TEXTURE_READY);
+		#else
+		event = new Event(Event.TEXTURE_READY);
+		#end
+
+		dispatchEvent(event);
+
+		#if openfl_pool_events
+		Event.__pool.release(event);
+		#end
 	}
 }
 #else

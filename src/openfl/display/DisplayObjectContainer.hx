@@ -241,15 +241,37 @@ class DisplayObjectContainer extends InteractiveObject
 			child.__setRenderDirty();
 			__setRenderDirty();
 
-			var event = new Event(Event.ADDED, true);
+			var event:Event = null;
+
+			#if openfl_pool_events
+			event = Event.__pool.get(Event.ADDED);
+			event.bubbles = true;
+			#else
+			event = new Event(Event.ADDED, true);
+			#end
+
 			event.target = child;
+
 			child.__dispatchWithCapture(event);
+
+			#if openfl_pool_events
+			Event.__pool.release(event);
+			#end
 
 			if (addedToStage)
 			{
-				var event = new Event(Event.ADDED_TO_STAGE, false, false);
+				#if openfl_pool_events
+				event = Event.__pool.get(Event.ADDED_TO_STAGE);
+				#else
+				event = new Event(Event.ADDED_TO_STAGE, false, false);
+				#end
+
 				child.__dispatchWithCapture(event);
 				child.__dispatchChildren(event);
+
+				#if openfl_pool_events
+				Event.__pool.release(event);
+				#end
 			}
 		}
 

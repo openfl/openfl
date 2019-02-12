@@ -1204,7 +1204,19 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	{
 		if (window != null)
 		{
-			__broadcastEvent(new Event(Event.DEACTIVATE));
+			var event:Event = null;
+
+			#if openfl_pool_events
+			event = Event.__pool.get(Event.DEACTIVATE);
+			#else
+			event = new Event(Event.DEACTIVATE);
+			#end
+
+			__broadcastEvent(event);
+
+			#if openfl_pool_events
+			Event.__pool.release(event);
+			#end
 		}
 	}
 
@@ -1398,7 +1410,20 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		}
 
 		__primaryTouch = null;
-		__broadcastEvent(new Event(Event.DEACTIVATE));
+
+		var event:Event = null;
+
+		#if openfl_pool_events
+		event = Event.__pool.get(Event.DEACTIVATE);
+		#else
+		event = new Event(Event.DEACTIVATE);
+		#end
+
+		__broadcastEvent(event);
+
+		#if openfl_pool_events
+		Event.__pool.release(event);
+		#end
 	}
 
 	@:noCompletion @:dox(hide) public function onWindowCreate(window:Window):Void
@@ -1442,7 +1467,19 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		__renderDirty = true;
 		#end
 
-		__broadcastEvent(new Event(Event.ACTIVATE));
+		var event:Event = null;
+
+		#if openfl_pool_events
+		event = Event.__pool.get(Event.ACTIVATE);
+		#else
+		event = new Event(Event.ACTIVATE);
+		#end
+
+		__broadcastEvent(event);
+
+		#if openfl_pool_events
+		Event.__pool.release(event);
+		#end
 
 		#if !desktop
 		focus = __cacheFocus;
@@ -1454,7 +1491,20 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		if (this.window == null || this.window != window) return;
 
 		__primaryTouch = null;
-		__broadcastEvent(new Event(Event.DEACTIVATE));
+
+		var event:Event = null;
+
+		#if openfl_pool_events
+		event = Event.__pool.get(Event.DEACTIVATE);
+		#else
+		event = new Event(Event.DEACTIVATE);
+		#end
+
+		__broadcastEvent(event);
+
+		#if openfl_pool_events
+		Event.__pool.release(event);
+		#end
 
 		var currentFocus = focus;
 		focus = null;
@@ -1480,7 +1530,20 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		if (this.window == null || this.window != window || MouseEvent.__buttonDown) return;
 
 		__dispatchPendingMouseEvent();
-		__dispatchEvent(new Event(Event.MOUSE_LEAVE));
+
+		var event:Event = null;
+
+		#if openfl_pool_events
+		event = Event.__pool.get(Event.MOUSE_LEAVE);
+		#else
+		event = new Event(Event.MOUSE_LEAVE);
+		#end
+
+		__dispatchEvent(event);
+
+		#if openfl_pool_events
+		Event.__pool.release(event);
+		#end
 	}
 
 	@:noCompletion @:dox(hide) public function onWindowMinimize(window:Window):Void
@@ -1546,9 +1609,29 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		Context3DStats.resetDrawCalls();
 		#end
 
+		var event = null;
+
+		#if openfl_pool_events
+		event = Event.__pool.get(Event.ENTER_FRAME);
+
+		__broadcastEvent(event);
+
+		Event.__pool.release(event);
+		event = Event.__pool.get(Event.FRAME_CONSTRUCTED);
+
+		__broadcastEvent(event);
+
+		Event.__pool.release(event);
+		event = Event.__pool.get(Event.EXIT_FRAME);
+
+		__broadcastEvent(event);
+
+		Event.__pool.release(event);
+		#else
 		__broadcastEvent(new Event(Event.ENTER_FRAME));
 		__broadcastEvent(new Event(Event.FRAME_CONSTRUCTED));
 		__broadcastEvent(new Event(Event.EXIT_FRAME));
+		#end
 
 		__renderable = true;
 		__enterFrame(__deltaTime);
@@ -1559,7 +1642,18 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		if (__invalidated && shouldRender)
 		{
 			__invalidated = false;
-			__broadcastEvent(new Event(Event.RENDER));
+
+			#if openfl_pool_events
+			event = Event.__pool.get(Event.RENDER);
+			#else
+			event = new Event(Event.RENDER);
+			#end
+
+			__broadcastEvent(event);
+
+			#if openfl_pool_events
+			Event.__pool.release(event);
+			#end
 		}
 
 		#if hxtelemetry
@@ -2226,8 +2320,21 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					}
 					else
 					{
-						__mouseDownLeft.dispatchEvent(MouseEvent.__create(MouseEvent
-								.RELEASE_OUTSIDE, 1, __mouseX, __mouseY, new Point(__mouseX, __mouseY), this));
+						var event:MouseEvent = null;
+
+						#if openfl_pool_events
+						event = MouseEvent.__pool.get(MouseEvent
+						.RELEASE_OUTSIDE, __mouseX, __mouseY, new Point(__mouseX, __mouseY), this);
+						#else
+						event = MouseEvent.__create(MouseEvent
+						.RELEASE_OUTSIDE, 1, __mouseX, __mouseY, new Point(__mouseX, __mouseY), this);
+						#end
+
+						__mouseDownLeft.dispatchEvent(event);
+
+						#if openfl_pool_events
+						MouseEvent.__pool.release(event);
+						#end
 					}
 
 					__mouseDownLeft = null;
@@ -2253,21 +2360,55 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		}
 
 		var localPoint = Point.__pool.get();
+		var event:MouseEvent = null;
 
-		__dispatchStack(MouseEvent.__create(type, button, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), target), stack);
+		#if openfl_pool_events
+		event = MouseEvent.__pool.get(type, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), target);
+		#else
+		event = MouseEvent.__create(type, button, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), target);
+		#end
+
+		__dispatchStack(event, stack);
+
+		#if openfl_pool_events
+		MouseEvent.__pool.release(event);
+		#end
 
 		if (clickType != null)
 		{
-			__dispatchStack(MouseEvent.__create(clickType, button, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), target), stack);
+			#if openfl_pool_events
+			event = MouseEvent.__pool.get(clickType, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), target);
+			#else
+			event = MouseEvent.__create(clickType, button, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), target);
+			#end
+
+			__dispatchStack(event, stack);
+
+			#if openfl_pool_events
+			MouseEvent.__pool.release(event);
+			#end
 
 			if (type == MouseEvent.MOUSE_UP && cast(target, openfl.display.InteractiveObject).doubleClickEnabled)
 			{
 				var currentTime = Lib.getTimer();
 				if (currentTime - __lastClickTime < 500)
 				{
-					__dispatchStack(MouseEvent.__create(MouseEvent.DOUBLE_CLICK, button, __mouseX, __mouseY, target
-							.__globalToLocal(targetPoint, localPoint), target),
-						stack);
+					#if openfl_pool_events
+					event = MouseEvent.__pool.get(
+						MouseEvent.DOUBLE_CLICK, __mouseX, __mouseY, target
+						.__globalToLocal(targetPoint, localPoint), target
+					);
+					#else
+					event = MouseEvent.__create(MouseEvent.DOUBLE_CLICK, button, __mouseX, __mouseY, target
+					.__globalToLocal(targetPoint, localPoint), target);
+					#end
+
+					__dispatchStack(event, stack);
+
+					#if openfl_pool_events
+					MouseEvent.__pool.release(event);
+					#end
+
 					__lastClickTime = 0;
 				}
 				else
@@ -2311,9 +2452,19 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		{
 			if (__mouseOverTarget != null)
 			{
+				#if openfl_pool_events
+				event = MouseEvent.__pool.get(MouseEvent.MOUSE_OUT, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
+				cast __mouseOverTarget);
+				#else
 				event = MouseEvent.__create(MouseEvent.MOUSE_OUT, button, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
-					cast __mouseOverTarget);
+				cast __mouseOverTarget);
+				#end
+
 				__dispatchStack(event, __mouseOutStack);
+
+				#if openfl_pool_events
+				MouseEvent.__pool.release(event);
+				#end
 			}
 		}
 
@@ -2323,10 +2474,20 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			{
 				__rollOutStack.remove(target);
 
+				#if openfl_pool_events
+				event = MouseEvent.__pool.get(MouseEvent.ROLL_OUT, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
+				cast __mouseOverTarget);
+				#else
 				event = MouseEvent.__create(MouseEvent.ROLL_OUT, button, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
-					cast __mouseOverTarget);
+				cast __mouseOverTarget);
+				#end
 				event.bubbles = false;
+
 				__dispatchTarget(target, event);
+
+				#if openfl_pool_events
+				MouseEvent.__pool.release(event);
+				#end
 			}
 		}
 
@@ -2336,10 +2497,22 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			{
 				if (target.hasEventListener(MouseEvent.ROLL_OVER))
 				{
+					#if openfl_pool_events
+					event = MouseEvent.__pool.get(
+					MouseEvent.ROLL_OVER, __mouseX, __mouseY, __mouseOverTarget
+					.__globalToLocal(targetPoint, localPoint), cast target
+					);
+					#else
 					event = MouseEvent.__create(MouseEvent.ROLL_OVER, button, __mouseX, __mouseY, __mouseOverTarget
-						.__globalToLocal(targetPoint, localPoint), cast target);
+					.__globalToLocal(targetPoint, localPoint), cast target);
+					#end
 					event.bubbles = false;
+
 					__dispatchTarget(target, event);
+
+					#if openfl_pool_events
+					MouseEvent.__pool.release(event);
+					#end
 				}
 
 				if (target.hasEventListener(MouseEvent.ROLL_OUT) || target.hasEventListener(MouseEvent.ROLL_OVER))
@@ -2353,8 +2526,20 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		{
 			if (target != null)
 			{
-				event = MouseEvent.__create(MouseEvent.MOUSE_OVER, button, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), cast target);
+				#if openfl_pool_events
+				event = MouseEvent.__pool.get(MouseEvent.MOUSE_OVER, __mouseX, __mouseY, target
+				.__globalToLocal(targetPoint, localPoint), cast target
+				);
+				#else
+				event = MouseEvent.__create(MouseEvent.MOUSE_OVER, button, __mouseX, __mouseY, target
+				.__globalToLocal(targetPoint, localPoint), cast target);
+				#end
+
 				__dispatchStack(event, stack);
+
+				#if openfl_pool_events
+				MouseEvent.__pool.release(event);
+				#end
 			}
 
 			__mouseOverTarget = target;
@@ -2685,7 +2870,19 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			__renderDirty = true;
 			__setTransformDirty();
 
-			__dispatchEvent(new Event(Event.RESIZE));
+			var event:Event = null;
+
+			#if openfl_pool_events
+			event = Event.__pool.get(Event.RESIZE);
+			#else
+			event = new Event(Event.RESIZE);
+			#end
+
+			__dispatchEvent(event);
+
+			#if openfl_pool_events
+			Event.__pool.release(event);
+			#end
 		}
 	}
 

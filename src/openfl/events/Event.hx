@@ -1,6 +1,9 @@
 package openfl.events;
 
 #if !flash
+
+import openfl._internal.utils.EventPool;
+
 /**
 	The Event class is used as the base class for the creation of Event
 	objects, which are passed as parameters to event listeners when an event
@@ -47,6 +50,8 @@ package openfl.events;
 #end
 class Event
 {
+	@:noCompletion private static var __pool:EventPool = new EventPool(20);
+
 	/**
 		The `ACTIVATE` constant defines the value of the `type` property of an
 		`activate` event object.

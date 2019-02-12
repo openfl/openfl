@@ -17,6 +17,7 @@ import openfl.utils.ByteArray;
 #end
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.Stage)
+@:access(openfl.events.Event)
 @:final class Texture extends TextureBase
 {
 	@:noCompletion private static var __lowMemoryMode:Bool = false;
@@ -54,7 +55,20 @@ import openfl.utils.ByteArray;
 			Timer.delay(function()
 			{
 				__uploadCompressedTextureFromByteArray(data, byteArrayOffset);
-				dispatchEvent(new Event(Event.TEXTURE_READY));
+
+				var event:Event = null;
+
+				#if openfl_pool_events
+				event = Event.__pool.get(Event.TEXTURE_READY);
+				#else
+				event = new Event(Event.TEXTURE_READY);
+				#end
+
+				dispatchEvent(event);
+
+				#if openfl_pool_events
+				Event.__pool.release(event);
+				#end
 			}, 1);
 		}
 	}
