@@ -64,8 +64,8 @@ class Context3DTilemap
 		if (tilemap.tileAlphaEnabled) dataPerVertex++;
 		if (tilemap.tileColorTransformEnabled) dataPerVertex += 8;
 
-		buildBufferTileContainer(tilemap, tilemap.__group, renderer, parentTransform, tilemap.__tileset, tilemap.tileAlphaEnabled, tilemap.__worldAlpha, tilemap
-			.tileColorTransformEnabled, tilemap.__worldColorTransform, null, rect, matrix);
+		buildBufferTileContainer(tilemap, tilemap.__group, renderer, parentTransform, tilemap.__tileset, tilemap.tileAlphaEnabled, tilemap.__worldAlpha,
+			tilemap.tileColorTransformEnabled, tilemap.__worldColorTransform, null, rect, matrix);
 
 		Rectangle.__pool.release(rect);
 		Matrix.__pool.release(matrix);
@@ -395,8 +395,8 @@ class Context3DTilemap
 		rect.setTo(0, 0, tilemap.__width, tilemap.__height);
 		renderer.__pushMaskRect(rect, tilemap.__renderTransform);
 
-		renderTileContainer(tilemap, renderer, tilemap.__group, cast tilemap.__worldShader, tilemap.__tileset, tilemap.__worldAlpha, tilemap
-			.tileBlendModeEnabled, currentBlendMode, null);
+		renderTileContainer(tilemap, renderer, tilemap.__group, cast tilemap.__worldShader, tilemap.__tileset, tilemap.__worldAlpha,
+			tilemap.tileBlendModeEnabled, currentBlendMode, null);
 		flush(tilemap, renderer, currentBlendMode);
 
 		// renderer.filterManager.popObject (tilemap);
@@ -452,9 +452,9 @@ class Context3DTilemap
 					if (tileData == null) continue;
 				}
 
-				if (
-					(shader != currentShader && currentShader != null) || (bitmapData != currentBitmapData && currentBitmapData != null) || (currentBlendMode != blendMode)
-				)
+				if ((shader != currentShader && currentShader != null)
+					|| (bitmapData != currentBitmapData && currentBitmapData != null)
+					|| (currentBlendMode != blendMode))
 				{
 					flush(tilemap, renderer, currentBlendMode);
 				}

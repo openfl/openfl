@@ -2118,26 +2118,6 @@ abstract Vector<T>(VectorData<T>)
 		return this[index] = value;
 	}
 
-	/*@:noCompletion @:dox(hide) @:from public static inline function fromArray<T> (value:Array<T>):Vector<T> {
-
-			return VectorData.ofArray (value);
-
-		}
-
-
-		@:noCompletion @:dox(hide) @:to public inline function toArray<T> ():Array<T> {
-
-			var array = new Array<T> ();
-
-			for (value in this) {
-
-				array.push (value);
-
-			}
-
-			return array;
-
-	}*/
 	@:noCompletion @:dox(hide) @:from public static inline function fromHaxeVector<T>(value:haxe.ds.Vector<T>):Vector<T>
 	{
 		return cast value;

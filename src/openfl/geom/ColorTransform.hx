@@ -285,8 +285,7 @@ class ColorTransform
 			return (redMultiplier == 1
 				&& greenMultiplier == 1
 				&& blueMultiplier == 1
-				&& /*alphaMultiplier == 1 &&*/
-				redOffset == 0
+				&& /*alphaMultiplier == 1 &&*/ redOffset == 0
 				&& greenOffset == 0
 				&& blueOffset == 0
 				&& alphaOffset == 0);

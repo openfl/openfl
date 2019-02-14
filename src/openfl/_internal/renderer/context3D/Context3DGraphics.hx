@@ -173,8 +173,8 @@ class Context3DGraphics
 							if (transformABCD && transformXY)
 							{
 								ti = i * 6;
-								tileTransform.setTo(transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], transforms[ti + 4],
-									transforms[ti + 5]);
+								tileTransform
+									.setTo(transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], transforms[ti + 4], transforms[ti + 5]);
 							}
 							else if (transformABCD)
 							{
@@ -606,8 +606,8 @@ class Context3DGraphics
 										renderer.__updateShaderBuffer(shaderBufferOffset);
 									}
 
-									if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, graphics.__quadBuffer.vertexBuffer,
-										quadBufferPosition * 16, FLOAT_2);
+									if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, graphics.__quadBuffer
+										.vertexBuffer, quadBufferPosition * 16, FLOAT_2);
 									if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, graphics.__quadBuffer
 										.vertexBuffer, (quadBufferPosition * 16) + 2, FLOAT_2);
 
@@ -717,10 +717,10 @@ class Context3DGraphics
 								renderer.updateShader();
 							}
 
-							if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, vertexBuffer, bufferPosition,
-								hasUVTData ? FLOAT_4 : FLOAT_2);
-							if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer, bufferPosition +
-								vertLength, FLOAT_2);
+							if (shader.__position != null) context.setVertexBufferAt(shader.__position
+								.index, vertexBuffer, bufferPosition, hasUVTData ? FLOAT_4 : FLOAT_2);
+							if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord
+								.index, vertexBuffer, bufferPosition + vertLength, FLOAT_2);
 
 							switch (culling)
 							{

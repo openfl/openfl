@@ -1,8 +1,6 @@
 package openfl.events;
 
-
 #if !flash
-
 import openfl._internal.utils.MouseEventPool;
 import openfl.display.InteractiveObject;
 import openfl.geom.Point;

@@ -2323,11 +2323,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 						var event:MouseEvent = null;
 
 						#if openfl_pool_events
-						event = MouseEvent.__pool.get(MouseEvent
-						.RELEASE_OUTSIDE, __mouseX, __mouseY, new Point(__mouseX, __mouseY), this);
+						event = MouseEvent.__pool.get(MouseEvent.RELEASE_OUTSIDE, __mouseX, __mouseY, new Point(__mouseX, __mouseY), this);
 						#else
-						event = MouseEvent.__create(MouseEvent
-						.RELEASE_OUTSIDE, 1, __mouseX, __mouseY, new Point(__mouseX, __mouseY), this);
+						event = MouseEvent.__create(MouseEvent.RELEASE_OUTSIDE, 1, __mouseX, __mouseY, new Point(__mouseX, __mouseY), this);
 						#end
 
 						__mouseDownLeft.dispatchEvent(event);
@@ -2394,13 +2392,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				if (currentTime - __lastClickTime < 500)
 				{
 					#if openfl_pool_events
-					event = MouseEvent.__pool.get(
-						MouseEvent.DOUBLE_CLICK, __mouseX, __mouseY, target
-						.__globalToLocal(targetPoint, localPoint), target
-					);
+					event = MouseEvent.__pool.get(MouseEvent.DOUBLE_CLICK, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), target);
 					#else
-					event = MouseEvent.__create(MouseEvent.DOUBLE_CLICK, button, __mouseX, __mouseY, target
-					.__globalToLocal(targetPoint, localPoint), target);
+					event = MouseEvent.__create(MouseEvent.DOUBLE_CLICK, button, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), target);
 					#end
 
 					__dispatchStack(event, stack);
@@ -2453,11 +2447,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			if (__mouseOverTarget != null)
 			{
 				#if openfl_pool_events
-				event = MouseEvent.__pool.get(MouseEvent.MOUSE_OUT, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
-				cast __mouseOverTarget);
+				event = MouseEvent.__pool.get(MouseEvent.MOUSE_OUT, __mouseX, __mouseY, __mouseOverTarget
+					.__globalToLocal(targetPoint, localPoint), cast __mouseOverTarget);
 				#else
 				event = MouseEvent.__create(MouseEvent.MOUSE_OUT, button, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
-				cast __mouseOverTarget);
+					cast __mouseOverTarget);
 				#end
 
 				__dispatchStack(event, __mouseOutStack);
@@ -2475,11 +2469,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				__rollOutStack.remove(target);
 
 				#if openfl_pool_events
-				event = MouseEvent.__pool.get(MouseEvent.ROLL_OUT, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
-				cast __mouseOverTarget);
+				event = MouseEvent.__pool.get(MouseEvent.ROLL_OUT, __mouseX, __mouseY, __mouseOverTarget
+					.__globalToLocal(targetPoint, localPoint), cast __mouseOverTarget);
 				#else
 				event = MouseEvent.__create(MouseEvent.ROLL_OUT, button, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
-				cast __mouseOverTarget);
+					cast __mouseOverTarget);
 				#end
 				event.bubbles = false;
 
@@ -2498,13 +2492,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				if (target.hasEventListener(MouseEvent.ROLL_OVER))
 				{
 					#if openfl_pool_events
-					event = MouseEvent.__pool.get(
-					MouseEvent.ROLL_OVER, __mouseX, __mouseY, __mouseOverTarget
-					.__globalToLocal(targetPoint, localPoint), cast target
-					);
+					event = MouseEvent.__pool.get(MouseEvent.ROLL_OVER, __mouseX, __mouseY, __mouseOverTarget
+						.__globalToLocal(targetPoint, localPoint), cast target);
 					#else
 					event = MouseEvent.__create(MouseEvent.ROLL_OVER, button, __mouseX, __mouseY, __mouseOverTarget
-					.__globalToLocal(targetPoint, localPoint), cast target);
+						.__globalToLocal(targetPoint, localPoint), cast target);
 					#end
 					event.bubbles = false;
 
@@ -2527,12 +2519,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			if (target != null)
 			{
 				#if openfl_pool_events
-				event = MouseEvent.__pool.get(MouseEvent.MOUSE_OVER, __mouseX, __mouseY, target
-				.__globalToLocal(targetPoint, localPoint), cast target
-				);
+				event = MouseEvent.__pool.get(MouseEvent.MOUSE_OVER, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), cast target);
 				#else
-				event = MouseEvent.__create(MouseEvent.MOUSE_OVER, button, __mouseX, __mouseY, target
-				.__globalToLocal(targetPoint, localPoint), cast target);
+				event = MouseEvent.__create(MouseEvent.MOUSE_OVER, button, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), cast target);
 				#end
 
 				__dispatchStack(event, stack);

@@ -1,7 +1,6 @@
 package openfl.events;
 
 #if !flash
-
 import openfl._internal.utils.EventPool;
 
 /**

@@ -97,7 +97,8 @@
 					"betweenAbstractVars"
 				],
 				"atleast": [],
-				"skipSingleLineTypes": true
+				"skipSingleLineTypes": true,
+				"severity": "IGNORE"
 			},
 			"type": "ExtendedEmptyLines"
 		},
@@ -124,7 +125,8 @@
 		},
 		{
 			"props": {
-				"max": 2200
+				"max": 2200,
+				"severity": "IGNORE"
 			},
 			"type": "FileLength"
 		},
@@ -190,7 +192,8 @@
 			"props": {
 				"maxPrivate": 55,
 				"maxPublic": 55,
-				"maxTotal": 105
+				"maxTotal": 105,
+				"severity": "IGNORE"
 			},
 			"type": "MethodCount"
 		},
@@ -274,7 +277,8 @@
 					"++",
 					"--"
 				],
-				"option": "eol"
+				"option": "eol",
+				"severity": "IGNORE"
 			},
 			"type": "OperatorWrap"
 		},
@@ -317,7 +321,8 @@
 		{
 			"props": {
 				"ignoreFormat": "^$",
-				"max": 11
+				"max": 11,
+				"severity": "IGNORE"
 			},
 			"type": "ReturnCount"
 		},
