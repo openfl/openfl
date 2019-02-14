@@ -505,6 +505,17 @@ class DisplayObjectContainer extends InteractiveObject
 		return null;
 	}
 
+	/**
+		Removes all `child` DisplayObject instances from the child list of the DisplayObjectContainer
+		instance. The `parent` property of the removed children is set to `null`, and the objects are
+		garbage collected if no other references to the children exist.
+
+		The garbage collector reallocates unused memory space. When a variable or object is no
+		longer actively referenced or stored somewhere, the garbage collector sweeps through and
+		wipes out the memory space it used to occupy if no other references to it exist.
+		@param	beginIndex	The beginning position. A value smaller than 0 throws a `RangeError`.
+		@param	endIndex	The ending position. A value smaller than 0 throws a `RangeError`.
+	**/
 	public function removeChildren(beginIndex:Int = 0, endIndex:Int = 0x7FFFFFFF):Void
 	{
 		if (endIndex == 0x7FFFFFFF)
@@ -586,6 +597,15 @@ class DisplayObjectContainer extends InteractiveObject
 		}
 	}
 
+	/**
+		Recursively stops the timeline execution of all MovieClips rooted at this object.
+
+		Child display objects belonging to a sandbox to which the excuting code does not
+		have access are ignored.
+
+		**Note:** Streaming media playback controlled via a NetStream object will not be
+		stopped.
+	**/
 	public function stopAllMovieClips():Void
 	{
 		__stopAllMovieClips();

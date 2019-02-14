@@ -168,7 +168,7 @@ import js.html.CSSStyleDeclaration;
 							**Note: **This event is not dispatched if the
 							display is not rendering. This is the case when the
 							content is either minimized or obscured.
- */
+**/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug

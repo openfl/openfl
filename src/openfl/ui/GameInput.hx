@@ -33,6 +33,7 @@ import lime.ui.GamepadButton;
 		__instances.push(this);
 	}
 
+	@SuppressWarnings("checkstyle:Dynamic")
 	public override function addEventListener(type:String, listener:Dynamic->Void, useCapture:Bool = false, priority:Int = 0,
 			useWeakReference:Bool = false):Void
 	{
