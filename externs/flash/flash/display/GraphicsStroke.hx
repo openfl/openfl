@@ -10,7 +10,7 @@ package flash.display;
 	public var pixelHinting:Bool;
 	public var scaleMode:LineScaleMode;
 	public var thickness:Float;
-	public function new(thickness:Float = Math.NaN, pixelHinting:Bool = false, ?scaleMode:LineScaleMode, ?caps:CapsStyle, ?joints:JointStyle,
+	public function new(thickness:Float = 0 /*NaN*/, pixelHinting:Bool = false, ?scaleMode:LineScaleMode, ?caps:CapsStyle, ?joints:JointStyle,
 		miterLimit:Float = 3, fill:IGraphicsFill = null);
 }
 #else
