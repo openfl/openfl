@@ -621,7 +621,7 @@ class URLStream extends EventDispatcher implements IDataInput
 	}
 
 	// Get & Set Methods
-	public function get_bytesAvailable():UInt
+	private function get_bytesAvailable():UInt
 	{
 		if (__data != null)
 		{
@@ -631,17 +631,17 @@ class URLStream extends EventDispatcher implements IDataInput
 		return 0;
 	}
 
-	public function get_connected():Bool
+	private function get_connected():Bool
 	{
 		return false;
 	}
 
-	public function get_endian():Endian
+	private function get_endian():Endian
 	{
 		return __data.endian;
 	}
 
-	public function set_endian(value:Endian):Endian
+	private function set_endian(value:Endian):Endian
 	{
 		return __data.endian = value;
 	}

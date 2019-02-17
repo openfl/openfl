@@ -20,12 +20,12 @@ class SWFProgressEvent extends Event
 		this.total = total;
 	}
 
-	public function get_progress():Float
+	private function get_progress():Float
 	{
 		return processed / total;
 	}
 
-	public function get_progressPercent():Float
+	private function get_progressPercent():Float
 	{
 		return Math.round(progress * 100);
 	}
