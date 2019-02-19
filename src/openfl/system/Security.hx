@@ -309,7 +309,7 @@ class Security
 							  application security sandbox cannot cross-script
 							  content in the application security sandbox.
 	**/
-	public static function allowDomain(?p1:Dynamic, ?p2:Dynamic, ?p3:Dynamic, ?p4:Dynamic, ?p5:Dynamic):Void {}
+	public static function allowDomain(p1:Dynamic = null, p2:Dynamic = null, p3:Dynamic = null, p4:Dynamic = null, p5:Dynamic = null):Void {}
 
 	/**
 		Lets SWF files and HTML files in the identified domains access objects
@@ -463,7 +463,7 @@ class Security
 							  cannot cross-script content in the application
 							  security sandbox.
 	**/
-	public static function allowInsecureDomain(?p1:Dynamic, ?p2:Dynamic, ?p3:Dynamic, ?p4:Dynamic, ?p5:Dynamic):Void {}
+	public static function allowInsecureDomain(p1:Dynamic = null, p2:Dynamic = null, p3:Dynamic = null, p4:Dynamic = null, p5:Dynamic = null):Void {}
 
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public static function duplicateSandboxBridgeInputArguments (toplevel:Dynamic, args:Array<Dynamic>):Array<Dynamic>;
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public static function duplicateSandboxBridgeOutputArgument (toplevel:Dynamic, arg:Dynamic):Dynamic;

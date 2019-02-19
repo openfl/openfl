@@ -335,13 +335,8 @@ class Matrix3D
 		]));
 	}
 
-	public function decompose(?orientationStyle:Orientation3D):Vector<Vector3D>
+	public function decompose(orientationStyle:Orientation3D = EULER_ANGLES):Vector<Vector3D>
 	{
-		if (orientationStyle == null)
-		{
-			orientationStyle = Orientation3D.EULER_ANGLES;
-		}
-
 		var vec = new Vector<Vector3D>();
 		var m = clone();
 		var mr = m.rawData.copy();
@@ -777,16 +772,11 @@ class Matrix3D
 		this.prepend(m);
 	}
 
-	public function recompose(components:Vector<Vector3D>, ?orientationStyle:Orientation3D):Bool
+	public function recompose(components:Vector<Vector3D>, orientationStyle:Orientation3D = EULER_ANGLES):Bool
 	{
 		if (components.length < 3 || components[2].x == 0 || components[2].y == 0 || components[2].z == 0)
 		{
 			return false;
-		}
-
-		if (orientationStyle == null)
-		{
-			orientationStyle = Orientation3D.EULER_ANGLES;
 		}
 
 		identity();

@@ -740,7 +740,7 @@ class Event
 		@return The name of your custom Event class and the String value of
 				your `...arguments` parameter.
 	**/
-	public function formatToString(className:String, ?p1:String, ?p2:String, ?p3:String, ?p4:String, ?p5:String):String
+	public function formatToString(className:String, p1:String = null, p2:String = null, p3:String = null, p4:String = null, p5:String = null):String
 	{
 		var parameters = [];
 		if (p1 != null) parameters.push(p1);

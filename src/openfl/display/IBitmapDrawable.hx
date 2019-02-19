@@ -24,7 +24,7 @@ interface IBitmapDrawable
 	@:noCompletion private function __renderGL(renderer:OpenGLRenderer):Void;
 	@:noCompletion private function __renderGLMask(renderer:OpenGLRenderer):Void;
 	@:noCompletion private function __update(transformOnly:Bool, updateChildren:Bool):Void;
-	@:noCompletion private function __updateTransforms(?overrideTransform:Matrix = null):Void;
+	@:noCompletion private function __updateTransforms(overrideTransform:Matrix = null):Void;
 	@:noCompletion private var __mask:DisplayObject;
 	@:noCompletion private var __scrollRect:Rectangle;
 }

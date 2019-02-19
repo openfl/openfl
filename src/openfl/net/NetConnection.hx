@@ -470,7 +470,7 @@ class NetConnection extends EventDispatcher
 							  "Restricting Networking APIs" in the
 							  _ActionScript 3.0 Developer's Guide_.
 	**/
-	public function connect(command:String, ?_, ?_, ?_, ?_, ?_):Void
+	public function connect(command:String, p1 = null, p2 = null, p3 = null, p4 = null, p5 = null):Void
 	{
 		if (command != null)
 		{

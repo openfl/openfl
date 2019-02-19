@@ -18,7 +18,7 @@ class EOFError extends IOError
 
 		@param message A string associated with the error object.
 	**/
-	public function new(?message:String, id:Int = 0)
+	public function new(message:String = null, id:Int = 0)
 	{
 		super("End of file was encountered");
 

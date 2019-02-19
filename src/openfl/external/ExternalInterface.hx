@@ -236,7 +236,7 @@ import openfl._internal.Lib;
 
 							  `openfl.system.Security.allowDomain(_sourceDomain_)`
 	**/
-	public static function call(functionName:String, ?p1:Dynamic, ?p2:Dynamic, ?p3:Dynamic, ?p4:Dynamic, ?p5:Dynamic):Dynamic
+	public static function call(functionName:String, p1:Dynamic = null, p2:Dynamic = null, p3:Dynamic = null, p4:Dynamic = null, p5:Dynamic = null):Dynamic
 	{
 		#if (js && html5)
 		var callResponse:Dynamic = null;

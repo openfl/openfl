@@ -21,7 +21,7 @@ class AVM1Movie extends DisplayObject
 
 	public function addCallback(functionName:String, closure:Function):Void {}
 
-	public function call(functionName:String, ?p1:Dynamic, ?p2:Dynamic, ?p3:Dynamic, ?p4:Dynamic, ?p5:Dynamic):Dynamic
+	public function call(functionName:String, p1:Dynamic = null, p2:Dynamic = null, p3:Dynamic = null, p4:Dynamic = null, p5:Dynamic = null):Dynamic
 	{
 		return null;
 	}
