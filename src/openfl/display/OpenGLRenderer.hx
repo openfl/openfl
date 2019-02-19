@@ -84,7 +84,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	@:noCompletion private var __values:Array<Float>;
 	@:noCompletion private var __width:Int;
 
-	@:noCompletion private function new(context:Context3D, ?defaultRenderTarget:BitmapData)
+	@:noCompletion private function new(context:Context3D, defaultRenderTarget:BitmapData = null)
 	{
 		super();
 

@@ -273,6 +273,9 @@ class TextEngine
 			#if lime
 			ascent = (font.ascender / font.unitsPerEM) * format.size;
 			descent = Math.abs((font.descender / font.unitsPerEM) * format.size);
+			#else
+			ascent = format.size;
+			descent = format.size * 0.185;
 			#end
 		}
 		else
@@ -655,6 +658,9 @@ class TextEngine
 				#if lime
 				ascent = (font.ascender / font.unitsPerEM) * currentFormat.size;
 				descent = Math.abs((font.descender / font.unitsPerEM) * currentFormat.size);
+				#else
+				ascent = currentFormat.size;
+				descent = currentFormat.size * 0.185;
 				#end
 			}
 			else

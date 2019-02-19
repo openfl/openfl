@@ -10,11 +10,11 @@ abstract Vector<T>(IVector<T>)
 	public var fixed(get, set):Bool;
 	public var length(get, set):Int;
 
-	public function new(?length:Int, ?fixed:Bool, ?array:Array<T>):Void;
+	public function new(length:Int = 0, fixed:Bool = false, array:Array<T> = null):Void;
 
-	public inline function concat(?a:Vector<T>):Vector<T>
+	public inline function concat(vec:Vector<T> = null):Vector<T>
 	{
-		return cast this.concat(cast a);
+		return cast this.concat(cast vec);
 	}
 
 	public inline function copy():Vector<T>
@@ -22,14 +22,14 @@ abstract Vector<T>(IVector<T>)
 		return cast this.copy();
 	}
 
-	@:arrayAccess public inline function get(index:Int):T
+	@:noCompletion @:dox(hide) @:arrayAccess public inline function get(index:Int):T
 	{
 		return this.get(index);
 	}
 
-	public inline function indexOf(x:T, ?from:Int = 0):Int
+	public inline function indexOf(searchElement:T, fromIndex:Int = 0):Int
 	{
-		return this.indexOf(x, from);
+		return this.indexOf(searchElement, fromIndex);
 	}
 
 	public inline function insertAt(index:Int, element:T):Void
@@ -47,9 +47,9 @@ abstract Vector<T>(IVector<T>)
 		return this.join(sep);
 	}
 
-	public inline function lastIndexOf(x:T, ?from:Int = null):Int
+	public inline function lastIndexOf(searchElement:T, fromIndex:Null<Int> = null):Int
 	{
-		return this.lastIndexOf(x, from);
+		return this.lastIndexOf(searchElement, fromIndex);
 	}
 
 	public inline function pop():Null<T>
@@ -57,9 +57,9 @@ abstract Vector<T>(IVector<T>)
 		return this.pop();
 	}
 
-	public inline function push(x:T):Int
+	public inline function push(value:T):Int
 	{
-		return this.push(x);
+		return this.push(value);
 	}
 
 	public inline function removeAt(index:Int):T
@@ -72,7 +72,7 @@ abstract Vector<T>(IVector<T>)
 		return cast this.reverse();
 	}
 
-	@:arrayAccess public inline function set(index:Int, value:T):T
+	@:noCompletion @:dox(hide) @:arrayAccess public inline function set(index:Int, value:T):T
 	{
 		return this.set(index, value);
 	}
@@ -82,19 +82,19 @@ abstract Vector<T>(IVector<T>)
 		return this.shift();
 	}
 
-	public inline function slice(?pos:Int, ?end:Int):Vector<T>
+	public inline function slice(startIndex:Int = 0, endIndex:Null<Int> = null):Vector<T>
 	{
-		return cast this.slice(pos, end);
+		return cast this.slice(startIndex, endIndex);
 	}
 
-	public inline function sort(f:T->T->Int):Void
+	public inline function sort(sortBehavior:T->T->Int):Void
 	{
-		this.sort(f);
+		this.sort(sortBehavior);
 	}
 
-	public inline function splice(pos:Int, len:Int):Vector<T>
+	public inline function splice(startIndex:Int, deleteCount:Int):Vector<T>
 	{
-		return cast this.splice(pos, len);
+		return cast this.splice(startIndex, deleteCount);
 	}
 
 	public inline function toString():String
@@ -102,9 +102,9 @@ abstract Vector<T>(IVector<T>)
 		return this != null ? this.toString() : null;
 	}
 
-	public inline function unshift(x:T):Void
+	public inline function unshift(value:T):Void
 	{
-		this.unshift(x);
+		this.unshift(value);
 	}
 
 	@:generic public inline static function ofArray<T>(a:Array<T>):Vector<T>
@@ -119,9 +119,9 @@ abstract Vector<T>(IVector<T>)
 		return vector;
 	}
 
-	public inline static function convert<T, U>(v:IVector<T>):IVector<U>
+	public inline static function convert<T, U>(vec:IVector<T>):IVector<U>
 	{
-		return cast v;
+		return cast vec;
 	}
 
 	@:to private static #if (!js && !flash) inline #end function toBoolVector<T:Bool>(t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):BoolVector
@@ -211,6 +211,7 @@ abstract Vector<T>(IVector<T>)
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:dox(hide) private class BoolVector implements IVector<Bool>
 {
 	public var fixed:Bool;
@@ -218,20 +219,20 @@ abstract Vector<T>(IVector<T>)
 
 	@:noCompletion private var __array:Array<Bool>;
 
-	public function new(?length:Int, ?fixed:Bool, ?array:Array<Bool>):Void
+	public function new(length:Int = 0, fixed:Bool = false, array:Array<Bool> = null):Void
 	{
 		if (array == null) array = new Array();
 		__array = array;
 
-		if (length != null && length > 0)
+		if (length > 0)
 		{
 			this.length = length;
 		}
 
-		this.fixed = (fixed == true);
+		this.fixed = fixed;
 	}
 
-	public function concat(?a:IVector<Bool>):IVector<Bool>
+	public function concat(a:IVector<Bool> = null):IVector<Bool>
 	{
 		if (a == null)
 		{
@@ -269,7 +270,7 @@ abstract Vector<T>(IVector<T>)
 		}
 	}
 
-	public function indexOf(x:Bool, ?from:Int = 0):Int
+	public function indexOf(x:Bool, from:Int = 0):Int
 	{
 		for (i in from...__array.length)
 		{
@@ -300,7 +301,7 @@ abstract Vector<T>(IVector<T>)
 		return __array.join(sep);
 	}
 
-	public function lastIndexOf(x:Bool, ?from:Int = null):Int
+	public function lastIndexOf(x:Bool, from:Null<Int> = null):Int
 	{
 		var i = (from == null || from >= __array.length) ? __array.length - 1 : from;
 
@@ -377,8 +378,9 @@ abstract Vector<T>(IVector<T>)
 		}
 	}
 
-	public function slice(?startIndex:Int = 0, ?endIndex:Int = 16777215):IVector<Bool>
+	public function slice(startIndex:Int = 0, endIndex:Null<Int> = null):IVector<Bool>
 	{
+		if (endIndex == null) endIndex = 16777215;
 		return new BoolVector(__array.slice(startIndex, endIndex));
 	}
 
@@ -452,6 +454,7 @@ abstract Vector<T>(IVector<T>)
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:dox(hide) private class FloatVector implements IVector<Float>
 {
 	public var fixed:Bool;
@@ -460,7 +463,7 @@ abstract Vector<T>(IVector<T>)
 	@:noCompletion private var __array:Array<Float>;
 
 	@SuppressWarnings("checkstyle:Dynamic")
-	public function new(?length:Int, ?fixed:Bool, ?array:Array<Dynamic>, forceCopy:Bool = false):Void
+	public function new(length:Int = 0, fixed:Bool = false, array:Array<Dynamic> = null, forceCopy:Bool = false):Void
 	{
 		if (forceCopy)
 		{
@@ -474,15 +477,15 @@ abstract Vector<T>(IVector<T>)
 			__array = cast array;
 		}
 
-		if (length != null && length > 0)
+		if (length > 0)
 		{
 			this.length = length;
 		}
 
-		this.fixed = (fixed == true);
+		this.fixed = fixed;
 	}
 
-	public function concat(?a:IVector<Float>):IVector<Float>
+	public function concat(a:IVector<Float> = null):IVector<Float>
 	{
 		if (a == null)
 		{
@@ -513,7 +516,7 @@ abstract Vector<T>(IVector<T>)
 		return __array[index];
 	}
 
-	public function indexOf(x:Float, ?from:Int = 0):Int
+	public function indexOf(x:Float, from:Int = 0):Int
 	{
 		for (i in from...__array.length)
 		{
@@ -544,7 +547,7 @@ abstract Vector<T>(IVector<T>)
 		return __array.join(sep);
 	}
 
-	public function lastIndexOf(x:Float, ?from:Int = null):Int
+	public function lastIndexOf(x:Float, from:Null<Int> = null):Int
 	{
 		var i = (from == null || from >= __array.length) ? __array.length - 1 : from;
 
@@ -621,8 +624,9 @@ abstract Vector<T>(IVector<T>)
 		}
 	}
 
-	public function slice(?startIndex:Int = 0, ?endIndex:Int = 16777215):IVector<Float>
+	public function slice(startIndex:Int = 0, endIndex:Null<Int> = null):IVector<Float>
 	{
+		if (endIndex == null) endIndex = 16777215;
 		return new FloatVector(__array.slice(startIndex, endIndex));
 	}
 
@@ -704,6 +708,7 @@ abstract Vector<T>(IVector<T>)
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:dox(hide) private class FunctionVector implements IVector<Function>
 {
 	public var fixed:Bool;
@@ -711,20 +716,20 @@ abstract Vector<T>(IVector<T>)
 
 	@:noCompletion private var __array:Array<Function>;
 
-	public function new(?length:Int, ?fixed:Bool, ?array:Array<Function>):Void
+	public function new(length:Int = 0, fixed:Bool = false, array:Array<Function> = null):Void
 	{
 		if (array == null) array = new Array();
 		__array = array;
 
-		if (length != null && length > 0)
+		if (length > 0)
 		{
 			this.length = length;
 		}
 
-		this.fixed = (fixed == true);
+		this.fixed = fixed;
 	}
 
-	public function concat(?a:IVector<Function>):IVector<Function>
+	public function concat(a:IVector<Function> = null):IVector<Function>
 	{
 		if (a == null)
 		{
@@ -762,7 +767,7 @@ abstract Vector<T>(IVector<T>)
 		}
 	}
 
-	public function indexOf(x:Function, ?from:Int = 0):Int
+	public function indexOf(x:Function, from:Int = 0):Int
 	{
 		for (i in from...__array.length)
 		{
@@ -793,7 +798,7 @@ abstract Vector<T>(IVector<T>)
 		return __array.join(sep);
 	}
 
-	public function lastIndexOf(x:Function, ?from:Int = null):Int
+	public function lastIndexOf(x:Function, from:Null<Int> = null):Int
 	{
 		var i = (from == null || from >= __array.length) ? __array.length - 1 : from;
 
@@ -870,8 +875,9 @@ abstract Vector<T>(IVector<T>)
 		}
 	}
 
-	public function slice(?startIndex:Int = 0, ?endIndex:Int = 16777215):IVector<Function>
+	public function slice(startIndex:Int = 0, endIndex:Null<Int> = null):IVector<Function>
 	{
+		if (endIndex == null) endIndex = 16777215;
 		return new FunctionVector(__array.slice(startIndex, endIndex));
 	}
 
@@ -946,6 +952,7 @@ abstract Vector<T>(IVector<T>)
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:dox(hide) private class IntVector implements IVector<Int>
 {
 	public var fixed:Bool;
@@ -953,20 +960,20 @@ abstract Vector<T>(IVector<T>)
 
 	@:noCompletion private var __array:Array<Int>;
 
-	public function new(?length:Int, ?fixed:Bool, ?array:Array<Int>):Void
+	public function new(length:Int = 0, fixed:Bool = false, array:Array<Int> = null):Void
 	{
 		if (array == null) array = new Array();
 		__array = array;
 
-		if (length != null && length > 0)
+		if (length > 0)
 		{
 			this.length = length;
 		}
 
-		this.fixed = (fixed == true);
+		this.fixed = fixed;
 	}
 
-	public function concat(?a:IVector<Int>):IVector<Int>
+	public function concat(a:IVector<Int> = null):IVector<Int>
 	{
 		if (a == null)
 		{
@@ -997,7 +1004,7 @@ abstract Vector<T>(IVector<T>)
 		return __array[index];
 	}
 
-	public function indexOf(x:Int, ?from:Int = 0):Int
+	public function indexOf(x:Int, from:Int = 0):Int
 	{
 		for (i in from...__array.length)
 		{
@@ -1028,7 +1035,7 @@ abstract Vector<T>(IVector<T>)
 		return __array.join(sep);
 	}
 
-	public function lastIndexOf(x:Int, ?from:Int = null):Int
+	public function lastIndexOf(x:Int, from:Null<Int> = null):Int
 	{
 		var i = (from == null || from >= __array.length) ? __array.length - 1 : from;
 
@@ -1105,8 +1112,9 @@ abstract Vector<T>(IVector<T>)
 		}
 	}
 
-	public function slice(?startIndex:Int = 0, ?endIndex:Int = 16777215):IVector<Int>
+	public function slice(startIndex:Int = 0, endIndex:Null<Int> = null):IVector<Int>
 	{
+		if (endIndex == null) endIndex = 16777215;
 		return new IntVector(__array.slice(startIndex, endIndex));
 	}
 
@@ -1180,6 +1188,7 @@ abstract Vector<T>(IVector<T>)
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:dox(hide) private class ObjectVector<T> implements IVector<T>
 {
 	public var fixed:Bool;
@@ -1188,7 +1197,7 @@ abstract Vector<T>(IVector<T>)
 	@:noCompletion private var __array:Array<T>;
 
 	@SuppressWarnings("checkstyle:Dynamic")
-	public function new(?length:Int, ?fixed:Bool, ?array:Array<Dynamic>, forceCopy:Bool = false):Void
+	public function new(length:Int = 0, fixed:Bool = false, array:Array<Dynamic> = null, forceCopy:Bool = false):Void
 	{
 		if (forceCopy)
 		{
@@ -1202,16 +1211,16 @@ abstract Vector<T>(IVector<T>)
 			__array = cast array;
 		}
 
-		if (length != null && length > 0)
+		if (length > 0)
 		{
 			this.length = length;
 		}
 
-		this.fixed = (fixed == true);
+		this.fixed = fixed;
 	}
 
 	@SuppressWarnings("checkstyle:Dynamic")
-	public function concat(?a:IVector<T>):IVector<T>
+	public function concat(a:IVector<T> = null):IVector<T>
 	{
 		if (a == null)
 		{
@@ -1242,7 +1251,7 @@ abstract Vector<T>(IVector<T>)
 		return __array[index];
 	}
 
-	public function indexOf(x:T, ?from:Int = 0):Int
+	public function indexOf(x:T, from:Int = 0):Int
 	{
 		for (i in from...__array.length)
 		{
@@ -1273,7 +1282,7 @@ abstract Vector<T>(IVector<T>)
 		return __array.join(sep);
 	}
 
-	public function lastIndexOf(x:T, ?from:Int = null):Int
+	public function lastIndexOf(x:T, from:Null<Int> = null):Int
 	{
 		var i = (from == null || from >= __array.length) ? __array.length - 1 : from;
 
@@ -1350,8 +1359,9 @@ abstract Vector<T>(IVector<T>)
 		}
 	}
 
-	public function slice(?startIndex:Int = 0, ?endIndex:Int = 16777215):IVector<T>
+	public function slice(startIndex:Int = 0, endIndex:Null<Int> = null):IVector<T>
 	{
+		if (endIndex == null) endIndex = 16777215;
 		return new ObjectVector(__array.slice(startIndex, endIndex));
 	}
 
@@ -1421,29 +1431,29 @@ abstract Vector<T>(IVector<T>)
 	}
 }
 
-@:dox(hide) private interface IVector<T>
+@:noCompletion @:dox(hide) private interface IVector<T>
 {
 	public var fixed:Bool;
 	public var length(get, set):Int;
-	public function concat(?a:IVector<T>):IVector<T>;
+	public function concat(vec:IVector<T> = null):IVector<T>;
 	public function copy():IVector<T>;
 	public function get(index:Int):T;
-	public function indexOf(x:T, ?from:Int = 0):Int;
+	public function indexOf(x:T, from:Int = 0):Int;
 	public function insertAt(index:Int, element:T):Void;
 	public function iterator():Iterator<T>;
 	public function join(sep:String = ","):String;
-	public function lastIndexOf(x:T, ?from:Int = null):Int;
+	public function lastIndexOf(x:T, from:Null<Int> = null):Int;
 	public function pop():Null<T>;
-	public function push(x:T):Int;
+	public function push(value:T):Int;
 	public function removeAt(index:Int):T;
 	public function reverse():IVector<T>;
 	public function set(index:Int, value:T):T;
 	public function shift():Null<T>;
-	public function slice(?pos:Int, ?end:Int):IVector<T>;
+	public function slice(startIndex:Int = 0, endIndex:Null<Int> = null):IVector<T>;
 	public function sort(f:T->T->Int):Void;
 	public function splice(pos:Int, len:Int):IVector<T>;
 	public function toString():String;
-	public function unshift(x:T):Void;
+	public function unshift(value:T):Void;
 }
 #else
 abstract Vector<T>(VectorData<T>) from VectorData<T>
@@ -1595,7 +1605,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 		}
 	}
 
-	public inline function slice(?startIndex:Int = 0, ?endIndex:Int = 16777215):Vector<T>
+	public inline function slice(startIndex:Int = 0, endIndex:Null<Int> = 16777215):Vector<T>
 	{
 		// return cast this.slice (pos, end);
 		return VectorData.ofArray(untyped __js__("Array.prototype.slice.call")(this, startIndex, endIndex));
@@ -1850,8 +1860,9 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 		}
 	}
 
-	public function slice(?startIndex:Int = 0, ?endIndex:Int = 16777215):VectorData<T>
+	public function slice(startIndex:Int = 0, endIndex:Null<Int> = null):VectorData<T>
 	{
+		if (endIndex == null) endIndex = 16777215;
 		return VectorData.ofArray(untyped __js__("Array.prototype.slice.call (this, startIndex, endIndex)"));
 	}
 
@@ -1947,7 +1958,8 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 // 	public function unshift (x:T):Void;
 // 	@:native("values") private function __values ():Iterator<T>;
 // }
-private class VectorIterator<T>
+@SuppressWarnings("checkstyle:FieldDocComment")
+@:dox(hide) private class VectorIterator<T>
 {
 	@:noCompletion private var index:Int;
 	@:noCompletion private var vector:Vector<T>;
@@ -2073,7 +2085,7 @@ abstract Vector<T>(VectorData<T>)
 		return this.shift();
 	}
 
-	public inline function slice(pos:Int = 0, end:Int = 16777215):Vector<T>
+	public inline function slice(pos:Int = 0, end:Null<Int> = 16777215):Vector<T>
 	{
 		return this.slice(pos, end);
 	}
@@ -2164,6 +2176,7 @@ abstract Vector<T>(VectorData<T>)
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:dox(hide) private class VectorDataIterator<T>
 {
 	@:noCompletion private var index:Int;
