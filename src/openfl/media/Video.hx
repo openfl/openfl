@@ -94,7 +94,7 @@ import lime.graphics.RenderContext;
 @:access(openfl.net.NetStream)
 class Video extends DisplayObject
 {
-	@:noCompletion private static inline var __vertexBufferStride:Int = 5;
+	@:noCompletion private static inline var VERTEX_BUFFER_STRIDE:Int = 5;
 
 	/**
 		Indicates the type of filter applied to decoded video as part of
@@ -376,19 +376,19 @@ class Video extends DisplayObject
 			var uvHeight = 1;
 			#end
 
-			__vertexBufferData = new Float32Array(__vertexBufferStride * 4);
+			__vertexBufferData = new Float32Array(VERTEX_BUFFER_STRIDE * 4);
 
 			__vertexBufferData[0] = width;
 			__vertexBufferData[1] = height;
 			__vertexBufferData[3] = uvWidth;
 			__vertexBufferData[4] = uvHeight;
-			__vertexBufferData[__vertexBufferStride + 1] = height;
-			__vertexBufferData[__vertexBufferStride + 4] = uvHeight;
-			__vertexBufferData[__vertexBufferStride * 2] = width;
-			__vertexBufferData[__vertexBufferStride * 2 + 3] = uvWidth;
+			__vertexBufferData[VERTEX_BUFFER_STRIDE + 1] = height;
+			__vertexBufferData[VERTEX_BUFFER_STRIDE + 4] = uvHeight;
+			__vertexBufferData[VERTEX_BUFFER_STRIDE * 2] = width;
+			__vertexBufferData[VERTEX_BUFFER_STRIDE * 2 + 3] = uvWidth;
 
 			__vertexBufferContext = context.__context;
-			__vertexBuffer = context.createVertexBuffer(3, __vertexBufferStride);
+			__vertexBuffer = context.createVertexBuffer(3, VERTEX_BUFFER_STRIDE);
 			__vertexBuffer.uploadFromTypedArray(__vertexBufferData);
 		}
 

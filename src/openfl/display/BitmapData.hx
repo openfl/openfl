@@ -129,7 +129,7 @@ import openfl._internal.renderer.context3D.stats.DrawCallContext;
 @:autoBuild(openfl._internal.macros.AssetsMacro.embedBitmap())
 class BitmapData implements IBitmapDrawable
 {
-	@:noCompletion private static inline var __vertexBufferStride:Int = 14;
+	@:noCompletion private static inline var VERTEX_BUFFER_STRIDE:Int = 14;
 	@:noCompletion private static var __supportsBGRA:Null<Bool> = null;
 	@:noCompletion private static var __textureFormat:Int;
 	@:noCompletion private static var __textureInternalFormat:Int;
@@ -1239,31 +1239,31 @@ class BitmapData implements IBitmapDrawable
 			// [ colorTransform.redOffset / 255, colorTransform.greenOffset / 255, colorTransform.blueOffset / 255, colorTransform.alphaOffset / 255 ]
 
 			#if lime
-			__vertexBufferData = new Float32Array(__vertexBufferStride * 4);
+			__vertexBufferData = new Float32Array(VERTEX_BUFFER_STRIDE * 4);
 
 			__vertexBufferData[0] = width;
 			__vertexBufferData[1] = height;
 			__vertexBufferData[3] = uvWidth;
 			__vertexBufferData[4] = uvHeight;
-			__vertexBufferData[__vertexBufferStride + 1] = height;
-			__vertexBufferData[__vertexBufferStride + 4] = uvHeight;
-			__vertexBufferData[__vertexBufferStride * 2] = width;
-			__vertexBufferData[__vertexBufferStride * 2 + 3] = uvWidth;
+			__vertexBufferData[VERTEX_BUFFER_STRIDE + 1] = height;
+			__vertexBufferData[VERTEX_BUFFER_STRIDE + 4] = uvHeight;
+			__vertexBufferData[VERTEX_BUFFER_STRIDE * 2] = width;
+			__vertexBufferData[VERTEX_BUFFER_STRIDE * 2 + 3] = uvWidth;
 
 			// for (i in 0...4) {
 
-			// 	__vertexBufferData[__vertexBufferStride * i + 5] = alpha;
+			// 	__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 5] = alpha;
 
 			// 	if (colorTransform != null) {
 
-			// 		__vertexBufferData[__vertexBufferStride * i + 6] = colorTransform.redMultiplier;
-			// 		__vertexBufferData[__vertexBufferStride * i + 7] = colorTransform.greenMultiplier;
-			// 		__vertexBufferData[__vertexBufferStride * i + 8] = colorTransform.blueMultiplier;
-			// 		__vertexBufferData[__vertexBufferStride * i + 9] = colorTransform.alphaMultiplier;
-			// 		__vertexBufferData[__vertexBufferStride * i + 10] = colorTransform.redOffset / 255;
-			// 		__vertexBufferData[__vertexBufferStride * i + 11] = colorTransform.greenOffset / 255;
-			// 		__vertexBufferData[__vertexBufferStride * i + 12] = colorTransform.blueOffset / 255;
-			// 		__vertexBufferData[__vertexBufferStride * i + 13] = colorTransform.alphaOffset / 255;
+			// 		__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 6] = colorTransform.redMultiplier;
+			// 		__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 7] = colorTransform.greenMultiplier;
+			// 		__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 8] = colorTransform.blueMultiplier;
+			// 		__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 9] = colorTransform.alphaMultiplier;
+			// 		__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 10] = colorTransform.redOffset / 255;
+			// 		__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 11] = colorTransform.greenOffset / 255;
+			// 		__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 12] = colorTransform.blueOffset / 255;
+			// 		__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 13] = colorTransform.alphaOffset / 255;
 
 			// 	}
 
@@ -1272,7 +1272,7 @@ class BitmapData implements IBitmapDrawable
 			// __vertexBufferAlpha = alpha;
 			// __vertexBufferColorTransform = colorTransform != null ? colorTransform.__clone () : null;
 			__vertexBufferContext = context.__context;
-			__vertexBuffer = context.createVertexBuffer(3, __vertexBufferStride);
+			__vertexBuffer = context.createVertexBuffer(3, VERTEX_BUFFER_STRIDE);
 
 			__vertexBuffer.uploadFromTypedArray(__vertexBufferData);
 			#end
@@ -1287,7 +1287,7 @@ class BitmapData implements IBitmapDrawable
 
 			// 	for (i in 0...4) {
 
-			// 		__vertexBufferData[__vertexBufferStride * i + 5] = alpha;
+			// 		__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 5] = alpha;
 
 			// 	}
 
@@ -1309,14 +1309,14 @@ class BitmapData implements IBitmapDrawable
 
 			// 		for (i in 0...4) {
 
-			// 			__vertexBufferData[__vertexBufferStride * i + 6] = colorTransform.redMultiplier;
-			// 			__vertexBufferData[__vertexBufferStride * i + 11] = colorTransform.greenMultiplier;
-			// 			__vertexBufferData[__vertexBufferStride * i + 16] = colorTransform.blueMultiplier;
-			// 			__vertexBufferData[__vertexBufferStride * i + 21] = colorTransform.alphaMultiplier;
-			// 			__vertexBufferData[__vertexBufferStride * i + 22] = colorTransform.redOffset / 255;
-			// 			__vertexBufferData[__vertexBufferStride * i + 23] = colorTransform.greenOffset / 255;
-			// 			__vertexBufferData[__vertexBufferStride * i + 24] = colorTransform.blueOffset / 255;
-			// 			__vertexBufferData[__vertexBufferStride * i + 25] = colorTransform.alphaOffset / 255;
+			// 			__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 6] = colorTransform.redMultiplier;
+			// 			__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 11] = colorTransform.greenMultiplier;
+			// 			__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 16] = colorTransform.blueMultiplier;
+			// 			__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 21] = colorTransform.alphaMultiplier;
+			// 			__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 22] = colorTransform.redOffset / 255;
+			// 			__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 23] = colorTransform.greenOffset / 255;
+			// 			__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 24] = colorTransform.blueOffset / 255;
+			// 			__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 25] = colorTransform.alphaOffset / 255;
 
 			// 		}
 
@@ -1324,14 +1324,14 @@ class BitmapData implements IBitmapDrawable
 
 			// 		for (i in 0...4) {
 
-			// 			__vertexBufferData[__vertexBufferStride * i + 6] = 1;
-			// 			__vertexBufferData[__vertexBufferStride * i + 11] = 1;
-			// 			__vertexBufferData[__vertexBufferStride * i + 16] = 1;
-			// 			__vertexBufferData[__vertexBufferStride * i + 21] = 1;
-			// 			__vertexBufferData[__vertexBufferStride * i + 22] = 0;
-			// 			__vertexBufferData[__vertexBufferStride * i + 23] = 0;
-			// 			__vertexBufferData[__vertexBufferStride * i + 24] = 0;
-			// 			__vertexBufferData[__vertexBufferStride * i + 25] = 0;
+			// 			__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 6] = 1;
+			// 			__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 11] = 1;
+			// 			__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 16] = 1;
+			// 			__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 21] = 1;
+			// 			__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 22] = 0;
+			// 			__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 23] = 0;
+			// 			__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 24] = 0;
+			// 			__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 25] = 0;
 
 			// 		}
 
@@ -2181,7 +2181,10 @@ class BitmapData implements IBitmapDrawable
 			|| sourceRect.x > sourceBitmapData.width
 			|| sourceRect.y > sourceBitmapData.height
 			|| destPoint.x > width
-			|| destPoint.y > height) return 0;
+			|| destPoint.y > height)
+		{
+			return 0;
+		}
 
 		#if lime
 		return image.threshold(sourceBitmapData.image, sourceRect.__toLimeRectangle(), destPoint.__toLimeVector2(), operation, threshold, color, mask,
@@ -2668,14 +2671,14 @@ class BitmapData implements IBitmapDrawable
 			__vertexBufferData[1] = height;
 			__vertexBufferData[3] = uvX + uvWidth;
 			__vertexBufferData[4] = uvY + uvHeight;
-			__vertexBufferData[__vertexBufferStride + 1] = height;
-			__vertexBufferData[__vertexBufferStride + 3] = uvX;
-			__vertexBufferData[__vertexBufferStride + 4] = uvY + uvHeight;
-			__vertexBufferData[__vertexBufferStride * 2] = width;
-			__vertexBufferData[__vertexBufferStride * 2 + 3] = uvX + uvWidth;
-			__vertexBufferData[__vertexBufferStride * 2 + 4] = uvY;
-			__vertexBufferData[__vertexBufferStride * 3 + 3] = uvX;
-			__vertexBufferData[__vertexBufferStride * 3 + 4] = uvY;
+			__vertexBufferData[VERTEX_BUFFER_STRIDE + 1] = height;
+			__vertexBufferData[VERTEX_BUFFER_STRIDE + 3] = uvX;
+			__vertexBufferData[VERTEX_BUFFER_STRIDE + 4] = uvY + uvHeight;
+			__vertexBufferData[VERTEX_BUFFER_STRIDE * 2] = width;
+			__vertexBufferData[VERTEX_BUFFER_STRIDE * 2 + 3] = uvX + uvWidth;
+			__vertexBufferData[VERTEX_BUFFER_STRIDE * 2 + 4] = uvY;
+			__vertexBufferData[VERTEX_BUFFER_STRIDE * 3 + 3] = uvX;
+			__vertexBufferData[VERTEX_BUFFER_STRIDE * 3 + 4] = uvY;
 
 			__vertexBuffer.uploadFromTypedArray(__vertexBufferData);
 		}

@@ -53,11 +53,11 @@ import lime.math.ColorMatrix;
 #end
 class ColorTransform
 {
-	@:noCompletion private static var __pool:ObjectPool<ColorTransform> = new ObjectPool<ColorTransform>(function() return new ColorTransform(), function(ct) ct
-		.__identity());
 	#if lime
 	@:noCompletion private static var __limeColorMatrix:Float32Array;
 	#end
+	@:noCompletion private static var __pool:ObjectPool<ColorTransform> = new ObjectPool<ColorTransform>(function() return new ColorTransform(), function(ct) ct
+		.__identity());
 
 	/**
 		A decimal value that is multiplied with the alpha transparency channel

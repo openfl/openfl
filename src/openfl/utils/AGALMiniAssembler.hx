@@ -36,6 +36,7 @@ import openfl.Lib;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:ConstantName")
 class AGALMiniAssembler
 {
 	@:noCompletion private static var OPMAP:Map<String, OpCode> = new Map();

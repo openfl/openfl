@@ -261,7 +261,7 @@ import lime.utils.BytePointer;
 
 			uniform.location = gl.getUniformLocation(__glProgram, uniform.name);
 
-			var indexBracket = uniform.name.indexOf('[');
+			var indexBracket = uniform.name.indexOf("[");
 
 			if (indexBracket >= 0)
 			{

@@ -3,7 +3,7 @@ package openfl.events;
 #if !flash
 class VideoTextureEvent extends Event
 {
-	public static var RENDER_STATE:String = "renderState";
+	public static inline var RENDER_STATE:String = "renderState";
 
 	@:isVar public var colorSpace(default, null):String;
 	@:isVar public var status(default, null):String;

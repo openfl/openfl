@@ -13,7 +13,7 @@ import lime.ui.Gamepad;
 @:access(openfl.ui.GameInputControl)
 @:final class GameInputDevice
 {
-	public static var MAX_BUFFER_SIZE:Int = 32000;
+	public static inline var MAX_BUFFER_SIZE:Int = 32000;
 
 	/**
 		Enables or disables this device.

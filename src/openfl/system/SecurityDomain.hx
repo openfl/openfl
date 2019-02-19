@@ -11,6 +11,7 @@ package openfl.system;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:UnnecessaryConstructor")
 class SecurityDomain
 {
 	/**

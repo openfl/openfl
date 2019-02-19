@@ -58,11 +58,11 @@ import lime.math.Vector2;
 @:final class Context3D extends EventDispatcher
 {
 	public static var supportsVideoTexture(default, null):Bool = #if (js && html5) true #else false #end;
-	@:noCompletion private static var GL_DEPTH_STENCIL:Int = -1;
-	@:noCompletion private static var GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT:Int = -1;
-	@:noCompletion private static var GL_MAX_VIEWPORT_DIMS:Int = -1;
-	@:noCompletion private static var GL_TEXTURE_MAX_ANISOTROPY_EXT:Int = -1;
 	@:noCompletion private static var __driverInfo:String;
+	@:noCompletion private static var __glDepthStencil:Int = -1;
+	@:noCompletion private static var __glMaxTextureMaxAnisotropy:Int = -1;
+	@:noCompletion private static var __glMaxViewportDims:Int = -1;
+	@:noCompletion private static var __glTextureMaxAnisotropy:Int = -1;
 
 	public var backBufferHeight(default, null):Int = 0;
 	public var backBufferWidth(default, null):Int = 0;
@@ -117,19 +117,19 @@ import lime.math.Vector2;
 		#end
 		__programs = new Map<String, Program3D>();
 
-		if (GL_MAX_VIEWPORT_DIMS == -1)
+		if (__glMaxViewportDims == -1)
 		{
 			#if (js && html5)
-			GL_MAX_VIEWPORT_DIMS = gl.getParameter(gl.MAX_VIEWPORT_DIMS);
+			__glMaxViewportDims = gl.getParameter(gl.MAX_VIEWPORT_DIMS);
 			#else
-			GL_MAX_VIEWPORT_DIMS = 16384;
+			__glMaxViewportDims = 16384;
 			#end
 		}
 
-		maxBackBufferWidth = GL_MAX_VIEWPORT_DIMS;
-		maxBackBufferHeight = GL_MAX_VIEWPORT_DIMS;
+		maxBackBufferWidth = __glMaxViewportDims;
+		maxBackBufferHeight = __glMaxViewportDims;
 
-		if (GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT == -1)
+		if (__glMaxTextureMaxAnisotropy == -1)
 		{
 			var extension:Dynamic = gl.getExtension("EXT_texture_filter_anisotropic");
 
@@ -142,43 +142,43 @@ import lime.math.Vector2;
 
 			if (extension != null)
 			{
-				GL_TEXTURE_MAX_ANISOTROPY_EXT = extension.TEXTURE_MAX_ANISOTROPY_EXT;
-				GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT = gl.getParameter(extension.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
+				__glTextureMaxAnisotropy = extension.TEXTURE_MAX_ANISOTROPY_EXT;
+				__glMaxTextureMaxAnisotropy = gl.getParameter(extension.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
 			}
 			else
 			{
-				GL_TEXTURE_MAX_ANISOTROPY_EXT = 0;
-				GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT = 0;
+				__glTextureMaxAnisotropy = 0;
+				__glMaxTextureMaxAnisotropy = 0;
 			}
 		}
 
 		#if lime
-		if (GL_DEPTH_STENCIL == -1)
+		if (__glDepthStencil == -1)
 		{
 			#if (js && html5)
-			GL_DEPTH_STENCIL = gl.DEPTH_STENCIL;
+			__glDepthStencil = gl.DEPTH_STENCIL;
 			#else
 			if (__context.type == OPENGLES && Std.parseFloat(__context.version) >= 3)
 			{
-				GL_DEPTH_STENCIL = __context.gles3.DEPTH24_STENCIL8;
+				__glDepthStencil = __context.gles3.DEPTH24_STENCIL8;
 			}
 			else
 			{
 				var extension = gl.getExtension("OES_packed_depth_stencil");
 				if (extension != null)
 				{
-					GL_DEPTH_STENCIL = extension.DEPTH24_STENCIL8_OES;
+					__glDepthStencil = extension.DEPTH24_STENCIL8_OES;
 				}
 				else
 				{
 					extension = gl.getExtension("EXT_packed_depth_stencil");
 					if (extension != null)
 					{
-						GL_DEPTH_STENCIL = extension.DEPTH24_STENCIL8_EXT;
+						__glDepthStencil = extension.DEPTH24_STENCIL8_EXT;
 					}
 					else
 					{
-						GL_DEPTH_STENCIL = 0;
+						__glDepthStencil = 0;
 					}
 				}
 			}

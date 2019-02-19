@@ -267,11 +267,12 @@ class TextEngine
 		{
 			ascent = format.size * format.__ascent;
 			descent = format.size * format.__descent;
-
+		}
+		else if (#if lime font != null && font.unitsPerEM != 0 #else false #end)
+		{
 			#if lime
-			}
-			else if (font != null && font.unitsPerEM != 0) {ascent = (font.ascender / font.unitsPerEM) * format.size;
-				descent = Math.abs((font.descender / font.unitsPerEM) * format.size);
+			ascent = (font.ascender / font.unitsPerEM) * format.size;
+			descent = Math.abs((font.descender / font.unitsPerEM) * format.size);
 			#end
 		}
 		else
@@ -648,11 +649,12 @@ class TextEngine
 			{
 				ascent = currentFormat.size * currentFormat.__ascent;
 				descent = currentFormat.size * currentFormat.__descent;
-
+			}
+			else if (#if lime font != null && font.unitsPerEM != 0 #else false #end)
+			{
 				#if lime
-				}
-				else if (font != null && font.unitsPerEM != 0) {ascent = (font.ascender / font.unitsPerEM) * currentFormat.size;
-					descent = Math.abs((font.descender / font.unitsPerEM) * currentFormat.size);
+				ascent = (font.ascender / font.unitsPerEM) * currentFormat.size;
+				descent = Math.abs((font.descender / font.unitsPerEM) * currentFormat.size);
 				#end
 			}
 			else
@@ -919,11 +921,12 @@ class TextEngine
 			{
 				ascent = currentFormat.size * currentFormat.__ascent;
 				descent = currentFormat.size * currentFormat.__descent;
-
+			}
+			else if (#if lime font != null && font.unitsPerEM != 0 #else false #end)
+			{
 				#if lime
-				}
-				else if (font != null && font.unitsPerEM != 0) {ascent = (font.ascender / font.unitsPerEM) * currentFormat.size;
-					descent = Math.abs((font.descender / font.unitsPerEM) * currentFormat.size);
+				ascent = (font.ascender / font.unitsPerEM) * currentFormat.size;
+				descent = Math.abs((font.descender / font.unitsPerEM) * currentFormat.size);
 				#end
 			}
 			else

@@ -456,7 +456,8 @@ class CanvasGraphics
 		return ((x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1)) < 0;
 	}
 
-	private static function normalizeUVT(uvt:Vector<Float>, skipT:Bool = false):{max:Float, uvt:Vector<Float>} {
+	private static function normalizeUVT(uvt:Vector<Float>, skipT:Bool = false):NormalizedUVT
+	{
 		var max:Float = Math.NEGATIVE_INFINITY;
 		var tmp = Math.NEGATIVE_INFINITY;
 		var len = uvt.length;
@@ -1530,4 +1531,10 @@ class CanvasGraphics
 		}
 		#end
 	}
+}
+
+private typedef NormalizedUVT =
+{
+	max:Float,
+	uvt:Vector<Float>
 }

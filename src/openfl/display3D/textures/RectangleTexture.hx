@@ -87,7 +87,7 @@ import lime.graphics.Image;
 		{
 			var gl = __context.gl;
 
-			if (Context3D.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT != 0)
+			if (Context3D.__glMaxTextureMaxAnisotropy != 0)
 			{
 				var aniso = switch (state.filter)
 				{
@@ -98,12 +98,12 @@ import lime.graphics.Image;
 					default: 1;
 				}
 
-				if (aniso > Context3D.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT)
+				if (aniso > Context3D.__glMaxTextureMaxAnisotropy)
 				{
-					aniso = Context3D.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT;
+					aniso = Context3D.__glMaxTextureMaxAnisotropy;
 				}
 
-				gl.texParameterf(gl.TEXTURE_2D, Context3D.GL_TEXTURE_MAX_ANISOTROPY_EXT, aniso);
+				gl.texParameterf(gl.TEXTURE_2D, Context3D.__glTextureMaxAnisotropy, aniso);
 			}
 
 			return true;

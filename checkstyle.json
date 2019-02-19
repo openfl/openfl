@@ -4,7 +4,20 @@
 	"defaultSeverity": "INFO",
 	"baseDefines": [],
 	"version": 1,
-	"exclude": {},
+	"exclude": {
+		"all": [
+			"assets",
+			"externs",
+			"lib",
+			"node_modules",
+			"scripts",
+			"test"
+		],
+		"path": "RELATIVE_TO_PROJECT",
+		"FieldDocComment": [
+			"src/openfl/_internal"
+		]
+	},
 	"checks": [
 		{
 			"props": {},
@@ -17,7 +30,8 @@
 		{
 			"props": {
 				"policy": "aligned",
-				"allowSingleline": true
+				"allowSingleline": true,
+				"severity": "IGNORE"
 			},
 			"type": "ConditionalCompilation"
 		},
@@ -64,7 +78,9 @@
 			"type": "DocCommentStyle"
 		},
 		{
-			"props": {},
+			"props": {
+				"severity": "IGNORE"
+			},
 			"type": "Dynamic"
 		},
 		{
@@ -234,7 +250,8 @@
 				"bitwiseOpPolicy": "around",
 				"arithmeticOpPolicy": "around",
 				"compareOpPolicy": "around",
-				"arrowPolicy": "around"
+				"arrowPolicy": "around",
+				"severity": "IGNORE"
 			},
 			"type": "OperatorWhitespace"
 		},
@@ -434,7 +451,9 @@
 			"type": "TypeDocComment"
 		},
 		{
-			"props": {},
+			"props": {
+				"severity": "IGNORE"
+			},
 			"type": "UnnecessaryConstructor"
 		},
 		{
