@@ -982,12 +982,123 @@ class BitmapData implements IBitmapDrawable
 		Matrix.__pool.release(transform);
 	}
 
+	/**
+		Draws the `source` display object onto the bitmap image, using the Flash runtime
+		vector renderer. You can specify `matrix`, `colorTransform`, `blendMode`, and a
+		destination `clipRect` parameter to control how the rendering performs.
+		Optionally, you can specify whether the bitmap should be smoothed when scaled
+		(this works only if the source object is a BitmapData object).
+
+		**Note:** The `drawWithQuality()` method works exactly like the `draw()` method,
+		but instead of using the `Stage.quality` property to determine the quality of
+		vector rendering, you specify the `quality` parameter to the `drawWithQuality()`
+		method.
+
+		This method directly corresponds to how objects are drawn with the standard
+		vector renderer for objects in the authoring tool interface.
+
+		The source display object does not use any of its applied transformations for
+		this call. It is treated as it exists in the library or file, with no matrix
+		transform, no color transform, and no blend mode. To draw a display object
+		(such as a movie clip) by using its own transform properties, you can copy its
+		`transform` property object to the `transform` property of the Bitmap object that
+		uses the BitmapData object.
+
+		This method is supported over RTMP in Flash Player 9.0.115.0 and later and in
+		Adobe AIR. You can control access to streams on Flash Media Server in a
+		server-side script. For more information, see the `Client.audioSampleAccess` and
+		`Client.videoSampleAccess` properties in Server-Side ActionScript Language
+		Reference for Adobe Flash Media Server.
+
+		If the source object and (in the case of a Sprite or MovieClip object) all of
+		its child objects do not come from the same domain as the caller, or are not in
+		a content that is accessible to the caller by having called the
+		`Security.allowDomain()` method, a call to the `drawWithQuality()` throws a
+		SecurityError exception. This restriction does not apply to AIR content in the
+		application security sandbox.
+
+		There are also restrictions on using a loaded bitmap image as the source. A call
+		to the `drawWithQuality()` method is successful if the loaded image comes from the
+		same domain as the caller. Also, a cross-domain policy file on the image's server
+		can grant permission to the domain of the SWF content calling the
+		`drawWithQuality()` method. In this case, you must set the `checkPolicyFile` property
+		of a LoaderContext object, and use this object as the `context` parameter when
+		calling the `load()` method of the Loader object used to load the image. These
+		restrictions do not apply to AIR content in the application security sandbox.
+
+		On Windows, the `drawWithQuality()` method cannot capture SWF content embedded in an
+		HTML page in an HTMLLoader object in Adobe AIR.
+
+		The `drawWithQuality()` method cannot capture PDF content in Adobe AIR. Nor can it
+		capture or SWF content embedded in HTML in which the `wmode` attribute is set to
+		`"window"` in Adobe AIR.
+
+		@param	source	The display object or BitmapData object to draw to the BitmapData
+		object. (The DisplayObject and BitmapData classes implement the IBitmapDrawable
+		interface.)
+		@param	matrix	A Matrix object used to scale, rotate, or translate the coordinates
+		of the bitmap. If you do not want to apply a matrix transformation to the image,
+		set this parameter to an identity matrix, created with the default `new Matrix()`
+		constructor, or pass a `null` value.
+		@param	colorTransform	A ColorTransform object that you use to adjust the color
+		values of the bitmap. If no object is supplied, the bitmap image's colors are not
+		transformed. If you must pass this parameter but you do not want to transform the
+		image, set this parameter to a ColorTransform object created with the default
+		`new ColorTransform()` constructor.
+		@param	blendMode	A string value, from the flash.display.BlendMode class,
+		specifying the blend mode to be applied to the resulting bitmap.
+		@param	clipRect	A Rectangle object that defines the area of the source object
+		to draw. If you do not supply this value, no clipping occurs and the entire source
+		object is drawn.
+		@param	smoothing	A Boolean value that determines whether a BitmapData object is
+		smoothed when scaled or rotated, due to a scaling or rotation in the `matrix`
+		parameter. The smoothing parameter only applies if the `source` parameter is a
+		BitmapData object. With `smoothing` set to `false`, the rotated or scaled BitmapData
+		image can appear pixelated or jagged. For example, the following two images use the
+		same BitmapData object for the `source` parameter, but the `smoothing` parameter is
+		set to `true` on the left and `false` on the right:
+		![Two images: the left one with smoothing and the right one without smoothing.](/images/bitmapData_draw_smoothing.jpg)
+		Drawing a bitmap with `smoothing` set to `true` takes longer than doing so with
+		`smoothing` set to `false`.
+		@param	quality	Any of one of the StageQuality values. Selects the antialiasing
+		quality to be used when drawing vectors graphics.
+		@throws	ArgumentError	The source parameter is not a BitmapData or DisplayObject
+		object.
+		@throws	SecurityError	The source object and (in the case of a Sprite or MovieClip
+		object) all of its child objects do not come from the same domain as the caller,
+		or are not in a content that is accessible to the caller by having called the
+		`Security.allowDomain()` method. This restriction does not apply to AIR content
+		in the application security sandbox.
+		@throws	ArgumentError	The source is `null` or not a valid IBitmapDrawable object.
+	**/
 	public function drawWithQuality(source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null,
 			clipRect:Rectangle = null, smoothing:Bool = false, quality:StageQuality = null):Void
 	{
 		draw(source, matrix, colorTransform, blendMode, clipRect, quality != LOW ? smoothing : false);
 	}
 
+	/**
+		Compresses this BitmapData object using the selected compressor algorithm and
+		returns a new ByteArray object. Optionally, writes the resulting data to the
+		specified ByteArray. The `compressor` argument specifies the encoding algorithm,
+		and can be PNGEncoderOptions, JPEGEncoderOptions, or JPEGXREncoderOptions.
+
+		The following example compresses a BitmapData object using the JPEGEncoderOptions:
+
+		```haxe
+		// Compress a BitmapData object as a JPEG file.
+		var bitmapData:BitmapData = new BitmapData(640,480,false,0x00FF00);
+		var byteArray:ByteArray = new ByteArray();
+		bitmapData.encode(new Rectangle(0,0,640,480), new openfl.display.JPEGEncoderOptions(), byteArray);
+		```
+
+		@param	rect	The area of the BitmapData object to compress.
+		@param	compressor	The compressor type to use. Valid values are:
+		flash.display.PNGEncoderOptions, flash.display.JPEGEncoderOptions, and
+		flash.display.JPEGXREncoderOptions.
+		@param	byteArray	The output ByteArray to hold the encoded image.
+		@return	A ByteArray containing the encoded image.
+	**/
 	public function encode(rect:Rectangle, compressor:Object, byteArray:ByteArray = null):ByteArray
 	{
 		#if lime
@@ -1582,7 +1693,6 @@ class BitmapData implements IBitmapDrawable
 		Generates a vector array from a rectangular region of pixel data. Returns
 		a Vector object of unsigned integers(a 32-bit unmultiplied pixel value)
 		for the specified rectangle.
-
 		@param rect A rectangular area in the current BitmapData object.
 		@return A Vector representing the given Rectangle.
 		@throws TypeError The rect is null.
@@ -1601,6 +1711,15 @@ class BitmapData implements IBitmapDrawable
 		return result;
 	}
 
+	/**
+		Computes a 256-value binary number histogram of a BitmapData object. This method
+		returns a Vector object containing four Vector<Float> instances (four Vector
+		objects that contain Float objects). The four Vector instances represent the
+		red, green, blue and alpha components in order. Each Vector instance contains
+		256 values that represent the population count of an individual component value,
+		from 0 to 255.
+		@param	hRect	The area of the BitmapData object to use.
+	**/
 	public function histogram(hRect:Rectangle = null):Array<Array<Int>>
 	{
 		var rect = hRect != null ? hRect : new Rectangle(0, 0, width, height);
@@ -1615,6 +1734,37 @@ class BitmapData implements IBitmapDrawable
 		return result;
 	}
 
+	/**
+		Performs pixel-level hit detection between one bitmap image and a point,
+		rectangle, or other bitmap image. A hit is defined as an overlap of a point or
+		rectangle over an opaque pixel, or two overlapping opaque pixels. No stretching,
+		rotation, or other transformation of either object is considered when the hit test
+		is performed.
+
+		If an image is an opaque image, it is considered a fully opaque rectangle for this
+		method. Both images must be transparent images to perform pixel-level hit testing
+		that considers transparency. When you are testing two transparent images, the alpha
+		threshold parameters control what alpha channel values, from 0 to 255, are
+		considered opaque.
+
+		@param	firstPoint	A position of the upper-left corner of the BitmapData image
+		in an arbitrary coordinate space. The same coordinate space is used in defining
+		the secondBitmapPoint parameter.
+		@param	firstAlphaThreshold	The smallest alpha channel value that is considered
+		opaque for this hit test.
+		@param	secondObject	A Rectangle, Point, Bitmap, or BitmapData object.
+		@param	secondBitmapDataPoint	A point that defines a pixel location in the
+		second BitmapData object. Use this parameter only when the value of `secondObject`
+		is a BitmapData object.
+		@param	secondAlphaThreshold	The smallest alpha channel value that is
+		considered opaque in the second BitmapData object. Use this parameter only when
+		the value of `secondObject` is a BitmapData object and both BitmapData objects
+		are transparent.
+		@return	A value of `true` if a hit occurs; otherwise, `false`.
+		@throws	ArgumentError	The `secondObject` parameter is not a Point, Rectangle,
+		Bitmap, or BitmapData object.
+		@throws	TypeError	The `firstPoint` is `null`.
+	**/
 	public function hitTest(firstPoint:Point, firstAlphaThreshold:Int, secondObject:Object, secondBitmapDataPoint:Point = null, secondAlphaThreshold:Int = 1):Bool
 	{
 		if (!readable) return false;
@@ -1793,6 +1943,43 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function lock():Void {}
 
+	/**
+		Performs per-channel blending from a source image to a destination image. For
+		each channel and each pixel, a new value is computed based on the channel
+		values of the source and destination pixels. For example, in the red channel,
+		the new value is computed as follows (where `redSrc` is the red channel value
+		for a pixel in the source image and `redDest` is the red channel value at the
+		corresponding pixel of the destination image):
+
+		```haxe
+		redDest = [(redSrc * redMultiplier) + (redDest * (256 - redMultiplier))] / 256;
+		```
+
+		The `redMultiplier`, `greenMultiplier`, `blueMultiplier`, and `alphaMultiplier`
+		values are the multipliers used for each color channel. Use a hexadecimal
+		value ranging from 0 to 0x100 (256) where 0 specifies the full value from the
+		destination is used in the result, 0x100 specifies the full value from the
+		source is used, and numbers in between specify a blend is used (such as 0x80
+		for 50%).
+
+		@param	sourceBitmapData	The input bitmap image to use. The source image can
+		be a different BitmapData object, or it can refer to the current BitmapData
+		object.
+		@param	sourceRect	A rectangle that defines the area of the source image to use
+		as input.
+		@param	destPoint	The point within the destination image (the current
+		BitmapData instance) that corresponds to the upper-left corner of the source
+		rectangle.
+		@param	redMultiplier	A hexadecimal uint value by which to multiply the red
+		channel value.
+		@param	greenMultiplier	A hexadecimal uint value by which to multiply the green
+		channel value.
+		@param	blueMultiplier	A hexadecimal uint value by which to multiply the blue
+		channel value.
+		@param	alphaMultiplier	A hexadecimal uint value by which to multiply the alpha
+		transparency value.
+		@throws	TypeError	The `sourceBitmapData`, `sourceRect` or `destPoint` are `null`.
+	**/
 	public function merge(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, redMultiplier:UInt, greenMultiplier:UInt, blueMultiplier:UInt,
 			alphaMultiplier:UInt):Void
 	{
@@ -1887,6 +2074,46 @@ class BitmapData implements IBitmapDrawable
 		}
 	}
 
+	/**
+		Remaps the color channel values in an image that has up to four arrays of
+		color palette data, one for each channel.
+
+		Flash runtimes use the following steps to generate the resulting image:
+
+		1. After the red, green, blue, and alpha values are computed, they are added
+		together using standard 32-bit-integer arithmetic.
+		2. The red, green, blue, and alpha channel values of each pixel are extracted
+		into separate 0 to 255 values. These values are used to look up new color
+		values in the appropriate array: `redArray`, `greenArray`, `blueArray`, and
+		`alphaArray`. Each of these four arrays should contain 256 values.
+		3. After all four of the new channel values are retrieved, they are combined
+		into a standard ARGB value that is applied to the pixel.
+
+		Cross-channel effects can be supported with this method. Each input array can
+		contain full 32-bit values, and no shifting occurs when the values are added
+		together. This routine does not support per-channel clamping.
+
+		If no array is specified for a channel, the color channel is copied from the
+		source image to the destination image.
+
+		You can use this method for a variety of effects such as general palette mapping
+		(taking one channel and converting it to a false color image). You can also use
+		this method for a variety of advanced color manipulation algorithms, such as
+		gamma, curves, levels, and quantizing.
+
+		@param	sourceBitmapData	The input bitmap image to use. The source image can
+		be a different BitmapData object, or it can refer to the current BitmapData
+		instance.
+		@param	sourceRect	A rectangle that defines the area of the source image to use
+		as input.
+		@param	destPoint	The point within the destination image (the current BitmapData
+		object) that corresponds to the upper-left corner of the source rectangle.
+		@param	redArray	If `redArray` is not `null`, `red = redArray[source red value] else red = source rect value`.
+		@param	greenArray	If `greenArray` is not `null`, `green = greenArray[source green value] else green = source green value`.
+		@param	blueArray	If `blueArray` is not `null, `blue = blueArray[source blue value] else blue = source blue value`.
+		@param	alphaArray	If `alphaArray` is not `null, `alpha = alphaArray[source alpha value] else alpha = source alpha value`.
+		@throws	TypeError	The `sourceBitmapData`, `sourceRect` or `destPoint` are `null`.
+	**/
 	public function paletteMap(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, redArray:Array<Int> = null, greenArray:Array<Int> = null,
 			blueArray:Array<Int> = null, alphaArray:Array<Int> = null):Void
 	{

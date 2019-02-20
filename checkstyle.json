@@ -121,7 +121,7 @@
 		{
 			"props": {
 				"requireParams": false,
-				"fieldType": "FUNCTIONS",
+				"fieldType": "BOTH",
 				"requireReturn": false,
 				"ignoreOverride": true,
 				"tokens": [

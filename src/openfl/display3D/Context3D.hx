@@ -34,6 +34,95 @@ import lime.math.Rectangle as LimeRectangle;
 import lime.math.Vector2;
 #end
 
+/**
+	The Context3D class provides a context for rendering geometrically defined graphics.
+	A rendering context includes a drawing surface and its associated resources and
+	state. When possible, the rendering context uses the hardware graphics processing
+	unit (GPU). Otherwise, the rendering context uses software. (If rendering through
+	Context3D is not supported on a platform, the stage3Ds property of the Stage object
+	contains an empty list.)
+
+	The Context3D rendering context is a programmable pipeline that is very similar to
+	OpenGL ES 2, but is abstracted so that it is compatible with a range of hardware and
+	GPU interfaces. Although designed for 3D graphics, the rendering pipeline does not
+	mandate that the rendering is three dimensional. Thus, you can create a 2D renderer
+	by supplying the appropriate vertex and pixel fragment programs. In both the 3D and
+	2D cases, the only geometric primitive supported is the triangle.
+
+	Get an instance of the Context3D class by calling the requestContext3D() method of a
+	Stage3D object. A limited number of Context3D objects can exist per stage; one for
+	each Stage3D in the Stage.stage3Ds list. When the context is created, the Stage3D
+	object dispatches a context3DCreate event. A rendering context can be destroyed and
+	recreated at any time, such as when another application that uses the GPU gains
+	focus. Your code should anticipate receiving multiple context3DCreate events.
+	Position the rendering area on the stage using the x and y properties of the
+	associated Stage3D instance.
+
+	To render and display a scene (after getting a Context3D object), the following steps
+	are typical:
+
+	1. Configure the main display buffer attributes by calling `configureBackBuffer()`.
+	2. Create and initialize your rendering resources, including:
+	   * Vertex and index buffers defining the scene geometry
+	   * Vertex and pixel programs (shaders) for rendering the scene
+	   * Textures
+	3. Render a frame:
+	   * Set the render state as appropriate for an object or collection of objects in
+	   the scene.
+	   * Call the `drawTriangles()` method to render a set of triangles.
+	   * Change the rendering state for the next group of objects.
+	   * Call `drawTriangles()` to draw the triangles defining the objects.
+	   * Repeat until the scene is entirely rendered.
+	   * Call the `present()` method to display the rendered scene on the stage.
+
+	The following limits apply to rendering:
+
+	Resource limits:
+
+	| Resource | Number allowed | Total memory |
+	| --- | --- | --- |
+	| Vertex buffers | 4096 | 256 MB |
+	| Index buffers | 4096 | 128 MB |
+	| Programs | 4096 | 16 MB |
+	| Textures | 4096 | 128 MB |
+	| Cube textures | 4096 | 256 MB |
+
+	AGAL limits: 200 opcodes per program.
+
+	Draw call limits: 32,768 `drawTriangles()` calls for each `present()` call.
+
+	The following limits apply to textures:
+
+	Texture limits for AIR 32 bit:
+
+	| Texture | Maximum size | Total GPU memory |
+	| --- | --- | --- |
+	| Normal Texture (below Baseline extended) | 2048x2048 | 512 MB |
+	| Normal Texture (Baseline extended and above) | 4096x4096 | 512 MB |
+	| Rectangular Texture (below Baseline extended) | 2048x2048 | 512 MB |
+	| Rectangular Texture (Baseline extended and above) | 4096x4096 | 512 MB |
+	| Cube Texture | 1024x1024 | 256 MB |
+
+	Texture limits for AIR 64 bit (Desktop):
+
+	| Texture | Maximum size | Total GPU memory |
+	| --- | --- | --- |
+	| Normal Texture (below Baseline extended) | 2048x2048 | 512 MB |
+	| Normal Texture (Baseline extended to Standard) | 4096x4096 | 512 MB |
+	| Normal Texture (Standard extended and above) | 4096x4096 | 2048 MB |
+	| Rectangular Texture (below Baseline extended) | 2048x2048 | 512 MB |
+	| Rectangular Texture (Baseline extended to Standard) | 4096x4096 | 512 MB |
+	| Rectangular Texture (Standard extended and above) | 4096x4096 | 2048 MB |
+	| Cube Texture | 1024x1024 | 256 MB |
+
+	512 MB is the absolute limit for textures, including the texture memory required
+	for mipmaps. However, for Cube Textures, the memory limit is 256 MB.
+
+	You cannot create Context3D objects with the Context3D constructor. It is
+	constructed and available as a property of a Stage3D instance. The Context3D class
+	can be used on both desktop and mobile platforms, both when running in Flash Player
+	and AIR.
+**/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -57,21 +146,115 @@ import lime.math.Vector2;
 @:access(openfl.geom.Rectangle)
 @:final class Context3D extends EventDispatcher
 {
+	/**
+		Indicates if Context3D supports video texture.
+	**/
 	public static var supportsVideoTexture(default, null):Bool = #if (js && html5) true #else false #end;
+
+	/**
+		Specifies the height of the back buffer, which can be changed by a successful
+		call to the `configureBackBuffer()` method. The height may be modified when the
+		browser zoom factor changes if the `wantsBestResolutionOnBrowserZoom` parameter
+		is set to `true` in the last successful call to the `configureBackBuffer()`
+		method. The change in height can be detected by registering an event listener
+		for the browser zoom change event.
+	**/
+	public var backBufferHeight(default, null):Int = 0;
+
+	/**
+		Specifies the width of the back buffer, which can be changed by a successful
+		call to the `configureBackBuffer()` method. The width may be modified when the
+		browser zoom factor changes if the `wantsBestResolutionOnBrowserZoom` parameter
+		is set to `true` in the last successful call to the `configureBackBuffer()`
+		method. The change in width can be detected by registering an event listener
+		for the browser zoom change event.
+	**/
+	public var backBufferWidth(default, null):Int = 0;
+
+	/**
+		The type of graphics library driver used by this rendering context. Indicates
+		whether the rendering is using software, a DirectX driver, or an OpenGL driver.
+		Also indicates whether hardware rendering failed. If hardware rendering fails,
+		Flash Player uses software rendering for Stage3D and `driverInfo` contains one
+		of the following values:
+
+		* "Software Hw_disabled=userDisabled" - The Enable hardware acceleration
+		checkbox in the Adobe Flash Player Settings UI is not selected.
+		* "Software Hw_disabled=oldDriver" - There are known problems with the
+		hardware graphics driver. Updating the graphics driver may fix this problem.
+		* "Software Hw_disabled=unavailable" - Known problems with the hardware
+		graphics driver or hardware graphics initialization failure.
+		* "Software Hw_disabled=explicit" - The content explicitly requested software
+		rendering through requestContext3D.
+		* "Software Hw_disabled=domainMemory" - The content uses domainMemory, which
+		requires a license when used with Stage3D hardware rendering. Visit
+		adobe.com/go/fpl.
+	**/
+	public var driverInfo(default, null):String = "OpenGL (Direct blitting)";
+
+	/**
+		Specifies whether errors encountered by the renderer are reported to the
+		application.
+
+		When `enableErrorChecking` is `true`, the `clear()`, and `drawTriangles()`
+		methods are synchronous and can throw errors. When `enableErrorChecking`
+		is `false`, the default, the `clear()`, and `drawTriangles()` methods are
+		asynchronous and errors are not reported. Enabling error checking reduces
+		rendering performance. You should only enable error checking when debugging.
+	**/
+	public var enableErrorChecking(get, set):Bool;
+
+	/**
+		Specifies the maximum height of the back buffer. The inital value is the system
+		limit in the platform. The property can be set to a value smaller than or equal
+		to, but not greater than, the system limit. The property can be set to a value
+		greater than or equal to, but not smaller than, the minimum limit. The minimum
+		limit is a constant value, 32, when the back buffer is not configured. The
+		minimum limit will be the value of the `height` parameter in the last successful
+		call to the `configureBackBuffer()` method after the back buffer is configured.
+	**/
+	public var maxBackBufferHeight(default, null):Int;
+
+	/**
+		Specifies the maximum width of the back buffer. The inital value is the system
+		limit in the platform. The property can be set to a value smaller than or equal
+		to, but not greater than, the system limit. The property can be set to a value
+		greater than or equal to, but not smaller than, the minimum limit. The minimum
+		limit is a constant value, 32, when the back buffer is not configured. The
+		minimum limit will be the value of the width parameter in the last successful
+		call to the `configureBackBuffer()` method after the back buffer is configured.
+	**/
+	public var maxBackBufferWidth(default, null):Int;
+
+	/**
+		The feature-support profile in use by this Context3D object.
+	**/
+	public var profile(default, null):Context3DProfile = STANDARD;
+
+	/**
+		Returns the total GPU memory allocated by Stage3D data structures of an
+		application.
+
+		Whenever a GPU resource object is created, memory utilized is stored in
+		Context3D. This memory includes index buffers, vertex buffers,
+		textures (excluding video texture), and programs that were created through this
+		Context3D.
+
+		API totalGPUMemory returns the total memory consumed by the above resources to
+		the user. Default value returned is 0.The total GPU memory returned is in bytes.
+		The information is only provided in Direct mode on mobile, and in Direct and
+		GPU modes on desktop. (On desktop, using `<renderMode>gpu</renderMode>` will
+		fall back to `<renderMode>direct</renderMode>`)
+
+		This API can be used when the SWF version is 32 or later.
+	**/
+	public var totalGPUMemory(default, null):Int = 0;
+
 	@:noCompletion private static var __driverInfo:String;
 	@:noCompletion private static var __glDepthStencil:Int = -1;
 	@:noCompletion private static var __glMaxTextureMaxAnisotropy:Int = -1;
 	@:noCompletion private static var __glMaxViewportDims:Int = -1;
 	@:noCompletion private static var __glTextureMaxAnisotropy:Int = -1;
-
-	public var backBufferHeight(default, null):Int = 0;
-	public var backBufferWidth(default, null):Int = 0;
-	public var driverInfo(default, null):String = "OpenGL (Direct blitting)";
-	public var enableErrorChecking(get, set):Bool;
-	public var maxBackBufferHeight(default, null):Int;
-	public var maxBackBufferWidth(default, null):Int;
-	public var profile(default, null):Context3DProfile = STANDARD;
-	public var totalGPUMemory(default, null):Int = 0;
 
 	@:noCompletion private var gl:#if lime WebGLRenderContext #else Dynamic #end;
 	@:noCompletion private var __backBufferAntiAlias:Int;
@@ -225,6 +408,38 @@ import lime.math.Vector2;
 		#end
 	}
 
+	/**
+		Clears the color, depth, and stencil buffers associated with this Context3D
+		object and fills them with the specified values.
+
+		Set the `mask` parameter to specify which buffers to clear. Use the constants
+		defined in the Context3DClearMask class to set the `mask` parameter. Use the
+		bitwise OR operator, "|", to add multiple buffers to the mask (or use
+		Context3DClearMask.ALL). When rendering to the back buffer, the
+		`configureBackBuffer()` method must be called before any `clear()` calls.
+
+		**Note:** If you specify a parameter value outside the allowed range, Numeric
+		parameter values are silently clamped to the range zero to one. Likewise, if
+		stencil is greater than 0xff it is set to 0xff.
+
+		@param	red	the red component of the color with which to clear the color buffer,
+		in the range zero to one.
+		@param	green	the green component of the color with which to clear the color
+		buffer, in the range zero to one.
+		@param	blue	the blue component of the color with which to clear the color
+		buffer, in the range zero to one.
+		@param	alpha	the alpha component of the color with which to clear the color
+		buffer, in the range zero to one. The alpha component is not used for blending.
+		It is written to the buffer alpha directly.
+		@param	depth	the value with which to clear the depth buffer, in the range
+		zero to one.
+		@param	stencil	the 8-bit value with which to clear the stencil buffer, in a
+		range of 0x00 to 0xff.
+		@param	mask	specifies which buffers to clear.
+		@throws	Error	Object Disposed: If this Context3D object has been disposed by a calling
+		dispose() or because the underlying rendering hardware has been lost.
+		@throws	Error	3768: The Stage3D API may not be used during background execution.
+	**/
 	public function clear(red:Float = 0, green:Float = 0, blue:Float = 0, alpha:Float = 1, depth:Float = 1, stencil:UInt = 0,
 			mask:UInt = Context3DClearMask.ALL):Void
 	{
@@ -289,6 +504,59 @@ import lime.math.Vector2;
 		gl.clear(clearMask);
 	}
 
+	/**
+		Sets the viewport dimensions and other attributes of the rendering buffer.
+
+		Rendering is double-buffered. The back buffer is swapped with the visible,
+		front buffer when the `present()` method is called. The minimum size of the
+		buffer is 32x32 pixels. The maximum size of the back buffer is limited by the
+		device capabilities and can also be set by the user through the properties
+		`maxBackBufferWidth` and `maxBackBufferHeight`. Configuring the buffer is a
+		slow operation. Avoid changing the buffer size or attributes during normal
+		rendering operations.
+
+		@param	width	width in pixels of the buffer.
+		@param	height	height in pixels of the buffer.
+		@param	antiAlias	an integer value specifying the requested antialiasing
+		quality. The value correlates to the number of subsamples used when
+		antialiasing. Using more subsamples requires more calculations to be performed,
+		although the relative performance impact depends on the specific rendering
+		hardware. The type of antialiasing and whether antialiasing is performed at all is
+		dependent on the device and rendering mode. Antialiasing is not supported at all by
+		the software rendering context.
+		| --- | --- |
+		| 0 | No antialiasing |
+		| 2 | Minimal antialiasing |
+		| 4 | High-quality antialiasing |
+		| 16 | Very high-quality antialiasing |
+		@param	enableDepthAndStencil	`false` indicates no depth or stencil buffer is
+		created, `true` creates a depth and a stencil buffer. For an AIR 3.2 or later
+		application compiled with SWF version 15 or higher, if the `renderMode` element in
+		the application descriptor file is `direct`, then the `depthAndStencil` element in
+		the application descriptor file must have the same value as this argument. By
+		default, the value of the `depthAndStencil` element is `false`.
+		@param	wantsBestResolution	`true` indicates that if the device supports HiDPI
+		screens it will attempt to allocate a larger back buffer than indicated with the
+		`width` and `height` parameters. Since this add more pixels and potentially changes
+		the result of shader operations this is turned off by default. Use
+		`Stage.contentsScaleFactor` to determine by how much the native back buffer was
+		scaled up.
+		@param	wantsBestResolutionOnBrowserZoom	`true` indicates that the size of the
+		back buffer should increase in proportion to the increase in the browser zoom
+		factor. The setting of this value is persistent across multiple browser zooms.
+		The default value of the parameter is `false`. Set `maxBackBufferWidth` and
+		`maxBackBufferHeight` properties to limit the back buffer size increase. Use
+		`backBufferWidth` and `backBufferHeight` to determine the current size of the
+		back buffer.
+		@throws	Error	Object Disposed: if this Context3D object has been disposed by a
+		calling `dispose()` or because the underlying rendering hardware has been lost.
+		@throws	Error	Bad Input Size: The `width` or `height` parameter is either less
+		than the minimum back buffer allowed size or greater than the maximum back buffer
+		size allowed.
+		@throws	Error	3709: The `depthAndStencil` flag in the application descriptor
+		must match the `enableDepthAndStencil` Boolean passed to `configureBackBuffer()`
+		on the Context3D object.
+	**/
 	public function configureBackBuffer(width:Int, height:Int, antiAlias:Int, enableDepthAndStencil:Bool = true, wantsBestResolution:Bool = false,
 			wantsBestResolutionOnBrowserZoom:Bool = false):Void
 	{
