@@ -6,13 +6,39 @@ package openfl.display3D;
 import openfl._internal.utils.NullUtils;
 #end
 
+/**
+	Defines the values to use for specifying a texture format.
+**/
 @:enum abstract Context3DTextureFormat(Null<Int>)
 {
+	/**
+		16 bit, bgr packed as 5:6:5
+	**/
 	public var BGR_PACKED = 0;
+
+	/**
+		32 bit
+	**/
 	public var BGRA = 1;
+
+	/**
+		16 bit, bgra packed as 4:4:4:4
+	**/
 	public var BGRA_PACKED = 2;
+
+	/**
+		ATF (Adobe Texture Format)
+	**/
 	public var COMPRESSED = 3;
+
+	/**
+		ATF (Adobe Texture Format), with alpha
+	**/
 	public var COMPRESSED_ALPHA = 4;
+
+	/**
+		64 bit, rgba as 16:16:16:16
+	**/
 	public var RGBA_HALF_FLOAT = 5;
 
 	@:from private static function fromString(value:String):Context3DTextureFormat
@@ -58,6 +84,7 @@ import openfl._internal.utils.NullUtils;
 	#end
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract Context3DTextureFormat(String) from String to String
 {
 	public var BGR_PACKED = "bgrPacked565";

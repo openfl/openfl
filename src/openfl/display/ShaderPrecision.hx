@@ -71,6 +71,7 @@ package openfl.display;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract ShaderPrecision(String) from String to String
 {
 	public var FAST = "fast";

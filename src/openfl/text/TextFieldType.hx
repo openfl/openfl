@@ -40,6 +40,7 @@ package openfl.text;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract TextFieldType(String) from String to String
 {
 	public var DYNAMIC = "dynamic";

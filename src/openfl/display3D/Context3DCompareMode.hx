@@ -6,15 +6,50 @@ package openfl.display3D;
 import openfl._internal.utils.NullUtils;
 #end
 
+/**
+	Defines the values to use for specifying 3D buffer comparisons in the
+	`setDepthTest()` and `setStencilAction()` methods of a Context3D instance.
+**/
 @:enum abstract Context3DCompareMode(Null<Int>)
 {
+	/**
+		The comparison always evaluates as true.
+	**/
 	public var ALWAYS = 0;
+
+	/**
+		Equal (==).
+	**/
 	public var EQUAL = 1;
+
+	/**
+		Greater than (>).
+	**/
 	public var GREATER = 2;
+
+	/**
+		Greater than or equal (>=).
+	**/
 	public var GREATER_EQUAL = 3;
+
+	/**
+		Less than (<).
+	**/
 	public var LESS = 4;
+
+	/**
+		Less than or equal (<=).
+	**/
 	public var LESS_EQUAL = 5;
+
+	/**
+		The comparison never evaluates as true.
+	**/
 	public var NEVER = 6;
+
+	/**
+		Not equal (!=).
+	**/
 	public var NOT_EQUAL = 7;
 
 	@:from private static function fromString(value:String):Context3DCompareMode
@@ -64,6 +99,7 @@ import openfl._internal.utils.NullUtils;
 	#end
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract Context3DCompareMode(String) from String to String
 {
 	public var ALWAYS = "always";

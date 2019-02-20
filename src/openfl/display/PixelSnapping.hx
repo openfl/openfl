@@ -57,6 +57,7 @@ package openfl.display;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract PixelSnapping(String) from String to String
 {
 	public var ALWAYS = "always";

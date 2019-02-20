@@ -6,6 +6,10 @@ package openfl.display3D;
 import openfl._internal.utils.NullUtils;
 #end
 
+/**
+	Defines the values to use for specifying vertex buffers.
+**/
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract Context3DVertexBufferFormat(Null<Int>)
 {
 	public var BYTES_4 = 0;
@@ -55,6 +59,7 @@ import openfl._internal.utils.NullUtils;
 	#end
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract Context3DVertexBufferFormat(String) from String to String
 {
 	public var BYTES_4 = "bytes4";

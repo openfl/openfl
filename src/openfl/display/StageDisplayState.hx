@@ -47,6 +47,7 @@ package openfl.display;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract StageDisplayState(String) from String to String
 {
 	public var FULL_SCREEN = "fullScreen";

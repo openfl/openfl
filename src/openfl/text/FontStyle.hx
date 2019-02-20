@@ -61,6 +61,7 @@ package openfl.text;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract FontStyle(String) from String to String
 {
 	public var BOLD = "bold";

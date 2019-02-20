@@ -65,6 +65,7 @@ package openfl.display;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract TriangleCulling(String) from String to String
 {
 	public var NEGATIVE = "negative";

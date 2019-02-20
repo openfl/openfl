@@ -49,6 +49,7 @@ package openfl.system;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract TouchscreenType(String) from String to String
 {
 	public var FINGER = "finger";

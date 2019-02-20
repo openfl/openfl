@@ -456,6 +456,7 @@ abstract Dictionary<K, V>(IMap<K, V>)
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 abstract Dictionary<K, V>(Dynamic)
 {
 	public function new(weakKeys:Bool = false)
@@ -518,6 +519,7 @@ abstract Dictionary<K, V>(Dynamic)
 }
 #end
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 abstract Dictionary<K, V>(flash.utils.Dictionary) from flash.utils.Dictionary to flash.utils.Dictionary
 {
 	public function new(weakKeys:Bool = false)

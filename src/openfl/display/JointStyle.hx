@@ -64,6 +64,7 @@ package openfl.display;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract JointStyle(String) from String to String
 {
 	public var BEVEL = "bevel";

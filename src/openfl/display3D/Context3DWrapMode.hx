@@ -6,11 +6,33 @@ package openfl.display3D;
 import openfl._internal.utils.NullUtils;
 #end
 
+/**
+	Defines the values to use for sampler wrap mode
+**/
 @:enum abstract Context3DWrapMode(Null<Int>)
 {
+	/**
+		Clamp texture coordinates outside the 0..1 range.
+
+		The function is x = max(min(x,0),1)
+	**/
 	public var CLAMP = 0;
+
+	/**
+		Clamp in U axis but Repeat in V axis.
+	**/
 	public var CLAMP_U_REPEAT_V = 1;
+
+	/**
+		Repeat (tile) texture coordinates outside the 0..1 range.
+
+		The function is x = x<0?1.0-frac(abs(x)):frac(x)
+	**/
 	public var REPEAT = 2;
+
+	/**
+		Repeat in U axis but Clamp in V axis.
+	**/
 	public var REPEAT_U_CLAMP_V = 3;
 
 	@:from private static function fromString(value:String):Context3DWrapMode
@@ -52,6 +74,7 @@ import openfl._internal.utils.NullUtils;
 	#end
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract Context3DWrapMode(String) from String to String
 {
 	public var CLAMP = "clamp";

@@ -63,6 +63,23 @@ import openfl.Vector;
 		this.__graphicsDataType = PATH;
 	}
 
+	/**
+		Adds a new "cubicCurveTo" command to the commands vector and new coordinates to
+		the data vector.
+
+		@param	controlX1	A number that specifies the horizontal position of the first
+		control point relative to the registration point of the parent display object.
+		@param	controlY1	A number that specifies the vertical position of the first
+		control point relative to the registration point of the parent display object.
+		@param	controlX2	A number that specifies the horizontal position of the second
+		control point relative to the registration point of the parent display object.
+		@param	controlY2	A number that specifies the vertical position of the second
+		control point relative to the registration point of the parent display object.
+		@param	anchorX	A number that specifies the horizontal position of the next anchor
+		point relative to the registration point of the parent display object.
+		@param	anchorY	A number that specifies the vertical position of the next anchor
+		point relative to the registration point of the parent display object.
+	**/
 	public function cubicCurveTo(controlX1:Float, controlY1:Float, controlX2:Float, controlY2:Float, anchorX:Float, anchorY:Float):Void
 	{
 		if (commands == null) commands = new Vector();

@@ -50,6 +50,7 @@ package openfl.text;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract AntiAliasType(String) from String to String
 {
 	public var ADVANCED = "advanced";

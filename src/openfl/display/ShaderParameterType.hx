@@ -110,8 +110,26 @@ package openfl.display;
 		of four Number instances in ActionScript.
 	**/
 	public var MATRIX2X2 = 12;
+
+	/**
+		Indicates that the shader parameter is defined as a `float2x3` value,
+		equivalent to a 2-by-3 matrix. This matrix is represented as an Array
+		of six Float instances in Haxe.
+	**/
 	public var MATRIX2X3 = 13;
+
+	/**
+		Indicates that the shader parameter is defined as a `float2x4` value,
+		equivalent to a 2-by-4 matrix. This matrix is represented as an Array
+		of eight Float instances in Haxe.
+	**/
 	public var MATRIX2X4 = 14;
+
+	/**
+		Indicates that the shader parameter is defined as a `float3x2` value,
+		equivalent to a 3-by-2 matrix. This matrix is represented as an Array
+		of six Float instances in Haxe.
+	**/
 	public var MATRIX3X2 = 15;
 
 	/**
@@ -120,8 +138,26 @@ package openfl.display;
 		of nine Number instances in ActionScript.
 	**/
 	public var MATRIX3X3 = 16;
+
+	/**
+		Indicates that the shader parameter is defined as a `float3x4` value,
+		equivalent to a 3-by-4 matrix. This matrix is represented as an Array
+		of twelve Float instances in Haxe.
+	**/
 	public var MATRIX3X4 = 17;
+
+	/**
+		Indicates that the shader parameter is defined as a `float4x2` value,
+		equivalent to a 4-by-2 matrix. This matrix is represented as an Array
+		of eight Float instances in Haxe.
+	**/
 	public var MATRIX4X2 = 18;
+
+	/**
+		Indicates that the shader parameter is defined as a `float4x3` value,
+		equivalent to a 4-by-3 matrix. This matrix is represented as an Array
+		of twelve Float instances in Haxe.
+	**/
 	public var MATRIX4X3 = 19;
 
 	/**
@@ -190,6 +226,7 @@ package openfl.display;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract ShaderParameterType(String) from String to String
 {
 	public var BOOL = "bool";

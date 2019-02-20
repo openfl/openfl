@@ -62,6 +62,7 @@ package openfl.text;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract GridFitType(String) from String to String
 {
 	public var NONE = "none";

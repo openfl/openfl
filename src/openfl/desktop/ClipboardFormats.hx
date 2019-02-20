@@ -10,8 +10,19 @@ package openfl.desktop;
 **/
 @:enum abstract ClipboardFormats(Null<Int>)
 {
+	/**
+		HTML data.
+	**/
 	public var HTML_FORMAT = 0;
+
+	/**
+		Rich Text Format data.
+	**/
 	public var RICH_TEXT_FORMAT = 1;
+
+	/**
+		String data.
+	**/
 	public var TEXT_FORMAT = 2;
 
 	@:from private static function fromString(value:String):ClipboardFormats
@@ -37,6 +48,7 @@ package openfl.desktop;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract ClipboardFormats(String) from String to String
 {
 	public var HTML_FORMAT = "air:html";

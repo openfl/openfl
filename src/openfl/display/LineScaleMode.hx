@@ -79,6 +79,7 @@ package openfl.display;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract LineScaleMode(String) from String to String
 {
 	public var HORIZONTAL = "horizontal";

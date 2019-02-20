@@ -18,6 +18,11 @@ package openfl.ui;
 		simple tap) are interpreted as mouse events.
 	**/
 	public var GESTURE = 0;
+
+	/**
+		Specifies that all user contact with a touch-enabled device is interpreted as a
+		type of mouse event.
+	**/
 	public var NONE = 1;
 
 	/**
@@ -49,6 +54,7 @@ package openfl.ui;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract MultitouchInputMode(String) from String to String
 {
 	public var GESTURE = "gesture";

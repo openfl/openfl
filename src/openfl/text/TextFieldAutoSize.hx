@@ -60,6 +60,7 @@ package openfl.text;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract TextFieldAutoSize(String) from String to String
 {
 	public var CENTER = "center";

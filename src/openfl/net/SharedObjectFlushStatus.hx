@@ -41,6 +41,7 @@ package openfl.net;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract SharedObjectFlushStatus(String) from String to String
 {
 	public var FLUSHED = "flushed";

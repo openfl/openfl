@@ -46,6 +46,7 @@ package openfl.utils;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract CompressionAlgorithm(String) from String to String
 {
 	public var DEFLATE = "deflate";

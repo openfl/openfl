@@ -6,13 +6,40 @@ package openfl.display3D;
 import openfl._internal.utils.NullUtils;
 #end
 
+/**
+	Defines the values to use for sampler filter mode.
+**/
 @:enum abstract Context3DTextureFilter(Null<Int>)
 {
+	/**
+		Use anisotropic filter with radio 16 when upsampling textures
+	**/
 	public var ANISOTROPIC16X = 0;
+
+	/**
+		Use anisotropic filter with radio 2 when upsampling textures
+	**/
 	public var ANISOTROPIC2X = 1;
+
+	/**
+		Use anisotropic filter with radio 4 when upsampling textures
+	**/
 	public var ANISOTROPIC4X = 2;
+
+	/**
+		Use anisotropic filter with radio 8 when upsampling textures
+	**/
 	public var ANISOTROPIC8X = 3;
+
+	/**
+		Use linear interpolation when upsampling textures (gives a smooth, blurry look).
+	**/
 	public var LINEAR = 4;
+
+	/**
+		Use nearest neighbor sampling when upsampling textures (gives a pixelated,
+		sharp mosaic look).
+	**/
 	public var NEAREST = 5;
 
 	@:from private static function fromString(value:String):Context3DTextureFilter
@@ -58,6 +85,7 @@ import openfl._internal.utils.NullUtils;
 	#end
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract Context3DTextureFilter(String) from String to String
 {
 	public var ANISOTROPIC16X = "anisotropic16x";

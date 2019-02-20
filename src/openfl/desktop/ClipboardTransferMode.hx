@@ -12,9 +12,24 @@ package openfl.desktop;
 **/
 @:enum abstract ClipboardTransferMode(Null<Int>)
 {
+	/**
+		The Clipboard object should only return a copy.
+	**/
 	public var CLONE_ONLY = 0;
+
+	/**
+		The Clipboard object should return a copy if available and a reference if not.
+	**/
 	public var CLONE_PREFERRED = 1;
+
+	/**
+		The Clipboard object should only return a reference.
+	**/
 	public var ORIGINAL_ONLY = 2;
+
+	/**
+		The Clipboard object should return a reference if available and a copy if not.
+	**/
 	public var ORIGINAL_PREFERRED = 3;
 
 	@:from private static function fromString(value:String):ClipboardTransferMode
@@ -42,6 +57,7 @@ package openfl.desktop;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract ClipboardTransferMode(String) from String to String
 {
 	public var CLONE_ONLY = "cloneOnly";

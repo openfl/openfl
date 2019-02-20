@@ -45,6 +45,25 @@ package openfl.text;
 		back to device fonts.
 	**/
 	public var EMBEDDED = 1;
+
+	/**
+		Indicates that this is an embedded CFF font. Font outlines and a subset of
+		OpenType tables are embedded in the published SWF file.
+
+		Text that uses embedded CFF fonts is always displayed in the chosen font, whether
+		or not that font is installed on the playback system. Also, text that uses
+		embedded CFF fonts is always anti-aliased (smoothed) by Flash Player. You can
+		select the rendering mode and hinting for an embedded CFF font using the
+		`flash.text.engine.FontDescription.renderingMode` and
+		`flash.text.engine.FontDescription.cffHinting` properties.
+
+		One drawback to embedded CFF fonts is that they increase the size of the SWF file.
+		However, embedded CFF fonts are typically 20% to 30% smaller than regular
+		embedded fonts.
+
+		Fonts of type EMBEDDED_CFF can only be used by the `flash.text.engine` classes. A
+		TextField directed to use such a font will fail to render.
+	**/
 	public var EMBEDDED_CFF = 2;
 
 	@:from private static function fromString(value:String):FontType
@@ -70,6 +89,7 @@ package openfl.text;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract FontType(String) from String to String
 {
 	public var DEVICE = "device";

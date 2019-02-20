@@ -44,6 +44,7 @@ package openfl.printing;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract PrintJobOrientation(String) from String to String
 {
 	public var LANDSCAPE = "landscape";

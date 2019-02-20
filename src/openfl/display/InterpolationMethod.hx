@@ -71,6 +71,7 @@ package openfl.display;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract InterpolationMethod(String) from String to String
 {
 	public var LINEAR_RGB = "linearRGB";

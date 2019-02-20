@@ -47,6 +47,7 @@ package openfl.filters;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract BitmapFilterType(String) from String to String
 {
 	public var FULL = "full";

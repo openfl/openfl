@@ -59,6 +59,7 @@ package openfl.display;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract StageQuality(String) from String to String
 {
 	public var BEST = "best";

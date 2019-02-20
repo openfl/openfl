@@ -61,6 +61,7 @@ package openfl.display;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract SpreadMethod(String) from String to String
 {
 	public var PAD = "pad";

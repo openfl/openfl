@@ -63,6 +63,7 @@ package openfl.display;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract CapsStyle(String) from String to String
 {
 	public var NONE = "none";

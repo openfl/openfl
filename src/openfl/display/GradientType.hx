@@ -52,6 +52,7 @@ package openfl.display;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract GradientType(String) from String to String
 {
 	public var LINEAR = "linear";

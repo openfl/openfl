@@ -6,9 +6,26 @@ package openfl.display3D;
 import openfl._internal.utils.NullUtils;
 #end
 
+/**
+	Defines the values to use for specifying the Context3D render mode.
+**/
 @:enum abstract Context3DRenderMode(Null<Int>)
 {
+	/**
+		Automatically choose rendering engine.
+
+		A hardware-accelerated rendering engine is used if available on the current
+		device. Availability of hardware acceleration is influenced by the device
+		capabilites, the wmode when running under Flash Player, and the render mode when
+		running under AIR.
+	**/
 	public var AUTO = 0;
+
+	/**
+		Use software 3D rendering.
+
+		Software rendering is not available on mobile devices.
+	**/
 	public var SOFTWARE = 1;
 
 	@:from private static function fromString(value:String):Context3DRenderMode
@@ -46,6 +63,7 @@ import openfl._internal.utils.NullUtils;
 	#end
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract Context3DRenderMode(String) from String to String
 {
 	public var AUTO = "auto";

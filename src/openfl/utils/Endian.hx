@@ -104,6 +104,7 @@ import lime.system.Endian as LimeEndian;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract Endian(String) from String to String
 {
 	public var BIG_ENDIAN = "bigEndian";

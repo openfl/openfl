@@ -47,6 +47,7 @@ package openfl.net;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract URLLoaderDataFormat(String) from String to String
 {
 	public var BINARY = "binary";
