@@ -42,7 +42,7 @@ class Context3DShape
 
 				var shader = renderer.__initDisplayShader(cast shape.__worldShader);
 				renderer.setShader(shader);
-				renderer.applyBitmapData(graphics.__bitmap, renderer.__allowSmoothing);
+				renderer.applyBitmapData(graphics.__bitmap, true);
 				renderer.applyMatrix(renderer.__getMatrix(graphics.__worldTransform, AUTO));
 				renderer.applyAlpha(shape.__worldAlpha);
 				renderer.applyColorTransform(shape.__worldColorTransform);
@@ -82,7 +82,7 @@ class Context3DShape
 
 				var shader = renderer.__maskShader;
 				renderer.setShader(shader);
-				renderer.applyBitmapData(graphics.__bitmap, renderer.__allowSmoothing);
+				renderer.applyBitmapData(graphics.__bitmap, true);
 				renderer.applyMatrix(renderer.__getMatrix(graphics.__worldTransform, AUTO));
 				renderer.updateShader();
 

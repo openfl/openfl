@@ -578,7 +578,7 @@ class Context3DGraphics
 
 									renderer.__setShaderBuffer(shaderBuffer);
 									renderer.applyMatrix(uMatrix);
-									renderer.applyBitmapData(bitmap, false, repeat);
+									renderer.applyBitmapData(bitmap, false /* ignored */, repeat);
 									renderer.applyAlpha(graphics.__owner.__worldAlpha);
 									renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
 									// renderer.__updateShaderBuffer ();
@@ -588,7 +588,7 @@ class Context3DGraphics
 									shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(null);
 									renderer.setShader(shader);
 									renderer.applyMatrix(uMatrix);
-									renderer.applyBitmapData(bitmap, renderer.__allowSmoothing && smooth, repeat);
+									renderer.applyBitmapData(bitmap, smooth, repeat);
 									renderer.applyAlpha(graphics.__owner.__worldAlpha);
 									renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
 									renderer.updateShader();
@@ -650,7 +650,7 @@ class Context3DGraphics
 								var shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(null);
 								renderer.setShader(shader);
 								renderer.applyMatrix(renderer.__getMatrix(matrix, AUTO));
-								renderer.applyBitmapData(blankBitmapData, renderer.__allowSmoothing, repeat);
+								renderer.applyBitmapData(blankBitmapData, true, repeat);
 								#if lime
 								renderer.applyAlpha((color.a / 0xFF) * graphics.__owner.__worldAlpha);
 								#end
@@ -711,7 +711,7 @@ class Context3DGraphics
 								shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(null);
 								renderer.setShader(shader);
 								renderer.applyMatrix(uMatrix);
-								renderer.applyBitmapData(bitmap, renderer.__allowSmoothing && smooth, repeat);
+								renderer.applyBitmapData(bitmap, smooth, repeat);
 								renderer.applyAlpha(graphics.__owner.__worldAlpha);
 								renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
 								renderer.updateShader();

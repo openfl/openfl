@@ -279,7 +279,7 @@ class Context3DTilemap
 		{
 			var shader = renderer.__initDisplayShader(cast currentShader);
 			renderer.setShader(shader);
-			renderer.applyBitmapData(currentBitmapData, renderer.__allowSmoothing && tilemap.smoothing);
+			renderer.applyBitmapData(currentBitmapData, tilemap.smoothing);
 			renderer.applyMatrix(renderer.__getMatrix(tilemap.__renderTransform, AUTO));
 
 			if (tilemap.tileAlphaEnabled)

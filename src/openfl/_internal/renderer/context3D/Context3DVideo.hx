@@ -42,7 +42,7 @@ class Context3DVideo
 			renderer.setShader(shader);
 
 			// TODO: Support ShaderInput<Video>
-			renderer.applyBitmapData(null, renderer.__allowSmoothing, false);
+			renderer.applyBitmapData(null, true, false);
 			// context.__bindGLTexture2D (video.__getTexture (context));
 			// shader.uImage0.input = bitmap.__bitmapData;
 			// shader.uImage0.smoothing = renderer.__allowSmoothing && (bitmap.smoothing || renderer.__upscaled);
