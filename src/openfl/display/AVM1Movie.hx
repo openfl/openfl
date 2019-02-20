@@ -41,7 +41,7 @@ class AVM1Movie extends DisplayObject
 	@:noCompletion private function new()
 	{
 		super();
-		AVM1Movie throw new ArgumentError("Error #2012: AVM1Movie$ class cannot be instantiated.");
+		throw new ArgumentError("Error #2012: AVM1Movie$ class cannot be instantiated.");
 	}
 
 	/**
