@@ -83,4 +83,34 @@ class DictionaryTest
 
 		Assert.areEqual(floatDict[2 / 3], "overwritten");
 	}
+
+	@Test
+	public function testIteration():Void
+	{
+		// TODO: Test more key types
+
+		var dic:Dictionary<String, String> = new Dictionary<String, String>();
+
+		for (i in 0...3)
+		{
+			dic["key" + i] = "value" + i;
+		}
+
+		for (i in 0...3)
+		{
+			Assert.areEqual("value" + i, dic["key" + i]);
+		}
+
+		for (str in dic)
+		{
+			Assert.isNotNull(str);
+			Assert.isTrue(StringTools.startsWith(str, "key"));
+		}
+
+		for (str in dic.each())
+		{
+			Assert.isNotNull(str);
+			Assert.isTrue(StringTools.startsWith(str, "value"));
+		}
+	}
 }

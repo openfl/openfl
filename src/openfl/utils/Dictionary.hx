@@ -573,7 +573,7 @@ abstract Dictionary<K, V>(flash.utils.Dictionary) from flash.utils.Dictionary to
 				},
 				next: function()
 				{
-					return __this__.ref[__this__.it.next()];
+					return get(__this__.it.next());
 				}
 			}
 	}

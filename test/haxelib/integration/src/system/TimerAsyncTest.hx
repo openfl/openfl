@@ -5,6 +5,7 @@ import openfl.utils.Timer;
 
 class TimerAsyncTest
 {
+	#if test_timer
 	@AsyncTest public function timerFinished()
 	{
 		// TODO: Lower MS values make this test fails completely
@@ -58,4 +59,5 @@ class TimerAsyncTest
 
 		var m_timer = massive.munit.util.Timer.delay(handler, 250);
 	}
+	#end
 }
