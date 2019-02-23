@@ -546,6 +546,40 @@ import sys.io.Process;
 	}
 	#end
 
+	/**
+		Specifies whether the system supports multichannel audio of a specific type. The
+		class flash.media.AudioDecoder enumerates the possible types.
+
+		_AIR profile support:_ Multichannel audio is supported only on AIR for TV devices.
+		On all other devices, this method always returns `false`. See AIR Profile Support
+		for more information regarding API support across multiple profiles.
+
+		**Note:** When using one of the DTS audio codecs, scenarios exist in which
+		`hasMultiChannelAudio()` returns `true` but the DTS audio is not played. For
+		example, consider a Blu-ray player with an S/PDIF output, connected to an old
+		amplifier. The old amplifier does not support DTS, but S/PDIF has no protocol to
+		notify the Blu-ray player. If the Blu-ray player sends the DTS stream to the old
+		amplifier, the user hears nothing. Therefore, as a best practice when using DTS,
+		provide a user interface so that the user can indicate if no sound is playing.
+		Then, your application can revert to a different codec.
+
+		The following table shows the server string for each multichannel audio type:
+
+		| Multichannel audio type | Server string |
+		| --- | --- |
+		| AudioDecoder.DOLBY_DIGITAL | DD |
+		| AudioDecoder.DOLBY_DIGITAL_PLUS | DDP |
+		| AudioDecoder.DTS | DTS |
+		| AudioDecoder.DTS_EXPRESS | DTE |
+		| AudioDecoder.DTS_HD_HIGH_RESOLUTION_AUDIO | DTH |
+		| AudioDecoder.DTS_HD_MASTER_AUDIO | DTM |
+
+		@param	type	A String value representing a multichannel audio type. The valid
+		values are the constants defined in flash.media.AudioDecoder.
+		@returns	The Boolean value `true` if the system supports the multichannel audio
+		type passed in the `type` parameter. Otherwise, the return value is `false`.
+
+	**/
 	public static function hasMultiChannelAudio(type:String):Bool
 	{
 		return false;

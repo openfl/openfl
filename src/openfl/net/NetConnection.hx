@@ -50,7 +50,8 @@ import openfl.events.NetStatusEvent;
 #end
 class NetConnection extends EventDispatcher
 {
-	public static inline var CONNECT_SUCCESS:String = "NetConnection.Connect.Success";
+	@SuppressWarnings("checkstyle:FieldDocComment")
+	@:noCompletion @:dox(hide) public static inline var CONNECT_SUCCESS:String = "NetConnection.Connect.Success";
 
 	/**
 		The default object encoding for NetConnection objects. When an object

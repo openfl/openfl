@@ -605,6 +605,16 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		receiving focus or invoking the `requestSoftKeyboard()` method.
 	**/
 	public var softKeyboardRect:Rectangle;
+
+	/**
+		A list of Stage3D objects available for displaying 3-dimensional content.
+
+		You can use only a limited number of Stage3D objects at a time. The number of
+		available Stage3D objects depends on the platform and on the available hardware.
+
+		A Stage3D object draws in front of a StageVideo object and behind the OpenFL
+		display list.
+	**/
 	public var stage3Ds(default, null):Vector<Stage3D>;
 
 	/**

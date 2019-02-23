@@ -396,6 +396,45 @@ import js.html.CanvasRenderingContext2D;
 		__visible = sourceGraphics.__visible;
 	}
 
+	/**
+		Draws a cubic Bezier curve from the current drawing position to the specified
+		anchor point. Cubic Bezier curves consist of two anchor points and two control
+		points. The curve interpolates the two anchor points and curves toward the two
+		control points.
+
+		![cubic bezier](/images/cubic_bezier.png)
+
+		The four points you use to draw a cubic Bezier curve with the `cubicCurveTo()`
+		method are as follows:
+
+		* The current drawing position is the first anchor point.
+		* The `anchorX` and `anchorY` parameters specify the second anchor point.
+		* The `controlX1` and `controlY1` parameters specify the first control point.
+		* The `controlX2` and `controlY2` parameters specify the second control point.
+
+		If you call the `cubicCurveTo()` method before calling the `moveTo()` method, your
+		curve starts at position (0, 0).
+
+		If the `cubicCurveTo()` method succeeds, the OpenFL runtime sets the current
+		drawing position to (`anchorX`, `anchorY`). If the `cubicCurveTo()` method fails,
+		the current drawing position remains unchanged.
+
+		If your movie clip contains content created with the Flash drawing tools, the
+		results of calls to the `cubicCurveTo()` method are drawn underneath that content.
+
+		@param	controlX1	Specifies the horizontal position of the first control point
+		relative to the registration point of the parent display object.
+		@param	controlY1	Specifies the vertical position of the first control point
+		relative to the registration point of the parent display object.
+		@param	controlX2	Specifies the horizontal position of the second control point
+		relative to the registration point of the parent display object.
+		@param	controlY2	Specifies the vertical position of the second control point
+		relative to the registration point of the parent display object.
+		@param	anchorX	Specifies the horizontal position of the anchor point relative to
+		the registration point of the parent display object.
+		@param	anchorY	Specifies the vertical position of the anchor point relative to
+		the registration point of the parent display object.
+	**/
 	public function cubicCurveTo(controlX1:Float, controlY1:Float, controlX2:Float, controlY2:Float, anchorX:Float, anchorY:Float):Void
 	{
 		__inflateBounds(__positionX - __strokePadding, __positionY - __strokePadding);
@@ -470,7 +509,7 @@ import js.html.CanvasRenderingContext2D;
 	}
 
 	/**
-		Draws a curve using the current line style from the current drawing
+		Draws a quadratic curve using the current line style from the current drawing
 		position to(anchorX, anchorY) and using the control point that
 		(`controlX`, `controlY`) specifies. The current
 		drawing position is then set to(`anchorX`,
@@ -485,6 +524,8 @@ import js.html.CanvasRenderingContext2D;
 		The curve drawn is a quadratic Bezier curve. Quadratic Bezier curves
 		consist of two anchor points and one control point. The curve interpolates
 		the two anchor points and curves toward the control point.
+
+		![quadratic bezier](quad_bezier.png)
 
 		@param controlX A number that specifies the horizontal position of the
 						control point relative to the registration point of the
@@ -703,39 +744,37 @@ import js.html.CanvasRenderingContext2D;
 		coordinate location. The drawing direction is a value from the
 		GraphicsPathWinding class.
 
-		 Generally, drawings render faster with `drawPath()` than
+		Generally, drawings render faster with `drawPath()` than
 		with a series of individual `lineTo()` and
 		`curveTo()` methods.
 
-		 The `drawPath()` method uses a uses a floating computation
+		The `drawPath()` method uses a uses a floating computation
 		so rotation and scaling of shapes is more accurate and gives better
 		results. However, curves submitted using the `drawPath()`
 		method can have small sub-pixel alignment errors when used in conjunction
 		with the `lineTo()` and `curveTo()` methods.
 
-		 The `drawPath()` method also uses slightly different rules
+		The `drawPath()` method also uses slightly different rules
 		for filling and drawing lines. They are:
 
-
 		* When a fill is applied to rendering a path:
-
-		* A sub-path of less than 3 points is not rendered.(But note that the
-		stroke rendering will still occur, consistent with the rules for strokes
-		below.)
-		* A sub-path that isn't closed(the end point is not equal to the
-		begin point) is implicitly closed.
-
-
+			* A sub-path of less than 3 points is not rendered.(But note that the
+			stroke rendering will still occur, consistent with the rules for strokes
+			below.)
+			* A sub-path that isn't closed(the end point is not equal to the
+			begin point) is implicitly closed.
 		* When a stroke is applied to rendering a path:
+			* The sub-paths can be composed of any number of points.
+			* The sub-path is never implicitly closed.
 
-		* The sub-paths can be composed of any number of points.
-		* The sub-path is never implicitly closed.
-
-
-
-
-		@param winding Specifies the winding rule using a value defined in the
-					   GraphicsPathWinding class.
+		@param	commands	A Vector of integers representing drawing commands. The set
+		of accepted values is defined by the constants in the GraphicsPathCommand class.
+		@param	data	A Vector of Number instances where each pair of numbers is treated
+		as a coordinate location (an x, y pair). The x- and y-coordinate value pairs are
+		not Point objects; the data vector is a series of numbers where each group of two
+		numbers represents a coordinate location.
+		@param	winding	Specifies the winding rule using a value defined in the
+		GraphicsPathWinding class.
 	**/
 	public function drawPath(commands:Vector<Int>, data:Vector<Float>, winding:GraphicsPathWinding = GraphicsPathWinding.EVEN_ODD):Void
 	{
@@ -1419,12 +1458,64 @@ import js.html.CanvasRenderingContext2D;
 		__commands.moveTo(x, y);
 	}
 
+	@SuppressWarnings("checkstyle:FieldDocComment")
 	@:dox(hide) @:noCompletion public function overrideBlendMode(blendMode:BlendMode):Void
 	{
 		if (blendMode == null) blendMode = NORMAL;
 		__commands.overrideBlendMode(blendMode);
 	}
 
+	/**
+		Queries a Sprite or Shape object (and optionally, its children) for its vector
+		graphics content. The result is a Vector of IGraphicsData objects. Transformations
+		are applied to the display object before the query, so the returned paths are all
+		in the same coordinate space. Coordinates in the result data set are relative to
+		the stage, not the display object being sampled.
+
+		The result includes the following types of objects, with the specified limitations:
+
+		* GraphicsSolidFill
+		* GraphicsGradientFill
+			* All properties of the gradient fill are returned by `readGraphicsData()`.
+			* The matrix returned is close to, but not exactly the same as, the input
+			matrix.
+		* GraphicsEndFill
+		* GraphicsBitmapFill
+			* The matrix returned is close to, but not exactly the same as, the input
+			matrix.
+			* `repeat` is always `true`.
+			* `smooth` is always `false`.
+		* GraphicsStroke
+			* `thickness` is supported.
+			* `fill` supports GraphicsSolidFill, GraphicsGradientFill, and GraphicsBitmapFill
+			as described previously
+			* All other properties have default values.
+		* GraphicsPath
+			* The only supported commands are `MOVE_TO`, `CURVE_TO`, and `LINE_TO`.
+
+		The following visual elements and transformations can't be represented and are not
+		included in the result:
+
+		* Masks
+		* Text, with one exception: Static text that is defined with anti-alias type
+		"anti-alias for animation" is rendered as vector shapes so it is included in the
+		result.
+		* Shader fills
+		* Blend modes
+		* 9-slice scaling
+		* Triangles (created with the `drawTriangles()` method)
+		* Opaque background
+		* `scrollRect` settings
+		* 2.5D transformations
+		* Non-visible objects (objects whose `visible` property is `false`)
+
+		@param	recurse	whether the runtime should also query display object children of
+		the current display object. A recursive query can take more time and memory to
+		execute. The results are returned in a single flattened result set, not separated
+		by display object.
+		@returns	A Vector of IGraphicsData objects representing the vector graphics
+		content of the related display object
+	**/
 	public function readGraphicsData(recurse:Bool = true):Vector<IGraphicsData>
 	{
 		var graphicsData = new Vector<IGraphicsData>();

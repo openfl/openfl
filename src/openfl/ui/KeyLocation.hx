@@ -15,6 +15,12 @@ package openfl.ui;
 		on a PC 101 Key US keyboard.
 	**/
 	public var LEFT = 1;
+
+	/**
+		Indicates the key activation originated on the numeric keypad or with a virtual
+		key corresponding to the numeric keypad. Example: The 1 key on a PC 101 Key US
+		keyboard located on the numeric pad.
+	**/
 	public var NUM_PAD = 3;
 
 	/**

@@ -197,6 +197,14 @@ class Event
 		| `target` | The Socket or XMLSocket object that has established a network connection. |
 	**/
 	public static inline var CONNECT:String = "connect";
+
+	/**
+		The `Event.CONTEXT3D_CREATE` constant defines the value of the type property of a
+		`context3Dcreate` event object. This event is raised only by Stage3D objects in
+		response to either a call to `Stage3D.requestContext3D` or in response to an OS
+		triggered reset of the Context3D bound to the Stage3D object. Inspect the
+		`Stage3D.context3D` property to get the newly created Context3D object.
+	**/
 	public static inline var CONTEXT3D_CREATE:String = "context3DCreate";
 
 	/**
@@ -321,6 +329,23 @@ class Event
 		| `target` | Any DisplayObject instance with a listener registered for the `frameConstructed` event. |
 	**/
 	public static inline var FRAME_CONSTRUCTED:String = "frameConstructed";
+
+	/**
+		The `Event.FRAME_LABEL` constant defines the value of the type property of a
+		`frameLabel` event object.
+
+		**Note:** This event has neither a "capture phase" nor a "bubble phase", which
+		means that event listeners must be added directly to FrameLabel objects.
+
+		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The FrameLabel object that is actively processing the Event object with an event listener. |
+		| `target` | Any FrameLabel instance with a listener registered for the frameLabel event. |
+	**/
 	public static inline var FRAME_LABEL:String = "frameLabel";
 
 	/**
@@ -586,6 +611,14 @@ class Event
 		| `target` | The object whose tabIndex has changed. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
 	public static inline var TAB_INDEX_CHANGE:String = "tabIndexChange";
+
+	/**
+		The `Event.TEXTURE_READY` constant defines the value of the type property of a
+		`textureReady` event object. This event is dispatched by Texture and CubeTexture
+		objects to signal the completion of an asynchronous upload. Request an asynchronous
+		upload by using the `uploadCompressedTextureFromByteArray()` method on Texture or
+		CubeTexture. This event neither bubbles nor is cancelable.
+	**/
 	public static inline var TEXTURE_READY:String = "textureReady";
 	/**
 		The `Event.TEXT_INTERACTION_MODE_CHANGE` constant defines the value of

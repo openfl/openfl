@@ -14,6 +14,13 @@ package openfl.text;
 		`TextFormatAlign.CENTER`.
 	**/
 	public var CENTER = 0;
+
+	/**
+		Constant; aligns text to the end edge of a line. Same as right for left-to-right
+		languages and same as left for right-to-left languages.
+
+		The `END` constant may only be used with the StageText class.
+	**/
 	public var END = 1;
 
 	/**
@@ -33,6 +40,13 @@ package openfl.text;
 		`TextFormatAlign.RIGHT`.
 	**/
 	public var RIGHT = 4;
+
+	/**
+		Constant; aligns text to the start edge of a line. Same as left for left-to-right
+		languages and same as right for right-to-left languages.
+
+		The `START` constant may only be used with the StageText class.
+	**/
 	public var START = 5;
 
 	@:from private static function fromString(value:String):TextFormatAlign

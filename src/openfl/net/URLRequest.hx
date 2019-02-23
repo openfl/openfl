@@ -138,7 +138,6 @@ import haxe.macro.Compiler;
 		description of the `contentType` property.
 	**/
 	public var data:Dynamic;
-
 	/**
 		A string that uniquely identifies the signed Adobe platform component
 		to be stored to (or retrieved from) the Flash Player cache. An Adobe
@@ -176,8 +175,56 @@ import haxe.macro.Compiler;
 							  contains invalid (nonhexadecimal) characters.
 	**/
 	// @:noCompletion @:dox(hide) public var digest:String;
+
+	/**
+		Specifies whether redirects are to be followed (`true`) or not (`false`).
+
+		**Note:** The `FileReference.upload()`, `FileReference.download()`, and
+		`HTMLLoader.load()` methods do not support the `URLRequest.followRedirects` property.
+
+		The default value is `true`.
+	**/
 	public var followRedirects:Bool;
+
+	/**
+		Specifies the idle timeout value (in milliseconds) for this request.
+
+		The idle timeout is the amount of time the client waits for a response from the
+		server, after the connection is established, before abandoning the request.
+
+		**Note:** The `HTMLLoader.load()` method does not support the
+		`URLRequest.idleTimeout` property. The HTMLLoader class defines its own
+		`idleTimeout` property.
+
+		The default value is initialized from the `URLRequestDefaults.idleTimeout` property.
+	**/
 	public var idleTimeout:Float;
+
+	/**
+		Specifies whether the HTTP protocol stack should manage cookies for this request.
+		When `true`, cookies are added to the request and response cookies are remembered.
+		If `false`, cookies are not added to the request and response cookies are not
+		remembered, but users can manage cookies themselves by direct header manipulation.
+		**Note:** On Windows, you cannot add cookies to a URL request manually when
+		`manageCookies` is set to `true`. On other operating systems, adding cookies to a
+		request is permitted irrespective of whether `manageCookies` is set to `true` or
+		`false`. When permitted, you can add cookies to a request manually by adding a
+		URLRequestHeader object containing the cookie data to the `requestHeaders` array.
+
+		On Mac OS, cookies are shared with Safari. To clear cookies on Mac OS:
+
+		1. Open Safari.
+		2. Select Safari > Preferences, and click the Security panel.
+		3. Click the Show Cookies button.
+		4. Click the Reomove All button.
+
+		To clear cookies on Windows:
+
+		1. Open the Internet Properties control panel, and click the General tab.
+		2. Click the Delete Cookies button.
+
+		The default value is `true`.
+	**/
 	public var manageCookies:Bool;
 
 	/**
@@ -271,6 +318,18 @@ import haxe.macro.Compiler;
 		`rtmp://[2001:db8:ccc3:ffff:0:444d:555e:666f]:1935/test`
 	**/
 	public var url:String;
+
+	/**
+		Specifies the user-agent string to be used in the HTTP request.
+
+		The default value is the same user agent string that is used by OpenFL on native
+		targets, by the web browser or by Flash Player (depending upon the target).
+
+		**Note:** This property does not affect the user agent string when the
+		URLRequest object is used with the `load()` method of an HTMLLoader object. To set
+		the user agent string for an HTMLLoader object, set the `userAgent` property of the
+		HTMLLoader object or set the static `URLRequestDefaults.userAgent` property.
+	**/
 	public var userAgent:String;
 
 	/**

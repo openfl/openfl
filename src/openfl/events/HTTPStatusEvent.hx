@@ -66,6 +66,9 @@ class HTTPStatusEvent extends Event
 	**/
 	public static inline var HTTP_STATUS:String = "httpStatus";
 
+	/**
+		Indicates whether the request was redirected.
+	**/
 	public var redirected:Bool;
 
 	/**

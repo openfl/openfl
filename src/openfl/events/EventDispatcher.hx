@@ -451,6 +451,7 @@ class EventDispatcher implements IEventDispatcher
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:dox(hide) private class DispatchIterator
 {
 	public var active:Bool;
@@ -532,6 +533,7 @@ class EventDispatcher implements IEventDispatcher
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 private class Listener
 {
 	public var callback:Dynamic->Void;

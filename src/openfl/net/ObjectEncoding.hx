@@ -77,11 +77,7 @@ package openfl.net;
 		format, this may change. You can use this constant only if you're
 		not concerned about interoperability with previous versions.
 	**/
-	#if flash
-	public var DEFAULT = 3;
-	#else
-	public var DEFAULT = 10;
-	#end
+	public var DEFAULT = #if flash 3 #else 10 #end;
 }
 #else
 typedef ObjectEncoding = flash.net.ObjectEncoding;

@@ -270,6 +270,12 @@ class Rectangle
 		}
 	}
 
+	/**
+		Copies all of rectangle data from the source Rectangle object into the calling
+		Rectangle object.
+
+		@param	sourceRect	The Rectangle object from which to copy the data.
+	**/
 	public function copyFrom(sourceRect:Rectangle):Void
 	{
 		x = sourceRect.x;
@@ -457,6 +463,14 @@ class Rectangle
 		x = y = width = height = 0;
 	}
 
+	/**
+		Sets the members of Rectangle to the specified values
+
+		@param	xa	the values to set the rectangle to.
+		@param	ya
+		@param	widtha
+		@param	heighta
+	**/
 	public function setTo(xa:Float, ya:Float, widtha:Float, heighta:Float):Void
 	{
 		x = xa;

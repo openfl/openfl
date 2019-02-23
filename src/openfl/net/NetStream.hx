@@ -1338,6 +1338,15 @@ class NetStream extends EventDispatcher
 		#end
 	}
 
+	/**
+		Releases all the resources held by the NetStream object.
+
+		The `dispose()` method is similar to the `close` method. The main difference
+		between the two methods is that `dispose()` releases the memory used to display
+		the current video frame. If that frame is currently displayed on screen, the
+		display will go blank. The `close()` method does not blank the display because it
+		does not release this memory.
+	**/
 	public function dispose():Void
 	{
 		#if (js && html5)

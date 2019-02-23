@@ -163,9 +163,35 @@ import sys.FileSystem;
 #end
 class SharedObject extends EventDispatcher
 {
+	/**
+		The default object encoding (AMF version) for all local shared objects created in
+		the SWF file. When local shared objects are written to disk, the
+		`SharedObject.defaultObjectEncoding` property indicates which Action Message
+		Format version should be used: the ActionScript 3.0 format (AMF3) or the
+		ActionScript 1.0 or 2.0 format (AMF0).
+
+		For more information about object encoding, including the difference between
+		encoding in local and remote shared objects, see the description of the
+		`objectEncoding` property.
+
+		The default value of `SharedObject.defaultObjectEncoding` is set to use the
+		ActionScript 3.0 format, AMF3. If you need to write local shared objects that
+		ActionScript 2.0 or 1.0 SWF files can read, set
+		`SharedObject.defaultObjectEncoding` to use the ActionScript 1.0 or ActionScript
+		2.0 format, `openfl.net.ObjectEncoding.AMF0`, at the beginning of your script,
+		before you create any local shared objects. All local shared objects created
+		thereafter will use AMF0 encoding and can interact with older content. You cannot
+		change the `objectEncoding` value of existing local shared objects by setting
+		`SharedObject.defaultObjectEncoding` after the local shared objects have been
+		created.
+
+		To set the object encoding on a per-object basis, rather than for all shared
+		objects created by the SWF file, set the objectEncoding property of the local
+		shared object instead.
+	**/
 	public static var defaultObjectEncoding:ObjectEncoding = ObjectEncoding.DEFAULT;
+
 	// @:noCompletion @:dox(hide) @:require(flash11_7) public static var preventBackup:Bool;
-	@:noCompletion private static var __sharedObjects:Map<String, SharedObject>;
 
 	/**
 		Indicates the object on which callback methods are invoked. The
@@ -260,6 +286,8 @@ class SharedObject extends EventDispatcher
 		have a specific need for it.
 	**/
 	public var size(get, never):Int;
+
+	@:noCompletion private static var __sharedObjects:Map<String, SharedObject>;
 
 	@:noCompletion private var __localPath:String;
 	@:noCompletion private var __name:String;

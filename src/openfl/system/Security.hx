@@ -50,7 +50,8 @@ class Security
 		sandbox rules.
 	**/
 	public static inline var REMOTE:String = "remote";
-	public static var disableAVM1Loading:Bool;
+	@SuppressWarnings("checkstyle:FieldDocComment")
+	@:noCompletion @:dox(hide) public static var disableAVM1Loading:Bool;
 
 	/**
 		Determines how Flash Player or AIR chooses the domain to use for

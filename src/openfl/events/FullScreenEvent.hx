@@ -27,6 +27,21 @@ class FullScreenEvent extends ActivityEvent
 		| `target` | The Stage object. |
 	**/
 	public static inline var FULL_SCREEN:String = "fullScreen";
+
+	/**
+		The `FULL_SCREEN_INTERACTIVE_ACCEPTED:String` constant defines the value of the
+		type property of a `fullScreenInteractiveAccepted` event object.
+
+		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `fullScreen` | `true` if the display state is full screen or `false` if it is normal. |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | The Stage object. |
+	**/
 	public static inline var FULL_SCREEN_INTERACTIVE_ACCEPTED:String = "fullScreenInteractiveAccepted";
 
 	/**
@@ -34,6 +49,11 @@ class FullScreenEvent extends ActivityEvent
 		not (`false`).
 	**/
 	public var fullScreen:Bool;
+
+	/**
+		Indicates whether the Stage object is in full-screen interactive mode (`true`) or
+		not (`false`).
+	**/
 	public var interactive:Bool;
 
 	/**

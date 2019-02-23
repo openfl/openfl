@@ -141,9 +141,36 @@ class Stage3D extends EventDispatcher
 {
 	@:noCompletion private static var __active:Bool;
 
+	/**
+		The Context3D object associated with this Stage3D instance.
+
+		This property is initially `null`. To create the Context3D instance for this
+		Stage3D object, add an event listener for the `context3DCreate` event and then call
+		the `requestContext3D` method. The listener is called once the Context3D object has
+		been created.
+	**/
 	public var context3D(default, null):Context3D;
+
+	/**
+		Specifies whether this Stage3D object is visible.
+
+		Use this property to temporarily hide a Stage3D object on the Stage. This property
+		defaults to `true`.
+	**/
 	public var visible:Bool;
+
+	/**
+		The horizontal coordinate of the Stage3D display on the stage, in pixels.
+
+		This property defaults to zero.
+	**/
 	public var x(get, set):Float;
+
+	/**
+		The vertical coordinate of the Stage3D display on the stage, in pixels.
+
+		This property defaults to zero.
+	**/
 	public var y(get, set):Float;
 
 	@:noCompletion private var __contextLost:Bool;
@@ -196,6 +223,65 @@ class Stage3D extends EventDispatcher
 		}
 	}
 
+	/**
+		Request the creation of a Context3D object for this Stage3D instance.
+
+		Before calling this function, add an event listener for the `context3DCreate`
+		event. If you do not, the runtime throws an exception.
+
+		**Important note on device loss:**
+		GPU device loss occurs when the GPU hardware becomes unavailable to the application.
+		The Context3D object is disposed when the GPU device is lost. GPU device loss can
+		happen for various reasons, such as, when a mobile device runs out of battery power
+		or a Windows device goes to a "lock screen." When the GPU becomes available again,
+		the runtime creates a new Context3D instance and dispatches another
+		`context3DCreate` event. Your application must reload all assets and reset the
+		rendering context state whenever device loss occurs.
+
+		Design your application logic to handle the possibility of device loss and context
+		regeneration. Do not remove the `context3DCreate` event listener. Do not perform
+		actions in response to the event that should not be repeated in the application.
+		For example, do not add anonymous functions to handle timer events because they
+		would be duplicated after device loss. To test your application's handling of
+		device loss, you can simulate device loss by calling the `dispose()` method of the
+		Context3D object.
+
+		The following example illustrates how to request a Context3d rendering context:
+
+		```haxe
+		if( stage.stage3Ds.length > 0 )
+		{
+			var stage3D:Stage3D = stage.stage3Ds[0];
+			stage3D.addEventListener( Event.CONTEXT3D_CREATE, myContext3DHandler );
+			stage3D.requestContext3D( );
+		}
+
+		function myContext3DHandler ( event : Event ) : void
+		{
+			var targetStage3D : Stage3D = cast event.target;
+			InitAll3DResources( targetStage3D.context3D );
+			StartRendering( targetStage3D.context3D );
+		}
+		```
+
+		@param	context3DRenderMode	The type of rendering context to request. The default
+		is `Context3DRenderMode.AUTO` for which the runtime will create a
+		hardware-accelerated context if possible and fall back to software otherwise. Use
+		`Context3DRenderMode.SOFTWARE` to request a software rendering context. Software
+		rendering is not available on mobile devices. Software rendering is available only
+		for `Context3DProfile.BASELINE` and `Context3DProfile.BASELINE_CONSTRAINED`.
+		@param	profile	(AIR 3.4 and higher) Specifies the extent to which Flash Player
+		supports lower-level GPUs. The default is `Context3DProfile.BASELINE`, which
+		returns a Context3D instance similar to that used in previous releases. To get
+		details of all available profiles, see openfl.display3D.Context3DProfile.
+		@event	context3DCreate	Dispatched when the requested rendering context is
+		successfully completed.
+		@event	error	Dispatched when the requested rendering context cannot be created.
+		@throws	Error	if no listeners for the `context3DCreate` event have been added to
+		this Stage3D object.
+		@throws	ArgumentError	if this method is called again with a different
+		`context3DRenderMode` before the previous call has completed.
+	**/
 	public function requestContext3D(context3DRenderMode:Context3DRenderMode = AUTO, profile:Context3DProfile = BASELINE):Void
 	{
 		if (__contextLost)
@@ -216,6 +302,65 @@ class Stage3D extends EventDispatcher
 		}
 	}
 
+	/**
+		Request the creation of a Context3D object for this Stage3D instance.
+
+		Before calling this function, add an event listener for the `context3DCreate`
+		event. If you do not, the runtime throws an exception.
+
+		**Important note on device loss:**
+		GPU device loss occurs when the GPU hardware becomes unavailable to the
+		application. The Context3D object is disposed when the GPU device is lost. GPU
+		device loss can happen for various reasons, such as, when a mobile device runs out
+		of battery power or a Windows device goes to a "lock screen." When the GPU becomes
+		available again, the runtime creates a new Context3D instance and dispatches
+		another `context3DCreate` event. Your application must reload all assets and reset
+		the rendering context state whenever device loss occurs.
+
+		Design your application logic to handle the possibility of device loss and context
+		regeneration. Do not remove the `context3DCreate` event listener. Do not perform
+		actions in response to the event that should not be repeated in the application.
+		For example, do not add anonymous functions to handle timer events because they
+		would be duplicated after device loss. To test your application's handling of
+		device loss, you can simulate device loss by calling the `dispose()` method of the
+		Context3D object.
+
+		The following example illustrates how to request a Context3d rendering context:
+
+		```haxe
+		if( stage.stage3Ds.length > 0 )
+		{
+			var stage3D:Stage3D = stage.stage3Ds[0];
+			stage3D.addEventListener( Event.CONTEXT3D_CREATE, myContext3DHandler );
+			stage3D.requestContext3DMatchingProfiles(Vector.<string>([Context3DProfile.BASELINE, Context3DProfile.BASELINE_EXTENDED]));
+		}
+
+		function myContext3DHandler ( event : Event ) : Void
+		{
+			var targetStage3D : Stage3D = cast event.target;
+			if(targetStage3D.context3D.profile.localeCompare(Context3DProfile.BASELINE) == 0)
+			{
+				InitAll3DResources( targetStage3D.context3D );
+			}
+			StartRendering( targetStage3D.context3D );
+		}
+		```
+
+		@param	profiles	(AIR 3.4 and higher) a profile arrays that developer want to
+		use in their flash program. When developer pass profile array to
+		`Stage3D.requestContext3DMatchingProfiles`, he will get a Context3D based on the
+		high level profile in that array according to their hardware capability. The
+		`rendermode` is set to AUTO, so the parameter is omitted.
+		@event	context3DCreate	Dispatched when the requested rendering context is
+		successfully completed.
+		@event	error	Dispatched when the requested rendering context cannot be created.
+		If the hardware is not available, it will not create a software context3d.
+		@throws	Error	if no listeners for the context3DCreate event have been added to
+		this Stage3D object.
+		@throws	ArgumentError	if this method is called before the previous call has
+		completed.
+		@throws	ArgumentError	if the item in array is not openfl.display3D.Context3DProfile.
+	**/
 	public function requestContext3DMatchingProfiles(profiles:Vector<Context3DProfile>):Void
 	{
 		requestContext3D();

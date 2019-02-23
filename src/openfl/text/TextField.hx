@@ -421,6 +421,13 @@ class TextField extends InteractiveObject
 		The maximum value of `scrollV`.
 	**/
 	public var maxScrollV(get, never):Int;
+
+	/**
+		A Boolean value that indicates whether Flash Player automatically scrolls
+		multiline text fields when the user clicks a text field and rolls the mouse wheel.
+		By default, this value is `true`. This property is useful if you want to prevent
+		mouse wheel scrolling of text fields, or implement your own text field scrolling.
+	**/
 	public var mouseWheelEnabled(get, set):Bool;
 
 	/**

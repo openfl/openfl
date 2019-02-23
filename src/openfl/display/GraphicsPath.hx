@@ -8,7 +8,7 @@ import openfl.Vector;
 	A collection of drawing commands and the coordinate parameters for those
 	commands.
 
-	 Use a GraphicsPath object with the
+	Use a GraphicsPath object with the
 	`Graphics.drawGraphicsData()` method. Drawing a GraphicsPath
 	object is the equivalent of calling the `Graphics.drawPath()`
 	method.

@@ -467,7 +467,29 @@ class MouseEvent extends Event
 		or not(`false`).
 	**/
 	public var buttonDown:Bool;
+
+	/**
+		Indicates whether the command key is activated (Mac only.)
+
+		The value of property `commandKey` will have the same value as property `ctrlKey`
+		on the Mac. Always `false` on Windows or Linux.
+	**/
 	public var commandKey:Bool;
+
+	/**
+		Indicates whether or not the mouse down event is part of a multi-click sequence.
+		This parameter will be zero for all mouse events other than `MouseEvent.mouseDown`,
+		`MouseEvent.mouseUp`, `MouseEvent.middleMouseDown`, `MouseEvent.middleMouseUp`,
+		`MouseEvent.rightMouseDown`, and `MouseEvent.rightMouseUp`. Listening for single
+		clicks, double clicks, or any multi-click sequence is possible with the
+		`clickCount` parameter. For example, an initial `MouseEvent.mouseDown` and
+		`MouseEvent.mouseUp` will have a `clickCount` of 1, and the second
+		`MouseEvent.mouseDown` and `MouseEvent.mouseUp` in a double-click sequence will
+		have a `clickCount` of 2. If the mouse moves sufficiently or the multi-click
+		sequence is interrupted for some reason, then the next `MouseEvent.mouseDown`
+		will have a `clickCount` of 1. The `doubleClick` event will continue to fire as
+		expected.
+	**/
 	public var clickCount:Int;
 
 	/**
@@ -486,6 +508,16 @@ class MouseEvent extends Event
 		property applies only to the `MouseEvent.mouseWheel` event.
 	**/
 	public var delta:Int;
+
+	/**
+		If `true`, the `relatedObject` property is set to `null` for reasons related to
+		security sandboxes. If the nominal value of `relatedObject` is a reference to a
+		DisplayObject in another sandbox, `relatedObject` is set to `null` unless there is
+		permission in both directions across this sandbox boundary. Permission is
+		established by calling `Security.allowDomain()` from a SWF file, or by providing a
+		policy file from the server of an image file, and setting the
+		`LoaderContext.checkPolicyFile` property when loading the image.
+	**/
 	public var isRelatedObjectInaccessible:Bool;
 
 	/**

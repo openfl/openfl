@@ -405,7 +405,8 @@ import lime.ui.KeyCode;
 		Constant associated with the key code value for the Control key(17).
 	**/
 	public static inline var CONTROL:Int = 17;
-	public static inline var BREAK:Int = 19;
+	@SuppressWarnings("checkstyle:FieldDocComment")
+	@:noCompletion @:dox(hide) public static inline var BREAK:Int = 19;
 
 	/**
 		Constant associated with the key code value for the Caps Lock key(20).
@@ -477,7 +478,8 @@ import lime.ui.KeyCode;
 		Constant associated with the key code value for the Delete key(46).
 	**/
 	public static inline var DELETE:Int = 46;
-	public static inline var NUMLOCK:Int = 144;
+	@SuppressWarnings("checkstyle:FieldDocComment")
+	@:noCompletion @:dox(hide) public static inline var NUMLOCK:Int = 144;
 
 	/**
 		Constant associated with the key code value for the ; key(186).

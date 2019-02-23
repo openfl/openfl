@@ -16,6 +16,12 @@ import lime.graphics.Image;
 import lime.graphics.RenderContext;
 #end
 
+/**
+	The TextureBase class is the base class for Context3D texture objects.
+
+	**Note:** You cannot create your own texture classes using TextureBase. To add
+	functionality to a texture class, extend either Texture or CubeTexture instead.
+**/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -136,6 +142,10 @@ class TextureBase extends EventDispatcher
 		// __compressedMemoryUsage = 0;
 	}
 
+	/**
+		Frees all GPU resources associated with this texture. After disposal, calling
+		`upload()` or rendering with this object fails.
+	**/
 	public function dispose():Void
 	{
 		var gl = __context.gl;

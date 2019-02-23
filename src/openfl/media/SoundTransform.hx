@@ -64,7 +64,8 @@ package openfl.media;
 		rightToRight = 0;
 	}
 
-	public function clone():SoundTransform
+	@SuppressWarnings("checkstyle:FieldDocComment")
+	@:noCompletion @:dox(hide) public function clone():SoundTransform
 	{
 		return new SoundTransform(volume, pan);
 	}

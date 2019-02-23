@@ -123,6 +123,23 @@ class Loader extends DisplayObjectContainer
 		`Loader.contentLoaderInfo.uncaughtErrorEvents` property.
 	**/
 	public var contentLoaderInfo(default, null):LoaderInfo;
+
+	/**
+		An object that dispatches an uncaughtError event when an unhandled error occurs in
+		the SWF that's loaded by this Loader object. An uncaught error happens when an
+		error is thrown outside of any `try..catch` blocks or when an ErrorEvent object is
+		dispatched with no registered listeners.
+
+		Note that a Loader object's `uncaughtErrorEvents` property dispatches events that
+		bubble through it, not events that it dispatches directly. It never dispatches an
+		`uncaughtErrorEvent` in the target phase. It only dispatches the event in the
+		capture and bubbling phases. To detect an uncaught error in the current SWF (the
+		SWF in which the Loader object is defined) use the `LoaderInfo.uncaughtErrorEvents`
+		property instead.
+
+		If the content loaded by the Loader object is an AVM1 (ActionScript 2) SWF file,
+		uncaught errors in the AVM1 SWF file do not result in an `uncaughtError` event.
+	**/
 	public var uncaughtErrorEvents(default, null):UncaughtErrorEvents;
 
 	@:noCompletion private var __library:AssetLibrary;

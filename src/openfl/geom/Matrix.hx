@@ -204,6 +204,12 @@ class Matrix
 		// __cleanValues ();
 	}
 
+	/**
+		Copies a Vector3D object into specific column of the calling Matrix3D object.
+
+		@param	column	The column from which to copy the data from.
+		@param	vector3D	The Vector3D object from which to copy the data.
+	**/
 	public function copyColumnFrom(column:Int, vector3D:Vector3D):Void
 	{
 		if (column > 2)
@@ -227,6 +233,13 @@ class Matrix
 		}
 	}
 
+	/**
+		Copies specific column of the calling Matrix object into the Vector3D object. The
+		`w` element of the Vector3D object will not be changed.
+
+		@param	column	The column from which to copy the data from.
+		@param	vector3D	The Vector3D object from which to copy the data.
+	**/
 	public function copyColumnTo(column:Int, vector3D:Vector3D):Void
 	{
 		if (column > 2)
@@ -253,6 +266,12 @@ class Matrix
 		}
 	}
 
+	/**
+		Copies all of the matrix data from the source Point object into the calling Matrix
+		object.
+
+		@param	sourceMatrix	The Matrix object from which to copy the data.
+	**/
 	public function copyFrom(sourceMatrix:Matrix):Void
 	{
 		a = sourceMatrix.a;
@@ -263,6 +282,12 @@ class Matrix
 		ty = sourceMatrix.ty;
 	}
 
+	/**
+		Copies a Vector3D object into specific row of the calling Matrix object.
+
+		@param	row	The row from which to copy the data from.
+		@param	vector3D	The Vector3D object from which to copy the data.
+	**/
 	public function copyRowFrom(row:Int, vector3D:Vector3D):Void
 	{
 		if (row > 2)
@@ -283,6 +308,13 @@ class Matrix
 		}
 	}
 
+	/**
+		Copies specific row of the calling Matrix object into the Vector3D object. The `w`
+		element of the Vector3D object will not be changed.
+
+		@param	row	The row from which to copy the data from.
+		@param	vector3D	The Vector3D object from which to copy the data.
+	**/
 	public function copyRowTo(row:Int, vector3D:Vector3D):Void
 	{
 		if (row > 2)
@@ -581,6 +613,16 @@ class Matrix
 		// __cleanValues ();
 	}
 
+	/**
+		Sets the members of Matrix to the specified values
+
+		@param	aa	the values to set the matrix to.
+		@param	ba
+		@param	ca
+		@param	da
+		@param	txa
+		@param	tya
+	**/
 	public function setTo(a:Float, b:Float, c:Float, d:Float, tx:Float, ty:Float):Void
 	{
 		this.a = a;
@@ -591,6 +633,7 @@ class Matrix
 		this.ty = ty;
 	}
 
+	@SuppressWarnings("checkstyle:FieldDocComment")
 	@:dox(hide) @:noCompletion public inline function to3DString(roundPixels:Bool = false):String
 	{
 		if (roundPixels)
@@ -603,6 +646,7 @@ class Matrix
 		}
 	}
 
+	@SuppressWarnings("checkstyle:FieldDocComment")
 	@:dox(hide) @:noCompletion public inline function toMozString():String
 	{
 		return 'matrix($a, $b, $c, $d, ${tx}px, ${ty}px)';

@@ -269,6 +269,7 @@ class TextFormat
 		this.leading = leading;
 	}
 
+	@SuppressWarnings("checkstyle:FieldDocComment")
 	@:dox(hide) @:noCompletion public function clone():TextFormat
 	{
 		var newFormat = new TextFormat(font, size, color, bold, italic, underline, url, target);

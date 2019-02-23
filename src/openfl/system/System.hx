@@ -119,7 +119,8 @@ import cpp.vm.Gc;
 		Unicode.
 	**/
 	public static var useCodePage:Bool = false;
-	public static var vmVersion(get, never):String;
+	@SuppressWarnings("checkstyle:FieldDocComment")
+	@:noCompletion @:dox(hide) public static var vmVersion(get, never):String;
 
 	#if openfljs
 	@:noCompletion private static function __init__()
