@@ -74,7 +74,7 @@ class Context3DGraphics
 					}
 					else
 					{
-						bitmap = c.shaderBuffer.shader.__bitmap.input;
+						bitmap = c.shaderBuffer.inputs[0];
 					}
 
 				case DRAW_QUADS:
