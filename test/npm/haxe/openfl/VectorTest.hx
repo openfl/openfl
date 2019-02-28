@@ -470,8 +470,7 @@ class VectorTest
 				Assert.equal(stringyfied, expected);
 
 				// Testing stringify inside object
-				var obj:Dynamic =
-					{id: 5, errors: vector};
+				var obj:Dynamic = {id: 5, errors: vector};
 
 				stringyfied = haxe.Json.stringify(obj);
 

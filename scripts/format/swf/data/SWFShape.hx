@@ -309,12 +309,8 @@ class SWFShape
 						}
 						// Check if all styles are reset to 0.
 						// This (probably) means that a new group starts with the next record
-						if (styleChangeRecord.stateLineStyle &&
-							styleChangeRecord.lineStyle == 0 &&
-							styleChangeRecord.stateFillStyle0 &&
-							styleChangeRecord.fillStyle0 == 0 &&
-							styleChangeRecord.stateFillStyle1 &&
-							styleChangeRecord.fillStyle1 == 0)
+						if (styleChangeRecord.stateLineStyle && styleChangeRecord.lineStyle == 0 && styleChangeRecord.stateFillStyle0
+							&& styleChangeRecord.fillStyle0 == 0 && styleChangeRecord.stateFillStyle1 && styleChangeRecord.fillStyle1 == 0)
 						{
 							cleanEdgeMap(currentFillEdgeMap);
 							cleanEdgeMap(currentLineEdgeMap);
@@ -581,9 +577,9 @@ class SWFShape
 						{
 							scaleMode = LineScaleMode.VERTICAL;
 						}
-						handler.lineStyle(lineStyle.width / 20, ColorUtils.rgb(lineStyle.color), ColorUtils.alpha(lineStyle.color), lineStyle.pixelHintingFlag,
-							scaleMode, LineCapsStyle.toEnum(lineStyle.startCapsStyle), LineCapsStyle.toEnum(lineStyle.endCapsStyle),
-							LineJointStyle.toEnum(lineStyle.jointStyle), lineStyle.miterLimitFactor);
+						handler.lineStyle(lineStyle.width / 20, ColorUtils.rgb(lineStyle.color), ColorUtils.alpha(lineStyle.color),
+							lineStyle.pixelHintingFlag, scaleMode, LineCapsStyle.toEnum(lineStyle.startCapsStyle),
+							LineCapsStyle.toEnum(lineStyle.endCapsStyle), LineJointStyle.toEnum(lineStyle.jointStyle), lineStyle.miterLimitFactor);
 
 						if (lineStyle.hasFillFlag)
 						{

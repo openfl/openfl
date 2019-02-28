@@ -72,11 +72,7 @@ class Main extends Sprite
 	// Event Handlers
 	private function stage_onKeyDown(event:KeyboardEvent):Void
 	{
-		if (event.altKey ||
-			event.ctrlKey ||
-			event.commandKey ||
-			event.controlKey ||
-			event.shiftKey) return;
+		if (event.altKey || event.ctrlKey || event.commandKey || event.controlKey || event.shiftKey) return;
 
 		switch (event.keyCode)
 		{

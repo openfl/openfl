@@ -40,7 +40,6 @@ import openfl.Vector;
 	 * GraphicsPathWinding class.
 	 */
 	public var winding:GraphicsPathWinding; /* note: currently ignored */
-
 	/**
 	 * Creates a new GraphicsPath object.
 	 *

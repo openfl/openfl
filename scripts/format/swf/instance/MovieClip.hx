@@ -460,8 +460,7 @@ class MovieClip extends flash.display.MovieClip
 
 						if (displayObject != null)
 						{
-							activeObjects.push(child =
-								{object: displayObject, frameObject: object});
+							activeObjects.push(child = {object: displayObject, frameObject: object});
 						}
 					}
 				}

@@ -345,8 +345,7 @@ describe("TypeScript | Vector", function()
 		expected = "[" + strObj + "]";
 		assert.equal(stringyfied, expected);
 		// Testing stringify inside object
-		var obj:Dynamic =
-			{id: 5, errors: vector};
+		var obj:Dynamic = {id: 5, errors: vector};
 		stringyfied = haxe.Json.stringify(obj);
 		// Testing if stringify inside object is still the same as outside
 		assert(stringyfied.indexOf(expected) != -1);

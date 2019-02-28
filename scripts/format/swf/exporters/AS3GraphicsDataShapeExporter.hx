@@ -86,9 +86,9 @@ class AS3GraphicsDataShapeExporter extends DefaultShapeExporter
 		graphicsData.push(new GraphicsEndFill());
 	}
 
-	override public function lineStyle(thickness:Float = 0 /*NaN*/, color:Int = 0, alpha:Float = 1.0, pixelHinting:Bool = false, scaleMode:LineScaleMode = null
-			/*LineScaleMode.NORMAL*/, startCaps:CapsStyle = null /*CapsStyle.ROUND*/, endCaps:CapsStyle = null /*CapsStyle.ROUND*/, joints:JointStyle = null
-			/*JointStyle.ROUND*/, miterLimit:Float = 3):Void
+	override public function lineStyle(thickness:Float = 0 /*NaN*/, color:Int = 0, alpha:Float = 1.0, pixelHinting:Bool = false,
+			scaleMode:LineScaleMode = null /*LineScaleMode.NORMAL*/, startCaps:CapsStyle = null /*CapsStyle.ROUND*/, endCaps:CapsStyle = null
+			/*CapsStyle.ROUND*/, joints:JointStyle = null /*JointStyle.ROUND*/, miterLimit:Float = 3):Void
 	{
 		cleanUpGraphicsPath();
 		tmpStroke = new GraphicsStroke(thickness, pixelHinting, scaleMode, startCaps, joints, miterLimit, new GraphicsSolidFill(color, alpha));

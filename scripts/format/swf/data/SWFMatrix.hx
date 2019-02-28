@@ -77,12 +77,7 @@ class SWFMatrix
 
 	public function isIdentity():Bool
 	{
-		return (scaleX == 1 &&
-			scaleY == 1 &&
-			rotateSkew0 == 0 &&
-			rotateSkew1 == 0 &&
-			translateX == 0 &&
-			translateY == 0);
+		return (scaleX == 1 && scaleY == 1 && rotateSkew0 == 0 && rotateSkew1 == 0 && translateX == 0 && translateY == 0);
 	}
 
 	public function toString():String

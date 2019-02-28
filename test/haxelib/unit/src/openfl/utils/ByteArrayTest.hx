@@ -712,40 +712,40 @@ class ByteArrayTest
 		#end */
 	/*@Test public function testUncompress () {
 
-			var data = new ByteArray();
+		var data = new ByteArray();
 
-			data.writeByte(120);
-			data.writeByte(156);
-			data.writeByte(203);
-			data.writeByte(72);
-			data.writeByte(205);
-			data.writeByte(201);
-			data.writeByte(201);
-			data.writeByte(87);
-			data.writeByte(200);
-			data.writeByte(0);
-			data.writeByte(145);
-			data.writeByte(0);
-			data.writeByte(25);
-			data.writeByte(145);
-			data.writeByte(4);
-			data.writeByte(73);
+		data.writeByte(120);
+		data.writeByte(156);
+		data.writeByte(203);
+		data.writeByte(72);
+		data.writeByte(205);
+		data.writeByte(201);
+		data.writeByte(201);
+		data.writeByte(87);
+		data.writeByte(200);
+		data.writeByte(0);
+		data.writeByte(145);
+		data.writeByte(0);
+		data.writeByte(25);
+		data.writeByte(145);
+		data.writeByte(4);
+		data.writeByte(73);
 
-			data.position = 0;
+		data.position = 0;
 
-			data.uncompress();
+		data.uncompress();
 
-			Assert.areEqual(104, data.readUnsignedByte());
-			Assert.areEqual(101, data.readUnsignedByte());
-			Assert.areEqual(108, data.readUnsignedByte());
-			Assert.areEqual(108, data.readUnsignedByte());
-			Assert.areEqual(111, data.readUnsignedByte());
-			Assert.areEqual(32, data.readUnsignedByte());
-			Assert.areEqual(104, data.readUnsignedByte());
-			Assert.areEqual(101, data.readUnsignedByte());
-			Assert.areEqual(108, data.readUnsignedByte());
-			Assert.areEqual(108, data.readUnsignedByte());
-			Assert.areEqual(111, data.readUnsignedByte());
+		Assert.areEqual(104, data.readUnsignedByte());
+		Assert.areEqual(101, data.readUnsignedByte());
+		Assert.areEqual(108, data.readUnsignedByte());
+		Assert.areEqual(108, data.readUnsignedByte());
+		Assert.areEqual(111, data.readUnsignedByte());
+		Assert.areEqual(32, data.readUnsignedByte());
+		Assert.areEqual(104, data.readUnsignedByte());
+		Assert.areEqual(101, data.readUnsignedByte());
+		Assert.areEqual(108, data.readUnsignedByte());
+		Assert.areEqual(108, data.readUnsignedByte());
+		Assert.areEqual(111, data.readUnsignedByte());
 
 	}*/
 }

@@ -115,7 +115,6 @@ class SWFRoot extends SWFTimelineContainer
 			trace("abcData.functions:");
 			trace(abcData.functions);
 			trace(".--"); */
-
 		/*
 			var cuadClass:ClassDef = abcData.classes[0];
 

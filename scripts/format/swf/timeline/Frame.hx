@@ -73,10 +73,7 @@ class Frame
 				// A character id is defined:
 				// This means that the previous character is replaced
 				// (possible transforms defined in previous frames are discarded)
-				if (tag.hasName ||
-					tag.hasMatrix ||
-					tag.hasColorTransform ||
-					tag.hasFilterList)
+				if (tag.hasName || tag.hasMatrix || tag.hasColorTransform || tag.hasFilterList)
 				{
 					frameObject.lastModifiedAtIndex = tagIndex;
 				}
