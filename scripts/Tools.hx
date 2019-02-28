@@ -57,6 +57,7 @@ import lime.project.Haxelib;
 import lime.project.HXProject;
 import lime.project.Platform;
 #end
+
 class Tools
 {
 	private static inline var SWFLITE_DATA_SUFFIX = #if force_dat_suffix ".dat" #else ".bin" #end;
@@ -255,8 +256,9 @@ class Tools
 											{
 												className = "openfl.display.MovieClip";
 											}
-											else
-												if (Std.is(childSymbol, TagDefineBits) || Std.is(childSymbol, TagDefineBitsJPEG2) || Std.is(childSymbol, TagDefineBitsLossless))
+											else if (Std.is(childSymbol, TagDefineBits)
+												|| Std.is(childSymbol, TagDefineBitsJPEG2)
+												|| Std.is(childSymbol, TagDefineBitsLossless))
 											{
 												className = "openfl.display.BitmapData";
 											}
@@ -370,6 +372,10 @@ class Tools
 				if (lastIndexOfPeriod > -1)
 				{
 					packageName = className.substr(0, lastIndexOfPeriod);
+					if (packageName.length > 0)
+					{
+						packageName = packageName.charAt(0).toLowerCase() + packageName.substr(1);
+					}
 					name = className.substr(lastIndexOfPeriod + 1);
 				}
 
@@ -403,8 +409,9 @@ class Tools
 												{
 													className = "openfl.display.MovieClip";
 												}
-												else
-													if (Std.is(childSymbol, TagDefineBits) || Std.is(childSymbol, TagDefineBitsJPEG2) || Std.is(childSymbol, TagDefineBitsLossless))
+												else if (Std.is(childSymbol, TagDefineBits)
+													|| Std.is(childSymbol, TagDefineBitsJPEG2)
+													|| Std.is(childSymbol, TagDefineBitsLossless))
 												{
 													className = "openfl.display.BitmapData";
 												}
@@ -726,9 +733,9 @@ class Tools
 
 		var includeXML = '<?xml version="1.0" encoding="utf-8"?>
 <library>
-	
+
 	<source path="src" />
-	
+
 </library>';
 
 		File.saveContent(#if (lime >= "7.0.0") Path.combine #else PathHelper.combine #end (targetPath, "include.xml"), includeXML);
