@@ -79,7 +79,9 @@ import haxe.Constraints.Function;
 	* Reliability: runtime range checking (or fixed-length checking) increases
 	reliability significantly over Arrays.
 **/
+#if !flash
 @:multiType(T)
+#end
 abstract Vector<T>(IVector<T>)
 {
 	/**
@@ -163,7 +165,14 @@ abstract Vector<T>(IVector<T>)
 		@param	fixed	Whether the Vector's length is fixed (`true`) or can be changed
 		(`false`). This value can also be set using the fixed property.
 	**/
+	#if !flash
 	public function new(length:Int = 0, fixed:Bool = false, array:Array<T> = null):Void;
+	#else
+	public function new(length:Null<Int> = 0, fixed:Null<Bool> = false, array:Array<T> = null):Void
+	{
+		this = null;
+	}
+	#end
 
 	/**
 		Concatenates the Vectors specified in the parameters list with the elements in
@@ -517,6 +526,7 @@ abstract Vector<T>(IVector<T>)
 		return cast vec;
 	}
 
+	#if !flash
 	@:to #if (!js && !flash) inline #end private static function toBoolVector<T:Bool>(t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):BoolVector
 	{
 		return new BoolVector(length, fixed, cast array);
@@ -577,6 +587,7 @@ abstract Vector<T>(IVector<T>)
 	{
 		return cast vector;
 	}
+	#end
 
 	// Getters & Setters
 	@:noCompletion private inline function get_fixed():Bool
@@ -600,6 +611,7 @@ abstract Vector<T>(IVector<T>)
 	}
 }
 
+#if !flash
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -1823,6 +1835,7 @@ abstract Vector<T>(IVector<T>)
 		return __array.length;
 	}
 }
+#end
 
 @SuppressWarnings("checkstyle:FieldDocComment")
 @:noCompletion @:dox(hide) private interface IVector<T>
