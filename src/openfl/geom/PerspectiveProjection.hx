@@ -16,7 +16,7 @@ package openfl.geom;
 	The projected perspective produces the illusion of three dimensions with depth and distance,
 	where the objects closer to the screen appear larger than the objects farther from the screen.
 
-	![Frustum viewing area](/images/frustrum.jpg)
+	![Frustum viewing area](/images/frustum.jpg)
 
 	A default `PerspectiveProjection` object is a framework defined for perspective transformation of
 	the root object, based on the field of view and aspect ratio (dimensions) of the stage.
