@@ -130,6 +130,7 @@ class Tools
 	private static function formatClassName(className:String, prefix:String = null):String
 	{
 		if (className == null) return null;
+		if (prefix == null) prefix = "";
 
 		var lastIndexOfPeriod = className.lastIndexOf(".");
 
@@ -151,11 +152,11 @@ class Tools
 
 		if (packageName != "")
 		{
-			return packageName + "." + name;
+			return StringTools.trim(packageName + "." + name);
 		}
 		else
 		{
-			return name;
+			return StringTools.trim(name);
 		}
 	}
 
@@ -275,6 +276,11 @@ class Tools
 												className = "openfl.display.SimpleButton";
 											}
 										}
+										else
+										{
+											className = formatClassName(className, prefix);
+										}
+										
 										if (className != null && !objectReferences.exists(placeObject.instanceName))
 										{
 											objectReferences[placeObject.instanceName] = true;
@@ -290,7 +296,7 @@ class Tools
 				var context =
 					{
 						PACKAGE_NAME: packageName,
-						NATIVE_CLASS_NAME: className,
+						NATIVE_CLASS_NAME: StringTools.trim(className),
 						CLASS_NAME: name,
 						SWF_ID: swfAsset.id,
 						SYMBOL_ID: symbolID,
@@ -431,6 +437,10 @@ class Tools
 												{
 													className = "openfl.display.SimpleButton";
 												}
+											}
+											else
+											{
+												className = formatClassName(className, prefix);
 											}
 
 											if (className != null)
