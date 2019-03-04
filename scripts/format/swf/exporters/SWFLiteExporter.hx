@@ -847,6 +847,7 @@ class SWFLiteExporter
 
 		// TODO: Move to separate FrameScriptExporter class
 
+		#if !disable_framescript
 		// TODO: guard the rest of this code with appropriate macro
 		//       cuz not everyone wants to do it this way
 
@@ -1101,6 +1102,7 @@ class SWFLiteExporter
 				}
 			}
 		}
+		#end
 	}
 
 	private function processTag(tag:IDefinitionTag):SWFSymbol
