@@ -1,6 +1,7 @@
 package openfl.utils;
 
 #if !lime
+@SuppressWarnings("checkstyle:FieldDocComment")
 class Future<T>
 {
 	public var error(default, null):Dynamic;
