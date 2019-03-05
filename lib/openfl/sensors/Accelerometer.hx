@@ -1,6 +1,6 @@
-package openfl.sensors; #if (display || !flash)
+package openfl.sensors;
 
-
+#if (display || !flash)
 import openfl.events.EventDispatcher;
 
 @:jsRequire("openfl/sensors/Accelerometer", "default")
@@ -29,8 +29,8 @@ import openfl.events.EventDispatcher;
  * devices. It is not supported on desktop or AIR for TV devices. See
  * [AIR Profile Support](http://help.adobe.com/en_US/air/build/WS144092a96ffef7cc16ddeea2126bb46b82f-8000.html)
  * for more information regarding API support across
- * multiple profiles. 
- * 
+ * multiple profiles.
+ *
  * @event status Dispatched when an accelerometer changes its status.
  *
  *               **Note:** On some devices, the accelerometer is always
@@ -40,8 +40,8 @@ import openfl.events.EventDispatcher;
  *               updates from the accelerometer sensor. The event is
  *               dispatched in the following circumstances:
  *
- *               
- *               
+ *
+ *
  *                * When a new listener function is attached through
  *               `addEventListener()`, this event is delivered once
  *               to all the registered listeners for providing the current
@@ -51,38 +51,33 @@ import openfl.events.EventDispatcher;
  *                * Whenever the application misses a change in the
  *               accelerometer(for example, the runtime is resuming after
  *               being idle).
- *               
- *               
+ *
+ *
  */
-extern class Accelerometer extends EventDispatcher {
-	
-	
+extern class Accelerometer extends EventDispatcher
+{
 	/**
 	 * The `isSupported` property is set to `true` if the
 	 * accelerometer sensor is available on the device, otherwise it is set to
 	 * `false`.
 	 */
-	public static var isSupported (get, never):Bool;
-	
-	@:noCompletion private static function get_isSupported ():Bool;
-	
+	public static var isSupported(get, never):Bool;
+	@:noCompletion private static function get_isSupported():Bool;
+
 	/**
 	 * Specifies whether the user has denied access to the accelerometer
 	 * (`true`) or allowed access(`false`). When this
 	 * value changes, a `status` event is dispatched.
 	 */
-	public var muted (get, set):Bool;
-	
-	@:noCompletion private function get_muted ():Bool;
-	@:noCompletion private function set_muted (value:Bool):Bool;
-	
-	
+	public var muted(get, set):Bool;
+	@:noCompletion private function get_muted():Bool;
+	@:noCompletion private function set_muted(value:Bool):Bool;
+
 	/**
 	 * Creates a new Accelerometer instance.
 	 */
-	public function new ();
-	
-	
+	public function new();
+
 	/**
 	 * The `setRequestedUpdateInterval` method is used to set the
 	 * desired time interval for updates. The time interval is measured in
@@ -92,19 +87,15 @@ extern class Accelerometer extends EventDispatcher {
 	 * registered listeners. You can use the Accelerometer class without calling
 	 * the `setRequestedUpdateInterval()` method. In this case, the
 	 * application receives updates based on the device's default interval.
-	 * 
+	 *
 	 * @param interval The requested update interval. If `interval` is
 	 *                 set to 0, then the minimum supported update interval is
 	 *                 used.
 	 * @throws ArgumentError The specified `interval` is less than
 	 *                       zero.
 	 */
-	public function setRequestedUpdateInterval (interval:Int):Void;
-	
-	
+	public function setRequestedUpdateInterval(interval:Int):Void;
 }
-
-
 #else
 typedef Accelerometer = flash.sensors.Accelerometer;
 #end

@@ -15,6 +15,8 @@ declare namespace openfl.utils {
 		public set (position:number, value:number):number;
 		
 		
+		static defaultEndian:Endian;
+		
 		/**
 		 * Denotes the default object encoding for the ByteArray class to use for a
 		 * new ByteArray instance. When you create a new ByteArray instance, the

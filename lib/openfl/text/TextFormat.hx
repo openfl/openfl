@@ -1,8 +1,7 @@
-package openfl.text; #if (display || !flash)
+package openfl.text;
 
-
+#if (display || !flash)
 @:jsRequire("openfl/text/TextFormat", "default")
-
 /**
  * The TextFormat class represents character formatting information. Use the
  * TextFormat class to create specific text formatting for text fields. You
@@ -29,19 +28,18 @@ package openfl.text; #if (display || !flash)
  * The default formatting for each property is also described in each
  * property description.
  */
-extern class TextFormat {
-	
-	
+extern class TextFormat
+{
 	/**
 	 * Indicates the alignment of the paragraph. Valid values are TextFormatAlign
 	 * constants.
-	 * 
+	 *
 	 * @default TextFormatAlign.LEFT
 	 * @throws ArgumentError The `align` specified is not a member of
 	 *                       flash.text.TextFormatAlign.
 	 */
 	public var align:TextFormatAlign;
-	
+
 	/**
 	 * Indicates the block indentation in pixels. Block indentation is applied to
 	 * an entire block of text; that is, to all lines of the text. In contrast,
@@ -51,14 +49,14 @@ extern class TextFormat {
 	 * 0).
 	 */
 	public var blockIndent:Null<Int>;
-	
+
 	/**
 	 * Specifies whether the text is boldface. The default value is
 	 * `null`, which means no boldface is used. If the value is
 	 * `true`, then the text is boldface.
 	 */
 	public var bold:Null<Bool>;
-	
+
 	/**
 	 * Indicates that the text is part of a bulleted list. In a bulleted list,
 	 * each paragraph of text is indented. To the left of the first line of each
@@ -66,7 +64,7 @@ extern class TextFormat {
 	 * `null`, which means no bulleted list is used.
 	 */
 	public var bullet:Null<Bool>;
-	
+
 	/**
 	 * Indicates the color of the text. A number containing three 8-bit RGB
 	 * components; for example, 0xFF0000 is red, and 0x00FF00 is green. The
@@ -74,31 +72,30 @@ extern class TextFormat {
 	 * color black(0x000000).
 	 */
 	public var color:Null<Int>;
-	
 	#if flash
 	@:noCompletion @:dox(hide) public var display:flash.text.TextFormatDisplay;
 	#end
-	
+
 	/**
 	 * The name of the font for text in this text format, as a string. The
 	 * default value is `null`, which means that Flash Player uses
 	 * Times New Roman font for the text.
 	 */
 	public var font:String;
-	
+
 	/**
 	 * Indicates the indentation from the left margin to the first character in
 	 * the paragraph. The default value is `null`, which indicates
 	 * that no indentation is used.
 	 */
 	public var indent:Null<Int>;
-	
+
 	/**
 	 * Indicates whether text in this text format is italicized. The default
 	 * value is `null`, which means no italics are used.
 	 */
 	public var italic:Null<Bool>;
-	
+
 	/**
 	 * A Boolean value that indicates whether kerning is enabled
 	 * (`true`) or disabled(`false`). Kerning adjusts the
@@ -113,20 +110,20 @@ extern class TextFormat {
 	 * enabled.
 	 */
 	public var kerning:Null<Bool>;
-	
+
 	/**
 	 * An integer representing the amount of vertical space(called
 	 * _leading_) between lines. The default value is `null`,
 	 * which indicates that the amount of leading used is 0.
 	 */
 	public var leading:Null<Int>;
-	
+
 	/**
 	 * The left margin of the paragraph, in pixels. The default value is
 	 * `null`, which indicates that the left margin is 0 pixels.
 	 */
 	public var leftMargin:Null<Int>;
-	
+
 	/**
 	 * A number representing the amount of space that is uniformly distributed
 	 * between all characters. The value specifies the number of pixels that are
@@ -135,26 +132,26 @@ extern class TextFormat {
 	 * You can use decimal values such as `1.75`.
 	 */
 	public var letterSpacing:Null<Float>;
-	
+
 	/**
 	 * The right margin of the paragraph, in pixels. The default value is
 	 * `null`, which indicates that the right margin is 0 pixels.
 	 */
 	public var rightMargin:Null<Int>;
-	
+
 	/**
 	 * The size in pixels of text in this text format. The default value is
 	 * `null`, which means that a size of 12 is used.
 	 */
 	public var size:Null<Int>;
-	
+
 	/**
 	 * Specifies custom tab stops as an array of non-negative integers. Each tab
 	 * stop is specified in pixels. If custom tab stops are not specified
 	 * (`null`), the default tab stop is 4(average character width).
 	 */
 	public var tabStops:Array<Int>;
-	
+
 	/**
 	 * Indicates the target window where the hyperlink is displayed. If the
 	 * target window is an empty string, the text is displayed in the default
@@ -168,7 +165,7 @@ extern class TextFormat {
 	 * have no effect.
 	 */
 	public var target:String;
-	
+
 	/**
 	 * Indicates whether the text that uses this text format is underlined
 	 * (`true`) or not(`false`). This underlining is
@@ -178,7 +175,7 @@ extern class TextFormat {
 	 * not used.
 	 */
 	public var underline:Null<Bool>;
-	
+
 	/**
 	 * Indicates the target URL for the text in this text format. If the
 	 * `url` property is an empty string, the text does not have a
@@ -189,8 +186,7 @@ extern class TextFormat {
 	 * the `htmlText` property for the hyperlink to work.
 	 */
 	public var url:String;
-	
-	
+
 	/**
 	 * Creates a TextFormat object with the specified properties. You can then
 	 * change the properties of the TextFormat object to change the formatting of
@@ -199,7 +195,7 @@ extern class TextFormat {
 	 * Any parameter may be set to `null` to indicate that it is
 	 * not defined. All of the parameters are optional; any omitted parameters
 	 * are treated as `null`.
-	 * 
+	 *
 	 * @param font        The name of a font for text as a string.
 	 * @param size        An integer that indicates the size in pixels.
 	 * @param color       The color of text using this text format. A number
@@ -230,15 +226,11 @@ extern class TextFormat {
 	 * @param leading     A number that indicates the amount of leading vertical
 	 *                    space between lines.
 	 */
-	public function new (font:String = null, size:Null<Int> = null, color:Null<Int> = null, bold:Null<Bool> = null, italic:Null<Bool> = null, underline:Null<Bool> = null, url:String = null, target:String = null, align:TextFormatAlign = null, leftMargin:Null<Int> = null, rightMargin:Null<Int> = null, indent:Null<Int> = null, leading:Null<Int> = null);
-	
-	
-	@:dox(hide) @:noCompletion public function clone ():TextFormat;
-	
-	
+	public function new(font:String = null, size:Null<Int> = null, color:Null<Int> = null, bold:Null<Bool> = null, italic:Null<Bool> = null,
+		underline:Null<Bool> = null, url:String = null, target:String = null, align:TextFormatAlign = null, leftMargin:Null<Int> = null,
+		rightMargin:Null<Int> = null, indent:Null<Int> = null, leading:Null<Int> = null);
+	@:dox(hide) @:noCompletion public function clone():TextFormat;
 }
-
-
 #else
 typedef TextFormat = flash.text.TextFormat;
 #end

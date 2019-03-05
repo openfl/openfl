@@ -1,61 +1,74 @@
-package openfl.display; #if !flash #if !openfljs
+package openfl.display;
 
+#if !flash
 
+#if !openfljs
 /**
- * The StageScaleMode class provides values for the
- * `Stage.scaleMode` property.
- */
-@:enum abstract StageScaleMode(Null<Int>) {
-	
+	The StageScaleMode class provides values for the
+	`Stage.scaleMode` property.
+**/
+@:enum abstract StageScaleMode(Null<Int>)
+{
+	/**
+		Specifies that the entire application be visible in the specified area without
+		trying to preserve the original aspect ratio. Distortion can occur.
+	**/
 	public var EXACT_FIT = 0;
+
+	/**
+		Specifies that the entire application fill the specified area, without
+		distortion but possibly with some cropping, while maintaining the original
+		aspect ratio of the application.
+	**/
 	public var NO_BORDER = 1;
+
+	/**
+		Specifies that the size of the application be fixed, so that it remains
+		unchanged even as the size of the player window changes. Cropping might occur
+		if the player window is smaller than the content.
+	**/
 	public var NO_SCALE = 2;
+
+	/**
+		Specifies that the entire application be visible in the specified area without
+		distortion while maintaining the original aspect ratio of the application.
+		Borders can appear on two sides of the application.
+	**/
 	public var SHOW_ALL = 3;
-	
-	@:from private static function fromString (value:String):StageScaleMode {
-		
-		return switch (value) {
-			
+
+	@:from private static function fromString(value:String):StageScaleMode
+	{
+		return switch (value)
+		{
 			case "exactFit": EXACT_FIT;
 			case "noBorder": NO_BORDER;
 			case "noScale": NO_SCALE;
 			case "showAll": SHOW_ALL;
 			default: null;
-			
 		}
-		
 	}
-	
-	@:to private static function toString (value:Int):String {
-		
-		return switch (value) {
-			
+
+	@:to private static function toString(value:Int):String
+	{
+		return switch (value)
+		{
 			case StageScaleMode.EXACT_FIT: "exactFit";
 			case StageScaleMode.NO_BORDER: "noBorder";
 			case StageScaleMode.NO_SCALE: "noScale";
 			case StageScaleMode.SHOW_ALL: "showAll";
 			default: null;
-			
 		}
-		
 	}
-	
 }
-
-
 #else
-
-
-@:enum abstract StageScaleMode(String) from String to String {
-	
+@SuppressWarnings("checkstyle:FieldDocComment")
+@:enum abstract StageScaleMode(String) from String to String
+{
 	public var EXACT_FIT = "exactFit";
 	public var NO_BORDER = "noBorder";
 	public var NO_SCALE = "noScale";
 	public var SHOW_ALL = "showAll";
-	
 }
-
-
 #end
 #else
 typedef StageScaleMode = flash.display.StageScaleMode;

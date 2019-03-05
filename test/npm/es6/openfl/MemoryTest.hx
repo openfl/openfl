@@ -1,10 +1,1 @@
-
-
-
-describe ("TypeScript | Memory", function () {
-	
-	
-	
-	
-	
-});
+describe("TypeScript | Memory", function() {});

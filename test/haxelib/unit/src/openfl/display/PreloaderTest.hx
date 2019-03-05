@@ -1,23 +1,17 @@
 package openfl.display;
 
-
 import massive.munit.Assert;
 import openfl.display.Preloader;
 
-
-class PreloaderTest {
-	
-	
-	@Test public function new_ () {
-		
+class PreloaderTest
+{
+	@Test public function new_()
+	{
 		// TODO: Confirm functionality
-		
-		var preloader = new Preloader ();
+
+		var preloader = new Preloader();
 		var exists = preloader;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
 }

@@ -16,6 +16,7 @@ export { default as IDataOutput } from "./IDataOutput";
 // export { default as  IExternalizable } from "./IExternalizable";
 // export { default as  Object } from "./Object";
 export { default as Timer } from "./Timer";
+export { default as clearTimeout } from "./clearTimeout";
 export { default as getDefinitionByName } from "./getDefinitionByName";
 export { default as getQualifiedClassName } from "./getQualifiedClassName";
 export { default as getQualifiedSuperclassName } from "./getQualifiedSuperclassName";

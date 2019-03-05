@@ -1,33 +1,25 @@
 package openfl.events;
 
-
 import massive.munit.Assert;
 
+class DataEventTest
+{
+	@Test public function data()
+	{
+		// TODO: Confirm functionality
 
-class DataEventTest {
-	
-	
-	@Test public function data () {
-		
-		// TODO: Confirm functionality
-		
-		var dataEvent = new DataEvent (DataEvent.DATA);
+		var dataEvent = new DataEvent(DataEvent.DATA);
 		var exists = dataEvent.data;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function new_ () {
-		
+
+	@Test public function new_()
+	{
 		// TODO: Confirm functionality
-		
-		var dataEvent = new DataEvent (DataEvent.DATA);
-		
-		Assert.isNotNull (dataEvent);
-		
+
+		var dataEvent = new DataEvent(DataEvent.DATA);
+
+		Assert.isNotNull(dataEvent);
 	}
-	
-	
 }

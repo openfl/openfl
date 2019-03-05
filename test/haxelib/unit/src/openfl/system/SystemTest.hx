@@ -1,43 +1,33 @@
 package openfl.system;
 
-
 import massive.munit.Assert;
 
+class SystemTest
+{
+	@Test public function totalMemory()
+	{
+		// TODO: Confirm functionality
 
-class SystemTest {
-	
-	
-	@Test public function totalMemory () {
-		
-		// TODO: Confirm functionality
-		
 		var exists = System.totalMemory;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function exit () {
-		
+
+	@Test public function exit()
+	{
 		// TODO: Confirm functionality
-		
+
 		var exists = System.exit;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function gc () {
-		
+
+	@Test public function gc()
+	{
 		// TODO: Confirm functionality
-		
+
 		var exists = System.gc;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
 }

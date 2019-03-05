@@ -1,4 +1,4 @@
-﻿package format.swf.data.actions;
+package format.swf.data.actions;
 
 import format.swf.SWFData;
 
@@ -8,7 +8,6 @@ interface IAction
 	var length(default, null):Int;
 	var lengthWithHeader(get, null):Int;
 	var pos(default, null):Int;
-	
 	function parse(data:SWFData):Void;
 	function publish(data:SWFData):Void;
 	function clone():IAction;

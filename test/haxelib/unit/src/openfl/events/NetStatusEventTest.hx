@@ -1,33 +1,25 @@
 package openfl.events;
 
-
 import massive.munit.Assert;
 
+class NetStatusEventTest
+{
+	@Test public function info()
+	{
+		// TODO: Confirm functionality
 
-class NetStatusEventTest {
-	
-	
-	@Test public function info () {
-		
-		// TODO: Confirm functionality
-		
-		var netStatusEvent = new NetStatusEvent (NetStatusEvent.NET_STATUS);
+		var netStatusEvent = new NetStatusEvent(NetStatusEvent.NET_STATUS);
 		var exists = netStatusEvent.info;
-		
-		Assert.isNull (exists);
-		
+
+		Assert.isNull(exists);
 	}
-	
-	
-	@Test public function new_ () {
-		
+
+	@Test public function new_()
+	{
 		// TODO: Confirm functionality
-		
-		var netStatusEvent = new NetStatusEvent (NetStatusEvent.NET_STATUS);
-		
-		Assert.isNotNull (netStatusEvent);
-		
+
+		var netStatusEvent = new NetStatusEvent(NetStatusEvent.NET_STATUS);
+
+		Assert.isNotNull(netStatusEvent);
 	}
-	
-	
 }

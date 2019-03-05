@@ -1,13 +1,11 @@
-package openfl.display; #if (display || !flash)
+package openfl.display;
 
-
+#if (display || !flash)
 @:jsRequire("openfl/display/Bitmap", "default")
-
-
 /**
  * The Bitmap class represents display objects that represent bitmap images.
- * These can be images that you load with the `openfl.Assets` or 
- * `openfl.display.Loader` classes, or they can be images that you 
+ * These can be images that you load with the `openfl.Assets` or
+ * `openfl.display.Loader` classes, or they can be images that you
  * create with the `Bitmap()` constructor.
  *
  * The `Bitmap()` constructor allows you to create a Bitmap
@@ -24,9 +22,9 @@ package openfl.display; #if (display || !flash)
  * object instance.
  *
  * A BitmapData object can be drawn to the screen by a Bitmap object in one
- * of two ways: by using the default hardware renderer with a single hardware surface, 
+ * of two ways: by using the default hardware renderer with a single hardware surface,
  * or by using the slower software renderer when 3D acceleration is not available.
- * 
+ *
  * If you would prefer to perform a batch rendering command, rather than using a
  * single surface for each Bitmap object, you can also draw to the screen using the
  * `openfl.display.Tilemap` class.
@@ -36,22 +34,20 @@ package openfl.display; #if (display || !flash)
  * `addEventListener()` method of the display object container that
  * contains the Bitmap object.
  */
-extern class Bitmap extends DisplayObject {
-	
-	
+extern class Bitmap extends DisplayObject
+{
 	/**
 	 * The BitmapData object being referenced.
 	 */
-	public var bitmapData (get, set):BitmapData;
-	
-	@:noCompletion private function get_bitmapData ():BitmapData;
-	@:noCompletion private function set_bitmapData (value:BitmapData):BitmapData;
-	
+	public var bitmapData(get, set):BitmapData;
+	@:noCompletion private function get_bitmapData():BitmapData;
+	@:noCompletion private function set_bitmapData(value:BitmapData):BitmapData;
+
 	/**
 	 * Controls whether or not the Bitmap object is snapped to the nearest pixel.
 	 * This value is ignored in the native and HTML5 targets.
 	 * The PixelSnapping class includes possible values:
-	 * 
+	 *
 	 *  * `PixelSnapping.NEVER` - No pixel snapping occurs.
 	 *  * `PixelSnapping.ALWAYS` - The image is always snapped to
 	 * the nearest pixel, independent of transformation.
@@ -59,26 +55,20 @@ extern class Bitmap extends DisplayObject {
 	 * nearest pixel if it is drawn with no rotation or skew and it is drawn at a
 	 * scale factor of 99.9% to 100.1%. If these conditions are satisfied, the
 	 * bitmap image is drawn at 100% scale, snapped to the nearest pixel.
-	 * When targeting Flash Player, this value allows the image to be drawn as fast 
+	 * When targeting Flash Player, this value allows the image to be drawn as fast
 	 * as possible using the internal vector renderer.
-	 * 
+	 *
 	 */
 	public var pixelSnapping:PixelSnapping;
-	
+
 	/**
 	 * Controls whether or not the bitmap is smoothed when scaled. If
 	 * `true`, the bitmap is smoothed when scaled. If
 	 * `false`, the bitmap is not smoothed when scaled.
 	 */
 	public var smoothing:Bool;
-	
-	
-	public function new (bitmapData:BitmapData = null, ?pixelSnapping:PixelSnapping, smoothing:Bool = false);
-	
-	
+	public function new(bitmapData:BitmapData = null, ?pixelSnapping:PixelSnapping, smoothing:Bool = false);
 }
-
-
 #else
 typedef Bitmap = flash.display.Bitmap;
 #end

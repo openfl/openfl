@@ -1,8 +1,8 @@
-package flash.display3D; #if flash
+package flash.display3D;
 
-
-@:enum abstract Context3DStencilAction(String) from String to String {
-	
+#if flash
+@:enum abstract Context3DStencilAction(String) from String to String
+{
 	public var DECREMENT_SATURATE = "decrementSaturate";
 	public var DECREMENT_WRAP = "decrementWrap";
 	public var INCREMENT_SATURATE = "incrementSaturate";
@@ -11,10 +11,7 @@ package flash.display3D; #if flash
 	public var KEEP = "keep";
 	public var SET = "set";
 	public var ZERO = "zero";
-	
 }
-
-
 #else
 typedef Context3DStencilAction = openfl.display3D.Context3DStencilAction;
 #end

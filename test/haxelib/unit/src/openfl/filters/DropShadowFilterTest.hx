@@ -1,152 +1,124 @@
 package openfl.filters;
 
-
 import massive.munit.Assert;
 
+class DropShadowFilterTest
+{
+	@Test public function alpha()
+	{
+		// TODO: Confirm functionality
 
-class DropShadowFilterTest {
-	
-	
-	@Test public function alpha () {
-		
-		// TODO: Confirm functionality
-		
-		var dropShadowFilter = new DropShadowFilter ();
+		var dropShadowFilter = new DropShadowFilter();
 		var exists = dropShadowFilter.alpha;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function angle () {
-		
+
+	@Test public function angle()
+	{
 		// TODO: Confirm functionality
-		
-		var dropShadowFilter = new DropShadowFilter ();
+
+		var dropShadowFilter = new DropShadowFilter();
 		var exists = dropShadowFilter.angle;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function blurX () {
-		
+
+	@Test public function blurX()
+	{
 		// TODO: Confirm functionality
-		
-		var dropShadowFilter = new DropShadowFilter ();
+
+		var dropShadowFilter = new DropShadowFilter();
 		var exists = dropShadowFilter.blurX;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function blurY () {
-		
+
+	@Test public function blurY()
+	{
 		// TODO: Confirm functionality
-		
-		var dropShadowFilter = new DropShadowFilter ();
+
+		var dropShadowFilter = new DropShadowFilter();
 		var exists = dropShadowFilter.blurY;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function color () {
-		
+
+	@Test public function color()
+	{
 		// TODO: Confirm functionality
-		
-		var dropShadowFilter = new DropShadowFilter ();
+
+		var dropShadowFilter = new DropShadowFilter();
 		var exists = dropShadowFilter.color;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function distance () {
-		
+
+	@Test public function distance()
+	{
 		// TODO: Confirm functionality
-		
-		var dropShadowFilter = new DropShadowFilter ();
+
+		var dropShadowFilter = new DropShadowFilter();
 		var exists = dropShadowFilter.distance;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function hideObject () {
-		
+
+	@Test public function hideObject()
+	{
 		// TODO: Confirm functionality
-		
-		var dropShadowFilter = new DropShadowFilter ();
+
+		var dropShadowFilter = new DropShadowFilter();
 		var exists = dropShadowFilter.hideObject;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function inner () {
-		
+
+	@Test public function inner()
+	{
 		// TODO: Confirm functionality
-		
-		var dropShadowFilter = new DropShadowFilter ();
+
+		var dropShadowFilter = new DropShadowFilter();
 		var exists = dropShadowFilter.inner;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function knockout () {
-		
+
+	@Test public function knockout()
+	{
 		// TODO: Confirm functionality
-		
-		var dropShadowFilter = new DropShadowFilter ();
+
+		var dropShadowFilter = new DropShadowFilter();
 		var exists = dropShadowFilter.knockout;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function quality () {
-		
+
+	@Test public function quality()
+	{
 		// TODO: Confirm functionality
-		
-		var dropShadowFilter = new DropShadowFilter ();
+
+		var dropShadowFilter = new DropShadowFilter();
 		var exists = dropShadowFilter.quality;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function strength () {
-		
+
+	@Test public function strength()
+	{
 		// TODO: Confirm functionality
-		
-		var dropShadowFilter = new DropShadowFilter ();
+
+		var dropShadowFilter = new DropShadowFilter();
 		var exists = dropShadowFilter.strength;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function new_ () {
-		
+
+	@Test public function new_()
+	{
 		// TODO: Confirm functionality
-		
-		var dropShadowFilter = new DropShadowFilter ();
-		Assert.isNotNull (dropShadowFilter);
-		
+
+		var dropShadowFilter = new DropShadowFilter();
+		Assert.isNotNull(dropShadowFilter);
 	}
-	
-	
 }

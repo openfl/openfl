@@ -1,6 +1,6 @@
-package openfl.display; #if (display || !flash)
+package openfl.display;
 
-
+#if (display || !flash)
 // import lime.app.Application in LimeApplication;
 // import lime.app.IModule;
 // import lime.app.Preloader;
@@ -18,7 +18,6 @@ package openfl.display; #if (display || !flash)
 import openfl.geom.Rectangle;
 
 @:jsRequire("openfl/display/Stage", "default")
-
 
 /**
  * The Stage class represents the main drawing area.
@@ -43,7 +42,7 @@ import openfl.geom.Rectangle;
  * These properties may always be read, but since they cannot be set, they
  * will always contain default values.
  *
- * 
+ *
  *  * `accessibilityProperties`
  *  * `alpha`
  *  * `blendMode`
@@ -67,7 +66,7 @@ import openfl.geom.Rectangle;
  *  * `visible`
  *  * `x`
  *  * `y`
- * 
+ *
  *
  * Some events that you might expect to be a part of the Stage class, such
  * as `enterFrame`, `exitFrame`,
@@ -87,7 +86,7 @@ import openfl.geom.Rectangle;
  * but also by all EventDispatcher instances and instances of other
  * EventDispatcher subclasses. For more information on broadcast events, see
  * the DisplayObject class.
- * 
+ *
  * @event fullScreen             Dispatched when the Stage object enters, or
  *                               leaves, full-screen mode. A change in
  *                               full-screen mode can be initiated through
@@ -136,9 +135,8 @@ import openfl.geom.Rectangle;
  * @event stageVideoAvailability Dispatched by the Stage object when the state
  *                               of the stageVideos property changes.
  */
-extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
-	
-	
+extern class Stage extends DisplayObjectContainer /*implements IModule*/
+{
 	/**
 	 * A value from the StageAlign class that specifies the alignment of the
 	 * stage in Flash Player or the browser. The following are valid values:
@@ -152,51 +150,43 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	 * Developer's Guide_.
 	 */
 	public var align:StageAlign;
-	
+
 	/**
 	 * Specifies whether this stage allows the use of the full screen mode
 	 */
-	public var allowsFullScreen (default, null):Bool;
-	
+	public var allowsFullScreen(default, null):Bool;
+
 	/**
 	 * Specifies whether this stage allows the use of the full screen with text input mode
 	 */
-	public var allowsFullScreenInteractive (default, null):Bool;
-	
-	//public var application (default, null):Application;
-	
+	public var allowsFullScreenInteractive(default, null):Bool;
+	// public var application (default, null):Application;
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash15) public var browserZoomFactor (default, null):Float;
+	@:noCompletion @:dox(hide) @:require(flash15) public var browserZoomFactor(default, null):Float;
 	#end
-	
+
 	/**
 	 * The window background color.
 	 */
-	public var color (get, set):UInt;
-	
-	@:noCompletion private function get_color ():UInt;
-	@:noCompletion private function set_color (value:UInt):UInt;
-	
+	public var color(get, set):UInt;
+	@:noCompletion private function get_color():UInt;
+	@:noCompletion private function set_color(value:UInt):UInt;
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10) public var colorCorrection:flash.display.ColorCorrection;
 	#end
-	
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10) public var colorCorrectionSupport (default, null):flash.display.ColorCorrectionSupport;
+	@:noCompletion @:dox(hide) @:require(flash10) public var colorCorrectionSupport(default, null):flash.display.ColorCorrectionSupport;
 	#end
-	
-	public var contentsScaleFactor (get, never):Float;
-	
-	@:noCompletion private function get_contentsScaleFactor ():Float;
-	
+	public var contentsScaleFactor(get, never):Float;
+	@:noCompletion private function get_contentsScaleFactor():Float;
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash11) public var displayContextInfo (default, null):String;
+	@:noCompletion @:dox(hide) @:require(flash11) public var displayContextInfo(default, null):String;
 	#end
-	
+
 	/**
 	 * A value from the StageDisplayState class that specifies which display
 	 * state to use. The following are valid values:
-	 * 
+	 *
 	 *  * `StageDisplayState.FULL_SCREEN` Sets AIR application or
 	 * Flash runtime to expand the stage over the user's entire screen, with
 	 * keyboard input disabled.
@@ -206,7 +196,7 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	 * Player.)
 	 *  * `StageDisplayState.NORMAL` Sets the Flash runtime back to
 	 * the standard stage display mode.
-	 * 
+	 *
 	 *
 	 * The scaling behavior of the movie in full-screen mode is determined by
 	 * the `scaleMode` setting(set using the
@@ -224,11 +214,11 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	 * page(not those using the stand-alone Flash Player or not running in the
 	 * AIR runtime):
 	 *
-	 * 
+	 *
 	 *  * To enable full-screen mode, add the `allowFullScreen`
 	 * parameter to the `object` and `embed` tags in the
 	 * HTML page that includes the SWF file, with `allowFullScreen`
-	 * set to `"true"`, as shown in the following example: 
+	 * set to `"true"`, as shown in the following example:
 	 *  * Full-screen mode is initiated in response to a mouse click or key
 	 * press by the user; the movie cannot change `Stage.displayState`
 	 * without user input. Flash runtimes restrict keyboard input in full-screen
@@ -241,14 +231,14 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	 * A Flash runtime dialog box appears over the movie when users enter
 	 * full-screen mode to inform the users they are in full-screen mode and that
 	 * they can press the Escape key to end full-screen mode.
-	 * 
+	 *
 	 *  * Starting with Flash Player 9.0.115.0, full-screen works the same in
 	 * windowless mode as it does in window mode. If you set the Window Mode
 	 * (`wmode` in the HTML) to Opaque Windowless
 	 * (`opaque`) or Transparent Windowless
 	 * (`transparent`), full-screen can be initiated, but the
 	 * full-screen window will always be opaque.
-	 * 
+	 *
 	 *
 	 * These restrictions are _not_ present for SWF content running in
 	 * the stand-alone Flash Player or in AIR. AIR supports an interactive
@@ -262,7 +252,7 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	 * `StageDisplayState.FULL_SCREEN` or
 	 * `StageDisplayState.FULL_SCREEN_INTERACTIVE` is an asynchronous
 	 * operation.
-	 * 
+	 *
 	 * @throws SecurityError Calling the `displayState` property of a
 	 *                       Stage object throws an exception for any caller that
 	 *                       is not in the same security sandbox as the Stage
@@ -280,25 +270,22 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	 *                       `allowFullScreen` attribute is not set to
 	 *                       `true` throws a security error.
 	 */
-	public var displayState (get, set):StageDisplayState;
-	
-	@:noCompletion private function get_displayState ():StageDisplayState;
-	@:noCompletion private function set_displayState (value:StageDisplayState):StageDisplayState;
-	
-	public var element (default, never):js.html.Element;
-	
+	public var displayState(get, set):StageDisplayState;
+	@:noCompletion private function get_displayState():StageDisplayState;
+	@:noCompletion private function set_displayState(value:StageDisplayState):StageDisplayState;
+	public var element(default, never):js.html.Element;
+
 	/**
 	 * The interactive object with keyboard focus; or `null` if focus
 	 * is not set or if the focused object belongs to a security sandbox to which
 	 * the calling object does not have access.
-	 * 
+	 *
 	 * @throws Error Throws an error if focus cannot be set to the target.
 	 */
-	public var focus (get, set):InteractiveObject;
-	
-	@:noCompletion private function get_focus ():InteractiveObject;
-	@:noCompletion private function set_focus (value:InteractiveObject):InteractiveObject;
-	
+	public var focus(get, set):InteractiveObject;
+	@:noCompletion private function get_focus():InteractiveObject;
+	@:noCompletion private function set_focus(value:InteractiveObject):InteractiveObject;
+
 	/**
 	 * Gets and sets the frame rate of the stage. The frame rate is defined as
 	 * frames per second. By default the rate is set to the frame rate of the
@@ -314,8 +301,8 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	 *
 	 * For content running in Adobe AIR, setting the `frameRate`
 	 * property of one Stage object changes the frame rate for all Stage objects
-	 * (used by different NativeWindow objects). 
-	 * 
+	 * (used by different NativeWindow objects).
+	 *
 	 * @throws SecurityError Calling the `frameRate` property of a
 	 *                       Stage object throws an exception for any caller that
 	 *                       is not in the same security sandbox as the Stage
@@ -327,31 +314,24 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	 *                       For more information, see the "Security" chapter in
 	 *                       the _ActionScript 3.0 Developer's Guide_.
 	 */
-	public var frameRate (get, set):Float;
-	
-	@:noCompletion private function get_frameRate ():Float;
-	@:noCompletion private function set_frameRate (value:Float):Float;
-	
-	public var fullScreenHeight (get, never):UInt;
-	
-	@:noCompletion private function get_fullScreenHeight ():UInt;
-	
+	public var frameRate(get, set):Float;
+	@:noCompletion private function get_frameRate():Float;
+	@:noCompletion private function set_frameRate(value:Float):Float;
+	public var fullScreenHeight(get, never):UInt;
+	@:noCompletion private function get_fullScreenHeight():UInt;
 	#if flash
 	@:noCompletion @:dox(hide) public var fullScreenSourceRect:Rectangle;
 	#end
-	
-	public var fullScreenWidth (get, never):UInt;
-	
-	@:noCompletion private function get_fullScreenWidth ():UInt;
-	
+	public var fullScreenWidth(get, never):UInt;
+	@:noCompletion private function get_fullScreenWidth():UInt;
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash11_2) public var mouseLock:Bool;
 	#end
-	
+
 	/**
 	 * A value from the StageQuality class that specifies which rendering quality
 	 * is used. The following are valid values:
-	 * 
+	 *
 	 *  * `StageQuality.LOW` - Low rendering quality. Graphics are
 	 * not anti-aliased, and bitmaps are not smoothed, but runtimes still use
 	 * mip-mapping.
@@ -372,12 +352,12 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	 * `StageQuality.BEST` with `Bitmap.smoothing` set to
 	 * `true` slows performance significantly and is not a recommended
 	 * setting).
-	 * 
+	 *
 	 *
 	 * Higher quality settings produce better rendering of scaled bitmaps.
 	 * However, higher quality settings are computationally more expensive. In
 	 * particular, when rendering scaled video, using higher quality settings can
-	 * reduce the frame rate. 
+	 * reduce the frame rate.
 	 *
 	 * In the desktop profile of Adobe AIR, `quality` can be set to
 	 * `StageQuality.BEST` or `StageQuality.HIGH`(and the
@@ -388,10 +368,10 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	 *
 	 * For content running in Adobe AIR, setting the `quality`
 	 * property of one Stage object changes the rendering quality for all Stage
-	 * objects(used by different NativeWindow objects). 
+	 * objects(used by different NativeWindow objects).
 	 * **_Note:_** The operating system draws the device fonts, which are
 	 * therefore unaffected by the `quality` property.
-	 * 
+	 *
 	 * @throws SecurityError Calling the `quality` property of a Stage
 	 *                       object throws an exception for any caller that is
 	 *                       not in the same security sandbox as the Stage owner
@@ -403,32 +383,31 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	 *                       For more information, see the "Security" chapter in
 	 *                       the _ActionScript 3.0 Developer's Guide_.
 	 */
-	public var quality (get, set):StageQuality;
-	
-	@:noCompletion private function get_quality ():StageQuality;
-	@:noCompletion private function set_quality (value:StageQuality):StageQuality;
-	
+	public var quality(get, set):StageQuality;
+	@:noCompletion private function get_quality():StageQuality;
+	@:noCompletion private function set_quality(value:StageQuality):StageQuality;
+
 	/**
 	 * A value from the StageScaleMode class that specifies which scale mode to
 	 * use. The following are valid values:
-	 * 
+	 *
 	 *  * `StageScaleMode.EXACT_FIT` - The entire application is
 	 * visible in the specified area without trying to preserve the original
 	 * aspect ratio. Distortion can occur, and the application may appear
-	 * stretched or compressed. 
+	 * stretched or compressed.
 	 *  * `StageScaleMode.SHOW_ALL` - The entire application is
 	 * visible in the specified area without distortion while maintaining the
 	 * original aspect ratio of the application. Borders can appear on two sides
-	 * of the application. 
+	 * of the application.
 	 *  * `StageScaleMode.NO_BORDER` - The entire application fills
 	 * the specified area, without distortion but possibly with some cropping,
-	 * while maintaining the original aspect ratio of the application. 
+	 * while maintaining the original aspect ratio of the application.
 	 *  * `StageScaleMode.NO_SCALE` - The entire application is
 	 * fixed, so that it remains unchanged even as the size of the player window
 	 * changes. Cropping might occur if the player window is smaller than the
-	 * content. 
-	 * 
-	 * 
+	 * content.
+	 *
+	 *
 	 * @throws SecurityError Calling the `scaleMode` property of a
 	 *                       Stage object throws an exception for any caller that
 	 *                       is not in the same security sandbox as the Stage
@@ -441,22 +420,18 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	 *                       the _ActionScript 3.0 Developer's Guide_.
 	 */
 	public var scaleMode:StageScaleMode;
-	
-	@:noCompletion private function get_scaleMode ():StageScaleMode;
-	@:noCompletion private function set_scaleMode (value:StageScaleMode):StageScaleMode;
-	
+	@:noCompletion private function get_scaleMode():StageScaleMode;
+	@:noCompletion private function set_scaleMode(value:StageScaleMode):StageScaleMode;
 	public var showDefaultContextMenu:Bool;
-	
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash11) public var softKeyboardRect (default, null):Rectangle;
+	@:noCompletion @:dox(hide) @:require(flash11) public var softKeyboardRect(default, null):Rectangle;
 	#end
-	
-	public var stage3Ds (default, null):Vector<Stage3D>;
-	
+	public var stage3Ds(default, null):Vector<Stage3D>;
+
 	/**
 	 * Specifies whether or not objects display a glowing border when they have
 	 * focus.
-	 * 
+	 *
 	 * @throws SecurityError Calling the `stageFocusRect` property of
 	 *                       a Stage object throws an exception for any caller
 	 *                       that is not in the same security sandbox as the
@@ -469,7 +444,7 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	 *                       the _ActionScript 3.0 Developer's Guide_.
 	 */
 	public var stageFocusRect:Bool;
-	
+
 	/**
 	 * The current height, in pixels, of the Stage.
 	 *
@@ -499,7 +474,7 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	 * `height` parameter of the `AC_FL_RunContent() `
 	 * method must be set to a percentage, too. This percentage is applied to the
 	 * `stageHeight` value.
-	 * 
+	 *
 	 * @throws SecurityError Calling the `stageHeight` property of a
 	 *                       Stage object throws an exception for any caller that
 	 *                       is not in the same security sandbox as the Stage
@@ -511,12 +486,11 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	 *                       For more information, see the "Security" chapter in
 	 *                       the _ActionScript 3.0 Developer's Guide_.
 	 */
-	public var stageHeight (default, null):Int;
-	
+	public var stageHeight(default, null):Int;
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10_2) public var stageVideos (default, null):Vector<flash.media.StageVideo>;
+	@:noCompletion @:dox(hide) @:require(flash10_2) public var stageVideos(default, null):Vector<flash.media.StageVideo>;
 	#end
-	
+
 	/**
 	 * Specifies the current width, in pixels, of the Stage.
 	 *
@@ -546,7 +520,7 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	 * `width` parameter of the `AC_FL_RunContent() `
 	 * method must be set to a percentage, too. This percentage is applied to the
 	 * `stageWidth` value.
-	 * 
+	 *
 	 * @throws SecurityError Calling the `stageWidth` property of a
 	 *                       Stage object throws an exception for any caller that
 	 *                       is not in the same security sandbox as the Stage
@@ -558,21 +532,16 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	 *                       For more information, see the "Security" chapter in
 	 *                       the _ActionScript 3.0 Developer's Guide_.
 	 */
-	public var stageWidth (default, null):Int;
-	
-	//public var window (default, null):Window;
-	
+	public var stageWidth(default, null):Int;
+	// public var window (default, null):Window;
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10_1) public var wmodeGPU (default, null):Bool;
+	@:noCompletion @:dox(hide) @:require(flash10_1) public var wmodeGPU(default, null):Bool;
 	#end
-	
-	
 	#if !flash
-	//public function new (window:Window, color:Null<Int> = null);
-	public function new (width:Int = 0, height:Int = 0, color:Null<Int> = null, documentClass:Class<Dynamic> = null, windowConfig:Dynamic = null);
+	// public function new (window:Window, color:Null<Int> = null);
+	public function new(width:Int = 0, height:Int = 0, color:Null<Int> = null, documentClass:Class<Dynamic> = null, windowConfig:Dynamic = null);
 	#end
-	
-	
+
 	/**
 	 * Calling the `invalidate()` method signals Flash runtimes to
 	 * alert display objects on the next opportunity it has to render the display
@@ -593,16 +562,12 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	 * `stage.invalidate()` method, or to display objects from a
 	 * security domain that has been granted permission via the
 	 * `Security.allowDomain()` method.
-	 * 
+	 *
 	 */
-	public override function invalidate ():Void;
-	
-	
+	public override function invalidate():Void;
 	#if flash
-	@:noCompletion @:dox(hide) public function isFocusInaccessible ():Bool;
+	@:noCompletion @:dox(hide) public function isFocusInaccessible():Bool;
 	#end
-	
-	
 	// @:noCompletion @:dox(hide) public function addRenderer (renderer:Renderer):Void;
 	// @:noCompletion @:dox(hide) public function addWindow (window:Window):Void;
 	// @:noCompletion @:dox(hide) public function registerModule (application:LimeApplication):Void;
@@ -655,11 +620,7 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/ {
 	// @:noCompletion @:dox(hide) public function onWindowRestore (window:Window):Void;
 	// @:noCompletion @:dox(hide) public function render (renderer:Renderer):Void;
 	// @:noCompletion @:dox(hide) public function update (deltaTime:Int):Void;
-	
-	
 }
-
-
 #else
 typedef Stage = flash.display.Stage;
 #end

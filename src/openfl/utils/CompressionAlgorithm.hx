@@ -1,55 +1,59 @@
-package openfl.utils; #if !flash #if !openfljs
+package openfl.utils;
 
+#if !flash
 
-@:enum abstract CompressionAlgorithm(Null<Int>) {
-	
+#if !openfljs
+/**
+	The CompressionAlgorithm class defines string constants for the names of
+	compress and uncompress options. These constants are used as values of the
+	`algorithm` parameter of the `ByteArray.compress()` and
+	`ByteArray.uncompress()` methods.
+**/
+@:enum abstract CompressionAlgorithm(Null<Int>)
+{
+	/**
+		Defines the string to use for the deflate compression algorithm.
+	**/
 	public var DEFLATE = 0;
-	//GZIP;
+	// GZIP;
 	public var LZMA = 1;
+
+	/**
+		Defines the string to use for the zlib compression algorithm.
+	**/
 	public var ZLIB = 2;
-	
-	@:from private static function fromString (value:String):CompressionAlgorithm {
-		
-		return switch (value) {
-			
+
+	@:from private static function fromString(value:String):CompressionAlgorithm
+	{
+		return switch (value)
+		{
 			case "deflate": DEFLATE;
 			case "lzma": LZMA;
 			case "zlib": ZLIB;
 			default: null;
-			
 		}
-		
 	}
-	
-	@:to private static function toString (value:Int):String {
-		
-		return switch (value) {
-			
+
+	@:to private static function toString(value:Int):String
+	{
+		return switch (value)
+		{
 			case CompressionAlgorithm.DEFLATE: "deflate";
 			case CompressionAlgorithm.LZMA: "lzma";
 			case CompressionAlgorithm.ZLIB: "zlib";
 			default: null;
-			
 		}
-		
 	}
-	
 }
-
-
 #else
-
-
-@:enum abstract CompressionAlgorithm(String) from String to String {
-	
+@SuppressWarnings("checkstyle:FieldDocComment")
+@:enum abstract CompressionAlgorithm(String) from String to String
+{
 	public var DEFLATE = "deflate";
-	//GZIP;
+	// GZIP;
 	public var LZMA = "lzma";
 	public var ZLIB = "zlib";
-	
 }
-
-
 #end
 #else
 typedef CompressionAlgorithm = flash.utils.CompressionAlgorithm;

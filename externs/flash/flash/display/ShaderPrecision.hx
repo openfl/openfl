@@ -1,14 +1,11 @@
-package flash.display; #if flash
+package flash.display;
 
-
-@:enum abstract ShaderPrecision(String) from String to String {
-	
+#if flash
+@:enum abstract ShaderPrecision(String) from String to String
+{
 	public var FAST = "fast";
 	public var FULL = "full";
-	
 }
-
-
 #else
 typedef ShaderPrecision = openfl.display.ShaderPrecision;
 #end

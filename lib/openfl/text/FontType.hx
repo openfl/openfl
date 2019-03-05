@@ -1,13 +1,12 @@
 package openfl.text;
 
-
 /**
  * The FontType class contains the enumerated constants
  * `"embedded"` and `"device"` for the
  * `fontType` property of the Font class.
  */
-@:enum abstract FontType(String) from String to String {
-	
+@:enum abstract FontType(String) from String to String
+{
 	/**
 	 * Indicates that this is a device font. The SWF file renders fonts with
 	 * those installed on the system.
@@ -24,7 +23,7 @@ package openfl.text;
 	 * anti-aliased and may appear jagged at large point sizes.
 	 */
 	public var DEVICE = "device";
-	
+
 	/**
 	 * Indicates that this is an embedded font. Font outlines are embedded in the
 	 * published SWF file.
@@ -43,7 +42,5 @@ package openfl.text;
 	 * back to device fonts.
 	 */
 	public var EMBEDDED = "embedded";
-	
 	public var EMBEDDED_CFF = "embeddedCFF";
-	
 }

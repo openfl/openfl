@@ -1,3 +1,32 @@
+8.8.0 (01/07/2019)
+------------------
+
+* Added `ByteArray.defaultEndian` property
+* Updated canvas `TextField` renderer to use text baseline for more consistent rendering
+* Updated the types for `KeyboardEvent` on Flash to improve support for `switch` cases
+* Improved `UncaughtErrorEvents` handler to not run on debug by default
+* Initial support for mouse wheel support in `TextField` scrolling
+* Disabled some incorrect HTML5 canvas renderer blend modes
+* Fixed the behavior of `ByteArray.defaultObjectEncoding`
+* Fixed a possible infinite loop when applying word wrap to narrow `TextField` instances
+* Fixed a regression in marking `scrollRect` changes as dirty
+* Fixed a regression in HTML5 DOM rendering when objects are removed from the stage
+* Fixed dirty object calculation for `removeChild` in some renderers
+* Fixed issues in SWF processing to improve NPM/Haxelib release compatibility
+* Fixed `Loader` to dispatch an error if `Loader.loadBytes` returns a null `BitmapData`
+* Fixed some issues with multi-format `TextField` line breaking
+* Fixed some minor issues for users trying to use OpenFL with unsupported Haxe versions
+* Fixed some issues with `Graphics` objects being dirty when using `cacheAsBitmap`
+* Fixed missing `Event.CONTEXT3D_CREATE` event if `requestContext3D` is called again
+* Fixed support for using AMF0/AMF3 object formats in NPM `ByteArray`
+* Fixed the behavior of `MovieClip` with `buttonMode` but with `enabled` false
+* Fixed some issues when setting the `CubeTexture` sampler state
+* Fixed support for disabling the context menu on browsers that show on mouse down
+* Fixed unnecessary Lime version warning when running `openfl create`
+* Fixed a case where `Stage3D` could render when the context had not been cleared
+* Fixed `Sound.getLength` for sounds streamed from OGG Vorbis audio files
+
+
 8.7.0 (12/04/2018)
 ------------------
 

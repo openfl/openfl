@@ -1,8 +1,7 @@
-package openfl.system; #if (display || !flash)
+package openfl.system;
 
-
+#if (display || !flash)
 @:jsRequire("openfl/system/Capabilities", "default")
-
 /**
  * The Capabilities class provides properties that describe the system and
  * runtime that are hosting the application. For example, a mobile phone's
@@ -15,7 +14,7 @@ package openfl.system; #if (display || !flash)
  *
  * However, some capabilities of Adobe AIR are not listed as properties in
  * the Capabilities class. They are properties of other classes:
- * 
+ *
  *
  * There is also a `WD` server string that specifies whether
  * windowless mode is disabled. Windowless mode can be disabled in Flash
@@ -24,9 +23,8 @@ package openfl.system; #if (display || !flash)
  *
  * All properties of the Capabilities class are read-only.
  */
-@:final extern class Capabilities {
-	
-	
+@:final extern class Capabilities
+{
 	/**
 	 * Specifies whether access to the user's camera and microphone has been
 	 * administratively prohibited(`true`) or allowed
@@ -37,110 +35,109 @@ package openfl.system; #if (display || !flash)
 	 * the application security sandbox can always access the user's camera and
 	 * microphone.
 	 */
-	public static var avHardwareDisable (default, null):Bool;
-	
+	public static var avHardwareDisable(default, null):Bool;
+
 	/**
 	 * Specifies the current CPU architecture. The `cpuArchitecture`
 	 * property can return the following strings: "`PowerPC`",
 	 * "`x86`", "`SPARC`", and "`ARM`". The
 	 * server string is `ARCH`.
 	 */
-	public static var cpuArchitecture (get, null):String;
-	
-	@:noCompletion private static function get_cpuArchitecture ():String;
-	
+	public static var cpuArchitecture(get, null):String;
+	@:noCompletion private static function get_cpuArchitecture():String;
+
 	/**
 	 * Specifies whether the system supports(`true`) or does not
 	 * support(`false`) communication with accessibility aids. The
 	 * server string is `ACC`.
 	 */
-	public static var hasAccessibility (default, null):Bool;
-	
+	public static var hasAccessibility(default, null):Bool;
+
 	/**
 	 * Specifies whether the system has audio capabilities. This property is
 	 * always `true`. The server string is `A`.
 	 */
-	public static var hasAudio (default, null):Bool;
-	
+	public static var hasAudio(default, null):Bool;
+
 	/**
 	 * Specifies whether the system can(`true`) or cannot
 	 * (`false`) encode an audio stream, such as that coming from a
 	 * microphone. The server string is `AE`.
 	 */
-	public static var hasAudioEncoder (default, null):Bool;
-	
+	public static var hasAudioEncoder(default, null):Bool;
+
 	/**
 	 * Specifies whether the system supports(`true`) or does not
 	 * support(`false`) embedded video. The server string is
 	 * `EV`.
 	 */
-	public static var hasEmbeddedVideo (default, null):Bool;
-	
+	public static var hasEmbeddedVideo(default, null):Bool;
+
 	/**
 	 * Specifies whether the system does(`true`) or does not
 	 * (`false`) have an input method editor(IME) installed. The
 	 * server string is `IME`.
 	 */
-	public static var hasIME (default, null):Bool;
-	
+	public static var hasIME(default, null):Bool;
+
 	/**
 	 * Specifies whether the system does(`true`) or does not
 	 * (`false`) have an MP3 decoder. The server string is
 	 * `MP3`.
 	 */
-	public static var hasMP3 (default, null):Bool;
-	
+	public static var hasMP3(default, null):Bool;
+
 	/**
 	 * Specifies whether the system does(`true`) or does not
 	 * (`false`) support printing. The server string is
 	 * `PR`.
 	 */
-	public static var hasPrinting (default, null):Bool;
-	
+	public static var hasPrinting(default, null):Bool;
+
 	/**
 	 * Specifies whether the system does(`true`) or does not
 	 * (`false`) support the development of screen broadcast
 	 * applications to be run through Flash Media Server. The server string is
 	 * `SB`.
 	 */
-	public static var hasScreenBroadcast (default, null):Bool;
-	
+	public static var hasScreenBroadcast(default, null):Bool;
+
 	/**
 	 * Specifies whether the system does(`true`) or does not
 	 * (`false`) support the playback of screen broadcast applications
 	 * that are being run through Flash Media Server. The server string is
 	 * `SP`.
 	 */
-	public static var hasScreenPlayback (default, null):Bool;
-	
+	public static var hasScreenPlayback(default, null):Bool;
+
 	/**
 	 * Specifies whether the system can(`true`) or cannot
 	 * (`false`) play streaming audio. The server string is
 	 * `SA`.
 	 */
-	public static var hasStreamingAudio (default, null):Bool;
-	
+	public static var hasStreamingAudio(default, null):Bool;
+
 	/**
 	 * Specifies whether the system can(`true`) or cannot
 	 * (`false`) play streaming video. The server string is
 	 * `SV`.
 	 */
-	public static var hasStreamingVideo (default, null):Bool;
-	
+	public static var hasStreamingVideo(default, null):Bool;
+
 	/**
 	 * Specifies whether the system supports native SSL sockets through
 	 * NetConnection(`true`) or does not(`false`). The
 	 * server string is `TLS`.
 	 */
-	public static var hasTLS (default, null):Bool;
-	
+	public static var hasTLS(default, null):Bool;
+
 	/**
 	 * Specifies whether the system can(`true`) or cannot
 	 * (`false`) encode a video stream, such as that coming from a web
 	 * camera. The server string is `VE`.
 	 */
-	public static var hasVideoEncoder (default, null):Bool;
-	
+	public static var hasVideoEncoder(default, null):Bool;
+
 	/**
 	 * Specifies whether the system is a special debugging version
 	 * (`true`) or an officially released version
@@ -148,14 +145,14 @@ package openfl.system; #if (display || !flash)
 	 * is set to `true` when running in the debug version of Flash
 	 * Player or the AIR Debug Launcher(ADL).
 	 */
-	public static var isDebugger (default, null):Bool;
-	
+	public static var isDebugger(default, null):Bool;
+
 	/**
 	 * Specifies whether the Flash runtime is embedded in a PDF file that is open
 	 * in Acrobat 9.0 or higher(`true`) or not(`false`).
 	 */
-	public static var isEmbeddedInAcrobat (default, null):Bool;
-	
+	public static var isEmbeddedInAcrobat(default, null):Bool;
+
 	/**
 	 * Specifies the language code of the system on which the content is running.
 	 * The language is specified as a lowercase two-letter language code from ISO
@@ -168,20 +165,19 @@ package openfl.system; #if (display || !flash)
 	 * (`en`), not the country code. On Microsoft Windows systems,
 	 * this property returns the user interface(UI) language, which refers to
 	 * the language used for all menus, dialog boxes, error messages, and help
-	 * files. The following table lists the possible values: 
+	 * files. The following table lists the possible values:
 	 *
 	 * _Note:_ The value of `Capabilities.language` property
 	 * is limited to the possible values on this list. Because of this
 	 * limitation, Adobe AIR applications should use the first element in the
 	 * `Capabilities.languages` array to determine the primary user
-	 * interface language for the system. 
+	 * interface language for the system.
 	 *
 	 * The server string is `L`.
 	 */
-	public static var language (get, never):String;
-	
-	@:noCompletion private static function get_language ():String;
-	
+	public static var language(get, never):String;
+	@:noCompletion private static function get_language():String;
+
 	/**
 	 * Specifies whether read access to the user's hard disk has been
 	 * administratively prohibited(`true`) or allowed
@@ -202,8 +198,8 @@ package openfl.system; #if (display || !flash)
 	 *
 	 * The server string is `LFD`.
 	 */
-	public static var localFileReadDisable (default, null):Bool;
-	
+	public static var localFileReadDisable(default, null):Bool;
+
 	/**
 	 * Specifies the manufacturer of the running version of Flash Player or the
 	 * AIR runtime, in the format `"Adobe`
@@ -220,10 +216,9 @@ package openfl.system; #if (display || !flash)
 	 * corresponding to the capability for which you are testing. For more
 	 * information, see the Capabilities class description.
 	 */
-	public static var manufacturer (get, never):String;
-	
-	@:noCompletion private static function get_manufacturer ():String;
-	
+	public static var manufacturer(get, never):String;
+	@:noCompletion private static function get_manufacturer():String;
+
 	/**
 	 * Retrieves the highest H.264 Level IDC that the client hardware supports.
 	 * Media run at this level are guaranteed to run; however, media run at the
@@ -234,8 +229,8 @@ package openfl.system; #if (display || !flash)
 	 *
 	 * The server string is `ML`.
 	 */
-	public static var maxLevelIDC (default, null):Int;
-	
+	public static var maxLevelIDC(default, null):Int;
+
 	/**
 	 * Specifies the current operating system. The `os` property can
 	 * return the following strings:
@@ -250,22 +245,20 @@ package openfl.system; #if (display || !flash)
 	 * corresponding to the capability for which you are testing. For more
 	 * information, see the Capabilities class description.
 	 */
-	public static var os (get, never):String;
-	
-	@:noCompletion private static function get_os ():String;
-	
+	public static var os(get, never):String;
+	@:noCompletion private static function get_os():String;
+
 	/**
 	 * Specifies the pixel aspect ratio of the screen. The server string is
 	 * `AR`.
 	 */
-	public static var pixelAspectRatio (get, never):Float;
-	
-	@:noCompletion private static function get_pixelAspectRatio ():Float;
-	
+	public static var pixelAspectRatio(get, never):Float;
+	@:noCompletion private static function get_pixelAspectRatio():Float;
+
 	/**
 	 * Specifies the type of runtime environment. This property can have one of
 	 * the following values:
-	 * 
+	 *
 	 *  * `"ActiveX"` for the Flash Player ActiveX control used by
 	 * Microsoft Internet Explorer
 	 *  * `"Desktop"` for the Adobe AIR runtime(except for SWF
@@ -276,28 +269,27 @@ package openfl.system; #if (display || !flash)
 	 *  * `"PlugIn"` for the Flash Player browser plug-in(and for
 	 * SWF content loaded by an HTML page in an AIR application)
 	 *  * `"StandAlone"` for the stand-alone Flash Player
-	 * 
+	 *
 	 *
 	 * The server string is `PT`.
 	 */
-	public static var playerType (default, null):String;
-	
+	public static var playerType(default, null):String;
+
 	/**
 	 * Specifies the screen color. This property can have the value
 	 * `"color"`, `"gray"`(for grayscale), or
 	 * `"bw"`(for black and white). The server string is
 	 * `COL`.
 	 */
-	public static var screenColor (default, null):String;
-	
+	public static var screenColor(default, null):String;
+
 	/**
 	 * Specifies the dots-per-inch(dpi) resolution of the screen, in pixels. The
 	 * server string is `DP`.
 	 */
-	public static var screenDPI (get, never):Float;
-	
-	@:noCompletion private static function get_screenDPI ():Float;
-	
+	public static var screenDPI(get, never):Float;
+	@:noCompletion private static function get_screenDPI():Float;
+
 	/**
 	 * Specifies the maximum horizontal resolution of the screen. The server
 	 * string is `R`(which returns both the width and height of the
@@ -306,10 +298,9 @@ package openfl.system; #if (display || !flash)
 	 * AIR application started. Also, the value only specifies the primary
 	 * screen.
 	 */
-	public static var screenResolutionX (get, never):Float;
-	
-	@:noCompletion private static function get_screenResolutionX ():Float;
-	
+	public static var screenResolutionX(get, never):Float;
+	@:noCompletion private static function get_screenResolutionX():Float;
+
 	/**
 	 * Specifies the maximum vertical resolution of the screen. The server string
 	 * is `R`(which returns both the width and height of the screen).
@@ -317,10 +308,9 @@ package openfl.system; #if (display || !flash)
 	 * only indicates the resolution at the time Flash Player or an Adobe AIR
 	 * application started. Also, the value only specifies the primary screen.
 	 */
-	public static var screenResolutionY (get, never):Float;
-	
-	@:noCompletion private static function get_screenResolutionY ():Float;
-	
+	public static var screenResolutionY(get, never):Float;
+	@:noCompletion private static function get_screenResolutionY():Float;
+
 	/**
 	 * A URL-encoded string that specifies values for each Capabilities property.
 	 *
@@ -331,26 +321,26 @@ package openfl.system; #if (display || !flash)
 	 * R=1600x1200&DP=72&COL=color&AR=1.0&OS=Windows%20XP&
 	 * L=en&PT=External&AVD=f&LFD=f&WD=f`
 	 */
-	public static var serverString (default, null):String;
-	
+	public static var serverString(default, null):String;
+
 	/**
 	 * Specifies whether the system supports running 32-bit processes. The server
 	 * string is `PR32`.
 	 */
-	public static var supports32BitProcesses (default, null):Bool;
-	
+	public static var supports32BitProcesses(default, null):Bool;
+
 	/**
 	 * Specifies whether the system supports running 64-bit processes. The server
 	 * string is `PR64`.
 	 */
-	public static var supports64BitProcesses (default, null):Bool;
-	
+	public static var supports64BitProcesses(default, null):Bool;
+
 	/**
 	 * Specifies the type of touchscreen supported, if any. Values are defined in
 	 * the flash.system.TouchscreenType class.
 	 */
-	public static var touchscreenType (default, null):TouchscreenType;
-	
+	public static var touchscreenType(default, null):TouchscreenType;
+
 	/**
 	 * Specifies the Flash Player or Adobe<sup>®</sup> AIR<sup>®</sup> platform
 	 * and version information. The format of the version number is: _platform
@@ -372,17 +362,10 @@ package openfl.system; #if (display || !flash)
 	 *
 	 * The server string is `V`.
 	 */
-	public static var version (get, never):String;
-	
-	@:noCompletion private static function get_version ():String;
-	
-	
-	public static function hasMultiChannelAudio (type:String):Bool;
-	
-	
+	public static var version(get, never):String;
+	@:noCompletion private static function get_version():String;
+	public static function hasMultiChannelAudio(type:String):Bool;
 }
-
-
 #else
 typedef Capabilities = flash.system.Capabilities;
 #end

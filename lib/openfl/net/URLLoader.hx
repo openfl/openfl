@@ -1,6 +1,6 @@
-package openfl.net; #if (display || !flash)
+package openfl.net;
 
-
+#if (display || !flash)
 import openfl.events.EventDispatcher;
 
 @:jsRequire("openfl/net/URLLoader", "default")
@@ -17,25 +17,25 @@ import openfl.events.EventDispatcher;
  * through dispatched events.
  *
  * When loading very large video files, such as FLV's, out-of-memory errors
- * may occur. 
+ * may occur.
  *
  * When you use this class in Flash Player and in AIR application content
  * in security sandboxes other than then application security sandbox,
  * consider the following security model:
  *
- * 
+ *
  *  * A SWF file in the local-with-filesystem sandbox may not load data
- * from, or provide data to, a resource that is in the network sandbox. 
+ * from, or provide data to, a resource that is in the network sandbox.
  *  *  By default, the calling SWF file and the URL you load must be in
  * exactly the same domain. For example, a SWF file at www.adobe.com can load
  * data only from sources that are also at www.adobe.com. To load data from a
  * different domain, place a URL policy file on the server hosting the
  * data.
- * 
+ *
  *
  * For more information related to security, see the Flash Player Developer
  * Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
- * 
+ *
  * @event complete           Dispatched after all the received data is decoded
  *                           and placed in the data property of the URLLoader
  *                           object. The received data may be accessed once
@@ -68,7 +68,7 @@ import openfl.events.EventDispatcher;
  *                           received completely. So, the progress event only
  *                           serves as a notification of how far the download
  *                           has progressed. To access the data before it's
- *                           entirely downloaded, use a URLStream object. 
+ *                           entirely downloaded, use a URLStream object.
  * @event securityError      Dispatched if a call to URLLoader.load() attempts
  *                           to load data from a server outside the security
  *                           sandbox. Also dispatched if a call to
@@ -76,15 +76,14 @@ import openfl.events.EventDispatcher;
  *                           SWZ file and the certificate is invalid or the
  *                           digest string does not match the component.
  */
-extern class URLLoader extends EventDispatcher {
-	
-	
+extern class URLLoader extends EventDispatcher
+{
 	/**
 	 * Indicates the number of bytes that have been loaded thus far during the
 	 * load operation.
 	 */
 	public var bytesLoaded:Int;
-	
+
 	/**
 	 * Indicates the total number of bytes in the downloaded data. This property
 	 * contains 0 while the load operation is in progress and is populated when
@@ -92,7 +91,7 @@ extern class URLLoader extends EventDispatcher {
 	 * result in bytesTotal being indeterminate.
 	 */
 	public var bytesTotal:Int;
-	
+
 	/**
 	 * The data received from the load operation. This property is populated only
 	 * when the load operation is complete. The format of the data depends on the
@@ -111,7 +110,7 @@ extern class URLLoader extends EventDispatcher {
 	 * URLVariables object containing the URL-encoded variables.
 	 */
 	public var data:Dynamic;
-	
+
 	/**
 	 * Controls whether the downloaded data is received as text
 	 * (`URLLoaderDataFormat.TEXT`), raw binary data
@@ -129,32 +128,29 @@ extern class URLLoader extends EventDispatcher {
 	 * If the value of the `dataFormat` property is
 	 * `URLLoaderDataFormat.VARIABLES`, the received data is a
 	 * URLVariables object containing the URL-encoded variables.
-	 * 
+	 *
 	 * @default URLLoaderDataFormat.TEXT
 	 */
-	public var dataFormat (default, set):URLLoaderDataFormat;
-	
-	
+	public var dataFormat(default, set):URLLoaderDataFormat;
+
 	/**
 	 * Creates a URLLoader object.
-	 * 
+	 *
 	 * @param request A URLRequest object specifying the URL to download. If this
 	 *                parameter is omitted, no load operation begins. If
 	 *                specified, the load operation begins immediately(see the
 	 *                `load` entry for more information).
 	 */
-	public function new (request:URLRequest = null);
-	
-	
+	public function new(request:URLRequest = null);
+
 	/**
 	 * Closes the load operation in progress. Any load operation in progress is
 	 * immediately terminated. If no URL is currently being streamed, an invalid
 	 * stream error is thrown.
-	 * 
+	 *
 	 */
-	public function close ():Void;
-	
-	
+	public function close():Void;
+
 	/**
 	 * Sends and loads data from the specified URL. The data can be received as
 	 * text, raw binary data, or URL-encoded variables, depending on the value
@@ -187,14 +183,14 @@ extern class URLLoader extends EventDispatcher {
 	 * body), the POST operation is subject to the security rules applied to
 	 * uploads:
 	 *
-	 * 
+	 *
 	 *  * The POST operation must be performed in response to a user-initiated
 	 * action, such as a mouse click or key press.
 	 *  * If the POST operation is cross-domain(the POST target is not on the
 	 * same server as the SWF file that is sending the POST request), the target
 	 * server must provide a URL policy file that permits cross-domain
 	 * access.
-	 * 
+	 *
 	 *
 	 * Also, for any multipart Content-Type, the syntax must be valid
 	 * (according to the RFC2046 standards). If the syntax appears to be invalid,
@@ -203,7 +199,7 @@ extern class URLLoader extends EventDispatcher {
 	 *
 	 * For more information related to security, see the Flash Player
 	 * Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
-	 * 
+	 *
 	 * @param request A URLRequest object specifying the URL to download.
 	 * @throws ArgumentError `URLRequest.requestHeader` objects may
 	 *                       not contain certain prohibited HTTP request headers.
@@ -254,12 +250,8 @@ extern class URLLoader extends EventDispatcher {
 	 *                           is invalid or the digest does not match the
 	 *                           component.
 	 */
-	public function load (request:URLRequest):Void;
-	
-	
+	public function load(request:URLRequest):Void;
 }
-
-
 #else
 typedef URLLoader = flash.net.URLLoader;
 #end

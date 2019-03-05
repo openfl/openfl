@@ -50,7 +50,8 @@ class Script extends hxp.Script {
 			"mac",
 			"linux",
 			"air",
-			"web"
+			"web",
+			"electron"
 		];
 		
 		if (commandArgs.length > 0) {

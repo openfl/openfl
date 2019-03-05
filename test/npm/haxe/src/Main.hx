@@ -168,25 +168,17 @@ import openfl.utils.DictionaryTest;
 import openfl.utils.EndianTest;
 import openfl.utils.TimerTest;
 import openfl.VectorTest;
-
 //
-
 import openfl.display.Stage;
 import openfl.display.Stage3D;
 
-
-class Main {
-	
-	
-	public static function main () {
-		
-		Mocha.before (function () {
-			
-			var stage = new Stage (550, 400);
-			
+class Main
+{
+	public static function main()
+	{
+		Mocha.before(function()
+		{
+			var stage = new Stage(550, 400);
 		});
-		
 	}
-	
-	
 }

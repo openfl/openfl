@@ -1,14 +1,11 @@
-package openfl.utils; #if !flash
+package openfl.utils;
 
-
-interface IExternalizable {
-	
-	function readExternal (input:IDataInput):Void;
-	function writeExternal (output:IDataOutput):Void;
-	
+#if !flash
+interface IExternalizable
+{
+	function readExternal(input:IDataInput):Void;
+	function writeExternal(output:IDataOutput):Void;
 }
-
-
 #else
 typedef IExternalizable = flash.utils.IExternalizable;
 #end

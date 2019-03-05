@@ -1,8 +1,7 @@
-package openfl.net; #if (display || !flash)
+package openfl.net;
 
-
+#if (display || !flash)
 @:jsRequire("openfl/net/URLRequest", "default")
-
 /**
  * The URLRequest class captures all of the information in a single HTTP
  * request. URLRequest objects are passed to the `load()` methods
@@ -12,7 +11,7 @@ package openfl.net; #if (display || !flash)
  * FileReference class.
  *
  * A SWF file in the local-with-filesystem sandbox may not load data from,
- * or provide data to, a resource that is in the network sandbox. 
+ * or provide data to, a resource that is in the network sandbox.
  *
  * By default, the calling SWF file and the URL you load must be in the
  * same domain. For example, a SWF file at www.adobe.com can load data only
@@ -25,12 +24,12 @@ package openfl.net; #if (display || !flash)
  * application security sandbox can access URLs using any of the following URL
  * schemes:
  *
- * 
- *  * `http` and `https` 
- *  * `file` 
- *  * `app-storage` 
- *  * `app` 
- * 
+ *
+ *  * `http` and `https`
+ *  * `file`
+ *  * `app-storage`
+ *  * `app`
+ *
  *
  * Content running in Adobe AIR that is not in the application security
  * sandbox observes the same restrictions as content running in the browser
@@ -40,9 +39,8 @@ package openfl.net; #if (display || !flash)
  * For more information related to security, see the Flash Player Developer
  * Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
  */
-@:final extern class URLRequest {
-	
-	
+@:final extern class URLRequest
+{
 	/**
 	 * The MIME content type of the content in the the `data`
 	 * property.
@@ -58,20 +56,20 @@ package openfl.net; #if (display || !flash)
 	 * When sending a POST request, the values of the `contentType`
 	 * and `data` properties must correspond properly. The value of
 	 * the `contentType` property instructs servers on how to
-	 * interpret the value of the `data` property. 
+	 * interpret the value of the `data` property.
 	 *
-	 * 
+	 *
 	 *  * If the value of the `data` property is a URLVariables
 	 * object, the value of `contentType` must be
-	 * `application/x-www-form-urlencoded`. 
+	 * `application/x-www-form-urlencoded`.
 	 *  *  If the value of the `data` property is any other type,
 	 * the value of `contentType` should indicate the type of the POST
 	 * data that will be sent(which is the binary or string data contained in
-	 * the value of the `data` property). 
+	 * the value of the `data` property).
 	 *  * For `FileReference.upload()`, the Content-Type of the
 	 * request is set automatically to `multipart/form-data`, and the
 	 * value of the `contentType` property is ignored.
-	 * 
+	 *
 	 *
 	 *  In Flash Player 10 and later, if you use a multipart Content-Type(for
 	 * example "multipart/form-data") that contains an upload(indicated by a
@@ -79,14 +77,14 @@ package openfl.net; #if (display || !flash)
 	 * body), the POST operation is subject to the security rules applied to
 	 * uploads:
 	 *
-	 * 
+	 *
 	 *  * The POST operation must be performed in response to a user-initiated
 	 * action, such as a mouse click or key press.
 	 *  * If the POST operation is cross-domain(the POST target is not on the
 	 * same server as the SWF file that is sending the POST request), the target
 	 * server must provide a URL policy file that permits cross-domain
 	 * access.
-	 * 
+	 *
 	 *
 	 * Also, for any multipart Content-Type, the syntax must be valid
 	 * (according to the RFC2046 standards). If the syntax appears to be invalid,
@@ -94,7 +92,7 @@ package openfl.net; #if (display || !flash)
 	 * uploads.
 	 */
 	public var contentType:String;
-	
+
 	/**
 	 * An object containing data to be transmitted with the URL request.
 	 *
@@ -113,7 +111,7 @@ package openfl.net; #if (display || !flash)
 	 * The way in which the data is used depends on the type of object
 	 * used:
 	 *
-	 * 
+	 *
 	 *  * If the object is a ByteArray object, the binary data of the
 	 * ByteArray object is used as `POST` data. For `GET`,
 	 * data of ByteArray type is not supported. Also, data of ByteArray type is
@@ -130,7 +128,7 @@ package openfl.net; #if (display || !flash)
 	 * with the URLRequest object.
 	 *  * Otherwise, the object is converted to a string, and the string is
 	 * used as the `POST` or `GET` data.
-	 * 
+	 *
 	 *
 	 * This data is not sent until a method, such as
 	 * `navigateToURL()` or `FileReference.upload()`, uses
@@ -141,17 +139,13 @@ package openfl.net; #if (display || !flash)
 	 * description of the `contentType` property.
 	 */
 	public var data:Dynamic;
-	
 	#if flash
 	@:noCompletion @:dox(hide) public var digest:String;
 	#end
-	
 	public var followRedirects:Bool;
-	
 	public var idleTimeout:Float;
-	
 	public var manageCookies:Bool;
-	
+
 	/**
 	 * Controls the HTTP form submission method.
 	 *
@@ -175,14 +169,14 @@ package openfl.net; #if (display || !flash)
 	 * is set to `URLRequestMethod.POST`. For this reason, it is
 	 * recommended to always include a "dummy" body to ensure that the correct
 	 * method is used.
-	 * 
+	 *
 	 * @default URLRequestMethod.GET
 	 * @throws ArgumentError If the `value` parameter is not
 	 *                       `URLRequestMethod.GET` or
 	 *                       `URLRequestMethod.POST`.
 	 */
 	public var method:String;
-	
+
 	/**
 	 * The array of HTTP request headers to be appended to the HTTP request. The
 	 * array is composed of URLRequestHeader objects. Each object in the array
@@ -205,7 +199,7 @@ package openfl.net; #if (display || !flash)
 	 * requests.
 	 */
 	public var requestHeaders:Array<URLRequestHeader>;
-	
+
 	/**
 	 * The URL to be requested.
 	 *
@@ -227,12 +221,12 @@ package openfl.net; #if (display || !flash)
 	 * sandobx  -  files installed with the AIR application  -  can access URLs
 	 * using any of the following URL schemes:
 	 *
-	 * 
-	 *  * `http` and `https` 
-	 *  * `file` 
-	 *  * `app-storage` 
-	 *  * `app` 
-	 * 
+	 *
+	 *  * `http` and `https`
+	 *  * `file`
+	 *  * `app-storage`
+	 *  * `app`
+	 *
 	 *
 	 * **Note:** IPv6(Internet Protocol version 6) is supported in AIR and
 	 * in Flash Player 9.0.115.0 and later. IPv6 is a version of Internet
@@ -241,35 +235,28 @@ package openfl.net; #if (display || !flash)
 	 * IPv6 on your networking interfaces. For more information, see the Help for
 	 * the operating system hosting the data. If IPv6 is supported on the hosting
 	 * system, you can specify numeric IPv6 literal addresses in URLs enclosed in
-	 * brackets([]), as in the following. 
+	 * brackets([]), as in the following.
 	 * `rtmp://[2001:db8:ccc3:ffff:0:444d:555e:666f]:1935/test`
 	 */
 	public var url:String;
-	
 	public var userAgent:String;
-	
-	
+
 	/**
 	 * Creates a URLRequest object. If `System.useCodePage` is
 	 * `true`, the request is encoded using the system code page,
 	 * rather than Unicode. If `System.useCodePage` is
 	 * `false`, the request is encoded using Unicode, rather than the
 	 * system code page.
-	 * 
+	 *
 	 * @param url The URL to be requested. You can set the URL later by using the
 	 *            `url` property.
 	 */
-	public function new (url:String = null);
-	
-	
+	public function new(url:String = null);
 	#if flash
-	@:noCompletion @:dox(hide) public function useRedirectedURL (sourceRequest:URLRequest, wholeURL:Bool = false, pattern:Dynamic = null, replace:String = null):Void;
+	@:noCompletion @:dox(hide) public function useRedirectedURL(sourceRequest:URLRequest, wholeURL:Bool = false, pattern:Dynamic = null,
+		replace:String = null):Void;
 	#end
-	
-	
 }
-
-
 #else
 typedef URLRequest = flash.net.URLRequest;
 #end

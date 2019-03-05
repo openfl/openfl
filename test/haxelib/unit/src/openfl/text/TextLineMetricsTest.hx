@@ -1,92 +1,74 @@
 package openfl.text;
 
-
 import massive.munit.Assert;
 
+class TextLineMetricsTest
+{
+	@Test public function ascent()
+	{
+		// TODO: Confirm functionality
 
-class TextLineMetricsTest {
-	
-	
-	@Test public function ascent () {
-		
-		// TODO: Confirm functionality
-		
-		var textLineMetrics = new TextLineMetrics (0, 0, 0, 0, 0, 0);
+		var textLineMetrics = new TextLineMetrics(0, 0, 0, 0, 0, 0);
 		var exists = textLineMetrics.ascent;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function descent () {
-		
+
+	@Test public function descent()
+	{
 		// TODO: Confirm functionality
-		
-		var textLineMetrics = new TextLineMetrics (0, 0, 0, 0, 0, 0);
+
+		var textLineMetrics = new TextLineMetrics(0, 0, 0, 0, 0, 0);
 		var exists = textLineMetrics.descent;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function height () {
-		
+
+	@Test public function height()
+	{
 		// TODO: Confirm functionality
-		
-		var textLineMetrics = new TextLineMetrics (0, 0, 0, 0, 0, 0);
+
+		var textLineMetrics = new TextLineMetrics(0, 0, 0, 0, 0, 0);
 		var exists = textLineMetrics.height;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function leading () {
-		
+
+	@Test public function leading()
+	{
 		// TODO: Confirm functionality
-		
-		var textLineMetrics = new TextLineMetrics (0, 0, 0, 0, 0, 0);
+
+		var textLineMetrics = new TextLineMetrics(0, 0, 0, 0, 0, 0);
 		var exists = textLineMetrics.leading;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function width () {
-		
+
+	@Test public function width()
+	{
 		// TODO: Confirm functionality
-		
-		var textLineMetrics = new TextLineMetrics (0, 0, 0, 0, 0, 0);
+
+		var textLineMetrics = new TextLineMetrics(0, 0, 0, 0, 0, 0);
 		var exists = textLineMetrics.width;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function x () {
-		
+
+	@Test public function x()
+	{
 		// TODO: Confirm functionality
-		
-		var textLineMetrics = new TextLineMetrics (0, 0, 0, 0, 0, 0);
+
+		var textLineMetrics = new TextLineMetrics(0, 0, 0, 0, 0, 0);
 		var exists = textLineMetrics.x;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function new_ () {
-		
+
+	@Test public function new_()
+	{
 		// TODO: Confirm functionality
-		
-		var textLineMetrics = new TextLineMetrics (0, 0, 0, 0, 0, 0);
-		Assert.isNotNull (textLineMetrics);
-		
+
+		var textLineMetrics = new TextLineMetrics(0, 0, 0, 0, 0, 0);
+		Assert.isNotNull(textLineMetrics);
 	}
-	
-	
 }

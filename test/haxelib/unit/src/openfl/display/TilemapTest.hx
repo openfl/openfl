@@ -1,167 +1,137 @@
 package openfl.display;
 
-
 import massive.munit.Assert;
 import openfl.display.Tilemap;
 
+class TilemapTest
+{
+	@Test public function numTiles()
+	{
+		// TODO: Confirm functionality
 
-class TilemapTest {
-	
-	
-	@Test public function numTiles () {
-		
-		// TODO: Confirm functionality
-		
-		var tilemap = new Tilemap (1, 1);
+		var tilemap = new Tilemap(1, 1);
 		var exists = tilemap.numTiles;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function smoothing () {
-		
+
+	@Test public function smoothing()
+	{
 		// TODO: Confirm functionality
-		
-		var tilemap = new Tilemap (1, 1);
+
+		var tilemap = new Tilemap(1, 1);
 		var exists = tilemap.smoothing;
-		
-		Assert.isTrue (exists);
-		
+
+		Assert.isTrue(exists);
 	}
-	
-	
-	@Test public function tileset () {
-		
+
+	@Test public function tileset()
+	{
 		// TODO: Confirm functionality
-		
-		var tilemap = new Tilemap (1, 1);
+
+		var tilemap = new Tilemap(1, 1);
 		var exists = tilemap.tileset;
-		
-		Assert.isNull (exists);
-		
+
+		Assert.isNull(exists);
 	}
-	
-	
-	@Test public function new_ () {
-		
+
+	@Test public function new_()
+	{
 		// TODO: Confirm functionality
-		
-		var tilemap = new Tilemap (1, 1);
+
+		var tilemap = new Tilemap(1, 1);
 		var exists = tilemap;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function addTile () {
-		
+
+	@Test public function addTile()
+	{
 		// TODO: Confirm functionality
-		
-		var tilemap = new Tilemap (1, 1);
+
+		var tilemap = new Tilemap(1, 1);
 		var exists = tilemap.addTile;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function addTileAt () {
-		
+
+	@Test public function addTileAt()
+	{
 		// TODO: Confirm functionality
-		
-		var tilemap = new Tilemap (1, 1);
+
+		var tilemap = new Tilemap(1, 1);
 		var exists = tilemap.addTileAt;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function addTiles () {
-		
+
+	@Test public function addTiles()
+	{
 		// TODO: Confirm functionality
-		
-		var tilemap = new Tilemap (1, 1);
+
+		var tilemap = new Tilemap(1, 1);
 		var exists = tilemap.addTiles;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function contains () {
-		
+
+	@Test public function contains()
+	{
 		// TODO: Confirm functionality
-		
-		var tilemap = new Tilemap (1, 1);
+
+		var tilemap = new Tilemap(1, 1);
 		var exists = tilemap.contains;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function getTileAt () {
-		
+
+	@Test public function getTileAt()
+	{
 		// TODO: Confirm functionality
-		
-		var tilemap = new Tilemap (1, 1);
+
+		var tilemap = new Tilemap(1, 1);
 		var exists = tilemap.getTileAt;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function getTileIndex () {
-		
+
+	@Test public function getTileIndex()
+	{
 		// TODO: Confirm functionality
-		
-		var tilemap = new Tilemap (1, 1);
+
+		var tilemap = new Tilemap(1, 1);
 		var exists = tilemap.getTileIndex;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function removeTile () {
-		
+
+	@Test public function removeTile()
+	{
 		// TODO: Confirm functionality
-		
-		var tilemap = new Tilemap (1, 1);
+
+		var tilemap = new Tilemap(1, 1);
 		var exists = tilemap.removeTile;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function removeTileAt () {
-		
+
+	@Test public function removeTileAt()
+	{
 		// TODO: Confirm functionality
-		
-		var tilemap = new Tilemap (1, 1);
+
+		var tilemap = new Tilemap(1, 1);
 		var exists = tilemap.removeTileAt;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function removeTiles () {
-		
+
+	@Test public function removeTiles()
+	{
 		// TODO: Confirm functionality
-		
-		var tilemap = new Tilemap (1, 1);
+
+		var tilemap = new Tilemap(1, 1);
 		var exists = tilemap.removeTiles;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
 }

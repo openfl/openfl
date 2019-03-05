@@ -19,31 +19,43 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
+
 package js;
 
 import js.html.Storage;
 import js.html.XMLHttpRequest;
 
-class Browser {
+class Browser
+{
 	/** The global window object. */
 	public static var window(get, never):js.html.Window;
-	inline static function get_window() return untyped __js__("window");
+
+	inline static function get_window()
+		return untyped __js__("window");
 
 	/** Shortcut to Window.document. */
 	public static var document(get, never):js.html.HTMLDocument;
-	inline static function get_document() return untyped __js__("window.document");
+
+	inline static function get_document()
+		return untyped __js__("window.document");
 
 	/** Shortcut to Window.location. */
 	public static var location(get, never):js.html.Location;
-	inline static function get_location() return untyped __js__("window.location");
+
+	inline static function get_location()
+		return untyped __js__("window.location");
 
 	/** Shortcut to Window.navigator. */
 	public static var navigator(get, never):js.html.Navigator;
-	inline static function get_navigator() return untyped __js__("window.navigator");
+
+	inline static function get_navigator()
+		return untyped __js__("window.navigator");
 
 	/** Shortcut to Window.console. */
 	public static var console(get, never):js.html.Console;
-	inline static function get_console() return untyped __js__("window.console");
+
+	inline static function get_console()
+		return untyped __js__("window.console");
 
 	/**
 	 * True if a window object exists, false otherwise.
@@ -52,19 +64,24 @@ class Browser {
 	 * environment such as node.js.
 	 */
 	public static var supported(get, never):Bool;
-	inline static function get_supported() return untyped __js__("typeof window") != "undefined";
+
+	inline static function get_supported()
+		return untyped __js__("typeof window") != "undefined";
 
 	/**
 	 * Safely gets the browser's local storage, or returns null if localStorage is unsupported or
 	 * disabled.
 	 */
-	public static function getLocalStorage() : Storage
+	public static function getLocalStorage():Storage
 	{
-		try {
+		try
+		{
 			var s = window.localStorage;
 			s.getItem("");
 			return s;
-		} catch( e : Dynamic ) {
+		}
+		catch (e:Dynamic)
+		{
 			return null;
 		}
 	}
@@ -73,13 +90,16 @@ class Browser {
 	 * Safely gets the browser's session storage, or returns null if sessionStorage is unsupported
 	 * or disabled.
 	 */
-	public static function getSessionStorage() : Storage
+	public static function getSessionStorage():Storage
 	{
-		try {
+		try
+		{
 			var s = window.sessionStorage;
 			s.getItem("");
 			return s;
-		} catch( e : Dynamic ) {
+		}
+		catch (e:Dynamic)
+		{
 			return null;
 		}
 	}
@@ -88,13 +108,15 @@ class Browser {
 	 * Creates an XMLHttpRequest, with a fallback to ActiveXObject for ancient versions of Internet
 	 * Explorer.
 	 */
-	public static function createXMLHttpRequest() : XMLHttpRequest
+	public static function createXMLHttpRequest():XMLHttpRequest
 	{
-		if( untyped __js__("typeof XMLHttpRequest") != "undefined" ) {
+		if (untyped __js__("typeof XMLHttpRequest") != "undefined")
+		{
 			return new XMLHttpRequest();
 		}
-		if( untyped __js__("typeof ActiveXObject") != "undefined" ) {
-			return untyped __new__("ActiveXObject","Microsoft.XMLHTTP");
+		if (untyped __js__("typeof ActiveXObject") != "undefined")
+		{
+			return untyped __new__("ActiveXObject", "Microsoft.XMLHTTP");
 		}
 		throw "Unable to create XMLHttpRequest object.";
 	}
@@ -102,7 +124,8 @@ class Browser {
 	/**
 		Display an alert message box containing the given message. See also `Window.alert()`.
 	**/
-	public static function alert( v : Dynamic ) {
-		@:privateAccess window.alert(Boot.__string_rec(v,""));
+	public static function alert(v:Dynamic)
+	{
+		@:privateAccess window.alert(Boot.__string_rec(v, ""));
 	}
 }

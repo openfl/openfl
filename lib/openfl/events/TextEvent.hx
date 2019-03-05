@@ -1,18 +1,16 @@
-package openfl.events; #if (display || !flash)
+package openfl.events;
 
-
+#if (display || !flash)
 @:jsRequire("openfl/events/TextEvent", "default")
-
 /**
  * An object dispatches a TextEvent object when a user enters text in a text
  * field or clicks a hyperlink in an HTML-enabled text field. There are two
  * types of text events: `TextEvent.LINK` and
  * `TextEvent.TEXT_INPUT`.
- * 
+ *
  */
-extern class TextEvent extends Event {
-	
-	
+extern class TextEvent extends Event
+{
 	/**
 	 * Defines the value of the `type` property of a `link`
 	 * event object.
@@ -20,7 +18,7 @@ extern class TextEvent extends Event {
 	 * This event has the following properties:
 	 */
 	public static inline var LINK = "link";
-	
+
 	/**
 	 * Defines the value of the `type` property of a
 	 * `textInput` event object.
@@ -31,8 +29,7 @@ extern class TextEvent extends Event {
 	 * This event has the following properties:
 	 */
 	public static inline var TEXT_INPUT = "textInput";
-	
-	
+
 	/**
 	 * For a `textInput` event, the character or sequence of
 	 * characters entered by the user. For a `link` event, the text of
@@ -40,12 +37,11 @@ extern class TextEvent extends Event {
 	 * `<a>` tag.
 	 */
 	public var text:String;
-	
-	
+
 	/**
 	 * Creates an Event object that contains information about text events. Event
 	 * objects are passed as parameters to event listeners.
-	 * 
+	 *
 	 * @param type       The type of the event. Event listeners can access this
 	 *                   information through the inherited `type`
 	 *                   property. Possible values are:
@@ -62,12 +58,8 @@ extern class TextEvent extends Event {
 	 *                   Event listeners can access this information through the
 	 *                   `text` property.
 	 */
-	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, text:String = "");
-	
-	
+	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false, text:String = "");
 }
-
-
 #else
 typedef TextEvent = flash.events.TextEvent;
 #end

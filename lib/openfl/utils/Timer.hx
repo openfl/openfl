@@ -1,10 +1,9 @@
-package openfl.utils; #if (display || !flash)
+package openfl.utils;
 
-
+#if (display || !flash)
 import openfl.events.EventDispatcher;
 
 @:jsRequire("openfl/utils/Timer", "default")
-
 
 /**
  * The Timer class is the interface to timers, which let you run code on a
@@ -20,22 +19,21 @@ import openfl.events.EventDispatcher;
  * millisecond intervals, but your timer is set to fire an event at 80
  * milliseconds, the event will be dispatched close to the 100 millisecond
  * interval. Memory-intensive scripts may also offset the events.
- * 
+ *
  * @event timer         Dispatched whenever a Timer object reaches an interval
  *                      specified according to the `Timer.delay`
  *                      property.
  * @event timerComplete Dispatched whenever it has completed the number of
  *                      requests set by `Timer.repeatCount`.
  */
-extern class Timer extends EventDispatcher {
-	
-	
+extern class Timer extends EventDispatcher
+{
 	/**
 	 * The total number of times the timer has fired since it started at zero. If
 	 * the timer has been reset, only the fires since the reset are counted.
 	 */
-	public var currentCount (default, null):Int;
-	
+	public var currentCount(default, null):Int;
+
 	/**
 	 * The delay, in milliseconds, between timer events. If you set the delay
 	 * interval while the timer is running, the timer will restart at the same
@@ -44,15 +42,14 @@ extern class Timer extends EventDispatcher {
 	 * **Note:** A `delay` lower than 20 milliseconds is not
 	 * recommended. Timer frequency is limited to 60 frames per second, meaning a
 	 * delay lower than 16.6 milliseconds causes runtime problems.
-	 * 
+	 *
 	 * @throws Error Throws an exception if the delay specified is negative or
 	 *               not a finite number.
 	 */
-	public var delay (get, set):Float;
-	
-	@:noCompletion private function get_delay ():Float;
-	@:noCompletion private function set_delay (value:Float):Float;
-	
+	public var delay(get, set):Float;
+	@:noCompletion private function get_delay():Float;
+	@:noCompletion private function set_delay(value:Float):Float;
+
 	/**
 	 * The total number of times the timer is set to run. If the repeat count is
 	 * set to 0, the timer continues forever or until the `stop()`
@@ -61,25 +58,23 @@ extern class Timer extends EventDispatcher {
 	 * is set to a total that is the same or less then `currentCount`
 	 * the timer stops and will not fire again.
 	 */
-	public var repeatCount (get, set):Int;
-	
-	@:noCompletion private function get_repeatCount ():Int;
-	@:noCompletion private function set_repeatCount (value:Int):Int;
-	
+	public var repeatCount(get, set):Int;
+	@:noCompletion private function get_repeatCount():Int;
+	@:noCompletion private function set_repeatCount(value:Int):Int;
+
 	/**
 	 * The timer's current state; `true` if the timer is running,
 	 * otherwise `false`.
 	 */
-	public var running (default, null):Bool;
-	
-	
+	public var running(default, null):Bool;
+
 	/**
 	 * Constructs a new Timer object with the specified `delay` and
 	 * `repeatCount` states.
 	 *
 	 * The timer does not start automatically; you must call the
 	 * `start()` method to start it.
-	 * 
+	 *
 	 * @param delay       The delay between timer events, in milliseconds. A
 	 *                    `delay` lower than 20 milliseconds is not
 	 *                    recommended. Timer frequency is limited to 60 frames
@@ -90,38 +85,31 @@ extern class Timer extends EventDispatcher {
 	 *                    specified number of times and then stops.
 	 * @throws Error if the delay specified is negative or not a finite number
 	 */
-	public function new (delay:Float, repeatCount:Int = 0);
-	
-	
+	public function new(delay:Float, repeatCount:Int = 0);
+
 	/**
 	 * Stops the timer, if it is running, and sets the `currentCount`
 	 * property back to 0, like the reset button of a stopwatch. Then, when
 	 * `start()` is called, the timer instance runs for the specified
 	 * number of repetitions, as set by the `repeatCount` value.
-	 * 
+	 *
 	 */
-	public function reset ():Void;
-	
-	
+	public function reset():Void;
+
 	/**
 	 * Starts the timer, if it is not already running.
-	 * 
+	 *
 	 */
-	public function start ():Void;
-	
-	
+	public function start():Void;
+
 	/**
 	 * Stops the timer. When `start()` is called after
 	 * `stop()`, the timer instance runs for the _remaining_
 	 * number of repetitions, as set by the `repeatCount` property.
-	 * 
+	 *
 	 */
-	public function stop ():Void;
-	
-	
+	public function stop():Void;
 }
-
-
 #else
 typedef Timer = flash.utils.Timer;
 #end

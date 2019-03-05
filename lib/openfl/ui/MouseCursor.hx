@@ -1,17 +1,14 @@
-package openfl.ui; #if (display || !flash)
+package openfl.ui;
 
-
+#if (display || !flash)
 // import lime.ui.MouseCursor in LimeMouseCursor;
-
-
-@:enum abstract MouseCursor(String) from String to String {
-	
+@:enum abstract MouseCursor(String) from String to String
+{
 	public var ARROW = "arrow";
 	public var AUTO = "auto";
 	public var BUTTON = "button";
 	public var HAND = "hand";
 	public var IBEAM = "ibeam";
-	
 	@:noCompletion private var __CROSSHAIR = "crosshair";
 	@:noCompletion private var __CUSTOM = "custom";
 	@:noCompletion private var __MOVE = "move";
@@ -21,11 +18,8 @@ package openfl.ui; #if (display || !flash)
 	@:noCompletion private var __RESIZE_WE = "resize_we";
 	@:noCompletion private var __WAIT = "wait";
 	@:noCompletion private var __WAIT_ARROW = "waitarrow";
-	
 	// @:from private static function fromLimeCursor (cursor:LimeMouseCursor):MouseCursor {
-		
 	// 	return switch (cursor) {
-			
 	// 		case LimeMouseCursor.ARROW: MouseCursor.ARROW;
 	// 		case LimeMouseCursor.DEFAULT: MouseCursor.AUTO;
 	// 		case LimeMouseCursor.POINTER: MouseCursor.BUTTON;
@@ -40,14 +34,9 @@ package openfl.ui; #if (display || !flash)
 	// 		case LimeMouseCursor.WAIT_ARROW: MouseCursor.__WAIT_ARROW;
 	// 		case LimeMouseCursor.CUSTOM: MouseCursor.__CUSTOM;
 	// 		default: MouseCursor.AUTO;
-			
 	// 	}
-		
 	// }
-	
 }
-
-
 #else
 typedef MouseCursor = flash.ui.MouseCursor;
 #end

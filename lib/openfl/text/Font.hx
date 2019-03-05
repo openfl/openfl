@@ -1,6 +1,6 @@
-package openfl.text; #if (display || !flash)
+package openfl.text;
 
-
+#if (display || !flash)
 import openfl.utils.Future;
 // import lime.text.Font in LimeFont;
 import openfl.utils.ByteArray;
@@ -15,37 +15,32 @@ import openfl.utils.ByteArray;
  * load external fonts, or to create an instance of a Font object by itself.
  * Use the Font class as an abstract base class.
  */
-extern class Font /*extends LimeFont*/ {
-	
-	
+extern class Font /*extends LimeFont*/
+{
 	/**
 	 * The name of an embedded font.
 	 */
-	public var fontName (get, set):String;
-	
-	@:noCompletion private function get_fontName ():String;
-	@:noCompletion private function set_fontName (value:String):String;
-	
+	public var fontName(get, set):String;
+	@:noCompletion private function get_fontName():String;
+	@:noCompletion private function set_fontName(value:String):String;
+
 	/**
 	 * The style of the font. This value can be any of the values defined in the
 	 * FontStyle class.
 	 */
 	public var fontStyle:FontStyle;
-	
+
 	/**
 	 * The type of the font. This value can be any of the constants defined in
 	 * the FontType class.
 	 */
 	public var fontType:FontType;
-	
-	
-	public function new (name:String = null);
-	
-	
+	public function new(name:String = null);
+
 	/**
 	 * Specifies whether to provide a list of the currently available embedded
 	 * fonts.
-	 * 
+	 *
 	 * @param enumerateDeviceFonts Indicates whether you want to limit the list
 	 *                             to only the currently available embedded
 	 *                             fonts. If this is set to `true`
@@ -55,35 +50,22 @@ extern class Font /*extends LimeFont*/ {
 	 *                             embedded fonts is returned.
 	 * @return A list of available fonts as an array of Font objects.
 	 */
-	public static function enumerateFonts (enumerateDeviceFonts:Bool = false):Array<Font>;
-	
-	
-	public static function fromBytes (bytes:ByteArray):Font;
-	
-	
-	public static function fromFile (path:String):Font;
-	
-	
-	public static function loadFromBytes (bytes:ByteArray):Future<Font>;
-	public static function loadFromFile (path:String):Future<Font>;
-	public static function loadFromName (path:String):Future<Font>;
-	
-	
+	public static function enumerateFonts(enumerateDeviceFonts:Bool = false):Array<Font>;
+	public static function fromBytes(bytes:ByteArray):Font;
+	public static function fromFile(path:String):Font;
+	public static function loadFromBytes(bytes:ByteArray):Future<Font>;
+	public static function loadFromFile(path:String):Future<Font>;
+	public static function loadFromName(path:String):Future<Font>;
 	#if flash
-	@:noCompletion @:dox(hide) public function hasGlyphs (str:String):Bool;
+	@:noCompletion @:dox(hide) public function hasGlyphs(str:String):Bool;
 	#end
-	
-	
+
 	/**
 	 * Registers a font in the global font list.
-	 * 
+	 *
 	 */
-	public static function registerFont (font:Dynamic):Void;
-	
-	
+	public static function registerFont(font:Dynamic):Void;
 }
-
-
 #else
 typedef Font = flash.text.Font;
 #end

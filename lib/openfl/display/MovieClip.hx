@@ -1,8 +1,7 @@
-package openfl.display; #if (display || !flash)
+package openfl.display;
 
-
+#if (display || !flash)
 @:jsRequire("openfl/display/MovieClip", "default")
-
 /**
  * The MovieClip class inherits from the following classes: Sprite,
  * DisplayObjectContainer, InteractiveObject, DisplayObject, and
@@ -13,7 +12,7 @@ package openfl.display; #if (display || !flash)
  * In Flash Professional, the methods for the MovieClip class provide the
  * same functionality as actions that target movie clips. Some additional
  * methods do not have equivalent actions in the Actions toolbox in the
- * Actions panel in the Flash authoring tool. 
+ * Actions panel in the Flash authoring tool.
  *
  * Children instances placed on the Stage in Flash Professional cannot be
  * accessed by code from within the constructor of a parent instance since
@@ -38,27 +37,24 @@ package openfl.display; #if (display || !flash)
  * MovieClip.opaqueBackground property for a suitable device, define
  * FEATURE_BITMAPCACHE in your project.
  */
-extern class MovieClip extends Sprite implements Dynamic {
-	
-	
+extern class MovieClip extends Sprite implements Dynamic
+{
 	/**
 	 * Specifies the number of the frame in which the playhead is located in the
 	 * timeline of the MovieClip instance. If the movie clip has multiple scenes,
 	 * this value is the frame number in the current scene.
 	 */
-	public var currentFrame (get, never):Int;
-	
-	@:noCompletion private function get_currentFrame ():Int;
-	
+	public var currentFrame(get, never):Int;
+	@:noCompletion private function get_currentFrame():Int;
+
 	/**
 	 * The label at the current frame in the timeline of the MovieClip instance.
 	 * If the current frame has no label, `currentLabel` is
 	 * `null`.
 	 */
-	public var currentFrameLabel (get, never):String;
-	
-	@:noCompletion private function get_currentFrameLabel ():String;
-	
+	public var currentFrameLabel(get, never):String;
+	@:noCompletion private function get_currentFrameLabel():String;
+
 	/**
 	 * The current label in which the playhead is located in the timeline of the
 	 * MovieClip instance. If the current frame has no label,
@@ -66,19 +62,17 @@ extern class MovieClip extends Sprite implements Dynamic {
 	 * includes a label. If the current frame and previous frames do not include
 	 * a label, `currentLabel` returns `null`.
 	 */
-	public var currentLabel (get, never):String;
-	
-	@:noCompletion private function get_currentLabel ():String;
-	
+	public var currentLabel(get, never):String;
+	@:noCompletion private function get_currentLabel():String;
+
 	/**
 	 * Returns an array of FrameLabel objects from the current scene. If the
 	 * MovieClip instance does not use scenes, the array includes all frame
 	 * labels from the entire MovieClip instance.
 	 */
-	public var currentLabels (get, never):Array<FrameLabel>;
-	
-	@:noCompletion private function get_currentLabels ():Array<FrameLabel>;
-	
+	public var currentLabels(get, never):Array<FrameLabel>;
+	@:noCompletion private function get_currentLabels():Array<FrameLabel>;
+
 	/**
 	 * A Boolean value that indicates whether a movie clip is enabled. The
 	 * default value of `enabled` is `true`. If
@@ -94,7 +88,7 @@ extern class MovieClip extends Sprite implements Dynamic {
 	 * is not included in automatic tab ordering.
 	 */
 	public var enabled:Bool;
-	
+
 	/**
 	 * The number of frames that are loaded from a streaming SWF file. You can
 	 * use the `framesLoaded` property to determine whether the
@@ -108,18 +102,14 @@ extern class MovieClip extends Sprite implements Dynamic {
 	 * `framesLoaded` property returns the number of frames loaded for
 	 * _all_ scenes in the movie clip.
 	 */
-	public var framesLoaded (get, never):Int;
-	
-	@:noCompletion private function get_framesLoaded ():Int;
-	
-	public var isPlaying (get, never):Bool;
-	
-	@:noCompletion private function get_isPlaying ():Bool;
-	
+	public var framesLoaded(get, never):Int;
+	@:noCompletion private function get_framesLoaded():Int;
+	public var isPlaying(get, never):Bool;
+	@:noCompletion private function get_isPlaying():Bool;
 	#if flash
-	@:noCompletion @:dox(hide) public var scenes (default, null):Array<flash.display.Scene>;
+	@:noCompletion @:dox(hide) public var scenes(default, null):Array<flash.display.Scene>;
 	#end
-	
+
 	/**
 	 * The total number of frames in the MovieClip instance.
 	 *
@@ -127,31 +117,25 @@ extern class MovieClip extends Sprite implements Dynamic {
 	 * `totalFrames` property returns the total number of frames in
 	 * _all_ scenes in the movie clip.
 	 */
-	public var totalFrames (get, never):Int;
-	
-	@:noCompletion private function get_totalFrames ():Int;
-	
+	public var totalFrames(get, never):Int;
+	@:noCompletion private function get_totalFrames():Int;
 	#if flash
 	@:noCompletion @:dox(hide) public var trackAsMenu:Bool;
 	#end
-	
-	
+
 	/**
 	 * Creates a new MovieClip instance. After creating the MovieClip, call the
 	 * `addChild()` or `addChildAt()` method of a display
 	 * object container that is onstage.
 	 */
-	public function new ();
-	
-	
-	public function addFrameScript (index:Int, method:Void->Void):Void;
-	
-	
+	public function new();
+	public function addFrameScript(index:Int, method:Void->Void):Void;
+
 	/**
 	 * Starts playing the SWF file at the specified frame. This happens after all
 	 * remaining actions in the frame have finished executing. To specify a scene
 	 * as well as a frame, specify a value for the `scene` parameter.
-	 * 
+	 *
 	 * @param frame A number representing the frame number, or a string
 	 *              representing the label of the frame, to which the playhead is
 	 *              sent. If you specify a number, it is relative to the scene
@@ -161,15 +145,14 @@ extern class MovieClip extends Sprite implements Dynamic {
 	 *              specified scene.
 	 * @param scene The name of the scene to play. This parameter is optional.
 	 */
-	public function gotoAndPlay (frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end, scene:String = null):Void;
-	
-	
+	public function gotoAndPlay(frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end, scene:String = null):Void;
+
 	/**
 	 * Brings the playhead to the specified frame of the movie clip and stops it
 	 * there. This happens after all remaining actions in the frame have finished
 	 * executing. If you want to specify a scene in addition to a frame, specify
 	 * a `scene` parameter.
-	 * 
+	 *
 	 * @param frame A number representing the frame number, or a string
 	 *              representing the label of the frame, to which the playhead is
 	 *              sent. If you specify a number, it is relative to the scene
@@ -181,52 +164,40 @@ extern class MovieClip extends Sprite implements Dynamic {
 	 * @throws ArgumentError If the `scene` or `frame`
 	 *                       specified are not found in this movie clip.
 	 */
-	public function gotoAndStop (frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end, scene:String = null):Void;
-	
-	
+	public function gotoAndStop(frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end, scene:String = null):Void;
+
 	/**
 	 * Sends the playhead to the next frame and stops it. This happens after all
 	 * remaining actions in the frame have finished executing.
-	 * 
+	 *
 	 */
-	public function nextFrame ():Void;
-	
-	
+	public function nextFrame():Void;
 	#if flash
-	@:noCompletion @:dox(hide) public function nextScene ():Void;
+	@:noCompletion @:dox(hide) public function nextScene():Void;
 	#end
-	
-	
+
 	/**
 	 * Moves the playhead in the timeline of the movie clip.
-	 * 
+	 *
 	 */
-	public function play ():Void;
-	
-	
+	public function play():Void;
+
 	/**
 	 * Sends the playhead to the previous frame and stops it. This happens after
 	 * all remaining actions in the frame have finished executing.
-	 * 
+	 *
 	 */
-	public function prevFrame ():Void;
-	
-	
+	public function prevFrame():Void;
 	#if flash
-	@:noCompletion @:dox(hide) public function prevScene ():Void;
+	@:noCompletion @:dox(hide) public function prevScene():Void;
 	#end
-	
-	
+
 	/**
 	 * Stops the playhead in the movie clip.
-	 * 
+	 *
 	 */
-	public function stop ():Void;
-	
-	
+	public function stop():Void;
 }
-
-
 #else
 typedef MovieClip = flash.display.MovieClip;
 #end

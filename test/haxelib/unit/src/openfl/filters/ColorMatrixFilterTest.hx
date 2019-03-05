@@ -2,24 +2,20 @@ package openfl.filters;
 
 import massive.munit.Assert;
 
-class ColorMatrixFilterTest {
-	@Test public function new_() {
-		var identity = [
-			1, 0, 0, 0, 0,
-			0, 1, 0, 0, 0,
-			0, 0, 1, 0, 0,
-			0, 0, 0, 1, 0
-		];
-		var matrix = [
-			1.0, 2.0, 3.0
-		];
+class ColorMatrixFilterTest
+{
+	@Test public function new_()
+	{
+		var identity = [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0];
+		var matrix = [1.0, 2.0, 3.0];
 
-		var color = new ColorMatrixFilter ();
+		var color = new ColorMatrixFilter();
 		var color_matrix = color.matrix;
 
 		Assert.areEqual(identity.length, color_matrix.length);
 
-		for (i in 0...color_matrix.length) {
+		for (i in 0...color_matrix.length)
+		{
 			Assert.areEqual(identity[i], color_matrix[i]);
 		}
 
@@ -33,25 +29,28 @@ class ColorMatrixFilterTest {
 		#end
 
 		#if flash
-		for (i in 0...color_matrix.length) {
-			if(i < matrix.length){
+		for (i in 0...color_matrix.length)
+		{
+			if (i < matrix.length)
+			{
 				Assert.areEqual(matrix[i], color_matrix[i]);
-			} else {
+			}
+			else
+			{
 				Assert.areEqual(0.0, color_matrix[i]);
 			}
 		}
 		#else
-		for (i in 0...matrix.length) {
+		for (i in 0...matrix.length)
+		{
 			Assert.areEqual(matrix[i], color_matrix[i]);
 		}
 		#end
-
 	}
 
-	@Test public function clone() {
-		var matrix = [
-			1.0, 2.0, 3.0
-		];
+	@Test public function clone()
+	{
+		var matrix = [1.0, 2.0, 3.0];
 
 		var color = new ColorMatrixFilter(matrix);
 		var color_clone = color.clone();
@@ -61,7 +60,8 @@ class ColorMatrixFilterTest {
 		var result = cast(color_clone, ColorMatrixFilter).matrix;
 
 		#if flash
-		for (i in 0...matrix.length) {
+		for (i in 0...matrix.length)
+		{
 			Assert.areEqual(matrix[i], result[i]);
 		}
 		#else
@@ -69,18 +69,12 @@ class ColorMatrixFilterTest {
 		#end
 	}
 
-	@Test public function matrix() {
-		var identity = [
-			1, 0, 0, 0, 0,
-			0, 1, 0, 0, 0,
-			0, 0, 1, 0, 0,
-			0, 0, 0, 1, 0
-		];
-		var matrix = [
-			5.0, 1.0, 3.0
-		];
+	@Test public function matrix()
+	{
+		var identity = [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0];
+		var matrix = [5.0, 1.0, 3.0];
 
-		var color = new ColorMatrixFilter ();
+		var color = new ColorMatrixFilter();
 		var color_matrix = null;
 
 		#if !flash
@@ -90,7 +84,8 @@ class ColorMatrixFilterTest {
 
 		Assert.areEqual(identity.length, color_matrix.length);
 
-		for (i in 0...color_matrix.length) {
+		for (i in 0...color_matrix.length)
+		{
 			Assert.areEqual(identity[i], color_matrix[i]);
 		}
 		#end
@@ -106,15 +101,20 @@ class ColorMatrixFilterTest {
 		#end
 
 		#if flash
-		for (i in 0...color_matrix.length) {
-			if(i < matrix.length){
+		for (i in 0...color_matrix.length)
+		{
+			if (i < matrix.length)
+			{
 				Assert.areEqual(matrix[i], color_matrix[i]);
-			} else {
+			}
+			else
+			{
 				Assert.areEqual(0.0, color_matrix[i]);
 			}
 		}
 		#else
-		for (i in 0...matrix.length) {
+		for (i in 0...matrix.length)
+		{
 			Assert.areEqual(matrix[i], color_matrix[i]);
 		}
 		#end

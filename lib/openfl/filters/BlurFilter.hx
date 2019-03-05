@@ -1,8 +1,7 @@
-package openfl.filters; #if (display || !flash)
+package openfl.filters;
 
-
+#if (display || !flash)
 @:jsRequire("openfl/filters/BlurFilter", "default")
-
 /**
  * The BlurFilter class lets you apply a blur visual effect to display
  * objects. A blur effect softens the details of an image. You can produce
@@ -19,18 +18,18 @@ package openfl.filters; #if (display || !flash)
  * BlurFilter()`. The use of filters depends on the object to which you
  * apply the filter:
  *
- * 
+ *
  *  * To apply filters to movie clips, text fields, buttons, and video, use
  * the `filters` property(inherited from DisplayObject). Setting
  * the `filters` property of an object does not modify the object,
  * and you can remove the filter by clearing the `filters`
- * property. 
+ * property.
  *  * To apply filters to BitmapData objects, use the
  * `BitmapData.applyFilter()` method. Calling
  * `applyFilter()` on a BitmapData object takes the source
  * BitmapData object and the filter object and generates a filtered image as a
  * result.
- * 
+ *
  *
  * If you apply a filter to a display object, the
  * `cacheAsBitmap` property of the display object is set to
@@ -53,23 +52,22 @@ package openfl.filters; #if (display || !flash)
  * filter is turned off if the resulting image exceeds the maximum
  * dimensions.
  */
-@:final extern class BlurFilter extends BitmapFilter {
-	
-	
+@:final extern class BlurFilter extends BitmapFilter
+{
 	/**
 	 * The amount of horizontal blur. Valid values are from 0 to 255(floating
 	 * point). The default value is 4. Values that are a power of 2(such as 2,
 	 * 4, 8, 16 and 32) are optimized to render more quickly than other values.
 	 */
 	public var blurX:Float;
-	
+
 	/**
 	 * The amount of vertical blur. Valid values are from 0 to 255(floating
 	 * point). The default value is 4. Values that are a power of 2(such as 2,
 	 * 4, 8, 16 and 32) are optimized to render more quickly than other values.
 	 */
 	public var blurY:Float;
-	
+
 	/**
 	 * The number of times to perform the blur. The default value is
 	 * `BitmapFilterQuality.LOW`, which is equivalent to applying the
@@ -89,33 +87,32 @@ package openfl.filters; #if (display || !flash)
 	 * You can use the following BitmapFilterQuality constants to specify
 	 * values of the `quality` property:
 	 *
-	 * 
+	 *
 	 *  * `BitmapFilterQuality.LOW`
 	 *  * `BitmapFilterQuality.MEDIUM`
 	 *  * `BitmapFilterQuality.HIGH`
-	 * 
+	 *
 	 */
-	public var quality (default, set):Int;
-	
-	
+	public var quality(default, set):Int;
+
 	/**
 	 * Initializes the filter with the specified parameters. The default values
 	 * create a soft, unfocused image.
-	 * 
+	 *
 	 * @param blurX   The amount to blur horizontally. Valid values are from 0 to
 	 *                255.0(floating-point value).
 	 * @param blurY   The amount to blur vertically. Valid values are from 0 to
 	 *                255.0(floating-point value).
 	 * @param quality The number of times to apply the filter. You can specify
 	 *                the quality using the BitmapFilterQuality constants:
-	 *                
+	 *
 	 *
 	 *               * `flash.filters.BitmapFilterQuality.LOW`
 	 *
 	 *               * `flash.filters.BitmapFilterQuality.MEDIUM`
 	 *
 	 *               * `flash.filters.BitmapFilterQuality.HIGH`
-	 *                
+	 *
 	 *
 	 *                High quality approximates a Gaussian blur. For most
 	 *                applications, these three values are sufficient. Although
@@ -123,12 +120,8 @@ package openfl.filters; #if (display || !flash)
 	 *                different effects, be aware that higher values are rendered
 	 *                more slowly.
 	 */
-	public function new (blurX:Float = 4, blurY:Float = 4, quality:Int = 1);
-	
-	
+	public function new(blurX:Float = 4, blurY:Float = 4, quality:Int = 1);
 }
-
-
 #else
 typedef BlurFilter = flash.filters.BlurFilter;
 #end

@@ -1,29 +1,22 @@
 package openfl.events;
 
+class TimerEventTest
+{
+	@Test public function new_()
+	{
+		// TODO: Confirm functionality
 
-class TimerEventTest {
-	
-	
-	@Test public function new_ () {
-		
-		// TODO: Confirm functionality
-		
-		var timerEvent = new TimerEvent (TimerEvent.TIMER);
-		Assert.isNotNull (timerEvent);
-		
+		var timerEvent = new TimerEvent(TimerEvent.TIMER);
+		Assert.isNotNull(timerEvent);
 	}
-	
-	
-	@Test public function updateAfterEvent () {
-		
+
+	@Test public function updateAfterEvent()
+	{
 		// TODO: Confirm functionality
-		
-		var timerEvent = new TimerEvent (TimerEvent.TIMER);
+
+		var timerEvent = new TimerEvent(TimerEvent.TIMER);
 		var exists = timerEvent.updateAfterEvent;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
 }

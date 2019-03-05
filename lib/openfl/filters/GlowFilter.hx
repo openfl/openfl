@@ -1,8 +1,7 @@
-package openfl.filters; #if (display || !flash)
+package openfl.filters;
 
-
+#if (display || !flash)
 @:jsRequire("openfl/filters/GlowFilter", "default")
-
 /**
  * The GlowFilter class lets you apply a glow effect to display objects. You
  * have several options for the style of the glow, including inner or outer
@@ -16,17 +15,17 @@ package openfl.filters; #if (display || !flash)
  * The use of filters depends on the object to which you apply the
  * filter:
  *
- * 
+ *
  *  * To apply filters to display objects, use the `filters`
  * property(inherited from DisplayObject). Setting the `filters`
  * property of an object does not modify the object, and you can remove the
- * filter by clearing the `filters` property. 
+ * filter by clearing the `filters` property.
  *  * To apply filters to BitmapData objects, use the
  * `BitmapData.applyFilter()` method. Calling
  * `applyFilter()` on a BitmapData object takes the source
  * BitmapData object and the filter object and generates a filtered image as a
  * result.
- * 
+ *
  *
  * If you apply a filter to a display object, the
  * `cacheAsBitmap` property of the display object is set to
@@ -49,50 +48,49 @@ package openfl.filters; #if (display || !flash)
  * filter is turned off if the resulting image exceeds the maximum
  * dimensions.
  */
-@:final extern class GlowFilter extends BitmapFilter {
-	
-	
+@:final extern class GlowFilter extends BitmapFilter
+{
 	/**
 	 * The alpha transparency value for the color. Valid values are 0 to 1. For
 	 * example, .25 sets a transparency value of 25%. The default value is 1.
 	 */
 	public var alpha:Float;
-	
+
 	/**
 	 * The amount of horizontal blur. Valid values are 0 to 255(floating point).
 	 * The default value is 6. Values that are a power of 2(such as 2, 4, 8, 16,
 	 * and 32) are optimized to render more quickly than other values.
 	 */
 	public var blurX:Float;
-	
+
 	/**
 	 * The amount of vertical blur. Valid values are 0 to 255(floating point).
 	 * The default value is 6. Values that are a power of 2(such as 2, 4, 8, 16,
 	 * and 32) are optimized to render more quickly than other values.
 	 */
 	public var blurY:Float;
-	
+
 	/**
 	 * The color of the glow. Valid values are in the hexadecimal format
 	 * 0x_RRGGBB_. The default value is 0xFF0000.
 	 */
 	public var color:Int;
-	
+
 	/**
 	 * Specifies whether the glow is an inner glow. The value `true`
 	 * indicates an inner glow. The default is `false`, an outer glow
 	 * (a glow around the outer edges of the object).
 	 */
 	public var inner:Bool;
-	
+
 	/**
 	 * Specifies whether the object has a knockout effect. A value of
 	 * `true` makes the object's fill transparent and reveals the
 	 * background color of the document. The default value is `false`
 	 * (no knockout effect).
 	 */
-	public var knockout (default, set):Bool;
-	
+	public var knockout(default, set):Bool;
+
 	/**
 	 * The number of times to apply the filter. The default value is
 	 * `BitmapFilterQuality.LOW`, which is equivalent to applying the
@@ -107,19 +105,18 @@ package openfl.filters; #if (display || !flash)
 	 * a similar effect, and with faster rendering, by simply increasing the
 	 * values of the `blurX` and `blurY` properties.
 	 */
-	public var quality (default, set):Int;
-	
+	public var quality(default, set):Int;
+
 	/**
 	 * The strength of the imprint or spread. The higher the value, the more
 	 * color is imprinted and the stronger the contrast between the glow and the
 	 * background. Valid values are 0 to 255. The default is 2.
 	 */
 	public var strength:Float;
-	
-	
+
 	/**
 	 * Initializes a new GlowFilter instance with the specified parameters.
-	 * 
+	 *
 	 * @param color    The color of the glow, in the hexadecimal format
 	 *                 0x_RRGGBB_. The default value is 0xFF0000.
 	 * @param alpha    The alpha transparency value for the color. Valid values
@@ -139,11 +136,11 @@ package openfl.filters; #if (display || !flash)
 	 *                 are 0 to 255.
 	 * @param quality  The number of times to apply the filter. Use the
 	 *                 BitmapFilterQuality constants:
-	 *                 
+	 *
 	 *                  * `BitmapFilterQuality.LOW`
 	 *                  * `BitmapFilterQuality.MEDIUM`
 	 *                  * `BitmapFilterQuality.HIGH`
-	 *                 
+	 *
 	 *
 	 *                 For more information, see the description of the
 	 *                 `quality` property.
@@ -156,12 +153,9 @@ package openfl.filters; #if (display || !flash)
 	 *                 transparent and reveals the background color of the
 	 *                 document.
 	 */
-	public function new (color:Int = 0xFF0000, alpha:Float = 1, blurX:Float = 6, blurY:Float = 6, strength:Float = 2, quality:Int = 1, inner:Bool = false, knockout:Bool = false);
-	
-	
+	public function new(color:Int = 0xFF0000, alpha:Float = 1, blurX:Float = 6, blurY:Float = 6, strength:Float = 2, quality:Int = 1, inner:Bool = false,
+		knockout:Bool = false);
 }
-
-
 #else
 typedef GlowFilter = flash.filters.GlowFilter;
 #end

@@ -1,33 +1,25 @@
 package openfl.events;
 
-
 import massive.munit.Assert;
 
+class GameInputEventTest
+{
+	@Test public function device()
+	{
+		// TODO: Confirm functionality
 
-class GameInputEventTest {
-	
-	
-	@Test public function device () {
-		
-		// TODO: Confirm functionality
-		
-		var gameInputEvent = new GameInputEvent (GameInputEvent.DEVICE_ADDED);
+		var gameInputEvent = new GameInputEvent(GameInputEvent.DEVICE_ADDED);
 		var exists = gameInputEvent.device;
-		
-		Assert.isNull (exists);
-		
+
+		Assert.isNull(exists);
 	}
-	
-	
-	@Test public function new_ () {
-		
+
+	@Test public function new_()
+	{
 		// TODO: Confirm functionality
-		
-		var gameInputEvent = new GameInputEvent (GameInputEvent.DEVICE_ADDED);
-		
-		Assert.isNotNull (gameInputEvent);
-		
+
+		var gameInputEvent = new GameInputEvent(GameInputEvent.DEVICE_ADDED);
+
+		Assert.isNotNull(gameInputEvent);
 	}
-	
-	
 }
