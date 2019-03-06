@@ -925,8 +925,10 @@ class TextField extends InteractiveObject
 		Returns a DisplayObject reference for the given `id`, for an image or
 		SWF file that has been added to an HTML-formatted text field by using
 		an `<img>` tag. The `<img>` tag is in the following format:
-		<pre xml:space="preserve">` <img src = 'filename.jpg' id =
-		'instanceName' >`</pre>
+
+		```html
+		<img src='filename.jpg' id='instanceName' />
+		```
 
 		@param id The `id` to match (in the `id` attribute of the `<img>`
 				  tag).

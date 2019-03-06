@@ -444,12 +444,18 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		To enable scaling, set the `fullScreenSourceRect` property to a
 		rectangle object:
-		<codeblock xml:space="preserve"> // valid, will enable hardware
-		scaling stage.fullScreenSourceRect = new Rectangle(0,0,320,240); ```
-		To disable scaling, set the `fullScreenSourceRect=null` in
-		ActionScript 3.0, and `undefined` in ActionScript 2.0.
-		<codeblock xml:space="preserve"> stage.fullScreenSourceRect = null;
+
+		```haxe
+		// valid, will enable hardware scaling
+		stage.fullScreenSourceRect = new Rectangle(0,0,320,240);
 		```
+
+		To disable scaling, set `fullScreenSourceRect=null`.
+
+		```haxe
+		stage.fullScreenSourceRect = null;
+		```
+
 		The end user also can select within Flash Player Display Settings to
 		turn off hardware scaling, which is enabled by default. For more
 		information, see <a href="http://www.adobe.com/go/display_settings"

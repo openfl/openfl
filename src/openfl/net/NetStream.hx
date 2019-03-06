@@ -624,14 +624,14 @@ class NetStream extends EventDispatcher
 		of either 60 seconds or twice the value of `NetStream.bufferTime`,
 		whichever value is higher. For example, if `bufferTime` is 20 seconds,
 		Flash Player buffers until `NetStream.bufferLength` is the higher
-		value of either 20~~2 (40), or 60. In this case it buffers until
+		value of either 20*2 (40), or 60. In this case it buffers until
 		`bufferLength` is 60. If `bufferTime` is 40 seconds, Flash Player
-		buffers until `bufferLength` is the higher value of 40~~2 (80), or 60.
+		buffers until `bufferLength` is the higher value of 40*2 (80), or 60.
 		In this case it buffers until `bufferLength` is 80 seconds.
 
 		The `bufferLength` property also has an absolute limit. If any call to
 		`pause()` causes `bufferLength` to increase more than 600 seconds or
-		the value of `bufferTime` ~~ 2, whichever is higher, Flash Player
+		the value of `bufferTime`* 2, whichever is higher, Flash Player
 		flushes the buffer and resets `bufferLength` to 0. For example, if
 		`bufferTime` is 120 seconds, Flash Player flushes the buffer if
 		`bufferLength` reaches 600 seconds; if `bufferTime` is 360 seconds,
@@ -781,16 +781,23 @@ class NetStream extends EventDispatcher
 		**To associate the `client` property with an event handler:**
 
 		1. Create an object and assign it to the `client` property of the
-		NetStream object: <codeblock xml:space="preserve"> var
-		customClient:Object = new Object(); my_netstream.client =
-		customClient; ```
+		NetStream object:
+		```as3
+		var customClient = new Object();
+		my_netstream.client = customClient;
+		```
 		2. Assign a handler function for the desired data event as a property
-		of the client object: <codeblock xml:space="preserve">
-		customClient.onImageData = onImageDataHandler; ```
+		of the client object:
+		```haxe
+		customClient.onImageData = onImageDataHandler;
+		```
 		3. Write the handler function to receive the data event object, such
-		as: <codeblock xml:space="preserve"> public function
-		onImageDataHandler(imageData:Object):void { trace("imageData length: "
-		+ imageData.data.length); } ```
+		as:
+		```as3
+		public function onImageDataHandler(imageData:Object):void {
+			trace("imageData length: " + imageData.data.length);
+		}
+		```
 
 		When data is passed through the stream or during playback, the data
 		event object (in this case the `imageData` object) is populated with
@@ -800,12 +807,18 @@ class NetStream extends EventDispatcher
 		**To associate the `client` property with a subclass:**
 
 		1. Create a subclass with a handler function to receive the data event
-		object: <codeblock xml:space="preserve"> class CustomClient { public
-		function onMetaData(info:Object):void { trace("metadata: duration=" +
-		info.duration + " framerate=" + info.framerate); } ```
+		object:
+		```as3
+		class CustomClient {
+			public function onMetaData(info:Object):void {
+				trace("metadata: duration=" + info.duration + " framerate=" + info.framerate);
+			}
+		```
 		2. Assign an instance of the subclass to the `client` property of the
-		NetStream object: <codeblock xml:space="preserve"> my_netstream.client
-		= new CustomClient(); ```
+		NetStream object:
+		```as3
+		my_netstream.client = new CustomClient();
+		```
 
 		When data is passed through the stream or during playback, the data
 		event object (in this case the `info` object) is populated with the
@@ -1229,13 +1242,21 @@ class NetStream extends EventDispatcher
 		capture device. Call `setSilenceLevel()` to set the silence level
 		threshold. To control the sound properties (volume and panning) of the
 		audio stream, use the `Microphone.soundTransform` property.
-		<pre xml:space="preserve"> var nc:NetConnection = new NetConnection();
-		nc.connect("rtmp://server.domain.com/app"); var ns:NetStream = new
-		NetStream(nc); var live_mic:Microphone = Microphone.get();
-		live_mic.rate = 8; live_mic.setSilenceLevel(20,200); var
-		soundTrans:SoundTransform = new SoundTransform(); soundTrans.volume =
-		6; live_mic.soundTransform = soundTrans; ns.attachAudio(live_mic);
-		ns.publish("mic_stream","live") </pre>
+
+		```haxe
+		var nc = new NetConnection();
+		nc.connect("rtmp://server.domain.com/app");
+		var ns = new NetStream(nc);
+		var live_mic = Microphone.get();
+		live_mic.rate = 8;
+		live_mic.setSilenceLevel(20,200);
+		var soundTrans = new SoundTransform();
+		soundTrans.volume = 6;
+		live_mic.soundTransform = soundTrans;
+		ns.attachAudio(live_mic);
+		ns.publish("mic_stream","live");
+		```
+
 		To hear the audio, call the `NetStream.play()` method and call
 		`DisplayObjectContainer.addChild()` to route the audio to an object on
 		the display list.
@@ -1360,10 +1381,17 @@ class NetStream extends EventDispatcher
 		stream. Before the subscriber is connected to the publisher, call this
 		method to allow the ActionScript code fine access control for
 		peer-to-peer publishing. The following code shows an example of how to
-		create a callback function for this method: <codeblock
-		xml:space="preserve"> var c:Object = new Object; c.onPeerConnect =
-		function(subscriber:NetStream):Boolean { if (accept) return true; else
-		return false; }; m_netStream.client = c; ```
+		create a callback function for this method:
+
+		```as3
+		var c:Object = new Object;
+		c.onPeerConnect = function(subscriber:NetStream):Boolean {
+			if (accept) return true;
+			else return false;
+		};
+		m_netStream.client = c;
+		```
+
 		If a peer-publisher does not implement this method, all peers are
 		allowed to play any published content.
 
@@ -1589,22 +1617,36 @@ class NetStream extends EventDispatcher
 		instance of the "lectureseries" application and records a stream
 		called "lecture". The file "lecture.flv" is recorded in the
 		applications/lectureseries/streams/_definst_ directory:
-		<codeblock xml:space="preserve"> var nc:NetConnection = new
-		NetConnection(); nc.connect("rtmp://fms.example.com/lectureseries");
+
+		```as3
+		var nc:NetConnection = new NetConnection();
+		nc.connect("rtmp://fms.example.com/lectureseries");
 		nc.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
-		function netStatusHandler(event:NetStatusEvent):void{ if
-		(event.info.code == "NetConnection.Connect.Success"){ var ns:NetStream
-		= new NetStream(nc); ns.publish("lecture", "record"); } } ```
+
+		function netStatusHandler(event:NetStatusEvent):void{
+			if (event.info.code == "NetConnection.Connect.Success"){
+				var ns:NetStream = new NetStream(nc);
+				ns.publish("lecture", "record");
+			}
+		}
+		```
+
 		The following example connects to the "monday" instance of the same
 		application. The file "lecture.flv" is recorded in the directory
 		/applications/lectureseries/streams/monday:
-		<codeblock xml:space="preserve"> var nc:NetConnection = new
-		NetConnection(); nc.addEventListener(NetStatusEvent.NET_STATUS,
-		netStatusHandler);
-		nc.connect("rtmp://fms.example.com/lectureseries/monday"); function
-		netStatusHandler(event:NetStatusEvent):void{ if (event.info.code ==
-		"NetConnection.Connect.Success"){ var ns:NetStream = new
-		NetStream(nc); ns.publish("lecture", "record"); } } ```
+
+		```as3
+		var nc:NetConnection = new NetConnection();
+		nc.addEventListener(NetStatusEvent.NET_STATUS, netStatusHandler);
+		nc.connect("rtmp://fms.example.com/lectureseries/monday");
+
+		function netStatusHandler(event:NetStatusEvent):void{
+			if (event.info.code == "NetConnection.Connect.Success"){
+				var ns:NetStream = new NetStream(nc);
+				ns.publish("lecture", "record");
+			}
+		}
+		```
 
 		@param name A string that identifies the stream. Clients that
 					subscribe to this stream pass this name when they call
@@ -1872,8 +1914,12 @@ class NetStream extends EventDispatcher
 		To add a keyframe of metadata to a live stream sent to Flash Media
 		Server, use `@setDataFrame` as the handler name, followed by two
 		additional arguments, for example:
-		<codeblock xml:space="preserve"> var ns:NetStream = new NetStream(nc);
-		ns.send("@setDataFrame", "onMetaData", metaData); ```
+
+		```as3
+		var ns:NetStream = new NetStream(nc);
+		ns.send("@setDataFrame", "onMetaData", metaData);
+		```
+
 		The `@setDataFrame` argument refers to a special handler built in to
 		Flash Media Server. The `onMetaData` argument is the name of a
 		callback function in your client application that listens for the
@@ -1883,8 +1929,10 @@ class NetStream extends EventDispatcher
 
 		Use `@clearDataFrame` to clear a keyframe of metadata that has already
 		been set in the stream:
-		<codeblock xml:space="preserve"> ns.send("@clearDataFrame",
-		"onMetaData"); ```
+
+		```as3
+		ns.send("@clearDataFrame", "onMetaData");
+		```
 
 		@param handlerName The message to send; also the name of the
 						   ActionScript handler to receive the message. The

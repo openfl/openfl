@@ -97,16 +97,25 @@ import openfl.geom.Matrix;
 		A value from the SpreadMethod class that specifies which spread method
 		to use. Valid values are: `SpreadMethod.PAD`, `SpreadMethod.REFLECT`,
 		or `SpreadMethod.REPEAT`.
+
 		For example, the following shows a simple linear gradient between two
 		colors:
-		<codeblock xml:space="preserve"> import openfl.geom.* import
-		openfl.display.* var fillType:String = GradientType.LINEAR; var
-		colors:Array = [0xFF0000, 0x0000FF]; var alphas:Array = [1, 1]; var
-		ratios:Array = [0x00, 0xFF]; var matr:Matrix = new Matrix();
-		matr.createGradientBox(20, 20, 0, 0, 0); var spreadMethod:String =
-		SpreadMethod.PAD; this.graphics.beginGradientFill(fillType, colors,
-		alphas, ratios, matr, spreadMethod);
-		this.graphics.drawRect(0,0,100,100); ```
+
+		```haxe
+		import openfl.geom.*;
+		import openfl.display.*;
+
+		var fillType = GradientType.LINEAR;
+		var colors = [0xFF0000, 0x0000FF];
+		var alphas = [1, 1];
+		var ratios = [0x00, 0xFF];
+		var matr = new Matrix();
+		matr.createGradientBox(20, 20, 0, 0, 0);
+		var spreadMethod = SpreadMethod.PAD;
+		graphics.beginGradientFill(fillType, colors, alphas, ratios, matr, spreadMethod);
+		graphics.drawRect(0,0,100,100);
+		```
+
 		This example uses `SpreadMethod.PAD` for the spread method, and the
 		gradient fill looks like the following:
 

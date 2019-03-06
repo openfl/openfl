@@ -348,9 +348,16 @@ class Matrix
 		`translate()` methods in succession. For example,
 		`mat1.createBox(2,2,Math.PI/4, 100, 100)` has the same effect as the
 		following:
-		<codeblock xml:space="preserve"> import openfl.geom.Matrix; var
-		mat1:Matrix = new Matrix(); mat1.identity(); mat1.rotate(Math.PI/4);
-		mat1.scale(2,2); mat1.translate(10,20); ```
+
+		```haxe
+		import openfl.geom.Matrix;
+
+		var mat1 = new Matrix();
+		mat1.identity();
+		mat1.rotate(Math.PI/4);
+		mat1.scale(2,2);
+		mat1.translate(10,20);
+		```
 
 		@param scaleX   The factor by which to scale horizontally.
 		@param scaleY   The factor by which scale vertically.

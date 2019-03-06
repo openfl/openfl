@@ -271,8 +271,10 @@ class NetConnection extends EventDispatcher
 		property.
 
 		The following code creates a NetConnection object:
-		<pre xml:space="preserve"> var nc:NetConnection = new NetConnection();
-		</pre>
+
+		```haxe
+		var nc = new NetConnection();
+		```
 	**/
 	public function new()
 	{

@@ -369,9 +369,11 @@ class SharedObject extends EventDispatcher
 
 		Call the `connect()` method to connect to a remote shared object, for
 		example:
-		<codeblock xml:space="preserve"> var myRemoteSO:SharedObject =
-		SharedObject.getRemote("mo", myNC.uri, false);
-		myRemoteSO.connect(myNC); ```
+
+		```as3
+		var myRemoteSO:SharedObject = SharedObject.getRemote("mo", myNC.uri, false);
+		myRemoteSO.connect(myNC);
+		```
 
 		@param myConnection A NetConnection object that uses the Real-Time
 							Messaging Protocol (RTMP), such as a NetConnection
@@ -742,10 +744,14 @@ class SharedObject extends EventDispatcher
 		To create a remote shared object, call `getRemote()` the call
 		`connect()` to connect the remote shared object to the server, as in
 		the following:
-		<codeblock xml:space="preserve"> var nc:NetConnection = new
-		NetConnection(); nc.connect("rtmp://somedomain.com/applicationName");
-		var myRemoteSO:SharedObject = SharedObject.getRemote("mo", nc.uri,
-		false); myRemoteSO.connect(nc); ```
+
+		```as3
+		var nc:NetConnection = new NetConnection();
+		nc.connect("rtmp://somedomain.com/applicationName");
+		var myRemoteSO:SharedObject = SharedObject.getRemote("mo", nc.uri, false);
+		myRemoteSO.connect(nc);
+		```
+
 		To confirm that the local and remote copies of the shared object are
 		synchronized, listen for and handle the `sync` event. All clients that
 		want to share this object must pass the same values for the `name` and
@@ -758,8 +764,7 @@ class SharedObject extends EventDispatcher
 						   include forward slashes (/); for example,
 						   work/addresses is a legal name. Spaces are not
 						   allowed in a shared object name, nor are the
-						   following characters: <pre xml:space="preserve"> ~
-						   % & \ ; : " ' , > ? ? #</pre>
+						   following characters: `~ % & \ ; :  " ' , > ? ? #`
 		@param remotePath  The URI of the server on which the shared object
 						   will be stored. This URI must be identical to the
 						   URI of the NetConnection object passed to the

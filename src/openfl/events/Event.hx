@@ -763,10 +763,21 @@ class Event
 	/**
 		A utility function for implementing the `toString()` method in custom
 		ActionScript 3.0 Event classes. Overriding the `toString()` method is
-		recommended, but not required. <pre xml:space="preserve"> class
-		PingEvent extends Event { var URL:String; public override function
-		toString():String { return formatToString("PingEvent", "type",
-		"bubbles", "cancelable", "eventPhase", "URL"); } } </pre>
+		recommended, but not required.
+
+		```haxe
+		class PingEvent extends Event {
+			var URL:String;
+
+			public function new() {
+				super();
+			}
+
+			public override function toString():String {
+				return formatToString("PingEvent", "type", "bubbles", "cancelable", "eventPhase", "URL");
+			}
+		}
+		```
 
 		@param className The name of your custom Event class. In the previous
 						 example, the `className` parameter is `PingEvent`.

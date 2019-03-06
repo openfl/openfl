@@ -73,12 +73,14 @@ import lime.math.RGBA;
 		the result. In the following formula, a[0] through a[19] correspond to
 		entries 0 through 19 in the 20-item array that is passed to the
 		`matrix` property:
-		<pre xml:space="preserve"> redResult = (a[0] ~~ srcR) + (a[1] ~~ srcG)
-		+ (a[2] ~~ srcB) + (a[3] ~~ srcA) + a[4] greenResult = (a[5] ~~ srcR)
-		+ (a[6] ~~ srcG) + (a[7] ~~ srcB) + (a[8] ~~ srcA) + a[9] blueResult =
-		(a[10] ~~ srcR) + (a[11] ~~ srcG) + (a[12] ~~ srcB) + (a[13] ~~ srcA)
-		+ a[14] alphaResult = (a[15] ~~ srcR) + (a[16] ~~ srcG) + (a[17] ~~
-		srcB) + (a[18] ~~ srcA) + a[19] </pre>
+
+		```
+		redResult   = (a[0]  * srcR) + (a[1]  * srcG) + (a[2]  * srcB) + (a[3]  * srcA) + a[4]
+		greenResult = (a[5]  * srcR) + (a[6]  * srcG) + (a[7]  * srcB) + (a[8]  * srcA) + a[9]
+		blueResult  = (a[10] * srcR) + (a[11] * srcG) + (a[12] * srcB) + (a[13] * srcA) + a[14]
+		alphaResult = (a[15] * srcR) + (a[16] * srcG) + (a[17] * srcB) + (a[18] * srcA) + a[19]
+		```
+
 		For each color value in the array, a value of 1 is equal to 100% of
 		that channel being sent to the output, preserving the value of the
 		color channel.
@@ -93,8 +95,14 @@ import lime.math.RGBA;
 		**Alpha only.** When you pass to the filter a matrix that adjusts only
 		the alpha component, as shown here, the filter optimizes its
 		performance:
-		<pre xml:space="preserve"> 1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 N 0
-		(where N is between 0.0 and 1.0) </pre>
+
+		```
+		1 0 0 0 0
+		0 1 0 0 0
+		0 0 1 0 0
+		0 0 0 N 0  (where N is between 0.0 and 1.0)
+		```
+
 		**Faster version**. Available only with SSE/AltiVec
 		accelerator-enabled processors, such as Intel<sup>®</sup>
 		Pentium<sup>®</sup> 3 and later and Apple<sup>®</sup> G4 and later.
@@ -102,7 +110,7 @@ import lime.math.RGBA;
 		-15.99 to 15.99 and the adder terms a[4], a[9], a[14], and a[19] are
 		in the range -8000 to 8000.
 
-		@throws TypeError The Array is null when being set
+		@throws TypeError The Array is `null` when being set
 	**/
 	public var matrix(get, set):Array<Float>;
 

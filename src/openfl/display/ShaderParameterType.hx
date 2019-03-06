@@ -18,9 +18,12 @@ package openfl.display;
 		`ShaderParameter.value` property is an Array, so the single value must
 		be the only element of an Array assigned to the `value` property, like
 		this:
-		<codeblock xml:space="preserve"> // assumes the shader has a parameter
-		named "param" // whose data type is bool myShader.data.param.value =
-		[true]; ```
+
+		```haxe
+		// assumes the shader has a parameter named "param"
+		// whose data type is bool
+		myShader.data.param.value = [true];
+		```
 	**/
 	public var BOOL = 0;
 
@@ -49,9 +52,12 @@ package openfl.display;
 		`ShaderParameter.value` property is an Array, so the single value must
 		be the only element of an Array assigned to the `value` property, like
 		this:
-		<codeblock xml:space="preserve"> // assumes the shader has a parameter
-		named "param" // whose data type is float myShader.data.param.value =
-		[22.5]; ```
+
+		```haxe
+		// assumes the shader has a parameter named "param"
+		// whose data type is float
+		myShader.data.param.value = [22.5];
+		```
 	**/
 	public var FLOAT = 4;
 
@@ -80,9 +86,12 @@ package openfl.display;
 		`ShaderParameter.value` property is an Array, so the single value must
 		be the only element of an Array assigned to the `value` property, like
 		this:
-		<codeblock xml:space="preserve"> // assumes the shader has a parameter
-		named "param" // whose data type is int myShader.data.param.value =
-		[275]; ```
+
+		```haxe
+		// assumes the shader has a parameter named "param"
+		// whose data type is int
+		myShader.data.param.value = [275];
+		```
 	**/
 	public var INT = 8;
 

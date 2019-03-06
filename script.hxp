@@ -1,195 +1,180 @@
 package;
 
-
 import hxp.*;
 
+class Script extends hxp.Script
+{
+	public function new()
+	{
+		super();
 
-class Script extends hxp.Script {
-	
-	
-	public function new () {
-		
-		super ();
-		
 		if (command == "default") command = "test";
-		
+
 		if (command == "unit-test") command = "test-unit";
 		if (command == "integration-test") command = "test-integration";
 		if (command == "functional-test") command = "test-functional";
-		
-		switch (command) {
-			case "test", "test-unit", "test-integration", "test-functional": test ();
-			default: Log.error ("Unknown command: \"" + command + "\"");
+
+		switch (command)
+		{
+			case "test", "test-unit", "test-integration", "test-functional":
+				test();
+			case "docs":
+				docs();
+			default:
+				Log.error("Unknown command: \"" + command + "\"");
 		}
-		
 	}
-	
-	
-	private function runOpenFLCommand (directory:String, args:Array<String>):Void {
-		
-		if (Log.verbose) args.push ("-verbose");
-		System.runCommand (directory, "openfl", args);
-		
+
+	private function docs():Void
+	{
+		System.runCommand("scripts", "haxe", ["docs.hxml"]);
+		PlatformTools.launchWebServer("docs-api");
 	}
-	
-	
-	private function test ():Void {
-		
+
+	private function runOpenFLCommand(directory:String, args:Array<String>):Void
+	{
+		if (Log.verbose) args.push("-verbose");
+		System.runCommand(directory, "openfl", args);
+	}
+
+	private function test():Void
+	{
 		var targets = [
-			"npm",
-			"npm-es5",
-			"npm-es6",
-			"npm-haxe",
-			"npm-typescript",
-			"haxelib",
-			"flash",
-			"html5",
-			"neko",
-			"cpp",
-			"windows",
-			"mac",
-			"linux",
-			"air",
-			"web",
+			"npm", "npm-es5", "npm-es6", "npm-haxe", "npm-typescript", "haxelib", "flash", "html5", "neko", "cpp", "windows", "mac", "linux", "air", "web",
 			"electron"
 		];
-		
-		if (commandArgs.length > 0) {
-			
+
+		if (commandArgs.length > 0)
+		{
 			var target = commandArgs[0];
-			
-			if (targets.indexOf (target) == -1) {
-				Log.error ("Unknown target type \"" + target + "\"");
+
+			if (targets.indexOf(target) == -1)
+			{
+				Log.error("Unknown target type \"" + target + "\"");
 			}
-			
-			if (target == "npm") {
-				
-				testNPM ();
-				
-			} else if (StringTools.startsWith (target, "npm-")) {
-				
-				testNPM (target.substr (4));
-				
-			} else if (target == "haxelib") {
-				
-				testHaxelib ();
-				
-			} else {
-				
-				testHaxelib (target);
-				
+
+			if (target == "npm")
+			{
+				testNPM();
 			}
-			
-		} else {
-			
-			testHaxelib ();
-			if (command == "test" || command == "test-unit") testNPM ();
-			
+			else if (StringTools.startsWith(target, "npm-"))
+			{
+				testNPM(target.substr(4));
+			}
+			else if (target == "haxelib")
+			{
+				testHaxelib();
+			}
+			else
+			{
+				testHaxelib(target);
+			}
 		}
-		
+		else
+		{
+			testHaxelib();
+			if (command == "test" || command == "test-unit") testNPM();
+		}
 	}
-	
-	
-	private function testHaxelib (target:String = null):Void {
-		
-		if (command == "test" || command == "test-unit") {
-			
-			var dir = Path.combine (Sys.getCwd (), "test/haxelib/unit");
-			
-			if (options.exists ("filter")) {
-				
-				System.runCommand (dir, "haxelib", [ "run", "munit", "gen", "-filter", options.get ("filter")[0] ]);
-				
-			} else {
-				
-				System.runCommand (dir, "haxelib", [ "run", "munit", "gen" ]);
-				
+
+	private function testHaxelib(target:String = null):Void
+	{
+		if (command == "test" || command == "test-unit")
+		{
+			var dir = Path.combine(Sys.getCwd(), "test/haxelib/unit");
+
+			if (options.exists("filter"))
+			{
+				System.runCommand(dir, "haxelib", ["run", "munit", "gen", "-filter", options.get("filter")[0]]);
 			}
-			
+			else
+			{
+				System.runCommand(dir, "haxelib", ["run", "munit", "gen"]);
+			}
+
 			// if (target == "neko" || target == null) runOpenFLCommand (dir, [ "test", "neko" ]);
 			// if (target == "cpp" || target == null || target == System.hostPlatform) runOpenFLCommand (dir, [ "test", "cpp" ]);
-			
+
 			// if (target == "web" || target == "flash" || target == null) runOpenFLCommand (dir, [ "build", "flash", "-debug" ]);
 			// if (target == "web" || target == "html5" || target == null) runOpenFLCommand (dir, [ "build", "html5" ]);
-			
+
 			// if (target == "web" || target == "html5" || target == "flash" || target == null) {
-				
-				System.runCommand (dir, "haxelib", [ "run", "munit", "test", "-nogen", "-result-exit-code" ]);
-				
+
+			System.runCommand(dir, "haxelib", ["run", "munit", "test", "-nogen", "-result-exit-code"]);
+
 			// }
-			
+
 			// if (target == "air" || target == null) runOpenFLCommand (dir, [ "test", "air" ]);
-			
 		}
-		
-		if (command == "test" || command == "test-integration") {
-			
-			var dir = Path.combine (Sys.getCwd (), "test/haxelib/integration");
-			
-			if (options.exists ("filter")) {
-				
-				System.runCommand (dir, "haxelib", [ "run", "munit", "gen", "-filter", options.get ("filter")[0] ]);
-				
-			} else {
-				
-				System.runCommand (dir, "haxelib", [ "run", "munit", "gen" ]);
-				
+
+		if (command == "test" || command == "test-integration")
+		{
+			var dir = Path.combine(Sys.getCwd(), "test/haxelib/integration");
+
+			if (options.exists("filter"))
+			{
+				System.runCommand(dir, "haxelib", ["run", "munit", "gen", "-filter", options.get("filter")[0]]);
 			}
-			
-			if (target == "neko" || target == null) runOpenFLCommand (dir, [ "test", "neko" ]);
-			if (target == "cpp" || target == null || target == System.hostPlatform) runOpenFLCommand (dir, [ "test", "cpp" ]);
-			
-			if (target == "web" || target == "flash" || target == null) runOpenFLCommand (dir, [ "build", "flash", "-debug" ]);
-			if (target == "web" || target == "html5" || target == null) runOpenFLCommand (dir, [ "build", "html5" ]);
-			
-			if (target == "web" || target == "html5" || target == "flash" || target == null) {
-				
-				System.runCommand (dir, "haxelib", [ "run", "munit", "test", "-nogen", "-result-exit-code" ]);
-				
+			else
+			{
+				System.runCommand(dir, "haxelib", ["run", "munit", "gen"]);
 			}
-			
-			if (target == "air" || target == null) runOpenFLCommand (dir, [ "test", "air" ]);
-			
+
+			if (target == "neko" || target == null) runOpenFLCommand(dir, ["test", "neko"]);
+			if (target == "cpp" || target == null || target == System.hostPlatform) runOpenFLCommand(dir, ["test", "cpp"]);
+
+			if (target == "web" || target == "flash" || target == null) runOpenFLCommand(dir, ["build", "flash", "-debug"]);
+			if (target == "web" || target == "html5" || target == null) runOpenFLCommand(dir, ["build", "html5"]);
+
+			if (target == "web" || target == "html5" || target == "flash" || target == null)
+			{
+				System.runCommand(dir, "haxelib", ["run", "munit", "test", "-nogen", "-result-exit-code"]);
+			}
+
+			if (target == "air" || target == null) runOpenFLCommand(dir, ["test", "air"]);
 		}
-		
-		if (command == "test" || command == "test-functional") {
-			
-			var dir = Path.combine (Sys.getCwd (), "test/haxelib/functional");
-			
-			var args = [ "test", target == null ? "neko" : target ];
-			
-			for (flag in flags.keys ()) {
-				args.push ("-" + flag);
+
+		if (command == "test" || command == "test-functional")
+		{
+			var dir = Path.combine(Sys.getCwd(), "test/haxelib/functional");
+
+			var args = ["test", target == null ? "neko" : target];
+
+			for (flag in flags.keys())
+			{
+				args.push("-" + flag);
 			}
-			
-			for (define in defines.keys ()) {
-				if (defines.get (define) != "") {
-					args.push ("-D" + define + "=" + defines.get (define));
-				} else {
-					args.push ("-D" + define);
+
+			for (define in defines.keys())
+			{
+				if (defines.get(define) != "")
+				{
+					args.push("-D" + define + "=" + defines.get(define));
+				}
+				else
+				{
+					args.push("-D" + define);
 				}
 			}
-			
-			runOpenFLCommand (dir, args);
-			
+
+			runOpenFLCommand(dir, args);
 		}
-		
 	}
-	
-	
-	private function testNPM (target:String = null):Void {
-		
-		switch (target) {
-			
-			case "es5": System.runCommand ("", "npm", [ "run", "test-es5", "-s" ]);
-			case "es6": System.runCommand ("", "npm", [ "run", "test-es6", "-s" ]);
-			case "haxe": System.runCommand ("", "npm", [ "run", "test-haxe", "-s" ]);
-			case "typescript": System.runCommand ("", "npm", [ "run", "test-typescript" ]);
-			default: System.runCommand ("", "npm", [ "run", "test", "-s" ]);
-			
+
+	private function testNPM(target:String = null):Void
+	{
+		switch (target)
+		{
+			case "es5":
+				System.runCommand("", "npm", ["run", "test-es5", "-s"]);
+			case "es6":
+				System.runCommand("", "npm", ["run", "test-es6", "-s"]);
+			case "haxe":
+				System.runCommand("", "npm", ["run", "test-haxe", "-s"]);
+			case "typescript":
+				System.runCommand("", "npm", ["run", "test-typescript"]);
+			default:
+				System.runCommand("", "npm", ["run", "test", "-s"]);
 		}
-		
 	}
-	
-	
 }

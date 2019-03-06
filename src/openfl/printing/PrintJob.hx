@@ -135,16 +135,32 @@ class PrintJob
 		For example, you can replace the `[params]` placeholder text for the
 		`myPrintJob.addPage()` method calls with custom parameters as shown in
 		the following code:
-		<pre xml:space="preserve"> // create PrintJob object var
-		myPrintJob:PrintJob = new PrintJob(); // display Print dialog box, but
-		only initiate the print job // if start returns successfully. if
-		(myPrintJob.start()) { // add specified page to print job // repeat
-		once for each page to be printed try { myPrintJob.addPage([params]); }
-		catch(e:Error) { // handle error } try { myPrintJob.addPage([params]);
-		} catch(e:Error) { // handle error } // send pages from the spooler to
-		the printer, but only if one or more // calls to addPage() was
-		successful. You should always check for successful // calls to start()
-		and addPage() before calling send(). myPrintJob.send(); } </pre>
+
+		```haxe
+		// create PrintJob object
+		var myPrintJob = new PrintJob();
+		// display Print dialog box, but only initiate the print job
+		// if start returns successfully.
+		if (myPrintJob.start()) {
+			// add specified page to print job
+			// repeat once for each page to be printed
+			try {
+				myPrintJob.addPage([params]);
+			} catch(e:Dynamic) {
+				// handle error
+			}
+			try {
+				myPrintJob.addPage([params]);
+			} catch(e:Dynamic) {
+				// handle error
+			}
+			// send pages from the spooler to the printer, but only if one or more
+			// calls to addPage() was successful. You should always check for successful
+			// calls to start() and addPage() before calling send().
+			myPrintJob.send();
+		}
+		```
+
 		In AIR 2 or later, you can create and use multiple PrintJob instances.
 		Properties set on the PrintJob instance are retained after printing
 		completes. This allows you to re-use a PrintJob instance and maintain
@@ -289,11 +305,18 @@ class PrintJob
 		`start2()` method returns `true` and catch any `addPage()` exceptions
 		before calling this method. The following example demonstrates how to
 		properly check for errors before calling this method:
-		<codeblock xml:space="preserve"> var myPrintJob:PrintJob = new
-		PrintJob(); if (myPrintJob.start()) { try {
-		myPrintJob.addPage([params]); } catch(e:Error) { // handle error }
-		myPrintJob.send(); } ```
 
+		```haxe
+		var myPrintJob = new PrintJob();
+		if (myPrintJob.start()) {
+			try {
+				myPrintJob.addPage([params]);
+			} catch(e:Dynamic) {
+				// handle error
+			}
+			myPrintJob.send();
+		}
+		```
 	**/
 	public function send():Void
 	{
@@ -308,7 +331,7 @@ class PrintJob
 			style.innerText = "@media all {
 					.page-break	{ display: none; }
 				}
-				
+
 				@media print {
 					.page-break	{ display: block; page-break-before: always; }
 				}";
@@ -377,9 +400,14 @@ class PrintJob
 		Test to see if this method returns `true` (when the user clicks OK in
 		the operating system's Print dialog box) before any subsequent calls
 		to `PrintJob.addPage()` and `PrintJob.send()`:
-		<codeblock xml:space="preserve"> var myPrintJob:PrintJob = new
-		PrintJob(); if(myPrintJob.start()) { // addPage() and send()
-		statements here } ```
+
+		```haxe
+		var myPrintJob = new PrintJob();
+		if(myPrintJob.start()) {
+			// addPage() and send() statements here
+		}
+		```
+
 		For the given print job instance, if any of the following intervals
 		last more than 15 seconds the next call to `PrintJob.start()` will
 		return `false`:

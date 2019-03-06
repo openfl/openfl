@@ -21,16 +21,46 @@ import openfl.utils.ByteArray;
 	For example, consider this shader, which is defined with one input image
 	(`src`), two parameters (`size` and `radius`), and three metadata values
 	(`nameSpace`, `version`, and `description`):
-	<codeblock xml:space="preserve"> <languageVersion : 1.0;> kernel DoNothing
-	< namespace: "Adobe::Example"; vendor: "Adobe examples"; version: 1;
-	description: "A shader that does nothing, but does it well."; > { input
-	image4 src; output pixel4 dst; parameter float2 size < description: "The
-	size of the image to which the kernel is applied"; minValue: float2(0.0,
-	0.0); maxValue: float2(100.0, 100.0); defaultValue: float2(50.0, 50.0); >;
-	parameter float radius < description: "The radius of the effect";
-	minValue: 0.0; maxValue: 50.0; defaultValue: 25.0; >; void evaluatePixel()
-	{ float2 one = (radius / radius) * (size / size); dst =
-	sampleNearest(src, outCoord()); } } ```
+
+	```as3
+	<languageVersion : 1.0;>
+
+	kernel DoNothing
+	<
+		namespace: "Adobe::Example";
+		vendor: "Adobe examples";
+		version: 1;
+		description: "A shader that does nothing, but does it well.";
+	>
+	{
+		input image4 src;
+
+		output pixel4 dst;
+
+		parameter float2 size
+		<
+			description: "The size of the image to which the kernel is applied";
+			minValue: float2(0.0, 0.0);
+			maxValue: float2(100.0, 100.0);
+			defaultValue: float2(50.0, 50.0);
+		>;
+
+		parameter float radius
+		<
+			description: "The radius of the effect";
+			minValue: 0.0;
+			maxValue: 50.0;
+			defaultValue: 25.0;
+		>;
+
+		void evaluatePixel()
+		{
+			float2 one = (radius / radius) ∗ (size / size);
+			dst = sampleNearest(src, outCoord());
+		}
+	}
+	```
+
 	If you create a Shader instance by loading the byte code for this shader,
 	the ShaderData instance in its `data` property contains these properties:
 

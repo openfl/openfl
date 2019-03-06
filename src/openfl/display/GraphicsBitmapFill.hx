@@ -26,9 +26,12 @@ import openfl.geom.Matrix;
 	/**
 		A matrix object (of the openfl.geom.Matrix class) that defines
 		transformations on the bitmap. For example, the following matrix
-		rotates a bitmap by 45 degrees (pi/4 radians): <codeblock
-		xml:space="preserve"> matrix = new openfl.geom.Matrix();
-		matrix.rotate(Math.PI / 4); ```
+		rotates a bitmap by 45 degrees (pi/4 radians):
+
+		```haxe
+		var matrix = new openfl.geom.Matrix();
+		matrix.rotate(Math.PI / 4);
+		```
 	**/
 	public var matrix:Matrix;
 

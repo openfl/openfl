@@ -37,9 +37,11 @@ import lime.math.Vector4;
 	clear all filters, the original value of `cacheAsBitmap` is restored.
 
 	The filter uses the following formula:
-	<codeblock xml:space="preserve"> dstPixel[x, y] = srcPixel[x +
-	((componentX(x, y) - 128) ~~ scaleX) / 256, y + ((componentY(x, y) - 128)
-	~~scaleY) / 256) ```
+
+	```
+	dstPixel[x, y] = srcPixel[x + ((componentX(x, y) - 128) * scaleX) / 256, y + ((componentY(x, y) - 128) * scaleY) / 256)
+	```
+
 	where `componentX(x, y)` gets the `componentX` property color value from
 	the `mapBitmap` property at `(x - mapPoint.x ,y - mapPoint.y)`.
 
@@ -392,55 +394,55 @@ import lime.math.Vector4;
 private class DisplacementMapShader extends BitmapFilterShader
 {
 	@:glFragmentSource("
-		
+
 		uniform sampler2D openfl_Texture;
 		uniform sampler2D mapTexture;
-		
+
 		uniform mat4 openfl_Matrix;
-		
+
 		uniform vec4 uOffsets;
 		uniform mat4 uDisplacements;
-		
+
 		varying vec2 openfl_TextureCoordV;
 		varying vec2 mapTextureCoords;
-		
+
 		void main(void) {
-			
+
 			vec4 map_color = texture2D(mapTexture, mapTextureCoords);
 			vec4 map_color_mod = map_color - uOffsets;
-			
+
 			map_color_mod = map_color_mod * vec4(map_color.w, map_color.w, 1.0, 1.0);
-			
+
 			vec4 displacements_multiplied = map_color_mod * uDisplacements;
 			vec4 result = vec4(openfl_TextureCoordV.x, openfl_TextureCoordV.y, 0.0, 1.0) + displacements_multiplied;
-			
+
 			gl_FragColor = texture2D(openfl_Texture, vec2(result));
-			
+
 		}
-		
+
 	")
 	@:glVertexSource("
-		
+
 		uniform mat4 openfl_Matrix;
-		
+
 		uniform vec2 mapTextureCoordsOffset;
-		
+
 		attribute vec4 openfl_Position;
 		attribute vec2 openfl_TextureCoord;
-		
+
 		varying vec2 openfl_TextureCoordV;
-		
+
 		varying vec2 mapTextureCoords;
-		
+
 		void main(void) {
-			
+
 			gl_Position = openfl_Matrix * openfl_Position;
-			
+
 			openfl_TextureCoordV = openfl_TextureCoord;
 			mapTextureCoords = openfl_TextureCoord - mapTextureCoordsOffset;
-			
+
 		}
-		
+
 	")
 	public function new()
 	{

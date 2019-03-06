@@ -893,7 +893,12 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 
 	/**
 		Writes a 16-bit integer to the socket. The bytes written are as
-		follows: <pre xml:space="preserve">`(v >> 8) & 0xff v & 0xff`</pre>
+		follows:
+
+		```
+		(v >> 8) & 0xff v & 0xff
+		```
+
 		The low 16 bits of the parameter are used; the high 16 bits are
 		ignored.
 

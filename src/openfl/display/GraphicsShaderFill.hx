@@ -21,8 +21,12 @@ import openfl.geom.Matrix;
 		A matrix object (of the openfl.geom.Matrix class), which you can use to
 		define transformations on the shader. For example, you can use the
 		following matrix to rotate a shader by 45 degrees (pi/4 radians):
-		<codeblock xml:space="preserve"> matrix = new openfl.geom.Matrix();
-		matrix.rotate(Math.PI / 4); ```
+
+		```haxe
+		var matrix = new openfl.geom.Matrix();
+		matrix.rotate(Math.PI / 4);
+		```
+
 		The coordinates received in the shader are based on the matrix that is
 		specified for the `matrix` parameter. For a default (`null`) matrix,
 		the coordinates in the shader are local pixel coordinates which can be

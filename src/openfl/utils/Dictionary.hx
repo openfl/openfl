@@ -15,13 +15,22 @@ import haxe.Constraints.IMap;
 	not the value returned from calling `toString()` on it.
 	The following statements show the relationship between a Dictionary object
 	and a key object:
-	<pre xml:space="preserve"> var dict = new Dictionary(); var obj = new
-	Object(); var key:Object = new Object(); key.toString = function() {
-	return "key" } dict[key] = "Letters"; obj["key"] = "Letters"; dict[key] ==
-	"Letters"; // true obj["key"] == "Letters"; // true obj[key] == "Letters";
-	// true because key == "key" is true b/c key.toString == "key" dict["key"]
-	== "Letters"; // false because "key" === key is false delete dict[key];
-	//removes the key </pre>
+
+	```as3
+	var dict = new Dictionary();
+	var obj = new Object();
+	var key:Object = new Object();
+	key.toString = function() { return "key" }
+
+	dict[key] = "Letters";
+	obj["key"] = "Letters";
+
+	dict[key] == "Letters"; // true
+	obj["key"] == "Letters"; // true
+	obj[key] == "Letters"; // true because key == "key" is true b/c key.toString == "key"
+	dict["key"] == "Letters"; // false because "key" === key is false
+	delete dict[key]; //removes the key
+	```
 **/
 @:multiType(K)
 abstract Dictionary<K, V>(IMap<K, V>)

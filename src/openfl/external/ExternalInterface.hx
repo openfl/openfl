@@ -30,7 +30,7 @@ import openfl._internal.Lib;
 	that the `id` attribute is set and the `id` and
 	`name` attributes of the `object` and
 	`embed` tags do not include the following characters:
-	`. - + ~~ / \`
+	`. - + * / \`
 
 	**Note for Flash Player applications:** Flash Player version
 	9.0.115.0 and later allows the `.`(period) character within the

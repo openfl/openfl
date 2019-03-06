@@ -86,7 +86,7 @@ class ConvolutionFilter extends BitmapFilter
 
 	/**
 		An array of values used for matrix transformation. The number of items
-		in the array must equal `matrixX ~~ matrixY`.
+		in the array must equal `matrixX * matrixY`.
 		A matrix convolution is based on an _n_ x _m_ matrix, which describes
 		how a given pixel value in the input image is combined with its
 		neighboring pixel values to produce a resulting pixel value. Each
@@ -94,9 +94,12 @@ class ConvolutionFilter extends BitmapFilter
 		source pixel and its neighboring pixels.
 
 		For a 3 x 3 matrix convolution, the following formula is used for each
-		independent color channel: <pre xml:space="preserve">` dst (x, y) =
-		((src (x-1, y-1) ~~ a0 + src(x, y-1) ~~ a1.... src(x, y+1) ~~ a7 + src
-		(x+1,y+1) ~~ a8) / divisor) + bias `</pre>
+		independent color channel:
+
+		```
+		dst (x, y) = ((src (x-1, y-1) * a0 + src(x, y-1) * a1....
+					   src(x, y+1) * a7 + src (x+1,y+1) * a8) / divisor) + bias
+		```
 
 		Certain filter specifications perform faster when run by a processor
 		that offers SSE (Streaming SIMD Extensions). The following are
@@ -117,14 +120,23 @@ class ConvolutionFilter extends BitmapFilter
 		properties affects the behavior of the filter. In the following case,
 		the matrix array is assigned while the `matrixX` and `matrixY`
 		properties are still set to `0` (the default value):
-		<codeblock xml:space="preserve"> public var myfilter:ConvolutionFilter
-		= new ConvolutionFilter(); myfilter.matrix = [0, 0, 0, 0, 1, 0, 0, 0,
-		0]; myfilter.matrixX = 3; myfilter.matrixY = 3; ```
+
+		```haxe
+		public var myfilter = new ConvolutionFilter();
+		myfilter.matrix = [0, 0, 0, 0, 1, 0, 0, 0, 0];
+		myfilter.matrixX = 3;
+		myfilter.matrixY = 3;
+		```
+
 		In the following case, the matrix array is assigned while the
 		`matrixX` and `matrixY` properties are set to `3`:
-		<codeblock xml:space="preserve"> public var myfilter:ConvolutionFilter
-		= new ConvolutionFilter(); myfilter.matrixX = 3; myfilter.matrixY = 3;
-		myfilter.matrix = [0, 0, 0, 0, 1, 0, 0, 0, 0]; ```
+
+		```haxe
+		public var myfilter = new ConvolutionFilter();
+		myfilter.matrixX = 3;
+		myfilter.matrixY = 3;
+		myfilter.matrix = [0, 0, 0, 0, 1, 0, 0, 0, 0];
+		```
 
 		@throws TypeError The Array is null when being set
 	**/
@@ -261,75 +273,75 @@ class ConvolutionFilter extends BitmapFilter
 private class ConvolutionShader extends BitmapFilterShader
 {
 	@:glFragmentSource("varying vec2 vBlurCoords[9];
-		
+
 		uniform sampler2D openfl_Texture;
-		
+
 		uniform float uBias;
 		uniform mat3 uConvoMatrix;
 		uniform float uDivisor;
 		uniform bool uPreserveAlpha;
-		
+
 		void main(void) {
-			
+
 			vec4 tc = texture2D (openfl_Texture, vBlurCoords[4]);
 			vec4 c = vec4 (0.0);
-			
+
 			c += texture2D (openfl_Texture, vBlurCoords[0]) * uConvoMatrix[0][0];
 			c += texture2D (openfl_Texture, vBlurCoords[1]) * uConvoMatrix[0][1];
 			c += texture2D (openfl_Texture, vBlurCoords[2]) * uConvoMatrix[0][2];
-			
+
 			c += texture2D (openfl_Texture, vBlurCoords[3]) * uConvoMatrix[1][0];
 			c += tc * uConvoMatrix[1][1];
 			c += texture2D (openfl_Texture, vBlurCoords[5]) * uConvoMatrix[1][2];
-			
+
 			c += texture2D (openfl_Texture, vBlurCoords[6]) * uConvoMatrix[2][0];
 			c += texture2D (openfl_Texture, vBlurCoords[7]) * uConvoMatrix[2][1];
 			c += texture2D (openfl_Texture, vBlurCoords[8]) * uConvoMatrix[2][2];
-			
+
 			if (uDivisor > 0.0) {
-				
+
 				c /= vec4 (uDivisor, uDivisor, uDivisor, uDivisor);
-				
+
 			}
-			
+
 			c += vec4 (uBias, uBias, uBias, uBias);
-			
+
 			if (uPreserveAlpha) {
-				
+
 				c.a = tc.a;
-				
+
 			}
-			
+
 			gl_FragColor = c;
-			
+
 		}")
 	@:glVertexSource("attribute vec4 openfl_Position;
 		attribute vec2 openfl_TextureCoord;
-		
+
 		varying vec2 vBlurCoords[9];
-		
+
 		uniform mat4 openfl_Matrix;
 		uniform vec2 openfl_TextureSize;
-		
+
 		void main(void) {
-			
+
 			vec2 r = vec2 (1.0, 1.0) / openfl_TextureSize;
 			vec2 t = openfl_TextureCoord;
-			
+
 			vBlurCoords[0] = t + r * vec2 (-1.0, -1.0);
 			vBlurCoords[1] = t + r * vec2 (0.0, -1.0);
 			vBlurCoords[2] = t + r * vec2 (1.0, -1.0);
-			
+
 			vBlurCoords[3] = t + r * vec2 (-1.0, 0.0);
 			vBlurCoords[4] = t;
 			vBlurCoords[5] = t + r * vec2 (1.0, 0.0);
-			
+
 			vBlurCoords[6] = t + r * vec2 (-1.0, 1.0);
 			vBlurCoords[7] = t + r * vec2 (0.0, 1.0);
 			vBlurCoords[8] = t + r * vec2 (1.0, 1.0);
-			
+
 			gl_Position = openfl_Matrix * openfl_Position;
-			
+
 		}")
 	public function new()
 	{

@@ -1250,36 +1250,57 @@ import js.html.CanvasRenderingContext2D;
 		Calls to the `clear()` method set the line style back to
 		`undefined`.
 
-		@param type                A value from the GradientType class that
-								   specifies which gradient type to use, either
-								   GradientType.LINEAR or GradientType.RADIAL.
-		@param matrix              A transformation matrix as defined by the
-								   openfl.geom.Matrix class. The openfl.geom.Matrix
-								   class includes a
-								   `createGradientBox()` method, which
-								   lets you conveniently set up the matrix for use
-								   with the `lineGradientStyle()`
-								   method.
-		@param spreadMethod        A value from the SpreadMethod class that
-								   specifies which spread method to use:
-		@param interpolationMethod A value from the InterpolationMethod class that
-								   specifies which value to use. For example,
-								   consider a simple linear gradient between two
-								   colors(with the `spreadMethod`
-								   parameter set to
-								   `SpreadMethod.REFLECT`). The
-								   different interpolation methods affect the
-								   appearance as follows:
-		@param focalPointRatio     A number that controls the location of the
-								   focal point of the gradient. The value 0 means
-								   the focal point is in the center. The value 1
-								   means the focal point is at one border of the
-								   gradient circle. The value -1 means that the
-								   focal point is at the other border of the
-								   gradient circle. Values less than -1 or greater
-								   than 1 are rounded to -1 or 1. The following
-								   image shows a gradient with a
-								   `focalPointRatio` of -0.75:
+		@param	type	A value from the GradientType class that specifies which gradient type to use:
+		`GradientType.LINEAR` or `GradientType.RADIAL`.
+
+		@param	colors	An array of RGB hex color values to be used in the gradient (for example, red is 0xFF0000,
+		blue is 0x0000FF, and so on).
+
+		@param	alphas	An array of alpha values for the corresponding colors in the `colors` array; valid values
+		are 0 to 1. If the value is less than 0, the default is 0. If the value is greater than 1, the default is 1.
+
+		@param	ratios	An array of color distribution ratios; valid values are from 0 to 255. This value defines the
+		percentage of the width where the color is sampled at 100%. The value 0 represents the left position in the
+		gradient box, and 255 represents the right position in the gradient box. This value represents positions in
+		the gradient box, not the coordinate space of the final gradient, which can be wider or thinner than the
+		gradient box. Specify a value for each value in the `colors` parameter.
+
+		For example, for a linear gradient that includes two colors, blue and green, the following figure illustrates
+		the placement of the colors in the gradient based on different values in the `ratios` array:
+
+		| ratios | Gradient |
+		| --- | --- |
+		| `[0, 127]` | ![linear gradient blue to green with ratios 0 and 127](/images/gradient-ratios-1.jpg) |
+		| `[0, 255]` | ![linear gradient blue to green with ratios 0 and 255](/images/gradient-ratios-2.jpg) |
+		| `[127, 255]` | ![linear gradient blue to green with ratios 127 and 255](/images/gradient-ratios-3.jpg) |
+
+		The values in the array must increase sequentially; for example, `[0, 63, 127, 190, 255]`.
+
+		@param	matrix	A transformation matrix as defined by the openfl.geom.Matrix class. The openfl.geom.Matrix
+		class includes a `createGradientBox()` method, which lets you conveniently set up the matrix for use with the
+		`lineGradientStyle()` method.
+
+		@param	spreadMethod	A value from the SpreadMethod class that specifies which spread method to use:
+
+		| | | |
+		| --- | --- | --- |
+		| ![linear gradient with SpreadMethod.PAD](/images/beginGradientFill_spread_pad.jpg)<br>`SpreadMethod.PAD` | ![linear gradient with SpreadMethod.REFLECT](/images/beginGradientFill_spread_reflect.jpg)<br>`SpreadMethod.REFLECT` | ![linear gradient with SpreadMethod.REPEAT](/images/beginGradientFill_spread_repeat.jpg)<br>`SpreadMethod.REPEAT` |
+
+		@param	interpolationMethod	A value from the InterpolationMethod class that specifies which value to use. For
+		example, consider a simple linear gradient between two colors (with the `spreadMethod` parameter set to
+		`SpreadMethod.REFLECT`). The different interpolation methods affect the appearance as follows:
+
+		| | |
+		| --- | --- |
+		| ![linear gradient with InterpolationMethod.LINEAR_RGB](/images/beginGradientFill_interp_linearrgb.jpg)<br>`InterpolationMethod.LINEAR_RGB` | ![linear gradient with InterpolationMethod.RGB](/images/beginGradientFill_interp_rgb.jpg)<br>`InterpolationMethod.RGB` |
+
+		@param	focalPointRatio	A number that controls the location of the focal point of the gradient. The value 0
+		means the focal point is in the center. The value 1 means the focal point is at one border of the gradient
+		circle. The value -1 means that the focal point is at the other border of the gradient circle. Values less
+		than -1 or greater than 1 are rounded to -1 or 1. The following image shows a gradient with a
+		`focalPointRatio` of -0.75:
+
+		![radial gradient with focalPointRatio set to 0.75](/images/radial_sketch.jpg)
 	**/
 	public function lineGradientStyle(type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null,
 			spreadMethod:SpreadMethod = SpreadMethod.PAD, interpolationMethod:InterpolationMethod = InterpolationMethod.RGB, focalPointRatio:Float = 0):Void
@@ -1287,6 +1308,21 @@ import js.html.CanvasRenderingContext2D;
 		__commands.lineGradientStyle(type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
 	}
 
+	/**
+		Specifies a shader to use for the line stroke when drawing lines.
+
+		The shader line style is used for subsequent calls to Graphics methods such as the `lineTo()` method or the
+		`drawCircle()` method. The line style remains in effect until you call the `lineStyle()` or
+		`lineGradientStyle()` methods, or the `lineBitmapStyle()` method again with different parameters.
+
+		You can call the `lineShaderStyle()` method in the middle of drawing a path to specify different styles for
+		different line segments within a path.
+
+		Call the `lineStyle()` method before you call the `lineShaderStyle()` method to enable a stroke, or else the
+		value of the line style is undefined.
+
+		Calls to the `clear()` method set the line style back to undefined.
+	**/
 	// @:require(flash10) public function lineShaderStyle (shader:Shader, ?matrix:Matrix):Void;
 
 	/**
@@ -1323,7 +1359,7 @@ import js.html.CanvasRenderingContext2D;
 							not indicated, the default is 1(solid). If the value
 							is less than 0, the default is 0. If the value is
 							greater than 1, the default is 1.
-		@param pixelHinting(Not supported in Flash Lite 4) A Boolean value that
+		@param pixelHinting (Not supported in Flash Lite 4) A Boolean value that
 							specifies whether to hint strokes to full pixels. This
 							affects both the position of anchors of a curve and
 							the line stroke size itself. With
@@ -1338,6 +1374,8 @@ import js.html.CanvasRenderingContext2D;
 							`lineStyle()` method is set differently
 						   (the images are scaled by 200%, to emphasize the
 							difference):
+
+							![pixelHinting false and pixelHinting true](/images/lineStyle_pixelHinting.jpg)
 
 							If a value is not supplied, the line does not use
 							pixel hinting.
@@ -1359,6 +1397,8 @@ import js.html.CanvasRenderingContext2D;
 							left is scaled vertically only, and the circle on the
 							right is scaled both vertically and horizontally:
 
+							![A circle scaled vertically, and a circle scaled both vertically and horizontally.](/images/LineScaleMode_VERTICAL.jpg)
+
 							 *  `LineScaleMode.HORIZONTAL` - Do not
 							scale the line thickness if the object is scaled
 							horizontally _only_. For example, consider the
@@ -1368,6 +1408,8 @@ import js.html.CanvasRenderingContext2D;
 							the left is scaled horizontally only, and the circle
 							on the right is scaled both vertically and
 							horizontally:
+
+							![A circle scaled horizontally, and a circle scaled both vertically and horizontally.](/images/LineScaleMode_HORIZONTAL.jpg)
 
 		@param caps        (Not supported in Flash Lite 4) A value from the
 							CapsStyle class that specifies the type of caps at the
@@ -1384,6 +1426,9 @@ import js.html.CanvasRenderingContext2D;
 							applies), and a superimposed black line with a
 							thickness of 1(for which no `capsStyle`
 							applies):
+
+							![NONE, ROUND, and SQUARE](/images/linecap.jpg)
+
 		@param joints      (Not supported in Flash Lite 4) A value from the
 							JointStyle class that specifies the type of joint
 							appearance used at angles. Valid values are:
@@ -1399,6 +1444,8 @@ import js.html.CanvasRenderingContext2D;
 							`jointStyle` applies), and a superimposed
 							angled black line with a thickness of 1(for which no
 							`jointStyle` applies):
+
+							![MITER, ROUND, and BEVEL](/images/linejoin.jpg)
 
 							**Note:** For `joints` set to
 							`JointStyle.MITER`, you can use the
@@ -1424,9 +1471,19 @@ import js.html.CanvasRenderingContext2D;
 							Superimposed are black reference lines showing the
 							meeting points of the joints:
 
+							![lines with miterLimit set to 1, 2, and 4](/images/miterLimit.jpg)
+
 							Notice that a given `miterLimit` value
 							has a specific maximum angle for which the miter is
 							cut off. The following table lists some examples:
+
+							| miterLimit value: | Angles smaller than this are cut off: |
+							| --- | --- |
+							| 1.414 | 90 degrees |
+							| 2 | 60 degrees |
+							| 4 | 30 degrees |
+							| 8 | 15 degrees |
+
 	**/
 	public function lineStyle(thickness:Null<Float> = null, color:Int = 0, alpha:Float = 1, pixelHinting:Bool = false,
 			scaleMode:LineScaleMode = LineScaleMode.NORMAL, caps:CapsStyle = null, joints:JointStyle = null, miterLimit:Float = 3):Void

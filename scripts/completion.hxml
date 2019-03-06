@@ -4,6 +4,7 @@
 -cp scripts
 -cp src
 -lib lime
+-lib hxp
 -D openfl
 # --remap flash:openfl
 --no-output

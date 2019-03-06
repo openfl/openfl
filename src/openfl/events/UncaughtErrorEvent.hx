@@ -106,7 +106,11 @@ class UncaughtErrorEvent extends ErrorEvent
 		type. ActionScript does not require a `throw` statement to be used
 		only with Error objects. For example, the following code is legal both
 		at compile time and run time:
-		<codeblock xml:space="preserve">throw new Sprite()```
+
+		```haxe
+		throw new Sprite();
+		```
+
 		If that `throw` statement is not caught by a `try..catch` block, the
 		`throw` statement triggers an `uncaughtError` event. In that case, the
 		`error` property of the UncaughtErrorEvent object that's dispatched is
@@ -115,12 +119,20 @@ class UncaughtErrorEvent extends ErrorEvent
 		Consequently, in your `uncaughtError` listener, you should check the
 		data type of the `error` property. The following example demonstrates
 		this check:
-		<codeblock xml:space="preserve"> function
-		uncaughtErrorHandler(event:UncaughtErrorEvent):void { var
-		message:String; if (event.error is Error) { message =
-		Error(event.error).message; } else if (event.error is ErrorEvent) {
-		message = ErrorEvent(event.error).text; } else { message =
-		event.error.toString(); } }```
+
+		```haxe
+		function uncaughtErrorHandler(event:UncaughtErrorEvent):Void {
+			var message:String;
+			if (Std.is(event.error, Error)) {
+				message = cast(event.error, Error).message;
+			} else if (Std.is(event.error, ErrorEvent)) {
+				message = cast(event.error, ErrorEvent).text;
+			} else {
+				message = Std.string(event.error);
+			}
+		}
+		```
+
 		If the `error` property contains an Error instance (or Error
 		subclass), the available error information varies depending on the
 		version of the runtime in which the content is running. The following

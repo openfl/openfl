@@ -1170,14 +1170,21 @@ class InteractiveObject extends DisplayObject
 
 		**Note:** To set the tab order for TLFTextField instances, cast the
 		display object child of the TLFTextField as an InteractiveObject, then
-		set the `tabIndex` property. For example: <pre xml:space="preserve">
-		InteractiveObject(tlfInstance.getChildAt(1)).tabIndex = 3; </pre> To
-		reverse the tab order from the default setting for three instances of
+		set the `tabIndex` property. For example:
+
+		```haxe
+		cast(tlfInstance.getChildAt(1), InteractiveObject).tabIndex = 3;
+		```
+
+		To reverse the tab order from the default setting for three instances of
 		a TLFTextField object (`tlfInstance1`, `tlfInstance2` and
-		`tlfInstance3`), use: <pre xml:space="preserve">
-		InteractiveObject(tlfInstance1.getChildAt(1)).tabIndex = 3;
-		InteractiveObject(tlfInstance2.getChildAt(1)).tabIndex = 2;
-		InteractiveObject(tlfInstance3.getChildAt(1)).tabIndex = 1; </pre>
+		`tlfInstance3`), use:
+
+		```haxe
+		cast(tlfInstance1.getChildAt(1), InteractiveObject).tabIndex = 3;
+		cast(tlfInstance2.getChildAt(1), InteractiveObject).tabIndex = 2;
+		cast(tlfInstance3.getChildAt(1), InteractiveObject).tabIndex = 1;
+		```
 	**/
 	public var tabIndex(get, set):Int;
 

@@ -13,12 +13,17 @@ import openfl.display.Graphics;
 	3.0, you can iterate over the items in the display list. For example, the
 	following snippet checks to see if the display list contains a static text
 	field and assigns the field to a variable:
-	<codeblock xml:space="preserve"> var i:uint; for (i = 0; i <
-	this.numChildren; i++) { var displayitem:DisplayObject =
-	this.getChildAt(i); if (displayitem instanceof StaticText) { trace("a
-	static text field is item " + i + " on the display list"); var
-	myFieldLabel:StaticText = StaticText(displayitem); trace("and contains the
-	text: " + myFieldLabel.text); } } ```
+
+	```haxe
+	for (i in 0...numChildren) {
+		var displayitem = getChildAt(i);
+		if (Std.is(displayitem, StaticText)) {
+			trace("a static text field is item " + i + " on the display list");
+			var myFieldLabel:StaticText = cast displayitem;
+			trace("and contains the text: " + myFieldLabel.text);
+		}
+	}
+	```
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

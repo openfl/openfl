@@ -22,10 +22,14 @@ class PrintJobOptions
 
 		For example, to print your content as a bitmap, use the following
 		syntax:
-		<codeblock xml:space="preserve"> var options:PrintJobOptions = new
-		PrintJobOptions(); options.printAsBitmap = true;
-		myPrintJob.addPage(mySprite, null, options); ```
-		_Note:_Adobe AIR does not support vector printing on Mac OS.
+
+		```haxe
+		var options = new PrintJobOptions();
+		options.printAsBitmap = true;
+		myPrintJob.addPage(mySprite, null, options);
+		```
+
+		_Note:_ Adobe AIR does not support vector printing on Mac OS.
 	**/
 	public var printAsBitmap:Bool;
 

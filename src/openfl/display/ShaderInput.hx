@@ -21,8 +21,11 @@ import openfl.display3D.Context3D;
 	code. For example, if a shader defines an input named `src`, the
 	ShaderInput instance representing the `src` input is available as the
 	`src` property, as this example shows:
-	<codeblock xml:space="preserve">myShader.data.src.image = new
-	BitmapData(50, 50, true, 0xFF990000);```
+
+	```haxe
+	myShader.data.src.image = new BitmapData(50, 50, true, 0xFF990000);
+	```
+
 	For some uses of a Shader instance, you do not need to specify an input
 	image, because it is automatically specified by the operation. You only
 	need to specify an input when a Shader is used for the following:
