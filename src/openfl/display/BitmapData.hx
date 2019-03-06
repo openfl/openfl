@@ -831,6 +831,8 @@ class BitmapData implements IBitmapDrawable
 							  is set to `true` on the left and
 							  `false` on the right:
 
+							  ![Two images: the left one with smoothing and the right one without smoothing.](/images/bitmapData_draw_smoothing.jpg)
+
 							  Drawing a bitmap with `smoothing` set
 							  to `true` takes longer than doing so with
 							  `smoothing` set to

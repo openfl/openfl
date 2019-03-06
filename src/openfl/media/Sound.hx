@@ -433,6 +433,15 @@ class Sound extends EventDispatcher
 		#end
 	}
 
+	/**
+		Load MP3 sound data from a ByteArray object into a Sound object. The data will be read from the current
+		ByteArray position and will leave the ByteArray position at the end of the specified bytes length once
+		finished. If the MP3 sound data contains ID3 data ID3 events will be dispatched during this function call.
+		This function will throw an exception if the ByteArray object does not contain enough data.
+
+		@param	bytes
+		@param	bytesLength
+	**/
 	public function loadCompressedDataFromByteArray(bytes:ByteArray, bytesLength:Int):Void
 	{
 		if (bytes == null || bytesLength <= 0)
@@ -488,6 +497,25 @@ class Sound extends EventDispatcher
 		#end
 	}
 
+	/**
+		Load PCM 32-bit floating point sound data from a ByteArray object into a Sound object. The data will be read
+		from the current ByteArray position and will leave the ByteArray position at the end of the specified sample
+		length multiplied by either 1 channel or 2 channels if the stereo flag is set once finished.
+
+		Starting with Flash Player 11.8, the amount of audio data that can be passed to this function is limited. For
+		SWF versions >= 21, this function throws an exception if the amount of audio data passed into this function is
+		more than 1800 seconds. That is, samples / sampleRate should be less than or equal to 1800. For swf versions <
+		21, the runtime fails silently if the amount of audio data passed in is more than 12000 seconds. This is
+		provided only for backward compatibility.
+
+		This function throws an exception if the ByteArray object does not contain enough data.
+
+		@param	bytes
+		@param	samples
+		@param	format
+		@param	stereo
+		@param	sampleRate
+	**/
 	public function loadPCMFromByteArray(bytes:ByteArray, samples:Int, format:String = "float", stereo:Bool = true, sampleRate:Float = 44100):Void
 	{
 		if (bytes == null)

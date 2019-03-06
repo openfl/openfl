@@ -128,6 +128,12 @@ import js.html.CanvasRenderingContext2D;
 					  can use to define transformations on the bitmap. For
 					  example, you can use the following matrix to rotate a bitmap
 					  by 45 degrees(pi/4 radians):
+
+		```haxe
+		matrix = new openfl.geom.Matrix();
+			 	matrix.rotate(Math.PI / 4);
+			 	```
+
 		@param repeat If `true`, the bitmap image repeats in a tiled
 					  pattern. If `false`, the bitmap image does not
 					  repeat, and the edges of the bitmap are used for any fill
@@ -136,13 +142,19 @@ import js.html.CanvasRenderingContext2D;
 					  For example, consider the following bitmap(a 20 x
 					  20-pixel checkerboard pattern):
 
+					  ![20 by 20 pixel checkerboard](/images/movieClip_beginBitmapFill_repeat_1.jpg)
+
 					  When `repeat` is set to `true`(as
 					  in the following example), the bitmap fill repeats the
 					  bitmap:
 
+					  ![60 by 60 pixel checkerboard](/images/movieClip_beginBitmapFill_repeat_2.jpg)
+
 					  When `repeat` is set to `false`,
 					  the bitmap fill uses the edge pixels for the fill area
 					  outside the bitmap:
+
+					  ![60 by 60 pixel image with no repeating](/images/movieClip_beginBitmapFill_repeat_3.jpg)
 		@param smooth If `false`, upscaled bitmap images are rendered
 					  by using a nearest-neighbor algorithm and look pixelated. If
 					  `true`, upscaled bitmap images are rendered by
@@ -188,58 +200,86 @@ import js.html.CanvasRenderingContext2D;
 		The application renders the fill whenever three or more points are
 		drawn, or when the `endFill()` method is called.
 
-		@param type                A value from the GradientType class that
-								   specifies which gradient type to use:
-								   `GradientType.LINEAR` or
-								   `GradientType.RADIAL`.
-		@param matrix              A transformation matrix as defined by the
-								   openfl.geom.Matrix class. The openfl.geom.Matrix
-								   class includes a
-								   `createGradientBox()` method, which
-								   lets you conveniently set up the matrix for use
-								   with the `beginGradientFill()`
-								   method.
-		@param spreadMethod        A value from the SpreadMethod class that
-								   specifies which spread method to use, either:
-								   `SpreadMethod.PAD`,
-								   `SpreadMethod.REFLECT`, or
-								   `SpreadMethod.REPEAT`.
+		@param	type	A value from the GradientType class that specifies which gradient type to use:
+		`GradientType.LINEAR` or `GradientType.RADIAL`.
 
-								   For example, consider a simple linear
-								   gradient between two colors:
+		@param	colors	An array of RGB hexadecimal color values used in the gradient; for example, red is 0xFF0000,
+		blue is 0x0000FF, and so on. You can specify up to 15 colors. For each color, specify a corresponding value
+		in the `alphas` and `ratios` parameters.
 
-								   This example uses
-								   `SpreadMethod.PAD` for the spread
-								   method, and the gradient fill looks like the
-								   following:
+		@param	alphas	An array of alpha values for the corresponding colors in the `colors` array; valid values
+		are 0 to 1. If the value is less than 0, the default is 0. If the value is greater than 1, the default is 1.
 
-								   If you use `SpreadMethod.REFLECT`
-								   for the spread method, the gradient fill looks
-								   like the following:
+		@param	ratios	An array of color distribution ratios; valid values are 0-255. This value defines the
+		percentage of the width where the color is sampled at 100%. The value 0 represents the left position in the
+		gradient box, and 255 represents the right position in the gradient box.
 
-								   If you use `SpreadMethod.REPEAT`
-								   for the spread method, the gradient fill looks
-								   like the following:
-		@param interpolationMethod A value from the InterpolationMethod class that
-								   specifies which value to use:
-								   `InterpolationMethod.LINEAR_RGB` or
-								   `InterpolationMethod.RGB`
+		**Note:** This value represents positions in the gradient box, not the coordinate space of the final gradient,
+		which can be wider or thinner than the gradient box. Specify a value for each value in the `colors` parameter.
 
-								   For example, consider a simple linear
-								   gradient between two colors(with the
-								   `spreadMethod` parameter set to
-								   `SpreadMethod.REFLECT`). The
-								   different interpolation methods affect the
-								   appearance as follows:
-		@param focalPointRatio     A number that controls the location of the
-								   focal point of the gradient. 0 means that the
-								   focal point is in the center. 1 means that the
-								   focal point is at one border of the gradient
-								   circle. -1 means that the focal point is at the
-								   other border of the gradient circle. A value
-								   less than -1 or greater than 1 is rounded to -1
-								   or 1. For example, the following example shows
-								   a `focalPointRatio` set to 0.75:
+		For example, for a linear gradient that includes two colors, blue and green, the following example illustrates
+		the placement of the colors in the gradient based on different values in the ratios array:
+
+		| ratios | Gradient |
+		| --- | --- |
+		| `[0, 127]` | ![linear gradient blue to green with ratios 0 and 127](/images/gradient-ratios-1.jpg) |
+		| `[0, 255]` | ![linear gradient blue to green with ratios 0 and 255](/images/gradient-ratios-2.jpg) |
+		| `[127, 255]` | ![linear gradient blue to green with ratios 127 and 255](/images/gradient-ratios-3.jpg) |
+
+		The values in the array must increase sequentially; for example, `[0, 63, 127, 190, 255]`.
+
+		@param	matrix	A transformation matrix as defined by the openfl.geom.Matrix class. The openfl.geom.Matrix
+		class includes a `createGradientBox()` method, which lets you conveniently set up the matrix for use with the
+		`beginGradientFill()` method.
+
+		@param	spreadMethod	A value from the SpreadMethod class that specifies which spread method to use, either:
+		`SpreadMethod.PAD`, `SpreadMethod.REFLECT`, or `SpreadMethod.REPEAT`.
+
+		For example, consider a simple linear gradient between two colors:
+
+		```as3
+		import flash.geom.*
+		import flash.display.*
+		var fillType:String = GradientType.LINEAR;
+		var colors:Array = [0xFF0000, 0x0000FF];
+		var alphas:Array = [1, 1];
+		var ratios:Array = [0x00, 0xFF];
+		var matr:Matrix = new Matrix();
+		matr.createGradientBox(20, 20, 0, 0, 0);
+		var spreadMethod:String = SpreadMethod.PAD;
+		this.graphics.beginGradientFill(fillType, colors, alphas, ratios, matr, spreadMethod);
+		this.graphics.drawRect(0,0,100,100);
+		```
+
+		This example uses `SpreadMethod.PAD` for the spread method, and the gradient fill looks like the following:
+
+		![linear gradient with SpreadMethod.PAD](/images/beginGradientFill_spread_pad.jpg)
+
+		If you use SpreadMethod.REFLECT for the spread method, the gradient fill looks like the following:
+
+		![linear gradient with SpreadMethod.REFLECT](/images/beginGradientFill_spread_reflect.jpg)
+
+		If you use SpreadMethod.REPEAT for the spread method, the gradient fill looks like the following:
+
+		![linear gradient with SpreadMethod.REPEAT](/images/beginGradientFill_spread_repeat.jpg)
+
+		@param	interpolationMethod	A value from the InterpolationMethod class that specifies which value to use:
+		`InterpolationMethod.LINEAR_RGB` or `InterpolationMethod.RGB`
+
+		For example, consider a simple linear gradient between two colors (with the `spreadMethod` parameter set to
+		`SpreadMethod.REFLECT`). The different interpolation methods affect the appearance as follows:
+
+		| | |
+		| --- | --- |
+		| ![linear gradient with InterpolationMethod.LINEAR_RGB](/images/beginGradientFill_interp_linearrgb.jpg)<br>`InterpolationMethod.LINEAR_RGB` | ![linear gradient with InterpolationMethod.RGB](/images/beginGradientFill_interp_rgb.jpg)<br>`InterpolationMethod.RGB` |
+
+		@param	focalPointRatio	A number that controls the location of the focal point of the gradient. 0 means that
+		the focal point is in the center. 1 means that the focal point is at one border of the gradient circle. -1
+		means that the focal point is at the other border of the gradient circle. A value less than -1 or greater
+		than 1 is rounded to -1 or 1. For example, the following example shows a `focalPointRatio` set to 0.75:
+
+		![radial gradient with focalPointRatio set to 0.75](/images/radial_sketch.jpg)
+
 		@throws ArgumentError If the `type` parameter is not valid.
 	**/
 	public function beginGradientFill(type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null,
@@ -308,9 +348,13 @@ import js.html.CanvasRenderingContext2D;
 		@param matrix A matrix object (of the openfl.geom.Matrix class), which
 					  you can use to define transformations on the shader. For
 					  example, you can use the following matrix to rotate a
-					  shader by 45 degrees (pi/4 radians): <codeblock
-					  xml:space="preserve"> matrix = new openfl.geom.Matrix();
-					  matrix.rotate(Math.PI / 4); ```
+					  shader by 45 degrees (pi/4 radians):
+
+					  ```haxe
+					  matrix = new openfl.geom.Matrix();
+					  matrix.rotate(Math.PI / 4);
+					  ```
+
 					  The coordinates received in the shader are based on the
 					  matrix that is specified for the `matrix` parameter. For
 					  a default (`null`) matrix, the coordinates in the shader
@@ -1012,6 +1056,9 @@ import js.html.CanvasRenderingContext2D;
 		__dirty = true;
 	}
 
+	/**
+		Undocumented method
+	**/
 	public function drawRoundRectComplex(x:Float, y:Float, width:Float, height:Float, topLeftRadius:Float, topRightRadius:Float, bottomLeftRadius:Float,
 			bottomRightRadius:Float):Void
 	{

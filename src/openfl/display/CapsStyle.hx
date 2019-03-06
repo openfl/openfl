@@ -9,6 +9,8 @@ package openfl.display;
 	values in the `caps` parameter of the
 	`openfl.display.Graphics.lineStyle()` method. You can specify the
 	following three types of caps:
+
+	![The three types of caps: NONE, ROUND, and SQUARE.](/images/linecap.jpg)
 **/
 @:enum abstract CapsStyle(Null<Int>)
 {

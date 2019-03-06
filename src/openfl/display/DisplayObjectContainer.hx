@@ -168,6 +168,8 @@ class DisplayObjectContainer extends InteractiveObject
 		For example, the following example shows three display objects, labeled
 		a, b, and c, at index positions 0, 2, and 1, respectively:
 
+		![b over c over a](/images/DisplayObjectContainer_layers.jpg)
+
 		If you add a child object that already has a different display object
 		container as a parent, the object is removed from the child list of the
 		other display object container.
@@ -566,6 +568,8 @@ class DisplayObjectContainer extends InteractiveObject
 		example shows three display objects, labeled a, b, and c, at index
 		positions 0, 1, and 2, respectively:
 
+		![c over b over a](/images/DisplayObjectContainerSetChildIndex1.jpg)
+
 		When you use the `setChildIndex()` method and specify an
 		index position that is already occupied, the only positions that change
 		are those in between the display object's former and new position. All
@@ -577,7 +581,13 @@ class DisplayObjectContainer extends InteractiveObject
 		`container`, you can swap the position of the display objects
 		labeled a and b by calling the following code:
 
+		```haxe
+		container.setChildIndex(container.getChildAt(1), 0);
+		```
+
 		This code results in the following arrangement of objects:
+
+		![c over a over b](/images/DisplayObjectContainerSetChildIndex2.jpg)
 
 		@param child The child DisplayObject instance for which you want to change
 					 the index number.

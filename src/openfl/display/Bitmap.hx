@@ -105,6 +105,16 @@ class Bitmap extends DisplayObject
 	}
 	#end
 
+	/**
+		Initializes a Bitmap object to refer to the specified BitmapData object.
+
+		@param	bitmapData	The BitmapData object being referenced.
+		@param	pixelSnapping	Whether or not the Bitmap object is snapped to the nearest pixel.
+		@param	smoothing	Whether or not the bitmap is smoothed when scaled. For example, the following examples
+		show the same bitmap scaled by a factor of 3, with `smoothing` set to `false` (left) and `true` (right):
+
+		![A bitmap without smoothing.](/images/bitmap_smoothing_off.jpg) ![A bitmap with smoothing.](bitmap_smoothing_on.jpg)
+	**/
 	public function new(bitmapData:BitmapData = null, pixelSnapping:PixelSnapping = null, smoothing:Bool = false)
 	{
 		super();
