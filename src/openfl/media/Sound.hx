@@ -456,10 +456,10 @@ class Sound extends EventDispatcher
 			return;
 		}
 
-		if (bytes.length > bytesLength)
+		if (bytes.position > 0 || bytes.length > bytesLength)
 		{
 			var copy = new ByteArray(bytesLength);
-			copy.writeBytes(bytes, 0, bytesLength);
+			copy.writeBytes(bytes, bytes.position, bytesLength);
 			bytes = copy;
 		}
 
@@ -530,16 +530,23 @@ class Sound extends EventDispatcher
 			return;
 		}
 
+		var bitsPerSample = (format == "float" ? 32 : 16); // "short"
+		var channels = (stereo ? 2 : 1);
+		var bytesLength = Std.int(samples * channels * (bitsPerSample / 8));
+
+		if (bytes.position > 0 || bytes.length > bytesLength)
+		{
+			var copy = new ByteArray(bytesLength);
+			copy.writeBytes(bytes, bytes.position, bytesLength);
+			bytes = copy;
+		}
+
 		#if lime
 		var audioBuffer = new AudioBuffer();
-		audioBuffer.bitsPerSample = format == "float" ? 32 : 16; // "short"
-		audioBuffer.channels = stereo ? 2 : 1;
+		audioBuffer.bitsPerSample = bitsPerSample;
+		audioBuffer.channels = channels;
+		audioBuffer.data = new UInt8Array(bytes);
 		audioBuffer.sampleRate = Std.int(sampleRate);
-
-		var length = Std.int(samples * audioBuffer.channels * (audioBuffer.bitsPerSample / 8));
-		var byteArray = new ByteArray();
-		byteArray.writeBytes(bytes, bytes.position, length);
-		audioBuffer.data = new UInt8Array(byteArray);
 
 		__buffer = audioBuffer;
 
