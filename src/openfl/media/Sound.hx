@@ -528,8 +528,12 @@ class Sound extends EventDispatcher
 		var audioBuffer = new AudioBuffer();
 		audioBuffer.bitsPerSample = format == "float" ? 32 : 16; // "short"
 		audioBuffer.channels = stereo ? 2 : 1;
-		audioBuffer.data = new UInt8Array(bytes);
 		audioBuffer.sampleRate = Std.int(sampleRate);
+
+		var length = Std.int(samples * audioBuffer.channels * (audioBuffer.bitsPerSample / 8));
+		var byteArray = new ByteArray();
+		byteArray.writeBytes(bytes, bytes.position, length);
+		audioBuffer.data = new UInt8Array(byteArray);
 
 		__buffer = audioBuffer;
 
