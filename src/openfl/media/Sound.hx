@@ -427,13 +427,13 @@ class Sound extends EventDispatcher
 		{
 			AudioBuffer.loadFromFile(url).onComplete(AudioBuffer_onURLLoad).onError(function(_)
 			{
-				AudioBuffer_onURLLoad(null)
+				AudioBuffer_onURLLoad(null);
 			});
 		}
 		#else
 		AudioBuffer.loadFromFile(url).onComplete(AudioBuffer_onURLLoad).onError(function(_)
 		{
-			AudioBuffer_onURLLoad(null)
+			AudioBuffer_onURLLoad(null);
 		});
 		#end
 		#end
