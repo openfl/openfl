@@ -2108,8 +2108,9 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 			get_length: { value: p.get_length },
 			set_length: { value: p.set_length },
 		}
-		var _VectorData = function (length, fixed) {
-			return Object.defineProperties (construct ([], length, fixed), _VectorDataDescriptor);
+		var _VectorData = function (length, fixed, array) {
+			if (array == null) array = [];
+			return Object.defineProperties (construct (array, length, fixed), _VectorDataDescriptor);
 		}
 		_VectorDataDescriptor.constructor.value = _VectorData;
 		_VectorData.__name__ = ref.__name__;
