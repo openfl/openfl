@@ -7,7 +7,7 @@ import openfl.display.DisplayObjectContainer;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.geom.Rectangle;
-import openfl.events.ScrollEvent;
+import openfl.fl.events.ScrollEvent;
 import openfl.events.MouseEvent;
 import openfl._internal.formats.xfl.XFLSymbolArguments;
 import openfl._internal.formats.xfl.XFLAssets;

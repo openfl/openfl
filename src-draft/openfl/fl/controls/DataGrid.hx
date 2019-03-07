@@ -13,7 +13,7 @@ import openfl.display.DisplayObjectContainer;
 import openfl.display.Sprite;
 import openfl.display.Shape;
 import openfl.events.MouseEvent;
-import openfl.events.ListEvent;
+import openfl.fl.events.ListEvent;
 import openfl.text.TextFormat;
 import openfl._internal.formats.xfl.XFLSymbolArguments;
 import openfl._internal.formats.xfl.XFLAssets;

@@ -7,7 +7,7 @@ import openfl.display.DisplayObjectContainer;
 import openfl.display.XFLMovieClip;
 import openfl.events.Event;
 import openfl.events.MouseEvent;
-import openfl.events.ScrollEvent;
+import openfl.fl.events.ScrollEvent;
 import openfl.geom.Point;
 import openfl._internal.formats.xfl.XFLSymbolArguments;
 import openfl._internal.formats.xfl.XFLAssets;

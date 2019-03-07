@@ -8,7 +8,7 @@ import openfl.display.XFLSprite;
 import openfl.display.XFLMovieClip;
 import openfl.events.Event;
 import openfl.events.MouseEvent;
-import openfl.events.ScrollEvent;
+import openfl.fl.events.ScrollEvent;
 import openfl.text.TextFormat;
 import openfl.text.TextField;
 import openfl.text.TextFieldType;

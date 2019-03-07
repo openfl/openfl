@@ -1,7 +1,7 @@
 package openfl._internal.formats.xfl.symbol;
 
 import openfl.Assets;
-import openfl.core.UIComponent;
+import openfl.fl.core.UIComponent;
 import openfl.display.DisplayObject;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.Bitmap;
@@ -214,7 +214,7 @@ class Symbols
 				var className:String = symbolItem.linkageBaseClass;
 				if (className == null || className == "")
 				{
-					className = StringTools.replace(symbolItem.linkageClassName, "fl.controls.", "openfl.controls.");
+					className = StringTools.replace(symbolItem.linkageClassName, "fl.controls.", "openfl.fl.controls.");
 				}
 				switch (className)
 				{
