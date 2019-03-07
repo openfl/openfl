@@ -2,8 +2,8 @@ package openfl.fl.core;
 
 import openfl.display.DisplayObject;
 import openfl.display.XFLSprite;
-import xfl.XFLSymbolArguments;
-import xfl.dom.DOMTimeline;
+import openfl._internal.formats.xfl.XFLSymbolArguments;
+import openfl._internal.formats.xfl.dom.DOMTimeline;
 
 /**
  * UI component

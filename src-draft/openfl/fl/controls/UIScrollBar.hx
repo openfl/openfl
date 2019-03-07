@@ -1,7 +1,7 @@
 package openfl.fl.controls;
 
-import xfl.XFLSymbolArguments;
-import xfl.XFLAssets;
+import openfl._internal.formats.xfl.XFLSymbolArguments;
+import openfl._internal.formats.xfl.XFLAssets;
 
 /**
  * UI scroll bar

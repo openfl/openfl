@@ -1,8 +1,8 @@
 package openfl.fl.controls;
 
-import xfl.XFLSymbolArguments;
-import xfl.XFLAssets;
-import xfl.dom.DOMTimeline;
+import openfl._internal.formats.xfl.XFLSymbolArguments;
+import openfl._internal.formats.xfl.XFLAssets;
+import openfl._internal.formats.xfl.dom.DOMTimeline;
 import openfl.fl.core.UIComponent;
 import openfl.fl.data.DataProvider;
 import openfl.display.XFLSprite;

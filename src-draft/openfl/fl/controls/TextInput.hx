@@ -7,8 +7,8 @@ import openfl.display.XFLMovieClip;
 import openfl.text.TextFormat;
 import openfl.text.TextField;
 import openfl.text.TextFieldType;
-import xfl.XFLSymbolArguments;
-import xfl.XFLAssets;
+import openfl._internal.formats.xfl.XFLSymbolArguments;
+import openfl._internal.formats.xfl.XFLAssets;
 
 /**
  * Text input

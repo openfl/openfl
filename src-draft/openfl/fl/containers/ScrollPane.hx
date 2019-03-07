@@ -1,8 +1,8 @@
 package openfl.fl.containers;
 
 import openfl.fl.containers.BaseScrollPane;
-import xfl.XFLSymbolArguments;
-import xfl.XFLAssets;
+import openfl._internal.formats.xfl.XFLSymbolArguments;
+import openfl._internal.formats.xfl.XFLAssets;
 
 /**
  * Base scroll pane

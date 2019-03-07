@@ -4,8 +4,8 @@ import openfl.fl.core.UIComponent;
 import openfl.fl.data.DataProvider;
 import openfl.display.DisplayObject;
 import openfl.events.MouseEvent;
-import xfl.XFLSymbolArguments;
-import xfl.XFLAssets;
+import openfl._internal.formats.xfl.XFLSymbolArguments;
+import openfl._internal.formats.xfl.XFLAssets;
 
 /**
  * Selectable list

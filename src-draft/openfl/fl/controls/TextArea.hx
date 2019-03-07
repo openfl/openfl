@@ -12,9 +12,9 @@ import openfl.events.ScrollEvent;
 import openfl.text.TextFormat;
 import openfl.text.TextField;
 import openfl.text.TextFieldType;
-import xfl.XFLSymbolArguments;
-import xfl.XFLAssets;
-import xfl.dom.DOMTimeline;
+import openfl._internal.formats.xfl.XFLSymbolArguments;
+import openfl._internal.formats.xfl.XFLAssets;
+import openfl._internal.formats.xfl.dom.DOMTimeline;
 
 /**
  * Textarea

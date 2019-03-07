@@ -9,8 +9,8 @@ import openfl.events.Event;
 import openfl.geom.Rectangle;
 import openfl.events.ScrollEvent;
 import openfl.events.MouseEvent;
-import xfl.XFLSymbolArguments;
-import xfl.XFLAssets;
+import openfl._internal.formats.xfl.XFLSymbolArguments;
+import openfl._internal.formats.xfl.XFLAssets;
 
 /**
  * Base scroll pane

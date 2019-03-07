@@ -15,8 +15,8 @@ import openfl.display.Shape;
 import openfl.events.MouseEvent;
 import openfl.events.ListEvent;
 import openfl.text.TextFormat;
-import xfl.XFLSymbolArguments;
-import xfl.XFLAssets;
+import openfl._internal.formats.xfl.XFLSymbolArguments;
+import openfl._internal.formats.xfl.XFLAssets;
 
 /**
  * Data grid

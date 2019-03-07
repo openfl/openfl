@@ -9,9 +9,9 @@ import openfl.events.Event;
 import openfl.events.MouseEvent;
 import openfl.events.ScrollEvent;
 import openfl.geom.Point;
-import xfl.XFLSymbolArguments;
-import xfl.XFLAssets;
-import xfl.dom.DOMTimeline;
+import openfl._internal.formats.xfl.XFLSymbolArguments;
+import openfl._internal.formats.xfl.XFLAssets;
+import openfl._internal.formats.xfl.dom.DOMTimeline;
 
 /**
  * Scroll bar

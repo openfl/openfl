@@ -10,8 +10,8 @@ import openfl.geom.Rectangle;
 import openfl.text.TextField;
 import openfl.text.TextFieldType;
 import openfl.text.TextFormat;
-import xfl.XFLSymbolArguments;
-import xfl.dom.DOMTimeline;
+import openfl._internal.formats.xfl.XFLSymbolArguments;
+import openfl._internal.formats.xfl.dom.DOMTimeline;
 
 class LabelButton extends UIComponent
 {

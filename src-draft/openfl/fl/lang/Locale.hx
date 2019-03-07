@@ -1,6 +1,6 @@
 package openfl.fl.lang;
 
-import xfl.XFLAssets;
+import openfl._internal.formats.xfl.XFLAssets;
 
 /**
  * Locale
