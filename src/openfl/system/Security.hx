@@ -50,7 +50,10 @@ class Security
 		sandbox rules.
 	**/
 	public static inline var REMOTE:String = "remote";
-	@SuppressWarnings("checkstyle:FieldDocComment")
+
+	/**
+		Undocumented property
+	**/
 	@:noCompletion @:dox(hide) public static var disableAVM1Loading:Bool;
 
 	/**

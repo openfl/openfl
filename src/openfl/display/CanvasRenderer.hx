@@ -7,6 +7,12 @@ import openfl.geom.Rectangle;
 import lime.graphics.Canvas2DRenderContext;
 #end
 
+/**
+	**BETA**
+
+	The CanvasRenderer API exposes support for HTML5 canvas render instructions within the
+	`RenderEvent.RENDER_CANVAS` event
+**/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -20,7 +26,15 @@ import lime.graphics.Canvas2DRenderContext;
 @:allow(openfl.text)
 class CanvasRenderer extends DisplayObjectRenderer
 {
-	@SuppressWarnings("checkstyle:Dynamic") public var context:#if lime Canvas2DRenderContext #else Dynamic #end;
+	/**
+		The current HTML5 canvas render context
+	**/
+	@SuppressWarnings("checkstyle:Dynamic")
+	public var context:#if lime Canvas2DRenderContext #else Dynamic #end;
+
+	/**
+		The active pixel ratio used during rendering
+	**/
 	public var pixelRatio(default, null):Float = 1;
 
 	@:noCompletion private var __isDOM:Bool;
@@ -40,12 +54,19 @@ class CanvasRenderer extends DisplayObjectRenderer
 		#end
 	}
 
+	/**
+		Set whether smoothing should be enabled on a canvas context
+	**/
 	@SuppressWarnings("checkstyle:Dynamic")
 	public function applySmoothing(context:#if lime Canvas2DRenderContext #else Dynamic #end, value:Bool):Void
 	{
 		context.imageSmoothingEnabled = value;
 	}
 
+	/**
+		Set the matrix value for the current render context, or (optionally) another canvas
+		context
+	**/
 	@SuppressWarnings("checkstyle:Dynamic")
 	public function setTransform(transform:Matrix, context:#if lime Canvas2DRenderContext #else Dynamic #end = null):Void
 	{

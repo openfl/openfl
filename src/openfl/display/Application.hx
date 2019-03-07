@@ -13,6 +13,7 @@ import lime.ui.WindowAttributes;
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.LoaderInfo)
 @:access(openfl.display.Window)
+@SuppressWarnings("checkstyle:FieldDocComment")
 class Application #if lime extends LimeApplication #end
 {
 	#if !lime

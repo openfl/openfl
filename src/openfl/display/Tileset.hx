@@ -150,6 +150,7 @@ class Tileset
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:allow(openfl.display.Tileset) @:dox(hide) private class TileData
 {
 	public var height:Int;

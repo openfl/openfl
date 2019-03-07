@@ -1172,6 +1172,21 @@ class BitmapData implements IBitmapDrawable
 	}
 
 	#if (!openfl_doc_gen || (!js && !html5 && !flash_doc_gen))
+	/**
+		Creates a new BitmapData instance from Base64-encoded data immediately.
+
+		The returned BitmapData will have a width and height of zero initially, then it
+		will populate with image data once decoding is successful.
+
+		If you must know when the data will be decoded, use the `loadFromBase64` method
+		instead.
+
+		All platforms except for HTML5 will currently return `null`
+
+		@param	base64	Base64-encoded data
+		@param	type	The MIME-type for the encoded data ("image/jpeg", etc)
+		@returns	A BitmapData when targeting HTML5 or `null` on all other targets
+	**/
 	public static function fromBase64(base64:String, type:String):BitmapData
 	{
 		#if (js && html5)
@@ -1185,6 +1200,21 @@ class BitmapData implements IBitmapDrawable
 	#end
 
 	#if (!openfl_doc_gen || (!js && !html5 && !flash_doc_gen))
+	/**
+		Creates a new BitmapData from bytes (a haxe.io.Bytes or openfl.utils.ByteArray)
+		synchronously. This means that the BitmapData will be returned immediately (if
+		supported).
+
+		HTML5 and Flash do not support creating BitmapData synchronously, so these targets
+		always return `null`. Other targets will return `null` if decoding was unsuccessful.
+
+		The optional `rawAlpha` parameter makes it easier to process images that have alpha
+		data stored separately.
+
+		@param	bytes	A haxe.io.Bytes or openfl.utils.ByteArray instance
+		@param	rawAlpha	An optional byte array with alpha data
+		@returns	A new BitmapData if successful, or `null` if unsuccessful
+	**/
 	public static function fromBytes(bytes:ByteArray, rawAlpha:ByteArray = null):BitmapData
 	{
 		#if (js && html5)
@@ -1198,6 +1228,16 @@ class BitmapData implements IBitmapDrawable
 	#end
 
 	#if (js && html5)
+	/**
+		Creates a new BitmapData from an HTML5 canvas element immediately.
+
+		All targets except from HTML5 targets will return `null`.
+
+		@param	canvas	An HTML5 canvas element
+		@param	transparent	Whether the new BitmapData object should be considered
+		transparent
+		@returns	A new BitmapData if successful, or `null` if unsuccessful
+	**/
 	public static function fromCanvas(canvas:CanvasElement, transparent:Bool = true):BitmapData
 	{
 		if (canvas == null) return null;
@@ -1210,6 +1250,19 @@ class BitmapData implements IBitmapDrawable
 	#end
 
 	#if (!openfl_doc_gen || (!js && !html5 && !flash_doc_gen))
+	/**
+		Creates a new BitmapData from a file path synchronously. This means that the
+		BitmapData will be returned immediately (if supported).
+
+		HTML5 and Flash do not support creating BitmapData synchronously, so these targets
+		always return `null`.
+
+		In order to load files from a remote web address, use the `loadFromFile` method,
+		which supports asynchronous loading.
+
+		@param	path	A local file path containing an image
+		@returns	A new BitmapData if successful, or `null` if unsuccessful
+	**/
 	public static function fromFile(path:String):BitmapData
 	{
 		#if (js && html5)
@@ -1223,6 +1276,15 @@ class BitmapData implements IBitmapDrawable
 	#end
 
 	#if lime
+	/**
+		Creates a new BitmapData using an existing Lime Image instance.
+
+		@param	image	A Lime Image object
+		@param	transparent	Whether the new BitmapData object should be considered
+		transparent
+		@returns	A new BitmapData if the Image (and associated ImageBuffer) are not
+		`null`, otherwise `null` will be returned
+	**/
 	public static function fromImage(image:Image, transparent:Bool = true):BitmapData
 	{
 		if (image == null || image.buffer == null) return null;
@@ -1234,6 +1296,16 @@ class BitmapData implements IBitmapDrawable
 	}
 	#end
 
+	/**
+		**BETA**
+
+		Creates a new BitmapData instance from a Stage3D rectangle texture.
+
+		This method is not supported by the Flash target.
+
+		@param	texture	A RectangleTexture instance
+		@returns	A new BitmapData if successful, or `null` if unsuccessful
+	**/
 	public static function fromTexture(texture:RectangleTexture):BitmapData
 	{
 		if (texture == null) return null;
@@ -1278,6 +1350,14 @@ class BitmapData implements IBitmapDrawable
 		return sourceRect.clone();
 	}
 
+	/**
+		**BETA**
+
+		Get the IndexBuffer3D object associated with this BitmapData object
+
+		@param	context	A Stage3D context
+		@returns	An IndexBuffer3D object for use with rendering
+	**/
 	@:dox(hide) public function getIndexBuffer(context:Context3D):IndexBuffer3D
 	{
 		var gl = context.gl;
@@ -1304,6 +1384,14 @@ class BitmapData implements IBitmapDrawable
 		return __indexBuffer;
 	}
 
+	/**
+		**BETA**
+
+		Get the VertexBuffer3D object associated with this BitmapData object
+
+		@param	context	A Stage3D context
+		@returns	A VertexBuffer3D object for use with rendering
+	**/
 	@:dox(hide) public function getVertexBuffer(context:Context3D):VertexBuffer3D
 	{
 		var gl = context.gl;
@@ -1604,6 +1692,14 @@ class BitmapData implements IBitmapDrawable
 		#end
 	}
 
+	/**
+		**BETA**
+
+		Get the CairoImageSurface associated with this BitmapData object for use with
+		Cairo software rendering
+
+		@returns	The associated CairoImageSurface
+	**/
 	@SuppressWarnings("checkstyle:Dynamic")
 	@:dox(hide) public function getSurface():#if lime CairoImageSurface #else Dynamic #end
 	{
@@ -1621,6 +1717,14 @@ class BitmapData implements IBitmapDrawable
 		#end
 	}
 
+	/**
+		**BETA**
+
+		Get a hardware texture representing this BitmapData instance
+
+		@param	context	A Context3D instance
+		@returns	A RectangleTexture
+	**/
 	@:dox(hide) public function getTexture(context:Context3D):RectangleTexture
 	{
 		if (!__isValid) return null;
@@ -1892,6 +1996,16 @@ class BitmapData implements IBitmapDrawable
 		return false;
 	}
 
+	/**
+		Creates a new BitmapData from Base64-encoded data asynchronously. The data
+		and (if successful) decoding the data into an image occur in the background.
+		Progress, completion and error callbacks will be dispatched in the current
+		thread using callbacks attached to a returned Future object.
+
+		@param	base64	Base64-encoded data
+		@param	type	The MIME-type for the encoded data ("image/jpeg", etc)
+		@returns	A Future BitmapData
+	**/
 	public static function loadFromBase64(base64:String, type:String):Future<BitmapData>
 	{
 		#if lime
@@ -1904,6 +2018,19 @@ class BitmapData implements IBitmapDrawable
 		#end
 	}
 
+	/**
+		Creates a new BitmapData from haxe.io.Bytes or openfl.utils.ByteArray data
+		asynchronously. The data and image decoding will occur in the background.
+		Progress, completion and error callbacks will be dispatched in the current
+		thread using callbacks attached to a returned Future object.
+
+		The optional `rawAlpha` parameter makes it easier to process images that have alpha
+		data stored separately.
+
+		@param	bytes	A haxe.io.Bytes or openfl.utils.ByteArray instance
+		@param	rawAlpha	An optional byte array with alpha data
+		@returns	A Future BitmapData
+	**/
 	public static function loadFromBytes(bytes:ByteArray, rawAlpha:ByteArray = null):Future<BitmapData>
 	{
 		#if lime
@@ -1923,6 +2050,15 @@ class BitmapData implements IBitmapDrawable
 		#end
 	}
 
+	/**
+		Creates a new BitmapData from a file path or web address asynchronously. The file
+		load and image decoding will occur in the background.
+		Progress, completion and error callbacks will be dispatched in the current
+		thread using callbacks attached to a returned Future object.
+
+		@param	path	A local file path or web address containing an image
+		@returns	A Future BitmapData
+	**/
 	public static function loadFromFile(path:String):Future<BitmapData>
 	{
 		#if lime

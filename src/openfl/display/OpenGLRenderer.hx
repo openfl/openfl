@@ -15,6 +15,12 @@ import lime.graphics.WebGLRenderContext;
 import lime.math.Matrix4;
 #end
 
+/**
+	**BETA**
+
+	The OpenGLRenderer API exposes support for OpenGL render instructions within the
+	`RenderEvent.RENDER_OPENGL` event.
+**/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -49,7 +55,11 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	@:noCompletion private static var __scissorRectangle:Rectangle = new Rectangle();
 	@:noCompletion private static var __textureSizeValue:Array<Float> = [0, 0];
 
-	@SuppressWarnings("checkstyle:Dynamic") public var gl:#if lime WebGLRenderContext #else Dynamic #end;
+	/**
+		The current OpenGL render context
+	**/
+	@SuppressWarnings("checkstyle:Dynamic")
+	public var gl:#if lime WebGLRenderContext #else Dynamic #end;
 
 	@:noCompletion private var __context3D:Context3D;
 	@:noCompletion private var __clipRects:Array<Rectangle>;
@@ -150,6 +160,9 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		__maskShader = new Context3DMaskShader();
 	}
 
+	/**
+		Applies an alpha value to the active shader, if compatible with OpenFL core shaders
+	**/
 	public function applyAlpha(alpha:Float):Void
 	{
 		__alphaValue[0] = alpha;
@@ -164,6 +177,10 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		}
 	}
 
+	/**
+		Binds a BitmapData object as the first active texture of the current active shader,
+		if compatible with OpenFL core shaders
+	**/
 	public function applyBitmapData(bitmapData:BitmapData, smooth:Bool, repeat:Bool = false):Void
 	{
 		if (__currentShaderBuffer != null)
@@ -211,6 +228,10 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		}
 	}
 
+	/**
+		Applies a color transform value to the active shader, if compatible with OpenFL
+		core shaders
+	**/
 	public function applyColorTransform(colorTransform:ColorTransform):Void
 	{
 		var enabled = (colorTransform != null && !colorTransform.__isDefault(true));
@@ -246,6 +267,10 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		}
 	}
 
+	/**
+		Applies the "has color transform" uniform value for the active shader, if
+		compatible with OpenFL core shaders
+	**/
 	public function applyHasColorTransform(enabled:Bool):Void
 	{
 		__hasColorTransformValue[0] = enabled;
@@ -260,6 +285,9 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		}
 	}
 
+	/**
+		Applies render matrix to the active shader, if compatible with OpenFL core shaders
+	**/
 	public function applyMatrix(matrix:Array<Float>):Void
 	{
 		if (__currentShaderBuffer != null)
@@ -272,6 +300,11 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		}
 	}
 
+	/**
+		Converts an OpenFL two-dimensional matrix to a compatible 3D matrix for use with
+		OpenGL rendering. Repeated calls to this method will return the same object with
+		new values, so it will need to be cloned if the result must be cached
+	**/
 	@SuppressWarnings("checkstyle:Dynamic")
 	public function getMatrix(transform:Matrix):#if lime Matrix4 #else Dynamic #end
 	{
@@ -300,6 +333,10 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		}
 	}
 
+	/**
+		Sets the current active shader, which automatically unbinds the previous shader
+		if it was bound using an OpenFL Shader object
+	**/
 	public function setShader(shader:Shader):Void
 	{
 		__currentShaderBuffer = null;
@@ -331,11 +368,19 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		}
 	}
 
+	/**
+		Updates the current OpenGL viewport using the current OpenFL stage coordinates
+	**/
 	public function setViewport():Void
 	{
 		__gl.viewport(__offsetX, __offsetY, __displayWidth, __displayHeight);
 	}
 
+	/**
+		Updates the current active shader with cached alpha, color transform,
+		bitmap data and other uniform or attribute values. This should be called in advance
+		of rendering
+	**/
 	public function updateShader():Void
 	{
 		if (__currentShader != null)
@@ -349,6 +394,10 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		}
 	}
 
+	/**
+		Updates the active shader to expect an alpha array, if the current shader
+		is compatible with OpenFL core shaders
+	**/
 	public function useAlphaArray():Void
 	{
 		if (__currentShader != null)
@@ -357,6 +406,10 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		}
 	}
 
+	/**
+		Updates the active shader to expect a color transform array, if the current shader
+		is compatible with OpenFL core shaders
+	**/
 	public function useColorTransformArray():Void
 	{
 		if (__currentShader != null)

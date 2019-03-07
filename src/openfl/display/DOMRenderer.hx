@@ -10,6 +10,12 @@ import lime.graphics.DOMRenderContext;
 import js.html.Element;
 #end
 
+/**
+	**BETA**
+
+	The DOMRenderer API exposes support for HTML5 DOM render instructions within the
+	`RenderEvent.RENDER_DOM` event
+**/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -23,7 +29,15 @@ import js.html.Element;
 @:allow(openfl.display)
 class DOMRenderer extends DisplayObjectRenderer
 {
-	@SuppressWarnings("checkstyle:Dynamic") public var element:#if lime DOMRenderContext #else Dynamic #end;
+	/**
+		The current HTML5 DOM element
+	**/
+	@SuppressWarnings("checkstyle:Dynamic")
+	public var element:#if lime DOMRenderContext #else Dynamic #end;
+
+	/**
+		The active pixel ratio used during rendering
+	**/
 	public var pixelRatio(default, null):Float = 1;
 
 	@:noCompletion private var __canvasRenderer:CanvasRenderer;
@@ -49,7 +63,7 @@ class DOMRenderer extends DisplayObjectRenderer
 		  var styles = window.getComputedStyle(document.documentElement, ''),
 			pre = (Array.prototype.slice
 			  .call(styles)
-			  .join('') 
+			  .join('')
 			  .match(/-(moz|webkit|ms)-/) || (styles.OLink === '' && ['', 'o'])
 			)[1],
 			dom = ('WebKit|Moz|MS|O').match(new RegExp('(' + pre + ')', 'i'))[1];
@@ -78,6 +92,11 @@ class DOMRenderer extends DisplayObjectRenderer
 		__canvasRenderer.__isDOM = true;
 	}
 
+	/**
+		Applies CSS styles to the specified DOM element, using a DisplayObject as the
+		virtual parent. This helps set the z-order, position and other components for
+		the DOM object
+	**/
 	@SuppressWarnings("checkstyle:Dynamic")
 	public function applyStyle(parent:DisplayObject, childElement:#if (js && html5 && !display) Element #else Dynamic #end):Void
 	{
@@ -97,6 +116,10 @@ class DOMRenderer extends DisplayObjectRenderer
 		#end
 	}
 
+	/**
+		Removes previously set CSS styles from a DOM element, used when the element
+		should no longer be a part of the display hierarchy
+	**/
 	@SuppressWarnings("checkstyle:Dynamic")
 	public function clearStyle(childElement:#if (js && html5 && !display) Element #else Dynamic #end):Void
 	{

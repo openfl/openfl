@@ -155,6 +155,7 @@ abstract Dictionary<K, V>(IMap<K, V>)
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:dox(hide) private class ClassMap<K:Class<Dynamic>, V> implements IMap<K, V>
 {
 	@:noCompletion private var types:Map<String, K>;
@@ -227,6 +228,7 @@ abstract Dictionary<K, V>(IMap<K, V>)
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:dox(hide) private class FloatMap<K:Float, V> implements IMap<K, V>
 {
 	@:noCompletion private var floatKeys:Array<K>;
@@ -403,6 +405,7 @@ abstract Dictionary<K, V>(IMap<K, V>)
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:dox(hide) private class UtilsObjectMap<K:Object, V> implements IMap<K, V>
 {
 	@:noCompletion private var map:ObjectMap<{}, V>;

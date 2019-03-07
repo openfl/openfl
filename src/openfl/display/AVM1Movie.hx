@@ -52,8 +52,8 @@ class AVM1Movie extends DisplayObject
 	/**
 		Undocumented method
 	**/
-	@:noCompletion @:dox(hide) public function call(functionName:String, p1:Dynamic = null, p2:Dynamic = null, p3:Dynamic = null, p4:Dynamic = null,
-			p5:Dynamic = null):Dynamic
+	@:noCompletion @:dox(hide)
+	public function call(functionName:String, p1:Dynamic = null, p2:Dynamic = null, p3:Dynamic = null, p4:Dynamic = null, p5:Dynamic = null):Dynamic
 	{
 		return null;
 	}

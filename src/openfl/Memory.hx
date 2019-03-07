@@ -15,6 +15,7 @@ import openfl.utils.ByteArray;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 class Memory
 {
 	@:noCompletion private static var __byteArray:ByteArray;

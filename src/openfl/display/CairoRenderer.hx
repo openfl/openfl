@@ -10,6 +10,12 @@ import lime.graphics.CairoRenderContext;
 import lime.math.Matrix3;
 #end
 
+/**
+	**BETA**
+
+	The CairoRenderer API exposes support for native Cairo render instructions within the
+	`RenderEvent.RENDER_CAIRO` event
+**/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -23,7 +29,11 @@ import lime.math.Matrix3;
 @:allow(openfl.display)
 class CairoRenderer extends DisplayObjectRenderer
 {
-	@SuppressWarnings("checkstyle:Dynamic") public var cairo:#if lime CairoRenderContext #else Dynamic #end;
+	/**
+		The current Cairo render context
+	**/
+	@SuppressWarnings("checkstyle:Dynamic")
+	public var cairo:#if lime CairoRenderContext #else Dynamic #end;
 
 	@:noCompletion private var __matrix:Matrix;
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __matrix3:#if lime Matrix3 #else Dynamic #end;
@@ -43,6 +53,10 @@ class CairoRenderer extends DisplayObjectRenderer
 		#end
 	}
 
+	/**
+		Set the matrix value for the current render context, or (optionally) another Cairo
+		object
+	**/
 	@SuppressWarnings("checkstyle:Dynamic")
 	public function applyMatrix(transform:Matrix, cairo:#if lime Cairo #else Dynamic #end = null):Void
 	{

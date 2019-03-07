@@ -11,7 +11,8 @@ import openfl.Lib;
 @:access(openfl.display.LoaderInfo)
 class Preloader
 {
-	@SuppressWarnings("checkstyle:Dynamic") public var onComplete:#if lime lime.app.Event < Void -> Void >= new lime.app.Event<Void->Void>() #else Dynamic #end;
+	@SuppressWarnings("checkstyle:Dynamic")
+	public var onComplete:#if lime lime.app.Event < Void -> Void >= new lime.app.Event<Void->Void>() #else Dynamic #end;
 
 	@:noCompletion private var complete:Bool;
 	@:noCompletion private var display:Sprite;
@@ -99,6 +100,7 @@ class Preloader
 	}
 }
 
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:dox(hide) class DefaultPreloader extends Sprite
 {
 	@:noCompletion private var endAnimation:Int;

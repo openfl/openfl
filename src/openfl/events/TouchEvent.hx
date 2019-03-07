@@ -291,7 +291,19 @@ class TouchEvent extends Event
 		only.
 	**/
 	public var altKey:Bool;
+
+	/**
+		Indicates whether the command key is activated (Mac only).
+
+		On a Mac OS, the value of the `commandKey` property is the same value as the
+		`ctrlKey` property. This property is always `false` on Windows or Linux.
+	**/
 	public var commandKey:Bool;
+
+	/**
+		Indicates whether the Control key is activated on Mac and whether the Ctrl key is
+		activated on Windows or Linux.
+	**/
 	public var controlKey:Bool;
 
 	/**
@@ -300,7 +312,8 @@ class TouchEvent extends Event
 		indicates whether either the Control key or the Command key is activated.
 	**/
 	public var ctrlKey:Bool;
-	public var delta:Int;
+	@SuppressWarnings("checkstyle:FieldDocComment")
+	@:noCompletion @:dox(hide) public var delta:Int;
 
 	/**
 		Indicates whether the first point of contact is mapped to mouse events.

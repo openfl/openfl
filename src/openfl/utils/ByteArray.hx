@@ -111,11 +111,11 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	**/
 	public var bytesAvailable(get, never):UInt;
 
+	#if openfl_doc_gen
 	/**
 		Changes or reads the byte order for the data; either
 		`Endian.BIG_ENDIAN` or `Endian.LITTLE_ENDIAN`.
 	**/
-	#if openfl_doc_gen
 	public var endian(get, set):Endian;
 	#end
 
@@ -130,6 +130,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	**/
 	public var length(get, set):UInt;
 
+	#if openfl_doc_gen
 	/**
 		* Used to determine whether the ActionScript 3.0, ActionScript 2.0, or
 		* ActionScript 1.0 format should be used when writing to, or reading from, a
@@ -149,7 +150,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		* functions on the Flash or AIR targets, but through `haxe.Serializer`,
 		* `haxe.Unserializer` or `haxe.JSON` if needed.
 	**/
-	#if openfl_doc_gen
 	public var objectEncoding(get, set):ObjectEncoding;
 	#end
 
@@ -992,11 +992,12 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:autoBuild(lime._internal.macros.AssetsMacro.embedByteArray())
 @:noCompletion @:dox(hide) class ByteArrayData extends Bytes implements IDataInput implements IDataOutput
 {
 	public static var defaultEndian(get, set):Endian;
-	public static var defaultObjectEncoding = ObjectEncoding.DEFAULT;
+	public static var defaultObjectEncoding:ObjectEncoding = ObjectEncoding.DEFAULT;
 	@:noCompletion private static var __defaultEndian:Endian = null;
 
 	public var bytesAvailable(get, never):UInt;
@@ -1132,7 +1133,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		return result;
 	}
 
-	public function inflate()
+	public function inflate():Void
 	{
 		uncompress(CompressionAlgorithm.DEFLATE);
 	}
@@ -1640,21 +1641,20 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	public function writeUTFBytes(value:String):Void
 	{
 		var bytes = Bytes.ofString(value);
-		writeBytes(Bytes.ofString(value));
+		writeBytes(bytes);
 	}
 
 	@:noCompletion private function __fromBytes(bytes:Bytes):Void
 	{
 		__setData(bytes);
 		#if lime_bytes_length_getter
-		l = bytes.l
+		l = bytes.l;
 		#else
-		length = bytes.length
+		length = bytes.length;
 		#end
-		;
 	}
 
-	@:noCompletion private function __resize(size:Int)
+	@:noCompletion private function __resize(size:Int):Void
 	{
 		if (size > __length)
 		{
@@ -1775,6 +1775,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 #if flash
 @:native("flash.utils.ByteArray")
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:noCompletion @:dox(hide) extern class ByteArrayData implements IDataOutput implements IDataInput implements ArrayAccess<Int>
 {
 	#if flash
