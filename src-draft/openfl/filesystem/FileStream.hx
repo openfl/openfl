@@ -1,5 +1,15 @@
 package openfl.filesystem;
 
+/**
+* Mirrors flash.filesystem.FileStream
+* Todo :
+* implement all read/write
+* complete prototypes
+* add event handler
+*
+* Note : as usual please be extra careful about allocations especially when designing Error stuff, avoid string concatenation in
+* heavy density calls
+*/
 class FileStream
 {
 	/////////////private
@@ -24,7 +34,6 @@ class FileStream
 				try
 				{
 					input = sys.io.File.read(f.nativePath, true);
-					input.seek(0, sys.io.FileSeek.SeekBegin); // ?
 				}
 				catch (d:Dynamic)
 				{
@@ -45,7 +54,6 @@ class FileStream
 				try
 				{
 					output = sys.io.File.append(f.nativePath, true);
-					output.seek(0, sys.io.FileSeek.SeekBegin); // ?
 				}
 				catch (d:Dynamic)
 				{
@@ -63,7 +71,7 @@ class FileStream
 		if (input != null) input.close();
 		if (output != null) output.close();
 
-		// invalid any r/w ops
+		// invalidate any r/w ops
 		input = null;
 		output = null;
 	}
@@ -89,11 +97,7 @@ class FileStream
 
 		if (rem < length) throw new openfl.errors.EOFError("File is not opened");
 
-		// #if debug trace("tasked to read "+length); #end
 		var b = input.read(length);
-
-		// #if debug  trace("extracted " + b.length); #end
-
 		var nba = openfl.utils.ByteArray.fromBytes(b);
 
 		ba.writeBytes(nba);
