@@ -1,7 +1,7 @@
 package openfl.events;
 
 #if !flash
-import openfl._internal.utils.EventPool;
+import openfl._internal.utils.ObjectPool;
 
 /**
 	The Event class is used as the base class for the creation of Event
@@ -49,7 +49,7 @@ import openfl._internal.utils.EventPool;
 #end
 class Event
 {
-	@:noCompletion private static var __pool:EventPool = new EventPool(20);
+	@:noCompletion private static var __pool:ObjectPool<Event> = new ObjectPool<Event>(20);
 
 	/**
 		The `ACTIVATE` constant defines the value of the `type` property of an

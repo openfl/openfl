@@ -1,7 +1,7 @@
 package openfl.events;
 
 #if !flash
-import openfl._internal.utils.MouseEventPool;
+import openfl._internal.utils.ObjectPool;
 import openfl.display.InteractiveObject;
 import openfl.geom.Point;
 
@@ -23,7 +23,7 @@ import openfl.geom.Point;
 #end
 class MouseEvent extends Event
 {
-	@:noCompletion private static var __pool:MouseEventPool = new MouseEventPool(20);
+	@:noCompletion private static var __pool:ObjectPool<MouseEvent> = new ObjectPool<MouseEvent>(20);
 
 	/**
 		Defines the value of the `type` property of a `click` event object.
