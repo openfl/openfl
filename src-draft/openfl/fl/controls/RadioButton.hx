@@ -4,7 +4,7 @@ import openfl._internal.formats.xfl.XFLSymbolArguments;
 import openfl._internal.formats.xfl.XFLAssets;
 import openfl._internal.formats.xfl.dom.DOMTimeline;
 import openfl.fl.controls.LabelButton;
-import openfl.display.XFLSprite;
+import openfl._internal.formats.xfl.display.XFLSprite;
 import openfl.text.TextField;
 import openfl.events.MouseEvent;
 

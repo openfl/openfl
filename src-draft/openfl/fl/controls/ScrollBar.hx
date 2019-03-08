@@ -4,7 +4,7 @@ import openfl.fl.containers.BaseScrollPane;
 import openfl.fl.core.UIComponent;
 import openfl.display.DisplayObject;
 import openfl.display.DisplayObjectContainer;
-import openfl.display.XFLMovieClip;
+import openfl._internal.formats.xfl.display.XFLMovieClip;
 import openfl.events.Event;
 import openfl.events.MouseEvent;
 import openfl.fl.events.ScrollEvent;

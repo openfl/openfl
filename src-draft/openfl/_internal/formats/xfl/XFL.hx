@@ -7,8 +7,8 @@ import openfl._internal.formats.xfl.dom.DOMSoundItem;
 import openfl._internal.formats.xfl.dom.DOMSymbolItem;
 import openfl._internal.formats.xfl.dom.DOMTimeline;
 import openfl.display.BitmapData;
-import openfl.display.XFLMovieClip;
-import openfl.display.XFLSprite;
+import openfl._internal.formats.xfl.display.XFLMovieClip;
+import openfl._internal.formats.xfl.display.XFLSprite;
 import openfl.media.Sound;
 
 class XFL

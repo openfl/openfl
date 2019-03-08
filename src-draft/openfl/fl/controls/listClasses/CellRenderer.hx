@@ -1,7 +1,7 @@
 package openfl.fl.controls.listClasses;
 
 import openfl.display.DisplayObject;
-import openfl.display.XFLMovieClip;
+import openfl._internal.formats.xfl.display.XFLMovieClip;
 import openfl.events.MouseEvent;
 
 /**

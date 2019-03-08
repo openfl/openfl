@@ -2,8 +2,8 @@ package xfl;
 
 import openfl._internal.formats.xfl.XFL;
 import openfl.display.BitmapData;
-import openfl.display.XFLMovieClip;
-import openfl.display.XFLSprite;
+import openfl._internal.formats.xfl.display.XFLMovieClip;
+import openfl._internal.formats.xfl.display.XFLSprite;
 import openfl.media.Sound;
 
 /**

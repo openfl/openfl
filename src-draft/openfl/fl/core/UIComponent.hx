@@ -1,7 +1,7 @@
 package openfl.fl.core;
 
 import openfl.display.DisplayObject;
-import openfl.display.XFLSprite;
+import openfl._internal.formats.xfl.display.XFLSprite;
 import openfl._internal.formats.xfl.XFLSymbolArguments;
 import openfl._internal.formats.xfl.dom.DOMTimeline;
 

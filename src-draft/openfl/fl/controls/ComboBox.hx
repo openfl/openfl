@@ -5,7 +5,7 @@ import openfl._internal.formats.xfl.XFLAssets;
 import openfl._internal.formats.xfl.dom.DOMTimeline;
 import openfl.fl.core.UIComponent;
 import openfl.fl.data.DataProvider;
-import openfl.display.XFLSprite;
+import openfl._internal.formats.xfl.display.XFLSprite;
 
 /**
  * Combo box grid

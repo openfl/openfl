@@ -1,8 +1,8 @@
 package xfl;
 
 import openfl._internal.formats.xfl.dom.DOMSymbolItem;
-import openfl.display.XFLMovieClip;
-import openfl.display.XFLSprite;
+import openfl._internal.formats.xfl.display.XFLMovieClip;
+import openfl._internal.formats.xfl.display.XFLSprite;
 
 /**
  * XFL custom symbol loader interface

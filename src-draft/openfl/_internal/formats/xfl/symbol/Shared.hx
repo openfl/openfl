@@ -17,7 +17,7 @@ import openfl.display.BitmapData;
 import openfl.display.DisplayObject;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.FrameLabel;
-import openfl.display.XFLMovieClip;
+import openfl._internal.formats.xfl.display.XFLMovieClip;
 
 /**
  * Shared between Sprite and MovieClip

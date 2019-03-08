@@ -2,8 +2,8 @@ package openfl.fl.controls;
 
 import openfl.fl.core.UIComponent;
 import openfl.display.DisplayObject;
-import openfl.display.XFLSprite;
-import openfl.display.XFLMovieClip;
+import openfl._internal.formats.xfl.display.XFLSprite;
+import openfl._internal.formats.xfl.display.XFLMovieClip;
 import openfl.text.TextFormat;
 import openfl.text.TextField;
 import openfl.text.TextFieldType;

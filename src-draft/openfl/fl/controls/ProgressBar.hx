@@ -1,7 +1,7 @@
 package openfl.fl.controls;
 
 import openfl.fl.core.UIComponent;
-import openfl.display.XFLMovieClip;
+import openfl._internal.formats.xfl.display.XFLMovieClip;
 import openfl.events.Event;
 import openfl.events.MouseEvent;
 import openfl.geom.Point;
