@@ -1,4 +1,4 @@
-package format.swf.data;
+﻿package format.swf.data;
 
 import format.swf.SWFData;
 import format.swf.data.consts.GradientInterpolationMode;
@@ -720,10 +720,17 @@ class SWFShape
 	private function removeEdgeFromCoordMap(edge:IEdge):Void
 	{
 		var key:String = edge.from.x + "_" + edge.from.y;
-		var coordMapArray = coordMap.get(key);
-		if (coordMapArray != null)
-		{
-			coordMap.remove(key);
+		var coordMapArray:Array<IEdge> = coordMap.get(key);
+
+		if(coordMapArray != null) {
+			if(coordMapArray.length == 1) {
+				coordMap.remove(key);
+			} else {
+				var i:Int = coordMapArray.indexOf(edge);
+				if(i > -1) {
+					coordMapArray.remove(edge);
+				}
+			}
 		}
 	}
 
