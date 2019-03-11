@@ -14,4 +14,6 @@ class FileSystemTest
 		Assert.isNotNull(absolutePath);
 	}
 }
+#else
+class FileSystemTest {}
 #end
