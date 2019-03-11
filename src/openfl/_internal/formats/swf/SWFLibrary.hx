@@ -109,7 +109,7 @@ import flash.display.AVM1Movie;
 			});
 			loader.contentLoaderInfo.addEventListener(ProgressEvent.PROGRESS, function(event)
 			{
-				promise.progress(event.bytesLoaded, event.bytesTotal);
+				promise.progress(Std.int(event.bytesLoaded), Std.int(event.bytesTotal));
 			});
 			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, function(_)
 			{
