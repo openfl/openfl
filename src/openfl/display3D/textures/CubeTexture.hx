@@ -215,6 +215,25 @@ import openfl.utils.ByteArray;
 		#end
 	}
 
+	/**
+		Uploads a component of a cube map texture from an ArrayBufferView object.
+
+		This function uploads one mip level of one side of the cube map. Call
+		`uploadFromTypedArray()` as necessary to upload each mip level and face of the
+		cube map.
+
+		@param	data	a typed array containing the image in the format specified when
+		this CubeTexture object was created.
+		@param	side	A code indicating which side of the cube to upload:
+		positive X : 0
+		negative X : 1
+		positive Y : 2
+		negative Y : 3
+		positive Z : 4
+		negative Z : 5
+		@param	miplevel	the mip level to be loaded, level zero is the top-level,
+		full-resolution image.
+	**/
 	public function uploadFromTypedArray(data:ArrayBufferView, side:UInt, miplevel:UInt = 0):Void
 	{
 		if (data == null) return;
@@ -248,7 +267,8 @@ import openfl.utils.ByteArray;
 			__framebufferSurface = surfaceSelector;
 
 			__context.__bindGLFramebuffer(__glFramebuffer);
-			gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_CUBE_MAP_POSITIVE_X + surfaceSelector, __textureID, 0);
+			gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_CUBE_MAP_POSITIVE_X
+				+ surfaceSelector, __textureID, 0);
 
 			if (__context.__enableErrorChecking)
 			{
@@ -345,7 +365,7 @@ import openfl.utils.ByteArray;
 				var size = Std.int(blockLength / 2);
 
 				gl.compressedTexImage2D(target, level, __internalFormat, width, height, 0,
-					new UInt8Array(#if js@:privateAccess bytes.b.buffer #else bytes #end, 0, size));
+					new UInt8Array(#if js @:privateAccess bytes.b.buffer #else bytes #end, 0, size));
 
 				var alphaTexture = new CubeTexture(__context, __size, Context3DTextureFormat.COMPRESSED, __optimizeForRenderToTexture, __streamingLevels);
 				alphaTexture.__format = format;
@@ -353,14 +373,14 @@ import openfl.utils.ByteArray;
 
 				__context.__bindGLTextureCubeMap(alphaTexture.__textureID);
 				gl.compressedTexImage2D(target, level, alphaTexture.__internalFormat, width, height, 0,
-					new UInt8Array(#if js@:privateAccess bytes.b.buffer #else bytes #end, size, size));
+					new UInt8Array(#if js @:privateAccess bytes.b.buffer #else bytes #end, size, size));
 
 				__alphaTexture = alphaTexture;
 			}
 			else
 			{
 				gl.compressedTexImage2D(target, level, __internalFormat, width, height, 0,
-					new UInt8Array(#if js@:privateAccess bytes.b.buffer #else bytes #end, 0, blockLength));
+					new UInt8Array(#if js @:privateAccess bytes.b.buffer #else bytes #end, 0, blockLength));
 			}
 		});
 

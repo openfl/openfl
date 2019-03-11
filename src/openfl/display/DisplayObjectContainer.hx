@@ -622,7 +622,7 @@ class DisplayObjectContainer extends InteractiveObject
 	}
 
 	/**
-		Swaps the z-order(front-to-back order) of the two specified child
+		Swaps the z-order (front-to-back order) of the two specified child
 		objects. All other child objects in the display object container remain in
 		the same index positions.
 
@@ -646,7 +646,7 @@ class DisplayObjectContainer extends InteractiveObject
 	}
 
 	/**
-		Swaps the z-order(front-to-back order) of the child objects at the two
+		Swaps the z-order (front-to-back order) of the child objects at the two
 		specified index positions in the child list. All other child objects in
 		the display object container remain in the same index positions.
 

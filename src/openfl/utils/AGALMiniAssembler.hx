@@ -36,7 +36,7 @@ import openfl.Lib;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@SuppressWarnings("checkstyle:ConstantName")
+@SuppressWarnings(["checkstyle:ConstantName", "checkstyle:FieldDocComment"])
 class AGALMiniAssembler
 {
 	@:noCompletion private static var OPMAP:Map<String, OpCode> = new Map();
@@ -792,6 +792,7 @@ class AGALMiniAssembler
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 private class OpCode
 {
 	public var emitCode(default, null):Int;
@@ -817,6 +818,7 @@ private class OpCode
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 private class Register
 {
 	public var emitCode(default, null):UInt;
@@ -844,6 +846,7 @@ private class Register
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 private class Sampler
 {
 	public var flag(default, null):UInt;

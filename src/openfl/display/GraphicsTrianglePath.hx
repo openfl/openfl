@@ -67,6 +67,10 @@ import openfl.Vector;
 	/**
 		Creates a new GraphicsTrianglePath object.
 
+		@param	vertices	A Vector of Numbers where each pair of numbers is treated as a point (an x, y pair).
+		Required.
+		@param	indices	A Vector of integers or indexes, where every three indexes define a triangle.
+		@param	uvtData	A Vector of normalized coordinates used to apply texture mapping.
 		@param culling Specifies whether to render triangles that face in a
 					   given direction. Used to prevent the rendering of
 					   triangles that cannot be seen in the current view. Can

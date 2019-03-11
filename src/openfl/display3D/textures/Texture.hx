@@ -230,6 +230,15 @@ import openfl.utils.ByteArray;
 		#end
 	}
 
+	/**
+		Uploads a texture from an ArrayBufferView.
+
+		@param	data	a typed array that contains enough bytes in the textures
+		internal format to fill the texture. rgba textures are read as bytes per texel
+		component (1 or 4). float textures are read as floats per texel component (1 or 4).
+		@param	miplevel	the mip level to be loaded, level zero is the top-level,
+		full-resolution image.
+	**/
 	public function uploadFromTypedArray(data:ArrayBufferView, miplevel:UInt = 0):Void
 	{
 		if (data == null) return;
@@ -313,7 +322,7 @@ import openfl.utils.ByteArray;
 				var size = Std.int(blockLength / 2);
 
 				gl.compressedTexImage2D(__textureTarget, level, __internalFormat, width, height, 0,
-					new UInt8Array(#if js@:privateAccess bytes.b.buffer #else bytes #end, 0, size));
+					new UInt8Array(#if js @:privateAccess bytes.b.buffer #else bytes #end, 0, size));
 
 				var alphaTexture = new Texture(__context, __width, __height, Context3DTextureFormat
 					.COMPRESSED, __optimizeForRenderToTexture, __streamingLevels);
@@ -322,14 +331,14 @@ import openfl.utils.ByteArray;
 
 				__context.__bindGLTexture2D(alphaTexture.__textureID);
 				gl.compressedTexImage2D(alphaTexture.__textureTarget, level, alphaTexture.__internalFormat, width, height, 0,
-					new UInt8Array(#if js@:privateAccess bytes.b.buffer #else bytes #end, size, size));
+					new UInt8Array(#if js @:privateAccess bytes.b.buffer #else bytes #end, size, size));
 
 				__alphaTexture = alphaTexture;
 			}
 			else
 			{
 				gl.compressedTexImage2D(__textureTarget, level, __internalFormat, width, height, 0,
-					new UInt8Array(#if js@:privateAccess bytes.b.buffer #else bytes #end, 0, blockLength));
+					new UInt8Array(#if js @:privateAccess bytes.b.buffer #else bytes #end, 0, blockLength));
 			}
 		});
 

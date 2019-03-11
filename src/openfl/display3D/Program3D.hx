@@ -113,6 +113,14 @@ import lime.utils.BytePointer;
 		__deleteShaders();
 	}
 
+	/**
+		**BETA**
+
+		Get the index for the specified shader attribute.
+
+		@returns	The index, or -1 if the attribute is not bound or
+		was not found in the shader sources
+	**/
 	public function getAttributeIndex(name:String):Int
 	{
 		if (__format == AGAL)
@@ -139,6 +147,14 @@ import lime.utils.BytePointer;
 		}
 	}
 
+	/**
+		**BETA**
+
+		Get the index for the specified shader constant.
+
+		@returns	The index, or -1 if the constant is not bound or
+		was not found in the shader sources
+	**/
 	public function getConstantIndex(name:String):Int
 	{
 		if (__format == AGAL)
@@ -394,6 +410,11 @@ import lime.utils.BytePointer;
 		}
 	}
 
+	/**
+		**BETA**
+
+		Uploads a pair of rendering programs expressed in GLSL (GL Shader Language).
+	**/
 	public function uploadSources(vertexSource:String, fragmentSource:String):Void
 	{
 		if (__format != GLSL) return;

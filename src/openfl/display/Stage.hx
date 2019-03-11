@@ -210,6 +210,10 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		Specifies whether this stage allows the use of the full screen with text input mode
 	**/
 	public var allowsFullScreenInteractive(default, null):Bool;
+
+	/**
+		The associated Lime Application instance.
+	**/
 	public var application(default, null):Application;
 	// @:noCompletion @:dox(hide) @:require(flash15) public var browserZoomFactor (default, null):Float;
 
@@ -274,6 +278,14 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10) public var colorCorrectionSupport (default, null):openfl.display.ColorCorrectionSupport;
 	public var contentsScaleFactor(get, never):Float;
+
+	/**
+		**BETA**
+
+		The current Context3D the default display renderer.
+
+		This property is supported only when using hardware rendering.
+	**/
 	public var context3D(default, null):Context3D;
 	// @:noCompletion @:dox(hide) @:require(flash11) public var displayContextInfo (default, null):String;
 
@@ -364,7 +376,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 							  `true` throws a security error.
 	**/
 	public var displayState(get, set):StageDisplayState;
+
 	#if commonjs
+	/**
+		The parent HTML element where this Stage is embedded.
+	**/
 	public var element:Element;
 	#end
 
@@ -742,7 +758,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		@throws SecurityError Calling the `stageWidth` property of a
 							  Stage object throws an exception for any caller that
 							  is not in the same security sandbox as the Stage
-							  owner(the main SWF file). To avoid this, the Stage
+							  owner (the main SWF file). To avoid this, the Stage
 							  owner can grant permission to the domain of the
 							  caller by calling the
 							  `Security.allowDomain()` method or the
@@ -751,6 +767,10 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 							  the _ActionScript 3.0 Developer's Guide_.
 	**/
 	public var stageWidth(default, null):Int;
+
+	/**
+		The associated Lime Window instance for this Stage.
+	**/
 	public var window(default, null):Window;
 
 	/**
@@ -1843,7 +1863,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		__enterFrame(__deltaTime);
 		__deltaTime = 0;
 
-		var shouldRender = #if !openfl_disable_display_render(__renderer != null #if !openfl_always_render && (__renderDirty || __forceRender) #end) #else false #end;
+		var shouldRender = #if !openfl_disable_display_render (
+			__renderer != null #if !openfl_always_render && (__renderDirty || __forceRender) #end) #else false #end;
 
 		if (__invalidated && shouldRender)
 		{
@@ -2441,8 +2462,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				event = MouseEvent.__pool.get(MouseEvent.MOUSE_OUT, __mouseX, __mouseY, __mouseOverTarget
 					.__globalToLocal(targetPoint, localPoint), cast __mouseOverTarget);
 				#else
-				event = MouseEvent.__create(MouseEvent.MOUSE_OUT, button, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
-					cast __mouseOverTarget);
+				event = MouseEvent.__create(MouseEvent.MOUSE_OUT, button, __mouseX, __mouseY, __mouseOverTarget
+					.__globalToLocal(targetPoint, localPoint), cast __mouseOverTarget);
 				#end
 
 				__dispatchStack(event, __mouseOutStack);
@@ -2463,8 +2484,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				event = MouseEvent.__pool.get(MouseEvent.ROLL_OUT, __mouseX, __mouseY, __mouseOverTarget
 					.__globalToLocal(targetPoint, localPoint), cast __mouseOverTarget);
 				#else
-				event = MouseEvent.__create(MouseEvent.ROLL_OUT, button, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
-					cast __mouseOverTarget);
+				event = MouseEvent.__create(MouseEvent.ROLL_OUT, button, __mouseX, __mouseY, __mouseOverTarget
+					.__globalToLocal(targetPoint, localPoint), cast __mouseOverTarget);
 				#end
 				event.bubbles = false;
 
@@ -2974,9 +2995,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					// __dirty = false;
 				}
 			}
-				/*
-					#if dom
-				**/
+			/*
+				#if dom
+			**/
 			else if (!__renderDirty && __wasDirty)
 			{
 				// If we were dirty last time, we need at least one more

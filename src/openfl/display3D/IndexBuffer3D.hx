@@ -84,6 +84,13 @@ import openfl.Vector;
 		#end
 	}
 
+	/**
+		Store in the graphics subsystem vertex indices.
+
+		@param	data	an ArrayBufferView containing index data. Each index is represented by
+		16-bits (two bytes) in the array.
+		@param	byteLength	The number of bytes to read.
+	**/
 	public function uploadFromTypedArray(data:ArrayBufferView, byteLength:Int = -1):Void
 	{
 		if (data == null) return;

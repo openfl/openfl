@@ -7,6 +7,10 @@ import lime.ui.Window as LimeWindow;
 import lime.ui.WindowAttributes;
 #end
 
+/**
+	The Window class is a Lime Window instance that automatically
+	initializes an OpenFL stage for the current window.
+**/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug

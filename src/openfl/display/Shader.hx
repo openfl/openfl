@@ -140,8 +140,26 @@ class Shader
 		properties of the `data` object, see the ShaderData class description.
 	**/
 	public var data(get, set):ShaderData;
+
+	/**
+		Get or set the fragment source used when compiling with GLSL.
+
+		This property is not available on the Flash target.
+	**/
 	public var glFragmentSource(get, set):String;
+
+	/**
+		The compiled GLProgram if available.
+
+		This property is not available on the Flash target.
+	**/
 	@SuppressWarnings("checkstyle:Dynamic") public var glProgram(default, null):GLProgram;
+
+	/**
+		Get or set the vertex source used when compiling with GLSL.
+
+		This property is not available on the Flash target.
+	**/
 	public var glVertexSource(get, set):String;
 
 	/**
@@ -184,6 +202,12 @@ class Shader
 		* `sqrt(x)`
 	**/
 	public var precisionHint:ShaderPrecision;
+
+	/**
+		The compiled Program3D if available.
+
+		This property is not available on the Flash target.
+	**/
 	public var program:Program3D;
 
 	@:noCompletion private var __alpha:ShaderParameter<Float>;
@@ -449,8 +473,8 @@ class Shader
 				precision highp float;
 				#else
 				precision mediump float;
-				#endif" : "precision lowp float;") +
-				"
+				#endif" : "precision lowp float;")
+				+ "
 				#endif
 				";
 

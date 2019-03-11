@@ -20,6 +20,27 @@ import openfl._internal.renderer.context3D.Context3DDisplayObject;
 import openfl._internal.renderer.context3D.Context3DTilemap;
 #end
 
+/**
+	The Tilemap class represents a "quad batch", or series of objects that are
+	rendered from the same bitmap. The Tilemap class is designed to encourage
+	the use of a single Tileset reference for best performance, but it is possible
+	to use unique Tileset references for each Tile or TileContainer within a
+	Tilemap.
+
+	On software renderered platforms, the Tilemap class uses a rendering method
+	similar to BitmapData `copyPixels`, so it will perform fastest if tile objects
+	do not use rotation or scale.
+
+	On hardware rendered platforms, the Tilemap class uses a rendering method
+	that is fast even with transforms, and allows support for additional features,
+	such as custom `shader` references, and color transform. Using multiple Shader
+	or Tileset references will require a new draw call each time there is a change.
+
+	**Note:** The Tilemap class is not a subclass of the InteractiveObject
+	class, so it cannot dispatch mouse events. However, you can use the
+	`addEventListener()` method of the display object container that
+	contains the Tilemap object.
+**/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -30,12 +51,44 @@ import openfl._internal.renderer.context3D.Context3DTilemap;
 @:access(openfl.geom.Rectangle)
 class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayObject #end implements ITileContainer
 {
+	/**
+		Returns the number of tiles of this object.
+	**/
 	public var numTiles(get, never):Int;
+
+	/**
+		Enable or disable support for the `alpha` property of contained tiles. Disabling
+		this property can improve performance on certain renderers.
+	**/
 	public var tileAlphaEnabled:Bool;
+
+	/**
+		Enable or disable support for the `blendMode` property of contained tiles.
+		Disabling this property can improve performance on certain renderers.
+	**/
 	public var tileBlendModeEnabled:Bool;
+
+	/**
+		Enable or disable support for the `colorTransform` property of contained tiles.
+		Disabling this property can improve performance on certain renderers.
+	**/
 	public var tileColorTransformEnabled:Bool;
+
+	/**
+		Optionally define a default Tileset to be used for all contained tiles. Tile
+		instances that do not have their `tileset` property defined will use this value.
+
+		If a Tile object does not have a Tileset set, either using this property or using
+		the Tile `tileset` property, it will not be rendered.
+	**/
 	public var tileset(get, set):Tileset;
+
 	#if !flash
+	/**
+		Controls whether or not the tilemap is smoothed when scaled. If
+		`true`, the bitmap is smoothed when scaled. If `false`, the tilemap is not
+		smoothed when scaled.
+	**/
 	public var smoothing:Bool;
 	#end
 
@@ -59,6 +112,17 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	}
 	#end
 
+	/**
+		Creates a new Tilemap object.
+
+		@param	width	The width of the tilemap in pixels.
+		@param	height	The height of the tilemap in pixels.
+		@param	tileset	A Tileset being referenced.
+		@param	smoothing	Whether or not the tilemap is smoothed when scaled. For example, the following examples
+		show the same tilemap scaled by a factor of 3, with `smoothing` set to `false` (left) and `true` (right):
+
+		![A bitmap without smoothing.](/images/bitmap_smoothing_off.jpg) ![A bitmap with smoothing.](bitmap_smoothing_on.jpg)
+	**/
 	public function new(width:Int, height:Int, tileset:Tileset = null, smoothing:Bool = true)
 	{
 		super();
@@ -82,74 +146,216 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		#end
 	}
 
+	/**
+		Adds a Tile instance to this Tilemap instance. The tile is
+		added to the front (top) of all other tiles in this Tilemap
+		instance. (To add a tile to a specific index position, use the `addTileAt()`
+		method.)
+
+		@param tile The Tile instance to add to this Tilemap instance.
+		@return The Tile instance that you pass in the `tile` parameter.
+	**/
 	public function addTile(tile:Tile):Tile
 	{
 		return __group.addTile(tile);
 	}
 
+	/**
+		Adds a Tile instance to this Tilemap instance. The tile is added
+		at the index position specified. An index of 0 represents the back (bottom)
+		of the rendered list for this Tilemap object.
+
+		For example, the following example shows three tiles, labeled
+		a, b, and c, at index positions 0, 2, and 1, respectively:
+
+		![b over c over a](/images/DisplayObjectContainer_layers.jpg)
+
+		@param tile The Tile instance to add to this Tilemap instance.
+		@param index The index position to which the tile is added. If you
+					 specify a currently occupied index position, the tile object
+					 that exists at that position and all higher positions are
+					 moved up one position in the tile list.
+		@return The Tile instance that you pass in the `tile` parameter.
+	**/
 	public function addTileAt(tile:Tile, index:Int):Tile
 	{
 		return __group.addTileAt(tile, index);
 	}
 
+	/**
+		Adds an Array of Tile instances to this Tilemap instance. The tiles
+		are added to the front (top) of all other tiles in this Tilemap
+		instance.
+
+		@param tiles The Tile instances to add to this Tilemap instance.
+		@return The Tile Array that you pass in the `tiles` parameter.
+	**/
 	public function addTiles(tiles:Array<Tile>):Array<Tile>
 	{
 		return __group.addTiles(tiles);
 	}
 
+	/**
+		Determines whether the specified tile is contained within the
+		Tilemap instance. The search includes the entire tile list including
+		this Tilemap instance. Grandchildren, great-grandchildren, and so on
+		each return `true`.
+
+		@param	tile	The tile object to test.
+		@return	`true` if the `tile` object is contained within the Tilemap;
+		otherwise `false`.
+	**/
 	public function contains(tile:Tile):Bool
 	{
 		return __group.contains(tile);
 	}
 
+	/**
+		Returns the tile instance that exists at the specified index.
+
+		@param index The index position of the tile object.
+		@return The tile object at the specified index position.
+	**/
 	public function getTileAt(index:Int):Tile
 	{
 		return __group.getTileAt(index);
 	}
 
+	/**
+		Returns the index position of a contained Tile instance.
+
+		@param child The Tile instance to identify.
+		@return The index position of the tile object to identify.
+	**/
 	public function getTileIndex(tile:Tile):Int
 	{
 		return __group.getTileIndex(tile);
 	}
 
+	/**
+		Returns a TileContainer with each of the tiles contained within this
+		Tilemap.
+
+		@return	A new TileContainer with the same Tile references as this Tilemap
+	**/
 	public function getTiles():TileContainer
 	{
 		return __group.clone();
 	}
 
+	/**
+		Removes the specified Tile instance from the tile list of the Tilemap
+		instance. The index positions of any tile objects above the tile in the
+		Tilemap are decreased by 1.
+
+		@param	tile	The Tile instance to remove.
+		@return	The Tile instance that you pass in the `tile` parameter.
+	**/
 	public function removeTile(tile:Tile):Tile
 	{
 		return __group.removeTile(tile);
 	}
 
+	/**
+		Removes a Tile from the specified `index` position in the tile list of the
+		Tilemap. The index positions of any tile objects above the tile in
+		the Tilemap are decreased by 1.
+
+		@param	index	The index of the Tile to remove.
+		@return	The Tile instance that was removed.
+	**/
 	public function removeTileAt(index:Int):Tile
 	{
 		return __group.removeTileAt(index);
 	}
 
+	/**
+		Removes all Tile instances from the tile list of the ITileContainer instance.
+
+		@param	beginIndex	The beginning position.
+		@param	endIndex	The ending position.
+	**/
 	public function removeTiles(beginIndex:Int = 0, endIndex:Int = 0x7fffffff):Void
 	{
 		return __group.removeTiles(beginIndex, endIndex);
 	}
 
+	/**
+		Changes the position of an existing tile in the tile container.
+		This affects the layering of tile objects. For example, the following
+		example shows three tile objects, labeled a, b, and c, at index
+		positions 0, 1, and 2, respectively:
+
+		![c over b over a](/images/DisplayObjectContainerSetChildIndex1.jpg)
+
+		When you use the `setTileIndex()` method and specify an
+		index position that is already occupied, the only positions that change
+		are those in between the tile object's former and new position. All
+		others will stay the same. If a tile is moved to an index LOWER than its
+		current index, all tiles in between will INCREASE by 1 for their index
+		reference. If a tile is moved to an index HIGHER than its current index,
+		all tiles in between will DECREASE by 1 for their index reference. For
+		example, if the tile container in the previous example is named
+		`container`, you can swap the position of the tile objects
+		labeled a and b by calling the following code:
+
+		```haxe
+		container.setTileIndex(container.getTileAt(1), 0);
+		```
+
+		This code results in the following arrangement of objects:
+
+		![c over a over b](/images/DisplayObjectContainerSetChildIndex2.jpg)
+
+		@param	tile	The Tile instance for which you want to change the index
+		number.
+		@param	index	The resulting index number for the `tile` object.
+	**/
 	public function setTileIndex(tile:Tile, index:Int):Void
 	{
 		__group.setTileIndex(tile, index);
 	}
 
+	/**
+		Sets all the Tile instances of this Tilemap instance.
+
+		@param	beginIndex	The beginning position.
+		@param	endIndex	The ending position.
+	**/
 	public function setTiles(group:TileContainer):Void
 	{
+		for (tile in __group.tiles)
+		{
+			removeTile(tile);
+		}
+
 		for (tile in group.__tiles)
 		{
 			addTile(tile);
 		}
 	}
 
+	/**
+		Swaps the z-order (front-to-back order) of the two specified tile
+		objects. All other tile objects in the tile container remain in
+		the same index positions.
+
+		@param	child1	The first tile object.
+		@param	child2	The second tile object.
+	**/
 	public function swapTiles(tile1:Tile, tile2:Tile):Void
 	{
 		__group.swapTiles(tile1, tile2);
 	}
 
+	/**
+		Swaps the z-order (front-to-back order) of the tile objects at the two
+		specified index positions in the tile list. All other tile objects in
+		the tile container remain in the same index positions.
+
+		@param	index1	The index position of the first tile object.
+		@param	index2	The index position of the second tile object.
+	**/
 	public function swapTilesAt(index1:Int, index2:Int):Void
 	{
 		__group.swapTilesAt(index1, index2);

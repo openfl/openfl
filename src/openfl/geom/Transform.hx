@@ -99,7 +99,7 @@ class Transform
 		A Matrix object containing values that alter the scaling, rotation, and
 		translation of the display object.
 
-		If the `matrix` property is set to a value(not
+		If the `matrix` property is set to a value (not
 		`null`), the `matrix3D` property is
 		`null`. And if the `matrix3D` property is set to a
 		value(not `null`), the `matrix` property is

@@ -107,6 +107,13 @@ import lime.graphics.Image;
 		#end
 	}
 
+	/**
+		Uploads a texture from an ArrayBufferView.
+
+		@param	data	a typed array that contains enough bytes in the textures internal
+		format to fill the texture. rgba textures are read as bytes per texel component (1
+		or 4). float textures are read as floats per texel component (1 or 4).
+	**/
 	public function uploadFromTypedArray(data:ArrayBufferView):Void
 	{
 		var gl = __context.gl;

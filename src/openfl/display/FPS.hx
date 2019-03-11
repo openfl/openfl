@@ -9,12 +9,19 @@ import openfl._internal.renderer.context3D.stats.Context3DStats;
 import openfl._internal.renderer.context3D.stats.DrawCallContext;
 #end
 
+/**
+	The FPS class provides an easy-to-use monitor to display
+	the current frame rate of an OpenFL project
+**/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
 class FPS extends TextField
 {
+	/**
+		The current frame rate, expressed using frames-per-second
+	**/
 	public var currentFPS(default, null):Int;
 
 	@:noCompletion private var cacheCount:Int;

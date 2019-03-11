@@ -114,6 +114,15 @@ class VertexBuffer3D
 		#end
 	}
 
+	/**
+		Uploads the data for a set of points to the rendering context from a typed array.
+
+		@param	data	a typed array of 32-bit values. A single vertex is comprised of a
+		number of values stored sequentially in the vector. The number of values in a
+		vertex is specified at buffer creation using the `data32PerVertex` parameter to the
+		Context3D `createVertexBuffer3D()` method.
+		@param	byteLength	The number of bytes to read.
+	**/
 	public function uploadFromTypedArray(data:ArrayBufferView, byteLength:Int = -1):Void
 	{
 		if (data == null) return;

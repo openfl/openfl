@@ -51,7 +51,7 @@ import openfl._internal.renderer.context3D.stats.DrawCallContext;
 #end
 
 /**
-	The BitmapData class lets you work with the data(pixels) of a Bitmap
+	The BitmapData class lets you work with the data (pixels) of a Bitmap
 	object. You can use the methods of the BitmapData class to create
 	arbitrarily sized transparent or opaque bitmap images and manipulate them
 	in various ways at runtime. You can also access the BitmapData for a bitmap
@@ -73,24 +73,22 @@ import openfl._internal.renderer.context3D.stats.DrawCallContext;
 	a buffer of 32-bit integers. Each 32-bit integer determines the properties
 	of a single pixel in the bitmap.
 
-	Each 32-bit integer is a combination of four 8-bit channel values(from
+	Each 32-bit integer is a combination of four 8-bit channel values (from
 	0 to 255) that describe the alpha transparency and the red, green, and blue
-	(ARGB) values of the pixel.(For ARGB values, the most significant byte
+	(ARGB) values of the pixel. (For ARGB values, the most significant byte
 	represents the alpha channel value, followed by red, green, and blue.)
 
-	The four channels(alpha, red, green, and blue) are represented as
+	The four channels (alpha, red, green, and blue) are represented as
 	numbers when you use them with the `BitmapData.copyChannel()`
 	method or the `DisplacementMapFilter.componentX` and
 	`DisplacementMapFilter.componentY` properties, and these numbers
 	are represented by the following constants in the BitmapDataChannel
 	class:
 
-
 	* `BitmapDataChannel.ALPHA`
 	* `BitmapDataChannel.RED`
 	* `BitmapDataChannel.GREEN`
 	* `BitmapDataChannel.BLUE`
-
 
 	You can attach BitmapData objects to a Bitmap object by using the
 	`bitmapData` property of the Bitmap object.
@@ -103,7 +101,7 @@ import openfl._internal.renderer.context3D.stats.DrawCallContext;
 
 	In Flash Player 10, the maximum size for a BitmapData object
 	is 8,191 pixels in width or height, and the total number of pixels cannot
-	exceed 16,777,215 pixels.(So, if a BitmapData object is 8,191 pixels wide,
+	exceed 16,777,215 pixels. (So, if a BitmapData object is 8,191 pixels wide,
 	it can only be 2,048 pixels high.) In Flash Player 9 and earlier, the limitation
 	is 2,880 pixels in height and 2,880 in width.
 **/
@@ -1767,7 +1765,7 @@ class BitmapData implements IBitmapDrawable
 				#end
 			}
 			#else
-			if (#if openfl_power_of_two! textureImage.powerOfTwo || #end (!textureImage.premultiplied && textureImage.transparent))
+			if (#if openfl_power_of_two !textureImage.powerOfTwo || #end (!textureImage.premultiplied && textureImage.transparent))
 			{
 				textureImage = textureImage.clone();
 				textureImage.premultiplied = true;
@@ -2542,7 +2540,9 @@ class BitmapData implements IBitmapDrawable
 	public function threshold(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, operation:String, threshold:Int, color:Int = 0x00000000,
 			mask:Int = 0xFFFFFFFF, copySource:Bool = false):Int
 	{
-		if (sourceBitmapData == null || sourceRect == null || destPoint == null
+		if (sourceBitmapData == null
+			|| sourceRect == null
+			|| destPoint == null
 			|| sourceRect.x > sourceBitmapData.width
 			|| sourceRect.y > sourceBitmapData.height
 			|| destPoint.x > width
@@ -2664,7 +2664,10 @@ class BitmapData implements IBitmapDrawable
 			color = 0;
 		}
 
-		if (allowFramebuffer && __texture != null && __texture.__glFramebuffer != null && Lib.current.stage.__renderer.__type == OPENGL)
+		if (allowFramebuffer
+			&& __texture != null
+			&& __texture.__glFramebuffer != null
+			&& Lib.current.stage.__renderer.__type == OPENGL)
 		{
 			var renderer:OpenGLRenderer = cast Lib.current.stage.__renderer;
 			var context = renderer.__context3D;

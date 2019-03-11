@@ -213,9 +213,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 	/**
 		Indicates the alpha transparency value of the object specified. Valid
-		values are 0(fully transparent) to 1(fully opaque). The default value is
-		1. Display objects with `alpha` set to 0 _are_ active,
-		even though they are invisible.
+		values are 0 (fully transparent) to 1 (fully opaque). The default value is 1.
+		Display objects with `alpha` set to 0 _are_ active, even though they are invisible.
 	**/
 	@:keep public var alpha(get, set):Float;
 
@@ -591,6 +590,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		You can use `parent` to move up multiple levels in the
 		display list as in the following:
 
+		```haxe
+		this.parent.parent.alpha = 20;
+		```
+
 		@throws SecurityError The parent display object belongs to a security
 							  sandbox to which you do not have access. You can
 							  avoid this situation by having the parent movie call
@@ -720,8 +723,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	public var scale9Grid:Rectangle;
 
 	/**
-		Indicates the horizontal scale(percentage) of the object as applied from
-		the registration point. The default registration point is(0,0). 1.0
+		Indicates the horizontal scale (percentage) of the object as applied from
+		the registration point. The default registration point is (0,0). 1.0
 		equals 100% scale.
 
 		Scaling the local coordinate system changes the `x` and
@@ -730,8 +733,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:keep public var scaleX(get, set):Float;
 
 	/**
-		Indicates the vertical scale(percentage) of an object as applied from the
-		registration point of the object. The default registration point is(0,0).
+		Indicates the vertical scale (percentage) of an object as applied from the
+		registration point of the object. The default registration point is (0,0).
 		1.0 is 100% scale.
 
 		Scaling the local coordinate system changes the `x` and
@@ -1329,6 +1332,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 
 	// @:noCompletion @:dox(hide) @:require(flash10) public function local3DToGlobal (point3d:Vector3D):Point;
+
 	@SuppressWarnings("checkstyle:Dynamic")
 	public override function removeEventListener(type:String, listener:Dynamic->Void, useCapture:Bool = false):Void
 	{
@@ -1507,8 +1511,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 			for (filter in __filters)
 			{
-				extension.__expand(-filter.__leftExtension, -filter.__topExtension, filter.__leftExtension + filter.__rightExtension,
-					filter.__topExtension + filter.__bottomExtension);
+				extension.__expand(-filter.__leftExtension, -filter.__topExtension, filter.__leftExtension + filter.__rightExtension, filter
+					.__topExtension + filter.__bottomExtension);
 			}
 
 			rect.width += extension.width;
@@ -1878,11 +1882,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	{
 		var renderParent = __renderParent != null ? __renderParent : parent;
 		if (__isMask && renderParent == null) renderParent = __maskTarget;
-		__renderable = (__visible
-			&& __scaleX != 0
-			&& __scaleY != 0
-			&& !__isMask
-			&& (renderParent == null || !renderParent.__isMask));
+		__renderable = (__visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
 		__updateTransforms();
 
 		// if (updateChildren && __transformDirty) {
@@ -2059,17 +2059,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 			var bitmapMatrix = (__cacheAsBitmapMatrix != null ? __cacheAsBitmapMatrix : __renderTransform);
 
-			if (!needRender && (bitmapMatrix.a != __cacheBitmapMatrix.a
-				|| bitmapMatrix.b != __cacheBitmapMatrix.b
-				|| bitmapMatrix.c != __cacheBitmapMatrix.c
-				|| bitmapMatrix.d != __cacheBitmapMatrix.d))
+			if (!needRender
+				&& (bitmapMatrix.a != __cacheBitmapMatrix.a
+					|| bitmapMatrix.b != __cacheBitmapMatrix.b
+					|| bitmapMatrix.c != __cacheBitmapMatrix.c
+					|| bitmapMatrix.d != __cacheBitmapMatrix.d))
 			{
 				needRender = true;
 			}
 
 			if (!needRender
 				&& renderer.__type != OPENGL
-				&& __cacheBitmapData != null && __cacheBitmapData.image != null && __cacheBitmapData.image.version < __cacheBitmapData.__textureVersion)
+				&& __cacheBitmapData != null
+				&& __cacheBitmapData.image != null
+				&& __cacheBitmapData.image.version < __cacheBitmapData.__textureVersion)
 			{
 				needRender = true;
 			}
@@ -2129,9 +2132,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 					var bitmapColor = needsFill ? 0 : fillColor;
 					var allowFramebuffer = (renderer.__type == OPENGL);
 
-					if (__cacheBitmapData == null
-						|| bitmapWidth > __cacheBitmapData.width
-						|| bitmapHeight > __cacheBitmapData.height)
+					if (__cacheBitmapData == null || bitmapWidth > __cacheBitmapData.width || bitmapHeight > __cacheBitmapData.height)
 					{
 						__cacheBitmapData = new BitmapData(bitmapWidth, bitmapHeight, true, bitmapColor);
 
@@ -2434,9 +2435,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 						if (needSecondBitmapData)
 						{
-							if (__cacheBitmapData2 == null || __cacheBitmapData2.image == null
-									|| bitmapWidth > __cacheBitmapData2.width
-									|| bitmapHeight > __cacheBitmapData2.height)
+							if (__cacheBitmapData2 == null
+								|| __cacheBitmapData2.image == null
+								|| bitmapWidth > __cacheBitmapData2.width
+								|| bitmapHeight > __cacheBitmapData2.height)
 							{
 								__cacheBitmapData2 = new BitmapData(bitmapWidth, bitmapHeight, true, 0);
 							}
@@ -2453,9 +2455,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 						if (needCopyOfOriginal)
 						{
-							if (__cacheBitmapData3 == null || __cacheBitmapData3.image == null
-									|| bitmapWidth > __cacheBitmapData3.width
-									|| bitmapHeight > __cacheBitmapData3.height)
+							if (__cacheBitmapData3 == null
+								|| __cacheBitmapData3.image == null
+								|| bitmapWidth > __cacheBitmapData3.width
+								|| bitmapHeight > __cacheBitmapData3.height)
 							{
 								__cacheBitmapData3 = new BitmapData(bitmapWidth, bitmapHeight, true, 0);
 							}
@@ -2964,8 +2967,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		__setTransformDirty();
 		__objectTransform.matrix = value.matrix;
 
-		if (!__objectTransform.colorTransform.__equals(value.colorTransform, true) || (!cacheAsBitmap && __objectTransform.colorTransform
-			.alphaMultiplier != value.colorTransform.alphaMultiplier))
+		if (!__objectTransform.colorTransform.__equals(value.colorTransform, true)
+			|| (!cacheAsBitmap && __objectTransform.colorTransform.alphaMultiplier != value.colorTransform.alphaMultiplier))
 		{
 			__objectTransform.colorTransform.__copyFrom(value.colorTransform);
 			__setRenderDirty();
