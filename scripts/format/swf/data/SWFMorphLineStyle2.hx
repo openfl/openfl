@@ -70,8 +70,9 @@ class SWFMorphLineStyle2 extends SWFMorphLineStyle
 
 	override public function toString():String
 	{
-		var str:String = "[SWFMorphLineStyle2] " + "StartWidth: " + startWidth + ", " + "EndWidth: " + endWidth + ", " + "StartCaps: " + LineCapsStyle
-			.toString(startCapsStyle) + ", " + "EndCaps: " + LineCapsStyle.toString(endCapsStyle) + ", " + "Joint: " + LineJointStyle.toString(jointStyle);
+		var str:String = "[SWFMorphLineStyle2] " + "StartWidth: " + startWidth + ", " + "EndWidth: " + endWidth + ", " + "StartCaps: "
+			+ LineCapsStyle.toString(startCapsStyle) + ", " + "EndCaps: " + LineCapsStyle.toString(endCapsStyle) + ", " + "Joint: "
+			+ LineJointStyle.toString(jointStyle);
 		if (hasFillFlag)
 		{
 			str += ", Fill: " + fillType.toString();

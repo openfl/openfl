@@ -497,8 +497,8 @@ class CairoGraphics
 				case CUBIC_CURVE_TO:
 					var c = data.readCubicCurveTo();
 					hasPath = true;
-					cairo.curveTo(c.controlX1 - offsetX, c.controlY1 - offsetY, c.controlX2 - offsetX, c.controlY2 - offsetY, c.anchorX - offsetX,
-						c.anchorY - offsetY);
+					cairo.curveTo(c.controlX1 - offsetX, c.controlY1 - offsetY, c.controlX2 - offsetX, c.controlY2 - offsetY, c.anchorX - offsetX, c
+						.anchorY - offsetY);
 
 				case CURVE_TO:
 					var c = data.readCurveTo();
@@ -778,8 +778,8 @@ class CairoGraphics
 						if (transformABCD && transformXY)
 						{
 							ti = i * 6;
-							tileTransform
-								.setTo(transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], transforms[ti + 4], transforms[ti + 5]);
+							tileTransform.setTo(transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], transforms[ti + 4], transforms[ti
+								+ 5]);
 						}
 						else if (transformABCD)
 						{

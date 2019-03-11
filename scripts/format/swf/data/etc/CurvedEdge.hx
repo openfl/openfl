@@ -19,7 +19,7 @@ class CurvedEdge extends StraightEdge implements IEdge
 
 	override public function toString():String
 	{
-		return "stroke:" + lineStyleIdx + ", fill:" + fillStyleIdx + ", start:" + from.toString() + ", control:" + control.toString() + ", end:" + to
-			.toString();
+		return "stroke:" + lineStyleIdx + ", fill:" + fillStyleIdx + ", start:" + from.toString() + ", control:" + control.toString() + ", end:"
+			+ to.toString();
 	}
 }

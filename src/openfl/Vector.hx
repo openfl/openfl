@@ -2368,6 +2368,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 // 	public function unshift (x:T):Void;
 // 	@:native("values") private function __values ():Iterator<T>;
 // }
+
 @SuppressWarnings("checkstyle:FieldDocComment")
 @:dox(hide) private class VectorIterator<T>
 {

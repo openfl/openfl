@@ -68,7 +68,8 @@ class TagDefineVideoStream implements IDefinitionTag
 
 	public function toString(indent:Int = 0):String
 	{
-		return Tag.toStringCommon(type, name, indent) + "ID: " + characterId + ", " + "Frames: " + numFrames + ", " + "Width: " + width + ", " + "Height: " +
-			height + ", " + "Deblocking: " + VideoDeblockingType.toString(deblocking) + ", " + "Smoothing: " + smoothing + ", " + "Codec: " + VideoCodecID.toString(codecId);
+		return Tag.toStringCommon(type, name, indent) + "ID: " + characterId + ", " + "Frames: " + numFrames + ", " + "Width: " + width + ", " + "Height: "
+			+ height + ", " + "Deblocking: " + VideoDeblockingType.toString(deblocking) + ", " + "Smoothing: " + smoothing + ", " + "Codec: "
+			+ VideoCodecID.toString(codecId);
 	}
 }

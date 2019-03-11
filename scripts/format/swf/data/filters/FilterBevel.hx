@@ -121,9 +121,9 @@ class FilterBevel extends Filter implements IFilter
 
 	override public function toString(indent:Int = 0):String
 	{
-		var str:String = "[BevelFilter] " + "ShadowColor: " + ColorUtils.rgbToString(shadowColor) + ", " + "HighlightColor: " + ColorUtils
-			.rgbToString(highlightColor) + ", " + "BlurX: " + blurX + ", " + "BlurY: " + blurY + ", " + "Angle: " + angle + ", " + "Distance: " + distance + ", " +
-				"Strength: " + strength + ", " + "Passes: " + passes;
+		var str:String = "[BevelFilter] " + "ShadowColor: " + ColorUtils.rgbToString(shadowColor) + ", " + "HighlightColor: "
+			+ ColorUtils.rgbToString(highlightColor) + ", " + "BlurX: " + blurX + ", " + "BlurY: " + blurY + ", " + "Angle: " + angle + ", " + "Distance: "
+			+ distance + ", " + "Strength: " + strength + ", " + "Passes: " + passes;
 		var flags:Array<String> = [];
 		if (innerShadow)
 		{

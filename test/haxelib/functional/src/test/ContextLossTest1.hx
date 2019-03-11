@@ -58,8 +58,8 @@ class ContextLossTest1 extends FunctionalTest
 
 				projectionTransform = new Matrix3D();
 				projectionTransform.copyRawDataFrom(Vector.ofArray([
-						2.0 / contentWidth, 0.0, 0.0, 0.0, 0.0, 2.0 / contentHeight, 0.0, 0.0, 0.0, 0.0, -2.0 / 2000, 0.0, -1.0, -1.0, 0.0, 1.0
-					]));
+					2.0 / contentWidth, 0.0, 0.0, 0.0, 0.0, 2.0 / contentHeight, 0.0, 0.0, 0.0, 0.0, -2.0 / 2000, 0.0, -1.0, -1.0, 0.0, 1.0
+				]));
 			}
 		}
 	}

@@ -260,8 +260,17 @@ class SWFTimelineContainer extends SWFEventDispatcher
 			else
 			{
 				eventData.indexRoot = rootTimelineContainer.tags.length;
-				trace("WARNING: excess bytes: " + excessBytes + ", " + "Tag: " + tag.name + ", " + "Index: " + index + ", " + "IndexRoot: " + eventData
-					.indexRoot);
+				trace("WARNING: excess bytes: "
+					+ excessBytes
+					+ ", "
+					+ "Tag: "
+					+ tag.name
+					+ ", "
+					+ "Index: "
+					+ index
+					+ ", "
+					+ "IndexRoot: "
+					+ eventData.indexRoot);
 			}
 			var event:SWFWarningEvent = new SWFWarningEvent(eventType, index, eventData, false, true);
 			var cancelled:Bool = !dispatchEvent(event);

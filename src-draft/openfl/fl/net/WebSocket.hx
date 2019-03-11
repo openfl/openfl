@@ -234,8 +234,8 @@ class WebSocket extends EventDispatcher
 					var frameLengthByte3:Int = _receiveData.readByte();
 
 					_receiveData = new ByteArray();
-					_receiveDataLength = ((frameLengthByte0 & 0xff) << 24) + ((frameLengthByte1 & 0xff) << 16) + ((frameLengthByte2 & 0xff) << 8) +
-						(frameLengthByte3 & 0xff);
+					_receiveDataLength = ((frameLengthByte0 & 0xff) << 24) + ((frameLengthByte1 & 0xff) << 16) + ((frameLengthByte2 & 0xff) << 8)
+						+ (frameLengthByte3 & 0xff);
 					_receiveState = RECEIVESTATE_FRAME_DATA;
 				}
 			case RECEIVESTATE_FRAME_DATA:

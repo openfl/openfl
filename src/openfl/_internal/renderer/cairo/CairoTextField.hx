@@ -80,9 +80,7 @@ class CairoTextField
 
 		if (width <= 0
 			|| height <= 0
-			|| (!textField.__dirty
-				&& !graphics.__softwareDirty
-				&& (!graphics.__visible || graphics.__bitmap != null))
+			|| (!textField.__dirty && !graphics.__softwareDirty && (!graphics.__visible || graphics.__bitmap != null))
 			|| !renderable)
 		{
 			textField.__dirty = false;
@@ -276,8 +274,13 @@ class CairoTextField
 
 								cairo.moveTo(Math.floor(group.offsetX + advance) + 0.5 - textField.scrollH - bounds.x, scrollY + 2.5 - bounds.y);
 								cairo.lineWidth = 1;
-								cairo.lineTo(Math.floor(group.offsetX + advance) + 0.5 - textField.scrollH - bounds.x,
-									scrollY + TextEngine.getFormatHeight(textField.defaultTextFormat) - 1 - bounds.y);
+								cairo.lineTo(Math.floor(group.offsetX + advance)
+									+ 0.5
+									- textField.scrollH
+									- bounds.x, scrollY
+									+ TextEngine.getFormatHeight(textField.defaultTextFormat)
+									- 1
+									- bounds.y);
 								cairo.stroke();
 							}
 						}

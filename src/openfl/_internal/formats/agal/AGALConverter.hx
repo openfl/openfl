@@ -687,7 +687,8 @@ class RegisterMap
 
 			// only emit temporary registers based on Boolean passed in
 			// this is so temp registers can be grouped in the main() block
-			if ((tempRegistersOnly && entry.type != RegisterType.TEMPORARY) || (!tempRegistersOnly && entry.type == RegisterType.TEMPORARY))
+			if ((tempRegistersOnly && entry.type != RegisterType.TEMPORARY)
+				|| (!tempRegistersOnly && entry.type == RegisterType.TEMPORARY))
 			{
 				continue;
 			}

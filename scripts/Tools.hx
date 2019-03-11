@@ -162,12 +162,12 @@ class Tools
 
 	private static function generateSWFClasses(project:HXProject, output:HXProject, swfAsset:Asset, prefix:String = ""):Array<String>
 	{
-		var bitmapDataTemplate = File.getContent(#if (lime >= "7.0.0") Haxelib.getPath #else PathHelper.getHaxelib #end
-			(new Haxelib("openfl"), true) + "/assets/templates/swf/BitmapData.mtt");
-		var movieClipTemplate = File.getContent(#if (lime >= "7.0.0") Haxelib.getPath #else PathHelper.getHaxelib #end
-			(new Haxelib("openfl"), true) + "/assets/templates/swf/MovieClip.mtt");
-		var simpleButtonTemplate = File.getContent(#if (lime >= "7.0.0") Haxelib.getPath #else PathHelper.getHaxelib #end
-			(new Haxelib("openfl"), true) + "/assets/templates/swf/SimpleButton.mtt");
+		var bitmapDataTemplate = File.getContent(#if (lime >= "7.0.0") Haxelib.getPath #else PathHelper.getHaxelib #end (new Haxelib("openfl"), true)
+			+ "/assets/templates/swf/BitmapData.mtt");
+		var movieClipTemplate = File.getContent(#if (lime >= "7.0.0") Haxelib.getPath #else PathHelper.getHaxelib #end (new Haxelib("openfl"), true)
+			+ "/assets/templates/swf/MovieClip.mtt");
+		var simpleButtonTemplate = File.getContent(#if (lime >= "7.0.0") Haxelib.getPath #else PathHelper.getHaxelib #end (new Haxelib("openfl"), true)
+			+ "/assets/templates/swf/SimpleButton.mtt");
 
 		var swf = new SWF(ByteArray.fromBytes(File.getBytes(swfAsset.sourcePath)));
 
@@ -239,7 +239,9 @@ class Tools
 							{
 								var placeObject:TagPlaceObject = cast timelineContainer.tags[frameObject.placedAtIndex];
 
-								if (placeObject != null && placeObject.instanceName != null && !objectReferences.exists(placeObject.instanceName))
+								if (placeObject != null
+									&& placeObject.instanceName != null
+									&& !objectReferences.exists(placeObject.instanceName))
 								{
 									var id = frameObject.characterId;
 									var childSymbol = timelineContainer.getCharacter(id);
@@ -280,7 +282,7 @@ class Tools
 										{
 											className = formatClassName(className, prefix);
 										}
-										
+
 										if (className != null && !objectReferences.exists(placeObject.instanceName))
 										{
 											objectReferences[placeObject.instanceName] = true;
@@ -338,12 +340,12 @@ class Tools
 		var simpleButtonTemplate = File.getContent(#if (lime >= "7.0.0") Path.combine #else PathHelper.combine #end (js.Node
 			.__dirname, "../assets/templates/swf/SimpleButton.mtt"));
 		#else
-		var bitmapDataTemplate = File.getContent(#if (lime >= "7.0.0") Haxelib.getPath #else PathHelper.getHaxelib #end
-			(new Haxelib("openfl"), true) + "/assets/templates/swf/BitmapData.mtt");
-		var movieClipTemplate = File.getContent(#if (lime >= "7.0.0") Haxelib.getPath #else PathHelper.getHaxelib #end
-			(new Haxelib("openfl"), true) + "/assets/templates/swf/MovieClip.mtt");
-		var simpleButtonTemplate = File.getContent(#if (lime >= "7.0.0") Haxelib.getPath #else PathHelper.getHaxelib #end
-			(new Haxelib("openfl"), true) + "/assets/templates/swf/SimpleButton.mtt");
+		var bitmapDataTemplate = File.getContent(#if (lime >= "7.0.0") Haxelib.getPath #else PathHelper.getHaxelib #end (new Haxelib("openfl"), true)
+			+ "/assets/templates/swf/BitmapData.mtt");
+		var movieClipTemplate = File.getContent(#if (lime >= "7.0.0") Haxelib.getPath #else PathHelper.getHaxelib #end (new Haxelib("openfl"), true)
+			+ "/assets/templates/swf/MovieClip.mtt");
+		var simpleButtonTemplate = File.getContent(#if (lime >= "7.0.0") Haxelib.getPath #else PathHelper.getHaxelib #end (new Haxelib("openfl"), true)
+			+ "/assets/templates/swf/SimpleButton.mtt");
 		#end
 
 		var generatedClasses = [];
@@ -501,8 +503,8 @@ class Tools
 
 			lastArgument = new Path(lastArgument).toString();
 
-			if (((StringTools.endsWith(lastArgument, "/") && lastArgument != "/") || StringTools.endsWith(lastArgument, "\\")) && !StringTools
-				.endsWith(lastArgument, ":\\"))
+			if (((StringTools.endsWith(lastArgument, "/") && lastArgument != "/") || StringTools.endsWith(lastArgument, "\\"))
+				&& !StringTools.endsWith(lastArgument, ":\\"))
 			{
 				lastArgument = lastArgument.substr(0, lastArgument.length - 1);
 			}
@@ -863,7 +865,8 @@ class Tools
 						{
 							var cacheDate = FileSystem.stat(cacheFile).mtime;
 							var swfToolDate = FileSystem.stat(#if (lime >= "7.0.0") Haxelib.getPath #else PathHelper
-								.getHaxelib #end (new Haxelib("openfl"), true) + "/scripts/tools.n").mtime;
+								.getHaxelib #end (new Haxelib("openfl"), true)
+								+ "/scripts/tools.n").mtime;
 							var sourceDate = FileSystem.stat(library.sourcePath).mtime;
 
 							if (sourceDate.getTime() < cacheDate.getTime() && swfToolDate.getTime() < cacheDate.getTime())
@@ -890,8 +893,8 @@ class Tools
 							}
 						}
 
-						var swfLiteAsset = new Asset(cacheDirectory + "/" + library.name + SWFLITE_DATA_SUFFIX,
-							"lib/" + library.name + "/" + library.name + SWFLITE_DATA_SUFFIX, AssetType.TEXT);
+						var swfLiteAsset = new Asset(cacheDirectory + "/" + library.name + SWFLITE_DATA_SUFFIX, "lib/" + library.name + "/" + library
+							.name + SWFLITE_DATA_SUFFIX, AssetType.TEXT);
 
 						if (library.embed != null)
 						{
@@ -1031,8 +1034,8 @@ class Tools
 
 							if (project.target == IOS)
 							{
-								targetPath = #if (lime >= "7.0.0") Path.tryFullPath #else PathHelper.tryFullPath #end (targetDirectory) + "/" + project.app
-									.file + "/" + "/haxe/_generated";
+								targetPath = #if (lime >= "7.0.0") Path.tryFullPath #else PathHelper.tryFullPath #end (targetDirectory) + "/"
+									+ project.app.file + "/" + "/haxe/_generated";
 							}
 							else
 							{

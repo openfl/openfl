@@ -215,36 +215,36 @@ class PerlinNoise extends AbstractNoise
 		var z1 = z - 1;
 
 		var hash = (p_perm[BB + 1]) & 15;
-		var g1 = ((hash & 1) == 0 ? (hash < 8 ? x1 : y1) : (hash < 8 ? -x1 : -y1)) +
-			((hash & 2) == 0 ? hash < 4 ? y1 : (hash == 12 ? x1 : z1) : hash < 4 ? -y1 : (hash == 14 ? -x1 : -z1));
+		var g1 = ((hash & 1) == 0 ? (hash < 8 ? x1 : y1) : (hash < 8 ? -x1 : -y1))
+			+ ((hash & 2) == 0 ? hash < 4 ? y1 : (hash == 12 ? x1 : z1) : hash < 4 ? -y1 : (hash == 14 ? -x1 : -z1));
 
 		hash = (p_perm[AB + 1]) & 15;
-		var g2 = ((hash & 1) == 0 ? (hash < 8 ? x : y1) : (hash < 8 ? -x : -y1)) +
-			((hash & 2) == 0 ? hash < 4 ? y1 : (hash == 12 ? x : z1) : hash < 4 ? -y1 : (hash == 14 ? -x : -z1));
+		var g2 = ((hash & 1) == 0 ? (hash < 8 ? x : y1) : (hash < 8 ? -x : -y1))
+			+ ((hash & 2) == 0 ? hash < 4 ? y1 : (hash == 12 ? x : z1) : hash < 4 ? -y1 : (hash == 14 ? -x : -z1));
 
 		hash = (p_perm[BA + 1]) & 15;
-		var g3 = ((hash & 1) == 0 ? (hash < 8 ? x1 : y) : (hash < 8 ? -x1 : -y)) +
-			((hash & 2) == 0 ? hash < 4 ? y : (hash == 12 ? x1 : z1) : hash < 4 ? -y : (hash == 14 ? -x1 : -z1));
+		var g3 = ((hash & 1) == 0 ? (hash < 8 ? x1 : y) : (hash < 8 ? -x1 : -y))
+			+ ((hash & 2) == 0 ? hash < 4 ? y : (hash == 12 ? x1 : z1) : hash < 4 ? -y : (hash == 14 ? -x1 : -z1));
 
 		hash = (p_perm[AA + 1]) & 15;
-		var g4 = ((hash & 1) == 0 ? (hash < 8 ? x : y) : (hash < 8 ? -x : -y)) +
-			((hash & 2) == 0 ? hash < 4 ? y : (hash == 12 ? x : z1) : hash < 4 ? -y : (hash == 14 ? -x : -z1));
+		var g4 = ((hash & 1) == 0 ? (hash < 8 ? x : y) : (hash < 8 ? -x : -y))
+			+ ((hash & 2) == 0 ? hash < 4 ? y : (hash == 12 ? x : z1) : hash < 4 ? -y : (hash == 14 ? -x : -z1));
 
 		hash = (p_perm[BB]) & 15;
-		var g5 = ((hash & 1) == 0 ? (hash < 8 ? x1 : y1) : (hash < 8 ? -x1 : -y1)) +
-			((hash & 2) == 0 ? hash < 4 ? y1 : (hash == 12 ? x1 : z) : hash < 4 ? -y1 : (hash == 14 ? -x1 : -z));
+		var g5 = ((hash & 1) == 0 ? (hash < 8 ? x1 : y1) : (hash < 8 ? -x1 : -y1))
+			+ ((hash & 2) == 0 ? hash < 4 ? y1 : (hash == 12 ? x1 : z) : hash < 4 ? -y1 : (hash == 14 ? -x1 : -z));
 
 		hash = (p_perm[AB]) & 15;
-		var g6 = ((hash & 1) == 0 ? (hash < 8 ? x : y1) : (hash < 8 ? -x : -y1)) +
-			((hash & 2) == 0 ? hash < 4 ? y1 : (hash == 12 ? x : z) : hash < 4 ? -y1 : (hash == 14 ? -x : -z));
+		var g6 = ((hash & 1) == 0 ? (hash < 8 ? x : y1) : (hash < 8 ? -x : -y1))
+			+ ((hash & 2) == 0 ? hash < 4 ? y1 : (hash == 12 ? x : z) : hash < 4 ? -y1 : (hash == 14 ? -x : -z));
 
 		hash = (p_perm[BA]) & 15;
-		var g7 = ((hash & 1) == 0 ? (hash < 8 ? x1 : y) : (hash < 8 ? -x1 : -y)) +
-			((hash & 2) == 0 ? hash < 4 ? y : (hash == 12 ? x1 : z) : hash < 4 ? -y : (hash == 14 ? -x1 : -z));
+		var g7 = ((hash & 1) == 0 ? (hash < 8 ? x1 : y) : (hash < 8 ? -x1 : -y))
+			+ ((hash & 2) == 0 ? hash < 4 ? y : (hash == 12 ? x1 : z) : hash < 4 ? -y : (hash == 14 ? -x1 : -z));
 
 		hash = (p_perm[AA]) & 15;
-		var g8 = ((hash & 1) == 0 ? (hash < 8 ? x : y) : (hash < 8 ? -x : -y)) +
-			((hash & 2) == 0 ? hash < 4 ? y : (hash == 12 ? x : z) : hash < 4 ? -y : (hash == 14 ? -x : -z));
+		var g8 = ((hash & 1) == 0 ? (hash < 8 ? x : y) : (hash < 8 ? -x : -y))
+			+ ((hash & 2) == 0 ? hash < 4 ? y : (hash == 12 ? x : z) : hash < 4 ? -y : (hash == 14 ? -x : -z));
 
 		g2 += u * (g1 - g2);
 		g4 += u * (g3 - g4);

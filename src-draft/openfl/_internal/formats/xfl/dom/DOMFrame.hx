@@ -49,8 +49,10 @@ class DOMFrame
 				case "DOMCompiledClipInstance":
 				// no op
 				default:
-					trace("Warning: Unrecognized DOMFrame element '" + childElement.name + "' with name = '" + (childElement.has.name ? childElement.att
-							.name : "null" + "'"));
+					trace("Warning: Unrecognized DOMFrame element '"
+						+ childElement.name
+						+ "' with name = '"
+						+ (childElement.has.name ? childElement.att.name : "null" + "'"));
 			}
 		}
 		return frameElements;

@@ -57,7 +57,7 @@ class SWFShapeRecordCurvedEdge extends SWFShapeRecord
 
 	override public function toString(indent:Int = 0):String
 	{
-		return "[SWFShapeRecordCurvedEdge] " + "ControlDelta: " + controlDeltaX + "," + controlDeltaY + ", " + "AnchorDelta: " + anchorDeltaX + "," +
-			anchorDeltaY;
+		return "[SWFShapeRecordCurvedEdge] " + "ControlDelta: " + controlDeltaX + "," + controlDeltaY + ", " + "AnchorDelta: " + anchorDeltaX + ","
+			+ anchorDeltaY;
 	}
 }

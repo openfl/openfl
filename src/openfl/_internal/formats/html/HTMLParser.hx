@@ -86,7 +86,8 @@ class HTMLParser
 				var tagEndIndex = segment.indexOf(">");
 				var start = tagEndIndex + 1;
 				var spaceIndex = segment.indexOf(" ");
-				var tagName = segment.substring(isClosingTag ? 1 : 0, spaceIndex > -1 && spaceIndex < tagEndIndex ? spaceIndex : tagEndIndex);
+				var tagName = segment.substring(isClosingTag ? 1 : 0, spaceIndex > -1
+					&& spaceIndex < tagEndIndex ? spaceIndex : tagEndIndex);
 				var format:TextFormat;
 
 				if (isClosingTag)

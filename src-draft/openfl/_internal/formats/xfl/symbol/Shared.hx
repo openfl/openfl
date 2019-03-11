@@ -334,9 +334,7 @@ class Shared
 					else if (Std.is(element, DOMShape))
 					{
 						var shape:Shape = Symbols.createShape(xfl, cast element);
-						if (containerMask == false
-							&& layer.parentLayerIndex != -1
-							&& maskDisplayObjects[layer.parentLayerIndex] != null)
+						if (containerMask == false && layer.parentLayerIndex != -1 && maskDisplayObjects[layer.parentLayerIndex] != null)
 						{
 							for (maskDisplayObject in maskDisplayObjects[layer.parentLayerIndex])
 							{
@@ -351,9 +349,7 @@ class Shared
 					else if (Std.is(element, DOMRectangle))
 					{
 						var rectangle:Rectangle = Symbols.createRectangle(xfl, cast element);
-						if (containerMask == false
-							&& layer.parentLayerIndex != -1
-							&& maskDisplayObjects[layer.parentLayerIndex] != null)
+						if (containerMask == false && layer.parentLayerIndex != -1 && maskDisplayObjects[layer.parentLayerIndex] != null)
 						{
 							for (maskDisplayObject in maskDisplayObjects[layer.parentLayerIndex])
 							{
@@ -457,8 +453,8 @@ class Shared
 						}
 						else if (Std.is(element, DOMBitmapInstance))
 						{
-							var bitmap:DisplayObject = container.getChildByName("xfl_anonymous_" + currentLayer + "_" + frame
-								.index + "_" + (frameAnonymousObjectId++));
+							var bitmap:DisplayObject = container.getChildByName("xfl_anonymous_" + currentLayer + "_" + frame.index + "_"
+								+ (frameAnonymousObjectId++));
 							if (bitmap != null)
 							{
 								if (processedObjects.indexOf(bitmap) != -1) continue;
@@ -486,8 +482,8 @@ class Shared
 						}
 						else if (Std.is(element, DOMShape))
 						{
-							var shape:DisplayObject = container.getChildByName("xfl_anonymous_" + currentLayer + "_" + frame
-								.index + "_" + (frameAnonymousObjectId++));
+							var shape:DisplayObject = container.getChildByName("xfl_anonymous_" + currentLayer + "_" + frame.index + "_"
+								+ (frameAnonymousObjectId++));
 							if (shape != null)
 							{
 								if (processedObjects.indexOf(shape) != -1) continue;
@@ -501,8 +497,8 @@ class Shared
 						}
 						else if (Std.is(element, DOMRectangle))
 						{
-							var rectangle:DisplayObject = container.getChildByName("xfl_anonymous_" + currentLayer + "_" + frame
-								.index + "_" + (frameAnonymousObjectId++));
+							var rectangle:DisplayObject = container.getChildByName("xfl_anonymous_" + currentLayer + "_" + frame.index + "_"
+								+ (frameAnonymousObjectId++));
 							if (rectangle != null)
 							{
 								if (processedObjects.indexOf(rectangle) != -1) continue;
@@ -530,8 +526,8 @@ class Shared
 						}
 						else if (Std.is(element, DOMStaticText))
 						{
-							var text:DisplayObject = container.getChildByName("xfl_anonymous_" + currentLayer + "_" + frame
-								.index + "_" + (frameAnonymousObjectId++));
+							var text:DisplayObject = container.getChildByName("xfl_anonymous_" + currentLayer + "_" + frame.index + "_"
+								+ (frameAnonymousObjectId++));
 							if (text != null)
 							{
 								if (processedObjects.indexOf(text) != -1) continue;
@@ -585,8 +581,8 @@ class Shared
 						}
 						else if (Std.is(element, DOMBitmapInstance))
 						{
-							var bitmap:DisplayObject = container.getChildByName("xfl_anonymous_" + currentLayer + "_" + frame
-								.index + "_" + (frameAnonymousObjectId++));
+							var bitmap:DisplayObject = container.getChildByName("xfl_anonymous_" + currentLayer + "_" + frame.index + "_"
+								+ (frameAnonymousObjectId++));
 							if (bitmap != null)
 							{
 								bitmap.visible = invisibleObjects == null || invisibleObjects.indexOf(bitmap) == -1;
@@ -602,8 +598,8 @@ class Shared
 						}
 						else if (Std.is(element, DOMShape))
 						{
-							var shape:DisplayObject = container.getChildByName("xfl_anonymous_" + currentLayer + "_" + frame
-								.index + "_" + (frameAnonymousObjectId++));
+							var shape:DisplayObject = container.getChildByName("xfl_anonymous_" + currentLayer + "_" + frame.index + "_"
+								+ (frameAnonymousObjectId++));
 							if (shape != null)
 							{
 								shape.visible = invisibleObjects == null || invisibleObjects.indexOf(shape) == -1;
@@ -611,8 +607,8 @@ class Shared
 						}
 						else if (Std.is(element, DOMRectangle))
 						{
-							var rectangle:DisplayObject = container.getChildByName("xfl_anonymous_" + currentLayer + "_" + frame
-								.index + "_" + (frameAnonymousObjectId++));
+							var rectangle:DisplayObject = container.getChildByName("xfl_anonymous_" + currentLayer + "_" + frame.index + "_"
+								+ (frameAnonymousObjectId++));
 							if (rectangle != null)
 							{
 								rectangle.visible = invisibleObjects == null || invisibleObjects.indexOf(rectangle) == -1;
@@ -628,8 +624,8 @@ class Shared
 						}
 						else if (Std.is(element, DOMStaticText))
 						{
-							var text:DisplayObject = container.getChildByName("xfl_anonymous_" + currentLayer + "_" + frame
-								.index + "_" + (frameAnonymousObjectId++));
+							var text:DisplayObject = container.getChildByName("xfl_anonymous_" + currentLayer + "_" + frame.index + "_"
+								+ (frameAnonymousObjectId++));
 							if (text != null)
 							{
 								text.visible = invisibleObjects == null || invisibleObjects.indexOf(text) == -1;

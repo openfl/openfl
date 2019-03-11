@@ -105,8 +105,8 @@ class FilterConvolution extends Filter implements IFilter
 
 	override public function toString(indent:Int = 0):String
 	{
-		var str:String = "[ConvolutionFilter] " + "DefaultColor: " + ColorUtils.rgbToString(defaultColor) + ", " + "Divisor: " + divisor + ", " + "Bias: " +
-			bias;
+		var str:String = "[ConvolutionFilter] " + "DefaultColor: " + ColorUtils.rgbToString(defaultColor) + ", " + "Divisor: " + divisor + ", " + "Bias: "
+			+ bias;
 		var flags:Array<String> = [];
 		if (clamp)
 		{

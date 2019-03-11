@@ -487,11 +487,12 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		_matrix.copyFrom(transform);
 		_matrix.concat(__worldTransform);
 
-		if (pixelSnapping == ALWAYS || (pixelSnapping == AUTO
-			&& _matrix.b == 0
-			&& _matrix.c == 0
-			&& (_matrix.a < 1.001 && _matrix.a > 0.999)
-			&& (_matrix.d < 1.001 && _matrix.d > 0.999)))
+		if (pixelSnapping == ALWAYS
+			|| (pixelSnapping == AUTO
+				&& _matrix.b == 0
+				&& _matrix.c == 0
+				&& (_matrix.a < 1.001 && _matrix.a > 0.999)
+				&& (_matrix.d < 1.001 && _matrix.d > 0.999)))
 		{
 			_matrix.tx = Math.round(_matrix.tx);
 			_matrix.ty = Math.round(_matrix.ty);

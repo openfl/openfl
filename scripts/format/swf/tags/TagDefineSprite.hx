@@ -62,6 +62,12 @@ class TagDefineSprite extends SWFTimelineContainer implements IDefinitionTag
 
 	override public function toString(indent:Int = 0):String
 	{
-		return Tag.toStringCommon(type, name, indent) + "ID: " + characterId + ", " + "FrameCount: " + frameCount + super.toString(indent);
+		return Tag.toStringCommon(type, name, indent)
+			+ "ID: "
+			+ characterId
+			+ ", "
+			+ "FrameCount: "
+			+ frameCount
+			+ super.toString(indent);
 	}
 }

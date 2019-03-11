@@ -128,9 +128,19 @@ class TagDefineBitsJPEG3 extends TagDefineBitsJPEG2 implements IDefinitionTag
 
 	override public function toString(indent:Int = 0):String
 	{
-		var str:String = Tag.toStringCommon(type, name, indent) + "ID: " + characterId + ", " + "Type: " + BitmapType.toString(bitmapType) + ", " +
-			"HasAlphaData: " + (bitmapAlphaData.length > 0) + ", " + ((bitmapAlphaData.length > 0) ? "BitmapAlphaLength: " + bitmapAlphaData.length + ", " : "") +
-				"BitmapLength: " + bitmapData.length;
+		var str:String = Tag.toStringCommon(type, name, indent)
+			+ "ID: "
+			+ characterId
+			+ ", "
+			+ "Type: "
+			+ BitmapType.toString(bitmapType)
+			+ ", "
+			+ "HasAlphaData: "
+			+ (bitmapAlphaData.length > 0)
+			+ ", "
+			+ ((bitmapAlphaData.length > 0) ? "BitmapAlphaLength: " + bitmapAlphaData.length + ", " : "")
+			+ "BitmapLength: "
+			+ bitmapData.length;
 		return str;
 	}
 }

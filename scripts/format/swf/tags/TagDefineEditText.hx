@@ -255,8 +255,14 @@ class TagDefineEditText implements IDefinitionTag
 
 	public function toString(indent:Int = 0):String
 	{
-		var str:String = Tag.toStringCommon(type, name, indent) + "ID: " + characterId + ", " + ((hasText && initialText.length > 0) ? "Text: " + initialText +
-			", " : "") + ((variableName.length > 0) ? "VariableName: " + variableName + ", " : "") + "Bounds: " + bounds;
+		var str:String = Tag.toStringCommon(type, name, indent)
+			+ "ID: "
+			+ characterId
+			+ ", "
+			+ ((hasText && initialText.length > 0) ? "Text: " + initialText + ", " : "")
+			+ ((variableName.length > 0) ? "VariableName: " + variableName + ", " : "")
+			+ "Bounds: "
+			+ bounds;
 		return str;
 	}
 }

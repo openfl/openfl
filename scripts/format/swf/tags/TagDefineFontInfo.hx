@@ -137,7 +137,7 @@ class TagDefineFontInfo implements ITag
 
 	public function toString(indent:Int = 0):String
 	{
-		return Tag.toStringCommon(type, name, indent) + "FontID: " + fontId + ", " + "FontName: " + fontName + ", " + "Italic: " + italic + ", " + "Bold: " +
-			bold + ", " + "Codes: " + codeTable.length;
+		return Tag.toStringCommon(type, name, indent) + "FontID: " + fontId + ", " + "FontName: " + fontName + ", " + "Italic: " + italic + ", " + "Bold: "
+			+ bold + ", " + "Codes: " + codeTable.length;
 	}
 }

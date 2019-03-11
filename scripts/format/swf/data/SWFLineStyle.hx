@@ -81,6 +81,9 @@ class SWFLineStyle
 
 	public function toString():String
 	{
-		return "[SWFLineStyle] Width: " + width + " Color: " + ((_level <= 2) ? ColorUtils.rgbToString(color) : ColorUtils.rgbaToString(color));
+		return "[SWFLineStyle] Width: "
+			+ width
+			+ " Color: "
+			+ ((_level <= 2) ? ColorUtils.rgbToString(color) : ColorUtils.rgbaToString(color));
 	}
 }

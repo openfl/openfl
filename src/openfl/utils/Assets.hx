@@ -425,31 +425,28 @@ class Assets
 			}
 		}
 
-		LimeAssets.loadImage(id, false)
-			.onComplete(function(image)
+		LimeAssets.loadImage(id, false).onComplete(function(image)
+		{
+			if (image != null)
 			{
-				if (image != null)
-				{
-					#if flash
-					var bitmapData = image.src;
-					#else
-					var bitmapData = BitmapData.fromImage(image);
-					#end
+				#if flash
+				var bitmapData = image.src;
+				#else
+				var bitmapData = BitmapData.fromImage(image);
+				#end
 
-					if (useCache && cache.enabled)
-					{
-						cache.setBitmapData(id, bitmapData);
-					}
-
-					promise.complete(bitmapData);
-				}
-				else
+				if (useCache && cache.enabled)
 				{
-					promise.error("[Assets] Could not load Image \"" + id + "\"");
+					cache.setBitmapData(id, bitmapData);
 				}
-			})
-			.onError(promise.error)
-			.onProgress(promise.progress);
+
+				promise.complete(bitmapData);
+			}
+			else
+			{
+				promise.error("[Assets] Could not load Image \"" + id + "\"");
+			}
+		}).onError(promise.error).onProgress(promise.progress);
 
 		return promise.future;
 		#else

@@ -29,7 +29,7 @@ class TagDefineFontInfo2 extends TagDefineFontInfo implements ITag
 
 	override public function toString(indent:Int = 0):String
 	{
-		return Tag.toStringCommon(type, name, indent) + "FontID: " + fontId + ", " + "FontName: " + fontName + ", " + "Italic: " + italic + ", " + "Bold: " +
-			bold + ", " + "LanguageCode: " + langCode + ", " + "Codes: " + codeTable.length;
+		return Tag.toStringCommon(type, name, indent) + "FontID: " + fontId + ", " + "FontName: " + fontName + ", " + "Italic: " + italic + ", " + "Bold: "
+			+ bold + ", " + "LanguageCode: " + langCode + ", " + "Codes: " + codeTable.length;
 	}
 }

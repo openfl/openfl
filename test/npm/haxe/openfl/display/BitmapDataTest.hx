@@ -372,7 +372,8 @@ class BitmapDataTest
 				bitmapData.draw(sprite2);
 
 				// TODO: Look into software renderer to find why alpha is off by one
-				Assert.assert(hex(bitmapData.getPixel32(50, 50)) == hex(0xFFFF0000) || hex(bitmapData.getPixel32(50, 50)) == hex(0xFEFF0000));
+				Assert.assert(hex(bitmapData.getPixel32(50, 50)) == hex(0xFFFF0000)
+					|| hex(bitmapData.getPixel32(50, 50)) == hex(0xFEFF0000));
 			});
 
 			Mocha.it("drawWithQuality", function()

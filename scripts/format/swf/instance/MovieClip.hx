@@ -422,8 +422,10 @@ class MovieClip extends flash.display.MovieClip
 				// Check if it's in the active objects
 				if (activeIdx > -1)
 				{
-					while (activeIdx > -1 && (activeObjects[activeIdx].frameObject.characterId != object.characterId || (activeObjects[activeIdx].frameObject
-						.characterId == object.characterId && activeObjects[activeIdx].frameObject.depth != object.depth)))
+					while (activeIdx > -1
+						&& (activeObjects[activeIdx].frameObject.characterId != object.characterId
+							|| (activeObjects[activeIdx].frameObject.characterId == object.characterId
+								&& activeObjects[activeIdx].frameObject.depth != object.depth)))
 					{
 						activeIdx--;
 					}

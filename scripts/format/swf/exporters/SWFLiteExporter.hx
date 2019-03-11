@@ -883,7 +883,8 @@ class SWFLiteExporter
 				{
 					case NPublic(_) if (!~/^flash\./.match(superClsName.nameSpaceName)):
 						// store on SWFLite object for serialized .dat export
-						spriteSymbol.baseClassName = ("" == superClsName.nameSpaceName ? "" : superClsName.nameSpaceName + ".") + superClsName.name;
+						spriteSymbol.baseClassName = ("" == superClsName.nameSpaceName ? "" : superClsName.nameSpaceName + ".")
+							+ superClsName.name;
 						Log.info("", "data.className: " + symbol.name + ", baseClass: " + spriteSymbol.baseClassName);
 					case _:
 				}
@@ -1001,8 +1002,9 @@ class SWFLiteExporter
 											stack.pop();
 											if (prop != null)
 											{
-												stack.push(AVM2.getFullName(data.abcData, prop, cls) + "." + AVM2.parseFunctionCall(data
-														.abcData, cls, nameIndex, argCount, stack));
+												stack.push(AVM2.getFullName(data.abcData, prop, cls)
+													+ "."
+													+ AVM2.parseFunctionCall(data.abcData, cls, nameIndex, argCount, stack));
 											}
 										case OConstructProperty(nameIndex, argCount):
 											Log.info("", "OConstructProperty stack: " + stack);

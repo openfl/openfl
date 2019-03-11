@@ -9,8 +9,7 @@ class Context3DBlendFactorTest
 		switch (Context3DBlendFactor.DESTINATION_ALPHA)
 		{
 			case Context3DBlendFactor.DESTINATION_ALPHA, Context3DBlendFactor.DESTINATION_COLOR, Context3DBlendFactor.ONE, Context3DBlendFactor
-				.ONE_MINUS_DESTINATION_ALPHA, Context3DBlendFactor.ONE_MINUS_DESTINATION_COLOR, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA, Context3DBlendFactor.ONE_MINUS_SOURCE_COLOR, Context3DBlendFactor
-				.SOURCE_ALPHA, Context3DBlendFactor.SOURCE_COLOR, Context3DBlendFactor.ZERO:
+				.ONE_MINUS_DESTINATION_ALPHA, Context3DBlendFactor.ONE_MINUS_DESTINATION_COLOR, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA, Context3DBlendFactor.ONE_MINUS_SOURCE_COLOR, Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.SOURCE_COLOR, Context3DBlendFactor.ZERO:
 		}
 	}
 }

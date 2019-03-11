@@ -43,7 +43,7 @@ class TagEnableDebugger2 extends TagEnableDebugger implements ITag
 
 	override public function toString(indent:Int = 0):String
 	{
-		return Tag.toStringCommon(type, name, indent) + "Password: " + (password.length > 0 ? 'null' : password.readUTF()) + ", " + "Reserved: 0x" + StringTools
-			.hex(reserved);
+		return Tag.toStringCommon(type, name, indent) + "Password: " + (password.length > 0 ? 'null' : password.readUTF()) + ", " + "Reserved: 0x"
+			+ StringTools.hex(reserved);
 	}
 }

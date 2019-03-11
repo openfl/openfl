@@ -77,6 +77,6 @@ class IntegrationTestMain
 			#end
 		}
 		// if run from outside browser can get error which we can ignore
-	catch (e:Dynamic) {}
+		catch (e:Dynamic) {}
 	}
 }

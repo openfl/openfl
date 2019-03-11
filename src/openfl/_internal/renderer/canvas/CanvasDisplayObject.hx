@@ -21,9 +21,9 @@ class CanvasDisplayObject
 		if (alpha <= 0) return;
 
 		if (displayObject.opaqueBackground != null
-				&& !displayObject.__isCacheBitmapRender
-				&& displayObject.width > 0
-				&& displayObject.height > 0)
+			&& !displayObject.__isCacheBitmapRender
+			&& displayObject.width > 0
+			&& displayObject.height > 0)
 		{
 			renderer.__setBlendMode(displayObject.__worldBlendMode);
 			renderer.__pushMaskObject(displayObject);

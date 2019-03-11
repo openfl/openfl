@@ -99,8 +99,8 @@ class TagDefineButtonSound implements IDefinitionTag
 
 	public function toString(indent:Int = 0):String
 	{
-		var str:String = Tag.toStringCommon(type, name, indent) + "ButtonID: " + characterId + ", " + "ButtonSoundChars: " + buttonSoundChar0 + "," +
-			buttonSoundChar1 + "," + buttonSoundChar2 + "," + buttonSoundChar3;
+		var str:String = Tag.toStringCommon(type, name, indent) + "ButtonID: " + characterId + ", " + "ButtonSoundChars: " + buttonSoundChar0 + ","
+			+ buttonSoundChar1 + "," + buttonSoundChar2 + "," + buttonSoundChar3;
 		return str;
 	}
 }

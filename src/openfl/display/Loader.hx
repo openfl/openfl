@@ -660,6 +660,7 @@ class Loader extends DisplayObjectContainer
 	}
 
 	// Event Handlers
+
 	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion private function BitmapData_onError(error:Dynamic):Void
 	{
@@ -745,8 +746,8 @@ class Loader extends DisplayObjectContainer
 		}
 		else
 		#end
-		if (contentLoaderInfo.contentType != null && (contentLoaderInfo.contentType.indexOf("/javascript") > -1 || contentLoaderInfo.contentType
-				.indexOf("/ecmascript") > -1))
+		if (contentLoaderInfo.contentType != null
+			&& (contentLoaderInfo.contentType.indexOf("/javascript") > -1 || contentLoaderInfo.contentType.indexOf("/ecmascript") > -1))
 		{
 			content = new Sprite();
 			contentLoaderInfo.content = content;

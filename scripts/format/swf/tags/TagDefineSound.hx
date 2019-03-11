@@ -113,9 +113,9 @@ class TagDefineSound implements IDefinitionTag
 
 	public function toString(indent:Int = 0):String
 	{
-		var str:String = Tag.toStringCommon(type, name, indent) + "SoundID: " + characterId + ", " + "Format: " + SoundCompression.toString(soundFormat) +
-			", " + "Rate: " + SoundRate.toString(soundRate) + ", " + "Size: " + SoundSize.toString(soundSize) + ", " + "Type: " + SoundType.toString(soundType) +
-				", " + "Samples: " + soundSampleCount;
+		var str:String = Tag.toStringCommon(type, name, indent) + "SoundID: " + characterId + ", " + "Format: " + SoundCompression.toString(soundFormat)
+			+ ", " + "Rate: " + SoundRate.toString(soundRate) + ", " + "Size: " + SoundSize.toString(soundSize) + ", " + "Type: "
+			+ SoundType.toString(soundType) + ", " + "Samples: " + soundSampleCount;
 		return str;
 	}
 

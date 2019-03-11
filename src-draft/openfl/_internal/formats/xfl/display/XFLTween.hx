@@ -231,8 +231,8 @@ class XFLTween
 		var object:DisplayObject = cast(tween.object, DisplayObject);
 		if (Reflect.hasField(tween, "rotation") == true)
 		{
-			object.rotation = tween.initialRotation + ((tween.rotation - tween.initialRotation) * tween.easeFunc((tween.timeCurrent - tween.timeInit) / tween
-					.duration));
+			object.rotation = tween.initialRotation
+				+ ((tween.rotation - tween.initialRotation) * tween.easeFunc((tween.timeCurrent - tween.timeInit) / tween.duration));
 			if (applyYoyo == true)
 			{
 				tween.rotation = Math.abs(object.rotation - tween.initialRotation) < 0.1 ? tween.targetRotation : tween.initialRotation;
@@ -241,7 +241,8 @@ class XFLTween
 		}
 		if (Reflect.hasField(tween, "alpha") == true)
 		{
-			object.alpha = tween.initialAlpha + ((tween.alpha - tween.initialAlpha) * tween.easeFunc((tween.timeCurrent - tween.timeInit) / tween.duration));
+			object.alpha = tween.initialAlpha
+				+ ((tween.alpha - tween.initialAlpha) * tween.easeFunc((tween.timeCurrent - tween.timeInit) / tween.duration));
 			if (applyYoyo == true)
 			{
 				tween.alpha = Math.abs(object.alpha - tween.initialAlpha) < 0.1 ? tween.targetAlpha : tween.initialAlpha;
@@ -250,7 +251,8 @@ class XFLTween
 		}
 		if (Reflect.hasField(tween, "x") == true)
 		{
-			object.x = tween.initialX + ((tween.x - tween.initialX) * tween.easeFunc((tween.timeCurrent - tween.timeInit) / tween.duration));
+			object.x = tween.initialX
+				+ ((tween.x - tween.initialX) * tween.easeFunc((tween.timeCurrent - tween.timeInit) / tween.duration));
 			if (applyYoyo == true)
 			{
 				tween.x = Math.abs(object.x - tween.initialX) < 0.1 ? tween.x : tween.initialX;
@@ -259,7 +261,8 @@ class XFLTween
 		}
 		if (Reflect.hasField(tween, "y") == true)
 		{
-			object.y = tween.initialY + ((tween.y - tween.initialY) * tween.easeFunc((tween.timeCurrent - tween.timeInit) / tween.duration));
+			object.y = tween.initialY
+				+ ((tween.y - tween.initialY) * tween.easeFunc((tween.timeCurrent - tween.timeInit) / tween.duration));
 			if (applyYoyo == true)
 			{
 				tween.y = Math.abs(object.y - tween.initialY) < 0.1 ? tween.y : tween.initialY;
@@ -268,7 +271,8 @@ class XFLTween
 		}
 		if (Reflect.hasField(tween, "width") == true)
 		{
-			object.width = tween.initialWidth + ((tween.width - tween.initialWidth) * tween.easeFunc((tween.timeCurrent - tween.timeInit) / tween.duration));
+			object.width = tween.initialWidth
+				+ ((tween.width - tween.initialWidth) * tween.easeFunc((tween.timeCurrent - tween.timeInit) / tween.duration));
 			if (applyYoyo == true)
 			{
 				tween.width = Math.abs(object.width - tween.initialWidth) < 0.1 ? tween.width : tween.initialWidth;
@@ -277,8 +281,8 @@ class XFLTween
 		}
 		if (Reflect.hasField(tween, "height") == true)
 		{
-			object.height = tween.initialHeight + ((tween.height - tween.initialHeight) * tween.easeFunc((tween.timeCurrent - tween.timeInit) / tween
-					.duration));
+			object.height = tween.initialHeight
+				+ ((tween.height - tween.initialHeight) * tween.easeFunc((tween.timeCurrent - tween.timeInit) / tween.duration));
 			if (applyYoyo == true)
 			{
 				tween.height = Math.abs(object.height - tween.initialHeight) < 0.1 ? tween.height : tween.initialHeight;
@@ -287,8 +291,8 @@ class XFLTween
 		}
 		if (Reflect.hasField(tween, "scaleX") == true)
 		{
-			object.scaleX = tween.initialScaleX + ((tween.scaleX - tween.initialScaleX) * tween.easeFunc((tween.timeCurrent - tween.timeInit) / tween
-					.duration));
+			object.scaleX = tween.initialScaleX
+				+ ((tween.scaleX - tween.initialScaleX) * tween.easeFunc((tween.timeCurrent - tween.timeInit) / tween.duration));
 			if (applyYoyo == true)
 			{
 				tween.scaleX = Math.abs(object.scaleX - tween.initialScaleX) < 0.1 ? tween.targetScaleX : tween.initialScaleX;
@@ -297,8 +301,8 @@ class XFLTween
 		}
 		if (Reflect.hasField(tween, "scaleY") == true)
 		{
-			object.scaleY = tween.initialScaleY + ((tween.scaleY - tween.initialScaleY) * tween.easeFunc((tween.timeCurrent - tween.timeInit) / tween
-					.duration));
+			object.scaleY = tween.initialScaleY
+				+ ((tween.scaleY - tween.initialScaleY) * tween.easeFunc((tween.timeCurrent - tween.timeInit) / tween.duration));
 			if (applyYoyo == true)
 			{
 				tween.scaleY = Math.abs(object.scaleY - tween.initialScaleY) < 0.1 ? tween.targetScaleY : tween.initialScaleY;
@@ -308,8 +312,8 @@ class XFLTween
 		if (Reflect.hasField(tween, "glowFilter") == true)
 		{
 			var glowFilter:GlowFilter = cast(tween.glowFilterInstance, GlowFilter);
-			var strength:Float = tween.glowFilter.initialStrength + ((tween.glowFilter.strength - tween.glowFilter.initialStrength) * tween.easeFunc((tween
-					.timeCurrent - tween.timeInit) / tween.duration));
+			var strength:Float = tween.glowFilter.initialStrength
+				+ ((tween.glowFilter.strength - tween.glowFilter.initialStrength) * tween.easeFunc((tween.timeCurrent - tween.timeInit) / tween.duration));
 			if (tween.glowFilter.firstInvocation == true)
 			{
 				glowFilter.strength = tween.glowFilter.targetStrength;
@@ -331,8 +335,9 @@ class XFLTween
 		if (Reflect.hasField(tween, "dropShadowFilter") == true)
 		{
 			var dropShadowFilter:DropShadowFilter = cast(tween.dropShadowFilterInstance, DropShadowFilter);
-			dropShadowFilter.distance = tween.dropShadowFilter.initialDistance + ((tween.dropShadowFilter.distance - tween.dropShadowFilter
-				.initialDistance) * tween.easeFunc((tween.timeCurrent - tween.timeInit) / tween.duration));
+			dropShadowFilter.distance = tween.dropShadowFilter.initialDistance
+				+ ((tween.dropShadowFilter.distance - tween.dropShadowFilter.initialDistance) * tween.easeFunc((tween.timeCurrent - tween.timeInit) / tween
+					.duration));
 			var objectFilters:Array<BitmapFilter> = object.filters;
 			if (objectFilters.indexOf(dropShadowFilter) == -1) objectFilters.push(dropShadowFilter);
 			object.filters = objectFilters;
@@ -371,8 +376,8 @@ class XFLTween
 		var object:SoundChannel = cast(tween.object, SoundChannel);
 		if (Reflect.hasField(tween, "volume") == true)
 		{
-			object.soundTransform.volume = tween.initialVolume + ((tween.volume - tween.initialVolume) * tween.easeFunc((tween.timeCurrent - tween
-					.timeInit) / tween.duration));
+			object.soundTransform.volume = tween.initialVolume
+				+ ((tween.volume - tween.initialVolume) * tween.easeFunc((tween.timeCurrent - tween.timeInit) / tween.duration));
 		}
 	}
 

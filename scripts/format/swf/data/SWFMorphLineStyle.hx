@@ -77,7 +77,7 @@ class SWFMorphLineStyle
 
 	public function toString():String
 	{
-		return "[SWFMorphLineStyle] " + "StartWidth: " + startWidth + ", " + "EndWidth: " + endWidth + ", " + "StartColor: " + ColorUtils
-			.rgbaToString(startColor) + ", " + "EndColor: " + ColorUtils.rgbaToString(endColor);
+		return "[SWFMorphLineStyle] " + "StartWidth: " + startWidth + ", " + "EndWidth: " + endWidth + ", " + "StartColor: "
+			+ ColorUtils.rgbaToString(startColor) + ", " + "EndColor: " + ColorUtils.rgbaToString(endColor);
 	}
 }

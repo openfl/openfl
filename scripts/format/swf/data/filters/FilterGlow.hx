@@ -83,8 +83,8 @@ class FilterGlow extends Filter implements IFilter
 
 	override public function toString(indent:Int = 0):String
 	{
-		var str:String = "[GlowFilter] " + "GlowColor: " + ColorUtils.rgbToString(glowColor) + ", " + "BlurX: " + blurX + ", " + "BlurY: " + blurY + ", " +
-			"Strength: " + strength + ", " + "Passes: " + passes;
+		var str:String = "[GlowFilter] " + "GlowColor: " + ColorUtils.rgbToString(glowColor) + ", " + "BlurX: " + blurX + ", " + "BlurY: " + blurY + ", "
+			+ "Strength: " + strength + ", " + "Passes: " + passes;
 		var flags:Array<String> = [];
 		if (innerGlow)
 		{

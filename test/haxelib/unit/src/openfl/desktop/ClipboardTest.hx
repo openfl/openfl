@@ -128,24 +128,24 @@ class ClipboardTest
 		#if (flash || !integration)
 		Assert.areEqual(1, clipboard.formats.length);
 		Assert.areEqual(1, clipboard.formats.filter(function(format:ClipboardFormats):Bool
-			{
-				return ClipboardFormats.HTML_FORMAT == format;
-			}).length);
+		{
+			return ClipboardFormats.HTML_FORMAT == format;
+		}).length);
 		#else
 		// TODO
 		Assert.areEqual(3, clipboard.formats.length);
 		Assert.areEqual(1, clipboard.formats.filter(function(format:ClipboardFormats):Bool
-			{
-				return ClipboardFormats.TEXT_FORMAT == format;
-			}).length);
+		{
+			return ClipboardFormats.TEXT_FORMAT == format;
+		}).length);
 		Assert.areEqual(1, clipboard.formats.filter(function(format:ClipboardFormats):Bool
-			{
-				return ClipboardFormats.HTML_FORMAT == format;
-			}).length);
+		{
+			return ClipboardFormats.HTML_FORMAT == format;
+		}).length);
 		Assert.areEqual(1, clipboard.formats.filter(function(format:ClipboardFormats):Bool
-			{
-				return ClipboardFormats.RICH_TEXT_FORMAT == format;
-			}).length);
+		{
+			return ClipboardFormats.RICH_TEXT_FORMAT == format;
+		}).length);
 		#end
 	}
 

@@ -52,8 +52,8 @@ class TagDefineFontAlignZones implements ITag
 
 	public function toString(indent:Int = 0):String
 	{
-		var str:String = Tag.toStringCommon(type, name, indent) + "FontID: " + fontId + ", " + "CSMTableHint: " + CSMTableHint.toString(csmTableHint) + ", " +
-			"Records: " + zoneTable.length;
+		var str:String = Tag.toStringCommon(type, name, indent) + "FontID: " + fontId + ", " + "CSMTableHint: " + CSMTableHint.toString(csmTableHint) + ", "
+			+ "Records: " + zoneTable.length;
 		for (i in 0...zoneTable.length)
 		{
 			str += "\n" + StringUtils.repeat(indent + 2) + "[" + i + "] " + zoneTable[i].toString(indent + 2);

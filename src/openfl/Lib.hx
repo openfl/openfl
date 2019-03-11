@@ -591,6 +591,7 @@ import js.Browser;
 		return InternalLib.current;
 		#end
 	}
+
 	// @:noCompletion private static function set_current (current:MovieClip):MovieClip {
 	// 	return cast flash.Lib.current = cast current;
 	// }

@@ -93,8 +93,8 @@ class FilterDropShadow extends Filter implements IFilter
 
 	override public function toString(indent:Int = 0):String
 	{
-		var str:String = "[DropShadowFilter] " + "DropShadowColor: " + ColorUtils.rgbToString(dropShadowColor) + ", " + "BlurX: " + blurX + ", " + "BlurY: " +
-			blurY + ", " + "Angle: " + angle + ", " + "Distance: " + distance + ", " + "Strength: " + strength + ", " + "Passes: " + passes;
+		var str:String = "[DropShadowFilter] " + "DropShadowColor: " + ColorUtils.rgbToString(dropShadowColor) + ", " + "BlurX: " + blurX + ", " + "BlurY: "
+			+ blurY + ", " + "Angle: " + angle + ", " + "Distance: " + distance + ", " + "Strength: " + strength + ", " + "Passes: " + passes;
 		var flags:Array<String> = [];
 		if (innerShadow)
 		{

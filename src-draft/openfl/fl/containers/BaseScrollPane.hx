@@ -84,7 +84,8 @@ class BaseScrollPane extends UIComponent
 		_scrollBar.x = _width - _scrollBar.width;
 		_scrollBar.y = 0.0;
 		_scrollBar.setSize(_scrollBar.width, _height);
-		_scrollBar.maxScrollPosition = _source != null && (_source.y + _source.height) > height ? (_source.y + _source.height) - height : 0.0;
+		_scrollBar.maxScrollPosition = _source != null
+			&& (_source.y + _source.height) > height ? (_source.y + _source.height) - height : 0.0;
 		_scrollBar.lineScrollSize = 10.0;
 		_scrollBar.pageScrollSize = height;
 		_scrollBar.visible = _source != null && (_source.y + _source.height) > height;

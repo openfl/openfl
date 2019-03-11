@@ -38,10 +38,8 @@ class DOMBitmap
 	public static inline function render(bitmap:Bitmap, renderer:DOMRenderer):Void
 	{
 		#if (js && html5)
-		if (bitmap.stage != null
-				&& bitmap.__worldVisible
-				&& bitmap.__renderable
-				&& bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid && bitmap.__bitmapData.readable)
+		if (bitmap.stage != null && bitmap.__worldVisible && bitmap.__renderable && bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid
+			&& bitmap.__bitmapData.readable)
 		{
 			renderer.__pushMaskObject(bitmap);
 

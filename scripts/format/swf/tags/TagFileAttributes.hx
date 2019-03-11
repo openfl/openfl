@@ -67,7 +67,7 @@ class TagFileAttributes implements ITag
 
 	public function toString(indent:Int = 0):String
 	{
-		return Tag.toStringCommon(type, name, indent) + "AS3: " + actionscript3 + ", " + "HasMetadata: " + hasMetadata + ", " + "UseDirectBlit: " +
-			useDirectBlit + ", " + "UseGPU: " + useGPU + ", " + "UseNetwork: " + useNetwork;
+		return Tag.toStringCommon(type, name, indent) + "AS3: " + actionscript3 + ", " + "HasMetadata: " + hasMetadata + ", " + "UseDirectBlit: "
+			+ useDirectBlit + ", " + "UseGPU: " + useGPU + ", " + "UseNetwork: " + useNetwork;
 	}
 }

@@ -9,7 +9,7 @@ package openfl.display;
  */
 @:enum abstract GraphicsPathCommand(Int) from Int to Int from UInt to UInt
 {
-	#if flash@:require(flash11) #end public var CUBIC_CURVE_TO = 6;
+	#if flash @:require(flash11) #end public var CUBIC_CURVE_TO = 6;
 	public var CURVE_TO = 3;
 	public var LINE_TO = 2;
 	public var MOVE_TO = 1;

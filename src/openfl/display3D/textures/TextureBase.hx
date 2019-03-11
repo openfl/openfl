@@ -278,7 +278,7 @@ class TextureBase extends EventDispatcher
 			#end
 		}
 		#else
-		if (#if openfl_power_of_two! image.powerOfTwo || #end (!image.premultiplied && image.transparent))
+		if (#if openfl_power_of_two !image.powerOfTwo || #end (!image.premultiplied && image.transparent))
 		{
 			image = image.clone();
 			image.premultiplied = true;

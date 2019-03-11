@@ -79,7 +79,7 @@ class TagDefineBitsLossless implements IDefinitionTag
 
 	public function toString(indent:Int = 0):String
 	{
-		return Tag.toStringCommon(type, name, indent) + "ID: " + characterId + ", " + "Format: " + BitmapFormat.toString(bitmapFormat) + ", " + "Size: (" +
-			bitmapWidth + "," + bitmapHeight + ")";
+		return Tag.toStringCommon(type, name, indent) + "ID: " + characterId + ", " + "Format: " + BitmapFormat.toString(bitmapFormat) + ", " + "Size: ("
+			+ bitmapWidth + "," + bitmapHeight + ")";
 	}
 }

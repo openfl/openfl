@@ -49,7 +49,7 @@ class TagCSMTextSettings implements ITag
 
 	public function toString(indent:Int = 0):String
 	{
-		return Tag.toStringCommon(type, name, indent) + "TextID: " + textId + ", " + "UseFlashType: " + useFlashType + ", " + "GridFit: " + gridFit + ", " +
-			"Thickness: " + thickness + ", " + "Sharpness: " + sharpness;
+		return Tag.toStringCommon(type, name, indent) + "TextID: " + textId + ", " + "UseFlashType: " + useFlashType + ", " + "GridFit: " + gridFit + ", "
+			+ "Thickness: " + thickness + ", " + "Sharpness: " + sharpness;
 	}
 }

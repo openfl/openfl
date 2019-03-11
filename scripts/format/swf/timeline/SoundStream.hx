@@ -21,7 +21,7 @@ class SoundStream
 
 	public function toString():String
 	{
-		return "[SoundStream] " + "StartFrame: " + startFrame + ", " + "Frames: " + numFrames + ", " + "Samples: " + numSamples + ", " + "Bytes: " + data
-			.length;
+		return "[SoundStream] " + "StartFrame: " + startFrame + ", " + "Frames: " + numFrames + ", " + "Samples: " + numSamples + ", " + "Bytes: "
+			+ data.length;
 	}
 }

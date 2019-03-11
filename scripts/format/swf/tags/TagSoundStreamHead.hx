@@ -74,8 +74,8 @@ class TagSoundStreamHead implements ITag
 		var str:String = Tag.toStringCommon(type, name, indent);
 		if (streamSoundSampleCount > 0)
 		{
-			str += "Format: " + SoundCompression.toString(streamSoundCompression) + ", " + "Rate: " + SoundRate.toString(streamSoundRate) + ", " + "Size: " +
-				SoundSize.toString(streamSoundSize) + ", " + "Type: " + SoundType.toString(streamSoundType) + ", ";
+			str += "Format: " + SoundCompression.toString(streamSoundCompression) + ", " + "Rate: " + SoundRate.toString(streamSoundRate) + ", " + "Size: "
+				+ SoundSize.toString(streamSoundSize) + ", " + "Type: " + SoundType.toString(streamSoundType) + ", ";
 		}
 		str += "Samples: " + streamSoundSampleCount + ", ";
 		str += "LatencySeek: " + latencySeek;

@@ -63,7 +63,7 @@ class TagProductInfo implements ITag
 
 	public function toString(indent:Int = 0):String
 	{
-		return Tag.toStringCommon(type, name, indent) + "ProductID: " + productId + ", " + "Edition: " + edition + ", " + "Version: " + majorVersion + "." +
-			minorVersion + " r" + build + ", " + "CompileDate: " + compileDate.toString();
+		return Tag.toStringCommon(type, name, indent) + "ProductID: " + productId + ", " + "Edition: " + edition + ", " + "Version: " + majorVersion + "."
+			+ minorVersion + " r" + build + ", " + "CompileDate: " + compileDate.toString();
 	}
 }

@@ -223,8 +223,8 @@ class TagDefineFont2 extends TagDefineFont implements IDefinitionTag
 
 	override public function toString(indent:Int = 0):String
 	{
-		var str:String = Tag.toStringCommon(type, name, indent) + "ID: " + characterId + ", " + "FontName: " + fontName + ", " + "Italic: " + italic + ", " +
-			"Bold: " + bold + ", " + "Glyphs: " + glyphShapeTable.length;
+		var str:String = Tag.toStringCommon(type, name, indent) + "ID: " + characterId + ", " + "FontName: " + fontName + ", " + "Italic: " + italic + ", "
+			+ "Bold: " + bold + ", " + "Glyphs: " + glyphShapeTable.length;
 		return str + toStringCommon(indent);
 	}
 

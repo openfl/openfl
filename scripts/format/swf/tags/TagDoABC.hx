@@ -61,7 +61,7 @@ class TagDoABC implements ITag
 
 	public function toString(indent:Int = 0):String
 	{
-		return Tag.toStringCommon(type, name, indent) + "Lazy: " + lazyInitializeFlag + ", " + ((abcName.length > 0) ? "Name: " + abcName + ", " : "") +
-			"Length: " + bytes.length;
+		return Tag.toStringCommon(type, name, indent) + "Lazy: " + lazyInitializeFlag + ", " + ((abcName.length > 0) ? "Name: " + abcName + ", " : "")
+			+ "Length: " + bytes.length;
 	}
 }

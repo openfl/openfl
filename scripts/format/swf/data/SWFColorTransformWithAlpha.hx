@@ -95,7 +95,7 @@ class SWFColorTransformWithAlpha extends SWFColorTransform
 
 	override public function toString():String
 	{
-		return ("(redMultiplier=" + rMult + ", greenMultiplier=" + gMult + ", blueMultiplier=" + bMult + ", alphaMultiplier=" + aMult + ", redOffset=" + rAdd +
-			", greenOffset=" + gAdd + ", blueOffset=" + bAdd + ", alphaOffset=" + aAdd + ")");
+		return ("(redMultiplier=" + rMult + ", greenMultiplier=" + gMult + ", blueMultiplier=" + bMult + ", alphaMultiplier=" + aMult + ", redOffset="
+			+ rAdd + ", greenOffset=" + gAdd + ", blueOffset=" + bAdd + ", alphaOffset=" + aAdd + ")");
 	}
 }

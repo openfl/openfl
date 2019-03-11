@@ -210,16 +210,16 @@ class ScrollBar extends UIComponent
 	{
 		if (parent == null) return;
 		var thumbYPosition = 0.0;
-		scrollThumbSkinHeight = scrollTrackHeight * (visibleScrollRange == null ? height : visibleScrollRange) / ((visibleScrollRange == null ? height : visibleScrollRange) +
-			_maxScrollPosition);
+		scrollThumbSkinHeight = scrollTrackHeight * (visibleScrollRange == null ? height : visibleScrollRange) / ((visibleScrollRange == null ? height : visibleScrollRange)
+			+ _maxScrollPosition);
 		if (scrollThumbSkinHeight > scrollTrackHeight) scrollThumbSkinHeight = scrollTrackHeight;
 		if (scrollThumbSkinHeight < 20.0) scrollThumbSkinHeight = 20.0;
 		thumbYPosition = _scrollPosition / (_maxScrollPosition - _minScrollPosition);
 		getXFLMovieClip("ScrollThumb_" + this.scrollThumbState + "Skin").height = scrollThumbSkinHeight;
 		getXFLMovieClip("ScrollThumb_" + this.scrollThumbState + "Skin").y = scrollArrowUpHeight +
 			(thumbYPosition * (scrollTrackHeight - scrollThumbSkinHeight));
-		getXFLMovieClip("ScrollBar_thumbIcon").y = getXFLMovieClip("ScrollThumb_" + this.scrollThumbState + "Skin").y +
-			((scrollThumbSkinHeight - scrollThumbIconHeight) / 2.0);
+		getXFLMovieClip("ScrollBar_thumbIcon").y = getXFLMovieClip("ScrollThumb_" + this.scrollThumbState + "Skin").y
+			+ ((scrollThumbSkinHeight - scrollThumbIconHeight) / 2.0);
 	}
 
 	private function layoutChild(child:DisplayObject, alignToVertical:String)

@@ -370,6 +370,7 @@ import haxe.macro.Compiler;
 		requestHeaders = [];
 		userAgent = URLRequestDefaults.userAgent;
 	}
+
 	// @:noCompletion @:dox(hide) public function useRedirectedURL (sourceRequest:URLRequest, wholeURL:Bool = false, pattern:Dynamic = null, replace:String = null):Void;
 }
 #else

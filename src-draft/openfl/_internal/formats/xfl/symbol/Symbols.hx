@@ -205,8 +205,9 @@ class Symbols
 			{
 				var symbolItem:DOMSymbolItem = DOMSymbolItem.load(document.path + "/LIBRARY", document.symbols.get(instance.libraryItemName).fileName);
 				// have a movie clip by default
-				if ((symbolItem.linkageBaseClass == null || symbolItem.linkageBaseClass == "") && (symbolItem.linkageClassName == null || StringTools
-					.startsWith(symbolItem.linkageClassName, "fl.controls.") == false))
+				if ((symbolItem.linkageBaseClass == null || symbolItem.linkageBaseClass == "")
+					&& (symbolItem.linkageClassName == null
+						|| StringTools.startsWith(symbolItem.linkageClassName, "fl.controls.") == false))
 				{
 					return createMovieClip(xfl, instance);
 				}
@@ -350,8 +351,9 @@ class Symbols
 			{
 				symbolItem = DOMSymbolItem.load(document.path + "/LIBRARY", document.symbols.get(instance.libraryItemName).fileName);
 				var classType:Class<Dynamic> = Type.resolveClass(className);
-				var otherName:String = (instance.name == null || instance.name == "") && symbolItem.timeline.name != null && symbolItem.timeline
-					.name != "" ? symbolItem.timeline.name : instance.name;
+				var otherName:String = (instance.name == null || instance.name == "")
+					&& symbolItem.timeline.name != null
+					&& symbolItem.timeline.name != "" ? symbolItem.timeline.name : instance.name;
 				other = Type.createInstance(classType, [
 					otherName,
 					new XFLSymbolArguments(xfl, symbolItem.linkageClassName, symbolItem.timeline, symbolItem.parametersAreLocked)
@@ -392,8 +394,9 @@ class Symbols
 				var className:String = symbolItem.linkageClassName;
 				if (StringTools.startsWith(className, "fl.")) className = "openfl." + className.substr("fl.".length);
 				var classType:Class<Dynamic> = Type.resolveClass(className);
-				var componentName:String = (instance.name == null || instance.name == "") && symbolItem.timeline.name != null && symbolItem.timeline
-					.name != "" ? symbolItem.timeline.name : instance.name;
+				var componentName:String = (instance.name == null || instance.name == "")
+					&& symbolItem.timeline.name != null
+					&& symbolItem.timeline.name != "" ? symbolItem.timeline.name : instance.name;
 				component = Type.createInstance(classType, [
 					componentName,
 					new XFLSymbolArguments(xfl, symbolItem.linkageClassName, symbolItem.timeline, symbolItem.parametersAreLocked)

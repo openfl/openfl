@@ -177,8 +177,9 @@ class TextEngine
 		{
 			if (registeredFont == null) continue;
 
-			if (registeredFont.fontName == name || (registeredFont.__fontPath != null && (registeredFont.__fontPath == name || registeredFont
-					.__fontPathWithoutDirectory == name)))
+			if (registeredFont.fontName == name
+				|| (registeredFont.__fontPath != null
+					&& (registeredFont.__fontPath == name || registeredFont.__fontPathWithoutDirectory == name)))
 			{
 				if (registeredFont.__initialize())
 				{
@@ -1488,9 +1489,8 @@ class TextEngine
 					previousSpaceIndex = spaceIndex;
 					spaceIndex = nextSpaceIndex;
 
-					if ((breakIndex > -1
-						&& breakIndex <= textIndex
-						&& (spaceIndex > breakIndex || spaceIndex == -1)) || textIndex > text.length)
+					if ((breakIndex > -1 && breakIndex <= textIndex && (spaceIndex > breakIndex || spaceIndex == -1))
+						|| textIndex > text.length)
 					{
 						break;
 					}
@@ -1515,8 +1515,8 @@ class TextEngine
 		#if openfl_trace_text_layout_groups
 		for (lg in layoutGroups)
 		{
-			Log.info("LG", lg.positions.length - (lg.endIndex - lg.startIndex), "line:" + lg.lineIndex, "w:" + lg.width, "h:" + lg.height,
-				"x:" + Std.int(lg.offsetX), "y:" + Std.int(lg.offsetY), '"${text.substring(lg.startIndex, lg.endIndex)}"', lg.startIndex, lg.endIndex);
+			Log.info("LG", lg.positions.length - (lg.endIndex - lg.startIndex), "line:" + lg.lineIndex, "w:" + lg.width, "h:" + lg.height, "x:" + Std.int(lg
+				.offsetX), "y:" + Std.int(lg.offsetY), '"${text.substring(lg.startIndex, lg.endIndex)}"', lg.startIndex, lg.endIndex);
 		}
 		#end
 	}

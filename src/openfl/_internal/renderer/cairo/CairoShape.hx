@@ -29,7 +29,9 @@ class CairoShape
 
 			var bounds = graphics.__bounds;
 
-			if (graphics.__cairo != null && graphics.__visible /*&& graphics.__commands.length > 0*/ && bounds != null && graphics.__width >= 1
+			if (graphics.__cairo != null && graphics.__visible /*&& graphics.__commands.length > 0*/
+				&& bounds != null
+				&& graphics.__width >= 1
 				&& graphics.__height >= 1)
 			{
 				var cairo = renderer.cairo;

@@ -66,8 +66,8 @@ class SWFLineStyle2 extends SWFLineStyle
 
 	override public function toString():String
 	{
-		var str:String = "[SWFLineStyle2] Width: " + width + ", " + "StartCaps: " + LineCapsStyle.toString(startCapsStyle) + ", " + "EndCaps: " + LineCapsStyle
-			.toString(endCapsStyle) + ", " + "Joint: " + LineJointStyle.toString(jointStyle) + ", ";
+		var str:String = "[SWFLineStyle2] Width: " + width + ", " + "StartCaps: " + LineCapsStyle.toString(startCapsStyle) + ", " + "EndCaps: "
+			+ LineCapsStyle.toString(endCapsStyle) + ", " + "Joint: " + LineJointStyle.toString(jointStyle) + ", ";
 		if (noClose)
 		{
 			str += "NoClose, ";
