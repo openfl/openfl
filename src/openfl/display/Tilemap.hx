@@ -324,7 +324,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	**/
 	public function setTiles(group:TileContainer):Void
 	{
-		for (tile in __group.tiles)
+		for (tile in __group.__tiles)
 		{
 			removeTile(tile);
 		}
