@@ -91,7 +91,7 @@ class SampleDataEvent extends Event
 		| `cancelable` | `false`; there is no default behavior to cancel. |
 		| `position` | The point from which audio data is provided. |
 	**/
-	public static inline var SAMPLE_DATA:String = "sampleData";
+	public static inline var SAMPLE_DATA:EventType<SampleDataEvent> = "sampleData";
 
 	/**
 		The data in the audio stream.
@@ -125,7 +125,7 @@ class SampleDataEvent extends Event
 		position = 0.0;
 	}
 
-	public override function clone():Event
+	public override function clone():SampleDataEvent
 	{
 		var event = new SampleDataEvent(type, bubbles, cancelable);
 		event.target = target;

@@ -40,7 +40,7 @@ class KeyboardEvent extends Event
 		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
 		| `target` | The InteractiveObject instance with focus. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
-	public static inline var KEY_DOWN:String = "keyDown";
+	public static inline var KEY_DOWN:EventType<KeyboardEvent> = "keyDown";
 
 	/**
 		The `KeyboardEvent.KEY_UP` constant defines the value of the `type`
@@ -61,7 +61,7 @@ class KeyboardEvent extends Event
 		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
 		| `target` | The InteractiveObject instance with focus. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
-	public static inline var KEY_UP:String = "keyUp";
+	public static inline var KEY_UP:EventType<KeyboardEvent> = "keyUp";
 
 	/**
 		Indicates whether the Alt key is active(`true`) or inactive
@@ -178,7 +178,7 @@ class KeyboardEvent extends Event
 		#end
 	}
 
-	public override function clone():Event
+	public override function clone():KeyboardEvent
 	{
 		var event = new KeyboardEvent(type, bubbles, cancelable, charCode, keyCode, keyLocation, ctrlKey, altKey, shiftKey
 			#if !openfl_doc_gen, controlKey, commandKey #end);

@@ -22,7 +22,7 @@ class TimerEvent extends Event
 		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
 		| `target` | The Timer object that has reached its interval. |
 	**/
-	public static inline var TIMER:String = "timer";
+	public static inline var TIMER:EventType<TimerEvent> = "timer";
 
 	/**
 		Defines the value of the `type` property of a `timerComplete` event
@@ -36,7 +36,7 @@ class TimerEvent extends Event
 		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
 		| `target` | The Timer object that has completed its requests. |
 	**/
-	public static inline var TIMER_COMPLETE:String = "timerComplete";
+	public static inline var TIMER_COMPLETE:EventType<TimerEvent> = "timerComplete";
 
 	/**
 		Creates an Event object with specific information relevant to
@@ -58,7 +58,7 @@ class TimerEvent extends Event
 		super(type, bubbles, cancelable);
 	}
 
-	public override function clone():Event
+	public override function clone():TimerEvent
 	{
 		var event = new TimerEvent(type, bubbles, cancelable);
 		event.target = target;

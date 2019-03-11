@@ -15,17 +15,17 @@ import openfl.ui.GameInputDevice;
 	/**
 		Indicates that a compatible device has been connected or turned on.
 	**/
-	public static inline var DEVICE_ADDED:String = "deviceAdded";
+	public static inline var DEVICE_ADDED:EventType<GameInputEvent> = "deviceAdded";
 
 	/**
 		Indicates that one of the enumerated devices has been disconnected or turned off.
 	**/
-	public static inline var DEVICE_REMOVED:String = "deviceRemoved";
+	public static inline var DEVICE_REMOVED:EventType<GameInputEvent> = "deviceRemoved";
 
 	/**
 		Dispatched when a game input device is connected but is not usable.
 	**/
-	public static inline var DEVICE_UNUSABLE:String = "deviceUnusable";
+	public static inline var DEVICE_UNUSABLE:EventType<GameInputEvent> = "deviceUnusable";
 
 	/**
 		Returns a reference to the device that was added or removed. When a device is added, use this property to get a reference to the new device, instead of enumerating all of the devices to find the new one.
@@ -39,7 +39,7 @@ import openfl.ui.GameInputDevice;
 		this.device = device;
 	}
 
-	public override function clone():Event
+	public override function clone():GameInputEvent
 	{
 		var event = new GameInputEvent(type, bubbles, cancelable, device);
 		event.target = target;

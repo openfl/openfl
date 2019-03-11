@@ -17,8 +17,9 @@ import openfl._internal.utils.ObjectPool;
 import openfl._internal.Lib;
 import openfl.errors.TypeError;
 import openfl.events.Event;
-import openfl.events.EventPhase;
 import openfl.events.EventDispatcher;
+import openfl.events.EventPhase;
+import openfl.events.EventType;
 import openfl.events.MouseEvent;
 import openfl.events.RenderEvent;
 import openfl.events.TouchEvent;
@@ -1090,7 +1091,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 
 	@SuppressWarnings("checkstyle:Dynamic")
-	public override function addEventListener(type:String, listener:Dynamic->Void, useCapture:Bool = false, priority:Int = 0,
+	public override function addEventListener<T>(type:EventType<T>, listener:T->Void, useCapture:Bool = false, priority:Int = 0,
 			useWeakReference:Bool = false):Void
 	{
 		switch (type)
@@ -1334,7 +1335,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	// @:noCompletion @:dox(hide) @:require(flash10) public function local3DToGlobal (point3d:Vector3D):Point;
 
 	@SuppressWarnings("checkstyle:Dynamic")
-	public override function removeEventListener(type:String, listener:Dynamic->Void, useCapture:Bool = false):Void
+	public override function removeEventListener<T>(type:EventType<T>, listener:T->Void, useCapture:Bool = false):Void
 	{
 		super.removeEventListener(type, listener, useCapture);
 

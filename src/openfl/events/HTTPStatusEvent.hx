@@ -49,7 +49,7 @@ class HTTPStatusEvent extends Event
 		| `status` | The HTTP status code returned by the server. |
 		| `target` | The network object receiving an HTTP status code. |
 	**/
-	public static inline var HTTP_RESPONSE_STATUS:String = "httpResponseStatus";
+	public static inline var HTTP_RESPONSE_STATUS:EventType<HTTPStatusEvent> = "httpResponseStatus";
 
 	/**
 		The `HTTPStatusEvent.HTTP_STATUS` constant defines the value of the
@@ -64,7 +64,7 @@ class HTTPStatusEvent extends Event
 		| `status` | The HTTP status code returned by the server. |
 		| `target` | The network object receiving an HTTP status code.  |
 	**/
-	public static inline var HTTP_STATUS:String = "httpStatus";
+	public static inline var HTTP_STATUS:EventType<HTTPStatusEvent> = "httpStatus";
 
 	/**
 		Indicates whether the request was redirected.
@@ -126,7 +126,7 @@ class HTTPStatusEvent extends Event
 		super(type, bubbles, cancelable);
 	}
 
-	public override function clone():Event
+	public override function clone():HTTPStatusEvent
 	{
 		var event = new HTTPStatusEvent(type, bubbles, cancelable, status, redirected);
 		event.target = target;

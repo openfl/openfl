@@ -32,7 +32,7 @@ class IOErrorEvent extends ErrorEvent
 		| `target` | The network object experiencing the input/output error. |
 		| `text` | Text to be displayed as an error message. |
 	**/
-	public static inline var IO_ERROR:String = "ioError";
+	public static inline var IO_ERROR:EventType<IOErrorEvent> = "ioError";
 
 	// @:noCompletion @:dox(hide) public static var NETWORK_ERROR:String;
 	// @:noCompletion @:dox(hide) public static var VERIFY_ERROR:String;
@@ -64,7 +64,7 @@ class IOErrorEvent extends ErrorEvent
 		super(type, bubbles, cancelable, text, id);
 	}
 
-	public override function clone():Event
+	public override function clone():IOErrorEvent
 	{
 		var event = new IOErrorEvent(type, bubbles, cancelable, text, errorID);
 		event.target = target;

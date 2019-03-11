@@ -174,7 +174,7 @@ class EventDispatcher implements IEventDispatcher
 		@throws ArgumentError The `listener` specified is not a
 							  function.
 	**/
-	public function addEventListener(type:String, listener:Dynamic->Void, useCapture:Bool = false, priority:Int = 0, useWeakReference:Bool = false):Void
+	public function addEventListener<T>(type:EventType<T>, listener:T->Void, useCapture:Bool = false, priority:Int = 0, useWeakReference:Bool = false):Void
 	{
 		if (listener == null) return;
 
@@ -288,7 +288,7 @@ class EventDispatcher implements IEventDispatcher
 						  to `true`, and another call with
 						  `useCapture()` set to `false`.
 	**/
-	public function removeEventListener(type:String, listener:Dynamic->Void, useCapture:Bool = false):Void
+	public function removeEventListener<T>(type:EventType<T>, listener:T->Void, useCapture:Bool = false):Void
 	{
 		if (__eventMap == null || listener == null) return;
 

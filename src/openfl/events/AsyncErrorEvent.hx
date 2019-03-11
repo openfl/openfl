@@ -29,7 +29,7 @@ class AsyncErrorEvent extends ErrorEvent
 		| `target` | The object dispatching the event. |
 		| `error` | The error that triggered the event. |
 	**/
-	public static inline var ASYNC_ERROR:String = "asyncError";
+	public static inline var ASYNC_ERROR:EventType<AsyncErrorEvent> = "asyncError";
 
 	/**
 		The exception that was thrown.
@@ -66,7 +66,7 @@ class AsyncErrorEvent extends ErrorEvent
 		this.error = error;
 	}
 
-	public override function clone():Event
+	public override function clone():AsyncErrorEvent
 	{
 		var event = new AsyncErrorEvent(type, bubbles, cancelable, text, error);
 		event.target = target;

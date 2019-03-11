@@ -26,7 +26,7 @@ class NetStatusEvent extends Event
 		| `info` | An object with properties that describe the object's status or error condition. |
 		| `target` | The NetConnection or NetStream object reporting its status. |
 	**/
-	public static inline var NET_STATUS:String = "netStatus";
+	public static inline var NET_STATUS:EventType<NetStatusEvent> = "netStatus";
 
 	/**
 		An object with properties that describe the object's status or error
@@ -148,7 +148,7 @@ class NetStatusEvent extends Event
 		super(type, bubbles, cancelable);
 	}
 
-	public override function clone():Event
+	public override function clone():NetStatusEvent
 	{
 		var event = new NetStatusEvent(type, bubbles, cancelable, info);
 		event.target = target;

@@ -53,7 +53,7 @@ extern class Sound extends EventDispatcher
 		});
 		sound.addEventListener(ProgressEvent.PROGRESS, function(e)
 		{
-			promise.progress(e.bytesLoaded, e.bytesTotal);
+			promise.progress(Std.int(e.bytesLoaded), Std.int(e.bytesTotal));
 		});
 		sound.load(new URLRequest(path));
 

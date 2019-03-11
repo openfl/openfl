@@ -37,7 +37,7 @@ class ErrorEvent extends TextEvent
 		| `target` | The object experiencing a network operation failure. |
 		| `text` | Text to be displayed as an error message. |
 	**/
-	public static inline var ERROR:String = "error";
+	public static inline var ERROR:EventType<ErrorEvent> = "error";
 
 	/**
 		Contains the reference number associated with the specific error. For a
@@ -72,7 +72,7 @@ class ErrorEvent extends TextEvent
 		errorID = id;
 	}
 
-	public override function clone():Event
+	public override function clone():ErrorEvent
 	{
 		var event = new ErrorEvent(type, bubbles, cancelable, text, errorID);
 		event.target = target;

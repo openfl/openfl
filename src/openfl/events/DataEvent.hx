@@ -27,7 +27,7 @@ class DataEvent extends TextEvent
 		| `data` | The raw data loaded into Flash Player or Adobe AIR. |
 		| `target` | The XMLSocket object receiving data. |
 	**/
-	public static inline var DATA:String = "data";
+	public static inline var DATA:EventType<DataEvent> = "data";
 
 	/**
 		Defines the value of the `type` property of an `uploadCompleteData`
@@ -42,7 +42,7 @@ class DataEvent extends TextEvent
 		| `data` | The raw data returned from the server after a successful file upload. |
 		| `target` | The FileReference object receiving data after a successful upload. |
 	**/
-	public static inline var UPLOAD_COMPLETE_DATA:String = "uploadCompleteData";
+	public static inline var UPLOAD_COMPLETE_DATA:EventType<DataEvent> = "uploadCompleteData";
 
 	/**
 		The raw data loaded into Flash Player or Adobe AIR.
@@ -75,7 +75,7 @@ class DataEvent extends TextEvent
 		this.data = data;
 	}
 
-	public override function clone():Event
+	public override function clone():DataEvent
 	{
 		var event = new DataEvent(type, bubbles, cancelable, data);
 		event.target = target;

@@ -37,7 +37,7 @@ class SecurityErrorEvent extends ErrorEvent
 		| `target` | The network object reporting the security error. |
 		| `text` | Text to be displayed as an error message. |
 	**/
-	public static inline var SECURITY_ERROR:String = "securityError";
+	public static inline var SECURITY_ERROR:EventType<SecurityErrorEvent> = "securityError";
 
 	/**
 		Creates an Event object that contains information about security error
@@ -64,7 +64,7 @@ class SecurityErrorEvent extends ErrorEvent
 		super(type, bubbles, cancelable, text, id);
 	}
 
-	public override function clone():Event
+	public override function clone():SecurityErrorEvent
 	{
 		var event = new SecurityErrorEvent(type, bubbles, cancelable, text, errorID);
 		event.target = target;

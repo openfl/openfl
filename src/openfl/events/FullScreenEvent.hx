@@ -26,7 +26,7 @@ class FullScreenEvent extends ActivityEvent
 		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
 		| `target` | The Stage object. |
 	**/
-	public static inline var FULL_SCREEN:String = "fullScreen";
+	public static inline var FULL_SCREEN:EventType<FullScreenEvent> = "fullScreen";
 
 	/**
 		The `FULL_SCREEN_INTERACTIVE_ACCEPTED:String` constant defines the value of the
@@ -42,7 +42,7 @@ class FullScreenEvent extends ActivityEvent
 		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
 		| `target` | The Stage object. |
 	**/
-	public static inline var FULL_SCREEN_INTERACTIVE_ACCEPTED:String = "fullScreenInteractiveAccepted";
+	public static inline var FULL_SCREEN_INTERACTIVE_ACCEPTED:EventType<FullScreenEvent> = "fullScreenInteractiveAccepted";
 
 	/**
 		Indicates whether the Stage object is in full-screen mode (`true`) or
@@ -86,7 +86,7 @@ class FullScreenEvent extends ActivityEvent
 		this.interactive = interactive;
 	}
 
-	public override function clone():Event
+	public override function clone():FullScreenEvent
 	{
 		var event = new FullScreenEvent(type, bubbles, cancelable, fullScreen, interactive);
 		event.target = target;

@@ -41,7 +41,7 @@ import openfl.geom.Matrix;
 		| `renderer` | A reference to the active display object renderer. |
 		| `target` | The display object that is going to be rendered. |
 	**/
-	public static inline var CLEAR_DOM:String = "clearDOM";
+	public static inline var CLEAR_DOM:EventType<RenderEvent> = "clearDOM";
 
 	/**
 		The `RenderEvent.RENDER_CAIRO` constant defines the value of the `type` property
@@ -57,7 +57,7 @@ import openfl.geom.Matrix;
 		| `renderer` | A reference to the active display object renderer. |
 		| `target` | The display object that is going to be rendered. |
 	**/
-	public static inline var RENDER_CAIRO:String = "renderCairo";
+	public static inline var RENDER_CAIRO:EventType<RenderEvent> = "renderCairo";
 
 	/**
 		The `RenderEvent.RENDER_CANVAS` constant defines the value of the `type` property
@@ -73,7 +73,7 @@ import openfl.geom.Matrix;
 		| `renderer` | A reference to the active display object renderer. |
 		| `target` | The display object that is going to be rendered. |
 	**/
-	public static inline var RENDER_CANVAS:String = "renderCanvas";
+	public static inline var RENDER_CANVAS:EventType<RenderEvent> = "renderCanvas";
 
 	/**
 		The `RenderEvent.RENDER_DOM` constant defines the value of the `type` property
@@ -89,7 +89,7 @@ import openfl.geom.Matrix;
 		| `renderer` | A reference to the active display object renderer. |
 		| `target` | The display object that is going to be rendered. |
 	**/
-	public static inline var RENDER_DOM:String = "renderDOM";
+	public static inline var RENDER_DOM:EventType<RenderEvent> = "renderDOM";
 
 	/**
 		The `RenderEvent.RENDER_OPENGL` constant defines the value of the `type` property
@@ -105,7 +105,7 @@ import openfl.geom.Matrix;
 		| `renderer` | A reference to the active display object renderer. |
 		| `target` | The display object that is going to be rendered. |
 	**/
-	public static inline var RENDER_OPENGL:String = "renderOpenGL";
+	public static inline var RENDER_OPENGL:EventType<RenderEvent> = "renderOpenGL";
 
 	/**
 		Whether the current render should allow smoothing.
@@ -155,7 +155,7 @@ import openfl.geom.Matrix;
 		this.allowSmoothing = allowSmoothing;
 	}
 
-	public override function clone():Event
+	public override function clone():RenderEvent
 	{
 		var event = new RenderEvent(type, bubbles, cancelable, objectMatrix.clone(), #if flash null #else objectColorTransform.__clone() #end, allowSmoothing);
 		#if !flash

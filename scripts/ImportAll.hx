@@ -136,6 +136,7 @@ import openfl.events.TimerEvent;
 import openfl.events.TouchEvent;
 import openfl.events.UncaughtErrorEvent;
 import openfl.events.UncaughtErrorEvents;
+import openfl.events.VideoTextureEvent;
 import openfl.external.ExternalInterface;
 import openfl.filters.BitmapFilter;
 import openfl.filters.BitmapFilterQuality;

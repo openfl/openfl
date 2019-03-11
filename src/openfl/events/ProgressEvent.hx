@@ -30,7 +30,7 @@ class ProgressEvent extends Event
 		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
 		| `target` | The object reporting progress.  |
 	**/
-	public static inline var PROGRESS:String = "progress";
+	public static inline var PROGRESS:EventType<ProgressEvent> = "progress";
 
 	/**
 		Defines the value of the `type` property of a `socketData` event
@@ -46,7 +46,7 @@ class ProgressEvent extends Event
 		| `bytesTotal` | 0; this property is not used by `socketData` event objects. |
 		| `target` | The socket reporting progress. |
 	**/
-	public static inline var SOCKET_DATA:String = "socketData";
+	public static inline var SOCKET_DATA:EventType<ProgressEvent> = "socketData";
 
 	/**
 		The number of items or bytes loaded when the listener processes the event.
@@ -88,7 +88,7 @@ class ProgressEvent extends Event
 		this.bytesTotal = bytesTotal;
 	}
 
-	public override function clone():Event
+	public override function clone():ProgressEvent
 	{
 		var event = new ProgressEvent(type, bubbles, cancelable, bytesLoaded, bytesTotal);
 		event.target = target;

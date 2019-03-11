@@ -25,7 +25,7 @@ class TextEvent extends Event
 		| `target` | The text field containing the hyperlink that has been clicked. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 		| `text` | The remainder of the URL after "event:" |
 	**/
-	public static inline var LINK:String = "link";
+	public static inline var LINK:EventType<TextEvent> = "link";
 
 	/**
 		Defines the value of the `type` property of a `textInput` event
@@ -43,7 +43,7 @@ class TextEvent extends Event
 		| `target` | The text field into which characters are being entered. The target is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 		|`text` | The character or sequence of characters entered by the user. |
 	**/
-	public static inline var TEXT_INPUT:String = "textInput";
+	public static inline var TEXT_INPUT:EventType<TextEvent> = "textInput";
 
 	/**
 		For a `textInput` event, the character or sequence of
@@ -80,7 +80,7 @@ class TextEvent extends Event
 		this.text = text;
 	}
 
-	public override function clone():Event
+	public override function clone():TextEvent
 	{
 		var event = new TextEvent(type, bubbles, cancelable, text);
 		event.target = target;
