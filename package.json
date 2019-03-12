@@ -50,7 +50,7 @@
     "build-lib": "cd scripts && haxe build.hxml",
     "build-lib-esm": "cd scripts && node generate-es2015 gen",
     "build-lib-esm-reexports-barrels": "cd scripts && node generate-es2015 non-gen",
-    "build-swc": "compc -load-config=node_modules/@apache-royale/royale-js/royale-asjs/frameworks/js-config.xml -keep-as3-metadata=JSModule -include-sources=lib -compiler.targets=SWF -output=dist/openfl.swc",
+    "build-swc": "compc -load-config=node_modules/@apache-royale/royale-js/royale-asjs/frameworks/js-config.xml -keep-as3-metadata=JSModule -include-sources=lib -compiler.targets=SWF,JS -warnings=false -output=dist/openfl.swc",
     "build-tools": "cd scripts && haxe tools-npm.hxml",
     "build-test-es5": "cd test/npm/es5 && webpack",
     "build-test-es6": "cd test/npm/es6 && webpack",
