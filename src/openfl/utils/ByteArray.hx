@@ -702,7 +702,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	@:to @:noCompletion private static function toBytePointer(byteArray:ByteArray):BytePointer
 	{
 		#if !display
-		__bytePointer.set(#if flash byteArray #else (byteArray : ByteArrayData) #end, byteArray.position);
+		__bytePointer.set(#if flash byteArray #else (byteArray:ByteArrayData) #end, byteArray.position);
 		#end
 		return __bytePointer;
 	}
@@ -1227,7 +1227,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function readBytes(bytes:ByteArray, offset:Int = 0, length:Int = 0):Void
 	{
-		if (length == 0) length = #if lime_bytes_length_getter l #else this.length #end -position;
+		if (length == 0) length = #if lime_bytes_length_getter l #else this.length #end - position;
 
 		if (position + length > #if lime_bytes_length_getter l #else this.length #end)
 		{
@@ -1720,7 +1720,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		{
 			var bytes = Bytes.alloc(((size + 1) * 3) >> 1);
 			#if sys
-			bytes.fill(length, size, 0);
+			bytes.fill(__length, size - __length, 0);
 			#end
 
 			if (__length > 0)
@@ -1772,7 +1772,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	// Get & Set Methods
 	@:noCompletion private inline function get_bytesAvailable():Int
 	{
-		return #if lime_bytes_length_getter l #else length #end -position;
+		return #if lime_bytes_length_getter l #else length #end - position;
 	}
 
 	@:noCompletion private inline static function get_defaultEndian():Endian
