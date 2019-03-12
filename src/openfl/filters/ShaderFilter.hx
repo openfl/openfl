@@ -54,7 +54,8 @@ import openfl.display.Shader;
 #end
 class ShaderFilter extends BitmapFilter
 {
-	@:beta public var blendMode:BlendMode;
+	@:dox(hide) @:noCompletion @:beta @SuppressWarnings("checkstyle:FieldDocComment")
+	public var blendMode:BlendMode;
 
 	/**
 		The growth in pixels on the bottom side of the target object.

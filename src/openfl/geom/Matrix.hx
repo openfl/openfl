@@ -473,7 +473,7 @@ class Matrix
 		return new Point(point.x * a + point.y * c, point.x * b + point.y * d);
 	}
 
-	public function equals(matrix:Matrix):Bool
+	@:dox(hide) @:noCompletion @SuppressWarnings("checkstyle:FieldDocComment") public function equals(matrix:Matrix):Bool
 	{
 		return (matrix != null && tx == matrix.tx && ty == matrix.ty && a == matrix.a && b == matrix.b && c == matrix.c && d == matrix.d);
 	}

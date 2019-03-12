@@ -703,7 +703,7 @@ class Event
 	/**
 		The type of event. The type is case-sensitive.
 	**/
-	public var type(default, null):String; /*EventType<Event>;*/
+	public var type(default, null):String;
 
 	@:noCompletion private var __isCanceled:Bool;
 	@:noCompletion private var __isCanceledNow:Bool;
@@ -720,7 +720,7 @@ class Event
 		@param cancelable Determines whether the Event object can be canceled. The
 						  default values is `false`.
 	**/
-	public function new(type:String /*EventType<Event>*/, bubbles:Bool = false, cancelable:Bool = false)
+	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false)
 	{
 		this.type = type;
 		this.bubbles = bubbles;

@@ -1019,6 +1019,7 @@ class NetStream extends EventDispatcher
 		SoundTransform class.
 	**/
 	public var soundTransform:SoundTransform;
+	@:dox(hide) @:noCompletion @SuppressWarnings("checkstyle:FieldDocComment")
 	public var speed(get, set):Float;
 
 	/**
