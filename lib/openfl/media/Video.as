@@ -6,7 +6,7 @@ package openfl.media {
 	
 	
 	/**
-	 * @exterms
+	 * @externs
 	 */
 	public class Video extends DisplayObject {
 		

@@ -5,7 +5,9 @@ package flash.utils {
 	import flash.media.Sound;
 	import flash.text.Font;
 	
-	
+	/**
+	 * @externs
+	 */
 	public interface IAssetCache {
 		
 		function get enabled ():Boolean;

@@ -5,7 +5,7 @@ package flash.display {
 	
 	
 	/**
-	 * externs
+	 * @externs
 	 */
 	public class GraphicsShader extends Shader {
 		
