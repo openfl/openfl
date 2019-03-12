@@ -1233,7 +1233,7 @@ class TextEngine
 			{
 				// if a line break is the next thing that needs to be dealt with
 
-				if (textIndex <= breakIndex)
+				if (textIndex < breakIndex)
 				{
 					setFormattedPositions(textIndex, breakIndex);
 					placeText(breakIndex);
