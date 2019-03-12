@@ -277,6 +277,12 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	}
 
 	#if lime
+	/**
+		Converts an ArrayBuffer into a ByteArray.
+
+		@param	buffer	An ArrayBuffer instance
+		@returns	A new ByteArray
+	**/
 	@:from public static function fromArrayBuffer(buffer:ArrayBuffer):ByteArray
 	{
 		if (buffer == null) return null;
@@ -293,6 +299,12 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	}
 	#end
 
+	/**
+		Converts a Bytes object into a ByteArray.
+
+		@param	buffer	A Bytes instance
+		@returns	A new ByteArray
+	**/
 	@:from public static function fromBytes(bytes:Bytes):ByteArray
 	{
 		if (bytes == null) return null;
@@ -315,6 +327,12 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		#end
 	}
 
+	/**
+		Converts a BytesData object into a ByteArray.
+
+		@param	buffer	A BytesData instance
+		@returns	A new ByteArray
+	**/
 	@:from @:noCompletion public static function fromBytesData(bytesData:BytesData):ByteArray
 	{
 		if (bytesData == null) return null;
@@ -328,6 +346,19 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		#end
 	}
 
+	/**
+		Creates a new ByteArray from a file path synchronously. This means that the
+		ByteArray will be returned immediately (if supported).
+
+		HTML5 and Flash do not support loading files synchronously, so these targets
+		always return `null`.
+
+		In order to load files from a remote web address, use the `loadFromFile` method,
+		which supports asynchronous loading.
+
+		@param	path	A local file path
+		@returns	A new ByteArray if successful, or `null` if unsuccessful
+	**/
 	public static function fromFile(path:String):ByteArray
 	{
 		#if lime
@@ -338,6 +369,12 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	}
 
 	#if lime
+	/**
+		Converts a Lime Bytes object into a ByteArray.
+
+		@param	buffer	A Lime Bytes instance
+		@returns	A new ByteArray
+	**/
 	@:from @:noCompletion public static function fromLimeBytes(bytes:LimeBytes):ByteArray
 	{
 		return fromBytes(bytes);
@@ -382,6 +419,14 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		this.inflate();
 	}
 
+	/**
+		Creates a new ByteArray from haxe.io.Bytes. Progress, completion and error
+		callbacks will be dispatched using callbacks attached to a returned Future
+		object.
+
+		@param	bytes	A haxe.io.Bytes instance
+		@returns	A Future ByteArray
+	**/
 	public static function loadFromBytes(bytes:Bytes):Future<ByteArray>
 	{
 		#if lime
@@ -395,6 +440,15 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		#end
 	}
 
+	/**
+		Creates a new ByteArray from a file path or web address asynchronously. The file
+		load will occur in the background.
+		Progress, completion and error callbacks will be dispatched in the current
+		thread using callbacks attached to a returned Future object.
+
+		@param	path	A local file path or web address
+		@returns	A Future ByteArray
+	**/
 	public static function loadFromFile(path:String):Future<ByteArray>
 	{
 		#if lime
@@ -624,6 +678,12 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	}
 
 	#if lime
+	/**
+		Converts a ByteArray into an ArrayBuffer.
+
+		@param	buffer	A ByteArray instance
+		@returns	A new ArrayBuffer
+	**/
 	@:to @:noCompletion public static function toArrayBuffer(byteArray:ByteArray):ArrayBuffer
 	{
 		#if display
@@ -642,7 +702,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	@:to @:noCompletion private static function toBytePointer(byteArray:ByteArray):BytePointer
 	{
 		#if !display
-		__bytePointer.set(#if flash byteArray #else (byteArray:ByteArrayData) #end, byteArray.position);
+		__bytePointer.set(#if flash byteArray #else (byteArray : ByteArrayData) #end, byteArray.position);
 		#end
 		return __bytePointer;
 	}
@@ -1167,7 +1227,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function readBytes(bytes:ByteArray, offset:Int = 0, length:Int = 0):Void
 	{
-		if (length == 0) length = #if lime_bytes_length_getter l #else this.length #end - position;
+		if (length == 0) length = #if lime_bytes_length_getter l #else this.length #end -position;
 
 		if (position + length > #if lime_bytes_length_getter l #else this.length #end)
 		{
@@ -1712,7 +1772,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	// Get & Set Methods
 	@:noCompletion private inline function get_bytesAvailable():Int
 	{
-		return #if lime_bytes_length_getter l #else length #end - position;
+		return #if lime_bytes_length_getter l #else length #end -position;
 	}
 
 	@:noCompletion private inline static function get_defaultEndian():Endian

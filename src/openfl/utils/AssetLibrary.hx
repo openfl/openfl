@@ -14,7 +14,7 @@ import lime.utils.Bytes;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:dox(hide) class AssetLibrary #if lime extends LimeAssetLibrary #end
+class AssetLibrary #if lime extends LimeAssetLibrary #end
 {
 	#if lime
 	@:noCompletion private var __proxy:LimeAssetLibrary;
