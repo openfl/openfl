@@ -127,6 +127,7 @@ import lime.media.AudioSource;
 		#if lime
 		__source.onComplete.remove(source_onComplete);
 		__source.dispose();
+		__source = null;
 		#end
 		__isValid = false;
 	}
