@@ -6,7 +6,7 @@ package flash.media {
 	
 	
 	/**
-	 * @exterms
+	 * @externs
 	 */
 	public class Video extends DisplayObject {
 		

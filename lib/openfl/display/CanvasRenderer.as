@@ -6,7 +6,9 @@ package openfl.display {
 
 	// typedef CanvasRenderContext = js.html.CanvasRenderingContext2D;
 	
-	
+	/** 
+	 * @externs 
+	 */
 	public class CanvasRenderer extends DisplayObjectRenderer {
 		
 		

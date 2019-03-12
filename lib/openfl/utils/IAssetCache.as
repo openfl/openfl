@@ -5,7 +5,9 @@ package openfl.utils {
 	import openfl.media.Sound;
 	import openfl.text.Font;
 	
-	
+	/**
+	 * @externs
+	 */	
 	public interface IAssetCache {
 		
 		function get enabled ():Boolean;
