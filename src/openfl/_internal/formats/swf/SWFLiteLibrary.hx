@@ -256,6 +256,11 @@ import openfl.utils.AssetManifest;
 
 						return promise.future;
 					}
+					else
+					{
+						alphaCheck.set(id, true);
+					}
+
 				}
 			}
 		}
