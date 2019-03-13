@@ -112,6 +112,8 @@ import openfl.utils.AssetManifest;
 					}
 				}
 			}
+
+			alphaCheck.set(id, true);
 		}
 
 		return super.getImage(id);
