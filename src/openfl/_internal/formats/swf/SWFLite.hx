@@ -24,10 +24,12 @@ import openfl.Assets;
 	public var library:SWFLiteLibrary;
 	public var root:SpriteSymbol;
 	public var symbols:Map<Int, SWFSymbol>;
+	public var symbolsByClassName:Map<String, SWFSymbol>;
 
 	public function new()
 	{
 		symbols = new Map<Int, SWFSymbol>();
+		symbolsByClassName = new Map<String, SWFSymbol>();
 
 		// distinction of symbol by class name and characters by ID somewhere?
 	}
@@ -45,14 +47,12 @@ import openfl.Assets;
 		}
 		else
 		{
-			for (symbol in symbols)
+			var symbol = symbolsByClassName.get(className);
+			if (symbol != null)
 			{
-				if (symbol.className == className)
+				if (Std.is(symbol, SpriteSymbol))
 				{
-					if (Std.is(symbol, SpriteSymbol))
-					{
-						return cast(symbol, SpriteSymbol).__createObject(this);
-					}
+					return cast(symbol, SpriteSymbol).__createObject(this);
 				}
 			}
 		}
@@ -62,15 +62,14 @@ import openfl.Assets;
 
 	public function getBitmapData(className:String):BitmapData
 	{
-		for (symbol in symbols)
+		var symbol = symbolsByClassName.get(className);
+
+		if (symbol != null)
 		{
-			if (symbol.className == className)
+			if (Std.is(symbol, BitmapSymbol))
 			{
-				if (Std.is(symbol, BitmapSymbol))
-				{
-					var bitmap:BitmapSymbol = cast symbol;
-					return Assets.getBitmapData(bitmap.path);
-				}
+				var bitmap:BitmapSymbol = cast symbol;
+				return Assets.getBitmapData(bitmap.path);
 			}
 		}
 
@@ -79,15 +78,7 @@ import openfl.Assets;
 
 	public function hasSymbol(className:String):Bool
 	{
-		for (symbol in symbols)
-		{
-			if (symbol.className == className)
-			{
-				return true;
-			}
-		}
-
-		return false;
+		return symbolsByClassName.exists(className);
 	}
 
 	@SuppressWarnings("checkstyle:Dynamic")
