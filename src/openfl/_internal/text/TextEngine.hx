@@ -945,7 +945,7 @@ class TextEngine
 			heightValue = Math.ceil(ascent + descent + leading);
 			
 			if (heightValue > maxHeightValue)
-      {
+			{
 				maxHeightValue = heightValue;
 			}
 
@@ -1117,7 +1117,7 @@ class TextEngine
 
 			maxAscent = 0.0;
 			maxHeightValue = 0;
-	
+
 			++lineIndex;
 			offsetX = 2;
 		}
