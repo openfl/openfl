@@ -47,39 +47,85 @@ abstract Dictionary<K, V>(IMap<K, V>)
 	**/
 	public function new(weakKeys:Bool = false);
 
+	/**
+		Returns `true` if `key` has a mapping, `false` otherwise.
+
+		If key is `null`, the result is unspecified.
+	**/
 	public inline function exists(key:K):Bool
 	{
 		return this.exists(key);
 	}
 
+	/**
+		Returns the current mapping of `key`.
+
+		If no such mapping exists, `null` is returned.
+
+		Note that a check like `dict.get(key) == null` can hold for two reasons:
+
+		1. The Dictionary has no mapping for `key`
+		2. The Dictionary has a mapping with a value of `null`
+
+		If it is important to distinguish these cases, `exists()` should be used.
+
+		If `key` is null, the result is unspecified.
+	**/
 	@:arrayAccess public inline function get(key:K):V
 	{
 		return this.get(key);
 	}
 
 	#if (haxe_ver >= "4.0.0")
+	/**
+		Returns an Iterator over the keys and values of this Dictionary.
+
+		The order of values is undefined.
+	**/
 	@:runtime public inline function keyValueIterator():KeyValueIterator<K, V>
 	{
 		return new haxe.iterators.MapKeyValueIterator(this);
 	}
 	#end
 
+	/**
+		Removes the mapping of `key` and returns `true` if such a mapping existed, `false` otherwise.
+
+		If `key` is `null`, the result is unspecified.
+	**/
 	public inline function remove(key:K):Bool
 	{
 		return this.remove(key);
 	}
 
+	/**
+		Maps `key` to `value`.
+
+		If `key` already has a mapping, the previous value disappears.
+
+		If `key` is `null`, the result is unspecified.
+	**/
 	@:arrayAccess public inline function set(key:K, value:V):V
 	{
 		this.set(key, value);
 		return value;
 	}
 
+	/**
+		Returns an Iterator over the keys of this Dictionary.
+
+		The order of values is undefined.
+	**/
 	public inline function iterator():Iterator<K>
 	{
 		return this.keys();
 	}
 
+	/**
+		Returns an Iterator over each of the values of this Dictionary.
+
+		The order of values is undefined.
+	**/
 	public inline function each():Iterator<V>
 	{
 		return this.iterator();
