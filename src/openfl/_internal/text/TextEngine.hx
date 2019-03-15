@@ -751,8 +751,7 @@ class TextEngine
 		var descent = 0.0;
 
 		var layoutGroup:TextLayoutGroup = null, positions = null;
-		var widthValue = 0.0, heightValue = 0.0, maxHeightValue = 0.0;
-
+		var widthValue = 0.0, heightValue = 0, maxHeightValue = 0;
 		var previousSpaceIndex = -2; // -1 equals not found, -2 saves extra comparison in `breakIndex == previousSpaceIndex`
 		var spaceIndex = text.indexOf(" ");
 		var breakIndex = getLineBreakIndex();
@@ -943,9 +942,9 @@ class TextEngine
 			}
 
 			leading = currentFormat.leading;
-
-			heightValue = ascent + descent + leading;
-
+			
+			heightValue = Math.ceil(ascent + descent + leading);
+			
 			if (heightValue > maxHeightValue)
 			{
 				maxHeightValue = heightValue;
@@ -1118,7 +1117,7 @@ class TextEngine
 			offsetY += maxHeightValue;
 
 			maxAscent = 0.0;
-			maxHeightValue = 0.0;
+			maxHeightValue = 0;
 
 			++lineIndex;
 			offsetX = 2;
