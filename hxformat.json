@@ -1,0 +1,19 @@
+{
+	"excludes": [
+		"\\assets",
+		"/assets",
+		"\\node_modules",
+		"/node_modules"
+	],
+	"lineEnds": {
+		"leftCurly": "both",
+		"rightCurly": "both"
+	},
+	"sameLine": {
+		"ifBody": "same",
+		"ifElse": "next",
+		"doWhile": "next",
+		"tryBody": "next",
+		"tryCatch": "next"
+	}
+}

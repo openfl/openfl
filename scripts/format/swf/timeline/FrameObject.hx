@@ -17,14 +17,13 @@ class FrameObject
 	public var placedAtIndex:Int;
 	// The tag index of the PlaceObject tag that modified this object (optional)
 	public var lastModifiedAtIndex:Int;
-	
 	// Whether this is a keyframe or not
 	public var isKeyframe:Bool;
-	
-	// The index of the layer this object resides on 
+	// The index of the layer this object resides on
 	public var layer:Int = -1;
-	
-	public function new(depth:Int, clipDepth:Int, characterId:Int, className:String, placedAtIndex:Int, lastModifiedAtIndex:Int = 0, isKeyframe:Bool = false)
+
+	public function new(depth:Int, clipDepth:Int, characterId:Int, className:String, placedAtIndex:Int, lastModifiedAtIndex:Int = 0,
+			isKeyframe:Bool = false)
 	{
 		this.depth = depth;
 		this.clipDepth = clipDepth;
@@ -35,24 +34,28 @@ class FrameObject
 		this.isKeyframe = isKeyframe;
 		this.layer = -1;
 	}
-	
-	public function clone():FrameObject {
+
+	public function clone():FrameObject
+	{
 		return new FrameObject(depth, clipDepth, characterId, className, placedAtIndex, lastModifiedAtIndex, false);
 	}
-	
-	public function toString(/*indent:Int = 0*/):String {
+
+	public function toString( /*indent:Int = 0*/):String
+	{
 		var indent = 0;
-		var str:String = StringUtils.repeat(indent + 2) +
-			"Depth: " + depth + (layer > -1 ? " (Layer " + layer + ")" : "") + ", " +
-			"CharacterId: " + characterId + ", ";
-		if(className != null) {
+		var str:String = StringUtils.repeat(indent + 2) + "Depth: " + depth + (layer > -1 ? " (Layer " + layer + ")" : "") + ", " + "CharacterId: "
+			+ characterId + ", ";
+		if (className != null)
+		{
 			str += "ClassName: " + className + ", ";
 		}
-		str += "PlacedAt: "  + placedAtIndex;
-		if(lastModifiedAtIndex > 0) {
+		str += "PlacedAt: " + placedAtIndex;
+		if (lastModifiedAtIndex > 0)
+		{
 			str += ", LastModifiedAt: " + lastModifiedAtIndex;
 		}
-		if(isKeyframe) {
+		if (isKeyframe)
+		{
 			str += ", IsKeyframe";
 		}
 		return str;

@@ -1,20 +1,15 @@
 package openfl._internal.text;
 
-
 import openfl.text.TextFormat;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-
-
+@SuppressWarnings("checkstyle:FieldDocComment")
 // TODO: Need to measure all characters (including whitespace) but include a value for non-whitespace characters separately (for sake of alignment and wrapping)
-
-
-class TextLayoutGroup {
-	
-	
+class TextLayoutGroup
+{
 	public var ascent:Float;
 	public var descent:Float;
 	public var endIndex:Int;
@@ -31,26 +26,20 @@ class TextLayoutGroup {
 	#end
 	public var startIndex:Int;
 	public var width:Float;
-	
-	
-	public function new (format:TextFormat, startIndex:Int, endIndex:Int) {
-		
+
+	public function new(format:TextFormat, startIndex:Int, endIndex:Int)
+	{
 		this.format = format;
 		this.startIndex = startIndex;
 		this.endIndex = endIndex;
-		
 	}
-	
-	
-	public inline function getAdvance (index:Int):Float {
-		
+
+	public inline function getAdvance(index:Int):Float
+	{
 		#if (js && html5)
 		return positions[index];
 		#else
 		return (index >= 0 && index < positions.length) ? positions[index].advance.x : 0;
 		#end
-		
 	}
-	
-	
 }

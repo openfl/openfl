@@ -1,29 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension>
-	
+
 	<log warn="OpenFL expects Haxe 3.4.3 or greater, but version ${haxe} is being used" if="${${haxe} < 3.4.3}" />
-	
+
 	<set name="expect-lime-version" value="7.2.*" />
-	
+
 	<set name="expect-lime-version" value="${lime-version}" if="lime-version" />
 	<!-- <set name="lime-version" value="${expect-lime-version}" if="setup" unless="lime-version" /> -->
-	
+
 	<haxedef name="native" if="cpp || neko" />
 	<set name="native" if="cpp || neko" />
-	
+
 	<window stencil-buffer="true" depth-buffer="true" color-depth="32" />
-	
+
 	<unset name="custom-backend" />
-	
+
 	<section if="${target}-backend" unless="no-custom-backend">
-		
+
 		<set name="target-backend" value="${target}-backend" />
 		<set name="custom-backend" value="$${target-backend}" />
-		
+
 	</section>
-	
+
 	<section unless="lime || custom-backend">
-		
+
 		<section if="lime-version">
 			<haxelib name="lime" version="${lime-version}" unless="create" />
 			<haxelib name="lime" version="${lime-version}" if="display || rebuild" />
@@ -32,65 +32,66 @@
 			<haxelib name="lime" unless="create" />
 			<haxelib name="lime" if="display || rebuild" />
 		</section>
-		
+
 	</section>
-	
+
 	<section if="${lime < 7.2.0} || ${lime >= 7.3.0}" unless="setup || create || disable-version-check">
-		
+
 		<log warn="Lime version ${lime} may not be compatible with OpenFL ${openfl} (expected version ${expect-lime-version})" />
 		<log info='Use &lt;lime version="" /&gt; before &lt;haxelib name="openfl" /&gt; to include a specific version' />
-		
+
 	</section>
-	
+
 	<template path="assets/templates" />
-	
+
 	<source path="externs/flash" if="flash" />
-	
+	<source path="src-draft" if="draft" />
+
 	<include haxelib="${custom-backend}" if="display custom-backend" />
 	<haxelib name="${custom-backend}" if="custom-backend" unless="display" />
-	
+
 	<section unless="custom-backend">
-		
+
 		<define name="openfl-disable-handle-error" unless="openfl-enable-handle-error" if="debug" />
-		
+
 		<section if="native">
-			
+
 			<set name="openfl-native" />
 			<haxedef name="openfl-native" />
 			<set name="openfl" />
 			<haxeflag name="--remap" value="flash:openfl" />
-			
+
 			<section if="telemetry || advanced-telemetry || openfl-telemetry">
-				
+
 				<haxelib name="hxtelemetry" unless="flash" />
 				<config:hxtelemetry allocations="true" host="localhost" unless="flash" />
 				<haxedef name="advanced-telemetry" if="flash" />
-				
+
 			</section>
-			
+
 			<haxedef name="openfl-debug" if="openfl-telemetry" />
 			<haxedef name="lime-debug" if="openfl-telemetry" />
-			
+
 		</section>
-		
+
 		<section if="flash">
-			
+
 			<set name="openfl-flash" />
 			<haxedef name="openfl-flash" />
 			<haxedef name="advanced-telemetry" if="telemetry" />
-			
+
 		</section>
-		
+
 		<section if="html5">
-			
+
 			<set name="openfl-html5" />
 			<haxedef name="openfl-html5" />
 			<haxeflag name="--remap" value="flash:openfl" />
-			
+
 			<module name="openfl" if="html5 lime-modular">
-				
+
 				<source path="src" package="openfl" exclude="openfl._internal.renderer.console.*|*.Context3DGraphics|*.SWFLibrary" />
-				
+
 				<!-- @:expose on enums do not work in Haxe 3.4.2 -->
 				<class remove="lime.graphics.opengl.GLContextType" />
 				<class remove="lime.graphics.ImageChannel" />
@@ -100,7 +101,7 @@
 				<class remove="lime.ui.MouseCursor" />
 				<class remove="lime.system.Endian" />
 				<class remove="lime.system.SensorType" />
-				
+
 				<include type="openfl.display3D._Program3D.Uniform" />
 				<include type="openfl.display3D._Program3D.UniformMap" />
 				<include type="openfl.display.DefaultPreloader" />
@@ -118,28 +119,28 @@
 				<include type="openfl._internal.stage3D._AGALConverter.RegisterMapEntry" />
 				<include type="openfl._internal.stage3D._AGALConverter.SamplerRegister" />
 				<include type="openfl._internal.stage3D._AGALConverter.SourceRegister" />
-				
+
 			</module>
-			
+
 		</section>
-		
+
 		<set name="openfl-has-default-fonts" if="windows || mac || linux || ios || android || flash || html5 || emscripten || tvos" />
 		<assets path="assets/fonts" unless="openfl-has-default-fonts || openfl-no-default-fonts" />
-		
+
 	</section>
-	
+
 	<library handler="openfl" type="swf" />
 	<library handler="openfl" type="swflite" />
 	<library handler="openfl" type="swf_lite" />
-	
+
 	<section if="setup">
-		
+
 		<haxelib name="lime" version="${lime-version}" if="lime-version" />
 		<haxelib name="lime" unless="lime-version" />
 		<haxelib name="openfl-samples" />
-		
+
 	</section>
-	
+
 	<include haxelib="openfl-samples" if="create" />
-	
+
 </extension>

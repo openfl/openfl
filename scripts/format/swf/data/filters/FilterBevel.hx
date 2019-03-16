@@ -1,8 +1,7 @@
-﻿package format.swf.data.filters;
+package format.swf.data.filters;
 
 import format.swf.SWFData;
 import format.swf.utils.ColorUtils;
-
 #if flash
 import flash.filters.BevelFilter;
 #end
@@ -23,47 +22,41 @@ class FilterBevel extends Filter implements IFilter
 	public var compositeSource:Bool;
 	public var onTop:Bool;
 	public var passes:Int;
-	
-	public function new(id:Int) {
+
+	public function new(id:Int)
+	{
 		super(id);
 	}
-	
-	override private function get_filter():BitmapFilter {
+
+	override private function get_filter():BitmapFilter
+	{
 		#if flash
 		var filterType:BitmapFilterType;
 		#else
 		var filterType:String;
 		#end
-		if(onTop) {
+		if (onTop)
+		{
 			filterType = BitmapFilterType.FULL;
-		} else {
+		}
+		else
+		{
 			filterType = (innerShadow) ? BitmapFilterType.INNER : BitmapFilterType.OUTER;
 		}
 		#if flash
-		return new BevelFilter(
-			distance,
-			angle * 180 / Math.PI,
-			ColorUtils.rgb(highlightColor),
-			ColorUtils.alpha(highlightColor),
-			ColorUtils.rgb(shadowColor),
-			ColorUtils.alpha(shadowColor),
-			blurX,
-			blurY,
-			strength,
-			passes,
-			filterType,
-			knockout
-		);
+		return new BevelFilter(distance, angle * 180 / Math.PI, ColorUtils.rgb(highlightColor), ColorUtils.alpha(highlightColor), ColorUtils.rgb(shadowColor),
+			ColorUtils.alpha(shadowColor), blurX, blurY, strength, passes, filterType, knockout);
 		#else
 		#if ((cpp || neko) && openfl_legacy)
-		return new BitmapFilter ("");
+		return new BitmapFilter("");
 		#else
-		return new BitmapFilter ();
+		return new BitmapFilter();
 		#end
 		#end
 	}
-	
-	override public function parse(data:SWFData):Void {
+
+	override public function parse(data:SWFData):Void
+	{
 		shadowColor = data.readRGBA();
 		highlightColor = data.readRGBA();
 		blurX = data.readFIXED();
@@ -78,8 +71,9 @@ class FilterBevel extends Filter implements IFilter
 		onTop = ((flags & 0x10) != 0);
 		passes = flags & 0x0f;
 	}
-	
-	override public function publish(data:SWFData):Void {
+
+	override public function publish(data:SWFData):Void
+	{
 		data.writeRGBA(shadowColor);
 		data.writeRGBA(highlightColor);
 		data.writeFIXED(blurX);
@@ -88,14 +82,27 @@ class FilterBevel extends Filter implements IFilter
 		data.writeFIXED(distance);
 		data.writeFIXED8(strength);
 		var flags:Int = (passes & 0x0f);
-		if(innerShadow) { flags |= 0x80; }
-		if(knockout) { flags |= 0x40; }
-		if(compositeSource) { flags |= 0x20; }
-		if(onTop) { flags |= 0x10; }
+		if (innerShadow)
+		{
+			flags |= 0x80;
+		}
+		if (knockout)
+		{
+			flags |= 0x40;
+		}
+		if (compositeSource)
+		{
+			flags |= 0x20;
+		}
+		if (onTop)
+		{
+			flags |= 0x10;
+		}
 		data.writeUI8(flags);
 	}
-	
-	override public function clone():IFilter {
+
+	override public function clone():IFilter
+	{
 		var filter:FilterBevel = new FilterBevel(id);
 		filter.shadowColor = shadowColor;
 		filter.highlightColor = highlightColor;
@@ -111,23 +118,31 @@ class FilterBevel extends Filter implements IFilter
 		filter.onTop = onTop;
 		return filter;
 	}
-	
-	override public function toString(indent:Int = 0):String {
-		var str:String = "[BevelFilter] " +
-			"ShadowColor: " + ColorUtils.rgbToString(shadowColor) + ", " +
-			"HighlightColor: " + ColorUtils.rgbToString(highlightColor) + ", " +
-			"BlurX: " + blurX + ", " +
-			"BlurY: " + blurY + ", " +
-			"Angle: " + angle + ", " +
-			"Distance: " + distance + ", " +
-			"Strength: " + strength + ", " +
-			"Passes: " + passes;
+
+	override public function toString(indent:Int = 0):String
+	{
+		var str:String = "[BevelFilter] " + "ShadowColor: " + ColorUtils.rgbToString(shadowColor) + ", " + "HighlightColor: "
+			+ ColorUtils.rgbToString(highlightColor) + ", " + "BlurX: " + blurX + ", " + "BlurY: " + blurY + ", " + "Angle: " + angle + ", " + "Distance: "
+			+ distance + ", " + "Strength: " + strength + ", " + "Passes: " + passes;
 		var flags:Array<String> = [];
-		if(innerShadow) { flags.push("InnerShadow"); }
-		if(knockout) { flags.push("Knockout"); }
-		if(compositeSource) { flags.push("CompositeSource"); }
-		if(onTop) { flags.push("OnTop"); }
-		if(flags.length > 0) {
+		if (innerShadow)
+		{
+			flags.push("InnerShadow");
+		}
+		if (knockout)
+		{
+			flags.push("Knockout");
+		}
+		if (compositeSource)
+		{
+			flags.push("CompositeSource");
+		}
+		if (onTop)
+		{
+			flags.push("OnTop");
+		}
+		if (flags.length > 0)
+		{
 			str += ", Flags: " + flags.join(", ");
 		}
 		return str;

@@ -1,6 +1,5 @@
 package openfl.display;
 
-
 /**
  * Defines the values to use for specifying path-drawing commands.
  *
@@ -8,8 +7,8 @@ package openfl.display;
  * `Graphics.drawPath()` method, or stored in the
  * `commands` vector of a GraphicsPath object.
  */
-@:enum abstract GraphicsPathCommand(Int) from Int to Int from UInt to UInt {
-	
+@:enum abstract GraphicsPathCommand(Int) from Int to Int from UInt to UInt
+{
 	#if flash @:require(flash11) #end public var CUBIC_CURVE_TO = 6;
 	public var CURVE_TO = 3;
 	public var LINE_TO = 2;
@@ -17,5 +16,4 @@ package openfl.display;
 	public var NO_OP = 0;
 	public var WIDE_LINE_TO = 5;
 	public var WIDE_MOVE_TO = 4;
-	
 }

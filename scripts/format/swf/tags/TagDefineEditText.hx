@@ -1,4 +1,4 @@
-﻿package format.swf.tags;
+package format.swf.tags;
 
 import format.swf.SWFData;
 import format.swf.data.SWFRectangle;
@@ -6,15 +6,13 @@ import format.swf.data.SWFRectangle;
 class TagDefineEditText implements IDefinitionTag
 {
 	public static inline var TYPE:Int = 37;
-	
+
 	public var type(default, null):Int;
 	public var name(default, null):String;
 	public var version(default, null):Int;
 	public var level(default, null):Int;
-	
 	public var bounds:SWFRectangle;
 	public var variableName:String;
-	
 	public var hasText:Bool;
 	public var wordWrap:Bool;
 	public var multiline:Bool;
@@ -31,7 +29,6 @@ class TagDefineEditText implements IDefinitionTag
 	public var wasStatic:Bool;
 	public var html:Bool;
 	public var useOutlines:Bool;
-	
 	public var fontId:Int;
 	public var fontClass:String;
 	public var fontHeight:Int;
@@ -43,19 +40,18 @@ class TagDefineEditText implements IDefinitionTag
 	public var indent:Int;
 	public var leading:Int;
 	public var initialText:String;
-
 	public var characterId:Int;
-	
-	public function new() {
-		
+
+	public function new()
+	{
 		type = TYPE;
 		name = "DefineEditText";
 		version = 4;
 		level = 1;
-		
 	}
-	
-	public function parse(data:SWFData, length:Int, version:Int, async:Bool = false):Void {
+
+	public function parse(data:SWFData, length:Int, version:Int, async:Bool = false):Void
+	{
 		characterId = data.readUI16();
 		bounds = data.readRECT();
 		var flags1:Int = data.readUI8();
@@ -76,22 +72,28 @@ class TagDefineEditText implements IDefinitionTag
 		wasStatic = ((flags2 & 0x04) != 0);
 		html = ((flags2 & 0x02) != 0);
 		useOutlines = ((flags2 & 0x01) != 0);
-		if (hasFont) {
+		if (hasFont)
+		{
 			fontId = data.readUI16();
 		}
-		if (hasFontClass) {
+		if (hasFontClass)
+		{
 			fontClass = data.readSTRING();
 		}
-		if (hasFont || hasFontClass) {
+		if (hasFont || hasFontClass)
+		{
 			fontHeight = data.readUI16();
 		}
-		if (hasTextColor) {
+		if (hasTextColor)
+		{
 			textColor = data.readRGBA();
 		}
-		if (hasMaxLength) {
+		if (hasMaxLength)
+		{
 			maxLength = data.readUI16();
 		}
-		if (hasLayout) {
+		if (hasLayout)
+		{
 			align = data.readUI8();
 			leftMargin = data.readUI16();
 			rightMargin = data.readUI16();
@@ -99,51 +101,107 @@ class TagDefineEditText implements IDefinitionTag
 			leading = data.readSI16();
 		}
 		variableName = data.readSTRING();
-		if (hasText) {
+		if (hasText)
+		{
 			initialText = data.readSTRING();
 		}
 	}
-	
-	public function publish(data:SWFData, version:Int):Void {
+
+	public function publish(data:SWFData, version:Int):Void
+	{
 		var body:SWFData = new SWFData();
 		body.writeUI16(characterId);
 		body.writeRECT(bounds);
 		var flags1:Int = 0;
-		if(hasText) { flags1 |= 0x80; }
-		if(wordWrap) { flags1 |= 0x40; }
-		if(multiline) { flags1 |= 0x20; }
-		if(password) { flags1 |= 0x10; }
-		if(readOnly) { flags1 |= 0x08; }
-		if(hasTextColor) { flags1 |= 0x04; }
-		if(hasMaxLength) { flags1 |= 0x02; }
-		if(hasFont) { flags1 |= 0x01; }
+		if (hasText)
+		{
+			flags1 |= 0x80;
+		}
+		if (wordWrap)
+		{
+			flags1 |= 0x40;
+		}
+		if (multiline)
+		{
+			flags1 |= 0x20;
+		}
+		if (password)
+		{
+			flags1 |= 0x10;
+		}
+		if (readOnly)
+		{
+			flags1 |= 0x08;
+		}
+		if (hasTextColor)
+		{
+			flags1 |= 0x04;
+		}
+		if (hasMaxLength)
+		{
+			flags1 |= 0x02;
+		}
+		if (hasFont)
+		{
+			flags1 |= 0x01;
+		}
 		body.writeUI8(flags1);
 		var flags2:Int = 0;
-		if(hasFontClass) { flags2 |= 0x80; }
-		if(autoSize) { flags2 |= 0x40; }
-		if(hasLayout) { flags2 |= 0x20; }
-		if(noSelect) { flags2 |= 0x10; }
-		if(border) { flags2 |= 0x08; }
-		if(wasStatic) { flags2 |= 0x04; }
-		if(html) { flags2 |= 0x02; }
-		if(useOutlines) { flags2 |= 0x01; }
+		if (hasFontClass)
+		{
+			flags2 |= 0x80;
+		}
+		if (autoSize)
+		{
+			flags2 |= 0x40;
+		}
+		if (hasLayout)
+		{
+			flags2 |= 0x20;
+		}
+		if (noSelect)
+		{
+			flags2 |= 0x10;
+		}
+		if (border)
+		{
+			flags2 |= 0x08;
+		}
+		if (wasStatic)
+		{
+			flags2 |= 0x04;
+		}
+		if (html)
+		{
+			flags2 |= 0x02;
+		}
+		if (useOutlines)
+		{
+			flags2 |= 0x01;
+		}
 		body.writeUI8(flags2);
-		if (hasFont) {
+		if (hasFont)
+		{
 			body.writeUI16(fontId);
 		}
-		if (hasFontClass) {
+		if (hasFontClass)
+		{
 			body.writeSTRING(fontClass);
 		}
-		if (hasFont || hasFontClass) {
+		if (hasFont || hasFontClass)
+		{
 			body.writeUI16(fontHeight);
 		}
-		if (hasTextColor) {
+		if (hasTextColor)
+		{
 			body.writeRGBA(textColor);
 		}
-		if (hasMaxLength) {
+		if (hasMaxLength)
+		{
 			body.writeUI16(maxLength);
 		}
-		if (hasLayout) {
+		if (hasLayout)
+		{
 			body.writeUI8(align);
 			body.writeUI16(leftMargin);
 			body.writeUI16(rightMargin);
@@ -151,14 +209,16 @@ class TagDefineEditText implements IDefinitionTag
 			body.writeSI16(leading);
 		}
 		body.writeSTRING(variableName);
-		if (hasText) {
+		if (hasText)
+		{
 			body.writeSTRING(initialText);
 		}
 		data.writeTagHeader(type, body.length);
 		data.writeBytes(body);
 	}
-	
-	public function clone():IDefinitionTag {
+
+	public function clone():IDefinitionTag
+	{
 		var tag:TagDefineEditText = new TagDefineEditText();
 		tag.characterId = characterId;
 		tag.bounds = bounds.clone();
@@ -192,13 +252,17 @@ class TagDefineEditText implements IDefinitionTag
 		tag.initialText = initialText;
 		return tag;
 	}
-	
-	public function toString(indent:Int = 0):String {
-		var str:String = Tag.toStringCommon(type, name, indent) +
-			"ID: " + characterId + ", " +
-			((hasText && initialText.length > 0) ? "Text: " + initialText + ", " : "") +
-			((variableName.length > 0) ? "VariableName: " + variableName + ", " : "") +
-			"Bounds: " + bounds;
+
+	public function toString(indent:Int = 0):String
+	{
+		var str:String = Tag.toStringCommon(type, name, indent)
+			+ "ID: "
+			+ characterId
+			+ ", "
+			+ ((hasText && initialText.length > 0) ? "Text: " + initialText + ", " : "")
+			+ ((variableName.length > 0) ? "VariableName: " + variableName + ", " : "")
+			+ "Bounds: "
+			+ bounds;
 		return str;
 	}
 }

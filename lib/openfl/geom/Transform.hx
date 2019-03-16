@@ -1,10 +1,9 @@
-package openfl.geom; #if (display || !flash)
+package openfl.geom;
 
-
+#if (display || !flash)
 import openfl.display.DisplayObject;
 
 @:jsRequire("openfl/geom/Transform", "default")
-
 
 /**
  * The Transform class provides access to color adjustment properties and two-
@@ -60,20 +59,18 @@ import openfl.display.DisplayObject;
  * projection center changes. For more control over the perspective
  * transformation, create a perspective projection Matrix3D object.
  */
-extern class Transform {
-	
-	
+extern class Transform
+{
 	/**
 	 * A ColorTransform object containing values that universally adjust the
 	 * colors in the display object.
-	 * 
+	 *
 	 * @throws TypeError The colorTransform is null when being set
 	 */
-	public var colorTransform (get, set):ColorTransform;
-	
-	@:noCompletion private function get_colorTransform ():ColorTransform;
-	@:noCompletion private function set_colorTransform (value:ColorTransform):ColorTransform;
-	
+	public var colorTransform(get, set):ColorTransform;
+	@:noCompletion private function get_colorTransform():ColorTransform;
+	@:noCompletion private function set_colorTransform(value:ColorTransform):ColorTransform;
+
 	/**
 	 * A ColorTransform object representing the combined color transformations
 	 * applied to the display object and all of its parent objects, back to the
@@ -81,8 +78,8 @@ extern class Transform {
 	 * different levels, all of those transformations are concatenated into one
 	 * ColorTransform object for this property.
 	 */
-	public var concatenatedColorTransform (default, null):ColorTransform;
-	
+	public var concatenatedColorTransform(default, null):ColorTransform;
+
 	/**
 	 * A Matrix object representing the combined transformation matrixes of the
 	 * display object and all of its parent objects, back to the root level. If
@@ -94,11 +91,10 @@ extern class Transform {
 	 * window coordinates, which may not be the same coordinate space as that of
 	 * the Stage.
 	 */
-	public var concatenatedMatrix (get, never):Matrix;
-	
-	@:noCompletion private function get_concatenatedMatrix ():Matrix;
-	@:noCompletion private function set_concatenatedMatrix (value:Matrix):Matrix;
-	
+	public var concatenatedMatrix(get, never):Matrix;
+	@:noCompletion private function get_concatenatedMatrix():Matrix;
+	@:noCompletion private function set_concatenatedMatrix(value:Matrix):Matrix;
+
 	/**
 	 * A Matrix object containing values that alter the scaling, rotation, and
 	 * translation of the display object.
@@ -108,14 +104,13 @@ extern class Transform {
 	 * `null`. And if the `matrix3D` property is set to a
 	 * value(not `null`), the `matrix` property is
 	 * `null`.
-	 * 
+	 *
 	 * @throws TypeError The matrix is null when being set
 	 */
-	public var matrix (get, set):Matrix;
-	
-	@:noCompletion private function get_matrix ():Matrix;
-	@:noCompletion private function set_matrix (value:Matrix):Matrix;
-	
+	public var matrix(get, set):Matrix;
+	@:noCompletion private function get_matrix():Matrix;
+	@:noCompletion private function set_matrix(value:Matrix):Matrix;
+
 	/**
 	 * Provides access to the Matrix3D object of a three-dimensional display
 	 * object. The Matrix3D object represents a transformation matrix that
@@ -128,32 +123,23 @@ extern class Transform {
 	 * value(not `null`), the `matrix` property is
 	 * `null`.
 	 */
-	public var matrix3D (get, set):Matrix3D;
-	
-	@:noCompletion private function get_matrix3D ():Matrix3D;
-	@:noCompletion private function set_matrix3D (value:Matrix3D):Matrix3D;
-	
+	public var matrix3D(get, set):Matrix3D;
+	@:noCompletion private function get_matrix3D():Matrix3D;
+	@:noCompletion private function set_matrix3D(value:Matrix3D):Matrix3D;
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10) public var perspectiveProjection:PerspectiveProjection;
 	#end
-	
+
 	/**
 	 * A Rectangle object that defines the bounding rectangle of the display
 	 * object on the stage.
 	 */
-	public var pixelBounds (default, null):Rectangle;
-	
-	
-	public function new (displayObject:DisplayObject);
-	
+	public var pixelBounds(default, null):Rectangle;
+	public function new(displayObject:DisplayObject);
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10) public function getRelativeMatrix3D (relativeTo:DisplayObject):Matrix3D;
+	@:noCompletion @:dox(hide) @:require(flash10) public function getRelativeMatrix3D(relativeTo:DisplayObject):Matrix3D;
 	#end
-	
-	
 }
-
-
 #else
 typedef Transform = flash.geom.Transform;
 #end

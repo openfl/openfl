@@ -1,5 +1,4 @@
 import massive.munit.TestSuite;
-
 import openfl.AssetsTest;
 import openfl.desktop.ClipboardFormatsTest;
 import openfl.desktop.ClipboardTest;

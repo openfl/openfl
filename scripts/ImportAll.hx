@@ -1,6 +1,5 @@
 package;
 
-
 import openfl.desktop.Clipboard;
 import openfl.desktop.ClipboardFormats;
 import openfl.desktop.ClipboardTransferMode;
@@ -137,6 +136,7 @@ import openfl.events.TimerEvent;
 import openfl.events.TouchEvent;
 import openfl.events.UncaughtErrorEvent;
 import openfl.events.UncaughtErrorEvents;
+import openfl.events.VideoTextureEvent;
 import openfl.external.ExternalInterface;
 import openfl.filters.BitmapFilter;
 import openfl.filters.BitmapFilterQuality;
@@ -236,7 +236,6 @@ import openfl.utils.Timer;
 import openfl.Lib;
 import openfl.Memory;
 import openfl.Vector;
-
 #if !display
 import openfl._internal.formats.swf.SWFLiteLibrary;
 #end

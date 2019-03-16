@@ -1,8 +1,8 @@
-package flash.display; #if flash
+package flash.display;
 
-
-@:enum abstract BlendMode(String) from String to String {
-	
+#if flash
+@:enum abstract BlendMode(String) from String to String
+{
 	public var ADD = "add";
 	public var ALPHA = "alpha";
 	public var DARKEN = "darken";
@@ -18,10 +18,7 @@ package flash.display; #if flash
 	public var SCREEN = "screen";
 	public var SHADER = "shader";
 	public var SUBTRACT = "subtract";
-	
 }
-
-
 #else
 typedef BlendMode = openfl.display.BlendMode;
 #end

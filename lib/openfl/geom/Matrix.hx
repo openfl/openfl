@@ -1,8 +1,7 @@
-package openfl.geom; #if (display || !flash)
+package openfl.geom;
 
-
+#if (display || !flash)
 @:jsRequire("openfl/geom/Matrix", "default")
-
 /**
  * The Matrix class represents a transformation matrix that determines how to
  * map points from one coordinate space to another. You can perform various
@@ -23,12 +22,12 @@ package openfl.geom; #if (display || !flash)
  * the display object to the Transform object. Matrix objects are also used as
  * parameters of some methods, such as the following:
  *
- * 
+ *
  *  * The `draw()` method of a BitmapData object
  *  * The `beginBitmapFill()` method,
  * `beginGradientFill()` method, or
  * `lineGradientStyle()` method of a Graphics object
- * 
+ *
  *
  * A transformation matrix object is a 3 x 3 matrix with the following
  * contents:
@@ -47,7 +46,7 @@ package openfl.geom; #if (display || !flash)
  * The Matrix class supports the four major types of transformations:
  * translation, scaling, rotation, and skewing. You can set three of these
  * transformations by using specialized methods, as described in the following
- * table: 
+ * table:
  *
  * Each transformation function alters the current matrix properties so
  * that you can effectively combine multiple transformations. To do this, you
@@ -58,44 +57,42 @@ package openfl.geom; #if (display || !flash)
  * Use the `new Matrix()` constructor to create a Matrix object
  * before you can call the methods of the Matrix object.
  */
-extern class Matrix {
-	
-	
+extern class Matrix
+{
 	/**
 	 * The value that affects the positioning of pixels along the _x_ axis
 	 * when scaling or rotating an image.
 	 */
 	public var a:Float;
-	
+
 	/**
 	 * The value that affects the positioning of pixels along the _y_ axis
 	 * when rotating or skewing an image.
 	 */
 	public var b:Float;
-	
+
 	/**
 	 * The value that affects the positioning of pixels along the _x_ axis
 	 * when rotating or skewing an image.
 	 */
 	public var c:Float;
-	
+
 	/**
 	 * The value that affects the positioning of pixels along the _y_ axis
 	 * when scaling or rotating an image.
 	 */
 	public var d:Float;
-	
+
 	/**
 	 * The distance by which to translate each point along the _x_ axis.
 	 */
 	public var tx:Float;
-	
+
 	/**
 	 * The distance by which to translate each point along the _y_ axis.
 	 */
 	public var ty:Float;
-	
-	
+
 	/**
 	 * Creates a new Matrix object with the specified parameters. In matrix
 	 * notation, the properties are organized like this:
@@ -105,7 +102,7 @@ extern class Matrix {
 	 * values:
 	 *
 	 * In matrix notation, the identity matrix looks like this:
-	 * 
+	 *
 	 * @param a  The value that affects the positioning of pixels along the
 	 *           _x_ axis when scaling or rotating an image.
 	 * @param b  The value that affects the positioning of pixels along the
@@ -119,19 +116,17 @@ extern class Matrix {
 	 * @param ty The distance by which to translate each point along the _y_
 	 *           axis.
 	 */
-	public function new (a:Float = 1, b:Float = 0, c:Float = 0, d:Float = 1, tx:Float = 0, ty:Float = 0);
-	
-	
+	public function new(a:Float = 1, b:Float = 0, c:Float = 0, d:Float = 1, tx:Float = 0, ty:Float = 0);
+
 	/**
 	 * Returns a new Matrix object that is a clone of this matrix, with an exact
 	 * copy of the contained object.
-	 * 
+	 *
 	 * @return A Matrix object.
 	 */
-	//public inline function clone ():Matrix;
-	public function clone ():Matrix;
-	
-	
+	// public inline function clone ():Matrix;
+	public function clone():Matrix;
+
 	/**
 	 * Concatenates a matrix with the current matrix, effectively combining the
 	 * geometric effects of the two. In mathematical terms, concatenating two
@@ -141,33 +136,22 @@ extern class Matrix {
 	 * four, and matrix `m2` rotates an object by 1.5707963267949
 	 * radians(`Math.PI/2`), then `m1.concat(m2)`
 	 * transforms `m1` into a matrix that scales an object by a factor
-	 * of four and rotates the object by `Math.PI/2` radians. 
+	 * of four and rotates the object by `Math.PI/2` radians.
 	 *
 	 * This method replaces the source matrix with the concatenated matrix. If
 	 * you want to concatenate two matrixes without altering either of the two
 	 * source matrixes, first copy the source matrix by using the
 	 * `clone()` method, as shown in the Class Examples section.
-	 * 
+	 *
 	 * @param m The matrix to be concatenated to the source matrix.
 	 */
-	public function concat (m:Matrix):Void;
-	
-	
-	public function copyColumnFrom (column:Int, vector3D:Vector3D):Void;
-	
-	
-	public function copyColumnTo (column:Int, vector3D:Vector3D):Void;
-	
-	
-	public function copyFrom (sourceMatrix:Matrix):Void;
-	
-	
-	public function copyRowFrom (row:Int, vector3D:Vector3D):Void;
-	
-	
-	public function copyRowTo (row:Int, vector3D:Vector3D):Void;
-	
-	
+	public function concat(m:Matrix):Void;
+	public function copyColumnFrom(column:Int, vector3D:Vector3D):Void;
+	public function copyColumnTo(column:Int, vector3D:Vector3D):Void;
+	public function copyFrom(sourceMatrix:Matrix):Void;
+	public function copyRowFrom(row:Int, vector3D:Vector3D):Void;
+	public function copyRowTo(row:Int, vector3D:Vector3D):Void;
+
 	/**
 	 * Includes parameters for scaling, rotation, and translation. When applied
 	 * to a matrix it sets the matrix's values based on those parameters.
@@ -177,7 +161,7 @@ extern class Matrix {
 	 * `rotate()`, `scale()`, and `translate()`
 	 * methods in succession. For example, `mat1.createBox(2,2,Math.PI/4,
 	 * 100, 100)` has the same effect as the following:
-	 * 
+	 *
 	 * @param scaleX   The factor by which to scale horizontally.
 	 * @param scaleY   The factor by which scale vertically.
 	 * @param rotation The amount to rotate, in radians.
@@ -186,9 +170,8 @@ extern class Matrix {
 	 * @param ty       The number of pixels to translate(move) down along the
 	 *                 _y_ axis.
 	 */
-	public function createBox (scaleX:Float, scaleY:Float, rotation:Float = 0, tx:Float = 0, ty:Float = 0):Void;
-	
-	
+	public function createBox(scaleX:Float, scaleY:Float, rotation:Float = 0, tx:Float = 0, ty:Float = 0):Void;
+
 	/**
 	 * Creates the specific style of matrix expected by the
 	 * `beginGradientFill()` and `lineGradientStyle()`
@@ -200,18 +183,18 @@ extern class Matrix {
 	 * For example, consider a gradient with the following
 	 * characteristics:
 	 *
-	 * 
+	 *
 	 *  * `GradientType.LINEAR`
 	 *  * Two colors, green and blue, with the ratios array set to `[0,
 	 * 255]`
 	 *  * `SpreadMethod.PAD`
 	 *  * `InterpolationMethod.LINEAR_RGB`
-	 * 
+	 *
 	 *
 	 * The following illustrations show gradients in which the matrix was
 	 * defined using the `createGradientBox()` method with different
 	 * parameter settings:
-	 * 
+	 *
 	 * @param width    The width of the gradient box.
 	 * @param height   The height of the gradient box.
 	 * @param rotation The amount to rotate, in radians.
@@ -222,9 +205,8 @@ extern class Matrix {
 	 *                 _y_ axis. This value is offset by half of the
 	 *                 `height` parameter.
 	 */
-	public function createGradientBox (width:Float, height:Float, rotation:Float = 0, tx:Float = 0, ty:Float = 0):Void;
-	
-	
+	public function createGradientBox(width:Float, height:Float, rotation:Float = 0, tx:Float = 0, ty:Float = 0):Void;
+
 	/**
 	 * Given a point in the pretransform coordinate space, returns the
 	 * coordinates of that point after the transformation occurs. Unlike the
@@ -232,14 +214,13 @@ extern class Matrix {
 	 * method, the `deltaTransformPoint()` method's transformation
 	 * does not consider the translation parameters `tx` and
 	 * `ty`.
-	 * 
+	 *
 	 * @param point The point for which you want to get the result of the matrix
 	 *              transformation.
 	 * @return The point resulting from applying the matrix transformation.
 	 */
-	public function deltaTransformPoint (point:Point):Point;
-	
-	
+	public function deltaTransformPoint(point:Point):Point;
+
 	/**
 	 * Sets each matrix property to a value that causes a null transformation. An
 	 * object transformed by applying an identity matrix will be identical to the
@@ -251,20 +232,18 @@ extern class Matrix {
 	 * `ty`=0.
 	 *
 	 * In matrix notation, the identity matrix looks like this:
-	 * 
+	 *
 	 */
-	public function identity ():Void;
-	
-	
+	public function identity():Void;
+
 	/**
 	 * Performs the opposite transformation of the original matrix. You can apply
 	 * an inverted matrix to an object to undo the transformation performed when
 	 * applying the original matrix.
-	 * 
+	 *
 	 */
-	public function invert ():Matrix;
-	
-	
+	public function invert():Matrix;
+
 	/**
 	 * Applies a rotation transformation to the Matrix object.
 	 *
@@ -272,12 +251,11 @@ extern class Matrix {
 	 * `b`, `c`, and `d` properties of the
 	 * Matrix object. In matrix notation, this is the same as concatenating the
 	 * current matrix with the following:
-	 * 
+	 *
 	 * @param angle The rotation angle in radians.
 	 */
-	public function rotate (theta:Float):Void;
-	
-	
+	public function rotate(theta:Float):Void;
+
 	/**
 	 * Applies a scaling transformation to the matrix. The _x_ axis is
 	 * multiplied by `sx`, and the _y_ axis it is multiplied by
@@ -287,52 +265,43 @@ extern class Matrix {
 	 * `d` properties of the Matrix object. In matrix notation, this
 	 * is the same as concatenating the current matrix with the following
 	 * matrix:
-	 * 
+	 *
 	 * @param sx A multiplier used to scale the object along the _x_ axis.
 	 * @param sy A multiplier used to scale the object along the _y_ axis.
 	 */
-	public function scale (sx:Float, sy:Float):Void;
-	
-	
-	public function setTo (a:Float, b:Float, c:Float, d:Float, tx:Float, ty:Float):Void;
-	
-	
+	public function scale(sx:Float, sy:Float):Void;
+	public function setTo(a:Float, b:Float, c:Float, d:Float, tx:Float, ty:Float):Void;
+
 	/**
 	 * Returns a text value listing the properties of the Matrix object.
-	 * 
+	 *
 	 * @return A string containing the values of the properties of the Matrix
 	 *         object: `a`, `b`, `c`,
 	 *         `d`, `tx`, and `ty`.
 	 */
-	//public inline function toString ():String;
-	public function toString ():String;
-	
-	
+	// public inline function toString ():String;
+	public function toString():String;
+
 	/**
 	 * Returns the result of applying the geometric transformation represented by
 	 * the Matrix object to the specified point.
-	 * 
+	 *
 	 * @param point The point for which you want to get the result of the Matrix
 	 *              transformation.
 	 * @return The point resulting from applying the Matrix transformation.
 	 */
-	public function transformPoint (pos:Point):Point;
-	
-	
+	public function transformPoint(pos:Point):Point;
+
 	/**
 	 * Translates the matrix along the _x_ and _y_ axes, as specified
 	 * by the `dx` and `dy` parameters.
-	 * 
+	 *
 	 * @param dx The amount of movement along the _x_ axis to the right, in
 	 *           pixels.
 	 * @param dy The amount of movement down along the _y_ axis, in pixels.
 	 */
-	public function translate (dx:Float, dy:Float):Void;
-	
-	
+	public function translate(dx:Float, dy:Float):Void;
 }
-
-
 #else
 typedef Matrix = flash.geom.Matrix;
 #end

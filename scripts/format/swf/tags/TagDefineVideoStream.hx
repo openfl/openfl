@@ -1,4 +1,4 @@
-﻿package format.swf.tags;
+package format.swf.tags;
 
 import format.swf.SWFData;
 import format.swf.data.consts.VideoCodecID;
@@ -7,31 +7,29 @@ import format.swf.data.consts.VideoDeblockingType;
 class TagDefineVideoStream implements IDefinitionTag
 {
 	public static inline var TYPE:Int = 60;
-	
+
 	public var type(default, null):Int;
 	public var name(default, null):String;
 	public var version(default, null):Int;
 	public var level(default, null):Int;
-
 	public var numFrames:Int;
 	public var width:Int;
 	public var height:Int;
 	public var deblocking:Int;
 	public var smoothing:Bool;
 	public var codecId:Int;
-	
 	public var characterId:Int;
-	
-	public function new() {
-		
+
+	public function new()
+	{
 		type = TYPE;
 		name = "DefineVideoStream";
 		version = 6;
 		level = 1;
-		
 	}
-	
-	public function parse(data:SWFData, length:Int, version:Int, async:Bool = false):Void {
+
+	public function parse(data:SWFData, length:Int, version:Int, async:Bool = false):Void
+	{
 		characterId = data.readUI16();
 		numFrames = data.readUI16();
 		width = data.readUI16();
@@ -41,8 +39,9 @@ class TagDefineVideoStream implements IDefinitionTag
 		smoothing = (data.readUB(1) == 1);
 		codecId = data.readUI8();
 	}
-	
-	public function publish(data:SWFData, version:Int):Void {
+
+	public function publish(data:SWFData, version:Int):Void
+	{
 		data.writeTagHeader(type, 10);
 		data.writeUI16(characterId);
 		data.writeUI16(numFrames);
@@ -53,8 +52,9 @@ class TagDefineVideoStream implements IDefinitionTag
 		data.writeUB(1, smoothing ? 1 : 0);
 		data.writeUI8(codecId);
 	}
-	
-	public function clone():IDefinitionTag {
+
+	public function clone():IDefinitionTag
+	{
 		var tag:TagDefineVideoStream = new TagDefineVideoStream();
 		tag.characterId = characterId;
 		tag.numFrames = numFrames;
@@ -65,15 +65,11 @@ class TagDefineVideoStream implements IDefinitionTag
 		tag.codecId = codecId;
 		return tag;
 	}
-	
-	public function toString(indent:Int = 0):String {
-		return Tag.toStringCommon(type, name, indent) +
-			"ID: " + characterId + ", " +
-			"Frames: " + numFrames + ", " +
-			"Width: " + width + ", " +
-			"Height: " + height + ", " +
-			"Deblocking: " + VideoDeblockingType.toString(deblocking) + ", " +
-			"Smoothing: " + smoothing + ", " +
-			"Codec: " + VideoCodecID.toString(codecId);
+
+	public function toString(indent:Int = 0):String
+	{
+		return Tag.toStringCommon(type, name, indent) + "ID: " + characterId + ", " + "Frames: " + numFrames + ", " + "Width: " + width + ", " + "Height: "
+			+ height + ", " + "Deblocking: " + VideoDeblockingType.toString(deblocking) + ", " + "Smoothing: " + smoothing + ", " + "Codec: "
+			+ VideoCodecID.toString(codecId);
 	}
 }

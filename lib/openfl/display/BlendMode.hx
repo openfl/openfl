@@ -1,18 +1,17 @@
 package openfl.display;
 
-
 /**
  * A class that provides constant values for visual blend mode effects. These
  * constants are used in the following:
- * 
+ *
  *  *  The `blendMode` property of the
  * openfl.display.DisplayObject class.
  *  *  The `blendMode` parameter of the `draw()`
  * method of the openfl.display.BitmapData class
- * 
+ *
  */
-@:enum abstract BlendMode(String) from String to String {
-	
+@:enum abstract BlendMode(String) from String to String
+{
 	/**
 	 * Adds the values of the constituent colors of the display object to the
 	 * colors of its background, applying a ceiling of 0xFF. This setting is
@@ -24,7 +23,7 @@ package openfl.display;
 	 * 0xDD > 0xFF, 0xA6 + 0x22 = 0xC8, and 0x33 + 0x00 = 0x33).
 	 */
 	public var ADD = "add";
-	
+
 	/**
 	 * Applies the alpha value of each pixel of the display object to the
 	 * background. This requires the `blendMode` property of the
@@ -34,7 +33,7 @@ package openfl.display;
 	 * Not supported under GPU rendering.
 	 */
 	public var ALPHA = "alpha";
-	
+
 	/**
 	 * Selects the darker of the constituent colors of the display object and the
 	 * colors of the background(the colors with the smaller values). This
@@ -48,7 +47,7 @@ package openfl.display;
 	 * Not supported under GPU rendering.
 	 */
 	public var DARKEN = "darken";
-	
+
 	/**
 	 * Compares the constituent colors of the display object with the colors of
 	 * its background, and subtracts the darker of the values of the two
@@ -61,7 +60,7 @@ package openfl.display;
 	 * 0xDD = 0x22, 0xF8 - 0xCC = 0x2C, and 0x33 - 0x00 = 0x33).
 	 */
 	public var DIFFERENCE = "difference";
-	
+
 	/**
 	 * Erases the background based on the alpha value of the display object. This
 	 * process requires that the `blendMode` property of the parent
@@ -70,7 +69,7 @@ package openfl.display;
 	 * Not supported under GPU rendering.
 	 */
 	public var ERASE = "erase";
-	
+
 	/**
 	 * Adjusts the color of each pixel based on the darkness of the display
 	 * object. If the display object is lighter than 50% gray, the display object
@@ -82,12 +81,12 @@ package openfl.display;
 	 * Not supported under GPU rendering.
 	 */
 	public var HARDLIGHT = "hardlight";
-	
+
 	/**
 	 * Inverts the background.
 	 */
 	public var INVERT = "invert";
-	
+
 	/**
 	 * Forces the creation of a transparency group for the display object. This
 	 * means that the display object is precomposed in a temporary buffer before
@@ -99,7 +98,7 @@ package openfl.display;
 	 * Not supported under GPU rendering.
 	 */
 	public var LAYER = "layer";
-	
+
 	/**
 	 * Selects the lighter of the constituent colors of the display object and
 	 * the colors of the background(the colors with the larger values). This
@@ -113,7 +112,7 @@ package openfl.display;
 	 * Not supported under GPU rendering.
 	 */
 	public var LIGHTEN = "lighten";
-	
+
 	/**
 	 * Multiplies the values of the display object constituent colors by the
 	 * constituent colors of the background color, and normalizes by dividing by
@@ -128,14 +127,14 @@ package openfl.display;
 	 * background.
 	 */
 	public var MULTIPLY = "multiply";
-	
+
 	/**
 	 * The display object appears in front of the background. Pixel values of the
 	 * display object override the pixel values of the background. Where the
 	 * display object is transparent, the background is visible.
 	 */
 	public var NORMAL = "normal";
-	
+
 	/**
 	 * Adjusts the color of each pixel based on the darkness of the background.
 	 * If the background is lighter than 50% gray, the display object and
@@ -147,7 +146,7 @@ package openfl.display;
 	 * Not supported under GPU rendering.
 	 */
 	public var OVERLAY = "overlay";
-	
+
 	/**
 	 * Multiplies the complement(inverse) of the display object color by the
 	 * complement of the background color, resulting in a bleaching effect. This
@@ -155,9 +154,8 @@ package openfl.display;
 	 * display object.
 	 */
 	public var SCREEN = "screen";
-	
 	public var SHADER = "shader";
-	
+
 	/**
 	 * Subtracts the values of the constituent colors in the display object from
 	 * the values of the background color, applying a floor of 0. This setting is
@@ -169,5 +167,4 @@ package openfl.display;
 	 * 0xAA = 0x33, 0xA6 - 0x22 = 0x84, and 0x00 - 0x33 < 0x00).
 	 */
 	public var SUBTRACT = "subtract";
-	
 }

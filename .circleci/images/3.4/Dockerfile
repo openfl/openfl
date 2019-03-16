@@ -7,7 +7,7 @@ RUN git clone https://github.com/jgranick/format ~/format --depth 1
 RUN haxelib dev format ~/format
 RUN haxelib install mcover
 RUN haxelib install hamcrest
-RUN git clone https://github.com/jgranick/MassiveUnit ~/munit --depth 1
+RUN git clone https://github.com/openfl/munit ~/munit --depth 1
 RUN haxelib dev munit ~/munit/src
 RUN cd ~/munit/tool && haxe build.hxml
 

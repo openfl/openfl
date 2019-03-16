@@ -1,12 +1,11 @@
 package openfl.display;
 
-
 /**
  * The LineScaleMode class provides values for the `scaleMode`
  * parameter in the `Graphics.lineStyle()` method.
  */
-@:enum abstract LineScaleMode(String) from String to String {
-	
+@:enum abstract LineScaleMode(String) from String to String
+{
 	/**
 	 * With this setting used as the `scaleMode` parameter of the
 	 * `lineStyle()` method, the thickness of the line scales
@@ -17,20 +16,20 @@ package openfl.display;
 	 * vertically and horizontally.
 	 */
 	public var HORIZONTAL = "horizontal";
-	
+
 	/**
 	 * With this setting used as the `scaleMode` parameter of the
 	 * `lineStyle()` method, the thickness of the line never scales.
 	 */
 	public var NONE = "none";
-	
+
 	/**
 	 * With this setting used as the `scaleMode` parameter of the
 	 * `lineStyle()` method, the thickness of the line always scales
 	 * when the object is scaled(the default).
 	 */
 	public var NORMAL = "normal";
-	
+
 	/**
 	 * With this setting used as the `scaleMode` parameter of the
 	 * `lineStyle()` method, the thickness of the line scales
@@ -41,5 +40,4 @@ package openfl.display;
 	 * both vertically and horizontally.
 	 */
 	public var VERTICAL = "vertical";
-	
 }

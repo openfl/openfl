@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	
+	<meta title="Functional Testing" package="org.openfl.tests.functional" version="1.0.0" company="OpenFL" />
+	<app path="build" />
+	
+	<source path="src" />
+	
+	<haxelib name="openfl" />
+	
+	<define name="openfl-functional-testing" />
+	<define name="functional" />
+	
+	<assets path="assets" />
+	
+</project>

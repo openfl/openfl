@@ -1,81 +1,65 @@
 package openfl.geom;
 
-
 import massive.munit.Assert;
 import openfl.display.Sprite;
 
+class TransformTest
+{
+	@Test public function colorTransform()
+	{
+		// TODO: Confirm functionality
 
-class TransformTest {
-	
-	
-	@Test public function colorTransform () {
-		
-		// TODO: Confirm functionality
-		
-		var transform = new Sprite ().transform;
+		var transform = new Sprite().transform;
 		var exists = transform.colorTransform;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function concatenatedColorTransform () {
-		
+
+	@Test public function concatenatedColorTransform()
+	{
 		// TODO: Confirm functionality
-		
-		var transform = new Sprite ().transform;
+
+		var transform = new Sprite().transform;
 		var exists = transform.concatenatedColorTransform;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function concatenatedMatrix () {
-		
+
+	@Test public function concatenatedMatrix()
+	{
 		// TODO: Confirm functionality
-		
-		var transform = new Sprite ().transform;
+
+		var transform = new Sprite().transform;
 		var exists = transform.concatenatedMatrix;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function matrix () {
-		
+
+	@Test public function matrix()
+	{
 		// TODO: Confirm functionality
-		
-		var transform = new Sprite ().transform;
+
+		var transform = new Sprite().transform;
 		var exists = transform.matrix;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function pixelBounds () {
-		
+
+	@Test public function pixelBounds()
+	{
 		// TODO: Confirm functionality
-		
-		var transform = new Sprite ().transform;
+
+		var transform = new Sprite().transform;
 		var exists = transform.pixelBounds;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function new_ () {
-		
+
+	@Test public function new_()
+	{
 		// TODO: Confirm functionality
-		
-		var transform = new Sprite ().transform;
-		Assert.isNotNull (transform);
-		
+
+		var transform = new Sprite().transform;
+		Assert.isNotNull(transform);
 	}
-	
-	
 }

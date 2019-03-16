@@ -1,10 +1,9 @@
-package openfl.events; #if (display || !flash)
+package openfl.events;
 
-
+#if (display || !flash)
 import openfl.net.URLRequestHeader;
 
 @:jsRequire("openfl/events/HTTPStatusEvent", "default")
-
 
 /**
  * The application dispatches HTTPStatusEvent objects when a network request
@@ -15,7 +14,7 @@ import openfl.net.URLRequestHeader;
  * condition; it simply reflects the HTTP status code(if any) that is
  * provided by the networking stack. Some Flash Player environments may be
  * unable to detect HTTP status codes; a status code of 0 is always reported
- * in these cases. 
+ * in these cases.
  *
  * In Flash Player, there is only one type of HTTPStatus event:
  * `httpStatus`. In the AIR runtime, a FileReference, URLLoader, or
@@ -23,11 +22,10 @@ import openfl.net.URLRequestHeader;
  * which includes `responseURL` and `responseHeaders`
  * properties. These properties are undefined in a `httpStatus`
  * event.
- * 
+ *
  */
-extern class HTTPStatusEvent extends Event {
-	
-	
+extern class HTTPStatusEvent extends Event
+{
 	/**
 	 * Unlike the `httpStatus` event, the
 	 * `httpResponseStatus` event is delivered before any response
@@ -39,12 +37,12 @@ extern class HTTPStatusEvent extends Event {
 	 *
 	 * The `HTTPStatusEvent.HTTP_RESPONSE_STATUS` constant defines
 	 * the value of the `type` property of a
-	 * `httpResponseStatus` event object. 
+	 * `httpResponseStatus` event object.
 	 *
 	 * This event has the following properties:
 	 */
 	public static inline var HTTP_RESPONSE_STATUS = "httpResponseStatus";
-	
+
 	/**
 	 * The `HTTPStatusEvent.HTTP_STATUS` constant defines the value of
 	 * the `type` property of a `httpStatus` event object.
@@ -52,22 +50,20 @@ extern class HTTPStatusEvent extends Event {
 	 * This event has the following properties:
 	 */
 	public static inline var HTTP_STATUS = "httpStatus";
-	
-	
 	public var redirected:Bool;
-	
+
 	/**
 	 * The response headers that the response returned, as an array of
 	 * URLRequestHeader objects.
 	 */
 	public var responseHeaders:Array<URLRequestHeader>;
-	
+
 	/**
 	 * The URL that the response was returned from. In the case of redirects,
 	 * this will be different from the request URL.
 	 */
 	public var responseURL:String;
-	
+
 	/**
 	 * The HTTP status code returned by the server. For example, a value of 404
 	 * indicates that the server has not found a match for the requested URI.
@@ -83,13 +79,12 @@ extern class HTTPStatusEvent extends Event {
 	 * not pass HTTP status codes to the player: Netscape, Mozilla, Safari,
 	 * Opera, and Internet Explorer for the Macintosh.
 	 */
-	public var status (default, null):Int;
-	
-	
+	public var status(default, null):Int;
+
 	/**
 	 * Creates an Event object that contains specific information about HTTP
 	 * status events. Event objects are passed as parameters to event listeners.
-	 * 
+	 *
 	 * @param type       The type of the event. Event listeners can access this
 	 *                   information through the inherited `type`
 	 *                   property. There is only one type of HTTPStatus event:
@@ -104,12 +99,8 @@ extern class HTTPStatusEvent extends Event {
 	 * @param status     Numeric status. Event listeners can access this
 	 *                   information through the `status` property.
 	 */
-	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, status:Int = 0, redirected:Bool = false):Void;
-	
-	
+	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false, status:Int = 0, redirected:Bool = false):Void;
 }
-
-
 #else
 typedef HTTPStatusEvent = flash.events.HTTPStatusEvent;
 #end

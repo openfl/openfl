@@ -3,6 +3,9 @@
 a, code .type {
 	color: #24afc4;
 }
+table {
+	margin-bottom: 20px;
+}
 .navbar .brand {
 	display: inline-block;
 	float: none;

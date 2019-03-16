@@ -1,6 +1,6 @@
-package openfl.display; #if (display || !flash)
+package openfl.display;
 
-
+#if (display || !flash)
 // import lime.app.Future;
 import openfl.utils.Future;
 // import lime.graphics.Image;
@@ -12,22 +12,20 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
 import openfl.utils.Object;
-
 // #if (js && html5)
 import js.html.CanvasElement;
-// #end
 
+// #end
 typedef Image = Dynamic;
 
 @:jsRequire("openfl/display/BitmapData", "default")
-
 
 /**
  * The BitmapData class lets you work with the data(pixels) of a Bitmap
  * object. You can use the methods of the BitmapData class to create
  * arbitrarily sized transparent or opaque bitmap images and manipulate them
  * in various ways at runtime. You can also access the BitmapData for a bitmap
- * image that you load with the `openfl.Assets` or 
+ * image that you load with the `openfl.Assets` or
  * `openfl.display.Loader` classes.
  *
  * This class lets you separate bitmap rendering operations from the
@@ -57,64 +55,63 @@ typedef Image = Dynamic;
  * are represented by the following constants in the BitmapDataChannel
  * class:
  *
- * 
+ *
  *  * `BitmapDataChannel.ALPHA`
  *  * `BitmapDataChannel.RED`
  *  * `BitmapDataChannel.GREEN`
  *  * `BitmapDataChannel.BLUE`
- * 
+ *
  *
  * You can attach BitmapData objects to a Bitmap object by using the
  * `bitmapData` property of the Bitmap object.
  *
  * You can use a BitmapData object to fill a Graphics object by using the
  * `Graphics.beginBitmapFill()` method.
- * 
+ *
  * You can also use a BitmapData object to perform batch tile rendering
  * using the `openfl.display.Tilemap` class.
  *
  * In Flash Player 10, the maximum size for a BitmapData object
  * is 8,191 pixels in width or height, and the total number of pixels cannot
  * exceed 16,777,215 pixels.(So, if a BitmapData object is 8,191 pixels wide,
- * it can only be 2,048 pixels high.) In Flash Player 9 and earlier, the limitation 
+ * it can only be 2,048 pixels high.) In Flash Player 9 and earlier, the limitation
  * is 2,880 pixels in height and 2,880 in width.
  */
-extern class BitmapData implements IBitmapDrawable {
-	
-	
+extern class BitmapData implements IBitmapDrawable
+{
 	/**
 	 * The height of the bitmap image in pixels.
 	 */
-	public var height (default, null):Int;
-	
+	public var height(default, null):Int;
+
 	/**
 	 * The Lime image that holds the pixels for the current image.
-	 * 
+	 *
 	 * In Flash Player, this property is always `null`.
 	 */
-	public var image (default, null):Image;
-	
+	public var image(default, null):Image;
+
 	/**
 	 * Defines whether the bitmap image is readable. Hardware-only bitmap images
-	 * do not support `getPixels`, `setPixels` and other 
-	 * BitmapData methods, though they can still be used inside a Bitmap object 
+	 * do not support `getPixels`, `setPixels` and other
+	 * BitmapData methods, though they can still be used inside a Bitmap object
 	 * or other display objects that do not need to modify the pixels.
-	 * 
+	 *
 	 * As an exception to the rule, `bitmapData.draw` is supported for
 	 * non-readable bitmap images.
-	 * 
+	 *
 	 * Since non-readable bitmap images do not have a software image buffer, they
 	 * will need to be recreated if the current hardware rendering context is lost.
 	 */
-	@:beta public var readable (default, null):Bool;
-	
+	@:beta public var readable(default, null):Bool;
+
 	/**
 	 * The rectangle that defines the size and location of the bitmap image. The
 	 * top and left of the rectangle are 0; the width and height are equal to the
 	 * width and height in pixels of the BitmapData object.
 	 */
-	public var rect (default, null):Rectangle;
-	
+	public var rect(default, null):Rectangle;
+
 	/**
 	 * Defines whether the bitmap image supports per-pixel transparency. You can
 	 * set this value only when you construct a BitmapData object by passing in
@@ -123,89 +120,84 @@ extern class BitmapData implements IBitmapDrawable {
 	 * whether it supports per-pixel transparency by determining if the value of
 	 * the `transparent` property is `true`.
 	 */
-	public var transparent (default, null):Bool;
-	
+	public var transparent(default, null):Bool;
+
 	/**
 	 * The width of the bitmap image in pixels.
 	 */
-	public var width (default, null):Int;
-	
+	public var width(default, null):Int;
+
 	/**
-	 * Creates a BitmapData object with a specified width and height. If you specify a value for 
-	 * the `fillColor` parameter, every pixel in the bitmap is set to that color. 
-	 * 
+	 * Creates a BitmapData object with a specified width and height. If you specify a value for
+	 * the `fillColor` parameter, every pixel in the bitmap is set to that color.
+	 *
 	 * By default, the bitmap is created as transparent, unless you pass the value `false`
-	 * for the transparent parameter. After you create an opaque bitmap, you cannot change it 
-	 * to a transparent bitmap. Every pixel in an opaque bitmap uses only 24 bits of color channel 
-	 * information. If you define the bitmap as transparent, every pixel uses 32 bits of color 
+	 * for the transparent parameter. After you create an opaque bitmap, you cannot change it
+	 * to a transparent bitmap. Every pixel in an opaque bitmap uses only 24 bits of color channel
+	 * information. If you define the bitmap as transparent, every pixel uses 32 bits of color
 	 * channel information, including an alpha transparency channel.
-	 * 
-	 * @param	width		The width of the bitmap image in pixels. 
-	 * @param	height		The height of the bitmap image in pixels. 
+	 *
+	 * @param	width		The width of the bitmap image in pixels.
+	 * @param	height		The height of the bitmap image in pixels.
 	 * @param	transparent		Specifies whether the bitmap image supports per-pixel transparency. The default value is `true`(transparent). To create a fully transparent bitmap, set the value of the `transparent` parameter to `true` and the value of the `fillColor` parameter to 0x00000000(or to 0). Setting the `transparent` property to `false` can result in minor improvements in rendering performance.
 	 * @param	fillColor		A 32-bit ARGB color value that you use to fill the bitmap image area. The default value is 0xFFFFFFFF(solid white).
 	 */
-	public function new (width:Int, height:Int, transparent:Bool = true, fillColor:UInt = 0xFFFFFFFF);
-	
-	
+	public function new(width:Int, height:Int, transparent:Bool = true, fillColor:UInt = 0xFFFFFFFF);
+
 	/**
-	 * Takes a source image and a filter object and generates the filtered image. 
-	 * 
-	 * This method relies on the behavior of built-in filter objects, which determine the 
+	 * Takes a source image and a filter object and generates the filtered image.
+	 *
+	 * This method relies on the behavior of built-in filter objects, which determine the
 	 * destination rectangle that is affected by an input source rectangle.
-	 * 
-	 * After a filter is applied, the resulting image can be larger than the input image. 
-	 * For example, if you use a BlurFilter class to blur a source rectangle of(50,50,100,100) 
-	 * and a destination point of(10,10), the area that changes in the destination image is 
-	 * larger than(10,10,60,60) because of the blurring. This happens internally during the 
+	 *
+	 * After a filter is applied, the resulting image can be larger than the input image.
+	 * For example, if you use a BlurFilter class to blur a source rectangle of(50,50,100,100)
+	 * and a destination point of(10,10), the area that changes in the destination image is
+	 * larger than(10,10,60,60) because of the blurring. This happens internally during the
 	 * applyFilter() call.
-	 * 
-	 * If the `sourceRect` parameter of the sourceBitmapData parameter is an 
-	 * interior region, such as(50,50,100,100) in a 200 x 200 image, the filter uses the source 
+	 *
+	 * If the `sourceRect` parameter of the sourceBitmapData parameter is an
+	 * interior region, such as(50,50,100,100) in a 200 x 200 image, the filter uses the source
 	 * pixels outside the `sourceRect` parameter to generate the destination rectangle.
-	 * 
-	 * If the BitmapData object and the object specified as the `sourceBitmapData` 
-	 * parameter are the same object, the application uses a temporary copy of the object to 
+	 *
+	 * If the BitmapData object and the object specified as the `sourceBitmapData`
+	 * parameter are the same object, the application uses a temporary copy of the object to
 	 * perform the filter. For best performance, avoid this situation.
-	 * 
+	 *
 	 * @param	sourceBitmapData		The input bitmap image to use. The source image can be a different BitmapData object or it can refer to the current BitmapData instance.
 	 * @param	sourceRect		A rectangle that defines the area of the source image to use as input.
-	 * @param	destPoint		The point within the destination image(the current BitmapData instance) that corresponds to the upper-left corner of the source rectangle. 
-	 * @param	filter		The filter object that you use to perform the filtering operation. 
+	 * @param	destPoint		The point within the destination image(the current BitmapData instance) that corresponds to the upper-left corner of the source rectangle.
+	 * @param	filter		The filter object that you use to perform the filtering operation.
 	 */
-	public function applyFilter (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, filter:BitmapFilter):Void;
-	
-	
+	public function applyFilter(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, filter:BitmapFilter):Void;
+
 	/**
-	 * Returns a new BitmapData object that is a clone of the original instance with an exact copy of the contained bitmap. 
+	 * Returns a new BitmapData object that is a clone of the original instance with an exact copy of the contained bitmap.
 	 * @return		A new BitmapData object that is identical to the original.
 	 */
-	public function clone ():BitmapData;
-	
-	
+	public function clone():BitmapData;
+
 	/**
 	 * Adjusts the color values in a specified area of a bitmap image by using a `ColorTransform`
-	 * object. If the rectangle matches the boundaries of the bitmap image, this method transforms the color 
-	 * values of the entire image. 
+	 * object. If the rectangle matches the boundaries of the bitmap image, this method transforms the color
+	 * values of the entire image.
 	 * @param	rect		A Rectangle object that defines the area of the image in which the ColorTransform object is applied.
 	 * @param	colorTransform		A ColorTransform object that describes the color transformation values to apply.
 	 */
-	public function colorTransform (rect:Rectangle, colorTransform:ColorTransform):Void;
-	
-	
+	public function colorTransform(rect:Rectangle, colorTransform:ColorTransform):Void;
+
 	/**
 	 * Compares two BitmapData objects. If the two BitmapData objects have the same dimensions (width and height), the method returns a new BitmapData object, in which each pixel is the "difference" between the pixels in the two source objects:
-	 * 
+	 *
 	 * - If two pixels are equal, the difference pixel is 0x00000000.
 	 * - If two pixels have different RGB values (ignoring the alpha value), the difference pixel is 0xFFRRGGBB where RR/GG/BB are the individual difference values between red, green, and blue channels. Alpha channel differences are ignored in this case.
 	 * - If only the alpha channel value is different, the pixel value is 0xZZFFFFFF, where ZZ is the difference in the alpha value.
-	 * 
+	 *
 	 * @param	otherBitmapData The BitmapData object to compare with the source BitmapData object.
 	 * @return If the two BitmapData objects have the same dimensions (width and height), the method returns a new BitmapData object that has the difference between the two objects (see the main discussion).If the BitmapData objects are equivalent, the method returns the number 0. If no argument is passed or if the argument is not a BitmapData object, the method returns -1. If either BitmapData object has been disposed of, the method returns -2. If the widths of the BitmapData objects are not equal, the method returns the number -3. If the heights of the BitmapData objects are not equal, the method returns the number -4.
 	 */
-	public function compare (otherBitmapData:BitmapData):Object;
-	
-	
+	public function compare(otherBitmapData:BitmapData):Object;
+
 	/**
 	 * Transfers data from one channel of another BitmapData object or the
 	 * current BitmapData object into a channel of the current BitmapData object.
@@ -213,15 +205,15 @@ extern class BitmapData implements IBitmapDrawable {
 	 * are preserved.
 	 *
 	 * The source channel value and destination channel value can be one of
-	 * following values: 
+	 * following values:
 	 *
-	 * 
+	 *
 	 *  * `BitmapDataChannel.RED`
 	 *  * `BitmapDataChannel.GREEN`
 	 *  * `BitmapDataChannel.BLUE`
 	 *  * `BitmapDataChannel.ALPHA`
-	 * 
-	 * 
+	 *
+	 *
 	 * @param sourceBitmapData The input bitmap image to use. The source image
 	 *                         can be a different BitmapData object or it can
 	 *                         refer to the current BitmapData object.
@@ -249,9 +241,9 @@ extern class BitmapData implements IBitmapDrawable {
 	 *                         `BitmapDataChannel.ALPHA`).
 	 * @throws TypeError The sourceBitmapData, sourceRect or destPoint are null.
 	 */
-	public function copyChannel (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, sourceChannel:BitmapDataChannel, destChannel:BitmapDataChannel):Void;
-	
-	
+	public function copyChannel(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, sourceChannel:BitmapDataChannel,
+		destChannel:BitmapDataChannel):Void;
+
 	/**
 	 * Provides a fast routine to perform pixel manipulation between images with
 	 * no stretching, rotation, or color effects. This method copies a
@@ -272,7 +264,7 @@ extern class BitmapData implements IBitmapDrawable {
 	 * transparent image. To copy pixels with the alpha channel data, set the
 	 * `mergeAlpha` property to `true`. By default, the
 	 * `mergeAlpha` property is `false`.
-	 * 
+	 *
 	 * @param sourceBitmapData The input bitmap image from which to copy pixels.
 	 *                         The source image can be a different BitmapData
 	 *                         instance, or it can refer to the current
@@ -291,21 +283,19 @@ extern class BitmapData implements IBitmapDrawable {
 	 *                         channel, set the value to `false`.
 	 * @throws TypeError The sourceBitmapData, sourceRect, destPoint are null.
 	 */
-	public function copyPixels (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, alphaBitmapData:BitmapData = null, alphaPoint:Point = null, mergeAlpha:Bool = false):Void;
-	
-	
+	public function copyPixels(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, alphaBitmapData:BitmapData = null, alphaPoint:Point = null,
+		mergeAlpha:Bool = false):Void;
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash11_4) public function copyPixelsToByteArray (rect:Rectangle, data:ByteArray):Void;
+	@:noCompletion @:dox(hide) @:require(flash11_4) public function copyPixelsToByteArray(rect:Rectangle, data:ByteArray):Void;
 	#end
-	
-	
+
 	/**
 	 * Frees memory that is used to store the BitmapData object.
 	 *
 	 * When the `dispose()` method is called on an image, the width
 	 * and height of the image are set to 0. All subsequent calls to methods or
 	 * properties of this BitmapData instance fail, and an exception is thrown.
-	 * 
+	 *
 	 *
 	 * `BitmapData.dispose()` releases the memory occupied by the
 	 * actual bitmap data, immediately(a bitmap can consume up to 64 MB of
@@ -316,26 +306,24 @@ extern class BitmapData implements IBitmapDrawable {
 	 * object(approximately 128 bytes); the memory occupied by the actual
 	 * BitmapData object is released at the time the BitmapData object is
 	 * collected by the garbage collector.
-	 * 
+	 *
 	 */
-	public function dispose ():Void;
-	
-	
+	public function dispose():Void;
+
 	/**
 	 * Frees the backing Lime image buffer, if possible.
-	 * 
+	 *
 	 * When using a software renderer, such as Flash Player or desktop targets
 	 * without OpenGL, the software buffer will be retained so that the BitmapData
 	 * will work properly. When using a hardware renderer, the Lime image
 	 * buffer will be available to garbage collection after a hardware texture
 	 * has been created internally.
-	 * 
-	 * `BitmapData.disposeImage()` will immediately change the value of 
+	 *
+	 * `BitmapData.disposeImage()` will immediately change the value of
 	 * the `readable` property to `false`.
 	 */
-	@:beta public function disposeImage ():Void;
-	
-	
+	@:beta public function disposeImage():Void;
+
 	/**
 	 * Draws the `source` display object onto the bitmap image, using
 	 * the OpenFL software renderer. You can specify `matrix`,
@@ -351,7 +339,7 @@ extern class BitmapData implements IBitmapDrawable {
 	 * properties, you can copy its `transform` property object to the
 	 * `transform` property of the Bitmap object that uses the
 	 * BitmapData object.
-	 * 
+	 *
 	 * @param source         The display object or BitmapData object to draw to
 	 *                       the BitmapData object.(The DisplayObject and
 	 *                       BitmapData classes implement the IBitmapDrawable
@@ -408,55 +396,46 @@ extern class BitmapData implements IBitmapDrawable {
 	 *                       restriction does not apply to AIR content in the
 	 *                       application security sandbox.
 	 */
-	public function draw (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, ?blendMode:BlendMode, clipRect:Rectangle = null, smoothing:Bool = false):Void;
-	
-	
-	public function drawWithQuality (source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, ?blendMode:BlendMode, clipRect:Rectangle = null, smoothing:Bool = false, ?quality:StageQuality):Void;
-	
-	
-	public function encode (rect:Rectangle, compressor:Object, byteArray:ByteArray = null):ByteArray;
-	
-	
+	public function draw(source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, ?blendMode:BlendMode, clipRect:Rectangle = null,
+		smoothing:Bool = false):Void;
+	public function drawWithQuality(source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, ?blendMode:BlendMode,
+		clipRect:Rectangle = null, smoothing:Bool = false, ?quality:StageQuality):Void;
+	public function encode(rect:Rectangle, compressor:Object, byteArray:ByteArray = null):ByteArray;
+
 	/**
 	 * Fills a rectangular area of pixels with a specified ARGB color.
-	 * 
+	 *
 	 * @param rect  The rectangular area to fill.
 	 * @param color The ARGB color value that fills the area. ARGB colors are
 	 *              often specified in hexadecimal format; for example,
 	 *              0xFF336699.
 	 * @throws TypeError The rect is null.
 	 */
-	public function fillRect (rect:Rectangle, color:UInt):Void;
-	
-	
+	public function fillRect(rect:Rectangle, color:UInt):Void;
+
 	/**
 	 * Performs a flood fill operation on an image starting at an(_x_,
 	 * _y_) coordinate and filling with a certain color. The
 	 * `floodFill()` method is similar to the paint bucket tool in
 	 * various paint programs. The color is an ARGB color that contains alpha
 	 * information and color information.
-	 * 
+	 *
 	 * @param x     The _x_ coordinate of the image.
 	 * @param y     The _y_ coordinate of the image.
 	 * @param color The ARGB color to use as a fill.
 	 */
-	public function floodFill (x:Int, y:Int, color:UInt):Void;
-	
-	
-	public static function fromBase64 (base64:String, type:String):BitmapData;
-	public static function fromBytes (bytes:ByteArray, rawAlpha:ByteArray = null):BitmapData;
-	
+	public function floodFill(x:Int, y:Int, color:UInt):Void;
+	public static function fromBase64(base64:String, type:String):BitmapData;
+	public static function fromBytes(bytes:ByteArray, rawAlpha:ByteArray = null):BitmapData;
 	// #if (js && html5)
-	public static function fromCanvas (canvas:CanvasElement, transparent:Bool = true):BitmapData;
+	public static function fromCanvas(canvas:CanvasElement, transparent:Bool = true):BitmapData;
 	// #end
-	
-	public static function fromFile (path:String):BitmapData;
-	public static function fromImage (image:Image, transparent:Bool = true):BitmapData;
-	
+	public static function fromFile(path:String):BitmapData;
+	public static function fromImage(image:Image, transparent:Bool = true):BitmapData;
 	// #if !flash
-	public static function fromTexture (texture:TextureBase):BitmapData;
+	public static function fromTexture(texture:TextureBase):BitmapData;
 	// #end
-	
+
 	/**
 	 * Determines the destination rectangle that the `applyFilter()`
 	 * method call affects, given a BitmapData object, a source rectangle, and a
@@ -475,7 +454,7 @@ extern class BitmapData implements IBitmapDrawable {
 	 * larger result than its source image. In this API, the BitmapData object is
 	 * used as the source bounds and not the source `rect`
 	 * parameter.
-	 * 
+	 *
 	 * @param sourceRect A rectangle defining the area of the source image to use
 	 *                   as input.
 	 * @param filter     A filter object that you use to calculate the
@@ -484,9 +463,8 @@ extern class BitmapData implements IBitmapDrawable {
 	 *         `sourceRect` parameter, and a filter.
 	 * @throws TypeError The sourceRect or filter are null.
 	 */
-	public function generateFilterRect (sourceRect:Rectangle, filter:BitmapFilter):Rectangle;
-	
-	
+	public function generateFilterRect(sourceRect:Rectangle, filter:BitmapFilter):Rectangle;
+
 	/**
 	 * Determines a rectangular region that either fully encloses all pixels of a
 	 * specified color within the bitmap image(if the `findColor`
@@ -506,7 +484,7 @@ extern class BitmapData implements IBitmapDrawable {
 	 * is the color value of the pixel). To determine white space around an
 	 * image, pass `{mask: 0xFFFFFFFF, color: 0xFFFFFFFF}` to find the
 	 * bounds of nonwhite pixels.
-	 * 
+	 *
 	 * @param mask      A hexadecimal value, specifying the bits of the ARGB
 	 *                  color to consider. The color value is combined with this
 	 *                  hexadecimal value, by using the `&`(bitwise
@@ -521,9 +499,8 @@ extern class BitmapData implements IBitmapDrawable {
 	 *                  color doesn't exist in an image.
 	 * @return The region of the image that is the specified color.
 	 */
-	public function getColorBoundsRect (mask:UInt, color:UInt, findColor:Bool = true):Rectangle;
-	
-	
+	public function getColorBoundsRect(mask:UInt, color:UInt, findColor:Bool = true):Rectangle;
+
 	/**
 	 * Returns an integer that represents an RGB pixel value from a BitmapData
 	 * object at a specific point(_x_, _y_). The
@@ -540,16 +517,15 @@ extern class BitmapData implements IBitmapDrawable {
 	 * premultiplied to unmultiplied before it is returned as a value. During a
 	 * set operation, the pixel value is premultiplied before the raw image pixel
 	 * is set.
-	 * 
+	 *
 	 * @param x The _x_ position of the pixel.
 	 * @param y The _y_ position of the pixel.
 	 * @return A number that represents an RGB pixel value. If the(_x_,
 	 *         _y_) coordinates are outside the bounds of the image, the
 	 *         method returns 0.
 	 */
-	public function getPixel (x:Int, y:Int):Int;
-	
-	
+	public function getPixel(x:Int, y:Int):Int;
+
 	/**
 	 * Returns an ARGB color value that contains alpha channel data and RGB data.
 	 * This method is similar to the `getPixel()` method, which
@@ -565,67 +541,58 @@ extern class BitmapData implements IBitmapDrawable {
 	 * premultiplied to unmultiplied before it is returned as a value. During a
 	 * set operation, the pixel value is premultiplied before the raw image pixel
 	 * is set.
-	 * 
+	 *
 	 * @param x The _x_ position of the pixel.
 	 * @param y The _y_ position of the pixel.
 	 * @return A number representing an ARGB pixel value. If the(_x_,
 	 *         _y_) coordinates are outside the bounds of the image, 0 is
 	 *         returned.
 	 */
-	public function getPixel32 (x:Int, y:Int):Int;
-	
-	
+	public function getPixel32(x:Int, y:Int):Int;
+
 	/**
 	 * Generates a byte array from a rectangular region of pixel data. Writes an
 	 * unsigned integer(a 32-bit unmultiplied pixel value) for each pixel into
 	 * the byte array.
-	 * 
+	 *
 	 * @param rect A rectangular area in the current BitmapData object.
 	 * @return A ByteArray representing the pixels in the given Rectangle.
 	 * @throws TypeError The rect is null.
 	 */
-	public function getPixels (rect:Rectangle):ByteArray;
-	
-	
+	public function getPixels(rect:Rectangle):ByteArray;
+
 	/**
 	 * Generates a vector array from a rectangular region of pixel data. Returns
 	 * a Vector object of unsigned integers(a 32-bit unmultiplied pixel value)
 	 * for the specified rectangle.
-	 * 
+	 *
 	 * @param rect A rectangular area in the current BitmapData object.
 	 * @return A Vector representing the given Rectangle.
 	 * @throws TypeError The rect is null.
 	 */
-	public function getVector (rect:Rectangle):Vector<UInt>;
-	
-	
-	public function histogram (hRect:Rectangle = null):Vector<Vector<Float>>;
-	
-	
-	public function hitTest (firstPoint:Point, firstAlphaThreshold:UInt, secondObject:Object, secondBitmapDataPoint:Point = null, secondAlphaThreshold:UInt = 1):Bool;
-	
-	public static function loadFromBase64 (base64:String, type:String):Future<BitmapData>;
-	public static function loadFromBytes (bytes:ByteArray, rawAlpha:ByteArray = null):Future<BitmapData>;
-	public static function loadFromFile (path:String):Future<BitmapData>;
-	
-	
+	public function getVector(rect:Rectangle):Vector<UInt>;
+	public function histogram(hRect:Rectangle = null):Vector<Vector<Float>>;
+	public function hitTest(firstPoint:Point, firstAlphaThreshold:UInt, secondObject:Object, secondBitmapDataPoint:Point = null,
+		secondAlphaThreshold:UInt = 1):Bool;
+	public static function loadFromBase64(base64:String, type:String):Future<BitmapData>;
+	public static function loadFromBytes(bytes:ByteArray, rawAlpha:ByteArray = null):Future<BitmapData>;
+	public static function loadFromFile(path:String):Future<BitmapData>;
+
 	/**
 	 * Locks an image so that any objects that reference the BitmapData object,
 	 * such as Bitmap objects, are not updated when this BitmapData object
 	 * changes. To improve performance, use this method along with the
 	 * `unlock()` method before and after numerous calls to the
 	 * `setPixel()` or `setPixel32()` method.
-	 * 
+	 *
 	 */
-	public function lock ():Void;
-	
-	
-	public function merge (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, redMultiplier:UInt, greenMultiplier:UInt, blueMultiplier:UInt, alphaMultiplier:UInt):Void;
-	
-	
+	public function lock():Void;
+	public function merge(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, redMultiplier:UInt, greenMultiplier:UInt, blueMultiplier:UInt,
+		alphaMultiplier:UInt):Void;
+
 	/**
 	 * Fills an image with pixels representing random noise.
-	 * 
+	 *
 	 * @param randomSeed     The random seed number to use. If you keep all other
 	 *                       parameters the same, you can generate different
 	 *                       pseudo-random results by varying the random seed
@@ -651,12 +618,10 @@ extern class BitmapData implements IBitmapDrawable {
 	 *                       selection is not affected by setting this parameter
 	 *                       to `true`.
 	 */
-	public function noise (randomSeed:Int, low:UInt = 0, high:UInt = 255, channelOptions:UInt = 7, grayScale:Bool = false):Void;
-	
-	
-	public function paletteMap (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, redArray:Array<Int> = null, greenArray:Array<Int> = null, blueArray:Array<Int> = null, alphaArray:Array<Int> = null):Void;
-	
-	
+	public function noise(randomSeed:Int, low:UInt = 0, high:UInt = 255, channelOptions:UInt = 7, grayScale:Bool = false):Void;
+	public function paletteMap(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, redArray:Array<Int> = null, greenArray:Array<Int> = null,
+		blueArray:Array<Int> = null, alphaArray:Array<Int> = null):Void;
+
 	/**
 	 * Generates a Perlin noise image.
 	 *
@@ -678,7 +643,7 @@ extern class BitmapData implements IBitmapDrawable {
 	 * nature. The Perlin noise algorithm blends multiple noise functions that
 	 * operate at different levels of detail. This algorithm results in smaller
 	 * variations among neighboring pixel values.
-	 * 
+	 *
 	 * @param baseX          Frequency to use in the _x_ direction. For
 	 *                       example, to generate a noise that is sized for a 64
 	 *                       x 128 image, pass 64 for the `baseX`
@@ -723,24 +688,22 @@ extern class BitmapData implements IBitmapDrawable {
 	 *                       values. The alpha channel value is not affected if
 	 *                       this value is set to `true`.
 	 */
-	public function perlinNoise (baseX:Float, baseY:Float, numOctaves:UInt, randomSeed:Int, stitch:Bool, fractalNoise:Bool, channelOptions:UInt = 7, grayScale:Bool = false, offsets:Array<Point> = null):Void;
-	
-	
+	public function perlinNoise(baseX:Float, baseY:Float, numOctaves:UInt, randomSeed:Int, stitch:Bool, fractalNoise:Bool, channelOptions:UInt = 7,
+		grayScale:Bool = false, offsets:Array<Point> = null):Void;
 	#if flash
-	@:noCompletion @:dox(hide) public function pixelDissolve (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, randomSeed:Int = 0, numPixels:Int = 0, fillColor:UInt = 0):Int;
+	@:noCompletion @:dox(hide) public function pixelDissolve(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, randomSeed:Int = 0,
+		numPixels:Int = 0, fillColor:UInt = 0):Int;
 	#end
-	
-	
+
 	/**
 	 * Scrolls an image by a certain(_x_, _y_) pixel amount. Edge
 	 * regions outside the scrolling area are left unchanged.
-	 * 
+	 *
 	 * @param x The amount by which to scroll horizontally.
 	 * @param y The amount by which to scroll vertically.
 	 */
-	public function scroll (x:Int, y:Int):Void;
-	
-	
+	public function scroll(x:Int, y:Int):Void;
+
 	/**
 	 * Sets a single pixel of a BitmapData object. The current alpha channel
 	 * value of the image pixel is preserved during this operation. The value of
@@ -753,14 +716,13 @@ extern class BitmapData implements IBitmapDrawable {
 	 * the `unlock()` method when you have made all pixel changes.
 	 * This process prevents objects that reference this BitmapData instance from
 	 * updating until you finish making the pixel changes.
-	 * 
+	 *
 	 * @param x     The _x_ position of the pixel whose value changes.
 	 * @param y     The _y_ position of the pixel whose value changes.
 	 * @param color The resulting RGB color for the pixel.
 	 */
-	public function setPixel (x:Int, y:Int, color:UInt):Void;
-	
-	
+	public function setPixel(x:Int, y:Int, color:UInt):Void;
+
 	/**
 	 * Sets the color and alpha transparency values of a single pixel of a
 	 * BitmapData object. This method is similar to the `setPixel()`
@@ -785,16 +747,15 @@ extern class BitmapData implements IBitmapDrawable {
 	 * the `unlock()` method when you have made all pixel changes.
 	 * This process prevents objects that reference this BitmapData instance from
 	 * updating until you finish making the pixel changes.
-	 * 
+	 *
 	 * @param x     The _x_ position of the pixel whose value changes.
 	 * @param y     The _y_ position of the pixel whose value changes.
 	 * @param color The resulting ARGB color for the pixel. If the bitmap is
 	 *              opaque(not transparent), the alpha transparency portion of
 	 *              this color value is ignored.
 	 */
-	public function setPixel32 (x:Int, y:Int, color:UInt):Void;
-	
-	
+	public function setPixel32(x:Int, y:Int, color:UInt):Void;
+
 	/**
 	 * Converts a byte array into a rectangular region of pixel data. For each
 	 * pixel, the `ByteArray.readUnsignedInt()` method is called and
@@ -802,7 +763,7 @@ extern class BitmapData implements IBitmapDrawable {
 	 * the full rectangle is written, the function returns. The data in the byte
 	 * array is expected to be 32-bit ARGB pixel values. No seeking is performed
 	 * on the byte array before or after the pixels are read.
-	 * 
+	 *
 	 * @param rect           Specifies the rectangular region of the BitmapData
 	 *                       object.
 	 * @param inputByteArray A ByteArray object that consists of 32-bit
@@ -814,21 +775,19 @@ extern class BitmapData implements IBitmapDrawable {
 	 *                   before throwing the exception.
 	 * @throws TypeError The rect or inputByteArray are null.
 	 */
-	public function setPixels (rect:Rectangle, byteArray:ByteArray):Void;
-	
-	
+	public function setPixels(rect:Rectangle, byteArray:ByteArray):Void;
+
 	/**
 	 * Converts a Vector into a rectangular region of pixel data. For each pixel,
 	 * a Vector element is read and written into the BitmapData pixel. The data
 	 * in the Vector is expected to be 32-bit ARGB pixel values.
-	 * 
+	 *
 	 * @param rect Specifies the rectangular region of the BitmapData object.
 	 * @throws RangeError The vector array is not large enough to read all the
 	 *                    pixel data.
 	 */
-	public function setVector (rect:Rectangle, inputVector:Vector<UInt>):Void;
-	
-	
+	public function setVector(rect:Rectangle, inputVector:Vector<UInt>):Void;
+
 	/**
 	 * Tests pixel values in an image against a specified threshold and sets
 	 * pixels that pass the test to new color values. Using the
@@ -850,7 +809,7 @@ extern class BitmapData implements IBitmapDrawable {
 	 * destination pixels to be fully transparent when the source image pixel's
 	 * alpha is less than 0x7F. You can use this technique for animated
 	 * transitions and other effects.
-	 * 
+	 *
 	 * @param sourceBitmapData The input bitmap image to use. The source image
 	 *                         can be a different BitmapData object or it can
 	 *                         refer to the current BitmapData instance.
@@ -877,27 +836,23 @@ extern class BitmapData implements IBitmapDrawable {
 	 * @throws TypeError     The sourceBitmapData, sourceRect destPoint or
 	 *                       operation are null.
 	 */
-	public function threshold (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, operation:String, threshold:UInt, color:UInt = 0x00000000, mask:UInt = 0xFFFFFFFF, copySource:Bool = false):Int;
-	
-	
+	public function threshold(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, operation:String, threshold:UInt, color:UInt = 0x00000000,
+		mask:UInt = 0xFFFFFFFF, copySource:Bool = false):Int;
+
 	/**
 	 * Unlocks an image so that any objects that reference the BitmapData object,
 	 * such as Bitmap objects, are updated when this BitmapData object changes.
 	 * To improve performance, use this method along with the `lock()`
 	 * method before and after numerous calls to the `setPixel()` or
 	 * `setPixel32()` method.
-	 * 
+	 *
 	 * @param changeRect The area of the BitmapData object that has changed. If
 	 *                   you do not specify a value for this parameter, the
 	 *                   entire area of the BitmapData object is considered
 	 *                   changed.
 	 */
-	public function unlock (changeRect:Rectangle = null):Void;
-	
-	
+	public function unlock(changeRect:Rectangle = null):Void;
 }
-
-
 #else
 typedef BitmapData = flash.display.BitmapData;
 #end

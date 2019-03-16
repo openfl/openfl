@@ -1,70 +1,74 @@
-package openfl.display3D; #if !flash #if !openfljs
+package openfl.display3D;
 
-
+#if !flash
+#if !openfljs
 #if cs
 import openfl._internal.utils.NullUtils;
 #end
 
+/**
+	Defines the values to use for specifying the Context3D render mode.
+**/
+@:enum abstract Context3DRenderMode(Null<Int>)
+{
+	/**
+		Automatically choose rendering engine.
 
-@:enum abstract Context3DRenderMode(Null<Int>) {
-	
+		A hardware-accelerated rendering engine is used if available on the current
+		device. Availability of hardware acceleration is influenced by the device
+		capabilites, the wmode when running under Flash Player, and the render mode when
+		running under AIR.
+	**/
 	public var AUTO = 0;
+
+	/**
+		Use software 3D rendering.
+
+		Software rendering is not available on mobile devices.
+	**/
 	public var SOFTWARE = 1;
-	
-	@:from private static function fromString (value:String):Context3DRenderMode {
-		
-		return switch (value) {
-			
+
+	@:from private static function fromString(value:String):Context3DRenderMode
+	{
+		return switch (value)
+		{
 			case "auto": AUTO;
 			case "software": SOFTWARE;
 			default: null;
-			
 		}
-		
 	}
-	
-	@:to private static function toString (value:Int):String {
-		
-		return switch (value) {
-			
+
+	@:to private static function toString(value:Int):String
+	{
+		return switch (value)
+		{
 			case Context3DRenderMode.AUTO: "auto";
 			case Context3DRenderMode.SOFTWARE: "software";
 			default: null;
-			
 		}
-		
 	}
-	
+
 	#if cs
-	@:noCompletion @:op(A == B) private static function equals (a:Context3DRenderMode, b:Context3DRenderMode):Bool {
-		
-		return NullUtils.valueEquals (a, b, Int);
-		
+	@:noCompletion @:op(A == B) private static function equals(a:Context3DRenderMode, b:Context3DRenderMode):Bool
+	{
+		return NullUtils.valueEquals(a, b, Int);
 	}
 	#end
-	
+
 	#if cs
-	@:noCompletion @:op(A != B) private static function notEquals (a:Context3DRenderMode, b:Context3DRenderMode):Bool {
-		
-		return !equals (a, b);
-		
+	@:noCompletion @:op(A != B) private static function notEquals(a:Context3DRenderMode, b:Context3DRenderMode):Bool
+	{
+		return !equals(a, b);
 	}
 	#end
-	
 }
-
-
 #else
-
-
-@:enum abstract Context3DRenderMode(String) from String to String {
-	
+@SuppressWarnings("checkstyle:FieldDocComment")
+@:enum abstract Context3DRenderMode(String) from String to String
+{
 	public var AUTO = "auto";
 	public var SOFTWARE = "software";
-	
 }
-
-
 #end
 #else
 typedef Context3DRenderMode = flash.display3D.Context3DRenderMode;

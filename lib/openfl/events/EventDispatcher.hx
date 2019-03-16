@@ -1,8 +1,7 @@
-package openfl.events; #if (display || !flash)
+package openfl.events;
 
-
+#if (display || !flash)
 @:jsRequire("openfl/events/EventDispatcher", "default")
-
 /**
  * The EventDispatcher class is the base class for all classes that dispatch
  * events. The EventDispatcher class implements the IEventDispatcher interface
@@ -30,7 +29,7 @@ package openfl.events; #if (display || !flash)
  * can instead implement the IEventDispatcher interface, create an
  * EventDispatcher member, and write simple hooks to route calls into the
  * aggregated EventDispatcher.
- * 
+ *
  * @event activate   [broadcast event] Dispatched when the Flash Player or AIR
  *                   application gains operating system focus and becomes
  *                   active. This event is a broadcast event, which means that
@@ -45,9 +44,8 @@ package openfl.events; #if (display || !flash)
  *                   information about broadcast events, see the DisplayObject
  *                   class.
  */
-extern class EventDispatcher implements IEventDispatcher {
-	
-	
+extern class EventDispatcher implements IEventDispatcher
+{
 	/**
 	 * Aggregates an instance of the EventDispatcher class.
 	 *
@@ -58,7 +56,7 @@ extern class EventDispatcher implements IEventDispatcher {
 	 * EventDispatcher class and must instead implement the IEventDispatcher
 	 * interface, use this constructor to aggregate an instance of the
 	 * EventDispatcher class.
-	 * 
+	 *
 	 * @param target The target object for events dispatched to the
 	 *               EventDispatcher object. This parameter is used when the
 	 *               EventDispatcher instance is aggregated by a class that
@@ -67,9 +65,8 @@ extern class EventDispatcher implements IEventDispatcher {
 	 *               this parameter in simple cases in which a class extends
 	 *               EventDispatcher.
 	 */
-	public function new (target:IEventDispatcher = null):Void;
-	
-	
+	public function new(target:IEventDispatcher = null):Void;
+
 	/**
 	 * Registers an event listener object with an EventDispatcher object so that
 	 * the listener receives notification of an event. You can register event
@@ -80,7 +77,7 @@ extern class EventDispatcher implements IEventDispatcher {
 	 * its priority through additional calls to `addEventListener()`.
 	 * To change a listener's priority, you must first call
 	 * `removeListener()`. Then you can register the listener again
-	 * with the new priority level. 
+	 * with the new priority level.
 	 *
 	 * Keep in mind that after the listener is registered, subsequent calls to
 	 * `addEventListener()` with a different `type` or
@@ -91,7 +88,7 @@ extern class EventDispatcher implements IEventDispatcher {
 	 * the same listener object, but with `useCapture` set to
 	 * `false`, you have two separate listeners: one that listens
 	 * during the capture phase and another that listens during the target and
-	 * bubbling phases. 
+	 * bubbling phases.
 	 *
 	 * You cannot register an event listener for only the target phase or the
 	 * bubbling phase. Those phases are coupled during registration because
@@ -118,8 +115,8 @@ extern class EventDispatcher implements IEventDispatcher {
 	 * If an event listener is removed from a node while an event is being
 	 * processed on the node, it is still triggered by the current actions. After
 	 * it is removed, the event listener is never invoked again(unless
-	 * registered again for future processing). 
-	 * 
+	 * registered again for future processing).
+	 *
 	 * @param type             The type of event.
 	 * @param useCapture       Determines whether the listener works in the
 	 *                         capture phase or the target and bubbling phases.
@@ -163,14 +160,13 @@ extern class EventDispatcher implements IEventDispatcher {
 	 * @throws ArgumentError The `listener` specified is not a
 	 *                       function.
 	 */
-	public function addEventListener (type:String, listener:Dynamic->Void, useCapture:Bool = false, priority:Int = 0, useWeakReference:Bool = false):Void;
-	
-	
+	public function addEventListener(type:String, listener:Dynamic->Void, useCapture:Bool = false, priority:Int = 0, useWeakReference:Bool = false):Void;
+
 	/**
 	 * Dispatches an event into the event flow. The event target is the
 	 * EventDispatcher object upon which the `dispatchEvent()` method
 	 * is called.
-	 * 
+	 *
 	 * @param event The Event object that is dispatched into the event flow. If
 	 *              the event is being redispatched, a clone of the event is
 	 *              created automatically. After an event is dispatched, its
@@ -181,9 +177,8 @@ extern class EventDispatcher implements IEventDispatcher {
 	 *         that `preventDefault()` was called on the event.
 	 * @throws Error The event dispatch recursion limit has been reached.
 	 */
-	public function dispatchEvent (event:Event):Bool;
-	
-	
+	public function dispatchEvent(event:Event):Bool;
+
 	/**
 	 * Checks whether the EventDispatcher object has any listeners registered for
 	 * a specific type of event. This allows you to determine where an
@@ -195,23 +190,22 @@ extern class EventDispatcher implements IEventDispatcher {
 	 * `willTrigger()` is that `hasEventListener()`
 	 * examines only the object to which it belongs, whereas
 	 * `willTrigger()` examines the entire event flow for the event
-	 * specified by the `type` parameter. 
+	 * specified by the `type` parameter.
 	 *
 	 * When `hasEventListener()` is called from a LoaderInfo
 	 * object, only the listeners that the caller can access are considered.
-	 * 
+	 *
 	 * @param type The type of event.
 	 * @return A value of `true` if a listener of the specified type
 	 *         is registered; `false` otherwise.
 	 */
-	public function hasEventListener (type:String):Bool;
-	
-	
+	public function hasEventListener(type:String):Bool;
+
 	/**
 	 * Removes a listener from the EventDispatcher object. If there is no
 	 * matching listener registered with the EventDispatcher object, a call to
 	 * this method has no effect.
-	 * 
+	 *
 	 * @param type       The type of event.
 	 * @param useCapture Specifies whether the listener was registered for the
 	 *                   capture phase or the target and bubbling phases. If the
@@ -222,12 +216,9 @@ extern class EventDispatcher implements IEventDispatcher {
 	 *                   to `true`, and another call with
 	 *                   `useCapture()` set to `false`.
 	 */
-	public function removeEventListener (type:String, listener:Dynamic->Void, useCapture:Bool = false):Void;
-	
-	
-	public function toString ():String;
-	
-	
+	public function removeEventListener(type:String, listener:Dynamic->Void, useCapture:Bool = false):Void;
+	public function toString():String;
+
 	/**
 	 * Checks whether an event listener is registered with this EventDispatcher
 	 * object or any of its ancestors for the specified event type. This method
@@ -239,21 +230,17 @@ extern class EventDispatcher implements IEventDispatcher {
 	 * `willTrigger()` methods is that `hasEventListener()`
 	 * examines only the object to which it belongs, whereas the
 	 * `willTrigger()` method examines the entire event flow for the
-	 * event specified by the `type` parameter. 
+	 * event specified by the `type` parameter.
 	 *
 	 * When `willTrigger()` is called from a LoaderInfo object,
 	 * only the listeners that the caller can access are considered.
-	 * 
+	 *
 	 * @param type The type of event.
 	 * @return A value of `true` if a listener of the specified type
 	 *         will be triggered; `false` otherwise.
 	 */
-	public function willTrigger (type:String):Bool;
-	
-	
+	public function willTrigger(type:String):Bool;
 }
-
-
 #else
 typedef EventDispatcher = flash.events.EventDispatcher;
 #end

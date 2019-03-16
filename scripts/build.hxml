@@ -5,6 +5,9 @@ ImportAll
 -D lime=7.0.0
 # -lib openfl
 -cp ../src
+# -lib format
+-cp ../node_modules/format
+-D format
 #-lib hxgenjs
 -cp ../node_modules/hxgenjs/src
 -cp ../node_modules/tink_macro/src

@@ -1,11 +1,10 @@
-package openfl.display; #if (display || !flash)
+package openfl.display;
 
-
+#if (display || !flash)
 import openfl.geom.Rectangle;
 import openfl.media.SoundTransform;
 
 @:jsRequire("openfl/display/Sprite", "default")
-
 
 /**
  * The Sprite class is a basic display list building block: a display list
@@ -21,9 +20,8 @@ import openfl.media.SoundTransform;
  * functionality of previous ActionScript releases to provide backward
  * compatibility.
  */
-extern class Sprite extends DisplayObjectContainer {
-	
-	
+extern class Sprite extends DisplayObjectContainer
+{
 	/**
 	 * Specifies the button mode of this sprite. If `true`, this
 	 * sprite behaves as a button, which means that it triggers the display of
@@ -51,29 +49,24 @@ extern class Sprite extends DisplayObjectContainer {
 	 * _down, Flash Player provides automatic state changes(functionality
 	 * similar to that provided in previous versions of ActionScript for movie
 	 * clips used as buttons). These automatic state changes are not available
-	 * for sprites, which have no timeline, and thus no frames to label. 
+	 * for sprites, which have no timeline, and thus no frames to label.
 	 */
-	public var buttonMode (get, set):Bool;
-	
-	@:noCompletion private function get_buttonMode ():Bool;
-	@:noCompletion private function set_buttonMode (value:Bool):Bool;
-	
-	public var dropTarget (default, null):DisplayObject;
-	
+	public var buttonMode(get, set):Bool;
+	@:noCompletion private function get_buttonMode():Bool;
+	@:noCompletion private function set_buttonMode(value:Bool):Bool;
+	public var dropTarget(default, null):DisplayObject;
+
 	/**
 	 * Specifies the Graphics object that belongs to this sprite where vector
 	 * drawing commands can occur.
 	 */
-	public var graphics (get, never):Graphics;
-	
-	@:noCompletion private function get_graphics ():Graphics;
-	
+	public var graphics(get, never):Graphics;
+	@:noCompletion private function get_graphics():Graphics;
 	public var hitArea:Sprite;
-	
 	#if flash
 	@:noCompletion @:dox(hide) public var soundTransform:SoundTransform;
 	#end
-	
+
 	/**
 	 * A Boolean value that indicates whether the pointing hand(hand cursor)
 	 * appears when the pointer rolls over a sprite in which the
@@ -85,7 +78,7 @@ extern class Sprite extends DisplayObjectContainer {
 	 * used instead.
 	 *
 	 * You can change the `useHandCursor` property at any time; the
-	 * modified sprite immediately takes on the new cursor appearance. 
+	 * modified sprite immediately takes on the new cursor appearance.
 	 *
 	 * **Note:** In Flex or Flash Builder, if your sprite has child
 	 * sprites, you might want to set the `mouseChildren` property to
@@ -95,17 +88,15 @@ extern class Sprite extends DisplayObjectContainer {
 	 * `mouseChildren` property to `false`.
 	 */
 	public var useHandCursor:Bool;
-	
-	
+
 	/**
 	 * Creates a new Sprite instance. After you create the Sprite instance, call
 	 * the `DisplayObjectContainer.addChild()` or
 	 * `DisplayObjectContainer.addChildAt()` method to add the Sprite
 	 * to a parent DisplayObjectContainer.
 	 */
-	public function new ();
-	
-	
+	public function new();
+
 	/**
 	 * Lets the user drag the specified sprite. The sprite remains draggable
 	 * until explicitly stopped through a call to the
@@ -118,7 +109,7 @@ extern class Sprite extends DisplayObjectContainer {
 	 * object is a two-dimensional object and the child of a three-dimensional
 	 * object, the two-dimensional object moves within the three dimensional
 	 * plane defined by the three-dimensional parent object.
-	 * 
+	 *
 	 * @param lockCenter Specifies whether the draggable sprite is locked to the
 	 *                   center of the pointer position(`true`), or
 	 *                   locked to the point where the user first clicked the
@@ -126,29 +117,23 @@ extern class Sprite extends DisplayObjectContainer {
 	 * @param bounds     Value relative to the coordinates of the Sprite's parent
 	 *                   that specify a constraint rectangle for the Sprite.
 	 */
-	public function startDrag (lockCenter:Bool = false, bounds:Rectangle = null):Void;
-	
+	public function startDrag(lockCenter:Bool = false, bounds:Rectangle = null):Void;
 	#if flash
-	@:noCompletion @:dox(hide) public function startTouchDrag (touchPointID:Int, lockCenter:Bool = false, bounds:Rectangle = null):Void;
+	@:noCompletion @:dox(hide) public function startTouchDrag(touchPointID:Int, lockCenter:Bool = false, bounds:Rectangle = null):Void;
 	#end
-	
+
 	/**
 	 * Ends the `startDrag()` method. A sprite that was made draggable
 	 * with the `startDrag()` method remains draggable until a
 	 * `stopDrag()` method is added, or until another sprite becomes
 	 * draggable. Only one sprite is draggable at a time.
-	 * 
+	 *
 	 */
-	public function stopDrag ():Void;
-	
+	public function stopDrag():Void;
 	#if flash
-	@:noCompletion @:dox(hide) public function stopTouchDrag (touchPointID:Int):Void;
+	@:noCompletion @:dox(hide) public function stopTouchDrag(touchPointID:Int):Void;
 	#end
-	
-	
 }
-
-
 #else
 typedef Sprite = flash.display.Sprite;
 #end

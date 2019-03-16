@@ -1,9 +1,8 @@
-package flash.media; #if flash
+package flash.media;
 
-
-@:final extern class ID3Info implements Dynamic {
-	
-	
+#if flash
+@:final extern class ID3Info implements Dynamic
+{
 	public var album:String;
 	public var artist:String;
 	public var comment:String;
@@ -11,14 +10,8 @@ package flash.media; #if flash
 	public var songName:String;
 	public var track:String;
 	public var year:String;
-	
-	
-	public function new ():Void;
-	
-	
+	public function new():Void;
 }
-
-
 #else
 typedef ID3Info = openfl.media.ID3Info;
 #end

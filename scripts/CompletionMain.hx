@@ -1,14 +1,6 @@
 package;
 
-
-class CompletionMain {
-	
-	
-	public static function main () {
-		
-		
-		
-	}
-	
-	
+class CompletionMain
+{
+	public static function main() {}
 }

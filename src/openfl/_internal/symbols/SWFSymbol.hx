@@ -1,6 +1,5 @@
 package openfl._internal.symbols;
 
-
 import openfl._internal.formats.swf.SWFLite;
 import openfl.display.DisplayObject;
 
@@ -8,27 +7,15 @@ import openfl.display.DisplayObject;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-
-
-@:keepSub class SWFSymbol {
-	
-	
+@:keepSub class SWFSymbol
+{
 	public var className:String;
 	public var id:Int;
-	
-	
-	public function new () {
-		
-		
-		
-	}
-	
-	
-	private function __createObject (swf:SWFLite):DisplayObject {
-		
+
+	public function new() {}
+
+	private function __createObject(swf:SWFLite):DisplayObject
+	{
 		return null;
-		
 	}
-	
-	
 }

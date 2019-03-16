@@ -1,12 +1,9 @@
 {
-    "haxe.displayConfigurations": [
-        [ "scripts/completion.hxml" ],
-        [ "-main", "TestMain", "-cp", "src", "-cp", "test/haxelib/unit/src", "-lib", "munit", "-D", "openfl-unit-testing" ]
-    ],
-    
-    "editor.trimAutoWhitespace": false,
-    "files.trimTrailingWhitespace": false,
-    "editor.insertSpaces": false,
+    "[haxe]": {
+        "editor.formatOnSave": true,
+        "files.eol": "\n",
+        "files.insertFinalNewline": true
+    },
     "codedox": {
         "commentprefix": "    ",
         "commentdescription": "",
@@ -17,4 +14,13 @@
         "neverAskTemplate": true
     },
     "editor.codeLens": false,
+    "editor.insertSpaces": false,
+    "editor.trimAutoWhitespace": true,
+    "files.trimTrailingWhitespace": true,
+    "haxe.displayConfigurations": [
+        [ "scripts/completion.hxml" ],
+        [ "-main", "TestMain", "-cp", "src", "-cp", "test/haxelib/unit/src", "-lib", "munit", "-D", "openfl-unit-testing" ]
+    ],
+    "haxe.enableMethodsView": true,
+    "lime.projectFile": "test/haxelib/functional/project.xml"
 }

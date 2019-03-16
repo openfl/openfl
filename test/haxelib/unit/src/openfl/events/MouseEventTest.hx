@@ -1,154 +1,126 @@
 package openfl.events;
 
-
 import massive.munit.Assert;
 import openfl.display.Sprite;
 
+class MouseEventTest
+{
+	@Test public function altKey()
+	{
+		// TODO: Confirm functionality
 
-class MouseEventTest {
-	
-	
-	@Test public function altKey () {
-		
-		// TODO: Confirm functionality
-		
-		var mouseEvent = new MouseEvent (MouseEvent.MOUSE_DOWN);
+		var mouseEvent = new MouseEvent(MouseEvent.MOUSE_DOWN);
 		var exists = mouseEvent.altKey;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function buttonDown () {
-		
+
+	@Test public function buttonDown()
+	{
 		// TODO: Confirm functionality
-		
-		var mouseEvent = new MouseEvent (MouseEvent.MOUSE_DOWN);
+
+		var mouseEvent = new MouseEvent(MouseEvent.MOUSE_DOWN);
 		var exists = mouseEvent.buttonDown;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function ctrlKey () {
-		
+
+	@Test public function ctrlKey()
+	{
 		// TODO: Confirm functionality
-		
-		var mouseEvent = new MouseEvent (MouseEvent.MOUSE_DOWN);
+
+		var mouseEvent = new MouseEvent(MouseEvent.MOUSE_DOWN);
 		var exists = mouseEvent.ctrlKey;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function delta () {
-		
+
+	@Test public function delta()
+	{
 		// TODO: Confirm functionality
-		
-		var mouseEvent = new MouseEvent (MouseEvent.MOUSE_DOWN);
+
+		var mouseEvent = new MouseEvent(MouseEvent.MOUSE_DOWN);
 		var exists = mouseEvent.delta;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function localX () {
-		
+
+	@Test public function localX()
+	{
 		// TODO: Confirm functionality
-		
-		var mouseEvent = new MouseEvent (MouseEvent.MOUSE_DOWN);
+
+		var mouseEvent = new MouseEvent(MouseEvent.MOUSE_DOWN);
 		var exists = mouseEvent.localX;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function localY () {
-		
+
+	@Test public function localY()
+	{
 		// TODO: Confirm functionality
-		
-		var mouseEvent = new MouseEvent (MouseEvent.MOUSE_DOWN);
+
+		var mouseEvent = new MouseEvent(MouseEvent.MOUSE_DOWN);
 		var exists = mouseEvent.localY;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function relatedObject () {
-		
+
+	@Test public function relatedObject()
+	{
 		// TODO: Confirm functionality
-		
-		var mouseEvent = new MouseEvent (MouseEvent.MOUSE_DOWN);
-		mouseEvent.relatedObject = new Sprite ();
+
+		var mouseEvent = new MouseEvent(MouseEvent.MOUSE_DOWN);
+		mouseEvent.relatedObject = new Sprite();
 		var exists = mouseEvent.relatedObject;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function shiftKey () {
-		
+
+	@Test public function shiftKey()
+	{
 		// TODO: Confirm functionality
-		
-		var mouseEvent = new MouseEvent (MouseEvent.MOUSE_DOWN);
+
+		var mouseEvent = new MouseEvent(MouseEvent.MOUSE_DOWN);
 		var exists = mouseEvent.shiftKey;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function stageX () {
-		
+
+	@Test public function stageX()
+	{
 		// TODO: Confirm functionality
-		
-		var mouseEvent = new MouseEvent (MouseEvent.MOUSE_DOWN);
+
+		var mouseEvent = new MouseEvent(MouseEvent.MOUSE_DOWN);
 		var exists = mouseEvent.stageX;
-		
-		Assert.isNaN (exists);
-		
+
+		Assert.isNaN(exists);
 	}
-	
-	
-	@Test public function stageY () {
-		
+
+	@Test public function stageY()
+	{
 		// TODO: Confirm functionality
-		
-		var mouseEvent = new MouseEvent (MouseEvent.MOUSE_DOWN);
+
+		var mouseEvent = new MouseEvent(MouseEvent.MOUSE_DOWN);
 		var exists = mouseEvent.stageY;
-		
-		Assert.isNaN (exists);
-		
+
+		Assert.isNaN(exists);
 	}
-	
-	
-	@Test public function new_ () {
-		
+
+	@Test public function new_()
+	{
 		// TODO: Confirm functionality
-		
-		var mouseEvent = new MouseEvent (MouseEvent.MOUSE_DOWN);
-		Assert.isNotNull (mouseEvent);
-		
+
+		var mouseEvent = new MouseEvent(MouseEvent.MOUSE_DOWN);
+		Assert.isNotNull(mouseEvent);
 	}
-	
-	
-	@Test public function updateAfterEvent () {
-		
+
+	@Test public function updateAfterEvent()
+	{
 		// TODO: Confirm functionality
-		
-		var mouseEvent = new MouseEvent (MouseEvent.MOUSE_DOWN);
+
+		var mouseEvent = new MouseEvent(MouseEvent.MOUSE_DOWN);
 		var exists = mouseEvent.updateAfterEvent;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
 }

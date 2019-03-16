@@ -1,14 +1,11 @@
-package flash.display; #if flash
+package flash.display;
 
-
-@:enum abstract InterpolationMethod(String) from String to String {
-	
+#if flash
+@:enum abstract InterpolationMethod(String) from String to String
+{
 	public var LINEAR_RGB = "linearRGB";
 	public var RGB = "rgb";
-	
 }
-
-
 #else
 typedef InterpolationMethod = openfl.display.InterpolationMethod;
 #end

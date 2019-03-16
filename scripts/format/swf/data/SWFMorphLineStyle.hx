@@ -1,4 +1,4 @@
-﻿package format.swf.data;
+package format.swf.data;
 
 import format.swf.SWFData;
 import format.swf.data.consts.LineCapsStyle;
@@ -11,7 +11,6 @@ class SWFMorphLineStyle
 	public var endWidth:Int;
 	public var startColor:Int;
 	public var endColor:Int;
-
 	// Forward declaration of SWFMorphLineStyle2 properties
 	public var startCapsStyle:Int;
 	public var endCapsStyle:Int;
@@ -23,38 +22,46 @@ class SWFMorphLineStyle
 	public var noClose:Bool;
 	public var miterLimitFactor:Float;
 	public var fillType:SWFMorphFillStyle;
-	
-	public function new(data:SWFData = null, level:Int = 1) {
+
+	public function new(data:SWFData = null, level:Int = 1)
+	{
 		startCapsStyle = LineCapsStyle.ROUND;
 		endCapsStyle = LineCapsStyle.ROUND;
 		jointStyle = LineJointStyle.ROUND;
 		miterLimitFactor = 3;
-		if (data != null) {
+		if (data != null)
+		{
 			parse(data, level);
 		}
 	}
-	
-	public function parse(data:SWFData, level:Int = 1):Void {
+
+	public function parse(data:SWFData, level:Int = 1):Void
+	{
 		startWidth = data.readUI16();
 		endWidth = data.readUI16();
 		startColor = data.readRGBA();
 		endColor = data.readRGBA();
 	}
-	
-	public function publish(data:SWFData, level:Int = 1):Void {
+
+	public function publish(data:SWFData, level:Int = 1):Void
+	{
 		data.writeUI16(startWidth);
 		data.writeUI16(endWidth);
 		data.writeRGBA(startColor);
 		data.writeRGBA(endColor);
 	}
-	
-	public function getMorphedLineStyle(ratio:Float = 0):SWFLineStyle {
+
+	public function getMorphedLineStyle(ratio:Float = 0):SWFLineStyle
+	{
 		var lineStyle:SWFLineStyle = new SWFLineStyle();
-		if(hasFillFlag) {
+		if (hasFillFlag)
+		{
 			lineStyle.fillType = fillType.getMorphedFillStyle(ratio);
-		} else {
+		}
+		else
+		{
 			lineStyle.color = ColorUtils.interpolate(startColor, endColor, ratio);
-			lineStyle.width = Std.int (startWidth + (endWidth - startWidth) * ratio);
+			lineStyle.width = Std.int(startWidth + (endWidth - startWidth) * ratio);
 		}
 		lineStyle.startCapsStyle = startCapsStyle;
 		lineStyle.endCapsStyle = endCapsStyle;
@@ -67,12 +74,10 @@ class SWFMorphLineStyle
 		lineStyle.miterLimitFactor = miterLimitFactor;
 		return lineStyle;
 	}
-	
-	public function toString():String {
-		return "[SWFMorphLineStyle] " +
-			"StartWidth: " + startWidth + ", " +
-			"EndWidth: " + endWidth + ", " +
-			"StartColor: " + ColorUtils.rgbaToString(startColor) + ", " +
-			"EndColor: " + ColorUtils.rgbaToString(endColor);
+
+	public function toString():String
+	{
+		return "[SWFMorphLineStyle] " + "StartWidth: " + startWidth + ", " + "EndWidth: " + endWidth + ", " + "StartColor: "
+			+ ColorUtils.rgbaToString(startColor) + ", " + "EndColor: " + ColorUtils.rgbaToString(endColor);
 	}
 }

@@ -1,8 +1,7 @@
 package openfl.display;
 
-
-@:enum abstract ShaderParameterType(String) from String to String {
-	
+@:enum abstract ShaderParameterType(String) from String to String
+{
 	public var BOOL = "bool";
 	public var BOOL2 = "bool2";
 	public var BOOL3 = "bool3";
@@ -24,5 +23,4 @@ package openfl.display;
 	public var MATRIX4X2 = "matrix4x2";
 	public var MATRIX4X3 = "matrix4x3";
 	public var MATRIX4X4 = "matrix4x4";
-	
 }

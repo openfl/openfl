@@ -1,13 +1,12 @@
-package openfl.display; #if (display || !flash)
+package openfl.display;
 
-
+#if (display || !flash)
 import openfl.events.UncaughtErrorEvents;
 import openfl.net.URLRequest;
 import openfl.system.LoaderContext;
 import openfl.utils.ByteArray;
 
 @:jsRequire("openfl/display/Loader", "default")
-
 
 /**
  * The Loader class is used to load SWF files or image (JPG, PNG, or GIF)
@@ -23,18 +22,18 @@ import openfl.utils.ByteArray;
  * `removeChild()`, `removeChildAt()`, and
  * `setChildIndex()`. To remove a loaded display object, you must
  * remove the _Loader_ object from its parent DisplayObjectContainer
- * child array. 
+ * child array.
  *
  * **Note:** The ActionScript 2.0 MovieClipLoader and LoadVars classes
  * are not used in ActionScript 3.0. The Loader and URLLoader classes replace
  * them.
  *
  * When you use the Loader class, consider the Flash Player and Adobe AIR
- * security model: 
- * 
- *  * You can load content from any accessible source. 
+ * security model:
+ *
+ *  * You can load content from any accessible source.
  *  * Loading is not allowed if the calling SWF file is in a network
- * sandbox and the file to be loaded is local. 
+ * sandbox and the file to be loaded is local.
  *  * If the loaded content is a SWF file written with ActionScript 3.0, it
  * cannot be cross-scripted by a SWF file in another security sandbox unless
  * that cross-scripting arrangement was approved through a call to the
@@ -51,11 +50,11 @@ import openfl.utils.ByteArray;
  * image.
  *  * Movie clips in the local-with-file-system sandbox cannot script movie
  * clips in the local-with-networking sandbox, and the reverse is also
- * prevented. 
+ * prevented.
  *  * You cannot connect to commonly reserved ports. For a complete list of
  * blocked ports, see "Restricting Networking APIs" in the _ActionScript 3.0
- * Developer's Guide_. 
- * 
+ * Developer's Guide_.
+ *
  * However, in AIR, content in the `application` security
  * sandbox(content installed with the AIR application) are not restricted by
  * these security limitations.
@@ -69,14 +68,13 @@ import openfl.utils.ByteArray;
  * of the Loader object) from drawing to portions of the Stage outside of that
  * mask, as shown in the following code:
  */
-extern class Loader extends DisplayObjectContainer {
-	
-	
+extern class Loader extends DisplayObjectContainer
+{
 	/**
 	 * Contains the root display object of the SWF file or image(JPG, PNG, or
 	 * GIF) file that was loaded by using the `load()` or
 	 * `loadBytes()` methods.
-	 * 
+	 *
 	 * @throws SecurityError The loaded SWF file or image file belongs to a
 	 *                       security sandbox to which you do not have access.
 	 *                       For a loaded SWF file, you can avoid this situation
@@ -89,8 +87,8 @@ extern class Loader extends DisplayObjectContainer {
 	 *                       call the `load()` or
 	 *                       `loadBytes()` method.
 	 */
-	public var content (default, null):DisplayObject;
-	
+	public var content(default, null):DisplayObject;
+
 	/**
 	 * Returns a LoaderInfo object corresponding to the object being loaded.
 	 * LoaderInfo objects are shared between the Loader object and the loaded
@@ -107,11 +105,9 @@ extern class Loader extends DisplayObjectContainer {
 	 * `Loader.uncaughtErrorEvents` property, not the
 	 * `Loader.contentLoaderInfo.uncaughtErrorEvents` property.
 	 */
-	public var contentLoaderInfo (default, null):LoaderInfo;
-	
-	public var uncaughtErrorEvents (default, null):UncaughtErrorEvents;
-	
-	
+	public var contentLoaderInfo(default, null):LoaderInfo;
+	public var uncaughtErrorEvents(default, null):UncaughtErrorEvents;
+
 	/**
 	 * Creates a Loader object that you can use to load files, such as SWF, JPEG,
 	 * GIF, or PNG files. Call the `load()` method to load the asset
@@ -123,7 +119,7 @@ extern class Loader extends DisplayObjectContainer {
 	 * You can also use a Loader instance "offlist," that is without adding it
 	 * to a display object container on the display list. In this mode, the
 	 * Loader instance might be used to load a SWF file that contains additional
-	 * modules of an application. 
+	 * modules of an application.
 	 *
 	 * To detect when the SWF file is finished loading, you can use the events
 	 * of the LoaderInfo object associated with the
@@ -141,16 +137,16 @@ extern class Loader extends DisplayObjectContainer {
 	 * events that the LoaderInfo object associated with the
 	 * `contentLoaderInfo` property of the Loader object:
 	 *
-	 * 
+	 *
 	 *  * The `open` event is dispatched when loading begins.
 	 *  * The `ioError` or `securityError` event is
 	 * dispatched if the file cannot be loaded or if an error occured during the
-	 * load process. 
+	 * load process.
 	 *  * The `progress` event fires continuously while the file is
 	 * being loaded.
 	 *  * The `complete` event is dispatched when a file completes
 	 * downloading, but before the loaded movie clip's methods and properties are
-	 * available. 
+	 * available.
 	 *  * The `init` event is dispatched after the properties and
 	 * methods of the loaded SWF file are accessible, so you can begin
 	 * manipulating the loaded SWF file. This event is dispatched before the
@@ -158,19 +154,17 @@ extern class Loader extends DisplayObjectContainer {
 	 * `init` event can occur significantly earlier than the
 	 * `complete` event. For most purposes, use the `init`
 	 * handler.
-	 * 
+	 *
 	 */
-	public function new ();
-	
-	
+	public function new();
+
 	/**
 	 * Cancels a `load()` method operation that is currently in
 	 * progress for the Loader instance.
-	 * 
+	 *
 	 */
-	public function close ():Void;
-	
-	
+	public function close():Void;
+
 	/**
 	 * Loads a SWF, JPEG, progressive JPEG, unanimated GIF, or PNG file into an
 	 * object that is a child of this Loader object. If you load an animated GIF
@@ -188,7 +182,7 @@ extern class Loader extends DisplayObjectContainer {
 	 *
 	 * A SWF file or image loaded into a Loader object inherits the position,
 	 * rotation, and scale properties of the parent display objects of the Loader
-	 * object. 
+	 * object.
 	 *
 	 * Use the `unload()` method to remove movies or images loaded
 	 * with this method, or to cancel a load operation that is in progress.
@@ -199,7 +193,7 @@ extern class Loader extends DisplayObjectContainer {
 	 * content.
 	 *
 	 * When you use this method, consider the Flash Player security model,
-	 * which is described in the Loader class description. 
+	 * which is described in the Loader class description.
 	 *
 	 *  In Flash Player 10 and later, if you use a multipart Content-Type(for
 	 * example "multipart/form-data") that contains an upload(indicated by a
@@ -207,14 +201,14 @@ extern class Loader extends DisplayObjectContainer {
 	 * body), the POST operation is subject to the security rules applied to
 	 * uploads:
 	 *
-	 * 
+	 *
 	 *  * The POST operation must be performed in response to a user-initiated
 	 * action, such as a mouse click or key press.
 	 *  * If the POST operation is cross-domain(the POST target is not on the
 	 * same server as the SWF file that is sending the POST request), the target
 	 * server must provide a URL policy file that permits cross-domain
 	 * access.
-	 * 
+	 *
 	 *
 	 * Also, for any multipart Content-Type, the syntax must be valid
 	 * (according to the RFC2046 standard). If the syntax appears to be invalid,
@@ -223,7 +217,7 @@ extern class Loader extends DisplayObjectContainer {
 	 *
 	 * For more information related to security, see the Flash Player
 	 * Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
-	 * 
+	 *
 	 * @param request The absolute or relative URL of the SWF, JPEG, GIF, or PNG
 	 *                file to be loaded. A relative path must be relative to the
 	 *                main SWF file. Absolute URLs must include the protocol
@@ -231,14 +225,14 @@ extern class Loader extends DisplayObjectContainer {
 	 *                include disk drive specifications.
 	 * @param context A LoaderContext object, which has properties that define
 	 *                the following:
-	 *                
+	 *
 	 *                 * Whether or not to check for the existence of a policy
 	 *                file upon loading the object
 	 *                 * The ApplicationDomain for the loaded object
 	 *                 * The SecurityDomain for the loaded object
 	 *                 * The ImageDecodingPolicy for the loaded image
 	 *                object
-	 *                
+	 *
 	 *                If the `context` parameter is not specified
 	 *                or refers to a null object, the loaded content remains in
 	 *                its own security domain.
@@ -328,9 +322,8 @@ extern class Loader extends DisplayObjectContainer {
 	 * @event unload        Dispatched by the `contentLoaderInfo`
 	 *                      object when a loaded object is removed.
 	 */
-	public function load (request:URLRequest, context:LoaderContext = null):Void;
-	
-	
+	public function load(request:URLRequest, context:LoaderContext = null):Void;
+
 	/**
 	 * Loads from binary data stored in a ByteArray object.
 	 *
@@ -338,8 +331,8 @@ extern class Loader extends DisplayObjectContainer {
 	 * the "init" event before accessing the properties of a loaded object.
 	 *
 	 * When you use this method, consider the Flash Player security model,
-	 * which is described in the Loader class description. 
-	 * 
+	 * which is described in the Loader class description.
+	 *
 	 * @param bytes   A ByteArray object. The contents of the ByteArray can be
 	 *                any of the file formats supported by the Loader class: SWF,
 	 *                GIF, JPEG, or PNG.
@@ -415,9 +408,8 @@ extern class Loader extends DisplayObjectContainer {
 	 * @event unload        Dispatched by the `contentLoaderInfo`
 	 *                      object when a loaded object is removed.
 	 */
-	public function loadBytes (buffer:ByteArray, context:LoaderContext = null):Void;
-	
-	
+	public function loadBytes(buffer:ByteArray, context:LoaderContext = null):Void;
+
 	/**
 	 * Removes a child of this Loader object that was loaded by using the
 	 * `load()` method. The `property` of the associated
@@ -446,9 +438,8 @@ extern class Loader extends DisplayObjectContainer {
 	 * closeAllStreams);
 	 * ```
 	 */
-	public function unload ():Void;
-	
-	
+	public function unload():Void;
+
 	/**
 	 * Attempts to unload child SWF file contents and stops the execution of
 	 * commands from loaded SWF files. This method attempts to unload SWF files
@@ -457,7 +448,7 @@ extern class Loader extends DisplayObjectContainer {
 	 * NetConnection, Timer, Sound, or Video objects of the child SWF file. As a
 	 * result, the following occurs for the child SWF file and the child SWF
 	 * file's display list:
-	 * 
+	 *
 	 *  * Sounds are stopped.
 	 *  * Stage event listeners are removed.
 	 *  * Event listeners for `enterFrame`,
@@ -466,8 +457,8 @@ extern class Loader extends DisplayObjectContainer {
 	 *  * Timers are stopped.
 	 *  * Camera and Microphone instances are detached
 	 *  * Movie clips are stopped.
-	 * 
-	 * 
+	 *
+	 *
 	 * @param gc Provides a hint to the garbage collector to run on the child SWF
 	 *           objects(`true`) or not(`false`). If you
 	 *           are unloading many objects asynchronously, setting the
@@ -477,12 +468,8 @@ extern class Loader extends DisplayObjectContainer {
 	 *           file might persist in memory after running the
 	 *           `unloadAndStop()` command.
 	 */
-	public function unloadAndStop (gc:Bool = true):Void;
-	
-	
+	public function unloadAndStop(gc:Bool = true):Void;
 }
-
-
 #else
 typedef Loader = flash.display.Loader;
 #end

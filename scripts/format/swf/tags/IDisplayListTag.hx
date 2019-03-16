@@ -1,5 +1,3 @@
 package format.swf.tags;
 
-interface IDisplayListTag extends ITag
-{
-}
+interface IDisplayListTag extends ITag {}

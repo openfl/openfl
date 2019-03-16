@@ -1,4 +1,4 @@
-﻿package format.swf.data.consts;
+package format.swf.data.consts;
 
 class BlendMode
 {
@@ -17,25 +17,41 @@ class BlendMode
 	public static inline var ERASE:Int = 12;
 	public static inline var OVERLAY:Int = 13;
 	public static inline var HARDLIGHT:Int = 14;
-	
-	public static function toString(blendMode:Int):String {
-		switch(blendMode) {
-			case NORMAL_0, NORMAL_1: 
+
+	public static function toString(blendMode:Int):String
+	{
+		switch (blendMode)
+		{
+			case NORMAL_0, NORMAL_1:
 				return "normal";
-			case LAYER: return "layer";
-			case MULTIPLY: return "multiply";
-			case SCREEN: return "screen";
-			case LIGHTEN: return "lighten";
-			case DARKEN: return "darken";
-			case DIFFERENCE: return "difference";
-			case ADD: return "add";
-			case SUBTRACT: return "subtract";
-			case INVERT: return "invert";
-			case ALPHA: return "alpha";
-			case ERASE: return "erase";
-			case OVERLAY: return "overlay";
-			case HARDLIGHT: return "hardlight";
-			default: return "unknown";
+			case LAYER:
+				return "layer";
+			case MULTIPLY:
+				return "multiply";
+			case SCREEN:
+				return "screen";
+			case LIGHTEN:
+				return "lighten";
+			case DARKEN:
+				return "darken";
+			case DIFFERENCE:
+				return "difference";
+			case ADD:
+				return "add";
+			case SUBTRACT:
+				return "subtract";
+			case INVERT:
+				return "invert";
+			case ALPHA:
+				return "alpha";
+			case ERASE:
+				return "erase";
+			case OVERLAY:
+				return "overlay";
+			case HARDLIGHT:
+				return "hardlight";
+			default:
+				return "unknown";
 		}
 	}
 }

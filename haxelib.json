@@ -4,8 +4,8 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "8.7.0",
-	"releasenote": "fullScreenSourceRect support, bitmap filter fixes, cacheAsBitmap improvements",
+	"version": "8.8.0",
+	"releasenote": "Added ByteArray.defaultEndian, NPM fixes, unit testing fixes",
 	"contributors": [ "singmajesty" ],
 	"classPath": "src"
 }

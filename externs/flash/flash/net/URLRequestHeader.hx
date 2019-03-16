@@ -1,18 +1,12 @@
-package flash.net; #if flash
+package flash.net;
 
-
-@:final extern class URLRequestHeader {
-	
-	
+#if flash
+@:final extern class URLRequestHeader
+{
 	public var name:String;
 	public var value:String;
-	
-	public function new (name:String = "", value:String = "");
-	
-	
+	public function new(name:String = "", value:String = "");
 }
-
-
 #else
 typedef URLRequestHeader = openfl.net.URLRequestHeader;
 #end

@@ -1,12 +1,13 @@
 package openfl.display;
 
 import massive.munit.Assert;
-
 import openfl.geom.Rectangle;
 import openfl.display.Tile;
 
-class TileTest {
-	@Test public function newDefault() {
+class TileTest
+{
+	@Test public function newDefault()
+	{
 		var tile = new Tile();
 
 		Assert.areEqual(0, tile.id);
@@ -25,7 +26,8 @@ class TileTest {
 		Assert.isTrue(tile.visible);
 	}
 
-	@Test public function new_() {
+	@Test public function new_()
+	{
 		var tile = new Tile(123, 7.3, 2.2, 1.3, 1.5, 32.1, 31.2, 0.12);
 
 		Assert.areEqual(123, tile.id);
@@ -44,7 +46,8 @@ class TileTest {
 		Assert.isTrue(tile.visible);
 	}
 
-	@Test public function clone() {
+	@Test public function clone()
+	{
 		var tile = new Tile(123, 7.3, 2.2, 1.3, 1.5, 32.1, 31.2, 0.12);
 		var tile_cloned = tile.clone();
 
@@ -81,7 +84,8 @@ class TileTest {
 		Assert.areNotEqual(tile.scaleY, tile_cloned.scaleY);
 	}
 
-	@Test public function alpha() {
+	@Test public function alpha()
+	{
 		var tile = new Tile();
 
 		Assert.areEqual(1.0, tile.alpha);
@@ -91,14 +95,12 @@ class TileTest {
 		Assert.areEqual(0.5, tile.alpha);
 	}
 
-	@Test public function data() {
+	@Test public function data()
+	{
 		var tile = new Tile();
 
 		var stringData:String = 'Data String';
-		var arrayData:Array<String> = [
-			'Array String 1',
-			'Array String 2',
-		];
+		var arrayData:Array<String> = ['Array String 1', 'Array String 2',];
 
 		tile.data = stringData;
 
@@ -109,7 +111,8 @@ class TileTest {
 		Assert.areSame(arrayData, tile.data);
 	}
 
-	@Test public function id() {
+	@Test public function id()
+	{
 		var tile = new Tile();
 
 		Assert.areEqual(0, tile.id);
@@ -119,7 +122,8 @@ class TileTest {
 		Assert.areEqual(123, tile.id);
 	}
 
-	@Test public function matrix() {
+	@Test public function matrix()
+	{
 		var tile = new Tile();
 
 		Assert.areEqual(1.0, tile.matrix.a);
@@ -130,7 +134,8 @@ class TileTest {
 		Assert.areEqual(0.0, tile.matrix.ty);
 	}
 
-	@Test public function rotation() {
+	@Test public function rotation()
+	{
 		var tile = new Tile();
 
 		Assert.areEqual(0.0, tile.rotation);
@@ -140,7 +145,8 @@ class TileTest {
 		Assert.areEqual(15.0, tile.rotation);
 	}
 
-	@Test public function scaleX() {
+	@Test public function scaleX()
+	{
 		var tile = new Tile();
 
 		Assert.areEqual(1.0, tile.scaleX);
@@ -150,7 +156,8 @@ class TileTest {
 		Assert.areEqual(7.0, tile.scaleX);
 	}
 
-	@Test public function scaleY() {
+	@Test public function scaleY()
+	{
 		var tile = new Tile();
 
 		Assert.areEqual(1.0, tile.scaleY);
@@ -160,7 +167,8 @@ class TileTest {
 		Assert.areEqual(10.0, tile.scaleY);
 	}
 
-	@Test public function tileset() {
+	@Test public function tileset()
+	{
 		var tileset = new Tileset(new BitmapData(100, 100), new Array<Rectangle>());
 		var tile = new Tile();
 
@@ -171,7 +179,8 @@ class TileTest {
 		Assert.areSame(tileset, tile.tileset);
 	}
 
-	@Test public function visible() {
+	@Test public function visible()
+	{
 		var tile = new Tile();
 
 		Assert.isTrue(tile.visible);
@@ -181,7 +190,8 @@ class TileTest {
 		Assert.isFalse(tile.visible);
 	}
 
-	@Test public function x() {
+	@Test public function x()
+	{
 		var tile = new Tile();
 
 		Assert.areEqual(0.0, tile.x);
@@ -191,7 +201,8 @@ class TileTest {
 		Assert.areEqual(7.0, tile.x);
 	}
 
-	@Test public function y() {
+	@Test public function y()
+	{
 		var tile = new Tile();
 
 		Assert.areEqual(0.0, tile.y);
@@ -200,5 +211,4 @@ class TileTest {
 
 		Assert.areEqual(10.0, tile.y);
 	}
-
 }

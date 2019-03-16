@@ -1,44 +1,51 @@
 package openfl.geom;
 
-class MatrixTest {
-
-	@Test public function a() {
+class MatrixTest
+{
+	@Test public function a()
+	{
 		var matrix = new Matrix(25.0, 28.0, 57.0, 64.0, 100.0, 112.0);
 
 		Assert.areEqual(25.0, matrix.a);
 	}
 
-	@Test public function b() {
+	@Test public function b()
+	{
 		var matrix = new Matrix(25.0, 28.0, 57.0, 64.0, 100.0, 112.0);
 
 		Assert.areEqual(28.0, matrix.b);
 	}
 
-	@Test public function c() {
+	@Test public function c()
+	{
 		var matrix = new Matrix(25.0, 28.0, 57.0, 64.0, 100.0, 112.0);
 
 		Assert.areEqual(57.0, matrix.c);
 	}
 
-	@Test public function d() {
+	@Test public function d()
+	{
 		var matrix = new Matrix(25.0, 28.0, 57.0, 64.0, 100.0, 112.0);
 
 		Assert.areEqual(64.0, matrix.d);
 	}
 
-	@Test public function tx() {
+	@Test public function tx()
+	{
 		var matrix = new Matrix(25.0, 28.0, 57.0, 64.0, 100.0, 112.0);
 
 		Assert.areEqual(100.0, matrix.tx);
 	}
 
-	@Test public function ty() {
+	@Test public function ty()
+	{
 		var matrix = new Matrix(25.0, 28.0, 57.0, 64.0, 100.0, 112.0);
 
 		Assert.areEqual(112.0, matrix.ty);
 	}
 
-	@Test public function new_() {
+	@Test public function new_()
+	{
 		var matrix_defualt = new Matrix();
 
 		Assert.areEqual(1.0, matrix_defualt.a);
@@ -60,7 +67,8 @@ class MatrixTest {
 		Assert.areEqual(112.0, matrix.ty);
 	}
 
-	@Test public function clone() {
+	@Test public function clone()
+	{
 		var source = new Matrix(25.0, 28.0, 57.0, 64.0, 100.0, 112.0);
 		var source_clone = source.clone();
 
@@ -99,7 +107,8 @@ class MatrixTest {
 		Assert.areEqual(0.0, source_clone.ty);
 	}
 
-	@Test public function concat() {
+	@Test public function concat()
+	{
 		var source = new Matrix(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
 		var dest = new Matrix(7.0, 8.0, 9.0, 10.0, 11.0, 12.0);
 
@@ -122,14 +131,14 @@ class MatrixTest {
 		Assert.areEqual(12.0, dest.ty);
 	}
 
-	@Test public function copyColumnFrom() {
-
+	@Test public function copyColumnFrom()
+	{
 		#if !flash // Flash is behaving the same as copyRowFrom?
 		var a = 1, b = 2, c = 3, d = 4, tx = 5, ty = 6;
 		var x = 10, y = 11, z = 12, w = 13;
 
-		var matrix = new Matrix (a, b, c, d, tx, ty);
-		var vector3D = new Vector3D (x, y, z, w);
+		var matrix = new Matrix(a, b, c, d, tx, ty);
+		var vector3D = new Vector3D(x, y, z, w);
 
 		matrix.copyColumnFrom(0, vector3D);
 		Assert.areEqual(x, matrix.a);
@@ -174,16 +183,15 @@ class MatrixTest {
 		Assert.areEqual(z, vector3D.z);
 		Assert.areEqual(w, vector3D.w);
 		#end
-
 	}
 
-	@Test public function copyColumnTo() {
-
+	@Test public function copyColumnTo()
+	{
 		var a = 1, b = 2, c = 3, d = 4, tx = 5, ty = 6;
 		var x = 10, y = 11, z = 12, w = 13;
 
-		var matrix = new Matrix (a, b, c, d, tx, ty);
-		var vector3D = new Vector3D (x, y, z, w);
+		var matrix = new Matrix(a, b, c, d, tx, ty);
+		var vector3D = new Vector3D(x, y, z, w);
 
 		matrix.copyColumnTo(0, vector3D);
 		Assert.areEqual(a, vector3D.x);
@@ -208,10 +216,10 @@ class MatrixTest {
 		Assert.areEqual(ty, vector3D.y);
 		Assert.areEqual(1, vector3D.z);
 		Assert.areEqual(w, vector3D.w);
-
 	}
 
-	@Test public function copyFrom() {
+	@Test public function copyFrom()
+	{
 		var source = new Matrix(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
 		var dest = new Matrix(7.0, 8.0, 9.0, 10.0, 11.0, 12.0);
 
@@ -234,13 +242,13 @@ class MatrixTest {
 		Assert.areEqual(12.0, dest.ty);
 	}
 
-	@Test public function copyRowFrom() {
-
+	@Test public function copyRowFrom()
+	{
 		var a = 1, b = 2, c = 3, d = 4, tx = 5, ty = 6;
 		var x = 10, y = 11, z = 12, w = 13;
 
-		var matrix = new Matrix (a, b, c, d, tx, ty);
-		var vector3D = new Vector3D (x, y, z, w);
+		var matrix = new Matrix(a, b, c, d, tx, ty);
+		var vector3D = new Vector3D(x, y, z, w);
 
 		matrix.copyRowFrom(0, vector3D);
 		Assert.areEqual(x, matrix.a);
@@ -284,16 +292,15 @@ class MatrixTest {
 		Assert.areEqual(y, vector3D.y);
 		Assert.areEqual(z, vector3D.z);
 		Assert.areEqual(w, vector3D.w);
-
 	}
 
-	@Test public function copyRowTo() {
-
+	@Test public function copyRowTo()
+	{
 		var a = 1, b = 2, c = 3, d = 4, tx = 5, ty = 6;
 		var x = 10, y = 11, z = 12, w = 13;
 
-		var matrix = new Matrix (a, b, c, d, tx, ty);
-		var vector3D = new Vector3D (x, y, z, w);
+		var matrix = new Matrix(a, b, c, d, tx, ty);
+		var vector3D = new Vector3D(x, y, z, w);
 
 		matrix.copyRowTo(0, vector3D);
 		Assert.areEqual(a, vector3D.x);
@@ -318,19 +325,18 @@ class MatrixTest {
 		Assert.areEqual(0, vector3D.y);
 		Assert.areEqual(1, vector3D.z);
 		Assert.areEqual(w, vector3D.w);
-
 	}
 
-	@Test public function createBox() {
-
+	@Test public function createBox()
+	{
 		var scaleX = 0.4, scaleY = 1.0, rotation = 30.0, tx = 11.1, ty = 11.12;
 
-		var matrix = new Matrix ();
+		var matrix = new Matrix();
 		matrix.rotate(rotation);
 		matrix.scale(scaleX, scaleY);
 		matrix.translate(tx, ty);
 
-		var matrix2 = new Matrix ();
+		var matrix2 = new Matrix();
 		matrix2.createBox(scaleX, scaleY, rotation, tx, ty);
 
 		Assert.areEqual(matrix.a, matrix2.a);
@@ -340,14 +346,18 @@ class MatrixTest {
 		Assert.areEqual(matrix.tx, matrix2.tx);
 		Assert.areEqual(matrix.ty, matrix2.ty);
 
-		scaleX = 0; scaleY = 11; rotation = 0; tx = 0; ty = 11;
+		scaleX = 0;
+		scaleY = 11;
+		rotation = 0;
+		tx = 0;
+		ty = 11;
 
 		matrix.identity();
 		matrix.rotate(rotation);
 		matrix.scale(scaleX, scaleY);
 		matrix.translate(tx, ty);
 
-		matrix2 = new Matrix ();
+		matrix2 = new Matrix();
 		matrix2.createBox(scaleX, scaleY, rotation, tx, ty);
 
 		Assert.areEqual(matrix.a, matrix2.a);
@@ -356,21 +366,20 @@ class MatrixTest {
 		Assert.areEqual(matrix.d, matrix2.d);
 		Assert.areEqual(matrix.tx, matrix2.tx);
 		Assert.areEqual(matrix.ty, matrix2.ty);
-
 	}
 
-	@Test public function createGradientBox() {
-
+	@Test public function createGradientBox()
+	{
 		// TODO: Confirm functionality
 
-		var matrix = new Matrix ();
+		var matrix = new Matrix();
 		var exists = matrix.createGradientBox;
 
 		Assert.isNotNull(exists);
-
 	}
 
-	@Test public function deltaTransformPoint() {
+	@Test public function deltaTransformPoint()
+	{
 		var matrix = new Matrix();
 		matrix.a = 1.0;
 		matrix.b = 2.0;
@@ -385,7 +394,8 @@ class MatrixTest {
 		Assert.areEqual(34.0, result.y);
 	}
 
-	@Test public function identity() {
+	@Test public function identity()
+	{
 		var matrix = new Matrix(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
 		matrix.identity();
 
@@ -398,7 +408,8 @@ class MatrixTest {
 		Assert.areEqual(0.0, matrix.ty);
 	}
 
-	@Test public function invert() {
+	@Test public function invert()
+	{
 		var matrix = new Matrix(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
 		matrix.invert();
 
@@ -411,7 +422,8 @@ class MatrixTest {
 		Assert.areEqual(-2, Math.round(matrix.ty));
 	}
 
-	@Test public function rotate() {
+	@Test public function rotate()
+	{
 		var matrix = new Matrix(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
 		matrix.rotate(0.5 * Math.PI);
 
@@ -424,7 +436,8 @@ class MatrixTest {
 		Assert.areEqual(5.0, Math.round(matrix.ty));
 	}
 
-	@Test public function scale() {
+	@Test public function scale()
+	{
 		var matrix = new Matrix(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
 		matrix.scale(2.5, 3.0);
 
@@ -437,7 +450,8 @@ class MatrixTest {
 		Assert.areEqual(18.0, matrix.ty);
 	}
 
-	@Test public function setTo() {
+	@Test public function setTo()
+	{
 		var matrix = new Matrix(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
 		matrix.setTo(7.0, 8.0, 9.0, 10.0, 11.0, 12.0);
 
@@ -450,7 +464,8 @@ class MatrixTest {
 		Assert.areEqual(12.0, matrix.ty);
 	}
 
-	@Test public function transformPoint() {
+	@Test public function transformPoint()
+	{
 		var matrix = new Matrix(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
 
 		var result = matrix.transformPoint(new Point(10.0, 50.0));
@@ -459,7 +474,8 @@ class MatrixTest {
 		Assert.areEqual(226.0, result.y);
 	}
 
-	@Test public function translate() {
+	@Test public function translate()
+	{
 		var matrix = new Matrix(1.0, 2.0, 3.0, 4.0, 5.0, 6.0);
 		matrix.translate(10.0, 50.0);
 
@@ -471,5 +487,4 @@ class MatrixTest {
 		Assert.areEqual(15.0, matrix.tx);
 		Assert.areEqual(56.0, matrix.ty);
 	}
-
 }

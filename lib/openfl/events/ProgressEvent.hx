@@ -1,8 +1,7 @@
-package openfl.events; #if (display || !flash)
+package openfl.events;
 
-
+#if (display || !flash)
 @:jsRequire("openfl/events/ProgressEvent", "default")
-
 /**
  * A ProgressEvent object is dispatched when a load operation has begun or a
  * socket has received data. These events are usually generated when SWF
@@ -11,11 +10,10 @@ package openfl.events; #if (display || !flash)
  * `ProgressEvent.SOCKET_DATA`. Additionally, in AIR ProgressEvent
  * objects are dispatched when a data is sent to or from a child process using
  * the NativeProcess class.
- * 
+ *
  */
-extern class ProgressEvent extends Event {
-	
-	
+extern class ProgressEvent extends Event
+{
 	/**
 	 * Defines the value of the `type` property of a
 	 * `progress` event object.
@@ -23,7 +21,7 @@ extern class ProgressEvent extends Event {
 	 * This event has the following properties:
 	 */
 	public static inline var PROGRESS = "progress";
-	
+
 	/**
 	 * Defines the value of the `type` property of a
 	 * `socketData` event object.
@@ -31,13 +29,12 @@ extern class ProgressEvent extends Event {
 	 * This event has the following properties:
 	 */
 	public static inline var SOCKET_DATA = "socketData";
-	
-	
+
 	/**
 	 * The number of items or bytes loaded when the listener processes the event.
 	 */
 	public var bytesLoaded:Float;
-	
+
 	/**
 	 * The total number of items or bytes that will be loaded if the loading
 	 * process succeeds. If the progress event is dispatched/attached to a Socket
@@ -46,12 +43,11 @@ extern class ProgressEvent extends Event {
 	 * back or forth is not set and is up to the application developer.
 	 */
 	public var bytesTotal:Float;
-	
-	
+
 	/**
 	 * Creates an Event object that contains information about progress events.
 	 * Event objects are passed as parameters to event listeners.
-	 * 
+	 *
 	 * @param type        The type of the event. Possible values
 	 *                    are:`ProgressEvent.PROGRESS`,
 	 *                    `ProgressEvent.SOCKET_DATA`,
@@ -66,12 +62,8 @@ extern class ProgressEvent extends Event {
 	 * @param bytesTotal  The total number of items or bytes that will be loaded
 	 *                    if the loading process succeeds.
 	 */
-	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, bytesLoaded:Float = 0, bytesTotal:Float = 0);
-	
-	
+	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false, bytesLoaded:Float = 0, bytesTotal:Float = 0);
 }
-
-
 #else
 typedef ProgressEvent = flash.events.ProgressEvent;
 #end

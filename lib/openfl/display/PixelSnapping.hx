@@ -1,20 +1,19 @@
 package openfl.display;
 
-
 /**
  * The PixelSnapping class is an enumeration of constant values for setting
  * the pixel snapping options by using the `pixelSnapping` property
  * of a Bitmap object.
  */
-@:enum abstract PixelSnapping(String) from String to String {
-	
+@:enum abstract PixelSnapping(String) from String to String
+{
 	/**
 	 * A constant value used in the `pixelSnapping` property of a
 	 * Bitmap object to specify that the bitmap image is always snapped to the
 	 * nearest pixel, independent of any transformation.
 	 */
 	public var ALWAYS = "always";
-	
+
 	/**
 	 * A constant value used in the `pixelSnapping` property of a
 	 * Bitmap object to specify that the bitmap image is snapped to the nearest
@@ -25,11 +24,10 @@ package openfl.display;
 	 * vector renderer.
 	 */
 	public var AUTO = "auto";
-	
+
 	/**
 	 * A constant value used in the `pixelSnapping` property of a
 	 * Bitmap object to specify that no pixel snapping occurs.
 	 */
 	public var NEVER = "never";
-	
 }

@@ -1,6 +1,6 @@
 {
   "name": "openfl",
-  "version": "8.7.0",
+  "version": "8.8.0",
   "description": "A fast, productive library for 2D cross-platform development.",
   "keywords": [
     "openfl",
@@ -50,7 +50,7 @@
     "build-lib": "cd scripts && haxe build.hxml",
     "build-lib-esm": "cd scripts && node generate-es2015 gen",
     "build-lib-esm-reexports-barrels": "cd scripts && node generate-es2015 non-gen",
-    "build-swc": "compc -load-config=node_modules/@apache-royale/royale-js/royale-asjs/frameworks/js-config.xml -keep-as3-metadata=JSModule -include-sources=lib -compiler.targets=SWF -output=dist/openfl.swc",
+    "build-swc": "compc -load-config=node_modules/@apache-royale/royale-js/royale-asjs/frameworks/js-config.xml -keep-as3-metadata=JSModule -include-sources=lib -compiler.targets=SWF,JS -warnings=false -output=dist/openfl.swc",
     "build-tools": "cd scripts && haxe tools-npm.hxml",
     "build-test-es5": "cd test/npm/es5 && webpack",
     "build-test-es6": "cd test/npm/es6 && webpack",
@@ -95,6 +95,7 @@
     "hxgenjs": "kevinresol/hxgenjs",
     "hxnodejs": "jgranick/hxnodejs",
     "hxp": "openfl/hxp",
+    "jpeg-js": "^0.3.4",
     "lime": "openfl/lime#develop",
     "mocha": "^5.2.0",
     "mocha-chrome": "^1.1.0",

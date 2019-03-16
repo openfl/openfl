@@ -1,54 +1,42 @@
 package openfl.system;
 
-
 import massive.munit.Assert;
 
+class CapabilitiesTest
+{
+	@Test public function language()
+	{
+		// TODO: Confirm functionality
 
-class CapabilitiesTest {
-	
-	
-	@Test public function language () {
-		
-		// TODO: Confirm functionality
-		
 		var exists = Capabilities.language;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function screenDPI () {
-		
+
+	@Test public function screenDPI()
+	{
 		// TODO: Confirm functionality
-		
+
 		var exists = Capabilities.screenDPI;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function screenResolutionX () {
-		
+
+	@Test public function screenResolutionX()
+	{
 		// TODO: Confirm functionality
-		
+
 		var exists = Capabilities.screenResolutionX;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function screenResolutionY () {
-		
+
+	@Test public function screenResolutionY()
+	{
 		// TODO: Confirm functionality
-		
+
 		var exists = Capabilities.screenResolutionY;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
 }

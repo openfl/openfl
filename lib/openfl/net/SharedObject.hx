@@ -1,6 +1,6 @@
-package openfl.net; #if (display || !flash)
+package openfl.net;
 
-
+#if (display || !flash)
 import openfl.events.EventDispatcher;
 import openfl.utils.Object;
 
@@ -17,7 +17,7 @@ import openfl.utils.Object;
  *
  * Use shared objects to do the following:
  *
- * 
+ *
  *  * **Maintain local persistence**. This is the simplest way to use a
  * shared object, and does not require Flash Media Server. For example, you
  * can call `SharedObject.getLocal()` to create a shared object in
@@ -48,7 +48,7 @@ import openfl.utils.Object;
  * to all clients connected to the object. When a user enters or leaves the
  * chat room, the object is updated and all clients that are connected to the
  * object see the revised list of chat room users.
- * 
+ *
  *
  *  To create a local shared object, call
  * `SharedObject.getLocal()`. To create a remote shared object,
@@ -71,14 +71,14 @@ import openfl.utils.Object;
  *
  * **Note**: SWF files that are stored and run on a local computer, not
  * from a remote server, can always write third-party shared objects to disk.
- * For more information about third-party shared objects, see the 
+ * For more information about third-party shared objects, see the
  * [Global Storage Settings panel](http://www.macromedia.com/support/documentation/en/flashplayer/help/settings_manager03.html)
  * in Flash Player Help.
  *
  * It's a good idea to check for failures related to the amount of disk
  * space and to user privacy controls. Perform these checks when you call
  * `getLocal()` and `flush()`:
- * 
+ *
  *  * `SharedObject.getLocal()`  -  Flash Player throws an
  * exception when a call to this method fails, such as when the user has
  * disabled third-party shared objects and the domain of your SWF file does
@@ -91,8 +91,8 @@ import openfl.utils.Object;
  * space for locally saved information. Thereafter, the `netStatus`
  * event is dispatched with an information object indicating whether the flush
  * failed or succeeded.
- * 
- * 
+ *
+ *
  *
  * If your SWF file attempts to create or modify local shared objects, make
  * sure that your SWF file is at least 215 pixels wide and at least 138 pixels
@@ -108,13 +108,13 @@ import openfl.utils.Object;
  * connected to your application. When one client changes a property of a
  * remote shared object, the property is changed for all connected clients.
  * You can use remote shared objects to synchronize clients, for example,
- * users in a multi-player game. 
+ * users in a multi-player game.
  *
  *  Each remote shared object has a `data` property which is an
  * Object with properties that store data. Call `setProperty()` to
  * change an property of the data object. The server updates the properties,
  * dispatches a `sync` event, and sends the properties back to the
- * connected clients. 
+ * connected clients.
  *
  *  You can choose to make remote shared objects persistent on the client,
  * the server, or both. By default, Flash Player saves locally persistent
@@ -122,16 +122,16 @@ import openfl.utils.Object;
  * object, Flash Player displays the Local Storage dialog box, which lets the
  * user allow or deny local storage for the shared object. Make sure your
  * Stage size is at least 215 by 138 pixels; this is the minimum size Flash
- * requires to display the dialog box. 
+ * requires to display the dialog box.
  *
  *  If the user selects Allow, the server saves the shared object and
  * dispatches a `netStatus` event with a `code` property
  * of `SharedObject.Flush.Success`. If the user select Deny, the
  * server does not save the shared object and dispatches a
  * `netStatus` event with a `code` property of
- * `SharedObject.Flush.Failed`. 
- * 
- * @event asyncError Dispatched when an exception is thrown asynchronously  - 
+ * `SharedObject.Flush.Failed`.
+ *
+ * @event asyncError Dispatched when an exception is thrown asynchronously  -
  *                   that is, from native asynchronous code.
  * @event netStatus  Dispatched when a SharedObject instance is reporting its
  *                   status or error condition. The `netStatus`
@@ -143,17 +143,14 @@ import openfl.utils.Object;
  * @event sync       Dispatched when a remote shared object has been updated
  *                   by the server.
  */
-extern class SharedObject extends EventDispatcher {
-	
-	
+extern class SharedObject extends EventDispatcher
+{
 	public static var defaultObjectEncoding:ObjectEncoding;
-	
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash11_7) public static var preventBackup:Bool;
 	#end
-	
 	public var client:Dynamic;
-	
+
 	/**
 	 * The collection of attributes assigned to the `data` property of
 	 * the object; these attributes can be shared and stored. Each attribute can
@@ -165,13 +162,12 @@ extern class SharedObject extends EventDispatcher {
 	 * `data` property are available to all clients connected to the
 	 * shared object, and all attributes are saved if the object is persistent.
 	 * If one client changes the value of an attribute, all clients now see the
-	 * new value. 
+	 * new value.
 	 */
-	public var data (default, null):Dynamic;
-	
-	public var fps (null, default):Float;
+	public var data(default, null):Dynamic;
+	public var fps(null, default):Float;
 	public var objectEncoding:ObjectEncoding;
-	
+
 	/**
 	 * The current size of the shared object, in bytes.
 	 *
@@ -181,14 +177,10 @@ extern class SharedObject extends EventDispatcher {
 	 * processing time, so you may want to avoid using this method unless you
 	 * have a specific need for it.
 	 */
-	public var size (get, never):UInt;
-	
-	@:noCompletion private function get_size ():UInt;
-	
-	
-	private function new ();
-	
-	
+	public var size(get, never):UInt;
+	@:noCompletion private function get_size():UInt;
+	private function new();
+
 	/**
 	 * For local shared objects, purges all of the data and deletes the shared
 	 * object from the disk. The reference to the shared object is still active,
@@ -198,23 +190,16 @@ extern class SharedObject extends EventDispatcher {
 	 * `clear()` disconnects the object and purges all of the data. If
 	 * the shared object is locally persistent, this method also deletes the
 	 * shared object from the disk. The reference to the shared object is still
-	 * active, but its data properties are deleted. 
-	 * 
+	 * active, but its data properties are deleted.
+	 *
 	 */
-	public function clear ():Void;
-	
-	
-	public function close ():Void;
-	
-	
-	public function connect (myConnection:NetConnection, params:String = null):Void;
-	
-	
+	public function clear():Void;
+	public function close():Void;
+	public function connect(myConnection:NetConnection, params:String = null):Void;
 	#if flash
-	@:noCompletion @:dox(hide) public static function deleteAll (url:String):Int;
+	@:noCompletion @:dox(hide) public static function deleteAll(url:String):Int;
 	#end
-	
-	
+
 	/**
 	 * Immediately writes a locally persistent shared object to a local file. If
 	 * you don't use this method, Flash Player writes the shared object to a file
@@ -231,7 +216,7 @@ extern class SharedObject extends EventDispatcher {
 	 * `minDiskSpace`. When Flash Player tries to write the file, it
 	 * looks for the number of bytes passed to `minDiskSpace`, instead
 	 * of looking for enough space to save the shared object at its current size.
-	 * 
+	 *
 	 *
 	 * For example, if you expect a shared object to grow to a maximum size of
 	 * 500 bytes, even though it might start out much smaller, pass 500 for
@@ -239,28 +224,28 @@ extern class SharedObject extends EventDispatcher {
 	 * the shared object, it asks for 500 bytes. After the user allots the
 	 * requested amount of space, Flash won't have to ask for more space on
 	 * future attempts to flush the object(as long as its size doesn't exceed
-	 * 500 bytes). 
+	 * 500 bytes).
 	 *
 	 * After the user responds to the dialog box, this method is called again.
 	 * A `netStatus` event is dispatched with a `code`
 	 * property of `SharedObject.Flush.Success` or
-	 * `SharedObject.Flush.Failed`. 
-	 * 
+	 * `SharedObject.Flush.Failed`.
+	 *
 	 * @param minDiskSpace The minimum disk space, in bytes, that must be
 	 *                     allotted for this object.
 	 * @return Either of the following values:
-	 *         
+	 *
 	 *          * `SharedObjectFlushStatus.PENDING`: The user has
 	 *         permitted local information storage for objects from this domain,
 	 *         but the amount of space allotted is not sufficient to store the
 	 *         object. Flash Player prompts the user to allow more space. To
 	 *         allow space for the shared object to grow when it is saved, thus
 	 *         avoiding a `SharedObjectFlushStatus.PENDING` return
-	 *         value, pass a value for `minDiskSpace`. 
+	 *         value, pass a value for `minDiskSpace`.
 	 *          * `SharedObjectFlushStatus.FLUSHED`: The shared
 	 *         object has been successfully written to a file on the local
 	 *         disk.
-	 *         
+	 *
 	 * @throws Error Flash Player cannot write the shared object to disk. This
 	 *               error might occur if the user has permanently disallowed
 	 *               local information storage for objects from this domain.
@@ -271,14 +256,11 @@ extern class SharedObject extends EventDispatcher {
 	 *               writing of third-party shared objects to disk is
 	 *               disallowed.
 	 */
-	public function flush (minDiskSpace:Int = 0):SharedObjectFlushStatus;
-	
-	
+	public function flush(minDiskSpace:Int = 0):SharedObjectFlushStatus;
 	#if flash
-	@:noCompletion @:dox(hide) public static function getDiskUsage (url:String):Int;
+	@:noCompletion @:dox(hide) public static function getDiskUsage(url:String):Int;
 	#end
-	
-	
+
 	/**
 	 * Returns a reference to a locally persistent shared object that is only
 	 * available to the current client. If the shared object does not already
@@ -298,7 +280,7 @@ extern class SharedObject extends EventDispatcher {
 	 * content. Local content can always write shared objects from third-party
 	 * domains(domains other than the domain in the current browser address bar)
 	 * to disk, even if writing of third-party shared objects to disk is
-	 * disallowed. 
+	 * disallowed.
 	 *
 	 * To avoid name conflicts, Flash looks at the location of the SWF file
 	 * creating the shared object. For example, if a SWF file at
@@ -306,7 +288,7 @@ extern class SharedObject extends EventDispatcher {
 	 * `portfolio`, that shared object does not conflict with another
 	 * object named `portfolio` that was created by a SWF file at
 	 * www.yourCompany.com/photoshoot.swf because the SWF files originate from
-	 * different directories. 
+	 * different directories.
 	 *
 	 * Although the `localPath` parameter is optional, you should
 	 * give some thought to its use, especially if other SWF files need to access
@@ -335,15 +317,15 @@ extern class SharedObject extends EventDispatcher {
 	 * provides optimal flexibility for your application.
 	 *
 	 * When using this method, consider the following security model:
-	 * 
+	 *
 	 *  * You cannot access shared objects across sandbox boundaries.
 	 *  * Users can restrict shared object access by using the Flash Player
 	 * Settings dialog box or the Settings Manager. By default, an application
 	 * can create shared objects of up 100 KB of data per domain. Administrators
 	 * and users can also place restrictions on the ability to write to the file
 	 * system.
-	 * 
-	 * 
+	 *
+	 *
 	 *
 	 * Suppose you publish SWF file content to be played back as local files
 	 * (either locally installed SWF files or EXE files), and you need to access
@@ -369,7 +351,7 @@ extern class SharedObject extends EventDispatcher {
 	 *
 	 * For more information, see the Flash Player Developer Center Topic:
 	 * [Security](http://www.adobe.com/go/devnet_security_en).
-	 * 
+	 *
 	 * @param name      The name of the object. The name can include forward
 	 *                  slashes(`/`); for example,
 	 *                  `work/addresses` is a legal name. Spaces are
@@ -384,7 +366,7 @@ extern class SharedObject extends EventDispatcher {
 	 *                  restricted to SWF files that are delivered over an HTTPS
 	 *                  connection. If your SWF file is delivered over HTTPS,
 	 *                  this parameter's value has the following effects:
-	 *                  
+	 *
 	 *                   * If this parameter is set to `true`,
 	 *                  Flash Player creates a new secure shared object or gets a
 	 *                  reference to an existing secure shared object. This
@@ -398,7 +380,7 @@ extern class SharedObject extends EventDispatcher {
 	 *                  reference to an existing shared object that can be read
 	 *                  from or written to by SWF files delivered over non-HTTPS
 	 *                  connections.
-	 *                  
+	 *
 	 *
 	 *                  If your SWF file is delivered over a non-HTTPS
 	 *                  connection and you try to set this parameter to
@@ -424,24 +406,12 @@ extern class SharedObject extends EventDispatcher {
 	 *               Storage Settings panel of the Settings Manager, located at
 	 *               [http://www.adobe.com/support/documentation/en/flashplayer/help/settings_manager03.html](http://www.adobe.com/support/documentation/en/flashplayer/help/settings_manager03.html).
 	 */
-	public static function getLocal (name:String, localPath:String = null, secure:Bool = false):SharedObject;
-	
-	
-	public static function getRemote (name:String, remotePath:String = null, persistence:Dynamic = false, secure:Bool = false):SharedObject;
-	
-	
-	public function send (arguments:Array<Dynamic>):Void;
-	
-	
-	public function setDirty (propertyName:String):Void;
-	
-	
-	public function setProperty (propertyName:String, value:Object = null):Void;
-	
-	
+	public static function getLocal(name:String, localPath:String = null, secure:Bool = false):SharedObject;
+	public static function getRemote(name:String, remotePath:String = null, persistence:Dynamic = false, secure:Bool = false):SharedObject;
+	public function send(arguments:Array<Dynamic>):Void;
+	public function setDirty(propertyName:String):Void;
+	public function setProperty(propertyName:String, value:Object = null):Void;
 }
-
-
 #else
 typedef SharedObject = flash.net.SharedObject;
 #end
