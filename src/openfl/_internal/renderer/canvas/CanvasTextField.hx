@@ -160,10 +160,10 @@ class CanvasTextField
 					{
 						if (group.lineIndex < textField.scrollV - 1) continue;
 						if (group.lineIndex > textEngine.bottomScrollV - 1) break;
-						
-						var color = "#" + StringTools.hex (group.format.color & 0xFFFFFF, 6);
-						
-						context.font = TextEngine.getFont (group.format);
+
+						var color = "#" + StringTools.hex(group.format.color & 0xFFFFFF, 6);
+
+						context.font = TextEngine.getFont(group.format);
 						context.fillStyle = color;
 
 						context.fillText(text.substring(group.startIndex, group.endIndex), group.offsetX

@@ -68,7 +68,7 @@ class TextEngine
 	public var numLines(default, null):Int;
 	public var restrict(default, set):UTF8String;
 	public var scrollH:Int;
-	public var scrollV (default, set):Int;
+	public var scrollV(default, set):Int;
 	public var selectable:Bool;
 	public var sharpness:Float;
 	public var text(default, set):UTF8String;
@@ -606,7 +606,6 @@ class TextEngine
 				currentLineWidth = 0;
 
 				numLines++;
-				
 			}
 
 			currentLineAscent = Math.max(currentLineAscent, group.ascent);
@@ -676,28 +675,26 @@ class TextEngine
 			currentTextHeight = ascent + descent;
 			textHeight = currentTextHeight;
 		}
-		
-		lineAscents.push (currentLineAscent);
-		lineDescents.push (currentLineDescent);
-		lineLeadings.push (currentLineLeading != null ? currentLineLeading : 0);
-		lineHeights.push (currentLineHeight);
-		lineWidths.push (currentLineWidth);
-		
-		if (numLines == 1) {
-			
-			if (currentLineLeading > 0) {
-				
+
+		lineAscents.push(currentLineAscent);
+		lineDescents.push(currentLineDescent);
+		lineLeadings.push(currentLineLeading != null ? currentLineLeading : 0);
+		lineHeights.push(currentLineHeight);
+		lineWidths.push(currentLineWidth);
+
+		if (numLines == 1)
+		{
+			if (currentLineLeading > 0)
+			{
 				textHeight += currentLineLeading;
 			}
-			
 		}
-		
+
 		var group = layoutGroups[layoutGroups.length - 1];
-		
-		if (group != null && group.startIndex == group.endIndex) {
-			
+
+		if (group != null && group.startIndex == group.endIndex)
+		{
 			textHeight -= currentLineHeight;
-			
 		}
 
 		if (autoSize != NONE)
@@ -725,9 +722,8 @@ class TextEngine
 		{
 			maxScrollH = 0;
 		}
-		
+
 		if (scrollH > maxScrollH) scrollH = maxScrollH;
-		
 	}
 
 	private function getLayoutGroups():Void
@@ -750,9 +746,9 @@ class TextEngine
 		var widthValue = 0.0, heightValue = 0, maxHeightValue = 0;
 		var previousSpaceIndex = -2; // -1 equals not found, -2 saves extra comparison in `breakIndex == previousSpaceIndex`
 		var previousBreakIndex = -1;
-		var spaceIndex = text.indexOf (" ");
-		var breakIndex = getLineBreakIndex ();
-		
+		var spaceIndex = text.indexOf(" ");
+		var breakIndex = getLineBreakIndex();
+
 		var offsetX = 2.0;
 		var offsetY = 2.0;
 		var textIndex = 0;
@@ -939,9 +935,9 @@ class TextEngine
 			}
 
 			leading = currentFormat.leading;
-			
+
 			heightValue = Math.ceil(ascent + descent + leading);
-			
+
 			if (heightValue > maxHeightValue)
 			{
 				maxHeightValue = heightValue;
@@ -1252,12 +1248,12 @@ class TextEngine
 					nextFormatRange();
 					setLineMetrics();
 					lineFormat = formatRange.format;
-					
 				}
-				
-				alignBaseline ();
-				
+
+				alignBaseline();
+
 				textIndex = breakIndex + 1;
+				previousBreakIndex = breakIndex;
 				breakIndex = getLineBreakIndex(textIndex);
 			}
 			else if (spaceIndex > -1)
@@ -1502,7 +1498,23 @@ class TextEngine
 				textIndex++;
 			}
 		}
-		
+
+		// if final char is a line break, create an empty layoutGroup for it
+		if (previousBreakIndex == textIndex - 2 && previousBreakIndex > -1)
+		{
+			nextLayoutGroup(textIndex, textIndex);
+
+			layoutGroup.positions = [];
+			layoutGroup.ascent = ascent;
+			layoutGroup.descent = descent;
+			layoutGroup.leading = leading;
+			layoutGroup.lineIndex = lineIndex;
+			layoutGroup.offsetX = 2;
+			layoutGroup.offsetY = offsetY;
+			layoutGroup.width = 0;
+			layoutGroup.height = heightValue;
+		}
+
 		#if openfl_trace_text_layout_groups
 		for (lg in layoutGroups)
 		{
@@ -1704,10 +1716,60 @@ class TextEngine
 
 		return restrict;
 	}
-	
-	
-	private function set_text (value:String):String {
-		
+
+	private function set_scrollV(value:Int):Int
+	{
+		if (value < 1) value = 1;
+
+		if (numLines == 1 || lineHeights == null)
+		{
+			value = 1;
+			maxScrollV = 1;
+			bottomScrollV = 1;
+		}
+		else
+		{
+			var i = numLines - 1, tempHeight = 0.0;
+
+			while (i >= 0)
+			{
+				if (tempHeight + lineHeights[i] <= height - 4)
+				{
+					tempHeight += lineHeights[i];
+					i--;
+				}
+				else
+					break;
+			}
+
+			maxScrollV = i + 2;
+			if (maxScrollV < 1) maxScrollV = 1;
+			if (value > maxScrollV) value = maxScrollV;
+
+			tempHeight = 0.0;
+			bottomScrollV = lineHeights.length;
+
+			for (i in value - 1...lineHeights.length)
+			{
+				if (tempHeight + lineHeights[i] <= height - 4)
+				{
+					tempHeight += lineHeights[i];
+				}
+				else
+				{
+					bottomScrollV = i;
+					break;
+				}
+			}
+		}
+
+		if (bottomScrollV < 1) bottomScrollV = 1;
+
+		return scrollV = value;
+	}
+
+	private function set_text(value:String):String
+	{
 		return text = value;
 	}
 }
