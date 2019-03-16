@@ -956,7 +956,7 @@ class TextEngine
 			}
 		}
 
-		#if !js inline #end function nextFormatRange():Void
+		#if !js inline #end function nextFormatRange():Bool
 
 		{
 			if (rangeIndex < textFormatRanges.length - 1)
@@ -970,7 +970,11 @@ class TextEngine
 				#end
 
 				font = getFontInstance(currentFormat);
+				
+				return true;
 			}
+			
+			return false;
 		}
 
 		#if !js inline #end function setFormattedPositions(startIndex:Int, endIndex:Int)
@@ -1002,7 +1006,11 @@ class TextEngine
 
 					if (tempRangeEnd != endIndex)
 					{
-						nextFormatRange();
+						if (!nextFormatRange())
+						{
+							Log.warn("You found a bug in OpenFL's text code! Please save a copy of your project and contact Joshua Granick (@singmajesty) so we can fix this.");
+							break;
+						}
 
 						tempIndex = tempRangeEnd;
 						tempRangeEnd = endIndex < formatRange.end ? endIndex : formatRange.end;
@@ -1086,7 +1094,12 @@ class TextEngine
 
 					if (tempRangeEnd == endIndex) break;
 
-					nextFormatRange();
+					if (!nextFormatRange())
+					{
+						Log.warn("You found a bug in OpenFL's text code! Please save a copy of your project and contact Joshua Granick (@singmajesty) so we can fix this.");
+						break;
+					}
+
 					setLineMetrics();
 				}
 			}
