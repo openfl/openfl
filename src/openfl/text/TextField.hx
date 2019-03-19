@@ -1298,20 +1298,17 @@ class TextField extends InteractiveObject
 	}
 
 	/**
-		Replaces the range of characters that the `beginIndex` and `endIndex`
-		parameters specify with the contents of the `newText` parameter. As
-		designed, the text from `beginIndex` to `endIndex-1` is replaced.
-		**Note:** This method does not work if a style sheet is applied to the
-		text field.
+		Sets as selected the text designated by the index values of the first and
+		last characters, which are specified with the `beginIndex` and
+		`endIndex` parameters. If the two parameter values are the
+		same, this method sets the insertion point, as if you set the
+		`caretIndex` property.
 
-		@param beginIndex The zero-based index value for the start position of
-						  the replacement range.
-		@param endIndex   The zero-based index position of the first character
-						  after the desired text span.
-		@param newText    The text to use to replace the specified range of
-						  characters.
-		@throws Error This method cannot be used on a text field with a style
-					  sheet.
+		@param beginIndex The zero-based index value of the first character in the
+						  selection(for example, the first character is 0, the
+						  second character is 1, and so on).
+		@param endIndex   The zero-based index value of the last character in the
+						  selection.
 	**/
 	public function setSelection(beginIndex:Int, endIndex:Int):Void
 	{
