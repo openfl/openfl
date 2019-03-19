@@ -40,7 +40,7 @@ class DefaultShapeExporter implements IShapeExporter
 
 	public function endFill():Void {}
 
-	public function lineStyle(thickness:Float = 0 /*Math.NaN*/, color:Int = 0, alpha:Float = 1.0, pixelHinting:Bool = false, scaleMode:LineScaleMode = null
+	public function lineStyle(thickness:Null<Float> = null, color:Int = 0, alpha:Float = 1.0, pixelHinting:Bool = false, scaleMode:LineScaleMode = null
 		/*LineScaleMode.NORMAL*/, startCaps:CapsStyle = null, endCaps:CapsStyle = null, joints:JointStyle = null, miterLimit:Float = 3):Void {}
 
 	public function lineGradientStyle(type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null,

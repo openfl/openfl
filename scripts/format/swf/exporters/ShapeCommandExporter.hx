@@ -63,8 +63,8 @@ class ShapeCommandExporter extends DefaultShapeExporter
 		commands.push(EndFill);
 	}
 
-	override public function lineStyle(thickness:Float = 0, color:Int = 0, alpha:Float = 1.0, pixelHinting:Bool = false, scaleMode:LineScaleMode = null,
-			startCaps:CapsStyle = null, endCaps:CapsStyle = null, joints:JointStyle = null, miterLimit:Float = 3):Void
+	override public function lineStyle(thickness:Null<Float> = null, color:Int = 0, alpha:Float = 1.0, pixelHinting:Bool = false,
+			scaleMode:LineScaleMode = null, startCaps:CapsStyle = null, endCaps:CapsStyle = null, joints:JointStyle = null, miterLimit:Float = 3):Void
 	{
 		commands.push(LineStyle(thickness, color, alpha, pixelHinting, scaleMode.toInt(), startCaps.toInt(), /*endCaps,*/ joints.toInt(), miterLimit));
 	}

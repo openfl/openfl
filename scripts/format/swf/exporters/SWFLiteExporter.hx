@@ -843,7 +843,6 @@ class SWFLiteExporter
 		if (data2 != null)
 		{
 			data2.className = symbol.name;
-			swfLite.symbolsByClassName.set(data2.className, data2);
 		}
 
 		// TODO: Move to separate FrameScriptExporter class

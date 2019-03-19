@@ -24,7 +24,8 @@ import openfl.Assets;
 	public var library:SWFLiteLibrary;
 	public var root:SpriteSymbol;
 	public var symbols:Map<Int, SWFSymbol>;
-	public var symbolsByClassName:Map<String, SWFSymbol>;
+
+	private var symbolsByClassName:Map<String, SWFSymbol>;
 
 	public function new()
 	{
@@ -140,6 +141,20 @@ import openfl.Assets;
 		var unserializer = new Unserializer(data);
 		unserializer.setResolver({resolveClass: resolveClass, resolveEnum: resolveEnum});
 
-		return cast unserializer.unserialize();
+		var swfLite:SWFLite = cast unserializer.unserialize();
+		if (swfLite != null)
+		{
+			swfLite.__init();
+		}
+
+		return swfLite;
+	}
+
+	private function __init():Void
+	{
+		for (symbol in symbols)
+		{
+			symbolsByClassName.set(symbol.className, symbol);
+		}
 	}
 }
