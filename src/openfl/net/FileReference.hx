@@ -913,7 +913,7 @@ class FileReference extends EventDispatcher
 		var reader = new FileReader();
 		reader.onload = function(evt)
 		{
-			data = ByteArray.fromArrayBuffer(cast evt.target.result));
+			data = ByteArray.fromArrayBuffer(cast evt.target.result);
 			openFileDialog_onComplete();
 		}
 		reader.readAsArrayBuffer(file);
