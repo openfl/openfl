@@ -68,9 +68,15 @@ class ByteArrayTest
 				#if lime
 				return lime.system.System.endianness;
 				#elseif js
+				#if haxe4
+				var arrayBuffer = new js.lib.ArrayBuffer(2);
+				var uint8Array = new js.lib.Uint8Array(arrayBuffer);
+				var uint16array = new js.lib.Uint16Array(arrayBuffer);
+				#else
 				var arrayBuffer = new js.html.ArrayBuffer(2);
 				var uint8Array = new js.html.Uint8Array(arrayBuffer);
 				var uint16array = new js.html.Uint16Array(arrayBuffer);
+				#end
 				uint8Array[0] = 0xAA;
 				uint8Array[1] = 0xBB;
 				if (uint16array[0] == 0xAABB) return Endian.BIG_ENDIAN;

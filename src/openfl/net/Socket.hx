@@ -20,7 +20,11 @@ import openfl.utils.Endian;
 import openfl.utils.IDataInput;
 import openfl.utils.IDataOutput;
 #if (js && html5)
+#if haxe4
+import js.lib.ArrayBuffer;
+#else
 import js.html.ArrayBuffer;
+#end
 import js.html.WebSocket;
 import js.Browser;
 #end

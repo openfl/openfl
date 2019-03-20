@@ -1,10 +1,13 @@
 package openfl.display3D;
 
 #if (display || !flash)
-// import lime.utils.ArrayBufferView;
-import js.html.ArrayBufferView;
 import openfl.utils.ByteArray;
 import openfl.Vector;
+#if haxe4
+import js.lib.ArrayBufferView;
+#else
+import js.html.ArrayBufferView;
+#end
 
 @:jsRequire("openfl/display3D/VertexBuffer3D", "default")
 extern class VertexBuffer3D
