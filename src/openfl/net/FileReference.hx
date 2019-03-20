@@ -454,7 +454,10 @@ class FileReference extends EventDispatcher
 	@:noCompletion private var __data:ByteArray;
 	@:noCompletion private var __path:String;
 	@:noCompletion private var __urlLoader:URLLoader;
-
+	#if js
+	@:noCompletion private var htmlInputControl:js.html.Element;
+	#end
+		
 	/**
 		Creates a new FileReference object. When populated, a FileReference
 		object represents a file on the user's local disk.
@@ -462,6 +465,14 @@ class FileReference extends EventDispatcher
 	public function new()
 	{
 		super();
+		#if js
+		htmlInputControl = js.Browser.document.createElement("input");
+		htmlInputControl.setAttribute("type", "file");
+		htmlInputControl.onclick = function(e) {
+			e.cancelBubble = true;
+			e.stopPropagation();
+		}
+		#end
 	}
 
 	/**
@@ -554,6 +565,33 @@ class FileReference extends EventDispatcher
 		openFileDialog.onCancel.add(openFileDialog_onCancel);
 		openFileDialog.onSelect.add(openFileDialog_onSelect);
 		openFileDialog.browse(OPEN, filter);
+		return true;
+		#elseif js
+		// creating comma separated list for the filter
+		var filter = null;
+		if (typeFilter != null) {
+			var filters = [];
+			for (type in typeFilter) {
+				filters.push(StringTools.replace(StringTools.replace(type.extension, "*.", "."), ";", ","));
+			}
+			filter = filters.join(",");
+		}
+		// setting the filter
+		if (filter != null)
+			htmlInputControl.setAttribute("accept", filter);
+		// catching the "file selected event". Maybe this shouldn't be inline but its own function?
+		htmlInputControl.onchange = function() {
+			untyped var file = htmlInputControl.files[0];
+			//Creation date is not on the js files api.
+			modificationDate = Date.fromTime(file.lastModified);
+			size = file.size;
+			type = "." + Path.extension(file.name);
+			name = Path.withoutDirectory(file.name);
+			__path = file.name;
+			dispatchEvent(new Event(Event.SELECT));
+		}
+		// triggering the dialog
+		htmlInputControl.click();
 		return true;
 		#end
 
@@ -863,6 +901,20 @@ class FileReference extends EventDispatcher
 			data = Bytes.fromFile(__path);
 			openFileDialog_onComplete();
 		}
+		#elseif js
+		// get the file
+		untyped var file = htmlInputControl.files[0];
+		// make a reader
+		var reader = new js.html.FileReader();
+		// subscribe to the loaded event
+		reader.onload = function(evt) {
+			// put the data into the data
+			data = ByteArray.fromArrayBuffer(cast(evt.target.result, js.html.ArrayBuffer)); //evt.target is the same as htmlInputControl. Maybe use that one instead?
+			// fire the event
+			openFileDialog_onComplete();
+		}
+		// begin the async load
+		reader.readAsArrayBuffer(file);
 		#end
 	}
 
