@@ -68,13 +68,18 @@ class Context3DGraphics
 					var c = data.readBeginShaderFill();
 					var shaderBuffer = c.shaderBuffer;
 
-					if (shaderBuffer == null || shaderBuffer.shader == null || shaderBuffer.shader.__bitmap == null)
+					bitmap = null;
+
+					if (shaderBuffer != null)
 					{
-						bitmap = null;
-					}
-					else
-					{
-						bitmap = c.shaderBuffer.shader.__bitmap.input;
+						for (i in 0...shaderBuffer.inputCount)
+						{
+							if (shaderBuffer.inputRefs[i].name == "bitmap")
+							{
+								bitmap = shaderBuffer.inputs[i];
+								break;
+							}
+						}
 					}
 
 				case DRAW_QUADS:
