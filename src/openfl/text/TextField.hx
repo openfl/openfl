@@ -8,10 +8,11 @@ import openfl._internal.renderer.cairo.CairoTextField;
 import openfl._internal.renderer.canvas.CanvasBitmap;
 import openfl._internal.renderer.canvas.CanvasDisplayObject;
 import openfl._internal.renderer.canvas.CanvasTextField;
-import openfl._internal.renderer.dom.DOMBitmap;
-import openfl._internal.renderer.dom.DOMTextField;
 import openfl._internal.renderer.context3D.Context3DBitmap;
 import openfl._internal.renderer.context3D.Context3DDisplayObject;
+import openfl._internal.renderer.context3D.Context3DTextField;
+import openfl._internal.renderer.dom.DOMBitmap;
+import openfl._internal.renderer.dom.DOMTextField;
 import openfl._internal.formats.swf.SWFLite;
 import openfl._internal.symbols.DynamicTextSymbol;
 import openfl._internal.symbols.FontSymbol;
@@ -2161,11 +2162,7 @@ class TextField extends InteractiveObject
 		}
 		else
 		{
-			#if (js && html5)
-			CanvasTextField.render(this, cast renderer.__softwareRenderer, __worldTransform);
-			#elseif lime_cairo
-			CairoTextField.render(this, cast renderer.__softwareRenderer, __worldTransform);
-			#end
+			Context3DTextField.render(this, renderer);
 			Context3DDisplayObject.render(this, renderer);
 		}
 
@@ -2174,12 +2171,7 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private override function __renderGLMask(renderer:OpenGLRenderer):Void
 	{
-		#if (js && html5)
-		CanvasTextField.render(this, cast renderer.__softwareRenderer, __worldTransform);
-		#elseif lime_cairo
-		CairoTextField.render(this, cast renderer.__softwareRenderer, __worldTransform);
-		#end
-
+		Context3DTextField.renderMask(this, renderer);
 		super.__renderGLMask(renderer);
 	}
 
