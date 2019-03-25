@@ -4,6 +4,7 @@ import openfl._internal.formats.swf.FilterType;
 import openfl.display.BlendMode;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -23,6 +24,7 @@ class FrameObject
 	public var symbol:Int;
 	public var type:FrameObjectType;
 	public var visible:Null<Bool>;
+	public var scale9Grid:Null<Rectangle>;
 
 	public function new() {}
 }

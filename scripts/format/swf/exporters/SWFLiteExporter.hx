@@ -45,6 +45,7 @@ import format.swf.tags.TagDefineSprite;
 import format.swf.tags.TagDefineText;
 import format.swf.tags.TagPlaceObject;
 import format.swf.tags.TagSymbolClass;
+import format.swf.tags.TagDefineScalingGrid;
 import format.swf.SWFRoot;
 import format.swf.SWFTimelineContainer;
 import haxe.io.Bytes;
@@ -554,6 +555,12 @@ class SWFLiteExporter
 				frameObject = new FrameObject();
 				frameObject.symbol = object.characterId;
 				frameObject.id = object.placedAtIndex;
+
+				var scalingGrid:TagDefineScalingGrid = data.getScalingGrid(object.characterId);
+				if (scalingGrid != null && scalingGrid.splitter != null)
+				{
+					frameObject.scale9Grid = scalingGrid.splitter.rect;
+				}
 
 				frameObject.name = placeTag.instanceName;
 
@@ -1066,7 +1073,7 @@ class SWFLiteExporter
 											switch (j)
 											{
 												case JNeq:
-													//												Log.info ("", stack[0]);
+													// Log.info("", stack[0]);
 													var temp = stack.pop();
 													js += "if (" + Std.string(stack.pop()) + " == " + Std.string(temp) + ")\n";
 												case JAlways:
