@@ -738,7 +738,6 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 								if (frameObject.scale9Grid != null)
 								{
 									displayObject.scale9Grid = frameObject.scale9Grid;
-									trace(displayObject.name + ": " + displayObject.scale9Grid);
 								}
 								if (stage != null) displayObject.dispatchEvent(new Event(Event.ADDED_TO_STAGE, false, false));
 
