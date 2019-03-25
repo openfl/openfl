@@ -261,7 +261,7 @@ class SWFLiteExporter
 				png.add(CPalette(palette));
 				if (transparent) png.add(CUnknown("tRNS", alpha));
 				var valuesBA:ByteArray = values;
-				valuesBA.deflate();
+				valuesBA.compress();
 				png.add(CData(valuesBA));
 				png.add(CEnd);
 
