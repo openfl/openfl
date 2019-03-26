@@ -942,11 +942,6 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 			displayObject.blendMode = frameObject.blendMode;
 		}
 
-		if (frameObject.scale9Grid != null)
-		{
-			displayObject.scale9Grid = frameObject.scale9Grid;
-		}
-
 		if (frameObject.cacheAsBitmap != null)
 		{
 			displayObject.cacheAsBitmap = frameObject.cacheAsBitmap;

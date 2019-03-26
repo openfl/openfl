@@ -555,13 +555,6 @@ class SWFLiteExporter
 				frameObject = new FrameObject();
 				frameObject.symbol = object.characterId;
 				frameObject.id = object.placedAtIndex;
-
-				var scalingGrid = data.getScalingGrid(object.characterId);
-				if (scalingGrid != null && scalingGrid.splitter != null)
-				{
-					frameObject.scale9Grid = scalingGrid.splitter.rect;
-				}
-
 				frameObject.name = placeTag.instanceName;
 
 				if (!lastModified.exists(object.placedAtIndex))
@@ -654,6 +647,12 @@ class SWFLiteExporter
 			}
 
 			symbol.frames.push(frame);
+		}
+
+		var scalingGrid = data.getScalingGrid(symbol.id);
+		if (scalingGrid != null && scalingGrid.splitter != null)
+		{
+			symbol.scale9Grid = scalingGrid.splitter.rect;
 		}
 
 		if (root)

@@ -3,6 +3,7 @@ package openfl._internal.symbols;
 import openfl._internal.formats.swf.SWFLite;
 import openfl._internal.symbols.timeline.Frame;
 import openfl.display.MovieClip;
+import openfl.geom.Rectangle;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -13,6 +14,7 @@ class SpriteSymbol extends SWFSymbol
 {
 	public var baseClassName:String;
 	public var frames:Array<Frame>;
+	public var scale9Grid:Rectangle;
 
 	public function new()
 	{
@@ -59,6 +61,8 @@ class SpriteSymbol extends SWFSymbol
 		{
 			movieClip = new MovieClip();
 		}
+
+		movieClip.scale9Grid = scale9Grid;
 
 		return movieClip;
 	}
