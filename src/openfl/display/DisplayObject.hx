@@ -1987,6 +1987,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				{
 					__worldColorTransform.__identity();
 				}
+
+				__worldBlendMode = __blendMode;
+				__worldShader = __shader;
+				__worldScale9Grid = __scale9Grid;
 			}
 
 			// if (updateChildren && __renderDirty) {

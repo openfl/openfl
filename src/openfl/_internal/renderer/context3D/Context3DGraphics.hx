@@ -371,6 +371,11 @@ class Context3DGraphics
 		return true;
 		#end
 
+		if (graphics.__owner.__worldScale9Grid != null)
+		{
+			return false;
+		}
+
 		var data = new DrawCommandReader(graphics.__commands);
 		var hasColorFill = false, hasBitmapFill = false, hasShaderFill = false;
 
