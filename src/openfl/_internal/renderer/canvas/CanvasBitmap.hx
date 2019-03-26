@@ -39,7 +39,7 @@ class CanvasBitmap
 
 			if (scrollRect == null)
 			{
-				if (bitmap.scale9Grid == null)
+				if (bitmap.__worldScale9Grid == null)
 				{
 					context.drawImage(bitmap.__bitmapData.image.src, 0, 0, bitmap.__bitmapData.image.width, bitmap.__bitmapData.image.height);
 				}
@@ -47,12 +47,12 @@ class CanvasBitmap
 				{
 					var image = bitmap.__bitmapData.image;
 					var imageSrc = image.src;
-					var centerX = bitmap.scale9Grid.width;
-					var centerY = bitmap.scale9Grid.height;
+					var centerX = bitmap.__worldScale9Grid.width;
+					var centerY = bitmap.__worldScale9Grid.height;
 					if (centerX != 0 && centerY != 0)
 					{
-						var left = bitmap.scale9Grid.x;
-						var top = bitmap.scale9Grid.y;
+						var left = bitmap.__worldScale9Grid.x;
+						var top = bitmap.__worldScale9Grid.y;
 						var right = image.width - centerX - left;
 						var bottom = image.height - centerY - top;
 						var renderedLeft = left / bitmap.scaleX;
@@ -79,7 +79,7 @@ class CanvasBitmap
 					}
 					else if (centerX == 0 && centerY != 0)
 					{
-						var top = bitmap.scale9Grid.y;
+						var top = bitmap.__worldScale9Grid.y;
 						var bottom = image.height - top - centerY;
 						var renderedTop = top / bitmap.scaleY;
 						var renderedBottom = bottom / bitmap.scaleY;
@@ -92,7 +92,7 @@ class CanvasBitmap
 					}
 					else if (centerY == 0 && centerX != 0)
 					{
-						var left = bitmap.scale9Grid.x;
+						var left = bitmap.__worldScale9Grid.x;
 						var right = image.width - left - centerX;
 						var renderedLeft = left / bitmap.scaleX;
 						var renderedRight = right / bitmap.scaleX;

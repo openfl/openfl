@@ -721,7 +721,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 		@throws ArgumentError If you pass an invalid argument to the method.
 	**/
-	public var scale9Grid:Rectangle;
+	public var scale9Grid(get, set):Rectangle;
 
 	/**
 		Indicates the horizontal scale (percentage) of the object as applied from
@@ -916,6 +916,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private var __rotation:Float;
 	@:noCompletion private var __rotationCosine:Float;
 	@:noCompletion private var __rotationSine:Float;
+	@:noCompletion private var __scale9Grid:Rectangle;
 	@:noCompletion private var __scaleX:Float;
 	@:noCompletion private var __scaleY:Float;
 	@:noCompletion private var __scrollRect:Rectangle;
@@ -931,6 +932,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private var __worldClipChanged:Bool;
 	@:noCompletion private var __worldColorTransform:ColorTransform;
 	@:noCompletion private var __worldShader:Shader;
+	@:noCompletion private var __worldScale9Grid:Rectangle;
 	@:noCompletion private var __worldTransform:Matrix;
 	@:noCompletion private var __worldVisible:Bool;
 	@:noCompletion private var __worldVisibleChanged:Bool;
@@ -1955,6 +1957,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				{
 					__worldShader = __shader;
 				}
+
+				if (__scale9Grid == null)
+				{
+					__worldScale9Grid = renderParent.__scale9Grid;
+				}
+				else
+				{
+					__worldScale9Grid = __scale9Grid;
+				}
 			}
 			else
 			{
@@ -2824,6 +2835,36 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 			__setTransformDirty();
 		}
+
+		return value;
+	}
+
+	@:noCompletion private function get_scale9Grid():Rectangle
+	{
+		if (__scale9Grid == null)
+		{
+			return null;
+		}
+
+		return __scale9Grid.clone();
+	}
+
+	@:noCompletion private function set_scale9Grid(value:Rectangle):Rectangle
+	{
+		if (value == null && __scale9Grid == null) return value;
+		if (value != null && __scale9Grid != null && __scale9Grid.equals(value)) return value;
+
+		if (value != null)
+		{
+			if (__scale9Grid == null) __scale9Grid = new Rectangle();
+			__scale9Grid.copyFrom(value);
+		}
+		else
+		{
+			__scale9Grid = null;
+		}
+
+		__setRenderDirty();
 
 		return value;
 	}
