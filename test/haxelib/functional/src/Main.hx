@@ -33,6 +33,7 @@ class Main extends Sprite
 		suite.addTest(new UnicodeTest2());
 		suite.addTest(new ContextLossTest1());
 		suite.addTest(new DropFileTest1());
+		suite.addTest(new Scale9GridTest1());
 		addChild(suite.content);
 
 		stage.addEventListener(Event.RESIZE, stage_onResize);
