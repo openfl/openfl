@@ -154,6 +154,7 @@ import openfl.Assets;
 	{
 		for (symbol in symbols)
 		{
+			if (symbol == null || symbol.className == null) continue;
 			symbolsByClassName.set(symbol.className, symbol);
 		}
 	}
