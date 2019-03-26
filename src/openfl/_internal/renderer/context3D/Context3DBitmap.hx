@@ -41,10 +41,10 @@ class Context3DBitmap
 			renderer.applyColorTransform(bitmap.__worldColorTransform);
 			renderer.updateShader();
 
-			var vertexBuffer = bitmap.__bitmapData.getVertexBuffer(context, bitmap);
+			var vertexBuffer = bitmap.__bitmapData.getVertexBuffer(context, bitmap.scale9Grid, bitmap);
 			if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, vertexBuffer, 0, FLOAT_3);
 			if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
-			var indexBuffer = bitmap.__bitmapData.getIndexBuffer(context, bitmap);
+			var indexBuffer = bitmap.__bitmapData.getIndexBuffer(context, bitmap.scale9Grid);
 			context.drawTriangles(indexBuffer);
 
 			#if gl_stats
@@ -73,7 +73,7 @@ class Context3DBitmap
 			var vertexBuffer = bitmap.__bitmapData.getVertexBuffer(context);
 			if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, vertexBuffer, 0, FLOAT_3);
 			if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
-			var indexBuffer = bitmap.__bitmapData.getIndexBuffer(context);
+			var indexBuffer = bitmap.__bitmapData.getIndexBuffer(context, bitmap.scale9Grid);
 			context.drawTriangles(indexBuffer);
 
 			#if gl_stats

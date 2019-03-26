@@ -194,6 +194,7 @@ class BitmapData implements IBitmapDrawable
 	@:noCompletion private var __indexBuffer:IndexBuffer3D;
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __indexBufferContext:#if lime RenderContext #else Dynamic #end;
 	@:noCompletion private var __indexBufferData:UInt16Array;
+	@:noCompletion private var __indexBufferGrid:Rectangle;
 	@:noCompletion private var __isMask:Bool;
 	@:noCompletion private var __isValid:Bool;
 	@:noCompletion private var __mask:DisplayObject;
@@ -213,6 +214,11 @@ class BitmapData implements IBitmapDrawable
 	@:noCompletion private var __vertexBuffer:VertexBuffer3D;
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __vertexBufferContext:#if lime RenderContext #else Dynamic #end;
 	@:noCompletion private var __vertexBufferData:Float32Array;
+	@:noCompletion private var __vertexBufferGrid:Rectangle;
+	@:noCompletion private var __vertexBufferHeight:Float;
+	@:noCompletion private var __vertexBufferScaleX:Float;
+	@:noCompletion private var __vertexBufferScaleY:Float;
+	@:noCompletion private var __vertexBufferWidth:Float;
 	@:noCompletion private var __worldAlpha:Float;
 	@:noCompletion private var __worldColorTransform:ColorTransform;
 	@:noCompletion private var __worldTransform:Matrix;
@@ -1356,22 +1362,29 @@ class BitmapData implements IBitmapDrawable
 		@param	context	A Stage3D context
 		@returns	An IndexBuffer3D object for use with rendering
 	**/
-	@:dox(hide) public function getIndexBuffer(context:Context3D, ?bitmap:Bitmap):IndexBuffer3D
+	@:dox(hide) public function getIndexBuffer(context:Context3D, scale9Grid:Rectangle = null):IndexBuffer3D
 	{
 		var gl = context.gl;
 
-		if (__indexBuffer == null || __indexBufferContext != context.__context)
+		if (__indexBuffer == null
+			|| __indexBufferContext != context.__context
+			|| (scale9Grid != null && __indexBufferGrid == null)
+			|| (__indexBufferGrid != null && !__indexBufferGrid.equals(scale9Grid)))
 		{
 			// TODO: Use shared buffer on context
+			// TODO: Support for UVs other than scale-9 grid?
 
 			#if lime
 			__indexBufferContext = context.__context;
 			__indexBuffer = null;
 
-			if (bitmap != null && bitmap.scale9Grid != null)
+			if (scale9Grid != null)
 			{
-				var centerX = bitmap.scale9Grid.width;
-				var centerY = bitmap.scale9Grid.height;
+				if (__indexBufferGrid == null) __indexBufferGrid = new Rectangle();
+				__indexBufferGrid.copyFrom(scale9Grid);
+
+				var centerX = scale9Grid.width;
+				var centerY = scale9Grid.height;
 				if (centerX != 0 && centerY != 0)
 				{
 					__indexBufferData = new UInt16Array(54);
@@ -1531,8 +1544,11 @@ class BitmapData implements IBitmapDrawable
 					__indexBuffer = context.createIndexBuffer(18);
 				}
 			}
+			else
+			{
+				__indexBufferGrid = null;
+			}
 
-			// no scale9Grid or invalid scale9Grid
 			if (__indexBuffer == null)
 			{
 				__indexBufferData = new UInt16Array(6);
@@ -1560,11 +1576,22 @@ class BitmapData implements IBitmapDrawable
 		@param	context	A Stage3D context
 		@returns	A VertexBuffer3D object for use with rendering
 	**/
-	@:dox(hide) public function getVertexBuffer(context:Context3D, ?bitmap:Bitmap):VertexBuffer3D
+	@:dox(hide) public function getVertexBuffer(context:Context3D, scale9Grid:Rectangle = null, targetObject:DisplayObject = null):VertexBuffer3D
 	{
 		var gl = context.gl;
 
-		if (__vertexBuffer == null || __vertexBufferContext != context.__context)
+		// TODO: Support for UVs other than scale-9 grid?
+		// TODO: Better way of handling object transform?
+
+		if (__vertexBuffer == null
+			|| __vertexBufferContext != context.__context
+			|| (scale9Grid != null && __vertexBufferGrid == null)
+			|| (__vertexBufferGrid != null && !__vertexBufferGrid.equals(scale9Grid))
+			|| (targetObject != null
+				&& (__vertexBufferWidth != targetObject.width
+					|| __vertexBufferHeight != targetObject.height
+					|| __vertexBufferScaleX != targetObject.scaleX
+					|| __vertexBufferScaleY != targetObject.scaleY)))
 		{
 			#if openfl_power_of_two
 			var newWidth = 1;
@@ -1611,16 +1638,24 @@ class BitmapData implements IBitmapDrawable
 			__vertexBufferContext = context.__context;
 			__vertexBuffer = null;
 
-			if (bitmap != null && bitmap.scale9Grid != null)
+			if (scale9Grid != null && targetObject != null)
 			{
-				var centerX = bitmap.scale9Grid.width;
-				var centerY = bitmap.scale9Grid.height;
+				if (__vertexBufferGrid == null) __vertexBufferGrid = new Rectangle();
+				__vertexBufferGrid.copyFrom(scale9Grid);
+
+				__vertexBufferWidth = targetObject.width;
+				__vertexBufferHeight = targetObject.height;
+				__vertexBufferScaleX = targetObject.scaleX;
+				__vertexBufferScaleY = targetObject.scaleY;
+
+				var centerX = scale9Grid.width;
+				var centerY = scale9Grid.height;
 				if (centerX != 0 && centerY != 0)
 				{
 					__vertexBufferData = new Float32Array(VERTEX_BUFFER_STRIDE * 16);
 
-					var left = bitmap.scale9Grid.x;
-					var top = bitmap.scale9Grid.y;
+					var left = scale9Grid.x;
+					var top = scale9Grid.y;
 					var right = width - centerX - left;
 					var bottom = height - centerY - top;
 
@@ -1631,12 +1666,12 @@ class BitmapData implements IBitmapDrawable
 					var uvRight = right / width;
 					var uvBottom = bottom / height;
 
-					var renderedLeft = left / bitmap.scaleX;
-					var renderedTop = top / bitmap.scaleY;
-					var renderedRight = right / bitmap.scaleX;
-					var renderedBottom = bottom / bitmap.scaleY;
-					var renderedCenterX = (bitmap.width / bitmap.scaleX) - renderedLeft - renderedRight;
-					var renderedCenterY = (bitmap.height / bitmap.scaleY) - renderedTop - renderedBottom;
+					var renderedLeft = left / targetObject.scaleX;
+					var renderedTop = top / targetObject.scaleY;
+					var renderedRight = right / targetObject.scaleX;
+					var renderedBottom = bottom / targetObject.scaleY;
+					var renderedCenterX = (targetObject.width / targetObject.scaleX) - renderedLeft - renderedRight;
+					var renderedCenterY = (targetObject.height / targetObject.scaleY) - renderedTop - renderedBottom;
 
 					// 3 ——— 2 ——— 5 ——— 7
 					// |  /  |  /  |  /  |
@@ -1724,18 +1759,18 @@ class BitmapData implements IBitmapDrawable
 				{
 					__vertexBufferData = new Float32Array(VERTEX_BUFFER_STRIDE * 8);
 
-					var top = bitmap.scale9Grid.y;
+					var top = scale9Grid.y;
 					var bottom = height - centerY - top;
 
 					var uvTop = top / height;
 					var uvCenterY = centerY / height;
 					var uvBottom = bottom / height;
 
-					var renderedTop = top / bitmap.scaleY;
-					var renderedBottom = bottom / bitmap.scaleY;
-					var renderedCenterY = (bitmap.height / bitmap.scaleY) - renderedTop - renderedBottom;
+					var renderedTop = top / targetObject.scaleY;
+					var renderedBottom = bottom / targetObject.scaleY;
+					var renderedCenterY = (targetObject.height / targetObject.scaleY) - renderedTop - renderedBottom;
 
-					var renderedWidth = bitmap.width / bitmap.scaleX;
+					var renderedWidth = targetObject.width / targetObject.scaleX;
 
 					// 3 ——— 2
 					// |  /  |
@@ -1781,18 +1816,18 @@ class BitmapData implements IBitmapDrawable
 				{
 					__vertexBufferData = new Float32Array(VERTEX_BUFFER_STRIDE * 8);
 
-					var left = bitmap.scale9Grid.x;
+					var left = scale9Grid.x;
 					var right = width - centerX - left;
 
 					var uvLeft = left / width;
 					var uvCenterX = centerX / width;
 					var uvRight = right / width;
 
-					var renderedLeft = left / bitmap.scaleX;
-					var renderedRight = right / bitmap.scaleX;
-					var renderedCenterX = (bitmap.width / bitmap.scaleX) - renderedLeft - renderedRight;
+					var renderedLeft = left / targetObject.scaleX;
+					var renderedRight = right / targetObject.scaleX;
+					var renderedCenterX = (targetObject.width / targetObject.scaleX) - renderedLeft - renderedRight;
 
-					var renderedHeight = bitmap.height / bitmap.scaleY;
+					var renderedHeight = targetObject.height / targetObject.scaleY;
 
 					// 3 ——— 2 ——— 5 ——— 7
 					// |  /  |  /  |  /  |
@@ -1831,8 +1866,11 @@ class BitmapData implements IBitmapDrawable
 					__vertexBuffer = context.createVertexBuffer(8, VERTEX_BUFFER_STRIDE);
 				}
 			}
+			else
+			{
+				__vertexBufferGrid = null;
+			}
 
-			// no scale9Grid or invalid scale9Grid
 			if (__vertexBuffer == null)
 			{
 				__vertexBufferData = new Float32Array(VERTEX_BUFFER_STRIDE * 4);
