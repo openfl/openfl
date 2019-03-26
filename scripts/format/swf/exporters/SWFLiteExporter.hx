@@ -40,12 +40,12 @@ import format.swf.tags.TagDefineEditText;
 import format.swf.tags.TagDefineFont;
 import format.swf.tags.TagDefineFont2;
 import format.swf.tags.TagDefineFont4;
+import format.swf.tags.TagDefineScalingGrid;
 import format.swf.tags.TagDefineShape;
 import format.swf.tags.TagDefineSprite;
 import format.swf.tags.TagDefineText;
 import format.swf.tags.TagPlaceObject;
 import format.swf.tags.TagSymbolClass;
-import format.swf.tags.TagDefineScalingGrid;
 import format.swf.SWFRoot;
 import format.swf.SWFTimelineContainer;
 import haxe.io.Bytes;
@@ -556,7 +556,7 @@ class SWFLiteExporter
 				frameObject.symbol = object.characterId;
 				frameObject.id = object.placedAtIndex;
 
-				var scalingGrid:TagDefineScalingGrid = data.getScalingGrid(object.characterId);
+				var scalingGrid = data.getScalingGrid(object.characterId);
 				if (scalingGrid != null && scalingGrid.splitter != null)
 				{
 					frameObject.scale9Grid = scalingGrid.splitter.rect;
