@@ -949,7 +949,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 
 		if (frameObject.cacheAsBitmap != null)
 		{
-			// displayObject.cacheAsBitmap = frameObject.cacheAsBitmap;
+			displayObject.cacheAsBitmap = frameObject.cacheAsBitmap;
 		}
 
 		#if (openfljs || ((openfl_dynamic || openfl_dynamic_fields_only) && haxe_ver <= "4.0.0"))
