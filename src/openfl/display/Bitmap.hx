@@ -346,7 +346,6 @@ class Bitmap extends DisplayObject
 		{
 			return __bitmapData.height * Math.abs(scaleY);
 		}
-
 		return 0;
 	}
 
@@ -354,16 +353,13 @@ class Bitmap extends DisplayObject
 	{
 		if (__bitmapData != null)
 		{
-			if (value != __bitmapData.height)
-			{
-				__setRenderDirty();
-				scaleY = value / __bitmapData.height;
-			}
-
-			return value;
+			scaleY = value / __bitmapData.height;
 		}
-
-		return 0;
+		else
+		{
+			scaleY = 0;
+		}
+		return value;
 	}
 
 	@:noCompletion private override function get_width():Float
@@ -372,7 +368,6 @@ class Bitmap extends DisplayObject
 		{
 			return __bitmapData.width * Math.abs(__scaleX);
 		}
-
 		return 0;
 	}
 
@@ -380,16 +375,13 @@ class Bitmap extends DisplayObject
 	{
 		if (__bitmapData != null)
 		{
-			if (value != __bitmapData.width)
-			{
-				__setRenderDirty();
-				scaleX = value / __bitmapData.width;
-			}
-
-			return value;
+			scaleX = value / __bitmapData.width;
 		}
-
-		return 0;
+		else
+		{
+			scaleX = 0;
+		}
+		return value;
 	}
 }
 #else
