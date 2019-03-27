@@ -56,19 +56,19 @@ class CairoShape
 					var renderScaleX = transform.a;
 					var renderScaleY = transform.d;
 
-					var left = scale9Grid.x * scaleX;
-					var top = scale9Grid.y * scaleY;
-					var right = (bounds.right - scale9Grid.right) * scaleX;
-					var bottom = (bounds.bottom - scale9Grid.bottom) * scaleY;
-					var centerWidth = scale9Grid.width * scaleX;
-					var centerHeight = scale9Grid.height * scaleY;
+					var left = Math.round(scale9Grid.x * scaleX);
+					var top = Math.round(scale9Grid.y * scaleY);
+					var right = Math.round((bounds.right - scale9Grid.right) * scaleX);
+					var bottom = Math.round((bounds.bottom - scale9Grid.bottom) * scaleY);
+					var centerWidth = Math.round(scale9Grid.width * scaleX);
+					var centerHeight = Math.round(scale9Grid.height * scaleY);
 
-					var renderLeft = scale9Grid.x * renderScaleX;
-					var renderTop = scale9Grid.y * renderScaleY;
-					var renderRight = (bounds.right - scale9Grid.right) * renderScaleX;
-					var renderBottom = (bounds.bottom - scale9Grid.bottom) * renderScaleY;
-					var renderCenterWidth = (width * renderScaleX) - renderLeft - renderRight;
-					var renderCenterHeight = (height * renderScaleY) - renderTop - renderBottom;
+					var renderLeft = Math.round(scale9Grid.x * renderScaleX);
+					var renderTop = Math.round(scale9Grid.y * renderScaleY);
+					var renderRight = Math.round((bounds.right - scale9Grid.right) * renderScaleX);
+					var renderBottom = Math.round((bounds.bottom - scale9Grid.bottom) * renderScaleY);
+					var renderCenterWidth = Math.round(width * renderScaleX) - renderLeft - renderRight;
+					var renderCenterHeight = Math.round(height * renderScaleY) - renderTop - renderBottom;
 
 					var pattern = CairoPattern.createForSurface(graphics.__cairo.target);
 					pattern.filter = renderer.__allowSmoothing ? CairoFilter.GOOD : CairoFilter.NEAREST;
