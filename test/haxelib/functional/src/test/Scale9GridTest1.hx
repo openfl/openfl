@@ -1,11 +1,16 @@
 package test;
 
+import haxe.Timer;
 import openfl.display.Sprite;
 import openfl.display.Stage;
+import openfl.display.MovieClip;
 import openfl.utils.Assets;
+import openfl.events.Event;
 
 class Scale9GridTest1 extends FunctionalTest
 {
+	private var buttons:Array<MovieClip> = [];
+
 	public function new()
 	{
 		super();
@@ -22,23 +27,35 @@ class Scale9GridTest1 extends FunctionalTest
 		movieClip.height = 300;
 		content.addChild(movieClip);
 
-		var button1 = Assets.getMovieClip("scale9Grid:ButtonPrimary");
-		button1.x = 600;
-		button1.y = 100;
-		button1.width = 128;
-		button1.height = 32;
-		content.addChild(button1);
+		buttons.push(Assets.getMovieClip("scale9Grid:ButtonPrimary"));
+		buttons.push(Assets.getMovieClip("scale9Grid:ButtonSecondary"));
 
-		var button2 = Assets.getMovieClip("scale9Grid:ButtonSecondary");
-		button2.x = 600;
-		button2.y = 200;
-		button2.width = 128;
-		button2.height = 32;
-		content.addChild(button2);
+		for (i in 0...buttons.length)
+		{
+			var button = buttons[i];
+			button.x = 600;
+			button.y = 100 + (i * 50);
+			button.width = 128;
+			button.height = 32;
+			content.addChild(button);
+		}
+		content.addEventListener(Event.ENTER_FRAME, update);
 	}
 
 	public override function stop():Void
 	{
+		content.removeEventListener(Event.ENTER_FRAME, update);
 		content = null;
+		buttons = [];
+	}
+
+	private function update(e:Event):Void
+	{
+		var sinT = Math.sin(Timer.stamp());
+		for (i in 0...buttons.length)
+		{
+			var button = buttons[i];
+			button.width = 128 + sinT * 32;
+		}
 	}
 }
