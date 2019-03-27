@@ -29,6 +29,7 @@ class CanvasShape
 
 			if (canvas != null)
 			{
+				var transform = graphics.__worldTransform;
 				var context = renderer.context;
 				var scrollRect = shape.__scrollRect;
 				var scale9Grid = shape.__worldScale9Grid;
@@ -41,78 +42,76 @@ class CanvasShape
 					renderer.__pushMaskObject(shape);
 
 					context.globalAlpha = alpha;
-					renderer.setTransform(graphics.__worldTransform, context);
 
-					if (renderer.__isDOM)
+					if (scale9Grid != null && transform.b == 0 && transform.c == 0)
 					{
-						var reverseScale = 1 / renderer.pixelRatio;
-						context.scale(reverseScale, reverseScale);
-					}
+						context.setTransform(1, 0, 0, 1, transform.tx, transform.ty);
 
-					// TODO: Use renderTransform instead of scaleX/scaleY?
+						var bounds = graphics.__bounds;
 
-					if (scale9Grid != null)
-					{
-						var centerX = scale9Grid.width;
-						var centerY = scale9Grid.height;
+						var scaleX = graphics.__renderTransform.a;
+						var scaleY = graphics.__renderTransform.d;
+						var renderScaleX = transform.a;
+						var renderScaleY = transform.d;
 
-						if (centerX != 0 && centerY != 0)
+						var left = scale9Grid.x * scaleX;
+						var top = scale9Grid.y * scaleY;
+						var right = (bounds.right - scale9Grid.right) * scaleX;
+						var bottom = (bounds.bottom - scale9Grid.bottom) * scaleY;
+						var centerWidth = scale9Grid.width * scaleX;
+						var centerHeight = scale9Grid.height * scaleY;
+
+						var renderLeft = scale9Grid.x * renderScaleX;
+						var renderTop = scale9Grid.y * renderScaleY;
+						var renderRight = (bounds.right - scale9Grid.right) * renderScaleX;
+						var renderBottom = (bounds.bottom - scale9Grid.bottom) * renderScaleY;
+						var renderCenterWidth = (width * renderScaleX) - renderLeft - renderRight;
+						var renderCenterHeight = (height * renderScaleY) - renderTop - renderBottom;
+
+						if (centerWidth != 0 && centerHeight != 0)
 						{
-							var left = scale9Grid.x;
-							var top = scale9Grid.y;
-							var right = width - centerX - left;
-							var bottom = height - centerY - top;
-							var renderedLeft = left / shape.scaleX;
-							var renderedTop = top / shape.scaleY;
-							var renderedRight = right / shape.scaleX;
-							var renderedBottom = bottom / shape.scaleY;
-							var renderedCenterX = width - renderedLeft - renderedRight;
-							var renderedCenterY = height - renderedTop - renderedBottom;
+							context.drawImage(canvas, 0, 0, left, top, 0, 0, renderLeft, renderTop);
+							context.drawImage(canvas, left, 0, centerWidth, top, renderLeft, 0, renderCenterWidth, renderTop);
+							context.drawImage(canvas, left + centerWidth, 0, right, top, renderLeft + renderCenterWidth, 0, renderRight, renderTop);
 
-							context.drawImage(canvas, 0, 0, left, top, 0, 0, renderedLeft, renderedTop);
-							context.drawImage(canvas, left, 0, centerX, top, renderedLeft, 0, renderedCenterX, renderedTop);
-							context.drawImage(canvas, left + centerX, 0, right, top, renderedLeft + renderedCenterX, 0, renderedRight, renderedTop);
+							context.drawImage(canvas, 0, top, left, centerHeight, 0, renderTop, renderLeft, renderCenterHeight);
+							context.drawImage(canvas, left, top, centerWidth, centerHeight, renderLeft, renderTop, renderCenterWidth, renderCenterHeight);
+							context.drawImage(canvas, left + centerWidth, top, right, centerHeight, renderLeft + renderCenterWidth, renderTop, renderRight,
+								renderCenterHeight);
 
-							context.drawImage(canvas, 0, top, left, centerY, 0, renderedTop, renderedLeft, renderedCenterY);
-							context.drawImage(canvas, left, top, centerX, centerY, renderedLeft, renderedTop, renderedCenterX, renderedCenterY);
-							context.drawImage(canvas, left + centerX, top, right, centerY, renderedLeft + renderedCenterX, renderedTop, renderedRight,
-								renderedCenterY);
-
-							context.drawImage(canvas, 0, top + centerY, left, bottom, 0, renderedTop + renderedCenterY, renderedLeft, renderedBottom);
-							context.drawImage(canvas, left, top + centerY, centerX, bottom, renderedLeft, renderedTop + renderedCenterY, renderedCenterX,
-								renderedBottom);
+							context.drawImage(canvas, 0, top + centerHeight, left, bottom, 0, renderTop + renderCenterHeight, renderLeft, renderBottom);
+							context.drawImage(canvas, left, top + centerHeight, centerWidth, bottom, renderLeft, renderTop + renderCenterHeight, renderCenterWidth,
+								renderBottom);
 							context
-								.drawImage(canvas, left + centerX, top + centerY, right, bottom, renderedLeft + renderedCenterX, renderedTop + renderedCenterY, renderedRight, renderedBottom);
+								.drawImage(canvas, left + centerWidth, top + centerHeight, right, bottom, renderLeft + renderCenterWidth, renderTop + renderCenterHeight, renderRight, renderBottom);
 						}
-						else if (centerX == 0 && centerY != 0)
+						else if (centerWidth == 0 && centerHeight != 0)
 						{
-							var top = scale9Grid.y;
-							var bottom = height - top - centerY;
-							var renderedTop = top / shape.scaleY;
-							var renderedBottom = bottom / shape.scaleY;
-							var renderedCenterY = height - renderedTop - renderedBottom;
-							var renderedWidth = width;
+							var renderWidth = renderLeft + renderCenterWidth + renderRight;
 
-							context.drawImage(canvas, 0, 0, width, top, 0, 0, renderedWidth, renderedTop);
-							context.drawImage(canvas, 0, top, width, centerY, 0, renderedTop, renderedWidth, renderedCenterY);
-							context.drawImage(canvas, 0, top + centerY, width, bottom, 0, renderedTop + renderedCenterY, renderedWidth, renderedBottom);
+							context.drawImage(canvas, 0, 0, width, top, 0, 0, renderWidth, renderTop);
+							context.drawImage(canvas, 0, top, width, centerHeight, 0, renderTop, renderWidth, renderCenterHeight);
+							context.drawImage(canvas, 0, top + centerHeight, width, bottom, 0, renderTop + renderCenterHeight, renderWidth, renderBottom);
 						}
-						else if (centerY == 0 && centerX != 0)
+						else if (centerHeight == 0 && centerWidth != 0)
 						{
-							var left = scale9Grid.x;
-							var right = width - left - centerX;
-							var renderedLeft = left / shape.scaleX;
-							var renderedRight = right / shape.scaleX;
-							var renderedCenterX = width - renderedLeft - renderedRight;
-							var renderedHeight = height;
+							var renderHeight = renderTop + renderCenterHeight + renderBottom;
 
-							context.drawImage(canvas, 0, 0, left, height, 0, 0, renderedLeft, renderedHeight);
-							context.drawImage(canvas, left, 0, centerX, height, renderedLeft, 0, renderedCenterX, renderedHeight);
-							context.drawImage(canvas, left + centerX, 0, right, height, renderedLeft + renderedCenterX, 0, renderedRight, renderedHeight);
+							context.drawImage(canvas, 0, 0, left, height, 0, 0, renderLeft, renderHeight);
+							context.drawImage(canvas, left, 0, centerWidth, height, renderLeft, 0, renderCenterWidth, renderHeight);
+							context.drawImage(canvas, left + centerWidth, 0, right, height, renderLeft + renderCenterWidth, 0, renderRight, renderHeight);
 						}
 					}
 					else
 					{
+						renderer.setTransform(transform, context);
+
+						if (renderer.__isDOM)
+						{
+							var reverseScale = 1 / renderer.pixelRatio;
+							context.scale(reverseScale, reverseScale);
+						}
+
 						context.drawImage(canvas, 0, 0, width, height);
 					}
 
