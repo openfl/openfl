@@ -68,6 +68,9 @@ class CanvasShape
 						var renderCenterWidth = Math.round(width * renderScaleX) - renderLeft - renderRight;
 						var renderCenterHeight = Math.round(height * renderScaleY) - renderTop - renderBottom;
 
+						// TODO: Allow smoothing, even though it shows seams?
+						renderer.applySmoothing(context, false);
+
 						if (centerWidth != 0 && centerHeight != 0)
 						{
 							context.drawImage(canvas, 0, 0, left, top, 0, 0, renderLeft, renderTop);

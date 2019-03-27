@@ -71,7 +71,9 @@ class CairoShape
 					var renderCenterHeight = Math.round(height * renderScaleY) - renderTop - renderBottom;
 
 					var pattern = CairoPattern.createForSurface(graphics.__cairo.target);
-					pattern.filter = renderer.__allowSmoothing ? CairoFilter.GOOD : CairoFilter.NEAREST;
+					// TODO: Allow smoothing, even though it shows seams?
+					pattern.filter = CairoFilter.NEAREST;
+					// pattern.filter = renderer.__allowSmoothing ? CairoFilter.GOOD : CairoFilter.NEAREST;
 
 					function drawImage(sx:Float, sy:Float, sWidth:Float, sHeight:Float, dx:Float, dy:Float, dWidth:Float, dHeight:Float):Void
 					{
