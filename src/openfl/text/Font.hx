@@ -123,6 +123,7 @@ class Font #if lime extends LimeFont #end
 		#end
 	}
 
+	#if false
 	/**
 		Specifies whether a provided string can be displayed using the
 		currently assigned font.
@@ -132,6 +133,7 @@ class Font #if lime extends LimeFont #end
 				displayed using this font.
 	**/
 	// @:noCompletion @:dox(hide) public function hasGlyphs (str:String):Bool;
+	#end
 
 	/**
 		Creates a new Font from haxe.io.Bytes or openfl.utils.ByteArray data

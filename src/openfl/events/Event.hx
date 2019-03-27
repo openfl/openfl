@@ -620,6 +620,8 @@ class Event
 		CubeTexture. This event neither bubbles nor is cancelable.
 	**/
 	public static inline var TEXTURE_READY:EventType<Event> = "textureReady";
+
+	#if false
 	/**
 		The `Event.TEXT_INTERACTION_MODE_CHANGE` constant defines the value of
 		the `type` property of a `interaction mode` event object.
@@ -633,6 +635,7 @@ class Event
 		| `target` | The TextField object whose interaction mode property is changed. For example on Android, one can change the interaction mode to SELECTION via context menu. The `target` property is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash11) public static var TEXT_INTERACTION_MODE_CHANGE:String;
+	#end
 
 	/**
 		The `Event.UNLOAD` constant defines the value of the `type` property

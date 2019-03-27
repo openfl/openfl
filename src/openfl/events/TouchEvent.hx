@@ -319,6 +319,8 @@ class TouchEvent extends Event
 		Indicates whether the first point of contact is mapped to mouse events.
 	**/
 	public var isPrimaryTouchPoint:Bool;
+
+	#if false
 	/**
 		If `true`, the `relatedObject` property is set to `null` for reasons
 		related to security sandboxes. If the nominal value of `relatedObject`
@@ -330,6 +332,7 @@ class TouchEvent extends Event
 		`LoaderContext.checkPolicyFile` property when loading the image.
 	**/
 	// @:noCompletion @:dox(hide) public var isRelatedObjectInaccessible:Bool;
+	#end
 
 	/**
 		The horizontal coordinate at which the event occurred relative to the

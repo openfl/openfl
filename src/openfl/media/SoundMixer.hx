@@ -87,6 +87,7 @@ package openfl.media;
 		return false;
 	}
 
+	#if false
 	/**
 		Takes a snapshot of the current sound wave and places it into the
 		specified ByteArray object. The values are formatted as normalized
@@ -133,6 +134,7 @@ package openfl.media;
 							 11.025 KHz; and so on.
 	**/
 	// @:noCompletion @:dox(hide) public static function computeSpectrum (outputArray:ByteArray, FFTMode:Bool = false, stretchFactor:Int = 0):Void;
+	#end
 
 	/**
 		Stops all sounds currently playing.

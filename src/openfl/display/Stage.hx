@@ -221,6 +221,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		The window background color.
 	**/
 	public var color(get, set):Null<Int>;
+
+	#if false
 	/**
 		Controls Flash runtime color correction for displays. Color correction
 		works only if the main monitor is assigned a valid ICC color profile,
@@ -261,7 +263,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		* `"off"`: Never perform color correction.
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10) public var colorCorrection:openfl.display.ColorCorrection;
+	#end
 
+	#if false
 	/**
 		Specifies whether the Flash runtime is running on an operating system
 		that supports color correction and whether the color profile of the
@@ -277,6 +281,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		* `"defaultOff"`: Never performs color correction.
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10) public var colorCorrectionSupport (default, null):openfl.display.ColorCorrectionSupport;
+	#end
 	public var contentsScaleFactor(get, never):Float;
 
 	/**
@@ -698,6 +703,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 							  the _ActionScript 3.0 Developer's Guide_.
 	**/
 	public var stageHeight(default, null):Int;
+
+	#if false
 	/**
 		A list of StageVideo objects available for playing external videos.
 		You can use only a limited number of StageVideo objects at a time.
@@ -724,6 +731,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		**Note:** AIR for TV devices support only one StageVideo object.
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10_2) public var stageVideos (default, null):Vector<openfl.media.StageVideo>;
+	#end
 
 	/**
 		Specifies the current width, in pixels, of the Stage.
@@ -827,7 +835,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		event of any `DisplayObject`, the `wmodeGPU` value at is the correct
 		value.
 	**/
+	#if false
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public var wmodeGPU (default, null):Bool;
+	#end
 	@:noCompletion private var __cacheFocus:InteractiveObject;
 	@:noCompletion private var __clearBeforeRender:Bool;
 	@:noCompletion private var __color:Int;

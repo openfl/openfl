@@ -95,6 +95,7 @@ class FocusEvent extends Event
 	**/
 	public static inline var MOUSE_FOCUS_CHANGE:EventType<FocusEvent> = "mouseFocusChange";
 
+	#if false
 	/**
 		If `true`, the `relatedObject` property is set to `null` for reasons
 		related to security sandboxes. If the nominal value of `relatedObject`
@@ -106,6 +107,7 @@ class FocusEvent extends Event
 		`LoaderContext.checkPolicyFile` property when loading the image.
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10) public var isRelatedObjectInaccessible:Bool;
+	#end
 
 	/**
 		The key code value of the key pressed to trigger a

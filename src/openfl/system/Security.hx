@@ -11,6 +11,7 @@ package openfl.system;
 #end
 class Security
 {
+	#if false
 	/**
 		The file is running in an AIR application, and it was installed with
 		the package (the AIR file) for that application. This content is
@@ -18,6 +19,7 @@ class Security
 		application content is installed).
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public static var APPLICATION:String;
+	#end
 
 	/**
 		The file is a local file and has been trusted by the user, using
@@ -95,12 +97,15 @@ class Security
 							  decision about player settings.
 	**/
 	public static var exactSettings:Bool;
+
+	#if false
 	/**
 		Get the page domain containing the swf. For security reasons, the
 		method does not return the full URL, only the page domain, such as
 		http://www.example.com.
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash11) public static var pageDomain (default, null):String;
+	#end
 
 	/**
 		Indicates the type of security sandbox in which the calling file is
@@ -571,6 +576,8 @@ class Security
 	{
 		// var res = haxe.Http.requestUrl( url );
 	}
+
+	#if false
 	/**
 		Displays the Security Settings panel in Flash Player. This method does
 		not apply to content in Adobe AIR; calling it in an AIR application
@@ -581,6 +588,7 @@ class Security
 					 this parameter, `SecurityPanel.DEFAULT` is used.
 	**/
 	// @:noCompletion @:dox(hide) public static function showSettings (panel:openfl.system.SecurityPanel = null):Void;
+	#end
 }
 #else
 typedef Security = flash.system.Security;

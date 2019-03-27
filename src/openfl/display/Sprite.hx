@@ -88,12 +88,15 @@ class Sprite extends DisplayObjectContainer
 		user input events instead of your sprite button.
 	**/
 	public var hitArea:Sprite;
+
+	#if false
 	/**
 		Controls sound within this sprite.
 		**Note:** This property does not affect HTML content in an HTMLControl
 		object (in Adobe AIR).
 	**/
 	// @:noCompletion @:dox(hide) public var soundTransform:SoundTransform;
+	#end
 
 	/**
 		A Boolean value that indicates whether the pointing hand(hand cursor)
@@ -172,6 +175,7 @@ class Sprite extends DisplayObjectContainer
 		}
 	}
 
+	#if false
 	/**
 		Lets the user drag the specified sprite on a touch-enabled device. The
 		sprite remains draggable until explicitly stopped through a call to
@@ -195,6 +199,7 @@ class Sprite extends DisplayObjectContainer
 							Sprite.
 	**/
 	// @:noCompletion @:dox(hide) public function startTouchDrag (touchPointID:Int, lockCenter:Bool = false, bounds:Rectangle = null):Void;
+	#end
 
 	/**
 		Ends the `startDrag()` method. A sprite that was made draggable
@@ -211,6 +216,7 @@ class Sprite extends DisplayObjectContainer
 		}
 	}
 
+	#if false
 	/**
 		Ends the `startTouchDrag()` method, for use with touch-enabled
 		devices. A sprite that was made draggable with the `startTouchDrag()`
@@ -222,6 +228,7 @@ class Sprite extends DisplayObjectContainer
 							`startTouchDrag` method.
 	**/
 	// @:noCompletion @:dox(hide) public function stopTouchDrag (touchPointID:Int):Void;
+	#end
 	@:noCompletion private override function __getCursor():MouseCursor
 	{
 		return (__buttonMode && useHandCursor) ? BUTTON : null;

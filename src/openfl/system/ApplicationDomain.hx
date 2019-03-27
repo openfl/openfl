@@ -37,22 +37,26 @@ package openfl.system;
 #end
 @:final class ApplicationDomain
 {
+	#if false
 	/**
 		Gets the minimum memory object length required to be used as
 		ApplicationDomain.domainMemory.
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10) public static var MIN_DOMAIN_MEMORY_LENGTH (default, null):UInt;
+	#end
 
 	/**
 		Gets the current application domain in which your code is executing.
 	**/
 	public static var currentDomain(default, null) = new ApplicationDomain(null);
 
+	#if false
 	/**
 		Gets and sets the object on which domain-global memory operations will
 		operate within this ApplicationDomain.
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10) public var domainMemory:ByteArray;
+	#end
 
 	/**
 		Gets the parent domain of this application domain.

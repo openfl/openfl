@@ -244,6 +244,8 @@ class LoaderContext
 		source.
 	**/
 	public var checkPolicyFile:Bool;
+
+	#if false
 	/**
 		Specifies whether to decode image data when it is used or when it is
 		loaded.
@@ -267,6 +269,9 @@ class LoaderContext
 		data at any time and re-decode the image the next time it is required.
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash11) public var imageDecodingPolicy:openfl.system.ImageDecodingPolicy;
+	#end
+
+	#if false
 	/**
 		An Object containing the parameters to pass to the LoaderInfo object
 		of the content.
@@ -313,6 +318,9 @@ class LoaderContext
 		If the content loaded successfully, this trace prints "bar".
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash11) public var parameters:Dynamic;
+	#end
+
+	#if false
 	/**
 		The parent to which the Loader will attempt to add the loaded content.
 
@@ -362,6 +370,7 @@ class LoaderContext
 		of the loaded child.swf file.
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash11) public var requestedContentParent:DisplayObjectContainer;
+	#end
 
 	/**
 		Specifies the security domain to use for a `Loader.load()` operation.

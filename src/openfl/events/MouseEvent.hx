@@ -47,6 +47,8 @@ class MouseEvent extends Event
 		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
 	public static inline var CLICK:EventType<MouseEvent> = "click";
+
+	#if false
 	/**
 		The `MouseEvent.CONTEXT_MENU` constant defines the value of the `type`
 		property of a `contextMenu` event object.
@@ -71,6 +73,7 @@ class MouseEvent extends Event
 		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash11_2) public static var CONTEXT_MENU:String;
+	#end
 
 	/**
 		Defines the value of the `type` property of a `doubleClick` event

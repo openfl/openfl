@@ -138,6 +138,8 @@ import haxe.macro.Compiler;
 		description of the `contentType` property.
 	**/
 	public var data:Dynamic;
+
+	#if false
 	/**
 		A string that uniquely identifies the signed Adobe platform component
 		to be stored to (or retrieved from) the Flash Player cache. An Adobe
@@ -175,6 +177,7 @@ import haxe.macro.Compiler;
 							  contains invalid (nonhexadecimal) characters.
 	**/
 	// @:noCompletion @:dox(hide) public var digest:String;
+	#end
 
 	/**
 		Specifies whether redirects are to be followed (`true`) or not (`false`).

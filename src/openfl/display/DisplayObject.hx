@@ -202,6 +202,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private static var __tempStack:ObjectPool<Vector<DisplayObject>> = new ObjectPool<Vector<DisplayObject>>(function() return
 		new Vector<DisplayObject>(), function(stack) stack.length = 0);
 
+	#if false
 	/**
 		The current accessibility options for this display object. If you modify the `accessibilityProperties`
 		property or any of the fields within `accessibilityProperties`, you must call the
@@ -211,6 +212,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		is prepopulated with any information you entered in the Accessibility panel for that object.
 	**/
 	// @:noCompletion @:dox(hide) public var accessibilityProperties:openfl.accessibility.AccessibilityProperties;
+	#end
 
 	/**
 		Indicates the alpha transparency value of the object specified. Valid
@@ -264,6 +266,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		| `BlendMode.SHADER` | N/A | Adjusts the color using a custom shader routine. The shader that is used is specified as the Shader instance assigned to the blendShader property. Setting the blendShader property of a display object to a Shader instance automatically sets the display object's `blendMode` property to `BlendMode.SHADER`. If the `blendMode` property is set to `BlendMode.SHADER` without first setting the `blendShader` property, the `blendMode` property is set to `BlendMode.NORMAL`. Not supported under GPU rendering. |
 	**/
 	public var blendMode(get, set):BlendMode;
+
+	#if false
 	/**
 		Sets a shader that is used for blending the foreground and background. When the `blendMode` property is set
 		to `BlendMode.SHADER`, the specified Shader is used to create the blend mode output for the display object.
@@ -286,7 +290,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		that internal copy, not a reference to the original shader. Any changes made to the shader, such as changing
 		a parameter value, input, or bytecode, are not applied to the copied shader that's used for the blend mode.
 	**/
-	// @:noCompletion @:dox(hide) @:require(flash10) public var blendShader (null, default):Shader;
+	// @:noCompletion @:dox(hide) @:require(flash10) public var blendShader(null, default):Shader;
+	#end
 
 	/**
 		All vector data for a display object that has a cached bitmap is drawn
@@ -639,6 +644,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		is the same as ` my_video.rotation = 90`.
 	**/
 	@:keep public var rotation(get, set):Float;
+
+	#if false
 	/**
 		Indicates the x-axis rotation of the DisplayObject instance, in degrees, from its original orientation
 		relative to the 3D parent container. Values from 0 to 180 represent clockwise rotation; values from 0 to
@@ -646,6 +653,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		obtain a value within the range.
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10) public var rotationX:Float;
+	#end
+
+	#if false
 	/**
 		Indicates the y-axis rotation of the DisplayObject instance, in degrees, from its original orientation
 		relative to the 3D parent container. Values from 0 to 180 represent clockwise rotation; values from 0 to
@@ -653,6 +663,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		obtain a value within the range.
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10) public var rotationY:Float;
+	#end
+
+	#if false
 	/**
 		Indicates the z-axis rotation of the DisplayObject instance, in degrees, from its original orientation
 		relative to the 3D parent container. Values from 0 to 180 represent clockwise rotation; values from 0 to
@@ -660,6 +673,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		obtain a value within the range.
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10) public var rotationZ:Float;
+	#end
 
 	/**
 		The current scaling grid that is in effect. If set to `null`,
@@ -680,9 +694,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		* The area below the rectangle
 		* The lower-right corner outside of the rectangle
 
-		You can think of the eight regions outside of the center(defined by
+		You can think of the eight regions outside of the center (defined by
 		the rectangle) as being like a picture frame that has special rules
 		applied to it when scaled.
+
+		**Note:** Content that is not rendered through the `graphics` interface
+		of a display object will not be affected by the `scale9Grid` property.
 
 		When the `scale9Grid` property is set and a display object
 		is scaled, all text and gradients are scaled normally; however, for other
@@ -692,7 +709,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		* Content in the corners is not scaled.
 		* Content in the top and bottom regions is scaled horizontally only.
 		* Content in the left and right regions is scaled vertically only.
-		* All fills(including bitmaps, video, and gradients) are stretched to
+		* All fills (including bitmaps, video, and gradients) are stretched to
 		fit their shapes.
 
 		If a display object is rotated, all subsequent scaling is normal(and
@@ -742,6 +759,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		`y` property values, which are defined in whole pixels.
 	**/
 	@:keep public var scaleY(get, set):Float;
+
+	#if false
 	/**
 		Indicates the depth scale (percentage) of an object as applied from the registration point of the object.
 		The default registration point is (0,0). 1.0 is 100% scale.
@@ -750,6 +769,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		pixels.
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10) public var scaleZ:Float;
+	#end
 
 	/**
 		The scroll rectangle bounds of the display object. The display object is

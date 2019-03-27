@@ -297,6 +297,7 @@ class Sound extends EventDispatcher
 		#end
 	}
 
+	#if false
 	/**
 		Extracts raw sound data from a Sound object.
 		This method is designed to be used when you are working with
@@ -320,6 +321,7 @@ class Sound extends EventDispatcher
 				the `target` parameter.
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10) public function extract (target:ByteArray, length:Float, startPosition:Float = -1):Float;
+	#end
 	#if lime
 	public static function fromAudioBuffer(buffer:AudioBuffer):Sound
 	{
