@@ -27,7 +27,7 @@ class CanvasShape
 			var height = graphics.__height;
 			var canvas = graphics.__canvas;
 
-			if (canvas != null)
+			if (canvas != null && graphics.__visible && width >= 1 && height >= 1)
 			{
 				var transform = graphics.__worldTransform;
 				var context = renderer.context;
@@ -36,7 +36,7 @@ class CanvasShape
 
 				// TODO: Render for scroll rect?
 
-				if (width > 0 && height > 0 && (scrollRect == null || (scrollRect.width > 0 && scrollRect.height > 0)))
+				if (scrollRect == null || (scrollRect.width > 0 && scrollRect.height > 0))
 				{
 					renderer.__setBlendMode(shape.__worldBlendMode);
 					renderer.__pushMaskObject(shape);
@@ -80,8 +80,8 @@ class CanvasShape
 								renderCenterHeight);
 
 							context.drawImage(canvas, 0, top + centerHeight, left, bottom, 0, renderTop + renderCenterHeight, renderLeft, renderBottom);
-							context.drawImage(canvas, left, top + centerHeight, centerWidth, bottom, renderLeft, renderTop + renderCenterHeight, renderCenterWidth,
-								renderBottom);
+							context.drawImage(canvas, left, top + centerHeight, centerWidth, bottom, renderLeft, renderTop + renderCenterHeight,
+								renderCenterWidth, renderBottom);
 							context
 								.drawImage(canvas, left + centerWidth, top + centerHeight, right, bottom, renderLeft + renderCenterWidth, renderTop + renderCenterHeight, renderRight, renderBottom);
 						}
