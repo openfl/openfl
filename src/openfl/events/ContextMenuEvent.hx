@@ -56,6 +56,7 @@ class ContextMenuEvent extends Event
 	**/
 	public var contextMenuOwner:InteractiveObject;
 
+	#if false
 	/**
 		Indicates whether the `mouseTarget` property was set to `null` for
 		security reasons. If the nominal value of `menuTarget` would be a
@@ -66,7 +67,6 @@ class ContextMenuEvent extends Event
 		policy file from the server of an image file, and setting the
 		`LoaderContext.checkPolicyFile` flag when loading the image.
 	**/
-	#if false
 	// @:noCompletion @:dox(hide) @:require(flash10) public var isMouseTargetInaccessible:Bool;
 	#end
 
