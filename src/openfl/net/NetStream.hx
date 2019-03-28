@@ -532,6 +532,7 @@ class NetStream extends EventDispatcher
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10) public static var DIRECT_CONNECTIONS:String;
 	#end
+	@:dox(hide) @:noCompletion @SuppressWarnings("checkstyle:FieldDocComment")
 	public var audioCodec(default, null):Int;
 
 	#if false
@@ -872,6 +873,7 @@ class NetStream extends EventDispatcher
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public var dataReliable:Bool;
 	#end
+	@:dox(hide) @:noCompletion @SuppressWarnings("checkstyle:FieldDocComment")
 	public var decodedFrames(default, null):Int;
 
 	#if false
@@ -1852,6 +1854,7 @@ class NetStream extends EventDispatcher
 	**/
 	// @:noCompletion @:dox(hide) public static function resetDRMVouchers ():Void;
 	#end
+	@:dox(hide) @:noCompletion @SuppressWarnings("checkstyle:FieldDocComment")
 	public function requestVideoStatus():Void
 	{
 		#if (js && html5)

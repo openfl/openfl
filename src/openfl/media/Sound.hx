@@ -322,7 +322,14 @@ class Sound extends EventDispatcher
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10) public function extract (target:ByteArray, length:Float, startPosition:Float = -1):Float;
 	#end
+
 	#if lime
+	/**
+		Creates a new Sound from an AudioBuffer immediately.
+
+		@param	buffer	An AudioBuffer instance
+		@returns	A new Sound
+	**/
 	public static function fromAudioBuffer(buffer:AudioBuffer):Sound
 	{
 		var sound = new Sound();
@@ -331,6 +338,19 @@ class Sound extends EventDispatcher
 	}
 	#end
 
+	/**
+		Creates a new Sound from a file path synchronously. This means that the
+		Sound will be returned immediately (if supported).
+
+		HTML5 and Flash do not support creating Sound synchronously, so these targets
+		always return `null`.
+
+		In order to load files from a remote web address, use the `loadFromFile` method,
+		which supports asynchronous loading.
+
+		@param	path	A local file path containing a sound
+		@returns	A new Sound if successful, or `null` if unsuccessful
+	**/
 	public static function fromFile(path:String):Sound
 	{
 		#if lime
@@ -481,6 +501,16 @@ class Sound extends EventDispatcher
 		#end
 	}
 
+	/**
+		Creates a new Sound from a file path or web address asynchronously. The file
+		load will occur in the background.
+
+		Progress, completion and error callbacks will be dispatched in the current
+		thread using callbacks attached to a returned Future object.
+
+		@param	path	A local file path or web address containing a sound
+		@returns	A Future Sound
+	**/
 	public static function loadFromFile(path:String):Future<Sound>
 	{
 		#if lime
@@ -493,6 +523,17 @@ class Sound extends EventDispatcher
 		#end
 	}
 
+	/**
+		Creates a new Sound from a set of file paths or web addresses asynchronously.
+		The audio backend will choose the first compatible file format, and will load the file
+		it selects in the background.
+
+		Progress, completion and error callbacks will be dispatched in the current
+		thread using callbacks attached to a returned Future object.
+
+		@param	paths	A set of local file paths or web addresses containing sound
+		@returns	A Future Sound
+	**/
 	public static function loadFromFiles(paths:Array<String>):Future<Sound>
 	{
 		#if lime

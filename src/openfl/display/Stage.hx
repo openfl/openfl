@@ -282,6 +282,15 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10) public var colorCorrectionSupport (default, null):openfl.display.ColorCorrectionSupport;
 	#end
+
+	/**
+		Specifies the effective pixel scaling factor of the stage. This
+		value is 1 on standard screens and HiDPI (Retina display)
+		screens. When the stage is rendered on HiDPI screens the pixel
+		resolution is doubled; even if the stage scaling mode is set to
+		`StageScaleMode.NO_SCALE`. `Stage.stageWidth` and `Stage.stageHeight`
+		continue to be reported in classic pixel units.
+	**/
 	public var contentsScaleFactor(get, never):Float;
 
 	/**
