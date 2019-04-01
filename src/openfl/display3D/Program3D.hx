@@ -500,6 +500,7 @@ import lime.utils.BytePointer;
 		for (i in 0...numActive)
 		{
 			var info = gl.getActiveUniform(__glProgram, i);
+			trace(info);
 			var name = info.name;
 			var size = info.size;
 			var uniformType = info.type;
@@ -509,6 +510,8 @@ import lime.utils.BytePointer;
 			uniform.size = size;
 			uniform.type = uniformType;
 
+			trace(uniform.name);
+			trace(uniform.name.length);
 			uniform.location = gl.getUniformLocation(__glProgram, uniform.name);
 
 			var indexBracket = uniform.name.indexOf("[");

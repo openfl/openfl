@@ -1,6 +1,13 @@
 package openfl.utils;
 
+import haxe.io.Bytes;
 import openfl.net.ObjectEncoding;
+import openfl.utils.Future;
+#if haxe4
+import js.lib.ArrayBuffer;
+#else
+import js.html.ArrayBuffer;
+#end
 
 @:jsRequire("openfl/utils/ByteArray", "default")
 extern class ByteArray implements IDataOutput implements IDataInput /*implements ArrayAccess<Int>*/
@@ -172,6 +179,8 @@ extern class ByteArray implements IDataOutput implements IDataInput /*implements
 	 *
 	 */
 	public function deflate():Void;
+	public static function fromBytes(bytes:Bytes):ByteArray;
+	public static function fromArrayBuffer(buffer:ArrayBuffer):ByteArray;
 
 	/**
 	 * Decompresses the byte array using the deflate compression algorithm. The
@@ -196,6 +205,8 @@ extern class ByteArray implements IDataOutput implements IDataInput /*implements
 	 *                 compress.
 	 */
 	public function inflate():Void;
+	public static function loadFromBytes(bytes:Bytes):Future<ByteArray>;
+	public static function loadFromFile(path:String):Future<ByteArray>;
 
 	/**
 	 * Reads a Boolean value from the byte stream. A single byte is read, and

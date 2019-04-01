@@ -1186,6 +1186,13 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		compress(CompressionAlgorithm.DEFLATE);
 	}
 
+	#if openfljs
+	public static function fromArrayBuffer(buffer:ArrayBuffer):ByteArrayData
+	{
+		return ByteArray.fromArrayBuffer(buffer);
+	}
+	#end
+
 	public static function fromBytes(bytes:Bytes):ByteArrayData
 	{
 		var result = new ByteArrayData();
@@ -1197,6 +1204,18 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	{
 		uncompress(CompressionAlgorithm.DEFLATE);
 	}
+
+	#if openfljs
+	public static function loadFromBytes(bytes:Bytes):Future<ByteArray>
+	{
+		return ByteArray.loadFromBytes(bytes);
+	}
+
+	public static function loadFromFile(path:String):Future<ByteArray>
+	{
+		return ByteArray.loadFromFile(path);
+	}
+	#end
 
 	public function readBoolean():Bool
 	{
