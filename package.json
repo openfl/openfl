@@ -57,7 +57,7 @@
     "build-test-haxe": "cd test/npm/haxe && haxe build.hxml && webpack",
     "build-test-typescript": "cd test/npm/typescript && tsc -p tsconfig.json && webpack",
     "dev-link": "npm link lime && npm link hxgenjs && npm link hxnodejs && npm link hxp && npm link format",
-    "prepublishOnly": "npm run dev-link && npm run build",
+    "prepublishOnly": "npm run build",
     "serve": "http-server -c-1 --cors",
     "test": "npm run build-test-es5 && npm run build-test-es6 && npm run build-test-haxe && npm run build-test-typescript && mocha-chrome test/npm/index.html --old-and-busted",
     "test-es5": "npm run build-test-es5 && mocha-chrome test/npm/es5/index.html --old-and-busted",
