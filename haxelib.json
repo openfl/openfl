@@ -4,8 +4,8 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "8.8.0",
-	"releasenote": "Added ByteArray.defaultEndian, NPM fixes, unit testing fixes",
+	"version": "8.9.0",
+	"releasenote": "Renderer fixes, improved AS3 externs, many other fixes",
 	"contributors": [ "singmajesty" ],
 	"classPath": "src"
 }
