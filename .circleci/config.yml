@@ -152,10 +152,10 @@ commands:
          command: npm install
      - run:
          name: Build Library
-         command: npm run build
+         command: npm run build -s
      - run:
          name: Run Tests
-         command: npm run test
+         command: npm run test -s
 
 
 jobs:
