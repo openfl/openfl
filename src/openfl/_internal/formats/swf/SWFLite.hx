@@ -152,6 +152,9 @@ import openfl.Assets;
 
 	private function __init():Void
 	{
+		if (symbols == null) return;
+		if (symbolsByClassName == null) symbolsByClassName = new Map<String, SWFSymbol>();
+
 		for (symbol in symbols)
 		{
 			if (symbol == null || symbol.className == null) continue;
