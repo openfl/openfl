@@ -40,7 +40,7 @@ class Script extends hxp.Script
 	private function test():Void
 	{
 		var targets = [
-			"npm", "npm-es5", "npm-es6", "npm-haxe", "npm-typescript", "haxelib", "flash", "html5", "neko", "cpp", "windows", "mac", "linux", "air", "web",
+			"npm", "npm-es5", "npm-es6", "npm-haxe", "npm-typescript", "haxelib", "flash", "html5", "neko", "cpp", "hl", "windows", "mac", "linux", "air", "web",
 			"electron"
 		];
 
@@ -121,6 +121,7 @@ class Script extends hxp.Script
 			}
 
 			if (target == "neko" || target == null) runOpenFLCommand(dir, ["test", "neko"]);
+			if (target == "hl" || target == null) runOpenFLCommand(dir, ["test", "hl"]);
 			if (target == "cpp" || target == null || target == System.hostPlatform) runOpenFLCommand(dir, ["test", "cpp"]);
 
 			if (target == "web" || target == "flash" || target == null) runOpenFLCommand(dir, ["build", "flash", "-debug"]);
