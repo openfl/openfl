@@ -1,5 +1,7 @@
-package format.swf.data.actions.swf3 {import format.swf.data.actions.*;
+package format.swf.data.actions.swf3
 
+	{
+		import format.swf.data.actions.*;
 import com.codeazur.hxswf.SWFData;
 
 class ActionGotoLabel extends Action implements IAction

@@ -1,5 +1,7 @@
-package format.swf.data.actions.swf3 {import com.codeazur.hxswf.SWFData;
+package format.swf.data.actions.swf3
 
+	{
+		import com.codeazur.hxswf.SWFData;
 import format.swf.data.actions.*;
 
 class ActionGotoFrame extends Action implements IAction

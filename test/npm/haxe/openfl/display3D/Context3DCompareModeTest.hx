@@ -12,8 +12,8 @@ class Context3DCompareModeTest
 			{
 				switch (Context3DCompareMode.ALWAYS)
 				{
-					case Context3DCompareMode.ALWAYS, Context3DCompareMode.EQUAL, Context3DCompareMode.GREATER, Context3DCompareMode
-						.GREATER_EQUAL, Context3DCompareMode.LESS, Context3DCompareMode.LESS_EQUAL, Context3DCompareMode.NEVER, Context3DCompareMode.NOT_EQUAL:
+					case Context3DCompareMode.ALWAYS, Context3DCompareMode.EQUAL, Context3DCompareMode.GREATER, Context3DCompareMode.GREATER_EQUAL,
+						Context3DCompareMode.LESS, Context3DCompareMode.LESS_EQUAL, Context3DCompareMode.NEVER, Context3DCompareMode.NOT_EQUAL:
 				}
 			});
 		});

@@ -12,8 +12,8 @@ class Context3DVertexBufferFormatTest
 			{
 				switch (Context3DVertexBufferFormat.BYTES_4)
 				{
-					case Context3DVertexBufferFormat.BYTES_4, Context3DVertexBufferFormat.FLOAT_1, Context3DVertexBufferFormat
-						.FLOAT_2, Context3DVertexBufferFormat.FLOAT_3, Context3DVertexBufferFormat.FLOAT_4:
+					case Context3DVertexBufferFormat.BYTES_4, Context3DVertexBufferFormat.FLOAT_1, Context3DVertexBufferFormat.FLOAT_2,
+						Context3DVertexBufferFormat.FLOAT_3, Context3DVertexBufferFormat.FLOAT_4:
 				}
 			});
 		});

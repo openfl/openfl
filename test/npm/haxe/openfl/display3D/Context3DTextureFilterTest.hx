@@ -12,8 +12,8 @@ class Context3DTextureFilterTest
 			{
 				switch (Context3DTextureFilter.ANISOTROPIC16X)
 				{
-					case Context3DTextureFilter.ANISOTROPIC16X, Context3DTextureFilter.ANISOTROPIC2X, Context3DTextureFilter
-						.ANISOTROPIC4X, Context3DTextureFilter.ANISOTROPIC8X, Context3DTextureFilter.LINEAR, Context3DTextureFilter.NEAREST:
+					case Context3DTextureFilter.ANISOTROPIC16X, Context3DTextureFilter.ANISOTROPIC2X, Context3DTextureFilter.ANISOTROPIC4X,
+						Context3DTextureFilter.ANISOTROPIC8X, Context3DTextureFilter.LINEAR, Context3DTextureFilter.NEAREST:
 				}
 			});
 		});

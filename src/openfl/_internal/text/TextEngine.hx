@@ -942,9 +942,9 @@ class TextEngine
 			}
 
 			leading = currentFormat.leading;
-			
+
 			heightValue = Math.ceil(ascent + descent + leading);
-			
+
 			if (heightValue > maxHeightValue)
 			{
 				maxHeightValue = heightValue;
@@ -970,10 +970,10 @@ class TextEngine
 				#end
 
 				font = getFontInstance(currentFormat);
-				
+
 				return true;
 			}
-			
+
 			return false;
 		}
 
@@ -1008,7 +1008,8 @@ class TextEngine
 					{
 						if (!nextFormatRange())
 						{
-							Log.warn("You found a bug in OpenFL's text code! Please save a copy of your project and contact Joshua Granick (@singmajesty) so we can fix this.");
+							Log
+								.warn("You found a bug in OpenFL's text code! Please save a copy of your project and contact Joshua Granick (@singmajesty) so we can fix this.");
 							break;
 						}
 
@@ -1096,7 +1097,8 @@ class TextEngine
 
 					if (!nextFormatRange())
 					{
-						Log.warn("You found a bug in OpenFL's text code! Please save a copy of your project and contact Joshua Granick (@singmajesty) so we can fix this.");
+						Log
+							.warn("You found a bug in OpenFL's text code! Please save a copy of your project and contact Joshua Granick (@singmajesty) so we can fix this.");
 						break;
 					}
 

@@ -1236,10 +1236,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	@:noCompletion private override function __dispatchEvent(event:Event):Bool
 	{
 		#if !openfl_disable_handle_error
-		try {
+		try
+		{
 		#end
 
-		return super.__dispatchEvent(event);
+			return super.__dispatchEvent(event);
 
 		#if !openfl_disable_handle_error
 		}
@@ -1264,48 +1265,25 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	@:noCompletion private function __dispatchStack(event:Event, stack:Array<DisplayObject>):Void
 	{
 		#if !openfl_disable_handle_error
-		try {
+		try
+		{
 		#end
 
-		var target:DisplayObject;
-		var length = stack.length;
+			var target:DisplayObject;
+			var length = stack.length;
 
-		if (length == 0)
-		{
-			event.eventPhase = EventPhase.AT_TARGET;
-			target = cast event.target;
-			target.__dispatch(event);
-		}
-		else
-		{
-			event.eventPhase = EventPhase.CAPTURING_PHASE;
-			event.target = stack[stack.length - 1];
-
-			for (i in 0...length - 1)
+			if (length == 0)
 			{
-				stack[i].__dispatch(event);
-
-				if (event.__isCanceled)
-				{
-					return;
-				}
+				event.eventPhase = EventPhase.AT_TARGET;
+				target = cast event.target;
+				target.__dispatch(event);
 			}
-
-			event.eventPhase = EventPhase.AT_TARGET;
-			target = cast event.target;
-			target.__dispatch(event);
-
-			if (event.__isCanceled)
+			else
 			{
-				return;
-			}
+				event.eventPhase = EventPhase.CAPTURING_PHASE;
+				event.target = stack[stack.length - 1];
 
-			if (event.bubbles)
-			{
-				event.eventPhase = EventPhase.BUBBLING_PHASE;
-				var i = length - 2;
-
-				while (i >= 0)
+				for (i in 0...length - 1)
 				{
 					stack[i].__dispatch(event);
 
@@ -1313,11 +1291,35 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					{
 						return;
 					}
+				}
 
-					i--;
+				event.eventPhase = EventPhase.AT_TARGET;
+				target = cast event.target;
+				target.__dispatch(event);
+
+				if (event.__isCanceled)
+				{
+					return;
+				}
+
+				if (event.bubbles)
+				{
+					event.eventPhase = EventPhase.BUBBLING_PHASE;
+					var i = length - 2;
+
+					while (i >= 0)
+					{
+						stack[i].__dispatch(event);
+
+						if (event.__isCanceled)
+						{
+							return;
+						}
+
+						i--;
+					}
 				}
 			}
-		}
 
 		#if !openfl_disable_handle_error
 		}
