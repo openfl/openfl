@@ -12,7 +12,7 @@ class AVM1MovieTest
 			Type.createInstance(AVM1Movie, []);
 		});
 
-		#if !flash
+		#if (!flash && !cpp)
 		var object:AVM1Movie = cast
 			{
 				addCallback: function(name, closure) {},

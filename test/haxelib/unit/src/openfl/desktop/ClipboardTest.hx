@@ -46,7 +46,7 @@ class ClipboardTest
 	#if (flash && !air)
 	@Ignore
 	#end
-	@AsyncTest public function getData()
+	@Test public function getData()
 	{
 		var textFormatData = 'Text Format Data';
 		var clipboard = Clipboard.generalClipboard;

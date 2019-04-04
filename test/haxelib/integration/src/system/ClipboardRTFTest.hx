@@ -11,12 +11,11 @@ class ClipboardRTFTest
 	#if (flash && !air)
 	@Ignore
 	#end
-	@AsyncTest public function getData()
+	@AsyncTest public function getData(factory:AsyncFactory)
 	{
 		// TODO: Inline RTF bytes?
 
-		#if integration
-		var handler = Async.handler(this, function(richTextFormatData)
+		var handler = factory.createHandler(this, function(richTextFormatData)
 		{
 			var textFormatData = 'Text Format Data';
 			var clipboard = Clipboard.generalClipboard;
@@ -37,6 +36,5 @@ class ClipboardRTFTest
 		});
 
 		ByteArray.loadFromFile("hello.rtf").onComplete(handler);
-		#end
 	}
 }

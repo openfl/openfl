@@ -8,9 +8,9 @@ class FileIOTest
 	#if flash
 	@Ignore
 	#end
-	@AsyncTest public function BitmapData_fromBase64()
+	@AsyncTest public function BitmapData_fromBase64(factory:AsyncFactory)
 	{
-		var handler = Async.handler(this, function(logoBytes)
+		var handler = factory.createHandler(this, function(logoBytes)
 		{
 			var logo = logoBytes.readUTFBytes(logoBytes.length);
 			var type = 'image';

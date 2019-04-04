@@ -6,13 +6,13 @@ import openfl.utils.Timer;
 class TimerAsyncTest
 {
 	#if test_timer
-	@AsyncTest public function timerFinished()
+	@AsyncTest public function timerFinished(factory:AsyncFactory)
 	{
 		// TODO: Lower MS values make this test fails completely
 		var timer = new Timer(50, 2);
 		timer.start();
 
-		var handler:Dynamic = Async.handler(this, function():Void
+		var handler:Dynamic = factory.createHandler(this, function():Void
 		{
 			Assert.isFalse(timer.running);
 			Assert.areEqual(2, timer.currentCount);
@@ -22,12 +22,12 @@ class TimerAsyncTest
 		var m_timer = massive.munit.util.Timer.delay(handler, 150);
 	}
 
-	@AsyncTest public function timerRunning()
+	@AsyncTest public function timerRunning(factory:AssetFactory)
 	{
 		var timer = new Timer(100, 5);
 		timer.start();
 
-		var handler:Dynamic = Async.handler(this, function():Void
+		var handler:Dynamic = factory.createHandler(this, function():Void
 		{
 			Assert.isTrue(timer.running);
 			Assert.isTrue(timer.currentCount == 1 || timer.currentCount == 2 || timer.currentCount == 3); // TODO: timer resolution?
@@ -36,14 +36,14 @@ class TimerAsyncTest
 		var m_timer = massive.munit.util.Timer.delay(handler, 250);
 	}
 
-	@AsyncTest public function repeatCountDuringTimer()
+	@AsyncTest public function repeatCountDuringTimer(factory:AsyncFactory)
 	{
 		var timer = new Timer(100, 5);
 		timer.start();
 
 		Assert.areEqual(0, timer.currentCount);
 
-		var handler:Dynamic = Async.handler(this, function():Void
+		var handler:Dynamic = factory.createHandler(this, function():Void
 		{
 			timer.repeatCount = 1;
 
