@@ -2,7 +2,6 @@ package openfl.utils;
 
 import openfl.errors.Error;
 import massive.munit.Assert;
-import massive.munit.Async;
 
 class TimerTest
 {
