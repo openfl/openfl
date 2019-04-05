@@ -1,5 +1,6 @@
 package openfl.filters;
 
+import haxe.Timer;
 #if !flash
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectRenderer;
@@ -174,8 +175,11 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 	@:noCompletion private override function __applyFilter(bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData
 	{
 		#if lime
+		var time = Timer.stamp();
 		var finalImage = ImageDataUtil.gaussianBlur(bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle(), destPoint.__toLimeVector2(),
 			__blurX, __blurY, __quality);
+		var elapsed = Timer.stamp() - time;
+		trace("blurX: " + __blurX + " blurY: " + __blurY + " quality: " + __quality + " elapsed: " + elapsed * 1000 + "ms");
 		if (finalImage == bitmapData.image) return bitmapData;
 		#end
 		return sourceBitmapData;
@@ -262,11 +266,11 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 private class BlurShader extends BitmapFilterShader
 {
 	@:glFragmentSource("uniform sampler2D openfl_Texture;
-		
+
 		varying vec2 vBlurCoords[7];
-		
+
 		void main(void) {
-			
+
 			vec4 sum = vec4(0.0);
 			sum += texture2D(openfl_Texture, vBlurCoords[0]) * 0.00443;
 			sum += texture2D(openfl_Texture, vBlurCoords[1]) * 0.05399;
@@ -275,23 +279,23 @@ private class BlurShader extends BitmapFilterShader
 			sum += texture2D(openfl_Texture, vBlurCoords[4]) * 0.24197;
 			sum += texture2D(openfl_Texture, vBlurCoords[5]) * 0.05399;
 			sum += texture2D(openfl_Texture, vBlurCoords[6]) * 0.00443;
-			
+
 			gl_FragColor = sum;
-			
+
 		}")
 	@:glVertexSource("attribute vec4 openfl_Position;
 		attribute vec2 openfl_TextureCoord;
-		
+
 		uniform mat4 openfl_Matrix;
-		
+
 		uniform vec2 uRadius;
 		varying vec2 vBlurCoords[7];
 		uniform vec2 uTextureSize;
-		
+
 		void main(void) {
-			
+
 			gl_Position = openfl_Matrix * openfl_Position;
-			
+
 			vec2 r = uRadius / uTextureSize;
 			vBlurCoords[0] = openfl_TextureCoord - r * 1.0;
 			vBlurCoords[1] = openfl_TextureCoord - r * 0.75;
@@ -300,7 +304,7 @@ private class BlurShader extends BitmapFilterShader
 			vBlurCoords[4] = openfl_TextureCoord + r * 0.5;
 			vBlurCoords[5] = openfl_TextureCoord + r * 0.75;
 			vBlurCoords[6] = openfl_TextureCoord + r * 1.0;
-			
+
 		}")
 	public function new()
 	{

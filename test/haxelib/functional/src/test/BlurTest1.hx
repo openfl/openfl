@@ -6,11 +6,12 @@ import openfl.display.Bitmap;
 import openfl.utils.Assets;
 import openfl.events.Event;
 import openfl.filters.BlurFilter;
+import openfl.filters.BitmapFilterQuality;
 
 class BlurTest1 extends FunctionalTest
 {
-	private var bitmap:Bitmap;
-	private var blurFilter:BlurFilter;
+	private var bitmaps:Array<Bitmap> = [];
+	private var filters:Array<BlurFilter> = [];
 
 	public function new()
 	{
@@ -21,12 +22,16 @@ class BlurTest1 extends FunctionalTest
 	{
 		content = new Sprite();
 
-		bitmap = new Bitmap(Assets.getBitmapData("assets/OwlAlpha.png"));
-		content.addChild(bitmap);
-
-		blurFilter = new BlurFilter(1, 1, 16);
-		bitmap.filters = [blurFilter];
-
+		var bitmapData = Assets.getBitmapData("assets/openfl.png");
+		for (i in 0...BitmapFilterQuality.HIGH)
+		{
+			bitmaps[i] = new Bitmap(bitmapData);
+			bitmaps[i].x = 50 + i * (bitmapData.width + 50);
+			bitmaps[i].y = 50;
+			content.addChild(bitmaps[i]);
+			filters[i] = new BlurFilter(4, 4, i);
+			bitmaps[i].filters = [filters[i]];
+		}
 		content.addEventListener(Event.ENTER_FRAME, update);
 	}
 
@@ -34,16 +39,18 @@ class BlurTest1 extends FunctionalTest
 	{
 		content.removeEventListener(Event.ENTER_FRAME, update);
 		content = null;
-		bitmap = null;
-		blurFilter = null;
+		bitmaps = [];
+		filters = [];
 	}
 
 	private function update(e:Event):Void
 	{
 		var sinT = Math.sin(Timer.stamp() * 0.5);
 		var amount = Math.abs(sinT) * 64;
-		blurFilter.blurX = amount;
-		blurFilter.blurY = amount;
-		bitmap.filters = [blurFilter];
+		for (i in 0...BitmapFilterQuality.HIGH)
+		{
+			filters[i].blurX = filters[i].blurY = amount;
+			bitmaps[i].filters = [filters[i]];
+		}
 	}
 }
