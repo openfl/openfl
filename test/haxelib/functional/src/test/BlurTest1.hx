@@ -29,7 +29,7 @@ class BlurTest1 extends FunctionalTest
 			bitmaps[i].x = 50 + i * (bitmapData.width + 50);
 			bitmaps[i].y = 50;
 			content.addChild(bitmaps[i]);
-			filters[i] = new BlurFilter(4, 4, i);
+			filters[i] = new BlurFilter(4, 4, i + 1);
 			bitmaps[i].filters = [filters[i]];
 		}
 		content.addEventListener(Event.ENTER_FRAME, update);
