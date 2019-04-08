@@ -357,6 +357,7 @@ class SharedObject extends EventDispatcher
 	**/
 	public function close():Void {}
 
+	#if !openfl_strict
 	/**
 		Connects to a remote shared object on a server through a specified
 		NetConnection object. Use this method after calling `getRemote()`.
@@ -391,6 +392,7 @@ class SharedObject extends EventDispatcher
 	{
 		openfl._internal.Lib.notImplemented();
 	}
+	#end
 
 	// @:noCompletion @:dox(hide) public static function deleteAll (url:String):Int;
 
@@ -737,6 +739,7 @@ class SharedObject extends EventDispatcher
 		return __sharedObjects.get(id);
 	}
 
+	#if !openfl_strict
 	/**
 		Returns a reference to a shared object on Flash Media Server that
 		multiple clients can access. If the remote shared object does not
@@ -807,7 +810,9 @@ class SharedObject extends EventDispatcher
 
 		return null;
 	}
+	#end
 
+	#if !openfl_strict
 	/**
 		Broadcasts a message to all clients connected to a remote shared
 		object, including the client that sent the message. To process and
@@ -819,6 +824,7 @@ class SharedObject extends EventDispatcher
 	{
 		openfl._internal.Lib.notImplemented();
 	}
+	#end
 
 	/**
 		Indicates to the server that the value of a property in the shared

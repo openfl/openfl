@@ -106,10 +106,12 @@ class ClipboardTest
 	{
 		// TODO: Confirm functionality
 
+		#if !openfl_strict
 		var clipboard = Clipboard.generalClipboard;
 		var exists = clipboard.setDataHandler;
 
 		Assert.isNotNull(exists);
+		#end
 	}
 
 	// Properties

@@ -1224,6 +1224,7 @@ class InteractiveObject extends DisplayObject
 		__tabIndex = -1;
 	}
 
+	#if !openfl_strict
 	/**
 		Raises a virtual keyboard.
 
@@ -1245,6 +1246,7 @@ class InteractiveObject extends DisplayObject
 		openfl._internal.Lib.notImplemented();
 		return false;
 	}
+	#end
 
 	@:noCompletion private function __allowMouseFocus():Bool
 	{

@@ -431,6 +431,7 @@ class Clipboard
 		}
 	}
 
+	#if !openfl_strict
 	/**
 		Adds a reference to a handler function that produces the data to be
 		transfered.
@@ -509,6 +510,7 @@ class Clipboard
 		openfl._internal.Lib.notImplemented();
 		return false;
 	}
+	#end
 
 	// Get & Set Methods
 	@:noCompletion private function get_formats():Array<ClipboardFormats>

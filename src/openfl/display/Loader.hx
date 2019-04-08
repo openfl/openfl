@@ -201,6 +201,7 @@ class Loader extends DisplayObjectContainer
 		uncaughtErrorEvents = contentLoaderInfo.uncaughtErrorEvents;
 	}
 
+	#if !openfl_strict
 	/**
 		Cancels a `load()` method operation that is currently in
 		progress for the Loader instance.
@@ -210,6 +211,7 @@ class Loader extends DisplayObjectContainer
 	{
 		openfl._internal.Lib.notImplemented();
 	}
+	#end
 
 	/**
 		Loads a SWF, JPEG, progressive JPEG, unanimated GIF, or PNG file into an

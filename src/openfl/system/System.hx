@@ -202,6 +202,7 @@ import cpp.vm.Gc;
 		#end
 	}
 
+	#if !openfl_strict
 	/**
 		Pauses Flash Player or the AIR Debug Launcher(ADL). After calling this
 		method, nothing in the application continues except the delivery of Socket
@@ -215,9 +216,11 @@ import cpp.vm.Gc;
 	{
 		openfl._internal.Lib.notImplemented();
 	}
+	#end
 
 	// @:noCompletion @:dox(hide) @:require(flash11) public static function pauseForGCIfCollectionImminent (imminence:Float = 0.75):Void;
 
+	#if !openfl_strict
 	/**
 		Resumes the application after calling `System.pause()`.
 
@@ -229,6 +232,7 @@ import cpp.vm.Gc;
 	{
 		openfl._internal.Lib.notImplemented();
 	}
+	#end
 
 	/**
 		Replaces the contents of the Clipboard with a specified text string. This

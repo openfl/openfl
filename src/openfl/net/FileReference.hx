@@ -1061,6 +1061,7 @@ class FileReference extends EventDispatcher
 		#end
 	}
 
+	#if !openfl_strict
 	/**
 		Starts the upload of the file to a remote server. Although Flash
 		Player has no restriction on the size of files you can upload or
@@ -1284,6 +1285,7 @@ class FileReference extends EventDispatcher
 	{
 		openfl._internal.Lib.notImplemented();
 	}
+	#end
 
 	// Event Handlers
 	@:noCompletion private function openFileDialog_onCancel():Void

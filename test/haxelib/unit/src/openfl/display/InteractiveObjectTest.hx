@@ -163,9 +163,11 @@ class InteractiveObjectTest
 	{
 		// TODO: Confirm functionality
 
+		#if !openfl_strict
 		var sprite = new Sprite();
 		var exists = sprite.requestSoftKeyboard;
 
 		Assert.isNotNull(exists);
+		#end
 	}
 }
