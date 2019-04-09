@@ -808,6 +808,8 @@ class TextField extends InteractiveObject
 		__updateText(__text + text);
 
 		__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __text.length;
+
+		__updateScrollV();
 		__updateScrollH();
 	}
 
@@ -1313,6 +1315,9 @@ class TextField extends InteractiveObject
 	{
 		__selectionIndex = beginIndex;
 		__caretIndex = endIndex;
+
+		__updateScrollV();
+
 		__stopCursorTimer();
 		__startCursorTimer();
 	}
@@ -2273,6 +2278,7 @@ class TextField extends InteractiveObject
 			}
 		}
 
+		__updateScrollV();
 		__updateScrollH();
 
 		__dirty = true;
@@ -2360,7 +2366,6 @@ class TextField extends InteractiveObject
 		if (__layoutDirty)
 		{
 			var cacheWidth = __textEngine.width;
-
 			__textEngine.update();
 
 			if (__textEngine.autoSize != NONE)
@@ -2425,6 +2430,47 @@ class TextField extends InteractiveObject
 			{
 				scrollH = 0;
 			}
+		}
+	}
+
+	@:noCompletion private function __updateScrollV():Void
+	{
+		__layoutDirty = true;
+		__updateLayout();
+
+		var lineIndex = getLineIndexOfChar(__caretIndex);
+
+		if (lineIndex == -1 && __caretIndex > 0)
+		{
+			// new paragraph
+			lineIndex = getLineIndexOfChar(__caretIndex - 1) + 1;
+		}
+
+		if (lineIndex + 1 < scrollV)
+		{
+			scrollV = lineIndex + 1;
+		}
+		else if (lineIndex + 1 > bottomScrollV)
+		{
+			var i = lineIndex, tempHeight = 0.0;
+
+			while (i >= 0)
+			{
+				if (tempHeight + __textEngine.lineHeights[i] <= height - 4)
+				{
+					tempHeight += __textEngine.lineHeights[i];
+					i--;
+				}
+				else
+					break;
+			}
+
+			scrollV = i + 2;
+		}
+		else
+		{
+			// TODO: can this be avoided? this doesn't need to hit the setter each time, just a couple times
+			scrollV = scrollV;
 		}
 	}
 
@@ -2727,6 +2773,7 @@ class TextField extends InteractiveObject
 		#else
 		__updateText(value);
 		#end
+		__updateScrollV();
 
 		return value;
 	}
@@ -2796,6 +2843,7 @@ class TextField extends InteractiveObject
 			__dirty = true;
 			__layoutDirty = true;
 			__updateText(__text);
+			__updateScrollV();
 			__updateScrollH();
 			__setRenderDirty();
 		}
@@ -2856,9 +2904,6 @@ class TextField extends InteractiveObject
 	@:noCompletion private function set_scrollV(value:Int):Int
 	{
 		__updateLayout();
-
-		if (value > __textEngine.maxScrollV) value = __textEngine.maxScrollV;
-		if (value < 1) value = 1;
 
 		if (value != __textEngine.scrollV)
 		{
@@ -2955,6 +3000,7 @@ class TextField extends InteractiveObject
 		__isHTML = false;
 
 		__updateText(value);
+		__updateScrollV();
 
 		return value;
 	}
@@ -3314,6 +3360,7 @@ class TextField extends InteractiveObject
 				}
 
 				__updateScrollH();
+				__updateScrollV();
 				__stopCursorTimer();
 				__startCursorTimer();
 
@@ -3346,6 +3393,8 @@ class TextField extends InteractiveObject
 				}
 
 				__updateScrollH();
+				__updateScrollV();
+
 				__stopCursorTimer();
 				__startCursorTimer();
 
@@ -3371,6 +3420,8 @@ class TextField extends InteractiveObject
 					__selectionIndex = __caretIndex;
 				}
 
+				__updateScrollV();
+
 				__stopCursorTimer();
 				__startCursorTimer();
 
@@ -3395,6 +3446,8 @@ class TextField extends InteractiveObject
 
 					__selectionIndex = __caretIndex;
 				}
+
+				__updateScrollV();
 
 				__stopCursorTimer();
 				__startCursorTimer();
