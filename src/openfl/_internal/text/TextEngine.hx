@@ -1163,8 +1163,13 @@ class TextEngine
 						i++;
 					}
 				}
-
-				if (i < 2 && positionWidth + offsetX > width - 2)
+				
+				if (positionWidth == 0.0)
+				{
+					// if there's so much offsetX that text can't even be displayed to begin with, don't worry about wrapping
+					break;
+				}
+				else if (i < 2 && positionWidth + offsetX > width - 2)
 				{
 					// if there's no room to put even a single character, automatically wrap the next character
 
