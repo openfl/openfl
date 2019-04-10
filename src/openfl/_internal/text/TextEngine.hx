@@ -690,11 +690,14 @@ class TextEngine
 			}
 		}
 
-		var group = layoutGroups[layoutGroups.length - 1];
-
-		if (group != null && group.startIndex == group.endIndex)
+		if (layoutGroups.length > 0)
 		{
-			textHeight -= currentLineHeight;
+			var group = layoutGroups[layoutGroups.length - 1];
+
+			if (group != null && group.startIndex == group.endIndex)
+			{
+				textHeight -= currentLineHeight;
+			}
 		}
 
 		if (autoSize != NONE)
@@ -1163,7 +1166,7 @@ class TextEngine
 						i++;
 					}
 				}
-				
+
 				if (positionWidth == 0.0)
 				{
 					// if there's so much offsetX that text can't even be displayed to begin with, don't worry about wrapping
