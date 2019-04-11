@@ -80,9 +80,21 @@ class Tools
 			{
 				var line = StringTools.trim(process.stdout.readLine());
 
-				if (StringTools.startsWith(line, "-L "))
+				if (line.length > 0 && !StringTools.startsWith(line, "-"))
 				{
-					path = StringTools.trim(line.substr(2));
+					path = StringTools.trim(line);
+					if (FileSystem.exists(Path.combine(path, "../lib")))
+					{
+						path = Path.combine(path, "../lib");
+					}
+					else
+					{
+						path = Path.combine(path, "../ndll");
+					}
+					if (!StringTools.endsWith(path, "/"))
+					{
+						path += "/";
+					}
 					break;
 				}
 			}
@@ -97,7 +109,7 @@ class Tools
 				untyped $loader.path = $array(path + "Windows/", $loader.path);
 
 			case MAC:
-				untyped $loader.path = $array(path + "Mac/", $loader.path);
+				// untyped $loader.path = $array(path + "Mac/", $loader.path);
 				untyped $loader.path = $array(path + "Mac64/", $loader.path);
 
 			case LINUX:
@@ -333,12 +345,12 @@ class Tools
 	private static function generateSWFLiteClasses(targetPath:String, output:Array<Asset>, swfLite:SWFLite, swfID:String, prefix:String = ""):Array<String>
 	{
 		#if commonjs
-		var bitmapDataTemplate = File.getContent(#if (lime >= "7.0.0") Path.combine #else PathHelper.combine #end (js.Node.__dirname,
-			"../assets/templates/swf/BitmapData.mtt"));
-		var movieClipTemplate = File.getContent(#if (lime >= "7.0.0") Path.combine #else PathHelper.combine #end (js.Node.__dirname,
-			"../assets/templates/swf/MovieClip.mtt"));
-		var simpleButtonTemplate = File.getContent(#if (lime >= "7.0.0") Path.combine #else PathHelper.combine #end (js.Node.__dirname,
-			"../assets/templates/swf/SimpleButton.mtt"));
+		var bitmapDataTemplate = File.getContent(#if (lime >= "7.0.0") Path.combine #else PathHelper.combine #end (js.Node
+			.__dirname, "../assets/templates/swf/BitmapData.mtt"));
+		var movieClipTemplate = File.getContent(#if (lime >= "7.0.0") Path.combine #else PathHelper.combine #end (js.Node
+			.__dirname, "../assets/templates/swf/MovieClip.mtt"));
+		var simpleButtonTemplate = File.getContent(#if (lime >= "7.0.0") Path.combine #else PathHelper.combine #end (js.Node
+			.__dirname, "../assets/templates/swf/SimpleButton.mtt"));
 		#else
 		var bitmapDataTemplate = File.getContent(#if (lime >= "7.0.0") Haxelib.getPath #else PathHelper.getHaxelib #end (new Haxelib("openfl"), true)
 			+ "/assets/templates/swf/BitmapData.mtt");
@@ -650,8 +662,8 @@ class Tools
 		{
 			if (!createdDirectory)
 			{
-				#if (lime >= "7.0.0") System.mkdir #else PathHelper.mkdir #end (#if (lime >= "7.0.0") Path.combine #else PathHelper.combine #end (targetPath,
-					"symbols"));
+				#if (lime >= "7.0.0") System.mkdir #else PathHelper.mkdir #end (#if (lime >= "7.0.0") Path.combine #else PathHelper
+					.combine #end (targetPath, "symbols"));
 				createdDirectory = true;
 			}
 
@@ -683,8 +695,8 @@ class Tools
 		{
 			if (!createdDirectory)
 			{
-				#if (lime >= "7.0.0") System.mkdir #else PathHelper.mkdir #end (#if (lime >= "7.0.0") Path.combine #else PathHelper.combine #end (targetPath,
-					"sounds"));
+				#if (lime >= "7.0.0") System.mkdir #else PathHelper.mkdir #end (#if (lime >= "7.0.0") Path.combine #else PathHelper
+					.combine #end (targetPath, "sounds"));
 				createdDirectory = true;
 			}
 
@@ -864,8 +876,8 @@ class Tools
 						if (FileSystem.exists(cacheFile))
 						{
 							var cacheDate = FileSystem.stat(cacheFile).mtime;
-							var swfToolDate = FileSystem.stat(#if (lime >= "7.0.0") Haxelib.getPath #else PathHelper.getHaxelib #end (new Haxelib("openfl"),
-								true)
+							var swfToolDate = FileSystem.stat(#if (lime >= "7.0.0") Haxelib.getPath #else PathHelper
+								.getHaxelib #end (new Haxelib("openfl"), true)
 								+ "/scripts/tools.n").mtime;
 							var sourceDate = FileSystem.stat(library.sourcePath).mtime;
 
