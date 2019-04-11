@@ -17,10 +17,6 @@ import openfl.display3D.Context3D;
 import openfl.display.Application;
 import openfl.geom.Rectangle;
 import openfl.Lib;
-#if (lime < "7.0.0")
-import lime.app.Preloader;
-import lime.graphics.Renderer;
-#end
 
 extern class Stage extends DisplayObjectContainer implements IModule
 {
@@ -110,24 +106,11 @@ extern class Stage extends DisplayObjectContainer implements IModule
 	public function setOrientation(newOrientation:StageOrientation):Void;
 	public static var supportsOrientationChange(default, never):Bool;
 	#end
-	#if (lime >= "7.0.0")
 	private function __registerLimeModule(application:LimeApplication):Void;
 	private function __unregisterLimeModule(application:LimeApplication):Void;
 	public function onRenderContextLost():Void;
 	public function onRenderContextRestored(context:RenderContext):Void;
 	public function render(context:RenderContext):Void;
-	#else
-	public function addRenderer(renderer:Renderer):Void;
-	public function addWindow(window:Window):Void;
-	public function registerModule(application:LimeApplication):Void;
-	public function removeRenderer(renderer:Renderer):Void;
-	public function removeWindow(window:Window):Void;
-	public function setPreloader(preloader:Preloader):Void;
-	public function unregisterModule(application:LimeApplication):Void;
-	public function onRenderContextLost(renderer:Renderer):Void;
-	public function onRenderContextRestored(renderer:Renderer, context:RenderContext):Void;
-	public function render(renderer:Renderer):Void;
-	#end
 	public function onGamepadAxisMove(gamepad:Gamepad, axis:GamepadAxis, value:Float):Void;
 	public function onGamepadButtonDown(gamepad:Gamepad, button:GamepadButton):Void;
 	public function onGamepadButtonUp(gamepad:Gamepad, button:GamepadButton):Void;
