@@ -238,8 +238,7 @@ class SWFLiteExporter
 					if (transparent) alpha.set(i, buffer.readUnsignedByte());
 				}
 
-				var paddedWidth:Int = Math.ceil(data.bitmapWidth / 4) * 4;
-				var values = Bytes.alloc((data.bitmapWidth + 1) * data.bitmapHeight);
+				var values = Bytes.alloc(data.bitmapWidth * data.bitmapHeight + data.bitmapHeight);
 				index = 0;
 
 				for (y in 0...data.bitmapHeight)
@@ -247,7 +246,7 @@ class SWFLiteExporter
 					values.set(index++, 0);
 					values.blit(index, buffer, buffer.position, data.bitmapWidth);
 					index += data.bitmapWidth;
-					buffer.position += paddedWidth;
+					buffer.position += data.bitmapWidth;
 				}
 
 				var png = new List();
@@ -317,7 +316,7 @@ class SWFLiteExporter
 				var image = jpeg.decode(bytes.getData());
 				#end
 
-				var values = Bytes.alloc((image.width + 1) * image.height);
+				var values = Bytes.alloc(image.width * image.height + image.height);
 				var index = 0;
 
 				for (y in 0...image.height)
@@ -339,7 +338,7 @@ class SWFLiteExporter
 					}));
 				png.add(CPalette(alphaPalette));
 				var valuesBA:ByteArray = values;
-				valuesBA.deflate();
+				valuesBA.compress();
 				png.add(CData(valuesBA));
 				png.add(CEnd);
 
