@@ -1,10 +1,10 @@
 package openfl._internal.renderer;
 
-@:fakeEnum(Int) enum GraphicsFillType
+@:enum abstract GraphicsFillType(Int)
 {
-	SOLID_FILL;
-	GRADIENT_FILL;
-	BITMAP_FILL;
-	END_FILL;
-	SHADER_FILL;
+	var SOLID_FILL = 0;
+	var GRADIENT_FILL = 1;
+	var BITMAP_FILL = 2;
+	var END_FILL = 3;
+	var SHADER_FILL = 4;
 }
