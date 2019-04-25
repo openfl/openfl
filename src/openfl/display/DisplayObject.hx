@@ -2135,24 +2135,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				offsetX = rect.x > 0 ? Math.ceil(rect.x) : Math.floor(rect.x);
 				offsetY = rect.y > 0 ? Math.ceil(rect.y) : Math.floor(rect.y);
 
-				if (__cacheBitmapData != null)
+				bitmapWidth = filterWidth;
+				bitmapHeight = filterHeight;
+
+				if (__cacheBitmapData == null || bitmapWidth != __cacheBitmapData.width  || bitmapHeight != __cacheBitmapData.height)
 				{
-					if (filterWidth > __cacheBitmapData.width || filterHeight > __cacheBitmapData.height)
-					{
-						bitmapWidth = Math.ceil(Math.max(filterWidth * 1.25, __cacheBitmapData.width));
-						bitmapHeight = Math.ceil(Math.max(filterHeight * 1.25, __cacheBitmapData.height));
-						needRender = true;
-					}
-					else
-					{
-						bitmapWidth = __cacheBitmapData.width;
-						bitmapHeight = __cacheBitmapData.height;
-					}
-				}
-				else
-				{
-					bitmapWidth = filterWidth;
-					bitmapHeight = filterHeight;
+					needRender = true;
 				}
 			}
 
@@ -2168,7 +2156,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 					var bitmapColor = needsFill ? 0 : fillColor;
 					var allowFramebuffer = (renderer.__type == OPENGL);
 
-					if (__cacheBitmapData == null || bitmapWidth > __cacheBitmapData.width || bitmapHeight > __cacheBitmapData.height)
+					if (__cacheBitmapData == null || bitmapWidth != __cacheBitmapData.width || bitmapHeight != __cacheBitmapData.height)
 					{
 						__cacheBitmapData = new BitmapData(bitmapWidth, bitmapHeight, true, bitmapColor);
 
