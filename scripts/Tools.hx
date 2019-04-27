@@ -42,6 +42,8 @@ import sys.io.File;
 import sys.io.Process;
 import sys.FileSystem;
 
+using format.swf.exporters.SWFLiteExporter.AVM2;
+
 class Tools
 {
 	private static inline var SWFLITE_DATA_SUFFIX = #if force_dat_suffix ".dat" #else ".bin" #end;
@@ -201,18 +203,38 @@ class Tools
 			var symbolID = swf.symbols.get(className);
 			var templateData = null;
 			var symbol = swf.data.getCharacter(symbolID);
+			var baseClassName = null;
 
 			if (Std.is(symbol, TagDefineBits) || Std.is(symbol, TagDefineBitsJPEG2) || Std.is(symbol, TagDefineBitsLossless))
 			{
 				templateData = bitmapDataTemplate;
+				baseClassName = "openfl.display.BitmapData";
 			}
 			else if (Std.is(symbol, TagDefineButton2))
 			{
 				templateData = simpleButtonTemplate;
+				baseClassName = "openfl.display.SimpleButton";
 			}
 			else if (Std.is(symbol, SWFTimelineContainer))
 			{
 				templateData = movieClipTemplate;
+				baseClassName = "openfl.display.MovieClip";
+			}
+
+			var classData = swf.data.abcData.findClassByName(className);
+			if (classData != null)
+			{
+				if (classData.superclass != null)
+				{
+					var superClassData = swf.data.abcData.resolveMultiNameByIndex(classData.superclass);
+					switch (superClassData.nameSpace)
+					{
+						case NPublic(_) if (!~/^flash\./.match(superClassData.nameSpaceName)):
+							baseClassName = ("" == superClassData.nameSpaceName ? "" : superClassData.nameSpaceName + ".")
+								+ superClassData.name;
+						case _:
+					}
+				}
 			}
 
 			if (templateData != null)
@@ -293,6 +315,7 @@ class Tools
 						PACKAGE_NAME: packageName,
 						NATIVE_CLASS_NAME: StringTools.trim(className),
 						CLASS_NAME: name,
+						BASE_CLASS_NAME: baseClassName,
 						SWF_ID: swfAsset.id,
 						SYMBOL_ID: symbolID,
 						PREFIX: prefix,
@@ -345,18 +368,29 @@ class Tools
 		{
 			var symbol = swfLite.symbols.get(symbolID);
 			var templateData = null;
+			var baseClassName = null;
 
 			if (Std.is(symbol, BitmapSymbol))
 			{
 				templateData = bitmapDataTemplate;
+				baseClassName = "openfl.display.BitmapData";
 			}
 			else if (Std.is(symbol, SpriteSymbol))
 			{
 				templateData = movieClipTemplate;
+				if (cast(symbol, SpriteSymbol).baseClassName != null)
+				{
+					baseClassName = cast(symbol, SpriteSymbol).baseClassName;
+				}
+				else
+				{
+					baseClassName = "openfl.display.MovieClip";
+				}
 			}
 			else if (Std.is(symbol, ButtonSymbol))
 			{
 				templateData = simpleButtonTemplate;
+				baseClassName = "openfl.display.SimpleButton";
 			}
 
 			if (templateData != null && symbol.className != null)
@@ -454,6 +488,7 @@ class Tools
 						PACKAGE_NAME: packageName,
 						NATIVE_CLASS_NAME: className,
 						CLASS_NAME: name,
+						BASE_CLASS_NAME: baseClassName,
 						SWF_ID: swfID,
 						SYMBOL_ID: symbolID,
 						PREFIX: "",
