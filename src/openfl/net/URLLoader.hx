@@ -146,7 +146,7 @@ class URLLoader extends EventDispatcher
 	**/
 	public var dataFormat:URLLoaderDataFormat;
 
-	@:noCompletion private var __httpRequest:#if (!lime || display || macro) Dynamic #else _IHTTPRequest #end; // TODO: Better (non-private) solution
+	@:noCompletion private var __httpRequest:#if (!lime || display || macro || doc_gen) Dynamic #else _IHTTPRequest #end; // TODO: Better (non-private) solution
 
 	/**
 		Creates a URLLoader object.
@@ -328,7 +328,7 @@ class URLLoader extends EventDispatcher
 
 		var headers = new Array<URLRequestHeader>();
 
-		#if (lime && !display && !macro)
+		#if (lime && !display && !macro && !doc_gen)
 		if (__httpRequest.enableResponseHeaders && __httpRequest.responseHeaders != null)
 		{
 			for (header in __httpRequest.responseHeaders)
@@ -342,7 +342,7 @@ class URLLoader extends EventDispatcher
 		dispatchEvent(event);
 	}
 
-	@:noCompletion private function __prepareRequest(httpRequest:#if (!lime || display || macro) Dynamic #else _IHTTPRequest #end, request:URLRequest):Void
+	@:noCompletion private function __prepareRequest(httpRequest:#if (!lime || display || macro || doc_gen) Dynamic #else _IHTTPRequest #end, request:URLRequest):Void
 	{
 		#if lime
 		__httpRequest = httpRequest;
