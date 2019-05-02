@@ -229,9 +229,11 @@ class Tools
 					var superClassData = swf.data.abcData.resolveMultiNameByIndex(classData.superclass);
 					switch (superClassData.nameSpace)
 					{
-						case NPublic(_) if (!~/^flash\./.match(superClassData.nameSpaceName)):
+						case NPublic(_): 
+							if (!~/^flash\./.match(superClassData.nameSpaceName)){
 							baseClassName = ("" == superClassData.nameSpaceName ? "" : superClassData.nameSpaceName + ".")
 								+ superClassData.name;
+							}
 						case _:
 					}
 				}
