@@ -48,7 +48,7 @@ class TextEngine
 	public var backgroundColor:Int;
 	public var border:Bool;
 	public var borderColor:Int;
-	public var bottomScrollV(default, null):Int;
+	public var bottomScrollV(get, null):Int;
 	public var bounds:Rectangle;
 	public var caretIndex:Int;
 	public var embedFonts:Bool;
@@ -63,12 +63,12 @@ class TextEngine
 	public var lineWidths:Vector<Float>;
 	public var maxChars:Int;
 	public var maxScrollH(default, null):Int;
-	public var maxScrollV(default, null):Int;
+	public var maxScrollV(get, null):Int;
 	public var multiline:Bool;
 	public var numLines(default, null):Int;
 	public var restrict(default, set):UTF8String;
 	public var scrollH:Int;
-	public var scrollV(default, set):Int;
+	@:isVar public var scrollV(get, set):Int;
 	public var selectable:Bool;
 	public var sharpness:Float;
 	public var text(default, set):UTF8String;
@@ -122,6 +122,7 @@ class TextEngine
 		gridFitType = GridFitType.PIXEL;
 		maxChars = 0;
 		multiline = false;
+		numLines = 1;
 		sharpness = 0;
 		scrollH = 0;
 		scrollV = 1;
@@ -1719,6 +1720,70 @@ class TextEngine
 	}
 
 	// Get & Set Methods
+	private function get_bottomScrollV():Int
+	{
+		// TODO: only update when dirty
+		if (numLines == 1 || lineHeights == null)
+		{
+			return 1;
+		}
+		else
+		{
+			var tempHeight = 0.0;
+			var ret = lineHeights.length;
+
+			for (i in ret - 1...lineHeights.length)
+			{
+				if (tempHeight + lineHeights[i] <= height - 4)
+				{
+					tempHeight += lineHeights[i];
+				}
+				else
+				{
+					ret = i;
+					break;
+				}
+			}
+			
+			if (ret < 1) return 1;
+			return ret;
+		}
+	}
+	
+	private function get_maxScrollV():Int
+	{
+		// TODO: only update when dirty
+		if (numLines == 1 || lineHeights == null)
+		{
+			return 1;
+		}
+		else
+		{
+			var i = numLines - 1, tempHeight = 0.0;
+
+			if (text.charCodeAt(text.length - 1) == '\n'.code) i--; // trailing newlines do not contribute to maxScrollV
+			var j = i;
+
+			while (i >= 0)
+			{
+				if (tempHeight + lineHeights[i] <= height - 4)
+				{
+					tempHeight += lineHeights[i];
+					i--;
+				}
+				else
+					break;
+			}
+
+			if (i == j) i = numLines; // maxScrollV defaults to numLines if the height - 4 is less than the line's height
+			// TODO: check if it's based on the first or last line's height
+			else i += 2;
+			
+			if (i < 1) return 1;
+			return i;
+		}
+	}
+	
 	private function set_restrict(value:String):String
 	{
 		if (restrict == value)
@@ -1740,54 +1805,18 @@ class TextEngine
 		return restrict;
 	}
 
+	private function get_scrollV():Int
+	{
+		if (numLines == 1 || lineHeights == null) return 1;
+		
+		var max = maxScrollV;
+		if (scrollV > max) return max;
+		return scrollV;
+	}
+
 	private function set_scrollV(value:Int):Int
 	{
 		if (value < 1) value = 1;
-
-		if (numLines == 1 || lineHeights == null)
-		{
-			value = 1;
-			maxScrollV = 1;
-			bottomScrollV = 1;
-		}
-		else
-		{
-			var i = numLines - 1, tempHeight = 0.0;
-
-			while (i >= 0)
-			{
-				if (tempHeight + lineHeights[i] <= height - 4)
-				{
-					tempHeight += lineHeights[i];
-					i--;
-				}
-				else
-					break;
-			}
-
-			maxScrollV = i + 2;
-			if (maxScrollV < 1) maxScrollV = 1;
-			if (value > maxScrollV) value = maxScrollV;
-
-			tempHeight = 0.0;
-			bottomScrollV = lineHeights.length;
-
-			for (i in value - 1...lineHeights.length)
-			{
-				if (tempHeight + lineHeights[i] <= height - 4)
-				{
-					tempHeight += lineHeights[i];
-				}
-				else
-				{
-					bottomScrollV = i;
-					break;
-				}
-			}
-		}
-
-		if (bottomScrollV < 1) bottomScrollV = 1;
-
 		return scrollV = value;
 	}
 
