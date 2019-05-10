@@ -121,7 +121,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		@param	smoothing	Whether or not the tilemap is smoothed when scaled. For example, the following examples
 		show the same tilemap scaled by a factor of 3, with `smoothing` set to `false` (left) and `true` (right):
 
-		![A bitmap without smoothing.](/images/bitmap_smoothing_off.jpg) ![A bitmap with smoothing.](bitmap_smoothing_on.jpg)
+		![A bitmap without smoothing.](/images/bitmap_smoothing_off.jpg) ![A bitmap with smoothing.](/images/bitmap_smoothing_on.jpg)
 	**/
 	public function new(width:Int, height:Int, tileset:Tileset = null, smoothing:Bool = true)
 	{
