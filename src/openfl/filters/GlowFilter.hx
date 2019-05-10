@@ -68,6 +68,8 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 @:final class GlowFilter extends BitmapFilter
 {
 	@:noCompletion private static var __glowShader:GlowShader = new GlowShader();
+	@:noCompletion private static var __innerGlowShader:InnerGlowShader = new InnerGlowShader();
+	@:noCompletion private static var __knockoutGlowShader:KnockoutGlowShader = new KnockoutGlowShader();
 
 	/**
 		The alpha transparency value for the color. Valid values are 0 to 1. For
@@ -216,6 +218,7 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 
 		__needSecondBitmapData = true;
 		__preserveObject = true;
+
 		__renderDirty = true;
 	}
 
@@ -233,6 +236,15 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 		var g = (__color >> 8) & 0xFF;
 		var b = __color & 0xFF;
 
+		if (__inner || __knockout)
+		{
+			sourceBitmapData.image.colorTransform(sourceBitmapData.image.rect, new ColorTransform(1, 1, 1, 0, 0, 0, 0, -255).__toLimeColorMatrix());
+			sourceBitmapData.image.dirty = true;
+			sourceBitmapData.image.version++;
+			bitmapData = sourceBitmapData.clone();
+			return bitmapData;
+		}
+
 		var finalImage = ImageDataUtil.gaussianBlur(bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle(), destPoint.__toLimeVector2(),
 			__blurX, __blurY, __quality, __strength);
 		finalImage.colorTransform(finalImage.rect, new ColorTransform(0, 0, 0, __alpha, r, g, b, 0).__toLimeColorMatrix());
@@ -244,27 +256,44 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 
 	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int):Shader
 	{
+		var shader:GlowShader = null;
+		if (__inner)
+		{
+			shader = __innerGlowShader;
+			__preserveObject = false;
+		}
+		else if (__knockout)
+		{
+			shader = __knockoutGlowShader;
+			__preserveObject = false;
+		}
+		else
+		{
+			shader = __glowShader;
+		}
+
 		#if !macro
 		if (pass <= __horizontalPasses)
 		{
 			var scale = Math.pow(0.5, pass >> 1);
-			__glowShader.uRadius.value[0] = blurX * scale;
-			__glowShader.uRadius.value[1] = 0;
+			shader.uRadius.value[0] = blurX * scale;
+			shader.uRadius.value[1] = 0;
 		}
 		else
 		{
 			var scale = Math.pow(0.5, (pass - __horizontalPasses) >> 1);
-			__glowShader.uRadius.value[0] = 0;
-			__glowShader.uRadius.value[1] = blurY * scale;
+			shader.uRadius.value[0] = 0;
+			shader.uRadius.value[1] = blurY * scale;
 		}
 
-		__glowShader.uColor.value[0] = ((color >> 16) & 0xFF) / 255;
-		__glowShader.uColor.value[1] = ((color >> 8) & 0xFF) / 255;
-		__glowShader.uColor.value[2] = (color & 0xFF) / 255;
-		__glowShader.uColor.value[3] = alpha * (__strength / __numShaderPasses);
+		shader.uColor.value[0] = ((color >> 16) & 0xFF) / 255;
+		shader.uColor.value[1] = ((color >> 8) & 0xFF) / 255;
+		shader.uColor.value[2] = (color & 0xFF) / 255;
+		shader.uColor.value[3] = alpha * (__strength / __numShaderPasses);
+		// if (__knockout) shader.uColor.value[3] = 0.2;
 		#end
 
-		return __glowShader;
+		return shader;
 	}
 
 	// Get & Set Methods
@@ -383,13 +412,13 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 private class GlowShader extends BitmapFilterShader
 {
 	@:glFragmentSource("uniform sampler2D openfl_Texture;
-		
+
 		uniform vec4 uColor;
-		
+
 		varying vec2 vBlurCoords[7];
-		
+
 		void main(void) {
-			
+
 			float a = 0.0;
 			a += texture2D(openfl_Texture, vBlurCoords[0]).a * 0.00443;
 			a += texture2D(openfl_Texture, vBlurCoords[1]).a * 0.05399;
@@ -399,23 +428,23 @@ private class GlowShader extends BitmapFilterShader
 			a += texture2D(openfl_Texture, vBlurCoords[5]).a * 0.05399;
 			a += texture2D(openfl_Texture, vBlurCoords[6]).a * 0.00443;
 			a *= uColor.a;
-			
+
 			gl_FragColor = vec4(uColor.rgb * a, a);
-			
+
 		}")
 	@:glVertexSource("attribute vec4 openfl_Position;
 		attribute vec2 openfl_TextureCoord;
-		
+
 		uniform mat4 openfl_Matrix;
 		uniform vec2 openfl_TextureSize;
-		
+
 		uniform vec2 uRadius;
 		varying vec2 vBlurCoords[7];
-		
+
 		void main(void) {
-			
+
 			gl_Position = openfl_Matrix * openfl_Position;
-			
+
 			vec2 r = uRadius / openfl_TextureSize;
 			vBlurCoords[0] = openfl_TextureCoord - r * 1.0;
 			vBlurCoords[1] = openfl_TextureCoord - r * 0.75;
@@ -424,8 +453,94 @@ private class GlowShader extends BitmapFilterShader
 			vBlurCoords[4] = openfl_TextureCoord + r * 0.5;
 			vBlurCoords[5] = openfl_TextureCoord + r * 0.75;
 			vBlurCoords[6] = openfl_TextureCoord + r * 1.0;
-			
+
 		}")
+	public function new()
+	{
+		super();
+
+		#if !macro
+		uRadius.value = [0, 0];
+		uColor.value = [0, 0, 0, 0];
+		#end
+	}
+}
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+private class InnerGlowShader extends GlowShader
+{
+	@:glFragmentSource("uniform sampler2D openfl_Texture;
+
+	uniform vec4 uColor;
+
+	varying vec2 vBlurCoords[7];
+	float iExponent;
+
+	void main(void) {
+
+		vec4 orig_pixel = texture2D(openfl_Texture, vBlurCoords[3]);
+
+		float a = 0.0;
+		a += texture2D(openfl_Texture, vBlurCoords[0]).a * 0.00443;
+		a += texture2D(openfl_Texture, vBlurCoords[1]).a * 0.05399;
+		a += texture2D(openfl_Texture, vBlurCoords[2]).a * 0.24197;
+		a += texture2D(openfl_Texture, vBlurCoords[3]).a * 0.39894;
+		a += texture2D(openfl_Texture, vBlurCoords[4]).a * 0.24197;
+		a += texture2D(openfl_Texture, vBlurCoords[5]).a * 0.05399;
+		a += texture2D(openfl_Texture, vBlurCoords[6]).a * 0.00443;
+		a *= uColor.a;
+
+		gl_FragColor = vec4(mix(uColor.rgb, orig_pixel.rgb, a), min(a, orig_pixel.a));
+	}
+	")
+	public function new()
+	{
+		super();
+
+		#if !macro
+		uRadius.value = [0, 0];
+		uColor.value = [0, 0, 0, 0];
+		#end
+	}
+}
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+private class KnockoutGlowShader extends GlowShader
+{
+	@:glFragmentSource("uniform sampler2D openfl_Texture;
+
+	uniform vec4 uColor;
+
+	varying vec2 vBlurCoords[7];
+	float iExponent;
+
+	void main(void) {
+
+		vec4 orig_pixel = texture2D(openfl_Texture, vBlurCoords[3]);
+		if (orig_pixel.a == 1.0) {
+			discard;
+			return;
+		}
+
+		float a = 0.0;
+		a += texture2D(openfl_Texture, vBlurCoords[0]).a * 0.00443;
+		a += texture2D(openfl_Texture, vBlurCoords[1]).a * 0.05399;
+		a += texture2D(openfl_Texture, vBlurCoords[2]).a * 0.24197;
+		a += texture2D(openfl_Texture, vBlurCoords[3]).a * 0.39894;
+		a += texture2D(openfl_Texture, vBlurCoords[4]).a * 0.24197;
+		a += texture2D(openfl_Texture, vBlurCoords[5]).a * 0.05399;
+		a += texture2D(openfl_Texture, vBlurCoords[6]).a * 0.00443;
+		a *= uColor.a;
+
+		gl_FragColor = vec4(mix(uColor.rgb, orig_pixel.rgb, a), min(a, orig_pixel.a));
+	}
+	")
 	public function new()
 	{
 		super();
