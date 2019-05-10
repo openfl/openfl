@@ -1206,6 +1206,7 @@ class NetStream extends EventDispatcher
 
 		__video.setAttribute("playsinline", "");
 		__video.setAttribute("webkit-playsinline", "");
+		__video.setAttribute("crossorigin", "anonymous");
 
 		__video.addEventListener("error", video_onError, false);
 		__video.addEventListener("waiting", video_onWaiting, false);
