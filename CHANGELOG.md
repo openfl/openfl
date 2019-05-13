@@ -1,3 +1,17 @@
+8.9.1 (05/13/2019)
+------------------
+
+* Updated to Lime 7.4.*
+* Added initial support for custom base classes from SWF resources
+* Improved `Video` to allow cross-origin requests when targeting HTML5
+* Improved support for indexed PNG images generated from SWF resources
+* Improved the scroll behavior in input `TextField` instances
+* Fixed a layout issue when combing `wordWrap` and `autoSize` in `TextField`
+* Fixed a possible crash when initializing `SWFLite` instances
+* Fixed a possible infinite loop issue in `TextField`
+* Fixed the behavior of `textFormat.url` when the `url` is unset
+
+
 8.9.0 (04/01/2019)
 ------------------
 
