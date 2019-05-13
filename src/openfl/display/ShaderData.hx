@@ -9,8 +9,6 @@ import openfl.display.ShaderParameter;
 @:noDebug
 #end
 
-#if ((!cs && !java) || display) @:final #end
-
 
 class ShaderData implements Dynamic<ShaderParameter> {
 	
