@@ -4,8 +4,8 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "8.9.0",
-	"releasenote": "Renderer fixes, improved AS3 externs, many other fixes",
+	"version": "8.9.1",
+	"releasenote": "Update Lime to 7.4, SWF fixes, TextField fixes",
 	"contributors": [ "singmajesty" ],
 	"classPath": "src"
 }
