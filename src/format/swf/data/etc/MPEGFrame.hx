@@ -47,8 +47,8 @@ class MPEGFrame
 	public var data:ByteArray;
 	private var _crc:ByteArray;
 	
-	public var crc(get_crc, null):Int;
-	public var size(get_size, null):Int;
+	public var crc(get, never):Int;
+	public var size(get, never):Int;
 	
 	public var hasCRC (default, null):Bool;
 

@@ -7,8 +7,8 @@ class SWFProgressEvent extends Event
 	public static inline var PROGRESS:String = "progress";
 	public static inline var COMPLETE:String = "complete";
 	
-	public var progress (get_progress, null):Float;
-	public var progressPercent (get_progressPercent, null):Float;
+	public var progress (get, never):Float;
+	public var progressPercent (get, never):Float;
 	
 	private var processed:Int;
 	private var total:Int;
