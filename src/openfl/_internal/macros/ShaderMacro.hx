@@ -49,7 +49,7 @@ class ShaderMacro {
 			var pos = Context.currentPos ();
 			var localClass = Context.getLocalClass ().get ();
 			
-			var isBaseClass = (localClass.name == "Shader" && localClass.pack.length == 2 && localClass.pack[0] == "openfl" && localClass.pack[1] == "display");
+			var isBaseClass = switch localClass { case {pack: ["openfl", "display"], name: "Shader"}: true; case _: false; };
 			
 			var shaderDataFields = new Array<Field> ();
 			var dataClassName;
