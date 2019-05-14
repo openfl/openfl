@@ -12,7 +12,6 @@ import openfl.display.MovieClip;
 import openfl.display.Stage;
 import openfl.net.URLLoader;
 import openfl.net.URLRequest;
-import openfl.net.URLVariables;
 
 #if swf
 #if flash
@@ -174,7 +173,7 @@ import js.Browser;
 		#else
 		var uri = request.url;
 		
-		if (Std.is (request.data, URLVariables)) {
+		if (Type.typeof(request.data) == TObject) {
 			
 			var query = "";
 			var fields = Reflect.fields (request.data);
