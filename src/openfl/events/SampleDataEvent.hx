@@ -1,6 +1,7 @@
 package openfl.events;
 
 #if !flash
+import openfl._internal.utils.ObjectPool;
 import openfl.utils.ByteArray;
 import openfl.utils.Endian;
 
@@ -103,6 +104,9 @@ class SampleDataEvent extends Event
 	**/
 	public var position:Float;
 
+	@:noCompletion private static var __pool:ObjectPool<SampleDataEvent> = new ObjectPool<SampleDataEvent>(function() return
+		new SampleDataEvent(null), function(event) event.__init());
+
 	/**
 		Creates an event object that contains information about audio data
 		events. Event objects are passed as parameters to event listeners.
@@ -137,6 +141,14 @@ class SampleDataEvent extends Event
 	public override function toString():String
 	{
 		return __formatToString("SampleDataEvent", ["type", "bubbles", "cancelable"]);
+	}
+
+	@:noCompletion private override function __init():Void
+	{
+		super.__init();
+		data = new ByteArray();
+		data.endian = Endian.LITTLE_ENDIAN;
+		position = 0.0;
 	}
 }
 #else

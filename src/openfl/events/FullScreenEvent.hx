@@ -1,6 +1,8 @@
 package openfl.events;
 
 #if !flash
+import openfl._internal.utils.ObjectPool;
+
 /**
 	The Stage object dispatches a FullScreenEvent object whenever the Stage
 	enters or leaves full-screen display mode. There is only one type of
@@ -56,6 +58,9 @@ class FullScreenEvent extends ActivityEvent
 	**/
 	public var interactive:Bool;
 
+	@:noCompletion private static var __pool:ObjectPool<FullScreenEvent> = new ObjectPool<FullScreenEvent>(function() return
+		new FullScreenEvent(null), function(event) event.__init());
+
 	/**
 		Creates an event object that contains information about `fullScreen`
 		events. Event objects are passed as parameters to event listeners.
@@ -98,6 +103,13 @@ class FullScreenEvent extends ActivityEvent
 	public override function toString():String
 	{
 		return __formatToString("FullscreenEvent", ["type", "bubbles", "cancelable", "fullscreen", "interactive"]);
+	}
+
+	@:noCompletion private override function __init():Void
+	{
+		super.__init();
+		fullScreen = false;
+		interactive = false;
 	}
 }
 #else

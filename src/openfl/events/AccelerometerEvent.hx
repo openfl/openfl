@@ -1,6 +1,8 @@
 package openfl.events;
 
 #if !flash
+import openfl._internal.utils.ObjectPool;
+
 /**
 	The Accelerometer class dispatches AccelerometerEvent objects when
 	acceleration updates are obtained from the Accelerometer sensor installed
@@ -61,6 +63,9 @@ class AccelerometerEvent extends Event
 	**/
 	public var timestamp:Float;
 
+	@:noCompletion private static var __pool:ObjectPool<AccelerometerEvent> = new ObjectPool<AccelerometerEvent>(function() return
+		new AccelerometerEvent(null), function(event) event.__init());
+
 	/**
 		Creates an AccelerometerEvent object that contains information about
 		acceleration along three dimensional axis. Event objects are passed as
@@ -115,6 +120,15 @@ class AccelerometerEvent extends Event
 			"accelerationY",
 			"accelerationZ"
 		]);
+	}
+
+	@:noCompletion private override function __init():Void
+	{
+		super.__init();
+		timestamp = 0;
+		accelerationX = 0;
+		accelerationY = 0;
+		accelerationZ = 0;
 	}
 }
 #else

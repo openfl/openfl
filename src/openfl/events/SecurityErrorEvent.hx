@@ -1,6 +1,8 @@
 package openfl.events;
 
 #if !flash
+import openfl._internal.utils.ObjectPool;
+
 /**
 	An object dispatches a SecurityErrorEvent object to report the occurrence
 	of a security error. Security errors reported through this class are
@@ -38,6 +40,8 @@ class SecurityErrorEvent extends ErrorEvent
 		| `text` | Text to be displayed as an error message. |
 	**/
 	public static inline var SECURITY_ERROR:EventType<SecurityErrorEvent> = "securityError";
+	@:noCompletion private static var __pool:ObjectPool<SecurityErrorEvent> = new ObjectPool<SecurityErrorEvent>(function() return
+		new SecurityErrorEvent(null), function(event) event.__init());
 
 	/**
 		Creates an Event object that contains information about security error

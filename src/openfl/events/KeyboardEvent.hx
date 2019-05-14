@@ -1,6 +1,7 @@
 package openfl.events;
 
 #if !flash
+import openfl._internal.utils.ObjectPool;
 import openfl.ui.KeyLocation;
 
 /**
@@ -130,6 +131,9 @@ class KeyboardEvent extends Event
 	**/
 	public var shiftKey:Bool;
 
+	@:noCompletion private static var __pool:ObjectPool<KeyboardEvent> = new ObjectPool<KeyboardEvent>(function() return
+		new KeyboardEvent(null), function(event) event.__init());
+
 	/**
 		Creates an Event object that contains specific information about keyboard
 		events. Event objects are passed as parameters to event listeners.
@@ -202,6 +206,22 @@ class KeyboardEvent extends Event
 			"altKey",
 			"shiftKey"
 		]);
+	}
+
+	@:noCompletion private override function __init():Void
+	{
+		super.__init();
+		charCode = 0;
+		keyCode = 0;
+		keyLocation = STANDARD;
+		ctrlKey = false;
+		altKey = false;
+		shiftKey = false;
+
+		#if !openfl_doc_gen
+		controlKey = false;
+		commandKey = false;
+		#end
 	}
 }
 #else

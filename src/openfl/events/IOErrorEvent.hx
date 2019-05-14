@@ -1,6 +1,8 @@
 package openfl.events;
 
 #if !flash
+import openfl._internal.utils.ObjectPool;
+
 /**
 	An IOErrorEvent object is dispatched when an error causes input or output
 	operations to fail.
@@ -33,9 +35,10 @@ class IOErrorEvent extends ErrorEvent
 		| `text` | Text to be displayed as an error message. |
 	**/
 	public static inline var IO_ERROR:EventType<IOErrorEvent> = "ioError";
-
 	// @:noCompletion @:dox(hide) public static var NETWORK_ERROR:String;
 	// @:noCompletion @:dox(hide) public static var VERIFY_ERROR:String;
+	@:noCompletion private static var __pool:ObjectPool<IOErrorEvent> = new ObjectPool<IOErrorEvent>(function() return new IOErrorEvent(null), function(event)
+		event.__init());
 
 	/**
 		Creates an Event object that contains specific information about

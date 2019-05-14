@@ -23,8 +23,6 @@ import openfl.geom.Point;
 #end
 class MouseEvent extends Event
 {
-	@:noCompletion private static var __pool:ObjectPool<MouseEvent> = new ObjectPool<MouseEvent>(20);
-
 	/**
 		Defines the value of the `type` property of a `click` event object.
 		This event has the following properties:
@@ -572,6 +570,8 @@ class MouseEvent extends Event
 	@:noCompletion private static var __buttonDown:Bool;
 	@:noCompletion private static var __commandKey:Bool;
 	@:noCompletion private static var __ctrlKey:Bool;
+	@:noCompletion private static var __pool:ObjectPool<MouseEvent> = new ObjectPool<MouseEvent>(function() return new MouseEvent(null), function(event) event
+		.__init());
 	@:noCompletion private static var __shiftKey:Bool;
 
 	/**
@@ -679,6 +679,26 @@ class MouseEvent extends Event
 		event.target = target;
 
 		return event;
+	}
+
+	@:noCompletion private override function __init():Void
+	{
+		super.__init();
+		shiftKey = false;
+		altKey = false;
+		ctrlKey = false;
+		bubbles = false;
+		relatedObject = null;
+		delta = 0;
+		localX = 0;
+		localY = 0;
+		buttonDown = false;
+		commandKey = false;
+		clickCount = 0;
+
+		isRelatedObjectInaccessible = false;
+		stageX = Math.NaN;
+		stageY = Math.NaN;
 	}
 }
 #else

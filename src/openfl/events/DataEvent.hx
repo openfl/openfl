@@ -1,6 +1,8 @@
 package openfl.events;
 
 #if !flash
+import openfl._internal.utils.ObjectPool;
+
 /**
 	An object dispatches a DataEvent object when raw data has completed
 	loading. There are two types of data event:
@@ -49,6 +51,9 @@ class DataEvent extends TextEvent
 	**/
 	public var data:String;
 
+	@:noCompletion private static var __pool:ObjectPool<DataEvent> = new ObjectPool<DataEvent>(function() return new DataEvent(null), function(event) event
+		.__init());
+
 	/**
 		Creates an event object that contains information about data events.
 		Event objects are passed as parameters to event listeners.
@@ -87,6 +92,12 @@ class DataEvent extends TextEvent
 	public override function toString():String
 	{
 		return __formatToString("DataEvent", ["type", "bubbles", "cancelable", "data"]);
+	}
+
+	@:noCompletion private override function __init():Void
+	{
+		super.__init();
+		data = "";
 	}
 }
 #else

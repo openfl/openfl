@@ -1,5 +1,6 @@
 package openfl.events;
 
+import openfl._internal.utils.ObjectPool;
 import openfl.display.DisplayObjectRenderer;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
@@ -127,6 +128,9 @@ import openfl.geom.Matrix;
 	**/
 	public var renderer(default, null):DisplayObjectRenderer;
 
+	@:noCompletion private static var __pool:ObjectPool<RenderEvent> = new ObjectPool<RenderEvent>(function() return new RenderEvent(null), function(event)
+		event.__init());
+
 	/**
 		Creates an Event object that contains information about render events.
 		Event objects are passed as parameters to event listeners.
@@ -172,4 +176,13 @@ import openfl.geom.Matrix;
 		return __formatToString("RenderEvent", ["type", "bubbles", "cancelable"]);
 	}
 	#end
+
+	@:noCompletion private override function __init():Void
+	{
+		super.__init();
+		objectMatrix = null;
+		objectColorTransform = null;
+		allowSmoothing = false;
+		renderer = null;
+	}
 }

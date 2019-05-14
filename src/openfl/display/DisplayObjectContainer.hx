@@ -243,20 +243,19 @@ class DisplayObjectContainer extends InteractiveObject
 			child.__setRenderDirty();
 			__setRenderDirty();
 
-			var event:Event = null;
-
-			#if openfl_pool_events
-			event = Event.__pool.get(Event.ADDED);
-			event.bubbles = true;
+			#if !openfl_disable_event_pooling
+			var event = Event.__pool.get();
+			event.type = Event.ADDED;
 			#else
-			event = new Event(Event.ADDED, true);
+			var event = new Event(Event.ADDED);
 			#end
+			event.bubbles = true;
 
 			event.target = child;
 
 			child.__dispatchWithCapture(event);
 
-			#if openfl_pool_events
+			#if !openfl_disable_event_pooling
 			Event.__pool.release(event);
 			#end
 

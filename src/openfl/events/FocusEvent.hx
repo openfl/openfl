@@ -1,6 +1,7 @@
 package openfl.events;
 
 #if !flash
+import openfl._internal.utils.ObjectPool;
 import openfl.display.InteractiveObject;
 
 /**
@@ -137,6 +138,9 @@ class FocusEvent extends Event
 	**/
 	public var shiftKey:Bool;
 
+	@:noCompletion private static var __pool:ObjectPool<FocusEvent> = new ObjectPool<FocusEvent>(function() return new FocusEvent(null), function(event) event
+		.__init());
+
 	/**
 		Creates an Event object with specific information relevant to focus
 		events. Event objects are passed as parameters to event listeners.
@@ -181,6 +185,14 @@ class FocusEvent extends Event
 	public override function toString():String
 	{
 		return __formatToString("FocusEvent", ["type", "bubbles", "cancelable", "relatedObject", "shiftKey", "keyCode"]);
+	}
+
+	@:noCompletion private override function __init():Void
+	{
+		super.__init();
+		keyCode = 0;
+		shiftKey = false;
+		relatedObject = null;
 	}
 }
 #else

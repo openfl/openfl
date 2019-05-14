@@ -1,6 +1,8 @@
 package openfl.events;
 
 #if !flash
+import openfl._internal.utils.ObjectPool;
+
 /**
 	An object dispatches a TextEvent object when a user enters text in a text
 	field or clicks a hyperlink in an HTML-enabled text field. There are two
@@ -53,6 +55,9 @@ class TextEvent extends Event
 	**/
 	public var text:String;
 
+	@:noCompletion private static var __pool:ObjectPool<TextEvent> = new ObjectPool<TextEvent>(function() return new TextEvent(null), function(event) event
+		.__init());
+
 	/**
 		Creates an Event object that contains information about text events. Event
 		objects are passed as parameters to event listeners.
@@ -92,6 +97,12 @@ class TextEvent extends Event
 	public override function toString():String
 	{
 		return __formatToString("TextEvent", ["type", "bubbles", "cancelable", "text"]);
+	}
+
+	@:noCompletion private override function __init():Void
+	{
+		super.__init();
+		text = "";
 	}
 }
 #else

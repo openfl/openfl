@@ -1,6 +1,7 @@
 package openfl.events;
 
 #if !flash
+import openfl._internal.utils.ObjectPool;
 import openfl.net.URLRequestHeader;
 
 /**
@@ -100,6 +101,9 @@ class HTTPStatusEvent extends Event
 	**/
 	public var status(default, null):Int;
 
+	@:noCompletion private static var __pool:ObjectPool<HTTPStatusEvent> = new ObjectPool<HTTPStatusEvent>(function() return
+		new HTTPStatusEvent(null), function(event) event.__init());
+
 	/**
 		Creates an Event object that contains specific information about HTTP
 		status events. Event objects are passed as parameters to event listeners.
@@ -138,6 +142,13 @@ class HTTPStatusEvent extends Event
 	public override function toString():String
 	{
 		return __formatToString("HTTPStatusEvent", ["type", "bubbles", "cancelable", "status", "redirected"]);
+	}
+
+	@:noCompletion private override function __init():Void
+	{
+		super.__init();
+		status = 0;
+		redirected = false;
 	}
 }
 #else

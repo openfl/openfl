@@ -1,6 +1,7 @@
 package openfl.events;
 
 #if !flash
+import openfl._internal.utils.ObjectPool;
 import openfl.display.InteractiveObject;
 
 /**
@@ -84,6 +85,9 @@ class ContextMenuEvent extends Event
 	**/
 	public var mouseTarget:InteractiveObject;
 
+	@:noCompletion private static var __pool:ObjectPool<ContextMenuEvent> = new ObjectPool<ContextMenuEvent>(function() return
+		new ContextMenuEvent(null), function(event) event.__init());
+
 	/**
 		Creates an Event object that contains specific information about menu
 		events. Event objects are passed as parameters to event listeners.
@@ -129,6 +133,13 @@ class ContextMenuEvent extends Event
 	public override function toString():String
 	{
 		return __formatToString("ContextMenuEvent", ["type", "bubbles", "cancelable", "mouseTarget", "contextMenuOwner"]);
+	}
+
+	@:noCompletion private override function __init():Void
+	{
+		super.__init();
+		mouseTarget = null;
+		contextMenuOwner = null;
 	}
 }
 #else

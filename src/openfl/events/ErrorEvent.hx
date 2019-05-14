@@ -1,6 +1,8 @@
 package openfl.events;
 
 #if !flash
+import openfl._internal.utils.ObjectPool;
+
 /**
 	An object dispatches an ErrorEvent object when an error causes an
 	asynchronous operation to fail.
@@ -46,6 +48,9 @@ class ErrorEvent extends TextEvent
 	**/
 	public var errorID(default, null):Int;
 
+	@:noCompletion private static var __pool:ObjectPool<ErrorEvent> = new ObjectPool<ErrorEvent>(function() return new ErrorEvent(null), function(event) event
+		.__init());
+
 	/**
 		Creates an Event object that contains information about error events.
 		Event objects are passed as parameters to event listeners.
@@ -84,6 +89,12 @@ class ErrorEvent extends TextEvent
 	public override function toString():String
 	{
 		return __formatToString("ErrorEvent", ["type", "bubbles", "cancelable", "text", "errorID"]);
+	}
+
+	@:noCompletion private override function __init():Void
+	{
+		super.__init();
+		errorID = 0;
 	}
 }
 #else

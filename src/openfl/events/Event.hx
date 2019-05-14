@@ -49,8 +49,6 @@ import openfl._internal.utils.ObjectPool;
 #end
 class Event
 {
-	@:noCompletion private static var __pool:ObjectPool<Event> = new ObjectPool<Event>(20);
-
 	/**
 		The `ACTIVATE` constant defines the value of the `type` property of an
 		`activate` event object.
@@ -708,6 +706,8 @@ class Event
 	**/
 	public var type(default, null):String;
 
+	@:noCompletion private static var __pool:ObjectPool<Event> = new ObjectPool<Event>(function() return new Event(null), function(event) event.__init());
+
 	@:noCompletion private var __isCanceled:Bool;
 	@:noCompletion private var __isCanceledNow:Bool;
 	@:noCompletion private var __preventDefault:Bool;
@@ -898,6 +898,17 @@ class Event
 
 		output += "]";
 		return output;
+	}
+
+	@:noCompletion private function __init():Void
+	{
+		// type = null;
+		bubbles = false;
+		cancelable = false;
+		eventPhase = AT_TARGET;
+		__isCanceled = false;
+		__isCanceledNow = false;
+		__preventDefault = false;
 	}
 }
 #else
