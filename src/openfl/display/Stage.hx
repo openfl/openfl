@@ -1422,7 +1422,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			Log.println(Std.string(e));
 			#end
 
-			#if cpp
+			#if (cpp && !cppia)
 			untyped __cpp__("throw e");
 			#elseif neko
 			neko.Lib.rethrow(e);
