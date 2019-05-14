@@ -61,6 +61,13 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 	}
 	
 	
+	#if haxe4
+	public inline function keyValueIterator ():KeyValueIterator<K, V> {
+		return this.keyValueIterator ();
+	}
+	#end
+	
+	
 	@:to static function toStringMap<K:String, V> (t:IMap<K, V>, weakKeys:Bool):StringMap<V> {
 		
 		return new StringMap<V> ();
@@ -215,6 +222,13 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 	}
 	
 	
+	#if haxe4
+	public inline function keyValueIterator ():KeyValueIterator<K, V> {
+		return new haxe.iterators.MapKeyValueIterator (this);
+	}
+	#end
+	
+	
 	public function remove (key:K):Bool {
 		
 		var name = Type.getClassName (key);
@@ -302,6 +316,13 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 		return values.copy().iterator ();
 		
 	}
+	
+	
+	#if haxe4
+	public inline function keyValueIterator ():KeyValueIterator<K, V> {
+		return new haxe.iterators.MapKeyValueIterator (this);
+	}
+	#end
 	
 	
 	public function remove (key:K):Bool {
@@ -504,6 +525,13 @@ abstract Dictionary<K, V> (IMap<K, V>) {
 		return cast map.iterator ();
 		
 	}
+	
+	
+	#if haxe4
+	public inline function keyValueIterator ():KeyValueIterator<K, V> {
+		return new haxe.iterators.MapKeyValueIterator (this);
+	}
+	#end
 	
 	
 	public function remove (key:K):Bool {
