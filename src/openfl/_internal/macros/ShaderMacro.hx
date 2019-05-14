@@ -52,6 +52,7 @@ class ShaderMacro {
 			var isBaseClass = switch localClass { case {pack: ["openfl", "display"], name: "Shader"}: true; case _: false; };
 			
 			var shaderDataFields = new Array<Field> ();
+			var dataClassPack = localClass.pack;
 			var dataClassName;
 			
 			processFields (glVertexSource, "attribute", shaderDataFields, isBaseClass, pos);
@@ -64,18 +65,30 @@ class ShaderMacro {
 				
 			} else if (shaderDataFields.length > 0) {
 				
+				dataClassPack = ["openfl", "display", "generated"];
 				dataClassName = "_" + localClass.name + "_ShaderData";
 				
 				Context.defineType ({
 					
 					pos: pos,
-					pack: localClass.pack,
+					pack: dataClassPack,
 					name: dataClassName,
 					kind: TDClass ({ pack: [ "openfl", "display" ], name: "ShaderData", params: [] }, null, false),
 					fields: shaderDataFields,
 					params: [],
-					meta: [ { name: ":dox", params: [ macro hide ], pos: pos }, { name: ":noCompletion", pos: pos }, { name: ":hack", pos: pos } ]
+					meta: [ { name: ":dox", params: [ macro hide ], pos: pos }, { name: ":noCompletion", pos: pos } ]
 					
+				});
+				
+				fields.push({
+					pos: pos,
+					name: "get_data",
+					access: [AOverride, AInline],
+					kind: FFun({
+						args: [],
+						ret: TPath({pack: dataClassPack, name: dataClassName}),
+						expr: macro return cast __data
+					})
 				});
 				
 			} else {
@@ -112,19 +125,7 @@ class ShaderMacro {
 					
 					case "__data":
 						
-						field.kind = FVar (TPath ({ name: dataClassName, pack: localClass.pack, params: [] }), Context.parse ("new " + dataClassName + " (null)", pos));
-					
-					case "get_data":
-						
-						switch (field.kind) {
-							
-							case FFun (f):
-								
-								f.ret = TPath ({ name: dataClassName, pack: localClass.pack, params: [] });
-							
-							default:
-							
-						}
+						field.kind = FVar (TPath ({ name: dataClassName, pack: dataClassPack }), Context.parse ("new " + dataClassName + " (null)", pos));
 					
 					default:
 					

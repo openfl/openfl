@@ -251,7 +251,7 @@ private class BlurShader extends Shader {
 	
 	private override function __update ():Void {
 		
-		var uTextureSize:ShaderParameterFloat2 = cast data.uTextureSize;
+		var uTextureSize = get_data().uTextureSize;
 		uTextureSize.value0 = data.uImage0.input.width;
 		uTextureSize.value1 = data.uImage0.input.height;
 		
