@@ -202,8 +202,8 @@ private class ColorMatrixShader extends Shader {
 	
 	public function init (matrix:Array<Float>):Void {
 		
-		var multipliers:ShaderParameterMatrix4 = cast data.uMultipliers;
-		var offsets:ShaderParameterFloat4 = cast data.uOffsets;
+		var multipliers = get_data().uMultipliers;
+		var offsets = get_data().uOffsets;
 		
 		multipliers.value = new Float32Array(matrix);
 		offsets.value0 = matrix[4] / 255.0;
