@@ -1655,13 +1655,13 @@ class BitmapData implements IBitmapDrawable
 
 					var left = scale9Grid.x;
 					var top = scale9Grid.y;
-					var right = width - centerX - left;
-					var bottom = height - centerY - top;
+					var right = __vertexBufferWidth - centerX - left;
+					var bottom = __vertexBufferHeight - centerY - top;
 
-					var uvLeft = left / width;
-					var uvTop = top / height;
-					var uvCenterX = centerX / width;
-					var uvCenterY = centerY / height;
+					var uvLeft = left / __vertexBufferWidth;
+					var uvTop = top / __vertexBufferHeight;
+					var uvCenterX = scale9Grid.width / __vertexBufferWidth;
+					var uvCenterY = scale9Grid.height / __vertexBufferHeight;
 					var uvRight = right / width;
 					var uvBottom = bottom / height;
 
@@ -1669,8 +1669,8 @@ class BitmapData implements IBitmapDrawable
 					var renderedTop = top / targetObject.scaleY;
 					var renderedRight = right / targetObject.scaleX;
 					var renderedBottom = bottom / targetObject.scaleY;
-					var renderedCenterX = (targetObject.width / targetObject.scaleX) - renderedLeft - renderedRight;
-					var renderedCenterY = (targetObject.height / targetObject.scaleY) - renderedTop - renderedBottom;
+					var renderedCenterX = (width - renderedLeft - renderedRight);
+					var renderedCenterY = (height - renderedTop - renderedBottom);
 
 					// 3 ——— 2 ——— 5 ——— 7
 					// |  /  |  /  |  /  |
