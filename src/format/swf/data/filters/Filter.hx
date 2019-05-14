@@ -8,9 +8,9 @@ import flash.errors.Error;
 
 class Filter implements IFilter
 {
-	public var filter (get_filter, null):BitmapFilter;
+	public var filter (get, never):BitmapFilter;
 	public var id (default, null):Int;
-	public var type (get_type, null):FilterType;
+	public var type (get, never):FilterType;
 	
 	public function new(id:Int) {
 		this.id = id;

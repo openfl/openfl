@@ -26,7 +26,7 @@ class FilterGradientGlow extends Filter implements IFilter
 	
 	public var gradientColors (default, null):Array<Int>;
 	public var gradientRatios (default, null):Array<Int>;
-	public var filterName (get_filterName, null):String;
+	public var filterName (get, never):String;
 	
 	public function new(id:Int) {
 		super(id);
