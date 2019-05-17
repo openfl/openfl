@@ -310,10 +310,10 @@ class Tile
 
 		// Copied from DisplayObject. Create the translation matrix.
 		var matrix = #if flash __tempMatrix #else Matrix.__pool.get() #end;
-		matrix.copyFrom(__getWorldTransform());
 
 		if (targetCoordinateSpace != null && targetCoordinateSpace != this)
 		{
+			matrix.copyFrom(__getWorldTransform()); // ? Is this correct?
 			var targetMatrix = #if flash new Matrix() #else Matrix.__pool.get() #end;
 
 			targetMatrix.copyFrom(targetCoordinateSpace.__getWorldTransform());
@@ -324,6 +324,10 @@ class Tile
 			#if !flash
 			Matrix.__pool.release(targetMatrix);
 			#end
+		}
+		else
+		{
+			matrix.identity();
 		}
 
 		__getBounds(result,matrix);
