@@ -10,8 +10,8 @@ class TextFormatAlignTest
 			{
 				switch (TextFormatAlign.CENTER)
 				{
-					case TextFormatAlign.CENTER, TextFormatAlign.JUSTIFY, TextFormatAlign.LEFT, TextFormatAlign.RIGHT, TextFormatAlign.START, TextFormatAlign
-						.END:
+					case TextFormatAlign.CENTER, TextFormatAlign.JUSTIFY, TextFormatAlign.LEFT, TextFormatAlign.RIGHT, TextFormatAlign.START,
+						TextFormatAlign.END:
 				}
 			});
 		});

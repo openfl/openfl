@@ -95,8 +95,7 @@ interface IEventDispatcher
 		longer be persistent. If you create references to the inner function (save it in
 		another variable) then it is not garbage-collected and stays persistent.
 	**/
-	public function addEventListener<T>(type:EventType<T>, listener:T->Void, useCapture:Bool = false, priority:Int = 0,
-		useWeakReference:Bool = false):Void;
+	public function addEventListener<T>(type:EventType<T>, listener:T->Void, useCapture:Bool = false, priority:Int = 0, useWeakReference:Bool = false):Void;
 
 	/**
 		Dispatches an event into the event flow. The event target is the EventDispatcher

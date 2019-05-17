@@ -268,6 +268,7 @@ class TextField extends InteractiveObject
 		is 0, the second position is 1, and so on).
 	**/
 	public var caretIndex(get, never):Int;
+
 	/**
 		A Boolean value that specifies whether extra white space (spaces, line
 		breaks, and so on) in a text field with HTML text is removed. The
@@ -553,6 +554,7 @@ class TextField extends InteractiveObject
 		@default true
 	**/
 	public var selectable(get, set):Bool;
+
 	// var selectedText(default,never) : String;
 
 	/**
@@ -582,6 +584,7 @@ class TextField extends InteractiveObject
 		@default 0
 	**/
 	public var sharpness(get, set):Float;
+
 	/**
 		Attaches a style sheet to the text field. For information on creating
 		style sheets, see the StyleSheet class and the _ActionScript 3.0
@@ -625,6 +628,7 @@ class TextField extends InteractiveObject
 		The height of the text in pixels.
 	**/
 	public var textHeight(get, never):Float;
+
 	/**
 		The interaction mode property, Default value is
 		TextInteractionMode.NORMAL. On mobile platforms, the normal mode
@@ -639,6 +643,7 @@ class TextField extends InteractiveObject
 		The width of the text in pixels.
 	**/
 	public var textWidth(get, never):Float;
+
 	/**
 		The thickness of the glyph edges in this text field. This property
 		applies only when `openfl.text.AntiAliasType` is set to
@@ -662,6 +667,7 @@ class TextField extends InteractiveObject
 							  openfl.text.TextFieldType.
 	**/
 	public var type(get, set):TextFieldType;
+
 	/**
 		Specifies whether to copy and paste the text formatting along with the
 		text. When set to `true`, Flash Player copies and pastes formatting
@@ -709,41 +715,60 @@ class TextField extends InteractiveObject
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperties(TextField.prototype,
-			{
-				"antiAliasType": {get: untyped __js__("function () { return this.get_antiAliasType (); }"), set: untyped __js__("function (v) { return this.set_antiAliasType (v); }")},
-				"autoSize": {get: untyped __js__("function () { return this.get_autoSize (); }"), set: untyped __js__("function (v) { return this.set_autoSize (v); }")},
-				"background": {get: untyped __js__("function () { return this.get_background (); }"), set: untyped __js__("function (v) { return this.set_background (v); }")},
-				"backgroundColor": {get: untyped __js__("function () { return this.get_backgroundColor (); }"), set: untyped __js__("function (v) { return this.set_backgroundColor (v); }")},
-				"border": {get: untyped __js__("function () { return this.get_border (); }"), set: untyped __js__("function (v) { return this.set_border (v); }")},
-				"borderColor": {get: untyped __js__("function () { return this.get_borderColor (); }"), set: untyped __js__("function (v) { return this.set_borderColor (v); }")},
-				"bottomScrollV": {get: untyped __js__("function () { return this.get_bottomScrollV (); }")},
-				"defaultTextFormat": {get: untyped __js__("function () { return this.get_defaultTextFormat (); }"), set: untyped __js__("function (v) { return this.set_defaultTextFormat (v); }")},
-				"displayAsPassword": {get: untyped __js__("function () { return this.get_displayAsPassword (); }"), set: untyped __js__("function (v) { return this.set_displayAsPassword (v); }")},
-				"embedFonts": {get: untyped __js__("function () { return this.get_embedFonts (); }"), set: untyped __js__("function (v) { return this.set_embedFonts (v); }")},
-				"gridFitType": {get: untyped __js__("function () { return this.get_gridFitType (); }"), set: untyped __js__("function (v) { return this.set_gridFitType (v); }")},
-				"htmlText": {get: untyped __js__("function () { return this.get_htmlText (); }"), set: untyped __js__("function (v) { return this.set_htmlText (v); }")},
-				"length": {get: untyped __js__("function () { return this.get_length (); }")},
-				"maxChars": {get: untyped __js__("function () { return this.get_maxChars (); }"), set: untyped __js__("function (v) { return this.set_maxChars (v); }")},
-				"maxScrollH": {get: untyped __js__("function () { return this.get_maxScrollH (); }")},
-				"maxScrollV": {get: untyped __js__("function () { return this.get_maxScrollV (); }")},
-				"mouseWheelEnabled": {get: untyped __js__("function () { return this.get_mouseWheelEnabled (); }"), set: untyped __js__("function (v) { return this.set_mouseWheelEnabled (v); }")},
-				"multiline": {get: untyped __js__("function () { return this.get_multiline (); }"), set: untyped __js__("function (v) { return this.set_multiline (v); }")},
-				"numLines": {get: untyped __js__("function () { return this.get_numLines (); }")},
-				"restrict": {get: untyped __js__("function () { return this.get_restrict (); }"), set: untyped __js__("function (v) { return this.set_restrict (v); }")},
-				"scrollH": {get: untyped __js__("function () { return this.get_scrollH (); }"), set: untyped __js__("function (v) { return this.set_scrollH (v); }")},
-				"scrollV": {get: untyped __js__("function () { return this.get_scrollV (); }"), set: untyped __js__("function (v) { return this.set_scrollV (v); }")},
-				"selectable": {get: untyped __js__("function () { return this.get_selectable (); }"), set: untyped __js__("function (v) { return this.set_selectable (v); }")},
-				"selectionBeginIndex": {get: untyped __js__("function () { return this.get_selectionBeginIndex (); }")},
-				"selectionEndIndex": {get: untyped __js__("function () { return this.get_selectionEndIndex (); }")},
-				"sharpness": {get: untyped __js__("function () { return this.get_sharpness (); }"), set: untyped __js__("function (v) { return this.set_sharpness (v); }")},
-				"text": {get: untyped __js__("function () { return this.get_text (); }"), set: untyped __js__("function (v) { return this.set_text (v); }")},
-				"textColor": {get: untyped __js__("function () { return this.get_textColor (); }"), set: untyped __js__("function (v) { return this.set_textColor (v); }")},
-				"textHeight": {get: untyped __js__("function () { return this.get_textHeight (); }")},
-				"textWidth": {get: untyped __js__("function () { return this.get_textWidth (); }")},
-				"type": {get: untyped __js__("function () { return this.get_type (); }"), set: untyped __js__("function (v) { return this.set_type (v); }")},
-				"wordWrap": {get: untyped __js__("function () { return this.get_wordWrap (); }"), set: untyped __js__("function (v) { return this.set_wordWrap (v); }")},
-			});
+		untyped Object.defineProperties(TextField.prototype, {
+			"antiAliasType": {get: untyped __js__("function () { return this.get_antiAliasType (); }"),
+				set: untyped __js__("function (v) { return this.set_antiAliasType (v); }")},
+			"autoSize": {get: untyped __js__("function () { return this.get_autoSize (); }"),
+				set: untyped __js__("function (v) { return this.set_autoSize (v); }")},
+			"background": {get: untyped __js__("function () { return this.get_background (); }"),
+				set: untyped __js__("function (v) { return this.set_background (v); }")},
+			"backgroundColor": {get: untyped __js__("function () { return this.get_backgroundColor (); }"),
+				set: untyped __js__("function (v) { return this.set_backgroundColor (v); }")},
+			"border": {get: untyped __js__("function () { return this.get_border (); }"), set: untyped __js__("function (v) { return this.set_border (v); }")},
+			"borderColor": {get: untyped __js__("function () { return this.get_borderColor (); }"),
+				set: untyped __js__("function (v) { return this.set_borderColor (v); }")},
+			"bottomScrollV": {get: untyped __js__("function () { return this.get_bottomScrollV (); }")},
+			"defaultTextFormat": {get: untyped __js__("function () { return this.get_defaultTextFormat (); }"),
+				set: untyped __js__("function (v) { return this.set_defaultTextFormat (v); }")},
+			"displayAsPassword": {get: untyped __js__("function () { return this.get_displayAsPassword (); }"),
+				set: untyped __js__("function (v) { return this.set_displayAsPassword (v); }")},
+			"embedFonts": {get: untyped __js__("function () { return this.get_embedFonts (); }"),
+				set: untyped __js__("function (v) { return this.set_embedFonts (v); }")},
+			"gridFitType": {get: untyped __js__("function () { return this.get_gridFitType (); }"),
+				set: untyped __js__("function (v) { return this.set_gridFitType (v); }")},
+			"htmlText": {get: untyped __js__("function () { return this.get_htmlText (); }"),
+				set: untyped __js__("function (v) { return this.set_htmlText (v); }")},
+			"length": {get: untyped __js__("function () { return this.get_length (); }")},
+			"maxChars": {get: untyped __js__("function () { return this.get_maxChars (); }"),
+				set: untyped __js__("function (v) { return this.set_maxChars (v); }")},
+			"maxScrollH": {get: untyped __js__("function () { return this.get_maxScrollH (); }")},
+			"maxScrollV": {get: untyped __js__("function () { return this.get_maxScrollV (); }")},
+			"mouseWheelEnabled": {get: untyped __js__("function () { return this.get_mouseWheelEnabled (); }"),
+				set: untyped __js__("function (v) { return this.set_mouseWheelEnabled (v); }")},
+			"multiline": {get: untyped __js__("function () { return this.get_multiline (); }"),
+				set: untyped __js__("function (v) { return this.set_multiline (v); }")},
+			"numLines": {get: untyped __js__("function () { return this.get_numLines (); }")},
+			"restrict": {get: untyped __js__("function () { return this.get_restrict (); }"),
+				set: untyped __js__("function (v) { return this.set_restrict (v); }")},
+			"scrollH": {get: untyped __js__("function () { return this.get_scrollH (); }"),
+				set: untyped __js__("function (v) { return this.set_scrollH (v); }")},
+			"scrollV": {get: untyped __js__("function () { return this.get_scrollV (); }"),
+				set: untyped __js__("function (v) { return this.set_scrollV (v); }")},
+			"selectable": {get: untyped __js__("function () { return this.get_selectable (); }"),
+				set: untyped __js__("function (v) { return this.set_selectable (v); }")},
+			"selectionBeginIndex": {get: untyped __js__("function () { return this.get_selectionBeginIndex (); }")},
+			"selectionEndIndex": {get: untyped __js__("function () { return this.get_selectionEndIndex (); }")},
+			"sharpness": {get: untyped __js__("function () { return this.get_sharpness (); }"),
+				set: untyped __js__("function (v) { return this.set_sharpness (v); }")},
+			"text": {get: untyped __js__("function () { return this.get_text (); }"), set: untyped __js__("function (v) { return this.set_text (v); }")},
+			"textColor": {get: untyped __js__("function () { return this.get_textColor (); }"),
+				set: untyped __js__("function (v) { return this.set_textColor (v); }")},
+			"textHeight": {get: untyped __js__("function () { return this.get_textHeight (); }")},
+			"textWidth": {get: untyped __js__("function () { return this.get_textWidth (); }")},
+			"type": {get: untyped __js__("function () { return this.get_type (); }"), set: untyped __js__("function (v) { return this.set_type (v); }")},
+			"wordWrap": {get: untyped __js__("function () { return this.get_wordWrap (); }"),
+				set: untyped __js__("function (v) { return this.set_wordWrap (v); }")},
+		});
 	}
 	#end
 
@@ -2843,7 +2868,7 @@ class TextField extends InteractiveObject
 			__dirty = true;
 			__layoutDirty = true;
 			__updateText(__text);
-			//__updateScrollV();
+			// __updateScrollV();
 			__updateScrollH();
 			__setRenderDirty();
 		}

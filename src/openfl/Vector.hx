@@ -543,14 +543,15 @@ abstract Vector<T>(IVector<T>)
 	}
 
 	#if !cs
-	@:to #if (!js && !flash) inline #end private static function toFunctionVector<T:Function>
-		(t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):FunctionVector
+	@:to #if (!js && !flash) inline #end private static function toFunctionVector<T:Function>(t:IVector<T>, length:Int, fixed:Bool,
+			array:Array<T>):FunctionVector
 	{
 		return new FunctionVector(length, fixed, cast array);
 	}
 	#end
 
-	@:to #if (!js && !flash) inline #end private static function toObjectVector<T:{}>(t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):ObjectVector<T>
+	@:to #if (!js && !flash) inline #end private static function toObjectVector<T:{}
+		>(t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):ObjectVector<T>
 	{
 		return new ObjectVector<T>(length, fixed, cast array, true);
 	}

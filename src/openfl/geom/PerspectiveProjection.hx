@@ -82,11 +82,10 @@ class PerspectiveProjection
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperty(PerspectiveProjection.prototype, "fieldOfView",
-			{
-				get: untyped __js__("function () { return this.get_fieldOfView (); }"),
-				set: untyped __js__("function (v) { return this.set_fieldOfView (v); }")
-			});
+		untyped Object.defineProperty(PerspectiveProjection.prototype, "fieldOfView", {
+			get: untyped __js__("function () { return this.get_fieldOfView (); }"),
+			set: untyped __js__("function (v) { return this.set_fieldOfView (v); }")
+		});
 	}
 	#end
 

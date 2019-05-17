@@ -15,6 +15,7 @@ package openfl.utils;
 		Defines the string to use for the deflate compression algorithm.
 	**/
 	public var DEFLATE = 0;
+
 	// GZIP;
 	public var LZMA = 1;
 

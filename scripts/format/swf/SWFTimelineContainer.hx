@@ -248,11 +248,10 @@ class SWFTimelineContainer extends SWFEventDispatcher
 			var index:Int = tags.length - 1;
 			var excessBytes:Int = data.position - (pos + tagHeader.tagLength);
 			var eventType:String = (excessBytes < 0) ? SWFWarningEvent.WARN_UNDERFLOW : SWFWarningEvent.WARN_OVERFLOW;
-			var eventData:Dynamic =
-				{
-					pos: pos,
-					bytes: (excessBytes < 0) ? -excessBytes : excessBytes
-				};
+			var eventData:Dynamic = {
+				pos: pos,
+				bytes: (excessBytes < 0) ? -excessBytes : excessBytes
+			};
 			if (rootTimelineContainer == this)
 			{
 				trace("WARNING: excess bytes: " + excessBytes + ", " + "Tag: " + tag.name + ", " + "Index: " + index);
@@ -260,16 +259,7 @@ class SWFTimelineContainer extends SWFEventDispatcher
 			else
 			{
 				eventData.indexRoot = rootTimelineContainer.tags.length;
-				trace("WARNING: excess bytes: "
-					+ excessBytes
-					+ ", "
-					+ "Tag: "
-					+ tag.name
-					+ ", "
-					+ "Index: "
-					+ index
-					+ ", "
-					+ "IndexRoot: "
+				trace("WARNING: excess bytes: " + excessBytes + ", " + "Tag: " + tag.name + ", " + "Index: " + index + ", " + "IndexRoot: "
 					+ eventData.indexRoot);
 			}
 			var event:SWFWarningEvent = new SWFWarningEvent(eventType, index, eventData, false, true);
@@ -628,8 +618,8 @@ class SWFTimelineContainer extends SWFEventDispatcher
 						// set start of new strip
 						startFrameIndex = curFrameIndex;
 						// evaluate type of new strip (motion tween detection see below)
-						curStripType = (Std.is(getCharacter(curFrameObject.characterId), TagDefineMorphShape)) ? LayerStrip.TYPE_SHAPETWEEN : LayerStrip
-							.TYPE_STATIC;
+						curStripType = (Std.is(getCharacter(curFrameObject.characterId),
+							TagDefineMorphShape)) ? LayerStrip.TYPE_SHAPETWEEN : LayerStrip.TYPE_STATIC;
 					}
 					else if (curStripType == LayerStrip.TYPE_STATIC && curFrameObject.lastModifiedAtIndex > 0)
 					{

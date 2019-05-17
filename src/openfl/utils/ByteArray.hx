@@ -97,6 +97,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		class.
 	**/
 	public static var defaultObjectEncoding(get, set):ObjectEncoding;
+
 	#if lime
 	@:noCompletion private static var __bytePointer = new BytePointer();
 	#end
@@ -702,7 +703,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	@:to @:noCompletion private static function toBytePointer(byteArray:ByteArray):BytePointer
 	{
 		#if !display
-		__bytePointer.set(#if flash byteArray #else (byteArray:ByteArrayData) #end, byteArray.position);
+		__bytePointer.set(#if flash byteArray #else (byteArray : ByteArrayData) #end, byteArray.position);
 		#end
 		return __bytePointer;
 	}
@@ -1071,34 +1072,29 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	#if lime_bytes_length_getter
 	@:noCompletion private static function __init__()
 	{
-		untyped global.Object.defineProperty(ByteArrayData, "defaultEndian",
+		untyped global.Object.defineProperty(ByteArrayData, "defaultEndian", {
+			get: function()
 			{
-				get: function()
-				{
-					return ByteArrayData.get_defaultEndian();
-				},
-				set: function(v)
-				{
-					return ByteArrayData.set_defaultEndian(v);
-				}
-			});
-		untyped global.Object.defineProperties(ByteArrayData.prototype,
+				return ByteArrayData.get_defaultEndian();
+			},
+			set: function(v)
 			{
-				"bytesAvailable":
-					{
-						get: untyped __js__("function () { return this.get_bytesAvailable (); }")
-					},
-				"endian":
-					{
-						get: untyped __js__("function () { return this.get_endian (); }"),
-						set: untyped __js__("function (v) { return this.set_endian (v); }")
-					},
-				"length":
-					{
-						get: untyped __js__("function () { return this.get_length (); }"),
-						set: untyped __js__("function (v) { return this.set_length (v); }")
-					},
-			});
+				return ByteArrayData.set_defaultEndian(v);
+			}
+		});
+		untyped global.Object.defineProperties(ByteArrayData.prototype, {
+			"bytesAvailable": {
+				get: untyped __js__("function () { return this.get_bytesAvailable (); }")
+			},
+			"endian": {
+				get: untyped __js__("function () { return this.get_endian (); }"),
+				set: untyped __js__("function (v) { return this.set_endian (v); }")
+			},
+			"length": {
+				get: untyped __js__("function () { return this.get_length (); }"),
+				set: untyped __js__("function (v) { return this.set_length (v); }")
+			},
+		});
 	}
 	#end
 

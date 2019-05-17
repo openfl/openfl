@@ -52,7 +52,17 @@ class FlashTilemap
 		var tiles = group.__tiles;
 		var length = group.__length;
 
-		var tile, tileset, alpha, visible, blendMode = null, colorTransform = null, id, tileData, tileRect, sourceBitmapData, cacheAlpha;
+		var tile,
+			tileset,
+			alpha,
+			visible,
+			blendMode = null,
+			colorTransform = null,
+			id,
+			tileData,
+			tileRect,
+			sourceBitmapData,
+			cacheAlpha;
 
 		for (i in 0...length)
 		{

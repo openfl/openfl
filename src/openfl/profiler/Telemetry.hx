@@ -26,6 +26,7 @@ import openfl._internal.Lib;
 		Returns a marker for use with `Telemetry.sendSpanMetric`
 	**/
 	public static var spanMarker(default, null) = 0.0;
+
 	#if ((cpp || neko) && hxtelemetry && !macro)
 	@:noCompletion private static var telemetry:HxTelemetry;
 	#end
@@ -33,13 +34,12 @@ import openfl._internal.Lib;
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperty(Telemetry, "connected",
+		untyped Object.defineProperty(Telemetry, "connected", {
+			get: function()
 			{
-				get: function()
-				{
-					return Telemetry.get_connected();
-				}
-			});
+				return Telemetry.get_connected();
+			}
+		});
 	}
 	#end
 

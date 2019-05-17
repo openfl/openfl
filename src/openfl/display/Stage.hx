@@ -215,6 +215,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		The associated Lime Application instance.
 	**/
 	public var application(default, null):Application;
+
 	// @:noCompletion @:dox(hide) @:require(flash15) public var browserZoomFactor (default, null):Float;
 
 	/**
@@ -301,6 +302,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		This property is supported only when using hardware rendering.
 	**/
 	public var context3D(default, null):Context3D;
+
 	// @:noCompletion @:dox(hide) @:require(flash11) public var displayContextInfo (default, null):String;
 
 	/**
@@ -509,6 +511,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		`Stage.scaleMode` is set to `StageScaleMode.NO_SCALE`.
 	**/
 	public var fullScreenWidth(get, never):UInt;
+
 	// @:noCompletion @:dox(hide) @:require(flash11_2) public var mouseLock:Bool;
 
 	/**
@@ -902,55 +905,46 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperties(Stage.prototype,
-			{
-				"color":
-					{
-						get: untyped __js__("function () { return this.get_color (); }"),
-						set: untyped __js__("function (v) { return this.set_color (v); }")
-					},
-				"contentsScaleFactor":
-					{
-						get: untyped __js__("function () { return this.get_contentsScaleFactor (); }")
-					},
-				"displayState":
-					{
-						get: untyped __js__("function () { return this.get_displayState (); }"),
-						set: untyped __js__("function (v) { return this.set_displayState (v); }")
-					},
-				"focus":
-					{
-						get: untyped __js__("function () { return this.get_focus (); }"),
-						set: untyped __js__("function (v) { return this.set_focus (v); }")
-					},
-				"frameRate":
-					{
-						get: untyped __js__("function () { return this.get_frameRate (); }"),
-						set: untyped __js__("function (v) { return this.set_frameRate (v); }")
-					},
-				"fullScreenHeight":
-					{
-						get: untyped __js__("function () { return this.get_fullScreenHeight (); }")
-					},
-				"fullScreenWidth":
-					{
-						get: untyped __js__("function () { return this.get_fullScreenWidth (); }")
-					},
-				"quality":
-					{
-						get: untyped __js__("function () { return this.get_quality (); }"),
-						set: untyped __js__("function (v) { return this.set_quality (v); }")
-					},
-				"scaleMode":
-					{
-						get: untyped __js__("function () { return this.get_scaleMode (); }"),
-						set: untyped __js__("function (v) { return this.set_scaleMode (v); }")
-					},
-			});
+		untyped Object.defineProperties(Stage.prototype, {
+			"color": {
+				get: untyped __js__("function () { return this.get_color (); }"),
+				set: untyped __js__("function (v) { return this.set_color (v); }")
+			},
+			"contentsScaleFactor": {
+				get: untyped __js__("function () { return this.get_contentsScaleFactor (); }")
+			},
+			"displayState": {
+				get: untyped __js__("function () { return this.get_displayState (); }"),
+				set: untyped __js__("function (v) { return this.set_displayState (v); }")
+			},
+			"focus": {
+				get: untyped __js__("function () { return this.get_focus (); }"),
+				set: untyped __js__("function (v) { return this.set_focus (v); }")
+			},
+			"frameRate": {
+				get: untyped __js__("function () { return this.get_frameRate (); }"),
+				set: untyped __js__("function (v) { return this.set_frameRate (v); }")
+			},
+			"fullScreenHeight": {
+				get: untyped __js__("function () { return this.get_fullScreenHeight (); }")
+			},
+			"fullScreenWidth": {
+				get: untyped __js__("function () { return this.get_fullScreenWidth (); }")
+			},
+			"quality": {
+				get: untyped __js__("function () { return this.get_quality (); }"),
+				set: untyped __js__("function (v) { return this.set_quality (v); }")
+			},
+			"scaleMode": {
+				get: untyped __js__("function () { return this.get_scaleMode (); }"),
+				set: untyped __js__("function (v) { return this.set_scaleMode (v); }")
+			},
+		});
 	}
 	#end
 
-	public function new(#if commonjs width:Dynamic = 0, height:Dynamic = 0, color:Null<Int> = null, documentClass:Class<Dynamic> = null, windowAttributes:Dynamic = null #else window:Window, color:Null<Int> = null #end)
+	public function new(#if commonjs width:Dynamic = 0, height:Dynamic = 0, color:Null<Int> = null, documentClass:Class<Dynamic> = null,
+		windowAttributes:Dynamic = null #else window:Window, color:Null<Int> = null #end)
 	{
 		#if hxtelemetry
 		Telemetry.__initialize();
@@ -1884,8 +1878,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		__enterFrame(__deltaTime);
 		__deltaTime = 0;
 
-		var shouldRender = #if !openfl_disable_display_render (
-			__renderer != null #if !openfl_always_render && (__renderDirty || __forceRender) #end) #else false #end;
+		var shouldRender = #if !openfl_disable_display_render (__renderer != null #if !openfl_always_render && (__renderDirty || __forceRender) #end) #else false #end;
 
 		if (__invalidated && shouldRender)
 		{
@@ -2480,11 +2473,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			if (__mouseOverTarget != null)
 			{
 				#if openfl_pool_events
-				event = MouseEvent.__pool.get(MouseEvent.MOUSE_OUT, __mouseX, __mouseY, __mouseOverTarget
-					.__globalToLocal(targetPoint, localPoint), cast __mouseOverTarget);
+				event = MouseEvent.__pool.get(MouseEvent.MOUSE_OUT, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
+					cast __mouseOverTarget);
 				#else
-				event = MouseEvent.__create(MouseEvent.MOUSE_OUT, button, __mouseX, __mouseY, __mouseOverTarget
-					.__globalToLocal(targetPoint, localPoint), cast __mouseOverTarget);
+				event = MouseEvent.__create(MouseEvent.MOUSE_OUT, button, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
+					cast __mouseOverTarget);
 				#end
 
 				__dispatchStack(event, __mouseOutStack);
@@ -2502,11 +2495,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				__rollOutStack.remove(target);
 
 				#if openfl_pool_events
-				event = MouseEvent.__pool.get(MouseEvent.ROLL_OUT, __mouseX, __mouseY, __mouseOverTarget
-					.__globalToLocal(targetPoint, localPoint), cast __mouseOverTarget);
+				event = MouseEvent.__pool.get(MouseEvent.ROLL_OUT, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
+					cast __mouseOverTarget);
 				#else
-				event = MouseEvent.__create(MouseEvent.ROLL_OUT, button, __mouseX, __mouseY, __mouseOverTarget
-					.__globalToLocal(targetPoint, localPoint), cast __mouseOverTarget);
+				event = MouseEvent.__create(MouseEvent.ROLL_OUT, button, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
+					cast __mouseOverTarget);
 				#end
 				event.bubbles = false;
 
@@ -2525,11 +2518,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				if (target.hasEventListener(MouseEvent.ROLL_OVER))
 				{
 					#if openfl_pool_events
-					event = MouseEvent.__pool.get(MouseEvent.ROLL_OVER, __mouseX, __mouseY, __mouseOverTarget
-						.__globalToLocal(targetPoint, localPoint), cast target);
+					event = MouseEvent.__pool.get(MouseEvent.ROLL_OVER, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
+						cast target);
 					#else
-					event = MouseEvent.__create(MouseEvent.ROLL_OVER, button, __mouseX, __mouseY, __mouseOverTarget
-						.__globalToLocal(targetPoint, localPoint), cast target);
+					event = MouseEvent.__create(MouseEvent.ROLL_OVER, button, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
+						cast target);
 					#end
 					event.bubbles = false;
 
@@ -2719,8 +2712,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		if (target != touchOverTarget && touchOverTarget != null)
 		{
-			touchEvent = TouchEvent.__create(TouchEvent.TOUCH_OUT, null, touchX, touchY, touchOverTarget
-				.__globalToLocal(targetPoint, localPoint), cast touchOverTarget);
+			touchEvent = TouchEvent.__create(TouchEvent.TOUCH_OUT, null, touchX, touchY, touchOverTarget.__globalToLocal(targetPoint, localPoint),
+				cast touchOverTarget);
 			touchEvent.touchPointID = touchId;
 			touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 			touchEvent.pressure = touch.pressure;
@@ -2736,8 +2729,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			{
 				touchOutStack.remove(target);
 
-				touchEvent = TouchEvent.__create(TouchEvent.TOUCH_ROLL_OUT, null, touchX, touchY, touchOverTarget
-					.__globalToLocal(targetPoint, localPoint), cast touchOverTarget);
+				touchEvent = TouchEvent.__create(TouchEvent.TOUCH_ROLL_OUT, null, touchX, touchY, touchOverTarget.__globalToLocal(targetPoint, localPoint),
+					cast touchOverTarget);
 				touchEvent.touchPointID = touchId;
 				touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 				touchEvent.bubbles = false;
@@ -2753,8 +2746,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			{
 				if (target.hasEventListener(TouchEvent.TOUCH_ROLL_OVER))
 				{
-					touchEvent = TouchEvent.__create(TouchEvent.TOUCH_ROLL_OVER, null, touchX, touchY, touchOverTarget
-						.__globalToLocal(targetPoint, localPoint), cast target);
+					touchEvent = TouchEvent.__create(TouchEvent.TOUCH_ROLL_OVER, null, touchX, touchY,
+						touchOverTarget.__globalToLocal(targetPoint, localPoint), cast target);
 					touchEvent.touchPointID = touchId;
 					touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 					touchEvent.bubbles = false;

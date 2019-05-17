@@ -41,6 +41,14 @@ class TagDefineFontName implements ITag
 
 	public function toString(indent:Int = 0):String
 	{
-		return Tag.toStringCommon(type, name, indent) + "FontID: " + fontId + ", " + "Name: " + fontName + ", " + "Copyright: " + fontCopyright;
+		return Tag.toStringCommon(type, name, indent)
+			+ "FontID: "
+			+ fontId
+			+ ", "
+			+ "Name: "
+			+ fontName
+			+ ", "
+			+ "Copyright: "
+			+ fontCopyright;
 	}
 }

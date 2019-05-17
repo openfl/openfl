@@ -102,10 +102,12 @@ class Slider extends UIComponent
 		this.state = state;
 		var sliderRange:Float = maximum - minimum;
 		getXFLMovieClip("SliderThumb_" + this.state + "Skin").x = getXFLMovieClip("SliderTrack_skin")
-			.x + (sliderRange < 0.00001 ? 0.0 : ((value - minimum) / sliderRange) * getXFLMovieClip("SliderTrack_skin").width);
+			.x + (sliderRange < 0.00001 ? 0.0 : ((value - minimum) / sliderRange) * getXFLMovieClip("SliderTrack_skin")
+				.width);
 		getXFLMovieClip("SliderThumb_" + this.state + "Skin").visible = true;
-		getXFLMovieClip("SliderTick_skin").x = getXFLMovieClip("SliderTrack_skin").x
-			+ (((value - minimum) / (maximum - minimum)) * getXFLMovieClip("SliderTrack_skin").width);
+		getXFLMovieClip("SliderTick_skin").x = getXFLMovieClip("SliderTrack_skin")
+			.x + (((value - minimum) / (maximum - minimum)) * getXFLMovieClip("SliderTrack_skin")
+				.width);
 	}
 
 	private function onMouseEvent(event:MouseEvent):Void
@@ -144,7 +146,8 @@ class Slider extends UIComponent
 				setState("up");
 			case MouseEvent.MOUSE_MOVE:
 				var mouseLocalX:Float = getXFLMovieClip("SliderTrack_skin").globalToLocal(new Point(event.stageX, event.stageY))
-					.x * getXFLMovieClip("SliderTrack_skin").scaleX;
+					.x * getXFLMovieClip("SliderTrack_skin")
+					.scaleX;
 				setValueInternal(minimum + ((mouseLocalX / getXFLMovieClip("SliderTrack_skin").width) * (maximum - minimum)), true);
 			default:
 				trace("onMouseEventMove(): unsupported mouse event type '" + event.type + "'");

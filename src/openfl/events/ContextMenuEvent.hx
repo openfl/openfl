@@ -85,8 +85,8 @@ class ContextMenuEvent extends Event
 	**/
 	public var mouseTarget:InteractiveObject;
 
-	@:noCompletion private static var __pool:ObjectPool<ContextMenuEvent> = new ObjectPool<ContextMenuEvent>(function() return
-		new ContextMenuEvent(null), function(event) event.__init());
+	@:noCompletion private static var __pool:ObjectPool<ContextMenuEvent> = new ObjectPool<ContextMenuEvent>(function() return new ContextMenuEvent(null),
+	function(event) event.__init());
 
 	/**
 		Creates an Event object that contains specific information about menu

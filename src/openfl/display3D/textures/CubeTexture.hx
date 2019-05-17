@@ -267,8 +267,7 @@ import openfl.utils.ByteArray;
 			__framebufferSurface = surfaceSelector;
 
 			__context.__bindGLFramebuffer(__glFramebuffer);
-			gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_CUBE_MAP_POSITIVE_X
-				+ surfaceSelector, __textureID, 0);
+			gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_CUBE_MAP_POSITIVE_X + surfaceSelector, __textureID, 0);
 
 			if (__context.__enableErrorChecking)
 			{

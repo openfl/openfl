@@ -20,7 +20,15 @@ class TagDefineText2 extends TagDefineText implements IDefinitionTag
 
 	override public function toString(indent:Int = 0):String
 	{
-		var str:String = Tag.toStringCommon(type, name, indent) + "ID: " + characterId + ", " + "Bounds: " + textBounds + ", " + "Matrix: " + textMatrix;
+		var str:String = Tag.toStringCommon(type, name, indent)
+			+ "ID: "
+			+ characterId
+			+ ", "
+			+ "Bounds: "
+			+ textBounds
+			+ ", "
+			+ "Matrix: "
+			+ textMatrix;
 		if (records.length > 0)
 		{
 			str += "\n" + StringUtils.repeat(indent + 2) + "TextRecords:";

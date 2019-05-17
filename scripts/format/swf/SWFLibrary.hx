@@ -44,6 +44,7 @@ import format.SWF;
 	public override function exists(id:String, type:String):Bool
 	{
 	#end
+
 		if (id == "" && type == cast AssetType.MOVIE_CLIP)
 		{
 			return true;
@@ -81,6 +82,7 @@ import format.SWF;
 			#end
 		}
 		#end
+
 		public override function getMovieClip(id:String):MovieClip
 		{
 			#if flash

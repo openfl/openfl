@@ -64,8 +64,8 @@ class ProgressEvent extends Event
 	**/
 	public var bytesTotal:Float;
 
-	@:noCompletion private static var __pool:ObjectPool<ProgressEvent> = new ObjectPool<ProgressEvent>(function() return
-		new ProgressEvent(null), function(event) event.__init());
+	@:noCompletion private static var __pool:ObjectPool<ProgressEvent> = new ObjectPool<ProgressEvent>(function() return new ProgressEvent(null),
+	function(event) event.__init());
 
 	/**
 		Creates an Event object that contains information about progress events.

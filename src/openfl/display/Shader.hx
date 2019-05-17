@@ -235,12 +235,13 @@ class Shader
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperties(Shader.prototype,
-			{
-				"data": {get: untyped __js__("function () { return this.get_data (); }"), set: untyped __js__("function (v) { return this.set_data (v); }")},
-				"glFragmentSource": {get: untyped __js__("function () { return this.get_glFragmentSource (); }"), set: untyped __js__("function (v) { return this.set_glFragmentSource (v); }")},
-				"glVertexSource": {get: untyped __js__("function () { return this.get_glVertexSource (); }"), set: untyped __js__("function (v) { return this.set_glVertexSource (v); }")},
-			});
+		untyped Object.defineProperties(Shader.prototype, {
+			"data": {get: untyped __js__("function () { return this.get_data (); }"), set: untyped __js__("function (v) { return this.set_data (v); }")},
+			"glFragmentSource": {get: untyped __js__("function () { return this.get_glFragmentSource (); }"),
+				set: untyped __js__("function (v) { return this.set_glFragmentSource (v); }")},
+			"glVertexSource": {get: untyped __js__("function () { return this.get_glVertexSource (); }"),
+				set: untyped __js__("function (v) { return this.set_glVertexSource (v); }")},
+		});
 	}
 	#end
 
@@ -469,7 +470,8 @@ class Shader
 			var gl = __context.gl;
 
 			var prefix = "#ifdef GL_ES
-				" + (precisionHint == FULL ? "#ifdef GL_FRAGMENT_PRECISION_HIGH
+				"
+				+ (precisionHint == FULL ? "#ifdef GL_FRAGMENT_PRECISION_HIGH
 				precision highp float;
 				#else
 				precision mediump float;
@@ -805,7 +807,9 @@ class Shader
 		var paramData = shaderBuffer.paramData;
 
 		var boolRef, floatRef, intRef, hasOverride;
-		var overrideBoolValue:Array<Bool> = null, overrideFloatValue:Array<Float> = null, overrideIntValue:Array<Int> = null;
+		var overrideBoolValue:Array<Bool> = null,
+			overrideFloatValue:Array<Float> = null,
+			overrideIntValue:Array<Int> = null;
 
 		for (i in 0...shaderBuffer.paramCount)
 		{

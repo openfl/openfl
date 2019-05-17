@@ -31,10 +31,9 @@ class Shape extends DisplayObject
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperty(Shape.prototype, "graphics",
-			{
-				get: untyped __js__("function () { return this.get_graphics (); }")
-			});
+		untyped Object.defineProperty(Shape.prototype, "graphics", {
+			get: untyped __js__("function () { return this.get_graphics (); }")
+		});
 	}
 	#end
 

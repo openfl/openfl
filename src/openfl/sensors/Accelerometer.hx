@@ -69,6 +69,7 @@ class Accelerometer extends EventDispatcher
 		`false`.
 	**/
 	public static var isSupported(get, never):Bool;
+
 	@:noCompletion private static var currentX:Float = 0.0;
 	@:noCompletion private static var currentY:Float = 1.0;
 	@:noCompletion private static var currentZ:Float = 0.0;
@@ -90,18 +91,16 @@ class Accelerometer extends EventDispatcher
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperty(Accelerometer.prototype, "muted",
+		untyped Object.defineProperty(Accelerometer.prototype, "muted", {
+			get: untyped __js__("function () { return this.get_muted (); }"),
+			set: untyped __js__("function (v) { return this.set_muted (v); }")
+		});
+		untyped Object.defineProperty(Accelerometer, "isSupported", {
+			get: function()
 			{
-				get: untyped __js__("function () { return this.get_muted (); }"),
-				set: untyped __js__("function (v) { return this.set_muted (v); }")
-			});
-		untyped Object.defineProperty(Accelerometer, "isSupported",
-			{
-				get: function()
-				{
-					return Accelerometer.get_isSupported();
-				}
-			});
+				return Accelerometer.get_isSupported();
+			}
+		});
 	}
 	#end
 

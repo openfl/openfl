@@ -324,8 +324,8 @@ import openfl.utils.ByteArray;
 				gl.compressedTexImage2D(__textureTarget, level, __internalFormat, width, height, 0,
 					new UInt8Array(#if js @:privateAccess bytes.b.buffer #else bytes #end, 0, size));
 
-				var alphaTexture = new Texture(__context, __width, __height, Context3DTextureFormat
-					.COMPRESSED, __optimizeForRenderToTexture, __streamingLevels);
+				var alphaTexture = new Texture(__context, __width, __height, Context3DTextureFormat.COMPRESSED, __optimizeForRenderToTexture,
+					__streamingLevels);
 				alphaTexture.__format = format;
 				alphaTexture.__internalFormat = format;
 

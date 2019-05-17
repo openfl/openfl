@@ -79,8 +79,7 @@ class ScrollRectTest1 extends FunctionalTest
 		textField.multiline = true;
 		textField.wordWrap = false;
 		// IMDB top 20 movies
-		textField
-			.text = "The Shawshank Redemption (1994)\nThe Godfather (1972)\nThe Godfather: Part II (1974)\nPulp Fiction (1994)\nThe Good, the Bad and the Ugly (1966)\nThe Dark Knight (2008)\n12 Angry Men (1957)\nSchindler's List (1993)\nThe Lord of the Rings: The Return of the Kind (2003)\nFight Club (1999)\nStar Wars: Episode V - The Empire Strikes Back (1980)\nThe Lord of the Rings: The Fellowship of the Ring (2001)\nOne Flew Over the Cuckoo's Next (1975)\nGoodfellas (1990)\nSeven Samurai (1954)\nInception (2010)\nStar Wars: Episode IV - A New Hope (1977)\nForrest Gump (1994)\nThe Matrix (1999)\nThe Lord of the Rings: The Two Towers (2002)";
+		textField.text = "The Shawshank Redemption (1994)\nThe Godfather (1972)\nThe Godfather: Part II (1974)\nPulp Fiction (1994)\nThe Good, the Bad and the Ugly (1966)\nThe Dark Knight (2008)\n12 Angry Men (1957)\nSchindler's List (1993)\nThe Lord of the Rings: The Return of the Kind (2003)\nFight Club (1999)\nStar Wars: Episode V - The Empire Strikes Back (1980)\nThe Lord of the Rings: The Fellowship of the Ring (2001)\nOne Flew Over the Cuckoo's Next (1975)\nGoodfellas (1990)\nSeven Samurai (1954)\nInception (2010)\nStar Wars: Episode IV - A New Hope (1977)\nForrest Gump (1994)\nThe Matrix (1999)\nThe Lord of the Rings: The Two Towers (2002)";
 
 		textSprite = new Sprite();
 

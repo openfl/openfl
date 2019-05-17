@@ -44,6 +44,14 @@ class SWFMorphGradientRecord
 
 	public function toString():String
 	{
-		return "[" + startRatio + "," + ColorUtils.rgbaToString(startColor) + "," + endRatio + "," + ColorUtils.rgbaToString(endColor) + "]";
+		return "["
+			+ startRatio
+			+ ","
+			+ ColorUtils.rgbaToString(startColor)
+			+ ","
+			+ endRatio
+			+ ","
+			+ ColorUtils.rgbaToString(endColor)
+			+ "]";
 	}
 }

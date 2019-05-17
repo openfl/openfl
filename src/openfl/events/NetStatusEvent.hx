@@ -124,8 +124,8 @@ class NetStatusEvent extends Event
 	**/
 	public var info:Dynamic;
 
-	@:noCompletion private static var __pool:ObjectPool<NetStatusEvent> = new ObjectPool<NetStatusEvent>(function() return
-		new NetStatusEvent(null), function(event) event.__init());
+	@:noCompletion private static var __pool:ObjectPool<NetStatusEvent> = new ObjectPool<NetStatusEvent>(function() return new NetStatusEvent(null),
+	function(event) event.__init());
 
 	/**
 		Creates an Event object that contains information about `netStatus`

@@ -113,6 +113,7 @@ import openfl.display3D.Context3D;
 		This property is not available when targeting Flash.
 	**/
 	public var mipFilter:Context3DMipFilter;
+
 	@:noCompletion @:dox(hide) @SuppressWarnings("checkstyle:FieldDocComment") public var name:String;
 
 	/**

@@ -63,6 +63,7 @@ import format.swf.utils.BitArray;
 	public static inline var MIN_FLOAT_VALUE:Float = 2.2250738585072014e-308;
 	public static inline var MAX_FLOAT_VALUE:Float = 1.7976931348623158e+308;
 	#end
+
 	public var length(get, set):Int;
 
 	public function new()

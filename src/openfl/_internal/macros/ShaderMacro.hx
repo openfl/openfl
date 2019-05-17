@@ -237,14 +237,13 @@ class ShaderMacro
 
 			if (StringTools.startsWith(type, "sampler"))
 			{
-				field =
-					{
-						name: name,
-						meta: [],
-						access: [fieldAccess],
-						kind: FVar(macro:openfl.display.ShaderInput<openfl.display.BitmapData>),
-						pos: pos
-					};
+				field = {
+					name: name,
+					meta: [],
+					access: [fieldAccess],
+					kind: FVar(macro:openfl.display.ShaderInput<openfl.display.BitmapData>),
+					pos: pos
+				};
 			}
 			else
 			{
@@ -277,37 +276,31 @@ class ShaderMacro
 				switch (parameterType)
 				{
 					case BOOL, BOOL2, BOOL3, BOOL4:
-						field =
-							{
-								name: name,
-								meta: [
-									{name: ":keep", pos: pos}],
-								access: [fieldAccess],
-								kind: FVar(macro:openfl.display.ShaderParameter<Bool>),
-								pos: pos
-							};
+						field = {
+							name: name,
+							meta: [{name: ":keep", pos: pos}],
+							access: [fieldAccess],
+							kind: FVar(macro:openfl.display.ShaderParameter<Bool>),
+							pos: pos
+						};
 
 					case INT, INT2, INT3, INT4:
-						field =
-							{
-								name: name,
-								meta: [
-									{name: ":keep", pos: pos}],
-								access: [fieldAccess],
-								kind: FVar(macro:openfl.display.ShaderParameter<Int>),
-								pos: pos
-							};
+						field = {
+							name: name,
+							meta: [{name: ":keep", pos: pos}],
+							access: [fieldAccess],
+							kind: FVar(macro:openfl.display.ShaderParameter<Int>),
+							pos: pos
+						};
 
 					default:
-						field =
-							{
-								name: name,
-								meta: [
-									{name: ":keep", pos: pos}],
-								access: [fieldAccess],
-								kind: FVar(macro:openfl.display.ShaderParameter<Float>),
-								pos: pos
-							};
+						field = {
+							name: name,
+							meta: [{name: ":keep", pos: pos}],
+							access: [fieldAccess],
+							kind: FVar(macro:openfl.display.ShaderParameter<Float>),
+							pos: pos
+						};
 				}
 			}
 
@@ -322,8 +315,7 @@ class ShaderMacro
 			}
 			else
 			{
-				field.meta = [
-					{name: ":keep", pos: pos}];
+				field.meta = [{name: ":keep", pos: pos}];
 			}
 
 			fields.push(field);

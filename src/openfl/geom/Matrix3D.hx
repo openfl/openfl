@@ -89,11 +89,12 @@ class Matrix3D
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperties(Matrix3D.prototype,
-			{
-				"determinant": {get: untyped __js__("function () { return this.get_determinant (); }"), set: untyped __js__("function (v) { return this.set_determinant (v); }")},
-				"position": {get: untyped __js__("function () { return this.get_position (); }"), set: untyped __js__("function (v) { return this.set_position (v); }")},
-			});
+		untyped Object.defineProperties(Matrix3D.prototype, {
+			"determinant": {get: untyped __js__("function () { return this.get_determinant (); }"),
+				set: untyped __js__("function (v) { return this.set_determinant (v); }")},
+			"position": {get: untyped __js__("function () { return this.get_position (); }"),
+				set: untyped __js__("function (v) { return this.set_position (v); }")},
+		});
 	}
 	#end
 
@@ -118,8 +119,38 @@ class Matrix3D
 	**/
 	public function append(lhs:Matrix3D):Void
 	{
-		var m111:Float = this.rawData[0], m121:Float = this.rawData[4], m131:Float = this.rawData[8], m141:Float = this.rawData[12], m112:Float = this
-			.rawData[1], m122:Float = this.rawData[5], m132:Float = this.rawData[9], m142:Float = this.rawData[13], m113:Float = this.rawData[2], m123:Float = this.rawData[6], m133:Float = this.rawData[10], m143:Float = this.rawData[14], m114:Float = this.rawData[3], m124:Float = this.rawData[7], m134:Float = this.rawData[11], m144:Float = this.rawData[15], m211:Float = lhs.rawData[0], m221:Float = lhs.rawData[4], m231:Float = lhs.rawData[8], m241:Float = lhs.rawData[12], m212:Float = lhs.rawData[1], m222:Float = lhs.rawData[5], m232:Float = lhs.rawData[9], m242:Float = lhs.rawData[13], m213:Float = lhs.rawData[2], m223:Float = lhs.rawData[6], m233:Float = lhs.rawData[10], m243:Float = lhs.rawData[14], m214:Float = lhs.rawData[3], m224:Float = lhs.rawData[7], m234:Float = lhs.rawData[11], m244:Float = lhs.rawData[15];
+		var m111:Float = this.rawData[0],
+			m121:Float = this.rawData[4],
+			m131:Float = this.rawData[8],
+			m141:Float = this.rawData[12],
+			m112:Float = this.rawData[1],
+			m122:Float = this.rawData[5],
+			m132:Float = this.rawData[9],
+			m142:Float = this.rawData[13],
+			m113:Float = this.rawData[2],
+			m123:Float = this.rawData[6],
+			m133:Float = this.rawData[10],
+			m143:Float = this.rawData[14],
+			m114:Float = this.rawData[3],
+			m124:Float = this.rawData[7],
+			m134:Float = this.rawData[11],
+			m144:Float = this.rawData[15],
+			m211:Float = lhs.rawData[0],
+			m221:Float = lhs.rawData[4],
+			m231:Float = lhs.rawData[8],
+			m241:Float = lhs.rawData[12],
+			m212:Float = lhs.rawData[1],
+			m222:Float = lhs.rawData[5],
+			m232:Float = lhs.rawData[9],
+			m242:Float = lhs.rawData[13],
+			m213:Float = lhs.rawData[2],
+			m223:Float = lhs.rawData[6],
+			m233:Float = lhs.rawData[10],
+			m243:Float = lhs.rawData[14],
+			m214:Float = lhs.rawData[3],
+			m224:Float = lhs.rawData[7],
+			m234:Float = lhs.rawData[11],
+			m244:Float = lhs.rawData[15];
 
 		rawData[0] = m111 * m211 + m112 * m221 + m113 * m231 + m114 * m241;
 		rawData[1] = m111 * m212 + m112 * m222 + m113 * m232 + m114 * m242;
@@ -1143,8 +1174,38 @@ class Matrix3D
 	**/
 	public function prepend(rhs:Matrix3D):Void
 	{
-		var m111:Float = rhs.rawData[0], m121:Float = rhs.rawData[4], m131:Float = rhs.rawData[8], m141:Float = rhs.rawData[12], m112:Float = rhs.rawData[1],
-		m122:Float = rhs.rawData[5], m132:Float = rhs.rawData[9], m142:Float = rhs.rawData[13], m113:Float = rhs.rawData[2], m123:Float = rhs.rawData[6], m133:Float = rhs.rawData[10], m143:Float = rhs.rawData[14], m114:Float = rhs.rawData[3], m124:Float = rhs.rawData[7], m134:Float = rhs.rawData[11], m144:Float = rhs.rawData[15], m211:Float = this.rawData[0], m221:Float = this.rawData[4], m231:Float = this.rawData[8], m241:Float = this.rawData[12], m212:Float = this.rawData[1], m222:Float = this.rawData[5], m232:Float = this.rawData[9], m242:Float = this.rawData[13], m213:Float = this.rawData[2], m223:Float = this.rawData[6], m233:Float = this.rawData[10], m243:Float = this.rawData[14], m214:Float = this.rawData[3], m224:Float = this.rawData[7], m234:Float = this.rawData[11], m244:Float = this.rawData[15];
+		var m111:Float = rhs.rawData[0],
+			m121:Float = rhs.rawData[4],
+			m131:Float = rhs.rawData[8],
+			m141:Float = rhs.rawData[12],
+			m112:Float = rhs.rawData[1],
+			m122:Float = rhs.rawData[5],
+			m132:Float = rhs.rawData[9],
+			m142:Float = rhs.rawData[13],
+			m113:Float = rhs.rawData[2],
+			m123:Float = rhs.rawData[6],
+			m133:Float = rhs.rawData[10],
+			m143:Float = rhs.rawData[14],
+			m114:Float = rhs.rawData[3],
+			m124:Float = rhs.rawData[7],
+			m134:Float = rhs.rawData[11],
+			m144:Float = rhs.rawData[15],
+			m211:Float = this.rawData[0],
+			m221:Float = this.rawData[4],
+			m231:Float = this.rawData[8],
+			m241:Float = this.rawData[12],
+			m212:Float = this.rawData[1],
+			m222:Float = this.rawData[5],
+			m232:Float = this.rawData[9],
+			m242:Float = this.rawData[13],
+			m213:Float = this.rawData[2],
+			m223:Float = this.rawData[6],
+			m233:Float = this.rawData[10],
+			m243:Float = this.rawData[14],
+			m214:Float = this.rawData[3],
+			m224:Float = this.rawData[7],
+			m234:Float = this.rawData[11],
+			m244:Float = this.rawData[15];
 
 		rawData[0] = m111 * m211 + m112 * m221 + m113 * m231 + m114 * m241;
 		rawData[1] = m111 * m212 + m112 * m222 + m113 * m232 + m114 * m242;

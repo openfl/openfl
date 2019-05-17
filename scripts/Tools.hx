@@ -230,8 +230,7 @@ class Tools
 					switch (superClassData.nameSpace)
 					{
 						case NPublic(_) if (!~/^flash\./.match(superClassData.nameSpaceName)):
-							baseClassName = ("" == superClassData.nameSpaceName ? "" : superClassData.nameSpaceName + ".")
-								+ superClassData.name;
+							baseClassName = ("" == superClassData.nameSpaceName ? "" : superClassData.nameSpaceName + ".") + superClassData.name;
 						case _:
 					}
 				}
@@ -310,17 +309,16 @@ class Tools
 					}
 				}
 
-				var context =
-					{
-						PACKAGE_NAME: packageName,
-						NATIVE_CLASS_NAME: StringTools.trim(className),
-						CLASS_NAME: name,
-						BASE_CLASS_NAME: baseClassName,
-						SWF_ID: swfAsset.id,
-						SYMBOL_ID: symbolID,
-						PREFIX: prefix,
-						CLASS_PROPERTIES: classProperties
-					};
+				var context = {
+					PACKAGE_NAME: packageName,
+					NATIVE_CLASS_NAME: StringTools.trim(className),
+					CLASS_NAME: name,
+					BASE_CLASS_NAME: baseClassName,
+					SWF_ID: swfAsset.id,
+					SYMBOL_ID: symbolID,
+					PREFIX: prefix,
+					CLASS_PROPERTIES: classProperties
+				};
 				var template = new Template(templateData);
 				var targetPath;
 
@@ -338,8 +336,7 @@ class Tools
 					+ "/"
 					+ prefix
 					+ name
-					+ ".hx",
-					AssetType.TEMPLATE);
+					+ ".hx", AssetType.TEMPLATE);
 				templateFile.data = template.execute(context);
 				output.assets.push(templateFile);
 
@@ -483,24 +480,22 @@ class Tools
 					}
 				}
 
-				var context =
-					{
-						PACKAGE_NAME: packageName,
-						NATIVE_CLASS_NAME: className,
-						CLASS_NAME: name,
-						BASE_CLASS_NAME: baseClassName,
-						SWF_ID: swfID,
-						SYMBOL_ID: symbolID,
-						PREFIX: "",
-						CLASS_PROPERTIES: classProperties
-					};
+				var context = {
+					PACKAGE_NAME: packageName,
+					NATIVE_CLASS_NAME: className,
+					CLASS_NAME: name,
+					BASE_CLASS_NAME: baseClassName,
+					SWF_ID: swfID,
+					SYMBOL_ID: symbolID,
+					PREFIX: "",
+					CLASS_PROPERTIES: classProperties
+				};
 				var template = new Template(templateData);
 
 				var templateFile = new Asset("", Path.combine(targetPath, Path.directory(symbol.className.split(".").join("/")))
 					+ "/"
 					+ name
-					+ ".hx",
-					AssetType.TEMPLATE);
+					+ ".hx", AssetType.TEMPLATE);
 				templateFile.data = template.execute(context);
 				output.push(templateFile);
 
@@ -918,8 +913,8 @@ class Tools
 							}
 						}
 
-						var swfLiteAsset = new Asset(cacheDirectory + "/" + library.name + SWFLITE_DATA_SUFFIX, "lib/" + library.name + "/" + library
-							.name + SWFLITE_DATA_SUFFIX, AssetType.TEXT);
+						var swfLiteAsset = new Asset(cacheDirectory + "/" + library.name + SWFLITE_DATA_SUFFIX, "lib/" + library.name + "/" + library.name
+							+ SWFLITE_DATA_SUFFIX, AssetType.TEXT);
 
 						if (library.embed != null)
 						{

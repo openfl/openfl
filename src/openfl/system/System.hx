@@ -79,6 +79,7 @@ import cpp.vm.Gc;
 		allows larger values.
 	**/
 	public static var totalMemory(get, never):Int;
+
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public static var totalMemoryNumber (default, null):Float;
 
 	/**
@@ -136,23 +137,20 @@ import cpp.vm.Gc;
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperties(System,
-			{
-				"totalMemory":
-					{
-						get: function()
-						{
-							return System.get_totalMemory();
-						}
-					},
-				"vmVersion":
-					{
-						get: function()
-						{
-							return System.get_vmVersion();
-						}
-					},
-			});
+		untyped Object.defineProperties(System, {
+			"totalMemory": {
+				get: function()
+				{
+					return System.get_totalMemory();
+				}
+			},
+			"vmVersion": {
+				get: function()
+				{
+					return System.get_vmVersion();
+				}
+			},
+		});
 	}
 	#end
 

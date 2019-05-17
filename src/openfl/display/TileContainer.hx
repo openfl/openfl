@@ -27,10 +27,9 @@ class TileContainer extends Tile implements ITileContainer
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperty(TileContainer.prototype, "numTiles",
-			{
-				get: untyped __js__("function () { return this.get_numTiles (); }")
-			});
+		untyped Object.defineProperty(TileContainer.prototype, "numTiles", {
+			get: untyped __js__("function () { return this.get_numTiles (); }")
+		});
 	}
 	#end
 

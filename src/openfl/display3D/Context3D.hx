@@ -1068,8 +1068,8 @@ import lime.math.Vector2;
 
 			if (cacheRenderToTexture != null)
 			{
-				setRenderToTexture(cacheRenderToTexture, __state.renderToTextureDepthStencil, __state.renderToTextureAntiAlias, __state
-					.renderToTextureSurfaceSelector);
+				setRenderToTexture(cacheRenderToTexture, __state.renderToTextureDepthStencil, __state.renderToTextureAntiAlias,
+					__state.renderToTextureSurfaceSelector);
 			}
 		}
 		#end
@@ -2124,8 +2124,8 @@ import lime.math.Vector2;
 			if (#if openfl_disable_context_cache true #else __contextState.renderToTexture != __state.renderToTexture
 				|| __contextState.renderToTextureSurfaceSelector != __state.renderToTextureSurfaceSelector #end)
 			{
-				var framebuffer = __state.renderToTexture.__getGLFramebuffer(__state.renderToTextureDepthStencil, __state.renderToTextureAntiAlias, __state
-					.renderToTextureSurfaceSelector);
+				var framebuffer = __state.renderToTexture.__getGLFramebuffer(__state.renderToTextureDepthStencil, __state.renderToTextureAntiAlias,
+					__state.renderToTextureSurfaceSelector);
 				__bindGLFramebuffer(framebuffer);
 
 				__contextState.renderToTexture = __state.renderToTexture;

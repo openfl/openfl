@@ -246,7 +246,8 @@ class Symbols
 				}
 				if (movieClip == null)
 				{
-					movieClip = new XFLMovieClip(new XFLSymbolArguments(xfl, symbolItem.linkageClassName, symbolItem.timeline, symbolItem.parametersAreLocked));
+					movieClip = new XFLMovieClip(new XFLSymbolArguments(xfl, symbolItem.linkageClassName, symbolItem.timeline,
+						symbolItem.parametersAreLocked));
 				}
 				// TODO: a.drewke, hack to inject timeline name into symbol instance if it has no name
 				if ((instance.name == null || instance.name == "") && symbolItem.timeline.name != null && symbolItem.timeline.name != "")
@@ -354,10 +355,11 @@ class Symbols
 				var otherName:String = (instance.name == null || instance.name == "")
 					&& symbolItem.timeline.name != null
 					&& symbolItem.timeline.name != "" ? symbolItem.timeline.name : instance.name;
-				other = Type.createInstance(classType, [
-					otherName,
-					new XFLSymbolArguments(xfl, symbolItem.linkageClassName, symbolItem.timeline, symbolItem.parametersAreLocked)
-				]);
+				other = Type.createInstance(classType,
+					[
+						otherName,
+						new XFLSymbolArguments(xfl, symbolItem.linkageClassName, symbolItem.timeline, symbolItem.parametersAreLocked)
+					]);
 				other.name = otherName;
 				break;
 			}
@@ -397,10 +399,11 @@ class Symbols
 				var componentName:String = (instance.name == null || instance.name == "")
 					&& symbolItem.timeline.name != null
 					&& symbolItem.timeline.name != "" ? symbolItem.timeline.name : instance.name;
-				component = Type.createInstance(classType, [
-					componentName,
-					new XFLSymbolArguments(xfl, symbolItem.linkageClassName, symbolItem.timeline, symbolItem.parametersAreLocked)
-				]);
+				component = Type.createInstance(classType,
+					[
+						componentName,
+						new XFLSymbolArguments(xfl, symbolItem.linkageClassName, symbolItem.timeline, symbolItem.parametersAreLocked)
+					]);
 				component.name = componentName;
 				var instanceVariablesLeft:Array<String> = [];
 				for (variable in instance.variables)

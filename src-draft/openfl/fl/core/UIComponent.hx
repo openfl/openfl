@@ -158,6 +158,7 @@ class UIComponent extends XFLSprite
 		return _height;
 	}
 	#end
+
 	private function draw():Void {}
 
 	public function drawFocus(draw:Bool):Void {}

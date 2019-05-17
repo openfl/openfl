@@ -83,7 +83,10 @@ class CairoGraphics
 	private static function createGradientPattern(type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix,
 			spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float):CairoPattern
 	{
-		var pattern:CairoPattern = null, point = null, point2 = null, releaseMatrix = false;
+		var pattern:CairoPattern = null,
+			point = null,
+			point2 = null,
+			releaseMatrix = false;
 
 		if (matrix == null)
 		{
@@ -176,8 +179,12 @@ class CairoGraphics
 		if (ellipseWidth > width / 2) ellipseWidth = width / 2;
 		if (ellipseHeight > height / 2) ellipseHeight = height / 2;
 
-		var xe = x + width, ye = y + height, cx1 = -ellipseWidth + (ellipseWidth * SIN45), cx2 = -ellipseWidth + (ellipseWidth * TAN22), cy1 = -ellipseHeight +
-			(ellipseHeight * SIN45), cy2 = -ellipseHeight + (ellipseHeight * TAN22);
+		var xe = x + width,
+			ye = y + height,
+			cx1 = -ellipseWidth + (ellipseWidth * SIN45),
+			cx2 = -ellipseWidth + (ellipseWidth * TAN22),
+			cy1 = -ellipseHeight + (ellipseHeight * SIN45),
+			cy2 = -ellipseHeight + (ellipseHeight * TAN22);
 
 		cairo.moveTo(xe, ye - ellipseHeight);
 		quadraticCurveTo(xe, ye + cy2, xe + cx1, ye + cy1);
@@ -488,7 +495,20 @@ class CairoGraphics
 
 		var data = new DrawCommandReader(commands);
 
-		var x, y, width, height, kappa = .5522848, ox, oy, xe, ye, xm, ym, r, g, b;
+		var x,
+			y,
+			width,
+			height,
+			kappa = .5522848,
+			ox,
+			oy,
+			xe,
+			ye,
+			xm,
+			ym,
+			r,
+			g,
+			b;
 
 		for (type in commands.types)
 		{
@@ -497,8 +517,8 @@ class CairoGraphics
 				case CUBIC_CURVE_TO:
 					var c = data.readCubicCurveTo();
 					hasPath = true;
-					cairo.curveTo(c.controlX1 - offsetX, c.controlY1 - offsetY, c.controlX2 - offsetX, c.controlY2 - offsetY, c.anchorX - offsetX, c
-						.anchorY - offsetY);
+					cairo.curveTo(c.controlX1 - offsetX, c.controlY1 - offsetY, c.controlX2 - offsetX, c.controlY2 - offsetY, c.anchorX - offsetX, c.anchorY
+						- offsetY);
 
 				case CURVE_TO:
 					var c = data.readCurveTo();
@@ -685,8 +705,8 @@ class CairoGraphics
 							fillPatternMatrix = null;
 						}
 
-						fillPattern = CairoPattern.createRGBA(((c.color & 0xFF0000) >>> 16) / 0xFF, ((c.color & 0x00FF00) >>> 8) / 0xFF, (c
-							.color & 0x0000FF) / 0xFF, c.alpha);
+						fillPattern = CairoPattern.createRGBA(((c.color & 0xFF0000) >>> 16) / 0xFF, ((c.color & 0x00FF00) >>> 8) / 0xFF,
+							(c.color & 0x0000FF) / 0xFF, c.alpha);
 						hasFill = true;
 					}
 
@@ -711,8 +731,8 @@ class CairoGraphics
 
 					if (shaderBuffer.inputCount > 0)
 					{
-						fillPattern = createImagePattern(shaderBuffer.inputs[0], null, shaderBuffer.inputWrap[0] != CLAMP, shaderBuffer
-							.inputFilter[0] != NEAREST);
+						fillPattern = createImagePattern(shaderBuffer.inputs[0], null, shaderBuffer.inputWrap[0] != CLAMP,
+							shaderBuffer.inputFilter[0] != NEAREST);
 
 						bitmapFill = shaderBuffer.inputs[0];
 						bitmapRepeat = false;
@@ -778,8 +798,8 @@ class CairoGraphics
 						if (transformABCD && transformXY)
 						{
 							ti = i * 6;
-							tileTransform.setTo(transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], transforms[ti + 4], transforms[ti
-								+ 5]);
+							tileTransform.setTo(transforms[ti], transforms[ti + 1], transforms[ti + 2], transforms[ti + 3], transforms[ti + 4],
+								transforms[ti + 5]);
 						}
 						else if (transformABCD)
 						{
@@ -1425,8 +1445,8 @@ class CairoGraphics
 				{
 					case CUBIC_CURVE_TO:
 						var c = data.readCubicCurveTo();
-						cairo.curveTo(c.controlX1 - offsetX, c.controlY1 - offsetY, c.controlX2 - offsetX, c.controlY2 - offsetY, c.anchorX - offsetX,
-							c.anchorY - offsetY);
+						cairo.curveTo(c.controlX1 - offsetX, c.controlY1 - offsetY, c.controlX2 - offsetX, c.controlY2 - offsetY, c.anchorX
+							- offsetX, c.anchorY - offsetY);
 						positionX = c.anchorX;
 						positionY = c.anchorY;
 

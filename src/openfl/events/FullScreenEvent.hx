@@ -58,8 +58,8 @@ class FullScreenEvent extends ActivityEvent
 	**/
 	public var interactive:Bool;
 
-	@:noCompletion private static var __pool:ObjectPool<FullScreenEvent> = new ObjectPool<FullScreenEvent>(function() return
-		new FullScreenEvent(null), function(event) event.__init());
+	@:noCompletion private static var __pool:ObjectPool<FullScreenEvent> = new ObjectPool<FullScreenEvent>(function() return new FullScreenEvent(null),
+	function(event) event.__init());
 
 	/**
 		Creates an event object that contains information about `fullScreen`

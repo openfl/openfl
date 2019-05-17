@@ -104,8 +104,8 @@ class SampleDataEvent extends Event
 	**/
 	public var position:Float;
 
-	@:noCompletion private static var __pool:ObjectPool<SampleDataEvent> = new ObjectPool<SampleDataEvent>(function() return
-		new SampleDataEvent(null), function(event) event.__init());
+	@:noCompletion private static var __pool:ObjectPool<SampleDataEvent> = new ObjectPool<SampleDataEvent>(function() return new SampleDataEvent(null),
+	function(event) event.__init());
 
 	/**
 		Creates an event object that contains information about audio data

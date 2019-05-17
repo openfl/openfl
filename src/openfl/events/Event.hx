@@ -97,6 +97,7 @@ class Event
 		| `target` | The DisplayObject instance being added to the on stage display list, either directly or through the addition of a sub tree in which the DisplayObject instance is contained. If the DisplayObject instance is being directly added, the `added` event occurs before this event. |
 	**/
 	public static inline var ADDED_TO_STAGE:EventType<Event> = "addedToStage";
+
 	// @:noCompletion @:dox(hide) @:require(flash15) public static var BROWSER_ZOOM_CHANGE:String;
 
 	/**
@@ -126,6 +127,7 @@ class Event
 		| `target` | The object that has had its value modified. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
 	public static inline var CHANGE:EventType<Event> = "change";
+
 	// @:noCompletion @:dox(hide) public static var CHANNEL_MESSAGE:String;
 	// @:noCompletion @:dox(hide) public static var CHANNEL_STATE:String;
 

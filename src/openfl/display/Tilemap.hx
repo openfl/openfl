@@ -104,11 +104,11 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperties(Tilemap.prototype,
-			{
-				"numTiles": {get: untyped __js__("function () { return this.get_numTiles (); }")},
-				"tileset": {get: untyped __js__("function () { return this.get_tileset (); }"), set: untyped __js__("function (v) { return this.set_tileset (v); }")}
-			});
+		untyped Object.defineProperties(Tilemap.prototype, {
+			"numTiles": {get: untyped __js__("function () { return this.get_numTiles (); }")},
+			"tileset": {get: untyped __js__("function () { return this.get_tileset (); }"),
+				set: untyped __js__("function (v) { return this.set_tileset (v); }")}
+		});
 	}
 	#end
 
@@ -553,6 +553,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		}
 	}
 	#end
+
 	@:noCompletion private function get_numTiles():Int
 	{
 		return __group.__length;

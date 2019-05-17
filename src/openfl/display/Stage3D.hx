@@ -194,11 +194,10 @@ class Stage3D extends EventDispatcher
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperties(Stage3D.prototype,
-			{
-				"x": {get: untyped __js__("function () { return this.get_x (); }"), set: untyped __js__("function (v) { return this.set_x (v); }")},
-				"y": {get: untyped __js__("function () { return this.get_y (); }"), set: untyped __js__("function (v) { return this.set_y (v); }")},
-			});
+		untyped Object.defineProperties(Stage3D.prototype, {
+			"x": {get: untyped __js__("function () { return this.get_x (); }"), set: untyped __js__("function (v) { return this.set_x (v); }")},
+			"y": {get: untyped __js__("function () { return this.get_y (); }"), set: untyped __js__("function (v) { return this.set_y (v); }")},
+		});
 	}
 	#end
 
@@ -400,15 +399,14 @@ class Stage3D extends EventDispatcher
 			var transparentBackground = Reflect.hasField(attributes, "background") && attributes.background == null;
 			var colorDepth = Reflect.hasField(attributes, "colorDepth") ? attributes.colorDepth : 32;
 
-			var options =
-				{
-					alpha: (transparentBackground || colorDepth > 16) ? true : false,
-					antialias: Reflect.hasField(attributes, "antialiasing") ? attributes.antialiasing > 0 : false,
-					depth: true,
-					premultipliedAlpha: true,
-					stencil: true,
-					preserveDrawingBuffer: false
-				};
+			var options = {
+				alpha: (transparentBackground || colorDepth > 16) ? true : false,
+				antialias: Reflect.hasField(attributes, "antialiasing") ? attributes.antialiasing > 0 : false,
+				depth: true,
+				premultipliedAlpha: true,
+				stencil: true,
+				preserveDrawingBuffer: false
+			};
 
 			__webgl = cast __canvas.getContextWebGL(options);
 

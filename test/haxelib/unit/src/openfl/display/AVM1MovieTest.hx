@@ -13,11 +13,10 @@ class AVM1MovieTest
 		});
 
 		#if (!flash && !cpp)
-		var object:AVM1Movie = cast
-			{
-				addCallback: function(name, closure) {},
-				call: function(name, ?p1, ?p2, ?p3, ?p4, ?p5) {}
-			};
+		var object:AVM1Movie = cast {
+			addCallback: function(name, closure) {},
+			call: function(name, ?p1, ?p2, ?p3, ?p4, ?p5) {}
+		};
 
 		// Check that the type signature compiles
 		object.addCallback("foo", null);

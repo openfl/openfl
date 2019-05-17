@@ -74,7 +74,10 @@ class WordWrapTest1 extends FunctionalTest
 		var word2 = (String.fromCharCode(0x920) + String.fromCharCode(0x960) + String.fromCharCode(0x9E0) + String.fromCharCode(0x9F0));
 
 		// 4 byte UTF-8 chars
-		var word3 = (String.fromCharCode(0x10300) + String.fromCharCode(0x10301) + String.fromCharCode(0x10302) + String.fromCharCode(0x10303));
+		var word3 = (String.fromCharCode(0x10300)
+			+ String.fromCharCode(0x10301)
+			+ String.fromCharCode(0x10302)
+			+ String.fromCharCode(0x10303));
 
 		// Mixed
 		var word4 = (String.fromCharCode(0xC2) + String.fromCharCode(0x10301) + "a" + String.fromCharCode(0x9F0) + String.fromCharCode(0xD2) + "b"

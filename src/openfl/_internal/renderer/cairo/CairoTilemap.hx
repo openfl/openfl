@@ -67,7 +67,15 @@ class CairoTilemap
 
 		var tiles = group.__tiles;
 
-		var tile, tileset, alpha, visible, blendMode = null, id, tileData, tileRect, bitmapData;
+		var tile,
+			tileset,
+			alpha,
+			visible,
+			blendMode = null,
+			id,
+			tileData,
+			tileRect,
+			bitmapData;
 
 		for (tile in tiles)
 		{
