@@ -304,22 +304,9 @@ class Tile
 	**/
 	public function getBounds(targetCoordinateSpace:Tile):Rectangle
 	{
-		var result:Rectangle;
+		var result:Rectangle = new Rectangle();
 
-		if (tileset == null)
-		{
-			var parentTileset = parent.__findTileset();
-			if (parentTileset == null) return new Rectangle();
-			result = parentTileset.getRect(id);
-			if (result == null) return new Rectangle();
-		}
-		else
-		{
-			result = tileset.getRect(id);
-		}
-
-		result.x = 0;
-		result.y = 0;
+		__findTileRect(result);
 
 		// Copied from DisplayObject. Create the translation matrix.
 		var matrix = #if flash __tempMatrix #else Matrix.__pool.get() #end;
@@ -424,6 +411,36 @@ class Tile
 	{
 		__setRenderDirty();
 	}
+	
+	@:noCompletion private function __findTileRect(result:Rectangle):Void
+	{
+		if (tileset == null)
+		{
+			var parentTileset:Tileset = parent.__findTileset();
+			if (parentTileset == null)
+			{
+				result.setTo(0,0,0,0);
+			}
+			else
+			{
+				// ? Is this a way to call getRect once without making extra vars? I don't fully grasp haxe pattern matching. Could be done with an if?
+				switch parentTileset.getRect(id)
+				{
+					case null:
+						result.setTo(0,0,0,0);
+					case not_null:
+						result.copyFrom(not_null);
+				}
+			}
+		}
+		else
+		{
+			result.copyFrom(tileset.getRect(id));
+		}
+
+		result.x = 0;
+		result.y = 0;
+	}
 
 	@:noCompletion private function __findTileset():Tileset
 	{
@@ -518,45 +535,26 @@ class Tile
 
 	@:noCompletion private function get_height():Float
 	{
-		// TODO use rectangle pooling
+		// TODO how does pooling work with flash target?
+		var result:Rectangle = #if flash new Rectangle() #else Rectangle.__pool.get() #end;
 
-		var result:Rectangle;
+		__findTileRect(result);
 
-		if (tileset == null)
-		{
-			var parentTileset = parent.__findTileset();
-			if (parentTileset == null) return 0;
-			result = parentTileset.getRect(id);
-			if (result == null) return 0;
-		}
-		else
-		{
-			result = tileset.getRect(id);
-		}
-		
 		__getBounds(result,matrix);
-		return result.height;
+		var h = result.height;
+		#if !flash Rectangle.__pool.release(result); #end
+		return h;
 	}
 
 	@:noCompletion private function set_height(value:Float):Float
 	{
-		// TODO use rectangle pooling
+		// TODO how does pooling work with flash target?
+		var result:Rectangle = #if flash new Rectangle() #else Rectangle.__pool.get() #end;
 
-		var result:Rectangle;
-
-		if (tileset == null)
-		{
-			var parentTileset = parent.__findTileset();
-			if (parentTileset == null) return value;
-			result = parentTileset.getRect(id);
-			if (result == null) return value;
-		}
-		else
-		{
-			result = tileset.getRect(id);
-		}
-		
+		__findTileRect(result);
+	
 		scaleY = value / result.height;
+		#if !flash Rectangle.__pool.release(result); #end
 		return value;
 	}
 
@@ -827,45 +825,26 @@ class Tile
 
 	@:noCompletion private function get_width():Float
 	{
-		// TODO use rectangle pooling
+		// TODO how does pooling work with flash target?
+		var result:Rectangle = #if flash new Rectangle() #else Rectangle.__pool.get() #end;
 
-		var result:Rectangle;
+		__findTileRect(result);
 
-		if (tileset == null)
-		{
-			var parentTileset = parent.__findTileset();
-			if (parentTileset == null) return 0;
-			result = parentTileset.getRect(id);
-			if (result == null) return 0;
-		}
-		else
-		{
-			result = tileset.getRect(id);
-		}
-		
 		__getBounds(result,matrix);
-		return result.width;
+		var w = result.width;
+		#if !flash Rectangle.__pool.release(result); #end
+		return w;
 	}
 
 	@:noCompletion private function set_width(value:Float):Float
 	{
-		// TODO use rectangle pooling
+		// TODO how does pooling work with flash target?
+		var result:Rectangle = #if flash new Rectangle() #else Rectangle.__pool.get() #end;
 
-		var result:Rectangle;
+		__findTileRect(result);
 
-		if (tileset == null)
-		{
-			var parentTileset = parent.__findTileset();
-			if (parentTileset == null) return value;
-			result = parentTileset.getRect(id);
-			if (result == null) return value;
-		}
-		else
-		{
-			result = tileset.getRect(id);
-		}
-		
 		scaleX = value / result.width;
+		#if !flash Rectangle.__pool.release(result); #end
 		return value;
 	}
 
