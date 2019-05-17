@@ -149,6 +149,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		_all_ scenes in the movie clip.
 	**/
 	public var framesLoaded(get, never):Int;
+
 	public var isPlaying(get, never):Bool;
 	// @:noCompletion @:dox(hide) public var scenes (default, never):Array<openfl.display.Scene>;
 
@@ -192,17 +193,17 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		__useParentFPS = false;
 		untyped __js__("/// #endif");
 
-		untyped Object.defineProperties(MovieClip.prototype,
-			{
-				"currentFrame": {get: untyped __js__("function () { return this.get_currentFrame (); }")},
-				"currentFrameLabel": {get: untyped __js__("function () { return this.get_currentFrameLabel (); }")},
-				"currentLabel": {get: untyped __js__("function () { return this.get_currentLabel (); }")},
-				"currentLabels": {get: untyped __js__("function () { return this.get_currentLabels (); }")},
-				"enabled": {get: untyped __js__("function () { return this.get_enabled (); }"), set: untyped __js__("function (v) { return this.set_enabled (v); }")},
-				"framesLoaded": {get: untyped __js__("function () { return this.get_framesLoaded (); }")},
-				"isPlaying": {get: untyped __js__("function () { return this.get_isPlaying (); }")},
-				"totalFrames": {get: untyped __js__("function () { return this.get_totalFrames (); }")},
-			});
+		untyped Object.defineProperties(MovieClip.prototype, {
+			"currentFrame": {get: untyped __js__("function () { return this.get_currentFrame (); }")},
+			"currentFrameLabel": {get: untyped __js__("function () { return this.get_currentFrameLabel (); }")},
+			"currentLabel": {get: untyped __js__("function () { return this.get_currentLabel (); }")},
+			"currentLabels": {get: untyped __js__("function () { return this.get_currentLabels (); }")},
+			"enabled": {get: untyped __js__("function () { return this.get_enabled (); }"),
+				set: untyped __js__("function (v) { return this.set_enabled (v); }")},
+			"framesLoaded": {get: untyped __js__("function () { return this.get_framesLoaded (); }")},
+			"isPlaying": {get: untyped __js__("function () { return this.get_isPlaying (); }")},
+			"totalFrames": {get: untyped __js__("function () { return this.get_totalFrames (); }")},
+		});
 	}
 	#end
 
@@ -738,8 +739,8 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 
 								if (stage != null) displayObject.dispatchEvent(new Event(Event.ADDED_TO_STAGE, false, false));
 
-								instance = new FrameSymbolInstance(frame, frameObject.id, frameObject.symbol, frameObject.depth, displayObject, frameObject
-									.clipDepth);
+								instance = new FrameSymbolInstance(frame, frameObject.id, frameObject.symbol, frameObject.depth, displayObject,
+									frameObject.clipDepth);
 							}
 						}
 					}

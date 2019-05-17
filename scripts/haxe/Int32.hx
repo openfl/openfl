@@ -82,6 +82,7 @@ abstract Int32(Int) from Int to Int
 
 	@:op(A * B) @:commutative private static function mulInt(a:Int32, b:Int):Int32;
 	#end
+
 	@:op(A * B) @:commutative private static function mulFloat(a:Int32, b:Float):Float;
 
 	@:op(A / B) private static function div(a:Int32, b:Int32):Float;
@@ -199,6 +200,7 @@ abstract Int32(Int) from Int to Int
 
 	@:op(A << B) private static function intShl(a:Int, b:Int32):Int32;
 	#end
+
 	@:to private inline function toFloat():Float
 		return this;
 

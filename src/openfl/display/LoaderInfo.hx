@@ -189,6 +189,7 @@ class LoaderInfo extends EventDispatcher
 					  retrieve the requested information.
 	**/
 	public var childAllowsParent(default, null):Bool;
+
 	// @:noCompletion @:dox(hide) @:require(flash11_4) public var childSandboxBridge:Dynamic;
 
 	/**
@@ -246,6 +247,7 @@ class LoaderInfo extends EventDispatcher
 					  requested information.
 	**/
 	public var height(default, null):Int;
+
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public var isURLInaccessible (default, null):Bool;
 
 	/**
@@ -313,6 +315,7 @@ class LoaderInfo extends EventDispatcher
 					  retrieve the requested information.
 	**/
 	public var parentAllowsChild(default, null):Bool;
+
 	// @:noCompletion @:dox(hide) @:require(flash11_4) public var parentSandboxBridge:Dynamic;
 
 	/**
@@ -333,6 +336,7 @@ class LoaderInfo extends EventDispatcher
 		object.
 	**/
 	public var sharedEvents(default, null):EventDispatcher;
+
 	// @:noCompletion @:dox(hide) public var swfVersion (default, null):UInt;
 
 	/**

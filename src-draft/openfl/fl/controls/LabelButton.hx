@@ -95,22 +95,28 @@ class LabelButton extends UIComponent
 			.x;
 		if (getStyle("selectedUpIcon") != null) cast(getStyle("selectedUpIcon"), DisplayObject).x = (_maxIconWidth
 			- cast(getStyle("selectedUpIcon"), DisplayObject)
-				.width) / 2.0 - getStyle("selectedUpIcon")
-			.getBounds(null)
-			.x;
+				.width) / 2.0
+			- getStyle("selectedUpIcon")
+				.getBounds(null)
+				.x;
 		if (getStyle("selectedOverIcon") != null) cast(getStyle("selectedOverIcon"), DisplayObject).x = (_maxIconWidth
 			- cast(getStyle("selectedOverIcon"), DisplayObject)
-				.width) / 2.0 - getStyle("upIcon")
-			.getBounds(null)
-			.x;
+				.width) / 2.0
+			- getStyle("upIcon")
+				.getBounds(null)
+				.x;
 		if (getStyle("selectedDownIcon") != null) cast(getStyle("selectedDownIcon"), DisplayObject).x = (_maxIconWidth
 			- cast(getStyle("selectedDownIcon"), DisplayObject)
-				.width) / 2.0 - getStyle("selectedDownIcon")
-			.getBounds(null)
-			.x;
+				.width) / 2.0
+			- getStyle("selectedDownIcon")
+				.getBounds(null)
+				.x;
 		if (getStyle("selectedDisabledIcon") != null) cast(getStyle("selectedDisabledIcon"), DisplayObject).x = (_maxIconWidth
 			- cast(getStyle("selectedDisabledIcon"), DisplayObject)
-				.width) / 2.0 - getStyle("selectedDisabledIcon").getBounds(null).x;
+				.width) / 2.0
+			- getStyle("selectedDisabledIcon")
+				.getBounds(null)
+				.x;
 	}
 
 	private function get_textField():TextField

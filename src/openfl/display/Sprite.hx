@@ -125,11 +125,11 @@ class Sprite extends DisplayObjectContainer
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperties(Sprite.prototype,
-			{
-				"buttonMode": {get: untyped __js__("function () { return this.get_buttonMode (); }"), set: untyped __js__("function (v) { return this.set_buttonMode (v); }")},
-				"graphics": {get: untyped __js__("function () { return this.get_graphics (); }")},
-			});
+		untyped Object.defineProperties(Sprite.prototype, {
+			"buttonMode": {get: untyped __js__("function () { return this.get_buttonMode (); }"),
+				set: untyped __js__("function (v) { return this.set_buttonMode (v); }")},
+			"graphics": {get: untyped __js__("function () { return this.get_graphics (); }")},
+		});
 	}
 	#end
 

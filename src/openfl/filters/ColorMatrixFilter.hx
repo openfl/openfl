@@ -119,10 +119,9 @@ import lime.math.RGBA;
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperties(ColorMatrixFilter.prototype,
-			{
-				"matrix": {get: untyped __js__("function () { return this.get_matrix (); }"), set: untyped __js__("function (v) { return this.set_matrix (v); }")},
-			});
+		untyped Object.defineProperties(ColorMatrixFilter.prototype, {
+			"matrix": {get: untyped __js__("function () { return this.get_matrix (); }"), set: untyped __js__("function (v) { return this.set_matrix (v); }")},
+		});
 	}
 	#end
 
@@ -145,7 +144,8 @@ import lime.math.RGBA;
 		return new ColorMatrixFilter(__matrix);
 	}
 
-	@:noCompletion private override function __applyFilter(destBitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData
+	@:noCompletion private override function __applyFilter(destBitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle,
+			destPoint:Point):BitmapData
 	{
 		#if lime
 		var sourceImage = sourceBitmapData.image;
@@ -188,29 +188,17 @@ import lime.math.RGBA;
 				else
 				{
 					destPixel.r = Std.int(Math.max(0,
-						Math.min((__matrix[0] * sourcePixel.r)
-							+ (__matrix[1] * sourcePixel.g)
-							+ (__matrix[2] * sourcePixel.b)
-							+ (__matrix[3] * sourcePixel.a)
-							+ __matrix[4], 255)));
+						Math.min((__matrix[0] * sourcePixel.r) + (__matrix[1] * sourcePixel.g) + (__matrix[2] * sourcePixel.b)
+							+ (__matrix[3] * sourcePixel.a) + __matrix[4], 255)));
 					destPixel.g = Std.int(Math.max(0,
-						Math.min((__matrix[5] * sourcePixel.r)
-							+ (__matrix[6] * sourcePixel.g)
-							+ (__matrix[7] * sourcePixel.b)
-							+ (__matrix[8] * sourcePixel.a)
-							+ __matrix[9], 255)));
+						Math.min((__matrix[5] * sourcePixel.r) + (__matrix[6] * sourcePixel.g) + (__matrix[7] * sourcePixel.b)
+							+ (__matrix[8] * sourcePixel.a) + __matrix[9], 255)));
 					destPixel.b = Std.int(Math.max(0,
-						Math.min((__matrix[10] * sourcePixel.r)
-							+ (__matrix[11] * sourcePixel.g)
-							+ (__matrix[12] * sourcePixel.b)
-							+ (__matrix[13] * sourcePixel.a)
-							+ __matrix[14], 255)));
+						Math.min((__matrix[10] * sourcePixel.r) + (__matrix[11] * sourcePixel.g) + (__matrix[12] * sourcePixel.b)
+							+ (__matrix[13] * sourcePixel.a) + __matrix[14], 255)));
 					destPixel.a = Std.int(Math.max(0,
-						Math.min((__matrix[15] * sourcePixel.r)
-							+ (__matrix[16] * sourcePixel.g)
-							+ (__matrix[17] * sourcePixel.b)
-							+ (__matrix[18] * sourcePixel.a)
-							+ __matrix[19], 255)));
+						Math.min((__matrix[15] * sourcePixel.r) + (__matrix[16] * sourcePixel.g) + (__matrix[17] * sourcePixel.b)
+							+ (__matrix[18] * sourcePixel.a) + __matrix[19], 255)));
 				}
 
 				destPixel.writeUInt8(destData, destOffset, destFormat, destPremultiplied);

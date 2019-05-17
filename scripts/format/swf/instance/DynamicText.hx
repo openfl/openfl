@@ -188,25 +188,23 @@ class SWFFont extends AbstractFont
 				var scale = (height / 1024);
 				var advance = Math.round(scale * font.fontAdvanceTable[index] * 0.05);
 
-				glyphInfo.set(charCode,
-					{
-						width: height,
-						height: height,
-						advance: advance,
-						offsetX: 0,
-						offsetY: 2
-					});
+				glyphInfo.set(charCode, {
+					width: height,
+					height: height,
+					advance: advance,
+					offsetX: 0,
+					offsetY: 2
+				});
 			}
 			else
 			{
-				glyphInfo.set(charCode,
-					{
-						width: 0,
-						height: 0,
-						advance: 0,
-						offsetX: 0,
-						offsetY: 0
-					});
+				glyphInfo.set(charCode, {
+					width: 0,
+					height: 0,
+					advance: 0,
+					offsetX: 0,
+					offsetY: 0
+				});
 			}
 		}
 

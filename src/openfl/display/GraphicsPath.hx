@@ -218,8 +218,12 @@ import openfl.Vector;
 		if (ellipseWidth > width / 2) ellipseWidth = width / 2;
 		if (ellipseHeight > height / 2) ellipseHeight = height / 2;
 
-		var xe = x + width, ye = y + height, cx1 = -ellipseWidth + (ellipseWidth * SIN45), cx2 = -ellipseWidth + (ellipseWidth * TAN22), cy1 = -ellipseHeight +
-			(ellipseHeight * SIN45), cy2 = -ellipseHeight + (ellipseHeight * TAN22);
+		var xe = x + width,
+			ye = y + height,
+			cx1 = -ellipseWidth + (ellipseWidth * SIN45),
+			cx2 = -ellipseWidth + (ellipseWidth * TAN22),
+			cy1 = -ellipseHeight + (ellipseHeight * SIN45),
+			cy2 = -ellipseHeight + (ellipseHeight * TAN22);
 
 		moveTo(xe, ye - ellipseHeight);
 		curveTo(xe, ye + cy2, xe + cx1, ye + cy1);

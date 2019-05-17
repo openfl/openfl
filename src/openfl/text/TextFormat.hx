@@ -95,6 +95,7 @@ class TextFormat
 		color black(0x000000).
 	**/
 	public var color:Null<Int>;
+
 	// @:noCompletion @:dox(hide) public var display:openfl.text.TextFormatDisplay;
 
 	/**

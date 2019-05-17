@@ -313,6 +313,7 @@ class TouchEvent extends Event
 		indicates whether either the Control key or the Command key is activated.
 	**/
 	public var ctrlKey:Bool;
+
 	@SuppressWarnings("checkstyle:FieldDocComment")
 	@:noCompletion @:dox(hide) public var delta:Int;
 
@@ -407,8 +408,8 @@ class TouchEvent extends Event
 	**/
 	public var touchPointID:Int;
 
-	@:noCompletion private static var __pool:ObjectPool<TouchEvent> = new ObjectPool<TouchEvent>(function() return new TouchEvent(null), function(event) event
-		.__init());
+	@:noCompletion private static var __pool:ObjectPool<TouchEvent> = new ObjectPool<TouchEvent>(function() return new TouchEvent(null),
+	function(event) event.__init());
 
 	/**
 		Creates an Event object that contains information about touch events.
@@ -483,10 +484,11 @@ class TouchEvent extends Event
 
 	public override function toString():String
 	{
-		return __formatToString("TouchEvent", [
-			"type", "bubbles", "cancelable", "touchPointID", "isPrimaryTouchPoint", "localX", "localY", "sizeX", "sizeY", "pressure", "relatedObject",
-			"ctrlKey", "altKey", "shiftKey", "commandKey", "controlKey"
-		]);
+		return __formatToString("TouchEvent",
+			[
+				"type", "bubbles", "cancelable", "touchPointID", "isPrimaryTouchPoint", "localX", "localY", "sizeX", "sizeY", "pressure", "relatedObject",
+				"ctrlKey", "altKey", "shiftKey", "commandKey", "controlKey"
+			]);
 	}
 
 	/**
@@ -497,7 +499,8 @@ class TouchEvent extends Event
 	public function updateAfterEvent():Void {}
 
 	@:noCompletion private static function __create(type:String, /*event:lime.ui.TouchEvent,*/ touch:Dynamic /*js.html.Touch*/, stageX:Float, stageY:Float,
-			local:Point, target:InteractiveObject):TouchEvent
+		local:Point,
+			target:InteractiveObject):TouchEvent
 	{
 		var evt = new TouchEvent(type, true, false, 0, true, local.x, local.y, 1, 1, 1);
 		evt.stageX = stageX;

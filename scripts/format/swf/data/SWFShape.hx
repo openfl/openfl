@@ -494,11 +494,10 @@ class SWFShape
 								case 0x40, 0x41, 0x42, 0x43:
 									// Bitmap fill
 									var m:SWFMatrix = fillStyle.bitmapMatrix;
-									matrix = new Matrix(m.scaleX / 20, m.rotateSkew0 / 20, m.rotateSkew1 / 20, m.scaleY / 20, m.translateX / 20, m
-										.translateY / 20);
-									handler.beginBitmapFill(fillStyle
-										.bitmapId, matrix, (fillStyle.type == 0x40 || fillStyle.type == 0x42), (fillStyle.type == 0x40
-										|| fillStyle.type == 0x41));
+									matrix = new Matrix(m.scaleX / 20, m.rotateSkew0 / 20, m.rotateSkew1 / 20, m.scaleY / 20, m.translateX / 20,
+										m.translateY / 20);
+									handler.beginBitmapFill(fillStyle.bitmapId, matrix, (fillStyle.type == 0x40 || fillStyle.type == 0x42),
+										(fillStyle.type == 0x40 || fillStyle.type == 0x41));
 							}
 						}
 						else

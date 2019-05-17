@@ -169,10 +169,9 @@ class ConvolutionFilter extends BitmapFilter
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperties(ConvolutionFilter.prototype,
-			{
-				"matrix": {get: untyped __js__("function () { return this.get_matrix (); }"), set: untyped __js__("function (v) { return this.set_matrix (v); }")},
-			});
+		untyped Object.defineProperties(ConvolutionFilter.prototype, {
+			"matrix": {get: untyped __js__("function () { return this.get_matrix (); }"), set: untyped __js__("function (v) { return this.set_matrix (v); }")},
+		});
 	}
 	#end
 

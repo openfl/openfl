@@ -191,6 +191,7 @@ class Sound extends EventDispatcher
 		waits for more data.
 	**/
 	public var isBuffering(default, null):Bool;
+
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public var isURLInaccessible (default, null):Bool;
 
 	/**
@@ -234,11 +235,10 @@ class Sound extends EventDispatcher
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperties(Sound.prototype,
-			{
-				"id3": {get: untyped __js__("function () { return this.get_id3 (); }")},
-				"length": {get: untyped __js__("function () { return this.get_length (); }")},
-			});
+		untyped Object.defineProperties(Sound.prototype, {
+			"id3": {get: untyped __js__("function () { return this.get_id3 (); }")},
+			"length": {get: untyped __js__("function () { return this.get_length (); }")},
+		});
 	}
 	#end
 

@@ -64,23 +64,23 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 		Indicates whether the current configuration supports native cursors.
 	**/
 	public static var supportsNativeCursor(default, null):Bool = #if !mobile true; #else false; #end
+
 	@:noCompletion private static var __cursor:MouseCursor = MouseCursor.AUTO;
 	@:noCompletion private static var __hidden:Bool;
 
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperty(Mouse, "cursor",
+		untyped Object.defineProperty(Mouse, "cursor", {
+			get: function()
 			{
-				get: function()
-				{
-					return Mouse.get_cursor();
-				},
-				set: function(value)
-				{
-					return Mouse.set_cursor(value);
-				}
-			});
+				return Mouse.get_cursor();
+			},
+			set: function(value)
+			{
+				return Mouse.set_cursor(value);
+			}
+		});
 	}
 	#end
 

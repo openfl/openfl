@@ -30,14 +30,12 @@ import openfl.events.EventDispatcher;
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperty(FrameLabel.prototype, "frame",
-			{
-				get: untyped __js__("function () { return this.get_frame (); }")
-			});
-		untyped Object.defineProperty(FrameLabel.prototype, "name",
-			{
-				get: untyped __js__("function () { return this.get_name (); }")
-			});
+		untyped Object.defineProperty(FrameLabel.prototype, "frame", {
+			get: untyped __js__("function () { return this.get_frame (); }")
+		});
+		untyped Object.defineProperty(FrameLabel.prototype, "name", {
+			get: untyped __js__("function () { return this.get_name (); }")
+		});
 	}
 	#end
 

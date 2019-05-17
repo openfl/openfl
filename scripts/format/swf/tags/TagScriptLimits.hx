@@ -36,6 +36,11 @@ class TagScriptLimits implements ITag
 
 	public function toString(indent:Int = 0):String
 	{
-		return Tag.toStringCommon(type, name, indent) + "MaxRecursionDepth: " + maxRecursionDepth + ", " + "ScriptTimeoutSeconds: " + scriptTimeoutSeconds;
+		return Tag.toStringCommon(type, name, indent)
+			+ "MaxRecursionDepth: "
+			+ maxRecursionDepth
+			+ ", "
+			+ "ScriptTimeoutSeconds: "
+			+ scriptTimeoutSeconds;
 	}
 }

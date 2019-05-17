@@ -100,6 +100,7 @@ class Clipboard
 		drag-and-drop operations in an AIR application.
 	**/
 	public static var generalClipboard(get, never):Clipboard;
+
 	@:noCompletion private static var __generalClipboard:Clipboard;
 
 	/**
@@ -119,17 +120,15 @@ class Clipboard
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped global.Object.defineProperty(Clipboard, "generalClipboard",
+		untyped global.Object.defineProperty(Clipboard, "generalClipboard", {
+			get: function()
 			{
-				get: function()
-				{
-					return Clipboard.get_generalClipboard();
-				}
-			});
-		untyped global.Object.defineProperty(Clipboard.prototype, "formats",
-			{
-				get: untyped __js__("function () { return this.get_formats (); }")
-			});
+				return Clipboard.get_generalClipboard();
+			}
+		});
+		untyped global.Object.defineProperty(Clipboard.prototype, "formats", {
+			get: untyped __js__("function () { return this.get_formats (); }")
+		});
 	}
 	#end
 

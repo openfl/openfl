@@ -200,13 +200,8 @@ class CanvasTextField
 									context.strokeStyle = "#" + StringTools.hex(group.format.color & 0xFFFFFF, 6);
 									context.moveTo(group.offsetX + advance - textField.scrollH - bounds.x, scrollY + 2 - bounds.y);
 									context.lineWidth = 1;
-									context.lineTo(group.offsetX
-										+ advance
-										- textField.scrollH
-										- bounds.x, scrollY
-										+ TextEngine.getFormatHeight(textField.defaultTextFormat)
-										- 1
-										- bounds.y);
+									context.lineTo(group.offsetX + advance - textField.scrollH - bounds.x, scrollY
+										+ TextEngine.getFormatHeight(textField.defaultTextFormat) - 1 - bounds.y);
 									context.stroke();
 									context.closePath();
 

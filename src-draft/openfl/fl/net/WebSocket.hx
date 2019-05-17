@@ -83,8 +83,9 @@ class WebSocket extends EventDispatcher
 	public function connect(host:String, port:Int, origin:String, url:String, key:String):Void
 	{
 		_socket.connect(new Host(host), port);
-		_socket.output.writeString("GET " + url + " HTTP/1.1\r\n" + "Host: " + host + ":" + Std
-			.string(port) + "\r\n" + "Upgrade: websocket\r\n" + "Connection: Upgrade\r\n" + "Sec-WebSocket-Key: " + encodeBase64(key) + "\r\n" + "Origin: " + origin + "\r\n" + "Sec-WebSocket-Version: 13" + "\r\n" + "\r\n");
+		_socket.output.writeString("GET " + url + " HTTP/1.1\r\n" + "Host: " + host + ":" + Std.string(port) + "\r\n" + "Upgrade: websocket\r\n"
+			+ "Connection: Upgrade\r\n" + "Sec-WebSocket-Key: " + encodeBase64(key) + "\r\n" + "Origin: " + origin + "\r\n" + "Sec-WebSocket-Version: 13"
+			+ "\r\n" + "\r\n");
 		_socket.output.flush();
 
 		var line:String;

@@ -46,11 +46,11 @@ class Tileset
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperties(Tileset.prototype,
-			{
-				"bitmapData": {get: untyped __js__("function () { return this.get_bitmapData (); }"), set: untyped __js__("function (v) { return this.set_bitmapData (v); }")},
-				"numRects": {get: untyped __js__("function () { return this.get_numRects (); }")}
-			});
+		untyped Object.defineProperties(Tileset.prototype, {
+			"bitmapData": {get: untyped __js__("function () { return this.get_bitmapData (); }"),
+				set: untyped __js__("function (v) { return this.set_bitmapData (v); }")},
+			"numRects": {get: untyped __js__("function () { return this.get_numRects (); }")}
+		});
 	}
 	#end
 

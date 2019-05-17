@@ -84,7 +84,15 @@ class Context3DTilemap
 
 		resizeBuffer(tilemap, numTiles + length);
 
-		var tile, tileset, alpha, visible, colorTransform = null, id, tileData, tileRect, bitmapData;
+		var tile,
+			tileset,
+			alpha,
+			visible,
+			colorTransform = null,
+			id,
+			tileData,
+			tileRect,
+			bitmapData;
 		var tileWidth, tileHeight, uvX, uvY, uvHeight, uvWidth, vertexOffset;
 		var x, y, x2, y2, x3, y3, x4, y4;
 
@@ -411,7 +419,16 @@ class Context3DTilemap
 	{
 		var tiles = group.__tiles;
 
-		var tile, tileset, alpha, visible, blendMode = null, id, tileData, tileRect, shader:Shader, bitmapData;
+		var tile,
+			tileset,
+			alpha,
+			visible,
+			blendMode = null,
+			id,
+			tileData,
+			tileRect,
+			shader:Shader,
+			bitmapData;
 
 		for (tile in tiles)
 		{

@@ -85,8 +85,8 @@ class CanvasShape
 							context.drawImage(canvas, 0, top + centerHeight, left, bottom, 0, renderTop + renderCenterHeight, renderLeft, renderBottom);
 							context.drawImage(canvas, left, top + centerHeight, centerWidth, bottom, renderLeft, renderTop + renderCenterHeight,
 								renderCenterWidth, renderBottom);
-							context
-								.drawImage(canvas, left + centerWidth, top + centerHeight, right, bottom, renderLeft + renderCenterWidth, renderTop + renderCenterHeight, renderRight, renderBottom);
+							context.drawImage(canvas, left + centerWidth, top + centerHeight, right, bottom, renderLeft + renderCenterWidth, renderTop
+								+ renderCenterHeight, renderRight, renderBottom);
 						}
 						else if (centerWidth == 0 && centerHeight != 0)
 						{

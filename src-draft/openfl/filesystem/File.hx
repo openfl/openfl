@@ -154,14 +154,13 @@ class File extends openfl.net.FileReference
 		}
 	}
 
-	public static inline var sep =
-		{
-			#if windows
-			"\\";
-			#else
-			"/";
-			#end
-		}
+	public static inline var sep = {
+		#if windows
+		"\\";
+		#else
+		"/";
+		#end
+	}
 
 	override function toString()
 	{

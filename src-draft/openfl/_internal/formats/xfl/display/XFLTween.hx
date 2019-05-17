@@ -190,8 +190,8 @@ class XFLTween
 			tween.glowFilter.firstInvocation = true;
 			tween.glowFilter.targetStrength = tween.glowFilter.strength;
 			tween.glowFilter.initialStrength = tween.glowFilter.strength;
-			tween.glowFilterInstance = new GlowFilter(tween.glowFilter.color, tween.glowFilter.alpha, tween.glowFilter.blurX, tween.glowFilter.blurY, tween
-				.glowFilter.strength);
+			tween.glowFilterInstance = new GlowFilter(tween.glowFilter.color, tween.glowFilter.alpha, tween.glowFilter.blurX, tween.glowFilter.blurY,
+				tween.glowFilter.strength);
 			var objectFilters:Array<BitmapFilter> = object.filters;
 			objectFilters.push(tween.glowFilterInstance);
 			object.filters = objectFilters;
@@ -241,8 +241,7 @@ class XFLTween
 		}
 		if (Reflect.hasField(tween, "alpha") == true)
 		{
-			object.alpha = tween.initialAlpha
-				+ ((tween.alpha - tween.initialAlpha) * tween.easeFunc((tween.timeCurrent - tween.timeInit) / tween.duration));
+			object.alpha = tween.initialAlpha + ((tween.alpha - tween.initialAlpha) * tween.easeFunc((tween.timeCurrent - tween.timeInit) / tween.duration));
 			if (applyYoyo == true)
 			{
 				tween.alpha = Math.abs(object.alpha - tween.initialAlpha) < 0.1 ? tween.targetAlpha : tween.initialAlpha;
@@ -251,8 +250,7 @@ class XFLTween
 		}
 		if (Reflect.hasField(tween, "x") == true)
 		{
-			object.x = tween.initialX
-				+ ((tween.x - tween.initialX) * tween.easeFunc((tween.timeCurrent - tween.timeInit) / tween.duration));
+			object.x = tween.initialX + ((tween.x - tween.initialX) * tween.easeFunc((tween.timeCurrent - tween.timeInit) / tween.duration));
 			if (applyYoyo == true)
 			{
 				tween.x = Math.abs(object.x - tween.initialX) < 0.1 ? tween.x : tween.initialX;
@@ -261,8 +259,7 @@ class XFLTween
 		}
 		if (Reflect.hasField(tween, "y") == true)
 		{
-			object.y = tween.initialY
-				+ ((tween.y - tween.initialY) * tween.easeFunc((tween.timeCurrent - tween.timeInit) / tween.duration));
+			object.y = tween.initialY + ((tween.y - tween.initialY) * tween.easeFunc((tween.timeCurrent - tween.timeInit) / tween.duration));
 			if (applyYoyo == true)
 			{
 				tween.y = Math.abs(object.y - tween.initialY) < 0.1 ? tween.y : tween.initialY;
@@ -271,8 +268,7 @@ class XFLTween
 		}
 		if (Reflect.hasField(tween, "width") == true)
 		{
-			object.width = tween.initialWidth
-				+ ((tween.width - tween.initialWidth) * tween.easeFunc((tween.timeCurrent - tween.timeInit) / tween.duration));
+			object.width = tween.initialWidth + ((tween.width - tween.initialWidth) * tween.easeFunc((tween.timeCurrent - tween.timeInit) / tween.duration));
 			if (applyYoyo == true)
 			{
 				tween.width = Math.abs(object.width - tween.initialWidth) < 0.1 ? tween.width : tween.initialWidth;
@@ -336,8 +332,8 @@ class XFLTween
 		{
 			var dropShadowFilter:DropShadowFilter = cast(tween.dropShadowFilterInstance, DropShadowFilter);
 			dropShadowFilter.distance = tween.dropShadowFilter.initialDistance
-				+ ((tween.dropShadowFilter.distance - tween.dropShadowFilter.initialDistance) * tween.easeFunc((tween.timeCurrent - tween.timeInit) / tween
-					.duration));
+				+
+				((tween.dropShadowFilter.distance - tween.dropShadowFilter.initialDistance) * tween.easeFunc((tween.timeCurrent - tween.timeInit) / tween.duration));
 			var objectFilters:Array<BitmapFilter> = object.filters;
 			if (objectFilters.indexOf(dropShadowFilter) == -1) objectFilters.push(dropShadowFilter);
 			object.filters = objectFilters;

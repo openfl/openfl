@@ -147,6 +147,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	@SuppressWarnings("checkstyle:Dynamic")
 	public var image(default, null):#if lime Image #else Dynamic #end;
+
 	// #if !flash_doc_gen
 
 	/**
@@ -162,6 +163,7 @@ class BitmapData implements IBitmapDrawable
 		will need to be recreated if the current hardware rendering context is lost.
 	**/
 	@:beta public var readable(default, null):Bool;
+
 	// #end
 
 	/**
@@ -506,7 +508,14 @@ class BitmapData implements IBitmapDrawable
 		}
 
 		var bitmapData = null;
-		var foundDifference, pixel:ARGB, otherPixel:ARGB, comparePixel:ARGB, r, g, b, a;
+		var foundDifference,
+			pixel:ARGB,
+			otherPixel:ARGB,
+			comparePixel:ARGB,
+			r,
+			g,
+			b,
+			a;
 
 		for (y in 0...height)
 		{
@@ -2305,7 +2314,8 @@ class BitmapData implements IBitmapDrawable
 		Bitmap, or BitmapData object.
 		@throws	TypeError	The `firstPoint` is `null`.
 	**/
-	public function hitTest(firstPoint:Point, firstAlphaThreshold:Int, secondObject:Object, secondBitmapDataPoint:Point = null, secondAlphaThreshold:Int = 1):Bool
+	public function hitTest(firstPoint:Point, firstAlphaThreshold:Int, secondObject:Object, secondBitmapDataPoint:Point = null,
+			secondAlphaThreshold:Int = 1):Bool
 	{
 		if (!readable) return false;
 

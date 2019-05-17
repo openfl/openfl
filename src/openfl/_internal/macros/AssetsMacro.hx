@@ -103,37 +103,33 @@ class AssetsMacro
 			];
 
 			#if html5
-			args.push(
-				{
-					name: "onload",
-					opt: true,
-					type: macro:Dynamic,
-					value: null
-				});
-			fields.push(
-				{
-					kind: FVar(macro:lime.graphics.Image, null),
-					name: "preload",
-					doc: null,
-					meta: [],
-					access: [APublic, AStatic],
-					pos: Context.currentPos()
-				});
+			args.push({
+				name: "onload",
+				opt: true,
+				type: macro:Dynamic,
+				value: null
+			});
+			fields.push({
+				kind: FVar(macro:lime.graphics.Image, null),
+				name: "preload",
+				doc: null,
+				meta: [],
+				access: [APublic, AStatic],
+				pos: Context.currentPos()
+			});
 			#end
 
-			fields.push(
-				{
-					name: "new",
-					access: [APublic],
-					kind: FFun(
-						{
-							args: args,
-							expr: constructor,
-							params: [],
-							ret: null
-						}),
-					pos: Context.currentPos()
-				});
+			fields.push({
+				name: "new",
+				access: [APublic],
+				kind: FFun({
+					args: args,
+					expr: constructor,
+					params: [],
+					ret: null
+				}),
+				pos: Context.currentPos()
+			});
 		}
 
 		return fields;
@@ -161,7 +157,8 @@ class AssetsMacro
 								path = Context.resolvePath(filePath);
 							}
 							var bytes = File.getBytes(path);
-							var resourceName = "__ASSET__" + metaName
+							var resourceName = "__ASSET__"
+								+ metaName
 								+ "_"
 								+ (classType.pack.length > 0 ? classType.pack.join("_") + "_" : "")
 								+ classType.name;
@@ -180,13 +177,12 @@ class AssetsMacro
 								}
 
 								var fieldValue = {pos: position, expr: EConst(CString(resourceType))};
-								fields.push(
-									{
-										kind: FVar(macro:String, fieldValue),
-										name: "resourceType",
-										access: [APrivate, AStatic],
-										pos: position
-									});
+								fields.push({
+									kind: FVar(macro:String, fieldValue),
+									name: "resourceType",
+									access: [APrivate, AStatic],
+									pos: position
+								});
 
 								var base64 = base64Encode(bytes);
 								Context.addResource(resourceName, Bytes.ofString(base64));
@@ -197,13 +193,12 @@ class AssetsMacro
 							}
 
 							var fieldValue = {pos: position, expr: EConst(CString(resourceName))};
-							fields.push(
-								{
-									kind: FVar(macro:String, fieldValue),
-									name: "resourceName",
-									access: [APrivate, AStatic],
-									pos: position
-								});
+							fields.push({
+								kind: FVar(macro:String, fieldValue),
+								name: "resourceName",
+								access: [APrivate, AStatic],
+								pos: position
+							});
 
 							return fields;
 
@@ -235,20 +230,19 @@ class AssetsMacro
 					opt: true,
 					type: macro:Int,
 					value: macro 0
-				}];
-			fields.push(
-				{
-					name: "new",
-					access: [APublic],
-					kind: FFun(
-						{
-							args: args,
-							expr: constructor,
-							params: [],
-							ret: null
-						}),
-					pos: Context.currentPos()
-				});
+				}
+			];
+			fields.push({
+				name: "new",
+				access: [APublic],
+				kind: FFun({
+					args: args,
+					expr: constructor,
+					params: [],
+					ret: null
+				}),
+				pos: Context.currentPos()
+			});
 		}
 
 		return fields;
@@ -299,13 +293,12 @@ class AssetsMacro
 			Context.addResource(resourceName, bytes);
 
 			var fieldValue = {pos: position, expr: EConst(CString(resourceName))};
-			fields.push(
-				{
-					kind: FVar(macro:String, fieldValue),
-					name: "resourceName",
-					access: [APublic, AStatic],
-					pos: position
-				});
+			fields.push({
+				kind: FVar(macro:String, fieldValue),
+				name: "resourceName",
+				access: [APublic, AStatic],
+				pos: position
+			});
 
 			// var constructor = macro {
 			//
@@ -353,19 +346,17 @@ class AssetsMacro
 					value: null
 				}
 			];
-			fields.push(
-				{
-					name: "new",
-					access: [APublic],
-					kind: FFun(
-						{
-							args: args,
-							expr: constructor,
-							params: [],
-							ret: null
-						}),
-					pos: Context.currentPos()
-				});
+			fields.push({
+				name: "new",
+				access: [APublic],
+				kind: FFun({
+					args: args,
+					expr: constructor,
+					params: [],
+					ret: null
+				}),
+				pos: Context.currentPos()
+			});
 			#end
 		}
 

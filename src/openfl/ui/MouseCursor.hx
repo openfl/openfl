@@ -36,6 +36,7 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 		Used to specify that the I-beam cursor should be used.
 	**/
 	public var IBEAM = "ibeam";
+
 	@:noCompletion private var __CROSSHAIR = "crosshair";
 	@:noCompletion private var __CUSTOM = "custom";
 	@:noCompletion private var __MOVE = "move";

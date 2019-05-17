@@ -1005,8 +1005,7 @@ class TextEngine
 					{
 						if (!nextFormatRange())
 						{
-							Log
-								.warn("You found a bug in OpenFL's text code! Please save a copy of your project and contact Joshua Granick (@singmajesty) so we can fix this.");
+							Log.warn("You found a bug in OpenFL's text code! Please save a copy of your project and contact Joshua Granick (@singmajesty) so we can fix this.");
 							break;
 						}
 
@@ -1094,8 +1093,7 @@ class TextEngine
 
 					if (!nextFormatRange())
 					{
-						Log
-							.warn("You found a bug in OpenFL's text code! Please save a copy of your project and contact Joshua Granick (@singmajesty) so we can fix this.");
+						Log.warn("You found a bug in OpenFL's text code! Please save a copy of your project and contact Joshua Granick (@singmajesty) so we can fix this.");
 						break;
 					}
 
@@ -1542,8 +1540,8 @@ class TextEngine
 		#if openfl_trace_text_layout_groups
 		for (lg in layoutGroups)
 		{
-			Log.info("LG", lg.positions.length - (lg.endIndex - lg.startIndex), "line:" + lg.lineIndex, "w:" + lg.width, "h:" + lg.height, "x:" + Std.int(lg
-				.offsetX), "y:" + Std.int(lg.offsetY), '"${text.substring(lg.startIndex, lg.endIndex)}"', lg.startIndex, lg.endIndex);
+			Log.info("LG", lg.positions.length - (lg.endIndex - lg.startIndex), "line:" + lg.lineIndex, "w:" + lg.width, "h:" + lg.height, "x:"
+				+ Std.int(lg.offsetX), "y:" + Std.int(lg.offsetY), '"${text.substring(lg.startIndex, lg.endIndex)}"', lg.startIndex, lg.endIndex);
 		}
 		#end
 	}
@@ -1744,12 +1742,12 @@ class TextEngine
 					break;
 				}
 			}
-			
+
 			if (ret < 1) return 1;
 			return ret;
 		}
 	}
-	
+
 	private function get_maxScrollV():Int
 	{
 		// TODO: only update when dirty
@@ -1777,13 +1775,14 @@ class TextEngine
 
 			if (i == j) i = numLines; // maxScrollV defaults to numLines if the height - 4 is less than the line's height
 			// TODO: check if it's based on the first or last line's height
-			else i += 2;
-			
+			else
+				i += 2;
+
 			if (i < 1) return 1;
 			return i;
 		}
 	}
-	
+
 	private function set_restrict(value:String):String
 	{
 		if (restrict == value)
@@ -1808,7 +1807,7 @@ class TextEngine
 	private function get_scrollV():Int
 	{
 		if (numLines == 1 || lineHeights == null) return 1;
-		
+
 		var max = maxScrollV;
 		if (scrollV > max) return max;
 		return scrollV;

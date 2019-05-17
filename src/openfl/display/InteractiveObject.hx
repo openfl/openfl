@@ -1194,11 +1194,12 @@ class InteractiveObject extends DisplayObject
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperties(InteractiveObject.prototype,
-			{
-				"tabEnabled": {get: untyped __js__("function () { return this.get_tabEnabled (); }"), set: untyped __js__("function (v) { return this.set_tabEnabled (v); }")},
-				"tabIndex": {get: untyped __js__("function () { return this.get_tabIndex (); }"), set: untyped __js__("function (v) { return this.set_tabIndex (v); }")},
-			});
+		untyped Object.defineProperties(InteractiveObject.prototype, {
+			"tabEnabled": {get: untyped __js__("function () { return this.get_tabEnabled (); }"),
+				set: untyped __js__("function (v) { return this.set_tabEnabled (v); }")},
+			"tabIndex": {get: untyped __js__("function () { return this.get_tabIndex (); }"),
+				set: untyped __js__("function (v) { return this.set_tabIndex (v); }")},
+		});
 	}
 	#end
 

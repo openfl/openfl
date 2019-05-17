@@ -21,8 +21,7 @@ class FilterColorMatrix extends Filter implements IFilter
 		return new ColorMatrixFilter([
 			colorMatrix[0], colorMatrix[1], colorMatrix[2], colorMatrix[3], colorMatrix[4], colorMatrix[5], colorMatrix[6], colorMatrix[7], colorMatrix[8],
 			colorMatrix[9], colorMatrix[10], colorMatrix[11], colorMatrix[12], colorMatrix[13], colorMatrix[14], colorMatrix[15], colorMatrix[16],
-			colorMatrix[17], colorMatrix[18], colorMatrix[19]
-		]);
+			colorMatrix[17], colorMatrix[18], colorMatrix[19]]);
 	}
 
 	override private function get_type():FilterType
@@ -30,8 +29,7 @@ class FilterColorMatrix extends Filter implements IFilter
 		return ColorMatrixFilter([
 			colorMatrix[0], colorMatrix[1], colorMatrix[2], colorMatrix[3], colorMatrix[4], colorMatrix[5], colorMatrix[6], colorMatrix[7], colorMatrix[8],
 			colorMatrix[9], colorMatrix[10], colorMatrix[11], colorMatrix[12], colorMatrix[13], colorMatrix[14], colorMatrix[15], colorMatrix[16],
-			colorMatrix[17], colorMatrix[18], colorMatrix[19]
-		]);
+			colorMatrix[17], colorMatrix[18], colorMatrix[19]]);
 	}
 
 	override public function parse(data:SWFData):Void

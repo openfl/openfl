@@ -120,12 +120,12 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperties(BlurFilter.prototype,
-			{
-				"blurX": {get: untyped __js__("function () { return this.get_blurX (); }"), set: untyped __js__("function (v) { return this.set_blurX (v); }")},
-				"blurY": {get: untyped __js__("function () { return this.get_blurY (); }"), set: untyped __js__("function (v) { return this.set_blurY (v); }")},
-				"quality": {get: untyped __js__("function () { return this.get_quality (); }"), set: untyped __js__("function (v) { return this.set_quality (v); }")},
-			});
+		untyped Object.defineProperties(BlurFilter.prototype, {
+			"blurX": {get: untyped __js__("function () { return this.get_blurX (); }"), set: untyped __js__("function (v) { return this.set_blurX (v); }")},
+			"blurY": {get: untyped __js__("function () { return this.get_blurY (); }"), set: untyped __js__("function (v) { return this.set_blurY (v); }")},
+			"quality": {get: untyped __js__("function () { return this.get_quality (); }"),
+				set: untyped __js__("function (v) { return this.set_quality (v); }")},
+		});
 	}
 	#end
 
@@ -172,7 +172,8 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 		return new BlurFilter(__blurX, __blurY, __quality);
 	}
 
-	@:noCompletion private override function __applyFilter(bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData
+	@:noCompletion private override function __applyFilter(bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle,
+			destPoint:Point):BitmapData
 	{
 		#if lime
 		var time = Timer.stamp();

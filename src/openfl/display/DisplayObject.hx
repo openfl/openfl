@@ -967,115 +967,92 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperties(DisplayObject.prototype,
-			{
-				"alpha":
-					{
-						get: untyped __js__("function () { return this.get_alpha (); }"),
-						set: untyped __js__("function (v) { return this.set_alpha (v); }")
-					},
-				"blendMode":
-					{
-						get: untyped __js__("function () { return this.get_blendMode (); }"),
-						set: untyped __js__("function (v) { return this.set_blendMode (v); }")
-					},
-				"cacheAsBitmap":
-					{
-						get: untyped __js__("function () { return this.get_cacheAsBitmap (); }"),
-						set: untyped __js__("function (v) { return this.set_cacheAsBitmap (v); }")
-					},
-				"cacheAsBitmapMatrix":
-					{
-						get: untyped __js__("function () { return this.get_cacheAsBitmapMatrix (); }"),
-						set: untyped __js__("function (v) { return this.set_cacheAsBitmapMatrix (v); }")
-					},
-				"filters":
-					{
-						get: untyped __js__("function () { return this.get_filters (); }"),
-						set: untyped __js__("function (v) { return this.set_filters (v); }")
-					},
-				"height":
-					{
-						get: untyped __js__("function () { return this.get_height (); }"),
-						set: untyped __js__("function (v) { return this.set_height (v); }")
-					},
-				"loaderInfo":
-					{
-						get: untyped __js__("function () { return this.get_loaderInfo (); }")
-					},
-				"mask":
-					{
-						get: untyped __js__("function () { return this.get_mask (); }"),
-						set: untyped __js__("function (v) { return this.set_mask (v); }")
-					},
-				"mouseX":
-					{
-						get: untyped __js__("function () { return this.get_mouseX (); }")
-					},
-				"mouseY":
-					{
-						get: untyped __js__("function () { return this.get_mouseY (); }")
-					},
-				"name":
-					{
-						get: untyped __js__("function () { return this.get_name (); }"),
-						set: untyped __js__("function (v) { return this.set_name (v); }")
-					},
-				"root":
-					{
-						get: untyped __js__("function () { return this.get_root (); }")
-					},
-				"rotation":
-					{
-						get: untyped __js__("function () { return this.get_rotation (); }"),
-						set: untyped __js__("function (v) { return this.set_rotation (v); }")
-					},
-				"scaleX":
-					{
-						get: untyped __js__("function () { return this.get_scaleX (); }"),
-						set: untyped __js__("function (v) { return this.set_scaleX (v); }")
-					},
-				"scaleY":
-					{
-						get: untyped __js__("function () { return this.get_scaleY (); }"),
-						set: untyped __js__("function (v) { return this.set_scaleY (v); }")
-					},
-				"scrollRect":
-					{
-						get: untyped __js__("function () { return this.get_scrollRect (); }"),
-						set: untyped __js__("function (v) { return this.set_scrollRect (v); }")
-					},
-				"shader":
-					{
-						get: untyped __js__("function () { return this.get_shader (); }"),
-						set: untyped __js__("function (v) { return this.set_shader (v); }")
-					},
-				"transform":
-					{
-						get: untyped __js__("function () { return this.get_transform (); }"),
-						set: untyped __js__("function (v) { return this.set_transform (v); }")
-					},
-				"visible":
-					{
-						get: untyped __js__("function () { return this.get_visible (); }"),
-						set: untyped __js__("function (v) { return this.set_visible (v); }")
-					},
-				"width":
-					{
-						get: untyped __js__("function () { return this.get_width (); }"),
-						set: untyped __js__("function (v) { return this.set_width (v); }")
-					},
-				"x":
-					{
-						get: untyped __js__("function () { return this.get_x (); }"),
-						set: untyped __js__("function (v) { return this.set_x (v); }")
-					},
-				"y":
-					{
-						get: untyped __js__("function () { return this.get_y (); }"),
-						set: untyped __js__("function (v) { return this.set_y (v); }")
-					},
-			});
+		untyped Object.defineProperties(DisplayObject.prototype, {
+			"alpha": {
+				get: untyped __js__("function () { return this.get_alpha (); }"),
+				set: untyped __js__("function (v) { return this.set_alpha (v); }")
+			},
+			"blendMode": {
+				get: untyped __js__("function () { return this.get_blendMode (); }"),
+				set: untyped __js__("function (v) { return this.set_blendMode (v); }")
+			},
+			"cacheAsBitmap": {
+				get: untyped __js__("function () { return this.get_cacheAsBitmap (); }"),
+				set: untyped __js__("function (v) { return this.set_cacheAsBitmap (v); }")
+			},
+			"cacheAsBitmapMatrix": {
+				get: untyped __js__("function () { return this.get_cacheAsBitmapMatrix (); }"),
+				set: untyped __js__("function (v) { return this.set_cacheAsBitmapMatrix (v); }")
+			},
+			"filters": {
+				get: untyped __js__("function () { return this.get_filters (); }"),
+				set: untyped __js__("function (v) { return this.set_filters (v); }")
+			},
+			"height": {
+				get: untyped __js__("function () { return this.get_height (); }"),
+				set: untyped __js__("function (v) { return this.set_height (v); }")
+			},
+			"loaderInfo": {
+				get: untyped __js__("function () { return this.get_loaderInfo (); }")
+			},
+			"mask": {
+				get: untyped __js__("function () { return this.get_mask (); }"),
+				set: untyped __js__("function (v) { return this.set_mask (v); }")
+			},
+			"mouseX": {
+				get: untyped __js__("function () { return this.get_mouseX (); }")
+			},
+			"mouseY": {
+				get: untyped __js__("function () { return this.get_mouseY (); }")
+			},
+			"name": {
+				get: untyped __js__("function () { return this.get_name (); }"),
+				set: untyped __js__("function (v) { return this.set_name (v); }")
+			},
+			"root": {
+				get: untyped __js__("function () { return this.get_root (); }")
+			},
+			"rotation": {
+				get: untyped __js__("function () { return this.get_rotation (); }"),
+				set: untyped __js__("function (v) { return this.set_rotation (v); }")
+			},
+			"scaleX": {
+				get: untyped __js__("function () { return this.get_scaleX (); }"),
+				set: untyped __js__("function (v) { return this.set_scaleX (v); }")
+			},
+			"scaleY": {
+				get: untyped __js__("function () { return this.get_scaleY (); }"),
+				set: untyped __js__("function (v) { return this.set_scaleY (v); }")
+			},
+			"scrollRect": {
+				get: untyped __js__("function () { return this.get_scrollRect (); }"),
+				set: untyped __js__("function (v) { return this.set_scrollRect (v); }")
+			},
+			"shader": {
+				get: untyped __js__("function () { return this.get_shader (); }"),
+				set: untyped __js__("function (v) { return this.set_shader (v); }")
+			},
+			"transform": {
+				get: untyped __js__("function () { return this.get_transform (); }"),
+				set: untyped __js__("function (v) { return this.set_transform (v); }")
+			},
+			"visible": {
+				get: untyped __js__("function () { return this.get_visible (); }"),
+				set: untyped __js__("function (v) { return this.set_visible (v); }")
+			},
+			"width": {
+				get: untyped __js__("function () { return this.get_width (); }"),
+				set: untyped __js__("function (v) { return this.set_width (v); }")
+			},
+			"x": {
+				get: untyped __js__("function () { return this.get_x (); }"),
+				set: untyped __js__("function (v) { return this.set_x (v); }")
+			},
+			"y": {
+				get: untyped __js__("function () { return this.get_y (); }"),
+				set: untyped __js__("function (v) { return this.set_y (v); }")
+			},
+		});
 	}
 	#end
 
@@ -1534,8 +1511,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 			for (filter in __filters)
 			{
-				extension.__expand(-filter.__leftExtension, -filter.__topExtension, filter.__leftExtension + filter.__rightExtension, filter
-					.__topExtension + filter.__bottomExtension);
+				extension.__expand(-filter.__leftExtension, -filter.__topExtension, filter.__leftExtension + filter.__rightExtension, filter.__topExtension
+					+ filter.__bottomExtension);
 			}
 
 			rect.width += extension.width;
@@ -1643,8 +1620,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		return local;
 	}
 
-	@:noCompletion private function __hitTest(x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool,
-			hitObject:DisplayObject):Bool
+	@:noCompletion private function __hitTest(x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool
 	{
 		if (__graphics != null)
 		{

@@ -621,19 +621,18 @@ abstract Dictionary<K, V>(flash.utils.Dictionary) from flash.utils.Dictionary to
 
 	@:analyzer(ignore) public function each():Iterator<V>
 	{
-		return untyped
+		return untyped {
+			ref: this,
+			it: iterator(),
+			hasNext: function()
 			{
-				ref: this,
-				it: iterator(),
-				hasNext: function()
-				{
-					return __this__.it.hasNext();
-				},
-				next: function()
-				{
-					return get(__this__.it.next());
-				}
+				return __this__.it.hasNext();
+			},
+			next: function()
+			{
+				return get(__this__.it.next());
 			}
+		}
 	}
 }
 #end

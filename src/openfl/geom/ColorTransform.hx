@@ -56,8 +56,8 @@ class ColorTransform
 	#if lime
 	@:noCompletion private static var __limeColorMatrix:Float32Array;
 	#end
-	@:noCompletion private static var __pool:ObjectPool<ColorTransform> = new ObjectPool<ColorTransform>(function() return new ColorTransform(), function(ct) ct
-		.__identity());
+	@:noCompletion private static var __pool:ObjectPool<ColorTransform> = new ObjectPool<ColorTransform>(function() return new ColorTransform(),
+	function(ct) ct.__identity());
 
 	/**
 		A decimal value that is multiplied with the alpha transparency channel
@@ -131,11 +131,10 @@ class ColorTransform
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperty(ColorTransform.prototype, "color",
-			{
-				get: untyped __js__("function () { return this.get_color (); }"),
-				set: untyped __js__("function (v) { return this.set_color (v); }")
-			});
+		untyped Object.defineProperty(ColorTransform.prototype, "color", {
+			get: untyped __js__("function () { return this.get_color (); }"),
+			set: untyped __js__("function (v) { return this.set_color (v); }")
+		});
 	}
 	#end
 

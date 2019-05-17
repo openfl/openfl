@@ -11,7 +11,8 @@ package flash.display;
 	public var scaleMode:LineScaleMode;
 	public var thickness:Float;
 	public function new(thickness:Float = 0 /*NaN*/, pixelHinting:Bool = false, ?scaleMode:LineScaleMode, ?caps:CapsStyle, ?joints:JointStyle,
-		miterLimit:Float = 3, fill:IGraphicsFill = null);
+		miterLimit:Float = 3,
+		fill:IGraphicsFill = null);
 }
 #else
 typedef GraphicsStroke = openfl.display.GraphicsStroke;

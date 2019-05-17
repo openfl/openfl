@@ -128,8 +128,8 @@ import openfl.geom.Matrix;
 	**/
 	public var renderer(default, null):DisplayObjectRenderer;
 
-	@:noCompletion private static var __pool:ObjectPool<RenderEvent> = new ObjectPool<RenderEvent>(function() return new RenderEvent(null), function(event)
-		event.__init());
+	@:noCompletion private static var __pool:ObjectPool<RenderEvent> = new ObjectPool<RenderEvent>(function() return new RenderEvent(null),
+	function(event) event.__init());
 
 	/**
 		Creates an Event object that contains information about render events.

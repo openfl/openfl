@@ -10,8 +10,8 @@ class URLRequestMethodTest
 			{
 				switch (URLRequestMethod.DELETE)
 				{
-					case URLRequestMethod.DELETE, URLRequestMethod.GET, URLRequestMethod.HEAD, URLRequestMethod.OPTIONS, URLRequestMethod.POST, URLRequestMethod
-						.PUT:
+					case URLRequestMethod.DELETE, URLRequestMethod.GET, URLRequestMethod.HEAD, URLRequestMethod.OPTIONS, URLRequestMethod.POST,
+						URLRequestMethod.PUT:
 				}
 			});
 		});

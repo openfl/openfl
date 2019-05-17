@@ -37,8 +37,8 @@ class AsyncErrorEvent extends ErrorEvent
 	**/
 	public var error:Error;
 
-	@:noCompletion private static var __pool:ObjectPool<AsyncErrorEvent> = new ObjectPool<AsyncErrorEvent>(function() return
-		new AsyncErrorEvent(null), function(event) event.__init());
+	@:noCompletion private static var __pool:ObjectPool<AsyncErrorEvent> = new ObjectPool<AsyncErrorEvent>(function() return new AsyncErrorEvent(null),
+	function(event) event.__init());
 
 	/**
 		Creates an AsyncErrorEvent object that contains information about

@@ -216,10 +216,10 @@ class ScrollBar extends UIComponent
 		if (scrollThumbSkinHeight < 20.0) scrollThumbSkinHeight = 20.0;
 		thumbYPosition = _scrollPosition / (_maxScrollPosition - _minScrollPosition);
 		getXFLMovieClip("ScrollThumb_" + this.scrollThumbState + "Skin").height = scrollThumbSkinHeight;
-		getXFLMovieClip("ScrollThumb_" + this.scrollThumbState + "Skin").y = scrollArrowUpHeight +
-			(thumbYPosition * (scrollTrackHeight - scrollThumbSkinHeight));
-		getXFLMovieClip("ScrollBar_thumbIcon").y = getXFLMovieClip("ScrollThumb_" + this.scrollThumbState + "Skin").y
-			+ ((scrollThumbSkinHeight - scrollThumbIconHeight) / 2.0);
+		getXFLMovieClip("ScrollThumb_" + this.scrollThumbState + "Skin").y = scrollArrowUpHeight
+			+ (thumbYPosition * (scrollTrackHeight - scrollThumbSkinHeight));
+		getXFLMovieClip("ScrollBar_thumbIcon").y = getXFLMovieClip("ScrollThumb_" + this.scrollThumbState + "Skin")
+			.y + ((scrollThumbSkinHeight - scrollThumbIconHeight) / 2.0);
 	}
 
 	private function layoutChild(child:DisplayObject, alignToVertical:String)
@@ -366,8 +366,9 @@ class ScrollBar extends UIComponent
 				setScrollThumbState("over");
 			case MouseEvent.MOUSE_DOWN:
 				setScrollThumbState("down");
-				scrollThumbMouseMoveYRelative = getXFLMovieClip("ScrollThumb_" + this.scrollThumbState + "Skin")
-					.globalToLocal(new Point(event.stageX, event.stageY)).y;
+				scrollThumbMouseMoveYRelative = getXFLMovieClip("ScrollThumb_" + this.scrollThumbState + "Skin").globalToLocal(new Point(event.stageX,
+					event.stageY))
+					.y;
 				scrollThumbMouseMoveYRelative *= getXFLMovieClip("ScrollThumb_" + this.scrollThumbState + "Skin").scaleY;
 				openfl.Lib.current.stage.addEventListener(MouseEvent.MOUSE_UP, onScrollThumbMouseMove);
 				openfl.Lib.current.stage.addEventListener(MouseEvent.MOUSE_MOVE, onScrollThumbMouseMove);

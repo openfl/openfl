@@ -51,7 +51,7 @@ class AS3GraphicsDataShapeExporter extends DefaultShapeExporter
 
 	override public function beginGradientFill(type:GradientType, colors:Array<UInt>, alphas:Array<Float>, ratios:Array<Float>, matrix:Matrix = null,
 			spreadMethod:SpreadMethod = null /*SpreadMethod.PAD*/, interpolationMethod:InterpolationMethod = null /*InterpolationMethod.RGB*/,
-			focalPointRatio:Float = 0):Void
+		focalPointRatio:Float = 0):Void
 	{
 		cleanUpGraphicsPath();
 
@@ -87,8 +87,8 @@ class AS3GraphicsDataShapeExporter extends DefaultShapeExporter
 	}
 
 	override public function lineStyle(thickness:Null<Float> = null, color:Int = 0, alpha:Float = 1.0, pixelHinting:Bool = false,
-			scaleMode:LineScaleMode = null /*LineScaleMode.NORMAL*/, startCaps:CapsStyle = null /*CapsStyle.ROUND*/, endCaps:CapsStyle = null
-			/*CapsStyle.ROUND*/, joints:JointStyle = null /*JointStyle.ROUND*/, miterLimit:Float = 3):Void
+			scaleMode:LineScaleMode = null /*LineScaleMode.NORMAL*/, startCaps:CapsStyle = null /*CapsStyle.ROUND*/,
+		endCaps:CapsStyle = null /*CapsStyle.ROUND*/, joints:JointStyle = null /*JointStyle.ROUND*/, miterLimit:Float = 3):Void
 	{
 		cleanUpGraphicsPath();
 		tmpStroke = new GraphicsStroke(thickness, pixelHinting, scaleMode, startCaps, joints, miterLimit, new GraphicsSolidFill(color, alpha));
@@ -97,7 +97,7 @@ class AS3GraphicsDataShapeExporter extends DefaultShapeExporter
 
 	override public function lineGradientStyle(type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Float>, matrix:Matrix = null,
 			spreadMethod:SpreadMethod = null /*SpreadMethod.PAD*/, interpolationMethod:InterpolationMethod = null /*InterpolationMethod.RGB*/,
-			focalPointRatio:Float = 0):Void
+		focalPointRatio:Float = 0):Void
 	{
 		#if flash
 		var newColors:Array<UInt> = [];

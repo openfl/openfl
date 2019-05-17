@@ -44,11 +44,10 @@ class AssetCache implements IAssetCache
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped global.Object.defineProperty(AssetCache.prototype, "enabled",
-			{
-				get: untyped __js__("function () { return this.get_enabled (); }"),
-				set: untyped __js__("function (v) { return this.set_enabled (v); }")
-			});
+		untyped global.Object.defineProperty(AssetCache.prototype, "enabled", {
+			get: untyped __js__("function () { return this.get_enabled (); }"),
+			set: untyped __js__("function (v) { return this.set_enabled (v); }")
+		});
 	}
 	#end
 

@@ -348,8 +348,7 @@ class DataGrid extends BaseScrollPane
 			var displayObjectIndex:Int = mouseCellRenderer.listData.index - 1;
 			for (columnIdx in 0...columns.length)
 			{
-				var cellRenderer:DisplayObject = displayObjectIndex < dataDisplayObjects.length ? dataDisplayObjects[displayObjectIndex]
-					.getChildAt(columnIdx) : null;
+				var cellRenderer:DisplayObject = displayObjectIndex < dataDisplayObjects.length ? dataDisplayObjects[displayObjectIndex].getChildAt(columnIdx) : null;
 				if (cellRenderer != null)
 				{
 					cast(cellRenderer, CellRenderer).setMouseState(event.type.charAt("mouse".length).toLowerCase() + event.type.substr("mouse".length + 1));

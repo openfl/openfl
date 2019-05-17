@@ -188,11 +188,10 @@ class Video extends DisplayObject
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperties(Video.prototype,
-			{
-				"videoHeight": {get: untyped __js__("function () { return this.get_videoHeight (); }")},
-				"videoWidth": {get: untyped __js__("function () { return this.get_videoWidth (); }")},
-			});
+		untyped Object.defineProperties(Video.prototype, {
+			"videoHeight": {get: untyped __js__("function () { return this.get_videoHeight (); }")},
+			"videoWidth": {get: untyped __js__("function () { return this.get_videoWidth (); }")},
+		});
 	}
 	#end
 

@@ -1084,6 +1084,7 @@ class NetStream extends EventDispatcher
 		SoundTransform class.
 	**/
 	public var soundTransform:SoundTransform;
+
 	@:dox(hide) @:noCompletion @SuppressWarnings("checkstyle:FieldDocComment")
 	public var speed(get, set):Float;
 
@@ -1107,6 +1108,7 @@ class NetStream extends EventDispatcher
 		when `NetStream.close()` is called.
 	**/
 	public var time(default, null):Float;
+
 	// @:noCompletion @:dox(hide) @:require(flash11) public var useHardwareDecoder:Bool;
 	// @:noCompletion @:dox(hide) @:require(flash11_3) public var useJitterBuffer:Bool;
 	public var videoCode(default, null):Int;
@@ -1147,11 +1149,10 @@ class NetStream extends EventDispatcher
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperty(NetStream.prototype, "speed",
-			{
-				get: untyped __js__("function () { return this.get_speed (); }"),
-				set: untyped __js__("function (v) { return this.set_speed (v); }")
-			});
+		untyped Object.defineProperty(NetStream.prototype, "speed", {
+			get: untyped __js__("function () { return this.get_speed (); }"),
+			set: untyped __js__("function (v) { return this.set_speed (v); }")
+		});
 	}
 	#end
 
@@ -2111,14 +2112,13 @@ class NetStream extends EventDispatcher
 			try
 			{
 				var handler = client.onPlayStatus;
-				handler(
-					{
-						code: code,
-						duration: __video.duration,
-						position: __video.currentTime,
-						speed: __video.playbackRate,
-						start: untyped __video.startTime
-					});
+				handler({
+					code: code,
+					duration: __video.duration,
+					position: __video.currentTime,
+					speed: __video.playbackRate,
+					start: untyped __video.startTime
+				});
 			}
 			catch (e:Dynamic) {}
 		}
@@ -2164,12 +2164,11 @@ class NetStream extends EventDispatcher
 			try
 			{
 				var handler = client.onMetaData;
-				handler(
-					{
-						width: __video.videoWidth,
-						height: __video.videoHeight,
-						duration: __video.duration
-					});
+				handler({
+					width: __video.videoWidth,
+					height: __video.videoHeight,
+					duration: __video.duration
+				});
 			}
 			catch (e:Dynamic) {}
 		}

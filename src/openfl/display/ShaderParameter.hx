@@ -99,6 +99,7 @@ import openfl.display3D.Context3D;
 		The zero-based index of the parameter.
 	**/
 	@SuppressWarnings("checkstyle:Dynamic") public var index(default, null):Dynamic;
+
 	@:noCompletion @:dox(hide) @SuppressWarnings("checkstyle:FieldDocComment") public var name(default, set):String;
 
 	/**
@@ -432,8 +433,8 @@ import openfl.display3D.Context3D;
 					case BOOL3, INT3:
 						gl.uniform3i(index, Std.int(buffer[position]), Std.int(buffer[position + 1]), Std.int(buffer[position + 2]));
 					case BOOL4, INT4:
-						gl.uniform4i(index, Std.int(buffer[position]), Std.int(buffer[position + 1]), Std.int(buffer[position + 2]), Std.int(buffer[position
-							+ 3]));
+						gl.uniform4i(index, Std.int(buffer[position]), Std.int(buffer[position + 1]), Std.int(buffer[position + 2]),
+							Std.int(buffer[position + 3]));
 					case FLOAT:
 						gl.uniform1f(index, buffer[position]);
 					case FLOAT2:
@@ -513,9 +514,8 @@ import openfl.display3D.Context3D;
 						case MATRIX4X4:
 							for (i in 0...4)
 							{
-								gl
-									.vertexAttrib4f(index + i, buffer[position + i * 4], buffer[position + i * 4 + 1], buffer[position + i * 4 + 2], buffer[position
-									+ i * 4 + 3]);
+								gl.vertexAttrib4f(index + i, buffer[position + i * 4], buffer[position + i * 4 + 1], buffer[position + i * 4 + 2],
+									buffer[position + i * 4 + 3]);
 							}
 
 						default:

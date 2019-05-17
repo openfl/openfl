@@ -515,8 +515,8 @@ class AGALMiniAssembler
 
 					if (verbose)
 					{
-						Log
-							.info("RELATIVE: type=" + reltype + "==" + relname[0] + " sel=" + relsel + "==" + selmatch[0] + " idx=" + regidx + " offset=" + reloffset);
+						Log.info("RELATIVE: type=" + reltype + "==" + relname[0] + " sel=" + relsel + "==" + selmatch[0] + " idx=" + regidx + " offset="
+							+ reloffset);
 					}
 				}
 
@@ -838,7 +838,17 @@ private class Register
 
 	public function toString():String
 	{
-		return "[Register name=\"" + name + "\", longName=\"" + longName + "\", emitCode=" + emitCode + ", range=" + range + ", flags=" + flags + "]";
+		return "[Register name=\""
+			+ name
+			+ "\", longName=\""
+			+ longName
+			+ "\", emitCode="
+			+ emitCode
+			+ ", range="
+			+ range
+			+ ", flags="
+			+ flags
+			+ "]";
 	}
 }
 

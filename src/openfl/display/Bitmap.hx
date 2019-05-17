@@ -97,11 +97,10 @@ class Bitmap extends DisplayObject
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperty(Bitmap.prototype, "bitmapData",
-			{
-				get: untyped __js__("function () { return this.get_bitmapData (); }"),
-				set: untyped __js__("function (v) { return this.set_bitmapData (v); }")
-			});
+		untyped Object.defineProperty(Bitmap.prototype, "bitmapData", {
+			get: untyped __js__("function () { return this.get_bitmapData (); }"),
+			set: untyped __js__("function (v) { return this.set_bitmapData (v); }")
+		});
 	}
 	#end
 

@@ -39,8 +39,9 @@ class TimerEvent extends Event
 		| `target` | The Timer object that has completed its requests. |
 	**/
 	public static inline var TIMER_COMPLETE:EventType<TimerEvent> = "timerComplete";
-	@:noCompletion private static var __pool:ObjectPool<TimerEvent> = new ObjectPool<TimerEvent>(function() return new TimerEvent(null), function(event) event
-		.__init());
+
+	@:noCompletion private static var __pool:ObjectPool<TimerEvent> = new ObjectPool<TimerEvent>(function() return new TimerEvent(null),
+	function(event) event.__init());
 
 	/**
 		Creates an Event object with specific information relevant to

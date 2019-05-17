@@ -80,6 +80,7 @@ class URLStream extends EventDispatcher implements IDataInput
 		connected, or `false` otherwise.
 	**/
 	public var connected(get, never):Bool;
+
 	// @:require(flash11_4) public var diskCacheEnabled (default, null):Bool;
 
 	/**
@@ -89,6 +90,7 @@ class URLStream extends EventDispatcher implements IDataInput
 		@default Endian.BIG_ENDIAN
 	**/
 	public var endian(get, set):Endian;
+
 	// @:require(flash11_4) public var length (default, null):Float;
 
 	/**
@@ -104,12 +106,11 @@ class URLStream extends EventDispatcher implements IDataInput
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperties(URLStream.prototype,
-			{
-				"bytesAvailable": {get: untyped __js__("function () { return this.get_bytesAvailable (); }")},
-				"connected": {get: untyped __js__("function () { return this.get_connected (); }")},
-				"endian": {get: untyped __js__("function () { return this.get_endian (); }"), set: untyped __js__("function (v) { return this.set_endian (v); }")},
-			});
+		untyped Object.defineProperties(URLStream.prototype, {
+			"bytesAvailable": {get: untyped __js__("function () { return this.get_bytesAvailable (); }")},
+			"connected": {get: untyped __js__("function () { return this.get_connected (); }")},
+			"endian": {get: untyped __js__("function () { return this.get_endian (); }"), set: untyped __js__("function (v) { return this.set_endian (v); }")},
+		});
 	}
 	#end
 

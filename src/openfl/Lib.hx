@@ -42,23 +42,20 @@ import js.Browser;
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperties(Lib,
-			{
-				"application":
-					{
-						get: function()
-						{
-							return Lib.get_application();
-						}
-					},
-				"current":
-					{
-						get: function()
-						{
-							return Lib.get_current();
-						}
-					}
-			});
+		untyped Object.defineProperties(Lib, {
+			"application": {
+				get: function()
+				{
+					return Lib.get_application();
+				}
+			},
+			"current": {
+				get: function()
+				{
+					return Lib.get_current();
+				}
+			}
+		});
 	}
 	#end
 

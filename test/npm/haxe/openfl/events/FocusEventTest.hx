@@ -176,7 +176,8 @@ class FocusEventTest
 						cur: root,
 						tgt: old2,
 						rel: new2
-					}, {
+					},
+					{
 						type: OUT,
 						phase: CAP,
 						cur: old1,

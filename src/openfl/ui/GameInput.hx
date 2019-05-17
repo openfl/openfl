@@ -76,6 +76,7 @@ import lime.ui.GamepadButton;
 		`GameInputEvent.DEVICE_ADDED` event is fired.
 	**/
 	public static var numDevices(default, null) = 0;
+
 	@:noCompletion private static var __deviceList:Array<GameInputDevice> = new Array();
 	@:noCompletion private static var __instances:Array<GameInput> = [];
 	#if lime

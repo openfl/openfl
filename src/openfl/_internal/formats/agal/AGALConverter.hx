@@ -286,8 +286,8 @@ class AGALConverter
 					{
 						// compose the matrix multiply from dot products
 						sr1.sourceMask = sr2.sourceMask = 7;
-						sb.add(dr.toGLSL() + " = vec3(" + "dot(" + sr1.toGLSL(true) + "," + sr2.toGLSL(true, 0) + "), " + "dot(" + sr1.toGLSL(true) + "," + sr2
-							.toGLSL(true, 1) + ")," + "dot(" + sr1.toGLSL(true) + "," + sr2.toGLSL(true, 2) + ")); // m33");
+						sb.add(dr.toGLSL() + " = vec3(" + "dot(" + sr1.toGLSL(true) + "," + sr2.toGLSL(true, 0) + "), " + "dot(" + sr1.toGLSL(true) + ","
+							+ sr2.toGLSL(true, 1) + ")," + "dot(" + sr1.toGLSL(true) + "," + sr2.toGLSL(true, 2) + ")); // m33");
 
 						map.addDR(dr, RegisterUsage.VECTOR_4);
 						map.addSR(sr1, RegisterUsage.VECTOR_4);
@@ -317,8 +317,9 @@ class AGALConverter
 					{
 						// compose the matrix multiply from dot products
 						sr1.sourceMask = sr2.sourceMask = 0xF;
-						sb.add(dr.toGLSL() + " = vec4(" + "dot(" + sr1.toGLSL(true) + "," + sr2.toGLSL(true, 0) + "), " + "dot(" + sr1.toGLSL(true) + "," + sr2
-							.toGLSL(true, 1) + "), " + "dot(" + sr1.toGLSL(true) + "," + sr2.toGLSL(true, 2) + "), " + "dot(" + sr1.toGLSL(true) + "," + sr2.toGLSL(true, 3) + ")); // m44");
+						sb.add(dr.toGLSL() + " = vec4(" + "dot(" + sr1.toGLSL(true) + "," + sr2.toGLSL(true, 0) + "), " + "dot(" + sr1.toGLSL(true) + ","
+							+ sr2.toGLSL(true, 1) + "), " + "dot(" + sr1.toGLSL(true) + "," + sr2.toGLSL(true, 2) + "), " + "dot(" + sr1.toGLSL(true) + ","
+							+ sr2.toGLSL(true, 3) + ")); // m44");
 
 						map.addDR(dr, RegisterUsage.VECTOR_4);
 						map.addSR(sr1, RegisterUsage.VECTOR_4);
@@ -351,8 +352,8 @@ class AGALConverter
 					{
 						// compose the matrix multiply from dot products
 						sr1.sourceMask = sr2.sourceMask = 0xF;
-						sb.add(dr.toGLSL() + " = vec3(" + "dot(" + sr1.toGLSL(true) + "," + sr2.toGLSL(true, 0) + "), " + "dot(" + sr1.toGLSL(true) + "," + sr2
-							.toGLSL(true, 1) + ")," + "dot(" + sr1.toGLSL(true) + "," + sr2.toGLSL(true, 2) + ")); // m34");
+						sb.add(dr.toGLSL() + " = vec3(" + "dot(" + sr1.toGLSL(true) + "," + sr2.toGLSL(true, 0) + "), " + "dot(" + sr1.toGLSL(true) + ","
+							+ sr2.toGLSL(true, 1) + ")," + "dot(" + sr1.toGLSL(true) + "," + sr2.toGLSL(true, 2) + ")); // m34");
 
 						map.addDR(dr, RegisterUsage.VECTOR_4);
 						map.addSR(sr1, RegisterUsage.VECTOR_4);
@@ -387,8 +388,8 @@ class AGALConverter
 								sr1.sourceMask = 0x3;
 								map.addSaR(sampler, RegisterUsage.SAMPLER_2D_ALPHA);
 								sb.add("if (" + sampler.toGLSL() + "_alphaEnabled) {\n");
-								sb.add("\t\t" + dr.toGLSL() + " = vec4(texture2D(" + sampler.toGLSL() + ", " + sr1.toGLSL() + ").xyz, texture2D(" + sampler
-									.toGLSL() + "_alpha, " + sr1.toGLSL() + ").x); // tex + alpha\n");
+								sb.add("\t\t" + dr.toGLSL() + " = vec4(texture2D(" + sampler.toGLSL() + ", " + sr1.toGLSL() + ").xyz, texture2D("
+									+ sampler.toGLSL() + "_alpha, " + sr1.toGLSL() + ").x); // tex + alpha\n");
 								sb.add("\t} else {\n");
 								sb.add("\t\t" + dr.toGLSL() + " = texture2D(" + sampler.toGLSL() + ", " + sr1.toGLSL() + "); // tex\n");
 								sb.add("\t}");
@@ -408,8 +409,8 @@ class AGALConverter
 								sr1.sourceMask = 0x7;
 								map.addSaR(sampler, RegisterUsage.SAMPLER_CUBE_ALPHA);
 								sb.add("if (" + sampler.toGLSL() + "_alphaEnabled) {\n");
-								sb.add("\t\t" + dr.toGLSL() + " = vec4(textureCube(" + sampler.toGLSL() + ", " + sr1.toGLSL() + ").xyz, textureCube(" + sampler
-									.toGLSL() + "_alpha, " + sr1.toGLSL() + ").x); // tex + alpha\n");
+								sb.add("\t\t" + dr.toGLSL() + " = vec4(textureCube(" + sampler.toGLSL() + ", " + sr1.toGLSL() + ").xyz, textureCube("
+									+ sampler.toGLSL() + "_alpha, " + sr1.toGLSL() + ").x); // tex + alpha\n");
 								sb.add("\t} else {\n");
 								sb.add("\t\t" + dr.toGLSL() + " = textureCube(" + sampler.toGLSL() + ", " + sr1.toGLSL() + "); // tex");
 								sb.add("\t}");

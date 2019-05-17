@@ -58,6 +58,7 @@ import openfl.Vector;
 		@default gesture
 	**/
 	public static var inputMode:MultitouchInputMode;
+
 	// @:noCompletion @:dox(hide) public static var mapTouchToMouse:Bool;
 
 	/**
@@ -115,16 +116,14 @@ import openfl.Vector;
 		inputMode = MultitouchInputMode.TOUCH_POINT;
 
 		#if openfljs
-		untyped Object.defineProperties(Multitouch,
-			{
-				"supportsTouchEvents":
-					{
-						get: function()
-						{
-							return Multitouch.get_supportsTouchEvents();
-						}
-					}
-			});
+		untyped Object.defineProperties(Multitouch, {
+			"supportsTouchEvents": {
+				get: function()
+				{
+					return Multitouch.get_supportsTouchEvents();
+				}
+			}
+		});
 		#end
 	}
 

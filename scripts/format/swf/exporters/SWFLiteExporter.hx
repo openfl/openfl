@@ -250,14 +250,13 @@ class SWFLiteExporter
 				}
 
 				var png = new List();
-				png.add(CHeader(
-					{
-						width: data.bitmapWidth,
-						height: data.bitmapHeight,
-						colbits: 8,
-						color: ColIndexed,
-						interlaced: false
-					}));
+				png.add(CHeader({
+					width: data.bitmapWidth,
+					height: data.bitmapHeight,
+					colbits: 8,
+					color: ColIndexed,
+					interlaced: false
+				}));
 				png.add(CPalette(palette));
 				if (transparent) png.add(CUnknown("tRNS", alpha));
 				var valuesBA:ByteArray = values;
@@ -328,14 +327,13 @@ class SWFLiteExporter
 				}
 
 				var png = new List();
-				png.add(CHeader(
-					{
-						width: image.width,
-						height: image.height,
-						colbits: 8,
-						color: ColIndexed,
-						interlaced: false
-					}));
+				png.add(CHeader({
+					width: image.width,
+					height: image.height,
+					colbits: 8,
+					color: ColIndexed,
+					interlaced: false
+				}));
 				png.add(CPalette(alphaPalette));
 				var valuesBA:ByteArray = values;
 				valuesBA.compress();
@@ -888,8 +886,7 @@ class SWFLiteExporter
 				{
 					case NPublic(_) if (!~/^flash\./.match(superClsName.nameSpaceName)):
 						// store on SWFLite object for serialized .dat export
-						spriteSymbol.baseClassName = ("" == superClsName.nameSpaceName ? "" : superClsName.nameSpaceName + ".")
-							+ superClsName.name;
+						spriteSymbol.baseClassName = ("" == superClsName.nameSpaceName ? "" : superClsName.nameSpaceName + ".") + superClsName.name;
 						Log.info("", "data.className: " + symbol.name + ", baseClass: " + spriteSymbol.baseClassName);
 					case _:
 				}

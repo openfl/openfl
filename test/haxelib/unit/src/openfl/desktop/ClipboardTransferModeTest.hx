@@ -6,8 +6,8 @@ class ClipboardTransferModeTest
 	{
 		switch (ClipboardTransferMode.CLONE_ONLY)
 		{
-			case ClipboardTransferMode.CLONE_ONLY, ClipboardTransferMode.CLONE_PREFERRED, ClipboardTransferMode.ORIGINAL_ONLY, ClipboardTransferMode
-				.ORIGINAL_PREFERRED:
+			case ClipboardTransferMode.CLONE_ONLY, ClipboardTransferMode.CLONE_PREFERRED, ClipboardTransferMode.ORIGINAL_ONLY,
+				ClipboardTransferMode.ORIGINAL_PREFERRED:
 		}
 	}
 }

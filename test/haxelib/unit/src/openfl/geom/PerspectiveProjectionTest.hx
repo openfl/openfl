@@ -18,8 +18,7 @@ class PerspectiveProjectionTest
 
 		// TODO: Flash's focalLength has some round/ceil I cannot reproduce
 		#if flash
-		var focalLength = (500.0 * 0.5) * (Math.cos((0.5 * projection.fieldOfView * Math.PI) / 180.0) / Math.sin((0.5 * projection.fieldOfView * Math
-			.PI) / 180.0));
+		var focalLength = (500.0 * 0.5) * (Math.cos((0.5 * projection.fieldOfView * Math.PI) / 180.0) / Math.sin((0.5 * projection.fieldOfView * Math.PI) / 180.0));
 
 		Assert.areEqual(Math.round(focalLength * 1000.0) / 1000.0, Math.round(projection.focalLength * 1000.0) / 1000.0);
 		#else
@@ -61,8 +60,7 @@ class PerspectiveProjectionTest
 
 		// TODO: Flash's focalLength has some round/ceil I cannot reproduce
 		#if flash
-		var focalLength = (500.0 * 0.5) * (Math.cos((0.5 * projection.fieldOfView * Math.PI) / 180.0) / Math.sin((0.5 * projection.fieldOfView * Math
-			.PI) / 180.0));
+		var focalLength = (500.0 * 0.5) * (Math.cos((0.5 * projection.fieldOfView * Math.PI) / 180.0) / Math.sin((0.5 * projection.fieldOfView * Math.PI) / 180.0));
 
 		Assert.areEqual(Math.round(focalLength * 1000.0) / 1000.0, Math.round(projection.focalLength * 1000.0) / 1000.0);
 		#else
@@ -79,8 +77,7 @@ class PerspectiveProjectionTest
 
 		// TODO: Flash's focalLength has some round/ceil I cannot reproduce
 		#if flash
-		var focalLength = (500.0 * 0.5) * (Math.cos((0.5 * projection.fieldOfView * Math.PI) / 180.0) / Math.sin((0.5 * projection.fieldOfView * Math
-			.PI) / 180.0));
+		var focalLength = (500.0 * 0.5) * (Math.cos((0.5 * projection.fieldOfView * Math.PI) / 180.0) / Math.sin((0.5 * projection.fieldOfView * Math.PI) / 180.0));
 
 		Assert.areEqual(Math.round(focalLength * 1000.0) / 1000.0, Math.round(projection.focalLength * 1000.0) / 1000.0);
 		#else

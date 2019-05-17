@@ -75,7 +75,15 @@ class CanvasTilemap
 		var tiles = group.__tiles;
 		var length = group.__length;
 
-		var tile, tileset, alpha, visible, blendMode = null, id, tileData, tileRect, bitmapData;
+		var tile,
+			tileset,
+			alpha,
+			visible,
+			blendMode = null,
+			id,
+			tileData,
+			tileRect,
+			bitmapData;
 
 		for (i in 0...length)
 		{

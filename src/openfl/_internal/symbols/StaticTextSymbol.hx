@@ -73,8 +73,8 @@ class StaticTextSymbol extends SWFSymbol
 									graphics.beginFill(color & 0xFFFFFF, ((color >> 24) & 0xFF) / 0xFF);
 
 								case CurveTo(controlX, controlY, anchorX, anchorY):
-									graphics
-										.curveTo(controlX * scale + offsetX, controlY * scale + offsetY, anchorX * scale + offsetX, anchorY * scale + offsetY);
+									graphics.curveTo(controlX * scale + offsetX, controlY * scale + offsetY, anchorX * scale + offsetX, anchorY * scale
+										+ offsetY);
 
 								case EndFill:
 									graphics.endFill();

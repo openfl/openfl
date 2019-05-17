@@ -167,6 +167,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 		Controls the version of AMF used when writing or reading an object.
 	**/
 	public var objectEncoding:ObjectEncoding;
+
 	@SuppressWarnings("checkstyle:FieldDocComment")
 	@:noCompletion @:dox(hide) public var secure:Bool;
 
@@ -190,13 +191,12 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperties(Socket.prototype,
-			{
-				"bytesAvailable": {get: untyped __js__("function () { return this.get_bytesAvailable (); }")},
-				"bytesPending": {get: untyped __js__("function () { return this.get_bytesPending (); }")},
-				"connected": {get: untyped __js__("function () { return this.get_connected (); }")},
-				"endian": {get: untyped __js__("function () { return this.get_endian (); }"), set: untyped __js__("function (v) { return this.set_endian (v); }")},
-			});
+		untyped Object.defineProperties(Socket.prototype, {
+			"bytesAvailable": {get: untyped __js__("function () { return this.get_bytesAvailable (); }")},
+			"bytesPending": {get: untyped __js__("function () { return this.get_bytesPending (); }")},
+			"connected": {get: untyped __js__("function () { return this.get_connected (); }")},
+			"endian": {get: untyped __js__("function () { return this.get_endian (); }"), set: untyped __js__("function (v) { return this.set_endian (v); }")},
+		});
 	}
 	#end
 

@@ -24,8 +24,7 @@ import openfl.Vector;
 	@:require(flash15) public var maxBackBufferHeight:Int;
 	@:require(flash15) public var maxBackBufferWidth:Int;
 	@:require(flash12) public var profile(default, never):String;
-	public function clear(red:Float = 0, green:Float = 0, blue:Float = 0, alpha:Float = 1, depth:Float = 1, stencil:UInt = 0,
-		mask:UInt = 0xFFFFFFFF):Void;
+	public function clear(red:Float = 0, green:Float = 0, blue:Float = 0, alpha:Float = 1, depth:Float = 1, stencil:UInt = 0, mask:UInt = 0xFFFFFFFF):Void;
 	public function configureBackBuffer(width:Int, height:Int, antiAlias:Int, enableDepthAndStencil:Bool = true, wantsBestResolution:Bool = false,
 		wantsBestResolutionOnBrowserZoom:Bool = false):Void;
 	public function createCubeTexture(size:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool, streamingLevels:Int = 0):CubeTexture;

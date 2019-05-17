@@ -342,7 +342,8 @@ class URLLoader extends EventDispatcher
 		dispatchEvent(event);
 	}
 
-	@:noCompletion private function __prepareRequest(httpRequest:#if (!lime || display || macro || doc_gen) Dynamic #else _IHTTPRequest #end, request:URLRequest):Void
+	@:noCompletion private function __prepareRequest(httpRequest:#if (!lime || display || macro || doc_gen) Dynamic #else _IHTTPRequest #end,
+			request:URLRequest):Void
 	{
 		#if lime
 		__httpRequest = httpRequest;

@@ -560,6 +560,7 @@ class Matrix
 		**/
 
 		var cos = Math.cos(theta);
+
 		var sin = Math.sin(theta);
 
 		var a1 = a * cos - b * sin;

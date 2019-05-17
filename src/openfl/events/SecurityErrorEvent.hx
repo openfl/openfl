@@ -40,6 +40,7 @@ class SecurityErrorEvent extends ErrorEvent
 		| `text` | Text to be displayed as an error message. |
 	**/
 	public static inline var SECURITY_ERROR:EventType<SecurityErrorEvent> = "securityError";
+
 	@:noCompletion private static var __pool:ObjectPool<SecurityErrorEvent> = new ObjectPool<SecurityErrorEvent>(function() return
 		new SecurityErrorEvent(null), function(event) event.__init());
 

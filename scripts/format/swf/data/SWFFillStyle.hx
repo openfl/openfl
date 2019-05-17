@@ -95,7 +95,12 @@ class SWFFillStyle
 			case 0x12:
 				str += " (radial gradient), Gradient: " + gradient + ", Matrix: " + gradientMatrix;
 			case 0x13:
-				str += " (focal radial gradient), Gradient: " + gradient + ", Matrix: " + gradientMatrix + ", FocalPoint: " + gradient.focalPoint;
+				str += " (focal radial gradient), Gradient: "
+					+ gradient
+					+ ", Matrix: "
+					+ gradientMatrix
+					+ ", FocalPoint: "
+					+ gradient.focalPoint;
 			case 0x40:
 				str += " (repeating bitmap), BitmapID: " + bitmapId;
 			case 0x41:
