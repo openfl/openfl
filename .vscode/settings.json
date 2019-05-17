@@ -17,10 +17,10 @@
     "editor.insertSpaces": false,
     "editor.trimAutoWhitespace": true,
     "files.trimTrailingWhitespace": true,
-    "haxe.displayConfigurations": [
+    "haxe.configurations": [
         [ "scripts/completion.hxml" ],
         [ "-main", "TestMain", "-cp", "src", "-cp", "test/haxelib/unit/src", "-lib", "munit", "-D", "openfl-unit-testing" ]
     ],
-    "haxe.enableMethodsView": true,
+    "haxe.enableServerView": true,
     "lime.projectFile": "test/haxelib/functional/project.xml"
 }
