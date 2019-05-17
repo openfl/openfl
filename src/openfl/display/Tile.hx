@@ -539,8 +539,7 @@ class Tile
 
 	@:noCompletion private function get_height():Float
 	{
-		// TODO how does pooling work with flash target?
-		var result:Rectangle = #if flash new Rectangle() #else Rectangle.__pool.get() #end;
+		var result:Rectangle = #if flash __tempRectangle #else Rectangle.__pool.get() #end;
 
 		__findTileRect(result);
 
@@ -552,8 +551,7 @@ class Tile
 
 	@:noCompletion private function set_height(value:Float):Float
 	{
-		// TODO how does pooling work with flash target?
-		var result:Rectangle = #if flash new Rectangle() #else Rectangle.__pool.get() #end;
+		var result:Rectangle = #if flash __tempRectangle #else Rectangle.__pool.get() #end;
 
 		__findTileRect(result);
 	
