@@ -58,6 +58,15 @@ class Tile
 	@SuppressWarnings("checkstyle:Dynamic") public var data:Dynamic;
 
 	/**
+		Indicates the height of the tile, in pixels. The height is
+		calculated based on the bounds of the tile after local transformations.
+		When you set the `height` property, the `scaleY` property
+		is adjusted accordingly.
+		If a tile has a height of zero, no change is applied
+	**/
+	public var height(get, set):Float;
+
+	/**
 		The ID of the tile to draw from the Tileset
 	**/
 	public var id(get, set):Int;
@@ -144,6 +153,15 @@ class Tile
 		Whether or not the tile object is visible.
 	**/
 	public var visible(get, set):Bool;
+
+	/**
+		Indicates the width of the tile, in pixels. The width is
+		calculated based on the bounds of the tile after local transformations.
+		When you set the `width` property, the `scaleX` property
+		is adjusted accordingly.
+		If a tile has a width of zero, no change is applied
+	**/
+	public var width(get, set):Float;
 
 	/**
 		Indicates the _x_ coordinate of the Tile instance relative
@@ -297,7 +315,7 @@ class Tile
 		result.x = 0;
 		result.y = 0;
 
-		// Copied from DisplayObject
+		// Copied from DisplayObject. Create the translation matrix.
 		var matrix = #if flash __tempMatrix #else Matrix.__pool.get() #end;
 		matrix.copyFrom(__getWorldTransform());
 
@@ -315,6 +333,17 @@ class Tile
 			#end
 		}
 
+		__getBounds(result,matrix);
+
+		#if !flash
+		Matrix.__pool.release(matrix);
+		#end
+
+		return result;
+	}
+
+	@:noCompletion private function __getBounds(result:Rectangle, matrix:Matrix):Void
+	{
 		#if flash
 		function __transform(rect:Rectangle, m:Matrix):Void
 		{
@@ -352,10 +381,8 @@ class Tile
 		__transform(result, matrix);
 		#else
 		result.__transform(result, matrix);
-		Matrix.__pool.release(matrix);
 		#end
 
-		return result;
 	}
 
 	/**
@@ -480,6 +507,50 @@ class Tile
 			__setRenderDirty();
 		}
 
+		return value;
+	}
+
+	@:noCompletion private function get_height():Float
+	{
+		// TODO use rectangle pooling
+
+		var result:Rectangle;
+
+		if (tileset == null)
+		{
+			var parentTileset = parent.__findTileset();
+			if (parentTileset == null) return 0;
+			result = parentTileset.getRect(id);
+			if (result == null) return 0;
+		}
+		else
+		{
+			result = tileset.getRect(id);
+		}
+		
+		__getBounds(result,matrix);
+		return result.height;
+	}
+
+	@:noCompletion private function set_height(value:Float):Float
+	{
+		// TODO use rectangle pooling
+
+		var result:Rectangle;
+
+		if (tileset == null)
+		{
+			var parentTileset = parent.__findTileset();
+			if (parentTileset == null) return value;
+			result = parentTileset.getRect(id);
+			if (result == null) return value;
+		}
+		else
+		{
+			result = tileset.getRect(id);
+		}
+		
+		scaleY = value / result.height;
 		return value;
 	}
 
@@ -745,6 +816,50 @@ class Tile
 			__setRenderDirty();
 		}
 
+		return value;
+	}
+
+	@:noCompletion private function get_width():Float
+	{
+		// TODO use rectangle pooling
+
+		var result:Rectangle;
+
+		if (tileset == null)
+		{
+			var parentTileset = parent.__findTileset();
+			if (parentTileset == null) return 0;
+			result = parentTileset.getRect(id);
+			if (result == null) return 0;
+		}
+		else
+		{
+			result = tileset.getRect(id);
+		}
+		
+		__getBounds(result,matrix);
+		return result.width;
+	}
+
+	@:noCompletion private function set_width(value:Float):Float
+	{
+		// TODO use rectangle pooling
+
+		var result:Rectangle;
+
+		if (tileset == null)
+		{
+			var parentTileset = parent.__findTileset();
+			if (parentTileset == null) return value;
+			result = parentTileset.getRect(id);
+			if (result == null) return value;
+		}
+		else
+		{
+			result = tileset.getRect(id);
+		}
+		
+		scaleX = value / result.width;
 		return value;
 	}
 
