@@ -12,6 +12,7 @@ import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFieldType;
 import openfl.text.TextFormat;
+import openfl.text.TextFormatAlign;
 #if lime
 import lime.graphics.cairo.CairoFontFace;
 import lime.system.System;
@@ -742,9 +743,19 @@ class TextEngine
 
 		var currentFormat = TextField.__defaultTextFormat.clone();
 
+		// line metrics
 		var leading = 0;
 		var ascent = 0.0, maxAscent = 0.0;
 		var descent = 0.0;
+
+		// paragraph metrics
+		var align:TextFormatAlign = LEFT;
+		var blockIndent = 0;
+		var bullet = false;
+		var indent = 0;
+		var leftMargin = 0;
+		var rightMargin = 0;
+		var tabStops = null; // TODO: maybe there's a better init value (not sure what this actually is)
 
 		var layoutGroup:TextLayoutGroup = null, positions = null;
 		var widthValue = 0.0, heightValue = 0, maxHeightValue = 0;
@@ -757,7 +768,6 @@ class TextEngine
 		var offsetY = 2.0;
 		var textIndex = 0;
 		var lineIndex = 0;
-		var lineFormat = null;
 
 		#if !js
 		inline
@@ -950,6 +960,45 @@ class TextEngine
 			if (ascent > maxAscent)
 			{
 				maxAscent = ascent;
+			}
+		}
+
+		#if !js inline #end function setParagraphMetrics():Void
+
+		{
+			if (currentFormat.align != null)
+			{
+				align = currentFormat.align;
+			}
+
+			if (currentFormat.blockIndent != null)
+			{
+				// TODO
+			}
+
+			if (currentFormat.bullet != null)
+			{
+				// TODO
+			}
+
+			if (currentFormat.indent != null)
+			{
+				// TODO
+			}
+
+			if (currentFormat.leftMargin != null)
+			{
+				leftMargin = currentFormat.leftMargin;
+			}
+
+			if (currentFormat.rightMargin != null)
+			{
+				rightMargin = currentFormat.rightMargin;
+			}
+
+			if (currentFormat.tabStops != null)
+			{
+				// TODO
 			}
 		}
 
@@ -1234,19 +1283,20 @@ class TextEngine
 		}
 
 		nextFormatRange();
+		setParagraphMetrics();
 		setLineMetrics();
 
-		lineFormat = formatRange.format;
 		var wrap;
 		var maxLoops = text.length +
 			1; // Do an extra iteration to ensure a LayoutGroup is created in case the last line is empty (multiline or trailing line break).
+		// TODO: check if the +1 is still needed, since the extra layout group is handled separately
 
 		while (textIndex < maxLoops)
 		{
 			if ((breakIndex > -1) && (spaceIndex == -1 || breakIndex < spaceIndex))
 			{
 				// if a line break is the next thing that needs to be dealt with
-
+				// TODO: when is this condition ever false?
 				if (textIndex <= breakIndex)
 				{
 					setFormattedPositions(textIndex, breakIndex);
@@ -1265,11 +1315,11 @@ class TextEngine
 					layoutGroup = null;
 				}
 
+				// TODO: is this necessary or already handled by placeText above?
 				if (formatRange.end == breakIndex)
 				{
 					nextFormatRange();
 					setLineMetrics();
-					lineFormat = formatRange.format;
 				}
 
 				alignBaseline();
@@ -1277,6 +1327,8 @@ class TextEngine
 				textIndex = breakIndex + 1;
 				previousBreakIndex = breakIndex;
 				breakIndex = getLineBreakIndex(textIndex);
+
+				setParagraphMetrics();
 			}
 			else if (spaceIndex > -1)
 			{
@@ -1316,7 +1368,7 @@ class TextEngine
 
 					setFormattedPositions(textIndex, endIndex);
 
-					if (lineFormat.align == JUSTIFY)
+					if (align == JUSTIFY)
 					{
 						if (positions.length > 0 && textIndex == previousSpaceIndex)
 						{
@@ -1362,7 +1414,7 @@ class TextEngine
 
 					if (wrap)
 					{
-						if (lineFormat.align != JUSTIFY && (layoutGroup != null || layoutGroups.length > 0))
+						if (align != JUSTIFY && (layoutGroup != null || layoutGroups.length > 0))
 						{
 							var previous = layoutGroup;
 							if (previous == null)
@@ -1424,7 +1476,7 @@ class TextEngine
 						if (layoutGroup != null && textIndex == spaceIndex)
 						{
 							// TODO: does this case ever happen?
-							if (lineFormat.align != JUSTIFY)
+							if (align != JUSTIFY)
 							{
 								layoutGroup.endIndex = spaceIndex;
 								layoutGroup.positions = layoutGroup.positions.concat(positions);
@@ -1435,7 +1487,7 @@ class TextEngine
 
 							textIndex = endIndex;
 						}
-						else if (layoutGroup == null || lineFormat.align == JUSTIFY)
+						else if (layoutGroup == null || align == JUSTIFY)
 						{
 							placeText(endIndex);
 						}
