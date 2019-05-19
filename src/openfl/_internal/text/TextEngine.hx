@@ -720,6 +720,7 @@ class TextEngine
 			}
 		}
 
+		// TODO: see if margins and stuff affect this
 		if (textWidth > width - GUTTER * 2)
 		{
 			maxScrollH = Std.int(textWidth - width + GUTTER * 2);
@@ -745,7 +746,7 @@ class TextEngine
 		var currentFormat = TextField.__defaultTextFormat.clone();
 
 		// line metrics
-		var leading = 0;
+		var leading = 0; // TODO: is maxLeading needed, just like with ascent? In case multiple formats in the same line have different leading values
 		var ascent = 0.0, maxAscent = 0.0;
 		var descent = 0.0;
 
@@ -756,6 +757,8 @@ class TextEngine
 		var indent = 0;
 		var leftMargin = 0;
 		var rightMargin = 0;
+		var firstLineOfParagraph = true;
+		
 		var tabStops = null; // TODO: maybe there's a better init value (not sure what this actually is)
 
 		var layoutGroup:TextLayoutGroup = null, positions = null;
@@ -765,8 +768,8 @@ class TextEngine
 		var spaceIndex = text.indexOf(" ");
 		var breakIndex = getLineBreakIndex();
 
-		var offsetX:Float = GUTTER;
-		var offsetY:Float = GUTTER;
+		var offsetX = 0.0;
+		var offsetY = 0.0;
 		var textIndex = 0;
 		var lineIndex = 0;
 
@@ -912,6 +915,23 @@ class TextEngine
 			#end
 		}
 
+		#if !js inline #end function getBaseX():Float
+
+		{
+			// TODO: double check overlapping margins doesn't affect this
+			// TODO: double check that too-large indents are basically the same as too-narrow widths
+			// TODO: swap margins in RTL
+			return GUTTER + leftMargin + blockIndent + (firstLineOfParagraph ? indent : 0);
+		}
+
+		#if !js inline #end function getWrapWidth():Float
+
+		{
+			// TODO: handle when margins overlap
+			// TODO: swap margins in RTL
+			return width - GUTTER - rightMargin - getBaseX();
+		}
+
 		#if !js inline #end function nextLayoutGroup(startIndex, endIndex):Void
 
 		{
@@ -967,6 +987,8 @@ class TextEngine
 		#if !js inline #end function setParagraphMetrics():Void
 
 		{
+			firstLineOfParagraph = true;
+			
 			if (currentFormat.align != null)
 			{
 				align = currentFormat.align;
@@ -974,7 +996,7 @@ class TextEngine
 
 			if (currentFormat.blockIndent != null)
 			{
-				// TODO
+				blockIndent = currentFormat.blockIndent;
 			}
 
 			if (currentFormat.bullet != null)
@@ -984,7 +1006,7 @@ class TextEngine
 
 			if (currentFormat.indent != null)
 			{
-				// TODO
+				indent = currentFormat.indent;
 			}
 
 			if (currentFormat.leftMargin != null)
@@ -1089,12 +1111,12 @@ class TextEngine
 				nextLayoutGroup(textIndex, endIndex);
 
 				layoutGroup.positions = positions;
-				layoutGroup.offsetX = offsetX;
+				layoutGroup.offsetX = offsetX + getBaseX();
 				layoutGroup.ascent = ascent;
 				layoutGroup.descent = descent;
 				layoutGroup.leading = leading;
 				layoutGroup.lineIndex = lineIndex;
-				layoutGroup.offsetY = offsetY;
+				layoutGroup.offsetY = offsetY + GUTTER;
 				layoutGroup.width = widthValue;
 				layoutGroup.height = heightValue;
 
@@ -1123,12 +1145,12 @@ class TextEngine
 						nextLayoutGroup(textIndex, tempRangeEnd);
 
 						layoutGroup.positions = positions;
-						layoutGroup.offsetX = offsetX;
+						layoutGroup.offsetX = offsetX + getBaseX();
 						layoutGroup.ascent = ascent;
 						layoutGroup.descent = descent;
 						layoutGroup.leading = leading;
 						layoutGroup.lineIndex = lineIndex;
-						layoutGroup.offsetY = offsetY;
+						layoutGroup.offsetY = offsetY + GUTTER;
 						layoutGroup.width = widthValue;
 						layoutGroup.height = heightValue;
 
@@ -1180,7 +1202,9 @@ class TextEngine
 			maxHeightValue = 0;
 
 			++lineIndex;
-			offsetX = GUTTER;
+			offsetX = 0;
+			
+			firstLineOfParagraph = false; // TODO: need to thoroughly test this
 		}
 
 		#if !js inline #end function breakLongWords(endIndex:Int):Void
@@ -1194,12 +1218,12 @@ class TextEngine
 
 			var tempWidth = getPositionsWidth(remainingPositions);
 
-			while (offsetX + tempWidth > width - GUTTER)
+			while (offsetX + tempWidth > getWrapWidth())
 			{
 				i = bufferCount = 0;
 				positionWidth = 0.0;
 
-				while (offsetX + positionWidth < width - GUTTER)
+				while (offsetX + positionWidth < getWrapWidth())
 				{
 					currentPosition = remainingPositions[i];
 
@@ -1221,7 +1245,7 @@ class TextEngine
 					// if there's so much offsetX that text can't even be displayed to begin with, don't worry about wrapping
 					break;
 				}
-				else if (i < 2 && positionWidth + offsetX > width - GUTTER)
+				else if (i < 2 && positionWidth + offsetX > getWrapWidth())
 				{
 					// if there's no room to put even a single character, automatically wrap the next character
 
@@ -1237,7 +1261,7 @@ class TextEngine
 					// because of combining letters potentially being broken up now, we have to redo the formatted positions each time
 					// TODO: this may not work exactly with Unicode buffer characters...
 					// TODO: maybe assume no combining letters, then compare result to i+1 and i-1 results?
-					while (offsetX + positionWidth > width - GUTTER)
+					while (offsetX + positionWidth > getWrapWidth())
 					{
 						i--;
 
@@ -1393,7 +1417,7 @@ class TextEngine
 
 					if (wordWrap)
 					{
-						if (offsetX + widthValue > width - GUTTER)
+						if (offsetX + widthValue > getWrapWidth())
 						{
 							wrap = true;
 
@@ -1405,7 +1429,7 @@ class TextEngine
 								var lastPosition = positions[positions.length - 1];
 								var spaceWidth = #if (js && html5) lastPosition #else lastPosition.advance.x #end;
 
-								if (offsetX + widthValue - spaceWidth <= width - GUTTER)
+								if (offsetX + widthValue - spaceWidth <= getWrapWidth())
 								{
 									wrap = false;
 								}
@@ -1452,7 +1476,7 @@ class TextEngine
 							alignBaseline();
 						}
 
-						offsetX = GUTTER;
+						offsetX = 0;
 
 						if (offsetCount > 0)
 						{
@@ -1462,7 +1486,7 @@ class TextEngine
 							{
 								layoutGroup = layoutGroups[i];
 								layoutGroup.offsetX -= bumpX;
-								layoutGroup.offsetY = offsetY;
+								layoutGroup.offsetY = offsetY + GUTTER;
 								layoutGroup.lineIndex = lineIndex;
 								offsetX += layoutGroup.width;
 							}
@@ -1584,8 +1608,8 @@ class TextEngine
 			layoutGroup.descent = descent;
 			layoutGroup.leading = leading;
 			layoutGroup.lineIndex = lineIndex;
-			layoutGroup.offsetX = GUTTER;
-			layoutGroup.offsetY = offsetY;
+			layoutGroup.offsetX = getBaseX(); // TODO: double check it doesn't default to GUTTER or something
+			layoutGroup.offsetY = offsetY + GUTTER;
 			layoutGroup.width = 0;
 			layoutGroup.height = heightValue;
 		}
@@ -1624,7 +1648,7 @@ class TextEngine
 	{
 		var lineIndex = -1;
 		var offsetX = 0.0;
-		var totalWidth = this.width - GUTTER * 2;
+		var totalWidth = this.width - GUTTER * 2; // TODO: do margins and stuff affect this at all?
 		var group, lineLength;
 		var lineMeasurementsDirty = false;
 
