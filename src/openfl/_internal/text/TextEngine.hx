@@ -37,6 +37,7 @@ class TextEngine
 	private static inline var UTF8_ENDLINE:Int = 10;
 	private static inline var UTF8_SPACE:Int = 32;
 	private static inline var UTF8_HYPHEN:Int = 0x2D;
+	private static inline var GUTTER:Int = 2;
 	private static var __defaultFonts:Map<String, Font> = new Map();
 	#if (js && html5)
 	private static var __canvas:CanvasElement;
@@ -246,14 +247,14 @@ class TextEngine
 			if (group.offsetY < y) y = group.offsetY;
 		}
 
-		if (x >= width) x = 2;
-		if (y >= height) y = 2;
+		if (x >= width) x = GUTTER;
+		if (y >= height) y = GUTTER;
 
 		#if (js && html5)
 		var textHeight = textHeight * 1.185; // measurement isn't always accurate, add padding
 		#end
 
-		textBounds.setTo(Math.max(x - 2, 0), Math.max(y - 2, 0), Math.min(textWidth + 4, bounds.width + 4), Math.min(textHeight + 4, bounds.height + 4));
+		textBounds.setTo(Math.max(x - GUTTER, 0), Math.max(y - GUTTER, 0), Math.min(textWidth + GUTTER * 2, bounds.width + GUTTER * 2), Math.min(textHeight + GUTTER * 2, bounds.height + GUTTER * 2));
 	}
 
 	public static function getFormatHeight(format:TextFormat):Float
@@ -623,14 +624,14 @@ class TextEngine
 			}
 
 			currentLineHeight = Math.max(currentLineHeight, group.height);
-			currentLineWidth = group.offsetX - 2 + group.width;
+			currentLineWidth = group.offsetX - GUTTER + group.width;
 
 			if (currentLineWidth > textWidth)
 			{
 				textWidth = currentLineWidth;
 			}
 
-			currentTextHeight = group.offsetY - 2 + group.ascent + group.descent;
+			currentTextHeight = group.offsetY - GUTTER + group.ascent + group.descent;
 
 			if (currentTextHeight > textHeight)
 			{
@@ -707,21 +708,21 @@ class TextEngine
 			switch (autoSize)
 			{
 				case LEFT, RIGHT, CENTER:
-					if (!wordWrap /*&& (width < textWidth + 4)*/)
+					if (!wordWrap /*&& (width < textWidth + GUTTER * 2)*/)
 					{
-						width = textWidth + 4;
+						width = textWidth + GUTTER * 2;
 					}
 
-					height = textHeight + 4;
+					height = textHeight + GUTTER * 2;
 					bottomScrollV = numLines;
 
 				default:
 			}
 		}
 
-		if (textWidth > width - 4)
+		if (textWidth > width - GUTTER * 2)
 		{
-			maxScrollH = Std.int(textWidth - width + 4);
+			maxScrollH = Std.int(textWidth - width + GUTTER * 2);
 		}
 		else
 		{
@@ -764,8 +765,8 @@ class TextEngine
 		var spaceIndex = text.indexOf(" ");
 		var breakIndex = getLineBreakIndex();
 
-		var offsetX = 2.0;
-		var offsetY = 2.0;
+		var offsetX:Float = GUTTER;
+		var offsetY:Float = GUTTER;
 		var textIndex = 0;
 		var lineIndex = 0;
 
@@ -1179,7 +1180,7 @@ class TextEngine
 			maxHeightValue = 0;
 
 			++lineIndex;
-			offsetX = 2;
+			offsetX = GUTTER;
 		}
 
 		#if !js inline #end function breakLongWords(endIndex:Int):Void
@@ -1193,12 +1194,12 @@ class TextEngine
 
 			var tempWidth = getPositionsWidth(remainingPositions);
 
-			while (offsetX + tempWidth > width - 2)
+			while (offsetX + tempWidth > width - GUTTER)
 			{
 				i = bufferCount = 0;
 				positionWidth = 0.0;
 
-				while (offsetX + positionWidth < width - 2)
+				while (offsetX + positionWidth < width - GUTTER)
 				{
 					currentPosition = remainingPositions[i];
 
@@ -1220,7 +1221,7 @@ class TextEngine
 					// if there's so much offsetX that text can't even be displayed to begin with, don't worry about wrapping
 					break;
 				}
-				else if (i < 2 && positionWidth + offsetX > width - 2)
+				else if (i < 2 && positionWidth + offsetX > width - GUTTER)
 				{
 					// if there's no room to put even a single character, automatically wrap the next character
 
@@ -1236,7 +1237,7 @@ class TextEngine
 					// because of combining letters potentially being broken up now, we have to redo the formatted positions each time
 					// TODO: this may not work exactly with Unicode buffer characters...
 					// TODO: maybe assume no combining letters, then compare result to i+1 and i-1 results?
-					while (offsetX + positionWidth > width - 2)
+					while (offsetX + positionWidth > width - GUTTER)
 					{
 						i--;
 
@@ -1274,7 +1275,7 @@ class TextEngine
 		#if !js inline #end function placeText(endIndex:Int):Void
 
 		{
-			if (width >= 4 && wordWrap)
+			if (width >= GUTTER * 2 && wordWrap)
 			{
 				breakLongWords(endIndex);
 			}
@@ -1392,7 +1393,7 @@ class TextEngine
 
 					if (wordWrap)
 					{
-						if (offsetX + widthValue > width - 2)
+						if (offsetX + widthValue > width - GUTTER)
 						{
 							wrap = true;
 
@@ -1404,7 +1405,7 @@ class TextEngine
 								var lastPosition = positions[positions.length - 1];
 								var spaceWidth = #if (js && html5) lastPosition #else lastPosition.advance.x #end;
 
-								if (offsetX + widthValue - spaceWidth <= width - 2)
+								if (offsetX + widthValue - spaceWidth <= width - GUTTER)
 								{
 									wrap = false;
 								}
@@ -1451,7 +1452,7 @@ class TextEngine
 							alignBaseline();
 						}
 
-						offsetX = 2;
+						offsetX = GUTTER;
 
 						if (offsetCount > 0)
 						{
@@ -1583,7 +1584,7 @@ class TextEngine
 			layoutGroup.descent = descent;
 			layoutGroup.leading = leading;
 			layoutGroup.lineIndex = lineIndex;
-			layoutGroup.offsetX = 2;
+			layoutGroup.offsetX = GUTTER;
 			layoutGroup.offsetY = offsetY;
 			layoutGroup.width = 0;
 			layoutGroup.height = heightValue;
@@ -1623,7 +1624,7 @@ class TextEngine
 	{
 		var lineIndex = -1;
 		var offsetX = 0.0;
-		var totalWidth = this.width - 4;
+		var totalWidth = this.width - GUTTER * 2;
 		var group, lineLength;
 		var lineMeasurementsDirty = false;
 
@@ -1784,7 +1785,7 @@ class TextEngine
 
 			for (i in ret - 1...lineHeights.length)
 			{
-				if (tempHeight + lineHeights[i] <= height - 4)
+				if (tempHeight + lineHeights[i] <= height - GUTTER * 2)
 				{
 					tempHeight += lineHeights[i];
 				}
@@ -1816,7 +1817,7 @@ class TextEngine
 
 			while (i >= 0)
 			{
-				if (tempHeight + lineHeights[i] <= height - 4)
+				if (tempHeight + lineHeights[i] <= height - GUTTER * 2)
 				{
 					tempHeight += lineHeights[i];
 					i--;
