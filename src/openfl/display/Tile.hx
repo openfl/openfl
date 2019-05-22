@@ -420,21 +420,28 @@ class Tile
 	{
 		if (tileset == null)
 		{
-			var parentTileset:Tileset = parent.__findTileset();
-			if (parentTileset == null)
+			if (parent != null)
+			{
+				var parentTileset:Tileset = parent.__findTileset();
+				if (parentTileset == null)
+				{
+					result.setTo(0,0,0,0);
+				}
+				else
+				{
+					// ? Is this a way to call getRect once without making extra vars? I don't fully grasp haxe pattern matching. Could be done with an if?
+					switch parentTileset.getRect(id)
+					{
+						case null:
+							result.setTo(0,0,0,0);
+						case not_null:
+							result.copyFrom(not_null);
+					}
+				}
+			}
+			else 
 			{
 				result.setTo(0,0,0,0);
-			}
-			else
-			{
-				// ? Is this a way to call getRect once without making extra vars? I don't fully grasp haxe pattern matching. Could be done with an if?
-				switch parentTileset.getRect(id)
-				{
-					case null:
-						result.setTo(0,0,0,0);
-					case not_null:
-						result.copyFrom(not_null);
-				}
 			}
 		}
 		else
@@ -554,8 +561,9 @@ class Tile
 		var result:Rectangle = #if flash __tempRectangle #else Rectangle.__pool.get() #end;
 
 		__findTileRect(result);
-	
-		scaleY = value / result.height;
+		if (result.height != 0) {
+			scaleY = value / result.height;
+		}
 		#if !flash Rectangle.__pool.release(result); #end
 		return value;
 	}
@@ -840,12 +848,12 @@ class Tile
 
 	@:noCompletion private function set_width(value:Float):Float
 	{
-		// TODO how does pooling work with flash target?
-		var result:Rectangle = #if flash new Rectangle() #else Rectangle.__pool.get() #end;
+		var result:Rectangle = #if flash __tempRectangle #else Rectangle.__pool.get() #end;
 
 		__findTileRect(result);
-
-		scaleX = value / result.width;
+		if (result.width != 0) {
+			scaleX = value / result.width;
+		}
 		#if !flash Rectangle.__pool.release(result); #end
 		return value;
 	}
