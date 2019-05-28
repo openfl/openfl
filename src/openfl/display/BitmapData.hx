@@ -10,7 +10,6 @@ import openfl._internal.utils.PerlinNoise;
 import openfl._internal.utils.UInt16Array;
 import openfl._internal.utils.UInt8Array;
 import openfl.display3D.textures.TextureBase;
-import openfl.display3D.textures.RectangleTexture;
 import openfl.display3D.Context3DClearMask;
 import openfl.display3D.Context3D;
 import openfl.display3D.IndexBuffer3D;
@@ -147,7 +146,6 @@ class BitmapData implements IBitmapDrawable
 	**/
 	@SuppressWarnings("checkstyle:Dynamic")
 	public var image(default, null):#if lime Image #else Dynamic #end;
-
 	// #if !flash_doc_gen
 
 	/**
@@ -163,7 +161,6 @@ class BitmapData implements IBitmapDrawable
 		will need to be recreated if the current hardware rendering context is lost.
 	**/
 	@:beta public var readable(default, null):Bool;
-
 	// #end
 
 	/**
@@ -206,7 +203,7 @@ class BitmapData implements IBitmapDrawable
 	@:noCompletion private var __stencilBuffer:GLRenderbuffer;
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __surface:#if lime CairoSurface #else Dynamic #end;
 	@:noCompletion private var __symbol:BitmapSymbol;
-	@:noCompletion private var __texture:RectangleTexture;
+	@:noCompletion private var __texture:TextureBase;
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __textureContext:#if lime RenderContext #else Dynamic #end;
 	@:noCompletion private var __textureHeight:Int;
 	@:noCompletion private var __textureVersion:Int;
@@ -508,14 +505,7 @@ class BitmapData implements IBitmapDrawable
 		}
 
 		var bitmapData = null;
-		var foundDifference,
-			pixel:ARGB,
-			otherPixel:ARGB,
-			comparePixel:ARGB,
-			r,
-			g,
-			b,
-			a;
+		var foundDifference, pixel:ARGB, otherPixel:ARGB, comparePixel:ARGB, r, g, b, a;
 
 		for (y in 0...height)
 		{
@@ -1316,10 +1306,10 @@ class BitmapData implements IBitmapDrawable
 
 		This method is not supported by the Flash target.
 
-		@param	texture	A RectangleTexture instance
+		@param	texture	A TextureBase instance
 		@returns	A new BitmapData if successful, or `null` if unsuccessful
 	**/
-	public static function fromTexture(texture:RectangleTexture):BitmapData
+	public static function fromTexture(texture:TextureBase):BitmapData
 	{
 		if (texture == null) return null;
 
@@ -2166,9 +2156,9 @@ class BitmapData implements IBitmapDrawable
 		Get a hardware texture representing this BitmapData instance
 
 		@param	context	A Context3D instance
-		@returns	A RectangleTexture
+		@returns	A TextureBase instance
 	**/
-	@:dox(hide) public function getTexture(context:Context3D):RectangleTexture
+	@:dox(hide) public function getTexture(context:Context3D):TextureBase
 	{
 		if (!__isValid) return null;
 
@@ -2314,8 +2304,7 @@ class BitmapData implements IBitmapDrawable
 		Bitmap, or BitmapData object.
 		@throws	TypeError	The `firstPoint` is `null`.
 	**/
-	public function hitTest(firstPoint:Point, firstAlphaThreshold:Int, secondObject:Object, secondBitmapDataPoint:Point = null,
-			secondAlphaThreshold:Int = 1):Bool
+	public function hitTest(firstPoint:Point, firstAlphaThreshold:Int, secondObject:Object, secondBitmapDataPoint:Point = null, secondAlphaThreshold:Int = 1):Bool
 	{
 		if (!readable) return false;
 

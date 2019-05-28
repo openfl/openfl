@@ -368,6 +368,56 @@ class TextureBase extends EventDispatcher
 
 		return false;
 	}
+
+	#if lime
+	@:noCompletion private function __uploadFromImage(image:Image):Void
+	{
+		var gl = __context.gl;
+		var internalFormat, format;
+
+		if (__textureTarget != gl.TEXTURE_2D) return;
+
+		if (image.buffer.bitsPerPixel == 1)
+		{
+			internalFormat = gl.ALPHA;
+			format = gl.ALPHA;
+		}
+		else
+		{
+			internalFormat = TextureBase.__textureInternalFormat;
+			format = TextureBase.__textureFormat;
+		}
+
+		__context.__bindGLTexture2D(__textureID);
+
+		#if (js && html5)
+		if (image.type != DATA && !image.premultiplied)
+		{
+			gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
+		}
+		else if (!image.premultiplied && image.transparent)
+		{
+			gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
+			// gl.pixelStorei (gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 0);
+			// textureImage = textureImage.clone ();
+			// textureImage.premultiplied = true;
+		}
+
+		if (image.type == DATA)
+		{
+			gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, image.buffer.width, image.buffer.height, 0, format, gl.UNSIGNED_BYTE, image.data);
+		}
+		else
+		{
+			gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, image.src);
+		}
+		#else
+		gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, image.buffer.width, image.buffer.height, 0, format, gl.UNSIGNED_BYTE, image.data);
+		#end
+
+		__context.__bindGLTexture2D(null);
+	}
+	#end
 }
 #else
 typedef TextureBase = flash.display3D.textures.TextureBase;
