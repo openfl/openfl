@@ -1306,7 +1306,7 @@ class BitmapData implements IBitmapDrawable
 
 		This method is not supported by the Flash target.
 
-		@param	texture	A TextureBase instance
+		@param	texture	A Texture or RectangleTexture instance
 		@returns	A new BitmapData if successful, or `null` if unsuccessful
 	**/
 	public static function fromTexture(texture:TextureBase):BitmapData
@@ -2156,7 +2156,7 @@ class BitmapData implements IBitmapDrawable
 		Get a hardware texture representing this BitmapData instance
 
 		@param	context	A Context3D instance
-		@returns	A TextureBase instance
+		@returns	A Texture or RectangleTexture instance
 	**/
 	@:dox(hide) public function getTexture(context:Context3D):TextureBase
 	{
