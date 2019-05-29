@@ -90,13 +90,11 @@ import openfl.net.NetStream;
 	public function attachNetStream(netStream:NetStream):Void
 	{
 		#if (js && html5)
-
-        if(__netStream != null)
-        {
-            __netStream.__video.removeEventListener("canplay", onCanPlay, false);
-        }
-
-        #end
+		if (__netStream != null)
+		{
+			__netStream.__video.removeEventListener("canplay", onCanPlay, false);
+		}
+		#end
 
 		__netStream = netStream;
 
@@ -115,13 +113,12 @@ import openfl.net.NetStream;
 		#end
 	}
 
-    
-    #if (js && html5)
-    function onCanPlay(_):Void
-    {
-        __textureReady();
-    }
-    #end
+	#if (js && html5)
+	function onCanPlay(_):Void
+	{
+		__textureReady();
+	}
+	#end
 
 	@:noCompletion private override function __getTexture():GLTexture
 	{
