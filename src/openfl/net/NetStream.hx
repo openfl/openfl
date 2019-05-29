@@ -1084,6 +1084,7 @@ class NetStream extends EventDispatcher
 		SoundTransform class.
 	**/
 	public var soundTransform:SoundTransform;
+
 	@:dox(hide) @:noCompletion @SuppressWarnings("checkstyle:FieldDocComment")
 	public var speed(get, set):Float;
 
@@ -1107,6 +1108,7 @@ class NetStream extends EventDispatcher
 		when `NetStream.close()` is called.
 	**/
 	public var time(default, null):Float;
+
 	// @:noCompletion @:dox(hide) @:require(flash11) public var useHardwareDecoder:Bool;
 	// @:noCompletion @:dox(hide) @:require(flash11_3) public var useJitterBuffer:Bool;
 	public var videoCode(default, null):Int;
@@ -1156,6 +1158,11 @@ class NetStream extends EventDispatcher
 	#end
 
 	#if (js && html5)
+	/**
+	 * paused is the NetStream's `paused state`. 
+	**/
+	var paused:Bool;
+
 	/**
 	 * loading is set to true between the time __video.play() is called until
 	 * the video either fails to load or successfully starts playing
@@ -1447,12 +1454,15 @@ class NetStream extends EventDispatcher
 	public function close():Void
 	{
 		#if (js && html5)
-		if (__video == null) return;
+		if (this.__video == null) return;
 
-		__closed = true;
+		this.__closed = true;
 		pause();
-		__video.src = "";
-		time = 0;
+		if (paused != true)
+		{
+			this.__video.src = "";
+		}
+		this.time = 0;
 		#end
 	}
 
@@ -1537,10 +1547,19 @@ class NetStream extends EventDispatcher
 	public function pause():Void
 	{
 		#if (js && html5)
-		if (__video != null && loading != true)
+		if (this.__video != null)
 		{
-			__video.pause();
-			failedPause = false;
+			if (this.__video.paused == true) return;
+		}
+
+		if (this.__video != null && loading != true)
+		{
+			if (paused != true)
+			{
+				this.__video.pause();
+				paused = true;
+				failedPause = false;
+			}
 		}
 		else
 		{
@@ -1628,14 +1647,15 @@ class NetStream extends EventDispatcher
 	public function play(url:String, p1 = null, p2 = null, p3 = null, p4 = null, p5 = null):Void
 	{
 		#if (js && html5)
-		if (__video == null) return;
+		if (this.__video == null) return;
 
-		__video.src = url;
+		this.__video.src = url;
 		loading = true;
 
-		__video.play().then(function(result)
+		this.__video.play().then(function(result)
 		{
 			loading = false;
+			paused = false;
 			if (failedPause == true)
 			{
 				pause();
@@ -1923,7 +1943,11 @@ class NetStream extends EventDispatcher
 	public function resume():Void
 	{
 		#if (js && html5)
-		if (__video != null) __video.play();
+		if (this.__video != null)
+		{
+			paused = false;
+			this.__video.play();
+		}
 		#end
 	}
 
