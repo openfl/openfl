@@ -92,7 +92,7 @@ import openfl.net.NetStream;
 		#if (js && html5)
 		if (__netStream != null)
 		{
-			__netStream.__video.removeEventListener("canplay", onCanPlay, false);
+			__netStream.__video.removeEventListener("canplay", __onCanPlay, false);
 		}
 		#end
 
@@ -108,13 +108,13 @@ import openfl.net.NetStream;
 		}
 		else
 		{
-			__netStream.__video.addEventListener("canplay", onCanPlay, false);
+			__netStream.__video.addEventListener("canplay", __onCanPlay, false);
 		}
 		#end
 	}
 
 	#if (js && html5)
-	function onCanPlay(_):Void
+	@:noCompletion private function __onCanPlay(_):Void
 	{
 		__textureReady();
 	}
