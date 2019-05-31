@@ -254,7 +254,8 @@ class TextEngine
 		var textHeight = textHeight * 1.185; // measurement isn't always accurate, add padding
 		#end
 
-		textBounds.setTo(Math.max(x - GUTTER, 0), Math.max(y - GUTTER, 0), Math.min(textWidth + GUTTER * 2, bounds.width + GUTTER * 2), Math.min(textHeight + GUTTER * 2, bounds.height + GUTTER * 2));
+		textBounds.setTo(Math.max(x - GUTTER, 0), Math.max(y - GUTTER, 0), Math.min(textWidth + GUTTER * 2, bounds.width + GUTTER * 2),
+			Math.min(textHeight + GUTTER * 2, bounds.height + GUTTER * 2));
 	}
 
 	public static function getFormatHeight(format:TextFormat):Float
@@ -626,6 +627,8 @@ class TextEngine
 			currentLineHeight = Math.max(currentLineHeight, group.height);
 			currentLineWidth = group.offsetX - GUTTER + group.width;
 
+			// TODO: confirm whether textWidth ignores margins, indents, etc or not
+			// currently they are not ignored, and setTextAlignment() happens to work due to this (gut feeling is that it does ignore them)
 			if (currentLineWidth > textWidth)
 			{
 				textWidth = currentLineWidth;
@@ -758,7 +761,7 @@ class TextEngine
 		var leftMargin = 0;
 		var rightMargin = 0;
 		var firstLineOfParagraph = true;
-		
+
 		var tabStops = null; // TODO: maybe there's a better init value (not sure what this actually is)
 
 		var layoutGroup:TextLayoutGroup = null, positions = null;
@@ -918,8 +921,6 @@ class TextEngine
 		#if !js inline #end function getBaseX():Float
 
 		{
-			// TODO: double check overlapping margins doesn't affect this
-			// TODO: double check that too-large indents are basically the same as too-narrow widths
 			// TODO: swap margins in RTL
 			return GUTTER + leftMargin + blockIndent + (firstLineOfParagraph ? indent : 0);
 		}
@@ -927,7 +928,6 @@ class TextEngine
 		#if !js inline #end function getWrapWidth():Float
 
 		{
-			// TODO: handle when margins overlap
 			// TODO: swap margins in RTL
 			return width - GUTTER - rightMargin - getBaseX();
 		}
@@ -988,7 +988,7 @@ class TextEngine
 
 		{
 			firstLineOfParagraph = true;
-			
+
 			if (currentFormat.align != null)
 			{
 				align = currentFormat.align;
@@ -1021,7 +1021,7 @@ class TextEngine
 
 			if (currentFormat.tabStops != null)
 			{
-				// TODO
+				// TODO, may not actually belong in paragraph metrics
 			}
 		}
 
@@ -1050,8 +1050,12 @@ class TextEngine
 
 		{
 			// sets the positions of the text from start to end, including format changes if there are any
-
-			if (endIndex <= formatRange.end)
+			if (startIndex >= endIndex)
+			{
+				positions = [];
+				widthValue = 0;
+			}
+			else if (endIndex <= formatRange.end)
 			{
 				positions = getPositions(text, startIndex, endIndex);
 				widthValue = getPositionsWidth(positions);
@@ -1203,7 +1207,7 @@ class TextEngine
 
 			++lineIndex;
 			offsetX = 0;
-			
+
 			firstLineOfParagraph = false; // TODO: need to thoroughly test this
 		}
 
@@ -1218,7 +1222,7 @@ class TextEngine
 
 			var tempWidth = getPositionsWidth(remainingPositions);
 
-			while (offsetX + tempWidth > getWrapWidth())
+			while (remainingPositions.length > 0 && offsetX + tempWidth > getWrapWidth())
 			{
 				i = bufferCount = 0;
 				positionWidth = 0.0;
@@ -1240,20 +1244,10 @@ class TextEngine
 					}
 				}
 
-				if (positionWidth == 0.0)
+				// if there's no room to put even a single character, automatically wrap the next character
+				if (i == bufferCount)
 				{
-					// if there's so much offsetX that text can't even be displayed to begin with, don't worry about wrapping
-					break;
-				}
-				else if (i < 2 && positionWidth + offsetX > getWrapWidth())
-				{
-					// if there's no room to put even a single character, automatically wrap the next character
-
-					// unless it's the last line of the long word
-					if (textIndex + i - bufferCount == endIndex)
-					{
-						break;
-					}
+					i = bufferCount + 1;
 				}
 				else
 				{
@@ -1261,7 +1255,7 @@ class TextEngine
 					// because of combining letters potentially being broken up now, we have to redo the formatted positions each time
 					// TODO: this may not work exactly with Unicode buffer characters...
 					// TODO: maybe assume no combining letters, then compare result to i+1 and i-1 results?
-					while (offsetX + positionWidth > getWrapWidth())
+					while (i > 1 && offsetX + positionWidth > getWrapWidth())
 					{
 						i--;
 
