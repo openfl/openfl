@@ -155,12 +155,18 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 			"blurY": {get: untyped __js__("function () { return this.get_blurY (); }"), set: untyped __js__("function (v) { return this.set_blurY (v); }")},
 			"color": {get: untyped __js__("function () { return this.get_color (); }"), set: untyped __js__("function (v) { return this.set_color (v); }")},
 			"inner": {get: untyped __js__("function () { return this.get_inner (); }"), set: untyped __js__("function (v) { return this.set_inner (v); }")},
-			"knockout": {get: untyped __js__("function () { return this.get_knockout (); }"),
-				set: untyped __js__("function (v) { return this.set_knockout (v); }")},
-			"quality": {get: untyped __js__("function () { return this.get_quality (); }"),
-				set: untyped __js__("function (v) { return this.set_quality (v); }")},
-			"strength": {get: untyped __js__("function () { return this.get_strength (); }"),
-				set: untyped __js__("function (v) { return this.set_strength (v); }")},
+			"knockout": {
+				get: untyped __js__("function () { return this.get_knockout (); }"),
+				set: untyped __js__("function (v) { return this.set_knockout (v); }")
+			},
+			"quality": {
+				get: untyped __js__("function () { return this.get_quality (); }"),
+				set: untyped __js__("function (v) { return this.set_quality (v); }")
+			},
+			"strength": {
+				get: untyped __js__("function () { return this.get_strength (); }"),
+				set: untyped __js__("function (v) { return this.set_strength (v); }")
+			},
 		});
 	}
 	#end
@@ -259,44 +265,87 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 
 	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int):Shader
 	{
-		var shader:GlowShader = null;
+		#if !macro
 		if (__inner)
 		{
-			shader = __innerGlowShader;
+			var shader = __innerGlowShader;
 			__preserveObject = false;
+
+			if (pass <= __horizontalPasses)
+			{
+				var scale = Math.pow(0.5, pass >> 1);
+				shader.uRadius.value[0] = blurX * scale;
+				shader.uRadius.value[1] = 0;
+			}
+			else
+			{
+				var scale = Math.pow(0.5, (pass - __horizontalPasses) >> 1);
+				shader.uRadius.value[0] = 0;
+				shader.uRadius.value[1] = blurY * scale;
+			}
+
+			shader.uColor.value[0] = ((color >> 16) & 0xFF) / 255;
+			shader.uColor.value[1] = ((color >> 8) & 0xFF) / 255;
+			shader.uColor.value[2] = (color & 0xFF) / 255;
+			shader.uColor.value[3] = alpha * (__strength / __numShaderPasses);
+			// if (__knockout) shader.uColor.value[3] = 0.2;
+
+			return shader;
 		}
 		else if (__knockout)
 		{
-			shader = __knockoutGlowShader;
+			var shader = __knockoutGlowShader;
 			__preserveObject = false;
+
+			if (pass <= __horizontalPasses)
+			{
+				var scale = Math.pow(0.5, pass >> 1);
+				shader.uRadius.value[0] = blurX * scale;
+				shader.uRadius.value[1] = 0;
+			}
+			else
+			{
+				var scale = Math.pow(0.5, (pass - __horizontalPasses) >> 1);
+				shader.uRadius.value[0] = 0;
+				shader.uRadius.value[1] = blurY * scale;
+			}
+
+			shader.uColor.value[0] = ((color >> 16) & 0xFF) / 255;
+			shader.uColor.value[1] = ((color >> 8) & 0xFF) / 255;
+			shader.uColor.value[2] = (color & 0xFF) / 255;
+			shader.uColor.value[3] = alpha * (__strength / __numShaderPasses);
+			// if (__knockout) shader.uColor.value[3] = 0.2;
+
+			return shader;
 		}
 		else
 		{
-			shader = __glowShader;
-		}
+			var shader = __glowShader;
 
-		#if !macro
-		if (pass <= __horizontalPasses)
-		{
-			var scale = Math.pow(0.5, pass >> 1);
-			shader.uRadius.value[0] = blurX * scale;
-			shader.uRadius.value[1] = 0;
-		}
-		else
-		{
-			var scale = Math.pow(0.5, (pass - __horizontalPasses) >> 1);
-			shader.uRadius.value[0] = 0;
-			shader.uRadius.value[1] = blurY * scale;
-		}
+			if (pass <= __horizontalPasses)
+			{
+				var scale = Math.pow(0.5, pass >> 1);
+				shader.uRadius.value[0] = blurX * scale;
+				shader.uRadius.value[1] = 0;
+			}
+			else
+			{
+				var scale = Math.pow(0.5, (pass - __horizontalPasses) >> 1);
+				shader.uRadius.value[0] = 0;
+				shader.uRadius.value[1] = blurY * scale;
+			}
 
-		shader.uColor.value[0] = ((color >> 16) & 0xFF) / 255;
-		shader.uColor.value[1] = ((color >> 8) & 0xFF) / 255;
-		shader.uColor.value[2] = (color & 0xFF) / 255;
-		shader.uColor.value[3] = alpha * (__strength / __numShaderPasses);
-		// if (__knockout) shader.uColor.value[3] = 0.2;
+			shader.uColor.value[0] = ((color >> 16) & 0xFF) / 255;
+			shader.uColor.value[1] = ((color >> 8) & 0xFF) / 255;
+			shader.uColor.value[2] = (color & 0xFF) / 255;
+			shader.uColor.value[3] = alpha * (__strength / __numShaderPasses);
+			// if (__knockout) shader.uColor.value[3] = 0.2;
+
+			return shader;
+		}
+		#else
+		return null;
 		#end
-
-		return shader;
 	}
 
 	// Get & Set Methods
@@ -473,7 +522,7 @@ private class GlowShader extends BitmapFilterShader
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-private class InnerGlowShader extends GlowShader
+private class InnerGlowShader extends BitmapFilterShader
 {
 	@:glFragmentSource("uniform sampler2D openfl_Texture;
 
@@ -499,6 +548,29 @@ private class InnerGlowShader extends GlowShader
 		gl_FragColor = vec4(mix(uColor.rgb, orig_pixel.rgb, a), min(a, orig_pixel.a));
 	}
 	")
+	@:glVertexSource("attribute vec4 openfl_Position;
+		attribute vec2 openfl_TextureCoord;
+
+		uniform mat4 openfl_Matrix;
+		uniform vec2 openfl_TextureSize;
+
+		uniform vec2 uRadius;
+		varying vec2 vBlurCoords[7];
+
+		void main(void) {
+
+			gl_Position = openfl_Matrix * openfl_Position;
+
+			vec2 r = uRadius / openfl_TextureSize;
+			vBlurCoords[0] = openfl_TextureCoord - r * 1.0;
+			vBlurCoords[1] = openfl_TextureCoord - r * 0.75;
+			vBlurCoords[2] = openfl_TextureCoord - r * 0.5;
+			vBlurCoords[3] = openfl_TextureCoord;
+			vBlurCoords[4] = openfl_TextureCoord + r * 0.5;
+			vBlurCoords[5] = openfl_TextureCoord + r * 0.75;
+			vBlurCoords[6] = openfl_TextureCoord + r * 1.0;
+
+		}")
 	public function new()
 	{
 		super();
@@ -514,7 +586,7 @@ private class InnerGlowShader extends GlowShader
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-private class KnockoutGlowShader extends GlowShader
+private class KnockoutGlowShader extends BitmapFilterShader
 {
 	@:glFragmentSource("uniform sampler2D openfl_Texture;
 
@@ -544,6 +616,29 @@ private class KnockoutGlowShader extends GlowShader
 		gl_FragColor = vec4(mix(uColor.rgb, orig_pixel.rgb, a), min(a, orig_pixel.a));
 	}
 	")
+	@:glVertexSource("attribute vec4 openfl_Position;
+		attribute vec2 openfl_TextureCoord;
+
+		uniform mat4 openfl_Matrix;
+		uniform vec2 openfl_TextureSize;
+
+		uniform vec2 uRadius;
+		varying vec2 vBlurCoords[7];
+
+		void main(void) {
+
+			gl_Position = openfl_Matrix * openfl_Position;
+
+			vec2 r = uRadius / openfl_TextureSize;
+			vBlurCoords[0] = openfl_TextureCoord - r * 1.0;
+			vBlurCoords[1] = openfl_TextureCoord - r * 0.75;
+			vBlurCoords[2] = openfl_TextureCoord - r * 0.5;
+			vBlurCoords[3] = openfl_TextureCoord;
+			vBlurCoords[4] = openfl_TextureCoord + r * 0.5;
+			vBlurCoords[5] = openfl_TextureCoord + r * 0.75;
+			vBlurCoords[6] = openfl_TextureCoord + r * 1.0;
+
+		}")
 	public function new()
 	{
 		super();
