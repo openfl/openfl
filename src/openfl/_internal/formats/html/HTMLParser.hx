@@ -229,10 +229,6 @@ class HTMLParser
 							value += sub;
 							noLineBreak = false;
 						}
-						else if (textFormatRanges.length > 0)
-						{
-							textFormatRanges[textFormatRanges.length - 1].end++;
-						}
 					}
 					else
 					{
