@@ -1,7 +1,6 @@
 package openfl._internal.renderer.canvas;
 
 
-import haxe.Utf8;
 import openfl._internal.renderer.dom.DOMTextField;
 import openfl._internal.renderer.RenderSession;
 import openfl._internal.text.TextEngine;
