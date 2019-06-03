@@ -154,7 +154,6 @@ import cpp.vm.Gc;
 	}
 	#end
 
-	#if false
 	/**
 		Makes the specified XML object immediately available for garbage
 		collection. This method will remove parent and child connections
@@ -163,8 +162,7 @@ import cpp.vm.Gc;
 		@param node XML reference that should be made available for garbage
 					collection.
 	**/
-	// @:noCompletion @:dox(hide) @:require(flash10_1) public static function disposeXML (node:openfl.xml.XML):Void;
-	#end
+	@:noCompletion @:dox(hide) public static function disposeXML(node:Dynamic):Void {}
 
 	/**
 		Closes Flash Player.
