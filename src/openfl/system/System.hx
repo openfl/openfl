@@ -68,6 +68,9 @@ import cpp.vm.Gc;
 	}
 	
 	
+	public static inline function disposeXML (node:Dynamic) {}
+	
+	
 	
 	
 	// Getters & Setters

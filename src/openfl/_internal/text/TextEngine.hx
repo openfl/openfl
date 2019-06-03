@@ -2,7 +2,6 @@ package openfl._internal.text;
 
 
 import haxe.Timer;
-import haxe.Utf8;
 import lime.graphics.cairo.CairoFontFace;
 import lime.graphics.opengl.GLTexture;
 import lime.system.System;

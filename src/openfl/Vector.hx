@@ -179,7 +179,7 @@ abstract Vector<T>(AbstractVector<T>) from AbstractVector<T> {
 	}
 	
 	
-	public inline static function convert<T,U> (v:AbstractVector<T>):AbstractVector<U> {
+	public inline static function convert<T,U> (v:Vector<T>):Vector<U> {
 		
 		return cast v;
 		

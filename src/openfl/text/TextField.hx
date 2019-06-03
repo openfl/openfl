@@ -95,6 +95,8 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	public var type (get, set):TextFieldType;
 	public var wordWrap (get, set):Bool;
 	
+	public var alwaysShowSelection:Bool; // not implemented
+	
 	private var __anchor:Float = 0;
 	private var __bounds:Rectangle;
 	private var __caretIndex:Int;
