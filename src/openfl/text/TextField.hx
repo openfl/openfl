@@ -716,58 +716,98 @@ class TextField extends InteractiveObject
 	@:noCompletion private static function __init__()
 	{
 		untyped Object.defineProperties(TextField.prototype, {
-			"antiAliasType": {get: untyped __js__("function () { return this.get_antiAliasType (); }"),
-				set: untyped __js__("function (v) { return this.set_antiAliasType (v); }")},
-			"autoSize": {get: untyped __js__("function () { return this.get_autoSize (); }"),
-				set: untyped __js__("function (v) { return this.set_autoSize (v); }")},
-			"background": {get: untyped __js__("function () { return this.get_background (); }"),
-				set: untyped __js__("function (v) { return this.set_background (v); }")},
-			"backgroundColor": {get: untyped __js__("function () { return this.get_backgroundColor (); }"),
-				set: untyped __js__("function (v) { return this.set_backgroundColor (v); }")},
+			"antiAliasType": {
+				get: untyped __js__("function () { return this.get_antiAliasType (); }"),
+				set: untyped __js__("function (v) { return this.set_antiAliasType (v); }")
+			},
+			"autoSize": {
+				get: untyped __js__("function () { return this.get_autoSize (); }"),
+				set: untyped __js__("function (v) { return this.set_autoSize (v); }")
+			},
+			"background": {
+				get: untyped __js__("function () { return this.get_background (); }"),
+				set: untyped __js__("function (v) { return this.set_background (v); }")
+			},
+			"backgroundColor": {
+				get: untyped __js__("function () { return this.get_backgroundColor (); }"),
+				set: untyped __js__("function (v) { return this.set_backgroundColor (v); }")
+			},
 			"border": {get: untyped __js__("function () { return this.get_border (); }"), set: untyped __js__("function (v) { return this.set_border (v); }")},
-			"borderColor": {get: untyped __js__("function () { return this.get_borderColor (); }"),
-				set: untyped __js__("function (v) { return this.set_borderColor (v); }")},
+			"borderColor": {
+				get: untyped __js__("function () { return this.get_borderColor (); }"),
+				set: untyped __js__("function (v) { return this.set_borderColor (v); }")
+			},
 			"bottomScrollV": {get: untyped __js__("function () { return this.get_bottomScrollV (); }")},
-			"defaultTextFormat": {get: untyped __js__("function () { return this.get_defaultTextFormat (); }"),
-				set: untyped __js__("function (v) { return this.set_defaultTextFormat (v); }")},
-			"displayAsPassword": {get: untyped __js__("function () { return this.get_displayAsPassword (); }"),
-				set: untyped __js__("function (v) { return this.set_displayAsPassword (v); }")},
-			"embedFonts": {get: untyped __js__("function () { return this.get_embedFonts (); }"),
-				set: untyped __js__("function (v) { return this.set_embedFonts (v); }")},
-			"gridFitType": {get: untyped __js__("function () { return this.get_gridFitType (); }"),
-				set: untyped __js__("function (v) { return this.set_gridFitType (v); }")},
-			"htmlText": {get: untyped __js__("function () { return this.get_htmlText (); }"),
-				set: untyped __js__("function (v) { return this.set_htmlText (v); }")},
+			"defaultTextFormat": {
+				get: untyped __js__("function () { return this.get_defaultTextFormat (); }"),
+				set: untyped __js__("function (v) { return this.set_defaultTextFormat (v); }")
+			},
+			"displayAsPassword": {
+				get: untyped __js__("function () { return this.get_displayAsPassword (); }"),
+				set: untyped __js__("function (v) { return this.set_displayAsPassword (v); }")
+			},
+			"embedFonts": {
+				get: untyped __js__("function () { return this.get_embedFonts (); }"),
+				set: untyped __js__("function (v) { return this.set_embedFonts (v); }")
+			},
+			"gridFitType": {
+				get: untyped __js__("function () { return this.get_gridFitType (); }"),
+				set: untyped __js__("function (v) { return this.set_gridFitType (v); }")
+			},
+			"htmlText": {
+				get: untyped __js__("function () { return this.get_htmlText (); }"),
+				set: untyped __js__("function (v) { return this.set_htmlText (v); }")
+			},
 			"length": {get: untyped __js__("function () { return this.get_length (); }")},
-			"maxChars": {get: untyped __js__("function () { return this.get_maxChars (); }"),
-				set: untyped __js__("function (v) { return this.set_maxChars (v); }")},
+			"maxChars": {
+				get: untyped __js__("function () { return this.get_maxChars (); }"),
+				set: untyped __js__("function (v) { return this.set_maxChars (v); }")
+			},
 			"maxScrollH": {get: untyped __js__("function () { return this.get_maxScrollH (); }")},
 			"maxScrollV": {get: untyped __js__("function () { return this.get_maxScrollV (); }")},
-			"mouseWheelEnabled": {get: untyped __js__("function () { return this.get_mouseWheelEnabled (); }"),
-				set: untyped __js__("function (v) { return this.set_mouseWheelEnabled (v); }")},
-			"multiline": {get: untyped __js__("function () { return this.get_multiline (); }"),
-				set: untyped __js__("function (v) { return this.set_multiline (v); }")},
+			"mouseWheelEnabled": {
+				get: untyped __js__("function () { return this.get_mouseWheelEnabled (); }"),
+				set: untyped __js__("function (v) { return this.set_mouseWheelEnabled (v); }")
+			},
+			"multiline": {
+				get: untyped __js__("function () { return this.get_multiline (); }"),
+				set: untyped __js__("function (v) { return this.set_multiline (v); }")
+			},
 			"numLines": {get: untyped __js__("function () { return this.get_numLines (); }")},
-			"restrict": {get: untyped __js__("function () { return this.get_restrict (); }"),
-				set: untyped __js__("function (v) { return this.set_restrict (v); }")},
-			"scrollH": {get: untyped __js__("function () { return this.get_scrollH (); }"),
-				set: untyped __js__("function (v) { return this.set_scrollH (v); }")},
-			"scrollV": {get: untyped __js__("function () { return this.get_scrollV (); }"),
-				set: untyped __js__("function (v) { return this.set_scrollV (v); }")},
-			"selectable": {get: untyped __js__("function () { return this.get_selectable (); }"),
-				set: untyped __js__("function (v) { return this.set_selectable (v); }")},
+			"restrict": {
+				get: untyped __js__("function () { return this.get_restrict (); }"),
+				set: untyped __js__("function (v) { return this.set_restrict (v); }")
+			},
+			"scrollH": {
+				get: untyped __js__("function () { return this.get_scrollH (); }"),
+				set: untyped __js__("function (v) { return this.set_scrollH (v); }")
+			},
+			"scrollV": {
+				get: untyped __js__("function () { return this.get_scrollV (); }"),
+				set: untyped __js__("function (v) { return this.set_scrollV (v); }")
+			},
+			"selectable": {
+				get: untyped __js__("function () { return this.get_selectable (); }"),
+				set: untyped __js__("function (v) { return this.set_selectable (v); }")
+			},
 			"selectionBeginIndex": {get: untyped __js__("function () { return this.get_selectionBeginIndex (); }")},
 			"selectionEndIndex": {get: untyped __js__("function () { return this.get_selectionEndIndex (); }")},
-			"sharpness": {get: untyped __js__("function () { return this.get_sharpness (); }"),
-				set: untyped __js__("function (v) { return this.set_sharpness (v); }")},
+			"sharpness": {
+				get: untyped __js__("function () { return this.get_sharpness (); }"),
+				set: untyped __js__("function (v) { return this.set_sharpness (v); }")
+			},
 			"text": {get: untyped __js__("function () { return this.get_text (); }"), set: untyped __js__("function (v) { return this.set_text (v); }")},
-			"textColor": {get: untyped __js__("function () { return this.get_textColor (); }"),
-				set: untyped __js__("function (v) { return this.set_textColor (v); }")},
+			"textColor": {
+				get: untyped __js__("function () { return this.get_textColor (); }"),
+				set: untyped __js__("function (v) { return this.set_textColor (v); }")
+			},
 			"textHeight": {get: untyped __js__("function () { return this.get_textHeight (); }")},
 			"textWidth": {get: untyped __js__("function () { return this.get_textWidth (); }")},
 			"type": {get: untyped __js__("function () { return this.get_type (); }"), set: untyped __js__("function (v) { return this.set_type (v); }")},
-			"wordWrap": {get: untyped __js__("function () { return this.get_wordWrap (); }"),
-				set: untyped __js__("function (v) { return this.set_wordWrap (v); }")},
+			"wordWrap": {
+				get: untyped __js__("function () { return this.get_wordWrap (); }"),
+				set: untyped __js__("function (v) { return this.set_wordWrap (v); }")
+			},
 		});
 	}
 	#end
@@ -843,7 +883,7 @@ class TextField extends InteractiveObject
 	/**
 		Returns a rectangle that is the bounding box of the character.
 
-		@param charIndex The zero-based index value for the character(for
+		@param charIndex The zero-based index value for the character (for
 						 example, the first position is 0, the second position is
 						 1, and so on).
 		@return A rectangle with `x` and `y` minimum and
@@ -1864,7 +1904,7 @@ class TextField extends InteractiveObject
 
 		for (group in __textEngine.layoutGroups)
 		{
-			if (charIndex >= group.startIndex && charIndex <= group.endIndex)
+			if (charIndex >= group.startIndex && charIndex < group.endIndex)
 			{
 				try
 				{

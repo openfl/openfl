@@ -230,9 +230,9 @@ class CanvasTextField
 
 								start = textField.getCharBoundaries(selectionStart);
 
-								if (selectionEnd >= textEngine.text.length)
+								if (selectionEnd >= group.endIndex)
 								{
-									end = textField.getCharBoundaries(textEngine.text.length - 1);
+									end = textField.getCharBoundaries(group.endIndex - 1);
 									end.x += end.width + 2;
 								}
 								else
