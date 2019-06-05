@@ -90,6 +90,14 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		
 	}
 	
+	public function dispose() {
+		#if flash
+		if (bitmapData != null) {
+			bitmapData.dispose();
+			bitmapData = null;
+		}
+		#end
+	}	
 	
 	public function addTile (tile:Tile):Tile {
 		
