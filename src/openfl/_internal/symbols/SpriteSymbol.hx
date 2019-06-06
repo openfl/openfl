@@ -30,6 +30,13 @@ class SpriteSymbol extends SWFSymbol
 		MovieClip.__initSymbol = this;
 		#end
 
+		#if flash
+		if (className == "flash.display.MovieClip")
+		{
+			className = "flash.display.MovieClip2";
+		}
+		#end
+
 		var symbolType = null;
 
 		if (className != null)
@@ -41,8 +48,16 @@ class SpriteSymbol extends SWFSymbol
 				// Log.warn ("Could not resolve class \"" + className + "\"");
 			}
 		}
+
 		if (symbolType == null && baseClassName != null)
 		{
+			#if flash
+			if (baseClassName == "flash.display.MovieClip")
+			{
+				baseClassName = "flash.display.MovieClip2";
+			}
+			#end
+
 			symbolType = Type.resolveClass(baseClassName);
 
 			if (symbolType == null)
@@ -59,7 +74,11 @@ class SpriteSymbol extends SWFSymbol
 		}
 		else
 		{
+			#if flash
+			movieClip = new flash.display.MovieClip.MovieClip2();
+			#else
 			movieClip = new MovieClip();
+			#end
 		}
 
 		movieClip.scale9Grid = scale9Grid;

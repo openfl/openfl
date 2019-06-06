@@ -62,6 +62,9 @@ class ShapeSymbol extends SWFSymbol
 					#end
 
 				case BeginGradientFill(fillType, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio):
+					#if flash
+					var colors:Array<UInt> = cast colors;
+					#end
 					graphics.beginGradientFill(GradientType.fromInt(fillType), colors, alphas, ratios, matrix, SpreadMethod.fromInt(spreadMethod),
 						InterpolationMethod.fromInt(interpolationMethod), focalPointRatio);
 
