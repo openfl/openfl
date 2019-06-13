@@ -408,7 +408,7 @@ extern class SharedObject extends EventDispatcher
 	 */
 	public static function getLocal(name:String, localPath:String = null, secure:Bool = false):SharedObject;
 	public static function getRemote(name:String, remotePath:String = null, persistence:Dynamic = false, secure:Bool = false):SharedObject;
-	public function send(arguments:Array<Dynamic>):Void;
+	public function send(message:Array<Dynamic>):Void;
 	public function setDirty(propertyName:String):Void;
 	public function setProperty(propertyName:String, value:Object = null):Void;
 }
