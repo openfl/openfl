@@ -430,7 +430,7 @@ package openfl.net {
 		public static function getRemote (name:String, remotePath:String = null, persistence:Object = false, secure:Boolean = false):SharedObject { return null; }
 		
 		
-		public function send (arguments:Array):void {}
+		public function send (message:Array):void {}
 		
 		
 		public function setDirty (propertyName:String):void {}
