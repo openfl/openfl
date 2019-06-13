@@ -431,7 +431,7 @@ declare namespace openfl.net {
 		public static getRemote (name:string, remotePath?:string, persistence?:boolean | string, secure?:boolean):SharedObject;
 		
 		
-		public send (arguments:Array<any>):void;
+		public send (message:Array<any>):void;
 		
 		
 		public setDirty (propertyName:string):void;
