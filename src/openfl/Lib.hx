@@ -14,9 +14,10 @@ import lime.system.System;
 #end
 // #if swf
 // Workaround to keep SWFLibrary/SWFLiteLibrary types available
+import openfl._internal.formats.animate.AnimateLibrary;
 #if flash
 import openfl._internal.formats.swf.SWFLibrary;
-import openfl._internal.formats.swf.SWFLiteLibrary;
+// import openfl._internal.formats.swf.SWFLiteLibrary;
 #else
 import openfl._internal.formats.swf.SWFLiteLibrary;
 #end

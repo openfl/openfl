@@ -1,14 +1,11 @@
 package flash.display;
 
 #if flash
-import openfl._internal.formats.swf.SWFLite;
-import openfl._internal.symbols.ButtonSymbol;
 import openfl.media.SoundTransform;
 
 extern class SimpleButton extends InteractiveObject
 {
-	@:noCompletion public static var __initSWF:SWFLite;
-	@:noCompletion public static var __initSymbol:ButtonSymbol;
+	@:noCompletion public static var __constructor:SimpleButton->Void;
 	public var downState:DisplayObject;
 	public var enabled:Bool;
 	public var hitTestState:DisplayObject;
@@ -27,33 +24,12 @@ extern class SimpleButton extends InteractiveObject
 	{
 		super();
 
-		if (SimpleButton.__initSymbol != null)
+		if (SimpleButton.__constructor != null)
 		{
-			var swf = SimpleButton.__initSWF;
-			var symbol = SimpleButton.__initSymbol;
+			var method = SimpleButton.__constructor;
+			SimpleButton.__constructor = null;
 
-			SimpleButton.__initSWF = null;
-			SimpleButton.__initSymbol = null;
-
-			if (symbol.downState != null)
-			{
-				downState = symbol.downState.__createObject(swf);
-			}
-
-			if (symbol.hitState != null)
-			{
-				hitTestState = symbol.hitState.__createObject(swf);
-			}
-
-			if (symbol.overState != null)
-			{
-				overState = symbol.overState.__createObject(swf);
-			}
-
-			if (symbol.upState != null)
-			{
-				upState = symbol.upState.__createObject(swf);
-			}
+			method(this);
 		}
 	}
 }

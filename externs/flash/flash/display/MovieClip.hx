@@ -1,9 +1,7 @@
 package flash.display;
 
-import openfl._internal.formats.swf.SWFLite;
 import openfl._internal.renderer.flash.FlashRenderer;
-import openfl._internal.symbols.timeline.Timeline;
-import openfl._internal.symbols.SpriteSymbol;
+import openfl._internal.utils.ITimeline;
 import openfl.events.Event;
 import openfl.utils.Object;
 import openfl.Lib;
@@ -11,8 +9,7 @@ import openfl.Lib;
 #if flash
 extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 {
-	@:noCompletion public static var __initSWF:SWFLite;
-	@:noCompletion public static var __initSymbol:SpriteSymbol;
+	@:noCompletion public static var __constructor:MovieClip->Void;
 	public var currentFrame(default, never):Int;
 	@:require(flash10) public var currentFrameLabel(default, never):String;
 	public var currentLabel(default, never):String;
@@ -46,7 +43,7 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 @:noCompletion class MovieClip2 extends MovieClip implements IDisplayObject
 {
 	@:noCompletion private var __cacheTime:Int; // TODO: Move to FlashRenderer?
-	@:noCompletion private var __timeline:Timeline;
+	@:noCompletion private var __timeline:ITimeline;
 
 	public function new()
 	{
@@ -54,17 +51,15 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 
 		__cacheTime = Lib.getTimer();
 
-		if (MovieClip.__initSymbol != null)
+		if (MovieClip.__constructor != null)
 		{
-			var swf = MovieClip.__initSWF;
-			var symbol = MovieClip.__initSymbol;
+			var method = MovieClip.__constructor;
+			MovieClip.__constructor = null;
 
-			MovieClip.__initSWF = null;
-			MovieClip.__initSymbol = null;
-
-			__timeline = new Timeline(this, swf, symbol);
-			FlashRenderer.register(this);
+			method(this);
 		}
+
+		FlashRenderer.register(this);
 	}
 
 	// public override function addFrameScript(index:Int, method:Void->Void):Void
@@ -107,7 +102,7 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 		var currentTime = Lib.getTimer();
 		var deltaTime = currentTime - __cacheTime;
 		__cacheTime = currentTime;
-		__timeline.__enterFrame(deltaTime);
+		__timeline.enterFrame(deltaTime);
 	}
 }
 #else
