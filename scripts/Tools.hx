@@ -664,6 +664,7 @@ class Tools
 		var output = new HXProject();
 		var embeddedSWF = false;
 		var embeddedSWFLite = false;
+		var embeddedAnimate = false;
 		// var filterClasses = [];
 
 		for (library in project.libraries)
@@ -677,7 +678,60 @@ class Tools
 				type = Path.extension(library.sourcePath).toLowerCase();
 			}
 
-			if (type == "swf" || type == "swf_lite" || type == "swflite")
+			if (type == "animate")
+			{
+				if (!FileSystem.exists(library.sourcePath))
+				{
+					Log.warn("Could not find library file: " + library.sourcePath);
+					continue;
+				}
+
+				Log.info("", " - \x1b[1mProcessing library:\x1b[0m " + library.sourcePath + " [SWF]");
+
+				var cacheAvailable = false;
+				var cacheDirectory = null;
+				var cacheFile = null;
+
+				if (targetDirectory != null)
+				{
+					cacheDirectory = targetDirectory + "/obj/libraries";
+					cacheFile = cacheDirectory + "/" + library.name + ".zip";
+
+					if (FileSystem.exists(cacheFile))
+					{
+						var cacheDate = FileSystem.stat(cacheFile).mtime;
+						var toolDate = FileSystem.stat(Haxelib.getPath(new Haxelib("openfl"), true) + "/scripts/tools.n").mtime;
+						var sourceDate = FileSystem.stat(library.sourcePath).mtime;
+
+						if (sourceDate.getTime() < cacheDate.getTime() && toolDate.getTime() < cacheDate.getTime())
+						{
+							cacheAvailable = true;
+						}
+					}
+
+					if (!cacheAvailable)
+					{
+						if (cacheDirectory != null)
+						{
+							System.mkdir(cacheDirectory);
+						}
+
+						var bytes:ByteArray = File.getBytes(library.sourcePath);
+						var swf = new SWF(bytes);
+						var exporter = new SWFLibraryExporter(swf.data, library.prefix, cacheFile);
+					}
+
+					var asset = new Asset(cacheFile, "lib/" + library.name + ".zip", AssetType.BUNDLE);
+					asset.library = library.name;
+					if (library.embed != null)
+					{
+						asset.embed = library.embed;
+					}
+					output.assets.push(asset);
+					embeddedAnimate = true;
+				}
+			}
+			else if (type == "swf" || type == "swf_lite" || type == "swflite")
 			{
 				if (project.target == Platform.FLASH || project.target == Platform.AIR)
 				{
@@ -999,7 +1053,7 @@ class Tools
 			// }
 		}
 
-		if (embeddedSWF || embeddedSWFLite)
+		if (embeddedSWF || embeddedSWFLite || embeddedAnimate)
 		{
 			var generatedPath;
 
