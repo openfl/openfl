@@ -52,8 +52,8 @@ class AnimateTimeline implements ITimeline
 	#if 0
 	// Suppress checkstyle warning
 	private static var __unusedImport:Array<Class<Dynamic>> = [
-		AnimateBitmapSymbol, AnimateButtonSymbol, AnimateDynamicTextSymbol, AnimateFontSymbol, AnimateShapeSymbol, AnimateSpriteSymbol, AnimateStaticTextSymbol, AnimateSymbol, BlurFilter, ColorMatrixFilter,
-		ConvolutionFilter, DisplacementMapFilter, DropShadowFilter, GlowFilter
+		AnimateBitmapSymbol, AnimateButtonSymbol, AnimateDynamicTextSymbol, AnimateFontSymbol, AnimateShapeSymbol, AnimateSpriteSymbol,
+		AnimateStaticTextSymbol, AnimateSymbol, BlurFilter, ColorMatrixFilter, ConvolutionFilter, DisplacementMapFilter, DropShadowFilter, GlowFilter
 	];
 	#end
 

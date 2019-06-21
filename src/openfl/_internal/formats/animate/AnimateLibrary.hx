@@ -231,10 +231,18 @@ import openfl.utils.AssetManifest;
 
 		if (exists(id, cast AssetType.TEXT) || exists(id, cast AssetType.BINARY))
 		{
-			#if (js && html5)
+			#if web
 			for (id in paths.keys())
 			{
 				preload.set(id, true);
+			}
+
+			for (id in types.keys())
+			{
+				if (types.get(id) == IMAGE)
+				{
+					preload.set(id, true);
+				}
 			}
 			#end
 

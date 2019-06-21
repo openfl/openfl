@@ -723,10 +723,12 @@ class Tools
 
 					var asset = new Asset(cacheFile, "lib/" + library.name + ".zip", AssetType.BUNDLE);
 					asset.library = library.name;
-					if (library.embed != null)
-					{
-						asset.embed = library.embed;
-					}
+					// This causes problems with the Flash target (embedding a ZIP... use a different method?)
+					// if (library.embed != null)
+					// {
+					// 	asset.embed = library.embed;
+					// }
+					asset.embed = false;
 					output.assets.push(asset);
 					embeddedAnimate = true;
 				}
