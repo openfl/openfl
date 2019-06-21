@@ -198,15 +198,20 @@ import openfl.utils.AssetManifest;
 						bitmapSymbols.push(bitmapSymbol);
 						if (bitmapSymbol.className != null) bitmapClassNames.set(bitmapSymbol.className, bitmapSymbol.path);
 						symbol = bitmapSymbol;
-					case BUTTON: symbol = __parseButton(data);
-					case DYNAMIC_TEXT: symbol = __parseDynamicText(data);
-					case FONT: symbol = __parseFont(data);
-					case SHAPE: symbol = __parseShape(data);
+					case BUTTON:
+						symbol = __parseButton(data);
+					case DYNAMIC_TEXT:
+						symbol = __parseDynamicText(data);
+					case FONT:
+						symbol = __parseFont(data);
+					case SHAPE:
+						symbol = __parseShape(data);
 					case SPRITE:
 						spriteSymbol = __parseSprite(data);
 						if (i == rootIndex) root = spriteSymbol;
 						symbol = spriteSymbol;
-					case STATIC_TEXT: symbol = __parseStaticText(data);
+					case STATIC_TEXT:
+						symbol = __parseStaticText(data);
 					default:
 				}
 
@@ -440,11 +445,58 @@ import openfl.utils.AssetManifest;
 		return symbol;
 	}
 
+	private function __parseMatrix(values:Array<Int>):Matrix
+	{
+		return values != null ? new Matrix(__pixel(values[0]), __pixel(values[1]), __pixel(values[2]), __pixel(values[3]), __pixel(values[4]),
+			__pixel(values[5])) : null;
+	}
+
 	private function __parseShape(data:Dynamic):AnimateShapeSymbol
 	{
 		var symbol = new AnimateShapeSymbol();
 		symbol.id = data.id;
-		symbol.commands = data.commands;
+		symbol.commands = [];
+
+		var data:Array<Dynamic> = data.commands;
+		var commands = symbol.commands;
+		var i = 0;
+
+		while (i < data.length)
+		{
+			switch (data[i])
+			{
+				case BEGIN_BITMAP_FILL:
+					commands.push(BeginBitmapFill(data[i + 1], __parseMatrix(data[i + 2]), data[i + 3], data[i + 4]));
+					i += 5;
+				case BEGIN_FILL:
+					commands.push(BeginFill(data[i + 1], data[i + 2]));
+					i += 3;
+				case BEGIN_GRADIENT_FILL:
+					commands.push(BeginGradientFill(data[i + 1], data[i + 2], data[i + 3], data[i + 4], __parseMatrix(data[i + 5]), data[i + 6], data[i + 7],
+						data[i + 8]));
+					i += 9;
+				case CLEAR_LINE_STYLE:
+					commands.push(LineStyle(null, null, null, null, null, null, null, null));
+					i++;
+				case CURVE_TO:
+					commands.push(CurveTo(__pixel(data[i + 1]), __pixel(data[i + 2]), __pixel(data[i + 3]), __pixel(data[i + 4])));
+					i += 5;
+				case END_FILL:
+					commands.push(EndFill);
+					i++;
+				case LINE_STYLE:
+					commands.push(LineStyle(data[i + 1], data[i + 2], data[i + 3], data[i + 4], data[i + 5], data[i + 6], data[i + 7], data[i + 8]));
+					i += 9;
+				case LINE_TO:
+					commands.push(LineTo(__pixel(data[i + 1]), __pixel(data[i + 2])));
+					i += 3;
+				case MOVE_TO:
+					commands.push(MoveTo(__pixel(data[i + 1]), __pixel(data[i + 2])));
+					i += 3;
+				default:
+					i++;
+			}
+		}
 		return symbol;
 	}
 
@@ -454,9 +506,12 @@ import openfl.utils.AssetManifest;
 		symbol.id = data.id;
 		symbol.className = data.className;
 		symbol.baseClassName = data.baseClassName;
-		symbol.scale9Grid = data.scale9Grid != null ? new Rectangle(__pixel(data.scale9Grid[0]), __pixel(data.scale9Grid[0]), __pixel(data.scale9Grid[0]), __pixel(data.scale9Grid[0])) : null;
+		symbol.scale9Grid = data.scale9Grid != null ? new Rectangle(__pixel(data.scale9Grid[0]), __pixel(data.scale9Grid[0]), __pixel(data.scale9Grid[0]),
+			__pixel(data.scale9Grid[0])) : null;
 		var frames:Array<Dynamic> = data.frames;
-		var frame:AnimateFrame, objects:Array<Dynamic>, object:AnimateFrameObject;
+		var frame:AnimateFrame,
+			objects:Array<Dynamic>,
+			object:AnimateFrameObject;
 		for (frameData in frames)
 		{
 			frame = new AnimateFrame();
@@ -473,11 +528,14 @@ import openfl.utils.AssetManifest;
 					object.blendMode = objectData.blendMode;
 					object.cacheAsBitmap = objectData.cacheAsBitmap;
 					object.clipDepth = objectData.clipDepth;
-					object.colorTransform = objectData.colorTransform != null ? new ColorTransform(__pixel(objectData.colorTransform[0]), __pixel(objectData.colorTransform[1]), __pixel(objectData.colorTransform[2]), __pixel(objectData.colorTransform[3]), __pixel(objectData.colorTransform[4]), __pixel(objectData.colorTransform[5]), __pixel(objectData.colorTransform[6]), __pixel(objectData.colorTransform[7])) : null;
+					object.colorTransform = objectData.colorTransform != null ? new ColorTransform(__pixel(objectData.colorTransform[0]),
+						__pixel(objectData.colorTransform[1]), __pixel(objectData.colorTransform[2]), __pixel(objectData.colorTransform[3]),
+						__pixel(objectData.colorTransform[4]), __pixel(objectData.colorTransform[5]), __pixel(objectData.colorTransform[6]),
+						__pixel(objectData.colorTransform[7])) : null;
 					object.depth = objectData.depth;
 					object.filters = objectData.filters;
 					object.id = objectData.id;
-					object.matrix = objectData.matrix != null ? new Matrix(__pixel(objectData.matrix[0]), __pixel(objectData.matrix[1]), __pixel(objectData.matrix[2]), __pixel(objectData.matrix[3]), __pixel(objectData.matrix[4]), __pixel(objectData.matrix[5])) : null;
+					object.matrix = __parseMatrix(objectData.matrix);
 					object.name = objectData.name;
 					object.symbol = objectData.symbol;
 					object.type = objectData.type;
@@ -494,7 +552,7 @@ import openfl.utils.AssetManifest;
 	{
 		var symbol = new AnimateStaticTextSymbol();
 		symbol.id = data.id;
-		symbol.matrix = new Matrix(__pixel(data.matrix[0]), __pixel(data.matrix[1]), __pixel(data.matrix[2]), __pixel(data.matrix[3]), __pixel(data.matrix[4]), __pixel(data.matrix[5]));
+		symbol.matrix = __parseMatrix(data.matrix[0]);
 		symbol.records = data.records;
 		return symbol;
 	}
@@ -503,6 +561,19 @@ import openfl.utils.AssetManifest;
 	{
 		return value / 20;
 	}
+}
+
+@:enum abstract SWFShapeCommandType(Int) from Int to Int
+{
+	public var BEGIN_BITMAP_FILL = 0;
+	public var BEGIN_FILL = 1;
+	public var BEGIN_GRADIENT_FILL = 2;
+	public var CLEAR_LINE_STYLE = 3;
+	public var CURVE_TO = 4;
+	public var END_FILL = 5;
+	public var LINE_STYLE = 6;
+	public var LINE_TO = 7;
+	public var MOVE_TO = 8;
 }
 
 @:enum abstract SWFSymbolType(Int) from Int to Int

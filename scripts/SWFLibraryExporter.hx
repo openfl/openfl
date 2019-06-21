@@ -141,7 +141,7 @@ class SWFLibraryExporter
 		outputList.add(entry);
 
 		// TODO: Generated class names
-		//generateSWFLiteClasses(srcPath, exportedClasses, swfLite, uuid, prefix);
+		// generateSWFLiteClasses(srcPath, exportedClasses, swfLite, uuid, prefix);
 
 		// 		var includeXML = '<?xml version="1.0" encoding="utf-8"?>
 		// <library>
@@ -588,19 +588,81 @@ class SWFLibraryExporter
 			symbol.type = SWFSymbolType.SHAPE;
 			symbol.id = tag.characterId;
 
-			symbol.commands = handler.commands;
+			var commands:Array<Dynamic> = [];
 
 			for (command in handler.commands)
 			{
 				switch (command)
 				{
-					case BeginBitmapFill(bitmapID, _, _, _):
+					case LineStyle(thickness, color, alpha, pixelHinting, scaleMode, startCaps, joints, miterLimit):
+						if (thickness == null && color == null && alpha == null)
+						{
+							commands.push(SWFShapeCommandType.CLEAR_LINE_STYLE);
+						}
+						else
+						{
+							commands = commands.concat([
+								SWFShapeCommandType.LINE_STYLE,
+								thickness,
+								color,
+								alpha,
+								pixelHinting,
+								scaleMode,
+								startCaps,
+								joints,
+								miterLimit
+							]);
+						}
+
+					case BeginFill(color, alpha):
+						commands = commands.concat([SWFShapeCommandType.BEGIN_FILL, color, alpha]);
+
+					case BeginGradientFill(type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio):
+						commands = commands.concat([
+							SWFShapeCommandType.BEGIN_GRADIENT_FILL,
+							type,
+							colors,
+							alphas,
+							ratios,
+							serializeMatrix(matrix),
+							spreadMethod,
+							interpolationMethod,
+							focalPointRatio
+						]);
+
+					case BeginBitmapFill(bitmapID, matrix, repeat, smooth):
+						commands = commands.concat([
+							SWFShapeCommandType.BEGIN_BITMAP_FILL,
+							bitmapID,
+							serializeMatrix(matrix),
+							repeat,
+							smooth
+						]);
 						processTag(cast swfData.getCharacter(bitmapID));
+
+					case EndFill:
+						commands.push(SWFShapeCommandType.END_FILL);
+
+					case MoveTo(x, y):
+						commands = commands.concat([SWFShapeCommandType.MOVE_TO, twip(x), twip(y)]);
+
+					case LineTo(x, y):
+						commands = commands.concat([SWFShapeCommandType.LINE_TO, twip(x), twip(y)]);
+
+					case CurveTo(controlX, controlY, anchorX, anchorY):
+						commands = commands.concat([
+							SWFShapeCommandType.CURVE_TO,
+							twip(controlX),
+							twip(controlY),
+							twip(anchorX),
+							twip(anchorY)
+						]);
 
 					default:
 				}
 			}
 
+			symbol.commands = commands;
 			libraryData.symbols.set(symbol.id, symbol);
 			return symbol;
 		}
@@ -621,7 +683,10 @@ class SWFLibraryExporter
 		var lastModified = new Map<Int, Int>();
 		var zeroCharacter = -1;
 
-		var frame:Dynamic, frameObject:Dynamic, frameData, placeTag:TagPlaceObject;
+		var frame:Dynamic,
+			frameObject:Dynamic,
+			frameData,
+			placeTag:TagPlaceObject;
 
 		for (frameData in tag.frames)
 		{
@@ -875,7 +940,10 @@ class SWFLibraryExporter
 			if (record.hasColor) textRecord.color = record.textColor;
 			if (record.hasXOffset || record.hasYOffset)
 			{
-				textRecord.offset = [record.hasXOffset ? twip(record.xOffset) : 0, record.hasYOffset ? twip(record.yOffset) : 0];
+				textRecord.offset = [
+					record.hasXOffset ? twip(record.xOffset) : 0,
+					record.hasYOffset ? twip(record.yOffset) : 0
+				];
 			}
 			textRecord.fontHeight = record.textHeight;
 
@@ -1345,17 +1413,33 @@ class SWFLibraryExporter
 
 	private function serializeColorTransform(colorTransform:ColorTransform):Array<Int>
 	{
-		return [twip(colorTransform.redMultiplier), twip(colorTransform.greenMultiplier),twip(colorTransform.blueMultiplier),twip(colorTransform.alphaMultiplier),twip(colorTransform.redOffset),twip(colorTransform.greenOffset),twip(colorTransform.blueOffset),twip(colorTransform.alphaOffset)];
+		return [
+			twip(colorTransform.redMultiplier),
+			twip(colorTransform.greenMultiplier),
+			twip(colorTransform.blueMultiplier),
+			twip(colorTransform.alphaMultiplier),
+			twip(colorTransform.redOffset),
+			twip(colorTransform.greenOffset),
+			twip(colorTransform.blueOffset),
+			twip(colorTransform.alphaOffset)
+		];
 	}
 
 	private function serializeMatrix(matrix:Matrix):Array<Int>
 	{
-		return[twip(matrix.a), twip(matrix.b), twip(matrix.c), twip(matrix.d), twip(matrix.tx), twip(matrix.ty)];
+		return [
+			twip(matrix.a),
+			twip(matrix.b),
+			twip(matrix.c),
+			twip(matrix.d),
+			twip(matrix.tx),
+			twip(matrix.ty)
+		];
 	}
 
 	private function serializeRect(rect:Rectangle):Array<Int>
 	{
-		return[twip(rect.x), twip(rect.y), twip(rect.width), twip(rect.height)];
+		return [twip(rect.x), twip(rect.y), twip(rect.width), twip(rect.height)];
 	}
 
 	private inline function twip(value:Float):Int
@@ -1648,6 +1732,26 @@ class SWFDocument
 	}
 }
 
+@:enum abstract SWFFrameObjectType(Int) from Int to Int
+{
+	public var CREATE = 0;
+	public var UPDATE = 1;
+	public var DESTROY = 2;
+}
+
+@:enum abstract SWFShapeCommandType(Int) from Int to Int
+{
+	public var BEGIN_BITMAP_FILL = 0;
+	public var BEGIN_FILL = 1;
+	public var BEGIN_GRADIENT_FILL = 2;
+	public var CLEAR_LINE_STYLE = 3;
+	public var CURVE_TO = 4;
+	public var END_FILL = 5;
+	public var LINE_STYLE = 6;
+	public var LINE_TO = 7;
+	public var MOVE_TO = 8;
+}
+
 @:enum abstract SWFSymbolType(Int) from Int to Int
 {
 	public var BITMAP = 0;
@@ -1657,11 +1761,4 @@ class SWFDocument
 	public var SHAPE = 4;
 	public var SPRITE = 5;
 	public var STATIC_TEXT = 6;
-}
-
-@:enum abstract SWFFrameObjectType(Int) from Int to Int
-{
-	public var CREATE = 0;
-	public var UPDATE = 1;
-	public var DESTROY = 2;
 }
