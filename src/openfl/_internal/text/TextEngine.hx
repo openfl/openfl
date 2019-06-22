@@ -1316,7 +1316,8 @@ class TextEngine
 				}
 
 				// TODO: is this necessary or already handled by placeText above?
-				if (formatRange.end == breakIndex)
+				// TODO: what happens if the \n is formatted differently from the previous and next text?
+				if (formatRange.end == breakIndex || formatRange.end == breakIndex + 1)
 				{
 					nextFormatRange();
 					setLineMetrics();
