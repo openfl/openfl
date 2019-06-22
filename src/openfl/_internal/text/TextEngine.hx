@@ -989,35 +989,17 @@ class TextEngine
 		{
 			firstLineOfParagraph = true;
 
-			if (currentFormat.align != null)
-			{
-				align = currentFormat.align;
-			}
-
-			if (currentFormat.blockIndent != null)
-			{
-				blockIndent = currentFormat.blockIndent;
-			}
+			align = currentFormat.align != null ? currentFormat.align : LEFT;
+			blockIndent = currentFormat.blockIndent != null ? currentFormat.blockIndent : 0;
 
 			if (currentFormat.bullet != null)
 			{
 				// TODO
 			}
 
-			if (currentFormat.indent != null)
-			{
-				indent = currentFormat.indent;
-			}
-
-			if (currentFormat.leftMargin != null)
-			{
-				leftMargin = currentFormat.leftMargin;
-			}
-
-			if (currentFormat.rightMargin != null)
-			{
-				rightMargin = currentFormat.rightMargin;
-			}
+			indent = currentFormat.indent != null ? currentFormat.indent : 0;
+			leftMargin = currentFormat.leftMargin != null ? currentFormat.leftMargin : 0;
+			rightMargin = currentFormat.rightMargin != null ? currentFormat.rightMargin : 0;
 
 			if (currentFormat.tabStops != null)
 			{
