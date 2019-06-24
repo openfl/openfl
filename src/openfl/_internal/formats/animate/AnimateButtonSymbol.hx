@@ -1,5 +1,6 @@
 package openfl._internal.formats.animate;
 
+import openfl.display.DisplayObject;
 import openfl.display.SimpleButton;
 
 #if !openfl_debug
@@ -84,5 +85,11 @@ class AnimateButtonSymbol extends AnimateSymbol
 		#end
 
 		return simpleButton;
+	}
+
+	private override function __initObject(library:AnimateLibrary, instance:DisplayObject):Void
+	{
+		this.library = library;
+		__constructor(cast instance);
 	}
 }

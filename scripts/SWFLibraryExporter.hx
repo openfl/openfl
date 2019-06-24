@@ -30,9 +30,13 @@ import format.swf.data.consts.BlendMode;
 import format.swf.data.SWFButtonRecord;
 import format.swf.SWFRoot;
 import format.swf.SWFTimelineContainer;
+import haxe.Template;
+import hxp.Haxelib;
 import hxp.Log;
+import hxp.Path;
 import hxp.StringTools;
 import lime.graphics.Image;
+import lime.tools.Asset;
 import openfl._internal.formats.swf.FilterType;
 import openfl._internal.formats.swf.ShapeCommand;
 import openfl.display.BitmapData;
@@ -57,29 +61,29 @@ using SWFLibraryExporter.AVM2;
 
 class SWFLibraryExporter
 {
-	private var classPrefix:String;
 	private var libraryData:SWFDocument;
 	private var manifestData:AssetManifest;
 	private var outputList:List<Entry>;
 	private var swfData:SWFRoot;
 	private var targetPath:String;
 
-	public function new(swfData:SWFRoot, classPrefix:String, targetPath:String)
+	public function new(swfData:SWFRoot, targetPath:String)
 	{
 		this.swfData = swfData;
-		this.classPrefix = classPrefix;
 		this.targetPath = targetPath;
 
 		manifestData = new AssetManifest();
 		libraryData = new SWFDocument();
 		outputList = new List();
 
+		var uuid = StringTools.generateUUID(20);
+
 		manifestData.libraryType = "openfl._internal.formats.animate.AnimateLibrary";
-		manifestData.libraryArgs = ["data.json"];
+		manifestData.libraryArgs = ["data.json", uuid];
 		manifestData.version = 3;
 		manifestData.assets = [];
 
-		libraryData.uuid = StringTools.generateUUID(20);
+		libraryData.uuid = uuid;
 		libraryData.frameRate = swfData.frameRate;
 		addSprite(swfData, true);
 
@@ -478,7 +482,7 @@ class SWFLibraryExporter
 			var symbol:Dynamic = {};
 			symbol.type = SWFSymbolType.FONT;
 			symbol.id = defineFont.characterId;
-			symbol.glyphs = new Array<Array<ShapeCommand>>();
+			symbol.glyphs = new Array<Array<Dynamic>>();
 
 			// for (i in 0...defineFont.glyphShapeTable.length) {
 			//
@@ -952,7 +956,80 @@ class SWFLibraryExporter
 					{
 						handler.beginShape();
 						defineFont.export(handler, index);
-						font.glyphs[index] = handler.commands.copy();
+
+						var commands:Array<Dynamic> = [];
+						for (command in handler.commands)
+						{
+							switch (command)
+							{
+								case LineStyle(thickness, color, alpha, pixelHinting, scaleMode, startCaps, joints, miterLimit):
+									if (thickness == null && color == null && alpha == null)
+									{
+										commands.push(SWFShapeCommandType.CLEAR_LINE_STYLE);
+									}
+									else
+									{
+										commands = commands.concat([
+											SWFShapeCommandType.LINE_STYLE,
+											thickness,
+											color,
+											alpha,
+											pixelHinting,
+											scaleMode,
+											startCaps,
+											joints,
+											miterLimit
+										]);
+									}
+
+								case BeginFill(color, alpha):
+									commands = commands.concat([SWFShapeCommandType.BEGIN_FILL, color, alpha]);
+
+								case BeginGradientFill(type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio):
+									commands = commands.concat([
+										SWFShapeCommandType.BEGIN_GRADIENT_FILL,
+										type,
+										colors,
+										alphas,
+										ratios,
+										serializeMatrix(matrix),
+										spreadMethod,
+										interpolationMethod,
+										focalPointRatio
+									]);
+
+								case BeginBitmapFill(bitmapID, matrix, repeat, smooth):
+									commands = commands.concat([
+										SWFShapeCommandType.BEGIN_BITMAP_FILL,
+										bitmapID,
+										serializeMatrix(matrix),
+										repeat,
+										smooth
+									]);
+									processTag(cast swfData.getCharacter(bitmapID));
+
+								case EndFill:
+									commands.push(SWFShapeCommandType.END_FILL);
+
+								case MoveTo(x, y):
+									commands = commands.concat([SWFShapeCommandType.MOVE_TO, twip(x), twip(y)]);
+
+								case LineTo(x, y):
+									commands = commands.concat([SWFShapeCommandType.LINE_TO, twip(x), twip(y)]);
+
+								case CurveTo(controlX, controlY, anchorX, anchorY):
+									commands = commands.concat([
+										SWFShapeCommandType.CURVE_TO,
+										twip(controlX),
+										twip(controlY),
+										twip(anchorX),
+										twip(anchorY)
+									]);
+
+								default:
+							}
+						}
+						font.glyphs[index] = commands;
 						font.advances[index] = defineFont.fontAdvanceTable[index];
 					}
 				}
@@ -1079,15 +1156,178 @@ class SWFLibraryExporter
 		}
 	}
 
+	public function generateClasses(targetPath:String, output:Array<Asset>, prefix:String = ""):Array<String>
+	{
+		#if commonjs
+		var bitmapDataTemplate = File.getContent(Path.combine(js.Node.__dirname, "../assets/templates/animate/BitmapData.mtt"));
+		var movieClipTemplate = File.getContent(Path.combine(js.Node.__dirname, "../assets/templates/animate/MovieClip.mtt"));
+		var simpleButtonTemplate = File.getContent(Path.combine(js.Node.__dirname, "../assets/templates/animate/SimpleButton.mtt"));
+		#else
+		var bitmapDataTemplate = File.getContent(Haxelib.getPath(new Haxelib("openfl"), true) + "/assets/templates/animate/BitmapData.mtt");
+		var movieClipTemplate = File.getContent(Haxelib.getPath(new Haxelib("openfl"), true) + "/assets/templates/animate/MovieClip.mtt");
+		var simpleButtonTemplate = File.getContent(Haxelib.getPath(new Haxelib("openfl"), true) + "/assets/templates/animate/SimpleButton.mtt");
+		#end
+
+		var generatedClasses = [];
+
+		for (symbolID in libraryData.symbols.keys())
+		{
+			var symbol = libraryData.symbols.get(symbolID);
+			var templateData = null;
+			var baseClassName = null;
+
+			var type:SWFSymbolType = symbol.type;
+
+			if (type == BITMAP)
+			{
+				templateData = bitmapDataTemplate;
+			}
+			else if (type == SPRITE)
+			{
+				templateData = movieClipTemplate;
+				if (Reflect.hasField(symbol, "baseClassName"))
+				{
+					baseClassName = symbol.baseClassName;
+				}
+			}
+			else if (type == BUTTON)
+			{
+				templateData = simpleButtonTemplate;
+			}
+			else
+			{
+				continue;
+			}
+
+			if (templateData != null && Reflect.hasField(symbol, "className") && symbol.className != null)
+			{
+				var className:String = symbol.className;
+
+				var name = className;
+				var packageName = "";
+
+				var lastIndexOfPeriod = className.lastIndexOf(".");
+
+				if (lastIndexOfPeriod > -1)
+				{
+					packageName = className.substr(0, lastIndexOfPeriod);
+					if (packageName.length > 0)
+					{
+						packageName = packageName.charAt(0).toLowerCase() + packageName.substr(1);
+					}
+					name = className.substr(lastIndexOfPeriod + 1);
+				}
+
+				name = formatClassName(name, prefix);
+
+				var classProperties = [];
+				var objectReferences = new Map<String, Bool>();
+
+				if (type == SPRITE)
+				{
+					var spriteSymbol:Dynamic = cast symbol;
+					var frames:Array<Dynamic> = cast spriteSymbol.frames;
+
+					if (frames.length > 0 && Reflect.hasField(frames[0], "objects"))
+					{
+						for (frame in frames)
+						{
+							var objects:Array<Dynamic> = cast frame.objects;
+							if (objects != null)
+							{
+								for (object in objects)
+								{
+									if (Reflect.hasField(object, "name") && object.name != null && !objectReferences.exists(object.name))
+									{
+										if (libraryData.symbols.exists(object.symbol))
+										{
+											var childSymbol = libraryData.symbols.get(object.symbol);
+											var className = Reflect.hasField(childSymbol, "className") ? childSymbol.className : null;
+
+											if (className == null)
+											{
+												var childType:SWFSymbolType = cast childSymbol.type;
+												if (childType == SPRITE)
+												{
+													className = "openfl.display.MovieClip";
+												}
+												else if (childType == BITMAP)
+												{
+													className = "openfl.display.BitmapData";
+												}
+												else if (childType == SHAPE)
+												{
+													className = "openfl.display.Shape";
+												}
+													// else if (childType == BITMAP)
+													// {
+													// 	className = "openfl.display.Bitmap";
+												// }
+												else if (childType == DYNAMIC_TEXT)
+												{
+													className = "openfl.text.TextField";
+												}
+												else if (childType == BUTTON)
+												{
+													className = "openfl.display.SimpleButton";
+												}
+												else
+												{
+													className = "Dynamic";
+												}
+											}
+											else
+											{
+												className = formatClassName(className, prefix);
+											}
+
+											if (className != null)
+											{
+												objectReferences[object.name] = true;
+												classProperties.push({name: object.name, type: className});
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+
+				var context:Dynamic = {
+					UUID: libraryData.uuid,
+					PACKAGE_NAME: packageName,
+					NATIVE_CLASS_NAME: className,
+					CLASS_NAME: name,
+					SYMBOL_ID: symbolID,
+					PREFIX: "",
+					CLASS_PROPERTIES: classProperties
+				};
+				if (baseClassName != null) context.BASE_CLASS_NAME = baseClassName;
+				var template = new Template(templateData);
+
+				var templateFile = new Asset("", Path.combine(targetPath, Path.directory(symbol.className.split(".").join("/"))) + "/" + name + ".hx",
+					cast AssetType.TEMPLATE);
+				templateFile.embed = false;
+				templateFile.data = template.execute(context);
+				output.push(templateFile);
+
+				generatedClasses.push((packageName.length > 0 ? packageName + "." : "") + name);
+			}
+		}
+
+		return generatedClasses;
+	}
+
 	private function processSymbol(symbol:format.swf.data.SWFSymbol):Void
 	{
-		Log.info("", "processing symbol " + symbol.name);
+		// Log.info("", "processing symbol " + symbol.name);
 
 		var data2 = processTag(cast swfData.getCharacter(symbol.tagId));
 
 		if (data2 != null && symbol.name != null)
 		{
-			data2.className = formatClassName(symbol.name, classPrefix);
+			data2.className = symbol.name;
 		}
 
 		// TODO: Move to separate FrameScriptExporter class

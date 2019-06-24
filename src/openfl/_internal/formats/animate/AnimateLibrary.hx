@@ -1,6 +1,7 @@
 package openfl._internal.formats.animate;
 
 import haxe.Json;
+import openfl._internal.formats.swf.ShapeCommand;
 import openfl.display.MovieClip;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
@@ -32,6 +33,8 @@ import openfl.utils.AssetManifest;
 @SuppressWarnings("checkstyle:FieldDocComment")
 @:keep class AnimateLibrary extends AssetLibrary
 {
+	private static var instances:Map<String, AnimateLibrary>;
+
 	private var alphaCheck:Map<String, Bool>;
 	private var bitmapClassNames:Map<String, String>;
 	private var bitmapSymbols:Array<AnimateBitmapSymbol>;
@@ -62,6 +65,9 @@ import openfl.utils.AssetManifest;
 		rootPath = "";
 		#end
 
+		if (instances == null) instances = new Map();
+		instances.set(uuid, this);
+
 		// Hack to include filter classes, macro.include is not working properly
 
 		// var filter = flash.filters.BlurFilter;
@@ -88,6 +94,12 @@ import openfl.utils.AssetManifest;
 		return super.exists(id, type);
 	}
 	#end
+
+	private static function get(uuid:String):AnimateLibrary
+	{
+		if (instances == null) return null;
+		return instances.get(uuid);
+	}
 
 	#if lime
 	public override function getImage(id:String):Image
@@ -174,7 +186,7 @@ import openfl.utils.AssetManifest;
 			var json:Dynamic = Json.parse(data);
 			var version = json.version;
 			frameRate = json.frameRate;
-			uuid = json.uuid;
+			// uuid = json.uuid;
 			var rootIndex = json.root;
 			var symbolData:Array<Dynamic> = json.symbols;
 
@@ -292,22 +304,19 @@ import openfl.utils.AssetManifest;
 				{
 					var promise = new Promise<Image>();
 
-					__loadImage(id).onError(promise.error)
-						.onComplete(function(image)
+					__loadImage(id).onError(promise.error).onComplete(function(image)
+					{
+						__loadImage(bitmapSymbol.alpha).onError(promise.error).onComplete(function(alpha)
 						{
-							__loadImage(bitmapSymbol.alpha)
-								.onError(promise.error)
-								.onComplete(function(alpha)
-								{
-									__copyChannel(image, alpha);
+							__copyChannel(image, alpha);
 
-									cachedImages.set(id, image);
-									cachedImages.remove(bitmapSymbol.alpha);
-									alphaCheck.set(id, true);
+							cachedImages.set(id, image);
+							cachedImages.remove(bitmapSymbol.alpha);
+							alphaCheck.set(id, true);
 
-									promise.complete(image);
-								});
+							promise.complete(image);
 						});
+					});
 
 					return promise.future;
 				}
@@ -325,6 +334,7 @@ import openfl.utils.AssetManifest;
 	#if lime
 	public override function unload():Void
 	{
+		instances.remove(uuid);
 		if (symbols == null) return;
 		// if (swf == null) return;
 
@@ -419,7 +429,6 @@ import openfl.utils.AssetManifest;
 		symbol.fontHeight = data.fontHeight;
 		symbol.fontID = data.fontID;
 		symbol.fontName = data.fontName;
-		symbol.height = __pixel(data.bounds[3]);
 		symbol.html = data.html;
 		symbol.indent = data.indent;
 		symbol.input = data.input;
@@ -430,10 +439,11 @@ import openfl.utils.AssetManifest;
 		symbol.rightMargin = data.rightMargin;
 		symbol.selectable = data.selectable;
 		symbol.text = data.text;
-		symbol.width = __pixel(data.bounds[2]);
 		symbol.wordWrap = data.wordWrap;
-		symbol.x = __pixel(data.bounds[0]);
-		symbol.y = __pixel(data.bounds[1]);
+		symbol.x = __pixel(data.rect[0]);
+		symbol.y = __pixel(data.rect[1]);
+		symbol.width = __pixel(data.rect[2]);
+		symbol.height = __pixel(data.rect[3]);
 		return symbol;
 	}
 
@@ -446,10 +456,62 @@ import openfl.utils.AssetManifest;
 		symbol.bold = data.bold;
 		symbol.codes = data.codes;
 		symbol.descent = data.descent;
-		symbol.glyphs = data.glyphs;
 		symbol.italic = data.italic;
 		symbol.leading = data.leading;
 		symbol.name = data.name;
+		if (Reflect.hasField(data, "glyphs"))
+		{
+			symbol.glyphs = [];
+			var glyphs:Array<Array<Dynamic>> = data.glyphs;
+			for (glyphIndex in 0...glyphs.length)
+			{
+				var data = glyphs[glyphIndex];
+				if (data != null)
+				{
+					var commands:Array<ShapeCommand> = [];
+					symbol.glyphs[glyphIndex] = commands;
+					var i = 0;
+
+					while (i < data.length)
+					{
+						switch (data[i])
+						{
+							case BEGIN_BITMAP_FILL:
+								commands.push(BeginBitmapFill(data[i + 1], __parseMatrix(data[i + 2]), data[i + 3], data[i + 4]));
+								i += 5;
+							case BEGIN_FILL:
+								commands.push(BeginFill(data[i + 1], data[i + 2]));
+								i += 3;
+							case BEGIN_GRADIENT_FILL:
+								commands.push(BeginGradientFill(data[i + 1], data[i + 2], data[i + 3], data[i + 4], __parseMatrix(data[i + 5]), data[i + 6],
+									data[i + 7], data[i + 8]));
+								i += 9;
+							case CLEAR_LINE_STYLE:
+								commands.push(LineStyle(null, null, null, null, null, null, null, null));
+								i++;
+							case CURVE_TO:
+								commands.push(CurveTo(__pixel(data[i + 1]), __pixel(data[i + 2]), __pixel(data[i + 3]), __pixel(data[i + 4])));
+								i += 5;
+							case END_FILL:
+								commands.push(EndFill);
+								i++;
+							case LINE_STYLE:
+								commands.push(LineStyle(data[i + 1], data[i + 2], data[i + 3], data[i + 4], data[i + 5], data[i + 6], data[i + 7],
+									data[i + 8]));
+								i += 9;
+							case LINE_TO:
+								commands.push(LineTo(__pixel(data[i + 1]), __pixel(data[i + 2])));
+								i += 3;
+							case MOVE_TO:
+								commands.push(MoveTo(__pixel(data[i + 1]), __pixel(data[i + 2])));
+								i += 3;
+							default:
+								i++;
+						}
+					}
+				}
+			}
+		}
 		return symbol;
 	}
 
@@ -560,7 +622,7 @@ import openfl.utils.AssetManifest;
 	{
 		var symbol = new AnimateStaticTextSymbol();
 		symbol.id = data.id;
-		symbol.matrix = __parseMatrix(data.matrix[0]);
+		symbol.matrix = __parseMatrix(data.matrix);
 		symbol.records = data.records;
 		return symbol;
 	}

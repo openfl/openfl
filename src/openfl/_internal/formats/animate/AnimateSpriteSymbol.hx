@@ -1,5 +1,6 @@
 package openfl._internal.formats.animate;
 
+import openfl.display.DisplayObject;
 import openfl.display.MovieClip;
 import openfl.geom.Rectangle;
 
@@ -99,5 +100,11 @@ class AnimateSpriteSymbol extends AnimateSymbol
 		#end
 
 		return movieClip;
+	}
+
+	private override function __initObject(library:AnimateLibrary, instance:DisplayObject):Void
+	{
+		this.library = library;
+		__constructor(cast instance);
 	}
 }

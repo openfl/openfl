@@ -332,11 +332,8 @@ class Tools
 
 				// }
 
-				var templateFile = new Asset("", Path.combine(targetPath, Path.directory(className.split(".").join("/")))
-					+ "/"
-					+ prefix
-					+ name
-					+ ".hx", AssetType.TEMPLATE);
+				var templateFile = new Asset("", Path.combine(targetPath, Path.directory(className.split(".").join("/"))) + "/" + prefix + name + ".hx",
+					AssetType.TEMPLATE);
 				templateFile.data = template.execute(context);
 				output.assets.push(templateFile);
 
@@ -492,10 +489,8 @@ class Tools
 				};
 				var template = new Template(templateData);
 
-				var templateFile = new Asset("", Path.combine(targetPath, Path.directory(symbol.className.split(".").join("/")))
-					+ "/"
-					+ name
-					+ ".hx", AssetType.TEMPLATE);
+				var templateFile = new Asset("", Path.combine(targetPath, Path.directory(symbol.className.split(".").join("/"))) + "/" + name + ".hx",
+					AssetType.TEMPLATE);
 				templateFile.data = template.execute(context);
 				output.push(templateFile);
 
@@ -646,7 +641,7 @@ class Tools
 
 		var bytes:ByteArray = File.getBytes(sourcePath);
 		var swf = new SWF(bytes);
-		var exporter = new SWFLibraryExporter(swf.data, prefix, targetPath);
+		var exporter = new SWFLibraryExporter(swf.data, targetPath);
 
 		return true;
 	}
@@ -718,7 +713,28 @@ class Tools
 
 						var bytes:ByteArray = File.getBytes(library.sourcePath);
 						var swf = new SWF(bytes);
-						var exporter = new SWFLibraryExporter(swf.data, library.prefix, cacheFile);
+						var exporter = new SWFLibraryExporter(swf.data, cacheFile);
+
+						if (true || library.generate)
+						{
+							var targetPath;
+
+							if (project.target == IOS)
+							{
+								targetPath = Path.tryFullPath(targetDirectory) + "/" + project.app.file + "/" + "/haxe/_generated";
+							}
+							else
+							{
+								targetPath = Path.tryFullPath(targetDirectory) + "/haxe/_generated";
+							}
+
+							var generatedClasses = exporter.generateClasses(targetPath, output.assets, library.prefix);
+
+							for (className in generatedClasses)
+							{
+								output.haxeflags.push(className);
+							}
+						}
 					}
 
 					var asset = new Asset(cacheFile, "lib/" + library.name + ".zip", AssetType.BUNDLE);
@@ -730,6 +746,7 @@ class Tools
 					// }
 					asset.embed = false;
 					output.assets.push(asset);
+
 					embeddedAnimate = true;
 				}
 			}
@@ -843,7 +860,14 @@ class Tools
 							}
 						}
 
-						var swfLiteAsset = new Asset(cacheDirectory + "/" + library.name + SWFLITE_DATA_SUFFIX, "lib/" + library.name + "/" + library.name
+						var swfLiteAsset = new Asset(cacheDirectory
+							+ "/"
+							+ library.name
+							+ SWFLITE_DATA_SUFFIX,
+							"lib/"
+							+ library.name
+							+ "/"
+							+ library.name
 							+ SWFLITE_DATA_SUFFIX, AssetType.TEXT);
 
 						if (library.embed != null)

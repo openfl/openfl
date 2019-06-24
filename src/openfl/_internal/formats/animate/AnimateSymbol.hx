@@ -17,4 +17,6 @@ import openfl.display.DisplayObject;
 	{
 		return null;
 	}
+
+	private function __initObject(library:AnimateLibrary, instance:DisplayObject):Void {}
 }

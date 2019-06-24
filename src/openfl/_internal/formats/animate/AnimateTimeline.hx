@@ -396,7 +396,7 @@ class AnimateTimeline implements ITimeline
 		enterFrame(0);
 
 		#if (!openfljs && (!openfl_dynamic || haxe_ver >= "4.0.0"))
-		__instanceFields = Type.getInstanceFields(Type.getClass(this));
+		__instanceFields = Type.getInstanceFields(Type.getClass(__movieClip));
 		__updateInstanceFields();
 		#end
 	}
@@ -850,7 +850,7 @@ class AnimateTimeline implements ITimeline
 				var child = #if flash __movieClip.getChildAt(i) #else __movieClip.__children[i] #end;
 				if (child.name == field)
 				{
-					Reflect.setField(this, field, child);
+					Reflect.setField(__movieClip, field, child);
 					break;
 				}
 			}
