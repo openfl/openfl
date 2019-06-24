@@ -451,7 +451,7 @@ class SWFLibraryExporter
 					fileTime: Date.now(),
 					compressed: false,
 					dataSize: 0,
-					data: byteArray,
+					data: alphaByteArray,
 					crc32: Crc32.make(alphaByteArray)
 				};
 				outputList.add(entry);
