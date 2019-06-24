@@ -456,8 +456,6 @@ class SWFLibraryExporter
 				};
 				outputList.add(entry);
 
-				sys.io.File.saveBytes("/home/joshua/Projects/Samples/SampleSWFProblem/Deploy/neko/obj/test.png", alphaByteArray);
-
 				manifestData.assets.push({
 					path: symbol.alpha,
 					type: AssetType.IMAGE
