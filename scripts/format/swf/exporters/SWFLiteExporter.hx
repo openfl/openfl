@@ -70,7 +70,6 @@ class SWFLiteExporter
 	public var filterClasses:Map<String, Bool>;
 	public var swfLite:SWFLite;
 
-	private var alphaPalette:Bytes;
 	private var data:SWFRoot;
 
 	public function new(data:SWFRoot)
@@ -294,19 +293,6 @@ class SWFLiteExporter
 				alpha.uncompress();
 				alpha.position = 0;
 
-				if (alphaPalette == null)
-				{
-					alphaPalette = Bytes.alloc(256 * 3);
-					var index = 0;
-
-					for (i in 0...256)
-					{
-						alphaPalette.set(index++, i);
-						alphaPalette.set(index++, i);
-						alphaPalette.set(index++, i);
-					}
-				}
-
 				#if !nodejs
 				var image = Image.fromBytes(data.bitmapData);
 				#else
@@ -331,10 +317,9 @@ class SWFLiteExporter
 					width: image.width,
 					height: image.height,
 					colbits: 8,
-					color: ColIndexed,
+					color: ColGrey(false),
 					interlaced: false
 				}));
-				png.add(CPalette(alphaPalette));
 				var valuesBA:ByteArray = values;
 				valuesBA.compress();
 				png.add(CData(valuesBA));

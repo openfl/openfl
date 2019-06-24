@@ -57,7 +57,6 @@ using SWFLibraryExporter.AVM2;
 
 class SWFLibraryExporter
 {
-	private var alphaPalette:Bytes;
 	private var classPrefix:String;
 	private var libraryData:SWFDocument;
 	private var manifestData:AssetManifest;
@@ -365,19 +364,6 @@ class SWFLibraryExporter
 				alpha.uncompress();
 				alpha.position = 0;
 
-				if (alphaPalette == null)
-				{
-					alphaPalette = Bytes.alloc(256 * 3);
-					var index = 0;
-
-					for (i in 0...256)
-					{
-						alphaPalette.set(index++, i);
-						alphaPalette.set(index++, i);
-						alphaPalette.set(index++, i);
-					}
-				}
-
 				#if !nodejs
 				var image = Image.fromBytes(data.bitmapData);
 				#else
@@ -402,10 +388,9 @@ class SWFLibraryExporter
 					width: image.width,
 					height: image.height,
 					colbits: 8,
-					color: ColIndexed,
+					color: ColGrey(false),
 					interlaced: false
 				}));
-				png.add(CPalette(alphaPalette));
 				var valuesBA:ByteArray = values;
 				valuesBA.compress();
 				png.add(CData(valuesBA));
@@ -458,8 +443,10 @@ class SWFLibraryExporter
 
 			if (type == JPEG_ALPHA)
 			{
+				symbol.alpha = "symbols/" + symbol.id + "a.png";
+
 				var entry:Entry = {
-					fileName: "symbols/" + symbol.id + "a.png",
+					fileName: symbol.alpha,
 					fileSize: alphaByteArray.length,
 					fileTime: Date.now(),
 					compressed: false,
@@ -469,8 +456,10 @@ class SWFLibraryExporter
 				};
 				outputList.add(entry);
 
+				sys.io.File.saveBytes("/home/joshua/Projects/Samples/SampleSWFProblem/Deploy/neko/obj/test.png", alphaByteArray);
+
 				manifestData.assets.push({
-					path: "symbols/" + symbol.id + "a.png",
+					path: symbol.alpha,
 					type: AssetType.IMAGE
 				});
 			}
