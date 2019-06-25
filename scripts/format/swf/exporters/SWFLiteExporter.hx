@@ -237,6 +237,7 @@ class SWFLiteExporter
 					if (transparent) alpha.set(i, buffer.readUnsignedByte());
 				}
 
+				var paddedWidth:Int = Math.ceil(data.bitmapWidth / 4) * 4;
 				var values = Bytes.alloc(data.bitmapWidth * data.bitmapHeight + data.bitmapHeight);
 				index = 0;
 
@@ -245,7 +246,7 @@ class SWFLiteExporter
 					values.set(index++, 0);
 					values.blit(index, buffer, buffer.position, data.bitmapWidth);
 					index += data.bitmapWidth;
-					buffer.position += data.bitmapWidth;
+					buffer.position += paddedWidth;
 				}
 
 				var png = new List();
