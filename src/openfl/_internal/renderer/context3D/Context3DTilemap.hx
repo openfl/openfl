@@ -67,6 +67,8 @@ class Context3DTilemap
 		buildBufferTileContainer(tilemap, tilemap.__group, renderer, parentTransform, tilemap.__tileset, tilemap.tileAlphaEnabled, tilemap.__worldAlpha,
 			tilemap.tileColorTransformEnabled, tilemap.__worldColorTransform, null, rect, matrix);
 
+		tilemap.__buffer.flushVertexBufferData();
+		
 		Rectangle.__pool.release(rect);
 		Matrix.__pool.release(matrix);
 		Matrix.__pool.release(parentTransform);
@@ -272,7 +274,6 @@ class Context3DTilemap
 		}
 
 		group.__dirty = false;
-		tilemap.__buffer.flushVertexBufferData();
 		Matrix.__pool.release(tileTransform);
 	}
 
