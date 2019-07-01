@@ -25,6 +25,7 @@ class FPS extends TextField
 	public var currentFPS(default, null):Int;
 
 	@:noCompletion private var cacheCount:Int;
+	@:noCompletion private var currentTime:Float;
 	@:noCompletion private var times:Array<Float>;
 
 	public function new(x:Float = 10, y:Float = 10, color:Int = 0x000000)
@@ -41,18 +42,17 @@ class FPS extends TextField
 		text = "FPS: ";
 
 		cacheCount = 0;
+		currentTime = 0;
 		times = [];
-
-		addEventListener(Event.ENTER_FRAME, this_onEnterFrame);
 	}
 
 	// Event Handlers
-	@:noCompletion private function this_onEnterFrame(event:Event):Void
+	@:noCompletion private override function __enterFrame(deltaTime:Float):Void
 	{
-		var currentTime = Timer.stamp();
+		currentTime += deltaTime;
 		times.push(currentTime);
 
-		while (times[0] < currentTime - 1)
+		while (times[0] < currentTime - 1000)
 		{
 			times.shift();
 		}
