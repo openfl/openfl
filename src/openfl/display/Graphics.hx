@@ -1946,9 +1946,14 @@ import js.html.CanvasRenderingContext2D;
 		__renderTransform.tx = __worldTransform.__transformInverseX(tx, ty);
 		__renderTransform.ty = __worldTransform.__transformInverseY(tx, ty);
 
+		// TODO: This was causing rendering to occur too often when transforming objects
+
 		// Calculate the size to contain the graphics and the extra subpixel
-		var newWidth = Math.ceil(width + __renderTransform.tx);
-		var newHeight = Math.ceil(height + __renderTransform.ty);
+		// var newWidth = Math.ceil(width + __renderTransform.tx);
+		// var newHeight = Math.ceil(height + __renderTransform.ty);
+
+		var newWidth = Math.floor(width + __renderTransform.tx);
+		var newHeight = Math.floor(height + __renderTransform.ty);
 
 		// Mark dirty if render size changed
 		if (newWidth != __width || newHeight != __height)
