@@ -413,11 +413,7 @@ class ByteArrayTest
 		Assert.areEqual(2, data.readUnsignedShort());
 		#end
 		#else
-		#if (flash || js)
 		Assert.areEqual(2, data.readUnsignedShort());
-		#else
-		Assert.areEqual(1, data.readUnsignedShort());
-		#end
 		#end
 
 		data.position = 0;
@@ -440,11 +436,7 @@ class ByteArrayTest
 		Assert.areEqual(14, data.length);
 		#end
 		#else
-		#if (flash || js)
 		Assert.areEqual(14, data.length);
-		#else
-		Assert.areEqual(13, data.length);
-		#end
 		#end
 
 		data.position = 0;
