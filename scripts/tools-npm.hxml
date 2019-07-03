@@ -12,6 +12,7 @@
 -D format
 # -lib nodejs
 -cp ../node_modules/hxnodejs/src
+-cp .
 --macro allowPackage('sys')
 --macro define('nodejs')
 -D nodejs
