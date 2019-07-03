@@ -402,7 +402,7 @@ class ByteArrayTest
 	@Test public function testReadWriteUTF()
 	{
 		var data = new ByteArray();
-		data.writeUTF("\xE9");
+		data.writeUTF("é");
 
 		data.position = 0;
 
@@ -422,13 +422,13 @@ class ByteArrayTest
 
 		data.position = 0;
 
-		Assert.areEqual("\xE9", data.readUTF());
+		Assert.areEqual("é", data.readUTF());
 	}
 
 	@Test public function testReadWriteUTFBytes()
 	{
 		var data = new ByteArray();
-		var str = "H\xE9llo World !";
+		var str = "Héllo World !";
 		data.writeUTFBytes(str);
 
 		// Flash is adding a byte for a null terminator
