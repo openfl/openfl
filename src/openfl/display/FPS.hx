@@ -8,6 +8,9 @@ import openfl.text.TextFormat;
 import openfl._internal.renderer.context3D.stats.Context3DStats;
 import openfl._internal.renderer.context3D.stats.DrawCallContext;
 #end
+#if flash
+import openfl.Lib;
+#end
 
 /**
 	The FPS class provides an easy-to-use monitor to display
@@ -44,10 +47,19 @@ class FPS extends TextField
 		cacheCount = 0;
 		currentTime = 0;
 		times = [];
+
+		#if flash
+		addEventListener(Event.ENTER_FRAME, function(e)
+		{
+			var time = Lib.getTimer();
+			__enterFrame(time - currentTime);
+		});
+		#end
 	}
 
 	// Event Handlers
-	@:noCompletion private override function __enterFrame(deltaTime:Float):Void
+	@:noCompletion
+	private #if !flash override #end function __enterFrame(deltaTime:Float):Void
 	{
 		currentTime += deltaTime;
 		times.push(currentTime);
