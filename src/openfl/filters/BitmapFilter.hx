@@ -25,6 +25,7 @@ import openfl.geom.Rectangle;
 class BitmapFilter
 {
 	@:noCompletion private var __bottomExtension:Int;
+	@:noCompletion private var __drawPreservedObject:Bool;
 	@:noCompletion private var __leftExtension:Int;
 	@:noCompletion private var __needSecondBitmapData:Bool;
 	@:noCompletion private var __numShaderPasses:Int;
@@ -38,6 +39,7 @@ class BitmapFilter
 	public function new()
 	{
 		__bottomExtension = 0;
+		__drawPreservedObject = false;
 		__leftExtension = 0;
 		__needSecondBitmapData = true;
 		__numShaderPasses = 0;
@@ -64,7 +66,7 @@ class BitmapFilter
 		return sourceBitmapData;
 	}
 
-	@:noCompletion private function __initShader(renderer:DisplayObjectRenderer, pass:Int):Shader
+	@:noCompletion private function __initShader(renderer:DisplayObjectRenderer, pass:Int, sourceBitmapData:BitmapData):Shader
 	{
 		// return renderer.__defaultShader;
 		return null;

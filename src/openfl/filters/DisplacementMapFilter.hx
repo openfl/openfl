@@ -239,7 +239,7 @@ import lime.math.Vector4;
 		return bitmapData;
 	}
 
-	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int):Shader
+	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int, sourceBitmapData:BitmapData):Shader
 	{
 		#if !macro
 		// TODO: mapX/mapY/mapU/mapV + offsets

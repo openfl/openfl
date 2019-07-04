@@ -2372,7 +2372,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 							for (i in 0...filter.__numShaderPasses)
 							{
-								shader = filter.__initShader(childRenderer, i);
+								shader = filter.__initShader(childRenderer, i, filter.__preserveObject ? bitmap3 : null);
 								childRenderer.__setBlendMode(filter.__shaderBlendMode);
 								childRenderer.__setRenderTarget(bitmap2);
 								childRenderer.__renderFilterPass(bitmap, shader, filter.__smooth);
@@ -2382,7 +2382,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 								bitmap2 = cacheBitmap;
 							}
 
-							if (filter.__preserveObject)
+							if (filter.__preserveObject && filter.__drawPreservedObject)
 							{
 								childRenderer.__setBlendMode(NORMAL);
 								childRenderer.__setRenderTarget(bitmap);

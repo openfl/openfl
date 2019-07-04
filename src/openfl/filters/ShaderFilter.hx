@@ -154,7 +154,7 @@ class ShaderFilter extends BitmapFilter
 		return filter;
 	}
 
-	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int):Shader
+	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int, sourceBitmapData:BitmapData):Shader
 	{
 		__shaderBlendMode = blendMode;
 		return shader;
