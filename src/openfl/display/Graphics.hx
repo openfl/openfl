@@ -1949,11 +1949,20 @@ import js.html.CanvasRenderingContext2D;
 		// TODO: This was causing rendering to occur too often when transforming objects
 
 		// Calculate the size to contain the graphics and the extra subpixel
-		// var newWidth = Math.ceil(width + __renderTransform.tx);
-		// var newHeight = Math.ceil(height + __renderTransform.ty);
-
-		var newWidth = Math.floor(width + __renderTransform.tx);
-		var newHeight = Math.floor(height + __renderTransform.ty);
+		var newWidth = Math.ceil(width + __renderTransform.tx);
+		if (__renderTransform.tx == Std.int(__renderTransform.tx))
+		{
+			// Keep a consistent size when positioned on an integer because it
+			// greatly improves performance
+			newWidth++;
+		}
+		var newHeight = Math.ceil(height + __renderTransform.ty);
+		if (__renderTransform.ty == Std.int(__renderTransform.ty))
+		{
+			// Keep a consistent size when positioned on an integer because it
+			// greatly improves performance
+			newHeight++;
+		}
 
 		// Mark dirty if render size changed
 		if (newWidth != __width || newHeight != __height)
