@@ -744,6 +744,9 @@ class Context3DGraphics
 								case NEGATIVE:
 									context.setCulling(BACK);
 
+								case NONE:
+									context.setCulling(NONE);
+
 								default:
 							}
 
