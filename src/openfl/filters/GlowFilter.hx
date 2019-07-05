@@ -2,7 +2,6 @@ package openfl.filters;
 
 #if !flash
 import openfl.display.BitmapData;
-import openfl.display.BlendMode;
 import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
 import openfl.geom.ColorTransform;
@@ -69,7 +68,7 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 @:final class GlowFilter extends BitmapFilter
 {
 	@:noCompletion private static var __invertAlphaShader = new InvertAlphaShader();
-	@:noCompletion private static var __glowShader = new GlowShader();
+	@:noCompletion private static var __blurAlphaShader = new BlurAlphaShader();
 	@:noCompletion private static var __combineShader = new CombineShader();
 	@:noCompletion private static var __innerCombineShader = new InnerCombineShader();
 	@:noCompletion private static var __combineKnockoutShader = new CombineKnockoutShader();
@@ -221,17 +220,17 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 
 		__color = color;
 		__alpha = alpha;
-		this.blurX = blurX;
-		this.blurY = blurY;
+		__blurX = blurX;
+		__blurY = blurY;
 		__strength = strength;
 		__inner = inner;
 		__knockout = knockout;
-		this.quality = quality;
+		__quality = quality;
+
+		__updateSize();
 
 		__needSecondBitmapData = true;
 		__preserveObject = true;
-		__drawPreservedObject = false;
-
 		__renderDirty = true;
 	}
 
@@ -271,28 +270,27 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int, sourceBitmapData:BitmapData):Shader
 	{
 		#if !macro
-
 		// First pass of inner glow is invert alpha
 		if (__inner && pass == 0)
 		{
 			return __invertAlphaShader;
 		}
 
-		var glowPass = pass - (__inner ? 1 : 0);
-		var numGlowPasses = __horizontalPasses + __verticalPasses;
+		var blurPass = pass - (__inner ? 1 : 0);
+		var numBlurPasses = __horizontalPasses + __verticalPasses;
 
-		if (glowPass < numGlowPasses)
+		if (blurPass < numBlurPasses)
 		{
-			var shader = __glowShader;
-			if (glowPass < __horizontalPasses)
+			var shader = __blurAlphaShader;
+			if (blurPass < __horizontalPasses)
 			{
-				var scale = Math.pow(0.5, glowPass >> 1);
+				var scale = Math.pow(0.5, blurPass >> 1);
 				shader.uRadius.value[0] = blurX * scale;
 				shader.uRadius.value[1] = 0;
 			}
 			else
 			{
-				var scale = Math.pow(0.5, (glowPass - __horizontalPasses) >> 1);
+				var scale = Math.pow(0.5, (blurPass - __horizontalPasses) >> 1);
 				shader.uRadius.value[0] = 0;
 				shader.uRadius.value[1] = blurY * scale;
 			}
@@ -302,19 +300,18 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 			shader.uColor.value[3] = alpha;
 			return shader;
 		}
-		var strength = __strength * 100 / 255;
 		if (__inner)
 		{
 			if (__knockout)
 			{
 				var shader = __innerCombineKnockoutShader;
 				shader.sourceBitmap.input = sourceBitmapData;
-				shader.strength.value[0] = strength;
+				shader.strength.value[0] = __strength;
 				return shader;
 			}
 			var shader = __innerCombineShader;
 			shader.sourceBitmap.input = sourceBitmapData;
-			shader.strength.value[0] = strength;
+			shader.strength.value[0] = __strength;
 			return shader;
 		}
 		else
@@ -323,17 +320,26 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 			{
 				var shader = __combineKnockoutShader;
 				shader.sourceBitmap.input = sourceBitmapData;
-				shader.strength.value[0] = strength;
+				shader.strength.value[0] = __strength;
 				return shader;
 			}
 			var shader = __combineShader;
 			shader.sourceBitmap.input = sourceBitmapData;
-			shader.strength.value[0] = strength;
+			shader.strength.value[0] = __strength;
 			return shader;
 		}
 		#else
 		return null;
 		#end
+	}
+
+	@:noCompletion private function __updateSize():Void
+	{
+		__leftExtension = (__blurX > 0 ? Math.ceil(__blurX * 1.5) : 0);
+		__rightExtension = __leftExtension;
+		__topExtension = (__blurY > 0 ? Math.ceil(__blurY * 1.5) : 0);
+		__bottomExtension = __topExtension;
+		__calculateNumShaderPasses();
 	}
 
 	@:noCompletion private function __calculateNumShaderPasses():Void
@@ -366,9 +372,7 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 		{
 			__blurX = value;
 			__renderDirty = true;
-			__leftExtension = (value > 0 ? Math.ceil(value * 1.5) : 0);
-			__rightExtension = __leftExtension;
-			__calculateNumShaderPasses();
+			__updateSize();
 		}
 		return value;
 	}
@@ -384,9 +388,7 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 		{
 			__blurY = value;
 			__renderDirty = true;
-			__topExtension = (value > 0 ? Math.ceil(value * 1.5) : 0);
-			__bottomExtension = __topExtension;
-			__calculateNumShaderPasses();
+			__updateSize();
 		}
 		return value;
 	}
@@ -495,7 +497,7 @@ private class InvertAlphaShader extends BitmapFilterShader
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-private class GlowShader extends BitmapFilterShader
+private class BlurAlphaShader extends BitmapFilterShader
 {
 	@:glFragmentSource("
 		uniform sampler2D openfl_Texture;
@@ -528,7 +530,6 @@ private class GlowShader extends BitmapFilterShader
 			gl_FragColor = vec4(uColor.rgb, a);
 		}
 	")
-
 	@:glVertexSource("
 		attribute vec4 openfl_Position;
 		attribute vec2 openfl_TextureCoord;
@@ -575,11 +576,11 @@ private class CombineShader extends BitmapFilterShader
 		uniform sampler2D openfl_Texture;
 		uniform sampler2D sourceBitmap;
 		uniform float strength;
-		varying vec2 vTexCoord;
+		varying vec4 textureCoords;
 
 		void main(void) {
-			vec4 glow = texture2D(openfl_Texture, vTexCoord) * strength;
-			vec4 src = texture2D(sourceBitmap, vTexCoord);
+			vec4 src = texture2D(sourceBitmap, textureCoords.xy);
+			vec4 glow = texture2D(openfl_Texture, textureCoords.zw) * strength;
 
 			gl_FragColor = src + glow * (1.0 - src.a);
 		}
@@ -587,11 +588,13 @@ private class CombineShader extends BitmapFilterShader
 	@:glVertexSource("attribute vec4 openfl_Position;
 		attribute vec2 openfl_TextureCoord;
 		uniform mat4 openfl_Matrix;
-		varying vec2 vTexCoord;
+		uniform vec2 openfl_TextureSize;
+		uniform vec2 offset;
+		varying vec4 textureCoords;
 
 		void main(void) {
 			gl_Position = openfl_Matrix * openfl_Position;
-			vTexCoord = openfl_TextureCoord;
+			textureCoords = vec4(openfl_TextureCoord, openfl_TextureCoord - offset / openfl_TextureSize);
 		}
 	")
 	public function new()
@@ -599,6 +602,7 @@ private class CombineShader extends BitmapFilterShader
 		super();
 		#if !macro
 		strength.value = [1];
+		offset.value = [0, 0];
 		#end
 	}
 }
@@ -613,11 +617,11 @@ private class InnerCombineShader extends BitmapFilterShader
 		uniform sampler2D openfl_Texture;
 		uniform sampler2D sourceBitmap;
 		uniform float strength;
-		varying vec2 vTexCoord;
+		varying vec4 textureCoords;
 
 		void main(void) {
-			vec4 glow = texture2D(openfl_Texture, vTexCoord) * strength;
-			vec4 src = texture2D(sourceBitmap, vTexCoord);
+			vec4 src = texture2D(sourceBitmap, textureCoords.xy);
+			vec4 glow = texture2D(openfl_Texture, textureCoords.zw) * strength;
 
 			gl_FragColor = vec4(mix(src.rgb, glow.rgb, glow.a), src.a);
 		}
@@ -625,11 +629,13 @@ private class InnerCombineShader extends BitmapFilterShader
 	@:glVertexSource("attribute vec4 openfl_Position;
 		attribute vec2 openfl_TextureCoord;
 		uniform mat4 openfl_Matrix;
-		varying vec2 vTexCoord;
+		uniform vec2 openfl_TextureSize;
+		uniform vec2 offset;
+		varying vec4 textureCoords;
 
 		void main(void) {
 			gl_Position = openfl_Matrix * openfl_Position;
-			vTexCoord = openfl_TextureCoord;
+			textureCoords = vec4(openfl_TextureCoord, openfl_TextureCoord - offset / openfl_TextureSize);
 		}
 	")
 	public function new()
@@ -637,9 +643,11 @@ private class InnerCombineShader extends BitmapFilterShader
 		super();
 		#if !macro
 		strength.value = [1];
+		offset.value = [0, 0];
 		#end
 	}
 }
+
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -650,11 +658,11 @@ private class CombineKnockoutShader extends BitmapFilterShader
 		uniform sampler2D openfl_Texture;
 		uniform sampler2D sourceBitmap;
 		uniform float strength;
-		varying vec2 vTexCoord;
+		varying vec4 textureCoords;
 
 		void main(void) {
-			vec4 glow = texture2D(openfl_Texture, vTexCoord) * strength;
-			vec4 src = texture2D(sourceBitmap, vTexCoord);
+			vec4 src = texture2D(sourceBitmap, textureCoords.xy);
+			vec4 glow = texture2D(openfl_Texture, textureCoords.zw) * strength;
 
 			gl_FragColor = glow * (1.0 - src.a);
 		}
@@ -662,11 +670,13 @@ private class CombineKnockoutShader extends BitmapFilterShader
 	@:glVertexSource("attribute vec4 openfl_Position;
 		attribute vec2 openfl_TextureCoord;
 		uniform mat4 openfl_Matrix;
-		varying vec2 vTexCoord;
+		uniform vec2 openfl_TextureSize;
+		uniform vec2 offset;
+		varying vec4 textureCoords;
 
 		void main(void) {
 			gl_Position = openfl_Matrix * openfl_Position;
-			vTexCoord = openfl_TextureCoord;
+			textureCoords = vec4(openfl_TextureCoord, openfl_TextureCoord - offset / openfl_TextureSize);
 		}
 	")
 	public function new()
@@ -674,6 +684,7 @@ private class CombineKnockoutShader extends BitmapFilterShader
 		super();
 		#if !macro
 		strength.value = [1];
+		offset.value = [0, 0];
 		#end
 	}
 }
@@ -688,11 +699,11 @@ private class InnerCombineKnockoutShader extends BitmapFilterShader
 		uniform sampler2D openfl_Texture;
 		uniform sampler2D sourceBitmap;
 		uniform float strength;
-		varying vec2 vTexCoord;
+		varying vec4 textureCoords;
 
 		void main(void) {
-			vec4 glow = texture2D(openfl_Texture, vTexCoord) * strength;
-			vec4 src = texture2D(sourceBitmap, vTexCoord);
+			vec4 src = texture2D(sourceBitmap, textureCoords.xy);
+			vec4 glow = texture2D(openfl_Texture, textureCoords.zw) * strength;
 
 			gl_FragColor = glow * src.a;
 		}
@@ -700,17 +711,20 @@ private class InnerCombineKnockoutShader extends BitmapFilterShader
 	@:glVertexSource("attribute vec4 openfl_Position;
 		attribute vec2 openfl_TextureCoord;
 		uniform mat4 openfl_Matrix;
-		varying vec2 vTexCoord;
+		uniform vec2 openfl_TextureSize;
+		uniform vec2 offset;
+		varying vec4 textureCoords;
 
 		void main(void) {
 			gl_Position = openfl_Matrix * openfl_Position;
-			vTexCoord = openfl_TextureCoord;
+			textureCoords = vec4(openfl_TextureCoord, openfl_TextureCoord - offset / openfl_TextureSize);
 		}
 	")
 	public function new()
 	{
 		super();
 		#if !macro
+		offset.value = [0, 0];
 		strength.value = [1];
 		#end
 	}
