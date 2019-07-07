@@ -2312,35 +2312,82 @@ class TextField extends InteractiveObject
 		{
 			range = __textEngine.textFormatRanges[i];
 
-			if (range.start <= beginIndex && range.end >= endIndex)
+			if (beginIndex == endIndex)
 			{
-				range.end += offset;
-				i++;
-			}
-			else if (range.start >= beginIndex && range.end <= endIndex)
-			{
-				if (i > 0)
+				if (range.end < beginIndex)
 				{
-					__textEngine.textFormatRanges.splice(i, 1);
+					// do nothing, range is completely before insertion point
+				}
+				else if (range.start > endIndex)
+				{
+					// shift range, range is after insertion point
+					range.start += offset;
+					range.end += offset;
 				}
 				else
 				{
-					range.start = 0;
-					range.end = beginIndex + newText.length;
-					i++;
+					if (range.start < range.end && range.end == beginIndex && i < __textEngine.textFormatRanges.length - 1)
+					{
+						// do nothing, insertion point is between two ranges, so it belongs to the next range
+						// unless there are no more ranges after this one (inserting at the end of the text)
+					}
+					else
+					{
+						// add to range, insertion point is within range
+						range.end += offset;
+					}
 				}
-
-				offset -= (range.end - range.start);
-			}
-			else if (range.start > beginIndex && range.start <= endIndex)
-			{
-				range.start += offset;
-				i++;
 			}
 			else
 			{
-				i++;
+				if (range.end < beginIndex)
+				{
+					// do nothing, range is before selection
+				}
+				else if (range.start >= endIndex)
+				{
+					// shift range, range is completely after selection
+					range.start += offset;
+					range.end += offset;
+				}
+				else if (range.start >= beginIndex && range.end <= endIndex)
+				{
+					// delete range, range is encompassed by selection
+					if (__textEngine.textFormatRanges.length > 1)
+					{
+						__textEngine.textFormatRanges.splice(i, 1);
+					}
+					else
+					{
+						// don't delete if it's the last range though, just modify properties
+						range.start = 0;
+						range.end = newText.length;
+					}
+				}
+				else if (range.start <= beginIndex)
+				{
+					if (range.end < endIndex)
+					{
+						// modify range, range ends before the selection ends
+						range.end = beginIndex;
+					}
+					else
+					{
+						// modify range, range ends where or after the selection ends
+						range.end += offset;
+					}
+				}
+				else
+				{
+					// modify range, selection begins before the range
+					// for deletion: entire range shifts leftward
+					// for addition: added text gains the format of endIndex
+					range.start = beginIndex;
+					range.end += offset;
+				}
 			}
+			
+			i++;
 		}
 
 		__updateScrollV();
