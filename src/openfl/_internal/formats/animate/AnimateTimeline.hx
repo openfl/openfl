@@ -40,6 +40,7 @@ import hscript.Parser;
 #end
 @:access(openfl._internal.formats.animate.AnimateLibrary)
 @:access(openfl._internal.formats.animate.AnimateSymbol)
+@:access(openfl.display.DisplayObject)
 @:access(openfl.display.MovieClip)
 @:access(openfl.geom.ColorTransform)
 class AnimateTimeline implements ITimeline
@@ -328,8 +329,8 @@ class AnimateTimeline implements ITimeline
 							if (displayObject != null)
 							{
 								#if !flash
-								// displayObject.parent = __movieClip;
-								// displayObject.stage = __movieClip.stage;
+								displayObject.parent = __movieClip;
+								displayObject.stage = __movieClip.stage;
 
 								if (__movieClip.stage != null) displayObject.dispatchEvent(new Event(Event.ADDED_TO_STAGE, false, false));
 								#end

@@ -517,8 +517,7 @@ import openfl.utils.AssetManifest;
 
 	private function __parseMatrix(values:Array<Int>):Matrix
 	{
-		return values != null ? new Matrix(__pixel(values[0]), __pixel(values[1]), __pixel(values[2]), __pixel(values[3]), __pixel(values[4]),
-			__pixel(values[5])) : null;
+		return values != null ? new Matrix(values[0], values[1], values[2], values[3], __pixel(values[4]), __pixel(values[5])) : null;
 	}
 
 	private function __parseShape(data:Dynamic):AnimateShapeSymbol
