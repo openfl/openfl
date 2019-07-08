@@ -762,9 +762,8 @@ class Tools
 
 					Log.info("", " - \x1b[1mProcessing library:\x1b[0m " + library.sourcePath + " [SWF]");
 
-					var swf = new Asset(library.sourcePath, "lib/" + library.name + "/" + library.name + ".swf", AssetType.BINARY);
-					swf.id = "lib/" + library.name + "/" + library.name + ".swf";
-					swf.library = library.name;
+					var swf = new Asset(library.sourcePath, library.name + ".swf", AssetType.BINARY);
+					// swf.library = library.name;
 
 					var embed = (library.embed != false);
 					// var embed = (library.embed == true); // default to non-embedded
@@ -784,8 +783,11 @@ class Tools
 
 					var data = AssetHelper.createManifest(output, library.name);
 					data.libraryType = "openfl._internal.formats.swf.SWFLibrary";
-					data.libraryArgs = ["lib/" + library.name + "/" + library.name + ".swf"];
+					data.libraryArgs = [library.name + ".swf"];
 					data.name = library.name;
+					data.rootPath = library.name;
+
+					swf.library = library.name;
 
 					var asset = new Asset("", "lib/" + library.name + ".json", AssetType.MANIFEST);
 					asset.id = "libraries/" + library.name + ".json";
@@ -849,7 +851,7 @@ class Tools
 						{
 							if (Path.extension(file) == "png" || Path.extension(file) == "jpg")
 							{
-								var asset = new Asset(cacheDirectory + "/" + file, "lib/" + library.name + "/" + file, AssetType.IMAGE);
+								var asset = new Asset(cacheDirectory + "/" + file, file, AssetType.IMAGE);
 
 								if (library.embed != null)
 								{
@@ -860,15 +862,8 @@ class Tools
 							}
 						}
 
-						var swfLiteAsset = new Asset(cacheDirectory
-							+ "/"
-							+ library.name
-							+ SWFLITE_DATA_SUFFIX,
-							"lib/"
-							+ library.name
-							+ "/"
-							+ library.name
-							+ SWFLITE_DATA_SUFFIX, AssetType.TEXT);
+						var swfLiteAsset = new Asset(cacheDirectory + "/" + library.name + SWFLITE_DATA_SUFFIX, library.name + SWFLITE_DATA_SUFFIX,
+							AssetType.TEXT);
 
 						if (library.embed != null)
 						{
@@ -918,7 +913,7 @@ class Tools
 						{
 							var type = exporter.bitmapTypes.get(id) == BitmapType.PNG ? "png" : "jpg";
 							var symbol:BitmapSymbol = cast swfLite.symbols.get(id);
-							symbol.path = "lib/" + library.name + "/" + id + "." + type;
+							symbol.path = id + "." + type;
 							swfLite.symbols.set(id, symbol);
 
 							var asset = new Asset("", symbol.path, AssetType.IMAGE);
@@ -946,7 +941,7 @@ class Tools
 
 							if (exporter.bitmapTypes.get(id) == BitmapType.JPEG_ALPHA)
 							{
-								symbol.alpha = "lib/" + library.name + "/" + id + "a.png";
+								symbol.alpha = id + "a.png";
 
 								var asset = new Asset("", symbol.alpha, AssetType.IMAGE);
 								var assetData = exporter.bitmapAlpha.get(id);
@@ -982,7 +977,7 @@ class Tools
 
 						// }
 
-						var swfLiteAsset = new Asset("", "lib/" + library.name + "/" + library.name + SWFLITE_DATA_SUFFIX, AssetType.TEXT);
+						var swfLiteAsset = new Asset("", library.name + SWFLITE_DATA_SUFFIX, AssetType.TEXT);
 						var swfLiteAssetData = swfLite.serialize();
 
 						if (cacheDirectory != null)
@@ -1015,7 +1010,8 @@ class Tools
 								targetPath = Path.tryFullPath(targetDirectory) + "/haxe/_generated";
 							}
 
-							var generatedClasses = generateSWFLiteClasses(targetPath, output.assets, swfLite, swfLiteAsset.id, library.prefix);
+							var generatedClasses = generateSWFLiteClasses(targetPath, output.assets, swfLite, library.name + SWFLITE_DATA_SUFFIX,
+								library.prefix);
 
 							for (className in generatedClasses)
 							{
@@ -1033,12 +1029,14 @@ class Tools
 
 					var data = AssetHelper.createManifest(merge);
 					data.libraryType = "openfl._internal.formats.swf.SWFLiteLibrary";
-					data.libraryArgs = ["lib/" + library.name + "/" + library.name + SWFLITE_DATA_SUFFIX];
+					data.libraryArgs = [library.name + SWFLITE_DATA_SUFFIX];
 					data.name = library.name;
+					data.rootPath = library.name;
 
 					for (asset in merge.assets)
 					{
 						asset.library = library.name;
+						asset.targetPath = "lib/" + library.name + "/" + asset.targetPath;
 					}
 
 					output.merge(merge);
