@@ -932,10 +932,7 @@ class SWFLibraryExporter
 			if (record.hasColor) textRecord.color = record.textColor;
 			if (record.hasXOffset || record.hasYOffset)
 			{
-				textRecord.offset = [
-					record.hasXOffset ? twip(record.xOffset) : 0,
-					record.hasYOffset ? twip(record.yOffset) : 0
-				];
+				textRecord.offset = [record.hasXOffset ? record.xOffset : 0, record.hasYOffset ? record.yOffset : 0];
 			}
 			textRecord.fontHeight = record.textHeight;
 

@@ -53,8 +53,11 @@ class AnimateStaticTextSymbol extends AnimateSymbol
 			for (record in records)
 			{
 				if (record.fontID != null) font = cast library.symbols.get(record.fontID);
-				if (record.offsetX != null) offsetX = matrix.tx + record.offsetX * 0.05;
-				if (record.offsetY != null) offsetY = matrix.ty + record.offsetY * 0.05;
+				if (record.offset != null)
+				{
+					offsetX = matrix.tx + record.offset[0] * 0.05;
+					offsetY = matrix.ty + record.offset[1] * 0.05;
+				}
 				if (record.color != null) color = record.color;
 
 				if (font != null)
@@ -74,8 +77,8 @@ class AnimateStaticTextSymbol extends AnimateSymbol
 									graphics.beginFill(color & 0xFFFFFF, ((color >> 24) & 0xFF) / 0xFF);
 
 								case CurveTo(controlX, controlY, anchorX, anchorY):
-									graphics.curveTo(controlX * scale + offsetX, controlY * scale + offsetY, anchorX * scale + offsetX, anchorY * scale
-										+ offsetY);
+									graphics.curveTo(controlX * scale + offsetX, controlY * scale + offsetY, anchorX * scale + offsetX,
+										anchorY * scale + offsetY);
 
 								case EndFill:
 									graphics.endFill();
@@ -125,8 +128,7 @@ class AnimateStaticTextSymbol extends AnimateSymbol
 	public var fontHeight:Int;
 	public var fontID:Null<Int>;
 	public var glyphs:Array<Int>;
-	public var offsetX:Null<Int>;
-	public var offsetY:Null<Int>;
+	public var offset:Null<Array<Int>>;
 
 	public function new() {}
 }
