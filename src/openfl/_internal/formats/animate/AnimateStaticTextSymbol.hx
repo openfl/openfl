@@ -121,7 +121,7 @@ class AnimateStaticTextSymbol extends AnimateSymbol
 	}
 }
 
-@:keep class StaticTextRecord
+@:keep typedef StaticTextRecord =
 {
 	public var advances:Array<Int>;
 	public var color:Null<Int>;
@@ -129,6 +129,5 @@ class AnimateStaticTextSymbol extends AnimateSymbol
 	public var fontID:Null<Int>;
 	public var glyphs:Array<Int>;
 	public var offset:Null<Array<Int>>;
-
-	public function new() {}
+	// public function new() {}
 }
