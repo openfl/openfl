@@ -823,6 +823,8 @@ class Tools
 
 					// project.haxelibs.push (new Haxelib ("swf"));
 
+					var uuid = StringTools.generateUUID(20);
+
 					var cacheAvailable = false;
 					var cacheDirectory = null;
 					var merge = new HXProject();
@@ -1010,8 +1012,7 @@ class Tools
 								targetPath = Path.tryFullPath(targetDirectory) + "/haxe/_generated";
 							}
 
-							var generatedClasses = generateSWFLiteClasses(targetPath, output.assets, swfLite, library.name + SWFLITE_DATA_SUFFIX,
-								library.prefix);
+							var generatedClasses = generateSWFLiteClasses(targetPath, output.assets, swfLite, uuid, library.prefix);
 
 							for (className in generatedClasses)
 							{
@@ -1029,7 +1030,7 @@ class Tools
 
 					var data = AssetHelper.createManifest(merge);
 					data.libraryType = "openfl._internal.formats.swf.SWFLiteLibrary";
-					data.libraryArgs = [library.name + SWFLITE_DATA_SUFFIX];
+					data.libraryArgs = [library.name + SWFLITE_DATA_SUFFIX, uuid];
 					data.name = library.name;
 					data.rootPath = library.name;
 
