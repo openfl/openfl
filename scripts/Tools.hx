@@ -785,7 +785,7 @@ class Tools
 					data.libraryType = "openfl._internal.formats.swf.SWFLibrary";
 					data.libraryArgs = [library.name + ".swf"];
 					data.name = library.name;
-					data.rootPath = library.name;
+					data.rootPath = "lib/" + library.name;
 
 					swf.library = library.name;
 
@@ -823,7 +823,7 @@ class Tools
 
 					// project.haxelibs.push (new Haxelib ("swf"));
 
-					var uuid = StringTools.generateUUID(20);
+					var uuid = null;
 
 					var cacheAvailable = false;
 					var cacheDirectory = null;
@@ -884,10 +884,20 @@ class Tools
 							}
 						}
 
+						if (FileSystem.exists(cacheDirectory + "/uuid.txt"))
+						{
+							uuid = File.getContent(cacheDirectory + "/uuid.txt");
+						}
+
 						embeddedSWFLite = true;
 					}
 					else
 					{
+						if (uuid == null)
+						{
+							uuid = StringTools.generateUUID(20);
+						}
+
 						if (cacheDirectory != null)
 						{
 							System.mkdir(cacheDirectory);
@@ -1025,6 +1035,11 @@ class Tools
 							}
 						}
 
+						if (cacheDirectory != null)
+						{
+							File.saveContent(cacheDirectory + "/uuid.txt", uuid);
+						}
+
 						embeddedSWFLite = true;
 					}
 
@@ -1032,7 +1047,15 @@ class Tools
 					data.libraryType = "openfl._internal.formats.swf.SWFLiteLibrary";
 					data.libraryArgs = [library.name + SWFLITE_DATA_SUFFIX, uuid];
 					data.name = library.name;
-					data.rootPath = library.name;
+
+					if (library.embed == true || (library.embed == null && (project.platformType == WEB || project.target == AIR)))
+					{
+						data.rootPath = "lib/" + library.name;
+					}
+					else
+					{
+						data.rootPath = library.name;
+					}
 
 					for (asset in merge.assets)
 					{
