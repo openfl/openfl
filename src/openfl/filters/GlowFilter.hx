@@ -525,9 +525,7 @@ private class BlurAlphaShader extends BitmapFilterShader
 			a += dot(top, contributions.xyz);
             a += dot(bottom, contributions.zyx);
 
-			a *= uColor.a;
-
-			gl_FragColor = vec4(uColor.rgb * a, a);
+			gl_FragColor = uColor * a;
 		}
 	")
 	@:glVertexSource("

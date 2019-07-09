@@ -68,7 +68,6 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 @:final class DropShadowFilter extends BitmapFilter
 {
 	@:noCompletion private static var __hideShader = new HideShader();
-	@:noCompletion private static var __innerHideShader = new InnerHideShader();
 
 	/**
 		The alpha transparency value for the shadow color. Valid values are 0.0 to
@@ -329,18 +328,9 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 		}
 		if (__inner)
 		{
-			if (__knockout)
+			if (__knockout || __hideObject)
 			{
 				var shader = GlowFilter.__innerCombineKnockoutShader;
-				shader.sourceBitmap.input = sourceBitmapData;
-				shader.offset.value[0] = __offsetX;
-				shader.offset.value[1] = __offsetY;
-				shader.strength.value[0] = __strength;
-				return shader;
-			}
-			else if (__hideObject)
-			{
-				var shader = __innerHideShader;
 				shader.sourceBitmap.input = sourceBitmapData;
 				shader.offset.value[0] = __offsetX;
 				shader.offset.value[1] = __offsetY;
@@ -566,47 +556,6 @@ private class HideShader extends BitmapFilterShader
 			vec4 glow = texture2D(openfl_Texture, textureCoords.zw) * strength;
 
 			gl_FragColor = glow;
-		}
-	")
-	@:glVertexSource("attribute vec4 openfl_Position;
-		attribute vec2 openfl_TextureCoord;
-		uniform mat4 openfl_Matrix;
-		uniform vec2 openfl_TextureSize;
-		uniform vec2 offset;
-		varying vec4 textureCoords;
-
-		void main(void) {
-			gl_Position = openfl_Matrix * openfl_Position;
-			textureCoords = vec4(openfl_TextureCoord, openfl_TextureCoord - offset / openfl_TextureSize);
-		}
-	")
-	public function new()
-	{
-		super();
-		#if !macro
-		strength.value = [1];
-		offset.value = [0, 0];
-		#end
-	}
-}
-
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
-private class InnerHideShader extends BitmapFilterShader
-{
-	@:glFragmentSource("
-		uniform sampler2D openfl_Texture;
-		uniform sampler2D sourceBitmap;
-		uniform float strength;
-		varying vec4 textureCoords;
-
-		void main(void) {
-			vec4 src = texture2D(sourceBitmap, textureCoords.xy);
-			vec4 glow = texture2D(openfl_Texture, textureCoords.zw) * strength;
-
-			gl_FragColor = glow * src.a;
 		}
 	")
 	@:glVertexSource("attribute vec4 openfl_Position;
