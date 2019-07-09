@@ -2,6 +2,7 @@ package openfl.display;
 
 #if !flash
 import haxe.io.Path;
+import openfl.errors.Error;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 import openfl.events.ProgressEvent;
@@ -199,6 +200,19 @@ class Loader extends DisplayObjectContainer
 
 		contentLoaderInfo = LoaderInfo.create(this);
 		uncaughtErrorEvents = contentLoaderInfo.uncaughtErrorEvents;
+		__unloaded = true;
+	}
+
+	public override function addChild(child:DisplayObject):DisplayObject
+	{
+		throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
+		return null;
+	}
+
+	public override function addChildAt(child:DisplayObject, index:Int):DisplayObject
+	{
+		throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
+		return null;
 	}
 
 	#if !openfl_strict
@@ -370,6 +384,8 @@ class Loader extends DisplayObjectContainer
 	**/
 	public function load(request:URLRequest, context:LoaderContext = null):Void
 	{
+		unload();
+
 		contentLoaderInfo.loaderURL = Lib.current.loaderInfo.url;
 		contentLoaderInfo.url = request.url;
 		__unloaded = false;
@@ -546,6 +562,23 @@ class Loader extends DisplayObjectContainer
 		BitmapData.loadFromBytes(buffer).onComplete(BitmapData_onLoad).onError(BitmapData_onError);
 	}
 
+	public override function removeChild(child:DisplayObject):DisplayObject
+	{
+		throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
+		return null;
+	}
+
+	public override function removeChildAt(index:Int):DisplayObject
+	{
+		throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
+		return null;
+	}
+
+	public override function setChildIndex(child:DisplayObject, index:Int):Void
+	{
+		throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
+	}
+
 	/**
 		Removes a child of this Loader object that was loaded by using the
 		`load()` method. The `property` of the associated
@@ -578,9 +611,9 @@ class Loader extends DisplayObjectContainer
 	{
 		if (!__unloaded)
 		{
-			while (numChildren > 0)
+			if (content != null && content.parent == this)
 			{
-				removeChildAt(0);
+				super.removeChild(content);
 			}
 
 			if (__library != null)
@@ -661,6 +694,20 @@ class Loader extends DisplayObjectContainer
 		contentLoaderInfo.dispatchEvent(event);
 	}
 
+	@:noCompletion private function __setContent(content:DisplayObject, width:Int, height:Int):Void
+	{
+		this.content = content;
+
+		contentLoaderInfo.content = content;
+		contentLoaderInfo.width = width;
+		contentLoaderInfo.height = height;
+
+		if (content != null)
+		{
+			super.addChildAt(content, 0);
+		}
+	}
+
 	// Event Handlers
 
 	@SuppressWarnings("checkstyle:Dynamic")
@@ -681,11 +728,7 @@ class Loader extends DisplayObjectContainer
 			return;
 		}
 
-		content = new Bitmap(bitmapData);
-		contentLoaderInfo.content = content;
-		contentLoaderInfo.width = Std.int(content.width);
-		contentLoaderInfo.height = Std.int(content.height);
-		addChild(content);
+		__setContent(new Bitmap(bitmapData), bitmapData.width, bitmapData.height);
 
 		contentLoaderInfo.dispatchEvent(new Event(Event.COMPLETE));
 	}
@@ -735,9 +778,8 @@ class Loader extends DisplayObjectContainer
 						Assets.registerLibrary(manifest.name, __library);
 					}
 
-					content = __library.getMovieClip("");
-					contentLoaderInfo.content = content;
-					addChild(content);
+					var clip = __library.getMovieClip("");
+					__setContent(clip, Std.int(clip.width), Std.int(clip.height));
 
 					contentLoaderInfo.dispatchEvent(new Event(Event.COMPLETE));
 				}).onError(function(e)
@@ -751,9 +793,7 @@ class Loader extends DisplayObjectContainer
 		if (contentLoaderInfo.contentType != null
 			&& (contentLoaderInfo.contentType.indexOf("/javascript") > -1 || contentLoaderInfo.contentType.indexOf("/ecmascript") > -1))
 		{
-			content = new Sprite();
-			contentLoaderInfo.content = content;
-			addChild(content);
+			__setContent(new Sprite(), 0, 0);
 
 			#if (js && html5)
 			// var script:ScriptElement = cast Browser.document.createElement ("script");
