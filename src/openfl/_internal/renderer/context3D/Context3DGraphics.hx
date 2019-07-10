@@ -771,9 +771,14 @@ class Context3DGraphics
 								vertexBufferPosition += (dataPerVertex * length);
 							}
 
-							if (culling != NONE)
+							// This code is here because other draw calls are not aware (currently) of the culling type and just generally expect it to use
+							// back face culling by default
+							switch (culling)
 							{
-								context.setCulling(BACK);
+								case POSITIVE, NONE:
+									context.setCulling(BACK);
+
+								default:
 							}
 
 							#if gl_stats
