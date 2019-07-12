@@ -30,6 +30,7 @@ extern class Point
 	 * The length of the line segment from(0,0) to this point.
 	 */
 	public var length(get, never):Float;
+
 	@:noCompletion private function get_length():Float;
 
 	/**
@@ -66,6 +67,7 @@ extern class Point
 	 * @return The new Point object.
 	 */
 	public function clone():Point;
+
 	public function copyFrom(sourcePoint:Point):Void;
 
 	/**
@@ -139,6 +141,7 @@ extern class Point
 	 * @return The Cartesian point.
 	 */
 	public static function polar(len:Float, angle:Float):Point;
+
 	// public inline function setTo (xa:Float, ya:Float):Void;
 	public function setTo(xa:Float, ya:Float):Void;
 

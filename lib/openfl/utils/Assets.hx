@@ -69,6 +69,7 @@ extern class Assets
 	 * @return		A new Font object
 	 */
 	public static function getFont(id:String, useCache:Bool = true):Font;
+
 	public static function getLibrary(name:String):LimeAssetLibrary;
 
 	/**
@@ -103,6 +104,7 @@ extern class Assets
 	 * @return		A new String object
 	 */
 	public static function getText(id:String):String;
+
 	public static function hasEventListener(type:String):Bool;
 	public static function hasLibrary(name:String):Bool;
 
@@ -206,6 +208,7 @@ extern class Assets
 	 * @param	library		An AssetLibrary instance to register
 	 */
 	public static function registerLibrary(name:String, library:AssetLibrary):Void;
+
 	public static function removeEventListener(type:String, listener:Dynamic, capture:Bool = false):Void;
 	public static function unloadLibrary(name:String):Void;
 }

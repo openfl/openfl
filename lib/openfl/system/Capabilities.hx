@@ -44,6 +44,7 @@ package openfl.system;
 	 * server string is `ARCH`.
 	 */
 	public static var cpuArchitecture(get, null):String;
+
 	@:noCompletion private static function get_cpuArchitecture():String;
 
 	/**
@@ -176,6 +177,7 @@ package openfl.system;
 	 * The server string is `L`.
 	 */
 	public static var language(get, never):String;
+
 	@:noCompletion private static function get_language():String;
 
 	/**
@@ -217,6 +219,7 @@ package openfl.system;
 	 * information, see the Capabilities class description.
 	 */
 	public static var manufacturer(get, never):String;
+
 	@:noCompletion private static function get_manufacturer():String;
 
 	/**
@@ -246,6 +249,7 @@ package openfl.system;
 	 * information, see the Capabilities class description.
 	 */
 	public static var os(get, never):String;
+
 	@:noCompletion private static function get_os():String;
 
 	/**
@@ -253,6 +257,7 @@ package openfl.system;
 	 * `AR`.
 	 */
 	public static var pixelAspectRatio(get, never):Float;
+
 	@:noCompletion private static function get_pixelAspectRatio():Float;
 
 	/**
@@ -288,6 +293,7 @@ package openfl.system;
 	 * server string is `DP`.
 	 */
 	public static var screenDPI(get, never):Float;
+
 	@:noCompletion private static function get_screenDPI():Float;
 
 	/**
@@ -299,6 +305,7 @@ package openfl.system;
 	 * screen.
 	 */
 	public static var screenResolutionX(get, never):Float;
+
 	@:noCompletion private static function get_screenResolutionX():Float;
 
 	/**
@@ -309,6 +316,7 @@ package openfl.system;
 	 * application started. Also, the value only specifies the primary screen.
 	 */
 	public static var screenResolutionY(get, never):Float;
+
 	@:noCompletion private static function get_screenResolutionY():Float;
 
 	/**
@@ -363,6 +371,7 @@ package openfl.system;
 	 * The server string is `V`.
 	 */
 	public static var version(get, never):String;
+
 	@:noCompletion private static function get_version():String;
 	public static function hasMultiChannelAudio(type:String):Bool;
 }

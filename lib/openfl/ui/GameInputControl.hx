@@ -30,6 +30,7 @@ extern class GameInputControl extends EventDispatcher
 	 * Returns the value for this control.
 	 */
 	public var value(default, null):Float;
+
 	private function new(device:GameInputDevice, id:String, minValue:Float, maxValue:Float, value:Float = 0);
 }
 #else

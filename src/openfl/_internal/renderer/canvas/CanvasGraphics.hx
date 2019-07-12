@@ -557,8 +557,14 @@ class CanvasGraphics
 				case CUBIC_CURVE_TO:
 					var c = data.readCubicCurveTo();
 					hasPath = true;
-					context.bezierCurveTo(c.controlX1 - offsetX, c.controlY1 - offsetY, c.controlX2 - offsetX, c.controlY2 - offsetY, c.anchorX
-						- offsetX, c.anchorY - offsetY);
+					context.bezierCurveTo(c.controlX1
+						- offsetX, c.controlY1
+						- offsetY, c.controlX2
+						- offsetX, c.controlY2
+						- offsetY, c.anchorX
+						- offsetX,
+						c.anchorY
+						- offsetY);
 
 				case CURVE_TO:
 					var c = data.readCurveTo();
@@ -1058,7 +1064,8 @@ class CanvasGraphics
 						if (canOptimizeMatrix && st >= 0 && sl >= 0 && sr <= bitmapFill.width && sb <= bitmapFill.height)
 						{
 							optimizationUsed = true;
-							if (!hitTesting) context.drawImage(bitmapFill.image.src, sl, st, sr - sl, sb - st, c.x - offsetX, c.y - offsetY, c.width, c.height);
+							if (!hitTesting) context.drawImage(bitmapFill.image.src, sl, st, sr - sl, sb - st, c.x - offsetX, c.y - offsetY, c.width,
+								c.height);
 						}
 					}
 
@@ -1472,8 +1479,14 @@ class CanvasGraphics
 				{
 					case CUBIC_CURVE_TO:
 						var c = data.readCubicCurveTo();
-						context.bezierCurveTo(c.controlX1 - offsetX, c.controlY1 - offsetY, c.controlX2 - offsetX, c.controlY2 - offsetY, c.anchorX
-							- offsetX, c.anchorY - offsetY);
+						context.bezierCurveTo(c.controlX1
+							- offsetX, c.controlY1
+							- offsetY, c.controlX2
+							- offsetX, c.controlY2
+							- offsetY, c.anchorX
+							- offsetX,
+							c.anchorY
+							- offsetY);
 						positionX = c.anchorX;
 						positionY = c.anchorY;
 

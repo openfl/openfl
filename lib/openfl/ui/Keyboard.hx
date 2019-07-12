@@ -400,6 +400,7 @@ package openfl.ui;
 	 * Constant associated with the key code value for the Control key(17).
 	 */
 	public static inline var CONTROL = 17;
+
 	public static inline var BREAK = 19;
 
 	/**
@@ -472,6 +473,7 @@ package openfl.ui;
 	 * Constant associated with the key code value for the Delete key(46).
 	 */
 	public static inline var DELETE = 46;
+
 	public static inline var NUMLOCK = 144;
 
 	/**
@@ -528,6 +530,7 @@ package openfl.ui;
 	 * Constant associated with the key code value for the ' key(222).
 	 */
 	public static inline var QUOTE = 222;
+
 	#if air
 	public static inline var NEXT = 0x0100000E;
 	public static inline var BACK = 0x01000016;

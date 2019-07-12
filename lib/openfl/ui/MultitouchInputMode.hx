@@ -15,6 +15,7 @@ package openfl.ui;
 	 * simple tap) are interpreted as mouse events.
 	 */
 	public var GESTURE = "gesture";
+
 	public var NONE = "none";
 
 	/**

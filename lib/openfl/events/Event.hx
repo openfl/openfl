@@ -75,6 +75,7 @@ extern class Event
 	 * This event has the following properties:
 	 */
 	public static inline var ADDED_TO_STAGE = "addedToStage";
+
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash15) public static var BROWSER_ZOOM_CHANGE:String;
 	#end
@@ -94,6 +95,7 @@ extern class Event
 	 * This event has the following properties:
 	 */
 	public static inline var CHANGE = "change";
+
 	#if flash
 	@:noCompletion @:dox(hide) public static var CHANNEL_MESSAGE:String;
 	#end
@@ -125,6 +127,7 @@ extern class Event
 	 * This event has the following properties:
 	 */
 	public static inline var CONNECT = "connect";
+
 	public static inline var CONTEXT3D_CREATE = "context3DCreate";
 	public static inline var COPY = "copy";
 	public static inline var CUT = "cut";
@@ -155,6 +158,7 @@ extern class Event
 	 * This event has the following properties:
 	 */
 	public static inline var ENTER_FRAME = "enterFrame";
+
 	#if (flash && air)
 	public static var EXITING:String;
 	#end
@@ -194,6 +198,7 @@ extern class Event
 	 * This event has the following properties:
 	 */
 	public static inline var OPEN = "open";
+
 	public static inline var PASTE = "paste";
 
 	/**
@@ -248,6 +253,7 @@ extern class Event
 	 * This event has the following properties:
 	 */
 	public static inline var SELECT = "select";
+
 	public static inline var SELECT_ALL = "selectAll";
 
 	/**
@@ -257,6 +263,7 @@ extern class Event
 	 * This event has the following properties:
 	 */
 	public static inline var SOUND_COMPLETE = "soundComplete";
+
 	#if (flash && air)
 	@:noCompletion @:dox(hide) @:require(flash11_3) public static var SUSPEND:String;
 	#end
@@ -286,6 +293,7 @@ extern class Event
 	 * This event has the following properties:
 	 */
 	public static inline var TAB_INDEX_CHANGE = "tabIndexChange";
+
 	public static inline var TEXTURE_READY = "textureReady";
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash11) public static var TEXT_INTERACTION_MODE_CHANGE:String;
@@ -298,6 +306,7 @@ extern class Event
 	 * This event has the following properties:
 	 */
 	public static inline var UNLOAD = "unload";
+
 	#if flash
 	@:noCompletion @:dox(hide) public static var VIDEO_FRAME:String;
 	#end
@@ -397,6 +406,7 @@ extern class Event
 	 * @return A new Event object that is identical to the original.
 	 */
 	public function clone():Event;
+
 	public function formatToString(className:String, ?p1:Dynamic, ?p2:Dynamic, ?p3:Dynamic, ?p4:Dynamic, ?p5:Dynamic):String;
 
 	/**

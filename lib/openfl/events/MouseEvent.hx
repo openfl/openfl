@@ -27,6 +27,7 @@ extern class MouseEvent extends Event
 	 * This event has the following properties:
 	 */
 	public static inline var CLICK = "click";
+
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash11_2) public static var CONTEXT_MENU:String;
 	#end
@@ -173,6 +174,7 @@ extern class MouseEvent extends Event
 	 * or not(`false`).
 	 */
 	public var buttonDown:Bool;
+
 	public var clickCount:Int;
 	public var commandKey:Bool;
 
@@ -192,6 +194,7 @@ extern class MouseEvent extends Event
 	 * property applies only to the `MouseEvent.mouseWheel` event.
 	 */
 	public var delta:Int;
+
 	public var isRelatedObjectInaccessible:Bool;
 
 	/**
@@ -205,6 +208,7 @@ extern class MouseEvent extends Event
 	 * containing sprite.
 	 */
 	public var localY:Float;
+
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash11_2) public var movementX:Float;
 	#end

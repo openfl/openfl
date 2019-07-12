@@ -52,6 +52,7 @@ package openfl.media;
 	 *                represents no panning(center).
 	 */
 	public function new(vol:Float = 1, panning:Float = 0);
+
 	public function clone():SoundTransform;
 }
 #else

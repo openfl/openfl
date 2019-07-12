@@ -42,5 +42,6 @@ package openfl.text;
 	 * back to device fonts.
 	 */
 	public var EMBEDDED = "embedded";
+
 	public var EMBEDDED_CFF = "embeddedCFF";
 }

@@ -45,6 +45,7 @@ package openfl.system;
 	 * allows larger values.
 	 */
 	public static var totalMemory(get, never):Int;
+
 	@:noCompletion private static function get_totalMemory():Int;
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10_1) public static var totalMemoryNumber(default, null):Float;
@@ -96,6 +97,7 @@ package openfl.system;
 	 * Unicode.
 	 */
 	public static var useCodePage:Bool;
+
 	public static var vmVersion(get, never):String;
 	@:noCompletion private static function get_vmVersion():String;
 	#if flash
@@ -136,6 +138,7 @@ package openfl.system;
 	 *
 	 */
 	public static function pause():Void;
+
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash11) public static function pauseForGCIfCollectionImminent(imminence:Float = 0.75):Void;
 	#end

@@ -37,6 +37,7 @@ import openfl.events.EventDispatcher;
 	 * beginning of each loop.
 	 */
 	public var position(get, set):Float;
+
 	@:noCompletion private function get_position():Float;
 	@:noCompletion private function set_position(value:Float):Float;
 
@@ -52,6 +53,7 @@ import openfl.events.EventDispatcher;
 	 * assignment, and right speaker assignment.
 	 */
 	public var soundTransform(get, set):SoundTransform;
+
 	@:noCompletion private function get_soundTransform():SoundTransform;
 	@:noCompletion private function set_soundTransform(value:SoundTransform):SoundTransform;
 	#if flash

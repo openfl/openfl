@@ -60,6 +60,7 @@ extern class KeyboardEvent extends Event
 	 * whether either the Ctrl key or the Command key is active.
 	 */
 	public var ctrlKey:Bool;
+
 	public var commandKey:Bool;
 	public var controlKey:Bool;
 

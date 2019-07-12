@@ -354,7 +354,8 @@ class TileContainer extends Tile implements ITileContainer
 		return __length;
 	}
 
-	override function get_height():Float {
+	override function get_height():Float
+	{
 		var result:Rectangle = #if flash __tempRectangle #else Rectangle.__pool.get() #end;
 		var rect = null;
 
@@ -370,15 +371,18 @@ class TileContainer extends Tile implements ITileContainer
 			#end
 		}
 
-		__getBounds(result,matrix);
+		__getBounds(result, matrix);
 
 		var h = result.height;
-		#if !flash Rectangle.__pool.release(result); #end
+		#if !flash
+		Rectangle.__pool.release(result);
+		#end
 
 		return h;
 	}
 
-	override function set_height(value:Float):Float {
+	override function set_height(value:Float):Float
+	{
 		var result:Rectangle = #if flash __tempRectangle #else Rectangle.__pool.get() #end;
 		var rect = null;
 
@@ -393,17 +397,21 @@ class TileContainer extends Tile implements ITileContainer
 			result.__expand(rect.x, rect.y, rect.width, rect.height);
 			#end
 		}
-		
-		if (result.height != 0) {
+
+		if (result.height != 0)
+		{
 			scaleY = value / result.height;
 		}
 
-		#if !flash Rectangle.__pool.release(result); #end
+		#if !flash
+		Rectangle.__pool.release(result);
+		#end
 
 		return value;
 	}
 
-	override function get_width():Float {
+	override function get_width():Float
+	{
 		var result:Rectangle = #if flash __tempRectangle #else Rectangle.__pool.get() #end;
 		var rect = null;
 
@@ -419,15 +427,18 @@ class TileContainer extends Tile implements ITileContainer
 			#end
 		}
 
-		__getBounds(result,matrix);
+		__getBounds(result, matrix);
 
 		var w = result.width;
-		#if !flash Rectangle.__pool.release(result); #end
-		
+		#if !flash
+		Rectangle.__pool.release(result);
+		#end
+
 		return w;
 	}
 
-	override function set_width(value:Float):Float {
+	override function set_width(value:Float):Float
+	{
 		var result:Rectangle = #if flash __tempRectangle #else Rectangle.__pool.get() #end;
 		var rect = null;
 
@@ -443,11 +454,14 @@ class TileContainer extends Tile implements ITileContainer
 			#end
 		}
 
-		if (result.width != 0) {
+		if (result.width != 0)
+		{
 			scaleX = value / result.width;
 		}
 
-		#if !flash Rectangle.__pool.release(result); #end
+		#if !flash
+		Rectangle.__pool.release(result);
+		#end
 
 		return value;
 	}

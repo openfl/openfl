@@ -237,10 +237,14 @@ class Shader
 	{
 		untyped Object.defineProperties(Shader.prototype, {
 			"data": {get: untyped __js__("function () { return this.get_data (); }"), set: untyped __js__("function (v) { return this.set_data (v); }")},
-			"glFragmentSource": {get: untyped __js__("function () { return this.get_glFragmentSource (); }"),
-				set: untyped __js__("function (v) { return this.set_glFragmentSource (v); }")},
-			"glVertexSource": {get: untyped __js__("function () { return this.get_glVertexSource (); }"),
-				set: untyped __js__("function (v) { return this.set_glVertexSource (v); }")},
+			"glFragmentSource": {
+				get: untyped __js__("function () { return this.get_glFragmentSource (); }"),
+				set: untyped __js__("function (v) { return this.set_glFragmentSource (v); }")
+			},
+			"glVertexSource": {
+				get: untyped __js__("function () { return this.get_glVertexSource (); }"),
+				set: untyped __js__("function (v) { return this.set_glVertexSource (v); }")
+			},
 		});
 	}
 	#end

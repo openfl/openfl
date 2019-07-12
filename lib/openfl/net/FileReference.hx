@@ -41,6 +41,7 @@ extern class FileReference extends EventDispatcher
 	 * The file type.
 	 */
 	public var type(default, null):String;
+
 	public function new();
 	public function browse(typeFilter:Array<FileFilter> = null):Bool;
 	public function cancel():Void;

@@ -52,6 +52,7 @@ extern class Rectangle
 	 * The sum of the `y` and `height` properties.
 	 */
 	public var bottom(get, set):Float;
+
 	@:noCompletion private function get_bottom():Float;
 	@:noCompletion private function set_bottom(value:Float):Float;
 
@@ -60,6 +61,7 @@ extern class Rectangle
 	 * the values of the `right` and `bottom` properties.
 	 */
 	public var bottomRight(get, set):Point;
+
 	@:noCompletion private function get_bottomRight():Point;
 	@:noCompletion private function set_bottomRight(value:Point):Point;
 
@@ -81,6 +83,7 @@ extern class Rectangle
 	 * the `x` property.
 	 */
 	public var left(get, set):Float;
+
 	@:noCompletion private function get_left():Float;
 	@:noCompletion private function set_left(value:Float):Float;
 
@@ -88,6 +91,7 @@ extern class Rectangle
 	 * The sum of the `x` and `width` properties.
 	 */
 	public var right(get, set):Float;
+
 	@:noCompletion private function get_right():Float;
 	@:noCompletion private function set_right(value:Float):Float;
 
@@ -96,6 +100,7 @@ extern class Rectangle
 	 * values of the `width` and `height` properties.
 	 */
 	public var size(get, set):Point;
+
 	@:noCompletion private function get_size():Point;
 	@:noCompletion private function set_size(value:Point):Point;
 
@@ -110,6 +115,7 @@ extern class Rectangle
 	 * `y` property.
 	 */
 	public var top(get, set):Float;
+
 	@:noCompletion private function get_top():Float;
 	@:noCompletion private function set_top(value:Float):Float;
 
@@ -118,6 +124,7 @@ extern class Rectangle
 	 * _x_ and _y_ coordinates of the point.
 	 */
 	public var topLeft(get, set):Point;
+
 	@:noCompletion private function get_topLeft():Point;
 	@:noCompletion private function set_topLeft(value:Point):Point;
 
@@ -214,6 +221,7 @@ extern class Rectangle
 	 *         `false`.
 	 */
 	public function containsRect(rect:Rectangle):Bool;
+
 	public function copyFrom(sourceRect:Rectangle):Void;
 
 	/**
@@ -326,6 +334,7 @@ extern class Rectangle
 	 *
 	 */
 	public function setEmpty():Void;
+
 	public function setTo(xa:Float, ya:Float, widtha:Float, heighta:Float):Void;
 	public function toString():String;
 

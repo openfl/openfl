@@ -62,6 +62,7 @@ extern class Accelerometer extends EventDispatcher
 	 * `false`.
 	 */
 	public static var isSupported(get, never):Bool;
+
 	@:noCompletion private static function get_isSupported():Bool;
 
 	/**
@@ -70,6 +71,7 @@ extern class Accelerometer extends EventDispatcher
 	 * value changes, a `status` event is dispatched.
 	 */
 	public var muted(get, set):Bool;
+
 	@:noCompletion private function get_muted():Bool;
 	@:noCompletion private function set_muted(value:Bool):Bool;
 

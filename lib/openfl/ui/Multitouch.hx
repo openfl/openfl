@@ -56,6 +56,7 @@ import openfl.Vector;
 	 * @default gesture
 	 */
 	public static var inputMode:MultitouchInputMode;
+
 	#if flash
 	@:noCompletion @:dox(hide) public static var mapTouchToMouse:Bool;
 	#end
@@ -106,6 +107,7 @@ import openfl.Vector;
 	 * as a single finger tap. Touch events are listed in the TouchEvent class.
 	 */
 	public static var supportsTouchEvents(get, never):Bool;
+
 	@:noCompletion private static function get_supportsTouchEvents():Bool;
 }
 #else

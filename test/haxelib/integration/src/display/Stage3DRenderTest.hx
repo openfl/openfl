@@ -4,7 +4,9 @@ import openfl.Lib;
 
 class Stage3DRenderTest
 {
-	#if flash @Ignore #end // TODO
+	#if flash
+	@Ignore
+	#end // TODO
 	@AsyncTest public function createContext(factory:AsyncFactory):Void
 	{
 		var stage3D = Lib.current.stage.stage3Ds[0];

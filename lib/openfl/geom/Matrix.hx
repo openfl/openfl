@@ -146,6 +146,7 @@ extern class Matrix
 	 * @param m The matrix to be concatenated to the source matrix.
 	 */
 	public function concat(m:Matrix):Void;
+
 	public function copyColumnFrom(column:Int, vector3D:Vector3D):Void;
 	public function copyColumnTo(column:Int, vector3D:Vector3D):Void;
 	public function copyFrom(sourceMatrix:Matrix):Void;
@@ -270,6 +271,7 @@ extern class Matrix
 	 * @param sy A multiplier used to scale the object along the _y_ axis.
 	 */
 	public function scale(sx:Float, sy:Float):Void;
+
 	public function setTo(a:Float, b:Float, c:Float, d:Float, tx:Float, ty:Float):Void;
 
 	/**

@@ -550,8 +550,7 @@ abstract Vector<T>(IVector<T>)
 	}
 	#end
 
-	@:to #if (!js && !flash) inline #end private static function toObjectVector<T:{}
-		>(t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):ObjectVector<T>
+	@:to #if (!js && !flash) inline #end private static function toObjectVector<T:{}>(t:IVector<T>, length:Int, fixed:Bool, array:Array<T>):ObjectVector<T>
 	{
 		return new ObjectVector<T>(length, fixed, cast array, true);
 	}

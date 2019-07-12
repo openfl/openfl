@@ -484,11 +484,10 @@ class TouchEvent extends Event
 
 	public override function toString():String
 	{
-		return __formatToString("TouchEvent",
-			[
-				"type", "bubbles", "cancelable", "touchPointID", "isPrimaryTouchPoint", "localX", "localY", "sizeX", "sizeY", "pressure", "relatedObject",
-				"ctrlKey", "altKey", "shiftKey", "commandKey", "controlKey"
-			]);
+		return __formatToString("TouchEvent", [
+			"type", "bubbles", "cancelable", "touchPointID", "isPrimaryTouchPoint", "localX", "localY", "sizeX", "sizeY", "pressure", "relatedObject",
+			"ctrlKey", "altKey", "shiftKey", "commandKey", "controlKey"
+		]);
 	}
 
 	/**
@@ -499,8 +498,7 @@ class TouchEvent extends Event
 	public function updateAfterEvent():Void {}
 
 	@:noCompletion private static function __create(type:String, /*event:lime.ui.TouchEvent,*/ touch:Dynamic /*js.html.Touch*/, stageX:Float, stageY:Float,
-		local:Point,
-			target:InteractiveObject):TouchEvent
+			local:Point, target:InteractiveObject):TouchEvent
 	{
 		var evt = new TouchEvent(type, true, false, 0, true, local.x, local.y, 1, 1, 1);
 		evt.stageX = stageX;

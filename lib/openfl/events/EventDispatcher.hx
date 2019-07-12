@@ -217,6 +217,7 @@ extern class EventDispatcher implements IEventDispatcher
 	 *                   `useCapture()` set to `false`.
 	 */
 	public function removeEventListener(type:String, listener:Dynamic->Void, useCapture:Bool = false):Void;
+
 	public function toString():String;
 
 	/**

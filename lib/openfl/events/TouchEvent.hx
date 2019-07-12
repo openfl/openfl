@@ -127,6 +127,7 @@ extern class TouchEvent extends Event
 	 * only.
 	 */
 	public var altKey:Bool;
+
 	public var commandKey:Bool;
 	public var controlKey:Bool;
 
@@ -136,12 +137,14 @@ extern class TouchEvent extends Event
 	 * indicates whether either the Control key or the Command key is activated.
 	 */
 	public var ctrlKey:Bool;
+
 	public var delta:Int;
 
 	/**
 	 * Indicates whether the first point of contact is mapped to mouse events.
 	 */
 	public var isPrimaryTouchPoint:Bool;
+
 	#if flash
 	@:noCompletion @:dox(hide) public var isRelatedObjectInaccessible:Bool;
 	#end

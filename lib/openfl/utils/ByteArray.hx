@@ -15,6 +15,7 @@ extern class ByteArray implements IDataOutput implements IDataInput /*implements
 	public function get(position:Int):Int;
 	public function set(position:Int, value:Int):Int;
 	public static var defaultEndian /*(get, set)*/:Endian;
+
 	// @:noCompletion private function get_defaultEndian ():Endian;
 	// @:noCompletion private function set_defaultEndian (value:Endian):Endian;
 
@@ -41,6 +42,7 @@ extern class ByteArray implements IDataOutput implements IDataInput /*implements
 	 * are reading valid data.
 	 */
 	public var bytesAvailable(get, never):UInt;
+
 	@:noCompletion private function get_bytesAvailable():UInt;
 
 	/**
@@ -48,6 +50,7 @@ extern class ByteArray implements IDataOutput implements IDataInput /*implements
 	 * `Endian.BIG_ENDIAN` or `Endian.LITTLE_ENDIAN`.
 	 */
 	public var endian(get, set):Endian;
+
 	@:noCompletion private function get_endian():Endian;
 	@:noCompletion private function set_endian(value:Endian):Endian;
 
@@ -75,6 +78,7 @@ extern class ByteArray implements IDataOutput implements IDataInput /*implements
 	 * method starts reading or a write method starts writing.
 	 */
 	public var position:UInt;
+
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash11_4) public var shareable:Bool;
 	#end
@@ -85,6 +89,7 @@ extern class ByteArray implements IDataOutput implements IDataInput /*implements
 	 * storage and stream.
 	 */
 	public function new(length:Int = 0);
+
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash11_4) public function atomicCompareAndSwapIntAt(byteIndex:Int, expectedValue:Int, newValue:Int):Int;
 	#end
@@ -179,6 +184,7 @@ extern class ByteArray implements IDataOutput implements IDataInput /*implements
 	 *
 	 */
 	public function deflate():Void;
+
 	public static function fromBytes(bytes:Bytes):ByteArray;
 	public static function fromArrayBuffer(buffer:ArrayBuffer):ByteArray;
 
@@ -205,6 +211,7 @@ extern class ByteArray implements IDataOutput implements IDataInput /*implements
 	 *                 compress.
 	 */
 	public function inflate():Void;
+
 	public static function loadFromBytes(bytes:Bytes):Future<ByteArray>;
 	public static function loadFromFile(path:String):Future<ByteArray>;
 

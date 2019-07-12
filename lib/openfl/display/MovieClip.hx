@@ -45,6 +45,7 @@ extern class MovieClip extends Sprite implements Dynamic
 	 * this value is the frame number in the current scene.
 	 */
 	public var currentFrame(get, never):Int;
+
 	@:noCompletion private function get_currentFrame():Int;
 
 	/**
@@ -53,6 +54,7 @@ extern class MovieClip extends Sprite implements Dynamic
 	 * `null`.
 	 */
 	public var currentFrameLabel(get, never):String;
+
 	@:noCompletion private function get_currentFrameLabel():String;
 
 	/**
@@ -63,6 +65,7 @@ extern class MovieClip extends Sprite implements Dynamic
 	 * a label, `currentLabel` returns `null`.
 	 */
 	public var currentLabel(get, never):String;
+
 	@:noCompletion private function get_currentLabel():String;
 
 	/**
@@ -71,6 +74,7 @@ extern class MovieClip extends Sprite implements Dynamic
 	 * labels from the entire MovieClip instance.
 	 */
 	public var currentLabels(get, never):Array<FrameLabel>;
+
 	@:noCompletion private function get_currentLabels():Array<FrameLabel>;
 
 	/**
@@ -103,6 +107,7 @@ extern class MovieClip extends Sprite implements Dynamic
 	 * _all_ scenes in the movie clip.
 	 */
 	public var framesLoaded(get, never):Int;
+
 	@:noCompletion private function get_framesLoaded():Int;
 	public var isPlaying(get, never):Bool;
 	@:noCompletion private function get_isPlaying():Bool;
@@ -118,6 +123,7 @@ extern class MovieClip extends Sprite implements Dynamic
 	 * _all_ scenes in the movie clip.
 	 */
 	public var totalFrames(get, never):Int;
+
 	@:noCompletion private function get_totalFrames():Int;
 	#if flash
 	@:noCompletion @:dox(hide) public var trackAsMenu:Bool;
@@ -129,6 +135,7 @@ extern class MovieClip extends Sprite implements Dynamic
 	 * object container that is onstage.
 	 */
 	public function new();
+
 	public function addFrameScript(index:Int, method:Void->Void):Void;
 
 	/**
@@ -172,6 +179,7 @@ extern class MovieClip extends Sprite implements Dynamic
 	 *
 	 */
 	public function nextFrame():Void;
+
 	#if flash
 	@:noCompletion @:dox(hide) public function nextScene():Void;
 	#end
@@ -188,6 +196,7 @@ extern class MovieClip extends Sprite implements Dynamic
 	 *
 	 */
 	public function prevFrame():Void;
+
 	#if flash
 	@:noCompletion @:dox(hide) public function prevScene():Void;
 	#end

@@ -10,6 +10,7 @@ extern class FileReferenceList extends EventDispatcher
 	 * An array of FileReference objects.
 	 */
 	public var fileList(default, null):Array<FileReference>;
+
 	public function new();
 	public function browse(typeFilter:Array<FileFilter> = null):Bool;
 }

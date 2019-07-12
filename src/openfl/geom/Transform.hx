@@ -140,13 +140,19 @@ class Transform
 	@:noCompletion private static function __init__()
 	{
 		untyped Object.defineProperties(Transform.prototype, {
-			"colorTransform": {get: untyped __js__("function () { return this.get_colorTransform (); }"),
-				set: untyped __js__("function (v) { return this.set_colorTransform (v); }")},
-			"concatenatedMatrix": {get: untyped __js__("function () { return this.get_concatenatedMatrix (); }"),
-				set: untyped __js__("function (v) { return this.set_concatenatedMatrix (v); }")},
+			"colorTransform": {
+				get: untyped __js__("function () { return this.get_colorTransform (); }"),
+				set: untyped __js__("function (v) { return this.set_colorTransform (v); }")
+			},
+			"concatenatedMatrix": {
+				get: untyped __js__("function () { return this.get_concatenatedMatrix (); }"),
+				set: untyped __js__("function (v) { return this.set_concatenatedMatrix (v); }")
+			},
 			"matrix": {get: untyped __js__("function () { return this.get_matrix (); }"), set: untyped __js__("function (v) { return this.set_matrix (v); }")},
-			"matrix3D": {get: untyped __js__("function () { return this.get_matrix3D (); }"),
-				set: untyped __js__("function (v) { return this.set_matrix3D (v); }")},
+			"matrix3D": {
+				get: untyped __js__("function () { return this.get_matrix3D (); }"),
+				set: untyped __js__("function (v) { return this.set_matrix3D (v); }")
+			},
 		});
 	}
 	#end

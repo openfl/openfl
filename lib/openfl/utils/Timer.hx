@@ -47,6 +47,7 @@ extern class Timer extends EventDispatcher
 	 *               not a finite number.
 	 */
 	public var delay(get, set):Float;
+
 	@:noCompletion private function get_delay():Float;
 	@:noCompletion private function set_delay(value:Float):Float;
 
@@ -59,6 +60,7 @@ extern class Timer extends EventDispatcher
 	 * the timer stops and will not fire again.
 	 */
 	public var repeatCount(get, set):Int;
+
 	@:noCompletion private function get_repeatCount():Int;
 	@:noCompletion private function set_repeatCount(value:Int):Int;
 

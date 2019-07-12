@@ -154,6 +154,7 @@ package openfl.display;
 	 * display object.
 	 */
 	public var SCREEN = "screen";
+
 	public var SHADER = "shader";
 
 	/**

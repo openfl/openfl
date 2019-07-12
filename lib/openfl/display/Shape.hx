@@ -23,6 +23,7 @@ extern class Shape extends DisplayObject
 	 * drawing commands can occur.
 	 */
 	public var graphics(get, never):Graphics;
+
 	@:noCompletion private function get_graphics():Graphics;
 
 	/**

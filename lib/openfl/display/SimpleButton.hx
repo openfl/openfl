@@ -29,6 +29,7 @@ extern class SimpleButton extends InteractiveObject
 	 * selects the `hitTestState` object.
 	 */
 	public var downState(get, set):DisplayObject;
+
 	@:noCompletion private function get_downState():DisplayObject;
 	@:noCompletion private function set_downState(value:DisplayObject):DisplayObject;
 
@@ -55,6 +56,7 @@ extern class SimpleButton extends InteractiveObject
 	 * inactive  -  it does not respond to user input events.
 	 */
 	public var hitTestState(get, set):DisplayObject;
+
 	@:noCompletion private function get_hitTestState():DisplayObject;
 	@:noCompletion private function set_hitTestState(value:DisplayObject):DisplayObject;
 
@@ -64,6 +66,7 @@ extern class SimpleButton extends InteractiveObject
 	 * positioned over the button.
 	 */
 	public var overState(get, set):DisplayObject;
+
 	@:noCompletion private function get_overState():DisplayObject;
 	@:noCompletion private function set_overState(value:DisplayObject):DisplayObject;
 
@@ -75,6 +78,7 @@ extern class SimpleButton extends InteractiveObject
 	 * sounds.
 	 */
 	public var soundTransform(get, set):SoundTransform;
+
 	@:noCompletion private function get_soundTransform():SoundTransform;
 	@:noCompletion private function set_soundTransform(value:SoundTransform):SoundTransform;
 
@@ -97,6 +101,7 @@ extern class SimpleButton extends InteractiveObject
 	 * not positioned over the button.
 	 */
 	public var upState(get, set):DisplayObject;
+
 	@:noCompletion private function get_upState():DisplayObject;
 	@:noCompletion private function set_upState(value:DisplayObject):DisplayObject;
 

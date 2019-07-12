@@ -659,10 +659,9 @@ class MouseEvent extends Event
 
 	public override function toString():String
 	{
-		return __formatToString("MouseEvent",
-			[
-				"type", "bubbles", "cancelable", "localX", "localY", "relatedObject", "ctrlKey", "altKey", "shiftKey", "buttonDown", "delta"
-			]);
+		return __formatToString("MouseEvent", [
+			"type", "bubbles", "cancelable", "localX", "localY", "relatedObject", "ctrlKey", "altKey", "shiftKey", "buttonDown", "delta"
+		]);
 	}
 
 	/**

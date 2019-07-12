@@ -90,6 +90,7 @@ extern class ColorTransform
 	 * value.
 	 */
 	public var color(get, set):UInt;
+
 	@:noCompletion private function get_color():UInt;
 	@:noCompletion private function set_color(value:UInt):UInt;
 
@@ -151,6 +152,7 @@ extern class ColorTransform
 	 *               ColorTransform object.
 	 */
 	public function concat(second:ColorTransform):Void;
+
 	public function toString():String;
 }
 #else

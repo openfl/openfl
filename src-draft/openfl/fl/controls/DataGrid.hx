@@ -319,7 +319,8 @@ class DataGrid extends BaseScrollPane
 				var headerRenderer:DisplayObject = headerDisplayObjects[0].getChildAt(columnIdx);
 				if (headerRenderer != null)
 				{
-					cast(headerRenderer, HeaderRenderer).setMouseState(event.type.charAt("mouse".length).toLowerCase() + event.type.substr("mouse".length + 1));
+					cast(headerRenderer, HeaderRenderer).setMouseState(event.type.charAt("mouse".length)
+						.toLowerCase() + event.type.substr("mouse".length + 1));
 				}
 			}
 		}
