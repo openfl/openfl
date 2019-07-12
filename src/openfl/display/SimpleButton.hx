@@ -132,16 +132,26 @@ class SimpleButton extends InteractiveObject
 	@:noCompletion private static function __init__()
 	{
 		untyped Object.defineProperties(SimpleButton.prototype, {
-			"downState": {get: untyped __js__("function () { return this.get_downState (); }"),
-				set: untyped __js__("function (v) { return this.set_downState (v); }")},
-			"hitTestState": {get: untyped __js__("function () { return this.get_hitTestState (); }"),
-				set: untyped __js__("function (v) { return this.set_hitTestState (v); }")},
-			"overState": {get: untyped __js__("function () { return this.get_overState (); }"),
-				set: untyped __js__("function (v) { return this.set_overState (v); }")},
-			"soundTransform": {get: untyped __js__("function () { return this.get_soundTransform (); }"),
-				set: untyped __js__("function (v) { return this.set_soundTransform (v); }")},
-			"upState": {get: untyped __js__("function () { return this.get_upState (); }"),
-				set: untyped __js__("function (v) { return this.set_upState (v); }")},
+			"downState": {
+				get: untyped __js__("function () { return this.get_downState (); }"),
+				set: untyped __js__("function (v) { return this.set_downState (v); }")
+			},
+			"hitTestState": {
+				get: untyped __js__("function () { return this.get_hitTestState (); }"),
+				set: untyped __js__("function (v) { return this.set_hitTestState (v); }")
+			},
+			"overState": {
+				get: untyped __js__("function () { return this.get_overState (); }"),
+				set: untyped __js__("function (v) { return this.set_overState (v); }")
+			},
+			"soundTransform": {
+				get: untyped __js__("function () { return this.get_soundTransform (); }"),
+				set: untyped __js__("function (v) { return this.set_soundTransform (v); }")
+			},
+			"upState": {
+				get: untyped __js__("function () { return this.get_upState (); }"),
+				set: untyped __js__("function (v) { return this.set_upState (v); }")
+			},
 		});
 	}
 	#end
@@ -624,7 +634,7 @@ class SimpleButton extends InteractiveObject
 	{
 		__ignoreEvent = false;
 
-		if (enabled && upState != __currentState)
+		if (upState != __currentState)
 		{
 			__currentState = upState;
 		}
@@ -647,16 +657,13 @@ class SimpleButton extends InteractiveObject
 	{
 		__ignoreEvent = false;
 
-		if (enabled)
+		if (enabled && overState != null)
 		{
-			if (overState != null)
-			{
-				__currentState = overState;
-			}
-			else
-			{
-				__currentState = upState;
-			}
+			__currentState = overState;
+		}
+		else
+		{
+			__currentState = upState;
 		}
 	}
 }
