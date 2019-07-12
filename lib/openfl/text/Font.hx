@@ -21,6 +21,7 @@ extern class Font /*extends LimeFont*/
 	 * The name of an embedded font.
 	 */
 	public var fontName(get, set):String;
+
 	@:noCompletion private function get_fontName():String;
 	@:noCompletion private function set_fontName(value:String):String;
 
@@ -35,6 +36,7 @@ extern class Font /*extends LimeFont*/
 	 * the FontType class.
 	 */
 	public var fontType:FontType;
+
 	public function new(name:String = null);
 
 	/**
@@ -51,6 +53,7 @@ extern class Font /*extends LimeFont*/
 	 * @return A list of available fonts as an array of Font objects.
 	 */
 	public static function enumerateFonts(enumerateDeviceFonts:Bool = false):Array<Font>;
+
 	public static function fromBytes(bytes:ByteArray):Font;
 	public static function fromFile(path:String):Font;
 	public static function loadFromBytes(bytes:ByteArray):Future<Font>;

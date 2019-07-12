@@ -1068,6 +1068,7 @@ extern class InteractiveObject extends DisplayObject
 	 * `doubleClick` event.
 	 */
 	public var doubleClickEnabled:Bool;
+
 	public var focusRect:Null<Bool>;
 
 	/**
@@ -1111,6 +1112,7 @@ extern class InteractiveObject extends DisplayObject
 	 * iOS.
 	 */
 	public var needsSoftKeyboard:Bool;
+
 	public var softKeyboardInputAreaOfInterest:Rectangle;
 	public var tabEnabled(get, set):Bool;
 	@:noCompletion private function get_tabEnabled():Bool;

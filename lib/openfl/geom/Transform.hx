@@ -68,6 +68,7 @@ extern class Transform
 	 * @throws TypeError The colorTransform is null when being set
 	 */
 	public var colorTransform(get, set):ColorTransform;
+
 	@:noCompletion private function get_colorTransform():ColorTransform;
 	@:noCompletion private function set_colorTransform(value:ColorTransform):ColorTransform;
 
@@ -92,6 +93,7 @@ extern class Transform
 	 * the Stage.
 	 */
 	public var concatenatedMatrix(get, never):Matrix;
+
 	@:noCompletion private function get_concatenatedMatrix():Matrix;
 	@:noCompletion private function set_concatenatedMatrix(value:Matrix):Matrix;
 
@@ -108,6 +110,7 @@ extern class Transform
 	 * @throws TypeError The matrix is null when being set
 	 */
 	public var matrix(get, set):Matrix;
+
 	@:noCompletion private function get_matrix():Matrix;
 	@:noCompletion private function set_matrix(value:Matrix):Matrix;
 
@@ -124,6 +127,7 @@ extern class Transform
 	 * `null`.
 	 */
 	public var matrix3D(get, set):Matrix3D;
+
 	@:noCompletion private function get_matrix3D():Matrix3D;
 	@:noCompletion private function set_matrix3D(value:Matrix3D):Matrix3D;
 	#if flash
@@ -135,6 +139,7 @@ extern class Transform
 	 * object on the stage.
 	 */
 	public var pixelBounds(default, null):Rectangle;
+
 	public function new(displayObject:DisplayObject);
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10) public function getRelativeMatrix3D(relativeTo:DisplayObject):Matrix3D;

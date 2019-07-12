@@ -72,6 +72,7 @@ extern class TextFormat
 	 * color black(0x000000).
 	 */
 	public var color:Null<Int>;
+
 	#if flash
 	@:noCompletion @:dox(hide) public var display:flash.text.TextFormatDisplay;
 	#end
@@ -229,6 +230,7 @@ extern class TextFormat
 	public function new(font:String = null, size:Null<Int> = null, color:Null<Int> = null, bold:Null<Bool> = null, italic:Null<Bool> = null,
 		underline:Null<Bool> = null, url:String = null, target:String = null, align:TextFormatAlign = null, leftMargin:Null<Int> = null,
 		rightMargin:Null<Int> = null, indent:Null<Int> = null, leading:Null<Int> = null);
+
 	@:dox(hide) @:noCompletion public function clone():TextFormat;
 }
 #else

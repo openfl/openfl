@@ -11,6 +11,7 @@ package openfl.text;
 	 * `TextFormatAlign.CENTER`.
 	 */
 	public var CENTER = "center";
+
 	public var END = "end";
 
 	/**
@@ -30,5 +31,6 @@ package openfl.text;
 	 * `TextFormatAlign.RIGHT`.
 	 */
 	public var RIGHT = "right";
+
 	public var START = "start";
 }

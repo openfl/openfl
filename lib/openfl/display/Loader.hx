@@ -106,6 +106,7 @@ extern class Loader extends DisplayObjectContainer
 	 * `Loader.contentLoaderInfo.uncaughtErrorEvents` property.
 	 */
 	public var contentLoaderInfo(default, null):LoaderInfo;
+
 	public var uncaughtErrorEvents(default, null):UncaughtErrorEvents;
 
 	/**

@@ -35,7 +35,8 @@ class WordWrapTest1 extends FunctionalTest
 	}
 
 	public override function start():Void
-	{content = new Sprite();
+	{
+		content = new Sprite();
 
 		textWidth = 300;
 		widthInc = 5;
@@ -85,24 +86,24 @@ class WordWrapTest1 extends FunctionalTest
 
 		textField.htmlText = "Here is some UTF-8: " /*+ word1 + " " +
 			word2 + " " + word3 + " " + word4 */
-		+ "angelo <i>Ephesi ecclesiae</i> scribe haec dicit qui tenet septem "
-		+ "<b>stellas</b> in dextera sua qui ambulat in medio septem "
-		+ "candelabrorum aureorum scio <u>opera tua et laborem</u> et "
-		+ "<br>&lt; (less than), &gt; (greater than), &amp; "
-		+ "(ampersand), &quot; (double quote), &apos; (apostrophe), "
-		+ "&lt;&gt;&amp;&quot;&apos; (all)"
-		+ "patientiam <font size=\"+10\">tuam et quia</font> nom potes "
-		+ "<font size=\"-6\" color=\"#123456\">sustinere malos</font> et "
-		+ "temptasti eos qui se dicunt apostolos et non sunt et "
-		+ "invenisti eos mendaces et patientiam habes et sustinuisti "
-		+ "propter nomen meum et non defecisti sed habeo adversus te <p><p>"
-		+ "quod caritatem tuam primam reliquisti memor esto itaque "
-		+ "unde excideris et age paenitentiam et prima opera fac sin "
-		+ "autem venio tibi et movebo candelabrum tuum de loco suo nisi "
-		+ "paenitentiam egeris sed hoc habes quia odisti facta "
-		+ "Nicolaitarum quae et ego odi qui habet aurem audiat quid "
-		+ "Spiritus dicat ecclesiis vincenti dabo ei edere de ligno "
-		+ "vitae quod est in paradiso Dei mei";
+			+ "angelo <i>Ephesi ecclesiae</i> scribe haec dicit qui tenet septem "
+			+ "<b>stellas</b> in dextera sua qui ambulat in medio septem "
+			+ "candelabrorum aureorum scio <u>opera tua et laborem</u> et "
+			+ "<br>&lt; (less than), &gt; (greater than), &amp; "
+			+ "(ampersand), &quot; (double quote), &apos; (apostrophe), "
+			+ "&lt;&gt;&amp;&quot;&apos; (all)"
+			+ "patientiam <font size=\"+10\">tuam et quia</font> nom potes "
+			+ "<font size=\"-6\" color=\"#123456\">sustinere malos</font> et "
+			+ "temptasti eos qui se dicunt apostolos et non sunt et "
+			+ "invenisti eos mendaces et patientiam habes et sustinuisti "
+			+ "propter nomen meum et non defecisti sed habeo adversus te <p><p>"
+			+ "quod caritatem tuam primam reliquisti memor esto itaque "
+			+ "unde excideris et age paenitentiam et prima opera fac sin "
+			+ "autem venio tibi et movebo candelabrum tuum de loco suo nisi "
+			+ "paenitentiam egeris sed hoc habes quia odisti facta "
+			+ "Nicolaitarum quae et ego odi qui habet aurem audiat quid "
+			+ "Spiritus dicat ecclesiis vincenti dabo ei edere de ligno "
+			+ "vitae quod est in paradiso Dei mei";
 
 		content.addChild(textField);
 

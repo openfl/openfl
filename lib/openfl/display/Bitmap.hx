@@ -40,6 +40,7 @@ extern class Bitmap extends DisplayObject
 	 * The BitmapData object being referenced.
 	 */
 	public var bitmapData(get, set):BitmapData;
+
 	@:noCompletion private function get_bitmapData():BitmapData;
 	@:noCompletion private function set_bitmapData(value:BitmapData):BitmapData;
 
@@ -67,6 +68,7 @@ extern class Bitmap extends DisplayObject
 	 * `false`, the bitmap is not smoothed when scaled.
 	 */
 	public var smoothing:Bool;
+
 	public function new(bitmapData:BitmapData = null, ?pixelSnapping:PixelSnapping, smoothing:Bool = false);
 }
 #else

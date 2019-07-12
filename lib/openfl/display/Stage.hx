@@ -160,6 +160,7 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/
 	 * Specifies whether this stage allows the use of the full screen with text input mode
 	 */
 	public var allowsFullScreenInteractive(default, null):Bool;
+
 	// public var application (default, null):Application;
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash15) public var browserZoomFactor(default, null):Float;
@@ -169,6 +170,7 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/
 	 * The window background color.
 	 */
 	public var color(get, set):UInt;
+
 	@:noCompletion private function get_color():UInt;
 	@:noCompletion private function set_color(value:UInt):UInt;
 	#if flash
@@ -271,6 +273,7 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/
 	 *                       `true` throws a security error.
 	 */
 	public var displayState(get, set):StageDisplayState;
+
 	@:noCompletion private function get_displayState():StageDisplayState;
 	@:noCompletion private function set_displayState(value:StageDisplayState):StageDisplayState;
 	public var element(default, never):js.html.Element;
@@ -283,6 +286,7 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/
 	 * @throws Error Throws an error if focus cannot be set to the target.
 	 */
 	public var focus(get, set):InteractiveObject;
+
 	@:noCompletion private function get_focus():InteractiveObject;
 	@:noCompletion private function set_focus(value:InteractiveObject):InteractiveObject;
 
@@ -315,6 +319,7 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/
 	 *                       the _ActionScript 3.0 Developer's Guide_.
 	 */
 	public var frameRate(get, set):Float;
+
 	@:noCompletion private function get_frameRate():Float;
 	@:noCompletion private function set_frameRate(value:Float):Float;
 	public var fullScreenHeight(get, never):UInt;
@@ -384,6 +389,7 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/
 	 *                       the _ActionScript 3.0 Developer's Guide_.
 	 */
 	public var quality(get, set):StageQuality;
+
 	@:noCompletion private function get_quality():StageQuality;
 	@:noCompletion private function set_quality(value:StageQuality):StageQuality;
 
@@ -420,6 +426,7 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/
 	 *                       the _ActionScript 3.0 Developer's Guide_.
 	 */
 	public var scaleMode:StageScaleMode;
+
 	@:noCompletion private function get_scaleMode():StageScaleMode;
 	@:noCompletion private function set_scaleMode(value:StageScaleMode):StageScaleMode;
 	public var showDefaultContextMenu:Bool;
@@ -487,6 +494,7 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/
 	 *                       the _ActionScript 3.0 Developer's Guide_.
 	 */
 	public var stageHeight(default, null):Int;
+
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10_2) public var stageVideos(default, null):Vector<flash.media.StageVideo>;
 	#end
@@ -533,6 +541,7 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/
 	 *                       the _ActionScript 3.0 Developer's Guide_.
 	 */
 	public var stageWidth(default, null):Int;
+
 	// public var window (default, null):Window;
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10_1) public var wmodeGPU(default, null):Bool;
@@ -565,6 +574,7 @@ extern class Stage extends DisplayObjectContainer /*implements IModule*/
 	 *
 	 */
 	public override function invalidate():Void;
+
 	#if flash
 	@:noCompletion @:dox(hide) public function isFocusInaccessible():Bool;
 	#end

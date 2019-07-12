@@ -50,6 +50,7 @@ extern class HTTPStatusEvent extends Event
 	 * This event has the following properties:
 	 */
 	public static inline var HTTP_STATUS = "httpStatus";
+
 	public var redirected:Bool;
 
 	/**

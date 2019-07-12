@@ -55,6 +55,7 @@ extern class DisplayObjectContainer extends InteractiveObject
 	 * Returns the number of children of this object.
 	 */
 	public var numChildren(get, never):Int;
+
 	@:noCompletion private function get_numChildren():Int;
 
 	/**
@@ -71,6 +72,7 @@ extern class DisplayObjectContainer extends InteractiveObject
 	 *                               not implement this property.
 	 */
 	public var tabChildren:Bool;
+
 	#if flash
 	@:noCompletion @:dox(hide) public var textSnapshot(default, null):flash.text.TextSnapshot;
 	#end
@@ -296,6 +298,7 @@ extern class DisplayObjectContainer extends InteractiveObject
 	 *                       call the `Security.allowDomain()` method.
 	 */
 	public function removeChildAt(index:Int):DisplayObject;
+
 	public function removeChildren(beginIndex:Int = 0, endIndex:Int = 0x7FFFFFFF):Void;
 
 	/**
@@ -327,6 +330,7 @@ extern class DisplayObjectContainer extends InteractiveObject
 	 *                       list.
 	 */
 	public function setChildIndex(child:DisplayObject, index:Int):Void;
+
 	public function stopAllMovieClips():Void;
 
 	/**

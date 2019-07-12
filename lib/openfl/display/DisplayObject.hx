@@ -153,6 +153,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * even though they are invisible.
 	 */
 	public var alpha(get, set):Float;
+
 	@:noCompletion private function get_alpha():Float;
 	@:noCompletion private function set_alpha(value:Float):Float;
 
@@ -181,6 +182,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * object(2) superimposed on another display object(1).
 	 */
 	public var blendMode(get, set):BlendMode;
+
 	@:noCompletion private function get_blendMode():BlendMode;
 	@:noCompletion private function set_blendMode(value:BlendMode):BlendMode;
 	#if flash
@@ -239,6 +241,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * and _y_ position is changed).
 	 */
 	public var cacheAsBitmap(get, set):Bool;
+
 	@:noCompletion private function get_cacheAsBitmap():Bool;
 	@:noCompletion private function set_cacheAsBitmap(value:Bool):Bool;
 	public var cacheAsBitmapMatrix(get, set):Matrix;
@@ -321,6 +324,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 *                       more information.
 	 */
 	public var filters(get, set):Array<BitmapFilter>;
+
 	@:noCompletion private function get_filters():Array<BitmapFilter>;
 	@:noCompletion private function set_filters(value:Array<BitmapFilter>):Array<BitmapFilter>;
 
@@ -335,6 +339,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * set `height` to a different value.
 	 */
 	public var height(get, set):Float;
+
 	@:noCompletion private function get_height():Float;
 	@:noCompletion private function set_height(value:Float):Float;
 
@@ -352,6 +357,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * func)`.
 	 */
 	public var loaderInfo(get, never):LoaderInfo;
+
 	@:noCompletion private function get_loaderInfo():LoaderInfo;
 
 	/**
@@ -386,6 +392,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * `null`.
 	 */
 	public var mask(get, set):DisplayObject;
+
 	@:noCompletion private function get_mask():DisplayObject;
 	@:noCompletion private function set_mask(value:DisplayObject):DisplayObject;
 
@@ -397,6 +404,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * coordinate will reflect the non-rotated object.
 	 */
 	public var mouseX(get, never):Float;
+
 	@:noCompletion private function get_mouseX():Float;
 
 	/**
@@ -407,6 +415,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * coordinate will reflect the non-rotated object.
 	 */
 	public var mouseY(get, never):Float;
+
 	@:noCompletion private function get_mouseY():Float;
 
 	/**
@@ -420,6 +429,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 *                               in the Flash authoring tool.
 	 */
 	public var name(get, set):String;
+
 	@:noCompletion private function get_name():String;
 	@:noCompletion private function set_name(value:String):String;
 
@@ -492,6 +502,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * set.
 	 */
 	public var root(get, never):DisplayObject;
+
 	@:noCompletion private function get_root():DisplayObject;
 
 	/**
@@ -503,6 +514,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * is the same as ` my_video.rotation = 90`.
 	 */
 	public var rotation(get, set):Float;
+
 	@:noCompletion private function get_rotation():Float;
 	@:noCompletion private function set_rotation(value:Float):Float;
 	#if flash
@@ -576,6 +588,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * `y` property values, which are defined in whole pixels.
 	 */
 	public var scaleX(get, set):Float;
+
 	@:noCompletion private function get_scaleX():Float;
 	@:noCompletion private function set_scaleX(value:Float):Float;
 
@@ -588,6 +601,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * `y` property values, which are defined in whole pixels.
 	 */
 	public var scaleY(get, set):Float;
+
 	@:noCompletion private function get_scaleY():Float;
 	@:noCompletion private function set_scaleY(value:Float):Float;
 	#if flash
@@ -617,6 +631,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * up and down.
 	 */
 	public var scrollRect(get, set):Rectangle;
+
 	@:noCompletion private function get_scrollRect():Rectangle;
 	@:noCompletion private function set_scrollRect(value:Rectangle):Rectangle;
 	@:beta public var shader(get, set):Shader;
@@ -634,6 +649,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * `stage` property is set to `null`.
 	 */
 	public var stage(default, null):Stage;
+
 	@:noCompletion private function get_stage():Stage;
 	@:noCompletion private function set_stage(value:Stage):Stage;
 
@@ -676,6 +692,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * available, for color transforms.
 	 */
 	public var transform(get, set):Transform;
+
 	@:noCompletion private function get_transform():Transform;
 	@:noCompletion private function set_transform(value:Transform):Transform;
 
@@ -685,6 +702,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * InteractiveObject instance, it cannot be clicked.
 	 */
 	public var visible(get, set):Bool;
+
 	@:noCompletion private function get_visible():Bool;
 	@:noCompletion private function set_visible(value:Bool):Bool;
 
@@ -699,6 +717,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * `width` to a different value.
 	 */
 	public var width(get, set):Float;
+
 	@:noCompletion private function get_width():Float;
 	@:noCompletion private function set_width(value:Float):Float;
 
@@ -713,6 +732,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * registration point position.
 	 */
 	public var x(get, set):Float;
+
 	@:noCompletion private function get_x():Float;
 	@:noCompletion private function set_x(value:Float):Float;
 
@@ -727,6 +747,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * registration point position.
 	 */
 	public var y(get, set):Float;
+
 	@:noCompletion private function get_y():Float;
 	@:noCompletion private function set_y(value:Float):Float;
 	#if flash
@@ -797,6 +818,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * @return A Point object with coordinates relative to the display object.
 	 */
 	public function globalToLocal(pos:Point):Point;
+
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10) public function globalToLocal3D(point:Point):Vector3D;
 	#end
@@ -859,6 +881,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable #i
 	 * @return A Point object with coordinates relative to the Stage.
 	 */
 	public function localToGlobal(point:Point):Point;
+
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10) public function local3DToGlobal(point3d:Vector3D):Point;
 	#end

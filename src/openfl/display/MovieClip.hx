@@ -151,6 +151,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	public var framesLoaded(get, never):Int;
 
 	public var isPlaying(get, never):Bool;
+
 	// @:noCompletion @:dox(hide) public var scenes (default, never):Array<openfl.display.Scene>;
 
 	/**

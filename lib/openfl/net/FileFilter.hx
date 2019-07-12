@@ -18,6 +18,7 @@ package openfl.net;
 	 * A list of Macintosh file types.
 	 */
 	public var macType:String;
+
 	public function new(description:String, extension:String, macType:String = null);
 }
 #else

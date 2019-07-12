@@ -126,8 +126,10 @@ class Sprite extends DisplayObjectContainer
 	@:noCompletion private static function __init__()
 	{
 		untyped Object.defineProperties(Sprite.prototype, {
-			"buttonMode": {get: untyped __js__("function () { return this.get_buttonMode (); }"),
-				set: untyped __js__("function (v) { return this.set_buttonMode (v); }")},
+			"buttonMode": {
+				get: untyped __js__("function () { return this.get_buttonMode (); }"),
+				set: untyped __js__("function (v) { return this.set_buttonMode (v); }")
+			},
 			"graphics": {get: untyped __js__("function () { return this.get_graphics (); }")},
 		});
 	}

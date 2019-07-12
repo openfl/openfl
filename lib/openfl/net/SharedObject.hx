@@ -165,6 +165,7 @@ extern class SharedObject extends EventDispatcher
 	 * new value.
 	 */
 	public var data(default, null):Dynamic;
+
 	public var fps(null, default):Float;
 	public var objectEncoding:ObjectEncoding;
 
@@ -178,6 +179,7 @@ extern class SharedObject extends EventDispatcher
 	 * have a specific need for it.
 	 */
 	public var size(get, never):UInt;
+
 	@:noCompletion private function get_size():UInt;
 	private function new();
 
@@ -194,6 +196,7 @@ extern class SharedObject extends EventDispatcher
 	 *
 	 */
 	public function clear():Void;
+
 	public function close():Void;
 	public function connect(myConnection:NetConnection, params:String = null):Void;
 	#if flash
@@ -257,6 +260,7 @@ extern class SharedObject extends EventDispatcher
 	 *               disallowed.
 	 */
 	public function flush(minDiskSpace:Int = 0):SharedObjectFlushStatus;
+
 	#if flash
 	@:noCompletion @:dox(hide) public static function getDiskUsage(url:String):Int;
 	#end
@@ -407,6 +411,7 @@ extern class SharedObject extends EventDispatcher
 	 *               [http://www.adobe.com/support/documentation/en/flashplayer/help/settings_manager03.html](http://www.adobe.com/support/documentation/en/flashplayer/help/settings_manager03.html).
 	 */
 	public static function getLocal(name:String, localPath:String = null, secure:Bool = false):SharedObject;
+
 	public static function getRemote(name:String, remotePath:String = null, persistence:Dynamic = false, secure:Bool = false):SharedObject;
 	public function send(message:Array<Dynamic>):Void;
 	public function setDirty(propertyName:String):Void;

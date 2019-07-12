@@ -127,6 +127,7 @@ extern class Sound extends EventDispatcher
 	 * Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
 	 */
 	public var id3(get, never):ID3Info;
+
 	@:noCompletion private function get_id3():ID3Info;
 
 	/**
@@ -135,6 +136,7 @@ extern class Sound extends EventDispatcher
 	 * waits for more data.
 	 */
 	public var isBuffering(default, null):Bool;
+
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10_1) public var isURLInaccessible(default, null):Bool;
 	#end
@@ -143,6 +145,7 @@ extern class Sound extends EventDispatcher
 	 * The length of the current sound in milliseconds.
 	 */
 	public var length(get, never):Float;
+
 	@:noCompletion private function get_length():Float;
 
 	/**
@@ -206,6 +209,7 @@ extern class Sound extends EventDispatcher
 	 *                 open.
 	 */
 	public function close():Void;
+
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10) public function extract(target:ByteArray, length:Float, startPosition:Float = -1):Float;
 	#end
@@ -289,6 +293,7 @@ extern class Sound extends EventDispatcher
 	 *                       Developer's Guide_.
 	 */
 	public function load(stream:URLRequest, context:SoundLoaderContext = null):Void;
+
 	public function loadCompressedDataFromByteArray(bytes:ByteArray, bytesLength:Int, forcePlayAsMusic:Bool = false):Void;
 	public static function loadFromFile(path:String):Future<Sound>;
 	public static function loadFromFiles(paths:Array<String>):Future<Sound>;

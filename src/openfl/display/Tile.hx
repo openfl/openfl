@@ -215,26 +215,40 @@ class Tile
 	{
 		untyped Object.defineProperties(Tile.prototype, {
 			"alpha": {get: untyped __js__("function () { return this.get_alpha (); }"), set: untyped __js__("function (v) { return this.set_alpha (v); }")},
-			"blendMode": {get: untyped __js__("function () { return this.get_blendMode (); }"),
-				set: untyped __js__("function (v) { return this.set_blendMode (v); }")},
-			"colorTransform": {get: untyped __js__("function () { return this.get_colorTransform (); }"),
-				set: untyped __js__("function (v) { return this.set_colorTransform (v); }")},
+			"blendMode": {
+				get: untyped __js__("function () { return this.get_blendMode (); }"),
+				set: untyped __js__("function (v) { return this.set_blendMode (v); }")
+			},
+			"colorTransform": {
+				get: untyped __js__("function () { return this.get_colorTransform (); }"),
+				set: untyped __js__("function (v) { return this.set_colorTransform (v); }")
+			},
 			"id": {get: untyped __js__("function () { return this.get_id (); }"), set: untyped __js__("function (v) { return this.set_id (v); }")},
 			"matrix": {get: untyped __js__("function () { return this.get_matrix (); }"), set: untyped __js__("function (v) { return this.set_matrix (v); }")},
-			"originX": {get: untyped __js__("function () { return this.get_originX (); }"),
-				set: untyped __js__("function (v) { return this.set_originX (v); }")},
-			"originY": {get: untyped __js__("function () { return this.get_originY (); }"),
-				set: untyped __js__("function (v) { return this.set_originY (v); }")},
+			"originX": {
+				get: untyped __js__("function () { return this.get_originX (); }"),
+				set: untyped __js__("function (v) { return this.set_originX (v); }")
+			},
+			"originY": {
+				get: untyped __js__("function () { return this.get_originY (); }"),
+				set: untyped __js__("function (v) { return this.set_originY (v); }")
+			},
 			"rect": {get: untyped __js__("function () { return this.get_rect (); }"), set: untyped __js__("function (v) { return this.set_rect (v); }")},
-			"rotation": {get: untyped __js__("function () { return this.get_rotation (); }"),
-				set: untyped __js__("function (v) { return this.set_rotation (v); }")},
+			"rotation": {
+				get: untyped __js__("function () { return this.get_rotation (); }"),
+				set: untyped __js__("function (v) { return this.set_rotation (v); }")
+			},
 			"scaleX": {get: untyped __js__("function () { return this.get_scaleX (); }"), set: untyped __js__("function (v) { return this.set_scaleX (v); }")},
 			"scaleY": {get: untyped __js__("function () { return this.get_scaleY (); }"), set: untyped __js__("function (v) { return this.set_scaleY (v); }")},
 			"shader": {get: untyped __js__("function () { return this.get_shader (); }"), set: untyped __js__("function (v) { return this.set_shader (v); }")},
-			"tileset": {get: untyped __js__("function () { return this.get_tileset (); }"),
-				set: untyped __js__("function (v) { return this.set_tileset (v); }")},
-			"visible": {get: untyped __js__("function () { return this.get_visible (); }"),
-				set: untyped __js__("function (v) { return this.set_visible (v); }")},
+			"tileset": {
+				get: untyped __js__("function () { return this.get_tileset (); }"),
+				set: untyped __js__("function (v) { return this.set_tileset (v); }")
+			},
+			"visible": {
+				get: untyped __js__("function () { return this.get_visible (); }"),
+				set: untyped __js__("function (v) { return this.set_visible (v); }")
+			},
 			"x": {get: untyped __js__("function () { return this.get_x (); }"), set: untyped __js__("function (v) { return this.set_x (v); }")},
 			"y": {get: untyped __js__("function () { return this.get_y (); }"), set: untyped __js__("function (v) { return this.set_y (v); }")},
 		});
@@ -330,7 +344,7 @@ class Tile
 			matrix.identity();
 		}
 
-		__getBounds(result,matrix);
+		__getBounds(result, matrix);
 
 		#if !flash
 		Matrix.__pool.release(matrix);
@@ -379,7 +393,6 @@ class Tile
 		#else
 		result.__transform(result, matrix);
 		#end
-
 	}
 
 	/**
@@ -415,7 +428,7 @@ class Tile
 	{
 		__setRenderDirty();
 	}
-	
+
 	@:noCompletion private function __findTileRect(result:Rectangle):Void
 	{
 		if (tileset == null)
@@ -425,7 +438,7 @@ class Tile
 				var parentTileset:Tileset = parent.__findTileset();
 				if (parentTileset == null)
 				{
-					result.setTo(0,0,0,0);
+					result.setTo(0, 0, 0, 0);
 				}
 				else
 				{
@@ -433,15 +446,15 @@ class Tile
 					switch parentTileset.getRect(id)
 					{
 						case null:
-							result.setTo(0,0,0,0);
+							result.setTo(0, 0, 0, 0);
 						case not_null:
 							result.copyFrom(not_null);
 					}
 				}
 			}
-			else 
+			else
 			{
-				result.setTo(0,0,0,0);
+				result.setTo(0, 0, 0, 0);
 			}
 		}
 		else
@@ -550,9 +563,11 @@ class Tile
 
 		__findTileRect(result);
 
-		__getBounds(result,matrix);
+		__getBounds(result, matrix);
 		var h = result.height;
-		#if !flash Rectangle.__pool.release(result); #end
+		#if !flash
+		Rectangle.__pool.release(result);
+		#end
 		return h;
 	}
 
@@ -561,10 +576,13 @@ class Tile
 		var result:Rectangle = #if flash __tempRectangle #else Rectangle.__pool.get() #end;
 
 		__findTileRect(result);
-		if (result.height != 0) {
+		if (result.height != 0)
+		{
 			scaleY = value / result.height;
 		}
-		#if !flash Rectangle.__pool.release(result); #end
+		#if !flash
+		Rectangle.__pool.release(result);
+		#end
 		return value;
 	}
 
@@ -840,9 +858,11 @@ class Tile
 
 		__findTileRect(result);
 
-		__getBounds(result,matrix);
+		__getBounds(result, matrix);
 		var w = result.width;
-		#if !flash Rectangle.__pool.release(result); #end
+		#if !flash
+		Rectangle.__pool.release(result);
+		#end
 		return w;
 	}
 
@@ -851,10 +871,13 @@ class Tile
 		var result:Rectangle = #if flash __tempRectangle #else Rectangle.__pool.get() #end;
 
 		__findTileRect(result);
-		if (result.width != 0) {
+		if (result.width != 0)
+		{
 			scaleX = value / result.width;
 		}
-		#if !flash Rectangle.__pool.release(result); #end
+		#if !flash
+		Rectangle.__pool.release(result);
+		#end
 		return value;
 	}
 

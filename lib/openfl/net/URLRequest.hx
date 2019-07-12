@@ -139,6 +139,7 @@ package openfl.net;
 	 * description of the `contentType` property.
 	 */
 	public var data:Dynamic;
+
 	#if flash
 	@:noCompletion @:dox(hide) public var digest:String;
 	#end
@@ -239,6 +240,7 @@ package openfl.net;
 	 * `rtmp://[2001:db8:ccc3:ffff:0:444d:555e:666f]:1935/test`
 	 */
 	public var url:String;
+
 	public var userAgent:String;
 
 	/**
@@ -252,6 +254,7 @@ package openfl.net;
 	 *            `url` property.
 	 */
 	public function new(url:String = null);
+
 	#if flash
 	@:noCompletion @:dox(hide) public function useRedirectedURL(sourceRequest:URLRequest, wholeURL:Bool = false, pattern:Dynamic = null,
 		replace:String = null):Void;

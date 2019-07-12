@@ -733,8 +733,8 @@ class Context3DGraphics
 
 							if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, vertexBuffer, bufferPosition,
 								hasUVTData ? FLOAT_4 : FLOAT_2);
-							if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer, bufferPosition
-								+ vertLength, FLOAT_2);
+							if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer,
+								bufferPosition + vertLength, FLOAT_2);
 
 							switch (culling)
 							{

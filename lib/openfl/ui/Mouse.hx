@@ -24,6 +24,7 @@ package openfl.ui;
 	 *
 	 */
 	public static function hide():Void;
+
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10_2) public static function registerCursor(name:String, cursor:flash.ui.MouseCursorData):Void;
 	#end
@@ -37,6 +38,7 @@ package openfl.ui;
 	 *
 	 */
 	public static function show():Void;
+
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash11) public static function unregisterCursor(name:String):Void;
 	#end

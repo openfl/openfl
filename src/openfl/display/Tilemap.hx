@@ -106,8 +106,10 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	{
 		untyped Object.defineProperties(Tilemap.prototype, {
 			"numTiles": {get: untyped __js__("function () { return this.get_numTiles (); }")},
-			"tileset": {get: untyped __js__("function () { return this.get_tileset (); }"),
-				set: untyped __js__("function (v) { return this.set_tileset (v); }")}
+			"tileset": {
+				get: untyped __js__("function () { return this.get_tileset (); }"),
+				set: untyped __js__("function (v) { return this.set_tileset (v); }")
+			}
 		});
 	}
 	#end

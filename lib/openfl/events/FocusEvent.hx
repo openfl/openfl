@@ -50,6 +50,7 @@ extern class FocusEvent extends Event
 	 * This event has the following properties:
 	 */
 	public static inline var MOUSE_FOCUS_CHANGE = "mouseFocusChange";
+
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10) public var isRelatedObjectInaccessible:Bool;
 	#end

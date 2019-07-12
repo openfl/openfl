@@ -146,6 +146,7 @@ import openfl.Vector;
 	 */
 	public function beginGradientFill(type:GradientType, colors:Array<UInt>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null,
 		?spreadMethod:SpreadMethod, ?interpolationMethod:InterpolationMethod, ?focalPointRatio:Float):Void;
+
 	public function beginShaderFill(shader:Shader, matrix:Matrix = null):Void;
 
 	/**
@@ -154,6 +155,7 @@ import openfl.Vector;
 	 *
 	 */
 	public function clear():Void;
+
 	public function copyFrom(sourceGraphics:Graphics):Void;
 	public function cubicCurveTo(controlX1:Float, controlY1:Float, controlX2:Float, controlY2:Float, anchorX:Float, anchorY:Float):Void;
 
@@ -362,6 +364,7 @@ import openfl.Vector;
 	 *                       number(`Number.NaN`).
 	 */
 	public function drawRoundRect(x:Float, y:Float, width:Float, height:Float, ellipseWidth:Float, ?ellipseHeight:Null<Float>):Void;
+
 	public function drawRoundRectComplex(x:Float, y:Float, width:Float, height:Float, topLeftRadius:Float, topRightRadius:Float, bottomLeftRadius:Float,
 		bottomRightRadius:Float):Void;
 
@@ -383,8 +386,7 @@ import openfl.Vector;
 	 *                parameter can be set to any value defined by the
 	 *                TriangleCulling class.
 	 */
-	public function drawTriangles(vertices:Vector<Float>, ?indices:Vector<Int> = null, ?uvtData:Vector<Float> = null,
-		?culling:TriangleCulling):Void;
+	public function drawTriangles(vertices:Vector<Float>, ?indices:Vector<Int> = null, ?uvtData:Vector<Float> = null, ?culling:TriangleCulling):Void;
 
 	/**
 	 * Applies a fill to the lines and curves that were added since the last call
@@ -656,6 +658,7 @@ import openfl.Vector;
 	 *          registration point of the parent display object(in pixels).
 	 */
 	public function moveTo(x:Float, y:Float):Void;
+
 	public function readGraphicsData(recurse:Bool = true):Vector<IGraphicsData>;
 }
 #else

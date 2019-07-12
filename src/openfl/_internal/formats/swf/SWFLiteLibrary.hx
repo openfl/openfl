@@ -237,22 +237,19 @@ import openfl.utils.AssetManifest;
 					{
 						var promise = new Promise<Image>();
 
-						__loadImage(id).onError(promise.error)
-							.onComplete(function(image)
+						__loadImage(id).onError(promise.error).onComplete(function(image)
+						{
+							__loadImage(bitmapSymbol.alpha).onError(promise.error).onComplete(function(alpha)
 							{
-								__loadImage(bitmapSymbol.alpha)
-									.onError(promise.error)
-									.onComplete(function(alpha)
-									{
-										__copyChannel(image, alpha);
+								__copyChannel(image, alpha);
 
-										cachedImages.set(id, image);
-										cachedImages.remove(bitmapSymbol.alpha);
-										alphaCheck.set(id, true);
+								cachedImages.set(id, image);
+								cachedImages.remove(bitmapSymbol.alpha);
+								alphaCheck.set(id, true);
 
-										promise.complete(image);
-									});
+								promise.complete(image);
 							});
+						});
 
 						return promise.future;
 					}

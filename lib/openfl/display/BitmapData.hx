@@ -285,6 +285,7 @@ extern class BitmapData implements IBitmapDrawable
 	 */
 	public function copyPixels(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, alphaBitmapData:BitmapData = null, alphaPoint:Point = null,
 		mergeAlpha:Bool = false):Void;
+
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash11_4) public function copyPixelsToByteArray(rect:Rectangle, data:ByteArray):Void;
 	#end
@@ -398,6 +399,7 @@ extern class BitmapData implements IBitmapDrawable
 	 */
 	public function draw(source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, ?blendMode:BlendMode, clipRect:Rectangle = null,
 		smoothing:Bool = false):Void;
+
 	public function drawWithQuality(source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, ?blendMode:BlendMode,
 		clipRect:Rectangle = null, smoothing:Bool = false, ?quality:StageQuality):Void;
 	public function encode(rect:Rectangle, compressor:Object, byteArray:ByteArray = null):ByteArray;
@@ -425,6 +427,7 @@ extern class BitmapData implements IBitmapDrawable
 	 * @param color The ARGB color to use as a fill.
 	 */
 	public function floodFill(x:Int, y:Int, color:UInt):Void;
+
 	public static function fromBase64(base64:String, type:String):BitmapData;
 	public static function fromBytes(bytes:ByteArray, rawAlpha:ByteArray = null):BitmapData;
 	// #if (js && html5)
@@ -434,6 +437,7 @@ extern class BitmapData implements IBitmapDrawable
 	public static function fromImage(image:Image, transparent:Bool = true):BitmapData;
 	// #if !flash
 	public static function fromTexture(texture:TextureBase):BitmapData;
+
 	// #end
 
 	/**
@@ -571,6 +575,7 @@ extern class BitmapData implements IBitmapDrawable
 	 * @throws TypeError The rect is null.
 	 */
 	public function getVector(rect:Rectangle):Vector<UInt>;
+
 	public function histogram(hRect:Rectangle = null):Vector<Vector<Float>>;
 	public function hitTest(firstPoint:Point, firstAlphaThreshold:UInt, secondObject:Object, secondBitmapDataPoint:Point = null,
 		secondAlphaThreshold:UInt = 1):Bool;
@@ -587,6 +592,7 @@ extern class BitmapData implements IBitmapDrawable
 	 *
 	 */
 	public function lock():Void;
+
 	public function merge(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, redMultiplier:UInt, greenMultiplier:UInt, blueMultiplier:UInt,
 		alphaMultiplier:UInt):Void;
 
@@ -619,6 +625,7 @@ extern class BitmapData implements IBitmapDrawable
 	 *                       to `true`.
 	 */
 	public function noise(randomSeed:Int, low:UInt = 0, high:UInt = 255, channelOptions:UInt = 7, grayScale:Bool = false):Void;
+
 	public function paletteMap(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, redArray:Array<Int> = null, greenArray:Array<Int> = null,
 		blueArray:Array<Int> = null, alphaArray:Array<Int> = null):Void;
 
@@ -690,6 +697,7 @@ extern class BitmapData implements IBitmapDrawable
 	 */
 	public function perlinNoise(baseX:Float, baseY:Float, numOctaves:UInt, randomSeed:Int, stitch:Bool, fractalNoise:Bool, channelOptions:UInt = 7,
 		grayScale:Bool = false, offsets:Array<Point> = null):Void;
+
 	#if flash
 	@:noCompletion @:dox(hide) public function pixelDissolve(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, randomSeed:Int = 0,
 		numPixels:Int = 0, fillColor:UInt = 0):Int;
