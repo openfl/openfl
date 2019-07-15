@@ -203,6 +203,18 @@ abstract Vector<T>(IVector<T>)
 	}
 
 	/**
+		Executes a test function on each item in the Vector and returns a new Vector
+		containing all items that return true for the specified function. If an item
+		returns false, it is not included in the result Vector. The base type of the return
+		Vector matches the base type of the Vector on which the method is called.
+		@param	callback	The function to run on each item in the Vector.
+	**/
+	public inline function filter(callback:T->Bool):Vector<T>
+	{
+		return cast this.filter(cast callback);
+	}
+
+	/**
 		Array access
 	**/
 	@:noCompletion @:dox(hide) @:arrayAccess public inline function get(index:Int):T
@@ -663,6 +675,11 @@ abstract Vector<T>(IVector<T>)
 		return new BoolVector(0, fixed, __array.copy());
 	}
 
+	public function filter(callback:Bool->Bool):IVector<Bool>
+	{
+		return new BoolVector(0, fixed, __array.filter(callback));
+	}
+
 	public function get(index:Int):Bool
 	{
 		if (index >= __array.length)
@@ -916,6 +933,11 @@ abstract Vector<T>(IVector<T>)
 		return new FloatVector(0, fixed, __array.copy());
 	}
 
+	public function filter(callback:Float->Bool):IVector<Float>
+	{
+		return new FloatVector(0, fixed, __array.filter(callback));
+	}
+
 	public function get(index:Int):Float
 	{
 		return __array[index];
@@ -1160,6 +1182,11 @@ abstract Vector<T>(IVector<T>)
 		return new FunctionVector(0, fixed, __array.copy());
 	}
 
+	public function filter(callback:Function->Bool):IVector<Function>
+	{
+		return new FunctionVector(0, fixed, __array.filter(callback));
+	}
+
 	public function get(index:Int):Function
 	{
 		if (index >= __array.length)
@@ -1402,6 +1429,11 @@ abstract Vector<T>(IVector<T>)
 	public function copy():IVector<Int>
 	{
 		return new IntVector(0, fixed, __array.copy());
+	}
+
+	public function filter(callback:Int->Bool):IVector<Int>
+	{
+		return new IntVector(0, fixed, __array.filter(callback));
 	}
 
 	public function get(index:Int):Int
@@ -1651,6 +1683,11 @@ abstract Vector<T>(IVector<T>)
 		return new ObjectVector(0, fixed, __array.copy());
 	}
 
+	public function filter(callback:T->Bool):IVector<T>
+	{
+		return new ObjectVector(0, fixed, __array.filter(callback));
+	}
+
 	public function get(index:Int):T
 	{
 		return __array[index];
@@ -1844,6 +1881,7 @@ abstract Vector<T>(IVector<T>)
 	public var length(get, set):Int;
 	public function concat(vec:IVector<T> = null):IVector<T>;
 	public function copy():IVector<T>;
+	public function filter(callback:T->Bool):IVector<T>;
 	public function get(index:Int):T;
 	public function indexOf(x:T, from:Int = 0):Int;
 	public function insertAt(index:Int, element:T):Void;
@@ -1896,6 +1934,11 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 	{
 		// return cast this.copy ();
 		return VectorData.ofArray(cast this);
+	}
+
+	public function filter(callback:T->Bool):Vector<T>
+	{
+		return VectorData.ofArray(untyped __js__("Array.prototype.filter.call")(this, callback));
 	}
 
 	@:arrayAccess public inline function get(index:Int):T
@@ -2093,6 +2136,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 			constructor: { value: null },
 			concat: { value: p.concat },
 			copy: { value: p.copy },
+			filter: { value: p.filter },
 			get: { value: p.get },
 			insertAt: { value: p.insertAt },
 			iterator: { value: p.iterator },
@@ -2152,6 +2196,11 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 	public function copy():VectorData<T>
 	{
 		return VectorData.ofArray(cast this);
+	}
+
+	public function filter(callback:T->Bool):Vector<T>
+	{
+		return VectorData.ofArray(untyped __js__("Array.prototype.filter.call (this, callback)"));
 	}
 
 	public function get(index:Int):T
@@ -2434,6 +2483,21 @@ abstract Vector<T>(VectorData<T>)
 		for (i in 0...this.length)
 		{
 			vec[i] = this[i];
+		}
+
+		return vec;
+	}
+
+	public inline function filter(callback:T->Bool):Vector<T>
+	{
+		var vec = new VectorData<T>();
+
+		for (i in 0...this.length)
+		{
+			if (callback(this[i]))
+			{
+				vec.push(this[i]);
+			}
 		}
 
 		return vec;
