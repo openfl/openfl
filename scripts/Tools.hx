@@ -1061,6 +1061,7 @@ class Tools
 					{
 						asset.library = library.name;
 						asset.targetPath = "lib/" + library.name + "/" + asset.targetPath;
+						asset.resourceName = asset.targetPath;
 					}
 
 					output.merge(merge);
