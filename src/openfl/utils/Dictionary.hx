@@ -82,9 +82,9 @@ abstract Dictionary<K, V>(IMap<K, V>)
 
 		The order of values is undefined.
 	**/
-	@:runtime public inline function keyValueIterator():KeyValueIterator<K, V>
+	public inline function keyValueIterator():KeyValueIterator<K, V>
 	{
-		return new haxe.iterators.MapKeyValueIterator(this);
+		return this.keyValueIterator();
 	}
 	#end
 
