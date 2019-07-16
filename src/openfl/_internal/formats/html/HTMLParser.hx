@@ -92,7 +92,7 @@ class HTMLParser
 
 				if (isClosingTag)
 				{
-					if (tagName.toLowerCase() != tagStack[tagStack.length - 1].toLowerCase())
+					if (tagStack.length == 0 || tagName.toLowerCase() != tagStack[tagStack.length - 1].toLowerCase())
 					{
 						Log.info("Invalid HTML, unexpected closing tag ignored: " + tagName);
 						continue;
