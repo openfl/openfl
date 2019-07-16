@@ -43,9 +43,9 @@ class BatchRenderer {
 	var textureTick = 0;
 
 	public var projectionMatrix:Float32Array;
-	
+
 	var emptyTexture:GLTexture;
-	
+
 	static inline var floatsPerQuad = MultiTextureShader.floatsPerVertex * 4;
 
 	public function new(gl:GLRenderContext, blendModeManager:GLBlendModeManager, shaderManager:GLShaderManager, maxQuads:Int) {
@@ -57,7 +57,7 @@ class BatchRenderer {
 		// determine amount of textures we can draw at once and generate a shader for that
 		shader = new MultiTextureShader(gl);
 		maxTextures = shader.maxTextures;
-		
+
 		emptyTexture = gl.createTexture();
 		gl.bindTexture(gl.TEXTURE_2D, emptyTexture);
 		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, 1, 1, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
@@ -70,7 +70,7 @@ class BatchRenderer {
 
 		// create the vertex buffer for further uploading
 		vertexBuffer = gl.createBuffer();
-		
+
 		gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
 		gl.bufferData(gl.ARRAY_BUFFER, vertexBufferData.byteLength, vertexBufferData, gl.STREAM_DRAW);
 
@@ -85,7 +85,7 @@ class BatchRenderer {
 		for (i in 0...maxQuads) {
 			groups[i] = new RenderGroup();
 		}
-		
+
 		startNextGroup();
 	}
 
@@ -123,6 +123,16 @@ class BatchRenderer {
 			currentBlendMode = quad.blendMode;
 			currentTexture = null;
 
+			finishCurrentGroup();
+			startNextGroup();
+		}
+
+		// if the texture was used in the current group (ticks are equal), but the smoothing mode has changed
+		// we gotta break the batch, because we can't render the same texture with different smoothing in a single batch
+		// TODO: we can in WebGL2 using Sampler objects
+		if (nextTexture.enabledTick == tick && nextTexture.lastSmoothing != quad.smoothing) {
+			currentTexture = null;
+			
 			finishCurrentGroup();
 			startNextGroup();
 		}
@@ -179,6 +189,7 @@ class BatchRenderer {
 
 				// mark the texture as enabled in this group
 				nextTexture.enabledTick = tick;
+				nextTexture.lastSmoothing = quad.smoothing;
 				// add the texture to the group textures array
 				currentGroup.textures[currentGroup.textureCount] = nextTexture;
 				// save the texture unit number separately as it can change when processing next group
@@ -321,7 +332,7 @@ class BatchRenderer {
 				lastBlendMode = group.blendMode;
 				lastBlendMode.apply(gl);
 			}
-			
+
 
 			// draw this group's slice of vertices
 			gl.drawElements(gl.TRIANGLES, group.size * 6, gl.UNSIGNED_SHORT, group.start * 6 * UInt16Array.BYTES_PER_ELEMENT);
@@ -333,7 +344,7 @@ class BatchRenderer {
 
 		// disable the current OpenFL shader so it'll be re-enabled properly on next non-batched openfl render
 		// this is needed because we don't use ShaderManager to set our shader. Ideally we should do that, but
-		// this will requires some rework for the whole OpenFL shader system, which we'll do when we'll fork away for good 
+		// this will requires some rework for the whole OpenFL shader system, which we'll do when we'll fork away for good
 		shaderManager.setShader(null);
 		blendModeManager.setBlendMode(NORMAL);
 
