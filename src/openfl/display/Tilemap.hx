@@ -363,6 +363,23 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		__group.swapTilesAt(index1, index2);
 	}
 
+	/**
+        Sorts the tile Array according to the comparison function `f`, where
+        `f(x,y)` returns 0 if x == y, a positive Int if x > y and a
+        negative Int if x < y.
+
+        This operation modifies the tile Array in place.
+
+        The sort operation is not guaranteed to be stable, which means that the
+        order of equal elements may not be retained. Please plan ahead.
+
+        If `f` is null, the result is unspecified.
+    **/
+    public function sort(f:Tile->Tile->Int) 
+	{
+        __group.sort(f);
+    }
+
 	#if !flash
 	@:noCompletion private override function __enterFrame(deltaTime:Int):Void
 	{
