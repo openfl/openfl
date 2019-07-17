@@ -3,8 +3,9 @@ package openfl.media;
 #if !flash
 import openfl._internal.backend.gl.GLBuffer;
 import openfl._internal.renderer.canvas.CanvasVideo;
-import openfl._internal.renderer.dom.DOMVideo;
 import openfl._internal.renderer.context3D.Context3DVideo;
+import openfl._internal.renderer.dom.DOMVideo;
+import openfl._internal.renderer.opengl.GLVideo;
 import openfl._internal.utils.Float32Array;
 import openfl._internal.utils.UInt16Array;
 import openfl.display3D.textures.RectangleTexture;
@@ -12,6 +13,7 @@ import openfl.display3D.Context3D;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
 import openfl.display.CanvasRenderer;
+import openfl.display.Context3DRenderer;
 import openfl.display.DisplayObject;
 import openfl.display.DOMRenderer;
 import openfl.display.OpenGLRenderer;
@@ -437,6 +439,17 @@ class Video extends DisplayObject
 		__renderEvent(renderer);
 	}
 
+	@:noCompletion private override function __renderContext3D(renderer:Context3DRenderer):Void
+	{
+		Context3DVideo.render(this, renderer);
+		__renderEvent(renderer);
+	}
+
+	@:noCompletion private override function __renderContext3DMask(renderer:Context3DRenderer):Void
+	{
+		Context3DVideo.renderMask(this, renderer);
+	}
+
 	@:noCompletion private override function __renderDOM(renderer:DOMRenderer):Void
 	{
 		DOMVideo.render(this, renderer);
@@ -445,13 +458,13 @@ class Video extends DisplayObject
 
 	@:noCompletion private override function __renderGL(renderer:OpenGLRenderer):Void
 	{
-		Context3DVideo.render(this, renderer);
+		GLVideo.render(this, renderer);
 		__renderEvent(renderer);
 	}
 
 	@:noCompletion private override function __renderGLMask(renderer:OpenGLRenderer):Void
 	{
-		Context3DVideo.renderMask(this, renderer);
+		GLVideo.renderMask(this, renderer);
 	}
 
 	// Get & Set Methods

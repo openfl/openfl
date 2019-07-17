@@ -9,6 +9,8 @@ import openfl._internal.renderer.context3D.Context3DBitmap;
 import openfl._internal.renderer.context3D.Context3DDisplayObject;
 import openfl._internal.renderer.dom.DOMBitmap;
 import openfl._internal.renderer.dom.DOMDisplayObject;
+import openfl._internal.renderer.opengl.GLBitmap;
+import openfl._internal.renderer.opengl.GLDisplayObject;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 #if (js && html5)
@@ -252,6 +254,33 @@ class Bitmap extends DisplayObject
 		renderer.context.rect(0, 0, width, height);
 	}
 
+	@:noCompletion private override function __renderContext3D(renderer:Context3DRenderer):Void
+	{
+		__updateCacheBitmap(renderer, false);
+
+		if (__bitmapData != null && __bitmapData.image != null)
+		{
+			__imageVersion = __bitmapData.image.version;
+		}
+
+		if (__cacheBitmap != null && !__isCacheBitmapRender)
+		{
+			Context3DBitmap.render(__cacheBitmap, renderer);
+		}
+		else
+		{
+			Context3DDisplayObject.render(this, renderer);
+			Context3DBitmap.render(this, renderer);
+		}
+
+		__renderEvent(renderer);
+	}
+
+	@:noCompletion private override function __renderContext3DMask(renderer:Context3DRenderer):Void
+	{
+		Context3DBitmap.renderMask(this, renderer);
+	}
+
 	@:noCompletion private override function __renderDOM(renderer:DOMRenderer):Void
 	{
 		__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
@@ -288,12 +317,12 @@ class Bitmap extends DisplayObject
 
 		if (__cacheBitmap != null && !__isCacheBitmapRender)
 		{
-			Context3DBitmap.render(__cacheBitmap, renderer);
+			GLBitmap.render(__cacheBitmap, renderer);
 		}
 		else
 		{
-			Context3DDisplayObject.render(this, renderer);
-			Context3DBitmap.render(this, renderer);
+			GLDisplayObject.render(this, renderer);
+			GLBitmap.render(this, renderer);
 		}
 
 		__renderEvent(renderer);
@@ -301,7 +330,7 @@ class Bitmap extends DisplayObject
 
 	@:noCompletion private override function __renderGLMask(renderer:OpenGLRenderer):Void
 	{
-		Context3DBitmap.renderMask(this, renderer);
+		GLBitmap.renderMask(this, renderer);
 	}
 
 	@:noCompletion private override function __updateCacheBitmap(renderer:DisplayObjectRenderer, force:Bool):Bool

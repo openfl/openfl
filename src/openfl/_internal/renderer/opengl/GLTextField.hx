@@ -1,8 +1,8 @@
-package openfl._internal.renderer.context3D;
+package openfl._internal.renderer.opengl;
 
 import openfl._internal.renderer.cairo.CairoTextField;
 import openfl._internal.renderer.canvas.CanvasTextField;
-import openfl.display.Context3DRenderer;
+import openfl.display.OpenGLRenderer;
 import openfl.text.TextField;
 
 #if !openfl_debug
@@ -12,9 +12,9 @@ import openfl.text.TextField;
 @:access(openfl.display.Graphics)
 @:access(openfl.text.TextField)
 @SuppressWarnings("checkstyle:FieldDocComment")
-class Context3DTextField
+class GLTextField
 {
-	public static function render(textField:TextField, renderer:Context3DRenderer):Void
+	public static function render(textField:TextField, renderer:OpenGLRenderer):Void
 	{
 		#if (js && html5)
 		CanvasTextField.render(textField, cast renderer.__softwareRenderer, textField.__worldTransform);
@@ -24,7 +24,7 @@ class Context3DTextField
 		textField.__graphics.__hardwareDirty = false;
 	}
 
-	public static function renderMask(textField:TextField, renderer:Context3DRenderer):Void
+	public static function renderMask(textField:TextField, renderer:OpenGLRenderer):Void
 	{
 		#if (js && html5)
 		CanvasTextField.render(textField, cast renderer.__softwareRenderer, textField.__worldTransform);

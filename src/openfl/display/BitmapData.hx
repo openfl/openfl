@@ -905,7 +905,11 @@ class BitmapData implements IBitmapDrawable
 				_colorTransform.__combine(colorTransform);
 			}
 
+			#if opengl_renderer
 			var renderer = new OpenGLRenderer(Lib.current.stage.context3D, this);
+			#else
+			var renderer = new Context3DRenderer(Lib.current.stage.context3D, this);
+			#end
 			renderer.__allowSmoothing = smoothing;
 			renderer.__overrideBlendMode = blendMode;
 
@@ -920,7 +924,11 @@ class BitmapData implements IBitmapDrawable
 				renderer.__pushMaskRect(clipRect, clipMatrix);
 			}
 
+			#if opengl_renderer
 			__drawGL(source, renderer);
+			#else
+			__drawContext3D(source, renderer);
+			#end
 
 			if (clipRect != null)
 			{
@@ -3076,6 +3084,29 @@ class BitmapData implements IBitmapDrawable
 		image.version++;
 	}
 
+	@:noCompletion private function __drawContext3D(source:IBitmapDrawable, renderer:Context3DRenderer):Void
+	{
+		var context = renderer.context3D;
+
+		var cacheRTT = context.__state.renderToTexture;
+		var cacheRTTDepthStencil = context.__state.renderToTextureDepthStencil;
+		var cacheRTTAntiAlias = context.__state.renderToTextureAntiAlias;
+		var cacheRTTSurfaceSelector = context.__state.renderToTextureSurfaceSelector;
+
+		context.setRenderToTexture(getTexture(context), true);
+
+		renderer.__render(source);
+
+		if (cacheRTT != null)
+		{
+			context.setRenderToTexture(cacheRTT, cacheRTTDepthStencil, cacheRTTAntiAlias, cacheRTTSurfaceSelector);
+		}
+		else
+		{
+			context.setRenderToBackBuffer();
+		}
+	}
+
 	@:noCompletion private function __drawGL(source:IBitmapDrawable, renderer:OpenGLRenderer):Void
 	{
 		var context = renderer.__context3D;
@@ -3114,8 +3145,8 @@ class BitmapData implements IBitmapDrawable
 			&& __texture.__glFramebuffer != null
 			&& Lib.current.stage.__renderer.__type == OPENGL)
 		{
-			var renderer:OpenGLRenderer = cast Lib.current.stage.__renderer;
-			var context = renderer.__context3D;
+			var renderer:Context3DRenderer = cast Lib.current.stage.__renderer;
+			var context = renderer.context3D;
 			var color:ARGB = (color : ARGB);
 			var useScissor = !this.rect.equals(rect);
 
@@ -3397,11 +3428,9 @@ class BitmapData implements IBitmapDrawable
 
 	@:noCompletion private function __renderCanvasMask(renderer:CanvasRenderer):Void {}
 
-	@:noCompletion private function __renderDOM(renderer:DOMRenderer):Void {}
-
-	@:noCompletion private function __renderGL(renderer:OpenGLRenderer):Void
+	@:noCompletion private function __renderContext3D(renderer:Context3DRenderer):Void
 	{
-		var context = renderer.__context3D;
+		var context = renderer.context3D;
 		var gl = context.gl;
 
 		renderer.__setBlendMode(NORMAL);
@@ -3429,6 +3458,62 @@ class BitmapData implements IBitmapDrawable
 		renderer.__clearShader();
 	}
 
+	@:noCompletion private function __renderContext3DMask(renderer:Context3DRenderer):Void
+	{
+		var context = renderer.context3D;
+		var gl = context.gl;
+
+		var shader = renderer.__maskShader;
+		renderer.setShader(shader);
+		renderer.applyBitmapData(this, renderer.__upscaled);
+		renderer.applyMatrix(renderer.__getMatrix(__worldTransform, AUTO));
+		renderer.updateShader();
+
+		var vertexBuffer = getVertexBuffer(context);
+		if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, vertexBuffer, 0, FLOAT_3);
+		if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
+		var indexBuffer = getIndexBuffer(context);
+		context.drawTriangles(indexBuffer);
+
+		#if gl_stats
+		Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
+		#end
+
+		renderer.__clearShader();
+	}
+
+	@:noCompletion private function __renderDOM(renderer:DOMRenderer):Void {}
+
+	@:noCompletion private function __renderGL(renderer:OpenGLRenderer):Void
+	{
+		var context = renderer.__context3D;
+		var gl = context.gl;
+
+		renderer.__setBlendMode(NORMAL);
+
+		var shader = renderer.__defaultDisplayShader;
+		renderer.setShader(shader);
+		renderer.applyBitmapData(this, renderer.__upscaled);
+		renderer.applyMatrix(renderer.__getMatrix(__worldTransform /*, AUTO*/));
+		renderer.applyAlpha(__worldAlpha);
+		renderer.applyColorTransform(__worldColorTransform);
+		renderer.updateShader();
+
+		// alpha == 1, __worldColorTransform
+
+		var vertexBuffer = getVertexBuffer(context);
+		if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, vertexBuffer, 0, FLOAT_3);
+		if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
+		var indexBuffer = getIndexBuffer(context);
+		context.drawTriangles(indexBuffer);
+
+		#if gl_stats
+		Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
+		#end
+
+		renderer.__clearShader();
+	}
+
 	@:noCompletion private function __renderGLMask(renderer:OpenGLRenderer):Void
 	{
 		var context = renderer.__context3D;
@@ -3437,7 +3522,7 @@ class BitmapData implements IBitmapDrawable
 		var shader = renderer.__maskShader;
 		renderer.setShader(shader);
 		renderer.applyBitmapData(this, renderer.__upscaled);
-		renderer.applyMatrix(renderer.__getMatrix(__worldTransform, AUTO));
+		renderer.applyMatrix(renderer.__getMatrix(__worldTransform /*, AUTO*/));
 		renderer.updateShader();
 
 		var vertexBuffer = getVertexBuffer(context);

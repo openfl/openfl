@@ -13,6 +13,9 @@ import openfl._internal.renderer.context3D.Context3DDisplayObject;
 import openfl._internal.renderer.context3D.Context3DTextField;
 import openfl._internal.renderer.dom.DOMBitmap;
 import openfl._internal.renderer.dom.DOMTextField;
+import openfl._internal.renderer.opengl.GLBitmap;
+import openfl._internal.renderer.opengl.GLDisplayObject;
+import openfl._internal.renderer.opengl.GLTextField;
 import openfl._internal.formats.swf.SWFLite;
 import openfl._internal.symbols.DynamicTextSymbol;
 import openfl._internal.symbols.FontSymbol;
@@ -24,6 +27,7 @@ import openfl._internal.text.UTF8String;
 import openfl._internal.utils.Log;
 import openfl.display.CanvasRenderer;
 import openfl.display.CairoRenderer;
+import openfl.display.Context3DRenderer;
 import openfl.display.DisplayObject;
 import openfl.display.DisplayObjectRenderer;
 import openfl.display.DOMRenderer;
@@ -2180,6 +2184,29 @@ class TextField extends InteractiveObject
 		#end
 	}
 
+	@:noCompletion private override function __renderContext3D(renderer:Context3DRenderer):Void
+	{
+		__updateCacheBitmap(renderer, false);
+
+		if (__cacheBitmap != null && !__isCacheBitmapRender)
+		{
+			Context3DBitmap.render(__cacheBitmap, renderer);
+		}
+		else
+		{
+			Context3DTextField.render(this, renderer);
+			Context3DDisplayObject.render(this, renderer);
+		}
+
+		__renderEvent(renderer);
+	}
+
+	@:noCompletion private override function __renderContext3DMask(renderer:Context3DRenderer):Void
+	{
+		Context3DTextField.renderMask(this, renderer);
+		super.__renderContext3DMask(renderer);
+	}
+
 	@:noCompletion private override function __renderDOM(renderer:DOMRenderer):Void
 	{
 		#if (js && html5)
@@ -2228,12 +2255,12 @@ class TextField extends InteractiveObject
 
 		if (__cacheBitmap != null && !__isCacheBitmapRender)
 		{
-			Context3DBitmap.render(__cacheBitmap, renderer);
+			GLBitmap.render(__cacheBitmap, renderer);
 		}
 		else
 		{
-			Context3DTextField.render(this, renderer);
-			Context3DDisplayObject.render(this, renderer);
+			GLTextField.render(this, renderer);
+			GLDisplayObject.render(this, renderer);
 		}
 
 		__renderEvent(renderer);
@@ -2241,7 +2268,7 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private override function __renderGLMask(renderer:OpenGLRenderer):Void
 	{
-		Context3DTextField.renderMask(this, renderer);
+		GLTextField.renderMask(this, renderer);
 		super.__renderGLMask(renderer);
 	}
 

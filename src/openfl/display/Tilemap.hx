@@ -11,13 +11,17 @@ import openfl._internal.renderer.cairo.CairoTilemap;
 import openfl._internal.renderer.canvas.CanvasBitmap;
 import openfl._internal.renderer.canvas.CanvasDisplayObject;
 import openfl._internal.renderer.canvas.CanvasTilemap;
+import openfl._internal.renderer.context3D.Context3DBitmap;
 import openfl._internal.renderer.context3D.Context3DBuffer;
+import openfl._internal.renderer.context3D.Context3DDisplayObject;
+import openfl._internal.renderer.context3D.Context3DTilemap;
 import openfl._internal.renderer.dom.DOMBitmap;
 import openfl._internal.renderer.dom.DOMDisplayObject;
 import openfl._internal.renderer.dom.DOMTilemap;
-import openfl._internal.renderer.context3D.Context3DBitmap;
-import openfl._internal.renderer.context3D.Context3DDisplayObject;
-import openfl._internal.renderer.context3D.Context3DTilemap;
+import openfl._internal.renderer.opengl.GLBitmap;
+import openfl._internal.renderer.opengl.GLBuffer;
+import openfl._internal.renderer.opengl.GLDisplayObject;
+import openfl._internal.renderer.opengl.GLTilemap;
 #end
 
 /**
@@ -470,6 +474,39 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		__renderEvent(renderer);
 	}
 
+	@:noCompletion private override function __renderContext3D(renderer:Context3DRenderer):Void
+	{
+		__updateCacheBitmap(renderer, false);
+
+		if (__cacheBitmap != null && !__isCacheBitmapRender)
+		{
+			Context3DBitmap.render(__cacheBitmap, renderer);
+		}
+		else
+		{
+			Context3DDisplayObject.render(this, renderer);
+			Context3DTilemap.render(this, renderer);
+		}
+
+		__renderEvent(renderer);
+	}
+
+	@:noCompletion private override function __renderContext3DMask(renderer:Context3DRenderer):Void
+	{
+		// __updateCacheBitmap (renderer, false);
+
+		// if (__cacheBitmap != null && !__isCacheBitmapRender) {
+
+		// 	Context3DBitmap.renderMask (__cacheBitmap, renderer);
+
+		// } else {
+
+		Context3DDisplayObject.renderMask(this, renderer);
+		Context3DTilemap.renderMask(this, renderer);
+
+		// }
+	}
+
 	@:noCompletion private override function __renderDOM(renderer:DOMRenderer):Void
 	{
 		__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
@@ -508,12 +545,12 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 
 		if (__cacheBitmap != null && !__isCacheBitmapRender)
 		{
-			Context3DBitmap.render(__cacheBitmap, renderer);
+			GLBitmap.render(__cacheBitmap, renderer);
 		}
 		else
 		{
-			Context3DDisplayObject.render(this, renderer);
-			Context3DTilemap.render(this, renderer);
+			GLDisplayObject.render(this, renderer);
+			GLTilemap.render(this, renderer);
 		}
 
 		__renderEvent(renderer);
@@ -529,8 +566,8 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 
 		// } else {
 
-		Context3DDisplayObject.renderMask(this, renderer);
-		Context3DTilemap.renderMask(this, renderer);
+		GLDisplayObject.renderMask(this, renderer);
+		GLTilemap.renderMask(this, renderer);
 
 		// }
 	}

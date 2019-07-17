@@ -1192,7 +1192,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				context3D = new Context3D(this);
 				context3D.configureBackBuffer(windowWidth, windowHeight, 0, true, true, true);
 				context3D.present();
+				#if opengl_renderer
 				__renderer = new OpenGLRenderer(context3D);
+				#else
+				__renderer = new Context3DRenderer(context3D);
+				#end
 				#end
 
 			case CANVAS:

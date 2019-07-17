@@ -77,6 +77,22 @@ import openfl.geom.Matrix;
 	public static inline var RENDER_CANVAS:EventType<RenderEvent> = "renderCanvas";
 
 	/**
+		The `RenderEvent.RENDER_CONTEXT3D` constant defines the value of the `type` property
+		of an `renderEvent` event object.
+
+		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `true` |
+		| `cancelable` | `true` |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `renderer` | A reference to the active display object renderer. |
+		| `target` | The display object that is going to be rendered. |
+	**/
+	public static inline var RENDER_CONTEXT3D:EventType<RenderEvent> = "renderContext3D";
+
+	/**
 		The `RenderEvent.RENDER_DOM` constant defines the value of the `type` property
 		of an `renderEvent` event object.
 

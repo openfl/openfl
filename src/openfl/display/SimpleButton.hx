@@ -371,6 +371,24 @@ class SimpleButton extends InteractiveObject
 		__currentState.__renderCanvasMask(renderer);
 	}
 
+	@:noCompletion private override function __renderContext3D(renderer:Context3DRenderer):Void
+	{
+		if (!__renderable || __worldAlpha <= 0 || __currentState == null) return;
+
+		renderer.__pushMaskObject(this);
+		__currentState.__renderContext3D(renderer);
+		renderer.__popMaskObject(this);
+
+		__renderEvent(renderer);
+	}
+
+	@:noCompletion private override function __renderContext3DMask(renderer:Context3DRenderer):Void
+	{
+		if (__currentState == null) return;
+
+		__currentState.__renderContext3DMask(renderer);
+	}
+
 	@:noCompletion private override function __renderDOM(renderer:DOMRenderer):Void
 	{
 		#if !neko

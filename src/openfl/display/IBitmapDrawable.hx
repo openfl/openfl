@@ -20,6 +20,8 @@ interface IBitmapDrawable
 	@:noCompletion private function __renderCairoMask(renderer:CairoRenderer):Void;
 	@:noCompletion private function __renderCanvas(renderer:CanvasRenderer):Void;
 	@:noCompletion private function __renderCanvasMask(renderer:CanvasRenderer):Void;
+	@:noCompletion private function __renderContext3D(renderer:Context3DRenderer):Void;
+	@:noCompletion private function __renderContext3DMask(renderer:Context3DRenderer):Void;
 	@:noCompletion private function __renderDOM(renderer:DOMRenderer):Void;
 	@:noCompletion private function __renderGL(renderer:OpenGLRenderer):Void;
 	@:noCompletion private function __renderGLMask(renderer:OpenGLRenderer):Void;

@@ -4,6 +4,7 @@ package openfl.display;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.context3D.Context3DShape;
+import openfl._internal.renderer.opengl.GLShape;
 import openfl.errors.ArgumentError;
 import openfl.errors.RangeError;
 import openfl.errors.TypeError;
@@ -1001,6 +1002,63 @@ class DisplayObjectContainer extends InteractiveObject
 		}
 	}
 
+	@:noCompletion private override function __renderContext3D(renderer:Context3DRenderer):Void
+	{
+		__cleanupRemovedChildren();
+
+		if (!__renderable || __worldAlpha <= 0) return;
+
+		super.__renderContext3D(renderer);
+
+		if (__cacheBitmap != null && !__isCacheBitmapRender) return;
+
+		if (__children.length > 0)
+		{
+			renderer.__pushMaskObject(this);
+			// renderer.filterManager.pushObject (this);
+
+			if (renderer.__stage != null)
+			{
+				for (child in __children)
+				{
+					child.__renderContext3D(renderer);
+					child.__renderDirty = false;
+				}
+
+				__renderDirty = false;
+			}
+			else
+			{
+				for (child in __children)
+				{
+					child.__renderContext3D(renderer);
+				}
+			}
+		}
+
+		if (__children.length > 0)
+		{
+			// renderer.filterManager.popObject (this);
+			renderer.__popMaskObject(this);
+		}
+	}
+
+	@:noCompletion private override function __renderContext3DMask(renderer:Context3DRenderer):Void
+	{
+		__cleanupRemovedChildren();
+
+		if (__graphics != null)
+		{
+			// Context3DGraphics.renderMask (__graphics, renderer);
+			Context3DShape.renderMask(this, renderer);
+		}
+
+		for (child in __children)
+		{
+			child.__renderContext3DMask(renderer);
+		}
+	}
+
 	@:noCompletion private override function __renderDOM(renderer:DOMRenderer):Void
 	{
 		for (orphan in __removedChildren)
@@ -1105,8 +1163,8 @@ class DisplayObjectContainer extends InteractiveObject
 
 		if (__graphics != null)
 		{
-			// Context3DGraphics.renderMask (__graphics, renderer);
-			Context3DShape.renderMask(this, renderer);
+			// GLGraphics.renderMask (__graphics, renderer);
+			GLShape.renderMask(this, renderer);
 		}
 
 		for (child in __children)

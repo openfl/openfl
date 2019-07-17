@@ -7,12 +7,16 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasBitmap;
 import openfl._internal.renderer.canvas.CanvasDisplayObject;
 import openfl._internal.renderer.canvas.CanvasGraphics;
-import openfl._internal.renderer.dom.DOMBitmap;
-import openfl._internal.renderer.dom.DOMDisplayObject;
 import openfl._internal.renderer.context3D.Context3DBitmap;
 import openfl._internal.renderer.context3D.Context3DDisplayObject;
 import openfl._internal.renderer.context3D.Context3DGraphics;
 import openfl._internal.renderer.context3D.Context3DShape;
+import openfl._internal.renderer.dom.DOMBitmap;
+import openfl._internal.renderer.dom.DOMDisplayObject;
+import openfl._internal.renderer.opengl.GLBitmap;
+import openfl._internal.renderer.opengl.GLDisplayObject;
+import openfl._internal.renderer.opengl.GLGraphics;
+import openfl._internal.renderer.opengl.GLShape;
 import openfl._internal.utils.ObjectPool;
 import openfl._internal.Lib;
 import openfl.errors.TypeError;
@@ -1720,6 +1724,31 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		}
 	}
 
+	@:noCompletion private function __renderContext3D(renderer:Context3DRenderer):Void
+	{
+		__updateCacheBitmap(renderer, false);
+
+		if (__cacheBitmap != null && !__isCacheBitmapRender)
+		{
+			Context3DBitmap.render(__cacheBitmap, renderer);
+		}
+		else
+		{
+			Context3DDisplayObject.render(this, renderer);
+		}
+
+		__renderEvent(renderer);
+	}
+
+	@:noCompletion private function __renderContext3DMask(renderer:Context3DRenderer):Void
+	{
+		if (__graphics != null)
+		{
+			// Context3DGraphics.renderMask (__graphics, renderer);
+			Context3DShape.renderMask(this, renderer);
+		}
+	}
+
 	@:noCompletion private function __renderDOM(renderer:DOMRenderer):Void
 	{
 		__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
@@ -1759,11 +1788,19 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				case OPENGL:
 					if (!renderer.__cleared) renderer.__clear();
 
+					#if opengl_renderer
 					var renderer:OpenGLRenderer = cast renderer;
 					renderer.setShader(__worldShader);
 					renderer.__context3D.__flushGL();
 
 					__customRenderEvent.type = RenderEvent.RENDER_OPENGL;
+					#else
+					var renderer:Context3DRenderer = cast renderer;
+					renderer.setShader(__worldShader);
+					renderer.context3D.__flushGL();
+
+					__customRenderEvent.type = RenderEvent.RENDER_CONTEXT3D;
+					#end
 
 				case CAIRO:
 					__customRenderEvent.type = RenderEvent.RENDER_CAIRO;
@@ -1794,7 +1831,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 			if (renderer.__type == OPENGL)
 			{
-				var renderer:OpenGLRenderer = cast renderer;
+				var renderer:Context3DRenderer = cast renderer;
 				renderer.setViewport();
 			}
 		}
@@ -1807,11 +1844,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 		if (__cacheBitmap != null && !__isCacheBitmapRender)
 		{
-			Context3DBitmap.render(__cacheBitmap, renderer);
+			GLBitmap.render(__cacheBitmap, renderer);
 		}
 		else
 		{
-			Context3DDisplayObject.render(this, renderer);
+			GLDisplayObject.render(this, renderer);
 		}
 
 		__renderEvent(renderer);
@@ -1822,7 +1859,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		if (__graphics != null)
 		{
 			// Context3DGraphics.renderMask (__graphics, renderer);
-			Context3DShape.renderMask(this, renderer);
+			GLShape.renderMask(this, renderer);
 		}
 	}
 
@@ -2224,7 +2261,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				{
 					if (renderType == OPENGL)
 					{
+						#if opengl_renderer
 						__cacheBitmapRenderer = new OpenGLRenderer(cast(renderer, OpenGLRenderer).__context3D, __cacheBitmapData);
+						#else
+						__cacheBitmapRenderer = new Context3DRenderer(cast(renderer, Context3DRenderer).context3D, __cacheBitmapData);
+						#end
 					}
 					else
 					{
@@ -2271,10 +2312,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 				if (__cacheBitmapRenderer.__type == OPENGL)
 				{
+					#if opengl_renderer
 					var parentRenderer:OpenGLRenderer = cast renderer;
 					var childRenderer:OpenGLRenderer = cast __cacheBitmapRenderer;
-
 					var context = childRenderer.__context3D;
+					#else
+					var parentRenderer:Context3DRenderer = cast renderer;
+					var childRenderer:Context3DRenderer = cast __cacheBitmapRenderer;
+					var context = childRenderer.context3D;
+					#end
 
 					var cacheRTT = context.__state.renderToTexture;
 					var cacheRTTDepthStencil = context.__state.renderToTextureDepthStencil;
@@ -2292,7 +2338,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 					childRenderer.__setRenderTarget(__cacheBitmapData);
 					if (__cacheBitmapData.image != null) __cacheBitmapData.__textureVersion = __cacheBitmapData.image.version + 1;
 
+					#if opengl_renderer
 					__cacheBitmapData.__drawGL(this, childRenderer);
+					#else
+					__cacheBitmapData.__drawContext3D(this, childRenderer);
+					#end
 
 					if (hasFilters)
 					{

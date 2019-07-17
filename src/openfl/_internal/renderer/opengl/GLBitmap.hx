@@ -1,10 +1,12 @@
-package openfl._internal.renderer.context3D;
+package openfl._internal.renderer.opengl;
 
+import lime.utils.Float32Array;
 import openfl.display.Bitmap;
-import openfl.display.Context3DRenderer;
+import openfl.display.BitmapData;
+import openfl.display.OpenGLRenderer;
 #if gl_stats
-import openfl._internal.renderer.context3D.stats.Context3DStats;
-import openfl._internal.renderer.context3D.stats.DrawCallContext;
+import openfl._internal.renderer.opengl.stats.GLStats;
+import openfl._internal.renderer.opengl.stats.DrawCallContext;
 #end
 
 #if !openfl_debug
@@ -18,16 +20,15 @@ import openfl._internal.renderer.context3D.stats.DrawCallContext;
 @:access(openfl.display.Stage)
 @:access(openfl.filters.BitmapFilter)
 @:access(openfl.geom.ColorTransform)
-@SuppressWarnings("checkstyle:FieldDocComment")
-class Context3DBitmap
+class GLBitmap
 {
-	public static function render(bitmap:Bitmap, renderer:Context3DRenderer):Void
+	public static function render(bitmap:Bitmap, renderer:OpenGLRenderer):Void
 	{
 		if (!bitmap.__renderable || bitmap.__worldAlpha <= 0) return;
 
 		if (bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid)
 		{
-			var context = renderer.context3D;
+			var context = renderer.__context3D;
 
 			renderer.__setBlendMode(bitmap.__worldBlendMode);
 			renderer.__pushMaskObject(bitmap);
@@ -36,7 +37,7 @@ class Context3DBitmap
 			var shader = renderer.__initDisplayShader(cast bitmap.__worldShader);
 			renderer.setShader(shader);
 			renderer.applyBitmapData(bitmap.__bitmapData, renderer.__allowSmoothing && (bitmap.smoothing || renderer.__upscaled));
-			renderer.applyMatrix(renderer.__getMatrix(bitmap.__renderTransform, bitmap.pixelSnapping));
+			renderer.applyMatrix(renderer.__getMatrix(bitmap.__renderTransform));
 			renderer.applyAlpha(bitmap.__worldAlpha);
 			renderer.applyColorTransform(bitmap.__worldColorTransform);
 			renderer.updateShader();
@@ -48,7 +49,7 @@ class Context3DBitmap
 			context.drawTriangles(indexBuffer);
 
 			#if gl_stats
-			Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
+			GLStats.incrementDrawCall(DrawCallContext.STAGE);
 			#end
 
 			renderer.__clearShader();
@@ -58,16 +59,16 @@ class Context3DBitmap
 		}
 	}
 
-	public static function renderMask(bitmap:Bitmap, renderer:Context3DRenderer):Void
+	public static function renderMask(bitmap:Bitmap, renderer:OpenGLRenderer):Void
 	{
 		if (bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid)
 		{
-			var context = renderer.context3D;
+			var context = renderer.__context3D;
 
 			var shader = renderer.__maskShader;
 			renderer.setShader(shader);
-			renderer.applyBitmapData(Context3DMaskShader.opaqueBitmapData, true);
-			renderer.applyMatrix(renderer.__getMatrix(bitmap.__renderTransform, bitmap.pixelSnapping));
+			renderer.applyBitmapData(GLMaskShader.opaqueBitmapData, true);
+			renderer.applyMatrix(renderer.__getMatrix(bitmap.__renderTransform));
 			renderer.updateShader();
 
 			var vertexBuffer = bitmap.__bitmapData.getVertexBuffer(context);
@@ -77,7 +78,7 @@ class Context3DBitmap
 			context.drawTriangles(indexBuffer);
 
 			#if gl_stats
-			Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
+			GLStats.incrementDrawCall(DrawCallContext.STAGE);
 			#end
 
 			renderer.__clearShader();
