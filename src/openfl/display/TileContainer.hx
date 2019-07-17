@@ -309,6 +309,28 @@ class TileContainer extends Tile implements ITileContainer
 	}
 
 	/**
+		Sorts the z-order (front-to-back order) of all the tile objects in this
+		container based on a comparison function.
+
+		A comparison function should take two arguments to compare. Given the elements
+		A and B, the result of `compareFunction` can have a negative, 0, or positive value:
+
+		* A negative return value specifies that A appears before B in the sorted sequence.
+		* A return value of 0 specifies that A and B have the same sort order.
+		* A positive return value specifies that A appears after B in the sorted sequence.
+
+		The sort operation is not guaranteed to be stable, which means that the
+		order of equal elements may not be retained.
+
+		@param	compareFunction	A comparison function to use when sorting.
+	**/
+	public function sortTiles(compareFunction:Tile->Tile->Int):Void
+	{
+		__tiles.sort(compareFunction);
+		__setRenderDirty();
+	}
+
+	/**
 		Swaps the z-order (front-to-back order) of the two specified tile
 		objects. All other tile objects in the tile container remain in
 		the same index positions.
@@ -347,23 +369,6 @@ class TileContainer extends Tile implements ITileContainer
 
 		__setRenderDirty();
 	}
-
-    /**
-        Sorts the tile Array according to the comparison function `f`, where
-        `f(x,y)` returns 0 if x == y, a positive Int if x > y and a
-        negative Int if x < y.
-
-        This operation modifies the tile Array in place.
-
-        The sort operation is not guaranteed to be stable, which means that the
-        order of equal elements may not be retained. Please plan ahead.
-
-        If `f` is null, the result is unspecified.
-    **/
-    public function sort(f:Tile->Tile->Int) 
-	{
-        __tiles.sort(f);
-    }
 
 	// Event Handlers
 	@:noCompletion private function get_numTiles():Int
