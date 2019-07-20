@@ -1,7 +1,6 @@
 package openfl._internal.renderer.canvas;
 
 import openfl.display.Bitmap;
-import openfl.display.CanvasRenderer;
 #if lime
 import lime._internal.graphics.ImageCanvasUtil; // TODO
 

@@ -1,6 +1,5 @@
 package openfl._internal.renderer.context3D;
 
-import openfl.display.Context3DRenderer;
 import openfl.media.Video;
 #if gl_stats
 import openfl._internal.renderer.context3D.stats.Context3DStats;

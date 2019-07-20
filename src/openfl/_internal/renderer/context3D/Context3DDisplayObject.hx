@@ -2,7 +2,6 @@ package openfl._internal.renderer.context3D;
 
 import openfl.display3D.Context3DClearMask;
 import openfl.display.DisplayObject;
-import openfl.display.Context3DRenderer;
 import openfl.geom.Rectangle;
 #if lime
 import lime.math.ARGB;

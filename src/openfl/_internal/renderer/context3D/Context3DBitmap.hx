@@ -1,7 +1,6 @@
 package openfl._internal.renderer.context3D;
 
 import openfl.display.Bitmap;
-import openfl.display.Context3DRenderer;
 #if gl_stats
 import openfl._internal.renderer.context3D.stats.Context3DStats;
 import openfl._internal.renderer.context3D.stats.DrawCallContext;

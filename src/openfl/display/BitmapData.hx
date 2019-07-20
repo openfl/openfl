@@ -4,6 +4,7 @@ package openfl.display;
 import openfl._internal.backend.gl.GLFramebuffer;
 import openfl._internal.backend.gl.GLRenderbuffer;
 import openfl._internal.formats.swf.SWFLite;
+import openfl._internal.renderer.DisplayObjectType;
 import openfl._internal.symbols.BitmapSymbol;
 import openfl._internal.utils.Float32Array;
 import openfl._internal.utils.PerlinNoise;
@@ -108,9 +109,12 @@ import openfl._internal.renderer.context3D.stats.DrawCallContext;
 @:access(lime.graphics.Image)
 @:access(lime.graphics.ImageBuffer)
 @:access(lime.math.Rectangle)
+@:access(openfl._internal.renderer.canvas.CanvasRenderer)
+@:access(openfl._internal.renderer.cairo.CairoRenderer)
 @:access(openfl.display3D.textures.TextureBase)
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.DisplayObject)
+@:access(openfl.display.DisplayObjectRenderer)
 @:access(openfl.display.DisplayObjectShader)
 @:access(openfl.display.Graphics)
 @:access(openfl.display.Shader)
@@ -127,6 +131,8 @@ import openfl._internal.renderer.context3D.stats.DrawCallContext;
 class BitmapData implements IBitmapDrawable
 {
 	@:noCompletion private static inline var VERTEX_BUFFER_STRIDE:Int = 14;
+	@:noCompletion private static var __hardwareRenderer:DisplayObjectRenderer;
+	@:noCompletion private static var __softwareRenderer:DisplayObjectRenderer;
 	@:noCompletion private static var __supportsBGRA:Null<Bool> = null;
 	@:noCompletion private static var __textureFormat:Int;
 	@:noCompletion private static var __textureInternalFormat:Int;
@@ -211,6 +217,7 @@ class BitmapData implements IBitmapDrawable
 	@:noCompletion private var __textureVersion:Int;
 	@:noCompletion private var __textureWidth:Int;
 	@:noCompletion private var __transform:Matrix;
+	@:noCompletion private var __type:DisplayObjectType;
 	@:noCompletion private var __uvRect:Rectangle;
 	@:noCompletion private var __vertexBuffer:VertexBuffer3D;
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __vertexBufferContext:#if lime RenderContext #else Dynamic #end;
@@ -879,20 +886,11 @@ class BitmapData implements IBitmapDrawable
 			transform.concat(matrix);
 		}
 
-		var clipMatrix = null;
-
-		if (clipRect != null)
-		{
-			clipMatrix = Matrix.__pool.get();
-			clipMatrix.copyFrom(transform);
-			clipMatrix.invert();
-		}
-
 		var _colorTransform = new ColorTransform();
 		_colorTransform.__copyFrom(source.__worldColorTransform);
 		_colorTransform.__invert();
 
-		if (!readable && Lib.current.stage.context3D != null)
+		if (!readable && __hardwareRenderer != null)
 		{
 			if (__textureContext == null)
 			{
@@ -905,36 +903,16 @@ class BitmapData implements IBitmapDrawable
 				_colorTransform.__combine(colorTransform);
 			}
 
-			#if opengl_renderer
-			var renderer = new OpenGLRenderer(Lib.current.stage.context3D, this);
-			#else
-			var renderer = new Context3DRenderer(Lib.current.stage.context3D, this);
-			#end
-			renderer.__allowSmoothing = smoothing;
-			renderer.__overrideBlendMode = blendMode;
+			__hardwareRenderer.__allowSmoothing = smoothing;
+			__hardwareRenderer.__overrideBlendMode = blendMode;
 
-			renderer.__worldTransform = transform;
-			renderer.__worldAlpha = 1 / source.__worldAlpha;
-			renderer.__worldColorTransform = _colorTransform;
+			__hardwareRenderer.__worldTransform = transform;
+			__hardwareRenderer.__worldAlpha = 1 / source.__worldAlpha;
+			__hardwareRenderer.__worldColorTransform = _colorTransform;
 
-			renderer.__resize(width, height);
+			__hardwareRenderer.__resize(width, height);
 
-			if (clipRect != null)
-			{
-				renderer.__pushMaskRect(clipRect, clipMatrix);
-			}
-
-			#if opengl_renderer
-			__drawGL(source, renderer);
-			#else
-			__drawContext3D(source, renderer);
-			#end
-
-			if (clipRect != null)
-			{
-				renderer.__popMaskRect();
-				Matrix.__pool.release(clipMatrix);
-			}
+			__hardwareRenderer.__drawBitmapData(this, source, clipRect);
 		}
 		else
 		{
@@ -969,10 +947,14 @@ class BitmapData implements IBitmapDrawable
 			}
 
 			#if (js && html5)
+			if (__softwareRenderer == null) __softwareRenderer = new CanvasRenderer(null);
 			ImageCanvasUtil.convertToCanvas(image);
-			var renderer = new CanvasRenderer(image.buffer.__srcContext);
+			var renderer:CanvasRenderer = cast __softwareRenderer;
+			renderer.context = image.buffer.__srcContext;
 			#else
-			var renderer = new CairoRenderer(new Cairo(getSurface()));
+			if (__softwareRenderer == null) __softwareRenderer = new CairoRenderer(null);
+			var renderer:CairoRenderer = cast __softwareRenderer;
+			renderer.cairo = getSurface();
 			#end
 
 			renderer.__allowSmoothing = smoothing;
@@ -982,22 +964,7 @@ class BitmapData implements IBitmapDrawable
 			renderer.__worldAlpha = 1 / source.__worldAlpha;
 			renderer.__worldColorTransform = _colorTransform;
 
-			if (clipRect != null)
-			{
-				renderer.__pushMaskRect(clipRect, clipMatrix);
-			}
-
-			#if (js && html5)
-			__drawCanvas(source, renderer);
-			#else
-			__drawCairo(source, renderer);
-			#end
-
-			if (clipRect != null)
-			{
-				renderer.__popMaskRect();
-				Matrix.__pool.release(clipMatrix);
-			}
+			renderer.__drawBitmapData(this, source, clipRect);
 			#end
 		}
 
@@ -3043,93 +3010,6 @@ class BitmapData implements IBitmapDrawable
 		image.version++;
 	}
 
-	@:noCompletion private function __drawCairo(source:IBitmapDrawable, renderer:CairoRenderer):Void
-	{
-		#if lime_cairo
-		var cairo = renderer.cairo;
-
-		if (source == this)
-		{
-			source = clone();
-		}
-
-		if (!renderer.__allowSmoothing) cairo.antialias = NONE;
-
-		renderer.__render(source);
-
-		if (!renderer.__allowSmoothing) cairo.antialias = GOOD;
-
-		cairo.target.flush();
-
-		image.dirty = true;
-		image.version++;
-		#end
-	}
-
-	@:noCompletion private function __drawCanvas(source:IBitmapDrawable, renderer:CanvasRenderer):Void
-	{
-		var buffer = image.buffer;
-
-		if (!renderer.__allowSmoothing) renderer.applySmoothing(buffer.__srcContext, false);
-
-		renderer.__render(source);
-
-		if (!renderer.__allowSmoothing) renderer.applySmoothing(buffer.__srcContext, true);
-
-		buffer.__srcContext.setTransform(1, 0, 0, 1, 0, 0);
-		buffer.__srcImageData = null;
-		buffer.data = null;
-
-		image.dirty = true;
-		image.version++;
-	}
-
-	@:noCompletion private function __drawContext3D(source:IBitmapDrawable, renderer:Context3DRenderer):Void
-	{
-		var context = renderer.context3D;
-
-		var cacheRTT = context.__state.renderToTexture;
-		var cacheRTTDepthStencil = context.__state.renderToTextureDepthStencil;
-		var cacheRTTAntiAlias = context.__state.renderToTextureAntiAlias;
-		var cacheRTTSurfaceSelector = context.__state.renderToTextureSurfaceSelector;
-
-		context.setRenderToTexture(getTexture(context), true);
-
-		renderer.__render(source);
-
-		if (cacheRTT != null)
-		{
-			context.setRenderToTexture(cacheRTT, cacheRTTDepthStencil, cacheRTTAntiAlias, cacheRTTSurfaceSelector);
-		}
-		else
-		{
-			context.setRenderToBackBuffer();
-		}
-	}
-
-	@:noCompletion private function __drawGL(source:IBitmapDrawable, renderer:OpenGLRenderer):Void
-	{
-		var context = renderer.__context3D;
-
-		var cacheRTT = context.__state.renderToTexture;
-		var cacheRTTDepthStencil = context.__state.renderToTextureDepthStencil;
-		var cacheRTTAntiAlias = context.__state.renderToTextureAntiAlias;
-		var cacheRTTSurfaceSelector = context.__state.renderToTextureSurfaceSelector;
-
-		context.setRenderToTexture(getTexture(context), true);
-
-		renderer.__render(source);
-
-		if (cacheRTT != null)
-		{
-			context.setRenderToTexture(cacheRTT, cacheRTTDepthStencil, cacheRTTAntiAlias, cacheRTTSurfaceSelector);
-		}
-		else
-		{
-			context.setRenderToBackBuffer();
-		}
-	}
-
 	@:noCompletion private function __fillRect(rect:Rectangle, color:Int, allowFramebuffer:Bool):Void
 	{
 		#if lime
@@ -3140,12 +3020,9 @@ class BitmapData implements IBitmapDrawable
 			color = 0;
 		}
 
-		if (allowFramebuffer
-			&& __texture != null
-			&& __texture.__glFramebuffer != null
-			&& Lib.current.stage.__renderer.__type == OPENGL)
+		if (allowFramebuffer && __texture != null && __texture.__glFramebuffer != null && __hardwareRenderer == null)
 		{
-			var renderer:Context3DRenderer = cast Lib.current.stage.__renderer;
+			var renderer:Context3DRenderer = cast __hardwareRenderer;
 			var context = renderer.context3D;
 			var color:ARGB = (color : ARGB);
 			var useScissor = !this.rect.equals(rect);
@@ -3373,169 +3250,6 @@ class BitmapData implements IBitmapDrawable
 		#else
 		return cast Future.withValue(this);
 		#end
-	}
-
-	@:noCompletion private function __renderCairo(renderer:CairoRenderer):Void
-	{
-		#if lime_cairo
-		if (!readable) return;
-
-		var cairo = renderer.cairo;
-
-		renderer.applyMatrix(__renderTransform, cairo);
-
-		var surface = getSurface();
-
-		if (surface != null)
-		{
-			var pattern = CairoPattern.createForSurface(surface);
-
-			if (!renderer.__allowSmoothing || cairo.antialias == NONE)
-			{
-				pattern.filter = CairoFilter.NEAREST;
-			}
-			else
-			{
-				pattern.filter = CairoFilter.GOOD;
-			}
-
-			cairo.source = pattern;
-			cairo.paint();
-		}
-		#end
-	}
-
-	@:noCompletion private function __renderCairoMask(renderer:CairoRenderer):Void {}
-
-	@:noCompletion private function __renderCanvas(renderer:CanvasRenderer):Void
-	{
-		#if (js && html5)
-		if (!readable) return;
-
-		if (image.type == DATA)
-		{
-			ImageCanvasUtil.convertToCanvas(image);
-		}
-
-		var context = renderer.context;
-		context.globalAlpha = 1;
-
-		renderer.setTransform(__renderTransform, context);
-
-		context.drawImage(image.src, 0, 0, image.width, image.height);
-		#end
-	}
-
-	@:noCompletion private function __renderCanvasMask(renderer:CanvasRenderer):Void {}
-
-	@:noCompletion private function __renderContext3D(renderer:Context3DRenderer):Void
-	{
-		var context = renderer.context3D;
-		var gl = context.gl;
-
-		renderer.__setBlendMode(NORMAL);
-
-		var shader = renderer.__defaultDisplayShader;
-		renderer.setShader(shader);
-		renderer.applyBitmapData(this, renderer.__upscaled);
-		renderer.applyMatrix(renderer.__getMatrix(__worldTransform, AUTO));
-		renderer.applyAlpha(__worldAlpha);
-		renderer.applyColorTransform(__worldColorTransform);
-		renderer.updateShader();
-
-		// alpha == 1, __worldColorTransform
-
-		var vertexBuffer = getVertexBuffer(context);
-		if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, vertexBuffer, 0, FLOAT_3);
-		if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
-		var indexBuffer = getIndexBuffer(context);
-		context.drawTriangles(indexBuffer);
-
-		#if gl_stats
-		Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
-		#end
-
-		renderer.__clearShader();
-	}
-
-	@:noCompletion private function __renderContext3DMask(renderer:Context3DRenderer):Void
-	{
-		var context = renderer.context3D;
-		var gl = context.gl;
-
-		var shader = renderer.__maskShader;
-		renderer.setShader(shader);
-		renderer.applyBitmapData(this, renderer.__upscaled);
-		renderer.applyMatrix(renderer.__getMatrix(__worldTransform, AUTO));
-		renderer.updateShader();
-
-		var vertexBuffer = getVertexBuffer(context);
-		if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, vertexBuffer, 0, FLOAT_3);
-		if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
-		var indexBuffer = getIndexBuffer(context);
-		context.drawTriangles(indexBuffer);
-
-		#if gl_stats
-		Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
-		#end
-
-		renderer.__clearShader();
-	}
-
-	@:noCompletion private function __renderDOM(renderer:DOMRenderer):Void {}
-
-	@:noCompletion private function __renderGL(renderer:OpenGLRenderer):Void
-	{
-		var context = renderer.__context3D;
-		var gl = context.gl;
-
-		renderer.__setBlendMode(NORMAL);
-
-		var shader = renderer.__defaultDisplayShader;
-		renderer.setShader(shader);
-		renderer.applyBitmapData(this, renderer.__upscaled);
-		renderer.applyMatrix(renderer.__getMatrix(__worldTransform /*, AUTO*/));
-		renderer.applyAlpha(__worldAlpha);
-		renderer.applyColorTransform(__worldColorTransform);
-		renderer.updateShader();
-
-		// alpha == 1, __worldColorTransform
-
-		var vertexBuffer = getVertexBuffer(context);
-		if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, vertexBuffer, 0, FLOAT_3);
-		if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
-		var indexBuffer = getIndexBuffer(context);
-		context.drawTriangles(indexBuffer);
-
-		#if gl_stats
-		Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
-		#end
-
-		renderer.__clearShader();
-	}
-
-	@:noCompletion private function __renderGLMask(renderer:OpenGLRenderer):Void
-	{
-		var context = renderer.__context3D;
-		var gl = context.gl;
-
-		var shader = renderer.__maskShader;
-		renderer.setShader(shader);
-		renderer.applyBitmapData(this, renderer.__upscaled);
-		renderer.applyMatrix(renderer.__getMatrix(__worldTransform /*, AUTO*/));
-		renderer.updateShader();
-
-		var vertexBuffer = getVertexBuffer(context);
-		if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, vertexBuffer, 0, FLOAT_3);
-		if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
-		var indexBuffer = getIndexBuffer(context);
-		context.drawTriangles(indexBuffer);
-
-		#if gl_stats
-		Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
-		#end
-
-		renderer.__clearShader();
 	}
 
 	@:noCompletion private function __resize(width:Int, height:Int):Void

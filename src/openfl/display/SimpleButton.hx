@@ -170,6 +170,8 @@ class SimpleButton extends InteractiveObject
 	{
 		super();
 
+		__type = SIMPLE_BUTTON;
+
 		enabled = true;
 		trackAsMenu = false;
 		useHandCursor = true;
@@ -329,110 +331,6 @@ class SimpleButton extends InteractiveObject
 		}
 
 		return hitTest;
-	}
-
-	@:noCompletion private override function __renderCairo(renderer:CairoRenderer):Void
-	{
-		if (!__renderable || __worldAlpha <= 0 || __currentState == null) return;
-
-		renderer.__pushMaskObject(this);
-		__currentState.__renderCairo(renderer);
-		renderer.__popMaskObject(this);
-
-		__renderEvent(renderer);
-	}
-
-	@:noCompletion private override function __renderCairoMask(renderer:CairoRenderer):Void
-	{
-		__currentState.__renderCairoMask(renderer);
-	}
-
-	@:noCompletion private override function __renderCanvas(renderer:CanvasRenderer):Void
-	{
-		if (!__renderable || __worldAlpha <= 0 || __currentState == null) return;
-
-		#if !neko
-		renderer.__pushMaskObject(this);
-		__currentState.__renderCanvas(renderer);
-		renderer.__popMaskObject(this);
-
-		__renderEvent(renderer);
-		#end
-	}
-
-	@:noCompletion private override function __renderCanvasMask(renderer:CanvasRenderer):Void
-	{
-		// var bounds = Rectangle.__pool.get ();
-		// __getLocalBounds (bounds);
-
-		// renderer.context.rect (bounds.x, bounds.y, bounds.width, bounds.height);
-
-		// Rectangle.__pool.release (bounds);
-		__currentState.__renderCanvasMask(renderer);
-	}
-
-	@:noCompletion private override function __renderContext3D(renderer:Context3DRenderer):Void
-	{
-		if (!__renderable || __worldAlpha <= 0 || __currentState == null) return;
-
-		renderer.__pushMaskObject(this);
-		__currentState.__renderContext3D(renderer);
-		renderer.__popMaskObject(this);
-
-		__renderEvent(renderer);
-	}
-
-	@:noCompletion private override function __renderContext3DMask(renderer:Context3DRenderer):Void
-	{
-		if (__currentState == null) return;
-
-		__currentState.__renderContext3DMask(renderer);
-	}
-
-	@:noCompletion private override function __renderDOM(renderer:DOMRenderer):Void
-	{
-		#if !neko
-		renderer.__pushMaskObject(this);
-
-		for (previousState in __previousStates)
-		{
-			previousState.__renderDOM(renderer);
-		}
-
-		__previousStates.length = 0;
-
-		if (__currentState != null)
-		{
-			if (__currentState.stage != stage)
-			{
-				__currentState.__setStageReference(stage);
-			}
-
-			__currentState.__renderDOM(renderer);
-		}
-
-		renderer.__popMaskObject(this);
-
-		__renderEvent(renderer);
-		#end
-	}
-
-	@:noCompletion private override function __renderGL(renderer:OpenGLRenderer):Void
-	{
-		if (!__renderable || __worldAlpha <= 0 || __currentState == null) return;
-
-		renderer.__pushMaskObject(this);
-		__currentState.__renderGL(renderer);
-		renderer.__popMaskObject(this);
-
-		__renderEvent(renderer);
-	}
-
-	@:noCompletion private override function __renderGLMask(renderer:OpenGLRenderer):Void
-	{
-		if (__currentState == null) return;
-
-		__currentState.__renderGLMask(renderer);
 	}
 
 	@:noCompletion private override function __setStageReference(stage:Stage):Void

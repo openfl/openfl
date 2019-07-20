@@ -40,6 +40,14 @@ import lime.ui.KeyModifier;
 import lime.ui.MouseCursor as LimeMouseCursor;
 import lime.ui.MouseWheelMode;
 import lime.ui.Window;
+import openfl._internal.renderer.context3D.Context3DRenderer;
+#if lime_cairo
+import openfl._internal.renderer.cairo.CairoRenderer;
+#end
+#if (js && html5)
+import openfl._internal.renderer.canvas.CanvasRenderer;
+import openfl._internal.renderer.dom.DOMRenderer;
+#end
 #end
 #if hxtelemetry
 import openfl.profiler.Telemetry;
@@ -174,7 +182,9 @@ typedef Element = Dynamic;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@:access(openfl._internal.renderer)
 @:access(openfl.display3D.Context3D)
+@:access(openfl.display.BitmapData)
 @:access(openfl.display.DisplayObjectRenderer)
 @:access(openfl.display.LoaderInfo)
 @:access(openfl.display.Sprite)
@@ -952,6 +962,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		super();
 
+		__type = DISPLAY_OBJECT_CONTAINER;
+
 		this.name = null;
 
 		__color = 0xFFFFFFFF;
@@ -1192,6 +1204,10 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				context3D = new Context3D(this);
 				context3D.configureBackBuffer(windowWidth, windowHeight, 0, true, true, true);
 				context3D.present();
+				if (BitmapData.__hardwareRenderer == null)
+				{
+					BitmapData.__hardwareRenderer = new Context3DRenderer(context3D);
+				}
 				#if opengl_renderer
 				__renderer = new OpenGLRenderer(context3D);
 				#else
@@ -1201,14 +1217,16 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 			case CANVAS:
 				#if (js && html5)
-				__renderer = new CanvasRenderer(window.context.canvas2D);
-				cast(__renderer, CanvasRenderer).pixelRatio = pixelRatio;
+				var renderer = new CanvasRenderer(window.context.canvas2D);
+				renderer.pixelRatio = pixelRatio;
+				__renderer = renderer;
 				#end
 
 			case DOM:
 				#if (js && html5)
-				__renderer = new DOMRenderer(window.context.dom);
-				cast(__renderer, DOMRenderer).pixelRatio = pixelRatio;
+				var renderer = new DOMRenderer(window.context.dom);
+				renderer.pixelRatio = pixelRatio;
+				__renderer = renderer;
 				#end
 
 			case CAIRO:
@@ -1928,7 +1946,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				if (__renderer.__type == CAIRO)
 				{
 					#if lime_cairo
-					cast(__renderer, CairoRenderer).cairo = context.cairo;
+					var renderer:CairoRenderer = cast __renderer;
+					renderer.cairo = context.cairo;
 					#end
 				}
 

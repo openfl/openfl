@@ -2,7 +2,6 @@ package openfl._internal.renderer.canvas;
 
 import openfl._internal.text.TextEngine;
 import openfl.display.BitmapData;
-import openfl.display.CanvasRenderer;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.text.TextField;

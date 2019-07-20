@@ -2,7 +2,6 @@ package openfl._internal.renderer.dom;
 
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl.display.DisplayObject;
-import openfl.display.DOMRenderer;
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)

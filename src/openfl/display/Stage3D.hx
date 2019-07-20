@@ -367,84 +367,84 @@ class Stage3D extends EventDispatcher
 
 	@:noCompletion private function __createContext():Void
 	{
-		#if lime
-		var stage = __stage;
-		var renderer = stage.__renderer;
+		// #if lime
+		// var stage = __stage;
+		// var renderer = stage.__renderer;
 
-		if (renderer.__type == CAIRO || renderer.__type == CANVAS)
-		{
-			__dispatchError();
-			return;
-		}
+		// if (renderer.__type == CAIRO || renderer.__type == CANVAS)
+		// {
+		// 	__dispatchError();
+		// 	return;
+		// }
 
-		if (renderer.__type == OPENGL)
-		{
-			#if openfl_share_context
-			context3D = stage.context3D;
-			#else
-			context3D = new Context3D(stage, stage.context3D.__contextState, this);
-			#end
-			__dispatchCreate();
-		}
-		else if (renderer.__type == DOM)
-		{
-			#if (js && html5)
-			__canvas = cast Browser.document.createElement("canvas");
-			__canvas.width = stage.stageWidth;
-			__canvas.height = stage.stageHeight;
+		// if (renderer.__type == OPENGL)
+		// {
+		// 	#if openfl_share_context
+		// 	context3D = stage.context3D;
+		// 	#else
+		// 	context3D = new Context3D(stage, stage.context3D.__contextState, this);
+		// 	#end
+		// 	__dispatchCreate();
+		// }
+		// else if (renderer.__type == DOM)
+		// {
+		// 	#if (js && html5)
+		// 	__canvas = cast Browser.document.createElement("canvas");
+		// 	__canvas.width = stage.stageWidth;
+		// 	__canvas.height = stage.stageHeight;
 
-			var window = stage.window;
-			var attributes = renderer.__context.attributes;
+		// 	var window = stage.window;
+		// 	var attributes = renderer.__context.attributes;
 
-			var transparentBackground = Reflect.hasField(attributes, "background") && attributes.background == null;
-			var colorDepth = Reflect.hasField(attributes, "colorDepth") ? attributes.colorDepth : 32;
+		// 	var transparentBackground = Reflect.hasField(attributes, "background") && attributes.background == null;
+		// 	var colorDepth = Reflect.hasField(attributes, "colorDepth") ? attributes.colorDepth : 32;
 
-			var options = {
-				alpha: (transparentBackground || colorDepth > 16) ? true : false,
-				antialias: Reflect.hasField(attributes, "antialiasing") ? attributes.antialiasing > 0 : false,
-				depth: true,
-				premultipliedAlpha: true,
-				stencil: true,
-				preserveDrawingBuffer: false
-			};
+		// 	var options = {
+		// 		alpha: (transparentBackground || colorDepth > 16) ? true : false,
+		// 		antialias: Reflect.hasField(attributes, "antialiasing") ? attributes.antialiasing > 0 : false,
+		// 		depth: true,
+		// 		premultipliedAlpha: true,
+		// 		stencil: true,
+		// 		preserveDrawingBuffer: false
+		// 	};
 
-			__webgl = cast __canvas.getContextWebGL(options);
+		// 	__webgl = cast __canvas.getContextWebGL(options);
 
-			if (__webgl != null)
-			{
-				#if webgl_debug
-				__webgl = untyped WebGLDebugUtils.makeDebugContext(__webgl);
-				#end
+		// 	if (__webgl != null)
+		// 	{
+		// 		#if webgl_debug
+		// 		__webgl = untyped WebGLDebugUtils.makeDebugContext(__webgl);
+		// 		#end
 
-				// TODO: Need to handle renderer/context better
+		// 		// TODO: Need to handle renderer/context better
 
-				// TODO
+		// 		// TODO
 
-				// __renderContext = new GLRenderContext (cast __webgl);
-				// GL.context = __renderContext;
+		// 		// __renderContext = new GLRenderContext (cast __webgl);
+		// 		// GL.context = __renderContext;
 
-				// context3D = new Context3D (stage, this);
+		// 		// context3D = new Context3D (stage, this);
 
-				// var renderer:DOMRenderer = cast renderer;
-				// renderer.element.appendChild (__canvas);
+		// 		// var renderer:DOMRenderer = cast renderer;
+		// 		// renderer.element.appendChild (__canvas);
 
-				// __style = __canvas.style;
-				// __style.setProperty ("position", "absolute", null);
-				// __style.setProperty ("top", "0", null);
-				// __style.setProperty ("left", "0", null);
-				// __style.setProperty (renderer.__transformOriginProperty, "0 0 0", null);
-				// __style.setProperty ("z-index", "-1", null);
+		// 		// __style = __canvas.style;
+		// 		// __style.setProperty ("position", "absolute", null);
+		// 		// __style.setProperty ("top", "0", null);
+		// 		// __style.setProperty ("left", "0", null);
+		// 		// __style.setProperty (renderer.__transformOriginProperty, "0 0 0", null);
+		// 		// __style.setProperty ("z-index", "-1", null);
 
-				// __dispatchCreate ();
-				__dispatchError();
-			}
-			else
-			{
-				__dispatchError();
-			}
-			#end
-		}
-		#end
+		// 		// __dispatchCreate ();
+		// 		__dispatchError();
+		// 	}
+		// 	else
+		// 	{
+		// 		__dispatchError();
+		// 	}
+		// 	#end
+		// }
+		// #end
 	}
 
 	@:noCompletion private function __dispatchError():Void

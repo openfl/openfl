@@ -2,7 +2,6 @@ package openfl._internal.renderer.context3D;
 
 import openfl._internal.renderer.cairo.CairoTextField;
 import openfl._internal.renderer.canvas.CanvasTextField;
-import openfl.display.Context3DRenderer;
 import openfl.text.TextField;
 
 #if !openfl_debug

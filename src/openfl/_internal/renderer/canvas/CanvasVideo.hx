@@ -1,6 +1,5 @@
 package openfl._internal.renderer.canvas;
 
-import openfl.display.CanvasRenderer;
 import openfl.media.Video;
 
 @:access(openfl.media.Video)

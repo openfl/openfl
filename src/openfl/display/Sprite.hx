@@ -145,6 +145,8 @@ class Sprite extends DisplayObjectContainer
 	{
 		super();
 
+		__type = DISPLAY_OBJECT_CONTAINER;
+
 		__buttonMode = false;
 		useHandCursor = true;
 	}

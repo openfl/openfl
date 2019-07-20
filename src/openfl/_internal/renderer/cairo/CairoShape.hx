@@ -3,7 +3,6 @@ package openfl._internal.renderer.cairo;
 import lime.graphics.cairo.CairoFilter;
 import lime.graphics.cairo.CairoPattern;
 import lime.math.Matrix3;
-import openfl.display.CairoRenderer;
 import openfl.display.DisplayObject;
 import openfl.geom.Matrix;
 

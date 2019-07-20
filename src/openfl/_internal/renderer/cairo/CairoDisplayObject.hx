@@ -1,6 +1,5 @@
 package openfl._internal.renderer.cairo;
 
-import openfl.display.CairoRenderer;
 import openfl.display.DisplayObject;
 #if lime
 import lime.math.ARGB;
