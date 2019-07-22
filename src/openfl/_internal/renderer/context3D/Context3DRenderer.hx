@@ -358,6 +358,33 @@ class Context3DRenderer extends Context3DRendererAPI
 		}
 	}
 
+	private function renderBitmapData(bitmapData:BitmapData):Void
+	{
+		__setBlendMode(NORMAL);
+
+		var shader = __defaultDisplayShader;
+		setShader(shader);
+		applyBitmapData(bitmapData, __upscaled);
+		applyMatrix(__getMatrix(bitmapData.__worldTransform, AUTO));
+		applyAlpha(bitmapData.__worldAlpha);
+		applyColorTransform(bitmapData.__worldColorTransform);
+		updateShader();
+
+		// alpha == 1, __worldColorTransform
+
+		var vertexBuffer = bitmapData.getVertexBuffer(context3D);
+		if (shader.__position != null) context3D.setVertexBufferAt(shader.__position.index, vertexBuffer, 0, FLOAT_3);
+		if (shader.__textureCoord != null) context3D.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
+		var indexBuffer = bitmapData.getIndexBuffer(context3D);
+		context3D.drawTriangles(indexBuffer);
+
+		#if gl_stats
+		Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
+		#end
+
+		__clearShader();
+	}
+
 	private function renderDisplayObject(object:DisplayObject):Void
 	{
 		if (object != null)
@@ -694,14 +721,9 @@ class Context3DRenderer extends Context3DRendererAPI
 
 	@:noCompletion private override function __drawBitmapData(bitmapData:BitmapData, source:IBitmapDrawable, clipRect:Rectangle):Void
 	{
-		var clipMatrix = null;
-
 		if (clipRect != null)
 		{
-			clipMatrix = Matrix.__pool.get();
-			clipMatrix.copyFrom(source.__renderTransform);
-
-			__pushMaskRect(clipRect, clipMatrix);
+			__pushMaskRect(clipRect, source.__renderTransform);
 		}
 
 		var context = context3D;
@@ -727,7 +749,6 @@ class Context3DRenderer extends Context3DRendererAPI
 		if (clipRect != null)
 		{
 			__popMaskRect();
-			Matrix.__pool.release(clipMatrix);
 		}
 	}
 
@@ -1093,10 +1114,16 @@ class Context3DRenderer extends Context3DRendererAPI
 			object.__mask = null;
 			object.__scrollRect = null;
 
-			// TODO: BitmapData render
-			if (object != null && object.__type != null)
+			if (object != null)
 			{
-				renderDisplayObject(cast object);
+				if (object.__type != null)
+				{
+					renderDisplayObject(cast object);
+				}
+				else
+				{
+					renderBitmapData(cast object);
+				}
 			}
 
 			object.__mask = cacheMask;

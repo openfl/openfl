@@ -41,6 +41,11 @@ import lime.graphics.ImageBuffer;
 import lime.graphics.RenderContext;
 import lime.math.ARGB;
 import lime.math.Vector2;
+#if lime_cairo
+import openfl._internal.renderer.cairo.CairoRenderer;
+#elseif (js && html5)
+import openfl._internal.renderer.canvas.CanvasRenderer;
+#end
 #end
 #if (js && html5)
 import js.html.CanvasElement;

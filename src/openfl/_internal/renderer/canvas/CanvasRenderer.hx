@@ -79,6 +79,22 @@ class CanvasRenderer extends CanvasRendererAPI
 		}
 	}
 
+	private function renderBitmapData(bitmapData:BitmapData):Void
+	{
+		if (!bitmapData.readable) return;
+
+		if (bitmapData.image.type == DATA)
+		{
+			ImageCanvasUtil.convertToCanvas(bitmapData.image);
+		}
+
+		context.globalAlpha = 1;
+
+		setTransform(bitmapData.__renderTransform, context);
+
+		context.drawImage(bitmapData.image.src, 0, 0, bitmapData.image.width, bitmapData.image.height);
+	}
+
 	private function renderDisplayObject(object:DisplayObject):Void
 	{
 		if (object != null)
@@ -358,14 +374,9 @@ class CanvasRenderer extends CanvasRendererAPI
 
 	@:noCompletion private override function __drawBitmapData(bitmapData:BitmapData, source:IBitmapDrawable, clipRect:Rectangle):Void
 	{
-		var clipMatrix = null;
-
 		if (clipRect != null)
 		{
-			clipMatrix = Matrix.__pool.get();
-			clipMatrix.copyFrom(source.__renderTransform);
-
-			__pushMaskRect(clipRect, clipMatrix);
+			__pushMaskRect(clipRect, source.__renderTransform);
 		}
 
 		var buffer = bitmapData.image.buffer;
@@ -386,7 +397,6 @@ class CanvasRenderer extends CanvasRendererAPI
 		if (clipRect != null)
 		{
 			__popMaskRect();
-			Matrix.__pool.release(clipMatrix);
 		}
 	}
 
@@ -471,10 +481,16 @@ class CanvasRenderer extends CanvasRendererAPI
 
 	@:noCompletion private override function __render(object:IBitmapDrawable):Void
 	{
-		// TODO: BitmapData render
-		if (object != null && object.__type != null)
+		if (object != null)
 		{
-			renderDisplayObject(cast object);
+			if (object.__type != null)
+			{
+				renderDisplayObject(cast object);
+			}
+			else
+			{
+				renderBitmapData(cast object);
+			}
 		}
 	}
 
