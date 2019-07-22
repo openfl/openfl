@@ -1156,6 +1156,25 @@ class NetStream extends EventDispatcher
 	}
 	#end
 
+	#if (js && html5)
+	/**
+	 * paused is the NetStream's `paused state`. 
+	**/
+	var paused:Bool;
+
+	/**
+	 * loading is set to true between the time __video.play() is called until
+	 * the video either fails to load or successfully starts playing
+	**/
+	var loading:Bool;
+
+	/**
+	 * failedPause is set to true if pause is called while loading == true,
+	 * if failedPause == true after loading has finished then pause will be called again
+	**/
+	var failedPause:Bool;
+	#end
+
 	/**
 		Creates a stream that you can use to play media files and send data
 		over a NetConnection object.
@@ -1435,12 +1454,15 @@ class NetStream extends EventDispatcher
 	public function close():Void
 	{
 		#if (js && html5)
-		if (__video == null) return;
+		if (this.__video == null) return;
 
-		__closed = true;
-		__video.pause();
-		__video.src = "";
-		time = 0;
+		this.__closed = true;
+		pause();
+		if (paused != true)
+		{
+			this.__video.src = "";
+		}
+		this.time = 0;
 		#end
 	}
 
@@ -1525,7 +1547,24 @@ class NetStream extends EventDispatcher
 	public function pause():Void
 	{
 		#if (js && html5)
-		if (__video != null) __video.pause();
+		if (this.__video != null)
+		{
+			if (this.__video.paused == true) return;
+		}
+
+		if (this.__video != null && loading != true)
+		{
+			if (paused != true)
+			{
+				this.__video.pause();
+				paused = true;
+				failedPause = false;
+			}
+		}
+		else
+		{
+			failedPause = true;
+		}
 		#end
 	}
 
@@ -1608,10 +1647,23 @@ class NetStream extends EventDispatcher
 	public function play(url:String, p1 = null, p2 = null, p3 = null, p4 = null, p5 = null):Void
 	{
 		#if (js && html5)
-		if (__video == null) return;
+		if (this.__video == null) return;
 
-		__video.src = url;
-		__video.play();
+		this.__video.src = url;
+		loading = true;
+
+		this.__video.play().then(function(result)
+		{
+			loading = false;
+			paused = false;
+			if (failedPause == true)
+			{
+				pause();
+			}
+		}, function(err)
+		{
+			loading = false;
+		});
 		#end
 	}
 
@@ -1891,7 +1943,11 @@ class NetStream extends EventDispatcher
 	public function resume():Void
 	{
 		#if (js && html5)
-		if (__video != null) __video.play();
+		if (this.__video != null)
+		{
+			paused = false;
+			this.__video.play();
+		}
 		#end
 	}
 
@@ -2097,7 +2153,7 @@ class NetStream extends EventDispatcher
 		}
 		else
 		{
-			__video.pause();
+			pause();
 		}
 		#end
 	}
