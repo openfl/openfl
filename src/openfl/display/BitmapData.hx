@@ -954,7 +954,7 @@ class BitmapData implements IBitmapDrawable
 			#else
 			if (__softwareRenderer == null) __softwareRenderer = new CairoRenderer(null);
 			var renderer:CairoRenderer = cast __softwareRenderer;
-			renderer.cairo = getSurface();
+			renderer.cairo = new Cairo(getSurface());
 			#end
 
 			renderer.__allowSmoothing = smoothing;

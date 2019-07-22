@@ -16,7 +16,10 @@ class DOMElement extends #if flash Sprite #else DisplayObject #end
 		super();
 
 		__element = element;
+
+		#if !flash
 		__type = DOM_ELEMENT;
+		#end
 	}
 }
 #end

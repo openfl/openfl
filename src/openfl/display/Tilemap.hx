@@ -117,8 +117,6 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	{
 		super();
 
-		__type = TILEMAP;
-
 		__tileset = tileset;
 		this.smoothing = smoothing;
 
@@ -131,6 +129,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		#if !flash
 		__width = width;
 		__height = height;
+		__type = TILEMAP;
 		#else
 		bitmapData = new BitmapData(width, height, true, 0);
 		this.smoothing = smoothing;
