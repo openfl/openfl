@@ -387,7 +387,7 @@ class Context3DRenderer extends Context3DRendererAPI
 
 	private function renderDisplayObject(object:DisplayObject):Void
 	{
-		if (object != null)
+		if (object != null && object.__type != null)
 		{
 			switch (object.__type)
 			{

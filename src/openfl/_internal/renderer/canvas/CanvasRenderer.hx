@@ -97,7 +97,7 @@ class CanvasRenderer extends CanvasRendererAPI
 
 	private function renderDisplayObject(object:DisplayObject):Void
 	{
-		if (object != null)
+		if (object != null && object.__type != null)
 		{
 			switch (object.__type)
 			{

@@ -118,7 +118,7 @@ class DOMRenderer extends DOMRendererAPI
 
 	private function clearDisplayObject(object:DisplayObject):Void
 	{
-		if (object != null)
+		if (object != null && object.__type != null)
 		{
 			switch (object.__type)
 			{
@@ -237,7 +237,7 @@ class DOMRenderer extends DOMRendererAPI
 
 	private function renderDisplayObject(object:DisplayObject):Void
 	{
-		if (object != null)
+		if (object != null && object.__type != null)
 		{
 			switch (object.__type)
 			{
