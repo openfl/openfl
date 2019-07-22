@@ -1362,7 +1362,7 @@ class Context3DRenderer extends Context3DRendererAPI
 		if (__worldColorTransform != null) colorTransform.__combine(__worldColorTransform);
 		var updated = false;
 
-		if (object.cacheAsBitmap || (__type != OPENGL && !colorTransform.__isDefault(true)))
+		if (object.cacheAsBitmap /*|| (__type != OPENGL && !colorTransform.__isDefault(true))*/)
 		{
 			var rect = null;
 
@@ -1489,7 +1489,7 @@ class Context3DRenderer extends Context3DRendererAPI
 					var needsFill = (object.opaqueBackground != null && (bitmapWidth != filterWidth || bitmapHeight != filterHeight));
 					var fillColor = object.opaqueBackground != null ? (0xFF << 24) | object.opaqueBackground : 0;
 					var bitmapColor = needsFill ? 0 : fillColor;
-					var allowFramebuffer = (__type == OPENGL);
+					var allowFramebuffer = true; // (__type == OPENGL);
 
 					if (object.__cacheBitmapData == null
 						|| bitmapWidth > object.__cacheBitmapData.width
@@ -1605,7 +1605,20 @@ class Context3DRenderer extends Context3DRendererAPI
 				object.__cacheBitmapRenderer.__stage = object.stage;
 
 				object.__cacheBitmapRenderer.__allowSmoothing = __allowSmoothing;
-				// object.__cacheBitmapRenderer.__setBlendMode(NORMAL);
+
+				if (renderType == OPENGL)
+				{
+					(cast object.__cacheBitmapRenderer : Context3DRenderer).__setBlendMode(NORMAL);
+				}
+				else
+				{
+					#if (js && html5)
+					(cast object.__cacheBitmapRenderer : CanvasRenderer).__setBlendMode(NORMAL);
+					#else
+					(cast object.__cacheBitmapRenderer : CairoRenderer).__setBlendMode(NORMAL);
+					#end
+				}
+
 				object.__cacheBitmapRenderer.__worldAlpha = 1 / object.__worldAlpha;
 
 				object.__cacheBitmapRenderer.__worldTransform.copyFrom(object.__renderTransform);
@@ -1622,7 +1635,7 @@ class Context3DRenderer extends Context3DRendererAPI
 				if (object.__cacheBitmapRenderer.__type == OPENGL)
 				{
 					#if opengl_renderer
-					var parentRenderer:OpenGLRenderer = cast renderer;
+					var parentRenderer:OpenGLRenderer = cast this;
 					var childRenderer:OpenGLRenderer = cast object.__cacheBitmapRenderer;
 					var context = childRenderer.__context3D;
 					#else
@@ -1652,10 +1665,13 @@ class Context3DRenderer extends Context3DRendererAPI
 					// #else
 					// object.__cacheBitmapData.__drawContext3D(object, childRenderer);
 					// #end
-					__drawBitmapData(object.__cacheBitmapData, object, null);
+					childRenderer.__drawBitmapData(object.__cacheBitmapData, object, null);
 
 					if (hasFilters)
 					{
+						var cacheRenderer = BitmapData.__hardwareRenderer;
+						BitmapData.__hardwareRenderer = childRenderer;
+
 						var needSecondBitmapData = true;
 						var needCopyOfOriginal = false;
 
@@ -1749,6 +1765,8 @@ class Context3DRenderer extends Context3DRendererAPI
 						}
 
 						object.__cacheBitmap.__bitmapData = bitmap;
+
+						BitmapData.__hardwareRenderer = cacheRenderer;
 					}
 
 					parentRenderer.__blendMode = NORMAL;
