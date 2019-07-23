@@ -21,7 +21,6 @@ import openfl.geom.Transform;
 import openfl.ui.MouseCursor;
 import openfl.Vector;
 #if lime
-import lime._internal.graphics.ImageCanvasUtil; // TODO
 import lime.graphics.cairo.Cairo;
 #end
 #if (js && html5)

@@ -10,6 +10,10 @@ class DOMDisplayObject
 	public static function clear(displayObject:DisplayObject, renderer:DOMRenderer):Void
 	{
 		#if (js && html5)
+		if (displayObject.__cacheBitmap != null)
+		{
+			DOMBitmap.clear(displayObject.__cacheBitmap, renderer);
+		}
 		DOMShape.clear(displayObject, renderer);
 		#end
 	}

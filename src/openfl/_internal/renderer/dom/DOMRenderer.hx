@@ -208,6 +208,8 @@ class DOMRenderer extends DOMRendererAPI
 
 		container.__cleanupRemovedChildren();
 
+		__clearShape(cast container);
+
 		for (child in container.__children)
 		{
 			__clearDisplayObject(child);
@@ -886,6 +888,7 @@ class DOMRenderer extends DOMRendererAPI
 				{
 					ColorTransform.__pool.release(colorTransform);
 
+					__clearBitmap(object.__cacheBitmap);
 					object.__cacheBitmap = null;
 					object.__cacheBitmapData = null;
 					object.__cacheBitmapData2 = null;
@@ -1144,6 +1147,7 @@ class DOMRenderer extends DOMRendererAPI
 				// else
 				// {
 				// TODO: Does this cause issues with display matrix, etc?
+				__canvasRenderer.context = object.__cacheBitmapData.image.buffer.__srcContext;
 				__canvasRenderer.__drawBitmapData(object.__cacheBitmapData, object, null);
 
 				if (hasFilters)

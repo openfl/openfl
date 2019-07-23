@@ -310,7 +310,7 @@ class CanvasRenderer extends CanvasRendererAPI
 
 	private function __renderDisplayObjectContainer(container:DisplayObjectContainer):Void
 	{
-		container.__cleanupRemovedChildren();
+		if (!__isDOM) container.__cleanupRemovedChildren();
 
 		if (!container.__renderable
 			|| container.__worldAlpha <= 0
@@ -363,7 +363,7 @@ class CanvasRenderer extends CanvasRendererAPI
 
 				case DISPLAY_OBJECT_CONTAINER:
 					var container:DisplayObjectContainer = cast mask;
-					container.__cleanupRemovedChildren();
+					if (!__isDOM) container.__cleanupRemovedChildren();
 
 					if (container.__graphics != null)
 					{

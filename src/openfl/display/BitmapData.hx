@@ -11,7 +11,6 @@ import openfl._internal.utils.PerlinNoise;
 import openfl._internal.utils.UInt16Array;
 import openfl._internal.utils.UInt8Array;
 import openfl.display3D.textures.TextureBase;
-import openfl.display3D.Context3DClearMask;
 import openfl.display3D.Context3D;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
@@ -25,14 +24,11 @@ import openfl.utils.ByteArray;
 import openfl.utils.Endian;
 import openfl.utils.Future;
 import openfl.utils.Object;
-import openfl.Lib;
 import openfl.Vector;
 #if lime
 import lime._internal.graphics.ImageCanvasUtil; // TODO
 import lime.app.Application;
-import lime.graphics.cairo.CairoFilter;
 import lime.graphics.cairo.CairoImageSurface;
-import lime.graphics.cairo.CairoPattern;
 import lime.graphics.cairo.CairoSurface;
 import lime.graphics.cairo.Cairo;
 import lime.graphics.Image;
@@ -50,10 +46,6 @@ import openfl._internal.renderer.canvas.CanvasRenderer;
 #end
 #if (js && html5)
 import js.html.CanvasElement;
-#end
-#if gl_stats
-import openfl._internal.renderer.context3D.stats.Context3DStats;
-import openfl._internal.renderer.context3D.stats.DrawCallContext;
 #end
 
 /**
