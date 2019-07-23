@@ -41,6 +41,7 @@ import lime.graphics.ImageBuffer;
 import lime.graphics.RenderContext;
 import lime.math.ARGB;
 import lime.math.Vector2;
+import openfl._internal.renderer.context3D.Context3DRenderer;
 #if lime_cairo
 import openfl._internal.renderer.cairo.CairoRenderer;
 #elseif (js && html5)
@@ -136,7 +137,7 @@ import openfl._internal.renderer.context3D.stats.DrawCallContext;
 class BitmapData implements IBitmapDrawable
 {
 	@:noCompletion private static inline var VERTEX_BUFFER_STRIDE:Int = 14;
-	@:noCompletion private static var __hardwareRenderer:DisplayObjectRenderer;
+	@:noCompletion private static var __hardwareRenderer:#if lime Context3DRenderer #else Dynamic #end;
 	@:noCompletion private static var __softwareRenderer:DisplayObjectRenderer;
 	@:noCompletion private static var __supportsBGRA:Null<Bool> = null;
 	@:noCompletion private static var __textureFormat:Int;
@@ -3025,40 +3026,9 @@ class BitmapData implements IBitmapDrawable
 			color = 0;
 		}
 
-		if (allowFramebuffer && __texture != null && __texture.__glFramebuffer != null && __hardwareRenderer == null)
+		if (allowFramebuffer && __texture != null && __hardwareRenderer != null)
 		{
-			var renderer:Context3DRenderer = cast __hardwareRenderer;
-			var context = renderer.context3D;
-			var color:ARGB = (color : ARGB);
-			var useScissor = !this.rect.equals(rect);
-
-			var cacheRTT = context.__state.renderToTexture;
-			var cacheRTTDepthStencil = context.__state.renderToTextureDepthStencil;
-			var cacheRTTAntiAlias = context.__state.renderToTextureAntiAlias;
-			var cacheRTTSurfaceSelector = context.__state.renderToTextureSurfaceSelector;
-
-			context.setRenderToTexture(__texture);
-
-			if (useScissor)
-			{
-				context.setScissorRectangle(rect);
-			}
-
-			context.clear(color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, transparent ? color.a / 0xFF : 1, 0, 0, Context3DClearMask.COLOR);
-
-			if (useScissor)
-			{
-				context.setScissorRectangle(null);
-			}
-
-			if (cacheRTT != null)
-			{
-				context.setRenderToTexture(cacheRTT, cacheRTTDepthStencil, cacheRTTAntiAlias, cacheRTTSurfaceSelector);
-			}
-			else
-			{
-				context.setRenderToBackBuffer();
-			}
+			__hardwareRenderer.__fillRect(this, rect, color);
 		}
 		else if (readable)
 		{

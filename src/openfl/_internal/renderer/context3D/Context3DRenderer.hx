@@ -4,11 +4,10 @@ package openfl._internal.renderer.context3D;
 import lime.graphics.opengl.ext.KHR_debug;
 import lime.graphics.RenderContext;
 import lime.graphics.WebGLRenderContext;
+import lime.math.ARGB;
 import lime.math.Matrix4;
-import openfl._internal.renderer.context3D.Context3DMaskShader;
 import openfl._internal.renderer.ShaderBuffer;
 import openfl._internal.utils.ObjectPool;
-import openfl._internal.renderer.canvas.CanvasRenderer;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
@@ -58,6 +57,7 @@ import openfl._internal.renderer.cairo.CairoRenderer;
 @:access(openfl._internal.renderer.cairo.CairoRenderer)
 @:access(openfl._internal.renderer.context3D.Context3DGraphics)
 @:access(openfl._internal.renderer.ShaderBuffer)
+@:access(openfl.display3D.textures.TextureBase)
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.DisplayObject)
@@ -749,6 +749,45 @@ class Context3DRenderer extends Context3DRendererAPI
 		if (clipRect != null)
 		{
 			__popMaskRect();
+		}
+	}
+
+	@:noCompletion private function __fillRect(bitmapData:BitmapData, rect:Rectangle, color:Int):Void
+	{
+		if (bitmapData.__texture != null)
+		{
+			var context = bitmapData.__texture.__context;
+
+			var color:ARGB = (color : ARGB);
+			var useScissor = !bitmapData.rect.equals(rect);
+
+			var cacheRTT = context.__state.renderToTexture;
+			var cacheRTTDepthStencil = context.__state.renderToTextureDepthStencil;
+			var cacheRTTAntiAlias = context.__state.renderToTextureAntiAlias;
+			var cacheRTTSurfaceSelector = context.__state.renderToTextureSurfaceSelector;
+
+			context.setRenderToTexture(bitmapData.__texture);
+
+			if (useScissor)
+			{
+				context.setScissorRectangle(rect);
+			}
+
+			context.clear(color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, bitmapData.transparent ? color.a / 0xFF : 1, 0, 0, Context3DClearMask.COLOR);
+
+			if (useScissor)
+			{
+				context.setScissorRectangle(null);
+			}
+
+			if (cacheRTT != null)
+			{
+				context.setRenderToTexture(cacheRTT, cacheRTTDepthStencil, cacheRTTAntiAlias, cacheRTTSurfaceSelector);
+			}
+			else
+			{
+				context.setRenderToBackBuffer();
+			}
 		}
 	}
 
