@@ -51,9 +51,9 @@ class DOMRenderer extends DOMRendererAPI
 {
 	private var __canvasRenderer:CanvasRenderer;
 	private var __clipRects:Array<Rectangle>;
+	private var __colorTransform:ColorTransform;
 	private var __currentClipRect:Rectangle;
 	private var __numClipRects:Int;
-	private var __tempColorTransform:ColorTransform;
 	private var __transformOriginProperty:String;
 	private var __transformProperty:String;
 	private var __vendorPrefix:String;
@@ -86,6 +86,7 @@ class DOMRenderer extends DOMRendererAPI
 		__transformOriginProperty = (prefix.lowercase == "webkit") ? "-webkit-transform-origin" : "transform-origin";
 
 		__clipRects = new Array();
+		__colorTransform = new ColorTransform();
 		__numClipRects = 0;
 		__z = 0;
 
@@ -260,9 +261,9 @@ class DOMRenderer extends DOMRendererAPI
 	{
 		if (__worldColorTransform != null)
 		{
-			__tempColorTransform.__copyFrom(__worldColorTransform);
-			__tempColorTransform.__combine(value);
-			return __tempColorTransform;
+			__colorTransform.__copyFrom(__worldColorTransform);
+			__colorTransform.__combine(value);
+			return __colorTransform;
 		}
 		else
 		{
