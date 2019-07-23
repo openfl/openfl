@@ -113,6 +113,8 @@ class DisplayObjectContainer extends InteractiveObject
 	{
 		super();
 
+		__type = DISPLAY_OBJECT_CONTAINER;
+
 		mouseChildren = true;
 		__tabChildren = true;
 

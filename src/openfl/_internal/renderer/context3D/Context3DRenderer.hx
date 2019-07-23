@@ -395,7 +395,7 @@ class Context3DRenderer extends Context3DRendererAPI
 					renderBitmap(cast object);
 				case DISPLAY_OBJECT_CONTAINER:
 					renderDisplayObjectContainer(cast object);
-				case SHAPE:
+				case DISPLAY_OBJECT, SHAPE:
 					renderShape(cast object);
 				case SIMPLE_BUTTON:
 					renderSimpleButton(cast object);

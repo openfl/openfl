@@ -962,8 +962,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		super();
 
-		__type = DISPLAY_OBJECT_CONTAINER;
-
 		this.name = null;
 
 		__color = 0xFFFFFFFF;

@@ -1050,6 +1050,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	{
 		super();
 
+		__type = DISPLAY_OBJECT;
+
 		__alpha = 1;
 		__blendMode = NORMAL;
 		__cacheAsBitmap = false;
