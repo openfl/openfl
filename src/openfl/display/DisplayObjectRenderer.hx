@@ -33,6 +33,10 @@ class DisplayObjectRenderer extends EventDispatcher
 	{
 		super();
 
+		#if openfl_round_pixels
+		__roundPixels = true;
+		#end
+
 		__allowSmoothing = true;
 		__worldAlpha = 1;
 	}
