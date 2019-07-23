@@ -48,14 +48,15 @@ import openfl.geom.Rectangle;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class CairoRenderer extends CairoRendererAPI
 {
-	@:noCompletion private var __matrix:Matrix;
-	@:noCompletion private var __matrix3:Matrix3;
-	@:noCompletion private var __tempColorTransform:ColorTransform;
+	private var __matrix:Matrix;
+	private var __matrix3:Matrix3;
+	private var __colorTransform:ColorTransform;
 
-	@:noCompletion private function new(cairo:Cairo)
+	private function new(cairo:Cairo)
 	{
 		super(cairo);
 
+		__colorTransform = new ColorTransform();
 		__matrix = new Matrix();
 		__matrix3 = new Matrix3();
 
@@ -92,233 +93,7 @@ class CairoRenderer extends CairoRendererAPI
 		cairo.matrix = __matrix3;
 	}
 
-	private function renderBitmap(bitmap:Bitmap):Void
-	{
-		__updateCacheBitmap(bitmap, /*!__worldColorTransform.__isDefault ()*/ false);
-
-		if (bitmap.__bitmapData != null && bitmap.__bitmapData.image != null)
-		{
-			bitmap.__imageVersion = bitmap.__bitmapData.image.version;
-		}
-
-		if (bitmap.__cacheBitmap != null && !bitmap.__isCacheBitmapRender)
-		{
-			CairoBitmap.render(bitmap.__cacheBitmap, this);
-		}
-		else
-		{
-			CairoDisplayObject.render(bitmap, this);
-			CairoBitmap.render(bitmap, this);
-		}
-	}
-
-	private function renderBitmapData(bitmapData:BitmapData):Void
-	{
-		if (!bitmapData.readable) return;
-
-		applyMatrix(bitmapData.__renderTransform, cairo);
-
-		var surface = bitmapData.getSurface();
-
-		if (surface != null)
-		{
-			var pattern = CairoPattern.createForSurface(surface);
-
-			if (!__allowSmoothing || cairo.antialias == NONE)
-			{
-				pattern.filter = CairoFilter.NEAREST;
-			}
-			else
-			{
-				pattern.filter = CairoFilter.GOOD;
-			}
-
-			cairo.source = pattern;
-			cairo.paint();
-		}
-	}
-
-	private function renderDisplayObject(object:DisplayObject):Void
-	{
-		if (object != null && object.__type != null)
-		{
-			switch (object.__type)
-			{
-				case BITMAP:
-					renderBitmap(cast object);
-				case DISPLAY_OBJECT_CONTAINER:
-					renderDisplayObjectContainer(cast object);
-				case DISPLAY_OBJECT, SHAPE:
-					renderShape(cast object);
-				case SIMPLE_BUTTON:
-					renderSimpleButton(cast object);
-				case TEXTFIELD:
-					renderTextField(cast object);
-				case TILEMAP:
-					renderTilemap(cast object);
-				case VIDEO:
-					renderVideo(cast object);
-				default:
-			}
-
-			if (object.__customRenderEvent != null)
-			{
-				var event = object.__customRenderEvent;
-				event.allowSmoothing = __allowSmoothing;
-				event.objectMatrix.copyFrom(object.__renderTransform);
-				event.objectColorTransform.__copyFrom(object.__worldColorTransform);
-				event.renderer = this;
-				event.type = RenderEvent.RENDER_CAIRO;
-
-				__setBlendMode(object.__worldBlendMode);
-				__pushMaskObject(object);
-
-				object.dispatchEvent(event);
-
-				__popMaskObject(object);
-			}
-		}
-	}
-
-	private function renderDisplayObjectContainer(container:DisplayObjectContainer):Void
-	{
-		container.__cleanupRemovedChildren();
-
-		if (!container.__renderable || container.__worldAlpha <= 0) return;
-
-		__updateCacheBitmap(container, /*!__worldColorTransform.__isDefault ()*/ false);
-
-		if (container.__cacheBitmap != null && !container.__isCacheBitmapRender)
-		{
-			CairoBitmap.render(container.__cacheBitmap, this);
-		}
-		else
-		{
-			CairoDisplayObject.render(container, this);
-		}
-
-		if (container.__cacheBitmap != null && !container.__isCacheBitmapRender) return;
-
-		__pushMaskObject(container);
-
-		if (__stage != null)
-		{
-			for (child in container.__children)
-			{
-				renderDisplayObject(child);
-				child.__renderDirty = false;
-			}
-
-			container.__renderDirty = false;
-		}
-		else
-		{
-			for (child in container.__children)
-			{
-				renderDisplayObject(child);
-			}
-		}
-
-		__popMaskObject(container);
-	}
-
-	private function renderMask(mask:DisplayObject):Void
-	{
-		if (mask != null)
-		{
-			switch (mask.__type)
-			{
-				case BITMAP:
-					cairo.rectangle(0, 0, mask.width, mask.height);
-
-				case DISPLAY_OBJECT_CONTAINER:
-					var container:DisplayObjectContainer = cast mask;
-					container.__cleanupRemovedChildren();
-
-					if (container.__graphics != null)
-					{
-						CairoGraphics.renderMask(container.__graphics, this);
-					}
-
-					for (child in container.__children)
-					{
-						renderMask(child);
-					}
-
-				case DOM_ELEMENT:
-
-				case SIMPLE_BUTTON:
-					var button:SimpleButton = cast mask;
-					renderMask(button.__currentState);
-
-				default:
-					if (mask.__graphics != null)
-					{
-						CairoGraphics.renderMask(mask.__graphics, this);
-					}
-			}
-		}
-	}
-
-	private function renderShape(shape:Shape):Void
-	{
-		__updateCacheBitmap(shape, /*!__worldColorTransform.__isDefault ()*/ false);
-
-		if (shape.__cacheBitmap != null && !shape.__isCacheBitmapRender)
-		{
-			CairoBitmap.render(shape.__cacheBitmap, this);
-		}
-		else
-		{
-			CairoDisplayObject.render(shape, this);
-		}
-	}
-
-	private function renderSimpleButton(button:SimpleButton):Void
-	{
-		if (!button.__renderable || button.__worldAlpha <= 0 || button.__currentState == null) return;
-
-		__pushMaskObject(button);
-		renderDisplayObject(button.__currentState);
-		__popMaskObject(button);
-	}
-
-	private function renderTextField(textField:TextField):Void
-	{
-		__updateCacheBitmap(textField, /*!__worldColorTransform.__isDefault ()*/ false);
-
-		if (textField.__cacheBitmap != null && !textField.__isCacheBitmapRender)
-		{
-			CairoBitmap.render(textField.__cacheBitmap, this);
-		}
-		else
-		{
-			CairoTextField.render(textField, this, textField.__worldTransform);
-			CairoDisplayObject.render(textField, this);
-		}
-	}
-
-	private function renderTilemap(tilemap:Tilemap):Void
-	{
-		__updateCacheBitmap(tilemap, /*!__worldColorTransform.__isDefault ()*/ false);
-
-		if (tilemap.__cacheBitmap != null && !tilemap.__isCacheBitmapRender)
-		{
-			CairoBitmap.render(tilemap.__cacheBitmap, this);
-		}
-		else
-		{
-			CairoDisplayObject.render(tilemap, this);
-			CairoTilemap.render(tilemap, this);
-		}
-	}
-
-	private function renderVideo(video:Video):Void
-	{
-		// CanvasVideo.render(video, this);
-	}
-
-	@:noCompletion private override function __clear():Void
+	private override function __clear():Void
 	{
 		if (cairo == null) return;
 
@@ -336,7 +111,7 @@ class CairoRenderer extends CairoRendererAPI
 		}
 	}
 
-	@:noCompletion private override function __drawBitmapData(bitmapData:BitmapData, source:IBitmapDrawable, clipRect:Rectangle):Void
+	private override function __drawBitmapData(bitmapData:BitmapData, source:IBitmapDrawable, clipRect:Rectangle):Void
 	{
 		#if lime_cairo
 		if (clipRect != null)
@@ -367,18 +142,18 @@ class CairoRenderer extends CairoRendererAPI
 		#end
 	}
 
-	@:noCompletion private function __getAlpha(value:Float):Float
+	private function __getAlpha(value:Float):Float
 	{
 		return value * __worldAlpha;
 	}
 
-	@:noCompletion private function __getColorTransform(value:ColorTransform):ColorTransform
+	private function __getColorTransform(value:ColorTransform):ColorTransform
 	{
 		if (__worldColorTransform != null)
 		{
-			__tempColorTransform.__copyFrom(__worldColorTransform);
-			__tempColorTransform.__combine(value);
-			return __tempColorTransform;
+			__colorTransform.__copyFrom(__worldColorTransform);
+			__colorTransform.__combine(value);
+			return __colorTransform;
 		}
 		else
 		{
@@ -386,12 +161,12 @@ class CairoRenderer extends CairoRendererAPI
 		}
 	}
 
-	@:noCompletion private function __popMask():Void
+	private function __popMask():Void
 	{
 		cairo.restore();
 	}
 
-	@:noCompletion private function __popMaskObject(object:DisplayObject, handleScrollRect:Bool = true):Void
+	private function __popMaskObject(object:DisplayObject, handleScrollRect:Bool = true):Void
 	{
 		if (!object.__isCacheBitmapRender && object.__mask != null)
 		{
@@ -404,23 +179,23 @@ class CairoRenderer extends CairoRendererAPI
 		}
 	}
 
-	@:noCompletion private function __popMaskRect():Void
+	private function __popMaskRect():Void
 	{
 		cairo.restore();
 	}
 
-	@:noCompletion private function __pushMask(mask:DisplayObject):Void
+	private function __pushMask(mask:DisplayObject):Void
 	{
 		cairo.save();
 
 		applyMatrix(mask.__renderTransform, cairo);
 
 		cairo.newPath();
-		renderMask(mask);
+		__renderMask(mask);
 		cairo.clip();
 	}
 
-	@:noCompletion private function __pushMaskObject(object:DisplayObject, handleScrollRect:Bool = true):Void
+	private function __pushMaskObject(object:DisplayObject, handleScrollRect:Bool = true):Void
 	{
 		if (handleScrollRect && object.__scrollRect != null)
 		{
@@ -433,7 +208,7 @@ class CairoRenderer extends CairoRendererAPI
 		}
 	}
 
-	@:noCompletion private function __pushMaskRect(rect:Rectangle, transform:Matrix):Void
+	private function __pushMaskRect(rect:Rectangle, transform:Matrix):Void
 	{
 		cairo.save();
 
@@ -444,7 +219,7 @@ class CairoRenderer extends CairoRendererAPI
 		cairo.clip();
 	}
 
-	@:noCompletion private override function __render(object:IBitmapDrawable):Void
+	private override function __render(object:IBitmapDrawable):Void
 	{
 		if (cairo == null) return;
 
@@ -452,16 +227,242 @@ class CairoRenderer extends CairoRendererAPI
 		{
 			if (object.__type != null)
 			{
-				renderDisplayObject(cast object);
+				__renderDisplayObject(cast object);
 			}
 			else
 			{
-				renderBitmapData(cast object);
+				__renderBitmapData(cast object);
 			}
 		}
 	}
 
-	@:noCompletion private function __setBlendMode(value:BlendMode):Void
+	private function __renderBitmap(bitmap:Bitmap):Void
+	{
+		__updateCacheBitmap(bitmap, /*!__worldColorTransform.__isDefault ()*/ false);
+
+		if (bitmap.__bitmapData != null && bitmap.__bitmapData.image != null)
+		{
+			bitmap.__imageVersion = bitmap.__bitmapData.image.version;
+		}
+
+		if (bitmap.__cacheBitmap != null && !bitmap.__isCacheBitmapRender)
+		{
+			CairoBitmap.render(bitmap.__cacheBitmap, this);
+		}
+		else
+		{
+			CairoDisplayObject.render(bitmap, this);
+			CairoBitmap.render(bitmap, this);
+		}
+	}
+
+	private function __renderBitmapData(bitmapData:BitmapData):Void
+	{
+		if (!bitmapData.readable) return;
+
+		applyMatrix(bitmapData.__renderTransform, cairo);
+
+		var surface = bitmapData.getSurface();
+
+		if (surface != null)
+		{
+			var pattern = CairoPattern.createForSurface(surface);
+
+			if (!__allowSmoothing || cairo.antialias == NONE)
+			{
+				pattern.filter = CairoFilter.NEAREST;
+			}
+			else
+			{
+				pattern.filter = CairoFilter.GOOD;
+			}
+
+			cairo.source = pattern;
+			cairo.paint();
+		}
+	}
+
+	private function __renderDisplayObject(object:DisplayObject):Void
+	{
+		if (object != null && object.__type != null)
+		{
+			switch (object.__type)
+			{
+				case BITMAP:
+					__renderBitmap(cast object);
+				case DISPLAY_OBJECT_CONTAINER:
+					__renderDisplayObjectContainer(cast object);
+				case DISPLAY_OBJECT, SHAPE:
+					__renderShape(cast object);
+				case SIMPLE_BUTTON:
+					__renderSimpleButton(cast object);
+				case TEXTFIELD:
+					__renderTextField(cast object);
+				case TILEMAP:
+					__renderTilemap(cast object);
+				case VIDEO:
+					__renderVideo(cast object);
+				default:
+			}
+
+			if (object.__customRenderEvent != null)
+			{
+				var event = object.__customRenderEvent;
+				event.allowSmoothing = __allowSmoothing;
+				event.objectMatrix.copyFrom(object.__renderTransform);
+				event.objectColorTransform.__copyFrom(object.__worldColorTransform);
+				event.renderer = this;
+				event.type = RenderEvent.RENDER_CAIRO;
+
+				__setBlendMode(object.__worldBlendMode);
+				__pushMaskObject(object);
+
+				object.dispatchEvent(event);
+
+				__popMaskObject(object);
+			}
+		}
+	}
+
+	private function __renderDisplayObjectContainer(container:DisplayObjectContainer):Void
+	{
+		container.__cleanupRemovedChildren();
+
+		if (!container.__renderable || container.__worldAlpha <= 0) return;
+
+		__updateCacheBitmap(container, /*!__worldColorTransform.__isDefault ()*/ false);
+
+		if (container.__cacheBitmap != null && !container.__isCacheBitmapRender)
+		{
+			CairoBitmap.render(container.__cacheBitmap, this);
+		}
+		else
+		{
+			CairoDisplayObject.render(container, this);
+		}
+
+		if (container.__cacheBitmap != null && !container.__isCacheBitmapRender) return;
+
+		__pushMaskObject(container);
+
+		if (__stage != null)
+		{
+			for (child in container.__children)
+			{
+				__renderDisplayObject(child);
+				child.__renderDirty = false;
+			}
+
+			container.__renderDirty = false;
+		}
+		else
+		{
+			for (child in container.__children)
+			{
+				__renderDisplayObject(child);
+			}
+		}
+
+		__popMaskObject(container);
+	}
+
+	private function __renderMask(mask:DisplayObject):Void
+	{
+		if (mask != null)
+		{
+			switch (mask.__type)
+			{
+				case BITMAP:
+					cairo.rectangle(0, 0, mask.width, mask.height);
+
+				case DISPLAY_OBJECT_CONTAINER:
+					var container:DisplayObjectContainer = cast mask;
+					container.__cleanupRemovedChildren();
+
+					if (container.__graphics != null)
+					{
+						CairoGraphics.renderMask(container.__graphics, this);
+					}
+
+					for (child in container.__children)
+					{
+						__renderMask(child);
+					}
+
+				case DOM_ELEMENT:
+
+				case SIMPLE_BUTTON:
+					var button:SimpleButton = cast mask;
+					__renderMask(button.__currentState);
+
+				default:
+					if (mask.__graphics != null)
+					{
+						CairoGraphics.renderMask(mask.__graphics, this);
+					}
+			}
+		}
+	}
+
+	private function __renderShape(shape:Shape):Void
+	{
+		__updateCacheBitmap(shape, /*!__worldColorTransform.__isDefault ()*/ false);
+
+		if (shape.__cacheBitmap != null && !shape.__isCacheBitmapRender)
+		{
+			CairoBitmap.render(shape.__cacheBitmap, this);
+		}
+		else
+		{
+			CairoDisplayObject.render(shape, this);
+		}
+	}
+
+	private function __renderSimpleButton(button:SimpleButton):Void
+	{
+		if (!button.__renderable || button.__worldAlpha <= 0 || button.__currentState == null) return;
+
+		__pushMaskObject(button);
+		__renderDisplayObject(button.__currentState);
+		__popMaskObject(button);
+	}
+
+	private function __renderTextField(textField:TextField):Void
+	{
+		__updateCacheBitmap(textField, /*!__worldColorTransform.__isDefault ()*/ false);
+
+		if (textField.__cacheBitmap != null && !textField.__isCacheBitmapRender)
+		{
+			CairoBitmap.render(textField.__cacheBitmap, this);
+		}
+		else
+		{
+			CairoTextField.render(textField, this, textField.__worldTransform);
+			CairoDisplayObject.render(textField, this);
+		}
+	}
+
+	private function __renderTilemap(tilemap:Tilemap):Void
+	{
+		__updateCacheBitmap(tilemap, /*!__worldColorTransform.__isDefault ()*/ false);
+
+		if (tilemap.__cacheBitmap != null && !tilemap.__isCacheBitmapRender)
+		{
+			CairoBitmap.render(tilemap.__cacheBitmap, this);
+		}
+		else
+		{
+			CairoDisplayObject.render(tilemap, this);
+			CairoTilemap.render(tilemap, this);
+		}
+	}
+
+	private function __renderVideo(video:Video):Void
+	{
+		// CanvasVideo.render(video, this);
+	}
+
+	private function __setBlendMode(value:BlendMode):Void
 	{
 		if (__overrideBlendMode != null) value = __overrideBlendMode;
 		if (__blendMode == value) return;
@@ -470,7 +471,7 @@ class CairoRenderer extends CairoRendererAPI
 		__setBlendModeCairo(cairo, value);
 	}
 
-	@:noCompletion private function __setBlendModeCairo(cairo:Cairo, value:BlendMode):Void
+	private function __setBlendModeCairo(cairo:Cairo, value:BlendMode):Void
 	{
 		switch (value)
 		{
@@ -526,7 +527,7 @@ class CairoRenderer extends CairoRendererAPI
 		}
 	}
 
-	@:noCompletion private function __updateCacheBitmap(object:DisplayObject, force:Bool):Bool
+	private function __updateCacheBitmap(object:DisplayObject, force:Bool):Bool
 	{
 		#if lime
 		if (object.__isCacheBitmapRender) return false;

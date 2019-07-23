@@ -49,17 +49,17 @@ import openfl.text.TextField;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class DOMRenderer extends DOMRendererAPI
 {
-	@:noCompletion private var __canvasRenderer:CanvasRenderer;
-	@:noCompletion private var __clipRects:Array<Rectangle>;
-	@:noCompletion private var __currentClipRect:Rectangle;
-	@:noCompletion private var __numClipRects:Int;
-	@:noCompletion private var __tempColorTransform:ColorTransform;
-	@:noCompletion private var __transformOriginProperty:String;
-	@:noCompletion private var __transformProperty:String;
-	@:noCompletion private var __vendorPrefix:String;
-	@:noCompletion private var __z:Int;
+	private var __canvasRenderer:CanvasRenderer;
+	private var __clipRects:Array<Rectangle>;
+	private var __currentClipRect:Rectangle;
+	private var __numClipRects:Int;
+	private var __tempColorTransform:ColorTransform;
+	private var __transformOriginProperty:String;
+	private var __transformProperty:String;
+	private var __vendorPrefix:String;
+	private var __z:Int;
 
-	@:noCompletion private function new(element:#if lime DOMRenderContext #else Dynamic #end)
+	private function new(element:#if lime DOMRenderContext #else Dynamic #end)
 	{
 		super(element);
 
@@ -111,104 +111,6 @@ class DOMRenderer extends DOMRendererAPI
 		}
 	}
 
-	private function clearBitmap(bitmap:Bitmap):Void
-	{
-		DOMBitmap.clear(bitmap, this);
-	}
-
-	private function clearDisplayObject(object:DisplayObject):Void
-	{
-		if (object != null && object.__type != null)
-		{
-			switch (object.__type)
-			{
-				case BITMAP:
-					clearBitmap(cast object);
-				case DISPLAY_OBJECT_CONTAINER:
-					clearDisplayObjectContainer(cast object);
-				case DOM_ELEMENT:
-					clearDOMElement(cast object);
-				case DISPLAY_OBJECT, SHAPE:
-					clearShape(cast object);
-				case SIMPLE_BUTTON:
-					clearSimpleButton(cast object);
-				case TEXTFIELD:
-					clearTextField(cast object);
-				case TILEMAP:
-					clearTilemap(cast object);
-				case VIDEO:
-					clearVideo(cast object);
-			}
-		}
-	}
-
-	private function clearDisplayObjectContainer(container:DisplayObjectContainer):Void
-	{
-		for (orphan in container.__removedChildren)
-		{
-			if (orphan.stage == null)
-			{
-				clearDisplayObject(orphan);
-			}
-		}
-
-		container.__cleanupRemovedChildren();
-
-		for (child in container.__children)
-		{
-			clearDisplayObject(child);
-		}
-	}
-
-	private function clearDOMElement(domElement:DOMElement):Void
-	{
-		DOMDisplayObject.clear(domElement, this);
-	}
-
-	private function clearShape(shape:Shape):Void
-	{
-		DOMDisplayObject.clear(shape, this);
-	}
-
-	private function clearSimpleButton(button:SimpleButton):Void
-	{
-		__pushMaskObject(button);
-
-		for (previousState in button.__previousStates)
-		{
-			renderDisplayObject(previousState);
-		}
-
-		button.__previousStates.length = 0;
-
-		if (button.__currentState != null)
-		{
-			if (button.__currentState.stage != button.stage)
-			{
-				button.__currentState.__setStageReference(button.stage);
-			}
-
-			renderDisplayObject(button.__currentState);
-		}
-
-		__popMaskObject(button);
-	}
-
-	private function clearTextField(textField:TextField):Void
-	{
-		DOMTextField.clear(textField, this);
-	}
-
-	private function clearTilemap(tilemap:Tilemap):Void
-	{
-		DOMTilemap.clear(tilemap, this);
-	}
-
-	private function clearVideo(video:Video):Void
-	{
-		DOMVideo.clear(video, this);
-	}
-
 	public override function clearStyle(childElement:Element):Void
 	{
 		if (childElement != null && childElement.parentElement == element)
@@ -217,251 +119,7 @@ class DOMRenderer extends DOMRendererAPI
 		}
 	}
 
-	private function renderBitmap(bitmap:Bitmap):Void
-	{
-		__updateCacheBitmap(bitmap, /*!__worldColorTransform.__isDefault ()*/ false);
-
-		if (bitmap.__cacheBitmap != null && !bitmap.__isCacheBitmapRender)
-		{
-			clearBitmap(bitmap);
-			bitmap.__cacheBitmap.stage = bitmap.stage;
-
-			DOMBitmap.render(bitmap.__cacheBitmap, this);
-		}
-		else
-		{
-			DOMDisplayObject.render(bitmap, this);
-			DOMBitmap.render(bitmap, this);
-		}
-	}
-
-	private function renderDisplayObject(object:DisplayObject):Void
-	{
-		if (object != null && object.__type != null)
-		{
-			switch (object.__type)
-			{
-				case BITMAP:
-					renderBitmap(cast object);
-				case DISPLAY_OBJECT_CONTAINER:
-					renderDisplayObjectContainer(cast object);
-				case DOM_ELEMENT:
-					renderDOMElement(cast object);
-				case DISPLAY_OBJECT, SHAPE:
-					renderShape(cast object);
-				case SIMPLE_BUTTON:
-					renderSimpleButton(cast object);
-				case TEXTFIELD:
-					renderTextField(cast object);
-				case TILEMAP:
-					renderTilemap(cast object);
-				case VIDEO:
-					renderVideo(cast object);
-			}
-
-			if (object.__customRenderEvent != null)
-			{
-				var event = object.__customRenderEvent;
-				event.allowSmoothing = __allowSmoothing;
-				event.objectMatrix.copyFrom(object.__renderTransform);
-				event.objectColorTransform.__copyFrom(object.__worldColorTransform);
-				event.renderer = this;
-
-				if (object.stage != null && object.__worldVisible)
-				{
-					event.type = RenderEvent.RENDER_DOM;
-				}
-				else
-				{
-					event.type = RenderEvent.CLEAR_DOM;
-				}
-
-				__setBlendMode(object.__worldBlendMode);
-				__pushMaskObject(object);
-
-				object.dispatchEvent(event);
-
-				__popMaskObject(object);
-			}
-		}
-	}
-
-	private function renderDisplayObjectContainer(container:DisplayObjectContainer):Void
-	{
-		for (orphan in container.__removedChildren)
-		{
-			if (orphan.stage == null)
-			{
-				renderDisplayObject(orphan);
-			}
-		}
-
-		container.__cleanupRemovedChildren();
-
-		__updateCacheBitmap(container, /*!__worldColorTransform.__isDefault ()*/ false);
-
-		if (container.__cacheBitmap != null && !container.__isCacheBitmapRender)
-		{
-			clearDisplayObjectContainer(container);
-			container.__cacheBitmap.stage = container.stage;
-
-			DOMBitmap.render(container.__cacheBitmap, this);
-		}
-		else
-		{
-			DOMDisplayObject.render(container, this);
-
-			if (container.__cacheBitmap != null && !container.__isCacheBitmapRender) return;
-
-			__pushMaskObject(container);
-
-			if (__stage != null)
-			{
-				for (child in container.__children)
-				{
-					renderDisplayObject(child);
-					child.__renderDirty = false;
-				}
-
-				container.__renderDirty = false;
-			}
-			else
-			{
-				for (child in container.__children)
-				{
-					renderDisplayObject(child);
-				}
-			}
-
-			__popMaskObject(container);
-		}
-	}
-
-	private function renderDOMElement(domElement:DOMElement):Void
-	{
-		if (domElement.stage != null && domElement.__worldVisible && domElement.__renderable)
-		{
-			if (!domElement.__active)
-			{
-				__initializeElement(domElement, domElement.__element);
-				domElement.__active = true;
-			}
-
-			__updateClip(domElement);
-			__applyStyle(domElement, true, true, true);
-		}
-		else
-		{
-			if (domElement.__active)
-			{
-				element.removeChild(domElement.__element);
-				domElement.__active = false;
-			}
-		}
-
-		DOMDisplayObject.render(domElement, this);
-	}
-
-	private function renderShape(shape:Shape):Void
-	{
-		__updateCacheBitmap(shape, /*!__worldColorTransform.__isDefault ()*/ false);
-
-		if (shape.__cacheBitmap != null && !shape.__isCacheBitmapRender)
-		{
-			clearShape(shape);
-			shape.__cacheBitmap.stage = shape.stage;
-
-			DOMBitmap.render(shape.__cacheBitmap, this);
-		}
-		else
-		{
-			DOMDisplayObject.render(shape, this);
-		}
-	}
-
-	private function renderSimpleButton(button:SimpleButton):Void
-	{
-		__pushMaskObject(button);
-
-		for (previousState in button.__previousStates)
-		{
-			renderDisplayObject(previousState);
-		}
-
-		button.__previousStates.length = 0;
-
-		if (button.__currentState != null)
-		{
-			if (button.__currentState.stage != button.stage)
-			{
-				button.__currentState.__setStageReference(button.stage);
-			}
-
-			renderDisplayObject(button.__currentState);
-		}
-
-		__popMaskObject(button);
-	}
-
-	private function renderTextField(textField:TextField):Void
-	{
-		#if (js && html5)
-		textField.__domRender = true;
-		__updateCacheBitmap(textField, textField.__forceCachedBitmapUpdate || /*!__worldColorTransform.__isDefault ()*/ false);
-		textField.__forceCachedBitmapUpdate = false;
-		textField.__domRender = false;
-
-		if (textField.__cacheBitmap != null && !textField.__isCacheBitmapRender)
-		{
-			clearTextField(textField);
-			textField.__cacheBitmap.stage = textField.stage;
-
-			DOMBitmap.render(textField.__cacheBitmap, this);
-		}
-		else
-		{
-			if (textField.__renderedOnCanvasWhileOnDOM)
-			{
-				textField.__renderedOnCanvasWhileOnDOM = false;
-
-				if (textField.__isHTML && textField.__rawHtmlText != null)
-				{
-					textField.__updateText(textField.__rawHtmlText);
-					textField.__dirty = true;
-					textField.__layoutDirty = true;
-					textField.__setRenderDirty();
-				}
-			}
-
-			DOMTextField.render(textField, this);
-		}
-		#end
-	}
-
-	private function renderTilemap(tilemap:Tilemap):Void
-	{
-		__updateCacheBitmap(tilemap, /*!__worldColorTransform.__isDefault ()*/ false);
-
-		if (tilemap.__cacheBitmap != null && !tilemap.__isCacheBitmapRender)
-		{
-			clearTilemap(tilemap);
-			tilemap.__cacheBitmap.stage = tilemap.stage;
-
-			DOMBitmap.render(tilemap.__cacheBitmap, this);
-		}
-		else
-		{
-			DOMDisplayObject.render(tilemap, this);
-			DOMTilemap.render(tilemap, this);
-		}
-	}
-
-	private function renderVideo(video:Video):Void
-	{
-		DOMVideo.render(video, this);
-	}
-
-	@:noCompletion private function __applyStyle(displayObject:DisplayObject, setTransform:Bool, setAlpha:Bool, setClip:Bool):Void
+	private function __applyStyle(displayObject:DisplayObject, setTransform:Bool, setAlpha:Bool, setClip:Bool):Void
 	{
 		#if (js && html5)
 		var style = displayObject.__style;
@@ -506,12 +164,99 @@ class DOMRenderer extends DOMRendererAPI
 		#end
 	}
 
-	@:noCompletion private function __getAlpha(value:Float):Float
+	private function __clearBitmap(bitmap:Bitmap):Void
+	{
+		DOMBitmap.clear(bitmap, this);
+	}
+
+	private function __clearDisplayObject(object:DisplayObject):Void
+	{
+		if (object != null && object.__type != null)
+		{
+			switch (object.__type)
+			{
+				case BITMAP:
+					__clearBitmap(cast object);
+				case DISPLAY_OBJECT_CONTAINER:
+					__clearDisplayObjectContainer(cast object);
+				case DOM_ELEMENT:
+					__clearDOMElement(cast object);
+				case DISPLAY_OBJECT, SHAPE:
+					__clearShape(cast object);
+				case SIMPLE_BUTTON:
+					__clearSimpleButton(cast object);
+				case TEXTFIELD:
+					__clearTextField(cast object);
+				case TILEMAP:
+					__clearTilemap(cast object);
+				case VIDEO:
+					__clearVideo(cast object);
+			}
+		}
+	}
+
+	private function __clearDisplayObjectContainer(container:DisplayObjectContainer):Void
+	{
+		for (orphan in container.__removedChildren)
+		{
+			if (orphan.stage == null)
+			{
+				__clearDisplayObject(orphan);
+			}
+		}
+
+		container.__cleanupRemovedChildren();
+
+		for (child in container.__children)
+		{
+			__clearDisplayObject(child);
+		}
+	}
+
+	private function __clearDOMElement(domElement:DOMElement):Void
+	{
+		DOMDisplayObject.clear(domElement, this);
+	}
+
+	private function __clearShape(shape:Shape):Void
+	{
+		DOMDisplayObject.clear(shape, this);
+	}
+
+	private function __clearSimpleButton(button:SimpleButton):Void
+	{
+		for (previousState in button.__previousStates)
+		{
+			__clearDisplayObject(previousState);
+		}
+
+		if (button.__currentState != null)
+		{
+			__clearDisplayObject(button.__currentState);
+		}
+	}
+
+	private function __clearTextField(textField:TextField):Void
+	{
+		DOMTextField.clear(textField, this);
+	}
+
+	private function __clearTilemap(tilemap:Tilemap):Void
+	{
+		DOMTilemap.clear(tilemap, this);
+	}
+
+	private function __clearVideo(video:Video):Void
+	{
+		DOMVideo.clear(video, this);
+	}
+
+	private function __getAlpha(value:Float):Float
 	{
 		return value * __worldAlpha;
 	}
 
-	@:noCompletion private function __getColorTransform(value:ColorTransform):ColorTransform
+	private function __getColorTransform(value:ColorTransform):ColorTransform
 	{
 		if (__worldColorTransform != null)
 		{
@@ -526,7 +271,7 @@ class DOMRenderer extends DOMRendererAPI
 	}
 
 	#if (js && html5)
-	@:noCompletion private function __initializeElement(displayObject:DisplayObject, element:Element):Void
+	private function __initializeElement(displayObject:DisplayObject, element:Element):Void
 	{
 		var style = displayObject.__style = element.style;
 
@@ -546,12 +291,12 @@ class DOMRenderer extends DOMRendererAPI
 	}
 	#end
 
-	@:noCompletion private function __popMask():Void
+	private function __popMask():Void
 	{
 		__popMaskRect();
 	}
 
-	@:noCompletion private function __popMaskObject(object:DisplayObject, handleScrollRect:Bool = true):Void
+	private function __popMaskObject(object:DisplayObject, handleScrollRect:Bool = true):Void
 	{
 		if (object.__mask != null)
 		{
@@ -564,7 +309,7 @@ class DOMRenderer extends DOMRendererAPI
 		}
 	}
 
-	@:noCompletion private function __popMaskRect():Void
+	private function __popMaskRect():Void
 	{
 		if (__numClipRects > 0)
 		{
@@ -581,14 +326,14 @@ class DOMRenderer extends DOMRendererAPI
 		}
 	}
 
-	@:noCompletion private function __pushMask(mask:DisplayObject):Void
+	private function __pushMask(mask:DisplayObject):Void
 	{
 		// TODO: Handle true mask shape, as well as alpha test
 
 		__pushMaskRect(mask.getBounds(mask), mask.__renderTransform);
 	}
 
-	@:noCompletion private function __pushMaskObject(object:DisplayObject, handleScrollRect:Bool = true):Void
+	private function __pushMaskObject(object:DisplayObject, handleScrollRect:Bool = true):Void
 	{
 		if (handleScrollRect && object.__scrollRect != null)
 		{
@@ -601,7 +346,7 @@ class DOMRenderer extends DOMRendererAPI
 		}
 	}
 
-	@:noCompletion private function __pushMaskRect(rect:Rectangle, transform:Matrix):Void
+	private function __pushMaskRect(rect:Rectangle, transform:Matrix):Void
 	{
 		// TODO: Handle rotation?
 
@@ -633,7 +378,7 @@ class DOMRenderer extends DOMRendererAPI
 		__numClipRects++;
 	}
 
-	@:noCompletion private override function __render(object:IBitmapDrawable):Void
+	private override function __render(object:IBitmapDrawable):Void
 	{
 		if (!__stage.__transparent)
 		{
@@ -649,11 +394,255 @@ class DOMRenderer extends DOMRendererAPI
 		// TODO: BitmapData render
 		if (object != null && object.__type != null)
 		{
-			renderDisplayObject(cast object);
+			__renderDisplayObject(cast object);
 		}
 	}
 
-	@:noCompletion private function __setBlendMode(value:BlendMode):Void
+	private function __renderBitmap(bitmap:Bitmap):Void
+	{
+		__updateCacheBitmap(bitmap, /*!__worldColorTransform.__isDefault ()*/ false);
+
+		if (bitmap.__cacheBitmap != null && !bitmap.__isCacheBitmapRender)
+		{
+			__clearBitmap(bitmap);
+			bitmap.__cacheBitmap.stage = bitmap.stage;
+
+			DOMBitmap.render(bitmap.__cacheBitmap, this);
+		}
+		else
+		{
+			DOMDisplayObject.render(bitmap, this);
+			DOMBitmap.render(bitmap, this);
+		}
+	}
+
+	private function __renderDisplayObject(object:DisplayObject):Void
+	{
+		if (object != null && object.__type != null)
+		{
+			switch (object.__type)
+			{
+				case BITMAP:
+					__renderBitmap(cast object);
+				case DISPLAY_OBJECT_CONTAINER:
+					__renderDisplayObjectContainer(cast object);
+				case DOM_ELEMENT:
+					__renderDOMElement(cast object);
+				case DISPLAY_OBJECT, SHAPE:
+					__renderShape(cast object);
+				case SIMPLE_BUTTON:
+					__renderSimpleButton(cast object);
+				case TEXTFIELD:
+					__renderTextField(cast object);
+				case TILEMAP:
+					__renderTilemap(cast object);
+				case VIDEO:
+					__renderVideo(cast object);
+			}
+
+			if (object.__customRenderEvent != null)
+			{
+				var event = object.__customRenderEvent;
+				event.allowSmoothing = __allowSmoothing;
+				event.objectMatrix.copyFrom(object.__renderTransform);
+				event.objectColorTransform.__copyFrom(object.__worldColorTransform);
+				event.renderer = this;
+
+				if (object.stage != null && object.__worldVisible)
+				{
+					event.type = RenderEvent.RENDER_DOM;
+				}
+				else
+				{
+					event.type = RenderEvent.CLEAR_DOM;
+				}
+
+				__setBlendMode(object.__worldBlendMode);
+				__pushMaskObject(object);
+
+				object.dispatchEvent(event);
+
+				__popMaskObject(object);
+			}
+		}
+	}
+
+	private function __renderDisplayObjectContainer(container:DisplayObjectContainer):Void
+	{
+		for (orphan in container.__removedChildren)
+		{
+			if (orphan.stage == null)
+			{
+				__clearDisplayObject(orphan);
+			}
+		}
+
+		container.__cleanupRemovedChildren();
+
+		__updateCacheBitmap(container, /*!__worldColorTransform.__isDefault ()*/ false);
+
+		if (container.__cacheBitmap != null && !container.__isCacheBitmapRender)
+		{
+			__clearDisplayObjectContainer(container);
+			container.__cacheBitmap.stage = container.stage;
+
+			DOMBitmap.render(container.__cacheBitmap, this);
+		}
+		else
+		{
+			DOMDisplayObject.render(container, this);
+
+			if (container.__cacheBitmap != null && !container.__isCacheBitmapRender) return;
+
+			__pushMaskObject(container);
+
+			if (__stage != null)
+			{
+				for (child in container.__children)
+				{
+					__renderDisplayObject(child);
+					child.__renderDirty = false;
+				}
+
+				container.__renderDirty = false;
+			}
+			else
+			{
+				for (child in container.__children)
+				{
+					__renderDisplayObject(child);
+				}
+			}
+
+			__popMaskObject(container);
+		}
+	}
+
+	private function __renderDOMElement(domElement:DOMElement):Void
+	{
+		if (domElement.stage != null && domElement.__worldVisible && domElement.__renderable)
+		{
+			if (!domElement.__active)
+			{
+				__initializeElement(domElement, domElement.__element);
+				domElement.__active = true;
+			}
+
+			__updateClip(domElement);
+			__applyStyle(domElement, true, true, true);
+		}
+		else
+		{
+			if (domElement.__active)
+			{
+				element.removeChild(domElement.__element);
+				domElement.__active = false;
+			}
+		}
+
+		DOMDisplayObject.render(domElement, this);
+	}
+
+	private function __renderShape(shape:Shape):Void
+	{
+		__updateCacheBitmap(shape, /*!__worldColorTransform.__isDefault ()*/ false);
+
+		if (shape.__cacheBitmap != null && !shape.__isCacheBitmapRender)
+		{
+			__clearShape(shape);
+			shape.__cacheBitmap.stage = shape.stage;
+
+			DOMBitmap.render(shape.__cacheBitmap, this);
+		}
+		else
+		{
+			DOMDisplayObject.render(shape, this);
+		}
+	}
+
+	private function __renderSimpleButton(button:SimpleButton):Void
+	{
+		__pushMaskObject(button);
+
+		for (previousState in button.__previousStates)
+		{
+			__clearDisplayObject(previousState);
+		}
+
+		button.__previousStates.length = 0;
+
+		if (button.__currentState != null)
+		{
+			if (button.__currentState.stage != button.stage)
+			{
+				button.__currentState.__setStageReference(button.stage);
+			}
+
+			__renderDisplayObject(button.__currentState);
+		}
+
+		__popMaskObject(button);
+	}
+
+	private function __renderTextField(textField:TextField):Void
+	{
+		#if (js && html5)
+		textField.__domRender = true;
+		__updateCacheBitmap(textField, textField.__forceCachedBitmapUpdate || /*!__worldColorTransform.__isDefault ()*/ false);
+		textField.__forceCachedBitmapUpdate = false;
+		textField.__domRender = false;
+
+		if (textField.__cacheBitmap != null && !textField.__isCacheBitmapRender)
+		{
+			__clearTextField(textField);
+			textField.__cacheBitmap.stage = textField.stage;
+
+			DOMBitmap.render(textField.__cacheBitmap, this);
+		}
+		else
+		{
+			if (textField.__renderedOnCanvasWhileOnDOM)
+			{
+				textField.__renderedOnCanvasWhileOnDOM = false;
+
+				if (textField.__isHTML && textField.__rawHtmlText != null)
+				{
+					textField.__updateText(textField.__rawHtmlText);
+					textField.__dirty = true;
+					textField.__layoutDirty = true;
+					textField.__setRenderDirty();
+				}
+			}
+
+			DOMTextField.render(textField, this);
+		}
+		#end
+	}
+
+	private function __renderTilemap(tilemap:Tilemap):Void
+	{
+		__updateCacheBitmap(tilemap, /*!__worldColorTransform.__isDefault ()*/ false);
+
+		if (tilemap.__cacheBitmap != null && !tilemap.__isCacheBitmapRender)
+		{
+			__clearTilemap(tilemap);
+			tilemap.__cacheBitmap.stage = tilemap.stage;
+
+			DOMBitmap.render(tilemap.__cacheBitmap, this);
+		}
+		else
+		{
+			DOMDisplayObject.render(tilemap, this);
+			DOMTilemap.render(tilemap, this);
+		}
+	}
+
+	private function __renderVideo(video:Video):Void
+	{
+		DOMVideo.render(video, this);
+	}
+
+	private function __setBlendMode(value:BlendMode):Void
 	{
 		if (__overrideBlendMode != null) value = __overrideBlendMode;
 		if (__blendMode == value) return;
@@ -729,7 +718,7 @@ class DOMRenderer extends DOMRendererAPI
 		// }
 	}
 
-	@:noCompletion private function __updateCacheBitmap(object:DisplayObject, force:Bool):Bool
+	private function __updateCacheBitmap(object:DisplayObject, force:Bool):Bool
 	{
 		#if lime
 		if (object.__isCacheBitmapRender) return false;
@@ -1279,7 +1268,7 @@ class DOMRenderer extends DOMRendererAPI
 		{
 			// if (__type == DOM)
 			// {
-			clearDisplayObject(object.__cacheBitmap);
+			__clearDisplayObject(object.__cacheBitmap);
 			// }
 
 			object.__cacheBitmap = null;
@@ -1300,7 +1289,7 @@ class DOMRenderer extends DOMRendererAPI
 		#end
 	}
 
-	@:noCompletion private function __updateClip(displayObject:DisplayObject):Void
+	private function __updateClip(displayObject:DisplayObject):Void
 	{
 		if (__currentClipRect == null)
 		{

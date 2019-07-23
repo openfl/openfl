@@ -42,15 +42,16 @@ import openfl.geom.Rectangle;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class CanvasRenderer extends CanvasRendererAPI
 {
-	@:noCompletion private var __isDOM:Bool;
-	@:noCompletion private var __tempColorTransform:ColorTransform;
-	@:noCompletion private var __tempMatrix:Matrix;
+	private var __colorTransform:ColorTransform;
+	private var __isDOM:Bool;
+	private var __transform:Matrix;
 
-	@:noCompletion private function new(context:Canvas2DRenderContext)
+	private function new(context:Canvas2DRenderContext)
 	{
 		super(context);
 
-		__tempMatrix = new Matrix();
+		__colorTransform = new ColorTransform();
+		__transform = new Matrix();
 		__type = CANVAS;
 	}
 
@@ -59,7 +60,177 @@ class CanvasRenderer extends CanvasRendererAPI
 		context.imageSmoothingEnabled = value;
 	}
 
-	private function renderBitmap(bitmap:Bitmap):Void
+	public override function setTransform(transform:Matrix, context:Canvas2DRenderContext = null):Void
+	{
+		if (context == null)
+		{
+			context = this.context;
+		}
+		else if (this.context == context && __worldTransform != null)
+		{
+			__transform.copyFrom(transform);
+			__transform.concat(__worldTransform);
+			transform = __transform;
+		}
+
+		if (__roundPixels)
+		{
+			context.setTransform(transform.a, transform.b, transform.c, transform.d, Std.int(transform.tx), Std.int(transform.ty));
+		}
+		else
+		{
+			context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
+		}
+	}
+
+	private override function __clear():Void
+	{
+		if (__stage != null)
+		{
+			var cacheBlendMode = __blendMode;
+			__blendMode = null;
+			__setBlendMode(NORMAL);
+
+			context.setTransform(1, 0, 0, 1, 0, 0);
+			context.globalAlpha = 1;
+
+			if (!__stage.__transparent && __stage.__clearBeforeRender)
+			{
+				context.fillStyle = __stage.__colorString;
+				context.fillRect(0, 0, __stage.stageWidth * __stage.window.scale, __stage.stageHeight * __stage.window.scale);
+			}
+			else if (__stage.__transparent && __stage.__clearBeforeRender)
+			{
+				context.clearRect(0, 0, __stage.stageWidth * __stage.window.scale, __stage.stageHeight * __stage.window.scale);
+			}
+
+			__setBlendMode(cacheBlendMode);
+		}
+	}
+
+	private override function __drawBitmapData(bitmapData:BitmapData, source:IBitmapDrawable, clipRect:Rectangle):Void
+	{
+		if (clipRect != null)
+		{
+			__pushMaskRect(clipRect, source.__renderTransform);
+		}
+
+		var buffer = bitmapData.image.buffer;
+
+		if (!__allowSmoothing) applySmoothing(buffer.__srcContext, false);
+
+		__render(source);
+
+		if (!__allowSmoothing) applySmoothing(buffer.__srcContext, true);
+
+		buffer.__srcContext.setTransform(1, 0, 0, 1, 0, 0);
+		buffer.__srcImageData = null;
+		buffer.data = null;
+
+		bitmapData.image.dirty = true;
+		bitmapData.image.version++;
+
+		if (clipRect != null)
+		{
+			__popMaskRect();
+		}
+	}
+
+	private function __getAlpha(value:Float):Float
+	{
+		return value * __worldAlpha;
+	}
+
+	private function __getColorTransform(value:ColorTransform):ColorTransform
+	{
+		if (__worldColorTransform != null)
+		{
+			__colorTransform.__copyFrom(__worldColorTransform);
+			__colorTransform.__combine(value);
+			return __colorTransform;
+		}
+		else
+		{
+			return value;
+		}
+	}
+
+	private function __popMask():Void
+	{
+		context.restore();
+	}
+
+	private function __popMaskObject(object:DisplayObject, handleScrollRect:Bool = true):Void
+	{
+		if (!object.__isCacheBitmapRender && object.__mask != null)
+		{
+			__popMask();
+		}
+
+		if (handleScrollRect && object.__scrollRect != null)
+		{
+			__popMaskRect();
+		}
+	}
+
+	private function __popMaskRect():Void
+	{
+		context.restore();
+	}
+
+	private function __pushMask(mask:DisplayObject):Void
+	{
+		context.save();
+
+		setTransform(mask.__renderTransform, context);
+
+		context.beginPath();
+		__renderMask(mask);
+		context.closePath();
+
+		context.clip();
+	}
+
+	private function __pushMaskObject(object:DisplayObject, handleScrollRect:Bool = true):Void
+	{
+		if (handleScrollRect && object.__scrollRect != null)
+		{
+			__pushMaskRect(object.__scrollRect, object.__renderTransform);
+		}
+
+		if (!object.__isCacheBitmapRender && object.__mask != null)
+		{
+			__pushMask(object.__mask);
+		}
+	}
+
+	private function __pushMaskRect(rect:Rectangle, transform:Matrix):Void
+	{
+		context.save();
+
+		setTransform(transform, context);
+
+		context.beginPath();
+		context.rect(rect.x, rect.y, rect.width, rect.height);
+		context.clip();
+	}
+
+	private override function __render(object:IBitmapDrawable):Void
+	{
+		if (object != null)
+		{
+			if (object.__type != null)
+			{
+				__renderDisplayObject(cast object);
+			}
+			else
+			{
+				__renderBitmapData(cast object);
+			}
+		}
+	}
+
+	private function __renderBitmap(bitmap:Bitmap):Void
 	{
 		__updateCacheBitmap(bitmap, /*!__worldColorTransform.__isDefault ()*/ false);
 
@@ -79,7 +250,7 @@ class CanvasRenderer extends CanvasRendererAPI
 		}
 	}
 
-	private function renderBitmapData(bitmapData:BitmapData):Void
+	private function __renderBitmapData(bitmapData:BitmapData):Void
 	{
 		if (!bitmapData.readable) return;
 
@@ -95,26 +266,26 @@ class CanvasRenderer extends CanvasRendererAPI
 		context.drawImage(bitmapData.image.src, 0, 0, bitmapData.image.width, bitmapData.image.height);
 	}
 
-	private function renderDisplayObject(object:DisplayObject):Void
+	private function __renderDisplayObject(object:DisplayObject):Void
 	{
 		if (object != null && object.__type != null)
 		{
 			switch (object.__type)
 			{
 				case BITMAP:
-					renderBitmap(cast object);
+					__renderBitmap(cast object);
 				case DISPLAY_OBJECT_CONTAINER:
-					renderDisplayObjectContainer(cast object);
+					__renderDisplayObjectContainer(cast object);
 				case DISPLAY_OBJECT, SHAPE:
-					renderShape(cast object);
+					__renderShape(cast object);
 				case SIMPLE_BUTTON:
-					renderSimpleButton(cast object);
+					__renderSimpleButton(cast object);
 				case TEXTFIELD:
-					renderTextField(cast object);
+					__renderTextField(cast object);
 				case TILEMAP:
-					renderTilemap(cast object);
+					__renderTilemap(cast object);
 				case VIDEO:
-					renderVideo(cast object);
+					__renderVideo(cast object);
 				default:
 			}
 
@@ -137,7 +308,7 @@ class CanvasRenderer extends CanvasRendererAPI
 		}
 	}
 
-	private function renderDisplayObjectContainer(container:DisplayObjectContainer):Void
+	private function __renderDisplayObjectContainer(container:DisplayObjectContainer):Void
 	{
 		container.__cleanupRemovedChildren();
 
@@ -164,7 +335,7 @@ class CanvasRenderer extends CanvasRendererAPI
 		{
 			for (child in container.__children)
 			{
-				renderDisplayObject(child);
+				__renderDisplayObject(child);
 				child.__renderDirty = false;
 			}
 
@@ -174,14 +345,14 @@ class CanvasRenderer extends CanvasRendererAPI
 		{
 			for (child in container.__children)
 			{
-				renderDisplayObject(child);
+				__renderDisplayObject(child);
 			}
 		}
 
 		__popMaskObject(container);
 	}
 
-	private function renderMask(mask:DisplayObject):Void
+	private function __renderMask(mask:DisplayObject):Void
 	{
 		if (mask != null)
 		{
@@ -201,14 +372,14 @@ class CanvasRenderer extends CanvasRendererAPI
 
 					for (child in container.__children)
 					{
-						renderMask(child);
+						__renderMask(child);
 					}
 
 				case DOM_ELEMENT:
 
 				case SIMPLE_BUTTON:
 					var button:SimpleButton = cast mask;
-					renderMask(button.__currentState);
+					__renderMask(button.__currentState);
 
 				default:
 					if (mask.__graphics != null)
@@ -219,7 +390,7 @@ class CanvasRenderer extends CanvasRendererAPI
 		}
 	}
 
-	private function renderShape(shape:Shape):Void
+	private function __renderShape(shape:Shape):Void
 	{
 		if (shape.mask == null || (shape.mask.width > 0 && shape.mask.height > 0))
 		{
@@ -236,16 +407,16 @@ class CanvasRenderer extends CanvasRendererAPI
 		}
 	}
 
-	private function renderSimpleButton(button:SimpleButton):Void
+	private function __renderSimpleButton(button:SimpleButton):Void
 	{
 		if (!button.__renderable || button.__worldAlpha <= 0 || button.__currentState == null) return;
 
 		__pushMaskObject(button);
-		renderDisplayObject(button.__currentState);
+		__renderDisplayObject(button.__currentState);
 		__popMaskObject(button);
 	}
 
-	private function renderTextField(textField:TextField):Void
+	private function __renderTextField(textField:TextField):Void
 	{
 		#if (js && html5)
 		// TODO: Better DOM workaround on cacheAsBitmap
@@ -304,7 +475,7 @@ class CanvasRenderer extends CanvasRendererAPI
 		#end
 	}
 
-	private function renderTilemap(tilemap:Tilemap):Void
+	private function __renderTilemap(tilemap:Tilemap):Void
 	{
 		__updateCacheBitmap(tilemap, /*!__worldColorTransform.__isDefault ()*/ false);
 
@@ -319,182 +490,12 @@ class CanvasRenderer extends CanvasRendererAPI
 		}
 	}
 
-	private function renderVideo(video:Video):Void
+	private function __renderVideo(video:Video):Void
 	{
 		CanvasVideo.render(video, this);
 	}
 
-	public override function setTransform(transform:Matrix, context:Canvas2DRenderContext = null):Void
-	{
-		if (context == null)
-		{
-			context = this.context;
-		}
-		else if (this.context == context && __worldTransform != null)
-		{
-			__tempMatrix.copyFrom(transform);
-			__tempMatrix.concat(__worldTransform);
-			transform = __tempMatrix;
-		}
-
-		if (__roundPixels)
-		{
-			context.setTransform(transform.a, transform.b, transform.c, transform.d, Std.int(transform.tx), Std.int(transform.ty));
-		}
-		else
-		{
-			context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
-		}
-	}
-
-	@:noCompletion private override function __clear():Void
-	{
-		if (__stage != null)
-		{
-			var cacheBlendMode = __blendMode;
-			__blendMode = null;
-			__setBlendMode(NORMAL);
-
-			context.setTransform(1, 0, 0, 1, 0, 0);
-			context.globalAlpha = 1;
-
-			if (!__stage.__transparent && __stage.__clearBeforeRender)
-			{
-				context.fillStyle = __stage.__colorString;
-				context.fillRect(0, 0, __stage.stageWidth * __stage.window.scale, __stage.stageHeight * __stage.window.scale);
-			}
-			else if (__stage.__transparent && __stage.__clearBeforeRender)
-			{
-				context.clearRect(0, 0, __stage.stageWidth * __stage.window.scale, __stage.stageHeight * __stage.window.scale);
-			}
-
-			__setBlendMode(cacheBlendMode);
-		}
-	}
-
-	@:noCompletion private override function __drawBitmapData(bitmapData:BitmapData, source:IBitmapDrawable, clipRect:Rectangle):Void
-	{
-		if (clipRect != null)
-		{
-			__pushMaskRect(clipRect, source.__renderTransform);
-		}
-
-		var buffer = bitmapData.image.buffer;
-
-		if (!__allowSmoothing) applySmoothing(buffer.__srcContext, false);
-
-		__render(source);
-
-		if (!__allowSmoothing) applySmoothing(buffer.__srcContext, true);
-
-		buffer.__srcContext.setTransform(1, 0, 0, 1, 0, 0);
-		buffer.__srcImageData = null;
-		buffer.data = null;
-
-		bitmapData.image.dirty = true;
-		bitmapData.image.version++;
-
-		if (clipRect != null)
-		{
-			__popMaskRect();
-		}
-	}
-
-	@:noCompletion private function __getAlpha(value:Float):Float
-	{
-		return value * __worldAlpha;
-	}
-
-	@:noCompletion private function __getColorTransform(value:ColorTransform):ColorTransform
-	{
-		if (__worldColorTransform != null)
-		{
-			__tempColorTransform.__copyFrom(__worldColorTransform);
-			__tempColorTransform.__combine(value);
-			return __tempColorTransform;
-		}
-		else
-		{
-			return value;
-		}
-	}
-
-	@:noCompletion private function __popMask():Void
-	{
-		context.restore();
-	}
-
-	@:noCompletion private function __popMaskObject(object:DisplayObject, handleScrollRect:Bool = true):Void
-	{
-		if (!object.__isCacheBitmapRender && object.__mask != null)
-		{
-			__popMask();
-		}
-
-		if (handleScrollRect && object.__scrollRect != null)
-		{
-			__popMaskRect();
-		}
-	}
-
-	@:noCompletion private function __popMaskRect():Void
-	{
-		context.restore();
-	}
-
-	@:noCompletion private function __pushMask(mask:DisplayObject):Void
-	{
-		context.save();
-
-		setTransform(mask.__renderTransform, context);
-
-		context.beginPath();
-		renderMask(mask);
-		context.closePath();
-
-		context.clip();
-	}
-
-	@:noCompletion private function __pushMaskObject(object:DisplayObject, handleScrollRect:Bool = true):Void
-	{
-		if (handleScrollRect && object.__scrollRect != null)
-		{
-			__pushMaskRect(object.__scrollRect, object.__renderTransform);
-		}
-
-		if (!object.__isCacheBitmapRender && object.__mask != null)
-		{
-			__pushMask(object.__mask);
-		}
-	}
-
-	@:noCompletion private function __pushMaskRect(rect:Rectangle, transform:Matrix):Void
-	{
-		context.save();
-
-		setTransform(transform, context);
-
-		context.beginPath();
-		context.rect(rect.x, rect.y, rect.width, rect.height);
-		context.clip();
-	}
-
-	@:noCompletion private override function __render(object:IBitmapDrawable):Void
-	{
-		if (object != null)
-		{
-			if (object.__type != null)
-			{
-				renderDisplayObject(cast object);
-			}
-			else
-			{
-				renderBitmapData(cast object);
-			}
-		}
-	}
-
-	@:noCompletion private function __setBlendMode(value:BlendMode):Void
+	private function __setBlendMode(value:BlendMode):Void
 	{
 		if (__overrideBlendMode != null) value = __overrideBlendMode;
 		if (__blendMode == value) return;
@@ -503,7 +504,7 @@ class CanvasRenderer extends CanvasRendererAPI
 		__setBlendModeContext(context, value);
 	}
 
-	@:noCompletion private function __setBlendModeContext(context:Canvas2DRenderContext, value:BlendMode):Void
+	private function __setBlendModeContext(context:Canvas2DRenderContext, value:BlendMode):Void
 	{
 		switch (value)
 		{
@@ -560,7 +561,7 @@ class CanvasRenderer extends CanvasRendererAPI
 		}
 	}
 
-	@:noCompletion private function __updateCacheBitmap(object:DisplayObject, force:Bool):Bool
+	private function __updateCacheBitmap(object:DisplayObject, force:Bool):Bool
 	{
 		#if lime
 		if (object.__isCacheBitmapRender) return false;
