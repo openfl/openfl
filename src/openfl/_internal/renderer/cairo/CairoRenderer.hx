@@ -861,7 +861,7 @@ class CairoRenderer extends CairoRendererAPI
 				object.__isCacheBitmapRender = false;
 			}
 
-			if (updateTransform || needRender)
+			if (updateTransform)
 			{
 				Rectangle.__pool.release(rect);
 			}
