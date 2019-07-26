@@ -896,10 +896,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private var __cacheBitmap:Bitmap;
 	@:noCompletion private var __cacheBitmapBackground:Null<Int>;
 	@:noCompletion private var __cacheBitmapColorTransform:ColorTransform;
-	@:noCompletion private var __cacheBitmapDataHW:BitmapData;
-	@:noCompletion private var __cacheBitmapDataSW:BitmapData;
-	@:noCompletion private var __cacheBitmapDataSW2:BitmapData;
-	@:noCompletion private var __cacheBitmapDataSW3:BitmapData;
+	@:noCompletion private var __cacheBitmapData:BitmapData;
+	@:noCompletion private var __cacheBitmapData2:BitmapData;
+	@:noCompletion private var __cacheBitmapData3:BitmapData;
+	@:noCompletion private var __cacheBitmapDataTexture:BitmapData;
 	@:noCompletion private var __cacheBitmapMatrix:Matrix;
 	@:noCompletion private var __cacheBitmapRendererHW:DisplayObjectRenderer;
 	@:noCompletion private var __cacheBitmapRendererSW:DisplayObjectRenderer;
@@ -1386,28 +1386,28 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			__cacheBitmap = null;
 		}
 
-		if (__cacheBitmapDataHW != null)
+		if (__cacheBitmapDataTexture != null)
 		{
-			__cacheBitmapDataHW.dispose();
-			__cacheBitmapDataHW = null;
+			__cacheBitmapDataTexture.dispose();
+			__cacheBitmapDataTexture = null;
 		}
 
-		if (__cacheBitmapDataSW != null)
+		if (__cacheBitmapData != null)
 		{
-			__cacheBitmapDataSW.dispose();
-			__cacheBitmapDataSW = null;
+			__cacheBitmapData.dispose();
+			__cacheBitmapData = null;
 		}
 
-		if (__cacheBitmapDataSW2 != null)
+		if (__cacheBitmapData2 != null)
 		{
-			__cacheBitmapDataSW2.dispose();
-			__cacheBitmapDataSW2 = null;
+			__cacheBitmapData2.dispose();
+			__cacheBitmapData2 = null;
 		}
 
-		if (__cacheBitmapDataSW3 != null)
+		if (__cacheBitmapData3 != null)
 		{
-			__cacheBitmapDataSW3.dispose();
-			__cacheBitmapDataSW3 = null;
+			__cacheBitmapData3.dispose();
+			__cacheBitmapData3 = null;
 		}
 	}
 
