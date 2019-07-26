@@ -16,7 +16,7 @@ import openfl.display.BitmapData;
 class Context3DTexturePool
 {
 	// TODO: Use power of two and increase lifetime?
-	private static inline var MAX_LIFETIME:Int = 2;
+	private static inline var MAX_LIFETIME:Int = 30;
 
 	private var __bitmapData:Map<Int, Map<Int, ObjectPool<BitmapData>>>;
 	private var __bitmapDataAge:Map<BitmapData, Int>;

@@ -719,6 +719,16 @@ class Context3DRenderer extends Context3DRendererAPI
 		}
 	}
 
+	private inline function __powerOfTwo(value:Int):Int
+	{
+		var newValue = 1;
+		while (newValue < value)
+		{
+			newValue <<= 1;
+		}
+		return newValue;
+	}
+
 	private function __pushMask(mask:DisplayObject):Void
 	{
 		if (__stencilReference == 0)
@@ -1457,8 +1467,10 @@ class Context3DRenderer extends Context3DRendererAPI
 
 				object.__getFilterBounds(rect, object.__cacheBitmapMatrix);
 
-				filterWidth = Math.ceil(rect.width);
-				filterHeight = Math.ceil(rect.height);
+				// filterWidth = Math.ceil(rect.width);
+				// filterHeight = Math.ceil(rect.height);
+				filterWidth = __powerOfTwo(Math.ceil(rect.width));
+				filterHeight = __powerOfTwo(Math.ceil(rect.height));
 
 				offsetX = rect.x > 0 ? Math.ceil(rect.x) : Math.floor(rect.x);
 				offsetY = rect.y > 0 ? Math.ceil(rect.y) : Math.floor(rect.y);
@@ -1467,8 +1479,10 @@ class Context3DRenderer extends Context3DRendererAPI
 				{
 					if (filterWidth > object.__cacheBitmapDataHW.width || filterHeight > object.__cacheBitmapDataHW.height)
 					{
-						bitmapWidth = Math.ceil(Math.max(filterWidth * 1.25, object.__cacheBitmapDataHW.width));
-						bitmapHeight = Math.ceil(Math.max(filterHeight * 1.25, object.__cacheBitmapDataHW.height));
+						// bitmapWidth = Math.ceil(Math.max(filterWidth * 1.25, object.__cacheBitmapDataHW.width));
+						// bitmapHeight = Math.ceil(Math.max(filterHeight * 1.25, object.__cacheBitmapDataHW.height));
+						filterWidth = bitmapWidth;
+						filterHeight = bitmapHeight;
 						needRender = true;
 					}
 					else
@@ -1647,8 +1661,8 @@ class Context3DRenderer extends Context3DRendererAPI
 							childRenderer.__setRenderTarget(bitmap2);
 							childRenderer.__renderFilterPass(firstPass ? object.__cacheBitmapDataHW : bitmap, shader, filter.__smooth);
 
-							firstPass =;
-							eslaf cacheBitmap = bitmap;
+							firstPass = false;
+							cacheBitmap = bitmap;
 							bitmap = bitmap2;
 							bitmap2 = cacheBitmap;
 						}
