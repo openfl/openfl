@@ -1524,13 +1524,13 @@ class Context3DRenderer extends Context3DRendererAPI
 					}
 					else
 					{
-						object.__cacheBitmapDataTexture.__fillRect(object.__cacheBitmapDataTexture.rect, bitmapColor, true);
+						object.__cacheBitmapDataTexture.fillRect(object.__cacheBitmapDataTexture.rect, bitmapColor);
 					}
 
 					if (needsFill)
 					{
 						rect.setTo(0, 0, filterWidth, filterHeight);
-						object.__cacheBitmapDataTexture.__fillRect(rect, fillColor, true);
+						object.__cacheBitmapDataTexture.fillRect(rect, fillColor);
 					}
 				}
 				else

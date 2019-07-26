@@ -655,13 +655,13 @@ class CairoRenderer extends CairoRendererAPI
 					}
 					else
 					{
-						object.__cacheBitmapData.__fillRect(object.__cacheBitmapData.rect, bitmapColor, false);
+						object.__cacheBitmapData.fillRect(object.__cacheBitmapData.rect, bitmapColor);
 					}
 
 					if (needsFill)
 					{
 						rect.setTo(0, 0, filterWidth, filterHeight);
-						object.__cacheBitmapData.__fillRect(rect, fillColor, false);
+						object.__cacheBitmapData.fillRect(rect, fillColor);
 					}
 				}
 				else

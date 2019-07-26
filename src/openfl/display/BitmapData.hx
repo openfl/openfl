@@ -703,6 +703,31 @@ class BitmapData implements IBitmapDrawable
 	{
 		if (!readable || sourceBitmapData == null) return;
 
+		#if (js && html5)
+		if (alphaBitmapData != null
+			&& alphaBitmapData.transparent
+			&& (alphaBitmapData != sourceBitmapData || (alphaPoint != null && (alphaPoint.x != 0 || alphaPoint.y != 0))))
+		{
+			var point = Point.__pool.get();
+			var rect = Rectangle.__pool.get();
+
+			var copy = Lib.current.stage.__bitmapDataPool.get(sourceBitmapData.width, sourceBitmapData.height, false);
+			copy.image.copyPixels(image, rect.__toLimeRectangle(), point.__toLimeVector2());
+
+			rect.setTo(alphaPoint != null ? alphaPoint.x : 0, alphaPoint != null ? alphaPoint.y : 0, sourceRect.width, sourceRect.height);
+			point.setTo(sourceRect.x, sourceRect.y);
+			copy.image.copyChannel(alphaBitmapData.image, rect.__toLimeRectangle(), point.__toLimeVector2(), ALPHA, ALPHA);
+
+			image.copyPixels(sourceBitmapData.image, sourceRect.__toLimeRectangle(), destPoint.__toLimeVector2(), null, null, mergeAlpha);
+
+			Point.__pool.release(point);
+			Rectangle.__pool.release(rect);
+			Lib.current.stage.__bitmapDataPool.release(copy);
+
+			return;
+		}
+		#end
+
 		#if lime
 		if (alphaPoint != null)
 		{
@@ -1134,7 +1159,23 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function fillRect(rect:Rectangle, color:Int):Void
 	{
-		__fillRect(rect, color, true);
+		#if lime
+		if (rect == null) return;
+
+		if (transparent && (color & 0xFF000000) == 0)
+		{
+			color = 0;
+		}
+
+		if (!readable && __hardwareRenderer != null)
+		{
+			__hardwareRenderer.__fillRect(this, rect, color);
+		}
+		else if (readable)
+		{
+			image.fillRect(rect.__toLimeRectangle(), color, ARGB32);
+		}
+		#end
 	}
 
 	/**
@@ -3006,27 +3047,6 @@ class BitmapData implements IBitmapDrawable
 		}
 
 		image.version++;
-	}
-
-	@:noCompletion private function __fillRect(rect:Rectangle, color:Int, allowFramebuffer:Bool):Void
-	{
-		#if lime
-		if (rect == null) return;
-
-		if (transparent && (color & 0xFF000000) == 0)
-		{
-			color = 0;
-		}
-
-		if (allowFramebuffer && __texture != null && __hardwareRenderer != null)
-		{
-			__hardwareRenderer.__fillRect(this, rect, color);
-		}
-		else if (readable)
-		{
-			image.fillRect(rect.__toLimeRectangle(), color, ARGB32);
-		}
-		#end
 	}
 
 	@:noCompletion private inline function __fromBase64(base64:String, type:String):Void
