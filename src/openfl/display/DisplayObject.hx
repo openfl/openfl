@@ -896,11 +896,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private var __cacheBitmap:Bitmap;
 	@:noCompletion private var __cacheBitmapBackground:Null<Int>;
 	@:noCompletion private var __cacheBitmapColorTransform:ColorTransform;
-	@:noCompletion private var __cacheBitmapData:BitmapData;
-	@:noCompletion private var __cacheBitmapData2:BitmapData;
-	@:noCompletion private var __cacheBitmapData3:BitmapData;
+	@:noCompletion private var __cacheBitmapDataHW:BitmapData;
+	@:noCompletion private var __cacheBitmapDataSW:BitmapData;
+	@:noCompletion private var __cacheBitmapDataSW2:BitmapData;
+	@:noCompletion private var __cacheBitmapDataSW3:BitmapData;
 	@:noCompletion private var __cacheBitmapMatrix:Matrix;
-	@:noCompletion private var __cacheBitmapRenderer:DisplayObjectRenderer;
+	@:noCompletion private var __cacheBitmapRendererHW:DisplayObjectRenderer;
+	@:noCompletion private var __cacheBitmapRendererSW:DisplayObjectRenderer;
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __cairo:#if lime Cairo #else Dynamic #end;
 	@:noCompletion private var __children:Array<DisplayObject>;
 	@:noCompletion private var __customRenderClear:Bool;
@@ -1384,10 +1386,28 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			__cacheBitmap = null;
 		}
 
-		if (__cacheBitmapData != null)
+		if (__cacheBitmapDataHW != null)
 		{
-			__cacheBitmapData.dispose();
-			__cacheBitmapData = null;
+			__cacheBitmapDataHW.dispose();
+			__cacheBitmapDataHW = null;
+		}
+
+		if (__cacheBitmapDataSW != null)
+		{
+			__cacheBitmapDataSW.dispose();
+			__cacheBitmapDataSW = null;
+		}
+
+		if (__cacheBitmapDataSW2 != null)
+		{
+			__cacheBitmapDataSW2.dispose();
+			__cacheBitmapDataSW2 = null;
+		}
+
+		if (__cacheBitmapDataSW3 != null)
+		{
+			__cacheBitmapDataSW3.dispose();
+			__cacheBitmapDataSW3 = null;
 		}
 	}
 

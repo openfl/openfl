@@ -118,6 +118,33 @@ class ObjectPool<T>
 		}
 	}
 
+	public function remove(object:T):Void
+	{
+		if (__pool.exists(object))
+		{
+			__pool.remove(object);
+
+			if (__inactiveObject0 == object)
+			{
+				__inactiveObject0 = null;
+				inactiveObjects--;
+			}
+			else if (__inactiveObject1 == object)
+			{
+				__inactiveObject1 = null;
+				inactiveObjects--;
+			}
+			else if (__inactiveObjectList.remove(object))
+			{
+				inactiveObjects--;
+			}
+			else
+			{
+				activeObjects--;
+			}
+		}
+	}
+
 	@:noCompletion private inline function __addInactive(object:T):Void
 	{
 		#if debug

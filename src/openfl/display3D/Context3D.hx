@@ -5,8 +5,10 @@ import openfl._internal.backend.gl.GLBuffer;
 import openfl._internal.backend.gl.GLFramebuffer;
 import openfl._internal.backend.gl.GLTexture;
 import openfl._internal.renderer.context3D.Context3DState;
+import openfl._internal.renderer.context3D.Context3DTexturePool;
 import openfl._internal.renderer.SamplerState;
 import openfl._internal.utils.Float32Array;
+import openfl._internal.utils.ObjectPool;
 import openfl._internal.utils.UInt16Array;
 import openfl._internal.utils.UInt8Array;
 import openfl.display3D.textures.CubeTexture;
@@ -277,6 +279,7 @@ import lime.math.Vector2;
 	@:noCompletion private var __stage:Stage;
 	@:noCompletion private var __stage3D:Stage3D;
 	@:noCompletion private var __state:Context3DState;
+	@:noCompletion private var __texturePool:Context3DTexturePool;
 	@:noCompletion private var __vertexConstants:Float32Array;
 
 	@:noCompletion private function new(stage:Stage, contextState:Context3DState = null, stage3D:Stage3D = null)
@@ -406,6 +409,8 @@ import lime.math.Vector2;
 		__quadIndexBuffer = createIndexBuffer(__quadIndexBufferCount);
 		__quadIndexBuffer.uploadFromTypedArray(data);
 		#end
+
+		__texturePool = new Context3DTexturePool(this);
 	}
 
 	/**
@@ -2524,6 +2529,8 @@ import lime.math.Vector2;
 
 			__present = true;
 		}
+
+		__texturePool.enterFrame();
 	}
 
 	@:noCompletion private function __setGLBlend(enable:Bool):Void

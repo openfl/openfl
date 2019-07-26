@@ -580,9 +580,9 @@ class CairoRenderer extends CairoRendererAPI
 			}
 
 			if (!needRender
-				&& object.__cacheBitmapData != null
-				&& object.__cacheBitmapData.image != null
-				&& object.__cacheBitmapData.image.version < object.__cacheBitmapData.__textureVersion)
+				&& object.__cacheBitmapDataSW != null
+				&& object.__cacheBitmapDataSW.image != null
+				&& object.__cacheBitmapDataSW.image.version < object.__cacheBitmapDataSW.__textureVersion)
 			{
 				needRender = true;
 			}
@@ -612,18 +612,18 @@ class CairoRenderer extends CairoRendererAPI
 				offsetX = rect.x > 0 ? Math.ceil(rect.x) : Math.floor(rect.x);
 				offsetY = rect.y > 0 ? Math.ceil(rect.y) : Math.floor(rect.y);
 
-				if (object.__cacheBitmapData != null)
+				if (object.__cacheBitmapDataSW != null)
 				{
-					if (filterWidth > object.__cacheBitmapData.width || filterHeight > object.__cacheBitmapData.height)
+					if (filterWidth > object.__cacheBitmapDataSW.width || filterHeight > object.__cacheBitmapDataSW.height)
 					{
-						bitmapWidth = Math.ceil(Math.max(filterWidth * 1.25, object.__cacheBitmapData.width));
-						bitmapHeight = Math.ceil(Math.max(filterHeight * 1.25, object.__cacheBitmapData.height));
+						bitmapWidth = Math.ceil(Math.max(filterWidth * 1.25, object.__cacheBitmapDataSW.width));
+						bitmapHeight = Math.ceil(Math.max(filterHeight * 1.25, object.__cacheBitmapDataSW.height));
 						needRender = true;
 					}
 					else
 					{
-						bitmapWidth = object.__cacheBitmapData.width;
-						bitmapHeight = object.__cacheBitmapData.height;
+						bitmapWidth = object.__cacheBitmapDataSW.width;
+						bitmapHeight = object.__cacheBitmapDataSW.height;
 					}
 				}
 				else
@@ -643,25 +643,25 @@ class CairoRenderer extends CairoRendererAPI
 					var fillColor = object.opaqueBackground != null ? (0xFF << 24) | object.opaqueBackground : 0;
 					var bitmapColor = needsFill ? 0 : fillColor;
 
-					if (object.__cacheBitmapData == null
-						|| bitmapWidth > object.__cacheBitmapData.width
-						|| bitmapHeight > object.__cacheBitmapData.height)
+					if (object.__cacheBitmapDataSW == null
+						|| bitmapWidth > object.__cacheBitmapDataSW.width
+						|| bitmapHeight > object.__cacheBitmapDataSW.height)
 					{
-						object.__cacheBitmapData = new BitmapData(bitmapWidth, bitmapHeight, true, bitmapColor);
+						object.__cacheBitmapDataSW = new BitmapData(bitmapWidth, bitmapHeight, true, bitmapColor);
 
 						if (object.__cacheBitmap == null) object.__cacheBitmap = new Bitmap();
-						object.__cacheBitmap.__bitmapData = object.__cacheBitmapData;
-						object.__cacheBitmapRenderer = null;
+						object.__cacheBitmap.__bitmapData = object.__cacheBitmapDataSW;
+						object.__cacheBitmapRendererSW = null;
 					}
 					else
 					{
-						object.__cacheBitmapData.__fillRect(object.__cacheBitmapData.rect, bitmapColor, false);
+						object.__cacheBitmapDataSW.__fillRect(object.__cacheBitmapDataSW.rect, bitmapColor, false);
 					}
 
 					if (needsFill)
 					{
 						rect.setTo(0, 0, filterWidth, filterHeight);
-						object.__cacheBitmapData.__fillRect(rect, fillColor, false);
+						object.__cacheBitmapDataSW.__fillRect(rect, fillColor, false);
 					}
 				}
 				else
@@ -669,10 +669,10 @@ class CairoRenderer extends CairoRendererAPI
 					ColorTransform.__pool.release(colorTransform);
 
 					object.__cacheBitmap = null;
-					object.__cacheBitmapData = null;
-					object.__cacheBitmapData2 = null;
-					object.__cacheBitmapData3 = null;
-					object.__cacheBitmapRenderer = null;
+					object.__cacheBitmapDataSW = null;
+					object.__cacheBitmapDataSW2 = null;
+					object.__cacheBitmapDataSW3 = null;
+					object.__cacheBitmapRendererSW = null;
 
 					return true;
 				}
@@ -681,9 +681,9 @@ class CairoRenderer extends CairoRendererAPI
 			{
 				// Should we retain these longer?
 
-				object.__cacheBitmapData = object.__cacheBitmap.bitmapData;
-				object.__cacheBitmapData2 = null;
-				object.__cacheBitmapData3 = null;
+				object.__cacheBitmapDataSW = object.__cacheBitmap.bitmapData;
+				object.__cacheBitmapDataSW2 = null;
+				object.__cacheBitmapDataSW3 = null;
 			}
 
 			if (updateTransform)
@@ -715,40 +715,40 @@ class CairoRenderer extends CairoRendererAPI
 
 			if (needRender)
 			{
-				if (object.__cacheBitmapRenderer == null || object.__cacheBitmapRenderer.__type != CAIRO)
+				if (object.__cacheBitmapRendererSW == null || object.__cacheBitmapRendererSW.__type != CAIRO)
 				{
-					if (object.__cacheBitmapData.image == null)
+					if (object.__cacheBitmapDataSW.image == null)
 					{
 						var color = object.opaqueBackground != null ? (0xFF << 24) | object.opaqueBackground : 0;
-						object.__cacheBitmapData = new BitmapData(bitmapWidth, bitmapHeight, true, color);
-						object.__cacheBitmap.__bitmapData = object.__cacheBitmapData;
+						object.__cacheBitmapDataSW = new BitmapData(bitmapWidth, bitmapHeight, true, color);
+						object.__cacheBitmap.__bitmapData = object.__cacheBitmapDataSW;
 					}
 
-					object.__cacheBitmapRenderer = new CairoRenderer(new Cairo(object.__cacheBitmapData.getSurface()));
-					object.__cacheBitmapRenderer.__worldTransform = new Matrix();
-					object.__cacheBitmapRenderer.__worldColorTransform = new ColorTransform();
+					object.__cacheBitmapRendererSW = new CairoRenderer(new Cairo(object.__cacheBitmapDataSW.getSurface()));
+					object.__cacheBitmapRendererSW.__worldTransform = new Matrix();
+					object.__cacheBitmapRendererSW.__worldColorTransform = new ColorTransform();
 				}
 
 				if (object.__cacheBitmapColorTransform == null) object.__cacheBitmapColorTransform = new ColorTransform();
 
-				object.__cacheBitmapRenderer.__stage = object.stage;
+				object.__cacheBitmapRendererSW.__stage = object.stage;
 
-				object.__cacheBitmapRenderer.__allowSmoothing = __allowSmoothing;
-				cast(object.__cacheBitmapRenderer, CairoRenderer).__setBlendMode(NORMAL);
-				object.__cacheBitmapRenderer.__worldAlpha = 1 / object.__worldAlpha;
+				object.__cacheBitmapRendererSW.__allowSmoothing = __allowSmoothing;
+				cast(object.__cacheBitmapRendererSW, CairoRenderer).__setBlendMode(NORMAL);
+				object.__cacheBitmapRendererSW.__worldAlpha = 1 / object.__worldAlpha;
 
-				object.__cacheBitmapRenderer.__worldTransform.copyFrom(object.__renderTransform);
-				object.__cacheBitmapRenderer.__worldTransform.invert();
-				object.__cacheBitmapRenderer.__worldTransform.concat(object.__cacheBitmapMatrix);
-				object.__cacheBitmapRenderer.__worldTransform.tx -= offsetX;
-				object.__cacheBitmapRenderer.__worldTransform.ty -= offsetY;
+				object.__cacheBitmapRendererSW.__worldTransform.copyFrom(object.__renderTransform);
+				object.__cacheBitmapRendererSW.__worldTransform.invert();
+				object.__cacheBitmapRendererSW.__worldTransform.concat(object.__cacheBitmapMatrix);
+				object.__cacheBitmapRendererSW.__worldTransform.tx -= offsetX;
+				object.__cacheBitmapRendererSW.__worldTransform.ty -= offsetY;
 
-				object.__cacheBitmapRenderer.__worldColorTransform.__copyFrom(colorTransform);
-				object.__cacheBitmapRenderer.__worldColorTransform.__invert();
+				object.__cacheBitmapRendererSW.__worldColorTransform.__copyFrom(colorTransform);
+				object.__cacheBitmapRendererSW.__worldColorTransform.__invert();
 
 				object.__isCacheBitmapRender = true;
 
-				object.__cacheBitmapRenderer.__drawBitmapData(object.__cacheBitmapData, object, null);
+				object.__cacheBitmapRendererSW.__drawBitmapData(object.__cacheBitmapDataSW, object, null);
 
 				if (hasFilters)
 				{
@@ -767,24 +767,24 @@ class CairoRenderer extends CairoRendererAPI
 						}
 					}
 
-					var bitmap = object.__cacheBitmapData;
+					var bitmap = object.__cacheBitmapDataSW;
 					var bitmap2 = null;
 					var bitmap3 = null;
 
 					if (needSecondBitmapData)
 					{
-						if (object.__cacheBitmapData2 == null
-							|| object.__cacheBitmapData2.image == null
-							|| bitmapWidth > object.__cacheBitmapData2.width
-							|| bitmapHeight > object.__cacheBitmapData2.height)
+						if (object.__cacheBitmapDataSW2 == null
+							|| object.__cacheBitmapDataSW2.image == null
+							|| bitmapWidth > object.__cacheBitmapDataSW2.width
+							|| bitmapHeight > object.__cacheBitmapDataSW2.height)
 						{
-							object.__cacheBitmapData2 = new BitmapData(bitmapWidth, bitmapHeight, true, 0);
+							object.__cacheBitmapDataSW2 = new BitmapData(bitmapWidth, bitmapHeight, true, 0);
 						}
 						else
 						{
-							object.__cacheBitmapData2.fillRect(object.__cacheBitmapData2.rect, 0);
+							object.__cacheBitmapDataSW2.fillRect(object.__cacheBitmapDataSW2.rect, 0);
 						}
-						bitmap2 = object.__cacheBitmapData2;
+						bitmap2 = object.__cacheBitmapDataSW2;
 					}
 					else
 					{
@@ -793,18 +793,18 @@ class CairoRenderer extends CairoRendererAPI
 
 					if (needCopyOfOriginal)
 					{
-						if (object.__cacheBitmapData3 == null
-							|| object.__cacheBitmapData3.image == null
-							|| bitmapWidth > object.__cacheBitmapData3.width
-							|| bitmapHeight > object.__cacheBitmapData3.height)
+						if (object.__cacheBitmapDataSW3 == null
+							|| object.__cacheBitmapDataSW3.image == null
+							|| bitmapWidth > object.__cacheBitmapDataSW3.width
+							|| bitmapHeight > object.__cacheBitmapDataSW3.height)
 						{
-							object.__cacheBitmapData3 = new BitmapData(bitmapWidth, bitmapHeight, true, 0);
+							object.__cacheBitmapDataSW3 = new BitmapData(bitmapWidth, bitmapHeight, true, 0);
 						}
 						else
 						{
-							object.__cacheBitmapData3.fillRect(object.__cacheBitmapData3.rect, 0);
+							object.__cacheBitmapDataSW3.fillRect(object.__cacheBitmapDataSW3.rect, 0);
 						}
-						bitmap3 = object.__cacheBitmapData3;
+						bitmap3 = object.__cacheBitmapDataSW3;
 					}
 
 					if (object.__tempPoint == null) object.__tempPoint = new Point();
@@ -834,20 +834,20 @@ class CairoRenderer extends CairoRendererAPI
 						}
 					}
 
-					if (object.__cacheBitmapData != bitmap)
+					if (object.__cacheBitmapDataSW != bitmap)
 					{
 						// TODO: Fix issue with swapping __cacheBitmap.__bitmapData
-						// __cacheBitmapData.copyPixels (bitmap, bitmap.rect, destPoint);
+						// __cacheBitmapDataSW.copyPixels (bitmap, bitmap.rect, destPoint);
 
-						// Adding __cacheBitmapRenderer = null; makes this work
-						cacheBitmap = object.__cacheBitmapData;
-						object.__cacheBitmapData = bitmap;
-						object.__cacheBitmapData2 = cacheBitmap;
-						object.__cacheBitmap.__bitmapData = object.__cacheBitmapData;
-						object.__cacheBitmapRenderer = null;
+						// Adding __cacheBitmapRendererSW = null; makes this work
+						cacheBitmap = object.__cacheBitmapDataSW;
+						object.__cacheBitmapDataSW = bitmap;
+						object.__cacheBitmapDataSW2 = cacheBitmap;
+						object.__cacheBitmap.__bitmapData = object.__cacheBitmapDataSW;
+						object.__cacheBitmapRendererSW = null;
 					}
 
-					object.__cacheBitmap.__imageVersion = object.__cacheBitmapData.__textureVersion;
+					object.__cacheBitmap.__imageVersion = object.__cacheBitmapDataSW.__textureVersion;
 				}
 
 				object.__cacheBitmapColorTransform.__copyFrom(colorTransform);
@@ -855,7 +855,7 @@ class CairoRenderer extends CairoRendererAPI
 				if (!object.__cacheBitmapColorTransform.__isDefault(true))
 				{
 					object.__cacheBitmapColorTransform.alphaMultiplier = 1;
-					object.__cacheBitmapData.colorTransform(object.__cacheBitmapData.rect, object.__cacheBitmapColorTransform);
+					object.__cacheBitmapDataSW.colorTransform(object.__cacheBitmapDataSW.rect, object.__cacheBitmapColorTransform);
 				}
 
 				object.__isCacheBitmapRender = false;
@@ -873,11 +873,11 @@ class CairoRenderer extends CairoRendererAPI
 		else if (object.__cacheBitmap != null)
 		{
 			object.__cacheBitmap = null;
-			object.__cacheBitmapData = null;
-			object.__cacheBitmapData2 = null;
-			object.__cacheBitmapData3 = null;
+			object.__cacheBitmapDataSW = null;
+			object.__cacheBitmapDataSW2 = null;
+			object.__cacheBitmapDataSW3 = null;
 			object.__cacheBitmapColorTransform = null;
-			object.__cacheBitmapRenderer = null;
+			object.__cacheBitmapRendererSW = null;
 
 			updated = true;
 		}
