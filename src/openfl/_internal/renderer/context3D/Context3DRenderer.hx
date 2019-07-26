@@ -12,7 +12,6 @@ import openfl._internal.utils.ObjectPool;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
-import openfl.display.Context3DRenderer as Context3DRendererAPI;
 import openfl.display.DisplayObject;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.DisplayObjectRenderer;
@@ -20,6 +19,7 @@ import openfl.display.DisplayObjectShader;
 import openfl.display.Graphics;
 import openfl.display.GraphicsShader;
 import openfl.display.IBitmapDrawable;
+import openfl.display.OpenGLRenderer as Context3DRendererAPI;
 import openfl.display.PixelSnapping;
 import openfl.display.Shader;
 import openfl.display.Shape;
@@ -42,12 +42,6 @@ import lime.graphics.cairo.Cairo;
 import openfl._internal.renderer.cairo.CairoRenderer;
 #end
 
-/**
-	**BETA**
-
-	The Context3DRenderer API exposes support for Context3D render instructions within the
-	`RenderEvent.RENDER_CONTEXT3D` event.
-**/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -90,6 +84,8 @@ class Context3DRenderer extends Context3DRendererAPI
 	private static var __hasColorTransformValue:Array<Bool> = [false];
 	private static var __scissorRectangle:Rectangle = new Rectangle();
 	private static var __textureSizeValue:Array<Float> = [0, 0];
+
+	public var context3D:Context3D;
 
 	private var __clipRects:Array<Rectangle>;
 	private var __context:RenderContext;
@@ -598,6 +594,7 @@ class Context3DRenderer extends Context3DRendererAPI
 		context3D = context;
 		__context = context.__context;
 		__gl = context.__context.webgl;
+		gl = __gl;
 
 		__defaultRenderTarget = defaultRenderTarget;
 		__flipped = (__defaultRenderTarget == null);
@@ -1022,7 +1019,7 @@ class Context3DRenderer extends Context3DRendererAPI
 				setShader(object.__worldShader);
 				context3D.__flushGL();
 
-				event.type = RenderEvent.RENDER_CONTEXT3D;
+				event.type = RenderEvent.RENDER_OPENGL;
 
 				__setBlendMode(object.__worldBlendMode);
 				__pushMaskObject(object);
