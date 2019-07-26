@@ -1607,29 +1607,48 @@ class Context3DRenderer extends Context3DRendererAPI
 
 				if (hasFilters)
 				{
+					var needCopyOfOriginal = false;
+
+					for (filter in object.__filters)
+					{
+						if (filter.__preserveObject)
+						{
+							needCopyOfOriginal = true;
+						}
+					}
+
 					var cacheRenderer = BitmapData.__hardwareRenderer;
 					BitmapData.__hardwareRenderer = childRenderer;
 
 					var bitmap = context3D.__texturePool.getBitmapData(filterWidth, filterHeight);
 					var bitmap2 = context3D.__texturePool.getBitmapData(filterWidth, filterHeight);
+					var bitmap3 = needCopyOfOriginal ? context3D.__texturePool.getBitmapData(filterWidth, filterHeight) : null;
 
 					childRenderer.__setBlendMode(NORMAL);
 					childRenderer.__worldAlpha = 1;
 					childRenderer.__worldTransform.identity();
 					childRenderer.__worldColorTransform.__identity();
 
-					var shader, cacheBitmap;
+					var shader, cacheBitmap, firstPass = true;
 
 					for (filter in object.__filters)
 					{
+						if (filter.__preserveObject)
+						{
+							childRenderer.__setRenderTarget(bitmap3);
+							childRenderer.__renderFilterPass(firstPass ? object.__cacheBitmapDataHW : bitmap, childRenderer.__defaultDisplayShader,
+								filter.__smooth);
+						}
+
 						for (i in 0...filter.__numShaderPasses)
 						{
-							shader = filter.__initShader(childRenderer, i, filter.__preserveObject ? object.__cacheBitmapDataHW : null);
+							shader = filter.__initShader(childRenderer, i, filter.__preserveObject ? bitmap3 : null);
 							childRenderer.__setBlendMode(filter.__shaderBlendMode);
 							childRenderer.__setRenderTarget(bitmap2);
-							childRenderer.__renderFilterPass(i == 0 ? object.__cacheBitmapDataHW : bitmap, shader, filter.__smooth);
+							childRenderer.__renderFilterPass(firstPass ? object.__cacheBitmapDataHW : bitmap, shader, filter.__smooth);
 
-							cacheBitmap = bitmap;
+							firstPass =;
+							eslaf cacheBitmap = bitmap;
 							bitmap = bitmap2;
 							bitmap2 = cacheBitmap;
 						}
@@ -1647,6 +1666,7 @@ class Context3DRenderer extends Context3DRendererAPI
 
 					context3D.__texturePool.releaseBitmapData(bitmap);
 					context3D.__texturePool.releaseBitmapData(bitmap2);
+					if (bitmap3 != null) context3D.__texturePool.releaseBitmapData(bitmap3);
 
 					BitmapData.__hardwareRenderer = cacheRenderer;
 				}
