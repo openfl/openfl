@@ -1414,8 +1414,6 @@ class Context3DRenderer extends Context3DRendererAPI
 			var hasFilters = #if !openfl_disable_filters object.__filters != null #else false #end;
 			var bitmapMatrix = (object.__cacheAsBitmapMatrix != null ? object.__cacheAsBitmapMatrix : object.__renderTransform);
 
-			var rect = null;
-
 			var colorTransform = ColorTransform.__pool.get();
 			colorTransform.__copyFrom(object.__worldColorTransform);
 			if (__worldColorTransform != null) colorTransform.__combine(__worldColorTransform);
@@ -1581,8 +1579,6 @@ class Context3DRenderer extends Context3DRendererAPI
 					object.__cacheBitmapRendererHW.__worldColorTransform = new ColorTransform();
 				}
 
-				if (object.__cacheBitmapColorTransform == null) object.__cacheBitmapColorTransform = new ColorTransform();
-
 				object.__cacheBitmapRendererHW.__stage = object.stage;
 
 				object.__cacheBitmapRendererHW.__allowSmoothing = __allowSmoothing;
@@ -1701,7 +1697,6 @@ class Context3DRenderer extends Context3DRendererAPI
 				parentRenderer.__resumeClipAndMask(childRenderer);
 				parentRenderer.setViewport();
 
-				object.__cacheBitmapColorTransform.__copyFrom(colorTransform);
 				object.__isCacheBitmapRender = false;
 			}
 
@@ -1718,7 +1713,6 @@ class Context3DRenderer extends Context3DRendererAPI
 		{
 			object.__cacheBitmap = null;
 			object.__cacheBitmapDataHW = null;
-			object.__cacheBitmapColorTransform = null;
 			object.__cacheBitmapRendererHW = null;
 
 			updated = true;
