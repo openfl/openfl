@@ -41,6 +41,7 @@ import lime.ui.KeyModifier;
 import lime.ui.MouseCursor as LimeMouseCursor;
 import lime.ui.MouseWheelMode;
 import lime.ui.Window;
+#if !display
 import openfl._internal.renderer.context3D.Context3DRenderer;
 #if lime_cairo
 import openfl._internal.renderer.cairo.CairoRenderer;
@@ -48,6 +49,7 @@ import openfl._internal.renderer.cairo.CairoRenderer;
 #if (js && html5)
 import openfl._internal.renderer.canvas.CanvasRenderer;
 import openfl._internal.renderer.dom.DOMRenderer;
+#end
 #end
 #end
 #if hxtelemetry
@@ -1183,7 +1185,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 	@:noCompletion private function __createRenderer():Void
 	{
-		#if lime
+		#if (lime && !display)
 		#if (js && html5)
 		var pixelRatio = 1;
 
