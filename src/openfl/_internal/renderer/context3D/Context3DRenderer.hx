@@ -1478,10 +1478,8 @@ class Context3DRenderer extends Context3DRendererAPI
 
 				object.__getFilterBounds(rect, object.__cacheBitmapMatrix);
 
-				// filterWidth = Math.ceil(rect.width);
-				// filterHeight = Math.ceil(rect.height);
-				filterWidth = __powerOfTwo(Math.ceil(rect.width));
-				filterHeight = __powerOfTwo(Math.ceil(rect.height));
+				filterWidth = Math.ceil(rect.width);
+				filterHeight = Math.ceil(rect.height);
 
 				offsetX = rect.x > 0 ? Math.ceil(rect.x) : Math.floor(rect.x);
 				offsetY = rect.y > 0 ? Math.ceil(rect.y) : Math.floor(rect.y);
@@ -1490,10 +1488,8 @@ class Context3DRenderer extends Context3DRendererAPI
 				{
 					if (filterWidth > object.__cacheBitmapDataTexture.width || filterHeight > object.__cacheBitmapDataTexture.height)
 					{
-						// bitmapWidth = Math.ceil(Math.max(filterWidth * 1.25, object.__cacheBitmapDataTexture.width));
-						// bitmapHeight = Math.ceil(Math.max(filterHeight * 1.25, object.__cacheBitmapDataTexture.height));
-						filterWidth = bitmapWidth;
-						filterHeight = bitmapHeight;
+						bitmapWidth = __powerOfTwo(filterWidth);
+						bitmapHeight = __powerOfTwo(filterHeight);
 						needRender = true;
 					}
 					else
@@ -1504,8 +1500,8 @@ class Context3DRenderer extends Context3DRendererAPI
 				}
 				else
 				{
-					bitmapWidth = filterWidth;
-					bitmapHeight = filterHeight;
+					bitmapWidth = __powerOfTwo(filterWidth);
+					bitmapHeight = __powerOfTwo(filterHeight);
 				}
 			}
 
@@ -1636,6 +1632,10 @@ class Context3DRenderer extends Context3DRendererAPI
 					var bitmap = __stage.__bitmapDataPool.get(filterWidth, filterHeight, true);
 					var bitmap2 = __stage.__bitmapDataPool.get(filterWidth, filterHeight, true);
 					var bitmap3 = needCopyOfOriginal ? __stage.__bitmapDataPool.get(filterWidth, filterHeight, true) : null;
+
+					bitmap.__setUVRect(context3D, 0, 0, filterWidth, filterHeight);
+					bitmap2.__setUVRect(context3D, 0, 0, filterWidth, filterHeight);
+					if (bitmap3 != null) bitmap3.__setUVRect(context3D, 0, 0, filterWidth, filterHeight);
 
 					childRenderer.__setBlendMode(NORMAL);
 					childRenderer.__worldAlpha = 1;
