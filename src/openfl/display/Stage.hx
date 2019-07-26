@@ -3,6 +3,7 @@ package openfl.display;
 #if !flash
 import haxe.CallStack;
 import haxe.ds.ArraySort;
+import openfl._internal.renderer.BitmapDataPool;
 import openfl._internal.utils.Log;
 import openfl._internal.utils.TouchData;
 import openfl.display3D.Context3D;
@@ -860,6 +861,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	#if false
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public var wmodeGPU (default, null):Bool;
 	#end
+	@:noCompletion private var __bitmapDataPool:BitmapDataPool;
 	@:noCompletion private var __cacheFocus:InteractiveObject;
 	@:noCompletion private var __clearBeforeRender:Bool;
 	@:noCompletion private var __color:Int;
@@ -1234,6 +1236,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 			default:
 		}
+
+		__bitmapDataPool = new BitmapDataPool(context3D);
 
 		if (__renderer != null)
 		{
@@ -1980,6 +1984,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			}
 
 			__renderer.__cleared = false;
+			__bitmapDataPool.cleanup();
 		}
 		#end
 

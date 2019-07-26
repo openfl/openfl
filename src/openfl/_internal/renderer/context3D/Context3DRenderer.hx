@@ -1634,9 +1634,9 @@ class Context3DRenderer extends Context3DRendererAPI
 					var cacheRenderer = BitmapData.__hardwareRenderer;
 					BitmapData.__hardwareRenderer = childRenderer;
 
-					var bitmap = context3D.__texturePool.getBitmapData(filterWidth, filterHeight);
-					var bitmap2 = context3D.__texturePool.getBitmapData(filterWidth, filterHeight);
-					var bitmap3 = needCopyOfOriginal ? context3D.__texturePool.getBitmapData(filterWidth, filterHeight) : null;
+					var bitmap = __stage.__bitmapDataPool.get(filterWidth, filterHeight, true);
+					var bitmap2 = __stage.__bitmapDataPool.get(filterWidth, filterHeight, true);
+					var bitmap3 = needCopyOfOriginal ? __stage.__bitmapDataPool.get(filterWidth, filterHeight, true) : null;
 
 					childRenderer.__setBlendMode(NORMAL);
 					childRenderer.__worldAlpha = 1;
@@ -1678,9 +1678,9 @@ class Context3DRenderer extends Context3DRendererAPI
 						// object.__cacheBitmap.bitmapData = object.__cacheBitmapData;
 					}
 
-					context3D.__texturePool.releaseBitmapData(bitmap);
-					context3D.__texturePool.releaseBitmapData(bitmap2);
-					if (bitmap3 != null) context3D.__texturePool.releaseBitmapData(bitmap3);
+					__stage.__bitmapDataPool.release(bitmap);
+					__stage.__bitmapDataPool.release(bitmap2);
+					if (bitmap3 != null) __stage.__bitmapDataPool.release(bitmap3);
 
 					BitmapData.__hardwareRenderer = cacheRenderer;
 				}
