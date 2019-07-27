@@ -32,9 +32,9 @@ import openfl._internal.utils.NullUtils;
 		}
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : Context3DProgramType)
 		{
 			case Context3DProgramType.FRAGMENT: "fragment";
 			case Context3DProgramType.VERTEX: "vertex";

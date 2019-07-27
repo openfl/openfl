@@ -33,9 +33,9 @@ package openfl.printing;
 		}
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : PrintJobOrientation)
 		{
 			case PrintJobOrientation.LANDSCAPE: "landscape";
 			case PrintJobOrientation.PORTRAIT: "portrait";

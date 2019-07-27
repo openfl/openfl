@@ -63,9 +63,9 @@ package openfl.text;
 		}
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : TextFormatAlign)
 		{
 			case TextFormatAlign.CENTER: "center";
 			case TextFormatAlign.END: "end";

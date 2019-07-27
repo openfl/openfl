@@ -27,8 +27,8 @@ package openfl.utils;
 	// 		default: null;
 	// 	}
 	// }
-	// @:to private static function toLimeEndian (value:String):LimeEndian {
-	// 	return switch (value) {
+	// @:to private function toLimeEndian ():LimeEndian {
+	// 	return switch (cast this : Endian) {
 	// 		case Endian.BIG_ENDIAN: LimeEndian.BIG_ENDIAN;
 	// 		case Endian.LITTLE_ENDIAN: LimeEndian.LITTLE_ENDIAN;
 	// 		default: null;

@@ -53,9 +53,9 @@ package openfl.display;
 		}
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : TriangleCulling)
 		{
 			case TriangleCulling.NEGATIVE: "negative";
 			case TriangleCulling.NONE: "none";

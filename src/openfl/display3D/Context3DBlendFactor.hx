@@ -131,9 +131,9 @@ import openfl._internal.utils.NullUtils;
 		}
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : Context3DBlendFactor)
 		{
 			case Context3DBlendFactor.DESTINATION_ALPHA: "destinationAlpha";
 			case Context3DBlendFactor.DESTINATION_COLOR: "destinationColor";

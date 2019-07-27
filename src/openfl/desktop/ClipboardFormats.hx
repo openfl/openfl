@@ -36,9 +36,9 @@ package openfl.desktop;
 		}
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : ClipboardFormats)
 		{
 			case ClipboardFormats.HTML_FORMAT: "air:html";
 			case ClipboardFormats.RICH_TEXT_FORMAT: "air:rtf";

@@ -52,9 +52,9 @@ package openfl.display;
 		return this;
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : JointStyle)
 		{
 			case JointStyle.BEVEL: "bevel";
 			case JointStyle.MITER: "miter";

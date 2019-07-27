@@ -65,9 +65,9 @@ package openfl.display;
 		}
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : StageAlign)
 		{
 			case StageAlign.BOTTOM: "bottom";
 			case StageAlign.BOTTOM_LEFT: "bottomLeft";

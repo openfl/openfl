@@ -30,9 +30,9 @@ import openfl._internal.utils.NullUtils;
 		}
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : Context3DProgramFormat)
 		{
 			case Context3DProgramFormat.AGAL: "agal";
 			case Context3DProgramFormat.GLSL: "glsl";

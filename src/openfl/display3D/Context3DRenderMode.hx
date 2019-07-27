@@ -38,9 +38,9 @@ import openfl._internal.utils.NullUtils;
 		}
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : Context3DRenderMode)
 		{
 			case Context3DRenderMode.AUTO: "auto";
 			case Context3DRenderMode.SOFTWARE: "software";

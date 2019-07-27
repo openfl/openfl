@@ -74,9 +74,9 @@ import openfl._internal.utils.NullUtils;
 		}
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : Context3DStencilAction)
 		{
 			case Context3DStencilAction.DECREMENT_SATURATE: "decrementSaturate";
 			case Context3DStencilAction.DECREMENT_WRAP: "decrementWrap";
