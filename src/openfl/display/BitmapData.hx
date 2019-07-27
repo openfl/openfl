@@ -913,7 +913,7 @@ class BitmapData implements IBitmapDrawable
 		_colorTransform.__copyFrom(source.__worldColorTransform);
 		_colorTransform.__invert();
 
-		if (!readable && __hardwareRenderer != null)
+		if (!readable && __texture != null && __hardwareRenderer != null)
 		{
 			if (__textureContext == null)
 			{
