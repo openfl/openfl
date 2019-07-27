@@ -48,9 +48,9 @@ package openfl.display;
 		}
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : StageScaleMode)
 		{
 			case StageScaleMode.EXACT_FIT: "exactFit";
 			case StageScaleMode.NO_BORDER: "noBorder";

@@ -47,9 +47,9 @@ import openfl._internal.utils.NullUtils;
 		}
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : Context3DWrapMode)
 		{
 			case Context3DWrapMode.CLAMP: "clamp";
 			case Context3DWrapMode.CLAMP_U_REPEAT_V: "clamp_u_repeat_v";

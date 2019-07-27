@@ -42,9 +42,9 @@ package openfl.ui;
 		}
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : MultitouchInputMode)
 		{
 			case MultitouchInputMode.GESTURE: "gesture";
 			case MultitouchInputMode.NONE: "none";

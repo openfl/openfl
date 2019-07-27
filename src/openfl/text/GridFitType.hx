@@ -50,9 +50,9 @@ package openfl.text;
 		}
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : GridFitType)
 		{
 			case GridFitType.NONE: "none";
 			case GridFitType.PIXEL: "pixel";

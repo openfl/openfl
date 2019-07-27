@@ -18,9 +18,9 @@ import lime.system.Endian in LimeEndian;
 		}
 	}
 
-	@:to private static function toLimeEndian(value:String):LimeEndian
+	@:to private function toLimeEndian():LimeEndian
 	{
-		return switch (value)
+		return switch (this)
 		{
 			case Endian.BIG_ENDIAN: LimeEndian.BIG_ENDIAN;
 			case Endian.LITTLE_ENDIAN: LimeEndian.LITTLE_ENDIAN;

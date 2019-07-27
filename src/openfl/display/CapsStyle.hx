@@ -53,9 +53,9 @@ package openfl.display;
 		return this;
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : CapsStyle)
 		{
 			case CapsStyle.NONE: "none";
 			case CapsStyle.ROUND: "round";

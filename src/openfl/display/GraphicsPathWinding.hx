@@ -47,9 +47,9 @@ package openfl.display;
 		}
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : GraphicsPathWinding)
 		{
 			case GraphicsPathWinding.EVEN_ODD: "evenOdd";
 			case GraphicsPathWinding.NON_ZERO: "nonZero";

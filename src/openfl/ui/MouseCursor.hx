@@ -69,9 +69,9 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 		}
 	}
 
-	@:to private static function toLimeCursor(cursor:MouseCursor):LimeMouseCursor
+	@:to private function toLimeCursor():LimeMouseCursor
 	{
-		return switch (cursor)
+		return switch (this)
 		{
 			case MouseCursor.ARROW: LimeMouseCursor.ARROW;
 			case MouseCursor.AUTO: LimeMouseCursor.DEFAULT;

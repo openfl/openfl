@@ -69,9 +69,9 @@ package openfl.geom;
 		}
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : Orientation3D)
 		{
 			case Orientation3D.AXIS_ANGLE: "axisAngle";
 			case Orientation3D.EULER_ANGLES: "eulerAngles";

@@ -35,9 +35,9 @@ package openfl.display;
 		}
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : StageDisplayState)
 		{
 			case StageDisplayState.FULL_SCREEN: "fullScreen";
 			case StageDisplayState.FULL_SCREEN_INTERACTIVE: "fullScreenInteractive";

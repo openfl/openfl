@@ -37,9 +37,9 @@ package openfl.system;
 		}
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : TouchscreenType)
 		{
 			case TouchscreenType.FINGER: "finger";
 			case TouchscreenType.NONE: "none";
