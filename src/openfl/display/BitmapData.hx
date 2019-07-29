@@ -710,20 +710,20 @@ class BitmapData implements IBitmapDrawable
 		{
 			var point = Point.__pool.get();
 			var rect = Rectangle.__pool.get();
+			rect.copyFrom(sourceBitmapData.rect);
+			rect.__contract(sourceRect.x, sourceRect.y, sourceRect.width, sourceRect.height);
 
-			var copy = Lib.current.stage.__bitmapDataPool.get(sourceBitmapData.width, sourceBitmapData.height, false);
-			copy.image.copyPixels(image, rect.__toLimeRectangle(), point.__toLimeVector2());
+			var copy = Lib.current.stage.__bitmapDataPool.get(Std.int(rect.width), Std.int(rect.height), false);
+			copy.image.copyPixels(sourceBitmapData.image, rect.__toLimeRectangle(), point.__toLimeVector2());
 
-			rect.setTo(alphaPoint != null ? alphaPoint.x : 0, alphaPoint != null ? alphaPoint.y : 0, sourceRect.width, sourceRect.height);
-			point.setTo(sourceRect.x, sourceRect.y);
+			rect.setTo(rect.x + (alphaPoint != null ? alphaPoint.x : 0), rect.y + (alphaPoint != null ? alphaPoint.y : 0), rect.width, rect.height);
+
 			copy.image.copyChannel(alphaBitmapData.image, rect.__toLimeRectangle(), point.__toLimeVector2(), ALPHA, ALPHA);
+			image.copyPixels(copy.image, copy.rect.__toLimeRectangle(), destPoint.__toLimeVector2(), null, null, mergeAlpha);
 
-			image.copyPixels(sourceBitmapData.image, sourceRect.__toLimeRectangle(), destPoint.__toLimeVector2(), null, null, mergeAlpha);
-
-			Point.__pool.release(point);
-			Rectangle.__pool.release(rect);
 			Lib.current.stage.__bitmapDataPool.release(copy);
-
+			Rectangle.__pool.release(rect);
+			Point.__pool.release(point);
 			return;
 		}
 		#end
@@ -1167,7 +1167,7 @@ class BitmapData implements IBitmapDrawable
 			color = 0;
 		}
 
-		if (!readable && __hardwareRenderer != null)
+		if (!readable && __texture != null && __hardwareRenderer != null)
 		{
 			__hardwareRenderer.__fillRect(this, rect, color);
 		}
