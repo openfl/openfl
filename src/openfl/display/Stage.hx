@@ -1209,6 +1209,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				if (BitmapData.__hardwareRenderer == null)
 				{
 					BitmapData.__hardwareRenderer = new Context3DRenderer(context3D);
+					BitmapData.__hardwareRenderer.__stage = this;
 				}
 				#if opengl_renderer
 				__renderer = new OpenGLRenderer(context3D);
