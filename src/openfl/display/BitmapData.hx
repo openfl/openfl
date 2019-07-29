@@ -703,30 +703,30 @@ class BitmapData implements IBitmapDrawable
 	{
 		if (!readable || sourceBitmapData == null) return;
 
-		#if (js && html5)
-		if (alphaBitmapData != null
-			&& alphaBitmapData.transparent
-			&& (alphaBitmapData != sourceBitmapData || (alphaPoint != null && (alphaPoint.x != 0 || alphaPoint.y != 0))))
-		{
-			var point = Point.__pool.get();
-			var rect = Rectangle.__pool.get();
-			rect.copyFrom(sourceBitmapData.rect);
-			rect.__contract(sourceRect.x, sourceRect.y, sourceRect.width, sourceRect.height);
+		// #if (js && html5)
+		// if (alphaBitmapData != null
+		// 	&& alphaBitmapData.transparent
+		// 	&& (alphaBitmapData != sourceBitmapData || (alphaPoint != null && (alphaPoint.x != 0 || alphaPoint.y != 0))))
+		// {
+		// 	var point = Point.__pool.get();
+		// 	var rect = Rectangle.__pool.get();
+		// 	rect.copyFrom(sourceBitmapData.rect);
+		// 	rect.__contract(sourceRect.x, sourceRect.y, sourceRect.width, sourceRect.height);
 
-			var copy = Lib.current.stage.__bitmapDataPool.get(Std.int(rect.width), Std.int(rect.height), false);
-			copy.image.copyPixels(sourceBitmapData.image, rect.__toLimeRectangle(), point.__toLimeVector2());
+		// 	var copy = Lib.current.stage.__bitmapDataPool.get(Std.int(rect.width), Std.int(rect.height), false);
+		// 	copy.image.copyPixels(sourceBitmapData.image, rect.__toLimeRectangle(), point.__toLimeVector2());
 
-			rect.setTo(rect.x + (alphaPoint != null ? alphaPoint.x : 0), rect.y + (alphaPoint != null ? alphaPoint.y : 0), rect.width, rect.height);
+		// 	rect.setTo(rect.x + (alphaPoint != null ? alphaPoint.x : 0), rect.y + (alphaPoint != null ? alphaPoint.y : 0), rect.width, rect.height);
 
-			copy.image.copyChannel(alphaBitmapData.image, rect.__toLimeRectangle(), point.__toLimeVector2(), ALPHA, ALPHA);
-			image.copyPixels(copy.image, copy.rect.__toLimeRectangle(), destPoint.__toLimeVector2(), null, null, mergeAlpha);
+		// 	copy.image.copyChannel(alphaBitmapData.image, rect.__toLimeRectangle(), point.__toLimeVector2(), ALPHA, ALPHA);
+		// 	image.copyPixels(copy.image, copy.rect.__toLimeRectangle(), destPoint.__toLimeVector2(), null, null, mergeAlpha);
 
-			Lib.current.stage.__bitmapDataPool.release(copy);
-			Rectangle.__pool.release(rect);
-			Point.__pool.release(point);
-			return;
-		}
-		#end
+		// 	Lib.current.stage.__bitmapDataPool.release(copy);
+		// 	Rectangle.__pool.release(rect);
+		// 	Point.__pool.release(point);
+		// 	return;
+		// }
+		// #end
 
 		#if lime
 		if (alphaPoint != null)
