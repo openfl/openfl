@@ -26,11 +26,6 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
 #end
-#if opengl_renderer
-import lime.graphics.opengl.GLBuffer;
-import lime.graphics.RenderContext;
-import lime.utils.Float32Array;
-#end
 
 /**
 	The Graphics class contains a set of methods that you can use to create a
@@ -98,12 +93,6 @@ import lime.utils.Float32Array;
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __cairo:#if lime Cairo #else Dynamic #end;
 	#end
 	@:noCompletion private var __bitmap:BitmapData;
-	#if opengl_renderer
-	@:noCompletion private var __buffer:GLBuffer;
-	@:noCompletion private var __bufferContext:RenderContext;
-	@:noCompletion private var __bufferData:Float32Array;
-	@:noCompletion private var __bufferLength:Int;
-	#end
 
 	@:noCompletion private function new(owner:DisplayObject)
 	{
