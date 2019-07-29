@@ -1120,7 +1120,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 			
 			//if (!renderSession.lockTransform) __getWorldTransform ();
 			
-			var needRender = (__cacheBitmap == null || (__renderDirty && ((__children != null && __children.length > 0) || (__graphics!= null && __graphics.__dirty))) || opaqueBackground != __cacheBitmapBackground || !__cacheBitmapColorTransform.__equals (__worldColorTransform));
+			var needRender = (__cacheBitmap == null || __cacheBitmapNeedsRender ());
 			var updateTransform = (needRender || !__cacheBitmap.__renderTransform.equals (__renderTransform));
 			var hasFilters = __hasFilters ();
 			var pixelRatio = renderSession.pixelRatio;
@@ -1328,6 +1328,24 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if openf
 		
 		return false;
 		
+	}
+	
+	
+	private function __cacheBitmapNeedsRender ():Bool {
+		return
+			(
+				__renderDirty
+				&& 
+				(
+					(__children != null && __children.length > 0) // TODO: this is the only place we use __children in DisplayObject, we can probably move this check in a DisplayObjectContainer override along with __children
+					||
+					(__graphics != null && __graphics.__dirty) // TODO: not sure if this ever holds, because graphics dirty flag is reset before we end up here
+				)
+			)
+			||
+			opaqueBackground != __cacheBitmapBackground
+			||
+			!__cacheBitmapColorTransform.__equals (__worldColorTransform);
 	}
 	
 	

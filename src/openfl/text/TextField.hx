@@ -1617,7 +1617,7 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 	
 	private override function __updateCacheBitmap (renderSession:RenderSession, force:Bool):Bool {
 		
-		var success = super.__updateCacheBitmap (renderSession, __forceCachedBitmapUpdate || force);
+		var success = super.__updateCacheBitmap (renderSession, force);
 		__forceCachedBitmapUpdate = false;
 		
 		if (success) {
@@ -1635,6 +1635,11 @@ class TextField extends InteractiveObject implements IShaderDrawable {
 		
 		return false;
 		
+	}
+	
+	
+	override private function __cacheBitmapNeedsRender ():Bool {
+		return __forceCachedBitmapUpdate || super.__cacheBitmapNeedsRender ();
 	}
 	
 	
