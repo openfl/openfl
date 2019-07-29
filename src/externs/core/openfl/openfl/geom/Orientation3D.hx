@@ -20,9 +20,9 @@ package openfl.geom; #if (display || !flash)
 		
 	}
 	
-	@:to private static function toString (value:Int):String {
+	@:to private function toString ():String {
 		
-		return switch (value) {
+		return switch (cast this) {
 			
 			case Orientation3D.AXIS_ANGLE: "axisAngle";
 			case Orientation3D.EULER_ANGLES: "eulerAngles";

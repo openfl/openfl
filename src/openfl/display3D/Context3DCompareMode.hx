@@ -31,9 +31,9 @@ import openfl._internal.utils.NullUtils;
 		
 	}
 	
-	@:to private static function toString (value:Int):String {
+	@:to private function toString ():String {
 		
-		return switch (value) {
+		return switch (cast this) {
 			
 			case Context3DCompareMode.ALWAYS: "always";
 			case Context3DCompareMode.EQUAL: "equal";

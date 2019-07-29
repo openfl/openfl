@@ -22,9 +22,9 @@ package openfl.display;
 		
 	}
 	
-	@:to private static function toString (value:Int):String {
+	@:to private function toString ():String {
 		
-		return switch (value) {
+		return switch (cast this) {
 			
 			case StageQuality.BEST: "best";
 			case StageQuality.HIGH: "high";

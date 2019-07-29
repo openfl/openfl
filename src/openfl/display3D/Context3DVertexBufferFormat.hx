@@ -25,9 +25,9 @@ import openfl._internal.utils.NullUtils;
 		
 	}
 	
-	@:to private static function toString (value:Int):String {
+	@:to private function toString ():String {
 		
-		return switch (value) {
+		return switch (cast this) {
 			
 			case Context3DVertexBufferFormat.BYTES_4: "bytes4";
 			case Context3DVertexBufferFormat.FLOAT_1: "float1";

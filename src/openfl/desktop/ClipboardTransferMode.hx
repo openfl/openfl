@@ -22,9 +22,9 @@ package openfl.desktop;
 		
 	}
 	
-	@:to private static function toString (value:Int):String {
+	@:to private function toString ():String {
 		
-		return switch (value) {
+		return switch (cast this) {
 			
 			case ClipboardTransferMode.CLONE_ONLY: "cloneOnly";
 			case ClipboardTransferMode.CLONE_PREFERRED: "clonePreferred";

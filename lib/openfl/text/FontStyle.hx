@@ -48,9 +48,9 @@ package openfl.text; #if (display || !flash)
 		
 	}
 	
-	@:to private static function toString (value:Int):String {
+	@:to private function toString ():String {
 		
-		return switch (value) {
+		return switch (cast this) {
 			
 			case FontStyle.BOLD: "bold";
 			case FontStyle.BOLD_ITALIC: "boldItalic";
