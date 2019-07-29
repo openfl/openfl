@@ -705,30 +705,53 @@ class BitmapData implements IBitmapDrawable
 	{
 		if (!readable || sourceBitmapData == null) return;
 
-		// #if (js && html5)
-		// if (alphaBitmapData != null
-		// 	&& alphaBitmapData.transparent
-		// 	&& (alphaBitmapData != sourceBitmapData || (alphaPoint != null && (alphaPoint.x != 0 || alphaPoint.y != 0))))
-		// {
-		// 	var point = Point.__pool.get();
-		// 	var rect = Rectangle.__pool.get();
-		// 	rect.copyFrom(sourceBitmapData.rect);
-		// 	rect.__contract(sourceRect.x, sourceRect.y, sourceRect.width, sourceRect.height);
+		#if (js && html5)
+		if (alphaBitmapData != null
+			&& alphaBitmapData.transparent
+			&& (alphaBitmapData != sourceBitmapData || (alphaPoint != null && (alphaPoint.x != 0 || alphaPoint.y != 0))))
+		{
+			var point = Point.__pool.get();
+			var rect = Rectangle.__pool.get();
+			rect.copyFrom(sourceBitmapData.rect);
+			rect.__contract(sourceRect.x, sourceRect.y, sourceRect.width, sourceRect.height);
 
-		// 	var copy = BitmapData.__pool.get(Std.int(rect.width), Std.int(rect.height));
-		// 	copy.image.copyPixels(sourceBitmapData.image, rect.__toLimeRectangle(), point.__toLimeVector2());
+			var copy = BitmapData.__pool.get(Std.int(rect.width), Std.int(rect.height));
 
-		// 	rect.setTo(rect.x + (alphaPoint != null ? alphaPoint.x : 0), rect.y + (alphaPoint != null ? alphaPoint.y : 0), rect.width, rect.height);
+			ImageCanvasUtil.convertToCanvas(copy.image);
+			ImageCanvasUtil.convertToCanvas(sourceBitmapData.image);
+			ImageCanvasUtil.convertToCanvas(alphaBitmapData.image);
 
-		// 	copy.image.copyChannel(alphaBitmapData.image, rect.__toLimeRectangle(), point.__toLimeVector2(), ALPHA, ALPHA);
-		// 	image.copyPixels(copy.image, copy.rect.__toLimeRectangle(), destPoint.__toLimeVector2(), null, null, mergeAlpha);
+			if (alphaPoint != null)
+			{
+				rect.x += alphaPoint.x;
+				rect.y += alphaPoint.y;
+			}
 
-		// 	BitmapData.__pool.release(copy);
-		// 	Rectangle.__pool.release(rect);
-		// 	Point.__pool.release(point);
-		// 	return;
-		// }
-		// #end
+			copy.image.buffer.__srcContext.globalCompositeOperation = "source-over";
+			copy.image.buffer.__srcContext.drawImage(alphaBitmapData.image.buffer.src, Std.int(rect.x + sourceBitmapData.image.offsetX),
+				Std.int(rect.y + sourceBitmapData.image.offsetY), Std.int(rect.width), Std.int(rect.height), Std.int(point.x + image.offsetX),
+				Std.int(point.y + image.offsetY), Std.int(rect.width), Std.int(rect.height));
+
+			if (alphaPoint != null)
+			{
+				rect.x -= alphaPoint.x;
+				rect.y -= alphaPoint.y;
+			}
+
+			copy.image.buffer.__srcContext.globalCompositeOperation = "source-in";
+			copy.image.buffer.__srcContext.drawImage(sourceBitmapData.image.buffer.src, Std.int(rect.x + sourceBitmapData.image.offsetX),
+				Std.int(rect.y + sourceBitmapData.image.offsetY), Std.int(rect.width), Std.int(rect.height), Std.int(point.x + image.offsetX),
+				Std.int(point.y + image.offsetY), Std.int(rect.width), Std.int(rect.height));
+
+			// TODO: Render directly for mergeAlpha=false?
+			image.copyPixels(copy.image, copy.rect.__toLimeRectangle(), destPoint.__toLimeVector2(), null, null, mergeAlpha);
+
+			BitmapData.__pool.release(copy);
+			Rectangle.__pool.release(rect);
+			Point.__pool.release(point);
+			return;
+		}
+		#end
 
 		#if lime
 		if (alphaPoint != null)
