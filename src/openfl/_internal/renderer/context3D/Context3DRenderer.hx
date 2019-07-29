@@ -1407,9 +1407,6 @@ class Context3DRenderer extends Context3DRendererAPI
 
 	private function __updateCacheBitmap(object:DisplayObject, force:Bool):Bool
 	{
-		// TODO: Use separate cacheBitmapData for software/hardware to prevent invalidating each other
-		// TODO: Use a single texture pool for all filter rendering
-
 		#if openfl_disable_cacheasbitmap
 		return false;
 		#end
@@ -1514,18 +1511,17 @@ class Context3DRenderer extends Context3DRendererAPI
 				{
 					var needsFill = (object.opaqueBackground != null && (bitmapWidth != filterWidth || bitmapHeight != filterHeight));
 					var fillColor = object.opaqueBackground != null ? (0xFF << 24) | object.opaqueBackground : 0;
-					var bitmapColor = needsFill ? 0 : fillColor;
 
 					if (object.__cacheBitmapDataTexture == null
 						|| bitmapWidth > object.__cacheBitmapDataTexture.width
 						|| bitmapHeight > object.__cacheBitmapDataTexture.height)
 					{
-						object.__cacheBitmapDataTexture = new BitmapData(bitmapWidth, bitmapHeight, true, bitmapColor);
+						// TODO: Use pool for HW bitmap data
+						var texture = context3D.createRectangleTexture(bitmapWidth, bitmapHeight, BGRA, true);
+						object.__cacheBitmapDataTexture = BitmapData.fromTexture(texture);
 					}
-					else
-					{
-						object.__cacheBitmapDataTexture.fillRect(object.__cacheBitmapDataTexture.rect, bitmapColor);
-					}
+
+					object.__cacheBitmapDataTexture.fillRect(rect, 0);
 
 					if (needsFill)
 					{
@@ -1536,8 +1532,6 @@ class Context3DRenderer extends Context3DRendererAPI
 				else
 				{
 					ColorTransform.__pool.release(colorTransform);
-
-					// TODO: Use pool for HW bitmap data
 
 					object.__cacheBitmap = null;
 					object.__cacheBitmapData = null;
