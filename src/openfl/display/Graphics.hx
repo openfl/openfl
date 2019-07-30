@@ -1062,9 +1062,12 @@ import js.html.CanvasRenderingContext2D;
 		__renderTransform.tx = __worldTransform.__transformInverseX (tx, ty);
 		__renderTransform.ty = __worldTransform.__transformInverseY (tx, ty);
 		
-		// Calculate the size to contain the graphics and the extra subpixel
-		var newWidth  = Math.ceil(width  + __renderTransform.tx);
-		var newHeight = Math.ceil(height + __renderTransform.ty);
+		// Calculate the size to contain the graphics and an extra subpixel
+		// We used to add tx and ty from __renderTransform instead of 1.0
+		// but it improves performance if we keep the size consistent when the
+		// extra pixel isn't needed
+		var newWidth = Math.ceil(width + 1.0);
+		var newHeight = Math.ceil(height + 1.0);
 		
 		// Mark dirty if render size changed
 		if (newWidth != __width || newHeight != __height) {
