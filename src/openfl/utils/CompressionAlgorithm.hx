@@ -21,9 +21,9 @@ package openfl.utils;
 		
 	}
 	
-	@:to private static function toString (value:Int):String {
+	@:to private function toString ():String {
 		
-		return switch (value) {
+		return switch (cast this) {
 			
 			case CompressionAlgorithm.DEFLATE: "deflate";
 			case CompressionAlgorithm.LZMA: "lzma";

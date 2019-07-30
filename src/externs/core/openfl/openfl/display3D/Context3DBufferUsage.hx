@@ -18,9 +18,9 @@ package openfl.display3D; #if (display || !flash)
 		
 	}
 	
-	@:to private static function toString (value:Int):String {
+	@:to private function toString ():String {
 		
-		return switch (value) {
+		return switch (cast this) {
 			
 			case Context3DBufferUsage.DYNAMIC_DRAW: "dynamicDraw";
 			case Context3DBufferUsage.STATIC_DRAW: "staticDraw";

@@ -38,9 +38,9 @@ package openfl.ui; #if (display || !flash)
 		
 	}
 	
-	@:to private static function toString (value:Int):String {
+	@:to private function toString ():String {
 		
-		return switch (value) {
+		return switch (cast this) {
 			
 			case MultitouchInputMode.GESTURE: "gesture";
 			case MultitouchInputMode.NONE: "none";

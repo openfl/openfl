@@ -31,9 +31,9 @@ package openfl.display; #if (display || !flash)
 		
 	}
 	
-	@:to private static function toString (value:Int):String {
+	@:to private function toString ():String {
 		
-		return switch (value) {
+		return switch (cast this) {
 			
 			case GradientType.LINEAR: "linear";
 			case GradientType.RADIAL: "radial";

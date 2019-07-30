@@ -20,9 +20,9 @@ package openfl.filters;
 		
 	}
 	
-	@:to private static function toString (value:Int):String {
+	@:to private function toString ():String {
 		
-		return switch (value) {
+		return switch (cast this) {
 			
 			case BitmapFilterType.FULL: "full";
 			case BitmapFilterType.INNER: "inner";
