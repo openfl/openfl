@@ -730,11 +730,25 @@ class Tools
 
 							var generatedClasses = exporter.generateClasses(targetPath, output.assets, library.prefix);
 
-							for (className in generatedClasses)
-							{
-								output.haxeflags.push(className);
-							}
+							// for (className in generatedClasses)
+							// {
+							// 	output.haxeflags.push(className);
+							// }
+
+							// if (cacheDirectory != null)
+							// {
+							// 	File.saveContent(cacheDirectory + "/classNames.txt", generatedClasses.join("\n"));
+							// }
 						}
+					}
+					else
+					{
+						// var generatedClasses = File.getContent(cacheDirectory + "/classNames.txt").split("\n");
+
+						// for (className in generatedClasses)
+						// {
+						// 	output.haxeflags.push(className);
+						// }
 					}
 
 					var asset = new Asset(cacheFile, "lib/" + library.name + ".zip", AssetType.BUNDLE);
