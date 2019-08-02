@@ -22,8 +22,8 @@ import haxe.Constraints.Function;
 	don't have this same restriction.
 
 	The Vector's base type is specified using postfix type parameter syntax. Type
-	parameter syntax is a sequence consisting of a dot (`.`), left angle bracket (`<`),
-	class name, then a right angle bracket (`>`), as shown in this example:
+	parameter syntax consists of left angle bracket (`<`),class name, then a right angle
+	bracket (`>`), as shown in this example:
 
 	In the first line of the example, the variable `v` is declared as a
 	Vector<String> instance. In other words, it represents a Vector (an array) that
@@ -119,9 +119,8 @@ abstract Vector<T>(IVector<T>)
 		Creates a Vector with the specified base type.
 
 		When calling the `Vector<T>()` constructor, specify the base type using
-		type parameter syntax. Type parameter syntax is a sequence consisting of a
-		dot (`.`), left angle bracket (`<`), class name, then a right angle bracket (`>`),
-		as shown in this example:
+		type parameter syntax. Type parameter syntax consists of a left angle bracket
+		(`<`), class name, then a right angle bracket (`>`), as shown in this example:
 
 		```haxe
 		var v:Vector<String> = new Vector<String>();
