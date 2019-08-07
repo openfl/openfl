@@ -87,6 +87,7 @@ class Context3DRenderer extends Context3DRendererAPI
 
 	public var context3D:Context3D;
 
+	private var __alphaMaskShader:Context3DAlphaMaskShader;
 	private var __clipRects:Array<Rectangle>;
 	private var __context:RenderContext;
 	private var __currentDisplayShader:Shader;
@@ -171,6 +172,7 @@ class Context3DRenderer extends Context3DRendererAPI
 		__initShader(__defaultShader);
 
 		__scrollRectMasks = new ObjectPool<Shape>(function() return new Shape());
+		__alphaMaskShader = new Context3DAlphaMaskShader();
 		__maskShader = new Context3DMaskShader();
 
 		if (__childRendererPool == null)
