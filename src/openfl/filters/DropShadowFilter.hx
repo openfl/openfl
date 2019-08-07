@@ -389,8 +389,8 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 
 	@:noCompletion private function __calculateNumShaderPasses():Void
 	{
-		__horizontalPasses = (__blurX <= 0) ? 0 : Math.round(__blurX * (__quality / 4)) + 1;
-		__verticalPasses = (__blurY <= 0) ? 0 : Math.round(__blurY * (__quality / 4)) + 1;
+		__horizontalPasses = Math.round(__blurX * (__quality / 4)) + 1;
+		__verticalPasses = Math.round(__blurY * (__quality / 4)) + 1;
 		__numShaderPasses = __horizontalPasses + __verticalPasses + (__inner ? 2 : 1);
 	}
 
