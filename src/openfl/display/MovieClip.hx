@@ -974,6 +974,8 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 			displayObject.transform.colorTransform = new ColorTransform();
 		}
 
+		displayObject.transform = displayObject.transform;
+
 		if (frameObject.filters != null)
 		{
 			var filters:Array<BitmapFilter> = [];

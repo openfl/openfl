@@ -766,6 +766,8 @@ class AnimateTimeline implements ITimeline
 			displayObject.transform.colorTransform = new ColorTransform();
 		}
 
+		displayObject.transform = displayObject.transform;
+
 		if (frameObject.filters != null)
 		{
 			var filters:Array<BitmapFilter> = [];
