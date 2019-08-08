@@ -104,10 +104,14 @@ commands:
      - run:
          name: Rebuild Lime Desktop Binary
          command: lime rebuild linux -release -64 -nocffi
+    #  - run:
+    #      name: Run Integration Tests
+    #      working_directory: /workspace/openfl/test/haxelib/integration
+    #      command: lime test linux --window-hardware=false
      - run:
-         name: Run Integration Tests
+         name: Build Integration Tests
          working_directory: /workspace/openfl/test/haxelib/integration
-         command: lime test linux --window-hardware=false
+         command: lime build linux --window-hardware=false
 
   test-flash:
     description: "Test Flash"
