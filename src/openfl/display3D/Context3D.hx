@@ -580,6 +580,9 @@ import lime.math.Vector2;
 		{
 			if (__backBufferTexture == null || backBufferWidth != width || backBufferHeight != height)
 			{
+				if (__backBufferTexture != null) __backBufferTexture.dispose();
+				if (__frontBufferTexture != null) __frontBufferTexture.dispose();
+
 				__backBufferTexture = createRectangleTexture(width, height, BGRA, true);
 				__frontBufferTexture = createRectangleTexture(width, height, BGRA, true);
 
