@@ -41,6 +41,10 @@ import openfl._internal.renderer.canvas.CanvasRenderer;
 import lime.graphics.cairo.Cairo;
 import openfl._internal.renderer.cairo.CairoRenderer;
 #end
+#if gl_stats
+import openfl._internal.renderer.context3D.stats.Context3DStats;
+import openfl._internal.renderer.context3D.stats.DrawCallContext;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
