@@ -76,7 +76,7 @@ class CanvasTextField
 
 				var transform = graphics.__renderTransform;
 
-				if (renderer.__isDOM)
+				if (renderer.__domRenderer != null)
 				{
 					var scale = renderer.pixelRatio;
 

@@ -93,7 +93,7 @@ class DOMRenderer extends DOMRendererAPI
 		__type = DOM;
 
 		__canvasRenderer = new CanvasRenderer(null);
-		__canvasRenderer.__isDOM = true;
+		__canvasRenderer.__domRenderer = this;
 	}
 
 	public override function applyStyle(parent:DisplayObject, childElement:Element):Void
@@ -165,7 +165,7 @@ class DOMRenderer extends DOMRendererAPI
 		#end
 	}
 
-	private function __clearBitmap(bitmap:Bitmap):Void
+	private override function __clearBitmap(bitmap:Bitmap):Void
 	{
 		DOMDisplayObject.clear(bitmap, this);
 		DOMBitmap.clear(bitmap, this);

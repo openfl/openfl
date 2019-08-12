@@ -9,6 +9,7 @@ import openfl.display.BlendMode;
 import openfl.display.CanvasRenderer as CanvasRendererAPI;
 import openfl.display.DisplayObject;
 import openfl.display.DisplayObjectContainer;
+import openfl.display.DOMRenderer;
 import openfl.display.IBitmapDrawable;
 import openfl.display.Shape;
 import openfl.display.SimpleButton;
@@ -29,6 +30,7 @@ import openfl.geom.Rectangle;
 @:access(lime.graphics.ImageBuffer)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.DisplayObject)
+@:access(openfl.display.DOMRenderer)
 @:access(openfl.display.Graphics)
 @:access(openfl.display.IBitmapDrawable)
 @:access(openfl.display.Stage)
@@ -43,7 +45,7 @@ import openfl.geom.Rectangle;
 class CanvasRenderer extends CanvasRendererAPI
 {
 	private var __colorTransform:ColorTransform;
-	private var __isDOM:Bool;
+	private var __domRenderer:DOMRenderer;
 	private var __transform:Matrix;
 
 	private function new(context:Canvas2DRenderContext)
@@ -310,7 +312,7 @@ class CanvasRenderer extends CanvasRendererAPI
 
 	private function __renderDisplayObjectContainer(container:DisplayObjectContainer):Void
 	{
-		if (!__isDOM) container.__cleanupRemovedChildren();
+		if (__domRenderer == null) container.__cleanupRemovedChildren();
 
 		if (!container.__renderable
 			|| container.__worldAlpha <= 0
@@ -363,7 +365,7 @@ class CanvasRenderer extends CanvasRendererAPI
 
 				case DISPLAY_OBJECT_CONTAINER:
 					var container:DisplayObjectContainer = cast mask;
-					if (!__isDOM) container.__cleanupRemovedChildren();
+					if (__domRenderer == null) container.__cleanupRemovedChildren();
 
 					if (container.__graphics != null)
 					{
@@ -421,7 +423,7 @@ class CanvasRenderer extends CanvasRendererAPI
 		#if (js && html5)
 		// TODO: Better DOM workaround on cacheAsBitmap
 
-		if (__isDOM && !textField.__renderedOnCanvasWhileOnDOM)
+		if (__domRenderer != null && !textField.__renderedOnCanvasWhileOnDOM)
 		{
 			textField.__renderedOnCanvasWhileOnDOM = true;
 
@@ -704,6 +706,11 @@ class CanvasRenderer extends CanvasRendererAPI
 				{
 					ColorTransform.__pool.release(colorTransform);
 
+					if (__domRenderer != null && object.__cacheBitmap != null)
+					{
+						__domRenderer.__clearBitmap(object.__cacheBitmap);
+					}
+
 					object.__cacheBitmap = null;
 					object.__cacheBitmapData = null;
 					object.__cacheBitmapData2 = null;
@@ -909,6 +916,11 @@ class CanvasRenderer extends CanvasRendererAPI
 		}
 		else if (object.__cacheBitmap != null)
 		{
+			if (__domRenderer != null && object.__cacheBitmap != null)
+			{
+				__domRenderer.__clearBitmap(object.__cacheBitmap);
+			}
+
 			object.__cacheBitmap = null;
 			object.__cacheBitmapData = null;
 			object.__cacheBitmapData2 = null;

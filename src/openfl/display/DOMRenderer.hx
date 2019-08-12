@@ -50,6 +50,8 @@ class DOMRenderer extends DisplayObjectRenderer
 		should no longer be a part of the display hierarchy
 	**/
 	public function clearStyle(childElement:#if (js && html5 && !display) Element #else Dynamic #end):Void {}
+
+	private function __clearBitmap(bitmap:Bitmap):Void {}
 }
 #else
 typedef DOMRenderer = Dynamic;

@@ -1174,7 +1174,7 @@ class CanvasGraphics
 
 				renderer.__setBlendModeContext(context, NORMAL);
 
-				if (renderer.__isDOM)
+				if (renderer.__domRenderer != null)
 				{
 					if (canvas.width == scaledWidth && canvas.height == scaledHeight)
 					{

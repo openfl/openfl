@@ -112,7 +112,7 @@ class CanvasShape
 					{
 						renderer.setTransform(transform, context);
 
-						if (renderer.__isDOM)
+						if (renderer.__domRenderer != null)
 						{
 							var reverseScale = 1 / renderer.pixelRatio;
 							context.scale(reverseScale, reverseScale);
