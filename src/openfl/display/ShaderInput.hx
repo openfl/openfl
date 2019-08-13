@@ -23,7 +23,7 @@ import openfl.display3D.Context3D;
 	`src` property, as this example shows:
 
 	```haxe
-	myShader.data.src.image = new BitmapData(50, 50, true, 0xFF990000);
+	myShader.data.src.input = new BitmapData(50, 50, true, 0xFF990000);
 	```
 
 	For some uses of a Shader instance, you do not need to specify an input
