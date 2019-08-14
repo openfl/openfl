@@ -702,6 +702,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 					var program = parser.parseString(frameData.scriptSource);
 					var interp = new Interp();
 					interp.variables.set("this", this);
+					interp.variables.set("flash.events_Event", Event);
 
 					var script = function()
 					{
