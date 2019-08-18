@@ -1014,7 +1014,18 @@ private class SourceRegister
 		{
 			// indirect register
 			str += o;
-			var indexComponent = String.fromCharCode("x".charCodeAt(0) + q);
+			var indexComponent = "String.fromCharCode(" x ".charCodeAt(0) + q)";
+			switch (q)
+			{
+				case 0:
+					indexComponent = "x";
+				case 1:
+					indexComponent = "y";
+				case 2:
+					indexComponent = "z";
+				case 3:
+					indexComponent = "w";
+			}
 			var indexRegister = AGALConverter.prefixFromType(itype, programType) + this.n + "." + indexComponent;
 			str += "[ int(" + indexRegister + ") +" + offset + "]";
 		}
