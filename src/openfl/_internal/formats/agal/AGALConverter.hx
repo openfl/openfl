@@ -1014,7 +1014,7 @@ private class SourceRegister
 		{
 			// indirect register
 			str += o;
-			var indexComponent = "String.fromCharCode(" x ".charCodeAt(0) + q)";
+			var indexComponent = "";
 			switch (q)
 			{
 				case 0:
