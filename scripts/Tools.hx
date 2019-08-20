@@ -813,6 +813,7 @@ class Tools
 				type = Path.extension(library.sourcePath).toLowerCase();
 			}
 
+			#if !nodejs
 			if (type == "animate")
 			{
 				if (!FileSystem.exists(library.sourcePath))
@@ -904,7 +905,9 @@ class Tools
 					embeddedAnimate = true;
 				}
 			}
-			else if (type == "swf" || type == "swf_lite" || type == "swflite")
+			else
+			#end
+			if (type == "swf" || type == "swf_lite" || type == "swflite")
 			{
 				if (project.target == Platform.FLASH || project.target == Platform.AIR)
 				{
