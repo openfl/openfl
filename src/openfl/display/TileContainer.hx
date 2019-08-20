@@ -324,7 +324,7 @@ class TileContainer extends Tile implements ITileContainer
 
 		@param	compareFunction	A comparison function to use when sorting.
 	**/
-	public function sortTiles(compareFunction:Tile->Tile->Int):Void
+	#if (openfl < "9.0.0") @:dox(hide) #end public function sortTiles(compareFunction:Tile->Tile->Int):Void
 	{
 		__tiles.sort(compareFunction);
 		__setRenderDirty();

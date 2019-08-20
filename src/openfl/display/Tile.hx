@@ -64,7 +64,7 @@ class Tile
 		is adjusted accordingly.
 		If a tile has a height of zero, no change is applied
 	**/
-	@:keep public var height(get, set):Float;
+	@:keep #if (openfl < "9.0.0") @:dox(hide) #end public var height(get, set):Float;
 
 	/**
 		The ID of the tile to draw from the Tileset
@@ -161,7 +161,7 @@ class Tile
 		is adjusted accordingly.
 		If a tile has a width of zero, no change is applied
 	**/
-	@:keep public var width(get, set):Float;
+	@:keep #if (openfl < "9.0.0") @:dox(hide) #end public var width(get, set):Float;
 
 	/**
 		Indicates the _x_ coordinate of the Tile instance relative
