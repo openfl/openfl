@@ -35,7 +35,7 @@ class Tile
 		values are 0 (fully transparent) to 1 (fully opaque). The default value is 1.
 		Tile objects with `alpha` set to 0 _are_ active, even though they are invisible.
 	**/
-	public var alpha(get, set):Float;
+	@:keep public var alpha(get, set):Float;
 
 	/**
 		A value from the BlendMode class that specifies which blend mode to use.
@@ -64,7 +64,7 @@ class Tile
 		is adjusted accordingly.
 		If a tile has a height of zero, no change is applied
 	**/
-	public var height(get, set):Float;
+	@:keep public var height(get, set):Float;
 
 	/**
 		The ID of the tile to draw from the Tileset
@@ -84,13 +84,13 @@ class Tile
 		Modifies the origin x coordinate for this tile, which is the center value
 		used when determining position, scale and rotation.
 	**/
-	public var originX(get, set):Float;
+	@:keep public var originX(get, set):Float;
 
 	/**
 		Modifies the origin y coordinate for this tile, which is the center value
 		used when determining position, scale and rotation.
 	**/
-	public var originY(get, set):Float;
+	@:keep public var originY(get, set):Float;
 
 	/**
 		Indicates the ITileContainer object that contains this display
@@ -113,7 +113,7 @@ class Tile
 		the range. For example, the statement `tile.rotation = 450`
 		is the same as ` tile.rotation = 90`.
 	**/
-	public var rotation(get, set):Float;
+	@:keep public var rotation(get, set):Float;
 
 	/**
 		Indicates the horizontal scale (percentage) of the object as applied from
@@ -123,7 +123,7 @@ class Tile
 		Scaling the local coordinate system changes the `x` and
 		`y` property values, which are defined in whole pixels.
 	**/
-	public var scaleX(get, set):Float;
+	@:keep public var scaleX(get, set):Float;
 
 	/**
 		Indicates the vertical scale (percentage) of an object as applied from the
@@ -133,7 +133,7 @@ class Tile
 		Scaling the local coordinate system changes the `x` and
 		`y` property values, which are defined in whole pixels.
 	**/
-	public var scaleY(get, set):Float;
+	@:keep public var scaleY(get, set):Float;
 
 	/**
 		Uses a custom Shader instance when rendering this tile.
@@ -161,7 +161,7 @@ class Tile
 		is adjusted accordingly.
 		If a tile has a width of zero, no change is applied
 	**/
-	public var width(get, set):Float;
+	@:keep public var width(get, set):Float;
 
 	/**
 		Indicates the _x_ coordinate of the Tile instance relative
@@ -173,7 +173,7 @@ class Tile
 		rotated 90° counterclockwise. The object's coordinates refer to the
 		registration point position.
 	**/
-	public var x(get, set):Float;
+	@:keep public var x(get, set):Float;
 
 	/**
 		Indicates the _y_ coordinate of the Tile instance relative
@@ -185,7 +185,7 @@ class Tile
 		rotated 90° counterclockwise. The object's coordinates refer to the
 		registration point position.
 	**/
-	public var y(get, set):Float;
+	@:keep public var y(get, set):Float;
 
 	@:noCompletion private var __alpha:Float;
 	@:noCompletion private var __blendMode:BlendMode;
@@ -509,12 +509,12 @@ class Tile
 	}
 
 	// Get & Set Methods
-	@:noCompletion private function get_alpha():Float
+	@:keep @:noCompletion private function get_alpha():Float
 	{
 		return __alpha;
 	}
 
-	@:noCompletion private function set_alpha(value:Float):Float
+	@:keep @:noCompletion private function set_alpha(value:Float):Float
 	{
 		if (value != __alpha)
 		{
@@ -557,7 +557,7 @@ class Tile
 		return value;
 	}
 
-	@:noCompletion private function get_height():Float
+	@:keep @:noCompletion private function get_height():Float
 	{
 		var result:Rectangle = #if flash __tempRectangle #else Rectangle.__pool.get() #end;
 
@@ -571,7 +571,7 @@ class Tile
 		return h;
 	}
 
-	@:noCompletion private function set_height(value:Float):Float
+	@:keep @:noCompletion private function set_height(value:Float):Float
 	{
 		var result:Rectangle = #if flash __tempRectangle #else Rectangle.__pool.get() #end;
 
@@ -621,12 +621,12 @@ class Tile
 		return value;
 	}
 
-	@:noCompletion private function get_originX():Float
+	@:keep @:noCompletion private function get_originX():Float
 	{
 		return __originX;
 	}
 
-	@:noCompletion private function set_originX(value:Float):Float
+	@:keep @:noCompletion private function set_originX(value:Float):Float
 	{
 		if (value != __originX)
 		{
@@ -637,12 +637,12 @@ class Tile
 		return value;
 	}
 
-	@:noCompletion private function get_originY():Float
+	@:keep @:noCompletion private function get_originY():Float
 	{
 		return __originY;
 	}
 
-	@:noCompletion private function set_originY(value:Float):Float
+	@:keep @:noCompletion private function set_originY(value:Float):Float
 	{
 		if (value != __originY)
 		{
@@ -669,7 +669,7 @@ class Tile
 		return value;
 	}
 
-	@:noCompletion private function get_rotation():Float
+	@:keep @:noCompletion private function get_rotation():Float
 	{
 		if (__rotation == null)
 		{
@@ -692,7 +692,7 @@ class Tile
 		return __rotation;
 	}
 
-	@:noCompletion private function set_rotation(value:Float):Float
+	@:keep @:noCompletion private function set_rotation(value:Float):Float
 	{
 		if (value != __rotation)
 		{
@@ -715,7 +715,7 @@ class Tile
 		return value;
 	}
 
-	@:noCompletion private function get_scaleX():Float
+	@:keep @:noCompletion private function get_scaleX():Float
 	{
 		if (__scaleX == null)
 		{
@@ -732,7 +732,7 @@ class Tile
 		return __scaleX;
 	}
 
-	@:noCompletion private function set_scaleX(value:Float):Float
+	@:keep @:noCompletion private function set_scaleX(value:Float):Float
 	{
 		if (value != __scaleX)
 		{
@@ -759,7 +759,7 @@ class Tile
 		return value;
 	}
 
-	@:noCompletion private function get_scaleY():Float
+	@:keep @:noCompletion private function get_scaleY():Float
 	{
 		if (__scaleY == null)
 		{
@@ -776,7 +776,7 @@ class Tile
 		return __scaleY;
 	}
 
-	@:noCompletion private function set_scaleY(value:Float):Float
+	@:keep @:noCompletion private function set_scaleY(value:Float):Float
 	{
 		if (value != __scaleY)
 		{
@@ -851,7 +851,7 @@ class Tile
 		return value;
 	}
 
-	@:noCompletion private function get_width():Float
+	@:keep @:noCompletion private function get_width():Float
 	{
 		// TODO how does pooling work with flash target?
 		var result:Rectangle = #if flash new Rectangle() #else Rectangle.__pool.get() #end;
@@ -866,7 +866,7 @@ class Tile
 		return w;
 	}
 
-	@:noCompletion private function set_width(value:Float):Float
+	@:keep @:noCompletion private function set_width(value:Float):Float
 	{
 		var result:Rectangle = #if flash __tempRectangle #else Rectangle.__pool.get() #end;
 
@@ -881,12 +881,12 @@ class Tile
 		return value;
 	}
 
-	@:noCompletion private function get_x():Float
+	@:keep @:noCompletion private function get_x():Float
 	{
 		return __matrix.tx;
 	}
 
-	@:noCompletion private function set_x(value:Float):Float
+	@:keep @:noCompletion private function set_x(value:Float):Float
 	{
 		if (value != __matrix.tx)
 		{
@@ -897,12 +897,12 @@ class Tile
 		return value;
 	}
 
-	@:noCompletion private function get_y():Float
+	@:keep @:noCompletion private function get_y():Float
 	{
 		return __matrix.ty;
 	}
 
-	@:noCompletion private function set_y(value:Float):Float
+	@:keep @:noCompletion private function set_y(value:Float):Float
 	{
 		if (value != __matrix.ty)
 		{
