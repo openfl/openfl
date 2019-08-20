@@ -2512,11 +2512,13 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			}
 		}
 
-		for (target in __rollOutStack)
+		var item, i = 0;
+		while (i < __rollOutStack.length)
 		{
-			if (stack.indexOf(target) == -1)
+			item = __rollOutStack[i];
+			if (stack.indexOf(item) == -1)
 			{
-				__rollOutStack.remove(target);
+				__rollOutStack.remove(item);
 
 				#if openfl_pool_events
 				event = MouseEvent.__pool.get(MouseEvent.ROLL_OUT, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
@@ -2527,39 +2529,43 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				#end
 				event.bubbles = false;
 
-				__dispatchTarget(target, event);
+				__dispatchTarget(item, event);
 
 				#if openfl_pool_events
 				MouseEvent.__pool.release(event);
 				#end
 			}
+			else
+			{
+				i++;
+			}
 		}
 
-		for (target in stack)
+		for (item in stack)
 		{
-			if (__rollOutStack.indexOf(target) == -1 && __mouseOverTarget != null)
+			if (__rollOutStack.indexOf(item) == -1 && __mouseOverTarget != null)
 			{
-				if (target.hasEventListener(MouseEvent.ROLL_OVER))
+				if (item.hasEventListener(MouseEvent.ROLL_OVER))
 				{
 					#if openfl_pool_events
 					event = MouseEvent.__pool.get(MouseEvent.ROLL_OVER, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
-						cast target);
+						cast item);
 					#else
 					event = MouseEvent.__create(MouseEvent.ROLL_OVER, button, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
-						cast target);
+						cast item);
 					#end
 					event.bubbles = false;
 
-					__dispatchTarget(target, event);
+					__dispatchTarget(item, event);
 
 					#if openfl_pool_events
 					MouseEvent.__pool.release(event);
 					#end
 				}
 
-				if (target.hasEventListener(MouseEvent.ROLL_OUT) || target.hasEventListener(MouseEvent.ROLL_OVER))
+				if (item.hasEventListener(MouseEvent.ROLL_OUT) || item.hasEventListener(MouseEvent.ROLL_OVER))
 				{
-					__rollOutStack.push(target);
+					__rollOutStack.push(item);
 				}
 			}
 		}
@@ -2746,12 +2752,13 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		}
 
 		var touchOutStack = touchData.rollOutStack;
-
-		for (target in touchOutStack)
+		var item, i = 0;
+		while (i < touchOutStack.length)
 		{
-			if (stack.indexOf(target) == -1)
+			item = touchOutStack[i];
+			if (stack.indexOf(item) == -1)
 			{
-				touchOutStack.remove(target);
+				touchOutStack.remove(item);
 
 				touchEvent = TouchEvent.__create(TouchEvent.TOUCH_ROLL_OUT, null, touchX, touchY, touchOverTarget.__globalToLocal(targetPoint, localPoint),
 					cast touchOverTarget);
@@ -2760,29 +2767,33 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				touchEvent.bubbles = false;
 				touchEvent.pressure = touch.pressure;
 
-				__dispatchTarget(target, touchEvent);
+				__dispatchTarget(item, touchEvent);
+			}
+			else
+			{
+				i++;
 			}
 		}
 
-		for (target in stack)
+		for (item in stack)
 		{
-			if (touchOutStack.indexOf(target) == -1)
+			if (touchOutStack.indexOf(item) == -1)
 			{
-				if (target.hasEventListener(TouchEvent.TOUCH_ROLL_OVER))
+				if (item.hasEventListener(TouchEvent.TOUCH_ROLL_OVER))
 				{
 					touchEvent = TouchEvent.__create(TouchEvent.TOUCH_ROLL_OVER, null, touchX, touchY,
-						touchOverTarget.__globalToLocal(targetPoint, localPoint), cast target);
+						touchOverTarget.__globalToLocal(targetPoint, localPoint), cast item);
 					touchEvent.touchPointID = touchId;
 					touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 					touchEvent.bubbles = false;
 					touchEvent.pressure = touch.pressure;
 
-					__dispatchTarget(target, touchEvent);
+					__dispatchTarget(item, touchEvent);
 				}
 
-				if (target.hasEventListener(TouchEvent.TOUCH_ROLL_OUT))
+				if (item.hasEventListener(TouchEvent.TOUCH_ROLL_OUT))
 				{
-					touchOutStack.push(target);
+					touchOutStack.push(item);
 				}
 			}
 		}
