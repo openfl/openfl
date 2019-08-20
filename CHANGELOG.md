@@ -1,3 +1,31 @@
+8.9.2 (08/20/2019)
+------------------
+
+* Updated to Lime 7.6.*
+* Improved `GlowFilter` with hardware shaders for inner and knockout glow
+* Improved the memory used when using hardware filters
+* Improved support for margins, `indent`, and `blockIndent` in `TextField`
+* Improved AGAL item count in converted shaders
+* Improved the performance of `TextField` when translating position
+* Improved `BitmapData.fromTexture` to support `Texture` and `RectangleTexture`
+* Improved the performance of `Tilemap` with multiple child containers
+* Improved the hardware implementation of `DropShadowFilter`
+* Improved performance of `bitmapData.copyPixels` on HTML5 using `alphaBitmapData`
+* Improved rendering when using HTML5 -Ddom
+* Fixed `scrollRect` rendering behavior
+* Fixed a possible runtime error when using `VideoTexture`
+* Fixed parsing issues when using `textField.htmlText`
+* Fixed issues when selecting multiple lines of text in a `TextField`
+* Fixed text styles following new-line breaks
+* Fixed a parsing issue for AGAL conversion when referencing an indirect register
+* Fixed dispatching of roll out and touch out events in some cases
+* Fixed the behavior of alpha PNG and 8-bit lossless exports from SWF files
+* Fixed culling when using `graphics.drawTriangles`
+* Fixed issues where `Loader` did not fully unload previously loaded content
+* Fixed `Loader` to properly disallow access to `DisplayObjectContainer` APIs
+* Fixed multiple cases in `SimpleButton` where state was not changed properly
+
+
 8.9.1 (05/14/2019)
 ------------------
 
