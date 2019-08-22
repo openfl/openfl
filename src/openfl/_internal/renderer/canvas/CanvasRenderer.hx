@@ -392,7 +392,7 @@ class CanvasRenderer extends CanvasRendererAPI
 		}
 	}
 
-	private function __renderShape(shape:Shape):Void
+	private function __renderShape(shape:DisplayObject):Void
 	{
 		if (shape.mask == null || (shape.mask.width > 0 && shape.mask.height > 0))
 		{

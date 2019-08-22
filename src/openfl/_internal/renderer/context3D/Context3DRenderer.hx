@@ -1180,7 +1180,7 @@ class Context3DRenderer extends Context3DRendererAPI
 		}
 	}
 
-	private function __renderShape(shape:Shape):Void
+	private function __renderShape(shape:DisplayObject):Void
 	{
 		__updateCacheBitmap(shape, false);
 

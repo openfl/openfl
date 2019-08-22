@@ -550,7 +550,7 @@ class DOMRenderer extends DOMRendererAPI
 		DOMDisplayObject.render(domElement, this);
 	}
 
-	private function __renderShape(shape:Shape):Void
+	private function __renderShape(shape:DisplayObject):Void
 	{
 		__canvasRenderer.__updateCacheBitmap(shape, /*!__worldColorTransform.__isDefault ()*/ false);
 

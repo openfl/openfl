@@ -402,7 +402,7 @@ class CairoRenderer extends CairoRendererAPI
 		}
 	}
 
-	private function __renderShape(shape:Shape):Void
+	private function __renderShape(shape:DisplayObject):Void
 	{
 		__updateCacheBitmap(shape, /*!__worldColorTransform.__isDefault ()*/ false);
 
