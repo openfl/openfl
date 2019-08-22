@@ -209,7 +209,7 @@ abstract Vector<T>(IVector<T>)
 		Vector matches the base type of the Vector on which the method is called.
 		@param	callback	The function to run on each item in the Vector.
 	**/
-	public inline function filter(callback:T->Bool):Vector<T>
+	#if (openfl < "9.0.0") @:dox(hide) #end public inline function filter(callback:T->Bool):Vector<T>
 	{
 		return cast this.filter(cast callback);
 	}

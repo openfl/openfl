@@ -633,6 +633,7 @@ class Tools
 
 	private static function processFile(sourcePath:String, targetPath:String, prefix:String = null):Bool
 	{
+		#if false // TODO: Make default
 		if (targetPath == null)
 		{
 			targetPath = Path.withoutExtension(sourcePath) + ".zip";
@@ -644,6 +645,145 @@ class Tools
 		var exporter = new SWFLibraryExporter(swf.data, targetPath);
 
 		return true;
+		#else
+		var bytes:ByteArray = File.getBytes(sourcePath);
+		var swf = new SWF(bytes);
+		var exporter = new SWFLiteExporter(swf.data);
+		var swfLite = exporter.swfLite;
+
+		if (prefix != null && prefix != "")
+		{
+			for (symbol in swfLite.symbols)
+			{
+				if (symbol.className != null)
+				{
+					symbol.className = formatClassName(symbol.className, prefix);
+				}
+			}
+		}
+
+		if (targetPath == null)
+		{
+			targetPath = Path.withoutExtension(sourcePath) + ".bundle";
+		}
+
+		try
+		{
+			System.removeDirectory(targetPath);
+		}
+		catch (e:Dynamic) {}
+
+		System.mkdir(targetPath);
+
+		var project = new HXProject();
+		var createdDirectory = false;
+
+		for (id in exporter.bitmaps.keys())
+		{
+			if (!createdDirectory)
+			{
+				System.mkdir(Path.combine(targetPath, "symbols"));
+				createdDirectory = true;
+			}
+
+			var type = exporter.bitmapTypes.get(id) == BitmapType.PNG ? "png" : "jpg";
+			var symbol:BitmapSymbol = cast swfLite.symbols.get(id);
+			symbol.path = "symbols/" + id + "." + type;
+			swfLite.symbols.set(id, symbol);
+
+			var asset = new Asset("", symbol.path, AssetType.IMAGE);
+			var assetData = exporter.bitmaps.get(id);
+			project.assets.push(asset);
+
+			File.saveBytes(Path.combine(targetPath, symbol.path), assetData);
+
+			if (exporter.bitmapTypes.get(id) == BitmapType.JPEG_ALPHA)
+			{
+				symbol.alpha = "symbols/" + id + "a.png";
+
+				var asset = new Asset("", symbol.alpha, AssetType.IMAGE);
+				var assetData = exporter.bitmapAlpha.get(id);
+				project.assets.push(asset);
+
+				File.saveBytes(Path.combine(targetPath, symbol.alpha), assetData);
+			}
+		}
+
+		createdDirectory = false;
+		for (id in exporter.sounds.keys())
+		{
+			if (!createdDirectory)
+			{
+				System.mkdir(Path.combine(targetPath, "sounds"));
+				createdDirectory = true;
+			}
+
+			var symbolClassName = exporter.soundSymbolClassNames.get(id);
+			var typeId = exporter.soundTypes.get(id);
+
+			Log.info("", " - \x1b[1mExporting sound:\x1b[0m [id=" + id + ", type=" + typeId + ", symbolClassName=" + symbolClassName + "]");
+
+			var type;
+			switch (typeId)
+			{
+				case SoundType.MP3:
+					type = "mp3";
+				case SoundType.ADPCM:
+					type = "adpcm";
+				case _:
+					throw "unsupported sound type " + id + ", type " + typeId + ", symbol class name " + symbolClassName;
+			};
+			var path = "sounds/" + symbolClassName + "." + type;
+			var assetData = exporter.sounds.get(id);
+
+			File.saveBytes(Path.combine(targetPath, path), assetData);
+
+			// NOTICE: everything must be .mp3 in its final form, even though we write out various formats to disk
+			var soundAsset = new Asset("", "sounds/" + symbolClassName + ".mp3", AssetType.SOUND);
+			project.assets.push(soundAsset);
+		}
+
+		var swfLiteAsset = new Asset("", "swflite" + SWFLITE_DATA_SUFFIX, AssetType.TEXT);
+		var swfLiteAssetData = swfLite.serialize();
+		project.assets.push(swfLiteAsset);
+
+		File.saveContent(Path.combine(targetPath, swfLiteAsset.targetPath), swfLiteAssetData);
+
+		var srcPath = Path.combine(targetPath, "src");
+		var exportedClasses = [];
+
+		// TODO: Allow prefix, fix generated class SWFLite references
+		var prefix = "";
+		var uuid = StringTools.generateUUID(20);
+
+		#if !commonjs
+		generateSWFLiteClasses(srcPath, exportedClasses, swfLite, uuid, prefix);
+
+		for (file in exportedClasses)
+		{
+			System.mkdir(Path.directory(file.targetPath));
+			File.saveContent(file.targetPath, file.data);
+		}
+		#end
+
+		var data = AssetHelper.createManifest(project);
+		data.libraryType = "openfl._internal.formats.swf.SWFLiteLibrary";
+		data.libraryArgs = ["swflite" + SWFLITE_DATA_SUFFIX, uuid];
+		data.name = Path.withoutDirectory(Path.withoutExtension(sourcePath));
+
+		File.saveContent(Path.combine(targetPath, "library.json"), data.serialize());
+
+		var includeXML = '<?xml version="1.0" encoding="utf-8"?>
+<library>
+
+	<source path="src" />
+
+</library>';
+
+		File.saveContent(Path.combine(targetPath, "include.xml"), includeXML);
+
+		return true;
+		#end
 	}
 
 	private static function processLibraries(project:HXProject):HXProject
@@ -673,6 +813,7 @@ class Tools
 				type = Path.extension(library.sourcePath).toLowerCase();
 			}
 
+			#if !nodejs
 			if (type == "animate")
 			{
 				if (!FileSystem.exists(library.sourcePath))
@@ -764,7 +905,9 @@ class Tools
 					embeddedAnimate = true;
 				}
 			}
-			else if (type == "swf" || type == "swf_lite" || type == "swflite")
+			else
+			#end
+			if (type == "swf" || type == "swf_lite" || type == "swflite")
 			{
 				if (project.target == Platform.FLASH || project.target == Platform.AIR)
 				{

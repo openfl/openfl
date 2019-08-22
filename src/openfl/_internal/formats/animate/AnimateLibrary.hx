@@ -575,8 +575,8 @@ import openfl.utils.AssetManifest;
 		symbol.id = data.id;
 		symbol.className = data.className;
 		symbol.baseClassName = data.baseClassName;
-		symbol.scale9Grid = data.scale9Grid != null ? new Rectangle(__pixel(data.scale9Grid[0]), __pixel(data.scale9Grid[0]), __pixel(data.scale9Grid[0]),
-			__pixel(data.scale9Grid[0])) : null;
+		symbol.scale9Grid = data.scale9Grid != null ? new Rectangle(__pixel(data.scale9Grid[0]), __pixel(data.scale9Grid[1]), __pixel(data.scale9Grid[2]),
+			__pixel(data.scale9Grid[3])) : null;
 		var frames:Array<Dynamic> = data.frames;
 		var frame:AnimateFrame,
 			objects:Array<Dynamic>,
