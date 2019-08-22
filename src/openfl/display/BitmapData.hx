@@ -1436,13 +1436,17 @@ class BitmapData implements IBitmapDrawable
 				{
 					__indexBufferData = new UInt16Array(54);
 
-					// 3 ——— 2 ——— 5 ——— 7
-					// |  /  |  /  |  /  |
-					// 1 ——— 0 ——— 4 ——— 6
-					// |  /  |  /  |  /  |
-					// 9 ——— 8 —— 10 —— 11
-					// |  /  |  /  |  /  |
-					// 13 — 12 —— 14 —— 15
+					//  0 ——— 1    4 ——— 5    8 ——— 9
+					//  |  /  |    |  /  |    |  /  |
+					//  2 ——— 3    6 ——— 7   10 ——— 11
+					//
+					// 12 ——— 13  16 ——— 18  20 ——— 21
+					//  |  /  |    |  /  |    |  /  |
+					// 14 ——— 15  17 ——— 19  22 ——— 23
+					//
+					// 24 ——— 25  28 ——— 29  32 ——— 33
+					//  |  /  |    |  /  |    |  /  |
+					// 26 ——— 27  30 ——— 31  34 ——— 35
 
 					// top left
 					__indexBufferData[0] = 0;
@@ -1454,67 +1458,67 @@ class BitmapData implements IBitmapDrawable
 
 					// top center
 					__indexBufferData[6] = 4;
-					__indexBufferData[7] = 0;
-					__indexBufferData[8] = 5;
-					__indexBufferData[9] = 5;
-					__indexBufferData[10] = 0;
-					__indexBufferData[11] = 2;
+					__indexBufferData[7] = 5;
+					__indexBufferData[8] = 6;
+					__indexBufferData[9] = 6;
+					__indexBufferData[10] = 5;
+					__indexBufferData[11] = 7;
 
 					// top right
-					__indexBufferData[12] = 6;
-					__indexBufferData[13] = 4;
-					__indexBufferData[14] = 7;
-					__indexBufferData[15] = 7;
-					__indexBufferData[16] = 4;
-					__indexBufferData[17] = 5;
+					__indexBufferData[12] = 8;
+					__indexBufferData[13] = 9;
+					__indexBufferData[14] = 10;
+					__indexBufferData[15] = 10;
+					__indexBufferData[16] = 9;
+					__indexBufferData[17] = 11;
 
 					// middle left
-					__indexBufferData[18] = 8;
-					__indexBufferData[19] = 9;
-					__indexBufferData[20] = 0;
-					__indexBufferData[21] = 0;
-					__indexBufferData[22] = 9;
-					__indexBufferData[23] = 1;
+					__indexBufferData[18] = 12;
+					__indexBufferData[19] = 13;
+					__indexBufferData[20] = 14;
+					__indexBufferData[21] = 14;
+					__indexBufferData[22] = 13;
+					__indexBufferData[23] = 15;
 
 					// middle center
-					__indexBufferData[24] = 10;
-					__indexBufferData[25] = 8;
-					__indexBufferData[26] = 4;
-					__indexBufferData[27] = 4;
-					__indexBufferData[28] = 8;
-					__indexBufferData[29] = 0;
+					__indexBufferData[24] = 16;
+					__indexBufferData[25] = 18;
+					__indexBufferData[26] = 17;
+					__indexBufferData[27] = 17;
+					__indexBufferData[28] = 18;
+					__indexBufferData[29] = 19;
 
 					// middle right
-					__indexBufferData[30] = 11;
-					__indexBufferData[31] = 10;
-					__indexBufferData[32] = 6;
-					__indexBufferData[33] = 6;
-					__indexBufferData[34] = 10;
-					__indexBufferData[35] = 4;
+					__indexBufferData[30] = 20;
+					__indexBufferData[31] = 21;
+					__indexBufferData[32] = 22;
+					__indexBufferData[33] = 22;
+					__indexBufferData[34] = 21;
+					__indexBufferData[35] = 23;
 
 					// bottom left
-					__indexBufferData[36] = 12;
-					__indexBufferData[37] = 13;
-					__indexBufferData[38] = 8;
-					__indexBufferData[39] = 8;
-					__indexBufferData[40] = 13;
-					__indexBufferData[41] = 9;
+					__indexBufferData[36] = 24;
+					__indexBufferData[37] = 25;
+					__indexBufferData[38] = 26;
+					__indexBufferData[39] = 26;
+					__indexBufferData[40] = 25;
+					__indexBufferData[41] = 27;
 
 					// bottom center
-					__indexBufferData[42] = 14;
-					__indexBufferData[43] = 12;
-					__indexBufferData[44] = 10;
-					__indexBufferData[45] = 10;
-					__indexBufferData[46] = 12;
-					__indexBufferData[47] = 8;
+					__indexBufferData[42] = 28;
+					__indexBufferData[43] = 29;
+					__indexBufferData[44] = 30;
+					__indexBufferData[45] = 30;
+					__indexBufferData[46] = 29;
+					__indexBufferData[47] = 31;
 
-					// bottom center
-					__indexBufferData[48] = 15;
-					__indexBufferData[49] = 14;
-					__indexBufferData[50] = 11;
-					__indexBufferData[51] = 11;
-					__indexBufferData[52] = 14;
-					__indexBufferData[53] = 10;
+					// bottom right
+					__indexBufferData[48] = 32;
+					__indexBufferData[49] = 33;
+					__indexBufferData[50] = 34;
+					__indexBufferData[51] = 34;
+					__indexBufferData[52] = 33;
+					__indexBufferData[53] = 35;
 
 					__indexBuffer = context.createIndexBuffer(54);
 				}
@@ -1699,7 +1703,7 @@ class BitmapData implements IBitmapDrawable
 				var centerY = scale9Grid.height;
 				if (centerX != 0 && centerY != 0)
 				{
-					__vertexBufferData = new Float32Array(VERTEX_BUFFER_STRIDE * 16);
+					__vertexBufferData = new Float32Array(VERTEX_BUFFER_STRIDE * 36);
 
 					var left = scale9Grid.x;
 					var top = scale9Grid.y;
@@ -1712,6 +1716,8 @@ class BitmapData implements IBitmapDrawable
 					var uvCenterY = scale9Grid.height / __vertexBufferHeight;
 					var uvRight = right / width;
 					var uvBottom = bottom / height;
+					var uvOffsetU = 1.5 / __vertexBufferWidth;
+					var uvOffsetV = 1.5 / __vertexBufferHeight;
 
 					var renderedLeft = left / targetObject.scaleX;
 					var renderedTop = top / targetObject.scaleY;
@@ -1720,85 +1726,40 @@ class BitmapData implements IBitmapDrawable
 					var renderedCenterX = (width - renderedLeft - renderedRight);
 					var renderedCenterY = (height - renderedTop - renderedBottom);
 
-					// 3 ——— 2 ——— 5 ——— 7
-					// |  /  |  /  |  /  |
-					// 1 ——— 0 ——— 4 ——— 6
-					// |  /  |  /  |  /  |
-					// 9 ——— 8 —— 10 —— 11
-					// |  /  |  /  |  /  |
-					// 13 — 12 —— 14 —— 15
+					//  0 ——— 1    4 ——— 5    8 ——— 9
+					//  |  /  |    |  /  |    |  /  |
+					//  2 ——— 3    6 ——— 7   10 ——— 11
+					//
+					// 12 ——— 13  16 ——— 18  20 ——— 21
+					//  |  /  |    |  /  |    |  /  |
+					// 14 ——— 15  17 ——— 19  22 ——— 23
+					//
+					// 24 ——— 25  28 ——— 29  32 ——— 33
+					//  |  /  |    |  /  |    |  /  |
+					// 26 ——— 27  30 ——— 31  34 ——— 35
 
-					// top left <0-1-2> <2-1-3>
-					__vertexBufferData[0] = renderedLeft;
-					__vertexBufferData[1] = renderedTop;
-					__vertexBufferData[3] = uvWidth * uvLeft;
-					__vertexBufferData[4] = uvHeight * uvTop;
+					__setVertex(0, 0, 0, 0, 0);
+					__setVertices([3, 6, 13, 16], renderedLeft, renderedTop, uvWidth * uvLeft, uvHeight * uvTop);
+					__setVertices([2, 12], 0, renderedTop, 0, uvHeight * uvTop);
+					__setVertices([1, 4], renderedLeft, 0, uvWidth * uvLeft, 0);
+					__setVertices([7, 10, 18, 20], renderedLeft + renderedCenterX, renderedTop, uvWidth * (uvLeft + uvCenterX), uvHeight * uvTop);
+					__setVertices([5, 8], renderedLeft + renderedCenterX, 0, uvWidth * (uvLeft + uvCenterX), 0);
+					__setVertices([11, 21], width, renderedTop, uvWidth, uvHeight * uvTop);
+					__setVertex(9, width, 0, uvWidth, 0);
+					__setVertices([15, 17, 25, 28], renderedLeft, renderedTop + renderedCenterY, uvWidth * uvLeft, uvHeight * (uvTop + uvCenterY));
+					__setVertices([14, 24], 0, renderedTop + renderedCenterY, 0, uvHeight * (uvTop + uvCenterY));
+					__setVertices([19, 22, 29, 32], renderedLeft + renderedCenterX, renderedTop + renderedCenterY, uvWidth * (uvLeft + uvCenterX),
+						uvHeight * (uvTop + uvCenterY));
+					__setVertices([23, 33], width, renderedTop + renderedCenterY, uvWidth, uvHeight * (uvTop + uvCenterY));
+					__setVertices([27, 30], renderedLeft, height, uvWidth * uvLeft, uvHeight);
+					__setVertex(26, 0, height, 0, uvHeight);
+					__setVertices([31, 34], renderedLeft + renderedCenterX, height, uvWidth * (uvLeft + uvCenterX), uvHeight);
+					__setVertex(35, width, height, uvWidth, uvHeight);
 
-					__vertexBufferData[VERTEX_BUFFER_STRIDE + 1] = renderedTop;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE + 4] = uvHeight * uvTop;
-
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 2] = renderedLeft;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 2 + 3] = uvWidth * uvLeft;
-
-					// top center <4-0-5> <5-0-2>
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 4] = renderedLeft + renderedCenterX;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 1] = renderedTop;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 3] = uvWidth * (uvLeft + uvCenterX);
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 4] = uvHeight * uvTop;
-
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 5] = renderedLeft + renderedCenterX;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 5 + 3] = uvWidth * (uvLeft + uvCenterX);
-
-					// top right <6-4-7> <7-4-5>
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 6] = width;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 1] = renderedTop;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 3] = uvWidth;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 4] = uvHeight * uvTop;
-
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 7] = width;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 7 + 3] = uvWidth;
-
-					// middle left <8-9-0> <0-9-1>
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 8] = renderedLeft;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 8 + 1] = renderedTop + renderedCenterY;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 8 + 3] = uvWidth * uvLeft;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 8 + 4] = uvHeight * (uvTop + uvCenterY);
-
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 9 + 1] = renderedTop + renderedCenterY;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 9 + 4] = uvHeight * (uvTop + uvCenterY);
-
-					// middle center <10-8-4> <4-8-0>
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 10] = renderedLeft + renderedCenterX;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 10 + 1] = renderedTop + renderedCenterY;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 10 + 3] = uvWidth * (uvLeft + uvCenterX);
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 10 + 4] = uvHeight * (uvTop + uvCenterY);
-
-					// middle right <11-10-6> <6-10-4>
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 11] = width;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 11 + 1] = renderedTop + renderedCenterY;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 11 + 3] = uvWidth;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 11 + 4] = uvHeight * (uvTop + uvCenterY);
-
-					// bottom left <12-13-8> <8-13-9>
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 12] = renderedLeft;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 12 + 1] = height;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 12 + 3] = uvWidth * uvLeft;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 12 + 4] = uvHeight;
-
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 13 + 1] = height;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 13 + 4] = uvHeight;
-
-					// bottom center <14-12-10> <10-12-8>
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 14] = renderedLeft + renderedCenterX;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 14 + 1] = height;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 14 + 3] = uvWidth * (uvLeft + uvCenterX);
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 14 + 4] = uvHeight;
-
-					// bottom right <15-14-11> <11-14-10>
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 15] = width;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 15 + 1] = height;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 15 + 3] = uvWidth;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 15 + 4] = uvHeight;
+					__setUOffsets([1, 3, 5, 7, 13, 15, 18, 19, 25, 27, 29, 31], -uvOffsetU);
+					__setUOffsets([4, 6, 8, 10, 16, 17, 20, 22, 28, 30, 32, 34], uvOffsetU);
+					__setVOffsets([2, 3, 6, 7, 10, 11, 14, 15, 17, 19, 22, 23], -uvOffsetV);
+					__setVOffsets([12, 13, 16, 18, 20, 21, 24, 25, 28, 29, 32, 33], uvOffsetV);
 
 					__vertexBuffer = context.createVertexBuffer(16, VERTEX_BUFFER_STRIDE);
 				}
@@ -3305,6 +3266,39 @@ class BitmapData implements IBitmapDrawable
 			__vertexBufferData[VERTEX_BUFFER_STRIDE * 3 + 4] = uvY;
 
 			__vertexBuffer.uploadFromTypedArray(__vertexBufferData);
+		}
+	}
+
+	@:noCompletion private function __setVertex(index:Int, x:Float, y:Float, u:Float, v:Float):Void
+	{
+		var i = index * VERTEX_BUFFER_STRIDE;
+		__vertexBufferData[i + 0] = x;
+		__vertexBufferData[i + 1] = y;
+		__vertexBufferData[i + 3] = u;
+		__vertexBufferData[i + 4] = v;
+	}
+
+	@:noCompletion private function __setVertices(indices:Array<Int>, x:Float, y:Float, u:Float, v:Float):Void
+	{
+		for (index in indices)
+		{
+			__setVertex(index, x, y, u, v);
+		}
+	}
+
+	@:noCompletion private function __setUOffsets(indices:Array<Int>, offset:Float):Void
+	{
+		for (index in indices)
+		{
+			__vertexBufferData[index * VERTEX_BUFFER_STRIDE + 3] += offset;
+		}
+	}
+
+	@:noCompletion private function __setVOffsets(indices:Array<Int>, offset:Float):Void
+	{
+		for (index in indices)
+		{
+			__vertexBufferData[index * VERTEX_BUFFER_STRIDE + 4] += offset;
 		}
 	}
 
