@@ -297,7 +297,7 @@ class Transform
 
 			if (c == 0)
 			{
-				scaleY = a;
+				scaleY = d;
 			}
 			else
 			{
