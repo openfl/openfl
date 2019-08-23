@@ -222,7 +222,7 @@ class DOMRenderer extends DOMRendererAPI
 		DOMDisplayObject.clear(domElement, this);
 	}
 
-	private function __clearShape(shape:Shape):Void
+	private function __clearShape(shape:DisplayObject):Void
 	{
 		DOMDisplayObject.clear(shape, this);
 	}
