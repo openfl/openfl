@@ -140,7 +140,7 @@ class TextLayout
 			__hbBuffer.script = script.toHBScript();
 			__hbBuffer.language = new HBLanguage(language);
 			__hbBuffer.clusterLevel = HBBufferClusterLevel.CHARACTERS;
-			#if (haxe_ver < "4.0.0" || neko || mac)
+			#if ((haxe_ver < "4.0.0") || neko || mac || linux || hl)
 			__hbBuffer.addUTF8(text, 0, -1);
 			#else
 			for (i in 0...text.length)
