@@ -1716,8 +1716,8 @@ class BitmapData implements IBitmapDrawable
 					var uvCenterY = scale9Grid.height / __vertexBufferHeight;
 					var uvRight = right / width;
 					var uvBottom = bottom / height;
-					var uvOffsetU = 1.5 / __vertexBufferWidth;
-					var uvOffsetV = 1.5 / __vertexBufferHeight;
+					var uvOffsetU = 0.5 / __vertexBufferWidth;
+					var uvOffsetV = 0.5 / __vertexBufferHeight;
 
 					var renderedLeft = left / targetObject.scaleX;
 					var renderedTop = top / targetObject.scaleY;
