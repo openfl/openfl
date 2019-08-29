@@ -2316,7 +2316,7 @@ import lime.math.Vector2;
 					__bindGLTextureCubeMap(texture.__getTexture());
 				}
 
-				#if desktop
+				#if (desktop && !html5)
 				// TODO: Cache?
 				gl.enable(gl.TEXTURE_2D);
 				#end
@@ -2350,7 +2350,7 @@ import lime.math.Vector2;
 					texture.__alphaTexture.__setSamplerState(samplerState);
 					gl.uniform1i(__state.program.__agalAlphaSamplerEnabled[sampler].location, 1);
 
-					#if desktop
+					#if (desktop && !html5)
 					// TODO: Cache?
 					gl.enable(gl.TEXTURE_2D);
 					#end
