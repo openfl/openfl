@@ -213,7 +213,15 @@ abstract Dictionary<K, V>(IMap<K, V>)
 		values = new Map();
 	}
 
-	#if (haxe_ver >= "4.0.0")
+	#if haxe4
+	public function clear():Void
+	{
+		types.clear();
+		values.clear();
+	}
+	#end
+
+	#if haxe4
 	public function copy():ClassMap<K, V>
 	{
 		var copied = new ClassMap<K, V>();
@@ -233,7 +241,7 @@ abstract Dictionary<K, V>(IMap<K, V>)
 		return values.get(Type.getClassName(key));
 	}
 
-	#if (haxe_ver >= "4.0.0")
+	#if haxe4
 	@:runtime public inline function keyValueIterator():KeyValueIterator<K, V>
 	{
 		return new haxe.iterators.MapKeyValueIterator(this);
@@ -286,7 +294,15 @@ abstract Dictionary<K, V>(IMap<K, V>)
 		values = new Array<V>();
 	}
 
-	#if (haxe_ver >= "4.0.0")
+	#if haxe4
+	public function clear():Void
+	{
+		floatKeys = new Array<K>();
+		values = new Array<V>();
+	}
+	#end
+
+	#if haxe4
 	public function copy():FloatMap<K, V>
 	{
 		var copied = new FloatMap<K, V>();
@@ -307,7 +323,7 @@ abstract Dictionary<K, V>(IMap<K, V>)
 		return ind > -1 ? values[ind] : null;
 	}
 
-	#if (haxe_ver >= "4.0.0")
+	#if haxe4
 	@:runtime public inline function keyValueIterator():KeyValueIterator<K, V>
 	{
 		return new haxe.iterators.MapKeyValueIterator(this);
@@ -461,7 +477,14 @@ abstract Dictionary<K, V>(IMap<K, V>)
 		map = new ObjectMap<{}, V>();
 	}
 
-	#if (haxe_ver >= "4.0.0")
+	#if haxe4
+	public function clear():Void
+	{
+		map.clear();
+	}
+	#end
+
+	#if haxe4
 	public function copy():UtilsObjectMap<K, V>
 	{
 		var copied = new UtilsObjectMap<K, V>();
@@ -481,7 +504,7 @@ abstract Dictionary<K, V>(IMap<K, V>)
 		return map.get(cast key);
 	}
 
-	#if (haxe_ver >= "4.0.0")
+	#if haxe4
 	@:runtime public inline function keyValueIterator():KeyValueIterator<K, V>
 	{
 		return new haxe.iterators.MapKeyValueIterator(this);
@@ -532,7 +555,7 @@ abstract Dictionary<K, V>(Dynamic)
 		return Reflect.field(this, cast key);
 	}
 
-	#if (haxe_ver >= "4.0.0")
+	#if haxe4
 	@:runtime public inline function keyValueIterator():KeyValueIterator<K, V>
 	{
 		return new haxe.iterators.MapKeyValueIterator(this);
@@ -595,7 +618,7 @@ abstract Dictionary<K, V>(flash.utils.Dictionary) from flash.utils.Dictionary to
 		return untyped this[key];
 	}
 
-	#if (haxe_ver >= "4.0.0")
+	#if haxe4
 	@:runtime public inline function keyValueIterator():KeyValueIterator<K, V>
 	{
 		return new haxe.iterators.MapKeyValueIterator(untyped this);
