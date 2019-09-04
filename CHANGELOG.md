@@ -1,3 +1,16 @@
+8.9.3 (09/04/2019)
+------------------
+
+* Updated for Haxe 4 RC 4
+* Improved the quality of `scale9Grid` rendering in hardware
+* Improved support for rendering UTF character sets with `TextField`
+* Fixed a type error when running on C++ platforms
+* Fixed incorrect scale value when using `openfl.geom.Transform`
+* Fixed support for array-based form parameters when making HTTP requests
+* Fixed use of an incompatible OpenGL call when using the Electron target
+* Fixed reference to objects that could prevent GC in event pool behavior
+
+
 8.9.2 (08/20/2019)
 ------------------
 
