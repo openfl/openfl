@@ -9,6 +9,7 @@
 * Fixed support for array-based form parameters when making HTTP requests
 * Fixed use of an incompatible OpenGL call when using the Electron target
 * Fixed reference to objects that could prevent GC in event pool behavior
+* Fixed the value for the `ClipboardFormats.TEXT_FORMAT` type
 
 
 8.9.2 (08/20/2019)
