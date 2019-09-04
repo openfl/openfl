@@ -4,8 +4,8 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "8.9.2",
-	"releasenote": "Update Lime to 7.6, better hardware filters, TextField accuracy improvements",
+	"version": "8.9.3",
+	"releasenote": "Update for Haxe 4 RC 4, scale9Grid improvements, fixes",
 	"contributors": [ "singmajesty" ],
 	"classPath": "src"
 }
