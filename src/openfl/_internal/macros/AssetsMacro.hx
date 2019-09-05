@@ -61,7 +61,7 @@ class AssetsMacro
 								preload = b.image;
 							}
 
-							if (onload != null)
+							if (onload != null && Reflect.isFunction(onload))
 							{
 								onload(b);
 							}
