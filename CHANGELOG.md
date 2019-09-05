@@ -1,3 +1,11 @@
+8.9.4 (09/05/2019)
+------------------
+
+* Reverted UTF character changes to investigate a different fix
+* Fixed support for 64-bit Neko on Windows (included in Haxe 4 RC 4)
+* Fixed a possible issue when using `@:bitmap` assets on HTML5
+
+
 8.9.3 (09/04/2019)
 ------------------
 
