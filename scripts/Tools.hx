@@ -93,6 +93,7 @@ class Tools
 		{
 			case WINDOWS:
 				untyped $loader.path = $array(path + "Windows/", $loader.path);
+				untyped $loader.path = $array(path + "Windows64/", $loader.path);
 
 			case MAC:
 				// untyped $loader.path = $array(path + "Mac/", $loader.path);
