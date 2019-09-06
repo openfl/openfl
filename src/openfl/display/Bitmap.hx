@@ -1,6 +1,7 @@
 package openfl.display;
 
 #if !flash
+import openfl._internal.renderer.context3D.batcher.Quad;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 #if (js && html5)
@@ -80,10 +81,12 @@ class Bitmap extends DisplayObject
 	**/
 	public var smoothing:Bool;
 
+	@:noCompletion private var __batchQuad:Quad;
+	@:noCompletion private var __batchQuadDirty:Bool;
+	@:noCompletion private var __bitmapData:BitmapData;
 	#if (js && html5)
 	@:noCompletion private var __image:ImageElement;
 	#end
-	@:noCompletion private var __bitmapData:BitmapData;
 	@:noCompletion private var __imageVersion:Int;
 
 	#if openfljs
@@ -115,6 +118,7 @@ class Bitmap extends DisplayObject
 		__bitmapData = bitmapData;
 		this.pixelSnapping = pixelSnapping;
 		this.smoothing = smoothing;
+		__batchQuadDirty = true;
 
 		if (pixelSnapping == null)
 		{
@@ -127,6 +131,7 @@ class Bitmap extends DisplayObject
 		if (__bitmapData != null && __bitmapData.image != null && __bitmapData.image.version != __imageVersion)
 		{
 			__setRenderDirty();
+			__batchQuadDirty = true;
 		}
 	}
 
@@ -190,6 +195,16 @@ class Bitmap extends DisplayObject
 		return false;
 	}
 
+	private override function __updateTransforms(overrideTransform:Matrix = null):Void
+	{
+		super.__updateTransforms(overrideTransform);
+
+		if (overrideTransform == null)
+		{
+			__batchQuadDirty = true;
+		}
+	}
+
 	// Get & Set Methods
 	@:noCompletion private function get_bitmapData():BitmapData
 	{
@@ -202,6 +217,7 @@ class Bitmap extends DisplayObject
 		smoothing = false;
 
 		__setRenderDirty();
+		__batchQuadDirty = true;
 
 		if (__filters != null)
 		{

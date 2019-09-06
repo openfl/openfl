@@ -7,6 +7,12 @@ import lime.graphics.RenderContext;
 import lime.graphics.WebGLRenderContext;
 import lime.math.ARGB;
 import lime.math.Matrix4;
+import lime.utils.Float32Array;
+import openfl._internal.renderer.context3D.batcher.BatchBlendMode;
+import openfl._internal.renderer.context3D.batcher.BatchRenderer;
+import openfl._internal.renderer.context3D.batcher.Quad;
+import openfl._internal.renderer.context3D.batcher.QuadTextureData;
+import openfl._internal.renderer.context3D.batcher.TextureData;
 import openfl._internal.renderer.ShaderBuffer;
 import openfl._internal.utils.ObjectPool;
 import openfl.display.Bitmap;
@@ -89,6 +95,7 @@ class Context3DRenderer extends Context3DRendererAPI
 	private static var __scissorRectangle:Rectangle = new Rectangle();
 	private static var __textureSizeValue:Array<Float> = [0, 0];
 
+	public var batcher:BatchRenderer;
 	public var context3D:Context3D;
 
 	private var __alphaMaskShader:Context3DAlphaMaskShader;
@@ -106,6 +113,7 @@ class Context3DRenderer extends Context3DRendererAPI
 	private var __displayHeight:Int;
 	private var __displayWidth:Int;
 	private var __flipped:Bool;
+	private var __getMatrixHelperMatrix:Matrix = new Matrix();
 	private var __gl:WebGLRenderContext;
 	private var __height:Int;
 	private var __maskShader:Context3DMaskShader;
@@ -501,6 +509,30 @@ class Context3DRenderer extends Context3DRendererAPI
 		}
 	}
 
+	private function __fillBitmapDataBatchQuad(bitmapData:BitmapData, transform:Matrix, vertexData:Float32Array):Void
+	{
+		var pixelRatio = 1.0; // bitmapData.__pixelRatio;
+		__fillBitmapDataTransformedVertexCoords(transform, vertexData, 0, 0, bitmapData.width / pixelRatio, bitmapData.height / pixelRatio);
+	}
+
+	private inline function __fillBitmapDataTransformedVertexCoords(transform:Matrix, vertexData:Float32Array, x:Float, y:Float, w:Float, h:Float):Void
+	{
+		var x1 = x + w;
+		var y1 = y + h;
+
+		vertexData[0] = transform.__transformX(x, y);
+		vertexData[1] = transform.__transformY(x, y);
+
+		vertexData[2] = transform.__transformX(x1, y);
+		vertexData[3] = transform.__transformY(x1, y);
+
+		vertexData[4] = transform.__transformX(x1, y1);
+		vertexData[5] = transform.__transformY(x1, y1);
+
+		vertexData[6] = transform.__transformX(x, y1);
+		vertexData[7] = transform.__transformY(x, y1);
+	}
+
 	private function __fillRect(bitmapData:BitmapData, rect:Rectangle, color:Int):Void
 	{
 		if (bitmapData.__texture != null)
@@ -545,6 +577,63 @@ class Context3DRenderer extends Context3DRendererAPI
 		return value * __worldAlpha;
 	}
 
+	private function __getBitmapBatchQuad(bitmap:Bitmap):Quad
+	{
+		if (bitmap.__batchQuadDirty)
+		{
+			if (bitmap.__batchQuad == null)
+			{
+				bitmap.__batchQuad = Quad.pool.get();
+			}
+
+			var snapToPixel = __roundPixels || __shouldSnapToPixel(bitmap);
+			var transform = __getDisplayTransformTempMatrix(bitmap.__renderTransform, snapToPixel);
+			__fillBitmapDataBatchQuad(bitmap.bitmapData, transform, bitmap.__batchQuad.vertexData);
+			bitmap.__batchQuad.texture = __getBitmapDataQuadTextureData(bitmap.bitmapData);
+			bitmap.__batchQuadDirty = false;
+		}
+
+		bitmap.__batchQuad.setup(bitmap.__worldAlpha, bitmap.__worldColorTransform, BatchBlendMode.fromOpenFLBlendMode(bitmap.__worldBlendMode),
+			bitmap.smoothing);
+
+		return bitmap.__batchQuad;
+	}
+
+	private function __getBitmapDataQuadTextureData(bitmapData:BitmapData):QuadTextureData
+	{
+		var texture = bitmapData.getTexture(context3D);
+		if (texture != null || (bitmapData.__textureData != null && bitmapData.__textureData.glTexture != texture.__textureID))
+		{
+			if (bitmapData.__textureData == null)
+			{
+				bitmapData.__textureData = new TextureData(texture.__textureID);
+				bitmapData.__quadTextureData = QuadTextureData.createFullFrame(bitmapData.__textureData);
+			}
+			return bitmapData.__quadTextureData;
+		}
+		return null;
+	}
+
+	private function __getGraphicsBatchQuad(graphics:Graphics, alpha:Float, colorTransform:ColorTransform, blendMode:BlendMode):Quad
+	{
+		if (graphics.__batchQuadDirty)
+		{
+			if (graphics.__batchQuad == null)
+			{
+				graphics.__batchQuad = Quad.pool.get();
+			}
+
+			var transform = __getDisplayTransformTempMatrix(graphics.__worldTransform, false);
+			__fillBitmapDataBatchQuad(graphics.__bitmap, transform, graphics.__batchQuad.vertexData);
+			graphics.__batchQuad.texture = __getBitmapDataQuadTextureData(graphics.__bitmap);
+			graphics.__batchQuadDirty = false;
+		}
+
+		graphics.__batchQuad.setup(alpha, colorTransform, BatchBlendMode.fromOpenFLBlendMode(blendMode), false);
+
+		return graphics.__batchQuad;
+	}
+
 	private function __getColorTransform(value:ColorTransform):ColorTransform
 	{
 		if (__worldColorTransform != null)
@@ -557,6 +646,21 @@ class Context3DRenderer extends Context3DRendererAPI
 		{
 			return value;
 		}
+	}
+
+	private function __getDisplayTransformTempMatrix(transform:Matrix, snapToPixel:Bool):Matrix
+	{
+		var matrix = __getMatrixHelperMatrix;
+		matrix.copyFrom(transform);
+		matrix.concat(__worldTransform);
+
+		if (snapToPixel)
+		{
+			matrix.tx = Math.round(matrix.tx);
+			matrix.ty = Math.round(matrix.ty);
+		}
+
+		return matrix;
 	}
 
 	private function __getMatrix(transform:Matrix, pixelSnapping:PixelSnapping):Array<Float>
@@ -601,6 +705,9 @@ class Context3DRenderer extends Context3DRendererAPI
 		__context = context.__context;
 		__gl = context.__context.webgl;
 		gl = __gl;
+
+		// TODO: Clean on re-init instead of making a new instance?
+		batcher = new BatchRenderer(this, 4096);
 
 		__defaultRenderTarget = defaultRenderTarget;
 		__flipped = (__defaultRenderTarget == null);
@@ -677,6 +784,8 @@ class Context3DRenderer extends Context3DRendererAPI
 	{
 		if (__stencilReference == 0) return;
 
+		batcher.flush();
+
 		var mask = __maskObjects.pop();
 
 		if (__stencilReference > 1)
@@ -686,6 +795,9 @@ class Context3DRenderer extends Context3DRendererAPI
 			context3D.setColorMask(false, false, false, false);
 
 			__renderMask(mask);
+
+			batcher.flush();
+
 			__stencilReference--;
 
 			context3D.setStencilActions(FRONT_AND_BACK, EQUAL, KEEP, KEEP, KEEP);
@@ -750,6 +862,8 @@ class Context3DRenderer extends Context3DRendererAPI
 
 	private function __pushMask(mask:DisplayObject):Void
 	{
+		batcher.flush();
+
 		if (__stencilReference == 0)
 		{
 			context3D.clear(0, 0, 0, 0, 0, 0, Context3DClearMask.STENCIL);
@@ -761,6 +875,9 @@ class Context3DRenderer extends Context3DRendererAPI
 		context3D.setColorMask(false, false, false, false);
 
 		__renderMask(mask);
+
+		batcher.flush();
+
 		__maskObjects.push(mask);
 		__stencilReference++;
 
@@ -844,6 +961,8 @@ class Context3DRenderer extends Context3DRendererAPI
 		__blendMode = null;
 		__setBlendMode(NORMAL);
 
+		batcher.projectionMatrix = __flipped ? __projectionFlipped : __projection;
+
 		if (__defaultRenderTarget == null)
 		{
 			__scissorRectangle.setTo(__offsetX, __offsetY, __displayWidth, __displayHeight);
@@ -856,6 +975,9 @@ class Context3DRenderer extends Context3DRendererAPI
 			{
 				__renderDisplayObject(cast object);
 			}
+
+			// flush whatever is left in the batch to render
+			batcher.flush();
 
 			// TODO: Handle this in Context3D as a viewport?
 
@@ -934,6 +1056,9 @@ class Context3DRenderer extends Context3DRendererAPI
 					__renderBitmapData(cast object);
 				}
 			}
+
+			// flush whatever is left in the batch to render
+			batcher.flush();
 
 			object.__mask = cacheMask;
 			object.__scrollRect = cacheScrollRect;
@@ -1280,6 +1405,8 @@ class Context3DRenderer extends Context3DRendererAPI
 
 	private function __scissorRect(clipRect:Rectangle = null):Void
 	{
+		batcher.flush();
+
 		if (clipRect != null)
 		{
 			var x = Math.floor(clipRect.x);
@@ -1394,6 +1521,16 @@ class Context3DRenderer extends Context3DRendererAPI
 				}
 
 				return null;
+		}
+	}
+
+	private inline function __shouldSnapToPixel(bitmap:Bitmap):Bool
+	{
+		return switch bitmap.pixelSnapping
+		{
+			case null | NEVER: false;
+			case ALWAYS: true;
+			case AUTO: Math.abs(bitmap.__renderTransform.a) == 1 && Math.abs(bitmap.__renderTransform.d) == 1; // only snap when not scaled/rotated/skewed
 		}
 	}
 
