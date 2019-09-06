@@ -491,6 +491,7 @@ class Context3DGraphics
 		else
 		{
 			graphics.__bitmap = null;
+			graphics.__batchQuadDirty = true;
 			graphics.__update(renderer.__worldTransform);
 
 			var bounds = graphics.__bounds;

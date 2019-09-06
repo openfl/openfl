@@ -1152,6 +1152,7 @@ class CairoGraphics
 		{
 			graphics.__cairo = null;
 			graphics.__bitmap = null;
+			graphics.__batchQuadDirty = true;
 		}
 		else
 		{

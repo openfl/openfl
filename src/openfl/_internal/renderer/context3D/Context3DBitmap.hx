@@ -29,71 +29,75 @@ class Context3DBitmap
 
 		if (bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid)
 		{
-			var context = renderer.context3D;
+			renderer.__pushMaskObject(bitmap);
+			renderer.batcher.render(renderer.__getBitmapBatchQuad(bitmap));
+			renderer.__popMaskObject(bitmap);
 
-			// TODO: Do we need to make sure this bitmap is cacheAsBitmap?
-			var alphaMask = (bitmap.mask != null && bitmap.mask.cacheAsBitmap);
+			// var context = renderer.context3D;
 
-			// TODO: Support more cases
-			if (alphaMask && bitmap.mask.__type != BITMAP)
-			{
-				alphaMask = false;
-			}
+			// // TODO: Do we need to make sure this bitmap is cacheAsBitmap?
+			// var alphaMask = (bitmap.mask != null && bitmap.mask.cacheAsBitmap);
 
-			renderer.__setBlendMode(bitmap.__worldBlendMode);
-			if (!alphaMask) renderer.__pushMaskObject(bitmap);
-			// renderer.filterManager.pushObject (bitmap);
+			// // TODO: Support more cases
+			// if (alphaMask && bitmap.mask.__type != BITMAP)
+			// {
+			// 	alphaMask = false;
+			// }
 
-			var shader = renderer.__initDisplayShader(!alphaMask ? cast bitmap.__worldShader : renderer.__alphaMaskShader);
-			renderer.setShader(shader);
-			renderer.applyBitmapData(bitmap.__bitmapData, renderer.__allowSmoothing && (bitmap.smoothing || renderer.__upscaled));
-			renderer.applyMatrix(renderer.__getMatrix(bitmap.__renderTransform, bitmap.pixelSnapping));
-			renderer.applyAlpha(bitmap.__worldAlpha);
-			renderer.applyColorTransform(bitmap.__worldColorTransform);
+			// renderer.__setBlendMode(bitmap.__worldBlendMode);
+			// if (!alphaMask) renderer.__pushMaskObject(bitmap);
+			// // renderer.filterManager.pushObject (bitmap);
 
-			if (alphaMask)
-			{
-				// renderer.__updateCacheBitmap(bitmap.mask, false);
-				// renderer.__currentShader.__alphaTexture.input = bitmap.mask.__cacheBitmapDataTexture;
+			// var shader = renderer.__initDisplayShader(!alphaMask ? cast bitmap.__worldShader : renderer.__alphaMaskShader);
+			// renderer.setShader(shader);
+			// renderer.applyBitmapData(bitmap.__bitmapData, renderer.__allowSmoothing && (bitmap.smoothing || renderer.__upscaled));
+			// renderer.applyMatrix(renderer.__getMatrix(bitmap.__renderTransform, bitmap.pixelSnapping));
+			// renderer.applyAlpha(bitmap.__worldAlpha);
+			// renderer.applyColorTransform(bitmap.__worldColorTransform);
 
-				// TODO: Use update cache bitmap always (filters) but keep cacheAsBitmap on a plain bitmap cheap?
-				var maskBitmap:Bitmap = cast bitmap.mask;
-				renderer.__currentShader.__alphaTexture.input = maskBitmap.__bitmapData;
-				if (renderer.__currentShader.__alphaTextureMatrix.value == null) renderer.__currentShader.__alphaTextureMatrix.value = [];
-				var matrix = renderer.__currentShader.__alphaTextureMatrix.value;
+			// if (alphaMask)
+			// {
+			// 	// renderer.__updateCacheBitmap(bitmap.mask, false);
+			// 	// renderer.__currentShader.__alphaTexture.input = bitmap.mask.__cacheBitmapDataTexture;
 
-				var transform = Matrix.__pool.get();
-				transform.copyFrom(bitmap.__renderTransform);
-				transform.invert();
-				transform.concat(maskBitmap.__renderTransform);
+			// 	// TODO: Use update cache bitmap always (filters) but keep cacheAsBitmap on a plain bitmap cheap?
+			// 	var maskBitmap:Bitmap = cast bitmap.mask;
+			// 	renderer.__currentShader.__alphaTexture.input = maskBitmap.__bitmapData;
+			// 	if (renderer.__currentShader.__alphaTextureMatrix.value == null) renderer.__currentShader.__alphaTextureMatrix.value = [];
+			// 	var matrix = renderer.__currentShader.__alphaTextureMatrix.value;
 
-				matrix[0] = transform.a * (bitmap.__bitmapData.width / maskBitmap.__bitmapData.width);
-				matrix[1] = transform.b;
-				matrix[4] = transform.c;
-				matrix[5] = transform.d * (bitmap.__bitmapData.height / maskBitmap.__bitmapData.height);
-				matrix[12] = transform.tx;
-				matrix[13] = transform.ty;
-				matrix[15] = 0.0;
+			// 	var transform = Matrix.__pool.get();
+			// 	transform.copyFrom(bitmap.__renderTransform);
+			// 	transform.invert();
+			// 	transform.concat(maskBitmap.__renderTransform);
 
-				Matrix.__pool.release(transform);
-			}
+			// 	matrix[0] = transform.a * (bitmap.__bitmapData.width / maskBitmap.__bitmapData.width);
+			// 	matrix[1] = transform.b;
+			// 	matrix[4] = transform.c;
+			// 	matrix[5] = transform.d * (bitmap.__bitmapData.height / maskBitmap.__bitmapData.height);
+			// 	matrix[12] = transform.tx;
+			// 	matrix[13] = transform.ty;
+			// 	matrix[15] = 0.0;
 
-			renderer.updateShader();
+			// 	Matrix.__pool.release(transform);
+			// }
 
-			var vertexBuffer = bitmap.__bitmapData.getVertexBuffer(context);
-			if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, vertexBuffer, 0, FLOAT_3);
-			if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
-			var indexBuffer = bitmap.__bitmapData.getIndexBuffer(context);
-			context.drawTriangles(indexBuffer);
+			// renderer.updateShader();
 
-			#if gl_stats
-			Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
-			#end
+			// var vertexBuffer = bitmap.__bitmapData.getVertexBuffer(context);
+			// if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, vertexBuffer, 0, FLOAT_3);
+			// if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
+			// var indexBuffer = bitmap.__bitmapData.getIndexBuffer(context);
+			// context.drawTriangles(indexBuffer);
 
-			renderer.__clearShader();
+			// #if gl_stats
+			// Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
+			// #end
 
-			// renderer.filterManager.popObject (bitmap);
-			if (!alphaMask) renderer.__popMaskObject(bitmap);
+			// renderer.__clearShader();
+
+			// // renderer.filterManager.popObject (bitmap);
+			// if (!alphaMask) renderer.__popMaskObject(bitmap);
 		}
 	}
 

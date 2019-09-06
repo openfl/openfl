@@ -1,6 +1,7 @@
 package openfl.display;
 
 #if !flash
+import openfl._internal.renderer.context3D.batcher.Quad;
 import openfl._internal.renderer.context3D.Context3DBuffer;
 import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.DrawCommandReader;
@@ -57,6 +58,8 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private static var maxTextureHeight:Null<Int> = null;
 	@:noCompletion private static var maxTextureWidth:Null<Int> = null;
 
+	@:noCompletion private var __batchQuad:Quad;
+	@:noCompletion private var __batchQuadDirty:Bool = true;
 	@:noCompletion private var __bounds:Rectangle;
 	@:noCompletion private var __commands:DrawCommandBuffer;
 	@:noCompletion private var __dirty(default, set):Bool = true;

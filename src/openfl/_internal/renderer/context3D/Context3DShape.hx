@@ -37,30 +37,34 @@ class Context3DShape
 
 			if (graphics.__bitmap != null && graphics.__visible)
 			{
-				var context = renderer.context3D;
-				var scale9Grid = shape.__worldScale9Grid;
+				renderer.__pushMaskObject(shape);
+				renderer.batcher.render(renderer.__getGraphicsBatchQuad(graphics, shape.__worldAlpha, shape.__worldColorTransform, shape.__worldBlendMode));
+				renderer.__popMaskObject(shape);
 
-				var shader = renderer.__initDisplayShader(cast shape.__worldShader);
-				renderer.setShader(shader);
-				renderer.applyBitmapData(graphics.__bitmap, true);
-				renderer.applyMatrix(renderer.__getMatrix(graphics.__worldTransform, AUTO));
-				renderer.applyAlpha(shape.__worldAlpha);
-				renderer.applyColorTransform(shape.__worldColorTransform);
-				renderer.updateShader();
+				// var context = renderer.context3D;
+				// var scale9Grid = shape.__worldScale9Grid;
 
-				// TODO: scale9Grid
+				// var shader = renderer.__initDisplayShader(cast shape.__worldShader);
+				// renderer.setShader(shader);
+				// renderer.applyBitmapData(graphics.__bitmap, true);
+				// renderer.applyMatrix(renderer.__getMatrix(graphics.__worldTransform, AUTO));
+				// renderer.applyAlpha(shape.__worldAlpha);
+				// renderer.applyColorTransform(shape.__worldColorTransform);
+				// renderer.updateShader();
 
-				var vertexBuffer = graphics.__bitmap.getVertexBuffer(context, scale9Grid, shape);
-				if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, vertexBuffer, 0, FLOAT_3);
-				if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
-				var indexBuffer = graphics.__bitmap.getIndexBuffer(context, scale9Grid);
-				context.drawTriangles(indexBuffer);
+				// // TODO: scale9Grid
 
-				#if gl_stats
-				Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
-				#end
+				// var vertexBuffer = graphics.__bitmap.getVertexBuffer(context, scale9Grid, shape);
+				// if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, vertexBuffer, 0, FLOAT_3);
+				// if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
+				// var indexBuffer = graphics.__bitmap.getIndexBuffer(context, scale9Grid);
+				// context.drawTriangles(indexBuffer);
 
-				renderer.__clearShader();
+				// #if gl_stats
+				// Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
+				// #end
+
+				// renderer.__clearShader();
 			}
 
 			// renderer.filterManager.popObject (shape);
