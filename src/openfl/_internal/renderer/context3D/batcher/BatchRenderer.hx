@@ -6,6 +6,7 @@ import lime.utils.UInt16Array;
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GLTexture;
 import lime.graphics.WebGLRenderContext;
+import openfl.display.BlendMode;
 #if gl_stats
 import openfl._internal.renderer.context3D.stats.GLStats;
 import openfl._internal.renderer.context3D.stats.DrawCallContext;
@@ -29,7 +30,7 @@ class BatchRenderer
 	private var groups:Vector<RenderGroup>;
 	private var boundTextures:Vector<TextureData>;
 
-	private var currentBlendMode:BatchBlendMode = BatchBlendMode.NORMAL;
+	private var currentBlendMode:BlendMode = NORMAL;
 	private var currentTexture:TextureData;
 	private var currentQuadIndex:Int = 0;
 	private var currentGroup:RenderGroup;
@@ -100,16 +101,6 @@ class BatchRenderer
 		// we always increase the tick when staring a new render group, so all textures become "disabled" and need to be processed
 		tick++;
 		currentGroupCount++;
-	}
-
-	public function flipVertical():Void
-	{
-		shader.positionScale[1] = -1;
-	}
-
-	public function unflipVertical():Void
-	{
-		shader.positionScale[1] = 1;
 	}
 
 	/** schedule quad for rendering **/
@@ -220,7 +211,7 @@ class BatchRenderer
 		var colorTransform = quad.colorTransform;
 		var currentVertexBufferIndex = currentQuadIndex * FLOATS_PER_QUAD;
 
-		// trace('Group $currentGroupCount uses texture $textureUnitId');
+		trace('Group $currentGroupCount uses texture $textureUnitId');
 
 		inline function setVertex(i)
 		{
@@ -267,9 +258,6 @@ class BatchRenderer
 		setVertex(3);
 
 		currentQuadIndex++;
-		#if gl_stats
-		GLStats.quadCounter.increment();
-		#end
 	}
 
 	/** render all the quads we collected **/
@@ -315,7 +303,7 @@ class BatchRenderer
 			gl.bindTexture(gl.TEXTURE_2D, emptyTexture);
 		}
 
-		var lastBlendMode = null;
+		var lastBlendMode = renderer.__blendMode;
 
 		// iterate over groups and render them
 		for (i in 0...currentGroupCount)
@@ -326,17 +314,17 @@ class BatchRenderer
 				// TODO: don't even create empty groups (can happen when staring drawing with a non-NORMAL blendmode)
 				continue;
 			}
-			// trace('Rendering group ${i + 1} (${group.size})');
+			trace('Rendering group ${i + 1} (${group.size})');
 
 			// bind this group's textures
-			for (i in 0...group.textureCount)
+			for (j in 0...group.textureCount)
 			{
-				var currentTexture = group.textures[i];
-				// trace('Activating texture at ${group.textureUnits[i]}: ${currentTexture.glTexture}');
-				gl.activeTexture(gl.TEXTURE0 + group.textureUnits[i]);
+				var currentTexture = group.textures[j];
+				trace('Activating texture at ${group.textureUnits[j]}: ${currentTexture.glTexture}');
+				gl.activeTexture(gl.TEXTURE0 + group.textureUnits[j]);
 				gl.bindTexture(gl.TEXTURE_2D, currentTexture.glTexture);
 
-				if (group.textureSmoothing[i])
+				if (group.textureSmoothing[j])
 				{
 					gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
 					gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -357,7 +345,7 @@ class BatchRenderer
 			if (group.blendMode != lastBlendMode)
 			{
 				lastBlendMode = group.blendMode;
-				lastBlendMode.apply(gl);
+				renderer.__setBlendMode(group.blendMode);
 			}
 
 			// draw this group's slice of vertices
@@ -380,7 +368,7 @@ class BatchRenderer
 		}
 		currentTexture = null;
 		currentQuadIndex = 0;
-		currentBlendMode = BatchBlendMode.NORMAL;
+		currentBlendMode = NORMAL;
 		currentGroupCount = 0;
 		startNextGroup();
 	}
@@ -414,7 +402,7 @@ private class RenderGroup
 	public var textureCount:Int = 0;
 	public var size:Int = 0;
 	public var start:Int = 0;
-	public var blendMode:BatchBlendMode;
+	public var blendMode:BlendMode = NORMAL;
 
 	public function new() {}
 }

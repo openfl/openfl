@@ -38,10 +38,14 @@ class MultiTextureShader
 		while (maxTextures >= 1)
 		{
 			var fsSource = generateMultiTextureFragmentShaderSource(maxTextures);
+
+			trace(fsSource);
+			trace(vsSource);
+
 			program = createProgram(gl, vsSource, fsSource);
 			if (program == null)
 			{
-				Log.warn("Coudln't compile multi-texture program for " + maxTextures + " samplers, trying twice as less...");
+				Log.warn("Couldn't compile multi-texture program for " + maxTextures + " samplers, trying twice as less...");
 				maxTextures = Std.int(maxTextures / 2);
 			}
 			else
@@ -137,11 +141,20 @@ class MultiTextureShader
 	private static function generateMultiTextureFragmentShaderSource(numTextures:Int):String
 	{
 		var select = [];
-		for (i in 0...numTextures)
+		if (numTextures > 1)
 		{
-			var cond = if (i > 0) "else " else "";
-			if (i < numTextures - 1) cond += 'if (textureId == $i.0) ';
-			select.push('\t\t\t\t${cond}color = texture2D(uSamplers[$i], vTextureCoord);');
+			select.push('\t\t\t\tvec4 color;');
+			select.push('\t\t\t\tfloat textureId = floor(vTextureId+0.5);');
+			for (i in 0...numTextures)
+			{
+				var cond = if (i > 0) "else " else "";
+				if (i < numTextures - 1) cond += 'if (textureId == $i.0) ';
+				select.push('\t\t\t\t${cond}color = texture2D(uSamplers[$i], vTextureCoord);');
+			}
+		}
+		else
+		{
+			select.push('\t\t\t\tvec4 color = texture2D(uSamplers[0], vTextureCoord);');
 		}
 		return '
 			#ifdef GL_ES
@@ -161,10 +174,11 @@ class MultiTextureShader
 			uniform sampler2D uSamplers[$numTextures];
 
 			void main(void) {
-				float textureId = floor(vTextureId+0.5);
-				vec4 color;
 ${select.join("\n")}
 
+				gl_FragColor = color;
+
+				return;
 				if (color.a == 0.0) {
 
 					gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);

@@ -2,6 +2,7 @@ package openfl._internal.renderer.context3D.batcher;
 
 import lime.utils.Float32Array;
 import lime.utils.ObjectPool;
+import openfl.display.BlendMode;
 import openfl.geom.ColorTransform;
 
 @SuppressWarnings("checkstyle:FieldDocComment")
@@ -19,7 +20,7 @@ class Quad
 
 	public var colorTransform(default, null):ColorTransform;
 
-	public var blendMode(default, null):BatchBlendMode;
+	public var blendMode(default, null):BlendMode;
 
 	public var smoothing(default, null):Bool;
 
@@ -30,7 +31,7 @@ class Quad
 		smoothing = false;
 	}
 
-	public inline function setup(alpha:Float, colorTransform:ColorTransform, blendMode:BatchBlendMode, smoothing:Bool):Void
+	public inline function setup(alpha:Float, colorTransform:ColorTransform, blendMode:BlendMode, smoothing:Bool):Void
 	{
 		this.alpha = alpha;
 		this.colorTransform = colorTransform;
