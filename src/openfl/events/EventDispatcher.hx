@@ -549,7 +549,11 @@ private class Listener
 
 	public function match(callback:Dynamic->Void, useCapture:Bool):Bool
 	{
+		#if hl // https://github.com/HaxeFoundation/hashlink/issues/301
+		return ((Reflect.compareMethods(this.callback, callback) || Reflect.compare(this.callback, callback) == 0) && this.useCapture == useCapture);
+		#else
 		return (Reflect.compareMethods(this.callback, callback) && this.useCapture == useCapture);
+		#end
 	}
 }
 #else
