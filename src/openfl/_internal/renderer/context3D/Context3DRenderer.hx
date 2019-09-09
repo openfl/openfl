@@ -8,7 +8,6 @@ import lime.graphics.WebGLRenderContext;
 import lime.math.ARGB;
 import lime.math.Matrix4;
 import lime.utils.Float32Array;
-import openfl._internal.renderer.context3D.batcher.BatchBlendMode;
 import openfl._internal.renderer.context3D.batcher.BatchRenderer;
 import openfl._internal.renderer.context3D.batcher.Quad;
 import openfl._internal.renderer.context3D.batcher.QuadTextureData;
@@ -593,8 +592,7 @@ class Context3DRenderer extends Context3DRendererAPI
 			bitmap.__batchQuadDirty = false;
 		}
 
-		bitmap.__batchQuad.setup(bitmap.__worldAlpha, bitmap.__worldColorTransform, BatchBlendMode.fromOpenFLBlendMode(bitmap.__worldBlendMode),
-			bitmap.smoothing);
+		bitmap.__batchQuad.setup(bitmap.__worldAlpha, bitmap.__worldColorTransform, bitmap.__worldBlendMode, bitmap.smoothing);
 
 		return bitmap.__batchQuad;
 	}
@@ -629,7 +627,7 @@ class Context3DRenderer extends Context3DRendererAPI
 			graphics.__batchQuadDirty = false;
 		}
 
-		graphics.__batchQuad.setup(alpha, colorTransform, BatchBlendMode.fromOpenFLBlendMode(blendMode), false);
+		graphics.__batchQuad.setup(alpha, colorTransform, blendMode, false);
 
 		return graphics.__batchQuad;
 	}
