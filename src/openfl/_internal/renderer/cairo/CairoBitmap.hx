@@ -56,6 +56,9 @@ class CairoBitmap
 			}
 
 			renderer.__popMaskObject(bitmap);
+
+			// TODO: Find cause of leaking blend modes?
+			renderer.__setBlendMode(NORMAL);
 		}
 		#end
 	}
