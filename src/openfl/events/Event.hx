@@ -905,6 +905,8 @@ class Event
 	@:noCompletion private function __init():Void
 	{
 		// type = null;
+		target = null;
+		currentTarget = null;
 		bubbles = false;
 		cancelable = false;
 		eventPhase = AT_TARGET;

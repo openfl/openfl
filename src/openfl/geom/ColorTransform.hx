@@ -254,10 +254,10 @@ class ColorTransform
 
 	@:noCompletion private function __invert():Void
 	{
-		redMultiplier = 1 / redMultiplier;
-		greenMultiplier = 1 / greenMultiplier;
-		blueMultiplier = 1 / blueMultiplier;
-		alphaMultiplier = 1 / alphaMultiplier;
+		redMultiplier = redMultiplier != 0 ? 1 / redMultiplier : 1;
+		greenMultiplier = greenMultiplier != 0 ? 1 / greenMultiplier : 1;
+		blueMultiplier = blueMultiplier != 0 ? 1 / blueMultiplier : 1;
+		alphaMultiplier = alphaMultiplier != 0 ? 1 / alphaMultiplier : 1;
 		redOffset = -redOffset;
 		greenOffset = -greenOffset;
 		blueOffset = -blueOffset;

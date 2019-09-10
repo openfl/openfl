@@ -11,6 +11,6 @@ class ::CLASS_NAME:: extends openfl.display.BitmapData
 		var library = openfl._internal.formats.animate.AnimateLibrary.get("::UUID::");
 		var symbol:openfl._internal.formats.animate.AnimateBitmapSymbol = cast library.symbols.get(::SYMBOL_ID::);
 		var image = library.getImage(symbol.path);
-		bitmapData = openfl.display.BitmapData.fromImage(image);
+		__fromImage(image);
 	}
 }
