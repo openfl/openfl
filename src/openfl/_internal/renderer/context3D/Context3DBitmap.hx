@@ -30,7 +30,7 @@ class Context3DBitmap
 		if (bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid)
 		{
 			renderer.__pushMaskObject(bitmap);
-			renderer.batcher.render(renderer.__getBitmapBatchQuad(bitmap));
+			renderer.batcher.push(renderer.__getBitmapBatchQuad(bitmap));
 			renderer.__popMaskObject(bitmap);
 
 			// var context = renderer.context3D;

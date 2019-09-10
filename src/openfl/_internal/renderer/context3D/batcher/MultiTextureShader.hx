@@ -27,7 +27,7 @@ class MultiTextureShader
 	private var uProjMatrix:GLUniformLocation;
 	private var uPositionScale:GLUniformLocation;
 
-	// x, y, u, v, texId, alpha, colorMult, colorOfs
+	// x, y, u, v, texId, aColorOffset, aColorMultiplier, aPremultipliedAlpha
 	public static inline var FLOATS_PER_VERTEX = 2 + 2 + 1 + 4 + 4 + 1;
 
 	public function new(gl:WebGLRenderContext)
@@ -38,9 +38,6 @@ class MultiTextureShader
 		while (maxTextures >= 1)
 		{
 			var fsSource = generateMultiTextureFragmentShaderSource(maxTextures);
-
-			trace(fsSource);
-			trace(vsSource);
 
 			program = createProgram(gl, vsSource, fsSource);
 			if (program == null)
@@ -66,8 +63,9 @@ class MultiTextureShader
 		aColorOffset = gl.getAttribLocation(program, 'aColorOffset');
 		aColorMultiplier = gl.getAttribLocation(program, 'aColorMultiplier');
 		aPremultipliedAlpha = gl.getAttribLocation(program, 'aPremultipliedAlpha');
+
 		uProjMatrix = gl.getUniformLocation(program, "uProjMatrix");
-		uPositionScale = gl.getUniformLocation(program, "uPostionScale");
+		uPositionScale = gl.getUniformLocation(program, "uPositionScale");
 
 		gl.useProgram(program);
 		gl.uniform1iv(gl.getUniformLocation(program, 'uSamplers'), new Int32Array([for (i in 0...maxTextures) i]));
@@ -176,9 +174,6 @@ class MultiTextureShader
 			void main(void) {
 ${select.join("\n")}
 
-				gl_FragColor = color;
-
-				return;
 				if (color.a == 0.0) {
 
 					gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
@@ -215,7 +210,7 @@ ${select.join("\n")}
 		attribute float aPremultipliedAlpha;
 
 		uniform mat4 uProjMatrix;
-		uniform vec4 uPostionScale;
+		uniform vec4 uPositionScale;
 
 		varying vec2 vTextureCoord;
 		varying float vTextureId;
@@ -224,7 +219,7 @@ ${select.join("\n")}
 		varying float vPremultipliedAlpha;
 
 		void main(void) {
-			gl_Position = uProjMatrix * vec4(aVertexPosition, 0, 1) * uPostionScale;
+			gl_Position = uProjMatrix * vec4(aVertexPosition, 0, 1) * uPositionScale;
 			vTextureCoord = aTextureCoord;
 			vTextureId = aTextureId;
 			vColorMultiplier = aColorMultiplier;
