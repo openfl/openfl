@@ -1204,6 +1204,11 @@ class SWFLibraryExporter
 				var name = className;
 				var packageName = "";
 
+				if (name.toLowerCase().indexOf("shipguide") > -1)
+				{
+					trace(name);
+				}
+
 				var lastIndexOfPeriod = className.lastIndexOf(".");
 
 				if (lastIndexOfPeriod > -1)
@@ -1213,10 +1218,26 @@ class SWFLibraryExporter
 					{
 						packageName = packageName.charAt(0).toLowerCase() + packageName.substr(1);
 					}
+					if (name.toLowerCase().indexOf("shipguide") > -1)
+					{
+						trace(name);
+						trace(packageName);
+					}
 					name = className.substr(lastIndexOfPeriod + 1);
+
+					if (name.toLowerCase().indexOf("shipguide") > -1)
+					{
+						trace(name);
+					}
 				}
 
 				name = formatClassName(name, prefix);
+
+				if (name.toLowerCase().indexOf("shipguide") > -1)
+				{
+					trace(prefix);
+					trace(name);
+				}
 
 				var classProperties = [];
 				var objectReferences = new Map<String, Bool>();
@@ -1702,10 +1723,14 @@ class AVM2
 
 	public static function getIndex<T>(idx:Index<T>):Int
 	{
+		#if (haxe4 || (format > "3.4.2"))
+		return idx.asInt();
+		#else
 		return switch (idx)
 		{
 			case Idx(i): i;
 		};
+		#end
 	}
 
 	public static function getMultiNameByIndex(abcData:ABCData, i:Index<Name>):Name
