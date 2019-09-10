@@ -38,7 +38,7 @@ class Context3DShape
 			if (graphics.__bitmap != null && graphics.__visible)
 			{
 				renderer.__pushMaskObject(shape);
-				renderer.batcher.render(renderer.__getGraphicsBatchQuad(graphics, shape.__worldAlpha, shape.__worldColorTransform, shape.__worldBlendMode));
+				renderer.batcher.push(renderer.__getGraphicsBatchQuad(graphics, shape.__worldAlpha, shape.__worldColorTransform, shape.__worldBlendMode));
 				renderer.__popMaskObject(shape);
 
 				// var context = renderer.context3D;

@@ -8,12 +8,6 @@ class TextureData
 	/** Actual GL texture **/
 	public var glTexture:GLTexture;
 
-	/** Batcher-specific data about this texture (so we don't have to allocate more storage and do lookups) **/
-	public var textureUnitId:Int = -1;
-
-	public var enabledTick:Int = 0;
-	public var lastSmoothing:Bool = false;
-
 	public function new(glTexture:GLTexture)
 	{
 		this.glTexture = glTexture;
