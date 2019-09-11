@@ -14,6 +14,7 @@ import openfl._internal.renderer.context3D.stats.DrawCallContext;
 
 // inspired by pixi.js SpriteRenderer
 
+@:access(openfl.display3D.Context3D)
 @SuppressWarnings("checkstyle:FieldDocComment")
 class BatchRenderer
 {
@@ -61,11 +62,11 @@ class BatchRenderer
 		{
 			flush();
 		}
-		var texture:QuadTextureData = null;
 		var unit = 0;
+		var texture:TextureData = null;
 		for (i in 0...batch.numTextures)
 		{
-			if (batch.textures[i].data.glTexture == quad.texture.data.glTexture)
+			if (batch.textures[i].glTexture == quad.texture.data.glTexture)
 			{
 				texture = batch.textures[i];
 				unit = i;
@@ -78,7 +79,7 @@ class BatchRenderer
 			{
 				flush();
 			}
-			texture = quad.texture;
+			texture = quad.texture.data;
 			unit = batch.numTextures;
 			batch.textures[batch.numTextures++] = texture;
 		}
@@ -92,12 +93,12 @@ class BatchRenderer
 			return;
 		}
 
-		@:privateAccess renderer.context3D.__flushGL();
-
-		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+		renderer.__setBlendMode(renderer.__blendMode);
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
 		gl.bufferSubData(gl.ARRAY_BUFFER, 0, batch.vertices.subarray(0, batch.numQuads * Batch.FLOATS_PER_QUAD));
+
+		gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 
 		var stride = MultiTextureShader.FLOATS_PER_VERTEX * Float32Array.BYTES_PER_ELEMENT;
 
@@ -113,14 +114,23 @@ class BatchRenderer
 		for (i in 0...batch.numTextures)
 		{
 			gl.activeTexture(gl.TEXTURE0 + i);
-			gl.bindTexture(gl.TEXTURE_2D, batch.textures[i].data.glTexture);
+			gl.bindTexture(gl.TEXTURE_2D, batch.textures[i].glTexture);
+
+			// TODO: smoothing
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 		}
-		for (i in batch.numTextures...shader.maxTextures)
-		{
-			gl.activeTexture(gl.TEXTURE0 + i);
-			gl.bindTexture(gl.TEXTURE_2D, emptyTexture);
-		}
+
 		gl.drawElements(gl.TRIANGLES, batch.numQuads * 6, gl.UNSIGNED_SHORT, 0);
+
+		// gl.useProgram(null);
+		// renderer.setShader(null);
+		// renderer.__clearShader();
+
+		renderer.context3D.__flushGL();
 
 		// start new batch
 		batch.clear();
@@ -128,7 +138,7 @@ class BatchRenderer
 
 	private static function createIndicesForQuads(numQuads:Int):UInt16Array
 	{
-		var totalIndices = numQuads * 3 * 2; // 2 triangles of 3 verties per quad
+		var totalIndices = numQuads * 6; // 2 triangles of 3 verties per quad
 		var indices = new UInt16Array(totalIndices);
 		var i = 0, j = 0;
 		while (i < totalIndices)
@@ -150,7 +160,7 @@ private class Batch
 {
 	public var indices:UInt16Array;
 	public var vertices:Float32Array;
-	public var textures:Array<QuadTextureData>;
+	public var textures:Array<TextureData>;
 
 	public var numQuads:Int = 0;
 	public var numTextures:Int = 0;
@@ -162,8 +172,6 @@ private class Batch
 		vertices = new Float32Array(maxQuads * FLOATS_PER_QUAD);
 		indices = new UInt16Array(maxQuads * 6);
 		textures = [for (i in 0...maxTextures) null];
-
-		trace(textures);
 	}
 
 	public function clear()
