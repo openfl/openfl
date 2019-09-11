@@ -968,6 +968,11 @@ class Context3DRenderer extends Context3DRendererAPI
 
 			__upscaled = (__worldTransform.a != 1 || __worldTransform.d != 1);
 
+			if (!__cleared)
+			{
+				__clear();
+			}
+
 			// TODO: BitmapData render
 			if (object != null && object.__type != null)
 			{
