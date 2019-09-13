@@ -1,22 +1,26 @@
 package openfl._internal.renderer.context3D.batcher;
 
 import haxe.ds.IntMap;
+import lime.math.Matrix4;
+import lime.graphics.WebGLRenderContext;
 import lime.utils.Float32Array;
 import lime.utils.UInt16Array;
-import lime.graphics.WebGLRenderContext;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display.Shader;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
+import openfl.geom.Matrix;
 #if gl_stats
 import openfl._internal.renderer.context3D.stats.Context3DStats;
 import openfl._internal.renderer.context3D.stats.DrawCallContext;
 #end
 
 @:access(openfl.display.Shader)
+@:access(openfl.display.ShaderParameter)
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display3D.VertexBuffer3D)
+@:access(openfl.geom.Matrix)
 @SuppressWarnings("checkstyle:FieldDocComment")
 class BatchRenderer
 {
@@ -24,7 +28,6 @@ class BatchRenderer
 	private var renderer:Context3DRenderer;
 
 	private var __batch:Batch;
-
 	private var __shader:BatchShader;
 	private var __vertexBuffer:VertexBuffer3D;
 	private var __indexBuffer:IndexBuffer3D;
@@ -51,6 +54,8 @@ class BatchRenderer
 		__vertexBuffer.uploadFromTypedArray(__batch.vertices);
 		__indexBuffer = context.createIndexBuffer(__maxQuads * 6, STATIC_DRAW);
 		__indexBuffer.uploadFromTypedArray(createIndicesForQuads(__maxQuads));
+
+		__shader.aTextureId.__useArray = true;
 	}
 
 	public function push(quad:Quad):Void
@@ -101,11 +106,47 @@ class BatchRenderer
 		gl.bufferSubData(gl.ARRAY_BUFFER, 0, subArray);
 
 		renderer.setShader(__shader);
-		// TODO:
-		// for (i in 0...batch.numTextures)
-		// {
-		__shader.uSampler.input = __batch.textures[0];
-		// }
+
+		renderer.applyMatrix(renderer.__getMatrix(Matrix.__identity, AUTO));
+		renderer.useColorTransformArray();
+		for (i in 0...__batch.numTextures)
+		{
+			switch (i)
+			{
+				case 0:
+					__shader.uSampler0.input = __batch.textures[i];
+				case 1:
+					__shader.uSampler1.input = __batch.textures[i];
+				case 2:
+					__shader.uSampler2.input = __batch.textures[i];
+				case 3:
+					__shader.uSampler3.input = __batch.textures[i];
+				case 4:
+					__shader.uSampler4.input = __batch.textures[i];
+				case 5:
+					__shader.uSampler5.input = __batch.textures[i];
+				case 6:
+					__shader.uSampler6.input = __batch.textures[i];
+				case 7:
+					__shader.uSampler7.input = __batch.textures[i];
+				case 8:
+					__shader.uSampler8.input = __batch.textures[i];
+				case 9:
+					__shader.uSampler9.input = __batch.textures[i];
+				case 10:
+					__shader.uSampler10.input = __batch.textures[i];
+				case 11:
+					__shader.uSampler11.input = __batch.textures[i];
+				case 12:
+					__shader.uSampler12.input = __batch.textures[i];
+				case 13:
+					__shader.uSampler13.input = __batch.textures[i];
+				case 14:
+					__shader.uSampler14.input = __batch.textures[i];
+				case 15:
+					__shader.uSampler15.input = __batch.textures[i];
+			}
+		}
 		renderer.updateShader();
 
 		context.setVertexBufferAt(__shader.__position.index, __vertexBuffer, 0, FLOAT_2);
@@ -120,8 +161,6 @@ class BatchRenderer
 		Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
 		#end
 
-		renderer.__clearShader();
-		context.__flushGL();
 		// start new batch
 		__batch.clear();
 	}
@@ -189,27 +228,27 @@ private class Batch
 
 			if (colorTransform != null)
 			{
-				vertices[offset + 4] = colorTransform.redOffset / 255;
-				vertices[offset + 5] = colorTransform.greenOffset / 255;
-				vertices[offset + 6] = colorTransform.blueOffset / 255;
-				vertices[offset + 7] = (colorTransform.alphaOffset / 255) * alpha;
+				vertices[offset + 4] = colorTransform.redMultiplier;
+				vertices[offset + 5] = colorTransform.greenMultiplier;
+				vertices[offset + 6] = colorTransform.blueMultiplier;
+				vertices[offset + 7] = colorTransform.alphaMultiplier * alpha;
 
-				vertices[offset + 8] = colorTransform.redMultiplier;
-				vertices[offset + 9] = colorTransform.greenMultiplier;
-				vertices[offset + 10] = colorTransform.blueMultiplier;
-				vertices[offset + 11] = colorTransform.alphaMultiplier * alpha;
+				vertices[offset + 8] = colorTransform.redOffset;
+				vertices[offset + 9] = colorTransform.greenOffset;
+				vertices[offset + 10] = colorTransform.blueOffset;
+				vertices[offset + 11] = (colorTransform.alphaOffset) * alpha;
 			}
 			else
 			{
-				vertices[offset + 4] = 0;
-				vertices[offset + 5] = 0;
-				vertices[offset + 6] = 0;
-				vertices[offset + 7] = 0;
+				vertices[offset + 4] = 1;
+				vertices[offset + 5] = 1;
+				vertices[offset + 6] = 1;
+				vertices[offset + 7] = 1;
 
-				vertices[offset + 8] = 1;
-				vertices[offset + 9] = 1;
-				vertices[offset + 10] = 1;
-				vertices[offset + 11] = alpha;
+				vertices[offset + 8] = 0;
+				vertices[offset + 9] = 0;
+				vertices[offset + 10] = 0;
+				vertices[offset + 11] = 0;
 			}
 			vertices[offset + 12] = textureUnit;
 		}
@@ -255,10 +294,42 @@ private class BatchShader extends Shader
 		varying vec2 openfl_TextureCoordv;
 		varying float vTextureId;
 
-		uniform sampler2D uSampler;
+		uniform sampler2D uSampler0;
+		uniform sampler2D uSampler1;
+		uniform sampler2D uSampler2;
+		uniform sampler2D uSampler3;
+		uniform sampler2D uSampler4;
+		uniform sampler2D uSampler5;
+		uniform sampler2D uSampler6;
+		uniform sampler2D uSampler7;
+		uniform sampler2D uSampler8;
+		uniform sampler2D uSampler9;
+		uniform sampler2D uSampler10;
+		uniform sampler2D uSampler11;
+		uniform sampler2D uSampler12;
+		uniform sampler2D uSampler13;
+		uniform sampler2D uSampler14;
+		uniform sampler2D uSampler15;
 
 		void main(void) {
-			vec4 color = texture2D(uSampler, openfl_TextureCoordv);
+			vec4 color;
+			if (vTextureId == 0.0) color = texture2D(uSampler0, openfl_TextureCoordv);
+			else if (vTextureId == 1.0) color = texture2D(uSampler1, openfl_TextureCoordv);
+			else if (vTextureId == 2.0) color = texture2D(uSampler2, openfl_TextureCoordv);
+			else if (vTextureId == 3.0) color = texture2D(uSampler3, openfl_TextureCoordv);
+			else if (vTextureId == 4.0) color = texture2D(uSampler4, openfl_TextureCoordv);
+			else if (vTextureId == 5.0) color = texture2D(uSampler5, openfl_TextureCoordv);
+			else if (vTextureId == 6.0) color = texture2D(uSampler6, openfl_TextureCoordv);
+			else if (vTextureId == 7.0) color = texture2D(uSampler7, openfl_TextureCoordv);
+			else if (vTextureId == 8.0) color = texture2D(uSampler8, openfl_TextureCoordv);
+			else if (vTextureId == 9.0) color = texture2D(uSampler9, openfl_TextureCoordv);
+			else if (vTextureId == 10.0) color = texture2D(uSampler10, openfl_TextureCoordv);
+			else if (vTextureId == 11.0) color = texture2D(uSampler11, openfl_TextureCoordv);
+			else if (vTextureId == 12.0) color = texture2D(uSampler12, openfl_TextureCoordv);
+			else if (vTextureId == 13.0) color = texture2D(uSampler13, openfl_TextureCoordv);
+			else if (vTextureId == 14.0) color = texture2D(uSampler14, openfl_TextureCoordv);
+			else if (vTextureId == 15.0) color = texture2D(uSampler15, openfl_TextureCoordv);
+
 			if (color.a == 0.0) {
 
 				gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
@@ -267,13 +338,7 @@ private class BatchShader extends Shader
 
 				color = vec4 (color.rgb / color.a, color.a);
 
-				mat4 colorMultiplier = mat4 (0);
-				colorMultiplier[0][0] = openfl_ColorMultiplierv.x;
-				colorMultiplier[1][1] = openfl_ColorMultiplierv.y;
-				colorMultiplier[2][2] = openfl_ColorMultiplierv.z;
-				colorMultiplier[3][3] = 1.0; // openfl_ColorMultiplierv.w;
-
-				color = clamp (openfl_ColorOffsetv + (color * colorMultiplier), 0.0, 1.0);
+				color = clamp (openfl_ColorOffsetv + (color * openfl_ColorMultiplierv), 0.0, 1.0);
 
 				if (color.a > 0.0) {
 
