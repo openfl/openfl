@@ -11,7 +11,6 @@ import lime.utils.Float32Array;
 import openfl._internal.renderer.context3D.batcher.BatchRenderer;
 import openfl._internal.renderer.context3D.batcher.Quad;
 import openfl._internal.renderer.context3D.batcher.QuadTextureData;
-import openfl._internal.renderer.context3D.batcher.TextureData;
 import openfl._internal.renderer.ShaderBuffer;
 import openfl._internal.utils.ObjectPool;
 import openfl.display.Bitmap;
@@ -600,12 +599,11 @@ class Context3DRenderer extends Context3DRendererAPI
 	private function __getBitmapDataQuadTextureData(bitmapData:BitmapData):QuadTextureData
 	{
 		var texture = bitmapData.getTexture(context3D);
-		if (texture != null || (bitmapData.__textureData != null && bitmapData.__textureData.glTexture != texture.__textureID))
+		if (texture != null)
 		{
-			if (bitmapData.__textureData == null)
+			if (bitmapData.__quadTextureData == null)
 			{
-				bitmapData.__textureData = new TextureData(texture.__textureID);
-				bitmapData.__quadTextureData = QuadTextureData.createFullFrame(bitmapData.__textureData);
+				bitmapData.__quadTextureData = QuadTextureData.createFullFrame(bitmapData);
 			}
 			return bitmapData.__quadTextureData;
 		}
@@ -959,19 +957,12 @@ class Context3DRenderer extends Context3DRendererAPI
 		__blendMode = null;
 		__setBlendMode(NORMAL);
 
-		batcher.projectionMatrix = __flipped ? __projectionFlipped : __projection;
-
 		if (__defaultRenderTarget == null)
 		{
 			__scissorRectangle.setTo(__offsetX, __offsetY, __displayWidth, __displayHeight);
 			context3D.setScissorRectangle(__scissorRectangle);
 
 			__upscaled = (__worldTransform.a != 1 || __worldTransform.d != 1);
-
-			if (!__cleared)
-			{
-				__clear();
-			}
 
 			// TODO: BitmapData render
 			if (object != null && object.__type != null)

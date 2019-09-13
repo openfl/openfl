@@ -5,7 +5,6 @@ import openfl._internal.backend.gl.GLFramebuffer;
 import openfl._internal.backend.gl.GLRenderbuffer;
 import openfl._internal.formats.swf.SWFLite;
 import openfl._internal.renderer.context3D.batcher.QuadTextureData;
-import openfl._internal.renderer.context3D.batcher.TextureData;
 import openfl._internal.renderer.BitmapDataPool;
 import openfl._internal.renderer.DisplayObjectType;
 import openfl._internal.symbols.BitmapSymbol;
@@ -216,7 +215,6 @@ class BitmapData implements IBitmapDrawable
 	@:noCompletion private var __symbol:BitmapSymbol;
 	@:noCompletion private var __texture:TextureBase;
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __textureContext:#if lime RenderContext #else Dynamic #end;
-	@:noCompletion private var __textureData:TextureData;
 	@:noCompletion private var __textureHeight:Int;
 	@:noCompletion private var __textureVersion:Int;
 	@:noCompletion private var __textureWidth:Int;
@@ -322,6 +320,7 @@ class BitmapData implements IBitmapDrawable
 			readable = true;
 		}
 
+		__quadTextureData = null;
 		__renderTransform = new Matrix();
 		__worldAlpha = 1;
 		__worldTransform = new Matrix();
