@@ -1812,8 +1812,6 @@ class TextEngine
 		else
 		{
 			var i = numLines - 1, tempHeight = 0.0;
-
-			// if (text.charCodeAt(text.length - 1) == '\n'.code) i--; // trailing newlines do not contribute to maxScrollV
 			var j = i;
 
 			while (i >= 0)

@@ -2141,7 +2141,6 @@ class TextField extends InteractiveObject
 
 		// TODO: Solution where this is not run twice (run inside replaceText above)
 		__updateScrollH();
-		// __updateScrollV();
 	}
 
 	@:noCompletion private function __replaceText(beginIndex:Int, endIndex:Int, newText:String, restrict:Bool):Void
