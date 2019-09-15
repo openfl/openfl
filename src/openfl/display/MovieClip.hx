@@ -1088,6 +1088,11 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 			stage.removeEventListener(MouseEvent.MOUSE_UP, __onMouseUp);
 		}
 
+		if (!__buttonMode)
+		{
+			return;
+		}
+
 		if (event.target == this && __enabled && __hasOver)
 		{
 			gotoAndStop("_over");

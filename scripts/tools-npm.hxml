@@ -9,7 +9,7 @@
 -D lime=7.5.0
 # -lib format
 -cp ../node_modules/format
--D format
+-D format=3.4.3
 # -lib nodejs
 -cp ../node_modules/hxnodejs/src
 -cp .

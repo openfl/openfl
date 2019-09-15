@@ -1,3 +1,13 @@
+8.9.5 (09/11/2019)
+------------------
+
+* Fixed support for both 32- and 64-bit Neko on Windows (for Haxe 3 and 4)
+* Fixed rendering position of SWF-based `TextField` instances with filters
+* Fixed rendering of updated `TextField` instances when using filters
+* Fixed instances where incorrect blend modes were applied in Cairo rendering
+* Fixed workaround for `compareMethods` on HL target within `EventDispatcher`
+
+
 8.9.4 (09/05/2019)
 ------------------
 
