@@ -1784,23 +1784,21 @@ class TextEngine
 		else
 		{
 			var tempHeight = 0.0;
-			var ret = lineHeights.length;
+			var ret = scrollV;
 
-			for (i in ret - 1...lineHeights.length)
-			{
-				if (tempHeight + lineHeights[i] <= height - GUTTER * 2)
+			while (ret <= lineHeights.length) {
+				
+				if (tempHeight + lineHeights[ret - 1] <= height - GUTTER * 2)
 				{
-					tempHeight += lineHeights[i];
+					tempHeight += lineHeights[ret - 1];
 				}
-				else
-				{
-					ret = i;
-					break;
-				}
+				
+				else break;
+
+				ret++;
 			}
 
-			if (ret < 1) return 1;
-			return ret;
+			return ret - 1;
 		}
 	}
 
@@ -1814,8 +1812,6 @@ class TextEngine
 		else
 		{
 			var i = numLines - 1, tempHeight = 0.0;
-
-			if (text.charCodeAt(text.length - 1) == '\n'.code) i--; // trailing newlines do not contribute to maxScrollV
 			var j = i;
 
 			while (i >= 0)
