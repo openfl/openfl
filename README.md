@@ -213,9 +213,9 @@ constructor () {
 	
 	super ();
 	
-	BitmapData.loadFromFile ("openfl.png").onComplete ((bitmapData) => {
+	BitmapData.loadFromFile ("openfl.png").onComplete (bitmapData => {
 		
-		var bitmap = new Bitmap (bitmapData);
+		const bitmap = new Bitmap (bitmapData);
 		this.addChild (bitmap);
 		
 	});
