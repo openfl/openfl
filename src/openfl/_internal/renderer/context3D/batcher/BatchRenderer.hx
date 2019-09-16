@@ -8,6 +8,7 @@ import lime.utils.UInt16Array;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display.Shader;
+import openfl.display.ShaderInput;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
 import openfl.geom.Matrix;
@@ -34,6 +35,7 @@ class BatchRenderer
 	private var __buffer:Context3DBuffer;
 	private var __maxQuads:Int;
 	private var __maxTextures:Int;
+	private var __samplers:Array<ShaderInput<BitmapData>> = [];
 
 	private static inline var MAX_TEXTURES:Int = 16;
 
@@ -56,6 +58,7 @@ class BatchRenderer
 		__indexBuffer.uploadFromTypedArray(createIndicesForQuads(__maxQuads));
 
 		__shader.aTextureId.__useArray = true;
+		__samplers = [for (i in 0...__maxTextures) Reflect.field(__shader.data, "uSampler" + i)];
 	}
 
 	public function push(quad:Quad):Void
@@ -111,41 +114,7 @@ class BatchRenderer
 		renderer.useColorTransformArray();
 		for (i in 0...__batch.numTextures)
 		{
-			switch (i)
-			{
-				case 0:
-					__shader.uSampler0.input = __batch.textures[i];
-				case 1:
-					__shader.uSampler1.input = __batch.textures[i];
-				case 2:
-					__shader.uSampler2.input = __batch.textures[i];
-				case 3:
-					__shader.uSampler3.input = __batch.textures[i];
-				case 4:
-					__shader.uSampler4.input = __batch.textures[i];
-				case 5:
-					__shader.uSampler5.input = __batch.textures[i];
-				case 6:
-					__shader.uSampler6.input = __batch.textures[i];
-				case 7:
-					__shader.uSampler7.input = __batch.textures[i];
-				case 8:
-					__shader.uSampler8.input = __batch.textures[i];
-				case 9:
-					__shader.uSampler9.input = __batch.textures[i];
-				case 10:
-					__shader.uSampler10.input = __batch.textures[i];
-				case 11:
-					__shader.uSampler11.input = __batch.textures[i];
-				case 12:
-					__shader.uSampler12.input = __batch.textures[i];
-				case 13:
-					__shader.uSampler13.input = __batch.textures[i];
-				case 14:
-					__shader.uSampler14.input = __batch.textures[i];
-				case 15:
-					__shader.uSampler15.input = __batch.textures[i];
-			}
+			__samplers[i].input = __batch.textures[i];
 		}
 		renderer.updateShader();
 
@@ -243,7 +212,7 @@ private class Batch
 				vertices[offset + 4] = 1;
 				vertices[offset + 5] = 1;
 				vertices[offset + 6] = 1;
-				vertices[offset + 7] = 1;
+				vertices[offset + 7] = alpha;
 
 				vertices[offset + 8] = 0;
 				vertices[offset + 9] = 0;
