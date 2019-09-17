@@ -1,7 +1,6 @@
 package openfl.display;
 
 #if !flash
-import openfl._internal.renderer.context3D.batcher.Quad;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 #if (js && html5)

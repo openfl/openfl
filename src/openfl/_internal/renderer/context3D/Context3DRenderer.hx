@@ -9,8 +9,6 @@ import lime.math.ARGB;
 import lime.math.Matrix4;
 import lime.utils.Float32Array;
 import openfl._internal.renderer.context3D.batcher.BatchRenderer;
-import openfl._internal.renderer.context3D.batcher.Quad;
-import openfl._internal.renderer.context3D.batcher.QuadTextureData;
 import openfl._internal.renderer.ShaderBuffer;
 import openfl._internal.utils.ObjectPool;
 import openfl.display.Bitmap;

@@ -4,7 +4,6 @@ package openfl.display;
 import openfl._internal.backend.gl.GLFramebuffer;
 import openfl._internal.backend.gl.GLRenderbuffer;
 import openfl._internal.formats.swf.SWFLite;
-import openfl._internal.renderer.context3D.batcher.QuadTextureData;
 import openfl._internal.renderer.BitmapDataPool;
 import openfl._internal.renderer.DisplayObjectType;
 import openfl._internal.symbols.BitmapSymbol;
