@@ -206,7 +206,6 @@ class BitmapData implements IBitmapDrawable
 	@:noCompletion private var __isMask:Bool;
 	@:noCompletion private var __isValid:Bool;
 	@:noCompletion private var __mask:DisplayObject;
-	@:noCompletion private var __quadTextureData:QuadTextureData;
 	@:noCompletion private var __renderable:Bool;
 	@:noCompletion private var __renderTransform:Matrix;
 	@:noCompletion private var __scrollRect:Rectangle;
@@ -320,7 +319,6 @@ class BitmapData implements IBitmapDrawable
 			readable = true;
 		}
 
-		__quadTextureData = null;
 		__renderTransform = new Matrix();
 		__worldAlpha = 1;
 		__worldTransform = new Matrix();

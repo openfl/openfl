@@ -58,8 +58,6 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private static var maxTextureHeight:Null<Int> = null;
 	@:noCompletion private static var maxTextureWidth:Null<Int> = null;
 
-	@:noCompletion private var __batchQuad:Quad;
-	@:noCompletion private var __batchQuadDirty:Bool = true;
 	@:noCompletion private var __bounds:Rectangle;
 	@:noCompletion private var __commands:DrawCommandBuffer;
 	@:noCompletion private var __dirty(default, set):Bool = true;
