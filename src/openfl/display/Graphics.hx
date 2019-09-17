@@ -1,7 +1,6 @@
 package openfl.display;
 
 #if !flash
-import openfl._internal.renderer.context3D.batcher.Quad;
 import openfl._internal.renderer.context3D.Context3DBuffer;
 import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.DrawCommandReader;
