@@ -11,6 +11,7 @@ import openfl.display.Shader;
 import openfl.display.ShaderInput;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
+import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 #if gl_stats
 import openfl._internal.renderer.context3D.stats.Context3DStats;
@@ -36,8 +37,18 @@ class BatchRenderer
 	private var __maxQuads:Int;
 	private var __maxTextures:Int;
 	private var __samplers:Array<ShaderInput<BitmapData>> = [];
+	private var __vertices:Array<Float> = [for (i in 0...8) 0.0];
+	private var __uvs:Array<Float>;
+	private var __userUvs:Array<Float> = [for (i in 0...8) 0.0];
 
 	private static inline var MAX_TEXTURES:Int = 16;
+
+	public static var DEFAULT_UVS:Array<Float> = [
+		0, 0,
+		1, 0,
+		1, 1,
+		0, 1
+	];
 
 	public function new(renderer:Context3DRenderer, maxQuads:Int)
 	{
@@ -61,9 +72,38 @@ class BatchRenderer
 		__samplers = [for (i in 0...__maxTextures) Reflect.field(__shader.data, "uSampler" + i)];
 	}
 
-	public function push(quad:Quad):Void
+	public function setVertices(transform:Matrix, x:Float, y:Float, w:Float, h:Float)
 	{
-		var terminateBatch:Bool = __batch.numQuads >= __maxQuads || renderer.__blendMode != quad.blendMode;
+		var x1 = x + w;
+		var y1 = y + h;
+
+		__vertices[0] = transform.__transformX(x, y);
+		__vertices[1] = transform.__transformY(x, y);
+
+		__vertices[2] = transform.__transformX(x1, y);
+		__vertices[3] = transform.__transformY(x1, y);
+
+		__vertices[4] = transform.__transformX(x1, y1);
+		__vertices[5] = transform.__transformY(x1, y1);
+
+		__vertices[6] = transform.__transformX(x, y1);
+		__vertices[7] = transform.__transformY(x, y1);
+	}
+
+	public function useDefaultUvs():Void
+	{
+		__uvs = DEFAULT_UVS;
+	}
+
+	public function setUvs(u:Float, v:Float, s:Float, t:Float):Void
+	{
+		// TODO: populate __userUvs
+		__uvs = __userUvs;
+	}
+
+	public function pushQuad(bitmapData:BitmapData, blendMode:BlendMode, alpha:Float, colorTransform:ColorTransform = null)
+	{
+		var terminateBatch:Bool = __batch.numQuads >= __maxQuads || renderer.__blendMode != blendMode;
 		if (terminateBatch)
 		{
 			flush();
@@ -72,7 +112,7 @@ class BatchRenderer
 		var texture:BitmapData = null;
 		for (i in 0...__batch.numTextures)
 		{
-			if (__batch.textures[i] == quad.texture.bitmapData)
+			if (__batch.textures[i] == bitmapData)
 			{
 				texture = __batch.textures[i];
 				unit = i;
@@ -81,15 +121,17 @@ class BatchRenderer
 		}
 		if (texture == null)
 		{
+			// flush if we hit the texture limit
 			if (__batch.numTextures == __maxTextures)
 			{
 				flush();
 			}
-			texture = quad.texture.bitmapData;
+			texture = bitmapData;
 			unit = __batch.numTextures;
 			__batch.textures[__batch.numTextures++] = texture;
 		}
-		__batch.push(unit, quad);
+
+		__batch.push(unit, __vertices, __uvs, alpha, colorTransform);
 	}
 
 	public function flush():Void
@@ -164,6 +206,7 @@ private class Batch
 	public var numTextures:Int = 0;
 
 	public static inline var FLOATS_PER_QUAD = BatchShader.FLOATS_PER_VERTEX * 4;
+	public static var IDENTITY_COLOR_TRANSFORM = new ColorTransform();
 
 	public function new(maxQuads:Int, maxTextures:Int)
 	{
@@ -178,47 +221,26 @@ private class Batch
 		numTextures = 0;
 	}
 
-	public function push(textureUnit:Int, quad:Quad)
+	public function push(textureUnit:Int, verts:Array<Float>, uvs:Array<Float>, alpha:Float, colorTransform:ColorTransform)
 	{
-		var vertexData = quad.vertexData;
-		var uvs = quad.texture.uvs;
-		var alpha = quad.alpha;
-		var colorTransform = quad.colorTransform;
-		var currentVertexBufferIndex = numQuads * FLOATS_PER_QUAD;
+		var startOffset = numQuads * FLOATS_PER_QUAD;
+		var ct = colorTransform != null ? colorTransform : IDENTITY_COLOR_TRANSFORM;
 
-		inline function setVertex(i):Void
+		inline function setVertex(i:Int):Void
 		{
-			var offset = currentVertexBufferIndex + i * BatchShader.FLOATS_PER_VERTEX;
-			vertices[offset + 0] = vertexData[i * 2 + 0];
-			vertices[offset + 1] = vertexData[i * 2 + 1];
-
+			var offset = startOffset + i * BatchShader.FLOATS_PER_VERTEX;
+			vertices[offset + 0] = verts[i * 2 + 0];
+			vertices[offset + 1] = verts[i * 2 + 1];
 			vertices[offset + 2] = uvs[i * 2 + 0];
 			vertices[offset + 3] = uvs[i * 2 + 1];
-
-			if (colorTransform != null)
-			{
-				vertices[offset + 4] = colorTransform.redMultiplier;
-				vertices[offset + 5] = colorTransform.greenMultiplier;
-				vertices[offset + 6] = colorTransform.blueMultiplier;
-				vertices[offset + 7] = colorTransform.alphaMultiplier * alpha;
-
-				vertices[offset + 8] = colorTransform.redOffset;
-				vertices[offset + 9] = colorTransform.greenOffset;
-				vertices[offset + 10] = colorTransform.blueOffset;
-				vertices[offset + 11] = (colorTransform.alphaOffset) * alpha;
-			}
-			else
-			{
-				vertices[offset + 4] = 1;
-				vertices[offset + 5] = 1;
-				vertices[offset + 6] = 1;
-				vertices[offset + 7] = alpha;
-
-				vertices[offset + 8] = 0;
-				vertices[offset + 9] = 0;
-				vertices[offset + 10] = 0;
-				vertices[offset + 11] = 0;
-			}
+			vertices[offset + 4] = ct.redMultiplier;
+			vertices[offset + 5] = ct.greenMultiplier;
+			vertices[offset + 6] = ct.blueMultiplier;
+			vertices[offset + 7] = ct.alphaMultiplier * alpha;
+			vertices[offset + 8] = ct.redOffset;
+			vertices[offset + 9] = ct.greenOffset;
+			vertices[offset + 10] = ct.blueOffset;
+			vertices[offset + 11] = ct.alphaOffset * alpha;
 			vertices[offset + 12] = textureUnit;
 		}
 

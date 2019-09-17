@@ -1155,7 +1155,6 @@ class CanvasGraphics
 				graphics.__canvas = null;
 				graphics.__context = null;
 				graphics.__bitmap = null;
-				graphics.__batchQuadDirty = true;
 			}
 			else
 			{
@@ -1445,7 +1444,6 @@ class CanvasGraphics
 
 				data.destroy();
 				graphics.__bitmap = BitmapData.fromCanvas(graphics.__canvas);
-				graphics.__batchQuadDirty = true;
 			}
 
 			graphics.__softwareDirty = false;

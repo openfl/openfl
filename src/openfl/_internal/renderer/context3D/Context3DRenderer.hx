@@ -507,30 +507,6 @@ class Context3DRenderer extends Context3DRendererAPI
 		}
 	}
 
-	private function __fillBitmapDataBatchQuad(bitmapData:BitmapData, transform:Matrix, vertexData:Float32Array):Void
-	{
-		var pixelRatio = 1.0; // bitmapData.__pixelRatio;
-		__fillBitmapDataTransformedVertexCoords(transform, vertexData, 0, 0, bitmapData.width / pixelRatio, bitmapData.height / pixelRatio);
-	}
-
-	private inline function __fillBitmapDataTransformedVertexCoords(transform:Matrix, vertexData:Float32Array, x:Float, y:Float, w:Float, h:Float):Void
-	{
-		var x1 = x + w;
-		var y1 = y + h;
-
-		vertexData[0] = transform.__transformX(x, y);
-		vertexData[1] = transform.__transformY(x, y);
-
-		vertexData[2] = transform.__transformX(x1, y);
-		vertexData[3] = transform.__transformY(x1, y);
-
-		vertexData[4] = transform.__transformX(x1, y1);
-		vertexData[5] = transform.__transformY(x1, y1);
-
-		vertexData[6] = transform.__transformX(x, y1);
-		vertexData[7] = transform.__transformY(x, y1);
-	}
-
 	private function __fillRect(bitmapData:BitmapData, rect:Rectangle, color:Int):Void
 	{
 		if (bitmapData.__texture != null)
@@ -573,61 +549,6 @@ class Context3DRenderer extends Context3DRendererAPI
 	private function __getAlpha(value:Float):Float
 	{
 		return value * __worldAlpha;
-	}
-
-	private function __getBitmapBatchQuad(bitmap:Bitmap):Quad
-	{
-		if (bitmap.__batchQuadDirty)
-		{
-			if (bitmap.__batchQuad == null)
-			{
-				bitmap.__batchQuad = Quad.pool.get();
-			}
-
-			var snapToPixel = __roundPixels || __shouldSnapToPixel(bitmap);
-			var transform = __getDisplayTransformTempMatrix(bitmap.__renderTransform, snapToPixel);
-			__fillBitmapDataBatchQuad(bitmap.bitmapData, transform, bitmap.__batchQuad.vertexData);
-			bitmap.__batchQuad.texture = __getBitmapDataQuadTextureData(bitmap.bitmapData);
-			bitmap.__batchQuadDirty = false;
-		}
-
-		bitmap.__batchQuad.setup(bitmap.__worldAlpha, bitmap.__worldColorTransform, bitmap.__worldBlendMode, bitmap.smoothing);
-
-		return bitmap.__batchQuad;
-	}
-
-	private function __getBitmapDataQuadTextureData(bitmapData:BitmapData):QuadTextureData
-	{
-		var texture = bitmapData.getTexture(context3D);
-		if (texture != null)
-		{
-			if (bitmapData.__quadTextureData == null)
-			{
-				bitmapData.__quadTextureData = QuadTextureData.createFullFrame(bitmapData);
-			}
-			return bitmapData.__quadTextureData;
-		}
-		return null;
-	}
-
-	private function __getGraphicsBatchQuad(graphics:Graphics, alpha:Float, colorTransform:ColorTransform, blendMode:BlendMode):Quad
-	{
-		if (graphics.__batchQuadDirty)
-		{
-			if (graphics.__batchQuad == null)
-			{
-				graphics.__batchQuad = Quad.pool.get();
-			}
-
-			var transform = __getDisplayTransformTempMatrix(graphics.__worldTransform, false);
-			__fillBitmapDataBatchQuad(graphics.__bitmap, transform, graphics.__batchQuad.vertexData);
-			graphics.__batchQuad.texture = __getBitmapDataQuadTextureData(graphics.__bitmap);
-			graphics.__batchQuadDirty = false;
-		}
-
-		graphics.__batchQuad.setup(alpha, colorTransform, blendMode, false);
-
-		return graphics.__batchQuad;
 	}
 
 	private function __getColorTransform(value:ColorTransform):ColorTransform
