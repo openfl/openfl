@@ -309,7 +309,11 @@ class CairoTextField
 							if (selectionEnd >= group.endIndex)
 							{
 								end = textField.getCharBoundaries(group.endIndex - 1);
-								end.x += end.width + 2;
+
+								if (end != null)
+								{
+									end.x += end.width + 2;
+								}
 							}
 							else
 							{
