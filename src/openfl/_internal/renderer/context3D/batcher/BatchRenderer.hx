@@ -30,20 +30,19 @@ class BatchRenderer
 	private var renderer:Context3DRenderer;
 
 	private var __batch:Batch;
-	private var __shader:BatchShader;
-	private var __vertexBuffer:VertexBuffer3D;
 	private var __indexBuffer:IndexBuffer3D;
-	private var __buffer:Context3DBuffer;
 	private var __maxQuads:Int;
 	private var __maxTextures:Int;
 	private var __samplers:Array<ShaderInput<BitmapData>> = [];
-	private var __vertices:Array<Float> = [for (i in 0...8) 0.0];
-	private var __uvs:Array<Float>;
+	private var __shader:BatchShader;
 	private var __userUvs:Array<Float> = [for (i in 0...8) 0.0];
+	private var __uvs:Array<Float>;
+	private var __vertexBuffer:VertexBuffer3D;
+	private var __vertices:Array<Float> = [for (i in 0...8) 0.0];
 
 	private static inline var MAX_TEXTURES:Int = 16;
 
-	public static var DEFAULT_UVS:Array<Float> = [
+	private static var DEFAULT_UVS:Array<Float> = [
 		0, 0,
 		1, 0,
 		1, 1,
@@ -66,13 +65,13 @@ class BatchRenderer
 		__vertexBuffer = context.createVertexBuffer(__maxQuads * 4, BatchShader.FLOATS_PER_VERTEX, DYNAMIC_DRAW);
 		__vertexBuffer.uploadFromTypedArray(__batch.vertices);
 		__indexBuffer = context.createIndexBuffer(__maxQuads * 6, STATIC_DRAW);
-		__indexBuffer.uploadFromTypedArray(createIndicesForQuads(__maxQuads));
+		__indexBuffer.uploadFromTypedArray(__createIndicesForQuads(__maxQuads));
 
 		__shader.aTextureId.__useArray = true;
 		__samplers = [for (i in 0...__maxTextures) Reflect.field(__shader.data, "uSampler" + i)];
 	}
 
-	public function setVertices(transform:Matrix, x:Float, y:Float, w:Float, h:Float)
+	public function setVertices(transform:Matrix, x:Float, y:Float, w:Float, h:Float):Void
 	{
 		var x1 = x + w;
 		var y1 = y + h;
@@ -97,7 +96,18 @@ class BatchRenderer
 
 	public function setUvs(u:Float, v:Float, s:Float, t:Float):Void
 	{
-		// TODO: populate __userUvs
+		__userUvs[0] = u;
+		__userUvs[1] = v;
+
+		__userUvs[2] = s;
+		__userUvs[3] = v;
+
+		__userUvs[4] = s;
+		__userUvs[5] = t;
+
+		__userUvs[6] = u;
+		__userUvs[7] = t;
+
 		__uvs = __userUvs;
 	}
 
@@ -176,7 +186,7 @@ class BatchRenderer
 		__batch.clear();
 	}
 
-	private static function createIndicesForQuads(numQuads:Int):UInt16Array
+	private static function __createIndicesForQuads(numQuads:Int):UInt16Array
 	{
 		var totalIndices = numQuads * 6; // 2 triangles of 3 verties per quad
 		var indices = new UInt16Array(totalIndices);

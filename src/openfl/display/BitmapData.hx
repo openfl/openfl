@@ -1619,6 +1619,11 @@ class BitmapData implements IBitmapDrawable
 		return __indexBuffer;
 	}
 
+	@:dox(hide) public function pushQuadsToBatcher(transform:Matrix, batcher:BatchRenderer):Void
+	{
+		// TODO
+	}
+
 	/**
 		**BETA**
 
