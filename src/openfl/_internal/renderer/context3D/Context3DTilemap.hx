@@ -355,15 +355,12 @@ class Context3DTilemap
 						context.setVertexBufferAt(shader.__colorOffset.index, vertexBuffer, vertexBufferPosition + position + 4, FLOAT_4);
 					}
 				}
-
 				context.drawTriangles(context.__quadIndexBuffer, 0, length * 2);
+				#if gl_stats
+				Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
+				#end
 				lastFlushedPosition += length;
 			}
-
-			#if gl_stats
-			Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
-			#end
-
 			renderer.__clearShader();
 		}
 
