@@ -31,6 +31,7 @@ class BatchRenderer
 
 	private var __batch:Batch;
 	private var __indexBuffer:IndexBuffer3D;
+	private var __emptyBitmapData:BitmapData;
 	private var __maxQuads:Int;
 	private var __maxTextures:Int;
 	private var __samplers:Array<ShaderInput<BitmapData>> = [];
@@ -55,6 +56,8 @@ class BatchRenderer
 		this.gl = renderer.gl;
 
 		var context = renderer.context3D;
+
+		__emptyBitmapData = new BitmapData(1, 1);
 
 		__maxQuads = maxQuads;
 		__maxTextures = Std.int(Math.min(MAX_TEXTURES, gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS)));
@@ -167,6 +170,10 @@ class BatchRenderer
 		for (i in 0...__batch.numTextures)
 		{
 			__samplers[i].input = __batch.textures[i];
+		}
+		for (i in __batch.numTextures...__maxTextures)
+		{
+			__samplers[i].input = __emptyBitmapData;
 		}
 		renderer.updateShader();
 

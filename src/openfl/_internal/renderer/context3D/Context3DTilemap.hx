@@ -35,42 +35,24 @@ class Context3DTilemap
 {
 	private static var cacheColorTransform:ColorTransform;
 	private static var context:Context3D;
-	private static var dataPerVertex:Int;
-	private static var currentBitmapData:BitmapData;
-	private static var currentBlendMode:BlendMode;
-	private static var currentShader:Shader;
-	private static var bufferPosition:Int;
-	private static var lastFlushedPosition:Int;
-	private static var lastUsedBitmapData:BitmapData;
-	private static var lastUsedShader:Shader;
 	private static var numTiles:Int;
-	private static var vertexBufferData:Float32Array;
-	private static var vertexDataPosition:Int;
 
 	public static function buildBuffer(tilemap:Tilemap, renderer:Context3DRenderer):Void
 	{
 		if (!tilemap.__renderable || tilemap.__group.__tiles.length == 0 || tilemap.__worldAlpha <= 0) return;
 
 		numTiles = 0;
-		vertexBufferData = (tilemap.__buffer != null) ? tilemap.__buffer.vertexBufferData : null;
-		vertexDataPosition = 0;
 
 		var rect = Rectangle.__pool.get();
 		var matrix = Matrix.__pool.get();
-		var parentTransform = Matrix.__pool.get();
-
-		dataPerVertex = 4;
-		if (tilemap.tileAlphaEnabled) dataPerVertex++;
-		if (tilemap.tileColorTransformEnabled) dataPerVertex += 8;
+		var parentTransform = tilemap.__renderTransform; // Matrix.__pool.get();
 
 		buildBufferTileContainer(tilemap, tilemap.__group, renderer, parentTransform, tilemap.__tileset, tilemap.tileAlphaEnabled, tilemap.__worldAlpha,
 			tilemap.tileColorTransformEnabled, tilemap.__worldColorTransform, null, rect, matrix);
 
-		tilemap.__buffer.flushVertexBufferData();
-
 		Rectangle.__pool.release(rect);
 		Matrix.__pool.release(matrix);
-		Matrix.__pool.release(parentTransform);
+		// Matrix.__pool.release(parentTransform);
 	}
 
 	private static function buildBufferTileContainer(tilemap:Tilemap, group:TileContainer, renderer:Context3DRenderer, parentTransform:Matrix,
@@ -82,8 +64,6 @@ class Context3DTilemap
 
 		var tiles = group.__tiles;
 		var length = group.__length;
-
-		resizeBuffer(tilemap, numTiles + length);
 
 		var tile,
 			tileset,
@@ -195,80 +175,9 @@ class Context3DTilemap
 				tileWidth = tileRect.width;
 				tileHeight = tileRect.height;
 
-				x = tileTransform.__transformX(0, 0);
-				y = tileTransform.__transformY(0, 0);
-				x2 = tileTransform.__transformX(tileWidth, 0);
-				y2 = tileTransform.__transformY(tileWidth, 0);
-				x3 = tileTransform.__transformX(0, tileHeight);
-				y3 = tileTransform.__transformY(0, tileHeight);
-				x4 = tileTransform.__transformX(tileWidth, tileHeight);
-				y4 = tileTransform.__transformY(tileWidth, tileHeight);
-
-				vertexOffset = vertexDataPosition;
-
-				vertexBufferData[vertexOffset + 0] = x;
-				vertexBufferData[vertexOffset + 1] = y;
-				vertexBufferData[vertexOffset + 2] = uvX;
-				vertexBufferData[vertexOffset + 3] = uvY;
-
-				vertexBufferData[vertexOffset + dataPerVertex + 0] = x2;
-				vertexBufferData[vertexOffset + dataPerVertex + 1] = y2;
-				vertexBufferData[vertexOffset + dataPerVertex + 2] = uvWidth;
-				vertexBufferData[vertexOffset + dataPerVertex + 3] = uvY;
-
-				vertexBufferData[vertexOffset + (dataPerVertex * 2) + 0] = x3;
-				vertexBufferData[vertexOffset + (dataPerVertex * 2) + 1] = y3;
-				vertexBufferData[vertexOffset + (dataPerVertex * 2) + 2] = uvX;
-				vertexBufferData[vertexOffset + (dataPerVertex * 2) + 3] = uvHeight;
-
-				vertexBufferData[vertexOffset + (dataPerVertex * 3) + 0] = x4;
-				vertexBufferData[vertexOffset + (dataPerVertex * 3) + 1] = y4;
-				vertexBufferData[vertexOffset + (dataPerVertex * 3) + 2] = uvWidth;
-				vertexBufferData[vertexOffset + (dataPerVertex * 3) + 3] = uvHeight;
-
-				if (alphaEnabled)
-				{
-					for (i in 0...4)
-					{
-						vertexBufferData[vertexOffset + (dataPerVertex * i) + alphaPosition] = alpha;
-					}
-				}
-
-				if (colorTransformEnabled)
-				{
-					if (colorTransform != null)
-					{
-						for (i in 0...4)
-						{
-							vertexBufferData[vertexOffset + (dataPerVertex * i) + ctPosition] = colorTransform.redMultiplier;
-							vertexBufferData[vertexOffset + (dataPerVertex * i) + ctPosition + 1] = colorTransform.greenMultiplier;
-							vertexBufferData[vertexOffset + (dataPerVertex * i) + ctPosition + 2] = colorTransform.blueMultiplier;
-							vertexBufferData[vertexOffset + (dataPerVertex * i) + ctPosition + 3] = colorTransform.alphaMultiplier;
-
-							vertexBufferData[vertexOffset + (dataPerVertex * i) + ctPosition + 4] = colorTransform.redOffset;
-							vertexBufferData[vertexOffset + (dataPerVertex * i) + ctPosition + 5] = colorTransform.greenOffset;
-							vertexBufferData[vertexOffset + (dataPerVertex * i) + ctPosition + 6] = colorTransform.blueOffset;
-							vertexBufferData[vertexOffset + (dataPerVertex * i) + ctPosition + 7] = colorTransform.alphaOffset;
-						}
-					}
-					else
-					{
-						for (i in 0...4)
-						{
-							vertexBufferData[vertexOffset + (dataPerVertex * i) + ctPosition] = 1;
-							vertexBufferData[vertexOffset + (dataPerVertex * i) + ctPosition + 1] = 1;
-							vertexBufferData[vertexOffset + (dataPerVertex * i) + ctPosition + 2] = 1;
-							vertexBufferData[vertexOffset + (dataPerVertex * i) + ctPosition + 3] = 1;
-
-							vertexBufferData[vertexOffset + (dataPerVertex * i) + ctPosition + 4] = 0;
-							vertexBufferData[vertexOffset + (dataPerVertex * i) + ctPosition + 5] = 0;
-							vertexBufferData[vertexOffset + (dataPerVertex * i) + ctPosition + 6] = 0;
-							vertexBufferData[vertexOffset + (dataPerVertex * i) + ctPosition + 7] = 0;
-						}
-					}
-				}
-
-				vertexDataPosition += dataPerVertex * 4;
+				renderer.batcher.setVertices(tileTransform, 0, 0, tileWidth, tileHeight);
+				renderer.batcher.setUvs(uvX, uvY, uvWidth, uvHeight);
+				renderer.batcher.pushQuad(bitmapData, tilemap.__worldBlendMode, alpha, colorTransform);
 			}
 		}
 
@@ -278,94 +187,94 @@ class Context3DTilemap
 
 	private static function flush(tilemap:Tilemap, renderer:Context3DRenderer, blendMode:BlendMode):Void
 	{
-		if (currentShader == null)
-		{
-			currentShader = renderer.__defaultDisplayShader;
-		}
+		// if (currentShader == null)
+		// {
+		// 	currentShader = renderer.__defaultDisplayShader;
+		// }
 
-		if (bufferPosition > lastFlushedPosition && currentBitmapData != null && currentShader != null)
-		{
-			var shader = renderer.__initDisplayShader(cast currentShader);
-			renderer.setShader(shader);
-			renderer.applyBitmapData(currentBitmapData, tilemap.smoothing);
-			renderer.applyMatrix(renderer.__getMatrix(tilemap.__renderTransform, AUTO));
+		// if (bufferPosition > lastFlushedPosition && currentBitmapData != null && currentShader != null)
+		// {
+		// 	var shader = renderer.__initDisplayShader(cast currentShader);
+		// 	renderer.setShader(shader);
+		// 	renderer.applyBitmapData(currentBitmapData, tilemap.smoothing);
+		// 	renderer.applyMatrix(renderer.__getMatrix(tilemap.__renderTransform, AUTO));
 
-			if (tilemap.tileAlphaEnabled)
-			{
-				renderer.useAlphaArray();
-			}
-			else
-			{
-				renderer.applyAlpha(tilemap.__worldAlpha);
-			}
+		// 	if (tilemap.tileAlphaEnabled)
+		// 	{
+		// 		renderer.useAlphaArray();
+		// 	}
+		// 	else
+		// 	{
+		// 		renderer.applyAlpha(tilemap.__worldAlpha);
+		// 	}
 
-			if (tilemap.tileBlendModeEnabled)
-			{
-				renderer.__setBlendMode(blendMode);
-			}
+		// 	if (tilemap.tileBlendModeEnabled)
+		// 	{
+		// 		renderer.__setBlendMode(blendMode);
+		// 	}
 
-			if (tilemap.tileColorTransformEnabled)
-			{
-				renderer.applyHasColorTransform(true);
-				renderer.useColorTransformArray();
-			}
-			else
-			{
-				renderer.applyColorTransform(tilemap.__worldColorTransform);
-			}
+		// 	if (tilemap.tileColorTransformEnabled)
+		// 	{
+		// 		renderer.applyHasColorTransform(true);
+		// 		renderer.useColorTransformArray();
+		// 	}
+		// 	else
+		// 	{
+		// 		renderer.applyColorTransform(tilemap.__worldColorTransform);
+		// 	}
 
-			renderer.updateShader();
+		// 	renderer.updateShader();
 
-			var vertexBuffer = tilemap.__buffer.vertexBuffer;
-			var vertexBufferPosition = lastFlushedPosition * dataPerVertex * 4;
-			var length = (bufferPosition - lastFlushedPosition);
+		// 	var vertexBuffer = tilemap.__buffer.vertexBuffer;
+		// 	var vertexBufferPosition = lastFlushedPosition * dataPerVertex * 4;
+		// 	var length = (bufferPosition - lastFlushedPosition);
 
-			while (lastFlushedPosition < bufferPosition)
-			{
-				length = Std.int(Math.min(bufferPosition - lastFlushedPosition, context.__quadIndexBufferElements));
-				if (length <= 0) break;
+		// 	while (lastFlushedPosition < bufferPosition)
+		// 	{
+		// 		length = Std.int(Math.min(bufferPosition - lastFlushedPosition, context.__quadIndexBufferElements));
+		// 		if (length <= 0) break;
 
-				if (shader.__position != null)
-				{
-					context.setVertexBufferAt(shader.__position.index, vertexBuffer, vertexBufferPosition, FLOAT_2);
-				}
+		// 		if (shader.__position != null)
+		// 		{
+		// 			context.setVertexBufferAt(shader.__position.index, vertexBuffer, vertexBufferPosition, FLOAT_2);
+		// 		}
 
-				if (shader.__textureCoord != null)
-				{
-					context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer, vertexBufferPosition + 2, FLOAT_2);
-				}
+		// 		if (shader.__textureCoord != null)
+		// 		{
+		// 			context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer, vertexBufferPosition + 2, FLOAT_2);
+		// 		}
 
-				if (tilemap.tileAlphaEnabled)
-				{
-					if (shader.__alpha != null)
-					{
-						context.setVertexBufferAt(shader.__alpha.index, vertexBuffer, vertexBufferPosition + 4, FLOAT_1);
-					}
-				}
+		// 		if (tilemap.tileAlphaEnabled)
+		// 		{
+		// 			if (shader.__alpha != null)
+		// 			{
+		// 				context.setVertexBufferAt(shader.__alpha.index, vertexBuffer, vertexBufferPosition + 4, FLOAT_1);
+		// 			}
+		// 		}
 
-				if (tilemap.tileColorTransformEnabled)
-				{
-					var position = tilemap.tileAlphaEnabled ? 5 : 4;
-					if (shader.__colorMultiplier != null)
-					{
-						context.setVertexBufferAt(shader.__colorMultiplier.index, vertexBuffer, vertexBufferPosition + position, FLOAT_4);
-					}
-					if (shader.__colorOffset != null)
-					{
-						context.setVertexBufferAt(shader.__colorOffset.index, vertexBuffer, vertexBufferPosition + position + 4, FLOAT_4);
-					}
-				}
-				context.drawTriangles(context.__quadIndexBuffer, 0, length * 2);
-				#if gl_stats
-				Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
-				#end
-				lastFlushedPosition += length;
-			}
-			renderer.__clearShader();
-		}
+		// 		if (tilemap.tileColorTransformEnabled)
+		// 		{
+		// 			var position = tilemap.tileAlphaEnabled ? 5 : 4;
+		// 			if (shader.__colorMultiplier != null)
+		// 			{
+		// 				context.setVertexBufferAt(shader.__colorMultiplier.index, vertexBuffer, vertexBufferPosition + position, FLOAT_4);
+		// 			}
+		// 			if (shader.__colorOffset != null)
+		// 			{
+		// 				context.setVertexBufferAt(shader.__colorOffset.index, vertexBuffer, vertexBufferPosition + position + 4, FLOAT_4);
+		// 			}
+		// 		}
+		// 		context.drawTriangles(context.__quadIndexBuffer, 0, length * 2);
+		// 		#if gl_stats
+		// 		Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
+		// 		#end
+		// 		lastFlushedPosition += length;
+		// 	}
+		// 	renderer.__clearShader();
+		// }
 
-		lastUsedBitmapData = currentBitmapData;
-		lastUsedShader = currentShader;
+		// lastUsedBitmapData = currentBitmapData;
+		// lastUsedShader = currentShader;
 	}
 
 	public static function render(tilemap:Tilemap, renderer:Context3DRenderer):Void
@@ -376,109 +285,109 @@ class Context3DTilemap
 
 		buildBuffer(tilemap, renderer);
 
-		if (numTiles == 0) return;
+		// if (numTiles == 0) return;
 
-		bufferPosition = 0;
+		// bufferPosition = 0;
 
-		lastFlushedPosition = 0;
-		lastUsedBitmapData = null;
-		lastUsedShader = null;
-		currentBitmapData = null;
-		currentShader = null;
+		// lastFlushedPosition = 0;
+		// lastUsedBitmapData = null;
+		// lastUsedShader = null;
+		// currentBitmapData = null;
+		// currentShader = null;
 
-		currentBlendMode = tilemap.__worldBlendMode;
+		// currentBlendMode = tilemap.__worldBlendMode;
 
-		if (!tilemap.tileBlendModeEnabled)
-		{
-			renderer.__setBlendMode(currentBlendMode);
-		}
+		// if (!tilemap.tileBlendModeEnabled)
+		// {
+		// 	renderer.__setBlendMode(currentBlendMode);
+		// }
 
-		renderer.__pushMaskObject(tilemap);
-		// renderer.filterManager.pushObject (tilemap);
+		// renderer.__pushMaskObject(tilemap);
+		// // renderer.filterManager.pushObject (tilemap);
 
-		var rect = Rectangle.__pool.get();
-		rect.setTo(0, 0, tilemap.__width, tilemap.__height);
-		renderer.__pushMaskRect(rect, tilemap.__renderTransform);
+		// var rect = Rectangle.__pool.get();
+		// rect.setTo(0, 0, tilemap.__width, tilemap.__height);
+		// renderer.__pushMaskRect(rect, tilemap.__renderTransform);
 
-		renderTileContainer(tilemap, renderer, tilemap.__group, cast tilemap.__worldShader, tilemap.__tileset, tilemap.__worldAlpha,
-			tilemap.tileBlendModeEnabled, currentBlendMode, null);
-		flush(tilemap, renderer, currentBlendMode);
+		// renderTileContainer(tilemap, renderer, tilemap.__group, cast tilemap.__worldShader, tilemap.__tileset, tilemap.__worldAlpha,
+		// 	tilemap.tileBlendModeEnabled, currentBlendMode, null);
+		// flush(tilemap, renderer, currentBlendMode);
 
-		// renderer.filterManager.popObject (tilemap);
-		renderer.__popMaskRect();
-		renderer.__popMaskObject(tilemap);
+		// // renderer.filterManager.popObject (tilemap);
+		// renderer.__popMaskRect();
+		// renderer.__popMaskObject(tilemap);
 
-		Rectangle.__pool.release(rect);
+		// Rectangle.__pool.release(rect);
 	}
 
 	private static function renderTileContainer(tilemap:Tilemap, renderer:Context3DRenderer, group:TileContainer, defaultShader:Shader,
 			defaultTileset:Tileset, worldAlpha:Float, blendModeEnabled:Bool, defaultBlendMode:BlendMode, cacheBitmapData:BitmapData):Void
 	{
-		var tiles = group.__tiles;
+		// var tiles = group.__tiles;
 
-		var tile,
-			tileset,
-			alpha,
-			visible,
-			blendMode = null,
-			id,
-			tileData,
-			tileRect,
-			shader:Shader,
-			bitmapData;
+		// var tile,
+		// 	tileset,
+		// 	alpha,
+		// 	visible,
+		// 	blendMode = null,
+		// 	id,
+		// 	tileData,
+		// 	tileRect,
+		// 	shader:Shader,
+		// 	bitmapData;
 
-		for (tile in tiles)
-		{
-			tileset = tile.tileset != null ? tile.tileset : defaultTileset;
+		// for (tile in tiles)
+		// {
+		// 	tileset = tile.tileset != null ? tile.tileset : defaultTileset;
 
-			alpha = tile.alpha * worldAlpha;
-			visible = tile.visible;
-			if (!visible || alpha <= 0) continue;
+		// 	alpha = tile.alpha * worldAlpha;
+		// 	visible = tile.visible;
+		// 	if (!visible || alpha <= 0) continue;
 
-			shader = tile.shader != null ? tile.shader : defaultShader;
+		// 	shader = tile.shader != null ? tile.shader : defaultShader;
 
-			if (blendModeEnabled)
-			{
-				blendMode = (tile.__blendMode != null) ? tile.__blendMode : defaultBlendMode;
-			}
+		// 	if (blendModeEnabled)
+		// 	{
+		// 		blendMode = (tile.__blendMode != null) ? tile.__blendMode : defaultBlendMode;
+		// 	}
 
-			if (tile.__length > 0)
-			{
-				renderTileContainer(tilemap, renderer, cast tile, shader, tileset, alpha, blendModeEnabled, blendMode, cacheBitmapData);
-			}
-			else
-			{
-				if (tileset == null) continue;
+		// 	if (tile.__length > 0)
+		// 	{
+		// 		renderTileContainer(tilemap, renderer, cast tile, shader, tileset, alpha, blendModeEnabled, blendMode, cacheBitmapData);
+		// 	}
+		// 	else
+		// 	{
+		// 		if (tileset == null) continue;
 
-				id = tile.id;
+		// 		id = tile.id;
 
-				bitmapData = tileset.__bitmapData;
-				if (bitmapData == null) continue;
+		// 		bitmapData = tileset.__bitmapData;
+		// 		if (bitmapData == null) continue;
 
-				if (id == -1)
-				{
-					tileRect = tile.__rect;
-					if (tileRect == null || tileRect.width <= 0 || tileRect.height <= 0) continue;
-				}
-				else
-				{
-					tileData = tileset.__data[id];
-					if (tileData == null) continue;
-				}
+		// 		if (id == -1)
+		// 		{
+		// 			tileRect = tile.__rect;
+		// 			if (tileRect == null || tileRect.width <= 0 || tileRect.height <= 0) continue;
+		// 		}
+		// 		else
+		// 		{
+		// 			tileData = tileset.__data[id];
+		// 			if (tileData == null) continue;
+		// 		}
 
-				if ((shader != currentShader)
-					|| (bitmapData != currentBitmapData && currentBitmapData != null)
-					|| (currentBlendMode != blendMode))
-				{
-					flush(tilemap, renderer, currentBlendMode);
-				}
+		// 		if ((shader != currentShader)
+		// 			|| (bitmapData != currentBitmapData && currentBitmapData != null)
+		// 			|| (currentBlendMode != blendMode))
+		// 		{
+		// 			flush(tilemap, renderer, currentBlendMode);
+		// 		}
 
-				currentBitmapData = bitmapData;
-				currentShader = shader;
-				currentBlendMode = blendMode;
-				bufferPosition++;
-			}
-		}
+		// 		currentBitmapData = bitmapData;
+		// 		currentShader = shader;
+		// 		currentBlendMode = blendMode;
+		// 		bufferPosition++;
+		// 	}
+		// }
 	}
 
 	public static function renderMask(tilemap:Tilemap, renderer:Context3DRenderer):Void
@@ -563,21 +472,5 @@ class Context3DTilemap
 		// 	}
 
 		// }
-	}
-
-	private static function resizeBuffer(tilemap:Tilemap, count:Int):Void
-	{
-		numTiles = count;
-
-		if (tilemap.__buffer == null)
-		{
-			tilemap.__buffer = new Context3DBuffer(context, QUADS, numTiles, dataPerVertex);
-		}
-		else
-		{
-			tilemap.__buffer.resize(numTiles, dataPerVertex);
-		}
-
-		vertexBufferData = tilemap.__buffer.vertexBufferData;
 	}
 }
