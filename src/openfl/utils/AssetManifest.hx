@@ -70,4 +70,73 @@ class AssetManifest #if lime extends LimeAssetManifest #end
 			preload: true
 		});
 	}
+
+	public static function fromBytes(bytes:Bytes, rootPath:String = null):AssetManifest
+	{
+		#if lime
+		var manifest = LimeAssetManifest.fromBytes(bytes, rootPath);
+		return __fromLimeManifest(manifest);
+		#else
+		return null;
+		#end
+	}
+
+	public static function fromFile(path:String, rootPath:String = null):AssetManifest
+	{
+		#if lime
+		var manifest = LimeAssetManifest.fromFile(path, rootPath);
+		return __fromLimeManifest(manifest);
+		#else
+		return null;
+		#end
+	}
+
+	public static function loadFromBytes(bytes:Bytes, rootPath:String = null):Future<AssetManifest>
+	{
+		#if lime
+		return LimeAssetManifest.loadFromBytes(bytes, rootPath).then(function(manifest)
+		{
+			return Future.withValue(__fromLimeManifest(manifest));
+		});
+		#else
+		return null;
+		#end
+	}
+
+	public static function loadFromFile(path:String, rootPath:String = null):Future<AssetManifest>
+	{
+		#if lime
+		return LimeAssetManifest.loadFromFile(path, rootPath).then(function(manifest)
+		{
+			return Future.withValue(__fromLimeManifest(manifest));
+		});
+		#else
+		return null;
+		#end
+	}
+
+	public static function parse(data:String, rootPath:String = null):AssetManifest
+	{
+		#if lime
+		var manifest = LimeAssetManifest.parse(data, rootPath);
+		return __fromLimeManifest(manifest);
+		#else
+		return null;
+		#end
+	}
+
+	@:noCompletion private static function __fromLimeManifest(limeManifest:LimeAssetManifest):AssetManifest
+	{
+		var manifest = null;
+		if (limeManifest != null)
+		{
+			manifest.assets = limeManifest.assets;
+			manifest.libraryArgs = limeManifest.libraryArgs;
+			manifest.libraryType = limeManifest.libraryType;
+			manifest.name = limeManifest.name;
+			manifest.rootPath = limeManifest.rootPath;
+			manifest.version = limeManifest.version;
+		}
+		return manifest;
+	}
 }
