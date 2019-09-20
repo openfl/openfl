@@ -34,26 +34,6 @@ import openfl._internal.renderer.context3D.stats.DrawCallContext;
 class Context3DTilemap
 {
 	private static var cacheColorTransform:ColorTransform;
-	private static var context:Context3D;
-	private static var numTiles:Int;
-
-	public static function buildBuffer(tilemap:Tilemap, renderer:Context3DRenderer):Void
-	{
-		if (!tilemap.__renderable || tilemap.__group.__tiles.length == 0 || tilemap.__worldAlpha <= 0) return;
-
-		numTiles = 0;
-
-		var rect = Rectangle.__pool.get();
-		var matrix = Matrix.__pool.get();
-		var parentTransform = tilemap.__renderTransform; // Matrix.__pool.get();
-
-		buildBufferTileContainer(tilemap, tilemap.__group, renderer, parentTransform, tilemap.__tileset, tilemap.tileAlphaEnabled, tilemap.__worldAlpha,
-			tilemap.tileColorTransformEnabled, tilemap.__worldColorTransform, null, rect, matrix);
-
-		Rectangle.__pool.release(rect);
-		Matrix.__pool.release(matrix);
-		// Matrix.__pool.release(parentTransform);
-	}
 
 	private static function buildBufferTileContainer(tilemap:Tilemap, group:TileContainer, renderer:Context3DRenderer, parentTransform:Matrix,
 			defaultTileset:Tileset, alphaEnabled:Bool, worldAlpha:Float, colorTransformEnabled:Bool, defaultColorTransform:ColorTransform,
@@ -75,10 +55,6 @@ class Context3DTilemap
 			tileRect,
 			bitmapData;
 		var tileWidth, tileHeight, uvX, uvY, uvHeight, uvWidth, vertexOffset;
-		var x, y, x2, y2, x3, y3, x4, y4;
-
-		var alphaPosition = 4;
-		var ctPosition = alphaEnabled ? 5 : 4;
 
 		for (tile in tiles)
 		{
@@ -185,209 +161,21 @@ class Context3DTilemap
 		Matrix.__pool.release(tileTransform);
 	}
 
-	private static function flush(tilemap:Tilemap, renderer:Context3DRenderer, blendMode:BlendMode):Void
-	{
-		// if (currentShader == null)
-		// {
-		// 	currentShader = renderer.__defaultDisplayShader;
-		// }
-
-		// if (bufferPosition > lastFlushedPosition && currentBitmapData != null && currentShader != null)
-		// {
-		// 	var shader = renderer.__initDisplayShader(cast currentShader);
-		// 	renderer.setShader(shader);
-		// 	renderer.applyBitmapData(currentBitmapData, tilemap.smoothing);
-		// 	renderer.applyMatrix(renderer.__getMatrix(tilemap.__renderTransform, AUTO));
-
-		// 	if (tilemap.tileAlphaEnabled)
-		// 	{
-		// 		renderer.useAlphaArray();
-		// 	}
-		// 	else
-		// 	{
-		// 		renderer.applyAlpha(tilemap.__worldAlpha);
-		// 	}
-
-		// 	if (tilemap.tileBlendModeEnabled)
-		// 	{
-		// 		renderer.__setBlendMode(blendMode);
-		// 	}
-
-		// 	if (tilemap.tileColorTransformEnabled)
-		// 	{
-		// 		renderer.applyHasColorTransform(true);
-		// 		renderer.useColorTransformArray();
-		// 	}
-		// 	else
-		// 	{
-		// 		renderer.applyColorTransform(tilemap.__worldColorTransform);
-		// 	}
-
-		// 	renderer.updateShader();
-
-		// 	var vertexBuffer = tilemap.__buffer.vertexBuffer;
-		// 	var vertexBufferPosition = lastFlushedPosition * dataPerVertex * 4;
-		// 	var length = (bufferPosition - lastFlushedPosition);
-
-		// 	while (lastFlushedPosition < bufferPosition)
-		// 	{
-		// 		length = Std.int(Math.min(bufferPosition - lastFlushedPosition, context.__quadIndexBufferElements));
-		// 		if (length <= 0) break;
-
-		// 		if (shader.__position != null)
-		// 		{
-		// 			context.setVertexBufferAt(shader.__position.index, vertexBuffer, vertexBufferPosition, FLOAT_2);
-		// 		}
-
-		// 		if (shader.__textureCoord != null)
-		// 		{
-		// 			context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer, vertexBufferPosition + 2, FLOAT_2);
-		// 		}
-
-		// 		if (tilemap.tileAlphaEnabled)
-		// 		{
-		// 			if (shader.__alpha != null)
-		// 			{
-		// 				context.setVertexBufferAt(shader.__alpha.index, vertexBuffer, vertexBufferPosition + 4, FLOAT_1);
-		// 			}
-		// 		}
-
-		// 		if (tilemap.tileColorTransformEnabled)
-		// 		{
-		// 			var position = tilemap.tileAlphaEnabled ? 5 : 4;
-		// 			if (shader.__colorMultiplier != null)
-		// 			{
-		// 				context.setVertexBufferAt(shader.__colorMultiplier.index, vertexBuffer, vertexBufferPosition + position, FLOAT_4);
-		// 			}
-		// 			if (shader.__colorOffset != null)
-		// 			{
-		// 				context.setVertexBufferAt(shader.__colorOffset.index, vertexBuffer, vertexBufferPosition + position + 4, FLOAT_4);
-		// 			}
-		// 		}
-		// 		context.drawTriangles(context.__quadIndexBuffer, 0, length * 2);
-		// 		#if gl_stats
-		// 		Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
-		// 		#end
-		// 		lastFlushedPosition += length;
-		// 	}
-		// 	renderer.__clearShader();
-		// }
-
-		// lastUsedBitmapData = currentBitmapData;
-		// lastUsedShader = currentShader;
-	}
-
 	public static function render(tilemap:Tilemap, renderer:Context3DRenderer):Void
 	{
 		if (!tilemap.__renderable || tilemap.__worldAlpha <= 0) return;
 
-		context = renderer.context3D;
+		if (!tilemap.__renderable || tilemap.__group.__tiles.length == 0 || tilemap.__worldAlpha <= 0) return;
 
-		buildBuffer(tilemap, renderer);
+		var rect = Rectangle.__pool.get();
+		var matrix = Matrix.__pool.get();
+		var parentTransform = tilemap.__renderTransform;
 
-		// if (numTiles == 0) return;
+		buildBufferTileContainer(tilemap, tilemap.__group, renderer, parentTransform, tilemap.__tileset, tilemap.tileAlphaEnabled, tilemap.__worldAlpha,
+			tilemap.tileColorTransformEnabled, tilemap.__worldColorTransform, null, rect, matrix);
 
-		// bufferPosition = 0;
-
-		// lastFlushedPosition = 0;
-		// lastUsedBitmapData = null;
-		// lastUsedShader = null;
-		// currentBitmapData = null;
-		// currentShader = null;
-
-		// currentBlendMode = tilemap.__worldBlendMode;
-
-		// if (!tilemap.tileBlendModeEnabled)
-		// {
-		// 	renderer.__setBlendMode(currentBlendMode);
-		// }
-
-		// renderer.__pushMaskObject(tilemap);
-		// // renderer.filterManager.pushObject (tilemap);
-
-		// var rect = Rectangle.__pool.get();
-		// rect.setTo(0, 0, tilemap.__width, tilemap.__height);
-		// renderer.__pushMaskRect(rect, tilemap.__renderTransform);
-
-		// renderTileContainer(tilemap, renderer, tilemap.__group, cast tilemap.__worldShader, tilemap.__tileset, tilemap.__worldAlpha,
-		// 	tilemap.tileBlendModeEnabled, currentBlendMode, null);
-		// flush(tilemap, renderer, currentBlendMode);
-
-		// // renderer.filterManager.popObject (tilemap);
-		// renderer.__popMaskRect();
-		// renderer.__popMaskObject(tilemap);
-
-		// Rectangle.__pool.release(rect);
-	}
-
-	private static function renderTileContainer(tilemap:Tilemap, renderer:Context3DRenderer, group:TileContainer, defaultShader:Shader,
-			defaultTileset:Tileset, worldAlpha:Float, blendModeEnabled:Bool, defaultBlendMode:BlendMode, cacheBitmapData:BitmapData):Void
-	{
-		// var tiles = group.__tiles;
-
-		// var tile,
-		// 	tileset,
-		// 	alpha,
-		// 	visible,
-		// 	blendMode = null,
-		// 	id,
-		// 	tileData,
-		// 	tileRect,
-		// 	shader:Shader,
-		// 	bitmapData;
-
-		// for (tile in tiles)
-		// {
-		// 	tileset = tile.tileset != null ? tile.tileset : defaultTileset;
-
-		// 	alpha = tile.alpha * worldAlpha;
-		// 	visible = tile.visible;
-		// 	if (!visible || alpha <= 0) continue;
-
-		// 	shader = tile.shader != null ? tile.shader : defaultShader;
-
-		// 	if (blendModeEnabled)
-		// 	{
-		// 		blendMode = (tile.__blendMode != null) ? tile.__blendMode : defaultBlendMode;
-		// 	}
-
-		// 	if (tile.__length > 0)
-		// 	{
-		// 		renderTileContainer(tilemap, renderer, cast tile, shader, tileset, alpha, blendModeEnabled, blendMode, cacheBitmapData);
-		// 	}
-		// 	else
-		// 	{
-		// 		if (tileset == null) continue;
-
-		// 		id = tile.id;
-
-		// 		bitmapData = tileset.__bitmapData;
-		// 		if (bitmapData == null) continue;
-
-		// 		if (id == -1)
-		// 		{
-		// 			tileRect = tile.__rect;
-		// 			if (tileRect == null || tileRect.width <= 0 || tileRect.height <= 0) continue;
-		// 		}
-		// 		else
-		// 		{
-		// 			tileData = tileset.__data[id];
-		// 			if (tileData == null) continue;
-		// 		}
-
-		// 		if ((shader != currentShader)
-		// 			|| (bitmapData != currentBitmapData && currentBitmapData != null)
-		// 			|| (currentBlendMode != blendMode))
-		// 		{
-		// 			flush(tilemap, renderer, currentBlendMode);
-		// 		}
-
-		// 		currentBitmapData = bitmapData;
-		// 		currentShader = shader;
-		// 		currentBlendMode = blendMode;
-		// 		bufferPosition++;
-		// 	}
-		// }
+		Rectangle.__pool.release(rect);
+		Matrix.__pool.release(matrix);
 	}
 
 	public static function renderMask(tilemap:Tilemap, renderer:Context3DRenderer):Void

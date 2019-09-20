@@ -567,7 +567,7 @@ class Context3DRenderer extends Context3DRendererAPI
 	{
 		var matrix = __getMatrixHelperMatrix;
 		matrix.copyFrom(transform);
-		matrix.concat(__worldTransform);
+		// matrix.concat(__worldTransform);
 
 		if (snapToPixel)
 		{
@@ -1156,6 +1156,10 @@ class Context3DRenderer extends Context3DRendererAPI
 		if (shader.__textureCoord != null) context3D.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
 		var indexBuffer = source.getIndexBuffer(context3D);
 		context3D.drawTriangles(indexBuffer);
+
+		#if gl_stats
+		Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
+		#end
 
 		if (cacheRTT != null)
 		{
