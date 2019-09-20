@@ -621,7 +621,7 @@ private class InnerCombineShader extends BitmapFilterShader
 			vec4 src = texture2D(sourceBitmap, textureCoords.xy);
 			vec4 glow = texture2D(openfl_Texture, textureCoords.zw) * strength;
 
-			gl_FragColor = mix(src, glow, glow.a) * src.a;
+ 			gl_FragColor = vec4(mix(src.rgb, glow.rgb, glow.a), src.a);
 		}
 	")
 	@:glVertexSource("attribute vec4 openfl_Position;
