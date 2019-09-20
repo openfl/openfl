@@ -29,7 +29,8 @@ class Context3DBitmap
 
 		if (bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid)
 		{
-			renderer.__pushMaskObject(bitmap);
+			var alphaMask = (bitmap.mask != null && bitmap.mask.cacheAsBitmap);
+			if (!alphaMask) renderer.__pushMaskObject(bitmap);
 
 			var snapToPixel = renderer.__roundPixels || renderer.__shouldSnapToPixel(bitmap);
 			var transform = renderer.__getDisplayTransformTempMatrix(bitmap.__renderTransform, snapToPixel);
@@ -37,7 +38,7 @@ class Context3DBitmap
 			renderer.batcher.useDefaultUvs();
 			renderer.batcher.pushQuad(bitmap.bitmapData, bitmap.__worldBlendMode, bitmap.__worldAlpha, bitmap.__worldColorTransform);
 
-			renderer.__popMaskObject(bitmap);
+			if (!alphaMask) renderer.__popMaskObject(bitmap);
 
 			// var context = renderer.context3D;
 
