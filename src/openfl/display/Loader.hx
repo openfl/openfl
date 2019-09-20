@@ -203,6 +203,8 @@ class Loader extends DisplayObjectContainer
 		__unloaded = true;
 	}
 
+	#if (openfl >= "9.0.0")
+	#error "Need to move addChild and sundry to private __addChild internally"
 	public override function addChild(child:DisplayObject):DisplayObject
 	{
 		throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
@@ -214,6 +216,7 @@ class Loader extends DisplayObjectContainer
 		throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
 		return null;
 	}
+	#end
 
 	#if !openfl_strict
 	/**
@@ -562,6 +565,7 @@ class Loader extends DisplayObjectContainer
 		BitmapData.loadFromBytes(buffer).onComplete(BitmapData_onLoad).onError(BitmapData_onError);
 	}
 
+	#if (openfl >= "9.0.0")
 	public override function removeChild(child:DisplayObject):DisplayObject
 	{
 		throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
@@ -578,6 +582,7 @@ class Loader extends DisplayObjectContainer
 	{
 		throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
 	}
+	#end
 
 	/**
 		Removes a child of this Loader object that was loaded by using the
