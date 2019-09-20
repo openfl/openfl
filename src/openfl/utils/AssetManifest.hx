@@ -1,5 +1,6 @@
 package openfl.utils;
 
+import haxe.io.Bytes;
 #if lime
 import lime.utils.AssetManifest as LimeAssetManifest;
 #end
@@ -130,6 +131,7 @@ class AssetManifest #if lime extends LimeAssetManifest #end
 		var manifest = null;
 		if (limeManifest != null)
 		{
+			manifest = new AssetManifest();
 			manifest.assets = limeManifest.assets;
 			manifest.libraryArgs = limeManifest.libraryArgs;
 			manifest.libraryType = limeManifest.libraryType;
