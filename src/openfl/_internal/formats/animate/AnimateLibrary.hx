@@ -571,6 +571,8 @@ import openfl.utils.AssetManifest;
 
 	private function __parseSprite(data:Dynamic):AnimateSpriteSymbol
 	{
+		if (data == null) return null;
+
 		var symbol = new AnimateSpriteSymbol();
 		symbol.id = data.id;
 		symbol.className = data.className;

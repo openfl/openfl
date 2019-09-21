@@ -139,7 +139,6 @@ class Tools
 
 	private static function formatClassName(className:String, prefix:String = null):String
 	{
-		trace(className, prefix);
 		if (className == null) return null;
 		if (prefix == null) prefix = "";
 
@@ -211,7 +210,6 @@ class Tools
 			}
 
 			packageName = packageName.charAt(0).toLowerCase() + packageName.substr(1);
-			trace("5");
 			name = formatClassName(name, prefix);
 
 			var symbolID = swf.symbols.get(className);
@@ -309,7 +307,6 @@ class Tools
 										}
 										else
 										{
-											trace("6");
 											className = formatClassName(className, prefix);
 										}
 
@@ -427,7 +424,6 @@ class Tools
 					name = className.substr(lastIndexOfPeriod + 1);
 				}
 
-				trace("1");
 				// name = formatClassName(name, prefix);
 
 				var classProperties = [];
@@ -483,7 +479,6 @@ class Tools
 											}
 											else
 											{
-												trace("2");
 												// className = formatClassName(className, prefix);
 											}
 
@@ -684,7 +679,6 @@ class Tools
 			{
 				if (symbol.className != null)
 				{
-					trace("3");
 					symbol.className = formatClassName(symbol.className, prefix);
 				}
 			}
@@ -1101,7 +1095,6 @@ class Tools
 							{
 								if (symbol.className != null)
 								{
-									trace("4");
 									symbol.className = formatClassName(symbol.className, prefix);
 								}
 							}

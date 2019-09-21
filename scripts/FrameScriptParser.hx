@@ -341,6 +341,8 @@ class AVM2
 
 	public static function findClassByName(abcData:ABCData, s:String):ClassDef
 	{
+		if (s == null) return null;
+
 		var x = s.lastIndexOf(".");
 		var pkgName = "";
 		var clsName = s;

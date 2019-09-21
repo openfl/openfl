@@ -1212,11 +1212,6 @@ class SWFLibraryExporter
 				var name = className;
 				var packageName = "";
 
-				if (name.toLowerCase().indexOf("shipguide") > -1)
-				{
-					trace(name);
-				}
-
 				var lastIndexOfPeriod = className.lastIndexOf(".");
 
 				if (lastIndexOfPeriod > -1)
@@ -1226,26 +1221,11 @@ class SWFLibraryExporter
 					{
 						packageName = packageName.charAt(0).toLowerCase() + packageName.substr(1);
 					}
-					if (name.toLowerCase().indexOf("shipguide") > -1)
-					{
-						trace(name);
-						trace(packageName);
-					}
-					name = className.substr(lastIndexOfPeriod + 1);
 
-					if (name.toLowerCase().indexOf("shipguide") > -1)
-					{
-						trace(name);
-					}
+					name = className.substr(lastIndexOfPeriod + 1);
 				}
 
 				name = formatClassName(name, prefix);
-
-				if (name.toLowerCase().indexOf("shipguide") > -1)
-				{
-					trace(prefix);
-					trace(name);
-				}
 
 				var classProperties = [];
 				var objectReferences = new Map<String, Bool>();
@@ -1330,7 +1310,12 @@ class SWFLibraryExporter
 					PREFIX: "",
 					CLASS_PROPERTIES: classProperties
 				};
-				if (baseClassName != null) context.BASE_CLASS_NAME = baseClassName;
+
+				if (baseClassName != null)
+				{
+					context.BASE_CLASS_NAME = baseClassName;
+				}
+
 				var template = new Template(templateData);
 
 				var templateFile = new Asset("", Path.combine(targetPath, Path.directory(symbol.className.split(".").join("/"))) + "/" + name + ".hx",
