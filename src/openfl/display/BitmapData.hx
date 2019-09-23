@@ -39,6 +39,7 @@ import lime.graphics.RenderContext;
 import lime.math.ARGB;
 import lime.math.Vector2;
 import openfl._internal.renderer.context3D.Context3DRenderer;
+import openfl._internal.renderer.context3D.batcher.BatchRenderer;
 #if lime_cairo
 import openfl._internal.renderer.cairo.CairoRenderer;
 #elseif (js && html5)
@@ -1619,10 +1620,158 @@ class BitmapData implements IBitmapDrawable
 		return __indexBuffer;
 	}
 
-	// @:dox(hide) public function pushQuadsToBatcher(transform:Matrix, batcher:BatchRenderer):Void
-	// {
-	// 	// TODO
-	// }
+	@:dox(hide) public function pushQuadsToBatcher(batcher:BatchRenderer, transform:Matrix, object:DisplayObject):Void
+	{
+		var blendMode = object.__worldBlendMode;
+		var alpha = object.__worldAlpha;
+		var colorTransform = object.__worldColorTransform;
+		var scale9Grid = object.__worldScale9Grid;
+
+		#if openfl_power_of_two
+		var newWidth = 1;
+		var newHeight = 1;
+
+		while (newWidth < width)
+		{
+			newWidth <<= 1;
+		}
+
+		while (newHeight < height)
+		{
+			newHeight <<= 1;
+		}
+		var uvWidth = width / newWidth;
+		var uvHeight = height / newHeight;
+		#else
+		var uvWidth = 1;
+		var uvHeight = 1;
+		#end
+
+		if (object != null && scale9Grid != null)
+		{
+			var vertexBufferWidth = object.width;
+			var vertexBufferHeight = object.height;
+			var vertexBufferScaleX = object.scaleX;
+			var vertexBufferScaleY = object.scaleY;
+
+			var centerX = scale9Grid.width;
+			var centerY = scale9Grid.height;
+			if (centerX != 0 && centerY != 0)
+			{
+				var left = scale9Grid.x;
+				var top = scale9Grid.y;
+				var right = vertexBufferWidth - centerX - left;
+				var bottom = vertexBufferHeight - centerY - top;
+
+				var uvLeft = left / vertexBufferWidth;
+				var uvTop = top / vertexBufferHeight;
+				var uvCenterX = scale9Grid.width / vertexBufferWidth;
+				var uvCenterY = scale9Grid.height / vertexBufferHeight;
+				var uvRight = right / width;
+				var uvBottom = bottom / height;
+				var uvOffsetU = 0.5 / vertexBufferWidth;
+				var uvOffsetV = 0.5 / vertexBufferHeight;
+
+				var renderedLeft = left / vertexBufferScaleX;
+				var renderedTop = top / vertexBufferScaleY;
+				var renderedRight = right / vertexBufferScaleX;
+				var renderedBottom = bottom / vertexBufferScaleY;
+				var renderedCenterX = (width - renderedLeft - renderedRight);
+				var renderedCenterY = (height - renderedTop - renderedBottom);
+
+				//  a         b          c         d
+				// p  0 ——— 1    4 ——— 5    8 ——— 9
+				//    |  /  |    |  /  |    |  /  |
+				//    2 ——— 3    6 ——— 7   10 ——— 11
+				// q
+				//   12 ——— 13  16 ——— 18  20 ——— 21
+				//    |  /  |    |  /  |    |  /  |
+				//   14 ——— 15  17 ——— 19  22 ——— 23
+				// r
+				//   24 ——— 25  28 ——— 29  32 ——— 33
+				//    |  /  |    |  /  |    |  /  |
+				//   26 ——— 27  30 ——— 31  34 ——— 35
+				// s
+
+				var a = 0;
+				var b = renderedLeft;
+				var c = renderedLeft + renderedCenterX;
+				var bc = renderedCenterX;
+				var d = width;
+				var cd = d - c;
+
+				var p = 0;
+				var q = renderedTop;
+				var r = renderedTop + renderedCenterY;
+				var qr = renderedCenterY;
+				var s = height;
+				var rs = s - r;
+
+				batcher.setVs(0, (uvHeight * uvTop) - uvOffsetV);
+				batcher.setVertices(transform, a, p, b, q);
+				batcher.setUs(0, (uvWidth * uvLeft) - uvOffsetU);
+				batcher.pushQuad(this, blendMode, alpha, colorTransform);
+
+				batcher.setVertices(transform, b, p, bc, q);
+				batcher.setUs((uvWidth * uvLeft) + uvOffsetU, (uvWidth * (uvLeft + uvCenterX)) - uvOffsetU);
+				batcher.pushQuad(this, blendMode, alpha, colorTransform);
+
+				batcher.setVertices(transform, c, p, cd, q);
+				batcher.setUs((uvWidth * (uvLeft + uvCenterX)) + uvOffsetU, uvWidth);
+				batcher.pushQuad(this, blendMode, alpha, colorTransform);
+
+				batcher.setVs((uvHeight * uvTop) + uvOffsetV, (uvHeight * (uvTop + uvCenterY)) - uvOffsetV);
+				batcher.setVertices(transform, a, q, b, qr);
+				batcher.setUs(0, (uvWidth * uvLeft) - uvOffsetU);
+				batcher.pushQuad(this, blendMode, alpha, colorTransform);
+
+				batcher.setVertices(transform, b, q, bc, qr);
+				batcher.setUs((uvWidth * uvLeft) + uvOffsetU, (uvWidth * (uvLeft + uvCenterX)) - uvOffsetU);
+				batcher.pushQuad(this, blendMode, alpha, colorTransform);
+
+				batcher.setVertices(transform, c, q, cd, qr);
+				batcher.setUs((uvWidth * (uvLeft + uvCenterX)) + uvOffsetU, uvWidth);
+				batcher.pushQuad(this, blendMode, alpha, colorTransform);
+
+				batcher.setVs((uvHeight * (uvTop + uvCenterY)) + uvOffsetV, uvHeight);
+				batcher.setVertices(transform, a, r, b, rs);
+				batcher.setUs(0, (uvWidth * uvLeft) - uvOffsetU);
+				batcher.pushQuad(this, blendMode, alpha, colorTransform);
+
+				batcher.setVertices(transform, b, r, bc, rs);
+				batcher.setUs((uvWidth * uvLeft) + uvOffsetU, (uvWidth * (uvLeft + uvCenterX)) - uvOffsetU);
+				batcher.pushQuad(this, blendMode, alpha, colorTransform);
+
+				batcher.setVertices(transform, c, r, cd, rs);
+				batcher.setUs((uvWidth * (uvLeft + uvCenterX)) + uvOffsetU, uvWidth);
+				batcher.pushQuad(this, blendMode, alpha, colorTransform);
+			}
+			else if (centerX == 0 && centerY != 0)
+			{
+				// TODO
+				// 3 ——— 2
+				// |  /  |
+				// 1 ——— 0
+				// |  /  |
+				// 5 ——— 4
+				// |  /  |
+				// 7 ——— 6
+			}
+			else if (centerY == 0 && centerX != 0)
+			{
+				// TODO
+				// 3 ——— 2 ——— 5 ——— 7
+				// |  /  |  /  |  /  |
+				// 1 ——— 0 ——— 4 ——— 6
+			}
+		}
+		else
+		{
+			batcher.setVertices(transform, 0, 0, width, height);
+			batcher.useDefaultUvs();
+			batcher.pushQuad(this, blendMode, alpha, colorTransform);
+		}
+	}
 
 	/**
 		**BETA**

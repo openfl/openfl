@@ -114,6 +114,26 @@ class BatchRenderer
 		__uvs = __userUvs;
 	}
 
+	public function setUs(u:Float, s:Float):Void
+	{
+		__userUvs[0] = u;
+		__userUvs[2] = s;
+		__userUvs[4] = s;
+		__userUvs[6] = u;
+
+		__uvs = __userUvs;
+	}
+
+	public function setVs(v:Float, t:Float):Void
+	{
+		__userUvs[1] = v;
+		__userUvs[3] = v;
+		__userUvs[5] = t;
+		__userUvs[7] = t;
+
+		__uvs = __userUvs;
+	}
+
 	public function pushQuad(bitmapData:BitmapData, blendMode:BlendMode, alpha:Float, colorTransform:ColorTransform = null)
 	{
 		var terminateBatch:Bool = __batch.numQuads >= __maxQuads || renderer.__blendMode != blendMode;

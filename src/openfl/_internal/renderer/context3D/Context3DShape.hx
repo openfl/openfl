@@ -41,9 +41,7 @@ class Context3DShape
 
 				var bitmapData = graphics.__bitmap;
 				var transform = renderer.__getDisplayTransformTempMatrix(graphics.__worldTransform, false);
-				renderer.batcher.setVertices(transform, 0, 0, bitmapData.width, bitmapData.height);
-				renderer.batcher.useDefaultUvs();
-				renderer.batcher.pushQuad(bitmapData, shape.__worldBlendMode, shape.__worldAlpha, shape.__worldColorTransform);
+				bitmapData.pushQuadsToBatcher(renderer.batcher, transform, shape);
 
 				renderer.__popMaskObject(shape);
 
