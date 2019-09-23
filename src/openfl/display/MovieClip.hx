@@ -1174,22 +1174,50 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 
 	@:noCompletion private function get_currentFrame():Int
 	{
-		return __currentFrame;
+		if (__timeline != null)
+		{
+			return __timeline.getCurrentFrame();
+		}
+		else
+		{
+			return __currentFrame;
+		}
 	}
 
 	@:noCompletion private function get_currentFrameLabel():String
 	{
-		return __currentFrameLabel;
+		if (__timeline != null)
+		{
+			return __timeline.getCurrentFrameLabel();
+		}
+		else
+		{
+			return __currentFrameLabel;
+		}
 	}
 
 	@:noCompletion private function get_currentLabel():String
 	{
-		return __currentLabel;
+		if (__timeline != null)
+		{
+			return __timeline.getCurrentLabel();
+		}
+		else
+		{
+			return __currentLabel;
+		}
 	}
 
 	@:noCompletion private function get_currentLabels():Array<FrameLabel>
 	{
-		return __currentLabels;
+		if (__timeline != null)
+		{
+			return __timeline.getCurrentLabels();
+		}
+		else
+		{
+			return __currentLabels;
+		}
 	}
 
 	@:noCompletion private function get_enabled():Bool
@@ -1204,17 +1232,38 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 
 	@:noCompletion private function get_framesLoaded():Int
 	{
-		return __totalFrames;
+		if (__timeline != null)
+		{
+			return __timeline.getFramesLoaded();
+		}
+		else
+		{
+			return __totalFrames;
+		}
 	}
 
 	@:noCompletion private function get_isPlaying():Bool
 	{
-		return __playing;
+		if (__timeline != null)
+		{
+			return __timeline.isPlaying();
+		}
+		else
+		{
+			return __playing;
+		}
 	}
 
 	@:noCompletion private function get_totalFrames():Int
 	{
-		return __totalFrames;
+		if (__timeline != null)
+		{
+			return __timeline.getTotalFrames();
+		}
+		else
+		{
+			return __totalFrames;
+		}
 	}
 }
 

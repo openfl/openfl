@@ -127,6 +127,36 @@ class AnimateTimeline implements ITimeline
 		}
 	}
 
+	public function getCurrentFrame():Int
+	{
+		return __currentFrame;
+	}
+
+	public function getCurrentFrameLabel():String
+	{
+		return __currentFrameLabel;
+	}
+
+	public function getCurrentLabel():String
+	{
+		return __currentLabel;
+	}
+
+	public function getCurrentLabels():Array<FrameLabel>
+	{
+		return __currentLabels;
+	}
+
+	public function getFramesLoaded():Int
+	{
+		return __totalFrames;
+	}
+
+	public function getTotalFrames():Int
+	{
+		return __totalFrames;
+	}
+
 	/**
 		Starts playing the SWF file at the specified frame. This happens after all
 		remaining actions in the frame have finished executing. To specify a scene
@@ -400,6 +430,11 @@ class AnimateTimeline implements ITimeline
 		__instanceFields = Type.getInstanceFields(Type.getClass(__movieClip));
 		__updateInstanceFields();
 		#end
+	}
+
+	public function isPlaying():Bool
+	{
+		return __playing;
 	}
 
 	/**
