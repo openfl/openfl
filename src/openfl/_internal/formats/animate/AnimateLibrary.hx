@@ -355,6 +355,17 @@ import openfl.utils.AssetManifest;
 	{
 		if (alpha != null)
 		{
+			if (!image.transparent)
+			{
+				#if flash
+				var copy = new Image(0, 0, image.width, image.height);
+				copy.copyPixels(image, image.rect, new Vector2());
+				image.buffer = copy.buffer;
+				#else
+				image.transparent = true;
+				#end
+			}
+
 			image.copyChannel(alpha, alpha.rect, new Vector2(), ImageChannel.RED, ImageChannel.ALPHA);
 		}
 
