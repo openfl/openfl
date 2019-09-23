@@ -91,7 +91,7 @@ class Context3DRenderer extends Context3DRendererAPI
 	private static var __scissorRectangle:Rectangle = new Rectangle();
 	private static var __textureSizeValue:Array<Float> = [0, 0];
 
-	public var batcher:BatchRenderer;
+	public var batcher:BatchRenderer = null;
 	public var context3D:Context3D;
 
 	private var __alphaMaskShader:Context3DAlphaMaskShader;
@@ -621,8 +621,14 @@ class Context3DRenderer extends Context3DRendererAPI
 		__gl = context.__context.webgl;
 		gl = __gl;
 
-		// TODO: Clean on re-init instead of making a new instance?
-		batcher = new BatchRenderer(this, 4096);
+		if (batcher == null)
+		{
+			batcher = new BatchRenderer(this, 4096);
+		}
+		else
+		{
+			batcher.flush();
+		}
 
 		__defaultRenderTarget = defaultRenderTarget;
 		__flipped = (__defaultRenderTarget == null);
