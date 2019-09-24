@@ -136,11 +136,13 @@ class BatchRenderer
 
 	public function pushQuad(bitmapData:BitmapData, blendMode:BlendMode, alpha:Float, colorTransform:ColorTransform = null)
 	{
-		var terminateBatch:Bool = __batch.numQuads >= __maxQuads || renderer.__blendMode != blendMode;
+		var terminateBatch:Bool = __batch.numQuads >= __maxQuads || __batch.blendMode != blendMode;
 		if (terminateBatch)
 		{
+			// trace("renderer.__blendMode: " + renderer.__blendMode + ", blendMode: " + blendMode);
 			flush();
 		}
+
 		var unit = 0;
 		var texture:BitmapData = null;
 		for (i in 0...__batch.numTextures)
@@ -164,6 +166,7 @@ class BatchRenderer
 			__batch.textures[__batch.numTextures++] = texture;
 		}
 
+		__batch.blendMode = blendMode;
 		__batch.push(unit, __vertices, __uvs, alpha, colorTransform);
 	}
 
@@ -177,7 +180,7 @@ class BatchRenderer
 		var context = renderer.context3D;
 
 		context.setScissorRectangle(null);
-		renderer.__setBlendMode(renderer.__blendMode);
+		renderer.__setBlendMode(__batch.blendMode);
 
 		context.__bindGLArrayBuffer(__vertexBuffer.__id);
 
@@ -207,7 +210,7 @@ class BatchRenderer
 		context.drawTriangles(__indexBuffer, 0, __batch.numQuads * 2);
 
 		#if gl_stats
-		Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
+		Context3DStats.incrementDrawCall(DrawCallContext.BATCHER);
 		#end
 
 		// start new batch
@@ -236,6 +239,7 @@ class BatchRenderer
 
 private class Batch
 {
+	public var blendMode:BlendMode;
 	public var indices:UInt16Array;
 	public var vertices:Float32Array;
 	public var textures:Array<BitmapData>;
@@ -248,6 +252,7 @@ private class Batch
 
 	public function new(maxQuads:Int, maxTextures:Int)
 	{
+		blendMode = null;
 		vertices = new Float32Array(maxQuads * FLOATS_PER_QUAD);
 		indices = new UInt16Array(maxQuads * 6);
 		textures = [for (i in 0...maxTextures) null];
@@ -255,6 +260,7 @@ private class Batch
 
 	public function clear()
 	{
+		blendMode = null;
 		numQuads = 0;
 		numTextures = 0;
 	}

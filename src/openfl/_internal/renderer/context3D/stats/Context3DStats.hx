@@ -11,7 +11,8 @@ class Context3DStats
 {
 	private static var drawCallsCounters:IntMap<DrawCallCounter> = [
 		DrawCallContext.STAGE => new DrawCallCounter(),
-		DrawCallContext.STAGE3D => new DrawCallCounter()
+		DrawCallContext.STAGE3D => new DrawCallCounter(),
+		DrawCallContext.BATCHER => new DrawCallCounter()
 	];
 
 	public static function incrementDrawCall(context:DrawCallContext):Void
