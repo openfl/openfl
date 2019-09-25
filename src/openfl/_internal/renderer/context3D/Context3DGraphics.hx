@@ -568,6 +568,8 @@ class Context3DGraphics
 						case DRAW_QUADS:
 							if (bitmap != null)
 							{
+								renderer.batcher.flush();
+
 								var c = data.readDrawQuads();
 								var rects = c.rects;
 								var indices = c.indices;
@@ -625,14 +627,13 @@ class Context3DGraphics
 										graphics.__quadBuffer.vertexBuffer, (quadBufferPosition * 16) + 2, FLOAT_2);
 
 									context.drawTriangles(context.__quadIndexBuffer, 0, length * 2);
+									#if gl_stats
+									Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
+									#end
 
 									shaderBufferOffset += length * 4;
 									quadBufferPosition += length;
 								}
-
-								#if gl_stats
-								Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
-								#end
 
 								renderer.__clearShader();
 							}
@@ -640,6 +641,8 @@ class Context3DGraphics
 						case DRAW_RECT:
 							if (fill != null)
 							{
+								renderer.batcher.flush();
+
 								var c = data.readDrawRect();
 								var x = c.x;
 								var y = c.y;
@@ -686,6 +689,8 @@ class Context3DGraphics
 							}
 
 						case DRAW_TRIANGLES:
+							renderer.batcher.flush();
+
 							var c = data.readDrawTriangles();
 							var vertices = c.vertices;
 							var indices = c.indices;
