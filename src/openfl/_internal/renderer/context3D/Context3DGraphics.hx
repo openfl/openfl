@@ -528,6 +528,11 @@ class Context3DGraphics
 				var vertexBufferPosition = 0;
 				var vertexBufferPositionUVT = 0;
 
+				if (graphics.__commands.length > 0)
+				{
+					renderer.batcher.flush();
+				}
+
 				for (type in graphics.__commands.types)
 				{
 					switch (type)
@@ -568,8 +573,6 @@ class Context3DGraphics
 						case DRAW_QUADS:
 							if (bitmap != null)
 							{
-								renderer.batcher.flush();
-
 								var c = data.readDrawQuads();
 								var rects = c.rects;
 								var indices = c.indices;
@@ -641,8 +644,6 @@ class Context3DGraphics
 						case DRAW_RECT:
 							if (fill != null)
 							{
-								renderer.batcher.flush();
-
 								var c = data.readDrawRect();
 								var x = c.x;
 								var y = c.y;
@@ -689,8 +690,6 @@ class Context3DGraphics
 							}
 
 						case DRAW_TRIANGLES:
-							renderer.batcher.flush();
-
 							var c = data.readDrawTriangles();
 							var vertices = c.vertices;
 							var indices = c.indices;

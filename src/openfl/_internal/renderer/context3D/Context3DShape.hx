@@ -56,8 +56,6 @@ class Context3DShape
 				// renderer.applyColorTransform(shape.__worldColorTransform);
 				// renderer.updateShader();
 
-				// // TODO: scale9Grid
-
 				// var vertexBuffer = graphics.__bitmap.getVertexBuffer(context, scale9Grid, shape);
 				// if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, vertexBuffer, 0, FLOAT_3);
 				// if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
@@ -88,6 +86,8 @@ class Context3DShape
 
 			if (graphics.__bitmap != null)
 			{
+				renderer.batcher.flush();
+
 				var context = renderer.context3D;
 
 				var shader = renderer.__maskShader;

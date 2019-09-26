@@ -139,7 +139,6 @@ class BatchRenderer
 		var terminateBatch:Bool = __batch.numQuads >= __maxQuads || __batch.blendMode != blendMode;
 		if (terminateBatch)
 		{
-			// trace("renderer.__blendMode: " + renderer.__blendMode + ", blendMode: " + blendMode);
 			flush();
 		}
 
