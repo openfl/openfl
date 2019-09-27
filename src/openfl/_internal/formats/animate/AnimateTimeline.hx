@@ -389,10 +389,10 @@ class AnimateTimeline implements ITimeline
 			}
 		}
 
-		if (__totalFrames > 1)
-		{
-			play();
-		}
+		// if (__totalFrames > 1)
+		// {
+		// 	play();
+		// }
 
 		enterFrame(0);
 

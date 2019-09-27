@@ -417,6 +417,8 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		if (__timeline != null)
 		{
 			__timeline.enterFrame(deltaTime);
+
+			super.__enterFrame(deltaTime);
 		}
 		else
 		{

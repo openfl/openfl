@@ -32,6 +32,7 @@ class AnimateSpriteSymbol extends AnimateSymbol
 		movieClip.__timeline = new AnimateTimeline(movieClip, library, this);
 		#end
 		movieClip.scale9Grid = scale9Grid;
+		movieClip.play();
 	}
 
 	private override function __createObject(library:AnimateLibrary):MovieClip

@@ -1,6 +1,7 @@
 package openfl._internal.formats.animate;
 
 import haxe.Json;
+import openfl._internal.formats.swf.FilterType;
 import openfl._internal.formats.swf.ShapeCommand;
 import openfl.display.MovieClip;
 import openfl.events.Event;
@@ -458,6 +459,38 @@ import openfl.utils.AssetManifest;
 		return symbol;
 	}
 
+	private function __parseFilters(filters:Array<Array<Dynamic>>):Array<FilterType>
+	{
+		if (filters == null) return null;
+
+		var result = [];
+
+		for (filter in filters)
+		{
+			if (filter == null || filter.length == 0) continue;
+
+			switch (filter[0])
+			{
+				case 0:
+					result.push(FilterType.BlurFilter(filter[1], filter[2], filter[3]));
+
+				case 1:
+					result.push(FilterType.ColorMatrixFilter(filter[1]));
+
+				case 2:
+					result.push(FilterType.DropShadowFilter(filter[1], filter[2], filter[3], filter[4], filter[5], filter[6], filter[7], filter[8], filter[9],
+						filter[10], filter[11]));
+
+				case 3:
+					result.push(FilterType.GlowFilter(filter[1], filter[2], filter[3], filter[4], filter[5], filter[6], filter[7], filter[8]));
+
+				default:
+			}
+		}
+
+		return result;
+	}
+
 	private function __parseFont(data:Dynamic):AnimateFontSymbol
 	{
 		var symbol = new AnimateFontSymbol();
@@ -618,7 +651,7 @@ import openfl.utils.AssetManifest;
 						__pixel(objectData.colorTransform[4]), __pixel(objectData.colorTransform[5]), __pixel(objectData.colorTransform[6]),
 						__pixel(objectData.colorTransform[7])) : null;
 					object.depth = objectData.depth;
-					object.filters = objectData.filters;
+					object.filters = __parseFilters(objectData.filters);
 					object.id = objectData.id;
 					object.matrix = __parseMatrix(objectData.matrix);
 					object.name = objectData.name;

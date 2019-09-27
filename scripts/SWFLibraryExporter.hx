@@ -2,6 +2,10 @@ package;
 
 import format.png.Data;
 import format.png.Writer as PNGWriter;
+import format.swf.data.consts.BitmapFormat;
+import format.swf.data.consts.BlendMode;
+import format.swf.data.filters.IFilter;
+import format.swf.data.SWFButtonRecord;
 import format.swf.exporters.ShapeBitmapExporter;
 import format.swf.exporters.ShapeCommandExporter;
 import format.swf.tags.IDefinitionTag;
@@ -22,9 +26,6 @@ import format.swf.tags.TagDefineSprite;
 import format.swf.tags.TagDefineText;
 import format.swf.tags.TagPlaceObject;
 import format.swf.tags.TagSymbolClass;
-import format.swf.data.consts.BitmapFormat;
-import format.swf.data.consts.BlendMode;
-import format.swf.data.SWFButtonRecord;
 import format.swf.SWFRoot;
 import format.swf.SWFTimelineContainer;
 import haxe.Template;
@@ -53,6 +54,7 @@ import haxe.zip.Writer as ZipWriter;
 import haxe.Json;
 import sys.io.File;
 import sys.io.FileOutput;
+
 using FrameScriptParser.AVM2;
 
 class SWFLibraryExporter
@@ -222,20 +224,7 @@ class SWFLibraryExporter
 
 					if (object.hasFilterList)
 					{
-						var filters:Array<FilterType> = [];
-
-						for (filter in object.filterList)
-						{
-							var type = filter.type;
-
-							if (type != null)
-							{
-								filters.push(filter.type);
-								// filterClasses.set (Type.getClassName (Type.getClass (surfaceFilter.filter)), true);
-							}
-						}
-
-						frameObject.filters = filters;
+						frameObject.filters = serializeFilters(object.filterList);
 					}
 
 					frameObject.depth = i;
@@ -742,20 +731,7 @@ class SWFLibraryExporter
 
 				if (placeTag.hasFilterList)
 				{
-					var filters:Array<FilterType> = [];
-
-					for (surfaceFilter in placeTag.surfaceFilterList)
-					{
-						var type = surfaceFilter.type;
-
-						if (type != null)
-						{
-							filters.push(surfaceFilter.type);
-							// filterClasses.set (Type.getClassName (Type.getClass (surfaceFilter.filter)), true);
-						}
-					}
-
-					frameObject.filters = filters;
+					frameObject.filters = serializeFilters(placeTag.surfaceFilterList);
 				}
 
 				frameObject.depth = placeTag.depth;
@@ -815,14 +791,34 @@ class SWFLibraryExporter
 			symbol.scale9Grid = serializeRect(scalingGrid.splitter.rect);
 		}
 
-		var scripts = FrameScriptParser.convertToJS(swfData, symbol.name);
+		var scripts = null;
+		var found = false;
+
+		// TODO: Less looping
+		for (tag in swfData.tags)
+		{
+			if (Std.is(tag, TagSymbolClass))
+			{
+				for (classSymbol in cast(tag, TagSymbolClass).symbols)
+				{
+					if (classSymbol.tagId == symbol.id)
+					{
+						scripts = FrameScriptParser.convertToJS(swfData, classSymbol.name);
+						found = true;
+						break;
+					}
+				}
+			}
+			if (found) break;
+		}
+
 		if (scripts != null)
 		{
 			for (i in 0...scripts.length)
 			{
 				if (scripts[i] != null && symbol.frames[i] != null)
 				{
-					symbol.frames.scriptSource = scripts[i];
+					symbol.frames[i].scriptSource = scripts[i];
 				}
 			}
 		}
@@ -1408,6 +1404,51 @@ class SWFLibraryExporter
 		];
 	}
 
+	private function serializeFilters(filters:Array<IFilter>):Array<Array<Dynamic>>
+	{
+		if (filters == null || filters.length == 0) return null;
+
+		var result:Array<Array<Dynamic>> = [];
+
+		for (filter in filters)
+		{
+			var type = filter.type;
+
+			if (type != null)
+			{
+				switch (type)
+				{
+					case BlurFilter(blurX, blurY, quality):
+						result.push([SWFFilterType.BLUR, blurX, blurY, quality]);
+
+					case ColorMatrixFilter(matrix):
+						result.push([SWFFilterType.COLOR_MATRIX, matrix]);
+
+					case DropShadowFilter(distance, angle, color, alpha, blurX, blurY, strength, quality, inner, knockout, hideObject):
+						result.push([
+							SWFFilterType.DROP_SHADOW, distance, angle, color, alpha, blurX, blurY, strength, quality, inner, knockout, hideObject
+						]);
+
+					case GlowFilter(color, alpha, blurX, blurY, strength, quality, inner, knockout):
+						result.push([
+							SWFFilterType.GLOW,
+							color,
+							alpha,
+							blurX,
+							blurY,
+							strength,
+							quality,
+							inner,
+							knockout
+						]);
+				}
+				// filterClasses.set (Type.getClassName (Type.getClass (surfaceFilter.filter)), true);
+			}
+		}
+
+		return result;
+	}
+
 	private function serializeMatrix(matrix:Matrix):Array<Float>
 	{
 		return [matrix.a, matrix.b, matrix.c, matrix.d, twip(matrix.tx), twip(matrix.ty)];
@@ -1508,4 +1549,13 @@ class SWFDocument
 	public var SHAPE = 4;
 	public var SPRITE = 5;
 	public var STATIC_TEXT = 6;
+}
+
+@:enum abstract SWFFilterType(Int) from Int to Int
+{
+	public var BLUR = 0;
+	public var COLOR_MATRIX = 1;
+	public var DROP_SHADOW = 2;
+	public var GLOW = 3;
+	// TODO: More
 }
