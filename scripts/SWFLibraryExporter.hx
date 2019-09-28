@@ -801,7 +801,7 @@ class SWFLibraryExporter
 			{
 				for (classSymbol in cast(tag, TagSymbolClass).symbols)
 				{
-					if (classSymbol.tagId == symbol.id)
+					if (classSymbol.tagId == symbol.id || (root && ~/_fla\.MainTimeline$/.match(classSymbol.name)))
 					{
 						scripts = FrameScriptParser.convertToJS(swfData, classSymbol.name);
 						found = true;
