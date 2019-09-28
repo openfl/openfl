@@ -102,7 +102,10 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 		var currentTime = Lib.getTimer();
 		var deltaTime = currentTime - __cacheTime;
 		__cacheTime = currentTime;
-		__timeline.enterFrame(deltaTime);
+		if (__timeline != null)
+		{
+			__timeline.enterFrame(deltaTime);
+		}
 	}
 }
 #else
