@@ -891,13 +891,13 @@ class SWFLiteExporter
 							{
 								var frameNumOneIndexed = Std.parseInt(AVM2.FRAME_SCRIPT_METHOD_NAME.matched(1));
 								Log.info("", "frame script #" + frameNumOneIndexed);
-								var pcodes:Array<OpCode> = data.pcode[idx.getIndex()];
+								var pcodes:Array<{pos:Int, opr:OpCode}> = data.pcode[idx.getIndex()];
 								var js = "";
 								var prop:MultiName = null;
 								var stack:Array<Dynamic> = new Array();
 								for (pcode in pcodes)
 								{
-									switch (pcode)
+									switch (pcode.opr)
 									{
 										case OThis:
 											stack.push("this");

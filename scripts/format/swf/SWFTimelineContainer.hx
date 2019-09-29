@@ -7,6 +7,7 @@ import format.abc.Data.IName;
 import format.abc.Data.Index;
 import format.abc.Data.Name;
 import format.abc.Data.Namespace;
+import format.abc.Data.OpCode;
 import format.SWF;
 import format.swf.data.SWFFrameLabel;
 import format.swf.data.SWFRawTag;
@@ -89,7 +90,7 @@ class SWFTimelineContainer extends SWFEventDispatcher
 	public var jpegTablesTag:TagJPEGTables;
 	public var abcTag:TagDoABC;
 	public var abcData:ABCData;
-	public var pcode:Array<Dynamic>;
+	public var pcode:Array<Array<{pos:Int, opr:OpCode}>>;
 	public var abcClasses(default, null):Map<Int, ClassDef>;
 
 	public function new()
@@ -577,7 +578,19 @@ class SWFTimelineContainer extends SWFEventDispatcher
 		pcode = new Array();
 		for (fn in abcData.functions)
 		{
-			pcode.push(format.abc.OpReader.decode(new haxe.io.BytesInput(fn.code)));
+			var i = new haxe.io.BytesInput(fn.code);
+			var opr = new format.abc.OpReader(i);
+			var ops = new Array();
+			while (true)
+			{
+				var op;
+				try
+					op = i.readByte()
+				catch (e:haxe.io.Eof)
+					break;
+				ops.push({opr: opr.readOp(op), pos: i.position});
+			}
+			pcode.push(ops);
 		}
 	}
 
