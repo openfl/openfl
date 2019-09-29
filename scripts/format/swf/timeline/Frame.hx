@@ -10,6 +10,7 @@ class Frame
 	public var tagIndexStart:Int = 0;
 	public var tagIndexEnd:Int = 0;
 	public var label:String;
+	public var labels:Array<String>;
 	public var objects(default, null):Map<Int, FrameObject>;
 
 	private var _objectsSortedByDepth:Array<FrameObject>;
@@ -118,6 +119,16 @@ class Frame
 		if (label != null && label != "")
 		{
 			str += ", Label: " + label;
+		}
+		if (labels != null)
+		{
+			for (label in labels)
+			{
+				if (label != null && label != "")
+				{
+					str += ", Label: " + label;
+				}
+			}
 		}
 		if (characters.length > 0)
 		{
