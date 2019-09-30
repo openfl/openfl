@@ -61,6 +61,7 @@ class AnimateTimeline implements ITimeline
 	// @:noCompletion @:dox(hide) public var trackAsMenu:Bool;
 	@:noCompletion private var __activeInstances:Array<FrameSymbolInstance>;
 	@:noCompletion private var __activeInstancesByFrameObjectID:Map<Int, FrameSymbolInstance>;
+	@:noCompletion private var __currentInstancesByFrameObjectID:Map<Int, FrameSymbolInstance>;
 	@:noCompletion private var __currentFrame:Int;
 	@:noCompletion private var __currentFrameLabel:String;
 	@:noCompletion private var __currentLabel:String;
@@ -206,6 +207,7 @@ class AnimateTimeline implements ITimeline
 
 		__activeInstances = [];
 		__activeInstancesByFrameObjectID = new Map();
+		__currentInstancesByFrameObjectID = new Map();
 		__currentFrame = 1;
 		__lastFrameScriptEval = -1;
 		__lastFrameUpdate = -1;
@@ -541,15 +543,18 @@ class AnimateTimeline implements ITimeline
 		{
 			__updateFrameLabel();
 
-			var currentInstancesByFrameObjectID = new Map<Int, FrameSymbolInstance>();
-
 			var frame:Int;
 			var frameData:AnimateFrame;
 			var instance:FrameSymbolInstance;
 
-			// TODO: Handle updates only from previous frame?
+			var updateFrameStart = __lastFrameUpdate < targetFrame ? (__lastFrameUpdate == -1 ? 0 : __lastFrameUpdate)  : 0;
 
-			for (i in 0...targetFrame)
+			// Reset frame objects if starting over.
+			if (updateFrameStart < 0) {
+				__currentInstancesByFrameObjectID = new Map();
+			}
+
+			for (i in updateFrameStart...targetFrame)
 			{
 				frame = i + 1;
 				frameData = __symbol.frames[i];
@@ -565,12 +570,12 @@ class AnimateTimeline implements ITimeline
 
 							if (instance != null)
 							{
-								currentInstancesByFrameObjectID.set(frameObject.id, instance);
+								__currentInstancesByFrameObjectID.set(frameObject.id, instance);
 								__updateDisplayObject(instance.displayObject, frameObject, true);
 							}
 
 						case UPDATE:
-							instance = currentInstancesByFrameObjectID.get(frameObject.id);
+							instance = __currentInstancesByFrameObjectID.get(frameObject.id);
 
 							if (instance != null && instance.displayObject != null)
 							{
@@ -578,7 +583,7 @@ class AnimateTimeline implements ITimeline
 							}
 
 						case DESTROY:
-							currentInstancesByFrameObjectID.remove(frameObject.id);
+							__currentInstancesByFrameObjectID.remove(frameObject.id);
 					}
 				}
 			}
@@ -588,7 +593,7 @@ class AnimateTimeline implements ITimeline
 			var currentInstances = new Array<FrameSymbolInstance>();
 			var currentMasks = new Array<FrameSymbolInstance>();
 
-			for (instance in currentInstancesByFrameObjectID)
+			for (instance in __currentInstancesByFrameObjectID)
 			{
 				if (currentInstances.indexOf(instance) == -1)
 				{
