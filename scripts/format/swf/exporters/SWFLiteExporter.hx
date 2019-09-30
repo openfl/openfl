@@ -503,9 +503,10 @@ class SWFLiteExporter
 		{
 			frame = new Frame();
 
-			if (frameData.label != null)
+			if (frameData.labels != null)
 			{
-				frame.label = frameData.label;
+				frame.label = frameData.labels[0];
+				// TODO: frame.labels
 			}
 
 			instances.splice(0, instances.length);
