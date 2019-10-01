@@ -63,6 +63,7 @@ class FrameScriptParser
 							var in_if:Bool = false;
 							var while_loops = [];
 
+							if(pcodes != null)
 							for (pindex in 0...pcodes.length)
 							{
 								var pcode = pcodes[pindex];

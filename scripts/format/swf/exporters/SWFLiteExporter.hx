@@ -895,6 +895,8 @@ class SWFLiteExporter
 								var js = "";
 								var prop:MultiName = null;
 								var stack:Array<Dynamic> = new Array();
+								
+								if(pcodes != null)
 								for (pcode in pcodes)
 								{
 									switch (pcode.opr)
