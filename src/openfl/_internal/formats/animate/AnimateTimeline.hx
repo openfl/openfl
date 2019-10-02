@@ -550,7 +550,7 @@ class AnimateTimeline implements ITimeline
 			var updateFrameStart = __lastFrameUpdate < targetFrame ? (__lastFrameUpdate == -1 ? 0 : __lastFrameUpdate)  : 0;
 
 			// Reset frame objects if starting over.
-			if (updateFrameStart < 0) {
+			if (updateFrameStart <= 0) {
 				__currentInstancesByFrameObjectID = new Map();
 			}
 
