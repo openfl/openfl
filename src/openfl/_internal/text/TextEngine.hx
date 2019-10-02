@@ -1289,9 +1289,8 @@ class TextEngine
 		setLineMetrics();
 
 		var wrap;
-		var maxLoops = text.length +
-			1; // Do an extra iteration to ensure a LayoutGroup is created in case the last line is empty (multiline or trailing line break).
-		// TODO: check if the +1 is still needed, since the extra layout group is handled separately
+		var maxLoops = text.length + 1;
+		// Do an extra iteration to ensure a LayoutGroup is created in case the last line is empty (trailing line break).
 
 		while (textIndex < maxLoops)
 		{
@@ -1587,7 +1586,7 @@ class TextEngine
 			layoutGroup.ascent = ascent;
 			layoutGroup.descent = descent;
 			layoutGroup.leading = leading;
-			layoutGroup.lineIndex = lineIndex;
+			layoutGroup.lineIndex = lineIndex - 1;
 			layoutGroup.offsetX = getBaseX(); // TODO: double check it doesn't default to GUTTER or something
 			layoutGroup.offsetY = offsetY + GUTTER;
 			layoutGroup.width = 0;
