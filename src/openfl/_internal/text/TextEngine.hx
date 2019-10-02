@@ -679,6 +679,7 @@ class TextEngine
 			currentLineDescent = descent;
 			currentLineLeading = leading;
 
+			// TODO: integer line heights/text heights
 			currentTextHeight = ascent + descent;
 			textHeight = currentTextHeight;
 		}
