@@ -4,6 +4,7 @@ package openfl.net;
 import haxe.Timer;
 import openfl.events.EventDispatcher;
 import openfl.events.NetStatusEvent;
+import openfl.media.SoundMixer;
 import openfl.media.SoundTransform;
 #if (js && html5)
 import js.html.VideoElement;
@@ -506,6 +507,7 @@ import js.Browser;
 							The value of the status code property will be
 							`"DRM.encryptedFLV"`.
 **/
+@:access(openfl.media.SoundMixer)
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -1083,7 +1085,7 @@ class NetStream extends EventDispatcher
 		Controls sound in this NetStream object. For more information, see the
 		SoundTransform class.
 	**/
-	public var soundTransform:SoundTransform;
+	public var soundTransform(get, set):SoundTransform;
 
 	@:dox(hide) @:noCompletion @SuppressWarnings("checkstyle:FieldDocComment")
 	public var speed(get, set):Float;
@@ -1140,6 +1142,7 @@ class NetStream extends EventDispatcher
 	// @:noCompletion @:dox(hide) @:require(flash11) public var videoStreamSettings:openfl.media.VideoStreamSettings;
 	@:noCompletion private var __closed:Bool;
 	@:noCompletion private var __connection:NetConnection;
+	@:noCompletion private var __soundTransform:SoundTransform;
 	@:noCompletion private var __timer:Timer;
 	#if (js && html5)
 	@:noCompletion @:isVar private var __seeking(get, set):Bool;
@@ -1149,9 +1152,15 @@ class NetStream extends EventDispatcher
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperty(NetStream.prototype, "speed", {
-			get: untyped __js__("function () { return this.get_speed (); }"),
-			set: untyped __js__("function (v) { return this.set_speed (v); }")
+		untyped Object.defineProperties(SoundChannel.prototype, {
+			"soundTransform": {
+				get: untyped __js__("function () { return this.get_soundTransform (); }"),
+				set: untyped __js__("function (v) { return this.set_soundTransform (v); }")
+			},
+			"speed": {
+				get: untyped __js__("function () { return this.get_speed (); }"),
+				set: untyped __js__("function (v) { return this.set_speed (v); }")
+			},
 		});
 	}
 	#end
@@ -1201,6 +1210,7 @@ class NetStream extends EventDispatcher
 		super();
 
 		__connection = connection;
+		__soundTransform = new SoundTransform();
 
 		#if (js && html5)
 		__video = cast Browser.document.createElement("video");
@@ -1610,6 +1620,7 @@ class NetStream extends EventDispatcher
 		#if (js && html5)
 		if (__video == null) return;
 
+		__video.volume = SoundMixer.__soundTransform.volume * __soundTransform.volume;
 		__video.src = url;
 		__video.play();
 		#end
@@ -2220,6 +2231,29 @@ class NetStream extends EventDispatcher
 	}
 
 	// Get & Set Methods
+	@:noCompletion private function get_soundTransform():SoundTransform
+	{
+		return __soundTransform.clone();
+	}
+
+	@:noCompletion private function set_soundTransform(value:SoundTransform):SoundTransform
+	{
+		if (value != null)
+		{
+			__soundTransform.pan = value.pan;
+			__soundTransform.volume = value.volume;
+
+			#if html5
+			if (__video != null)
+			{
+				__video.volume = SoundMixer.__soundTransform.volume * __soundTransform.volume;
+			}
+			#end
+		}
+
+		return value;
+	}
+
 	@:noCompletion private function get_speed():Float
 	{
 		#if (js && html5)
