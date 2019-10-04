@@ -1689,6 +1689,14 @@ class BitmapData implements IBitmapDrawable
 			__vertexBufferContext = context.__context;
 			__vertexBuffer = null;
 
+			if (targetObject != null)
+			{
+				__vertexBufferWidth = targetObject.width;
+				__vertexBufferHeight = targetObject.height;
+				__vertexBufferScaleX = targetObject.scaleX;
+				__vertexBufferScaleY = targetObject.scaleY;
+			}
+
 			if (scale9Grid != null && targetObject != null)
 			{
 				if (__vertexBufferGrid == null) __vertexBufferGrid = new Rectangle();
