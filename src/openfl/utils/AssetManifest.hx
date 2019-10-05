@@ -126,6 +126,7 @@ class AssetManifest #if lime extends LimeAssetManifest #end
 		#end
 	}
 
+	#if lime
 	@:noCompletion private static function __fromLimeManifest(limeManifest:LimeAssetManifest):AssetManifest
 	{
 		var manifest = null;
@@ -141,4 +142,5 @@ class AssetManifest #if lime extends LimeAssetManifest #end
 		}
 		return manifest;
 	}
+	#end
 }
