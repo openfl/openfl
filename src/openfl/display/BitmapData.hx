@@ -266,6 +266,11 @@ class BitmapData implements IBitmapDrawable
 		__textureWidth = width;
 		__textureHeight = height;
 
+		#if openfl_power_of_two
+		__textureWidth = __powerOfTwo(width);
+		__textureHeight = __powerOfTwo(height);
+		#end
+
 		if (width > 0 && height > 0)
 		{
 			if (transparent)
@@ -1768,7 +1773,8 @@ class BitmapData implements IBitmapDrawable
 		else
 		{
 			batcher.setVertices(transform, 0, 0, width, height);
-			batcher.useDefaultUvs();
+			batcher.setUs(0, uvWidth);
+			batcher.setVs(0, uvHeight);
 			batcher.pushQuad(this, blendMode, alpha, colorTransform);
 		}
 	}
@@ -1798,33 +1804,10 @@ class BitmapData implements IBitmapDrawable
 					|| __vertexBufferScaleX != targetObject.scaleX
 					|| __vertexBufferScaleY != targetObject.scaleY)))
 		{
-			#if openfl_power_of_two
-			var newWidth = 1;
-			var newHeight = 1;
+			__uvRect = new Rectangle(0, 0, __textureWidth, __textureHeight);
 
-			while (newWidth < width)
-			{
-				newWidth <<= 1;
-			}
-
-			while (newHeight < height)
-			{
-				newHeight <<= 1;
-			}
-
-			__uvRect = new Rectangle(0, 0, newWidth, newHeight);
-
-			var uvWidth = width / newWidth;
-			var uvHeight = height / newHeight;
-
-			__textureWidth = newWidth;
-			__textureHeight = newHeight;
-			#else
-			__uvRect = new Rectangle(0, 0, width, height);
-
-			var uvWidth = 1;
-			var uvHeight = 1;
-			#end
+			var uvWidth = width / __textureWidth;
+			var uvHeight = height / __textureHeight;
 
 			// __vertexBufferData = new Float32Array ([
 			//
@@ -3241,6 +3224,11 @@ class BitmapData implements IBitmapDrawable
 			__textureWidth = width;
 			__textureHeight = height;
 
+			#if openfl_power_of_two
+			__textureWidth = __powerOfTwo(width);
+			__textureHeight = __powerOfTwo(height);
+			#end
+
 			#if sys
 			image.format = BGRA32;
 			image.premultiplied = true;
@@ -3396,6 +3384,11 @@ class BitmapData implements IBitmapDrawable
 
 		__textureWidth = width;
 		__textureHeight = height;
+
+		#if openfl_power_of_two
+		__textureWidth = __powerOfTwo(width);
+		__textureHeight = __powerOfTwo(height);
+		#end
 	}
 
 	@:noCompletion private function __setUVRect(context:Context3D, x:Float, y:Float, width:Float, height:Float):Void
@@ -3488,6 +3481,16 @@ class BitmapData implements IBitmapDrawable
 		}
 
 		__renderTransform.copyFrom(__worldTransform);
+	}
+	
+	@:noCompletion private inline function __powerOfTwo(value:Int):Int
+	{
+		var newValue = 1;
+		while (newValue < value)
+		{
+			newValue <<= 1;
+		}
+		return newValue;
 	}
 }
 #else

@@ -47,6 +47,11 @@ class BitmapDataPool
 
 	public function get(width:Int, height:Int):BitmapData
 	{
+		#if openfl_power_of_two
+		width = __powerOfTwo(width);
+		height = __powerOfTwo(height);
+		#end
+
 		var heightMap = __bitmapData[width];
 		if (heightMap == null)
 		{
@@ -99,5 +104,15 @@ class BitmapDataPool
 		{
 			return new BitmapData(width, height, true, 0);
 		}
+	}
+	
+	private inline function __powerOfTwo(value:Int):Int
+	{
+		var newValue = 1;
+		while (newValue < value)
+		{
+			newValue <<= 1;
+		}
+		return newValue;
 	}
 }

@@ -22,6 +22,7 @@ import openfl._internal.renderer.context3D.stats.DrawCallContext;
 @:noDebug
 #end
 @:access(openfl.display3D.Context3D)
+@:access(openfl.display.BitmapData)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
 @:access(openfl.display.Shader)
@@ -266,6 +267,9 @@ class Context3DGraphics
 					var vertexBufferData = hasUVTData ? graphics.__vertexBufferDataUVT : graphics.__vertexBufferData;
 					var offset, vertOffset, uvOffset, t;
 
+					var uScale = bitmap.width / bitmap.__textureWidth;
+					var vScale = bitmap.height / bitmap.__textureHeight;
+
 					for (i in 0...length)
 					{
 						offset = vertexOffset + (i * dataPerVertex);
@@ -289,8 +293,13 @@ class Context3DGraphics
 							vertexBufferData[offset + 1] = vertices[vertOffset + 1];
 						}
 
+						#if openfl_power_of_two
+						vertexBufferData[offset + vertLength] = hasUVData ? uvtData[uvOffset] * uScale : 0;
+						vertexBufferData[offset + vertLength + 1] = hasUVData ? uvtData[uvOffset + 1] * vScale : 0;
+						#else
 						vertexBufferData[offset + vertLength] = hasUVData ? uvtData[uvOffset] : 0;
 						vertexBufferData[offset + vertLength + 1] = hasUVData ? uvtData[uvOffset + 1] : 0;
+						#end
 					}
 
 					// if (hasIndices) triangleIndexBufferPosition += length;
