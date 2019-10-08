@@ -22,6 +22,7 @@ import openfl._internal.renderer.context3D.stats.DrawCallContext;
 #end
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display3D.VertexBuffer3D)
+@:access(openfl.display.BitmapData)
 @:access(openfl.display.Shader)
 @:access(openfl.display.Tilemap)
 @:access(openfl.display.Tileset)
@@ -129,10 +130,10 @@ class Context3DTilemap
 					tileRect = tile.__rect;
 					if (tileRect == null || tileRect.width <= 0 || tileRect.height <= 0) continue;
 
-					uvX = tileRect.x / bitmapData.width;
-					uvY = tileRect.y / bitmapData.height;
-					uvWidth = tileRect.right / bitmapData.width;
-					uvHeight = tileRect.bottom / bitmapData.height;
+					uvX = tileRect.x / bitmapData.__textureWidth;
+					uvY = tileRect.y / bitmapData.__textureHeight;
+					uvWidth = tileRect.right / bitmapData.__textureWidth;
+					uvHeight = tileRect.bottom / bitmapData.__textureHeight;
 				}
 				else
 				{
