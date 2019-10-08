@@ -298,6 +298,7 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 			shader.uColor.value[1] = ((color >> 8) & 0xFF) / 255;
 			shader.uColor.value[2] = (color & 0xFF) / 255;
 			shader.uColor.value[3] = alpha;
+			shader.uStrength.value[0] = blurPass == (numBlurPasses - 1) ? __strength : 1.0;
 			return shader;
 		}
 		if (__inner)
@@ -306,12 +307,14 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 			{
 				var shader = __innerCombineKnockoutShader;
 				shader.sourceBitmap.input = sourceBitmapData;
-				shader.strength.value[0] = __strength;
+				shader.offset.value[0] = 0.0;
+				shader.offset.value[1] = 0.0;
 				return shader;
 			}
 			var shader = __innerCombineShader;
 			shader.sourceBitmap.input = sourceBitmapData;
-			shader.strength.value[0] = __strength;
+			shader.offset.value[0] = 0.0;
+			shader.offset.value[1] = 0.0;
 			return shader;
 		}
 		else
@@ -320,12 +323,14 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 			{
 				var shader = __combineKnockoutShader;
 				shader.sourceBitmap.input = sourceBitmapData;
-				shader.strength.value[0] = __strength;
+				shader.offset.value[0] = 0.0;
+				shader.offset.value[1] = 0.0;
 				return shader;
 			}
 			var shader = __combineShader;
 			shader.sourceBitmap.input = sourceBitmapData;
-			shader.strength.value[0] = __strength;
+			shader.offset.value[0] = 0.0;
+			shader.offset.value[1] = 0.0;
 			return shader;
 		}
 		#else
@@ -502,6 +507,7 @@ private class BlurAlphaShader extends BitmapFilterShader
 	@:glFragmentSource("
 		uniform sampler2D openfl_Texture;
 		uniform vec4 uColor;
+		uniform float uStrength;
 		varying vec2 vTexCoord;
 		varying vec2 vBlurCoords[6];
 
@@ -525,7 +531,7 @@ private class BlurAlphaShader extends BitmapFilterShader
 			a += dot(top, contributions.xyz);
             a += dot(bottom, contributions.zyx);
 
-			gl_FragColor = uColor * a;
+			gl_FragColor = vec4(uColor.rgb, uColor.a * a * uStrength);
 		}
 	")
 	@:glVertexSource("
@@ -544,7 +550,7 @@ private class BlurAlphaShader extends BitmapFilterShader
 			gl_Position = openfl_Matrix * openfl_Position;
 			vTexCoord = openfl_TextureCoord;
 
-			vec3 offset = vec3(0.33, 0.66, 1.0);
+			vec3 offset = vec3(0.5, 0.75, 1.0);
 			vec2 r = uRadius / openfl_TextureSize;
 			vBlurCoords[0] = openfl_TextureCoord - r * offset.z;
 			vBlurCoords[1] = openfl_TextureCoord - r * offset.y;
@@ -560,6 +566,7 @@ private class BlurAlphaShader extends BitmapFilterShader
 		#if !macro
 		uRadius.value = [0, 0];
 		uColor.value = [0, 0, 0, 0];
+		uStrength.value = [1];
 		#end
 	}
 }
@@ -573,14 +580,13 @@ private class CombineShader extends BitmapFilterShader
 	@:glFragmentSource("
 		uniform sampler2D openfl_Texture;
 		uniform sampler2D sourceBitmap;
-		uniform float strength;
 		varying vec4 textureCoords;
 
 		void main(void) {
 			vec4 src = texture2D(sourceBitmap, textureCoords.xy);
-			vec4 glow = texture2D(openfl_Texture, textureCoords.zw) * strength;
+			vec4 glow = texture2D(openfl_Texture, textureCoords.zw);
 
-			gl_FragColor = src * src.a + glow * (1.0 - src.a);
+			gl_FragColor = src + glow * (1.0 - src.a);
 		}
 	")
 	@:glVertexSource("attribute vec4 openfl_Position;
@@ -599,7 +605,6 @@ private class CombineShader extends BitmapFilterShader
 	{
 		super();
 		#if !macro
-		strength.value = [1];
 		offset.value = [0, 0];
 		#end
 	}
@@ -614,14 +619,15 @@ private class InnerCombineShader extends BitmapFilterShader
 	@:glFragmentSource("
 		uniform sampler2D openfl_Texture;
 		uniform sampler2D sourceBitmap;
-		uniform float strength;
 		varying vec4 textureCoords;
 
 		void main(void) {
 			vec4 src = texture2D(sourceBitmap, textureCoords.xy);
-			vec4 glow = texture2D(openfl_Texture, textureCoords.zw) * strength;
+			vec4 glow = texture2D(openfl_Texture, textureCoords.zw);
 
- 			gl_FragColor = vec4(mix(src.rgb, glow.rgb, glow.a), src.a);
+			src.rgb /= src.a;
+
+			gl_FragColor = vec4(mix(src.rgb, glow.rgb, glow.a), src.a);
 		}
 	")
 	@:glVertexSource("attribute vec4 openfl_Position;
@@ -640,7 +646,6 @@ private class InnerCombineShader extends BitmapFilterShader
 	{
 		super();
 		#if !macro
-		strength.value = [1];
 		offset.value = [0, 0];
 		#end
 	}
@@ -655,12 +660,11 @@ private class CombineKnockoutShader extends BitmapFilterShader
 	@:glFragmentSource("
 		uniform sampler2D openfl_Texture;
 		uniform sampler2D sourceBitmap;
-		uniform float strength;
 		varying vec4 textureCoords;
 
 		void main(void) {
 			vec4 src = texture2D(sourceBitmap, textureCoords.xy);
-			vec4 glow = texture2D(openfl_Texture, textureCoords.zw) * strength;
+			vec4 glow = texture2D(openfl_Texture, textureCoords.zw);
 
 			gl_FragColor = glow * (1.0 - src.a);
 		}
@@ -681,7 +685,6 @@ private class CombineKnockoutShader extends BitmapFilterShader
 	{
 		super();
 		#if !macro
-		strength.value = [1];
 		offset.value = [0, 0];
 		#end
 	}
@@ -696,12 +699,11 @@ private class InnerCombineKnockoutShader extends BitmapFilterShader
 	@:glFragmentSource("
 		uniform sampler2D openfl_Texture;
 		uniform sampler2D sourceBitmap;
-		uniform float strength;
 		varying vec4 textureCoords;
 
 		void main(void) {
 			vec4 src = texture2D(sourceBitmap, textureCoords.xy);
-			vec4 glow = texture2D(openfl_Texture, textureCoords.zw) * strength;
+			vec4 glow = texture2D(openfl_Texture, textureCoords.zw);
 
 			gl_FragColor = glow * src.a;
 		}
@@ -723,7 +725,6 @@ private class InnerCombineKnockoutShader extends BitmapFilterShader
 		super();
 		#if !macro
 		offset.value = [0, 0];
-		strength.value = [1];
 		#end
 	}
 }

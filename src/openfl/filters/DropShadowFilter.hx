@@ -324,6 +324,7 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 			shader.uColor.value[1] = ((color >> 8) & 0xFF) / 255;
 			shader.uColor.value[2] = (color & 0xFF) / 255;
 			shader.uColor.value[3] = alpha;
+			shader.uStrength.value[0] = blurPass == (numBlurPasses - 1) ? __strength : 1.0;
 			return shader;
 		}
 		if (__inner)
@@ -334,14 +335,12 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 				shader.sourceBitmap.input = sourceBitmapData;
 				shader.offset.value[0] = __offsetX;
 				shader.offset.value[1] = __offsetY;
-				shader.strength.value[0] = __strength;
 				return shader;
 			}
 			var shader = GlowFilter.__innerCombineShader;
 			shader.sourceBitmap.input = sourceBitmapData;
 			shader.offset.value[0] = __offsetX;
 			shader.offset.value[1] = __offsetY;
-			shader.strength.value[0] = __strength;
 			return shader;
 		}
 		else
@@ -352,7 +351,6 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 				shader.sourceBitmap.input = sourceBitmapData;
 				shader.offset.value[0] = __offsetX;
 				shader.offset.value[1] = __offsetY;
-				shader.strength.value[0] = __strength;
 				return shader;
 			}
 			else if (__hideObject)
@@ -361,14 +359,12 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 				shader.sourceBitmap.input = sourceBitmapData;
 				shader.offset.value[0] = __offsetX;
 				shader.offset.value[1] = __offsetY;
-				shader.strength.value[0] = __strength;
 				return shader;
 			}
 			var shader = GlowFilter.__combineShader;
 			shader.sourceBitmap.input = sourceBitmapData;
 			shader.offset.value[0] = __offsetX;
 			shader.offset.value[1] = __offsetY;
-			shader.strength.value[0] = __strength;
 			return shader;
 		}
 		#else
@@ -549,13 +545,10 @@ private class HideShader extends BitmapFilterShader
 	@:glFragmentSource("
 		uniform sampler2D openfl_Texture;
 		uniform sampler2D sourceBitmap;
-		uniform float strength;
 		varying vec4 textureCoords;
 
 		void main(void) {
-			vec4 glow = texture2D(openfl_Texture, textureCoords.zw) * strength;
-
-			gl_FragColor = glow;
+			gl_FragColor = texture2D(openfl_Texture, textureCoords.zw);
 		}
 	")
 	@:glVertexSource("attribute vec4 openfl_Position;
@@ -574,7 +567,6 @@ private class HideShader extends BitmapFilterShader
 	{
 		super();
 		#if !macro
-		strength.value = [1];
 		offset.value = [0, 0];
 		#end
 	}
