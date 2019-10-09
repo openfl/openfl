@@ -1634,20 +1634,8 @@ class BitmapData implements IBitmapDrawable
 		var scale9Grid = object.__worldScale9Grid;
 
 		#if openfl_power_of_two
-		var newWidth = 1;
-		var newHeight = 1;
-
-		while (newWidth < width)
-		{
-			newWidth <<= 1;
-		}
-
-		while (newHeight < height)
-		{
-			newHeight <<= 1;
-		}
-		var uvWidth = width / newWidth;
-		var uvHeight = height / newHeight;
+		var uvWidth = width / __textureWidth;
+		var uvHeight = height / __textureHeight;
 		#else
 		var uvWidth = 1;
 		var uvHeight = 1;
