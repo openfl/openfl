@@ -310,13 +310,13 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 			var shader = GlowFilter.__blurAlphaShader;
 			if (blurPass < __horizontalPasses)
 			{
-				var scale = Math.pow(0.5, blurPass >> 1);
+				var scale = Math.pow(0.5, blurPass >> 1) * 0.5;
 				shader.uRadius.value[0] = blurX * scale;
 				shader.uRadius.value[1] = 0;
 			}
 			else
 			{
-				var scale = Math.pow(0.5, (blurPass - __horizontalPasses) >> 1);
+				var scale = Math.pow(0.5, (blurPass - __horizontalPasses) >> 1) * 0.5;
 				shader.uRadius.value[0] = 0;
 				shader.uRadius.value[1] = blurY * scale;
 			}
