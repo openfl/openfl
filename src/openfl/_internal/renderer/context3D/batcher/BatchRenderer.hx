@@ -282,10 +282,10 @@ private class Batch
 			vertices[offset + 5] = ct.greenMultiplier;
 			vertices[offset + 6] = ct.blueMultiplier;
 			vertices[offset + 7] = ct.alphaMultiplier * alpha;
-			vertices[offset + 8] = ct.redOffset;
-			vertices[offset + 9] = ct.greenOffset;
-			vertices[offset + 10] = ct.blueOffset;
-			vertices[offset + 11] = ct.alphaOffset * alpha;
+			vertices[offset + 8] = ct.redOffset / 255;
+			vertices[offset + 9] = ct.greenOffset / 255;
+			vertices[offset + 10] = ct.blueOffset / 255;
+			vertices[offset + 11] = (ct.alphaOffset / 255) * alpha;
 			vertices[offset + 12] = textureUnit;
 		}
 
