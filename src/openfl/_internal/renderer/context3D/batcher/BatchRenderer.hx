@@ -178,6 +178,7 @@ class BatchRenderer
 
 		var context = renderer.context3D;
 
+		context.setCulling(NONE);
 		context.setScissorRectangle(null);
 		renderer.__setBlendMode(__batch.blendMode);
 
