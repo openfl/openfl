@@ -13,10 +13,10 @@ import openfl._internal.formats.animate.AnimateShapeSymbol;
 import openfl._internal.formats.animate.AnimateSpriteSymbol;
 import openfl._internal.formats.animate.AnimateStaticTextSymbol;
 import openfl._internal.formats.animate.AnimateSymbol;
-import openfl._internal.utils.ITimeline;
 import openfl._internal.utils.Log;
 import openfl.display.DisplayObject;
 import openfl.display.FrameLabel;
+import openfl.display.ITimeline;
 import openfl.display.MovieClip;
 import openfl.errors.ArgumentError;
 import openfl.events.Event;
@@ -58,15 +58,18 @@ class AnimateTimeline implements ITimeline
 	];
 	#end
 
+	public var currentFrame:Int;
+	public var currentFrameLabel:String;
+	public var currentLabel:String;
+	public var currentLabels:Array<FrameLabel>;
+	public var framesLoaded:Int;
+	public var isPlaying:Bool;
+	public var totalFrames:Int;
+
 	// @:noCompletion @:dox(hide) public var trackAsMenu:Bool;
 	@:noCompletion private var __activeInstances:Array<FrameSymbolInstance>;
 	@:noCompletion private var __activeInstancesByFrameObjectID:Map<Int, FrameSymbolInstance>;
 	@:noCompletion private var __currentInstancesByFrameObjectID:Map<Int, FrameSymbolInstance>;
-	@:noCompletion private var __currentFrame:Int;
-	@:noCompletion private var __currentFrameLabel:String;
-	@:noCompletion private var __currentLabel:String;
-	@:noCompletion private var __currentLabels:Array<FrameLabel>;
-	@:noCompletion private var __enabled:Bool;
 	@:noCompletion private var __frameScripts:Map<Int, Void->Void>;
 	@:noCompletion private var __frameTime:Int;
 	@:noCompletion private var __hasDown:Bool;
@@ -78,10 +81,8 @@ class AnimateTimeline implements ITimeline
 	@:noCompletion private var __library:AnimateLibrary;
 	@:noCompletion private var __mouseIsDown:Bool;
 	@:noCompletion private var __movieClip:MovieClip;
-	@:noCompletion private var __playing:Bool;
 	@:noCompletion private var __symbol:AnimateSpriteSymbol;
 	@:noCompletion private var __timeElapsed:Int;
-	@:noCompletion private var __totalFrames:Int;
 
 	#if openfljs
 	@:noCompletion private static function __init__()
@@ -99,11 +100,11 @@ class AnimateTimeline implements ITimeline
 		__library = library;
 		__symbol = symbol;
 
-		__currentFrame = 1;
-		__currentLabels = [];
+		currentFrame = 1;
+		currentLabels = [];
 		__instanceFields = [];
-		__totalFrames = 0;
-		__enabled = true;
+		totalFrames = 0;
+		framesLoaded = 0;
 
 		init();
 	}
@@ -126,36 +127,6 @@ class AnimateTimeline implements ITimeline
 		{
 			__frameScripts.remove(frame);
 		}
-	}
-
-	public function getCurrentFrame():Int
-	{
-		return __currentFrame;
-	}
-
-	public function getCurrentFrameLabel():String
-	{
-		return __currentFrameLabel;
-	}
-
-	public function getCurrentLabel():String
-	{
-		return __currentLabel;
-	}
-
-	public function getCurrentLabels():Array<FrameLabel>
-	{
-		return __currentLabels;
-	}
-
-	public function getFramesLoaded():Int
-	{
-		return __totalFrames;
-	}
-
-	public function getTotalFrames():Int
-	{
-		return __totalFrames;
 	}
 
 	/**
@@ -208,10 +179,11 @@ class AnimateTimeline implements ITimeline
 		__activeInstances = [];
 		__activeInstancesByFrameObjectID = new Map();
 		__currentInstancesByFrameObjectID = new Map();
-		__currentFrame = 1;
+		currentFrame = 1;
 		__lastFrameScriptEval = -1;
 		__lastFrameUpdate = -1;
-		__totalFrames = __symbol.frames.length;
+		totalFrames = __symbol.frames.length;
+		framesLoaded = totalFrames;
 
 		var frame:Int;
 		var frameData:AnimateFrame;
@@ -227,7 +199,7 @@ class AnimateTimeline implements ITimeline
 
 			if (frameData.label != null)
 			{
-				__currentLabels.push(new FrameLabel(frameData.label, i + 1));
+				currentLabels.push(new FrameLabel(frameData.label, i + 1));
 			}
 
 			if (frameData.script != null)
@@ -316,7 +288,7 @@ class AnimateTimeline implements ITimeline
 
 		// TODO: Create later?
 
-		for (i in 0...__totalFrames)
+		for (i in 0...totalFrames)
 		{
 			frame = i + 1;
 			frameData = __symbol.frames[i];
@@ -421,7 +393,7 @@ class AnimateTimeline implements ITimeline
 			}
 		}
 
-		// if (__totalFrames > 1)
+		// if (totalFrames > 1)
 		// {
 		// 	play();
 		// }
@@ -434,11 +406,6 @@ class AnimateTimeline implements ITimeline
 		#end
 	}
 
-	public function isPlaying():Bool
-	{
-		return __playing;
-	}
-
 	/**
 		Sends the playhead to the next frame and stops it. This happens after all
 		remaining actions in the frame have finished executing.
@@ -447,7 +414,7 @@ class AnimateTimeline implements ITimeline
 	public function nextFrame():Void
 	{
 		stop();
-		__goto(__currentFrame + 1);
+		__goto(currentFrame + 1);
 	}
 
 	// @:noCompletion @:dox(hide) public function nextScene ():Void;
@@ -458,9 +425,9 @@ class AnimateTimeline implements ITimeline
 	**/
 	public function play():Void
 	{
-		if (__symbol == null || __playing || __totalFrames < 2) return;
+		if (__symbol == null || isPlaying || totalFrames < 2) return;
 
-		__playing = true;
+		isPlaying = true;
 
 		if (!__useParentFPS)
 		{
@@ -477,7 +444,7 @@ class AnimateTimeline implements ITimeline
 	public function prevFrame():Void
 	{
 		stop();
-		__goto(__currentFrame - 1);
+		__goto(currentFrame - 1);
 	}
 
 	// @:noCompletion @:dox(hide) public function prevScene ():Void;
@@ -488,20 +455,20 @@ class AnimateTimeline implements ITimeline
 	**/
 	public function stop():Void
 	{
-		__playing = false;
+		isPlaying = false;
 	}
 
 	public function enterFrame(deltaTime:Int):Void
 	{
 		__updateFrameScript(deltaTime);
-		__updateSymbol(__currentFrame);
+		__updateSymbol(currentFrame);
 
 		// super.__enterFrame(deltaTime);
 	}
 
 	@:noCompletion private function __updateFrameScript(deltaTime:Int):Void
 	{
-		if (__symbol != null && __playing)
+		if (__symbol != null && isPlaying)
 		{
 			var nextFrame = __getNextFrame(deltaTime);
 
@@ -513,15 +480,15 @@ class AnimateTimeline implements ITimeline
 
 			if (__frameScripts != null)
 			{
-				if (nextFrame < __currentFrame)
+				if (nextFrame < currentFrame)
 				{
-					if (!__evaluateFrameScripts(__totalFrames))
+					if (!__evaluateFrameScripts(totalFrames))
 					{
 						// super.__enterFrame(deltaTime);
 						return;
 					}
 
-					__currentFrame = 1;
+					currentFrame = 1;
 				}
 
 				if (!__evaluateFrameScripts(nextFrame))
@@ -532,14 +499,14 @@ class AnimateTimeline implements ITimeline
 			}
 			else
 			{
-				__currentFrame = nextFrame;
+				currentFrame = nextFrame;
 			}
 		}
 	}
 
 	@:noCompletion private function __updateSymbol(targetFrame:Int):Void
 	{
-		if (__symbol != null && __currentFrame != __lastFrameUpdate)
+		if (__symbol != null && currentFrame != __lastFrameUpdate)
 		{
 			__updateFrameLabel();
 
@@ -547,10 +514,11 @@ class AnimateTimeline implements ITimeline
 			var frameData:AnimateFrame;
 			var instance:FrameSymbolInstance;
 
-			var updateFrameStart = __lastFrameUpdate < targetFrame ? (__lastFrameUpdate == -1 ? 0 : __lastFrameUpdate)  : 0;
+			var updateFrameStart = __lastFrameUpdate < targetFrame ? (__lastFrameUpdate == -1 ? 0 : __lastFrameUpdate) : 0;
 
 			// Reset frame objects if starting over.
-			if (updateFrameStart <= 0) {
+			if (updateFrameStart <= 0)
+			{
 				__currentInstancesByFrameObjectID = new Map();
 			}
 
@@ -680,7 +648,7 @@ class AnimateTimeline implements ITimeline
 				i++;
 			}
 
-			__lastFrameUpdate = __currentFrame;
+			__lastFrameUpdate = currentFrame;
 
 			#if (!openfljs && (!openfl_dynamic || haxe_ver >= "4.0.0"))
 			__updateInstanceFields();
@@ -690,12 +658,12 @@ class AnimateTimeline implements ITimeline
 
 	@:noCompletion private function __evaluateFrameScripts(advanceToFrame:Int):Bool
 	{
-		for (frame in __currentFrame...advanceToFrame + 1)
+		for (frame in currentFrame...advanceToFrame + 1)
 		{
 			if (frame == __lastFrameScriptEval) continue;
 
 			__lastFrameScriptEval = frame;
-			__currentFrame = frame;
+			currentFrame = frame;
 
 			if (__frameScripts.exists(frame))
 			{
@@ -703,13 +671,13 @@ class AnimateTimeline implements ITimeline
 				var script = __frameScripts.get(frame);
 				script();
 
-				if (__currentFrame != frame)
+				if (currentFrame != frame)
 				{
 					return false;
 				}
 			}
 
-			if (!__playing)
+			if (!isPlaying)
 			{
 				return false;
 			}
@@ -727,15 +695,15 @@ class AnimateTimeline implements ITimeline
 		if (!__useParentFPS)
 		{
 			__timeElapsed += deltaTime;
-			nextFrame = __currentFrame + Math.floor(__timeElapsed / __frameTime);
+			nextFrame = currentFrame + Math.floor(__timeElapsed / __frameTime);
 			if (nextFrame < 1) nextFrame = 1;
-			if (nextFrame > __totalFrames) nextFrame = Math.floor((nextFrame - 1) % __totalFrames) + 1;
+			if (nextFrame > totalFrames) nextFrame = Math.floor((nextFrame - 1) % totalFrames) + 1;
 			__timeElapsed = (__timeElapsed % __frameTime);
 		}
 		else
 		{
-			nextFrame = __currentFrame + 1;
-			if (nextFrame > __totalFrames) nextFrame = 1;
+			nextFrame = currentFrame + 1;
+			if (nextFrame > totalFrames) nextFrame = 1;
 		}
 
 		return nextFrame;
@@ -746,9 +714,9 @@ class AnimateTimeline implements ITimeline
 		if (__symbol == null) return;
 
 		if (frame < 1) frame = 1;
-		else if (frame > __totalFrames) frame = __totalFrames;
+		else if (frame > totalFrames) frame = totalFrames;
 
-		__currentFrame = frame;
+		currentFrame = frame;
 		enterFrame(0);
 	}
 
@@ -762,7 +730,7 @@ class AnimateTimeline implements ITimeline
 		{
 			var label:String = cast frame;
 
-			for (frameLabel in __currentLabels)
+			for (frameLabel in currentLabels)
 			{
 				if (frameLabel.name == label)
 				{
@@ -859,21 +827,21 @@ class AnimateTimeline implements ITimeline
 
 	@:noCompletion private function __updateFrameLabel():Void
 	{
-		__currentFrameLabel = __symbol.frames[__currentFrame - 1].label;
+		currentFrameLabel = __symbol.frames[currentFrame - 1].label;
 
-		if (__currentFrameLabel != null)
+		if (currentFrameLabel != null)
 		{
-			__currentLabel = __currentFrameLabel;
+			currentLabel = currentFrameLabel;
 		}
 		else
 		{
-			__currentLabel = null;
+			currentLabel = null;
 
-			for (label in __currentLabels)
+			for (label in currentLabels)
 			{
-				if (label.frame < __currentFrame)
+				if (label.frame < currentFrame)
 				{
-					__currentLabel = label.name;
+					currentLabel = label.name;
 				}
 				else
 				{

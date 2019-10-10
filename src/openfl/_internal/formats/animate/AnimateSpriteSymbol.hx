@@ -32,7 +32,7 @@ class AnimateSpriteSymbol extends AnimateSymbol
 		#else
 		movieClip.__timeline = timeline;
 		#end
-		if (timeline.getTotalFrames() > 1)
+		if (timeline.totalFrames > 1)
 		{
 			movieClip.play();
 		}

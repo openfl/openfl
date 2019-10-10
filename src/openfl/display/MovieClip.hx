@@ -14,7 +14,6 @@ import openfl._internal.symbols.SWFSymbol;
 import openfl._internal.symbols.timeline.Frame;
 import openfl._internal.symbols.timeline.FrameObject;
 import openfl._internal.symbols.timeline.FrameObjectType;
-import openfl._internal.utils.ITimeline;
 import openfl._internal.utils.Log;
 import openfl.errors.ArgumentError;
 import openfl.events.Event;
@@ -273,6 +272,19 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 				__frameScripts.remove(frame);
 			}
 		}
+	}
+
+	public static function fromTimeline(timeline:ITimeline):MovieClip
+	{
+		var movieClip = new MovieClip();
+		movieClip.__timeline = timeline;
+		// TODO: Allow for custom class name? Use movieClip.__constructor?
+		if (timeline.totalFrames > 1)
+		{
+			movieClip.play();
+		}
+		movieClip.play();
+		return movieClip;
 	}
 
 	/**
@@ -1176,7 +1188,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	{
 		if (__timeline != null)
 		{
-			return __timeline.getCurrentFrame();
+			return __timeline.currentFrame;
 		}
 		else
 		{
@@ -1188,7 +1200,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	{
 		if (__timeline != null)
 		{
-			return __timeline.getCurrentFrameLabel();
+			return __timeline.currentFrameLabel;
 		}
 		else
 		{
@@ -1200,7 +1212,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	{
 		if (__timeline != null)
 		{
-			return __timeline.getCurrentLabel();
+			return __timeline.currentLabel;
 		}
 		else
 		{
@@ -1212,7 +1224,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	{
 		if (__timeline != null)
 		{
-			return __timeline.getCurrentLabels();
+			return __timeline.currentLabels;
 		}
 		else
 		{
@@ -1234,7 +1246,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	{
 		if (__timeline != null)
 		{
-			return __timeline.getFramesLoaded();
+			return __timeline.framesLoaded;
 		}
 		else
 		{
@@ -1246,7 +1258,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	{
 		if (__timeline != null)
 		{
-			return __timeline.isPlaying();
+			return __timeline.isPlaying;
 		}
 		else
 		{
@@ -1258,7 +1270,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	{
 		if (__timeline != null)
 		{
-			return __timeline.getTotalFrames();
+			return __timeline.totalFrames;
 		}
 		else
 		{
