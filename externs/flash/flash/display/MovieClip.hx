@@ -1,7 +1,7 @@
 package flash.display;
 
 import openfl._internal.renderer.flash.FlashRenderer;
-import openfl._internal.utils.ITimeline;
+import openfl.display.ITimeline;
 import openfl.events.Event;
 import openfl.utils.Object;
 import openfl.Lib;
