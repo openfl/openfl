@@ -58,7 +58,8 @@ class DisplayObjectShader extends Shader
 
 			color = vec4(color.rgb / color.a, color.a);
 
-			color = clamp((color * openfl_ColorMultiplierv) + openfl_ColorOffsetv, 0.0, 1.0);
+			vec4 colorMultiplier = vec4(openfl_ColorMultiplierv.rgb, 1.0);
+			color = clamp((color * colorMultiplier) + openfl_ColorOffsetv, 0.0, 1.0);
 
 			if (color.a > 0.0) {
 
