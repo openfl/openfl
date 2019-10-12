@@ -1,5 +1,7 @@
 package openfl._internal.formats.animate;
 
+import openfl.display.MovieClip;
+
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -8,7 +10,7 @@ package openfl._internal.formats.animate;
 {
 	public var label:String;
 	public var objects:Array<AnimateFrameObject>;
-	public var script:Void->Void;
+	public var script:MovieClip->Void;
 	public var scriptSource:String;
 
 	// public var scriptType:FrameScriptType;

@@ -172,7 +172,9 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	@:noCompletion private var __currentLabel:String;
 	@:noCompletion private var __currentLabels:Array<FrameLabel>;
 	@:noCompletion private var __enabled:Bool;
+	@:noCompletion private var __frameRate:Float;
 	@:noCompletion private var __frameScripts:Map<Int, Void->Void>;
+	@:noCompletion private var __framesLoaded:Int;
 	@:noCompletion private var __frameTime:Int;
 	@:noCompletion private var __hasDown:Bool;
 	@:noCompletion private var __hasOver:Bool;
@@ -224,6 +226,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		__currentFrame = 1;
 		__currentLabels = [];
 		__instanceFields = [];
+		__framesLoaded = 0;
 		__totalFrames = 0;
 		__enabled = true;
 
@@ -250,39 +253,27 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	{
 		if (index < 0) return;
 
-		if (__timeline != null)
+		var frame = index + 1;
+
+		if (method != null)
 		{
-			__timeline.addFrameScript(index, method);
+			if (__frameScripts == null)
+			{
+				__frameScripts = new Map();
+			}
+
+			__frameScripts.set(frame, method);
 		}
-		else
+		else if (__frameScripts != null)
 		{
-			var frame = index + 1;
-
-			if (method != null)
-			{
-				if (__frameScripts == null)
-				{
-					__frameScripts = new Map();
-				}
-
-				__frameScripts.set(frame, method);
-			}
-			else if (__frameScripts != null)
-			{
-				__frameScripts.remove(frame);
-			}
+			__frameScripts.remove(frame);
 		}
 	}
 
 	public static function fromTimeline(timeline:ITimeline):MovieClip
 	{
 		var movieClip = new MovieClip();
-		movieClip.__timeline = timeline;
-		// TODO: Allow for custom class name? Use movieClip.__constructor?
-		if (timeline.totalFrames > 1)
-		{
-			movieClip.play();
-		}
+		movieClip.__fromTimeline(timeline);
 		movieClip.play();
 		return movieClip;
 	}
@@ -303,15 +294,8 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	**/
 	public function gotoAndPlay(frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end, scene:String = null):Void
 	{
-		if (__timeline != null)
-		{
-			__timeline.gotoAndPlay(frame, scene);
-		}
-		else
-		{
-			play();
-			__goto(__resolveFrameReference(frame));
-		}
+		play();
+		__goto(__resolveFrameReference(frame));
 	}
 
 	/**
@@ -333,15 +317,8 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	**/
 	public function gotoAndStop(frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end, scene:String = null):Void
 	{
-		if (__timeline != null)
-		{
-			__timeline.gotoAndStop(frame, scene);
-		}
-		else
-		{
-			stop();
-			__goto(__resolveFrameReference(frame));
-		}
+		stop();
+		__goto(__resolveFrameReference(frame));
 	}
 
 	/**
@@ -351,15 +328,8 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	**/
 	public function nextFrame():Void
 	{
-		if (__timeline != null)
-		{
-			__timeline.nextFrame();
-		}
-		else
-		{
-			stop();
-			__goto(__currentFrame + 1);
-		}
+		stop();
+		__goto(__currentFrame + 1);
 	}
 
 	// @:noCompletion @:dox(hide) public function nextScene ():Void;
@@ -370,21 +340,14 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	**/
 	public function play():Void
 	{
-		if (__timeline != null)
-		{
-			__timeline.play();
-		}
-		else
-		{
-			if (__symbol == null || __playing || __totalFrames < 2) return;
+		if ((__symbol == null && __timeline == null) || __playing || __totalFrames < 2) return;
 
-			__playing = true;
+		__playing = true;
 
-			if (!__useParentFPS)
-			{
-				__frameTime = Std.int(1000 / __swf.frameRate);
-				__timeElapsed = 0;
-			}
+		if (!__useParentFPS)
+		{
+			__frameTime = Std.int(1000 / __frameRate);
+			__timeElapsed = 0;
 		}
 	}
 
@@ -395,15 +358,8 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	**/
 	public function prevFrame():Void
 	{
-		if (__timeline != null)
-		{
-			__timeline.prevFrame();
-		}
-		else
-		{
-			stop();
-			__goto(__currentFrame - 1);
-		}
+		stop();
+		__goto(__currentFrame - 1);
 	}
 
 	// @:noCompletion @:dox(hide) public function prevScene ():Void;
@@ -414,36 +370,20 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	**/
 	public function stop():Void
 	{
-		if (__timeline != null)
-		{
-			__timeline.stop();
-		}
-		else
-		{
-			__playing = false;
-		}
+		__playing = false;
 	}
 
 	public override function __enterFrame(deltaTime:Int):Void
 	{
-		if (__timeline != null)
-		{
-			__timeline.enterFrame(deltaTime);
+		__updateFrameScript(deltaTime);
+		__updateSymbol(__currentFrame);
 
-			super.__enterFrame(deltaTime);
-		}
-		else
-		{
-			__updateFrameScript(deltaTime);
-			__updateSymbol(__currentFrame);
-
-			super.__enterFrame(deltaTime);
-		}
+		super.__enterFrame(deltaTime);
 	}
 
 	@:noCompletion private function __updateFrameScript(deltaTime:Int):Void
 	{
-		if (__symbol != null && __playing)
+		if ((__symbol != null || __timeline != null) && __playing)
 		{
 			var nextFrame = __getNextFrame(deltaTime);
 
@@ -481,149 +421,156 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 
 	@:noCompletion private function __updateSymbol(targetFrame:Int):Void
 	{
-		if (__symbol != null && __currentFrame != __lastFrameUpdate)
+		if (__currentFrame != __lastFrameUpdate)
 		{
 			__updateFrameLabel();
 
-			var currentInstancesByFrameObjectID = new Map<Int, FrameSymbolInstance>();
-
-			var frame:Int;
-			var frameData:Frame;
-			var instance:FrameSymbolInstance;
-
-			// TODO: Handle updates only from previous frame?
-
-			for (i in 0...targetFrame)
+			if (__timeline != null)
 			{
-				frame = i + 1;
-				frameData = __symbol.frames[i];
+				__timeline.updateMovieClip(this, __lastFrameUpdate, targetFrame);
+			}
+			else if (__symbol != null)
+			{
+				var currentInstancesByFrameObjectID = new Map<Int, FrameSymbolInstance>();
 
-				if (frameData.objects == null) continue;
+				var frame:Int;
+				var frameData:Frame;
+				var instance:FrameSymbolInstance;
 
-				for (frameObject in frameData.objects)
+				// TODO: Handle updates only from previous frame?
+
+				for (i in 0...targetFrame)
 				{
-					switch (frameObject.type)
+					frame = i + 1;
+					frameData = __symbol.frames[i];
+
+					if (frameData.objects == null) continue;
+
+					for (frameObject in frameData.objects)
 					{
-						case CREATE:
-							instance = __activeInstancesByFrameObjectID.get(frameObject.id);
+						switch (frameObject.type)
+						{
+							case CREATE:
+								instance = __activeInstancesByFrameObjectID.get(frameObject.id);
 
-							if (instance != null)
-							{
-								currentInstancesByFrameObjectID.set(frameObject.id, instance);
-								__updateDisplayObject(instance.displayObject, frameObject, true);
-							}
+								if (instance != null)
+								{
+									currentInstancesByFrameObjectID.set(frameObject.id, instance);
+									__updateDisplayObject(instance.displayObject, frameObject, true);
+								}
 
-						case UPDATE:
-							instance = currentInstancesByFrameObjectID.get(frameObject.id);
+							case UPDATE:
+								instance = currentInstancesByFrameObjectID.get(frameObject.id);
 
-							if (instance != null && instance.displayObject != null)
-							{
-								__updateDisplayObject(instance.displayObject, frameObject);
-							}
+								if (instance != null && instance.displayObject != null)
+								{
+									__updateDisplayObject(instance.displayObject, frameObject);
+								}
 
-						case DESTROY:
-							currentInstancesByFrameObjectID.remove(frameObject.id);
+							case DESTROY:
+								currentInstancesByFrameObjectID.remove(frameObject.id);
+						}
 					}
 				}
-			}
 
-			// TODO: Less garbage?
+				// TODO: Less garbage?
 
-			var currentInstances = new Array<FrameSymbolInstance>();
-			var currentMasks = new Array<FrameSymbolInstance>();
+				var currentInstances = new Array<FrameSymbolInstance>();
+				var currentMasks = new Array<FrameSymbolInstance>();
 
-			for (instance in currentInstancesByFrameObjectID)
-			{
-				if (currentInstances.indexOf(instance) == -1)
+				for (instance in currentInstancesByFrameObjectID)
 				{
-					currentInstances.push(instance);
-
-					if (instance.clipDepth > 0)
+					if (currentInstances.indexOf(instance) == -1)
 					{
-						currentMasks.push(instance);
+						currentInstances.push(instance);
+
+						if (instance.clipDepth > 0)
+						{
+							currentMasks.push(instance);
+						}
 					}
 				}
-			}
 
-			currentInstances.sort(__sortDepths);
+				currentInstances.sort(__sortDepths);
 
-			var existingChild:DisplayObject;
-			var targetDepth:Int;
-			var targetChild:DisplayObject;
-			var child:DisplayObject;
-			var maskApplied:Bool;
+				var existingChild:DisplayObject;
+				var targetDepth:Int;
+				var targetChild:DisplayObject;
+				var child:DisplayObject;
+				var maskApplied:Bool;
 
-			for (i in 0...currentInstances.length)
-			{
-				existingChild = __children[i];
-				instance = currentInstances[i];
-
-				targetDepth = instance.depth;
-				targetChild = instance.displayObject;
-
-				if (existingChild != targetChild)
+				for (i in 0...currentInstances.length)
 				{
-					child = targetChild;
-					addChildAt(targetChild, i);
+					existingChild = __children[i];
+					instance = currentInstances[i];
+
+					targetDepth = instance.depth;
+					targetChild = instance.displayObject;
+
+					if (existingChild != targetChild)
+					{
+						child = targetChild;
+						addChildAt(targetChild, i);
+					}
+					else
+					{
+						child = __children[i];
+					}
+
+					maskApplied = false;
+
+					for (mask in currentMasks)
+					{
+						if (targetDepth > mask.depth && targetDepth <= mask.clipDepth)
+						{
+							child.mask = mask.displayObject;
+							maskApplied = true;
+							break;
+						}
+					}
+
+					if (currentMasks.length > 0 && !maskApplied && child.mask != null)
+					{
+						child.mask = null;
+					}
 				}
-				else
+
+				var child;
+				var i = currentInstances.length;
+				var length = __children.length;
+
+				while (i < length)
 				{
 					child = __children[i];
-				}
 
-				maskApplied = false;
+					// TODO: Faster method of determining if this was automatically added?
 
-				for (mask in currentMasks)
-				{
-					if (targetDepth > mask.depth && targetDepth <= mask.clipDepth)
+					for (instance in __activeInstances)
 					{
-						child.mask = mask.displayObject;
-						maskApplied = true;
-						break;
-					}
-				}
-
-				if (currentMasks.length > 0 && !maskApplied && child.mask != null)
-				{
-					child.mask = null;
-				}
-			}
-
-			var child;
-			var i = currentInstances.length;
-			var length = __children.length;
-
-			while (i < length)
-			{
-				child = __children[i];
-
-				// TODO: Faster method of determining if this was automatically added?
-
-				for (instance in __activeInstances)
-				{
-					if (instance.displayObject == child)
-					{
-						// set MovieClips back to initial state (autoplay)
-						if (Std.is(child, MovieClip))
+						if (instance.displayObject == child)
 						{
-							var movie:MovieClip = cast child;
-							movie.gotoAndPlay(1);
-						}
+							// set MovieClips back to initial state (autoplay)
+							if (Std.is(child, MovieClip))
+							{
+								var movie:MovieClip = cast child;
+								movie.gotoAndPlay(1);
+							}
 
-						removeChild(child);
-						i--;
-						length--;
+							removeChild(child);
+							i--;
+							length--;
+						}
 					}
+
+					i++;
 				}
 
-				i++;
+				#if (!openfljs && (!openfl_dynamic || haxe_ver >= "4.0.0"))
+				__updateInstanceFields();
+				#end
 			}
 
 			__lastFrameUpdate = __currentFrame;
-
-			#if (!openfljs && (!openfl_dynamic || haxe_ver >= "4.0.0"))
-			__updateInstanceFields();
-			#end
 		}
 	}
 
@@ -670,6 +617,8 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		__lastFrameScriptEval = -1;
 		__lastFrameUpdate = -1;
 		__totalFrames = __symbol.frames.length;
+		__framesLoaded = __totalFrames;
+		__frameRate = __swf.frameRate;
 
 		var frame:Int;
 		var frameData:Frame;
@@ -891,6 +840,45 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		#end
 	}
 
+	@:noCompletion private function __fromTimeline(timeline:ITimeline):Void
+	{
+		__timeline = timeline;
+
+		__framesLoaded = timeline.framesLoaded; // TODO: Support for this to change?
+		__totalFrames = timeline.totalFrames;
+		__frameRate = timeline.frameRate;
+
+		if (timeline.frameLabels != null)
+		{
+			var labels, frameLabel;
+			for (frame in timeline.frameLabels.keys())
+			{
+				labels = timeline.frameLabels.get(frame);
+				if (labels == null) continue;
+
+				for (label in labels)
+				{
+					frameLabel = new FrameLabel(label, frame);
+					__currentLabels.push(frameLabel);
+				}
+			}
+		}
+
+		if (timeline.frameScripts != null)
+		{
+			var script;
+			for (frame in timeline.frameScripts.keys())
+			{
+				script = timeline.frameScripts.get(frame);
+				if (script == null) continue;
+
+				addFrameScript(frame - 1, script.bind(this));
+			}
+		}
+
+		timeline.updateMovieClip(this, 0, 1);
+	}
+
 	@:noCompletion private function __getNextFrame(deltaTime:Int):Int
 	{
 		var nextFrame:Int = 0;
@@ -1042,26 +1030,25 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 
 	@:noCompletion private function __updateFrameLabel():Void
 	{
-		__currentFrameLabel = __symbol.frames[__currentFrame - 1].label;
+		__currentLabel = null;
+		__currentFrameLabel = null;
 
-		if (__currentFrameLabel != null)
-		{
-			__currentLabel = __currentFrameLabel;
-		}
-		else
-		{
-			__currentLabel = null;
+		// TODO: Update without looping so much
 
-			for (label in __currentLabels)
+		for (label in __currentLabels)
+		{
+			if (label.frame < __currentFrame)
 			{
-				if (label.frame < __currentFrame)
-				{
-					__currentLabel = label.name;
-				}
-				else
-				{
-					break;
-				}
+				__currentLabel = label.name;
+			}
+			else if (label.frame == __currentFrame)
+			{
+				__currentLabel = label.name;
+				__currentFrameLabel = label.name;
+			}
+			else
+			{
+				break;
 			}
 		}
 	}
@@ -1186,50 +1173,22 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 
 	@:noCompletion private function get_currentFrame():Int
 	{
-		if (__timeline != null)
-		{
-			return __timeline.currentFrame;
-		}
-		else
-		{
-			return __currentFrame;
-		}
+		return __currentFrame;
 	}
 
 	@:noCompletion private function get_currentFrameLabel():String
 	{
-		if (__timeline != null)
-		{
-			return __timeline.currentFrameLabel;
-		}
-		else
-		{
-			return __currentFrameLabel;
-		}
+		return __currentFrameLabel;
 	}
 
 	@:noCompletion private function get_currentLabel():String
 	{
-		if (__timeline != null)
-		{
-			return __timeline.currentLabel;
-		}
-		else
-		{
-			return __currentLabel;
-		}
+		return __currentLabel;
 	}
 
 	@:noCompletion private function get_currentLabels():Array<FrameLabel>
 	{
-		if (__timeline != null)
-		{
-			return __timeline.currentLabels;
-		}
-		else
-		{
-			return __currentLabels;
-		}
+		return __currentLabels;
 	}
 
 	@:noCompletion private function get_enabled():Bool
@@ -1244,38 +1203,17 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 
 	@:noCompletion private function get_framesLoaded():Int
 	{
-		if (__timeline != null)
-		{
-			return __timeline.framesLoaded;
-		}
-		else
-		{
-			return __totalFrames;
-		}
+		return __framesLoaded;
 	}
 
 	@:noCompletion private function get_isPlaying():Bool
 	{
-		if (__timeline != null)
-		{
-			return __timeline.isPlaying;
-		}
-		else
-		{
-			return __playing;
-		}
+		return __playing;
 	}
 
 	@:noCompletion private function get_totalFrames():Int
 	{
-		if (__timeline != null)
-		{
-			return __timeline.totalFrames;
-		}
-		else
-		{
-			return __totalFrames;
-		}
+		return __totalFrames;
 	}
 }
 
