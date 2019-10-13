@@ -40,7 +40,7 @@ class Main extends Sprite
 		suite.addTest(new DropShadowTest());
 		suite.addTest(new BatcherTest());
 		#if draft
-		suite.addTest(new GLGraphicsTest1());
+		suite.addTest(new HWGraphicsTest1());
 		#end
 		addChild(suite.content);
 

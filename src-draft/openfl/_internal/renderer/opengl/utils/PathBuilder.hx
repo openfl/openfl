@@ -1,12 +1,12 @@
 package openfl._internal.renderer.opengl.utils;
 
 import openfl.display3D.Context3D;
-import openfl.display.GLGraphics;
 import openfl.display.Graphics;
+import openfl.display.HWGraphics;
 
 @:access(openfl._internal.renderer.opengl.utils.GraphicsRenderer)
-@:access(openfl.display.GLGraphics)
 @:access(openfl.display.Graphics)
+@:access(openfl.display.HWGraphics)
 @SuppressWarnings("checkstyle:FieldDocComment")
 class PathBuilder
 {
@@ -150,7 +150,7 @@ class PathBuilder
 		}
 	}
 
-	public static function build(object:GLGraphics, context3D:Context3D):GLStack
+	public static function build(object:HWGraphics, context3D:Context3D):GLStack
 	{
 		var glStack:GLStack = null;
 		var graphics = object.__graphics;
@@ -175,6 +175,8 @@ class PathBuilder
 		}
 		else
 		{
+			var data = new DrawCommandReader(graphics.__commands);
+
 			for (type in graphics.__commands.types)
 			{
 				switch (type)
@@ -184,6 +186,7 @@ class PathBuilder
 						var bitmap = c.bitmap;
 						var repeat = c.repeat;
 						var smooth = c.smooth;
+						var matrix = c.matrix;
 
 						endFill();
 						__fill = bitmap != null ? Texture(bitmap, matrix, repeat, smooth) : None;
@@ -218,21 +221,21 @@ class PathBuilder
 
 					case CUBIC_CURVE_TO:
 						var c = data.readCubicCurveTo();
-						var cx = c.cx;
-						var cy = c.cy;
-						var cx2 = c.cx2;
-						var cy2 = c.cy2;
-						var x = c.x;
-						var y = c.y;
+						var cx = c.controlX1;
+						var cy = c.controlY1;
+						var cx2 = c.controlX2;
+						var cy2 = c.controlY2;
+						var x = c.anchorX;
+						var y = c.anchorY;
 
 						cubicCurveTo(cx, cy, cx2, cy2, x, y);
 
 					case CURVE_TO:
 						var c = data.readCurveTo();
-						var cx = c.cx;
-						var cy = c.cy;
-						var x = c.x;
-						var y = c.y;
+						var cx = c.controlX;
+						var cy = c.controlY;
+						var x = c.anchorX;
+						var y = c.anchorY;
 
 						curveTo(cx, cy, x, y);
 
@@ -252,7 +255,7 @@ class PathBuilder
 						__drawPaths.push(__currentPath);
 
 					case DRAW_ELLIPSE:
-						var c = c.readDrawEllipse();
+						var c = data.readDrawEllipse();
 						var x = c.x;
 						var y = c.y;
 						var width = c.width;
@@ -268,7 +271,7 @@ class PathBuilder
 						__drawPaths.push(__currentPath);
 
 					case DRAW_RECT:
-						var c = c.readDrawRect();
+						var c = data.readDrawRect();
 						var x = c.x;
 						var y = c.y;
 						var width = c.width;
@@ -289,8 +292,8 @@ class PathBuilder
 						var y = c.y;
 						var width = c.width;
 						var height = c.height;
-						var rx = c.rx;
-						var ry = c.ry;
+						var rx = c.ellipseWidth;
+						var ry = c.ellipseHeight;
 
 						if (ry == -1) ry = rx;
 

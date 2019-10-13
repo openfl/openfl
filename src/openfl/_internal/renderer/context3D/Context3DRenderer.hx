@@ -1060,7 +1060,7 @@ class Context3DRenderer extends Context3DRendererAPI
 					__renderVideo(cast object);
 				#if draft
 				case GL_GRAPHICS:
-					openfl.display.GLGraphics.render(cast object, this);
+					openfl.display.HWGraphics.render(cast object, this);
 				#end
 				default:
 			}

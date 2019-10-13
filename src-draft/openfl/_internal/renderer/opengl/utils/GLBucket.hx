@@ -1,5 +1,8 @@
 package openfl._internal.renderer.opengl.utils;
 
+import lime.graphics.opengl.GLBuffer;
+import lime.graphics.opengl.GLTexture;
+import lime.utils.Int16Array;
 import openfl.display3D.Context3D;
 import openfl.display.BitmapData;
 import openfl.geom.Matrix;
@@ -79,7 +82,7 @@ class GLBucket
 
 		if (result == null)
 		{
-			result = new GLBucketData(gl);
+			result = new GLBucketData(context3D);
 		}
 
 		result.available = false;
@@ -216,6 +219,8 @@ class GLBucket
 
 	public function uploadTile(x:Int, y:Int, w:Int, h:Int):Void
 	{
+		var gl = @:privateAccess context3D.gl;
+
 		if (tileBuffer == null)
 		{
 			tileBuffer = gl.createBuffer();

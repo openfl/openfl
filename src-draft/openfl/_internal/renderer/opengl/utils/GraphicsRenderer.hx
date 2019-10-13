@@ -1,10 +1,20 @@
 package openfl._internal.renderer.opengl.utils;
 
+import lime.utils.Float32Array;
+import lime.utils.UInt32Array;
 import openfl._internal.renderer.context3D.Context3DRenderer;
+import openfl._internal.renderer.opengl.shaders2.DefaultShader.DefUniform;
+import openfl._internal.renderer.opengl.shaders2.FillShader;
+import openfl._internal.renderer.opengl.shaders2.PatternFillShader;
+import openfl._internal.renderer.opengl.shaders2.DrawTrianglesShader;
+import openfl._internal.renderer.opengl.shaders2.PrimitiveShader;
+import openfl._internal.renderer.opengl.shaders2.Shader;
+import openfl._internal.renderer.utils.PolyK;
 import openfl.display3D.Context3D;
 import openfl.display.DisplayObject;
-import openfl.display.GLGraphics;
 import openfl.display.Graphics;
+import openfl.display.HWGraphics;
+import openfl.display.TriangleCulling;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
@@ -16,13 +26,13 @@ import openfl.geom.Rectangle;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class GraphicsRenderer
 {
-	public static var fillVertexAttributes = [new VertexAttribute(2, ElementType.FLOAT, false, FillAttrib.Position),];
-	public static var drawTrianglesVertexAttributes = [
+	public static var fillVertexAttributes:Array<VertexAttribute> = [new VertexAttribute(2, ElementType.FLOAT, false, FillAttrib.Position),];
+	public static var drawTrianglesVertexAttributes:Array<VertexAttribute> = [
 		new VertexAttribute(2, ElementType.FLOAT, false, DrawTrianglesAttrib.Position),
 		new VertexAttribute(2, ElementType.FLOAT, false, DrawTrianglesAttrib.TexCoord),
 		new VertexAttribute(4, ElementType.UNSIGNED_BYTE, true, DrawTrianglesAttrib.Color),
 	];
-	public static var primitiveVertexAttributes = [
+	public static var primitiveVertexAttributes:Array<VertexAttribute> = [
 		new VertexAttribute(2, ElementType.FLOAT, false, PrimitiveAttrib.Position),
 		new VertexAttribute(4, ElementType.FLOAT, false, PrimitiveAttrib.Color),
 	];
@@ -30,8 +40,8 @@ class GraphicsRenderer
 	public static var graphicsDataPool:Array<GLGraphicsData> = [];
 	public static var bucketPool:Array<GLBucket> = [];
 
-	private static var SIN45 = 0.70710678118654752440084436210485;
-	private static var TAN22 = 0.4142135623730950488016887242097;
+	private static var SIN45:Float = 0.70710678118654752440084436210485;
+	private static var TAN22:Float = 0.4142135623730950488016887242097;
 
 	private static var objectPosition:Point = new Point();
 	private static var objectBounds:Rectangle = new Rectangle();
@@ -42,6 +52,14 @@ class GraphicsRenderer
 	// private static var lastTextureRepeat:Bool;
 	// private static var lastTextureSmooth:Bool;
 	private static var overrideMatrix:Matrix;
+
+	public static var fillShader:FillShader;
+	public static var patternFillShader:PatternFillShader;
+	public static var drawTrianglesShader:DrawTrianglesShader;
+	public static var primitiveShader:PrimitiveShader;
+
+	public static var currentShader:Shader;
+	public static var projectionMatrix:Matrix;
 
 	public static function buildCircle(path:DrawPath, glStack:GLStack, localCoords:Bool = false):Void
 	{
@@ -114,6 +132,7 @@ class GraphicsRenderer
 
 	public static function buildComplexPoly(path:DrawPath, glStack:GLStack, localCoords:Bool = false):Void
 	{
+		var gl = @:privateAccess glStack.context3D.gl;
 		var bucket:GLBucket = null;
 
 		if (path.points.length >= 6)
@@ -131,7 +150,7 @@ class GraphicsRenderer
 
 			bucket = prepareBucket(path, glStack);
 			var fill = bucket.getData(Fill);
-			fill.drawMode = glStack.gl.TRIANGLE_FAN;
+			fill.drawMode = gl.TRIANGLE_FAN;
 			fill.verts = points;
 
 			var indices = fill.indices;
@@ -798,8 +817,22 @@ class GraphicsRenderer
 		return points;
 	}
 
-	public static function render(object:GLGraphics, renderer:Context3DRenderer):Void
+	public static function render(object:HWGraphics, renderer:Context3DRenderer):Void
 	{
+		var context3D = renderer.context3D;
+
+		if (fillShader == null)
+		{
+			fillShader = new FillShader(context3D);
+			patternFillShader = new PatternFillShader(context3D);
+			drawTrianglesShader = new DrawTrianglesShader(context3D);
+			primitiveShader = new PrimitiveShader(context3D);
+		}
+
+		if (projectionMatrix == null) projectionMatrix = new Matrix();
+		var mat4 = @:privateAccess renderer.__flipped ? @:privateAccess renderer.__projectionFlipped : @:privateAccess renderer.__projection;
+		projectionMatrix.setTo(mat4[0], mat4[1], mat4[4], mat4[5], mat4[12], mat4[13]);
+
 		var graphics = object.__graphics;
 		// var spritebatch = renderer.spriteBatch;
 		var dirty = graphics.__dirty;
@@ -810,14 +843,21 @@ class GraphicsRenderer
 
 		if (dirty)
 		{
-			updateGraphics(object, object.__graphics, renderer.context3D, object.cacheAsBitmap);
+			updateGraphics(object, object.__graphics, renderer, object.cacheAsBitmap);
 		}
 
 		renderGraphics(object, renderer, false);
 	}
 
-	public static function renderGraphics(object:GLGraphics, renderer:Context3DRenderer, ?localCoords:Bool = false):Void
+	public static function renderGraphics(object:HWGraphics, renderer:Context3DRenderer, ?localCoords:Bool = false):Void
 	{
+		renderer.batcher.flush();
+		if (!renderer.__cleared) renderer.__clear();
+		renderer.setShader(null);
+		currentShader = null;
+		@:privateAccess renderer.context3D.__flushGL();
+		renderer.setViewport();
+
 		var graphics = object.__graphics;
 		var gl = renderer.gl;
 
@@ -834,27 +874,27 @@ class GraphicsRenderer
 			translationMatrix = object.__worldTransform;
 		}
 
-		renderer.blendModeManager.setBlendMode(object.blendMode);
+		@:privateAccess renderer.__setBlendMode(object.blendMode);
 
-		var batchDrawing = true; //renderer.spriteBatch.drawing;
+		// var batchDrawing = true; // renderer.spriteBatch.drawing;
 
 		for (i in 0...glStack.buckets.length)
 		{
-			batchDrawing = true; // renderer.spriteBatch.drawing;
+			// batchDrawing = true; // renderer.spriteBatch.drawing;
 			bucket = glStack.buckets[i];
 
 			switch (bucket.mode)
 			{
 				case Fill, PatternFill:
-					if (batchDrawing && !localCoords)
-					{
-						// renderer.spriteBatch.finish();
-						renderer.batcher.flush();
-					}
-					renderer.stencilManager.pushBucket(bucket, renderer, translationMatrix.toArray(true));
+					// if (batchDrawing && !localCoords)
+					// {
+					// 	// renderer.spriteBatch.finish();
+					// 	renderer.batcher.flush();
+					// }
+					pushStencilBucket(bucket, renderer, translationMatrix.toArray(true));
 					var shader = prepareShader(bucket, renderer, object, translationMatrix.toArray(true));
 					renderFill(bucket, shader, renderer);
-					renderer.stencilManager.popBucket(object, bucket, renderer);
+					popStencilBucket(object, bucket, renderer);
 				// case DrawTriangles:
 				// 	if (batchDrawing && !localCoords)
 				// 	{
@@ -877,18 +917,19 @@ class GraphicsRenderer
 			{
 				if (line != null && line.verts.length > 0)
 				{
-					batchDrawing = true; //renderer.spriteBatch.drawing;
-					if (batchDrawing && !localCoords)
-					{
-						// renderer.spriteBatch.finish();
-						renderer.batcher.flush();
-					}
-					var shader = renderer.shaderManager.primitiveShader;
+					// batchDrawing = true; // renderer.spriteBatch.drawing;
+					// if (batchDrawing && !localCoords)
+					// {
+					// 	// renderer.spriteBatch.finish();
+					// 	renderer.batcher.flush();
+					// }
+					var shader = primitiveShader;
 
-					renderer.shaderManager.setShader(shader);
+					// renderer.setShader(null);
+					setShader(renderer, shader);
 
 					gl.uniformMatrix3fv(shader.getUniformLocation(PrimitiveUniform.TranslationMatrix), false, translationMatrix.toArray(true));
-					gl.uniformMatrix3fv(shader.getUniformLocation(PrimitiveUniform.ProjectionMatrix), false, renderer.projectionMatrix.toArray(true));
+					gl.uniformMatrix3fv(shader.getUniformLocation(PrimitiveUniform.ProjectionMatrix), false, projectionMatrix.toArray(true));
 					gl.uniform1f(shader.getUniformLocation(PrimitiveUniform.Alpha), 1);
 
 					gl.uniform4f(shader.getUniformLocation(FillUniform.ColorMultiplier), ct.redMultiplier, ct.greenMultiplier, ct.blueMultiplier,
@@ -904,16 +945,16 @@ class GraphicsRenderer
 				}
 			}
 
-			batchDrawing = true; //renderer.spriteBatch.drawing;
-			if (!batchDrawing && !localCoords)
-			{
-				// renderer.spriteBatch.begin(renderer);
-				renderer.batcher.flush();
-			}
+			// batchDrawing = true; // renderer.spriteBatch.drawing;
+			// if (!batchDrawing && !localCoords)
+			// {
+			// 	// renderer.spriteBatch.begin(renderer);
+			// 	renderer.batcher.flush();
+			// }
 		}
 	}
 
-	public static function updateGraphics(object:GLGraphics, graphics:Graphics, renderer:Context3DRenderer, ?localCoords:Bool = false):Void
+	public static function updateGraphics(object:HWGraphics, graphics:Graphics, renderer:Context3DRenderer, ?localCoords:Bool = false):Void
 	{
 		objectPosition.setTo(object.x, object.y);
 
@@ -930,7 +971,7 @@ class GraphicsRenderer
 
 		if (graphics.__dirty)
 		{
-			glStack = DrawPath.getStack(object, context3D);
+			glStack = DrawPath.getStack(object, renderer.context3D);
 		}
 
 		graphics.__dirty = false;
@@ -943,9 +984,9 @@ class GraphicsRenderer
 
 		glStack.reset();
 
-		for (i in glStack.lastIndex...graphics.__drawPaths.length)
+		for (i in glStack.lastIndex...object.__drawPaths.length)
 		{
-			var path = graphics.__drawPaths[i];
+			var path = object.__drawPaths[i];
 
 			switch (path.type)
 			{
@@ -1003,7 +1044,7 @@ class GraphicsRenderer
 				bucket.bitmap = b;
 				bucket.textureRepeat = r;
 				bucket.textureSmooth = s;
-				bucket.texture = b.getTexture(glStack.gl);
+				bucket.texture = @:privateAccess b.getTexture(glStack.context3D).__textureID;
 				bucket.uploadTileBuffer = true;
 
 				// prepare the matrix
@@ -1057,7 +1098,7 @@ class GraphicsRenderer
 		var b = bucketPool.pop();
 		if (b == null)
 		{
-			b = new GLBucket(glStack.gl);
+			b = new GLBucket(glStack.context3D);
 		}
 		b.mode = mode;
 		glStack.buckets.push(b);
@@ -1088,7 +1129,7 @@ class GraphicsRenderer
 		return bucket;
 	}
 
-	private static function prepareShader(bucket:GLBucket, renderer:Context3DRenderer, object:DisplayObject, translationMatrix:Float32Array)
+	private static function prepareShader(bucket:GLBucket, renderer:Context3DRenderer, object:DisplayObject, translationMatrix:Float32Array):Shader
 	{
 		var gl = renderer.gl;
 		var shader:Shader = null;
@@ -1096,22 +1137,23 @@ class GraphicsRenderer
 		shader = switch (bucket.mode)
 		{
 			case Fill:
-				renderer.shaderManager.fillShader;
+				fillShader;
 			case PatternFill:
-				renderer.shaderManager.patternFillShader;
+				patternFillShader;
 			case DrawTriangles:
-				renderer.shaderManager.drawTrianglesShader;
+				drawTrianglesShader;
 			case _:
 				null;
 		}
 
 		if (shader == null) return null;
 
-		var newShader = renderer.shaderManager.setShader(shader);
+		// renderer.setShader(null);
+		var newShader = setShader(renderer, shader);
 
 		// common uniforms
 		gl.uniform1f(shader.getUniformLocation(DefUniform.Alpha), object.__worldAlpha);
-		gl.uniformMatrix3fv(shader.getUniformLocation(DefUniform.ProjectionMatrix), false, @:privateAccess renderer.projectionMatrix.toArray(true));
+		gl.uniformMatrix3fv(shader.getUniformLocation(DefUniform.ProjectionMatrix), false, projectionMatrix.toArray(true));
 
 		var ct:ColorTransform = object.__worldColorTransform;
 		gl.uniform4f(shader.getUniformLocation(FillUniform.ColorMultiplier), ct.redMultiplier, ct.greenMultiplier, ct.blueMultiplier, ct.alphaMultiplier);
@@ -1146,11 +1188,12 @@ class GraphicsRenderer
 
 	private static function renderFill(bucket:GLBucket, shader:Shader, renderer:Context3DRenderer):Void
 	{
-		var gl = renderer.gl;
+		var context3D = renderer.context3D;
+		var gl = @:privateAccess context3D.gl;
 
 		if (bucket.mode == PatternFill && bucket.texture != null)
 		{
-			bindTexture(gl, bucket);
+			bindTexture(context3D, bucket);
 		}
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, bucket.tileBuffer);
@@ -1176,10 +1219,12 @@ class GraphicsRenderer
 
 	private static function bindTexture(context3D:Context3D, bucket:GLBucket):Void
 	{
+		var gl = @:privateAccess context3D.gl;
+
 		gl.bindTexture(gl.TEXTURE_2D, bucket.texture);
 
 		// TODO Fix this: webgl can only repeat textures that are power of two
-		if (bucket.textureRepeat #if (js && html5) && bucket.bitmap.__image.powerOfTwo #end)
+		if (bucket.textureRepeat #if (js && html5) && bucket.bitmap.image.powerOfTwo #end)
 		{
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
@@ -1220,5 +1265,74 @@ class GraphicsRenderer
 			(hex & 0xFF) / 255,
 			(hex >> 24 & 0xFF) / 255
 		];
+	}
+
+	public static function setShader(renderer:Context3DRenderer, shader:Shader, ?force:Bool = false):Bool
+	{
+		var gl = @:privateAccess renderer.gl;
+
+		if (shader == null)
+		{
+			// Assume we want to force, if we get called with null.
+			currentShader = null;
+			gl.useProgram(null);
+			return true;
+		}
+
+		if (currentShader != null && !force && currentShader.ID == shader.ID)
+		{
+			return false;
+		}
+		currentShader = shader;
+
+		gl.useProgram(shader.program);
+		return true;
+	}
+
+	public static function pushStencilBucket(bucket:GLBucket, renderer:Context3DRenderer, translationMatrix:Float32Array, ?isMask:Bool = false):Void
+	{
+		var gl = @:privateAccess renderer.context3D.gl;
+
+		if (!isMask)
+		{
+			gl.enable(gl.STENCIL_TEST);
+			gl.clear(gl.STENCIL_BUFFER_BIT);
+			gl.stencilMask(0xFF);
+
+			gl.colorMask(false, false, false, false);
+			gl.stencilFunc(gl.NEVER, 0x01, 0xFF);
+			gl.stencilOp(gl.INVERT, gl.KEEP, gl.KEEP);
+
+			gl.clear(gl.STENCIL_BUFFER_BIT);
+		}
+
+		for (fill in bucket.fills)
+		{
+			if (fill.available) continue;
+			var shader = fillShader;
+
+			setShader(renderer, shader);
+			gl.uniformMatrix3fv(shader.getUniformLocation(FillUniform.TranslationMatrix), false, translationMatrix);
+			gl.uniformMatrix3fv(shader.getUniformLocation(FillUniform.ProjectionMatrix), false, projectionMatrix.toArray(true));
+
+			fill.vertexArray.bind();
+			shader.bindVertexArray(fill.vertexArray);
+			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, fill.indexBuffer);
+			gl.drawElements(fill.drawMode, fill.glIndices.length, gl.UNSIGNED_SHORT, 0);
+		}
+
+		if (!isMask)
+		{
+			gl.colorMask(true, true, true, @:privateAccess renderer.__transparent);
+			gl.stencilOp(gl.KEEP, gl.KEEP, gl.KEEP);
+			gl.stencilFunc(gl.EQUAL, 0xFF, 0xFF);
+		}
+	}
+
+	public static function popStencilBucket(object:DisplayObject, bucket:GLBucket, renderer:Context3DRenderer):Void
+	{
+		var gl = @:privateAccess renderer.context3D.gl;
+
+		gl.disable(gl.STENCIL_TEST);
 	}
 }

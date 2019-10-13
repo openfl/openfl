@@ -1,5 +1,8 @@
 package openfl._internal.renderer.opengl.utils;
 
+import lime.graphics.opengl.GLBuffer;
+import lime.utils.Float32Array;
+import lime.utils.UInt16Array;
 import openfl.display3D.Context3D;
 
 @SuppressWarnings("checkstyle:FieldDocComment")
@@ -25,6 +28,8 @@ class GLGraphicsData
 	{
 		this.context3D = context3D;
 
+		var gl = @:privateAccess context3D.gl;
+
 		dataBuffer = gl.createBuffer();
 		indexBuffer = gl.createBuffer();
 	}
@@ -38,6 +43,8 @@ class GLGraphicsData
 
 	public function upload():Void
 	{
+		var gl = @:privateAccess context3D.gl;
+
 		glData = new Float32Array(cast data);
 		gl.bindBuffer(gl.ARRAY_BUFFER, dataBuffer);
 		gl.bufferData(gl.ARRAY_BUFFER, glData, gl.STATIC_DRAW);

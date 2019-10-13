@@ -76,6 +76,12 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 		FlashRenderer.register(this);
 	}
 
+	private function __fromTimeline(timeline:ITimeline):Void
+	{
+		// TODO: Support timeline playback
+		__timeline = timeline;
+	}
+
 	// public override function addFrameScript(index:Int, method:Void->Void):Void
 	// {
 	// 	if (__timeline != null) __timeline.addFrameScript(index, method);

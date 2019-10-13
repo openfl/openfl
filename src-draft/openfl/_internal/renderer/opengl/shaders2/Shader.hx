@@ -1,17 +1,18 @@
 package openfl._internal.renderer.opengl.shaders2;
 
-import lime.graphics.GLRenderContext;
+import lime.graphics.opengl.GLProgram;
+import lime.graphics.opengl.GLShader;
+import lime.graphics.opengl.GLUniformLocation;
 import openfl._internal.renderer.opengl.utils.VertexArray;
 import openfl._internal.renderer.opengl.utils.VertexAttribute;
-import openfl.gl.GLProgram;
-import openfl.gl.GLShader;
-import openfl.gl.GLUniformLocation;
+import openfl.display3D.Context3D;
 
+@SuppressWarnings("checkstyle:FieldDocComment")
 class Shader
 {
 	private static var UID:Int = 0;
 
-	public var gl:GLRenderContext;
+	public var context3D:Context3D;
 
 	public var vertexSrc:Array<String>;
 	public var fragmentSrc:Array<String>;
@@ -22,22 +23,25 @@ class Shader
 
 	public var program:GLProgram;
 
-	public function new(gl:GLRenderContext)
+	public function new(context3D:Context3D)
 	{
 		ID = UID++;
-		this.gl = gl;
+		this.context3D = context3D;
 
 		program = null;
 	}
 
-	private function init()
+	private function init():Void
 	{
-		program = Shader.compileProgram(gl, vertexSrc, fragmentSrc);
+		var gl = @:privateAccess context3D.gl;
+		program = Shader.compileProgram(context3D, vertexSrc, fragmentSrc);
 		gl.useProgram(program);
 	}
 
-	public function destroy()
+	public function destroy():Void
 	{
+		var gl = @:privateAccess context3D.gl;
+
 		if (program != null)
 		{
 			gl.deleteProgram(program);
@@ -48,6 +52,8 @@ class Shader
 
 	public function getAttribLocation(attribute:String):Int
 	{
+		var gl = @:privateAccess context3D.gl;
+
 		if (program == null)
 		{
 			throw "Shader isn't initialized";
@@ -66,6 +72,8 @@ class Shader
 
 	public function getUniformLocation(uniform:String):GLUniformLocation
 	{
+		var gl = @:privateAccess context3D.gl;
+
 		if (program == null)
 		{
 			throw "Shader isn't initialized";
@@ -82,16 +90,20 @@ class Shader
 		}
 	}
 
-	public function enableVertexAttribute(attribute:VertexAttribute, stride:Int, offset:Int)
+	public function enableVertexAttribute(attribute:VertexAttribute, stride:Int, offset:Int):Void
 	{
+		var gl = @:privateAccess context3D.gl;
+
 		// trace("Enable vertex attribute " + attribute.name);
 		var location = getAttribLocation(attribute.name);
 		gl.enableVertexAttribArray(location);
 		gl.vertexAttribPointer(location, attribute.components, attribute.type, attribute.normalized, stride, offset * 4);
 	}
 
-	public function disableVertexAttribute(attribute:VertexAttribute, setDefault:Bool = true)
+	public function disableVertexAttribute(attribute:VertexAttribute, setDefault:Bool = true):Void
 	{
+		var gl = @:privateAccess context3D.gl;
+
 		var location = getAttribLocation(attribute.name);
 		gl.disableVertexAttribArray(location);
 		if (setDefault)
@@ -110,7 +122,7 @@ class Shader
 		}
 	}
 
-	public function bindVertexArray(va:VertexArray)
+	public function bindVertexArray(va:VertexArray):Void
 	{
 		var offset = 0;
 		var stride = va.stride;
@@ -129,7 +141,7 @@ class Shader
 		}
 	}
 
-	public function unbindVertexArray(va:VertexArray)
+	public function unbindVertexArray(va:VertexArray):Void
 	{
 		for (attribute in va.attributes)
 		{
@@ -137,10 +149,12 @@ class Shader
 		}
 	}
 
-	public static function compileProgram(gl:GLRenderContext, vertexSrc:Array<String>, fragmentSrc:Array<String>):GLProgram
+	public static function compileProgram(context3D:Context3D, vertexSrc:Array<String>, fragmentSrc:Array<String>):GLProgram
 	{
-		var vertexShader = Shader.compileShader(gl, vertexSrc, gl.VERTEX_SHADER);
-		var fragmentShader = Shader.compileShader(gl, fragmentSrc, gl.FRAGMENT_SHADER);
+		var gl = @:privateAccess context3D.gl;
+
+		var vertexShader = Shader.compileShader(context3D, vertexSrc, gl.VERTEX_SHADER);
+		var fragmentShader = Shader.compileShader(context3D, fragmentSrc, gl.FRAGMENT_SHADER);
 		var program = gl.createProgram();
 
 		if (vertexShader != null && fragmentShader != null)
@@ -158,8 +172,10 @@ class Shader
 		return program;
 	}
 
-	static function compileShader(gl:GLRenderContext, shaderSrc:Array<String>, type:Int):GLShader
+	private static function compileShader(context3D:Context3D, shaderSrc:Array<String>, type:Int):GLShader
 	{
+		var gl = @:privateAccess context3D.gl;
+
 		var src = shaderSrc.join("\n");
 		var shader = gl.createShader(type);
 		gl.shaderSource(shader, src);

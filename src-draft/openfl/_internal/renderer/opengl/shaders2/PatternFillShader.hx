@@ -1,14 +1,14 @@
 package openfl._internal.renderer.opengl.shaders2;
 
-import lime.graphics.GLRenderContext;
 import openfl._internal.renderer.opengl.shaders2.DefaultShader.DefAttrib;
 import openfl._internal.renderer.opengl.shaders2.DefaultShader.DefUniform;
+import openfl.display3D.Context3D;
 
 class PatternFillShader extends Shader
 {
-	public function new(gl:GLRenderContext)
+	public function new(context3D:Context3D)
 	{
-		super(gl);
+		super(context3D);
 
 		vertexSrc = [
 			'attribute vec2 ${Attrib.Position};',

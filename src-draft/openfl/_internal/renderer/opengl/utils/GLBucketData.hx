@@ -1,5 +1,8 @@
 package openfl._internal.renderer.opengl.utils;
 
+import lime.graphics.opengl.GLBuffer;
+import lime.utils.Float32Array;
+import lime.utils.UInt16Array;
 import openfl.display3D.Context3D;
 
 @SuppressWarnings("checkstyle:FieldDocComment")
@@ -31,6 +34,9 @@ class GLBucketData
 	public function new(context3D:Context3D)
 	{
 		this.context3D = context3D;
+
+		var gl = @:privateAccess context3D.gl;
+
 		drawMode = gl.TRIANGLE_STRIP;
 		verts = [];
 		indices = [];
@@ -51,6 +57,8 @@ class GLBucketData
 
 	public function upload():Void
 	{
+		var gl = @:privateAccess context3D.gl;
+
 		// only upload a verts buffer if verts has anything inside
 		if ((rawVerts && glVerts != null && glVerts.length > 0) || verts.length > 0)
 		{
@@ -74,7 +82,7 @@ class GLBucketData
 			}
 			else
 			{
-				vertexArray.setContext(gl, glVerts);
+				vertexArray.setContext(context3D, glVerts);
 				lastVertsSize = glVerts.length;
 			}
 		}

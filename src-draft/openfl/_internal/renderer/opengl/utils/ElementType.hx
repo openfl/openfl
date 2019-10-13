@@ -1,5 +1,7 @@
 package openfl._internal.renderer.opengl.utils;
 
+import lime.graphics.opengl.GL;
+
 @SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract ElementType(Int) from Int to Int
 {

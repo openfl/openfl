@@ -2,12 +2,12 @@ package test;
 
 #if draft
 import haxe.Timer;
-import openfl.display.GLGraphics;
+import openfl.display.HWGraphics;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.utils.Assets;
 
-class GLGraphicsTest1 extends FunctionalTest
+class HWGraphicsTest1 extends FunctionalTest
 {
 	public function new()
 	{
@@ -19,13 +19,16 @@ class GLGraphicsTest1 extends FunctionalTest
 		content = new Sprite();
 		content.addEventListener(Event.ENTER_FRAME, update);
 
-		var graphics = new GLGraphics();
-		graphics.graphics.beginFill(0xFF0000);
-		graphics.graphics.drawRect(0, 0, 100, 100);
-		graphics.x = 10;
-		graphics.y = 10;
+		var shape = new HWGraphics();
+		shape.graphics.beginFill(0xFF0000);
+		shape.graphics.drawRect(0, 0, 100, 100);
+		shape.x = 100;
+		shape.y = 100;
+		shape.graphics.beginFill(0x00FF00);
+		shape.graphics.lineStyle(4, 0);
+		shape.graphics.drawCircle(100, 100, 20);
 
-		content.addChild(graphics);
+		content.addChild(shape);
 	}
 
 	public override function stop():Void

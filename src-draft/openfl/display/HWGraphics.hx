@@ -1,5 +1,6 @@
 package openfl.display;
 
+#if !flash
 import openfl._internal.renderer.context3D.Context3DRenderer;
 import openfl._internal.renderer.opengl.utils.DrawPath;
 import openfl._internal.renderer.opengl.utils.GLStack;
@@ -9,7 +10,7 @@ import openfl.geom.Rectangle;
 
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
-class GLGraphics extends Shape
+class HWGraphics extends Shape
 {
 	private var __bounds:Rectangle = new Rectangle(0, 0, 0, 0);
 
@@ -24,7 +25,7 @@ class GLGraphics extends Shape
 		__blendMode = NORMAL;
 	}
 
-	@:noCompletion @:dox(hide) public static function render(graphics:GLGraphics, renderer:Context3DRenderer):Void
+	@:noCompletion @:dox(hide) public static function render(graphics:HWGraphics, renderer:Context3DRenderer):Void
 	{
 		GraphicsRenderer.render(graphics, renderer);
 	}
@@ -62,3 +63,6 @@ class GLGraphics extends Shape
 		Rectangle.__pool.release(bounds);
 	}
 }
+#else
+typedef HWGraphics = openfl.display.Shape;
+#end

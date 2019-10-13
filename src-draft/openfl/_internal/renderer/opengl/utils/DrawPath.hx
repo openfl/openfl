@@ -1,8 +1,8 @@
 package openfl._internal.renderer.opengl.utils;
 
 import openfl.display3D.Context3D;
-import openfl.display.GLGraphics;
 import openfl.display.CapsStyle;
+import openfl.display.HWGraphics;
 import openfl.display.JointStyle;
 import openfl.display.LineScaleMode;
 
@@ -44,7 +44,7 @@ class DrawPath
 		this.line.miterLimit = line.miterLimit;
 	}
 
-	public static function getStack(object:GLGraphics, context3D:Context3D):GLStack
+	public static function getStack(object:HWGraphics, context3D:Context3D):GLStack
 	{
 		return PathBuilder.build(object, context3D);
 	}
