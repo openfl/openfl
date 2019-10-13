@@ -193,6 +193,7 @@ class DOMRenderer extends DOMRendererAPI
 					__clearTilemap(cast object);
 				case VIDEO:
 					__clearVideo(cast object);
+				default:
 			}
 		}
 	}
@@ -445,6 +446,8 @@ class DOMRenderer extends DOMRendererAPI
 					__renderTilemap(cast object);
 				case VIDEO:
 					__renderVideo(cast object);
+				default:
+					return;
 			}
 
 			if (object.__customRenderEvent != null)

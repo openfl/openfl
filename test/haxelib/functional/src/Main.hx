@@ -39,6 +39,9 @@ class Main extends Sprite
 		suite.addTest(new GlowTest());
 		suite.addTest(new DropShadowTest());
 		suite.addTest(new BatcherTest());
+		#if draft
+		suite.addTest(new GLGraphicsTest1());
+		#end
 		addChild(suite.content);
 
 		stage.addEventListener(Event.RESIZE, stage_onResize);
