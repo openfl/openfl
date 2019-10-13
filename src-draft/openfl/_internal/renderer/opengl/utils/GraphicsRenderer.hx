@@ -930,7 +930,7 @@ class GraphicsRenderer
 
 					gl.uniformMatrix3fv(shader.getUniformLocation(PrimitiveUniform.TranslationMatrix), false, translationMatrix.toArray(true));
 					gl.uniformMatrix3fv(shader.getUniformLocation(PrimitiveUniform.ProjectionMatrix), false, projectionMatrix.toArray(true));
-					gl.uniform1f(shader.getUniformLocation(PrimitiveUniform.Alpha), 1);
+					gl.uniform1f(shader.getUniformLocation(PrimitiveUniform.Alpha), object.__worldAlpha);
 
 					gl.uniform4f(shader.getUniformLocation(FillUniform.ColorMultiplier), ct.redMultiplier, ct.greenMultiplier, ct.blueMultiplier,
 						ct.alphaMultiplier);
