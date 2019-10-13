@@ -952,6 +952,9 @@ class GraphicsRenderer
 			// 	renderer.batcher.flush();
 			// }
 		}
+
+		setShader(renderer, null);
+		renderer.setViewport();
 	}
 
 	public static function updateGraphics(object:HWGraphics, graphics:Graphics, renderer:Context3DRenderer, ?localCoords:Bool = false):Void
