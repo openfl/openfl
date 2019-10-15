@@ -338,11 +338,9 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		super.__enterFrame(deltaTime);
 	}
 
-
 	@:noCompletion private function __fromSymbol(swf:SWFLite, symbol:SpriteSymbol):Void
 	{
 		// TODO: Refactor to ITimeline (or remove)
-		return null;
 	}
 
 	@:noCompletion private override function __stopAllMovieClips():Void
