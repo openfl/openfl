@@ -16,8 +16,8 @@ import openfl._internal.formats.animate.AnimateSymbol;
 import openfl._internal.utils.Log;
 import openfl.display.DisplayObject;
 import openfl.display.FrameLabel;
-import openfl.display.ITimeline;
 import openfl.display.MovieClip;
+import openfl.display.Timeline;
 import openfl.events.Event;
 import openfl.filters.BitmapFilter;
 import openfl.filters.BlurFilter;
@@ -41,7 +41,7 @@ import hscript.Parser;
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.MovieClip)
 @:access(openfl.geom.ColorTransform)
-class AnimateTimeline implements ITimeline
+class AnimateTimeline extends Timeline
 {
 	#if 0
 	// Suppress checkstyle warning
@@ -50,12 +50,6 @@ class AnimateTimeline implements ITimeline
 		AnimateStaticTextSymbol, AnimateSymbol, BlurFilter, ColorMatrixFilter, ConvolutionFilter, DisplacementMapFilter, DropShadowFilter, GlowFilter
 	];
 	#end
-
-	public var frameLabels:Map<Int, Array<String>>;
-	public var frameRate:Float;
-	public var frameScripts:Map<Int, MovieClip->Void>;
-	public var framesLoaded:Int;
-	public var totalFrames:Int;
 
 	@:noCompletion private var __activeInstances:Array<FrameSymbolInstance>;
 	@:noCompletion private var __activeInstancesByFrameObjectID:Map<Int, FrameSymbolInstance>;
@@ -67,6 +61,8 @@ class AnimateTimeline implements ITimeline
 
 	public function new(library:AnimateLibrary, symbol:AnimateSpriteSymbol)
 	{
+		super();
+
 		__library = library;
 		__symbol = symbol;
 
@@ -93,7 +89,7 @@ class AnimateTimeline implements ITimeline
 					frameLabels = new Map();
 				}
 
-				frameLabels.set(frame, [frameData.label]);
+				frameLabels.set(frame, [new FrameLabel(frameData.label, frame)]);
 			}
 
 			if (frameData.script != null)
@@ -174,17 +170,16 @@ class AnimateTimeline implements ITimeline
 		}
 	}
 
-	public function updateMovieClip(movieClip:MovieClip, previousFrame:Int, currentFrame:Int):Void
+	public override function attachMovieClip(movieClip:MovieClip):Void
+	{
+		__movieClip = movieClip;
+		__init();
+	}
+
+	public override function updateFrame(previousFrame:Int, currentFrame:Int):Void
 	{
 		if (__symbol != null && currentFrame != previousFrame)
 		{
-			if (movieClip != __movieClip)
-			{
-				// TODO: Support multiple clips using one timeline
-				__movieClip = movieClip;
-				__init();
-			}
-
 			var frame:Int;
 			var frameData:AnimateFrame;
 			var instance:FrameSymbolInstance;

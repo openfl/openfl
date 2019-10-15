@@ -14,7 +14,6 @@ import openfl._internal.symbols.SWFSymbol;
 import openfl._internal.symbols.timeline.Frame;
 import openfl._internal.symbols.timeline.FrameObject;
 import openfl._internal.symbols.timeline.FrameObjectType;
-import openfl._internal.utils.Timeline;
 import openfl.events.MouseEvent;
 import openfl.filters.BitmapFilter;
 import openfl.filters.BlurFilter;
@@ -64,6 +63,7 @@ import openfl.filters.GlowFilter;
 @:noDebug
 #end
 @:access(openfl._internal.symbols.SWFSymbol)
+@:access(openfl.display.Timeline)
 @:access(openfl.geom.ColorTransform)
 class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implements Dynamic<DisplayObject> #end
 {
@@ -215,14 +215,16 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	{
 		if (__timeline != null)
 		{
-			__timeline.addFrameScript(index, method);
+			__timeline.__addFrameScript(index, method);
 		}
 	}
 
-	public static function fromTimeline(timeline:ITimeline):MovieClip
+	public static function fromTimeline(timeline:Timeline):MovieClip
 	{
 		var movieClip = new MovieClip();
-		movieClip.__timeline = new Timeline(movieClip, timeline);
+		movieClip.__timeline = timeline;
+		timeline.attachMovieClip(movieClip);
+		timeline.__scope = movieClip;
 		movieClip.play();
 		return movieClip;
 	}
@@ -245,7 +247,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	{
 		if (__timeline != null)
 		{
-			__timeline.gotoAndPlay(frame, scene);
+			__timeline.__gotoAndPlay(frame, scene);
 		}
 	}
 
@@ -270,7 +272,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	{
 		if (__timeline != null)
 		{
-			__timeline.gotoAndStop(frame, scene);
+			__timeline.__gotoAndStop(frame, scene);
 		}
 	}
 
@@ -283,7 +285,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	{
 		if (__timeline != null)
 		{
-			__timeline.nextFrame();
+			__timeline.__nextFrame();
 		}
 	}
 
@@ -297,7 +299,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	{
 		if (__timeline != null)
 		{
-			__timeline.play();
+			__timeline.__play();
 		}
 	}
 
@@ -310,7 +312,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	{
 		if (__timeline != null)
 		{
-			__timeline.prevFrame();
+			__timeline.__prevFrame();
 		}
 	}
 
@@ -324,7 +326,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	{
 		if (__timeline != null)
 		{
-			__timeline.stop();
+			__timeline.__stop();
 		}
 	}
 
@@ -332,7 +334,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	{
 		if (__timeline != null)
 		{
-			__timeline.enterFrame(deltaTime);
+			__timeline.__enterFrame(deltaTime);
 		}
 
 		super.__enterFrame(deltaTime);
@@ -462,7 +464,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	{
 		if (__timeline != null)
 		{
-			return __timeline.currentFrame;
+			return __timeline.__currentFrame;
 		}
 		else
 		{
@@ -474,7 +476,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	{
 		if (__timeline != null)
 		{
-			return __timeline.currentFrameLabel;
+			return __timeline.__currentFrameLabel;
 		}
 		else
 		{
@@ -486,7 +488,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	{
 		if (__timeline != null)
 		{
-			return __timeline.currentLabel;
+			return __timeline.__currentLabel;
 		}
 		else
 		{
@@ -498,7 +500,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	{
 		if (__timeline != null)
 		{
-			return __timeline.currentLabels;
+			return __timeline.__currentLabels;
 		}
 		else
 		{
@@ -532,7 +534,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	{
 		if (__timeline != null)
 		{
-			return __timeline.isPlaying;
+			return __timeline.__isPlaying;
 		}
 		else
 		{

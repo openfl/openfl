@@ -1,6 +1,5 @@
 package openfl._internal.formats.animate;
 
-import openfl._internal.utils.Timeline;
 import openfl.display.DisplayObject;
 import openfl.display.MovieClip;
 import openfl.geom.Rectangle;
@@ -27,12 +26,14 @@ class AnimateSpriteSymbol extends AnimateSymbol
 
 	private function __constructor(movieClip:MovieClip):Void
 	{
-		var timeline = new Timeline(movieClip, new AnimateTimeline(library, this));
+		var timeline = new AnimateTimeline(library, this);
 		#if flash
 		@:privateAccess cast(movieClip, flash.display.MovieClip.MovieClip2).__timeline = timeline;
 		#else
 		movieClip.__timeline = timeline;
 		#end
+		timeline.attachMovieClip(movieClip);
+		@:privateAccess timeline.__scope = movieClip;
 		movieClip.scale9Grid = scale9Grid;
 		movieClip.play();
 	}

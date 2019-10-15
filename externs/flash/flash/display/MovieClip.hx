@@ -1,8 +1,7 @@
 package flash.display;
 
 import openfl._internal.renderer.flash.FlashRenderer;
-import openfl._internal.utils.Timeline;
-import openfl.display.ITimeline;
+import openfl.display.Timeline;
 import openfl.events.Event;
 import openfl.events.MouseEvent;
 import openfl.utils.Object;
@@ -28,10 +27,12 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 	#end
 	public function new();
 	public function addFrameScript(index:Int, method:Void->Void):Void;
-	public static function fromTimeline(timeline:ITimeline):MovieClip
+	public static function fromTimeline(timeline:Timeline):MovieClip
 	{
 		var movieClip = new MovieClip2();
-		movieClip.__timeline = new Timeline(movieClip, timeline);
+		movieClip.__timeline = timeline;
+		timeline.attachMovieClip(movieClip);
+		@:privateAccess movieClip.__timeline.__scope = movieClip;
 		movieClip.play();
 		return;
 	}
@@ -49,6 +50,7 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 	public function stop():Void;
 }
 
+@:access(openfl.display.Timeline)
 @:noCompletion class MovieClip2 extends MovieClip implements IDisplayObject
 {
 	@:noCompletion private var __cacheTime:Int; // TODO: Move to FlashRenderer?
@@ -82,32 +84,32 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 
 	public override function gotoAndPlay(frame:Object, scene:String = null):Void
 	{
-		if (__timeline != null) __timeline.gotoAndPlay(frame, scene);
+		if (__timeline != null) __timeline.__gotoAndPlay(frame, scene);
 	}
 
 	public override function gotoAndStop(frame:Object, scene:String = null):Void
 	{
-		if (__timeline != null) __timeline.gotoAndStop(frame, scene);
+		if (__timeline != null) __timeline.__gotoAndStop(frame, scene);
 	}
 
 	public override function nextFrame():Void
 	{
-		if (__timeline != null) __timeline.nextFrame();
+		if (__timeline != null) __timeline.__nextFrame();
 	}
 
 	public override function play():Void
 	{
-		if (__timeline != null) __timeline.play();
+		if (__timeline != null) __timeline.__play();
 	}
 
 	public override function prevFrame():Void
 	{
-		if (__timeline != null) __timeline.prevFrame();
+		if (__timeline != null) __timeline.__prevFrame();
 	}
 
 	public override function stop():Void
 	{
-		if (__timeline != null) __timeline.stop();
+		if (__timeline != null) __timeline.__stop();
 	}
 
 	@:noCompletion private function __renderFlash():Void
@@ -117,7 +119,7 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 		__cacheTime = currentTime;
 		if (__timeline != null)
 		{
-			__timeline.enterFrame(deltaTime);
+			__timeline.__enterFrame(deltaTime);
 		}
 	}
 
@@ -226,7 +228,7 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 	{
 		if (__timeline != null)
 		{
-			return __timeline.currentFrame;
+			return __timeline.__currentFrame;
 		}
 		else
 		{
@@ -238,7 +240,7 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 	{
 		if (__timeline != null)
 		{
-			return __timeline.currentFrameLabel;
+			return __timeline.__currentFrameLabel;
 		}
 		else
 		{
@@ -250,7 +252,7 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 	{
 		if (__timeline != null)
 		{
-			return __timeline.currentLabel;
+			return __timeline.__currentLabel;
 		}
 		else
 		{
@@ -262,7 +264,7 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 	{
 		if (__timeline != null)
 		{
-			return __timeline.currentLabels;
+			return __timeline.__currentLabels;
 		}
 		else
 		{
@@ -286,7 +288,7 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 	{
 		if (__timeline != null)
 		{
-			return __timeline.isPlaying;
+			return __timeline.__isPlaying;
 		}
 		else
 		{
