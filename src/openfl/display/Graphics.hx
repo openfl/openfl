@@ -94,6 +94,11 @@ import js.html.CanvasRenderingContext2D;
 	#end
 	@:noCompletion private var __bitmap:BitmapData;
 
+	#if draft
+	@:noCompletion private var __drawPaths:Array<openfl._internal.renderer.opengl.utils.DrawPath>;
+	@:noCompletion private var __glStack:Array<openfl._internal.renderer.opengl.utils.GLStack> = [];
+	#end
+
 	@:noCompletion private function new(owner:DisplayObject)
 	{
 		__owner = owner;

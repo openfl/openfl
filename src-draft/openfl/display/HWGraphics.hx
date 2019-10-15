@@ -2,8 +2,6 @@ package openfl.display;
 
 #if !flash
 import openfl._internal.renderer.context3D.Context3DRenderer;
-import openfl._internal.renderer.opengl.utils.DrawPath;
-import openfl._internal.renderer.opengl.utils.GLStack;
 import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
@@ -14,9 +12,6 @@ class HWGraphics extends Shape
 {
 	private var __bounds:Rectangle = new Rectangle(0, 0, 0, 0);
 
-	@:noCompletion private var __drawPaths:Array<DrawPath>;
-	@:noCompletion private var __glStack:Array<GLStack> = [];
-
 	public function new()
 	{
 		super();
@@ -25,9 +20,9 @@ class HWGraphics extends Shape
 		__blendMode = NORMAL;
 	}
 
-	@:noCompletion @:dox(hide) public static function render(graphics:HWGraphics, renderer:Context3DRenderer):Void
+	@:noCompletion @:dox(hide) public static function render(object:HWGraphics, renderer:Context3DRenderer):Void
 	{
-		GraphicsRenderer.render(graphics, renderer);
+		GraphicsRenderer.render(object.__graphics, renderer);
 	}
 
 	@:noCompletion private function __addPointToBounds(x:Float, y:Float):Void

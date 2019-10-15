@@ -150,10 +150,9 @@ class PathBuilder
 		}
 	}
 
-	public static function build(object:HWGraphics, context3D:Context3D):GLStack
+	public static function build(graphics:Graphics, context3D:Context3D):GLStack
 	{
 		var glStack:GLStack = null;
-		var graphics = object.__graphics;
 		var bounds = graphics.__bounds;
 
 		__drawPaths = new Array();
@@ -162,16 +161,16 @@ class PathBuilder
 		__fill = None;
 		__fillIndex = 0;
 
-		glStack = object.__glStack[0 /*GLRenderer.glContextId*/];
+		glStack = graphics.__glStack[0 /*GLRenderer.glContextId*/];
 
 		if (glStack == null)
 		{
-			glStack = object.__glStack[0 /*GLRenderer.glContextId*/] = new GLStack(context3D);
+			glStack = graphics.__glStack[0 /*GLRenderer.glContextId*/] = new GLStack(context3D);
 		}
 
 		if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || bounds.width == 0 || bounds.height == 0)
 		{
-			// glStack = object.__glStack[GLRenderer.glContextId] = new GLStack (gl);
+			// glStack = graphics.__glStack[GLRenderer.glContextId] = new GLStack (gl);
 		}
 		else
 		{
@@ -497,7 +496,7 @@ class PathBuilder
 			closePath();
 		}
 
-		object.__drawPaths = __drawPaths;
+		graphics.__drawPaths = __drawPaths;
 
 		return glStack;
 	}

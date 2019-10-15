@@ -43,7 +43,6 @@ class GraphicsRenderer
 	private static var SIN45:Float = 0.70710678118654752440084436210485;
 	private static var TAN22:Float = 0.4142135623730950488016887242097;
 
-	private static var objectPosition:Point = new Point();
 	private static var objectBounds:Rectangle = new Rectangle();
 
 	// private static var lastVertsBuffer:GLBuffer;
@@ -817,7 +816,7 @@ class GraphicsRenderer
 		return points;
 	}
 
-	public static function render(object:HWGraphics, renderer:Context3DRenderer):Void
+	public static function render(graphics:Graphics, renderer:Context3DRenderer):Void
 	{
 		var context3D = renderer.context3D;
 
@@ -833,7 +832,6 @@ class GraphicsRenderer
 		var mat4 = @:privateAccess renderer.__flipped ? @:privateAccess renderer.__projectionFlipped : @:privateAccess renderer.__projection;
 		projectionMatrix.setTo(mat4[0], mat4[1], mat4[4], mat4[5], mat4[12], mat4[13]);
 
-		var graphics = object.__graphics;
 		// var spritebatch = renderer.spriteBatch;
 		var dirty = graphics.__dirty;
 		if (graphics.__commands.length <= 0)
@@ -843,13 +841,13 @@ class GraphicsRenderer
 
 		if (dirty)
 		{
-			updateGraphics(object, object.__graphics, renderer, object.cacheAsBitmap);
+			updateGraphics(graphics, renderer, graphics.__owner.cacheAsBitmap);
 		}
 
-		renderGraphics(object, renderer, false);
+		renderGraphics(graphics, renderer, false);
 	}
 
-	public static function renderGraphics(object:HWGraphics, renderer:Context3DRenderer, ?localCoords:Bool = false):Void
+	public static function renderGraphics(graphics:Graphics, renderer:Context3DRenderer, ?localCoords:Bool = false):Void
 	{
 		renderer.batcher.flush();
 		if (!renderer.__cleared) renderer.__clear();
@@ -858,10 +856,9 @@ class GraphicsRenderer
 		@:privateAccess renderer.context3D.__flushGL();
 		renderer.setViewport();
 
-		var graphics = object.__graphics;
 		var gl = renderer.gl;
 
-		var glStack = object.__glStack[0 /*GLRenderer.glContextId*/];
+		var glStack = graphics.__glStack[0 /*GLRenderer.glContextId*/];
 		var bucket:GLBucket;
 
 		var translationMatrix:Matrix;
@@ -871,10 +868,10 @@ class GraphicsRenderer
 		}
 		else
 		{
-			translationMatrix = object.__worldTransform;
+			translationMatrix = graphics.__owner.__worldTransform;
 		}
 
-		@:privateAccess renderer.__setBlendMode(object.blendMode);
+		@:privateAccess renderer.__setBlendMode(graphics.__owner.blendMode);
 
 		// var batchDrawing = true; // renderer.spriteBatch.drawing;
 
@@ -892,9 +889,9 @@ class GraphicsRenderer
 					// 	renderer.batcher.flush();
 					// }
 					pushStencilBucket(bucket, renderer, translationMatrix.toArray(true));
-					var shader = prepareShader(bucket, renderer, object, translationMatrix.toArray(true));
+					var shader = prepareShader(bucket, renderer, graphics.__owner, translationMatrix.toArray(true));
 					renderFill(bucket, shader, renderer);
-					popStencilBucket(object, bucket, renderer);
+					popStencilBucket(graphics.__owner, bucket, renderer);
 				// case DrawTriangles:
 				// 	if (batchDrawing && !localCoords)
 				// 	{
@@ -912,7 +909,7 @@ class GraphicsRenderer
 				case _:
 			}
 
-			var ct:ColorTransform = object.__worldColorTransform;
+			var ct:ColorTransform = graphics.__owner.__worldColorTransform;
 			for (line in bucket.lines)
 			{
 				if (line != null && line.verts.length > 0)
@@ -930,7 +927,7 @@ class GraphicsRenderer
 
 					gl.uniformMatrix3fv(shader.getUniformLocation(PrimitiveUniform.TranslationMatrix), false, translationMatrix.toArray(true));
 					gl.uniformMatrix3fv(shader.getUniformLocation(PrimitiveUniform.ProjectionMatrix), false, projectionMatrix.toArray(true));
-					gl.uniform1f(shader.getUniformLocation(PrimitiveUniform.Alpha), object.__worldAlpha);
+					gl.uniform1f(shader.getUniformLocation(PrimitiveUniform.Alpha), graphics.__owner.__worldAlpha);
 
 					gl.uniform4f(shader.getUniformLocation(FillUniform.ColorMultiplier), ct.redMultiplier, ct.greenMultiplier, ct.blueMultiplier,
 						ct.alphaMultiplier);
@@ -957,10 +954,8 @@ class GraphicsRenderer
 		renderer.setViewport();
 	}
 
-	public static function updateGraphics(object:HWGraphics, graphics:Graphics, renderer:Context3DRenderer, ?localCoords:Bool = false):Void
+	public static function updateGraphics(graphics:Graphics, renderer:Context3DRenderer, ?localCoords:Bool = false):Void
 	{
-		objectPosition.setTo(object.x, object.y);
-
 		if (graphics.__bounds == null)
 		{
 			objectBounds = new Rectangle();
@@ -974,7 +969,7 @@ class GraphicsRenderer
 
 		if (graphics.__dirty)
 		{
-			glStack = DrawPath.getStack(object, renderer.context3D);
+			glStack = DrawPath.getStack(graphics, renderer.context3D);
 		}
 
 		graphics.__dirty = false;
@@ -987,9 +982,9 @@ class GraphicsRenderer
 
 		glStack.reset();
 
-		for (i in glStack.lastIndex...object.__drawPaths.length)
+		for (i in glStack.lastIndex...graphics.__drawPaths.length)
 		{
-			var path = object.__drawPaths[i];
+			var path = graphics.__drawPaths[i];
 
 			switch (path.type)
 			{
