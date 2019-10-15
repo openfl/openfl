@@ -606,7 +606,7 @@ class Context3DGraphics
 									renderer.__setShaderBuffer(shaderBuffer);
 									renderer.applyMatrix(uMatrix);
 									renderer.applyBitmapData(bitmap, false /* ignored */, repeat);
-									renderer.applyAlpha(graphics.__owner.__worldAlpha);
+									renderer.applyAlpha(renderer.__getAlpha(graphics.__owner.__worldAlpha));
 									renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
 									// renderer.__updateShaderBuffer ();
 								}
@@ -616,7 +616,7 @@ class Context3DGraphics
 									renderer.setShader(shader);
 									renderer.applyMatrix(uMatrix);
 									renderer.applyBitmapData(bitmap, smooth, repeat);
-									renderer.applyAlpha(graphics.__owner.__worldAlpha);
+									renderer.applyAlpha(renderer.__getAlpha(graphics.__owner.__worldAlpha));
 									renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
 									renderer.updateShader();
 								}
@@ -678,7 +678,7 @@ class Context3DGraphics
 								renderer.applyMatrix(renderer.__getMatrix(matrix, AUTO));
 								renderer.applyBitmapData(blankBitmapData, true, repeat);
 								#if lime
-								renderer.applyAlpha((color.a / 0xFF) * graphics.__owner.__worldAlpha);
+								renderer.applyAlpha(renderer.__getAlpha((color.a / 0xFF) * graphics.__owner.__worldAlpha));
 								#end
 								renderer.applyColorTransform(tempColorTransform);
 								renderer.updateShader();
@@ -728,7 +728,7 @@ class Context3DGraphics
 								renderer.__setShaderBuffer(shaderBuffer);
 								renderer.applyMatrix(uMatrix);
 								renderer.applyBitmapData(bitmap, false, repeat);
-								renderer.applyAlpha(1);
+								renderer.applyAlpha(renderer.__getAlpha(1));
 								renderer.applyColorTransform(null);
 								renderer.__updateShaderBuffer(shaderBufferOffset);
 							}
@@ -738,7 +738,7 @@ class Context3DGraphics
 								renderer.setShader(shader);
 								renderer.applyMatrix(uMatrix);
 								renderer.applyBitmapData(bitmap, smooth, repeat);
-								renderer.applyAlpha(graphics.__owner.__worldAlpha);
+								renderer.applyAlpha(renderer.__getAlpha(graphics.__owner.__worldAlpha));
 								renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
 								renderer.updateShader();
 							}

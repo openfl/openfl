@@ -37,13 +37,10 @@ class Context3DShape
 
 			if (graphics.__bitmap != null && graphics.__visible)
 			{
-				renderer.__pushMaskObject(shape);
-
 				var bitmapData = graphics.__bitmap;
-				var transform = renderer.__getDisplayTransformTempMatrix(graphics.__worldTransform, false);
-				bitmapData.pushQuadsToBatcher(renderer.batcher, transform, shape);
-
-				renderer.__popMaskObject(shape);
+				var transform = renderer.__getDisplayTransformTempMatrix(graphics.__worldTransform, AUTO);
+				var alpha = renderer.__getAlpha(shape.__worldAlpha);
+				bitmapData.pushQuadsToBatcher(renderer.batcher, transform, alpha, shape);
 
 				// var context = renderer.context3D;
 				// var scale9Grid = shape.__worldScale9Grid;
@@ -52,7 +49,7 @@ class Context3DShape
 				// renderer.setShader(shader);
 				// renderer.applyBitmapData(graphics.__bitmap, true);
 				// renderer.applyMatrix(renderer.__getMatrix(graphics.__worldTransform, AUTO));
-				// renderer.applyAlpha(shape.__worldAlpha);
+				// renderer.applyAlpha(renderer.__getAlpha(shape.__worldAlpha));
 				// renderer.applyColorTransform(shape.__worldColorTransform);
 				// renderer.updateShader();
 

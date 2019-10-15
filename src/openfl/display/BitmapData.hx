@@ -1626,10 +1626,9 @@ class BitmapData implements IBitmapDrawable
 	}
 
 	#if lime
-	@:dox(hide) public function pushQuadsToBatcher(batcher:BatchRenderer, transform:Matrix, object:DisplayObject):Void
+	@:dox(hide) public function pushQuadsToBatcher(batcher:BatchRenderer, transform:Matrix, alpha:Float, object:DisplayObject):Void
 	{
 		var blendMode = object.__worldBlendMode;
-		var alpha = object.__worldAlpha;
 		var colorTransform = object.__worldColorTransform;
 		var scale9Grid = object.__worldScale9Grid;
 

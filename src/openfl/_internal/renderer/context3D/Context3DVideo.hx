@@ -46,7 +46,7 @@ class Context3DVideo
 			// shader.uImage0.input = bitmap.__bitmapData;
 			// shader.uImage0.smoothing = renderer.__allowSmoothing && (bitmap.smoothing || renderer.__upscaled);
 			renderer.applyMatrix(renderer.__getMatrix(video.__renderTransform, AUTO));
-			renderer.applyAlpha(video.__worldAlpha);
+			renderer.applyAlpha(renderer.__getAlpha(video.__worldAlpha));
 			renderer.applyColorTransform(video.__worldColorTransform);
 
 			if (shader.__textureSize != null)
