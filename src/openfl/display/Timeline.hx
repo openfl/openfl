@@ -53,7 +53,8 @@ class Timeline
 	}
 
 	public function attachMovieClip(movieClip:MovieClip):Void {}
-	public function updateFrame(previousFrame:Int, currentFrame:Int):Void {}
+
+	public function enterFrame(frame:Int):Void {}
 
 	private function __addFrameScript(index:Int, method:Void->Void):Void
 	{
@@ -68,7 +69,10 @@ class Timeline
 				frameScripts = new Map();
 			}
 
-			frameScripts.set(frame, function(scope) { method(); });
+			frameScripts.set(frame, function(scope)
+			{
+				method();
+			});
 		}
 		else if (frameScripts != null)
 		{
@@ -275,7 +279,7 @@ class Timeline
 		if (__currentFrame != __lastFrameUpdate)
 		{
 			__updateFrameLabel();
-			updateFrame(__lastFrameUpdate, targetFrame);
+			enterFrame(targetFrame);
 			__lastFrameUpdate = __currentFrame;
 		}
 	}

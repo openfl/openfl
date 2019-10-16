@@ -1,18 +1,18 @@
-package openfl._internal.formats.animate;
+package openfl._internal.symbols.timeline;
 
-// TODO: Force keeping of symbols a different way?
-import openfl._internal.formats.animate.AnimateBitmapSymbol;
-import openfl._internal.formats.animate.AnimateButtonSymbol;
-import openfl._internal.formats.animate.AnimateDynamicTextSymbol;
-import openfl._internal.formats.animate.AnimateFontSymbol;
-import openfl._internal.formats.animate.AnimateFrame;
-import openfl._internal.formats.animate.AnimateFrameObject;
-import openfl._internal.formats.animate.AnimateFrameObjectType;
-import openfl._internal.formats.animate.AnimateLibrary;
-import openfl._internal.formats.animate.AnimateShapeSymbol;
-import openfl._internal.formats.animate.AnimateSpriteSymbol;
-import openfl._internal.formats.animate.AnimateStaticTextSymbol;
-import openfl._internal.formats.animate.AnimateSymbol;
+// TODO: Force keeping of SWF symbols a different way?
+import openfl._internal.formats.swf.SWFLite;
+import openfl._internal.symbols.BitmapSymbol;
+import openfl._internal.symbols.ButtonSymbol;
+import openfl._internal.symbols.DynamicTextSymbol;
+import openfl._internal.symbols.FontSymbol;
+import openfl._internal.symbols.ShapeSymbol;
+import openfl._internal.symbols.SpriteSymbol;
+import openfl._internal.symbols.StaticTextSymbol;
+import openfl._internal.symbols.SWFSymbol;
+import openfl._internal.symbols.timeline.Frame;
+import openfl._internal.symbols.timeline.FrameObject;
+import openfl._internal.symbols.timeline.FrameObjectType;
 import openfl._internal.utils.Log;
 import openfl.display.DisplayObject;
 import openfl.display.FrameLabel;
@@ -32,49 +32,36 @@ import hscript.Interp;
 import hscript.Parser;
 #end
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
-@:access(openfl._internal.formats.animate.AnimateLibrary)
-@:access(openfl._internal.formats.animate.AnimateSymbol)
+@:access(openfl._internal.symbols)
 @:access(openfl.display.DisplayObject)
-@:access(openfl.display.MovieClip)
 @:access(openfl.geom.ColorTransform)
-class AnimateTimeline extends Timeline
+class SymbolTimeline extends Timeline
 {
-	#if 0
-	// Suppress checkstyle warning
-	private static var __unusedImport:Array<Class<Dynamic>> = [
-		AnimateBitmapSymbol, AnimateButtonSymbol, AnimateDynamicTextSymbol, AnimateFontSymbol, AnimateShapeSymbol, AnimateSpriteSymbol,
-		AnimateStaticTextSymbol, AnimateSymbol, BlurFilter, ColorMatrixFilter, ConvolutionFilter, DisplacementMapFilter, DropShadowFilter, GlowFilter
-	];
-	#end
-
 	@:noCompletion private var __activeInstances:Array<FrameSymbolInstance>;
 	@:noCompletion private var __activeInstancesByFrameObjectID:Map<Int, FrameSymbolInstance>;
-	@:noCompletion private var __currentInstancesByFrameObjectID:Map<Int, FrameSymbolInstance>;
 	@:noCompletion private var __instanceFields:Array<String>;
-	@:noCompletion private var __library:AnimateLibrary;
 	@:noCompletion private var __movieClip:MovieClip;
 	@:noCompletion private var __previousFrame:Int;
-	@:noCompletion private var __symbol:AnimateSpriteSymbol;
+	@:noCompletion private var __swf:SWFLite;
+	@:noCompletion private var __symbol:SpriteSymbol;
 
-	public function new(library:AnimateLibrary, symbol:AnimateSpriteSymbol)
+	public function new(swf:SWFLite, symbol:SpriteSymbol)
 	{
 		super();
 
-		__library = library;
+		__swf = swf;
 		__symbol = symbol;
-
-		frameRate = library.frameRate;
-		totalFrames = __symbol.frames.length;
-		framesLoaded = totalFrames;
 
 		__previousFrame = -1;
 
+		frameRate = swf.frameRate;
+		totalFrames = __symbol.frames.length;
+		framesLoaded = totalFrames;
+
+		frameLabels = new Map();
+
 		var frame:Int;
-		var frameData:AnimateFrame;
+		var frameData:Frame;
 
 		#if hscript
 		var parser = null;
@@ -87,12 +74,7 @@ class AnimateTimeline extends Timeline
 
 			if (frameData.label != null)
 			{
-				if (frameLabels == null)
-				{
-					frameLabels = new Map();
-				}
-
-				frameLabels.set(frame, [new FrameLabel(frameData.label, frame)]);
+				frameLabels.set(i + 1, [new FrameLabel(frameData.label, i + 1)]);
 			}
 
 			if (frameData.script != null)
@@ -102,7 +84,10 @@ class AnimateTimeline extends Timeline
 					frameScripts = new Map();
 				}
 
-				frameScripts.set(frame, frameData.script);
+				frameScripts.set(frame, function(scope)
+				{
+					frameData.script();
+				});
 			}
 			else if (frameData.scriptSource != null)
 			{
@@ -122,21 +107,22 @@ class AnimateTimeline extends Timeline
 
 					var program = parser.parseString(frameData.scriptSource);
 					var interp = new Interp();
+					interp.variables.set("this", this);
+					interp.variables.set("flash.events_Event", Event);
 
-					var script = function(scope:MovieClip)
+					var script = function()
 					{
-						interp.variables.set("this", scope);
 						interp.execute(program);
 					};
 
 					frameScripts.set(frame, script);
 					#elseif js
 					var script = untyped __js__("eval({0})", "(function(){" + frameData.scriptSource + "})");
-					var wrapper = function(scope:MovieClip)
+					var wrapper = function()
 					{
 						try
 						{
-							script.call(scope);
+							script.call(this);
 						}
 						catch (e:Dynamic)
 						{
@@ -175,173 +161,19 @@ class AnimateTimeline extends Timeline
 
 	public override function attachMovieClip(movieClip:MovieClip):Void
 	{
-		__movieClip = movieClip;
-		__init();
-	}
-
-	public override function enterFrame(currentFrame:Int):Void
-	{
-		if (__symbol != null && currentFrame != __previousFrame)
-		{
-			var frame:Int;
-			var frameData:AnimateFrame;
-			var instance:FrameSymbolInstance;
-
-			var updateFrameStart = __previousFrame < currentFrame ? (__previousFrame == -1 ? 0 : __previousFrame) : 0;
-
-			// Reset frame objects if starting over.
-			if (updateFrameStart <= 0)
-			{
-				__currentInstancesByFrameObjectID = new Map();
-			}
-
-			for (i in updateFrameStart...currentFrame)
-			{
-				frame = i + 1;
-				frameData = __symbol.frames[i];
-
-				if (frameData.objects == null) continue;
-
-				for (frameObject in frameData.objects)
-				{
-					switch (frameObject.type)
-					{
-						case CREATE:
-							instance = __activeInstancesByFrameObjectID.get(frameObject.id);
-
-							if (instance != null)
-							{
-								__currentInstancesByFrameObjectID.set(frameObject.id, instance);
-								__updateDisplayObject(instance.displayObject, frameObject, true);
-							}
-
-						case UPDATE:
-							instance = __currentInstancesByFrameObjectID.get(frameObject.id);
-
-							if (instance != null && instance.displayObject != null)
-							{
-								__updateDisplayObject(instance.displayObject, frameObject);
-							}
-
-						case DESTROY:
-							__currentInstancesByFrameObjectID.remove(frameObject.id);
-					}
-				}
-			}
-
-			// TODO: Less garbage?
-
-			var currentInstances = new Array<FrameSymbolInstance>();
-			var currentMasks = new Array<FrameSymbolInstance>();
-
-			for (instance in __currentInstancesByFrameObjectID)
-			{
-				if (currentInstances.indexOf(instance) == -1)
-				{
-					currentInstances.push(instance);
-
-					if (instance.clipDepth > 0)
-					{
-						currentMasks.push(instance);
-					}
-				}
-			}
-
-			currentInstances.sort(__sortDepths);
-
-			var existingChild:DisplayObject;
-			var targetDepth:Int;
-			var targetChild:DisplayObject;
-			var child:DisplayObject;
-			var maskApplied:Bool;
-
-			for (i in 0...currentInstances.length)
-			{
-				existingChild = #if flash (i < __movieClip.numChildren) ? __movieClip.getChildAt(i) : null #else __movieClip.__children[i] #end;
-				instance = currentInstances[i];
-
-				targetDepth = instance.depth;
-				targetChild = instance.displayObject;
-
-				if (existingChild != targetChild)
-				{
-					child = targetChild;
-					__movieClip.addChildAt(targetChild, i);
-				}
-				else
-				{
-					child = #if flash __movieClip.getChildAt(i) #else __movieClip.__children[i] #end;
-				}
-
-				maskApplied = false;
-
-				for (mask in currentMasks)
-				{
-					if (targetDepth > mask.depth && targetDepth <= mask.clipDepth)
-					{
-						child.mask = mask.displayObject;
-						maskApplied = true;
-						break;
-					}
-				}
-
-				if (currentMasks.length > 0 && !maskApplied && child.mask != null)
-				{
-					child.mask = null;
-				}
-			}
-
-			var child;
-			var i = currentInstances.length;
-			var length = #if flash __movieClip.numChildren #else __movieClip.__children.length #end;
-
-			while (i < length)
-			{
-				child = #if flash __movieClip.getChildAt(i) #else __movieClip.__children[i] #end;
-
-				// TODO: Faster method of determining if this was automatically added?
-
-				for (instance in __activeInstances)
-				{
-					if (instance.displayObject == child)
-					{
-						// set MovieClips back to initial state (autoplay)
-						if (Std.is(child, MovieClip))
-						{
-							var movie:MovieClip = cast child;
-							movie.gotoAndPlay(1);
-						}
-
-						__movieClip.removeChild(child);
-						i--;
-						length--;
-					}
-				}
-
-				i++;
-			}
-
-			#if (!openfljs && (!openfl_dynamic || haxe_ver >= "4.0.0"))
-			__updateInstanceFields();
-			#end
-
-			__previousFrame = currentFrame;
-		}
-	}
-
-	@:noCompletion private function __init():Void
-	{
 		if (__activeInstances != null) return;
+
+		__movieClip = movieClip;
 
 		__activeInstances = [];
 		__activeInstancesByFrameObjectID = new Map();
-		__currentInstancesByFrameObjectID = new Map();
+		__previousFrame = -1;
 
 		var frame:Int;
-		var frameData:AnimateFrame;
+		var frameData:Frame;
 		var instance:FrameSymbolInstance;
 		var duplicate:Bool;
-		var symbol:AnimateSymbol;
+		var symbol:SWFSymbol;
 		var displayObject:DisplayObject;
 
 		// TODO: Create later?
@@ -355,7 +187,7 @@ class AnimateTimeline extends Timeline
 
 			for (frameObject in frameData.objects)
 			{
-				if (frameObject.type == AnimateFrameObjectType.CREATE)
+				if (frameObject.type == FrameObjectType.CREATE)
 				{
 					if (__activeInstancesByFrameObjectID.exists(frameObject.id))
 					{
@@ -382,20 +214,18 @@ class AnimateTimeline extends Timeline
 
 					if (instance == null)
 					{
-						symbol = __library.symbols.get(frameObject.symbol);
+						symbol = __swf.symbols.get(frameObject.symbol);
 
 						if (symbol != null)
 						{
-							displayObject = symbol.__createObject(__library);
+							displayObject = symbol.__createObject(__swf);
 
 							if (displayObject != null)
 							{
-								#if !flash
 								displayObject.parent = __movieClip;
 								displayObject.stage = __movieClip.stage;
 
 								if (__movieClip.stage != null) displayObject.dispatchEvent(new Event(Event.ADDED_TO_STAGE, false, false));
-								#end
 
 								instance = new FrameSymbolInstance(frame, frameObject.id, frameObject.symbol, frameObject.depth, displayObject,
 									frameObject.clipDepth);
@@ -414,13 +244,194 @@ class AnimateTimeline extends Timeline
 						}
 					}
 				}
+				/*
+					else if (frameObject.type == FrameObjectType.UPDATE)
+					{
+						instance = null;
+						if (__activeInstancesByFrameObjectID.exists (frameObject.id))
+						{
+							instance = __activeInstancesByFrameObjectID.get (frameObject.id);
+						}
+						if (instance != null && instance.displayObject != null)
+						{
+							__updateDisplayObject (instance.displayObject, frameObject);
+						}
+					}
+					else if (frameObject.type == FrameObjectType.DESTROY)
+					{
+						// TODO: the following never evalutates because SWFLiteExporter
+						//   always orders DESTROY after CREATE, losing the original order
+						//   they were saved as in the .swf, and because SWFLiteExporter
+						//   duplicates two frameObjectIds for the same characterId
+						//   and depth sometimes.
+						//if (!indexCachedFrameObjectEntryById.exists (frameObject.id)) {
+						//
+						//	throw "Tried to remove a DisplayObject child that hasn't been CREATED yet.";
+						//
+						//}
+					}
+					else
+					{
+						throw "Unrecognized FrameObject.type "+ frameObject.type;
+					}
+				**/
 			}
 		}
 
+		enterFrame(0);
+
 		#if (!openfljs && (!openfl_dynamic || haxe_ver >= "4.0.0"))
-		__instanceFields = Type.getInstanceFields(Type.getClass(__movieClip));
+		__instanceFields = Type.getInstanceFields(Type.getClass(this));
 		__updateInstanceFields();
 		#end
+	}
+
+	public override function enterFrame(targetFrame:Int):Void
+	{
+		if (__symbol != null && targetFrame != __previousFrame)
+		{
+			__updateFrameLabel();
+
+			var currentInstancesByFrameObjectID = new Map<Int, FrameSymbolInstance>();
+
+			var frame:Int;
+			var frameData:Frame;
+			var instance:FrameSymbolInstance;
+
+			// TODO: Handle updates only from previous frame?
+
+			for (i in 0...targetFrame)
+			{
+				frame = i + 1;
+				frameData = __symbol.frames[i];
+
+				if (frameData.objects == null) continue;
+
+				for (frameObject in frameData.objects)
+				{
+					switch (frameObject.type)
+					{
+						case CREATE:
+							instance = __activeInstancesByFrameObjectID.get(frameObject.id);
+
+							if (instance != null)
+							{
+								currentInstancesByFrameObjectID.set(frameObject.id, instance);
+								__updateDisplayObject(instance.displayObject, frameObject, true);
+							}
+
+						case UPDATE:
+							instance = currentInstancesByFrameObjectID.get(frameObject.id);
+
+							if (instance != null && instance.displayObject != null)
+							{
+								__updateDisplayObject(instance.displayObject, frameObject);
+							}
+
+						case DESTROY:
+							currentInstancesByFrameObjectID.remove(frameObject.id);
+					}
+				}
+			}
+
+			// TODO: Less garbage?
+
+			var currentInstances = new Array<FrameSymbolInstance>();
+			var currentMasks = new Array<FrameSymbolInstance>();
+
+			for (instance in currentInstancesByFrameObjectID)
+			{
+				if (currentInstances.indexOf(instance) == -1)
+				{
+					currentInstances.push(instance);
+
+					if (instance.clipDepth > 0)
+					{
+						currentMasks.push(instance);
+					}
+				}
+			}
+
+			currentInstances.sort(__sortDepths);
+
+			var existingChild:DisplayObject;
+			var targetDepth:Int;
+			var targetChild:DisplayObject;
+			var child:DisplayObject;
+			var maskApplied:Bool;
+
+			for (i in 0...currentInstances.length)
+			{
+				existingChild = __movieClip.__children[i];
+				instance = currentInstances[i];
+
+				targetDepth = instance.depth;
+				targetChild = instance.displayObject;
+
+				if (existingChild != targetChild)
+				{
+					child = targetChild;
+					__movieClip.addChildAt(targetChild, i);
+				}
+				else
+				{
+					child = __movieClip.__children[i];
+				}
+
+				maskApplied = false;
+
+				for (mask in currentMasks)
+				{
+					if (targetDepth > mask.depth && targetDepth <= mask.clipDepth)
+					{
+						child.mask = mask.displayObject;
+						maskApplied = true;
+						break;
+					}
+				}
+
+				if (currentMasks.length > 0 && !maskApplied && child.mask != null)
+				{
+					child.mask = null;
+				}
+			}
+
+			var child;
+			var i = currentInstances.length;
+			var length = __movieClip.__children.length;
+
+			while (i < length)
+			{
+				child = __movieClip.__children[i];
+
+				// TODO: Faster method of determining if this was automatically added?
+
+				for (instance in __activeInstances)
+				{
+					if (instance.displayObject == child)
+					{
+						// set MovieClips back to initial state (autoplay)
+						if (Std.is(child, MovieClip))
+						{
+							var movie:MovieClip = cast child;
+							movie.gotoAndPlay(1);
+						}
+
+						__movieClip.removeChild(child);
+						i--;
+						length--;
+					}
+				}
+
+				i++;
+			}
+
+			__previousFrame = targetFrame;
+
+			#if (!openfljs && (!openfl_dynamic || haxe_ver >= "4.0.0"))
+			__updateInstanceFields();
+			#end
+		}
 	}
 
 	@:noCompletion private function __sortDepths(a:FrameSymbolInstance, b:FrameSymbolInstance):Int
@@ -428,7 +439,7 @@ class AnimateTimeline extends Timeline
 		return a.depth - b.depth;
 	}
 
-	@:noCompletion private function __updateDisplayObject(displayObject:DisplayObject, frameObject:AnimateFrameObject, reset:Bool = false):Void
+	@:noCompletion private function __updateDisplayObject(displayObject:DisplayObject, frameObject:FrameObject, reset:Bool = false):Void
 	{
 		if (displayObject == null) return;
 
@@ -446,7 +457,7 @@ class AnimateTimeline extends Timeline
 		{
 			displayObject.transform.colorTransform = frameObject.colorTransform;
 		}
-		else if (reset #if !flash && !displayObject.transform.colorTransform.__isDefault(true) #end)
+		else if (reset && !displayObject.transform.colorTransform.__isDefault(true))
 		{
 			displayObject.transform.colorTransform = new ColorTransform();
 		}
@@ -504,15 +515,15 @@ class AnimateTimeline extends Timeline
 
 	@:noCompletion private function __updateInstanceFields():Void
 	{
+		if (__instanceFields == null) return;
+
 		for (field in __instanceFields)
 		{
-			var length = #if flash __movieClip.numChildren #else __movieClip.__children.length #end;
-			for (i in 0...length)
+			for (child in __movieClip.__children)
 			{
-				var child = #if flash __movieClip.getChildAt(i) #else __movieClip.__children[i] #end;
 				if (child.name == field)
 				{
-					Reflect.setField(__movieClip, field, child);
+					Reflect.setField(this, field, child);
 					break;
 				}
 			}

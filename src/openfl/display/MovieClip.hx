@@ -1,27 +1,10 @@
 package openfl.display;
 
 #if !flash
-// TODO: Force keeping of SWF symbols a different way?
 import openfl._internal.formats.swf.SWFLite;
-import openfl._internal.symbols.BitmapSymbol;
-import openfl._internal.symbols.ButtonSymbol;
-import openfl._internal.symbols.DynamicTextSymbol;
-import openfl._internal.symbols.FontSymbol;
-import openfl._internal.symbols.ShapeSymbol;
+import openfl._internal.symbols.timeline.SymbolTimeline;
 import openfl._internal.symbols.SpriteSymbol;
-import openfl._internal.symbols.StaticTextSymbol;
-import openfl._internal.symbols.SWFSymbol;
-import openfl._internal.symbols.timeline.Frame;
-import openfl._internal.symbols.timeline.FrameObject;
-import openfl._internal.symbols.timeline.FrameObjectType;
 import openfl.events.MouseEvent;
-import openfl.filters.BitmapFilter;
-import openfl.filters.BlurFilter;
-import openfl.filters.ColorMatrixFilter;
-import openfl.filters.ConvolutionFilter;
-import openfl.filters.DisplacementMapFilter;
-import openfl.filters.DropShadowFilter;
-import openfl.filters.GlowFilter;
 
 /**
 	The MovieClip class inherits from the following classes: Sprite,
@@ -222,10 +205,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	public static function fromTimeline(timeline:Timeline):MovieClip
 	{
 		var movieClip = new MovieClip();
-		movieClip.__timeline = timeline;
-		timeline.attachMovieClip(movieClip);
-		timeline.__scope = movieClip;
-		movieClip.play();
+		movieClip.__fromTimeline(timeline);
 		return movieClip;
 	}
 
@@ -342,7 +322,15 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 
 	@:noCompletion private function __fromSymbol(swf:SWFLite, symbol:SpriteSymbol):Void
 	{
-		// TODO: Refactor to ITimeline (or remove)
+		__fromTimeline(new SymbolTimeline(swf, symbol));
+	}
+
+	@:noCompletion private function __fromTimeline(timeline:Timeline):Void
+	{
+		__timeline = timeline;
+		timeline.__scope = this;
+		timeline.attachMovieClip(this);
+		play();
 	}
 
 	@:noCompletion private override function __stopAllMovieClips():Void
