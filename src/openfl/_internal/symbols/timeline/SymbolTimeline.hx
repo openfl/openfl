@@ -278,7 +278,7 @@ class SymbolTimeline extends Timeline
 			}
 		}
 
-		enterFrame(0);
+		enterFrame(1);
 
 		#if (!openfljs && (!openfl_dynamic || haxe_ver >= "4.0.0"))
 		__instanceFields = Type.getInstanceFields(Type.getClass(this));

@@ -71,8 +71,6 @@ class AnimateTimeline extends Timeline
 		totalFrames = __symbol.frames.length;
 		framesLoaded = totalFrames;
 
-		__previousFrame = -1;
-
 		var frame:Int;
 		var frameData:AnimateFrame;
 
@@ -333,6 +331,9 @@ class AnimateTimeline extends Timeline
 	{
 		if (__activeInstances != null) return;
 
+		__instanceFields = [];
+		__previousFrame = -1;
+
 		__activeInstances = [];
 		__activeInstancesByFrameObjectID = new Map();
 		__currentInstancesByFrameObjectID = new Map();
@@ -416,6 +417,8 @@ class AnimateTimeline extends Timeline
 				}
 			}
 		}
+
+		enterFrame(1);
 
 		#if (!openfljs && (!openfl_dynamic || haxe_ver >= "4.0.0"))
 		__instanceFields = Type.getInstanceFields(Type.getClass(__movieClip));

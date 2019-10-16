@@ -21,7 +21,6 @@ class Scale9GridTest1 extends FunctionalTest
 		content = new Sprite();
 
 		var movieClip = Assets.getMovieClip("scale9Grid:Frame");
-		trace(movieClip);
 		movieClip.x = 100;
 		movieClip.y = 100;
 		movieClip.width = 400;
