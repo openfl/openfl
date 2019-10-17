@@ -16,7 +16,7 @@ class Timeline
 	@:noCompletion private static inline var __useParentFPS:Bool = #if (swflite_parent_fps || swf_parent_fps) true #else false #end;
 	#end
 
-	public var frameLabels:Map<Int, Array<FrameLabel>>;
+	public var currentLabels:Array<FrameLabel>;
 	public var frameRate:Float;
 	public var frameScripts:Map<Int, MovieClip->Void>;
 	public var framesLoaded:Int;
@@ -25,7 +25,6 @@ class Timeline
 	@:noCompletion private var __currentFrame:Int;
 	@:noCompletion private var __currentFrameLabel:String;
 	@:noCompletion private var __currentLabel:String;
-	@:noCompletion private var __currentLabels:Array<FrameLabel>;
 	@:noCompletion private var __frameTime:Int;
 	@:noCompletion private var __isPlaying:Bool;
 	@:noCompletion private var __lastFrameScriptEval:Int;
@@ -46,7 +45,7 @@ class Timeline
 	private function new()
 	{
 		__currentFrame = 1;
-		__currentLabels = [];
+		currentLabels = [];
 		frameRate = 24;
 		totalFrames = 1;
 		framesLoaded = 1;
@@ -198,7 +197,7 @@ class Timeline
 		{
 			var label:String = cast frame;
 
-			for (frameLabel in __currentLabels)
+			for (frameLabel in currentLabels)
 			{
 				if (frameLabel.name == label)
 				{
@@ -221,7 +220,7 @@ class Timeline
 
 		// TODO: Update without looping so much
 
-		for (label in __currentLabels)
+		for (label in currentLabels)
 		{
 			if (label.frame < __currentFrame)
 			{

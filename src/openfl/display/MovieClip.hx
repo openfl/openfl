@@ -488,7 +488,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	{
 		if (__timeline != null)
 		{
-			return __timeline.__currentLabels;
+			return __timeline.currentLabels;
 		}
 		else
 		{

@@ -58,7 +58,7 @@ class SymbolTimeline extends Timeline
 		totalFrames = __symbol.frames.length;
 		framesLoaded = totalFrames;
 
-		frameLabels = new Map();
+		currentLabels = [];
 
 		var frame:Int;
 		var frameData:Frame;
@@ -74,7 +74,7 @@ class SymbolTimeline extends Timeline
 
 			if (frameData.label != null)
 			{
-				frameLabels.set(i + 1, [new FrameLabel(frameData.label, i + 1)]);
+				currentLabels.push(new FrameLabel(frameData.label, i + 1));
 			}
 
 			if (frameData.script != null)

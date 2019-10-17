@@ -85,12 +85,12 @@ class AnimateTimeline extends Timeline
 
 			if (frameData.label != null)
 			{
-				if (frameLabels == null)
+				if (currentLabels == null)
 				{
-					frameLabels = new Map();
+					currentLabels = [];
 				}
 
-				frameLabels.set(frame, [new FrameLabel(frameData.label, frame)]);
+				currentLabels.push(new FrameLabel(frameData.label, frame));
 			}
 
 			if (frameData.script != null)
@@ -174,7 +174,102 @@ class AnimateTimeline extends Timeline
 	public override function attachMovieClip(movieClip:MovieClip):Void
 	{
 		__movieClip = movieClip;
-		__init();
+
+		if (__activeInstances != null) return;
+
+		__instanceFields = [];
+		__previousFrame = -1;
+
+		__activeInstances = [];
+		__activeInstancesByFrameObjectID = new Map();
+		__currentInstancesByFrameObjectID = new Map();
+
+		var frame:Int;
+		var frameData:AnimateFrame;
+		var instance:FrameSymbolInstance;
+		var duplicate:Bool;
+		var symbol:AnimateSymbol;
+		var displayObject:DisplayObject;
+
+		// TODO: Create later?
+
+		for (i in 0...totalFrames)
+		{
+			frame = i + 1;
+			frameData = __symbol.frames[i];
+
+			if (frameData.objects == null) continue;
+
+			for (frameObject in frameData.objects)
+			{
+				if (frameObject.type == AnimateFrameObjectType.CREATE)
+				{
+					if (__activeInstancesByFrameObjectID.exists(frameObject.id))
+					{
+						continue;
+					}
+					else
+					{
+						instance = null;
+						duplicate = false;
+
+						for (activeInstance in __activeInstances)
+						{
+							if (activeInstance.displayObject != null
+								&& activeInstance.characterID == frameObject.symbol
+								&& activeInstance.depth == frameObject.depth)
+							{
+								// TODO: Fix duplicates in exporter
+								instance = activeInstance;
+								duplicate = true;
+								break;
+							}
+						}
+					}
+
+					if (instance == null)
+					{
+						symbol = __library.symbols.get(frameObject.symbol);
+
+						if (symbol != null)
+						{
+							displayObject = symbol.__createObject(__library);
+
+							if (displayObject != null)
+							{
+								#if !flash
+								displayObject.parent = __movieClip;
+								displayObject.stage = __movieClip.stage;
+
+								if (__movieClip.stage != null) displayObject.dispatchEvent(new Event(Event.ADDED_TO_STAGE, false, false));
+								#end
+
+								instance = new FrameSymbolInstance(frame, frameObject.id, frameObject.symbol, frameObject.depth, displayObject,
+									frameObject.clipDepth);
+							}
+						}
+					}
+
+					if (instance != null)
+					{
+						__activeInstancesByFrameObjectID.set(frameObject.id, instance);
+
+						if (!duplicate)
+						{
+							__activeInstances.push(instance);
+							__updateDisplayObject(instance.displayObject, frameObject);
+						}
+					}
+				}
+			}
+		}
+
+		enterFrame(1);
+
+		#if (!openfljs && (!openfl_dynamic || haxe_ver >= "4.0.0"))
+		__instanceFields = Type.getInstanceFields(Type.getClass(__movieClip));
+		__updateInstanceFields();
+		#end
 	}
 
 	public override function enterFrame(currentFrame:Int):Void
@@ -325,105 +420,6 @@ class AnimateTimeline extends Timeline
 
 			__previousFrame = currentFrame;
 		}
-	}
-
-	@:noCompletion private function __init():Void
-	{
-		if (__activeInstances != null) return;
-
-		__instanceFields = [];
-		__previousFrame = -1;
-
-		__activeInstances = [];
-		__activeInstancesByFrameObjectID = new Map();
-		__currentInstancesByFrameObjectID = new Map();
-
-		var frame:Int;
-		var frameData:AnimateFrame;
-		var instance:FrameSymbolInstance;
-		var duplicate:Bool;
-		var symbol:AnimateSymbol;
-		var displayObject:DisplayObject;
-
-		// TODO: Create later?
-
-		for (i in 0...totalFrames)
-		{
-			frame = i + 1;
-			frameData = __symbol.frames[i];
-
-			if (frameData.objects == null) continue;
-
-			for (frameObject in frameData.objects)
-			{
-				if (frameObject.type == AnimateFrameObjectType.CREATE)
-				{
-					if (__activeInstancesByFrameObjectID.exists(frameObject.id))
-					{
-						continue;
-					}
-					else
-					{
-						instance = null;
-						duplicate = false;
-
-						for (activeInstance in __activeInstances)
-						{
-							if (activeInstance.displayObject != null
-								&& activeInstance.characterID == frameObject.symbol
-								&& activeInstance.depth == frameObject.depth)
-							{
-								// TODO: Fix duplicates in exporter
-								instance = activeInstance;
-								duplicate = true;
-								break;
-							}
-						}
-					}
-
-					if (instance == null)
-					{
-						symbol = __library.symbols.get(frameObject.symbol);
-
-						if (symbol != null)
-						{
-							displayObject = symbol.__createObject(__library);
-
-							if (displayObject != null)
-							{
-								#if !flash
-								displayObject.parent = __movieClip;
-								displayObject.stage = __movieClip.stage;
-
-								if (__movieClip.stage != null) displayObject.dispatchEvent(new Event(Event.ADDED_TO_STAGE, false, false));
-								#end
-
-								instance = new FrameSymbolInstance(frame, frameObject.id, frameObject.symbol, frameObject.depth, displayObject,
-									frameObject.clipDepth);
-							}
-						}
-					}
-
-					if (instance != null)
-					{
-						__activeInstancesByFrameObjectID.set(frameObject.id, instance);
-
-						if (!duplicate)
-						{
-							__activeInstances.push(instance);
-							__updateDisplayObject(instance.displayObject, frameObject);
-						}
-					}
-				}
-			}
-		}
-
-		enterFrame(1);
-
-		#if (!openfljs && (!openfl_dynamic || haxe_ver >= "4.0.0"))
-		__instanceFields = Type.getInstanceFields(Type.getClass(__movieClip));
-		__updateInstanceFields();
-		#end
 	}
 
 	@:noCompletion private function __sortDepths(a:FrameSymbolInstance, b:FrameSymbolInstance):Int
