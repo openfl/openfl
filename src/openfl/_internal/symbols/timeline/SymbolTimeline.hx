@@ -118,11 +118,11 @@ class SymbolTimeline extends Timeline
 					frameScripts.set(frame, script);
 					#elseif js
 					var script = untyped __js__("eval({0})", "(function(){" + frameData.scriptSource + "})");
-					var wrapper = function()
+					var wrapper = function(scope)
 					{
 						try
 						{
-							script.call(this);
+							script.call(scope);
 						}
 						catch (e:Dynamic)
 						{
