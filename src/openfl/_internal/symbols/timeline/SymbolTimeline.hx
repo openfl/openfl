@@ -107,11 +107,11 @@ class SymbolTimeline extends Timeline
 
 					var program = parser.parseString(frameData.scriptSource);
 					var interp = new Interp();
-					interp.variables.set("this", this);
 					interp.variables.set("flash.events_Event", Event);
 
-					var script = function()
+					var script = function(scope:MovieClip)
 					{
+						interp.variables.set("this", scope);
 						interp.execute(program);
 					};
 
