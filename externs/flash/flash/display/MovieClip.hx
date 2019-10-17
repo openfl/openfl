@@ -30,11 +30,8 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 	public static function fromTimeline(timeline:Timeline):MovieClip
 	{
 		var movieClip = new MovieClip2();
-		movieClip.__timeline = timeline;
-		timeline.attachMovieClip(movieClip);
-		@:privateAccess movieClip.__timeline.__scope = movieClip;
-		movieClip.play();
-		return;
+		@:privateAccess movieClip.__fromTimeline(timeline);
+		return movieClip;
 	}
 	public function gotoAndPlay(frame:Object, scene:String = null):Void;
 	public function gotoAndStop(frame:Object, scene:String = null):Void;
@@ -110,6 +107,14 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 	public override function stop():Void
 	{
 		if (__timeline != null) __timeline.__stop();
+	}
+
+	@:noCompletion private function __fromTimeline(timeline:Timeline):Void
+	{
+		__timeline = timeline;
+		timeline.__scope = this;
+		timeline.attachMovieClip(this);
+		play();
 	}
 
 	@:noCompletion private function __renderFlash():Void
@@ -264,7 +269,7 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 	{
 		if (__timeline != null)
 		{
-			return __timeline.__currentLabels;
+			return __timeline.currentLabels;
 		}
 		else
 		{
