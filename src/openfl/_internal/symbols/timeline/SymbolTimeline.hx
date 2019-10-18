@@ -16,7 +16,9 @@ import openfl._internal.symbols.timeline.FrameObjectType;
 import openfl._internal.utils.Log;
 import openfl.display.DisplayObject;
 import openfl.display.FrameLabel;
+import openfl.display.FrameScript;
 import openfl.display.MovieClip;
+import openfl.display.Scene;
 import openfl.display.Timeline;
 import openfl.events.Event;
 import openfl.filters.BitmapFilter;
@@ -37,6 +39,12 @@ import hscript.Parser;
 @:access(openfl.geom.ColorTransform)
 class SymbolTimeline extends Timeline
 {
+	#if openfljs
+	@:noCompletion private static var __useParentFPS:Bool;
+	#else
+	@:noCompletion private static inline var __useParentFPS:Bool = #if (swflite_parent_fps || swf_parent_fps) true #else false #end;
+	#end
+
 	@:noCompletion private var __activeInstances:Array<FrameSymbolInstance>;
 	@:noCompletion private var __activeInstancesByFrameObjectID:Map<Int, FrameSymbolInstance>;
 	@:noCompletion private var __instanceFields:Array<String>;
@@ -44,6 +52,16 @@ class SymbolTimeline extends Timeline
 	@:noCompletion private var __previousFrame:Int;
 	@:noCompletion private var __swf:SWFLite;
 	@:noCompletion private var __symbol:SpriteSymbol;
+
+	#if openfljs
+	@:noCompletion private static function __init__()
+	{
+		__useParentFPS = true;
+		untyped __js__("/// #if (typeof ENV === 'undefined' || (!ENV['swflite-parent-fps'] && !ENV['swf-parent-fps'])) && (typeof swf_parent_fps === 'undefined' || !swf_parent_fps) && (typeof swflite_parent_fps === 'undefined' || !swflite-parent-fps) && (typeof defines === 'undefined' || (!defines['swf-parent-fps'] && !defines['swflite-parent-fps']))");
+		__useParentFPS = false;
+		untyped __js__("/// #endif");
+	}
+	#end
 
 	public function new(swf:SWFLite, symbol:SpriteSymbol)
 	{
@@ -54,11 +72,8 @@ class SymbolTimeline extends Timeline
 
 		__previousFrame = -1;
 
-		frameRate = swf.frameRate;
-		totalFrames = __symbol.frames.length;
-		framesLoaded = totalFrames;
-
-		currentLabels = [];
+		var labels = [];
+		scripts = [];
 
 		var frame:Int;
 		var frameData:Frame;
@@ -74,28 +89,18 @@ class SymbolTimeline extends Timeline
 
 			if (frameData.label != null)
 			{
-				currentLabels.push(new FrameLabel(frameData.label, i + 1));
+				labels.push(new FrameLabel(frameData.label, i + 1));
 			}
 
 			if (frameData.script != null)
 			{
-				if (frameScripts == null)
-				{
-					frameScripts = new Map();
-				}
-
-				frameScripts.set(frame, function(scope)
+				scripts.push(new FrameScript(function(scope)
 				{
 					frameData.script();
-				});
+				}, frame));
 			}
 			else if (frameData.scriptSource != null)
 			{
-				if (frameScripts == null)
-				{
-					frameScripts = new Map();
-				}
-
 				try
 				{
 					#if hscript
@@ -115,7 +120,7 @@ class SymbolTimeline extends Timeline
 						interp.execute(program);
 					};
 
-					frameScripts.set(frame, script);
+					scripts.push(new FrameScript(script, frame));
 					#elseif js
 					var script = untyped __js__("eval({0})", "(function(){" + frameData.scriptSource + "})");
 					var wrapper = function(scope)
@@ -140,7 +145,7 @@ class SymbolTimeline extends Timeline
 						}
 					}
 
-					frameScripts.set(frame, wrapper);
+					scripts.push(new FrameScript(wrapper, frame));
 					#end
 				}
 				catch (e:Dynamic)
@@ -157,6 +162,9 @@ class SymbolTimeline extends Timeline
 				}
 			}
 		}
+
+		if (!__useParentFPS) frameRate = swf.frameRate;
+		scenes = [new Scene("", labels, __symbol.frames.length)];
 	}
 
 	public override function attachMovieClip(movieClip:MovieClip):Void
@@ -178,7 +186,7 @@ class SymbolTimeline extends Timeline
 
 		// TODO: Create later?
 
-		for (i in 0...totalFrames)
+		for (i in 0...scenes[0].numFrames)
 		{
 			frame = i + 1;
 			frameData = __symbol.frames[i];

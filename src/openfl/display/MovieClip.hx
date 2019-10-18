@@ -92,6 +92,12 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	public var currentLabels(get, never):Array<FrameLabel>;
 
 	/**
+		The current scene in which the playhead is located in the timeline of
+		the MovieClip instance.
+	**/
+	public var currentScene(get, never):Scene;
+
+	/**
 		A Boolean value that indicates whether a movie clip is enabled. The
 		default value of `enabled` is `true`. If
 		`enabled` is set to `false`, the movie clip's Over,
@@ -122,9 +128,16 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	**/
 	public var framesLoaded(get, never):Int;
 
+	/**
+		A Boolean value that indicates whether a movie clip is curently playing.
+	**/
 	public var isPlaying(get, never):Bool;
 
-	// @:noCompletion @:dox(hide) public var scenes (default, never):Array<openfl.display.Scene>;
+	/**
+		An array of Scene objects, each listing the name, the number of frames, and
+		the frame labels for a scene in the MovieClip instance.
+	**/
+	public var scenes(get, never):Array<Scene>;
 
 	/**
 		The total number of frames in the MovieClip instance.
@@ -141,6 +154,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	@:noCompletion private var __hasOver:Bool;
 	@:noCompletion private var __hasUp:Bool;
 	@:noCompletion private var __mouseIsDown:Bool;
+	@:noCompletion private var __scene:Scene;
 	@:noCompletion private var __swf:SWFLite;
 	@:noCompletion private var __symbol:SpriteSymbol;
 	@:noCompletion private var __timeline:Timeline;
@@ -169,11 +183,22 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		`addChild()` or `addChildAt()` method of a display
 		object container that is onstage.
 	**/
-	public function new()
+	public function new(timeline:Timeline = null)
 	{
 		super();
 
 		__enabled = true;
+
+		if (timeline != null)
+		{
+			__timeline = timeline;
+			timeline.__attachMovieClip(this);
+			play();
+		}
+		else
+		{
+			__scene = new Scene("", [], 1);
+		}
 
 		if (__constructor != null)
 		{
@@ -200,13 +225,6 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		{
 			__timeline.__addFrameScript(index, method);
 		}
-	}
-
-	public static function fromTimeline(timeline:Timeline):MovieClip
-	{
-		var movieClip = new MovieClip();
-		movieClip.__fromTimeline(timeline);
-		return movieClip;
 	}
 
 	/**
@@ -269,7 +287,17 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		}
 	}
 
-	// @:noCompletion @:dox(hide) public function nextScene ():Void;
+	/**
+		Moves the playhead to the next scene of the MovieClip instance. This happens
+		after all remaining actions in the frame have finished executing.
+	**/
+	public function nextScene():Void
+	{
+		if (__timeline != null)
+		{
+			__timeline.__nextScene();
+		}
+	}
 
 	/**
 		Moves the playhead in the timeline of the movie clip.
@@ -296,7 +324,17 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		}
 	}
 
-	// @:noCompletion @:dox(hide) public function prevScene ():Void;
+	/**
+		Moves the playhead to the previous scene of the MovieClip instance. This
+		happens after all remaining actions in the frame have finished executing.
+	**/
+	public function prevScene():Void
+	{
+		if (__timeline != null)
+		{
+			__timeline.__prevScene();
+		}
+	}
 
 	/**
 		Stops the playhead in the movie clip.
@@ -322,14 +360,8 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 
 	@:noCompletion private function __fromSymbol(swf:SWFLite, symbol:SpriteSymbol):Void
 	{
-		__fromTimeline(new SymbolTimeline(swf, symbol));
-	}
-
-	@:noCompletion private function __fromTimeline(timeline:Timeline):Void
-	{
-		__timeline = timeline;
-		timeline.__scope = this;
-		timeline.attachMovieClip(this);
+		__timeline = new SymbolTimeline(swf, symbol);
+		__timeline.__attachMovieClip(this);
 		play();
 	}
 
@@ -488,11 +520,27 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	{
 		if (__timeline != null)
 		{
-			return __timeline.currentLabels;
+			return __timeline.__currentLabels;
 		}
 		else
 		{
 			return null;
+		}
+	}
+
+	@:noCompletion private function get_currentScene():Scene
+	{
+		if (__timeline != null)
+		{
+			return __timeline.__currentScene;
+		}
+		else
+		{
+			if (__scene == null)
+			{
+				__scene = new Scene("", [], 1);
+			}
+			return __scene;
 		}
 	}
 
@@ -510,7 +558,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	{
 		if (__timeline != null)
 		{
-			return __timeline.framesLoaded;
+			return __timeline.__framesLoaded;
 		}
 		else
 		{
@@ -530,11 +578,23 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		}
 	}
 
+	@:noCompletion private function get_scenes():Array<Scene>
+	{
+		if (__timeline != null)
+		{
+			return __timeline.scenes.copy();
+		}
+		else
+		{
+			return [currentScene];
+		}
+	}
+
 	@:noCompletion private function get_totalFrames():Int
 	{
 		if (__timeline != null)
 		{
-			return __timeline.totalFrames;
+			return __timeline.__totalFrames;
 		}
 		else
 		{

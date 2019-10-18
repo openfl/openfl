@@ -1,22 +1,11 @@
 package openfl._internal.formats.animate;
 
-// TODO: Force keeping of symbols a different way?
-import openfl._internal.formats.animate.AnimateBitmapSymbol;
-import openfl._internal.formats.animate.AnimateButtonSymbol;
-import openfl._internal.formats.animate.AnimateDynamicTextSymbol;
-import openfl._internal.formats.animate.AnimateFontSymbol;
-import openfl._internal.formats.animate.AnimateFrame;
-import openfl._internal.formats.animate.AnimateFrameObject;
-import openfl._internal.formats.animate.AnimateFrameObjectType;
-import openfl._internal.formats.animate.AnimateLibrary;
-import openfl._internal.formats.animate.AnimateShapeSymbol;
-import openfl._internal.formats.animate.AnimateSpriteSymbol;
-import openfl._internal.formats.animate.AnimateStaticTextSymbol;
-import openfl._internal.formats.animate.AnimateSymbol;
 import openfl._internal.utils.Log;
 import openfl.display.DisplayObject;
 import openfl.display.FrameLabel;
+import openfl.display.FrameScript;
 import openfl.display.MovieClip;
+import openfl.display.Scene;
 import openfl.display.Timeline;
 import openfl.events.Event;
 import openfl.filters.BitmapFilter;
@@ -68,8 +57,8 @@ class AnimateTimeline extends Timeline
 		__symbol = symbol;
 
 		frameRate = library.frameRate;
-		totalFrames = __symbol.frames.length;
-		framesLoaded = totalFrames;
+		var labels = [];
+		scripts = [];
 
 		var frame:Int;
 		var frameData:AnimateFrame;
@@ -85,30 +74,15 @@ class AnimateTimeline extends Timeline
 
 			if (frameData.label != null)
 			{
-				if (currentLabels == null)
-				{
-					currentLabels = [];
-				}
-
-				currentLabels.push(new FrameLabel(frameData.label, frame));
+				labels.push(new FrameLabel(frameData.label, frame));
 			}
 
 			if (frameData.script != null)
 			{
-				if (frameScripts == null)
-				{
-					frameScripts = new Map();
-				}
-
-				frameScripts.set(frame, frameData.script);
+				scripts.push(new FrameScript(frameData.script, frame));
 			}
 			else if (frameData.scriptSource != null)
 			{
-				if (frameScripts == null)
-				{
-					frameScripts = new Map();
-				}
-
 				try
 				{
 					#if hscript
@@ -127,7 +101,7 @@ class AnimateTimeline extends Timeline
 						interp.execute(program);
 					};
 
-					frameScripts.set(frame, script);
+					scripts.push(new FrameScript(script, frame));
 					#elseif js
 					var script = untyped __js__("eval({0})", "(function(){" + frameData.scriptSource + "})");
 					var wrapper = function(scope:MovieClip)
@@ -152,7 +126,7 @@ class AnimateTimeline extends Timeline
 						}
 					}
 
-					frameScripts.set(frame, wrapper);
+					scripts.push(new FrameScript(wrapper, frame));
 					#end
 				}
 				catch (e:Dynamic)
@@ -169,6 +143,8 @@ class AnimateTimeline extends Timeline
 				}
 			}
 		}
+
+		scenes = [new Scene("", labels, __symbol.frames.length)];
 	}
 
 	public override function attachMovieClip(movieClip:MovieClip):Void
@@ -193,7 +169,7 @@ class AnimateTimeline extends Timeline
 
 		// TODO: Create later?
 
-		for (i in 0...totalFrames)
+		for (i in 0...scenes[0].numFrames)
 		{
 			frame = i + 1;
 			frameData = __symbol.frames[i];
