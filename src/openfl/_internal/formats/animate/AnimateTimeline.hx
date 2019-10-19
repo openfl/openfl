@@ -240,12 +240,11 @@ class AnimateTimeline extends Timeline
 			}
 		}
 
-		enterFrame(1);
-
 		#if (!openfljs && (!openfl_dynamic || haxe_ver >= "4.0.0"))
 		__instanceFields = Type.getInstanceFields(Type.getClass(__movieClip));
-		__updateInstanceFields();
 		#end
+
+		enterFrame(1);
 	}
 
 	public override function enterFrame(currentFrame:Int):Void

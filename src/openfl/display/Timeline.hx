@@ -35,7 +35,7 @@ class Timeline
 	public var scenes:Array<Scene>;
 
 	/**
-		A map of scripts to be run when the playhead enters each frame.
+		An array of scripts to be run when the playhead enters each frame.
 	**/
 	public var scripts:Array<FrameScript>;
 

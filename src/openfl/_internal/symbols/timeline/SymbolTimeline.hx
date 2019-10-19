@@ -252,46 +252,14 @@ class SymbolTimeline extends Timeline
 						}
 					}
 				}
-				/*
-					else if (frameObject.type == FrameObjectType.UPDATE)
-					{
-						instance = null;
-						if (__activeInstancesByFrameObjectID.exists (frameObject.id))
-						{
-							instance = __activeInstancesByFrameObjectID.get (frameObject.id);
-						}
-						if (instance != null && instance.displayObject != null)
-						{
-							__updateDisplayObject (instance.displayObject, frameObject);
-						}
-					}
-					else if (frameObject.type == FrameObjectType.DESTROY)
-					{
-						// TODO: the following never evalutates because SWFLiteExporter
-						//   always orders DESTROY after CREATE, losing the original order
-						//   they were saved as in the .swf, and because SWFLiteExporter
-						//   duplicates two frameObjectIds for the same characterId
-						//   and depth sometimes.
-						//if (!indexCachedFrameObjectEntryById.exists (frameObject.id)) {
-						//
-						//	throw "Tried to remove a DisplayObject child that hasn't been CREATED yet.";
-						//
-						//}
-					}
-					else
-					{
-						throw "Unrecognized FrameObject.type "+ frameObject.type;
-					}
-				**/
 			}
 		}
 
-		enterFrame(1);
-
 		#if (!openfljs && (!openfl_dynamic || haxe_ver >= "4.0.0"))
 		__instanceFields = Type.getInstanceFields(Type.getClass(this));
-		__updateInstanceFields();
 		#end
+
+		enterFrame(1);
 	}
 
 	public override function enterFrame(targetFrame:Int):Void
