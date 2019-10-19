@@ -183,22 +183,11 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		`addChild()` or `addChildAt()` method of a display
 		object container that is onstage.
 	**/
-	public function new(timeline:Timeline = null)
+	public function new()
 	{
 		super();
 
 		__enabled = true;
-
-		if (timeline != null)
-		{
-			__timeline = timeline;
-			timeline.__attachMovieClip(this);
-			play();
-		}
-		else
-		{
-			__scene = new Scene("", [], 1);
-		}
 
 		if (__constructor != null)
 		{
@@ -224,6 +213,16 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		if (__timeline != null)
 		{
 			__timeline.__addFrameScript(index, method);
+		}
+	}
+
+	public function attachTimeline(timeline:Timeline):Void
+	{
+		__timeline = timeline;
+		if (timeline != null)
+		{
+			timeline.__attachMovieClip(this);
+			play();
 		}
 	}
 
@@ -360,9 +359,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 
 	@:noCompletion private function __fromSymbol(swf:SWFLite, symbol:SpriteSymbol):Void
 	{
-		__timeline = new SymbolTimeline(swf, symbol);
-		__timeline.__attachMovieClip(this);
-		play();
+		attachTimeline(new SymbolTimeline(swf, symbol));
 	}
 
 	@:noCompletion private override function __stopAllMovieClips():Void
@@ -520,11 +517,11 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	{
 		if (__timeline != null)
 		{
-			return __timeline.__currentLabels;
+			return __timeline.__currentLabels.copy();
 		}
 		else
 		{
-			return null;
+			return [];
 		}
 	}
 

@@ -25,7 +25,7 @@ class SpriteSymbol extends SWFSymbol
 
 	private override function __createObject(swf:SWFLite):MovieClip
 	{
-		#if !macro
+		#if (!macro && !flash)
 		MovieClip.__initSWF = swf;
 		MovieClip.__initSymbol = this;
 		#end

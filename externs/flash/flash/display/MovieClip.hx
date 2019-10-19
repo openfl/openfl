@@ -285,7 +285,7 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 		}
 		else
 		{
-			return null;
+			return [];
 		}
 	}
 
@@ -297,7 +297,7 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 		}
 		else
 		{
-			return null;
+			return this.currentScene;
 		}
 	}
 

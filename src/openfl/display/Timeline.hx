@@ -72,7 +72,7 @@ class Timeline
 		This is an abstract method, so it should be overridden with an implementation
 		in child classes.
 	**/
-	public function attachMovieClip(movieClip:MovieClip):Void {}
+	@:noCompletion public function attachMovieClip(movieClip:MovieClip):Void {}
 
 	/**
 		Called internally when the Timeline object enters a new frame.
@@ -80,7 +80,7 @@ class Timeline
 		This is an abstract method, so it should be overridden with an implementation
 		in child classes.
 	**/
-	public function enterFrame(frame:Int):Void {}
+	@:noCompletion public function enterFrame(frame:Int):Void {}
 
 	@:noCompletion private function __addFrameScript(index:Int, method:Void->Void):Void
 	{

@@ -23,8 +23,10 @@ class ButtonSymbol extends SWFSymbol
 	private override function __createObject(swf:SWFLite):SimpleButton
 	{
 		var simpleButton:SimpleButton = null;
+		#if (!macro && !flash)
 		SimpleButton.__initSWF = swf;
 		SimpleButton.__initSymbol = this;
+		#end
 
 		#if flash
 		if (className == "flash.display.SimpleButton")
