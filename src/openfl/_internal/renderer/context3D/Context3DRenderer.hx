@@ -1061,6 +1061,8 @@ class Context3DRenderer extends Context3DRendererAPI
 				#if draft
 				case GL_GRAPHICS:
 					openfl.display.HWGraphics.render(cast object, this);
+				case GEOMETRY:
+					openfl._internal.renderer.context3D.Context3DGeometry.render(cast object, this);
 				#end
 				default:
 			}

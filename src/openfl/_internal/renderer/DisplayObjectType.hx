@@ -13,5 +13,6 @@ enum DisplayObjectType
 	VIDEO;
 	#if draft
 	GL_GRAPHICS;
+	GEOMETRY;
 	#end
 }

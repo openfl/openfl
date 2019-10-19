@@ -41,6 +41,7 @@ class Main extends Sprite
 		suite.addTest(new BatcherTest());
 		#if draft
 		suite.addTest(new HWGraphicsTest1());
+		suite.addTest(new GeometryTest());
 		#end
 		addChild(suite.content);
 
