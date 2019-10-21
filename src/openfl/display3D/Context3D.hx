@@ -377,7 +377,7 @@ import lime.math.Vector2;
 			var extension = gl.getExtension("NVX_gpu_memory_info");
 			if (extension != null)
 			{
-				__glMemoryTotalAvailable = extension.GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX;
+				__glMemoryTotalAvailable = extension.GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX;
 				__glMemoryCurrentAvailable = extension.GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX;
 			}
 		}
@@ -2658,11 +2658,13 @@ import lime.math.Vector2;
 	{
 		if (__glMemoryCurrentAvailable != -1)
 		{
+			// TODO: Return amount used by this application only
 			var current = gl.getParameter(__glMemoryCurrentAvailable);
 			var total = gl.getParameter(__glMemoryTotalAvailable);
+
 			if (total > 0)
 			{
-				return total - current;
+				return (total - current) * 1024;
 			}
 		}
 		return 0;
