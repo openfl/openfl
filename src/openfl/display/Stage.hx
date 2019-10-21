@@ -1240,6 +1240,13 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			__renderer.__stage = this;
 
 			__renderer.__resize(windowWidth, windowHeight);
+
+			if (BitmapData.__hardwareRenderer != null)
+			{
+				BitmapData.__hardwareRenderer.__stage = this;
+				BitmapData.__hardwareRenderer.__worldTransform = __displayMatrix.clone();
+				BitmapData.__hardwareRenderer.__resize(windowWidth, windowHeight);
+			}
 		}
 		#end
 	}

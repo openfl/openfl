@@ -486,7 +486,9 @@ class Context3DRenderer extends Context3DRendererAPI
 		var cacheRTTAntiAlias = context.__state.renderToTextureAntiAlias;
 		var cacheRTTSurfaceSelector = context.__state.renderToTextureSurfaceSelector;
 
+		var prevRenderTarget = __defaultRenderTarget;
 		context.setRenderToTexture(bitmapData.getTexture(context), true);
+		__setRenderTarget(bitmapData);
 
 		__render(source);
 
@@ -498,6 +500,8 @@ class Context3DRenderer extends Context3DRendererAPI
 		{
 			context.setRenderToBackBuffer();
 		}
+
+		__setRenderTarget(prevRenderTarget);
 
 		if (clipRect != null)
 		{
