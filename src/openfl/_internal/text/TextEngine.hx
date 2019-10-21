@@ -718,7 +718,7 @@ class TextEngine
 						width = textWidth + GUTTER * 2;
 					}
 
-					height = Math.ceil(textHeight) + GUTTER * 2;
+					height = textHeight + GUTTER * 2;
 					bottomScrollV = numLines;
 
 				default:
@@ -1786,14 +1786,14 @@ class TextEngine
 			var tempHeight = 0.0;
 			var ret = scrollV;
 
-			while (ret <= lineHeights.length)
-			{
+			while (ret <= lineHeights.length) {
+				
 				if (tempHeight + lineHeights[ret - 1] <= height - GUTTER * 2)
 				{
 					tempHeight += lineHeights[ret - 1];
 				}
-				else
-					break;
+				
+				else break;
 
 				ret++;
 			}
