@@ -944,14 +944,8 @@ class BitmapData implements IBitmapDrawable
 		_colorTransform.__copyFrom(source.__worldColorTransform);
 		_colorTransform.__invert();
 
-		if (!readable && __texture != null && __hardwareRenderer != null)
+		if (!readable && __hardwareRenderer != null && getTexture(__hardwareRenderer.context3D) != null)
 		{
-			if (__textureContext == null)
-			{
-				// TODO: Some way to select current GL context for renderer?
-				__textureContext = Application.current.window.context;
-			}
-
 			if (colorTransform != null)
 			{
 				_colorTransform.__combine(colorTransform);
@@ -2304,6 +2298,13 @@ class BitmapData implements IBitmapDrawable
 	@:dox(hide) public function getTexture(context:Context3D):TextureBase
 	{
 		if (!__isValid) return null;
+
+		if (!readable && image == null && (__texture == null || __textureContext != context.__context))
+		{
+			__textureContext = null;
+			__texture = null;
+			return null;
+		}
 
 		if (__texture == null || __textureContext != context.__context)
 		{
