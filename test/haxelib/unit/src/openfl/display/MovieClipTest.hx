@@ -84,7 +84,7 @@ class MovieClipTest
 		Assert.areEqual(1, clip.totalFrames);
 		#else
 		Assert.areEqual(1, clip.currentFrame);
-		Assert.areEqual(0, clip.totalFrames);
+		Assert.areEqual(1, clip.totalFrames);
 		#end
 
 		Assert.areEqual(0, clip.currentLabels.length);
