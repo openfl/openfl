@@ -2366,7 +2366,10 @@ import lime.math.Vector2;
 				else
 				{
 					__bindGLTexture2D(null);
-					gl.uniform1i(__state.program.__agalAlphaSamplerEnabled[sampler].location, 0);
+					if (__state.program.__agalAlphaSamplerEnabled[sampler] != null)
+					{
+						gl.uniform1i(__state.program.__agalAlphaSamplerEnabled[sampler].location, 0);
+					}
 				}
 			}
 
