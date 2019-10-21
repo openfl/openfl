@@ -719,7 +719,7 @@ class TextEngine
 					}
 
 					height = textHeight + GUTTER * 2;
-					bottomScrollV = numLines;
+				// bottomScrollV = numLines;
 
 				default:
 			}
@@ -1761,7 +1761,7 @@ class TextEngine
 			numLines = 1;
 			maxScrollH = 0;
 			maxScrollV = 1;
-			bottomScrollV = 1;
+			// bottomScrollV = 1;
 		}
 		else
 		{
@@ -1786,14 +1786,16 @@ class TextEngine
 			var tempHeight = 0.0;
 			var ret = scrollV;
 
-			while (ret <= lineHeights.length) {
-				
-				if (tempHeight + lineHeights[ret - 1] <= height - GUTTER * 2)
+			while (ret <= lineHeights.length)
+			{
+				if (tempHeight + lineHeights[ret - 1] <= Math.ceil(height - GUTTER * 2))
 				{
 					tempHeight += lineHeights[ret - 1];
 				}
-				
-				else break;
+				else
+				{
+					break;
+				}
 
 				ret++;
 			}
