@@ -28,6 +28,12 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 	#end
 	public function new();
 	public function addFrameScript(index:Int, method:Void->Void):Void;
+	public static inline function fromTimeline(timeline:Timeline):MovieClip
+	{
+		var movieClip = new MovieClip2();
+		movieClip.attachTimeline(timeline);
+		return movieClip;
+	}
 	public function gotoAndPlay(frame:Object, scene:String = null):Void;
 	public function gotoAndStop(frame:Object, scene:String = null):Void;
 	public function nextFrame():Void;
@@ -76,10 +82,14 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 		FlashRenderer.register(this);
 	}
 
-	private function __fromTimeline(timeline:ITimeline):Void
+	public function attachTimeline(timeline:Timeline):Void
 	{
-		// TODO: Support timeline playback
 		__timeline = timeline;
+		if (timeline != null)
+		{
+			timeline.__attachMovieClip(this);
+			play();
+		}
 	}
 
 	// public override function addFrameScript(index:Int, method:Void->Void):Void
@@ -125,14 +135,6 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 	public override function stop():Void
 	{
 		if (__timeline != null) __timeline.__stop();
-	}
-
-	@:noCompletion private function __fromTimeline(timeline:Timeline):Void
-	{
-		__timeline = timeline;
-		timeline.__scope = this;
-		timeline.attachMovieClip(this);
-		play();
 	}
 
 	@:noCompletion private function __renderFlash():Void

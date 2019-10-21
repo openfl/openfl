@@ -216,6 +216,14 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		}
 	}
 
+	/**
+		Attaches a Timeline object to the current movie clip.
+
+		A movie clip with a timeline will support additional movie clip features
+		such as `play()`, `gotoAndPlay()`, `stop()` and `prevFrame()`.
+
+		@param	timeline	The Timeline to attach to this MovieClip
+	**/
 	public function attachTimeline(timeline:Timeline):Void
 	{
 		__timeline = timeline;
@@ -224,6 +232,19 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 			timeline.__attachMovieClip(this);
 			play();
 		}
+	}
+
+	/**
+		Creates a new MovieClip instance from a Timeline.
+
+		@param	timeline	A Timeline instance
+		@returns	A MovieClip attached to the Timeline
+	**/
+	public static function fromTimeline(timeline:Timeline):MovieClip
+	{
+		var movieClip = new MovieClip();
+		movieClip.attachTimeline(timeline);
+		return movieClip;
 	}
 
 	/**

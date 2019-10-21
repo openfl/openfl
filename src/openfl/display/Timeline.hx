@@ -71,6 +71,8 @@ class Timeline
 
 		This is an abstract method, so it should be overridden with an implementation
 		in child classes.
+
+		@param	movieClip	The parent MovieClip being attached to this Timeline
 	**/
 	@:noCompletion public function attachMovieClip(movieClip:MovieClip):Void {}
 
@@ -79,6 +81,12 @@ class Timeline
 
 		This is an abstract method, so it should be overridden with an implementation
 		in child classes.
+
+		Do not rely on this method being called for every sequential frame. Due to
+		frame rate as well as default looping at the end of timelines, the `frame`
+		value represents only the current frame required.
+
+		@param	frame	The current frame
 	**/
 	@:noCompletion public function enterFrame(frame:Int):Void {}
 
