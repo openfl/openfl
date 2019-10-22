@@ -1306,8 +1306,8 @@ class Context3DRenderer extends Context3DRendererAPI
 		__width = width;
 		__height = height;
 
-		var w = (__defaultRenderTarget == null) ? __stage.stageWidth : __defaultRenderTarget.width;
-		var h = (__defaultRenderTarget == null) ? __stage.stageHeight : __defaultRenderTarget.height;
+		var w = (__defaultRenderTarget == null) ? __stage.stageWidth : __defaultRenderTarget.__textureWidth;
+		var h = (__defaultRenderTarget == null) ? __stage.stageHeight : __defaultRenderTarget.__textureHeight;
 
 		__offsetX = __defaultRenderTarget == null ? Math.round(__worldTransform.__transformX(0, 0)) : 0;
 		__offsetY = __defaultRenderTarget == null ? Math.round(__worldTransform.__transformY(0, 0)) : 0;
