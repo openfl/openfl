@@ -137,6 +137,9 @@ class BatchRenderer
 	public function pushQuad(bitmapData:BitmapData, blendMode:BlendMode, alpha:Float, colorTransform:ColorTransform = null)
 	{
 		var terminateBatch:Bool = __batch.numQuads >= __maxQuads || __batch.blendMode != blendMode;
+		#if (disable_batcher || openfl_disable_batcher)
+		terminateBatch = true;
+		#end
 		if (terminateBatch)
 		{
 			flush();
