@@ -154,7 +154,14 @@ class Context3DTilemap
 
 				renderer.batcher.setVertices(tileTransform, 0, 0, tileWidth, tileHeight);
 				renderer.batcher.setUvs(uvX, uvY, uvWidth, uvHeight);
-				renderer.batcher.pushQuad(bitmapData, tilemap.__worldBlendMode, alpha, colorTransform);
+
+				var blendMode = tilemap.__worldBlendMode;
+				if (tilemap.tileBlendModeEnabled)
+				{
+					blendMode = (tile.__blendMode != null) ? tile.__blendMode : blendMode;
+				}
+
+				renderer.batcher.pushQuad(bitmapData, blendMode, alpha, colorTransform);
 			}
 		}
 
