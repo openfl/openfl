@@ -764,9 +764,6 @@ class Context3DRenderer extends Context3DRendererAPI
 		if (__numClipRects > 0)
 		{
 			__numClipRects--;
-
-			batcher.flush();
-
 			if (__numClipRects > 0)
 			{
 				__scissorRect(__clipRects[__numClipRects - 1]);
@@ -872,8 +869,6 @@ class Context3DRenderer extends Context3DRendererAPI
 		}
 
 		Matrix.__pool.release(_matrix);
-
-		batcher.flush();
 
 		__scissorRect(clipRect);
 		__numClipRects++;
@@ -990,6 +985,8 @@ class Context3DRenderer extends Context3DRendererAPI
 
 			object.__mask = cacheMask;
 			object.__scrollRect = cacheScrollRect;
+
+			context3D.setScissorRectangle(null);
 		}
 
 		context3D.present();
@@ -1343,6 +1340,8 @@ class Context3DRenderer extends Context3DRendererAPI
 
 	private function __scissorRect(clipRect:Rectangle = null):Void
 	{
+		batcher.flush();
+
 		if (clipRect != null)
 		{
 			var x = Math.floor(clipRect.x);
