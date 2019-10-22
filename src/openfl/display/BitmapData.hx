@@ -2307,7 +2307,7 @@ class BitmapData implements IBitmapDrawable
 		if (__texture == null || __textureContext != context.__context)
 		{
 			__textureContext = context.__context;
-			__texture = context.createRectangleTexture(width, height, BGRA, false);
+			__texture = context.createRectangleTexture(__textureWidth, __textureHeight, BGRA, false);
 
 			// context.__bindGLTexture2D (__texture);
 			// gl.texParameteri (gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
