@@ -11,6 +11,7 @@ enum DisplayObjectType
 	TEXTFIELD;
 	TILEMAP;
 	VIDEO;
+	CUSTOM_RENDER_OBJECT;
 	#if draft
 	GL_GRAPHICS;
 	GEOMETRY;
