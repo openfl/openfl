@@ -1831,7 +1831,7 @@ class TextEngine
 
 			while (ret <= lineHeights.length)
 			{
-				if (tempHeight + lineHeights[ret - 1] <= Math.ceil(height - GUTTER * 2))
+				if (tempHeight + lineHeights[ret - 1] <= Math.ceil(height - GUTTER))
 				{
 					tempHeight += lineHeights[ret - 1];
 				}
