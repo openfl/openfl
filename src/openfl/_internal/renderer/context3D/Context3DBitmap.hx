@@ -113,6 +113,7 @@ class Context3DBitmap
 
 		if (bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid)
 		{
+			renderer.batcher.flush();
 			// var alphaMask = (bitmap.mask != null && bitmap.mask.cacheAsBitmap);
 			// if (!alphaMask) renderer.__pushMaskObject(bitmap);
 
