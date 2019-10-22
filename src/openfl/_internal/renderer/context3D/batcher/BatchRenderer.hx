@@ -178,8 +178,8 @@ class BatchRenderer
 
 		var context = renderer.context3D;
 
+		context.__flushGL();
 		context.setCulling(NONE);
-		context.setScissorRectangle(null);
 		renderer.__setBlendMode(__batch.blendMode);
 
 		context.__bindGLArrayBuffer(__vertexBuffer.__id);
