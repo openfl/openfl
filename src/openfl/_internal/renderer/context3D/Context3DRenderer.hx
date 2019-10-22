@@ -1006,7 +1006,7 @@ class Context3DRenderer extends Context3DRendererAPI
 
 		if (bitmap.__cacheBitmap != null && !bitmap.__isCacheBitmapRender)
 		{
-			Context3DBitmap.render(bitmap.__cacheBitmap, this);
+			Context3DBitmap.render2(bitmap.__cacheBitmap, this);
 		}
 		else
 		{
@@ -1108,7 +1108,7 @@ class Context3DRenderer extends Context3DRendererAPI
 
 		if (container.__cacheBitmap != null && !container.__isCacheBitmapRender)
 		{
-			Context3DBitmap.render(container.__cacheBitmap, this);
+			Context3DBitmap.render2(container.__cacheBitmap, this);
 		}
 		else
 		{
@@ -1249,7 +1249,7 @@ class Context3DRenderer extends Context3DRendererAPI
 
 		if (shape.__cacheBitmap != null && !shape.__isCacheBitmapRender)
 		{
-			Context3DBitmap.render(shape.__cacheBitmap, this);
+			Context3DBitmap.render2(shape.__cacheBitmap, this);
 		}
 		else
 		{
@@ -1272,7 +1272,7 @@ class Context3DRenderer extends Context3DRendererAPI
 
 		if (textField.__cacheBitmap != null && !textField.__isCacheBitmapRender)
 		{
-			Context3DBitmap.render(textField.__cacheBitmap, this);
+			Context3DBitmap.render2(textField.__cacheBitmap, this);
 		}
 		else
 		{
@@ -1287,7 +1287,7 @@ class Context3DRenderer extends Context3DRendererAPI
 
 		if (tilemap.__cacheBitmap != null && !tilemap.__isCacheBitmapRender)
 		{
-			Context3DBitmap.render(tilemap.__cacheBitmap, this);
+			Context3DBitmap.render2(tilemap.__cacheBitmap, this);
 		}
 		else
 		{
