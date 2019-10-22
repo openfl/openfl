@@ -958,8 +958,6 @@ class BitmapData implements IBitmapDrawable
 			__hardwareRenderer.__worldAlpha = 1 / source.__worldAlpha;
 			__hardwareRenderer.__worldColorTransform = _colorTransform;
 
-			__hardwareRenderer.__resize(width, height);
-
 			__hardwareRenderer.__drawBitmapData(this, source, clipRect);
 		}
 		else
