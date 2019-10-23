@@ -339,15 +339,6 @@ class Bitmap extends DisplayObject
 		return __bitmapData;
 	}
 
-	@:noCompletion private override function get_height():Float
-	{
-		if (__bitmapData != null)
-		{
-			return __bitmapData.height * Math.abs(scaleY);
-		}
-		return 0;
-	}
-
 	@:noCompletion private override function set_height(value:Float):Float
 	{
 		if (__bitmapData != null)
@@ -359,15 +350,6 @@ class Bitmap extends DisplayObject
 			scaleY = 0;
 		}
 		return value;
-	}
-
-	@:noCompletion private override function get_width():Float
-	{
-		if (__bitmapData != null)
-		{
-			return __bitmapData.width * Math.abs(__scaleX);
-		}
-		return 0;
 	}
 
 	@:noCompletion private override function set_width(value:Float):Float
