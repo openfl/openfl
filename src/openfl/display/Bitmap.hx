@@ -138,16 +138,19 @@ class Bitmap extends DisplayObject
 
 	@:noCompletion private override function __getBounds(rect:Rectangle, matrix:Matrix):Void
 	{
+		var bounds = Rectangle.__pool.get();
 		if (__bitmapData != null)
 		{
-			var bounds = Rectangle.__pool.get();
 			bounds.setTo(0, 0, __bitmapData.width, __bitmapData.height);
-			bounds.__transform(bounds, matrix);
-
-			rect.__expand(bounds.x, bounds.y, bounds.width, bounds.height);
-
-			Rectangle.__pool.release(bounds);
 		}
+		else
+		{
+			bounds.setTo(0, 0, 0, 0);
+		}
+
+		bounds.__transform(bounds, matrix);
+		rect.__expand(bounds.x, bounds.y, bounds.width, bounds.height);
+		Rectangle.__pool.release(bounds);
 	}
 
 	@:noCompletion private override function __hitTest(x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool,
@@ -343,7 +346,7 @@ class Bitmap extends DisplayObject
 	{
 		if (__bitmapData != null)
 		{
-			scaleY = value / __bitmapData.height;
+			scaleY = value / get_height();
 		}
 		else
 		{
@@ -356,7 +359,7 @@ class Bitmap extends DisplayObject
 	{
 		if (__bitmapData != null)
 		{
-			scaleX = value / __bitmapData.width;
+			scaleX = value / get_width();
 		}
 		else
 		{
