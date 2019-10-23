@@ -115,7 +115,9 @@ private class GeomShader extends Shader
 	public function new()
 	{
 		super();
+		#if !macro
 		data.uColorMultiplier.value = [1, 1, 1, 1];
 		data.uColorOffset.value = [1, 1, 1, 1];
+		#end
 	}
 }

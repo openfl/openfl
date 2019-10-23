@@ -70,7 +70,9 @@ class BatchRenderer
 		__indexBuffer = context.createIndexBuffer(__maxQuads * 6, STATIC_DRAW);
 		__indexBuffer.uploadFromTypedArray(__createIndicesForQuads(__maxQuads));
 
+		#if !macro
 		__shader.aTextureId.__useArray = true;
+		#end
 		__samplers = [for (i in 0...__maxTextures) Reflect.field(__shader.data, "uSampler" + i)];
 	}
 
@@ -208,7 +210,9 @@ class BatchRenderer
 		context.setVertexBufferAt(__shader.__textureCoord.index, __vertexBuffer, 2, FLOAT_2);
 		context.setVertexBufferAt(__shader.__colorMultiplier.index, __vertexBuffer, 4, FLOAT_4);
 		context.setVertexBufferAt(__shader.__colorOffset.index, __vertexBuffer, 8, FLOAT_4);
+		#if !macro
 		context.setVertexBufferAt(__shader.aTextureId.index, __vertexBuffer, 12, FLOAT_1);
+		#end
 
 		context.drawTriangles(__indexBuffer, 0, __batch.numQuads * 2);
 
