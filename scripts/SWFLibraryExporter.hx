@@ -63,12 +63,28 @@ class SWFLibraryExporter
 	private var manifestData:AssetManifest;
 	private var outputList:List<Entry>;
 	private var swfData:SWFRoot;
+	private var symbolClasses:Array<TagSymbolClass>;
+	private var symbolClassesByTagID:Map<Int, TagSymbolClass>;
 	private var targetPath:String;
 
 	public function new(swfData:SWFRoot, targetPath:String)
 	{
 		this.swfData = swfData;
 		this.targetPath = targetPath;
+
+		symbolClasses = [];
+		symbolClassesByTagID = new Map();
+
+		var symbolClass:TagSymbolClass;
+		for (tag in swfData.tags)
+		{
+			if (Std.is(tag, TagSymbolClass))
+			{
+				symbolClass = cast tag;
+				symbolClasses.push(symbolClass);
+				symbolClassesByTagID.set(symbolClass, symbolClass.tagId);
+			}
+		}
 
 		manifestData = new AssetManifest();
 		libraryData = new SWFDocument();
@@ -85,14 +101,11 @@ class SWFLibraryExporter
 		libraryData.frameRate = swfData.frameRate;
 		addSprite(swfData, true);
 
-		for (tag in swfData.tags)
+		for (symbolClass in symbolClasses)
 		{
-			if (Std.is(tag, TagSymbolClass))
+			for (symbol in symbolClass.symbols)
 			{
-				for (symbol in cast(tag, TagSymbolClass).symbols)
-				{
-					processSymbol(symbol);
-				}
+				processSymbol(symbol);
 			}
 		}
 
@@ -795,31 +808,18 @@ class SWFLibraryExporter
 		var scripts = null;
 		var found = false;
 
-		// TODO: Less looping
-		for (tag in swfData.tags)
+		var symbolClass = symbolClassesByTagID.get(symbol.id);
+		if (symbolClass != null)
 		{
-			if (Std.is(tag, TagSymbolClass))
+			var scripts = FrameScriptParser.convertToJS(swfData, symbolClass.name);
+			if (scripts != null)
 			{
-				for (classSymbol in cast(tag, TagSymbolClass).symbols)
+				for (i in 0...scripts.length)
 				{
-					if (classSymbol.tagId == symbol.id || (root && ~/_fla\.MainTimeline$/.match(classSymbol.name)))
+					if (scripts[i] != null && symbol.frames[i] != null)
 					{
-						scripts = FrameScriptParser.convertToJS(swfData, classSymbol.name);
-						found = true;
-						break;
+						symbol.frames[i].scriptSource = scripts[i];
 					}
-				}
-			}
-			if (found) break;
-		}
-
-		if (scripts != null)
-		{
-			for (i in 0...scripts.length)
-			{
-				if (scripts[i] != null && symbol.frames[i] != null)
-				{
-					symbol.frames[i].scriptSource = scripts[i];
 				}
 			}
 		}
