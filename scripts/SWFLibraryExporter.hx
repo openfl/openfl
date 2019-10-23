@@ -6,6 +6,7 @@ import format.swf.data.consts.BitmapFormat;
 import format.swf.data.consts.BlendMode;
 import format.swf.data.filters.IFilter;
 import format.swf.data.SWFButtonRecord;
+import format.swf.data.SWFSymbol;
 import format.swf.exporters.ShapeBitmapExporter;
 import format.swf.exporters.ShapeCommandExporter;
 import format.swf.tags.IDefinitionTag;
@@ -63,8 +64,8 @@ class SWFLibraryExporter
 	private var manifestData:AssetManifest;
 	private var outputList:List<Entry>;
 	private var swfData:SWFRoot;
-	private var symbolClasses:Array<TagSymbolClass>;
-	private var symbolClassesByTagID:Map<Int, TagSymbolClass>;
+	private var symbols:Array<SWFSymbol>;
+	private var symbolsByTagID:Map<Int, SWFSymbol>;
 	private var targetPath:String;
 
 	public function new(swfData:SWFRoot, targetPath:String)
@@ -72,17 +73,18 @@ class SWFLibraryExporter
 		this.swfData = swfData;
 		this.targetPath = targetPath;
 
-		symbolClasses = [];
-		symbolClassesByTagID = new Map();
+		symbols = [];
+		symbolsByTagID = new Map();
 
-		var symbolClass:TagSymbolClass;
 		for (tag in swfData.tags)
 		{
 			if (Std.is(tag, TagSymbolClass))
 			{
-				symbolClass = cast tag;
-				symbolClasses.push(symbolClass);
-				symbolClassesByTagID.set(symbolClass, symbolClass.tagId);
+				for (symbol in cast(tag, TagSymbolClass).symbols)
+				{
+					symbols.push(symbol);
+					symbolsByTagID.set(symbol.tagId, symbol);
+				}
 			}
 		}
 
@@ -101,12 +103,9 @@ class SWFLibraryExporter
 		libraryData.frameRate = swfData.frameRate;
 		addSprite(swfData, true);
 
-		for (symbolClass in symbolClasses)
+		for (symbol in symbols)
 		{
-			for (symbol in symbolClass.symbols)
-			{
-				processSymbol(symbol);
-			}
+			processSymbol(symbol);
 		}
 
 		// TODO: Compressed
@@ -808,10 +807,10 @@ class SWFLibraryExporter
 		var scripts = null;
 		var found = false;
 
-		var symbolClass = symbolClassesByTagID.get(symbol.id);
-		if (symbolClass != null)
+		var swfSymbol = symbolsByTagID.get(symbol.id);
+		if (swfSymbol != null)
 		{
-			var scripts = FrameScriptParser.convertToJS(swfData, symbolClass.name);
+			var scripts = FrameScriptParser.convertToJS(swfData, swfSymbol.name);
 			if (scripts != null)
 			{
 				for (i in 0...scripts.length)
