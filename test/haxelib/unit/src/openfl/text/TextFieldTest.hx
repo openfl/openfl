@@ -526,11 +526,12 @@ class TextFieldTest
 
 	@Test public function setTextFormat()
 	{
-		// TODO: Confirm functionality
-
 		var textField = new TextField();
-		var exists = textField.setTextFormat;
+		textField.htmlText = "<font color='#FF0000'>Hello</font> - World\n<font color='#00FF00'>Goodbye </font>- World";
+		var textFormat = textField.getTextFormat();
+		textField.setTextFormat(textFormat);
 
-		Assert.isNotNull(exists);
+		var check = textField.getTextFormat(0, 4);
+		Assert.areEqual(0xFF0000, check.color);
 	}
 }

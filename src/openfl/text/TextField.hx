@@ -1457,124 +1457,56 @@ class TextField extends InteractiveObject
 		if (beginIndex == 0 && endIndex >= max)
 		{
 			// set text format for the whole textfield
-
 			__textFormat.__merge(format);
 
 			for (i in 0...__textEngine.textFormatRanges.length)
 			{
 				range = __textEngine.textFormatRanges[i];
-				range.format.__merge(__textFormat);
+				range.format.__merge(format);
 			}
 		}
 		else
 		{
-			var index = __textEngine.textFormatRanges.length;
-			var searchIndex;
+			var index = 0;
+			var newRange;
 
-			while (index > 0)
+			while (index < __textEngine.textFormatRanges.length)
 			{
-				index--;
 				range = __textEngine.textFormatRanges[index];
 
 				if (range.start == beginIndex && range.end == endIndex)
 				{
-					// the new incoming text format range matches an existing range exactly, just replace it
-
-					range.format = __textFormat.clone();
+					// set format range matches an existing range exactly
 					range.format.__merge(format);
-
-					__dirty = true;
-					__layoutDirty = true;
-					__setRenderDirty();
-
-					return;
+					break;
 				}
-
-				if (range.start >= beginIndex && range.end <= endIndex)
+				else if (range.start >= beginIndex && range.end <= endIndex)
 				{
-					// the new incoming text format range completely encompasses this existing range, let's remove it
-
-					searchIndex = __textEngine.textFormatRanges.indexOf(range);
-
-					if (searchIndex > -1)
-					{
-						__textEngine.textFormatRanges.splice(searchIndex, 1);
-					}
+					// set format range completely encompasses this existing range
+					range.format.__merge(format);
 				}
-			}
-
-			var prevRange = null, nextRange = null;
-
-			// find the ranges before and after the new incoming range
-
-			if (beginIndex > 0)
-			{
-				for (i in 0...__textEngine.textFormatRanges.length)
+				else if (range.start >= beginIndex && range.start < endIndex && range.end > beginIndex)
 				{
-					range = __textEngine.textFormatRanges[i];
-
-					if (range.end >= beginIndex)
-					{
-						prevRange = range;
-
-						break;
-					}
+					// set format range is within the first part of the range
+					newRange = new TextFormatRange(range.format.clone(), range.start, endIndex);
+					newRange.format.__merge(format);
+					__textEngine.textFormatRanges.insertAt(index, newRange);
+					range.start = endIndex;
+					index++;
 				}
-			}
-
-			if (endIndex < max)
-			{
-				var ni = __textEngine.textFormatRanges.length;
-
-				while (--ni >= 0)
+				else if (range.start < beginIndex && range.end > beginIndex && range.end >= endIndex)
 				{
-					range = __textEngine.textFormatRanges[ni];
-
-					if (range.start <= endIndex)
-					{
-						nextRange = range;
-
-						break;
-					}
-				}
-			}
-
-			if (nextRange == prevRange)
-			{
-				// the new incoming text format range is completely within this existing range, let's divide it up
-
-				nextRange = new TextFormatRange(nextRange.format.clone(), nextRange.start, nextRange.end);
-				__textEngine.textFormatRanges.push(nextRange);
-			}
-
-			if (prevRange != null)
-			{
-				prevRange.end = beginIndex;
-			}
-
-			if (nextRange != null)
-			{
-				nextRange.start = endIndex;
-			}
-
-			var textFormat = __textFormat.clone();
-			textFormat.__merge(format);
-
-			__textEngine.textFormatRanges.push(new TextFormatRange(textFormat, beginIndex, endIndex));
-
-			__textEngine.textFormatRanges.sort(function(a:TextFormatRange, b:TextFormatRange):Int
-			{
-				if (a.start < b.start || a.end < b.end)
-				{
-					return -1;
-				}
-				else if (a.start > b.start || a.end > b.end)
-				{
-					return 1;
+					// set format range is within the second part of the range
+					newRange = new TextFormatRange(range.format.clone(), beginIndex, range.end);
+					newRange.format.__merge(format);
+					__textEngine.textFormatRanges.insertAt(index + 1, newRange);
+					range.end = beginIndex;
+					index++;
 				}
 
-				return 0;
-			});
+				index++;
+				// TODO: Remove duplicates?
+			}
 		}
 
 		__dirty = true;
