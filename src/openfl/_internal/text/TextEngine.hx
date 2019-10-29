@@ -626,7 +626,7 @@ class TextEngine
 			}
 
 			currentLineHeight = Math.max(currentLineHeight, group.height);
-			currentLineWidth = group.offsetX - GUTTER + group.width;
+			currentLineWidth = Math.max(currentLineWidth, group.offsetX - GUTTER + group.width);
 
 			// TODO: confirm whether textWidth ignores margins, indents, etc or not
 			// currently they are not ignored, and setTextAlignment() happens to work due to this (gut feeling is that it does ignore them)
