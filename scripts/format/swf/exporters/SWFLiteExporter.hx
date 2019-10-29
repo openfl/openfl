@@ -896,185 +896,187 @@ class SWFLiteExporter
 								var js = "";
 								var prop:MultiName = null;
 								var stack:Array<Dynamic> = new Array();
-								
-								if(pcodes != null)
-								for (pcode in pcodes)
+
+								if (pcodes != null)
 								{
-									switch (pcode.opr)
+									for (pcode in pcodes)
 									{
-										case OThis:
-											stack.push("this");
-										case OScope:
-											stack.pop();
-										case OFindPropStrict(nameIndex):
-										//										prop = data.abcData.resolveMultiNameByIndex(nameIndex);
-										case OGetLex(nameIndex):
-											prop = data.abcData.resolveMultiNameByIndex(nameIndex);
+										switch (pcode.opr)
+										{
+											case OThis:
+												stack.push("this");
+											case OScope:
+												stack.pop();
+											case OFindPropStrict(nameIndex):
+											//										prop = data.abcData.resolveMultiNameByIndex(nameIndex);
+											case OGetLex(nameIndex):
+												prop = data.abcData.resolveMultiNameByIndex(nameIndex);
 
-											var fullname = "";
+												var fullname = "";
 
-											if (prop != null)
-											{
-												fullname += AVM2.getFullName(data.abcData, prop, cls);
-												stack.push(fullname);
-											}
-										case OGetProp(nameIndex):
-											var fullname = "";
-
-											prop = data.abcData.resolveMultiNameByIndex(nameIndex);
-
-											if (prop != null)
-											{
-												fullname += stack.pop() + "." + AVM2.getFullName(data.abcData, prop, cls);
-											}
-
-											Log.info("", "OGetProp fullname: " + fullname);
-
-											stack.push(fullname);
-										case OSetProp(nameIndex):
-											prop = data.abcData.resolveMultiNameByIndex(nameIndex);
-											Log.info("", "OSetProp stack: " + prop + ", " + stack);
-
-											var result = stack.pop();
-
-											var name = null;
-
-											if (prop != null)
-											{
-												if (prop.name != null)
+												if (prop != null)
 												{
-													name = "." + prop.name;
+													fullname += AVM2.getFullName(data.abcData, prop, cls);
+													stack.push(fullname);
+												}
+											case OGetProp(nameIndex):
+												var fullname = "";
+
+												prop = data.abcData.resolveMultiNameByIndex(nameIndex);
+
+												if (prop != null)
+												{
+													fullname += stack.pop() + "." + AVM2.getFullName(data.abcData, prop, cls);
+												}
+
+												Log.info("", "OGetProp fullname: " + fullname);
+
+												stack.push(fullname);
+											case OSetProp(nameIndex):
+												prop = data.abcData.resolveMultiNameByIndex(nameIndex);
+												Log.info("", "OSetProp stack: " + prop + ", " + stack);
+
+												var result = stack.pop();
+
+												var name = null;
+
+												if (prop != null)
+												{
+													if (prop.name != null)
+													{
+														name = "." + prop.name;
+													}
+													else
+													{
+														name = "[" + stack.pop() + "]";
+													}
 												}
 												else
 												{
-													name = "[" + stack.pop() + "]";
+													Log.info("", "OSetProp stack prop is null");
+													break;
 												}
-											}
-											else
-											{
-												Log.info("", "OSetProp stack prop is null");
-												break;
-											}
 
-											var instance = stack.pop();
+												var instance = stack.pop();
 
-											if (instance != "this")
-											{
-												instance = "this" + "." + instance;
-											}
+												if (instance != "this")
+												{
+													instance = "this" + "." + instance;
+												}
 
-											js += instance + name + " = " + result + ";\n";
-										case OString(strIndex):
-											var str = data.abcData.getStringByIndex(strIndex);
-											stack.push("\"" + str + "\"");
-										case OInt(i):
-											stack.push(i);
-											Log.info("", "int: " + i);
-										case OSmallInt(i):
-											stack.push(i);
-											Log.info("", "smallint: " + i);
-										case OCallPropVoid(nameIndex, argCount):
-											var temp = AVM2.parseFunctionCall(data.abcData, cls, nameIndex, argCount, stack);
+												js += instance + name + " = " + result + ";\n";
+											case OString(strIndex):
+												var str = data.abcData.getStringByIndex(strIndex);
+												stack.push("\"" + str + "\"");
+											case OInt(i):
+												stack.push(i);
+												Log.info("", "int: " + i);
+											case OSmallInt(i):
+												stack.push(i);
+												Log.info("", "smallint: " + i);
+											case OCallPropVoid(nameIndex, argCount):
+												var temp = AVM2.parseFunctionCall(data.abcData, cls, nameIndex, argCount, stack);
 
-											if (stack.length > 0)
-											{
-												js += stack.pop() + ".";
-											}
-											else
-											{
-												js += "this" + ".";
-											}
+												if (stack.length > 0)
+												{
+													js += stack.pop() + ".";
+												}
+												else
+												{
+													js += "this" + ".";
+												}
 
-											js += temp;
-											js += ";\n";
-										case OCallProperty(nameIndex, argCount):
-											Log.info("", "OCallProperty stack: " + stack);
+												js += temp;
+												js += ";\n";
+											case OCallProperty(nameIndex, argCount):
+												Log.info("", "OCallProperty stack: " + stack);
 
-											stack.pop();
-											if (prop != null)
-											{
-												stack.push(AVM2.getFullName(data.abcData, prop, cls)
-													+ "."
-													+ AVM2.parseFunctionCall(data.abcData, cls, nameIndex, argCount, stack));
-											}
-										case OConstructProperty(nameIndex, argCount):
-											Log.info("", "OConstructProperty stack: " + stack);
+												stack.pop();
+												if (prop != null)
+												{
+													stack.push(AVM2.getFullName(data.abcData, prop, cls)
+														+ "."
+														+ AVM2.parseFunctionCall(data.abcData, cls, nameIndex, argCount, stack));
+												}
+											case OConstructProperty(nameIndex, argCount):
+												Log.info("", "OConstructProperty stack: " + stack);
 
-											var temp = "new ";
-											temp += AVM2.parseFunctionCall(data.abcData, cls, nameIndex, argCount, stack);
-											stack.push(temp);
+												var temp = "new ";
+												temp += AVM2.parseFunctionCall(data.abcData, cls, nameIndex, argCount, stack);
+												stack.push(temp);
 
-											Log.info("", "OConstructProperty value: " + temp);
-										case OInitProp(nameIndex):
-											Log.info("", "OInitProp stack: " + stack);
+												Log.info("", "OConstructProperty value: " + temp);
+											case OInitProp(nameIndex):
+												Log.info("", "OInitProp stack: " + stack);
 
-											prop = data.abcData.resolveMultiNameByIndex(nameIndex);
+												prop = data.abcData.resolveMultiNameByIndex(nameIndex);
 
-											var temp = stack.pop();
-
-											js += stack.pop() + "." + prop.name + " = " + Std.string(temp) + ";\n";
-										case ODup:
-											stack.push(stack[stack.length - 1]);
-										case OArray(argCount):
-											Log.info("", "before array: " + stack);
-
-											var str = "";
-											var temp = [];
-											for (i in 0...argCount)
-											{
-												temp.push(stack.pop());
-											}
-											temp.reverse();
-											stack.push(temp);
-
-											Log.info("", "after array: " + stack);
-										case ORetVoid:
-										case ONull:
-											stack.push(null);
-										case OOp(op):
-											var _operator = null;
-											switch (op)
-											{
-												case OpMul:
-													_operator = "*";
-												case OpAdd:
-													_operator = "+";
-												case _:
-													Log.info("", "OOp");
-											}
-
-											if (op == OpAs)
-											{
-												Log.info("", "cast to " + stack.pop() + " is discarded");
-											}
-
-											if (_operator != null)
-											{
 												var temp = stack.pop();
-												stack.push(Std.string(stack.pop()) + " " + _operator + " " + Std.string(temp));
-											}
-										case OJump(j, delta):
-											switch (j)
-											{
-												case JNeq:
-													// Log.info("", stack[0]);
+
+												js += stack.pop() + "." + prop.name + " = " + Std.string(temp) + ";\n";
+											case ODup:
+												stack.push(stack[stack.length - 1]);
+											case OArray(argCount):
+												Log.info("", "before array: " + stack);
+
+												var str = "";
+												var temp = [];
+												for (i in 0...argCount)
+												{
+													temp.push(stack.pop());
+												}
+												temp.reverse();
+												stack.push(temp);
+
+												Log.info("", "after array: " + stack);
+											case ORetVoid:
+											case ONull:
+												stack.push(null);
+											case OOp(op):
+												var _operator = null;
+												switch (op)
+												{
+													case OpMul:
+														_operator = "*";
+													case OpAdd:
+														_operator = "+";
+													case _:
+														Log.info("", "OOp");
+												}
+
+												if (op == OpAs)
+												{
+													Log.info("", "cast to " + stack.pop() + " is discarded");
+												}
+
+												if (_operator != null)
+												{
 													var temp = stack.pop();
-													js += "if (" + Std.string(stack.pop()) + " == " + Std.string(temp) + ")\n";
-												case JAlways:
-													js += "else\n";
-													Log.info("", Std.string(delta));
-												case JFalse:
-													js += "if (" + Std.string(stack.pop()) + ")\n";
-												case _:
-													Log.info("", "OJump");
-											}
-										case OTrue:
-											stack.push(true);
-										case OFalse:
-											stack.push(false);
-										case _:
-											// TODO: throw() on unsupported pcodes
-											Log.info("", "pcode " + pcode);
+													stack.push(Std.string(stack.pop()) + " " + _operator + " " + Std.string(temp));
+												}
+											case OJump(j, delta):
+												switch (j)
+												{
+													case JNeq:
+														// Log.info("", stack[0]);
+														var temp = stack.pop();
+														js += "if (" + Std.string(stack.pop()) + " == " + Std.string(temp) + ")\n";
+													case JAlways:
+														js += "else\n";
+														Log.info("", Std.string(delta));
+													case JFalse:
+														js += "if (" + Std.string(stack.pop()) + ")\n";
+													case _:
+														Log.info("", "OJump");
+												}
+											case OTrue:
+												stack.push(true);
+											case OFalse:
+												stack.push(false);
+											case _:
+												// TODO: throw() on unsupported pcodes
+												Log.info("", "pcode " + pcode);
+										}
 									}
 								}
 								Log.info("", "javascript:\n" + js);

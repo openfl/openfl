@@ -1,5 +1,6 @@
-package test; #if draft
+package test;
 
+#if draft
 import haxe.Timer;
 import openfl.display.Sprite;
 import openfl.display.Geometry;

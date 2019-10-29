@@ -105,7 +105,7 @@ class BitmapDataPool
 			return new BitmapData(width, height, true, 0);
 		}
 	}
-	
+
 	private inline function __powerOfTwo(value:Int):Int
 	{
 		var newValue = 1;

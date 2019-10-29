@@ -433,10 +433,10 @@ class Stage3D extends EventDispatcher
 			// }
 		}
 		#end
-		else
-		{
-			__dispatchError();
-		}
+	else
+	{
+		__dispatchError();
+	}
 	}
 
 	@:noCompletion private function __dispatchError():Void

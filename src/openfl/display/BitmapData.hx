@@ -1224,7 +1224,7 @@ class BitmapData implements IBitmapDrawable
 	/**
 		Creates a new BitmapData instance from Base64-encoded data synchronously. This means
 		that the BitmapData will be returned immediately (if supported).
-		
+
 		HTML5 and Flash do not support creating BitmapData synchronously, so these targets
 		always return `null`. Other targets will return `null` if decoding was unsuccessful.
 

@@ -239,7 +239,7 @@ class CanvasTextField
 								if (selectionEnd >= group.endIndex)
 								{
 									end = textField.getCharBoundaries(group.endIndex - 1);
-									
+
 									if (end != null)
 									{
 										end.x += end.width + 2;

@@ -64,10 +64,8 @@ extern class TouchEvent extends Event
 	public var touchPointID:Int;
 	public function new(type:String, bubbles:Bool = true, cancelable:Bool = false, touchPointID:Int = 0, isPrimaryTouchPoint:Bool = false, localX:Float = 0,
 		localY:Float = 0, sizeX:Float = 0, sizeY:Float = 0, pressure:Float = 0, relatedObject:InteractiveObject = null, ctrlKey:Bool = false,
-		altKey:Bool = false, shiftKey:Bool = false, commandKey:Bool = false, controlKey:Bool = false, timestamp:Float = 0, touchIntent:String = null,
-		samples:ByteArray = null, isTouchPointCanceled:Bool = false
-		#if air, commandKey:Bool = false, controlKey:Bool = false, ?timestamp:Float, ?touchIntent:TouchEventIntent, ?samples:flash.utils.ByteArray,
-		isTouchPointCanceled:Bool = false #end);
+		altKey:Bool = false, shiftKey:Bool = false, commandKey:Bool = false, controlKey:Bool = false, timestamp:Float = 0,
+		touchIntent:#if air TouchEventIntent #else String #end = null, samples:ByteArray = null, isTouchPointCanceled:Bool = false);
 	public override function clone():TouchEvent;
 	#if air
 	public function getSamples(buffer:ByteArray, append:Bool = false):Int;

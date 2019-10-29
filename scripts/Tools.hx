@@ -242,8 +242,7 @@ class Tools
 					switch (superClassData.nameSpace)
 					{
 						case NPublic(_) if (!~/^flash\./.match(superClassData.nameSpaceName)):
-							baseClassName = ("" == superClassData.nameSpaceName ? "" : superClassData.nameSpaceName + ".")
-								+ superClassData.name;
+							baseClassName = ("" == superClassData.nameSpaceName ? "" : superClassData.nameSpaceName + ".") + superClassData.name;
 						case _:
 					}
 				}
@@ -322,17 +321,16 @@ class Tools
 					}
 				}
 
-				var context =
-					{
-						PACKAGE_NAME: packageName,
-						NATIVE_CLASS_NAME: StringTools.trim(className),
-						CLASS_NAME: name,
-						BASE_CLASS_NAME: baseClassName,
-						SWF_ID: swfAsset.id,
-						SYMBOL_ID: symbolID,
-						PREFIX: "",
-						CLASS_PROPERTIES: classProperties
-					};
+				var context = {
+					PACKAGE_NAME: packageName,
+					NATIVE_CLASS_NAME: StringTools.trim(className),
+					CLASS_NAME: name,
+					BASE_CLASS_NAME: baseClassName,
+					SWF_ID: swfAsset.id,
+					SYMBOL_ID: symbolID,
+					PREFIX: "",
+					CLASS_PROPERTIES: classProperties
+				};
 				var template = new Template(templateData);
 				var targetPath;
 
@@ -346,11 +344,7 @@ class Tools
 
 				// }
 
-				var templateFile = new Asset("", Path.combine(targetPath, Path.directory(className.split(".").join("/")))
-					+ "/"
-					+ prefix
-					+ name
-					+ ".hx",
+				var templateFile = new Asset("", Path.combine(targetPath, Path.directory(className.split(".").join("/"))) + "/" + prefix + name + ".hx",
 					AssetType.TEMPLATE);
 				templateFile.data = template.execute(context);
 				output.assets.push(templateFile);
@@ -495,23 +489,19 @@ class Tools
 					}
 				}
 
-				var context =
-					{
-						PACKAGE_NAME: packageName,
-						NATIVE_CLASS_NAME: className,
-						CLASS_NAME: name,
-						BASE_CLASS_NAME: baseClassName,
-						SWF_ID: swfID,
-						SYMBOL_ID: symbolID,
-						PREFIX: "",
-						CLASS_PROPERTIES: classProperties
-					};
+				var context = {
+					PACKAGE_NAME: packageName,
+					NATIVE_CLASS_NAME: className,
+					CLASS_NAME: name,
+					BASE_CLASS_NAME: baseClassName,
+					SWF_ID: swfID,
+					SYMBOL_ID: symbolID,
+					PREFIX: "",
+					CLASS_PROPERTIES: classProperties
+				};
 				var template = new Template(templateData);
 
-				var templateFile = new Asset("", Path.combine(targetPath, Path.directory(symbol.className.split(".").join("/")))
-					+ "/"
-					+ name
-					+ ".hx",
+				var templateFile = new Asset("", Path.combine(targetPath, Path.directory(symbol.className.split(".").join("/"))) + "/" + name + ".hx",
 					AssetType.TEMPLATE);
 				templateFile.data = template.execute(context);
 				output.push(templateFile);
