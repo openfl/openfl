@@ -1185,19 +1185,15 @@ class BitmapData implements IBitmapDrawable
 
 	#if (!openfl_doc_gen || (!js && !html5 && !flash_doc_gen))
 	/**
-		Creates a new BitmapData instance from Base64-encoded data immediately.
-
-		The returned BitmapData will have a width and height of zero initially, then it
-		will populate with image data once decoding is successful.
-
-		If you must know when the data will be decoded, use the `loadFromBase64` method
-		instead.
-
-		All platforms except for HTML5 will currently return `null`
+		Creates a new BitmapData instance from Base64-encoded data synchronously. This means
+		that the BitmapData will be returned immediately (if supported).
+		
+		HTML5 and Flash do not support creating BitmapData synchronously, so these targets
+		always return `null`. Other targets will return `null` if decoding was unsuccessful.
 
 		@param	base64	Base64-encoded data
 		@param	type	The MIME-type for the encoded data ("image/jpeg", etc)
-		@returns	A BitmapData when targeting HTML5 or `null` on all other targets
+		@returns	A new BitmapData if successful, or `null` if unsuccessful
 	**/
 	public static function fromBase64(base64:String, type:String):BitmapData
 	{
