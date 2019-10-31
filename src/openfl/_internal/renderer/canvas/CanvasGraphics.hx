@@ -1528,7 +1528,7 @@ class CanvasGraphics
 						var c = data.readDrawRect();
 						context.beginPath();
 						context.rect(c.x - offsetX, c.y - offsetY, c.width, c.height);
-						context.closePath();
+						// context.closePath();
 
 					case DRAW_ROUND_RECT:
 						var c = data.readDrawRoundRect();
