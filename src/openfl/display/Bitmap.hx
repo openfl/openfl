@@ -346,7 +346,7 @@ class Bitmap extends DisplayObject
 	{
 		if (__bitmapData != null)
 		{
-			scaleY = value / get_height();
+			scaleY = value / __bitmapData.height; //get_height();
 		}
 		else
 		{
@@ -359,7 +359,7 @@ class Bitmap extends DisplayObject
 	{
 		if (__bitmapData != null)
 		{
-			scaleX = value / get_width();
+			scaleX = value / __bitmapData.width;// get_width();
 		}
 		else
 		{
