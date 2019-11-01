@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
 
-  run-tests:
+  haxelib:
     runs-on: ubuntu-16.04
 
     steps:
@@ -37,6 +37,26 @@ jobs:
 
     - name: Run unit tests
       run: |
-        hxp unit-test
+        hxp unit-test neko
 
+  npm:
+    runs-on: ubuntu-16.04
+
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        submodules: true
+
+    - name: Setup environment
+      run: |
+        sudo apt-get install npm -y
+
+    - name: Install dependencies
+      run: |
+        npm install -g
+
+    - name: Run unit tests
+      run: |
+        npm run build -g
+        npm run test -g
 
