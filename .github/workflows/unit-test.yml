@@ -20,6 +20,8 @@ jobs:
       run: |
         mkdir $GITHUB_WORKSPACE/.haxelib
         haxelib setup $GITHUB_WORKSPACE/.haxelib
+        haxelib install mcover > /dev/null
+        haxelib install hamcrest > /dev/null
         git clone https://github.com/openfl/munit $GITHUB_WORKSPACE/munit --depth 1
         haxelib dev munit $GITHUB_WORKSPACE/munit/src
         cd $GITHUB_WORKSPACE/munit/tool && haxe build.hxml
