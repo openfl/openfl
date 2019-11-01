@@ -49,6 +49,12 @@ jobs:
 
     - name: Setup environment
       run: |
+        sudo add-apt-repository ppa:haxe/releases -y
+        sudo apt-get update
+        sudo apt-get install haxe -y
+        mkdir $GITHUB_WORKSPACE/.haxelib
+        haxelib setup $GITHUB_WORKSPACE/.haxelib
+        haxelib dev openfl $GITHUB_WORKSPACE
         sudo apt-get install npm -y
 
     - name: Install dependencies
