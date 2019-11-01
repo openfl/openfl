@@ -14,12 +14,15 @@ jobs:
 
     - name: Setup environment
       run: |
-        sudo apt-get install -y haxe
+        sudo add-apt-repository ppa:haxe/releases -y
+        sudo apt-get update
+        sudo apt-get install haxe -y
+        mkdir $GITHUB_WORKSPACE/.haxelib
+        haxelib setup $GITHUB_WORKSPACE/.haxelib
+        haxelib dev openfl $GITHUB_WORKSPACE
 
     - name: Install dependencies
       run: |
-        mkdir $GITHUB_WORKSPACE/.haxelib
-        haxelib setup $GITHUB_WORKSPACE/.haxelib
         haxelib install mcover > /dev/null
         haxelib install hamcrest > /dev/null
         git clone https://github.com/openfl/munit $GITHUB_WORKSPACE/munit --depth 1
@@ -30,10 +33,9 @@ jobs:
 
     - name: Install "openfl" command alias
       run: |
-        haxelib dev openfl $GITHUB_WORKSPACE
         haxelib run openfl setup -alias -y
 
-    - name: Run Unit Tests
+    - name: Run unit tests
       run: |
         hxp unit-test
 
