@@ -189,6 +189,8 @@ class Timeline
 
 	@:noCompletion private function __evaluateFrameScripts(advanceToFrame:Int):Bool
 	{
+		if (__frameScripts == null) return;
+
 		for (frame in __currentFrame...advanceToFrame + 1)
 		{
 			if (frame == __lastFrameScriptEval) continue;
