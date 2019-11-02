@@ -59,10 +59,10 @@ jobs:
 
     - name: Install dependencies
       run: |
-        sudo npm install -g
+        sudo npm install
 
     - name: Run unit tests
       run: |
-        npm run build -g
-        npm run test -g
+        npm run build
+        npm run test
 
