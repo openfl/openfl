@@ -152,7 +152,38 @@ class Timeline
 
 	@:noCompletion private function __enterFrame(deltaTime:Int):Void
 	{
-		__updateFrameScript(deltaTime);
+		if (__isPlaying)
+		{
+			var nextFrame = __getNextFrame(deltaTime);
+
+			if (__lastFrameScriptEval == nextFrame)
+			{
+				return;
+			}
+
+			if (__frameScripts != null)
+			{
+				if (nextFrame < __currentFrame)
+				{
+					if (!__evaluateFrameScripts(__totalFrames))
+					{
+						return;
+					}
+
+					__currentFrame = 1;
+				}
+
+				if (!__evaluateFrameScripts(nextFrame))
+				{
+					return;
+				}
+			}
+			else
+			{
+				__currentFrame = nextFrame;
+			}
+		}
+
 		__updateSymbol(__currentFrame);
 	}
 
@@ -212,8 +243,15 @@ class Timeline
 		if (frame < 1) frame = 1;
 		else if (frame > __totalFrames) frame = __totalFrames;
 
-		__currentFrame = frame;
-		__enterFrame(0);
+		// TODO: Script may need children to be constructed first?
+		__lastFrameScriptEval = -1;
+		__evaluateFrameScripts(frame);
+
+		if (frame != __currentFrame)
+		{
+			__currentFrame = frame;
+			__updateSymbol(__currentFrame);
+		}
 	}
 
 	@:noCompletion private function __gotoAndPlay(frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end, scene:String = null):Void
@@ -315,41 +353,6 @@ class Timeline
 			else
 			{
 				break;
-			}
-		}
-	}
-
-	@:noCompletion private function __updateFrameScript(deltaTime:Int):Void
-	{
-		if (__isPlaying)
-		{
-			var nextFrame = __getNextFrame(deltaTime);
-
-			if (__lastFrameScriptEval == nextFrame)
-			{
-				return;
-			}
-
-			if (__frameScripts != null)
-			{
-				if (nextFrame < __currentFrame)
-				{
-					if (!__evaluateFrameScripts(__totalFrames))
-					{
-						return;
-					}
-
-					__currentFrame = 1;
-				}
-
-				if (!__evaluateFrameScripts(nextFrame))
-				{
-					return;
-				}
-			}
-			else
-			{
-				__currentFrame = nextFrame;
 			}
 		}
 	}
