@@ -189,7 +189,7 @@ class Timeline
 
 	@:noCompletion private function __evaluateFrameScripts(advanceToFrame:Int):Bool
 	{
-		if (__frameScripts == null) return;
+		if (__frameScripts == null) return true;
 
 		for (frame in __currentFrame...advanceToFrame + 1)
 		{
