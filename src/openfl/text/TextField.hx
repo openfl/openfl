@@ -3168,7 +3168,10 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function this_onMouseWheel(event:MouseEvent):Void
 	{
-		scrollV -= event.delta;
+		if (mouseWheelEnabled)
+		{
+			scrollV -= event.delta;
+		}
 	}
 
 	#if lime
