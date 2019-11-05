@@ -420,7 +420,7 @@ class AnimateTimeline extends Timeline
 		{
 			displayObject.transform.colorTransform = frameObject.colorTransform;
 		}
-		else if (reset #if !flash && !displayObject.transform.colorTransform.__isDefault(true) #end)
+		else if (reset #if !flash && !displayObject.transform.colorTransform.__isDefault(false) #end)
 		{
 			displayObject.transform.colorTransform = new ColorTransform();
 		}
