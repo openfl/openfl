@@ -4,7 +4,9 @@ package openfl.system;
 import openfl.utils.ByteArray;
 import openfl.utils.Object;
 
+#if !openfl_global
 @:jsRequire("openfl/system/ApplicationDomain", "default")
+#end
 @:final extern class ApplicationDomain
 {
 	#if flash

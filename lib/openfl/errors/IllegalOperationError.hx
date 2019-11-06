@@ -1,7 +1,10 @@
 package openfl.errors;
 
 #if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/errors/IllegalOperationError", "default")
+#end
+
 /**
  * The IllegalOperationError exception is thrown when a method is not
  * implemented or the implementation doesn't cover the current usage.

@@ -4,7 +4,9 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.Vector;
 
+#if !openfl_global
 @:jsRequire("openfl/display/Tileset", "default")
+#end
 extern class Tileset
 {
 	public var bitmapData(get, set):BitmapData;

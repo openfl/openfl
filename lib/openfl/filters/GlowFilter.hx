@@ -1,7 +1,10 @@
 package openfl.filters;
 
 #if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/filters/GlowFilter", "default")
+#end
+
 /**
  * The GlowFilter class lets you apply a glow effect to display objects. You
  * have several options for the style of the glow, including inner or outer

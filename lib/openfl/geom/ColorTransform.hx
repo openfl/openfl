@@ -1,7 +1,10 @@
 package openfl.geom;
 
 #if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/geom/ColorTransform", "default")
+#end
+
 /**
  * The ColorTransform class lets you adjust the color values in a display
  * object. The color adjustment or _color transformation_ can be applied

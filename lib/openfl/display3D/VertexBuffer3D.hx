@@ -9,7 +9,9 @@ import js.lib.ArrayBufferView;
 import js.html.ArrayBufferView;
 #end
 
+#if !openfl_global
 @:jsRequire("openfl/display3D/VertexBuffer3D", "default")
+#end
 extern class VertexBuffer3D
 {
 	public function dispose():Void;

@@ -3,7 +3,9 @@ package openfl.display;
 #if (display || !flash)
 import openfl.events.EventDispatcher;
 
+#if !openfl_global
 @:jsRequire("openfl/display/ShaderJob", "default")
+#end
 extern class ShaderJob extends EventDispatcher
 {
 	public var width:Int;

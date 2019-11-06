@@ -1,7 +1,10 @@
 package openfl.errors;
 
 #if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/errors/EOFError", "default")
+#end
+
 /**
  * An EOFError exception is thrown when you attempt to read past the end of
  * the available data. For example, an EOFError is thrown when one of the read

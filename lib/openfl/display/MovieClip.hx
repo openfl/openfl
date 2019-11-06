@@ -1,7 +1,10 @@
 package openfl.display;
 
 #if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/display/MovieClip", "default")
+#end
+
 /**
  * The MovieClip class inherits from the following classes: Sprite,
  * DisplayObjectContainer, InteractiveObject, DisplayObject, and

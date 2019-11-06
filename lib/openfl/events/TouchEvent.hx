@@ -4,7 +4,9 @@ package openfl.events;
 import openfl.display.InteractiveObject;
 import openfl.utils.ByteArray;
 
+#if !openfl_global
 @:jsRequire("openfl/events/TouchEvent", "default")
+#end
 
 /**
  * The TouchEvent class lets you handle events on devices that detect user

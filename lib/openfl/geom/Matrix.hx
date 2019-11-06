@@ -1,7 +1,10 @@
 package openfl.geom;
 
 #if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/geom/Matrix", "default")
+#end
+
 /**
  * The Matrix class represents a transformation matrix that determines how to
  * map points from one coordinate space to another. You can perform various

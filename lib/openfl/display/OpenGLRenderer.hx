@@ -10,7 +10,9 @@ import openfl.geom.Matrix;
 typedef GLRenderContext = js.html.webgl.RenderingContext;
 typedef Matrix4 = Dynamic;
 
+#if !openfl_global
 @:jsRequire("openfl/display/OpenGLRenderer", "default")
+#end
 extern class OpenGLRenderer extends DisplayObjectRenderer
 {
 	public var gl:GLRenderContext;

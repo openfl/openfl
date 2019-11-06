@@ -6,7 +6,9 @@ import openfl.net.URLRequest;
 import openfl.system.LoaderContext;
 import openfl.utils.ByteArray;
 
+#if !openfl_global
 @:jsRequire("openfl/display/Loader", "default")
+#end
 
 /**
  * The Loader class is used to load SWF files or image (JPG, PNG, or GIF)

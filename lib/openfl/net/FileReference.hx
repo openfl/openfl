@@ -4,7 +4,9 @@ package openfl.net;
 import openfl.events.EventDispatcher;
 import openfl.utils.ByteArray;
 
+#if !openfl_global
 @:jsRequire("openfl/net/FileReference", "default")
+#end
 extern class FileReference extends EventDispatcher
 {
 	/**

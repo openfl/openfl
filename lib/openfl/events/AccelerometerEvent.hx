@@ -1,7 +1,10 @@
 package openfl.events;
 
 #if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/events/AccelerometerEvent", "default")
+#end
+
 /**
  * The Accelerometer class dispatches AccelerometerEvent objects when
  * acceleration updates are obtained from the Accelerometer sensor installed

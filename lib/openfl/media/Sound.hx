@@ -10,7 +10,9 @@ import openfl.utils.ByteArray;
 
 typedef AudioBuffer = Dynamic;
 
+#if !openfl_global
 @:jsRequire("openfl/media/Sound", "default")
+#end
 
 /**
  * The Sound class lets you work with sound in an application. The Sound class

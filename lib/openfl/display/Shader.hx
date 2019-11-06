@@ -3,7 +3,9 @@ package openfl.display;
 #if (display || !flash)
 import openfl.utils.ByteArray;
 
+#if !openfl_global
 @:jsRequire("openfl/display/Shader", "default")
+#end
 extern class Shader
 {
 	public var byteCode(null, default):ByteArray;

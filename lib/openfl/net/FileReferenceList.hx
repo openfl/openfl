@@ -3,7 +3,9 @@ package openfl.net;
 #if (display || !flash)
 import openfl.events.EventDispatcher;
 
+#if !openfl_global
 @:jsRequire("openfl/net/FileReferenceList", "default")
+#end
 extern class FileReferenceList extends EventDispatcher
 {
 	/**

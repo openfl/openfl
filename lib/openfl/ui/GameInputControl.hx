@@ -3,7 +3,9 @@ package openfl.ui;
 #if (display || !flash)
 import openfl.events.EventDispatcher;
 
+#if !openfl_global
 @:jsRequire("openfl/ui/GameInputControl", "default")
+#end
 extern class GameInputControl extends EventDispatcher
 {
 	/**

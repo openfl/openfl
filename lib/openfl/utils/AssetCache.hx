@@ -4,7 +4,9 @@ import openfl.display.BitmapData;
 import openfl.media.Sound;
 import openfl.text.Font;
 
+#if !openfl_global
 @:jsRequire("openfl/utils/AssetCache", "default")
+#end
 @:dox(hide) extern class AssetCache implements IAssetCache
 {
 	public var enabled(get, set):Bool;

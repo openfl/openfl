@@ -1,7 +1,10 @@
 package openfl.filters;
 
 #if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/filters/DropShadowFilter", "default")
+#end
+
 /**
  * The DropShadowFilter class lets you add a drop shadow to display objects.
  * The shadow algorithm is based on the same box filter that the blur filter

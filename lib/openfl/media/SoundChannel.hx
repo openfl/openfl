@@ -3,7 +3,9 @@ package openfl.media;
 #if (display || !flash)
 import openfl.events.EventDispatcher;
 
+#if !openfl_global
 @:jsRequire("openfl/media/SoundChannel", "default")
+#end
 
 /**
  * The SoundChannel class controls a sound in an application. Every sound is

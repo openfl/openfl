@@ -1,7 +1,10 @@
 package openfl.media;
 
 #if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/media/SoundLoaderContext", "default")
+#end
+
 /**
  * The SoundLoaderContext class provides security checks for files that load
  * sound. SoundLoaderContext objects are passed as an argument to the

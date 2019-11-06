@@ -7,7 +7,9 @@ import openfl.utils.Endian;
 import openfl.utils.IDataInput;
 import openfl.utils.IDataOutput;
 
+#if !openfl_global
 @:jsRequire("openfl/net/Socket", "default")
+#end
 extern class Socket extends EventDispatcher implements IDataInput implements IDataOutput
 {
 	public var bytesAvailable(get, never):UInt;

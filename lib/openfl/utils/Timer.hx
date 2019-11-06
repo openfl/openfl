@@ -3,7 +3,9 @@ package openfl.utils;
 #if (display || !flash)
 import openfl.events.EventDispatcher;
 
+#if !openfl_global
 @:jsRequire("openfl/utils/Timer", "default")
+#end
 
 /**
  * The Timer class is the interface to timers, which let you run code on a

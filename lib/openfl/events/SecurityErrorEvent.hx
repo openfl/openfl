@@ -1,7 +1,10 @@
 package openfl.events;
 
 #if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/events/SecurityErrorEvent", "default")
+#end
+
 /**
  * An object dispatches a SecurityErrorEvent object to report the occurrence
  * of a security error. Security errors reported through this class are

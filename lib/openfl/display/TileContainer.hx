@@ -1,6 +1,8 @@
 package openfl.display;
 
+#if !openfl_global
 @:jsRequire("openfl/display/TileContainer", "default")
+#end
 extern class TileContainer extends Tile implements ITileContainer
 {
 	public var numTiles(get, never):Int;

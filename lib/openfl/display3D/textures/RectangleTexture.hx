@@ -4,7 +4,9 @@ package openfl.display3D.textures;
 import openfl.display.BitmapData;
 import openfl.utils.ByteArray;
 
+#if !openfl_global
 @:jsRequire("openfl/display3D/textures/RectangleTexture", "default")
+#end
 @:final extern class RectangleTexture extends TextureBase
 {
 	public function uploadFromBitmapData(source:BitmapData):Void;

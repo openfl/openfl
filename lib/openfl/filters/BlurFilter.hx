@@ -1,7 +1,10 @@
 package openfl.filters;
 
 #if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/filters/BlurFilter", "default")
+#end
+
 /**
  * The BlurFilter class lets you apply a blur visual effect to display
  * objects. A blur effect softens the details of an image. You can produce

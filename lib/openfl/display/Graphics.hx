@@ -6,7 +6,9 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.Vector;
 
+#if !openfl_global
 @:jsRequire("openfl/display/Graphics", "default")
+#end
 
 /**
  * The Graphics class contains a set of methods that you can use to create a

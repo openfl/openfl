@@ -6,7 +6,9 @@ import openfl.utils.ByteArray;
 import openfl.utils.Endian;
 import openfl.utils.IDataInput;
 
+#if !openfl_global
 @:jsRequire("openfl/net/URLStream", "default")
+#end
 extern class URLStream extends EventDispatcher implements IDataInput
 {
 	public var bytesAvailable(get, never):UInt;

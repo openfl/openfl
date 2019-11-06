@@ -1,7 +1,9 @@
 package openfl.net;
 
 #if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/net/FileFilter", "default")
+#end
 @:final extern class FileFilter
 {
 	/**

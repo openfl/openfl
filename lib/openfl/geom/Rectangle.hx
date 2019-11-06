@@ -1,7 +1,10 @@
 package openfl.geom;
 
 #if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/geom/Rectangle", "default")
+#end
+
 /**
  * A Rectangle object is an area defined by its position, as indicated by its
  * top-left corner point(_x_, _y_) and by its width and its height.

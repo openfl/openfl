@@ -3,7 +3,9 @@ package openfl.display;
 #if (display || !flash)
 import openfl.Vector;
 
+#if !openfl_global
 @:jsRequire("openfl/display/GraphicsTrianglePath", "default")
+#end
 @:final extern class GraphicsTrianglePath implements IGraphicsData implements IGraphicsPath
 {
 	public var culling:TriangleCulling;

@@ -1,7 +1,10 @@
 package openfl.system;
 
 #if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/system/System", "default")
+#end
+
 /**
  * The System class contains properties related to local settings and
  * operations. Among these are settings for camers and microphones, operations

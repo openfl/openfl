@@ -3,7 +3,9 @@ package openfl.media;
 #if (display || !flash)
 import openfl.utils.ByteArray;
 
+#if !openfl_global
 @:jsRequire("openfl/media/SoundMixer", "default")
+#end
 @:final extern class SoundMixer
 {
 	public static var bufferTime:Int;

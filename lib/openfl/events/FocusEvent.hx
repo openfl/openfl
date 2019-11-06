@@ -3,7 +3,9 @@ package openfl.events;
 #if (display || !flash)
 import openfl.display.InteractiveObject;
 
+#if !openfl_global
 @:jsRequire("openfl/events/FocusEvent", "default")
+#end
 
 /**
  * An object dispatches a FocusEvent object when the user changes the focus

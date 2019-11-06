@@ -1,7 +1,9 @@
 package openfl.profiler;
 
 #if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/profiler/Telemetry", "default")
+#end
 @:final extern class Telemetry
 {
 	public static var connected(default, null):Bool;

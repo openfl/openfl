@@ -6,7 +6,9 @@ import openfl.utils.Future;
 // import lime.utils.AssetManifest;
 import openfl.display.MovieClip;
 
+#if !openfl_global
 @:jsRequire("openfl/utils/AssetLibrary", "default")
+#end
 @:dox(hide) extern class AssetLibrary /*extends LimeAssetLibrary*/
 {
 	public function new();

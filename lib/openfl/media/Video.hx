@@ -4,7 +4,9 @@ package openfl.media;
 import openfl.display.DisplayObject;
 import openfl.net.NetStream;
 
+#if !openfl_global
 @:jsRequire("openfl/media/Video", "default")
+#end
 extern class Video extends DisplayObject
 {
 	public var deblocking:Int;

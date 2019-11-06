@@ -4,7 +4,9 @@ package openfl.text;
 import openfl.display.InteractiveObject;
 import openfl.geom.Rectangle;
 
+#if !openfl_global
 @:jsRequire("openfl/text/TextField", "default")
+#end
 
 /**
  * The TextField class is used to create display objects for text display and

@@ -1,7 +1,9 @@
 package openfl.events;
 
 #if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/events/ActivityEvent", "default")
+#end
 extern class ActivityEvent extends Event
 {
 	public static inline var ACTIVITY = "activity";

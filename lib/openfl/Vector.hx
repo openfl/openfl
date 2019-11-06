@@ -213,7 +213,9 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 	}
 }
 
+#if !openfl_global
 @:jsRequire("openfl/Vector", "default")
+#end
 extern class VectorData<T> implements ArrayAccess<T>
 {
 	public var fixed:Bool;

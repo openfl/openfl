@@ -4,7 +4,9 @@ package openfl;
 import openfl.display.MovieClip;
 import openfl.net.URLRequest;
 
+#if !openfl_global
 @:jsRequire("openfl/Lib", "default")
+#end
 extern class Lib
 {
 	// public static var application:Application;

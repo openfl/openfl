@@ -3,7 +3,9 @@ package openfl.sensors;
 #if (display || !flash)
 import openfl.events.EventDispatcher;
 
+#if !openfl_global
 @:jsRequire("openfl/sensors/Accelerometer", "default")
+#end
 
 /**
  * The Accelerometer class dispatches events based on activity detected by the

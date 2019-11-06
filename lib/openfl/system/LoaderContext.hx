@@ -3,7 +3,9 @@ package openfl.system;
 #if (display || !flash)
 import openfl.display.DisplayObjectContainer;
 
+#if !openfl_global
 @:jsRequire("openfl/system/LoaderContext", "default")
+#end
 extern class LoaderContext
 {
 	public var allowCodeImport:Bool;

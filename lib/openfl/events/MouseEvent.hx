@@ -3,7 +3,9 @@ package openfl.events;
 #if (display || !flash)
 import openfl.display.InteractiveObject;
 
+#if !openfl_global
 @:jsRequire("openfl/events/MouseEvent", "default")
+#end
 
 /**
  * A MouseEvent object is dispatched into the event flow whenever mouse events

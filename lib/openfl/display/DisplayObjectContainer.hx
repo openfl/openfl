@@ -3,7 +3,9 @@ package openfl.display;
 #if (display || !flash)
 import openfl.geom.Point;
 
+#if !openfl_global
 @:jsRequire("openfl/display/DisplayObjectContainer", "default")
+#end
 
 /**
  * The DisplayObjectContainer class is the base class for all objects that can

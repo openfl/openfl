@@ -1,7 +1,10 @@
 package openfl.display;
 
 #if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/display/GraphicsSolidFill", "default")
+#end
+
 /**
  * Defines a solid fill.
  *

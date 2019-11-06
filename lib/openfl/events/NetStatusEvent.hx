@@ -1,7 +1,9 @@
 package openfl.events;
 
 #if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/events/NetStatusEvent", "default")
+#end
 extern class NetStatusEvent extends Event
 {
 	public static inline var NET_STATUS = "netStatus";

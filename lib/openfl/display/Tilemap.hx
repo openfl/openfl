@@ -1,6 +1,8 @@
 package openfl.display;
 
+#if !openfl_global
 @:jsRequire("openfl/display/Tilemap", "default")
+#end
 extern class Tilemap extends DisplayObject implements ITileContainer
 {
 	public var numTiles(get, never):Int;

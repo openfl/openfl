@@ -1,7 +1,10 @@
 package openfl.text;
 
 #if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/text/TextFormat", "default")
+#end
+
 /**
  * The TextFormat class represents character formatting information. Use the
  * TextFormat class to create specific text formatting for text fields. You

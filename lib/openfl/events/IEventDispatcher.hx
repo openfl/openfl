@@ -1,6 +1,8 @@
 package openfl.events;
 
+#if !openfl_global
 @:jsRequire("openfl/events/IEventDispatcher", "default")
+#end
 #if flash
 @:native("flash.events.IEventDispatcher")
 #end

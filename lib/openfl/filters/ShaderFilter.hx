@@ -4,7 +4,9 @@ package openfl.filters;
 import openfl.display.BlendMode;
 import openfl.display.Shader;
 
+#if !openfl_global
 @:jsRequire("openfl/filters/ShaderFilter", "default")
+#end
 extern class ShaderFilter extends BitmapFilter
 {
 	@:beta public var blendMode:BlendMode;

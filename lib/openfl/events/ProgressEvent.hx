@@ -1,7 +1,10 @@
 package openfl.events;
 
 #if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/events/ProgressEvent", "default")
+#end
+
 /**
  * A ProgressEvent object is dispatched when a load operation has begun or a
  * socket has received data. These events are usually generated when SWF

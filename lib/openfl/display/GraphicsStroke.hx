@@ -1,7 +1,10 @@
 package openfl.display;
 
 #if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/display/GraphicsStroke", "default")
+#end
+
 /**
  * Defines a line style or stroke.
  *

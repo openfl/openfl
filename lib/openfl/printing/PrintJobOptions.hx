@@ -1,7 +1,9 @@
 package openfl.printing;
 
 #if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/printing/PrintJobOptions", "default")
+#end
 extern class PrintJobOptions
 {
 	public var printAsBitmap:Bool;

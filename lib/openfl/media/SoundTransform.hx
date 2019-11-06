@@ -1,7 +1,10 @@
 package openfl.media;
 
 #if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/media/SoundTransform", "default")
+#end
+
 /**
  * The SoundTransform class contains properties for volume and panning.
  */

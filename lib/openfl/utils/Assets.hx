@@ -12,7 +12,9 @@ import openfl.text.Font;
 
 typedef LimeAssetLibrary = Dynamic;
 
+#if !openfl_global
 @:jsRequire("openfl/utils/Assets", "default")
+#end
 
 /**
  * The Assets class provides a cross-platform interface to access

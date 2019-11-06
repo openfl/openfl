@@ -1,7 +1,10 @@
 package openfl.geom;
 
 #if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/geom/Point", "default")
+#end
+
 /**
  * The Point object represents a location in a two-dimensional coordinate
  * system, where _x_ represents the horizontal axis and _y_

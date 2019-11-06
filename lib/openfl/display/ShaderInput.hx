@@ -5,7 +5,9 @@ import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
 import openfl.display3D.Context3DWrapMode;
 
+#if !openfl_global
 @:jsRequire("openfl/display/ShaderInput", "default")
+#end
 #if !js
 @:generic
 #end

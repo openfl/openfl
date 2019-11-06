@@ -3,7 +3,9 @@ package openfl.net;
 #if (display || !flash)
 import openfl.events.EventDispatcher;
 
+#if !openfl_global
 @:jsRequire("openfl/net/XMLSocket", "default")
+#end
 extern class XMLSocket extends EventDispatcher
 {
 	public var connected(default, null):Bool;

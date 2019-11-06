@@ -7,7 +7,9 @@ import openfl.display3D.Context3DRenderMode;
 import openfl.events.EventDispatcher;
 import openfl.Vector;
 
+#if !openfl_global
 @:jsRequire("openfl/display/Stage3D", "default")
+#end
 extern class Stage3D extends EventDispatcher
 {
 	public var context3D(default, null):Context3D;

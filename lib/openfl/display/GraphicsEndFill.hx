@@ -1,7 +1,10 @@
 package openfl.display;
 
 #if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/display/GraphicsEndFill", "default")
+#end
+
 /**
  * Indicates the end of a graphics fill. Use a GraphicsEndFill object with the
  * `Graphics.drawGraphicsData()` method.

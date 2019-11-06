@@ -1,7 +1,9 @@
 package openfl.geom;
 
 #if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/geom/PerspectiveProjection", "default")
+#end
 extern class PerspectiveProjection
 {
 	// public static inline var TO_RADIAN:Float = 0.01745329251994329577; // Math.PI / 180
@@ -10,6 +12,7 @@ extern class PerspectiveProjection
 	public var projectionCenter:Point;
 	public function new();
 	public function toMatrix3D():Matrix3D;
+	private function set_fieldOfView():Float;
 }
 #else
 typedef PerspectiveProjection = flash.geom.PerspectiveProjection;

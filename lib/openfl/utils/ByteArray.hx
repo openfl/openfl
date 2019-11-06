@@ -9,7 +9,9 @@ import js.lib.ArrayBuffer;
 import js.html.ArrayBuffer;
 #end
 
+#if !openfl_global
 @:jsRequire("openfl/utils/ByteArray", "default")
+#end
 extern class ByteArray implements IDataOutput implements IDataInput /*implements ArrayAccess<Int>*/
 {
 	public function get(position:Int):Int;

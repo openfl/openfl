@@ -4,7 +4,9 @@ package openfl.net;
 import openfl.events.EventDispatcher;
 import openfl.utils.Object;
 
+#if !openfl_global
 @:jsRequire("openfl/net/SharedObject", "default")
+#end
 
 /**
  * The SharedObject class is used to read and store limited amounts of data on

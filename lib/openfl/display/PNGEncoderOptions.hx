@@ -1,7 +1,9 @@
 package openfl.display;
 
 #if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/display/PNGEncoderOptions", "default")
+#end
 @:final extern class PNGEncoderOptions
 {
 	public var fastCompression:Bool;

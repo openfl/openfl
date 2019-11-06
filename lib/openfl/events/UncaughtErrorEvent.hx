@@ -1,7 +1,9 @@
 package openfl.events;
 
 #if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/events/UncaughtErrorEvent", "default")
+#end
 extern class UncaughtErrorEvent extends ErrorEvent
 {
 	public static inline var UNCAUGHT_ERROR = "uncaughtError";

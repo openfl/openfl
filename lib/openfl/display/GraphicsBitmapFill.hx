@@ -3,7 +3,9 @@ package openfl.display;
 #if (display || !flash)
 import openfl.geom.Matrix;
 
+#if !openfl_global
 @:jsRequire("openfl/display/GraphicsBitmapFill", "default")
+#end
 @:final extern class GraphicsBitmapFill implements IGraphicsData implements IGraphicsFill
 {
 	public var bitmapData:BitmapData;

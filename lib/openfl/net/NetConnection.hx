@@ -4,7 +4,9 @@ package openfl.net;
 import openfl.events.EventDispatcher;
 import openfl.utils.Object;
 
+#if !openfl_global
 @:jsRequire("openfl/net/NetConnection", "default")
+#end
 extern class NetConnection extends EventDispatcher
 {
 	// public static inline var CONNECT_SUCCESS:String = "connectSuccess";

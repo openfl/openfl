@@ -1,7 +1,10 @@
 package openfl.net;
 
 #if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/net/URLRequest", "default")
+#end
+
 /**
  * The URLRequest class captures all of the information in a single HTTP
  * request. URLRequest objects are passed to the `load()` methods

@@ -3,7 +3,9 @@ package openfl.display;
 #if (display || !flash)
 import openfl.Vector;
 
+#if !openfl_global
 @:jsRequire("openfl/display/GraphicsPath", "default")
+#end
 
 /**
  * A collection of drawing commands and the coordinate parameters for those
