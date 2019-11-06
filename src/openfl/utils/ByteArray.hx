@@ -18,6 +18,8 @@ import lime.utils.ArrayBuffer;
 import lime.utils.BytePointer;
 import lime.utils.Bytes as LimeBytes;
 import lime.utils.DataPointer;
+#elseif js
+import js.html.ArrayBuffer;
 #end
 #if format
 import format.amf.Reader as AMFReader;
@@ -277,7 +279,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		this.deflate();
 	}
 
-	#if lime
+	#if (lime || js)
 	/**
 		Converts an ArrayBuffer into a ByteArray.
 
@@ -341,7 +343,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		#if display
 		return null;
 		#elseif flash
-		return bytesData;
+		return cast bytesData;
 		#else
 		return ByteArrayData.fromBytes(Bytes.ofData(bytesData));
 		#end
@@ -737,7 +739,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		#if display
 		return null;
 		#elseif flash
-		return byteArray;
+		return cast byteArray;
 		#else
 		return (byteArray : ByteArrayData).getData();
 		#end

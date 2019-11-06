@@ -1,4 +1,4 @@
-package openfl._internal.formats.swf;
+package openfl._internal.formats.swf; #if lime
 
 import haxe.Resource;
 import openfl.display.Loader;
@@ -137,3 +137,4 @@ import flash.display.AVM1Movie;
 		return promise.future;
 	}
 }
+#end

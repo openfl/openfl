@@ -37,7 +37,6 @@ import lime.ui.GamepadAxis;
 import lime.ui.GamepadButton;
 import lime.ui.KeyCode;
 import lime.ui.KeyModifier;
-import lime.ui.MouseCursor as LimeMouseCursor;
 import lime.ui.MouseWheelMode;
 import lime.ui.Window;
 #if !display
@@ -869,9 +868,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	@:noCompletion private var __colorString:String;
 	@:noCompletion private var __contentsScaleFactor:Float;
 	@:noCompletion private var __currentTabOrderIndex:Int;
-	#if (commonjs && !nodejs)
-	@:noCompletion private var __cursor:LimeMouseCursor;
-	#end
 	@:noCompletion private var __deltaTime:Int;
 	@:noCompletion private var __dirty:Bool;
 	@:noCompletion private var __displayMatrix:Matrix;

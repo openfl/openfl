@@ -11,15 +11,24 @@ class ExtraParams
 	{
 		if (!Context.defined("tools"))
 		{
-			if (Context.defined("display"))
-			{
-				includeExterns();
-			}
-
 			if (!Context.defined("flash"))
 			{
 				Compiler.allowPackage("flash");
 				Compiler.define("swf-version", "22.0");
+			}
+			else
+			{
+				var childPath = Context.resolvePath("openfl/_internal/macros");
+
+				var parts = StringTools.replace(childPath, "\\", "/").split("/");
+				parts.pop(); // _internal
+				parts.pop(); // openfl
+				parts.pop(); // src
+				parts.pop(); // root
+
+				var externsPath = parts.join("/") + "/externs";
+
+				Compiler.addClassPath(externsPath + "/flash");
 			}
 
 			#if debug
@@ -47,21 +56,6 @@ class ExtraParams
 				}
 			}
 		}
-	}
-
-	public static function includeExterns():Void
-	{
-		var childPath = Context.resolvePath("openfl/_internal/symbols");
-
-		var parts = StringTools.replace(childPath, "\\", "/").split("/");
-		parts.pop(); // _internal
-		parts.pop(); // openfl
-		parts.pop(); // src
-		parts.pop(); // root
-
-		var externsPath = parts.join("/") + "/externs";
-
-		Compiler.addClassPath(externsPath + "/flash");
 	}
 }
 #end

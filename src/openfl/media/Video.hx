@@ -163,21 +163,24 @@ class Video extends DisplayObject
 	@:noCompletion private var __buffer:GLBuffer;
 	@:noCompletion private var __bufferAlpha:Float;
 	@:noCompletion private var __bufferColorTransform:ColorTransform;
-	@:noCompletion private var __bufferContext:RenderContext;
 	@:noCompletion private var __bufferData:Float32Array;
 	@:noCompletion private var __dirty:Bool;
 	@:noCompletion private var __height:Float;
 	@:noCompletion private var __indexBuffer:IndexBuffer3D;
-	@:noCompletion private var __indexBufferContext:RenderContext;
 	@:noCompletion private var __indexBufferData:UInt16Array;
 	@:noCompletion private var __stream:NetStream;
 	@:noCompletion private var __texture:RectangleTexture;
 	@:noCompletion private var __textureTime:Float;
 	@:noCompletion private var __uvRect:Rectangle;
 	@:noCompletion private var __vertexBuffer:VertexBuffer3D;
-	@:noCompletion private var __vertexBufferContext:RenderContext;
 	@:noCompletion private var __vertexBufferData:Float32Array;
 	@:noCompletion private var __width:Float;
+
+	#if lime
+	@:noCompletion private var __bufferContext:RenderContext;
+	@:noCompletion private var __indexBufferContext:RenderContext;
+	@:noCompletion private var __vertexBufferContext:RenderContext;
+	#end
 
 	#if openfljs
 	@:noCompletion private static function __init__()
