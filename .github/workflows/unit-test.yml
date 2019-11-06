@@ -49,20 +49,25 @@ jobs:
 
     - name: Setup environment
       run: |
+        sudo apt-get install -y --no-install-recommends wget
+        wget --no-check-certificate -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+        sudo h -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
         sudo add-apt-repository ppa:haxe/releases -y
         sudo apt-get update
-        sudo apt-get install haxe -y
+        sudo apt-get install google-chrome-stable haxe npm -y
         mkdir $GITHUB_WORKSPACE/.haxelib
         haxelib setup $GITHUB_WORKSPACE/.haxelib
         haxelib dev openfl $GITHUB_WORKSPACE
-        sudo apt-get install npm -y
 
     - name: Install dependencies
       run: |
         sudo npm install
+        
+    - name: Build openfl.js
+      run: |
+        npm run build
 
     - name: Run unit tests
       run: |
-        npm run build
         npm run test
 
