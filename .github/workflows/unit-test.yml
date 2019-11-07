@@ -76,19 +76,18 @@ jobs:
         haxelib dev openfl $GITHUB_WORKSPACE
 
     - name: Install dependencies
-      uses: ianwalter/puppeteer@v2.0.0
-      with:
-        args: npm install
+      run: npm install
         
     - name: Build openfl.js
-      uses: ianwalter/puppeteer@v2.0.0
-      with:
-        args: npm run build -s
+      run: npm run build -s
+    
+    - name: Build unit tests
+      run: npm run build-test -s
 
     - name: Run unit tests
       uses: ianwalter/puppeteer@v2.0.0
       with:
-        args: npm run test -s
+        args: npm run run-test -s
     
     - name: Notify Discord (success)
       uses: appleboy/discord-action@master
