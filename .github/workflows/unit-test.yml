@@ -46,7 +46,7 @@ jobs:
         webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
         webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
         color: "#00C07F"
-        message: "Haxelib unit tests succeeded.\nhttps://github.com/openfl/openfl/actions\n<a href='http://google.com'>test</a>\n[test](http://www.google.com)"
+        message: "https://github.com/${{ github.repository }}/{{ github.ref }}/{{ github.sha }}\nHaxelib unit tests succeeded."
     
     - name: Notify Discord (success)
       uses: appleboy/discord-action@master
