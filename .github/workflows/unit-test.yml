@@ -44,17 +44,19 @@ jobs:
       if: success()
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        JOB_CONTEXT: ${{ toJson(job) }}
       uses: Ilshidur/action-discord@master
       with:
-        args: "https://github.com/${{github.repository}}/actions\n${{ job.id }} job succeeded."
+        args: "${{ toJson(job }} $JOB_CONTEXT job succeeded."
       
     - name: Notify Discord (failure)
       if: failure()
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        JOB_CONTEXT: ${{ toJson(job) }}
       uses: Ilshidur/action-discord@master
       with:
-        args: "https://github.com/${{github.repository}}/actions\n${{ job.id }} job failed."
+        args: "${{ toJson(job }} $JOB_CONTEXT job failed."
         
   npm:
     name: "NPM"
@@ -93,15 +95,17 @@ jobs:
       if: success()
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        JOB_CONTEXT: ${{ toJson(job) }}
       uses: Ilshidur/action-discord@master
       with:
-        args: "https://github.com/${{github.repository}}/actions\n${{ job.id }} job succeeded."
+        args: "${{ toJson(job }} $JOB_CONTEXT job succeeded."
       
     - name: Notify Discord (failure)
       if: failure()
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        JOB_CONTEXT: ${{ toJson(job) }}
       uses: Ilshidur/action-discord@master
       with:
-        args: "https://github.com/${{github.repository}}/actions\n${{ job.id }} job failed."
+        args: "${{ toJson(job }} $JOB_CONTEXT job failed."
 
