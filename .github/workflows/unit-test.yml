@@ -48,7 +48,7 @@ jobs:
         color: "#00C07F"
         message: "Haxelib unit tests succeeded.\nhttps://github.com/openfl/openfl/actions"
     
-    - name: Notify Discord (success)
+    - name: Notify Discord (failure)
       uses: appleboy/discord-action@master
       if: failure()
       with:
@@ -78,7 +78,7 @@ jobs:
     - name: Install dependencies
       uses: ianwalter/puppeteer@v2.0.0
       with:
-        args: sudo npm install
+        args: npm install
         
     - name: Build openfl.js
       uses: ianwalter/puppeteer@v2.0.0
@@ -98,7 +98,7 @@ jobs:
         color: "#00C07F"
         message: "NPM unit tests succeeded.\nhttps://github.com/openfl/openfl/actions"
     
-    - name: Notify Discord (success)
+    - name: Notify Discord (failure)
       uses: appleboy/discord-action@master
       if: failure()
       with:
