@@ -89,7 +89,13 @@ jobs:
     - name: Run unit tests
       uses: ianwalter/puppeteer@v2.0.0
       with:
-        args: npx mocha-puppeteer ./test/npm/*/bundle.js
+        args: npx mocha-puppeteer ./test/npm/es5/bundle.js ./test/npm/es6/bundle.js ./test/npm/haxe/bundle.js ./test/npm/typescript/bundle.js
+
+    - name: Run unit tests
+      if: always()
+      uses: ianwalter/puppeteer@v2.0.0
+      with:
+        args: npx mocha-puppeteer ./test/npm/**/bundle.js
     
     - name: Notify Discord (success)
       uses: appleboy/discord-action@master
