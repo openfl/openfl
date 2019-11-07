@@ -45,7 +45,7 @@ jobs:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
       uses: Ilshidur/action-discord@master
       with:
-        args: "Repository {{ github.repository }}, workflow {{ github.workflow }}, job Haxelib, succeeded."
+        args: "Haxelib unit tests succeeded."
       
     - name: Notify Discord (failure)
       if: failure()
@@ -53,7 +53,7 @@ jobs:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
       uses: Ilshidur/action-discord@master
       with:
-        args: "Repository {{ github.repository }}, workflow {{ github.workflow }}, job Haxelib, failed."
+        args: "Haxelib unit tests failed. (https://github.com/openfl/openfl/actions)"
         
   npm:
     name: "NPM"
@@ -93,7 +93,7 @@ jobs:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
       uses: Ilshidur/action-discord@master
       with:
-        args: "Repository {{ github.repository }}<br>workflow {{ github.workflow }}, job Haxelib, succeeded."
+        args: "NPM unit tests succeeded."
       
     - name: Notify Discord (failure)
       if: failure()
@@ -101,5 +101,5 @@ jobs:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
       uses: Ilshidur/action-discord@master
       with:
-        args: "Repository {{ github.repository }}<br>workflow {{ github.workflow }}, job Haxelib, failed."
+        args: "NPM unit tests failed. (https://github.com/openfl/openfl/actions)"
 
