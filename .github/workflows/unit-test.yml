@@ -46,8 +46,7 @@ jobs:
         webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
         webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
         color: "#00C07F"
-        username: "GitHub Bot"
-        message: "Haxelib unit tests succeeded."
+        message: "Haxelib unit tests succeeded.\nhttps://github.com/openfl/openfl/actions"
     
     - name: Notify Discord (success)
       uses: appleboy/discord-action@master
@@ -56,7 +55,6 @@ jobs:
         webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
         webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
         color: "#FF6562"
-        username: "GitHub Bot"
         message: "Haxelib unit tests failed."
         
   npm:
@@ -93,17 +91,19 @@ jobs:
         npm run test
     
     - name: Notify Discord (success)
-      env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-      uses: Ilshidur/action-discord@master
+      uses: appleboy/discord-action@master
       with:
-        args: "NPM unit tests succeeded."
-      
-    - name: Notify Discord (failure)
+        webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
+        webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+        color: "#00C07F"
+        message: "NPM unit tests succeeded."
+    
+    - name: Notify Discord (success)
+      uses: appleboy/discord-action@master
       if: failure()
-      env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-      uses: Ilshidur/action-discord@master
       with:
-        args: "NPM unit tests failed. (https://github.com/openfl/openfl/actions)"
+        webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
+        webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+        color: "#FF6562"
+        message: "NPM unit tests failed."
 
