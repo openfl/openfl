@@ -38,7 +38,13 @@ jobs:
     - name: Run unit tests
       run: |
         hxp unit-test neko
-
+    
+    - name: Notify Discord
+      uses: appleboy/discord-action@master
+      with:
+        webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
+        webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+        
   npm:
     runs-on: ubuntu-16.04
 
@@ -70,4 +76,10 @@ jobs:
     - name: Run unit tests
       run: |
         npm run test
+    
+    - name: Notify Discord
+      uses: appleboy/discord-action@master
+      with:
+        webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
+        webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
 
