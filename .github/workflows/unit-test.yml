@@ -89,7 +89,7 @@ jobs:
     - name: Run unit tests
       uses: ianwalter/puppeteer@v2.0.0
       with:
-        args: npx mocha-puppeteer ./test/*/bundle.js
+        args: npx mocha-puppeteer ./test/npm/*/bundle.js
     
     - name: Notify Discord (success)
       uses: appleboy/discord-action@master
