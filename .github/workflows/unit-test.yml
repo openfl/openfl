@@ -39,21 +39,25 @@ jobs:
     - name: Run unit tests
       run: |
         hxp unit-test neko
+
+    - name: Notify Discord (success)
+      uses: appleboy/discord-action@master
+      with:
+        webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
+        webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+        color: "#00C07F"
+        username: "GitHub Bot"
+        message: "Haxelib unit tests succeeded."
     
     - name: Notify Discord (success)
-      env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-      uses: Ilshidur/action-discord@master
-      with:
-        args: "Haxelib unit tests succeeded."
-      
-    - name: Notify Discord (failure)
+      uses: appleboy/discord-action@master
       if: failure()
-      env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-      uses: Ilshidur/action-discord@master
       with:
-        args: "Haxelib unit tests failed. (https://github.com/openfl/openfl/actions)"
+        webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
+        webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+        color: "#FF6562"
+        username: "GitHub Bot"
+        message: "Haxelib unit tests failed."
         
   npm:
     name: "NPM"
