@@ -67,13 +67,15 @@ jobs:
         submodules: true
 
     - name: Setup environment
-      run: |
-        sudo add-apt-repository ppa:haxe/releases -y
-        sudo apt-get update
-        sudo apt-get install haxe -y
-        mkdir $GITHUB_WORKSPACE/.haxelib
-        haxelib setup $GITHUB_WORKSPACE/.haxelib
-        haxelib dev openfl $GITHUB_WORKSPACE
+      uses: ianwalter/puppeteer@v2.0.0
+      with:
+        args: |
+          add-apt-repository ppa:haxe/releases -y
+          apt-get update
+          apt-get install haxe -y
+          mkdir $GITHUB_WORKSPACE/.haxelib
+          haxelib setup $GITHUB_WORKSPACE/.haxelib
+          haxelib dev openfl $GITHUB_WORKSPACE
 
     - name: Install dependencies
       uses: ianwalter/puppeteer@v2.0.0
