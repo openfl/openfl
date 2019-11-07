@@ -67,15 +67,13 @@ jobs:
         submodules: true
 
     - name: Setup environment
-      uses: ianwalter/puppeteer@v2.0.0
-      with:
-        args: |
-          add-apt-repository ppa:haxe/releases -y
-          apt-get update
-          apt-get install haxe -y
-          mkdir $GITHUB_WORKSPACE/.haxelib
-          haxelib setup $GITHUB_WORKSPACE/.haxelib
-          haxelib dev openfl $GITHUB_WORKSPACE
+      run: |
+        sudo add-apt-repository ppa:haxe/releases -y
+        sudo apt-get update
+        sudo apt-get install haxe -y
+        mkdir $GITHUB_WORKSPACE/.haxelib
+        haxelib setup $GITHUB_WORKSPACE/.haxelib
+        haxelib dev openfl $GITHUB_WORKSPACE
 
     - name: Install dependencies
       uses: ianwalter/puppeteer@v2.0.0
@@ -85,12 +83,12 @@ jobs:
     - name: Build openfl.js
       uses: ianwalter/puppeteer@v2.0.0
       with:
-        args: npm run build
+        args: npm run build -s
 
     - name: Run unit tests
       uses: ianwalter/puppeteer@v2.0.0
       with:
-        args: npm run test
+        args: npm run test -s
     
     - name: Notify Discord (success)
       uses: appleboy/discord-action@master
