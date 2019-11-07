@@ -39,9 +39,15 @@ jobs:
       run: |
         hxp unit-test neko
     
-    - name: Notify Discord
+    - name: Notify Discord (success)
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      uses: Ilshidur/action-discord@master
+    
+    - name: Notify Discord (failure)
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      if: failure()
       uses: Ilshidur/action-discord@master
         
   npm:
@@ -76,8 +82,14 @@ jobs:
       run: |
         npm run test
     
-    - name: Notify Discord
+    - name: Notify Discord (success)
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      uses: Ilshidur/action-discord@master
+    
+    - name: Notify Discord (failure)
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+      if: failure()
       uses: Ilshidur/action-discord@master
 
