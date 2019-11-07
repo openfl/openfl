@@ -12,7 +12,7 @@ extern class PerspectiveProjection
 	public var projectionCenter:Point;
 	public function new();
 	public function toMatrix3D():Matrix3D;
-	private function set_fieldOfView():Float;
+	private function set_fieldOfView(value:Float):Float;
 }
 #else
 typedef PerspectiveProjection = flash.geom.PerspectiveProjection;
