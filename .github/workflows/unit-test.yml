@@ -47,7 +47,7 @@ jobs:
         JOB_CONTEXT: ${{ toJson(job) }}
       uses: Ilshidur/action-discord@master
       with:
-        args: "${{ toJson(job }} $JOB_CONTEXT job succeeded."
+        args: "${{ toJson(job) }} $JOB_CONTEXT job succeeded."
       
     - name: Notify Discord (failure)
       if: failure()
@@ -56,7 +56,7 @@ jobs:
         JOB_CONTEXT: ${{ toJson(job) }}
       uses: Ilshidur/action-discord@master
       with:
-        args: "${{ toJson(job }} $JOB_CONTEXT job failed."
+        args: "${{ toJson(job) }} $JOB_CONTEXT job failed."
         
   npm:
     name: "NPM"
@@ -98,7 +98,7 @@ jobs:
         JOB_CONTEXT: ${{ toJson(job) }}
       uses: Ilshidur/action-discord@master
       with:
-        args: "${{ toJson(job }} $JOB_CONTEXT job succeeded."
+        args: "${{ toJson(job) }} $JOB_CONTEXT job succeeded."
       
     - name: Notify Discord (failure)
       if: failure()
@@ -107,5 +107,5 @@ jobs:
         JOB_CONTEXT: ${{ toJson(job) }}
       uses: Ilshidur/action-discord@master
       with:
-        args: "${{ toJson(job }} $JOB_CONTEXT job failed."
+        args: "${{ toJson(job) }} $JOB_CONTEXT job failed."
 
