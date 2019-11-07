@@ -46,7 +46,7 @@ jobs:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
       uses: Ilshidur/action-discord@master
       with:
-        args: "${{ job.name }} job succeeded."
+        args: "https://github.com/${{github.repository}}/actions\n${{ job.id }} job succeeded."
       
     - name: Notify Discord (failure)
       if: failure()
@@ -54,7 +54,7 @@ jobs:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
       uses: Ilshidur/action-discord@master
       with:
-        args: "${{ job.name }} job failed."
+        args: "https://github.com/${{github.repository}}/actions\n${{ job.id }} job failed."
         
   npm:
     name: "NPM"
@@ -95,7 +95,7 @@ jobs:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
       uses: Ilshidur/action-discord@master
       with:
-        args: "${{ job.name }} job succeeded."
+        args: "https://github.com/${{github.repository}}/actions\n${{ job.id }} job succeeded."
       
     - name: Notify Discord (failure)
       if: failure()
@@ -103,5 +103,5 @@ jobs:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
       uses: Ilshidur/action-discord@master
       with:
-        args: "${{ job.name }} job failed."
+        args: "https://github.com/${{github.repository}}/actions\n${{ job.id }} job failed."
 
