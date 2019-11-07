@@ -41,22 +41,19 @@ jobs:
         hxp unit-test neko
     
     - name: Notify Discord (success)
-      if: success()
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        JOB_CONTEXT: ${{ toJson(job) }}
       uses: Ilshidur/action-discord@master
       with:
-        args: "${{ toJson(job) }} $JOB_CONTEXT job succeeded."
+        args: "Repository {{ github.repository }}, workflow {{ github.workflow }}, job Haxelib, succeeded."
       
     - name: Notify Discord (failure)
       if: failure()
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        JOB_CONTEXT: ${{ toJson(job) }}
       uses: Ilshidur/action-discord@master
       with:
-        args: "${{ toJson(job) }} $JOB_CONTEXT job failed."
+        args: "Repository {{ github.repository }}, workflow {{ github.workflow }}, job Haxelib, failed."
         
   npm:
     name: "NPM"
@@ -92,20 +89,17 @@ jobs:
         npm run test
     
     - name: Notify Discord (success)
-      if: success()
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        JOB_CONTEXT: ${{ toJson(job) }}
       uses: Ilshidur/action-discord@master
       with:
-        args: "${{ toJson(job) }} $JOB_CONTEXT job succeeded."
+        args: "Repository {{ github.repository }}<br>workflow {{ github.workflow }}, job Haxelib, succeeded."
       
     - name: Notify Discord (failure)
       if: failure()
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-        JOB_CONTEXT: ${{ toJson(job) }}
       uses: Ilshidur/action-discord@master
       with:
-        args: "${{ toJson(job) }} $JOB_CONTEXT job failed."
+        args: "Repository {{ github.repository }}<br>workflow {{ github.workflow }}, job Haxelib, failed."
 
