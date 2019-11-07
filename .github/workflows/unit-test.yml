@@ -5,6 +5,7 @@ on: [push]
 jobs:
 
   haxelib:
+    name: "Haxelib"
     runs-on: ubuntu-16.04
 
     steps:
@@ -40,17 +41,23 @@ jobs:
         hxp unit-test neko
     
     - name: Notify Discord (success)
+      if: success()
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
       uses: Ilshidur/action-discord@master
-    
+      with:
+        args: "{{ job.name }} job succeeded."
+      
     - name: Notify Discord (failure)
+      if: failure()
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-      if: failure()
       uses: Ilshidur/action-discord@master
+      with:
+        args: "{{ job.name }} job failed."
         
   npm:
+    name: "NPM"
     runs-on: ubuntu-16.04
 
     steps:
@@ -83,13 +90,18 @@ jobs:
         npm run test
     
     - name: Notify Discord (success)
+      if: success()
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
       uses: Ilshidur/action-discord@master
-    
+      with:
+        args: "{{ job.name }} job succeeded."
+      
     - name: Notify Discord (failure)
+      if: failure()
       env:
         DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
-      if: failure()
       uses: Ilshidur/action-discord@master
+      with:
+        args: "{{ job.name }} job failed."
 
