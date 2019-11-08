@@ -315,11 +315,18 @@ class CanvasTextField
 							scrollY += textEngine.lineHeights[i];
 						}
 
+						var offsetX = switch (textField.defaultTextFormat.align)
+						{
+							case CENTER: (textField.width - 4) / 2;
+							case RIGHT: (textField.width - 4);
+							default: 0;
+						}
+
 						context.beginPath();
 						context.strokeStyle = "#" + StringTools.hex(textField.defaultTextFormat.color & 0xFFFFFF, 6);
-						context.moveTo(scrollX + 2.5, scrollY + 2.5);
+						context.moveTo(scrollX + offsetX + 2.5, scrollY + 2.5);
 						context.lineWidth = 1;
-						context.lineTo(scrollX + 2.5, scrollY + TextEngine.getFormatHeight(textField.defaultTextFormat) - 1);
+						context.lineTo(scrollX + offsetX + 2.5, scrollY + TextEngine.getFormatHeight(textField.defaultTextFormat) - 1);
 						context.stroke();
 						context.closePath();
 					}

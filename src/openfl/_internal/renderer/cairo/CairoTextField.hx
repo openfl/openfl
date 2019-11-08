@@ -370,10 +370,17 @@ class CairoTextField
 
 			cairo.setSourceRGB(r, g, b);
 
+			var offsetX = switch (textField.defaultTextFormat.align)
+			{
+				case CENTER: (textField.width - 4) / 2;
+				case RIGHT: (textField.width - 4);
+				default: 0;
+			}
+
 			cairo.newPath();
-			cairo.moveTo(scrollX + 2.5, scrollY + 2.5);
+			cairo.moveTo(scrollX + offsetX + 2.5, scrollY + 2.5);
 			cairo.lineWidth = 1;
-			cairo.lineTo(scrollX + 2.5, scrollY + TextEngine.getFormatHeight(textField.defaultTextFormat) - 1);
+			cairo.lineTo(scrollX + offsetX + 2.5, scrollY + TextEngine.getFormatHeight(textField.defaultTextFormat) - 1);
 			cairo.stroke();
 			cairo.closePath();
 		}
