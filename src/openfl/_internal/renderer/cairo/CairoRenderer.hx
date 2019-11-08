@@ -113,9 +113,14 @@ class CairoRenderer extends CairoRendererAPI
 
 	private override function __drawBitmapData(bitmapData:BitmapData, source:IBitmapDrawable, clipRect:Rectangle):Void
 	{
+		var clipMatrix = null;
+
 		if (clipRect != null)
 		{
-			__pushMaskRect(clipRect, source.__renderTransform);
+			clipMatrix = Matrix.__pool.get();
+			clipMatrix.copyFrom(__worldTransform);
+			clipMatrix.invert();
+			__pushMaskRect(clipRect, clipMatrix);
 		}
 
 		if (source == bitmapData)
@@ -137,6 +142,7 @@ class CairoRenderer extends CairoRendererAPI
 		if (clipRect != null)
 		{
 			__popMaskRect();
+			Matrix.__pool.release(clipMatrix);
 		}
 	}
 

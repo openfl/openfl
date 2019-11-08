@@ -474,9 +474,14 @@ class Context3DRenderer extends Context3DRendererAPI
 
 	private override function __drawBitmapData(bitmapData:BitmapData, source:IBitmapDrawable, clipRect:Rectangle):Void
 	{
+		var clipMatrix = null;
+
 		if (clipRect != null)
 		{
-			__pushMaskRect(clipRect, source.__renderTransform);
+			clipMatrix = Matrix.__pool.get();
+			clipMatrix.copyFrom(__worldTransform);
+			clipMatrix.invert();
+			__pushMaskRect(clipRect, clipMatrix);
 		}
 
 		var context = context3D;
@@ -506,6 +511,7 @@ class Context3DRenderer extends Context3DRendererAPI
 		if (clipRect != null)
 		{
 			__popMaskRect();
+			Matrix.__pool.release(clipMatrix);
 		}
 	}
 
