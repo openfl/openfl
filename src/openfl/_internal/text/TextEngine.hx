@@ -1640,6 +1640,7 @@ class TextEngine
 			if (group.lineIndex != lineIndex)
 			{
 				lineIndex = group.lineIndex;
+				totalWidth = this.width - GUTTER * 2 - group.format.rightMargin;
 
 				switch (group.format.align)
 				{
