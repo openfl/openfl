@@ -849,7 +849,9 @@ class GraphicsRenderer
 
 	public static function renderGraphics(graphics:Graphics, renderer:Context3DRenderer, ?localCoords:Bool = false):Void
 	{
+		#if !disable_batcher
 		renderer.batcher.flush();
+		#end
 		if (!renderer.__cleared) renderer.__clear();
 		renderer.setShader(null);
 		currentShader = null;

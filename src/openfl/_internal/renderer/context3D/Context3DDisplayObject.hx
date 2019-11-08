@@ -28,7 +28,9 @@ class Context3DDisplayObject
 			&& displayObject.width > 0
 			&& displayObject.height > 0)
 		{
+			#if !disable_batcher
 			renderer.batcher.flush();
+			#end
 
 			renderer.__setBlendMode(displayObject.__worldBlendMode);
 			renderer.__pushMaskObject(displayObject);

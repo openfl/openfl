@@ -39,7 +39,9 @@ class Context3DGeometry
 
 		if (geometry.__vertexBuffer != null)
 		{
+			#if !disable_batcher
 			renderer.batcher.flush();
+			#end
 
 			var vertexBuffer = geometry.__vertexBuffer;
 			context.setScissorRectangle(null);

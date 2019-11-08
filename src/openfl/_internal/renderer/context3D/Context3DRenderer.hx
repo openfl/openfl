@@ -630,6 +630,7 @@ class Context3DRenderer extends Context3DRendererAPI
 		__gl = context.__context.webgl;
 		gl = __gl;
 
+		#if !disable_batcher
 		if (batcher == null)
 		{
 			batcher = new BatchRenderer(this, 4096);
@@ -638,6 +639,7 @@ class Context3DRenderer extends Context3DRendererAPI
 		{
 			batcher.flush();
 		}
+		#end
 
 		__defaultRenderTarget = defaultRenderTarget;
 		__flipped = (__defaultRenderTarget == null);
@@ -714,7 +716,9 @@ class Context3DRenderer extends Context3DRendererAPI
 	{
 		if (__stencilReference == 0) return;
 
+		#if !disable_batcher
 		batcher.flush();
+		#end
 
 		var mask = __maskObjects.pop();
 
@@ -726,7 +730,9 @@ class Context3DRenderer extends Context3DRendererAPI
 
 			__renderMask(mask);
 
+			#if !disable_batcher
 			batcher.flush();
+			#end
 
 			__stencilReference--;
 
@@ -791,7 +797,9 @@ class Context3DRenderer extends Context3DRendererAPI
 
 	private function __pushMask(mask:DisplayObject):Void
 	{
+		#if !disable_batcher
 		batcher.flush();
+		#end
 
 		if (__stencilReference == 0)
 		{
@@ -805,7 +813,9 @@ class Context3DRenderer extends Context3DRendererAPI
 
 		__renderMask(mask);
 
+		#if !disable_batcher
 		batcher.flush();
+		#end
 
 		__maskObjects.push(mask);
 		__stencilReference++;
@@ -903,8 +913,10 @@ class Context3DRenderer extends Context3DRendererAPI
 				__renderDisplayObject(cast object);
 			}
 
+			#if !disable_batcher
 			// flush whatever is left in the batch to render
 			batcher.flush();
+			#end
 
 			// TODO: Handle this in Context3D as a viewport?
 
@@ -984,8 +996,10 @@ class Context3DRenderer extends Context3DRendererAPI
 				}
 			}
 
+			#if !disable_batcher
 			// flush whatever is left in the batch to render
 			batcher.flush();
+			#end
 
 			object.__mask = cacheMask;
 			object.__scrollRect = cacheScrollRect;
@@ -1344,7 +1358,9 @@ class Context3DRenderer extends Context3DRendererAPI
 
 	private function __scissorRect(clipRect:Rectangle = null):Void
 	{
+		#if !disable_batcher
 		batcher.flush();
+		#end
 
 		if (clipRect != null)
 		{
