@@ -2213,6 +2213,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		var currentFocus = focus;
 		focus = null;
 		__cacheFocus = currentFocus;
+
+		MouseEvent.__altKey = false;
+		MouseEvent.__commandKey = false;
+		MouseEvent.__ctrlKey = false;
+		MouseEvent.__shiftKey = false;
 	}
 
 	@:noCompletion private function __onLimeWindowFullscreen(window:Window):Void
