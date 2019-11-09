@@ -2633,8 +2633,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		__displayMatrix.__transformInversePoint(targetPoint);
 		var delta = Std.int(deltaY);
 
-		__dispatchStack(MouseEvent.__create(MouseEvent.MOUSE_WHEEL, 0, __mouseX, __mouseY, target.__globalToLocal(targetPoint, targetPoint), target, delta),
-			stack);
+		var event = MouseEvent.__create(MouseEvent.MOUSE_WHEEL, 0, __mouseX, __mouseY, target.__globalToLocal(targetPoint, targetPoint), target, delta);
+		event.cancelable = true;
+		__dispatchStack(event, stack);
+		if (event.isDefaultPrevented())
+			window.onMouseWheel.cancel();
 
 		Point.__pool.release(targetPoint);
 	}
