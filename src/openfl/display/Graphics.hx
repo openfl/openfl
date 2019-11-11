@@ -61,7 +61,9 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 	@:noCompletion private var __managed:Bool;
 	@:noCompletion private var __positionX:Float;
 	@:noCompletion private var __positionY:Float;
+	#if openfl_gl
 	@:noCompletion private var __quadBuffer:Context3DBuffer;
+	#end
 	@:noCompletion private var __renderTransform:Matrix;
 	@:noCompletion private var __shaderBufferPool:ObjectPool<ShaderBuffer>;
 	@:noCompletion private var __softwareDirty:Bool;

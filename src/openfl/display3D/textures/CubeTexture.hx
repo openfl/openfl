@@ -45,7 +45,9 @@ import openfl.utils.ByteArray;
 		__optimizeForRenderToTexture = optimizeForRenderToTexture;
 		__streamingLevels = streamingLevels;
 
+		#if openfl_gl
 		__textureTarget = __context.gl.TEXTURE_CUBE_MAP;
+		#end
 		__uploadedSides = 0;
 
 		// if (optimizeForRenderToTexture) __getFramebuffer (true, 0, 0);
@@ -152,7 +154,7 @@ import openfl.utils.ByteArray;
 
 		// TODO: Improve handling of miplevels with canvas src
 
-		#if openfl_html5
+		#if (openfl_gl && openfl_html5)
 		if (miplevel == 0 && image.buffer != null && image.buffer.data == null && image.buffer.src != null)
 		{
 			var gl = __context.gl;
@@ -236,6 +238,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function uploadFromTypedArray(data:ArrayBufferView, side:UInt, miplevel:UInt = 0):Void
 	{
+		#if openfl_gl
 		if (data == null) return;
 
 		var gl = __context.gl;
@@ -250,8 +253,10 @@ import openfl.utils.ByteArray;
 		__context.__bindGLTextureCubeMap(null);
 
 		__uploadedSides |= 1 << side;
+		#end
 	}
 
+	#if openfl_gl
 	@:noCompletion private override function __getGLFramebuffer(enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):GLFramebuffer
 	{
 		var gl = __context.gl;
@@ -282,9 +287,11 @@ import openfl.utils.ByteArray;
 
 		return super.__getGLFramebuffer(enableDepthAndStencil, antiAlias, surfaceSelector);
 	}
+	#end
 
 	@:noCompletion private override function __setSamplerState(state:SamplerState):Bool
 	{
+		#if openfl_gl
 		if (super.__setSamplerState(state))
 		{
 			var gl = __context.gl;
@@ -316,12 +323,14 @@ import openfl.utils.ByteArray;
 
 			return true;
 		}
+		#end
 
 		return false;
 	}
 
 	@:noCompletion private function __sideToTarget(side:UInt):Int
 	{
+		#if openfl_gl
 		var gl = __context.gl;
 
 		return switch (side)
@@ -334,10 +343,14 @@ import openfl.utils.ByteArray;
 			case 5: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z;
 			default: throw new IllegalOperationError();
 		}
+		#else
+		return 0;
+		#end
 	}
 
 	@:noCompletion private function __uploadCompressedTextureFromByteArray(data:ByteArray, byteArrayOffset:UInt):Void
 	{
+		#if openfl_gl
 		var reader = new ATFReader(data, byteArrayOffset);
 		var alpha = reader.readHeader(__size, __size, true);
 
@@ -347,7 +360,6 @@ import openfl.utils.ByteArray;
 
 		var hasTexture = false;
 
-		#if lime
 		reader.readTextures(function(side, level, gpuFormat, width, height, blockLength, bytes)
 		{
 			var format = alpha ? TextureBase.__compressedFormatsAlpha[gpuFormat] : TextureBase.__compressedFormats[gpuFormat];
@@ -391,9 +403,9 @@ import openfl.utils.ByteArray;
 				gl.texImage2D(__sideToTarget(side), 0, __internalFormat, __size, __size, 0, __format, gl.UNSIGNED_BYTE, data);
 			}
 		}
-		#end
 
 		__context.__bindGLTextureCubeMap(null);
+		#end
 	}
 }
 #else

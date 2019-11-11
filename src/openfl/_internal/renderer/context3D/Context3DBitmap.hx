@@ -1,5 +1,6 @@
 package openfl._internal.renderer.context3D;
 
+#if openfl_gl
 import openfl.display.Bitmap;
 import openfl.geom.Matrix;
 #if gl_stats
@@ -222,3 +223,4 @@ class Context3DBitmap
 		}
 	}
 }
+#end

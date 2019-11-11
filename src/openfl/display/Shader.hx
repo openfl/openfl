@@ -370,10 +370,13 @@ class Shader
 	{
 		if (program != null)
 		{
+			#if openfl_gl
 			__disableGL();
+			#end
 		}
 	}
 
+	#if openfl_gl
 	@:noCompletion private function __disableGL():Void
 	{
 		var gl = __context.gl;
@@ -410,6 +413,7 @@ class Shader
 		}
 		#end
 	}
+	#end
 
 	@:noCompletion private function __enable():Void
 	{
@@ -417,10 +421,13 @@ class Shader
 
 		if (program != null)
 		{
+			#if openfl_gl
 			__enableGL();
+			#end
 		}
 	}
 
+	#if openfl_gl
 	@:noCompletion private function __enableGL():Void
 	{
 		var textureCount = 0;
@@ -440,6 +447,7 @@ class Shader
 		}
 		#end
 	}
+	#end
 
 	@:noCompletion private function __init():Void
 	{
@@ -450,10 +458,13 @@ class Shader
 
 		if (__glFragmentSource != null && __glVertexSource != null && (program == null || __glSourceDirty))
 		{
+			#if openfl_gl
 			__initGL();
+			#end
 		}
 	}
 
+	#if openfl_gl
 	@:noCompletion private function __initGL():Void
 	{
 		if (__glSourceDirty || __paramBool == null)
@@ -560,6 +571,7 @@ class Shader
 			}
 		}
 	}
+	#end
 
 	@:noCompletion private function __processGLData(source:String, storageType:String):Void
 	{
@@ -728,7 +740,9 @@ class Shader
 	{
 		if (program != null)
 		{
+			#if openfl_gl
 			__updateGL();
+			#end
 		}
 	}
 
@@ -736,10 +750,13 @@ class Shader
 	{
 		if (program != null)
 		{
+			#if openfl_gl
 			__updateGLFromBuffer(shaderBuffer, bufferOffset);
+			#end
 		}
 	}
 
+	#if openfl_gl
 	@:noCompletion private function __updateGL():Void
 	{
 		var textureCount = 0;
@@ -901,6 +918,7 @@ class Shader
 			}
 		}
 	}
+	#end
 
 	// Get & Set Methods
 	@:noCompletion private function get_data():ShaderData

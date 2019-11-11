@@ -41,6 +41,7 @@ import openfl.utils.ByteArray;
 		__optimizeForRenderToTexture = optimizeForRenderToTexture;
 		__streamingLevels = streamingLevels;
 
+		#if openfl_gl
 		var gl = __context.gl;
 
 		__textureTarget = gl.TEXTURE_2D;
@@ -50,6 +51,7 @@ import openfl.utils.ByteArray;
 		__context.__bindGLTexture2D(null);
 
 		if (optimizeForRenderToTexture) __getGLFramebuffer(true, 0, 0);
+		#end
 	}
 
 	/**
@@ -166,7 +168,7 @@ import openfl.utils.ByteArray;
 
 		// TODO: Improve handling of miplevels with canvas src
 
-		#if openfl_html5
+		#if (openfl_gl && openfl_html5)
 		if (miplevel == 0 && image.buffer != null && image.buffer.data == null && image.buffer.src != null)
 		{
 			var gl = __context.gl;
@@ -217,7 +219,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function uploadFromByteArray(data:ByteArray, byteArrayOffset:UInt, miplevel:UInt = 0):Void
 	{
-		#if lime
+		#if openfl_gl
 		#if (js && !display)
 		if (byteArrayOffset == 0)
 		{
@@ -241,6 +243,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function uploadFromTypedArray(data:ArrayBufferView, miplevel:UInt = 0):Void
 	{
+		#if openfl_gl
 		if (data == null) return;
 
 		var gl = __context.gl;
@@ -256,10 +259,12 @@ import openfl.utils.ByteArray;
 		__context.__bindGLTexture2D(__textureID);
 		gl.texImage2D(__textureTarget, miplevel, __internalFormat, width, height, 0, __format, gl.UNSIGNED_BYTE, data);
 		__context.__bindGLTexture2D(null);
+		#end
 	}
 
 	@:noCompletion private override function __setSamplerState(state:SamplerState):Bool
 	{
+		#if openfl_gl
 		if (super.__setSamplerState(state))
 		{
 			var gl = __context.gl;
@@ -291,12 +296,14 @@ import openfl.utils.ByteArray;
 
 			return true;
 		}
+		#end
 
 		return false;
 	}
 
 	@:noCompletion private function __uploadCompressedTextureFromByteArray(data:ByteArray, byteArrayOffset:UInt):Void
 	{
+		#if openfl_gl
 		var reader = new ATFReader(data, byteArrayOffset);
 		var alpha = reader.readHeader(__width, __height, false);
 
@@ -307,7 +314,6 @@ import openfl.utils.ByteArray;
 
 		var hasTexture = false;
 
-		#if lime
 		reader.readTextures(function(target, level, gpuFormat, width, height, blockLength, bytes:Bytes)
 		{
 			var format = alpha ? TextureBase.__compressedFormatsAlpha[gpuFormat] : TextureBase.__compressedFormats[gpuFormat];
@@ -347,9 +353,9 @@ import openfl.utils.ByteArray;
 			var data = new UInt8Array(__width * __height * 4);
 			gl.texImage2D(__textureTarget, 0, __internalFormat, __width, __height, 0, __format, gl.UNSIGNED_BYTE, data);
 		}
-		#end
 
 		__context.__bindGLTexture2D(null);
+		#end
 	}
 }
 #else

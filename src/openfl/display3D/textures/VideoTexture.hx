@@ -60,7 +60,9 @@ import openfl.net.NetStream;
 	{
 		super(context);
 
+		#if openfl_gl
 		__textureTarget = __context.gl.TEXTURE_2D;
+		#end
 	}
 
 	#if false
@@ -120,6 +122,7 @@ import openfl.net.NetStream;
 	}
 	#end
 
+	#if openfl_gl
 	@:noCompletion private override function __getTexture():GLTexture
 	{
 		#if openfl_html5
@@ -135,6 +138,7 @@ import openfl.net.NetStream;
 
 		return __textureID;
 	}
+	#end
 
 	@:noCompletion private function __textureReady():Void
 	{

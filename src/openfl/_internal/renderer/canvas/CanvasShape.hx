@@ -1,5 +1,6 @@
 package openfl._internal.renderer.canvas;
 
+#if openfl_html5
 import openfl.display.DisplayObject;
 
 @:access(openfl.display.DisplayObject)
@@ -128,3 +129,4 @@ class CanvasShape
 		#end
 	}
 }
+#end

@@ -292,7 +292,7 @@ import openfl.geom.Rectangle;
 
 	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int, sourceBitmapData:BitmapData):Shader
 	{
-		#if !macro
+		#if (!macro && openfl_gl)
 		// Drop shadow is glow with an offset
 		if (__inner && pass == 0)
 		{
@@ -563,7 +563,7 @@ private class HideShader extends BitmapFilterShader
 	public function new()
 	{
 		super();
-		#if !macro
+		#if (!macro && openfl_gl)
 		offset.value = [0, 0];
 		#end
 	}

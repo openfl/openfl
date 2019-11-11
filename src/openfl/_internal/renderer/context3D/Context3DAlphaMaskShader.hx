@@ -1,5 +1,6 @@
 package openfl._internal.renderer.context3D;
 
+#if openfl_gl
 import openfl.display.Shader;
 
 #if !openfl_debug
@@ -48,3 +49,4 @@ class Context3DAlphaMaskShader extends Shader
 		super();
 	}
 }
+#end

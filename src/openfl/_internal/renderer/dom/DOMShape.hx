@@ -1,5 +1,6 @@
 package openfl._internal.renderer.dom;
 
+#if openfl_html5
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl.display.DisplayObject;
 
@@ -82,3 +83,4 @@ class DOMShape
 		#end
 	}
 }
+#end

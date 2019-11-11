@@ -1,5 +1,6 @@
 package openfl._internal.renderer.context3D;
 
+#if openfl_gl
 import openfl.media.Video;
 #if gl_stats
 import openfl._internal.renderer.context3D.stats.Context3DStats;
@@ -122,3 +123,4 @@ class Context3DVideo
 		#end
 	}
 }
+#end

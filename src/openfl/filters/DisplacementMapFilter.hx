@@ -239,7 +239,7 @@ import openfl.display.Shader;
 
 	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int, sourceBitmapData:BitmapData):Shader
 	{
-		#if !macro
+		#if (!macro && openfl_gl)
 		// TODO: mapX/mapY/mapU/mapV + offsets
 
 		__updateMapMatrix();

@@ -1,5 +1,6 @@
 package openfl._internal.renderer.dom;
 
+#if openfl_html5
 import openfl.media.Video;
 
 @:access(openfl.media.Video)
@@ -47,3 +48,4 @@ class DOMVideo
 		#end
 	}
 }
+#end

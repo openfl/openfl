@@ -1,5 +1,6 @@
 package openfl._internal.renderer.context3D;
 
+#if openfl_gl
 import openfl.display.DisplayObject;
 #if gl_stats
 import openfl._internal.renderer.context3D.stats.Context3DStats;
@@ -112,3 +113,4 @@ class Context3DShape
 		}
 	}
 }
+#end

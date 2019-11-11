@@ -1,5 +1,6 @@
 package openfl._internal.renderer.context3D;
 
+#if openfl_gl
 import openfl._internal.backend.math.ARGB;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
@@ -917,3 +918,4 @@ class Context3DGraphics
 		}
 	}
 }
+#end

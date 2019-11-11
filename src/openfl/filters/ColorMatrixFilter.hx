@@ -270,7 +270,7 @@ private class ColorMatrixShader extends BitmapFilterShader
 	{
 		super();
 
-		#if !macro
+		#if (!macro && openfl_gl)
 		uMultipliers.value = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 		uOffsets.value = [0, 0, 0, 0];
 		#end
@@ -278,7 +278,7 @@ private class ColorMatrixShader extends BitmapFilterShader
 
 	public function init(matrix:Array<Float>):Void
 	{
-		#if !macro
+		#if (!macro && openfl_gl)
 		var multipliers = uMultipliers.value;
 		var offsets = uOffsets.value;
 

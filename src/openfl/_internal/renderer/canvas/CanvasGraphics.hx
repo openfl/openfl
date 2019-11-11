@@ -1,5 +1,6 @@
 package openfl._internal.renderer.canvas;
 
+#if openfl_html5
 import openfl._internal.backend.html5.CanvasElement;
 import openfl._internal.backend.html5.CanvasPattern;
 import openfl._internal.backend.html5.CanvasRenderingContext2D;
@@ -1577,3 +1578,4 @@ private typedef NormalizedUVT =
 	max:Float,
 	uvt:Vector<Float>
 }
+#end

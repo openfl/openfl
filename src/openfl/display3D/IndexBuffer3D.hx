@@ -40,10 +40,12 @@ import openfl.Vector;
 		__context = context3D;
 		__numIndices = numIndices;
 
+		#if openfl_gl
 		var gl = __context.gl;
 		__id = gl.createBuffer();
 
 		__usage = (bufferUsage == Context3DBufferUsage.DYNAMIC_DRAW) ? gl.DYNAMIC_DRAW : gl.STATIC_DRAW;
+		#end
 	}
 
 	/**
@@ -52,8 +54,10 @@ import openfl.Vector;
 	**/
 	public function dispose():Void
 	{
+		#if openfl_gl
 		var gl = __context.gl;
 		gl.deleteBuffer(__id);
+		#end
 	}
 
 	/**
@@ -78,7 +82,7 @@ import openfl.Vector;
 	**/
 	public function uploadFromByteArray(data:ByteArray, byteArrayOffset:Int, startOffset:Int, count:Int):Void
 	{
-		#if lime
+		#if openfl_gl
 		var offset = byteArrayOffset + startOffset * 2;
 		uploadFromTypedArray(new UInt16Array(data.toArrayBuffer(), offset, count));
 		#end
@@ -93,10 +97,12 @@ import openfl.Vector;
 	**/
 	public function uploadFromTypedArray(data:ArrayBufferView, byteLength:Int = -1):Void
 	{
+		#if openfl_gl
 		if (data == null) return;
 		var gl = __context.gl;
 		__context.__bindGLElementArrayBuffer(__id);
 		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, data, __usage);
+		#end
 	}
 
 	/**
@@ -116,7 +122,7 @@ import openfl.Vector;
 	**/
 	public function uploadFromVector(data:Vector<UInt>, startOffset:Int, count:Int):Void
 	{
-		#if lime
+		#if openfl_gl
 		// TODO: Optimize more
 
 		if (data == null) return;

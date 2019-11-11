@@ -1,5 +1,6 @@
 package openfl._internal.renderer.dom;
 
+#if openfl_html5
 import openfl.display.DisplayObject;
 
 @:access(openfl.display.DisplayObject)
@@ -40,3 +41,4 @@ class DOMDisplayObject
 		#end
 	}
 }
+#end

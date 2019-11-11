@@ -1,5 +1,6 @@
 package openfl._internal.renderer.canvas;
 
+#if openfl_html5
 import openfl._internal.backend.math.ARGB;
 import openfl.display.DisplayObject;
 
@@ -43,3 +44,4 @@ class CanvasDisplayObject
 		#end
 	}
 }
+#end

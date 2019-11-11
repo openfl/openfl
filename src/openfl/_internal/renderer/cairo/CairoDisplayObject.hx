@@ -1,5 +1,6 @@
 package openfl._internal.renderer.cairo;
 
+#if openfl_cairo
 import openfl._internal.backend.math.ARGB;
 import openfl.display.DisplayObject;
 
@@ -46,3 +47,4 @@ class CairoDisplayObject
 		}
 	}
 }
+#end

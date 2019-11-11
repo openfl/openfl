@@ -1,5 +1,6 @@
 package openfl._internal.renderer.context3D.batcher;
 
+#if openfl_gl
 import haxe.ds.IntMap;
 import openfl._internal.backend.lime.WebGLRenderContext;
 import openfl._internal.backend.math.Matrix4;
@@ -392,3 +393,4 @@ private class BatchShader extends Shader
 		super();
 	}
 }
+#end

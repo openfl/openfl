@@ -457,6 +457,7 @@ import openfl.utils.ByteArray;
 	public function clear(red:Float = 0, green:Float = 0, blue:Float = 0, alpha:Float = 1, depth:Float = 1, stencil:UInt = 0,
 			mask:UInt = Context3DClearMask.ALL):Void
 	{
+		#if openfl_gl
 		__flushGLFramebuffer();
 		__flushGLViewport();
 
@@ -518,6 +519,7 @@ import openfl.utils.ByteArray;
 
 		__setGLScissorTest(false);
 		gl.clear(clearMask);
+		#end
 	}
 
 	/**
@@ -622,8 +624,11 @@ import openfl.utils.ByteArray;
 			__state.backBufferEnableDepthAndStencil = enableDepthAndStencil;
 			__backBufferWantsBestResolution = wantsBestResolution;
 			__backBufferWantsBestResolutionOnBrowserZoom = wantsBestResolutionOnBrowserZoom;
+
+			#if openfl_gl
 			__state.__primaryGLFramebuffer = __backBufferTexture.__getGLFramebuffer(enableDepthAndStencil, antiAlias, 0);
 			__frontBufferTexture.__getGLFramebuffer(enableDepthAndStencil, antiAlias, 0);
+			#end
 		}
 	}
 
@@ -1048,7 +1053,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function drawToBitmapData(destination:BitmapData, srcRect:Rectangle = null, destPoint:Point = null):Void
 	{
-		#if lime
+		#if openfl_gl
 		if (destination == null) return;
 
 		var sourceRect = srcRect != null ? srcRect.__toLimeRectangle() : new LimeRectangle(0, 0, backBufferWidth, backBufferHeight);
@@ -1171,6 +1176,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function drawTriangles(indexBuffer:IndexBuffer3D, firstIndex:Int = 0, numTriangles:Int = -1):Void
 	{
+		#if openfl_gl
 		#if !openfl_disable_display_render
 		if (__state.renderToTexture == null)
 		{
@@ -1198,6 +1204,7 @@ import openfl.utils.ByteArray;
 
 		__bindGLElementArrayBuffer(indexBuffer.__id);
 		gl.drawElements(gl.TRIANGLES, count, gl.UNSIGNED_SHORT, firstIndex * 2);
+		#end
 	}
 
 	/**
@@ -1222,6 +1229,7 @@ import openfl.utils.ByteArray;
 	{
 		setRenderToBackBuffer();
 
+		#if openfl_gl
 		if (__stage3D != null && __backBufferTexture != null)
 		{
 			if (!__cleared)
@@ -1238,6 +1246,7 @@ import openfl.utils.ByteArray;
 			__state.__primaryGLFramebuffer = __backBufferTexture.__getGLFramebuffer(__state.backBufferEnableDepthAndStencil, __backBufferAntiAlias, 0);
 			__cleared = false;
 		}
+		#end
 
 		__present = true;
 	}
@@ -1288,8 +1297,10 @@ import openfl.utils.ByteArray;
 		__state.blendSourceAlphaFactor = sourceAlphaFactor;
 		__state.blendDestinationAlphaFactor = destinationAlphaFactor;
 
+		#if openfl_gl
 		// TODO: Better way to handle this?
 		__setGLBlendEquation(gl.FUNC_ADD);
+		#end
 	}
 
 	/**
@@ -1464,7 +1475,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function setProgramConstantsFromMatrix(programType:Context3DProgramType, firstRegister:Int, matrix:Matrix3D, transposedMatrix:Bool = false):Void
 	{
-		#if lime
+		#if openfl_gl
 		if (__state.program != null && __state.program.__format == GLSL)
 		{
 			__flushGLProgram();
@@ -1871,6 +1882,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function setVertexBufferAt(index:Int, buffer:VertexBuffer3D, bufferOffset:Int = 0, format:Context3DVertexBufferFormat = FLOAT_4):Void
 	{
+		#if openfl_gl
 		if (buffer == null)
 		{
 			gl.disableVertexAttribArray(index);
@@ -1903,8 +1915,10 @@ import openfl.utils.ByteArray;
 			default:
 				throw new IllegalOperationError();
 		}
+		#end
 	}
 
+	#if openfl_gl
 	@:noCompletion private function __bindGLArrayBuffer(buffer:GLBuffer):Void
 	{
 		if (#if openfl_disable_context_cache true #else __contextState.__currentGLArrayBuffer != buffer #end)
@@ -1955,6 +1969,7 @@ import openfl.utils.ByteArray;
 
 		// }
 	}
+	#end
 
 	@:noCompletion private function __dispose():Void
 	{
@@ -1982,6 +1997,7 @@ import openfl.utils.ByteArray;
 
 	@:noCompletion private function __drawTriangles(firstIndex:Int = 0, count:Int):Void
 	{
+		#if openfl_gl
 		#if !openfl_disable_display_render
 		if (__state.renderToTexture == null)
 		{
@@ -2006,8 +2022,10 @@ import openfl.utils.ByteArray;
 		}
 
 		gl.drawArrays(gl.TRIANGLES, firstIndex, count);
+		#end
 	}
 
+	#if openfl_gl
 	@:noCompletion private function __flushGL():Void
 	{
 		__flushGLProgram();
@@ -2498,6 +2516,7 @@ import openfl.utils.ByteArray;
 			default: gl.FRONT_AND_BACK;
 		}
 	}
+	#end
 
 	@:noCompletion private function __renderStage3D(stage3D:Stage3D):Void
 	{
@@ -2546,6 +2565,7 @@ import openfl.utils.ByteArray;
 		}
 	}
 
+	#if openfl_gl
 	@:noCompletion private function __setGLBlend(enable:Bool):Void
 	{
 		if (#if openfl_disable_context_cache true #else __contextState.__enableGLBlend != enable #end)
@@ -2643,6 +2663,7 @@ import openfl.utils.ByteArray;
 			__contextState.__enableGLStencilTest = enable;
 		}
 	}
+	#end
 
 	// Get & Set Methods
 	@:noCompletion private function get_enableErrorChecking():Bool

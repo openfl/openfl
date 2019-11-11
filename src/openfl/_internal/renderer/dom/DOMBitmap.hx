@@ -1,5 +1,6 @@
 package openfl._internal.renderer.dom;
 
+#if openfl_html5
 import openfl._internal.backend.html5.Browser;
 import openfl._internal.backend.lime.ImageCanvasUtil;
 import openfl._internal.renderer.dom.DOMRenderer;
@@ -120,3 +121,4 @@ class DOMBitmap
 		#end
 	}
 }
+#end

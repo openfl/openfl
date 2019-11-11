@@ -1,5 +1,6 @@
 package openfl._internal.renderer.canvas;
 
+#if openfl_html5
 import openfl._internal.backend.lime.ImageCanvasUtil;
 import openfl.display.Bitmap;
 
@@ -61,3 +62,4 @@ class CanvasBitmap
 		#end
 	}
 }
+#end

@@ -40,9 +40,11 @@ class TextureBase extends EventDispatcher
 	// private var __compressedMemoryUsage:Int;
 	@:noCompletion private var __context:Context3D;
 	@:noCompletion private var __format:Int;
+	#if openfl_gl
 	@:noCompletion private var __glDepthRenderbuffer:GLRenderbuffer;
 	@:noCompletion private var __glFramebuffer:GLFramebuffer;
 	@:noCompletion private var __glStencilRenderbuffer:GLRenderbuffer;
+	#end
 	@:noCompletion private var __height:Int;
 	@:noCompletion private var __internalFormat:Int;
 	// private var __memoryUsage:Int;
@@ -51,7 +53,9 @@ class TextureBase extends EventDispatcher
 	@:noCompletion private var __samplerState:SamplerState;
 	@:noCompletion private var __streamingLevels:Int;
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __textureContext:#if lime RenderContext #else Dynamic #end;
+	#if openfl_gl
 	@:noCompletion private var __textureID:GLTexture;
+	#end
 	@:noCompletion private var __textureTarget:Int;
 	@:noCompletion private var __width:Int;
 
@@ -60,6 +64,8 @@ class TextureBase extends EventDispatcher
 		super();
 
 		__context = context;
+
+		#if openfl_gl
 		var gl = __context.gl;
 		// __textureTarget = target;
 
@@ -135,6 +141,7 @@ class TextureBase extends EventDispatcher
 
 		__internalFormat = __textureInternalFormat;
 		__format = __textureFormat;
+		#end
 
 		// __memoryUsage = 0;
 		// __compressedMemoryUsage = 0;
@@ -146,6 +153,7 @@ class TextureBase extends EventDispatcher
 	**/
 	public function dispose():Void
 	{
+		#if openfl_gl
 		var gl = __context.gl;
 
 		if (__alphaTexture != null)
@@ -169,8 +177,10 @@ class TextureBase extends EventDispatcher
 		{
 			gl.deleteRenderbuffer(__glStencilRenderbuffer);
 		}
+		#end
 	}
 
+	#if openfl_gl
 	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion private function __getGLFramebuffer(enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):GLFramebuffer
 	{
@@ -235,6 +245,7 @@ class TextureBase extends EventDispatcher
 
 		return __glFramebuffer;
 	}
+	#end
 
 	#if lime
 	@:noCompletion private function __getImage(bitmapData:BitmapData):Image
@@ -250,7 +261,7 @@ class TextureBase extends EventDispatcher
 		ImageCanvasUtil.sync(image, false);
 		#end
 
-		#if openfl_html5
+		#if (openfl_gl && openfl_html5)
 		var gl = __context.gl;
 
 		if (image.type != DATA && !image.premultiplied)
@@ -290,13 +301,16 @@ class TextureBase extends EventDispatcher
 	}
 	#end
 
+	#if openfl_gl
 	@:noCompletion private function __getTexture():GLTexture
 	{
 		return __textureID;
 	}
+	#end
 
 	@:noCompletion private function __setSamplerState(state:SamplerState):Bool
 	{
+		#if openfl_gl
 		if (!state.equals(__samplerState))
 		{
 			var gl = __context.gl;
@@ -363,6 +377,7 @@ class TextureBase extends EventDispatcher
 
 			return true;
 		}
+		#end
 
 		return false;
 	}

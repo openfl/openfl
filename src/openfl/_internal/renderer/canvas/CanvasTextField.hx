@@ -1,5 +1,6 @@
 package openfl._internal.renderer.canvas;
 
+#if openfl_html5
 import openfl._internal.backend.html5.Browser;
 import openfl._internal.backend.html5.CanvasRenderingContext2D;
 import openfl._internal.text.TextEngine;
@@ -340,3 +341,4 @@ class CanvasTextField
 		#end
 	}
 }
+#end

@@ -234,7 +234,7 @@ class ConvolutionFilter extends BitmapFilter
 
 	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int, sourceBitmapData:BitmapData):Shader
 	{
-		#if !macro
+		#if (!macro && openfl_gl)
 		__convolutionShader.uConvoMatrix.value = matrix;
 		__convolutionShader.uDivisor.value[0] = divisor;
 		__convolutionShader.uBias.value[0] = bias;
@@ -347,7 +347,7 @@ private class ConvolutionShader extends BitmapFilterShader
 	{
 		super();
 
-		#if !macro
+		#if (!macro && openfl_gl)
 		uDivisor.value = [1];
 		uBias.value = [0];
 		uPreserveAlpha.value = [true];

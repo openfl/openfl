@@ -1,5 +1,6 @@
 package openfl._internal.renderer.canvas;
 
+#if openfl_html5
 import openfl._internal.backend.lime.ImageCanvasUtil;
 import openfl._internal.backend.lime.Canvas2DRenderContext;
 import openfl._internal.formats.html.HTMLParser;
@@ -940,3 +941,4 @@ class CanvasRenderer extends CanvasRendererAPI
 		return updated;
 	}
 }
+#end

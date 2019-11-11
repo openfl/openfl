@@ -1,5 +1,6 @@
 package openfl._internal.renderer.dom;
 
+#if openfl_html5
 import openfl._internal.backend.html5.Browser;
 import openfl._internal.renderer.canvas.CanvasTilemap;
 import openfl.display.Tilemap;
@@ -55,3 +56,4 @@ class DOMTilemap
 		#end
 	}
 }
+#end

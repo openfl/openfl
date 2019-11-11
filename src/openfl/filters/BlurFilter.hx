@@ -310,14 +310,14 @@ private class BlurShader extends BitmapFilterShader
 	{
 		super();
 
-		#if !macro
+		#if (!macro && openfl_gl)
 		uRadius.value = [0, 0];
 		#end
 	}
 
 	@:noCompletion private override function __update():Void
 	{
-		#if !macro
+		#if (!macro && openfl_gl)
 		uTextureSize.value = [__texture.input.width, __texture.input.height];
 		#end
 

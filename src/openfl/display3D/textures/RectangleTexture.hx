@@ -34,10 +34,12 @@ import openfl.utils.ByteArray;
 		// __format = format;
 		__optimizeForRenderToTexture = optimizeForRenderToTexture;
 
+		#if openfl_gl
 		__textureTarget = __context.gl.TEXTURE_2D;
 		uploadFromTypedArray(null);
 
 		if (optimizeForRenderToTexture) __getGLFramebuffer(true, 0, 0);
+		#end
 	}
 
 	/**
@@ -58,7 +60,7 @@ import openfl.utils.ByteArray;
 		var image = __getImage(source);
 		if (image == null) return;
 
-		#if openfl_html5
+		#if (openfl_gl && openfl_html5)
 		if (image.buffer != null && image.buffer.data == null && image.buffer.src != null)
 		{
 			var gl = __context.gl;
@@ -92,7 +94,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function uploadFromByteArray(data:ByteArray, byteArrayOffset:UInt):Void
 	{
-		#if lime
+		#if openfl_gl
 		#if (js && !display)
 		if (byteArrayOffset == 0)
 		{
@@ -114,15 +116,18 @@ import openfl.utils.ByteArray;
 	**/
 	public function uploadFromTypedArray(data:ArrayBufferView):Void
 	{
+		#if openfl_gl
 		var gl = __context.gl;
 
 		__context.__bindGLTexture2D(__textureID);
 		gl.texImage2D(__textureTarget, 0, __internalFormat, __width, __height, 0, __format, gl.UNSIGNED_BYTE, data);
 		__context.__bindGLTexture2D(null);
+		#end
 	}
 
 	@:noCompletion private override function __setSamplerState(state:SamplerState):Bool
 	{
+		#if openfl_gl
 		if (super.__setSamplerState(state))
 		{
 			var gl = __context.gl;
@@ -148,6 +153,7 @@ import openfl.utils.ByteArray;
 
 			return true;
 		}
+		#end
 
 		return false;
 	}

@@ -1,6 +1,7 @@
 package openfl._internal.renderer.context3D;
 
 #if !flash
+#if openfl_gl
 import openfl._internal.backend.gl.ext.KHR_debug;
 import openfl._internal.backend.lime.RenderContext;
 import openfl._internal.backend.lime.WebGLRenderContext;
@@ -1825,6 +1826,7 @@ class Context3DRenderer extends Context3DRendererAPI
 		}
 	}
 }
+#end
 #else
 typedef Context3DRenderer = Dynamic;
 #end

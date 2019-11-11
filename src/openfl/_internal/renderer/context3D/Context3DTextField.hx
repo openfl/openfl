@@ -1,5 +1,6 @@
 package openfl._internal.renderer.context3D;
 
+#if openfl_gl
 import openfl._internal.renderer.cairo.CairoTextField;
 import openfl._internal.renderer.canvas.CanvasTextField;
 import openfl.text.TextField;
@@ -33,3 +34,4 @@ class Context3DTextField
 		textField.__graphics.__hardwareDirty = false;
 	}
 }
+#end

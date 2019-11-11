@@ -1,5 +1,6 @@
 package openfl._internal.renderer.context3D.batcher;
 
+#if openfl_gl
 @SuppressWarnings("checkstyle:FieldDocComment")
 class BitHacks
 {
@@ -33,3 +34,4 @@ class BitHacks
 		return v + 1;
 	}
 }
+#end

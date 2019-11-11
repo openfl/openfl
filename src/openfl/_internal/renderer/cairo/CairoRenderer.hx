@@ -1,5 +1,6 @@
 package openfl._internal.renderer.cairo;
 
+#if openfl_cairo
 import openfl._internal.backend.cairo.Cairo;
 import openfl._internal.backend.cairo.CairoFilter;
 import openfl._internal.backend.cairo.CairoOperator;
@@ -891,3 +892,4 @@ class CairoRenderer extends CairoRendererAPI
 		return updated;
 	}
 }
+#end

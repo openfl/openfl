@@ -4,6 +4,7 @@ package openfl.utils;
 // import openfl._internal.backend.lime.System;
 // import openfl._internal.backend.lime.ThreadPool;
 import openfl._internal.utils.Log;
+import openfl.Lib;
 
 /**
 	`Future` is an implementation of Futures and Promises, with the exception that
@@ -216,7 +217,7 @@ class Future<T>
 		}
 		else
 		{
-			var time = System.getTimer();
+			var time = Lib.getTimer();
 			var end = time + waitTime;
 
 			while (!isComplete && !isError && time <= end)
@@ -225,7 +226,7 @@ class Future<T>
 				Sys.sleep(0.01);
 				#end
 
-				time = System.getTimer();
+				time = Lib.getTimer();
 			}
 
 			return this;
