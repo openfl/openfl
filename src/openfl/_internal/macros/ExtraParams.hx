@@ -38,7 +38,7 @@ class ExtraParams
 			}
 			#end
 
-			if (Context.defined("js") && !Context.defined("nodejs") && !Context.defined("lime"))
+			if (Context.defined("js") && (Context.defined("commonjs") || Context.defined("openfljs")))
 			{
 				var childPath = Context.resolvePath("openfl/external");
 
