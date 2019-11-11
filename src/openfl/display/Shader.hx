@@ -315,6 +315,7 @@ class Shader
 	// }
 	// return shader;
 	// }
+	#if openfl_gl
 	@:noCompletion private function __createGLShader(source:String, type:Int):GLShader
 	{
 		var gl = __context.gl;
@@ -366,6 +367,7 @@ class Shader
 
 		return program;
 	}
+	#end
 
 	@:noCompletion private function __disable():Void
 	{

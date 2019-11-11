@@ -53,6 +53,7 @@ class AGALConverter
 
 	public static function convertToGLSL(program:Program3D, agal:ByteArray, samplerState:Array<SamplerState>):String
 	{
+		#if openfl_gl
 		agal.position = 0;
 		agal.endian = Endian.LITTLE_ENDIAN;
 
@@ -519,6 +520,9 @@ class AGALConverter
 
 		// System.Console.WriteLine(glsl);
 		return glsl.toString();
+		#else
+		return null;
+		#end
 	}
 }
 

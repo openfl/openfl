@@ -850,6 +850,7 @@ import openfl.Vector;
 
 	@:noCompletion private function __uploadFromGLSL(vertexShaderSource:String, fragmentShaderSource:String):Void
 	{
+		#if openfl_gl
 		var gl = __context.gl;
 
 		__glVertexSource = vertexShaderSource;
@@ -919,6 +920,7 @@ import openfl.Vector;
 			message += "\n" + gl.getProgramInfoLog(__glProgram);
 			Log.error(message);
 		}
+		#end
 	}
 }
 

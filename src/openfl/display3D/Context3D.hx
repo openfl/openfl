@@ -290,6 +290,7 @@ import openfl.utils.ByteArray;
 		__contextState = contextState;
 		__stage3D = stage3D;
 
+		#if openfl_gl
 		__context = stage.window.context;
 		gl = __context.webgl;
 
@@ -421,6 +422,7 @@ import openfl.utils.ByteArray;
 		#end
 
 		__bitmapDataPool = new BitmapDataPool(30, this);
+		#end
 	}
 
 	/**
