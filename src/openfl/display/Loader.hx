@@ -204,18 +204,17 @@ class Loader extends DisplayObjectContainer
 	}
 
 	#if (openfl >= "9.0.0")
-	#error "Need to move addChild and sundry to private __addChild internally"
-	public override function addChild(child:DisplayObject):DisplayObject
-	{
-		throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
-		return null;
-	}
-
-	public override function addChildAt(child:DisplayObject, index:Int):DisplayObject
-	{
-		throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
-		return null;
-	}
+	// #error "Need to move addChild and sundry to private __addChild internally"
+	// public override function addChild(child:DisplayObject):DisplayObject
+	// {
+	// 	throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
+	// 	return null;
+	// }
+	// public override function addChildAt(child:DisplayObject, index:Int):DisplayObject
+	// {
+	// 	throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
+	// 	return null;
+	// }
 	#end
 
 	#if !openfl_strict

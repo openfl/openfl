@@ -4,8 +4,8 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "8.9.5",
-	"releasenote": "Neko fixes, filter fixes, minor HL patch",
+	"version": "9.0.0",
+	"releasenote": "See CHANGELOG",
 	"contributors": [ "singmajesty" ],
 	"classPath": "src"
 }
