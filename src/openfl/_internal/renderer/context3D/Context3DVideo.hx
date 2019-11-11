@@ -1,6 +1,7 @@
 package openfl._internal.renderer.context3D;
 
 #if openfl_gl
+import openfl._internal.backend.gl.GL;
 import openfl.media.Video;
 #if gl_stats
 import openfl._internal.renderer.context3D.stats.Context3DStats;
@@ -65,13 +66,13 @@ class Context3DVideo
 
 			if (video.smoothing)
 			{
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+				gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.LINEAR);
+				gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.LINEAR);
 			}
 			else
 			{
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+				gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, GL.NEAREST);
+				gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, GL.NEAREST);
 			}
 
 			var vertexBuffer = video.__getVertexBuffer(context);

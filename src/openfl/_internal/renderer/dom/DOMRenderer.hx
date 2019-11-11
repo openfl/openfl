@@ -87,7 +87,9 @@ class DOMRenderer extends DOMRendererAPI
 		__numClipRects = 0;
 		__z = 0;
 
+		#if lime
 		__type = DOM;
+		#end
 
 		__canvasRenderer = new CanvasRenderer(null);
 		__canvasRenderer.__domRenderer = this;

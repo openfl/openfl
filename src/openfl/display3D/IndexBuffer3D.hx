@@ -2,6 +2,7 @@ package openfl.display3D;
 
 #if !flash
 import openfl._internal.backend.gl.GLBuffer;
+import openfl._internal.backend.gl.GL;
 import openfl._internal.backend.utils.ArrayBufferView;
 import openfl._internal.backend.utils.UInt16Array;
 import openfl.utils.ByteArray;
@@ -44,7 +45,7 @@ import openfl.Vector;
 		var gl = __context.gl;
 		__id = gl.createBuffer();
 
-		__usage = (bufferUsage == Context3DBufferUsage.DYNAMIC_DRAW) ? gl.DYNAMIC_DRAW : gl.STATIC_DRAW;
+		__usage = (bufferUsage == Context3DBufferUsage.DYNAMIC_DRAW) ? GL.DYNAMIC_DRAW : GL.STATIC_DRAW;
 		#end
 	}
 
@@ -101,7 +102,7 @@ import openfl.Vector;
 		if (data == null) return;
 		var gl = __context.gl;
 		__context.__bindGLElementArrayBuffer(__id);
-		gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, data, __usage);
+		gl.bufferData(GL.ELEMENT_ARRAY_BUFFER, data, __usage);
 		#end
 	}
 

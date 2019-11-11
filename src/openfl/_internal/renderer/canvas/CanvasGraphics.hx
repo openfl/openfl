@@ -87,7 +87,7 @@ class CanvasGraphics
 	@SuppressWarnings("checkstyle:Dynamic")
 	private static function createBitmapFill(bitmap:BitmapData, bitmapRepeat:Bool, smooth:Bool):#if openfl_html5 CanvasPattern #else Dynamic #end
 	{
-		#if openfl_html5
+		#if (lime && openfl_html5)
 		ImageCanvasUtil.convertToCanvas(bitmap.image);
 		setSmoothing(smooth);
 		return context.createPattern(bitmap.image.src, bitmapRepeat ? "repeat" : "no-repeat");

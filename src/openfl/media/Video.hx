@@ -295,6 +295,7 @@ class Video extends DisplayObject
 
 	@:noCompletion private function __getIndexBuffer(context:Context3D):IndexBuffer3D
 	{
+		#if (lime && openfl_gl)
 		var gl = context.gl;
 
 		if (__indexBuffer == null || __indexBufferContext != context.__context)
@@ -315,6 +316,9 @@ class Video extends DisplayObject
 		}
 
 		return __indexBuffer;
+		#else
+		return null;
+		#end
 	}
 
 	@:noCompletion private function __getTexture(context:Context3D):RectangleTexture
@@ -347,6 +351,7 @@ class Video extends DisplayObject
 
 	@:noCompletion private function __getVertexBuffer(context:Context3D):VertexBuffer3D
 	{
+		#if (lime && openfl_gl)
 		var gl = context.gl;
 
 		if (__vertexBuffer == null || __vertexBufferContext != context.__context)
@@ -389,6 +394,9 @@ class Video extends DisplayObject
 		}
 
 		return __vertexBuffer;
+		#else
+		return null;
+		#end
 	}
 
 	@:noCompletion private override function __hitTest(x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool,

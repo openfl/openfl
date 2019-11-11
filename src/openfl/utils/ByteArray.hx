@@ -676,7 +676,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		return value;
 	}
 
-	#if lime
 	/**
 		Converts a ByteArray into an ArrayBuffer.
 
@@ -695,7 +694,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		return (byteArray : ByteArrayData);
 		#end
 	}
-	#end
 
 	#if lime
 	@:to @:noCompletion private static function toBytePointer(byteArray:ByteArray):BytePointer

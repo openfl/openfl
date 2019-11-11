@@ -3,6 +3,7 @@ package openfl.display3D.textures;
 #if !flash
 import haxe.io.Bytes;
 import haxe.Timer;
+import openfl._internal.backend.gl.GL;
 import openfl._internal.formats.atf.ATFReader;
 import openfl._internal.renderer.SamplerState;
 import openfl._internal.backend.utils.ArrayBufferView;
@@ -44,10 +45,10 @@ import openfl.utils.ByteArray;
 		#if openfl_gl
 		var gl = __context.gl;
 
-		__textureTarget = gl.TEXTURE_2D;
+		__textureTarget = GL.TEXTURE_2D;
 
 		__context.__bindGLTexture2D(__textureID);
-		gl.texImage2D(__textureTarget, 0, __internalFormat, __width, __height, 0, __format, gl.UNSIGNED_BYTE, null);
+		gl.texImage2D(__textureTarget, 0, __internalFormat, __width, __height, 0, __format, GL.UNSIGNED_BYTE, null);
 		__context.__bindGLTexture2D(null);
 
 		if (optimizeForRenderToTexture) __getGLFramebuffer(true, 0, 0);
@@ -182,7 +183,7 @@ import openfl.utils.ByteArray;
 			if (height == 0) height = 1;
 
 			__context.__bindGLTexture2D(__textureID);
-			gl.texImage2D(__textureTarget, miplevel, __internalFormat, __format, gl.UNSIGNED_BYTE, image.buffer.src);
+			gl.texImage2D(__textureTarget, miplevel, __internalFormat, __format, GL.UNSIGNED_BYTE, image.buffer.src);
 			__context.__bindGLTexture2D(null);
 
 			return;
@@ -257,7 +258,7 @@ import openfl.utils.ByteArray;
 		if (height == 0) height = 1;
 
 		__context.__bindGLTexture2D(__textureID);
-		gl.texImage2D(__textureTarget, miplevel, __internalFormat, width, height, 0, __format, gl.UNSIGNED_BYTE, data);
+		gl.texImage2D(__textureTarget, miplevel, __internalFormat, width, height, 0, __format, GL.UNSIGNED_BYTE, data);
 		__context.__bindGLTexture2D(null);
 		#end
 	}
@@ -271,7 +272,7 @@ import openfl.utils.ByteArray;
 
 			if (state.mipfilter != MIPNONE && !__samplerState.mipmapGenerated)
 			{
-				gl.generateMipmap(gl.TEXTURE_2D);
+				gl.generateMipmap(GL.TEXTURE_2D);
 				__samplerState.mipmapGenerated = true;
 			}
 
@@ -291,7 +292,7 @@ import openfl.utils.ByteArray;
 					aniso = Context3D.__glMaxTextureMaxAnisotropy;
 				}
 
-				gl.texParameterf(gl.TEXTURE_2D, Context3D.__glTextureMaxAnisotropy, aniso);
+				gl.texParameterf(GL.TEXTURE_2D, Context3D.__glTextureMaxAnisotropy, aniso);
 			}
 
 			return true;
@@ -351,7 +352,7 @@ import openfl.utils.ByteArray;
 		if (!hasTexture)
 		{
 			var data = new UInt8Array(__width * __height * 4);
-			gl.texImage2D(__textureTarget, 0, __internalFormat, __width, __height, 0, __format, gl.UNSIGNED_BYTE, data);
+			gl.texImage2D(__textureTarget, 0, __internalFormat, __width, __height, 0, __format, GL.UNSIGNED_BYTE, data);
 		}
 
 		__context.__bindGLTexture2D(null);

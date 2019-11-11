@@ -11,7 +11,7 @@ class CanvasBitmap
 {
 	public static inline function render(bitmap:Bitmap, renderer:CanvasRenderer):Void
 	{
-		#if openfl_html5
+		#if (lime && openfl_html5)
 		if (!bitmap.__renderable) return;
 
 		var alpha = renderer.__getAlpha(bitmap.__worldAlpha);

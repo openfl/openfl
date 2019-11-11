@@ -4,7 +4,7 @@ package openfl.display3D;
 import openfl._internal.backend.gl.GLProgram;
 import openfl._internal.backend.gl.GLShader;
 import openfl._internal.backend.gl.GLUniformLocation;
-// import openfl._internal.backend.gl.GL;
+import openfl._internal.backend.gl.GL;
 import openfl._internal.backend.lime.BytePointer;
 import openfl._internal.formats.agal.AGALConverter;
 import openfl._internal.renderer.SamplerState;
@@ -518,11 +518,11 @@ import openfl.Vector;
 
 			switch (uniform.type)
 			{
-				case 0x8B5A: // GL.FLOAT_MAT2:
+				case GL.FLOAT_MAT2:
 					uniform.regCount = 2;
-				case 0x8B5B: // GL.FLOAT_MAT3:
+				case GL.FLOAT_MAT3:
 					uniform.regCount = 3;
-				case 0x8B5C: // GL.FLOAT_MAT4:
+				case GL.FLOAT_MAT4:
 					uniform.regCount = 4;
 				default:
 					uniform.regCount = 1;
@@ -855,11 +855,11 @@ import openfl.Vector;
 		__glVertexSource = vertexShaderSource;
 		__glFragmentSource = fragmentShaderSource;
 
-		__glVertexShader = gl.createShader(gl.VERTEX_SHADER);
+		__glVertexShader = gl.createShader(GL.VERTEX_SHADER);
 		gl.shaderSource(__glVertexShader, vertexShaderSource);
 		gl.compileShader(__glVertexShader);
 
-		if (gl.getShaderParameter(__glVertexShader, gl.COMPILE_STATUS) == 0)
+		if (gl.getShaderParameter(__glVertexShader, GL.COMPILE_STATUS) == 0)
 		{
 			var message = "Error compiling vertex shader";
 			message += "\n" + gl.getShaderInfoLog(__glVertexShader);
@@ -867,11 +867,11 @@ import openfl.Vector;
 			Log.error(message);
 		}
 
-		__glFragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+		__glFragmentShader = gl.createShader(GL.FRAGMENT_SHADER);
 		gl.shaderSource(__glFragmentShader, fragmentShaderSource);
 		gl.compileShader(__glFragmentShader);
 
-		if (gl.getShaderParameter(__glFragmentShader, gl.COMPILE_STATUS) == 0)
+		if (gl.getShaderParameter(__glFragmentShader, GL.COMPILE_STATUS) == 0)
 		{
 			var message = "Error compiling fragment shader";
 			message += "\n" + gl.getShaderInfoLog(__glFragmentShader);
@@ -913,7 +913,7 @@ import openfl.Vector;
 		gl.attachShader(__glProgram, __glFragmentShader);
 		gl.linkProgram(__glProgram);
 
-		if (gl.getProgramParameter(__glProgram, gl.LINK_STATUS) == 0)
+		if (gl.getProgramParameter(__glProgram, GL.LINK_STATUS) == 0)
 		{
 			var message = "Unable to initialize the shader program";
 			message += "\n" + gl.getProgramInfoLog(__glProgram);
@@ -967,32 +967,32 @@ import openfl.Vector;
 		switch (type)
 		{
 			#if openfl_html5
-			case 0x8B5A: // GL.FLOAT_MAT2:
+			case GL.FLOAT_MAT2:
 				gl.uniformMatrix2fv(location, false, __getUniformRegisters(index, size * 2 * 2));
-			case 0x8B5B: // GL.FLOAT_MAT3:
+			case GL.FLOAT_MAT3:
 				gl.uniformMatrix3fv(location, false, __getUniformRegisters(index, size * 3 * 3));
-			case 0x8B5C: // GL.FLOAT_MAT4:
+			case GL.FLOAT_MAT4:
 				gl.uniformMatrix4fv(location, false, __getUniformRegisters(index, size * 4 * 4));
-			case 0x8B50: // GL.FLOAT_VEC2:
+			case GL.FLOAT_VEC2:
 				gl.uniform2fv(location, __getUniformRegisters(index, regCount * 2));
-			case 0x8B51: // GL.FLOAT_VEC3:
+			case GL.FLOAT_VEC3:
 				gl.uniform3fv(location, __getUniformRegisters(index, regCount * 3));
-			case 0x8B52: // GL.FLOAT_VEC4:
+			case GL.FLOAT_VEC4:
 				gl.uniform4fv(location, __getUniformRegisters(index, regCount * 4));
 			default:
 				gl.uniform4fv(location, __getUniformRegisters(index, regCount * 4));
 			#else
-			case 0x8B5A: // GL.FLOAT_MAT2:
+			case GL.FLOAT_MAT2:
 				gl.uniformMatrix2fv(location, size, false, __getUniformRegisters(index, size * 2 * 2));
-			case 0x8B5B: // GL.FLOAT_MAT3:
+			case GL.FLOAT_MAT3:
 				gl.uniformMatrix3fv(location, size, false, __getUniformRegisters(index, size * 3 * 3));
-			case 0x8B5C: // GL.FLOAT_MAT4:
+			case GL.FLOAT_MAT4:
 				gl.uniformMatrix4fv(location, size, false, __getUniformRegisters(index, size * 4 * 4));
-			case 0x8B50: // GL.FLOAT_VEC2:
+			case GL.FLOAT_VEC2:
 				gl.uniform2fv(location, regCount, __getUniformRegisters(index, regCount * 2));
-			case 0x8B51: // GL.FLOAT_VEC3:
+			case GL.FLOAT_VEC3:
 				gl.uniform3fv(location, regCount, __getUniformRegisters(index, regCount * 3));
-			case 0x8B52: // GL.FLOAT_VEC4:
+			case GL.FLOAT_VEC4:
 				gl.uniform4fv(location, regCount, __getUniformRegisters(index, regCount * 4));
 			default:
 				gl.uniform4fv(location, regCount, __getUniformRegisters(index, regCount * 4));

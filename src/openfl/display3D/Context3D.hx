@@ -4,10 +4,11 @@ package openfl.display3D;
 import openfl._internal.backend.gl.GLBuffer;
 import openfl._internal.backend.gl.GLFramebuffer;
 import openfl._internal.backend.gl.GLTexture;
+import openfl._internal.backend.gl.GL;
+import openfl._internal.backend.gl.WebGLRenderingContext;
 import openfl._internal.backend.lime.Image;
 import openfl._internal.backend.lime.ImageBuffer;
 import openfl._internal.backend.lime.RenderContext;
-import openfl._internal.backend.lime.WebGLRenderContext;
 import openfl._internal.backend.math.Rectangle as LimeRectangle;
 import openfl._internal.backend.math.Vector2;
 import openfl._internal.renderer.context3D.Context3DState;
@@ -257,7 +258,7 @@ import openfl.utils.ByteArray;
 	@:noCompletion private static var __glMemoryTotalAvailable:Int = -1;
 	@:noCompletion private static var __glTextureMaxAnisotropy:Int = -1;
 
-	@:noCompletion private var gl:#if lime WebGLRenderContext #else Dynamic #end;
+	@:noCompletion private var gl:WebGLRenderingContext;
 	@:noCompletion private var __backBufferAntiAlias:Int;
 	@:noCompletion private var __backBufferTexture:RectangleTexture;
 	@:noCompletion private var __backBufferWantsBestResolution:Bool;
@@ -305,7 +306,7 @@ import openfl.utils.ByteArray;
 		if (__glMaxViewportDims == -1)
 		{
 			#if openfl_html5
-			__glMaxViewportDims = gl.getParameter(gl.MAX_VIEWPORT_DIMS);
+			__glMaxViewportDims = gl.getParameter(GL.MAX_VIEWPORT_DIMS);
 			#else
 			__glMaxViewportDims = 16384;
 			#end
@@ -383,10 +384,10 @@ import openfl.utils.ByteArray;
 
 		if (__driverInfo == null)
 		{
-			var vendor = gl.getParameter(gl.VENDOR);
-			var version = gl.getParameter(gl.VERSION);
-			var renderer = gl.getParameter(gl.RENDERER);
-			var glslVersion = gl.getParameter(gl.SHADING_LANGUAGE_VERSION);
+			var vendor = gl.getParameter(GL.VENDOR);
+			var version = gl.getParameter(GL.VERSION);
+			var renderer = gl.getParameter(GL.RENDERER);
+			var glslVersion = gl.getParameter(GL.SHADING_LANGUAGE_VERSION);
 
 			__driverInfo = "OpenGL Vendor=" + vendor + " Version=" + version + " Renderer=" + renderer + " GLSL=" + glslVersion;
 		}
@@ -471,7 +472,7 @@ import openfl.utils.ByteArray;
 				__cleared = true;
 			}
 
-			clearMask |= gl.COLOR_BUFFER_BIT;
+			clearMask |= GL.COLOR_BUFFER_BIT;
 
 			if (#if openfl_disable_context_cache true #else __contextState.colorMaskRed != true
 				|| __contextState.colorMaskGreen != true
@@ -490,7 +491,7 @@ import openfl.utils.ByteArray;
 
 		if (mask & Context3DClearMask.DEPTH != 0)
 		{
-			clearMask |= gl.DEPTH_BUFFER_BIT;
+			clearMask |= GL.DEPTH_BUFFER_BIT;
 
 			if (#if openfl_disable_context_cache true #else __contextState.depthMask != true #end)
 			{
@@ -503,7 +504,7 @@ import openfl.utils.ByteArray;
 
 		if (mask & Context3DClearMask.STENCIL != 0)
 		{
-			clearMask |= gl.STENCIL_BUFFER_BIT;
+			clearMask |= GL.STENCIL_BUFFER_BIT;
 
 			if (#if openfl_disable_context_cache true #else __contextState.stencilWriteMask != 0xFF #end)
 			{
@@ -1053,7 +1054,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function drawToBitmapData(destination:BitmapData, srcRect:Rectangle = null, destPoint:Point = null):Void
 	{
-		#if openfl_gl
+		#if (lime && openfl_gl)
 		if (destination == null) return;
 
 		var sourceRect = srcRect != null ? srcRect.__toLimeRectangle() : new LimeRectangle(0, 0, backBufferWidth, backBufferHeight);
@@ -1083,7 +1084,7 @@ import openfl.utils.ByteArray;
 			// TODO: Read less pixels if srcRect is smaller
 
 			var data = new UInt8Array(backBufferWidth * backBufferHeight * 4);
-			gl.readPixels(0, 0, backBufferWidth, backBufferHeight, __backBufferTexture.__format, gl.UNSIGNED_BYTE, data);
+			gl.readPixels(0, 0, backBufferWidth, backBufferHeight, __backBufferTexture.__format, GL.UNSIGNED_BYTE, data);
 
 			var image = new Image(new ImageBuffer(data, backBufferWidth, backBufferHeight, 32, BGRA32));
 			destination.image.copyPixels(image, sourceRect, destVector);
@@ -1203,7 +1204,7 @@ import openfl.utils.ByteArray;
 		var count = (numTriangles == -1) ? indexBuffer.__numIndices : (numTriangles * 3);
 
 		__bindGLElementArrayBuffer(indexBuffer.__id);
-		gl.drawElements(gl.TRIANGLES, count, gl.UNSIGNED_SHORT, firstIndex * 2);
+		gl.drawElements(GL.TRIANGLES, count, GL.UNSIGNED_SHORT, firstIndex * 2);
 		#end
 	}
 
@@ -1299,7 +1300,7 @@ import openfl.utils.ByteArray;
 
 		#if openfl_gl
 		// TODO: Better way to handle this?
-		__setGLBlendEquation(gl.FUNC_ADD);
+		__setGLBlendEquation(GL.FUNC_ADD);
 		#end
 	}
 
@@ -1898,19 +1899,19 @@ import openfl.utils.ByteArray;
 		switch (format)
 		{
 			case BYTES_4:
-				gl.vertexAttribPointer(index, 4, gl.UNSIGNED_BYTE, true, buffer.__stride, byteOffset);
+				gl.vertexAttribPointer(index, 4, GL.UNSIGNED_BYTE, true, buffer.__stride, byteOffset);
 
 			case FLOAT_4:
-				gl.vertexAttribPointer(index, 4, gl.FLOAT, false, buffer.__stride, byteOffset);
+				gl.vertexAttribPointer(index, 4, GL.FLOAT, false, buffer.__stride, byteOffset);
 
 			case FLOAT_3:
-				gl.vertexAttribPointer(index, 3, gl.FLOAT, false, buffer.__stride, byteOffset);
+				gl.vertexAttribPointer(index, 3, GL.FLOAT, false, buffer.__stride, byteOffset);
 
 			case FLOAT_2:
-				gl.vertexAttribPointer(index, 2, gl.FLOAT, false, buffer.__stride, byteOffset);
+				gl.vertexAttribPointer(index, 2, GL.FLOAT, false, buffer.__stride, byteOffset);
 
 			case FLOAT_1:
-				gl.vertexAttribPointer(index, 1, gl.FLOAT, false, buffer.__stride, byteOffset);
+				gl.vertexAttribPointer(index, 1, GL.FLOAT, false, buffer.__stride, byteOffset);
 
 			default:
 				throw new IllegalOperationError();
@@ -1923,7 +1924,7 @@ import openfl.utils.ByteArray;
 	{
 		if (#if openfl_disable_context_cache true #else __contextState.__currentGLArrayBuffer != buffer #end)
 		{
-			gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+			gl.bindBuffer(GL.ARRAY_BUFFER, buffer);
 			__contextState.__currentGLArrayBuffer = buffer;
 		}
 	}
@@ -1932,7 +1933,7 @@ import openfl.utils.ByteArray;
 	{
 		if (#if openfl_disable_context_cache true #else __contextState.__currentGLElementArrayBuffer != buffer #end)
 		{
-			gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, buffer);
+			gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, buffer);
 			__contextState.__currentGLElementArrayBuffer = buffer;
 		}
 	}
@@ -1941,7 +1942,7 @@ import openfl.utils.ByteArray;
 	{
 		if (#if openfl_disable_context_cache true #else __contextState.__currentGLFramebuffer != framebuffer #end)
 		{
-			gl.bindFramebuffer(gl.FRAMEBUFFER, framebuffer);
+			gl.bindFramebuffer(GL.FRAMEBUFFER, framebuffer);
 			__contextState.__currentGLFramebuffer = framebuffer;
 		}
 	}
@@ -1952,7 +1953,7 @@ import openfl.utils.ByteArray;
 
 		// if (#if openfl_disable_context_cache true #else __contextState.__currentGLTexture2D != texture #end) {
 
-		gl.bindTexture(gl.TEXTURE_2D, texture);
+		gl.bindTexture(GL.TEXTURE_2D, texture);
 		__contextState.__currentGLTexture2D = texture;
 
 		// }
@@ -1964,7 +1965,7 @@ import openfl.utils.ByteArray;
 
 		// if (#if openfl_disable_context_cache true #else __contextState.__currentGLTextureCubeMap != texture #end) {
 
-		gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+		gl.bindTexture(GL.TEXTURE_CUBE_MAP, texture);
 		__contextState.__currentGLTextureCubeMap = texture;
 
 		// }
@@ -2021,7 +2022,7 @@ import openfl.utils.ByteArray;
 			__state.program.__flush();
 		}
 
-		gl.drawArrays(gl.TRIANGLES, firstIndex, count);
+		gl.drawArrays(GL.TRIANGLES, firstIndex, count);
 		#end
 	}
 
@@ -2099,11 +2100,11 @@ import openfl.utils.ByteArray;
 				{
 					case NONE: // skip
 					case BACK:
-						gl.cullFace(gl.BACK);
+						gl.cullFace(GL.BACK);
 					case FRONT:
-						gl.cullFace(gl.FRONT);
+						gl.cullFace(GL.FRONT);
 					case FRONT_AND_BACK:
-						gl.cullFace(gl.FRONT_AND_BACK);
+						gl.cullFace(GL.FRONT_AND_BACK);
 					default:
 						throw new IllegalOperationError();
 				}
@@ -2129,21 +2130,21 @@ import openfl.utils.ByteArray;
 			switch (__state.depthCompareMode)
 			{
 				case ALWAYS:
-					gl.depthFunc(gl.ALWAYS);
+					gl.depthFunc(GL.ALWAYS);
 				case EQUAL:
-					gl.depthFunc(gl.EQUAL);
+					gl.depthFunc(GL.EQUAL);
 				case GREATER:
-					gl.depthFunc(gl.GREATER);
+					gl.depthFunc(GL.GREATER);
 				case GREATER_EQUAL:
-					gl.depthFunc(gl.GEQUAL);
+					gl.depthFunc(GL.GEQUAL);
 				case LESS:
-					gl.depthFunc(gl.LESS);
+					gl.depthFunc(GL.LESS);
 				case LESS_EQUAL:
-					gl.depthFunc(gl.LEQUAL);
+					gl.depthFunc(GL.LEQUAL);
 				case NEVER:
-					gl.depthFunc(gl.NEVER);
+					gl.depthFunc(GL.NEVER);
 				case NOT_EQUAL:
-					gl.depthFunc(gl.NOTEQUAL);
+					gl.depthFunc(GL.NOTEQUAL);
 				default:
 					throw new IllegalOperationError();
 			}
@@ -2328,14 +2329,14 @@ import openfl.utils.ByteArray;
 				samplerState = __state.samplerStates[i];
 			}
 
-			gl.activeTexture(gl.TEXTURE0 + sampler);
+			gl.activeTexture(GL.TEXTURE0 + sampler);
 
 			if (texture != null)
 			{
 				// if (#if openfl_disable_context_cache true #else texture != __contextState.textures[i] #end) {
 
 				// TODO: Cleaner approach?
-				if (texture.__textureTarget == gl.TEXTURE_2D)
+				if (texture.__textureTarget == GL.TEXTURE_2D)
 				{
 					__bindGLTexture2D(texture.__getTexture());
 				}
@@ -2346,7 +2347,7 @@ import openfl.utils.ByteArray;
 
 				#if (desktop && !html5)
 				// TODO: Cache?
-				gl.enable(gl.TEXTURE_2D);
+				gl.enable(GL.TEXTURE_2D);
 				#end
 
 				__contextState.textures[i] = texture;
@@ -2362,11 +2363,11 @@ import openfl.utils.ByteArray;
 
 			if (__state.program != null && __state.program.__format == AGAL && samplerState.textureAlpha)
 			{
-				gl.activeTexture(gl.TEXTURE0 + sampler + 4);
+				gl.activeTexture(GL.TEXTURE0 + sampler + 4);
 
 				if (texture != null && texture.__alphaTexture != null)
 				{
-					if (texture.__alphaTexture.__textureTarget == gl.TEXTURE_2D)
+					if (texture.__alphaTexture.__textureTarget == GL.TEXTURE_2D)
 					{
 						__bindGLTexture2D(texture.__alphaTexture.__getTexture());
 					}
@@ -2380,7 +2381,7 @@ import openfl.utils.ByteArray;
 
 					#if (desktop && !html5)
 					// TODO: Cache?
-					gl.enable(gl.TEXTURE_2D);
+					gl.enable(GL.TEXTURE_2D);
 					#end
 				}
 				else
@@ -2447,25 +2448,25 @@ import openfl.utils.ByteArray;
 		switch (blendFactor)
 		{
 			case DESTINATION_ALPHA:
-				return gl.DST_ALPHA;
+				return GL.DST_ALPHA;
 			case DESTINATION_COLOR:
-				return gl.DST_COLOR;
+				return GL.DST_COLOR;
 			case ONE:
-				return gl.ONE;
+				return GL.ONE;
 			case ONE_MINUS_DESTINATION_ALPHA:
-				return gl.ONE_MINUS_DST_ALPHA;
+				return GL.ONE_MINUS_DST_ALPHA;
 			case ONE_MINUS_DESTINATION_COLOR:
-				return gl.ONE_MINUS_DST_COLOR;
+				return GL.ONE_MINUS_DST_COLOR;
 			case ONE_MINUS_SOURCE_ALPHA:
-				return gl.ONE_MINUS_SRC_ALPHA;
+				return GL.ONE_MINUS_SRC_ALPHA;
 			case ONE_MINUS_SOURCE_COLOR:
-				return gl.ONE_MINUS_SRC_COLOR;
+				return GL.ONE_MINUS_SRC_COLOR;
 			case SOURCE_ALPHA:
-				return gl.SRC_ALPHA;
+				return GL.SRC_ALPHA;
 			case SOURCE_COLOR:
-				return gl.SRC_COLOR;
+				return GL.SRC_COLOR;
 			case ZERO:
-				return gl.ZERO;
+				return GL.ZERO;
 			default:
 				throw new IllegalOperationError();
 		}
@@ -2477,15 +2478,15 @@ import openfl.utils.ByteArray;
 	{
 		return switch (mode)
 		{
-			case ALWAYS: gl.ALWAYS;
-			case EQUAL: gl.EQUAL;
-			case GREATER: gl.GREATER;
-			case GREATER_EQUAL: gl.GEQUAL;
-			case LESS: gl.LESS;
-			case LESS_EQUAL: gl.LEQUAL; // TODO : wrong value
-			case NEVER: gl.NEVER;
-			case NOT_EQUAL: gl.NOTEQUAL;
-			default: gl.EQUAL;
+			case ALWAYS: GL.ALWAYS;
+			case EQUAL: GL.EQUAL;
+			case GREATER: GL.GREATER;
+			case GREATER_EQUAL: GL.GEQUAL;
+			case LESS: GL.LESS;
+			case LESS_EQUAL: GL.LEQUAL; // TODO : wrong value
+			case NEVER: GL.NEVER;
+			case NOT_EQUAL: GL.NOTEQUAL;
+			default: GL.EQUAL;
 		}
 	}
 
@@ -2493,15 +2494,15 @@ import openfl.utils.ByteArray;
 	{
 		return switch (action)
 		{
-			case DECREMENT_SATURATE: gl.DECR;
-			case DECREMENT_WRAP: gl.DECR_WRAP;
-			case INCREMENT_SATURATE: gl.INCR;
-			case INCREMENT_WRAP: gl.INCR_WRAP;
-			case INVERT: gl.INVERT;
-			case KEEP: gl.KEEP;
-			case SET: gl.REPLACE;
-			case ZERO: gl.ZERO;
-			default: gl.KEEP;
+			case DECREMENT_SATURATE: GL.DECR;
+			case DECREMENT_WRAP: GL.DECR_WRAP;
+			case INCREMENT_SATURATE: GL.INCR;
+			case INCREMENT_WRAP: GL.INCR_WRAP;
+			case INVERT: GL.INVERT;
+			case KEEP: GL.KEEP;
+			case SET: GL.REPLACE;
+			case ZERO: GL.ZERO;
+			default: GL.KEEP;
 		}
 	}
 
@@ -2509,11 +2510,11 @@ import openfl.utils.ByteArray;
 	{
 		return switch (face)
 		{
-			case FRONT: gl.FRONT;
-			case BACK: gl.BACK;
-			case FRONT_AND_BACK: gl.FRONT_AND_BACK;
-			case NONE: gl.NONE;
-			default: gl.FRONT_AND_BACK;
+			case FRONT: GL.FRONT;
+			case BACK: GL.BACK;
+			case FRONT_AND_BACK: GL.FRONT_AND_BACK;
+			case NONE: GL.NONE;
+			default: GL.FRONT_AND_BACK;
 		}
 	}
 	#end
@@ -2572,11 +2573,11 @@ import openfl.utils.ByteArray;
 		{
 			if (enable)
 			{
-				gl.enable(gl.BLEND);
+				gl.enable(GL.BLEND);
 			}
 			else
 			{
-				gl.disable(gl.BLEND);
+				gl.disable(GL.BLEND);
 			}
 			__contextState.__enableGLBlend = enable;
 		}
@@ -2597,11 +2598,11 @@ import openfl.utils.ByteArray;
 		{
 			if (enable)
 			{
-				gl.enable(gl.CULL_FACE);
+				gl.enable(GL.CULL_FACE);
 			}
 			else
 			{
-				gl.disable(gl.CULL_FACE);
+				gl.disable(GL.CULL_FACE);
 			}
 			__contextState.__enableGLCullFace = enable;
 		}
@@ -2613,11 +2614,11 @@ import openfl.utils.ByteArray;
 		{
 			if (enable)
 			{
-				gl.enable(gl.DEPTH_TEST);
+				gl.enable(GL.DEPTH_TEST);
 			}
 			else
 			{
-				gl.disable(gl.DEPTH_TEST);
+				gl.disable(GL.DEPTH_TEST);
 			}
 			__contextState.__enableGLDepthTest = enable;
 		}
@@ -2627,7 +2628,7 @@ import openfl.utils.ByteArray;
 	{
 		if (#if openfl_disable_context_cache true #else __contextState.__frontFaceGLCCW != counterClockWise #end)
 		{
-			gl.frontFace(counterClockWise ? gl.CCW : gl.CW);
+			gl.frontFace(counterClockWise ? GL.CCW : GL.CW);
 			__contextState.__frontFaceGLCCW = counterClockWise;
 		}
 	}
@@ -2638,11 +2639,11 @@ import openfl.utils.ByteArray;
 		{
 			if (enable)
 			{
-				gl.enable(gl.SCISSOR_TEST);
+				gl.enable(GL.SCISSOR_TEST);
 			}
 			else
 			{
-				gl.disable(gl.SCISSOR_TEST);
+				gl.disable(GL.SCISSOR_TEST);
 			}
 			__contextState.__enableGLScissorTest = enable;
 		}
@@ -2654,11 +2655,11 @@ import openfl.utils.ByteArray;
 		{
 			if (enable)
 			{
-				gl.enable(gl.STENCIL_TEST);
+				gl.enable(GL.STENCIL_TEST);
 			}
 			else
 			{
-				gl.disable(gl.STENCIL_TEST);
+				gl.disable(GL.STENCIL_TEST);
 			}
 			__contextState.__enableGLStencilTest = enable;
 		}

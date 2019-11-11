@@ -708,7 +708,7 @@ class BitmapData implements IBitmapDrawable
 	{
 		if (!readable || sourceBitmapData == null) return;
 
-		#if openfl_html5
+		#if (lime && openfl_html5)
 		if (alphaBitmapData != null
 			&& alphaBitmapData.transparent
 			&& (alphaBitmapData != sourceBitmapData || (alphaPoint != null && (alphaPoint.x != 0 || alphaPoint.y != 0))))
@@ -959,7 +959,7 @@ class BitmapData implements IBitmapDrawable
 		}
 		else
 		{
-			#if (openfl_html5 || openfl_cairo)
+			#if (lime && (openfl_html5 || openfl_cairo))
 			if (colorTransform != null)
 			{
 				var bounds = Rectangle.__pool.get();
@@ -1284,10 +1284,14 @@ class BitmapData implements IBitmapDrawable
 	{
 		if (canvas == null) return null;
 
+		#if lime
 		var bitmapData = new BitmapData(0, 0, transparent, 0);
 		bitmapData.__fromImage(Image.fromCanvas(canvas));
 		bitmapData.image.transparent = transparent;
 		return bitmapData;
+		#else
+		return null;
+		#end
 	}
 	#end
 
@@ -3146,6 +3150,7 @@ class BitmapData implements IBitmapDrawable
 
 	@:noCompletion private function __applyAlpha(alpha:ByteArray):Void
 	{
+		#if lime
 		#if openfl_html5
 		ImageCanvasUtil.convertToCanvas(image);
 		ImageCanvasUtil.createImageData(image);
@@ -3159,6 +3164,7 @@ class BitmapData implements IBitmapDrawable
 		}
 
 		image.version++;
+		#end
 	}
 
 	@:noCompletion private inline function __fromBase64(base64:String, type:String):Void
@@ -3440,7 +3446,7 @@ class BitmapData implements IBitmapDrawable
 
 	@:noCompletion private function __sync():Void
 	{
-		#if openfl_html5
+		#if (lime && openfl_html5)
 		ImageCanvasUtil.sync(image, false);
 		#end
 	}

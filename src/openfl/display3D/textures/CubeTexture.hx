@@ -3,6 +3,7 @@ package openfl.display3D.textures;
 #if !flash
 import haxe.Timer;
 import openfl._internal.backend.gl.GLFramebuffer;
+import openfl._internal.backend.gl.GL;
 import openfl._internal.formats.atf.ATFReader;
 import openfl._internal.renderer.SamplerState;
 import openfl._internal.backend.utils.ArrayBufferView;
@@ -46,7 +47,7 @@ import openfl.utils.ByteArray;
 		__streamingLevels = streamingLevels;
 
 		#if openfl_gl
-		__textureTarget = __context.gl.TEXTURE_CUBE_MAP;
+		__textureTarget = GL.TEXTURE_CUBE_MAP;
 		#end
 		__uploadedSides = 0;
 
@@ -164,7 +165,7 @@ import openfl.utils.ByteArray;
 
 			var target = __sideToTarget(side);
 			__context.__bindGLTextureCubeMap(__textureID);
-			gl.texImage2D(target, miplevel, __internalFormat, __format, gl.UNSIGNED_BYTE, image.buffer.src);
+			gl.texImage2D(target, miplevel, __internalFormat, __format, GL.UNSIGNED_BYTE, image.buffer.src);
 			__context.__bindGLTextureCubeMap(null);
 
 			__uploadedSides |= 1 << side;
@@ -249,7 +250,7 @@ import openfl.utils.ByteArray;
 		var target = __sideToTarget(side);
 
 		__context.__bindGLTextureCubeMap(__textureID);
-		gl.texImage2D(target, miplevel, __internalFormat, size, size, 0, __format, gl.UNSIGNED_BYTE, data);
+		gl.texImage2D(target, miplevel, __internalFormat, size, size, 0, __format, GL.UNSIGNED_BYTE, data);
 		__context.__bindGLTextureCubeMap(null);
 
 		__uploadedSides |= 1 << side;
@@ -272,13 +273,13 @@ import openfl.utils.ByteArray;
 			__framebufferSurface = surfaceSelector;
 
 			__context.__bindGLFramebuffer(__glFramebuffer);
-			gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_CUBE_MAP_POSITIVE_X + surfaceSelector, __textureID, 0);
+			gl.framebufferTexture2D(GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_CUBE_MAP_POSITIVE_X + surfaceSelector, __textureID, 0);
 
 			if (__context.__enableErrorChecking)
 			{
-				var code = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
+				var code = gl.checkFramebufferStatus(GL.FRAMEBUFFER);
 
-				if (code != gl.FRAMEBUFFER_COMPLETE)
+				if (code != GL.FRAMEBUFFER_COMPLETE)
 				{
 					Log.error('Error: Context3D.setRenderToTexture status:${code} width:${__width} height:${__height}');
 				}
@@ -298,7 +299,7 @@ import openfl.utils.ByteArray;
 
 			if (state.mipfilter != MIPNONE && !__samplerState.mipmapGenerated)
 			{
-				gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+				gl.generateMipmap(GL.TEXTURE_CUBE_MAP);
 				__samplerState.mipmapGenerated = true;
 			}
 
@@ -318,7 +319,7 @@ import openfl.utils.ByteArray;
 					aniso = Context3D.__glMaxTextureMaxAnisotropy;
 				}
 
-				gl.texParameterf(gl.TEXTURE_CUBE_MAP, Context3D.__glTextureMaxAnisotropy, aniso);
+				gl.texParameterf(GL.TEXTURE_CUBE_MAP, Context3D.__glTextureMaxAnisotropy, aniso);
 			}
 
 			return true;
@@ -335,12 +336,12 @@ import openfl.utils.ByteArray;
 
 		return switch (side)
 		{
-			case 0: gl.TEXTURE_CUBE_MAP_POSITIVE_X;
-			case 1: gl.TEXTURE_CUBE_MAP_NEGATIVE_X;
-			case 2: gl.TEXTURE_CUBE_MAP_POSITIVE_Y;
-			case 3: gl.TEXTURE_CUBE_MAP_NEGATIVE_Y;
-			case 4: gl.TEXTURE_CUBE_MAP_POSITIVE_Z;
-			case 5: gl.TEXTURE_CUBE_MAP_NEGATIVE_Z;
+			case 0: GL.TEXTURE_CUBE_MAP_POSITIVE_X;
+			case 1: GL.TEXTURE_CUBE_MAP_NEGATIVE_X;
+			case 2: GL.TEXTURE_CUBE_MAP_POSITIVE_Y;
+			case 3: GL.TEXTURE_CUBE_MAP_NEGATIVE_Y;
+			case 4: GL.TEXTURE_CUBE_MAP_POSITIVE_Z;
+			case 5: GL.TEXTURE_CUBE_MAP_NEGATIVE_Z;
 			default: throw new IllegalOperationError();
 		}
 		#else
@@ -400,7 +401,7 @@ import openfl.utils.ByteArray;
 			for (side in 0...6)
 			{
 				var data = new UInt8Array(__size * __size * 4);
-				gl.texImage2D(__sideToTarget(side), 0, __internalFormat, __size, __size, 0, __format, gl.UNSIGNED_BYTE, data);
+				gl.texImage2D(__sideToTarget(side), 0, __internalFormat, __size, __size, 0, __format, GL.UNSIGNED_BYTE, data);
 			}
 		}
 

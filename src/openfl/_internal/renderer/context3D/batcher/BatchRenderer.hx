@@ -1,9 +1,8 @@
 package openfl._internal.renderer.context3D.batcher;
 
 #if openfl_gl
-import haxe.ds.IntMap;
-import openfl._internal.backend.lime.WebGLRenderContext;
-import openfl._internal.backend.math.Matrix4;
+import openfl._internal.backend.gl.WebGLRenderingContext;
+import openfl._internal.backend.gl.GL;
 import openfl._internal.backend.utils.Float32Array;
 import openfl._internal.backend.utils.UInt16Array;
 import openfl.display.BitmapData;
@@ -27,7 +26,7 @@ import openfl._internal.renderer.context3D.stats.DrawCallContext;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class BatchRenderer
 {
-	private var gl:WebGLRenderContext;
+	private var gl:WebGLRenderingContext;
 	private var renderer:Context3DRenderer;
 
 	private var __batch:Batch;
@@ -61,7 +60,7 @@ class BatchRenderer
 		__emptyBitmapData = new BitmapData(1, 1);
 
 		__maxQuads = maxQuads;
-		__maxTextures = Std.int(Math.min(MAX_TEXTURES, gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS)));
+		__maxTextures = Std.int(Math.min(MAX_TEXTURES, gl.getParameter(GL.MAX_TEXTURE_IMAGE_UNITS)));
 
 		__shader = new BatchShader();
 		__batch = new Batch(__maxQuads, __maxTextures);
@@ -190,7 +189,7 @@ class BatchRenderer
 		context.__bindGLArrayBuffer(__vertexBuffer.__id);
 
 		var subArray = __batch.vertices.subarray(0, __batch.numQuads * Batch.FLOATS_PER_QUAD);
-		gl.bufferSubData(gl.ARRAY_BUFFER, 0, subArray);
+		gl.bufferSubData(GL.ARRAY_BUFFER, 0, subArray);
 
 		renderer.setShader(__shader);
 

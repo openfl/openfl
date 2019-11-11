@@ -1,6 +1,7 @@
 package openfl._internal.formats.agal;
 
 import haxe.Int64;
+import openfl._internal.backend.gl.GL;
 import openfl._internal.renderer.SamplerState;
 import openfl._internal.utils.Log;
 import openfl.display3D.Context3DMipFilter;
@@ -476,7 +477,7 @@ class AGALConverter
 		if (limitedProfile == null)
 		{
 			var gl = program.__context.gl;
-			var version:String = gl.getParameter(gl.VERSION);
+			var version:String = gl.getParameter(GL.VERSION);
 			limitedProfile = (version.indexOf("OpenGL ES") > -1 || version.indexOf("WebGL") > -1);
 		}
 

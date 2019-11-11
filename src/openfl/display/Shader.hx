@@ -3,6 +3,7 @@ package openfl.display;
 #if !flash
 import openfl._internal.backend.gl.GLProgram;
 import openfl._internal.backend.gl.GLShader;
+import openfl._internal.backend.gl.GL;
 import openfl._internal.renderer.ShaderBuffer;
 import openfl._internal.backend.utils.Float32Array;
 import openfl._internal.utils.Log;
@@ -322,9 +323,9 @@ class Shader
 		gl.shaderSource(shader, source);
 		gl.compileShader(shader);
 
-		if (gl.getShaderParameter(shader, gl.COMPILE_STATUS) == 0)
+		if (gl.getShaderParameter(shader, GL.COMPILE_STATUS) == 0)
 		{
-			var message = (type == gl.VERTEX_SHADER) ? "Error compiling vertex shader" : "Error compiling fragment shader";
+			var message = (type == GL.VERTEX_SHADER) ? "Error compiling vertex shader" : "Error compiling fragment shader";
 			message += "\n" + gl.getShaderInfoLog(shader);
 			message += "\n" + source;
 			Log.error(message);
@@ -337,8 +338,8 @@ class Shader
 	{
 		var gl = __context.gl;
 
-		var vertexShader = __createGLShader(vertexSource, gl.VERTEX_SHADER);
-		var fragmentShader = __createGLShader(fragmentSource, gl.FRAGMENT_SHADER);
+		var vertexShader = __createGLShader(vertexSource, GL.VERTEX_SHADER);
+		var fragmentShader = __createGLShader(fragmentSource, GL.FRAGMENT_SHADER);
 
 		var program = gl.createProgram();
 
@@ -356,7 +357,7 @@ class Shader
 		gl.attachShader(program, fragmentShader);
 		gl.linkProgram(program);
 
-		if (gl.getProgramParameter(program, gl.LINK_STATUS) == 0)
+		if (gl.getProgramParameter(program, GL.LINK_STATUS) == 0)
 		{
 			var message = "Unable to initialize the shader program";
 			message += "\n" + gl.getProgramInfoLog(program);
@@ -815,7 +816,7 @@ class Shader
 			// Log.verbose ("bind param data buffer (length: " + shaderBuffer.paramData.length + ") (" + shaderBuffer.paramCount + ")");
 
 			__context.__bindGLArrayBuffer(shaderBuffer.paramDataBuffer);
-			gl.bufferData(gl.ARRAY_BUFFER, shaderBuffer.paramData, gl.DYNAMIC_DRAW);
+			gl.bufferData(GL.ARRAY_BUFFER, shaderBuffer.paramData, GL.DYNAMIC_DRAW);
 		}
 		else
 		{

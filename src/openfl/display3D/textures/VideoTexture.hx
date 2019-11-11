@@ -3,6 +3,7 @@ package openfl.display3D.textures;
 #if !flash
 import haxe.Timer;
 import openfl._internal.backend.gl.GLTexture;
+import openfl._internal.backend.gl.GL;
 import openfl.events.Event;
 import openfl.net.NetStream;
 
@@ -61,7 +62,7 @@ import openfl.net.NetStream;
 		super(context);
 
 		#if openfl_gl
-		__textureTarget = __context.gl.TEXTURE_2D;
+		__textureTarget = GL.TEXTURE_2D;
 		#end
 	}
 
@@ -132,7 +133,7 @@ import openfl.net.NetStream;
 			var gl = __context.gl;
 
 			__context.__bindGLTexture2D(__textureID);
-			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, __netStream.__video);
+			gl.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, __netStream.__video);
 		}
 		#end
 

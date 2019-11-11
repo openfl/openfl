@@ -3,8 +3,9 @@ package openfl._internal.renderer.context3D;
 #if !flash
 #if openfl_gl
 import openfl._internal.backend.gl.ext.KHR_debug;
+import openfl._internal.backend.gl.GL;
+import openfl._internal.backend.gl.WebGLRenderingContext;
 import openfl._internal.backend.lime.RenderContext;
-import openfl._internal.backend.lime.WebGLRenderContext;
 import openfl._internal.backend.math.ARGB;
 import openfl._internal.backend.math.Matrix4;
 import openfl._internal.renderer.context3D.batcher.BatchRenderer;
@@ -106,7 +107,7 @@ class Context3DRenderer extends Context3DRendererAPI
 	private var __displayWidth:Int;
 	private var __flipped:Bool;
 	private var __getMatrixHelperMatrix:Matrix = new Matrix();
-	private var __gl:WebGLRenderContext;
+	private var __gl:WebGLRenderingContext;
 	private var __height:Int;
 	private var __maskShader:Context3DMaskShader;
 	private var __matrix:Matrix4;
@@ -134,10 +135,12 @@ class Context3DRenderer extends Context3DRendererAPI
 
 		if (Graphics.maxTextureWidth == null)
 		{
-			Graphics.maxTextureWidth = Graphics.maxTextureHeight = __gl.getParameter(__gl.MAX_TEXTURE_SIZE);
+			Graphics.maxTextureWidth = Graphics.maxTextureHeight = __gl.getParameter(GL.MAX_TEXTURE_SIZE);
 		}
 
+		#if lime
 		__matrix = new Matrix4();
+		#end
 
 		__values = new Array();
 
@@ -156,7 +159,9 @@ class Context3DRenderer extends Context3DRendererAPI
 		__softwareRenderer = new CairoRenderer(null);
 		#end
 
+		#if lime
 		__type = OPENGL;
+		#end
 
 		__setBlendMode(NORMAL);
 		context3D.__setGLBlend(true);
@@ -164,8 +169,10 @@ class Context3DRenderer extends Context3DRendererAPI
 		__clipRects = new Array();
 		__maskObjects = new Array();
 		__numClipRects = 0;
+		#if lime
 		__projection = new Matrix4();
 		__projectionFlipped = new Matrix4();
+		#end
 		__stencilReference = 0;
 		__tempRect = new Rectangle();
 
@@ -934,7 +941,7 @@ class Context3DRenderer extends Context3DRendererAPI
 
 					context3D.__flushGL();
 					__gl.clearColor(0, 0, 0, 1);
-					__gl.clear(__gl.COLOR_BUFFER_BIT);
+					__gl.clear(GL.COLOR_BUFFER_BIT);
 					// context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
 
 					// __gl.scissor (__offsetX + __displayWidth, 0, __width, __height);
@@ -943,7 +950,7 @@ class Context3DRenderer extends Context3DRendererAPI
 
 					context3D.__flushGL();
 					__gl.clearColor(0, 0, 0, 1);
-					__gl.clear(__gl.COLOR_BUFFER_BIT);
+					__gl.clear(GL.COLOR_BUFFER_BIT);
 					// context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
 				}
 
@@ -955,7 +962,7 @@ class Context3DRenderer extends Context3DRendererAPI
 
 					context3D.__flushGL();
 					__gl.clearColor(0, 0, 0, 1);
-					__gl.clear(__gl.COLOR_BUFFER_BIT);
+					__gl.clear(GL.COLOR_BUFFER_BIT);
 					// context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
 
 					// __gl.scissor (0, __offsetY + __displayHeight, __width, __height);
@@ -964,7 +971,7 @@ class Context3DRenderer extends Context3DRendererAPI
 
 					context3D.__flushGL();
 					__gl.clearColor(0, 0, 0, 1);
-					__gl.clear(__gl.COLOR_BUFFER_BIT);
+					__gl.clear(GL.COLOR_BUFFER_BIT);
 					// context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
 				}
 
@@ -1404,7 +1411,7 @@ class Context3DRenderer extends Context3DRendererAPI
 
 			case SUBTRACT:
 				context3D.setBlendFactors(ONE, ONE);
-				context3D.__setGLBlendEquation(__gl.FUNC_REVERSE_SUBTRACT);
+				context3D.__setGLBlendEquation(GL.FUNC_REVERSE_SUBTRACT);
 
 			#if desktop
 			case DARKEN:

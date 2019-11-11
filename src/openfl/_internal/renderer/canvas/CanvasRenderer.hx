@@ -55,7 +55,10 @@ class CanvasRenderer extends CanvasRendererAPI
 
 		__colorTransform = new ColorTransform();
 		__transform = new Matrix();
+
+		#if lime
 		__type = CANVAS;
+		#end
 	}
 
 	public override function applySmoothing(context:Canvas2DRenderContext, value:Bool):Void
@@ -261,6 +264,7 @@ class CanvasRenderer extends CanvasRendererAPI
 
 	private function __renderBitmapData(bitmapData:BitmapData):Void
 	{
+		#if lime
 		if (!bitmapData.readable) return;
 
 		if (bitmapData.image.type == DATA)
@@ -273,6 +277,7 @@ class CanvasRenderer extends CanvasRendererAPI
 		setTransform(bitmapData.__renderTransform, context);
 
 		context.drawImage(bitmapData.image.src, 0, 0, bitmapData.image.width, bitmapData.image.height);
+		#end
 	}
 
 	private function __renderDisplayObject(object:DisplayObject):Void
@@ -572,6 +577,7 @@ class CanvasRenderer extends CanvasRendererAPI
 
 	private function __updateCacheBitmap(object:DisplayObject, force:Bool):Bool
 	{
+		#if lime
 		#if openfl_disable_cacheasbitmap
 		return false;
 		#end
@@ -939,6 +945,9 @@ class CanvasRenderer extends CanvasRendererAPI
 		}
 
 		return updated;
+		#else
+		return false;
+		#end
 	}
 }
 #end

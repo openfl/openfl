@@ -399,7 +399,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	**/
 	public var displayState(get, set):StageDisplayState;
 
-	#if commonjs
+	#if (commonjs || (openfl_html5 && !lime))
 	/**
 		The parent HTML element where this Stage is embedded.
 	**/
@@ -946,7 +946,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	}
 	#end
 
-	public function new(#if commonjs width:Dynamic = 0, height:Dynamic = 0, color:Null<Int> = null, documentClass:Class<Dynamic> = null,
+	public function new(#if (commonjs || !lime) width:Dynamic = 0, height:Dynamic = 0, color:Null<Int> = null, documentClass:Class<Dynamic> = null,
 		windowAttributes:Dynamic = null #else window:Window, color:Null<Int> = null #end)
 	{
 		#if hxtelemetry
@@ -1003,7 +1003,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		__mouseOutStack = [];
 		__touchData = new Map<Int, TouchData>();
 
-		#if commonjs
+		#if (commonjs || (openfl_html5 && !lime))
 		if (windowAttributes == null) windowAttributes = {};
 		var app = null;
 
@@ -1038,6 +1038,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 			windowAttributes.stage = this;
 
+			#if lime
 			if (!Reflect.hasField(windowAttributes, "context")) windowAttributes.context = {};
 			var contextAttributes = windowAttributes.context;
 			if (Reflect.hasField(windowAttributes, "renderer"))
@@ -1064,6 +1065,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 			app = new OpenFLApplication();
 			window = app.createWindow(windowAttributes);
+			#end
 
 			this.color = color;
 		}

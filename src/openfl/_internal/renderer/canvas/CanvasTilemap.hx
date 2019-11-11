@@ -63,7 +63,7 @@ class CanvasTilemap
 			alphaEnabled:Bool, worldAlpha:Float, blendModeEnabled:Bool, defaultBlendMode:BlendMode, cacheBitmapData:BitmapData, source:Dynamic,
 			rect:Rectangle):Void
 	{
-		#if openfl_html5
+		#if (lime && openfl_html5)
 		var context = renderer.context;
 		var roundPixels = renderer.__roundPixels;
 

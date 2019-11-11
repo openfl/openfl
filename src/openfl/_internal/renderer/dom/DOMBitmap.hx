@@ -59,7 +59,7 @@ class DOMBitmap
 
 	private static function renderCanvas(bitmap:Bitmap, renderer:DOMRenderer):Void
 	{
-		#if openfl_html5
+		#if (lime && openfl_html5)
 		if (bitmap.__image != null)
 		{
 			renderer.element.removeChild(bitmap.__image);

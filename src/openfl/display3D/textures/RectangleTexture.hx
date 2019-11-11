@@ -1,7 +1,7 @@
 package openfl.display3D.textures;
 
 #if !flash
-import openfl._internal.backend.lime.Image;
+import openfl._internal.backend.gl.GL;
 import openfl._internal.renderer.SamplerState;
 import openfl._internal.backend.utils.ArrayBufferView;
 import openfl._internal.backend.utils.UInt8Array;
@@ -35,7 +35,7 @@ import openfl.utils.ByteArray;
 		__optimizeForRenderToTexture = optimizeForRenderToTexture;
 
 		#if openfl_gl
-		__textureTarget = __context.gl.TEXTURE_2D;
+		__textureTarget = GL.TEXTURE_2D;
 		uploadFromTypedArray(null);
 
 		if (optimizeForRenderToTexture) __getGLFramebuffer(true, 0, 0);
@@ -66,7 +66,7 @@ import openfl.utils.ByteArray;
 			var gl = __context.gl;
 
 			__context.__bindGLTexture2D(__textureID);
-			gl.texImage2D(__textureTarget, 0, __internalFormat, __format, gl.UNSIGNED_BYTE, image.buffer.src);
+			gl.texImage2D(__textureTarget, 0, __internalFormat, __format, GL.UNSIGNED_BYTE, image.buffer.src);
 			__context.__bindGLTexture2D(null);
 			return;
 		}
@@ -120,7 +120,7 @@ import openfl.utils.ByteArray;
 		var gl = __context.gl;
 
 		__context.__bindGLTexture2D(__textureID);
-		gl.texImage2D(__textureTarget, 0, __internalFormat, __width, __height, 0, __format, gl.UNSIGNED_BYTE, data);
+		gl.texImage2D(__textureTarget, 0, __internalFormat, __width, __height, 0, __format, GL.UNSIGNED_BYTE, data);
 		__context.__bindGLTexture2D(null);
 		#end
 	}
@@ -148,7 +148,7 @@ import openfl.utils.ByteArray;
 					aniso = Context3D.__glMaxTextureMaxAnisotropy;
 				}
 
-				gl.texParameterf(gl.TEXTURE_2D, Context3D.__glTextureMaxAnisotropy, aniso);
+				gl.texParameterf(GL.TEXTURE_2D, Context3D.__glTextureMaxAnisotropy, aniso);
 			}
 
 			return true;

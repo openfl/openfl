@@ -11,7 +11,7 @@ class CanvasShape
 {
 	public static inline function render(shape:DisplayObject, renderer:CanvasRenderer):Void
 	{
-		#if openfl_html5
+		#if (lime && openfl_html5)
 		if (!shape.__renderable) return;
 
 		var alpha = renderer.__getAlpha(shape.__worldAlpha);
@@ -54,9 +54,9 @@ class CanvasShape
 						var renderScaleX = transform.a;
 						var renderScaleY = transform.d;
 
-						var left = Math.max(1, Math.round(scale9Grid.x * scaleX));
+						var left:Int = Std.int(Math.max(1, Math.round(scale9Grid.x * scaleX)));
 						var top = Math.round(scale9Grid.y * scaleY);
-						var right = Math.max(1, Math.round((bounds.right - scale9Grid.right) * scaleX));
+						var right:Int = Std.int(Math.max(1, Math.round((bounds.right - scale9Grid.right) * scaleX)));
 						var bottom = Math.round((bounds.bottom - scale9Grid.bottom) * scaleY);
 						var centerWidth = Math.round(scale9Grid.width * scaleX);
 						var centerHeight = Math.round(scale9Grid.height * scaleY);

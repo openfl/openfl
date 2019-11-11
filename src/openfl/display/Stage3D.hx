@@ -2,10 +2,10 @@ package openfl.display;
 
 #if !flash
 import haxe.Timer;
+import openfl._internal.backend.gl.WebGLRenderingContext;
 import openfl._internal.backend.html5.Browser;
 import openfl._internal.backend.html5.CanvasElement;
 import openfl._internal.backend.html5.CSSStyleDeclaration;
-import openfl._internal.backend.html5.WebGLRenderingContext;
 import openfl._internal.backend.lime.RenderContext;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DProfile;

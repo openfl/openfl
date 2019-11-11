@@ -10,7 +10,7 @@ class CanvasVideo
 {
 	public static function render(video:Video, renderer:CanvasRenderer):Void
 	{
-		#if openfl_html5
+		#if (lime && openfl_html5)
 		if (!video.__renderable || video.__stream == null) return;
 
 		var alpha = renderer.__getAlpha(video.__worldAlpha);
