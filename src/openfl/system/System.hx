@@ -1,10 +1,8 @@
 package openfl.system;
 
 #if !flash
-#if lime
-import lime.system.Clipboard;
-import lime.system.System as LimeSystem;
-#end
+import openfl._internal.backend.lime.Clipboard;
+import openfl._internal.backend.lime.System as LimeSystem;
 #if neko
 import neko.vm.Gc;
 #elseif cpp
@@ -259,7 +257,7 @@ import cpp.vm.Gc;
 		return Gc.stats().heap;
 		#elseif cpp
 		return untyped __global__.__hxcpp_gc_used_bytes();
-		#elseif (js && html5)
+		#elseif openfl_html5
 		return untyped __js__("(window.performance && window.performance.memory) ? window.performance.memory.usedJSHeapSize : 0");
 		#else
 		return 0;

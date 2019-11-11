@@ -12,7 +12,7 @@ class DOMShape
 {
 	public static function clear(shape:DisplayObject, renderer:DOMRenderer):Void
 	{
-		#if (js && html5)
+		#if openfl_html5
 		if (shape.__canvas != null)
 		{
 			renderer.element.removeChild(shape.__canvas);
@@ -24,7 +24,7 @@ class DOMShape
 
 	public static inline function render(shape:DisplayObject, renderer:DOMRenderer):Void
 	{
-		#if (js && html5)
+		#if openfl_html5
 		var graphics = shape.__graphics;
 
 		if (shape.stage != null && shape.__worldVisible && shape.__renderable && graphics != null)

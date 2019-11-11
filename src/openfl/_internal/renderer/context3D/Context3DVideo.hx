@@ -22,7 +22,7 @@ class Context3DVideo
 
 	public static function render(video:Video, renderer:Context3DRenderer):Void
 	{
-		#if (js && html5)
+		#if openfl_html5
 		if (!video.__renderable || video.__worldAlpha <= 0 || video.__stream == null) return;
 
 		if (video.__stream.__video != null)
@@ -93,7 +93,7 @@ class Context3DVideo
 
 	public static function renderMask(video:Video, renderer:Context3DRenderer):Void
 	{
-		#if (js && html5)
+		#if openfl_html5
 		if (video.__stream == null) return;
 
 		if (video.__stream.__video != null)

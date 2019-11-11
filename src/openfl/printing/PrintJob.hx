@@ -2,18 +2,14 @@ package openfl.printing;
 
 #if !flash
 import haxe.Timer;
+import openfl._internal.backend.html5.Browser;
+import openfl._internal.backend.html5.DivElement;
+import openfl._internal.backend.html5.Image;
+import openfl._internal.backend.html5.StyleElement;
+import openfl._internal.backend.lime.ImageCanvasUtil;
 import openfl.display.BitmapData;
 import openfl.display.Sprite;
 import openfl.geom.Rectangle;
-#if lime
-import lime._internal.graphics.ImageCanvasUtil; // TODO
-#end
-#if (js && html5)
-import js.html.DivElement;
-import js.html.Image;
-import js.html.StyleElement;
-import js.Browser;
-#end
 
 /**
 	The PrintJob class lets you create content and print it to one or more
@@ -71,7 +67,7 @@ class PrintJob
 		Indicates whether the PrintJob class is supported on the current
 		platform (`true`) or not (`false`).
 	**/
-	public static var isSupported(default, null) = #if (js && html5) true #else false #end;
+	public static var isSupported(default, null) = #if openfl_html5 true #else false #end;
 
 	/**
 		The image orientation for printing. The acceptable values are defined
@@ -322,7 +318,7 @@ class PrintJob
 	{
 		if (!__started) return;
 
-		#if (js && html5)
+		#if openfl_html5
 		var window = Browser.window.open("", "", "width=500,height=500");
 
 		if (window != null)

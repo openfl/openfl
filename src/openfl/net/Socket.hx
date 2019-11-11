@@ -8,6 +8,9 @@ import haxe.io.Error;
 import haxe.Serializer;
 import haxe.Timer;
 import haxe.Unserializer;
+import openfl._internal.backend.html5.Browser;
+import openfl._internal.backend.html5.WebSocket;
+import openfl._internal.backend.utils.ArrayBuffer;
 import openfl._internal.Lib;
 import openfl.errors.IOError;
 import openfl.errors.SecurityError;
@@ -19,15 +22,6 @@ import openfl.utils.ByteArray;
 import openfl.utils.Endian;
 import openfl.utils.IDataInput;
 import openfl.utils.IDataOutput;
-#if (js && html5)
-#if haxe4
-import js.lib.ArrayBuffer;
-#else
-import js.html.ArrayBuffer;
-#end
-import js.html.WebSocket;
-import js.Browser;
-#end
 #if sys
 import sys.net.Host;
 import sys.net.Socket as SysSocket;
@@ -349,7 +343,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 			throw new SecurityError("Invalid socket port number specified.");
 		}
 
-		#if (js && html5)
+		#if openfl_html5
 		__timestamp = Timer.stamp();
 		#else
 		var h:Host = null;
@@ -376,7 +370,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 		__input = new ByteArray();
 		__input.endian = __endian;
 
-		#if (js && html5)
+		#if openfl_html5
 		if (Browser.location.protocol == "https:")
 		{
 			secure = true;
@@ -432,7 +426,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 		{
 			try
 			{
-				#if (js && html5)
+				#if openfl_html5
 				var buffer:ArrayBuffer = __output;
 				if (buffer.byteLength > __output.length) buffer = buffer.slice(0, __output.length);
 				__socket.send(buffer);
@@ -1002,7 +996,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 
 	@:noCompletion private function socket_onMessage(msg:Dynamic):Void
 	{
-		#if (js && html5)
+		#if openfl_html5
 		if (__input.position == __input.length)
 		{
 			__input.clear();
@@ -1036,7 +1030,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 
 	@:noCompletion private function this_onEnterFrame(event:Event):Void
 	{
-		#if (js && html5)
+		#if openfl_html5
 		if (__socket != null)
 		{
 			flush();

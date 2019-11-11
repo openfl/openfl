@@ -56,6 +56,20 @@ class ExtraParams
 				}
 			}
 		}
+
+		if (Context.defined("lime"))
+		{
+			if (Context.defined("lime_cairo")) Compiler.define("openfl-cairo");
+			if (Context.defined("lime_harfbuzz")) Compiler.define("openfl-harfbuzz");
+		}
+
+		if (Context.defined("js") && !Context.defined("nodejs"))
+		{
+			Compiler.define("openfl-html5");
+			Compiler.define("html5");
+		}
+
+		Compiler.define("openfl-gl");
 	}
 }
 #end

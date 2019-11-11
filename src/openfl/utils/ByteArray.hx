@@ -10,17 +10,13 @@ import haxe.io.FPHelper;
 import haxe.Json;
 import haxe.Serializer;
 import haxe.Unserializer;
+import openfl._internal.backend.lime.BytePointer;
+import openfl._internal.backend.lime.Bytes as LimeBytes;
+import openfl._internal.backend.lime.DataPointer;
+import openfl._internal.backend.lime.System;
+import openfl._internal.backend.utils.ArrayBuffer;
 import openfl.errors.EOFError;
 import openfl.net.ObjectEncoding;
-#if lime
-import lime.system.System;
-import lime.utils.ArrayBuffer;
-import lime.utils.BytePointer;
-import lime.utils.Bytes as LimeBytes;
-import lime.utils.DataPointer;
-#elseif js
-import js.html.ArrayBuffer;
-#end
 #if format
 import format.amf.Reader as AMFReader;
 import format.amf.Tools as AMFTools;

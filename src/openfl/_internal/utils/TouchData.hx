@@ -1,10 +1,8 @@
 package openfl._internal.utils;
 
+import openfl._internal.backend.lime.Touch;
 import openfl.display.DisplayObject;
 import openfl.display.InteractiveObject;
-#if lime
-import lime.ui.Touch;
-#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

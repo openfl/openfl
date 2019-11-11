@@ -1,9 +1,7 @@
 package openfl.display;
 
+import openfl._internal.backend.lime.Canvas2DRenderContext;
 import openfl.geom.Matrix;
-#if lime
-import lime.graphics.Canvas2DRenderContext;
-#end
 
 /**
 	**BETA**

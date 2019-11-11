@@ -2,8 +2,9 @@ package openfl.media;
 
 #if !flash
 import openfl._internal.backend.gl.GLBuffer;
-import openfl._internal.utils.Float32Array;
-import openfl._internal.utils.UInt16Array;
+import openfl._internal.backend.lime.RenderContext;
+import openfl._internal.backend.utils.Float32Array;
+import openfl._internal.backend.utils.UInt16Array;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.display3D.Context3D;
 import openfl.display3D.IndexBuffer3D;
@@ -14,9 +15,6 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.net.NetStream;
-#if lime
-import lime.graphics.RenderContext;
-#end
 
 /**
 	The Video class displays live or recorded video in an application without
@@ -257,7 +255,7 @@ class Video extends DisplayObject
 	{
 		__stream = netStream;
 
-		#if (js && html5)
+		#if openfl_html5
 		if (__stream != null && __stream.__video != null && !__stream.__closed)
 		{
 			__stream.__video.play();
@@ -276,7 +274,7 @@ class Video extends DisplayObject
 
 	@:noCompletion private override function __enterFrame(deltaTime:Int):Void
 	{
-		#if (js && html5)
+		#if openfl_html5
 		if (__renderable && __stream != null)
 		{
 			__setRenderDirty();
@@ -321,7 +319,7 @@ class Video extends DisplayObject
 
 	@:noCompletion private function __getTexture(context:Context3D):RectangleTexture
 	{
-		#if (js && html5)
+		#if openfl_html5
 		if (__stream == null || __stream.__video == null) return null;
 
 		var gl = context.__context.webgl;
@@ -450,7 +448,7 @@ class Video extends DisplayObject
 
 	@:noCompletion private function get_videoHeight():Int
 	{
-		#if (js && html5)
+		#if openfl_html5
 		if (__stream != null && __stream.__video != null)
 		{
 			return Std.int(__stream.__video.videoHeight);
@@ -462,7 +460,7 @@ class Video extends DisplayObject
 
 	@:noCompletion private function get_videoWidth():Int
 	{
-		#if (js && html5)
+		#if openfl_html5
 		if (__stream != null && __stream.__video != null)
 		{
 			return Std.int(__stream.__video.videoWidth);

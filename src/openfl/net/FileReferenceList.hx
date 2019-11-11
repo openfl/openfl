@@ -2,11 +2,9 @@ package openfl.net;
 
 #if !flash
 import haxe.io.Path;
+import openfl._internal.backend.lime.FileDialog;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
-#if lime
-import lime.ui.FileDialog;
-#end
 #if sys
 import sys.FileSystem;
 #end

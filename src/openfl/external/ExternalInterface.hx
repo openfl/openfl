@@ -87,7 +87,7 @@ import openfl._internal.Lib;
 		the HTML has finished loading before you attempt to call any JavaScript
 		methods.
 	**/
-	public static var available(default, null) = #if (js && html5) true #else false #end;
+	public static var available(default, null) = #if openfl_html5 true #else false #end;
 
 	/**
 		Indicates whether the external interface should attempt to pass
@@ -161,7 +161,7 @@ import openfl._internal.Lib;
 	**/
 	public static function addCallback(functionName:String, closure:Dynamic):Void
 	{
-		#if (js && html5)
+		#if openfl_html5
 		if (Lib.application.window.element != null)
 		{
 			untyped Lib.application.window.element[functionName] = closure;
@@ -238,7 +238,7 @@ import openfl._internal.Lib;
 	**/
 	public static function call(functionName:String, p1:Dynamic = null, p2:Dynamic = null, p3:Dynamic = null, p4:Dynamic = null, p5:Dynamic = null):Dynamic
 	{
-		#if (js && html5)
+		#if openfl_html5
 		var callResponse:Dynamic = null;
 
 		if (!~/^\(.+\)$/.match(functionName))
@@ -300,7 +300,7 @@ import openfl._internal.Lib;
 
 	private static function get_objectID():String
 	{
-		#if (js && html5)
+		#if openfl_html5
 		if (Lib.application.window.element != null)
 		{
 			return Lib.application.window.element.id;

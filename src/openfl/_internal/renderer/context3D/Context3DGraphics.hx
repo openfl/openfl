@@ -1,17 +1,15 @@
 package openfl._internal.renderer.context3D;
 
+import openfl._internal.backend.math.ARGB;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
-import openfl._internal.utils.Float32Array;
-import openfl._internal.utils.UInt16Array;
+import openfl._internal.backend.utils.Float32Array;
+import openfl._internal.backend.utils.UInt16Array;
 import openfl.display.BitmapData;
 import openfl.display.Graphics;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
-#if lime
-import lime.math.ARGB;
-#end
 #if gl_stats
 import openfl._internal.renderer.context3D.stats.Context3DStats;
 import openfl._internal.renderer.context3D.stats.DrawCallContext;
@@ -489,9 +487,9 @@ class Context3DGraphics
 			var cacheTransform = renderer.__softwareRenderer.__worldTransform;
 			renderer.__softwareRenderer.__worldTransform = renderer.__worldTransform;
 
-			#if (js && html5)
+			#if openfl_html5
 			CanvasGraphics.render(graphics, cast renderer.__softwareRenderer);
-			#elseif lime_cairo
+			#elseif openfl_cairo
 			CairoGraphics.render(graphics, cast renderer.__softwareRenderer);
 			#end
 

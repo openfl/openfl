@@ -1,9 +1,13 @@
 package openfl._internal.text;
 
 import haxe.Timer;
+import openfl._internal.backend.cairo.CairoFontFace;
 import openfl._internal.backend.gl.GLTexture;
+import openfl._internal.backend.html5.Browser;
+import openfl._internal.backend.html5.CanvasElement;
+import openfl._internal.backend.html5.CanvasRenderingContext2D;
+import openfl._internal.backend.lime.System;
 import openfl._internal.utils.Log;
-import openfl.Vector;
 import openfl.geom.Rectangle;
 import openfl.text.AntiAliasType;
 import openfl.text.Font;
@@ -13,15 +17,7 @@ import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFieldType;
 import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
-#if lime
-import lime.graphics.cairo.CairoFontFace;
-import lime.system.System;
-#end
-#if (js && html5)
-import js.html.CanvasElement;
-import js.html.CanvasRenderingContext2D;
-import js.Browser;
-#end
+import openfl.Vector;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -39,7 +35,7 @@ class TextEngine
 	private static inline var UTF8_HYPHEN:Int = 0x2D;
 	private static inline var GUTTER:Int = 2;
 	private static var __defaultFonts:Map<String, Font> = new Map();
-	#if (js && html5)
+	#if openfl_html5
 	private static var __context:CanvasRenderingContext2D;
 	#end
 
@@ -138,7 +134,7 @@ class TextEngine
 		layoutGroups = new Vector();
 		textFormatRanges = new Vector();
 
-		#if (js && html5)
+		#if openfl_html5
 		if (__context == null)
 		{
 			__context = (cast Browser.document.createElement("canvas") : CanvasElement).getContext("2d");
@@ -174,7 +170,7 @@ class TextEngine
 
 	private static function findFont(name:String):Font
 	{
-		#if (js && html5)
+		#if openfl_html5
 		return Font.__fontByName.get(name);
 		#elseif lime_cffi
 		for (registeredFont in Font.__registeredFonts)
@@ -251,7 +247,7 @@ class TextEngine
 		if (x >= width) x = GUTTER;
 		if (y >= height) y = GUTTER;
 
-		#if (js && html5)
+		#if openfl_html5
 		var textHeight = textHeight * 1.185; // measurement isn't always accurate, add padding
 		#end
 
@@ -263,7 +259,7 @@ class TextEngine
 	{
 		var ascent:Float, descent:Float, leading:Int;
 
-		#if (js && html5)
+		#if openfl_html5
 		__context.font = getFont(format);
 		#end
 
@@ -354,7 +350,7 @@ class TextEngine
 
 	public static function getFontInstance(format:TextFormat):Font
 	{
-		#if (js && html5)
+		#if openfl_html5
 		return findFontVariant(format);
 		#elseif lime_cffi
 		var instance = null;
@@ -783,7 +779,7 @@ class TextEngine
 		#if !js
 		inline
 		#end
-		function getPositions(text:UTF8String, startIndex:Int, endIndex:Int):Array<#if (js && html5) Float #else GlyphPosition #end>
+		function getPositions(text:UTF8String, startIndex:Int, endIndex:Int):Array<#if openfl_html5 Float #else GlyphPosition #end>
 		{
 			// TODO: optimize
 
@@ -795,7 +791,7 @@ class TextEngine
 				letterSpacing = formatRange.format.letterSpacing;
 			}
 
-			#if (js && html5)
+			#if openfl_html5
 			if (__useIntAdvances == null)
 			{
 				__useIntAdvances = ~/Trident\/7.0/.match(Browser.navigator.userAgent); // IE
@@ -870,14 +866,14 @@ class TextEngine
 			#end
 		}
 
-		#if !js inline #end function getPositionsWidth(positions:#if (js && html5) Array<Float> #else Array<GlyphPosition> #end):Float
+		#if !js inline #end function getPositionsWidth(positions:#if openfl_html5 Array<Float> #else Array<GlyphPosition> #end):Float
 
 		{
 			var width = 0.0;
 
 			for (position in positions)
 			{
-				#if (js && html5)
+				#if openfl_html5
 				width += position;
 				#else
 				width += position.advance.x;
@@ -890,7 +886,7 @@ class TextEngine
 		#if !js inline #end function getTextWidth(text:String):Float
 
 		{
-			#if (js && html5)
+			#if openfl_html5
 			return __context.measureText(text).width;
 			#else
 			if (__textLayout == null)
@@ -1020,7 +1016,7 @@ class TextEngine
 				formatRange = textFormatRanges[rangeIndex];
 				currentFormat.__merge(formatRange.format);
 
-				#if (js && html5)
+				#if openfl_html5
 				__context.font = getFont(currentFormat);
 				#end
 
@@ -1217,7 +1213,7 @@ class TextEngine
 				{
 					currentPosition = remainingPositions[i];
 
-					if (#if (js && html5) currentPosition #else currentPosition.advance.x #end == 0.0)
+					if (#if openfl_html5 currentPosition #else currentPosition.advance.x #end == 0.0)
 					{
 						// skip Unicode character buffer positions
 						i++;
@@ -1225,7 +1221,7 @@ class TextEngine
 					}
 					else
 					{
-						positionWidth += #if (js && html5) currentPosition #else currentPosition.advance.x #end;
+						positionWidth += #if openfl_html5 currentPosition #else currentPosition.advance.x #end;
 						i++;
 					}
 				}
@@ -1380,7 +1376,7 @@ class TextEngine
 							// Trim left space of this word
 							textIndex++;
 
-							var spaceWidth = #if (js && html5) positions.shift() #else positions.shift().advance.x #end;
+							var spaceWidth = #if openfl_html5 positions.shift() #else positions.shift().advance.x #end;
 							widthValue -= spaceWidth;
 							offsetX += spaceWidth;
 						}
@@ -1390,7 +1386,7 @@ class TextEngine
 							// Trim right space of this word
 							endIndex--;
 
-							var spaceWidth = #if (js && html5) positions.pop() #else positions.pop().advance.x #end;
+							var spaceWidth = #if openfl_html5 positions.pop() #else positions.pop().advance.x #end;
 							widthValue -= spaceWidth;
 						}
 					}
@@ -1407,7 +1403,7 @@ class TextEngine
 								// TODO: Handle multiple spaces
 
 								var lastPosition = positions[positions.length - 1];
-								var spaceWidth = #if (js && html5) lastPosition #else lastPosition.advance.x #end;
+								var spaceWidth = #if openfl_html5 lastPosition #else lastPosition.advance.x #end;
 
 								if (offsetX + widthValue - spaceWidth <= getWrapWidth())
 								{
@@ -1548,7 +1544,7 @@ class TextEngine
 						if (breakIndex - layoutGroup.startIndex - layoutGroup.positions.length < 0)
 						{
 							// Newline has no size
-							layoutGroup.positions.push(#if (js && html5) 0.0 #else null #end);
+							layoutGroup.positions.push(#if openfl_html5 0.0 #else null #end);
 						}
 
 						textIndex = breakIndex + 1;

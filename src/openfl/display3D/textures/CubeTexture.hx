@@ -5,9 +5,9 @@ import haxe.Timer;
 import openfl._internal.backend.gl.GLFramebuffer;
 import openfl._internal.formats.atf.ATFReader;
 import openfl._internal.renderer.SamplerState;
-import openfl._internal.utils.ArrayBufferView;
+import openfl._internal.backend.utils.ArrayBufferView;
 import openfl._internal.utils.Log;
-import openfl._internal.utils.UInt8Array;
+import openfl._internal.backend.utils.UInt8Array;
 import openfl.display.BitmapData;
 import openfl.errors.IllegalOperationError;
 import openfl.events.Event;
@@ -152,7 +152,7 @@ import openfl.utils.ByteArray;
 
 		// TODO: Improve handling of miplevels with canvas src
 
-		#if (js && html5)
+		#if openfl_html5
 		if (miplevel == 0 && image.buffer != null && image.buffer.data == null && image.buffer.src != null)
 		{
 			var gl = __context.gl;

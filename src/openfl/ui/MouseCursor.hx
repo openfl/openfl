@@ -1,9 +1,7 @@
 package openfl.ui;
 
 #if !flash
-#if lime
-import lime.ui.MouseCursor as LimeMouseCursor;
-#end
+import openfl._internal.backend.lime.MouseCursor as LimeMouseCursor;
 
 /**
 	The MouseCursor class is an enumeration of constant values used in setting

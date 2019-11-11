@@ -4,17 +4,15 @@ package openfl.display3D.textures;
 import openfl._internal.backend.gl.GLFramebuffer;
 import openfl._internal.backend.gl.GLRenderbuffer;
 import openfl._internal.backend.gl.GLTexture;
+import openfl._internal.backend.lime.ImageCanvasUtil;
+import openfl._internal.backend.lime.Image;
+import openfl._internal.backend.lime.RenderContext;
 import openfl._internal.formats.atf.ATFGPUFormat;
 import openfl._internal.renderer.SamplerState;
 import openfl.display.BitmapData;
 import openfl.events.EventDispatcher;
 import openfl.errors.Error;
 import openfl._internal.utils.Log;
-#if lime
-import lime._internal.graphics.ImageCanvasUtil;
-import lime.graphics.Image;
-import lime.graphics.RenderContext;
-#end
 
 /**
 	The TextureBase class is the base class for Context3D texture objects.
@@ -100,7 +98,7 @@ class TextureBase extends EventDispatcher
 			__compressedFormats = new Map();
 			__compressedFormatsAlpha = new Map();
 
-			#if (js && html5)
+			#if openfl_html5
 			var dxtExtension = gl.getExtension("WEBGL_compressed_texture_s3tc");
 			var etc1Extension = gl.getExtension("WEBGL_compressed_texture_etc1");
 			// WEBGL_compressed_texture_pvrtc is not available on iOS Safari
@@ -119,7 +117,7 @@ class TextureBase extends EventDispatcher
 
 			if (etc1Extension != null)
 			{
-				#if (js && html5)
+				#if openfl_html5
 				__compressedFormats[ATFGPUFormat.ETC1] = etc1Extension.COMPRESSED_RGB_ETC1_WEBGL;
 				__compressedFormatsAlpha[ATFGPUFormat.ETC1] = etc1Extension.COMPRESSED_RGB_ETC1_WEBGL;
 				#else
@@ -248,11 +246,11 @@ class TextureBase extends EventDispatcher
 			return null;
 		}
 
-		#if (js && html5)
+		#if openfl_html5
 		ImageCanvasUtil.sync(image, false);
 		#end
 
-		#if (js && html5)
+		#if openfl_html5
 		var gl = __context.gl;
 
 		if (image.type != DATA && !image.premultiplied)
@@ -390,7 +388,7 @@ class TextureBase extends EventDispatcher
 
 		__context.__bindGLTexture2D(__textureID);
 
-		#if (js && html5)
+		#if openfl_html5
 		if (image.type != DATA && !image.premultiplied)
 		{
 			gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);

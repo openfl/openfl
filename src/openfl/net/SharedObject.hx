@@ -5,16 +5,12 @@ import haxe.io.Bytes;
 import haxe.io.Path;
 import haxe.Serializer;
 import haxe.Unserializer;
+import openfl._internal.backend.html5.Browser;
+import openfl._internal.backend.lime.Application;
+import openfl._internal.backend.lime.System;
 import openfl.errors.Error;
 import openfl.events.EventDispatcher;
 import openfl.utils.Object;
-#if lime
-import lime.app.Application;
-import lime.system.System;
-#end
-#if (js && html5)
-import js.Browser;
-#end
 #if sys
 import sys.io.File;
 import sys.FileSystem;
@@ -327,7 +323,7 @@ class SharedObject extends EventDispatcher
 
 		try
 		{
-			#if (js && html5)
+			#if openfl_html5
 			var storage = Browser.getLocalStorage();
 
 			if (storage != null)
@@ -462,7 +458,7 @@ class SharedObject extends EventDispatcher
 
 		try
 		{
-			#if (js && html5)
+			#if openfl_html5
 			var storage = Browser.getLocalStorage();
 
 			if (storage != null)
@@ -684,7 +680,7 @@ class SharedObject extends EventDispatcher
 
 			try
 			{
-				#if (js && html5)
+				#if openfl_html5
 				var storage = Browser.getLocalStorage();
 
 				if (localPath == null)

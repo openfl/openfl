@@ -1,11 +1,9 @@
 package openfl.media;
 
 #if !flash
+import openfl._internal.backend.lime.AudioSource;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
-#if lime
-import lime.media.AudioSource;
-#end
 
 /**
 	The SoundChannel class controls a sound in an application. Every sound is

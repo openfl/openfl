@@ -5,26 +5,22 @@ import openfl._internal.renderer.context3D.Context3DBuffer;
 import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.DrawCommandReader;
 import openfl._internal.renderer.ShaderBuffer;
-import openfl._internal.utils.Float32Array;
+import openfl._internal.backend.utils.Float32Array;
 import openfl._internal.utils.ObjectPool;
-import openfl._internal.utils.UInt16Array;
+import openfl._internal.backend.utils.UInt16Array;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
 import openfl.errors.ArgumentError;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.Vector;
-#if lime
-import lime.graphics.cairo.Cairo;
-#if (js && html5)
+#if openfl_html5
+import openfl._internal.backend.html5.CanvasElement;
+import openfl._internal.backend.html5.CanvasRenderingContext2D;
 import openfl._internal.renderer.canvas.CanvasGraphics;
-#elseif lime_cffi
+#else
+import openfl._internal.backend.cairo.Cairo;
 import openfl._internal.renderer.cairo.CairoGraphics;
-#end
-#end
-#if (js && html5)
-import js.html.CanvasElement;
-import js.html.CanvasRenderingContext2D;
 #end
 
 /**
@@ -86,7 +82,7 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private var __owner:DisplayObject;
 	@:noCompletion private var __width:Int;
 	@:noCompletion private var __worldTransform:Matrix;
-	#if (js && html5)
+	#if openfl_html5
 	@:noCompletion private var __canvas:CanvasElement;
 	@:noCompletion private var __context:#if lime CanvasRenderingContext2D #else Dynamic #end;
 	#else
@@ -115,7 +111,7 @@ import js.html.CanvasRenderingContext2D;
 
 		__shaderBufferPool = new ObjectPool<ShaderBuffer>(function() return new ShaderBuffer());
 
-		#if (js && html5)
+		#if openfl_html5
 		moveTo(0, 0);
 		#end
 	}
@@ -424,7 +420,7 @@ import js.html.CanvasRenderingContext2D;
 		__positionX = 0;
 		__positionY = 0;
 
-		#if (js && html5)
+		#if openfl_html5
 		moveTo(0, 0);
 		#end
 	}
@@ -1647,7 +1643,7 @@ import js.html.CanvasRenderingContext2D;
 
 	@:noCompletion private function __cleanup():Void
 	{
-		#if (js && html5)
+		#if openfl_html5
 		if (__bounds != null && __canvas != null)
 		{
 			__dirty = true;
@@ -1663,7 +1659,7 @@ import js.html.CanvasRenderingContext2D;
 
 		__bitmap = null;
 
-		#if (js && html5)
+		#if openfl_html5
 		__canvas = null;
 		__context = null;
 		#else
@@ -1692,9 +1688,9 @@ import js.html.CanvasRenderingContext2D;
 		{
 			if (shapeFlag)
 			{
-				#if (js && html5)
+				#if openfl_html5
 				return CanvasGraphics.hitTest(this, px, py);
-				#elseif (lime_cffi)
+				#elseif (lime && lime_cffi)
 				return CairoGraphics.hitTest(this, px, py);
 				#end
 			}

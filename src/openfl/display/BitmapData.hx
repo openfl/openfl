@@ -1,16 +1,29 @@
 package openfl.display;
 
 #if !flash
+import openfl._internal.backend.cairo.CairoImageSurface;
+import openfl._internal.backend.cairo.CairoSurface;
+import openfl._internal.backend.cairo.Cairo;
 import openfl._internal.backend.gl.GLFramebuffer;
 import openfl._internal.backend.gl.GLRenderbuffer;
+import openfl._internal.backend.html5.CanvasElement;
+import openfl._internal.backend.lime.Image;
+import openfl._internal.backend.lime.ImageCanvasUtil;
+import openfl._internal.backend.lime.ImageChannel;
+import openfl._internal.backend.lime.ImageBuffer;
+import openfl._internal.backend.lime.RenderContext;
+import openfl._internal.backend.math.ARGB;
+import openfl._internal.backend.math.Vector2;
 import openfl._internal.formats.swf.SWFLite;
+import openfl._internal.renderer.context3D.Context3DRenderer;
+import openfl._internal.renderer.context3D.batcher.BatchRenderer;
 import openfl._internal.renderer.BitmapDataPool;
 import openfl._internal.renderer.DisplayObjectType;
 import openfl._internal.symbols.BitmapSymbol;
-import openfl._internal.utils.Float32Array;
+import openfl._internal.backend.utils.Float32Array;
 import openfl._internal.utils.PerlinNoise;
-import openfl._internal.utils.UInt16Array;
-import openfl._internal.utils.UInt8Array;
+import openfl._internal.backend.utils.UInt16Array;
+import openfl._internal.backend.utils.UInt8Array;
 import openfl.display3D.textures.TextureBase;
 import openfl.display3D.Context3D;
 import openfl.display3D.IndexBuffer3D;
@@ -26,28 +39,10 @@ import openfl.utils.Endian;
 import openfl.utils.Future;
 import openfl.utils.Object;
 import openfl.Vector;
-#if lime
-import lime._internal.graphics.ImageCanvasUtil; // TODO
-import lime.app.Application;
-import lime.graphics.cairo.CairoImageSurface;
-import lime.graphics.cairo.CairoSurface;
-import lime.graphics.cairo.Cairo;
-import lime.graphics.Image;
-import lime.graphics.ImageChannel;
-import lime.graphics.ImageBuffer;
-import lime.graphics.RenderContext;
-import lime.math.ARGB;
-import lime.math.Vector2;
-import openfl._internal.renderer.context3D.Context3DRenderer;
-import openfl._internal.renderer.context3D.batcher.BatchRenderer;
-#if lime_cairo
-import openfl._internal.renderer.cairo.CairoRenderer;
-#elseif (js && html5)
+#if openfl_html5
 import openfl._internal.renderer.canvas.CanvasRenderer;
-#end
-#end
-#if (js && html5)
-import js.html.CanvasElement;
+#else
+import openfl._internal.renderer.cairo.CairoRenderer;
 #end
 
 /**
@@ -109,8 +104,8 @@ import js.html.CanvasElement;
 @:access(lime.graphics.Image)
 @:access(lime.graphics.ImageBuffer)
 @:access(lime.math.Rectangle)
+@:access(openfl._internal.backend.lime.cairo.CairoRenderer)
 @:access(openfl._internal.renderer.canvas.CanvasRenderer)
-@:access(openfl._internal.renderer.cairo.CairoRenderer)
 @:access(openfl.display3D.textures.TextureBase)
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.DisplayObject)
@@ -251,7 +246,7 @@ class BitmapData implements IBitmapDrawable
 	{
 		this.transparent = transparent;
 
-		#if (neko || (js && html5))
+		#if (neko || openfl_html5)
 		width = width == null ? 0 : width;
 		height = height == null ? 0 : height;
 		#end
@@ -299,7 +294,7 @@ class BitmapData implements IBitmapDrawable
 			{
 				image.fillRect(image.rect, fillColor);
 			}
-			// #elseif (js && html5)
+			// #elseif openfl_html5
 			// var buffer = new ImageBuffer (null, width, height);
 			// var canvas:CanvasElement = cast Browser.document.createElement ("canvas");
 			// buffer.__srcCanvas = canvas;
@@ -711,7 +706,7 @@ class BitmapData implements IBitmapDrawable
 	{
 		if (!readable || sourceBitmapData == null) return;
 
-		#if (js && html5)
+		#if openfl_html5
 		if (alphaBitmapData != null
 			&& alphaBitmapData.transparent
 			&& (alphaBitmapData != sourceBitmapData || (alphaPoint != null && (alphaPoint.x != 0 || alphaPoint.y != 0))))
@@ -962,7 +957,7 @@ class BitmapData implements IBitmapDrawable
 		}
 		else
 		{
-			#if ((js && html5) || lime_cairo)
+			#if (openfl_html5 || openfl_cairo)
 			if (colorTransform != null)
 			{
 				var bounds = Rectangle.__pool.get();
@@ -992,12 +987,12 @@ class BitmapData implements IBitmapDrawable
 				Matrix.__pool.release(boundsMatrix);
 			}
 
-			#if (js && html5)
+			#if openfl_html5
 			if (__softwareRenderer == null) __softwareRenderer = new CanvasRenderer(null);
 			ImageCanvasUtil.convertToCanvas(image);
 			var renderer:CanvasRenderer = cast __softwareRenderer;
 			renderer.context = image.buffer.__srcContext;
-			#else
+			#elseif openfl_cairo
 			if (__softwareRenderer == null) __softwareRenderer = new CairoRenderer(null);
 			var renderer:CairoRenderer = cast __softwareRenderer;
 			renderer.cairo = new Cairo(getSurface());
@@ -1220,7 +1215,7 @@ class BitmapData implements IBitmapDrawable
 		#end
 	}
 
-	#if (!openfl_doc_gen || (!js && !html5 && !flash_doc_gen))
+	#if (!openfl_doc_gen || (!openfl_html5 && !flash_doc_gen))
 	/**
 		Creates a new BitmapData instance from Base64-encoded data synchronously. This means
 		that the BitmapData will be returned immediately (if supported).
@@ -1234,7 +1229,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public static function fromBase64(base64:String, type:String):BitmapData
 	{
-		#if (js && html5)
+		#if openfl_html5
 		return null;
 		#else
 		var bitmapData = new BitmapData(0, 0, true, 0);
@@ -1244,7 +1239,7 @@ class BitmapData implements IBitmapDrawable
 	}
 	#end
 
-	#if (!openfl_doc_gen || (!js && !html5 && !flash_doc_gen))
+	#if (!openfl_doc_gen || (!openfl_html5 && !flash_doc_gen))
 	/**
 		Creates a new BitmapData from bytes (a haxe.io.Bytes or openfl.utils.ByteArray)
 		synchronously. This means that the BitmapData will be returned immediately (if
@@ -1262,7 +1257,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public static function fromBytes(bytes:ByteArray, rawAlpha:ByteArray = null):BitmapData
 	{
-		#if (js && html5)
+		#if openfl_html5
 		return null;
 		#else
 		var bitmapData = new BitmapData(0, 0, true, 0);
@@ -1272,7 +1267,7 @@ class BitmapData implements IBitmapDrawable
 	}
 	#end
 
-	#if (js && html5)
+	#if openfl_html5
 	/**
 		Creates a new BitmapData from an HTML5 canvas element immediately.
 
@@ -1294,7 +1289,7 @@ class BitmapData implements IBitmapDrawable
 	}
 	#end
 
-	#if (!openfl_doc_gen || (!js && !html5 && !flash_doc_gen))
+	#if (!openfl_doc_gen || (!openfl_html5 && !flash_doc_gen))
 	/**
 		Creates a new BitmapData from a file path synchronously. This means that the
 		BitmapData will be returned immediately (if supported).
@@ -1310,7 +1305,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public static function fromFile(path:String):BitmapData
 	{
-		#if (js && html5)
+		#if openfl_html5
 		return null;
 		#else
 		var bitmapData = new BitmapData(0, 0, true, 0);
@@ -2314,7 +2309,7 @@ class BitmapData implements IBitmapDrawable
 		}
 
 		#if lime
-		#if (js && html5)
+		#if openfl_html5
 		ImageCanvasUtil.sync(image, false);
 		#end
 
@@ -2327,7 +2322,7 @@ class BitmapData implements IBitmapDrawable
 
 			var textureImage = image;
 
-			#if (js && html5)
+			#if openfl_html5
 			if (#if openfl_power_of_two true || #end (!TextureBase.__supportsBGRA && textureImage.format != RGBA32))
 			{
 				textureImage = textureImage.clone();
@@ -3149,7 +3144,7 @@ class BitmapData implements IBitmapDrawable
 
 	@:noCompletion private function __applyAlpha(alpha:ByteArray):Void
 	{
-		#if (js && html5)
+		#if openfl_html5
 		ImageCanvasUtil.convertToCanvas(image);
 		ImageCanvasUtil.createImageData(image);
 		#end
@@ -3231,7 +3226,7 @@ class BitmapData implements IBitmapDrawable
 		// TODO: Cache alpha image?
 
 		#if lime
-		#if (js && html5)
+		#if openfl_html5
 		Image.loadFromFile(symbol.path).onComplete(function(image)
 		{
 			if (symbol.alpha != null)
@@ -3443,7 +3438,7 @@ class BitmapData implements IBitmapDrawable
 
 	@:noCompletion private function __sync():Void
 	{
-		#if (js && html5)
+		#if openfl_html5
 		ImageCanvasUtil.sync(image, false);
 		#end
 	}

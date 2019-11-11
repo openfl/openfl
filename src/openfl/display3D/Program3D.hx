@@ -4,18 +4,16 @@ package openfl.display3D;
 import openfl._internal.backend.gl.GLProgram;
 import openfl._internal.backend.gl.GLShader;
 import openfl._internal.backend.gl.GLUniformLocation;
+// import openfl._internal.backend.gl.GL;
+import openfl._internal.backend.lime.BytePointer;
 import openfl._internal.formats.agal.AGALConverter;
 import openfl._internal.renderer.SamplerState;
-import openfl._internal.utils.Float32Array;
+import openfl._internal.backend.utils.Float32Array;
 import openfl._internal.utils.Log;
 import openfl.display.ShaderParameterType;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
 import openfl.Vector;
-#if lime
-import lime.graphics.opengl.GL;
-import lime.utils.BytePointer;
-#end
 
 /**
 	The Program3D class represents a pair of rendering programs (also called "shaders")
@@ -391,8 +389,8 @@ import lime.utils.BytePointer;
 		// var samplerStates = new Vector<SamplerState> (Context3D.MAX_SAMPLERS);
 		var samplerStates = new Array<SamplerState>();
 
-		var glslVertex = AGALConverter.convertToGLSL(vertexProgram, null);
-		var glslFragment = AGALConverter.convertToGLSL(fragmentProgram, samplerStates);
+		var glslVertex = AGALConverter.convertToGLSL(this, vertexProgram, null);
+		var glslFragment = AGALConverter.convertToGLSL(this, fragmentProgram, samplerStates);
 
 		if (Log.level == LogLevel.VERBOSE)
 		{
@@ -520,11 +518,11 @@ import lime.utils.BytePointer;
 
 			switch (uniform.type)
 			{
-				case GL.FLOAT_MAT2:
+				case 0x8B5A: // GL.FLOAT_MAT2:
 					uniform.regCount = 2;
-				case GL.FLOAT_MAT3:
+				case 0x8B5B: // GL.FLOAT_MAT3:
 					uniform.regCount = 3;
-				case GL.FLOAT_MAT4:
+				case 0x8B5C: // GL.FLOAT_MAT4:
 					uniform.regCount = 4;
 				default:
 					uniform.regCount = 1;
@@ -959,7 +957,7 @@ import lime.utils.BytePointer;
 	public function flush():Void
 	{
 		#if lime
-		#if (js && html5)
+		#if openfl_html5
 		var gl = context.gl;
 		#else
 		var gl = context.__context.gles2;
@@ -968,33 +966,33 @@ import lime.utils.BytePointer;
 		var index:Int = regIndex * 4;
 		switch (type)
 		{
-			#if (js && html5)
-			case GL.FLOAT_MAT2:
+			#if openfl_html5
+			case 0x8B5A: // GL.FLOAT_MAT2:
 				gl.uniformMatrix2fv(location, false, __getUniformRegisters(index, size * 2 * 2));
-			case GL.FLOAT_MAT3:
+			case 0x8B5B: // GL.FLOAT_MAT3:
 				gl.uniformMatrix3fv(location, false, __getUniformRegisters(index, size * 3 * 3));
-			case GL.FLOAT_MAT4:
+			case 0x8B5C: // GL.FLOAT_MAT4:
 				gl.uniformMatrix4fv(location, false, __getUniformRegisters(index, size * 4 * 4));
-			case GL.FLOAT_VEC2:
+			case 0x8B50: // GL.FLOAT_VEC2:
 				gl.uniform2fv(location, __getUniformRegisters(index, regCount * 2));
-			case GL.FLOAT_VEC3:
+			case 0x8B51: // GL.FLOAT_VEC3:
 				gl.uniform3fv(location, __getUniformRegisters(index, regCount * 3));
-			case GL.FLOAT_VEC4:
+			case 0x8B52: // GL.FLOAT_VEC4:
 				gl.uniform4fv(location, __getUniformRegisters(index, regCount * 4));
 			default:
 				gl.uniform4fv(location, __getUniformRegisters(index, regCount * 4));
 			#else
-			case GL.FLOAT_MAT2:
+			case 0x8B5A: // GL.FLOAT_MAT2:
 				gl.uniformMatrix2fv(location, size, false, __getUniformRegisters(index, size * 2 * 2));
-			case GL.FLOAT_MAT3:
+			case 0x8B5B: // GL.FLOAT_MAT3:
 				gl.uniformMatrix3fv(location, size, false, __getUniformRegisters(index, size * 3 * 3));
-			case GL.FLOAT_MAT4:
+			case 0x8B5C: // GL.FLOAT_MAT4:
 				gl.uniformMatrix4fv(location, size, false, __getUniformRegisters(index, size * 4 * 4));
-			case GL.FLOAT_VEC2:
+			case 0x8B50: // GL.FLOAT_VEC2:
 				gl.uniform2fv(location, regCount, __getUniformRegisters(index, regCount * 2));
-			case GL.FLOAT_VEC3:
+			case 0x8B51: // GL.FLOAT_VEC3:
 				gl.uniform3fv(location, regCount, __getUniformRegisters(index, regCount * 3));
-			case GL.FLOAT_VEC4:
+			case 0x8B52: // GL.FLOAT_VEC4:
 				gl.uniform4fv(location, regCount, __getUniformRegisters(index, regCount * 4));
 			default:
 				gl.uniform4fv(location, regCount, __getUniformRegisters(index, regCount * 4));
@@ -1003,7 +1001,7 @@ import lime.utils.BytePointer;
 		#end
 	}
 
-	#if (js && html5)
+	#if openfl_html5
 	@:noCompletion private inline function __getUniformRegisters(index:Int, size:Int):Float32Array
 	{
 		return regData.subarray(index, index + size);

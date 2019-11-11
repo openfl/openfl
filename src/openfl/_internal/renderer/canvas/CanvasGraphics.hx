@@ -1,9 +1,15 @@
 package openfl._internal.renderer.canvas;
 
-import openfl.display.BitmapData;
-import openfl.display.CapsStyle;
+import openfl._internal.backend.html5.CanvasElement;
+import openfl._internal.backend.html5.CanvasPattern;
+import openfl._internal.backend.html5.CanvasRenderingContext2D;
+import openfl._internal.backend.html5.CanvasWindingRule;
+import openfl._internal.backend.html5.Browser;
+import openfl._internal.backend.lime.ImageCanvasUtil;
 import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.DrawCommandReader;
+import openfl.display.BitmapData;
+import openfl.display.CapsStyle;
 import openfl.display.GradientType;
 import openfl.display.Graphics;
 import openfl.display.InterpolationMethod;
@@ -12,16 +18,6 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.Vector;
-#if lime
-import lime._internal.graphics.ImageCanvasUtil; // TODO
-#end
-#if (js && html5)
-import js.html.CanvasElement;
-import js.html.CanvasPattern;
-import js.html.CanvasRenderingContext2D;
-import js.html.CanvasWindingRule;
-import js.Browser;
-#end
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.BitmapData)
@@ -47,15 +43,15 @@ class CanvasGraphics
 	private static var inversePendingMatrix:Matrix;
 	private static var pendingMatrix:Matrix;
 	private static var strokeCommands:DrawCommandBuffer = new DrawCommandBuffer();
-	@SuppressWarnings("checkstyle:Dynamic") private static var windingRule:#if (js && html5) CanvasWindingRule #else Dynamic #end;
+	@SuppressWarnings("checkstyle:Dynamic") private static var windingRule:#if openfl_html5 CanvasWindingRule #else Dynamic #end;
 	private static var worldAlpha:Float;
-	#if (js && html5)
+	#if openfl_html5
 	private static var context:CanvasRenderingContext2D;
 	private static var hitTestCanvas:CanvasElement;
 	private static var hitTestContext:CanvasRenderingContext2D;
 	#end
 
-	#if (js && html5)
+	#if openfl_html5
 	private static function __init__():Void
 	{
 		hitTestCanvas = Browser.supported ? cast Browser.document.createElement("canvas") : null;
@@ -65,7 +61,7 @@ class CanvasGraphics
 
 	private static function closePath(strokeBefore:Bool = false):Void
 	{
-		#if (js && html5)
+		#if openfl_html5
 		if (context.strokeStyle == null)
 		{
 			return;
@@ -88,9 +84,9 @@ class CanvasGraphics
 	}
 
 	@SuppressWarnings("checkstyle:Dynamic")
-	private static function createBitmapFill(bitmap:BitmapData, bitmapRepeat:Bool, smooth:Bool):#if (js && html5) CanvasPattern #else Dynamic #end
+	private static function createBitmapFill(bitmap:BitmapData, bitmapRepeat:Bool, smooth:Bool):#if openfl_html5 CanvasPattern #else Dynamic #end
 	{
-		#if (js && html5)
+		#if openfl_html5
 		ImageCanvasUtil.convertToCanvas(bitmap.image);
 		setSmoothing(smooth);
 		return context.createPattern(bitmap.image.src, bitmapRepeat ? "repeat" : "no-repeat");
@@ -101,9 +97,9 @@ class CanvasGraphics
 
 	@SuppressWarnings("checkstyle:Dynamic")
 	private static function createGradientPattern(type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix,
-			spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float):#if (js && html5) CanvasPattern #else Void #end
+			spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float):#if openfl_html5 CanvasPattern #else Void #end
 	{
-		#if (js && html5)
+		#if openfl_html5
 		var gradientFill = null,
 			point = null,
 			point2 = null,
@@ -161,11 +157,11 @@ class CanvasGraphics
 		#end
 	}
 
-	private static function createTempPatternCanvas(bitmap:BitmapData, repeat:Bool, width:Int, height:Int):#if (js && html5) CanvasElement #else Void #end
+	private static function createTempPatternCanvas(bitmap:BitmapData, repeat:Bool, width:Int, height:Int):#if openfl_html5 CanvasElement #else Void #end
 	{
 		// TODO: Don't create extra canvas elements like this
 
-		#if (js && html5)
+		#if openfl_html5
 		var canvas:CanvasElement = cast Browser.document.createElement("canvas");
 		var context = canvas.getContext("2d");
 
@@ -187,7 +183,7 @@ class CanvasGraphics
 
 	private static function drawRoundRect(x:Float, y:Float, width:Float, height:Float, ellipseWidth:Float, ellipseHeight:Null<Float>):Void
 	{
-		#if (js && html5)
+		#if openfl_html5
 		if (ellipseHeight == null) ellipseHeight = ellipseWidth;
 
 		ellipseWidth *= 0.5;
@@ -221,7 +217,7 @@ class CanvasGraphics
 
 	private static function endFill():Void
 	{
-		#if (js && html5)
+		#if openfl_html5
 		context.beginPath();
 		playCommands(fillCommands, false);
 		fillCommands.clear();
@@ -230,7 +226,7 @@ class CanvasGraphics
 
 	private static function endStroke():Void
 	{
-		#if (js && html5)
+		#if openfl_html5
 		context.beginPath();
 		playCommands(strokeCommands, true);
 		context.closePath();
@@ -240,7 +236,7 @@ class CanvasGraphics
 
 	public static function hitTest(graphics:Graphics, x:Float, y:Float):Bool
 	{
-		#if (js && html5)
+		#if openfl_html5
 		bounds = graphics.__bounds;
 		CanvasGraphics.graphics = graphics;
 
@@ -505,7 +501,7 @@ class CanvasGraphics
 
 	private static function playCommands(commands:DrawCommandBuffer, stroke:Bool = false):Void
 	{
-		#if (js && html5)
+		#if openfl_html5
 		bounds = graphics.__bounds;
 
 		var offsetX = bounds.x;
@@ -1135,7 +1131,7 @@ class CanvasGraphics
 
 	public static function render(graphics:Graphics, renderer:CanvasRenderer):Void
 	{
-		#if (js && html5)
+		#if openfl_html5
 		graphics.__update(renderer.__worldTransform);
 
 		if (graphics.__softwareDirty)
@@ -1454,7 +1450,7 @@ class CanvasGraphics
 
 	public static function renderMask(graphics:Graphics, renderer:CanvasRenderer):Void
 	{
-		#if (js && html5)
+		#if openfl_html5
 		// TODO: Move to normal render method, browsers appear to support more than
 		// one path in clipping now
 
@@ -1530,7 +1526,7 @@ class CanvasGraphics
 						var c = data.readDrawRect();
 						// context.beginPath();
 						context.rect(c.x - offsetX, c.y - offsetY, c.width, c.height);
-						// context.closePath();
+					// context.closePath();
 
 					case DRAW_ROUND_RECT:
 						var c = data.readDrawRoundRect();
@@ -1562,7 +1558,7 @@ class CanvasGraphics
 
 	private static function setSmoothing(smooth:Bool):Void
 	{
-		#if (js && html5)
+		#if openfl_html5
 		if (!allowSmoothing)
 		{
 			smooth = false;

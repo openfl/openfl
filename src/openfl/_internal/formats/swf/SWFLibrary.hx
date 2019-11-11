@@ -1,6 +1,7 @@
-package openfl._internal.formats.swf; #if lime
+package openfl._internal.formats.swf;
 
 import haxe.Resource;
+import openfl._internal.backend.lime.Image;
 import openfl.display.Loader;
 import openfl.display.MovieClip;
 import openfl.events.Event;
@@ -13,10 +14,7 @@ import openfl.utils.AssetLibrary;
 import openfl.utils.AssetType;
 import openfl.utils.ByteArray;
 import openfl.utils.Future;
-#if lime
-import lime.graphics.Image;
-import lime.app.Promise;
-#end
+import openfl.utils.Promise;
 #if flash
 import flash.display.AVM1Movie;
 #end
@@ -137,4 +135,3 @@ import flash.display.AVM1Movie;
 		return promise.future;
 	}
 }
-#end

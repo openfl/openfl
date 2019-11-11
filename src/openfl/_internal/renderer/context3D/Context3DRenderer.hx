@@ -1,13 +1,11 @@
 package openfl._internal.renderer.context3D;
 
-import haxe.ds.IntMap;
 #if !flash
-import lime.graphics.opengl.ext.KHR_debug;
-import lime.graphics.RenderContext;
-import lime.graphics.WebGLRenderContext;
-import lime.math.ARGB;
-import lime.math.Matrix4;
-import lime.utils.Float32Array;
+import openfl._internal.backend.gl.ext.KHR_debug;
+import openfl._internal.backend.lime.RenderContext;
+import openfl._internal.backend.lime.WebGLRenderContext;
+import openfl._internal.backend.math.ARGB;
+import openfl._internal.backend.math.Matrix4;
 import openfl._internal.renderer.context3D.batcher.BatchRenderer;
 import openfl._internal.renderer.ShaderBuffer;
 import openfl._internal.utils.ObjectPool;
@@ -32,15 +30,12 @@ import openfl.display3D.Context3D;
 import openfl.events.RenderEvent;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
-import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.media.Video;
 import openfl.text.TextField;
-#if (js && html5)
-import lime._internal.graphics.ImageCanvasUtil;
+#if openfl_html5
 import openfl._internal.renderer.canvas.CanvasRenderer;
 #else
-import lime.graphics.cairo.Cairo;
 import openfl._internal.renderer.cairo.CairoRenderer;
 #end
 #if gl_stats
@@ -154,7 +149,7 @@ class Context3DRenderer extends Context3DRendererAPI
 		}
 		#end
 
-		#if (js && html5)
+		#if openfl_html5
 		__softwareRenderer = new CanvasRenderer(null);
 		#else
 		__softwareRenderer = new CairoRenderer(null);

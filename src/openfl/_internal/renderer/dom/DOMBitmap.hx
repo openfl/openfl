@@ -1,14 +1,9 @@
 package openfl._internal.renderer.dom;
 
+import openfl._internal.backend.html5.Browser;
+import openfl._internal.backend.lime.ImageCanvasUtil;
 import openfl._internal.renderer.dom.DOMRenderer;
 import openfl.display.Bitmap;
-#if lime
-// TODO: Avoid use of private APIs
-import lime._internal.graphics.ImageCanvasUtil;
-#end
-#if (js && html5)
-import js.Browser;
-#end
 
 @:access(lime.graphics.ImageBuffer)
 @:access(openfl.display.Bitmap)
@@ -18,7 +13,7 @@ class DOMBitmap
 {
 	public static function clear(bitmap:Bitmap, renderer:DOMRenderer):Void
 	{
-		#if (js && html5)
+		#if openfl_html5
 		if (bitmap.__image != null)
 		{
 			renderer.element.removeChild(bitmap.__image);
@@ -37,7 +32,7 @@ class DOMBitmap
 
 	public static inline function render(bitmap:Bitmap, renderer:DOMRenderer):Void
 	{
-		#if (js && html5)
+		#if openfl_html5
 		if (bitmap.stage != null && bitmap.__worldVisible && bitmap.__renderable && bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid
 			&& bitmap.__bitmapData.readable)
 		{
@@ -63,7 +58,7 @@ class DOMBitmap
 
 	private static function renderCanvas(bitmap:Bitmap, renderer:DOMRenderer):Void
 	{
-		#if (js && html5)
+		#if openfl_html5
 		if (bitmap.__image != null)
 		{
 			renderer.element.removeChild(bitmap.__image);
@@ -105,7 +100,7 @@ class DOMBitmap
 
 	private static function renderImage(bitmap:Bitmap, renderer:DOMRenderer):Void
 	{
-		#if (js && html5)
+		#if openfl_html5
 		if (bitmap.__canvas != null)
 		{
 			renderer.element.removeChild(bitmap.__canvas);

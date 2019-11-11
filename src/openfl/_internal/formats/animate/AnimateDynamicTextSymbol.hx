@@ -1,8 +1,6 @@
 package openfl._internal.formats.animate;
 
-#if lime
-import lime.utils.Log;
-#end
+import openfl._internal.utils.Log;
 import openfl.text.Font;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
@@ -138,7 +136,7 @@ class AnimateDynamicTextSymbol extends AnimateSymbol
 		{
 			textField.embedFonts = true;
 		}
-		#if (lime && !flash)
+		#if !flash
 		else if (!TextField.__missingFontWarning.exists(format.font))
 		{
 			TextField.__missingFontWarning[format.font] = true;

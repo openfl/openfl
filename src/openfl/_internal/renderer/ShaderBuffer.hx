@@ -1,7 +1,7 @@
 package openfl._internal.renderer;
 
 import openfl._internal.backend.gl.GLBuffer;
-import openfl._internal.utils.Float32Array;
+import openfl._internal.backend.utils.Float32Array;
 import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
 import openfl.display3D.Context3DWrapMode;

@@ -2,15 +2,12 @@ package openfl.filters;
 
 import haxe.Timer;
 #if !flash
+import openfl._internal.backend.lime.ImageDataUtil;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-#if lime
-import lime._internal.graphics.ImageDataUtil; // TODO
-
-#end
 
 /**
 	The BlurFilter class lets you apply a blur visual effect to display

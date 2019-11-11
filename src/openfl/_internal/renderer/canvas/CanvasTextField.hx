@@ -1,15 +1,13 @@
 package openfl._internal.renderer.canvas;
 
+import openfl._internal.backend.html5.Browser;
+import openfl._internal.backend.html5.CanvasRenderingContext2D;
 import openfl._internal.text.TextEngine;
 import openfl.display.BitmapData;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
-#if (js && html5)
-import js.html.CanvasRenderingContext2D;
-import js.Browser;
-#end
 
 @:access(openfl._internal.text.TextEngine)
 @:access(openfl.display.Graphics)
@@ -19,14 +17,14 @@ import js.Browser;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class CanvasTextField
 {
-	#if (js && html5)
+	#if openfl_html5
 	private static var context:CanvasRenderingContext2D;
 	private static var clearRect:Null<Bool>;
 	#end
 
 	public static inline function render(textField:TextField, renderer:CanvasRenderer, transform:Matrix):Void
 	{
-		#if (js && html5)
+		#if openfl_html5
 		var textEngine = textField.__textEngine;
 		var bounds = (textEngine.background || textEngine.border) ? textEngine.bounds : textEngine.textBounds;
 		var graphics = textField.__graphics;

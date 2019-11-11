@@ -494,8 +494,8 @@ class SimpleButton extends InteractiveObject
 			value.parent.removeChild(value);
 		}
 
-		// #if (js && html5 && dom)
-		#if (js && html5)
+		// #if (openfl_html5 && dom)
+		#if openfl_html5
 		if (DisplayObject.__supportDOM && __previousStates == null)
 		{
 			__previousStates = new Vector<DisplayObject>();
@@ -504,8 +504,8 @@ class SimpleButton extends InteractiveObject
 
 		if (value != __currentState)
 		{
-			// #if (js && html5 && dom)
-			#if (js && html5)
+			// #if (openfl_html5 && dom)
+			#if openfl_html5
 			if (DisplayObject.__supportDOM)
 			{
 				if (__currentState != null)

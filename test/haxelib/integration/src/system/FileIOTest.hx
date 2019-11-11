@@ -22,7 +22,7 @@ class FileIOTest
 
 			var bitmapData = BitmapData.fromBase64(logo, type);
 
-			#if (js && html5)
+			#if openfl_html5
 			Assert.isNull(bitmapData);
 			#else
 			Assert.areEqual(color145x160, bitmapData.getPixel(145, 160));
@@ -49,7 +49,7 @@ class FileIOTest
 	{
 		// TODO: Confirm functionality
 
-		#if (js && html5)
+		#if openfl_html5
 		var exists = BitmapData.fromCanvas;
 		Assert.isNotNull(exists);
 		#end

@@ -2,17 +2,15 @@ package openfl.media;
 
 #if !flash
 import haxe.Int64;
+import openfl._internal.backend.lime.AudioBuffer;
+import openfl._internal.backend.lime.AudioSource;
+import openfl._internal.backend.utils.UInt8Array;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.IOErrorEvent;
 import openfl.net.URLRequest;
 import openfl.utils.ByteArray;
 import openfl.utils.Future;
-#if lime
-import openfl._internal.utils.UInt8Array;
-import lime.media.AudioBuffer;
-import lime.media.AudioSource;
-#end
 
 /**
 	The Sound class lets you work with sound in an application. The Sound class
@@ -438,7 +436,7 @@ class Sound extends EventDispatcher
 		url = stream.url;
 
 		#if lime
-		#if (js && html5)
+		#if openfl_html5
 		var defaultLibrary = lime.utils.Assets.getLibrary("default"); // TODO: Improve this
 
 		if (defaultLibrary != null && defaultLibrary.cachedAudioBuffers.exists(url))
@@ -669,7 +667,7 @@ class Sound extends EventDispatcher
 		#if lime
 		if (__buffer != null)
 		{
-			#if (js && html5 && howlerjs)
+			#if (openfl_html5 && howlerjs)
 			return Std.int(__buffer.src.duration() * 1000);
 			#else
 			if (__buffer.data != null)

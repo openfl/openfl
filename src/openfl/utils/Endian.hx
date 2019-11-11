@@ -1,9 +1,7 @@
 package openfl.utils;
 
 #if !flash
-#if lime
-import lime.system.Endian as LimeEndian;
-#end
+import openfl._internal.backend.lime.Endian as LimeEndian;
 
 #if !openfljs
 /**

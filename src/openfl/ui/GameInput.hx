@@ -1,15 +1,13 @@
 package openfl.ui;
 
 #if !flash
+import openfl._internal.backend.lime.Gamepad;
+import openfl._internal.backend.lime.GamepadAxis;
+import openfl._internal.backend.lime.GamepadButton;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.EventType;
 import openfl.events.GameInputEvent;
-#if lime
-import lime.ui.Gamepad;
-import lime.ui.GamepadAxis;
-import lime.ui.GamepadButton;
-#end
 
 /**
 	The GameInput class is the entry point into the GameInput API. You can use this API to

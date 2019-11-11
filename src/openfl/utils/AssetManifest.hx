@@ -1,9 +1,7 @@
 package openfl.utils;
 
 import haxe.io.Bytes;
-#if lime
-import lime.utils.AssetManifest as LimeAssetManifest;
-#end
+import openfl._internal.backend.lime.AssetManifest as LimeAssetManifest;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

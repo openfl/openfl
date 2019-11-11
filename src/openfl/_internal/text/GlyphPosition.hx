@@ -1,9 +1,7 @@
 package openfl._internal.text;
 
-#if lime
-import lime.math.Vector2;
-import lime.text.Glyph;
-#end
+import openfl._internal.backend.lime.Glyph;
+import openfl._internal.backend.math.Vector2;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -12,12 +10,11 @@ import lime.text.Glyph;
 @SuppressWarnings(["checkstyle:FieldDocComment", "checkstyle:Dynamic"])
 class GlyphPosition
 {
-	public var advance:#if lime Vector2 #else Dynamic #end;
-	public var glyph:#if lime Glyph #else Dynamic #end;
-	public var offset:#if lime Vector2 #else Dynamic #end;
+	public var advance:Vector2;
+	public var glyph:Glyph;
+	public var offset:Vector2;
 
-	public function new(glyph:#if lime Glyph #else Dynamic #end, advance:#if lime Vector2 #else Dynamic #end,
-			offset:#if lime Vector2 #else Dynamic #end = null)
+	public function new(glyph:Glyph, advance:Vector2, offset:Vector2 = null)
 	{
 		this.glyph = glyph;
 		this.advance = advance;

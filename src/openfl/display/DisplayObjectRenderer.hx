@@ -1,13 +1,11 @@
 package openfl.display;
 
 #if !flash
+import openfl._internal.backend.lime.RenderContextType;
 import openfl.events.EventDispatcher;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
-#if lime
-import lime.graphics.RenderContextType;
-#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

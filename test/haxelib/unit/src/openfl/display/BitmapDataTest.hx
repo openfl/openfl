@@ -27,7 +27,7 @@ class BitmapDataTest
 	#end
 	@Test public function fromCanvas()
 	{
-		#if (js && html5)
+		#if openfl_html5
 		Assert.isNotNull(BitmapData.fromCanvas);
 		#end
 	}

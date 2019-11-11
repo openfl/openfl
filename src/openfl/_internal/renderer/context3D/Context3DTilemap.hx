@@ -1,6 +1,6 @@
 package openfl._internal.renderer.context3D;
 
-import openfl._internal.utils.Float32Array;
+import openfl._internal.backend.utils.Float32Array;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display.Shader;

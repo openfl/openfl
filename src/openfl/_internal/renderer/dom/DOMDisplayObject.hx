@@ -9,7 +9,7 @@ class DOMDisplayObject
 {
 	public static function clear(displayObject:DisplayObject, renderer:DOMRenderer):Void
 	{
-		#if (js && html5)
+		#if openfl_html5
 		if (displayObject.__cacheBitmap != null)
 		{
 			DOMBitmap.clear(displayObject.__cacheBitmap, renderer);
@@ -20,7 +20,7 @@ class DOMDisplayObject
 
 	public static inline function render(displayObject:DisplayObject, renderer:DOMRenderer):Void
 	{
-		#if (js && html5)
+		#if openfl_html5
 		// if (displayObject.opaqueBackground == null && displayObject.__graphics == null) return;
 		// if (!displayObject.__renderable || displayObject.__worldAlpha <= 0) return;
 

@@ -1,9 +1,7 @@
 package openfl._internal.renderer.cairo;
 
+import openfl._internal.backend.math.ARGB;
 import openfl.display.DisplayObject;
-#if lime
-import lime.math.ARGB;
-#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -16,7 +14,6 @@ class CairoDisplayObject
 {
 	public static function render(displayObject:DisplayObject, renderer:CairoRenderer):Void
 	{
-		#if lime_cairo
 		if (displayObject.opaqueBackground == null && displayObject.__graphics == null) return;
 		if (!displayObject.__renderable) return;
 
@@ -47,6 +44,5 @@ class CairoDisplayObject
 		{
 			CairoShape.render(displayObject, renderer);
 		}
-		#end
 	}
 }

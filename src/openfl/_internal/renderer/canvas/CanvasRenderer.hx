@@ -1,7 +1,7 @@
 package openfl._internal.renderer.canvas;
 
-import lime._internal.graphics.ImageCanvasUtil;
-import lime.graphics.Canvas2DRenderContext;
+import openfl._internal.backend.lime.ImageCanvasUtil;
+import openfl._internal.backend.lime.Canvas2DRenderContext;
 import openfl._internal.formats.html.HTMLParser;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
@@ -426,7 +426,7 @@ class CanvasRenderer extends CanvasRendererAPI
 
 	private function __renderTextField(textField:TextField):Void
 	{
-		#if (js && html5)
+		#if openfl_html5
 		// TODO: Better DOM workaround on cacheAsBitmap
 
 		if (__domRenderer != null && !textField.__renderedOnCanvasWhileOnDOM)

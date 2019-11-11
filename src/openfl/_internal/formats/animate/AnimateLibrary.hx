@@ -1,6 +1,9 @@
 package openfl._internal.formats.animate;
 
 import haxe.Json;
+import openfl._internal.backend.lime.Image;
+import openfl._internal.backend.lime.ImageChannel;
+import openfl._internal.backend.math.Vector2;
 import openfl._internal.formats.swf.FilterType;
 import openfl._internal.formats.swf.ShapeCommand;
 import openfl.display.MovieClip;
@@ -15,13 +18,9 @@ import openfl.utils.Assets;
 import openfl.utils.AssetLibrary;
 import openfl.utils.AssetType;
 import openfl.utils.Future;
+import openfl.utils.Promise;
 #if lime
-import lime.app.Promise;
-import lime.graphics.Image;
-import lime.graphics.ImageChannel;
-import lime.math.Vector2;
-// import lime.utils.AssetLibrary;
-import lime.utils.AssetManifest;
+import openfl._internal.backend.lime.AssetManifest;
 #else
 import openfl.utils.AssetManifest;
 #end

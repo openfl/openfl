@@ -10,7 +10,7 @@ class CanvasShape
 {
 	public static inline function render(shape:DisplayObject, renderer:CanvasRenderer):Void
 	{
-		#if (js && html5)
+		#if openfl_html5
 		if (!shape.__renderable) return;
 
 		var alpha = renderer.__getAlpha(shape.__worldAlpha);

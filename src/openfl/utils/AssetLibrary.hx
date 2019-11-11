@@ -1,14 +1,12 @@
 package openfl.utils;
 
+import openfl._internal.backend.lime.AssetLibrary as LimeAssetLibrary;
+import openfl._internal.backend.lime.AssetManifest;
+import openfl._internal.backend.lime.AudioBuffer;
+import openfl._internal.backend.lime.Bytes;
+import openfl._internal.backend.lime.Font;
+import openfl._internal.backend.lime.Image;
 import openfl.display.MovieClip;
-#if lime
-import lime.graphics.Image;
-import lime.media.AudioBuffer;
-import lime.text.Font;
-import lime.utils.AssetLibrary as LimeAssetLibrary;
-import lime.utils.AssetManifest;
-import lime.utils.Bytes;
-#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

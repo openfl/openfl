@@ -1,11 +1,9 @@
 package openfl.geom;
 
 #if !flash
+import openfl._internal.backend.math.ColorMatrix;
+import openfl._internal.backend.utils.Float32Array;
 import openfl._internal.utils.ObjectPool;
-#if lime
-import openfl._internal.utils.Float32Array;
-import lime.math.ColorMatrix;
-#end
 
 /**
 	The ColorTransform class lets you adjust the color values in a display

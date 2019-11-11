@@ -4,12 +4,18 @@ package openfl.display3D;
 import openfl._internal.backend.gl.GLBuffer;
 import openfl._internal.backend.gl.GLFramebuffer;
 import openfl._internal.backend.gl.GLTexture;
+import openfl._internal.backend.lime.Image;
+import openfl._internal.backend.lime.ImageBuffer;
+import openfl._internal.backend.lime.RenderContext;
+import openfl._internal.backend.lime.WebGLRenderContext;
+import openfl._internal.backend.math.Rectangle as LimeRectangle;
+import openfl._internal.backend.math.Vector2;
 import openfl._internal.renderer.context3D.Context3DState;
 import openfl._internal.renderer.BitmapDataPool;
 import openfl._internal.renderer.SamplerState;
-import openfl._internal.utils.Float32Array;
-import openfl._internal.utils.UInt16Array;
-import openfl._internal.utils.UInt8Array;
+import openfl._internal.backend.utils.Float32Array;
+import openfl._internal.backend.utils.UInt16Array;
+import openfl._internal.backend.utils.UInt8Array;
 import openfl.display3D.textures.CubeTexture;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.display3D.textures.TextureBase;
@@ -26,14 +32,6 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.utils.AGALMiniAssembler;
 import openfl.utils.ByteArray;
-#if lime
-import lime.graphics.Image;
-import lime.graphics.ImageBuffer;
-import lime.graphics.RenderContext;
-import lime.graphics.WebGLRenderContext;
-import lime.math.Rectangle as LimeRectangle;
-import lime.math.Vector2;
-#end
 
 /**
 	The Context3D class provides a context for rendering geometrically defined graphics.
@@ -150,7 +148,7 @@ import lime.math.Vector2;
 	/**
 		Indicates if Context3D supports video texture.
 	**/
-	public static var supportsVideoTexture(default, null):Bool = #if (js && html5) true #else false #end;
+	public static var supportsVideoTexture(default, null):Bool = #if openfl_html5 true #else false #end;
 
 	/**
 		Specifies the height of the back buffer, which can be changed by a successful
@@ -306,7 +304,7 @@ import lime.math.Vector2;
 
 		if (__glMaxViewportDims == -1)
 		{
-			#if (js && html5)
+			#if openfl_html5
 			__glMaxViewportDims = gl.getParameter(gl.MAX_VIEWPORT_DIMS);
 			#else
 			__glMaxViewportDims = 16384;
@@ -320,7 +318,7 @@ import lime.math.Vector2;
 		{
 			var extension:Dynamic = gl.getExtension("EXT_texture_filter_anisotropic");
 
-			#if (js && html5)
+			#if openfl_html5
 			if (extension == null
 				|| extension.MAX_TEXTURE_MAX_ANISOTROPY_EXT == null) extension = gl.getExtension("MOZ_EXT_texture_filter_anisotropic");
 			if (extension == null
@@ -342,7 +340,7 @@ import lime.math.Vector2;
 		#if lime
 		if (__glDepthStencil == -1)
 		{
-			#if (js && html5)
+			#if openfl_html5
 			__glDepthStencil = gl.DEPTH_STENCIL;
 			#else
 			if (__context.type == OPENGLES && Std.parseFloat(__context.version) >= 3)
@@ -973,7 +971,7 @@ import lime.math.Vector2;
 	**/
 	public function createVideoTexture():VideoTexture
 	{
-		#if (js && html5)
+		#if openfl_html5
 		return new VideoTexture(this);
 		#else
 		throw new Error("Video textures are not supported on this platform");

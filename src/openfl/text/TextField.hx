@@ -2,6 +2,10 @@ package openfl.text;
 
 #if !flash
 import haxe.Timer;
+import openfl._internal.backend.lime.Clipboard;
+import openfl._internal.backend.lime.KeyCode;
+import openfl._internal.backend.lime.KeyModifier;
+import openfl._internal.backend.html5.DivElement;
 import openfl._internal.formats.swf.SWFLite;
 import openfl._internal.symbols.DynamicTextSymbol;
 import openfl._internal.symbols.FontSymbol;
@@ -26,14 +30,6 @@ import openfl.net.URLRequest;
 import openfl.ui.Keyboard;
 import openfl.ui.MouseCursor;
 import openfl.Lib;
-#if lime
-import lime.system.Clipboard;
-import lime.ui.KeyCode;
-import lime.ui.KeyModifier;
-#end
-#if (js && html5)
-import js.html.DivElement;
-#end
 
 /**
 	The TextField class is used to create display objects for text display and
@@ -689,7 +685,7 @@ class TextField extends InteractiveObject
 	@:noCompletion private var __htmlText:UTF8String;
 	@:noCompletion private var __textEngine:TextEngine;
 	@:noCompletion private var __textFormat:TextFormat;
-	#if (js && html5)
+	#if openfl_html5
 	@:noCompletion private var __div:DivElement;
 	@:noCompletion private var __renderedOnCanvasWhileOnDOM:Bool = false;
 	@:noCompletion private var __rawHtmlText:String;
@@ -1790,7 +1786,7 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private inline function __getAdvance(position):Float
 	{
-		#if (js && html5)
+		#if openfl_html5
 		return position;
 		#else
 		return position.advance.x;
@@ -2213,7 +2209,7 @@ class TextField extends InteractiveObject
 			__selectionIndex = __caretIndex;
 		}
 
-		var enableInput = #if (js && html5) (DisplayObject.__supportDOM ? __renderedOnCanvasWhileOnDOM : true) #else true #end;
+		var enableInput = #if openfl_html5 (DisplayObject.__supportDOM ? __renderedOnCanvasWhileOnDOM : true) #else true #end;
 
 		if (enableInput)
 		{
@@ -2239,7 +2235,7 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function __stopTextInput():Void
 	{
-		var disableInput = #if (js && html5) (DisplayObject.__supportDOM ? __renderedOnCanvasWhileOnDOM : true) #else true #end;
+		var disableInput = #if openfl_html5 (DisplayObject.__supportDOM ? __renderedOnCanvasWhileOnDOM : true) #else true #end;
 
 		if (disableInput)
 		{
@@ -2362,7 +2358,7 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function __updateText(value:String):Void
 	{
-		#if (js && html5)
+		#if openfl_html5
 		if (DisplayObject.__supportDOM && __renderedOnCanvasWhileOnDOM)
 		{
 			__forceCachedBitmapUpdate = __text != value;
@@ -2379,7 +2375,7 @@ class TextField extends InteractiveObject
 			__selectionIndex = __caretIndex = __text.length;
 		}
 
-		if (!__displayAsPassword #if (js && html5) || (DisplayObject.__supportDOM && !__renderedOnCanvasWhileOnDOM) #end)
+		if (!__displayAsPassword #if openfl_html5 || (DisplayObject.__supportDOM && !__renderedOnCanvasWhileOnDOM) #end)
 		{
 			__textEngine.text = __text;
 		}
@@ -2605,7 +2601,7 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function get_htmlText():String
 	{
-		#if (js && html5)
+		#if openfl_html5
 		return __isHTML ? __rawHtmlText : __text;
 		#else
 		return __text;
@@ -2623,13 +2619,13 @@ class TextField extends InteractiveObject
 
 		__isHTML = true;
 
-		#if (js && html5)
+		#if openfl_html5
 		__rawHtmlText = value;
 		#end
 
 		value = HTMLParser.parse(value, __textFormat, __textEngine.textFormatRanges);
 
-		#if (js && html5)
+		#if openfl_html5
 		if (DisplayObject.__supportDOM)
 		{
 			if (__textEngine.textFormatRanges.length > 1)
@@ -3033,7 +3029,7 @@ class TextField extends InteractiveObject
 			{
 				__caretIndex = position;
 
-				#if (js && html5)
+				#if openfl_html5
 				if (DisplayObject.__supportDOM)
 				{
 					if (__renderedOnCanvasWhileOnDOM)
@@ -3080,7 +3076,7 @@ class TextField extends InteractiveObject
 				__stopCursorTimer();
 				__startCursorTimer();
 
-				#if (js && html5)
+				#if openfl_html5
 				if (DisplayObject.__supportDOM && __renderedOnCanvasWhileOnDOM)
 				{
 					__forceCachedBitmapUpdate = true;

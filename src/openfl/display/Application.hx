@@ -1,10 +1,8 @@
 package openfl.display;
 
+import openfl._internal.backend.lime.Application as LimeApplication;
+import openfl._internal.backend.lime.WindowAttributes;
 import openfl._internal.Lib;
-#if lime
-import lime.app.Application as LimeApplication;
-import lime.ui.WindowAttributes;
-#end
 
 /**
 	The Application class is a Lime Application instance that uses

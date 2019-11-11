@@ -1,14 +1,12 @@
 package openfl.display3D.textures;
 
 #if !flash
+import openfl._internal.backend.lime.Image;
 import openfl._internal.renderer.SamplerState;
-import openfl._internal.utils.ArrayBufferView;
-import openfl._internal.utils.UInt8Array;
+import openfl._internal.backend.utils.ArrayBufferView;
+import openfl._internal.backend.utils.UInt8Array;
 import openfl.display.BitmapData;
 import openfl.utils.ByteArray;
-#if lime
-import lime.graphics.Image;
-#end
 
 /**
 	The Rectangle Texture class represents a 2-dimensional texture uploaded to a rendering
@@ -60,7 +58,7 @@ import lime.graphics.Image;
 		var image = __getImage(source);
 		if (image == null) return;
 
-		#if (js && html5)
+		#if openfl_html5
 		if (image.buffer != null && image.buffer.data == null && image.buffer.src != null)
 		{
 			var gl = __context.gl;

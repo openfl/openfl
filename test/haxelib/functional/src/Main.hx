@@ -1,8 +1,8 @@
 package;
 
 import haxe.macro.Compiler;
-import lime.utils.Log;
 import test.*;
+import openfl._internal.utils.Log;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.events.KeyboardEvent;

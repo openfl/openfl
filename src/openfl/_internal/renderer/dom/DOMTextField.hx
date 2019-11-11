@@ -1,12 +1,10 @@
 package openfl._internal.renderer.dom;
 
+import openfl._internal.backend.html5.Browser;
+import openfl._internal.backend.html5.Element;
 import openfl._internal.text.TextEngine;
 import openfl.text.TextField;
 import openfl.text.TextFormatAlign;
-#if (js && html5)
-import js.html.Element;
-import js.Browser;
-#end
 
 @:access(openfl._internal.text.TextEngine)
 @:access(openfl.text.TextField)
@@ -21,7 +19,7 @@ class DOMTextField
 
 	public static function clear(textField:TextField, renderer:DOMRenderer):Void
 	{
-		#if (js && html5)
+		#if openfl_html5
 		if (textField.__div != null)
 		{
 			renderer.element.removeChild(textField.__div);
@@ -33,7 +31,7 @@ class DOMTextField
 
 	public static function measureText(textField:TextField):Void
 	{
-		#if (js && html5)
+		#if openfl_html5
 		var textEngine = textField.__textEngine;
 		var div:Element = textField.__div;
 
@@ -69,7 +67,7 @@ class DOMTextField
 
 	public static inline function render(textField:TextField, renderer:DOMRenderer):Void
 	{
-		#if (js && html5)
+		#if openfl_html5
 		var textEngine = textField.__textEngine;
 
 		if (textField.stage != null && textField.__worldVisible && textField.__renderable)

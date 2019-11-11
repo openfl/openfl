@@ -1,5 +1,9 @@
 package openfl._internal.formats.swf;
 
+import openfl._internal.backend.lime.AssetManifest;
+import openfl._internal.backend.lime.Image;
+import openfl._internal.backend.lime.ImageChannel;
+import openfl._internal.backend.math.Vector2;
 import openfl._internal.symbols.BitmapSymbol;
 import openfl.display.MovieClip;
 import openfl.events.Event;
@@ -10,16 +14,7 @@ import openfl.utils.Assets;
 import openfl.utils.AssetLibrary;
 import openfl.utils.AssetType;
 import openfl.utils.Future;
-#if lime
-import lime.app.Promise;
-import lime.graphics.Image;
-import lime.graphics.ImageChannel;
-import lime.math.Vector2;
-// import lime.utils.AssetLibrary;
-import lime.utils.AssetManifest;
-#else
-import openfl.utils.AssetManifest;
-#end
+import openfl.utils.Promise;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -178,7 +173,7 @@ import openfl.utils.AssetManifest;
 
 		if (Assets.exists(id))
 		{
-			#if (js && html5)
+			#if openfl_html5
 			for (id in paths.keys())
 			{
 				preload.set(id, true);

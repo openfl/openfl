@@ -1,5 +1,7 @@
 package openfl.utils;
 
+import openfl._internal.backend.lime.AssetLibrary as LimeAssetLibrary;
+import openfl._internal.backend.lime.Assets as LimeAssets;
 import openfl._internal.utils.Log;
 import openfl.display.BitmapData;
 import openfl.display.MovieClip;
@@ -7,11 +9,7 @@ import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.media.Sound;
 import openfl.text.Font;
-#if lime
-import lime.app.Promise;
-import lime.utils.AssetLibrary as LimeAssetLibrary;
-import lime.utils.Assets as LimeAssets;
-#end
+import openfl.utils.Promise;
 
 /**
 	The Assets class provides a cross-platform interface to access

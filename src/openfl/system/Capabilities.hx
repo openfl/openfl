@@ -2,11 +2,9 @@ package openfl.system;
 
 #if !flash
 import haxe.macro.Compiler;
+import openfl._internal.backend.lime.Locale;
+import openfl._internal.backend.lime.System;
 import openfl._internal.Lib;
-#if lime
-import lime.system.Locale;
-import lime.system.System;
-#end
 #if linux
 import sys.io.Process;
 #end

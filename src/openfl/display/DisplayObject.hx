@@ -1,6 +1,10 @@
 package openfl.display;
 
 #if !flash
+import openfl._internal.backend.cairo.Cairo;
+import openfl._internal.backend.html5.CanvasElement;
+import openfl._internal.backend.html5.CanvasRenderingContext2D;
+import openfl._internal.backend.html5.CSSStyleDeclaration;
 import openfl._internal.renderer.DisplayObjectType;
 import openfl._internal.utils.ObjectPool;
 import openfl._internal.Lib;
@@ -20,14 +24,6 @@ import openfl.geom.Rectangle;
 import openfl.geom.Transform;
 import openfl.ui.MouseCursor;
 import openfl.Vector;
-#if lime
-import lime.graphics.cairo.Cairo;
-#end
-#if (js && html5)
-import js.html.CanvasElement;
-import js.html.CanvasRenderingContext2D;
-import js.html.CSSStyleDeclaration;
-#end
 
 /**
 	The DisplayObject class is the base class for all objects that can be
@@ -949,7 +945,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private var __worldVisibleChanged:Bool;
 	@:noCompletion private var __worldTransformInvalid:Bool;
 	@:noCompletion private var __worldZ:Int;
-	#if (js && html5)
+	#if openfl_html5
 	@:noCompletion private var __canvas:CanvasElement;
 	@:noCompletion private var __context:CanvasRenderingContext2D;
 	@:noCompletion private var __style:CSSStyleDeclaration;
@@ -1370,7 +1366,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	{
 		__cairo = null;
 
-		#if (js && html5)
+		#if openfl_html5
 		__canvas = null;
 		__context = null;
 		#end

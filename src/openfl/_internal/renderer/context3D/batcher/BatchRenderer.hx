@@ -1,10 +1,10 @@
 package openfl._internal.renderer.context3D.batcher;
 
 import haxe.ds.IntMap;
-import lime.math.Matrix4;
-import lime.graphics.WebGLRenderContext;
-import lime.utils.Float32Array;
-import lime.utils.UInt16Array;
+import openfl._internal.backend.lime.WebGLRenderContext;
+import openfl._internal.backend.math.Matrix4;
+import openfl._internal.backend.utils.Float32Array;
+import openfl._internal.backend.utils.UInt16Array;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display.Shader;

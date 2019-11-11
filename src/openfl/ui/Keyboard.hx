@@ -1,9 +1,7 @@
 package openfl.ui;
 
 #if !flash
-#if lime
-import lime.ui.KeyCode;
-#end
+import openfl._internal.backend.lime.KeyCode;
 
 /**
 	The Keyboard class is used to build an interface that can be controlled by

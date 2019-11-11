@@ -3,6 +3,29 @@ package openfl.display;
 #if !flash
 import haxe.CallStack;
 import haxe.ds.ArraySort;
+import openfl._internal.backend.html5.Browser;
+import openfl._internal.backend.html5.Element;
+import openfl._internal.backend.lime.Application;
+import openfl._internal.backend.lime.Gamepad;
+import openfl._internal.backend.lime.GamepadAxis;
+import openfl._internal.backend.lime.GamepadButton;
+import openfl._internal.backend.lime.IModule;
+import openfl._internal.backend.lime.KeyCode;
+import openfl._internal.backend.lime.KeyModifier;
+import openfl._internal.backend.lime.MouseWheelMode;
+import openfl._internal.backend.lime.RenderContext;
+import openfl._internal.backend.lime.RenderContextType;
+import openfl._internal.backend.lime.Touch;
+import openfl._internal.backend.lime.Window;
+#if !display
+import openfl._internal.renderer.context3D.Context3DRenderer;
+#if openfl_html5
+import openfl._internal.renderer.canvas.CanvasRenderer;
+import openfl._internal.renderer.dom.DOMRenderer;
+#else
+import openfl._internal.renderer.cairo.CairoRenderer;
+#end
+#end
 import openfl._internal.utils.Log;
 import openfl._internal.utils.TouchData;
 import openfl.display3D.Context3D;
@@ -26,41 +49,11 @@ import openfl.ui.GameInput;
 import openfl.ui.Keyboard;
 import openfl.ui.Mouse;
 import openfl.ui.MouseCursor;
-#if lime
-import lime.app.Application;
-import lime.app.IModule;
-import lime.graphics.RenderContext;
-import lime.graphics.RenderContextType;
-import lime.ui.Touch;
-import lime.ui.Gamepad;
-import lime.ui.GamepadAxis;
-import lime.ui.GamepadButton;
-import lime.ui.KeyCode;
-import lime.ui.KeyModifier;
-import lime.ui.MouseWheelMode;
-import lime.ui.Window;
-#if !display
-import openfl._internal.renderer.context3D.Context3DRenderer;
-#if lime_cairo
-import openfl._internal.renderer.cairo.CairoRenderer;
-#end
-#if (js && html5)
-import openfl._internal.renderer.canvas.CanvasRenderer;
-import openfl._internal.renderer.dom.DOMRenderer;
-#end
-#end
-#end
 #if hxtelemetry
 import openfl.profiler.Telemetry;
 #end
 #if gl_stats
 import openfl._internal.renderer.context3D.stats.Context3DStats;
-#end
-#if (js && html5)
-import js.html.Element;
-import js.Browser;
-#elseif js
-typedef Element = Dynamic;
 #end
 
 /**
@@ -997,7 +990,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		#if mac
 		__macKeyboard = true;
-		#elseif (js && html5)
+		#elseif openfl_html5
 		__macKeyboard = untyped __js__("/AppleWebKit/.test (navigator.userAgent) && /Mobile\\/\\w+/.test (navigator.userAgent) || /Mac/.test (navigator.platform)");
 		#end
 
@@ -1024,7 +1017,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 			var resizable = (width == 0 && width == 0);
 
-			#if (js && html5)
+			#if openfl_html5
 			element = Browser.document.createElement("div");
 
 			if (resizable)
@@ -1180,7 +1173,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	@:noCompletion private function __createRenderer():Void
 	{
 		#if (lime && !display)
-		#if (js && html5)
+		#if openfl_html5
 		var pixelRatio = 1;
 
 		if (window.scale > 1)
@@ -1208,21 +1201,21 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				#end
 
 			case CANVAS:
-				#if (js && html5)
+				#if openfl_html5
 				var renderer = new CanvasRenderer(window.context.canvas2D);
 				renderer.pixelRatio = pixelRatio;
 				__renderer = renderer;
 				#end
 
 			case DOM:
-				#if (js && html5)
+				#if openfl_html5
 				var renderer = new DOMRenderer(window.context.dom);
 				renderer.pixelRatio = pixelRatio;
 				__renderer = renderer;
 				#end
 
 			case CAIRO:
-				#if lime_cairo
+				#if (!openfl_html5 && openfl_cairo)
 				__renderer = new CairoRenderer(window.context.cairo);
 				#end
 
@@ -1944,7 +1937,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			{
 				if (__renderer.__type == CAIRO)
 				{
-					#if lime_cairo
+					#if openfl_cairo
 					var renderer:CairoRenderer = cast __renderer;
 					renderer.cairo = context.cairo;
 					#end
@@ -2865,7 +2858,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		var windowWidth = Std.int(window.width * window.scale);
 		var windowHeight = Std.int(window.height * window.scale);
 
-		#if (js && html5)
+		#if openfl_html5
 		__logicalWidth = windowWidth;
 		__logicalHeight = windowHeight;
 		#end

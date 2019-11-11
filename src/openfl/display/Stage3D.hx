@@ -2,6 +2,11 @@ package openfl.display;
 
 #if !flash
 import haxe.Timer;
+import openfl._internal.backend.html5.Browser;
+import openfl._internal.backend.html5.CanvasElement;
+import openfl._internal.backend.html5.CSSStyleDeclaration;
+import openfl._internal.backend.html5.WebGLRenderingContext;
+import openfl._internal.backend.lime.RenderContext;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DProfile;
 import openfl.display3D.Context3DRenderMode;
@@ -12,15 +17,6 @@ import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.geom.Matrix3D;
 import openfl.Vector;
-#if lime
-import lime.graphics.RenderContext;
-#end
-#if (js && html5)
-import js.html.webgl.RenderingContext;
-import js.html.CanvasElement;
-import js.html.CSSStyleDeclaration;
-import js.Browser;
-#end
 
 /**
 	The Stage class represents the main drawing area.
@@ -185,10 +181,10 @@ class Stage3D extends EventDispatcher
 	@:noCompletion private var __width:Int;
 	@:noCompletion private var __x:Float;
 	@:noCompletion private var __y:Float;
-	#if (js && html5)
+	#if openfl_html5
 	@:noCompletion private var __canvas:CanvasElement;
 	@:noCompletion private var __style:CSSStyleDeclaration;
-	@:noCompletion private var __webgl:RenderingContext;
+	@:noCompletion private var __webgl:WebGLRenderingContext;
 	#end
 	#if lime
 	@:noCompletion private var __renderContext:RenderContext;
@@ -379,7 +375,7 @@ class Stage3D extends EventDispatcher
 			#end
 			__dispatchCreate();
 		}
-		#if (lime && (js && html5))
+		#if (lime && openfl_html5)
 		else if (false && __stage.window.context.type == DOM)
 		{
 			// TODO
@@ -471,7 +467,7 @@ class Stage3D extends EventDispatcher
 	{
 		if (width != __width || height != __height)
 		{
-			#if (js && html5)
+			#if openfl_html5
 			if (__canvas != null)
 			{
 				__canvas.width = width;

@@ -1,10 +1,8 @@
 package openfl.ui;
 
 #if !flash
-#if lime
-import lime.app.Application;
-import lime.ui.MouseCursor as LimeMouseCursor;
-#end
+import openfl._internal.backend.lime.Application;
+import openfl._internal.backend.lime.MouseCursor as LimeMouseCursor;
 
 /**
 	The methods of the Mouse class are used to hide and show the mouse pointer,

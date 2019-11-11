@@ -1,12 +1,8 @@
 package openfl.display;
 
 #if !flash
-#if lime
-import lime.graphics.DOMRenderContext;
-#end
-#if (js && html5)
-import js.html.Element;
-#end
+import openfl._internal.backend.html5.Element;
+import openfl._internal.backend.lime.DOMRenderContext;
 
 /**
 	**BETA**
@@ -43,13 +39,13 @@ class DOMRenderer extends DisplayObjectRenderer
 		virtual parent. This helps set the z-order, position and other components for
 		the DOM object
 	**/
-	public function applyStyle(parent:DisplayObject, childElement:#if (js && html5 && !display) Element #else Dynamic #end):Void {}
+	public function applyStyle(parent:DisplayObject, childElement:#if (openfl_html5 && !display) Element #else Dynamic #end):Void {}
 
 	/**
 		Removes previously set CSS styles from a DOM element, used when the element
 		should no longer be a part of the display hierarchy
 	**/
-	public function clearStyle(childElement:#if (js && html5 && !display) Element #else Dynamic #end):Void {}
+	public function clearStyle(childElement:#if (openfl_html5 && !display) Element #else Dynamic #end):Void {}
 
 	private function __clearBitmap(bitmap:Bitmap):Void {}
 }

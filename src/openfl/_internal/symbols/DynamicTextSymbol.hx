@@ -1,9 +1,7 @@
 package openfl._internal.symbols;
 
-#if lime
-import lime.utils.Log;
-#end
 import openfl._internal.formats.swf.SWFLite;
+import openfl._internal.utils.Log;
 import openfl.text.Font;
 import openfl.text.TextField;
 import openfl.text.TextFormat;

@@ -3,23 +3,19 @@ package openfl.net;
 #if !flash
 import haxe.io.Path;
 import haxe.Timer;
+import openfl._internal.backend.html5.Browser;
+import openfl._internal.backend.html5.FileReader;
+import openfl._internal.backend.html5.InputElement;
+import openfl._internal.backend.lime.Bytes;
+import openfl._internal.backend.lime.FileDialog;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.IOErrorEvent;
 import openfl.events.ProgressEvent;
 import openfl.utils.ByteArray;
-#if lime
-import lime.ui.FileDialog;
-import lime.utils.Bytes;
-#end
 #if sys
 import sys.io.File;
 import sys.FileSystem;
-#end
-#if (js && html5)
-import js.html.FileReader;
-import js.html.InputElement;
-import js.Browser;
 #end
 
 /**
@@ -459,7 +455,7 @@ class FileReference extends EventDispatcher
 	@:noCompletion private var __data:ByteArray;
 	@:noCompletion private var __path:String;
 	@:noCompletion private var __urlLoader:URLLoader;
-	#if (js && html5)
+	#if openfl_html5
 	@:noCompletion private var __inputControl:InputElement;
 	#end
 
@@ -470,7 +466,7 @@ class FileReference extends EventDispatcher
 	public function new()
 	{
 		super();
-		#if (js && html5)
+		#if openfl_html5
 		__inputControl = cast Browser.document.createElement("input");
 		__inputControl.setAttribute("type", "file");
 		__inputControl.onclick = function(e)
@@ -572,7 +568,7 @@ class FileReference extends EventDispatcher
 		openFileDialog.onSelect.add(openFileDialog_onSelect);
 		openFileDialog.browse(OPEN, filter);
 		return true;
-		#elseif (js && html5)
+		#elseif openfl_html5
 		var filter = null;
 		if (typeFilter != null)
 		{
@@ -908,7 +904,7 @@ class FileReference extends EventDispatcher
 			data = Bytes.fromFile(__path);
 			openFileDialog_onComplete();
 		}
-		#elseif (js && html5)
+		#elseif openfl_html5
 		var file = __inputControl.files[0];
 		var reader = new FileReader();
 		reader.onload = function(evt)
@@ -1043,7 +1039,7 @@ class FileReference extends EventDispatcher
 		saveFileDialog.onCancel.add(saveFileDialog_onCancel);
 		saveFileDialog.onSelect.add(saveFileDialog_onSelect);
 		saveFileDialog.browse(SAVE, defaultFileName != null ? Path.extension(defaultFileName) : null, defaultFileName);
-		#elseif (js && html5)
+		#elseif openfl_html5
 		if (Std.is(data, ByteArrayData))
 		{
 			__data = data;

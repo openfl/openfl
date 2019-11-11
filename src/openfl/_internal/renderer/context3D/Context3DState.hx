@@ -12,9 +12,6 @@ import openfl.display3D.Context3DTriangleFace;
 import openfl.display3D.Program3D;
 import openfl.display.Shader;
 import openfl.geom.Rectangle;
-#if lime
-import lime.graphics.opengl.GL;
-#end
 
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DState
@@ -97,9 +94,6 @@ class Context3DState
 		stencilWriteMask = 0xFF;
 		textures = new Array();
 		__frontFaceGLCCW = true;
-
-		#if lime
-		__glBlendEquation = GL.FUNC_ADD;
-		#end
+		__glBlendEquation = 0x8006; // GL.FUNC_ADD
 	}
 }
