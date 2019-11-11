@@ -18,7 +18,9 @@ import openfl._internal.backend.lime.RenderContextType;
 import openfl._internal.backend.lime.Touch;
 import openfl._internal.backend.lime.Window;
 #if !display
+#if openfl_gl
 import openfl._internal.renderer.context3D.Context3DRenderer;
+#end
 #if openfl_html5
 import openfl._internal.renderer.canvas.CanvasRenderer;
 import openfl._internal.renderer.dom.DOMRenderer;
@@ -1189,6 +1191,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		switch (window.context.type)
 		{
 			case OPENGL, OPENGLES, WEBGL:
+				#if openfl_gl
 				#if (!disable_cffi && (!html5 || !canvas))
 				context3D = new Context3D(this);
 				context3D.configureBackBuffer(windowWidth, windowHeight, 0, true, true, true);
@@ -1198,6 +1201,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					BitmapData.__hardwareRenderer = new Context3DRenderer(context3D);
 				}
 				__renderer = new Context3DRenderer(context3D);
+				#end
 				#end
 
 			case CANVAS:
@@ -2656,8 +2660,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		var event = MouseEvent.__create(MouseEvent.MOUSE_WHEEL, 0, __mouseX, __mouseY, target.__globalToLocal(targetPoint, targetPoint), target, delta);
 		event.cancelable = true;
 		__dispatchStack(event, stack);
-		if (event.isDefaultPrevented())
-			window.onMouseWheel.cancel();
+		if (event.isDefaultPrevented()) window.onMouseWheel.cancel();
 
 		Point.__pool.release(targetPoint);
 	}

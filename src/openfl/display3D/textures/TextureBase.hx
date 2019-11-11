@@ -385,6 +385,7 @@ class TextureBase extends EventDispatcher
 	#if lime
 	@:noCompletion private function __uploadFromImage(image:Image):Void
 	{
+		#if openfl_gl
 		var gl = __context.gl;
 		var internalFormat, format;
 
@@ -429,6 +430,7 @@ class TextureBase extends EventDispatcher
 		#end
 
 		__context.__bindGLTexture2D(null);
+		#end
 	}
 	#end
 }

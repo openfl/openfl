@@ -15,8 +15,6 @@ import openfl._internal.backend.lime.RenderContext;
 import openfl._internal.backend.math.ARGB;
 import openfl._internal.backend.math.Vector2;
 import openfl._internal.formats.swf.SWFLite;
-import openfl._internal.renderer.context3D.Context3DRenderer;
-import openfl._internal.renderer.context3D.batcher.BatchRenderer;
 import openfl._internal.renderer.BitmapDataPool;
 import openfl._internal.renderer.DisplayObjectType;
 import openfl._internal.symbols.BitmapSymbol;
@@ -39,6 +37,10 @@ import openfl.utils.Endian;
 import openfl.utils.Future;
 import openfl.utils.Object;
 import openfl.Vector;
+#if openfl_gl
+import openfl._internal.renderer.context3D.batcher.BatchRenderer;
+import openfl._internal.renderer.context3D.Context3DRenderer;
+#end
 #if openfl_html5
 import openfl._internal.renderer.canvas.CanvasRenderer;
 #else
@@ -126,7 +128,7 @@ import openfl._internal.renderer.cairo.CairoRenderer;
 class BitmapData implements IBitmapDrawable
 {
 	@:noCompletion private static inline var VERTEX_BUFFER_STRIDE:Int = 14;
-	@:noCompletion private static var __hardwareRenderer:#if lime Context3DRenderer #else Dynamic #end;
+	@:noCompletion private static var __hardwareRenderer:#if openfl_gl Context3DRenderer #else Dynamic #end;
 	@:noCompletion private static var __pool:BitmapDataPool = new BitmapDataPool();
 	@:noCompletion private static var __softwareRenderer:DisplayObjectRenderer;
 	@:noCompletion private static var __supportsBGRA:Null<Bool> = null;
@@ -1608,7 +1610,7 @@ class BitmapData implements IBitmapDrawable
 		return __indexBuffer;
 	}
 
-	#if (lime && !disable_batcher)
+	#if (openfl_gl && !disable_batcher)
 	@:dox(hide) public function pushQuadsToBatcher(batcher:BatchRenderer, transform:Matrix, alpha:Float, object:DisplayObject):Void
 	{
 		var blendMode = object.__worldBlendMode;

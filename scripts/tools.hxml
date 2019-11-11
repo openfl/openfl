@@ -1,9 +1,10 @@
 -main Tools
 -neko tools.n
--cp ../src
 -lib hxp
 -lib lime
 -lib format
+-cp ../src
+--macro openfl._internal.macros.ExtraParams.include()
 -D lime-cairo
 -D lime-cffi
 -D optional-cffi

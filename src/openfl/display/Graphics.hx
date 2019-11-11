@@ -1692,7 +1692,7 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 			{
 				#if openfl_html5
 				return CanvasGraphics.hitTest(this, px, py);
-				#elseif (lime && lime_cffi)
+				#elseif openfl_cairo
 				return CairoGraphics.hitTest(this, px, py);
 				#end
 			}
