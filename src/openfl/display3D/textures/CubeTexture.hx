@@ -205,7 +205,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function uploadFromByteArray(data:ByteArray, byteArrayOffset:UInt, side:UInt, miplevel:UInt = 0):Void
 	{
-		#if lime
+		#if openfl_gl
 		#if (js && !display)
 		if (byteArrayOffset == 0)
 		{

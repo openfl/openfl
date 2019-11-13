@@ -183,7 +183,7 @@ import openfl.display3D.Context3D;
 
 	@:noCompletion private function __updateGL(context:Context3D, overrideValue:Array<T> = null):Void
 	{
-		#if lime
+		#if openfl_gl
 		var gl = context.gl;
 
 		var value = overrideValue != null ? overrideValue : this.value;
@@ -417,7 +417,7 @@ import openfl.display3D.Context3D;
 
 	@:noCompletion private function __updateGLFromBuffer(context:Context3D, buffer:Float32Array, position:Int, length:Int, bufferOffset:Int):Void
 	{
-		#if lime
+		#if openfl_gl
 		var gl = context.gl;
 
 		if (__isUniform)

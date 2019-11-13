@@ -111,7 +111,7 @@ class Matrix
 	**/
 	public var ty:Float;
 
-	#if lime
+	#if openfl_gl
 	@:noCompletion private var __array:Float32Array;
 	#end
 
@@ -697,7 +697,7 @@ class Matrix
 		ty += dy;
 	}
 
-	#if lime
+	#if openfl_gl
 	@:noCompletion private function toArray(transpose:Bool = false):Float32Array
 	{
 		if (__array == null)

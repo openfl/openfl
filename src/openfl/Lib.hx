@@ -224,12 +224,10 @@ import openfl._internal.formats.swf.SWFLiteLibrary;
 	**/
 	public static function getTimer():Int
 	{
-		#if lime
 		#if flash
 		return flash.Lib.getTimer();
-		#else
+		#elseif lime
 		return System.getTimer();
-		#end
 		#else
 		return 0;
 		#end

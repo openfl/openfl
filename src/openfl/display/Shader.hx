@@ -576,6 +576,7 @@ class Shader
 	}
 	#end
 
+	#if openfl_gl
 	@:noCompletion private function __processGLData(source:String, storageType:String):Void
 	{
 		var lastMatch = 0, position, regex, name, type;
@@ -705,9 +706,7 @@ class Shader
 						parameter.name = name;
 						parameter.type = parameterType;
 						parameter.__arrayLength = arrayLength;
-						#if lime
 						if (arrayLength > 0) parameter.__uniformMatrix = new Float32Array(arrayLength * arrayLength);
-						#end
 						parameter.__isFloat = true;
 						parameter.__isUniform = isUniform;
 						parameter.__length = length;
@@ -738,6 +737,7 @@ class Shader
 			lastMatch = position.pos + position.len;
 		}
 	}
+	#end
 
 	@:noCompletion private function __update():Void
 	{

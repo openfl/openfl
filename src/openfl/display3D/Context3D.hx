@@ -297,11 +297,10 @@ import openfl.utils.ByteArray;
 		if (__contextState == null) __contextState = new Context3DState();
 		__state = new Context3DState();
 
-		#if lime
 		__vertexConstants = new Float32Array(4 * 128);
 		__fragmentConstants = new Float32Array(4 * 128);
 		__positionScale = new Float32Array([1.0, 1.0, 1.0, 1.0]);
-		#end
+
 		__programs = new Map<String, Program3D>();
 
 		if (__glMaxViewportDims == -1)
@@ -339,12 +338,12 @@ import openfl.utils.ByteArray;
 			}
 		}
 
-		#if lime
+		#if openfl_gl
 		if (__glDepthStencil == -1)
 		{
 			#if openfl_html5
 			__glDepthStencil = gl.DEPTH_STENCIL;
-			#else
+			#elseif lime
 			if (__context.type == OPENGLES && Std.parseFloat(__context.version) >= 3)
 			{
 				__glDepthStencil = __context.gles3.DEPTH24_STENCIL8;
@@ -1420,7 +1419,7 @@ import openfl.utils.ByteArray;
 	public function setProgramConstantsFromByteArray(programType:Context3DProgramType, firstRegister:Int, numRegisters:Int, data:ByteArray,
 			byteArrayOffset:UInt):Void
 	{
-		#if lime
+		#if openfl_gl
 		if (numRegisters == 0 || __state.program == null) return;
 
 		if (__state.program != null && __state.program.__format == GLSL)

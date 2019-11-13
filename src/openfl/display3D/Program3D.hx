@@ -479,7 +479,7 @@ import openfl.Vector;
 	{
 		if (__format == GLSL) return;
 
-		#if lime
+		#if openfl_gl
 		var gl = __context.gl;
 
 		__agalUniforms.clear();
@@ -958,10 +958,10 @@ import openfl.Vector;
 
 	public function flush():Void
 	{
-		#if lime
+		#if openfl_gl
 		#if openfl_html5
 		var gl = context.gl;
-		#else
+		#elseif lime
 		var gl = context.__context.gles2;
 		#end
 
