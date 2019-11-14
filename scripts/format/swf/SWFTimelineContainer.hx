@@ -62,7 +62,8 @@ class SWFTimelineContainer extends SWFEventDispatcher
 	public static var TIMEOUT:Int = 50;
 	public static var AUTOBUILD_LAYERS:Bool = false;
 	public static var EXTRACT_SOUND_STREAM:Bool = true;
-	public static var scalingGrids(default, null):Map<Int, Int>;
+
+	public var scalingGrids(default, null):Map<Int, Int>;
 
 	public var tags(default, null):Array<ITag>;
 	public var tagsRaw(default, null):Array<SWFRawTag>;
