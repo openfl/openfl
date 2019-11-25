@@ -245,15 +245,11 @@ class Timeline
 		if (frame < 1) frame = 1;
 		else if (frame > __totalFrames) frame = __totalFrames;
 
-		// TODO: Script may need children to be constructed first?
 		__lastFrameScriptEval = -1;
-		__evaluateFrameScripts(frame);
+		__currentFrame = frame;
 
-		if (frame != __currentFrame)
-		{
-			__currentFrame = frame;
-			__updateSymbol(__currentFrame);
-		}
+		__updateSymbol(__currentFrame);
+		__evaluateFrameScripts(__currentFrame);
 	}
 
 	@:noCompletion private function __gotoAndPlay(frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end, scene:String = null):Void
