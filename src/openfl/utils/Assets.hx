@@ -745,6 +745,17 @@ class Assets
 
 	public static function unloadLibrary(name:String):Void
 	{
+		if (name == null || name == "")
+		{
+			name = "default";
+		}
+
+		var library = getLibrary(name);
+		if (library != null)
+		{
+			cache.clear(name + ":");
+		}
+
 		#if lime
 		LimeAssets.unloadLibrary(name);
 		#end
