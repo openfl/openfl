@@ -748,6 +748,8 @@ class Assets
 		if (name == null || name == "")
 		{
 			name = "default";
+			// TODO: Do we cache with the default prefix?
+			cache.clear(":");
 		}
 
 		var library = getLibrary(name);
