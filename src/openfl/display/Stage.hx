@@ -1899,6 +1899,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		__deltaTime = 0;
 
 		var shouldRender = #if !openfl_disable_display_render (__renderer != null #if !openfl_always_render && (__renderDirty || __forceRender) #end) #else false #end;
+		var shouldUpdate = shouldRender || __transformDirty;
 
 		if (__invalidated && shouldRender)
 		{
@@ -1922,7 +1923,20 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		Telemetry.__startTiming(TelemetryCommandName.RENDER);
 		#end
 
-		__update(false, true);
+		if (DisplayObject.__supportDOM)
+		{
+			if (shouldUpdate || __wasDirty)
+			{
+				// If we were dirty last time, we need at least one more
+				// update in order to clear "changed" properties
+				__update(false, true);
+				__wasDirty = shouldUpdate;
+			}
+		}
+		else if (shouldUpdate)
+		{
+			__update(false, true);
+		}
 
 		#if lime
 		if (__renderer != null)
@@ -3017,61 +3031,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		Touch.onEnd.remove(__onLimeTouchEnd);
 		Touch.onCancel.remove(__onLimeTouchCancel);
 		#end
-	}
-
-	@:noCompletion private override function __update(transformOnly:Bool, updateChildren:Bool):Void
-	{
-		if (transformOnly)
-		{
-			if (__transformDirty)
-			{
-				super.__update(true, updateChildren);
-
-				if (updateChildren)
-				{
-					__transformDirty = false;
-					// __dirty = true;
-				}
-			}
-		}
-		else
-		{
-			if (__transformDirty || __renderDirty)
-			{
-				super.__update(false, updateChildren);
-
-				if (updateChildren)
-				{
-					// #if dom
-					if (DisplayObject.__supportDOM)
-					{
-						__wasDirty = true;
-					}
-
-					// #end
-
-					// __dirty = false;
-				}
-			}
-			/*
-				#if dom
-			**/
-			else if (!__renderDirty && __wasDirty)
-			{
-				// If we were dirty last time, we need at least one more
-				// update in order to clear "changed" properties
-
-				super.__update(false, updateChildren);
-
-				if (updateChildren)
-				{
-					__wasDirty = false;
-				}
-			}
-			/*
-				#end
-			**/
-		}
 	}
 
 	// Get & Set Methods
