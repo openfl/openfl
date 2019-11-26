@@ -416,6 +416,7 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 			__dirty = true;
 			__transformDirty = true;
 			__bounds = null;
+			__owner.__localBoundsDirty = true;
 		}
 
 		__visible = false;
@@ -437,6 +438,7 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 	public function copyFrom(sourceGraphics:Graphics):Void
 	{
 		__bounds = sourceGraphics.__bounds != null ? sourceGraphics.__bounds.clone() : null;
+		__owner.__localBoundsDirty = true;
 		__commands = sourceGraphics.__commands.copy();
 		__dirty = true;
 		__strokePadding = sourceGraphics.__strokePadding;
@@ -1708,32 +1710,38 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 		if (__bounds == null)
 		{
 			__bounds = new Rectangle(x, y, 0, 0);
-			__transformDirty = true;
-			return;
-		}
-
-		if (x < __bounds.x)
-		{
-			__bounds.width += __bounds.x - x;
-			__bounds.x = x;
+			__owner.__localBoundsDirty = true;
 			__transformDirty = true;
 		}
-
-		if (y < __bounds.y)
+		else
 		{
-			__bounds.height += __bounds.y - y;
-			__bounds.y = y;
-			__transformDirty = true;
-		}
+			if (x < __bounds.x)
+			{
+				__bounds.width += __bounds.x - x;
+				__bounds.x = x;
+				__owner.__localBoundsDirty = true;
+				__transformDirty = true;
+			}
 
-		if (x > __bounds.x + __bounds.width)
-		{
-			__bounds.width = x - __bounds.x;
-		}
+			if (y < __bounds.y)
+			{
+				__bounds.height += __bounds.y - y;
+				__bounds.y = y;
+				__owner.__localBoundsDirty = true;
+				__transformDirty = true;
+			}
 
-		if (y > __bounds.y + __bounds.height)
-		{
-			__bounds.height = y - __bounds.y;
+			if (x > __bounds.x + __bounds.width)
+			{
+				__owner.__localBoundsDirty = true;
+				__bounds.width = x - __bounds.x;
+			}
+
+			if (y > __bounds.y + __bounds.height)
+			{
+				__owner.__localBoundsDirty = true;
+				__bounds.height = y - __bounds.y;
+			}
 		}
 	}
 
