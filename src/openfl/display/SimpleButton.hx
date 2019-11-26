@@ -348,18 +348,18 @@ class SimpleButton extends InteractiveObject
 		}
 	}
 
-	@:noCompletion private override function __setTransformDirty():Void
+	@:noCompletion private override function __setTransformDirty(force:Bool = false):Void
 	{
-		super.__setTransformDirty();
+		super.__setTransformDirty(force);
 
 		if (__currentState != null)
 		{
-			__currentState.__setTransformDirty();
+			__currentState.__setTransformDirty(force);
 		}
 
 		if (hitTestState != null && hitTestState != __currentState)
 		{
-			hitTestState.__setTransformDirty();
+			hitTestState.__setTransformDirty(force);
 		}
 	}
 
