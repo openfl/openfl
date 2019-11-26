@@ -916,23 +916,19 @@ class DisplayObjectContainer extends InteractiveObject
 
 	@:noCompletion private override function __setTransformDirty():Void
 	{
-		if (!__transformDirty)
-		{
-			__transformDirty = true;
+		__transformDirty = true;
 
+		if (!__childTransformDirty)
+		{
 			if (__children != null)
 			{
 				for (child in __children)
 				{
-					// TODO: Way to know children are still invalidated?
-					// This behavior is related to __getWorldTransform() only
-					// updating a single parent/child branch
-
-					// if (child.__transformDirty) break;
-
 					child.__setTransformDirty();
 				}
 			}
+
+			__childTransformDirty = true;
 		}
 	}
 
@@ -975,6 +971,8 @@ class DisplayObjectContainer extends InteractiveObject
 			{
 				child.__update(transformOnly, true);
 			}
+
+			__childTransformDirty = false;
 		}
 	}
 
