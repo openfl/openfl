@@ -943,7 +943,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private var __worldTransform:Matrix;
 	@:noCompletion private var __worldVisible:Bool;
 	@:noCompletion private var __worldVisibleChanged:Bool;
-	@:noCompletion private var __worldTransformInvalid:Bool;
 	@:noCompletion private var __worldZ:Int;
 	#if openfl_html5
 	@:noCompletion private var __canvas:CanvasElement;
@@ -1580,33 +1579,31 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 	@:noCompletion private function __getWorldTransform():Matrix
 	{
-		var transformDirty = __transformDirty || __worldTransformInvalid;
-
-		if (transformDirty)
+		if (__transformDirty)
 		{
-			var list = [];
-			var current = this;
-
-			if (parent == null)
+			if (parent == null || !parent.__transformDirty)
 			{
 				__update(true, false);
 			}
 			else
 			{
-				while (current != stage)
+				var list = [];
+				var current = this;
+
+				while (current != stage && current.__transformDirty)
 				{
 					list.push(current);
 					current = current.parent;
 
 					if (current == null) break;
 				}
-			}
 
-			var i = list.length;
-			while (--i >= 0)
-			{
-				current = list[i];
-				current.__update(true, false);
+				var i = list.length;
+				while (--i >= 0)
+				{
+					current = list[i];
+					current.__update(true, false);
+				}
 			}
 		}
 
@@ -1698,18 +1695,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 	@:noCompletion private function __setTransformDirty():Void
 	{
-		if (!__transformDirty)
-		{
-			__transformDirty = true;
-
-			__setWorldTransformInvalid();
-			__setParentRenderDirty();
-		}
-	}
-
-	@:noCompletion private function __setWorldTransformInvalid():Void
-	{
-		__worldTransformInvalid = true;
+		__transformDirty = true;
 	}
 
 	@:noCompletion private function __stopAllMovieClips():Void {}
@@ -1721,13 +1707,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		__renderable = (__visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
 		__updateTransforms();
 
-		// if (updateChildren && __transformDirty) {
-
 		__transformDirty = false;
-
-		// }
-
-		__worldTransformInvalid = false;
 
 		if (!transformOnly)
 		{
@@ -1825,12 +1805,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				__worldShader = __shader;
 				__worldScale9Grid = __scale9Grid;
 			}
-
-			// if (updateChildren && __renderDirty) {
-
-			// __renderDirty = false;
-
-			// }
 		}
 
 		if (updateChildren && mask != null)
@@ -2023,6 +1997,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		if (value != __mask)
 		{
 			__setTransformDirty();
+			__setParentRenderDirty();
 			__setRenderDirty();
 		}
 
@@ -2031,14 +2006,20 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			__mask.__isMask = false;
 			__mask.__maskTarget = null;
 			__mask.__setTransformDirty();
+			__mask.__setParentRenderDirty();
 			__mask.__setRenderDirty();
 		}
 
 		if (value != null)
 		{
+			if (!value.__isMask)
+			{
+				value.__setParentRenderDirty();
+			}
+
 			value.__isMask = true;
 			value.__maskTarget = this;
-			value.__setWorldTransformInvalid();
+			value.__setTransformDirty();
 		}
 
 		if (__cacheBitmap != null && __cacheBitmap.mask != value)
@@ -2105,6 +2086,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			__transform.d = __rotationCosine * __scaleY;
 
 			__setTransformDirty();
+			__setParentRenderDirty();
 		}
 
 		return value;
@@ -2153,7 +2135,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 			if (__transform.b == 0)
 			{
-				if (value != __transform.a) __setTransformDirty();
+				if (value != __transform.a)
+				{
+					__setTransformDirty();
+					__setParentRenderDirty();
+				}
+
 				__transform.a = value;
 			}
 			else
@@ -2164,6 +2151,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				if (__transform.a != a || __transform.b != b)
 				{
 					__setTransformDirty();
+					__setParentRenderDirty();
 				}
 
 				__transform.a = a;
@@ -2187,7 +2175,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 			if (__transform.c == 0)
 			{
-				if (value != __transform.d) __setTransformDirty();
+				if (value != __transform.d)
+				{
+					__setTransformDirty();
+					__setParentRenderDirty();
+				}
+
 				__transform.d = value;
 			}
 			else
@@ -2198,6 +2191,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				if (__transform.d != d || __transform.c != c)
 				{
 					__setTransformDirty();
+					__setParentRenderDirty();
 				}
 
 				__transform.c = c;
@@ -2234,6 +2228,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		}
 
 		__setTransformDirty();
+		__setParentRenderDirty();
 
 		if (__supportDOM)
 		{
@@ -2277,7 +2272,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			__objectTransform = new Transform(this);
 		}
 
-		__setTransformDirty();
 		__objectTransform.matrix = value.matrix;
 
 		if (!__objectTransform.colorTransform.__equals(value.colorTransform, true)
@@ -2340,7 +2334,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 	@:keep @:noCompletion private function set_x(value:Float):Float
 	{
-		if (value != __transform.tx) __setTransformDirty();
+		if (value != __transform.tx)
+		{
+			__setTransformDirty();
+			__setParentRenderDirty();
+		}
+
 		return __transform.tx = value;
 	}
 
@@ -2351,7 +2350,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 	@:keep @:noCompletion private function set_y(value:Float):Float
 	{
-		if (value != __transform.ty) __setTransformDirty();
+		if (value != __transform.ty)
+		{
+			__setTransformDirty();
+			__setParentRenderDirty();
+		}
+
 		return __transform.ty = value;
 	}
 }

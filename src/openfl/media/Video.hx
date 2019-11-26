@@ -447,6 +447,7 @@ class Video extends DisplayObject
 		if (scaleY != 1 || value != __height)
 		{
 			__setTransformDirty();
+			__setParentRenderDirty();
 			__dirty = true;
 		}
 
@@ -488,6 +489,7 @@ class Video extends DisplayObject
 		if (__scaleX != 1 || __width != value)
 		{
 			__setTransformDirty();
+			__setParentRenderDirty();
 			__dirty = true;
 		}
 

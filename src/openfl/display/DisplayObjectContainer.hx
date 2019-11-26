@@ -238,6 +238,7 @@ class DisplayObjectContainer extends InteractiveObject
 			}
 
 			child.__setTransformDirty();
+			child.__setParentRenderDirty();
 			child.__setRenderDirty();
 			__setRenderDirty();
 
@@ -444,6 +445,7 @@ class DisplayObjectContainer extends InteractiveObject
 		if (child != null && child.parent == this)
 		{
 			child.__setTransformDirty();
+			child.__setParentRenderDirty();
 			child.__setRenderDirty();
 			__setRenderDirty();
 
@@ -467,6 +469,7 @@ class DisplayObjectContainer extends InteractiveObject
 			__children.remove(child);
 			__removedChildren.push(child);
 			child.__setTransformDirty();
+			child.__setParentRenderDirty();
 		}
 
 		return child;
@@ -911,17 +914,23 @@ class DisplayObjectContainer extends InteractiveObject
 		}
 	}
 
-	@:noCompletion private override function __setWorldTransformInvalid():Void
+	@:noCompletion private override function __setTransformDirty():Void
 	{
-		if (!__worldTransformInvalid)
+		if (!__transformDirty)
 		{
-			__worldTransformInvalid = true;
+			__transformDirty = true;
 
 			if (__children != null)
 			{
 				for (child in __children)
 				{
-					child.__setWorldTransformInvalid();
+					// TODO: Way to know children are still invalidated?
+					// This behavior is related to __getWorldTransform() only
+					// updating a single parent/child branch
+
+					// if (child.__transformDirty) break;
+
+					child.__setTransformDirty();
 				}
 			}
 		}
