@@ -910,6 +910,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private var __isCacheBitmapRender:Bool;
 	@:noCompletion private var __isMask:Bool;
 	@:noCompletion private var __loaderInfo:LoaderInfo;
+	@:noCompletion private var __localBounds:Rectangle;
+	@:noCompletion private var __localBoundsDirty:Bool;
 	@:noCompletion private var __mask:DisplayObject;
 	@:noCompletion private var __maskTarget:DisplayObject;
 	@:noCompletion private var __name:String;
@@ -1539,19 +1541,22 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		return false;
 	}
 
-	@:noCompletion private function __getLocalBounds(rect:Rectangle):Void
+	@:noCompletion private function __getLocalBounds():Rectangle
 	{
-		// var cacheX = __transform.tx;
-		// var cacheY = __transform.ty;
-		// __transform.tx = __transform.ty = 0;
+		if (__localBounds == null)
+		{
+			__localBounds = new Rectangle();
+			__localBoundsDirty = true;
+		}
 
-		__getBounds(rect, __transform);
+		if (__localBoundsDirty)
+		{
+			__getBounds(__localBounds, __transform);
+			__localBounds.x -= __transform.tx;
+			__localBounds.y -= __transform.ty;
+		}
 
-		// __transform.tx = cacheX;
-		// __transform.ty = cacheY;
-
-		rect.x -= __transform.tx;
-		rect.y -= __transform.ty;
+		return __localBounds;
 	}
 
 	@:noCompletion private function __getRenderBounds(rect:Rectangle, matrix:Matrix):Void
@@ -1675,6 +1680,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		var renderParent = __renderParent != null ? __renderParent : parent;
 		if (renderParent != null && !renderParent.__renderDirty)
 		{
+			// TODO: Use separate method? Based on transform, not render change
+			renderParent.__localBoundsDirty = true;
+
 			renderParent.__renderDirty = true;
 			renderParent.__setParentRenderDirty();
 		}
@@ -1943,11 +1951,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 	@:keep @:noCompletion private function get_height():Float
 	{
-		var rect = Rectangle.__pool.get();
-		__getLocalBounds(rect);
-		var height = rect.height;
-		Rectangle.__pool.release(rect);
-		return height;
+		return __getLocalBounds().height;
 	}
 
 	@:keep @:noCompletion private function set_height(value:Float):Float
@@ -2086,6 +2090,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			__transform.c = -__rotationSine * __scaleY;
 			__transform.d = __rotationCosine * __scaleY;
 
+			__localBoundsDirty = true;
 			__setTransformDirty();
 			__setParentRenderDirty();
 		}
@@ -2138,6 +2143,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			{
 				if (value != __transform.a)
 				{
+					__localBoundsDirty = true;
 					__setTransformDirty();
 					__setParentRenderDirty();
 				}
@@ -2151,6 +2157,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 				if (__transform.a != a || __transform.b != b)
 				{
+					__localBoundsDirty = true;
 					__setTransformDirty();
 					__setParentRenderDirty();
 				}
@@ -2178,6 +2185,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			{
 				if (value != __transform.d)
 				{
+					__localBoundsDirty = true;
 					__setTransformDirty();
 					__setParentRenderDirty();
 				}
@@ -2191,6 +2199,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 				if (__transform.d != d || __transform.c != c)
 				{
+					__localBoundsDirty = true;
 					__setTransformDirty();
 					__setParentRenderDirty();
 				}
@@ -2298,11 +2307,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 	@:keep @:noCompletion private function get_width():Float
 	{
-		var rect = Rectangle.__pool.get();
-		__getLocalBounds(rect);
-		var width = rect.width;
-		Rectangle.__pool.release(rect);
-		return width;
+		return __getLocalBounds().width;
 	}
 
 	@:keep @:noCompletion private function set_width(value:Float):Float

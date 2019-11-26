@@ -240,6 +240,7 @@ class DisplayObjectContainer extends InteractiveObject
 			child.__setTransformDirty();
 			child.__setParentRenderDirty();
 			child.__setRenderDirty();
+			__localBoundsDirty = true;
 			__setRenderDirty();
 
 			#if !openfl_disable_event_pooling
@@ -447,6 +448,7 @@ class DisplayObjectContainer extends InteractiveObject
 			child.__setTransformDirty();
 			child.__setParentRenderDirty();
 			child.__setRenderDirty();
+			__localBoundsDirty = true;
 			__setRenderDirty();
 
 			var event = new Event(Event.REMOVED, true);
