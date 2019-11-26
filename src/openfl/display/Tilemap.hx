@@ -437,6 +437,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	@:noCompletion private override function set_height(value:Float):Float
 	{
 		__height = Std.int(value);
+		__localBoundsDirty = true;
 		return __height * Math.abs(scaleY);
 	}
 	#else
@@ -488,6 +489,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	@:noCompletion private override function set_width(value:Float):Float
 	{
 		__width = Std.int(value);
+		__localBoundsDirty = true;
 		return __width * Math.abs(__scaleX);
 	}
 	#else

@@ -514,6 +514,7 @@ class SimpleButton extends InteractiveObject
 				value.__setRenderDirty();
 			}
 
+			__localBoundsDirty = true;
 			__setRenderDirty();
 		}
 

@@ -1549,11 +1549,18 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			__localBoundsDirty = true;
 		}
 
-		if (__localBoundsDirty)
+		if (__localBoundsDirty || (__graphics != null && __graphics.__dirty))
 		{
+			__localBounds.x = 0;
+			__localBounds.y = 0;
+			__localBounds.width = 0;
+			__localBounds.height = 0;
+
 			__getBounds(__localBounds, __transform);
+
 			__localBounds.x -= __transform.tx;
 			__localBounds.y -= __transform.ty;
+			__localBoundsDirty = false;
 		}
 
 		return __localBounds;

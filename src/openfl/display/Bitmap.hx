@@ -202,6 +202,7 @@ class Bitmap extends DisplayObject
 		__bitmapData = value;
 		smoothing = false;
 
+		__localBoundsDirty = true;
 		__setRenderDirty();
 
 		if (__filters != null)
