@@ -1694,7 +1694,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		this.stage = stage;
 	}
 
-	@:noCompletion private function __setTransformDirty():Void
+	@:noCompletion private function __setTransformDirty(force:Bool = false):Void
 	{
 		__transformDirty = true;
 	}
@@ -2006,7 +2006,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		{
 			__mask.__isMask = false;
 			__mask.__maskTarget = null;
-			__mask.__setTransformDirty();
+			__mask.__setTransformDirty(true);
 			__mask.__setParentRenderDirty();
 			__mask.__setRenderDirty();
 		}
@@ -2020,7 +2020,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 			value.__isMask = true;
 			value.__maskTarget = this;
-			value.__setTransformDirty();
+			value.__setTransformDirty(true);
 		}
 
 		if (__cacheBitmap != null && __cacheBitmap.mask != value)

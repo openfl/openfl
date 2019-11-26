@@ -914,17 +914,17 @@ class DisplayObjectContainer extends InteractiveObject
 		}
 	}
 
-	@:noCompletion private override function __setTransformDirty():Void
+	@:noCompletion private override function __setTransformDirty(force:Bool = false):Void
 	{
 		__transformDirty = true;
 
-		if (!__childTransformDirty)
+		if (!__childTransformDirty || force)
 		{
 			if (__children != null)
 			{
 				for (child in __children)
 				{
-					child.__setTransformDirty();
+					child.__setTransformDirty(force);
 				}
 			}
 
