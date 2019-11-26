@@ -3453,8 +3453,8 @@ class BitmapData implements IBitmapDrawable
 
 	@:noCompletion private function __update(transformOnly:Bool, updateChildren:Bool):Void
 	{
-		__worldTransform.identity();
-		__renderTransform.copyFrom(__worldTransform);
+		// __worldTransform.identity();
+		// __renderTransform.copyFrom(__worldTransform);
 	}
 
 	@:noCompletion private inline function __powerOfTwo(value:Int):Int

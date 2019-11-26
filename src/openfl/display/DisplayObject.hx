@@ -1715,40 +1715,43 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		if (__isMask && renderParent == null) renderParent = __maskTarget;
 		__renderable = (__visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
 
-		if (__worldTransform == null)
+		if (__transformDirty)
 		{
-			__worldTransform = new Matrix();
-		}
+			if (__worldTransform == null)
+			{
+				__worldTransform = new Matrix();
+			}
 
-		if (__renderTransform == null)
-		{
-			__renderTransform = new Matrix();
-		}
+			if (__renderTransform == null)
+			{
+				__renderTransform = new Matrix();
+			}
 
-		if (parent != null)
-		{
-			__calculateAbsoluteTransform(__transform, parent.__worldTransform, __worldTransform);
-		}
-		else
-		{
-			__worldTransform.copyFrom(__transform);
-		}
+			if (parent != null)
+			{
+				__calculateAbsoluteTransform(__transform, parent.__worldTransform, __worldTransform);
+			}
+			else
+			{
+				__worldTransform.copyFrom(__transform);
+			}
 
-		if (renderParent != null)
-		{
-			__calculateAbsoluteTransform(__transform, renderParent.__renderTransform, __renderTransform);
-		}
-		else
-		{
-			__renderTransform.copyFrom(__transform);
-		}
+			if (renderParent != null)
+			{
+				__calculateAbsoluteTransform(__transform, renderParent.__renderTransform, __renderTransform);
+			}
+			else
+			{
+				__renderTransform.copyFrom(__transform);
+			}
 
-		if (__scrollRect != null)
-		{
-			__renderTransform.__translateTransformed(-__scrollRect.x, -__scrollRect.y);
-		}
+			if (__scrollRect != null)
+			{
+				__renderTransform.__translateTransformed(-__scrollRect.x, -__scrollRect.y);
+			}
 
-		__transformDirty = false;
+			__transformDirty = false;
+		}
 
 		if (!transformOnly)
 		{
