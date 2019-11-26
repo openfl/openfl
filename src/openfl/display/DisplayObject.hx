@@ -1714,7 +1714,39 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		var renderParent = __renderParent != null ? __renderParent : parent;
 		if (__isMask && renderParent == null) renderParent = __maskTarget;
 		__renderable = (__visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
-		__updateTransforms();
+
+		if (__worldTransform == null)
+		{
+			__worldTransform = new Matrix();
+		}
+
+		if (__renderTransform == null)
+		{
+			__renderTransform = new Matrix();
+		}
+
+		if (parent != null)
+		{
+			__calculateAbsoluteTransform(__transform, parent.__worldTransform, __worldTransform);
+		}
+		else
+		{
+			__worldTransform.copyFrom(__transform);
+		}
+
+		if (renderParent != null)
+		{
+			__calculateAbsoluteTransform(__transform, renderParent.__renderTransform, __renderTransform);
+		}
+		else
+		{
+			__renderTransform.copyFrom(__transform);
+		}
+
+		if (__scrollRect != null)
+		{
+			__renderTransform.__translateTransformed(-__scrollRect.x, -__scrollRect.y);
+		}
 
 		__transformDirty = false;
 
@@ -1819,47 +1851,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		if (updateChildren && mask != null)
 		{
 			mask.__update(transformOnly, true);
-		}
-	}
-
-	@:noCompletion private function __updateTransforms(overrideTransform:Matrix = null):Void
-	{
-		var overrided = overrideTransform != null;
-		var local = overrided ? overrideTransform : __transform;
-
-		if (__worldTransform == null)
-		{
-			__worldTransform = new Matrix();
-		}
-
-		if (__renderTransform == null)
-		{
-			__renderTransform = new Matrix();
-		}
-
-		var renderParent = __renderParent != null ? __renderParent : parent;
-
-		if (!overrided && parent != null)
-		{
-			__calculateAbsoluteTransform(local, parent.__worldTransform, __worldTransform);
-		}
-		else
-		{
-			__worldTransform.copyFrom(local);
-		}
-
-		if (!overrided && renderParent != null)
-		{
-			__calculateAbsoluteTransform(local, renderParent.__renderTransform, __renderTransform);
-		}
-		else
-		{
-			__renderTransform.copyFrom(local);
-		}
-
-		if (__scrollRect != null)
-		{
-			__renderTransform.__translateTransformed(-__scrollRect.x, -__scrollRect.y);
 		}
 	}
 

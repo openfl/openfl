@@ -2393,9 +2393,9 @@ class TextField extends InteractiveObject
 		}
 	}
 
-	@:noCompletion private override function __updateTransforms(overrideTransform:Matrix = null):Void
+	@:noCompletion private override function __update(transformOnly:Bool, updateChildren:Bool):Void
 	{
-		super.__updateTransforms(overrideTransform);
+		super.__update(transformOnly, updateChildren);
 		__renderTransform.__translateTransformed(__offsetX, __offsetY);
 	}
 

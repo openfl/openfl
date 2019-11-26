@@ -3453,20 +3453,7 @@ class BitmapData implements IBitmapDrawable
 
 	@:noCompletion private function __update(transformOnly:Bool, updateChildren:Bool):Void
 	{
-		__updateTransforms();
-	}
-
-	@:noCompletion private function __updateTransforms(overrideTransform:Matrix = null):Void
-	{
-		if (overrideTransform == null)
-		{
-			__worldTransform.identity();
-		}
-		else
-		{
-			__worldTransform.copyFrom(overrideTransform);
-		}
-
+		__worldTransform.identity();
 		__renderTransform.copyFrom(__worldTransform);
 	}
 

@@ -21,7 +21,6 @@ interface IBitmapDrawable
 	@:noCompletion private var __worldTransform:Matrix;
 	@:noCompletion private function __getBounds(rect:Rectangle, matrix:Matrix):Void;
 	@:noCompletion private function __update(transformOnly:Bool, updateChildren:Bool):Void;
-	@:noCompletion private function __updateTransforms(overrideTransform:Matrix = null):Void;
 }
 #else
 typedef IBitmapDrawable = flash.display.IBitmapDrawable;

@@ -381,21 +381,6 @@ class SimpleButton extends InteractiveObject
 		}
 	}
 
-	@:noCompletion private override function __updateTransforms(overrideTransform:Matrix = null):Void
-	{
-		super.__updateTransforms(overrideTransform);
-
-		if (__currentState != null)
-		{
-			__currentState.__updateTransforms();
-		}
-
-		if (hitTestState != null && hitTestState != __currentState)
-		{
-			hitTestState.__updateTransforms();
-		}
-	}
-
 	// Getters & Setters
 	@:noCompletion private function get_downState():DisplayObject
 	{
