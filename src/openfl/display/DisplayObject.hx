@@ -1726,7 +1726,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		__renderable = (__visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
 
 		#if openfl_update_check
-		if (__transformDirty)
+		if (!__transformDirty)
 		{
 			if (parent != null)
 			{
@@ -1753,6 +1753,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			{
 				var mat = new Matrix();
 				__calculateAbsoluteTransform(__transform, renderParent.__renderTransform, mat);
+				if (Std.is(this, openfl.text.TextField))
+				{
+					mat.__translateTransformed(@:privateAccess cast(this, openfl.text.TextField).__offsetX, @:privateAccess cast(this, openfl.text.TextField).__offsetY);
+				}
 				if (!__renderTransform.equals(mat))
 				{
 					trace("[" + Type.getClassName(Type.getClass(this)) + "] renderTransform cache miss detected");
@@ -1762,11 +1766,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			}
 			else
 			{
-				if (!__renderTransform.equals(__transform))
+				var mat = new Matrix();
+				mat.copyFrom(__transform);
+				if (Std.is(this, openfl.text.TextField))
+				{
+					mat.__translateTransformed(@:privateAccess cast(this, openfl.text.TextField).__offsetX, @:privateAccess cast(this, openfl.text.TextField).__offsetY);
+				}
+				if (!__renderTransform.equals(mat))
 				{
 					trace("[" + Type.getClassName(Type.getClass(this)) + "] renderTransform cache miss detected");
 					trace(__renderTransform);
-					trace(__transform);
+					trace(mat);
 				}
 			}
 		}
