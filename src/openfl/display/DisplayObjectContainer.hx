@@ -606,6 +606,8 @@ class DisplayObjectContainer extends InteractiveObject
 		{
 			__children.remove(child);
 			__children.insert(index, child);
+
+			__setRenderDirty();
 		}
 	}
 

@@ -2395,8 +2395,12 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private override function __update(transformOnly:Bool, updateChildren:Bool):Void
 	{
+		var transformDirty = __transformDirty;
 		super.__update(transformOnly, updateChildren);
-		__renderTransform.__translateTransformed(__offsetX, __offsetY);
+		if (transformDirty)
+		{
+			__renderTransform.__translateTransformed(__offsetX, __offsetY);
+		}
 	}
 
 	// Getters & Setters

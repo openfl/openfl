@@ -1722,7 +1722,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		if (__isMask && renderParent == null) renderParent = __maskTarget;
 		__renderable = (__visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
 
-		if (true || __transformDirty)
+		if (__transformDirty)
 		{
 			if (__worldTransform == null)
 			{
@@ -1758,6 +1758,52 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			}
 
 			__transformDirty = false;
+		}
+		else
+		{
+			#if openfl_update_check
+			if (parent != null)
+			{
+				var mat = new Matrix();
+				__calculateAbsoluteTransform(__transform, parent.__worldTransform, mat);
+				if (!__worldTransform.equals(mat))
+				{
+					trace("[" + Type.getClassName(Type.getClass(this)) + "] worldTransform cache miss detected");
+					trace(__worldTransform);
+					trace(mat);
+				}
+			}
+			else
+			{
+				if (!__worldTransform.equals(__transform))
+				{
+					trace("[" + Type.getClassName(Type.getClass(this)) + "] worldTransform cache miss detected");
+					trace(__worldTransform);
+					trace(__transform);
+				}
+			}
+
+			if (renderParent != null)
+			{
+				var mat = new Matrix();
+				__calculateAbsoluteTransform(__transform, renderParent.__renderTransform, mat);
+				if (!__renderTransform.equals(mat))
+				{
+					trace("[" + Type.getClassName(Type.getClass(this)) + "] renderTransform cache miss detected");
+					trace(__renderTransform);
+					trace(mat);
+				}
+			}
+			else
+			{
+				if (!__renderTransform.equals(__transform))
+				{
+					trace("[" + Type.getClassName(Type.getClass(this)) + "] renderTransform cache miss detected");
+					trace(__renderTransform);
+					trace(__transform);
+				}
+			}
+			#end
 		}
 
 		if (!transformOnly)
