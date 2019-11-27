@@ -1722,46 +1722,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		if (__isMask && renderParent == null) renderParent = __maskTarget;
 		__renderable = (__visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
 
+		#if openfl_update_check
 		if (__transformDirty)
 		{
-			if (__worldTransform == null)
-			{
-				__worldTransform = new Matrix();
-			}
-
-			if (__renderTransform == null)
-			{
-				__renderTransform = new Matrix();
-			}
-
-			if (parent != null)
-			{
-				__calculateAbsoluteTransform(__transform, parent.__worldTransform, __worldTransform);
-			}
-			else
-			{
-				__worldTransform.copyFrom(__transform);
-			}
-
-			if (renderParent != null)
-			{
-				__calculateAbsoluteTransform(__transform, renderParent.__renderTransform, __renderTransform);
-			}
-			else
-			{
-				__renderTransform.copyFrom(__transform);
-			}
-
-			if (__scrollRect != null)
-			{
-				__renderTransform.__translateTransformed(-__scrollRect.x, -__scrollRect.y);
-			}
-
-			__transformDirty = false;
-		}
-		else
-		{
-			#if openfl_update_check
 			if (parent != null)
 			{
 				var mat = new Matrix();
@@ -1803,7 +1766,45 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 					trace(__transform);
 				}
 			}
-			#end
+		}
+		#end
+
+		if (#if openfl_cache_update __transformDirty #else true #end)
+		{
+			if (__worldTransform == null)
+			{
+				__worldTransform = new Matrix();
+			}
+
+			if (__renderTransform == null)
+			{
+				__renderTransform = new Matrix();
+			}
+
+			if (parent != null)
+			{
+				__calculateAbsoluteTransform(__transform, parent.__worldTransform, __worldTransform);
+			}
+			else
+			{
+				__worldTransform.copyFrom(__transform);
+			}
+
+			if (renderParent != null)
+			{
+				__calculateAbsoluteTransform(__transform, renderParent.__renderTransform, __renderTransform);
+			}
+			else
+			{
+				__renderTransform.copyFrom(__transform);
+			}
+
+			if (__scrollRect != null)
+			{
+				__renderTransform.__translateTransformed(-__scrollRect.x, -__scrollRect.y);
+			}
+
+			__transformDirty = false;
 		}
 
 		if (!transformOnly)
