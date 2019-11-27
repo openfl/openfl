@@ -975,9 +975,12 @@ class DisplayObjectContainer extends InteractiveObject
 			{
 				child.__update(transformOnly, true);
 			}
-
-			__childTransformDirty = false;
 		}
+
+		// Ensure children are marked as dirty again
+		// as we no longer know if they all are dirty
+		// since at least one has been updated
+		__childTransformDirty = false;
 	}
 
 	// Get & Set Methods

@@ -1594,7 +1594,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	{
 		if (__transformDirty)
 		{
-			if (parent == null || !parent.__transformDirty)
+			var renderParent = __renderParent != null ? __renderParent : parent;
+			if (__isMask && renderParent == null) renderParent = __maskTarget;
+
+			if (parent == null || (!parent.__transformDirty && !renderParent.__transformDirty))
 			{
 				__update(true, false);
 			}
@@ -1603,12 +1606,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				var list = [];
 				var current = this;
 
-				while (current != stage && current.__transformDirty)
+				while (current != stage && (current.parent.__transformDirty || renderParent.__transformDirty))
 				{
 					list.push(current);
 					current = current.parent;
 
 					if (current == null) break;
+
+					renderParent = current.__renderParent != null ? current.__renderParent : current.parent;
+					if (current.__isMask && renderParent == null) renderParent = current.__maskTarget;
 				}
 
 				var i = list.length;

@@ -2243,6 +2243,18 @@ class TextField extends InteractiveObject
 		}
 	}
 
+	@:noCompletion private override function __update(transformOnly:Bool, updateChildren:Bool):Void
+	{
+		var transformDirty = #if openfl_cache_update __transformDirty #else true #end;
+
+		super.__update(transformOnly, updateChildren);
+
+		if (transformDirty)
+		{
+			__renderTransform.__translateTransformed(__offsetX, __offsetY);
+		}
+	}
+
 	@:noCompletion private function __updateLayout():Void
 	{
 		if (__layoutDirty)
@@ -2390,16 +2402,6 @@ class TextField extends InteractiveObject
 			}
 
 			__textEngine.text = mask;
-		}
-	}
-
-	@:noCompletion private override function __update(transformOnly:Bool, updateChildren:Bool):Void
-	{
-		var transformDirty = __transformDirty;
-		super.__update(transformOnly, updateChildren);
-		if (transformDirty)
-		{
-			__renderTransform.__translateTransformed(__offsetX, __offsetY);
 		}
 	}
 
