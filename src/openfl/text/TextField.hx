@@ -2245,7 +2245,7 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private override function __update(transformOnly:Bool, updateChildren:Bool):Void
 	{
-		var transformDirty = #if openfl_cache_update __transformDirty #else true #end;
+		var transformDirty = __transformDirty;
 
 		super.__update(transformOnly, updateChildren);
 

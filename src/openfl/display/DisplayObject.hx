@@ -1069,6 +1069,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		__worldColorTransform = new ColorTransform();
 		__renderTransform = new Matrix();
 		__worldVisible = true;
+		__transformDirty = true;
 
 		name = "instance" + (++__instanceCount);
 
@@ -1725,7 +1726,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		if (__isMask && renderParent == null) renderParent = __maskTarget;
 		__renderable = (__visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
 
-		#if openfl_update_check
+		#if openfl_validate_update
 		if (!__transformDirty)
 		{
 			if (parent != null)
@@ -1782,7 +1783,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		}
 		#end
 
-		if (#if openfl_cache_update __transformDirty #else true #end)
+		if (__transformDirty)
 		{
 			if (__worldTransform == null)
 			{

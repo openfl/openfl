@@ -237,7 +237,7 @@ class DisplayObjectContainer extends InteractiveObject
 				this.__setStageReference(stage);
 			}
 
-			child.__setTransformDirty();
+			child.__setTransformDirty(true);
 			child.__setParentRenderDirty();
 			child.__setRenderDirty();
 			__localBoundsDirty = true;
@@ -470,7 +470,7 @@ class DisplayObjectContainer extends InteractiveObject
 			child.parent = null;
 			__children.remove(child);
 			__removedChildren.push(child);
-			child.__setTransformDirty();
+			child.__setTransformDirty(true);
 			child.__setParentRenderDirty();
 		}
 
