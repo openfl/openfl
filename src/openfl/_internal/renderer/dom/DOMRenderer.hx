@@ -589,7 +589,7 @@ class DOMRenderer extends DOMRendererAPI
 		{
 			if (button.__currentState.stage != button.stage)
 			{
-				button.__currentState.__setStageReference(button.stage);
+				button.__currentState.__setStageReferences(button.stage);
 			}
 
 			__renderDisplayObject(button.__currentState);

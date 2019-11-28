@@ -333,21 +333,6 @@ class SimpleButton extends InteractiveObject
 		return hitTest;
 	}
 
-	@:noCompletion private override function __setStageReference(stage:Stage):Void
-	{
-		super.__setStageReference(stage);
-
-		if (__currentState != null)
-		{
-			__currentState.__setStageReference(stage);
-		}
-
-		if (hitTestState != null && hitTestState != __currentState)
-		{
-			hitTestState.__setStageReference(stage);
-		}
-	}
-
 	@:noCompletion private override function __setTransformDirty(force:Bool = false):Void
 	{
 		super.__setTransformDirty(force);
@@ -498,7 +483,7 @@ class SimpleButton extends InteractiveObject
 			{
 				if (__currentState != null)
 				{
-					__currentState.__setStageReference(null);
+					__currentState.__setStageReferences(null);
 					__previousStates.push(__currentState);
 				}
 

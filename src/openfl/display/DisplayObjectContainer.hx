@@ -215,7 +215,7 @@ class DisplayObjectContainer extends InteractiveObject
 
 			if (addedToStage)
 			{
-				child.__setStageReference(stage);
+				child.__setStageReferences(stage);
 			}
 
 			child.__setTransformDirty(true);
@@ -376,7 +376,7 @@ class DisplayObjectContainer extends InteractiveObject
 
 			if (addedToStage)
 			{
-				child.__setStageReference(stage);
+				child.__setStageReferences(stage);
 			}
 
 			child.__setTransformDirty(true);
@@ -619,7 +619,7 @@ class DisplayObjectContainer extends InteractiveObject
 				var event = new Event(Event.REMOVED_FROM_STAGE, false, false);
 				child.__dispatchWithCapture(event);
 				child.__dispatchChildren(event);
-				child.__setStageReference(null);
+				child.__setStageReferences(null);
 			}
 
 			child.parent = null;
@@ -1201,18 +1201,6 @@ class DisplayObjectContainer extends InteractiveObject
 				child.__readGraphicsData(graphicsData, recurse);
 				child = child.__nextSibling;
 			}
-		}
-	}
-
-	@:noCompletion private override function __setStageReference(stage:Stage):Void
-	{
-		super.__setStageReference(stage);
-
-		var child = __firstChild;
-		while (child != null)
-		{
-			child.__setStageReference(stage);
-			child = child.__nextSibling;
 		}
 	}
 

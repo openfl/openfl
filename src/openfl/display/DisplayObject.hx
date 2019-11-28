@@ -6,6 +6,7 @@ import openfl._internal.backend.html5.CanvasElement;
 import openfl._internal.backend.html5.CanvasRenderingContext2D;
 import openfl._internal.backend.html5.CSSStyleDeclaration;
 import openfl._internal.renderer.DisplayObjectType;
+import openfl._internal.utils.DisplayObjectIterator;
 import openfl._internal.utils.ObjectPool;
 import openfl._internal.Lib;
 import openfl.errors.TypeError;
@@ -169,6 +170,7 @@ import openfl.Vector;
 @:access(openfl.display.DisplayObjectContainer)
 @:access(openfl.display.Graphics)
 @:access(openfl.display.Shader)
+@:access(openfl.display.SimpleButton)
 @:access(openfl.display.Stage)
 @:access(openfl.filters.BitmapFilter)
 @:access(openfl.geom.ColorTransform)
@@ -1358,6 +1360,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		}
 	}
 
+	@:noCompletion private function __allChildren():Iterator<DisplayObject>
+	{
+		return new DisplayObjectIterator(this);
+	}
+
 	@:noCompletion private static inline function __calculateAbsoluteTransform(local:Matrix, parentTransform:Matrix, target:Matrix):Void
 	{
 		target.a = local.a * parentTransform.a + local.b * parentTransform.c;
@@ -1711,9 +1718,26 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		}
 	}
 
-	@:noCompletion private function __setStageReference(stage:Stage):Void
+	@:noCompletion private function __setStageReferences(stage:Stage):Void
 	{
 		this.stage = stage;
+
+		for (child in __allChildren())
+		{
+			child.stage = stage;
+			if (child.__type == SIMPLE_BUTTON)
+			{
+				var button:SimpleButton = cast child;
+				if (button.__currentState != null)
+				{
+					button.__currentState.__setStageReferences(stage);
+				}
+				if (button.hitTestState != null && button.hitTestState != button.__currentState)
+				{
+					button.hitTestState.__setStageReferences(stage);
+				}
+			}
+		}
 	}
 
 	@:noCompletion private function __setTransformDirty(force:Bool = false):Void
