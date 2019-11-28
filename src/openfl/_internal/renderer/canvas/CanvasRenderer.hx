@@ -609,7 +609,7 @@ class CanvasRenderer extends CanvasRendererAPI
 			if (__worldColorTransform != null) colorTransform.__combine(__worldColorTransform);
 
 			var needRender = (object.__cacheBitmap == null
-				|| (object.__renderDirty && (force || object.numChildren > 0))
+				|| (object.__renderDirty && (force || object.__firstChild != null))
 				|| object.opaqueBackground != object.__cacheBitmapBackground)
 				|| (object.__graphics != null && object.__graphics.__softwareDirty)
 				|| !object.__cacheBitmapColorTransform.__equals(colorTransform, true);
