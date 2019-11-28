@@ -1006,11 +1006,11 @@ class DisplayObjectContainer extends InteractiveObject
 		var child = __firstChild;
 		while (child != null)
 		{
-			if (child.__scaleX == 0 || child.__scaleY == 0) continue;
-
-			DisplayObject.__calculateAbsoluteTransform(child.__transform, matrix, childWorldTransform);
-
-			child.__getBounds(rect, childWorldTransform);
+			if (child.__scaleX != 0 && child.__scaleY != 0)
+			{
+				DisplayObject.__calculateAbsoluteTransform(child.__transform, matrix, childWorldTransform);
+				child.__getBounds(rect, childWorldTransform);
+			}
 			child = child.__nextSibling;
 		}
 
@@ -1029,11 +1029,11 @@ class DisplayObjectContainer extends InteractiveObject
 		var child = __firstChild;
 		while (child != null)
 		{
-			if (child.__scaleX == 0 || child.__scaleY == 0 || child.__isMask) continue;
-
-			DisplayObject.__calculateAbsoluteTransform(child.__transform, matrix, childWorldTransform);
-
-			child.__getFilterBounds(rect, childWorldTransform);
+			if (child.__scaleX != 0 && child.__scaleY != 0 && !child.__isMask)
+			{
+				DisplayObject.__calculateAbsoluteTransform(child.__transform, matrix, childWorldTransform);
+				child.__getFilterBounds(rect, childWorldTransform);
+			}
 			child = child.__nextSibling;
 		}
 
@@ -1059,11 +1059,11 @@ class DisplayObjectContainer extends InteractiveObject
 		var child = __firstChild;
 		while (child != null)
 		{
-			if (child.__scaleX == 0 || child.__scaleY == 0 || child.__isMask) continue;
-
-			DisplayObject.__calculateAbsoluteTransform(child.__transform, matrix, childWorldTransform);
-
-			child.__getRenderBounds(rect, childWorldTransform);
+			if (child.__scaleX != 0 && child.__scaleY != 0 && !child.__isMask)
+			{
+				DisplayObject.__calculateAbsoluteTransform(child.__transform, matrix, childWorldTransform);
+				child.__getRenderBounds(rect, childWorldTransform);
+			}
 			child = child.__nextSibling;
 		}
 
