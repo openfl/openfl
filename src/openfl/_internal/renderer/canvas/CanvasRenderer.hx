@@ -288,7 +288,7 @@ class CanvasRenderer extends CanvasRendererAPI
 			{
 				case BITMAP:
 					__renderBitmap(cast object);
-				case DISPLAY_OBJECT_CONTAINER:
+				case DISPLAY_OBJECT_CONTAINER, MOVIE_CLIP:
 					__renderDisplayObjectContainer(cast object);
 				case DISPLAY_OBJECT, SHAPE:
 					__renderShape(cast object);
@@ -378,7 +378,7 @@ class CanvasRenderer extends CanvasRendererAPI
 				case BITMAP:
 					context.rect(0, 0, mask.width, mask.height);
 
-				case DISPLAY_OBJECT_CONTAINER:
+				case DISPLAY_OBJECT_CONTAINER, MOVIE_CLIP:
 					var container:DisplayObjectContainer = cast mask;
 					if (__domRenderer == null) container.__cleanupRemovedChildren();
 

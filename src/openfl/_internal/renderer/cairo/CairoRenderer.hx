@@ -295,7 +295,7 @@ class CairoRenderer extends CairoRendererAPI
 			{
 				case BITMAP:
 					__renderBitmap(cast object);
-				case DISPLAY_OBJECT_CONTAINER:
+				case DISPLAY_OBJECT_CONTAINER, MOVIE_CLIP:
 					__renderDisplayObjectContainer(cast object);
 				case DISPLAY_OBJECT, SHAPE:
 					__renderShape(cast object);
@@ -383,7 +383,7 @@ class CairoRenderer extends CairoRendererAPI
 				case BITMAP:
 					cairo.rectangle(0, 0, mask.width, mask.height);
 
-				case DISPLAY_OBJECT_CONTAINER:
+				case DISPLAY_OBJECT_CONTAINER, MOVIE_CLIP:
 					var container:DisplayObjectContainer = cast mask;
 					container.__cleanupRemovedChildren();
 

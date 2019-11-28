@@ -368,16 +368,6 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		}
 	}
 
-	public override function __enterFrame(deltaTime:Int):Void
-	{
-		if (__timeline != null)
-		{
-			__timeline.__enterFrame(deltaTime);
-		}
-
-		super.__enterFrame(deltaTime);
-	}
-
 	@:noCompletion private function __fromSymbol(swf:SWFLite, symbol:SpriteSymbol):Void
 	{
 		attachTimeline(new SymbolTimeline(swf, symbol));

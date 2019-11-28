@@ -6,12 +6,19 @@ import openfl.events.EventDispatcher;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+import openfl.media.Video;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
 @:allow(openfl._internal.renderer)
+@:access(openfl.display.Bitmap)
+@:access(openfl.display.DisplayObject)
+@:access(openfl.display.TileContainer)
+@:access(openfl.display.Tilemap)
+@:access(openfl.display.Timeline)
+@:access(openfl.media.Video)
 class DisplayObjectRenderer extends EventDispatcher
 {
 	@:noCompletion private var __allowSmoothing:Bool;
@@ -38,6 +45,49 @@ class DisplayObjectRenderer extends EventDispatcher
 	@:noCompletion private function __clear():Void {}
 
 	@:noCompletion private function __drawBitmapData(bitmapData:BitmapData, source:IBitmapDrawable, clipRect:Rectangle):Void {}
+
+	@:noCompletion private function __enterFrame(displayObject:DisplayObject, deltaTime:Int):Void
+	{
+		for (child in displayObject.__allChildren())
+		{
+			switch (child.__type)
+			{
+				case BITMAP:
+					var bitmap:Bitmap = cast child;
+					if (bitmap.__bitmapData != null
+						&& bitmap.__bitmapData.image != null
+						&& bitmap.__bitmapData.image.version != bitmap.__imageVersion)
+					{
+						bitmap.__setRenderDirty();
+					}
+
+				case MOVIE_CLIP:
+					var movieClip:MovieClip = cast child;
+					if (movieClip.__timeline != null)
+					{
+						movieClip.__timeline.__enterFrame(deltaTime);
+					}
+
+				case TILEMAP:
+					var tilemap:Tilemap = cast child;
+					if (tilemap.__group.__dirty)
+					{
+						tilemap.__setRenderDirty();
+					}
+
+				case VIDEO:
+					var video:Video = cast child;
+					#if openfl_html5
+					if (video.__renderable && video.__stream != null)
+					{
+						video.__setRenderDirty();
+					}
+					#end
+
+				default:
+			}
+		}
+	}
 
 	@:noCompletion private function __render(object:IBitmapDrawable):Void {}
 

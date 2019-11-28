@@ -272,16 +272,6 @@ class Video extends DisplayObject
 	**/
 	public function clear():Void {}
 
-	@:noCompletion private override function __enterFrame(deltaTime:Int):Void
-	{
-		#if openfl_html5
-		if (__renderable && __stream != null)
-		{
-			__setRenderDirty();
-		}
-		#end
-	}
-
 	@:noCompletion private override function __getBounds(rect:Rectangle, matrix:Matrix):Void
 	{
 		var bounds = Rectangle.__pool.get();

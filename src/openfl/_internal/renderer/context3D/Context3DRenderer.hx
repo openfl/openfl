@@ -1074,7 +1074,7 @@ class Context3DRenderer extends Context3DRendererAPI
 			{
 				case BITMAP:
 					__renderBitmap(cast object);
-				case DISPLAY_OBJECT_CONTAINER:
+				case DISPLAY_OBJECT_CONTAINER, MOVIE_CLIP:
 					__renderDisplayObjectContainer(cast object);
 				case DISPLAY_OBJECT, SHAPE:
 					__renderShape(cast object);
@@ -1230,7 +1230,7 @@ class Context3DRenderer extends Context3DRendererAPI
 				case BITMAP:
 					Context3DBitmap.renderMask(cast mask, this);
 
-				case DISPLAY_OBJECT_CONTAINER:
+				case DISPLAY_OBJECT_CONTAINER, MOVIE_CLIP:
 					var container:DisplayObjectContainer = cast mask;
 					container.__cleanupRemovedChildren();
 
@@ -1456,7 +1456,7 @@ class Context3DRenderer extends Context3DRendererAPI
 
 		switch (object.__type)
 		{
-			case DISPLAY_OBJECT_CONTAINER:
+			case DISPLAY_OBJECT_CONTAINER, MOVIE_CLIP:
 				if (object.__filters != null) return true;
 
 				if (value == false || (object.__graphics != null && !Context3DGraphics.isCompatible(object.__graphics)))

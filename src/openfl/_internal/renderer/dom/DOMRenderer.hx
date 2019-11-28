@@ -178,7 +178,7 @@ class DOMRenderer extends DOMRendererAPI
 			{
 				case BITMAP:
 					__clearBitmap(cast object);
-				case DISPLAY_OBJECT_CONTAINER:
+				case DISPLAY_OBJECT_CONTAINER, MOVIE_CLIP:
 					__clearDisplayObjectContainer(cast object);
 				case DOM_ELEMENT:
 					__clearDOMElement(cast object);
@@ -433,7 +433,7 @@ class DOMRenderer extends DOMRendererAPI
 			{
 				case BITMAP:
 					__renderBitmap(cast object);
-				case DISPLAY_OBJECT_CONTAINER:
+				case DISPLAY_OBJECT_CONTAINER, MOVIE_CLIP:
 					__renderDisplayObjectContainer(cast object);
 				case DOM_ELEMENT:
 					__renderDOMElement(cast object);

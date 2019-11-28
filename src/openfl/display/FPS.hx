@@ -48,18 +48,19 @@ class FPS extends TextField
 		currentTime = 0;
 		times = [];
 
-		#if flash
+		// #if flash
 		addEventListener(Event.ENTER_FRAME, function(e)
 		{
 			var time = Lib.getTimer();
 			__enterFrame(time - currentTime);
 		});
-		#end
+		// #end
 	}
 
 	// Event Handlers
+
 	@:noCompletion
-	private #if !flash override #end function __enterFrame(deltaTime:Float):Void
+	private /*#if !flash override #end*/ function __enterFrame(deltaTime:Float):Void
 	{
 		currentTime += deltaTime;
 		times.push(currentTime);

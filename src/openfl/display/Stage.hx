@@ -1895,7 +1895,10 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		#end
 
 		__renderable = true;
-		__enterFrame(__deltaTime);
+		if (__renderer != null)
+		{
+			__renderer.__enterFrame(this, __deltaTime);
+		}
 		__deltaTime = 0;
 
 		var shouldRender = #if !openfl_disable_display_render (__renderer != null #if !openfl_always_render && (__renderDirty || __forceRender) #end) #else false #end;
