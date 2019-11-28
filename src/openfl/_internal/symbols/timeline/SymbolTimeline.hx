@@ -338,7 +338,7 @@ class SymbolTimeline extends Timeline
 
 			for (i in 0...currentInstances.length)
 			{
-				existingChild = __movieClip.__children[i];
+				existingChild = __movieClip.getChildAt(i);
 				instance = currentInstances[i];
 
 				targetDepth = instance.depth;
@@ -351,7 +351,7 @@ class SymbolTimeline extends Timeline
 				}
 				else
 				{
-					child = __movieClip.__children[i];
+					child = __movieClip.getChildAt(i);
 				}
 
 				maskApplied = false;
@@ -374,11 +374,11 @@ class SymbolTimeline extends Timeline
 
 			var child;
 			var i = currentInstances.length;
-			var length = __movieClip.__children.length;
+			var length = __movieClip.numChildren;
 
 			while (i < length)
 			{
-				child = __movieClip.__children[i];
+				child = __movieClip.getChildAt(i);
 
 				// TODO: Faster method of determining if this was automatically added?
 
@@ -495,11 +495,13 @@ class SymbolTimeline extends Timeline
 
 		for (field in __instanceFields)
 		{
-			for (child in __movieClip.__children)
+			var length = __movieClip.numChildren;
+			for (i in 0...length)
 			{
+				var child = __movieClip.getChildAt(i);
 				if (child.name == field)
 				{
-					Reflect.setField(this, field, child);
+					Reflect.setField(__movieClip, field, child);
 					break;
 				}
 			}

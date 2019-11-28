@@ -325,7 +325,7 @@ class AnimateTimeline extends Timeline
 
 			for (i in 0...currentInstances.length)
 			{
-				existingChild = #if flash (i < __movieClip.numChildren) ? __movieClip.getChildAt(i) : null #else __movieClip.__children[i] #end;
+				existingChild = (i < __movieClip.numChildren) ? __movieClip.getChildAt(i) : null;
 				instance = currentInstances[i];
 
 				targetDepth = instance.depth;
@@ -333,14 +333,10 @@ class AnimateTimeline extends Timeline
 
 				if (existingChild != targetChild)
 				{
-					child = targetChild;
 					__movieClip.addChildAt(targetChild, i);
 				}
-				else
-				{
-					child = #if flash __movieClip.getChildAt(i) #else __movieClip.__children[i] #end;
-				}
 
+				child = targetChild;
 				maskApplied = false;
 
 				for (mask in currentMasks)
@@ -361,11 +357,11 @@ class AnimateTimeline extends Timeline
 
 			var child;
 			var i = currentInstances.length;
-			var length = #if flash __movieClip.numChildren #else __movieClip.__children.length #end;
+			var length = __movieClip.numChildren;
 
 			while (i < length)
 			{
-				child = #if flash __movieClip.getChildAt(i) #else __movieClip.__children[i] #end;
+				child = __movieClip.getChildAt(i);
 
 				// TODO: Faster method of determining if this was automatically added?
 
@@ -480,10 +476,10 @@ class AnimateTimeline extends Timeline
 	{
 		for (field in __instanceFields)
 		{
-			var length = #if flash __movieClip.numChildren #else __movieClip.__children.length #end;
+			var length = __movieClip.numChildren;
 			for (i in 0...length)
 			{
-				var child = #if flash __movieClip.getChildAt(i) #else __movieClip.__children[i] #end;
+				var child = __movieClip.getChildAt(i);
 				if (child.name == field)
 				{
 					Reflect.setField(__movieClip, field, child);

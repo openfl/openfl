@@ -211,9 +211,11 @@ class DOMRenderer extends DOMRendererAPI
 
 		__clearShape(cast container);
 
-		for (child in container.__children)
+		var child = container.__firstChild;
+		while (child != null)
 		{
 			__clearDisplayObject(child);
+			child = child.__nextSibling;
 		}
 	}
 
@@ -505,21 +507,24 @@ class DOMRenderer extends DOMRendererAPI
 
 			__pushMaskObject(container);
 
+			var child = container.__firstChild;
 			if (__stage != null)
 			{
-				for (child in container.__children)
+				while (child != null)
 				{
 					__renderDisplayObject(child);
 					child.__renderDirty = false;
+					child = child.__nextSibling;
 				}
 
 				container.__renderDirty = false;
 			}
 			else
 			{
-				for (child in container.__children)
+				while (child != null)
 				{
 					__renderDisplayObject(child);
+					child = child.__nextSibling;
 				}
 			}
 

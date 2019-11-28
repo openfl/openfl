@@ -350,21 +350,24 @@ class CairoRenderer extends CairoRendererAPI
 
 		__pushMaskObject(container);
 
+		var child = container.__firstChild;
 		if (__stage != null)
 		{
-			for (child in container.__children)
+			while (child != null)
 			{
 				__renderDisplayObject(child);
 				child.__renderDirty = false;
+				child = child.__nextSibling;
 			}
 
 			container.__renderDirty = false;
 		}
 		else
 		{
-			for (child in container.__children)
+			while (child != null)
 			{
 				__renderDisplayObject(child);
+				child = child.__nextSibling;
 			}
 		}
 
@@ -389,9 +392,11 @@ class CairoRenderer extends CairoRendererAPI
 						CairoGraphics.renderMask(container.__graphics, this);
 					}
 
-					for (child in container.__children)
+					var child = container.__firstChild;
+					while (child != null)
 					{
 						__renderMask(child);
+						child = child.__nextSibling;
 					}
 
 				case DOM_ELEMENT:
@@ -560,7 +565,7 @@ class CairoRenderer extends CairoRendererAPI
 			if (__worldColorTransform != null) colorTransform.__combine(__worldColorTransform);
 
 			var needRender = (object.__cacheBitmap == null
-				|| (object.__renderDirty && (force || (object.__children != null && object.__children.length > 0)))
+				|| (object.__renderDirty && (force || object.numChildren > 0))
 				|| object.opaqueBackground != object.__cacheBitmapBackground)
 				|| (object.__graphics != null && object.__graphics.__softwareDirty)
 				|| !object.__cacheBitmapColorTransform.__equals(colorTransform, true);

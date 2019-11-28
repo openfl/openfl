@@ -900,22 +900,25 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private var __cacheBitmapRendererHW:DisplayObjectRenderer;
 	@:noCompletion private var __cacheBitmapRendererSW:DisplayObjectRenderer;
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __cairo:#if lime Cairo #else Dynamic #end;
-	@:noCompletion private var __children:Array<DisplayObject>;
 	@:noCompletion private var __childTransformDirty:Bool;
 	@:noCompletion private var __customRenderClear:Bool;
 	@:noCompletion private var __customRenderEvent:RenderEvent;
 	@:noCompletion private var __filters:Array<BitmapFilter>;
+	@:noCompletion private var __firstChild:DisplayObject;
 	@:noCompletion private var __graphics:Graphics;
 	@:noCompletion private var __interactive:Bool;
 	@:noCompletion private var __isCacheBitmapRender:Bool;
 	@:noCompletion private var __isMask:Bool;
+	@:noCompletion private var __lastChild:DisplayObject;
 	@:noCompletion private var __loaderInfo:LoaderInfo;
 	@:noCompletion private var __localBounds:Rectangle;
 	@:noCompletion private var __localBoundsDirty:Bool;
 	@:noCompletion private var __mask:DisplayObject;
 	@:noCompletion private var __maskTarget:DisplayObject;
 	@:noCompletion private var __name:String;
+	@:noCompletion private var __nextSibling:DisplayObject;
 	@:noCompletion private var __objectTransform:Transform;
+	@:noCompletion private var __previousSibling:DisplayObject;
 	@:noCompletion private var __renderable:Bool;
 	@:noCompletion private var __renderDirty:Bool;
 	@:noCompletion private var __renderParent:DisplayObject;
@@ -1756,7 +1759,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				__calculateAbsoluteTransform(__transform, renderParent.__renderTransform, mat);
 				if (Std.is(this, openfl.text.TextField))
 				{
-					mat.__translateTransformed(@:privateAccess cast(this, openfl.text.TextField).__offsetX, @:privateAccess cast(this, openfl.text.TextField).__offsetY);
+					mat.__translateTransformed(@:privateAccess cast(this, openfl.text.TextField).__offsetX, @:privateAccess cast(this, openfl.text.TextField)
+						.__offsetY);
 				}
 				if (!__renderTransform.equals(mat))
 				{
@@ -1771,7 +1775,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				mat.copyFrom(__transform);
 				if (Std.is(this, openfl.text.TextField))
 				{
-					mat.__translateTransformed(@:privateAccess cast(this, openfl.text.TextField).__offsetX, @:privateAccess cast(this, openfl.text.TextField).__offsetY);
+					mat.__translateTransformed(@:privateAccess cast(this, openfl.text.TextField).__offsetX, @:privateAccess cast(this, openfl.text.TextField)
+						.__offsetY);
 				}
 				if (!__renderTransform.equals(mat))
 				{

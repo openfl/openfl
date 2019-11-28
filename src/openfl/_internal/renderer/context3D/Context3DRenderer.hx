@@ -1141,31 +1141,34 @@ class Context3DRenderer extends Context3DRendererAPI
 
 		if (container.__cacheBitmap != null && !container.__isCacheBitmapRender) return;
 
-		if (container.__children.length > 0)
+		if (container.numChildren > 0)
 		{
 			__pushMaskObject(container);
 			// renderer.filterManager.pushObject (this);
 
+			var child = container.__firstChild;
 			if (__stage != null)
 			{
-				for (child in container.__children)
+				while (child != null)
 				{
 					__renderDisplayObject(child);
 					child.__renderDirty = false;
+					child = child.__nextSibling;
 				}
 
 				container.__renderDirty = false;
 			}
 			else
 			{
-				for (child in container.__children)
+				while (child != null)
 				{
 					__renderDisplayObject(child);
+					child = child.__nextSibling;
 				}
 			}
 		}
 
-		if (container.__children.length > 0)
+		if (container.numChildren > 0)
 		{
 			__popMaskObject(container);
 		}
@@ -1236,9 +1239,11 @@ class Context3DRenderer extends Context3DRendererAPI
 						Context3DShape.renderMask(container, this);
 					}
 
-					for (child in container.__children)
+					var child = container.__firstChild;
+					while (child != null)
 					{
 						__renderMask(child);
+						child = child.__nextSibling;
 					}
 
 				case DOM_ELEMENT:
@@ -1459,13 +1464,12 @@ class Context3DRenderer extends Context3DRendererAPI
 					value = false;
 				}
 
-				if (object.__children != null)
+				var child = object.__firstChild;
+				while (child != null)
 				{
-					for (child in object.__children)
-					{
-						value = __shouldCacheHardware(child, value);
-						if (value == true) return true;
-					}
+					value = __shouldCacheHardware(child, value);
+					if (value == true) return true;
+					child = child.__nextSibling;
 				}
 
 				return value;
@@ -1536,7 +1540,7 @@ class Context3DRenderer extends Context3DRendererAPI
 			if (__worldColorTransform != null) colorTransform.__combine(__worldColorTransform);
 
 			var needRender = (object.__cacheBitmap == null
-				|| (object.__renderDirty && (force || (object.__children != null && object.__children.length > 0)))
+				|| (object.__renderDirty && (force || object.numChildren > 0))
 				|| object.opaqueBackground != object.__cacheBitmapBackground)
 				|| (object.__graphics != null && object.__graphics.__hardwareDirty);
 
