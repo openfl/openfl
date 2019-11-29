@@ -902,6 +902,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private var __cacheBitmapRendererHW:DisplayObjectRenderer;
 	@:noCompletion private var __cacheBitmapRendererSW:DisplayObjectRenderer;
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __cairo:#if lime Cairo #else Dynamic #end;
+	#if openfl_validate_children
+	@:noCompletion private var __children:Array<DisplayObject> = new Array<DisplayObject>();
+	#end
 	@:noCompletion private var __childTransformDirty:Bool;
 	@:noCompletion private var __customRenderClear:Bool;
 	@:noCompletion private var __customRenderEvent:RenderEvent;

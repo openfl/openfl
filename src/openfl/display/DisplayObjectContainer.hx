@@ -189,6 +189,8 @@ class DisplayObjectContainer extends InteractiveObject
 				__lastChild = child;
 				__setRenderDirty();
 				#if openfl_validate_children
+				__children.remove(child);
+				__children.push(child);
 				__validateChildren();
 				#end
 			}
@@ -218,6 +220,7 @@ class DisplayObjectContainer extends InteractiveObject
 			numChildren++;
 
 			#if openfl_validate_children
+			__children.push(child);
 			__validateChildren();
 			#end
 
@@ -353,6 +356,8 @@ class DisplayObjectContainer extends InteractiveObject
 
 					__setRenderDirty();
 					#if openfl_validate_children
+					__children.remove(child);
+					__children.insert(index, child);
 					__validateChildren();
 					#end
 				}
@@ -403,6 +408,7 @@ class DisplayObjectContainer extends InteractiveObject
 			numChildren++;
 
 			#if openfl_validate_children
+			__children.insert(index, child);
 			__validateChildren();
 			#end
 
@@ -687,6 +693,7 @@ class DisplayObjectContainer extends InteractiveObject
 			child.__setParentRenderDirty();
 
 			#if openfl_validate_children
+			__children.remove(child);
 			__validateChildren();
 			#end
 		}
@@ -824,6 +831,9 @@ class DisplayObjectContainer extends InteractiveObject
 	{
 		if (index >= 0 && index <= numChildren && numChildren > 1 && child.parent == this)
 		{
+			#if openfl_validate_children
+			var copy = __children.copy();
+			#end
 			if (index >= numChildren)
 			{
 				addChild(child);
@@ -833,6 +843,12 @@ class DisplayObjectContainer extends InteractiveObject
 				var other = getChildAt(index);
 				swapChildren(child, other);
 			}
+			#if openfl_validate_children
+			__children = copy;
+			__children.remove(child);
+			__children.insert(index, child);
+			__validateChildren();
+			#end
 		}
 	}
 
@@ -893,6 +909,10 @@ class DisplayObjectContainer extends InteractiveObject
 
 			__setRenderDirty();
 			#if openfl_validate_children
+			var index1 = __children.indexOf(child1);
+			var index2 = __children.indexOf(child2);
+			__children[index1] = child2;
+			__children[index2] = child1;
 			__validateChildren();
 			#end
 		}
@@ -1249,14 +1269,17 @@ class DisplayObjectContainer extends InteractiveObject
 	@:noCompletion private function __validateChildren():Void
 	{
 		var map = new Map<DisplayObject, Bool>();
-		trace("----");
+
+		trace("------------");
 		trace("FIRST CHILD: " + (__firstChild != null ? __firstChild.name : null));
 		trace("LAST CHILD: " + (__lastChild != null ? __lastChild.name : null));
 		trace("NUM CHILDREN: " + numChildren);
+
 		var child = __firstChild;
+		var i = 0;
 		while (child != null)
 		{
-			trace("> CHILD: " + child.name);
+			trace("> CHILD [" + i + "]: " + child.name);
 			trace("-- PARENT: " + (child.parent != null ? child.parent.name : null));
 			trace("-- PREV SIBLING: " + (child.__previousSibling != null ? child.__previousSibling.name : null));
 			trace("-- NEXT SIBLING: " + (child.__nextSibling != null ? child.__nextSibling.name : null));
@@ -1271,6 +1294,68 @@ class DisplayObjectContainer extends InteractiveObject
 			}
 
 			child = child.__nextSibling;
+			i++;
+		}
+
+		trace("> CHECK");
+		for (i in 0...__children.length)
+		{
+			trace(">> CHILD [" + i + "]: " + __children[i].name);
+		}
+
+		if (__firstChild != __children[0])
+		{
+			throw "ERROR: firstChild does not match";
+		}
+		if (child != null)
+		{
+			if (child.__previousSibling != null)
+			{
+				throw "ERROR: firstChild.__previousSibling is not null";
+			}
+			if (__lastChild != __children[__children.length - 1])
+			{
+				throw "ERROR: lastChild does not match";
+			}
+			if (__lastChild.__nextSibling != null)
+			{
+				throw "ERROR: lastChild.__nextSibling is not null";
+			}
+		}
+
+		var child = __firstChild;
+		var i = 0;
+		while (child != null)
+		{
+			if (child != __children[i])
+			{
+				throw "ERROR: child " + i + " does not match";
+			}
+			if (i > 0)
+			{
+				if (child.__previousSibling == null)
+				{
+					throw "ERROR: child.__previousSibling at index " + i + " is null";
+				}
+				else if (child.__previousSibling != __children[i - 1])
+				{
+					throw "ERROR: child.__previousSibling at index " + i + " does not match";
+				}
+			}
+			if (i < __children.length - 1)
+			{
+				if (child.__nextSibling == null)
+				{
+					throw "ERROR: child.__nextSibling at index " + i + " is null";
+				}
+				else if (child.__nextSibling != __children[i + 1])
+				{
+					throw "ERROR: child.__nextSibling at index " + i + " does not match";
+				}
+			}
+
+			child = child.__nextSibling;
+			i++;
 		}
 	}
 	#end
