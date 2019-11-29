@@ -202,6 +202,10 @@ class DisplayObjectContainer extends InteractiveObject
 				child.parent.removeChild(child);
 			}
 
+			#if openfl_validate_children
+			__validateChildren();
+			#end
+
 			if (__lastChild != null)
 			{
 				__lastChild.__nextSibling = child;
@@ -306,10 +310,18 @@ class DisplayObjectContainer extends InteractiveObject
 	**/
 	public function addChildAt(child:DisplayObject, index:Int):DisplayObject
 	{
+		#if openfl_validate_children
+		// __validateChildren();
+		#end
+
 		if (index >= numChildren - 1)
 		{
 			return addChild(child);
 		}
+
+		#if openfl_validate_children
+		__validateChildren();
+		#end
 
 		if (child == null)
 		{
@@ -341,7 +353,7 @@ class DisplayObjectContainer extends InteractiveObject
 
 					if (child == __lastChild)
 					{
-						child.__previousSibling = __lastChild;
+						__lastChild = child.__previousSibling;
 					}
 
 					if (child.__nextSibling != null)
@@ -1268,21 +1280,33 @@ class DisplayObjectContainer extends InteractiveObject
 	#if openfl_validate_children
 	@:noCompletion private function __validateChildren():Void
 	{
+		var numChildrenCorrect = (numChildren == __children.length);
+		var firstChildMatches = (__firstChild == __children[0]);
+		var lastChildMatches = (__lastChild == __children[__children.length - 1]);
+
 		var map = new Map<DisplayObject, Bool>();
 
 		trace("------------");
-		trace("FIRST CHILD: " + (__firstChild != null ? __firstChild.name : null));
-		trace("LAST CHILD: " + (__lastChild != null ? __lastChild.name : null));
-		trace("NUM CHILDREN: " + numChildren);
+		trace((firstChildMatches ? "CORRECT" : "ERROR") + " - FIRST CHILD: " + (__firstChild != null ? __firstChild.name : null));
+		trace((lastChildMatches ? "CORRECT" : "ERROR") + " - LAST CHILD: " + (__lastChild != null ? __lastChild.name : null));
+		trace((numChildrenCorrect ? "CORRECT" : "ERROR") + " - NUM CHILDREN: " + numChildren);
 
 		var child = __firstChild;
 		var i = 0;
 		while (child != null)
 		{
-			trace("> CHILD [" + i + "]: " + child.name);
-			trace("-- PARENT: " + (child.parent != null ? child.parent.name : null));
-			trace("-- PREV SIBLING: " + (child.__previousSibling != null ? child.__previousSibling.name : null));
-			trace("-- NEXT SIBLING: " + (child.__nextSibling != null ? child.__nextSibling.name : null));
+			var childMatches = (child == __children[i]);
+			var parentMatches = (__children[i] != null && child.parent == __children[i].parent);
+			var prevSiblingMatches = (child.__previousSibling == __children[i - 1]);
+			var nextSiblingMatches = (child.__nextSibling == __children[i + 1]);
+
+			trace((childMatches ? "CORRECT" : "ERROR") + " - > CHILD [" + i + "]: " + child.name + " (should be "
+				+ (__children[i] != null ? __children[i].name : null) + ")");
+			trace((parentMatches ? "CORRECT" : "ERROR") + " - -- PARENT: " + (child.parent != null ? child.parent.name : null));
+			trace((prevSiblingMatches ? "CORRECT" : "ERROR")
+				+ " - -- PREV SIBLING: "
+				+ (child.__previousSibling != null ? child.__previousSibling.name : null));
+			trace((nextSiblingMatches ? "CORRECT" : "ERROR") + " - -- NEXT SIBLING: " + (child.__nextSibling != null ? child.__nextSibling.name : null));
 
 			if (map.exists(child))
 			{
@@ -1297,12 +1321,7 @@ class DisplayObjectContainer extends InteractiveObject
 			i++;
 		}
 
-		trace("> CHECK");
-		for (i in 0...__children.length)
-		{
-			trace(">> CHILD [" + i + "]: " + __children[i].name);
-		}
-
+		child = __firstChild;
 		if (__firstChild != __children[0])
 		{
 			throw "ERROR: firstChild does not match";
