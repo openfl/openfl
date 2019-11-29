@@ -122,6 +122,7 @@ class DisplayObjectLinkedList
 			}
 			__insertChildAfter(displayObject, child, ref);
 			#if openfl_validate_children
+			displayObject.__children.remove(child);
 			displayObject.__children.insert(index, child);
 			__validateChildren(displayObject, "addChildAt (index > 0)");
 			#end
