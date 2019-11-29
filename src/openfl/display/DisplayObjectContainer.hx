@@ -883,14 +883,70 @@ class DisplayObjectContainer extends InteractiveObject
 	{
 		if (child1.parent == this && child2.parent == this && child1 != child2)
 		{
-			var prev = child1.__previousSibling;
-			var next = child1.__nextSibling;
+			if (child1.__nextSibling == child2 || child2.__nextSibling == child1)
+			{
+				var first, second;
+				if (child1.__nextSibling == child2)
+				{
+					first = child1;
+					second = child2;
+				}
+				else
+				{
+					first = child2;
+					second = child1;
+				}
 
-			child1.__previousSibling = (child2.__previousSibling != child1 ? child2.__previousSibling : child2);
-			child1.__nextSibling = (child2.__nextSibling != child1 ? child2.__nextSibling : child2);
+				var before = first.__previousSibling;
+				var after = second.__nextSibling;
 
-			child2.__previousSibling = (prev != child2 ? prev : child1);
-			child2.__nextSibling = (next != child2 ? next : child1);
+				first.__previousSibling = second;
+				first.__nextSibling = after;
+				second.__previousSibling = before;
+				second.__nextSibling = first;
+
+				if (before != null)
+				{
+					before.__nextSibling = second;
+				}
+
+				if (after != null)
+				{
+					after.__previousSibling = first;
+				}
+			}
+			else
+			{
+				var prev1 = child1.__previousSibling;
+				var next1 = child1.__nextSibling;
+				var prev2 = child2.__previousSibling;
+				var next2 = child2.__nextSibling;
+
+				child1.__previousSibling = prev2;
+				child1.__nextSibling = next2;
+				child2.__previousSibling = prev1;
+				child2.__nextSibling = next1;
+
+				if (prev1 != null)
+				{
+					prev1.__nextSibling = child2;
+				}
+
+				if (next1 != null)
+				{
+					next1.__previousSibling = child2;
+				}
+
+				if (prev2 != null)
+				{
+					prev2.__nextSibling = child1;
+				}
+
+				if (next2 != null)
+				{
+					next2.__previousSibling = child1;
+				}
+			}
 
 			if (__firstChild == child1)
 			{
@@ -1313,10 +1369,16 @@ class DisplayObjectContainer extends InteractiveObject
 		}
 
 		child = __firstChild;
-		if (__firstChild != __children[0])
+		if (!numChildrenCorrect)
+		{
+			throw '[$label] numChildren is incorrect';
+		}
+
+		if (!firstChildMatches)
 		{
 			throw '[$label] firstChild does not match';
 		}
+
 		if (child != null)
 		{
 			if (child.__previousSibling != null)
@@ -1334,8 +1396,7 @@ class DisplayObjectContainer extends InteractiveObject
 		}
 
 		var child = __firstChild;
-		var i = 0;
-		while (child != null)
+		for (i in 0...__children.length)
 		{
 			if (child != __children[i])
 			{
@@ -1365,7 +1426,6 @@ class DisplayObjectContainer extends InteractiveObject
 			}
 
 			child = child.__nextSibling;
-			i++;
 		}
 	}
 	#end

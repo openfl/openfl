@@ -5,4 +5,5 @@
 -cp src
 -lib munit
 -D openfl-unit-testing
+-D openfl-validate-children
 --times

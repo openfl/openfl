@@ -345,14 +345,60 @@ class DisplayObjectContainerTest
 		var sprite = new Sprite();
 		var sprite2 = new Sprite();
 		var sprite3 = new Sprite();
+		var sprite4 = new Sprite();
+		var sprite5 = new Sprite();
 
 		sprite.addChild(sprite2);
 		sprite.addChild(sprite3);
 
+		Assert.areEqual(0, sprite.getChildIndex(sprite2));
+		Assert.areEqual(1, sprite.getChildIndex(sprite3));
+
 		sprite.swapChildren(sprite2, sprite3);
 
-		Assert.areEqual(0, sprite.getChildIndex(sprite3));
 		Assert.areEqual(1, sprite.getChildIndex(sprite2));
+		Assert.areEqual(0, sprite.getChildIndex(sprite3));
+
+		sprite.addChild(sprite4);
+
+		Assert.areEqual(1, sprite.getChildIndex(sprite2));
+		Assert.areEqual(0, sprite.getChildIndex(sprite3));
+		Assert.areEqual(2, sprite.getChildIndex(sprite4));
+
+		sprite.addChild(sprite5);
+
+		Assert.areEqual(1, sprite.getChildIndex(sprite2));
+		Assert.areEqual(0, sprite.getChildIndex(sprite3));
+		Assert.areEqual(2, sprite.getChildIndex(sprite4));
+		Assert.areEqual(3, sprite.getChildIndex(sprite5));
+
+		sprite.swapChildren(sprite2, sprite4);
+
+		Assert.areEqual(2, sprite.getChildIndex(sprite2));
+		Assert.areEqual(0, sprite.getChildIndex(sprite3));
+		Assert.areEqual(1, sprite.getChildIndex(sprite4));
+		Assert.areEqual(3, sprite.getChildIndex(sprite5));
+
+		sprite.swapChildren(sprite3, sprite5);
+
+		Assert.areEqual(2, sprite.getChildIndex(sprite2));
+		Assert.areEqual(3, sprite.getChildIndex(sprite3));
+		Assert.areEqual(1, sprite.getChildIndex(sprite4));
+		Assert.areEqual(0, sprite.getChildIndex(sprite5));
+
+		sprite.swapChildren(sprite2, sprite4);
+
+		Assert.areEqual(1, sprite.getChildIndex(sprite2));
+		Assert.areEqual(3, sprite.getChildIndex(sprite3));
+		Assert.areEqual(2, sprite.getChildIndex(sprite4));
+		Assert.areEqual(0, sprite.getChildIndex(sprite5));
+
+		sprite.swapChildren(sprite2, sprite4);
+
+		Assert.areEqual(2, sprite.getChildIndex(sprite2));
+		Assert.areEqual(3, sprite.getChildIndex(sprite3));
+		Assert.areEqual(1, sprite.getChildIndex(sprite4));
+		Assert.areEqual(0, sprite.getChildIndex(sprite5));
 
 		try
 		{
