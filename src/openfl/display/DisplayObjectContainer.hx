@@ -361,7 +361,7 @@ class DisplayObjectContainer extends InteractiveObject
 					#if openfl_validate_children
 					__children.remove(child);
 					__children.insert(index, child);
-					__validateChildren();
+					__validateChildren("addChild (parent == this)");
 					#end
 				}
 			}
@@ -412,7 +412,7 @@ class DisplayObjectContainer extends InteractiveObject
 
 			#if openfl_validate_children
 			__children.insert(index, child);
-			__validateChildren();
+			__validateChildren("addChild (parent != this)");
 			#end
 
 			var addedToStage = (stage != null && child.stage == null);
@@ -697,7 +697,7 @@ class DisplayObjectContainer extends InteractiveObject
 
 			#if openfl_validate_children
 			__children.remove(child);
-			__validateChildren();
+			__validateChildren("removeChild");
 			#end
 		}
 
@@ -850,7 +850,7 @@ class DisplayObjectContainer extends InteractiveObject
 			__children = copy;
 			__children.remove(child);
 			__children.insert(index, child);
-			__validateChildren();
+			__validateChildren("setChildIndex");
 			#end
 		}
 	}
@@ -916,7 +916,7 @@ class DisplayObjectContainer extends InteractiveObject
 			var index2 = __children.indexOf(child2);
 			__children[index1] = child2;
 			__children[index2] = child1;
-			__validateChildren();
+			__validateChildren("swapChildren");
 			#end
 		}
 	}
@@ -1269,7 +1269,7 @@ class DisplayObjectContainer extends InteractiveObject
 	}
 
 	#if openfl_validate_children
-	@:noCompletion private function __validateChildren():Void
+	@:noCompletion private function __validateChildren(label:String):Void
 	{
 		var numChildrenCorrect = (numChildren == __children.length);
 		var firstChildMatches = (__firstChild == __children[0]);
@@ -1277,7 +1277,7 @@ class DisplayObjectContainer extends InteractiveObject
 
 		var map = new Map<DisplayObject, Bool>();
 
-		// trace("------------");
+		// trace("------------" + label);
 		// trace((firstChildMatches ? "CORRECT" : "ERROR") + " - FIRST CHILD: " + (__firstChild != null ? __firstChild.name : null));
 		// trace((lastChildMatches ? "CORRECT" : "ERROR") + " - LAST CHILD: " + (__lastChild != null ? __lastChild.name : null));
 		// trace((numChildrenCorrect ? "CORRECT" : "ERROR") + " - NUM CHILDREN: " + numChildren);
@@ -1301,7 +1301,7 @@ class DisplayObjectContainer extends InteractiveObject
 
 			if (map.exists(child))
 			{
-				throw "ERROR: Duplicate child detected";
+				throw '[$label] Duplicate child detected';
 			}
 			else
 			{
@@ -1315,21 +1315,21 @@ class DisplayObjectContainer extends InteractiveObject
 		child = __firstChild;
 		if (__firstChild != __children[0])
 		{
-			throw "ERROR: firstChild does not match";
+			throw '[$label] firstChild does not match';
 		}
 		if (child != null)
 		{
 			if (child.__previousSibling != null)
 			{
-				throw "ERROR: firstChild.__previousSibling is not null";
+				throw '[$label] firstChild.__previousSibling is not null';
 			}
 			if (__lastChild != __children[__children.length - 1])
 			{
-				throw "ERROR: lastChild does not match";
+				throw '[$label] lastChild does not match';
 			}
 			if (__lastChild.__nextSibling != null)
 			{
-				throw "ERROR: lastChild.__nextSibling is not null";
+				throw '[$label] lastChild.__nextSibling is not null';
 			}
 		}
 
@@ -1339,28 +1339,28 @@ class DisplayObjectContainer extends InteractiveObject
 		{
 			if (child != __children[i])
 			{
-				throw "ERROR: child " + i + " does not match";
+				throw '[$label] child $i does not match';
 			}
 			if (i > 0)
 			{
 				if (child.__previousSibling == null)
 				{
-					throw "ERROR: child.__previousSibling at index " + i + " is null";
+					throw '[$label] child.__previousSibling at index $i is null';
 				}
 				else if (child.__previousSibling != __children[i - 1])
 				{
-					throw "ERROR: child.__previousSibling at index " + i + " does not match";
+					throw '[$label] child.__previousSibling at index $i does not match';
 				}
 			}
 			if (i < __children.length - 1)
 			{
 				if (child.__nextSibling == null)
 				{
-					throw "ERROR: child.__nextSibling at index " + i + " is null";
+					throw '[$label] child.__nextSibling at index $i is null';
 				}
 				else if (child.__nextSibling != __children[i + 1])
 				{
-					throw "ERROR: child.__nextSibling at index " + i + " does not match";
+					throw '[$label] child.__nextSibling at index $i does not match';
 				}
 			}
 
