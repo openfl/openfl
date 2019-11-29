@@ -162,22 +162,21 @@ class DisplayObjectContainer extends InteractiveObject
 
 		if (child.parent == this)
 		{
-			if (child != __lastChild)
+			if (child != __lastChild && (__firstChild != __lastChild))
 			{
-				if (child.__previousSibling != null)
-				{
-					child.__previousSibling.__nextSibling = child.__nextSibling;
-				}
-				else if (__firstChild == child)
+				if (__firstChild == child)
 				{
 					__firstChild = child.__nextSibling;
+				}
+				else if (child.__previousSibling != null)
+				{
+					child.__previousSibling.__nextSibling = child.__nextSibling;
 				}
 
 				if (child.__nextSibling != null)
 				{
 					child.__nextSibling.__previousSibling = child.__previousSibling;
 				}
-				child.__nextSibling = null;
 
 				if (__lastChild != null)
 				{
@@ -190,6 +189,8 @@ class DisplayObjectContainer extends InteractiveObject
 				}
 
 				__lastChild = child;
+				child.__nextSibling = null;
+
 				__setRenderDirty();
 				#if openfl_validate_children
 				__children.remove(child);
