@@ -709,14 +709,18 @@ class DisplayObjectContainer extends InteractiveObject
 			#if openfl_validate_children
 			var copy = __children.copy();
 			#end
-			if (index >= numChildren)
+			if (index == 0)
+			{
+				this.__unshiftChild(child);
+			}
+			else if (index >= numChildren)
 			{
 				this.__addChild(child);
 			}
 			else
 			{
 				var other = getChildAt(index);
-				this.__swapChildren(child, other);
+				this.__insertChildBefore(child, other);
 			}
 			__setRenderDirty();
 			#if openfl_validate_children
