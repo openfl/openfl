@@ -166,12 +166,12 @@ class DisplayObjectContainer extends InteractiveObject
 		{
 			if (child != __lastChild && (__firstChild != __lastChild))
 			{
-				__addChild(child);
+				this.__addChild(child);
 			}
 		}
 		else
 		{
-			__addChild(child);
+			this.__addChild(child);
 
 			var addedToStage = (stage != null && child.stage == null);
 
@@ -286,19 +286,19 @@ class DisplayObjectContainer extends InteractiveObject
 			{
 				if (__firstChild != child)
 				{
-					__unshiftChild(child);
+					this.__unshiftChild(child);
 					__setRenderDirty();
 				}
 			}
 			else
 			{
-				__swapChildren(child, getChildAt(index));
+				this.__swapChildren(child, getChildAt(index));
 				__setRenderDirty();
 			}
 		}
 		else
 		{
-			__insertChildAt(child, index);
+			this.__insertChildAt(child, index);
 			__setRenderDirty();
 
 			var addedToStage = (stage != null && child.stage == null);
@@ -551,7 +551,7 @@ class DisplayObjectContainer extends InteractiveObject
 				child.__setStageReferences(null);
 			}
 
-			__removeChild(child);
+			this.__removeChild(child);
 
 			__removedChildren.push(child);
 			child.__setTransformDirty(true);
@@ -696,12 +696,12 @@ class DisplayObjectContainer extends InteractiveObject
 			#end
 			if (index >= numChildren)
 			{
-				__addChild(child);
+				this.__addChild(child);
 			}
 			else
 			{
 				var other = getChildAt(index);
-				__swapChildren(child, other);
+				this.__swapChildren(child, other);
 			}
 			__setRenderDirty();
 			#if openfl_validate_children
@@ -741,7 +741,7 @@ class DisplayObjectContainer extends InteractiveObject
 	{
 		if (child1.parent == this && child2.parent == this && child1 != child2)
 		{
-			__swapChildren(child1, child2);
+			this.__swapChildren(child1, child2);
 			__setRenderDirty();
 		}
 	}
@@ -775,7 +775,7 @@ class DisplayObjectContainer extends InteractiveObject
 				current = current.__nextSibling;
 			}
 
-			__swapChildren(child1, child2);
+			this.__swapChildren(child1, child2);
 			__setRenderDirty();
 		}
 	}
