@@ -162,7 +162,7 @@ class DisplayObjectContainer extends InteractiveObject
 
 		if (child.parent == this)
 		{
-			if (child.__nextSibling != null)
+			if (child != __lastChild)
 			{
 				if (child.__previousSibling != null)
 				{
@@ -188,6 +188,9 @@ class DisplayObjectContainer extends InteractiveObject
 
 				__lastChild = child;
 				__setRenderDirty();
+				#if openfl_validate_children
+				__validateChildren();
+				#end
 			}
 		}
 		else
@@ -201,15 +204,22 @@ class DisplayObjectContainer extends InteractiveObject
 			{
 				__lastChild.__nextSibling = child;
 				child.__previousSibling = __lastChild;
+				child.__nextSibling = null;
 			}
 			else
 			{
 				__firstChild = child;
+				child.__previousSibling = null;
+				child.__nextSibling = null;
 			}
 
 			__lastChild = child;
 			child.parent = this;
 			numChildren++;
+
+			#if openfl_validate_children
+			__validateChildren();
+			#end
 
 			var addedToStage = (stage != null && child.stage == null);
 
@@ -318,29 +328,34 @@ class DisplayObjectContainer extends InteractiveObject
 			throw "Invalid index position " + index;
 		}
 
-		var previous = __firstChild;
+		var before = __firstChild;
 		for (i in 0...index)
 		{
-			previous = previous.__nextSibling;
+			before = before.__nextSibling;
 		}
 
-		var next = (index == 0 ? __firstChild : previous.__nextSibling);
+		var after = (index == 0 ? __firstChild : before.__nextSibling);
+		if (after == child) return child;
 
 		if (child.parent == this)
 		{
-			if (previous != child)
+			if (before == child)
 			{
-				child.__previousSibling = previous;
-				child.__nextSibling = next;
+				swapChildren(child, child.__nextSibling);
+			}
+			else
+			{
+				child.__previousSibling = before;
+				child.__nextSibling = after;
 
-				if (previous != null)
+				if (before != null)
 				{
-					previous.__nextSibling = child;
+					before.__nextSibling = child;
 				}
 
-				if (next != null)
+				if (after != null)
 				{
-					next.__previousSibling = child;
+					after.__previousSibling = child;
 				}
 
 				if (index == 0)
@@ -349,6 +364,9 @@ class DisplayObjectContainer extends InteractiveObject
 				}
 
 				__setRenderDirty();
+				#if openfl_validate_children
+				__validateChildren();
+				#end
 			}
 		}
 		else
@@ -358,11 +376,11 @@ class DisplayObjectContainer extends InteractiveObject
 				child.parent.removeChild(child);
 			}
 
-			child.__previousSibling = previous;
-			child.__nextSibling = next;
+			child.__previousSibling = before;
+			child.__nextSibling = after;
 
-			previous.__nextSibling = child;
-			next.__previousSibling = child;
+			before.__nextSibling = child;
+			after.__previousSibling = child;
 
 			if (index == 0)
 			{
@@ -371,6 +389,10 @@ class DisplayObjectContainer extends InteractiveObject
 
 			child.parent = this;
 			numChildren++;
+
+			#if openfl_validate_children
+			__validateChildren();
+			#end
 
 			var addedToStage = (stage != null && child.stage == null);
 
@@ -651,6 +673,10 @@ class DisplayObjectContainer extends InteractiveObject
 			__removedChildren.push(child);
 			child.__setTransformDirty(true);
 			child.__setParentRenderDirty();
+
+			#if openfl_validate_children
+			__validateChildren();
+			#end
 		}
 
 		return child;
@@ -786,75 +812,15 @@ class DisplayObjectContainer extends InteractiveObject
 	{
 		if (index >= 0 && index <= numChildren && numChildren > 1 && child.parent == this)
 		{
-			if (index > numChildren)
+			if (index >= numChildren)
 			{
-				index = numChildren;
-			}
-
-			var prev = null;
-			for (i in 0...index)
-			{
-				if (i == 0)
-				{
-					prev = __firstChild;
-				}
-				else
-				{
-					prev = prev.__nextSibling;
-				}
-			}
-
-			if (__firstChild == child)
-			{
-				__firstChild = child.__nextSibling;
-			}
-
-			if (__lastChild == child)
-			{
-				__lastChild = child.__previousSibling;
-			}
-
-			if (child.__previousSibling != null)
-			{
-				child.__previousSibling.__nextSibling = child.__nextSibling;
-			}
-
-			if (child.__nextSibling != null)
-			{
-				child.__nextSibling.__previousSibling = child.__previousSibling;
-			}
-
-			if (prev != null)
-			{
-				child.__previousSibling = prev;
-				child.__nextSibling = prev.__nextSibling;
-
-				if (prev.__nextSibling != null)
-				{
-					prev.__nextSibling.__previousSibling = child;
-				}
-
-				prev.__nextSibling = child;
-
-				if (__lastChild == prev)
-				{
-					__lastChild = child;
-				}
+				addChild(child);
 			}
 			else
 			{
-				child.__previousSibling = null;
-				child.__nextSibling = __firstChild;
-
-				if (__firstChild != null)
-				{
-					__firstChild.__previousSibling = child;
-				}
-
-				__firstChild = child;
+				var other = getChildAt(index);
+				swapChildren(child, other);
 			}
-
-			__setRenderDirty();
 		}
 	}
 
@@ -914,6 +880,9 @@ class DisplayObjectContainer extends InteractiveObject
 			}
 
 			__setRenderDirty();
+			#if openfl_validate_children
+			__validateChildren();
+			#end
 		}
 	}
 
@@ -1263,6 +1232,35 @@ class DisplayObjectContainer extends InteractiveObject
 		// since at least one has been updated
 		__childTransformDirty = false;
 	}
+
+	#if openfl_validate_children
+	@:noCompletion private function __validateChildren():Void
+	{
+		var map = new Map<DisplayObject, Bool>();
+		trace("----");
+		trace("FIRST CHILD: " + (__firstChild != null ? __firstChild.name : null));
+		trace("LAST CHILD: " + (__lastChild != null ? __lastChild.name : null));
+		trace("NUM CHILDREN: " + numChildren);
+		var child = __firstChild;
+		while (child != null)
+		{
+			trace("PARENT: " + (child.parent != null ? child.parent.name : null));
+			trace("PREV SIBLING: " + (child.__previousSibling != null ? child.__previousSibling.name : null));
+			trace("NEXT SIBLING: " + (child.__nextSibling != null ? child.__nextSibling.name : null));
+
+			if (map.exists(child))
+			{
+				throw "ERROR: Duplicate child detected";
+			}
+			else
+			{
+				map[child] = true;
+			}
+
+			child = child.__nextSibling;
+		}
+	}
+	#end
 
 	// Get & Set Methods
 	@:noCompletion private function get_tabChildren():Bool
