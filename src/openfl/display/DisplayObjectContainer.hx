@@ -194,7 +194,7 @@ class DisplayObjectContainer extends InteractiveObject
 				#if openfl_validate_children
 				__children.remove(child);
 				__children.push(child);
-				__validateChildren();
+				__validateChildren("addChild (parent == this)");
 				#end
 			}
 		}
@@ -224,7 +224,7 @@ class DisplayObjectContainer extends InteractiveObject
 
 			#if openfl_validate_children
 			__children.push(child);
-			__validateChildren();
+			__validateChildren("addChild (parent != this)");
 			#end
 
 			var addedToStage = (stage != null && child.stage == null);
@@ -361,7 +361,7 @@ class DisplayObjectContainer extends InteractiveObject
 					#if openfl_validate_children
 					__children.remove(child);
 					__children.insert(index, child);
-					__validateChildren("addChild (parent == this)");
+					__validateChildren("addChildAt (parent == this)");
 					#end
 				}
 			}
@@ -412,7 +412,7 @@ class DisplayObjectContainer extends InteractiveObject
 
 			#if openfl_validate_children
 			__children.insert(index, child);
-			__validateChildren("addChild (parent != this)");
+			__validateChildren("addChildAt (parent != this)");
 			#end
 
 			var addedToStage = (stage != null && child.stage == null);
