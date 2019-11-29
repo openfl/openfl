@@ -26,6 +26,10 @@ class DisplayObjectLinkedList
 		{
 			child.__previousSibling.__nextSibling = child.__nextSibling;
 		}
+		else if (displayObject.__firstChild == null)
+		{
+			displayObject.__firstChild = child;
+		}
 
 		if (child.__nextSibling != null)
 		{
@@ -247,11 +251,9 @@ class DisplayObjectLinkedList
 			displayObject.numChildren++;
 		}
 
-		child.__previousSibling.__nextSibling = child.__nextSibling;
-
-		if (child == displayObject.__lastChild)
+		if (child.__previousSibling != null)
 		{
-			displayObject.__lastChild = child.__previousSibling;
+			child.__previousSibling.__nextSibling = child.__nextSibling;
 		}
 
 		if (child.__nextSibling != null)
@@ -259,10 +261,24 @@ class DisplayObjectLinkedList
 			child.__nextSibling.__previousSibling = child.__previousSibling;
 		}
 
+		if (displayObject.__firstChild != null)
+		{
+			displayObject.__firstChild.__previousSibling = child;
+		}
+
+		if (child == displayObject.__lastChild)
+		{
+			displayObject.__lastChild = child.__previousSibling;
+		}
+
 		child.__previousSibling = null;
 		child.__nextSibling = displayObject.__firstChild;
-		displayObject.__firstChild.__previousSibling = child;
 		displayObject.__firstChild = child;
+
+		if (child.__nextSibling == null)
+		{
+			displayObject.__lastChild = child;
+		}
 
 		#if openfl_validate_children
 		displayObject.__children.remove(child);

@@ -255,7 +255,7 @@ class DisplayObjectContainer extends InteractiveObject
 	**/
 	public function addChildAt(child:DisplayObject, index:Int):DisplayObject
 	{
-		if (index >= numChildren - 1)
+		if (index >= numChildren)
 		{
 			return addChild(child);
 		}
@@ -649,6 +649,21 @@ class DisplayObjectContainer extends InteractiveObject
 			child = next;
 			numRemovals--;
 		}
+	}
+
+	@:noCompletion private function resolve(fieldName:String):DisplayObject
+	{
+		var child = __firstChild;
+		while (child != null)
+		{
+			if (child.name == fieldName)
+			{
+				return child;
+			}
+			child = child.__nextSibling;
+		}
+
+		return null;
 	}
 
 	/**

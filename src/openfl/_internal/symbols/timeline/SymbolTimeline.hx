@@ -230,10 +230,10 @@ class SymbolTimeline extends Timeline
 
 							if (displayObject != null)
 							{
-								displayObject.parent = __movieClip;
-								displayObject.stage = __movieClip.stage;
+								// displayObject.parent = __movieClip;
+								// displayObject.stage = __movieClip.stage;
 
-								if (__movieClip.stage != null) displayObject.dispatchEvent(new Event(Event.ADDED_TO_STAGE, false, false));
+								// if (__movieClip.stage != null) displayObject.dispatchEvent(new Event(Event.ADDED_TO_STAGE, false, false));
 
 								instance = new FrameSymbolInstance(frame, frameObject.id, frameObject.symbol, frameObject.depth, displayObject,
 									frameObject.clipDepth);
@@ -485,7 +485,7 @@ class SymbolTimeline extends Timeline
 		}
 
 		#if (openfljs || ((openfl_dynamic || openfl_dynamic_fields_only) && haxe_ver <= "4.0.0"))
-		Reflect.setField(this, displayObject.name, displayObject);
+		Reflect.setField(__movieClip, displayObject.name, displayObject);
 		#end
 	}
 
