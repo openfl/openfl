@@ -202,10 +202,6 @@ class DisplayObjectContainer extends InteractiveObject
 				child.parent.removeChild(child);
 			}
 
-			#if openfl_validate_children
-			__validateChildren();
-			#end
-
 			if (__lastChild != null)
 			{
 				__lastChild.__nextSibling = child;
@@ -310,18 +306,10 @@ class DisplayObjectContainer extends InteractiveObject
 	**/
 	public function addChildAt(child:DisplayObject, index:Int):DisplayObject
 	{
-		#if openfl_validate_children
-		// __validateChildren();
-		#end
-
 		if (index >= numChildren - 1)
 		{
 			return addChild(child);
 		}
-
-		#if openfl_validate_children
-		__validateChildren();
-		#end
 
 		if (child == null)
 		{
@@ -1286,10 +1274,10 @@ class DisplayObjectContainer extends InteractiveObject
 
 		var map = new Map<DisplayObject, Bool>();
 
-		trace("------------");
-		trace((firstChildMatches ? "CORRECT" : "ERROR") + " - FIRST CHILD: " + (__firstChild != null ? __firstChild.name : null));
-		trace((lastChildMatches ? "CORRECT" : "ERROR") + " - LAST CHILD: " + (__lastChild != null ? __lastChild.name : null));
-		trace((numChildrenCorrect ? "CORRECT" : "ERROR") + " - NUM CHILDREN: " + numChildren);
+		// trace("------------");
+		// trace((firstChildMatches ? "CORRECT" : "ERROR") + " - FIRST CHILD: " + (__firstChild != null ? __firstChild.name : null));
+		// trace((lastChildMatches ? "CORRECT" : "ERROR") + " - LAST CHILD: " + (__lastChild != null ? __lastChild.name : null));
+		// trace((numChildrenCorrect ? "CORRECT" : "ERROR") + " - NUM CHILDREN: " + numChildren);
 
 		var child = __firstChild;
 		var i = 0;
@@ -1300,13 +1288,13 @@ class DisplayObjectContainer extends InteractiveObject
 			var prevSiblingMatches = (child.__previousSibling == __children[i - 1]);
 			var nextSiblingMatches = (child.__nextSibling == __children[i + 1]);
 
-			trace((childMatches ? "CORRECT" : "ERROR") + " - > CHILD [" + i + "]: " + child.name + " (should be "
-				+ (__children[i] != null ? __children[i].name : null) + ")");
-			trace((parentMatches ? "CORRECT" : "ERROR") + " - -- PARENT: " + (child.parent != null ? child.parent.name : null));
-			trace((prevSiblingMatches ? "CORRECT" : "ERROR")
-				+ " - -- PREV SIBLING: "
-				+ (child.__previousSibling != null ? child.__previousSibling.name : null));
-			trace((nextSiblingMatches ? "CORRECT" : "ERROR") + " - -- NEXT SIBLING: " + (child.__nextSibling != null ? child.__nextSibling.name : null));
+			// trace((childMatches ? "CORRECT" : "ERROR") + " -> CHILD [" + i + "]: " + child.name + " (should be "
+			// 	+ (__children[i] != null ? __children[i].name : null) + ")");
+			// trace((parentMatches ? "CORRECT" : "ERROR") + " --- PARENT: " + (child.parent != null ? child.parent.name : null));
+			// trace((prevSiblingMatches ? "CORRECT" : "ERROR")
+			// 	+ " - -- PREV SIBLING: "
+			// 	+ (child.__previousSibling != null ? child.__previousSibling.name : null));
+			// trace((nextSiblingMatches ? "CORRECT" : "ERROR") + " --- NEXT SIBLING: " + (child.__nextSibling != null ? child.__nextSibling.name : null));
 
 			if (map.exists(child))
 			{
