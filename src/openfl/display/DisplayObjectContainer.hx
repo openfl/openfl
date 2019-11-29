@@ -173,7 +173,10 @@ class DisplayObjectContainer extends InteractiveObject
 					__firstChild = child.__nextSibling;
 				}
 
-				child.__nextSibling.__previousSibling = child.__previousSibling;
+				if (child.__nextSibling != null)
+				{
+					child.__nextSibling.__previousSibling = child.__previousSibling;
+				}
 				child.__nextSibling = null;
 
 				if (__lastChild != null)
