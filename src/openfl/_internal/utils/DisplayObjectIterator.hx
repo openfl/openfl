@@ -13,9 +13,6 @@ class DisplayObjectIterator
 	private var current:DisplayObject;
 	private var entry:DisplayObject;
 
-	// TODO: Remove safety check
-	private var map = new Map<DisplayObject, Bool>();
-
 	public function new(displayObject:DisplayObject)
 	{
 		entry = displayObject;
@@ -60,17 +57,6 @@ class DisplayObjectIterator
 			while (current.__nextSibling == null);
 			current = current.__nextSibling;
 		}
-
-		// TODO: Remove safety check
-		if (map.exists(current))
-		{
-			current = null;
-		}
-		if (current != null)
-		{
-			map[current] = true;
-		}
-
 		return _current;
 	}
 }

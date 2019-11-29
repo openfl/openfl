@@ -328,45 +328,38 @@ class DisplayObjectContainer extends InteractiveObject
 			throw "Invalid index position " + index;
 		}
 
-		var before = __firstChild;
-		for (i in 0...index)
-		{
-			before = before.__nextSibling;
-		}
-
-		var after = (index == 0 ? __firstChild : before.__nextSibling);
-		if (after == child) return child;
-
 		if (child.parent == this)
 		{
-			if (before == child)
+			if (index == 0)
 			{
-				swapChildren(child, child.__nextSibling);
+				if (__firstChild != child)
+				{
+					child.__previousSibling.__nextSibling = child.__nextSibling;
+
+					if (child == __lastChild)
+					{
+						child.__previousSibling = __lastChild;
+					}
+
+					if (child.__nextSibling != null)
+					{
+						child.__nextSibling.__previousSibling = child.__previousSibling;
+					}
+
+					child.__previousSibling = null;
+					child.__nextSibling = __firstChild;
+					__firstChild.__previousSibling = child;
+					__firstChild = child;
+
+					__setRenderDirty();
+					#if openfl_validate_children
+					__validateChildren();
+					#end
+				}
 			}
 			else
 			{
-				child.__previousSibling = before;
-				child.__nextSibling = after;
-
-				if (before != null)
-				{
-					before.__nextSibling = child;
-				}
-
-				if (after != null)
-				{
-					after.__previousSibling = child;
-				}
-
-				if (index == 0)
-				{
-					__firstChild = child;
-				}
-
-				__setRenderDirty();
-				#if openfl_validate_children
-				__validateChildren();
-				#end
+				swapChildren(child, getChildAt(index));
 			}
 		}
 		else
@@ -376,11 +369,30 @@ class DisplayObjectContainer extends InteractiveObject
 				child.parent.removeChild(child);
 			}
 
+			var before = null;
+			if (index > 0)
+			{
+				before = __firstChild;
+				for (i in 0...(index - 1))
+				{
+					before = before.__nextSibling;
+				}
+			}
+
+			var after = (index == 0 ? __firstChild : before.__nextSibling);
+
 			child.__previousSibling = before;
 			child.__nextSibling = after;
 
-			before.__nextSibling = child;
-			after.__previousSibling = child;
+			if (before != null)
+			{
+				before.__nextSibling = child;
+			}
+
+			if (after != null)
+			{
+				after.__previousSibling = child;
+			}
 
 			if (index == 0)
 			{
@@ -1244,9 +1256,10 @@ class DisplayObjectContainer extends InteractiveObject
 		var child = __firstChild;
 		while (child != null)
 		{
-			trace("PARENT: " + (child.parent != null ? child.parent.name : null));
-			trace("PREV SIBLING: " + (child.__previousSibling != null ? child.__previousSibling.name : null));
-			trace("NEXT SIBLING: " + (child.__nextSibling != null ? child.__nextSibling.name : null));
+			trace("> CHILD: " + child.name);
+			trace("-- PARENT: " + (child.parent != null ? child.parent.name : null));
+			trace("-- PREV SIBLING: " + (child.__previousSibling != null ? child.__previousSibling.name : null));
+			trace("-- NEXT SIBLING: " + (child.__nextSibling != null ? child.__nextSibling.name : null));
 
 			if (map.exists(child))
 			{
