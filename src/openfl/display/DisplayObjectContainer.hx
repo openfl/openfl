@@ -447,14 +447,14 @@ class DisplayObjectContainer extends InteractiveObject
 	public function getChildByName(name:String):DisplayObject
 	{
 		var child = __firstChild;
-
-		do
+		while (child != null)
 		{
-			if (child.name == name) return child;
+			if (child.name == name)
+			{
+				return child;
+			}
 			child = child.__nextSibling;
 		}
-		while (child != null);
-
 		return null;
 	}
 

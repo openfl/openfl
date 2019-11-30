@@ -6,7 +6,7 @@ import openfl.display.DisplayObject;
 @:access(openfl.display.DisplayObject)
 class DisplayObjectLinkedList
 {
-	public static #if openfl_validate_children inline #end function __addChild(displayObject:DisplayObjectContainer, child:DisplayObject):Void
+	public static #if !openfl_validate_children inline #end function __addChild(displayObject:DisplayObjectContainer, child:DisplayObject):Void
 	{
 		if (child.parent != displayObject)
 		{
@@ -53,9 +53,10 @@ class DisplayObjectLinkedList
 		#end
 	}
 
-	public static #if openfl_validate_children inline #end function __insertChildAfter(displayObject:DisplayObjectContainer, child:DisplayObject,
+	public static #if !openfl_validate_children inline #end function __insertChildAfter(displayObject:DisplayObjectContainer, child:DisplayObject,
 			before:DisplayObject):Void
 	{
+		// trace("__insertChildAfter(" + (child != null ? child.name : null) + ", " + (before != null ? before.name : null));
 		if (child.parent != displayObject)
 		{
 			if (child.parent != null)
@@ -66,7 +67,39 @@ class DisplayObjectLinkedList
 			displayObject.numChildren++;
 		}
 
+		if (before == child)
+		{
+			if (child.__nextSibling != null)
+			{
+				__swapChildren(displayObject, child, child.__nextSibling);
+			}
+			else
+			{
+				__addChild(displayObject, child);
+			}
+			return;
+		}
+
+		// var msg = "__children: [";
+		// for (i in 0...displayObject.__children.length)
+		// {
+		// 	msg += (displayObject.__children[i] != null ? displayObject.__children[i].name : null) + ",";
+		// }
+		// msg += "]";
+		// trace(msg);
+
+		// var msg = "child list: [";
+		// var _child = displayObject.__firstChild;
+		// while (_child != null)
+		// {
+		// 	msg += (_child != null ? _child.name : null) + ",";
+		// 	_child = _child.__nextSibling;
+		// }
+		// msg += "]";
+		// trace(msg);
+
 		var after = before.__nextSibling;
+		if (after == child) return;
 
 		child.__previousSibling = before;
 		child.__nextSibling = after;
@@ -84,6 +117,25 @@ class DisplayObjectLinkedList
 		{
 			displayObject.__lastChild = child;
 		}
+
+		// var msg = "__children: [";
+		// for (i in 0...displayObject.__children.length)
+		// {
+		// 	msg += (displayObject.__children[i] != null ? displayObject.__children[i].name : null) + ",";
+		// }
+		// msg += "]";
+		// trace(msg);
+
+		// var msg = "child list: [";
+		// var _child = displayObject.__firstChild;
+		// while (_child != null)
+		// {
+		// 	msg += (_child != null ? _child.name : null) + ",";
+		// 	_child = _child.__nextSibling;
+		// }
+		// msg += "]";
+		// trace(msg);
+
 		#if openfl_validate_children
 		displayObject.__children.remove(child);
 		var index = displayObject.__children.indexOf(before) + 1;
@@ -107,7 +159,7 @@ class DisplayObjectLinkedList
 		}
 	}
 
-	public static #if openfl_validate_children inline #end function __insertChildAt(displayObject:DisplayObjectContainer, child:DisplayObject, index:Int):Void
+	public static #if !openfl_validate_children inline #end function __insertChildAt(displayObject:DisplayObjectContainer, child:DisplayObject, index:Int):Void
 	{
 		if (index == 0)
 		{
@@ -129,7 +181,7 @@ class DisplayObjectLinkedList
 		}
 	}
 
-	public static #if openfl_validate_children inline #end function __removeChild(displayObject:DisplayObjectContainer, child:DisplayObject):Void
+	public static #if !openfl_validate_children inline #end function __removeChild(displayObject:DisplayObjectContainer, child:DisplayObject):Void
 	{
 		child.parent = null;
 		displayObject.numChildren--;
@@ -257,7 +309,7 @@ class DisplayObjectLinkedList
 		#end
 	}
 
-	public static #if openfl_validate_children inline #end function __unshiftChild(displayObject:DisplayObjectContainer, child:DisplayObject):Void
+	public static #if !openfl_validate_children inline #end function __unshiftChild(displayObject:DisplayObjectContainer, child:DisplayObject):Void
 	{
 		if (child.parent != displayObject)
 		{
