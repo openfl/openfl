@@ -256,7 +256,7 @@ class SymbolTimeline extends Timeline
 		}
 
 		#if (!openfljs && (!openfl_dynamic || haxe_ver >= "4.0.0"))
-		__instanceFields = Type.getInstanceFields(Type.getClass(this));
+		__instanceFields = Type.getInstanceFields(Type.getClass(movieClip));
 		#end
 
 		enterFrame(1);
