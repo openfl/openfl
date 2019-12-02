@@ -188,6 +188,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		super();
 
 		__enabled = true;
+		__type = MOVIE_CLIP;
 
 		if (__constructor != null)
 		{
