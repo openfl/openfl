@@ -8,6 +8,7 @@ import openfl.events.Event;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import openfl.text.TextField;
 import openfl.Vector;
 
 using openfl._internal.utils.DisplayObjectLinkedList;
@@ -39,10 +40,12 @@ using openfl._internal.utils.DisplayObjectLinkedList;
 #end
 @:access(openfl.events.Event)
 @:access(openfl.display.Graphics)
+@:access(openfl.display.SimpleButton)
 @:access(openfl.errors.Error)
 @:access(openfl.geom.Point)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
+@:access(openfl.text.TextField)
 class DisplayObjectContainer extends InteractiveObject
 {
 	/**
@@ -1107,21 +1110,53 @@ class DisplayObjectContainer extends InteractiveObject
 
 	@:noCompletion private override function __update(transformOnly:Bool, updateChildren:Bool):Void
 	{
-		super.__update(transformOnly, updateChildren);
+		__updateSingle(transformOnly, updateChildren);
 
 		if (updateChildren)
 		{
-			var child = __firstChild;
-			while (child != null)
+			for (child in __allChildren())
 			{
-				child.__update(transformOnly, true);
-				child = child.__nextSibling;
+				var transformDirty = child.__transformDirty;
+
+				// TODO: Flatten masks
+				child.__updateSingle(transformOnly, updateChildren);
+
+				switch (child.__type)
+				{
+					case SIMPLE_BUTTON:
+						// TODO: Flatten this into the allChildren() call?
+						if (updateChildren)
+						{
+							var button:SimpleButton = cast child;
+							if (button.__currentState != null)
+							{
+								button.__currentState.__update(transformOnly, true);
+							}
+
+							if (button.hitTestState != null && button.hitTestState != button.__currentState)
+							{
+								button.hitTestState.__update(transformOnly, true);
+							}
+						}
+
+					case TEXTFIELD:
+						if (transformDirty)
+						{
+							var textField:TextField = cast child;
+							textField.__renderTransform.__translateTransformed(textField.__offsetX, textField.__offsetY);
+						}
+
+					case DISPLAY_OBJECT_CONTAINER, MOVIE_CLIP:
+						// Ensure children are marked as dirty again
+						// as we no longer know if they all are dirty
+						// since at least one has been updated
+						child.__childTransformDirty = false;
+
+					default:
+				}
 			}
 		}
 
-		// Ensure children are marked as dirty again
-		// as we no longer know if they all are dirty
-		// since at least one has been updated
 		__childTransformDirty = false;
 	}
 

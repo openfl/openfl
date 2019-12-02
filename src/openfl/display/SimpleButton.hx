@@ -350,7 +350,7 @@ class SimpleButton extends InteractiveObject
 
 	@:noCompletion private override function __update(transformOnly:Bool, updateChildren:Bool):Void
 	{
-		super.__update(transformOnly, updateChildren);
+		__updateSingle(transformOnly, updateChildren);
 
 		if (updateChildren)
 		{

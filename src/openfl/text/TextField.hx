@@ -2247,7 +2247,7 @@ class TextField extends InteractiveObject
 	{
 		var transformDirty = __transformDirty;
 
-		super.__update(transformOnly, updateChildren);
+		__updateSingle(transformOnly, updateChildren);
 
 		if (transformDirty)
 		{

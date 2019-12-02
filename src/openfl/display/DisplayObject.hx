@@ -1750,6 +1750,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 	@:noCompletion private function __update(transformOnly:Bool, updateChildren:Bool):Void
 	{
+		__updateSingle(transformOnly, updateChildren);
+	}
+
+	@:noCompletion private inline function __updateSingle(transformOnly:Bool, updateChildren:Bool):Void
+	{
 		var renderParent = __renderParent != null ? __renderParent : parent;
 		if (__isMask && renderParent == null) renderParent = __maskTarget;
 		__renderable = (__visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
@@ -1949,6 +1954,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			}
 		}
 
+		// TODO: Flatten
 		if (updateChildren && mask != null)
 		{
 			mask.__update(transformOnly, true);
