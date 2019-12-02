@@ -56,9 +56,7 @@ extern class DisplayObjectContainer extends InteractiveObject
 	/**
 	 * Returns the number of children of this object.
 	 */
-	public var numChildren(get, never):Int;
-
-	@:noCompletion private function get_numChildren():Int;
+	public var numChildren(default, never):Int;
 
 	/**
 	 * Determines whether the children of the object are tab enabled. Enables or
