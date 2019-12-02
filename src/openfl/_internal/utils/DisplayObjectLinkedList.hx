@@ -55,6 +55,11 @@ class DisplayObjectLinkedList
 
 	public static function __insertChildAfter(displayObject:DisplayObjectContainer, child:DisplayObject, before:DisplayObject):Void
 	{
+		if (before == child || before.__nextSibling == child)
+		{
+			return;
+		}
+
 		if (child.parent != displayObject)
 		{
 			if (child.parent != null)
@@ -63,23 +68,6 @@ class DisplayObjectLinkedList
 			}
 			child.parent = displayObject;
 			displayObject.numChildren++;
-		}
-
-		if (before.__nextSibling == child)
-		{
-			return;
-		}
-		else if (before == child)
-		{
-			if (child.__nextSibling != null)
-			{
-				__swapChildren(displayObject, child, child.__nextSibling);
-			}
-			else
-			{
-				__addChild(displayObject, child);
-			}
-			return;
 		}
 
 		var after = before.__nextSibling;
@@ -121,33 +109,16 @@ class DisplayObjectLinkedList
 		}
 
 		#if openfl_validate_children
-		// TODO: Seeing a bug here in the validation code
-		// ignoring for now since it's not needed for runtime
-		var index = 0;
-		if (before == child)
-		{
-			index = displayObject.__children.indexOf(before) + 1;
-		}
 		displayObject.__children.remove(child);
-		if (before != child)
-		{
-			index = displayObject.__children.indexOf(before) + 1;
-		}
-		// if (index > displayObject.numChildren)
-		// {
-		// 	index = displayObject.numChildren;
-		// }
-		// if (index >= 0)
-		// {
+		var index = displayObject.__children.indexOf(before) + 1;
 		displayObject.__children.insert(index, child);
-		// }
 		__validateChildren(displayObject, "insertChildAfter");
 		#end
 	}
 
 	public static function __insertChildBefore(displayObject:DisplayObjectContainer, child:DisplayObject, after:DisplayObject):Void
 	{
-		if (after != null)
+		if (after != null && child != after && after.__previousSibling != child)
 		{
 			if (after.__previousSibling != null)
 			{
@@ -173,7 +144,15 @@ class DisplayObjectLinkedList
 			{
 				ref = ref.__nextSibling;
 			}
-			__insertChildAfter(displayObject, child, ref);
+
+			if (ref == child)
+			{
+				__swapChildren(displayObject, child, child.__nextSibling);
+			}
+			else
+			{
+				__insertChildAfter(displayObject, child, ref);
+			}
 		}
 	}
 

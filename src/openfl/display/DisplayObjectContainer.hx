@@ -732,8 +732,7 @@ class DisplayObjectContainer extends InteractiveObject
 			}
 			else
 			{
-				var other = getChildAt(index);
-				this.__insertChildBefore(child, other);
+				this.__insertChildAt(child, index);
 			}
 			__setRenderDirty();
 			#if openfl_validate_children
