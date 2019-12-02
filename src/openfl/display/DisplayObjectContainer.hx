@@ -418,9 +418,12 @@ class DisplayObjectContainer extends InteractiveObject
 		}
 
 		var child = __firstChild;
-		for (i in 0...index)
+		if (child != null)
 		{
-			child = child.__nextSibling;
+			for (i in 0...index)
+			{
+				child = child.__nextSibling;
+			}
 		}
 
 		return child;
@@ -469,13 +472,14 @@ class DisplayObjectContainer extends InteractiveObject
 	public function getChildIndex(child:DisplayObject):Int
 	{
 		var current = __firstChild;
-
-		for (i in 0...numChildren)
+		if (current != null)
 		{
-			if (current == child) return i;
-			current = current.__nextSibling;
+			for (i in 0...numChildren)
+			{
+				if (current == child) return i;
+				current = current.__nextSibling;
+			}
 		}
-
 		return -1;
 	}
 
@@ -588,13 +592,16 @@ class DisplayObjectContainer extends InteractiveObject
 		if (index >= 0 && index < numChildren)
 		{
 			var child = __firstChild;
-			for (i in 0...numChildren)
+			if (child != null)
 			{
-				if (i == index)
+				for (i in 0...numChildren)
 				{
-					return removeChild(child);
+					if (i == index)
+					{
+						return removeChild(child);
+					}
+					child = child.__nextSibling;
 				}
-				child = child.__nextSibling;
 			}
 		}
 
@@ -634,9 +641,12 @@ class DisplayObjectContainer extends InteractiveObject
 		}
 
 		var child = __firstChild;
-		for (i in 0...beginIndex)
+		if (child != null)
 		{
-			child = child.__nextSibling;
+			for (i in 0...beginIndex)
+			{
+				child = child.__nextSibling;
+			}
 		}
 
 		var numRemovals = endIndex - beginIndex;
@@ -781,17 +791,20 @@ class DisplayObjectContainer extends InteractiveObject
 			var child1 = null, child2 = null;
 			var current = __firstChild;
 
-			for (i in 0...numChildren)
+			if (current != null)
 			{
-				if (i == index1)
+				for (i in 0...numChildren)
 				{
-					child1 = current;
+					if (i == index1)
+					{
+						child1 = current;
+					}
+					else if (i == index2)
+					{
+						child2 = current;
+					}
+					current = current.__nextSibling;
 				}
-				else if (i == index2)
-				{
-					child2 = current;
-				}
-				current = current.__nextSibling;
 			}
 
 			this.__swapChildren(child1, child2);
