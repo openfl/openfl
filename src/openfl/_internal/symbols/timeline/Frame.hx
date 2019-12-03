@@ -8,7 +8,7 @@ package openfl._internal.symbols.timeline;
 {
 	public var label:String;
 	public var objects:Array<FrameObject>;
-	public var script:Void->Void;
+	public var script:() -> Void;
 	public var scriptSource:String;
 
 	// public var scriptType:FrameScriptType;

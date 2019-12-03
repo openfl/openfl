@@ -8,7 +8,7 @@ import openfl._internal.utils.NullUtils;
 /**
 	Defines the values to use for specifying a Program3D source format.
 **/
-@:enum abstract Context3DProgramFormat(Null<Int>)
+enum abstract Context3DProgramFormat(Null<Int>)
 {
 	/**
 		The program will use the AGAL (Adobe Graphics Assembly Language) format
@@ -56,7 +56,7 @@ import openfl._internal.utils.NullUtils;
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-@:enum abstract Context3DProgramFormat(String) from String to String
+enum abstract Context3DProgramFormat(String) from String to String
 {
 	public var AGAL = "agal";
 	public var GLSL = "glsl";

@@ -3,7 +3,7 @@ package flash.display3D.textures;
 #if flash
 import openfl.net.NetStream;
 
-@:final extern class VideoTexture extends TextureBase
+final extern class VideoTexture extends TextureBase
 {
 	public var videoHeight(default, never):Int;
 	public var videoWidth(default, never):Int;

@@ -8,7 +8,7 @@ package openfl.display;
  * three types of joints: miter, round, and bevel, as the following example
  * shows:
  */
-@:enum abstract JointStyle(String) from String to String
+enum abstract JointStyle(String) from String to String
 {
 	/**
 	 * Specifies beveled joints in the `joints` parameter of the

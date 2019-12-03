@@ -51,7 +51,7 @@ package openfl.filters;
  * filter is turned off if the resulting image exceeds the maximum
  * dimensions.
  */
-@:final extern class GlowFilter extends BitmapFilter
+final extern class GlowFilter extends BitmapFilter
 {
 	/**
 	 * The alpha transparency value for the color. Valid values are 0 to 1. For

@@ -7,7 +7,7 @@ package openfl.display;
 	The StageQuality class provides values for the `Stage.quality`
 	property.
 **/
-@:enum abstract StageQuality(Null<Int>)
+enum abstract StageQuality(Null<Int>)
 {
 	/**
 		Specifies very high rendering quality: graphics are anti-aliased using a 4
@@ -60,7 +60,7 @@ package openfl.display;
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-@:enum abstract StageQuality(String) from String to String
+enum abstract StageQuality(String) from String to String
 {
 	public var BEST = "best";
 	public var HIGH = "high";

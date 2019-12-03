@@ -1,7 +1,7 @@
 package flash.filters;
 
 #if flash
-@:final extern class GlowFilter extends BitmapFilter
+final extern class GlowFilter extends BitmapFilter
 {
 	public var alpha:Float;
 	public var blurX:Float;

@@ -7,7 +7,7 @@ package openfl.printing;
 	This class provides values that are used by the `PrintJob.orientation`
 	property for the image position of a printed page.
 **/
-@:enum abstract PrintJobOrientation(Null<Int>)
+enum abstract PrintJobOrientation(Null<Int>)
 {
 	/**
 		The landscape (horizontal) image orientation for printing. This
@@ -45,7 +45,7 @@ package openfl.printing;
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-@:enum abstract PrintJobOrientation(String) from String to String
+enum abstract PrintJobOrientation(String) from String to String
 {
 	public var LANDSCAPE = "landscape";
 	public var PORTRAIT = "portrait";

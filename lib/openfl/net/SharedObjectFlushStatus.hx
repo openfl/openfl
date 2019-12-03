@@ -4,7 +4,7 @@ package openfl.net;
  * The SharedObjectFlushStatus class provides values for the code returned
  * from a call to the `SharedObject.flush()` method.
  */
-@:enum abstract SharedObjectFlushStatus(String) from String to String
+enum abstract SharedObjectFlushStatus(String) from String to String
 {
 	/**
 	 * Indicates that the flush completed successfully.

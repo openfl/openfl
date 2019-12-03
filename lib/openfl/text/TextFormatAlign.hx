@@ -4,7 +4,7 @@ package openfl.text;
  * The TextFormatAlign class provides values for text alignment in the
  * TextFormat class.
  */
-@:enum abstract TextFormatAlign(String) from String to String
+enum abstract TextFormatAlign(String) from String to String
 {
 	/**
 	 * Constant; centers the text in the text field. Use the syntax

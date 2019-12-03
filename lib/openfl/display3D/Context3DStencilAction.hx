@@ -1,6 +1,6 @@
 package openfl.display3D;
 
-@:enum abstract Context3DStencilAction(String) from String to String
+enum abstract Context3DStencilAction(String) from String to String
 {
 	public var DECREMENT_SATURATE = "decrementSaturate";
 	public var DECREMENT_WRAP = "decrementWrap";

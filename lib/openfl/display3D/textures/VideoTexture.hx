@@ -6,7 +6,7 @@ import openfl.net.NetStream;
 #if !openfl_global
 @:jsRequire("openfl/display3D/textures/VideoTexture", "default")
 #end
-@:final extern class VideoTexture extends TextureBase
+final extern class VideoTexture extends TextureBase
 {
 	public var videoHeight(default, null):Int;
 	public var videoWidth(default, null):Int;

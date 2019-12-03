@@ -25,7 +25,7 @@ import cpp.vm.Gc;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:final class System
+final class System
 {
 	#if false
 	/**

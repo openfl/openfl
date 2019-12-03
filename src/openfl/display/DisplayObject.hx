@@ -176,7 +176,7 @@ import openfl.Vector;
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
-class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (openfl_dynamic && haxe_ver < "4.0.0") implements Dynamic<DisplayObject> #end
+class DisplayObject extends EventDispatcher implements IBitmapDrawable
 {
 	@:noCompletion private static var __broadcastEvents:Map<String, Array<DisplayObject>> = new Map();
 	@:noCompletion private static var __initStage:Stage;
@@ -1090,7 +1090,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 
 	@SuppressWarnings("checkstyle:Dynamic")
-	public override function addEventListener<T>(type:EventType<T>, listener:T->Void, useCapture:Bool = false, priority:Int = 0,
+	public override function addEventListener<T>(type:EventType<T>, listener:(event:T) -> Void, useCapture:Bool = false, priority:Int = 0,
 			useWeakReference:Bool = false):Void
 	{
 		switch (type)
@@ -1334,7 +1334,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	// @:noCompletion @:dox(hide) @:require(flash10) public function local3DToGlobal (point3d:Vector3D):Point;
 
 	@SuppressWarnings("checkstyle:Dynamic")
-	public override function removeEventListener<T>(type:EventType<T>, listener:T->Void, useCapture:Bool = false):Void
+	public override function removeEventListener<T>(type:EventType<T>, listener:(event:T) -> Void, useCapture:Bool = false):Void
 	{
 		super.removeEventListener(type, listener, useCapture);
 

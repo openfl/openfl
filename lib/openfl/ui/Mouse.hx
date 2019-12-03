@@ -12,7 +12,7 @@ package openfl.ui;
  * constructor. <ph outputclass="flashonly">The pointer is visible by default,
  * but you can hide it and implement a custom pointer.
  */
-@:final extern class Mouse
+final extern class Mouse
 {
 	public static var cursor:MouseCursor;
 	public static var supportsCursor(default, null):Bool;

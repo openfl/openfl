@@ -14,7 +14,7 @@ package openfl.display;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:final class Scene
+final class Scene
 {
 	/**
 		An array of FrameLabel objects for the scene. Each FrameLabel object contains

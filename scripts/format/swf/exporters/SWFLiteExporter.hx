@@ -1184,14 +1184,7 @@ class AVM2
 
 	public static function getIndex<T>(idx:Index<T>):Int
 	{
-		#if (haxe4 || (format > "3.4.2"))
 		return idx.asInt();
-		#else
-		return switch (idx)
-		{
-			case Idx(i): i;
-		};
-		#end
 	}
 
 	public static function getMultiNameByIndex(abcData:ABCData, i:Index<Name>):Name

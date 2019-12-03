@@ -15,7 +15,7 @@ import openfl.geom.Matrix;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:final class GraphicsShaderFill implements IGraphicsData implements IGraphicsFill
+final class GraphicsShaderFill implements IGraphicsData implements IGraphicsFill
 {
 	/**
 		A matrix object (of the openfl.geom.Matrix class), which you can use to

@@ -1,7 +1,7 @@
 package flash.display;
 
 #if flash
-@:final extern class JPEGEncoderOptions
+final extern class JPEGEncoderOptions
 {
 	public var quality:UInt;
 	public function new(quality:UInt = 80);

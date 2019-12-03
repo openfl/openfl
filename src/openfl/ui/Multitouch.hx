@@ -45,7 +45,7 @@ import openfl.Vector;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:final class Multitouch
+final class Multitouch
 {
 	/**
 		Identifies the multi-touch mode for touch and gesture event handling. Use

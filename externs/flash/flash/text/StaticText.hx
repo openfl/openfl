@@ -5,7 +5,7 @@ import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.display.Shape;
 
-@:final extern class StaticText extends DisplayObject
+final extern class StaticText extends DisplayObject
 {
 	public var text(default, never):String;
 	private function new();

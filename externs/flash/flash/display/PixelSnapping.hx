@@ -1,7 +1,7 @@
 package flash.display;
 
 #if flash
-@:enum abstract PixelSnapping(String) from String to String
+enum abstract PixelSnapping(String) from String to String
 {
 	public var ALWAYS = "always";
 	public var AUTO = "auto";

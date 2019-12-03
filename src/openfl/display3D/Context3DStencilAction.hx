@@ -11,7 +11,7 @@ import openfl._internal.utils.NullUtils;
 
 	A stencil action specifies how the values in the stencil buffer should be changed.
 **/
-@:enum abstract Context3DStencilAction(Null<Int>)
+enum abstract Context3DStencilAction(Null<Int>)
 {
 	/**
 		Decrement the stencil buffer value, clamping at 0, the minimum value.
@@ -106,7 +106,7 @@ import openfl._internal.utils.NullUtils;
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-@:enum abstract Context3DStencilAction(String) from String to String
+enum abstract Context3DStencilAction(String) from String to String
 {
 	public var DECREMENT_SATURATE = "decrementSaturate";
 	public var DECREMENT_WRAP = "decrementWrap";

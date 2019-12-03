@@ -1,7 +1,7 @@
 package flash.external;
 
 #if flash
-@:final extern class ExternalInterface
+final extern class ExternalInterface
 {
 	public static var available(default, never):Bool;
 	public static var marshallExceptions:Bool;

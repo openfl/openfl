@@ -26,7 +26,7 @@ package openfl.system;
  *
  * All properties of the Capabilities class are read-only.
  */
-@:final extern class Capabilities
+final extern class Capabilities
 {
 	/**
 	 * Specifies whether access to the user's camera and microphone has been

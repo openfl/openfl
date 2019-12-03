@@ -50,7 +50,7 @@ package openfl.filters;
  * filter is turned off if the resulting image exceeds the maximum
  * dimensions.
  */
-@:final extern class DropShadowFilter extends BitmapFilter
+final extern class DropShadowFilter extends BitmapFilter
 {
 	/**
 	 * The alpha transparency value for the shadow color. Valid values are 0.0 to

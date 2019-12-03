@@ -5,7 +5,7 @@ package openfl.filters;
 	The DisplacementMapFilterMode class provides
 	values for the mode property of the DisplacementMapFilter class.
 **/
-@:enum abstract DisplacementMapFilterMode(String) from String to String
+enum abstract DisplacementMapFilterMode(String) from String to String
 {
 	/**
 		Clamps the displacement value to the edge of the source image.

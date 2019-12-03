@@ -16,7 +16,7 @@ import openfl._internal.renderer.GraphicsFillType;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:final class GraphicsSolidFill implements IGraphicsData implements IGraphicsFill
+final class GraphicsSolidFill implements IGraphicsData implements IGraphicsFill
 {
 	/**
 		Indicates the alpha transparency value of the fill. Valid values are 0

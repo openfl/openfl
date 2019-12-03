@@ -240,7 +240,7 @@ class AnimateTimeline extends Timeline
 			}
 		}
 
-		#if (!openfljs && (!openfl_dynamic || haxe_ver >= "4.0.0"))
+		#if !openfljs
 		__instanceFields = Type.getInstanceFields(Type.getClass(__movieClip));
 		#end
 
@@ -385,7 +385,7 @@ class AnimateTimeline extends Timeline
 				i++;
 			}
 
-			#if (!openfljs && (!openfl_dynamic || haxe_ver >= "4.0.0"))
+			#if !openfljs
 			__updateInstanceFields();
 			#end
 
@@ -467,7 +467,7 @@ class AnimateTimeline extends Timeline
 			displayObject.cacheAsBitmap = frameObject.cacheAsBitmap;
 		}
 
-		#if (openfljs || ((openfl_dynamic || openfl_dynamic_fields_only) && haxe_ver <= "4.0.0"))
+		#if openfljs
 		Reflect.setField(__movieClip, displayObject.name, displayObject);
 		#end
 	}

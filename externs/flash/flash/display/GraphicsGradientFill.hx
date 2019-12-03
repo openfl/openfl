@@ -3,7 +3,7 @@ package flash.display;
 #if flash
 import openfl.geom.Matrix;
 
-@:final extern class GraphicsGradientFill implements IGraphicsData implements IGraphicsFill
+final extern class GraphicsGradientFill implements IGraphicsData implements IGraphicsFill
 {
 	public var alphas:Array<Float>;
 	public var colors:Array<UInt>;

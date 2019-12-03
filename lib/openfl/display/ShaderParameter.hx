@@ -7,7 +7,7 @@ package openfl.display;
 #if !js
 @:generic
 #end
-@:final extern class ShaderParameter<T> /*implements Dynamic*/
+final extern class ShaderParameter<T> /*implements Dynamic*/
 {
 	public var index(default, null):Int;
 	public var type(default, null):ShaderParameterType;

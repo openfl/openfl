@@ -10,7 +10,7 @@ package openfl.desktop;
 	The transfer mode provides a hint about whether to return a reference or a
 	copy when accessing an object contained on a clipboard.
 **/
-@:enum abstract ClipboardTransferMode(Null<Int>)
+enum abstract ClipboardTransferMode(Null<Int>)
 {
 	/**
 		The Clipboard object should only return a copy.
@@ -58,7 +58,7 @@ package openfl.desktop;
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-@:enum abstract ClipboardTransferMode(String) from String to String
+enum abstract ClipboardTransferMode(String) from String to String
 {
 	public var CLONE_ONLY = "cloneOnly";
 	public var CLONE_PREFERRED = "clonePreferred";

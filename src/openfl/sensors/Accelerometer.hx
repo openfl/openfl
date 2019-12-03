@@ -117,7 +117,7 @@ class Accelerometer extends EventDispatcher
 		setRequestedUpdateInterval(defaultInterval);
 	}
 
-	override public function addEventListener(type:String, listener:Dynamic->Void, useCapture:Bool = false, priority:Int = 0,
+	override public function addEventListener(type:String, listener:(event:Dynamic) -> Void, useCapture:Bool = false, priority:Int = 0,
 			useWeakReference:Bool = false):Void
 	{
 		super.addEventListener(type, listener, useCapture, priority, useWeakReference);

@@ -1,13 +1,9 @@
 package openfl.display3D;
 
 #if (display || !flash)
+import js.lib.ArrayBufferView;
 import openfl.utils.ByteArray;
 import openfl.Vector;
-#if haxe4
-import js.lib.ArrayBufferView;
-#else
-import js.html.ArrayBufferView;
-#end
 
 #if !openfl_global
 @:jsRequire("openfl/display3D/VertexBuffer3D", "default")

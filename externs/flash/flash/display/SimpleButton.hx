@@ -5,7 +5,7 @@ import openfl.media.SoundTransform;
 
 extern class SimpleButton extends InteractiveObject
 {
-	@:noCompletion public static var __constructor:SimpleButton->Void;
+	@:noCompletion public static var __constructor:(simpleButton:SimpleButton) -> Void;
 	public var downState:DisplayObject;
 	public var enabled:Bool;
 	public var hitTestState:DisplayObject;

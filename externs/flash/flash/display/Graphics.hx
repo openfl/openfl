@@ -8,7 +8,7 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.Vector;
 
-@:final extern class Graphics
+final extern class Graphics
 {
 	@:native("beginBitmapFill") @:noCompletion private function __beginBitmapFill(bitmap:BitmapData, matrix:Matrix = null, repeat:Bool = true,
 		smooth:Bool = false):Void;

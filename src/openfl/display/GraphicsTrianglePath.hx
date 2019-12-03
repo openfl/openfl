@@ -17,7 +17,7 @@ import openfl.Vector;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:final class GraphicsTrianglePath implements IGraphicsData implements IGraphicsPath
+final class GraphicsTrianglePath implements IGraphicsData implements IGraphicsPath
 {
 	/**
 		Specifies whether to render triangles that face in a given direction.

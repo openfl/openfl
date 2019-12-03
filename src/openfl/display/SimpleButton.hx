@@ -36,7 +36,7 @@ import openfl.Vector;
 @:access(openfl.geom.Rectangle)
 class SimpleButton extends InteractiveObject
 {
-	@:noCompletion private static var __constructor:SimpleButton->Void;
+	@:noCompletion private static var __constructor:(simpleButton:SimpleButton) -> Void;
 	@:noCompletion private static var __initSWF:SWFLite;
 	@:noCompletion private static var __initSymbol:ButtonSymbol;
 

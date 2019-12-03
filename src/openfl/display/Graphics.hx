@@ -48,7 +48,7 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 @:access(openfl.display.Shader)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
-@:final class Graphics
+final class Graphics
 {
 	@:noCompletion private static var maxTextureHeight:Null<Int> = null;
 	@:noCompletion private static var maxTextureWidth:Null<Int> = null;

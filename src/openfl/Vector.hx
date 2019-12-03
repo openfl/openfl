@@ -209,7 +209,7 @@ abstract Vector<T>(IVector<T>)
 		Vector matches the base type of the Vector on which the method is called.
 		@param	callback	The function to run on each item in the Vector.
 	**/
-	#if (openfl < "9.0.0") @:dox(hide) #end public inline function filter(callback:T->Bool):Vector<T>
+	#if (openfl < "9.0.0") @:dox(hide) #end public inline function filter(callback:(value:T) -> Bool):Vector<T>
 	{
 		return cast this.filter(cast callback);
 	}
@@ -446,7 +446,7 @@ abstract Vector<T>(IVector<T>)
 		Number value specifies the sorting options.
 		@return	A Vector object, with elements in the new order.
 	**/
-	public inline function sort(sortBehavior:T->T->Int):Void
+	public inline function sort(sortBehavior:(a:T, b:T) -> Int):Void
 	{
 		this.sort(sortBehavior);
 	}
@@ -675,7 +675,7 @@ abstract Vector<T>(IVector<T>)
 		return new BoolVector(0, fixed, __array.copy());
 	}
 
-	public function filter(callback:Bool->Bool):IVector<Bool>
+	public function filter(callback:(value:Bool) -> Bool):IVector<Bool>
 	{
 		return new BoolVector(0, fixed, __array.filter(callback));
 	}
@@ -806,7 +806,7 @@ abstract Vector<T>(IVector<T>)
 		return new BoolVector(0, false, __array.slice(startIndex, endIndex));
 	}
 
-	public function sort(f:Bool->Bool->Int):Void
+	public function sort(f:(a:Bool, b:Bool) -> Int):Void
 	{
 		__array.sort(f);
 	}
@@ -933,7 +933,7 @@ abstract Vector<T>(IVector<T>)
 		return new FloatVector(0, fixed, __array.copy());
 	}
 
-	public function filter(callback:Float->Bool):IVector<Float>
+	public function filter(callback:(value:Float) -> Bool):IVector<Float>
 	{
 		return new FloatVector(0, fixed, __array.filter(callback));
 	}
@@ -1057,7 +1057,7 @@ abstract Vector<T>(IVector<T>)
 		return new FloatVector(0, false, __array.slice(startIndex, endIndex));
 	}
 
-	public function sort(f:Float->Float->Int):Void
+	public function sort(f:(a:Float, b:Float) -> Int):Void
 	{
 		__array.sort(f);
 	}
@@ -1182,7 +1182,7 @@ abstract Vector<T>(IVector<T>)
 		return new FunctionVector(0, fixed, __array.copy());
 	}
 
-	public function filter(callback:Function->Bool):IVector<Function>
+	public function filter(callback:(value:Function) -> Bool):IVector<Function>
 	{
 		return new FunctionVector(0, fixed, __array.filter(callback));
 	}
@@ -1313,7 +1313,7 @@ abstract Vector<T>(IVector<T>)
 		return new FunctionVector(0, false, __array.slice(startIndex, endIndex));
 	}
 
-	public function sort(f:Function->Function->Int):Void
+	public function sort(f:(a:Function, b:Function) -> Int):Void
 	{
 		__array.sort(f);
 	}
@@ -1431,7 +1431,7 @@ abstract Vector<T>(IVector<T>)
 		return new IntVector(0, fixed, __array.copy());
 	}
 
-	public function filter(callback:Int->Bool):IVector<Int>
+	public function filter(callback:(value:Int) -> Bool):IVector<Int>
 	{
 		return new IntVector(0, fixed, __array.filter(callback));
 	}
@@ -1555,7 +1555,7 @@ abstract Vector<T>(IVector<T>)
 		return new IntVector(0, false, __array.slice(startIndex, endIndex));
 	}
 
-	public function sort(f:Int->Int->Int):Void
+	public function sort(f:(a:Int, b:Int) -> Int):Void
 	{
 		__array.sort(f);
 	}
@@ -1683,7 +1683,7 @@ abstract Vector<T>(IVector<T>)
 		return new ObjectVector(0, fixed, __array.copy());
 	}
 
-	public function filter(callback:T->Bool):IVector<T>
+	public function filter(callback:(value:T) -> Bool):IVector<T>
 	{
 		return new ObjectVector(0, fixed, __array.filter(callback));
 	}
@@ -1807,7 +1807,7 @@ abstract Vector<T>(IVector<T>)
 		return new ObjectVector(0, false, __array.slice(startIndex, endIndex));
 	}
 
-	public function sort(f:T->T->Int):Void
+	public function sort(f:(a:T, b:T) -> Int):Void
 	{
 		__array.sort(f);
 	}
@@ -1881,7 +1881,7 @@ abstract Vector<T>(IVector<T>)
 	public var length(get, set):Int;
 	public function concat(vec:IVector<T> = null):IVector<T>;
 	public function copy():IVector<T>;
-	public function filter(callback:T->Bool):IVector<T>;
+	public function filter(callback:(value:T) -> Bool):IVector<T>;
 	public function get(index:Int):T;
 	public function indexOf(x:T, from:Int = 0):Int;
 	public function insertAt(index:Int, element:T):Void;
@@ -1895,7 +1895,7 @@ abstract Vector<T>(IVector<T>)
 	public function set(index:Int, value:T):T;
 	public function shift():Null<T>;
 	public function slice(startIndex:Int = 0, endIndex:Null<Int> = null):IVector<T>;
-	public function sort(f:T->T->Int):Void;
+	public function sort(f:(a:T, b:T) -> Int):Void;
 	public function splice(pos:Int, len:Int):IVector<T>;
 	public function toString():String;
 	public function unshift(value:T):Void;
@@ -1936,7 +1936,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 		return VectorData.ofArray(cast this);
 	}
 
-	public function filter(callback:T->Bool):Vector<T>
+	public function filter(callback:(value:T) -> Bool):Vector<T>
 	{
 		return VectorData.ofArray(untyped __js__("Array.prototype.filter.call")(this, callback));
 	}
@@ -2062,7 +2062,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 		return VectorData.ofArray(untyped __js__("Array.prototype.slice.call")(this, startIndex, endIndex));
 	}
 
-	public inline function sort(f:T->T->Int):Void
+	public inline function sort(f:(a:T, b:T) -> Int):Void
 	{
 		// this.sort (f);
 		untyped __js__("Array.prototype.sort.call")(this, f);
@@ -2198,7 +2198,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 		return VectorData.ofArray(cast this);
 	}
 
-	public function filter(callback:T->Bool):Vector<T>
+	public function filter(callback:(value:T) -> Bool):Vector<T>
 	{
 		return VectorData.ofArray(untyped __js__("Array.prototype.filter.call (this, callback)"));
 	}
@@ -2325,7 +2325,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 		return VectorData.ofArray(untyped __js__("Array.prototype.slice.call (this, startIndex, endIndex)"));
 	}
 
-	public function sort(f:T->T->Int):Void {}
+	public function sort(f:(a:T, b:T) -> Int):Void {}
 
 	public function splice(pos:Int, len:Int):VectorData<T>
 	{
@@ -2488,7 +2488,7 @@ abstract Vector<T>(VectorData<T>)
 		return vec;
 	}
 
-	public inline function filter(callback:T->Bool):Vector<T>
+	public inline function filter(callback:(value:T) -> Bool):Vector<T>
 	{
 		var vec = new VectorData<T>();
 
@@ -2566,7 +2566,7 @@ abstract Vector<T>(VectorData<T>)
 		return this.slice(pos, end);
 	}
 
-	public inline function sort(f:T->T->Int):Void
+	public inline function sort(f:(a:T, b:T) -> Int):Void
 	{
 		this.sort(f);
 	}

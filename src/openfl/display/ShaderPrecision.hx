@@ -26,7 +26,7 @@ package openfl.display;
 	* `reciprocal(x)`
 	* `sqrt(x)`
 **/
-@:enum abstract ShaderPrecision(Null<Int>)
+enum abstract ShaderPrecision(Null<Int>)
 {
 	/**
 		Represents fast precision mode.
@@ -72,7 +72,7 @@ package openfl.display;
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-@:enum abstract ShaderPrecision(String) from String to String
+enum abstract ShaderPrecision(String) from String to String
 {
 	public var FAST = "fast";
 	public var FULL = "full";

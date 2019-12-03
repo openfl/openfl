@@ -1,18 +1,14 @@
 package openfl.display3D;
 
 #if (display || !flash)
+import js.lib.ArrayBufferView;
 import openfl.utils.ByteArray;
 import openfl.Vector;
-#if haxe4
-import js.lib.ArrayBufferView;
-#else
-import js.html.ArrayBufferView;
-#end
 
 #if !openfl_global
 @:jsRequire("openfl/display3D/IndexBuffer3D", "default")
 #end
-@:final extern class IndexBuffer3D
+final extern class IndexBuffer3D
 {
 	public function dispose():Void;
 	public function uploadFromByteArray(data:ByteArray, byteArrayOffset:Int, startOffset:Int, count:Int):Void;

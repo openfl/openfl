@@ -294,7 +294,7 @@ class ApplicationMain
 		};
 
 		var loader = new neko.vm.Loader(untyped $loader);
-		loader.addPath(haxe.io.Path.directory(#if (haxe_ver >= 3.3) sys_program_path #else Sys.executablePath() #end));
+		loader.addPath(haxe.io.Path.directory(sys_program_path));
 		loader.addPath("./");
 		loader.addPath("@executable_path/");
 		#end

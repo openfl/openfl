@@ -7,7 +7,7 @@ package openfl.text;
 	The TextFormatAlign class provides values for text alignment in the
 	TextFormat class.
 **/
-@:enum abstract TextFormatAlign(Null<Int>)
+enum abstract TextFormatAlign(Null<Int>)
 {
 	/**
 		Constant; centers the text in the text field. Use the syntax
@@ -79,7 +79,7 @@ package openfl.text;
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-@:enum abstract TextFormatAlign(String) from String to String
+enum abstract TextFormatAlign(String) from String to String
 {
 	public var CENTER = "center";
 	public var END = "end";

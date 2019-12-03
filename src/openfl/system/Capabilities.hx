@@ -91,7 +91,7 @@ import sys.io.Process;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:final class Capabilities
+final class Capabilities
 {
 	/**
 		Specifies whether access to the user's camera and microphone has been

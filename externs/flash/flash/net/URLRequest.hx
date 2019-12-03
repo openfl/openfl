@@ -1,7 +1,7 @@
 package flash.net;
 
 #if flash
-@:final extern class URLRequest
+final extern class URLRequest
 {
 	#if air
 	public var authenticate:Bool;

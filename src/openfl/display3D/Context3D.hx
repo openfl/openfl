@@ -144,7 +144,7 @@ import openfl.utils.ByteArray;
 @:access(openfl.display.Stage3D)
 @:access(openfl.geom.Point)
 @:access(openfl.geom.Rectangle)
-@:final class Context3D extends EventDispatcher
+final class Context3D extends EventDispatcher
 {
 	/**
 		Indicates if Context3D supports video texture.

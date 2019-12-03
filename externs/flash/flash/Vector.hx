@@ -17,7 +17,7 @@ package flash;
 	public function shift():Null<T>;
 	public function unshift(x:T):Void;
 	public function slice(?pos:Int, ?end:Int):Vector<T>;
-	public function sort(f:T->T->Int):Void;
+	public function sort(f:(a:T, b:T) -> Int):Void;
 	public function splice(pos:Int, len:Int):Vector<T>;
 	public function toString():String;
 	public inline static function ofArray<T>(v:Array<T>):Vector<T>

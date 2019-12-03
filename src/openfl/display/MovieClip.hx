@@ -48,9 +48,9 @@ import openfl.events.MouseEvent;
 @:access(openfl._internal.symbols.SWFSymbol)
 @:access(openfl.display.Timeline)
 @:access(openfl.geom.ColorTransform)
-class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implements Dynamic<DisplayObject> #end
+class MovieClip extends Sprite
 {
-	@:noCompletion private static var __constructor:MovieClip->Void;
+	@:noCompletion private static var __constructor:(movieClip:MovieClip) -> Void;
 	@:noCompletion private static var __initSWF:SWFLite;
 	@:noCompletion private static var __initSymbol:SpriteSymbol;
 	#if 0
@@ -209,7 +209,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		}
 	}
 
-	public function addFrameScript(index:Int, method:Void->Void):Void
+	public function addFrameScript(index:Int, method:() -> Void):Void
 	{
 		if (__timeline != null)
 		{
@@ -262,7 +262,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 					 specified scene.
 		@param scene The name of the scene to play. This parameter is optional.
 	**/
-	public function gotoAndPlay(frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end, scene:String = null):Void
+	public function gotoAndPlay(frame:Any, scene:String = null):Void
 	{
 		if (__timeline != null)
 		{
@@ -287,7 +287,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		@throws ArgumentError If the `scene` or `frame`
 							  specified are not found in this movie clip.
 	**/
-	public function gotoAndStop(frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end, scene:String = null):Void
+	public function gotoAndStop(frame:Any, scene:String = null):Void
 	{
 		if (__timeline != null)
 		{

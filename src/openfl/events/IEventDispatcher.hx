@@ -95,7 +95,8 @@ interface IEventDispatcher
 		longer be persistent. If you create references to the inner function (save it in
 		another variable) then it is not garbage-collected and stays persistent.
 	**/
-	public function addEventListener<T>(type:EventType<T>, listener:T->Void, useCapture:Bool = false, priority:Int = 0, useWeakReference:Bool = false):Void;
+	public function addEventListener<T>(type:EventType<T>, listener:(event:T) -> Void, useCapture:Bool = false, priority:Int = 0,
+		useWeakReference:Bool = false):Void;
 
 	/**
 		Dispatches an event into the event flow. The event target is the EventDispatcher
@@ -138,7 +139,7 @@ interface IEventDispatcher
 		`removeEventListener()` are required to remove both: one call with `useCapture` set
 		to `true`, and another call with `useCapture` set to `false`.
 	**/
-	public function removeEventListener<T>(type:EventType<T>, listener:T->Void, useCapture:Bool = false):Void;
+	public function removeEventListener<T>(type:EventType<T>, listener:(event:T) -> Void, useCapture:Bool = false):Void;
 
 	/**
 		Checks whether an event listener is registered with this EventDispatcher object or

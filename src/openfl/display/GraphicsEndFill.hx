@@ -15,7 +15,7 @@ import openfl._internal.renderer.GraphicsFillType;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:final class GraphicsEndFill implements IGraphicsData implements IGraphicsFill
+final class GraphicsEndFill implements IGraphicsData implements IGraphicsFill
 {
 	@:noCompletion private var __graphicsDataType(default, null):GraphicsDataType;
 	@:noCompletion private var __graphicsFillType(default, null):GraphicsFillType;

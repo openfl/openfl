@@ -407,12 +407,8 @@ class ByteArrayTest
 
 		data.position = 0;
 
-		#if (haxe_ver >= "4.0.0")
 		#if js
 		Assert.areEqual(4, data.readUnsignedShort());
-		#else
-		Assert.areEqual(2, data.readUnsignedShort());
-		#end
 		#else
 		Assert.areEqual(2, data.readUnsignedShort());
 		#end
@@ -430,12 +426,8 @@ class ByteArrayTest
 
 		// Flash is adding a byte for a null terminator
 
-		#if (haxe_ver >= "4.0.0")
 		#if js
 		Assert.areEqual(16, data.length);
-		#else
-		Assert.areEqual(14, data.length);
-		#end
 		#else
 		Assert.areEqual(14, data.length);
 		#end

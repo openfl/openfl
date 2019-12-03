@@ -5,7 +5,7 @@ import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
 import openfl.display3D.Context3DWrapMode;
 
-@:final extern class ShaderInput<T> implements Dynamic
+final extern class ShaderInput<T> implements Dynamic
 {
 	public var channels(default, never):Int;
 	public var height:Int;

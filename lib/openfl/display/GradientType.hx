@@ -6,7 +6,7 @@ package openfl.display;
  * `lineGradientStyle()` methods of the openfl.display.Graphics
  * class.
  */
-@:enum abstract GradientType(String) from String to String
+enum abstract GradientType(String) from String to String
 {
 	/**
 	 * Value used to specify a linear gradient fill.

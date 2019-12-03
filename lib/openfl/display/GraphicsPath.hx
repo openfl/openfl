@@ -23,7 +23,7 @@ import openfl.Vector;
  * `GraphicsPath.commands` and `GraphicsPath.data`
  * vector arrays.
  */
-@:final extern class GraphicsPath implements IGraphicsData implements IGraphicsPath
+final extern class GraphicsPath implements IGraphicsData implements IGraphicsPath
 {
 	/**
 	 * The Vector of drawing commands as integers representing the path. Each

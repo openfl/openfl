@@ -156,7 +156,7 @@ interface ITileContainer
 
 		@param	compareFunction	A comparison function to use when sorting.
 	**/
-	public function sortTiles(compareFunction:Tile->Tile->Int):Void;
+	public function sortTiles(compareFunction:(a:Tile, b:Tile) -> Int):Void;
 
 	/**
 		Swaps the z-order (front-to-back order) of the two specified tile

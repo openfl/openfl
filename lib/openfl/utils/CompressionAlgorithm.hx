@@ -1,6 +1,6 @@
 package openfl.utils;
 
-@:enum abstract CompressionAlgorithm(String) from String to String
+enum abstract CompressionAlgorithm(String) from String to String
 {
 	public var DEFLATE = "deflate";
 	// GZIP;

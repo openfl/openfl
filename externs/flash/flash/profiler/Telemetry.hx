@@ -2,7 +2,7 @@ package flash.profiler;
 
 #if flash
 @:require(flash11_4)
-@:final extern class Telemetry
+final extern class Telemetry
 {
 	public static var connected(default, never):Bool;
 	public static var spanMarker(default, never):Float;

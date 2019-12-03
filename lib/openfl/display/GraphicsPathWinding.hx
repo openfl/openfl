@@ -10,7 +10,7 @@ package openfl.display;
  *  When paths intersect or overlap, the winding direction determines the
  * rules for filling the areas created by the intersection or overlap:
  */
-@:enum abstract GraphicsPathWinding(String) from String to String
+enum abstract GraphicsPathWinding(String) from String to String
 {
 	public var EVEN_ODD = "evenOdd";
 	public var NON_ZERO = "nonZero";

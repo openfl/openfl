@@ -3,7 +3,7 @@ package flash.media;
 #if flash
 import openfl.utils.ByteArray;
 
-@:final extern class SoundMixer
+final extern class SoundMixer
 {
 	#if (flash && air)
 	public static var audioPlaybackMode:String;

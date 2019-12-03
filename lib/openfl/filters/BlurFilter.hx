@@ -55,7 +55,7 @@ package openfl.filters;
  * filter is turned off if the resulting image exceeds the maximum
  * dimensions.
  */
-@:final extern class BlurFilter extends BitmapFilter
+final extern class BlurFilter extends BitmapFilter
 {
 	/**
 	 * The amount of horizontal blur. Valid values are from 0 to 255(floating

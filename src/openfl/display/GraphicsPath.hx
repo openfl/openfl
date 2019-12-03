@@ -24,7 +24,7 @@ import openfl.Vector;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:final class GraphicsPath implements IGraphicsData implements IGraphicsPath
+final class GraphicsPath implements IGraphicsData implements IGraphicsPath
 {
 	private static inline var SIN45:Float = 0.70710678118654752440084436210485;
 	private static inline var TAN22:Float = 0.4142135623730950488016887242097;

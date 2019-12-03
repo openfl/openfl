@@ -1,7 +1,7 @@
 package flash.display;
 
 #if flash
-@:final extern class GraphicsSolidFill implements IGraphicsData implements IGraphicsFill
+final extern class GraphicsSolidFill implements IGraphicsData implements IGraphicsFill
 {
 	public var alpha:Float;
 	public var color:UInt;

@@ -17,7 +17,7 @@ import openfl.events.EventDispatcher;
  *
  * @event soundComplete Dispatched when a sound has finished playing.
  */
-@:final extern class SoundChannel extends EventDispatcher
+final extern class SoundChannel extends EventDispatcher
 {
 	/**
 	 * The current amplitude(volume) of the left channel, from 0(silent) to 1

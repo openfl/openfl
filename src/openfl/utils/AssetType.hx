@@ -4,7 +4,7 @@ package openfl.utils;
 	The AssetType enum lists the core set of available
 	asset types from the OpenFL command-line tools.
 **/
-@:enum abstract AssetType(String)
+enum abstract AssetType(String)
 {
 	/**
 		Binary assets (data that is not readable as text)

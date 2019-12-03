@@ -16,7 +16,7 @@ package openfl.utils;
  * order that matches the protocol of the server that is sending or receiving
  * data.
  */
-@:enum abstract Endian(String) from String to String
+enum abstract Endian(String) from String to String
 {
 	public var BIG_ENDIAN = "bigEndian";
 	public var LITTLE_ENDIAN = "littleEndian";

@@ -1,7 +1,7 @@
 package flash.filters;
 
 #if flash
-@:enum abstract DisplacementMapFilterMode(String) from String to String
+enum abstract DisplacementMapFilterMode(String) from String to String
 {
 	public var CLAMP = "clamp";
 	public var COLOR = "color";

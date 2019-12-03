@@ -1,7 +1,7 @@
 package flash.display3D;
 
 #if flash
-@:enum abstract Context3DMipFilter(String) from String to String
+enum abstract Context3DMipFilter(String) from String to String
 {
 	public var MIPLINEAR = "miplinear";
 	public var MIPNEAREST = "mipnearest";

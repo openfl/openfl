@@ -9,7 +9,7 @@ import openfl.utils.ByteArray;
 @:noDebug
 #end
 @:access(openfl.ui.GameInputControl)
-@:final class GameInputDevice
+final class GameInputDevice
 {
 	/**
 		Specifies the maximum size for the buffer used to cache sampled control values.

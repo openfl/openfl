@@ -3,7 +3,7 @@ package flash.ui;
 #if flash
 import openfl.Vector;
 
-@:final extern class Multitouch
+final extern class Multitouch
 {
 	public static var inputMode:MultitouchInputMode;
 	#if flash

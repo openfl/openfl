@@ -52,7 +52,7 @@ package openfl.net;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:final class FileFilter
+final class FileFilter
 {
 	/**
 		The description string for the filter. The description is visible to

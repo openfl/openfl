@@ -7,7 +7,7 @@ package openfl.text;
 	The AntiAliasType class provides values for anti-aliasing in the
 	openfl.text.TextField class.
 **/
-@:enum abstract AntiAliasType(Null<Int>)
+enum abstract AntiAliasType(Null<Int>)
 {
 	/**
 		Sets anti-aliasing to advanced anti-aliasing. Advanced anti-aliasing
@@ -51,7 +51,7 @@ package openfl.text;
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-@:enum abstract AntiAliasType(String) from String to String
+enum abstract AntiAliasType(String) from String to String
 {
 	public var ADVANCED = "advanced";
 	public var NORMAL = "normal";

@@ -76,7 +76,6 @@ abstract Dictionary<K, V>(IMap<K, V>)
 		return this.get(key);
 	}
 
-	#if (haxe_ver >= "4.0.0")
 	/**
 		Returns an Iterator over the keys and values of this Dictionary.
 
@@ -86,7 +85,6 @@ abstract Dictionary<K, V>(IMap<K, V>)
 	{
 		return this.keyValueIterator();
 	}
-	#end
 
 	/**
 		Removes the mapping of `key` and returns `true` if such a mapping existed, `false` otherwise.
@@ -213,15 +211,12 @@ abstract Dictionary<K, V>(IMap<K, V>)
 		values = new Map();
 	}
 
-	#if haxe4
 	public function clear():Void
 	{
 		types.clear();
 		values.clear();
 	}
-	#end
 
-	#if haxe4
 	public function copy():ClassMap<K, V>
 	{
 		var copied = new ClassMap<K, V>();
@@ -229,7 +224,6 @@ abstract Dictionary<K, V>(IMap<K, V>)
 			copied.set(key, get(key));
 		return copied;
 	}
-	#end
 
 	public function exists(key:K):Bool
 	{
@@ -241,12 +235,10 @@ abstract Dictionary<K, V>(IMap<K, V>)
 		return values.get(Type.getClassName(key));
 	}
 
-	#if haxe4
 	@:runtime public inline function keyValueIterator():KeyValueIterator<K, V>
 	{
 		return new haxe.iterators.MapKeyValueIterator(this);
 	}
-	#end
 
 	public function keys():Iterator<K>
 	{
@@ -294,15 +286,12 @@ abstract Dictionary<K, V>(IMap<K, V>)
 		values = new Array<V>();
 	}
 
-	#if haxe4
 	public function clear():Void
 	{
 		floatKeys = new Array<K>();
 		values = new Array<V>();
 	}
-	#end
 
-	#if haxe4
 	public function copy():FloatMap<K, V>
 	{
 		var copied = new FloatMap<K, V>();
@@ -310,7 +299,6 @@ abstract Dictionary<K, V>(IMap<K, V>)
 			copied.set(key, get(key));
 		return copied;
 	}
-	#end
 
 	public function exists(key:K):Bool
 	{
@@ -323,12 +311,10 @@ abstract Dictionary<K, V>(IMap<K, V>)
 		return ind > -1 ? values[ind] : null;
 	}
 
-	#if haxe4
 	@:runtime public inline function keyValueIterator():KeyValueIterator<K, V>
 	{
 		return new haxe.iterators.MapKeyValueIterator(this);
 	}
-	#end
 
 	public function keys():Iterator<K>
 	{
@@ -477,14 +463,11 @@ abstract Dictionary<K, V>(IMap<K, V>)
 		map = new ObjectMap<{}, V>();
 	}
 
-	#if haxe4
 	public function clear():Void
 	{
 		map.clear();
 	}
-	#end
 
-	#if haxe4
 	public function copy():UtilsObjectMap<K, V>
 	{
 		var copied = new UtilsObjectMap<K, V>();
@@ -492,7 +475,6 @@ abstract Dictionary<K, V>(IMap<K, V>)
 			copied.set(key, get(key));
 		return copied;
 	}
-	#end
 
 	public function exists(key:K):Bool
 	{
@@ -504,12 +486,10 @@ abstract Dictionary<K, V>(IMap<K, V>)
 		return map.get(cast key);
 	}
 
-	#if haxe4
 	@:runtime public inline function keyValueIterator():KeyValueIterator<K, V>
 	{
 		return new haxe.iterators.MapKeyValueIterator(this);
 	}
-	#end
 
 	public function keys():Iterator<K>
 	{
@@ -555,12 +535,10 @@ abstract Dictionary<K, V>(Dynamic)
 		return Reflect.field(this, cast key);
 	}
 
-	#if haxe4
 	@:runtime public inline function keyValueIterator():KeyValueIterator<K, V>
 	{
 		return new haxe.iterators.MapKeyValueIterator(this);
 	}
-	#end
 
 	public inline function remove(key:K):Bool
 	{
@@ -618,12 +596,10 @@ abstract Dictionary<K, V>(flash.utils.Dictionary) from flash.utils.Dictionary to
 		return untyped this[key];
 	}
 
-	#if haxe4
 	@:runtime public inline function keyValueIterator():KeyValueIterator<K, V>
 	{
 		return new haxe.iterators.MapKeyValueIterator(untyped this);
 	}
-	#end
 
 	public inline function remove(key:K):Bool
 	{

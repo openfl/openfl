@@ -72,7 +72,7 @@ package openfl.net;
  * supported for `POST` requests, not for `GET`
  * requests.
  */
-@:final extern class URLRequestHeader
+final extern class URLRequestHeader
 {
 	/**
 	 * An HTTP request header name(such as `Content-Type` or

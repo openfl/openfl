@@ -4,7 +4,7 @@ package flash.ui;
 import openfl.utils.ByteArray;
 
 @:require(flash11_8)
-@:final extern class GameInputDevice
+final extern class GameInputDevice
 {
 	public static var MAX_BUFFER_SIZE(default, never):Int;
 	public var enabled:Bool;

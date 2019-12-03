@@ -10,7 +10,7 @@ import openfl.display.MovieClip;
 {
 	public var label:String;
 	public var objects:Array<AnimateFrameObject>;
-	public var script:MovieClip->Void;
+	public var script:(scope:MovieClip) -> Void;
 	public var scriptSource:String;
 
 	// public var scriptType:FrameScriptType;

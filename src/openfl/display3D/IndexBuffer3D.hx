@@ -27,7 +27,7 @@ import openfl.Vector;
 #end
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.Stage)
-@:final class IndexBuffer3D
+final class IndexBuffer3D
 {
 	@:noCompletion private var __context:Context3D;
 	@:noCompletion private var __id:GLBuffer;

@@ -7,7 +7,7 @@ import openfl.utils.ByteArray;
 #if !openfl_global
 @:jsRequire("openfl/display3D/textures/CubeTexture", "default")
 #end
-@:final extern class CubeTexture extends TextureBase
+final extern class CubeTexture extends TextureBase
 {
 	public function uploadCompressedTextureFromByteArray(data:ByteArray, byteArrayOffset:UInt, async:Bool = false):Void;
 	public function uploadFromBitmapData(source:BitmapData, side:UInt, miplevel:UInt = 0):Void;

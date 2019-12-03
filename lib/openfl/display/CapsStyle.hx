@@ -7,7 +7,7 @@ package openfl.display;
  * `openfl.display.Graphics.lineStyle()` method. You can specify the
  * following three types of caps:
  */
-@:enum abstract CapsStyle(String) from String to String
+enum abstract CapsStyle(String) from String to String
 {
 	/**
 	 * Used to specify no caps in the `caps` parameter of the

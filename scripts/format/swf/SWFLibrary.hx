@@ -137,7 +137,7 @@ import format.SWF;
 			return promise.future;
 		}
 		#else
-		public override function load(handler:AssetLibrary->Void):Void
+		public override function load(handler:(library:AssetLibrary) -> Void):Void
 		{
 			#if flash
 			context = new LoaderContext(false, ApplicationDomain.currentDomain, null);

@@ -1,7 +1,7 @@
 package flash.display;
 
 #if flash
-@:enum abstract JointStyle(String) from String to String
+enum abstract JointStyle(String) from String to String
 {
 	public var MITER = "miter";
 	public var ROUND = "round";

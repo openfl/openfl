@@ -9,7 +9,7 @@ package openfl.display;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:final class PNGEncoderOptions
+final class PNGEncoderOptions
 {
 	/**
 		Chooses compression speed over file size. Setting this property to true improves

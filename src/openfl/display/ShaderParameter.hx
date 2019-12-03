@@ -93,7 +93,7 @@ import openfl.display3D.Context3D;
 #if (!js && !display)
 @:generic
 #end
-@:final class ShaderParameter<T> /*implements Dynamic*/
+final class ShaderParameter<T> /*implements Dynamic*/
 {
 	/**
 		The zero-based index of the parameter.

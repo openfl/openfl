@@ -62,7 +62,7 @@ import openfl.events.GameInputEvent;
 #end
 @:access(openfl.ui.GameInputControl)
 @:access(openfl.ui.GameInputDevice)
-@:final class GameInput extends EventDispatcher
+final class GameInput extends EventDispatcher
 {
 	/**
 		Indicates whether the current platform supports the GameInput API.
@@ -89,7 +89,7 @@ import openfl.events.GameInputEvent;
 	}
 
 	@SuppressWarnings("checkstyle:Dynamic")
-	public override function addEventListener<T>(type:EventType<T>, listener:T->Void, useCapture:Bool = false, priority:Int = 0,
+	public override function addEventListener<T>(type:EventType<T>, listener:(event:T) -> Void, useCapture:Bool = false, priority:Int = 0,
 			useWeakReference:Bool = false):Void
 	{
 		super.addEventListener(type, listener, useCapture, priority, useWeakReference);

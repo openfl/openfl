@@ -156,14 +156,12 @@ class DisplayObjectContainer extends InteractiveObject
 			error.errorID = 2007;
 			throw error;
 		}
-		#if ((haxe_ver >= "3.4.0") || !cpp)
 		else if (child.stage == child)
 		{
 			var error = new ArgumentError("Error #3783: A Stage object cannot be added as the child of another object.");
 			error.errorID = 3783;
 			throw error;
 		}
-		#end
 
 		if (child.parent == this)
 		{
@@ -269,14 +267,12 @@ class DisplayObjectContainer extends InteractiveObject
 			error.errorID = 2007;
 			throw error;
 		}
-		#if ((haxe_ver >= "3.4.0") || !cpp)
 		else if (child.stage == child)
 		{
 			var error = new ArgumentError("Error #3783: A Stage object cannot be added as the child of another object.");
 			error.errorID = 3783;
 			throw error;
 		}
-		#end
 
 		if (index < 0 || index > numChildren)
 		{
@@ -662,21 +658,6 @@ class DisplayObjectContainer extends InteractiveObject
 			child = next;
 			numRemovals--;
 		}
-	}
-
-	@:noCompletion private function resolve(fieldName:String):DisplayObject
-	{
-		var child = __firstChild;
-		while (child != null)
-		{
-			if (child.name == fieldName)
-			{
-				return child;
-			}
-			child = child.__nextSibling;
-		}
-
-		return null;
 	}
 
 	/**

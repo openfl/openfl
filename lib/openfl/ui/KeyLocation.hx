@@ -1,6 +1,6 @@
 package openfl.ui;
 
-@:enum abstract KeyLocation(Int) from Int to Int from UInt to UInt
+enum abstract KeyLocation(Int) from Int to Int from UInt to UInt
 {
 	#if (flash && !doc_gen)
 	@:noCompletion @:dox(hide) public static inline var D_PAD = 4;

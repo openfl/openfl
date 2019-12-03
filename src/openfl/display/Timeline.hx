@@ -44,7 +44,7 @@ class Timeline
 	@:noCompletion private var __currentLabel:String;
 	@:noCompletion private var __currentLabels:Array<FrameLabel>;
 	@:noCompletion private var __currentScene:Scene;
-	@:noCompletion private var __frameScripts:Map<Int, MovieClip->Void>;
+	@:noCompletion private var __frameScripts:Map<Int, (scope:MovieClip) -> Void>;
 	@:noCompletion private var __framesLoaded:Int;
 	@:noCompletion private var __frameTime:Int;
 	@:noCompletion private var __isPlaying:Bool;
@@ -90,7 +90,7 @@ class Timeline
 	**/
 	@:noCompletion public function enterFrame(frame:Int):Void {}
 
-	@:noCompletion private function __addFrameScript(index:Int, method:Void->Void):Void
+	@:noCompletion private function __addFrameScript(index:Int, method:() -> Void):Void
 	{
 		if (index < 0) return;
 
@@ -252,13 +252,13 @@ class Timeline
 		__evaluateFrameScripts(__currentFrame);
 	}
 
-	@:noCompletion private function __gotoAndPlay(frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end, scene:String = null):Void
+	@:noCompletion private function __gotoAndPlay(frame:Any, scene:String = null):Void
 	{
 		__play();
 		__goto(__resolveFrameReference(frame));
 	}
 
-	@:noCompletion private function __gotoAndStop(frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end, scene:String = null):Void
+	@:noCompletion private function __gotoAndStop(frame:Any, scene:String = null):Void
 	{
 		__stop();
 		__goto(__resolveFrameReference(frame));
@@ -304,7 +304,7 @@ class Timeline
 		__isPlaying = false;
 	}
 
-	@:noCompletion private function __resolveFrameReference(frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end):Int
+	@:noCompletion private function __resolveFrameReference(frame:Any):Int
 	{
 		if (Std.is(frame, Int))
 		{

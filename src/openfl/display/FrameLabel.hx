@@ -12,7 +12,7 @@ import openfl.events.EventDispatcher;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:final class FrameLabel extends EventDispatcher
+final class FrameLabel extends EventDispatcher
 {
 	/**
 		The frame number containing the label.

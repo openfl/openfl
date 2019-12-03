@@ -27,7 +27,7 @@ import openfl.utils.ByteArray;
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.Stage)
 @:access(openfl.events.Event)
-@:final class Texture extends TextureBase
+final class Texture extends TextureBase
 {
 	@:noCompletion private static var __lowMemoryMode:Bool = false;
 

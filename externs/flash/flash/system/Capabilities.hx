@@ -1,7 +1,7 @@
 package flash.system;
 
 #if flash
-@:final extern class Capabilities
+final extern class Capabilities
 {
 	public static var avHardwareDisable(default, never):Bool;
 	@:require(flash10_1) public static var cpuArchitecture(default, never):String;

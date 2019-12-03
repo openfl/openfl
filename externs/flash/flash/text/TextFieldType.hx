@@ -1,7 +1,7 @@
 package flash.text;
 
 #if flash
-@:enum abstract TextFieldType(String) from String to String
+enum abstract TextFieldType(String) from String to String
 {
 	public var DYNAMIC = "dynamic";
 	public var INPUT = "input";

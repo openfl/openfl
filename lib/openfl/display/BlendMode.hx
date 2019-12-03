@@ -10,7 +10,7 @@ package openfl.display;
  * method of the openfl.display.BitmapData class
  *
  */
-@:enum abstract BlendMode(String) from String to String
+enum abstract BlendMode(String) from String to String
 {
 	/**
 	 * Adds the values of the constituent colors of the display object to the

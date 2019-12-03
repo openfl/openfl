@@ -65,16 +65,16 @@ class Future<T>
 	**/
 	public var value(default, null):T;
 
-	@:noCompletion private var __completeListeners:Array<T->Void>;
-	@:noCompletion private var __errorListeners:Array<Dynamic->Void>;
-	@:noCompletion private var __progressListeners:Array<Int->Int->Void>;
+	@:noCompletion private var __completeListeners:Array<(value:T) -> Void>;
+	@:noCompletion private var __errorListeners:Array<(error:Dynamic) -> Void>;
+	@:noCompletion private var __progressListeners:Array<(loaded:Int, total:Int) -> Void>;
 
 	/**
 		Create a new `Future` instance
 		@param	work	(Optional) A function to execute
 		@param	async	(Optional) If a function is specified, whether to execute it asynchronously where supported
 	**/
-	public function new(work:Void->T = null, async:Bool = false)
+	public function new(work:() -> T = null, async:Bool = false)
 	{
 		if (work != null)
 		{
@@ -120,7 +120,7 @@ class Future<T>
 		@param	listener	A callback method to receive the result value
 		@return	The current `Future`
 	**/
-	public function onComplete(listener:T->Void):Future<T>
+	public function onComplete(listener:(value:T) -> Void):Future<T>
 	{
 		if (listener != null)
 		{
@@ -149,7 +149,7 @@ class Future<T>
 		@param	listener	A callback method to receive the error value
 		@return	The current `Future`
 	**/
-	public function onError(listener:Dynamic->Void):Future<T>
+	public function onError(listener:(error:Dynamic) -> Void):Future<T>
 	{
 		if (listener != null)
 		{
@@ -178,7 +178,7 @@ class Future<T>
 		@param	listener	A callback method to receive the progress value
 		@return	The current `Future`
 	**/
-	public function onProgress(listener:Int->Int->Void):Future<T>
+	public function onProgress(listener:(loaded:Int, total:Int) -> Void):Future<T>
 	{
 		if (listener != null)
 		{
@@ -257,7 +257,7 @@ class Future<T>
 		Chains two `Future` instances together, passing the result from the first
 		as input for creating/returning a new `Future` instance of a new or the same type
 	**/
-	public function then<U>(next:T->Future<U>):Future<U>
+	public function then<U>(next:(value:T) -> Future<U>):Future<U>
 	{
 		if (isComplete)
 		{

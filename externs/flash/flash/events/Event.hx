@@ -94,9 +94,9 @@ extern class Event
 	#end
 	public var bubbles(default, never):Bool;
 	public var cancelable(default, never):Bool;
-	public var currentTarget(default, never):#if (haxe_ver >= "3.4.2") Any #else IEventDispatcher #end;
+	public var currentTarget(default, never):Any;
 	public var eventPhase(default, never):EventPhase;
-	public var target(default, never):#if (haxe_ver >= "3.4.2") Any #else IEventDispatcher #end;
+	public var target(default, never):Any;
 	public var type(default, never):String;
 	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false);
 	public function clone():Event;

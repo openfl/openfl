@@ -3,7 +3,7 @@ package flash.display;
 #if flash
 import openfl.Vector;
 
-@:final extern class GraphicsPath implements IGraphicsData implements IGraphicsPath
+final extern class GraphicsPath implements IGraphicsData implements IGraphicsPath
 {
 	public var commands:Vector<Int>;
 	public var data:Vector<Float>;

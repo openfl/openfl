@@ -3,7 +3,7 @@ package flash.display;
 #if flash
 import openfl.geom.Matrix;
 
-@:final extern class GraphicsShaderFill implements IGraphicsData implements IGraphicsFill
+final extern class GraphicsShaderFill implements IGraphicsData implements IGraphicsFill
 {
 	public var matrix:Matrix;
 	public var shader:Shader;

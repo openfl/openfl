@@ -17,7 +17,7 @@ package openfl.display;
 
 	![a comparison of even-odd and non-zero winding rules](/images/winding_rules_evenodd_nonzero.gif)
 **/
-@:enum abstract GraphicsPathWinding(Null<Int>)
+enum abstract GraphicsPathWinding(Null<Int>)
 {
 	/**
 		Establishes the even-odd winding type. The even-odd winding type is the rule
@@ -59,7 +59,7 @@ package openfl.display;
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-@:enum abstract GraphicsPathWinding(String) from String to String
+enum abstract GraphicsPathWinding(String) from String to String
 {
 	public var EVEN_ODD = "evenOdd";
 	public var NON_ZERO = "nonZero";

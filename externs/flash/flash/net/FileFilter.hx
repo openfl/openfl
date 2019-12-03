@@ -1,7 +1,7 @@
 package flash.net;
 
 #if flash
-@:final extern class FileFilter
+final extern class FileFilter
 {
 	public var description:String;
 	public var extension:String;

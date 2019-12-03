@@ -4,7 +4,7 @@ package openfl.text;
  * The AntiAliasType class provides values for anti-aliasing in the
  * flash.text.TextField class.
  */
-@:enum abstract AntiAliasType(String) from String to String
+enum abstract AntiAliasType(String) from String to String
 {
 	/**
 	 * Sets anti-aliasing to advanced anti-aliasing. Advanced anti-aliasing

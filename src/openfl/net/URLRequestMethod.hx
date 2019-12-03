@@ -6,7 +6,7 @@ package openfl.net;
 	URLRequest object should use the `POST` method or the
 	`GET` method when sending data to a server.
 **/
-@:enum abstract URLRequestMethod(String) from String to String
+enum abstract URLRequestMethod(String) from String to String
 {
 	/**
 		Specifies that the URLRequest object is a `DELETE`.
