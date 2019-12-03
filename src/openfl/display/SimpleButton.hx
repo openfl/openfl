@@ -1,8 +1,6 @@
 package openfl.display;
 
 #if !flash
-import openfl._internal.formats.swf.SWFLite;
-import openfl._internal.symbols.ButtonSymbol;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.events.MouseEvent;
@@ -30,16 +28,11 @@ import openfl.Vector;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl._internal.symbols.SWFSymbol)
 @:access(openfl.display.MovieClip)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 class SimpleButton extends InteractiveObject
 {
-	@:noCompletion private static var __constructor:(simpleButton:SimpleButton) -> Void;
-	@:noCompletion private static var __initSWF:SWFLite;
-	@:noCompletion private static var __initSymbol:ButtonSymbol;
-
 	/**
 		Specifies a display object that is used as the visual object for the
 		button "Down" state  - the state that the button is in when the user
@@ -118,6 +111,8 @@ class SimpleButton extends InteractiveObject
 	**/
 	public var useHandCursor:Bool;
 
+	@:noCompletion private static var __constructor:(simpleButton:SimpleButton) -> Void;
+
 	@:noCompletion private var __currentState(default, set):DisplayObject;
 	@:noCompletion private var __downState:DisplayObject;
 	@:noCompletion private var __hitTestState:DisplayObject;
@@ -125,7 +120,6 @@ class SimpleButton extends InteractiveObject
 	@:noCompletion private var __overState:DisplayObject;
 	@:noCompletion private var __previousStates:Vector<DisplayObject>;
 	@:noCompletion private var __soundTransform:SoundTransform;
-	@:noCompletion private var __symbol:ButtonSymbol;
 	@:noCompletion private var __upState:DisplayObject;
 
 	#if openfljs
@@ -195,41 +189,6 @@ class SimpleButton extends InteractiveObject
 			__constructor = null;
 
 			method(this);
-		}
-		else if (__initSymbol != null)
-		{
-			var swf = __initSWF;
-			__symbol = __initSymbol;
-
-			__initSWF = null;
-			__initSymbol = null;
-
-			__fromSymbol(swf, __symbol);
-		}
-	}
-
-	@:noCompletion private function __fromSymbol(swf:SWFLite, symbol:ButtonSymbol):Void
-	{
-		__symbol = symbol;
-
-		if (symbol.downState != null)
-		{
-			downState = symbol.downState.__createObject(swf);
-		}
-
-		if (symbol.hitState != null)
-		{
-			hitTestState = symbol.hitState.__createObject(swf);
-		}
-
-		if (symbol.overState != null)
-		{
-			overState = symbol.overState.__createObject(swf);
-		}
-
-		if (symbol.upState != null)
-		{
-			upState = symbol.upState.__createObject(swf);
 		}
 	}
 
