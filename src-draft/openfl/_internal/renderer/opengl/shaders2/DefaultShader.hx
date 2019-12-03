@@ -55,7 +55,6 @@ enum private abstract Attrib(String) from String to String
 	var TexCoord = "aTexCoord0";
 	var Color = "aColor";
 }
-
 enum private abstract Uniform(String) from String to String
 {
 	var Sampler = "uSampler0";
@@ -65,6 +64,5 @@ enum private abstract Uniform(String) from String to String
 	var ColorMultiplier = "uColorMultiplier";
 	var ColorOffset = "uColorOffset";
 }
-
 typedef DefAttrib = Attrib;
 typedef DefUniform = Uniform;

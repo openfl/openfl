@@ -10,7 +10,6 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
 import openfl.utils.Object;
-
 #if lime
 import lime.app.Future;
 import lime.app.Promise;

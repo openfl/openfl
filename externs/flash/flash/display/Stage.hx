@@ -5,7 +5,6 @@ import openfl.display3D.Context3D;
 import openfl.display.Application;
 import openfl.geom.Rectangle;
 import openfl.Lib;
-
 #if lime
 import lime.app.Application in LimeApplication;
 import lime.app.IModule;

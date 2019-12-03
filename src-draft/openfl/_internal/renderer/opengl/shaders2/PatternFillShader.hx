@@ -66,7 +66,6 @@ enum private abstract Attrib(String) to String from String
 {
 	var Position = DefAttrib.Position;
 }
-
 enum private abstract Uniform(String) from String to String
 {
 	var TranslationMatrix = "uTranslationMatrix";
@@ -80,6 +79,5 @@ enum private abstract Uniform(String) from String to String
 	var ColorMultiplier = DefUniform.ColorMultiplier;
 	var ColorOffset = DefUniform.ColorOffset;
 }
-
 typedef PatternFillAttrib = Attrib;
 typedef PatternFillUniform = Uniform;

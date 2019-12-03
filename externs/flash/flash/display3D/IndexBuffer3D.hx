@@ -3,7 +3,6 @@ package flash.display3D;
 #if flash
 import openfl.utils.ByteArray;
 import openfl.Vector;
-
 #if lime
 import lime.utils.ArrayBufferView;
 #end

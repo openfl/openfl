@@ -13,7 +13,6 @@ import openfl._internal.formats.html.HTMLParser;
 import openfl._internal.text.TextEngine;
 import openfl._internal.text.TextFormatRange;
 import openfl._internal.text.TextLayoutGroup;
-import openfl._internal.text.UTF8String;
 import openfl._internal.utils.Log;
 import openfl.display.DisplayObject;
 import openfl.display.Graphics;
@@ -375,7 +374,7 @@ class TextField extends InteractiveObject
 		Flash Player and AIR also support explicit character codes, such as
 		&#38; (ASCII ampersand) and &#x20AC; (Unicode € symbol).
 	**/
-	public var htmlText(get, set):UTF8String;
+	public var htmlText(get, set):String;
 
 	/**
 		The number of characters in a text field. A character such as tab
@@ -479,7 +478,7 @@ class TextField extends InteractiveObject
 
 		@default null
 	**/
-	public var restrict(get, set):UTF8String;
+	public var restrict(get, set):String;
 
 	/**
 		The current horizontal scrolling position. If the `scrollH`
@@ -591,7 +590,7 @@ class TextField extends InteractiveObject
 		To get the text in HTML form, use the `htmlText`
 		property.
 	**/
-	public var text(get, set):UTF8String;
+	public var text(get, set):String;
 
 	/**
 		The color of the text in a text field, in hexadecimal format. The
@@ -681,8 +680,8 @@ class TextField extends InteractiveObject
 	@:noCompletion private var __selectionIndex:Int;
 	@:noCompletion private var __showCursor:Bool;
 	@:noCompletion private var __symbol:DynamicTextSymbol;
-	@:noCompletion private var __text:UTF8String;
-	@:noCompletion private var __htmlText:UTF8String;
+	@:noCompletion private var __text:String;
+	@:noCompletion private var __htmlText:String;
 	@:noCompletion private var __textEngine:TextEngine;
 	@:noCompletion private var __textFormat:TextFormat;
 	#if openfl_html5
@@ -2062,7 +2061,7 @@ class TextField extends InteractiveObject
 
 		__replaceText(startIndex, endIndex, value, restrict);
 
-		var i = startIndex + cast(value, UTF8String).length;
+		var i = startIndex + value.length;
 		if (i > __text.length) i = __text.length;
 
 		setSelection(i, i);
@@ -2882,11 +2881,10 @@ class TextField extends InteractiveObject
 			__textEngine.textFormatRanges.splice(1, __textEngine.textFormatRanges.length - 1);
 		}
 
-		var utfValue:UTF8String = value;
 		var range = __textEngine.textFormatRanges[0];
 		range.format = __textFormat;
 		range.start = 0;
-		range.end = utfValue.length;
+		range.end = value.length;
 
 		__isHTML = false;
 

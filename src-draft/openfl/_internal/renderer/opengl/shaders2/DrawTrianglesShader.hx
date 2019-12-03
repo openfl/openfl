@@ -62,7 +62,6 @@ enum private abstract Attrib(String) from String to String
 	var TexCoord = DefAttrib.TexCoord;
 	var Color = DefAttrib.Color;
 }
-
 enum private abstract Uniform(String) from String to String
 {
 	var UseTexture = "uUseTexture";
@@ -73,6 +72,5 @@ enum private abstract Uniform(String) from String to String
 	var ColorMultiplier = DefUniform.ColorMultiplier;
 	var ColorOffset = DefUniform.ColorOffset;
 }
-
 typedef DrawTrianglesAttrib = Attrib;
 typedef DrawTrianglesUniform = Uniform;

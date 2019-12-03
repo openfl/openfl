@@ -2,7 +2,6 @@ package flash.text;
 
 #if flash
 import openfl.utils.ByteArray;
-
 #if lime
 import lime.text.Font in LimeFont;
 #end
