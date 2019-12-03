@@ -439,7 +439,7 @@ class CairoRenderer extends CairoRendererAPI
 
 	private function __renderTextField(textField:TextField):Void
 	{
-		__updateCacheBitmap(textField, /*!__worldColorTransform.__isDefault ()*/ false);
+		__updateCacheBitmap(textField, textField.__dirty);
 
 		if (textField.__cacheBitmap != null && !textField.__isCacheBitmapRender)
 		{

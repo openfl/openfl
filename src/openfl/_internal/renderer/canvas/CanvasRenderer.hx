@@ -461,7 +461,7 @@ class CanvasRenderer extends CanvasRendererAPI
 
 		if (textField.mask == null || (textField.mask.width > 0 && textField.mask.height > 0))
 		{
-			__updateCacheBitmap(textField, /*!__worldColorTransform.__isDefault ()*/ false);
+			__updateCacheBitmap(textField, textField.__dirty);
 
 			if (textField.__cacheBitmap != null && !textField.__isCacheBitmapRender)
 			{
