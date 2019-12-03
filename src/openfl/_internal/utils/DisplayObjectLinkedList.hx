@@ -111,7 +111,15 @@ class DisplayObjectLinkedList
 		#if openfl_validate_children
 		displayObject.__children.remove(child);
 		var index = displayObject.__children.indexOf(before) + 1;
-		displayObject.__children.insert(index, child);
+		var childIndex = displayObject.__children.indexOf(child);
+		if (childIndex != index)
+		{
+			if (childIndex != -1 && childIndex < index)
+			{
+				index--;
+			}
+			displayObject.__children.insert(index, child);
+		}
 		__validateChildren(displayObject, "insertChildAfter");
 		#end
 	}
@@ -139,20 +147,31 @@ class DisplayObjectLinkedList
 		}
 		else
 		{
+			// var args:Array<Dynamic> = [child, index];
+			// __validateChildrenInit(displayObject, "__insertChildAt", args);
+
 			var ref = displayObject.__firstChild;
+			var childFound = (ref == child);
 			for (i in 0...(index - 1))
+			{
+				ref = ref.__nextSibling;
+				if (ref == child)
+				{
+					childFound = true;
+				}
+			}
+
+			if (childFound && ref.__nextSibling != null)
 			{
 				ref = ref.__nextSibling;
 			}
 
 			if (ref == child)
 			{
-				__swapChildren(displayObject, child, child.__nextSibling);
+				return;
 			}
-			else
-			{
-				__insertChildAfter(displayObject, child, ref);
-			}
+
+			__insertChildAfter(displayObject, child, ref);
 		}
 	}
 
@@ -286,6 +305,11 @@ class DisplayObjectLinkedList
 
 	public static #if !openfl_validate_children inline #end function __unshiftChild(displayObject:DisplayObjectContainer, child:DisplayObject):Void
 	{
+		if (displayObject.__firstChild == child)
+		{
+			return;
+		}
+
 		if (child.parent != displayObject)
 		{
 			if (child.parent != null)
@@ -482,6 +506,52 @@ class DisplayObjectLinkedList
 		trace(msg);
 
 		throw message;
+	}
+
+	@:noCompletion private static function __validateChildrenInit(displayObject:DisplayObjectContainer, methodName:String, args:Array<Dynamic>):Void
+	{
+		var msg = methodName + "(";
+		for (i in 0...args.length)
+		{
+			var arg = args[i];
+			if (arg == null)
+			{
+				msg += "null";
+			}
+			else if (Std.is(arg, DisplayObject))
+			{
+				msg += cast(arg, DisplayObject).name;
+			}
+			else
+			{
+				msg += Std.string(arg);
+			}
+
+			if (i < args.length - 1)
+			{
+				msg += ", ";
+			}
+		}
+		msg += ")";
+		trace(msg);
+
+		var msg = "__children: [";
+		for (i in 0...displayObject.__children.length)
+		{
+			msg += (displayObject.__children[i] != null ? displayObject.__children[i].name : null) + ",";
+		}
+		msg += "]";
+		trace(msg);
+
+		var msg = "child list: [";
+		var _child = displayObject.__firstChild;
+		while (_child != null)
+		{
+			msg += (_child != null ? _child.name : null) + ",";
+			_child = _child.__nextSibling;
+		}
+		msg += "]";
+		trace(msg);
 	}
 	#end
 }
