@@ -6,16 +6,11 @@ import openfl.display.DisplayObject;
 @:access(openfl.display.DisplayObject)
 class DisplayObjectLinkedList
 {
-	public static #if !openfl_validate_children inline #end function __addChild(displayObject:DisplayObjectContainer, child:DisplayObject):Void
+	public static #if !openfl_validate_children /*inline*/ #end function __addChild(displayObject:DisplayObjectContainer, child:DisplayObject):Void
 	{
-		if (child.parent != displayObject)
+		if (child == displayObject.__lastChild)
 		{
-			if (child.parent != null)
-			{
-				child.parent.removeChild(child);
-			}
-			child.parent = displayObject;
-			displayObject.numChildren++;
+			return;
 		}
 
 		if (displayObject.__firstChild == child)
@@ -58,16 +53,6 @@ class DisplayObjectLinkedList
 		if (before == child || before.__nextSibling == child)
 		{
 			return;
-		}
-
-		if (child.parent != displayObject)
-		{
-			if (child.parent != null)
-			{
-				child.parent.removeChild(child);
-			}
-			child.parent = displayObject;
-			displayObject.numChildren++;
 		}
 
 		var after = before.__nextSibling;
@@ -139,7 +124,8 @@ class DisplayObjectLinkedList
 		}
 	}
 
-	public static #if !openfl_validate_children inline #end function __insertChildAt(displayObject:DisplayObjectContainer, child:DisplayObject, index:Int):Void
+	public static #if !openfl_validate_children /*inline*/ #end function __insertChildAt(displayObject:DisplayObjectContainer, child:DisplayObject,
+			index:Int):Void
 	{
 		if (index == 0)
 		{
@@ -155,7 +141,11 @@ class DisplayObjectLinkedList
 			for (i in 0...(index - 1))
 			{
 				ref = ref.__nextSibling;
-				if (ref == child)
+				if (ref == null)
+				{
+					break;
+				}
+				else if (ref == child)
 				{
 					childFound = true;
 				}
@@ -175,7 +165,7 @@ class DisplayObjectLinkedList
 		}
 	}
 
-	public static #if !openfl_validate_children inline #end function __removeChild(displayObject:DisplayObjectContainer, child:DisplayObject):Void
+	public static #if !openfl_validate_children /*inline*/ #end function __removeChild(displayObject:DisplayObjectContainer, child:DisplayObject):Void
 	{
 		child.parent = null;
 		displayObject.numChildren--;
@@ -207,6 +197,19 @@ class DisplayObjectLinkedList
 		displayObject.__children.remove(child);
 		__validateChildren(displayObject, "removeChild");
 		#end
+	}
+
+	public static inline function __reparent(displayObject:DisplayObjectContainer, child:DisplayObject):Void
+	{
+		if (child.parent != displayObject)
+		{
+			if (child.parent != null)
+			{
+				child.parent.removeChild(child);
+			}
+			child.parent = displayObject;
+			displayObject.numChildren++;
+		}
 	}
 
 	public static function __swapChildren(displayObject:DisplayObjectContainer, child1:DisplayObject, child2:DisplayObject):Void
@@ -303,21 +306,11 @@ class DisplayObjectLinkedList
 		#end
 	}
 
-	public static #if !openfl_validate_children inline #end function __unshiftChild(displayObject:DisplayObjectContainer, child:DisplayObject):Void
+	public static #if !openfl_validate_children /*inline*/ #end function __unshiftChild(displayObject:DisplayObjectContainer, child:DisplayObject):Void
 	{
 		if (displayObject.__firstChild == child)
 		{
 			return;
-		}
-
-		if (child.parent != displayObject)
-		{
-			if (child.parent != null)
-			{
-				child.parent.removeChild(child);
-			}
-			child.parent = displayObject;
-			displayObject.numChildren++;
 		}
 
 		if (child.__previousSibling != null)

@@ -165,13 +165,11 @@ class DisplayObjectContainer extends InteractiveObject
 
 		if (child.parent == this)
 		{
-			if (child != __lastChild && (__firstChild != __lastChild))
-			{
-				this.__addChild(child);
-			}
+			this.__addChild(child);
 		}
 		else
 		{
+			this.__reparent(child);
 			this.__addChild(child);
 
 			var addedToStage = (stage != null && child.stage == null);
@@ -297,6 +295,7 @@ class DisplayObjectContainer extends InteractiveObject
 		}
 		else
 		{
+			this.__reparent(child);
 			this.__insertChildAt(child, index);
 			__setRenderDirty();
 
@@ -707,7 +706,7 @@ class DisplayObjectContainer extends InteractiveObject
 			{
 				this.__unshiftChild(child);
 			}
-			else if (index >= numChildren)
+			else if (index >= numChildren - 1)
 			{
 				this.__addChild(child);
 			}
