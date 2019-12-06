@@ -254,7 +254,7 @@ class DisplayObjectContainer extends InteractiveObject
 	**/
 	public function addChildAt(child:DisplayObject, index:Int):DisplayObject
 	{
-		if (index >= numChildren)
+		if (index == numChildren)
 		{
 			return addChild(child);
 		}
@@ -719,7 +719,7 @@ class DisplayObjectContainer extends InteractiveObject
 			__children = copy;
 			__children.remove(child);
 			__children.insert(index, child);
-			@:privateAccess DisplayObjectLinkedList.__validateChildren(this, "setChildIndex");
+			this.__validateChildren("setChildIndex");
 			#end
 		}
 	}
