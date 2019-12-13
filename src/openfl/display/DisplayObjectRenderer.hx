@@ -48,7 +48,7 @@ class DisplayObjectRenderer extends EventDispatcher
 
 	@:noCompletion private function __enterFrame(displayObject:DisplayObject, deltaTime:Int):Void
 	{
-		for (child in displayObject.__allChildren())
+		for (child in displayObject.__childIterator(false))
 		{
 			switch (child.__type)
 			{

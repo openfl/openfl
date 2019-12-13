@@ -886,6 +886,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable
 	**/
 	@:keep public var y(get, set):Float;
 
+	@:noCompletion private static var __childIterators:ObjectPool<DisplayObjectIterator> = new ObjectPool<DisplayObjectIterator>(function() { return new DisplayObjectIterator(); });
+
 	// @:noCompletion @:dox(hide) @:require(flash10) var z:Float;
 	@:noCompletion private var __alpha:Float;
 	@:noCompletion private var __blendMode:BlendMode;
@@ -1363,9 +1365,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable
 		}
 	}
 
-	@:noCompletion private function __allChildren():Iterator<DisplayObject>
+	@:noCompletion private function __childIterator(childrenOnly:Bool = true):DisplayObjectIterator
 	{
-		return new DisplayObjectIterator(this);
+		var iterator = __childIterators.get();
+		iterator.init(this, childrenOnly);
+		return iterator;
 	}
 
 	@:noCompletion private static inline function __calculateAbsoluteTransform(local:Matrix, parentTransform:Matrix, target:Matrix):Void
@@ -1378,48 +1382,59 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable
 		target.ty = local.tx * parentTransform.b + local.ty * parentTransform.d + parentTransform.ty;
 	}
 
-	@:noCompletion private function __cleanup():Void
+	@:noCompletion private #if haxe4 final #end function __cleanup():Void
 	{
-		__cairo = null;
-
-		#if openfl_html5
-		__canvas = null;
-		__context = null;
-		#end
-
-		if (__graphics != null)
+		for (child in __childIterator(false))
 		{
-			__graphics.__cleanup();
-		}
+			child.__cairo = null;
 
-		if (__cacheBitmap != null)
-		{
-			__cacheBitmap.__cleanup();
-			__cacheBitmap = null;
-		}
+			#if openfl_html5
+			child.__canvas = null;
+			child.__context = null;
+			#end
 
-		if (__cacheBitmapDataTexture != null)
-		{
-			__cacheBitmapDataTexture.dispose();
-			__cacheBitmapDataTexture = null;
-		}
+			if (child.__graphics != null)
+			{
+				child.__graphics.__cleanup();
+			}
 
-		if (__cacheBitmapData != null)
-		{
-			__cacheBitmapData.dispose();
-			__cacheBitmapData = null;
-		}
+			if (child.__cacheBitmap != null)
+			{
+				child.__cacheBitmap.__cleanup();
+				child.__cacheBitmap = null;
+			}
 
-		if (__cacheBitmapData2 != null)
-		{
-			__cacheBitmapData2.dispose();
-			__cacheBitmapData2 = null;
-		}
+			if (child.__cacheBitmapDataTexture != null)
+			{
+				child.__cacheBitmapDataTexture.dispose();
+				child.__cacheBitmapDataTexture = null;
+			}
 
-		if (__cacheBitmapData3 != null)
-		{
-			__cacheBitmapData3.dispose();
-			__cacheBitmapData3 = null;
+			if (child.__cacheBitmapData != null)
+			{
+				child.__cacheBitmapData.dispose();
+				child.__cacheBitmapData = null;
+			}
+
+			if (child.__cacheBitmapData2 != null)
+			{
+				child.__cacheBitmapData2.dispose();
+				child.__cacheBitmapData2 = null;
+			}
+
+			if (child.__cacheBitmapData3 != null)
+			{
+				child.__cacheBitmapData3.dispose();
+				child.__cacheBitmapData3 = null;
+			}
+
+			switch (child.__type)
+			{
+				case DISPLAY_OBJECT_CONTAINER, MOVIE_CLIP:
+					var displayObjectContainer:DisplayObjectContainer = cast child;
+					displayObjectContainer.__cleanupRemovedChildren();
+				default:
+			}
 		}
 	}
 
@@ -1440,7 +1455,30 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable
 		return true;
 	}
 
-	@:noCompletion private function __dispatchChildren(event:Event):Void {}
+	@:noCompletion private #if haxe4 final #end function __dispatchChildren(event:Event):Void
+	{
+		if (__type != null)
+		{
+			switch (__type)
+			{
+				case DISPLAY_OBJECT_CONTAINER, MOVIE_CLIP:
+					var displayObjectContainer:DisplayObjectContainer = cast this;
+					if (displayObjectContainer.numChildren > 0)
+					{
+						for (child in __childIterator())
+						{
+							event.target = child;
+
+							if (!child.__dispatchWithCapture(event))
+							{
+								break;
+							}
+						}
+					}
+				default:
+			}
+		}
+	}
 
 	@:noCompletion private override function __dispatchEvent(event:Event):Bool
 	{
@@ -1657,36 +1695,31 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable
 
 	@:noCompletion private function __hitTest(x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool
 	{
+		var hitTest = false;
+
 		if (__graphics != null)
 		{
-			if (!hitObject.__visible || __isMask) return false;
-			if (mask != null && !mask.__hitTestMask(x, y)) return false;
-
-			if (__graphics.__hitTest(x, y, shapeFlag, __getRenderTransform()))
+			if (!hitObject.__visible || __isMask || (mask != null && !mask.__hitTestMask(x, y)))
+			{
+				hitTest = false;
+			}
+			else if (__graphics.__hitTest(x, y, shapeFlag, __getRenderTransform()))
 			{
 				if (stack != null && !interactiveOnly)
 				{
 					stack.push(hitObject);
 				}
 
-				return true;
+				hitTest = true;
 			}
 		}
 
-		return false;
+		return hitTest;
 	}
 
 	@:noCompletion private function __hitTestMask(x:Float, y:Float):Bool
 	{
-		if (__graphics != null)
-		{
-			if (__graphics.__hitTest(x, y, true, __getRenderTransform()))
-			{
-				return true;
-			}
-		}
-
-		return false;
+		return (__graphics != null && __graphics.__hitTest(x, y, true, __getRenderTransform()));
 	}
 
 	@:noCompletion private function __readGraphicsData(graphicsData:Vector<IGraphicsData>, recurse:Bool):Void
@@ -1723,19 +1756,22 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable
 	{
 		this.stage = stage;
 
-		for (child in __allChildren())
+		if (__firstChild != null)
 		{
-			child.stage = stage;
-			if (child.__type == SIMPLE_BUTTON)
+			for (child in __childIterator())
 			{
-				var button:SimpleButton = cast child;
-				if (button.__currentState != null)
+				child.stage = stage;
+				if (child.__type == SIMPLE_BUTTON)
 				{
-					button.__currentState.__setStageReferences(stage);
-				}
-				if (button.hitTestState != null && button.hitTestState != button.__currentState)
-				{
-					button.hitTestState.__setStageReferences(stage);
+					var button:SimpleButton = cast child;
+					if (button.__currentState != null)
+					{
+						button.__currentState.__setStageReferences(stage);
+					}
+					if (button.hitTestState != null && button.hitTestState != button.__currentState)
+					{
+						button.hitTestState.__setStageReferences(stage);
+					}
 				}
 			}
 		}

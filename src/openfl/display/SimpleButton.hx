@@ -257,10 +257,11 @@ class SimpleButton extends InteractiveObject
 		}
 		else if (__currentState != null)
 		{
-			if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
-			if (mask != null && !mask.__hitTestMask(x, y)) return false;
-
-			if (__currentState.__hitTest(x, y, shapeFlag, stack, interactiveOnly, hitObject))
+			if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled) || (mask != null && !mask.__hitTestMask(x, y)))
+			{
+				hitTest = false;
+			}
+			else if (__currentState.__hitTest(x, y, shapeFlag, stack, interactiveOnly, hitObject))
 			{
 				hitTest = interactiveOnly;
 			}
@@ -294,7 +295,8 @@ class SimpleButton extends InteractiveObject
 
 	@:noCompletion private override function __setTransformDirty(force:Bool = false):Void
 	{
-		super.__setTransformDirty(force);
+		// inline super.__setTransformDirty(force);
+		__transformDirty = true;
 
 		if (__currentState != null)
 		{
