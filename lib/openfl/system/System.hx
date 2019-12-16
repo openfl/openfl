@@ -17,7 +17,7 @@ package openfl.system;
  * This class contains only static methods and properties. You cannot
  * create new instances of the System class.
  */
-final extern class System
+@:final extern class System
 {
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10_1) public static var freeMemory(default, null):Float;

@@ -35,7 +35,7 @@ package openfl.system;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-final class ApplicationDomain
+@:final class ApplicationDomain
 {
 	#if false
 	/**

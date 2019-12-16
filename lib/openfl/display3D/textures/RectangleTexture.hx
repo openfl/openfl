@@ -7,7 +7,7 @@ import openfl.utils.ByteArray;
 #if !openfl_global
 @:jsRequire("openfl/display3D/textures/RectangleTexture", "default")
 #end
-final extern class RectangleTexture extends TextureBase
+@:final extern class RectangleTexture extends TextureBase
 {
 	public function uploadFromBitmapData(source:BitmapData):Void;
 	public function uploadFromByteArray(data:ByteArray, byteArrayOffset:UInt):Void;

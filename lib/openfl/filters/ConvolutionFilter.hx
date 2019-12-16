@@ -4,7 +4,7 @@ package openfl.filters;
 #if !openfl_global
 @:jsRequire("openfl/filters/ConvolutionFilter", "default")
 #end
-final extern class ConvolutionFilter extends BitmapFilter
+@:final extern class ConvolutionFilter extends BitmapFilter
 {
 	public var alpha:Float;
 	public var bias:Float;

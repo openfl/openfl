@@ -62,7 +62,7 @@ import openfl.geom.Rectangle;
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Point)
 @:access(openfl.geom.Rectangle)
-final class DropShadowFilter extends BitmapFilter
+@:final class DropShadowFilter extends BitmapFilter
 {
 	@:noCompletion private static var __hideShader = new HideShader();
 

@@ -1,7 +1,7 @@
 package flash.display;
 
 #if flash
-enum abstract TriangleCulling(String) from String to String
+@:enum abstract TriangleCulling(String) from String to String
 {
 	public var NEGATIVE = "negative";
 	public var NONE = "none";

@@ -58,7 +58,7 @@ import openfl.display.Shader;
 #end
 @:access(openfl.geom.Point)
 @:access(openfl.geom.Rectangle)
-final class DisplacementMapFilter extends BitmapFilter
+@:final class DisplacementMapFilter extends BitmapFilter
 {
 	@:noCompletion private static var __displacementMapShader:DisplacementMapShader = new DisplacementMapShader();
 	private static var __matrixData:Array<Float> = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0];

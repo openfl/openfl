@@ -17,7 +17,7 @@ import openfl.Lib;
 class Preloader
 {
 	@SuppressWarnings("checkstyle:Dynamic")
-	public var onComplete:#if lime lime.app.Event < () -> Void >= new lime.app.Event<() -> Void>() #else Dynamic #end;
+	public var onComplete:#if lime lime.app.Event < Void -> Void >= new lime.app.Event<Void->Void>() #else Dynamic #end;
 
 	@:noCompletion private var complete:Bool;
 	@:noCompletion private var display:Sprite;

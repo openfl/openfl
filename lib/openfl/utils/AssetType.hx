@@ -1,6 +1,6 @@
 package openfl.utils;
 
-@:dox(hide) enum abstract AssetType(String)
+@:dox(hide) @:enum abstract AssetType(String)
 {
 	var BINARY = "BINARY";
 	var FONT = "FONT";

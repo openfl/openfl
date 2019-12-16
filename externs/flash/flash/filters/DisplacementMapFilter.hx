@@ -4,7 +4,7 @@ package flash.filters;
 import openfl.display.BitmapData;
 import openfl.geom.Point;
 
-final extern class DisplacementMapFilter extends BitmapFilter
+@:final extern class DisplacementMapFilter extends BitmapFilter
 {
 	public var alpha:Float;
 	public var color:Int;

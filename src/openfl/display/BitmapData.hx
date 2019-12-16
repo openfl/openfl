@@ -2731,7 +2731,7 @@ class BitmapData implements IBitmapDrawable
 		if (!readable) return;
 
 		// Seeded Random Number Generator
-		var rand:() -> Int =
+		var rand:Void->Int =
 			{
 				function func():Int
 				{

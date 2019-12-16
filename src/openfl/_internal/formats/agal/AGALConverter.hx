@@ -818,7 +818,7 @@ private class RegisterMapEntry
 	public function new() {}
 }
 
-enum abstract RegisterType(Int)
+@:enum abstract RegisterType(Int)
 {
 	public var ATTRIBUTE = 0;
 	public var CONSTANT = 1;

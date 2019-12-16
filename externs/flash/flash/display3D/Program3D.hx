@@ -3,7 +3,7 @@ package flash.display3D;
 #if flash
 import openfl.utils.ByteArray;
 
-final extern class Program3D
+@:final extern class Program3D
 {
 	public function dispose():Void;
 	public inline function getAttributeIndex(name:String):Int

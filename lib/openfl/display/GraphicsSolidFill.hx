@@ -13,7 +13,7 @@ package openfl.display;
  * GraphicsSolidFill object is the equivalent of calling the
  * `Graphics.beginFill()` method.
  */
-final extern class GraphicsSolidFill implements IGraphicsData implements IGraphicsFill
+@:final extern class GraphicsSolidFill implements IGraphicsData implements IGraphicsFill
 {
 	/**
 	 * Indicates the alpha transparency value of the fill. Valid values are 0

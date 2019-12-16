@@ -11,7 +11,7 @@ package openfl.display;
 	three types of joints: miter, round, and bevel, as the following example
 	shows:
 **/
-enum abstract JointStyle(Null<Int>)
+@:enum abstract JointStyle(Null<Int>)
 {
 	/**
 		Specifies beveled joints in the `joints` parameter of the
@@ -65,7 +65,7 @@ enum abstract JointStyle(Null<Int>)
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-enum abstract JointStyle(String) from String to String
+@:enum abstract JointStyle(String) from String to String
 {
 	public var BEVEL = "bevel";
 	public var MITER = "miter";

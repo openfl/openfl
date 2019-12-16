@@ -53,11 +53,12 @@ class FillShader extends Shader
 	}
 }
 
-enum private abstract Attrib(String) from String to String
+@:enum private abstract Attrib(String) from String to String
 {
 	var Position = DefAttrib.Position;
 }
-enum private abstract Uniform(String) from String to String
+
+@:enum private abstract Uniform(String) from String to String
 {
 	var TranslationMatrix = "uTranslationMatrix";
 	var ProjectionMatrix = DefUniform.ProjectionMatrix;
@@ -66,5 +67,6 @@ enum private abstract Uniform(String) from String to String
 	var ColorMultiplier = DefUniform.ColorMultiplier;
 	var ColorOffset = DefUniform.ColorOffset;
 }
+
 typedef FillAttrib = Attrib;
 typedef FillUniform = Uniform;

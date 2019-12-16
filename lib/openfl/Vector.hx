@@ -155,7 +155,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 		return VectorData.ofArray(untyped __js__("Array.prototype.slice.call")(this, startIndex, endIndex));
 	}
 
-	public inline function sort(f:(a:T, b:T) -> Int):Void
+	public inline function sort(f:T->T->Int):Void
 	{
 		// this.sort (f);
 		untyped __js__("Array.prototype.sort.call")(this, f);
@@ -235,7 +235,7 @@ extern class VectorData<T> implements ArrayAccess<T>
 	public function set(index:Int, value:T):T;
 	public function shift():Null<T>;
 	public function slice(?pos:Int, ?end:Int):Vector<T>;
-	public function sort(f:(a:T, b:T) -> Int):Void;
+	public function sort(f:T->T->Int):Void;
 	public function splice(pos:Int, len:Int):Vector<T>;
 	public function unshift(x:T):Void;
 	public static function ofArray<T>(a:Array<T>):VectorData<T>;

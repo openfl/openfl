@@ -1,6 +1,6 @@
 package openfl.display3D;
 
-enum abstract Context3DTextureFormat(String) from String to String
+@:enum abstract Context3DTextureFormat(String) from String to String
 {
 	public var BGR_PACKED = "bgrPacked565";
 	public var BGRA = "bgra";

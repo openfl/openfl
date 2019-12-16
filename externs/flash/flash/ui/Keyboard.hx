@@ -1,7 +1,7 @@
 package flash.ui;
 
 #if flash
-final extern class Keyboard
+@:final extern class Keyboard
 {
 	public static inline var NUMBER_0 = 48;
 	public static inline var NUMBER_1 = 49;

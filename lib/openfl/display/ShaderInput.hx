@@ -11,7 +11,7 @@ import openfl.display3D.Context3DWrapMode;
 #if !js
 @:generic
 #end
-final extern class ShaderInput<T> /*implements Dynamic*/
+@:final extern class ShaderInput<T> /*implements Dynamic*/
 {
 	public var channels(default, null):Int;
 	public var filter:Context3DTextureFilter;

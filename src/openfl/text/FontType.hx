@@ -8,7 +8,7 @@ package openfl.text;
 	`"embedded"` and `"device"` for the
 	`fontType` property of the Font class.
 **/
-enum abstract FontType(Null<Int>)
+@:enum abstract FontType(Null<Int>)
 {
 	/**
 		Indicates that this is a device font. The SWF file renders fonts with
@@ -90,7 +90,7 @@ enum abstract FontType(Null<Int>)
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-enum abstract FontType(String) from String to String
+@:enum abstract FontType(String) from String to String
 {
 	public var DEVICE = "device";
 	public var EMBEDDED = "embedded";

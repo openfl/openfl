@@ -62,7 +62,7 @@ import openfl.geom.Rectangle;
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Point)
 @:access(openfl.geom.Rectangle)
-final class GlowFilter extends BitmapFilter
+@:final class GlowFilter extends BitmapFilter
 {
 	@:noCompletion private static var __invertAlphaShader = new InvertAlphaShader();
 	@:noCompletion private static var __blurAlphaShader = new BlurAlphaShader();

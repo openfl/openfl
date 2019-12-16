@@ -1,7 +1,7 @@
 package flash.display;
 
 #if flash
-final extern class GraphicsStroke implements IGraphicsData implements IGraphicsStroke
+@:final extern class GraphicsStroke implements IGraphicsData implements IGraphicsStroke
 {
 	public var caps:CapsStyle;
 	public var fill:IGraphicsFill;

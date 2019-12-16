@@ -6,7 +6,7 @@ import openfl.utils.ByteArray;
 #if !openfl_global
 @:jsRequire("openfl/display3D/Program3D", "default")
 #end
-final extern class Program3D
+@:final extern class Program3D
 {
 	public function dispose():Void;
 	public function upload(vertexProgram:ByteArray, fragmentProgram:ByteArray):Void;

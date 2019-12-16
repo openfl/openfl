@@ -4,7 +4,7 @@ package flash.system;
 import openfl.utils.ByteArray;
 import openfl.utils.Object;
 
-final extern class ApplicationDomain
+@:final extern class ApplicationDomain
 {
 	#if flash
 	@:require(flash10) public static var MIN_DOMAIN_MEMORY_LENGTH(default, never):UInt;

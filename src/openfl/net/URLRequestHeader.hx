@@ -72,7 +72,7 @@ package openfl.net;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-final class URLRequestHeader
+@:final class URLRequestHeader
 {
 	/**
 		An HTTP request header name(such as `Content-Type` or

@@ -1,6 +1,6 @@
 package openfl._internal.renderer;
 
-@:dox(hide) enum abstract GraphicsDataType(Int)
+@:dox(hide) @:enum abstract GraphicsDataType(Int)
 {
 	var STROKE = 0;
 	var SOLID = 1;

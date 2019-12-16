@@ -10,7 +10,7 @@ import openfl._internal.utils.NullUtils;
 	Defines the values to use for specifying vertex buffers.
 **/
 @SuppressWarnings("checkstyle:FieldDocComment")
-enum abstract Context3DVertexBufferFormat(Null<Int>)
+@:enum abstract Context3DVertexBufferFormat(Null<Int>)
 {
 	public var BYTES_4 = 0;
 	public var FLOAT_1 = 1;
@@ -60,7 +60,7 @@ enum abstract Context3DVertexBufferFormat(Null<Int>)
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-enum abstract Context3DVertexBufferFormat(String) from String to String
+@:enum abstract Context3DVertexBufferFormat(String) from String to String
 {
 	public var BYTES_4 = "bytes4";
 	public var FLOAT_1 = "float1";

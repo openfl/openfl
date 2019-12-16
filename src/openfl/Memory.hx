@@ -195,7 +195,7 @@ class Memory
 		});
 	}
 
-	@:noCompletion private static function _setPositionTemporarily<T>(position:Int, action:() -> T):T
+	@:noCompletion private static function _setPositionTemporarily<T>(position:Int, action:Void->T):T
 	{
 		var oldPosition:Int = __byteArray.position;
 		__byteArray.position = position;

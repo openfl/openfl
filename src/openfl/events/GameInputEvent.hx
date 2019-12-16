@@ -11,7 +11,7 @@ import openfl.ui.GameInputDevice;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-final class GameInputEvent extends Event
+@:final class GameInputEvent extends Event
 {
 	/**
 		Indicates that a compatible device has been connected or turned on.

@@ -1,7 +1,7 @@
 package flash.text;
 
 #if flash
-enum abstract FontType(String) from String to String
+@:enum abstract FontType(String) from String to String
 {
 	public var DEVICE = "device";
 	public var EMBEDDED = "embedded";

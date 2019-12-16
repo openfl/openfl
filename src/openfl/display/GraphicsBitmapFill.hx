@@ -16,7 +16,7 @@ import openfl.geom.Matrix;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-final class GraphicsBitmapFill implements IGraphicsData implements IGraphicsFill
+@:final class GraphicsBitmapFill implements IGraphicsData implements IGraphicsFill
 {
 	/**
 		A transparent or opaque bitmap image.

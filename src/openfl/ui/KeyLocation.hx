@@ -7,7 +7,7 @@ package openfl.ui;
 	The KeyLocation constants are used in the `KeyboardEvent.keyLocation`
 	property.
 **/
-enum abstract KeyLocation(Int) from Int to Int from UInt to UInt
+@:enum abstract KeyLocation(Int) from Int to Int from UInt to UInt
 {
 	/**
 		Indicates the key activated is in the left key location (there is more

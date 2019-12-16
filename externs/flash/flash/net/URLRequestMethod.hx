@@ -1,7 +1,7 @@
 package flash.net;
 
 #if flash
-enum abstract URLRequestMethod(String) from String to String
+@:enum abstract URLRequestMethod(String) from String to String
 {
 	@:require(flash10_1) public var DELETE = "DELETE";
 	public var GET = "GET";

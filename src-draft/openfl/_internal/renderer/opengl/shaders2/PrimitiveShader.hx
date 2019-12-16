@@ -53,12 +53,13 @@ class PrimitiveShader extends Shader
 	}
 }
 
-enum private abstract Attrib(String) to String from String
+@:enum private abstract Attrib(String) to String from String
 {
 	var Position = DefAttrib.Position;
 	var Color = DefAttrib.Color;
 }
-enum private abstract Uniform(String) from String to String
+
+@:enum private abstract Uniform(String) from String to String
 {
 	var TranslationMatrix = "uTranslationMatrix";
 	var ProjectionMatrix = DefUniform.ProjectionMatrix;
@@ -66,5 +67,6 @@ enum private abstract Uniform(String) from String to String
 	var ColorMultiplier = DefUniform.ColorMultiplier;
 	var ColorOffset = DefUniform.ColorOffset;
 }
+
 typedef PrimitiveAttrib = Attrib;
 typedef PrimitiveUniform = Uniform;

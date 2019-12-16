@@ -7,7 +7,7 @@ package openfl.display;
  * `Graphics.drawPath()` method, or stored in the
  * `commands` vector of a GraphicsPath object.
  */
-enum abstract GraphicsPathCommand(Int) from Int to Int from UInt to UInt
+@:enum abstract GraphicsPathCommand(Int) from Int to Int from UInt to UInt
 {
 	#if flash @:require(flash11) #end public var CUBIC_CURVE_TO = 6;
 	public var CURVE_TO = 3;

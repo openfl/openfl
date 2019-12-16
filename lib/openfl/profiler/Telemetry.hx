@@ -4,7 +4,7 @@ package openfl.profiler;
 #if !openfl_global
 @:jsRequire("openfl/profiler/Telemetry", "default")
 #end
-final extern class Telemetry
+@:final extern class Telemetry
 {
 	public static var connected(default, null):Bool;
 	public static var spanMarker(default, null):Float;

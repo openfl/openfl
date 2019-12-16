@@ -1,7 +1,7 @@
 package flash.net;
 
 #if flash
-enum abstract URLLoaderDataFormat(String) from String to String
+@:enum abstract URLLoaderDataFormat(String) from String to String
 {
 	public var BINARY = "binary";
 	public var TEXT = "text";

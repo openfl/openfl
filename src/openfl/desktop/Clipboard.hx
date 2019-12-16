@@ -502,7 +502,7 @@ class Clipboard
 		@throws TypeError             `format` or `handler` is `null`.
 	**/
 	@SuppressWarnings("checkstyle:Dynamic")
-	public function setDataHandler(format:ClipboardFormats, handler:() -> Dynamic, serializable:Bool = true):Bool
+	public function setDataHandler(format:ClipboardFormats, handler:Void->Dynamic, serializable:Bool = true):Bool
 	{
 		openfl._internal.Lib.notImplemented();
 		return false;

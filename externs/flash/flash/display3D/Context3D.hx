@@ -14,7 +14,7 @@ import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
 import openfl.Vector;
 
-final extern class Context3D extends EventDispatcher
+@:final extern class Context3D extends EventDispatcher
 {
 	@:require(flash15) public static var supportsVideoTexture(default, never):Bool;
 	@:require(flash15) public var backBufferHeight(default, never):Int;

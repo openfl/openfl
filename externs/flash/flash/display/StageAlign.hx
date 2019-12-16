@@ -1,7 +1,7 @@
 package flash.display;
 
 #if flash
-enum abstract StageAlign(String) from String to String
+@:enum abstract StageAlign(String) from String to String
 {
 	public var BOTTOM = "bottom";
 	public var BOTTOM_LEFT = "bottomLeft";

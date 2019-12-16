@@ -8,7 +8,7 @@ package openfl.media;
 /**
  * The SoundTransform class contains properties for volume and panning.
  */
-final extern class SoundTransform
+@:final extern class SoundTransform
 {
 	/**
 	 * A value, from 0(none) to 1(all), specifying how much of the left input

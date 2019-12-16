@@ -139,7 +139,7 @@ extern class MovieClip extends Sprite implements Dynamic
 	 */
 	public function new();
 
-	public function addFrameScript(index:Int, method:() -> Void):Void;
+	public function addFrameScript(index:Int, method:Void->Void):Void;
 
 	/**
 	 * Starts playing the SWF file at the specified frame. This happens after all
@@ -155,7 +155,7 @@ extern class MovieClip extends Sprite implements Dynamic
 	 *              specified scene.
 	 * @param scene The name of the scene to play. This parameter is optional.
 	 */
-	public function gotoAndPlay(frame:Any, scene:String = null):Void;
+	public function gotoAndPlay(frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end, scene:String = null):Void;
 
 	/**
 	 * Brings the playhead to the specified frame of the movie clip and stops it
@@ -174,7 +174,7 @@ extern class MovieClip extends Sprite implements Dynamic
 	 * @throws ArgumentError If the `scene` or `frame`
 	 *                       specified are not found in this movie clip.
 	 */
-	public function gotoAndStop(frame:Any, scene:String = null):Void;
+	public function gotoAndStop(frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end, scene:String = null):Void;
 
 	/**
 	 * Sends the playhead to the next frame and stops it. This happens after all

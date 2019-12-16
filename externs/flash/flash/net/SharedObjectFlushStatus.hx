@@ -1,7 +1,7 @@
 package flash.net;
 
 #if flash
-enum abstract SharedObjectFlushStatus(String) from String to String
+@:enum abstract SharedObjectFlushStatus(String) from String to String
 {
 	public var FLUSHED = "flushed";
 	public var PENDING = "pending";

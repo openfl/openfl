@@ -45,7 +45,7 @@ import openfl.Vector;
  * **Note:** The Multitouch feature is not supported for SWF files
  * embedded in HTML running on Mac OS.
  */
-final extern class Multitouch
+@:final extern class Multitouch
 {
 	/**
 	 * Identifies the multi-touch mode for touch and gesture event handling. Use

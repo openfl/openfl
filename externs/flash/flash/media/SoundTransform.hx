@@ -1,7 +1,7 @@
 package flash.media;
 
 #if flash
-final extern class SoundTransform
+@:final extern class SoundTransform
 {
 	public var leftToLeft:Float;
 	public var leftToRight:Float;

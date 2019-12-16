@@ -7,7 +7,7 @@ package openfl.display;
 	The LineScaleMode class provides values for the `scaleMode`
 	parameter in the `Graphics.lineStyle()` method.
 **/
-enum abstract LineScaleMode(Null<Int>)
+@:enum abstract LineScaleMode(Null<Int>)
 {
 	/**
 		With this setting used as the `scaleMode` parameter of the
@@ -80,7 +80,7 @@ enum abstract LineScaleMode(Null<Int>)
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-enum abstract LineScaleMode(String) from String to String
+@:enum abstract LineScaleMode(String) from String to String
 {
 	public var HORIZONTAL = "horizontal";
 	public var NONE = "none";

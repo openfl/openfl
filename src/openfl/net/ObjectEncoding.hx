@@ -42,7 +42,7 @@ package openfl.net;
 	`objectEncoding` property description explains the behavior more
 	thoroughly.
 **/
-enum abstract ObjectEncoding(Int) from Int to Int from UInt to UInt
+@:enum abstract ObjectEncoding(Int) from Int to Int from UInt to UInt
 {
 	/**
 		Specifies that objects are serialized using the

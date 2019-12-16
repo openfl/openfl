@@ -9,7 +9,7 @@ package openfl.system;
 	Use the values defined by the TouchscreenType class with the
 	`Capabilities.touchscreenType` property.
 **/
-enum abstract TouchscreenType(Null<Int>)
+@:enum abstract TouchscreenType(Null<Int>)
 {
 	/**
 		A touchscreen designed to respond to finger touches.
@@ -50,7 +50,7 @@ enum abstract TouchscreenType(Null<Int>)
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-enum abstract TouchscreenType(String) from String to String
+@:enum abstract TouchscreenType(String) from String to String
 {
 	public var FINGER = "finger";
 	public var NONE = "none";

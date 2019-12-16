@@ -7,7 +7,7 @@ package openfl.text;
 	The GridFitType class defines values for grid fitting in the TextField
 	class.
 **/
-enum abstract GridFitType(Null<Int>)
+@:enum abstract GridFitType(Null<Int>)
 {
 	/**
 		Doesn't set grid fitting. Horizontal and vertical lines in the glyphs
@@ -63,7 +63,7 @@ enum abstract GridFitType(Null<Int>)
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-enum abstract GridFitType(String) from String to String
+@:enum abstract GridFitType(String) from String to String
 {
 	public var NONE = "none";
 	public var PIXEL = "pixel";

@@ -21,7 +21,7 @@ package openfl.display;
  * `TriangleCulling.NEGATIVE` algorithm is used, triangles with
  * negative normals will not be rendered.
  */
-enum abstract TriangleCulling(String) from String to String
+@:enum abstract TriangleCulling(String) from String to String
 {
 	/**
 	 * Specifies culling of all triangles facing toward the current view point.

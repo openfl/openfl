@@ -1,7 +1,7 @@
 package flash.text;
 
 #if flash
-enum abstract TextFormatAlign(String) from String to String
+@:enum abstract TextFormatAlign(String) from String to String
 {
 	public var CENTER = "center";
 	public var END = "end";

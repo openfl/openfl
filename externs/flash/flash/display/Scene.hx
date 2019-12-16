@@ -1,7 +1,7 @@
 package flash.display;
 
 #if flash
-final extern class Scene
+@:final extern class Scene
 {
 	public var labels(default, never):Array<FrameLabel>;
 	public var name(default, never):String;

@@ -1,7 +1,7 @@
 package flash.display;
 
 #if flash
-enum abstract BlendMode(String) from String to String
+@:enum abstract BlendMode(String) from String to String
 {
 	public var ADD = "add";
 	public var ALPHA = "alpha";

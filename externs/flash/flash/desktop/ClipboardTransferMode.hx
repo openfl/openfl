@@ -1,7 +1,7 @@
 package flash.desktop;
 
 #if flash
-enum abstract ClipboardTransferMode(String) from String to String
+@:enum abstract ClipboardTransferMode(String) from String to String
 {
 	public var CLONE_ONLY = "cloneOnly";
 	public var CLONE_PREFERRED = "clonePreferred";

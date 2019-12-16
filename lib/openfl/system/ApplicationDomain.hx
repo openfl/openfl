@@ -7,7 +7,7 @@ import openfl.utils.Object;
 #if !openfl_global
 @:jsRequire("openfl/system/ApplicationDomain", "default")
 #end
-final extern class ApplicationDomain
+@:final extern class ApplicationDomain
 {
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash10) public static var MIN_DOMAIN_MEMORY_LENGTH(default, null):UInt;

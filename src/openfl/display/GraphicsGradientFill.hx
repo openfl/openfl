@@ -15,7 +15,7 @@ import openfl.geom.Matrix;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-final class GraphicsGradientFill implements IGraphicsData implements IGraphicsFill
+@:final class GraphicsGradientFill implements IGraphicsData implements IGraphicsFill
 {
 	/**
 		An array of alpha values for the corresponding colors in the colors

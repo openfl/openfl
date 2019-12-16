@@ -52,7 +52,7 @@ import openfl.geom.Rectangle;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-final class ColorMatrixFilter extends BitmapFilter
+@:final class ColorMatrixFilter extends BitmapFilter
 {
 	@:noCompletion private static var __colorMatrixShader:ColorMatrixShader = new ColorMatrixShader();
 

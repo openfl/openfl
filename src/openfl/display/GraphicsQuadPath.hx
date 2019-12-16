@@ -21,7 +21,7 @@ import openfl.Vector;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-final class GraphicsQuadPath implements IGraphicsData implements IGraphicsPath
+@:final class GraphicsQuadPath implements IGraphicsData implements IGraphicsPath
 {
 	/**
 		A Vector containing optional index values to reference the data contained in

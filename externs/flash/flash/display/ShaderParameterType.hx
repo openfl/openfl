@@ -1,7 +1,7 @@
 package flash.display;
 
 #if flash
-enum abstract ShaderParameterType(String) from String to String
+@:enum abstract ShaderParameterType(String) from String to String
 {
 	public var BOOL = "bool";
 	public var BOOL2 = "bool2";

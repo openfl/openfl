@@ -8,7 +8,7 @@ package openfl.media;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-final class SoundTransform
+@:final class SoundTransform
 {
 	/**
 		A value, from 0(none) to 1(all), specifying how much of the left input

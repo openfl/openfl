@@ -4,7 +4,7 @@ package openfl.net;
 #if !openfl_global
 @:jsRequire("openfl/net/FileFilter", "default")
 #end
-final extern class FileFilter
+@:final extern class FileFilter
 {
 	/**
 	 * The description string for the filter.

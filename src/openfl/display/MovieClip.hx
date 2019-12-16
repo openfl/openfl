@@ -44,7 +44,7 @@ import openfl.events.MouseEvent;
 #end
 @:access(openfl.display.Timeline)
 @:access(openfl.geom.ColorTransform)
-class MovieClip extends Sprite
+class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implements Dynamic<DisplayObject> #end
 {
 	/**
 		Specifies the number of the frame in which the playhead is located in the
@@ -133,7 +133,7 @@ class MovieClip extends Sprite
 	**/
 	public var totalFrames(get, never):Int;
 
-	@:noCompletion private static var __constructor:(movieClip:MovieClip) -> Void;
+	@:noCompletion private static var __constructor:MovieClip->Void;
 
 	// @:noCompletion @:dox(hide) public var trackAsMenu:Bool;
 	@:noCompletion private var __enabled:Bool;
@@ -184,7 +184,7 @@ class MovieClip extends Sprite
 		}
 	}
 
-	public function addFrameScript(index:Int, method:() -> Void):Void
+	public function addFrameScript(index:Int, method:Void->Void):Void
 	{
 		if (__timeline != null)
 		{
@@ -237,7 +237,7 @@ class MovieClip extends Sprite
 					 specified scene.
 		@param scene The name of the scene to play. This parameter is optional.
 	**/
-	public function gotoAndPlay(frame:Any, scene:String = null):Void
+	public function gotoAndPlay(frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end, scene:String = null):Void
 	{
 		if (__timeline != null)
 		{
@@ -262,7 +262,7 @@ class MovieClip extends Sprite
 		@throws ArgumentError If the `scene` or `frame`
 							  specified are not found in this movie clip.
 	**/
-	public function gotoAndStop(frame:Any, scene:String = null):Void
+	public function gotoAndStop(frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end, scene:String = null):Void
 	{
 		if (__timeline != null)
 		{

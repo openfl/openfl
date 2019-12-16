@@ -16,7 +16,7 @@ import openfl._internal.backend.lime.MouseCursor as LimeMouseCursor;
 @:noDebug
 #end
 @:access(openfl.display.Stage)
-final class Mouse
+@:final class Mouse
 {
 	/**
 		Sets or returns the type of cursor, or, for a native cursor, the

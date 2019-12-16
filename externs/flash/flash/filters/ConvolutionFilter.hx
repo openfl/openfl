@@ -1,7 +1,7 @@
 package flash.filters;
 
 #if flash
-final extern class ConvolutionFilter extends BitmapFilter
+@:final extern class ConvolutionFilter extends BitmapFilter
 {
 	public var alpha:Float;
 	public var bias:Float;

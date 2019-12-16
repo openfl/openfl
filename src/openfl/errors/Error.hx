@@ -17,7 +17,7 @@ import haxe.CallStack;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-class Error
+class Error #if (openfl_dynamic && haxe_ver < "4.0.0") implements Dynamic #end
 {
 	@:noCompletion private static inline var DEFAULT_TO_STRING:String = "Error";
 

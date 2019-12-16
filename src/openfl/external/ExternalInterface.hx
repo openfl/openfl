@@ -76,7 +76,7 @@ import openfl._internal.Lib;
 #end
 @:access(openfl.display.Stage)
 @:access(lime.ui.Window)
-final class ExternalInterface
+@:final class ExternalInterface
 {
 	/**
 		Indicates whether this player is in a container that offers an external

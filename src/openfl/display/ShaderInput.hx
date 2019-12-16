@@ -57,7 +57,7 @@ import openfl.display3D.Context3D;
 #if (!js && !display)
 @:generic
 #end
-final class ShaderInput<T> /*implements Dynamic*/
+@:final class ShaderInput<T> /*implements Dynamic*/
 {
 	/**
 		The number of channels that a shader input expects. This property must

@@ -1,7 +1,7 @@
 package flash.system;
 
 #if flash
-final extern class System
+@:final extern class System
 {
 	#if flash
 	@:require(flash10_1) public static var freeMemory(default, never):Float;

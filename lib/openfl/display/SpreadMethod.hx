@@ -8,7 +8,7 @@ package openfl.display;
  * The following example shows the same gradient fill using various spread
  * methods:
  */
-enum abstract SpreadMethod(String) from String to String
+@:enum abstract SpreadMethod(String) from String to String
 {
 	/**
 	 * Specifies that the gradient use the _pad_ spread method.

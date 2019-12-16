@@ -9,7 +9,7 @@ package openfl.display;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-final class FrameScript
+@:final class FrameScript
 {
 	/**
 		The frame number containing the label.
@@ -19,9 +19,9 @@ final class FrameScript
 	/**
 		The script to be executed, taking a MovieClip object as the scope of the method.
 	**/
-	public var script(default, null):(scope:MovieClip) -> Void;
+	public var script(default, null):MovieClip->Void;
 
-	public function new(script:(scope:MovieClip) -> Void, frame:Int)
+	public function new(script:MovieClip->Void, frame:Int)
 	{
 		this.script = script;
 		this.frame = frame;

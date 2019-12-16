@@ -11,7 +11,7 @@ package openfl.media;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-final class ID3Info
+@:final class ID3Info
 {
 	/**
 		The name of the album; corresponds to the ID3 2.0 tag TALB.

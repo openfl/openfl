@@ -33,7 +33,7 @@ import openfl.net.NetStream;
 @:access(openfl.display.Stage)
 @:access(openfl.net.NetStream)
 @:access(openfl.events.Event)
-final class VideoTexture extends TextureBase
+@:final class VideoTexture extends TextureBase
 {
 	/**
 		An integer specifying the height of the video stream, in pixels.

@@ -146,7 +146,7 @@ class Log
 	}
 }
 
-enum abstract LogLevel(Int) from Int to Int from UInt to UInt
+@:enum abstract LogLevel(Int) from Int to Int from UInt to UInt
 {
 	public var NONE = 0;
 	public var ERROR = 1;

@@ -18,7 +18,7 @@ import openfl._internal.renderer.GraphicsDataType;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-final class GraphicsStroke implements IGraphicsData implements IGraphicsStroke
+@:final class GraphicsStroke implements IGraphicsData implements IGraphicsStroke
 {
 	/**
 		Specifies the type of caps at the end of lines. Valid values are:

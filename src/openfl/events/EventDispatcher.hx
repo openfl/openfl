@@ -174,8 +174,7 @@ class EventDispatcher implements IEventDispatcher
 		@throws ArgumentError The `listener` specified is not a
 							  function.
 	**/
-	public function addEventListener<T>(type:EventType<T>, listener:(event:T) -> Void, useCapture:Bool = false, priority:Int = 0,
-			useWeakReference:Bool = false):Void
+	public function addEventListener<T>(type:EventType<T>, listener:T->Void, useCapture:Bool = false, priority:Int = 0, useWeakReference:Bool = false):Void
 	{
 		if (listener == null) return;
 
@@ -289,7 +288,7 @@ class EventDispatcher implements IEventDispatcher
 						  to `true`, and another call with
 						  `useCapture()` set to `false`.
 	**/
-	public function removeEventListener<T>(type:EventType<T>, listener:(event:T) -> Void, useCapture:Bool = false):Void
+	public function removeEventListener<T>(type:EventType<T>, listener:T->Void, useCapture:Bool = false):Void
 	{
 		if (__eventMap == null || listener == null) return;
 
@@ -537,18 +536,18 @@ class EventDispatcher implements IEventDispatcher
 @SuppressWarnings("checkstyle:FieldDocComment")
 private class Listener
 {
-	public var callback:(event:Dynamic) -> Void;
+	public var callback:Dynamic->Void;
 	public var priority:Int;
 	public var useCapture:Bool;
 
-	public function new(callback:(event:Dynamic) -> Void, useCapture:Bool, priority:Int)
+	public function new(callback:Dynamic->Void, useCapture:Bool, priority:Int)
 	{
 		this.callback = callback;
 		this.useCapture = useCapture;
 		this.priority = priority;
 	}
 
-	public function match(callback:(event:Dynamic) -> Void, useCapture:Bool):Bool
+	public function match(callback:Dynamic->Void, useCapture:Bool):Bool
 	{
 		#if hl // https://github.com/HaxeFoundation/hashlink/issues/301
 		return ((Reflect.compareMethods(this.callback, callback) || Reflect.compare(this.callback, callback) == 0)

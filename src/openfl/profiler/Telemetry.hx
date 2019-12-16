@@ -15,7 +15,7 @@ import openfl._internal.Lib;
 @:noDebug
 #end
 @:allow(openfl.display.Stage)
-final class Telemetry
+@:final class Telemetry
 {
 	/**
 		Indicates whether Telemetry is connected to a server
@@ -187,7 +187,7 @@ final class Telemetry
 }
 
 @SuppressWarnings("checkstyle:FieldDocComment")
-@:noCompletion @:dox(hide) enum abstract TelemetryCommandName(String) from String to String
+@:noCompletion @:dox(hide) @:enum abstract TelemetryCommandName(String) from String to String
 {
 	public var EVENT = ".event";
 	public var RENDER = ".render";

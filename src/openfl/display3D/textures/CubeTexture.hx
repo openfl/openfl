@@ -30,7 +30,7 @@ import openfl.utils.ByteArray;
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.Stage)
 @:access(openfl.events.Event)
-final class CubeTexture extends TextureBase
+@:final class CubeTexture extends TextureBase
 {
 	@:noCompletion private var __framebufferSurface:Int;
 	@:noCompletion private var __size:Int;

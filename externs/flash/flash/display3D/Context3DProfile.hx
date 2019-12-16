@@ -1,7 +1,7 @@
 package flash.display3D;
 
 #if flash
-enum abstract Context3DProfile(String) from String to String
+@:enum abstract Context3DProfile(String) from String to String
 {
 	public var BASELINE = "baseline";
 	public var BASELINE_CONSTRAINED = "baselineConstrained";

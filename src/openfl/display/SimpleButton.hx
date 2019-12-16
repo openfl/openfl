@@ -111,7 +111,7 @@ class SimpleButton extends InteractiveObject
 	**/
 	public var useHandCursor:Bool;
 
-	@:noCompletion private static var __constructor:(simpleButton:SimpleButton) -> Void;
+	@:noCompletion private static var __constructor:SimpleButton->Void;
 
 	@:noCompletion private var __currentState(default, set):DisplayObject;
 	@:noCompletion private var __downState:DisplayObject;

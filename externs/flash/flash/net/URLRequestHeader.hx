@@ -1,7 +1,7 @@
 package flash.net;
 
 #if flash
-final extern class URLRequestHeader
+@:final extern class URLRequestHeader
 {
 	public var name:String;
 	public var value:String;

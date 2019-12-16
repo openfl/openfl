@@ -4,7 +4,7 @@ package openfl.display3D;
 /**
 	Defines the values to use for specifying Context3D clear masks.
 **/
-enum abstract Context3DClearMask(UInt) from UInt to UInt from Int to Int
+@:enum abstract Context3DClearMask(UInt) from UInt to UInt from Int to Int
 {
 	/**
 		Clear all buffers.

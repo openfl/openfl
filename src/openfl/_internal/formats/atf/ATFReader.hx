@@ -5,7 +5,7 @@ import openfl._internal.utils.Log;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
 
-typedef UploadCallback = (side:UInt, level:Int, gpuFormat:ATFGPUFormat, width:Int, height:Int, blockLength:Int, bytes:Bytes) -> Void;
+typedef UploadCallback = UInt->Int->ATFGPUFormat->Int->Int->Int->Bytes->Void;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

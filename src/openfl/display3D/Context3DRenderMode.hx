@@ -9,7 +9,7 @@ import openfl._internal.utils.NullUtils;
 /**
 	Defines the values to use for specifying the Context3D render mode.
 **/
-enum abstract Context3DRenderMode(Null<Int>)
+@:enum abstract Context3DRenderMode(Null<Int>)
 {
 	/**
 		Automatically choose rendering engine.
@@ -64,7 +64,7 @@ enum abstract Context3DRenderMode(Null<Int>)
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-enum abstract Context3DRenderMode(String) from String to String
+@:enum abstract Context3DRenderMode(String) from String to String
 {
 	public var AUTO = "auto";
 	public var SOFTWARE = "software";

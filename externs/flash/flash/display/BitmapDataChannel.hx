@@ -1,7 +1,7 @@
 package flash.display;
 
 #if flash
-enum abstract BitmapDataChannel(UInt) from UInt to UInt from Int to Int
+@:enum abstract BitmapDataChannel(UInt) from UInt to UInt from Int to Int
 {
 	public var ALPHA = 8;
 	public var BLUE = 4;

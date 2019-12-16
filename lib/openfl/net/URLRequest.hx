@@ -42,7 +42,7 @@ package openfl.net;
  * For more information related to security, see the Flash Player Developer
  * Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
  */
-final extern class URLRequest
+@:final extern class URLRequest
 {
 	/**
 	 * The MIME content type of the content in the the `data`

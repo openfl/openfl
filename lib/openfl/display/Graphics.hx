@@ -24,7 +24,7 @@ import openfl.Vector;
  *
  * The Graphics class is final; it cannot be subclassed.
  */
-final extern class Graphics
+@:final extern class Graphics
 {
 	/**
 	 * Fills a drawing area with a bitmap image. The bitmap can be repeated or

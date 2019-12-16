@@ -10,7 +10,7 @@ import openfl._internal.utils.NullUtils;
 	Constants to specify the orientation of a triangle relative to the view point.
 **/
 @SuppressWarnings("checkstyle:FieldDocComment")
-enum abstract Context3DTriangleFace(Null<Int>)
+@:enum abstract Context3DTriangleFace(Null<Int>)
 {
 	public var BACK = 0;
 	public var FRONT = 1;
@@ -57,7 +57,7 @@ enum abstract Context3DTriangleFace(Null<Int>)
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-enum abstract Context3DTriangleFace(String) from String to String
+@:enum abstract Context3DTriangleFace(String) from String to String
 {
 	public var BACK = "back";
 	public var FRONT = "front";

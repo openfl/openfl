@@ -3,7 +3,7 @@ package flash.display;
 #if flash
 import openfl.Vector;
 
-final extern class GraphicsTrianglePath implements IGraphicsData implements IGraphicsPath
+@:final extern class GraphicsTrianglePath implements IGraphicsData implements IGraphicsPath
 {
 	public var culling:TriangleCulling;
 	public var indices:Vector<Int>;

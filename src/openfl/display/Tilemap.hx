@@ -340,7 +340,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 
 		@param	compareFunction	A comparison function to use when sorting.
 	**/
-	public function sortTiles(compareFunction:(a:Tile, b:Tile) -> Int):Void
+	public function sortTiles(compareFunction:Tile->Tile->Int):Void
 	{
 		__group.sortTiles(compareFunction);
 	}

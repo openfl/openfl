@@ -65,7 +65,7 @@ import openfl.geom.Rectangle;
 #end
 @:access(openfl.geom.Point)
 @:access(openfl.geom.Rectangle)
-final class BlurFilter extends BitmapFilter
+@:final class BlurFilter extends BitmapFilter
 {
 	@:noCompletion private static var __blurShader:BlurShader = new BlurShader();
 

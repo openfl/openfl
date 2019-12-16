@@ -1,6 +1,6 @@
 package openfl.display3D;
 
-enum abstract Context3DTriangleFace(String) from String to String
+@:enum abstract Context3DTriangleFace(String) from String to String
 {
 	public var BACK = "back";
 	public var FRONT = "front";

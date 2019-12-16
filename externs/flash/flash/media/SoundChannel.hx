@@ -3,7 +3,7 @@ package flash.media;
 #if flash
 import openfl.events.EventDispatcher;
 
-final extern class SoundChannel extends EventDispatcher
+@:final extern class SoundChannel extends EventDispatcher
 {
 	public var leftPeak(default, never):Float;
 	public var position(default, never):Float;

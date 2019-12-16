@@ -12,7 +12,7 @@ package openfl.display;
  *  Drawing a GraphicsEndFill object is the equivalent of calling the
  * `Graphics.endFill()` method.
  */
-final extern class GraphicsEndFill implements IGraphicsData implements IGraphicsFill
+@:final extern class GraphicsEndFill implements IGraphicsData implements IGraphicsFill
 {
 	/**
 	 * Creates an object to use with the `Graphics.drawGraphicsData()`

@@ -4,7 +4,7 @@ package openfl.filters;
 #if !openfl_global
 @:jsRequire("openfl/filters/ColorMatrixFilter", "default")
 #end
-final extern class ColorMatrixFilter extends BitmapFilter
+@:final extern class ColorMatrixFilter extends BitmapFilter
 {
 	public var matrix(default, set):Array<Float>;
 	public function new(matrix:Array<Float> = null);

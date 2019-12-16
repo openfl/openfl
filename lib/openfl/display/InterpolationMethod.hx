@@ -7,7 +7,7 @@ package openfl.display;
  * `Graphics.lineGradientStyle()` methods. This parameter
  * determines the RGB space to use when rendering the gradient.
  */
-enum abstract InterpolationMethod(String) from String to String
+@:enum abstract InterpolationMethod(String) from String to String
 {
 	/**
 	 * Specifies that the RGB interpolation method should be used. This means

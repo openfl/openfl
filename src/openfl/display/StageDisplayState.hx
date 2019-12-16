@@ -7,7 +7,7 @@ package openfl.display;
 	The StageDisplayState class provides values for the
 	`Stage.displayState` property.
 **/
-enum abstract StageDisplayState(Null<Int>)
+@:enum abstract StageDisplayState(Null<Int>)
 {
 	/**
 		Specifies that the Stage is in full-screen mode.
@@ -48,7 +48,7 @@ enum abstract StageDisplayState(Null<Int>)
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-enum abstract StageDisplayState(String) from String to String
+@:enum abstract StageDisplayState(String) from String to String
 {
 	public var FULL_SCREEN = "fullScreen";
 	public var FULL_SCREEN_INTERACTIVE = "fullScreenInteractive";

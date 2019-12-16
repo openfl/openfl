@@ -14,7 +14,7 @@ import openfl._internal.backend.lime.KeyCode;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-final class Keyboard
+@:final class Keyboard
 {
 	/**
 		Constant associated with the key code value for the 0 key(48).

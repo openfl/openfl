@@ -1,7 +1,7 @@
 package flash.display3D;
 
 #if flash
-enum abstract Context3DVertexBufferFormat(String) from String to String
+@:enum abstract Context3DVertexBufferFormat(String) from String to String
 {
 	public var BYTES_4 = "bytes4";
 	public var FLOAT_1 = "float1";

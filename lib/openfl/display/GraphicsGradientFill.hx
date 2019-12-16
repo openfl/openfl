@@ -6,7 +6,7 @@ import openfl.geom.Matrix;
 #if !openfl_global
 @:jsRequire("openfl/display/GraphicsGradientFill", "default")
 #end
-final extern class GraphicsGradientFill implements IGraphicsData implements IGraphicsFill
+@:final extern class GraphicsGradientFill implements IGraphicsData implements IGraphicsFill
 {
 	public var alphas:Array<Float>;
 	public var colors:Array<UInt>;

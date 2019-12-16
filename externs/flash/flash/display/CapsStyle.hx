@@ -1,7 +1,7 @@
 package flash.display;
 
 #if flash
-enum abstract CapsStyle(String) from String to String
+@:enum abstract CapsStyle(String) from String to String
 {
 	public var NONE = "none";
 	public var ROUND = "round";

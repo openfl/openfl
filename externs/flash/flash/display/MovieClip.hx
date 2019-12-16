@@ -10,7 +10,7 @@ import openfl.Lib;
 #if flash
 extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 {
-	@:noCompletion public static var __constructor:(movieClip:MovieClip) -> Void;
+	@:noCompletion public static var __constructor:MovieClip->Void;
 	public var currentFrame(default, never):Int;
 	@:require(flash10) public var currentFrameLabel(default, never):String;
 	public var currentLabel(default, never):String;
@@ -27,7 +27,7 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 	public var trackAsMenu:Bool;
 	#end
 	public function new();
-	public function addFrameScript(index:Int, method:() -> Void):Void;
+	public function addFrameScript(index:Int, method:Void->Void):Void;
 	public static inline function fromTimeline(timeline:Timeline):MovieClip
 	{
 		var movieClip = new MovieClip2();
@@ -92,7 +92,7 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 		}
 	}
 
-	// public override function addFrameScript(index:Int, method:() -> Void):Void
+	// public override function addFrameScript(index:Int, method:Void->Void):Void
 	// {
 	// 	if (__timeline != null) __timeline.addFrameScript(index, method);
 	// }

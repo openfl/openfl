@@ -20,7 +20,7 @@ import openfl.events.EventDispatcher;
 @:noDebug
 #end
 @:access(openfl.media.SoundMixer)
-@:keep final class SoundChannel extends EventDispatcher
+@:final @:keep class SoundChannel extends EventDispatcher
 {
 	/**
 		The current amplitude(volume) of the left channel, from 0(silent) to 1

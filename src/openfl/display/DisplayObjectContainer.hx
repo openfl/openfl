@@ -158,12 +158,14 @@ class DisplayObjectContainer extends InteractiveObject
 			error.errorID = 2007;
 			throw error;
 		}
+		#if ((haxe_ver >= "3.4.0") || !cpp)
 		else if (child.stage == child)
 		{
 			var error = new ArgumentError("Error #3783: A Stage object cannot be added as the child of another object.");
 			error.errorID = 3783;
 			throw error;
 		}
+		#end
 
 		if (child.parent == this)
 		{
@@ -267,12 +269,14 @@ class DisplayObjectContainer extends InteractiveObject
 			error.errorID = 2007;
 			throw error;
 		}
+		#if ((haxe_ver >= "3.4.0") || !cpp)
 		else if (child.stage == child)
 		{
 			var error = new ArgumentError("Error #3783: A Stage object cannot be added as the child of another object.");
 			error.errorID = 3783;
 			throw error;
 		}
+		#end
 
 		if (index < 0 || index > numChildren)
 		{
@@ -659,6 +663,21 @@ class DisplayObjectContainer extends InteractiveObject
 			child = next;
 			numRemovals--;
 		}
+	}
+
+	@:noCompletion private function resolve(fieldName:String):DisplayObject
+	{
+		var child = __firstChild;
+		while (child != null)
+		{
+			if (child.name == fieldName)
+			{
+				return child;
+			}
+			child = child.__nextSibling;
+		}
+
+		return null;
 	}
 
 	/**
@@ -1103,16 +1122,16 @@ class DisplayObjectContainer extends InteractiveObject
 					{
 						case BITMAP:
 							var bitmap:Bitmap = cast child;
-							inline bitmap.__hitTestMask(x, y);
+							#if haxe4 inline #end bitmap.__hitTestMask(x, y);
 						case SIMPLE_BUTTON:
 							var simpleButton:SimpleButton = cast child;
-							inline simpleButton.__hitTestMask(x, y);
+							#if haxe4 inline #end simpleButton.__hitTestMask(x, y);
 						case TEXTFIELD:
 							var textField:TextField = cast child;
-							inline textField.__hitTestMask(x, y);
+							#if haxe4 inline #end textField.__hitTestMask(x, y);
 						case VIDEO:
 							var video:Video = cast child;
-							inline video.__hitTestMask(x, y);
+							#if haxe4 inline #end video.__hitTestMask(x, y);
 						case DISPLAY_OBJECT_CONTAINER,
 							MOVIE_CLIP: // inline super.__hitTestMask(x, y) || (child.__graphics != null && child.__graphics.__hitTest(x, y, true, child.__getRenderTransform()));
 							(__graphics != null && __graphics.__hitTest(x, y, true, __getRenderTransform()))
@@ -1161,7 +1180,7 @@ class DisplayObjectContainer extends InteractiveObject
 				if (child.__type == SIMPLE_BUTTON)
 				{
 					var simpleButton:SimpleButton = cast child;
-					inline simpleButton.__setTransformDirty(force);
+					#if haxe4 inline #end simpleButton.__setTransformDirty(force);
 				}
 				else
 				{

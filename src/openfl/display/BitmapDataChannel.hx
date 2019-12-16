@@ -21,7 +21,7 @@ package openfl.display;
 	`openfl.filters.DisplacementMapFilter.componentY` properties
 
 **/
-enum abstract BitmapDataChannel(Int) from Int to Int from UInt to UInt
+@:enum abstract BitmapDataChannel(Int) from Int to Int from UInt to UInt
 {
 	/**
 		The alpha channel.

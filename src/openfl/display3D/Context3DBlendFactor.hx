@@ -46,7 +46,7 @@ import openfl._internal.utils.NullUtils;
 
 	Note that not all combinations of blend factors are useful and that you can sometimes achieve the same effect in different ways.
 **/
-enum abstract Context3DBlendFactor(Null<Int>)
+@:enum abstract Context3DBlendFactor(Null<Int>)
 {
 	/**
 		The blend factor is (D<sub>a</sub>,D<sub>a</sub>,D<sub>a</sub>,D<sub>a</sub>),
@@ -165,7 +165,7 @@ enum abstract Context3DBlendFactor(Null<Int>)
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-enum abstract Context3DBlendFactor(String) from String to String
+@:enum abstract Context3DBlendFactor(String) from String to String
 {
 	public var DESTINATION_ALPHA = "destinationAlpha";
 	public var DESTINATION_COLOR = "destinationColor";

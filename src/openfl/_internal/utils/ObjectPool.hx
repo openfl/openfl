@@ -16,7 +16,7 @@ class ObjectPool<T>
 	@:noCompletion private var __pool:Map<T, Bool>;
 	@:noCompletion private var __size:Null<Int>;
 
-	public function new(create:() -> T = null, clean:(object:T) -> Void = null, size:Null<Int> = null)
+	public function new(create:Void->T = null, clean:T->Void = null, size:Null<Int> = null)
 	{
 		__pool = cast new ObjectMap();
 

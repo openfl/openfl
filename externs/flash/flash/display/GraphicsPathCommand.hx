@@ -1,7 +1,7 @@
 package flash.display;
 
 #if flash
-enum abstract GraphicsPathCommand(Int) from Int to Int from UInt to UInt
+@:enum abstract GraphicsPathCommand(Int) from Int to Int from UInt to UInt
 {
 	public var CUBIC_CURVE_TO = 6;
 	public var CURVE_TO = 3;

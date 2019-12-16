@@ -1,7 +1,7 @@
 package flash.display;
 
 #if flash
-enum abstract LineScaleMode(String) from String to String
+@:enum abstract LineScaleMode(String) from String to String
 {
 	public var HORIZONTAL = "horizontal";
 	public var NONE = "none";

@@ -1,7 +1,7 @@
 package flash.display;
 
 #if flash
-final extern class GraphicsEndFill implements IGraphicsData implements IGraphicsFill
+@:final extern class GraphicsEndFill implements IGraphicsData implements IGraphicsFill
 {
 	public function new();
 }

@@ -9,7 +9,7 @@ package openfl.display;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-final class JPEGEncoderOptions
+@:final class JPEGEncoderOptions
 {
 	/**
 		A value between 1 and 100, where 1 means the lowest quality and 100 means the

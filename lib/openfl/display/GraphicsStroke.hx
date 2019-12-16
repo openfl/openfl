@@ -16,7 +16,7 @@ package openfl.display;
  * `Graphics.lineBitmapStyle()` method, or the
  * `Graphics.lineGradientStyle()` method.
  */
-final extern class GraphicsStroke implements IGraphicsData implements IGraphicsStroke
+@:final extern class GraphicsStroke implements IGraphicsData implements IGraphicsStroke
 {
 	/**
 	 * Specifies the type of caps at the end of lines. Valid values are:

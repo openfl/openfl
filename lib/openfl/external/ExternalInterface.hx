@@ -72,7 +72,7 @@ package openfl.external;
  * in the HTMLLoader control and ActionScript in SWF content embedded in that
  * HTML page.
  */
-final extern class ExternalInterface
+@:final extern class ExternalInterface
 {
 	/**
 	 * Indicates whether this player is in a container that offers an external

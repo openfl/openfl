@@ -12,7 +12,7 @@ package openfl.ui;
  * Keyboard class are constants representing the keys that are most commonly
  * used to control games.
  */
-final extern class Keyboard
+@:final extern class Keyboard
 {
 	// TODO: Add additional Flash values
 

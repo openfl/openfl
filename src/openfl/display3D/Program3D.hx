@@ -49,7 +49,7 @@ import openfl.Vector;
 @:access(openfl.display.ShaderInput)
 @:access(openfl.display.ShaderParameter)
 @:access(openfl.display.Stage)
-final class Program3D
+@:final class Program3D
 {
 	@:noCompletion private var __agalAlphaSamplerEnabled:Array<Uniform>;
 	@:noCompletion private var __agalAlphaSamplerUniforms:List<Uniform>;

@@ -1,7 +1,7 @@
 package flash.display;
 
 #if flash
-enum abstract ShaderPrecision(String) from String to String
+@:enum abstract ShaderPrecision(String) from String to String
 {
 	public var FAST = "fast";
 	public var FULL = "full";

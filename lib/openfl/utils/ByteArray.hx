@@ -1,9 +1,13 @@
 package openfl.utils;
 
 import haxe.io.Bytes;
-import js.lib.ArrayBuffer;
 import openfl.net.ObjectEncoding;
 import openfl.utils.Future;
+#if haxe4
+import js.lib.ArrayBuffer;
+#else
+import js.html.ArrayBuffer;
+#end
 
 #if !openfl_global
 @:jsRequire("openfl/utils/ByteArray", "default")

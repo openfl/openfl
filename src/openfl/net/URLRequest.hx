@@ -44,7 +44,7 @@ import haxe.macro.Compiler;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-final class URLRequest
+@:final class URLRequest
 {
 	/**
 		The MIME content type of the content in the the `data`

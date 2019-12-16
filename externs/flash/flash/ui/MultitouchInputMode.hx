@@ -1,7 +1,7 @@
 package flash.ui;
 
 #if flash
-enum abstract MultitouchInputMode(String) from String to String
+@:enum abstract MultitouchInputMode(String) from String to String
 {
 	public var GESTURE = "gesture";
 	public var NONE = "none";
