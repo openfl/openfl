@@ -85,7 +85,9 @@ class ByteArrayTest
 				#end
 			}
 
-			Mocha.it("testWritePos", function()
+			new file:scripts / SWFLibraryExporter.hx new file:scripts / format / swf / SWFLibrary.hx new file:scripts / format / swf / exporters / SWFLiteExporter.hx new file:scripts / haxe / Int32.hx new file:scripts / js / Browser.hx Mocha.it("testWritePos",
+			function()
+
 			{
 				var ba:ByteArray = new ByteArray();
 
