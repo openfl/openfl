@@ -794,6 +794,14 @@ class Context3DRenderer extends Context3DRendererAPI
 		}
 	}
 
+	private override function __popObject(displayObject:DisplayObject):Void
+	{
+		if (displayObject.__firstChild != null)
+		{
+			__popMaskObject(displayObject);
+		}
+	}
+
 	private inline function __powerOfTwo(value:Int):Int
 	{
 		var newValue = 1;
@@ -895,6 +903,14 @@ class Context3DRenderer extends Context3DRendererAPI
 
 		__scissorRect(clipRect);
 		__numClipRects++;
+	}
+
+	private override function __pushObject(displayObject:DisplayObject):Void
+	{
+		if (displayObject.__firstChild != null)
+		{
+			__pushMaskObject(displayObject);
+		}
 	}
 
 	private override function __render(object:IBitmapDrawable):Void
@@ -1019,26 +1035,6 @@ class Context3DRenderer extends Context3DRendererAPI
 		context3D.present();
 	}
 
-	private function __renderBitmap(bitmap:Bitmap):Void
-	{
-		__updateCacheBitmap(bitmap, false);
-
-		if (bitmap.__bitmapData != null && bitmap.__bitmapData.image != null)
-		{
-			bitmap.__imageVersion = bitmap.__bitmapData.image.version;
-		}
-
-		if (bitmap.__cacheBitmap != null && !bitmap.__isCacheBitmapRender)
-		{
-			Context3DBitmap.render2(bitmap.__cacheBitmap, this);
-		}
-		else
-		{
-			Context3DDisplayObject.render(bitmap, this);
-			Context3DBitmap.render(bitmap, this);
-		}
-	}
-
 	private function __renderBitmapData(bitmapData:BitmapData):Void
 	{
 		__setBlendMode(NORMAL);
@@ -1068,109 +1064,160 @@ class Context3DRenderer extends Context3DRendererAPI
 
 	private function __renderDisplayObject(object:DisplayObject):Void
 	{
-		if (object != null && object.__type != null)
+		var children = object.__childIterator(false, this);
+		for (displayObject in children)
 		{
-			switch (object.__type)
+			switch (displayObject.__type)
 			{
 				case BITMAP:
-					__renderBitmap(cast object);
+					var bitmap:Bitmap = cast displayObject;
+					__updateCacheBitmap(bitmap, false);
+
+					if (bitmap.__bitmapData != null && bitmap.__bitmapData.image != null)
+					{
+						bitmap.__imageVersion = bitmap.__bitmapData.image.version;
+					}
+
+					if (bitmap.__cacheBitmap != null && !bitmap.__isCacheBitmapRender)
+					{
+						Context3DBitmap.render2(bitmap.__cacheBitmap, this);
+					}
+					else
+					{
+						Context3DDisplayObject.render(bitmap, this);
+						Context3DBitmap.render(bitmap, this);
+					}
+
 				case DISPLAY_OBJECT_CONTAINER, MOVIE_CLIP:
-					__renderDisplayObjectContainer(cast object);
+					var container:DisplayObjectContainer = cast displayObject;
+					container.__cleanupRemovedChildren();
+
+					if (!container.__renderable || container.__worldAlpha <= 0)
+					{
+						if (__stage != null)
+						{
+							container.__renderDirty = false;
+						}
+						children.skip(displayObject);
+						continue;
+					}
+
+					__updateCacheBitmap(container, false);
+
+					if (container.__cacheBitmap != null && !container.__isCacheBitmapRender)
+					{
+						Context3DBitmap.render2(container.__cacheBitmap, this);
+					}
+					else
+					{
+						Context3DDisplayObject.render(container, this);
+					}
+
+					if (container.__cacheBitmap != null && !container.__isCacheBitmapRender)
+					{
+						if (__stage != null)
+						{
+							container.__renderDirty = false;
+						}
+						children.skip(displayObject);
+						continue;
+					}
+
 				case DISPLAY_OBJECT, SHAPE:
-					__renderShape(cast object);
+					var shape:Shape = cast displayObject;
+					__updateCacheBitmap(shape, false);
+
+					if (shape.__cacheBitmap != null && !shape.__isCacheBitmapRender)
+					{
+						Context3DBitmap.render2(shape.__cacheBitmap, this);
+					}
+					else
+					{
+						Context3DDisplayObject.render(shape, this);
+					}
+
 				case SIMPLE_BUTTON:
-					__renderSimpleButton(cast object);
+					var button:SimpleButton = cast displayObject;
+					if (!button.__renderable || button.__worldAlpha <= 0 || button.__currentState == null)
+					{
+						button.__renderDirty = false;
+						continue;
+					}
+
+					__pushMaskObject(button);
+					__renderDisplayObject(button.__currentState);
+					__popMaskObject(button);
+
 				case TEXTFIELD:
-					__renderTextField(cast object);
+					var textField:TextField = cast displayObject;
+					__updateCacheBitmap(textField, textField.__dirty);
+
+					if (textField.__cacheBitmap != null && !textField.__isCacheBitmapRender)
+					{
+						Context3DBitmap.render2(textField.__cacheBitmap, this);
+					}
+					else
+					{
+						Context3DTextField.render(textField, this);
+						Context3DDisplayObject.render(textField, this);
+					}
+
 				case TILEMAP:
-					__renderTilemap(cast object);
+					var tilemap:Tilemap = cast displayObject;
+					__updateCacheBitmap(tilemap, false);
+
+					if (tilemap.__cacheBitmap != null && !tilemap.__isCacheBitmapRender)
+					{
+						Context3DBitmap.render2(tilemap.__cacheBitmap, this);
+					}
+					else
+					{
+						Context3DDisplayObject.render(tilemap, this);
+						Context3DTilemap.render(tilemap, this);
+					}
+
 				case VIDEO:
-					__renderVideo(cast object);
+					Context3DVideo.render(cast displayObject, this);
+
 				#if draft
 				case GL_GRAPHICS:
-					openfl.display.HWGraphics.render(cast object, this);
+					openfl.display.HWGraphics.render(cast displayObject, this);
 				case GEOMETRY:
-					openfl._internal.renderer.context3D.Context3DGeometry.render(cast object, this);
+					openfl._internal.renderer.context3D.Context3DGeometry.render(cast displayObject, this);
 				#end
+
 				default:
 			}
 
-			if (object.__customRenderEvent != null)
-			{
-				var event = object.__customRenderEvent;
-				event.allowSmoothing = __allowSmoothing;
-				event.objectMatrix.copyFrom(object.__renderTransform);
-				event.objectColorTransform.__copyFrom(object.__worldColorTransform);
-				event.renderer = this;
-
-				if (!__cleared) __clear();
-
-				setShader(object.__worldShader);
-				context3D.__flushGL();
-
-				event.type = RenderEvent.RENDER_OPENGL;
-
-				__setBlendMode(object.__worldBlendMode);
-				__pushMaskObject(object);
-
-				object.dispatchEvent(event);
-
-				__popMaskObject(object);
-
-				setViewport();
-			}
-		}
-	}
-
-	private function __renderDisplayObjectContainer(container:DisplayObjectContainer):Void
-	{
-		container.__cleanupRemovedChildren();
-
-		if (!container.__renderable || container.__worldAlpha <= 0) return;
-
-		__updateCacheBitmap(container, false);
-
-		if (container.__cacheBitmap != null && !container.__isCacheBitmapRender)
-		{
-			Context3DBitmap.render2(container.__cacheBitmap, this);
-		}
-		else
-		{
-			Context3DDisplayObject.render(container, this);
-		}
-
-		if (container.__cacheBitmap != null && !container.__isCacheBitmapRender) return;
-
-		if (container.numChildren > 0)
-		{
-			__pushMaskObject(container);
-			// renderer.filterManager.pushObject (this);
-
-			var child = container.__firstChild;
 			if (__stage != null)
 			{
-				while (child != null)
-				{
-					__renderDisplayObject(child);
-					child.__renderDirty = false;
-					child = child.__nextSibling;
-				}
-
-				container.__renderDirty = false;
-			}
-			else
-			{
-				while (child != null)
-				{
-					__renderDisplayObject(child);
-					child = child.__nextSibling;
-				}
+				displayObject.__renderDirty = false;
 			}
 		}
 
-		if (container.numChildren > 0)
+		if (object.__customRenderEvent != null)
 		{
-			__popMaskObject(container);
+			var event = object.__customRenderEvent;
+			event.allowSmoothing = __allowSmoothing;
+			event.objectMatrix.copyFrom(object.__renderTransform);
+			event.objectColorTransform.__copyFrom(object.__worldColorTransform);
+			event.renderer = this;
+
+			if (!__cleared) __clear();
+
+			setShader(object.__worldShader);
+			context3D.__flushGL();
+
+			event.type = RenderEvent.RENDER_OPENGL;
+
+			__setBlendMode(object.__worldBlendMode);
+			__pushMaskObject(object);
+
+			object.dispatchEvent(event);
+
+			__popMaskObject(object);
+
+			setViewport();
 		}
 	}
 
@@ -1270,64 +1317,6 @@ class Context3DRenderer extends Context3DRendererAPI
 					}
 			}
 		}
-	}
-
-	private function __renderShape(shape:DisplayObject):Void
-	{
-		__updateCacheBitmap(shape, false);
-
-		if (shape.__cacheBitmap != null && !shape.__isCacheBitmapRender)
-		{
-			Context3DBitmap.render2(shape.__cacheBitmap, this);
-		}
-		else
-		{
-			Context3DDisplayObject.render(shape, this);
-		}
-	}
-
-	private function __renderSimpleButton(button:SimpleButton):Void
-	{
-		if (!button.__renderable || button.__worldAlpha <= 0 || button.__currentState == null) return;
-
-		__pushMaskObject(button);
-		__renderDisplayObject(button.__currentState);
-		__popMaskObject(button);
-	}
-
-	private function __renderTextField(textField:TextField):Void
-	{
-		__updateCacheBitmap(textField, textField.__dirty);
-
-		if (textField.__cacheBitmap != null && !textField.__isCacheBitmapRender)
-		{
-			Context3DBitmap.render2(textField.__cacheBitmap, this);
-		}
-		else
-		{
-			Context3DTextField.render(textField, this);
-			Context3DDisplayObject.render(textField, this);
-		}
-	}
-
-	private function __renderTilemap(tilemap:Tilemap):Void
-	{
-		__updateCacheBitmap(tilemap, false);
-
-		if (tilemap.__cacheBitmap != null && !tilemap.__isCacheBitmapRender)
-		{
-			Context3DBitmap.render2(tilemap.__cacheBitmap, this);
-		}
-		else
-		{
-			Context3DDisplayObject.render(tilemap, this);
-			Context3DTilemap.render(tilemap, this);
-		}
-	}
-
-	private function __renderVideo(video:Video):Void
-	{
-		Context3DVideo.render(video, this);
 	}
 
 	private override function __resize(width:Int, height:Int):Void

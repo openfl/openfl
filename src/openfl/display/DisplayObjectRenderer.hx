@@ -89,6 +89,10 @@ class DisplayObjectRenderer extends EventDispatcher
 		}
 	}
 
+	@:noCompletion private function __popObject(displayObject:DisplayObject):Void {}
+
+	@:noCompletion private function __pushObject(displayObject:DisplayObject):Void {}
+
 	@:noCompletion private function __render(object:IBitmapDrawable):Void {}
 
 	@:noCompletion private function __resize(width:Int, height:Int):Void {}

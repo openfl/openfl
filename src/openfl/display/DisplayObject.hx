@@ -1365,10 +1365,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		}
 	}
 
-	@:noCompletion private function __childIterator(childrenOnly:Bool = true):DisplayObjectIterator
+	@:noCompletion private function __childIterator(childrenOnly:Bool = true, renderer:DisplayObjectRenderer = null):DisplayObjectIterator
 	{
 		var iterator = __childIterators.get();
-		iterator.init(this, childrenOnly);
+		iterator.init(this, childrenOnly, renderer);
 		return iterator;
 	}
 
