@@ -6,15 +6,10 @@ import openfl._internal.backend.lime.Clipboard;
 import openfl._internal.backend.lime.KeyCode;
 import openfl._internal.backend.lime.KeyModifier;
 import openfl._internal.backend.html5.DivElement;
-import openfl._internal.formats.swf.SWFLite;
-import openfl._internal.symbols.DynamicTextSymbol;
-import openfl._internal.symbols.FontSymbol;
 import openfl._internal.formats.html.HTMLParser;
 import openfl._internal.text.TextEngine;
 import openfl._internal.text.TextFormatRange;
 import openfl._internal.text.TextLayoutGroup;
-import openfl._internal.text.UTF8String;
-import openfl._internal.utils.Log;
 import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.display.InteractiveObject;
@@ -375,7 +370,7 @@ class TextField extends InteractiveObject
 		Flash Player and AIR also support explicit character codes, such as
 		&#38; (ASCII ampersand) and &#x20AC; (Unicode € symbol).
 	**/
-	public var htmlText(get, set):UTF8String;
+	public var htmlText(get, set):String;
 
 	/**
 		The number of characters in a text field. A character such as tab
@@ -479,7 +474,7 @@ class TextField extends InteractiveObject
 
 		@default null
 	**/
-	public var restrict(get, set):UTF8String;
+	public var restrict(get, set):String;
 
 	/**
 		The current horizontal scrolling position. If the `scrollH`
@@ -591,7 +586,7 @@ class TextField extends InteractiveObject
 		To get the text in HTML form, use the `htmlText`
 		property.
 	**/
-	public var text(get, set):UTF8String;
+	public var text(get, set):String;
 
 	/**
 		The color of the text in a text field, in hexadecimal format. The
@@ -680,9 +675,8 @@ class TextField extends InteractiveObject
 	@:noCompletion private var __offsetY:Float;
 	@:noCompletion private var __selectionIndex:Int;
 	@:noCompletion private var __showCursor:Bool;
-	@:noCompletion private var __symbol:DynamicTextSymbol;
-	@:noCompletion private var __text:UTF8String;
-	@:noCompletion private var __htmlText:UTF8String;
+	@:noCompletion private var __text:String;
+	@:noCompletion private var __htmlText:String;
 	@:noCompletion private var __textEngine:TextEngine;
 	@:noCompletion private var __textFormat:TextFormat;
 	#if openfl_html5
@@ -1667,127 +1661,6 @@ class TextField extends InteractiveObject
 		#end
 	}
 
-	@:noCompletion private function __fromSymbol(swf:SWFLite, symbol:DynamicTextSymbol):Void
-	{
-		__symbol = symbol;
-
-		width = symbol.width;
-		height = symbol.height;
-
-		__offsetX = symbol.x;
-		__offsetY = symbol.y;
-
-		multiline = symbol.multiline;
-		wordWrap = symbol.wordWrap;
-		displayAsPassword = symbol.password;
-
-		if (symbol.border)
-		{
-			border = true;
-			background = true;
-		}
-
-		selectable = symbol.selectable;
-
-		if (symbol.input)
-		{
-			type = INPUT;
-		}
-
-		var format = new TextFormat();
-		if (symbol.color != null) format.color = (symbol.color & 0x00FFFFFF);
-		format.size = Math.round(symbol.fontHeight / 20);
-
-		var font:FontSymbol = cast swf.symbols.get(symbol.fontID);
-
-		if (font != null)
-		{
-			// TODO: Bold and italic are handled in the font already
-			// Setting this can cause "extra" bold in HTML5
-
-			// format.bold = font.bold;
-			// format.italic = font.italic;
-			// format.leading = Std.int (font.leading / 20 + (format.size * 0.2) #if flash + 2 #end);
-			// embedFonts = true;
-
-			format.__ascent = ((font.ascent / 20) / 1024);
-			format.__descent = ((font.descent / 20) / 1024);
-		}
-
-		format.font = symbol.fontName;
-
-		var found = false;
-
-		switch (format.font)
-		{
-			case "_sans", "_serif", "_typewriter", "", null:
-				found = true;
-
-			default:
-				for (font in Font.enumerateFonts())
-				{
-					if (font.fontName == format.font)
-					{
-						found = true;
-						break;
-					}
-				}
-		}
-
-		if (!found)
-		{
-			var alpha = ~/[^a-zA-Z]+/g;
-
-			for (font in Font.enumerateFonts())
-			{
-				if (alpha.replace(font.fontName, "").substr(0, symbol.fontName.length) == symbol.fontName)
-				{
-					format.font = font.fontName;
-					found = true;
-					break;
-				}
-			}
-		}
-
-		if (found)
-		{
-			embedFonts = true;
-		}
-		else if (!__missingFontWarning.exists(format.font))
-		{
-			__missingFontWarning[format.font] = true;
-			Log.warn("Could not find required font \"" + format.font + "\", it has not been embedded");
-		}
-
-		if (symbol.align != null)
-		{
-			if (symbol.align == "center") format.align = TextFormatAlign.CENTER;
-			else if (symbol.align == "right") format.align = TextFormatAlign.RIGHT;
-			else if (symbol.align == "justify") format.align = TextFormatAlign.JUSTIFY;
-
-			format.leftMargin = Std.int(symbol.leftMargin / 20);
-			format.rightMargin = Std.int(symbol.rightMargin / 20);
-			format.indent = Std.int(symbol.indent / 20);
-			format.leading = Std.int(symbol.leading / 20);
-		}
-
-		defaultTextFormat = format;
-
-		if (symbol.text != null)
-		{
-			if (symbol.html)
-			{
-				htmlText = symbol.text;
-			}
-			else
-			{
-				text = symbol.text;
-			}
-		}
-
-		// autoSize = (tag.autoSize) ? TextFieldAutoSize.LEFT : TextFieldAutoSize.NONE;
-	}
-
 	@:noCompletion private inline function __getAdvance(position):Float
 	{
 		#if openfl_html5
@@ -2066,7 +1939,7 @@ class TextField extends InteractiveObject
 
 		__replaceText(startIndex, endIndex, value, restrict);
 
-		var i = startIndex + cast(value, UTF8String).length;
+		var i = startIndex + value.length;
 		if (i > __text.length) i = __text.length;
 
 		setSelection(i, i);
@@ -2886,11 +2759,10 @@ class TextField extends InteractiveObject
 			__textEngine.textFormatRanges.splice(1, __textEngine.textFormatRanges.length - 1);
 		}
 
-		var utfValue:UTF8String = value;
 		var range = __textEngine.textFormatRanges[0];
 		range.format = __textFormat;
 		range.start = 0;
-		range.end = utfValue.length;
+		range.end = value.length;
 
 		__isHTML = false;
 

@@ -7,7 +7,6 @@ import openfl.events.IOErrorEvent;
 import openfl.events.ProgressEvent;
 import openfl.net.URLRequest;
 import openfl.utils.ByteArray;
-
 #if lime
 import lime.app.Future;
 import lime.app.Promise;

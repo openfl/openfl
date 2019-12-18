@@ -22,9 +22,6 @@
     "Other OpenFL contributors"
   ],
   "main": "dist/openfl.min.js",
-  "bin": {
-    "openfljs": "bin/openfl.js"
-  },
   "module": "lib-esm/openfl/index.js",
   "types": "lib/openfl/index.d.ts",
   "sideEffects": [
@@ -95,7 +92,7 @@
     "globby": "^8.0.1",
     "haxe": "^5.0.10",
     "hxgenjs": "kevinresol/hxgenjs",
-    "hxnodejs": "jgranick/hxnodejs",
+    "hxnodejs": "haxefoundation/hxnodejs",
     "hxp": "openfl/hxp",
     "jpeg-js": "^0.3.4",
     "lime": "openfl/lime#develop",
@@ -115,6 +112,6 @@
     "pako": "^1.0.6"
   },
   "haxeDependencies": {
-    "haxe": "3.4.4"
+    "haxe": "4.0.3"
   }
 }

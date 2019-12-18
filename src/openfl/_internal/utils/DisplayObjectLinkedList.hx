@@ -6,17 +6,15 @@ import openfl.display.DisplayObject;
 @:access(openfl.display.DisplayObject)
 class DisplayObjectLinkedList
 {
-	public static #if !openfl_validate_children inline #end function __addChild(displayObject:DisplayObjectContainer, child:DisplayObject):Void
+	public static #if !openfl_validate_children /*inline*/ #end function __addChild(displayObject:DisplayObjectContainer, child:DisplayObject):Void
 	{
-		if (child.parent != displayObject)
+		if (child == displayObject.__lastChild)
 		{
-			if (child.parent != null)
-			{
-				child.parent.removeChild(child);
-			}
-			child.parent = displayObject;
-			displayObject.numChildren++;
+			return;
 		}
+
+		// var args:Array<Dynamic> = [child];
+		// __validateChildrenInit(displayObject, "__addChild", args);
 
 		if (displayObject.__firstChild == child)
 		{
@@ -49,7 +47,7 @@ class DisplayObjectLinkedList
 		#if openfl_validate_children
 		displayObject.__children.remove(child);
 		displayObject.__children.push(child);
-		__validateChildren(displayObject, "addChild");
+		__validateChildren(displayObject, "__addChild");
 		#end
 	}
 
@@ -60,21 +58,19 @@ class DisplayObjectLinkedList
 			return;
 		}
 
-		if (child.parent != displayObject)
-		{
-			if (child.parent != null)
-			{
-				child.parent.removeChild(child);
-			}
-			child.parent = displayObject;
-			displayObject.numChildren++;
-		}
+		// var args:Array<Dynamic> = [child, before];
+		// __validateChildrenInit(displayObject, "__insertChildAfter", args);
 
 		var after = before.__nextSibling;
 
 		if (displayObject.__firstChild == child)
 		{
 			displayObject.__firstChild = child.__nextSibling;
+		}
+
+		if (displayObject.__lastChild == child)
+		{
+			displayObject.__lastChild = child.__previousSibling;
 		}
 
 		if (child.__previousSibling != null)
@@ -98,10 +94,6 @@ class DisplayObjectLinkedList
 		if (after != null)
 		{
 			after.__previousSibling = child;
-			if (displayObject.__lastChild == child)
-			{
-				displayObject.__lastChild = after;
-			}
 		}
 		else
 		{
@@ -120,7 +112,7 @@ class DisplayObjectLinkedList
 			}
 			displayObject.__children.insert(index, child);
 		}
-		__validateChildren(displayObject, "insertChildAfter");
+		__validateChildren(displayObject, "__insertChildAfter");
 		#end
 	}
 
@@ -139,7 +131,8 @@ class DisplayObjectLinkedList
 		}
 	}
 
-	public static #if !openfl_validate_children inline #end function __insertChildAt(displayObject:DisplayObjectContainer, child:DisplayObject, index:Int):Void
+	public static #if !openfl_validate_children /*inline*/ #end function __insertChildAt(displayObject:DisplayObjectContainer, child:DisplayObject,
+			index:Int):Void
 	{
 		if (index == 0)
 		{
@@ -155,7 +148,11 @@ class DisplayObjectLinkedList
 			for (i in 0...(index - 1))
 			{
 				ref = ref.__nextSibling;
-				if (ref == child)
+				if (ref == null)
+				{
+					break;
+				}
+				else if (ref == child)
 				{
 					childFound = true;
 				}
@@ -175,8 +172,11 @@ class DisplayObjectLinkedList
 		}
 	}
 
-	public static #if !openfl_validate_children inline #end function __removeChild(displayObject:DisplayObjectContainer, child:DisplayObject):Void
+	public static #if !openfl_validate_children /*inline*/ #end function __removeChild(displayObject:DisplayObjectContainer, child:DisplayObject):Void
 	{
+		// var args:Array<Dynamic> = [child];
+		// __validateChildrenInit(displayObject, "__removeChild", args);
+
 		child.parent = null;
 		displayObject.numChildren--;
 
@@ -205,12 +205,28 @@ class DisplayObjectLinkedList
 
 		#if openfl_validate_children
 		displayObject.__children.remove(child);
-		__validateChildren(displayObject, "removeChild");
+		__validateChildren(displayObject, "__removeChild");
 		#end
+	}
+
+	public static inline function __reparent(displayObject:DisplayObjectContainer, child:DisplayObject):Void
+	{
+		if (child.parent != displayObject)
+		{
+			if (child.parent != null)
+			{
+				child.parent.removeChild(child);
+			}
+			child.parent = displayObject;
+			displayObject.numChildren++;
+		}
 	}
 
 	public static function __swapChildren(displayObject:DisplayObjectContainer, child1:DisplayObject, child2:DisplayObject):Void
 	{
+		// var args:Array<Dynamic> = [child1, child2];
+		// __validateChildrenInit(displayObject, "__swapChildren", args);
+
 		if (child1.__nextSibling == child2 || child2.__nextSibling == child1)
 		{
 			var first, second;
@@ -299,26 +315,19 @@ class DisplayObjectLinkedList
 		var index2 = displayObject.__children.indexOf(child2);
 		displayObject.__children[index1] = child2;
 		displayObject.__children[index2] = child1;
-		__validateChildren(displayObject, "swapChildren");
+		__validateChildren(displayObject, "__swapChildren");
 		#end
 	}
 
-	public static #if !openfl_validate_children inline #end function __unshiftChild(displayObject:DisplayObjectContainer, child:DisplayObject):Void
+	public static #if !openfl_validate_children /*inline*/ #end function __unshiftChild(displayObject:DisplayObjectContainer, child:DisplayObject):Void
 	{
 		if (displayObject.__firstChild == child)
 		{
 			return;
 		}
 
-		if (child.parent != displayObject)
-		{
-			if (child.parent != null)
-			{
-				child.parent.removeChild(child);
-			}
-			child.parent = displayObject;
-			displayObject.numChildren++;
-		}
+		// var args:Array<Dynamic> = [child];
+		// __validateChildrenInit(displayObject, "__unshiftChild", args);
 
 		if (child.__previousSibling != null)
 		{
@@ -352,12 +361,12 @@ class DisplayObjectLinkedList
 		#if openfl_validate_children
 		displayObject.__children.remove(child);
 		displayObject.__children.insert(0, child);
-		__validateChildren(displayObject, "addChildAt (index == 0)");
+		__validateChildren(displayObject, "__unshiftChild");
 		#end
 	}
 
 	#if openfl_validate_children
-	@:noCompletion private static function __validateChildren(displayObject:DisplayObjectContainer, label:String):Void
+	public static function __validateChildren(displayObject:DisplayObjectContainer, label:String):Void
 	{
 		var numChildren = displayObject.numChildren;
 		var __firstChild = displayObject.__firstChild;
@@ -366,15 +375,7 @@ class DisplayObjectLinkedList
 
 		var numChildrenCorrect = (numChildren == __children.length);
 		var firstChildMatches = (__firstChild == __children[0]);
-		// var lastChildMatches = (__lastChild == __children[__children.length - 1]);
-
-		// var map = new Map<DisplayObject, Bool>();
 		var checkMap = new Map<DisplayObject, Bool>();
-
-		// trace("------------" + label);
-		// trace((firstChildMatches ? "CORRECT" : "ERROR") + " - FIRST CHILD: " + (__firstChild != null ? __firstChild.name : null));
-		// trace((lastChildMatches ? "CORRECT" : "ERROR") + " - LAST CHILD: " + (__lastChild != null ? __lastChild.name : null));
-		// trace((numChildrenCorrect ? "CORRECT" : "ERROR") + " - NUM CHILDREN: " + numChildren);
 
 		for (i in 0...displayObject.__children.length)
 		{
@@ -388,37 +389,6 @@ class DisplayObjectLinkedList
 			}
 		}
 
-		var child = __firstChild;
-		// var i = 0;
-		// while (child != null)
-		// {
-		// 	// var childMatches = (child == __children[i]);
-		// 	// var parentMatches = (__children[i] != null && child.parent == __children[i].parent);
-		// 	// var prevSiblingMatches = (child.__previousSibling == __children[i - 1]);
-		// 	// var nextSiblingMatches = (child.__nextSibling == __children[i + 1]);
-
-		// 	// trace((childMatches ? "CORRECT" : "ERROR") + " -> CHILD [" + i + "]: " + child.name + " (should be "
-		// 	// 	+ (__children[i] != null ? __children[i].name : null) + ")");
-		// 	// trace((parentMatches ? "CORRECT" : "ERROR") + " --- PARENT: " + (child.parent != null ? child.parent.name : null));
-		// 	// trace((prevSiblingMatches ? "CORRECT" : "ERROR")
-		// 	// 	+ " - -- PREV SIBLING: "
-		// 	// 	+ (child.__previousSibling != null ? child.__previousSibling.name : null));
-		// 	// trace((nextSiblingMatches ? "CORRECT" : "ERROR") + " --- NEXT SIBLING: " + (child.__nextSibling != null ? child.__nextSibling.name : null));
-
-		// 	if (map.exists(child))
-		// 	{
-		// 		__validateChildrenError(displayObject, '[$label] Duplicate child detected');
-		// 	}
-		// 	else
-		// 	{
-		// 		map[child] = true;
-		// 	}
-
-		// 	child = child.__nextSibling;
-		// 	i++;
-		// }
-
-		child = __firstChild;
 		if (!numChildrenCorrect)
 		{
 			__validateChildrenError(displayObject, '[$label] numChildren is incorrect');
@@ -429,6 +399,7 @@ class DisplayObjectLinkedList
 			__validateChildrenError(displayObject, '[$label] firstChild does not match');
 		}
 
+		var child = __firstChild;
 		if (child != null)
 		{
 			if (child.__previousSibling != null)
@@ -444,6 +415,7 @@ class DisplayObjectLinkedList
 			{
 				__validateChildrenError(displayObject, '[$label] child $i does not match');
 			}
+
 			if (i > 0)
 			{
 				if (child.__previousSibling == null)
@@ -455,6 +427,7 @@ class DisplayObjectLinkedList
 					__validateChildrenError(displayObject, '[$label] child.__previousSibling at index $i does not match');
 				}
 			}
+
 			if (i < __children.length - 1)
 			{
 				if (child.__nextSibling == null)
@@ -470,6 +443,7 @@ class DisplayObjectLinkedList
 			child = child.__nextSibling;
 		}
 
+		var child = __firstChild;
 		if (child != null)
 		{
 			if (__lastChild != __children[__children.length - 1])

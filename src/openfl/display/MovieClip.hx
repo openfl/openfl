@@ -1,9 +1,6 @@
 package openfl.display;
 
 #if !flash
-import openfl._internal.formats.swf.SWFLite;
-import openfl._internal.symbols.timeline.SymbolTimeline;
-import openfl._internal.symbols.SpriteSymbol;
 import openfl.events.MouseEvent;
 
 /**
@@ -45,22 +42,10 @@ import openfl.events.MouseEvent;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl._internal.symbols.SWFSymbol)
 @:access(openfl.display.Timeline)
 @:access(openfl.geom.ColorTransform)
 class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implements Dynamic<DisplayObject> #end
 {
-	@:noCompletion private static var __constructor:MovieClip->Void;
-	@:noCompletion private static var __initSWF:SWFLite;
-	@:noCompletion private static var __initSymbol:SpriteSymbol;
-	#if 0
-	// Suppress checkstyle warning
-	private static var __unusedImport:Array<Class<Dynamic>> = [
-		BitmapSymbol, ButtonSymbol, DynamicTextSymbol, FontSymbol, ShapeSymbol, SpriteSymbol, StaticTextSymbol, SWFSymbol, BlurFilter, ColorMatrixFilter,
-		ConvolutionFilter, DisplacementMapFilter, DropShadowFilter, GlowFilter
-	];
-	#end
-
 	/**
 		Specifies the number of the frame in which the playhead is located in the
 		timeline of the MovieClip instance. If the movie clip has multiple scenes,
@@ -148,6 +133,8 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	**/
 	public var totalFrames(get, never):Int;
 
+	@:noCompletion private static var __constructor:MovieClip->Void;
+
 	// @:noCompletion @:dox(hide) public var trackAsMenu:Bool;
 	@:noCompletion private var __enabled:Bool;
 	@:noCompletion private var __hasDown:Bool;
@@ -155,8 +142,6 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	@:noCompletion private var __hasUp:Bool;
 	@:noCompletion private var __mouseIsDown:Bool;
 	@:noCompletion private var __scene:Scene;
-	@:noCompletion private var __swf:SWFLite;
-	@:noCompletion private var __symbol:SpriteSymbol;
 	@:noCompletion private var __timeline:Timeline;
 
 	#if openfljs
@@ -196,16 +181,6 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 			__constructor = null;
 
 			method(this);
-		}
-		else if (__initSymbol != null)
-		{
-			__swf = __initSWF;
-			__symbol = __initSymbol;
-
-			__initSWF = null;
-			__initSymbol = null;
-
-			__fromSymbol(__swf, __symbol);
 		}
 	}
 
@@ -367,11 +342,6 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		{
 			__timeline.__stop();
 		}
-	}
-
-	@:noCompletion private function __fromSymbol(swf:SWFLite, symbol:SpriteSymbol):Void
-	{
-		attachTimeline(new SymbolTimeline(swf, symbol));
 	}
 
 	@:noCompletion private override function __stopAllMovieClips():Void

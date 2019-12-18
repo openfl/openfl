@@ -63,12 +63,12 @@ class TextEngine
 	public var maxScrollV(default, null):Int;
 	public var multiline:Bool;
 	public var numLines(default, null):Int;
-	public var restrict(default, set):UTF8String;
+	public var restrict(default, set):String;
 	public var scrollH:Int;
 	@:isVar public var scrollV(get, set):Int;
 	public var selectable:Bool;
 	public var sharpness:Float;
-	public var text(default, set):UTF8String;
+	public var text(default, set):String;
 	public var textBounds:Rectangle;
 	public var textHeight:Float;
 	public var textFormatRanges:Vector<TextFormatRange>;
@@ -779,7 +779,7 @@ class TextEngine
 		#if !js
 		inline
 		#end
-		function getPositions(text:UTF8String, startIndex:Int, endIndex:Int):Array<#if openfl_html5 Float #else GlyphPosition #end>
+		function getPositions(text:String, startIndex:Int, endIndex:Int):Array<#if openfl_html5 Float #else GlyphPosition #end>
 		{
 			// TODO: optimize
 
@@ -1600,7 +1600,7 @@ class TextEngine
 		#end
 	}
 
-	public function restrictText(value:UTF8String):UTF8String
+	public function restrictText(value:String):String
 	{
 		if (value == null)
 		{
@@ -1728,7 +1728,7 @@ class TextEngine
 		}
 	}
 
-	public function trimText(value:UTF8String):UTF8String
+	public function trimText(value:String):String
 	{
 		if (value == null)
 		{

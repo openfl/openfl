@@ -309,17 +309,81 @@ class DisplayObjectContainerTest
 		var sprite = new Sprite();
 		var sprite2 = new Sprite();
 		var sprite3 = new Sprite();
+		var sprite4 = new Sprite();
+		var sprite5 = new Sprite();
 
 		sprite.addChild(sprite2);
 		sprite.addChild(sprite3);
+		sprite.addChild(sprite4);
+		sprite.addChild(sprite5);
+
+		Assert.areEqual(0, sprite.getChildIndex(sprite2));
+		Assert.areEqual(1, sprite.getChildIndex(sprite3));
+		Assert.areEqual(2, sprite.getChildIndex(sprite4));
+		Assert.areEqual(3, sprite.getChildIndex(sprite5));
 
 		sprite.setChildIndex(sprite3, 0);
 
+		Assert.areEqual(1, sprite.getChildIndex(sprite2));
 		Assert.areEqual(0, sprite.getChildIndex(sprite3));
+		Assert.areEqual(2, sprite.getChildIndex(sprite4));
+		Assert.areEqual(3, sprite.getChildIndex(sprite5));
 
 		sprite.setChildIndex(sprite2, 0);
 
 		Assert.areEqual(0, sprite.getChildIndex(sprite2));
+		Assert.areEqual(1, sprite.getChildIndex(sprite3));
+		Assert.areEqual(2, sprite.getChildIndex(sprite4));
+		Assert.areEqual(3, sprite.getChildIndex(sprite5));
+
+		sprite.setChildIndex(sprite3, 3);
+
+		Assert.areEqual(0, sprite.getChildIndex(sprite2));
+		Assert.areEqual(3, sprite.getChildIndex(sprite3));
+		Assert.areEqual(1, sprite.getChildIndex(sprite4));
+		Assert.areEqual(2, sprite.getChildIndex(sprite5));
+
+		sprite.setChildIndex(sprite2, 4);
+
+		Assert.areEqual(3, sprite.getChildIndex(sprite2));
+		Assert.areEqual(2, sprite.getChildIndex(sprite3));
+		Assert.areEqual(0, sprite.getChildIndex(sprite4));
+		Assert.areEqual(1, sprite.getChildIndex(sprite5));
+
+		sprite.setChildIndex(sprite2, 0);
+
+		Assert.areEqual(0, sprite.getChildIndex(sprite2));
+		Assert.areEqual(3, sprite.getChildIndex(sprite3));
+		Assert.areEqual(1, sprite.getChildIndex(sprite4));
+		Assert.areEqual(2, sprite.getChildIndex(sprite5));
+
+		sprite.setChildIndex(sprite2, 1);
+
+		Assert.areEqual(1, sprite.getChildIndex(sprite2));
+		Assert.areEqual(3, sprite.getChildIndex(sprite3));
+		Assert.areEqual(0, sprite.getChildIndex(sprite4));
+		Assert.areEqual(2, sprite.getChildIndex(sprite5));
+
+		sprite.setChildIndex(sprite2, 2);
+
+		Assert.areEqual(2, sprite.getChildIndex(sprite2));
+		Assert.areEqual(3, sprite.getChildIndex(sprite3));
+		Assert.areEqual(0, sprite.getChildIndex(sprite4));
+		Assert.areEqual(1, sprite.getChildIndex(sprite5));
+
+		sprite.setChildIndex(sprite2, 1);
+
+		Assert.areEqual(1, sprite.getChildIndex(sprite2));
+		Assert.areEqual(3, sprite.getChildIndex(sprite3));
+		Assert.areEqual(0, sprite.getChildIndex(sprite4));
+		Assert.areEqual(2, sprite.getChildIndex(sprite5));
+
+		sprite.setChildIndex(sprite2, 3);
+
+		Assert.areEqual(3, sprite.getChildIndex(sprite2));
+		Assert.areEqual(2, sprite.getChildIndex(sprite3));
+		Assert.areEqual(0, sprite.getChildIndex(sprite4));
+		Assert.areEqual(1, sprite.getChildIndex(sprite5));
 
 		try
 		{

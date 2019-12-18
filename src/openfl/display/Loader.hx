@@ -18,6 +18,8 @@ import openfl.utils.Assets;
 import openfl.utils.AssetLibrary;
 import openfl.utils.ByteArray;
 
+using openfl._internal.utils.DisplayObjectLinkedList;
+
 /**
 	The Loader class is used to load SWF files or image (JPG, PNG, or GIF)
 	files. Use the `load()` method to initiate loading. The loaded
@@ -201,19 +203,17 @@ class Loader extends DisplayObjectContainer
 		__unloaded = true;
 	}
 
-	#if (openfl >= "9.0.0")
-	// #error "Need to move addChild and sundry to private __addChild internally"
-	// public override function addChild(child:DisplayObject):DisplayObject
-	// {
-	// 	throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
-	// 	return null;
-	// }
-	// public override function addChildAt(child:DisplayObject, index:Int):DisplayObject
-	// {
-	// 	throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
-	// 	return null;
-	// }
-	#end
+	public override function addChild(child:DisplayObject):DisplayObject
+	{
+		throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
+		return null;
+	}
+
+	public override function addChildAt(child:DisplayObject, index:Int):DisplayObject
+	{
+		throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
+		return null;
+	}
 
 	#if !openfl_strict
 	/**
@@ -562,22 +562,22 @@ class Loader extends DisplayObjectContainer
 		BitmapData.loadFromBytes(buffer).onComplete(BitmapData_onLoad).onError(BitmapData_onError);
 	}
 
-	#if (openfl >= "9.0.0")
-	// public override function removeChild(child:DisplayObject):DisplayObject
-	// {
-	// 	throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
-	// 	return null;
-	// }
-	// public override function removeChildAt(index:Int):DisplayObject
-	// {
-	// 	throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
-	// 	return null;
-	// }
-	// public override function setChildIndex(child:DisplayObject, index:Int):Void
-	// {
-	// 	throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
-	// }
-	#end
+	public override function removeChild(child:DisplayObject):DisplayObject
+	{
+		throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
+		return null;
+	}
+
+	public override function removeChildAt(index:Int):DisplayObject
+	{
+		throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
+		return null;
+	}
+
+	public override function setChildIndex(child:DisplayObject, index:Int):Void
+	{
+		throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
+	}
 
 	/**
 		Removes a child of this Loader object that was loaded by using the
@@ -704,7 +704,7 @@ class Loader extends DisplayObjectContainer
 
 		if (content != null)
 		{
-			super.addChildAt(content, 0);
+			super.addChild(content);
 		}
 	}
 
