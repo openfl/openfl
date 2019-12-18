@@ -3092,6 +3092,7 @@ class TextField extends InteractiveObject
 					__selectionIndex = leftPos;
 					__caretIndex = rightPos;
 
+					var setDirty:Bool = true;
 					#if openfl_html5
 					if (DisplayObject.__supportDOM)
 					{
@@ -3099,10 +3100,10 @@ class TextField extends InteractiveObject
 						{
 							__forceCachedBitmapUpdate = true;
 						}
+						setDirty = false;
 					}
-					else
 					#end
-					{
+					if (setDirty) {
 						__dirty = true;
 						__setRenderDirty();
 					}
