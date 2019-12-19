@@ -406,8 +406,7 @@ class ByteArrayTest
 			Mocha.it("testReadWriteUTFBytes", function()
 			{
 				var data = new ByteArray();
-				var str = "H\xE9llo World !";
-				// var str = "Héllo World !";
+				var str = "Héllo World !";
 				data.writeUTFBytes(str);
 
 				// Flash is adding a byte for a null terminator

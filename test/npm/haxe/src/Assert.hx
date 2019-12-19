@@ -33,7 +33,7 @@ extern class Assert
 		Throws an `AssertionError`. If `message` is falsy, the error message is set as the values of `actual` and `expected` separated by the provided `operator`.
 		Otherwise, the error message is the value of `message`.
 	**/
-	static function fail<T>(actual:T, expected:T, message:String, operator:String):Void;
+	static function fail<T>(actual:T, expected:T, message:String, _operator:String):Void;
 
 	/**
 		Tests if value is truthy.
@@ -158,4 +158,4 @@ extern class Assert
 /**
 	a class, RegExp or function.
 **/
-private typedef ThrowsExpectedError = EitherType<Class<Dynamic>, EitherType<js.RegExp, Dynamic->Bool>>;
+private typedef ThrowsExpectedError = EitherType<Class<Dynamic>, EitherType<#if haxe4 js.lib.RegExp #else js.RegExp #end, Dynamic->Bool>>;
