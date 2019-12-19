@@ -3132,7 +3132,7 @@ class TextField extends InteractiveObject
 	{
 		if (stage == null) return;
 
-		if (__textEngine.selectable && __selectionIndex >= 0)
+		if (selectable && __selectionIndex >= 0)
 		{
 			__updateLayout();
 
@@ -3142,6 +3142,8 @@ class TextField extends InteractiveObject
 			{
 				__caretIndex = position;
 
+				var setDirty = true;
+
 				#if (js && html5)
 				if (DisplayObject.__supportDOM)
 				{
@@ -3149,9 +3151,11 @@ class TextField extends InteractiveObject
 					{
 						__forceCachedBitmapUpdate = true;
 					}
+					setDirty = false;
 				}
-				else
 				#end
+
+				if (setDirty)
 				{
 					__dirty = true;
 					__setRenderDirty();
