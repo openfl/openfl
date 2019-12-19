@@ -3069,7 +3069,7 @@ class TextField extends InteractiveObject
 	
 	@:noCompletion private function this_onDoubleClick(event:MouseEvent):Void
 	{
-		if (__textEngine.selectable) {
+		if (selectable) {
 			__updateLayout();
 			
 			var delimiters:Array<String> = ['\n', '.', '!', '?', ',', ' ', ';', ':', '(', ')', '-', '_', '/'];
@@ -3092,8 +3092,7 @@ class TextField extends InteractiveObject
 				
 				if (leftPos != rightPos)
 				{
-					__selectionIndex = leftPos;
-					__caretIndex = rightPos;
+					setSelection(leftPos, rightPos);
 
 					var setDirty:Bool = true;
 					#if openfl_html5
