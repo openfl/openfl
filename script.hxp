@@ -125,7 +125,7 @@ class Script extends hxp.Script
 			}
 
 			if (target == "neko" || target == null) runOpenFLCommand(dir, ["test", "neko"]);
-			if (target == "hl" || target == null) runOpenFLCommand(dir, ["test", "hl"]);
+			if (target == "hl" || target == "hashlink" || target == null) runOpenFLCommand(dir, ["test", "hl"]);
 			if (target == "cpp" || target == null || target == System.hostPlatform) runOpenFLCommand(dir, ["test", "cpp"]);
 
 			if (target == "web" || target == "flash" || target == null) runOpenFLCommand(dir, ["build", "flash", "-debug"]);
