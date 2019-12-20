@@ -40,8 +40,8 @@ class Script extends hxp.Script
 	private function test():Void
 	{
 		var targets = [
-			"npm", "npm-es5", "npm-es6", "npm-haxe", "npm-typescript", "haxelib", "flash", "html5", "neko", "cpp", "hl", "windows", "mac", "linux", "air",
-			"web", "electron"
+			"npm", "npm-es5", "npm-es6", "npm-haxe", "npm-typescript", "haxelib", "flash", "html5", "neko", "cpp", "hl", "hashlink", "windows", "mac",
+			"linux", "air", "web", "electron"
 		];
 
 		if (commandArgs.length > 0)
