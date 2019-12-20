@@ -562,11 +562,12 @@ class Loader extends DisplayObjectContainer
 		BitmapData.loadFromBytes(buffer).onComplete(BitmapData_onLoad).onError(BitmapData_onError);
 	}
 
-	public override function removeChild(child:DisplayObject):DisplayObject
-	{
-		throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
-		return null;
-	}
+	// TODO
+	// public override function removeChild(child:DisplayObject):DisplayObject
+	// {
+	// 	throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
+	// 	return null;
+	// }
 
 	public override function removeChildAt(index:Int):DisplayObject
 	{
