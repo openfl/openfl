@@ -1094,11 +1094,7 @@ class Context3DRenderer extends Context3DRendererAPI
 
 					if (!container.__renderable || container.__worldAlpha <= 0)
 					{
-						if (__stage != null)
-						{
-							container.__renderDirty = false;
-						}
-						children.skip(displayObject);
+						children.skip(container);
 						continue;
 					}
 
@@ -1107,20 +1103,11 @@ class Context3DRenderer extends Context3DRendererAPI
 					if (container.__cacheBitmap != null && !container.__isCacheBitmapRender)
 					{
 						Context3DBitmap.render2(container.__cacheBitmap, this);
+						children.skip(container);
 					}
 					else
 					{
 						Context3DDisplayObject.render(container, this);
-					}
-
-					if (container.__cacheBitmap != null && !container.__isCacheBitmapRender)
-					{
-						if (__stage != null)
-						{
-							container.__renderDirty = false;
-						}
-						children.skip(displayObject);
-						continue;
 					}
 
 				case DISPLAY_OBJECT, SHAPE:
@@ -1140,7 +1127,10 @@ class Context3DRenderer extends Context3DRendererAPI
 					var button:SimpleButton = cast displayObject;
 					if (!button.__renderable || button.__worldAlpha <= 0 || button.__currentState == null)
 					{
-						button.__renderDirty = false;
+						if (__stage != null)
+						{
+							button.__renderDirty = false;
+						}
 						continue;
 					}
 
