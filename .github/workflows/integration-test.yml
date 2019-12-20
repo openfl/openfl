@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
 
-	lime-hashlink:
+	lime_hashlink:
 		name: "Lime / Hashlink"
 		runs-on: ubuntu-16.04
 
@@ -58,7 +58,7 @@ jobs:
 			color: "#FF6562"
 			message: "https://github.com/openfl/openfl/actions\nLime Hashlink integration unit tests failed."
 
-	lime-linux-32:
+	lime_linux-32:
 		name: "Lime / Linux (32-bit)"
 		runs-on: ubuntu-16.04
 
@@ -113,7 +113,7 @@ jobs:
 			color: "#FF6562"
 			message: "https://github.com/openfl/openfl/actions\nLime Linux (32-bit) integration tests failed."
 
-	lime-linux-64:
+	lime_linux-64:
 		name: "Lime / Linux (64-bit)"
 		runs-on: ubuntu-16.04
 
@@ -168,7 +168,7 @@ jobs:
 			color: "#FF6562"
 			message: "https://github.com/openfl/openfl/actions\nLime Linux (64-bit) integration tests failed."
 
-	lime-neko:
+	lime_neko:
 		name: "Lime / Neko"
 		runs-on: ubuntu-16.04
 
