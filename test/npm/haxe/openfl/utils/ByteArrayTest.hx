@@ -85,9 +85,7 @@ class ByteArrayTest
 				#end
 			}
 
-			new file:scripts / SWFLibraryExporter.hx new file:scripts / format / swf / SWFLibrary.hx new file:scripts / format / swf / exporters / SWFLiteExporter.hx new file:scripts / haxe / Int32.hx new file:scripts / js / Browser.hx Mocha.it("testWritePos",
-			function()
-
+			Mocha.it("testWritePos", function()
 			{
 				var ba:ByteArray = new ByteArray();
 
@@ -408,8 +406,7 @@ class ByteArrayTest
 			Mocha.it("testReadWriteUTFBytes", function()
 			{
 				var data = new ByteArray();
-				var str = "H\xE9llo World !";
-				// var str = "Héllo World !";
+				var str = "Héllo World !";
 				data.writeUTFBytes(str);
 
 				// Flash is adding a byte for a null terminator

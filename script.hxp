@@ -40,8 +40,8 @@ class Script extends hxp.Script
 	private function test():Void
 	{
 		var targets = [
-			"npm", "npm-es5", "npm-es6", "npm-haxe", "npm-typescript", "haxelib", "flash", "html5", "neko", "cpp", "hl", "windows", "mac", "linux", "air", "web",
-			"electron"
+			"npm", "npm-es5", "npm-es6", "npm-haxe", "npm-typescript", "haxelib", "flash", "html5", "neko", "cpp", "hl", "hashlink", "windows", "mac",
+			"linux", "air", "web", "electron"
 		];
 
 		if (commandArgs.length > 0)
@@ -100,7 +100,11 @@ class Script extends hxp.Script
 
 			// if (target == "web" || target == "html5" || target == "flash" || target == null) {
 
-			System.runCommand(dir, "haxelib", ["run", "munit", "test", "-nogen", "-result-exit-code"]);
+			// System.runCommand(dir, "haxelib", ["run", "munit", "test", "-nogen", "-result-exit-code"]);
+			System.runCommand(dir, "haxe", ["test.hxml"]);
+
+			dir = Path.combine(dir, "build/neko/bin");
+			System.runCommand(dir, "neko", ["TestMain.n"]);
 
 			// }
 
@@ -121,7 +125,7 @@ class Script extends hxp.Script
 			}
 
 			if (target == "neko" || target == null) runOpenFLCommand(dir, ["test", "neko"]);
-			if (target == "hl" || target == null) runOpenFLCommand(dir, ["test", "hl"]);
+			if (target == "hl" || target == "hashlink" || target == null) runOpenFLCommand(dir, ["test", "hl"]);
 			if (target == "cpp" || target == null || target == System.hostPlatform) runOpenFLCommand(dir, ["test", "cpp"]);
 
 			if (target == "web" || target == "flash" || target == null) runOpenFLCommand(dir, ["build", "flash", "-debug"]);

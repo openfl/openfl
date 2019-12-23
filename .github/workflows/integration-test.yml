@@ -1,0 +1,227 @@
+name: Integration Tests
+
+on: [push]
+
+jobs:
+
+  lime-hashlink:
+    name: "Lime / Hashlink"
+    runs-on: ubuntu-16.04
+
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        submodules: true
+
+    - name: Setup environment
+      run: |
+        sudo add-apt-repository ppa:haxe/releases -y
+        sudo apt-get update
+        sudo apt-get install haxe -y
+        mkdir $GITHUB_WORKSPACE/.haxelib
+        haxelib setup $GITHUB_WORKSPACE/.haxelib
+        haxelib dev openfl $GITHUB_WORKSPACE
+
+    - name: Install dependencies
+      run: |
+        haxelib install lime > /dev/null
+        haxelib install format > /dev/null
+        haxelib install mcover > /dev/null
+        haxelib install hamcrest > /dev/null
+        git clone https://github.com/openfl/munit $GITHUB_WORKSPACE/munit --depth 1
+        haxelib dev munit $GITHUB_WORKSPACE/munit/src
+        cd $GITHUB_WORKSPACE/munit/tool && haxe build.hxml
+        haxelib install hxp > /dev/null
+        haxelib run hxp --install-hxp-alias
+
+    - name: Install "openfl" command alias
+      run: |
+        haxelib run openfl setup -alias -y
+
+    - name: Run integration tests
+      run: |
+        hxp integration-test hashlink
+
+    - name: Notify Discord (success)
+      uses: appleboy/discord-action@master
+      with:
+        webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
+        webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+        color: "#00C07F"
+        message: "https://github.com/openfl/openfl/actions\nLime Hashlink integration tests succeeded."
+
+    - name: Notify Discord (failure)
+      uses: appleboy/discord-action@master
+      if: failure()
+      with:
+        webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
+        webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+        color: "#FF6562"
+        message: "https://github.com/openfl/openfl/actions\nLime Hashlink integration tests failed."
+
+  lime-linux-32:
+    name: "Lime / Linux (32-bit)"
+    runs-on: ubuntu-16.04
+
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        submodules: true
+
+    - name: Setup environment
+      run: |
+        sudo add-apt-repository ppa:haxe/releases -y
+        sudo apt-get update
+        sudo apt-get install g++-multilib haxe -y
+        mkdir $GITHUB_WORKSPACE/.haxelib
+        haxelib setup $GITHUB_WORKSPACE/.haxelib
+        haxelib dev openfl $GITHUB_WORKSPACE
+
+    - name: Install dependencies
+      run: |
+        haxelib install lime > /dev/null
+        haxelib install hxcpp > /dev/null
+        haxelib install format > /dev/null
+        haxelib install mcover > /dev/null
+        haxelib install hamcrest > /dev/null
+        git clone https://github.com/openfl/munit $GITHUB_WORKSPACE/munit --depth 1
+        haxelib dev munit $GITHUB_WORKSPACE/munit/src
+        cd $GITHUB_WORKSPACE/munit/tool && haxe build.hxml
+        haxelib install hxp > /dev/null
+        haxelib run hxp --install-hxp-alias
+
+    - name: Install "openfl" command alias
+      run: |
+        haxelib run openfl setup -alias -y
+
+    - name: Run integration tests
+      run: |
+        hxp integration-test linux -32
+
+    - name: Notify Discord (success)
+      uses: appleboy/discord-action@master
+      with:
+        webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
+        webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+        color: "#00C07F"
+        message: "https://github.com/openfl/openfl/actions\nLime Linux (32-bit) integration tests succeeded."
+
+    - name: Notify Discord (failure)
+      uses: appleboy/discord-action@master
+      if: failure()
+      with:
+        webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
+        webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+        color: "#FF6562"
+        message: "https://github.com/openfl/openfl/actions\nLime Linux (32-bit) integration tests failed."
+
+  lime-linux-64:
+    name: "Lime / Linux (64-bit)"
+    runs-on: ubuntu-16.04
+
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        submodules: true
+
+    - name: Setup environment
+      run: |
+        sudo add-apt-repository ppa:haxe/releases -y
+        sudo apt-get update
+        sudo apt-get install g++ haxe -y
+        mkdir $GITHUB_WORKSPACE/.haxelib
+        haxelib setup $GITHUB_WORKSPACE/.haxelib
+        haxelib dev openfl $GITHUB_WORKSPACE
+
+    - name: Install dependencies
+      run: |
+        haxelib install lime > /dev/null
+        haxelib install hxcpp > /dev/null
+        haxelib install format > /dev/null
+        haxelib install mcover > /dev/null
+        haxelib install hamcrest > /dev/null
+        git clone https://github.com/openfl/munit $GITHUB_WORKSPACE/munit --depth 1
+        haxelib dev munit $GITHUB_WORKSPACE/munit/src
+        cd $GITHUB_WORKSPACE/munit/tool && haxe build.hxml
+        haxelib install hxp > /dev/null
+        haxelib run hxp --install-hxp-alias
+
+    - name: Install "openfl" command alias
+      run: |
+        haxelib run openfl setup -alias -y
+
+    - name: Run integration tests
+      run: |
+        hxp integration-test linux -64
+
+    - name: Notify Discord (success)
+      uses: appleboy/discord-action@master
+      with:
+        webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
+        webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+        color: "#00C07F"
+        message: "https://github.com/openfl/openfl/actions\nLime Linux (64-bit) integration tests succeeded."
+
+    - name: Notify Discord (failure)
+      uses: appleboy/discord-action@master
+      if: failure()
+      with:
+        webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
+        webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+        color: "#FF6562"
+        message: "https://github.com/openfl/openfl/actions\nLime Linux (64-bit) integration tests failed."
+
+  lime-neko:
+    name: "Lime / Neko"
+    runs-on: ubuntu-16.04
+
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        submodules: true
+
+    - name: Setup environment
+      run: |
+        sudo add-apt-repository ppa:haxe/releases -y
+        sudo apt-get update
+        sudo apt-get install haxe -y
+        mkdir $GITHUB_WORKSPACE/.haxelib
+        haxelib setup $GITHUB_WORKSPACE/.haxelib
+        haxelib dev openfl $GITHUB_WORKSPACE
+
+    - name: Install dependencies
+      run: |
+        haxelib install lime > /dev/null
+        haxelib install format > /dev/null
+        haxelib install mcover > /dev/null
+        haxelib install hamcrest > /dev/null
+        git clone https://github.com/openfl/munit $GITHUB_WORKSPACE/munit --depth 1
+        haxelib dev munit $GITHUB_WORKSPACE/munit/src
+        cd $GITHUB_WORKSPACE/munit/tool && haxe build.hxml
+        haxelib install hxp > /dev/null
+        haxelib run hxp --install-hxp-alias
+
+    - name: Install "openfl" command alias
+      run: |
+        haxelib run openfl setup -alias -y
+
+    - name: Run integration tests
+      run: |
+        hxp integration-test neko
+
+    - name: Notify Discord (success)
+      uses: appleboy/discord-action@master
+      with:
+        webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
+        webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+        color: "#00C07F"
+        message: "https://github.com/openfl/openfl/actions\nLime Neko integration tests succeeded."
+
+    - name: Notify Discord (failure)
+      uses: appleboy/discord-action@master
+      if: failure()
+      with:
+        webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
+        webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+        color: "#FF6562"
+        message: "https://github.com/openfl/openfl/actions\nLime Neko integration tests failed."
