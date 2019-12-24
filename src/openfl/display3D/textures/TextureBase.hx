@@ -5,8 +5,6 @@ import openfl._internal.backend.gl.GLFramebuffer;
 import openfl._internal.backend.gl.GLRenderbuffer;
 import openfl._internal.backend.gl.GLTexture;
 import openfl._internal.backend.gl.GL;
-import openfl._internal.backend.lime.ImageCanvasUtil;
-import openfl._internal.backend.lime.Image;
 import openfl._internal.backend.lime.RenderContext;
 import openfl._internal.formats.atf.ATFGPUFormat;
 import openfl._internal.renderer.SamplerState;
@@ -14,6 +12,13 @@ import openfl.display.BitmapData;
 import openfl.events.EventDispatcher;
 import openfl.errors.Error;
 import openfl._internal.utils.Log;
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.ImageCanvasUtil;
+import openfl._internal.backend.lime_standalone.Image;
+#else
+import openfl._internal.backend.lime.ImageCanvasUtil;
+import openfl._internal.backend.lime.Image;
+#end
 
 /**
 	The TextureBase class is the base class for Context3D texture objects.
@@ -248,7 +253,6 @@ class TextureBase extends EventDispatcher
 	}
 	#end
 
-	#if lime
 	@:noCompletion private function __getImage(bitmapData:BitmapData):Image
 	{
 		var image = bitmapData.image;
@@ -300,7 +304,6 @@ class TextureBase extends EventDispatcher
 
 		return image;
 	}
-	#end
 
 	#if openfl_gl
 	@:noCompletion private function __getTexture():GLTexture

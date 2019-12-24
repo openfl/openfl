@@ -226,9 +226,7 @@ class Sound extends EventDispatcher
 	**/
 	public var url(default, null):String;
 
-	#if lime
 	@:noCompletion private var __buffer:AudioBuffer;
-	#end
 
 	#if openfljs
 	@:noCompletion private static function __init__()
@@ -286,13 +284,11 @@ class Sound extends EventDispatcher
 	**/
 	public function close():Void
 	{
-		#if lime
 		if (__buffer != null)
 		{
 			__buffer.dispose();
 			__buffer = null;
 		}
-		#end
 	}
 
 	#if false
@@ -483,7 +479,6 @@ class Sound extends EventDispatcher
 			bytes = copy;
 		}
 
-		#if lime
 		__buffer = AudioBuffer.fromBytes(bytes);
 
 		if (__buffer == null)
@@ -494,9 +489,6 @@ class Sound extends EventDispatcher
 		{
 			dispatchEvent(new Event(Event.COMPLETE));
 		}
-		#else
-		dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
-		#end
 	}
 
 	/**
@@ -511,14 +503,10 @@ class Sound extends EventDispatcher
 	**/
 	public static function loadFromFile(path:String):Future<Sound>
 	{
-		#if lime
 		return AudioBuffer.loadFromFile(path).then(function(audioBuffer)
 		{
 			return Future.withValue(fromAudioBuffer(audioBuffer));
 		});
-		#else
-		return cast Future.withError("Cannot load audio file");
-		#end
 	}
 
 	/**
@@ -534,14 +522,10 @@ class Sound extends EventDispatcher
 	**/
 	public static function loadFromFiles(paths:Array<String>):Future<Sound>
 	{
-		#if lime
 		return AudioBuffer.loadFromFiles(paths).then(function(audioBuffer)
 		{
 			return Future.withValue(fromAudioBuffer(audioBuffer));
 		});
-		#else
-		return cast Future.withError("Cannot load audio files");
-		#end
 	}
 
 	/**
@@ -582,7 +566,6 @@ class Sound extends EventDispatcher
 			bytes = copy;
 		}
 
-		#if lime
 		var audioBuffer = new AudioBuffer();
 		audioBuffer.bitsPerSample = bitsPerSample;
 		audioBuffer.channels = channels;
@@ -592,9 +575,6 @@ class Sound extends EventDispatcher
 		__buffer = audioBuffer;
 
 		dispatchEvent(new Event(Event.COMPLETE));
-		#else
-		dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
-		#end
 	}
 
 	/**
@@ -617,7 +597,6 @@ class Sound extends EventDispatcher
 	**/
 	public function play(startTime:Float = 0.0, loops:Int = 0, sndTransform:SoundTransform = null):SoundChannel
 	{
-		#if lime
 		if (__buffer == null || SoundMixer.__soundChannels.length >= SoundMixer.MAX_ACTIVE_CHANNELS)
 		{
 			return null;
@@ -651,9 +630,6 @@ class Sound extends EventDispatcher
 		source.position = position;
 
 		return new SoundChannel(source, sndTransform);
-		#else
-		return null;
-		#end
 	}
 
 	// Get & Set Methods
@@ -664,7 +640,6 @@ class Sound extends EventDispatcher
 
 	@:noCompletion private function get_length():Int
 	{
-		#if lime
 		if (__buffer != null)
 		{
 			#if (openfl_html5 && howlerjs)
@@ -686,13 +661,11 @@ class Sound extends EventDispatcher
 			}
 			#end
 		}
-		#end
 
 		return 0;
 	}
 
 	// Event Handlers
-	#if lime
 	@:noCompletion private function AudioBuffer_onURLLoad(buffer:AudioBuffer):Void
 	{
 		if (buffer == null)
@@ -705,7 +678,6 @@ class Sound extends EventDispatcher
 			dispatchEvent(new Event(Event.COMPLETE));
 		}
 	}
-	#end
 }
 #else
 typedef Sound = flash.media.Sound;

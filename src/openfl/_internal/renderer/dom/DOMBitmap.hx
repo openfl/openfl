@@ -7,6 +7,7 @@ import openfl._internal.renderer.dom.DOMRenderer;
 import openfl.display.Bitmap;
 
 @:access(lime.graphics.ImageBuffer)
+@:access(openfl._internal.backend.lime_standalone.ImageBuffer)
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)
 @SuppressWarnings("checkstyle:FieldDocComment")

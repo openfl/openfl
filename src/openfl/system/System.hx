@@ -245,9 +245,7 @@ import cpp.vm.Gc;
 	**/
 	public static function setClipboard(string:String):Void
 	{
-		#if lime
 		Clipboard.text = string;
-		#end
 	}
 
 	// Getters & Setters

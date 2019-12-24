@@ -58,9 +58,7 @@ import openfl.events.EventDispatcher;
 
 	@:noCompletion private var __isValid:Bool;
 	@:noCompletion private var __soundTransform:SoundTransform;
-	#if lime
 	@:noCompletion private var __source:AudioSource;
-	#end
 
 	#if openfljs
 	@:noCompletion private static function __init__()
@@ -78,7 +76,7 @@ import openfl.events.EventDispatcher;
 	}
 	#end
 
-	@:noCompletion private function new(source:#if lime AudioSource #else Dynamic #end = null, soundTransform:SoundTransform = null):Void
+	@:noCompletion private function new(source:AudioSource = null, soundTransform:SoundTransform = null):Void
 	{
 		super(this);
 
@@ -94,7 +92,6 @@ import openfl.events.EventDispatcher;
 			__soundTransform = new SoundTransform();
 		}
 
-		#if lime
 		if (source != null)
 		{
 			__source = source;
@@ -103,7 +100,6 @@ import openfl.events.EventDispatcher;
 
 			__source.play();
 		}
-		#end
 
 		SoundMixer.__registerSoundChannel(this);
 	}
@@ -117,9 +113,7 @@ import openfl.events.EventDispatcher;
 
 		if (!__isValid) return;
 
-		#if lime
 		__source.stop();
-		#end
 		__dispose();
 	}
 
@@ -127,11 +121,9 @@ import openfl.events.EventDispatcher;
 	{
 		if (!__isValid) return;
 
-		#if lime
 		__source.onComplete.remove(source_onComplete);
 		__source.dispose();
 		__source = null;
-		#end
 		__isValid = false;
 	}
 
@@ -145,20 +137,14 @@ import openfl.events.EventDispatcher;
 	{
 		if (!__isValid) return 0;
 
-		#if lime
 		return __source.currentTime + __source.offset;
-		#else
-		return 0;
-		#end
 	}
 
 	@:noCompletion private function set_position(value:Float):Float
 	{
 		if (!__isValid) return 0;
 
-		#if lime
 		__source.currentTime = Std.int(value) - __source.offset;
-		#end
 		return value;
 	}
 
@@ -183,7 +169,6 @@ import openfl.events.EventDispatcher;
 
 			if (__isValid)
 			{
-				#if lime
 				__source.gain = volume;
 
 				var position = __source.position;
@@ -192,7 +177,6 @@ import openfl.events.EventDispatcher;
 				__source.position = position;
 
 				return value;
-				#end
 			}
 		}
 

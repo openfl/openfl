@@ -490,7 +490,7 @@ import openfl.Vector;
 		__agalSamplerUsageMask = 0;
 
 		var numActive = 0;
-		numActive = gl.getProgramParameter(__glProgram, gl.ACTIVE_UNIFORMS);
+		numActive = gl.getProgramParameter(__glProgram, GL.ACTIVE_UNIFORMS);
 
 		var vertexUniforms = new List<Uniform>();
 		var fragmentUniforms = new List<Uniform>();

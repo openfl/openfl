@@ -7,7 +7,6 @@ import openfl._internal.backend.cairo.Cairo;
 import openfl._internal.backend.gl.GLFramebuffer;
 import openfl._internal.backend.gl.GLRenderbuffer;
 import openfl._internal.backend.html5.CanvasElement;
-import openfl._internal.backend.lime.Image;
 import openfl._internal.backend.lime.ImageCanvasUtil;
 import openfl._internal.backend.lime.ImageChannel;
 import openfl._internal.backend.lime.ImageBuffer;
@@ -35,6 +34,11 @@ import openfl.utils.Endian;
 import openfl.utils.Future;
 import openfl.utils.Object;
 import openfl.Vector;
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.Image;
+#else
+import openfl._internal.backend.lime.Image;
+#end
 #if openfl_gl
 import openfl._internal.renderer.context3D.batcher.BatchRenderer;
 import openfl._internal.renderer.context3D.Context3DRenderer;
@@ -147,7 +151,7 @@ class BitmapData implements IBitmapDrawable
 		In Flash Player, this property is always `null`.
 	**/
 	@SuppressWarnings("checkstyle:Dynamic")
-	public var image(default, null):#if lime Image #else Dynamic #end;
+	public var image(default, null):#if (lime || openfl_html5) Image #else Dynamic #end;
 
 	// #if !flash_doc_gen
 

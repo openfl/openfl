@@ -128,7 +128,6 @@ class Accelerometer extends EventDispatcher
 	{
 		if (!initialized)
 		{
-			#if lime
 			var sensors = Sensor.getSensors(SensorType.ACCELEROMETER);
 
 			if (sensors.length > 0)
@@ -136,7 +135,6 @@ class Accelerometer extends EventDispatcher
 				sensors[0].onUpdate.add(accelerometer_onUpdate);
 				supported = true;
 			}
-			#end
 
 			initialized = true;
 		}

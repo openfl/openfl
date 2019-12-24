@@ -217,7 +217,6 @@ import openfl.display.Shader;
 	@:noCompletion private override function __applyFilter(bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle,
 			destPoint:Point):BitmapData
 	{
-		#if lime
 		__updateMapMatrix();
 
 		#if openfl_html5
@@ -232,7 +231,6 @@ import openfl.display.Shader;
 
 			new Vector4(__matrixData[0], __matrixData[4], __matrixData[8], __matrixData[12]),
 			new Vector4(__matrixData[1], __matrixData[5], __matrixData[9], __matrixData[13]), __smooth);
-		#end
 
 		return bitmapData;
 	}

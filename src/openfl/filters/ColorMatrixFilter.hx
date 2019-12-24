@@ -145,7 +145,6 @@ import openfl.geom.Rectangle;
 	@:noCompletion private override function __applyFilter(destBitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle,
 			destPoint:Point):BitmapData
 	{
-		#if lime
 		var sourceImage = sourceBitmapData.image;
 		var image = destBitmapData.image;
 
@@ -208,7 +207,6 @@ import openfl.geom.Rectangle;
 		}
 
 		destBitmapData.image.dirty = true;
-		#end
 		return destBitmapData;
 	}
 

@@ -1,7 +1,6 @@
 package openfl._internal.renderer.canvas;
 
 #if openfl_html5
-import openfl._internal.backend.lime.ImageCanvasUtil;
 import openfl._internal.backend.lime.Canvas2DRenderContext;
 import openfl._internal.formats.html.HTMLParser;
 import openfl.display.Bitmap;
@@ -23,12 +22,18 @@ import openfl.text.TextFieldType;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.ImageCanvasUtil;
+#else
+import openfl._internal.backend.lime.ImageCanvasUtil;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
 @:access(lime.graphics.ImageBuffer)
+@:access(openfl._internal.backend.lime_standalone.ImageBuffer)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.DOMRenderer)
@@ -55,10 +60,7 @@ class CanvasRenderer extends CanvasRendererAPI
 
 		__colorTransform = new ColorTransform();
 		__transform = new Matrix();
-
-		#if lime
 		__type = CANVAS;
-		#end
 	}
 
 	public override function applySmoothing(context:Canvas2DRenderContext, value:Bool):Void
@@ -264,7 +266,6 @@ class CanvasRenderer extends CanvasRendererAPI
 
 	private function __renderBitmapData(bitmapData:BitmapData):Void
 	{
-		#if lime
 		if (!bitmapData.readable) return;
 
 		if (bitmapData.image.type == DATA)
@@ -277,7 +278,6 @@ class CanvasRenderer extends CanvasRendererAPI
 		setTransform(bitmapData.__renderTransform, context);
 
 		context.drawImage(bitmapData.image.src, 0, 0, bitmapData.image.width, bitmapData.image.height);
-		#end
 	}
 
 	private function __renderDisplayObject(object:DisplayObject):Void
@@ -582,7 +582,6 @@ class CanvasRenderer extends CanvasRendererAPI
 
 	private function __updateCacheBitmap(object:DisplayObject, force:Bool):Bool
 	{
-		#if lime
 		#if openfl_disable_cacheasbitmap
 		return false;
 		#end
@@ -950,9 +949,6 @@ class CanvasRenderer extends CanvasRendererAPI
 		}
 
 		return updated;
-		#else
-		return false;
-		#end
 	}
 }
 #end

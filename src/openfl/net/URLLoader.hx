@@ -14,7 +14,7 @@ import openfl.utils.ByteArray;
 #if lime
 import lime.net.HTTPRequest;
 #else
-typedef HTTPRequest = Dynamic;
+import openfl._internal.backend.lime_standalone.HTTPRequest;
 #end
 
 /**
@@ -286,7 +286,7 @@ class URLLoader extends EventDispatcher
 	**/
 	public function load(request:URLRequest):Void
 	{
-		#if (lime && !macro)
+		#if !macro
 		if (dataFormat == BINARY)
 		{
 			var httpRequest = new HTTPRequest<ByteArray>();
@@ -348,7 +348,6 @@ class URLLoader extends EventDispatcher
 	@:noCompletion private function __prepareRequest(httpRequest:#if (!lime || display || macro || doc_gen) Dynamic #else _IHTTPRequest #end,
 			request:URLRequest):Void
 	{
-		#if lime
 		__httpRequest = httpRequest;
 		__httpRequest.uri = request.url;
 		__httpRequest.method = request.method;
@@ -394,7 +393,6 @@ class URLLoader extends EventDispatcher
 
 		__httpRequest.userAgent = request.userAgent;
 		__httpRequest.enableResponseHeaders = true;
-		#end
 	}
 
 	// Event Handlers

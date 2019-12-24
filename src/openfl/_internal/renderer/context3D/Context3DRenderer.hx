@@ -138,9 +138,7 @@ class Context3DRenderer extends Context3DRendererAPI
 			Graphics.maxTextureWidth = Graphics.maxTextureHeight = __gl.getParameter(GL.MAX_TEXTURE_SIZE);
 		}
 
-		#if lime
 		__matrix = new Matrix4();
-		#end
 
 		__values = new Array();
 
@@ -159,9 +157,7 @@ class Context3DRenderer extends Context3DRendererAPI
 		__softwareRenderer = new CairoRenderer(null);
 		#end
 
-		#if lime
 		__type = OPENGL;
-		#end
 
 		__setBlendMode(NORMAL);
 		context3D.__setGLBlend(true);
@@ -169,10 +165,8 @@ class Context3DRenderer extends Context3DRendererAPI
 		__clipRects = new Array();
 		__maskObjects = new Array();
 		__numClipRects = 0;
-		#if lime
 		__projection = new Matrix4();
 		__projectionFlipped = new Matrix4();
-		#end
 		__stencilReference = 0;
 		__tempRect = new Rectangle();
 

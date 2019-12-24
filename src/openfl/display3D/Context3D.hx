@@ -342,7 +342,7 @@ import openfl.utils.ByteArray;
 		if (__glDepthStencil == -1)
 		{
 			#if openfl_html5
-			__glDepthStencil = gl.DEPTH_STENCIL;
+			__glDepthStencil = GL.DEPTH_STENCIL;
 			#elseif lime
 			if (__context.type == OPENGLES && Std.parseFloat(__context.version) >= 3)
 			{
@@ -397,7 +397,6 @@ import openfl.utils.ByteArray;
 		__quadIndexBufferElements = Math.floor(0xFFFF / 4);
 		__quadIndexBufferCount = __quadIndexBufferElements * 6;
 
-		#if lime
 		var data = new UInt16Array(__quadIndexBufferCount);
 
 		var index:UInt = 0;
@@ -418,7 +417,6 @@ import openfl.utils.ByteArray;
 
 		__quadIndexBuffer = createIndexBuffer(__quadIndexBufferCount);
 		__quadIndexBuffer.uploadFromTypedArray(data);
-		#end
 
 		__bitmapDataPool = new BitmapDataPool(30, this);
 		#end

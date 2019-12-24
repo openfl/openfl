@@ -40,10 +40,8 @@ class Context3DDisplayObject
 			rect.setTo(0, 0, displayObject.width, displayObject.height);
 			renderer.__pushMaskRect(rect, displayObject.__renderTransform);
 
-			#if lime
 			var color:ARGB = (displayObject.opaqueBackground : ARGB);
 			context.clear(color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, 1, 0, 0, Context3DClearMask.COLOR);
-			#end
 
 			renderer.__popMaskRect();
 			renderer.__popMaskObject(displayObject);

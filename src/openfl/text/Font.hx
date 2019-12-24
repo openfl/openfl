@@ -20,6 +20,11 @@ import openfl.utils.Future;
 #end
 class Font #if lime extends LimeFont #end
 {
+	#if (!lime && openfl_html5)
+	@:noCompletion public var ascender:Int;
+	@:noCompletion public var descender:Int;
+	#end
+
 	/**
 		The name of an embedded font.
 	**/
@@ -36,6 +41,10 @@ class Font #if lime extends LimeFont #end
 		the FontType class.
 	**/
 	public var fontType:FontType;
+
+	#if (!lime && openfl_html5)
+	@:noCompletion public var unitsPerEM:Int;
+	#end
 
 	@:noCompletion private static var __fontByName:Map<String, Font> = new Map();
 	@:noCompletion private static var __registeredFonts:Array<Font> = new Array();

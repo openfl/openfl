@@ -86,7 +86,7 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 	@:noCompletion private var __worldTransform:Matrix;
 	#if openfl_html5
 	@:noCompletion private var __canvas:CanvasElement;
-	@:noCompletion private var __context:#if lime CanvasRenderingContext2D #else Dynamic #end;
+	@:noCompletion private var __context:CanvasRenderingContext2D;
 	#else
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __cairo:#if lime Cairo #else Dynamic #end;
 	#end
@@ -383,13 +383,11 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 	{
 		if (shader != null)
 		{
-			#if lime
 			var shaderBuffer = __shaderBufferPool.get();
 			__usedShaderBuffers.add(shaderBuffer);
 			shaderBuffer.update(cast shader);
 
 			__commands.beginShaderFill(shaderBuffer);
-			#end
 		}
 	}
 
@@ -400,12 +398,10 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 	**/
 	public function clear():Void
 	{
-		#if lime
 		for (shaderBuffer in __usedShaderBuffers)
 		{
 			__shaderBufferPool.release(shaderBuffer);
 		}
-		#end
 
 		__usedShaderBuffers.clear();
 		__commands.clear();
