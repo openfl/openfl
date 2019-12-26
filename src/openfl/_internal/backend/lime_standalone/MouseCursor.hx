@@ -1,6 +1,4 @@
-package openfl._internal.backend.lime_standalone;
-
-package lime.ui;
+package openfl._internal.backend.lime_standalone; #if openfl_html5
 
 enum MouseCursor
 {
@@ -18,3 +16,4 @@ enum MouseCursor
 	WAIT_ARROW;
 	CUSTOM;
 }
+#end

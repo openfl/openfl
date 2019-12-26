@@ -5,7 +5,6 @@ import haxe.CallStack;
 import haxe.ds.ArraySort;
 import openfl._internal.backend.html5.Browser;
 import openfl._internal.backend.html5.Element;
-import openfl._internal.backend.lime.Application;
 import openfl._internal.backend.lime.Gamepad;
 import openfl._internal.backend.lime.GamepadAxis;
 import openfl._internal.backend.lime.GamepadButton;
@@ -14,9 +13,16 @@ import openfl._internal.backend.lime.KeyCode;
 import openfl._internal.backend.lime.KeyModifier;
 import openfl._internal.backend.lime.MouseWheelMode;
 import openfl._internal.backend.lime.RenderContext;
-import openfl._internal.backend.lime.RenderContextType;
 import openfl._internal.backend.lime.Touch;
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.Application;
+import openfl._internal.backend.lime_standalone.RenderContextType;
+import openfl._internal.backend.lime_standalone.Window;
+#else
+import openfl._internal.backend.lime.Application;
+import openfl._internal.backend.lime.RenderContextType;
 import openfl._internal.backend.lime.Window;
+#end
 #if !display
 #if openfl_gl
 import openfl._internal.renderer.context3D.Context3DRenderer;
@@ -1038,7 +1044,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 			windowAttributes.stage = this;
 
-			#if lime
 			if (!Reflect.hasField(windowAttributes, "context")) windowAttributes.context = {};
 			var contextAttributes = windowAttributes.context;
 			if (Reflect.hasField(windowAttributes, "renderer"))
@@ -1065,7 +1070,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 			app = new OpenFLApplication();
 			window = app.createWindow(windowAttributes);
-			#end
 
 			this.color = color;
 		}

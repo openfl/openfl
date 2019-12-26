@@ -1,13 +1,7 @@
-package openfl._internal.backend.lime_standalone;
-
-package lime.ui;
+package openfl._internal.backend.lime_standalone; #if openfl_html5
 
 import lime.app.Event;
 
-#if !lime_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class Touch
 {
 	public static var onCancel = new Event<Touch->Void>();
@@ -34,3 +28,4 @@ class Touch
 		this.device = device;
 	}
 }
+#end

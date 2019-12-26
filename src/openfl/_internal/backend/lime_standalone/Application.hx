@@ -1,73 +1,16 @@
-package openfl._internal.backend.lime_standalone;
+package openfl._internal.backend.lime_standalone; #if openfl_html5
 
-import lime.graphics.RenderContext;
-import lime.system.System;
-import lime.ui.Gamepad;
-import lime.ui.GamepadAxis;
-import lime.ui.GamepadButton;
-import lime.ui.Joystick;
-import lime.ui.JoystickHatPosition;
-import lime.ui.KeyCode;
-import lime.ui.KeyModifier;
-import lime.ui.MouseButton;
-import lime.ui.MouseWheelMode;
-import lime.ui.Touch;
-import lime.ui.Window;
-import lime.ui.WindowAttributes;
-import lime.utils.Preloader;
-
-/**
-	The Application class forms the foundation for most Lime projects.
-	It is common to extend this class in a main class. It is then possible
-	to override "on" functions in the class in order to handle standard events
-	that are relevant.
-**/
-@:access(lime.ui.Window)
-#if !lime_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
+@:access(openfl._internal.backend.lime_standalone.Window)
 class Application extends Module
 {
-	/**
-		The current Application instance that is executing
-	**/
 	public static var current(default, null):Application;
 
-	/**
-		Meta-data values for the application, such as a version or a package name
-	**/
 	public var meta:Map<String, String>;
-
-	/**
-		A list of currently attached Module instances
-	**/
 	public var modules(default, null):Array<IModule>;
-
-	/**
-		Update events are dispatched each frame (usually just before rendering)
-	**/
 	public var onUpdate = new Event<Int->Void>();
-
-	/**
-		Dispatched when a new window has been created by this application
-	**/
 	public var onCreateWindow = new Event<Window->Void>();
-
-	/**
-		The Preloader for the current Application
-	**/
 	public var preloader(get, null):Preloader;
-
-	/**
-		The Window associated with this Application, or the first Window
-		if there are multiple Windows active
-	**/
 	public var window(get, null):Window;
-
-	/**
-		A list of active Window instances associated with this Application
-	**/
 	public var windows(get, null):Array<Window>;
 
 	@:noCompletion private var __backend:ApplicationBackend;
@@ -76,22 +19,6 @@ class Application extends Module
 	@:noCompletion private var __windowByID:Map<Int, Window>;
 	@:noCompletion private var __windows:Array<Window>;
 
-	private static function __init__()
-	{
-		var init = ApplicationBackend;
-		#if commonjs
-		var p = untyped Application.prototype;
-		untyped Object.defineProperties(p, {
-			"preloader": {get: p.get_preloader},
-			"window": {get: p.get_window},
-			"windows": {get: p.get_windows}
-		});
-		#end
-	}
-
-	/**
-		Creates a new Application instance
-	**/
 	public function new()
 	{
 		super();
@@ -115,20 +42,12 @@ class Application extends Module
 		__preloader.onComplete.add(onPreloadComplete);
 	}
 
-	/**
-		Adds a new module to the Application
-		@param	module	A module to add
-	**/
 	public function addModule(module:IModule):Void
 	{
 		module.__registerLimeModule(this);
 		modules.push(module);
 	}
 
-	/**
-		Creates a new Window and adds it to the Application
-		@param	attributes	A set of parameters to initialize the window
-	**/
 	public function createWindow(attributes:WindowAttributes):Window
 	{
 		var window = __createWindow(attributes);
@@ -136,12 +55,6 @@ class Application extends Module
 		return window;
 	}
 
-	/**
-		Execute the Application. On native platforms, this method
-		blocks until the application is finished running. On other
-		platforms, it will return immediately
-		@return	An exit code, 0 if there was no error
-	**/
 	public function exec():Int
 	{
 		Application.current = this;
@@ -149,292 +62,52 @@ class Application extends Module
 		return __backend.exec();
 	}
 
-	/**
-		Called when a gamepad axis move event is fired
-		@param	gamepad	The current gamepad
-		@param	axis	The axis that was moved
-		@param	value	The axis value (between 0 and 1)
-	**/
 	public function onGamepadAxisMove(gamepad:Gamepad, axis:GamepadAxis, value:Float):Void {}
-
-	/**
-		Called when a gamepad button down event is fired
-		@param	gamepad	The current gamepad
-		@param	button	The button that was pressed
-	**/
 	public function onGamepadButtonDown(gamepad:Gamepad, button:GamepadButton):Void {}
-
-	/**
-		Called when a gamepad button up event is fired
-		@param	gamepad	The current gamepad
-		@param	button	The button that was released
-	**/
 	public function onGamepadButtonUp(gamepad:Gamepad, button:GamepadButton):Void {}
-
-	/**
-		Called when a gamepad is connected
-		@param	gamepad	The gamepad that was connected
-	**/
 	public function onGamepadConnect(gamepad:Gamepad):Void {}
-
-	/**
-		Called when a gamepad is disconnected
-		@param	gamepad	The gamepad that was disconnected
-	**/
 	public function onGamepadDisconnect(gamepad:Gamepad):Void {}
-
-	/**
-		Called when a joystick axis move event is fired
-		@param	joystick	The current joystick
-		@param	axis	The axis that was moved
-		@param	value	The axis value (between 0 and 1)
-	**/
 	public function onJoystickAxisMove(joystick:Joystick, axis:Int, value:Float):Void {}
-
-	/**
-		Called when a joystick button down event is fired
-		@param	joystick	The current joystick
-		@param	button	The button that was pressed
-	**/
 	public function onJoystickButtonDown(joystick:Joystick, button:Int):Void {}
-
-	/**
-		Called when a joystick button up event is fired
-		@param	joystick	The current joystick
-		@param	button	The button that was released
-	**/
 	public function onJoystickButtonUp(joystick:Joystick, button:Int):Void {}
-
-	/**
-		Called when a joystick is connected
-		@param	joystick	The joystick that was connected
-	**/
 	public function onJoystickConnect(joystick:Joystick):Void {}
-
-	/**
-		Called when a joystick is disconnected
-		@param	joystick	The joystick that was disconnected
-	**/
 	public function onJoystickDisconnect(joystick:Joystick):Void {}
-
-	/**
-		Called when a joystick hat move event is fired
-		@param	joystick	The current joystick
-		@param	hat	The hat that was moved
-		@param	position	The current hat position
-	**/
 	public function onJoystickHatMove(joystick:Joystick, hat:Int, position:JoystickHatPosition):Void {}
-
-	/**
-		Called when a joystick axis move event is fired
-		@param	joystick	The current joystick
-		@param	trackball	The trackball that was moved
-		@param	x	The x movement of the trackball (between 0 and 1)
-		@param	y	The y movement of the trackball (between 0 and 1)
-	**/
 	public function onJoystickTrackballMove(joystick:Joystick, trackball:Int, x:Float, y:Float):Void {}
-
-	/**
-		Called when a key down event is fired on the primary window
-		@param	keyCode	The code of the key that was pressed
-		@param	modifier	The modifier of the key that was pressed
-	**/
 	public function onKeyDown(keyCode:KeyCode, modifier:KeyModifier):Void {}
-
-	/**
-		Called when a key up event is fired on the primary window
-		@param	keyCode	The code of the key that was released
-		@param	modifier	The modifier of the key that was released
-	**/
 	public function onKeyUp(keyCode:KeyCode, modifier:KeyModifier):Void {}
-
-	/**
-		Called when the module is exiting
-	**/
 	public function onModuleExit(code:Int):Void {}
-
-	/**
-		Called when a mouse down event is fired on the primary window
-		@param	x	The current x coordinate of the mouse
-		@param	y	The current y coordinate of the mouse
-		@param	button	The ID of the mouse button that was pressed
-	**/
 	public function onMouseDown(x:Float, y:Float, button:MouseButton):Void {}
-
-	/**
-		Called when a mouse move event is fired on the primary window
-		@param	x	The current x coordinate of the mouse
-		@param	y	The current y coordinate of the mouse
-	**/
 	public function onMouseMove(x:Float, y:Float):Void {}
-
-	/**
-		Called when a mouse move relative event is fired on the primary window
-		@param	x	The x movement of the mouse
-		@param	y	The y movement of the mouse
-	**/
 	public function onMouseMoveRelative(x:Float, y:Float):Void {}
-
-	/**
-		Called when a mouse up event is fired on the primary window
-		@param	x	The current x coordinate of the mouse
-		@param	y	The current y coordinate of the mouse
-		@param	button	The ID of the button that was released
-	**/
 	public function onMouseUp(x:Float, y:Float, button:MouseButton):Void {}
-
-	/**
-		Called when a mouse wheel event is fired on the primary window
-		@param	deltaX	The amount of horizontal scrolling (if applicable)
-		@param	deltaY	The amount of vertical scrolling (if applicable)
-		@param	deltaMode	The units of measurement used
-	**/
 	public function onMouseWheel(deltaX:Float, deltaY:Float, deltaMode:MouseWheelMode):Void {}
-
-	/**
-		Called when a preload complete event is fired
-	**/
 	public function onPreloadComplete():Void {}
-
-	/**
-		Called when a preload progress event is fired
-		@param	loaded	The number of items that are loaded
-		@param	total	The total number of items will be loaded
-	**/
 	public function onPreloadProgress(loaded:Int, total:Int):Void {}
-
-	/**
-		Called when a render context is lost on the primary window
-	**/
 	public function onRenderContextLost():Void {}
-
-	/**
-		Called when a render context is restored on the primary window
-		@param	context	The render context relevant to the event
-	**/
 	public function onRenderContextRestored(context:RenderContext):Void {}
-
-	/**
-		Called when a text edit event is fired on the primary window
-		@param	text	The current replacement text
-		@param	start	The starting index for the edit
-		@param	length	The length of the edit
-	**/
 	public function onTextEdit(text:String, start:Int, length:Int):Void {}
-
-	/**
-		Called when a text input event is fired on the primary window
-		@param	text	The current input text
-	**/
 	public function onTextInput(text:String):Void {}
-
-	/**
-		Called when a touch cancel event is fired
-		@param	touch	The current touch object
-	**/
 	public function onTouchCancel(touch:Touch):Void {}
-
-	/**
-		Called when a touch end event is fired
-		@param	touch	The current touch object
-	**/
 	public function onTouchEnd(touch:Touch):Void {}
-
-	/**
-		Called when a touch move event is fired
-		@param	touch	The current touch object
-	**/
 	public function onTouchMove(touch:Touch):Void {}
-
-	/**
-		Called when a touch start event is fired
-		@param	touch	The current touch object
-	**/
 	public function onTouchStart(touch:Touch):Void {}
-
-	/**
-		Called when a window activate event is fired on the primary window
-	**/
 	public function onWindowActivate():Void {}
-
-	/**
-		Called when a window close event is fired on the primary window
-	**/
 	public function onWindowClose():Void {}
-
-	/**
-		Called when the primary window is created
-	**/
 	public function onWindowCreate():Void {}
-
-	/**
-		Called when a window deactivate event is fired on the primary window
-	**/
 	public function onWindowDeactivate():Void {}
-
-	/**
-		Called when a window drop file event is fired on the primary window
-	**/
 	public function onWindowDropFile(file:String):Void {}
-
-	/**
-		Called when a window enter event is fired on the primary window
-	**/
 	public function onWindowEnter():Void {}
-
-	/**
-		Called when a window expose event is fired on the primary window
-	**/
 	public function onWindowExpose():Void {}
-
-	/**
-		Called when a window focus in event is fired on the primary window
-	**/
 	public function onWindowFocusIn():Void {}
-
-	/**
-		Called when a window focus out event is fired on the primary window
-	**/
 	public function onWindowFocusOut():Void {}
-
-	/**
-		Called when the primary window enters fullscreen
-	**/
 	public function onWindowFullscreen():Void {}
-
-	/**
-		Called when a window leave event is fired on the primary window
-	**/
 	public function onWindowLeave():Void {}
-
-	/**
-		Called when a window move event is fired on the primary window
-		@param	x	The x position of the window in desktop coordinates
-		@param	y	The y position of the window in desktop coordinates
-	**/
 	public function onWindowMove(x:Float, y:Float):Void {}
-
-	/**
-		Called when the primary window is minimized
-	**/
 	public function onWindowMinimize():Void {}
-
-	/**
-		Called when a window resize event is fired on the primary window
-		@param	width	The width of the window
-		@param	height	The height of the window
-	**/
 	public function onWindowResize(width:Int, height:Int):Void {}
-
-	/**
-		Called when the primary window is restored from being minimized or fullscreen
-	**/
 	public function onWindowRestore():Void {}
 
-	/**
-		Removes a module from the Application
-		@param	module	A module to remove
-	**/
 	public function removeModule(module:IModule):Void
 	{
 		if (module != null)
@@ -444,16 +117,7 @@ class Application extends Module
 		}
 	}
 
-	/**
-		Called when a render event is fired on the primary window
-		@param	context	The render context ready to be rendered
-	**/
 	public function render(context:RenderContext):Void {}
-
-	/**
-		Called when an update event is fired on the primary window
-		@param	deltaTime	The amount of time in milliseconds that has elapsed since the last update
-	**/
 	public function update(deltaTime:Int):Void {}
 
 	@:noCompletion private function __addWindow(window:Window):Void
@@ -627,34 +291,7 @@ class Application extends Module
 	}
 }
 
-#if kha
-@:noCompletion private typedef ApplicationBackend = lime._internal.backend.kha.KhaApplication;
-#elseif air
-@:noCompletion private typedef ApplicationBackend = lime._internal.backend.air.AIRApplication;
-#elseif flash
-@:noCompletion private typedef ApplicationBackend = lime._internal.backend.flash.FlashApplication;
-#elseif (js && html5)
-@:noCompletion private typedef ApplicationBackend = lime._internal.backend.html5.HTML5Application;
-#else
-@:noCompletion private typedef ApplicationBackend = lime._internal.backend.native.NativeApplication;
-#end
-
-package lime._internal.backend.html5;
-
-import js.html.DeviceMotionEvent;
-import js.html.KeyboardEvent;
-import js.Browser;
-import lime.app.Application;
-import lime.media.AudioManager;
-import lime.system.Sensor;
-import lime.system.SensorType;
-import lime.ui.GamepadAxis;
-import lime.ui.KeyCode;
-import lime.ui.KeyModifier;
-import lime.ui.Gamepad;
-import lime.ui.GamepadButton;
-import lime.ui.Joystick;
-import lime.ui.Window;
+@:noCompletion private typedef ApplicationBackend = HTML5Application;
 
 @:access(lime._internal.backend.html5.HTML5Window)
 @:access(lime.app.Application)
@@ -1274,3 +911,4 @@ class GameDeviceData
 		axes = [];
 	}
 }
+#end
