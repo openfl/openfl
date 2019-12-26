@@ -2,8 +2,6 @@ package openfl.media;
 
 #if !flash
 import haxe.Int64;
-import openfl._internal.backend.lime.AudioBuffer;
-import openfl._internal.backend.lime.AudioSource;
 import openfl._internal.backend.utils.UInt8Array;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
@@ -11,6 +9,13 @@ import openfl.events.IOErrorEvent;
 import openfl.net.URLRequest;
 import openfl.utils.ByteArray;
 import openfl.utils.Future;
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.AudioBuffer;
+import openfl._internal.backend.lime_standalone.AudioSource;
+#else
+import openfl._internal.backend.lime.AudioBuffer;
+import openfl._internal.backend.lime.AudioSource;
+#end
 
 /**
 	The Sound class lets you work with sound in an application. The Sound class
@@ -317,14 +322,14 @@ class Sound extends EventDispatcher
 	// @:noCompletion @:dox(hide) @:require(flash10) public function extract (target:ByteArray, length:Float, startPosition:Float = -1):Float;
 	#end
 
-	#if lime
+	#if (lime || (!lime && openfl_html5))
 	/**
 		Creates a new Sound from an AudioBuffer immediately.
 
 		@param	buffer	An AudioBuffer instance
 		@returns	A new Sound
 	**/
-	public static function fromAudioBuffer(buffer:AudioBuffer):Sound
+	#if (!lime && openfl_html5) @:noCompletion @:dox(hide) #end public static function fromAudioBuffer(buffer:AudioBuffer):Sound
 	{
 		var sound = new Sound();
 		sound.__buffer = buffer;
@@ -569,7 +574,10 @@ class Sound extends EventDispatcher
 		var audioBuffer = new AudioBuffer();
 		audioBuffer.bitsPerSample = bitsPerSample;
 		audioBuffer.channels = channels;
+		#if (lime || !openfl_html5)
+		// TODO
 		audioBuffer.data = new UInt8Array(bytes);
+		#end
 		audioBuffer.sampleRate = Std.int(sampleRate);
 
 		__buffer = audioBuffer;

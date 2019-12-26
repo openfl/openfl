@@ -7,7 +7,6 @@ import openfl._internal.backend.gl.GL;
 import openfl._internal.backend.gl.WebGLRenderingContext;
 import openfl._internal.backend.lime.RenderContext;
 import openfl._internal.backend.math.ARGB;
-import openfl._internal.backend.math.Matrix4;
 import openfl._internal.renderer.context3D.batcher.BatchRenderer;
 import openfl._internal.renderer.ShaderBuffer;
 import openfl._internal.utils.ObjectPool;
@@ -35,6 +34,11 @@ import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.media.Video;
 import openfl.text.TextField;
+#if (!lime && openfl_html5)
+import openfl.geom.Matrix3D;
+#else
+import openfl._internal.backend.math.Matrix4;
+#end
 #if openfl_html5
 import openfl._internal.renderer.canvas.CanvasRenderer;
 #else
@@ -110,13 +114,13 @@ class Context3DRenderer extends Context3DRendererAPI
 	private var __gl:WebGLRenderingContext;
 	private var __height:Int;
 	private var __maskShader:Context3DMaskShader;
-	private var __matrix:Matrix4;
+	private var __matrix:#if (!lime && openfl_html5) Matrix3D #else Matrix4 #end;
 	private var __maskObjects:Array<DisplayObject>;
 	private var __numClipRects:Int;
 	private var __offsetX:Int;
 	private var __offsetY:Int;
-	private var __projection:Matrix4;
-	private var __projectionFlipped:Matrix4;
+	private var __projection:#if (!lime && openfl_html5) Matrix3D #else Matrix4 #end;
+	private var __projectionFlipped:#if (!lime && openfl_html5) Matrix3D #else Matrix4 #end;
 	private var __scrollRectMasks:ObjectPool<Shape>;
 	private var __softwareRenderer:DisplayObjectRenderer;
 	private var __stencilReference:Int;
@@ -138,7 +142,7 @@ class Context3DRenderer extends Context3DRendererAPI
 			Graphics.maxTextureWidth = Graphics.maxTextureHeight = __gl.getParameter(GL.MAX_TEXTURE_SIZE);
 		}
 
-		__matrix = new Matrix4();
+		__matrix = new #if (!lime && openfl_html5) Matrix3D #else Matrix4 #end ();
 
 		__values = new Array();
 
@@ -165,8 +169,8 @@ class Context3DRenderer extends Context3DRendererAPI
 		__clipRects = new Array();
 		__maskObjects = new Array();
 		__numClipRects = 0;
-		__projection = new Matrix4();
-		__projectionFlipped = new Matrix4();
+		__projection = new #if (!lime && openfl_html5) Matrix3D #else Matrix4 #end ();
+		__projectionFlipped = new #if (!lime && openfl_html5) Matrix3D #else Matrix4 #end ();
 		__stencilReference = 0;
 		__tempRect = new Rectangle();
 
@@ -314,7 +318,7 @@ class Context3DRenderer extends Context3DRendererAPI
 		}
 	}
 
-	public override function getMatrix(transform:Matrix):Matrix4
+	public override function getMatrix(transform:Matrix):#if (!lime && openfl_html5) Matrix3D #else Matrix4 #end
 	{
 		if (__gl != null)
 		{
@@ -322,7 +326,11 @@ class Context3DRenderer extends Context3DRendererAPI
 
 			for (i in 0...16)
 			{
+				#if (!lime && openfl_html5)
+				__matrix.rawData[i] = values[i];
+				#else
 				__matrix[i] = values[i];
+				#end
 			}
 
 			return __matrix;
@@ -330,13 +338,21 @@ class Context3DRenderer extends Context3DRendererAPI
 		else
 		{
 			__matrix.identity();
+			#if (!lime && openfl_html5)
+			__matrix.rawData[0] = transform.a;
+			__matrix.rawData[1] = transform.b;
+			__matrix.rawData[4] = transform.c;
+			__matrix.rawData[5] = transform.d;
+			__matrix.rawData[12] = transform.tx;
+			__matrix.rawData[13] = transform.ty;
+			#else
 			__matrix[0] = transform.a;
 			__matrix[1] = transform.b;
 			__matrix[4] = transform.c;
 			__matrix[5] = transform.d;
 			__matrix[12] = transform.tx;
 			__matrix[13] = transform.ty;
-
+			#end
 			return __matrix;
 		}
 	}
@@ -608,17 +624,30 @@ class Context3DRenderer extends Context3DRendererAPI
 		}
 
 		__matrix.identity();
+		#if (!lime && openfl_html5)
+		__matrix.rawData[0] = _matrix.a;
+		__matrix.rawData[1] = _matrix.b;
+		__matrix.rawData[4] = _matrix.c;
+		__matrix.rawData[5] = _matrix.d;
+		__matrix.rawData[12] = _matrix.tx;
+		__matrix.rawData[13] = _matrix.ty;
+		#else
 		__matrix[0] = _matrix.a;
 		__matrix[1] = _matrix.b;
 		__matrix[4] = _matrix.c;
 		__matrix[5] = _matrix.d;
 		__matrix[12] = _matrix.tx;
 		__matrix[13] = _matrix.ty;
+		#end
 		__matrix.append(__flipped ? __projectionFlipped : __projection);
 
 		for (i in 0...16)
 		{
+			#if (!lime && openfl_html5)
+			__values[i] = __matrix.rawData[i];
+			#else
 			__values[i] = __matrix[i];
+			#end
 		}
 
 		Matrix.__pool.release(_matrix);
@@ -1337,8 +1366,13 @@ class Context3DRenderer extends Context3DRendererAPI
 		__displayWidth = __defaultRenderTarget == null ? Math.round(__worldTransform.__transformX(w, 0) - __offsetX) : w;
 		__displayHeight = __defaultRenderTarget == null ? Math.round(__worldTransform.__transformY(0, h) - __offsetY) : h;
 
+		#if (!lime && openfl_html5)
+		__projection = Matrix3D.createOrtho(0, __displayWidth + __offsetX * 2, 0, __displayHeight + __offsetY * 2, -1000, 1000);
+		__projectionFlipped = Matrix3D.createOrtho(0, __displayWidth + __offsetX * 2, __displayHeight + __offsetY * 2, 0, -1000, 1000);
+		#else
 		__projection.createOrtho(0, __displayWidth + __offsetX * 2, 0, __displayHeight + __offsetY * 2, -1000, 1000);
 		__projectionFlipped.createOrtho(0, __displayWidth + __offsetX * 2, __displayHeight + __offsetY * 2, 0, -1000, 1000);
+		#end
 	}
 
 	private function __resumeClipAndMask(childRenderer:Context3DRenderer):Void

@@ -1436,7 +1436,12 @@ import openfl.utils.ByteArray;
 			var isVertex = (programType == VERTEX);
 			var dest = isVertex ? __vertexConstants : __fragmentConstants;
 
+			#if (!lime && openfl_html5)
+			var bytes:haxe.io.Bytes = cast data;
+			var floatData = new Float32Array(bytes.getData(), 0, data.length);
+			#else
 			var floatData = Float32Array.fromBytes(data, 0, data.length);
+			#end
 			var outOffset = firstRegister * 4;
 			var inOffset = Std.int(byteArrayOffset / 4);
 

@@ -2,8 +2,6 @@ package openfl.net;
 
 #if !flash
 import haxe.io.Bytes;
-// import openfl._internal.backend.lime.HTTPRequest;
-import openfl._internal.backend.lime.HTTPRequestHeader;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.HTTPStatusEvent;
@@ -11,10 +9,16 @@ import openfl.events.IOErrorEvent;
 import openfl.events.ProgressEvent;
 import openfl.events.SecurityErrorEvent;
 import openfl.utils.ByteArray;
-#if lime
-import lime.net.HTTPRequest;
-#else
+#if (!lime && openfl_html5)
 import openfl._internal.backend.lime_standalone.HTTPRequest;
+import openfl._internal.backend.lime_standalone.HTTPRequestHeader;
+#elseif lime
+import lime.net.HTTPRequest;
+// import openfl._internal.backend.lime.HTTPRequest;
+import openfl._internal.backend.lime.HTTPRequestHeader;
+#else
+import openfl._internal.backend.lime.HTTPRequest;
+import openfl._internal.backend.lime.HTTPRequestHeader;
 #end
 
 /**

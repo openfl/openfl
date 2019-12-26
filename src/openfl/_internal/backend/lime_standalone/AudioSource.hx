@@ -1,25 +1,17 @@
-package openfl._internal.backend.lime_standalone;
+package openfl._internal.backend.lime_standalone; #if openfl_html5
 
-package lime.media;
+import openfl.geom.Vector3D;
 
-import lime.app.Event;
-import lime.media.openal.AL;
-import lime.media.openal.ALSource;
-import lime.math.Vector4;
-#if !lime_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class AudioSource
 {
-	public var onComplete = new Event<Void->Void>();
+	public var onComplete:Void->Void;
 	public var buffer:AudioBuffer;
 	public var currentTime(get, set):Int;
 	public var gain(get, set):Float;
 	public var length(get, set):Int;
 	public var loops(get, set):Int;
 	public var offset:Int;
-	public var position(get, set):Vector4;
+	public var position(get, set):Vector3D;
 
 	@:noCompletion private var __backend:AudioSourceBackend;
 
@@ -109,31 +101,20 @@ class AudioSource
 		return __backend.setLoops(value);
 	}
 
-	@:noCompletion private function get_position():Vector4
+	@:noCompletion private function get_position():Vector3D
 	{
 		return __backend.getPosition();
 	}
 
-	@:noCompletion private function set_position(value:Vector4):Vector4
+	@:noCompletion private function set_position(value:Vector3D):Vector3D
 	{
 		return __backend.setPosition(value);
 	}
 }
 
-#if flash
-@:noCompletion private typedef AudioSourceBackend = lime._internal.backend.flash.FlashAudioSource;
-#elseif (js && html5)
-@:noCompletion private typedef AudioSourceBackend = lime._internal.backend.html5.HTML5AudioSource;
-#else
-@:noCompletion private typedef AudioSourceBackend = lime._internal.backend.native.NativeAudioSource;
-#end
+@:noCompletion private typedef AudioSourceBackend = HTML5AudioSource;
 
-package lime._internal.backend.html5;
-
-import lime.math.Vector4;
-import lime.media.AudioSource;
-
-@:access(lime.media.AudioBuffer)
+@:access(openfl._internal.backend.lime_standalone.AudioBuffer)
 class HTML5AudioSource
 {
 	private var completed:Bool;
@@ -143,7 +124,7 @@ class HTML5AudioSource
 	private var loops:Int;
 	private var parent:AudioSource;
 	private var playing:Bool;
-	private var position:Vector4;
+	private var position:Vector3D;
 
 	public function new(parent:AudioSource)
 	{
@@ -151,7 +132,7 @@ class HTML5AudioSource
 
 		id = -1;
 		gain = 1;
-		position = new Vector4();
+		position = new Vector3D();
 	}
 
 	public function dispose():Void {}
@@ -160,7 +141,6 @@ class HTML5AudioSource
 
 	public function play():Void
 	{
-		#if lime_howlerjs
 		if (playing || parent.buffer == null || parent.buffer.__srcHowl == null)
 		{
 			return;
@@ -185,24 +165,20 @@ class HTML5AudioSource
 		parent.buffer.__srcHowl.on("end", howl_onEnd, id);
 
 		setCurrentTime(time);
-		#end
 	}
 
 	public function pause():Void
 	{
-		#if lime_howlerjs
 		playing = false;
 
 		if (parent.buffer != null && parent.buffer.__srcHowl != null)
 		{
 			parent.buffer.__srcHowl.pause(id);
 		}
-		#end
 	}
 
 	public function stop():Void
 	{
-		#if lime_howlerjs
 		playing = false;
 
 		if (parent.buffer != null && parent.buffer.__srcHowl != null)
@@ -210,13 +186,11 @@ class HTML5AudioSource
 			parent.buffer.__srcHowl.stop(id);
 			parent.buffer.__srcHowl.off("end", howl_onEnd, id);
 		}
-		#end
 	}
 
 	// Event Handlers
 	private function howl_onEnd()
 	{
-		#if lime_howlerjs
 		playing = false;
 
 		if (loops > 0)
@@ -234,8 +208,10 @@ class HTML5AudioSource
 		}
 
 		completed = true;
-		parent.onComplete.dispatch();
-		#end
+		if (parent.onComplete != null)
+		{
+			parent.onComplete();
+		}
 	}
 
 	// Get & Set Methods
@@ -246,7 +222,6 @@ class HTML5AudioSource
 			return 0;
 		}
 
-		#if lime_howlerjs
 		if (completed)
 		{
 			return getLength();
@@ -257,14 +232,12 @@ class HTML5AudioSource
 			if (time < 0) return 0;
 			return time;
 		}
-		#end
 
 		return 0;
 	}
 
 	public function setCurrentTime(value:Int):Int
 	{
-		#if lime_howlerjs
 		if (parent.buffer != null && parent.buffer.__srcHowl != null)
 		{
 			// if (playing) buffer.__srcHowl.play (id);
@@ -272,7 +245,6 @@ class HTML5AudioSource
 			if (pos < 0) pos = 0;
 			parent.buffer.__srcHowl.seek(pos, id);
 		}
-		#end
 
 		return value;
 	}
@@ -284,7 +256,6 @@ class HTML5AudioSource
 
 	public function setGain(value:Float):Float
 	{
-		#if lime_howlerjs
 		// set howler volume only if we have an active id.
 		// Passing -1 might create issues in future play()'s.
 
@@ -292,7 +263,6 @@ class HTML5AudioSource
 		{
 			parent.buffer.__srcHowl.volume(value, id);
 		}
-		#end
 
 		return gain = value;
 	}
@@ -304,12 +274,10 @@ class HTML5AudioSource
 			return length;
 		}
 
-		#if lime_howlerjs
 		if (parent.buffer != null && parent.buffer.__srcHowl != null)
 		{
 			return Std.int(parent.buffer.__srcHowl.duration() * 1000);
 		}
-		#end
 
 		return 0;
 	}
@@ -329,9 +297,8 @@ class HTML5AudioSource
 		return loops = value;
 	}
 
-	public function getPosition():Vector4
+	public function getPosition():Vector3D
 	{
-		#if lime_howlerjs
 		// This should work, but it returns null (But checking the inside of the howl, the _pos is actually null... so ¯\_(ツ)_/¯)
 		/*
 			var arr = parent.buffer.__srcHowl.pos())
@@ -339,23 +306,21 @@ class HTML5AudioSource
 			position.y = arr[1];
 			position.z = arr[2];
 		 */
-		#end
 
 		return position;
 	}
 
-	public function setPosition(value:Vector4):Vector4
+	public function setPosition(value:Vector3D):Vector3D
 	{
 		position.x = value.x;
 		position.y = value.y;
 		position.z = value.z;
 		position.w = value.w;
 
-		#if lime_howlerjs
 		if (parent.buffer.__srcHowl != null && parent.buffer.__srcHowl.pos != null) parent.buffer.__srcHowl.pos(position.x, position.y, position.z, id);
 		// There are more settings to the position of the sound on the "pannerAttr()" function of howler. Maybe somebody who understands sound should look into it?
-		#end
 
 		return position;
 	}
 }
+#end
