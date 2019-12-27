@@ -1,10 +1,11 @@
-package openfl._internal.backend.lime_standalone; #if openfl_html5
+package openfl._internal.backend.lime_standalone;
 
+#if openfl_html5
 import openfl.geom.Vector3D;
 
 class AudioSource
 {
-	public var onComplete:Void->Void;
+	public var onComplete = new LimeEvent<Void->Void>();
 	public var buffer:AudioBuffer;
 	public var currentTime(get, set):Int;
 	public var gain(get, set):Float;
@@ -208,10 +209,7 @@ class HTML5AudioSource
 		}
 
 		completed = true;
-		if (parent.onComplete != null)
-		{
-			parent.onComplete();
-		}
+		parent.onComplete.dispatch();
 	}
 
 	// Get & Set Methods

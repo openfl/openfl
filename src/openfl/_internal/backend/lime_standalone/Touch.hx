@@ -1,13 +1,12 @@
-package openfl._internal.backend.lime_standalone; #if openfl_html5
+package openfl._internal.backend.lime_standalone;
 
-import lime.app.Event;
-
+#if openfl_html5
 class Touch
 {
-	public static var onCancel = new Event<Touch->Void>();
-	public static var onEnd = new Event<Touch->Void>();
-	public static var onMove = new Event<Touch->Void>();
-	public static var onStart = new Event<Touch->Void>();
+	public static var onCancel = new LimeEvent<Touch->Void>();
+	public static var onEnd = new LimeEvent<Touch->Void>();
+	public static var onMove = new LimeEvent<Touch->Void>();
+	public static var onStart = new LimeEvent<Touch->Void>();
 
 	public var device:Int;
 	public var dx:Float;

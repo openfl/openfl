@@ -1,5 +1,6 @@
-package openfl._internal.backend.lime_standalone; #if openfl_html5
+package openfl._internal.backend.lime_standalone;
 
+#if openfl_html5
 @:access(openfl._internal.backend.lime_standalone.Window)
 class Application extends Module
 {
@@ -7,8 +8,8 @@ class Application extends Module
 
 	public var meta:Map<String, String>;
 	public var modules(default, null):Array<IModule>;
-	public var onUpdate = new Event<Int->Void>();
-	public var onCreateWindow = new Event<Window->Void>();
+	public var onUpdate = new LimeEvent<Int->Void>();
+	public var onCreateWindow = new LimeEvent<Window->Void>();
 	public var preloader(get, null):Preloader;
 	public var window(get, null):Window;
 	public var windows(get, null):Array<Window>;
@@ -63,49 +64,93 @@ class Application extends Module
 	}
 
 	public function onGamepadAxisMove(gamepad:Gamepad, axis:GamepadAxis, value:Float):Void {}
+
 	public function onGamepadButtonDown(gamepad:Gamepad, button:GamepadButton):Void {}
+
 	public function onGamepadButtonUp(gamepad:Gamepad, button:GamepadButton):Void {}
+
 	public function onGamepadConnect(gamepad:Gamepad):Void {}
+
 	public function onGamepadDisconnect(gamepad:Gamepad):Void {}
+
 	public function onJoystickAxisMove(joystick:Joystick, axis:Int, value:Float):Void {}
+
 	public function onJoystickButtonDown(joystick:Joystick, button:Int):Void {}
+
 	public function onJoystickButtonUp(joystick:Joystick, button:Int):Void {}
+
 	public function onJoystickConnect(joystick:Joystick):Void {}
+
 	public function onJoystickDisconnect(joystick:Joystick):Void {}
+
 	public function onJoystickHatMove(joystick:Joystick, hat:Int, position:JoystickHatPosition):Void {}
+
 	public function onJoystickTrackballMove(joystick:Joystick, trackball:Int, x:Float, y:Float):Void {}
+
 	public function onKeyDown(keyCode:KeyCode, modifier:KeyModifier):Void {}
+
 	public function onKeyUp(keyCode:KeyCode, modifier:KeyModifier):Void {}
+
 	public function onModuleExit(code:Int):Void {}
+
 	public function onMouseDown(x:Float, y:Float, button:MouseButton):Void {}
+
 	public function onMouseMove(x:Float, y:Float):Void {}
+
 	public function onMouseMoveRelative(x:Float, y:Float):Void {}
+
 	public function onMouseUp(x:Float, y:Float, button:MouseButton):Void {}
+
 	public function onMouseWheel(deltaX:Float, deltaY:Float, deltaMode:MouseWheelMode):Void {}
+
 	public function onPreloadComplete():Void {}
+
 	public function onPreloadProgress(loaded:Int, total:Int):Void {}
+
 	public function onRenderContextLost():Void {}
+
 	public function onRenderContextRestored(context:RenderContext):Void {}
+
 	public function onTextEdit(text:String, start:Int, length:Int):Void {}
+
 	public function onTextInput(text:String):Void {}
+
 	public function onTouchCancel(touch:Touch):Void {}
+
 	public function onTouchEnd(touch:Touch):Void {}
+
 	public function onTouchMove(touch:Touch):Void {}
+
 	public function onTouchStart(touch:Touch):Void {}
+
 	public function onWindowActivate():Void {}
+
 	public function onWindowClose():Void {}
+
 	public function onWindowCreate():Void {}
+
 	public function onWindowDeactivate():Void {}
+
 	public function onWindowDropFile(file:String):Void {}
+
 	public function onWindowEnter():Void {}
+
 	public function onWindowExpose():Void {}
+
 	public function onWindowFocusIn():Void {}
+
 	public function onWindowFocusOut():Void {}
+
 	public function onWindowFullscreen():Void {}
+
 	public function onWindowLeave():Void {}
+
 	public function onWindowMove(x:Float, y:Float):Void {}
+
 	public function onWindowMinimize():Void {}
+
 	public function onWindowResize(width:Int, height:Int):Void {}
+
 	public function onWindowRestore():Void {}
 
 	public function removeModule(module:IModule):Void
@@ -118,6 +163,7 @@ class Application extends Module
 	}
 
 	public function render(context:RenderContext):Void {}
+
 	public function update(deltaTime:Int):Void {}
 
 	@:noCompletion private function __addWindow(window:Window):Void

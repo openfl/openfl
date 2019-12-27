@@ -1,5 +1,6 @@
-package openfl._internal.backend.lime_standalone; #if openfl_html5
+package openfl._internal.backend.lime_standalone;
 
+#if openfl_html5
 import haxe.Timer;
 import js.html.webgl.RenderingContext;
 import js.html.CanvasElement;
@@ -17,6 +18,7 @@ import js.html.TouchEvent;
 import js.html.ClipboardEvent;
 import js.Browser;
 import openfl.display.Stage;
+import openfl.geom.Rectangle;
 
 class Window
 {
@@ -24,8 +26,8 @@ class Window
 	public var borderless(get, set):Bool;
 	public var context(default, null):RenderContext;
 	public var cursor(get, set):MouseCursor;
-	public var display(get, null):Display;
-	public var displayMode(get, set):DisplayMode;
+	// public var display(get, null):Display;
+	// public var displayMode(get, set):DisplayMode;
 	public var element(default, null):Element;
 
 	public var frameRate(get, set):Float;
@@ -37,33 +39,33 @@ class Window
 	public var maximized(get, set):Bool;
 	public var minimized(get, set):Bool;
 	public var mouseLock(get, set):Bool;
-	public var onActivate(default, null) = new Event<Void->Void>();
-	public var onClose(default, null) = new Event<Void->Void>();
-	public var onDeactivate(default, null) = new Event<Void->Void>();
-	public var onDropFile(default, null) = new Event<String->Void>();
-	public var onEnter(default, null) = new Event<Void->Void>();
-	public var onExpose(default, null) = new Event<Void->Void>();
-	public var onFocusIn(default, null) = new Event<Void->Void>();
-	public var onFocusOut(default, null) = new Event<Void->Void>();
-	public var onFullscreen(default, null) = new Event<Void->Void>();
-	public var onKeyDown(default, null) = new Event<KeyCode->KeyModifier->Void>();
-	public var onKeyUp(default, null) = new Event<KeyCode->KeyModifier->Void>();
-	public var onLeave(default, null) = new Event<Void->Void>();
-	public var onMaximize(default, null) = new Event<Void->Void>();
-	public var onMinimize(default, null) = new Event<Void->Void>();
-	public var onMouseDown(default, null) = new Event<Float->Float->MouseButton->Void>();
-	public var onMouseMove(default, null) = new Event<Float->Float->Void>();
-	public var onMouseMoveRelative(default, null) = new Event<Float->Float->Void>();
-	public var onMouseUp(default, null) = new Event<Float->Float->Int->Void>();
-	public var onMouseWheel(default, null) = new Event<Float->Float->MouseWheelMode->Void>();
-	public var onMove(default, null) = new Event<Float->Float->Void>();
-	public var onRender(default, null) = new Event<RenderContext->Void>();
-	public var onRenderContextLost(default, null) = new Event<Void->Void>();
-	public var onRenderContextRestored(default, null) = new Event<RenderContext->Void>();
-	public var onResize(default, null) = new Event<Int->Int->Void>();
-	public var onRestore(default, null) = new Event<Void->Void>();
-	public var onTextEdit(default, null) = new Event<String->Int->Int->Void>();
-	public var onTextInput(default, null) = new Event<String->Void>();
+	public var onActivate(default, null) = new LimeEvent<Void->Void>();
+	public var onClose(default, null) = new LimeEvent<Void->Void>();
+	public var onDeactivate(default, null) = new LimeEvent<Void->Void>();
+	public var onDropFile(default, null) = new LimeEvent<String->Void>();
+	public var onEnter(default, null) = new LimeEvent<Void->Void>();
+	public var onExpose(default, null) = new LimeEvent<Void->Void>();
+	public var onFocusIn(default, null) = new LimeEvent<Void->Void>();
+	public var onFocusOut(default, null) = new LimeEvent<Void->Void>();
+	public var onFullscreen(default, null) = new LimeEvent<Void->Void>();
+	public var onKeyDown(default, null) = new LimeEvent<KeyCode->KeyModifier->Void>();
+	public var onKeyUp(default, null) = new LimeEvent<KeyCode->KeyModifier->Void>();
+	public var onLeave(default, null) = new LimeEvent<Void->Void>();
+	public var onMaximize(default, null) = new LimeEvent<Void->Void>();
+	public var onMinimize(default, null) = new LimeEvent<Void->Void>();
+	public var onMouseDown(default, null) = new LimeEvent<Float->Float->MouseButton->Void>();
+	public var onMouseMove(default, null) = new LimeEvent<Float->Float->Void>();
+	public var onMouseMoveRelative(default, null) = new LimeEvent<Float->Float->Void>();
+	public var onMouseUp(default, null) = new LimeEvent<Float->Float->Int->Void>();
+	public var onMouseWheel(default, null) = new LimeEvent<Float->Float->MouseWheelMode->Void>();
+	public var onMove(default, null) = new LimeEvent<Float->Float->Void>();
+	public var onRender(default, null) = new LimeEvent<RenderContext->Void>();
+	public var onRenderContextLost(default, null) = new LimeEvent<Void->Void>();
+	public var onRenderContextRestored(default, null) = new LimeEvent<RenderContext->Void>();
+	public var onResize(default, null) = new LimeEvent<Int->Int->Void>();
+	public var onRestore(default, null) = new LimeEvent<Void->Void>();
+	public var onTextEdit(default, null) = new LimeEvent<String->Int->Int->Void>();
+	public var onTextInput(default, null) = new LimeEvent<String->Void>();
 	public var parameters:Dynamic;
 	public var resizable(get, set):Bool;
 	public var scale(get, null):Float;
@@ -175,20 +177,18 @@ class Window
 		return __backend.setCursor(value);
 	}
 
-	@:noCompletion private function get_display():Display
-	{
-		return __backend.getDisplay();
-	}
-
-	@:noCompletion private function get_displayMode():DisplayMode
-	{
-		return __backend.getDisplayMode();
-	}
-
-	@:noCompletion private function set_displayMode(value:DisplayMode):DisplayMode
-	{
-		return __backend.setDisplayMode(value);
-	}
+	// @:noCompletion private function get_display():Display
+	// {
+	// 	return __backend.getDisplay();
+	// }
+	// @:noCompletion private function get_displayMode():DisplayMode
+	// {
+	// 	return __backend.getDisplayMode();
+	// }
+	// @:noCompletion private function set_displayMode(value:DisplayMode):DisplayMode
+	// {
+	// 	return __backend.setDisplayMode(value);
+	// }
 
 	@:noCompletion private inline function get_borderless():Bool
 	{
@@ -649,15 +649,14 @@ class HTML5Window
 		return cursor;
 	}
 
-	public function getDisplay():Display
-	{
-		return System.getDisplay(0);
-	}
-
-	public function getDisplayMode():DisplayMode
-	{
-		return System.getDisplay(0).currentMode;
-	}
+	// public function getDisplay():Display
+	// {
+	// 	return System.getDisplay(0);
+	// }
+	// public function getDisplayMode():DisplayMode
+	// {
+	// 	return System.getDisplay(0).currentMode;
+	// }
 
 	public function getFrameRate():Float
 	{
@@ -1263,10 +1262,10 @@ class HTML5Window
 		return cursor;
 	}
 
-	public function setDisplayMode(value:DisplayMode):DisplayMode
-	{
-		return value;
-	}
+	// public function setDisplayMode(value:DisplayMode):DisplayMode
+	// {
+	// 	return value;
+	// }
 
 	public function setFrameRate(value:Float):Float
 	{

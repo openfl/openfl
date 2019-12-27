@@ -1,9 +1,6 @@
 package openfl._internal.backend.lime_standalone;
 
-package lime.ui;
-
-import lime.graphics.RenderContextAttributes;
-
+#if openfl_html5
 typedef WindowAttributes =
 {
 	@:optional public var allowHighDPI:Bool;
@@ -11,7 +8,7 @@ typedef WindowAttributes =
 	@:optional public var borderless:Bool;
 	@:optional public var context:RenderContextAttributes;
 	// @:optional public var display:Int;
-	@:optional public var element:#if (js && html5 && !doc_gen) js.html.Element #else Dynamic #end;
+	@:optional public var element:js.html.Element;
 	@:optional public var frameRate:Float;
 	@:optional public var fullscreen:Bool;
 	@:optional public var height:Int;
@@ -25,3 +22,4 @@ typedef WindowAttributes =
 	@:optional public var x:Int;
 	@:optional public var y:Int;
 }
+#end
