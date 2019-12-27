@@ -713,6 +713,7 @@ class Loader extends DisplayObjectContainer
 	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion private function BitmapData_onError(error:Dynamic):Void
 	{
+		trace("bitmap error");
 		// TODO: Dispatch HTTPStatusEvent
 
 		__dispatchError(Std.string(error));
@@ -720,6 +721,7 @@ class Loader extends DisplayObjectContainer
 
 	@:noCompletion private function BitmapData_onLoad(bitmapData:BitmapData):Void
 	{
+		trace("bitmap load");
 		// TODO: Dispatch HTTPStatusEvent
 
 		if (bitmapData == null)
@@ -743,6 +745,7 @@ class Loader extends DisplayObjectContainer
 
 	@:noCompletion private function loader_onComplete(event:Event):Void
 	{
+		trace("on complete");
 		// TODO: Dispatch HTTPStatusEvent
 
 		var loader:URLLoader = cast event.target;

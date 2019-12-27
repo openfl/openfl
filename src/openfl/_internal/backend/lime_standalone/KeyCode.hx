@@ -1,10 +1,6 @@
 package openfl._internal.backend.lime_standalone;
 
-package lime.ui;
-
-import lime._internal.backend.native.NativeCFFI;
-
-@:access(lime._internal.backend.native.NativeCFFI)
+#if openfl_html5
 @:enum abstract KeyCode(Int) from Int to Int from UInt to UInt
 {
 	var UNKNOWN = 0x00;
@@ -244,26 +240,14 @@ import lime._internal.backend.native.NativeCFFI;
 	var EJECT = 0x40000119;
 	var SLEEP = 0x4000011A;
 
-	@:from public static function fromScanCode(scanCode:ScanCode):KeyCode
-	{
-		#if (lime_cffi && !macro)
-		var code:Int = scanCode;
-		return Std.int(NativeCFFI.lime_key_code_from_scan_code(code));
-		#else
-		return KeyCode.UNKNOWN;
-		#end
-	}
-
-	private static function toScanCode(keyCode:KeyCode):ScanCode
-	{
-		#if (lime_cffi && !macro)
-		var code:Int = keyCode;
-		return Std.int(NativeCFFI.lime_key_code_to_scan_code(code));
-		#else
-		return ScanCode.UNKNOWN;
-		#end
-	}
-
+	// @:from public static function fromScanCode(scanCode:ScanCode):KeyCode
+	// {
+	// 	return KeyCode.UNKNOWN;
+	// }
+	// private static function toScanCode(keyCode:KeyCode):ScanCode
+	// {
+	// 	return ScanCode.UNKNOWN;
+	// }
 	@:op(A > B) private static inline function gt(a:KeyCode, b:KeyCode):Bool
 	{
 		return (a : Int) > (b : Int);
@@ -289,3 +273,4 @@ import lime._internal.backend.native.NativeCFFI;
 		return (a : Int) + b;
 	}
 }
+#end

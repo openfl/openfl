@@ -1,9 +1,15 @@
 package openfl.display;
 
+import openfl._internal.Lib;
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.Application;
+import openfl._internal.backend.lime_standalone.Window as LimeWindow;
+import openfl._internal.backend.lime_standalone.WindowAttributes;
+#else
 import openfl._internal.backend.lime.Application;
 import openfl._internal.backend.lime.Window as LimeWindow;
 import openfl._internal.backend.lime.WindowAttributes;
-import openfl._internal.Lib;
+#end
 
 /**
 	The Window class is a Lime Window instance that automatically
@@ -16,9 +22,9 @@ import openfl._internal.Lib;
 @:access(openfl.display.LoaderInfo)
 @:access(openfl.display.Stage)
 @SuppressWarnings("checkstyle:FieldDocComment")
-class Window #if lime extends LimeWindow #end
+class Window #if (lime || openfl_html5) extends LimeWindow #end
 {
-	#if !lime
+	#if (!lime && !openfl_html5)
 	public var application:Application;
 	@SuppressWarnings("checkstyle:Dynamic") public var context:Dynamic;
 	@SuppressWarnings("checkstyle:Dynamic") public var cursor:Dynamic;
@@ -35,7 +41,7 @@ class Window #if lime extends LimeWindow #end
 	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion private function new(application:Application, attributes:#if lime WindowAttributes #else Dynamic #end)
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		super(application, attributes);
 		#end
 
@@ -65,7 +71,7 @@ class Window #if lime extends LimeWindow #end
 			stage.__setLogicalSize(attributes.width, attributes.height);
 		}
 
-		#if lime
+		#if (lime || openfl_html5)
 		application.addModule(stage);
 		#end
 		#else

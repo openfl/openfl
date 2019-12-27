@@ -1,6 +1,7 @@
 package openfl._internal.backend.lime_standalone;
 
 #if openfl_html5
+import js.html.webgl.UniformLocation in GLUniformLocation;
 import openfl._internal.backend.utils.ArrayBufferView;
 import openfl._internal.backend.utils.Float32Array;
 

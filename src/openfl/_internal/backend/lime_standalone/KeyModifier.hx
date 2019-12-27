@@ -1,7 +1,6 @@
 package openfl._internal.backend.lime_standalone;
 
-package lime.ui;
-
+#if openfl_html5
 abstract KeyModifier(Int) from Int to Int from UInt to UInt
 {
 	public static inline var NONE:KeyModifier = 0x0000;
@@ -142,3 +141,4 @@ abstract KeyModifier(Int) from Int to Int from UInt to UInt
 		return value;
 	}
 }
+#end

@@ -1,8 +1,8 @@
-package openfl._internal.backend.lime_standalone; #if openfl_html5
+package openfl._internal.backend.lime_standalone;
 
+#if openfl_html5
 import haxe.io.BytesData;
 import haxe.io.Bytes;
-import openfl._internal.backend.lime_standalone.Bytes as LimeBytes;
 #if haxe4
 import js.lib.ArrayBuffer;
 import js.lib.ArrayBufferView;

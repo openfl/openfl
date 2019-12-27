@@ -1,13 +1,19 @@
 package openfl.ui;
 
 #if !flash
-import openfl._internal.backend.lime.Gamepad;
-import openfl._internal.backend.lime.GamepadAxis;
-import openfl._internal.backend.lime.GamepadButton;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.EventType;
 import openfl.events.GameInputEvent;
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.Gamepad;
+import openfl._internal.backend.lime_standalone.GamepadAxis;
+import openfl._internal.backend.lime_standalone.GamepadButton;
+#else
+import openfl._internal.backend.lime.Gamepad;
+import openfl._internal.backend.lime.GamepadAxis;
+import openfl._internal.backend.lime.GamepadButton;
+#end
 
 /**
 	The GameInput class is the entry point into the GameInput API. You can use this API to
@@ -77,7 +83,7 @@ import openfl.events.GameInputEvent;
 
 	@:noCompletion private static var __deviceList:Array<GameInputDevice> = new Array();
 	@:noCompletion private static var __instances:Array<GameInput> = [];
-	#if lime
+	#if (lime || openfl_html5)
 	@:noCompletion private static var __devices:Map<Gamepad, GameInputDevice> = new Map();
 	#end
 
@@ -126,7 +132,7 @@ import openfl.events.GameInputEvent;
 		return null;
 	}
 
-	#if lime
+	#if (lime || openfl_html5)
 	@:noCompletion private static function __getDevice(gamepad:Gamepad):GameInputDevice
 	{
 		if (gamepad == null) return null;
@@ -143,7 +149,7 @@ import openfl.events.GameInputEvent;
 	}
 	#end
 
-	#if lime
+	#if (lime || openfl_html5)
 	@:noCompletion private static function __onGamepadAxisMove(gamepad:Gamepad, axis:GamepadAxis, value:Float):Void
 	{
 		var device = __getDevice(gamepad);
@@ -165,7 +171,7 @@ import openfl.events.GameInputEvent;
 	}
 	#end
 
-	#if lime
+	#if (lime || openfl_html5)
 	@:noCompletion private static function __onGamepadButtonDown(gamepad:Gamepad, button:GamepadButton):Void
 	{
 		var device = __getDevice(gamepad);
@@ -187,7 +193,7 @@ import openfl.events.GameInputEvent;
 	}
 	#end
 
-	#if lime
+	#if (lime || openfl_html5)
 	@:noCompletion private static function __onGamepadButtonUp(gamepad:Gamepad, button:GamepadButton):Void
 	{
 		var device = __getDevice(gamepad);
@@ -209,7 +215,7 @@ import openfl.events.GameInputEvent;
 	}
 	#end
 
-	#if lime
+	#if (lime || openfl_html5)
 	@:noCompletion private static function __onGamepadConnect(gamepad:Gamepad):Void
 	{
 		var device = __getDevice(gamepad);
@@ -222,7 +228,7 @@ import openfl.events.GameInputEvent;
 	}
 	#end
 
-	#if lime
+	#if (lime || openfl_html5)
 	@:noCompletion private static function __onGamepadDisconnect(gamepad:Gamepad):Void
 	{
 		var device = __devices.get(gamepad);

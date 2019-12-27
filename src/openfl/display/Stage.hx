@@ -5,6 +5,21 @@ import haxe.CallStack;
 import haxe.ds.ArraySort;
 import openfl._internal.backend.html5.Browser;
 import openfl._internal.backend.html5.Element;
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.Application;
+import openfl._internal.backend.lime_standalone.Gamepad;
+import openfl._internal.backend.lime_standalone.GamepadAxis;
+import openfl._internal.backend.lime_standalone.GamepadButton;
+import openfl._internal.backend.lime_standalone.IModule;
+import openfl._internal.backend.lime_standalone.KeyCode;
+import openfl._internal.backend.lime_standalone.KeyModifier;
+import openfl._internal.backend.lime_standalone.MouseWheelMode;
+import openfl._internal.backend.lime_standalone.RenderContext;
+import openfl._internal.backend.lime_standalone.RenderContextType;
+import openfl._internal.backend.lime_standalone.Touch;
+import openfl._internal.backend.lime_standalone.Window;
+#else
+import openfl._internal.backend.lime.Application;
 import openfl._internal.backend.lime.Gamepad;
 import openfl._internal.backend.lime.GamepadAxis;
 import openfl._internal.backend.lime.GamepadButton;
@@ -13,14 +28,8 @@ import openfl._internal.backend.lime.KeyCode;
 import openfl._internal.backend.lime.KeyModifier;
 import openfl._internal.backend.lime.MouseWheelMode;
 import openfl._internal.backend.lime.RenderContext;
-import openfl._internal.backend.lime.Touch;
-#if (!lime && openfl_html5)
-import openfl._internal.backend.lime_standalone.Application;
-import openfl._internal.backend.lime_standalone.RenderContextType;
-import openfl._internal.backend.lime_standalone.Window;
-#else
-import openfl._internal.backend.lime.Application;
 import openfl._internal.backend.lime.RenderContextType;
+import openfl._internal.backend.lime.Touch;
 import openfl._internal.backend.lime.Window;
 #end
 #if !display
@@ -197,7 +206,7 @@ import openfl._internal.renderer.context3D.stats.Context3DStats;
 @:access(openfl.ui.GameInput)
 @:access(openfl.ui.Keyboard)
 @:access(openfl.ui.Mouse)
-class Stage extends DisplayObjectContainer #if lime implements IModule #end
+class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements IModule #end
 {
 	/**
 		A value from the StageAlign class that specifies the alignment of the
@@ -907,7 +916,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	@:noCompletion private var __transparent:Bool;
 	@:noCompletion private var __wasDirty:Bool;
 	@:noCompletion private var __wasFullscreen:Bool;
-	#if lime
+	#if (lime || openfl_html5)
 	@:noCompletion private var __primaryTouch:Touch;
 	#end
 
@@ -1094,7 +1103,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			stage.addChild(Lib.current);
 		}
 
-		#if commonjs
+		#if (commonjs || (openfl_html5 && !lime))
 		if (documentClass != null)
 		{
 			DisplayObject.__initStage = this;
@@ -1472,7 +1481,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		}
 	}
 
-	#if lime
+	#if (lime || openfl_html5)
 	@:noCompletion private function __onKey(type:String, keyCode:KeyCode, modifier:KeyModifier):Void
 	{
 		__dispatchPendingMouseEvent();
@@ -1631,7 +1640,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	}
 	#end
 
-	#if lime
+	#if (lime || openfl_html5)
 	@:noCompletion private function __onLimeCreateWindow(window:Window):Void
 	{
 		if (this.window != window) return;
@@ -1945,7 +1954,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			__update(false, true);
 		}
 
-		#if lime
+		#if (lime || openfl_html5)
 		if (__renderer != null)
 		{
 			if (context3D != null)
@@ -2655,7 +2664,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		Point.__pool.release(localPoint);
 	}
 
-	#if lime
+	#if (lime || openfl_html5)
 	@:noCompletion private function __onMouseWheel(deltaX:Float, deltaY:Float, deltaMode:MouseWheelMode):Void
 	{
 		var x = __mouseX;
@@ -2689,7 +2698,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	}
 	#end
 
-	#if lime
+	#if (lime || openfl_html5)
 	@:noCompletion private function __onTouch(type:String, touch:Touch):Void
 	{
 		var targetPoint = Point.__pool.get();
@@ -2856,7 +2865,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	}
 	#end
 
-	#if lime
+	#if (lime || openfl_html5)
 	@:noCompletion private function __registerLimeModule(application:Application):Void
 	{
 		application.onCreateWindow.add(__onLimeCreateWindow);
@@ -3027,7 +3036,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 	@:noCompletion private function __unregisterLimeModule(application:Application):Void
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		application.onCreateWindow.remove(__onLimeCreateWindow);
 		application.onUpdate.remove(__onLimeUpdate);
 		application.onExit.remove(__onLimeModuleExit);

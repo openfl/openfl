@@ -1,6 +1,10 @@
 package openfl._internal.backend.lime_standalone;
 
 #if openfl_html5
+import js.html.DeviceMotionEvent;
+import js.html.KeyboardEvent;
+import js.Browser;
+
 @:access(openfl._internal.backend.lime_standalone.Window)
 class Application extends Module
 {
@@ -339,12 +343,12 @@ class Application extends Module
 
 @:noCompletion private typedef ApplicationBackend = HTML5Application;
 
-@:access(lime._internal.backend.html5.HTML5Window)
-@:access(lime.app.Application)
-@:access(lime.system.Sensor)
-@:access(lime.ui.Gamepad)
-@:access(lime.ui.Joystick)
-@:access(lime.ui.Window)
+@:access(openfl._internal.backend.lime_standalone.HTML5Window)
+@:access(openfl._internal.backend.lime_standalone.Application)
+@:access(openfl._internal.backend.lime_standalone.Sensor)
+@:access(openfl._internal.backend.lime_standalone.Gamepad)
+@:access(openfl._internal.backend.lime_standalone.Joystick)
+@:access(openfl._internal.backend.lime_standalone.Window)
 class HTML5Application
 {
 	private var gameDeviceCache = new Map<Int, GameDeviceData>();
@@ -368,7 +372,7 @@ class HTML5Application
 		nextUpdate = 0;
 		framePeriod = -1;
 
-		AudioManager.init();
+		// AudioManager.init();
 		accelerometer = Sensor.registerSensor(SensorType.ACCELEROMETER, 0);
 	}
 

@@ -1,30 +1,22 @@
 package openfl._internal.backend.lime_standalone;
 
 #if openfl_html5
-import haxe.io.Bytes;
 import haxe.Int64;
 import js.html.webgl.ActiveInfo in GLActiveInfo;
 import js.html.webgl.Buffer in GLBuffer;
+import js.html.webgl.ContextAttributes in GLContextAttributes;
 import js.html.webgl.Framebuffer in GLFramebuffer;
 import js.html.webgl.Program in GLProgram;
 import js.html.webgl.Query in GLQuery;
 import js.html.webgl.Renderbuffer in GLRenderbuffer;
-import js.html.webgl.RenderingContext in WebGLRenderingContext;
 import js.html.webgl.Sampler in GLSampler;
 import js.html.webgl.Shader in GLShader;
+import js.html.webgl.ShaderPrecisionFormat in GLShaderPrecisionFormat;
 import js.html.webgl.Sync in GLSync;
 import js.html.webgl.Texture in GLTexture;
 import js.html.webgl.TransformFeedback in GLTransformFeedback;
 import js.html.webgl.UniformLocation in GLUniformLocation;
 import js.html.webgl.VertexArrayObject in GLVertexArrayObject;
-import openfl._internal.backend.utils.ArrayBufferView;
-import openfl._internal.backend.utils.ArrayBuffer;
-import openfl._internal.backend.utils.Float32Array;
-#if haxe4
-import js.lib.Int32Array;
-#else
-import js.html.Int32Array;
-#end
 
 @:allow(openfl._internal.backend.lime_standalone.Window)
 class GL

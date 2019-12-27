@@ -1,7 +1,6 @@
 package openfl._internal.backend.lime_standalone;
 
-package lime.ui;
-
+#if openfl_html5
 @:enum abstract GamepadButton(Int) from Int to Int from UInt to UInt
 {
 	var A = 0;
@@ -43,3 +42,4 @@ package lime.ui;
 		}
 	}
 }
+#end

@@ -1,27 +1,17 @@
 package openfl._internal.backend.lime_standalone;
 
+#if openfl_html5
 import haxe.io.Path;
-import lime.app.Event;
-import lime.app.Future;
-import lime.app.Promise;
-import lime.media.AudioBuffer;
-import lime.graphics.Image;
-import lime.text.Font;
-import lime.utils.AssetType;
-#if flash
-import flash.display.BitmapData;
-import flash.media.Sound;
-#end
+import openfl._internal.utils.Log;
+import openfl.text.Font;
+import openfl.utils.Future;
+import openfl.utils.Promise;
 
-#if !lime_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
-@:access(lime.text.Font)
-@:access(lime.utils.Assets)
+@:access(openfl._internal.backend.lime_standalone.Assets)
+@:access(openfl.text.Font)
 class AssetLibrary
 {
-	public var onChange = new Event<Void->Void>();
+	public var onChange = new LimeEvent<Void->Void>();
 
 	@:noCompletion private var assetsLoaded:Int;
 	@:noCompletion private var assetsTotal:Int;
@@ -29,7 +19,7 @@ class AssetLibrary
 	@:noCompletion private var bytesLoadedCache:Map<String, Int>;
 	@:noCompletion private var bytesTotal:Int;
 	@:noCompletion private var cachedAudioBuffers = new Map<String, AudioBuffer>();
-	@:noCompletion private var cachedBytes = new Map<String, Bytes>();
+	@:noCompletion private var cachedBytes = new Map<String, LimeBytes>();
 	@:noCompletion private var cachedFonts = new Map<String, Font>();
 	@:noCompletion private var cachedImages = new Map<String, Image>();
 	@:noCompletion private var cachedText = new Map<String, String>();
@@ -61,31 +51,16 @@ class AssetLibrary
 				return true;
 			}
 
-			#if flash
-			if (requestedType == BINARY && (assetType == BINARY || assetType == TEXT || assetType == IMAGE))
-			{
-				return true;
-			}
-			else if (requestedType == TEXT && assetType == BINARY)
-			{
-				return true;
-			}
-			else if (requestedType == null || paths.exists(id))
-			{
-				return true;
-			}
-			#else
 			if (requestedType == BINARY || requestedType == null || (assetType == BINARY && requestedType == TEXT))
 			{
 				return true;
 			}
-			#end
 		}
 
 		return false;
 	}
 
-	public static function fromBytes(bytes:Bytes, rootPath:String = null):AssetLibrary
+	public static function fromBytes(bytes:LimeBytes, rootPath:String = null):AssetLibrary
 	{
 		return fromManifest(AssetManifest.fromBytes(bytes, rootPath));
 	}
@@ -170,13 +145,13 @@ class AssetLibrary
 	{
 		return switch (type)
 		{
-			case BINARY: getBytes(id);
-			case FONT: getFont(id);
-			case IMAGE: getImage(id);
-			case MUSIC, SOUND: getAudioBuffer(id);
-			case TEXT: getText(id);
+			case AssetType.BINARY: getBytes(id);
+			case AssetType.FONT: getFont(id);
+			case AssetType.IMAGE: getImage(id);
+			case AssetType.MUSIC, AssetType.SOUND: getAudioBuffer(id);
+			case AssetType.TEXT: getText(id);
 
-			case TEMPLATE: throw "Not sure how to get template: " + id;
+			case AssetType.TEMPLATE: throw "Not sure how to get template: " + id;
 			default: throw "Unknown asset type: " + type;
 		}
 	}
@@ -189,13 +164,7 @@ class AssetLibrary
 		}
 		else if (classTypes.exists(id))
 		{
-			#if flash
-			var buffer = new AudioBuffer();
-			buffer.src = cast(Type.createInstance(classTypes.get(id), []), Sound);
-			return buffer;
-			#else
-			return AudioBuffer.fromBytes(cast(Type.createInstance(classTypes.get(id), []), Bytes));
-			#end
+			return AudioBuffer.fromBytes(cast(Type.createInstance(classTypes.get(id), []), LimeBytes));
 		}
 		else
 		{
@@ -203,7 +172,7 @@ class AssetLibrary
 		}
 	}
 
-	public function getBytes(id:String):Bytes
+	public function getBytes(id:String):LimeBytes
 	{
 		if (cachedBytes.exists(id))
 		{
@@ -211,34 +180,17 @@ class AssetLibrary
 		}
 		else if (cachedText.exists(id))
 		{
-			var bytes = Bytes.ofString(cachedText.get(id));
+			var bytes = LimeBytes.ofString(cachedText.get(id));
 			cachedBytes.set(id, bytes);
 			return bytes;
 		}
 		else if (classTypes.exists(id))
 		{
-			#if flash
-			var data = Type.createInstance(classTypes.get(id), []);
-
-			switch (types.get(id))
-			{
-				case TEXT, BINARY:
-					return Bytes.ofData(cast(Type.createInstance(classTypes.get(id), []), flash.utils.ByteArray));
-
-				case IMAGE:
-					var bitmapData = cast(Type.createInstance(classTypes.get(id), []), BitmapData);
-					return Bytes.ofData(bitmapData.getPixels(bitmapData.rect));
-
-				default:
-					return null;
-			}
-			#else
-			return cast(Type.createInstance(classTypes.get(id), []), Bytes);
-			#end
+			return cast(Type.createInstance(classTypes.get(id), []), LimeBytes);
 		}
 		else
 		{
-			return Bytes.fromFile(paths.get(id));
+			return LimeBytes.fromFile(paths.get(id));
 		}
 	}
 
@@ -250,15 +202,7 @@ class AssetLibrary
 		}
 		else if (classTypes.exists(id))
 		{
-			#if flash
-			var src = Type.createInstance(classTypes.get(id), []);
-
-			var font = new Font(src.fontName);
-			font.src = src;
-			return font;
-			#else
 			return cast(Type.createInstance(classTypes.get(id), []), Font);
-			#end
 		}
 		else
 		{
@@ -274,11 +218,7 @@ class AssetLibrary
 		}
 		else if (classTypes.exists(id))
 		{
-			#if flash
-			return Image.fromBitmapData(cast(Type.createInstance(classTypes.get(id), []), BitmapData));
-			#else
 			return cast(Type.createInstance(classTypes.get(id), []), Image);
-			#end
 		}
 		else
 		{
@@ -371,13 +311,13 @@ class AssetLibrary
 	{
 		return switch (type)
 		{
-			case BINARY: loadBytes(id);
-			case FONT: loadFont(id);
-			case IMAGE: loadImage(id);
-			case MUSIC, SOUND: loadAudioBuffer(id);
-			case TEXT: loadText(id);
+			case AssetType.BINARY: loadBytes(id);
+			case AssetType.FONT: loadFont(id);
+			case AssetType.IMAGE: loadImage(id);
+			case AssetType.MUSIC, AssetType.SOUND: loadAudioBuffer(id);
+			case AssetType.TEXT: loadText(id);
 
-			case TEMPLATE: throw "Not sure how to load template: " + id;
+			case AssetType.TEMPLATE: throw "Not sure how to load template: " + id;
 			default: throw "Unknown asset type: " + type;
 		}
 	}
@@ -478,7 +418,7 @@ class AssetLibrary
 		}
 	}
 
-	public function loadBytes(id:String):Future<Bytes>
+	public function loadBytes(id:String):Future<LimeBytes>
 	{
 		if (cachedBytes.exists(id))
 		{
@@ -486,15 +426,11 @@ class AssetLibrary
 		}
 		else if (classTypes.exists(id))
 		{
-			#if flash
-			return Future.withValue(Bytes.ofData(Type.createInstance(classTypes.get(id), [])));
-			#else
 			return Future.withValue(Type.createInstance(classTypes.get(id), []));
-			#end
 		}
 		else
 		{
-			return Bytes.loadFromFile(paths.get(id));
+			return LimeBytes.loadFromFile(paths.get(id));
 		}
 	}
 
@@ -507,24 +443,16 @@ class AssetLibrary
 		else if (classTypes.exists(id))
 		{
 			var font:Font = Type.createInstance(classTypes.get(id), []);
-
-			#if (js && html5)
-			return font.__loadFromName(font.name);
-			#else
-			return Future.withValue(font);
-			#end
+			// return font.__loadFromName(font.name);
+			return font.__loadFromName(font.fontName);
 		}
 		else
 		{
-			#if (js && html5)
 			return Font.loadFromName(paths.get(id));
-			#else
-			return Font.loadFromFile(paths.get(id));
-			#end
 		}
 	}
 
-	public static function loadFromBytes(bytes:Bytes, rootPath:String = null):Future<AssetLibrary>
+	public static function loadFromBytes(bytes:LimeBytes, rootPath:String = null):Future<AssetLibrary>
 	{
 		return AssetManifest.loadFromBytes(bytes, rootPath).then(function(manifest)
 		{
@@ -858,7 +786,6 @@ class AssetLibrary
 
 	@:noCompletion private function loadAudioBuffer_onError(id:String, message:Dynamic):Void
 	{
-		#if (js && html5)
 		if (message != null && message != "")
 		{
 			Log.warn("Could not load \"" + id + "\": " + Std.string(message));
@@ -869,12 +796,9 @@ class AssetLibrary
 		}
 
 		loadAudioBuffer_onComplete(id, new AudioBuffer());
-		#else
-		load_onError(id, message);
-		#end
 	}
 
-	@:noCompletion private function loadBytes_onComplete(id:String, bytes:Bytes):Void
+	@:noCompletion private function loadBytes_onComplete(id:String, bytes:LimeBytes):Void
 	{
 		cachedBytes.set(id, bytes);
 		__assetLoaded(id);
@@ -949,3 +873,4 @@ class AssetLibrary
 		}
 	}
 }
+#end

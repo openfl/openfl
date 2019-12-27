@@ -17,6 +17,7 @@ import js.html.TextAreaElement;
 import js.html.TouchEvent;
 import js.html.ClipboardEvent;
 import js.Browser;
+import openfl._internal.backend.lime_standalone.WebGL2RenderContext;
 import openfl.display.Stage;
 import openfl.geom.Rectangle;
 
@@ -26,8 +27,8 @@ class Window
 	public var borderless(get, set):Bool;
 	public var context(default, null):RenderContext;
 	public var cursor(get, set):MouseCursor;
-	// public var display(get, null):Display;
-	// public var displayMode(get, set):DisplayMode;
+	public var display(get, null):Display;
+	public var displayMode(get, set):DisplayMode;
 	public var element(default, null):Element;
 
 	public var frameRate(get, set):Float;
@@ -177,18 +178,20 @@ class Window
 		return __backend.setCursor(value);
 	}
 
-	// @:noCompletion private function get_display():Display
-	// {
-	// 	return __backend.getDisplay();
-	// }
-	// @:noCompletion private function get_displayMode():DisplayMode
-	// {
-	// 	return __backend.getDisplayMode();
-	// }
-	// @:noCompletion private function set_displayMode(value:DisplayMode):DisplayMode
-	// {
-	// 	return __backend.setDisplayMode(value);
-	// }
+	@:noCompletion private function get_display():Display
+	{
+		return __backend.getDisplay();
+	}
+
+	@:noCompletion private function get_displayMode():DisplayMode
+	{
+		return __backend.getDisplayMode();
+	}
+
+	@:noCompletion private function set_displayMode(value:DisplayMode):DisplayMode
+	{
+		return __backend.setDisplayMode(value);
+	}
 
 	@:noCompletion private inline function get_borderless():Bool
 	{
@@ -341,15 +344,15 @@ class Window
 
 @:noCompletion private typedef WindowBackend = HTML5Window;
 
-@:access(lime._internal.backend.html5.HTML5Application)
-@:access(lime._internal.backend.html5.HTML5WebGL2RenderContext)
-@:access(lime.app.Application)
-@:access(lime.graphics.opengl.GL)
-@:access(lime.graphics.OpenGLRenderContext)
-@:access(lime.graphics.RenderContext)
-@:access(lime.ui.Gamepad)
-@:access(lime.ui.Joystick)
-@:access(lime.ui.Window)
+@:access(openfl._internal.backend.lime_standalone.HTML5Application)
+@:access(openfl._internal.backend.lime_standalone.HTML5WebGL2RenderContext)
+@:access(openfl._internal.backend.lime_standalone.Application)
+@:access(openfl._internal.backend.lime_standalone.GL)
+@:access(openfl._internal.backend.lime_standalone.OpenGLRenderContext)
+@:access(openfl._internal.backend.lime_standalone.RenderContext)
+@:access(openfl._internal.backend.lime_standalone.Gamepad)
+@:access(openfl._internal.backend.lime_standalone.Joystick)
+@:access(openfl._internal.backend.lime_standalone.Window)
 class HTML5Window
 {
 	private static var dummyCharacter = String.fromCharCode(127);
@@ -649,14 +652,15 @@ class HTML5Window
 		return cursor;
 	}
 
-	// public function getDisplay():Display
-	// {
-	// 	return System.getDisplay(0);
-	// }
-	// public function getDisplayMode():DisplayMode
-	// {
-	// 	return System.getDisplay(0).currentMode;
-	// }
+	public function getDisplay():Display
+	{
+		return System.getDisplay(0);
+	}
+
+	public function getDisplayMode():DisplayMode
+	{
+		return System.getDisplay(0).currentMode;
+	}
 
 	public function getFrameRate():Float
 	{
@@ -1180,7 +1184,31 @@ class HTML5Window
 			}
 			else
 			{
-				rect.intersection(stageRect, rect);
+				// rect.intersection(stageRect, rect);
+				var x0 = rect.x < stageRect.x ? stageRect.x : rect.x;
+				var x1 = rect.right > stageRect.right ? stageRect.right : rect.right;
+
+				if (x1 <= x0)
+				{
+					rect.setEmpty();
+				}
+				else
+				{
+					var y0 = rect.y < stageRect.y ? stageRect.y : rect.y;
+					var y1 = rect.bottom > stageRect.bottom ? stageRect.bottom : rect.bottom;
+
+					if (y1 <= y0)
+					{
+						rect.setEmpty();
+					}
+					else
+					{
+						rect.x = x0;
+						rect.y = y0;
+						rect.width = x1 - x0;
+						rect.height = y1 - y0;
+					}
+				}
 			}
 
 			if (rect.width > 0 && rect.height > 0)
@@ -1262,10 +1290,10 @@ class HTML5Window
 		return cursor;
 	}
 
-	// public function setDisplayMode(value:DisplayMode):DisplayMode
-	// {
-	// 	return value;
-	// }
+	public function setDisplayMode(value:DisplayMode):DisplayMode
+	{
+		return value;
+	}
 
 	public function setFrameRate(value:Float):Float
 	{

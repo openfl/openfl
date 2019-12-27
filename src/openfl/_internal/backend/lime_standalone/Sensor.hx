@@ -1,20 +1,13 @@
 package openfl._internal.backend.lime_standalone;
 
-package lime.system;
-
-import lime.app.Event;
-
-#if !lime_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
+#if openfl_html5
 class Sensor
 {
 	private static var sensorByID = new Map<Int, Sensor>();
 	private static var sensors = new Array<Sensor>();
 
 	public var id:Int;
-	public var onUpdate = new Event<Float->Float->Float->Void>();
+	public var onUpdate = new LimeEvent<Float->Float->Float->Void>();
 	public var type:SensorType;
 
 	@:noCompletion private function new(type:SensorType, id:Int)
@@ -55,3 +48,4 @@ class Sensor
 		return sensor;
 	}
 }
+#end

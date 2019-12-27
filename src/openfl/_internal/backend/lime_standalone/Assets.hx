@@ -1,45 +1,23 @@
 package openfl._internal.backend.lime_standalone;
 
-package lime.utils;
-
+#if openfl_html5
 import haxe.io.Path;
 import haxe.CallStack;
 import haxe.Unserializer;
-import lime.app.Application;
-import lime.app.Event;
-import lime.app.Promise;
-import lime.app.Future;
-import lime.media.AudioBuffer;
-import lime.graphics.Image;
-import lime.text.Font;
-import lime.utils.Bytes;
-import lime.utils.Log;
+import openfl._internal.utils.Log;
+import openfl.text.Font;
+import openfl.utils.AssetCache;
+import openfl.utils.Future;
+import openfl.utils.Promise;
 #if !macro
 import haxe.Json;
 #end
 
-/**
- * <p>The Assets class provides a cross-platform interface to access
- * embedded images, fonts, sounds and other resource files.</p>
- *
- * <p>The contents are populated automatically when an application
- * is compiled using the Lime command-line tools, based on the
- * contents of the project file.</p>
- *
- * <p>For most platforms, the assets are included in the same directory
- * or package as the application, and the paths are handled
- * automatically. For web content, the assets are preloaded before
- * the start of the rest of the application.</p>
- */
-#if !lime_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
-@:access(lime.utils.AssetLibrary)
+@:access(openfl._internal.backend.lime_standalone.AssetLibrary)
 class Assets
 {
 	public static var cache:AssetCache = new AssetCache();
-	public static var onChange = new Event<Void->Void>();
+	public static var onChange = new LimeEvent<Void->Void>();
 
 	private static var bundlePaths = new Map<String, String>();
 	private static var libraries(default, null) = new Map<String, AssetLibrary>();
@@ -64,12 +42,6 @@ class Assets
 		return false;
 	}
 
-	/**
-	 * Gets an instance of a cached or embedded asset
-	 * @usage		var sound = Assets.getAsset("sound.wav", SOUND);
-	 * @param	id		The ID or asset path for the asset
-	 * @return		An Asset object, or null.
-	 */
 	public static function getAsset(id:String, type:AssetType, useCache:Bool):Dynamic
 	{
 		#if (tools && !display)
@@ -149,46 +121,21 @@ class Assets
 		return null;
 	}
 
-	/**
-	 * Gets an instance of an embedded sound
-	 * @usage		var sound = Assets.getAudioBuffer ("sound.wav");
-	 * @param	id		The ID or asset path for the sound
-	 * @return		A new Sound object
-	 */
 	public static function getAudioBuffer(id:String, useCache:Bool = true):AudioBuffer
 	{
 		return cast getAsset(id, SOUND, useCache);
 	}
 
-	/**
-	 * Gets an instance of an embedded binary asset
-	 * @usage		var bytes = Assets.getBytes("file.zip");
-	 * @param	id		The ID or asset path for the file
-	 * @return		A new Bytes object
-	 */
-	public static function getBytes(id:String):Bytes
+	public static function getBytes(id:String):LimeBytes
 	{
 		return cast getAsset(id, BINARY, false);
 	}
 
-	/**
-	 * Gets an instance of an embedded font
-	 * @usage		var fontName = Assets.getFont("font.ttf").fontName;
-	 * @param	id		The ID or asset path for the font
-	 * @return		A new Font object
-	 */
 	public static function getFont(id:String, useCache:Bool = true):Font
 	{
 		return getAsset(id, FONT, useCache);
 	}
 
-	/**
-	 * Gets an instance of an embedded bitmap
-	 * @usage		var bitmap = new Bitmap(Assets.getBitmapData("image.jpg"));
-	 * @param	id		The ID or asset path for the bitmap
-	 * @param	useCache		(Optional) Whether to use BitmapData from the cache(Default: true)
-	 * @return		A new BitmapData object
-	 */
 	public static function getImage(id:String, useCache:Bool = true):Image
 	{
 		return getAsset(id, IMAGE, useCache);
@@ -204,12 +151,6 @@ class Assets
 		return libraries.get(name);
 	}
 
-	/**
-	 * Gets the file path (if available) for an asset
-	 * @usage		var path = Assets.getPath("image.jpg");
-	 * @param	id		The ID or asset path for the asset
-	 * @return		The path to the asset (or null)
-	 */
 	public static function getPath(id:String):String
 	{
 		#if (tools && !display)
@@ -235,12 +176,6 @@ class Assets
 		return null;
 	}
 
-	/**
-	 * Gets an instance of an embedded text asset
-	 * @usage		var text = Assets.getText("text.txt");
-	 * @param	id		The ID or asset path for the file
-	 * @return		A new String object
-	 */
 	public static function getText(id:String):String
 	{
 		return getAsset(id, TEXT, false);
@@ -379,7 +314,7 @@ class Assets
 		return cast loadAsset(id, SOUND, useCache);
 	}
 
-	public static function loadBytes(id:String):Future<Bytes>
+	public static function loadBytes(id:String):Future<LimeBytes>
 	{
 		return cast loadAsset(id, BINARY, false);
 	}
@@ -579,10 +514,6 @@ class Assets
 	}
 }
 
-#if !lime_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 private class LibrarySymbol
 {
 	public var library(default, null):AssetLibrary;
@@ -603,3 +534,4 @@ private class LibrarySymbol
 	public inline function exists(?type)
 		return library.exists(symbolName, type);
 }
+#end

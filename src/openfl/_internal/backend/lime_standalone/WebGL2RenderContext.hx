@@ -3,13 +3,10 @@ package openfl._internal.backend.lime_standalone;
 #if openfl_html5
 import js.html.webgl.ActiveInfo in GLActiveInfo;
 import js.html.webgl.Buffer in GLBuffer;
-import js.html.webgl.Framebuffer in GLFramebuffer;
 import js.html.webgl.Program in GLProgram;
 import js.html.webgl.Query in GLQuery;
-import js.html.webgl.Renderbuffer in GLRenderbuffer;
 import js.html.webgl.RenderingContext in WebGLRenderingContext;
 import js.html.webgl.Sampler in GLSampler;
-import js.html.webgl.Shader in GLShader;
 import js.html.webgl.Sync in GLSync;
 import js.html.webgl.Texture in GLTexture;
 import js.html.webgl.TransformFeedback in GLTransformFeedback;

@@ -1,8 +1,8 @@
 package openfl._internal.backend.lime_standalone;
 
-package lime.system;
-
+#if openfl_html5
 enum SensorType
 {
 	ACCELEROMETER;
 }
+#end

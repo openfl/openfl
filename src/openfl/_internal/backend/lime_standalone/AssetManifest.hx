@@ -1,18 +1,14 @@
 package openfl._internal.backend.lime_standalone;
 
+#if openfl_html5
 import haxe.io.Path;
 import haxe.Serializer;
 import haxe.Unserializer;
-import lime.app.Future;
-import lime.utils.Bytes;
+import openfl.utils.Future;
 #if !macro
 import haxe.Json;
 #end
 
-#if !lime_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
 class AssetManifest
 {
 	public var assets:Array<Dynamic>;
@@ -29,7 +25,7 @@ class AssetManifest
 		version = 2;
 	}
 
-	public static function fromBytes(bytes:Bytes, rootPath:String = null):AssetManifest
+	public static function fromBytes(bytes:LimeBytes, rootPath:String = null):AssetManifest
 	{
 		if (bytes != null)
 		{
@@ -48,10 +44,10 @@ class AssetManifest
 
 		if (path == null) return null;
 
-		return fromBytes(Bytes.fromFile(path), rootPath);
+		return fromBytes(LimeBytes.fromFile(path), rootPath);
 	}
 
-	public static function loadFromBytes(bytes:Bytes, rootPath:String = null):Future<AssetManifest>
+	public static function loadFromBytes(bytes:LimeBytes, rootPath:String = null):Future<AssetManifest>
 	{
 		return Future.withValue(fromBytes(bytes, rootPath));
 	}
@@ -63,7 +59,7 @@ class AssetManifest
 
 		if (path == null) return null;
 
-		return Bytes.loadFromFile(path).then(function(bytes)
+		return LimeBytes.loadFromFile(path).then(function(bytes)
 		{
 			return Future.withValue(fromBytes(bytes, rootPath));
 		});
@@ -220,3 +216,4 @@ class AssetManifest
 		return rootPath;
 	}
 }
+#end

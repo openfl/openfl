@@ -1,7 +1,6 @@
 package openfl._internal.backend.lime_standalone;
 
-package lime.ui;
-
+#if openfl_html5
 enum MouseWheelMode
 {
 	PIXELS;
@@ -9,3 +8,4 @@ enum MouseWheelMode
 	PAGES;
 	UNKNOWN;
 }
+#end
