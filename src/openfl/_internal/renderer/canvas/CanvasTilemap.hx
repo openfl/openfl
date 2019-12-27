@@ -1,7 +1,6 @@
 package openfl._internal.renderer.canvas;
 
 #if openfl_html5
-import openfl._internal.backend.lime.ImageCanvasUtil;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display.TileContainer;
@@ -9,6 +8,11 @@ import openfl.display.Tilemap;
 import openfl.display.Tileset;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.ImageCanvasUtil;
+#else
+import openfl._internal.backend.lime.ImageCanvasUtil;
+#end
 
 @:access(lime.graphics.ImageBuffer)
 @:access(openfl.display.BitmapData)

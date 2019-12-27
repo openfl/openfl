@@ -1,7 +1,6 @@
 package openfl._internal.renderer.canvas;
 
 #if openfl_html5
-import openfl._internal.backend.lime.Canvas2DRenderContext;
 import openfl._internal.formats.html.HTMLParser;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
@@ -23,8 +22,10 @@ import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 #if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.Canvas2DRenderContext;
 import openfl._internal.backend.lime_standalone.ImageCanvasUtil;
 #else
+import openfl._internal.backend.lime.Canvas2DRenderContext;
 import openfl._internal.backend.lime.ImageCanvasUtil;
 #end
 

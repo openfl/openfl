@@ -39,14 +39,14 @@ class Window #if (lime || openfl_html5) extends LimeWindow #end
 	#end
 
 	@SuppressWarnings("checkstyle:Dynamic")
-	@:noCompletion private function new(application:Application, attributes:#if lime WindowAttributes #else Dynamic #end)
+	@:noCompletion private function new(application:Application, attributes:#if (lime || openfl_html5) WindowAttributes #else Dynamic #end)
 	{
 		#if (lime || openfl_html5)
 		super(application, attributes);
 		#end
 
 		#if (!flash && !macro)
-		#if commonjs
+		#if (commonjs || (!lime && openfl_html5))
 		if (Reflect.hasField(attributes, "stage"))
 		{
 			stage = Reflect.field(attributes, "stage");

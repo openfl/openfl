@@ -7,10 +7,6 @@ import openfl._internal.backend.cairo.Cairo;
 import openfl._internal.backend.gl.GLFramebuffer;
 import openfl._internal.backend.gl.GLRenderbuffer;
 import openfl._internal.backend.html5.CanvasElement;
-import openfl._internal.backend.lime.ImageCanvasUtil;
-import openfl._internal.backend.lime.ImageChannel;
-import openfl._internal.backend.lime.ImageBuffer;
-import openfl._internal.backend.lime.RenderContext;
 import openfl._internal.backend.math.ARGB;
 import openfl._internal.backend.math.Vector2;
 import openfl._internal.renderer.BitmapDataPool;
@@ -36,8 +32,16 @@ import openfl.utils.Object;
 import openfl.Vector;
 #if (!lime && openfl_html5)
 import openfl._internal.backend.lime_standalone.Image;
+import openfl._internal.backend.lime_standalone.ImageCanvasUtil;
+import openfl.display.BitmapDataChannel as ImageChannel;
+import openfl._internal.backend.lime_standalone.ImageBuffer;
+import openfl._internal.backend.lime_standalone.RenderContext;
 #else
 import openfl._internal.backend.lime.Image;
+import openfl._internal.backend.lime.ImageCanvasUtil;
+import openfl._internal.backend.lime.ImageChannel;
+import openfl._internal.backend.lime.ImageBuffer;
+import openfl._internal.backend.lime.RenderContext;
 #end
 #if openfl_gl
 import openfl._internal.renderer.context3D.batcher.BatchRenderer;
@@ -136,8 +140,13 @@ class BitmapData implements IBitmapDrawable
 	@:noCompletion private static var __supportsBGRA:Null<Bool> = null;
 	@:noCompletion private static var __textureFormat:Int;
 	@:noCompletion private static var __textureInternalFormat:Int;
-	#if lime
-	@:noCompletion private static var __tempVector:Vector2 = new Vector2();
+	#if (lime || openfl_html5)
+	@:noCompletion private static var __tempVector:#if openfl_html5 Point #else Vector2 #end = new
+		#if openfl_html5
+		Point
+		#else
+		Vector2
+		#end ();
 	#end
 
 	/**
@@ -197,9 +206,9 @@ class BitmapData implements IBitmapDrawable
 	// @:noCompletion private var __vertexBufferColorTransform:ColorTransform;
 	// @:noCompletion private var __vertexBufferAlpha:Float;
 	@:noCompletion private var __framebuffer:GLFramebuffer;
-	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __framebufferContext:#if lime RenderContext #else Dynamic #end;
+	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __framebufferContext:#if (lime || openfl_html5) RenderContext #else Dynamic #end;
 	@:noCompletion private var __indexBuffer:IndexBuffer3D;
-	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __indexBufferContext:#if lime RenderContext #else Dynamic #end;
+	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __indexBufferContext:#if (lime || openfl_html5) RenderContext #else Dynamic #end;
 	@:noCompletion private var __indexBufferData:UInt16Array;
 	@:noCompletion private var __indexBufferGrid:Rectangle;
 	@:noCompletion private var __isMask:Bool;
@@ -209,9 +218,9 @@ class BitmapData implements IBitmapDrawable
 	@:noCompletion private var __renderTransform:Matrix;
 	@:noCompletion private var __scrollRect:Rectangle;
 	@:noCompletion private var __stencilBuffer:GLRenderbuffer;
-	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __surface:#if lime CairoSurface #else Dynamic #end;
+	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __surface:#if (lime || openfl_html5) CairoSurface #else Dynamic #end;
 	@:noCompletion private var __texture:TextureBase;
-	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __textureContext:#if lime RenderContext #else Dynamic #end;
+	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __textureContext:#if (lime || openfl_html5) RenderContext #else Dynamic #end;
 	@:noCompletion private var __textureHeight:Int;
 	@:noCompletion private var __textureVersion:Int;
 	@:noCompletion private var __textureWidth:Int;
@@ -219,7 +228,7 @@ class BitmapData implements IBitmapDrawable
 	@:noCompletion private var __type:DisplayObjectType;
 	@:noCompletion private var __uvRect:Rectangle;
 	@:noCompletion private var __vertexBuffer:VertexBuffer3D;
-	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __vertexBufferContext:#if lime RenderContext #else Dynamic #end;
+	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __vertexBufferContext:#if (lime || openfl_html5) RenderContext #else Dynamic #end;
 	@:noCompletion private var __vertexBufferData:Float32Array;
 	@:noCompletion private var __vertexBufferGrid:Rectangle;
 	@:noCompletion private var __vertexBufferHeight:Float;
@@ -285,7 +294,7 @@ class BitmapData implements IBitmapDrawable
 
 			fillColor = (fillColor << 8) | ((fillColor >> 24) & 0xFF);
 
-			#if lime
+			#if (lime || openfl_html5)
 			#if sys
 			var buffer = new ImageBuffer(new UInt8Array(width * height * 4), width, height);
 			buffer.format = BGRA32;
@@ -408,7 +417,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function clone():BitmapData
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		var bitmapData;
 
 		if (!__isValid)
@@ -456,8 +465,8 @@ class BitmapData implements IBitmapDrawable
 	{
 		if (!readable) return;
 
-		#if lime
-		image.colorTransform(rect.__toLimeRectangle(), colorTransform.__toLimeColorMatrix());
+		#if (lime || openfl_html5)
+		image.colorTransform(#if openfl_html5 rect #else rect.__toLimeRectangle() #end, colorTransform.__toLimeColorMatrix());
 		#end
 	}
 
@@ -474,7 +483,7 @@ class BitmapData implements IBitmapDrawable
 	@SuppressWarnings("checkstyle:Dynamic")
 	public function compare(otherBitmapData:BitmapData):Dynamic
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		if (otherBitmapData == this)
 		{
 			return 0;
@@ -642,7 +651,7 @@ class BitmapData implements IBitmapDrawable
 	{
 		if (!readable) return;
 
-		#if lime
+		#if (lime || openfl_html5)
 		var sourceChannel = switch (sourceChannel)
 		{
 			case 1: ImageChannel.RED;
@@ -661,7 +670,8 @@ class BitmapData implements IBitmapDrawable
 			default: return;
 		}
 
-		image.copyChannel(sourceBitmapData.image, sourceRect.__toLimeRectangle(), destPoint.__toLimeVector2(), sourceChannel, destChannel);
+		image.copyChannel(sourceBitmapData.image, #if openfl_html5 sourceRect #else sourceRect.__toLimeRectangle() #end,
+			#if openfl_html5 destPoint #else destPoint.__toLimeVector2() #end, sourceChannel, destChannel);
 		#end
 	}
 
@@ -748,7 +758,8 @@ class BitmapData implements IBitmapDrawable
 				Std.int(point.y + image.offsetY), Std.int(rect.width), Std.int(rect.height));
 
 			// TODO: Render directly for mergeAlpha=false?
-			image.copyPixels(copy.image, copy.rect.__toLimeRectangle(), destPoint.__toLimeVector2(), null, null, mergeAlpha);
+			image.copyPixels(copy.image, #if openfl_html5 copy.rect #else copy.rect.__toLimeRectangle() #end,
+				#if openfl_html5 destPoint #else destPoint.__toLimeVector2() #end, null, null, mergeAlpha);
 
 			BitmapData.__pool.release(copy);
 			Rectangle.__pool.release(rect);
@@ -757,15 +768,16 @@ class BitmapData implements IBitmapDrawable
 		}
 		#end
 
-		#if lime
+		#if (lime || openfl_html5)
 		if (alphaPoint != null)
 		{
 			__tempVector.x = alphaPoint.x;
 			__tempVector.y = alphaPoint.y;
 		}
 
-		image.copyPixels(sourceBitmapData.image, sourceRect.__toLimeRectangle(), destPoint.__toLimeVector2(),
-			alphaBitmapData != null ? alphaBitmapData.image : null, alphaPoint != null ? __tempVector : null, mergeAlpha);
+		image.copyPixels(sourceBitmapData.image, #if openfl_html5 sourceRect #else sourceRect.__toLimeRectangle() #end,
+			#if openfl_html5 destPoint #else destPoint.__toLimeVector2() #end, alphaBitmapData != null ? alphaBitmapData.image : null,
+			alphaPoint != null ? __tempVector : null, mergeAlpha);
 		#end
 	}
 
@@ -1134,7 +1146,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function encode(rect:Rectangle, compressor:Object, byteArray:ByteArray = null):ByteArray
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		if (!readable || rect == null) return byteArray = null;
 		if (byteArray == null) byteArray = new ByteArray();
 
@@ -1180,7 +1192,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function fillRect(rect:Rectangle, color:Int):Void
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		if (rect == null) return;
 
 		if (transparent && (color & 0xFF000000) == 0)
@@ -1194,7 +1206,7 @@ class BitmapData implements IBitmapDrawable
 		}
 		else if (readable)
 		{
-			image.fillRect(rect.__toLimeRectangle(), color, ARGB32);
+			image.fillRect(#if openfl_html5 rect #else rect.__toLimeRectangle() #end, color, ARGB32);
 		}
 		#end
 	}
@@ -1212,7 +1224,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function floodFill(x:Int, y:Int, color:Int):Void
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		if (!readable) return;
 		image.floodFill(x, y, color, ARGB32);
 		#end
@@ -1285,7 +1297,7 @@ class BitmapData implements IBitmapDrawable
 	{
 		if (canvas == null) return null;
 
-		#if lime
+		#if (lime || openfl_html5)
 		var bitmapData = new BitmapData(0, 0, transparent, 0);
 		bitmapData.__fromImage(Image.fromCanvas(canvas));
 		bitmapData.image.transparent = transparent;
@@ -1322,7 +1334,7 @@ class BitmapData implements IBitmapDrawable
 	}
 	#end
 
-	#if lime
+	#if (lime || openfl_html5)
 	/**
 		Creates a new BitmapData using an existing Lime Image instance.
 
@@ -1417,7 +1429,7 @@ class BitmapData implements IBitmapDrawable
 			// TODO: Use shared buffer on context
 			// TODO: Support for UVs other than scale-9 grid?
 
-			#if lime
+			#if (lime || openfl_html5)
 			__indexBufferContext = context.__context;
 			__indexBuffer = null;
 
@@ -1801,7 +1813,7 @@ class BitmapData implements IBitmapDrawable
 			// [ colorTransform.redMultiplier, 0, 0, 0, 0, colorTransform.greenMultiplier, 0, 0, 0, 0, colorTransform.blueMultiplier, 0, 0, 0, 0, colorTransform.alphaMultiplier ];
 			// [ colorTransform.redOffset / 255, colorTransform.greenOffset / 255, colorTransform.blueOffset / 255, colorTransform.alphaOffset / 255 ]
 
-			#if lime
+			#if (lime || openfl_html5)
 			__vertexBufferContext = context.__context;
 			__vertexBuffer = null;
 
@@ -2154,7 +2166,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function getColorBoundsRect(mask:Int, color:Int, findColor:Bool = true):Rectangle
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		if (!readable) return new Rectangle(0, 0, width, height);
 
 		if (!transparent || ((mask >> 24) & 0xFF) > 0)
@@ -2196,7 +2208,7 @@ class BitmapData implements IBitmapDrawable
 	public function getPixel(x:Int, y:Int):Int
 	{
 		if (!readable) return 0;
-		#if lime
+		#if (lime || openfl_html5)
 		return image.getPixel(x, y, ARGB32);
 		#else
 		return 0;
@@ -2228,7 +2240,7 @@ class BitmapData implements IBitmapDrawable
 	public function getPixel32(x:Int, y:Int):Int
 	{
 		if (!readable) return 0;
-		#if lime
+		#if (lime || openfl_html5)
 		return image.getPixel32(x, y, ARGB32);
 		#else
 		return 0;
@@ -2246,10 +2258,10 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function getPixels(rect:Rectangle):ByteArray
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		if (!readable) return null;
 		if (rect == null) rect = this.rect;
-		var byteArray = ByteArray.fromBytes(image.getPixels(rect.__toLimeRectangle(), ARGB32));
+		var byteArray = ByteArray.fromBytes(image.getPixels(#if openfl_html5 rect #else rect.__toLimeRectangle() #end, ARGB32));
 		// TODO: System endian order
 		byteArray.endian = Endian.BIG_ENDIAN;
 		return byteArray;
@@ -2315,7 +2327,7 @@ class BitmapData implements IBitmapDrawable
 			__textureVersion = -1;
 		}
 
-		#if lime
+		#if (lime || openfl_html5)
 		#if openfl_html5
 		ImageCanvasUtil.sync(image, false);
 		#end
@@ -2582,7 +2594,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public static function loadFromBase64(base64:String, type:String):Future<BitmapData>
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		return Image.loadFromBase64(base64, type).then(function(image)
 		{
 			return Future.withValue(BitmapData.fromImage(image));
@@ -2607,7 +2619,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public static function loadFromBytes(bytes:ByteArray, rawAlpha:ByteArray = null):Future<BitmapData>
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		return Image.loadFromBytes(bytes).then(function(image)
 		{
 			var bitmapData = BitmapData.fromImage(image);
@@ -2635,7 +2647,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public static function loadFromFile(path:String):Future<BitmapData>
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		return Image.loadFromFile(path).then(function(image)
 		{
 			return Future.withValue(BitmapData.fromImage(image));
@@ -2695,10 +2707,10 @@ class BitmapData implements IBitmapDrawable
 	public function merge(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, redMultiplier:UInt, greenMultiplier:UInt, blueMultiplier:UInt,
 			alphaMultiplier:UInt):Void
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		if (!readable || sourceBitmapData == null || !sourceBitmapData.readable || sourceRect == null || destPoint == null) return;
-		image.merge(sourceBitmapData.image, sourceRect.__toLimeRectangle(), destPoint.__toLimeVector2(), redMultiplier, greenMultiplier, blueMultiplier,
-			alphaMultiplier);
+		image.merge(sourceBitmapData.image, #if openfl_html5 sourceRect #else sourceRect.__toLimeRectangle() #end,
+			#if openfl_html5 destPoint #else destPoint.__toLimeVector2() #end, redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier);
 		#end
 	}
 
@@ -2967,7 +2979,7 @@ class BitmapData implements IBitmapDrawable
 	public function setPixel(x:Int, y:Int, color:Int):Void
 	{
 		if (!readable) return;
-		#if lime
+		#if (lime || openfl_html5)
 		image.setPixel(x, y, color, ARGB32);
 		#end
 	}
@@ -3006,7 +3018,7 @@ class BitmapData implements IBitmapDrawable
 	public function setPixel32(x:Int, y:Int, color:Int):Void
 	{
 		if (!readable) return;
-		#if lime
+		#if (lime || openfl_html5)
 		image.setPixel32(x, y, color, ARGB32);
 		#end
 	}
@@ -3037,8 +3049,8 @@ class BitmapData implements IBitmapDrawable
 		var length = (rect.width * rect.height * 4);
 		if (byteArray.bytesAvailable < length) throw new Error("End of file was encountered.", 2030);
 
-		#if lime
-		image.setPixels(rect.__toLimeRectangle(), byteArray, ARGB32, byteArray.endian);
+		#if (lime || openfl_html5)
+		image.setPixels(#if openfl_html5 rect #else rect.__toLimeRectangle() #end, byteArray, ARGB32, byteArray.endian);
 		#end
 	}
 
@@ -3127,9 +3139,9 @@ class BitmapData implements IBitmapDrawable
 			return 0;
 		}
 
-		#if lime
-		return image.threshold(sourceBitmapData.image, sourceRect.__toLimeRectangle(), destPoint.__toLimeVector2(), operation, threshold, color, mask,
-			copySource, ARGB32);
+		#if (lime || openfl_html5)
+		return image.threshold(sourceBitmapData.image, #if openfl_html5 sourceRect #else sourceRect.__toLimeRectangle() #end,
+			#if openfl_html5 destPoint #else destPoint.__toLimeVector2() #end, operation, threshold, color, mask, copySource, ARGB32);
 		#else
 		return 0;
 		#end
@@ -3151,7 +3163,7 @@ class BitmapData implements IBitmapDrawable
 
 	@:noCompletion private function __applyAlpha(alpha:ByteArray):Void
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		#if openfl_html5
 		ImageCanvasUtil.convertToCanvas(image);
 		ImageCanvasUtil.createImageData(image);
@@ -3170,7 +3182,7 @@ class BitmapData implements IBitmapDrawable
 
 	@:noCompletion private inline function __fromBase64(base64:String, type:String):Void
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		var image = Image.fromBase64(base64, type);
 		__fromImage(image);
 		#end
@@ -3178,7 +3190,7 @@ class BitmapData implements IBitmapDrawable
 
 	@:noCompletion private inline function __fromBytes(bytes:ByteArray, rawAlpha:ByteArray = null):Void
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		var image = Image.fromBytes(bytes);
 		__fromImage(image);
 
@@ -3191,16 +3203,16 @@ class BitmapData implements IBitmapDrawable
 
 	@:noCompletion private function __fromFile(path:String):Void
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		var image = Image.fromFile(path);
 		__fromImage(image);
 		#end
 	}
 
 	@SuppressWarnings("checkstyle:Dynamic")
-	@:noCompletion private function __fromImage(image:#if lime Image #else Dynamic #end):Void
+	@:noCompletion private function __fromImage(image:#if (lime || openfl_html5) Image #else Dynamic #end):Void
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		if (image != null && image.buffer != null)
 		{
 			this.image = image;
@@ -3265,7 +3277,7 @@ class BitmapData implements IBitmapDrawable
 	// }
 	@:noCompletion private inline function __loadFromBase64(base64:String, type:String):Future<BitmapData>
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		return Image.loadFromBase64(base64, type).then(function(image)
 		{
 			__fromImage(image);
@@ -3278,7 +3290,7 @@ class BitmapData implements IBitmapDrawable
 
 	@:noCompletion private inline function __loadFromBytes(bytes:ByteArray, rawAlpha:ByteArray = null):Future<BitmapData>
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		return Image.loadFromBytes(bytes).then(function(image)
 		{
 			__fromImage(image);
@@ -3297,7 +3309,7 @@ class BitmapData implements IBitmapDrawable
 
 	@:noCompletion private function __loadFromFile(path:String):Future<BitmapData>
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		return Image.loadFromFile(path).then(function(image)
 		{
 			__fromImage(image);

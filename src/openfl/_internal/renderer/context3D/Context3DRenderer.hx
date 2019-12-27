@@ -4,8 +4,6 @@ package openfl._internal.renderer.context3D;
 #if openfl_gl
 import openfl._internal.backend.gl.ext.KHR_debug;
 import openfl._internal.backend.gl.GL;
-import openfl._internal.backend.gl.WebGLRenderingContext;
-import openfl._internal.backend.lime.RenderContext;
 import openfl._internal.backend.math.ARGB;
 import openfl._internal.renderer.context3D.batcher.BatchRenderer;
 import openfl._internal.renderer.ShaderBuffer;
@@ -35,8 +33,12 @@ import openfl.geom.Rectangle;
 import openfl.media.Video;
 import openfl.text.TextField;
 #if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.RenderContext;
+import openfl._internal.backend.lime_standalone.WebGLRenderContext;
 import openfl.geom.Matrix3D;
 #else
+import openfl._internal.backend.gl.WebGLRenderingContext in WebGLRenderContext;
+import openfl._internal.backend.lime.RenderContext;
 import openfl._internal.backend.math.Matrix4;
 #end
 #if openfl_html5
@@ -111,7 +113,7 @@ class Context3DRenderer extends Context3DRendererAPI
 	private var __displayWidth:Int;
 	private var __flipped:Bool;
 	private var __getMatrixHelperMatrix:Matrix = new Matrix();
-	private var __gl:WebGLRenderingContext;
+	private var __gl:WebGLRenderContext;
 	private var __height:Int;
 	private var __maskShader:Context3DMaskShader;
 	private var __matrix:#if (!lime && openfl_html5) Matrix3D #else Matrix4 #end;
@@ -142,7 +144,12 @@ class Context3DRenderer extends Context3DRendererAPI
 			Graphics.maxTextureWidth = Graphics.maxTextureHeight = __gl.getParameter(GL.MAX_TEXTURE_SIZE);
 		}
 
-		__matrix = new #if (!lime && openfl_html5) Matrix3D #else Matrix4 #end ();
+		__matrix = new
+			#if (!lime && openfl_html5)
+			Matrix3D
+			#else
+			Matrix4
+			#end ();
 
 		__values = new Array();
 
@@ -169,8 +176,18 @@ class Context3DRenderer extends Context3DRendererAPI
 		__clipRects = new Array();
 		__maskObjects = new Array();
 		__numClipRects = 0;
-		__projection = new #if (!lime && openfl_html5) Matrix3D #else Matrix4 #end ();
-		__projectionFlipped = new #if (!lime && openfl_html5) Matrix3D #else Matrix4 #end ();
+		__projection = new
+			#if (!lime && openfl_html5)
+			Matrix3D
+			#else
+			Matrix4
+			#end ();
+		__projectionFlipped = new
+			#if (!lime && openfl_html5)
+			Matrix3D
+			#else
+			Matrix4
+			#end ();
 		__stencilReference = 0;
 		__tempRect = new Rectangle();
 

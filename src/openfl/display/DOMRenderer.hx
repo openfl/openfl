@@ -2,7 +2,11 @@ package openfl.display;
 
 #if !flash
 import openfl._internal.backend.html5.Element;
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.DOMRenderContext;
+#else
 import openfl._internal.backend.lime.DOMRenderContext;
+#end
 
 /**
 	**BETA**
@@ -20,14 +24,14 @@ class DOMRenderer extends DisplayObjectRenderer
 	/**
 		The current HTML5 DOM element
 	**/
-	public var element:#if lime DOMRenderContext #else Dynamic #end;
+	public var element:#if (lime || openfl_html5) DOMRenderContext #else Dynamic #end;
 
 	/**
 		The active pixel ratio used during rendering
 	**/
 	public var pixelRatio(default, null):Float = 1;
 
-	@:noCompletion private function new(element:#if lime DOMRenderContext #else Dynamic #end)
+	@:noCompletion private function new(element:#if (lime || openfl_html5) DOMRenderContext #else Dynamic #end)
 	{
 		super();
 

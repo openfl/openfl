@@ -5,7 +5,6 @@ import openfl._internal.backend.gl.GLFramebuffer;
 import openfl._internal.backend.gl.GLRenderbuffer;
 import openfl._internal.backend.gl.GLTexture;
 import openfl._internal.backend.gl.GL;
-import openfl._internal.backend.lime.RenderContext;
 import openfl._internal.formats.atf.ATFGPUFormat;
 import openfl._internal.renderer.SamplerState;
 import openfl.display.BitmapData;
@@ -15,9 +14,11 @@ import openfl._internal.utils.Log;
 #if (!lime && openfl_html5)
 import openfl._internal.backend.lime_standalone.ImageCanvasUtil;
 import openfl._internal.backend.lime_standalone.Image;
+import openfl._internal.backend.lime_standalone.RenderContext;
 #else
 import openfl._internal.backend.lime.ImageCanvasUtil;
 import openfl._internal.backend.lime.Image;
+import openfl._internal.backend.lime.RenderContext;
 #end
 
 /**
@@ -58,7 +59,7 @@ class TextureBase extends EventDispatcher
 	// private var __outputTextureMemoryUsage:Bool = false;
 	@:noCompletion private var __samplerState:SamplerState;
 	@:noCompletion private var __streamingLevels:Int;
-	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __textureContext:#if lime RenderContext #else Dynamic #end;
+	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __textureContext:#if (lime || openfl_html5) RenderContext #else Dynamic #end;
 	#if openfl_gl
 	@:noCompletion private var __textureID:GLTexture;
 	#end
@@ -386,7 +387,7 @@ class TextureBase extends EventDispatcher
 		return false;
 	}
 
-	#if lime
+	#if (lime || openfl_html5)
 	@:noCompletion private function __uploadFromImage(image:Image):Void
 	{
 		#if openfl_gl

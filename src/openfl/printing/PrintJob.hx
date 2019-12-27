@@ -6,10 +6,14 @@ import openfl._internal.backend.html5.Browser;
 import openfl._internal.backend.html5.DivElement;
 import openfl._internal.backend.html5.Image;
 import openfl._internal.backend.html5.StyleElement;
-import openfl._internal.backend.lime.ImageCanvasUtil;
 import openfl.display.BitmapData;
 import openfl.display.Sprite;
 import openfl.geom.Rectangle;
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.ImageCanvasUtil;
+#else
+import openfl._internal.backend.lime.ImageCanvasUtil;
+#end
 
 /**
 	The PrintJob class lets you create content and print it to one or more

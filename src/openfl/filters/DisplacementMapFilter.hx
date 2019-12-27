@@ -1,8 +1,6 @@
 package openfl.filters;
 
 #if !flash
-import openfl._internal.backend.lime.ImageCanvasUtil;
-import openfl._internal.backend.lime.ImageDataUtil;
 import openfl._internal.backend.math.Vector2;
 import openfl._internal.backend.math.Vector4;
 import openfl.display.BitmapDataChannel;
@@ -11,6 +9,13 @@ import openfl.geom.Point;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.ImageCanvasUtil;
+import openfl._internal.backend.lime_standalone.ImageDataUtil;
+#else
+import openfl._internal.backend.lime.ImageCanvasUtil;
+import openfl._internal.backend.lime.ImageDataUtil;
+#end
 
 /**
 	The DisplacementMapFilter class uses the pixel values from the specified

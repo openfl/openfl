@@ -2,8 +2,6 @@ package openfl.display;
 
 #if !flash
 import haxe.io.Path;
-import openfl._internal.backend.lime.AssetLibrary as LimeAssetLibrary;
-import openfl._internal.backend.lime.AssetManifest;
 import openfl.errors.Error;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
@@ -17,6 +15,13 @@ import openfl.system.LoaderContext;
 import openfl.utils.Assets;
 import openfl.utils.AssetLibrary;
 import openfl.utils.ByteArray;
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.AssetLibrary as LimeAssetLibrary;
+import openfl._internal.backend.lime_standalone.AssetManifest;
+#else
+import openfl._internal.backend.lime.AssetLibrary as LimeAssetLibrary;
+import openfl._internal.backend.lime.AssetManifest;
+#end
 
 using openfl._internal.utils.DisplayObjectLinkedList;
 
@@ -562,11 +567,11 @@ class Loader extends DisplayObjectContainer
 		BitmapData.loadFromBytes(buffer).onComplete(BitmapData_onLoad).onError(BitmapData_onError);
 	}
 
-	public override function removeChild(child:DisplayObject):DisplayObject
-	{
-		throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
-		return null;
-	}
+	// public override function removeChild(child:DisplayObject):DisplayObject
+	// {
+	// 	throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
+	// 	return null;
+	// }
 
 	public override function removeChildAt(index:Int):DisplayObject
 	{
@@ -713,7 +718,6 @@ class Loader extends DisplayObjectContainer
 	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion private function BitmapData_onError(error:Dynamic):Void
 	{
-		trace("bitmap error");
 		// TODO: Dispatch HTTPStatusEvent
 
 		__dispatchError(Std.string(error));
@@ -721,7 +725,6 @@ class Loader extends DisplayObjectContainer
 
 	@:noCompletion private function BitmapData_onLoad(bitmapData:BitmapData):Void
 	{
-		trace("bitmap load");
 		// TODO: Dispatch HTTPStatusEvent
 
 		if (bitmapData == null)
@@ -745,12 +748,11 @@ class Loader extends DisplayObjectContainer
 
 	@:noCompletion private function loader_onComplete(event:Event):Void
 	{
-		trace("on complete");
 		// TODO: Dispatch HTTPStatusEvent
 
 		var loader:URLLoader = cast event.target;
 
-		#if lime
+		#if (lime || openfl_html5)
 		if (contentLoaderInfo.contentType != null && contentLoaderInfo.contentType.indexOf("/json") > -1)
 		{
 			var manifest = AssetManifest.parse(loader.data, Path.directory(__path));

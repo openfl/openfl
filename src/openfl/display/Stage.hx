@@ -1189,7 +1189,7 @@ class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements
 
 	@:noCompletion private function __createRenderer():Void
 	{
-		#if (lime && !display)
+		#if ((lime || openfl_html5) && !display)
 		#if openfl_html5
 		var pixelRatio = 1;
 

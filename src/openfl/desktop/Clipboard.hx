@@ -1,8 +1,12 @@
 package openfl.desktop;
 
 #if !flash
-import openfl._internal.backend.lime.Clipboard as LimeClipboard;
 import openfl.utils.Object;
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.Clipboard as LimeClipboard;
+#else
+import openfl._internal.backend.lime.Clipboard as LimeClipboard;
+#end
 
 /**
 	The Clipboard class provides a container for transferring data and objects

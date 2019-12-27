@@ -2,7 +2,6 @@ package openfl.media;
 
 #if !flash
 import openfl._internal.backend.gl.GLBuffer;
-import openfl._internal.backend.lime.RenderContext;
 import openfl._internal.backend.utils.Float32Array;
 import openfl._internal.backend.utils.UInt16Array;
 import openfl.display3D.textures.RectangleTexture;
@@ -15,6 +14,11 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.net.NetStream;
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.RenderContext;
+#else
+import openfl._internal.backend.lime.RenderContext;
+#end
 
 /**
 	The Video class displays live or recorded video in an application without
@@ -174,7 +178,7 @@ class Video extends DisplayObject
 	@:noCompletion private var __vertexBufferData:Float32Array;
 	@:noCompletion private var __width:Float;
 
-	#if lime
+	#if (lime || openfl_html5)
 	@:noCompletion private var __bufferContext:RenderContext;
 	@:noCompletion private var __indexBufferContext:RenderContext;
 	@:noCompletion private var __vertexBufferContext:RenderContext;

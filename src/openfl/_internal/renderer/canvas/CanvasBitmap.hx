@@ -1,8 +1,12 @@
 package openfl._internal.renderer.canvas;
 
 #if openfl_html5
-import openfl._internal.backend.lime.ImageCanvasUtil;
 import openfl.display.Bitmap;
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.ImageCanvasUtil;
+#else
+import openfl._internal.backend.lime.ImageCanvasUtil;
+#end
 
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)

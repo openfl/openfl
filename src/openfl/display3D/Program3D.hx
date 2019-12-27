@@ -5,7 +5,6 @@ import openfl._internal.backend.gl.GLProgram;
 import openfl._internal.backend.gl.GLShader;
 import openfl._internal.backend.gl.GLUniformLocation;
 import openfl._internal.backend.gl.GL;
-import openfl._internal.backend.lime.BytePointer;
 import openfl._internal.formats.agal.AGALConverter;
 import openfl._internal.renderer.SamplerState;
 import openfl._internal.backend.utils.Float32Array;
@@ -14,6 +13,11 @@ import openfl.display.ShaderParameterType;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
 import openfl.Vector;
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.BytePointer;
+#else
+import openfl._internal.backend.lime.BytePointer;
+#end
 
 /**
 	The Program3D class represents a pair of rendering programs (also called "shaders")
@@ -941,7 +945,7 @@ import openfl.Vector;
 	public var regCount:Int;
 	public var isDirty:Bool;
 	public var context:Context3D;
-	#if lime
+	#if (lime || openfl_html5)
 	public var regDataPointer:BytePointer;
 	#end
 
@@ -951,7 +955,7 @@ import openfl.Vector;
 
 		isDirty = true;
 
-		#if lime
+		#if (lime || openfl_html5)
 		regDataPointer = new BytePointer();
 		#end
 	}

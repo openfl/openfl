@@ -1,13 +1,17 @@
 package openfl.filters;
 
 #if !flash
-import openfl._internal.backend.lime.ImageCanvasUtil;
 import openfl._internal.backend.math.RGBA;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.ImageCanvasUtil;
+#else
+import openfl._internal.backend.lime.ImageCanvasUtil;
+#end
 
 /**
 	The ColorMatrixFilter class lets you apply a 4 x 5 matrix transformation

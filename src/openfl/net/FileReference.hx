@@ -6,13 +6,18 @@ import haxe.Timer;
 import openfl._internal.backend.html5.Browser;
 import openfl._internal.backend.html5.FileReader;
 import openfl._internal.backend.html5.InputElement;
-import openfl._internal.backend.lime.Bytes;
-import openfl._internal.backend.lime.FileDialog;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.IOErrorEvent;
 import openfl.events.ProgressEvent;
 import openfl.utils.ByteArray;
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime.LimeBytes in Bytes;
+import openfl._internal.backend.lime.FileDialog;
+#else
+import openfl._internal.backend.lime.Bytes;
+import openfl._internal.backend.lime.FileDialog;
+#end
 #if sys
 import sys.io.File;
 import sys.FileSystem;

@@ -11,6 +11,11 @@ import openfl.display.Application;
 import openfl.display.MovieClip;
 import openfl.net.URLLoader;
 import openfl.net.URLRequest;
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.System;
+#else
+import openfl._internal.backend.lime.System;
+#end
 
 // #end
 #if !openfl_debug
@@ -214,7 +219,7 @@ import openfl.net.URLRequest;
 	{
 		#if flash
 		return flash.Lib.getTimer();
-		#elseif lime
+		#elseif (lime || openfl_html5)
 		return System.getTimer();
 		#else
 		return 0;
@@ -384,7 +389,7 @@ import openfl.net.URLRequest;
 
 		#if flash
 		return flash.Lib.getURL(request, window);
-		#elseif lime
+		#elseif (lime || openfl_html5)
 		var uri = request.url;
 
 		if (Type.typeof(request.data) == Type.ValueType.TObject)

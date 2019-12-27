@@ -2,9 +2,6 @@ package openfl.text;
 
 #if !flash
 import haxe.Timer;
-import openfl._internal.backend.lime.Clipboard;
-import openfl._internal.backend.lime.KeyCode;
-import openfl._internal.backend.lime.KeyModifier;
 import openfl._internal.backend.html5.DivElement;
 import openfl._internal.formats.html.HTMLParser;
 import openfl._internal.text.TextEngine;
@@ -25,6 +22,15 @@ import openfl.net.URLRequest;
 import openfl.ui.Keyboard;
 import openfl.ui.MouseCursor;
 import openfl.Lib;
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.Clipboard;
+import openfl._internal.backend.lime_standalone.KeyCode;
+import openfl._internal.backend.lime_standalone.KeyModifier;
+#else
+import openfl._internal.backend.lime.Clipboard;
+import openfl._internal.backend.lime.KeyCode;
+import openfl._internal.backend.lime.KeyModifier;
+#end
 
 /**
 	The TextField class is used to create display objects for text display and
@@ -809,7 +815,7 @@ class TextField extends InteractiveObject
 		__offsetY = 0;
 		__mouseWheelEnabled = true;
 		__text = "";
-		
+
 		doubleClickEnabled = true;
 
 		if (__defaultTextFormat == null)
@@ -829,7 +835,7 @@ class TextField extends InteractiveObject
 		addEventListener(FocusEvent.FOCUS_OUT, this_onFocusOut);
 		addEventListener(KeyboardEvent.KEY_DOWN, this_onKeyDown);
 		addEventListener(MouseEvent.MOUSE_WHEEL, this_onMouseWheel);
-		
+
 		addEventListener(MouseEvent.DOUBLE_CLICK, this_onDoubleClick);
 	}
 
@@ -1598,7 +1604,7 @@ class TextField extends InteractiveObject
 	{
 		if (__inputEnabled && stage != null)
 		{
-			#if lime
+			#if (lime || openfl_html5)
 			stage.window.textInputEnabled = false;
 			stage.window.onTextInput.remove(window_onTextInput);
 			stage.window.onKeyDown.remove(window_onKeyDown);
@@ -1639,7 +1645,7 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function __enableInput():Void
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		if (stage != null)
 		{
 			stage.window.textInputEnabled = true;
@@ -2936,7 +2942,8 @@ class TextField extends InteractiveObject
 				}
 				#end
 
-				if (setDirty) {
+				if (setDirty)
+				{
 					__dirty = true;
 					__setRenderDirty();
 				}
@@ -3010,7 +3017,7 @@ class TextField extends InteractiveObject
 		{
 			if (stage != null)
 			{
-				#if lime
+				#if (lime || openfl_html5)
 				stage.window.onTextInput.remove(window_onTextInput);
 				stage.window.onKeyDown.remove(window_onKeyDown);
 				#end
@@ -3066,22 +3073,23 @@ class TextField extends InteractiveObject
 			scrollV -= event.delta;
 		}
 	}
-	
+
 	@:noCompletion private function this_onDoubleClick(event:MouseEvent):Void
 	{
-		if (selectable) {
+		if (selectable)
+		{
 			__updateLayout();
-			
+
 			var delimiters:Array<String> = ['\n', '.', '!', '?', ',', ' ', ';', ':', '(', ')', '-', '_', '/'];
-			
+
 			var txtStr:String = __text;
 			var leftPos:Int = -1;
 			var rightPos:Int = txtStr.length;
 			var pos:Int = 0;
-			var startPos:Int = Std.int( Math.max(__caretIndex, 1) );
+			var startPos:Int = Std.int(Math.max(__caretIndex, 1));
 			if (txtStr.length > 0 && __caretIndex >= 0 && rightPos >= __caretIndex)
 			{
-				for(c in delimiters)
+				for (c in delimiters)
 				{
 					pos = txtStr.lastIndexOf(c, startPos - 1);
 					if (pos > leftPos) leftPos = pos + 1;
@@ -3089,7 +3097,7 @@ class TextField extends InteractiveObject
 					pos = txtStr.indexOf(c, startPos);
 					if (pos < rightPos && pos != -1) rightPos = pos;
 				}
-				
+
 				if (leftPos != rightPos)
 				{
 					setSelection(leftPos, rightPos);
@@ -3105,17 +3113,17 @@ class TextField extends InteractiveObject
 						setDirty = false;
 					}
 					#end
-					if (setDirty) {
+					if (setDirty)
+					{
 						__dirty = true;
 						__setRenderDirty();
 					}
 				}
 			}
 		}
-		
 	}
 
-	#if lime
+	#if (lime || openfl_html5)
 	@:noCompletion private function window_onKeyDown(key:KeyCode, modifier:KeyModifier):Void
 	{
 		switch (key)
@@ -3295,7 +3303,7 @@ class TextField extends InteractiveObject
 				__startCursorTimer();
 
 			case C:
-				#if lime
+				#if (lime || openfl_html5)
 				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end)
 				{
 					if (__caretIndex != __selectionIndex)
@@ -3306,7 +3314,7 @@ class TextField extends InteractiveObject
 				#end
 
 			case X:
-				#if lime
+				#if (lime || openfl_html5)
 				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end)
 				{
 					if (__caretIndex != __selectionIndex)
@@ -3321,7 +3329,7 @@ class TextField extends InteractiveObject
 
 			#if !js
 			case V:
-				#if lime
+				#if (lime || openfl_html5)
 				if (#if mac modifier.metaKey #else modifier.ctrlKey #end)
 				{
 					if (Clipboard.text != null)

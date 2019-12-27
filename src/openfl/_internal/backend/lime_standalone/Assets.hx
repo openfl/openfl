@@ -6,7 +6,6 @@ import haxe.CallStack;
 import haxe.Unserializer;
 import openfl._internal.utils.Log;
 import openfl.text.Font;
-import openfl.utils.AssetCache;
 import openfl.utils.Future;
 import openfl.utils.Promise;
 #if !macro

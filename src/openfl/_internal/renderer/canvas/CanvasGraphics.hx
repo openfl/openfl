@@ -6,7 +6,6 @@ import openfl._internal.backend.html5.CanvasPattern;
 import openfl._internal.backend.html5.CanvasRenderingContext2D;
 import openfl._internal.backend.html5.CanvasWindingRule;
 import openfl._internal.backend.html5.Browser;
-import openfl._internal.backend.lime.ImageCanvasUtil;
 import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.DrawCommandReader;
 import openfl.display.BitmapData;
@@ -19,6 +18,11 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.Vector;
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.ImageCanvasUtil;
+#else
+import openfl._internal.backend.lime.ImageCanvasUtil;
+#end
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.BitmapData)
