@@ -117,17 +117,20 @@ import openfl._internal.backend.howlerjs.Howl;
 
 			#if lime
 			__source = new AudioSource(sound.__buffer);
-			source.offset = Std.int(sound.startTime);
-			if (sound.loops > 1) source.loops = sound.loops - 1;
+			__source.offset = Std.int(startTime);
+			if (loops > 1) __source.loops = loops - 1;
 
-			source.gain = volume;
+			__source.gain = volume;
 
-			var position = source.position;
+			var position = __source.position;
 			position.x = pan;
 			position.z = -1 * Math.sqrt(1 - Math.pow(pan, 2));
-			source.position = position;
+			__source.position = position;
 
-			return new SoundChannel(source, sndTransform);
+			__source.onComplete.add(soundChannel_onComplete);
+			__isValid = true;
+
+			__source.play();
 			#elseif openfl_html5
 			__srcHowl = sound.__srcHowl;
 
