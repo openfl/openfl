@@ -9,12 +9,11 @@ import openfl.events.IOErrorEvent;
 import openfl.net.URLRequest;
 import openfl.utils.ByteArray;
 import openfl.utils.Future;
-#if (!lime && openfl_html5)
-import openfl._internal.backend.lime_standalone.AudioBuffer;
-import openfl._internal.backend.lime_standalone.AudioSource;
-#else
+#if lime
 import openfl._internal.backend.lime.AudioBuffer;
 import openfl._internal.backend.lime.AudioSource;
+#elseif openfl_html5
+import openfl._internal.backend.howlerjs.Howl;
 #end
 
 /**
@@ -231,8 +230,10 @@ class Sound extends EventDispatcher
 	**/
 	public var url(default, null):String;
 
-	#if (lime || openfl_html5)
+	#if lime
 	@:noCompletion private var __buffer:AudioBuffer;
+	#elseif openfl_html5
+	@:noCompletion private var __srcHowl:Howl;
 	#end
 
 	#if openfljs
@@ -326,15 +327,14 @@ class Sound extends EventDispatcher
 	// @:noCompletion @:dox(hide) @:require(flash10) public function extract (target:ByteArray, length:Float, startPosition:Float = -1):Float;
 	#end
 
-	#if (lime || openfl_html5)
+	#if lime
 	/**
 		Creates a new Sound from an AudioBuffer immediately.
 
 		@param	buffer	An AudioBuffer instance
 		@returns	A new Sound
 	**/
-	#if (!lime && openfl_html5) @:noCompletion
-	@:dox(hide) #end public static function fromAudioBuffer(buffer:AudioBuffer):Sound
+	@:dox(hide) public static function fromAudioBuffer(buffer:AudioBuffer):Sound
 	{
 		var sound = new Sound();
 		sound.__buffer = buffer;
@@ -357,8 +357,14 @@ class Sound extends EventDispatcher
 	**/
 	public static function fromFile(path:String):Sound
 	{
-		#if (lime || openfl_html5)
+		if (path == null) return null;
+
+		#if lime
 		return fromAudioBuffer(AudioBuffer.fromFile(path));
+		#elseif openfl_html5
+		var sound = new Sound();
+		sound.__srcHowl = new Howl({src: [path], #if force_html5_audio html5: true, #end preload: false});
+		return sound;
 		#else
 		return null;
 		#end
@@ -441,7 +447,7 @@ class Sound extends EventDispatcher
 	{
 		url = stream.url;
 
-		#if (lime || openfl_html5)
+		#if lime
 		#if openfl_html5
 		var defaultLibrary = lime.utils.Assets.getLibrary("default"); // TODO: Improve this
 
@@ -462,6 +468,26 @@ class Sound extends EventDispatcher
 			AudioBuffer_onURLLoad(null);
 		});
 		#end
+		#elseif openfl_html5
+		if (path != null)
+		{
+			__srcHowl = new Howl({src: [path], #if force_html5_audio html5: true, #end preload: false});
+
+			__srcHowl.on("load", function()
+			{
+				dispatchEvent(new Event(Event.COMPLETE));
+			});
+
+			__srcHowl.on("loaderror", function(id, msg)
+			{
+				__srcHowl = null;
+				dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+			});
+		}
+		else
+		{
+			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+		}
 		#end
 	}
 
@@ -476,7 +502,6 @@ class Sound extends EventDispatcher
 	**/
 	public function loadCompressedDataFromByteArray(bytes:ByteArray, bytesLength:Int):Void
 	{
-		#if (lime || openfl_html5)
 		if (bytes == null || bytesLength <= 0)
 		{
 			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
@@ -490,9 +515,13 @@ class Sound extends EventDispatcher
 			bytes = copy;
 		}
 
+		#if lime
 		__buffer = AudioBuffer.fromBytes(bytes);
+		#elseif openfl_html5
+		__srcHowl = new Howl({src: ["data:" + __getCodec(bytes) + ";base64," + Base64.encode(bytes)], html5: true, preload: false});
+		#end
 
-		if (__buffer == null)
+		if (#if lime __buffer == null #elseif openfl_html5 false #else true #end)
 		{
 			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
 		}
@@ -500,7 +529,6 @@ class Sound extends EventDispatcher
 		{
 			dispatchEvent(new Event(Event.COMPLETE));
 		}
-		#end
 	}
 
 	/**
@@ -515,11 +543,13 @@ class Sound extends EventDispatcher
 	**/
 	public static function loadFromFile(path:String):Future<Sound>
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		return AudioBuffer.loadFromFile(path).then(function(audioBuffer)
 		{
 			return Future.withValue(fromAudioBuffer(audioBuffer));
 		});
+		#elseif openfl_html5
+		return loadFromFiles([path]);
 		#else
 		return cast Future.withError("Cannot load audio file");
 		#end
@@ -538,11 +568,31 @@ class Sound extends EventDispatcher
 	**/
 	public static function loadFromFiles(paths:Array<String>):Future<Sound>
 	{
-		#if (lime || openfl_html5)
+		if (paths == null) return cast Future.withError("");
+
+		#if lime
 		return AudioBuffer.loadFromFiles(paths).then(function(audioBuffer)
 		{
 			return Future.withValue(fromAudioBuffer(audioBuffer));
 		});
+		#elseif openfl_html5
+		var sound = new Sound();
+		sound.__srcHowl = new Howl({src: paths, #if force_html5_audio html5: true, #end preload: false});
+		var promise = new Promise<Sound>();
+
+		sound.__srcHowl.on("load", function()
+		{
+			promise.complete(sound);
+		});
+
+		sound.__srcHowl.on("loaderror", function(id, msg)
+		{
+			sound.__srcHowl = null;
+			promise.error(msg);
+		});
+
+		sound.__srcHowl.load();
+		return promise.future;
 		#else
 		return cast Future.withError("Cannot load audio file");
 		#end
@@ -586,19 +636,19 @@ class Sound extends EventDispatcher
 			bytes = copy;
 		}
 
-		#if (lime || openfl_html5)
+		#if lime
 		var audioBuffer = new AudioBuffer();
 		audioBuffer.bitsPerSample = bitsPerSample;
 		audioBuffer.channels = channels;
-		#if (lime || !openfl_html5)
-		// TODO
 		audioBuffer.data = new UInt8Array(bytes);
-		#end
 		audioBuffer.sampleRate = Std.int(sampleRate);
 
 		__buffer = audioBuffer;
 
 		dispatchEvent(new Event(Event.COMPLETE));
+		#elseif openfl_html5
+		// TODO
+		dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
 		#else
 		dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
 		#end
@@ -624,43 +674,20 @@ class Sound extends EventDispatcher
 	**/
 	public function play(startTime:Float = 0.0, loops:Int = 0, sndTransform:SoundTransform = null):SoundChannel
 	{
-		#if (lime || openfl_html5)
-		if (__buffer == null || SoundMixer.__soundChannels.length >= SoundMixer.MAX_ACTIVE_CHANNELS)
+		#if lime
+		if (__buffer == null) return null;
+		#elseif openfl_html5
+		if (__srcHowl == null) return null;
+		#else
+		return null;
+		#end
+
+		if (SoundMixer.__soundChannels.length >= SoundMixer.MAX_ACTIVE_CHANNELS)
 		{
 			return null;
 		}
 
-		if (sndTransform == null)
-		{
-			sndTransform = new SoundTransform();
-		}
-		else
-		{
-			sndTransform = sndTransform.clone();
-		}
-
-		var pan = SoundMixer.__soundTransform.pan + sndTransform.pan;
-
-		if (pan > 1) pan = 1;
-		if (pan < -1) pan = -1;
-
-		var volume = SoundMixer.__soundTransform.volume * sndTransform.volume;
-
-		var source = new AudioSource(__buffer);
-		source.offset = Std.int(startTime);
-		if (loops > 1) source.loops = loops - 1;
-
-		source.gain = volume;
-
-		var position = source.position;
-		position.x = pan;
-		position.z = -1 * Math.sqrt(1 - Math.pow(pan, 2));
-		source.position = position;
-
-		return new SoundChannel(source, sndTransform);
-		#else
-		return null;
-		#end
+		return new SoundChannel(this, startTime, loops, sndTransform);
 	}
 
 	// Get & Set Methods
@@ -671,7 +698,7 @@ class Sound extends EventDispatcher
 
 	@:noCompletion private function get_length():Int
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		if (__buffer != null)
 		{
 			#if (openfl_html5 && howlerjs)
@@ -693,13 +720,18 @@ class Sound extends EventDispatcher
 			}
 			#end
 		}
+		#elseif openfl_html5
+		if (__srcHowl != null)
+		{
+			return Std.int(__srcHowl.duration() * 1000);
+		}
 		#end
 
 		return 0;
 	}
 
 	// Event Handlers
-	#if (lime || openfl_html5)
+	#if lime
 	@:noCompletion private function AudioBuffer_onURLLoad(buffer:AudioBuffer):Void
 	{
 		if (buffer == null)

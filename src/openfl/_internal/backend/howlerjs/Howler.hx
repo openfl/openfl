@@ -1,5 +1,6 @@
-package openfl._internal.backend.lime_standalone; #if openfl_html5
+package openfl._internal.backend.howlerjs;
 
+#if openfl_html5
 import haxe.extern.EitherType;
 import js.html.audio.AudioContext;
 import js.html.audio.GainNode;
