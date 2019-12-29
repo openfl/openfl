@@ -131,6 +131,7 @@ class Accelerometer extends EventDispatcher
 
 	@:noCompletion private static function initialize():Void
 	{
+		#if (lime || openfl_html5)
 		if (!initialized)
 		{
 			var sensors = Sensor.getSensors(SensorType.ACCELEROMETER);
@@ -143,6 +144,7 @@ class Accelerometer extends EventDispatcher
 
 			initialized = true;
 		}
+		#end
 	}
 
 	/**

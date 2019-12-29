@@ -54,7 +54,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function uploadFromBitmapData(source:BitmapData):Void
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		if (source == null) return;
 
 		var image = __getImage(source);

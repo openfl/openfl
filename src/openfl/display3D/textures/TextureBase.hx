@@ -254,6 +254,7 @@ class TextureBase extends EventDispatcher
 	}
 	#end
 
+	#if (lime || openfl_html5)
 	@:noCompletion private function __getImage(bitmapData:BitmapData):Image
 	{
 		var image = bitmapData.image;
@@ -305,6 +306,7 @@ class TextureBase extends EventDispatcher
 
 		return image;
 	}
+	#end
 
 	#if openfl_gl
 	@:noCompletion private function __getTexture():GLTexture

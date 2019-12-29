@@ -592,6 +592,7 @@ import sys.io.Process;
 
 	@:noCompletion private static function get_language():String
 	{
+		#if (lime || openfl_html5)
 		var language = Locale.currentLocale.language;
 
 		if (language != null)
@@ -623,6 +624,7 @@ import sys.io.Process;
 					return "xu";
 			}
 		}
+		#end
 
 		return "en";
 	}
@@ -659,9 +661,11 @@ import sys.io.Process;
 		if (kernelVersion != "") return "Linux " + kernelVersion;
 		else
 			return "Linux";
-		#else
+		#elseif (lime || openfl_html5)
 		var label = System.platformLabel;
 		return label != null ? label : "";
+		#else
+		return "Unknown";
 		#end
 	}
 

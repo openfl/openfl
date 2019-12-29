@@ -149,6 +149,7 @@ import openfl._internal.backend.lime.ImageCanvasUtil;
 	@:noCompletion private override function __applyFilter(destBitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle,
 			destPoint:Point):BitmapData
 	{
+		#if (lime || openfl_html5)
 		var sourceImage = sourceBitmapData.image;
 		var image = destBitmapData.image;
 
@@ -211,6 +212,7 @@ import openfl._internal.backend.lime.ImageCanvasUtil;
 		}
 
 		destBitmapData.image.dirty = true;
+		#end
 		return destBitmapData;
 	}
 

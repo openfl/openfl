@@ -239,6 +239,7 @@ import openfl.geom.Rectangle;
 	@:noCompletion private override function __applyFilter(bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle,
 			destPoint:Point):BitmapData
 	{
+		#if (lime || openfl_html5)
 		// TODO: Support knockout, inner
 
 		var r = (__color >> 16) & 0xFF;
@@ -259,6 +260,7 @@ import openfl.geom.Rectangle;
 		finalImage.colorTransform(finalImage.rect, new ColorTransform(0, 0, 0, __alpha, r, g, b, 0).__toLimeColorMatrix());
 
 		if (finalImage == bitmapData.image) return bitmapData;
+		#end
 		return sourceBitmapData;
 	}
 

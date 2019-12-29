@@ -149,11 +149,13 @@ class Clipboard
 	**/
 	public function clear():Void
 	{
+		#if (lime || openfl_html5)
 		if (__systemClipboard)
 		{
 			LimeClipboard.text = null;
 			return;
 		}
+		#end
 
 		__htmlText = null;
 		__richText = null;
@@ -174,6 +176,7 @@ class Clipboard
 	**/
 	public function clearData(format:ClipboardFormats):Void
 	{
+		#if (lime || openfl_html5)
 		if (__systemClipboard)
 		{
 			switch (format)
@@ -186,6 +189,7 @@ class Clipboard
 
 			return;
 		}
+		#end
 
 		switch (format)
 		{
@@ -252,6 +256,7 @@ class Clipboard
 			transferMode = ORIGINAL_PREFERRED;
 		}
 
+		#if (lime || openfl_html5)
 		if (__systemClipboard)
 		{
 			return switch (format)
@@ -260,6 +265,7 @@ class Clipboard
 				default: null;
 			}
 		}
+		#end
 
 		return switch (format)
 		{
@@ -285,6 +291,7 @@ class Clipboard
 	**/
 	public function hasFormat(format:ClipboardFormats):Bool
 	{
+		#if (lime || openfl_html5)
 		if (__systemClipboard)
 		{
 			return switch (format)
@@ -293,6 +300,7 @@ class Clipboard
 				default: false;
 			}
 		}
+		#end
 
 		return switch (format)
 		{
@@ -390,6 +398,7 @@ class Clipboard
 	**/
 	public function setData(format:ClipboardFormats, data:Object, serializable:Bool = true):Bool
 	{
+		#if (lime || openfl_html5)
 		if (__systemClipboard)
 		{
 			switch (format)
@@ -402,6 +411,7 @@ class Clipboard
 					return false;
 			}
 		}
+		#end
 
 		switch (format)
 		{

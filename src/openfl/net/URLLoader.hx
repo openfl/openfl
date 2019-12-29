@@ -290,7 +290,7 @@ class URLLoader extends EventDispatcher
 	**/
 	public function load(request:URLRequest):Void
 	{
-		#if !macro
+		#if (!macro && (lime || openfl_html5))
 		if (dataFormat == BINARY)
 		{
 			var httpRequest = new HTTPRequest<ByteArray>();
@@ -352,6 +352,7 @@ class URLLoader extends EventDispatcher
 	@:noCompletion private function __prepareRequest(httpRequest:#if (!lime || display || macro || doc_gen) Dynamic #else _IHTTPRequest #end,
 			request:URLRequest):Void
 	{
+		#if (lime || openfl_html5)
 		__httpRequest = httpRequest;
 		__httpRequest.uri = request.url;
 		__httpRequest.method = request.method;
@@ -397,6 +398,7 @@ class URLLoader extends EventDispatcher
 
 		__httpRequest.userAgent = request.userAgent;
 		__httpRequest.enableResponseHeaders = true;
+		#end
 	}
 
 	// Event Handlers

@@ -250,7 +250,9 @@ import cpp.vm.Gc;
 	**/
 	public static function setClipboard(string:String):Void
 	{
+		#if (lime || openfl_html5)
 		Clipboard.text = string;
+		#end
 	}
 
 	// Getters & Setters
