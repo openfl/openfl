@@ -140,13 +140,10 @@ class BitmapData implements IBitmapDrawable
 	@:noCompletion private static var __supportsBGRA:Null<Bool> = null;
 	@:noCompletion private static var __textureFormat:Int;
 	@:noCompletion private static var __textureInternalFormat:Int;
-	#if (lime || openfl_html5)
-	@:noCompletion private static var __tempVector:#if openfl_html5 Point #else Vector2 #end = new
-		#if openfl_html5
-		Point
-		#else
-		Vector2
-		#end ();
+	#if (!lime && openfl_html5)
+	@:noCompletion private static var __tempVector:Point = new Point();
+	#elseif lime
+	@:noCompletion private static var __tempVector:Vector2 = new Vector2();
 	#end
 
 	/**
@@ -466,7 +463,7 @@ class BitmapData implements IBitmapDrawable
 		if (!readable) return;
 
 		#if (lime || openfl_html5)
-		image.colorTransform(#if openfl_html5 rect #else rect.__toLimeRectangle() #end, colorTransform.__toLimeColorMatrix());
+		image.colorTransform(#if (!lime && openfl_html5) rect #else rect.__toLimeRectangle() #end, colorTransform.__toLimeColorMatrix());
 		#end
 	}
 
@@ -670,8 +667,8 @@ class BitmapData implements IBitmapDrawable
 			default: return;
 		}
 
-		image.copyChannel(sourceBitmapData.image, #if openfl_html5 sourceRect #else sourceRect.__toLimeRectangle() #end,
-			#if openfl_html5 destPoint #else destPoint.__toLimeVector2() #end, sourceChannel, destChannel);
+		image.copyChannel(sourceBitmapData.image, #if (!lime && openfl_html5) sourceRect #else sourceRect.__toLimeRectangle() #end,
+			#if (!lime && openfl_html5) destPoint #else destPoint.__toLimeVector2() #end, sourceChannel, destChannel);
 		#end
 	}
 
@@ -758,8 +755,8 @@ class BitmapData implements IBitmapDrawable
 				Std.int(point.y + image.offsetY), Std.int(rect.width), Std.int(rect.height));
 
 			// TODO: Render directly for mergeAlpha=false?
-			image.copyPixels(copy.image, #if openfl_html5 copy.rect #else copy.rect.__toLimeRectangle() #end,
-				#if openfl_html5 destPoint #else destPoint.__toLimeVector2() #end, null, null, mergeAlpha);
+			image.copyPixels(copy.image, #if (!lime && openfl_html5) copy.rect #else copy.rect.__toLimeRectangle() #end,
+				#if (!lime && openfl_html5) destPoint #else destPoint.__toLimeVector2() #end, null, null, mergeAlpha);
 
 			BitmapData.__pool.release(copy);
 			Rectangle.__pool.release(rect);
@@ -775,8 +772,8 @@ class BitmapData implements IBitmapDrawable
 			__tempVector.y = alphaPoint.y;
 		}
 
-		image.copyPixels(sourceBitmapData.image, #if openfl_html5 sourceRect #else sourceRect.__toLimeRectangle() #end,
-			#if openfl_html5 destPoint #else destPoint.__toLimeVector2() #end, alphaBitmapData != null ? alphaBitmapData.image : null,
+		image.copyPixels(sourceBitmapData.image, #if (!lime && openfl_html5) sourceRect #else sourceRect.__toLimeRectangle() #end,
+			#if (!lime && openfl_html5) destPoint #else destPoint.__toLimeVector2() #end, alphaBitmapData != null ? alphaBitmapData.image : null,
 			alphaPoint != null ? __tempVector : null, mergeAlpha);
 		#end
 	}
@@ -1206,7 +1203,7 @@ class BitmapData implements IBitmapDrawable
 		}
 		else if (readable)
 		{
-			image.fillRect(#if openfl_html5 rect #else rect.__toLimeRectangle() #end, color, ARGB32);
+			image.fillRect(#if (!lime && openfl_html5) rect #else rect.__toLimeRectangle() #end, color, ARGB32);
 		}
 		#end
 	}
@@ -2261,7 +2258,7 @@ class BitmapData implements IBitmapDrawable
 		#if (lime || openfl_html5)
 		if (!readable) return null;
 		if (rect == null) rect = this.rect;
-		var byteArray = ByteArray.fromBytes(image.getPixels(#if openfl_html5 rect #else rect.__toLimeRectangle() #end, ARGB32));
+		var byteArray = ByteArray.fromBytes(image.getPixels(#if (!lime && openfl_html5) rect #else rect.__toLimeRectangle() #end, ARGB32));
 		// TODO: System endian order
 		byteArray.endian = Endian.BIG_ENDIAN;
 		return byteArray;
@@ -2709,8 +2706,8 @@ class BitmapData implements IBitmapDrawable
 	{
 		#if (lime || openfl_html5)
 		if (!readable || sourceBitmapData == null || !sourceBitmapData.readable || sourceRect == null || destPoint == null) return;
-		image.merge(sourceBitmapData.image, #if openfl_html5 sourceRect #else sourceRect.__toLimeRectangle() #end,
-			#if openfl_html5 destPoint #else destPoint.__toLimeVector2() #end, redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier);
+		image.merge(sourceBitmapData.image, #if (!lime && openfl_html5) sourceRect #else sourceRect.__toLimeRectangle() #end,
+			#if (!lime && openfl_html5) destPoint #else destPoint.__toLimeVector2() #end, redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier);
 		#end
 	}
 
@@ -3050,7 +3047,7 @@ class BitmapData implements IBitmapDrawable
 		if (byteArray.bytesAvailable < length) throw new Error("End of file was encountered.", 2030);
 
 		#if (lime || openfl_html5)
-		image.setPixels(#if openfl_html5 rect #else rect.__toLimeRectangle() #end, byteArray, ARGB32, byteArray.endian);
+		image.setPixels(#if (!lime && openfl_html5) rect #else rect.__toLimeRectangle() #end, byteArray, ARGB32, byteArray.endian);
 		#end
 	}
 
@@ -3140,8 +3137,8 @@ class BitmapData implements IBitmapDrawable
 		}
 
 		#if (lime || openfl_html5)
-		return image.threshold(sourceBitmapData.image, #if openfl_html5 sourceRect #else sourceRect.__toLimeRectangle() #end,
-			#if openfl_html5 destPoint #else destPoint.__toLimeVector2() #end, operation, threshold, color, mask, copySource, ARGB32);
+		return image.threshold(sourceBitmapData.image, #if (!lime && openfl_html5) sourceRect #else sourceRect.__toLimeRectangle() #end,
+			#if (!lime && openfl_html5) destPoint #else destPoint.__toLimeVector2() #end, operation, threshold, color, mask, copySource, ARGB32);
 		#else
 		return 0;
 		#end
