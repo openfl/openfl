@@ -2,11 +2,16 @@ package openfl._internal.renderer.dom;
 
 #if openfl_html5
 import openfl._internal.backend.html5.Browser;
-import openfl._internal.backend.lime.ImageCanvasUtil;
 import openfl._internal.renderer.dom.DOMRenderer;
 import openfl.display.Bitmap;
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.ImageCanvasUtil;
+#else
+import openfl._internal.backend.lime.ImageCanvasUtil;
+#end
 
 @:access(lime.graphics.ImageBuffer)
+@:access(openfl._internal.backend.lime_standalone.ImageBuffer)
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)
 @SuppressWarnings("checkstyle:FieldDocComment")

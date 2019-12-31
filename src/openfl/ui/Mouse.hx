@@ -1,8 +1,13 @@
 package openfl.ui;
 
 #if !flash
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.Application;
+import openfl._internal.backend.lime_standalone.MouseCursor as LimeMouseCursor;
+#else
 import openfl._internal.backend.lime.Application;
 import openfl._internal.backend.lime.MouseCursor as LimeMouseCursor;
+#end
 
 /**
 	The methods of the Mouse class are used to hide and show the mouse pointer,
@@ -94,7 +99,7 @@ import openfl._internal.backend.lime.MouseCursor as LimeMouseCursor;
 	{
 		__hidden = true;
 
-		#if lime
+		#if (lime || openfl_html5)
 		for (window in Application.current.windows)
 		{
 			window.cursor = null;
@@ -149,7 +154,7 @@ import openfl._internal.backend.lime.MouseCursor as LimeMouseCursor;
 	{
 		if (value == null) value = AUTO;
 
-		#if lime
+		#if (lime || openfl_html5)
 		var setCursor:LimeMouseCursor = null;
 
 		switch (value)

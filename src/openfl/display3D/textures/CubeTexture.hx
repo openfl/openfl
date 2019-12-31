@@ -145,7 +145,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function uploadFromBitmapData(source:BitmapData, side:UInt, miplevel:UInt = 0, generateMipmap:Bool = false):Void
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		if (source == null) return;
 		var size = __size >> miplevel;
 		if (size == 0) return;
@@ -171,9 +171,9 @@ import openfl.utils.ByteArray;
 			__uploadedSides |= 1 << side;
 			return;
 		}
-		#end
 
 		uploadFromTypedArray(image.data, side, miplevel);
+		#end
 		#end
 	}
 

@@ -1,8 +1,13 @@
 package openfl.system;
 
 #if !flash
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.Clipboard;
+import openfl._internal.backend.lime_standalone.System as LimeSystem;
+#else
 import openfl._internal.backend.lime.Clipboard;
 import openfl._internal.backend.lime.System as LimeSystem;
+#end
 #if neko
 import neko.vm.Gc;
 #elseif cpp
@@ -245,7 +250,7 @@ import cpp.vm.Gc;
 	**/
 	public static function setClipboard(string:String):Void
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		Clipboard.text = string;
 		#end
 	}

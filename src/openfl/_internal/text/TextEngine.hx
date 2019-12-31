@@ -270,14 +270,14 @@ class TextEngine
 			ascent = format.size * format.__ascent;
 			descent = format.size * format.__descent;
 		}
-		else if (#if lime font != null && font.unitsPerEM != 0 #else false #end)
+		else if (#if (lime || openfl_html5) font != null && font.unitsPerEM != 0 #else false #end)
 		{
-			#if lime
+			#if (lime || openfl_html5)
 			ascent = (font.ascender / font.unitsPerEM) * format.size;
 			descent = Math.abs((font.descender / font.unitsPerEM) * format.size);
 			#else
-			ascent = format.size;
-			descent = format.size * 0.185;
+			ascent = 0;
+			descent = 0;
 			#end
 		}
 		else
@@ -651,14 +651,14 @@ class TextEngine
 				ascent = currentFormat.size * currentFormat.__ascent;
 				descent = currentFormat.size * currentFormat.__descent;
 			}
-			else if (#if lime font != null && font.unitsPerEM != 0 #else false #end)
+			else if (#if (lime || openfl_html) font != null && font.unitsPerEM != 0 #else false #end)
 			{
-				#if lime
+				#if (lime || openfl_html5)
 				ascent = (font.ascender / font.unitsPerEM) * currentFormat.size;
 				descent = Math.abs((font.descender / font.unitsPerEM) * currentFormat.size);
 				#else
-				ascent = currentFormat.size;
-				descent = currentFormat.size * 0.185;
+				ascent = 0;
+				descent = 0;
 				#end
 			}
 			else
@@ -956,9 +956,9 @@ class TextEngine
 				ascent = currentFormat.size * currentFormat.__ascent;
 				descent = currentFormat.size * currentFormat.__descent;
 			}
-			else if (#if lime font != null && font.unitsPerEM != 0 #else false #end)
+			else if (#if (lime || openfl_html5) font != null && font.unitsPerEM != 0 #else false #end)
 			{
-				#if lime
+				#if (lime || openfl_html5)
 				ascent = (font.ascender / font.unitsPerEM) * currentFormat.size;
 				descent = Math.abs((font.descender / font.unitsPerEM) * currentFormat.size);
 				#end

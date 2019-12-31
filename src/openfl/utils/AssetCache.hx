@@ -1,9 +1,13 @@
 package openfl.utils;
 
-import openfl._internal.backend.lime.Assets as LimeAssets;
 import openfl.display.BitmapData;
 import openfl.media.Sound;
 import openfl.text.Font;
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.Assets as LimeAssets;
+#else
+import openfl._internal.backend.lime.Assets as LimeAssets;
+#end
 
 /**
 	The AssetCache class is the default cache implementation used
@@ -191,7 +195,7 @@ class AssetCache implements IAssetCache
 	**/
 	public function removeBitmapData(id:String):Bool
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		LimeAssets.cache.image.remove(id);
 		#end
 		return bitmapData.remove(id);
@@ -205,7 +209,7 @@ class AssetCache implements IAssetCache
 	**/
 	public function removeFont(id:String):Bool
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		LimeAssets.cache.font.remove(id);
 		#end
 		return font.remove(id);
@@ -219,7 +223,7 @@ class AssetCache implements IAssetCache
 	**/
 	public function removeSound(id:String):Bool
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		LimeAssets.cache.audio.remove(id);
 		#end
 		return sound.remove(id);

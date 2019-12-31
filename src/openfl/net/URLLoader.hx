@@ -2,8 +2,6 @@ package openfl.net;
 
 #if !flash
 import haxe.io.Bytes;
-// import openfl._internal.backend.lime.HTTPRequest;
-import openfl._internal.backend.lime.HTTPRequestHeader;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.HTTPStatusEvent;
@@ -11,10 +9,16 @@ import openfl.events.IOErrorEvent;
 import openfl.events.ProgressEvent;
 import openfl.events.SecurityErrorEvent;
 import openfl.utils.ByteArray;
-#if lime
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.HTTPRequest;
+import openfl._internal.backend.lime_standalone.HTTPRequestHeader;
+#elseif lime
 import lime.net.HTTPRequest;
+// import openfl._internal.backend.lime.HTTPRequest;
+import openfl._internal.backend.lime.HTTPRequestHeader;
 #else
-typedef HTTPRequest = Dynamic;
+import openfl._internal.backend.lime.HTTPRequest;
+import openfl._internal.backend.lime.HTTPRequestHeader;
 #end
 
 /**
@@ -286,7 +290,7 @@ class URLLoader extends EventDispatcher
 	**/
 	public function load(request:URLRequest):Void
 	{
-		#if (lime && !macro)
+		#if (!macro && (lime || openfl_html5))
 		if (dataFormat == BINARY)
 		{
 			var httpRequest = new HTTPRequest<ByteArray>();
@@ -348,7 +352,7 @@ class URLLoader extends EventDispatcher
 	@:noCompletion private function __prepareRequest(httpRequest:#if (!lime || display || macro || doc_gen) Dynamic #else _IHTTPRequest #end,
 			request:URLRequest):Void
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		__httpRequest = httpRequest;
 		__httpRequest.uri = request.url;
 		__httpRequest.method = request.method;

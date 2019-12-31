@@ -2,12 +2,16 @@ package openfl.filters;
 
 import haxe.Timer;
 #if !flash
-import openfl._internal.backend.lime.ImageDataUtil;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.ImageDataUtil;
+#else
+import openfl._internal.backend.lime.ImageDataUtil;
+#end
 
 /**
 	The BlurFilter class lets you apply a blur visual effect to display
@@ -174,7 +178,7 @@ import openfl.geom.Rectangle;
 	@:noCompletion private override function __applyFilter(bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle,
 			destPoint:Point):BitmapData
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		var time = Timer.stamp();
 		var finalImage = ImageDataUtil.gaussianBlur(bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle(), destPoint.__toLimeVector2(),
 			__blurX, __blurY, __quality);

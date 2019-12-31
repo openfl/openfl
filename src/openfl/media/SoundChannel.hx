@@ -1,9 +1,13 @@
 package openfl.media;
 
 #if !flash
-import openfl._internal.backend.lime.AudioSource;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
+#if lime
+import openfl._internal.backend.lime.AudioSource;
+#elseif openfl_html5
+import openfl._internal.backend.howlerjs.Howl;
+#end
 
 /**
 	The SoundChannel class controls a sound in an application. Every sound is
@@ -19,6 +23,7 @@ import openfl.events.EventDispatcher;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@:access(openfl.media.Sound)
 @:access(openfl.media.SoundMixer)
 @:final @:keep class SoundChannel extends EventDispatcher
 {
@@ -58,8 +63,12 @@ import openfl.events.EventDispatcher;
 
 	@:noCompletion private var __isValid:Bool;
 	@:noCompletion private var __soundTransform:SoundTransform;
+
 	#if lime
 	@:noCompletion private var __source:AudioSource;
+	#elseif openfl_html5
+	@:noCompletion private var __howlID:Int;
+	@:noCompletion private var __srcHowl:Howl;
 	#end
 
 	#if openfljs
@@ -78,34 +87,79 @@ import openfl.events.EventDispatcher;
 	}
 	#end
 
-	@:noCompletion private function new(source:#if lime AudioSource #else Dynamic #end = null, soundTransform:SoundTransform = null):Void
+	@:noCompletion private function new(sound:Sound = null, startTime:Float = 0, loops:Int = 0, soundTransform:SoundTransform = null):Void
 	{
 		super(this);
 
 		leftPeak = 1;
 		rightPeak = 1;
 
-		if (soundTransform != null)
+		if (soundTransform == null)
 		{
-			__soundTransform = soundTransform;
+			soundTransform = new SoundTransform();
 		}
 		else
 		{
-			__soundTransform = new SoundTransform();
+			soundTransform = soundTransform.clone();
 		}
 
-		#if lime
-		if (source != null)
+		if (sound != null)
 		{
-			__source = source;
-			__source.onComplete.add(source_onComplete);
+			SoundMixer.__registerSoundChannel(this);
+
+			var pan = SoundMixer.__soundTransform.pan + soundTransform.pan;
+
+			if (pan > 1) pan = 1;
+			if (pan < -1) pan = -1;
+
+			var volume = SoundMixer.__soundTransform.volume * soundTransform.volume;
+			this.soundTransform = soundTransform;
+
+			#if lime
+			__source = new AudioSource(sound.__buffer);
+			__source.offset = Std.int(startTime);
+			if (loops > 1) __source.loops = loops - 1;
+
+			__source.gain = volume;
+
+			var position = __source.position;
+			position.x = pan;
+			position.z = -1 * Math.sqrt(1 - Math.pow(pan, 2));
+			__source.position = position;
+
+			__source.onComplete.add(soundChannel_onComplete);
 			__isValid = true;
 
 			__source.play();
-		}
-		#end
+			#elseif openfl_html5
+			__srcHowl = sound.__srcHowl;
 
-		SoundMixer.__registerSoundChannel(this);
+			var cacheVolume = untyped __srcHowl._volume;
+			untyped __srcHowl._volume = volume;
+
+			__howlID = __srcHowl.play();
+
+			untyped __srcHowl._volume = cacheVolume;
+
+			if (__srcHowl.pos != null)
+			{
+				parent.buffer.__srcHowl.pos(pan, 0, -1 * Math.sqrt(1 - Math.pow(pan, 2)), __howlID);
+				// There are more settings to the position of the sound on the "pannerAttr()" function of howler.
+				// Maybe somebody who understands sound should look into it?
+			}
+
+			__srcHowl.on("end", soundChannel_onComplete, __howlID);
+
+			if (startTime > 0)
+			{
+				__srcHowl.seek(startTime, __howlID);
+			}
+			#end
+		}
+		else
+		{
+			this.soundTransform = new SoundTransform();
+		}
 	}
 
 	/**
@@ -119,6 +173,8 @@ import openfl.events.EventDispatcher;
 
 		#if lime
 		__source.stop();
+		#elseif openfl_html5
+		__srcHowl.stop(__howlID);
 		#end
 		__dispose();
 	}
@@ -128,9 +184,12 @@ import openfl.events.EventDispatcher;
 		if (!__isValid) return;
 
 		#if lime
-		__source.onComplete.remove(source_onComplete);
+		__source.onComplete.remove(soundChannel_onComplete);
 		__source.dispose();
 		__source = null;
+		#elseif openfl_html5
+		__srcHowl.off("end", sourceChannel_onComplete, __howlID);
+		__srcHowl = null;
 		#end
 		__isValid = false;
 	}
@@ -147,6 +206,8 @@ import openfl.events.EventDispatcher;
 
 		#if lime
 		return __source.currentTime + __source.offset;
+		#elseif openfl_html5
+		return __srcHowl.seek(__howlID) * 1000;
 		#else
 		return 0;
 		#end
@@ -157,7 +218,9 @@ import openfl.events.EventDispatcher;
 		if (!__isValid) return 0;
 
 		#if lime
-		__source.currentTime = Std.int(value) - __source.offset;
+		__source.currentTime = Std.int(value < 0 ? 0 : value) - __source.offset;
+		#elseif openfl_html5
+		__srcHowl.seek(value < 0 ? 0 : value, __howlID);
 		#end
 		return value;
 	}
@@ -185,14 +248,18 @@ import openfl.events.EventDispatcher;
 			{
 				#if lime
 				__source.gain = volume;
-
 				var position = __source.position;
 				position.x = pan;
 				position.z = -1 * Math.sqrt(1 - Math.pow(pan, 2));
 				__source.position = position;
-
-				return value;
+				#elseif openfl_html5
+				__srcHowl.volume(volume, __howlID);
+				if (__srcHowl.pos != null)
+				{
+					__srcHowl.pos(pan, 0, -1 * Math.sqrt(1 - Math.pow(pan, 2)), __howlID);
+				}
 				#end
+				return value;
 			}
 		}
 
@@ -200,7 +267,7 @@ import openfl.events.EventDispatcher;
 	}
 
 	// Event Handlers
-	@:noCompletion private function source_onComplete():Void
+	@:noCompletion private function soundChannel_onComplete():Void
 	{
 		SoundMixer.__unregisterSoundChannel(this);
 

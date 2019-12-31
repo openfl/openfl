@@ -239,9 +239,9 @@ import openfl.geom.Rectangle;
 	@:noCompletion private override function __applyFilter(bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle,
 			destPoint:Point):BitmapData
 	{
+		#if (lime || openfl_html5)
 		// TODO: Support knockout, inner
 
-		#if lime
 		var r = (__color >> 16) & 0xFF;
 		var g = (__color >> 8) & 0xFF;
 		var b = __color & 0xFF;

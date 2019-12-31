@@ -1,7 +1,6 @@
 package openfl._internal.renderer.context3D.batcher;
 
 #if openfl_gl
-import openfl._internal.backend.gl.WebGLRenderingContext;
 import openfl._internal.backend.gl.GL;
 import openfl._internal.backend.utils.Float32Array;
 import openfl._internal.backend.utils.UInt16Array;
@@ -13,6 +12,11 @@ import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.WebGLRenderContext in WebGLRenderingContext;
+#else
+import openfl._internal.backend.gl.WebGLRenderingContext;
+#end
 #if gl_stats
 import openfl._internal.renderer.context3D.stats.Context3DStats;
 import openfl._internal.renderer.context3D.stats.DrawCallContext;

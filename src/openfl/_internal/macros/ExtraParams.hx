@@ -69,6 +69,10 @@ class ExtraParams
 
 		if (Context.defined("js") && !Context.defined("nodejs"))
 		{
+			if (!Context.defined("lime"))
+			{
+				Compiler.define("howlerjs");
+			}
 			Compiler.define("openfl-html5");
 			Compiler.define("html5");
 			Compiler.define("openfl-gl");

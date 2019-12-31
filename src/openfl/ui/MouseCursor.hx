@@ -1,7 +1,11 @@
 package openfl.ui;
 
 #if !flash
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.MouseCursor as LimeMouseCursor;
+#else
 import openfl._internal.backend.lime.MouseCursor as LimeMouseCursor;
+#end
 
 /**
 	The MouseCursor class is an enumeration of constant values used in setting
@@ -45,7 +49,7 @@ import openfl._internal.backend.lime.MouseCursor as LimeMouseCursor;
 	@:noCompletion private var __WAIT = "wait";
 	@:noCompletion private var __WAIT_ARROW = "waitarrow";
 
-	#if lime
+	#if (lime || openfl_html5)
 	@:from private static function fromLimeCursor(cursor:LimeMouseCursor):MouseCursor
 	{
 		return switch (cursor)

@@ -1,8 +1,12 @@
 package openfl.desktop;
 
 #if !flash
-import openfl._internal.backend.lime.Clipboard as LimeClipboard;
 import openfl.utils.Object;
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.Clipboard as LimeClipboard;
+#else
+import openfl._internal.backend.lime.Clipboard as LimeClipboard;
+#end
 
 /**
 	The Clipboard class provides a container for transferring data and objects
@@ -145,7 +149,7 @@ class Clipboard
 	**/
 	public function clear():Void
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		if (__systemClipboard)
 		{
 			LimeClipboard.text = null;
@@ -172,7 +176,7 @@ class Clipboard
 	**/
 	public function clearData(format:ClipboardFormats):Void
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		if (__systemClipboard)
 		{
 			switch (format)
@@ -252,7 +256,7 @@ class Clipboard
 			transferMode = ORIGINAL_PREFERRED;
 		}
 
-		#if lime
+		#if (lime || openfl_html5)
 		if (__systemClipboard)
 		{
 			return switch (format)
@@ -287,7 +291,7 @@ class Clipboard
 	**/
 	public function hasFormat(format:ClipboardFormats):Bool
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		if (__systemClipboard)
 		{
 			return switch (format)
@@ -394,7 +398,7 @@ class Clipboard
 	**/
 	public function setData(format:ClipboardFormats, data:Object, serializable:Bool = true):Bool
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		if (__systemClipboard)
 		{
 			switch (format)

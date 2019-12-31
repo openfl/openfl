@@ -1,7 +1,11 @@
 package openfl.ui;
 
 #if !flash
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.KeyCode;
+#else
 import openfl._internal.backend.lime.KeyCode;
+#end
 
 /**
 	The Keyboard class is used to build an interface that can be controlled by
@@ -564,7 +568,7 @@ import openfl._internal.backend.lime.KeyCode;
 		return false;
 	}
 
-	#if lime
+	#if (lime || openfl_html5)
 	@:noCompletion private static inline function __convertKeyCode(key:KeyCode):Int
 	{
 		return switch (key)
@@ -941,7 +945,7 @@ import openfl._internal.backend.lime.KeyCode;
 		return 0;
 	}
 
-	#if lime
+	#if (lime || openfl_html5)
 	@:noCompletion private static inline function __getKeyLocation(key:KeyCode):KeyLocation
 	{
 		return switch (key)

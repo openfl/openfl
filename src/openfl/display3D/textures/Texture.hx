@@ -136,7 +136,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function uploadFromBitmapData(source:BitmapData, miplevel:UInt = 0, generateMipmap:Bool = false):Void
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		/* TODO
 			if (LowMemoryMode) {
 				// shrink bitmap data

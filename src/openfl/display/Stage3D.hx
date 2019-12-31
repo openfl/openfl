@@ -2,11 +2,9 @@ package openfl.display;
 
 #if !flash
 import haxe.Timer;
-import openfl._internal.backend.gl.WebGLRenderingContext;
 import openfl._internal.backend.html5.Browser;
 import openfl._internal.backend.html5.CanvasElement;
 import openfl._internal.backend.html5.CSSStyleDeclaration;
-import openfl._internal.backend.lime.RenderContext;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DProfile;
 import openfl.display3D.Context3DRenderMode;
@@ -17,6 +15,13 @@ import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.geom.Matrix3D;
 import openfl.Vector;
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.RenderContext;
+import openfl._internal.backend.lime_standalone.WebGLRenderContext in WebGLRenderingContext;
+#else
+import openfl._internal.backend.lime.RenderContext;
+import openfl._internal.backend.gl.WebGLRenderingContext;
+#end
 
 /**
 	The Stage class represents the main drawing area.
@@ -186,7 +191,7 @@ class Stage3D extends EventDispatcher
 	@:noCompletion private var __style:CSSStyleDeclaration;
 	@:noCompletion private var __webgl:WebGLRenderingContext;
 	#end
-	#if lime
+	#if (lime || !openfl_html5)
 	@:noCompletion private var __renderContext:RenderContext;
 	#end
 

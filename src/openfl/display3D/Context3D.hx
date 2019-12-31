@@ -5,10 +5,6 @@ import openfl._internal.backend.gl.GLBuffer;
 import openfl._internal.backend.gl.GLFramebuffer;
 import openfl._internal.backend.gl.GLTexture;
 import openfl._internal.backend.gl.GL;
-import openfl._internal.backend.gl.WebGLRenderingContext;
-import openfl._internal.backend.lime.Image;
-import openfl._internal.backend.lime.ImageBuffer;
-import openfl._internal.backend.lime.RenderContext;
 import openfl._internal.backend.math.Rectangle as LimeRectangle;
 import openfl._internal.backend.math.Vector2;
 import openfl._internal.renderer.context3D.Context3DState;
@@ -33,6 +29,17 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.utils.AGALMiniAssembler;
 import openfl.utils.ByteArray;
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.Image;
+import openfl._internal.backend.lime_standalone.ImageBuffer;
+import openfl._internal.backend.lime_standalone.RenderContext;
+import openfl._internal.backend.lime_standalone.WebGLRenderContext;
+#else
+import openfl._internal.backend.lime.Image;
+import openfl._internal.backend.lime.ImageBuffer;
+import openfl._internal.backend.lime.RenderContext;
+import openfl._internal.backend.gl.WebGLRenderingContext in WebGLRenderContext;
+#end
 
 /**
 	The Context3D class provides a context for rendering geometrically defined graphics.
@@ -258,14 +265,14 @@ import openfl.utils.ByteArray;
 	@:noCompletion private static var __glMemoryTotalAvailable:Int = -1;
 	@:noCompletion private static var __glTextureMaxAnisotropy:Int = -1;
 
-	@:noCompletion private var gl:WebGLRenderingContext;
+	@:noCompletion private var gl:WebGLRenderContext;
 	@:noCompletion private var __backBufferAntiAlias:Int;
 	@:noCompletion private var __backBufferTexture:RectangleTexture;
 	@:noCompletion private var __backBufferWantsBestResolution:Bool;
 	@:noCompletion private var __backBufferWantsBestResolutionOnBrowserZoom:Bool;
 	@:noCompletion private var __bitmapDataPool:BitmapDataPool;
 	@:noCompletion private var __cleared:Bool;
-	@:noCompletion private var __context:#if lime RenderContext #else Dynamic #end;
+	@:noCompletion private var __context:#if (lime || openfl_html5) RenderContext #else Dynamic #end;
 	@:noCompletion private var __contextState:Context3DState;
 	@:noCompletion private var __renderStage3DProgram:Program3D;
 	@:noCompletion private var __enableErrorChecking:Bool;
@@ -342,7 +349,7 @@ import openfl.utils.ByteArray;
 		if (__glDepthStencil == -1)
 		{
 			#if openfl_html5
-			__glDepthStencil = gl.DEPTH_STENCIL;
+			__glDepthStencil = GL.DEPTH_STENCIL;
 			#elseif lime
 			if (__context.type == OPENGLES && Std.parseFloat(__context.version) >= 3)
 			{
@@ -397,7 +404,6 @@ import openfl.utils.ByteArray;
 		__quadIndexBufferElements = Math.floor(0xFFFF / 4);
 		__quadIndexBufferCount = __quadIndexBufferElements * 6;
 
-		#if lime
 		var data = new UInt16Array(__quadIndexBufferCount);
 
 		var index:UInt = 0;
@@ -418,7 +424,6 @@ import openfl.utils.ByteArray;
 
 		__quadIndexBuffer = createIndexBuffer(__quadIndexBufferCount);
 		__quadIndexBuffer.uploadFromTypedArray(data);
-		#end
 
 		__bitmapDataPool = new BitmapDataPool(30, this);
 		#end
@@ -1438,7 +1443,12 @@ import openfl.utils.ByteArray;
 			var isVertex = (programType == VERTEX);
 			var dest = isVertex ? __vertexConstants : __fragmentConstants;
 
+			#if (!lime && openfl_html5)
+			var bytes:haxe.io.Bytes = cast data;
+			var floatData = new Float32Array(bytes.getData(), 0, data.length);
+			#else
 			var floatData = Float32Array.fromBytes(data, 0, data.length);
+			#end
 			var outOffset = firstRegister * 4;
 			var inOffset = Std.int(byteArrayOffset / 4);
 

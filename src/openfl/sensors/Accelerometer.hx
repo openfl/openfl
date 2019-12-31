@@ -2,11 +2,16 @@ package openfl.sensors;
 
 #if !flash
 import haxe.Timer;
-import openfl._internal.backend.lime.Sensor;
-import openfl._internal.backend.lime.SensorType;
 import openfl.errors.ArgumentError;
 import openfl.events.AccelerometerEvent;
 import openfl.events.EventDispatcher;
+#if (!lime && openfl_html5)
+import openfl._internal.backend.lime_standalone.Sensor;
+import openfl._internal.backend.lime_standalone.SensorType;
+#else
+import openfl._internal.backend.lime.Sensor;
+import openfl._internal.backend.lime.SensorType;
+#end
 
 /**
 	The Accelerometer class dispatches events based on activity detected by the
@@ -126,9 +131,9 @@ class Accelerometer extends EventDispatcher
 
 	@:noCompletion private static function initialize():Void
 	{
+		#if (lime || openfl_html5)
 		if (!initialized)
 		{
-			#if lime
 			var sensors = Sensor.getSensors(SensorType.ACCELEROMETER);
 
 			if (sensors.length > 0)
@@ -136,10 +141,10 @@ class Accelerometer extends EventDispatcher
 				sensors[0].onUpdate.add(accelerometer_onUpdate);
 				supported = true;
 			}
-			#end
 
 			initialized = true;
 		}
+		#end
 	}
 
 	/**
