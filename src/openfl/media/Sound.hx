@@ -1,19 +1,13 @@
 package openfl.media;
 
 #if !flash
-import haxe.Int64;
-import openfl._internal.backend.utils.UInt8Array;
-import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.IOErrorEvent;
 import openfl.net.URLRequest;
 import openfl.utils.ByteArray;
 import openfl.utils.Future;
 #if lime
-import openfl._internal.backend.lime.AudioBuffer;
-import openfl._internal.backend.lime.AudioSource;
-#elseif openfl_html5
-import openfl._internal.backend.howlerjs.Howl;
+import lime.media.AudioBuffer;
 #end
 
 /**
@@ -80,10 +74,6 @@ import openfl._internal.backend.howlerjs.Howl;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(lime.media.AudioBuffer)
-@:access(lime.utils.AssetLibrary)
-@:access(openfl.media.SoundMixer)
-@:access(openfl.media.SoundChannel.new)
 @:autoBuild(openfl._internal.macros.AssetsMacro.embedSound())
 class Sound extends EventDispatcher
 {
@@ -230,11 +220,7 @@ class Sound extends EventDispatcher
 	**/
 	public var url(default, null):String;
 
-	#if lime
-	@:noCompletion private var __buffer:AudioBuffer;
-	#elseif openfl_html5
-	@:noCompletion private var __srcHowl:Howl;
-	#end
+	@:noCompletion private var __backend:SoundBackend;
 
 	#if openfljs
 	@:noCompletion private static function __init__()
@@ -277,6 +263,8 @@ class Sound extends EventDispatcher
 		isBuffering = false;
 		url = null;
 
+		__backend = new SoundBackend(this);
+
 		if (stream != null)
 		{
 			load(stream, context);
@@ -292,13 +280,7 @@ class Sound extends EventDispatcher
 	**/
 	public function close():Void
 	{
-		#if (lime || openfl_html5)
-		if (__buffer != null)
-		{
-			__buffer.dispose();
-			__buffer = null;
-		}
-		#end
+		__backend.close();
 	}
 
 	#if false
@@ -336,9 +318,7 @@ class Sound extends EventDispatcher
 	**/
 	@:dox(hide) public static function fromAudioBuffer(buffer:AudioBuffer):Sound
 	{
-		var sound = new Sound();
-		sound.__buffer = buffer;
-		return sound;
+		return SoundBackend.fromAudioBuffer(buffer);
 	}
 	#end
 
@@ -359,15 +339,7 @@ class Sound extends EventDispatcher
 	{
 		if (path == null) return null;
 
-		#if lime
-		return fromAudioBuffer(AudioBuffer.fromFile(path));
-		#elseif openfl_html5
-		var sound = new Sound();
-		sound.__srcHowl = new Howl({src: [path], #if force_html5_audio html5: true, #end preload: false});
-		return sound;
-		#else
-		return null;
-		#end
+		return SoundBackend.fromFile(path);
 	}
 
 	/**
@@ -446,49 +418,14 @@ class Sound extends EventDispatcher
 	public function load(stream:URLRequest, context:SoundLoaderContext = null):Void
 	{
 		url = stream.url;
-
-		#if lime
-		#if openfl_html5
-		var defaultLibrary = lime.utils.Assets.getLibrary("default"); // TODO: Improve this
-
-		if (defaultLibrary != null && defaultLibrary.cachedAudioBuffers.exists(url))
+		if (url != null)
 		{
-			AudioBuffer_onURLLoad(defaultLibrary.cachedAudioBuffers.get(url));
-		}
-		else
-		{
-			AudioBuffer.loadFromFile(url).onComplete(AudioBuffer_onURLLoad).onError(function(_)
-			{
-				AudioBuffer_onURLLoad(null);
-			});
-		}
-		#else
-		AudioBuffer.loadFromFile(url).onComplete(AudioBuffer_onURLLoad).onError(function(_)
-		{
-			AudioBuffer_onURLLoad(null);
-		});
-		#end
-		#elseif openfl_html5
-		if (path != null)
-		{
-			__srcHowl = new Howl({src: [path], #if force_html5_audio html5: true, #end preload: false});
-
-			__srcHowl.on("load", function()
-			{
-				dispatchEvent(new Event(Event.COMPLETE));
-			});
-
-			__srcHowl.on("loaderror", function(id, msg)
-			{
-				__srcHowl = null;
-				dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
-			});
+			__backend.load(stream, context);
 		}
 		else
 		{
 			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
 		}
-		#end
 	}
 
 	/**
@@ -508,27 +445,7 @@ class Sound extends EventDispatcher
 			return;
 		}
 
-		if (bytes.position > 0 || bytes.length > bytesLength)
-		{
-			var copy = new ByteArray(bytesLength);
-			copy.writeBytes(bytes, bytes.position, bytesLength);
-			bytes = copy;
-		}
-
-		#if lime
-		__buffer = AudioBuffer.fromBytes(bytes);
-		#elseif openfl_html5
-		__srcHowl = new Howl({src: ["data:" + __getCodec(bytes) + ";base64," + Base64.encode(bytes)], html5: true, preload: false});
-		#end
-
-		if (#if lime __buffer == null #elseif openfl_html5 false #else true #end)
-		{
-			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
-		}
-		else
-		{
-			dispatchEvent(new Event(Event.COMPLETE));
-		}
+		__backend.loadCompressedDataFromByteArray(bytes, bytesLength);
 	}
 
 	/**
@@ -543,16 +460,7 @@ class Sound extends EventDispatcher
 	**/
 	public static function loadFromFile(path:String):Future<Sound>
 	{
-		#if lime
-		return AudioBuffer.loadFromFile(path).then(function(audioBuffer)
-		{
-			return Future.withValue(fromAudioBuffer(audioBuffer));
-		});
-		#elseif openfl_html5
-		return loadFromFiles([path]);
-		#else
-		return cast Future.withError("Cannot load audio file");
-		#end
+		return SoundBackend.loadFromFile(path);
 	}
 
 	/**
@@ -570,32 +478,7 @@ class Sound extends EventDispatcher
 	{
 		if (paths == null) return cast Future.withError("");
 
-		#if lime
-		return AudioBuffer.loadFromFiles(paths).then(function(audioBuffer)
-		{
-			return Future.withValue(fromAudioBuffer(audioBuffer));
-		});
-		#elseif openfl_html5
-		var sound = new Sound();
-		sound.__srcHowl = new Howl({src: paths, #if force_html5_audio html5: true, #end preload: false});
-		var promise = new Promise<Sound>();
-
-		sound.__srcHowl.on("load", function()
-		{
-			promise.complete(sound);
-		});
-
-		sound.__srcHowl.on("loaderror", function(id, msg)
-		{
-			sound.__srcHowl = null;
-			promise.error(msg);
-		});
-
-		sound.__srcHowl.load();
-		return promise.future;
-		#else
-		return cast Future.withError("Cannot load audio file");
-		#end
+		return SoundBackend.loadFromFiles(paths);
 	}
 
 	/**
@@ -625,33 +508,7 @@ class Sound extends EventDispatcher
 			return;
 		}
 
-		var bitsPerSample = (format == "float" ? 32 : 16); // "short"
-		var channels = (stereo ? 2 : 1);
-		var bytesLength = Std.int(samples * channels * (bitsPerSample / 8));
-
-		if (bytes.position > 0 || bytes.length > bytesLength)
-		{
-			var copy = new ByteArray(bytesLength);
-			copy.writeBytes(bytes, bytes.position, bytesLength);
-			bytes = copy;
-		}
-
-		#if lime
-		var audioBuffer = new AudioBuffer();
-		audioBuffer.bitsPerSample = bitsPerSample;
-		audioBuffer.channels = channels;
-		audioBuffer.data = new UInt8Array(bytes);
-		audioBuffer.sampleRate = Std.int(sampleRate);
-
-		__buffer = audioBuffer;
-
-		dispatchEvent(new Event(Event.COMPLETE));
-		#elseif openfl_html5
-		// TODO
-		dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
-		#else
-		dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
-		#end
+		__backend.loadPCMFromByteArray(bytes, samples, format, stereo, sampleRate);
 	}
 
 	/**
@@ -674,78 +531,28 @@ class Sound extends EventDispatcher
 	**/
 	public function play(startTime:Float = 0.0, loops:Int = 0, sndTransform:SoundTransform = null):SoundChannel
 	{
-		#if lime
-		if (__buffer == null) return null;
-		#elseif openfl_html5
-		if (__srcHowl == null) return null;
-		#else
-		return null;
-		#end
-
-		if (SoundMixer.__soundChannels.length >= SoundMixer.MAX_ACTIVE_CHANNELS)
-		{
-			return null;
-		}
-
-		return new SoundChannel(this, startTime, loops, sndTransform);
+		return __backend.play(startTime, loops, sndTransform);
 	}
 
 	// Get & Set Methods
 	@:noCompletion private function get_id3():ID3Info
 	{
-		return new ID3Info();
+		return __backend.getID3();
 	}
 
 	@:noCompletion private function get_length():Int
 	{
-		#if lime
-		if (__buffer != null)
-		{
-			#if (openfl_html5 && howlerjs)
-			return Std.int(__buffer.src.duration() * 1000);
-			#else
-			if (__buffer.data != null)
-			{
-				var samples = (__buffer.data.length * 8) / (__buffer.channels * __buffer.bitsPerSample);
-				return Std.int(samples / __buffer.sampleRate * 1000);
-			}
-			else if (__buffer.__srcVorbisFile != null)
-			{
-				var samples = Int64.toInt(__buffer.__srcVorbisFile.pcmTotal());
-				return Std.int(samples / __buffer.sampleRate * 1000);
-			}
-			else
-			{
-				return 0;
-			}
-			#end
-		}
-		#elseif openfl_html5
-		if (__srcHowl != null)
-		{
-			return Std.int(__srcHowl.duration() * 1000);
-		}
-		#end
-
-		return 0;
+		return __backend.getLength();
 	}
-
-	// Event Handlers
-	#if lime
-	@:noCompletion private function AudioBuffer_onURLLoad(buffer:AudioBuffer):Void
-	{
-		if (buffer == null)
-		{
-			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
-		}
-		else
-		{
-			__buffer = buffer;
-			dispatchEvent(new Event(Event.COMPLETE));
-		}
-	}
-	#end
 }
+
+#if lime
+private typedef SoundBackend = openfl._internal.backend.lime.LimeSoundBackend;
+#elseif openfl_html5
+private typedef SoundBackend = openfl._internal.backend.howlerjs.HowlerSoundBackend;
+#else
+private typedef SoundBackend = openfl._internal.backend.dummy.DummySoundBackend;
+#end
 #else
 typedef Sound = flash.media.Sound;
 #end

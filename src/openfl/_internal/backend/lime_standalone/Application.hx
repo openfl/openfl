@@ -14,12 +14,12 @@ class Application extends Module
 	public var modules(default, null):Array<IModule>;
 	public var onUpdate = new LimeEvent<Int->Void>();
 	public var onCreateWindow = new LimeEvent<Window->Void>();
-	public var preloader(get, null):Preloader;
+	// public var preloader(get, null):Preloader;
 	public var window(get, null):Window;
 	public var windows(get, null):Array<Window>;
 
 	@:noCompletion private var __backend:ApplicationBackend;
-	@:noCompletion private var __preloader:Preloader;
+	// @:noCompletion private var __preloader:Preloader;
 	@:noCompletion private var __window:Window;
 	@:noCompletion private var __windowByID:Map<Int, Window>;
 	@:noCompletion private var __windows:Array<Window>;
@@ -42,9 +42,9 @@ class Application extends Module
 
 		__registerLimeModule(this);
 
-		__preloader = new Preloader();
-		__preloader.onProgress.add(onPreloadProgress);
-		__preloader.onComplete.add(onPreloadComplete);
+		// __preloader = new Preloader();
+		// __preloader.onProgress.add(onPreloadProgress);
+		// __preloader.onComplete.add(onPreloadComplete);
 	}
 
 	public function addModule(module:IModule):Void
@@ -325,10 +325,10 @@ class Application extends Module
 	}
 
 	// Get & Set Methods
-	@:noCompletion private inline function get_preloader():Preloader
-	{
-		return __preloader;
-	}
+	// @:noCompletion private inline function get_preloader():Preloader
+	// {
+	// 	return __preloader;
+	// }
 
 	@:noCompletion private inline function get_window():Window
 	{

@@ -30,9 +30,9 @@ class LimeStageBackend
 {
 	private var parent:Stage;
 
-	public function new(stage:Stage, window:OpenFLWindow, color:Null<Int> = null)
+	public function new(parent:Stage, window:OpenFLWindow, color:Null<Int> = null)
 	{
-		parent = stage;
+		this.parent = parent;
 
 		parent.application = window.application;
 		parent.window = window;

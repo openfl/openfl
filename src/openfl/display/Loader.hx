@@ -15,10 +15,7 @@ import openfl.system.LoaderContext;
 import openfl.utils.Assets;
 import openfl.utils.AssetLibrary;
 import openfl.utils.ByteArray;
-#if (!lime && openfl_html5)
-import openfl._internal.backend.lime_standalone.AssetLibrary as LimeAssetLibrary;
-import openfl._internal.backend.lime_standalone.AssetManifest;
-#else
+#if lime
 import openfl._internal.backend.lime.AssetLibrary as LimeAssetLibrary;
 import openfl._internal.backend.lime.AssetManifest;
 #end
@@ -752,7 +749,7 @@ class Loader extends DisplayObjectContainer
 
 		var loader:URLLoader = cast event.target;
 
-		#if (lime || openfl_html5)
+		#if lime
 		if (contentLoaderInfo.contentType != null && contentLoaderInfo.contentType.indexOf("/json") > -1)
 		{
 			var manifest = AssetManifest.parse(loader.data, Path.directory(__path));

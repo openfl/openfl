@@ -14,6 +14,8 @@ import lime.ui.Touch;
 #elseif openfl_html5
 import openfl._internal.backend.lime_standalone.KeyCode;
 import openfl._internal.backend.lime_standalone.KeyModifier;
+import openfl._internal.backend.lime_standalone.MouseWheelMode;
+import openfl._internal.backend.lime_standalone.Touch;
 #end
 #if !display
 #if openfl_gl
@@ -184,7 +186,7 @@ import openfl._internal.renderer.context3D.stats.Context3DStats;
 @:access(openfl.geom.Point)
 @:access(openfl.ui.Keyboard)
 @:access(openfl.ui.Mouse)
-class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements IModule #end
+class Stage extends DisplayObjectContainer #if lime implements IModule #end
 {
 	/**
 		A value from the StageAlign class that specifies the alignment of the
@@ -2633,7 +2635,7 @@ private typedef StageBackend = openfl._internal.backend.lime.LimeStageBackend;
 #elseif openfl_html5
 private typedef StageBackend = openfl._internal.backend.html5.HTML5StageBackend;
 #else
-private typedef StageBackend = Dynamic;
+private typedef StageBackend = openfl._internal.backend.dummy.DummyStageBackend;
 #end
 #else
 typedef Stage = flash.display.Stage;

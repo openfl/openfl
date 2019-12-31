@@ -7,11 +7,7 @@ import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.media.Sound;
 import openfl.text.Font;
-import openfl.utils.Promise;
-#if (!lime && openfl_html5)
-import openfl._internal.backend.lime_standalone.AssetLibrary as LimeAssetLibrary;
-import openfl._internal.backend.lime_standalone.Assets as LimeAssets;
-#else
+#if lime
 import openfl._internal.backend.lime.AssetLibrary as LimeAssetLibrary;
 import openfl._internal.backend.lime.Assets as LimeAssets;
 #end
@@ -46,7 +42,7 @@ class Assets
 
 	public static function addEventListener(type:String, listener:Dynamic, useCapture:Bool = false, priority:Int = 0, useWeakReference:Bool = false):Void
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		if (!LimeAssets.onChange.has(LimeAssets_onChange))
 		{
 			LimeAssets.onChange.add(LimeAssets_onChange);
@@ -69,7 +65,7 @@ class Assets
 	**/
 	public static function exists(id:String, type:AssetType = null):Bool
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		return LimeAssets.exists(id, cast type);
 		#else
 		return false;
@@ -126,7 +122,7 @@ class Assets
 	**/
 	public static function getBytes(id:String):ByteArray
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		return LimeAssets.getBytes(id);
 		#else
 		return null;
@@ -171,9 +167,9 @@ class Assets
 		return new Font();
 	}
 
-	public static function getLibrary(name:String):#if (lime || openfl_html5) LimeAssetLibrary #else AssetLibrary #end
+	public static function getLibrary(name:String):#if lime LimeAssetLibrary #else AssetLibrary #end
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		return LimeAssets.getLibrary(name);
 		#else
 		return null;
@@ -239,7 +235,7 @@ class Assets
 	**/
 	public static function getPath(id:String):String
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		return LimeAssets.getPath(id);
 		#else
 		return null;
@@ -296,7 +292,7 @@ class Assets
 	**/
 	public static function getText(id:String):String
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		return LimeAssets.getText(id);
 		#else
 		return null;
@@ -310,7 +306,7 @@ class Assets
 
 	public static function hasLibrary(name:String):Bool
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		return LimeAssets.hasLibrary(name);
 		#else
 		return false;
@@ -396,7 +392,7 @@ class Assets
 	**/
 	public static function list(type:AssetType = null):Array<String>
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		return LimeAssets.list(cast type);
 		#else
 		return [];
@@ -465,7 +461,7 @@ class Assets
 	**/
 	public static function loadBytes(id:String):Future<ByteArray>
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		var promise = new Promise<ByteArray>();
 		var future = LimeAssets.loadBytes(id);
 
@@ -532,7 +528,7 @@ class Assets
 	**/
 	public static function loadLibrary(name:String):#if java Future<LimeAssetLibrary> #else Future<AssetLibrary> #end
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		return LimeAssets.loadLibrary(name).then(function(library)
 		{
 			var _library:AssetLibrary = null;
@@ -569,7 +565,7 @@ class Assets
 	{
 		if (useCache == null) useCache = true;
 
-		#if (lime || openfl_html5)
+		#if lime
 		#if !html5
 		var promise = new Promise<Sound>();
 
@@ -661,7 +657,7 @@ class Assets
 	{
 		if (useCache == null) useCache = true;
 
-		#if (lime || openfl_html5)
+		#if lime
 		var promise = new Promise<Sound>();
 
 		LimeAssets.loadAudioBuffer(id, useCache)
@@ -704,7 +700,7 @@ class Assets
 	**/
 	public static function loadText(id:String):Future<String>
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		var future = LimeAssets.loadText(id);
 		return future;
 		#else
@@ -719,7 +715,7 @@ class Assets
 	**/
 	public static function registerLibrary(name:String, library:AssetLibrary):Void
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		LimeAssets.registerLibrary(name, library);
 		#end
 	}
@@ -763,7 +759,7 @@ class Assets
 			cache.clear(name + ":");
 		}
 
-		#if (lime || openfl_html5)
+		#if lime
 		LimeAssets.unloadLibrary(name);
 		#end
 	}

@@ -71,7 +71,7 @@ class Window #if (lime || openfl_html5) extends LimeWindow #end
 			stage.__setLogicalSize(attributes.width, attributes.height);
 		}
 
-		#if (lime || openfl_html5)
+		#if lime
 		application.addModule(stage);
 		#end
 		#else

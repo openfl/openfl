@@ -1,6 +1,6 @@
 package openfl._internal.backend.lime_standalone;
 
-#if openfl_html5
+#if (false && openfl_html5)
 import haxe.io.Bytes;
 import haxe.io.Path;
 import haxe.macro.Compiler;

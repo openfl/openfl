@@ -1,9 +1,7 @@
 package openfl.utils;
 
 import haxe.io.Bytes;
-#if (!lime && openfl_html5)
-import openfl._internal.backend.lime_standalone.AssetManifest as LimeAssetManifest;
-#else
+#if lime
 import openfl._internal.backend.lime.AssetManifest as LimeAssetManifest;
 #end
 
@@ -11,7 +9,7 @@ import openfl._internal.backend.lime.AssetManifest as LimeAssetManifest;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-class AssetManifest #if (lime || openfl_html5) extends LimeAssetManifest #end
+class AssetManifest #if lime extends LimeAssetManifest #end
 {
 	#if !lime
 	private var assets:Array<Dynamic>;
@@ -19,7 +17,7 @@ class AssetManifest #if (lime || openfl_html5) extends LimeAssetManifest #end
 
 	public function new()
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		super();
 		#end
 	}
@@ -76,7 +74,7 @@ class AssetManifest #if (lime || openfl_html5) extends LimeAssetManifest #end
 
 	public static function fromBytes(bytes:Bytes, rootPath:String = null):AssetManifest
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		var manifest = LimeAssetManifest.fromBytes(bytes, rootPath);
 		return __fromLimeManifest(manifest);
 		#else
@@ -86,7 +84,7 @@ class AssetManifest #if (lime || openfl_html5) extends LimeAssetManifest #end
 
 	public static function fromFile(path:String, rootPath:String = null):AssetManifest
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		var manifest = LimeAssetManifest.fromFile(path, rootPath);
 		return __fromLimeManifest(manifest);
 		#else
@@ -96,7 +94,7 @@ class AssetManifest #if (lime || openfl_html5) extends LimeAssetManifest #end
 
 	public static function loadFromBytes(bytes:Bytes, rootPath:String = null):Future<AssetManifest>
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		return LimeAssetManifest.loadFromBytes(bytes, rootPath).then(function(manifest)
 		{
 			return Future.withValue(__fromLimeManifest(manifest));
@@ -108,7 +106,7 @@ class AssetManifest #if (lime || openfl_html5) extends LimeAssetManifest #end
 
 	public static function loadFromFile(path:String, rootPath:String = null):Future<AssetManifest>
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		return LimeAssetManifest.loadFromFile(path, rootPath).then(function(manifest)
 		{
 			return Future.withValue(__fromLimeManifest(manifest));
@@ -120,7 +118,7 @@ class AssetManifest #if (lime || openfl_html5) extends LimeAssetManifest #end
 
 	public static function parse(data:String, rootPath:String = null):AssetManifest
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		var manifest = LimeAssetManifest.parse(data, rootPath);
 		return __fromLimeManifest(manifest);
 		#else
@@ -128,7 +126,7 @@ class AssetManifest #if (lime || openfl_html5) extends LimeAssetManifest #end
 		#end
 	}
 
-	#if (lime || openfl_html5)
+	#if lime
 	@:noCompletion private static function __fromLimeManifest(limeManifest:LimeAssetManifest):AssetManifest
 	{
 		var manifest = null;
