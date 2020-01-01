@@ -1,6 +1,7 @@
 package openfl._internal.backend.dummy;
 
 import openfl.display.Stage;
+import openfl.display.StageDisplayState;
 import openfl.display.Window in OpenFLWindow;
 
 #if !openfl_debug
@@ -10,4 +11,40 @@ import openfl.display.Window in OpenFLWindow;
 class DummyStageBackend
 {
 	public function new(parent:Stage, window:OpenFLWindow, color:Null<Int> = null) {}
+
+	public function cancelRender():Void {}
+
+	public function getFrameRate():Int
+	{
+		return 0;
+	}
+
+	public function getFullScreenHeight():UInt
+	{
+		return 0;
+	}
+
+	public function getFullScreenWidth():UInt
+	{
+		return 0;
+	}
+
+	public function getWindowFullscreen():Bool
+	{
+		return false;
+	}
+
+	public function getWindowHeight():Int
+	{
+		return 0;
+	}
+
+	public function getWindowWidth():Int
+	{
+		return 0;
+	}
+
+	public function setFrameRate(value:Float):Void {}
+
+	public function setDisplayState(value:StageDisplayState):Void {}
 }

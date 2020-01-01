@@ -1,19 +1,9 @@
 package openfl.printing;
 
 #if !flash
-import haxe.Timer;
-import openfl._internal.backend.html5.Browser;
-import openfl._internal.backend.html5.DivElement;
-import openfl._internal.backend.html5.Image;
-import openfl._internal.backend.html5.StyleElement;
 import openfl.display.BitmapData;
 import openfl.display.Sprite;
 import openfl.geom.Rectangle;
-#if (!lime && openfl_html5)
-import openfl._internal.backend.lime_standalone.ImageCanvasUtil;
-#else
-import openfl._internal.backend.lime.ImageCanvasUtil;
-#end
 
 /**
 	The PrintJob class lets you create content and print it to one or more
@@ -64,7 +54,6 @@ import openfl._internal.backend.lime.ImageCanvasUtil;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(lime.graphics.ImageBuffer)
 class PrintJob
 {
 	/**
@@ -322,53 +311,7 @@ class PrintJob
 	{
 		if (!__started) return;
 
-		#if openfl_html5
-		var window = Browser.window.open("", "", "width=500,height=500");
-
-		if (window != null)
-		{
-			var style:StyleElement = cast window.document.createElement("style");
-			style.innerText = "@media all {
-					.page-break	{ display: none; }
-				}
-
-				@media print {
-					.page-break	{ display: block; page-break-before: always; }
-				}";
-
-			window.document.head.appendChild(style);
-
-			var div:DivElement;
-			var image:Image;
-			var bitmapData;
-
-			for (i in 0...__bitmapData.length)
-			{
-				bitmapData = __bitmapData[i];
-				ImageCanvasUtil.sync(bitmapData.image, false);
-
-				if (bitmapData.image.buffer.__srcCanvas != null)
-				{
-					if (i > 0)
-					{
-						div = cast window.document.createElement("div");
-						div.className = "page-break";
-						window.document.body.appendChild(div);
-					}
-
-					image = new Image();
-					image.src = bitmapData.image.buffer.__srcCanvas.toDataURL("image/png");
-					window.document.body.appendChild(image);
-				}
-			}
-
-			Timer.delay(function()
-			{
-				window.focus();
-				window.print();
-			}, 500);
-		}
-		#end
+		PrintJobBackend.send(this);
 	}
 
 	/**
@@ -435,6 +378,14 @@ class PrintJob
 		return false;
 	}
 }
+
+#if lime
+private typedef PrintJobBackend = openfl._internal.backend.lime.LimePrintJobBackend;
+#elseif openfl_html5
+private typedef PrintJobBackend = openfl._internal.backend.html5.HTML5PrintJobBackend;
+#else
+private typedef PrintJobBackend = openfl._internal.backend.dummy.DummyPrintJobBackend;
+#end
 #else
 typedef PrintJob = flash.printing.PrintJob;
 #end

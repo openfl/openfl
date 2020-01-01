@@ -2,17 +2,6 @@ package openfl.system;
 
 #if !flash
 import haxe.macro.Compiler;
-import openfl._internal.Lib;
-#if (!lime && openfl_html5)
-import openfl._internal.backend.lime_standalone.Locale;
-import openfl._internal.backend.lime_standalone.System;
-#else
-import openfl._internal.backend.lime.Locale;
-import openfl._internal.backend.lime.System;
-#end
-#if linux
-import sys.io.Process;
-#end
 
 /**
 	The Capabilities class provides properties that describe the system and

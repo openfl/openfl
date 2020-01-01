@@ -95,7 +95,8 @@ class HTML5MouseBackend
 
 		if (limeCursor != null && !Mouse.__hidden)
 		{
-			stage.window.cursor = limeCursor;
+			// TODO
+			//stage.window.cursor = limeCursor;
 		}
 	}
 

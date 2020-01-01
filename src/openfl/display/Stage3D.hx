@@ -381,7 +381,7 @@ class Stage3D extends EventDispatcher
 			__dispatchCreate();
 		}
 		#if (lime && openfl_html5)
-		else if (false && __stage.window.context.type == DOM)
+		else if (false && __stage.limeWindow.context.type == DOM)
 		{
 			// TODO
 

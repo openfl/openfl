@@ -99,7 +99,7 @@ class LimeMouseBackend
 
 		if (limeCursor != null && !Mouse.__hidden)
 		{
-			stage.window.cursor = limeCursor;
+			stage.limeWindow.cursor = limeCursor;
 		}
 	}
 

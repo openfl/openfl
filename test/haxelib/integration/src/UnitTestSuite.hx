@@ -34,7 +34,6 @@ import openfl.display.LoaderTest;
 import openfl.display.MovieClipTest;
 import openfl.display.PixelSnappingTest;
 import openfl.display.PNGEncoderOptionsTest;
-import openfl.display.PreloaderTest;
 import openfl.display.ShaderDataTest;
 import openfl.display.ShaderInputTest;
 import openfl.display.ShaderJobTest;
@@ -216,7 +215,6 @@ class UnitTestSuite extends massive.munit.TestSuite
 		add(openfl.display.MovieClipTest);
 		add(openfl.display.PixelSnappingTest);
 		add(openfl.display.PNGEncoderOptionsTest);
-		add(openfl.display.PreloaderTest);
 		add(openfl.display.ShaderDataTest);
 		add(openfl.display.ShaderInputTest);
 		add(openfl.display.ShaderJobTest);

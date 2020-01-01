@@ -5,13 +5,6 @@ import haxe.Timer;
 import openfl.errors.ArgumentError;
 import openfl.events.AccelerometerEvent;
 import openfl.events.EventDispatcher;
-#if (!lime && openfl_html5)
-import openfl._internal.backend.lime_standalone.Sensor;
-import openfl._internal.backend.lime_standalone.SensorType;
-#else
-import openfl._internal.backend.lime.Sensor;
-import openfl._internal.backend.lime.SensorType;
-#end
 
 /**
 	The Accelerometer class dispatches events based on activity detected by the
@@ -134,14 +127,7 @@ class Accelerometer extends EventDispatcher
 		#if (lime || openfl_html5)
 		if (!initialized)
 		{
-			var sensors = Sensor.getSensors(SensorType.ACCELEROMETER);
-
-			if (sensors.length > 0)
-			{
-				sensors[0].onUpdate.add(accelerometer_onUpdate);
-				supported = true;
-			}
-
+			AccelerometerBackend.initialize();
 			initialized = true;
 		}
 		#end
@@ -201,14 +187,6 @@ class Accelerometer extends EventDispatcher
 		dispatchEvent(event);
 	}
 
-	// Event Handlers
-	@:noCompletion private static function accelerometer_onUpdate(x:Float, y:Float, z:Float):Void
-	{
-		currentX = x;
-		currentY = y;
-		currentZ = z;
-	}
-
 	// Getters & Setters
 	@:noCompletion private static function get_isSupported():Bool
 	{
@@ -230,6 +208,14 @@ class Accelerometer extends EventDispatcher
 		return value;
 	}
 }
+
+#if lime
+private typedef AccelerometerBackend = openfl._internal.backend.lime.LimeAccelerometerBackend;
+#elseif openfl_html5
+private typedef AccelerometerBackend = openfl._internal.backend.html5.HTML5AccelerometerBackend;
+#else
+private typedef AccelerometerBackend = openfl._internal.backend.dummy.DummyAccelerometerBackend;
+#end
 #else
 typedef Accelerometer = flash.sensors.Accelerometer;
 #end

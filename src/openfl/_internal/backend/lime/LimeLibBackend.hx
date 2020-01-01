@@ -3,6 +3,9 @@ package openfl._internal.backend.lime;
 #if lime
 import lime.system.System;
 import openfl.net.URLRequest;
+#if openfl_html5
+import js.Browser;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -41,6 +44,16 @@ class LimeLibBackend
 		}
 
 		System.openURL(uri, window);
+	}
+
+	public static function preventDefaultTouchMove():Void
+	{
+		#if openfl_html5
+		Browser.document.addEventListener("touchmove", function(evt:js.html.Event):Void
+		{
+			evt.preventDefault();
+		}, false);
+		#end
 	}
 }
 #end

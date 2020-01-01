@@ -297,8 +297,8 @@ import openfl._internal.backend.gl.WebGLRenderingContext in WebGLRenderContext;
 		__contextState = contextState;
 		__stage3D = stage3D;
 
-		#if openfl_gl
-		__context = stage.window.context;
+		#if (lime && openfl_gl)
+		__context = stage.limeWindow.context;
 		gl = __context.webgl;
 
 		if (__contextState == null) __contextState = new Context3DState();
@@ -1068,14 +1068,14 @@ import openfl._internal.backend.gl.WebGLRenderingContext in WebGLRenderContext;
 
 		if (__stage.context3D == this)
 		{
-			if (__stage.window != null)
+			if (__stage.limeWindow != null)
 			{
 				if (__stage3D != null)
 				{
 					destVector.setTo(Std.int(-__stage3D.x), Std.int(-__stage3D.y));
 				}
 
-				var image = __stage.window.readPixels();
+				var image = __stage.limeWindow.readPixels();
 				destination.image.copyPixels(image, sourceRect, destVector);
 			}
 		}
@@ -2257,6 +2257,7 @@ import openfl._internal.backend.gl.WebGLRenderingContext in WebGLRenderContext;
 
 	@:noCompletion private function __flushGLScissor():Void
 	{
+		#if (lime && openfl_gl)
 		if (!__state.scissorEnabled)
 		{
 			if (#if openfl_disable_context_cache true #else __contextState.scissorEnabled != __state.scissorEnabled #end)
@@ -2277,7 +2278,7 @@ import openfl._internal.backend.gl.WebGLRenderingContext in WebGLRenderContext;
 
 			if (__state.renderToTexture == null && __stage3D == null)
 			{
-				var contextHeight = Std.int(__stage.window.height * __stage.window.scale);
+				var contextHeight = Std.int(__stage.limeWindow.height * __stage.limeWindow.scale);
 				scissorY = contextHeight - Std.int(__state.scissorRectangle.height) - scissorY;
 			}
 
@@ -2290,6 +2291,7 @@ import openfl._internal.backend.gl.WebGLRenderingContext in WebGLRenderContext;
 				__contextState.scissorRectangle.setTo(scissorX, scissorY, scissorWidth, scissorHeight);
 			}
 		}
+		#end
 	}
 
 	@:noCompletion private function __flushGLStencil():Void
@@ -2411,6 +2413,7 @@ import openfl._internal.backend.gl.WebGLRenderingContext in WebGLRenderContext;
 
 	@:noCompletion private function __flushGLViewport():Void
 	{
+		#if (lime && openfl_gl)
 		// TODO: Cache
 
 		if (__state.renderToTexture == null)
@@ -2418,7 +2421,7 @@ import openfl._internal.backend.gl.WebGLRenderingContext in WebGLRenderContext;
 			if (__stage.context3D == this)
 			{
 				var x = __stage3D == null ? 0 : Std.int(__stage3D.x);
-				var y = Std.int((__stage.window.height * __stage.window.scale) - backBufferHeight - (__stage3D == null ? 0 : __stage3D.y));
+				var y = Std.int((__stage.limeWindow.height * __stage.limeWindow.scale) - backBufferHeight - (__stage3D == null ? 0 : __stage3D.y));
 				gl.viewport(x, y, backBufferWidth, backBufferHeight);
 			}
 			else
@@ -2452,6 +2455,7 @@ import openfl._internal.backend.gl.WebGLRenderingContext in WebGLRenderContext;
 
 			gl.viewport(0, 0, width, height);
 		}
+		#end
 	}
 
 	@:noCompletion private function __getGLBlend(blendFactor:Context3DBlendFactor):Int

@@ -1,5 +1,6 @@
 package openfl.display;
 
+#if lime
 import openfl.events.Event;
 import openfl.events.ProgressEvent;
 import openfl.Lib;
@@ -170,7 +171,7 @@ class Preloader
 
 	public function getBackgroundColor():Int
 	{
-		var attributes = Lib.current.stage.window.context.attributes;
+		var attributes = Lib.current.stage.limeWindow.context.attributes;
 
 		if (Reflect.hasField(attributes, "background") && attributes.background != null)
 		{
@@ -184,7 +185,7 @@ class Preloader
 
 	public function getHeight():Float
 	{
-		var height = Lib.current.stage.window.height;
+		var height = Lib.current.stage.limeWindow.height;
 
 		if (height > 0)
 		{
@@ -198,7 +199,7 @@ class Preloader
 
 	public function getWidth():Float
 	{
-		var width = Lib.current.stage.window.width;
+		var width = Lib.current.stage.limeWindow.width;
 
 		if (width > 0)
 		{
@@ -280,3 +281,4 @@ class Preloader
 		onUpdate(Std.int(event.bytesLoaded), Std.int(event.bytesTotal));
 	}
 }
+#end

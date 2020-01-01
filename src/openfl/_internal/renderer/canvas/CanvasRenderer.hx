@@ -106,11 +106,11 @@ class CanvasRenderer extends CanvasRendererAPI
 			if (!__stage.__transparent && __stage.__clearBeforeRender)
 			{
 				context.fillStyle = __stage.__colorString;
-				context.fillRect(0, 0, __stage.stageWidth * __stage.window.scale, __stage.stageHeight * __stage.window.scale);
+				context.fillRect(0, 0, __stage.stageWidth * __stage.__contentsScaleFactor, __stage.stageHeight * __stage.__contentsScaleFactor);
 			}
 			else if (__stage.__transparent && __stage.__clearBeforeRender)
 			{
-				context.clearRect(0, 0, __stage.stageWidth * __stage.window.scale, __stage.stageHeight * __stage.window.scale);
+				context.clearRect(0, 0, __stage.stageWidth * __stage.__contentsScaleFactor, __stage.stageHeight * __stage.__contentsScaleFactor);
 			}
 
 			__setBlendMode(cacheBlendMode);

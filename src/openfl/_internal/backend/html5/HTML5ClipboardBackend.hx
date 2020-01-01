@@ -4,6 +4,7 @@ package openfl._internal.backend.html5;
 import js.html.TextAreaElement;
 import openfl.desktop.Clipboard;
 import openfl.desktop.ClipboardFormats;
+import openfl.desktop.ClipboardTransferMode;
 import openfl.utils.Object;
 
 class HTML5ClipboardBackend
@@ -38,7 +39,7 @@ class HTML5ClipboardBackend
 	{
 		return switch (format)
 		{
-			case HTML_FORMAT, RICH_TEXT_FORMAT, TEXT_FORMAT: text
+			case HTML_FORMAT, RICH_TEXT_FORMAT, TEXT_FORMAT: text;
 			default: null;
 		}
 	}
