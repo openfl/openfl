@@ -2,7 +2,7 @@ package openfl.utils;
 
 import haxe.io.Bytes;
 #if lime
-import openfl._internal.backend.lime.AssetManifest as LimeAssetManifest;
+import lime.utils.AssetManifest as LimeAssetManifest;
 #end
 
 #if !openfl_debug

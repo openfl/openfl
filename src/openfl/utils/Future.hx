@@ -1,8 +1,6 @@
 package openfl.utils;
 
 #if !lime
-// import openfl._internal.backend.lime.System;
-// import openfl._internal.backend.lime.ThreadPool;
 import openfl._internal.utils.Log;
 import openfl.Lib;
 

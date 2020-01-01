@@ -3,19 +3,12 @@ package openfl;
 import haxe.Constraints.Function;
 import haxe.PosInfos;
 import haxe.Timer;
-import openfl._internal.backend.html5.Browser;
-import openfl._internal.backend.lime.System;
 import openfl._internal.utils.Log;
 import openfl._internal.Lib as InternalLib;
 import openfl.display.Application;
 import openfl.display.MovieClip;
 import openfl.net.URLLoader;
 import openfl.net.URLRequest;
-#if (!lime && openfl_html5)
-import openfl._internal.backend.lime_standalone.System;
-#else
-import openfl._internal.backend.lime.System;
-#end
 
 // #end
 #if !openfl_debug
@@ -24,7 +17,9 @@ import openfl._internal.backend.lime.System;
 #end
 @:access(openfl.display.Stage) class Lib
 {
+	#if lime
 	public static var application(get, never):Application;
+	#end
 	public static var current(get, never):MovieClip;
 	@:noCompletion private static var __lastTimerID:UInt = 0;
 	@:noCompletion private static var __sentWarnings:Map<String, Bool> = new Map();
@@ -219,10 +214,8 @@ import openfl._internal.backend.lime.System;
 	{
 		#if flash
 		return flash.Lib.getTimer();
-		#elseif (lime || openfl_html5)
-		return System.getTimer();
 		#else
-		return 0;
+		return LibBackend.getTimer();
 		#end
 	}
 
@@ -389,31 +382,8 @@ import openfl._internal.backend.lime.System;
 
 		#if flash
 		return flash.Lib.getURL(request, window);
-		#elseif (lime || openfl_html5)
-		var uri = request.url;
-
-		if (Type.typeof(request.data) == Type.ValueType.TObject)
-		{
-			var query = "";
-			var fields = Reflect.fields(request.data);
-
-			for (field in fields)
-			{
-				if (query.length > 0) query += "&";
-				query += StringTools.urlEncode(field) + "=" + StringTools.urlEncode(Std.string(Reflect.field(request.data, field)));
-			}
-
-			if (uri.indexOf("?") > -1)
-			{
-				uri += "&" + query;
-			}
-			else
-			{
-				uri += "?" + query;
-			}
-		}
-
-		System.openURL(uri, window);
+		#else
+		return LibBackend.navigateToURL(request, window);
 		#end
 	}
 
@@ -432,10 +402,7 @@ import openfl._internal.backend.lime.System;
 	public static function preventDefaultTouchMove():Void
 	{
 		#if openfl_html5
-		Browser.document.addEventListener("touchmove", function(evt:js.html.Event):Void
-		{
-			evt.preventDefault();
-		}, false);
+		LibBackend.preventDefaultTouchMove();
 		#end
 	}
 
@@ -563,10 +530,12 @@ import openfl._internal.backend.lime.System;
 	}
 
 	// Get & Set Methods
+	#if lime
 	@:noCompletion private static function get_application():Application
 	{
 		return InternalLib.application;
 	}
+	#end
 
 	@:noCompletion private static function get_current():MovieClip
 	{
@@ -582,3 +551,11 @@ import openfl._internal.backend.lime.System;
 	// 	return cast flash.Lib.current = cast current;
 	// }
 }
+
+#if lime
+private typedef LibBackend = openfl._internal.backend.lime.LimeLibBackend;
+#elseif openfl_html5
+private typedef LibBackend = openfl._internal.backend.html5.HTML5LibBackend;
+#else
+private typedef LibBackend = openfl._internal.backend.dummy.DummyLibBackend;
+#end

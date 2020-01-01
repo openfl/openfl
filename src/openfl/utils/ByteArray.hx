@@ -13,16 +13,13 @@ import haxe.Unserializer;
 import openfl._internal.backend.utils.ArrayBuffer;
 import openfl.errors.EOFError;
 import openfl.net.ObjectEncoding;
-#if (!lime && openfl_html5)
-import openfl._internal.backend.lime_standalone.BytePointer;
+#if lime
+import lime.system.System;
+import lime.utils.BytePointer;
+import lime.utils.Bytes as LimeBytes;
+import lime.utils.DataPointer;
+#elseif openfl_html5
 import openfl._internal.backend.lime_standalone.LimeBytes;
-import openfl._internal.backend.lime_standalone.DataPointer;
-import openfl._internal.backend.lime_standalone.System;
-#else
-import openfl._internal.backend.lime.BytePointer;
-import openfl._internal.backend.lime.Bytes as LimeBytes;
-import openfl._internal.backend.lime.DataPointer;
-import openfl._internal.backend.lime.System;
 #end
 #if format
 import format.amf.Reader as AMFReader;

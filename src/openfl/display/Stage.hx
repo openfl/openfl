@@ -1706,8 +1706,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 					if (cursor != null)
 					{
-						window.cursor = cursor;
-						break;
+						Mouse.__setStageCursor(this, cursor);
 					}
 				}
 			}

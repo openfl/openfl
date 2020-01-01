@@ -4,7 +4,7 @@ import openfl.display.BitmapData;
 import openfl.media.Sound;
 import openfl.text.Font;
 #if lime
-import openfl._internal.backend.lime.Assets as LimeAssets;
+import lime.utils.Assets as LimeAssets;
 #end
 
 /**

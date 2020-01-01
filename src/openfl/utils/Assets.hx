@@ -8,8 +8,8 @@ import openfl.events.EventDispatcher;
 import openfl.media.Sound;
 import openfl.text.Font;
 #if lime
-import openfl._internal.backend.lime.AssetLibrary as LimeAssetLibrary;
-import openfl._internal.backend.lime.Assets as LimeAssets;
+import lime.utils.AssetLibrary as LimeAssetLibrary;
+import lime.utils.Assets as LimeAssets;
 #end
 
 /**
