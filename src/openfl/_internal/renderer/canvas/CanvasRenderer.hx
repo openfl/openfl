@@ -541,9 +541,8 @@ class CanvasRenderer extends CanvasRendererAPI
 			case DIFFERENCE:
 				context.globalCompositeOperation = "difference";
 
-			// case ERASE:
-
-			// context.globalCompositeOperation = "";
+			 case ERASE:
+				context.globalCompositeOperation = "destination-out";
 
 			case HARDLIGHT:
 				context.globalCompositeOperation = "hard-light";

@@ -1463,6 +1463,9 @@ class Context3DRenderer extends Context3DRendererAPI
 				context3D.setBlendFactors(ONE, ONE);
 				context3D.__setGLBlendEquation(GL.FUNC_REVERSE_SUBTRACT);
 
+			case ERASE:
+				context3D.setBlendFactors(ZERO, ONE_MINUS_SOURCE_ALPHA);
+
 			#if desktop
 			case DARKEN:
 				context3D.setBlendFactors(ONE, ONE);

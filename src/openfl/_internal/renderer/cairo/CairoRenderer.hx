@@ -498,9 +498,8 @@ class CairoRenderer extends CairoRendererAPI
 			case DIFFERENCE:
 				cairo.setOperator(CairoOperator.DIFFERENCE);
 
-			// case ERASE:
-
-			// TODO;
+			case ERASE:
+				cairo.setOperator(CairoOperator.DEST_OUT);
 
 			case HARDLIGHT:
 				cairo.setOperator(CairoOperator.HARD_LIGHT);
