@@ -1,4 +1,4 @@
-package openfl.display;
+package display;
 
 import massive.munit.Assert;
 import openfl.display.Window;

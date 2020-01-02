@@ -113,6 +113,7 @@ class PrintJob
 	**/
 	public var paperWidth(default, null):Int;
 
+	@:noCompletion private var __backend:PrintJobBackend;
 	@:noCompletion private var __bitmapData:Array<BitmapData>;
 	@:noCompletion private var __started:Bool;
 
@@ -166,7 +167,10 @@ class PrintJob
 									  throws an exception if another PrintJob
 									  object is still active.
 	**/
-	public function new() {}
+	public function new()
+	{
+		__backend = new PrintJobBackend(this);
+	}
 
 	/**
 		Sends the specified Sprite object as a single page to the print
@@ -311,7 +315,7 @@ class PrintJob
 	{
 		if (!__started) return;
 
-		PrintJobBackend.send(this);
+		__backend.send();
 	}
 
 	/**

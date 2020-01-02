@@ -13,7 +13,14 @@ import openfl.printing.PrintJob;
 @:access(openfl.printing.PrintJob)
 class HTML5PrintJobBackend
 {
-	public function send(printJob:PrintJob):Void
+	private var parent:PrintJob;
+
+	public function new(parent:PrintJob)
+	{
+		this.parent = parent;
+	}
+
+	public function send():Void
 	{
 		var window = Browser.window.open("", "", "width=500,height=500");
 
@@ -34,9 +41,9 @@ class HTML5PrintJobBackend
 			var image:Image;
 			var bitmapData;
 
-			for (i in 0...printJob.__bitmapData.length)
+			for (i in 0...parent.__bitmapData.length)
 			{
-				bitmapData = printJob.__bitmapData[i];
+				bitmapData = parent.__bitmapData[i];
 				ImageCanvasUtil.sync(bitmapData.image, false);
 
 				if (bitmapData.image.buffer.__srcCanvas != null)

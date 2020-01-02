@@ -3,10 +3,10 @@ package openfl._internal.backend.lime;
 #if lime
 import haxe.Timer;
 import lime._internal.graphics.ImageCanvasUtil;
-import lime.graphics.Image;
 import openfl.printing.PrintJob;
 #if openfl_html5
 import js.html.DivElement;
+import js.html.Image;
 import js.html.StyleElement;
 import js.Browser;
 #end
@@ -19,7 +19,14 @@ import js.Browser;
 @:access(openfl.printing.PrintJob)
 class LimePrintJobBackend
 {
-	public function send(printJob:PrintJob):Void
+	private var parent:PrintJob;
+
+	public function new(parent:PrintJob)
+	{
+		this.parent = parent;
+	}
+
+	public function send():Void
 	{
 		#if openfl_html5
 		var window = Browser.window.open("", "", "width=500,height=500");
@@ -41,9 +48,9 @@ class LimePrintJobBackend
 			var image:Image;
 			var bitmapData;
 
-			for (i in 0...printJob.__bitmapData.length)
+			for (i in 0...parent.__bitmapData.length)
 			{
-				bitmapData = printJob.__bitmapData[i];
+				bitmapData = parent.__bitmapData[i];
 				ImageCanvasUtil.sync(bitmapData.image, false);
 
 				if (bitmapData.image.buffer.__srcCanvas != null)

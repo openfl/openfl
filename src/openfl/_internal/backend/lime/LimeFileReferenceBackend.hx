@@ -27,6 +27,7 @@ import sys.FileSystem;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@:access(openfl.net.FileReference)
 class LimeFileReferenceBackend
 {
 	private var data:ByteArray;
@@ -95,13 +96,13 @@ class LimeFileReferenceBackend
 		inputControl.onchange = function()
 		{
 			var file = inputControl.files[0];
-			modificationDate = Date.fromTime(file.lastModified);
-			creationDate = modificationDate;
-			size = file.size;
-			type = "." + Path.extension(file.name);
-			name = Path.withoutDirectory(file.name);
+			parent.modificationDate = Date.fromTime(file.lastModified);
+			parent.creationDate = parent.modificationDate;
+			parent.size = file.size;
+			parent.type = "." + Path.extension(file.name);
+			parent.name = Path.withoutDirectory(file.name);
 			path = file.name;
-			dispatchEvent(new Event(Event.SELECT));
+			parent.dispatchEvent(new Event(Event.SELECT));
 		}
 		inputControl.click();
 		return true;
@@ -121,8 +122,8 @@ class LimeFileReferenceBackend
 
 	public function download(request:URLRequest, defaultFileName:String = null):Void
 	{
-		data = null;
-		path = null;
+		this.data = null;
+		this.path = null;
 
 		urlLoader = new URLLoader();
 		urlLoader.addEventListener(Event.COMPLETE, urlLoader_onComplete);
@@ -158,8 +159,8 @@ class LimeFileReferenceBackend
 
 	public function save(data:Dynamic, defaultFileName:String = null):Void
 	{
-		data = null;
-		path = null;
+		this.data = null;
+		this.path = null;
 
 		if (data == null) return;
 
@@ -182,7 +183,7 @@ class LimeFileReferenceBackend
 		#elseif openfl_html5
 		if (Std.is(data, ByteArrayData))
 		{
-			thisdata = data;
+			this.data = data;
 		}
 		else
 		{
@@ -213,13 +214,13 @@ class LimeFileReferenceBackend
 	{
 		#if sys
 		var fileInfo = FileSystem.stat(path);
-		creationDate = fileInfo.ctime;
-		modificationDate = fileInfo.mtime;
-		size = fileInfo.size;
-		type = "." + Path.extension(path);
+		parent.creationDate = fileInfo.ctime;
+		parent.modificationDate = fileInfo.mtime;
+		parent.size = fileInfo.size;
+		parent.type = "." + Path.extension(path);
 		#end
 
-		name = Path.withoutDirectory(path);
+		parent.name = Path.withoutDirectory(path);
 		this.path = path;
 
 		parent.dispatchEvent(new Event(Event.SELECT));
@@ -243,11 +244,11 @@ class LimeFileReferenceBackend
 		#if desktop
 		name = Path.withoutDirectory(path);
 
-		if (data != null)
+		if (this.data != null)
 		{
 			File.saveBytes(path, data);
 
-			data = null;
+			this.data = null;
 			this.path = null;
 		}
 		else

@@ -1,4 +1,4 @@
-package openfl.display;
+package display;
 
 import massive.munit.Assert;
 import openfl.display.Preloader;
@@ -9,9 +9,11 @@ class PreloaderTest
 	{
 		// TODO: Confirm functionality
 
+		#if lime
 		var preloader = new Preloader();
 		var exists = preloader;
 
 		Assert.isNotNull(exists);
+		#end
 	}
 }

@@ -77,7 +77,7 @@ class LimeFileReferenceListBackend
 			fileReference.type = "." + Path.extension(path);
 			#end
 
-			fileReference.__path = path;
+			@:privateAccess fileReference.__backend.path = path;
 			fileReference.name = Path.withoutDirectory(path);
 
 			parent.fileList.push(fileReference);

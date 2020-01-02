@@ -63,7 +63,7 @@ class FileReferenceList extends EventDispatcher
 	**/
 	public var fileList(default, null):Array<FileReference>;
 
-	@:noCompletion private var __backend:FileReferenceBackend;
+	@:noCompletion private var __backend:FileReferenceListBackend;
 
 	/**
 		Creates a new FileReferenceList object. A FileReferenceList object
@@ -76,7 +76,7 @@ class FileReferenceList extends EventDispatcher
 	{
 		super();
 
-		__backend = new FileReferenceBackend(this);
+		__backend = new FileReferenceListBackend(this);
 	}
 
 	/**

@@ -67,7 +67,7 @@ class LimeStageBackend
 		parent.color = color;
 
 		// TODO: Workaround need to set reference here
-		parent.__backend = this;
+		parent.__backend = cast this;
 
 		parent.__contentsScaleFactor = window.scale;
 		parent.__wasFullscreen = window.fullscreen;
