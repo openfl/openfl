@@ -579,41 +579,7 @@ import haxe.macro.Compiler;
 
 	@:noCompletion private static function get_language():String
 	{
-		#if (lime || openfl_html5)
-		var language = Locale.currentLocale.language;
-
-		if (language != null)
-		{
-			language = language.toLowerCase();
-
-			switch (language)
-			{
-				case "cs", "da", "nl", "en", "fi", "fr", "de", "hu", "it", "ja", "ko", "nb", "pl", "pt", "ru", "es", "sv", "tr":
-					return language;
-
-				case "zh":
-					var region = Locale.currentLocale.region;
-
-					if (region != null)
-					{
-						switch (region.toUpperCase())
-						{
-							case "TW", "HANT":
-								return "zh-TW";
-
-							default:
-						}
-					}
-
-					return "zh-CN";
-
-				default:
-					return "xu";
-			}
-		}
-		#end
-
-		return "en";
+		return CapabilitiesBackend.getLanguage();
 	}
 
 	@:noCompletion private static inline function get_manufacturer():String

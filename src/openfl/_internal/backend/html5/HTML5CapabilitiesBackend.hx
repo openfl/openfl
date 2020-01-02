@@ -2,10 +2,48 @@ package openfl._internal.backend.html5;
 
 #if openfl_html5
 import openfl._internal.backend.lime_standalone.Application;
+import openfl._internal.backend.lime_standalone.Locale;
 import openfl._internal.backend.lime_standalone.System;
 
 class HTML5CapabilitiesBackend
 {
+	public static function getLanguage():String
+	{
+		var language = Locale.currentLocale.language;
+
+		if (language != null)
+		{
+			language = language.toLowerCase();
+
+			switch (language)
+			{
+				case "cs", "da", "nl", "en", "fi", "fr", "de", "hu", "it", "ja", "ko", "nb", "pl", "pt", "ru", "es", "sv", "tr":
+					return language;
+
+				case "zh":
+					var region = Locale.currentLocale.region;
+
+					if (region != null)
+					{
+						switch (region.toUpperCase())
+						{
+							case "TW", "HANT":
+								return "zh-TW";
+
+							default:
+						}
+					}
+
+					return "zh-CN";
+
+				default:
+					return "xu";
+			}
+		}
+
+		return "en";
+	}
+
 	public static function getManufacturer():String
 	{
 		var name = System.platformName;

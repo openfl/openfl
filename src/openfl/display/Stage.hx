@@ -801,7 +801,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		The associated Lime Window instance for this Stage.
 	**/
 	@:noCompletion @:dox(hide)
-	@:deprecated("Stage.window is deprecated. Use Stage.window instead.")
+	@:deprecated("Stage.window is deprecated. Use Stage.limeWindow instead.")
 	public var window(get, never):Window;
 	@:noCompletion private inline function get_window():Window
 	{

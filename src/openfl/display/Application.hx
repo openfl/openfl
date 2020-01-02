@@ -23,9 +23,9 @@ class Application extends LimeApplication
 	{
 		super();
 
-		if (Lib.application == null)
+		if (Lib.limeApplication == null)
 		{
-			Lib.application = this;
+			Lib.limeApplication = this;
 		}
 
 		#if (!flash && !macro)

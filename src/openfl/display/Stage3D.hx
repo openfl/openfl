@@ -389,7 +389,7 @@ class Stage3D extends EventDispatcher
 			// __canvas.width = stage.stageWidth;
 			// __canvas.height = stage.stageHeight;
 
-			// var window = stage.window;
+			// var window = stage.limeWindow;
 			// var attributes = @:privateAccess window.__attributes;
 
 			// var transparentBackground = Reflect.hasField(attributes, "background") && attributes.background == null;

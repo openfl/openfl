@@ -161,10 +161,11 @@ import openfl._internal.Lib;
 	**/
 	public static function addCallback(functionName:String, closure:Dynamic):Void
 	{
-		#if openfl_html5
-		if (Lib.application.window.element != null)
+		#if (lime && openfl_html5)
+		// TODO without Lime
+		if (Lib.limeApplication.window.element != null)
 		{
-			untyped Lib.application.window.element[functionName] = closure;
+			untyped Lib.limeApplication.window.element[functionName] = closure;
 		}
 		#end
 	}
@@ -300,10 +301,10 @@ import openfl._internal.Lib;
 
 	private static function get_objectID():String
 	{
-		#if openfl_html5
-		if (Lib.application.window.element != null)
+		#if (lime && openfl_html5)
+		if (Lib.limeApplication.window.element != null)
 		{
-			return Lib.application.window.element.id;
+			return Lib.limeApplication.window.element.id;
 		}
 		#end
 

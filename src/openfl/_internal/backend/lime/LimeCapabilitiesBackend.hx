@@ -1,6 +1,7 @@
 package openfl._internal.backend.lime;
 
 #if lime
+import lime.system.Locale;
 import lime.system.System;
 import openfl.Lib;
 
@@ -11,6 +12,43 @@ import openfl.Lib;
 class LimeCapabilitiesBackend
 {
 	@:noCompletion private static var __standardDensities:Array<Int> = [120, 160, 240, 320, 480, 640, 800, 960];
+
+	public static function getLanguage():String
+	{
+		var language = Locale.currentLocale.language;
+
+		if (language != null)
+		{
+			language = language.toLowerCase();
+
+			switch (language)
+			{
+				case "cs", "da", "nl", "en", "fi", "fr", "de", "hu", "it", "ja", "ko", "nb", "pl", "pt", "ru", "es", "sv", "tr":
+					return language;
+
+				case "zh":
+					var region = Locale.currentLocale.region;
+
+					if (region != null)
+					{
+						switch (region.toUpperCase())
+						{
+							case "TW", "HANT":
+								return "zh-TW";
+
+							default:
+						}
+					}
+
+					return "zh-CN";
+
+				default:
+					return "xu";
+			}
+		}
+
+		return "en";
+	}
 
 	public static function getManufacturer():String
 	{
@@ -26,7 +64,7 @@ class LimeCapabilitiesBackend
 
 	public static function getScreenDPI():Float
 	{
-		var window = Lib.application != null ? Lib.application.window : null;
+		var window = Lib.limeApplication != null ? Lib.limeApplication.window : null;
 		var screenDPI:Float;
 
 		#if (desktop || web)
@@ -77,13 +115,13 @@ class LimeCapabilitiesBackend
 
 		if (stage == null) return 0;
 
-		if (stage.window != null)
+		if (stage.limeWindow != null)
 		{
-			var display = stage.window.display;
+			var display = stage.limeWindow.display;
 
 			if (display != null)
 			{
-				resolutionX = Math.ceil(display.currentMode.width * stage.window.scale);
+				resolutionX = Math.ceil(display.currentMode.width * stage.limeWindow.scale);
 			}
 		}
 
@@ -102,13 +140,13 @@ class LimeCapabilitiesBackend
 
 		if (stage == null) return 0;
 
-		if (stage.window != null)
+		if (stage.limeWindow != null)
 		{
-			var display = stage.window.display;
+			var display = stage.limeWindow.display;
 
 			if (display != null)
 			{
-				resolutionY = Math.ceil(display.currentMode.height * stage.window.scale);
+				resolutionY = Math.ceil(display.currentMode.height * stage.limeWindow.scale);
 			}
 		}
 

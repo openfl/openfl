@@ -18,9 +18,19 @@ import openfl.net.URLRequest;
 @:access(openfl.display.Stage) class Lib
 {
 	#if lime
-	public static var application(get, never):Application;
+	@:noCompletion @:dox(hide)
+	@:deprecated("Lib.application is deprecated. Use Lib.limeApplication instead.")
+	public var application(get, never):Application;
+	@:noCompletion private inline function get_application():Application
+	{
+		return Lib.limeApplication;
+	}
 	#end
 	public static var current(get, never):MovieClip;
+	#if lime
+	public static var limeApplication(get, never):Application;
+	#end
+
 	@:noCompletion private static var __lastTimerID:UInt = 0;
 	@:noCompletion private static var __sentWarnings:Map<String, Bool> = new Map();
 	@:noCompletion private static var __timers:Map<UInt, Timer> = new Map();
@@ -32,7 +42,7 @@ import openfl.net.URLRequest;
 			"application": {
 				get: function()
 				{
-					return Lib.get_application();
+					return Lib.get_limeApplication();
 				}
 			},
 			"current": {
@@ -40,7 +50,13 @@ import openfl.net.URLRequest;
 				{
 					return Lib.get_current();
 				}
-			}
+			},
+			"limeApplication": {
+				get: function()
+				{
+					return Lib.get_limeApplication();
+				}
+			},
 		});
 	}
 	#end
@@ -530,13 +546,6 @@ import openfl.net.URLRequest;
 	}
 
 	// Get & Set Methods
-	#if lime
-	@:noCompletion private static function get_application():Application
-	{
-		return InternalLib.application;
-	}
-	#end
-
 	@:noCompletion private static function get_current():MovieClip
 	{
 		#if flash
@@ -550,6 +559,13 @@ import openfl.net.URLRequest;
 	// @:noCompletion private static function set_current (current:MovieClip):MovieClip {
 	// 	return cast flash.Lib.current = cast current;
 	// }
+
+	#if lime
+	@:noCompletion private static function get_limeApplication():Application
+	{
+		return InternalLib.limeApplication;
+	}
+	#end
 }
 
 #if lime

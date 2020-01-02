@@ -4,6 +4,11 @@ import openfl.Lib;
 
 class DummyCapabilitiesBackend
 {
+	public static function getLanguage():String
+	{
+		return "en";
+	}
+
 	public static function getManufacturer():String
 	{
 		return "Unknown";

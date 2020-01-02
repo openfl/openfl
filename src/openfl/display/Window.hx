@@ -50,7 +50,7 @@ class Window #if (lime || openfl_html5) extends LimeWindow #end
 		if (Reflect.hasField(attributes, "stage"))
 		{
 			stage = Reflect.field(attributes, "stage");
-			stage.window = this;
+			stage.limeWindow = this;
 			Reflect.deleteField(attributes, "stage");
 		}
 		else
