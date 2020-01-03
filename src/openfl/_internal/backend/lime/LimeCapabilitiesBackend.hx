@@ -4,6 +4,9 @@ package openfl._internal.backend.lime;
 import lime.system.Locale;
 import lime.system.System;
 import openfl.Lib;
+#if linux
+import sys.io.Process;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
