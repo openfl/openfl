@@ -2,7 +2,6 @@ package openfl._internal.backend.dummy;
 
 import openfl.display.Stage;
 import openfl.display.StageDisplayState;
-import openfl.display.Window in OpenFLWindow;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -10,7 +9,7 @@ import openfl.display.Window in OpenFLWindow;
 #end
 class DummyStageBackend
 {
-	public function new(parent:Stage, window:OpenFLWindow, color:Null<Int> = null) {}
+	public function new(parent:Stage) {}
 
 	public function cancelRender():Void {}
 

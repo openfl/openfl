@@ -957,7 +957,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	#end
 
 	public function new(#if (commonjs || (openfl_html5 && !lime)) width:Dynamic = 0, height:Dynamic = 0, color:Null<Int> = null,
-		documentClass:Class<Dynamic> = null, windowAttributes:Dynamic = null #else window:Window, color:Null<Int> = null #end)
+		documentClass:Class<Dynamic> = null, windowAttributes:Dynamic = null #elseif lime window:Window, color:Null<Int> = null #end)
 	{
 		#if hxtelemetry
 		Telemetry.__initialize();
@@ -1011,6 +1011,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		__backend = new StageBackend(this, width, height, color, documentClass, windowAttributes);
 		#elseif lime
 		__backend = new StageBackend(this, window, color);
+		#else
+		__backend = new StageBackend(this);
 		#end
 	}
 
