@@ -23,6 +23,9 @@ class LimeCommonJSStageBackend extends LimeStageBackend
 		if (windowAttributes == null) windowAttributes = {};
 		var app = null;
 
+		// TODO: Workaround need to set reference here
+		parent.__backend = cast this;
+
 		if (!Math.isNaN(width))
 		{
 			// if (Lib.current == null) Lib.current = new MovieClip ();
@@ -47,7 +50,7 @@ class LimeCommonJSStageBackend extends LimeStageBackend
 			windowAttributes.element = parent.element;
 			windowAttributes.resizable = resizable;
 
-			windowAttributes.stage = this;
+			windowAttributes.stage = parent;
 
 			if (!Reflect.hasField(windowAttributes, "context")) windowAttributes.context = {};
 			var contextAttributes = windowAttributes.context;
