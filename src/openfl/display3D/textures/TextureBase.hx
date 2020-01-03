@@ -1,10 +1,10 @@
 package openfl.display3D.textures;
 
 #if !flash
-import openfl._internal.backend.gl.GLFramebuffer;
-import openfl._internal.backend.gl.GLRenderbuffer;
-import openfl._internal.backend.gl.GLTexture;
-import openfl._internal.backend.gl.GL;
+import openfl._internal.bindings.gl.GLFramebuffer;
+import openfl._internal.bindings.gl.GLRenderbuffer;
+import openfl._internal.bindings.gl.GLTexture;
+import openfl._internal.bindings.gl.GL;
 import openfl._internal.formats.atf.ATFGPUFormat;
 import openfl._internal.renderer.SamplerState;
 import openfl.display.BitmapData;

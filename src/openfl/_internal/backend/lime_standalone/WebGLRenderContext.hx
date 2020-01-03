@@ -2,8 +2,8 @@ package openfl._internal.backend.lime_standalone;
 
 #if openfl_html5
 import js.html.webgl.UniformLocation in GLUniformLocation;
-import openfl._internal.backend.utils.ArrayBufferView;
-import openfl._internal.backend.utils.Float32Array;
+import openfl._internal.bindings.typedarray.ArrayBufferView;
+import openfl._internal.bindings.typedarray.Float32Array;
 
 @:forward(DEPTH_BUFFER_BIT, STENCIL_BUFFER_BIT, COLOR_BUFFER_BIT, POINTS, LINES, LINE_LOOP, LINE_STRIP, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN, ZERO, ONE,
 	SRC_COLOR, ONE_MINUS_SRC_COLOR, SRC_ALPHA, ONE_MINUS_SRC_ALPHA, DST_ALPHA, ONE_MINUS_DST_ALPHA, DST_COLOR, ONE_MINUS_DST_COLOR, SRC_ALPHA_SATURATE,

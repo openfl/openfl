@@ -1,6 +1,6 @@
 package openfl._internal.backend.lime_standalone; #if openfl_html5
 
-import openfl._internal.backend.utils.UInt8Array;
+import openfl._internal.bindings.typedarray.UInt8Array;
 
 abstract ARGB(UInt) from Int to Int from UInt to UInt
 {

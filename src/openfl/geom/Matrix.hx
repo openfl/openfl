@@ -1,9 +1,11 @@
 package openfl.geom;
 
 #if !flash
-import openfl._internal.backend.math.Matrix3;
-import openfl._internal.backend.utils.Float32Array;
+import openfl._internal.bindings.typedarray.Float32Array;
 import openfl._internal.utils.ObjectPool;
+#if lime
+import lime.math.Matrix3;
+#end
 
 /**
 	The Matrix class represents a transformation matrix that determines how to

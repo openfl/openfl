@@ -1,7 +1,7 @@
 package openfl.display;
 
 #if !flash
-import openfl._internal.backend.cairo.Cairo;
+import openfl._internal.bindings.cairo.Cairo;
 import openfl._internal.backend.lime.CairoRenderContext;
 import openfl.geom.Matrix;
 

@@ -3,17 +3,6 @@ package openfl.display;
 #if !flash
 import haxe.CallStack;
 import haxe.ds.ArraySort;
-import openfl._internal.backend.html5.Element;
-#if lime
-import lime.app.Application;
-import lime.app.IModule;
-import lime.ui.MouseWheelMode;
-import lime.ui.Touch;
-#elseif openfl_html5
-import openfl._internal.backend.lime_standalone.MouseWheelMode;
-import openfl._internal.backend.lime_standalone.Touch;
-#end
-
 import openfl._internal.utils.Log;
 import openfl._internal.utils.TouchData;
 import openfl.display3D.Context3D;
@@ -34,6 +23,18 @@ import openfl.ui.Keyboard;
 import openfl.ui.KeyLocation;
 import openfl.ui.Mouse;
 import openfl.ui.MouseCursor;
+#if lime
+import lime.app.Application;
+import lime.app.IModule;
+import lime.ui.MouseWheelMode;
+import lime.ui.Touch;
+#elseif openfl_html5
+import openfl._internal.backend.lime_standalone.MouseWheelMode;
+import openfl._internal.backend.lime_standalone.Touch;
+#end
+#if openfl_html5
+import js.html.Element;
+#end
 #if hxtelemetry
 import openfl.profiler.Telemetry;
 #end

@@ -1,11 +1,11 @@
 package openfl._internal.renderer.canvas;
 
 #if openfl_html5
-import openfl._internal.backend.html5.CanvasElement;
-import openfl._internal.backend.html5.CanvasPattern;
-import openfl._internal.backend.html5.CanvasRenderingContext2D;
-import openfl._internal.backend.html5.CanvasWindingRule;
-import openfl._internal.backend.html5.Browser;
+import js.html.CanvasElement;
+import js.html.CanvasPattern;
+import js.html.CanvasRenderingContext2D;
+import js.html.CanvasWindingRule;
+import js.Browser;
 import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.DrawCommandReader;
 import openfl.display.BitmapData;

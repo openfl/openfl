@@ -1,7 +1,7 @@
 package openfl._internal.formats.agal;
 
 import haxe.Int64;
-import openfl._internal.backend.gl.GL;
+import openfl._internal.bindings.gl.GL;
 import openfl._internal.renderer.SamplerState;
 import openfl._internal.utils.Log;
 import openfl.display3D.Context3DMipFilter;

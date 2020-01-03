@@ -1,8 +1,8 @@
 package openfl._internal.renderer.canvas;
 
 #if openfl_html5
-import openfl._internal.backend.html5.Browser;
-import openfl._internal.backend.html5.CanvasRenderingContext2D;
+import js.html.CanvasRenderingContext2D;
+import js.Browser;
 import openfl._internal.text.TextEngine;
 import openfl.display.BitmapData;
 import openfl.geom.Matrix;

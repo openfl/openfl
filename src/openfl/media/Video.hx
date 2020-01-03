@@ -1,9 +1,9 @@
 package openfl.media;
 
 #if !flash
-import openfl._internal.backend.gl.GLBuffer;
-import openfl._internal.backend.utils.Float32Array;
-import openfl._internal.backend.utils.UInt16Array;
+import openfl._internal.bindings.gl.GLBuffer;
+import openfl._internal.bindings.typedarray.Float32Array;
+import openfl._internal.bindings.typedarray.UInt16Array;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.display3D.Context3D;
 import openfl.display3D.IndexBuffer3D;
@@ -260,9 +260,9 @@ class Video extends DisplayObject
 		__stream = netStream;
 
 		#if openfl_html5
-		if (__stream != null && __stream.__video != null && !__stream.__closed)
+		if (__stream != null && @:privateAccess __stream.__backend.video != null && @:privateAccess !__stream.__backend.closed)
 		{
-			__stream.__video.play();
+			@:privateAccess __stream.__backend.video.play();
 		}
 		#end
 	}
@@ -318,23 +318,24 @@ class Video extends DisplayObject
 	@:noCompletion private function __getTexture(context:Context3D):RectangleTexture
 	{
 		#if openfl_html5
-		if (__stream == null || __stream.__video == null) return null;
+		if (__stream == null || @:privateAccess __stream.__backend.video == null) return null;
 
 		var gl = context.__context.webgl;
 		var internalFormat = gl.RGBA;
 		var format = gl.RGBA;
 
-		if (!__stream.__closed && __stream.__video.currentTime != __textureTime)
+		if (@:privateAccess !__stream.__backend.closed && @:privateAccess __stream.__backend.video.currentTime != __textureTime)
 		{
 			if (__texture == null)
 			{
-				__texture = context.createRectangleTexture(__stream.__video.videoWidth, __stream.__video.videoHeight, BGRA, false);
+				__texture = context.createRectangleTexture(@:privateAccess __stream.__backend.video.videoWidth,
+					@:privateAccess __stream.__backend.video.videoHeight, BGRA, false);
 			}
 
 			context.__bindGLTexture2D(__texture.__textureID);
-			gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, __stream.__video);
+			gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, @:privateAccess __stream.__backend.video);
 
-			__textureTime = __stream.__video.currentTime;
+			__textureTime = @:privateAccess __stream.__backend.video.currentTime;
 		}
 
 		return __texture;
@@ -452,9 +453,9 @@ class Video extends DisplayObject
 	@:noCompletion private function get_videoHeight():Int
 	{
 		#if openfl_html5
-		if (__stream != null && __stream.__video != null)
+		if (__stream != null && @:privateAccess __stream.__backend.video != null)
 		{
-			return Std.int(__stream.__video.videoHeight);
+			return Std.int(@:privateAccess __stream.__backend.video.videoHeight);
 		}
 		#end
 
@@ -464,9 +465,9 @@ class Video extends DisplayObject
 	@:noCompletion private function get_videoWidth():Int
 	{
 		#if openfl_html5
-		if (__stream != null && __stream.__video != null)
+		if (__stream != null && @:privateAccess __stream.__backend.video != null)
 		{
-			return Std.int(__stream.__video.videoWidth);
+			return Std.int(@:privateAccess __stream.__backend.video.videoWidth);
 		}
 		#end
 

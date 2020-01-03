@@ -1,13 +1,13 @@
 package openfl.display3D;
 
 #if !flash
-import openfl._internal.backend.gl.GLProgram;
-import openfl._internal.backend.gl.GLShader;
-import openfl._internal.backend.gl.GLUniformLocation;
-import openfl._internal.backend.gl.GL;
+import openfl._internal.bindings.gl.GLProgram;
+import openfl._internal.bindings.gl.GLShader;
+import openfl._internal.bindings.gl.GLUniformLocation;
+import openfl._internal.bindings.gl.GL;
 import openfl._internal.formats.agal.AGALConverter;
 import openfl._internal.renderer.SamplerState;
-import openfl._internal.backend.utils.Float32Array;
+import openfl._internal.bindings.typedarray.Float32Array;
 import openfl._internal.utils.Log;
 import openfl.display.ShaderParameterType;
 import openfl.errors.IllegalOperationError;

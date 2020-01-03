@@ -1,13 +1,13 @@
 package openfl._internal.renderer.cairo;
 
 #if openfl_cairo
-import openfl._internal.backend.cairo.Cairo;
-import openfl._internal.backend.cairo.CairoAntialias;
-import openfl._internal.backend.cairo.CairoFontOptions;
-import openfl._internal.backend.cairo.CairoFTFontFace;
-import openfl._internal.backend.cairo.CairoGlyph;
-import openfl._internal.backend.cairo.CairoHintMetrics;
-import openfl._internal.backend.cairo.CairoHintStyle;
+import openfl._internal.bindings.cairo.Cairo;
+import openfl._internal.bindings.cairo.CairoAntialias;
+import openfl._internal.bindings.cairo.CairoFontOptions;
+import openfl._internal.bindings.cairo.CairoFTFontFace;
+import openfl._internal.bindings.cairo.CairoGlyph;
+import openfl._internal.bindings.cairo.CairoHintMetrics;
+import openfl._internal.bindings.cairo.CairoHintStyle;
 import openfl._internal.text.TextEngine;
 import openfl.display.BitmapData;
 import openfl.display.Graphics;

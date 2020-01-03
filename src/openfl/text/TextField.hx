@@ -2,7 +2,6 @@ package openfl.text;
 
 #if !flash
 import haxe.Timer;
-import openfl._internal.backend.html5.DivElement;
 import openfl._internal.formats.html.HTMLParser;
 import openfl._internal.text.TextEngine;
 import openfl._internal.text.TextFormatRange;
@@ -23,6 +22,9 @@ import openfl.net.URLRequest;
 import openfl.ui.Keyboard;
 import openfl.ui.MouseCursor;
 import openfl.Lib;
+#if openfl_html5
+import js.html.DivElement;
+#end
 
 /**
 	The TextField class is used to create display objects for text display and

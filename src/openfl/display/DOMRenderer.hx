@@ -1,11 +1,13 @@
 package openfl.display;
 
 #if !flash
-import openfl._internal.backend.html5.Element;
 #if (!lime && openfl_html5)
 import openfl._internal.backend.lime_standalone.DOMRenderContext;
 #else
 import openfl._internal.backend.lime.DOMRenderContext;
+#end
+#if openfl_html5
+import js.html.Element;
 #end
 
 /**

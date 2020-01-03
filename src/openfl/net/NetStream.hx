@@ -1,12 +1,7 @@
 package openfl.net;
 
 #if !flash
-import haxe.Timer;
-import openfl._internal.backend.html5.Browser;
-import openfl._internal.backend.html5.VideoElement;
 import openfl.events.EventDispatcher;
-import openfl.events.NetStatusEvent;
-import openfl.media.SoundMixer;
 import openfl.media.SoundTransform;
 
 /**
@@ -1138,14 +1133,9 @@ class NetStream extends EventDispatcher
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public var videoSampleAccess:Bool;
 	#end
 	// @:noCompletion @:dox(hide) @:require(flash11) public var videoStreamSettings:openfl.media.VideoStreamSettings;
-	@:noCompletion private var __closed:Bool;
+	@:noCompletion private var __backend:NetStreamBackend;
 	@:noCompletion private var __connection:NetConnection;
 	@:noCompletion private var __soundTransform:SoundTransform;
-	@:noCompletion private var __timer:Timer;
-	#if openfl_html5
-	@:noCompletion @:isVar private var __seeking(get, set):Bool;
-	@:noCompletion private var __video(default, null):VideoElement;
-	#end
 
 	#if openfljs
 	@:noCompletion private static function __init__()
@@ -1210,27 +1200,7 @@ class NetStream extends EventDispatcher
 		__connection = connection;
 		__soundTransform = new SoundTransform();
 
-		#if openfl_html5
-		__video = cast Browser.document.createElement("video");
-
-		__video.setAttribute("playsinline", "");
-		__video.setAttribute("webkit-playsinline", "");
-		__video.setAttribute("crossorigin", "anonymous");
-
-		__video.addEventListener("error", video_onError, false);
-		__video.addEventListener("waiting", video_onWaiting, false);
-		__video.addEventListener("ended", video_onEnd, false);
-		__video.addEventListener("pause", video_onPause, false);
-		__video.addEventListener("seeking", video_onSeeking, false);
-		__video.addEventListener("playing", video_onPlaying, false);
-		__video.addEventListener("timeupdate", video_onTimeUpdate, false);
-		__video.addEventListener("loadstart", video_onLoadStart, false);
-		__video.addEventListener("stalled", video_onStalled, false);
-		__video.addEventListener("durationchanged", video_onDurationChanged, false);
-		__video.addEventListener("canplay", video_onCanPlay, false);
-		__video.addEventListener("canplaythrough", video_onCanPlayThrough, false);
-		__video.addEventListener("loadedmetadata", video_onLoadMetaData, false);
-		#end
+		__backend = new NetStreamBackend(this);
 	}
 
 	#if false
@@ -1442,14 +1412,7 @@ class NetStream extends EventDispatcher
 	**/
 	public function close():Void
 	{
-		#if openfl_html5
-		if (__video == null) return;
-
-		__closed = true;
-		__video.pause();
-		__video.src = "";
-		time = 0;
-		#end
+		__backend.close();
 	}
 
 	/**
@@ -1463,10 +1426,7 @@ class NetStream extends EventDispatcher
 	**/
 	public function dispose():Void
 	{
-		#if openfl_html5
-		close();
-		__video = null;
-		#end
+		__backend.dispose();
 	}
 
 	#if false
@@ -1532,9 +1492,7 @@ class NetStream extends EventDispatcher
 	**/
 	public function pause():Void
 	{
-		#if openfl_html5
-		if (__video != null) __video.pause();
-		#end
+		__backend.pause();
 	}
 
 	/**
@@ -1615,13 +1573,7 @@ class NetStream extends EventDispatcher
 	**/
 	public function play(url:String, p1 = null, p2 = null, p3 = null, p4 = null, p5 = null):Void
 	{
-		#if openfl_html5
-		if (__video == null) return;
-
-		__video.volume = SoundMixer.__soundTransform.volume * __soundTransform.volume;
-		__video.src = url;
-		__video.play();
-		#end
+		__backend.play(url, p1, p2, p3, p4, p5);
 	}
 
 	#if false
@@ -1865,32 +1817,6 @@ class NetStream extends EventDispatcher
 	**/
 	// @:noCompletion @:dox(hide) public static function resetDRMVouchers ():Void;
 	#end
-	@:dox(hide) @:noCompletion @SuppressWarnings("checkstyle:FieldDocComment")
-	public function requestVideoStatus():Void
-	{
-		#if openfl_html5
-		if (__video == null) return;
-
-		if (__timer == null)
-		{
-			__timer = new Timer(1);
-		}
-
-		__timer.run = function()
-		{
-			if (__video.paused)
-			{
-				__playStatus("NetStream.Play.pause");
-			}
-			else
-			{
-				__playStatus("NetStream.Play.playing");
-			}
-
-			__timer.stop();
-		};
-		#end
-	}
 
 	/**
 		Resumes playback of a video stream that is paused. If the video is
@@ -1899,9 +1825,7 @@ class NetStream extends EventDispatcher
 	**/
 	public function resume():Void
 	{
-		#if openfl_html5
-		if (__video != null) __video.play();
-		#end
+		__backend.resume();
 	}
 
 	/**
@@ -1981,22 +1905,7 @@ class NetStream extends EventDispatcher
 	**/
 	public function seek(time:Float):Void
 	{
-		#if openfl_html5
-		if (__video == null) return;
-
-		if (time < 0)
-		{
-			time = 0;
-		}
-		else if (time > __video.duration)
-		{
-			time = __video.duration;
-		}
-
-		__seeking = true;
-		__connection.dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, false, {code: "NetStream.SeekStart.Notify"}));
-		__video.currentTime = time;
-		#end
+		__backend.seek(time);
 	}
 
 	#if false
@@ -2097,135 +2006,7 @@ class NetStream extends EventDispatcher
 	**/
 	public function togglePause():Void
 	{
-		#if openfl_html5
-		if (__video == null) return;
-
-		if (__video.paused)
-		{
-			__video.play();
-		}
-		else
-		{
-			__video.pause();
-		}
-		#end
-	}
-
-	@:noCompletion private function __playStatus(code:String):Void
-	{
-		#if openfl_html5
-		if (__video == null) return;
-
-		if (client != null)
-		{
-			try
-			{
-				var handler = client.onPlayStatus;
-				handler({
-					code: code,
-					duration: __video.duration,
-					position: __video.currentTime,
-					speed: __video.playbackRate,
-					start: untyped __video.startTime
-				});
-			}
-			catch (e:Dynamic) {}
-		}
-		#end
-	}
-
-	// Event Handlers
-	@:noCompletion private function video_onCanPlay(event:Dynamic):Void
-	{
-		__playStatus("NetStream.Play.canplay");
-	}
-
-	@:noCompletion private function video_onCanPlayThrough(event:Dynamic):Void
-	{
-		__playStatus("NetStream.Play.canplaythrough");
-	}
-
-	@:noCompletion private function video_onDurationChanged(event:Dynamic):Void
-	{
-		__playStatus("NetStream.Play.durationchanged");
-	}
-
-	@:noCompletion private function video_onEnd(event:Dynamic):Void
-	{
-		__connection.dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, false, {code: "NetStream.Play.Stop"}));
-		__connection.dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, false, {code: "NetStream.Play.Complete"}));
-		__playStatus("NetStream.Play.Complete");
-	}
-
-	@:noCompletion private function video_onError(event:Dynamic):Void
-	{
-		__connection.dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, false, {code: "NetStream.Play.Stop"}));
-		__playStatus("NetStream.Play.error");
-	}
-
-	@:noCompletion private function video_onLoadMetaData(event:Dynamic):Void
-	{
-		#if openfl_html5
-		if (__video == null) return;
-
-		if (client != null)
-		{
-			try
-			{
-				var handler = client.onMetaData;
-				handler({
-					width: __video.videoWidth,
-					height: __video.videoHeight,
-					duration: __video.duration
-				});
-			}
-			catch (e:Dynamic) {}
-		}
-		#end
-	}
-
-	@:noCompletion private function video_onLoadStart(event:Dynamic):Void
-	{
-		__playStatus("NetStream.Play.loadstart");
-	}
-
-	@:noCompletion private function video_onPause(event:Dynamic):Void
-	{
-		__playStatus("NetStream.Play.pause");
-	}
-
-	@:noCompletion private function video_onPlaying(event:Dynamic):Void
-	{
-		__connection.dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, false, {code: "NetStream.Play.Start"}));
-		__playStatus("NetStream.Play.playing");
-	}
-
-	@:noCompletion private function video_onSeeking(event:Dynamic):Void
-	{
-		__playStatus("NetStream.Play.seeking");
-
-		__connection.dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, false, {code: "NetStream.Seek.Complete"}));
-	}
-
-	@:noCompletion private function video_onStalled(event:Dynamic):Void
-	{
-		__playStatus("NetStream.Play.stalled");
-	}
-
-	@:noCompletion private function video_onTimeUpdate(event:Dynamic):Void
-	{
-		#if openfl_html5
-		if (__video == null) return;
-
-		time = __video.currentTime;
-		#end
-
-		__playStatus("NetStream.Play.timeupdate");
-	}
-
-	@:noCompletion private function video_onWaiting(event:Dynamic):Void
-	{
-		__playStatus("NetStream.Play.waiting");
+		__backend.togglePause();
 	}
 
 	// Get & Set Methods
@@ -2241,12 +2022,7 @@ class NetStream extends EventDispatcher
 			__soundTransform.pan = value.pan;
 			__soundTransform.volume = value.volume;
 
-			#if html5
-			if (__video != null)
-			{
-				__video.volume = SoundMixer.__soundTransform.volume * __soundTransform.volume;
-			}
-			#end
+			__backend.setSoundTransform(value);
 		}
 
 		return value;
@@ -2254,40 +2030,21 @@ class NetStream extends EventDispatcher
 
 	@:noCompletion private function get_speed():Float
 	{
-		#if openfl_html5
-		return __video != null ? __video.playbackRate : 1;
-		#else
-		return 1;
-		#end
+		return __backend.getSpeed();
 	}
 
 	@:noCompletion private function set_speed(value:Float):Float
 	{
-		#if openfl_html5
-		return __video != null ? __video.playbackRate = value : value;
-		#else
+		__backend.setSpeed(value);
 		return value;
-		#end
-	}
-
-	@:noCompletion private function get___seeking():Bool
-	{
-		#if openfl_html5
-		return __seeking || __video.seeking;
-		#else
-		return false;
-		#end
-	}
-
-	@:noCompletion private function set___seeking(value:Bool):Bool
-	{
-		#if openfl_html5
-		return __seeking = value;
-		#else
-		return value;
-		#end
 	}
 }
+
+#if openfl_html5
+private typedef NetStreamBackend = openfl._internal.backend.html5.HTML5NetStreamBackend;
+#else
+private typedef NetStreamBackend = openfl._internal.backend.dummy.DummyNetStreamBackend;
+#end
 #else
 typedef NetStream = flash.net.NetStream;
 #end

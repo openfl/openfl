@@ -1,11 +1,8 @@
 package openfl._internal.text;
 
 import haxe.Timer;
-import openfl._internal.backend.cairo.CairoFontFace;
-import openfl._internal.backend.gl.GLTexture;
-import openfl._internal.backend.html5.Browser;
-import openfl._internal.backend.html5.CanvasElement;
-import openfl._internal.backend.html5.CanvasRenderingContext2D;
+import openfl._internal.bindings.cairo.CairoFontFace;
+import openfl._internal.bindings.gl.GLTexture;
 import openfl._internal.backend.lime.System;
 import openfl._internal.utils.Log;
 import openfl.geom.Rectangle;
@@ -18,6 +15,11 @@ import openfl.text.TextFieldType;
 import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
 import openfl.Vector;
+#if openfl_html5
+import js.html.CanvasElement;
+import js.html.CanvasRenderingContext2D;
+import js.Browser;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

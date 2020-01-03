@@ -1,7 +1,7 @@
 package openfl._internal.backend.lime_standalone; #if openfl_html5
 
 import haxe.io.Bytes;
-import openfl._internal.backend.utils.UInt8Array;
+import openfl._internal.bindings.typedarray.UInt8Array;
 import openfl.display.BitmapDataChannel;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;

@@ -1,11 +1,11 @@
 package openfl._internal.renderer.context3D;
 
 #if openfl_gl
-import openfl._internal.backend.math.ARGB;
+import openfl._internal.backend.lime.ARGB;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
-import openfl._internal.backend.utils.Float32Array;
-import openfl._internal.backend.utils.UInt16Array;
+import openfl._internal.bindings.typedarray.Float32Array;
+import openfl._internal.bindings.typedarray.UInt16Array;
 import openfl.display.BitmapData;
 import openfl.display.Graphics;
 import openfl.geom.ColorTransform;

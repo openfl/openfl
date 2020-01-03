@@ -1,8 +1,8 @@
 package openfl._internal.renderer.cairo;
 
 #if openfl_cairo
-import openfl._internal.backend.cairo.CairoFilter;
-import openfl._internal.backend.cairo.CairoPattern;
+import openfl._internal.bindings.cairo.CairoFilter;
+import openfl._internal.bindings.cairo.CairoPattern;
 import openfl.display.Bitmap;
 
 #if !openfl_debug

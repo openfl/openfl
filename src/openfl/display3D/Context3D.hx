@@ -1,18 +1,18 @@
 package openfl.display3D;
 
 #if !flash
-import openfl._internal.backend.gl.GLBuffer;
-import openfl._internal.backend.gl.GLFramebuffer;
-import openfl._internal.backend.gl.GLTexture;
-import openfl._internal.backend.gl.GL;
-import openfl._internal.backend.math.Rectangle as LimeRectangle;
-import openfl._internal.backend.math.Vector2;
+import openfl._internal.bindings.gl.GLBuffer;
+import openfl._internal.bindings.gl.GLFramebuffer;
+import openfl._internal.bindings.gl.GLTexture;
+import openfl._internal.bindings.gl.GL;
+import openfl._internal.backend.lime.Rectangle as LimeRectangle;
+import openfl._internal.backend.lime.Vector2;
 import openfl._internal.renderer.context3D.Context3DState;
 import openfl._internal.renderer.BitmapDataPool;
 import openfl._internal.renderer.SamplerState;
-import openfl._internal.backend.utils.Float32Array;
-import openfl._internal.backend.utils.UInt16Array;
-import openfl._internal.backend.utils.UInt8Array;
+import openfl._internal.bindings.typedarray.Float32Array;
+import openfl._internal.bindings.typedarray.UInt16Array;
+import openfl._internal.bindings.typedarray.UInt8Array;
 import openfl.display3D.textures.CubeTexture;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.display3D.textures.TextureBase;
@@ -38,7 +38,7 @@ import openfl._internal.backend.lime_standalone.WebGLRenderContext;
 import openfl._internal.backend.lime.Image;
 import openfl._internal.backend.lime.ImageBuffer;
 import openfl._internal.backend.lime.RenderContext;
-import openfl._internal.backend.gl.WebGLRenderingContext in WebGLRenderContext;
+import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 #end
 
 /**

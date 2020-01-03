@@ -1,9 +1,9 @@
 package openfl._internal.renderer.context3D;
 
-import openfl._internal.backend.gl.GLBuffer;
-import openfl._internal.backend.gl.GLFramebuffer;
-import openfl._internal.backend.gl.GLRenderbuffer;
-import openfl._internal.backend.gl.GLTexture;
+import openfl._internal.bindings.gl.GLBuffer;
+import openfl._internal.bindings.gl.GLFramebuffer;
+import openfl._internal.bindings.gl.GLRenderbuffer;
+import openfl._internal.bindings.gl.GLTexture;
 import openfl.display3D.textures.TextureBase;
 import openfl.display3D.Context3DBlendFactor;
 import openfl.display3D.Context3DCompareMode;

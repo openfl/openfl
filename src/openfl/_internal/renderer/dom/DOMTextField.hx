@@ -1,8 +1,8 @@
 package openfl._internal.renderer.dom;
 
 #if openfl_html5
-import openfl._internal.backend.html5.Browser;
-import openfl._internal.backend.html5.Element;
+import js.html.Element;
+import js.Browser;
 import openfl._internal.text.TextEngine;
 import openfl.text.TextField;
 import openfl.text.TextFormatAlign;

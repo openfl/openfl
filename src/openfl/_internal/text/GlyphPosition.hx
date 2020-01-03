@@ -1,7 +1,7 @@
 package openfl._internal.text;
 
 import openfl._internal.backend.lime.Glyph;
-import openfl._internal.backend.math.Vector2;
+import openfl._internal.backend.lime.Vector2;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

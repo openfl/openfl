@@ -1,10 +1,10 @@
 package openfl.display3D.textures;
 
 #if !flash
-import openfl._internal.backend.gl.GL;
+import openfl._internal.bindings.gl.GL;
 import openfl._internal.renderer.SamplerState;
-import openfl._internal.backend.utils.ArrayBufferView;
-import openfl._internal.backend.utils.UInt8Array;
+import openfl._internal.bindings.typedarray.ArrayBufferView;
+import openfl._internal.bindings.typedarray.UInt8Array;
 import openfl.display.BitmapData;
 import openfl.utils.ByteArray;
 

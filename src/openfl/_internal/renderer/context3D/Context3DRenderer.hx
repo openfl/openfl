@@ -2,9 +2,9 @@ package openfl._internal.renderer.context3D;
 
 #if !flash
 #if openfl_gl
-import openfl._internal.backend.gl.ext.KHR_debug;
-import openfl._internal.backend.gl.GL;
-import openfl._internal.backend.math.ARGB;
+import openfl._internal.bindings.gl.ext.KHR_debug;
+import openfl._internal.bindings.gl.GL;
+import openfl._internal.backend.lime.ARGB;
 import openfl._internal.renderer.context3D.batcher.BatchRenderer;
 import openfl._internal.renderer.ShaderBuffer;
 import openfl._internal.utils.ObjectPool;
@@ -37,9 +37,9 @@ import openfl._internal.backend.lime_standalone.RenderContext;
 import openfl._internal.backend.lime_standalone.WebGLRenderContext;
 import openfl.geom.Matrix3D;
 #else
-import openfl._internal.backend.gl.WebGLRenderingContext in WebGLRenderContext;
+import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 import openfl._internal.backend.lime.RenderContext;
-import openfl._internal.backend.math.Matrix4;
+import openfl._internal.backend.lime.Matrix4;
 #end
 #if openfl_html5
 import openfl._internal.renderer.canvas.CanvasRenderer;

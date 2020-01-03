@@ -1,7 +1,7 @@
 package openfl._internal.renderer.canvas;
 
 #if openfl_html5
-import openfl._internal.backend.math.ARGB;
+import openfl._internal.backend.lime.ARGB;
 import openfl.display.DisplayObject;
 
 @:access(openfl.display.DisplayObject)

@@ -3,8 +3,8 @@ package openfl._internal.backend.lime_standalone;
 #if openfl_html5
 import haxe.io.BytesData;
 import haxe.io.Bytes;
-import openfl._internal.backend.utils.ArrayBuffer;
-import openfl._internal.backend.utils.ArrayBufferView;
+import openfl._internal.bindings.typedarray.ArrayBuffer;
+import openfl._internal.bindings.typedarray.ArrayBufferView;
 
 @:access(haxe.io.Bytes)
 abstract DataPointer(DataPointerType) to DataPointerType

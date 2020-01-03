@@ -1,7 +1,7 @@
 package openfl._internal.renderer.dom;
 
 #if openfl_html5
-import openfl._internal.backend.html5.Browser;
+import js.Browser;
 import openfl._internal.renderer.dom.DOMRenderer;
 import openfl.display.Bitmap;
 #if (!lime && openfl_html5)

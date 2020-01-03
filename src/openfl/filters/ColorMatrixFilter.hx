@@ -1,7 +1,7 @@
 package openfl.filters;
 
 #if !flash
-import openfl._internal.backend.math.RGBA;
+import openfl._internal.backend.lime.RGBA;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;

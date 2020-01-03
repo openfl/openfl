@@ -11,7 +11,7 @@ import js.lib.Uint8ClampedArray;
 #else
 import js.html.Uint8ClampedArray;
 #end
-import openfl._internal.backend.utils.UInt8Array;
+import openfl._internal.bindings.typedarray.UInt8Array;
 
 @:allow(openfl._internal.backend.lime_standalone.Image)
 class ImageBuffer

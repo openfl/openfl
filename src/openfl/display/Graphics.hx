@@ -5,9 +5,9 @@ import openfl._internal.renderer.context3D.Context3DBuffer;
 import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.DrawCommandReader;
 import openfl._internal.renderer.ShaderBuffer;
-import openfl._internal.backend.utils.Float32Array;
+import openfl._internal.bindings.typedarray.Float32Array;
 import openfl._internal.utils.ObjectPool;
-import openfl._internal.backend.utils.UInt16Array;
+import openfl._internal.bindings.typedarray.UInt16Array;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
 import openfl.errors.ArgumentError;
@@ -15,11 +15,11 @@ import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.Vector;
 #if openfl_html5
-import openfl._internal.backend.html5.CanvasElement;
-import openfl._internal.backend.html5.CanvasRenderingContext2D;
+import js.html.CanvasElement;
+import js.html.CanvasRenderingContext2D;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 #else
-import openfl._internal.backend.cairo.Cairo;
+import openfl._internal.bindings.cairo.Cairo;
 import openfl._internal.renderer.cairo.CairoGraphics;
 #end
 

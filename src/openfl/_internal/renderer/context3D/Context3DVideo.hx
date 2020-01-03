@@ -1,7 +1,7 @@
 package openfl._internal.renderer.context3D;
 
 #if openfl_gl
-import openfl._internal.backend.gl.GL;
+import openfl._internal.bindings.gl.GL;
 import openfl.media.Video;
 #if gl_stats
 import openfl._internal.renderer.context3D.stats.Context3DStats;
@@ -27,7 +27,7 @@ class Context3DVideo
 		#if openfl_html5
 		if (!video.__renderable || video.__worldAlpha <= 0 || video.__stream == null) return;
 
-		if (video.__stream.__video != null)
+		if (@:privateAccess video.__stream.__backend.video != null)
 		{
 			var context = renderer.context3D;
 			var gl = context.gl;
@@ -53,8 +53,8 @@ class Context3DVideo
 
 			if (shader.__textureSize != null)
 			{
-				__textureSizeValue[0] = (video.__stream != null) ? video.__stream.__video.videoWidth : 0;
-				__textureSizeValue[1] = (video.__stream != null) ? video.__stream.__video.videoHeight : 0;
+				__textureSizeValue[0] = (video.__stream != null) ? @:privateAccess video.__stream.__backend.video.videoWidth : 0;
+				__textureSizeValue[1] = (video.__stream != null) ? @:privateAccess video.__stream.__backend.video.videoHeight : 0;
 				shader.__textureSize.value = __textureSizeValue;
 			}
 
@@ -98,7 +98,7 @@ class Context3DVideo
 		#if openfl_html5
 		if (video.__stream == null) return;
 
-		if (video.__stream.__video != null)
+		if (@:privateAccess video.__stream.__backend.video != null)
 		{
 			var context = renderer.context3D;
 			var gl = context.gl;

@@ -172,7 +172,7 @@ import openfl.events.EventDispatcher;
 #if lime
 private typedef SoundChannelBackend = openfl._internal.backend.lime.LimeSoundChannelBackend;
 #elseif openfl_html5
-private typedef SoundChannelBackend = openfl._internal.backend.howlerjs.HowlerSoundChannelBackend;
+private typedef SoundChannelBackend = openfl._internal.bindings.howlerjs.HowlerSoundChannelBackend;
 #else
 private typedef SoundChannelBackend = openfl._internal.backend.dummy.DummySoundChannelBackend;
 #end

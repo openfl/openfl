@@ -1,10 +1,10 @@
 package openfl.display3D;
 
 #if !flash
-import openfl._internal.backend.gl.GLBuffer;
-import openfl._internal.backend.gl.GL;
-import openfl._internal.backend.utils.ArrayBufferView;
-import openfl._internal.backend.utils.Float32Array;
+import openfl._internal.bindings.gl.GLBuffer;
+import openfl._internal.bindings.gl.GL;
+import openfl._internal.bindings.typedarray.ArrayBufferView;
+import openfl._internal.bindings.typedarray.Float32Array;
 import openfl.utils.ByteArray;
 import openfl.Vector;
 

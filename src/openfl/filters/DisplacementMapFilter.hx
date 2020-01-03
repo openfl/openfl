@@ -1,8 +1,6 @@
 package openfl.filters;
 
 #if !flash
-import openfl._internal.backend.math.Vector2;
-import openfl._internal.backend.math.Vector4;
 import openfl.display.BitmapDataChannel;
 import openfl.geom.Rectangle;
 import openfl.geom.Point;
@@ -15,6 +13,8 @@ import openfl._internal.backend.lime_standalone.ImageDataUtil;
 #else
 import openfl._internal.backend.lime.ImageCanvasUtil;
 import openfl._internal.backend.lime.ImageDataUtil;
+import openfl._internal.backend.lime.Vector2;
+import openfl._internal.backend.lime.Vector4;
 #end
 
 /**

@@ -1,9 +1,11 @@
 package openfl.display;
 
 #if !flash
-import openfl._internal.backend.html5.ImageElement;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+#if openfl_html5
+import js.html.ImageElement;
+#end
 
 /**
 	The Bitmap class represents display objects that represent bitmap images.

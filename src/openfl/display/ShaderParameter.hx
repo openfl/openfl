@@ -1,8 +1,8 @@
 package openfl.display;
 
 #if !flash
-import openfl._internal.backend.gl.GL;
-import openfl._internal.backend.utils.Float32Array;
+import openfl._internal.bindings.gl.GL;
+import openfl._internal.bindings.typedarray.Float32Array;
 import openfl.display3D.Context3D;
 
 /**

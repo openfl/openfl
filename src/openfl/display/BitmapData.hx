@@ -1,20 +1,19 @@
 package openfl.display;
 
 #if !flash
-import openfl._internal.backend.cairo.CairoImageSurface;
-import openfl._internal.backend.cairo.CairoSurface;
-import openfl._internal.backend.cairo.Cairo;
-import openfl._internal.backend.gl.GLFramebuffer;
-import openfl._internal.backend.gl.GLRenderbuffer;
-import openfl._internal.backend.html5.CanvasElement;
-import openfl._internal.backend.math.ARGB;
-import openfl._internal.backend.math.Vector2;
+import openfl._internal.bindings.cairo.CairoImageSurface;
+import openfl._internal.bindings.cairo.CairoSurface;
+import openfl._internal.bindings.cairo.Cairo;
+import openfl._internal.bindings.gl.GLFramebuffer;
+import openfl._internal.bindings.gl.GLRenderbuffer;
+import openfl._internal.backend.lime.ARGB;
+import openfl._internal.backend.lime.Vector2;
 import openfl._internal.renderer.BitmapDataPool;
 import openfl._internal.renderer.DisplayObjectType;
-import openfl._internal.backend.utils.Float32Array;
+import openfl._internal.bindings.typedarray.Float32Array;
 import openfl._internal.utils.PerlinNoise;
-import openfl._internal.backend.utils.UInt16Array;
-import openfl._internal.backend.utils.UInt8Array;
+import openfl._internal.bindings.typedarray.UInt16Array;
+import openfl._internal.bindings.typedarray.UInt8Array;
 import openfl.display3D.textures.TextureBase;
 import openfl.display3D.Context3D;
 import openfl.display3D.IndexBuffer3D;
@@ -48,6 +47,7 @@ import openfl._internal.renderer.context3D.batcher.BatchRenderer;
 import openfl._internal.renderer.context3D.Context3DRenderer;
 #end
 #if openfl_html5
+import js.html.CanvasElement;
 import openfl._internal.renderer.canvas.CanvasRenderer;
 #else
 import openfl._internal.renderer.cairo.CairoRenderer;

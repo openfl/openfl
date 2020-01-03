@@ -10,7 +10,7 @@ import haxe.io.FPHelper;
 import haxe.Json;
 import haxe.Serializer;
 import haxe.Unserializer;
-import openfl._internal.backend.utils.ArrayBuffer;
+import openfl._internal.bindings.typedarray.ArrayBuffer;
 import openfl.errors.EOFError;
 import openfl.net.ObjectEncoding;
 #if lime

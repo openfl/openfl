@@ -1,10 +1,7 @@
 package openfl.display;
 
 #if !flash
-import openfl._internal.backend.cairo.Cairo;
-import openfl._internal.backend.html5.CanvasElement;
-import openfl._internal.backend.html5.CanvasRenderingContext2D;
-import openfl._internal.backend.html5.CSSStyleDeclaration;
+import openfl._internal.bindings.cairo.Cairo;
 import openfl._internal.renderer.DisplayObjectType;
 import openfl._internal.utils.DisplayObjectIterator;
 import openfl._internal.utils.ObjectPool;
@@ -25,6 +22,11 @@ import openfl.geom.Rectangle;
 import openfl.geom.Transform;
 import openfl.ui.MouseCursor;
 import openfl.Vector;
+#if openfl_html5
+import js.html.CanvasElement;
+import js.html.CanvasRenderingContext2D;
+import js.html.CSSStyleDeclaration;
+#end
 
 /**
 	The DisplayObject class is the base class for all objects that can be
