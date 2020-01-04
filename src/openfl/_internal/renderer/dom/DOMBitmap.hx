@@ -2,12 +2,11 @@ package openfl._internal.renderer.dom;
 
 #if openfl_html5
 import js.Browser;
-import openfl._internal.renderer.dom.DOMRenderer;
 import openfl.display.Bitmap;
-#if (!lime && openfl_html5)
+#if lime
+import lime._internal.graphics.ImageCanvasUtil;
+#elseif openfl_html5
 import openfl._internal.backend.lime_standalone.ImageCanvasUtil;
-#else
-import openfl._internal.backend.lime.ImageCanvasUtil;
 #end
 
 @:access(lime.graphics.ImageBuffer)

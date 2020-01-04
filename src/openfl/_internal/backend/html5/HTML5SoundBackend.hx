@@ -1,8 +1,9 @@
-package openfl._internal.bindings.howlerjs;
+package openfl._internal.backend.html5;
 
 #if openfl_html5
 import haxe.io.Bytes;
 import openfl._internal.backend.lime_standalone.Base64;
+import openfl._internal.bindings.howlerjs.Howl;
 import openfl._internal.utils.Log;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
@@ -20,7 +21,7 @@ import openfl.utils.Promise;
 @:access(openfl.media.Sound)
 @:access(openfl.media.SoundChannel.new)
 @:access(openfl.media.SoundMixer)
-class HowlerSoundBackend
+class HTML5SoundBackend
 {
 	private var parent:Sound;
 	private var srcHowl:Howl;

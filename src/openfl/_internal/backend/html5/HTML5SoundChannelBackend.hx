@@ -1,6 +1,7 @@
-package openfl._internal.bindings.howlerjs;
+package openfl._internal.backend.html5;
 
 #if openfl_html5
+import openfl._internal.bindings.howlerjs.Howl;
 import openfl.media.Sound;
 import openfl.media.SoundChannel;
 import openfl.media.SoundMixer;
@@ -9,7 +10,7 @@ import openfl.media.SoundTransform;
 @:access(openfl.media.Sound)
 @:access(openfl.media.SoundChannel)
 @:access(openfl.media.SoundMixer)
-class HowlerSoundChannelBackend
+class HTML5SoundChannelBackend
 {
 	private var howlID:Int;
 	private var parent:SoundChannel;

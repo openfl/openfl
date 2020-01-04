@@ -12,10 +12,10 @@ import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
-#if (!lime && openfl_html5)
-import openfl._internal.backend.lime_standalone.WebGLRenderContext in WebGLRenderingContext;
-#else
+#if lime
 import openfl._internal.bindings.gl.WebGLRenderingContext;
+#elseif openfl_html5
+import openfl._internal.backend.lime_standalone.WebGLRenderContext in WebGLRenderingContext;
 #end
 #if gl_stats
 import openfl._internal.renderer.context3D.stats.Context3DStats;

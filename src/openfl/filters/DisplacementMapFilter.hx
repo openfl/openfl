@@ -7,14 +7,14 @@ import openfl.geom.Point;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
-#if (!lime && openfl_html5)
+#if lime
+import lime._internal.graphics.ImageCanvasUtil;
+import lime._internal.graphics.ImageDataUtil;
+import lime.math.Vector2;
+import lime.math.Vector4;
+#elseif openfl_html5
 import openfl._internal.backend.lime_standalone.ImageCanvasUtil;
 import openfl._internal.backend.lime_standalone.ImageDataUtil;
-#else
-import openfl._internal.backend.lime.ImageCanvasUtil;
-import openfl._internal.backend.lime.ImageDataUtil;
-import openfl._internal.backend.lime.Vector2;
-import openfl._internal.backend.lime.Vector4;
 #end
 
 /**

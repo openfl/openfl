@@ -1,16 +1,17 @@
 package openfl.filters;
 
 #if !flash
-import openfl._internal.backend.lime.RGBA;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-#if (!lime && openfl_html5)
+#if lime
+import lime._internal.graphics.ImageCanvasUtil;
+import lime.math.RGBA;
+#elseif openfl_html5
 import openfl._internal.backend.lime_standalone.ImageCanvasUtil;
-#else
-import openfl._internal.backend.lime.ImageCanvasUtil;
+import openfl._internal.backend.lime_standalone.RGBA;
 #end
 
 /**

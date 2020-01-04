@@ -16,8 +16,8 @@ import openfl.utils.Assets;
 import openfl.utils.AssetLibrary;
 import openfl.utils.ByteArray;
 #if lime
-import openfl._internal.backend.lime.AssetLibrary as LimeAssetLibrary;
-import openfl._internal.backend.lime.AssetManifest;
+import lime.utils.AssetLibrary as LimeAssetLibrary;
+import lime.utils.AssetManifest;
 #end
 
 using openfl._internal.utils.DisplayObjectLinkedList;

@@ -3,7 +3,6 @@ package openfl._internal.text;
 import haxe.Timer;
 import openfl._internal.bindings.cairo.CairoFontFace;
 import openfl._internal.bindings.gl.GLTexture;
-import openfl._internal.backend.lime.System;
 import openfl._internal.utils.Log;
 import openfl.geom.Rectangle;
 import openfl.text.AntiAliasType;
@@ -15,6 +14,9 @@ import openfl.text.TextFieldType;
 import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
 import openfl.Vector;
+#if lime
+import lime.system.System;
+#end
 #if openfl_html5
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
@@ -89,7 +91,9 @@ class TextEngine
 	@:noCompletion private var __selectionStart:Int;
 	@:noCompletion private var __showCursor:Bool;
 	@:noCompletion private var __textFormat:TextFormat;
+	#if (lime && !openfl_html5)
 	@:noCompletion private var __textLayout:TextLayout;
+	#end
 	@:noCompletion private var __texture:GLTexture;
 	// @:noCompletion private var __tileData:Map<Tilesheet, Array<Float>>;
 	// @:noCompletion private var __tileDataLength:Map<Tilesheet, Int>;
@@ -781,7 +785,7 @@ class TextEngine
 		#if !js
 		inline
 		#end
-		function getPositions(text:String, startIndex:Int, endIndex:Int):Array<#if openfl_html5 Float #else GlyphPosition #end>
+		function getPositions(text:String, startIndex:Int, endIndex:Int):Array<#if (openfl_html5 || !lime) Float #else GlyphPosition #end>
 		{
 			// TODO: optimize
 
@@ -841,7 +845,7 @@ class TextEngine
 			}
 
 			return positions;
-			#else
+			#elseif lime
 			if (__textLayout == null)
 			{
 				__textLayout = new TextLayout();
@@ -865,17 +869,19 @@ class TextEngine
 
 			__textLayout.text = text.substring(startIndex, endIndex);
 			return __textLayout.positions;
+			#else
+			return [];
 			#end
 		}
 
-		#if !js inline #end function getPositionsWidth(positions:#if openfl_html5 Array<Float> #else Array<GlyphPosition> #end):Float
+		#if !js inline #end function getPositionsWidth(positions:#if (openfl_html5 || !lime) Array<Float> #else Array<GlyphPosition> #end):Float
 
 		{
 			var width = 0.0;
 
 			for (position in positions)
 			{
-				#if openfl_html5
+				#if (openfl_html5 || !lime)
 				width += position;
 				#else
 				width += position.advance.x;
@@ -890,7 +896,7 @@ class TextEngine
 		{
 			#if openfl_html5
 			return __context.measureText(text).width;
-			#else
+			#elseif lime
 			if (__textLayout == null)
 			{
 				__textLayout = new TextLayout();
@@ -917,6 +923,8 @@ class TextEngine
 			}
 
 			return width;
+			#else
+			return 0;
 			#end
 		}
 
@@ -1215,7 +1223,7 @@ class TextEngine
 				{
 					currentPosition = remainingPositions[i];
 
-					if (#if openfl_html5 currentPosition #else currentPosition.advance.x #end == 0.0)
+					if (#if (openfl_html5 || !lime) currentPosition #else currentPosition.advance.x #end == 0.0)
 					{
 						// skip Unicode character buffer positions
 						i++;
@@ -1223,7 +1231,7 @@ class TextEngine
 					}
 					else
 					{
-						positionWidth += #if openfl_html5 currentPosition #else currentPosition.advance.x #end;
+						positionWidth += #if (openfl_html5 || !lime) currentPosition #else currentPosition.advance.x #end;
 						i++;
 					}
 				}
@@ -1378,7 +1386,7 @@ class TextEngine
 							// Trim left space of this word
 							textIndex++;
 
-							var spaceWidth = #if openfl_html5 positions.shift() #else positions.shift().advance.x #end;
+							var spaceWidth = #if (openfl_html5 || !lime) positions.shift() #else positions.shift().advance.x #end;
 							widthValue -= spaceWidth;
 							offsetX += spaceWidth;
 						}
@@ -1388,7 +1396,7 @@ class TextEngine
 							// Trim right space of this word
 							endIndex--;
 
-							var spaceWidth = #if openfl_html5 positions.pop() #else positions.pop().advance.x #end;
+							var spaceWidth = #if (openfl_html5 || !lime) positions.pop() #else positions.pop().advance.x #end;
 							widthValue -= spaceWidth;
 						}
 					}
@@ -1405,7 +1413,7 @@ class TextEngine
 								// TODO: Handle multiple spaces
 
 								var lastPosition = positions[positions.length - 1];
-								var spaceWidth = #if openfl_html5 lastPosition #else lastPosition.advance.x #end;
+								var spaceWidth = #if (openfl_html5 || !lime) lastPosition #else lastPosition.advance.x #end;
 
 								if (offsetX + widthValue - spaceWidth <= getWrapWidth())
 								{

@@ -549,7 +549,7 @@ class Sound extends EventDispatcher
 #if lime
 private typedef SoundBackend = openfl._internal.backend.lime.LimeSoundBackend;
 #elseif openfl_html5
-private typedef SoundBackend = openfl._internal.bindings.howlerjs.HowlerSoundBackend;
+private typedef SoundBackend = openfl._internal.backend.html5.HTML5SoundBackend;
 #else
 private typedef SoundBackend = openfl._internal.backend.dummy.DummySoundBackend;
 #end

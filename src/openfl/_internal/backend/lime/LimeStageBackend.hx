@@ -32,7 +32,6 @@ import openfl._internal.renderer.dom.DOMRenderer;
 import openfl._internal.renderer.cairo.CairoRenderer;
 #end
 #end
-
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -57,6 +56,7 @@ class LimeStageBackend
 
 	private var macKeyboard:Bool;
 	private var parent:Stage;
+	private var primaryTouch:Touch;
 
 	public function new(parent:Stage, window:OpenFLWindow, color:Null<Int> = null)
 	{
@@ -816,37 +816,41 @@ class LimeStageBackend
 	{
 		// TODO: Should we handle this differently?
 
-		if (parent.__primaryTouch == touch)
+		if (primaryTouch == touch)
 		{
-			parent.__primaryTouch = null;
+			primaryTouch = null;
 		}
 
-		parent.__onTouch(TouchEvent.TOUCH_END, touch);
+		parent.__onTouch(TouchEvent.TOUCH_END, touch.id, Math.round(touch.x * parent.limeWindow.width), Math.round(touch.y * parent.limeWindow.width),
+			touch.pressure, touch == primaryTouch);
 	}
 
 	private function touch_onMove(touch:Touch):Void
 	{
-		parent.__onTouch(TouchEvent.TOUCH_MOVE, touch);
+		parent.__onTouch(TouchEvent.TOUCH_MOVE, touch.id, Math.round(touch.x * parent.limeWindow.width), Math.round(touch.y * parent.limeWindow.width),
+			touch.pressure, touch == primaryTouch);
 	}
 
 	private function touch_onEnd(touch:Touch):Void
 	{
-		if (parent.__primaryTouch == touch)
+		if (primaryTouch == touch)
 		{
-			parent.__primaryTouch = null;
+			primaryTouch = null;
 		}
 
-		parent.__onTouch(TouchEvent.TOUCH_END, touch);
+		parent.__onTouch(TouchEvent.TOUCH_END, touch.id, Math.round(touch.x * parent.limeWindow.width), Math.round(touch.y * parent.limeWindow.width),
+			touch.pressure, touch == primaryTouch);
 	}
 
 	private function touch_onStart(touch:Touch):Void
 	{
-		if (parent.__primaryTouch == null)
+		if (primaryTouch == null)
 		{
-			parent.__primaryTouch = touch;
+			primaryTouch = touch;
 		}
 
-		parent.__onTouch(TouchEvent.TOUCH_BEGIN, touch);
+		parent.__onTouch(TouchEvent.TOUCH_BEGIN, touch.id, Math.round(touch.x * parent.limeWindow.width), Math.round(touch.y * parent.limeWindow.width),
+			touch.pressure, touch == primaryTouch);
 	}
 
 	private function window_onActivate(window:Window):Void
@@ -863,7 +867,7 @@ class LimeStageBackend
 			parent.limeWindow = null;
 		}
 
-		parent.__primaryTouch = null;
+		primaryTouch = null;
 
 		var event:Event = null;
 
@@ -944,7 +948,7 @@ class LimeStageBackend
 	{
 		if (parent.limeWindow == null || parent.limeWindow != window) return;
 
-		parent.__primaryTouch = null;
+		primaryTouch = null;
 
 		var event:Event = null;
 
@@ -993,8 +997,7 @@ class LimeStageBackend
 		var charCode = getCharCode(keyCode, modifier.shiftKey);
 
 		var event = new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, charCode, keyCode, keyLocation,
-				macKeyboard ? (modifier.ctrlKey || modifier.metaKey) : modifier.ctrlKey, modifier.altKey, modifier.shiftKey, modifier.ctrlKey,
-				modifier.metaKey);
+			macKeyboard ? (modifier.ctrlKey || modifier.metaKey) : modifier.ctrlKey, modifier.altKey, modifier.shiftKey, modifier.ctrlKey, modifier.metaKey);
 
 		if (parent.__onKey(event))
 		{
@@ -1011,8 +1014,7 @@ class LimeStageBackend
 		var charCode = getCharCode(keyCode, modifier.shiftKey);
 
 		var event = new KeyboardEvent(KeyboardEvent.KEY_UP, true, true, charCode, keyCode, keyLocation,
-				macKeyboard ? (modifier.ctrlKey || modifier.metaKey) : modifier.ctrlKey, modifier.altKey, modifier.shiftKey, modifier.ctrlKey,
-				modifier.metaKey);
+			macKeyboard ? (modifier.ctrlKey || modifier.metaKey) : modifier.ctrlKey, modifier.altKey, modifier.shiftKey, modifier.ctrlKey, modifier.metaKey);
 
 		if (parent.__onKey(event))
 		{
@@ -1118,11 +1120,11 @@ class LimeStageBackend
 
 		if (deltaMode == PIXELS)
 		{
-			preventDefault = parent.__onMouseWheel(Std.int(deltaX * window.scale), Std.int(deltaY * window.scale), deltaMode);
+			preventDefault = parent.__onMouseWheel(Std.int(deltaX * window.scale), Std.int(deltaY * window.scale));
 		}
 		else
 		{
-			preventDefault = parent.__onMouseWheel(Std.int(deltaX), Std.int(deltaY), deltaMode);
+			preventDefault = parent.__onMouseWheel(Std.int(deltaX), Std.int(deltaY));
 		}
 
 		if (preventDefault)

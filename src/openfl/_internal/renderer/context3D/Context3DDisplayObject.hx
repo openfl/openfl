@@ -1,10 +1,14 @@
 package openfl._internal.renderer.context3D;
 
 #if openfl_gl
-import openfl._internal.backend.lime.ARGB;
 import openfl.display3D.Context3DClearMask;
 import openfl.display.DisplayObject;
 import openfl.geom.Rectangle;
+#if !lime
+import openfl._internal.backend.lime_standalone.ARGB;
+#else
+import lime.math.ARGB;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

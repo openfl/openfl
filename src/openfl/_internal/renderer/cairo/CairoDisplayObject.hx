@@ -1,7 +1,7 @@
 package openfl._internal.renderer.cairo;
 
 #if openfl_cairo
-import openfl._internal.backend.lime.ARGB;
+import lime.math.ARGB;
 import openfl.display.DisplayObject;
 
 #if !openfl_debug

@@ -1,13 +1,13 @@
 package openfl._internal.renderer.cairo;
 
 #if openfl_cairo
+import lime.math.Matrix3;
+import lime.math.Vector2;
 import openfl._internal.bindings.cairo.Cairo;
 import openfl._internal.bindings.cairo.CairoExtend;
 import openfl._internal.bindings.cairo.CairoFilter;
 import openfl._internal.bindings.cairo.CairoImageSurface;
 import openfl._internal.bindings.cairo.CairoPattern;
-import openfl._internal.backend.lime.Matrix3;
-import openfl._internal.backend.lime.Vector2;
 import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.DrawCommandReader;
 import openfl.display.BitmapData;

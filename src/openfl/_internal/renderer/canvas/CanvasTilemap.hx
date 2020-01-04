@@ -8,10 +8,10 @@ import openfl.display.Tilemap;
 import openfl.display.Tileset;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
-#if (!lime && openfl_html5)
+#if !lime
 import openfl._internal.backend.lime_standalone.ImageCanvasUtil;
 #else
-import openfl._internal.backend.lime.ImageCanvasUtil;
+import lime._internal.graphics.ImageCanvasUtil;
 #end
 
 @:access(lime.graphics.ImageBuffer)

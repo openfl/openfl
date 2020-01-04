@@ -18,10 +18,10 @@ import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.media.Video;
 import openfl.text.TextField;
-#if (!lime && openfl_html5)
+#if !lime
 import openfl._internal.backend.lime_standalone.DOMRenderContext;
 #else
-import openfl._internal.backend.lime.DOMRenderContext;
+import lime.graphics.DOMRenderContext;
 #end
 
 /**

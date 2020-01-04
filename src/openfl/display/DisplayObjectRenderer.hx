@@ -6,10 +6,10 @@ import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.media.Video;
-#if (!lime && openfl_html5)
+#if lime
+import lime.graphics.RenderContextType;
+#elseif openfl_html5
 import openfl._internal.backend.lime_standalone.RenderContextType;
-#else
-import openfl._internal.backend.lime.RenderContextType;
 #end
 
 #if !openfl_debug
@@ -33,7 +33,9 @@ class DisplayObjectRenderer extends EventDispatcher
 	@:noCompletion private var __roundPixels:Bool;
 	@:noCompletion private var __stage:Stage;
 	@:noCompletion private var __transparent:Bool;
+	#if (lime || openfl_html5)
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __type:RenderContextType;
+	#end
 	@:noCompletion private var __worldAlpha:Float;
 	@:noCompletion private var __worldColorTransform:ColorTransform;
 	@:noCompletion private var __worldTransform:Matrix;

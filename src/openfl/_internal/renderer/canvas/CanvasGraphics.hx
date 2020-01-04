@@ -18,10 +18,10 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.Vector;
-#if (!lime && openfl_html5)
+#if !lime
 import openfl._internal.backend.lime_standalone.ImageCanvasUtil;
 #else
-import openfl._internal.backend.lime.ImageCanvasUtil;
+import lime._internal.graphics.ImageCanvasUtil;
 #end
 
 @:access(openfl.display.DisplayObject)

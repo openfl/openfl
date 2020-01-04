@@ -1,7 +1,6 @@
 package openfl._internal.renderer.context3D;
 
 #if openfl_gl
-import openfl._internal.backend.lime.ARGB;
 import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.bindings.typedarray.Float32Array;
@@ -11,6 +10,11 @@ import openfl.display.Graphics;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+#if !lime
+import openfl._internal.backend.lime_standalone.ARGB;
+#else
+import lime.math.ARGB;
+#end
 #if gl_stats
 import openfl._internal.renderer.context3D.stats.Context3DStats;
 import openfl._internal.renderer.context3D.stats.DrawCallContext;

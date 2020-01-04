@@ -7,10 +7,10 @@ import openfl.display.Shader;
 import openfl.geom.ColorTransform;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-#if (!lime && openfl_html5)
-import openfl._internal.backend.lime_standalone.ImageDataUtil;
+#if lime
+import lime._internal.graphics.ImageDataUtil;
 #else
-import openfl._internal.backend.lime.ImageDataUtil;
+import openfl._internal.backend.lime_standalone.ImageDataUtil;
 #end
 
 /**

@@ -14,10 +14,10 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.net.NetStream;
-#if (!lime && openfl_html5)
+#if lime
+import lime.graphics.RenderContext;
+#elseif openfl_html5
 import openfl._internal.backend.lime_standalone.RenderContext;
-#else
-import openfl._internal.backend.lime.RenderContext;
 #end
 
 /**

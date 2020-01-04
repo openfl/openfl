@@ -11,14 +11,14 @@ import openfl.display.BitmapData;
 import openfl.events.EventDispatcher;
 import openfl.errors.Error;
 import openfl._internal.utils.Log;
-#if (!lime && openfl_html5)
+#if lime
+import lime._internal.graphics.ImageCanvasUtil;
+import lime.graphics.Image;
+import lime.graphics.RenderContext;
+#elseif openfl_html5
 import openfl._internal.backend.lime_standalone.ImageCanvasUtil;
 import openfl._internal.backend.lime_standalone.Image;
 import openfl._internal.backend.lime_standalone.RenderContext;
-#else
-import openfl._internal.backend.lime.ImageCanvasUtil;
-import openfl._internal.backend.lime.Image;
-import openfl._internal.backend.lime.RenderContext;
 #end
 
 /**

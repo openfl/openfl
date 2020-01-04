@@ -12,12 +12,12 @@ import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.geom.Matrix3D;
 import openfl.Vector;
-#if (!lime && openfl_html5)
+#if lime
+import lime.graphics.RenderContext;
+import openfl._internal.bindings.gl.WebGLRenderingContext;
+#elseif openfl_html5
 import openfl._internal.backend.lime_standalone.RenderContext;
 import openfl._internal.backend.lime_standalone.WebGLRenderContext in WebGLRenderingContext;
-#else
-import openfl._internal.backend.lime.RenderContext;
-import openfl._internal.bindings.gl.WebGLRenderingContext;
 #end
 #if openfl_html5
 import js.html.CanvasElement;
@@ -193,7 +193,7 @@ class Stage3D extends EventDispatcher
 	@:noCompletion private var __style:CSSStyleDeclaration;
 	@:noCompletion private var __webgl:WebGLRenderingContext;
 	#end
-	#if (lime || !openfl_html5)
+	#if (lime || openfl_html5)
 	@:noCompletion private var __renderContext:RenderContext;
 	#end
 

@@ -4,6 +4,7 @@ package openfl._internal.backend.html5;
 import js.html.DeviceMotionEvent in JSDeviceMotionEvent;
 import js.html.Event in JSEvent;
 import js.html.KeyboardEvent in JSKeyboardEvent;
+import js.Browser;
 import openfl._internal.backend.lime_standalone.KeyCode;
 import openfl._internal.backend.lime_standalone.KeyModifier;
 import openfl.display.DisplayObject;
@@ -853,8 +854,7 @@ class HTML5StageBackend
 		var charCode = getCharCode(keyCode, modifier.shiftKey);
 
 		var event = new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, charCode, keyCode, keyLocation,
-				macKeyboard ? (modifier.ctrlKey || modifier.metaKey) : modifier.ctrlKey, modifier.altKey, modifier.shiftKey, modifier.ctrlKey,
-				modifier.metaKey);
+			macKeyboard ? (modifier.ctrlKey || modifier.metaKey) : modifier.ctrlKey, modifier.altKey, modifier.shiftKey, modifier.ctrlKey, modifier.metaKey);
 
 		if (parent.__onKey(event) && event.cancelable)
 		{
@@ -873,8 +873,7 @@ class HTML5StageBackend
 		var charCode = getCharCode(keyCode, modifier.shiftKey);
 
 		var event = new KeyboardEvent(KeyboardEvent.KEY_UP, true, true, charCode, keyCode, keyLocation,
-				macKeyboard ? (modifier.ctrlKey || modifier.metaKey) : modifier.ctrlKey, modifier.altKey, modifier.shiftKey, modifier.ctrlKey,
-				modifier.metaKey);
+			macKeyboard ? (modifier.ctrlKey || modifier.metaKey) : modifier.ctrlKey, modifier.altKey, modifier.shiftKey, modifier.ctrlKey, modifier.metaKey);
 
 		if (parent.__onKey(event) && event.cancelable)
 		{

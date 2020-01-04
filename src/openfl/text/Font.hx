@@ -1,12 +1,14 @@
 package openfl.text;
 
 #if !flash
-import openfl._internal.backend.lime.Font as LimeFont;
 import openfl._internal.utils.Log;
 import openfl.utils.Assets;
 import openfl.utils.ByteArray;
 import openfl.utils.Future;
 import openfl.utils.Promise;
+#if lime
+import lime.text.Font as LimeFont;
+#end
 #if openfl_html5
 import js.html.SpanElement;
 import js.Browser;

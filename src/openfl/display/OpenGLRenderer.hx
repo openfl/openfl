@@ -1,14 +1,14 @@
 package openfl.display;
 
 #if !flash
-import openfl._internal.backend.lime.Matrix4;
 import openfl.display3D.Context3D;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
-#if (!lime && openfl_html5)
-import openfl._internal.backend.lime_standalone.WebGLRenderContext in WebGLRenderingContext;
-#else
+#if lime
+import lime.math.Matrix4;
 import openfl._internal.bindings.gl.WebGLRenderingContext;
+#elseif openfl_html5
+import openfl._internal.backend.lime_standalone.WebGLRenderContext in WebGLRenderingContext;
 #end
 
 /**

@@ -21,12 +21,12 @@ import openfl.text.TextFieldType;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
-#if (!lime && openfl_html5)
+#if !lime
 import openfl._internal.backend.lime_standalone.Canvas2DRenderContext;
 import openfl._internal.backend.lime_standalone.ImageCanvasUtil;
 #else
-import openfl._internal.backend.lime.Canvas2DRenderContext;
-import openfl._internal.backend.lime.ImageCanvasUtil;
+import lime._internal.graphics.ImageCanvasUtil;
+import lime.graphics.Canvas2DRenderContext;
 #end
 
 #if !openfl_debug

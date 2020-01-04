@@ -5,8 +5,6 @@ import openfl._internal.bindings.gl.GLBuffer;
 import openfl._internal.bindings.gl.GLFramebuffer;
 import openfl._internal.bindings.gl.GLTexture;
 import openfl._internal.bindings.gl.GL;
-import openfl._internal.backend.lime.Rectangle as LimeRectangle;
-import openfl._internal.backend.lime.Vector2;
 import openfl._internal.renderer.context3D.Context3DState;
 import openfl._internal.renderer.BitmapDataPool;
 import openfl._internal.renderer.SamplerState;
@@ -29,15 +27,19 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.utils.AGALMiniAssembler;
 import openfl.utils.ByteArray;
-#if (!lime && openfl_html5)
+#if lime
+import lime.graphics.Image;
+import lime.graphics.ImageBuffer;
+import lime.graphics.RenderContext;
+import lime.math.Rectangle as LimeRectangle;
+import lime.math.Vector2;
+import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
+#elseif openfl_html5
 import openfl._internal.backend.lime_standalone.Image;
 import openfl._internal.backend.lime_standalone.ImageBuffer;
 import openfl._internal.backend.lime_standalone.RenderContext;
 import openfl._internal.backend.lime_standalone.WebGLRenderContext;
 #else
-import openfl._internal.backend.lime.Image;
-import openfl._internal.backend.lime.ImageBuffer;
-import openfl._internal.backend.lime.RenderContext;
 import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 #end
 

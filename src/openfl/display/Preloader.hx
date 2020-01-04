@@ -4,9 +4,6 @@ package openfl.display;
 import openfl.events.Event;
 import openfl.events.ProgressEvent;
 import openfl.Lib;
-#if (!lime && openfl_html5)
-import openfl._internal.backend.lime_standalone.LimeEvent;
-#end
 
 /**
 	The Preloader class is a Lime Preloader instance that uses an OpenFL
@@ -21,13 +18,7 @@ import openfl._internal.backend.lime_standalone.LimeEvent;
 class Preloader
 {
 	@SuppressWarnings("checkstyle:Dynamic")
-	#if (!lime && openfl_html5)
-	public var onComplete:LimeEvent<Void->Void> = new LimeEvent<Void->Void>();
-	#elseif lime
 	public var onComplete:lime.app.Event<Void->Void> = new lime.app.Event<Void->Void>();
-	#else
-	public var onComplete:Dynamic;
-	#end
 
 	@:noCompletion private var complete:Bool;
 	@:noCompletion private var display:Sprite;
@@ -64,13 +55,11 @@ class Preloader
 		}
 		else
 		{
-			#if (lime || openfl_html5)
 			if (!complete)
 			{
 				complete = true;
 				onComplete.dispatch();
 			}
-			#end
 		}
 	}
 
@@ -104,13 +93,11 @@ class Preloader
 
 		if (ready)
 		{
-			#if (lime || openfl_html5)
 			if (!complete)
 			{
 				complete = true;
 				onComplete.dispatch();
 			}
-			#end
 		}
 	}
 }

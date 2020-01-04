@@ -13,10 +13,10 @@ import openfl.display.ShaderParameterType;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
 import openfl.Vector;
-#if (!lime && openfl_html5)
+#if lime
+import lime.utils.BytePointer;
+#elseif openfl_html5
 import openfl._internal.backend.lime_standalone.BytePointer;
-#else
-import openfl._internal.backend.lime.BytePointer;
 #end
 
 /**

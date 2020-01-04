@@ -1,8 +1,12 @@
 package openfl._internal.renderer.canvas;
 
 #if openfl_html5
-import openfl._internal.backend.lime.ARGB;
 import openfl.display.DisplayObject;
+#if !lime
+import openfl._internal.backend.lime_standalone.ARGB;
+#else
+import lime.math.ARGB;
+#end
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.geom.Matrix)

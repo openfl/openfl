@@ -6,8 +6,6 @@ import openfl._internal.bindings.cairo.CairoSurface;
 import openfl._internal.bindings.cairo.Cairo;
 import openfl._internal.bindings.gl.GLFramebuffer;
 import openfl._internal.bindings.gl.GLRenderbuffer;
-import openfl._internal.backend.lime.ARGB;
-import openfl._internal.backend.lime.Vector2;
 import openfl._internal.renderer.BitmapDataPool;
 import openfl._internal.renderer.DisplayObjectType;
 import openfl._internal.bindings.typedarray.Float32Array;
@@ -29,18 +27,21 @@ import openfl.utils.Endian;
 import openfl.utils.Future;
 import openfl.utils.Object;
 import openfl.Vector;
-#if (!lime && openfl_html5)
+#if lime
+import lime._internal.graphics.ImageCanvasUtil;
+import lime.graphics.Image;
+import lime.graphics.ImageChannel;
+import lime.graphics.ImageBuffer;
+import lime.graphics.RenderContext;
+import lime.math.ARGB;
+import lime.math.Vector2;
+#elseif openfl_html5
+import openfl._internal.backend.lime_standalone.ARGB;
 import openfl._internal.backend.lime_standalone.Image;
 import openfl._internal.backend.lime_standalone.ImageCanvasUtil;
 import openfl.display.BitmapDataChannel as ImageChannel;
 import openfl._internal.backend.lime_standalone.ImageBuffer;
 import openfl._internal.backend.lime_standalone.RenderContext;
-#else
-import openfl._internal.backend.lime.Image;
-import openfl._internal.backend.lime.ImageCanvasUtil;
-import openfl._internal.backend.lime.ImageChannel;
-import openfl._internal.backend.lime.ImageBuffer;
-import openfl._internal.backend.lime.RenderContext;
 #end
 #if openfl_gl
 import openfl._internal.renderer.context3D.batcher.BatchRenderer;

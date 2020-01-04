@@ -20,17 +20,11 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.geom.Transform;
 import openfl.ui.Keyboard;
-import openfl.ui.KeyLocation;
 import openfl.ui.Mouse;
 import openfl.ui.MouseCursor;
 #if lime
 import lime.app.Application;
 import lime.app.IModule;
-import lime.ui.MouseWheelMode;
-import lime.ui.Touch;
-#elseif openfl_html5
-import openfl._internal.backend.lime_standalone.MouseWheelMode;
-import openfl._internal.backend.lime_standalone.Touch;
 #end
 #if openfl_html5
 import js.html.Element;
@@ -207,6 +201,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	@:noCompletion @:dox(hide)
 	@:deprecated("Stage.application is deprecated. Use Stage.limeApplication instead.")
 	public var application(get, never):Application;
+
 	@:noCompletion private inline function get_application():Application
 	{
 		return this.limeApplication;
@@ -804,6 +799,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	@:noCompletion @:dox(hide)
 	@:deprecated("Stage.window is deprecated. Use Stage.limeWindow instead.")
 	public var window(get, never):Window;
+
 	@:noCompletion private inline function get_window():Window
 	{
 		return this.limeWindow;
@@ -902,6 +898,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	@:noCompletion private var __pendingMouseEvent:Bool;
 	@:noCompletion private var __pendingMouseX:Int;
 	@:noCompletion private var __pendingMouseY:Int;
+	@:noCompletion private var __primaryTouchID:Null<Int>;
 	@:noCompletion private var __quality:StageQuality;
 	@:noCompletion private var __renderer:DisplayObjectRenderer;
 	@:noCompletion private var __rendering:Bool;
@@ -912,9 +909,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	@:noCompletion private var __transparent:Bool;
 	@:noCompletion private var __wasDirty:Bool;
 	@:noCompletion private var __wasFullscreen:Bool;
-	#if (lime || openfl_html5)
-	@:noCompletion private var __primaryTouch:Touch;
-	#end
 
 	#if openfljs
 	@:noCompletion private static function __init__()
@@ -1781,9 +1775,10 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		Point.__pool.release(localPoint);
 	}
 
-	#if (lime || openfl_html5)
-	@:noCompletion private function __onMouseWheel(deltaX:Float, deltaY:Float, deltaMode:MouseWheelMode):Bool
+	@:noCompletion private function __onMouseWheel(deltaX:Float, deltaY:Float):Bool
 	{
+		// TODO: Support delta modes
+
 		var x = __mouseX;
 		var y = __mouseY;
 
@@ -1814,13 +1809,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		return event.isDefaultPrevented();
 	}
-	#end
 
-	#if (lime || openfl_html5)
-	@:noCompletion private function __onTouch(type:String, touch:Touch):Void
+	@:noCompletion private function __onTouch(type:String, id:Int, x:Int, y:Int, pressure:Float, isPrimaryTouchPoint:Bool):Void
 	{
 		var targetPoint = Point.__pool.get();
-		targetPoint.setTo(Math.round(touch.x * __backend.getWindowWidth()), Math.round(touch.y * __backend.getWindowHeight()));
+		targetPoint.setTo(x, y);
 		__displayMatrix.__transformInversePoint(targetPoint);
 
 		var touchX = targetPoint.x;
@@ -1841,19 +1834,17 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		if (target == null) target = this;
 
-		var touchId:Int = touch.id;
 		var touchData:TouchData = null;
 
-		if (__touchData.exists(touchId))
+		if (__touchData.exists(id))
 		{
-			touchData = __touchData.get(touchId);
+			touchData = __touchData.get(id);
 		}
 		else
 		{
 			touchData = TouchData.__pool.get();
 			touchData.reset();
-			touchData.touch = touch;
-			__touchData.set(touchId, touchData);
+			__touchData.set(id, touchData);
 		}
 
 		var touchType = null;
@@ -1877,20 +1868,19 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		}
 
 		var localPoint = Point.__pool.get();
-		var isPrimaryTouchPoint:Bool = (__primaryTouch == touch);
 		var touchEvent = TouchEvent.__create(type, null, touchX, touchY, target.__globalToLocal(targetPoint, localPoint), cast target);
-		touchEvent.touchPointID = touchId;
+		touchEvent.touchPointID = id;
 		touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
-		touchEvent.pressure = touch.pressure;
+		touchEvent.pressure = pressure;
 
 		__dispatchStack(touchEvent, stack);
 
 		if (touchType != null)
 		{
 			touchEvent = TouchEvent.__create(touchType, null, touchX, touchY, target.__globalToLocal(targetPoint, localPoint), cast target);
-			touchEvent.touchPointID = touchId;
+			touchEvent.touchPointID = id;
 			touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
-			touchEvent.pressure = touch.pressure;
+			touchEvent.pressure = pressure;
 
 			__dispatchStack(touchEvent, stack);
 		}
@@ -1901,9 +1891,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		{
 			touchEvent = TouchEvent.__create(TouchEvent.TOUCH_OUT, null, touchX, touchY, touchOverTarget.__globalToLocal(targetPoint, localPoint),
 				cast touchOverTarget);
-			touchEvent.touchPointID = touchId;
+			touchEvent.touchPointID = id;
 			touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
-			touchEvent.pressure = touch.pressure;
+			touchEvent.pressure = pressure;
 
 			__dispatchTarget(touchOverTarget, touchEvent);
 		}
@@ -1919,10 +1909,10 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 				touchEvent = TouchEvent.__create(TouchEvent.TOUCH_ROLL_OUT, null, touchX, touchY, touchOverTarget.__globalToLocal(targetPoint, localPoint),
 					cast touchOverTarget);
-				touchEvent.touchPointID = touchId;
+				touchEvent.touchPointID = id;
 				touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 				touchEvent.bubbles = false;
-				touchEvent.pressure = touch.pressure;
+				touchEvent.pressure = pressure;
 
 				__dispatchTarget(item, touchEvent);
 			}
@@ -1940,10 +1930,10 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				{
 					touchEvent = TouchEvent.__create(TouchEvent.TOUCH_ROLL_OVER, null, touchX, touchY,
 						touchOverTarget.__globalToLocal(targetPoint, localPoint), cast item);
-					touchEvent.touchPointID = touchId;
+					touchEvent.touchPointID = id;
 					touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 					touchEvent.bubbles = false;
-					touchEvent.pressure = touch.pressure;
+					touchEvent.pressure = pressure;
 
 					__dispatchTarget(item, touchEvent);
 				}
@@ -1960,10 +1950,10 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			if (target != null)
 			{
 				touchEvent = TouchEvent.__create(TouchEvent.TOUCH_OVER, null, touchX, touchY, target.__globalToLocal(targetPoint, localPoint), cast target);
-				touchEvent.touchPointID = touchId;
+				touchEvent.touchPointID = id;
 				touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 				touchEvent.bubbles = true;
-				touchEvent.pressure = touch.pressure;
+				touchEvent.pressure = pressure;
 
 				__dispatchTarget(target, touchEvent);
 			}
@@ -1976,12 +1966,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		if (releaseTouchData)
 		{
-			__touchData.remove(touchId);
+			__touchData.remove(id);
 			touchData.reset();
 			TouchData.__pool.release(touchData);
 		}
 	}
-	#end
 
 	#if lime
 	@:noCompletion private function __registerLimeModule(application:Application):Void

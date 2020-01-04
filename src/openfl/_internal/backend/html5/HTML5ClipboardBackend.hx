@@ -2,6 +2,7 @@ package openfl._internal.backend.html5;
 
 #if openfl_html5
 import js.html.TextAreaElement;
+import js.Browser;
 import openfl.desktop.Clipboard;
 import openfl.desktop.ClipboardFormats;
 import openfl.desktop.ClipboardTransferMode;
