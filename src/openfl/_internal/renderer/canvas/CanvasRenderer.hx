@@ -61,6 +61,7 @@ class CanvasRenderer extends CanvasRendererAPI
 
 		__colorTransform = new ColorTransform();
 		__transform = new Matrix();
+
 		__type = CANVAS;
 	}
 

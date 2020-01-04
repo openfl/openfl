@@ -6,7 +6,7 @@ import haxe.Timer;
 import js.html.FileReader;
 import js.html.InputElement;
 import js.Browser;
-import lime.ui.FileDialog;
+import openfl._internal.backend.lime_standalone.FileDialog;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 import openfl.events.ProgressEvent;

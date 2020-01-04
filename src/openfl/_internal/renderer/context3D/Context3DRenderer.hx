@@ -169,7 +169,7 @@ class Context3DRenderer extends Context3DRendererAPI
 		__softwareRenderer = new CairoRenderer(null);
 		#end
 
-		__type = OPENGL;
+		__type = CONTEXT3D;
 
 		__setBlendMode(NORMAL);
 		context3D.__setGLBlend(true);

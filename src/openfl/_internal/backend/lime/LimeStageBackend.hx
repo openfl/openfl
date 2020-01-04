@@ -2,7 +2,14 @@ package openfl._internal.backend.lime;
 
 #if lime
 import lime.app.Application;
+import lime.graphics.RenderContext;
 import lime.ui.Gamepad;
+import lime.ui.GamepadAxis;
+import lime.ui.GamepadButton;
+import lime.ui.KeyCode;
+import lime.ui.KeyModifier;
+import lime.ui.MouseWheelMode;
+import lime.ui.Touch;
 import lime.ui.Window;
 import openfl.display3D.Context3D;
 import openfl.display.BitmapData;
