@@ -195,10 +195,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	public var allowsFullScreenInteractive(default, null):Bool;
 
 	#if lime
-	/**
-		The associated Lime Application instance.
-	**/
-	@:noCompletion @:dox(hide)
+	@:noCompletion @:dox(hide) @SuppressWarnings("checkstyle:FieldDocComment")
 	@:deprecated("Stage.application is deprecated. Use Stage.limeApplication instead.")
 	public var application(get, never):Application;
 
@@ -793,10 +790,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	public var stageWidth(default, null):Int;
 
 	#if lime
-	/**
-		The associated Lime Window instance for this Stage.
-	**/
-	@:noCompletion @:dox(hide)
+	@:noCompletion @:dox(hide) @SuppressWarnings("checkstyle:FieldDocComment")
 	@:deprecated("Stage.window is deprecated. Use Stage.limeWindow instead.")
 	public var window(get, never):Window;
 

@@ -1064,9 +1064,9 @@ class Context3DRenderer extends Context3DRendererAPI
 	{
 		__updateCacheBitmap(bitmap, false);
 
-		if (bitmap.__bitmapData != null && bitmap.__bitmapData.image != null)
+		if (bitmap.__bitmapData != null && bitmap.__bitmapData.limeImage != null)
 		{
-			bitmap.__imageVersion = bitmap.__bitmapData.image.version;
+			bitmap.__imageVersion = bitmap.__bitmapData.limeImage.version;
 		}
 
 		if (bitmap.__cacheBitmap != null && !bitmap.__isCacheBitmapRender)
@@ -1759,9 +1759,9 @@ class Context3DRenderer extends Context3DRendererAPI
 				__suspendClipAndMask();
 				childRenderer.__copyShader(this);
 
-				object.__cacheBitmapDataTexture.__setUVRect(context3D, 0, 0, filterWidth, filterHeight);
+				@:privateAccess object.__cacheBitmapDataTexture.__backend.__setUVRect(context3D, 0, 0, filterWidth, filterHeight);
 				childRenderer.__setRenderTarget(object.__cacheBitmapDataTexture);
-				// if (object.__cacheBitmapDataTexture.image != null) object.__cacheBitmapData.__textureVersion = object.__cacheBitmapData.image.version + 1;
+				// if (object.__cacheBitmapDataTexture.image != null) object.__cacheBitmapData.__textureVersion = object.__cacheBitmapData.limeImage.version + 1;
 
 				childRenderer.__drawBitmapData(object.__cacheBitmapDataTexture, object, null);
 
@@ -1784,9 +1784,9 @@ class Context3DRenderer extends Context3DRendererAPI
 					var bitmap2 = context3D.__bitmapDataPool.get(filterWidth, filterHeight);
 					var bitmap3 = needCopyOfOriginal ? context3D.__bitmapDataPool.get(filterWidth, filterHeight) : null;
 
-					bitmap.__setUVRect(context3D, 0, 0, filterWidth, filterHeight);
-					bitmap2.__setUVRect(context3D, 0, 0, filterWidth, filterHeight);
-					if (bitmap3 != null) bitmap3.__setUVRect(context3D, 0, 0, filterWidth, filterHeight);
+					@:privateAccess bitmap.__backend.__setUVRect(context3D, 0, 0, filterWidth, filterHeight);
+					@:privateAccess bitmap2.__backend.__setUVRect(context3D, 0, 0, filterWidth, filterHeight);
+					if (bitmap3 != null) @:privateAccess bitmap3.__backend.__setUVRect(context3D, 0, 0, filterWidth, filterHeight);
 
 					childRenderer.__setBlendMode(NORMAL);
 					childRenderer.__worldAlpha = 1;

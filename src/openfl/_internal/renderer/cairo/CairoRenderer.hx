@@ -137,8 +137,8 @@ class CairoRenderer extends CairoRendererAPI
 
 		cairo.target.flush();
 
-		bitmapData.image.dirty = true;
-		bitmapData.image.version++;
+		bitmapData.limeImage.dirty = true;
+		bitmapData.limeImage.version++;
 
 		if (clipRect != null)
 		{
@@ -245,9 +245,9 @@ class CairoRenderer extends CairoRendererAPI
 	{
 		__updateCacheBitmap(bitmap, /*!__worldColorTransform.__isDefault ()*/ false);
 
-		if (bitmap.__bitmapData != null && bitmap.__bitmapData.image != null)
+		if (bitmap.__bitmapData != null && bitmap.__bitmapData.limeImage != null)
 		{
-			bitmap.__imageVersion = bitmap.__bitmapData.image.version;
+			bitmap.__imageVersion = bitmap.__bitmapData.limeImage.version;
 		}
 
 		if (bitmap.__cacheBitmap != null && !bitmap.__isCacheBitmapRender)
@@ -593,8 +593,8 @@ class CairoRenderer extends CairoRendererAPI
 
 			if (!needRender
 				&& object.__cacheBitmapData != null
-				&& object.__cacheBitmapData.image != null
-				&& object.__cacheBitmapData.image.version < object.__cacheBitmapData.__textureVersion)
+				&& object.__cacheBitmapData.limeImage != null
+				&& object.__cacheBitmapData.limeImage.version < object.__cacheBitmapData.__textureVersion)
 			{
 				needRender = true;
 			}
@@ -729,7 +729,7 @@ class CairoRenderer extends CairoRendererAPI
 			{
 				if (object.__cacheBitmapRendererSW == null || object.__cacheBitmapRendererSW.__type != CAIRO)
 				{
-					if (object.__cacheBitmapData.image == null)
+					if (object.__cacheBitmapData.limeImage == null)
 					{
 						var color = object.opaqueBackground != null ? (0xFF << 24) | object.opaqueBackground : 0;
 						object.__cacheBitmapData = new BitmapData(bitmapWidth, bitmapHeight, true, color);
@@ -786,7 +786,7 @@ class CairoRenderer extends CairoRendererAPI
 					if (needSecondBitmapData)
 					{
 						if (object.__cacheBitmapData2 == null
-							|| object.__cacheBitmapData2.image == null
+							|| object.__cacheBitmapData2.limeImage == null
 							|| bitmapWidth > object.__cacheBitmapData2.width
 							|| bitmapHeight > object.__cacheBitmapData2.height)
 						{
@@ -806,7 +806,7 @@ class CairoRenderer extends CairoRendererAPI
 					if (needCopyOfOriginal)
 					{
 						if (object.__cacheBitmapData3 == null
-							|| object.__cacheBitmapData3.image == null
+							|| object.__cacheBitmapData3.limeImage == null
 							|| bitmapWidth > object.__cacheBitmapData3.width
 							|| bitmapHeight > object.__cacheBitmapData3.height)
 						{

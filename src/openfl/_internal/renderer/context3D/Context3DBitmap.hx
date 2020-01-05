@@ -37,7 +37,7 @@ class Context3DBitmap
 			var bitmapData = bitmap.bitmapData;
 			var transform = renderer.__getDisplayTransformTempMatrix(bitmap.__renderTransform, bitmap.pixelSnapping);
 			var alpha = renderer.__getAlpha(bitmap.__worldAlpha);
-			bitmapData.pushQuadsToBatcher(renderer.batcher, transform, alpha, bitmap);
+			@:privateAccess bitmapData.__backend.pushQuadsToBatcher(renderer.batcher, transform, alpha, bitmap);
 
 			if (!alphaMask) renderer.__popMaskObject(bitmap);
 			#else

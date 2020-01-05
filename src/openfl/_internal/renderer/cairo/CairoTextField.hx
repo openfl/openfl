@@ -383,8 +383,8 @@ class CairoTextField
 			cairo.closePath();
 		}
 
-		graphics.__bitmap.image.dirty = true;
-		graphics.__bitmap.image.version++;
+		graphics.__bitmap.limeImage.dirty = true;
+		graphics.__bitmap.limeImage.version++;
 		textField.__dirty = false;
 		graphics.__softwareDirty = false;
 		graphics.__dirty = false;

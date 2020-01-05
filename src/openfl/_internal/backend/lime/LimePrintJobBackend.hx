@@ -51,9 +51,9 @@ class LimePrintJobBackend
 			for (i in 0...parent.__bitmapData.length)
 			{
 				bitmapData = parent.__bitmapData[i];
-				ImageCanvasUtil.sync(bitmapData.image, false);
+				ImageCanvasUtil.sync(bitmapData.limeImage, false);
 
-				if (bitmapData.image.buffer.__srcCanvas != null)
+				if (bitmapData.limeImage.buffer.__srcCanvas != null)
 				{
 					if (i > 0)
 					{
@@ -63,7 +63,7 @@ class LimePrintJobBackend
 					}
 
 					image = new Image();
-					image.src = bitmapData.image.buffer.__srcCanvas.toDataURL("image/png");
+					image.src = bitmapData.limeImage.buffer.__srcCanvas.toDataURL("image/png");
 					window.document.body.appendChild(image);
 				}
 			}

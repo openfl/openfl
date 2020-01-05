@@ -43,7 +43,7 @@ class DOMBitmap
 		{
 			renderer.__pushMaskObject(bitmap);
 
-			if (bitmap.__bitmapData.image.buffer.__srcImage != null)
+			if (bitmap.__bitmapData.limeImage.buffer.__srcImage != null)
 			{
 				renderImage(bitmap, renderer);
 			}
@@ -84,9 +84,9 @@ class DOMBitmap
 			renderer.__initializeElement(bitmap, bitmap.__canvas);
 		}
 
-		if (bitmap.__imageVersion != bitmap.__bitmapData.image.version)
+		if (bitmap.__imageVersion != bitmap.__bitmapData.limeImage.version)
 		{
-			ImageCanvasUtil.convertToCanvas(bitmap.__bitmapData.image);
+			ImageCanvasUtil.convertToCanvas(bitmap.__bitmapData.limeImage);
 
 			// Next line is workaround, to fix rendering bug in Chrome 59 (https://vimeo.com/222938554)
 			bitmap.__canvas.width = bitmap.__bitmapData.width + 1;
@@ -94,8 +94,8 @@ class DOMBitmap
 			bitmap.__canvas.width = bitmap.__bitmapData.width;
 			bitmap.__canvas.height = bitmap.__bitmapData.height;
 
-			bitmap.__context.drawImage(bitmap.__bitmapData.image.buffer.__srcCanvas, 0, 0);
-			bitmap.__imageVersion = bitmap.__bitmapData.image.version;
+			bitmap.__context.drawImage(bitmap.__bitmapData.limeImage.buffer.__srcCanvas, 0, 0);
+			bitmap.__imageVersion = bitmap.__bitmapData.limeImage.version;
 		}
 
 		renderer.__updateClip(bitmap);
@@ -116,7 +116,7 @@ class DOMBitmap
 		{
 			bitmap.__image = cast Browser.document.createElement("img");
 			bitmap.__image.crossOrigin = "Anonymous";
-			bitmap.__image.src = bitmap.__bitmapData.image.buffer.__srcImage.src;
+			bitmap.__image.src = bitmap.__bitmapData.limeImage.buffer.__srcImage.src;
 			renderer.__initializeElement(bitmap, bitmap.__image);
 		}
 

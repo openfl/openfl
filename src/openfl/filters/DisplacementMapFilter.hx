@@ -225,12 +225,12 @@ import openfl._internal.backend.lime_standalone.ImageDataUtil;
 		__updateMapMatrix();
 
 		#if openfl_html5
-		ImageCanvasUtil.convertToData(bitmapData.image);
-		ImageCanvasUtil.convertToData(sourceBitmapData.image);
-		ImageCanvasUtil.convertToData(__mapBitmap.image);
+		ImageCanvasUtil.convertToData(bitmapData.limeImage);
+		ImageCanvasUtil.convertToData(sourceBitmapData.limeImage);
+		ImageCanvasUtil.convertToData(__mapBitmap.limeImage);
 		#end
 
-		ImageDataUtil.displaceMap(bitmapData.image, sourceBitmapData.image, __mapBitmap.image,
+		ImageDataUtil.displaceMap(bitmapData.limeImage, sourceBitmapData.limeImage, __mapBitmap.limeImage,
 
 			new Vector2(__mapPoint.x / __mapBitmap.width, __mapPoint.y / __mapBitmap.height),
 

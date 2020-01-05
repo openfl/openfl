@@ -151,8 +151,8 @@ import openfl._internal.backend.lime_standalone.RGBA;
 			destPoint:Point):BitmapData
 	{
 		#if (lime || openfl_html5)
-		var sourceImage = sourceBitmapData.image;
-		var image = destBitmapData.image;
+		var sourceImage = sourceBitmapData.limeImage;
+		var image = destBitmapData.limeImage;
 
 		#if openfl_html5
 		ImageCanvasUtil.convertToData(sourceImage);
@@ -212,7 +212,7 @@ import openfl._internal.backend.lime_standalone.RGBA;
 			}
 		}
 
-		destBitmapData.image.dirty = true;
+		destBitmapData.limeImage.dirty = true;
 		#end
 		return destBitmapData;
 	}

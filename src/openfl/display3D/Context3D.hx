@@ -1078,7 +1078,7 @@ import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 				}
 
 				var image = __stage.limeWindow.readPixels();
-				destination.image.copyPixels(image, sourceRect, destVector);
+				destination.limeImage.copyPixels(image, sourceRect, destVector);
 			}
 		}
 		else if (__backBufferTexture != null)
@@ -1095,7 +1095,7 @@ import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 			gl.readPixels(0, 0, backBufferWidth, backBufferHeight, __backBufferTexture.__format, GL.UNSIGNED_BYTE, data);
 
 			var image = new Image(new ImageBuffer(data, backBufferWidth, backBufferHeight, 32, BGRA32));
-			destination.image.copyPixels(image, sourceRect, destVector);
+			destination.limeImage.copyPixels(image, sourceRect, destVector);
 
 			if (cacheRenderToTexture != null)
 			{

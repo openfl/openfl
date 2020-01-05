@@ -1,6 +1,6 @@
 package openfl._internal.renderer.canvas;
 
-#if openfl_html5
+#if (lime && openfl_html5)
 import openfl._internal.formats.html.HTMLParser;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
@@ -130,7 +130,7 @@ class CanvasRenderer extends CanvasRendererAPI
 			__pushMaskRect(clipRect, clipMatrix);
 		}
 
-		var buffer = bitmapData.image.buffer;
+		var buffer = bitmapData.limeImage.buffer;
 
 		if (!__allowSmoothing) applySmoothing(buffer.__srcContext, false);
 
@@ -142,8 +142,8 @@ class CanvasRenderer extends CanvasRendererAPI
 		buffer.__srcImageData = null;
 		buffer.data = null;
 
-		bitmapData.image.dirty = true;
-		bitmapData.image.version++;
+		bitmapData.limeImage.dirty = true;
+		bitmapData.limeImage.version++;
 
 		if (clipRect != null)
 		{
@@ -250,9 +250,9 @@ class CanvasRenderer extends CanvasRendererAPI
 	{
 		__updateCacheBitmap(bitmap, /*!__worldColorTransform.__isDefault ()*/ false);
 
-		if (bitmap.__bitmapData != null && bitmap.__bitmapData.image != null)
+		if (bitmap.__bitmapData != null && bitmap.__bitmapData.limeImage != null)
 		{
-			bitmap.__imageVersion = bitmap.__bitmapData.image.version;
+			bitmap.__imageVersion = bitmap.__bitmapData.limeImage.version;
 		}
 
 		if (bitmap.__cacheBitmap != null && !bitmap.__isCacheBitmapRender)
@@ -270,16 +270,16 @@ class CanvasRenderer extends CanvasRendererAPI
 	{
 		if (!bitmapData.readable) return;
 
-		if (bitmapData.image.type == DATA)
+		if (bitmapData.limeImage.type == DATA)
 		{
-			ImageCanvasUtil.convertToCanvas(bitmapData.image);
+			ImageCanvasUtil.convertToCanvas(bitmapData.limeImage);
 		}
 
 		context.globalAlpha = 1;
 
 		setTransform(bitmapData.__renderTransform, context);
 
-		context.drawImage(bitmapData.image.src, 0, 0, bitmapData.image.width, bitmapData.image.height);
+		context.drawImage(bitmapData.limeImage.src, 0, 0, bitmapData.limeImage.width, bitmapData.limeImage.height);
 	}
 
 	private function __renderDisplayObject(object:DisplayObject):Void
@@ -638,8 +638,8 @@ class CanvasRenderer extends CanvasRendererAPI
 
 			if (!needRender
 				&& object.__cacheBitmapData != null
-				&& object.__cacheBitmapData.image != null
-				&& object.__cacheBitmapData.image.version < object.__cacheBitmapData.__textureVersion)
+				&& object.__cacheBitmapData.limeImage != null
+				&& object.__cacheBitmapData.limeImage.version < object.__cacheBitmapData.__textureVersion)
 			{
 				needRender = true;
 			}
@@ -779,15 +779,15 @@ class CanvasRenderer extends CanvasRendererAPI
 			{
 				if (object.__cacheBitmapRendererSW == null || object.__cacheBitmapRendererSW.__type != CANVAS)
 				{
-					if (object.__cacheBitmapData.image == null)
+					if (object.__cacheBitmapData.limeImage == null)
 					{
 						var color = object.opaqueBackground != null ? (0xFF << 24) | object.opaqueBackground : 0;
 						object.__cacheBitmapData = new BitmapData(bitmapWidth, bitmapHeight, true, color);
 						object.__cacheBitmap.__bitmapData = object.__cacheBitmapData;
 					}
 
-					ImageCanvasUtil.convertToCanvas(object.__cacheBitmapData.image);
-					object.__cacheBitmapRendererSW = new CanvasRenderer(object.__cacheBitmapData.image.buffer.__srcContext);
+					ImageCanvasUtil.convertToCanvas(object.__cacheBitmapData.limeImage);
+					object.__cacheBitmapRendererSW = new CanvasRenderer(object.__cacheBitmapData.limeImage.buffer.__srcContext);
 					object.__cacheBitmapRendererSW.__worldTransform = new Matrix();
 					object.__cacheBitmapRendererSW.__worldColorTransform = new ColorTransform();
 				}
@@ -837,7 +837,7 @@ class CanvasRenderer extends CanvasRendererAPI
 					if (needSecondBitmapData)
 					{
 						if (object.__cacheBitmapData2 == null
-							|| object.__cacheBitmapData2.image == null
+							|| object.__cacheBitmapData2.limeImage == null
 							|| bitmapWidth > object.__cacheBitmapData2.width
 							|| bitmapHeight > object.__cacheBitmapData2.height)
 						{
@@ -857,7 +857,7 @@ class CanvasRenderer extends CanvasRendererAPI
 					if (needCopyOfOriginal)
 					{
 						if (object.__cacheBitmapData3 == null
-							|| object.__cacheBitmapData3.image == null
+							|| object.__cacheBitmapData3.limeImage == null
 							|| bitmapWidth > object.__cacheBitmapData3.width
 							|| bitmapHeight > object.__cacheBitmapData3.height)
 						{

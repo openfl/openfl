@@ -5,6 +5,7 @@ import haxe.io.Bytes;
 import haxe.io.Path;
 import haxe.Serializer;
 import haxe.Unserializer;
+import lime.app.Application;
 import lime.system.System;
 import openfl.net.SharedObject;
 import openfl.net.SharedObjectFlushStatus;

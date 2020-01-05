@@ -257,7 +257,7 @@ class TextureBase extends EventDispatcher
 	#if (lime || openfl_html5)
 	@:noCompletion private function __getImage(bitmapData:BitmapData):Image
 	{
-		var image = bitmapData.image;
+		var image = bitmapData.limeImage;
 
 		if (!bitmapData.__isValid || image == null)
 		{

@@ -42,7 +42,7 @@ class Context3DShape
 				var bitmapData = graphics.__bitmap;
 				var transform = renderer.__getDisplayTransformTempMatrix(graphics.__worldTransform, AUTO);
 				var alpha = renderer.__getAlpha(shape.__worldAlpha);
-				bitmapData.pushQuadsToBatcher(renderer.batcher, transform, alpha, shape);
+				@:privateAccess bitmapData.__backend.pushQuadsToBatcher(renderer.batcher, transform, alpha, shape);
 				#else
 				var context = renderer.context3D;
 				var scale9Grid = shape.__worldScale9Grid;

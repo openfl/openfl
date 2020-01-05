@@ -180,11 +180,11 @@ import openfl._internal.backend.lime_standalone.ImageDataUtil;
 	{
 		#if (lime || openfl_html5)
 		var time = Timer.stamp();
-		var finalImage = ImageDataUtil.gaussianBlur(bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle(), destPoint.__toLimeVector2(),
-			__blurX, __blurY, __quality);
+		var finalImage = ImageDataUtil.gaussianBlur(bitmapData.limeImage, sourceBitmapData.limeImage, sourceRect.__toLimeRectangle(),
+			destPoint.__toLimeVector2(), __blurX, __blurY, __quality);
 		var elapsed = Timer.stamp() - time;
 		// trace("blurX: " + __blurX + " blurY: " + __blurY + " quality: " + __quality + " elapsed: " + elapsed * 1000 + "ms");
-		if (finalImage == bitmapData.image) return bitmapData;
+		if (finalImage == bitmapData.limeImage) return bitmapData;
 		#end
 		return sourceBitmapData;
 	}

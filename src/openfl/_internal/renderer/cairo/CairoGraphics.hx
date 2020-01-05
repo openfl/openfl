@@ -1410,8 +1410,8 @@ class CairoGraphics
 
 			data.destroy();
 
-			graphics.__bitmap.image.dirty = true;
-			graphics.__bitmap.image.version++;
+			graphics.__bitmap.limeImage.dirty = true;
+			graphics.__bitmap.limeImage.version++;
 		}
 
 		graphics.__softwareDirty = false;

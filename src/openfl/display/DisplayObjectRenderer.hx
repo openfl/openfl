@@ -53,13 +53,15 @@ class DisplayObjectRenderer extends EventDispatcher
 			switch (child.__type)
 			{
 				case BITMAP:
+					#if lime
 					var bitmap:Bitmap = cast child;
 					if (bitmap.__bitmapData != null
-						&& bitmap.__bitmapData.image != null
-						&& bitmap.__bitmapData.image.version != bitmap.__imageVersion)
+						&& bitmap.__bitmapData.limeImage != null
+						&& bitmap.__bitmapData.limeImage.version != bitmap.__imageVersion)
 					{
 						bitmap.__setRenderDirty();
 					}
+					#end
 
 				case MOVIE_CLIP:
 					var movieClip:MovieClip = cast child;
