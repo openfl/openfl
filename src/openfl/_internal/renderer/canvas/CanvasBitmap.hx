@@ -27,8 +27,6 @@ class CanvasBitmap
 			renderer.__setBlendMode(bitmap.__worldBlendMode);
 			renderer.__pushMaskObject(bitmap, false);
 
-			ImageCanvasUtil.convertToCanvas(bitmap.__bitmapData.limeImage);
-
 			context.globalAlpha = alpha;
 			var scrollRect = bitmap.__scrollRect;
 
@@ -41,7 +39,7 @@ class CanvasBitmap
 
 			if (scrollRect == null)
 			{
-				context.drawImage(bitmap.__bitmapData.limeImage.src, 0, 0, bitmap.__bitmapData.limeImage.width, bitmap.__bitmapData.limeImage.height);
+				context.drawImage(bitmap.__bitmapData.__getElement(), 0, 0, bitmap.__bitmapData.width, bitmap.__bitmapData.height);
 			}
 			else
 			{
@@ -51,7 +49,7 @@ class CanvasBitmap
 				context.rect(scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height);
 				context.clip();
 
-				context.drawImage(bitmap.__bitmapData.limeImage.src, 0, 0, bitmap.__bitmapData.limeImage.width, bitmap.__bitmapData.limeImage.height);
+				context.drawImage(bitmap.__bitmapData.__getElement(), 0, 0, bitmap.__bitmapData.width, bitmap.__bitmapData.height);
 
 				context.restore();
 			}

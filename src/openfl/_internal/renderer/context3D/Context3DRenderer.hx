@@ -1064,9 +1064,10 @@ class Context3DRenderer extends Context3DRendererAPI
 	{
 		__updateCacheBitmap(bitmap, false);
 
-		if (bitmap.__bitmapData != null && bitmap.__bitmapData.limeImage != null)
+		if (bitmap.__bitmapData != null
+			&& #if lime bitmap.__bitmapData.limeImage #elseif openfl_html5 @:privateAccess bitmap.__bitmapData.__backend.image #end != null)
 		{
-			bitmap.__imageVersion = bitmap.__bitmapData.limeImage.version;
+			bitmap.__imageVersion = bitmap.__bitmapData.__getVersion();
 		}
 
 		if (bitmap.__cacheBitmap != null && !bitmap.__isCacheBitmapRender)

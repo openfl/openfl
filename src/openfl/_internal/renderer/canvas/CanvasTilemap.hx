@@ -143,12 +143,7 @@ class CanvasTilemap
 
 				if (bitmapData != cacheBitmapData)
 				{
-					if (bitmapData.limeImage.buffer.__srcImage == null)
-					{
-						ImageCanvasUtil.convertToCanvas(bitmapData.limeImage);
-					}
-
-					source = bitmapData.limeImage.src;
+					source = bitmapData.__getElement();
 					cacheBitmapData = bitmapData;
 				}
 

@@ -3,6 +3,7 @@ package openfl._internal.backend.html5;
 #if openfl_html5
 import js.html.CanvasElement;
 import openfl._internal.backend.lime_standalone.ARGB;
+import openfl._internal.backend.lime_standalone.Canvas2DRenderContext;
 import openfl._internal.backend.lime_standalone.Image;
 import openfl._internal.backend.lime_standalone.ImageCanvasUtil;
 import openfl._internal.backend.lime_standalone.ImageBuffer;
@@ -593,7 +594,31 @@ class HTML5BitmapDataBackend
 		return sourceRect.clone();
 	}
 
-	@:dox(hide) public function getIndexBuffer(context:Context3D, scale9Grid:Rectangle = null):IndexBuffer3D
+	public function getCanvas(clearData:Bool):CanvasElement
+	{
+		if (this.image == null) return null;
+		ImageCanvasUtil.convertToCanvas(this.image, clearData);
+		return this.image.buffer.__srcCanvas;
+	}
+
+	public function getCanvasContext(clearData:Bool):Canvas2DRenderContext
+	{
+		if (this.image == null) return null;
+		ImageCanvasUtil.convertToCanvas(this.image, clearData);
+		return this.image.buffer.__srcContext;
+	}
+
+	public function getElement(clearData:Bool):Dynamic
+	{
+		if (this.image == null) return null;
+		if (this.image.type == DATA)
+		{
+			ImageCanvasUtil.convertToCanvas(this.image, clearData);
+		}
+		return this.image.src;
+	}
+
+	public function getIndexBuffer(context:Context3D, scale9Grid:Rectangle = null):IndexBuffer3D
 	{
 		var gl = context.gl;
 
@@ -802,7 +827,7 @@ class HTML5BitmapDataBackend
 	}
 
 	#if (openfl_gl && !disable_batcher)
-	@:dox(hide) public function pushQuadsToBatcher(batcher:BatchRenderer, transform:Matrix, alpha:Float, object:DisplayObject):Void
+	public function pushQuadsToBatcher(batcher:BatchRenderer, transform:Matrix, alpha:Float, object:DisplayObject):Void
 	{
 		var blendMode = object.__worldBlendMode;
 		var colorTransform = object.__worldColorTransform;
@@ -944,7 +969,12 @@ class HTML5BitmapDataBackend
 	}
 	#end
 
-	@:dox(hide) public function getVertexBuffer(context:Context3D, scale9Grid:Rectangle = null, targetObject:DisplayObject = null):VertexBuffer3D
+	public function getVersion():Int
+	{
+		return this.image.version;
+	}
+
+	public function getVertexBuffer(context:Context3D, scale9Grid:Rectangle = null, targetObject:DisplayObject = null):VertexBuffer3D
 	{
 		var gl = context.gl;
 
@@ -1325,7 +1355,7 @@ class HTML5BitmapDataBackend
 		return byteArray;
 	}
 
-	@:dox(hide) public function getTexture(context:Context3D):TextureBase
+	public function getTexture(context:Context3D):TextureBase
 	{
 		if (!parent.readable && this.image == null && (parent.__texture == null || parent.__textureContext != context.__context))
 		{
@@ -1670,6 +1700,12 @@ class HTML5BitmapDataBackend
 	public function scroll(x:Int, y:Int):Void
 	{
 		this.image.scroll(x, y);
+	}
+
+	public function setDirty():Void
+	{
+		this.image.dirty = true;
+		this.image.version++;
 	}
 
 	public function setPixel(x:Int, y:Int, color:Int):Void

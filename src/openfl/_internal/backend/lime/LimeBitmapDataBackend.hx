@@ -40,6 +40,7 @@ import openfl._internal.renderer.context3D.batcher.BatchRenderer;
 #end
 #if openfl_html5
 import js.html.CanvasElement;
+import lime.graphics.Canvas2DRenderContext;
 import openfl._internal.renderer.canvas.CanvasRenderer;
 #else
 import openfl._internal.renderer.cairo.CairoRenderer;
@@ -634,7 +635,7 @@ class LimeBitmapDataBackend
 		return sourceRect.clone();
 	}
 
-	@:dox(hide) public function getIndexBuffer(context:Context3D, scale9Grid:Rectangle = null):IndexBuffer3D
+	public function getIndexBuffer(context:Context3D, scale9Grid:Rectangle = null):IndexBuffer3D
 	{
 		var gl = context.gl;
 
@@ -843,7 +844,7 @@ class LimeBitmapDataBackend
 	}
 
 	#if (openfl_gl && !disable_batcher)
-	@:dox(hide) public function pushQuadsToBatcher(batcher:BatchRenderer, transform:Matrix, alpha:Float, object:DisplayObject):Void
+	public function pushQuadsToBatcher(batcher:BatchRenderer, transform:Matrix, alpha:Float, object:DisplayObject):Void
 	{
 		var blendMode = object.__worldBlendMode;
 		var colorTransform = object.__worldColorTransform;
@@ -985,7 +986,12 @@ class LimeBitmapDataBackend
 	}
 	#end
 
-	@:dox(hide) public function getVertexBuffer(context:Context3D, scale9Grid:Rectangle = null, targetObject:DisplayObject = null):VertexBuffer3D
+	public function getVersion():Int
+	{
+		return parent.limeImage.version;
+	}
+
+	public function getVertexBuffer(context:Context3D, scale9Grid:Rectangle = null, targetObject:DisplayObject = null):VertexBuffer3D
 	{
 		var gl = context.gl;
 
@@ -1335,6 +1341,22 @@ class LimeBitmapDataBackend
 		return parent.__vertexBuffer;
 	}
 
+	#if openfl_html5
+	public function getCanvas(clearData:Bool):CanvasElement
+	{
+		if (parent.limeImage == null) return null;
+		ImageCanvasUtil.convertToCanvas(parent.limeImage, clearData);
+		return parent.limeImage.buffer.__srcCanvas;
+	}
+
+	public function getCanvasContext(clearData:Bool):Canvas2DRenderContext
+	{
+		if (parent.limeImage == null) return null;
+		ImageCanvasUtil.convertToCanvas(parent.limeImage, clearData);
+		return parent.limeImage.buffer.__srcContext;
+	}
+	#end
+
 	public function getColorBoundsRect(mask:Int, color:Int, findColor:Bool = true):Rectangle
 	{
 		if (!parent.transparent || ((mask >> 24) & 0xFF) > 0)
@@ -1346,6 +1368,18 @@ class LimeBitmapDataBackend
 		var rect = parent.limeImage.getColorBoundsRect(mask, color, findColor, ARGB32);
 		return new Rectangle(rect.x, rect.y, rect.width, rect.height);
 	}
+
+	#if openfl_html5
+	public function getElement(clearData:Bool):Dynamic
+	{
+		if (parent.limeImage == null) return null;
+		if (parent.limeImage.type == DATA)
+		{
+			ImageCanvasUtil.convertToCanvas(parent.limeImage, clearData);
+		}
+		return parent.limeImage.src;
+	}
+	#end
 
 	public function getPixel(x:Int, y:Int):Int
 	{
@@ -1366,7 +1400,7 @@ class LimeBitmapDataBackend
 		return byteArray;
 	}
 
-	@:dox(hide) public function getSurface():CairoImageSurface
+	public function getSurface():CairoImageSurface
 	{
 		if (parent.__surface == null)
 		{
@@ -1376,7 +1410,7 @@ class LimeBitmapDataBackend
 		return parent.__surface;
 	}
 
-	@:dox(hide) public function getTexture(context:Context3D):TextureBase
+	public function getTexture(context:Context3D):TextureBase
 	{
 		if (!parent.readable && parent.limeImage == null && (parent.__texture == null || parent.__textureContext != context.__context))
 		{
@@ -1735,6 +1769,12 @@ class LimeBitmapDataBackend
 	public function scroll(x:Int, y:Int):Void
 	{
 		parent.limeImage.scroll(x, y);
+	}
+
+	public function setDirty():Void
+	{
+		parent.limeImage.dirty = true;
+		parent.limeImage.version++;
 	}
 
 	public function setPixel(x:Int, y:Int, color:Int):Void

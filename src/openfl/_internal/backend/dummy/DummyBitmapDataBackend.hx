@@ -91,16 +91,16 @@ class DummyBitmapDataBackend
 		return null;
 	}
 
-	@:dox(hide) public function getIndexBuffer(context:Context3D, scale9Grid:Rectangle = null):IndexBuffer3D
+	public function getIndexBuffer(context:Context3D, scale9Grid:Rectangle = null):IndexBuffer3D
 	{
 		return null;
 	}
 
 	#if (openfl_gl && !disable_batcher)
-	@:dox(hide) public function pushQuadsToBatcher(batcher:BatchRenderer, transform:Matrix, alpha:Float, object:DisplayObject):Void {}
+	public function pushQuadsToBatcher(batcher:BatchRenderer, transform:Matrix, alpha:Float, object:DisplayObject):Void {}
 	#end
 
-	@:dox(hide) public function getVertexBuffer(context:Context3D, scale9Grid:Rectangle = null, targetObject:DisplayObject = null):VertexBuffer3D
+	public function getVertexBuffer(context:Context3D, scale9Grid:Rectangle = null, targetObject:DisplayObject = null):VertexBuffer3D
 	{
 		return null;
 	}
@@ -125,12 +125,12 @@ class DummyBitmapDataBackend
 		return null;
 	}
 
-	@:dox(hide) public function getSurface():#if lime CairoImageSurface #else Dynamic #end
+	public function getSurface():#if lime CairoImageSurface #else Dynamic #end
 	{
 		return null;
 	}
 
-	@:dox(hide) public function getTexture(context:Context3D):TextureBase
+	public function getTexture(context:Context3D):TextureBase
 	{
 		return null;
 	}
@@ -138,6 +138,11 @@ class DummyBitmapDataBackend
 	public function getVector(rect:Rectangle):Vector<UInt>
 	{
 		return null;
+	}
+
+	public function getVersion():Int
+	{
+		return 0;
 	}
 
 	public function histogram(hRect:Rectangle = null):Array<Array<Int>>
@@ -180,6 +185,8 @@ class DummyBitmapDataBackend
 		grayScale:Bool = false, offsets:Array<Point> = null):Void {}
 
 	public function scroll(x:Int, y:Int):Void {}
+
+	public function setDirty():Void {}
 
 	public function setPixel(x:Int, y:Int, color:Int):Void {}
 

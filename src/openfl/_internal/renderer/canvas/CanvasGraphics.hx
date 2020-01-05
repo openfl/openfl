@@ -92,9 +92,8 @@ class CanvasGraphics
 	private static function createBitmapFill(bitmap:BitmapData, bitmapRepeat:Bool, smooth:Bool):#if openfl_html5 CanvasPattern #else Dynamic #end
 	{
 		#if (lime && openfl_html5)
-		ImageCanvasUtil.convertToCanvas(bitmap.limeImage);
 		setSmoothing(smooth);
-		return context.createPattern(bitmap.limeImage.src, bitmapRepeat ? "repeat" : "no-repeat");
+		return context.createPattern(bitmap.__getElement(), bitmapRepeat ? "repeat" : "no-repeat");
 		#else
 		return null;
 		#end
@@ -173,7 +172,7 @@ class CanvasGraphics
 		canvas.width = width;
 		canvas.height = height;
 
-		context.fillStyle = context.createPattern(bitmap.limeImage.src, repeat ? "repeat" : "no-repeat");
+		context.fillStyle = context.createPattern(bitmap.__getElement(), repeat ? "repeat" : "no-repeat");
 		context.beginPath();
 		context.moveTo(0, 0);
 		context.lineTo(0, height);
@@ -859,7 +858,7 @@ class CanvasGraphics
 
 						if (bitmapFill != null)
 						{
-							context.drawImage(bitmapFill.limeImage.src, tileRect.x, tileRect.y, tileRect.width, tileRect.height, 0, 0, tileRect.width,
+							context.drawImage(bitmapFill.__getElement(), tileRect.x, tileRect.y, tileRect.width, tileRect.height, 0, 0, tileRect.width,
 								tileRect.height);
 						}
 						else
@@ -1064,7 +1063,7 @@ class CanvasGraphics
 						if (canOptimizeMatrix && st >= 0 && sl >= 0 && sr <= bitmapFill.width && sb <= bitmapFill.height)
 						{
 							optimizationUsed = true;
-							if (!hitTesting) context.drawImage(bitmapFill.limeImage.src, sl, st, sr - sl, sb - st, c.x - offsetX, c.y - offsetY, c.width,
+							if (!hitTesting) context.drawImage(bitmapFill.__getElement(), sl, st, sr - sl, sb - st, c.x - offsetX, c.y - offsetY, c.width,
 								c.height);
 						}
 					}

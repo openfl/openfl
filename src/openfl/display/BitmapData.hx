@@ -24,10 +24,12 @@ import openfl.utils.Future;
 import openfl.utils.Object;
 import openfl.Vector;
 #if lime
+import lime.graphics.Canvas2DRenderContext;
 import lime.graphics.Image;
 import lime.graphics.RenderContext;
 import lime.math.Vector2;
 #elseif openfl_html5
+import openfl._internal.backend.lime_standalone.Canvas2DRenderContext;
 import openfl._internal.backend.lime_standalone.Image;
 import openfl._internal.backend.lime_standalone.RenderContext;
 #end
@@ -1050,8 +1052,7 @@ class BitmapData implements IBitmapDrawable
 
 		@returns	The associated CairoImageSurface
 	**/
-	@SuppressWarnings("checkstyle:Dynamic")
-	@:dox(hide) public function getSurface():#if lime CairoImageSurface #else Dynamic #end
+	@:dox(hide) public function getSurface():CairoImageSurface
 	{
 		return __backend.getSurface();
 	}
@@ -1593,6 +1594,44 @@ class BitmapData implements IBitmapDrawable
 		this.rect.__transform(bounds, matrix);
 		rect.__expand(bounds.x, bounds.y, bounds.width, bounds.height);
 		Rectangle.__pool.release(bounds);
+	}
+
+	#if openfl_html5
+	@:noCompletion private function __getCanvas(clearData:Bool = false):CanvasElement
+	{
+		return __backend.getCanvas(clearData);
+	}
+	#end
+
+	#if openfl_html5
+	@:noCompletion private function __getCanvasContext(clearData:Bool = false):Canvas2DRenderContext
+	{
+		return __backend.getCanvasContext(clearData);
+	}
+	#end
+
+	#if openfl_html5
+	@:noCompletion private function __getElement(clearData:Bool = false):Dynamic
+	{
+		return __backend.getElement(clearData);
+	}
+	#end
+
+	#if openfl_cairo
+	@:noCompletion private function __getSurface():CairoImageSurface
+	{
+		return __backend.getSurface();
+	}
+	#end
+
+	@:noCompletion private function __getVersion():Int
+	{
+		return __backend.getVersion();
+	}
+
+	@:noCompletion private function __setDirty():Void
+	{
+		__backend.setDirty();
 	}
 
 	@:noCompletion private function __update(transformOnly:Bool, updateChildren:Bool):Void {}

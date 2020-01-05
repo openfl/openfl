@@ -1,6 +1,6 @@
 package openfl._internal.renderer.canvas;
 
-#if (lime && openfl_html5)
+#if openfl_html5
 import openfl._internal.formats.html.HTMLParser;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
@@ -10,7 +10,6 @@ import openfl.display.DisplayObject;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.DOMRenderer;
 import openfl.display.IBitmapDrawable;
-import openfl.display.Shape;
 import openfl.display.SimpleButton;
 import openfl.display.Tilemap;
 import openfl.events.RenderEvent;
@@ -21,12 +20,10 @@ import openfl.text.TextFieldType;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
-#if !lime
-import openfl._internal.backend.lime_standalone.Canvas2DRenderContext;
-import openfl._internal.backend.lime_standalone.ImageCanvasUtil;
-#else
-import lime._internal.graphics.ImageCanvasUtil;
+#if lime
 import lime.graphics.Canvas2DRenderContext;
+#else
+import openfl._internal.backend.lime_standalone.Canvas2DRenderContext;
 #end
 
 #if !openfl_debug
@@ -130,20 +127,19 @@ class CanvasRenderer extends CanvasRendererAPI
 			__pushMaskRect(clipRect, clipMatrix);
 		}
 
-		var buffer = bitmapData.limeImage.buffer;
+		var context = bitmapData.__getCanvasContext(true);
 
-		if (!__allowSmoothing) applySmoothing(buffer.__srcContext, false);
+		if (!__allowSmoothing) applySmoothing(context, false);
 
 		__render(source);
 
-		if (!__allowSmoothing) applySmoothing(buffer.__srcContext, true);
+		if (!__allowSmoothing) applySmoothing(context, true);
 
-		buffer.__srcContext.setTransform(1, 0, 0, 1, 0, 0);
-		buffer.__srcImageData = null;
-		buffer.data = null;
+		context.setTransform(1, 0, 0, 1, 0, 0);
+		// buffer.__srcImageData = null;
+		// buffer.data = null;
 
-		bitmapData.limeImage.dirty = true;
-		bitmapData.limeImage.version++;
+		bitmapData.__setDirty();
 
 		if (clipRect != null)
 		{
@@ -250,9 +246,9 @@ class CanvasRenderer extends CanvasRendererAPI
 	{
 		__updateCacheBitmap(bitmap, /*!__worldColorTransform.__isDefault ()*/ false);
 
-		if (bitmap.__bitmapData != null && bitmap.__bitmapData.limeImage != null)
+		if (bitmap.__bitmapData != null && bitmap.__bitmapData.__getCanvas() != null)
 		{
-			bitmap.__imageVersion = bitmap.__bitmapData.limeImage.version;
+			bitmap.__imageVersion = bitmap.__bitmapData.__getVersion();
 		}
 
 		if (bitmap.__cacheBitmap != null && !bitmap.__isCacheBitmapRender)
@@ -270,16 +266,11 @@ class CanvasRenderer extends CanvasRendererAPI
 	{
 		if (!bitmapData.readable) return;
 
-		if (bitmapData.limeImage.type == DATA)
-		{
-			ImageCanvasUtil.convertToCanvas(bitmapData.limeImage);
-		}
-
 		context.globalAlpha = 1;
 
 		setTransform(bitmapData.__renderTransform, context);
 
-		context.drawImage(bitmapData.limeImage.src, 0, 0, bitmapData.limeImage.width, bitmapData.limeImage.height);
+		context.drawImage(bitmapData.__getElement(), 0, 0, bitmapData.width, bitmapData.height);
 	}
 
 	private function __renderDisplayObject(object:DisplayObject):Void
@@ -638,8 +629,8 @@ class CanvasRenderer extends CanvasRendererAPI
 
 			if (!needRender
 				&& object.__cacheBitmapData != null
-				&& object.__cacheBitmapData.limeImage != null
-				&& object.__cacheBitmapData.limeImage.version < object.__cacheBitmapData.__textureVersion)
+				&& object.__cacheBitmapData.__getCanvas() != null
+				&& object.__cacheBitmapData.__getVersion() < object.__cacheBitmapData.__textureVersion)
 			{
 				needRender = true;
 			}
@@ -779,15 +770,14 @@ class CanvasRenderer extends CanvasRendererAPI
 			{
 				if (object.__cacheBitmapRendererSW == null || object.__cacheBitmapRendererSW.__type != CANVAS)
 				{
-					if (object.__cacheBitmapData.limeImage == null)
+					if (object.__cacheBitmapData.__getCanvas() == null)
 					{
 						var color = object.opaqueBackground != null ? (0xFF << 24) | object.opaqueBackground : 0;
 						object.__cacheBitmapData = new BitmapData(bitmapWidth, bitmapHeight, true, color);
 						object.__cacheBitmap.__bitmapData = object.__cacheBitmapData;
 					}
 
-					ImageCanvasUtil.convertToCanvas(object.__cacheBitmapData.limeImage);
-					object.__cacheBitmapRendererSW = new CanvasRenderer(object.__cacheBitmapData.limeImage.buffer.__srcContext);
+					object.__cacheBitmapRendererSW = new CanvasRenderer(object.__cacheBitmapData.__getCanvasContext());
 					object.__cacheBitmapRendererSW.__worldTransform = new Matrix();
 					object.__cacheBitmapRendererSW.__worldColorTransform = new ColorTransform();
 				}
@@ -837,7 +827,7 @@ class CanvasRenderer extends CanvasRendererAPI
 					if (needSecondBitmapData)
 					{
 						if (object.__cacheBitmapData2 == null
-							|| object.__cacheBitmapData2.limeImage == null
+							|| object.__cacheBitmapData2.__getCanvas() == null
 							|| bitmapWidth > object.__cacheBitmapData2.width
 							|| bitmapHeight > object.__cacheBitmapData2.height)
 						{
@@ -857,7 +847,7 @@ class CanvasRenderer extends CanvasRendererAPI
 					if (needCopyOfOriginal)
 					{
 						if (object.__cacheBitmapData3 == null
-							|| object.__cacheBitmapData3.limeImage == null
+							|| object.__cacheBitmapData3.__getCanvas() == null
 							|| bitmapWidth > object.__cacheBitmapData3.width
 							|| bitmapHeight > object.__cacheBitmapData3.height)
 						{

@@ -137,8 +137,7 @@ class CairoRenderer extends CairoRendererAPI
 
 		cairo.target.flush();
 
-		bitmapData.limeImage.dirty = true;
-		bitmapData.limeImage.version++;
+		bitmapData.__setDirty();
 
 		if (clipRect != null)
 		{
@@ -245,9 +244,9 @@ class CairoRenderer extends CairoRendererAPI
 	{
 		__updateCacheBitmap(bitmap, /*!__worldColorTransform.__isDefault ()*/ false);
 
-		if (bitmap.__bitmapData != null && bitmap.__bitmapData.limeImage != null)
+		if (bitmap.__bitmapData != null && bitmap.__bitmapData.__getSurface() != null)
 		{
-			bitmap.__imageVersion = bitmap.__bitmapData.limeImage.version;
+			bitmap.__imageVersion = bitmap.__bitmapData.__getVersion();
 		}
 
 		if (bitmap.__cacheBitmap != null && !bitmap.__isCacheBitmapRender)
@@ -593,8 +592,8 @@ class CairoRenderer extends CairoRendererAPI
 
 			if (!needRender
 				&& object.__cacheBitmapData != null
-				&& object.__cacheBitmapData.limeImage != null
-				&& object.__cacheBitmapData.limeImage.version < object.__cacheBitmapData.__textureVersion)
+				&& object.__cacheBitmapData.__getSurface() != null
+				&& object.__cacheBitmapData.__getVersion() < object.__cacheBitmapData.__textureVersion)
 			{
 				needRender = true;
 			}
