@@ -728,7 +728,7 @@ class CairoRenderer extends CairoRendererAPI
 			{
 				if (object.__cacheBitmapRendererSW == null || object.__cacheBitmapRendererSW.__type != CAIRO)
 				{
-					if (object.__cacheBitmapData.limeImage == null)
+					if (object.__cacheBitmapData.__getSurface() == null)
 					{
 						var color = object.opaqueBackground != null ? (0xFF << 24) | object.opaqueBackground : 0;
 						object.__cacheBitmapData = new BitmapData(bitmapWidth, bitmapHeight, true, color);
@@ -785,7 +785,7 @@ class CairoRenderer extends CairoRendererAPI
 					if (needSecondBitmapData)
 					{
 						if (object.__cacheBitmapData2 == null
-							|| object.__cacheBitmapData2.limeImage == null
+							|| object.__cacheBitmapData2.__getSurface() == null
 							|| bitmapWidth > object.__cacheBitmapData2.width
 							|| bitmapHeight > object.__cacheBitmapData2.height)
 						{
@@ -805,7 +805,7 @@ class CairoRenderer extends CairoRendererAPI
 					if (needCopyOfOriginal)
 					{
 						if (object.__cacheBitmapData3 == null
-							|| object.__cacheBitmapData3.limeImage == null
+							|| object.__cacheBitmapData3.__getSurface() == null
 							|| bitmapWidth > object.__cacheBitmapData3.width
 							|| bitmapHeight > object.__cacheBitmapData3.height)
 						{

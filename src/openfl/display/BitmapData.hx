@@ -38,6 +38,7 @@ import openfl._internal.renderer.context3D.Context3DRenderer;
 #end
 #if openfl_html5
 import js.html.CanvasElement;
+import js.html.Image in JSImage;
 #end
 
 /**
@@ -1614,6 +1615,13 @@ class BitmapData implements IBitmapDrawable
 	@:noCompletion private function __getElement(clearData:Bool = false):Dynamic
 	{
 		return __backend.getElement(clearData);
+	}
+	#end
+
+	#if openfl_html5
+	@:noCompletion private function __getJSImage():JSImage
+	{
+		return __backend.getJSImage();
 	}
 	#end
 

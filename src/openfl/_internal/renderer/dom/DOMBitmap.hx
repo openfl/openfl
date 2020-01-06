@@ -3,11 +3,6 @@ package openfl._internal.renderer.dom;
 #if openfl_html5
 import js.Browser;
 import openfl.display.Bitmap;
-#if lime
-import lime._internal.graphics.ImageCanvasUtil;
-#elseif openfl_html5
-import openfl._internal.backend.lime_standalone.ImageCanvasUtil;
-#end
 
 @:access(lime.graphics.ImageBuffer)
 @:access(openfl._internal.backend.lime_standalone.ImageBuffer)
@@ -43,7 +38,7 @@ class DOMBitmap
 		{
 			renderer.__pushMaskObject(bitmap);
 
-			if (bitmap.__bitmapData.limeImage.buffer.__srcImage != null)
+			if (bitmap.__bitmapData.__getJSImage() != null)
 			{
 				renderImage(bitmap, renderer);
 			}
@@ -84,18 +79,16 @@ class DOMBitmap
 			renderer.__initializeElement(bitmap, bitmap.__canvas);
 		}
 
-		if (bitmap.__imageVersion != bitmap.__bitmapData.limeImage.version)
+		if (bitmap.__imageVersion != bitmap.__bitmapData.__getVersion())
 		{
-			ImageCanvasUtil.convertToCanvas(bitmap.__bitmapData.limeImage);
-
 			// Next line is workaround, to fix rendering bug in Chrome 59 (https://vimeo.com/222938554)
 			bitmap.__canvas.width = bitmap.__bitmapData.width + 1;
 
 			bitmap.__canvas.width = bitmap.__bitmapData.width;
 			bitmap.__canvas.height = bitmap.__bitmapData.height;
 
-			bitmap.__context.drawImage(bitmap.__bitmapData.limeImage.buffer.__srcCanvas, 0, 0);
-			bitmap.__imageVersion = bitmap.__bitmapData.limeImage.version;
+			bitmap.__context.drawImage(bitmap.__bitmapData.__getCanvas(), 0, 0);
+			bitmap.__imageVersion = bitmap.__bitmapData.__getVersion();
 		}
 
 		renderer.__updateClip(bitmap);
@@ -116,7 +109,7 @@ class DOMBitmap
 		{
 			bitmap.__image = cast Browser.document.createElement("img");
 			bitmap.__image.crossOrigin = "Anonymous";
-			bitmap.__image.src = bitmap.__bitmapData.limeImage.buffer.__srcImage.src;
+			bitmap.__image.src = bitmap.__bitmapData.__getJSImage().src;
 			renderer.__initializeElement(bitmap, bitmap.__image);
 		}
 

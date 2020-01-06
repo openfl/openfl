@@ -2,7 +2,6 @@ package openfl._internal.backend.lime;
 
 #if lime
 import haxe.Timer;
-import lime._internal.graphics.ImageCanvasUtil;
 import openfl.printing.PrintJob;
 #if openfl_html5
 import js.html.DivElement;
@@ -47,13 +46,14 @@ class LimePrintJobBackend
 			var div:DivElement;
 			var image:Image;
 			var bitmapData;
+			var canvas;
 
 			for (i in 0...parent.__bitmapData.length)
 			{
 				bitmapData = parent.__bitmapData[i];
-				ImageCanvasUtil.sync(bitmapData.limeImage, false);
+				canvas = bitmapData.__getCanvas();
 
-				if (bitmapData.limeImage.buffer.__srcCanvas != null)
+				if (canvas != null)
 				{
 					if (i > 0)
 					{
@@ -63,7 +63,7 @@ class LimePrintJobBackend
 					}
 
 					image = new Image();
-					image.src = bitmapData.limeImage.buffer.__srcCanvas.toDataURL("image/png");
+					image.src = canvas.toDataURL("image/png");
 					window.document.body.appendChild(image);
 				}
 			}

@@ -14,6 +14,7 @@ import openfl.media.Video;
 #end
 @:allow(openfl._internal.renderer)
 @:access(openfl.display.Bitmap)
+@:access(openfl.display.BitmapData)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.TileContainer)
 @:access(openfl.display.Tilemap)
@@ -53,15 +54,13 @@ class DisplayObjectRenderer extends EventDispatcher
 			switch (child.__type)
 			{
 				case BITMAP:
-					#if lime
 					var bitmap:Bitmap = cast child;
 					if (bitmap.__bitmapData != null
-						&& bitmap.__bitmapData.limeImage != null
-						&& bitmap.__bitmapData.limeImage.version != bitmap.__imageVersion)
+						&& bitmap.__bitmapData.readable
+						&& bitmap.__bitmapData.__getVersion() != bitmap.__imageVersion)
 					{
 						bitmap.__setRenderDirty();
 					}
-					#end
 
 				case MOVIE_CLIP:
 					var movieClip:MovieClip = cast child;

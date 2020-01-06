@@ -2,6 +2,7 @@ package openfl._internal.backend.html5;
 
 #if openfl_html5
 import js.html.CanvasElement;
+import js.html.Image in JSImage;
 import openfl._internal.backend.lime_standalone.ARGB;
 import openfl._internal.backend.lime_standalone.Canvas2DRenderContext;
 import openfl._internal.backend.lime_standalone.Image;
@@ -606,6 +607,12 @@ class HTML5BitmapDataBackend
 		if (this.image == null) return null;
 		ImageCanvasUtil.convertToCanvas(this.image, clearData);
 		return this.image.buffer.__srcContext;
+	}
+
+	public function getJSImage():JSImage
+	{
+		if (this.image == null) return null;
+		return this.image.buffer.__srcImage;
 	}
 
 	public function getElement(clearData:Bool):Dynamic

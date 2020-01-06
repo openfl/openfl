@@ -40,13 +40,14 @@ class HTML5PrintJobBackend
 			var div:DivElement;
 			var image:Image;
 			var bitmapData;
+			var canvas;
 
 			for (i in 0...parent.__bitmapData.length)
 			{
 				bitmapData = parent.__bitmapData[i];
-				ImageCanvasUtil.sync(bitmapData.limeImage, false);
+				canvas = bitmapData.__getCanvas();
 
-				if (bitmapData.limeImage.buffer.__srcCanvas != null)
+				if (canvas != null)
 				{
 					if (i > 0)
 					{
@@ -56,7 +57,7 @@ class HTML5PrintJobBackend
 					}
 
 					image = new Image();
-					image.src = bitmapData.limeImage.buffer.__srcCanvas.toDataURL("image/png");
+					image.src = canvas.toDataURL("image/png");
 					window.document.body.appendChild(image);
 				}
 			}

@@ -40,6 +40,7 @@ import openfl._internal.renderer.context3D.batcher.BatchRenderer;
 #end
 #if openfl_html5
 import js.html.CanvasElement;
+import js.html.Image in JSImage;
 import lime.graphics.Canvas2DRenderContext;
 import openfl._internal.renderer.canvas.CanvasRenderer;
 #else
@@ -1368,6 +1369,14 @@ class LimeBitmapDataBackend
 		var rect = parent.limeImage.getColorBoundsRect(mask, color, findColor, ARGB32);
 		return new Rectangle(rect.x, rect.y, rect.width, rect.height);
 	}
+
+	#if openfl_html5
+	public function getJSImage():JSImage
+	{
+		if (parent.limeImage == null) return null;
+		return parent.limeImage.buffer.__srcImage;
+	}
+	#end
 
 	#if openfl_html5
 	public function getElement(clearData:Bool):Dynamic

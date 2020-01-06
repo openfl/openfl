@@ -1064,8 +1064,7 @@ class Context3DRenderer extends Context3DRendererAPI
 	{
 		__updateCacheBitmap(bitmap, false);
 
-		if (bitmap.__bitmapData != null
-			&& #if lime bitmap.__bitmapData.limeImage #elseif openfl_html5 @:privateAccess bitmap.__bitmapData.__backend.image #end != null)
+		if (bitmap.__bitmapData != null && bitmap.__bitmapData.readable)
 		{
 			bitmap.__imageVersion = bitmap.__bitmapData.__getVersion();
 		}
@@ -1762,7 +1761,7 @@ class Context3DRenderer extends Context3DRendererAPI
 
 				@:privateAccess object.__cacheBitmapDataTexture.__backend.__setUVRect(context3D, 0, 0, filterWidth, filterHeight);
 				childRenderer.__setRenderTarget(object.__cacheBitmapDataTexture);
-				// if (object.__cacheBitmapDataTexture.image != null) object.__cacheBitmapData.__textureVersion = object.__cacheBitmapData.limeImage.version + 1;
+				// if (object.__cacheBitmapDataTexture.image != null) object.__cacheBitmapData.__textureVersion = object.__cacheBitmapData.__getVersion() + 1;
 
 				childRenderer.__drawBitmapData(object.__cacheBitmapDataTexture, object, null);
 
