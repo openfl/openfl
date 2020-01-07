@@ -23,7 +23,7 @@ class CanvasDisplayObject
 		if (alpha <= 0) return;
 
 		if (displayObject.opaqueBackground != null
-			&& !displayObject.__isCacheBitmapRender
+			&& !displayObject.__renderData.isCacheBitmapRender
 			&& displayObject.width > 0
 			&& displayObject.height > 0)
 		{

@@ -69,7 +69,7 @@ class CairoShape
 					var renderCenterWidth = Math.round(width * renderScaleX) - renderLeft - renderRight;
 					var renderCenterHeight = Math.round(height * renderScaleY) - renderTop - renderBottom;
 
-					var pattern = CairoPattern.createForSurface(graphics.__cairo.target);
+					var pattern = CairoPattern.createForSurface(graphics.__renderData.cairo.target);
 					// TODO: Allow smoothing, even though it shows seams?
 					pattern.filter = CairoFilter.NEAREST;
 					// pattern.filter = renderer.__allowSmoothing ? CairoFilter.GOOD : CairoFilter.NEAREST;
@@ -144,7 +144,7 @@ class CairoShape
 				{
 					renderer.applyMatrix(transform, cairo);
 
-					cairo.setSourceSurface(graphics.__cairo.target, 0, 0);
+					cairo.setSourceSurface(graphics.__renderData.cairo.target, 0, 0);
 
 					if (alpha >= 1)
 					{

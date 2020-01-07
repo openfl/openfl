@@ -2,11 +2,10 @@ package openfl.display;
 
 #if !flash
 import haxe.Timer;
+import openfl._internal.renderer.DisplayObjectRenderData;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DProfile;
 import openfl.display3D.Context3DRenderMode;
-import openfl.display3D.IndexBuffer3D;
-import openfl.display3D.VertexBuffer3D;
 import openfl.events.ErrorEvent;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
@@ -180,17 +179,14 @@ class Stage3D extends EventDispatcher
 	@:noCompletion private var __contextLost:Bool;
 	@:noCompletion private var __contextRequested:Bool;
 	@:noCompletion private var __height:Int;
-	@:noCompletion private var __indexBuffer:IndexBuffer3D;
 	@:noCompletion private var __projectionTransform:Matrix3D;
+	@:noCompletion private var __renderData:DisplayObjectRenderData;
 	@:noCompletion private var __renderTransform:Matrix3D;
 	@:noCompletion private var __stage:Stage;
-	@:noCompletion private var __vertexBuffer:VertexBuffer3D;
 	@:noCompletion private var __width:Int;
 	@:noCompletion private var __x:Float;
 	@:noCompletion private var __y:Float;
 	#if openfl_html5
-	@:noCompletion private var __canvas:CanvasElement;
-	@:noCompletion private var __style:CSSStyleDeclaration;
 	@:noCompletion private var __webgl:WebGLRenderingContext;
 	#end
 	#if (lime || openfl_html5)
@@ -221,6 +217,7 @@ class Stage3D extends EventDispatcher
 		__y = 0;
 
 		visible = true;
+		__renderData = new DisplayObjectRenderData();
 
 		if (stage.stageWidth > 0 && stage.stageHeight > 0)
 		{
@@ -475,10 +472,10 @@ class Stage3D extends EventDispatcher
 		if (width != __width || height != __height)
 		{
 			#if openfl_html5
-			if (__canvas != null)
+			if (__renderData.canvas != null)
 			{
-				__canvas.width = width;
-				__canvas.height = height;
+				__renderData.canvas.width = width;
+				__renderData.canvas.height = height;
 			}
 			#end
 

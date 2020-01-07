@@ -229,15 +229,15 @@ class CairoGraphics
 			x -= bounds.x;
 			y -= bounds.y;
 
-			if (graphics.__cairo == null)
+			if (graphics.__renderData.cairo == null)
 			{
 				var bitmap = new BitmapData(Math.floor(bounds.width), Math.floor(bounds.height), true, 0);
 				var surface = bitmap.getSurface();
-				graphics.__cairo = new Cairo(surface);
+				graphics.__renderData.cairo = new Cairo(surface);
 				// graphics.__bitmap = bitmap;
 			}
 
-			cairo = graphics.__cairo;
+			cairo = graphics.__renderData.cairo;
 
 			fillCommands.clear();
 			strokeCommands.clear();
@@ -1142,7 +1142,7 @@ class CairoGraphics
 
 		if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || width < 1 || height < 1)
 		{
-			graphics.__cairo = null;
+			graphics.__renderData.cairo = null;
 			graphics.__bitmap = null;
 		}
 		else
@@ -1150,26 +1150,26 @@ class CairoGraphics
 			hitTesting = false;
 			var needsUpscaling = false;
 
-			if (graphics.__cairo != null)
+			if (graphics.__renderData.cairo != null)
 			{
-				var surface:CairoImageSurface = cast graphics.__cairo.target;
+				var surface:CairoImageSurface = cast graphics.__renderData.cairo.target;
 
 				if (width > surface.width || height > surface.height)
 				{
-					graphics.__cairo = null;
+					graphics.__renderData.cairo = null;
 					needsUpscaling = true;
 				}
 			}
 
-			if (graphics.__cairo == null || graphics.__bitmap == null)
+			if (graphics.__renderData.cairo == null || graphics.__bitmap == null)
 			{
 				var bitmap = needsUpscaling ? new BitmapData(Std.int(width * 1.25), Std.int(height * 1.25), true, 0) : new BitmapData(width, height, true, 0);
 				var surface = bitmap.getSurface();
-				graphics.__cairo = new Cairo(surface);
+				graphics.__renderData.cairo = new Cairo(surface);
 				graphics.__bitmap = bitmap;
 			}
 
-			cairo = graphics.__cairo;
+			cairo = graphics.__renderData.cairo;
 
 			renderer.__setBlendModeCairo(cairo, NORMAL);
 			renderer.applyMatrix(graphics.__renderTransform, cairo);

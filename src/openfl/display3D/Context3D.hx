@@ -587,6 +587,7 @@ import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 	public function configureBackBuffer(width:Int, height:Int, antiAlias:Int, enableDepthAndStencil:Bool = true, wantsBestResolution:Bool = false,
 			wantsBestResolutionOnBrowserZoom:Bool = false):Void
 	{
+		#if openfl_gl
 		if (__stage3D == null)
 		{
 			backBufferWidth = width;
@@ -607,22 +608,22 @@ import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 				__backBufferTexture = createRectangleTexture(width, height, BGRA, true);
 				__frontBufferTexture = createRectangleTexture(width, height, BGRA, true);
 
-				if (__stage3D.__vertexBuffer == null)
+				if (__stage3D.__renderData.vertexBuffer == null)
 				{
-					__stage3D.__vertexBuffer = createVertexBuffer(4, 5);
+					__stage3D.__renderData.vertexBuffer = createVertexBuffer(4, 5);
 				}
 
 				var vertexData = new Vector<Float>([width, height, 0, 1, 1, 0, height, 0, 0, 1, width, 0, 0, 1, 0, 0, 0, 0, 0, 0.0]);
 
-				__stage3D.__vertexBuffer.uploadFromVector(vertexData, 0, 20);
+				__stage3D.__renderData.vertexBuffer.uploadFromVector(vertexData, 0, 20);
 
-				if (__stage3D.__indexBuffer == null)
+				if (__stage3D.__renderData.indexBuffer == null)
 				{
-					__stage3D.__indexBuffer = createIndexBuffer(6);
+					__stage3D.__renderData.indexBuffer = createIndexBuffer(6);
 
 					var indexData = new Vector<UInt>([0, 1, 2, 2, 1, 3]);
 
-					__stage3D.__indexBuffer.uploadFromVector(indexData, 0, 6);
+					__stage3D.__renderData.indexBuffer.uploadFromVector(indexData, 0, 6);
 				}
 			}
 
@@ -639,6 +640,7 @@ import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 			__frontBufferTexture.__getGLFramebuffer(enableDepthAndStencil, antiAlias, 0);
 			#end
 		}
+		#end
 	}
 
 	/**
@@ -1987,12 +1989,13 @@ import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 
 	@:noCompletion private function __dispose():Void
 	{
+		#if openfl_gl
 		driverInfo += " (Disposed)";
 
 		if (__stage3D != null)
 		{
-			__stage3D.__indexBuffer = null;
-			__stage3D.__vertexBuffer = null;
+			__stage3D.__renderData.indexBuffer = null;
+			__stage3D.__renderData.vertexBuffer = null;
 			__stage3D.context3D = null;
 			__stage3D = null;
 		}
@@ -2007,6 +2010,7 @@ import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 		__quadIndexBuffer = null;
 		__stage = null;
 		__vertexConstants = null;
+		#end
 	}
 
 	@:noCompletion private function __drawTriangles(firstIndex:Int = 0, count:Int):Void
@@ -2538,6 +2542,7 @@ import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 
 	@:noCompletion private function __renderStage3D(stage3D:Stage3D):Void
 	{
+		#if openfl_gl
 		// Assume this is the primary Context3D
 
 		var context = stage3D.context3D;
@@ -2574,13 +2579,14 @@ import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 			setScissorRectangle(null);
 
 			setTextureAt(0, context.__frontBufferTexture);
-			setVertexBufferAt(0, stage3D.__vertexBuffer, 0, Context3DVertexBufferFormat.FLOAT_3);
-			setVertexBufferAt(1, stage3D.__vertexBuffer, 3, Context3DVertexBufferFormat.FLOAT_2);
+			setVertexBufferAt(0, stage3D.__renderData.vertexBuffer, 0, Context3DVertexBufferFormat.FLOAT_3);
+			setVertexBufferAt(1, stage3D.__renderData.vertexBuffer, 3, Context3DVertexBufferFormat.FLOAT_2);
 			setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, stage3D.__renderTransform, true);
-			drawTriangles(stage3D.__indexBuffer);
+			drawTriangles(stage3D.__renderData.indexBuffer);
 
 			__present = true;
 		}
+		#end
 	}
 
 	#if openfl_gl

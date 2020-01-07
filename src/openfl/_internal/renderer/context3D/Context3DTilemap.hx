@@ -131,10 +131,10 @@ class Context3DTilemap
 					tileRect = tile.__rect;
 					if (tileRect == null || tileRect.width <= 0 || tileRect.height <= 0) continue;
 
-					uvX = tileRect.x / bitmapData.__textureWidth;
-					uvY = tileRect.y / bitmapData.__textureHeight;
-					uvWidth = tileRect.right / bitmapData.__textureWidth;
-					uvHeight = tileRect.bottom / bitmapData.__textureHeight;
+					uvX = tileRect.x / bitmapData.__renderData.textureWidth;
+					uvY = tileRect.y / bitmapData.__renderData.textureHeight;
+					uvWidth = tileRect.right / bitmapData.__renderData.textureWidth;
+					uvHeight = tileRect.bottom / bitmapData.__renderData.textureHeight;
 				}
 				else
 				{

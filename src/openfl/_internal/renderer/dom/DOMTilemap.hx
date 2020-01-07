@@ -14,11 +14,11 @@ class DOMTilemap
 	public static function clear(tilemap:Tilemap, renderer:DOMRenderer):Void
 	{
 		#if openfl_html5
-		if (tilemap.__canvas != null)
+		if (tilemap.__renderData.canvas != null)
 		{
-			renderer.element.removeChild(tilemap.__canvas);
-			tilemap.__canvas = null;
-			tilemap.__style = null;
+			renderer.element.removeChild(tilemap.__renderData.canvas);
+			tilemap.__renderData.canvas = null;
+			tilemap.__renderData.style = null;
 		}
 		#end
 	}
@@ -30,17 +30,17 @@ class DOMTilemap
 		#if openfl_html5
 		if (tilemap.stage != null && tilemap.__worldVisible && tilemap.__renderable && tilemap.__group.__tiles.length > 0)
 		{
-			if (tilemap.__canvas == null)
+			if (tilemap.__renderData.canvas == null)
 			{
-				tilemap.__canvas = cast Browser.document.createElement("canvas");
-				tilemap.__context = tilemap.__canvas.getContext("2d");
-				renderer.__initializeElement(tilemap, tilemap.__canvas);
+				tilemap.__renderData.canvas = cast Browser.document.createElement("canvas");
+				tilemap.__renderData.context = tilemap.__renderData.canvas.getContext("2d");
+				renderer.__initializeElement(tilemap, tilemap.__renderData.canvas);
 			}
 
-			tilemap.__canvas.width = tilemap.__width;
-			tilemap.__canvas.height = tilemap.__height;
+			tilemap.__renderData.canvas.width = tilemap.__width;
+			tilemap.__renderData.canvas.height = tilemap.__height;
 
-			renderer.__canvasRenderer.context = tilemap.__context;
+			renderer.__canvasRenderer.context = tilemap.__renderData.context;
 
 			CanvasTilemap.render(tilemap, renderer.__canvasRenderer);
 

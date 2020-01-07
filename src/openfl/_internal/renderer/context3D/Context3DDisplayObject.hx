@@ -27,7 +27,7 @@ class Context3DDisplayObject
 		if (!displayObject.__renderable || displayObject.__worldAlpha <= 0) return;
 
 		if (displayObject.opaqueBackground != null
-			&& !displayObject.__isCacheBitmapRender
+			&& !displayObject.__renderData.isCacheBitmapRender
 			&& displayObject.width > 0
 			&& displayObject.height > 0)
 		{
@@ -64,7 +64,7 @@ class Context3DDisplayObject
 		if (displayObject.opaqueBackground == null && displayObject.__graphics == null) return;
 
 		if (displayObject.opaqueBackground != null
-			&& !displayObject.__isCacheBitmapRender
+			&& !displayObject.__renderData.isCacheBitmapRender
 			&& displayObject.width > 0
 			&& displayObject.height > 0)
 		{

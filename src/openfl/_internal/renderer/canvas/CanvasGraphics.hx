@@ -263,12 +263,12 @@ class CanvasGraphics
 			x -= transform.__transformX(bounds.x, bounds.y);
 			y -= transform.__transformY(bounds.x, bounds.y);
 
-			var cacheCanvas = graphics.__canvas;
-			var cacheContext = graphics.__context;
-			graphics.__canvas = hitTestCanvas;
-			graphics.__context = hitTestContext;
+			var cacheCanvas = graphics.__renderData.canvas;
+			var cacheContext = graphics.__renderData.context;
+			graphics.__renderData.canvas = hitTestCanvas;
+			graphics.__renderData.context = hitTestContext;
 
-			context = graphics.__context;
+			context = graphics.__renderData.context;
 			context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 
 			fillCommands.clear();
@@ -327,8 +327,8 @@ class CanvasGraphics
 						if (hasFill && context.isPointInPath(x, y, windingRule))
 						{
 							data.destroy();
-							graphics.__canvas = cacheCanvas;
-							graphics.__context = cacheContext;
+							graphics.__renderData.canvas = cacheCanvas;
+							graphics.__renderData.context = cacheContext;
 							return true;
 						}
 
@@ -337,8 +337,8 @@ class CanvasGraphics
 						if (hasStroke && (context : Dynamic).isPointInStroke(x, y))
 						{
 							data.destroy();
-							graphics.__canvas = cacheCanvas;
-							graphics.__context = cacheContext;
+							graphics.__renderData.canvas = cacheCanvas;
+							graphics.__renderData.context = cacheContext;
 							return true;
 						}
 
@@ -351,8 +351,8 @@ class CanvasGraphics
 						if (hasFill && context.isPointInPath(x, y, windingRule))
 						{
 							data.destroy();
-							graphics.__canvas = cacheCanvas;
-							graphics.__context = cacheContext;
+							graphics.__renderData.canvas = cacheCanvas;
+							graphics.__renderData.context = cacheContext;
 							return true;
 						}
 
@@ -361,8 +361,8 @@ class CanvasGraphics
 						if (hasStroke && (context : Dynamic).isPointInStroke(x, y))
 						{
 							data.destroy();
-							graphics.__canvas = cacheCanvas;
-							graphics.__context = cacheContext;
+							graphics.__renderData.canvas = cacheCanvas;
+							graphics.__renderData.context = cacheContext;
 							return true;
 						}
 
@@ -448,8 +448,8 @@ class CanvasGraphics
 
 			data.destroy();
 
-			graphics.__canvas = cacheCanvas;
-			graphics.__context = cacheContext;
+			graphics.__renderData.canvas = cacheCanvas;
+			graphics.__renderData.context = cacheContext;
 			return hitTest;
 		}
 		#end
@@ -1152,21 +1152,21 @@ class CanvasGraphics
 
 			if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || width < 1 || height < 1)
 			{
-				graphics.__canvas = null;
-				graphics.__context = null;
+				graphics.__renderData.canvas = null;
+				graphics.__renderData.context = null;
 				graphics.__bitmap = null;
 			}
 			else
 			{
-				if (graphics.__canvas == null)
+				if (graphics.__renderData.canvas == null)
 				{
-					graphics.__canvas = cast Browser.document.createElement("canvas");
-					graphics.__context = graphics.__canvas.getContext("2d");
+					graphics.__renderData.canvas = cast Browser.document.createElement("canvas");
+					graphics.__renderData.context = graphics.__renderData.canvas.getContext("2d");
 				}
 
-				context = graphics.__context;
+				context = graphics.__renderData.context;
 				var transform = graphics.__renderTransform;
-				var canvas = graphics.__canvas;
+				var canvas = graphics.__renderData.canvas;
 
 				var scale = renderer.pixelRatio;
 				var scaledWidth = Std.int(width * scale);
@@ -1443,7 +1443,7 @@ class CanvasGraphics
 				}
 
 				data.destroy();
-				graphics.__bitmap = BitmapData.fromCanvas(graphics.__canvas);
+				graphics.__bitmap = BitmapData.fromCanvas(graphics.__renderData.canvas);
 			}
 
 			graphics.__softwareDirty = false;

@@ -2,12 +2,9 @@ package openfl._internal.backend.dummy;
 
 import openfl.display3D.textures.TextureBase;
 import openfl.display3D.Context3D;
-import openfl.display3D.IndexBuffer3D;
-import openfl.display3D.VertexBuffer3D;
 import openfl.display.BitmapData;
 import openfl.display.BitmapDataChannel;
 import openfl.display.BlendMode;
-import openfl.display.DisplayObject;
 import openfl.display.IBitmapDrawable;
 import openfl.display.StageQuality;
 import openfl.filters.BitmapFilter;
@@ -19,9 +16,6 @@ import openfl.utils.ByteArray;
 import openfl.utils.Future;
 import openfl.utils.Object;
 import openfl.Vector;
-#if openfl_gl
-import openfl._internal.renderer.context3D.batcher.BatchRenderer;
-#end
 
 class DummyBitmapDataBackend
 {
@@ -87,20 +81,6 @@ class DummyBitmapDataBackend
 	}
 
 	public function generateFilterRect(sourceRect:Rectangle, filter:BitmapFilter):Rectangle
-	{
-		return null;
-	}
-
-	public function getIndexBuffer(context:Context3D, scale9Grid:Rectangle = null):IndexBuffer3D
-	{
-		return null;
-	}
-
-	#if (openfl_gl && !disable_batcher)
-	public function pushQuadsToBatcher(batcher:BatchRenderer, transform:Matrix, alpha:Float, object:DisplayObject):Void {}
-	#end
-
-	public function getVertexBuffer(context:Context3D, scale9Grid:Rectangle = null, targetObject:DisplayObject = null):VertexBuffer3D
 	{
 		return null;
 	}
@@ -227,22 +207,12 @@ class DummyBitmapDataBackend
 		return null;
 	}
 
-	private function __resize(width:Int, height:Int):Void {}
-
-	private function __setUVRect(context:Context3D, x:Float, y:Float, width:Float, height:Float):Void {}
-
-	private function __setVertex(index:Int, x:Float, y:Float, u:Float, v:Float):Void {}
-
-	private function __setVertices(indices:Array<Int>, x:Float, y:Float, u:Float, v:Float):Void {}
-
-	private function __setUOffsets(indices:Array<Int>, offset:Float):Void {}
-
-	private function __setVOffsets(indices:Array<Int>, offset:Float):Void {}
-
-	private function __sync():Void {}
-
 	private inline function __powerOfTwo(value:Int):Int
 	{
 		return value;
 	}
+
+	private function __resize(width:Int, height:Int):Void {}
+
+	private function __sync():Void {}
 }

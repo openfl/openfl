@@ -127,13 +127,13 @@ class Context3DGraphics
 						var dataPerVertex = 4;
 						var stride = dataPerVertex * 4;
 
-						if (graphics.__quadBuffer == null)
+						if (graphics.__renderData.quadBuffer == null)
 						{
-							graphics.__quadBuffer = new Context3DBuffer(context, QUADS, length, dataPerVertex);
+							graphics.__renderData.quadBuffer = new Context3DBuffer(context, QUADS, length, dataPerVertex);
 						}
 						else
 						{
-							graphics.__quadBuffer.resize(quadBufferPosition + length, dataPerVertex);
+							graphics.__renderData.quadBuffer.resize(quadBufferPosition + length, dataPerVertex);
 						}
 
 						var vertexOffset, alpha = 1.0, tileData, id;
@@ -145,7 +145,7 @@ class Context3DGraphics
 						var x, y, x2, y2, x3, y3, x4, y4;
 						var ri, ti;
 
-						var vertexBufferData = graphics.__quadBuffer.vertexBufferData;
+						var vertexBufferData = graphics.__renderData.quadBuffer.vertexBufferData;
 
 						#if openfl_power_of_two
 						bitmapWidth = 1;
@@ -267,11 +267,11 @@ class Context3DGraphics
 					resizeVertexBuffer(graphics, hasUVTData, vertexOffset + (length * dataPerVertex));
 
 					// var indexBufferData = graphics.__triangleIndexBufferData;
-					var vertexBufferData = hasUVTData ? graphics.__vertexBufferDataUVT : graphics.__vertexBufferData;
+					var vertexBufferData = hasUVTData ? graphics.__renderData.vertexBufferDataUVT : graphics.__renderData.vertexBufferData;
 					var offset, vertOffset, uvOffset, t;
 
-					var uScale = bitmap.width / bitmap.__textureWidth;
-					var vScale = bitmap.height / bitmap.__textureHeight;
+					var uScale = bitmap.width / bitmap.__renderData.textureWidth;
+					var vScale = bitmap.height / bitmap.__renderData.textureHeight;
 
 					for (i in 0...length)
 					{
@@ -327,49 +327,49 @@ class Context3DGraphics
 
 		if (quadBufferPosition > 0)
 		{
-			graphics.__quadBuffer.flushVertexBufferData();
+			graphics.__renderData.quadBuffer.flushVertexBufferData();
 		}
 
 		if (triangleIndexBufferPosition > 0)
 		{
-			var buffer = graphics.__triangleIndexBuffer;
+			var buffer = graphics.__renderData.triangleIndexBuffer;
 
-			if (buffer == null || triangleIndexBufferPosition > graphics.__triangleIndexBufferCount)
+			if (buffer == null || triangleIndexBufferPosition > graphics.__renderData.triangleIndexBufferCount)
 			{
 				buffer = context.createIndexBuffer(triangleIndexBufferPosition, DYNAMIC_DRAW);
-				graphics.__triangleIndexBuffer = buffer;
-				graphics.__triangleIndexBufferCount = triangleIndexBufferPosition;
+				graphics.__renderData.triangleIndexBuffer = buffer;
+				graphics.__renderData.triangleIndexBufferCount = triangleIndexBufferPosition;
 			}
 
-			buffer.uploadFromTypedArray(graphics.__triangleIndexBufferData);
+			buffer.uploadFromTypedArray(graphics.__renderData.triangleIndexBufferData);
 		}
 
 		if (vertexBufferPosition > 0)
 		{
-			var buffer = graphics.__vertexBuffer;
+			var buffer = graphics.__renderData.vertexBuffer;
 
-			if (buffer == null || vertexBufferPosition > graphics.__vertexBufferCount)
+			if (buffer == null || vertexBufferPosition > graphics.__renderData.vertexBufferCount)
 			{
 				buffer = context.createVertexBuffer(vertexBufferPosition, 4, DYNAMIC_DRAW);
-				graphics.__vertexBuffer = buffer;
-				graphics.__vertexBufferCount = vertexBufferPosition;
+				graphics.__renderData.vertexBuffer = buffer;
+				graphics.__renderData.vertexBufferCount = vertexBufferPosition;
 			}
 
-			buffer.uploadFromTypedArray(graphics.__vertexBufferData);
+			buffer.uploadFromTypedArray(graphics.__renderData.vertexBufferData);
 		}
 
 		if (vertexBufferPositionUVT > 0)
 		{
-			var buffer = graphics.__vertexBufferUVT;
+			var buffer = graphics.__renderData.vertexBufferUVT;
 
-			if (buffer == null || vertexBufferPositionUVT > graphics.__vertexBufferCountUVT)
+			if (buffer == null || vertexBufferPositionUVT > graphics.__renderData.vertexBufferCountUVT)
 			{
 				buffer = context.createVertexBuffer(vertexBufferPositionUVT, 6, DYNAMIC_DRAW);
-				graphics.__vertexBufferUVT = buffer;
-				graphics.__vertexBufferCountUVT = vertexBufferPositionUVT;
+				graphics.__renderData.vertexBufferUVT = buffer;
+				graphics.__renderData.vertexBufferCountUVT = vertexBufferPositionUVT;
 			}
 
-			buffer.uploadFromTypedArray(graphics.__vertexBufferDataUVT);
+			buffer.uploadFromTypedArray(graphics.__renderData.vertexBufferDataUVT);
 		}
 
 		Rectangle.__pool.release(tileRect);
@@ -475,17 +475,17 @@ class Context3DGraphics
 
 		if ((graphics.__bitmap != null && !graphics.__dirty) #if !hwgraphics || !isCompatible(graphics) #end)
 		{
-			// if (graphics.__quadBuffer != null || graphics.__triangleIndexBuffer != null) {
+			// if (graphics.__renderData.quadBuffer != null || graphics.__triangleIndexBuffer != null) {
 
 			// TODO: Should this be kept?
 
-			// graphics.__quadBuffer = null;
+			// graphics.__renderData.quadBuffer = null;
 			// graphics.__triangleIndexBuffer = null;
 			// graphics.__triangleIndexBufferData = null;
-			// graphics.__vertexBuffer = null;
-			// graphics.__vertexBufferData = null;
-			// graphics.__vertexBufferDataUVT = null;
-			// graphics.__vertexBufferUVT = null;
+			// graphics.__renderData.vertexBuffer = null;
+			// graphics.__renderData.vertexBufferData = null;
+			// graphics.__renderData.vertexBufferDataUVT = null;
+			// graphics.__renderData.vertexBufferUVT = null;
 
 			// }
 
@@ -523,7 +523,9 @@ class Context3DGraphics
 			if (bounds != null && width >= 1 && height >= 1)
 			{
 				if (graphics.__hardwareDirty
-					|| (graphics.__quadBuffer == null && graphics.__vertexBuffer == null && graphics.__vertexBufferUVT == null))
+					|| (graphics.__renderData.quadBuffer == null
+						&& graphics.__renderData.vertexBuffer == null
+						&& graphics.__renderData.vertexBufferUVT == null))
 				{
 					buildBuffer(graphics, renderer);
 				}
@@ -648,10 +650,10 @@ class Context3DGraphics
 										renderer.__updateShaderBuffer(shaderBufferOffset);
 									}
 
-									if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, graphics.__quadBuffer.vertexBuffer,
-										quadBufferPosition * 16, FLOAT_2);
+									if (shader.__position != null) context.setVertexBufferAt(shader.__position.index,
+										graphics.__renderData.quadBuffer.vertexBuffer, quadBufferPosition * 16, FLOAT_2);
 									if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index,
-										graphics.__quadBuffer.vertexBuffer, (quadBufferPosition * 16) + 2, FLOAT_2);
+										graphics.__renderData.quadBuffer.vertexBuffer, (quadBufferPosition * 16) + 2, FLOAT_2);
 
 									context.drawTriangles(context.__quadIndexBuffer, 0, length * 2);
 									#if gl_stats
@@ -726,7 +728,7 @@ class Context3DGraphics
 							var uvStride = hasUVTData ? 3 : 2;
 
 							var dataPerVertex = vertLength + 2;
-							var vertexBuffer = hasUVTData ? graphics.__vertexBufferUVT : graphics.__vertexBuffer;
+							var vertexBuffer = hasUVTData ? graphics.__renderData.vertexBufferUVT : graphics.__renderData.vertexBuffer;
 							var bufferPosition = hasUVTData ? vertexBufferPositionUVT : vertexBufferPosition;
 
 							var uMatrix = renderer.__getMatrix(graphics.__owner.__renderTransform, AUTO);
@@ -851,7 +853,7 @@ class Context3DGraphics
 	{
 		if (isQuad) return;
 
-		var buffer = (isQuad ? null /*graphics.__quadIndexBufferData*/ : graphics.__triangleIndexBufferData);
+		var buffer = (isQuad ? null /*graphics.__quadIndexBufferData*/ : graphics.__renderData.triangleIndexBufferData);
 		var position = 0, newBuffer = null;
 
 		if (buffer == null)
@@ -888,14 +890,14 @@ class Context3DGraphics
 			}
 			else
 			{
-				graphics.__triangleIndexBufferData = newBuffer;
+				graphics.__renderData.triangleIndexBufferData = newBuffer;
 			}
 		}
 	}
 
 	private static function resizeVertexBuffer(graphics:Graphics, hasUVTData:Bool, length:Int):Void
 	{
-		var buffer = (hasUVTData ? graphics.__vertexBufferDataUVT : graphics.__vertexBufferData);
+		var buffer = (hasUVTData ? graphics.__renderData.vertexBufferDataUVT : graphics.__renderData.vertexBufferData);
 		var newBuffer = null;
 
 		if (buffer == null)
@@ -910,7 +912,7 @@ class Context3DGraphics
 
 		if (newBuffer != null)
 		{
-			hasUVTData ? graphics.__vertexBufferDataUVT = newBuffer : graphics.__vertexBufferData = newBuffer;
+			hasUVTData ? graphics.__renderData.vertexBufferDataUVT = newBuffer : graphics.__renderData.vertexBufferData = newBuffer;
 		}
 	}
 }

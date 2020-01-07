@@ -31,7 +31,7 @@ class CairoTextField
 		var textEngine = textField.__textEngine;
 		var bounds = (textEngine.background || textEngine.border) ? textEngine.bounds : textEngine.textBounds;
 		var graphics = textField.__graphics;
-		var cairo = graphics.__cairo;
+		var cairo = graphics.__renderData.cairo;
 
 		if (textField.__dirty)
 		{
@@ -68,7 +68,7 @@ class CairoTextField
 
 			if (!renderable || needsUpscaling)
 			{
-				graphics.__cairo = null;
+				graphics.__renderData.cairo = null;
 				graphics.__bitmap = null;
 				graphics.__visible = false;
 				cairo = null;
@@ -101,13 +101,13 @@ class CairoTextField
 
 			var bitmap = new BitmapData(bitmapWidth, bitmapHeight, true, 0);
 			var surface = bitmap.getSurface();
-			graphics.__cairo = new Cairo(surface);
+			graphics.__renderData.cairo = new Cairo(surface);
 			graphics.__visible = true;
 			graphics.__managed = true;
 
 			graphics.__bitmap = bitmap;
 
-			cairo = graphics.__cairo;
+			cairo = graphics.__renderData.cairo;
 
 			var options = new CairoFontOptions();
 

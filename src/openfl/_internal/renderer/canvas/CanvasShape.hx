@@ -25,7 +25,7 @@ class CanvasShape
 
 			var width = graphics.__width;
 			var height = graphics.__height;
-			var canvas = graphics.__canvas;
+			var canvas = graphics.__renderData.canvas;
 
 			if (canvas != null && graphics.__visible && width >= 1 && height >= 1)
 			{

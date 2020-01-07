@@ -2,13 +2,9 @@ package openfl.display;
 
 #if !flash
 import openfl._internal.bindings.cairo.CairoImageSurface;
-import openfl._internal.bindings.cairo.CairoSurface;
-import openfl._internal.bindings.gl.GLFramebuffer;
-import openfl._internal.bindings.gl.GLRenderbuffer;
 import openfl._internal.renderer.BitmapDataPool;
+import openfl._internal.renderer.DisplayObjectRenderData;
 import openfl._internal.renderer.DisplayObjectType;
-import openfl._internal.bindings.typedarray.Float32Array;
-import openfl._internal.bindings.typedarray.UInt16Array;
 import openfl.display3D.textures.TextureBase;
 import openfl.display3D.Context3D;
 import openfl.display3D.IndexBuffer3D;
@@ -26,14 +22,13 @@ import openfl.Vector;
 #if lime
 import lime.graphics.Canvas2DRenderContext;
 import lime.graphics.Image;
-import lime.graphics.RenderContext;
 import lime.math.Vector2;
 #elseif openfl_html5
 import openfl._internal.backend.lime_standalone.Canvas2DRenderContext;
 import openfl._internal.backend.lime_standalone.Image;
-import openfl._internal.backend.lime_standalone.RenderContext;
 #end
 #if openfl_gl
+import openfl._internal.renderer.context3D.Context3DBitmapData;
 import openfl._internal.renderer.context3D.Context3DRenderer;
 #end
 #if openfl_html5
@@ -121,7 +116,6 @@ import js.html.Image in JSImage;
 @:autoBuild(openfl._internal.macros.AssetsMacro.embedBitmap())
 class BitmapData implements IBitmapDrawable
 {
-	@:noCompletion private static inline var VERTEX_BUFFER_STRIDE:Int = 14;
 	@:noCompletion private static var __hardwareRenderer:#if openfl_gl Context3DRenderer #else Dynamic #end;
 	@:noCompletion private static var __pool:BitmapDataPool = new BitmapDataPool();
 	@:noCompletion private static var __softwareRenderer:DisplayObjectRenderer;
@@ -199,38 +193,15 @@ class BitmapData implements IBitmapDrawable
 
 	@:noCompletion private var __backend:BitmapDataBackend;
 	@:noCompletion private var __blendMode:BlendMode;
-	// @:noCompletion private var __vertexBufferColorTransform:ColorTransform;
-	// @:noCompletion private var __vertexBufferAlpha:Float;
-	@:noCompletion private var __framebuffer:GLFramebuffer;
-	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __framebufferContext:#if (lime || openfl_html5) RenderContext #else Dynamic #end;
-	@:noCompletion private var __indexBuffer:IndexBuffer3D;
-	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __indexBufferContext:#if (lime || openfl_html5) RenderContext #else Dynamic #end;
-	@:noCompletion private var __indexBufferData:UInt16Array;
-	@:noCompletion private var __indexBufferGrid:Rectangle;
 	@:noCompletion private var __isMask:Bool;
 	@:noCompletion private var __isValid:Bool;
 	@:noCompletion private var __mask:DisplayObject;
 	@:noCompletion private var __renderable:Bool;
+	@:noCompletion private var __renderData:DisplayObjectRenderData;
 	@:noCompletion private var __renderTransform:Matrix;
 	@:noCompletion private var __scrollRect:Rectangle;
-	@:noCompletion private var __stencilBuffer:GLRenderbuffer;
-	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __surface:#if (lime || openfl_html5) CairoSurface #else Dynamic #end;
-	@:noCompletion private var __texture:TextureBase;
-	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __textureContext:#if (lime || openfl_html5) RenderContext #else Dynamic #end;
-	@:noCompletion private var __textureHeight:Int;
-	@:noCompletion private var __textureVersion:Int;
-	@:noCompletion private var __textureWidth:Int;
 	@:noCompletion private var __transform:Matrix;
 	@:noCompletion private var __type:DisplayObjectType;
-	@:noCompletion private var __uvRect:Rectangle;
-	@:noCompletion private var __vertexBuffer:VertexBuffer3D;
-	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __vertexBufferContext:#if (lime || openfl_html5) RenderContext #else Dynamic #end;
-	@:noCompletion private var __vertexBufferData:Float32Array;
-	@:noCompletion private var __vertexBufferGrid:Rectangle;
-	@:noCompletion private var __vertexBufferHeight:Float;
-	@:noCompletion private var __vertexBufferScaleX:Float;
-	@:noCompletion private var __vertexBufferScaleY:Float;
-	@:noCompletion private var __vertexBufferWidth:Float;
 	@:noCompletion private var __worldAlpha:Float;
 	@:noCompletion private var __worldColorTransform:ColorTransform;
 	@:noCompletion private var __worldTransform:Matrix;
@@ -266,13 +237,14 @@ class BitmapData implements IBitmapDrawable
 		this.height = height;
 		rect = new Rectangle(0, 0, width, height);
 
-		__backend = new BitmapDataBackend(this, width, height, transparent, fillColor);
-
+		__renderData = new DisplayObjectRenderData();
 		__renderTransform = new Matrix();
 		__worldAlpha = 1;
 		__worldTransform = new Matrix();
 		__worldColorTransform = new ColorTransform();
 		__renderable = true;
+
+		__backend = new BitmapDataBackend(this, width, height, transparent, fillColor);
 	}
 
 	/**
@@ -915,7 +887,11 @@ class BitmapData implements IBitmapDrawable
 	**/
 	@:dox(hide) public function getIndexBuffer(context:Context3D, scale9Grid:Rectangle = null):IndexBuffer3D
 	{
-		return __backend.getIndexBuffer(context, scale9Grid);
+		#if openfl_gl
+		return Context3DBitmapData.getIndexBuffer(this, context, scale9Grid);
+		#else
+		return null;
+		#end
 	}
 
 	/**
@@ -928,7 +904,11 @@ class BitmapData implements IBitmapDrawable
 	**/
 	@:dox(hide) public function getVertexBuffer(context:Context3D, scale9Grid:Rectangle = null, targetObject:DisplayObject = null):VertexBuffer3D
 	{
-		return __backend.getVertexBuffer(context, scale9Grid, targetObject);
+		#if openfl_gl
+		return Context3DBitmapData.getVertexBuffer(this, context, scale9Grid, targetObject);
+		#else
+		return null;
+		#end
 	}
 
 	/**
