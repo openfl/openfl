@@ -68,8 +68,6 @@ class Context3DDisplayObject
 			&& displayObject.width > 0
 			&& displayObject.height > 0)
 		{
-			// var gl = renderer.__context.webgl;
-
 			// TODO
 
 			// var rect = Rectangle.__pool.get ();

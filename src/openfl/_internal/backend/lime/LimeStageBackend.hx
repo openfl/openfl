@@ -28,6 +28,7 @@ import openfl.ui.GameInputControl;
 import openfl.ui.GameInputDevice;
 import openfl.ui.Keyboard;
 import openfl.ui.KeyLocation;
+import openfl.Lib;
 #if !display
 #if openfl_gl
 import openfl._internal.renderer.context3D.Context3DRenderer;
@@ -1147,7 +1148,7 @@ class LimeStageBackend
 
 	private function window_onRender(context:RenderContext):Void
 	{
-		#if openfl_cairo
+		#if (openfl_cairo && !display)
 		if (parent.__renderer != null && parent.__renderer.__type == CAIRO)
 		{
 			var renderer:CairoRenderer = cast parent.__renderer;

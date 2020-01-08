@@ -1299,7 +1299,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		__dispatchPendingMouseEvent();
 
 		MouseEvent.__altKey = event.altKey;
+		#if !openfl_doc_gen
 		MouseEvent.__commandKey = event.commandKey;
+		#end
 		MouseEvent.__ctrlKey = event.ctrlKey;
 		MouseEvent.__shiftKey = event.shiftKey;
 

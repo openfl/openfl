@@ -5,6 +5,7 @@ import openfl._internal.bindings.gl.GLBuffer;
 import openfl._internal.bindings.gl.GLFramebuffer;
 import openfl._internal.bindings.gl.GLTexture;
 import openfl._internal.bindings.gl.GL;
+import openfl._internal.bindings.gl.WebGLRenderingContext;
 import openfl._internal.renderer.SamplerState;
 import openfl._internal.bindings.typedarray.Float32Array;
 import openfl._internal.bindings.typedarray.UInt8Array;
@@ -30,14 +31,6 @@ import lime.graphics.ImageBuffer;
 import lime.graphics.RenderContext;
 import lime.math.Rectangle as LimeRectangle;
 import lime.math.Vector2;
-import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
-#elseif openfl_html5
-import openfl._internal.backend.lime_standalone.Image;
-import openfl._internal.backend.lime_standalone.ImageBuffer;
-import openfl._internal.backend.lime_standalone.RenderContext;
-import openfl._internal.backend.lime_standalone.WebGLRenderContext;
-#else
-import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 #end
 
 #if !openfl_debug
@@ -69,7 +62,7 @@ class OpenGLContext3DBackend
 	private static var driverInfo:String;
 
 	public var context:#if (lime || openfl_html5) RenderContext #else Dynamic #end;
-	public var gl:WebGLRenderContext;
+	public var gl:WebGLRenderingContext;
 
 	private var parent:Context3D;
 	private var positionScale:Float32Array; // TODO: Better approach?

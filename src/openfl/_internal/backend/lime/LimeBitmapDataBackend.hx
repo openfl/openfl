@@ -35,7 +35,7 @@ import js.html.CanvasElement;
 import js.html.Image in JSImage;
 import lime.graphics.Canvas2DRenderContext;
 import openfl._internal.renderer.canvas.CanvasRenderer;
-#else
+#elseif openfl_cairo
 import openfl._internal.renderer.cairo.CairoRenderer;
 #end
 
@@ -45,6 +45,7 @@ import openfl._internal.renderer.cairo.CairoRenderer;
 @:access(lime.math.Rectangle)
 @:access(openfl._internal.backend.lime.cairo.CairoRenderer)
 @:access(openfl._internal.renderer.canvas.CanvasRenderer)
+@:access(openfl._internal.renderer.cairo.CairoRenderer)
 @:access(openfl.display3D.textures.TextureBase)
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.BitmapData)

@@ -3,6 +3,7 @@ package openfl._internal.backend.opengl;
 #if openfl_gl
 import openfl._internal.bindings.gl.GLBuffer;
 import openfl._internal.bindings.gl.GL;
+import openfl._internal.bindings.gl.WebGLRenderingContext;
 import openfl._internal.bindings.typedarray.ArrayBufferView;
 import openfl._internal.bindings.typedarray.UInt16Array;
 import openfl.display3D.Context3DBufferUsage;
@@ -20,6 +21,7 @@ import openfl.Vector;
 @:access(openfl.display.Stage)
 class OpenGLIndexBuffer3DBackend
 {
+	private var gl:WebGLRenderingContext;
 	private var glBufferID:GLBuffer;
 	private var glUsage:Int;
 	private var memoryUsage:Int;
@@ -30,7 +32,7 @@ class OpenGLIndexBuffer3DBackend
 	{
 		this.parent = parent;
 
-		var gl = parent.__context.__backend.gl;
+		gl = parent.__context.__backend.gl;
 		glBufferID = gl.createBuffer();
 
 		glUsage = (parent.__bufferUsage == Context3DBufferUsage.DYNAMIC_DRAW) ? GL.DYNAMIC_DRAW : GL.STATIC_DRAW;
@@ -38,7 +40,6 @@ class OpenGLIndexBuffer3DBackend
 
 	public function dispose():Void
 	{
-		var gl = parent.__context.__backend.gl;
 		gl.deleteBuffer(glBufferID);
 	}
 
@@ -51,7 +52,6 @@ class OpenGLIndexBuffer3DBackend
 	public function uploadFromTypedArray(data:ArrayBufferView, byteLength:Int = -1):Void
 	{
 		if (data == null) return;
-		var gl = parent.__context.__backend.gl;
 		parent.__context.__backend.bindGLElementArrayBuffer(glBufferID);
 		gl.bufferData(GL.ELEMENT_ARRAY_BUFFER, data, glUsage);
 	}
@@ -61,7 +61,6 @@ class OpenGLIndexBuffer3DBackend
 		// TODO: Optimize more
 
 		if (data == null) return;
-		var gl = parent.__context.__backend.gl;
 
 		var length = startOffset + count;
 		var existingUInt16Array = tempUInt16Array;

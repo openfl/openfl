@@ -242,7 +242,7 @@ class LimeFileReferenceBackend
 	private function saveFileDialog_onSelect(path:String):Void
 	{
 		#if desktop
-		name = Path.withoutDirectory(path);
+		parent.name = Path.withoutDirectory(path);
 
 		if (this.data != null)
 		{

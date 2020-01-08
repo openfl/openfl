@@ -36,8 +36,6 @@ class Context3DVideo
 	private static function getIndexBuffer(video:Video, context:Context3D):IndexBuffer3D
 	{
 		#if (lime && openfl_gl)
-		var gl = context.__backend.gl;
-
 		if (video.__renderData.indexBuffer == null || video.__renderData.indexBufferContext != context)
 		{
 			// TODO: Use shared buffer on context
@@ -95,8 +93,6 @@ class Context3DVideo
 	private static function getVertexBuffer(video:Video, context:Context3D):VertexBuffer3D
 	{
 		#if (lime && openfl_gl)
-		var gl = context.__backend.gl;
-
 		if (video.__renderData.vertexBuffer == null || video.__renderData.vertexBufferContext != context)
 		{
 			#if openfl_power_of_two
@@ -223,7 +219,6 @@ class Context3DVideo
 		if (video.__stream.__getVideoElement() != null)
 		{
 			var context = renderer.context3D;
-			var gl = context.__backend.gl;
 
 			var shader = renderer.__maskShader;
 			renderer.setShader(shader);

@@ -283,7 +283,7 @@ class SysSocketBackend
 		var doConnect = false;
 		var doClose = false;
 
-		if (!connected)
+		if (!parent.connected)
 		{
 			var r = SysSocket.select(null, [socket], null, 0);
 
@@ -291,7 +291,7 @@ class SysSocketBackend
 			{
 				doConnect = true;
 			}
-			else if (Sys.time() - timestamp > timeout / 1000)
+			else if (Sys.time() - timestamp > parent.timeout / 1000)
 			{
 				doClose = true;
 			}
@@ -300,7 +300,7 @@ class SysSocketBackend
 		var b = new BytesBuffer();
 		var bLength = 0;
 
-		if (connected || doConnect)
+		if (parent.connected || doConnect)
 		{
 			try
 			{
@@ -335,7 +335,7 @@ class SysSocketBackend
 			}
 		}
 
-		if (doClose && connected)
+		if (doClose && parent.connected)
 		{
 			cleanSocket();
 
@@ -349,7 +349,7 @@ class SysSocketBackend
 		}
 		else if (doConnect)
 		{
-			connected = true;
+			parent.connected = true;
 			parent.dispatchEvent(new Event(Event.CONNECT));
 		}
 

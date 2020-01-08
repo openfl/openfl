@@ -195,7 +195,6 @@ class Context3DTilemap
 		// if (tilemap.__tileArray == null || tilemap.__tileArray.length == 0) return;
 
 		// var renderer:Context3DRenderer = cast renderer.renderer;
-		// var gl = renderer.__gl;
 
 		// var shader = renderer.__maskShader;
 

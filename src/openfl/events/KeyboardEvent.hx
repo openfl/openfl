@@ -82,7 +82,7 @@ class KeyboardEvent extends Event
 	**/
 	public var charCode:Int;
 
-	#if (!openfl_doc_gen || !flash_doc_gen || air_doc_gen)
+	#if (!flash_doc_gen || air_doc_gen)
 	/**
 		Indicates whether the Command key is active (`true`) or inactive
 		(`false`). Supported for Mac OS only. On Mac OS, the `commandKey`

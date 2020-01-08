@@ -20,7 +20,7 @@ import openfl.utils.ByteArray;
 #end
 class LimeURLLoaderBackend
 {
-	private var httpRequest:_IHTTPRequest; // TODO: Better (non-private) solution
+	private var httpRequest:#if (display || macro || doc_gen) Dynamic #else _IHTTPRequest #end; // TODO: Better (non-private) solution
 	private var parent:URLLoader;
 
 	public function new(parent:URLLoader)
@@ -98,8 +98,7 @@ class LimeURLLoaderBackend
 		#end
 	}
 
-	private function prepareRequest(httpRequest:#if (display || macro || doc_gen) Dynamic #else _IHTTPRequest #end,
-			request:URLRequest):Void
+	private function prepareRequest(httpRequest:#if (display || macro || doc_gen) Dynamic #else _IHTTPRequest #end, request:URLRequest):Void
 	{
 		this.httpRequest = httpRequest;
 		httpRequest.uri = request.url;

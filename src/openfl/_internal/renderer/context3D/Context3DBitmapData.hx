@@ -24,8 +24,6 @@ class Context3DBitmapData
 
 	public static function getIndexBuffer(bitmapData:BitmapData, context:Context3D, scale9Grid:Rectangle = null):IndexBuffer3D
 	{
-		// var gl = context.__backend.gl;
-
 		if (bitmapData.__renderData.indexBuffer == null
 			|| bitmapData.__renderData.indexBufferContext != context
 			|| (scale9Grid != null && bitmapData.__renderData.indexBufferGrid == null)
@@ -376,8 +374,6 @@ class Context3DBitmapData
 	public static function getVertexBuffer(bitmapData:BitmapData, context:Context3D, scale9Grid:Rectangle = null,
 			targetObject:DisplayObject = null):VertexBuffer3D
 	{
-		// var gl = context.__backend.gl;
-
 		// TODO: Support for UVs other than scale-9 grid?
 		// TODO: Better way of handling object transform?
 
@@ -734,8 +730,6 @@ class Context3DBitmapData
 				|| x != bitmapData.__renderData.uvRect.x
 				|| y != bitmapData.__renderData.uvRect.y))
 		{
-			// var gl = context.__backend.gl;
-
 			if (bitmapData.__renderData.uvRect == null) bitmapData.__renderData.uvRect = new Rectangle();
 			bitmapData.__renderData.uvRect.setTo(x, y, width, height);
 

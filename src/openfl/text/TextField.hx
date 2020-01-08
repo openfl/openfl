@@ -3016,6 +3016,7 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function this_onKeyDown(event:KeyboardEvent):Void
 	{
+		#if !openfl_doc_gen
 		if (type == INPUT)
 		{
 			switch (event.keyCode)
@@ -3251,6 +3252,7 @@ class TextField extends InteractiveObject
 				Clipboard.generalClipboard.setData(TEXT_FORMAT, __text.substring(__caretIndex, __selectionIndex));
 			}
 		}
+		#end
 	}
 
 	@:noCompletion private function this_onMouseDown(event:MouseEvent):Void

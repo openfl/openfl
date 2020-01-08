@@ -533,7 +533,6 @@ class Context3DGraphics
 				var data = new DrawCommandReader(graphics.__commands);
 
 				var context = renderer.context3D;
-				// var gl = context.__backend.gl;
 
 				var matrix = Matrix.__pool.get();
 

@@ -5,18 +5,19 @@ import openfl._internal.bindings.gl.GLProgram;
 import openfl._internal.bindings.gl.GLShader;
 import openfl._internal.bindings.gl.GLUniformLocation;
 import openfl._internal.bindings.gl.GL;
+import openfl._internal.bindings.gl.WebGLRenderingContext;
 import openfl._internal.bindings.typedarray.Float32Array;
 import openfl._internal.formats.agal.AGALConverter;
 import openfl._internal.renderer.SamplerState;
 import openfl._internal.utils.Log;
 import openfl.display3D.Context3D;
-import openfl.display3D.Context3DProgramFormat;
 import openfl.display3D.Program3D;
 import openfl.display.ShaderParameterType;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
 import openfl.Vector;
 #if lime
+import lime.graphics.OpenGLES2RenderContext;
 import lime.utils.BytePointer;
 #elseif openfl_html5
 import openfl._internal.backend.lime_standalone.BytePointer;
@@ -42,6 +43,7 @@ class OpenGLProgram3DBackend
 	private var agalSamplerUsageMask:Int;
 	private var agalUniforms:List<Uniform>;
 	private var agalVertexUniformMap:UniformMap;
+	private var gl:WebGLRenderingContext;
 	private var glFragmentShader:GLShader;
 	private var glFragmentSource:String;
 	private var glProgram:GLProgram;
@@ -59,6 +61,8 @@ class OpenGLProgram3DBackend
 	public function new(parent:Program3D)
 	{
 		this.parent = parent;
+
+		gl = parent.__context.__backend.gl;
 
 		switch (parent.__format)
 		{
@@ -172,7 +176,6 @@ class OpenGLProgram3DBackend
 		glslAttribTypes = new Array();
 		glslUniformLocations = new Array();
 
-		var gl = parent.__context.__backend.gl;
 		var index:Int, location;
 
 		for (name in samplerNames)
@@ -198,8 +201,6 @@ class OpenGLProgram3DBackend
 	private function buildAGALUniformList():Void
 	{
 		if (parent.__format == GLSL) return;
-
-		var gl = parent.__context.__backend.gl;
 
 		agalUniforms.clear();
 		agalSamplerUniforms.clear();
@@ -301,8 +302,6 @@ class OpenGLProgram3DBackend
 
 	private function deleteShaders():Void
 	{
-		var gl = parent.__context.__backend.gl;
-
 		if (glProgram != null)
 		{
 			glProgram = null;
@@ -325,7 +324,6 @@ class OpenGLProgram3DBackend
 	{
 		if (parent.__format == GLSL)
 		{
-			// var gl = __context.gl;
 			// var textureCount = 0;
 
 			// for (input in __glslInputBitmapData) {
@@ -365,7 +363,6 @@ class OpenGLProgram3DBackend
 
 	private function enable():Void
 	{
-		var gl = parent.__context.__backend.gl;
 		gl.useProgram(glProgram);
 
 		if (parent.__format == AGAL)
@@ -400,8 +397,6 @@ class OpenGLProgram3DBackend
 		else
 		{
 			// var textureCount = 0;
-
-			// var gl = __context.gl;
 
 			// for (input in __glslInputBitmapData) {
 
@@ -551,15 +546,12 @@ class OpenGLProgram3DBackend
 
 		if (agalPositionScale != null)
 		{
-			var gl = parent.__context.__backend.gl;
 			gl.uniform4fv(agalPositionScale.location, positionScale);
 		}
 	}
 
 	private function uploadFromGLSL(vertexShaderSource:String, fragmentShaderSource:String):Void
 	{
-		var gl = parent.__context.__backend.gl;
-
 		glVertexSource = vertexShaderSource;
 		glFragmentSource = fragmentShaderSource;
 
@@ -648,29 +640,29 @@ class OpenGLProgram3DBackend
 	public var regCount:Int;
 	public var isDirty:Bool;
 	public var context:Context3D;
-	#if (lime || openfl_html5)
-	public var regDataPointer:BytePointer;
+
+	#if (lime && !openfl_html5)
+	private var gl:OpenGLES2RenderContext;
+	private var regDataPointer:BytePointer;
+	#else
+	private var gl:WebGLRenderingContext;
 	#end
 
 	public function new(context:Context3D)
 	{
 		this.context = context;
+		#if (lime && !openfl_html5)
+		gl = context.__backend.context.gles2;
+		regDataPointer = new BytePointer();
+		#else
+		gl = context.__backend.gl;
+		#end
 
 		isDirty = true;
-
-		#if (lime || openfl_html5)
-		regDataPointer = new BytePointer();
-		#end
 	}
 
 	public function flush():Void
 	{
-		#if openfl_html5
-		var gl = context.__backend.gl;
-		#elseif lime
-		var gl = context.__backend.context.gles2;
-		#end
-
 		var index:Int = regIndex * 4;
 		switch (type)
 		{

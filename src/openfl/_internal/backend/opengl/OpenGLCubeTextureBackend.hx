@@ -4,13 +4,13 @@ package openfl._internal.backend.opengl;
 import haxe.Timer;
 import openfl._internal.bindings.gl.GLFramebuffer;
 import openfl._internal.bindings.gl.GL;
+import openfl._internal.bindings.gl.WebGLRenderingContext;
+import openfl._internal.bindings.typedarray.ArrayBufferView;
+import openfl._internal.bindings.typedarray.UInt8Array;
 import openfl._internal.formats.atf.ATFReader;
 import openfl._internal.renderer.SamplerState;
-import openfl._internal.bindings.typedarray.ArrayBufferView;
 import openfl._internal.utils.Log;
-import openfl._internal.bindings.typedarray.UInt8Array;
 import openfl.display3D.textures.CubeTexture;
-import openfl.display3D.Context3D;
 import openfl.display3D.Context3DTextureFormat;
 import openfl.display.BitmapData;
 import openfl.errors.IllegalOperationError;
@@ -29,6 +29,7 @@ import openfl.utils.ByteArray;
 class OpenGLCubeTextureBackend extends OpenGLTextureBaseBackend
 {
 	private var framebufferSurface:Int;
+	private var gl:WebGLRenderingContext;
 	private var parent:CubeTexture;
 	private var uploadedSides:Int;
 
@@ -38,6 +39,7 @@ class OpenGLCubeTextureBackend extends OpenGLTextureBaseBackend
 
 		this.parent = parent;
 
+		gl = parent.__context.__backend.gl;
 		glTextureTarget = GL.TEXTURE_CUBE_MAP;
 		uploadedSides = 0;
 
@@ -88,8 +90,6 @@ class OpenGLCubeTextureBackend extends OpenGLTextureBaseBackend
 		#if openfl_html5
 		if (miplevel == 0 && image.buffer != null && image.buffer.data == null && image.buffer.src != null)
 		{
-			var gl = parent.__context.__backend.gl;
-
 			var size = parent.__size >> miplevel;
 			if (size == 0) return;
 
@@ -124,8 +124,6 @@ class OpenGLCubeTextureBackend extends OpenGLTextureBaseBackend
 	{
 		if (data == null) return;
 
-		var gl = parent.__context.__backend.gl;
-
 		var size = parent.__size >> miplevel;
 		if (size == 0) return;
 
@@ -140,8 +138,6 @@ class OpenGLCubeTextureBackend extends OpenGLTextureBaseBackend
 
 	private override function getGLFramebuffer(enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):GLFramebuffer
 	{
-		var gl = parent.__context.__backend.gl;
-
 		if (glFramebuffer == null)
 		{
 			glFramebuffer = gl.createFramebuffer();
@@ -173,8 +169,6 @@ class OpenGLCubeTextureBackend extends OpenGLTextureBaseBackend
 	{
 		if (super.setSamplerState(state))
 		{
-			var gl = parent.__context.__backend.gl;
-
 			if (state.mipfilter != MIPNONE && !samplerState.mipmapGenerated)
 			{
 				gl.generateMipmap(GL.TEXTURE_CUBE_MAP);
@@ -208,8 +202,6 @@ class OpenGLCubeTextureBackend extends OpenGLTextureBaseBackend
 
 	private function sideToTarget(side:UInt):Int
 	{
-		var gl = parent.__context.__backend.gl;
-
 		return switch (side)
 		{
 			case 0: GL.TEXTURE_CUBE_MAP_POSITIVE_X;
@@ -226,8 +218,6 @@ class OpenGLCubeTextureBackend extends OpenGLTextureBaseBackend
 	{
 		var reader = new ATFReader(data, byteArrayOffset);
 		var alpha = reader.readHeader(parent.__size, parent.__size, true);
-
-		var gl = parent.__context.__backend.gl;
 
 		parent.__context.__backend.bindGLTextureCubeMap(glTextureID);
 
