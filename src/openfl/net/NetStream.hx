@@ -3,6 +3,9 @@ package openfl.net;
 #if !flash
 import openfl.events.EventDispatcher;
 import openfl.media.SoundTransform;
+#if openfl_html5
+import js.html.VideoElement;
+#end
 
 /**
 	The NetStream class opens a one-way streaming channel over a
@@ -1134,7 +1137,9 @@ class NetStream extends EventDispatcher
 	#end
 	// @:noCompletion @:dox(hide) @:require(flash11) public var videoStreamSettings:openfl.media.VideoStreamSettings;
 	@:noCompletion private var __backend:NetStreamBackend;
+	@:noCompletion private var __closed:Bool;
 	@:noCompletion private var __connection:NetConnection;
+	@:noCompletion @:isVar private var __seeking(get, set):Bool;
 	@:noCompletion private var __soundTransform:SoundTransform;
 
 	#if openfljs
@@ -1412,6 +1417,7 @@ class NetStream extends EventDispatcher
 	**/
 	public function close():Void
 	{
+		__closed = true;
 		__backend.close();
 	}
 
@@ -2009,6 +2015,13 @@ class NetStream extends EventDispatcher
 		__backend.togglePause();
 	}
 
+	#if openfl_html5
+	@:noCompletion private function __getVideoElement():VideoElement
+	{
+		return __backend.video;
+	}
+	#end
+
 	// Get & Set Methods
 	@:noCompletion private function get_soundTransform():SoundTransform
 	{
@@ -2037,6 +2050,16 @@ class NetStream extends EventDispatcher
 	{
 		__backend.setSpeed(value);
 		return value;
+	}
+
+	@:noCompletion private function get___seeking():Bool
+	{
+		return __seeking || __backend.getSeeking();
+	}
+
+	@:noCompletion private function set___seeking(value:Bool):Bool
+	{
+		return __seeking = value;
 	}
 }
 

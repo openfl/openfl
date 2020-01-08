@@ -64,23 +64,26 @@ class Context3DVideo
 	private static function getTexture(video:Video, context:Context3D):RectangleTexture
 	{
 		#if openfl_html5
-		if (video.__stream == null || @:privateAccess video.__stream.__backend.video == null) return null;
+		if (video.__stream == null) return null;
+
+		var videoElement = video.__stream.__getVideoElement();
+		if (videoElement == null) return null;
 
 		var gl = context.__backend.context.webgl;
 		var internalFormat = gl.RGBA;
 		var format = gl.RGBA;
 
-		if (@:privateAccess !video.__stream.__backend.closed && @:privateAccess video.__stream.__backend.video.currentTime != video.__renderData.textureTime)
+		if (!video.__stream.__closed && videoElement.currentTime != video.__renderData.textureTime)
 		{
 			if (video.__renderData.texture == null)
 			{
-				video.__renderData.texture = context.createRectangleTexture(@:privateAccess video.__stream.__backend.video.videoWidth, @:privateAccess video.__stream.__backend.video.videoHeight, BGRA, false);
+				video.__renderData.texture = context.createRectangleTexture(videoElement.videoWidth, videoElement.videoHeight, BGRA, false);
 			}
 
 			context.__backend.bindGLTexture2D(video.__renderData.texture.__baseBackend.glTextureID);
-			gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, @:privateAccess video.__stream.__backend.video);
+			gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, videoElement);
 
-			video.__renderData.textureTime = @:privateAccess video.__stream.__backend.video.currentTime;
+			video.__renderData.textureTime = videoElement.currentTime;
 		}
 
 		return cast video.__renderData.texture;
@@ -144,7 +147,9 @@ class Context3DVideo
 		#if openfl_html5
 		if (!video.__renderable || video.__worldAlpha <= 0 || video.__stream == null) return;
 
-		if (@:privateAccess video.__stream.__backend.video != null)
+		var videoElement = video.__stream.__getVideoElement();
+
+		if (videoElement != null)
 		{
 			var context = renderer.context3D;
 			var gl = context.__backend.gl;
@@ -170,8 +175,8 @@ class Context3DVideo
 
 			if (shader.__textureSize != null)
 			{
-				__textureSizeValue[0] = (video.__stream != null) ? @:privateAccess video.__stream.__backend.video.videoWidth : 0;
-				__textureSizeValue[1] = (video.__stream != null) ? @:privateAccess video.__stream.__backend.video.videoHeight : 0;
+				__textureSizeValue[0] = (video.__stream != null) ? videoElement.videoWidth : 0;
+				__textureSizeValue[1] = (video.__stream != null) ? videoElement.videoHeight : 0;
 				shader.__textureSize.value = __textureSizeValue;
 			}
 
@@ -215,7 +220,7 @@ class Context3DVideo
 		#if openfl_html5
 		if (video.__stream == null) return;
 
-		if (@:privateAccess video.__stream.__backend.video != null)
+		if (video.__stream.__getVideoElement() != null)
 		{
 			var context = renderer.context3D;
 			var gl = context.__backend.gl;

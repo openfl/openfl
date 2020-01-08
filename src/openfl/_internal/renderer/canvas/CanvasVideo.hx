@@ -17,8 +17,9 @@ class CanvasVideo
 		if (alpha <= 0) return;
 
 		var context = renderer.context;
+		var videoElement = video.__stream.__getVideoElement();
 
-		if (@:privateAccess video.__stream.__backend.video != null)
+		if (videoElement != null)
 		{
 			renderer.__setBlendMode(video.__worldBlendMode);
 			renderer.__pushMaskObject(video);
@@ -36,13 +37,12 @@ class CanvasVideo
 
 			if (scrollRect == null)
 			{
-				context.drawImage(@:privateAccess video.__stream.__backend.video, 0, 0, video.width, video.height);
+				context.drawImage(videoElement, 0, 0, video.width, video.height);
 			}
 			else
 			{
-				context.drawImage(@:privateAccess video.__stream.__backend.video, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height,
-					scrollRect.x, scrollRect.y,
-					scrollRect.width, scrollRect.height);
+				context.drawImage(videoElement, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height, scrollRect.x, scrollRect.y, scrollRect.width,
+					scrollRect.height);
 			}
 
 			if (!smoothing)

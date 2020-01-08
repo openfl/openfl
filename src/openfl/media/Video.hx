@@ -71,6 +71,7 @@ import openfl.net.NetStream;
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Point)
 @:access(openfl.geom.Rectangle)
+@:access(openfl.net.NetStream)
 class Video extends DisplayObject
 {
 	/**
@@ -224,9 +225,10 @@ class Video extends DisplayObject
 		__stream = netStream;
 
 		#if openfl_html5
-		if (__stream != null && @:privateAccess __stream.__backend.video != null && @:privateAccess !__stream.__backend.closed)
+		if (__stream != null && !__stream.__closed)
 		{
-			@:privateAccess __stream.__backend.video.play();
+			// @:privateAccess __stream.__getVideoElement().play();
+			__stream.resume();
 		}
 		#end
 	}
@@ -310,9 +312,13 @@ class Video extends DisplayObject
 	@:noCompletion private function get_videoHeight():Int
 	{
 		#if openfl_html5
-		if (__stream != null && @:privateAccess __stream.__backend.video != null)
+		if (__stream != null)
 		{
-			return Std.int(@:privateAccess __stream.__backend.video.videoHeight);
+			var videoElement = __stream.__getVideoElement();
+			if (videoElement != null)
+			{
+				return Std.int(videoElement.videoHeight);
+			}
 		}
 		#end
 
@@ -322,9 +328,13 @@ class Video extends DisplayObject
 	@:noCompletion private function get_videoWidth():Int
 	{
 		#if openfl_html5
-		if (__stream != null && @:privateAccess __stream.__backend.video != null)
+		if (__stream != null)
 		{
-			return Std.int(@:privateAccess __stream.__backend.video.videoWidth);
+			var videoElement = __stream.__getVideoElement();
+			if (videoElement != null)
+			{
+				return Std.int(videoElement.videoWidth);
+			}
 		}
 		#end
 

@@ -5,9 +5,11 @@ import haxe.Timer;
 import openfl._internal.bindings.gl.GLTexture;
 import openfl._internal.bindings.gl.GL;
 import openfl.display3D.textures.VideoTexture;
-import openfl.display3D.Context3D;
 import openfl.events.Event;
 import openfl.net.NetStream;
+#if openfl_html5
+import js.html.VideoElement;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -23,6 +25,9 @@ class OpenGLVideoTextureBackend extends OpenGLTextureBaseBackend
 {
 	private var netStream:NetStream;
 	private var parent:VideoTexture;
+	#if openfl_html5
+	private var videoElement:VideoElement;
+	#end
 
 	public function new(parent:VideoTexture)
 	{
@@ -38,14 +43,15 @@ class OpenGLVideoTextureBackend extends OpenGLTextureBaseBackend
 		#if openfl_html5
 		if (this.netStream != null)
 		{
-			@:privateAccess this.netStream.__backend.video.removeEventListener("canplay", onCanPlay, false);
+			this.netStream.__getVideoElement().removeEventListener("canplay", onCanPlay, false);
 		}
 		#end
 
 		this.netStream = netStream;
 
 		#if openfl_html5
-		if (@:privateAccess netStream.__backend.video.readyState == 4)
+		this.videoElement = netStream.__getVideoElement();
+		if (videoElement.readyState == 4)
 		{
 			Timer.delay(function()
 			{
@@ -54,7 +60,7 @@ class OpenGLVideoTextureBackend extends OpenGLTextureBaseBackend
 		}
 		else
 		{
-			@:privateAccess netStream.__backend.video.addEventListener("canplay", onCanPlay, false);
+			videoElement.addEventListener("canplay", onCanPlay, false);
 		}
 		#end
 	}
@@ -69,14 +75,13 @@ class OpenGLVideoTextureBackend extends OpenGLTextureBaseBackend
 	private override function getTexture():GLTexture
 	{
 		#if openfl_html5
-		if ((! @:privateAccess netStream.__backend.video.paused || @:privateAccess netStream.__backend.seeking)
-			&& @:privateAccess netStream.__backend.video.readyState > 0)
+		if ((!videoElement.paused || netStream.__seeking) && videoElement.readyState > 0)
 		{
-			@:privateAccess netStream.__backend.seeking = false;
+			netStream.__seeking = false;
 			var gl = parent.__context.__backend.gl;
 
 			parent.__context.__backend.bindGLTexture2D(glTextureID);
-			gl.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, @:privateAccess netStream.__backend.video);
+			gl.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, videoElement);
 		}
 		#end
 
@@ -86,8 +91,8 @@ class OpenGLVideoTextureBackend extends OpenGLTextureBaseBackend
 	private function textureReady():Void
 	{
 		#if openfl_html5
-		parent.videoWidth = @:privateAccess netStream.__backend.video.videoWidth;
-		parent.videoHeight = @:privateAccess netStream.__backend.video.videoHeight;
+		parent.videoWidth = videoElement.videoWidth;
+		parent.videoHeight = videoElement.videoHeight;
 		#end
 
 		var event:Event = null;

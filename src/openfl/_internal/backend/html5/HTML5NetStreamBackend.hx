@@ -13,11 +13,10 @@ import openfl.net.NetStream;
 @:access(openfl.net.NetStream)
 class HTML5NetStreamBackend
 {
-	private var closed:Bool;
+	public var video:VideoElement;
+
 	private var parent:NetStream;
-	@:isVar private var seeking(get, set):Bool;
 	private var timer:Timer;
-	private var video:VideoElement;
 
 	public function new(parent:NetStream):Void
 	{
@@ -48,7 +47,6 @@ class HTML5NetStreamBackend
 	{
 		if (video == null) return;
 
-		closed = true;
 		video.pause();
 		video.src = "";
 		parent.time = 0;
@@ -62,7 +60,7 @@ class HTML5NetStreamBackend
 
 	public function getSeeking():Bool
 	{
-		return video.seeking;
+		return (video != null && video.seeking);
 	}
 
 	public function getSpeed():Float
@@ -126,7 +124,7 @@ class HTML5NetStreamBackend
 			time = video.duration;
 		}
 
-		this.seeking = true;
+		parent.__seeking = true;
 		parent.__connection.dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, false, {code: "NetStream.SeekStart.Notify"}));
 		video.currentTime = time;
 	}
@@ -247,7 +245,7 @@ class HTML5NetStreamBackend
 	{
 		playStatus("NetStream.Play.seeking");
 
-		// this.seeking = false;
+		// parent.__seeking = false;
 		parent.__connection.dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, false, {code: "NetStream.Seek.Complete"}));
 	}
 
@@ -268,18 +266,6 @@ class HTML5NetStreamBackend
 	private function video_onWaiting(event:Dynamic):Void
 	{
 		playStatus("NetStream.Play.waiting");
-	}
-
-	// Get & Set Methods
-	private function get_seeking():Bool
-	{
-		return this.seeking || (video != null && video.seeking);
-	}
-
-	private function set_seeking(value:Bool):Bool
-	{
-		this.seeking = value;
-		return value;
 	}
 }
 #end
