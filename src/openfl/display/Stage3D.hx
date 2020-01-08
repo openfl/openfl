@@ -462,7 +462,7 @@ class Stage3D extends EventDispatcher
 
 		if (context3D != null)
 		{
-			context3D.__dispose();
+			context3D.dispose();
 			__contextRequested = true;
 		}
 	}

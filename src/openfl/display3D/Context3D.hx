@@ -1,16 +1,11 @@
 package openfl.display3D;
 
 #if !flash
-import openfl._internal.bindings.gl.GLBuffer;
-import openfl._internal.bindings.gl.GLFramebuffer;
-import openfl._internal.bindings.gl.GLTexture;
-import openfl._internal.bindings.gl.GL;
+import openfl._internal.bindings.typedarray.Float32Array;
+import openfl._internal.bindings.typedarray.UInt16Array;
 import openfl._internal.renderer.context3D.Context3DState;
 import openfl._internal.renderer.BitmapDataPool;
 import openfl._internal.renderer.SamplerState;
-import openfl._internal.bindings.typedarray.Float32Array;
-import openfl._internal.bindings.typedarray.UInt16Array;
-import openfl._internal.bindings.typedarray.UInt8Array;
 import openfl.display3D.textures.CubeTexture;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.display3D.textures.TextureBase;
@@ -20,33 +15,17 @@ import openfl.display.BitmapData;
 import openfl.display.Stage;
 import openfl.display.Stage3D;
 import openfl.errors.Error;
-import openfl.errors.IllegalOperationError;
 import openfl.events.EventDispatcher;
 import openfl.geom.Matrix3D;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.utils.AGALMiniAssembler;
 import openfl.utils.ByteArray;
-#if lime
-import lime.graphics.Image;
-import lime.graphics.ImageBuffer;
-import lime.graphics.RenderContext;
-import lime.math.Rectangle as LimeRectangle;
-import lime.math.Vector2;
-import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
-#elseif openfl_html5
-import openfl._internal.backend.lime_standalone.Image;
-import openfl._internal.backend.lime_standalone.ImageBuffer;
-import openfl._internal.backend.lime_standalone.RenderContext;
-import openfl._internal.backend.lime_standalone.WebGLRenderContext;
-#else
-import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
-#end
 
 /**
 	The Context3D class provides a context for rendering geometrically defined graphics.
 	A rendering context includes a drawing surface and its associated resources and
-	state. When possible, the rendering context uses the hardware graphics processing
+	__state. When possible, the rendering context uses the hardware graphics processing
 	unit (GPU). Otherwise, the rendering context uses software. (If rendering through
 	Context3D is not supported on a platform, the stage3Ds property of the Stage object
 	contains an empty list.)
@@ -145,14 +124,7 @@ import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 @:access(openfl.display3D.IndexBuffer3D)
 @:access(openfl.display3D.Program3D)
 @:access(openfl.display3D.VertexBuffer3D)
-@:access(openfl.display.BitmapData)
-@:access(openfl.display.Bitmap)
-@:access(openfl.display.DisplayObjectRenderer)
-@:access(openfl.display.Shader)
-@:access(openfl.display.Stage)
 @:access(openfl.display.Stage3D)
-@:access(openfl.geom.Point)
-@:access(openfl.geom.Rectangle)
 @:final class Context3D extends EventDispatcher
 {
 	/**
@@ -259,33 +231,25 @@ import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 	**/
 	public var totalGPUMemory(get, never):Int;
 
-	@:noCompletion private static var __driverInfo:String;
-	@:noCompletion private static var __glDepthStencil:Int = -1;
-	@:noCompletion private static var __glMaxTextureMaxAnisotropy:Int = -1;
-	@:noCompletion private static var __glMaxViewportDims:Int = -1;
-	@:noCompletion private static var __glMemoryCurrentAvailable:Int = -1;
-	@:noCompletion private static var __glMemoryTotalAvailable:Int = -1;
-	@:noCompletion private static var __glTextureMaxAnisotropy:Int = -1;
+	@:noCompletion private static var __supportsBGRA:Null<Bool> = null;
 
-	@:noCompletion private var gl:WebGLRenderContext;
 	@:noCompletion private var __backBufferAntiAlias:Int;
 	@:noCompletion private var __backBufferTexture:RectangleTexture;
 	@:noCompletion private var __backBufferWantsBestResolution:Bool;
 	@:noCompletion private var __backBufferWantsBestResolutionOnBrowserZoom:Bool;
+	@:noCompletion private var __backend:Context3DBackend;
 	@:noCompletion private var __bitmapDataPool:BitmapDataPool;
 	@:noCompletion private var __cleared:Bool;
-	@:noCompletion private var __context:#if (lime || openfl_html5) RenderContext #else Dynamic #end;
 	@:noCompletion private var __contextState:Context3DState;
-	@:noCompletion private var __renderStage3DProgram:Program3D;
 	@:noCompletion private var __enableErrorChecking:Bool;
 	@:noCompletion private var __fragmentConstants:Float32Array;
 	@:noCompletion private var __frontBufferTexture:RectangleTexture;
-	@:noCompletion private var __positionScale:Float32Array; // TODO: Better approach?
 	@:noCompletion private var __present:Bool;
 	@:noCompletion private var __programs:Map<String, Program3D>;
 	@:noCompletion private var __quadIndexBuffer:IndexBuffer3D;
 	@:noCompletion private var __quadIndexBufferCount:Int;
 	@:noCompletion private var __quadIndexBufferElements:Int;
+	@:noCompletion private var __renderStage3DProgram:Program3D;
 	@:noCompletion private var __stage:Stage;
 	@:noCompletion private var __stage3D:Stage3D;
 	@:noCompletion private var __state:Context3DState;
@@ -299,114 +263,30 @@ import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 		__contextState = contextState;
 		__stage3D = stage3D;
 
-		#if (lime && openfl_gl)
-		__context = stage.limeWindow.context;
-		gl = __context.webgl;
-
 		if (__contextState == null) __contextState = new Context3DState();
 		__state = new Context3DState();
 
+		#if (lime || js)
+		// TODO: Dummy impl?
 		__vertexConstants = new Float32Array(4 * 128);
 		__fragmentConstants = new Float32Array(4 * 128);
-		__positionScale = new Float32Array([1.0, 1.0, 1.0, 1.0]);
+		#end
 
 		__programs = new Map<String, Program3D>();
 
-		if (__glMaxViewportDims == -1)
-		{
-			#if openfl_html5
-			__glMaxViewportDims = gl.getParameter(GL.MAX_VIEWPORT_DIMS);
-			#else
-			__glMaxViewportDims = 16384;
-			#end
-		}
+		__backend = new Context3DBackend(this);
 
-		maxBackBufferWidth = __glMaxViewportDims;
-		maxBackBufferHeight = __glMaxViewportDims;
-
-		if (__glMaxTextureMaxAnisotropy == -1)
-		{
-			var extension:Dynamic = gl.getExtension("EXT_texture_filter_anisotropic");
-
-			#if openfl_html5
-			if (extension == null
-				|| extension.MAX_TEXTURE_MAX_ANISOTROPY_EXT == null) extension = gl.getExtension("MOZ_EXT_texture_filter_anisotropic");
-			if (extension == null
-				|| extension.MAX_TEXTURE_MAX_ANISOTROPY_EXT == null) extension = gl.getExtension("WEBKIT_EXT_texture_filter_anisotropic");
-			#end
-
-			if (extension != null)
-			{
-				__glTextureMaxAnisotropy = extension.TEXTURE_MAX_ANISOTROPY_EXT;
-				__glMaxTextureMaxAnisotropy = gl.getParameter(extension.MAX_TEXTURE_MAX_ANISOTROPY_EXT);
-			}
-			else
-			{
-				__glTextureMaxAnisotropy = 0;
-				__glMaxTextureMaxAnisotropy = 0;
-			}
-		}
-
-		#if openfl_gl
-		if (__glDepthStencil == -1)
-		{
-			#if openfl_html5
-			__glDepthStencil = GL.DEPTH_STENCIL;
-			#elseif lime
-			if (__context.type == OPENGLES && Std.parseFloat(__context.version) >= 3)
-			{
-				__glDepthStencil = __context.gles3.DEPTH24_STENCIL8;
-			}
-			else
-			{
-				var extension = gl.getExtension("OES_packed_depth_stencil");
-				if (extension != null)
-				{
-					__glDepthStencil = extension.DEPTH24_STENCIL8_OES;
-				}
-				else
-				{
-					extension = gl.getExtension("EXT_packed_depth_stencil");
-					if (extension != null)
-					{
-						__glDepthStencil = extension.DEPTH24_STENCIL8_EXT;
-					}
-					else
-					{
-						__glDepthStencil = 0;
-					}
-				}
-			}
-			#end
-		}
-
-		if (__glMemoryTotalAvailable == -1)
-		{
-			var extension = gl.getExtension("NVX_gpu_memory_info");
-			if (extension != null)
-			{
-				__glMemoryTotalAvailable = extension.GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX;
-				__glMemoryCurrentAvailable = extension.GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX;
-			}
-		}
-		#end
-
-		if (__driverInfo == null)
-		{
-			var vendor = gl.getParameter(GL.VENDOR);
-			var version = gl.getParameter(GL.VERSION);
-			var renderer = gl.getParameter(GL.RENDERER);
-			var glslVersion = gl.getParameter(GL.SHADING_LANGUAGE_VERSION);
-
-			__driverInfo = "OpenGL Vendor=" + vendor + " Version=" + version + " Renderer=" + renderer + " GLSL=" + glslVersion;
-		}
-
-		driverInfo = __driverInfo;
+		__bitmapDataPool = new BitmapDataPool(30, this);
 
 		__quadIndexBufferElements = Math.floor(0xFFFF / 4);
 		__quadIndexBufferCount = __quadIndexBufferElements * 6;
 
+		#if (lime || js)
+		// TODO: Dummy impl?
 		var data = new UInt16Array(__quadIndexBufferCount);
+		#else
+		var data = null;
+		#end
 
 		var index:UInt = 0;
 		var vertex:UInt = 0;
@@ -426,9 +306,6 @@ import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 
 		__quadIndexBuffer = createIndexBuffer(__quadIndexBufferCount);
 		__quadIndexBuffer.uploadFromTypedArray(data);
-
-		__bitmapDataPool = new BitmapDataPool(30, this);
-		#end
 	}
 
 	/**
@@ -466,69 +343,7 @@ import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 	public function clear(red:Float = 0, green:Float = 0, blue:Float = 0, alpha:Float = 1, depth:Float = 1, stencil:UInt = 0,
 			mask:UInt = Context3DClearMask.ALL):Void
 	{
-		#if openfl_gl
-		__flushGLFramebuffer();
-		__flushGLViewport();
-
-		var clearMask = 0;
-
-		if (mask & Context3DClearMask.COLOR != 0)
-		{
-			if (__state.renderToTexture == null)
-			{
-				if (__stage.context3D == this && !__stage.__renderer.__cleared) __stage.__renderer.__cleared = true;
-				__cleared = true;
-			}
-
-			clearMask |= GL.COLOR_BUFFER_BIT;
-
-			if (#if openfl_disable_context_cache true #else __contextState.colorMaskRed != true
-				|| __contextState.colorMaskGreen != true
-				|| __contextState.colorMaskBlue != true
-				|| __contextState.colorMaskAlpha != true #end)
-			{
-				gl.colorMask(true, true, true, true);
-				__contextState.colorMaskRed = true;
-				__contextState.colorMaskGreen = true;
-				__contextState.colorMaskBlue = true;
-				__contextState.colorMaskAlpha = true;
-			}
-
-			gl.clearColor(red, green, blue, alpha);
-		}
-
-		if (mask & Context3DClearMask.DEPTH != 0)
-		{
-			clearMask |= GL.DEPTH_BUFFER_BIT;
-
-			if (#if openfl_disable_context_cache true #else __contextState.depthMask != true #end)
-			{
-				gl.depthMask(true);
-				__contextState.depthMask = true;
-			}
-
-			gl.clearDepth(depth);
-		}
-
-		if (mask & Context3DClearMask.STENCIL != 0)
-		{
-			clearMask |= GL.STENCIL_BUFFER_BIT;
-
-			if (#if openfl_disable_context_cache true #else __contextState.stencilWriteMask != 0xFF #end)
-			{
-				gl.stencilMask(0xFF);
-				__contextState.stencilWriteMask = 0xFF;
-			}
-
-			gl.clearStencil(stencil);
-			__contextState.stencilWriteMask = 0xFF;
-		}
-
-		if (clearMask == 0) return;
-
-		__setGLScissorTest(false);
-		gl.clear(clearMask);
-		#end
+		__backend.clear(red, green, blue, alpha, depth, stencil, mask);
 	}
 
 	/**
@@ -587,60 +402,7 @@ import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 	public function configureBackBuffer(width:Int, height:Int, antiAlias:Int, enableDepthAndStencil:Bool = true, wantsBestResolution:Bool = false,
 			wantsBestResolutionOnBrowserZoom:Bool = false):Void
 	{
-		#if openfl_gl
-		if (__stage3D == null)
-		{
-			backBufferWidth = width;
-			backBufferHeight = height;
-
-			__backBufferAntiAlias = antiAlias;
-			__state.backBufferEnableDepthAndStencil = enableDepthAndStencil;
-			__backBufferWantsBestResolution = wantsBestResolution;
-			__backBufferWantsBestResolutionOnBrowserZoom = wantsBestResolutionOnBrowserZoom;
-		}
-		else
-		{
-			if (__backBufferTexture == null || backBufferWidth != width || backBufferHeight != height)
-			{
-				if (__backBufferTexture != null) __backBufferTexture.dispose();
-				if (__frontBufferTexture != null) __frontBufferTexture.dispose();
-
-				__backBufferTexture = createRectangleTexture(width, height, BGRA, true);
-				__frontBufferTexture = createRectangleTexture(width, height, BGRA, true);
-
-				if (__stage3D.__renderData.vertexBuffer == null)
-				{
-					__stage3D.__renderData.vertexBuffer = createVertexBuffer(4, 5);
-				}
-
-				var vertexData = new Vector<Float>([width, height, 0, 1, 1, 0, height, 0, 0, 1, width, 0, 0, 1, 0, 0, 0, 0, 0, 0.0]);
-
-				__stage3D.__renderData.vertexBuffer.uploadFromVector(vertexData, 0, 20);
-
-				if (__stage3D.__renderData.indexBuffer == null)
-				{
-					__stage3D.__renderData.indexBuffer = createIndexBuffer(6);
-
-					var indexData = new Vector<UInt>([0, 1, 2, 2, 1, 3]);
-
-					__stage3D.__renderData.indexBuffer.uploadFromVector(indexData, 0, 6);
-				}
-			}
-
-			backBufferWidth = width;
-			backBufferHeight = height;
-
-			__backBufferAntiAlias = antiAlias;
-			__state.backBufferEnableDepthAndStencil = enableDepthAndStencil;
-			__backBufferWantsBestResolution = wantsBestResolution;
-			__backBufferWantsBestResolutionOnBrowserZoom = wantsBestResolutionOnBrowserZoom;
-
-			#if openfl_gl
-			__state.__primaryGLFramebuffer = __backBufferTexture.__getGLFramebuffer(enableDepthAndStencil, antiAlias, 0);
-			__frontBufferTexture.__getGLFramebuffer(enableDepthAndStencil, antiAlias, 0);
-			#end
-		}
-		#end
+		__backend.configureBackBuffer(width, height, antiAlias, enableDepthAndStencil, wantsBestResolution, wantsBestResolutionOnBrowserZoom);
 	}
 
 	/**
@@ -987,12 +749,15 @@ import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 	**/
 	public function createVideoTexture():VideoTexture
 	{
-		#if openfl_html5
-		return new VideoTexture(this);
-		#else
-		throw new Error("Video textures are not supported on this platform");
-		return null;
-		#end
+		if (supportsVideoTexture)
+		{
+			return new VideoTexture(this);
+		}
+		else
+		{
+			throw new Error("Video textures are not currently supported");
+			return null;
+		}
 	}
 
 	/**
@@ -1017,10 +782,16 @@ import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 	**/
 	public function dispose(recreate:Bool = true):Void
 	{
-		// TODO: Dispose all related buffers
+		__backend.dispose(recreate);
 
-		gl = null;
-		__dispose();
+		__renderStage3DProgram = null;
+		__frontBufferTexture = null;
+		__present = false;
+		__backBufferTexture = null;
+		__fragmentConstants = null;
+		__quadIndexBuffer = null;
+		__stage = null;
+		__vertexConstants = null;
 	}
 
 	/**
@@ -1064,48 +835,7 @@ import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 	**/
 	public function drawToBitmapData(destination:BitmapData, srcRect:Rectangle = null, destPoint:Point = null):Void
 	{
-		#if (lime && openfl_gl)
-		if (destination == null) return;
-
-		var sourceRect = srcRect != null ? srcRect.__toLimeRectangle() : new LimeRectangle(0, 0, backBufferWidth, backBufferHeight);
-		var destVector = destPoint != null ? destPoint.__toLimeVector2() : new Vector2();
-
-		if (__stage.context3D == this)
-		{
-			if (__stage.limeWindow != null)
-			{
-				if (__stage3D != null)
-				{
-					destVector.setTo(Std.int(-__stage3D.x), Std.int(-__stage3D.y));
-				}
-
-				var image = __stage.limeWindow.readPixels();
-				destination.limeImage.copyPixels(image, sourceRect, destVector);
-			}
-		}
-		else if (__backBufferTexture != null)
-		{
-			var cacheRenderToTexture = __state.renderToTexture;
-			setRenderToBackBuffer();
-
-			__flushGLFramebuffer();
-			__flushGLViewport();
-
-			// TODO: Read less pixels if srcRect is smaller
-
-			var data = new UInt8Array(backBufferWidth * backBufferHeight * 4);
-			gl.readPixels(0, 0, backBufferWidth, backBufferHeight, __backBufferTexture.__format, GL.UNSIGNED_BYTE, data);
-
-			var image = new Image(new ImageBuffer(data, backBufferWidth, backBufferHeight, 32, BGRA32));
-			destination.limeImage.copyPixels(image, sourceRect, destVector);
-
-			if (cacheRenderToTexture != null)
-			{
-				setRenderToTexture(cacheRenderToTexture, __state.renderToTextureDepthStencil, __state.renderToTextureAntiAlias,
-					__state.renderToTextureSurfaceSelector);
-			}
-		}
-		#end
+		__backend.drawToBitmapData(destination, srcRect, destPoint);
 	}
 
 	/**
@@ -1134,7 +864,7 @@ import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 		been disposed or there are too many draw calls. If the rendering context state
 		is invalid rendering fails silently. When the `enableErrorChecking` property is
 		`true`, this function returns after the triangles are drawn and throws exceptions
-		for any drawing errors or invalid context state.
+		for any drawing errors or invalid context __state.
 
 		@param	indexBuffer:IndexBuffer3D — a set of vertex indices referencing the
 		vertices to render.
@@ -1187,35 +917,7 @@ import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 	**/
 	public function drawTriangles(indexBuffer:IndexBuffer3D, firstIndex:Int = 0, numTriangles:Int = -1):Void
 	{
-		#if openfl_gl
-		#if !openfl_disable_display_render
-		if (__state.renderToTexture == null)
-		{
-			// TODO: Make sure state is correct for this?
-			if (__stage.context3D == this && !__stage.__renderer.__cleared)
-			{
-				__stage.__renderer.__clear();
-			}
-			else if (!__cleared)
-			{
-				// TODO: Throw error if error reporting is enabled?
-				clear(0, 0, 0, 0, 1, 0, Context3DClearMask.COLOR);
-			}
-		}
-
-		__flushGL();
-		#end
-
-		if (__state.program != null)
-		{
-			__state.program.__flush();
-		}
-
-		var count = (numTriangles == -1) ? indexBuffer.__numIndices : (numTriangles * 3);
-
-		__bindGLElementArrayBuffer(indexBuffer.__id);
-		gl.drawElements(GL.TRIANGLES, count, GL.UNSIGNED_SHORT, firstIndex * 2);
-		#end
+		__backend.drawTriangles(indexBuffer, firstIndex, numTriangles);
 	}
 
 	/**
@@ -1238,28 +940,7 @@ import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 	**/
 	public function present():Void
 	{
-		setRenderToBackBuffer();
-
-		#if openfl_gl
-		if (__stage3D != null && __backBufferTexture != null)
-		{
-			if (!__cleared)
-			{
-				// Make sure texture is initialized
-				// TODO: Throw error if error reporting is enabled?
-				clear(0, 0, 0, 0, 1, 0, Context3DClearMask.COLOR);
-			}
-
-			var cacheBuffer = __backBufferTexture;
-			__backBufferTexture = __frontBufferTexture;
-			__frontBufferTexture = cacheBuffer;
-
-			__state.__primaryGLFramebuffer = __backBufferTexture.__getGLFramebuffer(__state.backBufferEnableDepthAndStencil, __backBufferAntiAlias, 0);
-			__cleared = false;
-		}
-		#end
-
-		__present = true;
+		__backend.present();
 	}
 
 	/**
@@ -1310,7 +991,7 @@ import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 
 		#if openfl_gl
 		// TODO: Better way to handle this?
-		__setGLBlendEquation(GL.FUNC_ADD);
+		__backend.resetGLBlendEquation();
 		#end
 	}
 
@@ -1428,7 +1109,6 @@ import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 	public function setProgramConstantsFromByteArray(programType:Context3DProgramType, firstRegister:Int, numRegisters:Int, data:ByteArray,
 			byteArrayOffset:UInt):Void
 	{
-		#if openfl_gl
 		if (numRegisters == 0 || __state.program == null) return;
 
 		if (__state.program != null && __state.program.__format == GLSL)
@@ -1447,11 +1127,14 @@ import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 			var isVertex = (programType == VERTEX);
 			var dest = isVertex ? __vertexConstants : __fragmentConstants;
 
-			#if (!lime && openfl_html5)
+			#if lime
+			var floatData = Float32Array.fromBytes(data, 0, data.length);
+			#elseif openfl_html5
 			var bytes:haxe.io.Bytes = cast data;
 			var floatData = new Float32Array(bytes.getData(), 0, data.length);
 			#else
-			var floatData = Float32Array.fromBytes(data, 0, data.length);
+			// TODO: Dummy impl?
+			var floatData = null;
 			#end
 			var outOffset = firstRegister * 4;
 			var inOffset = Std.int(byteArrayOffset / 4);
@@ -1463,10 +1146,9 @@ import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 
 			if (__state.program != null)
 			{
-				__state.program.__markDirty(isVertex, firstRegister, numRegisters);
+				__state.program.__backend.markDirty(isVertex, firstRegister, numRegisters);
 			}
 		}
-		#end
 	}
 
 	/**
@@ -1491,19 +1173,11 @@ import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 	**/
 	public function setProgramConstantsFromMatrix(programType:Context3DProgramType, firstRegister:Int, matrix:Matrix3D, transposedMatrix:Bool = false):Void
 	{
-		#if openfl_gl
 		if (__state.program != null && __state.program.__format == GLSL)
 		{
-			__flushGLProgram();
-
-			// TODO: Cache value, prevent need to copy
-			var data = new Float32Array(16);
-			for (i in 0...16)
-			{
-				data[i] = matrix.rawData[i];
-			}
-
-			gl.uniformMatrix4fv(cast firstRegister, transposedMatrix, data);
+			#if openfl_gl
+			__backend.setGLSLProgramConstantsFromMatrix(programType, firstRegister, matrix, transposedMatrix);
+			#end
 		}
 		else
 		{
@@ -1559,10 +1233,9 @@ import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 
 			if (__state.program != null)
 			{
-				__state.program.__markDirty(isVertex, firstRegister, 4);
+				__state.program.__backend.markDirty(isVertex, firstRegister, 4);
 			}
 		}
-		#end
 	}
 
 	/**
@@ -1617,7 +1290,7 @@ import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 
 			if (__state.program != null)
 			{
-				__state.program.__markDirty(isVertex, firstRegister, numRegisters);
+				__state.program.__backend.markDirty(isVertex, firstRegister, numRegisters);
 			}
 		}
 	}
@@ -1678,7 +1351,7 @@ import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 	}
 
 	/**
-		Manually override texture sampler state.
+		Manually override texture sampler __state.
 
 		Texture sampling state is typically set at the time setProgram is called.
 		However, you can override texture sampler state with this function. If you do not
@@ -1898,651 +1571,14 @@ import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 	**/
 	public function setVertexBufferAt(index:Int, buffer:VertexBuffer3D, bufferOffset:Int = 0, format:Context3DVertexBufferFormat = FLOAT_4):Void
 	{
+		// TODO: Don't flush immediately?
 		#if openfl_gl
-		if (buffer == null)
-		{
-			gl.disableVertexAttribArray(index);
-			__bindGLArrayBuffer(null);
-			return;
-		}
-
-		__bindGLArrayBuffer(buffer.__id);
-		gl.enableVertexAttribArray(index);
-
-		var byteOffset = bufferOffset * 4;
-
-		switch (format)
-		{
-			case BYTES_4:
-				gl.vertexAttribPointer(index, 4, GL.UNSIGNED_BYTE, true, buffer.__stride, byteOffset);
-
-			case FLOAT_4:
-				gl.vertexAttribPointer(index, 4, GL.FLOAT, false, buffer.__stride, byteOffset);
-
-			case FLOAT_3:
-				gl.vertexAttribPointer(index, 3, GL.FLOAT, false, buffer.__stride, byteOffset);
-
-			case FLOAT_2:
-				gl.vertexAttribPointer(index, 2, GL.FLOAT, false, buffer.__stride, byteOffset);
-
-			case FLOAT_1:
-				gl.vertexAttribPointer(index, 1, GL.FLOAT, false, buffer.__stride, byteOffset);
-
-			default:
-				throw new IllegalOperationError();
-		}
+		__backend.setVertexBufferAt(index, buffer, bufferOffset, format);
 		#end
 	}
-
-	#if openfl_gl
-	@:noCompletion private function __bindGLArrayBuffer(buffer:GLBuffer):Void
-	{
-		if (#if openfl_disable_context_cache true #else __contextState.__currentGLArrayBuffer != buffer #end)
-		{
-			gl.bindBuffer(GL.ARRAY_BUFFER, buffer);
-			__contextState.__currentGLArrayBuffer = buffer;
-		}
-	}
-
-	@:noCompletion private function __bindGLElementArrayBuffer(buffer:GLBuffer):Void
-	{
-		if (#if openfl_disable_context_cache true #else __contextState.__currentGLElementArrayBuffer != buffer #end)
-		{
-			gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, buffer);
-			__contextState.__currentGLElementArrayBuffer = buffer;
-		}
-	}
-
-	@:noCompletion private function __bindGLFramebuffer(framebuffer:GLFramebuffer):Void
-	{
-		if (#if openfl_disable_context_cache true #else __contextState.__currentGLFramebuffer != framebuffer #end)
-		{
-			gl.bindFramebuffer(GL.FRAMEBUFFER, framebuffer);
-			__contextState.__currentGLFramebuffer = framebuffer;
-		}
-	}
-
-	@:noCompletion private function __bindGLTexture2D(texture:GLTexture):Void
-	{
-		// TODO: Need to consider activeTexture ID
-
-		// if (#if openfl_disable_context_cache true #else __contextState.__currentGLTexture2D != texture #end) {
-
-		gl.bindTexture(GL.TEXTURE_2D, texture);
-		__contextState.__currentGLTexture2D = texture;
-
-		// }
-	}
-
-	@:noCompletion private function __bindGLTextureCubeMap(texture:GLTexture):Void
-	{
-		// TODO: Need to consider activeTexture ID
-
-		// if (#if openfl_disable_context_cache true #else __contextState.__currentGLTextureCubeMap != texture #end) {
-
-		gl.bindTexture(GL.TEXTURE_CUBE_MAP, texture);
-		__contextState.__currentGLTextureCubeMap = texture;
-
-		// }
-	}
-	#end
-
-	@:noCompletion private function __dispose():Void
-	{
-		#if openfl_gl
-		driverInfo += " (Disposed)";
-
-		if (__stage3D != null)
-		{
-			__stage3D.__renderData.indexBuffer = null;
-			__stage3D.__renderData.vertexBuffer = null;
-			__stage3D.context3D = null;
-			__stage3D = null;
-		}
-
-		__backBufferTexture = null;
-		__context = null;
-		__renderStage3DProgram = null;
-		__fragmentConstants = null;
-		__frontBufferTexture = null;
-		__positionScale = null;
-		__present = false;
-		__quadIndexBuffer = null;
-		__stage = null;
-		__vertexConstants = null;
-		#end
-	}
-
-	@:noCompletion private function __drawTriangles(firstIndex:Int = 0, count:Int):Void
-	{
-		#if openfl_gl
-		#if !openfl_disable_display_render
-		if (__state.renderToTexture == null)
-		{
-			// TODO: Make sure state is correct for this?
-			if (__stage.context3D == this && !__stage.__renderer.__cleared)
-			{
-				__stage.__renderer.__clear();
-			}
-			else if (!__cleared)
-			{
-				// TODO: Throw error if error reporting is enabled?
-				clear(0, 0, 0, 0, 1, 0, Context3DClearMask.COLOR);
-			}
-		}
-
-		__flushGL();
-		#end
-
-		if (__state.program != null)
-		{
-			__state.program.__flush();
-		}
-
-		gl.drawArrays(GL.TRIANGLES, firstIndex, count);
-		#end
-	}
-
-	#if openfl_gl
-	@:noCompletion private function __flushGL():Void
-	{
-		__flushGLProgram();
-		__flushGLFramebuffer();
-		__flushGLViewport();
-
-		__flushGLBlend();
-		__flushGLColor();
-		__flushGLCulling();
-		__flushGLDepth();
-		__flushGLScissor();
-		__flushGLStencil();
-		__flushGLTextures();
-	}
-
-	@:noCompletion private function __flushGLBlend():Void
-	{
-		if (#if openfl_disable_context_cache true #else __contextState.blendDestinationRGBFactor != __state.blendDestinationRGBFactor
-			|| __contextState.blendSourceRGBFactor != __state.blendSourceRGBFactor
-			|| __contextState.blendDestinationAlphaFactor != __state.blendDestinationAlphaFactor
-			|| __contextState.blendSourceAlphaFactor != __state.blendSourceAlphaFactor #end)
-		{
-			__setGLBlend(true);
-
-			if (__state.blendDestinationRGBFactor == __state.blendDestinationAlphaFactor
-				&& __state.blendSourceRGBFactor == __state.blendSourceAlphaFactor)
-			{
-				gl.blendFunc(__getGLBlend(__state.blendSourceRGBFactor), __getGLBlend(__state.blendDestinationRGBFactor));
-			}
-			else
-			{
-				gl.blendFuncSeparate(__getGLBlend(__state.blendSourceRGBFactor), __getGLBlend(__state.blendDestinationRGBFactor),
-					__getGLBlend(__state.blendSourceAlphaFactor), __getGLBlend(__state.blendDestinationAlphaFactor));
-			}
-
-			__contextState.blendDestinationRGBFactor = __state.blendDestinationRGBFactor;
-			__contextState.blendSourceRGBFactor = __state.blendSourceRGBFactor;
-			__contextState.blendDestinationAlphaFactor = __state.blendDestinationAlphaFactor;
-			__contextState.blendSourceAlphaFactor = __state.blendSourceAlphaFactor;
-		}
-	}
-
-	@:noCompletion private inline function __flushGLColor():Void
-	{
-		if (#if openfl_disable_context_cache true #else __contextState.colorMaskRed != __state.colorMaskRed
-			|| __contextState.colorMaskGreen != __state.colorMaskGreen
-			|| __contextState.colorMaskBlue != __state.colorMaskBlue
-			|| __contextState.colorMaskAlpha != __state.colorMaskAlpha #end)
-		{
-			gl.colorMask(__state.colorMaskRed, __state.colorMaskGreen, __state.colorMaskBlue, __state.colorMaskAlpha);
-			__contextState.colorMaskRed = __state.colorMaskRed;
-			__contextState.colorMaskGreen = __state.colorMaskGreen;
-			__contextState.colorMaskBlue = __state.colorMaskBlue;
-			__contextState.colorMaskAlpha = __state.colorMaskAlpha;
-		}
-	}
-
-	@:noCompletion private function __flushGLCulling():Void
-	{
-		if (#if openfl_disable_context_cache true #else __contextState.culling != __state.culling #end)
-		{
-			if (__state.culling == NONE)
-			{
-				__setGLCullFace(false);
-			}
-			else
-			{
-				__setGLCullFace(true);
-
-				switch (__state.culling)
-				{
-					case NONE: // skip
-					case BACK:
-						gl.cullFace(GL.BACK);
-					case FRONT:
-						gl.cullFace(GL.FRONT);
-					case FRONT_AND_BACK:
-						gl.cullFace(GL.FRONT_AND_BACK);
-					default:
-						throw new IllegalOperationError();
-				}
-			}
-
-			__contextState.culling = __state.culling;
-		}
-	}
-
-	@:noCompletion private function __flushGLDepth():Void
-	{
-		var depthMask = (__state.depthMask
-			&& (__state.renderToTexture != null ? __state.renderToTextureDepthStencil : __state.backBufferEnableDepthAndStencil));
-
-		if (#if openfl_disable_context_cache true #else __contextState.depthMask != depthMask #end)
-		{
-			gl.depthMask(depthMask);
-			__contextState.depthMask = depthMask;
-		}
-
-		if (#if openfl_disable_context_cache true #else __contextState.depthCompareMode != __state.depthCompareMode #end)
-		{
-			switch (__state.depthCompareMode)
-			{
-				case ALWAYS:
-					gl.depthFunc(GL.ALWAYS);
-				case EQUAL:
-					gl.depthFunc(GL.EQUAL);
-				case GREATER:
-					gl.depthFunc(GL.GREATER);
-				case GREATER_EQUAL:
-					gl.depthFunc(GL.GEQUAL);
-				case LESS:
-					gl.depthFunc(GL.LESS);
-				case LESS_EQUAL:
-					gl.depthFunc(GL.LEQUAL);
-				case NEVER:
-					gl.depthFunc(GL.NEVER);
-				case NOT_EQUAL:
-					gl.depthFunc(GL.NOTEQUAL);
-				default:
-					throw new IllegalOperationError();
-			}
-
-			__contextState.depthCompareMode = __state.depthCompareMode;
-		}
-	}
-
-	@:noCompletion private function __flushGLFramebuffer():Void
-	{
-		if (__state.renderToTexture != null)
-		{
-			if (#if openfl_disable_context_cache true #else __contextState.renderToTexture != __state.renderToTexture
-				|| __contextState.renderToTextureSurfaceSelector != __state.renderToTextureSurfaceSelector #end)
-			{
-				var framebuffer = __state.renderToTexture.__getGLFramebuffer(__state.renderToTextureDepthStencil, __state.renderToTextureAntiAlias,
-					__state.renderToTextureSurfaceSelector);
-				__bindGLFramebuffer(framebuffer);
-
-				__contextState.renderToTexture = __state.renderToTexture;
-				__contextState.renderToTextureAntiAlias = __state.renderToTextureAntiAlias;
-				__contextState.renderToTextureDepthStencil = __state.renderToTextureDepthStencil;
-				__contextState.renderToTextureSurfaceSelector = __state.renderToTextureSurfaceSelector;
-			}
-
-			__setGLDepthTest(__state.renderToTextureDepthStencil);
-			__setGLStencilTest(__state.renderToTextureDepthStencil);
-
-			__setGLFrontFace(true);
-		}
-		else
-		{
-			if (__stage == null && backBufferWidth == 0 && backBufferHeight == 0)
-			{
-				throw new Error("Context3D backbuffer has not been configured");
-			}
-
-			if (#if openfl_disable_context_cache true #else __contextState.renderToTexture != null
-				|| __contextState.__currentGLFramebuffer != __state.__primaryGLFramebuffer
-				|| __contextState.backBufferEnableDepthAndStencil != __state.backBufferEnableDepthAndStencil #end
-			)
-			{
-				__bindGLFramebuffer(__state.__primaryGLFramebuffer);
-
-				__contextState.renderToTexture = null;
-				__contextState.backBufferEnableDepthAndStencil = __state.backBufferEnableDepthAndStencil;
-			}
-
-			__setGLDepthTest(__state.backBufferEnableDepthAndStencil);
-			__setGLStencilTest(__state.backBufferEnableDepthAndStencil);
-
-			__setGLFrontFace(__stage.context3D != this);
-		}
-	}
-
-	@:noCompletion private function __flushGLProgram():Void
-	{
-		var shader = __state.shader;
-		var program = __state.program;
-
-		if (#if openfl_disable_context_cache true #else __contextState.shader != shader #end)
-		{
-			// TODO: Merge this logic
-
-			if (__contextState.shader != null)
-			{
-				__contextState.shader.__disable();
-			}
-
-			if (shader != null)
-			{
-				shader.__enable();
-			}
-
-			__contextState.shader = shader;
-		}
-
-		if (#if openfl_disable_context_cache true #else __contextState.program != program #end)
-		{
-			if (__contextState.program != null)
-			{
-				__contextState.program.__disable();
-			}
-
-			if (program != null)
-			{
-				program.__enable();
-			}
-
-			__contextState.program = program;
-		}
-
-		if (program != null && program.__format == AGAL)
-		{
-			__positionScale[1] = (__stage.context3D == this && __state.renderToTexture == null) ? 1.0 : -1.0;
-			program.__setPositionScale(__positionScale);
-		}
-	}
-
-	@:noCompletion private function __flushGLScissor():Void
-	{
-		#if (lime && openfl_gl)
-		if (!__state.scissorEnabled)
-		{
-			if (#if openfl_disable_context_cache true #else __contextState.scissorEnabled != __state.scissorEnabled #end)
-			{
-				__setGLScissorTest(false);
-				__contextState.scissorEnabled = false;
-			}
-		}
-		else
-		{
-			__setGLScissorTest(true);
-			__contextState.scissorEnabled = true;
-
-			var scissorX = Std.int(__state.scissorRectangle.x);
-			var scissorY = Std.int(__state.scissorRectangle.y);
-			var scissorWidth = Std.int(__state.scissorRectangle.width);
-			var scissorHeight = Std.int(__state.scissorRectangle.height);
-
-			if (__state.renderToTexture == null && __stage3D == null)
-			{
-				var contextHeight = Std.int(__stage.limeWindow.height * __stage.limeWindow.scale);
-				scissorY = contextHeight - Std.int(__state.scissorRectangle.height) - scissorY;
-			}
-
-			if (#if openfl_disable_context_cache true #else __contextState.scissorRectangle.x != scissorX
-				|| __contextState.scissorRectangle.y != scissorY
-				|| __contextState.scissorRectangle.width != scissorWidth
-				|| __contextState.scissorRectangle.height != scissorHeight #end)
-			{
-				gl.scissor(scissorX, scissorY, scissorWidth, scissorHeight);
-				__contextState.scissorRectangle.setTo(scissorX, scissorY, scissorWidth, scissorHeight);
-			}
-		}
-		#end
-	}
-
-	@:noCompletion private function __flushGLStencil():Void
-	{
-		if (#if openfl_disable_context_cache true #else __contextState.stencilTriangleFace != __state.stencilTriangleFace
-			|| __contextState.stencilPass != __state.stencilPass
-			|| __contextState.stencilDepthFail != __state.stencilDepthFail
-			|| __contextState.stencilFail != __state.stencilFail #end)
-		{
-			gl.stencilOpSeparate(__getGLTriangleFace(__state.stencilTriangleFace), __getGLStencilAction(__state.stencilFail),
-				__getGLStencilAction(__state.stencilDepthFail), __getGLStencilAction(__state.stencilPass));
-			__contextState.stencilTriangleFace = __state.stencilTriangleFace;
-			__contextState.stencilPass = __state.stencilPass;
-			__contextState.stencilDepthFail = __state.stencilDepthFail;
-			__contextState.stencilFail = __state.stencilFail;
-		}
-
-		if (#if openfl_disable_context_cache true #else __contextState.stencilWriteMask != __state.stencilWriteMask #end)
-		{
-			gl.stencilMask(__state.stencilWriteMask);
-			__contextState.stencilWriteMask = __state.stencilWriteMask;
-		}
-
-		if (#if openfl_disable_context_cache true #else __contextState.stencilCompareMode != __state.stencilCompareMode
-			|| __contextState.stencilReferenceValue != __state.stencilReferenceValue
-			|| __contextState.stencilReadMask != __state.stencilReadMask #end
-		)
-		{
-			gl.stencilFunc(__getGLCompareMode(__state.stencilCompareMode), __state.stencilReferenceValue, __state.stencilReadMask);
-			__contextState.stencilCompareMode = __state.stencilCompareMode;
-			__contextState.stencilReferenceValue = __state.stencilReferenceValue;
-			__contextState.stencilReadMask = __state.stencilReadMask;
-		}
-	}
-
-	@:noCompletion private function __flushGLTextures():Void
-	{
-		var sampler = 0;
-		var texture, samplerState;
-
-		for (i in 0...__state.textures.length)
-		{
-			texture = __state.textures[i];
-			samplerState = __state.samplerStates[i];
-			if (samplerState == null)
-			{
-				__state.samplerStates[i] = new SamplerState();
-				samplerState = __state.samplerStates[i];
-			}
-
-			gl.activeTexture(GL.TEXTURE0 + sampler);
-
-			if (texture != null)
-			{
-				// if (#if openfl_disable_context_cache true #else texture != __contextState.textures[i] #end) {
-
-				// TODO: Cleaner approach?
-				if (texture.__textureTarget == GL.TEXTURE_2D)
-				{
-					__bindGLTexture2D(texture.__getTexture());
-				}
-				else
-				{
-					__bindGLTextureCubeMap(texture.__getTexture());
-				}
-
-				#if (desktop && !html5)
-				// TODO: Cache?
-				gl.enable(GL.TEXTURE_2D);
-				#end
-
-				__contextState.textures[i] = texture;
-
-				// }
-
-				texture.__setSamplerState(samplerState);
-			}
-			else
-			{
-				__bindGLTexture2D(null);
-			}
-
-			if (__state.program != null && __state.program.__format == AGAL && samplerState.textureAlpha)
-			{
-				gl.activeTexture(GL.TEXTURE0 + sampler + 4);
-
-				if (texture != null && texture.__alphaTexture != null)
-				{
-					if (texture.__alphaTexture.__textureTarget == GL.TEXTURE_2D)
-					{
-						__bindGLTexture2D(texture.__alphaTexture.__getTexture());
-					}
-					else
-					{
-						__bindGLTextureCubeMap(texture.__alphaTexture.__getTexture());
-					}
-
-					texture.__alphaTexture.__setSamplerState(samplerState);
-					gl.uniform1i(__state.program.__agalAlphaSamplerEnabled[sampler].location, 1);
-
-					#if (desktop && !html5)
-					// TODO: Cache?
-					gl.enable(GL.TEXTURE_2D);
-					#end
-				}
-				else
-				{
-					__bindGLTexture2D(null);
-					if (__state.program.__agalAlphaSamplerEnabled[sampler] != null)
-					{
-						gl.uniform1i(__state.program.__agalAlphaSamplerEnabled[sampler].location, 0);
-					}
-				}
-			}
-
-			sampler++;
-		}
-	}
-
-	@:noCompletion private function __flushGLViewport():Void
-	{
-		#if (lime && openfl_gl)
-		// TODO: Cache
-
-		if (__state.renderToTexture == null)
-		{
-			if (__stage.context3D == this)
-			{
-				var x = __stage3D == null ? 0 : Std.int(__stage3D.x);
-				var y = Std.int((__stage.limeWindow.height * __stage.limeWindow.scale) - backBufferHeight - (__stage3D == null ? 0 : __stage3D.y));
-				gl.viewport(x, y, backBufferWidth, backBufferHeight);
-			}
-			else
-			{
-				gl.viewport(0, 0, backBufferWidth, backBufferHeight);
-			}
-		}
-		else
-		{
-			var width = 0, height = 0;
-
-			// TODO: Avoid use of Std.is
-			if (Std.is(__state.renderToTexture, Texture))
-			{
-				var texture2D:Texture = cast __state.renderToTexture;
-				width = texture2D.__width;
-				height = texture2D.__height;
-			}
-			else if (Std.is(__state.renderToTexture, RectangleTexture))
-			{
-				var rectTexture:RectangleTexture = cast __state.renderToTexture;
-				width = rectTexture.__width;
-				height = rectTexture.__height;
-			}
-			else if (Std.is(__state.renderToTexture, CubeTexture))
-			{
-				var cubeTexture:CubeTexture = cast __state.renderToTexture;
-				width = cubeTexture.__size;
-				height = cubeTexture.__size;
-			}
-
-			gl.viewport(0, 0, width, height);
-		}
-		#end
-	}
-
-	@:noCompletion private function __getGLBlend(blendFactor:Context3DBlendFactor):Int
-	{
-		switch (blendFactor)
-		{
-			case DESTINATION_ALPHA:
-				return GL.DST_ALPHA;
-			case DESTINATION_COLOR:
-				return GL.DST_COLOR;
-			case ONE:
-				return GL.ONE;
-			case ONE_MINUS_DESTINATION_ALPHA:
-				return GL.ONE_MINUS_DST_ALPHA;
-			case ONE_MINUS_DESTINATION_COLOR:
-				return GL.ONE_MINUS_DST_COLOR;
-			case ONE_MINUS_SOURCE_ALPHA:
-				return GL.ONE_MINUS_SRC_ALPHA;
-			case ONE_MINUS_SOURCE_COLOR:
-				return GL.ONE_MINUS_SRC_COLOR;
-			case SOURCE_ALPHA:
-				return GL.SRC_ALPHA;
-			case SOURCE_COLOR:
-				return GL.SRC_COLOR;
-			case ZERO:
-				return GL.ZERO;
-			default:
-				throw new IllegalOperationError();
-		}
-
-		return 0;
-	}
-
-	@:noCompletion private function __getGLCompareMode(mode:Context3DCompareMode):Int
-	{
-		return switch (mode)
-		{
-			case ALWAYS: GL.ALWAYS;
-			case EQUAL: GL.EQUAL;
-			case GREATER: GL.GREATER;
-			case GREATER_EQUAL: GL.GEQUAL;
-			case LESS: GL.LESS;
-			case LESS_EQUAL: GL.LEQUAL; // TODO : wrong value
-			case NEVER: GL.NEVER;
-			case NOT_EQUAL: GL.NOTEQUAL;
-			default: GL.EQUAL;
-		}
-	}
-
-	@:noCompletion private function __getGLStencilAction(action:Context3DStencilAction):Int
-	{
-		return switch (action)
-		{
-			case DECREMENT_SATURATE: GL.DECR;
-			case DECREMENT_WRAP: GL.DECR_WRAP;
-			case INCREMENT_SATURATE: GL.INCR;
-			case INCREMENT_WRAP: GL.INCR_WRAP;
-			case INVERT: GL.INVERT;
-			case KEEP: GL.KEEP;
-			case SET: GL.REPLACE;
-			case ZERO: GL.ZERO;
-			default: GL.KEEP;
-		}
-	}
-
-	@:noCompletion private function __getGLTriangleFace(face:Context3DTriangleFace):Int
-	{
-		return switch (face)
-		{
-			case FRONT: GL.FRONT;
-			case BACK: GL.BACK;
-			case FRONT_AND_BACK: GL.FRONT_AND_BACK;
-			case NONE: GL.NONE;
-			default: GL.FRONT_AND_BACK;
-		}
-	}
-	#end
 
 	@:noCompletion private function __renderStage3D(stage3D:Stage3D):Void
 	{
-		#if openfl_gl
 		// Assume this is the primary Context3D
 
 		var context = stage3D.context3D;
@@ -2554,7 +1590,7 @@ import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 			&& backBufferHeight > 0
 			&& backBufferWidth > 0)
 		{
-			// if (!__stage.__renderer.__cleared) __stage.__renderer.__clear ();
+			// if (!stage.renderer.cleared) stage.renderer.clear ();
 
 			if (__renderStage3DProgram == null)
 			{
@@ -2586,108 +1622,7 @@ import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 
 			__present = true;
 		}
-		#end
 	}
-
-	#if openfl_gl
-	@:noCompletion private function __setGLBlend(enable:Bool):Void
-	{
-		if (#if openfl_disable_context_cache true #else __contextState.__enableGLBlend != enable #end)
-		{
-			if (enable)
-			{
-				gl.enable(GL.BLEND);
-			}
-			else
-			{
-				gl.disable(GL.BLEND);
-			}
-			__contextState.__enableGLBlend = enable;
-		}
-	}
-
-	@:noCompletion private function __setGLBlendEquation(value:Int):Void
-	{
-		if (#if openfl_disable_context_cache true #else __contextState.__glBlendEquation != value #end)
-		{
-			gl.blendEquation(value);
-			__contextState.__glBlendEquation = value;
-		}
-	}
-
-	@:noCompletion private function __setGLCullFace(enable:Bool):Void
-	{
-		if (#if openfl_disable_context_cache true #else __contextState.__enableGLCullFace != enable #end)
-		{
-			if (enable)
-			{
-				gl.enable(GL.CULL_FACE);
-			}
-			else
-			{
-				gl.disable(GL.CULL_FACE);
-			}
-			__contextState.__enableGLCullFace = enable;
-		}
-	}
-
-	@:noCompletion private function __setGLDepthTest(enable:Bool):Void
-	{
-		if (#if openfl_disable_context_cache true #else __contextState.__enableGLDepthTest != enable #end)
-		{
-			if (enable)
-			{
-				gl.enable(GL.DEPTH_TEST);
-			}
-			else
-			{
-				gl.disable(GL.DEPTH_TEST);
-			}
-			__contextState.__enableGLDepthTest = enable;
-		}
-	}
-
-	@:noCompletion private function __setGLFrontFace(counterClockWise:Bool):Void
-	{
-		if (#if openfl_disable_context_cache true #else __contextState.__frontFaceGLCCW != counterClockWise #end)
-		{
-			gl.frontFace(counterClockWise ? GL.CCW : GL.CW);
-			__contextState.__frontFaceGLCCW = counterClockWise;
-		}
-	}
-
-	@:noCompletion private function __setGLScissorTest(enable:Bool):Void
-	{
-		if (#if openfl_disable_context_cache true #else __contextState.__enableGLScissorTest != enable #end)
-		{
-			if (enable)
-			{
-				gl.enable(GL.SCISSOR_TEST);
-			}
-			else
-			{
-				gl.disable(GL.SCISSOR_TEST);
-			}
-			__contextState.__enableGLScissorTest = enable;
-		}
-	}
-
-	@:noCompletion private function __setGLStencilTest(enable:Bool):Void
-	{
-		if (#if openfl_disable_context_cache true #else __contextState.__enableGLStencilTest != enable #end)
-		{
-			if (enable)
-			{
-				gl.enable(GL.STENCIL_TEST);
-			}
-			else
-			{
-				gl.disable(GL.STENCIL_TEST);
-			}
-			__contextState.__enableGLStencilTest = enable;
-		}
-	}
-	#end
 
 	// Get & Set Methods
 	@:noCompletion private function get_enableErrorChecking():Bool
@@ -2702,20 +1637,15 @@ import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 
 	@:noCompletion private function get_totalGPUMemory():Int
 	{
-		if (__glMemoryCurrentAvailable != -1)
-		{
-			// TODO: Return amount used by this application only
-			var current = gl.getParameter(__glMemoryCurrentAvailable);
-			var total = gl.getParameter(__glMemoryTotalAvailable);
-
-			if (total > 0)
-			{
-				return (total - current) * 1024;
-			}
-		}
-		return 0;
+		return __backend.getTotalGPUMemory();
 	}
 }
+
+#if openfl_gl
+private typedef Context3DBackend = openfl._internal.backend.opengl.OpenGLContext3DBackend;
+#else
+private typedef Context3DBackend = openfl._internal.backend.dummy.DummyContext3DBackend;
+#end
 #else
 typedef Context3D = flash.display3D.Context3D;
 #end

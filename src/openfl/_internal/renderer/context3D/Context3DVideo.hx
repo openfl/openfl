@@ -18,6 +18,8 @@ import openfl._internal.renderer.context3D.stats.DrawCallContext;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@:access(openfl._internal.backend.opengl.OpenGLContext3DBackend) // TODO: Remove backend references
+@:access(openfl._internal.backend.opengl.OpenGLTextureBaseBackend)
 @:access(openfl.display3D.textures.TextureBase)
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.Shader)
@@ -34,9 +36,9 @@ class Context3DVideo
 	private static function getIndexBuffer(video:Video, context:Context3D):IndexBuffer3D
 	{
 		#if (lime && openfl_gl)
-		var gl = context.gl;
+		var gl = context.__backend.gl;
 
-		if (video.__renderData.indexBuffer == null || video.__renderData.indexBufferContext != context.__context)
+		if (video.__renderData.indexBuffer == null || video.__renderData.indexBufferContext != context)
 		{
 			// TODO: Use shared buffer on context
 
@@ -48,7 +50,7 @@ class Context3DVideo
 			video.__renderData.indexBufferData[4] = 1;
 			video.__renderData.indexBufferData[5] = 3;
 
-			video.__renderData.indexBufferContext = context.__context;
+			video.__renderData.indexBufferContext = context;
 			video.__renderData.indexBuffer = context.createIndexBuffer(6);
 			video.__renderData.indexBuffer.uploadFromTypedArray(video.__renderData.indexBufferData);
 		}
@@ -64,7 +66,7 @@ class Context3DVideo
 		#if openfl_html5
 		if (video.__stream == null || @:privateAccess video.__stream.__backend.video == null) return null;
 
-		var gl = context.__context.webgl;
+		var gl = context.__backend.context.webgl;
 		var internalFormat = gl.RGBA;
 		var format = gl.RGBA;
 
@@ -75,7 +77,7 @@ class Context3DVideo
 				video.__renderData.texture = context.createRectangleTexture(@:privateAccess video.__stream.__backend.video.videoWidth, @:privateAccess video.__stream.__backend.video.videoHeight, BGRA, false);
 			}
 
-			context.__bindGLTexture2D(video.__renderData.texture.__textureID);
+			context.__backend.bindGLTexture2D(video.__renderData.texture.__baseBackend.glTextureID);
 			gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, @:privateAccess video.__stream.__backend.video);
 
 			video.__renderData.textureTime = @:privateAccess video.__stream.__backend.video.currentTime;
@@ -90,9 +92,9 @@ class Context3DVideo
 	private static function getVertexBuffer(video:Video, context:Context3D):VertexBuffer3D
 	{
 		#if (lime && openfl_gl)
-		var gl = context.gl;
+		var gl = context.__backend.gl;
 
-		if (video.__renderData.vertexBuffer == null || video.__renderData.vertexBufferContext != context.__context)
+		if (video.__renderData.vertexBuffer == null || video.__renderData.vertexBufferContext != context)
 		{
 			#if openfl_power_of_two
 			var newWidth = 1;
@@ -126,7 +128,7 @@ class Context3DVideo
 			video.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 2] = video.width;
 			video.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 2 + 3] = uvWidth;
 
-			video.__renderData.vertexBufferContext = context.__context;
+			video.__renderData.vertexBufferContext = context;
 			video.__renderData.vertexBuffer = context.createVertexBuffer(3, VERTEX_BUFFER_STRIDE);
 			video.__renderData.vertexBuffer.uploadFromTypedArray(video.__renderData.vertexBufferData);
 		}
@@ -145,7 +147,7 @@ class Context3DVideo
 		if (@:privateAccess video.__stream.__backend.video != null)
 		{
 			var context = renderer.context3D;
-			var gl = context.gl;
+			var gl = context.__backend.gl;
 
 			var texture = getTexture(video, context);
 			if (texture == null) return;
@@ -176,7 +178,7 @@ class Context3DVideo
 			renderer.updateShader();
 
 			context.setTextureAt(0, getTexture(video, context));
-			context.__flushGLTextures();
+			context.__backend.flushGLTextures();
 			gl.uniform1i(shader.__texture.index, 0);
 
 			if (video.smoothing)
@@ -216,7 +218,7 @@ class Context3DVideo
 		if (@:privateAccess video.__stream.__backend.video != null)
 		{
 			var context = renderer.context3D;
-			var gl = context.gl;
+			var gl = context.__backend.gl;
 
 			var shader = renderer.__maskShader;
 			renderer.setShader(shader);

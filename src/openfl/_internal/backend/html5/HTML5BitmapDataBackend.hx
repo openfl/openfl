@@ -34,6 +34,7 @@ import openfl.Vector;
 
 @:access(openfl._internal.backend.lime_standalone.Image)
 @:access(openfl._internal.backend.lime_standalone.ImageBuffer)
+@:access(openfl._internal.backend.opengl.OpenGLTextureBaseBackend) // TODO: Remove backend references
 @:access(openfl._internal.renderer.canvas.CanvasRenderer)
 @:access(openfl.display3D.textures.TextureBase)
 @:access(openfl.display3D.Context3D)
@@ -569,7 +570,7 @@ class HTML5BitmapDataBackend
 		var bitmapData = new BitmapData(texture.__width, texture.__height, true, 0);
 		bitmapData.readable = false;
 		bitmapData.__renderData.texture = texture;
-		bitmapData.__renderData.textureContext = texture.__textureContext;
+		bitmapData.__renderData.textureContext = texture.__context;
 		bitmapData.__backend.image = null;
 		return bitmapData;
 	}
@@ -649,16 +650,16 @@ class HTML5BitmapDataBackend
 	{
 		if (!parent.readable
 			&& this.image == null
-			&& (parent.__renderData.texture == null || parent.__renderData.textureContext != context.__context))
+			&& (parent.__renderData.texture == null || parent.__renderData.textureContext != context))
 		{
 			parent.__renderData.textureContext = null;
 			parent.__renderData.texture = null;
 			return null;
 		}
 
-		if (parent.__renderData.texture == null || parent.__renderData.textureContext != context.__context)
+		if (parent.__renderData.texture == null || parent.__renderData.textureContext != context)
 		{
-			parent.__renderData.textureContext = context.__context;
+			parent.__renderData.textureContext = context;
 			parent.__renderData.texture = context.createRectangleTexture(parent.__renderData.textureWidth, parent.__renderData.textureHeight, BGRA, false);
 
 			// context.__bindGLTexture2D (__texture);
@@ -675,7 +676,7 @@ class HTML5BitmapDataBackend
 		{
 			var textureImage = this.image;
 
-			if (#if openfl_power_of_two true || #end (!TextureBase.__supportsBGRA && textureImage.format != RGBA32))
+			if (#if openfl_power_of_two true || #end (!Context3D.__supportsBGRA && textureImage.format != RGBA32))
 			{
 				textureImage = textureImage.clone();
 				textureImage.format = RGBA32;
@@ -685,7 +686,7 @@ class HTML5BitmapDataBackend
 				#end
 			}
 
-			parent.__renderData.texture.__uploadFromImage(textureImage);
+			parent.__renderData.texture.__baseBackend.uploadFromImage(textureImage);
 
 			parent.__renderData.textureVersion = this.image.version;
 

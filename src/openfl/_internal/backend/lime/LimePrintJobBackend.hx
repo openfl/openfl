@@ -15,6 +15,7 @@ import js.Browser;
 @:noDebug
 #end
 @:access(lime.graphics.ImageBuffer)
+@:access(openfl.display.BitmapData)
 @:access(openfl.printing.PrintJob)
 class LimePrintJobBackend
 {

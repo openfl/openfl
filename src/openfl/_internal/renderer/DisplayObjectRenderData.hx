@@ -9,6 +9,7 @@ import openfl._internal.bindings.typedarray.Float32Array;
 import openfl._internal.bindings.typedarray.UInt16Array;
 import openfl._internal.renderer.context3D.Context3DBuffer;
 import openfl.display3D.textures.TextureBase;
+import openfl.display3D.Context3D;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
 import openfl.display.Bitmap;
@@ -17,11 +18,6 @@ import openfl.display.DisplayObjectRenderer;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
-#if lime
-import lime.graphics.RenderContext;
-#elseif openfl_html5
-import openfl._internal.backend.lime_standalone.RenderContext;
-#end
 #if openfl_html5
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
@@ -39,7 +35,7 @@ class DisplayObjectRenderData
 	public var buffer:GLBuffer;
 	public var bufferAlpha:Float;
 	public var bufferColorTransform:ColorTransform;
-	@SuppressWarnings("checkstyle:Dynamic") public var bufferContext:#if (lime || openfl_html5) RenderContext #else Dynamic #end;
+	public var bufferContext:Context3D;
 	public var bufferData:Float32Array;
 	public var cacheBitmap:Bitmap;
 	public var cacheBitmapBackground:Null<Int>;
@@ -60,12 +56,12 @@ class DisplayObjectRenderData
 	#end
 	#if openfl_gl
 	public var framebuffer:GLFramebuffer;
-	@SuppressWarnings("checkstyle:Dynamic") public var framebufferContext:#if (lime || openfl_html5) RenderContext #else Dynamic #end;
+	public var framebufferContext:Context3D;
+	#end
 	public var indexBuffer:IndexBuffer3D;
-	@SuppressWarnings("checkstyle:Dynamic") public var indexBufferContext:#if (lime || openfl_html5) RenderContext #else Dynamic #end;
+	public var indexBufferContext:Context3D;
 	public var indexBufferData:UInt16Array;
 	public var indexBufferGrid:Rectangle;
-	#end
 	public var isCacheBitmapRender:Bool;
 	#if openfl_gl
 	public var quadBuffer:Context3DBuffer;
@@ -77,10 +73,10 @@ class DisplayObjectRenderData
 	public var style:CSSStyleDeclaration;
 	#end
 	#if openfl_cairo
-	@SuppressWarnings("checkstyle:Dynamic") public var surface:#if (lime || openfl_html5) CairoSurface #else Dynamic #end;
+	public var surface:CairoSurface;
 	#end
 	public var texture:TextureBase;
-	@SuppressWarnings("checkstyle:Dynamic") public var textureContext:#if (lime || openfl_html5) RenderContext #else Dynamic #end;
+	public var textureContext:Context3D;
 	public var textureHeight:Int;
 	public var textureTime:Float;
 	public var textureVersion:Int;
@@ -89,9 +85,8 @@ class DisplayObjectRenderData
 	public var triangleIndexBufferCount:Int;
 	public var triangleIndexBufferData:UInt16Array;
 	public var uvRect:Rectangle;
-	#if openfl_gl
 	public var vertexBuffer:VertexBuffer3D;
-	@SuppressWarnings("checkstyle:Dynamic") public var vertexBufferContext:#if (lime || openfl_html5) RenderContext #else Dynamic #end;
+	public var vertexBufferContext:Context3D;
 	public var vertexBufferCount:Int;
 	public var vertexBufferCountUVT:Int;
 	public var vertexBufferData:Float32Array;
@@ -102,7 +97,6 @@ class DisplayObjectRenderData
 	public var vertexBufferScaleX:Float;
 	public var vertexBufferScaleY:Float;
 	public var vertexBufferWidth:Float;
-	#end
 
 	public function new() {}
 

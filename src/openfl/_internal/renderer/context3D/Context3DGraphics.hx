@@ -533,7 +533,7 @@ class Context3DGraphics
 				var data = new DrawCommandReader(graphics.__commands);
 
 				var context = renderer.context3D;
-				var gl = context.gl;
+				// var gl = context.__backend.gl;
 
 				var matrix = Matrix.__pool.get();
 
@@ -782,7 +782,7 @@ class Context3DGraphics
 
 							// } else {
 
-							context.__drawTriangles(0, length);
+							@:privateAccess context.__backend._drawTriangles(0, length);
 
 							// }
 

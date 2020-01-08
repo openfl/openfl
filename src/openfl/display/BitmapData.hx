@@ -119,7 +119,6 @@ class BitmapData implements IBitmapDrawable
 	@:noCompletion private static var __hardwareRenderer:#if openfl_gl Context3DRenderer #else Dynamic #end;
 	@:noCompletion private static var __pool:BitmapDataPool = new BitmapDataPool();
 	@:noCompletion private static var __softwareRenderer:DisplayObjectRenderer;
-	@:noCompletion private static var __supportsBGRA:Null<Bool> = null;
 	@:noCompletion private static var __textureFormat:Int;
 	@:noCompletion private static var __textureInternalFormat:Int;
 	#if (!lime && openfl_html5)

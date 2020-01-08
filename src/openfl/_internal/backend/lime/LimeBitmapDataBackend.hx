@@ -610,7 +610,7 @@ class LimeBitmapDataBackend
 		var bitmapData = new BitmapData(texture.__width, texture.__height, true, 0);
 		bitmapData.readable = false;
 		bitmapData.__renderData.texture = texture;
-		bitmapData.__renderData.textureContext = texture.__textureContext;
+		bitmapData.__renderData.textureContext = texture.__context;
 		bitmapData.limeImage = null;
 		return bitmapData;
 	}
@@ -709,16 +709,16 @@ class LimeBitmapDataBackend
 		// TODO: Refactor further
 		if (!parent.readable
 			&& parent.limeImage == null
-			&& (parent.__renderData.texture == null || parent.__renderData.textureContext != context.__context))
+			&& (parent.__renderData.texture == null || parent.__renderData.textureContext != context))
 		{
 			parent.__renderData.textureContext = null;
 			parent.__renderData.texture = null;
 			return null;
 		}
 
-		if (parent.__renderData.texture == null || parent.__renderData.textureContext != context.__context)
+		if (parent.__renderData.texture == null || parent.__renderData.textureContext != context)
 		{
-			parent.__renderData.textureContext = context.__context;
+			parent.__renderData.textureContext = context;
 			parent.__renderData.texture = context.createRectangleTexture(parent.__renderData.textureWidth, parent.__renderData.textureHeight, BGRA, false);
 
 			// context.__bindGLTexture2D (__texture);
@@ -745,7 +745,7 @@ class LimeBitmapDataBackend
 			var textureImage = parent.limeImage;
 
 			#if openfl_html5
-			if (#if openfl_power_of_two true || #end (!TextureBase.__supportsBGRA && textureImage.format != RGBA32))
+			if (#if openfl_power_of_two true || #end (!Context3D.__supportsBGRA && textureImage.format != RGBA32))
 			{
 				textureImage = textureImage.clone();
 				textureImage.format = RGBA32;
@@ -765,7 +765,7 @@ class LimeBitmapDataBackend
 			}
 			#end
 
-			parent.__renderData.texture.__uploadFromImage(textureImage);
+			@:privateAccess parent.__renderData.texture.__baseBackend.uploadFromImage(textureImage);
 
 			parent.__renderData.textureVersion = parent.limeImage.version;
 

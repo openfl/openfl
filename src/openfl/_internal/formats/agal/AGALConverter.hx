@@ -16,6 +16,7 @@ import openfl.utils.Endian;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@:access(openfl._internal.backend.opengl) // TODO: Remove backend references
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display3D.Program3D)
 @SuppressWarnings("checkstyle:FieldDocComment")
@@ -477,7 +478,7 @@ class AGALConverter
 
 		if (limitedProfile == null)
 		{
-			var gl = program.__context.gl;
+			var gl = program.__context.__backend.gl;
 			var version:String = gl.getParameter(GL.VERSION);
 			limitedProfile = (version.indexOf("OpenGL ES") > -1 || version.indexOf("WebGL") > -1);
 		}

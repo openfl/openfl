@@ -22,6 +22,7 @@ import openfl._internal.renderer.context3D.stats.Context3DStats;
 import openfl._internal.renderer.context3D.stats.DrawCallContext;
 #end
 
+@:access(openfl._internal.backend.opengl) // TODO: Remove backend references
 @:access(openfl.display.Shader)
 @:access(openfl.display.ShaderParameter)
 @:access(openfl.display3D.Context3D)
@@ -75,7 +76,7 @@ class BatchRenderer
 		__indexBuffer.uploadFromTypedArray(__createIndicesForQuads(__maxQuads));
 
 		#if !macro
-		__shader.aTextureId.__useArray = true;
+		__shader.aTextureId.__backend.useArray = true;
 		#end
 		__samplers = [for (i in 0...__maxTextures) Reflect.field(__shader.data, "uSampler" + i)];
 	}
@@ -190,7 +191,7 @@ class BatchRenderer
 		context.setCulling(NONE);
 		renderer.__setBlendMode(__batch.blendMode);
 
-		context.__bindGLArrayBuffer(__vertexBuffer.__id);
+		context.__backend.bindGLArrayBuffer(__vertexBuffer.__backend.glBufferID);
 
 		var subArray = __batch.vertices.subarray(0, __batch.numQuads * Batch.FLOATS_PER_QUAD);
 		gl.bufferSubData(GL.ARRAY_BUFFER, 0, subArray);

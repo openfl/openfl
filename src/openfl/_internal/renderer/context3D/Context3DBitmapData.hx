@@ -24,17 +24,17 @@ class Context3DBitmapData
 
 	public static function getIndexBuffer(bitmapData:BitmapData, context:Context3D, scale9Grid:Rectangle = null):IndexBuffer3D
 	{
-		var gl = context.gl;
+		// var gl = context.__backend.gl;
 
 		if (bitmapData.__renderData.indexBuffer == null
-			|| bitmapData.__renderData.indexBufferContext != context.__context
+			|| bitmapData.__renderData.indexBufferContext != context
 			|| (scale9Grid != null && bitmapData.__renderData.indexBufferGrid == null)
 			|| (bitmapData.__renderData.indexBufferGrid != null && !bitmapData.__renderData.indexBufferGrid.equals(scale9Grid)))
 		{
 			// TODO: Use shared buffer on context
 			// TODO: Support for UVs other than scale-9 grid?
 
-			bitmapData.__renderData.indexBufferContext = context.__context;
+			bitmapData.__renderData.indexBufferContext = context;
 			bitmapData.__renderData.indexBuffer = null;
 
 			if (scale9Grid != null)
@@ -376,13 +376,13 @@ class Context3DBitmapData
 	public static function getVertexBuffer(bitmapData:BitmapData, context:Context3D, scale9Grid:Rectangle = null,
 			targetObject:DisplayObject = null):VertexBuffer3D
 	{
-		var gl = context.gl;
+		// var gl = context.__backend.gl;
 
 		// TODO: Support for UVs other than scale-9 grid?
 		// TODO: Better way of handling object transform?
 
 		if (bitmapData.__renderData.vertexBuffer == null
-			|| bitmapData.__renderData.vertexBufferContext != context.__context
+			|| bitmapData.__renderData.vertexBufferContext != context
 			|| (scale9Grid != null && bitmapData.__renderData.vertexBufferGrid == null)
 			|| (bitmapData.__renderData.vertexBufferGrid != null && !bitmapData.__renderData.vertexBufferGrid.equals(scale9Grid))
 			|| (targetObject != null
@@ -409,7 +409,7 @@ class Context3DBitmapData
 			// [ colorTransform.redMultiplier, 0, 0, 0, 0, colorTransform.greenMultiplier, 0, 0, 0, 0, colorTransform.blueMultiplier, 0, 0, 0, 0, colorTransform.alphaMultiplier ];
 			// [ colorTransform.redOffset / 255, colorTransform.greenOffset / 255, colorTransform.blueOffset / 255, colorTransform.alphaOffset / 255 ]
 
-			bitmapData.__renderData.vertexBufferContext = context.__context;
+			bitmapData.__renderData.vertexBufferContext = context;
 			bitmapData.__renderData.vertexBuffer = null;
 
 			if (targetObject != null)
@@ -734,7 +734,7 @@ class Context3DBitmapData
 				|| x != bitmapData.__renderData.uvRect.x
 				|| y != bitmapData.__renderData.uvRect.y))
 		{
-			var gl = context.gl;
+			// var gl = context.__backend.gl;
 
 			if (bitmapData.__renderData.uvRect == null) bitmapData.__renderData.uvRect = new Rectangle();
 			bitmapData.__renderData.uvRect.setTo(x, y, width, height);

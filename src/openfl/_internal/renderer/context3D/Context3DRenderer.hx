@@ -58,6 +58,7 @@ import openfl._internal.renderer.context3D.stats.DrawCallContext;
 #end
 @:access(lime.graphics.GLRenderContext)
 @:access(lime.graphics.ImageBuffer)
+@:access(openfl._internal.backend.opengl) // TODO: Remove backend references
 @:access(openfl._internal.renderer.canvas.CanvasRenderer)
 @:access(openfl._internal.renderer.cairo.CairoRenderer)
 @:access(openfl._internal.renderer.context3D.Context3DGraphics)
@@ -172,7 +173,7 @@ class Context3DRenderer extends Context3DRendererAPI
 		__type = CONTEXT3D;
 
 		__setBlendMode(NORMAL);
-		context3D.__setGLBlend(true);
+		context3D.__backend.setGLBlend(true);
 
 		__clipRects = new Array();
 		__maskObjects = new Array();
@@ -399,9 +400,9 @@ class Context3DRenderer extends Context3DRendererAPI
 			__currentShader = shader;
 			__initShader(shader);
 			context3D.setProgram(shader.program);
-			context3D.__flushGLProgram();
+			context3D.__backend.flushGLProgram();
 			// context3D.__flushGLTextures ();
-			__currentShader.__enable();
+			__currentShader.__backend.enable();
 			context3D.__state.shader = shader;
 		}
 	}
@@ -415,11 +416,11 @@ class Context3DRenderer extends Context3DRendererAPI
 	{
 		if (__currentShader != null)
 		{
-			if (__currentShader.__position != null) __currentShader.__position.__useArray = true;
-			if (__currentShader.__textureCoord != null) __currentShader.__textureCoord.__useArray = true;
+			if (__currentShader.__position != null) __currentShader.__position.__backend.useArray = true;
+			if (__currentShader.__textureCoord != null) __currentShader.__textureCoord.__backend.useArray = true;
 			context3D.setProgram(__currentShader.program);
-			context3D.__flushGLProgram();
-			context3D.__flushGLTextures();
+			context3D.__backend.flushGLProgram();
+			context3D.__backend.flushGLTextures();
 			__currentShader.__update();
 		}
 	}
@@ -428,7 +429,7 @@ class Context3DRenderer extends Context3DRendererAPI
 	{
 		if (__currentShader != null)
 		{
-			if (__currentShader.__alpha != null) __currentShader.__alpha.__useArray = true;
+			if (__currentShader.__alpha != null) __currentShader.__alpha.__backend.useArray = true;
 		}
 	}
 
@@ -436,8 +437,8 @@ class Context3DRenderer extends Context3DRendererAPI
 	{
 		if (__currentShader != null)
 		{
-			if (__currentShader.__colorMultiplier != null) __currentShader.__colorMultiplier.__useArray = true;
-			if (__currentShader.__colorOffset != null) __currentShader.__colorOffset.__useArray = true;
+			if (__currentShader.__colorMultiplier != null) __currentShader.__colorMultiplier.__backend.useArray = true;
+			if (__currentShader.__colorOffset != null) __currentShader.__colorOffset.__backend.useArray = true;
 		}
 	}
 
@@ -489,7 +490,7 @@ class Context3DRenderer extends Context3DRendererAPI
 			if (__currentShader.__hasColorTransform != null) __currentShader.__hasColorTransform.value = null;
 			if (__currentShader.__position != null) __currentShader.__position.value = null;
 			if (__currentShader.__matrix != null) __currentShader.__matrix.value = null;
-			__currentShader.__clearUseArray();
+			__currentShader.__backend.clearUseArray();
 		}
 	}
 
@@ -676,8 +677,8 @@ class Context3DRenderer extends Context3DRendererAPI
 	private function __init(context:Context3D, defaultRenderTarget:BitmapData):Void
 	{
 		context3D = context;
-		__context = context.__context;
-		__gl = context.__context.webgl;
+		__context = context.__backend.context;
+		__gl = context.__backend.context.webgl;
 		gl = __gl;
 
 		#if !disable_batcher
@@ -701,9 +702,9 @@ class Context3DRenderer extends Context3DRendererAPI
 		{
 			// TODO: Change of GL context?
 
-			if (shader.__context == null)
+			if (shader.__backend.context == null)
 			{
-				shader.__context = context3D;
+				shader.__backend.context = context3D;
 				shader.__init();
 			}
 
@@ -720,9 +721,9 @@ class Context3DRenderer extends Context3DRendererAPI
 		{
 			// TODO: Change of GL context?
 
-			if (shader.__context == null)
+			if (shader.__backend.context == null)
 			{
-				shader.__context = context3D;
+				shader.__backend.context = context3D;
 				shader.__init();
 			}
 
@@ -739,9 +740,9 @@ class Context3DRenderer extends Context3DRendererAPI
 		{
 			// TODO: Change of GL context?
 
-			if (shader.__context == null)
+			if (shader.__backend.context == null)
 			{
-				shader.__context = context3D;
+				shader.__backend.context = context3D;
 				shader.__init();
 			}
 
@@ -980,7 +981,7 @@ class Context3DRenderer extends Context3DRendererAPI
 					__scissorRectangle.setTo(0, 0, __offsetX, __height);
 					context3D.setScissorRectangle(__scissorRectangle);
 
-					context3D.__flushGL();
+					context3D.__backend.flushGL();
 					__gl.clearColor(0, 0, 0, 1);
 					__gl.clear(GL.COLOR_BUFFER_BIT);
 					// context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
@@ -989,7 +990,7 @@ class Context3DRenderer extends Context3DRendererAPI
 					__scissorRectangle.setTo(__offsetX + __displayWidth, 0, __width, __height);
 					context3D.setScissorRectangle(__scissorRectangle);
 
-					context3D.__flushGL();
+					context3D.__backend.flushGL();
 					__gl.clearColor(0, 0, 0, 1);
 					__gl.clear(GL.COLOR_BUFFER_BIT);
 					// context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
@@ -1001,7 +1002,7 @@ class Context3DRenderer extends Context3DRendererAPI
 					__scissorRectangle.setTo(0, 0, __width, __offsetY);
 					context3D.setScissorRectangle(__scissorRectangle);
 
-					context3D.__flushGL();
+					context3D.__backend.flushGL();
 					__gl.clearColor(0, 0, 0, 1);
 					__gl.clear(GL.COLOR_BUFFER_BIT);
 					// context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
@@ -1010,7 +1011,7 @@ class Context3DRenderer extends Context3DRendererAPI
 					__scissorRectangle.setTo(0, __offsetY + __displayHeight, __width, __height);
 					context3D.setScissorRectangle(__scissorRectangle);
 
-					context3D.__flushGL();
+					context3D.__backend.flushGL();
 					__gl.clearColor(0, 0, 0, 1);
 					__gl.clear(GL.COLOR_BUFFER_BIT);
 					// context3D.clear (0, 0, 0, 1, 0, 0, Context3DClearMask.COLOR);
@@ -1147,7 +1148,7 @@ class Context3DRenderer extends Context3DRendererAPI
 				if (!__cleared) __clear();
 
 				setShader(object.__worldShader);
-				context3D.__flushGL();
+				context3D.__backend.flushGL();
 
 				event.type = RenderEvent.RENDER_OPENGL;
 
@@ -1462,16 +1463,16 @@ class Context3DRenderer extends Context3DRendererAPI
 
 			case SUBTRACT:
 				context3D.setBlendFactors(ONE, ONE);
-				context3D.__setGLBlendEquation(GL.FUNC_REVERSE_SUBTRACT);
+				context3D.__backend.setGLBlendEquation(GL.FUNC_REVERSE_SUBTRACT);
 
 			#if desktop
 			case DARKEN:
 				context3D.setBlendFactors(ONE, ONE);
-				context3D.__setGLBlendEquation(0x8007); // GL_MIN
+				context3D.__backend.setGLBlendEquation(0x8007); // GL_MIN
 
 			case LIGHTEN:
 				context3D.setBlendFactors(ONE, ONE);
-				context3D.__setGLBlendEquation(0x8008); // GL_MAX
+				context3D.__backend.setGLBlendEquation(0x8008); // GL_MAX
 			#end
 
 			default:
@@ -1880,7 +1881,7 @@ class Context3DRenderer extends Context3DRendererAPI
 	{
 		if (__currentShader != null && __currentShaderBuffer != null)
 		{
-			__currentShader.__updateFromBuffer(__currentShaderBuffer, bufferOffset);
+			__currentShader.__backend.updateFromBuffer(__currentShaderBuffer, bufferOffset);
 		}
 	}
 }
