@@ -20,12 +20,14 @@ import openfl.net.URLRequest;
 	#if lime
 	@:noCompletion @:dox(hide)
 	@:deprecated("Lib.application is deprecated. Use Lib.limeApplication instead.")
-	public var application(get, never):Application;
-	@:noCompletion private inline function get_application():Application
+	public static var application(get, never):Application;
+
+	@:noCompletion private static inline function get_application():Application
 	{
 		return Lib.limeApplication;
 	}
 	#end
+
 	public static var current(get, never):MovieClip;
 	#if lime
 	public static var limeApplication(get, never):Application;
@@ -559,7 +561,6 @@ import openfl.net.URLRequest;
 	// @:noCompletion private static function set_current (current:MovieClip):MovieClip {
 	// 	return cast flash.Lib.current = cast current;
 	// }
-
 	#if lime
 	@:noCompletion private static function get_limeApplication():Application
 	{
