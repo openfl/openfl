@@ -13,7 +13,7 @@ import openfl.display.ShaderParameter;
 @:access(openfl._internal.backend.opengl)
 @:access(openfl.display3D.Context3D)
 #if (!js && !display)
-// @:generic
+@:generic
 #end
 class OpenGLShaderParameterBackend<T> /*implements Dynamic*/
 {

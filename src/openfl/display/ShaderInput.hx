@@ -53,7 +53,7 @@ import openfl.display3D.Context3DWrapMode;
 @:noDebug
 #end
 #if (!js && !display)
-@:generic
+// @:generic
 #end
 @:final class ShaderInput<T> /*implements Dynamic*/
 {
@@ -145,7 +145,7 @@ import openfl.display3D.Context3DWrapMode;
 		width = 0;
 		wrap = CLAMP;
 
-		__backend = cast new ShaderInputBackend<T>(this);
+		__backend = new ShaderInputBackend<T>(this);
 	}
 }
 

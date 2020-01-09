@@ -88,7 +88,7 @@ package openfl.display;
 #end
 @:access(openfl.display3D.Context3D)
 #if (!js && !display)
-@:generic
+// @:generic
 #end
 @:final class ShaderParameter<T> /*implements Dynamic*/
 {
@@ -156,7 +156,7 @@ package openfl.display;
 	{
 		index = 0;
 
-		__backend = cast new ShaderParameterBackend<T>(this);
+		__backend = new ShaderParameterBackend<T>(this);
 	}
 
 	// Get & Set Methods
