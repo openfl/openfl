@@ -78,9 +78,7 @@ class OpenGLVideoTextureBackend extends OpenGLTextureBaseBackend
 		if ((!videoElement.paused || netStream.__seeking) && videoElement.readyState > 0)
 		{
 			netStream.__seeking = false;
-			var gl = parent.__context.__backend.gl;
-
-			parent.__context.__backend.bindGLTexture2D(glTextureID);
+			contextBackend.bindGLTexture2D(glTextureID);
 			gl.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, videoElement);
 		}
 		#end

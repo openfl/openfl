@@ -67,9 +67,9 @@ class Context3DVideo
 		var videoElement = video.__stream.__getVideoElement();
 		if (videoElement == null) return null;
 
-		var gl = context.__backend.context.webgl;
-		var internalFormat = gl.RGBA;
-		var format = gl.RGBA;
+		var gl = context.__backend.gl;
+		var internalFormat = GL.RGBA;
+		var format = GL.RGBA;
 
 		if (!video.__stream.__closed && videoElement.currentTime != video.__renderData.textureTime)
 		{
@@ -79,7 +79,7 @@ class Context3DVideo
 			}
 
 			context.__backend.bindGLTexture2D(video.__renderData.texture.__baseBackend.glTextureID);
-			gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, format, gl.UNSIGNED_BYTE, videoElement);
+			gl.texImage2D(GL.TEXTURE_2D, 0, internalFormat, format, GL.UNSIGNED_BYTE, videoElement);
 
 			video.__renderData.textureTime = videoElement.currentTime;
 		}

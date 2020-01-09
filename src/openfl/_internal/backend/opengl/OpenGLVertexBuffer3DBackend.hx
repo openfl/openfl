@@ -3,6 +3,7 @@ package openfl._internal.backend.opengl;
 #if openfl_gl
 import openfl._internal.bindings.gl.GLBuffer;
 import openfl._internal.bindings.gl.GL;
+import openfl._internal.bindings.gl.WebGLRenderingContext;
 import openfl._internal.bindings.typedarray.ArrayBufferView;
 import openfl._internal.bindings.typedarray.Float32Array;
 import openfl.display3D.Context3DBufferUsage;
@@ -21,6 +22,7 @@ import openfl.Vector;
 class OpenGLVertexBuffer3DBackend
 {
 	private var data:Vector<Float>;
+	private var gl:WebGLRenderingContext;
 	private var glBufferID:GLBuffer;
 	private var glUsage:Int;
 	// private var memoryUsage:Int;
@@ -31,8 +33,7 @@ class OpenGLVertexBuffer3DBackend
 	public function new(parent:VertexBuffer3D)
 	{
 		this.parent = parent;
-
-		var gl = parent.__context.__backend.gl;
+		gl = parent.__context.__backend.gl;
 
 		glBufferID = gl.createBuffer();
 		stride = parent.__dataPerVertex * 4;
@@ -41,7 +42,6 @@ class OpenGLVertexBuffer3DBackend
 
 	public function dispose():Void
 	{
-		var gl = parent.__context.__backend.gl;
 		gl.deleteBuffer(glBufferID);
 	}
 
@@ -56,7 +56,6 @@ class OpenGLVertexBuffer3DBackend
 	public function uploadFromTypedArray(data:ArrayBufferView, byteLength:Int = -1):Void
 	{
 		if (data == null) return;
-		var gl = parent.__context.__backend.gl;
 
 		parent.__context.__backend.bindGLArrayBuffer(glBufferID);
 		gl.bufferData(GL.ARRAY_BUFFER, data, glUsage);
@@ -65,7 +64,6 @@ class OpenGLVertexBuffer3DBackend
 	public function uploadFromVector(data:Vector<Float>, startVertex:Int, numVertices:Int):Void
 	{
 		if (data == null) return;
-		var gl = parent.__context.__backend.gl;
 
 		// TODO: Optimize more
 

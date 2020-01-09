@@ -28,7 +28,7 @@ class GLGraphicsData
 	{
 		this.context3D = context3D;
 
-		var gl = @:privateAccess context3D.gl;
+		var gl = @:privateAccess context3D.__backend.gl;
 
 		dataBuffer = gl.createBuffer();
 		indexBuffer = gl.createBuffer();
@@ -43,7 +43,7 @@ class GLGraphicsData
 
 	public function upload():Void
 	{
-		var gl = @:privateAccess context3D.gl;
+		var gl = @:privateAccess context3D.__backend.gl;
 
 		glData = new Float32Array(cast data);
 		gl.bindBuffer(gl.ARRAY_BUFFER, dataBuffer);

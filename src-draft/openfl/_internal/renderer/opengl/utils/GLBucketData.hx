@@ -35,7 +35,7 @@ class GLBucketData
 	{
 		this.context3D = context3D;
 
-		var gl = @:privateAccess context3D.gl;
+		var gl = @:privateAccess context3D.__backend.gl;
 
 		drawMode = gl.TRIANGLE_STRIP;
 		verts = [];
@@ -57,7 +57,7 @@ class GLBucketData
 
 	public function upload():Void
 	{
-		var gl = @:privateAccess context3D.gl;
+		var gl = @:privateAccess context3D.__backend.gl;
 
 		// only upload a verts buffer if verts has anything inside
 		if ((rawVerts && glVerts != null && glVerts.length > 0) || verts.length > 0)

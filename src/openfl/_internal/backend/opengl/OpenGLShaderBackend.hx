@@ -4,11 +4,11 @@ package openfl._internal.backend.opengl;
 import openfl._internal.bindings.gl.GLProgram;
 import openfl._internal.bindings.gl.GLShader;
 import openfl._internal.bindings.gl.GL;
+import openfl._internal.bindings.gl.WebGLRenderingContext;
 import openfl._internal.renderer.ShaderBuffer;
 import openfl._internal.bindings.typedarray.Float32Array;
 import openfl._internal.utils.Log;
 import openfl.display3D.Context3D;
-import openfl.display3D.Program3D;
 import openfl.display.BitmapData;
 import openfl.display.Shader;
 import openfl.display.ShaderData;
@@ -30,6 +30,7 @@ import openfl.utils.ByteArray;
 class OpenGLShaderBackend
 {
 	private var context:Context3D;
+	private var gl:WebGLRenderingContext;
 	private var inputBitmapData:Array<ShaderInput<BitmapData>>;
 	private var numPasses:Int;
 	private var paramBool:Array<ShaderParameter<Bool>>;
@@ -62,8 +63,6 @@ class OpenGLShaderBackend
 
 	private function createGLShader(source:String, type:Int):GLShader
 	{
-		var gl = context.__backend.gl;
-
 		var shader = gl.createShader(type);
 		gl.shaderSource(shader, source);
 		gl.compileShader(shader);
@@ -81,8 +80,6 @@ class OpenGLShaderBackend
 
 	private function createGLProgram(vertexSource:String, fragmentSource:String):GLProgram
 	{
-		var gl = context.__backend.gl;
-
 		var vertexShader = createGLShader(vertexSource, GL.VERTEX_SHADER);
 		var fragmentShader = createGLShader(fragmentSource, GL.FRAGMENT_SHADER);
 
@@ -122,8 +119,6 @@ class OpenGLShaderBackend
 
 	private function disableGL():Void
 	{
-		var gl = context.__backend.gl;
-
 		var textureCount = 0;
 
 		for (input in inputBitmapData)
@@ -150,7 +145,7 @@ class OpenGLShaderBackend
 		context.__backend.bindGLArrayBuffer(null);
 
 		#if lime
-		if (context.__backend.context.type == OPENGL)
+		if (context.__backend.limeContext.type == OPENGL)
 		{
 			gl.disable(gl.TEXTURE_2D);
 		}
@@ -171,8 +166,6 @@ class OpenGLShaderBackend
 	{
 		var textureCount = 0;
 
-		var gl = context.__backend.gl;
-
 		for (input in inputBitmapData)
 		{
 			gl.uniform1i(input.index, textureCount);
@@ -180,15 +173,21 @@ class OpenGLShaderBackend
 		}
 
 		#if lime
-		if (context.__backend.context.type == OPENGL && textureCount > 0)
+		if (context.__backend.limeContext.type == OPENGL && textureCount > 0)
 		{
 			gl.enable(gl.TEXTURE_2D);
 		}
 		#end
 	}
 
-	public function init():Void
+	public function init(context3D:Context3D = null):Void
 	{
+		if (context3D != null)
+		{
+			this.context = context3D;
+			gl = context.__backend.gl;
+		}
+
 		if (parent.__data == null)
 		{
 			parent.__data = cast new ShaderData(null);
@@ -219,8 +218,6 @@ class OpenGLShaderBackend
 
 		if (context != null && parent.program == null)
 		{
-			var gl = context.__backend.gl;
-
 			var prefix = "#ifdef GL_ES
 				"
 				+ (parent.precisionHint == FULL ? "#ifdef GL_FRAGMENT_PRECISION_HIGH
@@ -529,8 +526,6 @@ class OpenGLShaderBackend
 				textureCount++;
 			}
 		}
-
-		var gl = context.__backend.gl;
 
 		if (shaderBuffer.paramDataLength > 0)
 		{

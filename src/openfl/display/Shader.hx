@@ -260,9 +260,9 @@ class Shader
 		__data = new ShaderData(code);
 	}
 
-	@:noCompletion private function __init():Void
+	@:noCompletion private function __init(context3D:Context3D = null):Void
 	{
-		__backend.init();
+		__backend.init(context3D);
 	}
 
 	@:noCompletion private function __update():Void

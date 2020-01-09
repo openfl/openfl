@@ -61,7 +61,9 @@ class OpenGLContext3DBackend
 
 	private static var driverInfo:String;
 
-	public var context:#if (lime || openfl_html5) RenderContext #else Dynamic #end;
+	#if lime
+	public var limeContext:RenderContext;
+	#end
 	public var gl:WebGLRenderingContext;
 
 	private var parent:Context3D;
@@ -74,8 +76,8 @@ class OpenGLContext3DBackend
 		positionScale = new Float32Array([1.0, 1.0, 1.0, 1.0]);
 
 		#if lime
-		context = parent.__stage.limeWindow.context;
-		gl = context.webgl;
+		limeContext = parent.__stage.limeWindow.context;
+		gl = limeContext.webgl;
 
 		if (glMaxViewportDims == -1)
 		{
@@ -117,9 +119,9 @@ class OpenGLContext3DBackend
 			#if openfl_html5
 			glDepthStencil = GL.DEPTH_STENCIL;
 			#elseif lime
-			if (context.type == OPENGLES && Std.parseFloat(context.version) >= 3)
+			if (limeContext.type == OPENGLES && Std.parseFloat(limeContext.version) >= 3)
 			{
-				glDepthStencil = context.gles3.DEPTH24_STENCIL8;
+				glDepthStencil = limeContext.gles3.DEPTH24_STENCIL8;
 			}
 			else
 			{
@@ -304,7 +306,9 @@ class OpenGLContext3DBackend
 			parent.__stage3D = null;
 		}
 
-		context = null;
+		#if lime
+		limeContext = null;
+		#end
 		positionScale = null;
 	}
 
@@ -437,23 +441,24 @@ class OpenGLContext3DBackend
 		gl.enableVertexAttribArray(index);
 
 		var byteOffset = bufferOffset * 4;
+		var stride = buffer.__backend.stride;
 
 		switch (format)
 		{
 			case BYTES_4:
-				gl.vertexAttribPointer(index, 4, GL.UNSIGNED_BYTE, true, buffer.__backend.stride, byteOffset);
+				gl.vertexAttribPointer(index, 4, GL.UNSIGNED_BYTE, true, stride, byteOffset);
 
 			case FLOAT_4:
-				gl.vertexAttribPointer(index, 4, GL.FLOAT, false, buffer.__backend.stride, byteOffset);
+				gl.vertexAttribPointer(index, 4, GL.FLOAT, false, stride, byteOffset);
 
 			case FLOAT_3:
-				gl.vertexAttribPointer(index, 3, GL.FLOAT, false, buffer.__backend.stride, byteOffset);
+				gl.vertexAttribPointer(index, 3, GL.FLOAT, false, stride, byteOffset);
 
 			case FLOAT_2:
-				gl.vertexAttribPointer(index, 2, GL.FLOAT, false, buffer.__backend.stride, byteOffset);
+				gl.vertexAttribPointer(index, 2, GL.FLOAT, false, stride, byteOffset);
 
 			case FLOAT_1:
-				gl.vertexAttribPointer(index, 1, GL.FLOAT, false, buffer.__backend.stride, byteOffset);
+				gl.vertexAttribPointer(index, 1, GL.FLOAT, false, stride, byteOffset);
 
 			default:
 				throw new IllegalOperationError();

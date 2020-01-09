@@ -131,7 +131,7 @@ class GraphicsRenderer
 
 	public static function buildComplexPoly(path:DrawPath, glStack:GLStack, localCoords:Bool = false):Void
 	{
-		var gl = @:privateAccess glStack.context3D.gl;
+		var gl = @:privateAccess glStack.context3D.__backend.gl;
 		var bucket:GLBucket = null;
 
 		if (path.points.length >= 6)
@@ -855,7 +855,7 @@ class GraphicsRenderer
 		if (!renderer.__cleared) renderer.__clear();
 		renderer.setShader(null);
 		currentShader = null;
-		@:privateAccess renderer.context3D.__flushGL();
+		@:privateAccess renderer.context3D.__backend.flushGL();
 		renderer.setViewport();
 
 		var gl = renderer.gl;
@@ -1044,7 +1044,7 @@ class GraphicsRenderer
 				bucket.bitmap = b;
 				bucket.textureRepeat = r;
 				bucket.textureSmooth = s;
-				bucket.texture = @:privateAccess b.getTexture(glStack.context3D).__textureID;
+				bucket.texture = @:privateAccess b.getTexture(glStack.context3D).__baseBackend.glTextureID;
 				bucket.uploadTileBuffer = true;
 
 				// prepare the matrix
@@ -1189,7 +1189,7 @@ class GraphicsRenderer
 	private static function renderFill(bucket:GLBucket, shader:Shader, renderer:Context3DRenderer):Void
 	{
 		var context3D = renderer.context3D;
-		var gl = @:privateAccess context3D.gl;
+		var gl = @:privateAccess context3D.__backend.gl;
 
 		if (bucket.mode == PatternFill && bucket.texture != null)
 		{
@@ -1219,7 +1219,7 @@ class GraphicsRenderer
 
 	private static function bindTexture(context3D:Context3D, bucket:GLBucket):Void
 	{
-		var gl = @:privateAccess context3D.gl;
+		var gl = @:privateAccess context3D.__backend.gl;
 
 		gl.bindTexture(gl.TEXTURE_2D, bucket.texture);
 
@@ -1291,7 +1291,7 @@ class GraphicsRenderer
 
 	public static function pushStencilBucket(bucket:GLBucket, renderer:Context3DRenderer, translationMatrix:Float32Array, ?isMask:Bool = false):Void
 	{
-		var gl = @:privateAccess renderer.context3D.gl;
+		var gl = @:privateAccess renderer.context3D.__backend.gl;
 
 		if (!isMask)
 		{
@@ -1331,7 +1331,7 @@ class GraphicsRenderer
 
 	public static function popStencilBucket(object:DisplayObject, bucket:GLBucket, renderer:Context3DRenderer):Void
 	{
-		var gl = @:privateAccess renderer.context3D.gl;
+		var gl = @:privateAccess renderer.context3D.__backend.gl;
 
 		gl.disable(gl.STENCIL_TEST);
 	}

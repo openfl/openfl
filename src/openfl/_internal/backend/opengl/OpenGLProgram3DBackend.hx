@@ -652,7 +652,7 @@ class OpenGLProgram3DBackend
 	{
 		this.context = context;
 		#if (lime && !openfl_html5)
-		gl = context.__backend.context.gles2;
+		gl = context.__backend.limeContext.gles2;
 		regDataPointer = new BytePointer();
 		#else
 		gl = context.__backend.gl;

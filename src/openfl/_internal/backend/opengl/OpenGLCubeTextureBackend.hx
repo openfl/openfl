@@ -4,7 +4,6 @@ package openfl._internal.backend.opengl;
 import haxe.Timer;
 import openfl._internal.bindings.gl.GLFramebuffer;
 import openfl._internal.bindings.gl.GL;
-import openfl._internal.bindings.gl.WebGLRenderingContext;
 import openfl._internal.bindings.typedarray.ArrayBufferView;
 import openfl._internal.bindings.typedarray.UInt8Array;
 import openfl._internal.formats.atf.ATFReader;
@@ -29,7 +28,6 @@ import openfl.utils.ByteArray;
 class OpenGLCubeTextureBackend extends OpenGLTextureBaseBackend
 {
 	private var framebufferSurface:Int;
-	private var gl:WebGLRenderingContext;
 	private var parent:CubeTexture;
 	private var uploadedSides:Int;
 
@@ -39,7 +37,6 @@ class OpenGLCubeTextureBackend extends OpenGLTextureBaseBackend
 
 		this.parent = parent;
 
-		gl = parent.__context.__backend.gl;
 		glTextureTarget = GL.TEXTURE_CUBE_MAP;
 		uploadedSides = 0;
 
@@ -94,9 +91,9 @@ class OpenGLCubeTextureBackend extends OpenGLTextureBaseBackend
 			if (size == 0) return;
 
 			var target = sideToTarget(side);
-			parent.__context.__backend.bindGLTextureCubeMap(glTextureID);
+			contextBackend.bindGLTextureCubeMap(glTextureID);
 			gl.texImage2D(target, miplevel, glInternalFormat, glFormat, GL.UNSIGNED_BYTE, image.buffer.src);
-			parent.__context.__backend.bindGLTextureCubeMap(null);
+			contextBackend.bindGLTextureCubeMap(null);
 
 			uploadedSides |= 1 << side;
 			return;
@@ -129,9 +126,9 @@ class OpenGLCubeTextureBackend extends OpenGLTextureBaseBackend
 
 		var target = sideToTarget(side);
 
-		parent.__context.__backend.bindGLTextureCubeMap(glTextureID);
+		contextBackend.bindGLTextureCubeMap(glTextureID);
 		gl.texImage2D(target, miplevel, glInternalFormat, size, size, 0, glFormat, GL.UNSIGNED_BYTE, data);
-		parent.__context.__backend.bindGLTextureCubeMap(null);
+		contextBackend.bindGLTextureCubeMap(null);
 
 		uploadedSides |= 1 << side;
 	}
@@ -148,7 +145,7 @@ class OpenGLCubeTextureBackend extends OpenGLTextureBaseBackend
 		{
 			framebufferSurface = surfaceSelector;
 
-			parent.__context.__backend.bindGLFramebuffer(glFramebuffer);
+			contextBackend.bindGLFramebuffer(glFramebuffer);
 			gl.framebufferTexture2D(GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_CUBE_MAP_POSITIVE_X + surfaceSelector, glTextureID, 0);
 
 			if (parent.__context.enableErrorChecking)
@@ -219,7 +216,7 @@ class OpenGLCubeTextureBackend extends OpenGLTextureBaseBackend
 		var reader = new ATFReader(data, byteArrayOffset);
 		var alpha = reader.readHeader(parent.__size, parent.__size, true);
 
-		parent.__context.__backend.bindGLTextureCubeMap(glTextureID);
+		contextBackend.bindGLTextureCubeMap(glTextureID);
 
 		var hasTexture = false;
 
@@ -246,7 +243,7 @@ class OpenGLCubeTextureBackend extends OpenGLTextureBaseBackend
 				alphaTexture.__backend.glFormat = format;
 				alphaTexture.__backend.glInternalFormat = format;
 
-				context.__backend.bindGLTextureCubeMap(alphaTexture.__backend.glTextureID);
+				contextBackend.bindGLTextureCubeMap(alphaTexture.__backend.glTextureID);
 				gl.compressedTexImage2D(target, level, alphaTexture.__backend.glInternalFormat, width, height, 0,
 					new UInt8Array(#if js @:privateAccess bytes.b.buffer #else bytes #end, size, size));
 
@@ -268,7 +265,7 @@ class OpenGLCubeTextureBackend extends OpenGLTextureBaseBackend
 			}
 		}
 
-		parent.__context.__backend.bindGLTextureCubeMap(null);
+		contextBackend.bindGLTextureCubeMap(null);
 	}
 }
 #end

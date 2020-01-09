@@ -6,7 +6,6 @@ import openfl._internal.renderer.SamplerState;
 import openfl._internal.bindings.typedarray.ArrayBufferView;
 import openfl._internal.bindings.typedarray.UInt8Array;
 import openfl.display3D.textures.RectangleTexture;
-import openfl.display3D.Context3D;
 import openfl.display.BitmapData;
 import openfl.utils.ByteArray;
 
@@ -27,6 +26,7 @@ class OpenGLRectangleTextureBackend extends OpenGLTextureBaseBackend
 		super(parent);
 
 		this.parent = parent;
+		gl = parent.__context.__backend.gl;
 
 		glTextureTarget = GL.TEXTURE_2D;
 		uploadFromTypedArray(null);
@@ -45,11 +45,9 @@ class OpenGLRectangleTextureBackend extends OpenGLTextureBaseBackend
 		#if openfl_html5
 		if (image.buffer != null && image.buffer.data == null && image.buffer.src != null)
 		{
-			var gl = parent.__context.__backend.gl;
-
-			parent.__context.__backend.bindGLTexture2D(glTextureID);
+			contextBackend.bindGLTexture2D(glTextureID);
 			gl.texImage2D(glTextureTarget, 0, glInternalFormat, glFormat, GL.UNSIGNED_BYTE, image.buffer.src);
-			parent.__context.__backend.bindGLTexture2D(null);
+			contextBackend.bindGLTexture2D(null);
 			return;
 		}
 		#end
@@ -73,19 +71,15 @@ class OpenGLRectangleTextureBackend extends OpenGLTextureBaseBackend
 
 	public function uploadFromTypedArray(data:ArrayBufferView):Void
 	{
-		var gl = parent.__context.__backend.gl;
-
-		parent.__context.__backend.bindGLTexture2D(glTextureID);
+		contextBackend.bindGLTexture2D(glTextureID);
 		gl.texImage2D(glTextureTarget, 0, glInternalFormat, parent.__width, parent.__height, 0, glFormat, GL.UNSIGNED_BYTE, data);
-		parent.__context.__backend.bindGLTexture2D(null);
+		contextBackend.bindGLTexture2D(null);
 	}
 
 	private override function setSamplerState(state:SamplerState):Bool
 	{
 		if (super.setSamplerState(state))
 		{
-			var gl = parent.__context.__backend.gl;
-
 			if (OpenGLContext3DBackend.glMaxTextureMaxAnisotropy != 0)
 			{
 				var aniso = switch (state.filter)

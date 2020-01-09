@@ -101,7 +101,9 @@ class Context3DRenderer extends Context3DRendererAPI
 
 	private var __alphaMaskShader:Context3DAlphaMaskShader;
 	private var __clipRects:Array<Rectangle>;
-	private var __context:RenderContext;
+	#if lime
+	private var __limeContext:RenderContext;
+	#end
 	private var __currentDisplayShader:Shader;
 	private var __currentGraphicsShader:Shader;
 	private var __currentRenderTarget:BitmapData;
@@ -677,8 +679,10 @@ class Context3DRenderer extends Context3DRendererAPI
 	private function __init(context:Context3D, defaultRenderTarget:BitmapData):Void
 	{
 		context3D = context;
-		__context = context.__backend.context;
-		__gl = context.__backend.context.webgl;
+		#if lime
+		__limeContext = context.__backend.limeContext;
+		#end
+		__gl = cast context.__backend.gl;
 		gl = __gl;
 
 		#if !disable_batcher
@@ -701,11 +705,9 @@ class Context3DRenderer extends Context3DRendererAPI
 		if (shader != null)
 		{
 			// TODO: Change of GL context?
-
 			if (shader.__backend.context == null)
 			{
-				shader.__backend.context = context3D;
-				shader.__init();
+				shader.__init(context3D);
 			}
 
 			// currentShader = shader;
@@ -720,11 +722,9 @@ class Context3DRenderer extends Context3DRendererAPI
 		if (shader != null)
 		{
 			// TODO: Change of GL context?
-
 			if (shader.__backend.context == null)
 			{
-				shader.__backend.context = context3D;
-				shader.__init();
+				shader.__init(context3D);
 			}
 
 			// currentShader = shader;
@@ -739,11 +739,9 @@ class Context3DRenderer extends Context3DRendererAPI
 		if (shader != null)
 		{
 			// TODO: Change of GL context?
-
 			if (shader.__backend.context == null)
 			{
-				shader.__backend.context = context3D;
-				shader.__init();
+				shader.__init(context3D);
 			}
 
 			// currentShader = shader;

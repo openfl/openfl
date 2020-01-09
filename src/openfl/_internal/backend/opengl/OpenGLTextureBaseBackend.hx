@@ -5,6 +5,7 @@ import openfl._internal.bindings.gl.GLFramebuffer;
 import openfl._internal.bindings.gl.GLRenderbuffer;
 import openfl._internal.bindings.gl.GLTexture;
 import openfl._internal.bindings.gl.GL;
+import openfl._internal.bindings.gl.WebGLRenderingContext;
 import openfl._internal.formats.atf.ATFGPUFormat;
 import openfl._internal.renderer.SamplerState;
 import openfl.display3D.textures.TextureBase;
@@ -41,7 +42,9 @@ class OpenGLTextureBaseBackend
 	private var alphaTexture:TextureBase;
 	private var baseParent:TextureBase;
 	// private var compressedMemoryUsage:Int;
-	private var context:Context3D;
+	// private var context:Context3D;
+	private var contextBackend:OpenGLContext3DBackend;
+	private var gl:WebGLRenderingContext;
 	private var glDepthRenderbuffer:GLRenderbuffer;
 	private var glFormat:Int;
 	private var glFramebuffer:GLFramebuffer;
@@ -56,7 +59,8 @@ class OpenGLTextureBaseBackend
 	public function new(parent:TextureBase)
 	{
 		baseParent = parent;
-		var gl = parent.__context.__backend.gl;
+		contextBackend = parent.__context.__backend;
+		gl = contextBackend.gl;
 		// textureTarget = target;
 
 		glTextureID = gl.createTexture();
@@ -78,7 +82,7 @@ class OpenGLTextureBaseBackend
 				glTextureFormat = bgraExtension.BGRA_EXT;
 
 				#if (lime && !ios && !tvos)
-				if (parent.__context.__backend.context.type == OPENGLES)
+				if (contextBackend.limeContext.type == OPENGLES)
 				{
 					glTextureInternalFormat = bgraExtension.BGRA_EXT;
 				}
@@ -137,8 +141,6 @@ class OpenGLTextureBaseBackend
 
 	public function dispose():Void
 	{
-		var gl = baseParent.__context.__backend.gl;
-
 		if (alphaTexture != null)
 		{
 			alphaTexture.dispose();
@@ -165,12 +167,10 @@ class OpenGLTextureBaseBackend
 	@SuppressWarnings("checkstyle:Dynamic")
 	private function getGLFramebuffer(enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):GLFramebuffer
 	{
-		var gl = baseParent.__context.__backend.gl;
-
 		if (glFramebuffer == null)
 		{
 			glFramebuffer = gl.createFramebuffer();
-			baseParent.__context.__backend.bindGLFramebuffer(glFramebuffer);
+			contextBackend.bindGLFramebuffer(glFramebuffer);
 			gl.framebufferTexture2D(GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_2D, glTextureID, 0);
 
 			if (baseParent.__context.enableErrorChecking)
@@ -186,7 +186,7 @@ class OpenGLTextureBaseBackend
 
 		if (enableDepthAndStencil && glDepthRenderbuffer == null)
 		{
-			baseParent.__context.__backend.bindGLFramebuffer(glFramebuffer);
+			contextBackend.bindGLFramebuffer(glFramebuffer);
 
 			if (OpenGLContext3DBackend.glDepthStencil != 0)
 			{
@@ -246,8 +246,6 @@ class OpenGLTextureBaseBackend
 		#end
 
 		#if openfl_html5
-		var gl = baseParent.__context.__backend.gl;
-
 		if (image.type != DATA && !image.premultiplied)
 		{
 			gl.pixelStorei(GL.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
@@ -294,11 +292,9 @@ class OpenGLTextureBaseBackend
 	{
 		if (!state.equals(samplerState))
 		{
-			var gl = baseParent.__context.__backend.gl;
-
-			if (glTextureTarget == GL.TEXTURE_CUBE_MAP) baseParent.__context.__backend.bindGLTextureCubeMap(glTextureID);
+			if (glTextureTarget == GL.TEXTURE_CUBE_MAP) contextBackend.bindGLTextureCubeMap(glTextureID);
 			else
-				baseParent.__context.__backend.bindGLTexture2D(glTextureID);
+				contextBackend.bindGLTexture2D(glTextureID);
 
 			var wrapModeS = 0, wrapModeT = 0;
 
@@ -365,7 +361,6 @@ class OpenGLTextureBaseBackend
 	#if (lime || openfl_html5)
 	private function uploadFromImage(image:Image):Void
 	{
-		var gl = baseParent.__context.__backend.gl;
 		var internalFormat, format;
 
 		if (glTextureTarget != GL.TEXTURE_2D) return;
@@ -381,7 +376,7 @@ class OpenGLTextureBaseBackend
 			format = glTextureFormat;
 		}
 
-		baseParent.__context.__backend.bindGLTexture2D(glTextureID);
+		contextBackend.bindGLTexture2D(glTextureID);
 
 		#if openfl_html5
 		if (image.type != DATA && !image.premultiplied)
@@ -408,7 +403,7 @@ class OpenGLTextureBaseBackend
 		gl.texImage2D(GL.TEXTURE_2D, 0, internalFormat, image.buffer.width, image.buffer.height, 0, format, GL.UNSIGNED_BYTE, image.data);
 		#end
 
-		baseParent.__context.__backend.bindGLTexture2D(null);
+		contextBackend.bindGLTexture2D(null);
 	}
 	#end
 }

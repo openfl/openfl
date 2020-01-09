@@ -9,7 +9,6 @@ import openfl._internal.renderer.SamplerState;
 import openfl._internal.bindings.typedarray.ArrayBufferView;
 import openfl._internal.bindings.typedarray.UInt8Array;
 import openfl.display3D.textures.Texture;
-import openfl.display3D.Context3D;
 import openfl.display3D.Context3DTextureFormat;
 import openfl.display.BitmapData;
 import openfl.events.Event;
@@ -36,13 +35,12 @@ class OpenGLTextureBackend extends OpenGLTextureBaseBackend
 
 		super(parent);
 
-		var gl = parent.__context.__backend.gl;
-
+		gl = contextBackend.gl;
 		glTextureTarget = GL.TEXTURE_2D;
 
-		parent.__context.__backend.bindGLTexture2D(glTextureID);
+		contextBackend.bindGLTexture2D(glTextureID);
 		gl.texImage2D(glTextureTarget, 0, glInternalFormat, parent.__width, parent.__height, 0, glFormat, GL.UNSIGNED_BYTE, null);
-		parent.__context.__backend.bindGLTexture2D(null);
+		contextBackend.bindGLTexture2D(null);
 
 		if (parent.__optimizeForRenderToTexture) getGLFramebuffer(true, 0, 0);
 	}
@@ -114,8 +112,6 @@ class OpenGLTextureBackend extends OpenGLTextureBaseBackend
 		#if openfl_html5
 		if (miplevel == 0 && image.buffer != null && image.buffer.data == null && image.buffer.src != null)
 		{
-			var gl = parent.__context.__backend.gl;
-
 			var width = parent.__width >> miplevel;
 			var height = parent.__height >> miplevel;
 
@@ -124,9 +120,9 @@ class OpenGLTextureBackend extends OpenGLTextureBaseBackend
 			if (width == 0) width = 1;
 			if (height == 0) height = 1;
 
-			parent.__context.__backend.bindGLTexture2D(glTextureID);
+			contextBackend.bindGLTexture2D(glTextureID);
 			gl.texImage2D(glTextureTarget, miplevel, glInternalFormat, glFormat, GL.UNSIGNED_BYTE, image.buffer.src);
-			parent.__context.__backend.bindGLTexture2D(null);
+			contextBackend.bindGLTexture2D(null);
 
 			return;
 		}
@@ -153,8 +149,6 @@ class OpenGLTextureBackend extends OpenGLTextureBaseBackend
 	{
 		if (data == null) return;
 
-		var gl = parent.__context.__backend.gl;
-
 		var width = parent.__width >> miplevel;
 		var height = parent.__height >> miplevel;
 
@@ -163,17 +157,15 @@ class OpenGLTextureBackend extends OpenGLTextureBaseBackend
 		if (width == 0) width = 1;
 		if (height == 0) height = 1;
 
-		parent.__context.__backend.bindGLTexture2D(glTextureID);
+		contextBackend.bindGLTexture2D(glTextureID);
 		gl.texImage2D(glTextureTarget, miplevel, glInternalFormat, width, height, 0, glFormat, GL.UNSIGNED_BYTE, data);
-		parent.__context.__backend.bindGLTexture2D(null);
+		contextBackend.bindGLTexture2D(null);
 	}
 
 	private override function setSamplerState(state:SamplerState):Bool
 	{
 		if (super.setSamplerState(state))
 		{
-			var gl = parent.__context.__backend.gl;
-
 			if (state.mipfilter != MIPNONE && !samplerState.mipmapGenerated)
 			{
 				gl.generateMipmap(GL.TEXTURE_2D);
@@ -210,9 +202,7 @@ class OpenGLTextureBackend extends OpenGLTextureBaseBackend
 		var reader = new ATFReader(data, byteArrayOffset);
 		var alpha = reader.readHeader(parent.__width, parent.__height, false);
 
-		var gl = parent.__context.__backend.gl;
-
-		parent.__context.__backend.bindGLTexture2D(glTextureID);
+		contextBackend.bindGLTexture2D(glTextureID);
 
 		var hasTexture = false;
 
@@ -237,7 +227,7 @@ class OpenGLTextureBackend extends OpenGLTextureBaseBackend
 				alphaTexture.__backend.glFormat = format;
 				alphaTexture.__backend.glInternalFormat = format;
 
-				parent.__context.__backend.bindGLTexture2D(alphaTexture.__backend.glTextureID);
+				contextBackend.bindGLTexture2D(alphaTexture.__backend.glTextureID);
 				gl.compressedTexImage2D(alphaTexture.__backend.glTextureTarget, level, alphaTexture.__backend.glInternalFormat, width, height, 0,
 					new UInt8Array(#if js @:privateAccess bytes.b.buffer #else bytes #end, size, size));
 
@@ -256,7 +246,7 @@ class OpenGLTextureBackend extends OpenGLTextureBaseBackend
 			gl.texImage2D(glTextureTarget, 0, glInternalFormat, parent.__width, parent.__height, 0, glFormat, GL.UNSIGNED_BYTE, data);
 		}
 
-		parent.__context.__backend.bindGLTexture2D(null);
+		contextBackend.bindGLTexture2D(null);
 	}
 }
 #end

@@ -32,28 +32,28 @@ class VertexArray
 
 	public inline function bind():Void
 	{
-		var gl = @:privateAccess context3D.gl;
+		var gl = @:privateAccess context3D.__backend.gl;
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, glBuffer);
 	}
 
 	public inline function unbind():Void
 	{
-		var gl = @:privateAccess context3D.gl;
+		var gl = @:privateAccess context3D.__backend.gl;
 
 		gl.bindBuffer(gl.ARRAY_BUFFER, null);
 	}
 
 	public function upload(view:ArrayBufferView):Void
 	{
-		var gl = @:privateAccess context3D.gl;
+		var gl = @:privateAccess context3D.__backend.gl;
 
 		gl.bufferSubData(gl.ARRAY_BUFFER, 0, view);
 	}
 
 	public function destroy():Void
 	{
-		var gl = @:privateAccess context3D.gl;
+		var gl = @:privateAccess context3D.__backend.gl;
 
 		gl.deleteBuffer(glBuffer);
 		buffer = null;
@@ -61,7 +61,7 @@ class VertexArray
 
 	public function setContext(context3D:Context3D, view:ArrayBufferView):Void
 	{
-		var gl = @:privateAccess context3D.gl;
+		var gl = @:privateAccess context3D.__backend.gl;
 
 		this.context3D = context3D;
 
