@@ -1577,7 +1577,7 @@ class NetStream extends EventDispatcher
 					  with digital rights management (DRM). The value of the
 					  `code` property is `"DRM.encryptedFLV"`.
 	**/
-	public function play(url:String, p1 = null, p2 = null, p3 = null, p4 = null, p5 = null):Void
+	public function play(url:#if (openfl_html5 && !openfl_doc_gen) Dynamic #else String #end, p1 = null, p2 = null, p3 = null, p4 = null, p5 = null):Void
 	{
 		__backend.play(url, p1, p2, p3, p4, p5);
 	}

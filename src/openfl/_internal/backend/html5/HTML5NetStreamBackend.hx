@@ -73,12 +73,21 @@ class HTML5NetStreamBackend
 		if (video != null) video.pause();
 	}
 
-	public function play(url:String, p1 = null, p2 = null, p3 = null, p4 = null, p5 = null):Void
+	public function play(url:Dynamic, p1 = null, p2 = null, p3 = null, p4 = null, p5 = null):Void
 	{
 		if (video == null) return;
 
 		video.volume = SoundMixer.soundTransform.volume * parent.__soundTransform.volume;
-		video.src = url;
+
+		if (Std.is(url, String))
+		{
+			video.src = url;
+		}
+		else
+		{
+			video.srcObject = url;
+		}
+
 		video.play();
 	}
 
