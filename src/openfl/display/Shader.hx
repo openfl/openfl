@@ -2,11 +2,6 @@ package openfl.display;
 
 #if !flash
 import openfl._internal.bindings.gl.GLProgram;
-import openfl._internal.bindings.gl.GLShader;
-import openfl._internal.bindings.gl.GL;
-import openfl._internal.renderer.ShaderBuffer;
-import openfl._internal.bindings.typedarray.Float32Array;
-import openfl._internal.utils.Log;
 import openfl.display3D.Context3D;
 import openfl.display3D.Program3D;
 import openfl.utils.ByteArray;

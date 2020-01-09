@@ -1,10 +1,6 @@
 package openfl.display3D.textures;
 
 #if !flash
-import haxe.Timer;
-import openfl._internal.bindings.gl.GLTexture;
-import openfl._internal.bindings.gl.GL;
-import openfl.events.Event;
 import openfl.net.NetStream;
 
 /**

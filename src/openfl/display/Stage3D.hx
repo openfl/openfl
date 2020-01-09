@@ -18,11 +18,6 @@ import openfl._internal.bindings.gl.WebGLRenderingContext;
 import openfl._internal.backend.lime_standalone.RenderContext;
 import openfl._internal.backend.lime_standalone.WebGLRenderContext in WebGLRenderingContext;
 #end
-#if openfl_html5
-import js.html.CanvasElement;
-import js.html.CSSStyleDeclaration;
-import js.Browser;
-#end
 
 /**
 	The Stage class represents the main drawing area.
