@@ -20,8 +20,16 @@ extern class BitmapData implements IBitmapDrawable
 {
 	public var height(default, never):Int;
 	#if lime
+	@:noCompletion @:dox(hide) @SuppressWarnings("checkstyle:FieldDocComment")
+	@:deprecated("BitmapData.image is deprecated. Use BitmapData.limeImage instead.")
 	public var image(get, never):Image;
 	@:noCompletion private inline function get_image():Image
+	{
+		return this.limeImage;
+	}
+
+	public var limeImage(get, never):Image;
+	@:noCompletion private inline function get_limeImage():Image
 	{
 		return null;
 	}
