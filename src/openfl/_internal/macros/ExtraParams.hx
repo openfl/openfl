@@ -11,15 +11,24 @@ class ExtraParams
 	{
 		if (!Context.defined("tools"))
 		{
-			if (Context.defined("display"))
-			{
-				includeExterns();
-			}
-
 			if (!Context.defined("flash"))
 			{
 				Compiler.allowPackage("flash");
 				Compiler.define("swf-version", "22.0");
+			}
+			else
+			{
+				var childPath = Context.resolvePath("openfl/_internal/macros");
+
+				var parts = StringTools.replace(childPath, "\\", "/").split("/");
+				parts.pop(); // _internal
+				parts.pop(); // openfl
+				parts.pop(); // src
+				parts.pop(); // root
+
+				var externsPath = parts.join("/") + "/externs";
+
+				Compiler.addClassPath(externsPath + "/flash");
 			}
 
 			#if debug
@@ -29,7 +38,7 @@ class ExtraParams
 			}
 			#end
 
-			if (Context.defined("js") && !Context.defined("nodejs") && !Context.defined("lime"))
+			if (Context.defined("js") && (Context.defined("commonjs") || Context.defined("openfljs")))
 			{
 				var childPath = Context.resolvePath("openfl/external");
 
@@ -47,21 +56,27 @@ class ExtraParams
 				}
 			}
 		}
-	}
 
-	public static function includeExterns():Void
-	{
-		var childPath = Context.resolvePath("openfl/_internal/symbols");
+		if (Context.defined("lime"))
+		{
+			if (Context.defined("lime_cairo")) Compiler.define("openfl-cairo");
+			if (Context.defined("lime_harfbuzz")) Compiler.define("openfl-harfbuzz");
+			if (Context.defined("lime_opengl") || Context.defined("lime_opengles") || Context.defined("lime_webgl"))
+			{
+				Compiler.define("openfl-gl");
+			}
+		}
 
-		var parts = StringTools.replace(childPath, "\\", "/").split("/");
-		parts.pop(); // _internal
-		parts.pop(); // openfl
-		parts.pop(); // src
-		parts.pop(); // root
-
-		var externsPath = parts.join("/") + "/externs";
-
-		Compiler.addClassPath(externsPath + "/flash");
+		if (Context.defined("js") && !Context.defined("nodejs"))
+		{
+			if (!Context.defined("lime"))
+			{
+				Compiler.define("howlerjs");
+			}
+			Compiler.define("openfl-html5");
+			Compiler.define("html5");
+			Compiler.define("openfl-gl");
+		}
 	}
 }
 #end

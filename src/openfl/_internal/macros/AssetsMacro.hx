@@ -50,18 +50,18 @@ class AssetsMacro
 
 					if (preload != null)
 					{
-						__fromImage(preload);
+						@:privateAccess __backend.__fromImage(preload);
 					}
 					else
 					{
-						__loadFromBase64(haxe.Resource.getString(resourceName), resourceType).onComplete(function(b)
+						@:privateAccess __backend.__loadFromBase64(haxe.Resource.getString(resourceName), resourceType).onComplete(function(b)
 						{
 							if (preload == null)
 							{
-								preload = b.image;
+								preload = b.limeImage;
 							}
 
-							if (onload != null)
+							if (onload != null && Reflect.isFunction(onload))
 							{
 								onload(b);
 							}
@@ -71,7 +71,7 @@ class AssetsMacro
 					super(0, 0, transparent, fillRGBA);
 
 					var byteArray = openfl.utils.ByteArray.fromBytes(haxe.Resource.getBytes(resourceName));
-					__fromBytes(byteArray);
+					@:privateAccess __backend.__fromBytes(byteArray);
 					#end
 				};
 
@@ -103,37 +103,33 @@ class AssetsMacro
 			];
 
 			#if html5
-			args.push(
-				{
-					name: "onload",
-					opt: true,
-					type: macro:Dynamic,
-					value: null
-				});
-			fields.push(
-				{
-					kind: FVar(macro:lime.graphics.Image, null),
-					name: "preload",
-					doc: null,
-					meta: [],
-					access: [APublic, AStatic],
-					pos: Context.currentPos()
-				});
+			args.push({
+				name: "onload",
+				opt: true,
+				type: macro:Dynamic,
+				value: null
+			});
+			fields.push({
+				kind: FVar(macro:lime.graphics.Image, null),
+				name: "preload",
+				doc: null,
+				meta: [],
+				access: [APublic, AStatic],
+				pos: Context.currentPos()
+			});
 			#end
 
-			fields.push(
-				{
-					name: "new",
-					access: [APublic],
-					kind: FFun(
-						{
-							args: args,
-							expr: constructor,
-							params: [],
-							ret: null
-						}),
-					pos: Context.currentPos()
-				});
+			fields.push({
+				name: "new",
+				access: [APublic],
+				kind: FFun({
+					args: args,
+					expr: constructor,
+					params: [],
+					ret: null
+				}),
+				pos: Context.currentPos()
+			});
 		}
 
 		return fields;
@@ -161,8 +157,11 @@ class AssetsMacro
 								path = Context.resolvePath(filePath);
 							}
 							var bytes = File.getBytes(path);
-							var resourceName = "__ASSET__" + metaName + "_" + (classType.pack.length > 0 ? classType.pack.join("_") + "_" : "") + classType
-								.name;
+							var resourceName = "__ASSET__"
+								+ metaName
+								+ "_"
+								+ (classType.pack.length > 0 ? classType.pack.join("_") + "_" : "")
+								+ classType.name;
 
 							if (encode)
 							{
@@ -177,15 +176,13 @@ class AssetsMacro
 									resourceType = "image/gif";
 								}
 
-								var fieldValue =
-									{pos: position, expr: EConst(CString(resourceType))};
-								fields.push(
-									{
-										kind: FVar(macro:String, fieldValue),
-										name: "resourceType",
-										access: [APrivate, AStatic],
-										pos: position
-									});
+								var fieldValue = {pos: position, expr: EConst(CString(resourceType))};
+								fields.push({
+									kind: FVar(macro:String, fieldValue),
+									name: "resourceType",
+									access: [APrivate, AStatic],
+									pos: position
+								});
 
 								var base64 = base64Encode(bytes);
 								Context.addResource(resourceName, Bytes.ofString(base64));
@@ -195,15 +192,13 @@ class AssetsMacro
 								Context.addResource(resourceName, bytes);
 							}
 
-							var fieldValue =
-								{pos: position, expr: EConst(CString(resourceName))};
-							fields.push(
-								{
-									kind: FVar(macro:String, fieldValue),
-									name: "resourceName",
-									access: [APrivate, AStatic],
-									pos: position
-								});
+							var fieldValue = {pos: position, expr: EConst(CString(resourceName))};
+							fields.push({
+								kind: FVar(macro:String, fieldValue),
+								name: "resourceName",
+								access: [APrivate, AStatic],
+								pos: position
+							});
 
 							return fields;
 
@@ -226,7 +221,7 @@ class AssetsMacro
 				{
 					super();
 
-					__fromBytes(haxe.Resource.getBytes(resourceName));
+					@:privateAccess __backend.__fromBytes(haxe.Resource.getBytes(resourceName));
 				};
 
 			var args = [
@@ -235,20 +230,19 @@ class AssetsMacro
 					opt: true,
 					type: macro:Int,
 					value: macro 0
-				}];
-			fields.push(
-				{
-					name: "new",
-					access: [APublic],
-					kind: FFun(
-						{
-							args: args,
-							expr: constructor,
-							params: [],
-							ret: null
-						}),
-					pos: Context.currentPos()
-				});
+				}
+			];
+			fields.push({
+				name: "new",
+				access: [APublic],
+				kind: FFun({
+					args: args,
+					expr: constructor,
+					params: [],
+					ret: null
+				}),
+				pos: Context.currentPos()
+			});
 		}
 
 		return fields;
@@ -298,15 +292,13 @@ class AssetsMacro
 
 			Context.addResource(resourceName, bytes);
 
-			var fieldValue =
-				{pos: position, expr: EConst(CString(resourceName))};
-			fields.push(
-				{
-					kind: FVar(macro:String, fieldValue),
-					name: "resourceName",
-					access: [APublic, AStatic],
-					pos: position
-				});
+			var fieldValue = {pos: position, expr: EConst(CString(resourceName))};
+			fields.push({
+				kind: FVar(macro:String, fieldValue),
+				name: "resourceName",
+				access: [APublic, AStatic],
+				pos: position
+			});
 
 			// var constructor = macro {
 			//
@@ -354,19 +346,17 @@ class AssetsMacro
 					value: null
 				}
 			];
-			fields.push(
-				{
-					name: "new",
-					access: [APublic],
-					kind: FFun(
-						{
-							args: args,
-							expr: constructor,
-							params: [],
-							ret: null
-						}),
-					pos: Context.currentPos()
-				});
+			fields.push({
+				name: "new",
+				access: [APublic],
+				kind: FFun({
+					args: args,
+					expr: constructor,
+					params: [],
+					ret: null
+				}),
+				pos: Context.currentPos()
+			});
 			#end
 		}
 

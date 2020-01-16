@@ -1,12 +1,35 @@
 package openfl.desktop;
 
 #if !flash
+
 #if !openfljs
+/**
+	The ClipboardTransferMode class defines constants for the modes used as
+	values of the `transferMode` parameter of the `Clipboard.getData()`
+	method.
+	The transfer mode provides a hint about whether to return a reference or a
+	copy when accessing an object contained on a clipboard.
+**/
 @:enum abstract ClipboardTransferMode(Null<Int>)
 {
+	/**
+		The Clipboard object should only return a copy.
+	**/
 	public var CLONE_ONLY = 0;
+
+	/**
+		The Clipboard object should return a copy if available and a reference if not.
+	**/
 	public var CLONE_PREFERRED = 1;
+
+	/**
+		The Clipboard object should only return a reference.
+	**/
 	public var ORIGINAL_ONLY = 2;
+
+	/**
+		The Clipboard object should return a reference if available and a copy if not.
+	**/
 	public var ORIGINAL_PREFERRED = 3;
 
 	@:from private static function fromString(value:String):ClipboardTransferMode
@@ -21,9 +44,9 @@ package openfl.desktop;
 		}
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : ClipboardTransferMode)
 		{
 			case ClipboardTransferMode.CLONE_ONLY: "cloneOnly";
 			case ClipboardTransferMode.CLONE_PREFERRED: "clonePreferred";
@@ -34,6 +57,7 @@ package openfl.desktop;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract ClipboardTransferMode(String) from String to String
 {
 	public var CLONE_ONLY = "cloneOnly";

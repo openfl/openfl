@@ -1,8 +1,7 @@
 package openfl.display3D;
 
-
-@:enum abstract Context3DProfile(String) from String to String {
-	
+@:enum abstract Context3DProfile(String) from String to String
+{
 	public var BASELINE = "baseline";
 	public var BASELINE_CONSTRAINED = "baselineConstrained";
 	public var BASELINE_EXTENDED = "baselineExtended";
@@ -12,5 +11,4 @@ package openfl.display3D;
 	#if (flash && air)
 	public var ENHANCED = "enhanced";
 	#end
-	
 }

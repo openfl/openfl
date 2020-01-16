@@ -1,22 +1,15 @@
-package openfl.events; #if (display || !flash)
+package openfl.events;
 
-
+#if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/events/UncaughtErrorEvent", "default")
-
-extern class UncaughtErrorEvent extends ErrorEvent {
-	
-	
+#end
+extern class UncaughtErrorEvent extends ErrorEvent
+{
 	public static inline var UNCAUGHT_ERROR = "uncaughtError";
-	
-	public var error (default, null):Dynamic;
-	
-	
-	public function new (type:String, bubbles:Bool = true, cancelable:Bool = true, error:Dynamic = null);
-	
-	
+	public var error(default, null):Dynamic;
+	public function new(type:String, bubbles:Bool = true, cancelable:Bool = true, error:Dynamic = null);
 }
-
-
 #else
 typedef UncaughtErrorEvent = flash.events.UncaughtErrorEvent;
 #end

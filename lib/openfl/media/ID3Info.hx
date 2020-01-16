@@ -1,11 +1,11 @@
-package openfl.media; #if (display || !flash)
+package openfl.media;
 
-
+#if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/media/ID3Info", "default")
-
-@:final extern class ID3Info {
-	
-	
+#end
+@:final extern class ID3Info
+{
 	public var album:String;
 	public var artist:String;
 	public var comment:String;
@@ -13,14 +13,8 @@ package openfl.media; #if (display || !flash)
 	public var songName:String;
 	public var track:String;
 	public var year:String;
-	
-	
-	public function new ():Void;
-	
-	
+	public function new():Void;
 }
-
-
 #else
 typedef ID3Info = flash.media.ID3Info;
 #end

@@ -6,6 +6,10 @@ package openfl.display3D;
 import openfl._internal.utils.NullUtils;
 #end
 
+/**
+	Constants to specify the orientation of a triangle relative to the view point.
+**/
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract Context3DTriangleFace(Null<Int>)
 {
 	public var BACK = 0;
@@ -25,9 +29,9 @@ import openfl._internal.utils.NullUtils;
 		}
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : Context3DTriangleFace)
 		{
 			case Context3DTriangleFace.BACK: "back";
 			case Context3DTriangleFace.FRONT: "front";
@@ -52,6 +56,7 @@ import openfl._internal.utils.NullUtils;
 	#end
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract Context3DTriangleFace(String) from String to String
 {
 	public var BACK = "back";

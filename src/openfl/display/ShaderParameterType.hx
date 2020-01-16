@@ -1,29 +1,179 @@
 package openfl.display;
 
 #if !flash
+
 #if !openfljs
+/**
+	This class defines the constants that represent the possible values for
+	the ShaderParameter class's `type` property. Each constant represents one
+	of the data types available in Flash Player for parameters in the Pixel
+	Bender shader language.
+**/
 @:enum abstract ShaderParameterType(Null<Int>)
 {
+	/**
+		Indicates that the shader parameter is defined as a `bool` value,
+		equivalent to a single Boolean instance in ActionScript.
+		Note that even though the parameter only expects a single value, the
+		`ShaderParameter.value` property is an Array, so the single value must
+		be the only element of an Array assigned to the `value` property, like
+		this:
+
+		```haxe
+		// assumes the shader has a parameter named "param"
+		// whose data type is bool
+		myShader.data.param.value = [true];
+		```
+	**/
 	public var BOOL = 0;
+
+	/**
+		Indicates that the shader parameter is defined as a `bool2` value,
+		equivalent to an Array of two Boolean instances in ActionScript.
+	**/
 	public var BOOL2 = 1;
+
+	/**
+		Indicates that the shader parameter is defined as a `bool3` value,
+		equivalent to an Array of three Boolean instances in ActionScript.
+	**/
 	public var BOOL3 = 2;
+
+	/**
+		Indicates that the shader parameter is defined as a `bool4` value,
+		equivalent to an Array of four Boolean instances in ActionScript.
+	**/
 	public var BOOL4 = 3;
+
+	/**
+		Indicates that the shader parameter is defined as a `float` value,
+		equivalent to a single Number instance in ActionScript.
+		Note that even though the parameter only expects a single value, the
+		`ShaderParameter.value` property is an Array, so the single value must
+		be the only element of an Array assigned to the `value` property, like
+		this:
+
+		```haxe
+		// assumes the shader has a parameter named "param"
+		// whose data type is float
+		myShader.data.param.value = [22.5];
+		```
+	**/
 	public var FLOAT = 4;
+
+	/**
+		Indicates that the shader parameter is defined as a `float2` value,
+		equivalent to an Array of two Number instances in ActionScript.
+	**/
 	public var FLOAT2 = 5;
+
+	/**
+		Indicates that the shader parameter is defined as a `float3` value,
+		equivalent to an Array of three Number instances in ActionScript.
+	**/
 	public var FLOAT3 = 6;
+
+	/**
+		Indicates that the shader parameter is defined as a `float4` value,
+		equivalent to an Array of four Number instances in ActionScript.
+	**/
 	public var FLOAT4 = 7;
+
+	/**
+		Indicates that the shader parameter is defined as an `int` value,
+		equivalent to a single int or uint instance in ActionScript.
+		Note that even though the parameter only expects a single value, the
+		`ShaderParameter.value` property is an Array, so the single value must
+		be the only element of an Array assigned to the `value` property, like
+		this:
+
+		```haxe
+		// assumes the shader has a parameter named "param"
+		// whose data type is int
+		myShader.data.param.value = [275];
+		```
+	**/
 	public var INT = 8;
+
+	/**
+		Indicates that the shader parameter is defined as an `int2` value,
+		equivalent to an Array of two int or uint instances in ActionScript.
+	**/
 	public var INT2 = 9;
+
+	/**
+		Indicates that the shader parameter is defined as an `int3` value,
+		equivalent to an Array of three int or uint instances in ActionScript.
+	**/
 	public var INT3 = 10;
+
+	/**
+		Indicates that the shader parameter is defined as an `int4` value,
+		equivalent to an Array of four int or uint instances in ActionScript.
+	**/
 	public var INT4 = 11;
+
+	/**
+		Indicates that the shader parameter is defined as a `float2x2` value,
+		equivalent to a 2-by-2 matrix. This matrix is represented as an Array
+		of four Number instances in ActionScript.
+	**/
 	public var MATRIX2X2 = 12;
+
+	/**
+		Indicates that the shader parameter is defined as a `float2x3` value,
+		equivalent to a 2-by-3 matrix. This matrix is represented as an Array
+		of six Float instances in Haxe.
+	**/
 	public var MATRIX2X3 = 13;
+
+	/**
+		Indicates that the shader parameter is defined as a `float2x4` value,
+		equivalent to a 2-by-4 matrix. This matrix is represented as an Array
+		of eight Float instances in Haxe.
+	**/
 	public var MATRIX2X4 = 14;
+
+	/**
+		Indicates that the shader parameter is defined as a `float3x2` value,
+		equivalent to a 3-by-2 matrix. This matrix is represented as an Array
+		of six Float instances in Haxe.
+	**/
 	public var MATRIX3X2 = 15;
+
+	/**
+		Indicates that the shader parameter is defined as a `float3x3` value,
+		equivalent to a 3-by-3 matrix. This matrix is represented as an Array
+		of nine Number instances in ActionScript.
+	**/
 	public var MATRIX3X3 = 16;
+
+	/**
+		Indicates that the shader parameter is defined as a `float3x4` value,
+		equivalent to a 3-by-4 matrix. This matrix is represented as an Array
+		of twelve Float instances in Haxe.
+	**/
 	public var MATRIX3X4 = 17;
+
+	/**
+		Indicates that the shader parameter is defined as a `float4x2` value,
+		equivalent to a 4-by-2 matrix. This matrix is represented as an Array
+		of eight Float instances in Haxe.
+	**/
 	public var MATRIX4X2 = 18;
+
+	/**
+		Indicates that the shader parameter is defined as a `float4x3` value,
+		equivalent to a 4-by-3 matrix. This matrix is represented as an Array
+		of twelve Float instances in Haxe.
+	**/
 	public var MATRIX4X3 = 19;
+
+	/**
+		Indicates that the shader parameter is defined as a `float4x4` value,
+		equivalent to a 4-by-4 matrix. This matrix is represented as an Array
+		of 16 Number instances in ActionScript.
+	**/
 	public var MATRIX4X4 = 20;
 
 	@:from private static function fromString(value:String):ShaderParameterType
@@ -55,9 +205,9 @@ package openfl.display;
 		}
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : ShaderParameterType)
 		{
 			case ShaderParameterType.BOOL: "bool";
 			case ShaderParameterType.BOOL2: "bool2";
@@ -85,6 +235,7 @@ package openfl.display;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract ShaderParameterType(String) from String to String
 {
 	public var BOOL = "bool";

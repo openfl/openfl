@@ -1,33 +1,25 @@
 package openfl.events;
 
-
 import massive.munit.Assert;
 
+class AsyncErrorEventTest
+{
+	@Test public function error()
+	{
+		// TODO: Confirm functionality
 
-class AsyncErrorEventTest {
-	
-	
-	@Test public function error () {
-		
-		// TODO: Confirm functionality
-		
-		var asyncErrorEvent = new AsyncErrorEvent (AsyncErrorEvent.ASYNC_ERROR);
+		var asyncErrorEvent = new AsyncErrorEvent(AsyncErrorEvent.ASYNC_ERROR);
 		var exists = asyncErrorEvent.error;
-		
-		Assert.isNull (exists);
-		
+
+		Assert.isNull(exists);
 	}
-	
-	
-	@Test public function new_ () {
-		
+
+	@Test public function new_()
+	{
 		// TODO: Confirm functionality
-		
-		var asyncErrorEvent = new AsyncErrorEvent (AsyncErrorEvent.ASYNC_ERROR);
-		
-		Assert.isNotNull (asyncErrorEvent);
-		
+
+		var asyncErrorEvent = new AsyncErrorEvent(AsyncErrorEvent.ASYNC_ERROR);
+
+		Assert.isNotNull(asyncErrorEvent);
 	}
-	
-	
 }

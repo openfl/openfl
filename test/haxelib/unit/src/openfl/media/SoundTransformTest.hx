@@ -1,92 +1,74 @@
 package openfl.media;
 
-
 import massive.munit.Assert;
 
+class SoundTransformTest
+{
+	@Test public function leftToLeft()
+	{
+		// TODO: Confirm functionality
 
-class SoundTransformTest {
-	
-	
-	@Test public function leftToLeft () {
-		
-		// TODO: Confirm functionality
-		
-		var soundTransform = new SoundTransform ();
+		var soundTransform = new SoundTransform();
 		var exists = soundTransform.leftToLeft;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function leftToRight () {
-		
+
+	@Test public function leftToRight()
+	{
 		// TODO: Confirm functionality
-		
-		var soundTransform = new SoundTransform ();
+
+		var soundTransform = new SoundTransform();
 		var exists = soundTransform.leftToRight;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function pan () {
-		
+
+	@Test public function pan()
+	{
 		// TODO: Confirm functionality
-		
-		var soundTransform = new SoundTransform ();
+
+		var soundTransform = new SoundTransform();
 		var exists = soundTransform.pan;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function rightToLeft () {
-		
+
+	@Test public function rightToLeft()
+	{
 		// TODO: Confirm functionality
-		
-		var soundTransform = new SoundTransform ();
+
+		var soundTransform = new SoundTransform();
 		var exists = soundTransform.rightToLeft;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function rightToRight () {
-		
+
+	@Test public function rightToRight()
+	{
 		// TODO: Confirm functionality
-		
-		var soundTransform = new SoundTransform ();
+
+		var soundTransform = new SoundTransform();
 		var exists = soundTransform.rightToRight;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function volume () {
-		
+
+	@Test public function volume()
+	{
 		// TODO: Confirm functionality
-		
-		var soundTransform = new SoundTransform ();
+
+		var soundTransform = new SoundTransform();
 		var exists = soundTransform.volume;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function new_ () {
-		
+
+	@Test public function new_()
+	{
 		// TODO: Confirm functionality
-		
-		var soundTransform = new SoundTransform ();
-		Assert.isNotNull (soundTransform);
-		
+
+		var soundTransform = new SoundTransform();
+		Assert.isNotNull(soundTransform);
 	}
-	
-	
 }

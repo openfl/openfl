@@ -1,17 +1,13 @@
 package openfl.media;
 
 #if !flash
-import haxe.Int64;
-import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.IOErrorEvent;
 import openfl.net.URLRequest;
 import openfl.utils.ByteArray;
 import openfl.utils.Future;
 #if lime
-import openfl._internal.utils.UInt8Array;
 import lime.media.AudioBuffer;
-import lime.media.AudioSource;
 #end
 
 /**
@@ -78,10 +74,6 @@ import lime.media.AudioSource;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(lime.media.AudioBuffer)
-@:access(lime.utils.AssetLibrary)
-@:access(openfl.media.SoundMixer)
-@:access(openfl.media.SoundChannel.new)
 @:autoBuild(openfl._internal.macros.AssetsMacro.embedSound())
 class Sound extends EventDispatcher
 {
@@ -98,43 +90,90 @@ class Sound extends EventDispatcher
 
 	/**
 		Provides access to the metadata that is part of an MP3 file.
-
 		MP3 sound files can contain ID3 tags, which provide metadata about the
-		file. If an MP3 sound that you load using the `Sound.load()`
-		method contains ID3 tags, you can query these properties. Only ID3 tags
-		that use the UTF-8 character set are supported.
+		file. If an MP3 sound that you load using the `Sound.load()` method
+		contains ID3 tags, you can query these properties. Only ID3 tags that
+		use the UTF-8 character set are supported.
 
-		Flash Player 9 and later and AIR support ID3 2.0 tags, specifically 2.3
-		and 2.4. The following tables list the standard ID3 2.0 tags and the type
-		of content the tags represent. The `Sound.id3` property
-		provides access to these tags through the format
-		`my_sound.id3.COMM`, `my_sound.id3.TIME`, and so on.
-		The first table describes tags that can be accessed either through the ID3
-		2.0 property name or the ActionScript property name. The second table
-		describes ID3 tags that are supported but do not have predefined
-		properties in ActionScript.
+		Flash Player 9 and later and AIR support ID3 2.0 tags, specifically
+		2.3 and 2.4. The following tables list the standard ID3 2.0 tags and
+		the type of content the tags represent. The `Sound.id3` property
+		provides access to these tags through the format `my_sound.id3.COMM`,
+		`my_sound.id3.TIME`, and so on. The first table describes tags that
+		can be accessed either through the ID3 2.0 property name or the
+		ActionScript property name. The second table describes ID3 tags that
+		are supported but do not have predefined properties in ActionScript.
+
+		| ID3 2.0 tag | Corresponding Sound class property |
+		| --- | --- |
+		| COMM | Sound.id3.comment |
+		| TALB | Sound.id3.album |
+		| TCON | Sound.id3.genre |
+		| TIT2 | Sound.id3.songName |
+		| TPE1 | Sound.id3.artist |
+		| TRCK | Sound.id3.track |
+		| TYER | Sound.id3.year |
+
+		The following table describes ID3 tags that are supported but do not
+		have predefined properties in the Sound class. You access them by
+		calling `mySound.id3.TFLT`, `mySound.id3.TIME`, and so on. **NOTE:**
+		None of these tags are supported in Flash Lite 4.
+
+		| Property | Description |
+		| --- | --- |
+		| TFLT | File type |
+		| TIME | Time |
+		| TIT1 | Content group description |
+		| TIT2 | Title/song name/content description |
+		| TIT3 | Subtitle/description refinement |
+		| TKEY | Initial key |
+		| TLAN | Languages |
+		| TLEN | Length |
+		| TMED | Media type |
+		| TOAL | Original album/movie/show title |
+		| TOFN | Original filename |
+		| TOLY | Original lyricists/text writers |
+		| TOPE | Original artists/performers |
+		| TORY | Original release year |
+		| TOWN | File owner/licensee |
+		| TPE1 | Lead performers/soloists |
+		| TPE2 | Band/orchestra/accompaniment |
+		| TPE3 | Conductor/performer refinement |
+		| TPE4 | Interpreted, remixed, or otherwise modified by |
+		| TPOS | Part of a set |
+		| TPUB | Publisher |
+		| TRCK | Track number/position in set |
+		| TRDA | Recording dates |
+		| TRSN | Internet radio station name |
+		| TRSO | Internet radio station owner |
+		| TSIZ | Size |
+		| TSRC | ISRC (international standard recording code) |
+		| TSSE | Software/hardware and settings used for encoding |
+		| TYER | Year |
+		| WXXX | URL link frame |
 
 		When using this property, consider the Flash Player security model:
 
-
-		* The `id3` property of a Sound object is always permitted
-		for SWF files that are in the same security sandbox as the sound file. For
+		* The `id3` property of a Sound object is always permitted for SWF
+		files that are in the same security sandbox as the sound file. For
 		files in other sandboxes, there are security checks.
-		* When you load the sound, using the `load()` method of the
-		Sound class, you can specify a `context` parameter, which is a
-		SoundLoaderContext object. If you set the `checkPolicyFile`
-		property of the SoundLoaderContext object to `true`, Flash
-		Player checks for a URL policy file on the server from which the sound is
-		loaded. If a policy file exists and permits access from the domain of the
-		loading SWF file, then the file is allowed to access the `id3`
-		property of the Sound object; otherwise it is not.
+		* When you load the sound, using the `load()` method of the Sound
+		class, you can specify a `context` parameter, which is a
+		SoundLoaderContext object. If you set the `checkPolicyFile` property
+		of the SoundLoaderContext object to `true`, Flash Player checks for a
+		URL policy file on the server from which the sound is loaded. If a
+		policy file exists and permits access from the domain of the loading
+		SWF file, then the file is allowed to access the `id3` property of the
+		Sound object; otherwise it is not.
 
-		However, in Adobe AIR, content in the `application` security
-		sandbox(content installed with the AIR application) are not restricted by
+		However, in Adobe AIR, content in the `application` security sandbox
+		(content installed with the AIR application) are not restricted by
 		these security limitations.
 
 		For more information related to security, see the Flash Player
-		Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
+		Developer Center Topic: <a
+		href="http://www.adobe.com/go/devnet_security_en"
+		scope="external">Security</a>.
 	**/
 	public var id3(get, never):ID3Info;
 
@@ -144,6 +183,7 @@ class Sound extends EventDispatcher
 		waits for more data.
 	**/
 	public var isBuffering(default, null):Bool;
+
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public var isURLInaccessible (default, null):Bool;
 
 	/**
@@ -180,18 +220,15 @@ class Sound extends EventDispatcher
 	**/
 	public var url(default, null):String;
 
-	#if lime
-	@:noCompletion private var __buffer:AudioBuffer;
-	#end
+	@:noCompletion private var __backend:SoundBackend;
 
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperties(Sound.prototype,
-			{
-				"id3": {get: untyped __js__("function () { return this.get_id3 (); }")},
-				"length": {get: untyped __js__("function () { return this.get_length (); }")},
-			});
+		untyped Object.defineProperties(Sound.prototype, {
+			"id3": {get: untyped __js__("function () { return this.get_id3 (); }")},
+			"length": {get: untyped __js__("function () { return this.get_length (); }")},
+		});
 	}
 	#end
 
@@ -226,40 +263,83 @@ class Sound extends EventDispatcher
 		isBuffering = false;
 		url = null;
 
+		__backend = new SoundBackend(this);
+
 		if (stream != null)
 		{
 			load(stream, context);
 		}
 	}
 
+	/**
+		Closes the stream, causing any download of data to cease. No data may
+		be read from the stream after the `close()` method is called.
+
+		@throws IOError The stream could not be closed, or the stream was not
+						open.
+	**/
 	public function close():Void
 	{
-		#if lime
-		if (__buffer != null)
-		{
-			__buffer.dispose();
-			__buffer = null;
-		}
-		#end
+		__backend.close();
 	}
 
+	#if false
+	/**
+		Extracts raw sound data from a Sound object.
+		This method is designed to be used when you are working with
+		dynamically generated audio, using a function you assign to the
+		`sampleData` event for a different Sound object. That is, you can use
+		this method to extract sound data from a Sound object. Then you can
+		write the data to the byte array that another Sound object is using to
+		stream dynamic audio.
+
+		The audio data is placed in the target byte array starting from the
+		current position of the byte array. The audio data is always exposed
+		as 44100 Hz Stereo. The sample type is a 32-bit floating-point value,
+		which can be converted to a Number using `ByteArray.readFloat()`.
+
+		@param target A ByteArray object in which the extracted sound samples
+					  are placed.
+		@param length The number of sound samples to extract. A sample
+					  contains both the left and right channels נthat is,
+					  two 32-bit floating-point values.
+		@return The number of samples written to the ByteArray specified in
+				the `target` parameter.
+	**/
 	// @:noCompletion @:dox(hide) @:require(flash10) public function extract (target:ByteArray, length:Float, startPosition:Float = -1):Float;
+	#end
+
 	#if lime
-	public static function fromAudioBuffer(buffer:AudioBuffer):Sound
+	/**
+		Creates a new Sound from an AudioBuffer immediately.
+
+		@param	buffer	An AudioBuffer instance
+		@returns	A new Sound
+	**/
+	@:dox(hide) public static function fromAudioBuffer(buffer:AudioBuffer):Sound
 	{
-		var sound = new Sound();
-		sound.__buffer = buffer;
-		return sound;
+		return SoundBackend.fromAudioBuffer(buffer);
 	}
 	#end
 
+	/**
+		Creates a new Sound from a file path synchronously. This means that the
+		Sound will be returned immediately (if supported).
+
+		HTML5 and Flash do not support creating Sound synchronously, so these targets
+		always return `null`.
+
+		In order to load files from a remote web address, use the `loadFromFile` method,
+		which supports asynchronous loading.
+
+		@param	path	A local file path containing a sound
+		@returns	A new Sound if successful, or `null` if unsuccessful
+	**/
 	public static function fromFile(path:String):Sound
 	{
-		#if lime
-		return fromAudioBuffer(AudioBuffer.fromFile(path));
-		#else
-		return null;
-		#end
+		if (path == null) return null;
+
+		return SoundBackend.fromFile(path);
 	}
 
 	/**
@@ -338,25 +418,25 @@ class Sound extends EventDispatcher
 	public function load(stream:URLRequest, context:SoundLoaderContext = null):Void
 	{
 		url = stream.url;
-
-		#if lime
-		#if (js && html5)
-		var defaultLibrary = lime.utils.Assets.getLibrary("default"); // TODO: Improve this
-
-		if (defaultLibrary != null && defaultLibrary.cachedAudioBuffers.exists(url))
+		if (url != null)
 		{
-			AudioBuffer_onURLLoad(defaultLibrary.cachedAudioBuffers.get(url));
+			__backend.load(stream, context);
 		}
 		else
 		{
-			AudioBuffer.loadFromFile(url).onComplete(AudioBuffer_onURLLoad).onError(function(_) AudioBuffer_onURLLoad(null));
+			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
 		}
-		#else
-		AudioBuffer.loadFromFile(url).onComplete(AudioBuffer_onURLLoad).onError(function(_) AudioBuffer_onURLLoad(null));
-		#end
-		#end
 	}
 
+	/**
+		Load MP3 sound data from a ByteArray object into a Sound object. The data will be read from the current
+		ByteArray position and will leave the ByteArray position at the end of the specified bytes length once
+		finished. If the MP3 sound data contains ID3 data ID3 events will be dispatched during this function call.
+		This function will throw an exception if the ByteArray object does not contain enough data.
+
+		@param	bytes
+		@param	bytesLength
+	**/
 	public function loadCompressedDataFromByteArray(bytes:ByteArray, bytesLength:Int):Void
 	{
 		if (bytes == null || bytesLength <= 0)
@@ -365,53 +445,61 @@ class Sound extends EventDispatcher
 			return;
 		}
 
-		if (bytes.length > bytesLength)
-		{
-			var copy = new ByteArray(bytesLength);
-			copy.writeBytes(bytes, 0, bytesLength);
-			bytes = copy;
-		}
-
-		#if lime
-		__buffer = AudioBuffer.fromBytes(bytes);
-
-		if (__buffer == null)
-		{
-			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
-		}
-		else
-		{
-			dispatchEvent(new Event(Event.COMPLETE));
-		}
-		#else
-		dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
-		#end
+		__backend.loadCompressedDataFromByteArray(bytes, bytesLength);
 	}
 
+	/**
+		Creates a new Sound from a file path or web address asynchronously. The file
+		load will occur in the background.
+
+		Progress, completion and error callbacks will be dispatched in the current
+		thread using callbacks attached to a returned Future object.
+
+		@param	path	A local file path or web address containing a sound
+		@returns	A Future Sound
+	**/
 	public static function loadFromFile(path:String):Future<Sound>
 	{
-		#if lime
-		return AudioBuffer.loadFromFile(path).then(function(audioBuffer)
-		{
-			return Future.withValue(fromAudioBuffer(audioBuffer));
-		});
-		#else
-		return cast Future.withError("Cannot load audio file");
-		#end
+		return SoundBackend.loadFromFile(path);
 	}
 
+	/**
+		Creates a new Sound from a set of file paths or web addresses asynchronously.
+		The audio backend will choose the first compatible file format, and will load the file
+		it selects in the background.
+
+		Progress, completion and error callbacks will be dispatched in the current
+		thread using callbacks attached to a returned Future object.
+
+		@param	paths	A set of local file paths or web addresses containing sound
+		@returns	A Future Sound
+	**/
 	public static function loadFromFiles(paths:Array<String>):Future<Sound>
 	{
-		#if lime
-		return AudioBuffer.loadFromFiles(paths).then(function(audioBuffer)
-		{
-			return Future.withValue(fromAudioBuffer(audioBuffer));
-		});
-		#else
-		return cast Future.withError("Cannot load audio files");
-		#end
+		if (paths == null) return cast Future.withError("");
+
+		return SoundBackend.loadFromFiles(paths);
 	}
 
+	/**
+		Load PCM 32-bit floating point sound data from a ByteArray object into a Sound object. The data will be read
+		from the current ByteArray position and will leave the ByteArray position at the end of the specified sample
+		length multiplied by either 1 channel or 2 channels if the stereo flag is set once finished.
+
+		Starting with Flash Player 11.8, the amount of audio data that can be passed to this function is limited. For
+		SWF versions >= 21, this function throws an exception if the amount of audio data passed into this function is
+		more than 1800 seconds. That is, samples / sampleRate should be less than or equal to 1800. For swf versions <
+		21, the runtime fails silently if the amount of audio data passed in is more than 12000 seconds. This is
+		provided only for backward compatibility.
+
+		This function throws an exception if the ByteArray object does not contain enough data.
+
+		@param	bytes
+		@param	samples
+		@param	format
+		@param	stereo
+		@param	sampleRate
+	**/
 	public function loadPCMFromByteArray(bytes:ByteArray, samples:Int, format:String = "float", stereo:Bool = true, sampleRate:Float = 44100):Void
 	{
 		if (bytes == null)
@@ -420,19 +508,7 @@ class Sound extends EventDispatcher
 			return;
 		}
 
-		#if lime
-		var audioBuffer = new AudioBuffer();
-		audioBuffer.bitsPerSample = format == "float" ? 32 : 16; // "short"
-		audioBuffer.channels = stereo ? 2 : 1;
-		audioBuffer.data = new UInt8Array(bytes);
-		audioBuffer.sampleRate = Std.int(sampleRate);
-
-		__buffer = audioBuffer;
-
-		dispatchEvent(new Event(Event.COMPLETE));
-		#else
-		dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
-		#end
+		__backend.loadPCMFromByteArray(bytes, samples, format, stereo, sampleRate);
 	}
 
 	/**
@@ -455,96 +531,28 @@ class Sound extends EventDispatcher
 	**/
 	public function play(startTime:Float = 0.0, loops:Int = 0, sndTransform:SoundTransform = null):SoundChannel
 	{
-		#if lime
-		if (__buffer == null || SoundMixer.__soundChannels.length >= SoundMixer.MAX_ACTIVE_CHANNELS)
-		{
-			return null;
-		}
-
-		if (sndTransform == null)
-		{
-			sndTransform = new SoundTransform();
-		}
-		else
-		{
-			sndTransform = sndTransform.clone();
-		}
-
-		var pan = SoundMixer.__soundTransform.pan + sndTransform.pan;
-
-		if (pan > 1) pan = 1;
-		if (pan < -1) pan = -1;
-
-		var volume = SoundMixer.__soundTransform.volume * sndTransform.volume;
-
-		var source = new AudioSource(__buffer);
-		source.offset = Std.int(startTime);
-		if (loops > 1) source.loops = loops - 1;
-
-		source.gain = volume;
-
-		var position = source.position;
-		position.x = pan;
-		position.z = -1 * Math.sqrt(1 - Math.pow(pan, 2));
-		source.position = position;
-
-		return new SoundChannel(source, sndTransform);
-		#else
-		return null;
-		#end
+		return __backend.play(startTime, loops, sndTransform);
 	}
 
 	// Get & Set Methods
 	@:noCompletion private function get_id3():ID3Info
 	{
-		return new ID3Info();
+		return __backend.getID3();
 	}
 
 	@:noCompletion private function get_length():Int
 	{
-		#if lime
-		if (__buffer != null)
-		{
-			#if (js && html5 && howlerjs)
-			return Std.int(__buffer.src.duration() * 1000);
-			#else
-			if (__buffer.data != null)
-			{
-				var samples = (__buffer.data.length * 8) / (__buffer.channels * __buffer.bitsPerSample);
-				return Std.int(samples / __buffer.sampleRate * 1000);
-			}
-			else if (__buffer.__srcVorbisFile != null)
-			{
-				var samples = Int64.toInt(__buffer.__srcVorbisFile.pcmTotal());
-				return Std.int(samples / __buffer.sampleRate * 1000);
-			}
-			else
-			{
-				return 0;
-			}
-			#end
-		}
-		#end
-
-		return 0;
+		return __backend.getLength();
 	}
-
-	// Event Handlers
-	#if lime
-	@:noCompletion private function AudioBuffer_onURLLoad(buffer:AudioBuffer):Void
-	{
-		if (buffer == null)
-		{
-			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
-		}
-		else
-		{
-			__buffer = buffer;
-			dispatchEvent(new Event(Event.COMPLETE));
-		}
-	}
-	#end
 }
+
+#if lime
+private typedef SoundBackend = openfl._internal.backend.lime.LimeSoundBackend;
+#elseif openfl_html5
+private typedef SoundBackend = openfl._internal.backend.html5.HTML5SoundBackend;
+#else
+private typedef SoundBackend = openfl._internal.backend.dummy.DummySoundBackend;
+#end
 #else
 typedef Sound = flash.media.Sound;
 #end

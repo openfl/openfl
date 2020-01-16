@@ -1,17 +1,13 @@
-package openfl.errors; #if (display || !flash)
+package openfl.errors;
 
-
+#if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/errors/IOError", "default")
-
-extern class IOError extends Error {
-	
-	
-	public function new (message:String = "");
-	
-	
+#end
+extern class IOError extends Error
+{
+	public function new(message:String = "");
 }
-
-
 #else
 typedef IOError = flash.errors.IOError;
 #end

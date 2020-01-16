@@ -25,6 +25,7 @@ package openfl.utils;
 		return false;
 	}
 
+	@SuppressWarnings("checkstyle:FieldDocComment")
 	@:noCompletion @:dox(hide) public function iterator():Iterator<String>
 	{
 		var fields = Reflect.fields(this);
@@ -52,11 +53,13 @@ package openfl.utils;
 		return this;
 	}
 
+	@SuppressWarnings("checkstyle:FieldDocComment")
 	@:arrayAccess @:noCompletion @:dox(hide) public inline function __get(key:String):Dynamic
 	{
 		return Reflect.field(this, key);
 	}
 
+	@SuppressWarnings("checkstyle:FieldDocComment")
 	@:arrayAccess @:noCompletion @:dox(hide) public inline function __set(key:String, value:Dynamic):Dynamic
 	{
 		Reflect.setField(this, key, value);
@@ -65,12 +68,14 @@ package openfl.utils;
 }
 
 #if (!cs || haxe_ver > "3.3.0")
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:keep @:native("haxe.lang.Iterator") private interface Iterator_<T>
 {
 	public function hasNext():Bool;
 	public function next():T;
 }
 
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:keep @:native("haxe.lang.Iterable") private interface Iterable_<T>
 {
 	public function iterator():Iterator_<T>;

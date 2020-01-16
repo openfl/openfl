@@ -1,10 +1,3 @@
 package openfl;
 
-
-class MemoryTest {
-	
-	
-	
-	
-	
-}
+class MemoryTest {}

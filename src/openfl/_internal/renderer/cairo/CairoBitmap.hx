@@ -1,11 +1,9 @@
 package openfl._internal.renderer.cairo;
 
+#if openfl_cairo
+import openfl._internal.bindings.cairo.CairoFilter;
+import openfl._internal.bindings.cairo.CairoPattern;
 import openfl.display.Bitmap;
-import openfl.display.CairoRenderer;
-#if lime
-import lime.graphics.cairo.CairoFilter;
-import lime.graphics.cairo.CairoPattern;
-#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -20,7 +18,6 @@ class CairoBitmap
 {
 	public static inline function render(bitmap:Bitmap, renderer:CairoRenderer):Void
 	{
-		#if lime
 		if (!bitmap.__renderable) return;
 
 		var alpha = renderer.__getAlpha(bitmap.__worldAlpha);
@@ -56,7 +53,10 @@ class CairoBitmap
 			}
 
 			renderer.__popMaskObject(bitmap);
+
+			// TODO: Find cause of leaking blend modes?
+			renderer.__setBlendMode(NORMAL);
 		}
-		#end
 	}
 }
+#end

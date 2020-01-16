@@ -8,7 +8,6 @@ import openfl.events.EventDispatcher;
 import openfl.media.Sound;
 import openfl.text.Font;
 #if lime
-import lime.app.Promise;
 import lime.utils.AssetLibrary as LimeAssetLibrary;
 import lime.utils.Assets as LimeAssets;
 #end
@@ -369,7 +368,7 @@ class Assets
 			return false;
 		}
 		#else
-		return (bitmapData != null && #if !lime_hybrid bitmapData.image != null #else bitmapData.__handle != null #end);
+		return (bitmapData != null && #if !lime_hybrid bitmapData.limeImage != null #else bitmapData.__handle != null #end);
 		#end
 		#else
 		return true;
@@ -425,31 +424,28 @@ class Assets
 			}
 		}
 
-		LimeAssets.loadImage(id, false)
-			.onComplete(function(image)
+		LimeAssets.loadImage(id, false).onComplete(function(image)
+		{
+			if (image != null)
 			{
-				if (image != null)
-				{
-					#if flash
-					var bitmapData = image.src;
-					#else
-					var bitmapData = BitmapData.fromImage(image);
-					#end
+				#if flash
+				var bitmapData = image.src;
+				#else
+				var bitmapData = BitmapData.fromImage(image);
+				#end
 
-					if (useCache && cache.enabled)
-					{
-						cache.setBitmapData(id, bitmapData);
-					}
-
-					promise.complete(bitmapData);
-				}
-				else
+				if (useCache && cache.enabled)
 				{
-					promise.error("[Assets] Could not load Image \"" + id + "\"");
+					cache.setBitmapData(id, bitmapData);
 				}
-			})
-			.onError(promise.error)
-			.onProgress(promise.progress);
+
+				promise.complete(bitmapData);
+			}
+			else
+			{
+				promise.error("[Assets] Could not load Image \"" + id + "\"");
+			}
+		}).onError(promise.error).onProgress(promise.progress);
 
 		return promise.future;
 		#else
@@ -750,6 +746,19 @@ class Assets
 
 	public static function unloadLibrary(name:String):Void
 	{
+		if (name == null || name == "")
+		{
+			name = "default";
+			// TODO: Do we cache with the default prefix?
+			cache.clear(":");
+		}
+
+		var library = getLibrary(name);
+		if (library != null)
+		{
+			cache.clear(name + ":");
+		}
+
 		#if lime
 		LimeAssets.unloadLibrary(name);
 		#end

@@ -22,11 +22,11 @@ import openfl.Vector;
 
 
 
-	* flash.events.TouchEvent
-	* flash.events.GestureEvent
-	* flash.events.GesturePhase
-	* flash.events.TransformGestureEvent
-	* flash.events.PressAndTapGestureEvent
+	* openfl.events.TouchEvent
+	* openfl.events.GestureEvent
+	* openfl.events.GesturePhase
+	* openfl.events.TransformGestureEvent
+	* openfl.events.PressAndTapGestureEvent
 
 
 
@@ -53,11 +53,12 @@ import openfl.Vector;
 		events with multiple points of contact and specific events for different
 		gestures(such as rotation and pan), or only a single point of contact
 		(such as tap), or none at all(contact is handled as a mouse event). To
-		set this property, use values from the flash.ui.MultitouchInputMode class.
+		set this property, use values from the openfl.ui.MultitouchInputMode class.
 
 		@default gesture
 	**/
 	public static var inputMode:MultitouchInputMode;
+
 	// @:noCompletion @:dox(hide) public static var mapTouchToMouse:Bool;
 
 	/**
@@ -115,23 +116,21 @@ import openfl.Vector;
 		inputMode = MultitouchInputMode.TOUCH_POINT;
 
 		#if openfljs
-		untyped Object.defineProperties(Multitouch,
-			{
-				"supportsTouchEvents":
-					{
-						get: function()
-						{
-							return Multitouch.get_supportsTouchEvents();
-						}
-					}
-			});
+		untyped Object.defineProperties(Multitouch, {
+			"supportsTouchEvents": {
+				get: function()
+				{
+					return Multitouch.get_supportsTouchEvents();
+				}
+			}
+		});
 		#end
 	}
 
 	// Getters & Setters
 	@:noCompletion private static function get_supportsTouchEvents():Bool
 	{
-		#if (js && html5)
+		#if openfl_html5
 		if (untyped __js__("('ontouchstart' in document.documentElement) || (window.DocumentTouch && document instanceof DocumentTouch)"))
 		{
 			return true;

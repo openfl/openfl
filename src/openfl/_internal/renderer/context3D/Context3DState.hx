@@ -1,9 +1,9 @@
 package openfl._internal.renderer.context3D;
 
-import openfl._internal.backend.gl.GLBuffer;
-import openfl._internal.backend.gl.GLFramebuffer;
-import openfl._internal.backend.gl.GLRenderbuffer;
-import openfl._internal.backend.gl.GLTexture;
+import openfl._internal.bindings.gl.GLBuffer;
+import openfl._internal.bindings.gl.GLFramebuffer;
+import openfl._internal.bindings.gl.GLRenderbuffer;
+import openfl._internal.bindings.gl.GLTexture;
 import openfl.display3D.textures.TextureBase;
 import openfl.display3D.Context3DBlendFactor;
 import openfl.display3D.Context3DCompareMode;
@@ -12,9 +12,6 @@ import openfl.display3D.Context3DTriangleFace;
 import openfl.display3D.Program3D;
 import openfl.display.Shader;
 import openfl.geom.Rectangle;
-#if lime
-import lime.graphics.opengl.GL;
-#end
 
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DState
@@ -53,6 +50,7 @@ class Context3DState
 	// vertex buffer at?
 	public var shader:Shader; // TODO: Merge shader/program3d
 
+	#if openfl_gl
 	private var __currentGLArrayBuffer:GLBuffer;
 	private var __currentGLElementArrayBuffer:GLBuffer;
 	private var __currentGLFramebuffer:GLFramebuffer;
@@ -70,6 +68,7 @@ class Context3DState
 	private var __rttGLFramebuffer:GLFramebuffer;
 	private var __rttGLRenderbuffer:GLRenderbuffer;
 	private var __rttStencilGLRenderbuffer:GLRenderbuffer;
+	#end
 
 	public function new()
 	{
@@ -96,10 +95,10 @@ class Context3DState
 		stencilTriangleFace = FRONT_AND_BACK;
 		stencilWriteMask = 0xFF;
 		textures = new Array();
-		__frontFaceGLCCW = true;
 
-		#if lime
-		__glBlendEquation = GL.FUNC_ADD;
+		#if openfl_gl
+		__frontFaceGLCCW = true;
+		__glBlendEquation = 0x8006; // GL.FUNC_ADD
 		#end
 	}
 }

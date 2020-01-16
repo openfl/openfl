@@ -1,12 +1,12 @@
 package openfl.utils;
 
 import openfl.errors.Error;
-
 import massive.munit.Assert;
-import massive.munit.Async;
 
-class TimerTest {
-	@Test public function new_() {
+class TimerTest
+{
+	@Test public function new_()
+	{
 		var timer_default = new Timer(123);
 
 		Assert.areEqual(false, timer_default.running);
@@ -22,13 +22,16 @@ class TimerTest {
 		Assert.areEqual(0, timer.currentCount);
 	}
 
-	@Test public function newError() {
-		Assert.throws(Error, function():Void {
+	@Test public function newError()
+	{
+		Assert.throws(Error, function():Void
+		{
 			new Timer(-100.0);
 		});
 	}
 
-	@Test public function delay() {
+	@Test public function delay()
+	{
 		var timer = new Timer(123);
 		timer.start();
 
@@ -41,7 +44,8 @@ class TimerTest {
 		Assert.areEqual(true, timer.running);
 	}
 
-	@Test public function repeatCount() {
+	@Test public function repeatCount()
+	{
 		var timer_default = new Timer(123);
 
 		Assert.areEqual(0, timer_default.repeatCount);
@@ -57,7 +61,8 @@ class TimerTest {
 		// TODO: Actual timer ticks tests
 	}
 
-	@Test public function running() {
+	@Test public function running()
+	{
 		var timer = new Timer(123);
 
 		Assert.areEqual(false, timer.running);
@@ -67,7 +72,8 @@ class TimerTest {
 		Assert.areEqual(true, timer.running);
 	}
 
-	@Test public function reset() {
+	@Test public function reset()
+	{
 		var timer = new Timer(123);
 		timer.start();
 
@@ -79,7 +85,8 @@ class TimerTest {
 		Assert.areEqual(false, timer.running);
 	}
 
-	@Test public function start() {
+	@Test public function start()
+	{
 		var timer = new Timer(123);
 
 		Assert.areEqual(false, timer.running);
@@ -89,7 +96,8 @@ class TimerTest {
 		Assert.areEqual(true, timer.running);
 	}
 
-	@Test public function stop() {
+	@Test public function stop()
+	{
 		var timer = new Timer(123);
 		timer.start();
 
@@ -99,5 +107,4 @@ class TimerTest {
 
 		Assert.areEqual(false, timer.running);
 	}
-
 }

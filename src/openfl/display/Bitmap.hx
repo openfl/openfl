@@ -1,17 +1,9 @@
 package openfl.display;
 
 #if !flash
-import openfl._internal.renderer.cairo.CairoBitmap;
-import openfl._internal.renderer.cairo.CairoDisplayObject;
-import openfl._internal.renderer.canvas.CanvasBitmap;
-import openfl._internal.renderer.canvas.CanvasDisplayObject;
-import openfl._internal.renderer.context3D.Context3DBitmap;
-import openfl._internal.renderer.context3D.Context3DDisplayObject;
-import openfl._internal.renderer.dom.DOMBitmap;
-import openfl._internal.renderer.dom.DOMDisplayObject;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
-#if (js && html5)
+#if openfl_html5
 import js.html.ImageElement;
 #end
 
@@ -88,26 +80,37 @@ class Bitmap extends DisplayObject
 	**/
 	public var smoothing:Bool;
 
-	#if (js && html5)
+	@:noCompletion private var __bitmapData:BitmapData;
+	#if openfl_html5
 	@:noCompletion private var __image:ImageElement;
 	#end
-	@:noCompletion private var __bitmapData:BitmapData;
 	@:noCompletion private var __imageVersion:Int;
 
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperty(Bitmap.prototype, "bitmapData",
-			{
-				get: untyped __js__("function () { return this.get_bitmapData (); }"),
-				set: untyped __js__("function (v) { return this.set_bitmapData (v); }")
-			});
+		untyped Object.defineProperty(Bitmap.prototype, "bitmapData", {
+			get: untyped __js__("function () { return this.get_bitmapData (); }"),
+			set: untyped __js__("function (v) { return this.set_bitmapData (v); }")
+		});
 	}
 	#end
 
+	/**
+		Initializes a Bitmap object to refer to the specified BitmapData object.
+
+		@param	bitmapData	The BitmapData object being referenced.
+		@param	pixelSnapping	Whether or not the Bitmap object is snapped to the nearest pixel.
+		@param	smoothing	Whether or not the bitmap is smoothed when scaled. For example, the following examples
+		show the same bitmap scaled by a factor of 3, with `smoothing` set to `false` (left) and `true` (right):
+
+		![A bitmap without smoothing.](/images/bitmap_smoothing_off.jpg) ![A bitmap with smoothing.](bitmap_smoothing_on.jpg)
+	**/
 	public function new(bitmapData:BitmapData = null, pixelSnapping:PixelSnapping = null, smoothing:Bool = false)
 	{
 		super();
+
+		__type = BITMAP;
 
 		__bitmapData = bitmapData;
 		this.pixelSnapping = pixelSnapping;
@@ -119,26 +122,21 @@ class Bitmap extends DisplayObject
 		}
 	}
 
-	@:noCompletion private override function __enterFrame(deltaTime:Int):Void
-	{
-		if (__bitmapData != null && __bitmapData.image != null && __bitmapData.image.version != __imageVersion)
-		{
-			__setRenderDirty();
-		}
-	}
-
 	@:noCompletion private override function __getBounds(rect:Rectangle, matrix:Matrix):Void
 	{
+		var bounds = Rectangle.__pool.get();
 		if (__bitmapData != null)
 		{
-			var bounds = Rectangle.__pool.get();
 			bounds.setTo(0, 0, __bitmapData.width, __bitmapData.height);
-			bounds.__transform(bounds, matrix);
-
-			rect.__expand(bounds.x, bounds.y, bounds.width, bounds.height);
-
-			Rectangle.__pool.release(bounds);
 		}
+		else
+		{
+			bounds.setTo(0, 0, 0, 0);
+		}
+
+		bounds.__transform(bounds, matrix);
+		rect.__expand(bounds.x, bounds.y, bounds.width, bounds.height);
+		Rectangle.__pool.release(bounds);
 	}
 
 	@:noCompletion private override function __hitTest(x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool,
@@ -152,10 +150,7 @@ class Bitmap extends DisplayObject
 		var px = __renderTransform.__transformInverseX(x, y);
 		var py = __renderTransform.__transformInverseY(x, y);
 
-		if (px > 0 &&
-			py > 0 &&
-			px <= __bitmapData.width &&
-			py <= __bitmapData.height)
+		if (px > 0 && py > 0 && px <= __bitmapData.width && py <= __bitmapData.height)
 		{
 			if (__scrollRect != null && !__scrollRect.contains(px, py))
 			{
@@ -182,135 +177,12 @@ class Bitmap extends DisplayObject
 		var px = __renderTransform.__transformInverseX(x, y);
 		var py = __renderTransform.__transformInverseY(x, y);
 
-		if (px > 0 &&
-			py > 0 &&
-			px <= __bitmapData.width &&
-			py <= __bitmapData.height)
+		if (px > 0 && py > 0 && px <= __bitmapData.width && py <= __bitmapData.height)
 		{
 			return true;
 		}
 
 		return false;
-	}
-
-	@:noCompletion private override function __renderCairo(renderer:CairoRenderer):Void
-	{
-		#if lime_cairo
-		__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
-
-		if (__bitmapData != null && __bitmapData.image != null)
-		{
-			__imageVersion = __bitmapData.image.version;
-		}
-
-		if (__cacheBitmap != null && !__isCacheBitmapRender)
-		{
-			CairoBitmap.render(__cacheBitmap, renderer);
-		}
-		else
-		{
-			CairoDisplayObject.render(this, renderer);
-			CairoBitmap.render(this, renderer);
-		}
-
-		__renderEvent(renderer);
-		#end
-	}
-
-	@:noCompletion private override function __renderCairoMask(renderer:CairoRenderer):Void
-	{
-		renderer.cairo.rectangle(0, 0, width, height);
-	}
-
-	@:noCompletion private override function __renderCanvas(renderer:CanvasRenderer):Void
-	{
-		__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
-
-		if (__bitmapData != null && __bitmapData.image != null)
-		{
-			__imageVersion = __bitmapData.image.version;
-		}
-
-		if (__cacheBitmap != null && !__isCacheBitmapRender)
-		{
-			CanvasBitmap.render(__cacheBitmap, renderer);
-		}
-		else
-		{
-			CanvasDisplayObject.render(this, renderer);
-			CanvasBitmap.render(this, renderer);
-		}
-
-		__renderEvent(renderer);
-	}
-
-	@:noCompletion private override function __renderCanvasMask(renderer:CanvasRenderer):Void
-	{
-		renderer.context.rect(0, 0, width, height);
-	}
-
-	@:noCompletion private override function __renderDOM(renderer:DOMRenderer):Void
-	{
-		__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
-
-		if (__cacheBitmap != null && !__isCacheBitmapRender)
-		{
-			__renderDOMClear(renderer);
-			__cacheBitmap.stage = stage;
-
-			DOMBitmap.render(__cacheBitmap, renderer);
-		}
-		else
-		{
-			DOMDisplayObject.render(this, renderer);
-			DOMBitmap.render(this, renderer);
-		}
-
-		__renderEvent(renderer);
-	}
-
-	@:noCompletion private override function __renderDOMClear(renderer:DOMRenderer):Void
-	{
-		DOMBitmap.clear(this, renderer);
-	}
-
-	@:noCompletion private override function __renderGL(renderer:OpenGLRenderer):Void
-	{
-		__updateCacheBitmap(renderer, false);
-
-		if (__bitmapData != null && __bitmapData.image != null)
-		{
-			__imageVersion = __bitmapData.image.version;
-		}
-
-		if (__cacheBitmap != null && !__isCacheBitmapRender)
-		{
-			Context3DBitmap.render(__cacheBitmap, renderer);
-		}
-		else
-		{
-			Context3DDisplayObject.render(this, renderer);
-			Context3DBitmap.render(this, renderer);
-		}
-
-		__renderEvent(renderer);
-	}
-
-	@:noCompletion private override function __renderGLMask(renderer:OpenGLRenderer):Void
-	{
-		Context3DBitmap.renderMask(this, renderer);
-	}
-
-	@:noCompletion private override function __updateCacheBitmap(renderer:DisplayObjectRenderer, force:Bool):Bool
-	{
-		// TODO: Handle filters without an intermediate draw
-
-		#if lime
-		if (__bitmapData == null || (__filters == null && renderer.__type == OPENGL && __cacheBitmap == null)) return false;
-		return super.__updateCacheBitmap(renderer, __bitmapData.image != null && __bitmapData.image.version != __imageVersion);
-		#else
-		return false;
-		#end
 	}
 
 	// Get & Set Methods
@@ -324,6 +196,7 @@ class Bitmap extends DisplayObject
 		__bitmapData = value;
 		smoothing = false;
 
+		__localBoundsDirty = true;
 		__setRenderDirty();
 
 		if (__filters != null)
@@ -336,56 +209,30 @@ class Bitmap extends DisplayObject
 		return __bitmapData;
 	}
 
-	@:noCompletion private override function get_height():Float
-	{
-		if (__bitmapData != null)
-		{
-			return __bitmapData.height * Math.abs(scaleY);
-		}
-
-		return 0;
-	}
-
 	@:noCompletion private override function set_height(value:Float):Float
 	{
 		if (__bitmapData != null)
 		{
-			if (value != __bitmapData.height)
-			{
-				__setRenderDirty();
-				scaleY = value / __bitmapData.height;
-			}
-
-			return value;
+			scaleY = value / __bitmapData.height; // get_height();
 		}
-
-		return 0;
-	}
-
-	@:noCompletion private override function get_width():Float
-	{
-		if (__bitmapData != null)
+		else
 		{
-			return __bitmapData.width * Math.abs(__scaleX);
+			scaleY = 0;
 		}
-
-		return 0;
+		return value;
 	}
 
 	@:noCompletion private override function set_width(value:Float):Float
 	{
 		if (__bitmapData != null)
 		{
-			if (value != __bitmapData.width)
-			{
-				__setRenderDirty();
-				scaleX = value / __bitmapData.width;
-			}
-
-			return value;
+			scaleX = value / __bitmapData.width; // get_width();
 		}
-
-		return 0;
+		else
+		{
+			scaleX = 0;
+		}
+		return value;
 	}
 }
 #else

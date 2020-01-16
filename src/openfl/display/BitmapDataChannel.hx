@@ -12,7 +12,6 @@ package openfl.display;
 	The BitmapDataChannel constants are provided for use as values in the
 	following:
 
-
 	* The `sourceChannel` and `destChannel`
 	parameters of the `openfl.display.BitmapData.copyChannel()`
 	method

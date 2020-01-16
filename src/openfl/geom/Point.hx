@@ -57,10 +57,9 @@ class Point
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperty(Point.prototype, "length",
-			{
-				get: untyped __js__("function () { return this.get_length (); }")
-			});
+		untyped Object.defineProperty(Point.prototype, "length", {
+			get: untyped __js__("function () { return this.get_length (); }")
+		});
 	}
 	#end
 
@@ -99,6 +98,12 @@ class Point
 		return new Point(x, y);
 	}
 
+	/**
+		Copies all of the point data from the source Point object into the calling Point
+		object.
+
+		@param	sourcePoint	The Point object from which to copy the data.
+	**/
 	public function copyFrom(sourcePoint:Point):Void
 	{
 		x = sourcePoint.x;
@@ -207,6 +212,12 @@ class Point
 		return new Point(len * Math.cos(angle), len * Math.sin(angle));
 	}
 
+	/**
+		Sets the members of Point to the specified values
+
+		@param	xa	the values to set the point to.
+		@param	ya
+	**/
 	public function setTo(xa:Float, ya:Float):Void
 	{
 		x = xa;

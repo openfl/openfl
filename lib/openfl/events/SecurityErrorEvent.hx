@@ -1,7 +1,9 @@
-package openfl.events; #if (display || !flash)
+package openfl.events;
 
-
+#if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/events/SecurityErrorEvent", "default")
+#end
 
 /**
  * An object dispatches a SecurityErrorEvent object to report the occurrence
@@ -19,11 +21,10 @@ package openfl.events; #if (display || !flash)
  * object. This means that any other events, including generic error events,
  * are not dispatched for a target object that experiences a security
  * error.
- * 
+ *
  */
-extern class SecurityErrorEvent extends ErrorEvent {
-	
-	
+extern class SecurityErrorEvent extends ErrorEvent
+{
 	/**
 	 * The `SecurityErrorEvent.SECURITY_ERROR` constant defines the
 	 * value of the `type` property of a `securityError`
@@ -32,12 +33,11 @@ extern class SecurityErrorEvent extends ErrorEvent {
 	 * This event has the following properties:
 	 */
 	public static inline var SECURITY_ERROR = "securityError";
-	
-	
+
 	/**
 	 * Creates an Event object that contains information about security error
 	 * events. Event objects are passed as parameters to event listeners.
-	 * 
+	 *
 	 * @param type       The type of the event. Event listeners can access this
 	 *                   information through the inherited `type`
 	 *                   property. There is only one type of error event:
@@ -54,12 +54,8 @@ extern class SecurityErrorEvent extends ErrorEvent {
 	 *                   `text` property.
 	 * @param id         A reference number to associate with the specific error.
 	 */
-	public function new (type:String, bubbles:Bool = false, cancelable:Bool = false, text:String = "", id:Int = 0);
-	
-	
+	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false, text:String = "", id:Int = 0);
 }
-
-
 #else
 typedef SecurityErrorEvent = flash.events.SecurityErrorEvent;
 #end

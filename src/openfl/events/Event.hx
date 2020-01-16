@@ -1,6 +1,8 @@
 package openfl.events;
 
 #if !flash
+import openfl._internal.utils.ObjectPool;
+
 /**
 	The Event class is used as the base class for the creation of Event
 	objects, which are passed as parameters to event listeners when an event
@@ -31,7 +33,6 @@ package openfl.events;
 
 	Other sources of information include:
 
-
 	* A useful description about the timing of events, code execution, and
 	rendering at runtime in Ted Patrick's blog entry: <a
 	[Flash Player Mental Model - The Elastic Racetrack](http://tedpatrick.com/2005/07/19/flash-player-mental-model-the-elastic-racetrack/).
@@ -49,9 +50,8 @@ package openfl.events;
 class Event
 {
 	/**
-		The `ACTIVATE` constant defines the value of the
-		`type` property of an `activate` event object.
-
+		The `ACTIVATE` constant defines the value of the `type` property of an
+		`activate` event object.
 		**Note:** This event has neither a "capture phase" nor a "bubble
 		phase", which means that event listeners must be added directly to any
 		potential targets, whether the target is on the display list or not.
@@ -60,76 +60,204 @@ class Event
 		however, dispatch it manually.
 
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | Any DisplayObject instance with a listener registered for the `activate` event. |
 	**/
-	public static inline var ACTIVATE:String = "activate";
+	public static inline var ACTIVATE:EventType<Event> = "activate";
 
 	/**
-		The `Event.ADDED` constant defines the value of the
-		`type` property of an `added` event object.
-
+		The `Event.ADDED` constant defines the value of the `type` property of
+		an `added` event object.
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `true` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | The DisplayObject instance being added to the display list. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
-	public static inline var ADDED:String = "added";
+	public static inline var ADDED:EventType<Event> = "added";
 
 	/**
-		The `Event.ADDED_TO_STAGE` constant defines the value of the
-		`type` property of an `addedToStage` event object.
-
+		The `Event.ADDED_TO_STAGE` constant defines the value of the `type`
+		property of an `addedToStage` event object.
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | The DisplayObject instance being added to the on stage display list, either directly or through the addition of a sub tree in which the DisplayObject instance is contained. If the DisplayObject instance is being directly added, the `added` event occurs before this event. |
 	**/
-	public static inline var ADDED_TO_STAGE:String = "addedToStage";
+	public static inline var ADDED_TO_STAGE:EventType<Event> = "addedToStage";
+
 	// @:noCompletion @:dox(hide) @:require(flash15) public static var BROWSER_ZOOM_CHANGE:String;
 
 	/**
-		The `Event.CANCEL` constant defines the value of the
-		`type` property of a `cancel` event object.
-
+		The `Event.CANCEL` constant defines the value of the `type` property
+		of a `cancel` event object.
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | A reference to the object on which the operation is canceled. |
 	**/
-	public static inline var CANCEL:String = "cancel";
+	public static inline var CANCEL:EventType<Event> = "cancel";
 
 	/**
-		The `Event.CHANGE` constant defines the value of the
-		`type` property of a `change` event object.
-
+		The `Event.CHANGE` constant defines the value of the `type` property
+		of a `change` event object.
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `true` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | The object that has had its value modified. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
-	public static inline var CHANGE:String = "change";
+	public static inline var CHANGE:EventType<Event> = "change";
+
 	// @:noCompletion @:dox(hide) public static var CHANNEL_MESSAGE:String;
 	// @:noCompletion @:dox(hide) public static var CHANNEL_STATE:String;
-	public static inline var CLEAR:String = "clear";
 
 	/**
-		The `Event.CLOSE` constant defines the value of the
-		`type` property of a `close` event object.
-
+		The `Event.CLEAR` constant defines the value of the `type` property of
+		a `clear` event object.
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | Any InteractiveObject instance with a listener registered for the `clear` event. |
+
+		**Note:** TextField objects do _not_ dispatch `clear`, `copy`, `cut`,
+		`paste`, or `selectAll` events. TextField objects always include Cut,
+		Copy, Paste, Clear, and Select All commands in the context menu. You
+		cannot remove these commands from the context menu for TextField
+		objects. For TextField objects, selecting these commands (or their
+		keyboard equivalents) does not generate `clear`, `copy`, `cut`,
+		`paste`, or `selectAll` events. However, other classes that extend the
+		InteractiveObject class, including components built using the Flash
+		Text Engine (FTE), will dispatch these events in response to user
+		actions such as keyboard shortcuts and context menus.
 	**/
-	public static inline var CLOSE:String = "close";
+	public static inline var CLEAR:EventType<Event> = "clear";
 
 	/**
-		The `Event.COMPLETE` constant defines the value of the
-		`type` property of a `complete` event object.
-
+		The `Event.CLOSE` constant defines the value of the `type` property of
+		a `close` event object.
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | The object whose connection has been closed. |
 	**/
-	public static inline var COMPLETE:String = "complete";
+	public static inline var CLOSE:EventType<Event> = "close";
 
 	/**
-		The `Event.CONNECT` constant defines the value of the
-		`type` property of a `connect` event object.
-
+		The `Event.COMPLETE` constant defines the value of the `type` property
+		of a `complete` event object.
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | The network object that has completed loading. |
 	**/
-	public static inline var CONNECT:String = "connect";
-	public static inline var CONTEXT3D_CREATE:String = "context3DCreate";
-	public static inline var COPY:String = "copy";
-	public static inline var CUT:String = "cut";
+	public static inline var COMPLETE:EventType<Event> = "complete";
 
 	/**
-		The `Event.DEACTIVATE` constant defines the value of the
-		`type` property of a `deactivate` event object.
+		The `Event.CONNECT` constant defines the value of the `type` property
+		of a `connect` event object.
+		This event has the following properties:
 
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | The Socket or XMLSocket object that has established a network connection. |
+	**/
+	public static inline var CONNECT:EventType<Event> = "connect";
+
+	/**
+		The `Event.CONTEXT3D_CREATE` constant defines the value of the type property of a
+		`context3Dcreate` event object. This event is raised only by Stage3D objects in
+		response to either a call to `Stage3D.requestContext3D` or in response to an OS
+		triggered reset of the Context3D bound to the Stage3D object. Inspect the
+		`Stage3D.context3D` property to get the newly created Context3D object.
+	**/
+	public static inline var CONTEXT3D_CREATE:EventType<Event> = "context3DCreate";
+
+	/**
+		Defines the value of the `type` property of a `copy` event object.
+		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | Any InteractiveObject instance with a listener registered for the `copy` event. |
+
+		**Note:** TextField objects do _not_ dispatch `clear`, `copy`, `cut`,
+		`paste`, or `selectAll` events. TextField objects always include Cut,
+		Copy, Paste, Clear, and Select All commands in the context menu. You
+		cannot remove these commands from the context menu for TextField
+		objects. For TextField objects, selecting these commands (or their
+		keyboard equivalents) does not generate `clear`, `copy`, `cut`,
+		`paste`, or `selectAll` events. However, other classes that extend the
+		InteractiveObject class, including components built using the Flash
+		Text Engine (FTE), will dispatch these events in response to user
+		actions such as keyboard shortcuts and context menus.
+	**/
+	public static inline var COPY:EventType<Event> = "copy";
+
+	/**
+		Defines the value of the `type` property of a `cut` event object.
+		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | Any InteractiveObject instance with a listener registered for the `cut` event. |
+
+		**Note:** TextField objects do _not_ dispatch `clear`, `copy`, `cut`,
+		`paste`, or `selectAll` events. TextField objects always include Cut,
+		Copy, Paste, Clear, and Select All commands in the context menu. You
+		cannot remove these commands from the context menu for TextField
+		objects. For TextField objects, selecting these commands (or their
+		keyboard equivalents) does not generate `clear`, `copy`, `cut`,
+		`paste`, or `selectAll` events. However, other classes that extend the
+		InteractiveObject class, including components built using the Flash
+		Text Engine (FTE), will dispatch these events in response to user
+		actions such as keyboard shortcuts and context menus.
+	**/
+	public static inline var CUT:EventType<Event> = "cut";
+
+	/**
+		The `Event.DEACTIVATE` constant defines the value of the `type`
+		property of a `deactivate` event object.
 		**Note:** This event has neither a "capture phase" nor a "bubble
 		phase", which means that event listeners must be added directly to any
 		potential targets, whether the target is on the display list or not.
@@ -138,155 +266,390 @@ class Event
 		however, dispatch it manually.
 
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | Any DisplayObject instance with a listener registered for the `deactivate` event. |
 	**/
-	public static inline var DEACTIVATE:String = "deactivate";
+	public static inline var DEACTIVATE:EventType<Event> = "deactivate";
 
 	/**
-		The `Event.ENTER_FRAME` constant defines the value of the
-		`type` property of an `enterFrame` event object.
-
+		The `Event.ENTER_FRAME` constant defines the value of the `type`
+		property of an `enterFrame` event object.
 		**Note:** This event has neither a "capture phase" nor a "bubble
 		phase", which means that event listeners must be added directly to any
 		potential targets, whether the target is on the display list or not.
 
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | Any DisplayObject instance with a listener registered for the `enterFrame` event. |
 	**/
-	public static inline var ENTER_FRAME:String = "enterFrame";
-	public static inline var EXIT_FRAME:String = "exitFrame";
-	public static inline var FRAME_CONSTRUCTED:String = "frameConstructed";
-	public static inline var FRAME_LABEL:String = "frameLabel";
-	public static inline var FULLSCREEN:String = "fullScreen";
+	public static inline var ENTER_FRAME:EventType<Event> = "enterFrame";
 
 	/**
-		The `Event.ID3` constant defines the value of the
-		`type` property of an `id3` event object.
-
-		This event has the following properties:
-	**/
-	public static inline var ID3:String = "id3";
-
-	/**
-		The `Event.INIT` constant defines the value of the
-		`type` property of an `init` event object.
-
-		This event has the following properties:
-	**/
-	public static inline var INIT:String = "init";
-
-	/**
-		The `Event.MOUSE_LEAVE` constant defines the value of the
-		`type` property of a `mouseLeave` event object.
-
-		This event has the following properties:
-	**/
-	public static inline var MOUSE_LEAVE:String = "mouseLeave";
-
-	/**
-		The `Event.OPEN` constant defines the value of the
-		`type` property of an `open` event object.
-
-		This event has the following properties:
-	**/
-	public static inline var OPEN:String = "open";
-	public static inline var PASTE:String = "paste";
-
-	/**
-		The `Event.REMOVED` constant defines the value of the
-		`type` property of a `removed` event object.
-
-		This event has the following properties:
-	**/
-	public static inline var REMOVED:String = "removed";
-
-	/**
-		The `Event.REMOVED_FROM_STAGE` constant defines the value of
-		the `type` property of a `removedFromStage` event
-		object.
-
-		This event has the following properties:
-	**/
-	public static inline var REMOVED_FROM_STAGE:String = "removedFromStage";
-
-	/**
-		The `Event.RENDER` constant defines the value of the
-		`type` property of a `render` event object.
-
+		The `Event.EXIT_FRAME` constant defines the value of the `type`
+		property of an `exitFrame` event object.
 		**Note:** This event has neither a "capture phase" nor a "bubble
 		phase", which means that event listeners must be added directly to any
 		potential targets, whether the target is on the display list or not.
 
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | Any DisplayObject instance with a listener registered for the `enterFrame` event. |
 	**/
-	public static inline var RENDER:String = "render";
+	public static inline var EXIT_FRAME:EventType<Event> = "exitFrame";
 
 	/**
-		The `Event.RESIZE` constant defines the value of the
-		`type` property of a `resize` event object.
+		The `Event.FRAME_CONSTRUCTED` constant defines the value of the `type`
+		property of an `frameConstructed` event object.
+		**Note:** This event has neither a "capture phase" nor a "bubble
+		phase", which means that event listeners must be added directly to any
+		potential targets, whether the target is on the display list or not.
 
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | Any DisplayObject instance with a listener registered for the `frameConstructed` event. |
 	**/
-	public static inline var RESIZE:String = "resize";
+	public static inline var FRAME_CONSTRUCTED:EventType<Event> = "frameConstructed";
 
 	/**
-		The `Event.SCROLL` constant defines the value of the
-		`type` property of a `scroll` event object.
+		The `Event.FRAME_LABEL` constant defines the value of the type property of a
+		`frameLabel` event object.
+
+		**Note:** This event has neither a "capture phase" nor a "bubble phase", which
+		means that event listeners must be added directly to FrameLabel objects.
 
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The FrameLabel object that is actively processing the Event object with an event listener. |
+		| `target` | Any FrameLabel instance with a listener registered for the frameLabel event. |
 	**/
-	public static inline var SCROLL:String = "scroll";
+	public static inline var FRAME_LABEL:EventType<Event> = "frameLabel";
 
 	/**
-		The `Event.SELECT` constant defines the value of the
-		`type` property of a `select` event object.
-
+		The `Event.FULL_SCREEN` constant defines the value of the `type`
+		property of a `fullScreen` event object.
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | The Stage object. |
 	**/
-	public static inline var SELECT:String = "select";
-	public static inline var SELECT_ALL:String = "selectAll";
+	public static inline var FULLSCREEN:EventType<Event> = "fullScreen";
 
 	/**
-		The `Event.SOUND_COMPLETE` constant defines the value of the
-		`type` property of a `soundComplete` event object.
-
+		The `Event.ID3` constant defines the value of the `type` property of
+		an `id3` event object.
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | The Sound object loading the MP3 for which ID3 data is now available. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
-	public static inline var SOUND_COMPLETE:String = "soundComplete";
+	public static inline var ID3:EventType<Event> = "id3";
 
 	/**
-		The `Event.TAB_CHILDREN_CHANGE` constant defines the value of
-		the `type` property of a `tabChildrenChange` event
-		object.
-
+		The `Event.INIT` constant defines the value of the `type` property of
+		an `init` event object.
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | The LoaderInfo object associated with the SWF file being loaded. |
 	**/
-	public static inline var TAB_CHILDREN_CHANGE:String = "tabChildrenChange";
+	public static inline var INIT:EventType<Event> = "init";
 
 	/**
-		The `Event.TAB_ENABLED_CHANGE` constant defines the value of
-		the `type` property of a `tabEnabledChange` event
-		object.
-
+		The `Event.MOUSE_LEAVE` constant defines the value of the `type`
+		property of a `mouseLeave` event object.
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | The Stage object. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
-	public static inline var TAB_ENABLED_CHANGE:String = "tabEnabledChange";
+	public static inline var MOUSE_LEAVE:EventType<Event> = "mouseLeave";
 
 	/**
-		The `Event.TAB_INDEX_CHANGE` constant defines the value of the
-		`type` property of a `tabIndexChange` event object.
+		The `Event.OPEN` constant defines the value of the `type` property of
+		an `open` event object.
+		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | The network object that has opened a connection. |
+	**/
+	public static inline var OPEN:EventType<Event> = "open";
+
+	/**
+		The `Event.PASTE` constant defines the value of the `type` property of
+		a `paste` event object.
+		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | Any InteractiveObject instance with a listener registered for the `paste` event. |
+
+		**Note:** TextField objects do _not_ dispatch `clear`, `copy`, `cut`,
+		`paste`, or `selectAll` events. TextField objects always include Cut,
+		Copy, Paste, Clear, and Select All commands in the context menu. You
+		cannot remove these commands from the context menu for TextField
+		objects. For TextField objects, selecting these commands (or their
+		keyboard equivalents) does not generate `clear`, `copy`, `cut`,
+		`paste`, or `selectAll` events. However, other classes that extend the
+		InteractiveObject class, including components built using the Flash
+		Text Engine (FTE), will dispatch these events in response to user
+		actions such as keyboard shortcuts and context menus.
+	**/
+	public static inline var PASTE:EventType<Event> = "paste";
+
+	/**
+		The `Event.REMOVED` constant defines the value of the `type` property
+		of a `removed` event object.
+		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `true` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | The DisplayObject instance to be removed from the display list. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
+	**/
+	public static inline var REMOVED:EventType<Event> = "removed";
+
+	/**
+		The `Event.REMOVED_FROM_STAGE` constant defines the value of the
+		`type` property of a `removedFromStage` event object.
+		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | The DisplayObject instance being removed from the on stage display list, either directly or through the removal of a sub tree in which the DisplayObject instance is contained. If the DisplayObject instance is being directly removed, the `removed` event occurs before this event. |
+	**/
+	public static inline var REMOVED_FROM_STAGE:EventType<Event> = "removedFromStage";
+
+	/**
+		The `Event.RENDER` constant defines the value of the `type` property
+		of a `render` event object.
+		**Note:** This event has neither a "capture phase" nor a "bubble
+		phase", which means that event listeners must be added directly to any
+		potential targets, whether the target is on the display list or not.
 
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; the default behavior cannot be canceled. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | Any DisplayObject instance with a listener registered for the `render` event. |
 	**/
-	public static inline var TAB_INDEX_CHANGE:String = "tabIndexChange";
-	public static inline var TEXTURE_READY:String = "textureReady";
+	public static inline var RENDER:EventType<Event> = "render";
+
+	/**
+		The `Event.RESIZE` constant defines the value of the `type` property
+		of a `resize` event object.
+		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | The Stage object. |
+	**/
+	public static inline var RESIZE:EventType<Event> = "resize";
+
+	/**
+		The `Event.SCROLL` constant defines the value of the `type` property
+		of a `scroll` event object.
+		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | The TextField object that has been scrolled. The `target` property is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
+	**/
+	public static inline var SCROLL:EventType<Event> = "scroll";
+
+	/**
+		The `Event.SELECT` constant defines the value of the `type` property
+		of a `select` event object.
+		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | The object on which an item has been selected. |
+	**/
+	public static inline var SELECT:EventType<Event> = "select";
+
+	/**
+		The `Event.SELECT_ALL` constant defines the value of the `type`
+		property of a `selectAll` event object.
+		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | Any InteractiveObject instance with a listener registered for the `selectAll` event. |
+
+		**Note:** TextField objects do _not_ dispatch `clear`, `copy`, `cut`,
+		`paste`, or `selectAll` events. TextField objects always include Cut,
+		Copy, Paste, Clear, and Select All commands in the context menu. You
+		cannot remove these commands from the context menu for TextField
+		objects. For TextField objects, selecting these commands (or their
+		keyboard equivalents) does not generate `clear`, `copy`, `cut`,
+		`paste`, or `selectAll` events. However, other classes that extend the
+		InteractiveObject class, including components built using the Flash
+		Text Engine (FTE), will dispatch these events in response to user
+		actions such as keyboard shortcuts and context menus.
+	**/
+	public static inline var SELECT_ALL:EventType<Event> = "selectAll";
+
+	/**
+		The `Event.SOUND_COMPLETE` constant defines the value of the `type`
+		property of a `soundComplete` event object.
+		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | The SoundChannel object in which a sound has finished playing. |
+	**/
+	public static inline var SOUND_COMPLETE:EventType<Event> = "soundComplete";
+
+	/**
+		The `Event.TAB_CHILDREN_CHANGE` constant defines the value of the
+		`type` property of a `tabChildrenChange` event object.
+		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `true` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | The object whose tabChildren flag has changed. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
+	**/
+	public static inline var TAB_CHILDREN_CHANGE:EventType<Event> = "tabChildrenChange";
+
+	/**
+		The `Event.TAB_ENABLED_CHANGE` constant defines the value of the
+		`type` property of a `tabEnabledChange` event object.
+		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `true` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | The InteractiveObject whose tabEnabled flag has changed. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
+	**/
+	public static inline var TAB_ENABLED_CHANGE:EventType<Event> = "tabEnabledChange";
+
+	/**
+		The `Event.TAB_INDEX_CHANGE` constant defines the value of the `type`
+		property of a `tabIndexChange` event object.
+		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `true` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | The object whose tabIndex has changed. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
+	**/
+	public static inline var TAB_INDEX_CHANGE:EventType<Event> = "tabIndexChange";
+
+	/**
+		The `Event.TEXTURE_READY` constant defines the value of the type property of a
+		`textureReady` event object. This event is dispatched by Texture and CubeTexture
+		objects to signal the completion of an asynchronous upload. Request an asynchronous
+		upload by using the `uploadCompressedTextureFromByteArray()` method on Texture or
+		CubeTexture. This event neither bubbles nor is cancelable.
+	**/
+	public static inline var TEXTURE_READY:EventType<Event> = "textureReady";
+
+	#if false
+	/**
+		The `Event.TEXT_INTERACTION_MODE_CHANGE` constant defines the value of
+		the `type` property of a `interaction mode` event object.
+		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | The TextField object whose interaction mode property is changed. For example on Android, one can change the interaction mode to SELECTION via context menu. The `target` property is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
+	**/
 	// @:noCompletion @:dox(hide) @:require(flash11) public static var TEXT_INTERACTION_MODE_CHANGE:String;
+	#end
 
 	/**
-		The `Event.UNLOAD` constant defines the value of the
-		`type` property of an `unload` event object.
-
+		The `Event.UNLOAD` constant defines the value of the `type` property
+		of an `unload` event object.
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | The LoaderInfo object associated with the SWF file being unloaded or replaced. |
 	**/
-	public static inline var UNLOAD:String = "unload";
+	public static inline var UNLOAD:EventType<Event> = "unload";
 
 	// @:noCompletion @:dox(hide) public static var VIDEO_FRAME:String;
 	// @:noCompletion @:dox(hide) public static var WORKER_STATE:String;
@@ -345,6 +708,8 @@ class Event
 	**/
 	public var type(default, null):String;
 
+	@:noCompletion private static var __pool:ObjectPool<Event> = new ObjectPool<Event>(function() return new Event(null), function(event) event.__init());
+
 	@:noCompletion private var __isCanceled:Bool;
 	@:noCompletion private var __isCanceledNow:Bool;
 	@:noCompletion private var __preventDefault:Bool;
@@ -400,7 +765,31 @@ class Event
 		return event;
 	}
 
-	public function formatToString(className:String, ?p1:String, ?p2:String, ?p3:String, ?p4:String, ?p5:String):String
+	/**
+		A utility function for implementing the `toString()` method in custom
+		ActionScript 3.0 Event classes. Overriding the `toString()` method is
+		recommended, but not required.
+
+		```haxe
+		class PingEvent extends Event {
+			var URL:String;
+
+			public function new() {
+				super();
+			}
+
+			public override function toString():String {
+				return formatToString("PingEvent", "type", "bubbles", "cancelable", "eventPhase", "URL");
+			}
+		}
+		```
+
+		@param className The name of your custom Event class. In the previous
+						 example, the `className` parameter is `PingEvent`.
+		@return The name of your custom Event class and the String value of
+				your `...arguments` parameter.
+	**/
+	public function formatToString(className:String, p1:String = null, p2:String = null, p3:String = null, p4:String = null, p5:String = null):String
 	{
 		var parameters = [];
 		if (p1 != null) parameters.push(p1);
@@ -511,6 +900,19 @@ class Event
 
 		output += "]";
 		return output;
+	}
+
+	@:noCompletion private function __init():Void
+	{
+		// type = null;
+		target = null;
+		currentTarget = null;
+		bubbles = false;
+		cancelable = false;
+		eventPhase = AT_TARGET;
+		__isCanceled = false;
+		__isCanceledNow = false;
+		__preventDefault = false;
 	}
 }
 #else

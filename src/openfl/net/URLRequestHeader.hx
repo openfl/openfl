@@ -52,10 +52,10 @@ package openfl.net;
 	Content running in Adobe AIR sets the `ACCEPT` header to the
 	following, unless you specify a setting for the `ACCEPT` header
 	in the `requestHeaders` property of the URLRequest class:
-	`text/xml, application/xml, application/xhtml+xml, text/html;q=0.9,
-	text/plain;q=0.8, image/png, application/x-shockwave-flash,
-	video/mp4;q=0.9, flv-application/octet-stream;q=0.8, video/x-flv;q=0.7,
-	audio/mp4, ~~/~~;q=0.5`
+
+	```
+	text/xml, application/xml, application/xhtml+xml, text/html;q=0.9, text/plain;q=0.8, image/png, application/x-shockwave-flash, video/mp4;q=0.9, flv-application/octet-stream;q=0.8, video/x-flv;q=0.7, audio/mp4, * /*;q=0.5
+	```
 
 	Not all methods that accept URLRequest parameters support the
 	`requestHeaders` property, consult the documentation for the

@@ -1,61 +1,51 @@
 package openfl.net;
 
-
 import massive.munit.Assert;
 
+class URLLoaderTest
+{
+	@Test public function bytesLoaded()
+	{
+		// TODO: Confirm functionality
 
-class URLLoaderTest {
-	
-	
-	@Test public function bytesLoaded () {
-		
-		// TODO: Confirm functionality
-		
-		var urlLoader = new URLLoader ();
+		var urlLoader = new URLLoader();
 		var exists = urlLoader.bytesLoaded;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function bytesTotal () {
-		
+
+	@Test public function bytesTotal()
+	{
 		// TODO: Confirm functionality
-		
-		var urlLoader = new URLLoader ();
+
+		var urlLoader = new URLLoader();
 		var exists = urlLoader.bytesTotal;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function data () {
-		
+
+	@Test public function data()
+	{
 		// TODO: Confirm functionality
-		
-		var urlLoader = new URLLoader ();
+
+		var urlLoader = new URLLoader();
 		var exists = urlLoader.data;
-		
-		Assert.isNull (exists);
-		
+
+		Assert.isNull(exists);
 	}
-	
-	
-	@Test public function dataFormat () {
-		
+
+	@Test public function dataFormat()
+	{
 		// TODO: Confirm functionality
-		
-		var urlLoader = new URLLoader ();
+
+		var urlLoader = new URLLoader();
 		var exists = urlLoader.dataFormat;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function new_ () {
+
+	@Test public function new_()
+	{
 		var loader = new URLLoader();
 
 		Assert.areEqual(0, loader.bytesLoaded);
@@ -64,29 +54,23 @@ class URLLoaderTest {
 		Assert.areEqual(URLLoaderDataFormat.TEXT, loader.dataFormat);
 	}
 
-	
-	@Test public function close () {
-		
+	@Test public function close()
+	{
 		// TODO: Confirm functionality
-		
-		var urlLoader = new URLLoader ();
+
+		var urlLoader = new URLLoader();
 		var exists = urlLoader.close;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function load () {
-		
+
+	@Test public function load()
+	{
 		// TODO: Confirm functionality
-		
-		var urlLoader = new URLLoader ();
+
+		var urlLoader = new URLLoader();
 		var exists = urlLoader.load;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
 }

@@ -1,18 +1,13 @@
 package openfl.desktop;
 
-
-class ClipboardTransferModeTest {
-	
-	
-	@Test public function test () {
-		
-		switch (ClipboardTransferMode.CLONE_ONLY) {
-			
-			case ClipboardTransferMode.CLONE_ONLY, ClipboardTransferMode.CLONE_PREFERRED, ClipboardTransferMode.ORIGINAL_ONLY, ClipboardTransferMode.ORIGINAL_PREFERRED:
-			
+class ClipboardTransferModeTest
+{
+	@Test public function test()
+	{
+		switch (ClipboardTransferMode.CLONE_ONLY)
+		{
+			case ClipboardTransferMode.CLONE_ONLY, ClipboardTransferMode.CLONE_PREFERRED, ClipboardTransferMode.ORIGINAL_ONLY,
+				ClipboardTransferMode.ORIGINAL_PREFERRED:
 		}
-		
 	}
-	
-	
 }

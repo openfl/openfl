@@ -56,44 +56,53 @@ import lime.math.Rectangle as LimeRectangle;
 #end
 class Rectangle
 {
-	@:noCompletion private static var __pool:ObjectPool<Rectangle> = new ObjectPool<Rectangle>(function() return new Rectangle(), function(r) r
-		.setTo(0, 0, 0, 0));
 	#if lime
 	@:noCompletion private static var __limeRectangle:LimeRectangle;
 	#end
+	@:noCompletion private static var __pool:ObjectPool<Rectangle> = new ObjectPool<Rectangle>(function() return new Rectangle(),
+	function(r) r.setTo(0, 0, 0, 0));
 
 	/**
 		The sum of the `y` and `height` properties.
+
+		![A rectangle image showing location and measurement properties.](/images/rectangle.jpg)
 	**/
 	public var bottom(get, set):Float;
 
 	/**
-		The location of the Rectangle object's bottom-right corner, determined by
-		the values of the `right` and `bottom` properties.
+		The location of the Rectangle object's bottom-right corner, determined
+		by the values of the `right` and `bottom` properties.
+
+		![A rectangle image showing location and measurement properties.](/images/rectangle.jpg)
 	**/
 	public var bottomRight(get, set):Point;
 
 	/**
-		The height of the rectangle, in pixels. Changing the `height`
-		value of a Rectangle object has no effect on the `x`,
-		`y`, and `width` properties.
+		The height of the rectangle, in pixels. Changing the `height` value of
+		a Rectangle object has no effect on the `x`, `y`, and `width`
+		properties.
+
+		![A rectangle image showing location and measurement properties.](/images/rectangle.jpg)
 	**/
 	public var height:Float;
 
 	/**
 		The _x_ coordinate of the top-left corner of the rectangle. Changing
-		the `left` property of a Rectangle object has no effect on the
-		`y` and `height` properties. However it does affect
-		the `width` property, whereas changing the `x` value
-		does _not_ affect the `width` property.
+		the `left` property of a Rectangle object has no effect on the `y` and
+		`height` properties. However it does affect the `width` property,
+		whereas changing the `x` value does _not_ affect the `width` property.
 
-		The value of the `left` property is equal to the value of
-		the `x` property.
+		The value of the `left` property is equal to the value of the `x`
+		property.
+
+		![A rectangle image showing location and measurement properties.](/images/rectangle.jpg)
 	**/
 	public var left(get, set):Float;
 
 	/**
 		The sum of the `x` and `width` properties.
+
+		![A rectangle image showing location and measurement properties.](/images/rectangle.jpg)
 	**/
 	public var right(get, set):Float;
 
@@ -105,26 +114,31 @@ class Rectangle
 
 	/**
 		The _y_ coordinate of the top-left corner of the rectangle. Changing
-		the `top` property of a Rectangle object has no effect on the
-		`x` and `width` properties. However it does affect
-		the `height` property, whereas changing the `y`
-		value does _not_ affect the `height` property.
+		the `top` property of a Rectangle object has no effect on the `x` and
+		`width` properties. However it does affect the `height` property,
+		whereas changing the `y` value does _not_ affect the `height`
+		property.
+		The value of the `top` property is equal to the value of the `y`
+		property.
 
-		The value of the `top` property is equal to the value of the
-		`y` property.
+		![A rectangle image showing location and measurement properties.](/images/rectangle.jpg)
 	**/
 	public var top(get, set):Float;
 
 	/**
-		The location of the Rectangle object's top-left corner, determined by the
-		_x_ and _y_ coordinates of the point.
+		The location of the Rectangle object's top-left corner, determined by
+		the _x_ and _y_ coordinates of the point.
+
+		![A rectangle image showing location and measurement properties.](/images/rectangle.jpg)
 	**/
 	public var topLeft(get, set):Point;
 
 	/**
-		The width of the rectangle, in pixels. Changing the `width`
-		value of a Rectangle object has no effect on the `x`,
-		`y`, and `height` properties.
+		The width of the rectangle, in pixels. Changing the `width` value of a
+		Rectangle object has no effect on the `x`, `y`, and `height`
+		properties.
+
+		![A rectangle image showing location and measurement properties.](/images/rectangle.jpg)
 	**/
 	public var width:Float;
 
@@ -153,16 +167,21 @@ class Rectangle
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperties(Rectangle.prototype,
-			{
-				"bottom": {get: untyped __js__("function () { return this.get_bottom (); }"), set: untyped __js__("function (v) { return this.set_bottom (v); }")},
-				"bottomRight": {get: untyped __js__("function () { return this.get_bottomRight (); }"), set: untyped __js__("function (v) { return this.set_bottomRight (v); }")},
-				"left": {get: untyped __js__("function () { return this.get_left (); }"), set: untyped __js__("function (v) { return this.set_left (v); }")},
-				"right": {get: untyped __js__("function () { return this.get_right (); }"), set: untyped __js__("function (v) { return this.set_right (v); }")},
-				"size": {get: untyped __js__("function () { return this.get_size (); }"), set: untyped __js__("function (v) { return this.set_size (v); }")},
-				"top": {get: untyped __js__("function () { return this.get_top (); }"), set: untyped __js__("function (v) { return this.set_top (v); }")},
-				"topLeft": {get: untyped __js__("function () { return this.get_topLeft (); }"), set: untyped __js__("function (v) { return this.set_topLeft (v); }")},
-			});
+		untyped Object.defineProperties(Rectangle.prototype, {
+			"bottom": {get: untyped __js__("function () { return this.get_bottom (); }"), set: untyped __js__("function (v) { return this.set_bottom (v); }")},
+			"bottomRight": {
+				get: untyped __js__("function () { return this.get_bottomRight (); }"),
+				set: untyped __js__("function (v) { return this.set_bottomRight (v); }")
+			},
+			"left": {get: untyped __js__("function () { return this.get_left (); }"), set: untyped __js__("function (v) { return this.set_left (v); }")},
+			"right": {get: untyped __js__("function () { return this.get_right (); }"), set: untyped __js__("function (v) { return this.set_right (v); }")},
+			"size": {get: untyped __js__("function () { return this.get_size (); }"), set: untyped __js__("function (v) { return this.set_size (v); }")},
+			"top": {get: untyped __js__("function () { return this.get_top (); }"), set: untyped __js__("function (v) { return this.set_top (v); }")},
+			"topLeft": {
+				get: untyped __js__("function () { return this.get_topLeft (); }"),
+				set: untyped __js__("function (v) { return this.set_topLeft (v); }")
+			},
+		});
 	}
 	#end
 
@@ -248,20 +267,20 @@ class Rectangle
 	{
 		if (rect.width <= 0 || rect.height <= 0)
 		{
-			return rect.x > x &&
-				rect.y > y &&
-				rect.right < right &&
-				rect.bottom < bottom;
+			return rect.x > x && rect.y > y && rect.right < right && rect.bottom < bottom;
 		}
 		else
 		{
-			return rect.x >= x &&
-				rect.y >= y &&
-				rect.right <= right &&
-				rect.bottom <= bottom;
+			return rect.x >= x && rect.y >= y && rect.right <= right && rect.bottom <= bottom;
 		}
 	}
 
+	/**
+		Copies all of rectangle data from the source Rectangle object into the calling
+		Rectangle object.
+
+		@param	sourceRect	The Rectangle object from which to copy the data.
+	**/
 	public function copyFrom(sourceRect:Rectangle):Void
 	{
 		x = sourceRect.x;
@@ -287,25 +306,31 @@ class Rectangle
 	{
 		if (toCompare == this) return true;
 		else
-			return toCompare != null &&
-				x == toCompare.x &&
-				y == toCompare.y &&
-				width == toCompare.width &&
-				height == toCompare.height;
+			return toCompare != null && x == toCompare.x && y == toCompare.y && width == toCompare.width && height == toCompare.height;
 	}
 
 	/**
-		Increases the size of the Rectangle object by the specified amounts, in
-		pixels. The center point of the Rectangle object stays the same, and its
-		size increases to the left and right by the `dx` value, and to
+		Increases the size of the Rectangle object by the specified amounts,
+		in pixels. The center point of the Rectangle object stays the same,
+		and its size increases to the left and right by the `dx` value, and to
 		the top and the bottom by the `dy` value.
 
-		@param dx The value to be added to the left and the right of the Rectangle
-				  object. The following equation is used to calculate the new
-				  width and position of the rectangle:
+		@param dx The value to be added to the left and the right of the
+				  Rectangle object. The following equation is used to
+				  calculate the new width and position of the rectangle:
+
+				  ```as3
+				  x -= dx;
+				  width += 2 * dx;
+				  ```
 		@param dy The value to be added to the top and the bottom of the
-				  Rectangle. The following equation is used to calculate the new
-				  height and position of the rectangle:
+				  Rectangle. The following equation is used to calculate the
+				  new height and position of the rectangle:
+
+				  ```
+				  y -= dy;
+				  height += 2 * dy;
+				  ```
 	**/
 	public function inflate(dx:Float, dy:Float):Void
 	{
@@ -316,16 +341,25 @@ class Rectangle
 	}
 
 	/**
-		Increases the size of the Rectangle object. This method is similar to the
-		`Rectangle.inflate()` method except it takes a Point object as
-		a parameter.
-
+		Increases the size of the Rectangle object. This method is similar to
+		the `Rectangle.inflate()` method except it takes a Point object as a
+		parameter.
 		The following two code examples give the same result:
 
-		@param point The `x` property of this Point object is used to
-					 increase the horizontal dimension of the Rectangle object.
-					 The `y` property is used to increase the vertical
-					 dimension of the Rectangle object.
+		```haxe
+		var rect1 = new Rectangle(0,0,2,5);
+		rect1.inflate(2,2);
+		```
+		```haxe
+		var rect1 = new Rectangle(0,0,2,5);
+		var pt1 = new Point(2,2);
+		rect1.inflatePoint(pt1);
+		```
+
+		@param point The `x` property of this Point object is used to increase
+					 the horizontal dimension of the Rectangle object. The `y`
+					 property is used to increase the vertical dimension of
+					 the Rectangle object.
 	**/
 	public function inflatePoint(point:Point):Void
 	{
@@ -333,19 +367,20 @@ class Rectangle
 	}
 
 	/**
-		If the Rectangle object specified in the `toIntersect`
-		parameter intersects with this Rectangle object, returns the area of
-		intersection as a Rectangle object. If the rectangles do not intersect,
-		this method returns an empty Rectangle object with its properties set to
-		0.
+		If the Rectangle object specified in the `toIntersect` parameter
+		intersects with this Rectangle object, returns the area of
+		intersection as a Rectangle object. If the rectangles do not
+		intersect, this method returns an empty Rectangle object with its
+		properties set to 0.
 
-		@param toIntersect The Rectangle object to compare against to see if it
-						   intersects with this Rectangle object.
-		@return A Rectangle object that equals the area of intersection. If the
-				rectangles do not intersect, this method returns an empty
-				Rectangle object; that is, a rectangle with its `x`,
-				`y`, `width`, and `height`
-				properties set to 0.
+		![The resulting intersection rectangle.](/images/rectangle_intersect.jpg)
+
+		@param toIntersect The Rectangle object to compare against to see if
+						   it intersects with this Rectangle object.
+		@return A Rectangle object that equals the area of intersection. If
+				the rectangles do not intersect, this method returns an empty
+				Rectangle object; that is, a rectangle with its `x`, `y`,
+				`width`, and `height` properties set to 0.
 	**/
 	public function intersection(toIntersect:Rectangle):Rectangle
 	{
@@ -446,6 +481,14 @@ class Rectangle
 		x = y = width = height = 0;
 	}
 
+	/**
+		Sets the members of Rectangle to the specified values
+
+		@param	xa	the values to set the rectangle to.
+		@param	ya
+		@param	widtha
+		@param	heighta
+	**/
 	public function setTo(xa:Float, ya:Float, widtha:Float, heighta:Float):Void
 	{
 		x = xa;
@@ -460,15 +503,18 @@ class Rectangle
 	}
 
 	/**
-		Adds two rectangles together to create a new Rectangle object, by filling
-		in the horizontal and vertical space between the two rectangles.
+		Adds two rectangles together to create a new Rectangle object, by
+		filling in the horizontal and vertical space between the two
+		rectangles.
 
-		**Note:** The `union()` method ignores rectangles with
-		`0` as the height or width value, such as: `var
-		rect2:Rectangle = new Rectangle(300,300,50,0);`
+		![The resulting union rectangle.](/images/rectangle_union.jpg)
+
+		**Note:** The `union()` method ignores rectangles with `0` as the
+		height or width value, such as: `var rect2:Rectangle = new Rectangle(300,300,50,0);`
 
 		@param toUnion A Rectangle object to add to this Rectangle object.
-		@return A new Rectangle object that is the union of the two rectangles.
+		@return A new Rectangle object that is the union of the two
+				rectangles.
 	**/
 	public function union(toUnion:Rectangle):Rectangle
 	{

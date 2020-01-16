@@ -59,6 +59,11 @@ class Sprite extends DisplayObjectContainer
 		for sprites, which have no timeline, and thus no frames to label.
 	**/
 	public var buttonMode(get, set):Bool;
+
+	/**
+		Specifies the display object over which the sprite is being dragged,
+		or on which the sprite was dropped.
+	**/
 	public var dropTarget(default, null):DisplayObject;
 
 	/**
@@ -66,8 +71,32 @@ class Sprite extends DisplayObjectContainer
 		drawing commands can occur.
 	**/
 	public var graphics(get, never):Graphics;
+
+	/**
+		Designates another sprite to serve as the hit area for a sprite. If
+		the `hitArea` property does not exist or the value is `null` or
+		`undefined`, the sprite itself is used as the hit area. The value of
+		the `hitArea` property can be a reference to a Sprite object.
+		You can change the `hitArea` property at any time; the modified sprite
+		immediately uses the new hit area behavior. The sprite designated as
+		the hit area does not need to be visible; its graphical shape,
+		although not visible, is still detected as the hit area.
+
+		**Note:** You must set to `false` the `mouseEnabled` property of the
+		sprite designated as the hit area. Otherwise, your sprite button might
+		not work because the sprite designated as the hit area receives the
+		user input events instead of your sprite button.
+	**/
 	public var hitArea:Sprite;
+
+	#if false
+	/**
+		Controls sound within this sprite.
+		**Note:** This property does not affect HTML content in an HTMLControl
+		object (in Adobe AIR).
+	**/
 	// @:noCompletion @:dox(hide) public var soundTransform:SoundTransform;
+	#end
 
 	/**
 		A Boolean value that indicates whether the pointing hand(hand cursor)
@@ -96,11 +125,13 @@ class Sprite extends DisplayObjectContainer
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperties(Sprite.prototype,
-			{
-				"buttonMode": {get: untyped __js__("function () { return this.get_buttonMode (); }"), set: untyped __js__("function (v) { return this.set_buttonMode (v); }")},
-				"graphics": {get: untyped __js__("function () { return this.get_graphics (); }")},
-			});
+		untyped Object.defineProperties(Sprite.prototype, {
+			"buttonMode": {
+				get: untyped __js__("function () { return this.get_buttonMode (); }"),
+				set: untyped __js__("function (v) { return this.set_buttonMode (v); }")
+			},
+			"graphics": {get: untyped __js__("function () { return this.get_graphics (); }")},
+		});
 	}
 	#end
 
@@ -146,7 +177,31 @@ class Sprite extends DisplayObjectContainer
 		}
 	}
 
+	#if false
+	/**
+		Lets the user drag the specified sprite on a touch-enabled device. The
+		sprite remains draggable until explicitly stopped through a call to
+		the `Sprite.stopTouchDrag()` method, or until another sprite is made
+		draggable. Only one sprite is draggable at a time.
+		Three-dimensional display objects follow the pointer and
+		`Sprite.startTouchDrag()` moves the object within the
+		three-dimensional plane defined by the display object. Or, if the
+		display object is a two-dimensional object and the child of a
+		three-dimensional object, the two-dimensional object moves within the
+		three dimensional plane defined by the three-dimensional parent
+		object.
+
+		@param touchPointID An integer to assign to the touch point.
+		@param lockCenter   Specifies whether the draggable sprite is locked
+							to the center of the pointer position (`true`), or
+							locked to the point where the user first clicked
+							the sprite (`false`).
+		@param bounds       Value relative to the coordinates of the Sprite's
+							parent that specify a constraint rectangle for the
+							Sprite.
+	**/
 	// @:noCompletion @:dox(hide) public function startTouchDrag (touchPointID:Int, lockCenter:Bool = false, bounds:Rectangle = null):Void;
+	#end
 
 	/**
 		Ends the `startDrag()` method. A sprite that was made draggable
@@ -163,7 +218,19 @@ class Sprite extends DisplayObjectContainer
 		}
 	}
 
+	#if false
+	/**
+		Ends the `startTouchDrag()` method, for use with touch-enabled
+		devices. A sprite that was made draggable with the `startTouchDrag()`
+		method remains draggable until a `stopTouchDrag()` method is added, or
+		until another sprite becomes draggable. Only one sprite is draggable
+		at a time.
+
+		@param touchPointID The integer assigned to the touch point in the
+							`startTouchDrag` method.
+	**/
 	// @:noCompletion @:dox(hide) public function stopTouchDrag (touchPointID:Int):Void;
+	#end
 	@:noCompletion private override function __getCursor():MouseCursor
 	{
 		return (__buttonMode && useHandCursor) ? BUTTON : null;

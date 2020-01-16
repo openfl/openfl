@@ -1,17 +1,13 @@
-package openfl.errors; #if (display || !flash)
+package openfl.errors;
 
-
+#if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/errors/SecurityError", "default")
-
-extern class SecurityError extends Error {
-	
-	
-	public function new (message:String = "");
-	
-	
+#end
+extern class SecurityError extends Error
+{
+	public function new(message:String = "");
 }
-
-
 #else
 typedef SecurityError = flash.errors.SecurityError;
 #end

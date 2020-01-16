@@ -30,9 +30,9 @@ package openfl.net;
 		}
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : SharedObjectFlushStatus)
 		{
 			case SharedObjectFlushStatus.FLUSHED: "flushed";
 			case SharedObjectFlushStatus.PENDING: "pending";
@@ -41,6 +41,7 @@ package openfl.net;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract SharedObjectFlushStatus(String) from String to String
 {
 	public var FLUSHED = "flushed";

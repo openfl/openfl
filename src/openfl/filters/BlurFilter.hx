@@ -1,5 +1,6 @@
 package openfl.filters;
 
+import haxe.Timer;
 #if !flash
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectRenderer;
@@ -7,8 +8,9 @@ import openfl.display.Shader;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 #if lime
-import lime._internal.graphics.ImageDataUtil; // TODO
-
+import lime._internal.graphics.ImageDataUtil;
+#elseif openfl_html5
+import openfl._internal.backend.lime_standalone.ImageDataUtil;
 #end
 
 /**
@@ -119,12 +121,14 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperties(BlurFilter.prototype,
-			{
-				"blurX": {get: untyped __js__("function () { return this.get_blurX (); }"), set: untyped __js__("function (v) { return this.set_blurX (v); }")},
-				"blurY": {get: untyped __js__("function () { return this.get_blurY (); }"), set: untyped __js__("function (v) { return this.set_blurY (v); }")},
-				"quality": {get: untyped __js__("function () { return this.get_quality (); }"), set: untyped __js__("function (v) { return this.set_quality (v); }")},
-			});
+		untyped Object.defineProperties(BlurFilter.prototype, {
+			"blurX": {get: untyped __js__("function () { return this.get_blurX (); }"), set: untyped __js__("function (v) { return this.set_blurX (v); }")},
+			"blurY": {get: untyped __js__("function () { return this.get_blurY (); }"), set: untyped __js__("function (v) { return this.set_blurY (v); }")},
+			"quality": {
+				get: untyped __js__("function () { return this.get_quality (); }"),
+				set: untyped __js__("function (v) { return this.set_quality (v); }")
+			},
+		});
 	}
 	#end
 
@@ -140,11 +144,11 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 					   the quality using the BitmapFilterQuality constants:
 
 
-					  * `flash.filters.BitmapFilterQuality.LOW`
+					  * `openfl.filters.BitmapFilterQuality.LOW`
 
-					  * `flash.filters.BitmapFilterQuality.MEDIUM`
+					  * `openfl.filters.BitmapFilterQuality.MEDIUM`
 
-					  * `flash.filters.BitmapFilterQuality.HIGH`
+					  * `openfl.filters.BitmapFilterQuality.HIGH`
 
 
 					   High quality approximates a Gaussian blur. For most
@@ -171,20 +175,24 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 		return new BlurFilter(__blurX, __blurY, __quality);
 	}
 
-	@:noCompletion private override function __applyFilter(bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData
+	@:noCompletion private override function __applyFilter(bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle,
+			destPoint:Point):BitmapData
 	{
-		#if lime
-		var finalImage = ImageDataUtil.gaussianBlur(bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle(), destPoint.__toLimeVector2(),
-			__blurX, __blurY, __quality);
-		if (finalImage == bitmapData.image) return bitmapData;
+		#if (lime || openfl_html5)
+		var time = Timer.stamp();
+		var finalImage = ImageDataUtil.gaussianBlur(bitmapData.limeImage, sourceBitmapData.limeImage, sourceRect.__toLimeRectangle(),
+			destPoint.__toLimeVector2(), __blurX, __blurY, __quality);
+		var elapsed = Timer.stamp() - time;
+		// trace("blurX: " + __blurX + " blurY: " + __blurY + " quality: " + __quality + " elapsed: " + elapsed * 1000 + "ms");
+		if (finalImage == bitmapData.limeImage) return bitmapData;
 		#end
 		return sourceBitmapData;
 	}
 
-	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int):Shader
+	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int, sourceBitmapData:BitmapData):Shader
 	{
 		#if !macro
-		if (pass <= __horizontalPasses)
+		if (pass < __horizontalPasses)
 		{
 			var scale = Math.pow(0.5, pass >> 1);
 			__blurShader.uRadius.value[0] = blurX * scale;
@@ -262,11 +270,11 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 private class BlurShader extends BitmapFilterShader
 {
 	@:glFragmentSource("uniform sampler2D openfl_Texture;
-		
+
 		varying vec2 vBlurCoords[7];
-		
+
 		void main(void) {
-			
+
 			vec4 sum = vec4(0.0);
 			sum += texture2D(openfl_Texture, vBlurCoords[0]) * 0.00443;
 			sum += texture2D(openfl_Texture, vBlurCoords[1]) * 0.05399;
@@ -275,45 +283,45 @@ private class BlurShader extends BitmapFilterShader
 			sum += texture2D(openfl_Texture, vBlurCoords[4]) * 0.24197;
 			sum += texture2D(openfl_Texture, vBlurCoords[5]) * 0.05399;
 			sum += texture2D(openfl_Texture, vBlurCoords[6]) * 0.00443;
-			
+
 			gl_FragColor = sum;
-			
+
 		}")
 	@:glVertexSource("attribute vec4 openfl_Position;
 		attribute vec2 openfl_TextureCoord;
-		
+
 		uniform mat4 openfl_Matrix;
-		
+
 		uniform vec2 uRadius;
 		varying vec2 vBlurCoords[7];
 		uniform vec2 uTextureSize;
-		
+
 		void main(void) {
-			
+
 			gl_Position = openfl_Matrix * openfl_Position;
-			
+
 			vec2 r = uRadius / uTextureSize;
-			vBlurCoords[0] = openfl_TextureCoord - r * 1.0;
+			vBlurCoords[0] = openfl_TextureCoord - r;
 			vBlurCoords[1] = openfl_TextureCoord - r * 0.75;
 			vBlurCoords[2] = openfl_TextureCoord - r * 0.5;
 			vBlurCoords[3] = openfl_TextureCoord;
 			vBlurCoords[4] = openfl_TextureCoord + r * 0.5;
 			vBlurCoords[5] = openfl_TextureCoord + r * 0.75;
-			vBlurCoords[6] = openfl_TextureCoord + r * 1.0;
-			
+			vBlurCoords[6] = openfl_TextureCoord + r;
+
 		}")
 	public function new()
 	{
 		super();
 
-		#if !macro
+		#if (!macro && openfl_gl)
 		uRadius.value = [0, 0];
 		#end
 	}
 
 	@:noCompletion private override function __update():Void
 	{
-		#if !macro
+		#if (!macro && openfl_gl)
 		uTextureSize.value = [__texture.input.width, __texture.input.height];
 		#end
 

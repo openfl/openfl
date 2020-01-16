@@ -3,86 +3,80 @@ package openfl.display;
 import massive.munit.Assert;
 import openfl.display.MovieClip;
 
-class MovieClipTest {
-
-	@Test public function currentFrame() {
-
+class MovieClipTest
+{
+	@Test public function currentFrame()
+	{
 		// TODO: Confirm functionality
 
-		var movieClip = new MovieClip ();
+		var movieClip = new MovieClip();
 		var exists = movieClip.currentFrame;
 
 		Assert.isNotNull(exists);
-
 	}
 
-	@Test public function currentFrameLabel() {
-
+	@Test public function currentFrameLabel()
+	{
 		// TODO: Confirm functionality
 
-		var movieClip = new MovieClip ();
+		var movieClip = new MovieClip();
 		var exists = movieClip.currentFrameLabel;
 
 		Assert.isNull(exists);
-
 	}
 
-	@Test public function currentLabel() {
-
+	@Test public function currentLabel()
+	{
 		// TODO: Confirm functionality
 
-		var movieClip = new MovieClip ();
+		var movieClip = new MovieClip();
 		var exists = movieClip.currentLabel;
 
 		Assert.isNull(exists);
-
 	}
 
-	@Test public function currentLabels() {
-
+	@Test public function currentLabels()
+	{
 		// TODO: Confirm functionality
 
-		var movieClip = new MovieClip ();
+		var movieClip = new MovieClip();
 		var exists = movieClip.currentLabels;
 
 		Assert.isNotNull(exists);
-
 	}
 
-	@Test public function enabled() {
-
+	@Test public function enabled()
+	{
 		// TODO: Confirm functionality
 
-		var movieClip = new MovieClip ();
+		var movieClip = new MovieClip();
 		var exists = movieClip.enabled;
 
 		Assert.isTrue(exists);
-
 	}
 
-	@Test public function framesLoaded() {
-
+	@Test public function framesLoaded()
+	{
 		// TODO: Confirm functionality
 
-		var movieClip = new MovieClip ();
+		var movieClip = new MovieClip();
 		var exists = movieClip.framesLoaded;
 
 		Assert.isNotNull(exists);
-
 	}
 
-	@Test public function totalFrames() {
-
+	@Test public function totalFrames()
+	{
 		// TODO: Confirm functionality
 
-		var movieClip = new MovieClip ();
+		var movieClip = new MovieClip();
 		var exists = movieClip.totalFrames;
 
 		Assert.isNotNull(exists);
-
 	}
 
-	@Test public function new_() {
+	@Test public function new_()
+	{
 		var clip = new MovieClip();
 
 		#if flash
@@ -90,7 +84,7 @@ class MovieClipTest {
 		Assert.areEqual(1, clip.totalFrames);
 		#else
 		Assert.areEqual(1, clip.currentFrame);
-		Assert.areEqual(0, clip.totalFrames);
+		Assert.areEqual(1, clip.totalFrames);
 		#end
 
 		Assert.areEqual(0, clip.currentLabels.length);
@@ -98,70 +92,63 @@ class MovieClipTest {
 		Assert.areEqual(true, clip.enabled);
 	}
 
-	@Test public function gotoAndPlay() {
-
+	@Test public function gotoAndPlay()
+	{
 		// TODO: Confirm functionality
 
-		var movieClip = new MovieClip ();
+		var movieClip = new MovieClip();
 		var exists = movieClip.gotoAndPlay;
 
 		Assert.isNotNull(exists);
-
 	}
 
-	@Test public function gotoAndStop() {
-
+	@Test public function gotoAndStop()
+	{
 		// TODO: Confirm functionality
 
-		var movieClip = new MovieClip ();
+		var movieClip = new MovieClip();
 		var exists = movieClip.gotoAndStop;
 
 		Assert.isNotNull(exists);
-
 	}
 
-	@Test public function nextFrame() {
-
+	@Test public function nextFrame()
+	{
 		// TODO: Confirm functionality
 
-		var movieClip = new MovieClip ();
+		var movieClip = new MovieClip();
 		var exists = movieClip.nextFrame;
 
 		Assert.isNotNull(exists);
-
 	}
 
-	@Test public function play() {
-
+	@Test public function play()
+	{
 		// TODO: Confirm functionality
 
-		var movieClip = new MovieClip ();
+		var movieClip = new MovieClip();
 		var exists = movieClip.play;
 
 		Assert.isNotNull(exists);
-
 	}
 
-	@Test public function prevFrame() {
-
+	@Test public function prevFrame()
+	{
 		// TODO: Confirm functionality
 
-		var movieClip = new MovieClip ();
+		var movieClip = new MovieClip();
 		var exists = movieClip.prevFrame;
 
 		Assert.isNotNull(exists);
-
 	}
 
-	@Test public function stop() {
-
+	@Test public function stop()
+	{
 		// TODO: Confirm functionality
 
-		var movieClip = new MovieClip ();
+		var movieClip = new MovieClip();
 		var exists = movieClip.stop;
 
 		Assert.isNotNull(exists);
-
 	}
-
 }

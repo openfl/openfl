@@ -5,7 +5,7 @@ package openfl.ui;
 #if !openfljs
 /**
 	The MultitouchInputMode class provides values for the
-	`inputMode` property in the flash.ui.Multitouch class. These
+	`inputMode` property in the openfl.ui.Multitouch class. These
 	values set the type of touch events the Flash runtime dispatches when the
 	user interacts with a touch-enabled device.
 **/
@@ -18,6 +18,11 @@ package openfl.ui;
 		simple tap) are interpreted as mouse events.
 	**/
 	public var GESTURE = 0;
+
+	/**
+		Specifies that all user contact with a touch-enabled device is interpreted as a
+		type of mouse event.
+	**/
 	public var NONE = 1;
 
 	/**
@@ -37,9 +42,9 @@ package openfl.ui;
 		}
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : MultitouchInputMode)
 		{
 			case MultitouchInputMode.GESTURE: "gesture";
 			case MultitouchInputMode.NONE: "none";
@@ -49,6 +54,7 @@ package openfl.ui;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract MultitouchInputMode(String) from String to String
 {
 	public var GESTURE = "gesture";

@@ -1,6 +1,7 @@
 package openfl.events;
 
 #if !flash
+import openfl._internal.utils.ObjectPool;
 import openfl.display.InteractiveObject;
 import openfl.geom.Point;
 
@@ -23,95 +24,301 @@ import openfl.geom.Point;
 class MouseEvent extends Event
 {
 	/**
-		Defines the value of the `type` property of a
-		`click` event object.
-
+		Defines the value of the `type` property of a `click` event object.
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `altKey` | `true` if the Alt key is active (Windows). |
+		| `bubbles` | `true` |
+		| `buttonDown` | For click events, this value is always `false`. |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `commandKey` | `true` on the Mac if the Command key is active; `false` if it is inactive. Always `false` on Windows. |
+		| `controlKey` | `true` if the Ctrl or Control key is active; `false` if it is inactive. |
+		| `ctrlKey` | `true` on Windows or Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
+		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
+		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
+		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
+		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
+		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
-	public static inline var CLICK:String = "click";
+	public static inline var CLICK:EventType<MouseEvent> = "click";
+
+	#if false
+	/**
+		The `MouseEvent.CONTEXT_MENU` constant defines the value of the `type`
+		property of a `contextMenu` event object.
+		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `altKey` | `true` if the Alt key is active (Windows). |
+		| `bubbles` | `true` |
+		| `buttonDown` | `true` if the right mouse button is pressed; `false` otherwise. |
+		| `cancelable` | `false`; the default behavior cannot be canceled. |
+		| `commandKey` | `true` on the Mac if the Command key is active; `false` if it is inactive. Always `false` on Windows. |
+		| `controlKey` | `true` if the Ctrl or Control key is active; `false` if it is inactive. |
+		| `ctrlKey` | `true` on Windows or Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
+		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
+		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
+		| `clickCount` | Count of the number of mouse clicks to indicate whether the event is part of a multi-click sequence. |
+		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
+		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
+		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
+	**/
 	// @:noCompletion @:dox(hide) @:require(flash11_2) public static var CONTEXT_MENU:String;
+	#end
 
 	/**
-		Defines the value of the `type` property of a
-		`doubleClick` event object. The `doubleClickEnabled`
-		property must be `true` for an object to generate the
-		`doubleClick` event.
-
+		Defines the value of the `type` property of a `doubleClick` event
+		object. The `doubleClickEnabled` property must be `true` for an object
+		to generate the `doubleClick` event.
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `altKey` | `true` if the Alt key is active (Windows). |
+		| `bubbles` | `true` |
+		| `buttonDown` | For double-click events, this value is always `false`. |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `commandKey` | `true` on the Mac if the Command key is active; `false` if it is inactive. Always `false` on Windows. |
+		| `controlKey` | `true` if the Ctrl or Control key is active; `false` if it is inactive. |
+		| `ctrlKey` | `true` on Windows or Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
+		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
+		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
+		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
+		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
+		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
-	public static inline var DOUBLE_CLICK:String = "doubleClick";
+	public static inline var DOUBLE_CLICK:EventType<MouseEvent> = "doubleClick";
 
 	/**
-		Defines the value of the `type` property of a
-		`middleClick` event object.
-
+		Defines the value of the `type` property of a `middleClick` event
+		object.
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `altKey` | `true` if the Alt key is active (Windows). |
+		| `bubbles` | `true` |
+		| `buttonDown` | For middle-click events, this property is always `false`. |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `commandKey` | `true` on the Mac if the Command key is active; `false` if it is inactive. Always `false` on Windows. |
+		| `controlKey` | `true` if the Ctrl or Control key is active; `false` if it is inactive. |
+		| `ctrlKey` | `true` on Windows or Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
+		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
+		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
+		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
+		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
+		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
-	public static inline var MIDDLE_CLICK:String = "middleClick";
+	public static inline var MIDDLE_CLICK:EventType<MouseEvent> = "middleClick";
 
 	/**
-		Defines the value of the `type` property of a
-		`middleMouseDown` event object.
-
+		Defines the value of the `type` property of a `middleMouseDown` event
+		object.
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `altKey` | `true` if the Alt key is active (Windows). |
+		| `bubbles` | `true` |
+		| `buttonDown` | `true` if the middle mouse button is pressed; `false` otherwise. |
+		| `cancelable` | `false`; the default behavior cannot be canceled. |
+		| `commandKey` | `true` on the Mac if the Command key is active; `false` if it is inactive. Always `false` on Windows. |
+		| `controlKey` | `true` if the Ctrl or Control key is active; `false` if it is inactive. |
+		| `ctrlKey` | `true` on Windows or Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
+		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
+		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
+		| `clickCount` | Count of the number of mouse clicks to indicate whether the event is part of a multi-click sequence. |
+		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
+		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
+		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
-	public static inline var MIDDLE_MOUSE_DOWN:String = "middleMouseDown";
+	public static inline var MIDDLE_MOUSE_DOWN:EventType<MouseEvent> = "middleMouseDown";
 
 	/**
-		Defines the value of the `type` property of a
-		`middleMouseUp` event object.
-
+		Defines the value of the `type` property of a `middleMouseUp` event
+		object.
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `altKey` | `true` if the Alt key is active (Windows). |
+		| `bubbles` | `true` |
+		| `buttonDown` | `true` if the middle mouse button is pressed; `false` otherwise. |
+		| `cancelable` | `false`; the default behavior cannot be canceled. |
+		| `commandKey` | `true` on the Mac if the Command key is active; `false` if it is inactive. Always `false` on Windows. |
+		| `controlKey` | `true` if the Ctrl or Control key is active; `false` if it is inactive. |
+		| `ctrlKey` | `true` on Windows or Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
+		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
+		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
+		| `clickCount` | Count of the number of mouse clicks to indicate whether the event is part of a multi-click sequence. |
+		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
+		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
+		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
-	public static inline var MIDDLE_MOUSE_UP:String = "middleMouseUp";
+	public static inline var MIDDLE_MOUSE_UP:EventType<MouseEvent> = "middleMouseUp";
 
 	/**
-		Defines the value of the `type` property of a
-		`mouseDown` event object.
-
+		Defines the value of the `type` property of a `mouseDown` event
+		object.
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `altKey` | `true` if the Alt key is active (Windows). |
+		| `bubbles` | `true` |
+		| `buttonDown` | `true` if the primary mouse button is pressed; `false` otherwise. |
+		| `cancelable` | `false`; the default behavior cannot be canceled. |
+		| `commandKey` | `true` on the Mac if the Command key is active; `false` if it is inactive. Always `false` on Windows. |
+		| `controlKey` | `true` if the Ctrl or Control key is active; `false` if it is inactive. |
+		| `ctrlKey` | `true` on Windows and Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
+		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
+		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
+		| `clickCount` | Count of the number of mouse clicks to indicate whether the event is part of a multi-click sequence. |
+		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
+		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
+		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
-	public static inline var MOUSE_DOWN:String = "mouseDown";
+	public static inline var MOUSE_DOWN:EventType<MouseEvent> = "mouseDown";
 
 	/**
-		Defines the value of the `type` property of a
-		`mouseMove` event object.
-
+		Defines the value of the `type` property of a `mouseMove` event
+		object.
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `altKey` | `true` if the Alt key is active (Windows). |
+		| `bubbles` | `true` |
+		| `buttonDown` | `true` if the primary mouse button is pressed; `false` otherwise. |
+		| `cancelable` | `false`; the default behavior cannot be canceled. |
+		| `commandKey` | `true` on the Mac if the Command key is active; `false` if it is inactive. Always `false` on Windows. |
+		| `controlKey` | `true` if the Ctrl or Control key is active; `false` if it is inactive. |
+		| `ctrlKey` | `true` on Windows or Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
+		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
+		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
+		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
+		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
+		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
-	public static inline var MOUSE_MOVE:String = "mouseMove";
+	public static inline var MOUSE_MOVE:EventType<MouseEvent> = "mouseMove";
 
 	/**
-		Defines the value of the `type` property of a
-		`mouseOut` event object.
+		Defines the value of the `type` property of a `mouseOut` event object.
 
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `altKey` | `true` if the Alt key is active (Windows). |
+		| `bubbles` | `true` |
+		| `buttonDown` | `true` if the primary mouse button is pressed; `false` otherwise. |
+		| `cancelable` | `false`; the default behavior cannot be canceled. |
+		| `commandKey` | `true` on the Mac if the Command key is active; `false` if it is inactive. Always `false` on Windows. |
+		| `controlKey` | `true` if the Ctrl or Control key is active; `false` if it is inactive. |
+		| `ctrlKey` | `true` on Windows or Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `relatedObject` | The display list object to which the pointing device now points. |
+		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
+		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
+		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
+		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
+		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
+		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
-	public static inline var MOUSE_OUT:String = "mouseOut";
+	public static inline var MOUSE_OUT:EventType<MouseEvent> = "mouseOut";
 
 	/**
-		Defines the value of the `type` property of a
-		`mouseOver` event object.
-
+		Defines the value of the `type` property of a `mouseOver` event
+		object.
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `altKey` | `true` if the Alt key is active (Windows). |
+		| `bubbles` | `true` |
+		| `buttonDown` | `true` if the primary mouse button is pressed; `false` otherwise. |
+		| `cancelable` | `false`; the default behavior cannot be canceled. |
+		| `commandKey` | `true` on the Mac if the Command key is active; `false` if it is inactive. Always `false` on Windows. |
+		| `controlKey` | `true` if the Ctrl or Control key is active; `false` if it is inactive. |
+		| `ctrlKey` | `true` on Windows or Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `relatedObject` | The display list object to which the pointing device was pointing. |
+		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
+		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
+		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
+		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
+		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
+		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
-	public static inline var MOUSE_OVER:String = "mouseOver";
+	public static inline var MOUSE_OVER:EventType<MouseEvent> = "mouseOver";
 
 	/**
-		Defines the value of the `type` property of a
-		`mouseUp` event object.
-
+		Defines the value of the `type` property of a `mouseUp` event object.
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `altKey` | `true` if the Alt key is active (Windows). |
+		| `bubbles` | `true` |
+		| `buttonDown` | `true` if the primary mouse button is pressed; `false` otherwise. |
+		| `cancelable` | `false`; the default behavior cannot be canceled. |
+		| `commandKey` | `true` on the Mac if the Command key is active; `false` if it is inactive. Always `false` on Windows. |
+		| `controlKey` | `true` if the Ctrl or Control key is active; `false` if it is inactive. |
+		| `ctrlKey` | `true` on Windows or Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
+		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
+		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
+		| `clickCount` | Count of the number of mouse clicks to indicate whether the event is part of a multi-click sequence. |
+		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
+		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
+		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
-	public static inline var MOUSE_UP:String = "mouseUp";
+	public static inline var MOUSE_UP:EventType<MouseEvent> = "mouseUp";
 
 	/**
-		Defines the value of the `type` property of a
-		`mouseWheel` event object.
-
+		Defines the value of the `type` property of a `mouseWheel` event
+		object.
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `altKey` | `true` if the Alt key is active (Windows). |
+		| `bubbles` | `true` |
+		| `buttonDown` | `true` if the primary mouse button is pressed; `false` otherwise. |
+		| `cancelable` | `false`; the default behavior cannot be canceled. |
+		| `commandKey` | `true` on the Mac if the Command key is active; `false` if it is inactive. Always `false` on Windows. |
+		| `controlKey` | `true` if the Ctrl or Control key is active; `false` if it is inactive. |
+		| `ctrlKey` | `true` on Windows or Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `delta` | The number of lines that that each notch on the mouse wheel represents. |
+		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
+		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
+		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
+		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
+		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
+		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
-	public static inline var MOUSE_WHEEL:String = "mouseWheel";
+	public static inline var MOUSE_WHEEL:EventType<MouseEvent> = "mouseWheel";
 
 	/**
 		Defines the value of the `type` property of a
@@ -119,52 +326,130 @@ class MouseEvent extends Event
 
 		This event has the following properties:
 	**/
-	public static inline var RELEASE_OUTSIDE:String = "releaseOutside";
+	public static inline var RELEASE_OUTSIDE:EventType<MouseEvent> = "releaseOutside";
 
 	/**
-		Defines the value of the `type` property of a
-		`rightClick` event object.
-
+		Defines the value of the `type` property of a `rightClick` event
+		object.
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `altKey` | `true` if the Alt key is active (Windows). |
+		| `bubbles` | `true` |
+		| `buttonDown` | For right-click events, this property is always `false`. |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `commandKey` | `true` on the Mac if the Command key is active; `false` if it is inactive. Always `false` on Windows. |
+		| `controlKey` | `true` if the Ctrl or Control key is active; `false` if it is inactive. |
+		| `ctrlKey` | `true` on Windows or Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
+		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
+		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
+		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
+		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
+		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
-	public static inline var RIGHT_CLICK:String = "rightClick";
+	public static inline var RIGHT_CLICK:EventType<MouseEvent> = "rightClick";
 
 	/**
-		Defines the value of the `type` property of a
-		`rightMouseDown` event object.
-
+		Defines the value of the `type` property of a `rightMouseDown` event
+		object.
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `altKey` | `true` if the Alt key is active (Windows). |
+		| `bubbles` | `true` |
+		| `buttonDown` | For right-click events, this property is always `true`. |
+		| `cancelable` | `false`; the default behavior cannot be canceled. |
+		| `commandKey` | `true` on the Mac if the Command key is active; `false` if it is inactive. Always `false` on Windows. |
+		| `controlKey` | `true` if the Ctrl or Control key is active; `false` if it is inactive. |
+		| `ctrlKey` | `true` on Windows or Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
+		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
+		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
+		| `clickCount` | Count of the number of mouse clicks to indicate whether the event is part of a multi-click sequence. |
+		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
+		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
+		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
-	public static inline var RIGHT_MOUSE_DOWN:String = "rightMouseDown";
+	public static inline var RIGHT_MOUSE_DOWN:EventType<MouseEvent> = "rightMouseDown";
 
 	/**
-		Defines the value of the `type` property of a
-		`rightMouseUp` event object.
-
+		Defines the value of the `type` property of a `rightMouseUp` event
+		object.
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `altKey` | `true` if the Alt key is active (Windows). |
+		| `bubbles` | `true` |
+		| `buttonDown` | `true` if the right mouse button is pressed; `false` otherwise. |
+		| `cancelable` | `false`; the default behavior cannot be canceled. |
+		| `commandKey` | `true` on the Mac if the Command key is active; `false` if it is inactive. Always `false` on Windows. |
+		| `controlKey` | `true` if the Ctrl or Control key is active; `false` if it is inactive. |
+		| `ctrlKey` | `true` on Windows or Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
+		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
+		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
+		| `clickCount` | Count of the number of mouse clicks to indicate whether the event is part of a multi-click sequence. |
+		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
+		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
+		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
-	public static inline var RIGHT_MOUSE_UP:String = "rightMouseUp";
+	public static inline var RIGHT_MOUSE_UP:EventType<MouseEvent> = "rightMouseUp";
 
 	/**
-		Defines the value of the `type` property of a
-		`rollOut` event object.
-
+		Defines the value of the `type` property of a `rollOut` event object.
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `altKey` | `true` if the Alt key is active (Windows). |
+		| `bubbles` | `false` |
+		| `buttonDown` | `true` if the primary mouse button is pressed; `false` otherwise. |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `commandKey` | `true` on the Mac if the Command key is active; `false` if it is inactive. Always `false` on Windows. |
+		| `controlKey` | `true` if the Ctrl or Control key is active; `false` if it is inactive. |
+		| `ctrlKey` | `true` on Windows or Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `relatedObject` | The display list object to which the pointing device now points. |
+		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
+		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
+		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
+		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
+		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
+		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
-	public static inline var ROLL_OUT:String = "rollOut";
+	public static inline var ROLL_OUT:EventType<MouseEvent> = "rollOut";
 
 	/**
-		Defines the value of the `type` property of a
-		`rollOver` event object.
+		Defines the value of the `type` property of a `rollOver` event object.
 
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `altKey` | `true` if the Alt key is active (Windows). |
+		| `bubbles` | `false` |
+		| `buttonDown` | `true` if the primary mouse button is pressed; `false` otherwise. |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `commandKey` | `true` on the Mac if the Command key is active; `false` if it is inactive. Always `false` on Windows. |
+		| `controlKey` | `true` if the Ctrl or Control key is active; `false` if it is inactive. |
+		| `ctrlKey` | `true` on Windows or Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `relatedObject` | The display list object to which the pointing device was pointing. |
+		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
+		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
+		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
+		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
+		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
+		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
-	public static inline var ROLL_OVER:String = "rollOver";
-	@:noCompletion private static var __altKey:Bool;
-	@:noCompletion private static var __buttonDown:Bool;
-	@:noCompletion private static var __commandKey:Bool;
-	@:noCompletion private static var __ctrlKey:Bool;
-	@:noCompletion private static var __shiftKey:Bool;
+	public static inline var ROLL_OVER:EventType<MouseEvent> = "rollOver";
 
 	/**
 		Indicates whether the Alt key is active(`true`) or inactive
@@ -178,7 +463,29 @@ class MouseEvent extends Event
 		or not(`false`).
 	**/
 	public var buttonDown:Bool;
+
+	/**
+		Indicates whether the command key is activated (Mac only.)
+
+		The value of property `commandKey` will have the same value as property `ctrlKey`
+		on the Mac. Always `false` on Windows or Linux.
+	**/
 	public var commandKey:Bool;
+
+	/**
+		Indicates whether or not the mouse down event is part of a multi-click sequence.
+		This parameter will be zero for all mouse events other than `MouseEvent.mouseDown`,
+		`MouseEvent.mouseUp`, `MouseEvent.middleMouseDown`, `MouseEvent.middleMouseUp`,
+		`MouseEvent.rightMouseDown`, and `MouseEvent.rightMouseUp`. Listening for single
+		clicks, double clicks, or any multi-click sequence is possible with the
+		`clickCount` parameter. For example, an initial `MouseEvent.mouseDown` and
+		`MouseEvent.mouseUp` will have a `clickCount` of 1, and the second
+		`MouseEvent.mouseDown` and `MouseEvent.mouseUp` in a double-click sequence will
+		have a `clickCount` of 2. If the mouse moves sufficiently or the multi-click
+		sequence is interrupted for some reason, then the next `MouseEvent.mouseDown`
+		will have a `clickCount` of 1. The `doubleClick` event will continue to fire as
+		expected.
+	**/
 	public var clickCount:Int;
 
 	/**
@@ -197,6 +504,16 @@ class MouseEvent extends Event
 		property applies only to the `MouseEvent.mouseWheel` event.
 	**/
 	public var delta:Int;
+
+	/**
+		If `true`, the `relatedObject` property is set to `null` for reasons related to
+		security sandboxes. If the nominal value of `relatedObject` is a reference to a
+		DisplayObject in another sandbox, `relatedObject` is set to `null` unless there is
+		permission in both directions across this sandbox boundary. Permission is
+		established by calling `Security.allowDomain()` from a SWF file, or by providing a
+		policy file from the server of an image file, and setting the
+		`LoaderContext.checkPolicyFile` property when loading the image.
+	**/
 	public var isRelatedObjectInaccessible:Bool;
 
 	/**
@@ -210,6 +527,7 @@ class MouseEvent extends Event
 		containing sprite.
 	**/
 	public var localY:Float;
+
 	// @:noCompletion @:dox(hide) @:require(flash11_2) public var movementX:Float;
 	// @:noCompletion @:dox(hide) @:require(flash11_2) public var movementY:Float;
 
@@ -248,6 +566,14 @@ class MouseEvent extends Event
 		property is set.
 	**/
 	public var stageY:Float;
+
+	@:noCompletion private static var __altKey:Bool;
+	@:noCompletion private static var __buttonDown:Bool;
+	@:noCompletion private static var __commandKey:Bool;
+	@:noCompletion private static var __ctrlKey:Bool;
+	@:noCompletion private static var __pool:ObjectPool<MouseEvent> = new ObjectPool<MouseEvent>(function() return new MouseEvent(null),
+	function(event) event.__init());
+	@:noCompletion private static var __shiftKey:Bool;
 
 	/**
 		Creates an Event object that contains information about mouse events.
@@ -321,7 +647,7 @@ class MouseEvent extends Event
 		stageY = Math.NaN;
 	}
 
-	public override function clone():Event
+	public override function clone():MouseEvent
 	{
 		var event = new MouseEvent(type, bubbles, cancelable, localX, localY, relatedObject, ctrlKey, altKey, shiftKey, buttonDown, delta, commandKey,
 			clickCount);
@@ -345,7 +671,8 @@ class MouseEvent extends Event
 	**/
 	public function updateAfterEvent():Void {}
 
-	@:noCompletion private static function __create(type:String, button:Int, stageX:Float, stageY:Float, local:Point, target:InteractiveObject, delta:Int = 0):MouseEvent
+	@:noCompletion private static function __create(type:String, button:Int, stageX:Float, stageY:Float, local:Point, target:InteractiveObject,
+			delta:Int = 0):MouseEvent
 	{
 		var event = new MouseEvent(type, true, false, local.x, local.y, null, __ctrlKey, __altKey, __shiftKey, __buttonDown, delta, __commandKey);
 		event.stageX = stageX;
@@ -353,6 +680,26 @@ class MouseEvent extends Event
 		event.target = target;
 
 		return event;
+	}
+
+	@:noCompletion private override function __init():Void
+	{
+		super.__init();
+		shiftKey = false;
+		altKey = false;
+		ctrlKey = false;
+		bubbles = false;
+		relatedObject = null;
+		delta = 0;
+		localX = 0;
+		localY = 0;
+		buttonDown = false;
+		commandKey = false;
+		clickCount = 0;
+
+		isRelatedObjectInaccessible = false;
+		stageX = Math.NaN;
+		stageY = Math.NaN;
 	}
 }
 #else

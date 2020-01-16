@@ -1,12 +1,8 @@
 package openfl.display;
 
-
 import openfl.events.EventDispatcher;
 
+#if !openfl_global
 @:jsRequire("openfl/display/DisplayObjectRenderer", "default")
-
-
-extern class DisplayObjectRenderer extends EventDispatcher {
-	
-	
-}
+#end
+extern class DisplayObjectRenderer extends EventDispatcher {}

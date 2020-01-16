@@ -6,9 +6,21 @@ package openfl.display3D;
 import openfl._internal.utils.NullUtils;
 #end
 
+/**
+	Defines the values to use for specifying the buffer usage type.
+**/
 @:enum abstract Context3DBufferUsage(Null<Int>)
 {
+	/**
+		Indicates the buffer will be used for drawing and be updated frequently
+	**/
 	public var DYNAMIC_DRAW = 0;
+
+	/**
+		Indicates the buffer will be used for drawing and be updated once
+
+		This type is the default value for buffers in `Stage3D`.
+	**/
 	public var STATIC_DRAW = 1;
 
 	@:from private static function fromString(value:String):Context3DBufferUsage
@@ -21,9 +33,9 @@ import openfl._internal.utils.NullUtils;
 		}
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : Context3DBufferUsage)
 		{
 			case Context3DBufferUsage.DYNAMIC_DRAW: "dynamicDraw";
 			case Context3DBufferUsage.STATIC_DRAW: "staticDraw";
@@ -46,6 +58,7 @@ import openfl._internal.utils.NullUtils;
 	#end
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract Context3DBufferUsage(String) from String to String
 {
 	public var DYNAMIC_DRAW = "dynamicDraw";

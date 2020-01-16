@@ -1,18 +1,12 @@
-package flash.media; #if flash
+package flash.media;
 
-
-extern class SoundLoaderContext {
-	
-	
+#if flash
+extern class SoundLoaderContext
+{
 	public var bufferTime:Float;
 	public var checkPolicyFile:Bool;
-	
-	public function new (bufferTime:Float = 1000, checkPolicyFile:Bool = false);
-	
-	
+	public function new(bufferTime:Float = 1000, checkPolicyFile:Bool = false);
 }
-
-
 #else
 typedef SoundLoaderContext = openfl.media.SoundLoaderContext;
 #end

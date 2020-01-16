@@ -3,8 +3,10 @@ package openfl.geom;
 import massive.munit.Assert;
 
 // TODO: Width/Height is 500/500 in tests for FLASH target - is SWF 500x500 ?
-class PerspectiveProjectionTest {
-	@Test public function new_() {
+class PerspectiveProjectionTest
+{
+	@Test public function new_()
+	{
 		var projection = new PerspectiveProjection();
 
 		// TODO: Looks like Flash's default value is 55.0
@@ -16,11 +18,7 @@ class PerspectiveProjectionTest {
 
 		// TODO: Flash's focalLength has some round/ceil I cannot reproduce
 		#if flash
-		var focalLength = (500.0 * 0.5)
-		* (
-			Math.cos((0.5 * projection.fieldOfView * Math.PI) / 180.0)
-			/ Math.sin((0.5 * projection.fieldOfView * Math.PI) / 180.0)
-		);
+		var focalLength = (500.0 * 0.5) * (Math.cos((0.5 * projection.fieldOfView * Math.PI) / 180.0) / Math.sin((0.5 * projection.fieldOfView * Math.PI) / 180.0));
 
 		Assert.areEqual(Math.round(focalLength * 1000.0) / 1000.0, Math.round(projection.focalLength * 1000.0) / 1000.0);
 		#else
@@ -40,8 +38,8 @@ class PerspectiveProjectionTest {
 		#end
 	}
 
-	@Test public function fieldOfView() {
-
+	@Test public function fieldOfView()
+	{
 		var projection = new PerspectiveProjection();
 
 		// TODO: Looks like Flash's default value is 55.0
@@ -62,11 +60,7 @@ class PerspectiveProjectionTest {
 
 		// TODO: Flash's focalLength has some round/ceil I cannot reproduce
 		#if flash
-		var focalLength = (500.0 * 0.5)
-		* (
-			Math.cos((0.5 * projection.fieldOfView * Math.PI) / 180.0)
-			/ Math.sin((0.5 * projection.fieldOfView * Math.PI) / 180.0)
-		);
+		var focalLength = (500.0 * 0.5) * (Math.cos((0.5 * projection.fieldOfView * Math.PI) / 180.0) / Math.sin((0.5 * projection.fieldOfView * Math.PI) / 180.0));
 
 		Assert.areEqual(Math.round(focalLength * 1000.0) / 1000.0, Math.round(projection.focalLength * 1000.0) / 1000.0);
 		#else
@@ -74,20 +68,16 @@ class PerspectiveProjectionTest {
 
 		Assert.areEqual(focalLength, projection.focalLength);
 		#end
-
 	}
 
-	@Test public function focalLength() {
+	@Test public function focalLength()
+	{
 		var projection = new PerspectiveProjection();
 		projection.fieldOfView = 40;
 
 		// TODO: Flash's focalLength has some round/ceil I cannot reproduce
 		#if flash
-		var focalLength = (500.0 * 0.5)
-		* (
-			Math.cos((0.5 * projection.fieldOfView * Math.PI) / 180.0)
-			/ Math.sin((0.5 * projection.fieldOfView * Math.PI) / 180.0)
-		);
+		var focalLength = (500.0 * 0.5) * (Math.cos((0.5 * projection.fieldOfView * Math.PI) / 180.0) / Math.sin((0.5 * projection.fieldOfView * Math.PI) / 180.0));
 
 		Assert.areEqual(Math.round(focalLength * 1000.0) / 1000.0, Math.round(projection.focalLength * 1000.0) / 1000.0);
 		#else
@@ -97,11 +87,12 @@ class PerspectiveProjectionTest {
 		#end
 	}
 
-	@Test public function projectionCenter() {
+	@Test public function projectionCenter()
+	{
 		var projection = new PerspectiveProjection();
-		
+
 		// TODO: Isolate so integration is not needed
-		
+
 		#if integration
 		#if flash
 		Assert.areEqual(500 / 2, projection.projectionCenter.x);
@@ -113,7 +104,8 @@ class PerspectiveProjectionTest {
 		#end
 	}
 
-	@Test public function toMatrix3D() {
+	@Test public function toMatrix3D()
+	{
 		var projection = new PerspectiveProjection();
 		projection.fieldOfView = 40.0;
 
@@ -135,7 +127,5 @@ class PerspectiveProjectionTest {
 
 		Assert.areEqual(1.0, matrix.rawData[11]);
 		Assert.areEqual(0.0, matrix.rawData[15]);
-
 	}
-
 }

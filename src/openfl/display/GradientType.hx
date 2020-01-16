@@ -41,9 +41,9 @@ package openfl.display;
 		return this;
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : GradientType)
 		{
 			case GradientType.LINEAR: "linear";
 			case GradientType.RADIAL: "radial";
@@ -52,6 +52,7 @@ package openfl.display;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract GradientType(String) from String to String
 {
 	public var LINEAR = "linear";

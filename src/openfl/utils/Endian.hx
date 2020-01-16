@@ -82,9 +82,9 @@ import lime.system.Endian as LimeEndian;
 	}
 
 	#if lime
-	@:to private static function toLimeEndian(value:Int):LimeEndian
+	@:to private function toLimeEndian():LimeEndian
 	{
-		return switch (value)
+		return switch (cast this : Endian)
 		{
 			case Endian.BIG_ENDIAN: LimeEndian.BIG_ENDIAN;
 			case Endian.LITTLE_ENDIAN: LimeEndian.LITTLE_ENDIAN;
@@ -93,9 +93,9 @@ import lime.system.Endian as LimeEndian;
 	}
 	#end
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : Endian)
 		{
 			case Endian.BIG_ENDIAN: "bigEndian";
 			case Endian.LITTLE_ENDIAN: "littleEndian";
@@ -104,6 +104,7 @@ import lime.system.Endian as LimeEndian;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract Endian(String) from String to String
 {
 	public var BIG_ENDIAN = "bigEndian";
@@ -120,9 +121,9 @@ import lime.system.Endian as LimeEndian;
 		}
 	}
 
-	@:to private static function toLimeEndian(value:String):LimeEndian
+	@:to private function toLimeEndian():LimeEndian
 	{
-		return switch (value)
+		return switch (cast this : Endian)
 		{
 			case Endian.BIG_ENDIAN: LimeEndian.BIG_ENDIAN;
 			case Endian.LITTLE_ENDIAN: LimeEndian.LITTLE_ENDIAN;

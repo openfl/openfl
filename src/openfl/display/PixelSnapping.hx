@@ -45,9 +45,9 @@ package openfl.display;
 		}
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : PixelSnapping)
 		{
 			case PixelSnapping.ALWAYS: "always";
 			case PixelSnapping.AUTO: "auto";
@@ -57,6 +57,7 @@ package openfl.display;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract PixelSnapping(String) from String to String
 {
 	public var ALWAYS = "always";

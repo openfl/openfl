@@ -16,6 +16,8 @@ package openfl.geom;
 	The projected perspective produces the illusion of three dimensions with depth and distance,
 	where the objects closer to the screen appear larger than the objects farther from the screen.
 
+	![Frustum viewing area](/images/frustum.jpg)
+
 	A default `PerspectiveProjection` object is a framework defined for perspective transformation of
 	the root object, based on the field of view and aspect ratio (dimensions) of the stage.
 	The projection center, the vanishing point, is set to the center of the stage, which means the
@@ -38,7 +40,8 @@ package openfl.geom;
 #end
 class PerspectiveProjection
 {
-	public static inline var TO_RADIAN:Float = 0.01745329251994329577; // Math.PI / 180
+	@SuppressWarnings("checkstyle:FieldDocComment")
+	@:dox(hide) @:noCompletion public static inline var TO_RADIAN:Float = 0.01745329251994329577; // Math.PI / 180
 
 	/**
 		Specifies an angle, as a degree between 0 and 180, for the field of view in three dimensions.
@@ -79,14 +82,16 @@ class PerspectiveProjection
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperty(PerspectiveProjection.prototype, "fieldOfView",
-			{
-				get: untyped __js__("function () { return this.get_fieldOfView (); }"),
-				set: untyped __js__("function (v) { return this.set_fieldOfView (v); }")
-			});
+		untyped Object.defineProperty(PerspectiveProjection.prototype, "fieldOfView", {
+			get: untyped __js__("function () { return this.get_fieldOfView (); }"),
+			set: untyped __js__("function (v) { return this.set_fieldOfView (v); }")
+		});
 	}
 	#end
 
+	/**
+		Creates an instance of a PerspectiveProjection object.
+	**/
 	public function new()
 	{
 		__fieldOfView = 0;

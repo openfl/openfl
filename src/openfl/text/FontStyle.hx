@@ -48,9 +48,9 @@ package openfl.text;
 		}
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : FontStyle)
 		{
 			case FontStyle.BOLD: "bold";
 			case FontStyle.BOLD_ITALIC: "boldItalic";
@@ -61,6 +61,7 @@ package openfl.text;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract FontStyle(String) from String to String
 {
 	public var BOLD = "bold";

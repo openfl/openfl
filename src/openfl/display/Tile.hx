@@ -4,6 +4,23 @@ import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
+/**
+	The Tile class is the base class for all objects that can be contained in a
+	ITileContainer object. Use the Tilemap or TileContainer class to arrange the tile
+	objects in the tile list. Tilemap or TileContainer objects can contain tile'
+	objects, while other the Tile class is a "leaf" node that have only parents and
+	siblings, no children.
+
+	The Tile class supports basic functionality like the _x_ and _y_ position of an
+	tile, as well as more advanced properties of a tile such as its transformation
+	matrix.
+
+	Tile objects render from a Tileset using either an `id` or a `rect` value, to
+	reference either an existing rectangle within the Tileset, or a custom rectangle.
+
+	Tile objects cannot be rendered on their own. In order to display a Tile object,
+	it should be contained within a Tilemap instance.
+**/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -13,24 +30,162 @@ import openfl.geom.Rectangle;
 @:access(openfl.geom.Rectangle)
 class Tile
 {
-	public var alpha(get, set):Float;
+	/**
+		Indicates the alpha transparency value of the object specified. Valid
+		values are 0 (fully transparent) to 1 (fully opaque). The default value is 1.
+		Tile objects with `alpha` set to 0 _are_ active, even though they are invisible.
+	**/
+	@:keep public var alpha(get, set):Float;
+
+	/**
+		A value from the BlendMode class that specifies which blend mode to use.
+
+		This property is supported only when using hardware rendering or the Flash target.
+	**/
 	public var blendMode(get, set):BlendMode;
+
+	/**
+		A ColorTransform object containing values that universally adjust the
+		colors in the display object.
+
+		This property is supported only when using hardware rendering.
+	**/
 	@:beta public var colorTransform(get, set):ColorTransform;
+
+	/**
+		An additional field for custom user-data
+	**/
 	@SuppressWarnings("checkstyle:Dynamic") public var data:Dynamic;
+
+	/**
+		Indicates the height of the tile, in pixels. The height is
+		calculated based on the bounds of the tile after local transformations.
+		When you set the `height` property, the `scaleY` property
+		is adjusted accordingly.
+		If a tile has a height of zero, no change is applied
+	**/
+	@:keep #if (openfl < "9.0.0") @:dox(hide) #end public var height(get, set):Float;
+
+	/**
+		The ID of the tile to draw from the Tileset
+	**/
 	public var id(get, set):Int;
+
+	/**
+		A Matrix object containing values that alter the scaling, rotation, and
+		translation of the tile object.
+
+		If the `matrix` property is set to a value (not `null`), the `x`, `y`,
+		`scaleX`, `scaleY` and the `rotation` values will be overwritten.
+	**/
 	public var matrix(get, set):Matrix;
-	public var originX(get, set):Float;
-	public var originY(get, set):Float;
+
+	/**
+		Modifies the origin x coordinate for this tile, which is the center value
+		used when determining position, scale and rotation.
+	**/
+	@:keep public var originX(get, set):Float;
+
+	/**
+		Modifies the origin y coordinate for this tile, which is the center value
+		used when determining position, scale and rotation.
+	**/
+	@:keep public var originY(get, set):Float;
+
+	/**
+		Indicates the ITileContainer object that contains this display
+		object. Use the `parent` property to specify a relative path to
+		tile objects that are above the current tile object in the tile
+		list hierarchy.
+	**/
 	public var parent(default, null):TileContainer;
+
+	/**
+		The custom rectangle to draw from the Tileset
+	**/
 	public var rect(get, set):Rectangle;
-	public var rotation(get, set):Float;
-	public var scaleX(get, set):Float;
-	public var scaleY(get, set):Float;
+
+	/**
+		Indicates the rotation of the Tile instance, in degrees, from its
+		original orientation. Values from 0 to 180 represent clockwise rotation;
+		values from 0 to -180 represent counterclockwise rotation. Values outside
+		this range are added to or subtracted from 360 to obtain a value within
+		the range. For example, the statement `tile.rotation = 450`
+		is the same as ` tile.rotation = 90`.
+	**/
+	@:keep public var rotation(get, set):Float;
+
+	/**
+		Indicates the horizontal scale (percentage) of the object as applied from
+		the origin point. The default origin point is (0,0). 1.0
+		equals 100% scale.
+
+		Scaling the local coordinate system changes the `x` and
+		`y` property values, which are defined in whole pixels.
+	**/
+	@:keep public var scaleX(get, set):Float;
+
+	/**
+		Indicates the vertical scale (percentage) of an object as applied from the
+		origin point of the object. The default origin point is (0,0).
+		1.0 is 100% scale.
+
+		Scaling the local coordinate system changes the `x` and
+		`y` property values, which are defined in whole pixels.
+	**/
+	@:keep public var scaleY(get, set):Float;
+
+	/**
+		Uses a custom Shader instance when rendering this tile.
+
+		This property is only supported when using hardware rendering.
+	**/
 	@:beta public var shader(get, set):Shader;
+
+	/**
+		The Tileset that this Tile is rendered from.
+
+		If `null`, this Tile will use the Tileset value of its parent.
+	**/
 	public var tileset(get, set):Tileset;
+
+	/**
+		Whether or not the tile object is visible.
+	**/
 	public var visible(get, set):Bool;
-	public var x(get, set):Float;
-	public var y(get, set):Float;
+
+	/**
+		Indicates the width of the tile, in pixels. The width is
+		calculated based on the bounds of the tile after local transformations.
+		When you set the `width` property, the `scaleX` property
+		is adjusted accordingly.
+		If a tile has a width of zero, no change is applied
+	**/
+	@:keep #if (openfl < "9.0.0") @:dox(hide) #end public var width(get, set):Float;
+
+	/**
+		Indicates the _x_ coordinate of the Tile instance relative
+		to the local coordinates of the parent ITileContainer. If the
+		object is inside a TileContainer that has transformations, it is
+		in the local coordinate system of the enclosing TileContainer.
+		Thus, for a TileContainer rotated 90° counterclockwise, the
+		TileContainer's children inherit a coordinate system that is
+		rotated 90° counterclockwise. The object's coordinates refer to the
+		registration point position.
+	**/
+	@:keep public var x(get, set):Float;
+
+	/**
+		Indicates the _y_ coordinate of the Tile instance relative
+		to the local coordinates of the parent ITileContainer. If the
+		object is inside a TileContainer that has transformations, it is
+		in the local coordinate system of the enclosing TileContainer.
+		Thus, for a TileContainer rotated 90° counterclockwise, the
+		TileContainer's children inherit a coordinate system that is
+		rotated 90° counterclockwise. The object's coordinates refer to the
+		registration point position.
+	**/
+	@:keep public var y(get, set):Float;
 
 	@:noCompletion private var __alpha:Float;
 	@:noCompletion private var __blendMode:BlendMode;
@@ -58,25 +213,45 @@ class Tile
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperties(Tile.prototype,
-			{
-				"alpha": {get: untyped __js__("function () { return this.get_alpha (); }"), set: untyped __js__("function (v) { return this.set_alpha (v); }")},
-				"blendMode": {get: untyped __js__("function () { return this.get_blendMode (); }"), set: untyped __js__("function (v) { return this.set_blendMode (v); }")},
-				"colorTransform": {get: untyped __js__("function () { return this.get_colorTransform (); }"), set: untyped __js__("function (v) { return this.set_colorTransform (v); }")},
-				"id": {get: untyped __js__("function () { return this.get_id (); }"), set: untyped __js__("function (v) { return this.set_id (v); }")},
-				"matrix": {get: untyped __js__("function () { return this.get_matrix (); }"), set: untyped __js__("function (v) { return this.set_matrix (v); }")},
-				"originX": {get: untyped __js__("function () { return this.get_originX (); }"), set: untyped __js__("function (v) { return this.set_originX (v); }")},
-				"originY": {get: untyped __js__("function () { return this.get_originY (); }"), set: untyped __js__("function (v) { return this.set_originY (v); }")},
-				"rect": {get: untyped __js__("function () { return this.get_rect (); }"), set: untyped __js__("function (v) { return this.set_rect (v); }")},
-				"rotation": {get: untyped __js__("function () { return this.get_rotation (); }"), set: untyped __js__("function (v) { return this.set_rotation (v); }")},
-				"scaleX": {get: untyped __js__("function () { return this.get_scaleX (); }"), set: untyped __js__("function (v) { return this.set_scaleX (v); }")},
-				"scaleY": {get: untyped __js__("function () { return this.get_scaleY (); }"), set: untyped __js__("function (v) { return this.set_scaleY (v); }")},
-				"shader": {get: untyped __js__("function () { return this.get_shader (); }"), set: untyped __js__("function (v) { return this.set_shader (v); }")},
-				"tileset": {get: untyped __js__("function () { return this.get_tileset (); }"), set: untyped __js__("function (v) { return this.set_tileset (v); }")},
-				"visible": {get: untyped __js__("function () { return this.get_visible (); }"), set: untyped __js__("function (v) { return this.set_visible (v); }")},
-				"x": {get: untyped __js__("function () { return this.get_x (); }"), set: untyped __js__("function (v) { return this.set_x (v); }")},
-				"y": {get: untyped __js__("function () { return this.get_y (); }"), set: untyped __js__("function (v) { return this.set_y (v); }")},
-			});
+		untyped Object.defineProperties(Tile.prototype, {
+			"alpha": {get: untyped __js__("function () { return this.get_alpha (); }"), set: untyped __js__("function (v) { return this.set_alpha (v); }")},
+			"blendMode": {
+				get: untyped __js__("function () { return this.get_blendMode (); }"),
+				set: untyped __js__("function (v) { return this.set_blendMode (v); }")
+			},
+			"colorTransform": {
+				get: untyped __js__("function () { return this.get_colorTransform (); }"),
+				set: untyped __js__("function (v) { return this.set_colorTransform (v); }")
+			},
+			"id": {get: untyped __js__("function () { return this.get_id (); }"), set: untyped __js__("function (v) { return this.set_id (v); }")},
+			"matrix": {get: untyped __js__("function () { return this.get_matrix (); }"), set: untyped __js__("function (v) { return this.set_matrix (v); }")},
+			"originX": {
+				get: untyped __js__("function () { return this.get_originX (); }"),
+				set: untyped __js__("function (v) { return this.set_originX (v); }")
+			},
+			"originY": {
+				get: untyped __js__("function () { return this.get_originY (); }"),
+				set: untyped __js__("function (v) { return this.set_originY (v); }")
+			},
+			"rect": {get: untyped __js__("function () { return this.get_rect (); }"), set: untyped __js__("function (v) { return this.set_rect (v); }")},
+			"rotation": {
+				get: untyped __js__("function () { return this.get_rotation (); }"),
+				set: untyped __js__("function (v) { return this.set_rotation (v); }")
+			},
+			"scaleX": {get: untyped __js__("function () { return this.get_scaleX (); }"), set: untyped __js__("function (v) { return this.set_scaleX (v); }")},
+			"scaleY": {get: untyped __js__("function () { return this.get_scaleY (); }"), set: untyped __js__("function (v) { return this.set_scaleY (v); }")},
+			"shader": {get: untyped __js__("function () { return this.get_shader (); }"), set: untyped __js__("function (v) { return this.set_shader (v); }")},
+			"tileset": {
+				get: untyped __js__("function () { return this.get_tileset (); }"),
+				set: untyped __js__("function (v) { return this.set_tileset (v); }")
+			},
+			"visible": {
+				get: untyped __js__("function () { return this.get_visible (); }"),
+				set: untyped __js__("function (v) { return this.set_visible (v); }")
+			},
+			"x": {get: untyped __js__("function () { return this.get_x (); }"), set: untyped __js__("function (v) { return this.set_x (v); }")},
+			"y": {get: untyped __js__("function () { return this.get_y (); }"), set: untyped __js__("function (v) { return this.set_y (v); }")},
+		});
 	}
 	#end
 
@@ -100,6 +275,11 @@ class Tile
 		__visible = true;
 	}
 
+	/**
+		Duplicates an instance of a Tile subclass.
+
+		@return A new Tile object that is identical to the original.
+	**/
 	public function clone():Tile
 	{
 		var tile = new Tile(__id);
@@ -138,29 +318,16 @@ class Tile
 	**/
 	public function getBounds(targetCoordinateSpace:Tile):Rectangle
 	{
-		var result:Rectangle;
+		var result:Rectangle = new Rectangle();
 
-		if (tileset == null)
-		{
-			var parentTileset = parent.__findTileset();
-			if (parentTileset == null) return new Rectangle();
-			result = parentTileset.getRect(id);
-			if (result == null) return new Rectangle();
-		}
-		else
-		{
-			result = tileset.getRect(id);
-		}
+		__findTileRect(result);
 
-		result.x = 0;
-		result.y = 0;
-
-		// Copied from DisplayObject
+		// Copied from DisplayObject. Create the translation matrix.
 		var matrix = #if flash __tempMatrix #else Matrix.__pool.get() #end;
-		matrix.copyFrom(__getWorldTransform());
 
 		if (targetCoordinateSpace != null && targetCoordinateSpace != this)
 		{
+			matrix.copyFrom(__getWorldTransform()); // ? Is this correct?
 			var targetMatrix = #if flash new Matrix() #else Matrix.__pool.get() #end;
 
 			targetMatrix.copyFrom(targetCoordinateSpace.__getWorldTransform());
@@ -172,7 +339,22 @@ class Tile
 			Matrix.__pool.release(targetMatrix);
 			#end
 		}
+		else
+		{
+			matrix.identity();
+		}
 
+		__getBounds(result, matrix);
+
+		#if !flash
+		Matrix.__pool.release(matrix);
+		#end
+
+		return result;
+	}
+
+	@:noCompletion private function __getBounds(result:Rectangle, matrix:Matrix):Void
+	{
 		#if flash
 		function __transform(rect:Rectangle, m:Matrix):Void
 		{
@@ -210,10 +392,7 @@ class Tile
 		__transform(result, matrix);
 		#else
 		result.__transform(result, matrix);
-		Matrix.__pool.release(matrix);
 		#end
-
-		return result;
 	}
 
 	/**
@@ -237,9 +416,54 @@ class Tile
 		return false;
 	}
 
+	/**
+		Calling the `invalidate()` method signals to have the current tile
+		redrawn the next time the tile object is eligible to be rendered.
+
+		Invalidation is handled automatically, but in some cases it is
+		necessary to trigger it manually, such as changing the parameters
+		of a Shader instance attached to this tile.
+	**/
 	public function invalidate():Void
 	{
 		__setRenderDirty();
+	}
+
+	@:noCompletion private function __findTileRect(result:Rectangle):Void
+	{
+		if (tileset == null)
+		{
+			if (parent != null)
+			{
+				var parentTileset:Tileset = parent.__findTileset();
+				if (parentTileset == null)
+				{
+					result.setTo(0, 0, 0, 0);
+				}
+				else
+				{
+					// ? Is this a way to call getRect once without making extra vars? I don't fully grasp haxe pattern matching. Could be done with an if?
+					switch parentTileset.getRect(id)
+					{
+						case null:
+							result.setTo(0, 0, 0, 0);
+						case not_null:
+							result.copyFrom(not_null);
+					}
+				}
+			}
+			else
+			{
+				result.setTo(0, 0, 0, 0);
+			}
+		}
+		else
+		{
+			result.copyFrom(tileset.getRect(id));
+		}
+
+		result.x = 0;
+		result.y = 0;
 	}
 
 	@:noCompletion private function __findTileset():Tileset
@@ -285,12 +509,12 @@ class Tile
 	}
 
 	// Get & Set Methods
-	@:noCompletion private function get_alpha():Float
+	@:keep @:noCompletion private function get_alpha():Float
 	{
 		return __alpha;
 	}
 
-	@:noCompletion private function set_alpha(value:Float):Float
+	@:keep @:noCompletion private function set_alpha(value:Float):Float
 	{
 		if (value != __alpha)
 		{
@@ -333,6 +557,35 @@ class Tile
 		return value;
 	}
 
+	@:keep @:noCompletion private function get_height():Float
+	{
+		var result:Rectangle = #if flash __tempRectangle #else Rectangle.__pool.get() #end;
+
+		__findTileRect(result);
+
+		__getBounds(result, matrix);
+		var h = result.height;
+		#if !flash
+		Rectangle.__pool.release(result);
+		#end
+		return h;
+	}
+
+	@:keep @:noCompletion private function set_height(value:Float):Float
+	{
+		var result:Rectangle = #if flash __tempRectangle #else Rectangle.__pool.get() #end;
+
+		__findTileRect(result);
+		if (result.height != 0)
+		{
+			scaleY = value / result.height;
+		}
+		#if !flash
+		Rectangle.__pool.release(result);
+		#end
+		return value;
+	}
+
 	@:noCompletion private function get_id():Int
 	{
 		return __id;
@@ -368,12 +621,12 @@ class Tile
 		return value;
 	}
 
-	@:noCompletion private function get_originX():Float
+	@:keep @:noCompletion private function get_originX():Float
 	{
 		return __originX;
 	}
 
-	@:noCompletion private function set_originX(value:Float):Float
+	@:keep @:noCompletion private function set_originX(value:Float):Float
 	{
 		if (value != __originX)
 		{
@@ -384,12 +637,12 @@ class Tile
 		return value;
 	}
 
-	@:noCompletion private function get_originY():Float
+	@:keep @:noCompletion private function get_originY():Float
 	{
 		return __originY;
 	}
 
-	@:noCompletion private function set_originY(value:Float):Float
+	@:keep @:noCompletion private function set_originY(value:Float):Float
 	{
 		if (value != __originY)
 		{
@@ -416,7 +669,7 @@ class Tile
 		return value;
 	}
 
-	@:noCompletion private function get_rotation():Float
+	@:keep @:noCompletion private function get_rotation():Float
 	{
 		if (__rotation == null)
 		{
@@ -439,7 +692,7 @@ class Tile
 		return __rotation;
 	}
 
-	@:noCompletion private function set_rotation(value:Float):Float
+	@:keep @:noCompletion private function set_rotation(value:Float):Float
 	{
 		if (value != __rotation)
 		{
@@ -462,7 +715,7 @@ class Tile
 		return value;
 	}
 
-	@:noCompletion private function get_scaleX():Float
+	@:keep @:noCompletion private function get_scaleX():Float
 	{
 		if (__scaleX == null)
 		{
@@ -479,7 +732,7 @@ class Tile
 		return __scaleX;
 	}
 
-	@:noCompletion private function set_scaleX(value:Float):Float
+	@:keep @:noCompletion private function set_scaleX(value:Float):Float
 	{
 		if (value != __scaleX)
 		{
@@ -506,7 +759,7 @@ class Tile
 		return value;
 	}
 
-	@:noCompletion private function get_scaleY():Float
+	@:keep @:noCompletion private function get_scaleY():Float
 	{
 		if (__scaleY == null)
 		{
@@ -523,7 +776,7 @@ class Tile
 		return __scaleY;
 	}
 
-	@:noCompletion private function set_scaleY(value:Float):Float
+	@:keep @:noCompletion private function set_scaleY(value:Float):Float
 	{
 		if (value != __scaleY)
 		{
@@ -598,12 +851,42 @@ class Tile
 		return value;
 	}
 
-	@:noCompletion private function get_x():Float
+	@:keep @:noCompletion private function get_width():Float
+	{
+		// TODO how does pooling work with flash target?
+		var result:Rectangle = #if flash new Rectangle() #else Rectangle.__pool.get() #end;
+
+		__findTileRect(result);
+
+		__getBounds(result, matrix);
+		var w = result.width;
+		#if !flash
+		Rectangle.__pool.release(result);
+		#end
+		return w;
+	}
+
+	@:keep @:noCompletion private function set_width(value:Float):Float
+	{
+		var result:Rectangle = #if flash __tempRectangle #else Rectangle.__pool.get() #end;
+
+		__findTileRect(result);
+		if (result.width != 0)
+		{
+			scaleX = value / result.width;
+		}
+		#if !flash
+		Rectangle.__pool.release(result);
+		#end
+		return value;
+	}
+
+	@:keep @:noCompletion private function get_x():Float
 	{
 		return __matrix.tx;
 	}
 
-	@:noCompletion private function set_x(value:Float):Float
+	@:keep @:noCompletion private function set_x(value:Float):Float
 	{
 		if (value != __matrix.tx)
 		{
@@ -614,12 +897,12 @@ class Tile
 		return value;
 	}
 
-	@:noCompletion private function get_y():Float
+	@:keep @:noCompletion private function get_y():Float
 	{
 		return __matrix.ty;
 	}
 
-	@:noCompletion private function set_y(value:Float):Float
+	@:keep @:noCompletion private function set_y(value:Float):Float
 	{
 		if (value != __matrix.ty)
 		{

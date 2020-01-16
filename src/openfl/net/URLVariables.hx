@@ -5,7 +5,7 @@ package openfl.net;
 	The URLVariables class allows you to transfer variables between an
 	application and a server. Use URLVariables objects with methods of the
 	URLLoader class, with the `data` property of the URLRequest
-	class, and with flash.net package functions.
+	class, and with openfl.net package functions.
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -84,7 +84,19 @@ abstract URLVariables(Dynamic) from Dynamic to Dynamic
 
 		for (f in fields)
 		{
-			result.push(StringTools.urlEncode(f) + "=" + StringTools.urlEncode(Reflect.field(this, f)));
+			var value:Dynamic = Reflect.field(this, f);
+			if (f.indexOf("[]") > -1 && Std.is(value, Array))
+			{
+				var arrayValue:String = Lambda.map(value, function(v:String)
+				{
+					return StringTools.urlEncode(v);
+				}).join('&amp;${f}=');
+				result.push(StringTools.urlEncode(f) + "=" + arrayValue);
+			}
+			else
+			{
+				result.push(StringTools.urlEncode(f) + "=" + StringTools.urlEncode(value));
+			}
 		}
 
 		return result.join("&");

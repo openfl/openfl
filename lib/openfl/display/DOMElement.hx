@@ -1,13 +1,9 @@
 package openfl.display;
 
-
+#if !openfl_global
 @:jsRequire("openfl/display/DOMElement", "default")
-
-
-extern class DOMElement extends DisplayObject {
-	
-	
-	public function new (element:Dynamic);
-	
-	
+#end
+extern class DOMElement extends DisplayObject
+{
+	public function new(element:Dynamic);
 }

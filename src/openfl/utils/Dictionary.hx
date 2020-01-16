@@ -8,44 +8,124 @@ import haxe.ds.ObjectMap;
 import haxe.ds.EnumValueMap;
 import haxe.Constraints.IMap;
 
+/**
+	The Dictionary class lets you create a dynamic collection of properties,
+	which uses strict equality (`===`) for key comparison. When an object is
+	used as a key, the object's identity is used to look up the object, and
+	not the value returned from calling `toString()` on it.
+	The following statements show the relationship between a Dictionary object
+	and a key object:
+
+	```as3
+	var dict = new Dictionary();
+	var obj = new Object();
+	var key:Object = new Object();
+	key.toString = function() { return "key" }
+
+	dict[key] = "Letters";
+	obj["key"] = "Letters";
+
+	dict[key] == "Letters"; // true
+	obj["key"] == "Letters"; // true
+	obj[key] == "Letters"; // true because key == "key" is true b/c key.toString == "key"
+	dict["key"] == "Letters"; // false because "key" === key is false
+	delete dict[key]; //removes the key
+	```
+**/
 @:multiType(K)
 abstract Dictionary<K, V>(IMap<K, V>)
 {
+	/**
+		Creates a new Dictionary object. To remove a key from a Dictionary
+		object, use the `delete` operator.
+
+		@param weakKeys Instructs the Dictionary object to use "weak"
+						references on object keys. If the only reference to an
+						object is in the specified Dictionary object, the key
+						is eligible for garbage collection and is removed from
+						the table when the object is collected.
+	**/
 	public function new(weakKeys:Bool = false);
 
+	/**
+		Returns `true` if `key` has a mapping, `false` otherwise.
+
+		If key is `null`, the result is unspecified.
+	**/
 	public inline function exists(key:K):Bool
 	{
 		return this.exists(key);
 	}
 
+	/**
+		Returns the current mapping of `key`.
+
+		If no such mapping exists, `null` is returned.
+
+		Note that a check like `dict.get(key) == null` can hold for two reasons:
+
+		1. The Dictionary has no mapping for `key`
+		2. The Dictionary has a mapping with a value of `null`
+
+		If it is important to distinguish these cases, `exists()` should be used.
+
+		If `key` is null, the result is unspecified.
+	**/
 	@:arrayAccess public inline function get(key:K):V
 	{
 		return this.get(key);
 	}
 
 	#if (haxe_ver >= "4.0.0")
-	@:runtime public inline function keyValueIterator():KeyValueIterator<K, V>
+	/**
+		Returns an Iterator over the keys and values of this Dictionary.
+
+		The order of values is undefined.
+	**/
+	public inline function keyValueIterator():KeyValueIterator<K, V>
 	{
-		return new haxe.iterators.MapKeyValueIterator(this);
+		return this.keyValueIterator();
 	}
 	#end
 
+	/**
+		Removes the mapping of `key` and returns `true` if such a mapping existed, `false` otherwise.
+
+		If `key` is `null`, the result is unspecified.
+	**/
 	public inline function remove(key:K):Bool
 	{
 		return this.remove(key);
 	}
 
+	/**
+		Maps `key` to `value`.
+
+		If `key` already has a mapping, the previous value disappears.
+
+		If `key` is `null`, the result is unspecified.
+	**/
 	@:arrayAccess public inline function set(key:K, value:V):V
 	{
 		this.set(key, value);
 		return value;
 	}
 
+	/**
+		Returns an Iterator over the keys of this Dictionary.
+
+		The order of values is undefined.
+	**/
 	public inline function iterator():Iterator<K>
 	{
 		return this.keys();
 	}
 
+	/**
+		Returns an Iterator over each of the values of this Dictionary.
+
+		The order of values is undefined.
+	**/
 	public inline function each():Iterator<V>
 	{
 		return this.iterator();
@@ -121,6 +201,7 @@ abstract Dictionary<K, V>(IMap<K, V>)
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:dox(hide) private class ClassMap<K:Class<Dynamic>, V> implements IMap<K, V>
 {
 	@:noCompletion private var types:Map<String, K>;
@@ -132,7 +213,15 @@ abstract Dictionary<K, V>(IMap<K, V>)
 		values = new Map();
 	}
 
-	#if (haxe_ver >= "4.0.0")
+	#if haxe4
+	public function clear():Void
+	{
+		types.clear();
+		values.clear();
+	}
+	#end
+
+	#if haxe4
 	public function copy():ClassMap<K, V>
 	{
 		var copied = new ClassMap<K, V>();
@@ -152,7 +241,7 @@ abstract Dictionary<K, V>(IMap<K, V>)
 		return values.get(Type.getClassName(key));
 	}
 
-	#if (haxe_ver >= "4.0.0")
+	#if haxe4
 	@:runtime public inline function keyValueIterator():KeyValueIterator<K, V>
 	{
 		return new haxe.iterators.MapKeyValueIterator(this);
@@ -193,6 +282,7 @@ abstract Dictionary<K, V>(IMap<K, V>)
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:dox(hide) private class FloatMap<K:Float, V> implements IMap<K, V>
 {
 	@:noCompletion private var floatKeys:Array<K>;
@@ -204,7 +294,15 @@ abstract Dictionary<K, V>(IMap<K, V>)
 		values = new Array<V>();
 	}
 
-	#if (haxe_ver >= "4.0.0")
+	#if haxe4
+	public function clear():Void
+	{
+		floatKeys = new Array<K>();
+		values = new Array<V>();
+	}
+	#end
+
+	#if haxe4
 	public function copy():FloatMap<K, V>
 	{
 		var copied = new FloatMap<K, V>();
@@ -225,7 +323,7 @@ abstract Dictionary<K, V>(IMap<K, V>)
 		return ind > -1 ? values[ind] : null;
 	}
 
-	#if (haxe_ver >= "4.0.0")
+	#if haxe4
 	@:runtime public inline function keyValueIterator():KeyValueIterator<K, V>
 	{
 		return new haxe.iterators.MapKeyValueIterator(this);
@@ -369,6 +467,7 @@ abstract Dictionary<K, V>(IMap<K, V>)
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:dox(hide) private class UtilsObjectMap<K:Object, V> implements IMap<K, V>
 {
 	@:noCompletion private var map:ObjectMap<{}, V>;
@@ -378,7 +477,14 @@ abstract Dictionary<K, V>(IMap<K, V>)
 		map = new ObjectMap<{}, V>();
 	}
 
-	#if (haxe_ver >= "4.0.0")
+	#if haxe4
+	public function clear():Void
+	{
+		map.clear();
+	}
+	#end
+
+	#if haxe4
 	public function copy():UtilsObjectMap<K, V>
 	{
 		var copied = new UtilsObjectMap<K, V>();
@@ -398,7 +504,7 @@ abstract Dictionary<K, V>(IMap<K, V>)
 		return map.get(cast key);
 	}
 
-	#if (haxe_ver >= "4.0.0")
+	#if haxe4
 	@:runtime public inline function keyValueIterator():KeyValueIterator<K, V>
 	{
 		return new haxe.iterators.MapKeyValueIterator(this);
@@ -431,6 +537,7 @@ abstract Dictionary<K, V>(IMap<K, V>)
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 abstract Dictionary<K, V>(Dynamic)
 {
 	public function new(weakKeys:Bool = false)
@@ -448,7 +555,7 @@ abstract Dictionary<K, V>(Dynamic)
 		return Reflect.field(this, cast key);
 	}
 
-	#if (haxe_ver >= "4.0.0")
+	#if haxe4
 	@:runtime public inline function keyValueIterator():KeyValueIterator<K, V>
 	{
 		return new haxe.iterators.MapKeyValueIterator(this);
@@ -493,6 +600,7 @@ abstract Dictionary<K, V>(Dynamic)
 }
 #end
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 abstract Dictionary<K, V>(flash.utils.Dictionary) from flash.utils.Dictionary to flash.utils.Dictionary
 {
 	public function new(weakKeys:Bool = false)
@@ -510,7 +618,7 @@ abstract Dictionary<K, V>(flash.utils.Dictionary) from flash.utils.Dictionary to
 		return untyped this[key];
 	}
 
-	#if (haxe_ver >= "4.0.0")
+	#if haxe4
 	@:runtime public inline function keyValueIterator():KeyValueIterator<K, V>
 	{
 		return new haxe.iterators.MapKeyValueIterator(untyped this);
@@ -536,19 +644,18 @@ abstract Dictionary<K, V>(flash.utils.Dictionary) from flash.utils.Dictionary to
 
 	@:analyzer(ignore) public function each():Iterator<V>
 	{
-		return untyped
+		return untyped {
+			ref: this,
+			it: iterator(),
+			hasNext: function()
 			{
-				ref: this,
-				it: iterator(),
-				hasNext: function()
-				{
-					return __this__.it.hasNext();
-				},
-				next: function()
-				{
-					return __this__.ref[__this__.it.next()];
-				}
+				return __this__.it.hasNext();
+			},
+			next: function()
+			{
+				return get(__this__.it.next());
 			}
+		}
 	}
 }
 #end

@@ -1,55 +1,43 @@
 package openfl.sensors;
 
-
 import massive.munit.Assert;
 
+class AccelerometerTest
+{
+	@Test public function muted()
+	{
+		// TODO: Confirm functionality
 
-class AccelerometerTest {
-	
-	
-	@Test public function muted () {
-		
-		// TODO: Confirm functionality
-		
-		var accelerometer = new Accelerometer ();
+		var accelerometer = new Accelerometer();
 		var exists = accelerometer.muted;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function new_ () {
-		
+
+	@Test public function new_()
+	{
 		// TODO: Confirm functionality
-		
-		var accelerometer = new Accelerometer ();
-		Assert.isNotNull (accelerometer);
-		
+
+		var accelerometer = new Accelerometer();
+		Assert.isNotNull(accelerometer);
 	}
-	
-	
-	@Test public function setRequestedUpdateInterval () {
-		
+
+	@Test public function setRequestedUpdateInterval()
+	{
 		// TODO: Confirm functionality
-		
-		var accelerometer = new Accelerometer ();
+
+		var accelerometer = new Accelerometer();
 		var exists = accelerometer.setRequestedUpdateInterval;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function isSupported () {
-		
+
+	@Test public function isSupported()
+	{
 		// TODO: Confirm functionality
-		
+
 		var exists = Accelerometer.isSupported;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
 }

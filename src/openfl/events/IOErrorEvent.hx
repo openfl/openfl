@@ -1,6 +1,8 @@
 package openfl.events;
 
 #if !flash
+import openfl._internal.utils.ObjectPool;
+
 /**
 	An IOErrorEvent object is dispatched when an error causes input or output
 	operations to fail.
@@ -19,15 +21,25 @@ class IOErrorEvent extends ErrorEvent
 	// @:noCompletion @:dox(hide) public static var DISK_ERROR:String;
 
 	/**
-		Defines the value of the `type` property of an
-		`ioError` event object.
+		Defines the value of the `type` property of an `ioError` event object.
 
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `errorID` | A reference number associated with the specific error (AIR only). |
+		| `target` | The network object experiencing the input/output error. |
+		| `text` | Text to be displayed as an error message. |
 	**/
-	public static inline var IO_ERROR:String = "ioError";
+	public static inline var IO_ERROR:EventType<IOErrorEvent> = "ioError";
 
 	// @:noCompletion @:dox(hide) public static var NETWORK_ERROR:String;
 	// @:noCompletion @:dox(hide) public static var VERIFY_ERROR:String;
+	@:noCompletion private static var __pool:ObjectPool<IOErrorEvent> = new ObjectPool<IOErrorEvent>(function() return new IOErrorEvent(null),
+	function(event) event.__init());
 
 	/**
 		Creates an Event object that contains specific information about
@@ -56,7 +68,7 @@ class IOErrorEvent extends ErrorEvent
 		super(type, bubbles, cancelable, text, id);
 	}
 
-	public override function clone():Event
+	public override function clone():IOErrorEvent
 	{
 		var event = new IOErrorEvent(type, bubbles, cancelable, text, errorID);
 		event.target = target;

@@ -1,21 +1,19 @@
 package openfl._internal.renderer.cairo;
 
+#if openfl_cairo
+import openfl._internal.bindings.cairo.Cairo;
+import openfl._internal.bindings.cairo.CairoAntialias;
+import openfl._internal.bindings.cairo.CairoFontOptions;
+import openfl._internal.bindings.cairo.CairoFTFontFace;
+import openfl._internal.bindings.cairo.CairoGlyph;
+import openfl._internal.bindings.cairo.CairoHintMetrics;
+import openfl._internal.bindings.cairo.CairoHintStyle;
 import openfl._internal.text.TextEngine;
 import openfl.display.BitmapData;
-import openfl.display.CairoRenderer;
 import openfl.display.Graphics;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.text.TextField;
-#if lime
-import lime.graphics.cairo.Cairo;
-import lime.graphics.cairo.CairoAntialias;
-import lime.graphics.cairo.CairoFontOptions;
-import lime.graphics.cairo.CairoFTFontFace;
-import lime.graphics.cairo.CairoGlyph;
-import lime.graphics.cairo.CairoHintMetrics;
-import lime.graphics.cairo.CairoHintStyle;
-#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -30,11 +28,10 @@ class CairoTextField
 {
 	public static function render(textField:TextField, renderer:CairoRenderer, transform:Matrix):Void
 	{
-		#if lime_cairo
 		var textEngine = textField.__textEngine;
 		var bounds = (textEngine.background || textEngine.border) ? textEngine.bounds : textEngine.textBounds;
 		var graphics = textField.__graphics;
-		var cairo = graphics.__cairo;
+		var cairo = graphics.__renderData.cairo;
 
 		if (textField.__dirty)
 		{
@@ -71,17 +68,17 @@ class CairoTextField
 
 			if (!renderable || needsUpscaling)
 			{
-				graphics.__cairo = null;
+				graphics.__renderData.cairo = null;
 				graphics.__bitmap = null;
 				graphics.__visible = false;
 				cairo = null;
 			}
 		}
 
-		if (width <= 0 ||
-			height <= 0 ||
-			(!textField.__dirty && !graphics.__softwareDirty && (!graphics.__visible || graphics.__bitmap != null)) ||
-			!renderable)
+		if (width <= 0
+			|| height <= 0
+			|| (!textField.__dirty && !graphics.__softwareDirty && (!graphics.__visible || graphics.__bitmap != null))
+			|| !renderable)
 		{
 			textField.__dirty = false;
 			return;
@@ -104,13 +101,13 @@ class CairoTextField
 
 			var bitmap = new BitmapData(bitmapWidth, bitmapHeight, true, 0);
 			var surface = bitmap.getSurface();
-			graphics.__cairo = new Cairo(surface);
+			graphics.__renderData.cairo = new Cairo(surface);
 			graphics.__visible = true;
 			graphics.__managed = true;
 
 			graphics.__bitmap = bitmap;
 
-			cairo = graphics.__cairo;
+			cairo = graphics.__renderData.cairo;
 
 			var options = new CairoFontOptions();
 
@@ -193,7 +190,7 @@ class CairoTextField
 			for (group in textEngine.layoutGroups)
 			{
 				if (group.lineIndex < textField.scrollV - 1) continue;
-				if (group.lineIndex > textField.scrollV + textEngine.bottomScrollV - 2) break;
+				if (group.lineIndex > textEngine.bottomScrollV - 1) break;
 
 				color = group.format.color;
 				r = ((color & 0xFF0000) >>> 16) / 0xFF;
@@ -253,7 +250,9 @@ class CairoTextField
 					{
 						if (textField.__selectionIndex == textField.__caretIndex)
 						{
-							if (textField.__showCursor && group.startIndex <= textField.__caretIndex && group.endIndex >= textField.__caretIndex)
+							if (textField.__showCursor
+								&& group.startIndex <= textField.__caretIndex
+								&& group.endIndex >= textField.__caretIndex)
 							{
 								advance = 0.0;
 
@@ -272,15 +271,21 @@ class CairoTextField
 
 								cairo.moveTo(Math.floor(group.offsetX + advance) + 0.5 - textField.scrollH - bounds.x, scrollY + 2.5 - bounds.y);
 								cairo.lineWidth = 1;
-								cairo.lineTo(Math.floor(group.offsetX + advance) + 0.5 - textField.scrollH - bounds.x,
-									scrollY + TextEngine.getFormatHeight(textField.defaultTextFormat) - 1 - bounds.y);
+								cairo.lineTo(Math.floor(group.offsetX + advance)
+									+ 0.5
+									- textField.scrollH
+									- bounds.x,
+									scrollY
+									+ TextEngine.getFormatHeight(textField.defaultTextFormat)
+									- 1
+									- bounds.y);
 								cairo.stroke();
 							}
 						}
-						else if ((group.startIndex <= textField.__caretIndex && group.endIndex >= textField.__caretIndex) ||
-							(group.startIndex <= textField.__selectionIndex && group.endIndex >= textField.__selectionIndex) ||
-							(group.startIndex > textField.__caretIndex && group.endIndex < textField.__selectionIndex) ||
-							(group.startIndex > textField.__selectionIndex && group.endIndex < textField.__caretIndex))
+						else if ((group.startIndex <= textField.__caretIndex && group.endIndex >= textField.__caretIndex)
+							|| (group.startIndex <= textField.__selectionIndex && group.endIndex >= textField.__selectionIndex)
+							|| (group.startIndex > textField.__caretIndex && group.endIndex < textField.__selectionIndex)
+							|| (group.startIndex > textField.__selectionIndex && group.endIndex < textField.__caretIndex))
 						{
 							var selectionStart = Std.int(Math.min(textField.__selectionIndex, textField.__caretIndex));
 							var selectionEnd = Std.int(Math.max(textField.__selectionIndex, textField.__caretIndex));
@@ -299,10 +304,14 @@ class CairoTextField
 
 							start = textField.getCharBoundaries(selectionStart);
 
-							if (selectionEnd >= textEngine.text.length)
+							if (selectionEnd >= group.endIndex)
 							{
-								end = textField.getCharBoundaries(textEngine.text.length - 1);
-								end.x += end.width + 2;
+								end = textField.getCharBoundaries(group.endIndex - 1);
+
+								if (end != null)
+								{
+									end.x += end.width + 2;
+								}
 							}
 							else
 							{
@@ -359,19 +368,25 @@ class CairoTextField
 
 			cairo.setSourceRGB(r, g, b);
 
+			var offsetX = switch (textField.defaultTextFormat.align)
+			{
+				case CENTER: (textField.width - 4) / 2;
+				case RIGHT: (textField.width - 4);
+				default: 0;
+			}
+
 			cairo.newPath();
-			cairo.moveTo(scrollX + 2.5, scrollY + 2.5);
+			cairo.moveTo(scrollX + offsetX + 2.5, scrollY + 2.5);
 			cairo.lineWidth = 1;
-			cairo.lineTo(scrollX + 2.5, scrollY + TextEngine.getFormatHeight(textField.defaultTextFormat) - 1);
+			cairo.lineTo(scrollX + offsetX + 2.5, scrollY + TextEngine.getFormatHeight(textField.defaultTextFormat) - 1);
 			cairo.stroke();
 			cairo.closePath();
 		}
 
-		graphics.__bitmap.image.dirty = true;
-		graphics.__bitmap.image.version++;
+		graphics.__bitmap.__setDirty();
 		textField.__dirty = false;
 		graphics.__softwareDirty = false;
 		graphics.__dirty = false;
-		#end
 	}
 }
+#end

@@ -1,6 +1,5 @@
 package openfl.display;
 
-
 /**
  * The BitmapDataChannel class is an enumeration of constant values that
  * indicate which channel to use: red, blue, green, or alpha transparency.
@@ -12,7 +11,7 @@ package openfl.display;
  * The BitmapDataChannel constants are provided for use as values in the
  * following:
  *
- * 
+ *
  *  * The `sourceChannel` and `destChannel`
  * parameters of the `openfl.display.BitmapData.copyChannel()`
  * method
@@ -20,28 +19,27 @@ package openfl.display;
  * `openfl.display.BitmapData.noise()` method
  *  * The `openfl.filters.DisplacementMapFilter.componentX` and
  * `openfl.filters.DisplacementMapFilter.componentY` properties
- * 
+ *
  */
-@:enum abstract BitmapDataChannel(UInt) from UInt to UInt from Int to Int {
-	
+@:enum abstract BitmapDataChannel(UInt) from UInt to UInt from Int to Int
+{
 	/**
 	 * The alpha channel.
 	 */
 	public var ALPHA = 8;
-	
+
 	/**
 	 * The blue channel.
 	 */
 	public var BLUE = 4;
-	
+
 	/**
 	 * The green channel.
 	 */
 	public var GREEN = 2;
-	
+
 	/**
 	 * The red channel.
 	 */
 	public var RED = 1;
-	
 }

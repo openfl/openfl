@@ -1,11 +1,14 @@
 package openfl.display;
 
-import openfl._internal.Lib;
 #if lime
 import lime.app.Application as LimeApplication;
 import lime.ui.WindowAttributes;
-#end
+import openfl._internal.Lib;
 
+/**
+	The Application class is a Lime Application instance that uses
+	OpenFL Window by default when a new window is created.
+**/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -13,23 +16,16 @@ import lime.ui.WindowAttributes;
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.LoaderInfo)
 @:access(openfl.display.Window)
-class Application #if lime extends LimeApplication #end
+@SuppressWarnings("checkstyle:FieldDocComment")
+class Application extends LimeApplication
 {
-	#if !lime
-	public static var current:Application;
-
-	public var window:Window;
-	#end
-
 	public function new()
 	{
-		#if lime
 		super();
-		#end
 
-		if (Lib.application == null)
+		if (Lib.limeApplication == null)
 		{
-			Lib.application = this;
+			Lib.limeApplication = this;
 		}
 
 		#if (!flash && !macro)
@@ -39,7 +35,6 @@ class Application #if lime extends LimeApplication #end
 		#end
 	}
 
-	#if lime
 	public override function createWindow(attributes:WindowAttributes):Window
 	{
 		var window = new Window(this, attributes);
@@ -86,5 +81,5 @@ class Application #if lime extends LimeApplication #end
 
 		return window;
 	}
-	#end
 }
+#end

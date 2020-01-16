@@ -12,20 +12,20 @@ import openfl.Vector;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class HTMLParser
 {
-	private static var __regexAlign:EReg = ~/align=("([^"]+)"|'([^']+)')/i;
+	private static var __regexAlign:EReg = ~/align\s?=\s?("([^"]+)"|'([^']+)')/i;
 	private static var __regexBreakTag:EReg = ~/<br\s*\/?>/gi;
-	private static var __regexBlockIndent:EReg = ~/blockindent=("([^"]+)"|'([^']+)')/i;
-	private static var __regexColor:EReg = ~/color=("#([^"]+)"|'#([^']+)')/i;
+	private static var __regexBlockIndent:EReg = ~/blockindent\s?=\s?("([^"]+)"|'([^']+)')/i;
+	private static var __regexColor:EReg = ~/color\s?=\s?("#([^"]+)"|'#([^']+)')/i;
 	private static var __regexEntities:Array<EReg> = [~/&quot;/g, ~/&apos;/g, ~/&amp;/g, ~/&lt;/g, ~/&gt;/g, ~/&nbsp;/g];
-	private static var __regexFace:EReg = ~/face=("([^"]+)"|'([^']+)')/i;
+	private static var __regexFace:EReg = ~/face\s?=\s?("([^"]+)"|'([^']+)')/i;
 	private static var __regexHTMLTag:EReg = ~/<.*?>/g;
-	private static var __regexHref:EReg = ~/href=("([^"]+)"|'([^']+)')/i;
-	private static var __regexIndent:EReg = ~/ indent=("([^"]+)"|'([^']+)')/i;
-	private static var __regexLeading:EReg = ~/leading=("([^"]+)"|'([^']+)')/i;
-	private static var __regexLeftMargin:EReg = ~/leftmargin=("([^"]+)"|'([^']+)')/i;
-	private static var __regexRightMargin:EReg = ~/rightmargin=("([^"]+)"|'([^']+)')/i;
-	private static var __regexSize:EReg = ~/size=("([^"]+)"|'([^']+)')/i;
-	private static var __regexTabStops:EReg = ~/tabstops=("([^"]+)"|'([^']+)')/i;
+	private static var __regexHref:EReg = ~/href\s?=\s?("([^"]+)"|'([^']+)')/i;
+	private static var __regexIndent:EReg = ~/ indent\s?=\s?("([^"]+)"|'([^']+)')/i;
+	private static var __regexLeading:EReg = ~/leading\s?=\s?("([^"]+)"|'([^']+)')/i;
+	private static var __regexLeftMargin:EReg = ~/leftmargin\s?=\s?("([^"]+)"|'([^']+)')/i;
+	private static var __regexRightMargin:EReg = ~/rightmargin\s?=\s?("([^"]+)"|'([^']+)')/i;
+	private static var __regexSize:EReg = ~/size\s?=\s?("([^"]+)"|'([^']+)')/i;
+	private static var __regexTabStops:EReg = ~/tabstops\s?=\s?("([^"]+)"|'([^']+)')/i;
 
 	public static function parse(value:String, textFormat:TextFormat, textFormatRanges:Vector<TextFormatRange>):String
 	{
@@ -86,12 +86,13 @@ class HTMLParser
 				var tagEndIndex = segment.indexOf(">");
 				var start = tagEndIndex + 1;
 				var spaceIndex = segment.indexOf(" ");
-				var tagName = segment.substring(isClosingTag ? 1 : 0, spaceIndex > -1 && spaceIndex < tagEndIndex ? spaceIndex : tagEndIndex);
+				var tagName = segment.substring(isClosingTag ? 1 : 0, spaceIndex > -1
+					&& spaceIndex < tagEndIndex ? spaceIndex : tagEndIndex);
 				var format:TextFormat;
 
 				if (isClosingTag)
 				{
-					if (tagName.toLowerCase() != tagStack[tagStack.length - 1].toLowerCase())
+					if (tagStack.length == 0 || tagName.toLowerCase() != tagStack[tagStack.length - 1].toLowerCase())
 					{
 						Log.info("Invalid HTML, unexpected closing tag ignored: " + tagName);
 						continue;
@@ -105,6 +106,7 @@ class HTMLParser
 					{
 						value += "\n";
 						noLineBreak = true;
+						textFormatRanges[textFormatRanges.length - 1].end++;
 					}
 
 					if (start < segment.length)

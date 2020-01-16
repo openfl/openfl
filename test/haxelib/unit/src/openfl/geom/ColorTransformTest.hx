@@ -1,49 +1,38 @@
 package openfl.geom;
 
-class ColorTransformTest {
-
-	@Test public function alphaMultiplier() {
-		var base = new ColorTransform (
-		0.1, 0.55, 0.4, 0.89123,
-		-255, 5, 255, 123
-		);
+class ColorTransformTest
+{
+	@Test public function alphaMultiplier()
+	{
+		var base = new ColorTransform(0.1, 0.55, 0.4, 0.89123, -255, 5, 255, 123);
 
 		Assert.areEqual(0.89123, base.alphaMultiplier);
 	}
 
-	@Test public function alphaOffset() {
-		var base = new ColorTransform (
-		0.1, 0.55, 0.4, 0.89123,
-		-255, 5, 255, 123
-		);
+	@Test public function alphaOffset()
+	{
+		var base = new ColorTransform(0.1, 0.55, 0.4, 0.89123, -255, 5, 255, 123);
 
 		Assert.areEqual(123, base.alphaOffset);
-
 	}
 
-	@Test public function blueMultiplier() {
-		var base = new ColorTransform (
-		0.1, 0.55, 0.4, 0.89123,
-		-255, 5, 255, 123
-		);
+	@Test public function blueMultiplier()
+	{
+		var base = new ColorTransform(0.1, 0.55, 0.4, 0.89123, -255, 5, 255, 123);
 
 		Assert.areEqual(0.4, base.blueMultiplier);
 	}
 
-	@Test public function blueOffset() {
-		var base = new ColorTransform (
-		0.1, 0.55, 0.4, 0.89123,
-		-255, 5, 255, 123
-		);
+	@Test public function blueOffset()
+	{
+		var base = new ColorTransform(0.1, 0.55, 0.4, 0.89123, -255, 5, 255, 123);
 
 		Assert.areEqual(255, base.blueOffset);
 	}
 
-	@Test public function color() {
-		var base = new ColorTransform (
-		0.1, 0.55, 0.4, 1.0,
-		-255, 5, 255, 0
-		);
+	@Test public function color()
+	{
+		var base = new ColorTransform(0.1, 0.55, 0.4, 1.0, -255, 5, 255, 0);
 
 		#if flash
 		var color:UInt = 0xFF0105FF;
@@ -66,44 +55,37 @@ class ColorTransformTest {
 		Assert.areEqual(1.0, base.alphaMultiplier);
 	}
 
-	@Test public function greenMultiplier() {
-		var base = new ColorTransform (
-		0.1, 0.55, 0.4, 0.89123,
-		-255, 5, 255, 123
-		);
+	@Test public function greenMultiplier()
+	{
+		var base = new ColorTransform(0.1, 0.55, 0.4, 0.89123, -255, 5, 255, 123);
 
 		Assert.areEqual(0.55, base.greenMultiplier);
 	}
 
-	@Test public function greenOffset() {
-		var base = new ColorTransform (
-		0.1, 0.55, 0.4, 0.89123,
-		-255, 5, 255, 123
-		);
+	@Test public function greenOffset()
+	{
+		var base = new ColorTransform(0.1, 0.55, 0.4, 0.89123, -255, 5, 255, 123);
 
 		Assert.areEqual(5, base.greenOffset);
 	}
 
-	@Test public function redMultiplier() {
-		var base = new ColorTransform (
-		0.1, 0.55, 0.4, 0.89123,
-		-255, 5, 255, 123
-		);
+	@Test public function redMultiplier()
+	{
+		var base = new ColorTransform(0.1, 0.55, 0.4, 0.89123, -255, 5, 255, 123);
 
 		Assert.areEqual(0.1, base.redMultiplier);
 	}
 
-	@Test public function redOffset() {
-		var base = new ColorTransform (
-		0.1, 0.55, 0.4, 0.89123,
-		-255, 5, 255, 123
-		);
+	@Test public function redOffset()
+	{
+		var base = new ColorTransform(0.1, 0.55, 0.4, 0.89123, -255, 5, 255, 123);
 
 		Assert.areEqual(-255, base.redOffset);
 	}
 
-	@Test public function new_() {
-		var transformDefaults = new ColorTransform ();
+	@Test public function new_()
+	{
+		var transformDefaults = new ColorTransform();
 
 		Assert.areEqual(0.0, transformDefaults.redOffset);
 		Assert.areEqual(0.0, transformDefaults.greenOffset);
@@ -115,10 +97,7 @@ class ColorTransformTest {
 		Assert.areEqual(1.0, transformDefaults.blueMultiplier);
 		Assert.areEqual(1.0, transformDefaults.alphaMultiplier);
 
-		var transformWithValues = new ColorTransform (
-		0.1, 0.55, 0.4, 0.89123,
-		-255, 5, 255, -123
-		);
+		var transformWithValues = new ColorTransform(0.1, 0.55, 0.4, 0.89123, -255, 5, 255, -123);
 
 		Assert.areEqual(-255, transformWithValues.redOffset);
 		Assert.areEqual(5, transformWithValues.greenOffset);
@@ -131,9 +110,10 @@ class ColorTransformTest {
 		Assert.areEqual(0.891230, transformWithValues.alphaMultiplier);
 	}
 
-	@Test public function concatDefaults() {
-		var base = new ColorTransform ();
-		var second = new ColorTransform ();
+	@Test public function concatDefaults()
+	{
+		var base = new ColorTransform();
+		var second = new ColorTransform();
 
 		base.concat(second);
 
@@ -146,18 +126,12 @@ class ColorTransformTest {
 		Assert.areEqual(1.0, base.greenMultiplier);
 		Assert.areEqual(1.0, base.blueMultiplier);
 		Assert.areEqual(1.0, base.alphaMultiplier);
-
 	}
 
-	@Test public function concat() {
-		var base = new ColorTransform (
-		0.1, 0.55, 0.4, 0.89123,
-		-255, 5, 255, 123
-		);
-		var second = new ColorTransform (
-		0.321, 0.33, 0.1, 0.123123,
-		200, -10, -100, 3
-		);
+	@Test public function concat()
+	{
+		var base = new ColorTransform(0.1, 0.55, 0.4, 0.89123, -255, 5, 255, 123);
+		var second = new ColorTransform(0.321, 0.33, 0.1, 0.123123, 200, -10, -100, 3);
 
 		base.concat(second);
 
@@ -170,7 +144,5 @@ class ColorTransformTest {
 		Assert.areEqual(0.55 * 0.33, base.greenMultiplier);
 		Assert.areEqual(0.4 * 0.1, base.blueMultiplier);
 		Assert.areEqual(0.89123 * 0.123123, base.alphaMultiplier);
-
 	}
-
 }

@@ -1,13 +1,9 @@
 package openfl.utils;
 
 #if !flash
-import haxe.Timer as HaxeTimer;
 import openfl.errors.Error;
 import openfl.events.EventDispatcher;
 import openfl.events.TimerEvent;
-#if (js && html5)
-import js.Browser;
-#end
 
 /**
 	The Timer class is the interface to timers, which let you run code on a
@@ -72,20 +68,18 @@ class Timer extends EventDispatcher
 	**/
 	public var running(default, null):Bool;
 
+	@:noCompletion private var __backend:TimerBackend;
 	@:noCompletion private var __delay:Float;
 	@:noCompletion private var __repeatCount:Int;
-	@:noCompletion private var __timer:HaxeTimer;
-	@:noCompletion private var __timerID:Int;
 
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
 		var p = untyped Timer.prototype;
-		untyped global.Object.defineProperties(p,
-			{
-				"delay": {get: p.get_delay, set: p.set_delay},
-				"repeatCount": {get: p.get_repeatCount, set: p.set_repeatCount}
-			});
+		untyped global.Object.defineProperties(p, {
+			"delay": {get: p.get_delay, set: p.set_delay},
+			"repeatCount": {get: p.get_repeatCount, set: p.set_repeatCount}
+		});
 	}
 	#end
 
@@ -120,6 +114,8 @@ class Timer extends EventDispatcher
 
 		running = false;
 		currentCount = 0;
+
+		__backend = new TimerBackend(this);
 	}
 
 	/**
@@ -148,13 +144,7 @@ class Timer extends EventDispatcher
 		if (!running)
 		{
 			running = true;
-
-			#if (js && html5)
-			__timerID = Browser.window.setInterval(timer_onTimer, Std.int(__delay));
-			#else
-			__timer = new HaxeTimer(Std.int(__delay));
-			__timer.run = timer_onTimer;
-			#end
+			__backend.start();
 		}
 	}
 
@@ -167,20 +157,7 @@ class Timer extends EventDispatcher
 	public function stop():Void
 	{
 		running = false;
-
-		#if (js && html5)
-		if (__timerID != null)
-		{
-			Browser.window.clearInterval(__timerID);
-			__timerID = null;
-		}
-		#else
-		if (__timer != null)
-		{
-			__timer.stop();
-			__timer = null;
-		}
-		#end
+		__backend.stop();
 	}
 
 	// Getters & Setters
@@ -234,6 +211,14 @@ class Timer extends EventDispatcher
 		}
 	}
 }
+
+#if openfl_html5
+private typedef TimerBackend = openfl._internal.backend.html5.HTML5TimerBackend;
+#elseif sys
+private typedef TimerBackend = openfl._internal.backend.sys.SysTimerBackend;
+#else
+private typedef TimerBackend = openfl._internal.backend.dummy.DummyTimerBackend;
+#end
 #else
 typedef Timer = flash.utils.Timer;
 #end

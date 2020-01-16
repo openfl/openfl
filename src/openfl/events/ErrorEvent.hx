@@ -1,6 +1,8 @@
 package openfl.events;
 
 #if !flash
+import openfl._internal.utils.ObjectPool;
+
 /**
 	An object dispatches an ErrorEvent object when an error causes an
 	asynchronous operation to fail.
@@ -26,12 +28,18 @@ package openfl.events;
 class ErrorEvent extends TextEvent
 {
 	/**
-		Defines the value of the `type` property of an
-		`error` event object.
-
+		Defines the value of the `type` property of an `error` event object.
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | The object experiencing a network operation failure. |
+		| `text` | Text to be displayed as an error message. |
 	**/
-	public static inline var ERROR:String = "error";
+	public static inline var ERROR:EventType<ErrorEvent> = "error";
 
 	/**
 		Contains the reference number associated with the specific error. For a
@@ -39,6 +47,9 @@ class ErrorEvent extends TextEvent
 		`id` parameter supplied in the constructor.
 	**/
 	public var errorID(default, null):Int;
+
+	@:noCompletion private static var __pool:ObjectPool<ErrorEvent> = new ObjectPool<ErrorEvent>(function() return new ErrorEvent(null),
+	function(event) event.__init());
 
 	/**
 		Creates an Event object that contains information about error events.
@@ -66,7 +77,7 @@ class ErrorEvent extends TextEvent
 		errorID = id;
 	}
 
-	public override function clone():Event
+	public override function clone():ErrorEvent
 	{
 		var event = new ErrorEvent(type, bubbles, cancelable, text, errorID);
 		event.target = target;
@@ -78,6 +89,12 @@ class ErrorEvent extends TextEvent
 	public override function toString():String
 	{
 		return __formatToString("ErrorEvent", ["type", "bubbles", "cancelable", "text", "errorID"]);
+	}
+
+	@:noCompletion private override function __init():Void
+	{
+		super.__init();
+		errorID = 0;
 	}
 }
 #else

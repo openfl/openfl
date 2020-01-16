@@ -2,7 +2,7 @@ Notices
 =======
 
 ### OpenFL
-Copyright (c) 2013-2018 Joshua Granick and other OpenFL contributors
+Copyright (c) 2013-2019 Joshua Granick and other OpenFL contributors
 
 This product bundles font files which are available under an "SIL Open Font"
 license. For details, see [http://scripts.sil.org/OFL](http://scripts.sil.org/OFL).

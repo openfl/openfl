@@ -1,33 +1,28 @@
-package openfl.net; #if (display || !flash)
+package openfl.net;
 
-
+#if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/net/FileFilter", "default")
-
-@:final extern class FileFilter {
-	
-	
+#end
+@:final extern class FileFilter
+{
 	/**
 	 * The description string for the filter.
 	 */
 	public var description:String;
-	
+
 	/**
 	 * A list of file extensions.
 	 */
 	public var extension:String;
-	
+
 	/**
 	 * A list of Macintosh file types.
 	 */
 	public var macType:String;
-	
-	
-	public function new (description:String, extension:String, macType:String = null);
-	
-	
+
+	public function new(description:String, extension:String, macType:String = null);
 }
-
-
 #else
 typedef FileFilter = flash.net.FileFilter;
 #end

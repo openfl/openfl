@@ -7,36 +7,53 @@ import openfl.text.Font;
 import lime.utils.Assets as LimeAssets;
 #end
 
+/**
+	The AssetCache class is the default cache implementation used
+	by openfl.utils.Assets, objects will be cached for the lifetime
+	of the application unless removed explicitly, or using Assets
+	`unloadLibrary`
+**/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:dox(hide) class AssetCache implements IAssetCache
+class AssetCache implements IAssetCache
 {
+	/**
+		Whether caching is currently enabled.
+	**/
 	public var enabled(get, set):Bool;
 
-	/** deprecated **/
-	@:dox(hide) public var bitmapData:Map<String, BitmapData>;
+	/**
+		Internal
+	**/
+	@:noCompletion @:dox(hide) public var bitmapData:Map<String, BitmapData>;
 
-	/** deprecated **/
-	@:dox(hide) public var font:Map<String, Font>;
+	/**
+		Internal
+	**/
+	@:noCompletion @:dox(hide) public var font:Map<String, Font>;
 
-	/** deprecated **/
-	@:dox(hide) public var sound:Map<String, Sound>;
+	/**
+		Internal
+	**/
+	@:noCompletion @:dox(hide) public var sound:Map<String, Sound>;
 
 	@:noCompletion private var __enabled:Bool = true;
 
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped global.Object.defineProperty(AssetCache.prototype, "enabled",
-			{
-				get: untyped __js__("function () { return this.get_enabled (); }"),
-				set: untyped __js__("function (v) { return this.set_enabled (v); }")
-			});
+		untyped global.Object.defineProperty(AssetCache.prototype, "enabled", {
+			get: untyped __js__("function () { return this.get_enabled (); }"),
+			set: untyped __js__("function (v) { return this.set_enabled (v); }")
+		});
 	}
 	#end
 
+	/**
+		Creates a new AssetCache instance.
+	**/
 	public function new()
 	{
 		bitmapData = new Map<String, BitmapData>();
@@ -44,6 +61,22 @@ import lime.utils.Assets as LimeAssets;
 		sound = new Map<String, Sound>();
 	}
 
+	/**
+		Clears all cached assets, or all assets with an ID that
+		matches an optional prefix.
+
+		For example:
+
+		```haxe
+		Assets.setBitmapData("image1", image1);
+		Assets.setBitmapData("assets/image2", image2);
+
+		Assets.clear("assets"); // will clear image2
+		Assets.clear("image"); // will clear image1
+		```
+
+		@param	prefix	A ID prefix
+	**/
 	public function clear(prefix:String = null):Void
 	{
 		if (prefix == null)
@@ -86,36 +119,78 @@ import lime.utils.Assets as LimeAssets;
 		}
 	}
 
+	/**
+		Retrieves a cached BitmapData.
+
+		@param	id	The ID of the cached BitmapData
+		@return	The cached BitmapData instance
+	**/
 	public function getBitmapData(id:String):BitmapData
 	{
 		return bitmapData.get(id);
 	}
 
+	/**
+		Retrieves a cached Font.
+
+		@param	id	The ID of the cached Font
+		@return	The cached Font instance
+	**/
 	public function getFont(id:String):Font
 	{
 		return font.get(id);
 	}
 
+	/**
+		Retrieves a cached Sound.
+
+		@param	id	The ID of the cached Sound
+		@return	The cached Sound instance
+	**/
 	public function getSound(id:String):Sound
 	{
 		return sound.get(id);
 	}
 
+	/**
+		Checks whether a BitmapData asset is cached.
+
+		@param	id	The ID of a BitmapData asset
+		@return	Whether the object has been cached
+	**/
 	public function hasBitmapData(id:String):Bool
 	{
 		return bitmapData.exists(id);
 	}
 
+	/**
+		Checks whether a Font asset is cached.
+
+		@param	id	The ID of a Font asset
+		@return	Whether the object has been cached
+	**/
 	public function hasFont(id:String):Bool
 	{
 		return font.exists(id);
 	}
 
+	/**
+		Checks whether a Sound asset is cached.
+
+		@param	id	The ID of a Sound asset
+		@return	Whether the object has been cached
+	**/
 	public function hasSound(id:String):Bool
 	{
 		return sound.exists(id);
 	}
 
+	/**
+		Removes a BitmapData from the cache.
+
+		@param	id	The ID of a BitmapData asset
+		@return	`true` if the asset was removed, `false` if it was not in the cache
+	**/
 	public function removeBitmapData(id:String):Bool
 	{
 		#if lime
@@ -124,6 +199,12 @@ import lime.utils.Assets as LimeAssets;
 		return bitmapData.remove(id);
 	}
 
+	/**
+		Removes a Font from the cache.
+
+		@param	id	The ID of a Font asset
+		@return	`true` if the asset was removed, `false` if it was not in the cache
+	**/
 	public function removeFont(id:String):Bool
 	{
 		#if lime
@@ -132,6 +213,12 @@ import lime.utils.Assets as LimeAssets;
 		return font.remove(id);
 	}
 
+	/**
+		Removes a Sound from the cache.
+
+		@param	id	The ID of a Sound asset
+		@return	`true` if the asset was removed, `false` if it was not in the cache
+	**/
 	public function removeSound(id:String):Bool
 	{
 		#if lime
@@ -140,16 +227,34 @@ import lime.utils.Assets as LimeAssets;
 		return sound.remove(id);
 	}
 
+	/**
+		Adds or replaces a BitmapData asset in the cache.
+
+		@param	id	The ID of a BitmapData asset
+		@param	bitmapData	The matching BitmapData instance
+	**/
 	public function setBitmapData(id:String, bitmapData:BitmapData):Void
 	{
 		this.bitmapData.set(id, bitmapData);
 	}
 
+	/**
+		Adds or replaces a Font asset in the cache.
+
+		@param	id	The ID of a Font asset
+		@param	bitmapData	The matching Font instance
+	**/
 	public function setFont(id:String, font:Font):Void
 	{
 		this.font.set(id, font);
 	}
 
+	/**
+		Adds or replaces a Sound asset in the cache.
+
+		@param	id	The ID of a Sound asset
+		@param	bitmapData	The matching Sound instance
+	**/
 	public function setSound(id:String, sound:Sound):Void
 	{
 		this.sound.set(id, sound);

@@ -29,9 +29,9 @@ package openfl.text;
 		}
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : TextFieldType)
 		{
 			case TextFieldType.DYNAMIC: "dynamic";
 			case TextFieldType.INPUT: "input";
@@ -40,6 +40,7 @@ package openfl.text;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract TextFieldType(String) from String to String
 {
 	public var DYNAMIC = "dynamic";

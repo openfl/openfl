@@ -24,6 +24,7 @@
 	NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **/
+
 package openfl.utils;
 
 import openfl._internal.utils.Log;
@@ -35,6 +36,7 @@ import openfl.Lib;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings(["checkstyle:ConstantName", "checkstyle:FieldDocComment"])
 class AGALMiniAssembler
 {
 	@:noCompletion private static var OPMAP:Map<String, OpCode> = new Map();
@@ -513,8 +515,8 @@ class AGALMiniAssembler
 
 					if (verbose)
 					{
-						Log
-							.info("RELATIVE: type=" + reltype + "==" + relname[0] + " sel=" + relsel + "==" + selmatch[0] + " idx=" + regidx + " offset=" + reloffset);
+						Log.info("RELATIVE: type=" + reltype + "==" + relname[0] + " sel=" + relsel + "==" + selmatch[0] + " idx=" + regidx + " offset="
+							+ reloffset);
 					}
 				}
 
@@ -790,6 +792,7 @@ class AGALMiniAssembler
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 private class OpCode
 {
 	public var emitCode(default, null):Int;
@@ -815,6 +818,7 @@ private class OpCode
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 private class Register
 {
 	public var emitCode(default, null):UInt;
@@ -834,7 +838,17 @@ private class Register
 
 	public function toString():String
 	{
-		return "[Register name=\"" + name + "\", longName=\"" + longName + "\", emitCode=" + emitCode + ", range=" + range + ", flags=" + flags + "]";
+		return "[Register name=\""
+			+ name
+			+ "\", longName=\""
+			+ longName
+			+ "\", emitCode="
+			+ emitCode
+			+ ", range="
+			+ range
+			+ ", flags="
+			+ flags
+			+ "]";
 	}
 }
 
@@ -842,6 +856,7 @@ private class Register
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 private class Sampler
 {
 	public var flag(default, null):UInt;

@@ -1,8 +1,10 @@
 package openfl._internal.renderer.canvas;
 
-import openfl.display.CanvasRenderer;
+#if openfl_html5
 import openfl.display.DisplayObject;
-#if lime
+#if !lime
+import openfl._internal.backend.lime_standalone.ARGB;
+#else
 import lime.math.ARGB;
 #end
 
@@ -13,17 +15,17 @@ class CanvasDisplayObject
 {
 	public static inline function render(displayObject:DisplayObject, renderer:CanvasRenderer):Void
 	{
-		#if (js && html5)
+		#if openfl_html5
 		if (displayObject.opaqueBackground == null && displayObject.__graphics == null) return;
 		if (!displayObject.__renderable) return;
 
 		var alpha = renderer.__getAlpha(displayObject.__worldAlpha);
 		if (alpha <= 0) return;
 
-		if (displayObject.opaqueBackground != null &&
-				!displayObject.__isCacheBitmapRender &&
-				displayObject.width > 0 &&
-				displayObject.height > 0)
+		if (displayObject.opaqueBackground != null
+			&& !displayObject.__renderData.isCacheBitmapRender
+			&& displayObject.width > 0
+			&& displayObject.height > 0)
 		{
 			renderer.__setBlendMode(displayObject.__worldBlendMode);
 			renderer.__pushMaskObject(displayObject);
@@ -46,3 +48,4 @@ class CanvasDisplayObject
 		#end
 	}
 }
+#end

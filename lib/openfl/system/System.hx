@@ -1,7 +1,9 @@
-package openfl.system; #if (display || !flash)
+package openfl.system;
 
-
+#if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/system/System", "default")
+#end
 
 /**
  * The System class contains properties related to local settings and
@@ -15,25 +17,21 @@ package openfl.system; #if (display || !flash)
  * This class contains only static methods and properties. You cannot
  * create new instances of the System class.
  */
-@:final extern class System {
-	
-	
+@:final extern class System
+{
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10_1) public static var freeMemory (default, null):Float;
+	@:noCompletion @:dox(hide) @:require(flash10_1) public static var freeMemory(default, null):Float;
 	#end
-	
 	#if flash
-	@:noCompletion @:dox(hide) public static var ime (default, null):flash.system.IME;
+	@:noCompletion @:dox(hide) public static var ime(default, null):flash.system.IME;
 	#end
-	
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10_1) public static var privateMemory (default, null):Float;
+	@:noCompletion @:dox(hide) @:require(flash10_1) public static var privateMemory(default, null):Float;
 	#end
-	
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash11) public static var processCPUUsage (default, null):Float;
+	@:noCompletion @:dox(hide) @:require(flash11) public static var processCPUUsage(default, null):Float;
 	#end
-	
+
 	/**
 	 * The amount of memory(in bytes) currently in use that has been directly
 	 * allocated by Flash Player or AIR.
@@ -49,14 +47,13 @@ package openfl.system; #if (display || !flash)
 	 * property is set to 0. The `System.totalMemoryNumber` property
 	 * allows larger values.
 	 */
-	public static var totalMemory (get, never):Int;
-	
-	@:noCompletion private static function get_totalMemory ():Int;
-	
+	public static var totalMemory(get, never):Int;
+
+	@:noCompletion private static function get_totalMemory():Int;
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10_1) public static var totalMemoryNumber (default, null):Float;
+	@:noCompletion @:dox(hide) @:require(flash10_1) public static var totalMemoryNumber(default, null):Float;
 	#end
-	
+
 	/**
 	 * A Boolean value that determines which code page to use to interpret
 	 * external text files. When the property is set to `false`,
@@ -103,17 +100,13 @@ package openfl.system; #if (display || !flash)
 	 * Unicode.
 	 */
 	public static var useCodePage:Bool;
-	
-	public static var vmVersion (get, never):String;
-	
-	@:noCompletion private static function get_vmVersion ():String;
-	
-	
+
+	public static var vmVersion(get, never):String;
+	@:noCompletion private static function get_vmVersion():String;
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash10_1) public static function disposeXML (node:flash.xml.XML):Void;
+	@:noCompletion @:dox(hide) @:require(flash10_1) public static function disposeXML(node:flash.xml.XML):Void;
 	#end
-	
-	
+
 	/**
 	 * Closes Flash Player.
 	 *
@@ -121,13 +114,12 @@ package openfl.system; #if (display || !flash)
 	 *
 	 * AIR applications should call the `NativeApplication.exit()`
 	 * method to exit the application.
-	 * 
+	 *
 	 * @param code A value to pass to the operating system. Typically, if the
 	 *             process exits normally, the value is 0.
 	 */
-	public static function exit (code:UInt):Void;
-	
-	
+	public static function exit(code:UInt):Void;
+
 	/**
 	 * Forces the garbage collection process.
 	 *
@@ -135,11 +127,10 @@ package openfl.system; #if (display || !flash)
 	 * In an AIR application, the `System.gc()` method is only enabled
 	 * in content running in the AIR Debug Launcher(ADL) or, in an installed
 	 * applcation, in content in the application security sandbox.
-	 * 
+	 *
 	 */
-	public static function gc ():Void;
-	
-	
+	public static function gc():Void;
+
 	/**
 	 * Pauses Flash Player or the AIR Debug Launcher(ADL). After calling this
 	 * method, nothing in the application continues except the delivery of Socket
@@ -147,26 +138,23 @@ package openfl.system; #if (display || !flash)
 	 *
 	 * _For the Flash Player debugger version or the AIR Debug Launcher
 	 * (ADL) only._
-	 * 
+	 *
 	 */
-	public static function pause ():Void;
-	
-	
+	public static function pause():Void;
+
 	#if flash
-	@:noCompletion @:dox(hide) @:require(flash11) public static function pauseForGCIfCollectionImminent (imminence:Float = 0.75):Void;
+	@:noCompletion @:dox(hide) @:require(flash11) public static function pauseForGCIfCollectionImminent(imminence:Float = 0.75):Void;
 	#end
-	
-	
+
 	/**
 	 * Resumes the application after calling `System.pause()`.
 	 *
 	 * _For the Flash Player debugger version or the AIR Debug Launcher
 	 * (ADL) only._
-	 * 
+	 *
 	 */
-	public static function resume ():Void;
-	
-	
+	public static function resume():Void;
+
 	/**
 	 * Replaces the contents of the Clipboard with a specified text string. This
 	 * method works from any security context when called as a result of a user
@@ -178,16 +166,12 @@ package openfl.system; #if (display || !flash)
 	 * Flash Player 10 content and content in the application security sandbox
 	 * in an AIR application can call the `Clipboard.setData()`
 	 * method.
-	 * 
+	 *
 	 * @param string A plain-text string of characters to put on the system
 	 *               Clipboard, replacing its current contents(if any).
 	 */
-	public static function setClipboard (string:String):Void;
-	
-	
+	public static function setClipboard(string:String):Void;
 }
-
-
 #else
 typedef System = flash.system.System;
 #end

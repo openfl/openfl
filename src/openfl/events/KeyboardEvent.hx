@@ -1,6 +1,7 @@
 package openfl.events;
 
 #if !flash
+import openfl._internal.utils.ObjectPool;
 import openfl.ui.KeyLocation;
 
 /**
@@ -22,20 +23,46 @@ import openfl.ui.KeyLocation;
 class KeyboardEvent extends Event
 {
 	/**
-		The `KeyboardEvent.KEY_DOWN` constant defines the value of the
-		`type` property of a `keyDown` event object.
-
+		The `KeyboardEvent.KEY_DOWN` constant defines the value of the `type`
+		property of a `keyDown` event object.
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `true` |
+		| `cancelable` | `true` in AIR, `false` in Flash Player; in AIR, canceling this event prevents the character from being entered into a text field. |
+		| `charCode` | The character code value of the key pressed or released. |
+		| `commandKey` | `true` on Mac if the Command key is active. Otherwise, `false` |
+		| `controlKey` | `true` on Windows and Linux if the Ctrl key is active. `true` on Mac if either the Control key is active. Otherwise, `false` |
+		| `ctrlKey` | `true` on Windows and Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `keyCode` | The key code value of the key pressed or released. |
+		| `keyLocation` | The location of the key on the keyboard. |
+		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
+		| `target` | The InteractiveObject instance with focus. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
-	public static inline var KEY_DOWN:String = "keyDown";
+	public static inline var KEY_DOWN:EventType<KeyboardEvent> = "keyDown";
 
 	/**
-		The `KeyboardEvent.KEY_UP` constant defines the value of the
-		`type` property of a `keyUp` event object.
-
+		The `KeyboardEvent.KEY_UP` constant defines the value of the `type`
+		property of a `keyUp` event object.
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `true` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `charCode` | Contains the character code value of the key pressed or released. |
+		| `commandKey` | `true` on Mac if the Command key is active. Otherwise, `false` |
+		| `controlKey` | `true` on Windows and Linux if the Ctrl key is active. `true` on Mac if either the Control key is active. Otherwise, `false` |
+		| `ctrlKey` | `true` on Windows if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `keyCode` | The key code value of the key pressed or released. |
+		| `keyLocation` | The location of the key on the keyboard. |
+		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
+		| `target` | The InteractiveObject instance with focus. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
-	public static inline var KEY_UP:String = "keyUp";
+	public static inline var KEY_UP:EventType<KeyboardEvent> = "keyUp";
 
 	/**
 		Indicates whether the Alt key is active(`true`) or inactive
@@ -55,7 +82,7 @@ class KeyboardEvent extends Event
 	**/
 	public var charCode:Int;
 
-	#if (!openfl_doc_gen || !flash_doc_gen || air_doc_gen)
+	#if (!flash_doc_gen || air_doc_gen)
 	/**
 		Indicates whether the Command key is active (`true`) or inactive
 		(`false`). Supported for Mac OS only. On Mac OS, the `commandKey`
@@ -103,6 +130,9 @@ class KeyboardEvent extends Event
 		inactive(`false`).
 	**/
 	public var shiftKey:Bool;
+
+	@:noCompletion private static var __pool:ObjectPool<KeyboardEvent> = new ObjectPool<KeyboardEvent>(function() return new KeyboardEvent(null),
+	function(event) event.__init());
 
 	/**
 		Creates an Event object that contains specific information about keyboard
@@ -152,7 +182,7 @@ class KeyboardEvent extends Event
 		#end
 	}
 
-	public override function clone():Event
+	public override function clone():KeyboardEvent
 	{
 		var event = new KeyboardEvent(type, bubbles, cancelable, charCode, keyCode, keyLocation, ctrlKey, altKey, shiftKey
 			#if !openfl_doc_gen, controlKey, commandKey #end);
@@ -176,6 +206,22 @@ class KeyboardEvent extends Event
 			"altKey",
 			"shiftKey"
 		]);
+	}
+
+	@:noCompletion private override function __init():Void
+	{
+		super.__init();
+		charCode = 0;
+		keyCode = 0;
+		keyLocation = STANDARD;
+		ctrlKey = false;
+		altKey = false;
+		shiftKey = false;
+
+		#if !openfl_doc_gen
+		controlKey = false;
+		commandKey = false;
+		#end
 	}
 }
 #else

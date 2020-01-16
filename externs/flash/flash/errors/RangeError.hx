@@ -1,15 +1,10 @@
-package flash.errors; #if flash
+package flash.errors;
 
-
-@:native("RangeError") extern class RangeError extends Error {
-	
-	
-	public function new (message:String = "");
-	
-	
+#if flash
+@:native("RangeError") extern class RangeError extends Error
+{
+	public function new(message:String = "");
 }
-
-
 #else
 typedef RangeError = openfl.errors.RangeError;
 #end

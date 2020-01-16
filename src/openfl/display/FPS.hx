@@ -8,16 +8,27 @@ import openfl.text.TextFormat;
 import openfl._internal.renderer.context3D.stats.Context3DStats;
 import openfl._internal.renderer.context3D.stats.DrawCallContext;
 #end
+#if flash
+import openfl.Lib;
+#end
 
+/**
+	The FPS class provides an easy-to-use monitor to display
+	the current frame rate of an OpenFL project
+**/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
 class FPS extends TextField
 {
+	/**
+		The current frame rate, expressed using frames-per-second
+	**/
 	public var currentFPS(default, null):Int;
 
 	@:noCompletion private var cacheCount:Int;
+	@:noCompletion private var currentTime:Float;
 	@:noCompletion private var times:Array<Float>;
 
 	public function new(x:Float = 10, y:Float = 10, color:Int = 0x000000)
@@ -34,18 +45,27 @@ class FPS extends TextField
 		text = "FPS: ";
 
 		cacheCount = 0;
+		currentTime = 0;
 		times = [];
 
-		addEventListener(Event.ENTER_FRAME, this_onEnterFrame);
+		// #if flash
+		addEventListener(Event.ENTER_FRAME, function(e)
+		{
+			var time = Lib.getTimer();
+			__enterFrame(time - currentTime);
+		});
+		// #end
 	}
 
 	// Event Handlers
-	@:noCompletion private function this_onEnterFrame(event:Event):Void
+
+	@:noCompletion
+	private /*#if !flash override #end*/ function __enterFrame(deltaTime:Float):Void
 	{
-		var currentTime = Timer.stamp();
+		currentTime += deltaTime;
 		times.push(currentTime);
 
-		while (times[0] < currentTime - 1)
+		while (times[0] < currentTime - 1000)
 		{
 			times.shift();
 		}

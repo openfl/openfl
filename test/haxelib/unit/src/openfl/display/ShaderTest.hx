@@ -5,26 +5,27 @@ import openfl.display.Shader;
 import openfl.display.ShaderPrecision;
 import openfl.utils.ByteArray;
 
-class ShaderTest {
-	@Test public function new_() {
-		var shader = new Shader ();
+class ShaderTest
+{
+	@Test public function new_()
+	{
+		var shader = new Shader();
 
 		Assert.areEqual(ShaderPrecision.FULL, shader.precisionHint);
 	}
 
-	@Test public function byteCode() {
-
+	@Test public function byteCode()
+	{
 		// TODO: Confirm functionality
 
-		var shader = new Shader ();
+		var shader = new Shader();
 		#if !flash
-		shader.byteCode = new ByteArray ();
+		shader.byteCode = new ByteArray();
 		#end
-
 	}
 
-	@Test public function data() {
-
+	@Test public function data()
+	{
 		// TODO: Confirm functionality
 
 		// var shader = new Shader ();
@@ -35,11 +36,11 @@ class ShaderTest {
 		// #else
 		// Assert.isNotNull (exists);
 		// #end
-
 	}
 
-	@Test public function precisionHint() {
-		var shader = new Shader ();
+	@Test public function precisionHint()
+	{
+		var shader = new Shader();
 
 		Assert.areEqual(ShaderPrecision.FULL, shader.precisionHint);
 
@@ -47,5 +48,4 @@ class ShaderTest {
 
 		Assert.areEqual(ShaderPrecision.FAST, shader.precisionHint);
 	}
-
 }

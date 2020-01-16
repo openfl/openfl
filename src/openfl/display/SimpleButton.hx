@@ -1,8 +1,6 @@
 package openfl.display;
 
 #if !flash
-import openfl._internal.formats.swf.SWFLite;
-import openfl._internal.symbols.ButtonSymbol;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.events.MouseEvent;
@@ -30,15 +28,11 @@ import openfl.Vector;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl._internal.symbols.SWFSymbol)
 @:access(openfl.display.MovieClip)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 class SimpleButton extends InteractiveObject
 {
-	@:noCompletion private static var __initSWF:SWFLite;
-	@:noCompletion private static var __initSymbol:ButtonSymbol;
-
 	/**
 		Specifies a display object that is used as the visual object for the
 		button "Down" state  - the state that the button is in when the user
@@ -117,6 +111,8 @@ class SimpleButton extends InteractiveObject
 	**/
 	public var useHandCursor:Bool;
 
+	@:noCompletion private static var __constructor:SimpleButton->Void;
+
 	@:noCompletion private var __currentState(default, set):DisplayObject;
 	@:noCompletion private var __downState:DisplayObject;
 	@:noCompletion private var __hitTestState:DisplayObject;
@@ -124,20 +120,33 @@ class SimpleButton extends InteractiveObject
 	@:noCompletion private var __overState:DisplayObject;
 	@:noCompletion private var __previousStates:Vector<DisplayObject>;
 	@:noCompletion private var __soundTransform:SoundTransform;
-	@:noCompletion private var __symbol:ButtonSymbol;
 	@:noCompletion private var __upState:DisplayObject;
 
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperties(SimpleButton.prototype,
-			{
-				"downState": {get: untyped __js__("function () { return this.get_downState (); }"), set: untyped __js__("function (v) { return this.set_downState (v); }")},
-				"hitTestState": {get: untyped __js__("function () { return this.get_hitTestState (); }"), set: untyped __js__("function (v) { return this.set_hitTestState (v); }")},
-				"overState": {get: untyped __js__("function () { return this.get_overState (); }"), set: untyped __js__("function (v) { return this.set_overState (v); }")},
-				"soundTransform": {get: untyped __js__("function () { return this.get_soundTransform (); }"), set: untyped __js__("function (v) { return this.set_soundTransform (v); }")},
-				"upState": {get: untyped __js__("function () { return this.get_upState (); }"), set: untyped __js__("function (v) { return this.set_upState (v); }")},
-			});
+		untyped Object.defineProperties(SimpleButton.prototype, {
+			"downState": {
+				get: untyped __js__("function () { return this.get_downState (); }"),
+				set: untyped __js__("function (v) { return this.set_downState (v); }")
+			},
+			"hitTestState": {
+				get: untyped __js__("function () { return this.get_hitTestState (); }"),
+				set: untyped __js__("function (v) { return this.set_hitTestState (v); }")
+			},
+			"overState": {
+				get: untyped __js__("function () { return this.get_overState (); }"),
+				set: untyped __js__("function (v) { return this.set_overState (v); }")
+			},
+			"soundTransform": {
+				get: untyped __js__("function () { return this.get_soundTransform (); }"),
+				set: untyped __js__("function (v) { return this.set_soundTransform (v); }")
+			},
+			"upState": {
+				get: untyped __js__("function () { return this.get_upState (); }"),
+				set: untyped __js__("function (v) { return this.set_upState (v); }")
+			},
+		});
 	}
 	#end
 
@@ -154,6 +163,8 @@ class SimpleButton extends InteractiveObject
 	public function new(upState:DisplayObject = null, overState:DisplayObject = null, downState:DisplayObject = null, hitTestState:DisplayObject = null)
 	{
 		super();
+
+		__type = SIMPLE_BUTTON;
 
 		enabled = true;
 		trackAsMenu = false;
@@ -172,40 +183,12 @@ class SimpleButton extends InteractiveObject
 		__tabEnabled = true;
 		__currentState = __upState;
 
-		if (__initSymbol != null)
+		if (__constructor != null)
 		{
-			var swf = __initSWF;
-			__symbol = __initSymbol;
+			var method = __constructor;
+			__constructor = null;
 
-			__initSWF = null;
-			__initSymbol = null;
-
-			__fromSymbol(swf, __symbol);
-		}
-	}
-
-	@:noCompletion private function __fromSymbol(swf:SWFLite, symbol:ButtonSymbol):Void
-	{
-		__symbol = symbol;
-
-		if (symbol.downState != null)
-		{
-			downState = symbol.downState.__createObject(swf);
-		}
-
-		if (symbol.hitState != null)
-		{
-			hitTestState = symbol.hitState.__createObject(swf);
-		}
-
-		if (symbol.overState != null)
-		{
-			overState = symbol.overState.__createObject(swf);
-		}
-
-		if (symbol.upState != null)
-		{
-			upState = symbol.upState.__createObject(swf);
+			method(this);
 		}
 	}
 
@@ -274,10 +257,11 @@ class SimpleButton extends InteractiveObject
 		}
 		else if (__currentState != null)
 		{
-			if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
-			if (mask != null && !mask.__hitTestMask(x, y)) return false;
-
-			if (__currentState.__hitTest(x, y, shapeFlag, stack, interactiveOnly, hitObject))
+			if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled) || (mask != null && !mask.__hitTestMask(x, y)))
+			{
+				hitTest = false;
+			}
+			else if (__currentState.__hitTest(x, y, shapeFlag, stack, interactiveOnly, hitObject))
 			{
 				hitTest = interactiveOnly;
 			}
@@ -309,125 +293,25 @@ class SimpleButton extends InteractiveObject
 		return hitTest;
 	}
 
-	@:noCompletion private override function __renderCairo(renderer:CairoRenderer):Void
+	@:noCompletion private override function __setTransformDirty(force:Bool = false):Void
 	{
-		if (!__renderable || __worldAlpha <= 0 || __currentState == null) return;
-
-		renderer.__pushMaskObject(this);
-		__currentState.__renderCairo(renderer);
-		renderer.__popMaskObject(this);
-
-		__renderEvent(renderer);
-	}
-
-	@:noCompletion private override function __renderCairoMask(renderer:CairoRenderer):Void
-	{
-		__currentState.__renderCairoMask(renderer);
-	}
-
-	@:noCompletion private override function __renderCanvas(renderer:CanvasRenderer):Void
-	{
-		if (!__renderable || __worldAlpha <= 0 || __currentState == null) return;
-
-		#if !neko
-		renderer.__pushMaskObject(this);
-		__currentState.__renderCanvas(renderer);
-		renderer.__popMaskObject(this);
-
-		__renderEvent(renderer);
-		#end
-	}
-
-	@:noCompletion private override function __renderCanvasMask(renderer:CanvasRenderer):Void
-	{
-		// var bounds = Rectangle.__pool.get ();
-		// __getLocalBounds (bounds);
-
-		// renderer.context.rect (bounds.x, bounds.y, bounds.width, bounds.height);
-
-		// Rectangle.__pool.release (bounds);
-		__currentState.__renderCanvasMask(renderer);
-	}
-
-	@:noCompletion private override function __renderDOM(renderer:DOMRenderer):Void
-	{
-		#if !neko
-		renderer.__pushMaskObject(this);
-
-		for (previousState in __previousStates)
-		{
-			previousState.__renderDOM(renderer);
-		}
-
-		__previousStates.length = 0;
+		// inline super.__setTransformDirty(force);
+		__transformDirty = true;
 
 		if (__currentState != null)
 		{
-			if (__currentState.stage != stage)
-			{
-				__currentState.__setStageReference(stage);
-			}
-
-			__currentState.__renderDOM(renderer);
-		}
-
-		renderer.__popMaskObject(this);
-
-		__renderEvent(renderer);
-		#end
-	}
-
-	@:noCompletion private override function __renderGL(renderer:OpenGLRenderer):Void
-	{
-		if (!__renderable || __worldAlpha <= 0 || __currentState == null) return;
-
-		renderer.__pushMaskObject(this);
-		__currentState.__renderGL(renderer);
-		renderer.__popMaskObject(this);
-
-		__renderEvent(renderer);
-	}
-
-	@:noCompletion private override function __renderGLMask(renderer:OpenGLRenderer):Void
-	{
-		if (__currentState == null) return;
-
-		__currentState.__renderGLMask(renderer);
-	}
-
-	@:noCompletion private override function __setStageReference(stage:Stage):Void
-	{
-		super.__setStageReference(stage);
-
-		if (__currentState != null)
-		{
-			__currentState.__setStageReference(stage);
+			__currentState.__setTransformDirty(force);
 		}
 
 		if (hitTestState != null && hitTestState != __currentState)
 		{
-			hitTestState.__setStageReference(stage);
-		}
-	}
-
-	@:noCompletion private override function __setTransformDirty():Void
-	{
-		super.__setTransformDirty();
-
-		if (__currentState != null)
-		{
-			__currentState.__setTransformDirty();
-		}
-
-		if (hitTestState != null && hitTestState != __currentState)
-		{
-			hitTestState.__setTransformDirty();
+			hitTestState.__setTransformDirty(force);
 		}
 	}
 
 	@:noCompletion private override function __update(transformOnly:Bool, updateChildren:Bool):Void
 	{
-		super.__update(transformOnly, updateChildren);
+		__updateSingle(transformOnly, updateChildren);
 
 		if (updateChildren)
 		{
@@ -440,21 +324,6 @@ class SimpleButton extends InteractiveObject
 			{
 				hitTestState.__update(transformOnly, true);
 			}
-		}
-	}
-
-	@:noCompletion private override function __updateTransforms(overrideTransform:Matrix = null):Void
-	{
-		super.__updateTransforms(overrideTransform);
-
-		if (__currentState != null)
-		{
-			__currentState.__updateTransforms();
-		}
-
-		if (hitTestState != null && hitTestState != __currentState)
-		{
-			hitTestState.__updateTransforms();
 		}
 	}
 
@@ -486,12 +355,14 @@ class SimpleButton extends InteractiveObject
 			if (__hitTestState != downState && __hitTestState != upState && __hitTestState != overState)
 			{
 				__hitTestState.__renderParent = null;
+				__hitTestState.__setTransformDirty();
 			}
 		}
 
 		if (hitTestState != null)
 		{
 			hitTestState.__renderParent = this;
+			hitTestState.__setTransformDirty();
 			hitTestState.__setRenderDirty();
 		}
 
@@ -549,6 +420,7 @@ class SimpleButton extends InteractiveObject
 		if (__currentState != null && __currentState != hitTestState)
 		{
 			__currentState.__renderParent = null;
+			__currentState.__setTransformDirty();
 		}
 
 		if (value != null && value.parent != null)
@@ -556,8 +428,8 @@ class SimpleButton extends InteractiveObject
 			value.parent.removeChild(value);
 		}
 
-		// #if (js && html5 && dom)
-		#if (js && html5)
+		// #if (openfl_html5 && dom)
+		#if openfl_html5
 		if (DisplayObject.__supportDOM && __previousStates == null)
 		{
 			__previousStates = new Vector<DisplayObject>();
@@ -566,13 +438,13 @@ class SimpleButton extends InteractiveObject
 
 		if (value != __currentState)
 		{
-			// #if (js && html5 && dom)
-			#if (js && html5)
+			// #if (openfl_html5 && dom)
+			#if openfl_html5
 			if (DisplayObject.__supportDOM)
 			{
 				if (__currentState != null)
 				{
-					__currentState.__setStageReference(null);
+					__currentState.__setStageReferences(null);
 					__previousStates.push(__currentState);
 				}
 
@@ -588,9 +460,11 @@ class SimpleButton extends InteractiveObject
 			if (value != null)
 			{
 				value.__renderParent = this;
+				value.__setTransformDirty();
 				value.__setRenderDirty();
 			}
 
+			__localBoundsDirty = true;
 			__setRenderDirty();
 		}
 
@@ -612,7 +486,7 @@ class SimpleButton extends InteractiveObject
 	{
 		__ignoreEvent = false;
 
-		if (enabled && upState != __currentState)
+		if (upState != __currentState)
 		{
 			__currentState = upState;
 		}
@@ -635,16 +509,13 @@ class SimpleButton extends InteractiveObject
 	{
 		__ignoreEvent = false;
 
-		if (enabled)
+		if (enabled && overState != null)
 		{
-			if (overState != null)
-			{
-				__currentState = overState;
-			}
-			else
-			{
-				__currentState = upState;
-			}
+			__currentState = overState;
+		}
+		else
+		{
+			__currentState = upState;
 		}
 	}
 }

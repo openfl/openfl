@@ -5,7 +5,7 @@ package openfl.text;
 #if !openfljs
 /**
 	The AntiAliasType class provides values for anti-aliasing in the
-	flash.text.TextField class.
+	openfl.text.TextField class.
 **/
 @:enum abstract AntiAliasType(Null<Int>)
 {
@@ -39,9 +39,9 @@ package openfl.text;
 		}
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : AntiAliasType)
 		{
 			case AntiAliasType.ADVANCED: "advanced";
 			case AntiAliasType.NORMAL: "normal";
@@ -50,6 +50,7 @@ package openfl.text;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract AntiAliasType(String) from String to String
 {
 	public var ADVANCED = "advanced";

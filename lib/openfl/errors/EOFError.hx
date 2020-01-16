@@ -1,7 +1,9 @@
-package openfl.errors; #if (display || !flash)
+package openfl.errors;
 
-
+#if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/errors/EOFError", "default")
+#end
 
 /**
  * An EOFError exception is thrown when you attempt to read past the end of
@@ -9,20 +11,15 @@ package openfl.errors; #if (display || !flash)
  * methods in the IDataInput interface is called and there is insufficient
  * data to satisfy the read request.
  */
-extern class EOFError extends IOError {
-	
-	
+extern class EOFError extends IOError
+{
 	/**
 	 * Creates a new EOFError object.
-	 * 
+	 *
 	 * @param message A string associated with the error object.
 	 */
-	public function new (?message:String, id:Int = 0):Void;
-	
-	
+	public function new(?message:String, id:Int = 0):Void;
 }
-
-
 #else
 typedef EOFError = flash.errors.EOFError;
 #end

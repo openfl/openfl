@@ -5,6 +5,7 @@ ImportAll
 -D lime=7.0.0
 # -lib openfl
 -cp ../src
+--macro openfl._internal.macros.ExtraParams.include()
 # -lib format
 -cp ../node_modules/format
 -D format

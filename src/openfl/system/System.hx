@@ -1,15 +1,7 @@
 package openfl.system;
 
 #if !flash
-#if lime
-import lime.system.Clipboard;
-import lime.system.System as LimeSystem;
-#end
-#if neko
-import neko.vm.Gc;
-#elseif cpp
-import cpp.vm.Gc;
-#end
+import openfl.desktop.Clipboard;
 
 /**
 	The System class contains properties related to local settings and
@@ -17,7 +9,7 @@ import cpp.vm.Gc;
 	with shared objects and the use of the Clipboard.
 
 	Additional properties and methods are in other classes within the
-	flash.system package: the Capabilities class, the IME class, and the
+	openfl.system package: the Capabilities class, the IME class, and the
 	Security class.
 
 	This class contains only static methods and properties. You cannot
@@ -29,9 +21,38 @@ import cpp.vm.Gc;
 #end
 @:final class System
 {
+	#if false
+	/**
+		The amount of memory (in bytes) that is allocated to
+		Adobe<sup>஼/sup> Flash<sup>஼/sup> Player or Adobe<sup>஼/sup>
+		AIR<sup>஼/sup> and that is not in use. This unused portion of
+		allocated memory (`System.totalMemory`) fluctuates as garbage
+		collection takes place. Use this property to monitor garbage
+		collection.
+	**/
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public static var freeMemory (default, null):Float;
-	// @:noCompletion @:dox(hide) public static var ime (default, null):flash.system.IME;
+	#end
+
+	#if false
+	/**
+		The currently installed system IME. To register for imeComposition
+		events, call `addEventListener()` on this instance.
+	**/
+	// @:noCompletion @:dox(hide) public static var ime (default, null):openfl.system.IME;
+	#end
+
+	#if false
+	/**
+		The entire amount of memory (in bytes) used by an application. This is
+		the amount of resident private memory for the entire process.
+		AIR developers should use this property to determine the entire memory
+		consumption of an application.
+
+		For Flash Player, this includes the memory used by the container
+		application, such as the web browser.
+	**/
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public static var privateMemory (default, null):Float;
+	#end
 	// @:noCompletion @:dox(hide) @:require(flash11) public static var processCPUUsage (default, null):Float;
 
 	/**
@@ -50,6 +71,7 @@ import cpp.vm.Gc;
 		allows larger values.
 	**/
 	public static var totalMemory(get, never):Int;
+
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public static var totalMemoryNumber (default, null):Float;
 
 	/**
@@ -98,32 +120,41 @@ import cpp.vm.Gc;
 		Unicode.
 	**/
 	public static var useCodePage:Bool = false;
-	public static var vmVersion(get, never):String;
+
+	/**
+		Undocumented property
+	**/
+	@:noCompletion @:dox(hide) public static var vmVersion(get, never):String;
 
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperties(System,
-			{
-				"totalMemory":
-					{
-						get: function()
-						{
-							return System.get_totalMemory();
-						}
-					},
-				"vmVersion":
-					{
-						get: function()
-						{
-							return System.get_vmVersion();
-						}
-					},
-			});
+		untyped Object.defineProperties(System, {
+			"totalMemory": {
+				get: function()
+				{
+					return System.get_totalMemory();
+				}
+			},
+			"vmVersion": {
+				get: function()
+				{
+					return System.get_vmVersion();
+				}
+			},
+		});
 	}
 	#end
 
-	// @:noCompletion @:dox(hide) @:require(flash10_1) public static function disposeXML (node:flash.xml.XML):Void;
+	/**
+		Makes the specified XML object immediately available for garbage
+		collection. This method will remove parent and child connections
+		between all the nodes for the specified XML node.
+
+		@param node XML reference that should be made available for garbage
+					collection.
+	**/
+	@:noCompletion @:dox(hide) public static function disposeXML(node:Dynamic):Void {}
 
 	/**
 		Closes Flash Player.
@@ -138,9 +169,7 @@ import cpp.vm.Gc;
 	**/
 	public static function exit(code:Int):Void
 	{
-		#if lime
-		LimeSystem.exit(code);
-		#end
+		SystemBackend.exit(code);
 	}
 
 	/**
@@ -154,11 +183,10 @@ import cpp.vm.Gc;
 	**/
 	public static function gc():Void
 	{
-		#if (cpp || neko)
-		return Gc.run(true);
-		#end
+		SystemBackend.gc();
 	}
 
+	#if !openfl_strict
 	/**
 		Pauses Flash Player or the AIR Debug Launcher(ADL). After calling this
 		method, nothing in the application continues except the delivery of Socket
@@ -172,9 +200,11 @@ import cpp.vm.Gc;
 	{
 		openfl._internal.Lib.notImplemented();
 	}
+	#end
 
 	// @:noCompletion @:dox(hide) @:require(flash11) public static function pauseForGCIfCollectionImminent (imminence:Float = 0.75):Void;
 
+	#if !openfl_strict
 	/**
 		Resumes the application after calling `System.pause()`.
 
@@ -186,6 +216,7 @@ import cpp.vm.Gc;
 	{
 		openfl._internal.Lib.notImplemented();
 	}
+	#end
 
 	/**
 		Replaces the contents of the Clipboard with a specified text string. This
@@ -204,23 +235,13 @@ import cpp.vm.Gc;
 	**/
 	public static function setClipboard(string:String):Void
 	{
-		#if lime
-		Clipboard.text = string;
-		#end
+		Clipboard.generalClipboard.setData(TEXT_FORMAT, string);
 	}
 
 	// Getters & Setters
 	@:noCompletion private static function get_totalMemory():Int
 	{
-		#if neko
-		return Gc.stats().heap;
-		#elseif cpp
-		return untyped __global__.__hxcpp_gc_used_bytes();
-		#elseif (js && html5)
-		return untyped __js__("(window.performance && window.performance.memory) ? window.performance.memory.usedJSHeapSize : 0");
-		#else
-		return 0;
-		#end
+		return SystemBackend.getTotalMemory();
 	}
 
 	@:noCompletion private static function get_vmVersion():String
@@ -228,6 +249,14 @@ import cpp.vm.Gc;
 		return "1.0.0";
 	}
 }
+
+#if lime
+private typedef SystemBackend = openfl._internal.backend.lime.LimeSystemBackend;
+#elseif openfl_html5
+private typedef SystemBackend = openfl._internal.backend.html5.HTML5SystemBackend;
+#else
+private typedef SystemBackend = openfl._internal.backend.dummy.DummySystemBackend;
+#end
 #else
 typedef System = flash.system.System;
 #end

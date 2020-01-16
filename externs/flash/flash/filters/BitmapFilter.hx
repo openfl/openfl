@@ -1,16 +1,11 @@
-package flash.filters; #if flash
+package flash.filters;
 
-
-extern class BitmapFilter {
-	
-	
-	public function new ():Void;
-	public function clone ():BitmapFilter;
-	
-	
+#if flash
+extern class BitmapFilter
+{
+	public function new():Void;
+	public function clone():BitmapFilter;
 }
-
-
 #else
 typedef BitmapFilter = openfl.filters.BitmapFilter;
 #end

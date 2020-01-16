@@ -1,605 +1,537 @@
 package openfl.text;
 
+class TextFieldTest
+{
+	@Test public function autoSizeLeft()
+	{
+		var textField = new TextField();
+		textField.text = "Hello";
 
-class TextFieldTest {
-    @Test public function autoSizeLeft() {
-        var textField = new TextField ();
-        textField.text = "Hello";
+		Assert.areNotEqual(textField.textWidth + 4, textField.width);
+		Assert.areEqual(0.0, textField.x);
+		Assert.areEqual(100.0, textField.width);
 
-        Assert.areNotEqual(textField.textWidth + 4, textField.width);
-        Assert.areEqual(0.0, textField.x);
-        Assert.areEqual(100.0, textField.width);
+		textField.autoSize = TextFieldAutoSize.LEFT;
 
-        textField.autoSize = TextFieldAutoSize.LEFT;
+		Assert.areEqual(textField.textWidth + 4, textField.width);
+		Assert.areEqual(0.0, textField.x);
 
-        Assert.areEqual(textField.textWidth + 4, textField.width);
-        Assert.areEqual(0.0, textField.x);
+		textField.text = "H";
 
-        textField.text = "H";
+		Assert.areEqual(textField.textWidth + 4, textField.width);
+		Assert.areEqual(0.0, textField.x);
 
-        Assert.areEqual(textField.textWidth + 4, textField.width);
-        Assert.areEqual(0.0, textField.x);
+		textField.text = "Hello World";
 
-        textField.text = "Hello World";
+		Assert.areEqual(textField.textWidth + 4, textField.width);
+		Assert.areEqual(0.0, textField.x);
+	}
 
-        Assert.areEqual(textField.textWidth + 4, textField.width);
-        Assert.areEqual(0.0, textField.x);
-    }
+	@Test public function autoSizeRight()
+	{
+		var textField = new TextField();
+		textField.text = "Hello";
 
-    @Test public function autoSizeRight() {
-        var textField = new TextField();
-        textField.text = "Hello";
+		Assert.areNotEqual(textField.textWidth + 4, textField.width);
+		Assert.areEqual(0.0, textField.x);
+		Assert.areEqual(100.0, textField.width);
 
-        Assert.areNotEqual(textField.textWidth + 4, textField.width);
-        Assert.areEqual(0.0, textField.x);
-        Assert.areEqual(100.0, textField.width);
+		textField.autoSize = TextFieldAutoSize.RIGHT;
 
-        textField.autoSize = TextFieldAutoSize.RIGHT;
+		Assert.areEqual(textField.textWidth + 4, textField.width);
+		Assert.areEqual(100.0 - textField.textWidth - 4, textField.x);
 
-        Assert.areEqual(textField.textWidth + 4, textField.width);
-        Assert.areEqual(100.0 - textField.textWidth - 4, textField.x);
+		textField.text = "H";
 
-        textField.text = "H";
+		Assert.areEqual(textField.textWidth + 4, textField.width);
+		Assert.areEqual(100.0 - textField.textWidth - 4, textField.x);
 
-        Assert.areEqual(textField.textWidth + 4, textField.width);
-        Assert.areEqual(100.0 - textField.textWidth - 4, textField.x);
+		textField.text = "Hello World";
 
-        textField.text = "Hello World";
+		Assert.areEqual(textField.textWidth + 4, textField.width);
+		Assert.areEqual(100.0 - textField.textWidth - 4, textField.x);
+	}
 
-        Assert.areEqual(textField.textWidth + 4, textField.width);
-        Assert.areEqual(100.0 - textField.textWidth - 4, textField.x);
-    }
+	@Test public function autoSizeCenter()
+	{
+		var textField = new TextField();
+		textField.text = "Hello";
 
-    @Test public function autoSizeCenter() {
-        var textField = new TextField();
-        textField.text = "Hello";
+		Assert.areNotEqual(textField.textWidth + 4, textField.width);
+		Assert.areEqual(0.0, textField.x);
+		Assert.areEqual(100.0, textField.width);
 
-        Assert.areNotEqual(textField.textWidth + 4, textField.width);
-        Assert.areEqual(0.0, textField.x);
-        Assert.areEqual(100.0, textField.width);
+		textField.autoSize = TextFieldAutoSize.CENTER;
 
-        textField.autoSize = TextFieldAutoSize.CENTER;
+		Assert.areEqual(textField.textWidth + 4, textField.width);
+		Assert.areEqual((100.0 - (textField.textWidth + 4)) * 0.5, textField.x);
 
-        Assert.areEqual(textField.textWidth + 4, textField.width);
-        Assert.areEqual((100.0 - (textField.textWidth + 4)) * 0.5, textField.x);
+		textField.text = "H";
 
-        textField.text = "H";
+		Assert.areEqual(textField.textWidth + 4, textField.width);
+		Assert.areEqual((100.0 - (textField.textWidth + 4)) * 0.5, textField.x);
 
-        Assert.areEqual(textField.textWidth + 4, textField.width);
-        Assert.areEqual((100.0 - (textField.textWidth + 4)) * 0.5, textField.x);
+		textField.text = "Hello World";
 
-        textField.text = "Hello World";
+		Assert.areEqual(textField.textWidth + 4, textField.width);
+		Assert.areEqual((100.0 - (textField.textWidth + 4)) * 0.5, textField.x);
+	}
 
-        Assert.areEqual(textField.textWidth + 4, textField.width);
-        Assert.areEqual((100.0 - (textField.textWidth + 4)) * 0.5, textField.x);
-    }
-	
-	
-	@Test public function background () {
-		
-		var textField = new TextField ();
-		
-		Assert.isFalse (textField.background);
-		
+	@Test public function background()
+	{
+		var textField = new TextField();
+
+		Assert.isFalse(textField.background);
+
 		textField.background = true;
-		
-		Assert.isTrue (textField.background);
-		
+
+		Assert.isTrue(textField.background);
 	}
-	
-	
-	@Test public function backgroundColor () {
-		
-		var textField = new TextField ();
-		
-		Assert.areEqual (StringTools.hex (0xFFFFFF, 6), StringTools.hex (textField.backgroundColor, 6));
-		
+
+	@Test public function backgroundColor()
+	{
+		var textField = new TextField();
+
+		Assert.areEqual(StringTools.hex(0xFFFFFF, 6), StringTools.hex(textField.backgroundColor, 6));
+
 		textField.backgroundColor = 0x00FF00;
-		
-		Assert.areEqual (StringTools.hex (0x00FF00, 6), StringTools.hex (textField.backgroundColor, 6));
-		
+
+		Assert.areEqual(StringTools.hex(0x00FF00, 6), StringTools.hex(textField.backgroundColor, 6));
 	}
-	
-	
-	@Test public function border () {
-		
-		var textField = new TextField ();
-		
-		Assert.isFalse (textField.border);
-		
+
+	@Test public function border()
+	{
+		var textField = new TextField();
+
+		Assert.isFalse(textField.border);
+
 		textField.border = true;
-		
-		Assert.isTrue (textField.border);
-		
+
+		Assert.isTrue(textField.border);
 	}
-	
-	
-	@Test public function borderColor () {
-		
-		var textField = new TextField ();
-		
-		Assert.areEqual (StringTools.hex (0x000000, 6), StringTools.hex (textField.borderColor, 6));
-		
+
+	@Test public function borderColor()
+	{
+		var textField = new TextField();
+
+		Assert.areEqual(StringTools.hex(0x000000, 6), StringTools.hex(textField.borderColor, 6));
+
 		textField.borderColor = 0x00FF00;
-		
-		Assert.areEqual (StringTools.hex (0x00FF00, 6), StringTools.hex (textField.borderColor, 6));
-		
+
+		Assert.areEqual(StringTools.hex(0x00FF00, 6), StringTools.hex(textField.borderColor, 6));
 	}
-	
-	
-	@Test public function bottomScrollV () {
-		
-		var textField = new TextField ();
+
+	@Test public function bottomScrollV()
+	{
+		var textField = new TextField();
 		textField.text = "Hello";
-		
-		Assert.areEqual (1, textField.bottomScrollV);
-		
+
+		Assert.areEqual(1, textField.bottomScrollV);
+
 		textField.text = "Hello\nWorld";
-		
-		Assert.areEqual (2, textField.bottomScrollV);
-		
+
+		Assert.areEqual(2, textField.bottomScrollV);
+
 		textField.text = "";
-		
-		Assert.areEqual (1, textField.bottomScrollV);
-		
+
+		Assert.areEqual(1, textField.bottomScrollV);
 	}
-	
-	
-	@Test public function defaultTextFormat () {
-		
+
+	@Test public function defaultTextFormat()
+	{
 		// TODO: Confirm functionality
-		
-		var textField = new TextField ();
+
+		var textField = new TextField();
 		var exists = textField.defaultTextFormat;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function displayAsPassword () {
-		
-		var textField = new TextField ();
+
+	@Test public function displayAsPassword()
+	{
+		var textField = new TextField();
 		textField.text = "Hello";
-		
-		var textField2 = new TextField ();
+
+		var textField2 = new TextField();
 		textField2.text = "Hello";
 		textField2.displayAsPassword = true;
-		
-		var textField3 = new TextField ();
+
+		var textField3 = new TextField();
 		textField3.text = "*****";
-		
+
 		#if flash
 		// TODO -- textWidth is still unchanged?
-		Assert.areEqual (textField.textWidth, textField2.textWidth);
-		Assert.areNotEqual (textField3.textWidth, textField2.textWidth);
+		Assert.areEqual(textField.textWidth, textField2.textWidth);
+		Assert.areNotEqual(textField3.textWidth, textField2.textWidth);
 		#end
-		
 	}
-	
-	
-	@Test public function embedFonts () {
-		
+
+	@Test public function embedFonts()
+	{
 		// TODO: Confirm functionality
-		
-		var textField = new TextField ();
+
+		var textField = new TextField();
 		var exists = textField.embedFonts;
-		
-		Assert.isFalse (exists);
-		
+
+		Assert.isFalse(exists);
 	}
-	
-	
-	@Test public function gridFitType () {
-		
+
+	@Test public function gridFitType()
+	{
 		// TODO: Confirm functionality
-		
-		var textField = new TextField ();
+
+		var textField = new TextField();
 		var exists = textField.gridFitType;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function htmlText () {
-		
+
+	@Test public function htmlText()
+	{
 		// TODO: Confirm functionality
-		
-		var textField = new TextField ();
+
+		var textField = new TextField();
 		var exists = textField.htmlText;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function maxChars () {
-		
+
+	@Test public function maxChars()
+	{
 		// TODO: Confirm functionality
-		
-		var textField = new TextField ();
+
+		var textField = new TextField();
 		var exists = textField.maxChars;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function maxScrollH () {
-		
-		var textField = new TextField ();
+
+	@Test public function maxScrollH()
+	{
+		var textField = new TextField();
 		textField.text = "Hello";
-		
-		Assert.areEqual (0, textField.maxScrollH);
-		
+
+		Assert.areEqual(0, textField.maxScrollH);
 	}
-	
-	
-	@Test public function maxScrollV () {
-		
-		var textField = new TextField ();
-		
-		Assert.areEqual (1, textField.maxScrollV);
-		
+
+	@Test public function maxScrollV()
+	{
+		var textField = new TextField();
+
+		Assert.areEqual(1, textField.maxScrollV);
+
 		textField.text = "Hello";
-		
-		Assert.areEqual (1, textField.maxScrollV);
-		
+
+		Assert.areEqual(1, textField.maxScrollV);
+
 		textField.text = "Hello\nWorld\n";
-		
-		Assert.areEqual (1, textField.maxScrollV);
-		
+
+		Assert.areEqual(1, textField.maxScrollV);
+
 		textField.multiline = true;
-		
-		Assert.areEqual (1, textField.maxScrollV);
-		
+
+		Assert.areEqual(1, textField.maxScrollV);
+
 		textField.text = "Hello\n\nWorld\n\nHello\n\nWorld\n\n";
-		
+
 		#if !flash // sometimes 3, not 2?
-		
+
 		#if !html5
-		//Assert.areEqual (2, textField.maxScrollV);
-		Assert.isTrue (textField.maxScrollV == 2 || textField.maxScrollV == 3);
+		// Assert.areEqual (2, textField.maxScrollV);
+		Assert.isTrue(textField.maxScrollV == 2 || textField.maxScrollV == 3);
 		#end
-		
+
 		textField.height = 10;
-		
+
 		#if flash
 		// should we replicate not updating until text is changed?
-		Assert.areEqual (2, textField.maxScrollV);
+		Assert.areEqual(2, textField.maxScrollV);
 		#end
-		
 		#end
-		
+
 		textField.text = textField.text;
-		
+
 		#if (!flash && !html5) // sometimes 10, not 9?
-		
-		//Assert.areEqual (9, textField.maxScrollV);
-		Assert.isTrue (textField.maxScrollV == 9 || textField.maxScrollV == 10);
-		
+
+		// Assert.areEqual (9, textField.maxScrollV);
+		// Assert.isTrue(textField.maxScrollV == 9 || textField.maxScrollV == 10);
 		#end
-		
 	}
-	
-	
-	@Test public function multiline () {
-		
+
+	@Test public function multiline()
+	{
 		// TODO: Confirm functionality
-		
-		var textField = new TextField ();
+
+		var textField = new TextField();
 		var exists = textField.multiline;
-		
-		Assert.isFalse (exists);
-		
+
+		Assert.isFalse(exists);
 	}
-	
-	
-	@Test public function numLines () {
-		
-		var textField = new TextField ();
+
+	@Test public function numLines()
+	{
+		var textField = new TextField();
 		textField.text = "Hello";
-		
-		Assert.areEqual (1, textField.numLines);
-		
+
+		Assert.areEqual(1, textField.numLines);
+
 		textField.text = "Hello\nWorld";
-		
-		Assert.areEqual (2, textField.numLines);
-		
+
+		Assert.areEqual(2, textField.numLines);
+
 		textField.text = "";
-		
-		Assert.areEqual (1, textField.numLines);
-		
+
+		Assert.areEqual(1, textField.numLines);
 	}
-	
-	
-	@Test public function scrollH () {
-		
-		var textField = new TextField ();
-		
-		Assert.areEqual (0, textField.scrollH);
-		
+
+	@Test public function scrollH()
+	{
+		var textField = new TextField();
+
+		Assert.areEqual(0, textField.scrollH);
+
 		textField.text = "Hello";
-		
-		Assert.areEqual (0, textField.scrollH);
-		
+
+		Assert.areEqual(0, textField.scrollH);
 	}
-	
-	
-	@Test public function scrollV () {
-		
-		var textField = new TextField ();
-		
-		Assert.areEqual (1, textField.scrollV);
-		
+
+	@Test public function scrollV()
+	{
+		var textField = new TextField();
+
+		Assert.areEqual(1, textField.scrollV);
+
 		textField.text = "Hello";
-		
-		Assert.areEqual (1, textField.scrollV);
-		
+
+		Assert.areEqual(1, textField.scrollV);
+
 		textField.text = "Hello\nWorld";
 		textField.height = 20;
 		textField.multiline = true;
-		
+
 		#if flash
 		textField.text = textField.text;
 		#end
-		
-		var textField2 = new TextField ();
+
+		var textField2 = new TextField();
 		textField2.height = 20;
 		textField2.text = "World";
-		
+
 		textField.scrollV = 2;
-		
 	}
-	
-	
-	@Test public function selectable () {
-		
+
+	@Test public function selectable()
+	{
 		// TODO: Confirm functionality
-		
-		var textField = new TextField ();
+
+		var textField = new TextField();
 		var exists = textField.selectable;
-		
-		Assert.isTrue (exists);
-		
+
+		Assert.isTrue(exists);
 	}
-	
-	
-	@Test public function sharpness () {
-		
+
+	@Test public function sharpness()
+	{
 		// TODO: Confirm functionality
-		
-		var textField = new TextField ();
+
+		var textField = new TextField();
 		var exists = textField.sharpness;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function tabEnabled () {
-		
-		var textField = new TextField ();
-		Assert.isFalse (textField.tabEnabled);
-		
+
+	@Test public function tabEnabled()
+	{
+		var textField = new TextField();
+		Assert.isFalse(textField.tabEnabled);
+
 		textField.type = INPUT;
-		Assert.isTrue (textField.tabEnabled);
-		
+		Assert.isTrue(textField.tabEnabled);
+
 		textField.tabEnabled = false;
-		Assert.isFalse (textField.tabEnabled);
-		
+		Assert.isFalse(textField.tabEnabled);
+
 		textField.type = DYNAMIC;
 		textField.type = INPUT;
-		Assert.isFalse (textField.tabEnabled);
-		
+		Assert.isFalse(textField.tabEnabled);
+
 		textField.type = DYNAMIC;
 		textField.tabEnabled = true;
-		Assert.isTrue (textField.tabEnabled);
-		
+		Assert.isTrue(textField.tabEnabled);
 	}
-	
-	
-	@Test public function text () {
-		
+
+	@Test public function text()
+	{
 		// TODO: Confirm functionality
-		
-		var textField = new TextField ();
+
+		var textField = new TextField();
 		var exists = textField.text;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function textColor () {
-		
+
+	@Test public function textColor()
+	{
 		// TODO: Confirm functionality
-		
-		var textField = new TextField ();
+
+		var textField = new TextField();
 		var exists = textField.textColor;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function textHeight () {
-		
+
+	@Test public function textHeight()
+	{
 		// TODO: Confirm functionality
-		
-		var textField = new TextField ();
+
+		var textField = new TextField();
 		var exists = textField.textHeight;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function textWidth () {
-		
+
+	@Test public function textWidth()
+	{
 		// TODO: Confirm functionality
-		
-		var textField = new TextField ();
+
+		var textField = new TextField();
 		var exists = textField.textWidth;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function type () {
-		
+
+	@Test public function type()
+	{
 		// TODO: Confirm functionality
-		
-		var textField = new TextField ();
+
+		var textField = new TextField();
 		var exists = textField.type;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function wordWrap () {
-		
+
+	@Test public function wordWrap()
+	{
 		// TODO: Confirm functionality
-		
-		var textField = new TextField ();
+
+		var textField = new TextField();
 		var exists = textField.wordWrap;
-		
-		Assert.isFalse (exists);
-		
+
+		Assert.isFalse(exists);
 	}
-	
-	
-	@Test public function new_ () {
-		
+
+	@Test public function new_()
+	{
 		// TODO: Confirm functionality
-		
-		var textField = new TextField ();
-		Assert.isNotNull (textField);
-		
+
+		var textField = new TextField();
+		Assert.isNotNull(textField);
 	}
-	
-	
-	@Test public function appendText () {
-		
+
+	@Test public function appendText()
+	{
 		// TODO: Confirm functionality
-		
-		var textField = new TextField ();
+
+		var textField = new TextField();
 		var exists = textField.appendText;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function getLineMetrics () {
-		
+
+	@Test public function getLineMetrics()
+	{
 		// TODO: Confirm functionality
-		
-		var textField = new TextField ();
+
+		var textField = new TextField();
 		var exists = textField.getLineMetrics;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function getLineOffset () {
-		
+
+	@Test public function getLineOffset()
+	{
 		// TODO: Confirm functionality
-		
-		var textField = new TextField ();
+
+		var textField = new TextField();
 		var exists = textField.getLineOffset;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function getLineText () {
-		
+
+	@Test public function getLineText()
+	{
 		// TODO: Confirm functionality
-		
-		var textField = new TextField ();
+
+		var textField = new TextField();
 		var exists = textField.getLineText;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function getTextFormat () {
-		
+
+	@Test public function getTextFormat()
+	{
 		// TODO: Confirm functionality
-		
-		var textField = new TextField ();
-		var textFormat = textField.getTextFormat ();
-		
-		Assert.isNotNull (textFormat);
-		Assert.areEqual (null, textFormat.font);
-		Assert.areEqual (null, textFormat.size);
-		
-		var textFormat1 = new TextFormat ("_sans", 20, 0xFF0000);
-		var textFormat2 = new TextFormat ("_serif", 40);
-		
-		textField.setTextFormat (textFormat1);
-		
-		Assert.isNotNull (textFormat);
-		Assert.areEqual (null, textFormat.font);
-		Assert.areEqual (null, textFormat.size);
-		
+
+		var textField = new TextField();
+		var textFormat = textField.getTextFormat();
+
+		Assert.isNotNull(textFormat);
+		Assert.areEqual(null, textFormat.font);
+		Assert.areEqual(null, textFormat.size);
+
+		var textFormat1 = new TextFormat("_sans", 20, 0xFF0000);
+		var textFormat2 = new TextFormat("_serif", 40);
+
+		textField.setTextFormat(textFormat1);
+
+		Assert.isNotNull(textFormat);
+		Assert.areEqual(null, textFormat.font);
+		Assert.areEqual(null, textFormat.size);
+
 		textField.text = "1234";
-		textField.setTextFormat (textFormat1, 0, 4);
-		textField.setTextFormat (textFormat2, 2, 4);
-		
-		var textFormat = textField.getTextFormat ();
-		
-		Assert.isNotNull (textFormat);
-		Assert.areEqual (null, textFormat.font);
-		Assert.areEqual (null, textFormat.size);
-		Assert.areEqual (0xFF0000, textFormat.color);
-		
-		var textFormat = textField.getTextFormat (0, 2);
-		
-		Assert.isNotNull (textFormat);
-		Assert.areEqual (textFormat1.font, textFormat.font);
-		Assert.areEqual (textFormat1.size, textFormat.size);
-		Assert.areEqual (textFormat1.color, textFormat.color);
-		
-		var textFormat = textField.getTextFormat (2, 4);
-		
-		Assert.isNotNull (textFormat);
-		Assert.areEqual (textFormat2.font, textFormat.font);
-		Assert.areEqual (textFormat2.size, textFormat.size);
-		Assert.areEqual (textFormat1.color, textFormat.color);
-		
+		textField.setTextFormat(textFormat1, 0, 4);
+		textField.setTextFormat(textFormat2, 2, 4);
+
+		var textFormat = textField.getTextFormat();
+
+		Assert.isNotNull(textFormat);
+		Assert.areEqual(null, textFormat.font);
+		Assert.areEqual(null, textFormat.size);
+		Assert.areEqual(0xFF0000, textFormat.color);
+
+		var textFormat = textField.getTextFormat(0, 2);
+
+		Assert.isNotNull(textFormat);
+		Assert.areEqual(textFormat1.font, textFormat.font);
+		Assert.areEqual(textFormat1.size, textFormat.size);
+		Assert.areEqual(textFormat1.color, textFormat.color);
+
+		var textFormat = textField.getTextFormat(2, 4);
+
+		Assert.isNotNull(textFormat);
+		Assert.areEqual(textFormat2.font, textFormat.font);
+		Assert.areEqual(textFormat2.size, textFormat.size);
+		Assert.areEqual(textFormat1.color, textFormat.color);
 	}
-	
-	
-	@Test public function setSelection () {
-		
+
+	@Test public function setSelection()
+	{
 		// TODO: Confirm functionality
-		
-		var textField = new TextField ();
+
+		var textField = new TextField();
 		var exists = textField.setSelection;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function setTextFormat () {
-		
-		// TODO: Confirm functionality
-		
-		var textField = new TextField ();
-		var exists = textField.setTextFormat;
-		
-		Assert.isNotNull (exists);
-		
+
+	@Test public function setTextFormat()
+	{
+		var textField = new TextField();
+		textField.htmlText = "<font color='#FF0000'>Hello</font> - World\n<font color='#00FF00'>Goodbye </font>- World";
+		var textFormat = textField.getTextFormat();
+		textField.setTextFormat(textFormat);
+
+		var check = textField.getTextFormat(0, 4);
+		Assert.areEqual(0xFF0000, check.color);
 	}
-	
-	
 }

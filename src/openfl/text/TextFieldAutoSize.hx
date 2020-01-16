@@ -47,9 +47,9 @@ package openfl.text;
 		}
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : TextFieldAutoSize)
 		{
 			case TextFieldAutoSize.CENTER: "center";
 			case TextFieldAutoSize.LEFT: "left";
@@ -60,6 +60,7 @@ package openfl.text;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract TextFieldAutoSize(String) from String to String
 {
 	public var CENTER = "center";

@@ -1,6 +1,7 @@
 package openfl.events;
 
 #if !flash
+import openfl._internal.utils.ObjectPool;
 import openfl.net.URLRequestHeader;
 
 /**
@@ -28,30 +29,47 @@ import openfl.net.URLRequestHeader;
 class HTTPStatusEvent extends Event
 {
 	/**
-		Unlike the `httpStatus` event, the
-		`httpResponseStatus` event is delivered before any response
-		data. Also, the `httpResponseStatus` event includes values for
-		the `responseHeaders` and `responseURL` properties
-		(which are undefined for an `httpStatus` event. Note that the
-		`httpResponseStatus` event(if any) will be sent before(and in
+		Unlike the `httpStatus` event, the `httpResponseStatus` event is
+		delivered before any response data. Also, the `httpResponseStatus`
+		event includes values for the `responseHeaders` and `responseURL`
+		properties (which are undefined for an `httpStatus` event. Note that
+		the `httpResponseStatus` event (if any) will be sent before (and in
 		addition to) any `complete` or `error` event.
-
-		The `HTTPStatusEvent.HTTP_RESPONSE_STATUS` constant defines
-		the value of the `type` property of a
-		`httpResponseStatus` event object.
+		The `HTTPStatusEvent.HTTP_RESPONSE_STATUS` constant defines the value
+		of the `type` property of a `httpResponseStatus` event object.
 
 		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `responseURL` | The URL from which the response was returned. |
+		| `responseHeaders` | The response headers that the response returned, as an array of URLRequestHeader objects. |
+		| `status` | The HTTP status code returned by the server. |
+		| `target` | The network object receiving an HTTP status code. |
 	**/
-	public static inline var HTTP_RESPONSE_STATUS:String = "httpResponseStatus";
+	public static inline var HTTP_RESPONSE_STATUS:EventType<HTTPStatusEvent> = "httpResponseStatus";
 
 	/**
-		The `HTTPStatusEvent.HTTP_STATUS` constant defines the value of
-		the `type` property of a `httpStatus` event object.
-
+		The `HTTPStatusEvent.HTTP_STATUS` constant defines the value of the
+		`type` property of a `httpStatus` event object.
 		This event has the following properties:
-	**/
-	public static inline var HTTP_STATUS:String = "httpStatus";
 
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `status` | The HTTP status code returned by the server. |
+		| `target` | The network object receiving an HTTP status code.  |
+	**/
+	public static inline var HTTP_STATUS:EventType<HTTPStatusEvent> = "httpStatus";
+
+	/**
+		Indicates whether the request was redirected.
+	**/
 	public var redirected:Bool;
 
 	/**
@@ -83,6 +101,9 @@ class HTTPStatusEvent extends Event
 	**/
 	public var status(default, null):Int;
 
+	@:noCompletion private static var __pool:ObjectPool<HTTPStatusEvent> = new ObjectPool<HTTPStatusEvent>(function() return new HTTPStatusEvent(null),
+	function(event) event.__init());
+
 	/**
 		Creates an Event object that contains specific information about HTTP
 		status events. Event objects are passed as parameters to event listeners.
@@ -109,7 +130,7 @@ class HTTPStatusEvent extends Event
 		super(type, bubbles, cancelable);
 	}
 
-	public override function clone():Event
+	public override function clone():HTTPStatusEvent
 	{
 		var event = new HTTPStatusEvent(type, bubbles, cancelable, status, redirected);
 		event.target = target;
@@ -121,6 +142,13 @@ class HTTPStatusEvent extends Event
 	public override function toString():String
 	{
 		return __formatToString("HTTPStatusEvent", ["type", "bubbles", "cancelable", "status", "redirected"]);
+	}
+
+	@:noCompletion private override function __init():Void
+	{
+		super.__init();
+		status = 0;
+		redirected = false;
 	}
 }
 #else

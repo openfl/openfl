@@ -35,9 +35,9 @@ package openfl.net;
 		}
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : URLLoaderDataFormat)
 		{
 			case URLLoaderDataFormat.BINARY: "binary";
 			case URLLoaderDataFormat.TEXT: "text";
@@ -47,6 +47,7 @@ package openfl.net;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract URLLoaderDataFormat(String) from String to String
 {
 	public var BINARY = "binary";

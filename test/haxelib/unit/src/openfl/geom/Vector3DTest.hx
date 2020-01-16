@@ -2,58 +2,64 @@ package openfl.geom;
 
 import massive.munit.Assert;
 
-class Vector3DTest {
-
-	@Test public function length() {
-		var zero = new Vector3D (0.0, 0.0, 0.0, 0.0);
-		var vector = new Vector3D (3.0, 4.0, 5.0, 6.0);
+class Vector3DTest
+{
+	@Test public function length()
+	{
+		var zero = new Vector3D(0.0, 0.0, 0.0, 0.0);
+		var vector = new Vector3D(3.0, 4.0, 5.0, 6.0);
 
 		Assert.areEqual(0.0, zero.length);
 		Assert.areEqual(7.07107, Math.round(vector.length * 100000.0) / 100000.0);
 	}
 
-	@Test public function lengthSquared() {
-		var zero = new Vector3D (0.0, 0.0, 0.0, 0.0);
-		var vector = new Vector3D (3.0, 4.0, 5.0, 6.0);
+	@Test public function lengthSquared()
+	{
+		var zero = new Vector3D(0.0, 0.0, 0.0, 0.0);
+		var vector = new Vector3D(3.0, 4.0, 5.0, 6.0);
 
 		Assert.areEqual(0.0, zero.lengthSquared);
 		Assert.areEqual(50, vector.lengthSquared);
 	}
 
-	@Test public function w() {
-		var vector = new Vector3D (3, 4, 5, 6);
+	@Test public function w()
+	{
+		var vector = new Vector3D(3, 4, 5, 6);
 
 		Assert.areEqual(6, vector.w);
 	}
 
-	@Test public function x() {
-		var vector = new Vector3D (3, 4, 5, 6);
+	@Test public function x()
+	{
+		var vector = new Vector3D(3, 4, 5, 6);
 
 		Assert.areEqual(3, vector.x);
-
 	}
 
-	@Test public function y() {
-		var vector = new Vector3D (3, 4, 5, 6);
+	@Test public function y()
+	{
+		var vector = new Vector3D(3, 4, 5, 6);
 
 		Assert.areEqual(4, vector.y);
 	}
 
-	@Test public function z() {
-		var vector = new Vector3D (3, 4, 5, 6);
+	@Test public function z()
+	{
+		var vector = new Vector3D(3, 4, 5, 6);
 
 		Assert.areEqual(5, vector.z);
 	}
 
-	@Test public function new_() {
-		var a = new Vector3D ();
+	@Test public function new_()
+	{
+		var a = new Vector3D();
 
 		Assert.areEqual(0.0, a.x);
 		Assert.areEqual(0.0, a.y);
 		Assert.areEqual(0.0, a.z);
 		Assert.areEqual(0.0, a.w);
 
-		var b = new Vector3D (3, 4, 5, 6);
+		var b = new Vector3D(3, 4, 5, 6);
 
 		Assert.areEqual(3, b.x);
 		Assert.areEqual(4, b.y);
@@ -61,10 +67,10 @@ class Vector3DTest {
 		Assert.areEqual(6, b.w);
 	}
 
-	@Test public function add() {
-
-		var vector = new Vector3D (1, 1, 1, 1);
-		var vector2 = new Vector3D (2, 2, 2, 2);
+	@Test public function add()
+	{
+		var vector = new Vector3D(1, 1, 1, 1);
+		var vector2 = new Vector3D(2, 2, 2, 2);
 
 		var result = vector.add(vector2);
 
@@ -73,13 +79,12 @@ class Vector3DTest {
 		Assert.areEqual(3, result.z);
 
 		Assert.areEqual(0, result.w); // stays default
-
 	}
 
-	@Test public function copyFrom() {
-
-		var vector = new Vector3D (1, 1, 1, 1);
-		var vector2 = new Vector3D (2, 2, 2, 2);
+	@Test public function copyFrom()
+	{
+		var vector = new Vector3D(1, 1, 1, 1);
+		var vector2 = new Vector3D(2, 2, 2, 2);
 
 		vector2.copyFrom(vector);
 
@@ -88,10 +93,10 @@ class Vector3DTest {
 		Assert.areEqual(1, vector2.z);
 
 		Assert.areEqual(2, vector2.w); // ignored
-
 	}
 
-	@Test public function crossProduct() {
+	@Test public function crossProduct()
+	{
 		var v1 = new Vector3D(1, 0, 0, 0);
 		var v2 = new Vector3D(0, 1, 0, 0);
 
@@ -102,9 +107,9 @@ class Vector3DTest {
 		Assert.areEqual(1, crossV1V2.z);
 		Assert.areEqual(1, crossV1V2.w);
 
-		var a = new Vector3D (2, 3, 4, 4);
-		var b = new Vector3D (3, 4, 5, 6);
-		var c = new Vector3D (3, 4, 5, 10); // w ignored
+		var a = new Vector3D(2, 3, 4, 4);
+		var b = new Vector3D(3, 4, 5, 6);
+		var c = new Vector3D(3, 4, 5, 10); // w ignored
 
 		var crossAB = a.crossProduct(b);
 		var crossAC = a.crossProduct(c);
@@ -120,10 +125,10 @@ class Vector3DTest {
 		Assert.areEqual(1, crossAC.w);
 	}
 
-	@Test public function decrementBy() {
-
-		var vector = new Vector3D (1, 1, 1, 1);
-		var vector2 = new Vector3D (2, 2, 2, 2);
+	@Test public function decrementBy()
+	{
+		var vector = new Vector3D(1, 1, 1, 1);
+		var vector2 = new Vector3D(2, 2, 2, 2);
 
 		vector2.decrementBy(vector);
 
@@ -132,32 +137,33 @@ class Vector3DTest {
 		Assert.areEqual(1, vector2.z);
 
 		Assert.areEqual(2, vector2.w); // ignored
-
 	}
 
-	@Test public function dotProduct() {
+	@Test public function dotProduct()
+	{
 		var v1 = new Vector3D(1, 0, 0, 0);
 		var v2 = new Vector3D(0, 1, 0, 0);
 
 		Assert.areEqual(0, v1.dotProduct(v2));
 
-		var a = new Vector3D (2, 3, 4, 4);
-		var b = new Vector3D (3, 4, 5, 6);
-		var c = new Vector3D (3, 4, 5, 10); // w ignored
+		var a = new Vector3D(2, 3, 4, 4);
+		var b = new Vector3D(3, 4, 5, 6);
+		var c = new Vector3D(3, 4, 5, 10); // w ignored
 
 		Assert.areEqual(29, a.dotProduct(a));
 		Assert.areEqual(38, a.dotProduct(b));
 		Assert.areEqual(38, a.dotProduct(c));
 	}
 
-	@Test public function equals() {
-		var a = new Vector3D (1, 2, 3, 4);
+	@Test public function equals()
+	{
+		var a = new Vector3D(1, 2, 3, 4);
 		var a_cloned = a.clone();
 
-		var a_w_diff_only = new Vector3D (1, 2, 3, 5);
+		var a_w_diff_only = new Vector3D(1, 2, 3, 5);
 
-		var b = new Vector3D (2, 3, 4, 4);
-		var c = new Vector3D (3, 4, 5, 6);
+		var b = new Vector3D(2, 3, 4, 4);
+		var c = new Vector3D(3, 4, 5, 6);
 
 		Assert.areEqual(true, a.equals(a_w_diff_only, false));
 		Assert.areEqual(false, a.equals(a_w_diff_only, true));
@@ -168,10 +174,10 @@ class Vector3DTest {
 		Assert.areEqual(false, a.equals(c, true));
 	}
 
-	@Test public function incrementBy() {
-
-		var vector = new Vector3D (1, 1, 1, 1);
-		var vector2 = new Vector3D (2, 2, 2, 2);
+	@Test public function incrementBy()
+	{
+		var vector = new Vector3D(1, 1, 1, 1);
+		var vector2 = new Vector3D(2, 2, 2, 2);
 
 		vector.incrementBy(vector2);
 
@@ -180,15 +186,15 @@ class Vector3DTest {
 		Assert.areEqual(3, vector.z);
 
 		Assert.areEqual(1, vector.w); // ignored
-
 	}
 
-	@Test public function nearEquals() {
-		var a = new Vector3D (3.7, -1.1, 6.9, 2.3);
-		var a_w_diff_only = new Vector3D (3.7, -1.1, 6.9, 2.28);
+	@Test public function nearEquals()
+	{
+		var a = new Vector3D(3.7, -1.1, 6.9, 2.3);
+		var a_w_diff_only = new Vector3D(3.7, -1.1, 6.9, 2.28);
 
-		var b = new Vector3D (3.6, -1.0, 6.9, 2.2);
-		var c = new Vector3D (3.72, -1.11, 6.88, 2.31);
+		var b = new Vector3D(3.6, -1.0, 6.9, 2.2);
+		var c = new Vector3D(3.72, -1.11, 6.88, 2.31);
 
 		Assert.areEqual(true, a.nearEquals(a_w_diff_only, 0.01, false));
 
@@ -208,9 +214,9 @@ class Vector3DTest {
 		#end
 	}
 
-	@Test public function negate() {
-
-		var vector = new Vector3D (1, 1, 1, 1);
+	@Test public function negate()
+	{
+		var vector = new Vector3D(1, 1, 1, 1);
 		vector.negate();
 
 		Assert.areEqual(-1, vector.x);
@@ -218,12 +224,11 @@ class Vector3DTest {
 		Assert.areEqual(-1, vector.z);
 
 		Assert.areEqual(1, vector.w); // ignored
-
 	}
 
-	@Test public function normalize() {
-
-		var vector = new Vector3D (4, 4, 4, 4);
+	@Test public function normalize()
+	{
+		var vector = new Vector3D(4, 4, 4, 4);
 
 		var normalizedValue = 4 / vector.length;
 		vector.normalize();
@@ -233,11 +238,11 @@ class Vector3DTest {
 		Assert.areEqual(normalizedValue, vector.z);
 
 		Assert.areEqual(4, vector.w); // ignored
-
 	}
 
-	@Test public function project() {
-		var vector = new Vector3D (3.7, -1.1, 6.9, 2.3);
+	@Test public function project()
+	{
+		var vector = new Vector3D(3.7, -1.1, 6.9, 2.3);
 		vector.project();
 
 		Assert.areEqual(3.7 / 2.3, vector.x);
@@ -246,9 +251,9 @@ class Vector3DTest {
 		Assert.areEqual(2.3, vector.w);
 	}
 
-	@Test public function scaleBy() {
-
-		var vector = new Vector3D (1, 1, 1, 1);
+	@Test public function scaleBy()
+	{
+		var vector = new Vector3D(1, 1, 1, 1);
 		vector.scaleBy(4);
 
 		Assert.areEqual(4, vector.x);
@@ -256,25 +261,23 @@ class Vector3DTest {
 		Assert.areEqual(4, vector.z);
 
 		Assert.areEqual(1, vector.w); // ignored
-
 	}
 
-	@Test public function setTo() {
-
-		var vector = new Vector3D (1, 1, 1, 1);
+	@Test public function setTo()
+	{
+		var vector = new Vector3D(1, 1, 1, 1);
 		vector.setTo(4, 4, 4);
 
 		Assert.areEqual(4, vector.x);
 		Assert.areEqual(4, vector.y);
 		Assert.areEqual(4, vector.z);
 		Assert.areEqual(1, vector.w);
-
 	}
 
-	@Test public function subtract() {
-
-		var vector = new Vector3D (5, 5, 5, 5);
-		var vector2 = new Vector3D (2, 2, 2, 2);
+	@Test public function subtract()
+	{
+		var vector = new Vector3D(5, 5, 5, 5);
+		var vector2 = new Vector3D(2, 2, 2, 2);
 
 		var result = vector.subtract(vector2);
 
@@ -283,10 +286,10 @@ class Vector3DTest {
 		Assert.areEqual(3, result.z);
 
 		Assert.areEqual(0, result.w); // ignored
-
 	}
 
-	@Test public function clone() {
+	@Test public function clone()
+	{
 		var a = new Vector3D(5.1, 3.2, 4.4, 1.0);
 		var a_cloned = a.clone();
 
@@ -311,7 +314,8 @@ class Vector3DTest {
 		Assert.areEqual(1.0, a_cloned.w);
 	}
 
-	@Test public function angleBetween() {
+	@Test public function angleBetween()
+	{
 		var a = new Vector3D(5.1, 3.2, 4.4, 1.0);
 		var b = new Vector3D(3.1, 6.2, -5.3, 2.0);
 		var c = new Vector3D(3.1, 6.2, -5.3, 5.1); // w ignored
@@ -323,7 +327,8 @@ class Vector3DTest {
 		// ... even when they were commented out
 	}
 
-	@Test public function distance() {
+	@Test public function distance()
+	{
 		var a = new Vector3D(1.1, 2.2, 3.3, 4.4);
 		var b = new Vector3D(-33.3, -31.2, 32.1, 12.3);
 		var c = new Vector3D(-33.3, -31.2, 32.1, 7.7); // w ignored
@@ -332,5 +337,4 @@ class Vector3DTest {
 		Assert.areEqual(55.9317, Math.round(Vector3D.distance(a, b) * 10000.0) / 10000.0);
 		Assert.areEqual(55.9317, Math.round(Vector3D.distance(a, c) * 10000.0) / 10000.0);
 	}
-
 }

@@ -14,7 +14,7 @@ import lime.utils.Bytes;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:dox(hide) class AssetLibrary #if lime extends LimeAssetLibrary #end
+class AssetLibrary #if lime extends LimeAssetLibrary #end
 {
 	#if lime
 	@:noCompletion private var __proxy:LimeAssetLibrary;
@@ -40,6 +40,33 @@ import lime.utils.Bytes;
 		}
 	}
 	#end
+
+	public static function fromBundle(bundle:AssetBundle):AssetLibrary
+	{
+		#if lime
+		var library = LimeAssetLibrary.fromBundle(bundle);
+
+		if (library != null)
+		{
+			if (Std.is(library, AssetLibrary))
+			{
+				return cast library;
+			}
+			else
+			{
+				var _library = new AssetLibrary();
+				_library.__proxy = library;
+				return _library;
+			}
+		}
+		else
+		{
+			return null;
+		}
+		#else
+		return null;
+		#end
+	}
 
 	public static function fromBytes(bytes:ByteArray, rootPath:String = null):AssetLibrary
 	{

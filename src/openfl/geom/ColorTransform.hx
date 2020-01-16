@@ -1,11 +1,8 @@
 package openfl.geom;
 
 #if !flash
+import openfl._internal.bindings.typedarray.Float32Array;
 import openfl._internal.utils.ObjectPool;
-#if lime
-import openfl._internal.utils.Float32Array;
-import lime.math.ColorMatrix;
-#end
 
 /**
 	The ColorTransform class lets you adjust the color values in a display
@@ -53,11 +50,11 @@ import lime.math.ColorMatrix;
 #end
 class ColorTransform
 {
-	@:noCompletion private static var __pool:ObjectPool<ColorTransform> = new ObjectPool<ColorTransform>(function() return new ColorTransform(), function(ct) ct
-		.__identity());
-	#if lime
+	#if (lime || openfl_html5)
 	@:noCompletion private static var __limeColorMatrix:Float32Array;
 	#end
+	@:noCompletion private static var __pool:ObjectPool<ColorTransform> = new ObjectPool<ColorTransform>(function() return new ColorTransform(),
+	function(ct) ct.__identity());
 
 	/**
 		A decimal value that is multiplied with the alpha transparency channel
@@ -131,11 +128,10 @@ class ColorTransform
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperty(ColorTransform.prototype, "color",
-			{
-				get: untyped __js__("function () { return this.get_color (); }"),
-				set: untyped __js__("function (v) { return this.set_color (v); }")
-			});
+		untyped Object.defineProperty(ColorTransform.prototype, "color", {
+			get: untyped __js__("function () { return this.get_color (); }"),
+			set: untyped __js__("function (v) { return this.set_color (v); }")
+		});
 	}
 	#end
 
@@ -197,6 +193,13 @@ class ColorTransform
 		alphaMultiplier *= second.alphaMultiplier;
 	}
 
+	/**
+		Formats and returns a string that describes all of the properties of
+		the ColorTransform object.
+
+		@return A string that lists all of the properties of the
+				ColorTransform object.
+	**/
 	public function toString():String
 	{
 		return
@@ -248,10 +251,10 @@ class ColorTransform
 
 	@:noCompletion private function __invert():Void
 	{
-		redMultiplier = 1 / redMultiplier;
-		greenMultiplier = 1 / greenMultiplier;
-		blueMultiplier = 1 / blueMultiplier;
-		alphaMultiplier = 1 / alphaMultiplier;
+		redMultiplier = redMultiplier != 0 ? 1 / redMultiplier : 1;
+		greenMultiplier = greenMultiplier != 0 ? 1 / greenMultiplier : 1;
+		blueMultiplier = blueMultiplier != 0 ? 1 / blueMultiplier : 1;
+		alphaMultiplier = alphaMultiplier != 0 ? 1 / alphaMultiplier : 1;
 		redOffset = -redOffset;
 		greenOffset = -greenOffset;
 		blueOffset = -blueOffset;
@@ -260,40 +263,33 @@ class ColorTransform
 
 	@:noCompletion private function __equals(ct:ColorTransform, ignoreAlphaMultiplier:Bool):Bool
 	{
-		return (ct != null &&
-			redMultiplier == ct.redMultiplier &&
-			greenMultiplier == ct.greenMultiplier &&
-			blueMultiplier == ct.blueMultiplier &&
-			(ignoreAlphaMultiplier || alphaMultiplier == ct.alphaMultiplier) &&
-			redOffset == ct.redOffset &&
-			greenOffset == ct.greenOffset &&
-			blueOffset == ct.blueOffset &&
-			alphaOffset == ct.alphaOffset);
+		return (ct != null
+			&& redMultiplier == ct.redMultiplier
+			&& greenMultiplier == ct.greenMultiplier
+			&& blueMultiplier == ct.blueMultiplier
+			&& (ignoreAlphaMultiplier || alphaMultiplier == ct.alphaMultiplier)
+			&& redOffset == ct.redOffset
+			&& greenOffset == ct.greenOffset
+			&& blueOffset == ct.blueOffset
+			&& alphaOffset == ct.alphaOffset);
 	}
 
 	@:noCompletion private function __isDefault(ignoreAlphaMultiplier:Bool):Bool
 	{
 		if (ignoreAlphaMultiplier)
 		{
-			return (redMultiplier == 1 &&
-				greenMultiplier == 1 &&
-				blueMultiplier == 1 &&
-				/*alphaMultiplier == 1 &&*/
-				redOffset == 0 &&
-				greenOffset == 0 &&
-				blueOffset == 0 &&
-				alphaOffset == 0);
+			return (redMultiplier == 1
+				&& greenMultiplier == 1
+				&& blueMultiplier == 1
+				&& /*alphaMultiplier == 1 &&*/ redOffset == 0
+				&& greenOffset == 0
+				&& blueOffset == 0
+				&& alphaOffset == 0);
 		}
 		else
 		{
-			return (redMultiplier == 1 &&
-				greenMultiplier == 1 &&
-				blueMultiplier == 1 &&
-				alphaMultiplier == 1 &&
-				redOffset == 0 &&
-				greenOffset == 0 &&
-				blueOffset == 0 &&
-				alphaOffset == 0);
+			return (redMultiplier == 1 && greenMultiplier == 1 && blueMultiplier == 1 && alphaMultiplier == 1 && redOffset == 0 && greenOffset == 0
+				&& blueOffset == 0 && alphaOffset == 0);
 		}
 	}
 
@@ -328,8 +324,8 @@ class ColorTransform
 		return color;
 	}
 
-	#if lime
-	@:noCompletion private function __toLimeColorMatrix():ColorMatrix
+	#if (lime || openfl_html5)
+	@:noCompletion private function __toLimeColorMatrix():Float32Array
 	{
 		if (__limeColorMatrix == null)
 		{

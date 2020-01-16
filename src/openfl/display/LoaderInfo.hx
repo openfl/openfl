@@ -7,7 +7,7 @@ import openfl.events.ProgressEvent;
 import openfl.events.UncaughtErrorEvents;
 import openfl.system.ApplicationDomain;
 import openfl.utils.ByteArray;
-#if (js && html5)
+#if openfl_html5
 import js.Browser;
 #end
 
@@ -20,15 +20,13 @@ import js.Browser;
 
 	You can access LoaderInfo objects in two ways:
 
-
-	* The `contentLoaderInfo` property of a flash.display.Loader
+	* The `contentLoaderInfo` property of a openfl.display.Loader
 	object -  The `contentLoaderInfo` property is always available
 	for any Loader object. For a Loader object that has not called the
 	`load()` or `loadBytes()` method, or that has not
 	sufficiently loaded, attempting to access many of the properties of the
 	`contentLoaderInfo` property throws an error.
 	* The `loaderInfo` property of a display object.
-
 
 	The `contentLoaderInfo` property of a Loader object provides
 	information about the content that the Loader object is loading, whereas
@@ -87,7 +85,6 @@ import js.Browser;
 					   * All ActionScript code in the first frame of the
 					  loaded SWF's main timeline has been executed.
 
-
 					  For example, an `Event.INIT` is dispatched
 					  when the first frame of a movie or animation is loaded.
 					  The movie is then accessible and can be added to the
@@ -114,9 +111,9 @@ import js.Browser;
 #end
 class LoaderInfo extends EventDispatcher
 {
-	@:noCompletion private static var __rootURL:String = #if (js && html5)(Browser.supported ? Browser.document.URL : "") #else "" #end;
+	@:noCompletion private static var __rootURL:String = #if openfl_html5 (Browser.supported ? Browser.document.URL : "") #else "" #end;
 
-	// @:noCompletion @:dox(hide) public var actionScriptVersion (default, never):flash.display.ActionScriptVersion;
+	// @:noCompletion @:dox(hide) public var actionScriptVersion (default, never):openfl.display.ActionScriptVersion;
 
 	/**
 		When an external SWF file is loaded, all ActionScript 3.0 definitions
@@ -192,6 +189,7 @@ class LoaderInfo extends EventDispatcher
 					  retrieve the requested information.
 	**/
 	public var childAllowsParent(default, null):Bool;
+
 	// @:noCompletion @:dox(hide) @:require(flash11_4) public var childSandboxBridge:Dynamic;
 
 	/**
@@ -249,6 +247,7 @@ class LoaderInfo extends EventDispatcher
 					  requested information.
 	**/
 	public var height(default, null):Int;
+
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public var isURLInaccessible (default, null):Bool;
 
 	/**
@@ -316,6 +315,7 @@ class LoaderInfo extends EventDispatcher
 					  retrieve the requested information.
 	**/
 	public var parentAllowsChild(default, null):Bool;
+
 	// @:noCompletion @:dox(hide) @:require(flash11_4) public var parentSandboxBridge:Dynamic;
 
 	/**
@@ -336,6 +336,7 @@ class LoaderInfo extends EventDispatcher
 		object.
 	**/
 	public var sharedEvents(default, null):EventDispatcher;
+
 	// @:noCompletion @:dox(hide) public var swfVersion (default, null):UInt;
 
 	/**
@@ -394,6 +395,8 @@ class LoaderInfo extends EventDispatcher
 		parameters = {};
 	}
 
+	@:noCompletion @:dox(hide)
+	@SuppressWarnings("checkstyle:FieldDocComment")
 	public static function create(loader:Loader):LoaderInfo
 	{
 		var loaderInfo = new LoaderInfo();

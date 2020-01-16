@@ -99,7 +99,7 @@ class Transform
 		A Matrix object containing values that alter the scaling, rotation, and
 		translation of the display object.
 
-		If the `matrix` property is set to a value(not
+		If the `matrix` property is set to a value (not
 		`null`), the `matrix3D` property is
 		`null`. And if the `matrix3D` property is set to a
 		value(not `null`), the `matrix` property is
@@ -122,6 +122,7 @@ class Transform
 		`null`.
 	**/
 	public var matrix3D(get, set):Matrix3D;
+
 	// @:noCompletion @:dox(hide) @:require(flash10) public var perspectiveProjection:PerspectiveProjection;
 
 	/**
@@ -138,13 +139,21 @@ class Transform
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperties(Transform.prototype,
-			{
-				"colorTransform": {get: untyped __js__("function () { return this.get_colorTransform (); }"), set: untyped __js__("function (v) { return this.set_colorTransform (v); }")},
-				"concatenatedMatrix": {get: untyped __js__("function () { return this.get_concatenatedMatrix (); }"), set: untyped __js__("function (v) { return this.set_concatenatedMatrix (v); }")},
-				"matrix": {get: untyped __js__("function () { return this.get_matrix (); }"), set: untyped __js__("function (v) { return this.set_matrix (v); }")},
-				"matrix3D": {get: untyped __js__("function () { return this.get_matrix3D (); }"), set: untyped __js__("function (v) { return this.set_matrix3D (v); }")},
-			});
+		untyped Object.defineProperties(Transform.prototype, {
+			"colorTransform": {
+				get: untyped __js__("function () { return this.get_colorTransform (); }"),
+				set: untyped __js__("function (v) { return this.set_colorTransform (v); }")
+			},
+			"concatenatedMatrix": {
+				get: untyped __js__("function () { return this.get_concatenatedMatrix (); }"),
+				set: untyped __js__("function (v) { return this.set_concatenatedMatrix (v); }")
+			},
+			"matrix": {get: untyped __js__("function () { return this.get_matrix (); }"), set: untyped __js__("function (v) { return this.set_matrix (v); }")},
+			"matrix3D": {
+				get: untyped __js__("function () { return this.get_matrix3D (); }"),
+				set: untyped __js__("function (v) { return this.set_matrix3D (v); }")
+			},
+		});
 	}
 	#end
 
@@ -158,7 +167,27 @@ class Transform
 		__hasMatrix = true;
 	}
 
+	#if false
+	/**
+		Returns a Matrix3D object, which can transform the space of a
+		specified display object in relation to the current display object's
+		space. You can use the `getRelativeMatrix3D()` method to move one
+		three-dimensional display object relative to another three-dimensional
+		display object.
+
+		@param relativeTo The display object relative to which the
+						  transformation occurs. To get a Matrix3D object
+						  relative to the stage, set the parameter to the
+						  `root` or `stage` object. To get the world-relative
+						  matrix of the display object, set the parameter to a
+						  display object that has a perspective transformation
+						  applied to it.
+		@return A Matrix3D object that can be used to transform the space from
+				the `relativeTo` display object to the current display object
+				space.
+	**/
 	// @:noCompletion @:dox(hide) @:require(flash10) public function getRelativeMatrix3D (relativeTo:DisplayObject):Matrix3D;
+	#end
 	// Get & Set Methods
 	@:noCompletion private function get_colorTransform():ColorTransform
 	{
@@ -254,6 +283,12 @@ class Transform
 	{
 		if (__displayObject != null)
 		{
+			var transform = __displayObject.__transform;
+			if (transform.a == a && transform.b == b && transform.c == c && transform.d == d && transform.tx == tx && transform.ty == ty)
+			{
+				return;
+			}
+
 			var scaleX = 0.0;
 			var scaleY = 0.0;
 
@@ -268,7 +303,7 @@ class Transform
 
 			if (c == 0)
 			{
-				scaleY = a;
+				scaleY = d;
 			}
 			else
 			{
@@ -288,14 +323,15 @@ class Transform
 				__displayObject.__rotationCosine = Math.cos(radians);
 			}
 
-			__displayObject.__transform.a = a;
-			__displayObject.__transform.b = b;
-			__displayObject.__transform.c = c;
-			__displayObject.__transform.d = d;
-			__displayObject.__transform.tx = tx;
-			__displayObject.__transform.ty = ty;
+			transform.a = a;
+			transform.b = b;
+			transform.c = c;
+			transform.d = d;
+			transform.tx = tx;
+			transform.ty = ty;
 
 			__displayObject.__setTransformDirty();
+			__displayObject.__setParentRenderDirty();
 		}
 	}
 }

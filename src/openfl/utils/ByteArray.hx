@@ -10,14 +10,16 @@ import haxe.io.FPHelper;
 import haxe.Json;
 import haxe.Serializer;
 import haxe.Unserializer;
+import openfl._internal.bindings.typedarray.ArrayBuffer;
 import openfl.errors.EOFError;
 import openfl.net.ObjectEncoding;
 #if lime
 import lime.system.System;
-import lime.utils.ArrayBuffer;
 import lime.utils.BytePointer;
 import lime.utils.Bytes as LimeBytes;
 import lime.utils.DataPointer;
+#elseif openfl_html5
+import openfl._internal.backend.lime_standalone.LimeBytes;
 #end
 #if format
 import format.amf.Reader as AMFReader;
@@ -97,6 +99,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		class.
 	**/
 	public static var defaultObjectEncoding(get, set):ObjectEncoding;
+
 	#if lime
 	@:noCompletion private static var __bytePointer = new BytePointer();
 	#end
@@ -111,11 +114,11 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	**/
 	public var bytesAvailable(get, never):UInt;
 
+	#if openfl_doc_gen
 	/**
 		Changes or reads the byte order for the data; either
 		`Endian.BIG_ENDIAN` or `Endian.LITTLE_ENDIAN`.
 	**/
-	#if openfl_doc_gen
 	public var endian(get, set):Endian;
 	#end
 
@@ -130,6 +133,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	**/
 	public var length(get, set):UInt;
 
+	#if openfl_doc_gen
 	/**
 		* Used to determine whether the ActionScript 3.0, ActionScript 2.0, or
 		* ActionScript 1.0 format should be used when writing to, or reading from, a
@@ -149,7 +153,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		* functions on the Flash or AIR targets, but through `haxe.Serializer`,
 		* `haxe.Unserializer` or `haxe.JSON` if needed.
 	**/
-	#if openfl_doc_gen
 	public var objectEncoding(get, set):ObjectEncoding;
 	#end
 
@@ -276,7 +279,13 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		this.deflate();
 	}
 
-	#if lime
+	#if (lime || js)
+	/**
+		Converts an ArrayBuffer into a ByteArray.
+
+		@param	buffer	An ArrayBuffer instance
+		@returns	A new ByteArray
+	**/
 	@:from public static function fromArrayBuffer(buffer:ArrayBuffer):ByteArray
 	{
 		if (buffer == null) return null;
@@ -293,6 +302,12 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	}
 	#end
 
+	/**
+		Converts a Bytes object into a ByteArray.
+
+		@param	buffer	A Bytes instance
+		@returns	A new ByteArray
+	**/
 	@:from public static function fromBytes(bytes:Bytes):ByteArray
 	{
 		if (bytes == null) return null;
@@ -315,6 +330,12 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		#end
 	}
 
+	/**
+		Converts a BytesData object into a ByteArray.
+
+		@param	buffer	A BytesData instance
+		@returns	A new ByteArray
+	**/
 	@:from @:noCompletion public static function fromBytesData(bytesData:BytesData):ByteArray
 	{
 		if (bytesData == null) return null;
@@ -322,15 +343,28 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		#if display
 		return null;
 		#elseif flash
-		return bytesData;
+		return cast bytesData;
 		#else
 		return ByteArrayData.fromBytes(Bytes.ofData(bytesData));
 		#end
 	}
 
+	/**
+		Creates a new ByteArray from a file path synchronously. This means that the
+		ByteArray will be returned immediately (if supported).
+
+		HTML5 and Flash do not support loading files synchronously, so these targets
+		always return `null`.
+
+		In order to load files from a remote web address, use the `loadFromFile` method,
+		which supports asynchronous loading.
+
+		@param	path	A local file path
+		@returns	A new ByteArray if successful, or `null` if unsuccessful
+	**/
 	public static function fromFile(path:String):ByteArray
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		return LimeBytes.fromFile(path);
 		#else
 		return null;
@@ -338,6 +372,12 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	}
 
 	#if lime
+	/**
+		Converts a Lime Bytes object into a ByteArray.
+
+		@param	buffer	A Lime Bytes instance
+		@returns	A new ByteArray
+	**/
 	@:from @:noCompletion public static function fromLimeBytes(bytes:LimeBytes):ByteArray
 	{
 		return fromBytes(bytes);
@@ -382,9 +422,17 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		this.inflate();
 	}
 
+	/**
+		Creates a new ByteArray from haxe.io.Bytes. Progress, completion and error
+		callbacks will be dispatched using callbacks attached to a returned Future
+		object.
+
+		@param	bytes	A haxe.io.Bytes instance
+		@returns	A Future ByteArray
+	**/
 	public static function loadFromBytes(bytes:Bytes):Future<ByteArray>
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		return LimeBytes.loadFromBytes(bytes).then(function(limeBytes:LimeBytes)
 		{
 			var byteArray:ByteArray = limeBytes;
@@ -395,9 +443,18 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		#end
 	}
 
+	/**
+		Creates a new ByteArray from a file path or web address asynchronously. The file
+		load will occur in the background.
+		Progress, completion and error callbacks will be dispatched in the current
+		thread using callbacks attached to a returned Future object.
+
+		@param	path	A local file path or web address
+		@returns	A Future ByteArray
+	**/
 	public static function loadFromFile(path:String):Future<ByteArray>
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		return LimeBytes.loadFromFile(path).then(function(limeBytes:LimeBytes)
 		{
 			var byteArray:ByteArray = limeBytes;
@@ -623,7 +680,12 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		return value;
 	}
 
-	#if lime
+	/**
+		Converts a ByteArray into an ArrayBuffer.
+
+		@param	buffer	A ByteArray instance
+		@returns	A new ArrayBuffer
+	**/
 	@:to @:noCompletion public static function toArrayBuffer(byteArray:ByteArray):ArrayBuffer
 	{
 		#if display
@@ -636,7 +698,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		return (byteArray : ByteArrayData);
 		#end
 	}
-	#end
 
 	#if lime
 	@:to @:noCompletion private static function toBytePointer(byteArray:ByteArray):BytePointer
@@ -676,7 +737,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		#if display
 		return null;
 		#elseif flash
-		return byteArray;
+		return cast byteArray;
 		#else
 		return (byteArray : ByteArrayData).getData();
 		#end
@@ -992,11 +1053,12 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:autoBuild(lime._internal.macros.AssetsMacro.embedByteArray())
 @:noCompletion @:dox(hide) class ByteArrayData extends Bytes implements IDataInput implements IDataOutput
 {
 	public static var defaultEndian(get, set):Endian;
-	public static var defaultObjectEncoding = ObjectEncoding.DEFAULT;
+	public static var defaultObjectEncoding:ObjectEncoding = ObjectEncoding.DEFAULT;
 	@:noCompletion private static var __defaultEndian:Endian = null;
 
 	public var bytesAvailable(get, never):UInt;
@@ -1010,34 +1072,29 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	#if lime_bytes_length_getter
 	@:noCompletion private static function __init__()
 	{
-		untyped global.Object.defineProperty(ByteArrayData, "defaultEndian",
+		untyped global.Object.defineProperty(ByteArrayData, "defaultEndian", {
+			get: function()
 			{
-				get: function()
-				{
-					return ByteArrayData.get_defaultEndian();
-				},
-				set: function(v)
-				{
-					return ByteArrayData.set_defaultEndian(v);
-				}
-			});
-		untyped global.Object.defineProperties(ByteArrayData.prototype,
+				return ByteArrayData.get_defaultEndian();
+			},
+			set: function(v)
 			{
-				"bytesAvailable":
-					{
-						get: untyped __js__("function () { return this.get_bytesAvailable (); }")
-					},
-				"endian":
-					{
-						get: untyped __js__("function () { return this.get_endian (); }"),
-						set: untyped __js__("function (v) { return this.set_endian (v); }")
-					},
-				"length":
-					{
-						get: untyped __js__("function () { return this.get_length (); }"),
-						set: untyped __js__("function (v) { return this.set_length (v); }")
-					},
-			});
+				return ByteArrayData.set_defaultEndian(v);
+			}
+		});
+		untyped global.Object.defineProperties(ByteArrayData.prototype, {
+			"bytesAvailable": {
+				get: untyped __js__("function () { return this.get_bytesAvailable (); }")
+			},
+			"endian": {
+				get: untyped __js__("function () { return this.get_endian (); }"),
+				set: untyped __js__("function (v) { return this.set_endian (v); }")
+			},
+			"length": {
+				get: untyped __js__("function () { return this.get_length (); }"),
+				set: untyped __js__("function (v) { return this.set_length (v); }")
+			},
+		});
 	}
 	#end
 
@@ -1075,7 +1132,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function compress(algorithm:CompressionAlgorithm = ZLIB):Void
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		#if js
 		if (__length > #if lime_bytes_length_getter l #else length #end)
 		{
@@ -1125,6 +1182,13 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		compress(CompressionAlgorithm.DEFLATE);
 	}
 
+	#if openfljs
+	public static function fromArrayBuffer(buffer:ArrayBuffer):ByteArrayData
+	{
+		return ByteArray.fromArrayBuffer(buffer);
+	}
+	#end
+
 	public static function fromBytes(bytes:Bytes):ByteArrayData
 	{
 		var result = new ByteArrayData();
@@ -1132,10 +1196,22 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		return result;
 	}
 
-	public function inflate()
+	public function inflate():Void
 	{
 		uncompress(CompressionAlgorithm.DEFLATE);
 	}
+
+	#if openfljs
+	public static function loadFromBytes(bytes:Bytes):Future<ByteArray>
+	{
+		return ByteArray.loadFromBytes(bytes);
+	}
+
+	public static function loadFromFile(path:String):Future<ByteArray>
+	{
+		return ByteArray.loadFromFile(path);
+	}
+	#end
 
 	public function readBoolean():Bool
 	{
@@ -1166,7 +1242,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function readBytes(bytes:ByteArray, offset:Int = 0, length:Int = 0):Void
 	{
-		if (length == 0) length = #if lime_bytes_length_getter l #else this.length #end -position;
+		if (length == 0) length = #if lime_bytes_length_getter l #else this.length #end - position;
 
 		if (position + length > #if lime_bytes_length_getter l #else this.length #end)
 		{
@@ -1451,7 +1527,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function uncompress(algorithm:CompressionAlgorithm = ZLIB):Void
 	{
-		#if lime
+		#if (lime || openfl_html5)
 		#if js
 		if (__length > #if lime_bytes_length_getter l #else length #end)
 		{
@@ -1640,27 +1716,26 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	public function writeUTFBytes(value:String):Void
 	{
 		var bytes = Bytes.ofString(value);
-		writeBytes(Bytes.ofString(value));
+		writeBytes(bytes);
 	}
 
 	@:noCompletion private function __fromBytes(bytes:Bytes):Void
 	{
 		__setData(bytes);
 		#if lime_bytes_length_getter
-		l = bytes.l
+		l = bytes.l;
 		#else
-		length = bytes.length
+		length = bytes.length;
 		#end
-		;
 	}
 
-	@:noCompletion private function __resize(size:Int)
+	@:noCompletion private function __resize(size:Int):Void
 	{
 		if (size > __length)
 		{
 			var bytes = Bytes.alloc(((size + 1) * 3) >> 1);
 			#if sys
-			bytes.fill(length, size, 0);
+			bytes.fill(__length, size - __length, 0);
 			#end
 
 			if (__length > 0)
@@ -1712,7 +1787,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	// Get & Set Methods
 	@:noCompletion private inline function get_bytesAvailable():Int
 	{
-		return #if lime_bytes_length_getter l #else length #end -position;
+		return #if lime_bytes_length_getter l #else length #end - position;
 	}
 
 	@:noCompletion private inline static function get_defaultEndian():Endian
@@ -1775,6 +1850,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 #if flash
 @:native("flash.utils.ByteArray")
 #end
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:noCompletion @:dox(hide) extern class ByteArrayData implements IDataOutput implements IDataInput implements ArrayAccess<Int>
 {
 	#if flash

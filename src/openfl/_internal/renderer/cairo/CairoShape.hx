@@ -1,7 +1,11 @@
 package openfl._internal.renderer.cairo;
 
-import openfl.display.CairoRenderer;
+#if openfl_cairo
+import lime.math.Matrix3;
+import openfl._internal.bindings.cairo.CairoFilter;
+import openfl._internal.bindings.cairo.CairoPattern;
 import openfl.display.DisplayObject;
+import openfl.geom.Matrix;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -13,9 +17,10 @@ import openfl.display.DisplayObject;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class CairoShape
 {
+	private static var sourceTransform:Matrix3 = new Matrix3();
+
 	public static function render(shape:DisplayObject, renderer:CairoRenderer):Void
 	{
-		#if lime_cairo
 		if (!shape.__renderable) return;
 
 		var alpha = renderer.__getAlpha(shape.__worldAlpha);
@@ -27,32 +32,133 @@ class CairoShape
 		{
 			CairoGraphics.render(graphics, renderer);
 
-			var bounds = graphics.__bounds;
+			var width = graphics.__width;
+			var height = graphics.__height;
+			var cairo = renderer.cairo;
 
-			if (graphics.__cairo != null && graphics
-				.__visible /*&& graphics.__commands.length > 0*/ && bounds != null && graphics.__width >= 1 && graphics.__height >= 1)
+			if (cairo != null && graphics.__visible && width >= 1 && height >= 1)
 			{
-				var cairo = renderer.cairo;
+				var transform = graphics.__worldTransform;
+				var scale9Grid = shape.__worldScale9Grid;
 
 				renderer.__setBlendMode(shape.__worldBlendMode);
 				renderer.__pushMaskObject(shape);
 
-				renderer.applyMatrix(graphics.__worldTransform, cairo);
-
-				cairo.setSourceSurface(graphics.__cairo.target, 0, 0);
-
-				if (alpha >= 1)
+				if (scale9Grid != null && transform.b == 0 && transform.c == 0)
 				{
-					cairo.paint();
+					var bounds = graphics.__bounds;
+
+					var renderTransform = Matrix.__pool.get();
+
+					var scaleX = graphics.__renderTransform.a;
+					var scaleY = graphics.__renderTransform.d;
+					var renderScaleX = transform.a;
+					var renderScaleY = transform.d;
+
+					var left = Math.round(scale9Grid.x * scaleX);
+					var top = Math.round(scale9Grid.y * scaleY);
+					var right = Math.round((bounds.right - scale9Grid.right) * scaleX);
+					var bottom = Math.round((bounds.bottom - scale9Grid.bottom) * scaleY);
+					var centerWidth = Math.round(scale9Grid.width * scaleX);
+					var centerHeight = Math.round(scale9Grid.height * scaleY);
+
+					var renderLeft = Math.round(scale9Grid.x * renderScaleX);
+					var renderTop = Math.round(scale9Grid.y * renderScaleY);
+					var renderRight = Math.round((bounds.right - scale9Grid.right) * renderScaleX);
+					var renderBottom = Math.round((bounds.bottom - scale9Grid.bottom) * renderScaleY);
+					var renderCenterWidth = Math.round(width * renderScaleX) - renderLeft - renderRight;
+					var renderCenterHeight = Math.round(height * renderScaleY) - renderTop - renderBottom;
+
+					var pattern = CairoPattern.createForSurface(graphics.__renderData.cairo.target);
+					// TODO: Allow smoothing, even though it shows seams?
+					pattern.filter = CairoFilter.NEAREST;
+					// pattern.filter = renderer.__allowSmoothing ? CairoFilter.GOOD : CairoFilter.NEAREST;
+
+					function drawImage(sx:Float, sy:Float, sWidth:Float, sHeight:Float, dx:Float, dy:Float, dWidth:Float, dHeight:Float):Void
+					{
+						renderTransform.a = (dWidth / sWidth);
+						renderTransform.d = (dHeight / sHeight);
+						renderTransform.tx = transform.tx + dx;
+						renderTransform.ty = transform.ty + dy;
+
+						renderer.applyMatrix(renderTransform, cairo);
+
+						sourceTransform.tx = sx;
+						sourceTransform.ty = sy;
+						pattern.matrix = sourceTransform;
+						cairo.source = pattern;
+
+						cairo.save();
+
+						cairo.newPath();
+						cairo.rectangle(0, 0, sWidth, sHeight);
+						cairo.clip();
+
+						if (alpha == 1)
+						{
+							cairo.paint();
+						}
+						else
+						{
+							cairo.paintWithAlpha(alpha);
+						}
+
+						cairo.restore();
+					}
+
+					if (centerWidth != 0 && centerHeight != 0)
+					{
+						drawImage(0, 0, left, top, 0, 0, renderLeft, renderTop);
+						drawImage(left, 0, centerWidth, top, renderLeft, 0, renderCenterWidth, renderTop);
+						drawImage(left + centerWidth, 0, right, top, renderLeft + renderCenterWidth, 0, renderRight, renderTop);
+
+						drawImage(0, top, left, centerHeight, 0, renderTop, renderLeft, renderCenterHeight);
+						drawImage(left, top, centerWidth, centerHeight, renderLeft, renderTop, renderCenterWidth, renderCenterHeight);
+						drawImage(left + centerWidth, top, right, centerHeight, renderLeft + renderCenterWidth, renderTop, renderRight, renderCenterHeight);
+
+						drawImage(0, top + centerHeight, left, bottom, 0, renderTop + renderCenterHeight, renderLeft, renderBottom);
+						drawImage(left, top + centerHeight, centerWidth, bottom, renderLeft, renderTop + renderCenterHeight, renderCenterWidth, renderBottom);
+						drawImage(left + centerWidth, top + centerHeight, right, bottom, renderLeft + renderCenterWidth, renderTop + renderCenterHeight,
+							renderRight, renderBottom);
+					}
+					else if (centerWidth == 0 && centerHeight != 0)
+					{
+						var renderWidth = renderLeft + renderCenterWidth + renderRight;
+
+						drawImage(0, 0, width, top, 0, 0, renderWidth, renderTop);
+						drawImage(0, top, width, centerHeight, 0, renderTop, renderWidth, renderCenterHeight);
+						drawImage(0, top + centerHeight, width, bottom, 0, renderTop + renderCenterHeight, renderWidth, renderBottom);
+					}
+					else if (centerHeight == 0 && centerWidth != 0)
+					{
+						var renderHeight = renderTop + renderCenterHeight + renderBottom;
+
+						drawImage(0, 0, left, height, 0, 0, renderLeft, renderHeight);
+						drawImage(left, 0, centerWidth, height, renderLeft, 0, renderCenterWidth, renderHeight);
+						drawImage(left + centerWidth, 0, right, height, renderLeft + renderCenterWidth, 0, renderRight, renderHeight);
+					}
+
+					Matrix.__pool.release(renderTransform);
 				}
 				else
 				{
-					cairo.paintWithAlpha(alpha);
+					renderer.applyMatrix(transform, cairo);
+
+					cairo.setSourceSurface(graphics.__renderData.cairo.target, 0, 0);
+
+					if (alpha >= 1)
+					{
+						cairo.paint();
+					}
+					else
+					{
+						cairo.paintWithAlpha(alpha);
+					}
 				}
 
 				renderer.__popMaskObject(shape);
 			}
 		}
-		#end
 	}
 }
+#end

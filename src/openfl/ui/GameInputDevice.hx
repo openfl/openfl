@@ -2,9 +2,6 @@ package openfl.ui;
 
 #if !flash
 import openfl.utils.ByteArray;
-#if lime
-import lime.ui.Gamepad;
-#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -13,7 +10,12 @@ import lime.ui.Gamepad;
 @:access(openfl.ui.GameInputControl)
 @:final class GameInputDevice
 {
-	public static var MAX_BUFFER_SIZE:Int = 32000;
+	/**
+		Specifies the maximum size for the buffer used to cache sampled control values.
+		If `startCachingSamples` returns samples that require more memory than you specify,
+		it throws a memory error.
+	**/
+	public static inline var MAX_BUFFER_SIZE:Int = 32000;
 
 	/**
 		Enables or disables this device.
@@ -43,17 +45,13 @@ import lime.ui.Gamepad;
 	@:noCompletion private var __axis:Map<Int, GameInputControl> = new Map();
 	@:noCompletion private var __button:Map<Int, GameInputControl> = new Map();
 	@:noCompletion private var __controls:Array<GameInputControl> = new Array();
-	#if lime
-	@:noCompletion private var __gamepad:Gamepad;
-	#end
 
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperties(GameInputDevice.prototype,
-			{
-				"numControls": {get: untyped __js__("function () { return this.get_numControls (); }")},
-			});
+		untyped Object.defineProperties(GameInputDevice.prototype, {
+			"numControls": {get: untyped __js__("function () { return this.get_numControls (); }")},
+		});
 	}
 	#end
 

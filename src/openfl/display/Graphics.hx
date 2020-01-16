@@ -1,27 +1,27 @@
 package openfl.display;
 
 #if !flash
-import openfl._internal.renderer.cairo.CairoGraphics;
-import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.context3D.Context3DBuffer;
+import openfl._internal.renderer.DisplayObjectRenderData;
 import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.DrawCommandReader;
 import openfl._internal.renderer.ShaderBuffer;
-import openfl._internal.utils.Float32Array;
+import openfl._internal.bindings.typedarray.Float32Array;
 import openfl._internal.utils.ObjectPool;
-import openfl._internal.utils.UInt16Array;
+import openfl._internal.bindings.typedarray.UInt16Array;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
 import openfl.errors.ArgumentError;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.Vector;
-#if lime
-import lime.graphics.cairo.Cairo;
-#end
-#if (js && html5)
+#if openfl_html5
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
+import openfl._internal.renderer.canvas.CanvasGraphics;
+#else
+import openfl._internal.bindings.cairo.Cairo;
+import openfl._internal.renderer.cairo.CairoGraphics;
 #end
 
 /**
@@ -54,6 +54,7 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private static var maxTextureHeight:Null<Int> = null;
 	@:noCompletion private static var maxTextureWidth:Null<Int> = null;
 
+	@:noCompletion private var __bitmap:BitmapData;
 	@:noCompletion private var __bounds:Rectangle;
 	@:noCompletion private var __commands:DrawCommandBuffer;
 	@:noCompletion private var __dirty(default, set):Bool = true;
@@ -62,34 +63,23 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private var __managed:Bool;
 	@:noCompletion private var __positionX:Float;
 	@:noCompletion private var __positionY:Float;
-	@:noCompletion private var __quadBuffer:Context3DBuffer;
+	@:noCompletion private var __renderData:DisplayObjectRenderData;
 	@:noCompletion private var __renderTransform:Matrix;
 	@:noCompletion private var __shaderBufferPool:ObjectPool<ShaderBuffer>;
 	@:noCompletion private var __softwareDirty:Bool;
 	@:noCompletion private var __strokePadding:Float;
 	@:noCompletion private var __transformDirty:Bool;
-	@:noCompletion private var __triangleIndexBuffer:IndexBuffer3D;
-	@:noCompletion private var __triangleIndexBufferCount:Int;
-	@:noCompletion private var __triangleIndexBufferData:UInt16Array;
 	@:noCompletion private var __usedShaderBuffers:List<ShaderBuffer>;
-	@:noCompletion private var __vertexBuffer:VertexBuffer3D;
-	@:noCompletion private var __vertexBufferCount:Int;
-	@:noCompletion private var __vertexBufferCountUVT:Int;
-	@:noCompletion private var __vertexBufferData:Float32Array;
-	@:noCompletion private var __vertexBufferDataUVT:Float32Array;
-	@:noCompletion private var __vertexBufferUVT:VertexBuffer3D;
 	@:noCompletion private var __visible:Bool;
 	// private var __cachedTexture:RenderTexture;
 	@:noCompletion private var __owner:DisplayObject;
 	@:noCompletion private var __width:Int;
 	@:noCompletion private var __worldTransform:Matrix;
-	#if (js && html5)
-	@:noCompletion private var __canvas:CanvasElement;
-	@:noCompletion private var __context:#if lime CanvasRenderingContext2D #else Dynamic #end;
-	#else
-	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __cairo:#if lime Cairo #else Dynamic #end;
+
+	#if draft
+	@:noCompletion private var __drawPaths:Array<openfl._internal.renderer.opengl.utils.DrawPath>;
+	@:noCompletion private var __glStack:Array<openfl._internal.renderer.opengl.utils.GLStack> = [];
 	#end
-	@:noCompletion private var __bitmap:BitmapData;
 
 	@:noCompletion private function new(owner:DisplayObject)
 	{
@@ -105,9 +95,10 @@ import js.html.CanvasRenderingContext2D;
 		__width = 0;
 		__height = 0;
 
+		__renderData = new DisplayObjectRenderData();
 		__shaderBufferPool = new ObjectPool<ShaderBuffer>(function() return new ShaderBuffer());
 
-		#if (js && html5)
+		#if openfl_html5
 		moveTo(0, 0);
 		#end
 	}
@@ -128,6 +119,12 @@ import js.html.CanvasRenderingContext2D;
 					  can use to define transformations on the bitmap. For
 					  example, you can use the following matrix to rotate a bitmap
 					  by 45 degrees(pi/4 radians):
+
+		```haxe
+		matrix = new openfl.geom.Matrix();
+			 	matrix.rotate(Math.PI / 4);
+			 	```
+
 		@param repeat If `true`, the bitmap image repeats in a tiled
 					  pattern. If `false`, the bitmap image does not
 					  repeat, and the edges of the bitmap are used for any fill
@@ -136,13 +133,19 @@ import js.html.CanvasRenderingContext2D;
 					  For example, consider the following bitmap(a 20 x
 					  20-pixel checkerboard pattern):
 
+					  ![20 by 20 pixel checkerboard](/images/movieClip_beginBitmapFill_repeat_1.jpg)
+
 					  When `repeat` is set to `true`(as
 					  in the following example), the bitmap fill repeats the
 					  bitmap:
 
+					  ![60 by 60 pixel checkerboard](/images/movieClip_beginBitmapFill_repeat_2.jpg)
+
 					  When `repeat` is set to `false`,
 					  the bitmap fill uses the edge pixels for the fill area
 					  outside the bitmap:
+
+					  ![60 by 60 pixel image with no repeating](/images/movieClip_beginBitmapFill_repeat_3.jpg)
 		@param smooth If `false`, upscaled bitmap images are rendered
 					  by using a nearest-neighbor algorithm and look pixelated. If
 					  `true`, upscaled bitmap images are rendered by
@@ -188,58 +191,86 @@ import js.html.CanvasRenderingContext2D;
 		The application renders the fill whenever three or more points are
 		drawn, or when the `endFill()` method is called.
 
-		@param type                A value from the GradientType class that
-								   specifies which gradient type to use:
-								   `GradientType.LINEAR` or
-								   `GradientType.RADIAL`.
-		@param matrix              A transformation matrix as defined by the
-								   openfl.geom.Matrix class. The openfl.geom.Matrix
-								   class includes a
-								   `createGradientBox()` method, which
-								   lets you conveniently set up the matrix for use
-								   with the `beginGradientFill()`
-								   method.
-		@param spreadMethod        A value from the SpreadMethod class that
-								   specifies which spread method to use, either:
-								   `SpreadMethod.PAD`,
-								   `SpreadMethod.REFLECT`, or
-								   `SpreadMethod.REPEAT`.
+		@param	type	A value from the GradientType class that specifies which gradient type to use:
+		`GradientType.LINEAR` or `GradientType.RADIAL`.
 
-								   For example, consider a simple linear
-								   gradient between two colors:
+		@param	colors	An array of RGB hexadecimal color values used in the gradient; for example, red is 0xFF0000,
+		blue is 0x0000FF, and so on. You can specify up to 15 colors. For each color, specify a corresponding value
+		in the `alphas` and `ratios` parameters.
 
-								   This example uses
-								   `SpreadMethod.PAD` for the spread
-								   method, and the gradient fill looks like the
-								   following:
+		@param	alphas	An array of alpha values for the corresponding colors in the `colors` array; valid values
+		are 0 to 1. If the value is less than 0, the default is 0. If the value is greater than 1, the default is 1.
 
-								   If you use `SpreadMethod.REFLECT`
-								   for the spread method, the gradient fill looks
-								   like the following:
+		@param	ratios	An array of color distribution ratios; valid values are 0-255. This value defines the
+		percentage of the width where the color is sampled at 100%. The value 0 represents the left position in the
+		gradient box, and 255 represents the right position in the gradient box.
 
-								   If you use `SpreadMethod.REPEAT`
-								   for the spread method, the gradient fill looks
-								   like the following:
-		@param interpolationMethod A value from the InterpolationMethod class that
-								   specifies which value to use:
-								   `InterpolationMethod.LINEAR_RGB` or
-								   `InterpolationMethod.RGB`
+		**Note:** This value represents positions in the gradient box, not the coordinate space of the final gradient,
+		which can be wider or thinner than the gradient box. Specify a value for each value in the `colors` parameter.
 
-								   For example, consider a simple linear
-								   gradient between two colors(with the
-								   `spreadMethod` parameter set to
-								   `SpreadMethod.REFLECT`). The
-								   different interpolation methods affect the
-								   appearance as follows:
-		@param focalPointRatio     A number that controls the location of the
-								   focal point of the gradient. 0 means that the
-								   focal point is in the center. 1 means that the
-								   focal point is at one border of the gradient
-								   circle. -1 means that the focal point is at the
-								   other border of the gradient circle. A value
-								   less than -1 or greater than 1 is rounded to -1
-								   or 1. For example, the following example shows
-								   a `focalPointRatio` set to 0.75:
+		For example, for a linear gradient that includes two colors, blue and green, the following example illustrates
+		the placement of the colors in the gradient based on different values in the ratios array:
+
+		| ratios | Gradient |
+		| --- | --- |
+		| `[0, 127]` | ![linear gradient blue to green with ratios 0 and 127](/images/gradient-ratios-1.jpg) |
+		| `[0, 255]` | ![linear gradient blue to green with ratios 0 and 255](/images/gradient-ratios-2.jpg) |
+		| `[127, 255]` | ![linear gradient blue to green with ratios 127 and 255](/images/gradient-ratios-3.jpg) |
+
+		The values in the array must increase sequentially; for example, `[0, 63, 127, 190, 255]`.
+
+		@param	matrix	A transformation matrix as defined by the openfl.geom.Matrix class. The openfl.geom.Matrix
+		class includes a `createGradientBox()` method, which lets you conveniently set up the matrix for use with the
+		`beginGradientFill()` method.
+
+		@param	spreadMethod	A value from the SpreadMethod class that specifies which spread method to use, either:
+		`SpreadMethod.PAD`, `SpreadMethod.REFLECT`, or `SpreadMethod.REPEAT`.
+
+		For example, consider a simple linear gradient between two colors:
+
+		```as3
+		import flash.geom.*
+		import flash.display.*
+		var fillType:String = GradientType.LINEAR;
+		var colors:Array = [0xFF0000, 0x0000FF];
+		var alphas:Array = [1, 1];
+		var ratios:Array = [0x00, 0xFF];
+		var matr:Matrix = new Matrix();
+		matr.createGradientBox(20, 20, 0, 0, 0);
+		var spreadMethod:String = SpreadMethod.PAD;
+		this.graphics.beginGradientFill(fillType, colors, alphas, ratios, matr, spreadMethod);
+		this.graphics.drawRect(0,0,100,100);
+		```
+
+		This example uses `SpreadMethod.PAD` for the spread method, and the gradient fill looks like the following:
+
+		![linear gradient with SpreadMethod.PAD](/images/beginGradientFill_spread_pad.jpg)
+
+		If you use SpreadMethod.REFLECT for the spread method, the gradient fill looks like the following:
+
+		![linear gradient with SpreadMethod.REFLECT](/images/beginGradientFill_spread_reflect.jpg)
+
+		If you use SpreadMethod.REPEAT for the spread method, the gradient fill looks like the following:
+
+		![linear gradient with SpreadMethod.REPEAT](/images/beginGradientFill_spread_repeat.jpg)
+
+		@param	interpolationMethod	A value from the InterpolationMethod class that specifies which value to use:
+		`InterpolationMethod.LINEAR_RGB` or `InterpolationMethod.RGB`
+
+		For example, consider a simple linear gradient between two colors (with the `spreadMethod` parameter set to
+		`SpreadMethod.REFLECT`). The different interpolation methods affect the appearance as follows:
+
+		| | |
+		| --- | --- |
+		| ![linear gradient with InterpolationMethod.LINEAR_RGB](/images/beginGradientFill_interp_linearrgb.jpg)<br>`InterpolationMethod.LINEAR_RGB` | ![linear gradient with InterpolationMethod.RGB](/images/beginGradientFill_interp_rgb.jpg)<br>`InterpolationMethod.RGB` |
+
+		@param	focalPointRatio	A number that controls the location of the focal point of the gradient. 0 means that
+		the focal point is in the center. 1 means that the focal point is at one border of the gradient circle. -1
+		means that the focal point is at the other border of the gradient circle. A value less than -1 or greater
+		than 1 is rounded to -1 or 1. For example, the following example shows a `focalPointRatio` set to 0.75:
+
+		![radial gradient with focalPointRatio set to 0.75](/images/radial_sketch.jpg)
+
 		@throws ArgumentError If the `type` parameter is not valid.
 	**/
 	public function beginGradientFill(type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null,
@@ -281,17 +312,67 @@ import js.html.CanvasRenderingContext2D;
 		}
 	}
 
+	/**
+		Specifies a shader fill used by subsequent calls to other Graphics
+		methods (such as `lineTo()` or `drawCircle()`) for the object. The
+		fill remains in effect until you call the `beginFill()`,
+		`beginBitmapFill()`, `beginGradientFill()`, or `beginShaderFill()`
+		method. Calling the `clear()` method clears the fill.
+		The application renders the fill whenever three or more points are
+		drawn, or when the `endFill()` method is called.
+
+		Shader fills are not supported under GPU rendering; filled areas will
+		be colored cyan.
+
+		@param shader The shader to use for the fill. This Shader instance is
+					  not required to specify an image input. However, if an
+					  image input is specified in the shader, the input must
+					  be provided manually. To specify the input, set the
+					  `input` property of the corresponding ShaderInput
+					  property of the `Shader.data` property.
+					  When you pass a Shader instance as an argument the
+					  shader is copied internally. The drawing fill operation
+					  uses that internal copy, not a reference to the original
+					  shader. Any changes made to the shader, such as changing
+					  a parameter value, input, or bytecode, are not applied
+					  to the copied shader that's used for the fill.
+		@param matrix A matrix object (of the openfl.geom.Matrix class), which
+					  you can use to define transformations on the shader. For
+					  example, you can use the following matrix to rotate a
+					  shader by 45 degrees (pi/4 radians):
+
+					  ```haxe
+					  matrix = new openfl.geom.Matrix();
+					  matrix.rotate(Math.PI / 4);
+					  ```
+
+					  The coordinates received in the shader are based on the
+					  matrix that is specified for the `matrix` parameter. For
+					  a default (`null`) matrix, the coordinates in the shader
+					  are local pixel coordinates which can be used to sample
+					  an input.
+		@throws ArgumentError When the shader output type is not compatible
+							  with this operation (the shader must specify a
+							  `pixel3` or `pixel4` output).
+		@throws ArgumentError When the shader specifies an image input that
+							  isn't provided.
+		@throws ArgumentError When a ByteArray or Vector.<Number> instance is
+							  used as an input and the `width` and `height`
+							  properties aren't specified for the ShaderInput,
+							  or the specified values don't match the amount
+							  of data in the input object. See the
+							  `ShaderInput.input` property for more
+							  information.
+	**/
 	public function beginShaderFill(shader:Shader, matrix:Matrix = null):Void
 	{
 		if (shader != null)
 		{
-			#if lime
 			var shaderBuffer = __shaderBufferPool.get();
 			__usedShaderBuffers.add(shaderBuffer);
 			shaderBuffer.update(cast shader);
 
 			__commands.beginShaderFill(shaderBuffer);
-			#end
 		}
 	}
 
@@ -302,12 +383,10 @@ import js.html.CanvasRenderingContext2D;
 	**/
 	public function clear():Void
 	{
-		#if lime
 		for (shaderBuffer in __usedShaderBuffers)
 		{
 			__shaderBufferPool.release(shaderBuffer);
 		}
-		#end
 
 		__usedShaderBuffers.clear();
 		__commands.clear();
@@ -318,20 +397,29 @@ import js.html.CanvasRenderingContext2D;
 			__dirty = true;
 			__transformDirty = true;
 			__bounds = null;
+			__owner.__localBoundsDirty = true;
 		}
 
 		__visible = false;
 		__positionX = 0;
 		__positionY = 0;
 
-		#if (js && html5)
+		#if openfl_html5
 		moveTo(0, 0);
 		#end
 	}
 
+	/**
+		Copies all of drawing commands from the source Graphics object into
+		the calling Graphics object.
+
+		@param sourceGraphics The Graphics object from which to copy the
+							  drawing commands.
+	**/
 	public function copyFrom(sourceGraphics:Graphics):Void
 	{
 		__bounds = sourceGraphics.__bounds != null ? sourceGraphics.__bounds.clone() : null;
+		__owner.__localBoundsDirty = true;
 		__commands = sourceGraphics.__commands.copy();
 		__dirty = true;
 		__strokePadding = sourceGraphics.__strokePadding;
@@ -341,6 +429,45 @@ import js.html.CanvasRenderingContext2D;
 		__visible = sourceGraphics.__visible;
 	}
 
+	/**
+		Draws a cubic Bezier curve from the current drawing position to the specified
+		anchor point. Cubic Bezier curves consist of two anchor points and two control
+		points. The curve interpolates the two anchor points and curves toward the two
+		control points.
+
+		![cubic bezier](/images/cubic_bezier.png)
+
+		The four points you use to draw a cubic Bezier curve with the `cubicCurveTo()`
+		method are as follows:
+
+		* The current drawing position is the first anchor point.
+		* The `anchorX` and `anchorY` parameters specify the second anchor point.
+		* The `controlX1` and `controlY1` parameters specify the first control point.
+		* The `controlX2` and `controlY2` parameters specify the second control point.
+
+		If you call the `cubicCurveTo()` method before calling the `moveTo()` method, your
+		curve starts at position (0, 0).
+
+		If the `cubicCurveTo()` method succeeds, the OpenFL runtime sets the current
+		drawing position to (`anchorX`, `anchorY`). If the `cubicCurveTo()` method fails,
+		the current drawing position remains unchanged.
+
+		If your movie clip contains content created with the Flash drawing tools, the
+		results of calls to the `cubicCurveTo()` method are drawn underneath that content.
+
+		@param	controlX1	Specifies the horizontal position of the first control point
+		relative to the registration point of the parent display object.
+		@param	controlY1	Specifies the vertical position of the first control point
+		relative to the registration point of the parent display object.
+		@param	controlX2	Specifies the horizontal position of the second control point
+		relative to the registration point of the parent display object.
+		@param	controlY2	Specifies the vertical position of the second control point
+		relative to the registration point of the parent display object.
+		@param	anchorX	Specifies the horizontal position of the anchor point relative to
+		the registration point of the parent display object.
+		@param	anchorY	Specifies the vertical position of the anchor point relative to
+		the registration point of the parent display object.
+	**/
 	public function cubicCurveTo(controlX1:Float, controlY1:Float, controlX2:Float, controlY2:Float, anchorX:Float, anchorY:Float):Void
 	{
 		__inflateBounds(__positionX - __strokePadding, __positionY - __strokePadding);
@@ -351,9 +478,8 @@ import js.html.CanvasRenderingContext2D;
 		ix1 = anchorX;
 		ix2 = anchorX;
 
-		if (
-			!(((controlX1 < anchorX && controlX1 > __positionX) || (controlX1 > anchorX && controlX1 < __positionX)) && ((controlX2 < anchorX && controlX2 > __positionX) || (controlX2 > anchorX && controlX2 < __positionX)))
-		)
+		if (!(((controlX1 < anchorX && controlX1 > __positionX) || (controlX1 > anchorX && controlX1 < __positionX))
+			&& ((controlX2 < anchorX && controlX2 > __positionX) || (controlX2 > anchorX && controlX2 < __positionX))))
 		{
 			var u = (2 * __positionX - 4 * controlX1 + 2 * controlX2);
 			var v = (controlX1 - __positionX);
@@ -376,9 +502,8 @@ import js.html.CanvasRenderingContext2D;
 		iy1 = anchorY;
 		iy2 = anchorY;
 
-		if (
-			!(((controlY1 < anchorY && controlY1 > __positionX) || (controlY1 > anchorY && controlY1 < __positionX)) && ((controlY2 < anchorY && controlY2 > __positionX) || (controlY2 > anchorY && controlY2 < __positionX)))
-		)
+		if (!(((controlY1 < anchorY && controlY1 > __positionX) || (controlY1 > anchorY && controlY1 < __positionX))
+			&& ((controlY2 < anchorY && controlY2 > __positionX) || (controlY2 > anchorY && controlY2 < __positionX))))
 		{
 			var u = (2 * __positionX - 4 * controlY1 + 2 * controlY2);
 			var v = (controlY1 - __positionX);
@@ -415,7 +540,7 @@ import js.html.CanvasRenderingContext2D;
 	}
 
 	/**
-		Draws a curve using the current line style from the current drawing
+		Draws a quadratic curve using the current line style from the current drawing
 		position to(anchorX, anchorY) and using the control point that
 		(`controlX`, `controlY`) specifies. The current
 		drawing position is then set to(`anchorX`,
@@ -430,6 +555,8 @@ import js.html.CanvasRenderingContext2D;
 		The curve drawn is a quadratic Bezier curve. Quadratic Bezier curves
 		consist of two anchor points and one control point. The curve interpolates
 		the two anchor points and curves toward the control point.
+
+		![quadratic bezier](quad_bezier.png)
 
 		@param controlX A number that specifies the horizontal position of the
 						control point relative to the registration point of the
@@ -648,39 +775,37 @@ import js.html.CanvasRenderingContext2D;
 		coordinate location. The drawing direction is a value from the
 		GraphicsPathWinding class.
 
-		 Generally, drawings render faster with `drawPath()` than
+		Generally, drawings render faster with `drawPath()` than
 		with a series of individual `lineTo()` and
 		`curveTo()` methods.
 
-		 The `drawPath()` method uses a uses a floating computation
+		The `drawPath()` method uses a uses a floating computation
 		so rotation and scaling of shapes is more accurate and gives better
 		results. However, curves submitted using the `drawPath()`
 		method can have small sub-pixel alignment errors when used in conjunction
 		with the `lineTo()` and `curveTo()` methods.
 
-		 The `drawPath()` method also uses slightly different rules
+		The `drawPath()` method also uses slightly different rules
 		for filling and drawing lines. They are:
 
-
 		* When a fill is applied to rendering a path:
-
-		* A sub-path of less than 3 points is not rendered.(But note that the
-		stroke rendering will still occur, consistent with the rules for strokes
-		below.)
-		* A sub-path that isn't closed(the end point is not equal to the
-		begin point) is implicitly closed.
-
-
+			* A sub-path of less than 3 points is not rendered.(But note that the
+			stroke rendering will still occur, consistent with the rules for strokes
+			below.)
+			* A sub-path that isn't closed(the end point is not equal to the
+			begin point) is implicitly closed.
 		* When a stroke is applied to rendering a path:
+			* The sub-paths can be composed of any number of points.
+			* The sub-path is never implicitly closed.
 
-		* The sub-paths can be composed of any number of points.
-		* The sub-path is never implicitly closed.
-
-
-
-
-		@param winding Specifies the winding rule using a value defined in the
-					   GraphicsPathWinding class.
+		@param	commands	A Vector of integers representing drawing commands. The set
+		of accepted values is defined by the constants in the GraphicsPathCommand class.
+		@param	data	A Vector of Number instances where each pair of numbers is treated
+		as a coordinate location (an x, y pair). The x- and y-coordinate value pairs are
+		not Point objects; the data vector is a series of numbers where each group of two
+		numbers represents a coordinate location.
+		@param	winding	Specifies the winding rule using a value defined in the
+		GraphicsPathWinding class.
 	**/
 	public function drawPath(commands:Vector<Int>, data:Vector<Float>, winding:GraphicsPathWinding = GraphicsPathWinding.EVEN_ODD):Void
 	{
@@ -736,20 +861,20 @@ import js.html.CanvasRenderingContext2D;
 
 		The optional `indices` parameter allows the use of either repeated
 		rectangle geometry, or allows the use of a subset of a broader rectangle
-		data `Vector`, such as `tileset.rectData`.
+		data Vector, such as Tileset `rectData`.
 
-		@param rects A `Vector` containing rectangle coordinates in
+		@param rects A Vector containing rectangle coordinates in
 					 [ x0, y0, width0, height0, x1, y1 ... ] format.
-		@param indices A `Vector` containing optional index values to reference
+		@param indices A Vector containing optional index values to reference
 					   the data contained in `rects`. Each index is a rectangle
-					   index in the `Vector`, not an array index. If this parameter
+					   index in the Vector, not an array index. If this parameter
 					   is ommitted, each index from `rects` will be used in order.
-		@param transforms A `Vector` containing optional transform data to adjust
+		@param transforms A Vector containing optional transform data to adjust
 						  _x_, _y_, _a_, _b_, _c_ or _d_ value for the resulting
-						  quadrilateral. A `transforms` `Vector` that is double
+						  quadrilateral. A `transforms` Vector that is double the
 						  size of the draw count (the length of `indices`, or if
 						  omitted, the rectangle count in `rects`) will be treated
-						  as [ x, y, ... ] pairs. A `transforms` `Vector` that is
+						  as [ x, y, ... ] pairs. A `transforms` Vector that is
 						  four times the size of the draw count will be used as
 						  matrix [ a, b, c, d, ... ] values. A `transforms` object
 						  which is six times the draw count in size will use full
@@ -918,6 +1043,9 @@ import js.html.CanvasRenderingContext2D;
 		__dirty = true;
 	}
 
+	/**
+		Undocumented method
+	**/
 	public function drawRoundRectComplex(x:Float, y:Float, width:Float, height:Float, topLeftRadius:Float, topRightRadius:Float, bottomLeftRadius:Float,
 			bottomRightRadius:Float):Void
 	{
@@ -1109,36 +1237,57 @@ import js.html.CanvasRenderingContext2D;
 		Calls to the `clear()` method set the line style back to
 		`undefined`.
 
-		@param type                A value from the GradientType class that
-								   specifies which gradient type to use, either
-								   GradientType.LINEAR or GradientType.RADIAL.
-		@param matrix              A transformation matrix as defined by the
-								   openfl.geom.Matrix class. The openfl.geom.Matrix
-								   class includes a
-								   `createGradientBox()` method, which
-								   lets you conveniently set up the matrix for use
-								   with the `lineGradientStyle()`
-								   method.
-		@param spreadMethod        A value from the SpreadMethod class that
-								   specifies which spread method to use:
-		@param interpolationMethod A value from the InterpolationMethod class that
-								   specifies which value to use. For example,
-								   consider a simple linear gradient between two
-								   colors(with the `spreadMethod`
-								   parameter set to
-								   `SpreadMethod.REFLECT`). The
-								   different interpolation methods affect the
-								   appearance as follows:
-		@param focalPointRatio     A number that controls the location of the
-								   focal point of the gradient. The value 0 means
-								   the focal point is in the center. The value 1
-								   means the focal point is at one border of the
-								   gradient circle. The value -1 means that the
-								   focal point is at the other border of the
-								   gradient circle. Values less than -1 or greater
-								   than 1 are rounded to -1 or 1. The following
-								   image shows a gradient with a
-								   `focalPointRatio` of -0.75:
+		@param	type	A value from the GradientType class that specifies which gradient type to use:
+		`GradientType.LINEAR` or `GradientType.RADIAL`.
+
+		@param	colors	An array of RGB hex color values to be used in the gradient (for example, red is 0xFF0000,
+		blue is 0x0000FF, and so on).
+
+		@param	alphas	An array of alpha values for the corresponding colors in the `colors` array; valid values
+		are 0 to 1. If the value is less than 0, the default is 0. If the value is greater than 1, the default is 1.
+
+		@param	ratios	An array of color distribution ratios; valid values are from 0 to 255. This value defines the
+		percentage of the width where the color is sampled at 100%. The value 0 represents the left position in the
+		gradient box, and 255 represents the right position in the gradient box. This value represents positions in
+		the gradient box, not the coordinate space of the final gradient, which can be wider or thinner than the
+		gradient box. Specify a value for each value in the `colors` parameter.
+
+		For example, for a linear gradient that includes two colors, blue and green, the following figure illustrates
+		the placement of the colors in the gradient based on different values in the `ratios` array:
+
+		| ratios | Gradient |
+		| --- | --- |
+		| `[0, 127]` | ![linear gradient blue to green with ratios 0 and 127](/images/gradient-ratios-1.jpg) |
+		| `[0, 255]` | ![linear gradient blue to green with ratios 0 and 255](/images/gradient-ratios-2.jpg) |
+		| `[127, 255]` | ![linear gradient blue to green with ratios 127 and 255](/images/gradient-ratios-3.jpg) |
+
+		The values in the array must increase sequentially; for example, `[0, 63, 127, 190, 255]`.
+
+		@param	matrix	A transformation matrix as defined by the openfl.geom.Matrix class. The openfl.geom.Matrix
+		class includes a `createGradientBox()` method, which lets you conveniently set up the matrix for use with the
+		`lineGradientStyle()` method.
+
+		@param	spreadMethod	A value from the SpreadMethod class that specifies which spread method to use:
+
+		| | | |
+		| --- | --- | --- |
+		| ![linear gradient with SpreadMethod.PAD](/images/beginGradientFill_spread_pad.jpg)<br>`SpreadMethod.PAD` | ![linear gradient with SpreadMethod.REFLECT](/images/beginGradientFill_spread_reflect.jpg)<br>`SpreadMethod.REFLECT` | ![linear gradient with SpreadMethod.REPEAT](/images/beginGradientFill_spread_repeat.jpg)<br>`SpreadMethod.REPEAT` |
+
+		@param	interpolationMethod	A value from the InterpolationMethod class that specifies which value to use. For
+		example, consider a simple linear gradient between two colors (with the `spreadMethod` parameter set to
+		`SpreadMethod.REFLECT`). The different interpolation methods affect the appearance as follows:
+
+		| | |
+		| --- | --- |
+		| ![linear gradient with InterpolationMethod.LINEAR_RGB](/images/beginGradientFill_interp_linearrgb.jpg)<br>`InterpolationMethod.LINEAR_RGB` | ![linear gradient with InterpolationMethod.RGB](/images/beginGradientFill_interp_rgb.jpg)<br>`InterpolationMethod.RGB` |
+
+		@param	focalPointRatio	A number that controls the location of the focal point of the gradient. The value 0
+		means the focal point is in the center. The value 1 means the focal point is at one border of the gradient
+		circle. The value -1 means that the focal point is at the other border of the gradient circle. Values less
+		than -1 or greater than 1 are rounded to -1 or 1. The following image shows a gradient with a
+		`focalPointRatio` of -0.75:
+
+		![radial gradient with focalPointRatio set to 0.75](/images/radial_sketch.jpg)
 	**/
 	public function lineGradientStyle(type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null,
 			spreadMethod:SpreadMethod = SpreadMethod.PAD, interpolationMethod:InterpolationMethod = InterpolationMethod.RGB, focalPointRatio:Float = 0):Void
@@ -1146,6 +1295,21 @@ import js.html.CanvasRenderingContext2D;
 		__commands.lineGradientStyle(type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
 	}
 
+	/**
+		Specifies a shader to use for the line stroke when drawing lines.
+
+		The shader line style is used for subsequent calls to Graphics methods such as the `lineTo()` method or the
+		`drawCircle()` method. The line style remains in effect until you call the `lineStyle()` or
+		`lineGradientStyle()` methods, or the `lineBitmapStyle()` method again with different parameters.
+
+		You can call the `lineShaderStyle()` method in the middle of drawing a path to specify different styles for
+		different line segments within a path.
+
+		Call the `lineStyle()` method before you call the `lineShaderStyle()` method to enable a stroke, or else the
+		value of the line style is undefined.
+
+		Calls to the `clear()` method set the line style back to undefined.
+	**/
 	// @:require(flash10) public function lineShaderStyle (shader:Shader, ?matrix:Matrix):Void;
 
 	/**
@@ -1182,7 +1346,7 @@ import js.html.CanvasRenderingContext2D;
 							not indicated, the default is 1(solid). If the value
 							is less than 0, the default is 0. If the value is
 							greater than 1, the default is 1.
-		@param pixelHinting(Not supported in Flash Lite 4) A Boolean value that
+		@param pixelHinting (Not supported in Flash Lite 4) A Boolean value that
 							specifies whether to hint strokes to full pixels. This
 							affects both the position of anchors of a curve and
 							the line stroke size itself. With
@@ -1197,6 +1361,8 @@ import js.html.CanvasRenderingContext2D;
 							`lineStyle()` method is set differently
 						   (the images are scaled by 200%, to emphasize the
 							difference):
+
+							![pixelHinting false and pixelHinting true](/images/lineStyle_pixelHinting.jpg)
 
 							If a value is not supplied, the line does not use
 							pixel hinting.
@@ -1218,6 +1384,8 @@ import js.html.CanvasRenderingContext2D;
 							left is scaled vertically only, and the circle on the
 							right is scaled both vertically and horizontally:
 
+							![A circle scaled vertically, and a circle scaled both vertically and horizontally.](/images/LineScaleMode_VERTICAL.jpg)
+
 							 *  `LineScaleMode.HORIZONTAL` - Do not
 							scale the line thickness if the object is scaled
 							horizontally _only_. For example, consider the
@@ -1227,6 +1395,8 @@ import js.html.CanvasRenderingContext2D;
 							the left is scaled horizontally only, and the circle
 							on the right is scaled both vertically and
 							horizontally:
+
+							![A circle scaled horizontally, and a circle scaled both vertically and horizontally.](/images/LineScaleMode_HORIZONTAL.jpg)
 
 		@param caps        (Not supported in Flash Lite 4) A value from the
 							CapsStyle class that specifies the type of caps at the
@@ -1243,6 +1413,9 @@ import js.html.CanvasRenderingContext2D;
 							applies), and a superimposed black line with a
 							thickness of 1(for which no `capsStyle`
 							applies):
+
+							![NONE, ROUND, and SQUARE](/images/linecap.jpg)
+
 		@param joints      (Not supported in Flash Lite 4) A value from the
 							JointStyle class that specifies the type of joint
 							appearance used at angles. Valid values are:
@@ -1258,6 +1431,8 @@ import js.html.CanvasRenderingContext2D;
 							`jointStyle` applies), and a superimposed
 							angled black line with a thickness of 1(for which no
 							`jointStyle` applies):
+
+							![MITER, ROUND, and BEVEL](/images/linejoin.jpg)
 
 							**Note:** For `joints` set to
 							`JointStyle.MITER`, you can use the
@@ -1283,9 +1458,19 @@ import js.html.CanvasRenderingContext2D;
 							Superimposed are black reference lines showing the
 							meeting points of the joints:
 
+							![lines with miterLimit set to 1, 2, and 4](/images/miterLimit.jpg)
+
 							Notice that a given `miterLimit` value
 							has a specific maximum angle for which the miter is
 							cut off. The following table lists some examples:
+
+							| miterLimit value: | Angles smaller than this are cut off: |
+							| --- | --- |
+							| 1.414 | 90 degrees |
+							| 2 | 60 degrees |
+							| 4 | 30 degrees |
+							| 8 | 15 degrees |
+
 	**/
 	public function lineStyle(thickness:Null<Float> = null, color:Int = 0, alpha:Float = 1, pixelHinting:Bool = false,
 			scaleMode:LineScaleMode = LineScaleMode.NORMAL, caps:CapsStyle = null, joints:JointStyle = null, miterLimit:Float = 3):Void
@@ -1364,12 +1549,64 @@ import js.html.CanvasRenderingContext2D;
 		__commands.moveTo(x, y);
 	}
 
+	@SuppressWarnings("checkstyle:FieldDocComment")
 	@:dox(hide) @:noCompletion public function overrideBlendMode(blendMode:BlendMode):Void
 	{
 		if (blendMode == null) blendMode = NORMAL;
 		__commands.overrideBlendMode(blendMode);
 	}
 
+	/**
+		Queries a Sprite or Shape object (and optionally, its children) for its vector
+		graphics content. The result is a Vector of IGraphicsData objects. Transformations
+		are applied to the display object before the query, so the returned paths are all
+		in the same coordinate space. Coordinates in the result data set are relative to
+		the stage, not the display object being sampled.
+
+		The result includes the following types of objects, with the specified limitations:
+
+		* GraphicsSolidFill
+		* GraphicsGradientFill
+			* All properties of the gradient fill are returned by `readGraphicsData()`.
+			* The matrix returned is close to, but not exactly the same as, the input
+			matrix.
+		* GraphicsEndFill
+		* GraphicsBitmapFill
+			* The matrix returned is close to, but not exactly the same as, the input
+			matrix.
+			* `repeat` is always `true`.
+			* `smooth` is always `false`.
+		* GraphicsStroke
+			* `thickness` is supported.
+			* `fill` supports GraphicsSolidFill, GraphicsGradientFill, and GraphicsBitmapFill
+			as described previously
+			* All other properties have default values.
+		* GraphicsPath
+			* The only supported commands are `MOVE_TO`, `CURVE_TO`, and `LINE_TO`.
+
+		The following visual elements and transformations can't be represented and are not
+		included in the result:
+
+		* Masks
+		* Text, with one exception: Static text that is defined with anti-alias type
+		"anti-alias for animation" is rendered as vector shapes so it is included in the
+		result.
+		* Shader fills
+		* Blend modes
+		* 9-slice scaling
+		* Triangles (created with the `drawTriangles()` method)
+		* Opaque background
+		* `scrollRect` settings
+		* 2.5D transformations
+		* Non-visible objects (objects whose `visible` property is `false`)
+
+		@param	recurse	whether the runtime should also query display object children of
+		the current display object. A recursive query can take more time and memory to
+		execute. The results are returned in a single flattened result set, not separated
+		by display object.
+		@returns	A Vector of IGraphicsData objects representing the vector graphics
+		content of the related display object
+	**/
 	public function readGraphicsData(recurse:Bool = true):Vector<IGraphicsData>
 	{
 		var graphicsData = new Vector<IGraphicsData>();
@@ -1391,8 +1628,8 @@ import js.html.CanvasRenderingContext2D;
 
 	@:noCompletion private function __cleanup():Void
 	{
-		#if (js && html5)
-		if (__bounds != null && __canvas != null)
+		#if openfl_html5
+		if (__bounds != null && __renderData.canvas != null)
 		{
 			__dirty = true;
 			__transformDirty = true;
@@ -1406,13 +1643,7 @@ import js.html.CanvasRenderingContext2D;
 		#end
 
 		__bitmap = null;
-
-		#if (js && html5)
-		__canvas = null;
-		__context = null;
-		#else
-		__cairo = null;
-		#end
+		__renderData.dispose();
 	}
 
 	@:noCompletion private function __getBounds(rect:Rectangle, matrix:Matrix):Void
@@ -1436,9 +1667,9 @@ import js.html.CanvasRenderingContext2D;
 		{
 			if (shapeFlag)
 			{
-				#if (js && html5)
+				#if openfl_html5
 				return CanvasGraphics.hitTest(this, px, py);
-				#elseif (lime_cffi)
+				#elseif openfl_cairo
 				return CairoGraphics.hitTest(this, px, py);
 				#end
 			}
@@ -1454,32 +1685,38 @@ import js.html.CanvasRenderingContext2D;
 		if (__bounds == null)
 		{
 			__bounds = new Rectangle(x, y, 0, 0);
-			__transformDirty = true;
-			return;
-		}
-
-		if (x < __bounds.x)
-		{
-			__bounds.width += __bounds.x - x;
-			__bounds.x = x;
+			__owner.__localBoundsDirty = true;
 			__transformDirty = true;
 		}
-
-		if (y < __bounds.y)
+		else
 		{
-			__bounds.height += __bounds.y - y;
-			__bounds.y = y;
-			__transformDirty = true;
-		}
+			if (x < __bounds.x)
+			{
+				__bounds.width += __bounds.x - x;
+				__bounds.x = x;
+				__owner.__localBoundsDirty = true;
+				__transformDirty = true;
+			}
 
-		if (x > __bounds.x + __bounds.width)
-		{
-			__bounds.width = x - __bounds.x;
-		}
+			if (y < __bounds.y)
+			{
+				__bounds.height += __bounds.y - y;
+				__bounds.y = y;
+				__owner.__localBoundsDirty = true;
+				__transformDirty = true;
+			}
 
-		if (y > __bounds.y + __bounds.height)
-		{
-			__bounds.height = y - __bounds.y;
+			if (x > __bounds.x + __bounds.width)
+			{
+				__owner.__localBoundsDirty = true;
+				__bounds.width = x - __bounds.x;
+			}
+
+			if (y > __bounds.y + __bounds.height)
+			{
+				__owner.__localBoundsDirty = true;
+				__bounds.height = y - __bounds.y;
+			}
 		}
 	}
 
@@ -1698,9 +1935,12 @@ import js.html.CanvasRenderingContext2D;
 		__renderTransform.tx = __worldTransform.__transformInverseX(tx, ty);
 		__renderTransform.ty = __worldTransform.__transformInverseY(tx, ty);
 
-		// Calculate the size to contain the graphics and the extra subpixel
-		var newWidth = Math.ceil(width + __renderTransform.tx);
-		var newHeight = Math.ceil(height + __renderTransform.ty);
+		// Calculate the size to contain the graphics and an extra subpixel
+		// We used to add tx and ty from __renderTransform instead of 1.0
+		// but it improves performance if we keep the size consistent when the
+		// extra pixel isn't needed
+		var newWidth = Math.ceil(width + 1.0);
+		var newHeight = Math.ceil(height + 1.0);
 
 		// Mark dirty if render size changed
 		if (newWidth != __width || newHeight != __height)

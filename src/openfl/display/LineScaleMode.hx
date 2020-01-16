@@ -66,9 +66,9 @@ package openfl.display;
 		return this;
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : LineScaleMode)
 		{
 			case LineScaleMode.HORIZONTAL: "horizontal";
 			case LineScaleMode.NONE: "none";
@@ -79,6 +79,7 @@ package openfl.display;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract LineScaleMode(String) from String to String
 {
 	public var HORIZONTAL = "horizontal";

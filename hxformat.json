@@ -1,7 +1,16 @@
 {
+	"excludes": [
+		"\\assets",
+		"/assets",
+		"\\node_modules",
+		"/node_modules"
+	],
 	"lineEnds": {
 		"leftCurly": "both",
-		"rightCurly": "both"
+		"rightCurly": "both",
+		"objectLiteralCurly": {
+			"leftCurly": "after"
+		}
 	},
 	"sameLine": {
 		"ifBody": "same",

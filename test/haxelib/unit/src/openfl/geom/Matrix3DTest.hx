@@ -1,43 +1,35 @@
 package openfl.geom;
 
-
 import openfl.geom.Vector3D;
 import openfl.Vector;
 
+class Matrix3DTest
+{
+	@Test public function new_()
+	{
+		var identity = Vector.ofArray([1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]);
+		var matrix = Vector.ofArray([3.0, 2.0, 7.0, 1.0, 5.0, 1.0, 1.1, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 3.2, 1.0]);
 
-class Matrix3DTest {
-	@Test public function new_() {
-		var identity = Vector.ofArray([
-			1.0, 0.0, 0.0, 0.0,
-			0.0, 1.0, 0.0, 0.0,
-			0.0, 0.0, 1.0, 0.0,
-			0.0, 0.0, 0.0, 1.0
-		]);
-		var matrix = Vector.ofArray([
-			3.0, 2.0, 7.0, 1.0,
-			5.0, 1.0, 1.1, 0.0,
-			0.0, 1.0, 1.0, 0.0,
-			0.0, 0.0, 3.2, 1.0
-		]);
-
-		var matrix3D = new Matrix3D ();
+		var matrix3D = new Matrix3D();
 
 		assertMatrix3DnearEquals(new Matrix3D(identity), matrix3D);
 
-		matrix3D = new Matrix3D (matrix);
+		matrix3D = new Matrix3D(matrix);
 
 		assertMatrix3DnearEquals(new Matrix3D(matrix), matrix3D);
 	}
 
-	@Test public function determinant() {
+	@Test public function determinant()
+	{
 		var matrix3D = setupTestMatrix3D();
 
 		Assert.isTrue(nearEquals(3.2639, matrix3D.determinant));
 	}
 
-	@Test public function position() {
-		var matrix3D = new Matrix3D ();
-		matrix3D.position = new Vector3D (10, 20, 30, 40);
+	@Test public function position()
+	{
+		var matrix3D = new Matrix3D();
+		matrix3D.position = new Vector3D(10, 20, 30, 40);
 
 		Assert.areEqual(10, matrix3D.position.x);
 		Assert.areEqual(20, matrix3D.position.y);
@@ -50,9 +42,10 @@ class Matrix3DTest {
 		Assert.areEqual(0, matrix3D.position.w);
 	}
 
-	@Test public function rawData() {
-		var matrix3D = new Matrix3D ();
-		matrix3D.rawData = Vector.ofArray([ 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.1, 2.2, 2.3, 2.4, 2.5 ]);
+	@Test public function rawData()
+	{
+		var matrix3D = new Matrix3D();
+		matrix3D.rawData = Vector.ofArray([1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.1, 2.2, 2.3, 2.4, 2.5]);
 
 		Assert.isTrue(nearEquals(1.0, matrix3D.rawData[0]));
 		Assert.isTrue(nearEquals(1.1, matrix3D.rawData[1]));
@@ -72,16 +65,24 @@ class Matrix3DTest {
 		Assert.isTrue(nearEquals(2.5, matrix3D.rawData[15]));
 	}
 
-	@Test public function append() {
+	@Test public function append()
+	{
 		var matrix3D = setupTestMatrix3D();
-		matrix3D.append(new Matrix3D (Vector.ofArray([ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0 ])));
+		matrix3D.append(new Matrix3D(Vector.ofArray([
+			1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0
+		])));
 
-		var expected = new Matrix3D(Vector.ofArray([ 64.28496551513672, 72.80441284179688, 81.32386779785156, 89.84331512451172, 2.8154678344726563, 3.088881254196167, 3.362294912338257, 3.635709047317505, -5.6544413566589355, -4.923484802246094, -4.19252872467041, -3.461571216583252, 9090.5439453125, 10123.5390625, 11156.533203125, 12189.5283203125 ]));
+		var expected = new Matrix3D(Vector.ofArray([
+			64.28496551513672, 72.80441284179688, 81.32386779785156, 89.84331512451172, 2.8154678344726563, 3.088881254196167, 3.362294912338257,
+			3.635709047317505, -5.6544413566589355, -4.923484802246094, -4.19252872467041, -3.461571216583252, 9090.5439453125, 10123.5390625,
+			11156.533203125, 12189.5283203125
+		]));
 
 		assertMatrix3DnearEquals(expected, matrix3D);
 	}
 
-	@Test public function appendRotation() {
+	@Test public function appendRotation()
+	{
 		var matrix3D = setupTestMatrix3D();
 
 		// Append rotations
@@ -96,7 +97,10 @@ class Matrix3DTest {
 		var v2 = recomposed.decompose();
 		var rotation = v1[1];
 		var expectedRotation = v2[1];
-		var expectedRotatedMatrix3D = new Matrix3D(Vector.ofArray([ -0.3636549711227417, -3.372683525085449, 5.835120677947998, 0, 0.21577900648117065, -0.3639894127845764, 0.28737783432006836, 0, 0.9405853152275085, 1.4176323413848877, 0.2845056653022766, 0, -126.25172424316406, -620.2042846679688, 740.5840454101563, 1 ]));
+		var expectedRotatedMatrix3D = new Matrix3D(Vector.ofArray([
+			-0.3636549711227417, -3.372683525085449,  5.835120677947998, 0, 0.21577900648117065, -0.3639894127845764, 0.28737783432006836, 0,
+			 0.9405853152275085, 1.4176323413848877, 0.2845056653022766, 0, -126.25172424316406,  -620.2042846679688,   740.5840454101563, 1
+		]));
 
 		assertVector3DnearEquals(expectedRotation, rotation);
 
@@ -104,7 +108,8 @@ class Matrix3DTest {
 		assertMatrix3DnearEquals(expectedRotatedMatrix3D, matrix3D);
 	}
 
-	@Test public function appendScale() {
+	@Test public function appendScale()
+	{
 		var matrix3D = setupTestMatrix3D();
 		matrix3D.appendScale(3, 5, 7);
 
@@ -115,20 +120,22 @@ class Matrix3DTest {
 		var v2 = recomposed.decompose();
 		var scale = v1[2];
 		var expectedScale = v2[2];
-		var expectedScaledMatrix3D = new Matrix3D(Vector.ofArray([ 3.5480880737304688, 3.6606297492980957, 46.23238754272461, 0, 0.23695658147335052, -1.2332863807678223, 3.0875978469848633, 0, 4.587393760681152, 0, -5.587223052978516, 0, -22.75981330871582, 338.8786315917969, 6802.64013671875, 1 ]));
+		var expectedScaledMatrix3D = new Matrix3D(Vector.ofArray([
+			3.5480880737304688, 3.6606297492980957, 46.23238754272461, 0, 0.23695658147335052, -1.2332863807678223, 3.0875978469848633, 0, 4.587393760681152,
+			0, -5.587223052978516, 0, -22.75981330871582, 338.8786315917969, 6802.64013671875, 1
+		]));
 
 		assertVector3DnearEquals(expectedScale, scale);
 
 		// Test the scaling matches to the scaling values in Flash
 		assertMatrix3DnearEquals(expectedScaledMatrix3D, matrix3D);
-
 	}
 
-	@Test public function appendTranslation() {
-
+	@Test public function appendTranslation()
+	{
 		// TODO: Confirm functionality
 
-		var matrix3D = new Matrix3D ();
+		var matrix3D = new Matrix3D();
 		var exists = matrix3D.appendTranslation;
 
 		Assert.isNotNull(exists);
@@ -143,20 +150,22 @@ class Matrix3DTest {
 		var v2 = recomposed.decompose();
 		var translation = v1[0];
 		var expectedTranslation = v2[0];
-		var expectedTranslatedMatrix3D = new Matrix3D(Vector.ofArray([ 1.182695984840393, 0.7321259379386902, 6.604626655578613, 0, 0.07898552715778351, -0.24665726721286774, 0.4410853981971741, 0, 1.529131293296814, 0, -0.7981747388839722, 0, 115.41339874267578, -388.2242736816406, 1760.8056640625, 1 ]));
+		var expectedTranslatedMatrix3D = new Matrix3D(Vector.ofArray([
+			1.182695984840393, 0.7321259379386902, 6.604626655578613, 0, 0.07898552715778351, -0.24665726721286774, 0.4410853981971741, 0, 1.529131293296814,
+			0, -0.7981747388839722, 0, 115.41339874267578, -388.2242736816406, 1760.8056640625, 1
+		]));
 
 		assertVector3DnearEquals(expectedTranslation, translation);
 
 		// Test the translation matches to the translation values in Flash
 		assertMatrix3DnearEquals(expectedTranslatedMatrix3D, matrix3D);
-
 	}
 
-	@Test public function clone() {
-
+	@Test public function clone()
+	{
 		// TODO: Confirm functionality
 
-		var matrix3D = new Matrix3D ();
+		var matrix3D = new Matrix3D();
 		var exists = matrix3D.clone;
 
 		Assert.isNotNull(exists);
@@ -166,14 +175,13 @@ class Matrix3DTest {
 		var clone = matrix3D.clone();
 
 		assertMatrix3DnearEquals(clone, matrix3D);
-
 	}
 
-	@Test public function copyColumnFrom() {
-
+	@Test public function copyColumnFrom()
+	{
 		// TODO: Confirm functionality
 
-		var matrix3D = new Matrix3D ();
+		var matrix3D = new Matrix3D();
 		var exists = matrix3D.copyColumnFrom;
 
 		Assert.isNotNull(exists);
@@ -184,22 +192,25 @@ class Matrix3DTest {
 		matrix3D.copyColumnFrom(2, new Vector3D(9, 10, 11, 12));
 		matrix3D.copyColumnFrom(3, new Vector3D(13, 14, 15, 16));
 
-		var m2 = new Matrix3D(Vector.ofArray([ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0 ]));
+		var m2 = new Matrix3D(Vector.ofArray([
+			1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0
+		]));
 
 		assertMatrix3DnearEquals(m2, matrix3D);
-
 	}
 
-	@Test public function copyColumnTo() {
-
+	@Test public function copyColumnTo()
+	{
 		// TODO: Confirm functionality
 
-		var matrix3D = new Matrix3D ();
+		var matrix3D = new Matrix3D();
 		var exists = matrix3D.copyColumnTo;
 
 		Assert.isNotNull(exists);
 
-		matrix3D = new Matrix3D(Vector.ofArray([ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0 ]));
+		matrix3D = new Matrix3D(Vector.ofArray([
+			1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0
+		]));
 
 		var v0 = new Vector3D();
 		var v1 = new Vector3D();
@@ -211,57 +222,55 @@ class Matrix3DTest {
 		matrix3D.copyColumnTo(3, v3);
 
 		// Test the values as expected in Flash
-		assertVector3DnearEquals(new Vector3D(1, 2, 3, 4 ), v0);
-		assertVector3DnearEquals(new Vector3D(5, 6, 7, 8 ), v1);
-		assertVector3DnearEquals(new Vector3D(9, 10, 11, 12 ), v2);
-		assertVector3DnearEquals(new Vector3D(13, 14, 15, 16 ), v3);
-
+		assertVector3DnearEquals(new Vector3D(1, 2, 3, 4), v0);
+		assertVector3DnearEquals(new Vector3D(5, 6, 7, 8), v1);
+		assertVector3DnearEquals(new Vector3D(9, 10, 11, 12), v2);
+		assertVector3DnearEquals(new Vector3D(13, 14, 15, 16), v3);
 	}
 
-	@Test public function copyFrom() {
-
+	@Test public function copyFrom()
+	{
 		// TODO: Confirm functionality
 
-		var matrix3D = new Matrix3D ();
+		var matrix3D = new Matrix3D();
 		var exists = matrix3D.copyFrom;
 
 		Assert.isNotNull(exists);
 
 		matrix3D = setupTestMatrix3D();
-		var m2 = new Matrix3D(Vector.ofArray([ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0 ]));
+		var m2 = new Matrix3D(Vector.ofArray([
+			1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0
+		]));
 		matrix3D.copyFrom(m2);
 
 		assertMatrix3DnearEquals(m2, matrix3D);
-
 	}
 
-	@Test public function copyRawDataFrom() {
-
+	@Test public function copyRawDataFrom()
+	{
 		// TODO: Confirm functionality
 
-		var matrix3D = new Matrix3D ();
+		var matrix3D = new Matrix3D();
 		var exists = matrix3D.copyRawDataFrom;
 
 		Assert.isNotNull(exists);
-
 	}
 
-	@Test public function copyRawDataTo() {
-
+	@Test public function copyRawDataTo()
+	{
 		// TODO: Confirm functionality
 
-		var matrix3D = new Matrix3D ();
+		var matrix3D = new Matrix3D();
 		var exists = matrix3D.copyRawDataTo;
 
 		Assert.isNotNull(exists);
-
 	}
 
-	@Test public function copyRowFrom() {
-
+	@Test public function copyRowFrom()
+	{
 		// TODO: Confirm functionality
 
-		var matrix3D = new Matrix3D ();
+		var matrix3D = new Matrix3D();
 		var exists = matrix3D.copyRowFrom;
 
 		Assert.isNotNull(exists);
@@ -272,23 +281,26 @@ class Matrix3DTest {
 		matrix3D.copyRowFrom(2, new Vector3D(9, 10, 11, 12));
 		matrix3D.copyRowFrom(3, new Vector3D(13, 14, 15, 16));
 
-		var m2 = new Matrix3D(Vector.ofArray([ 1.0, 5.0, 9.0, 13.0, 2.0, 6.0, 10.0, 14.0, 3.0, 7.0, 11.0, 15.0, 4.0, 8.0, 12.0, 16.0 ]));
+		var m2 = new Matrix3D(Vector.ofArray([
+			1.0, 5.0, 9.0, 13.0, 2.0, 6.0, 10.0, 14.0, 3.0, 7.0, 11.0, 15.0, 4.0, 8.0, 12.0, 16.0
+		]));
 
 		// Test the values as expected in Flash
 		assertMatrix3DnearEquals(m2, matrix3D);
-
 	}
 
-	@Test public function copyRowTo() {
-
+	@Test public function copyRowTo()
+	{
 		// TODO: Confirm functionality
 
-		var matrix3D = new Matrix3D ();
+		var matrix3D = new Matrix3D();
 		var exists = matrix3D.copyRowTo;
 
 		Assert.isNotNull(exists);
 
-		matrix3D = new Matrix3D(Vector.ofArray([ 1.0, 5.0, 9.0, 13.0, 2.0, 6.0, 10.0, 14.0, 3.0, 7.0, 11.0, 15.0, 4.0, 8.0, 12.0, 16.0 ]));
+		matrix3D = new Matrix3D(Vector.ofArray([
+			1.0, 5.0, 9.0, 13.0, 2.0, 6.0, 10.0, 14.0, 3.0, 7.0, 11.0, 15.0, 4.0, 8.0, 12.0, 16.0
+		]));
 
 		var v0 = new Vector3D();
 		var v1 = new Vector3D();
@@ -300,18 +312,17 @@ class Matrix3DTest {
 		matrix3D.copyRowTo(3, v3);
 
 		// Test the values as expected in Flash
-		assertVector3DnearEquals(new Vector3D(1, 2, 3, 4 ), v0);
-		assertVector3DnearEquals(new Vector3D(5, 6, 7, 8 ), v1);
-		assertVector3DnearEquals(new Vector3D(9, 10, 11, 12 ), v2);
-		assertVector3DnearEquals(new Vector3D(13, 14, 15, 16 ), v3);
-
+		assertVector3DnearEquals(new Vector3D(1, 2, 3, 4), v0);
+		assertVector3DnearEquals(new Vector3D(5, 6, 7, 8), v1);
+		assertVector3DnearEquals(new Vector3D(9, 10, 11, 12), v2);
+		assertVector3DnearEquals(new Vector3D(13, 14, 15, 16), v3);
 	}
 
-	@Test public function copyToMatrix3D() {
-
+	@Test public function copyToMatrix3D()
+	{
 		// TODO: Confirm functionality
 
-		var matrix3D = new Matrix3D ();
+		var matrix3D = new Matrix3D();
 		var exists = matrix3D.copyToMatrix3D;
 
 		Assert.isNotNull(exists);
@@ -323,14 +334,13 @@ class Matrix3DTest {
 
 		// Test the values as expected in Flash
 		assertMatrix3DnearEquals(copy, matrix3D);
-
 	}
 
-	@Test public function decompose() {
-
+	@Test public function decompose()
+	{
 		// TODO: Confirm functionality
 
-		var matrix3D = new Matrix3D ();
+		var matrix3D = new Matrix3D();
 		var exists = matrix3D.decompose;
 
 		Assert.isNotNull(exists);
@@ -351,9 +361,9 @@ class Matrix3DTest {
 
 		// Check values match the values from Flash
 		// TODO: Descrepencies between flash API and the current implementation differ in results
-		//assertVector3DnearEquals(new Vector3D(-7.586604595184326, 67.77572631835938, 971.8057250976563, 0 ), translation, 0.1 );
-		//assertVector3DnearEquals(new Vector3D(6.749508857727051, 0.2938079237937927, 1.6458808183670044, 0 ), scale, 0.1 );
-		//assertVector3DnearEquals(new Vector3D(0.7662321329116821, 0.04167995974421501, 0.6412106156349182, 3.0718624591827393 ), rotation, 0.25 );
+		// assertVector3DnearEquals(new Vector3D(-7.586604595184326, 67.77572631835938, 971.8057250976563, 0 ), translation, 0.1 );
+		// assertVector3DnearEquals(new Vector3D(6.749508857727051, 0.2938079237937927, 1.6458808183670044, 0 ), scale, 0.1 );
+		// assertVector3DnearEquals(new Vector3D(0.7662321329116821, 0.04167995974421501, 0.6412106156349182, 3.0718624591827393 ), rotation, 0.25 );
 
 		matrix3D = setupTestMatrix3D();
 		v1 = matrix3D.decompose(Orientation3D.AXIS_ANGLE);
@@ -369,9 +379,9 @@ class Matrix3DTest {
 
 		// Check values match the values from Flash
 		// TODO: Descrepencies between flash API and the current implementation differ in results
-		//assertVector3DnearEquals(new Vector3D(-7.586604595184326, 67.77572631835938, 971.8057250976563, 0 ), translation );
-		//assertVector3DnearEquals(new Vector3D(6.749508857727051, 0.2938079237937927, 1.6458808183670044, 0 ), scale );
-		//assertVector3DnearEquals(new Vector3D(0.7657665014266968, 0.04165463149547577, 0.6408209204673767, 0.03485807776451111 ), rotation );
+		// assertVector3DnearEquals(new Vector3D(-7.586604595184326, 67.77572631835938, 971.8057250976563, 0 ), translation );
+		// assertVector3DnearEquals(new Vector3D(6.749508857727051, 0.2938079237937927, 1.6458808183670044, 0 ), scale );
+		// assertVector3DnearEquals(new Vector3D(0.7657665014266968, 0.04165463149547577, 0.6408209204673767, 0.03485807776451111 ), rotation );
 
 		matrix3D = setupTestMatrix3D();
 		v1 = matrix3D.decompose();
@@ -387,62 +397,51 @@ class Matrix3DTest {
 
 		// Check values match the values from Flash
 		// TODO: Descrepencies between flash API and the current implementation differ in results
-		//assertVector3DnearEquals(new Vector3D(-7.586604595184326, 67.77572631835938, 971.8057250976563, 0 ), translation );
-		//assertVector3DnearEquals(new Vector3D(6.749508857727051, 0.2938079237937927, 1.6458808183670044, 0 ), scale );
-		//assertVector3DnearEquals(new Vector3D(2.5969605445861816, -1.3632254600524902, 0.5542957186698914, 1.169139158164002e-31 ), rotation );
-
+		// assertVector3DnearEquals(new Vector3D(-7.586604595184326, 67.77572631835938, 971.8057250976563, 0 ), translation );
+		// assertVector3DnearEquals(new Vector3D(6.749508857727051, 0.2938079237937927, 1.6458808183670044, 0 ), scale );
+		// assertVector3DnearEquals(new Vector3D(2.5969605445861816, -1.3632254600524902, 0.5542957186698914, 1.169139158164002e-31 ), rotation );
 	}
 
-	@Test public function deltaTransformVector() {
-
+	@Test public function deltaTransformVector()
+	{
 		// TODO: Confirm functionality
 
-		var matrix3D = new Matrix3D ();
+		var matrix3D = new Matrix3D();
 		var exists = matrix3D.deltaTransformVector;
 
 		Assert.isNotNull(exists);
 
 		matrix3D = setupTestMatrix3D();
 
-		var expected = new Vector3D(59.280609130859375, 2.3881149291992188, 50.9227294921875, 0 );
+		var expected = new Vector3D(59.280609130859375, 2.3881149291992188, 50.9227294921875, 0);
 		var actual = matrix3D.deltaTransformVector(new Vector3D(10, 20, 30));
 
 		assertVector3DnearEquals(expected, actual);
-		
-		var v = new Vector<Float> ();
+
+		var v = new Vector<Float>();
 		for (i in 0...16)
-			v.push (i+1);
+			v.push(i + 1);
 
-		var a = new Vector3D (1, 2, 3, 4);
-		var b = new Matrix3D (v);
-		var c = b.deltaTransformVector (a);
+		var a = new Vector3D(1, 2, 3, 4);
+		var b = new Matrix3D(v);
+		var c = b.deltaTransformVector(a);
 
-		Assert.areEqual (1, a.x);
-		Assert.areEqual (2, a.y);
-		Assert.areEqual (3, a.z);
-		Assert.areEqual (4, a.w);
+		Assert.areEqual(1, a.x);
+		Assert.areEqual(2, a.y);
+		Assert.areEqual(3, a.z);
+		Assert.areEqual(4, a.w);
 
-		Assert.areEqual (38, c.x);
-		Assert.areEqual (44, c.y);
-		Assert.areEqual (50, c.z);
-		Assert.areEqual (56, c.w);
-
+		Assert.areEqual(38, c.x);
+		Assert.areEqual(44, c.y);
+		Assert.areEqual(50, c.z);
+		Assert.areEqual(56, c.w);
 	}
 
-	@Test public function identity() {
-		var identity = Vector.ofArray([
-			1.0, 0.0, 0.0, 0.0,
-			0.0, 1.0, 0.0, 0.0,
-			0.0, 0.0, 1.0, 0.0,
-			0.0, 0.0, 0.0, 1.0
-		]);
+	@Test public function identity()
+	{
+		var identity = Vector.ofArray([1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0]);
 
-		var matrix = Vector.ofArray([
-			3.0, 2.0, 7.0, 1.0,
-			5.0, 1.0, 1.1, 0.0,
-			0.0, 1.0, 1.0, 0.0,
-			0.0, 0.0, 3.2, 1.0
-		]);
+		var matrix = Vector.ofArray([3.0, 2.0, 7.0, 1.0, 5.0, 1.0, 1.1, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 3.2, 1.0]);
 
 		var matrix3D = new Matrix3D(matrix);
 		matrix3D.identity();
@@ -450,28 +449,14 @@ class Matrix3DTest {
 		assertMatrix3DnearEquals(new Matrix3D(), matrix3D);
 	}
 
-	@Test public function interpolateTo() {
-		var m1 = Vector.ofArray([
-			3.0, 2.0, 7.0, 1.0,
-			5.0, 1.0, 1.1, 0.0,
-			0.0, 1.0, 1.0, 0.0,
-			0.0, 0.0, 3.2, 1.0
-		]);
+	@Test public function interpolateTo()
+	{
+		var m1 = Vector.ofArray([3.0, 2.0, 7.0, 1.0, 5.0, 1.0, 1.1, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 3.2, 1.0]);
 
-		var m2 = Vector.ofArray([
-			1.0, 10.0, 2.0, 1.0,
-			2.0, 4.0, 2.0, 1.0,
-			3.0, 6.0, 1.0, 0.0,
-			0.0, 0.0, 3.5, 1.0
-		]);
+		var m2 = Vector.ofArray([1.0, 10.0, 2.0, 1.0, 2.0, 4.0, 2.0, 1.0, 3.0, 6.0, 1.0, 0.0, 0.0, 0.0, 3.5, 1.0]);
 
 		#if !flash // TODO: For non-flash it behaves weirdly
-		var result = Vector.ofArray([
-			2.0, 6.0, 4.5, 1.0,
-			3.5, 2.5, 1.55, 0.5,
-			1.5, 3.5, 1.0, 0.0,
-			0.0, 0.0, 3.35, 1.0
-		]);
+		var result = Vector.ofArray([2.0, 6.0, 4.5, 1.0, 3.5, 2.5, 1.55, 0.5, 1.5, 3.5, 1.0, 0.0, 0.0, 0.0, 3.35, 1.0]);
 
 		var matrix3D = new Matrix3D(m1);
 		matrix3D.interpolateTo(new Matrix3D(m2), 0.5);
@@ -480,48 +465,61 @@ class Matrix3DTest {
 		#end
 	}
 
-	@Test public function invert() {
-		var matrix3D = new Matrix3D(Vector.ofArray([ 1.0, 2.0, 3.0, 4.0, 2.0, 1.0, 2.0, 3.0, 3.0, 2.0, 1.0, 2.0, 4.0, 3.0, 2.0, 1.0 ]));
+	@Test public function invert()
+	{
+		var matrix3D = new Matrix3D(Vector.ofArray([1.0, 2.0, 3.0, 4.0, 2.0, 1.0, 2.0, 3.0, 3.0, 2.0, 1.0, 2.0, 4.0, 3.0, 2.0, 1.0]));
 		var inverted = matrix3D.invert();
-		var expected = new Matrix3D(Vector.ofArray([ -0.4, 0.5, 0, 0.1, 0.5, -1, 0.5, 0, 0, 0.5, -1, 0.5, 0.1, 0, 0.5, -0.4 ]));
+		var expected = new Matrix3D(Vector.ofArray([-0.4, 0.5, 0, 0.1, 0.5, -1, 0.5, 0, 0, 0.5, -1, 0.5, 0.1, 0, 0.5, -0.4]));
 
 		Assert.isTrue(inverted);
 
 		assertMatrix3DnearEquals(expected, matrix3D);
 	}
 
-	@Test public function pointAt() {
-
+	@Test public function pointAt()
+	{
 		#if flash
-		var matrix3D = new Matrix3D ();
-		matrix3D.pointAt (new Vector3D (1, 1, 1, 1), new Vector3D (2, 2, 2, 2), new Vector3D (3, 3, 3, 3));
-		
+		var matrix3D = new Matrix3D();
+		matrix3D.pointAt(new Vector3D(1, 1, 1, 1), new Vector3D(2, 2, 2, 2), new Vector3D(3, 3, 3, 3));
+
 		// var expected = new Matrix3D (Vector.ofArray ([1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]));
 		// assertMatrix3DnearEquals (expected, matrix3D);
-		
-		matrix3D.pointAt (new Vector3D (1, 1, 1, 1));
-		
-		var expected = new Matrix3D (Vector.ofArray ([0.7071067690849304,0,-0.7071067690849304,0,0.5773502588272095,0.5773502588272095,0.5773502588272095,0,0.40824827551841736,-0.8164965510368347,0.40824827551841736,0,0,0,0,1]));
-		assertMatrix3DnearEquals (expected, matrix3D);
-		
-		matrix3D.pointAt (new Vector3D (2, 2, 2, 2), new Vector3D (1, 1, 1, 1));
-		
-		var expected = new Matrix3D (Vector.ofArray ([0.6666666269302368,0.6666666269302368,-0.3333333134651184,0,-0.3333333134651184,0.6666666269302368,0.6666666269302368,0,0.6666666269302368,-0.3333333134651184,0.6666666269302368,0,0,0,0,1]));
-		assertMatrix3DnearEquals (expected, matrix3D);
-		#end
 
+		matrix3D.pointAt(new Vector3D(1, 1, 1, 1));
+
+		var expected = new Matrix3D(Vector.ofArray([
+			0.7071067690849304, 0, -0.7071067690849304, 0, 0.5773502588272095, 0.5773502588272095, 0.5773502588272095, 0, 0.40824827551841736,
+			-0.8164965510368347, 0.40824827551841736, 0, 0, 0, 0, 1
+		]));
+		assertMatrix3DnearEquals(expected, matrix3D);
+
+		matrix3D.pointAt(new Vector3D(2, 2, 2, 2), new Vector3D(1, 1, 1, 1));
+
+		var expected = new Matrix3D(Vector.ofArray([
+			0.6666666269302368,  0.6666666269302368, -0.3333333134651184, 0, -0.3333333134651184, 0.6666666269302368, 0.6666666269302368, 0,
+			0.6666666269302368, -0.3333333134651184,  0.6666666269302368, 0,                   0,                  0,                  0, 1
+		]));
+		assertMatrix3DnearEquals(expected, matrix3D);
+		#end
 	}
 
-	@Test public function prepend() {
+	@Test public function prepend()
+	{
 		var matrix3D = setupTestMatrix3D();
-		matrix3D.prepend(new Matrix3D(Vector.ofArray([ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0 ])));
+		matrix3D.prepend(new Matrix3D(Vector.ofArray([
+			1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0
+		])));
 
-		var expected = new Matrix3D(Vector.ofArray([ -24.418357849121094, 271.3417053222656, 3892.315185546875, 4, -43.601524353027344, 544.386474609375, 7804.5283203125, 8, -62.784690856933594, 817.4312744140625, 11716.7412109375, 12, -81.96785736083984, 1090.47607421875, 15628.9541015625, 16 ]));
+		var expected = new Matrix3D(Vector.ofArray([
+			-24.418357849121094, 271.3417053222656, 3892.315185546875, 4, -43.601524353027344, 544.386474609375, 7804.5283203125, 8, -62.784690856933594,
+			817.4312744140625, 11716.7412109375, 12, -81.96785736083984, 1090.47607421875, 15628.9541015625, 16
+		]));
 
 		assertMatrix3DnearEquals(expected, matrix3D);
 	}
 
-	@Test public function prependRotation() {
+	@Test public function prependRotation()
+	{
 		var matrix3D = setupTestMatrix3D();
 
 		// Append rotations
@@ -536,20 +534,22 @@ class Matrix3DTest {
 		var v2 = recomposed.decompose();
 		var rotation = v1[1];
 		var expectedRotation = v2[1];
-		var expectedRotatedMatrix3D = new Matrix3D(Vector.ofArray([ 1.74116849899292, 0.3082742691040039, 3.5007357597351074, 0, -0.7260121703147888, -0.6244180798530579, -3.412437915802002, 0, 0.42952263355255127, -0.3345402479171753, -4.533524990081787, 0, -7.586604595184326, 67.77572631835938, 971.8057250976563, 1 ]));
+		var expectedRotatedMatrix3D = new Matrix3D(Vector.ofArray([
+			1.74116849899292, 0.3082742691040039, 3.5007357597351074, 0, -0.7260121703147888, -0.6244180798530579, -3.412437915802002, 0, 0.42952263355255127,
+			-0.3345402479171753, -4.533524990081787, 0, -7.586604595184326, 67.77572631835938, 971.8057250976563, 1
+		]));
 
 		assertVector3DnearEquals(expectedRotation, rotation);
 
 		// Test the rotation matches to the rotation values in Flash
 		assertMatrix3DnearEquals(expectedRotatedMatrix3D, matrix3D);
-
 	}
 
-	@Test public function prependScale() {
-
+	@Test public function prependScale()
+	{
 		// TODO: Confirm functionality
 
-		var matrix3D = new Matrix3D ();
+		var matrix3D = new Matrix3D();
 		var exists = matrix3D.prependScale;
 
 		Assert.isNotNull(exists);
@@ -564,20 +564,22 @@ class Matrix3DTest {
 		var v2 = recomposed.decompose();
 		var scale = v1[2];
 		var expectedScale = v2[2];
-		var expectedScaledMatrix3D = new Matrix3D(Vector.ofArray([ 3.5480880737304688, 2.196377754211426, 19.813880920410156, 0, 0.39492762088775635, -1.2332863807678223, 2.2054269313812256, 0, 10.703919410705566, 0, -5.587223052978516, 0, -7.586604595184326, 67.77572631835938, 971.8057250976563, 1 ]));
+		var expectedScaledMatrix3D = new Matrix3D(Vector.ofArray([
+			3.5480880737304688, 2.196377754211426, 19.813880920410156, 0, 0.39492762088775635, -1.2332863807678223, 2.2054269313812256, 0, 10.703919410705566,
+			0, -5.587223052978516, 0, -7.586604595184326, 67.77572631835938, 971.8057250976563, 1
+		]));
 
 		assertVector3DnearEquals(expectedScale, scale);
 
 		// Test the scaling matches to the scaling values in Flash
 		assertMatrix3DnearEquals(expectedScaledMatrix3D, matrix3D);
-
 	}
 
-	@Test public function prependTranslation() {
-
+	@Test public function prependTranslation()
+	{
 		// TODO: Confirm functionality
 
-		var matrix3D = new Matrix3D ();
+		var matrix3D = new Matrix3D();
 		var exists = matrix3D.prependTranslation;
 
 		Assert.isNotNull(exists);
@@ -592,31 +594,32 @@ class Matrix3DTest {
 		var v2 = recomposed.decompose();
 		var translation = v1[0];
 		var expectedTranslation = v2[0];
-		var expectedTranslatedMatrix3D = new Matrix3D(Vector.ofArray([ 1.182695984840393, 0.7321259379386902, 6.604626655578613, 0, 0.07898552715778351, -0.24665726721286774, 0.4410853981971741, 0, 1.529131293296814, 0, -0.7981747388839722, 0, 1308.352294921875, 270.30291748046875, 953.2799682617188, 1 ]));
+		var expectedTranslatedMatrix3D = new Matrix3D(Vector.ofArray([
+			1.182695984840393, 0.7321259379386902, 6.604626655578613, 0, 0.07898552715778351, -0.24665726721286774, 0.4410853981971741, 0, 1.529131293296814,
+			0, -0.7981747388839722, 0, 1308.352294921875, 270.30291748046875, 953.2799682617188, 1
+		]));
 
 		assertVector3DnearEquals(expectedTranslation, translation);
 
 		// Test the translation matches to the translation values in Flash
 		assertMatrix3DnearEquals(expectedTranslatedMatrix3D, matrix3D);
-
 	}
 
-	@Test public function recompose() {
-
+	@Test public function recompose()
+	{
 		// TODO: Confirm functionality
 
-		var matrix3D = new Matrix3D ();
+		var matrix3D = new Matrix3D();
 		var exists = matrix3D.recompose;
 
 		Assert.isNotNull(exists);
-
 	}
 
-	@Test public function transformVector() {
-
+	@Test public function transformVector()
+	{
 		// TODO: Confirm functionality
 
-		var matrix3D = new Matrix3D ();
+		var matrix3D = new Matrix3D();
 		var exists = matrix3D.transformVector;
 
 		Assert.isNotNull(exists);
@@ -628,52 +631,60 @@ class Matrix3DTest {
 		// Test transformed values match transformed values from Flash
 		assertVector3DnearEquals(new Vector3D(585.2195, 91.6569, 1481.0330), transformed);
 
-		var v = new Vector<Float> ();
+		var v = new Vector<Float>();
 		for (i in 0...16)
-			v.push (i+1);
+			v.push(i + 1);
 
-		var a = new Vector3D (1, 2, 3, 4);
-		var b = new Matrix3D (v);
-		var c = b.deltaTransformVector (a);
+		var a = new Vector3D(1, 2, 3, 4);
+		var b = new Matrix3D(v);
+		var c = b.deltaTransformVector(a);
 
-		Assert.areEqual (1, a.x);
-		Assert.areEqual (2, a.y);
-		Assert.areEqual (3, a.z);
-		Assert.areEqual (4, a.w);
+		Assert.areEqual(1, a.x);
+		Assert.areEqual(2, a.y);
+		Assert.areEqual(3, a.z);
+		Assert.areEqual(4, a.w);
 
-		Assert.areEqual (38, c.x);
-		Assert.areEqual (44, c.y);
-		Assert.areEqual (50, c.z);
-		Assert.areEqual (56, c.w);
-
+		Assert.areEqual(38, c.x);
+		Assert.areEqual(44, c.y);
+		Assert.areEqual(50, c.z);
+		Assert.areEqual(56, c.w);
 	}
 
-	@Test public function transformVectors() {
-
+	@Test public function transformVectors()
+	{
 		// TODO: Confirm functionality
 
-		var matrix3D = new Matrix3D ();
+		var matrix3D = new Matrix3D();
 		var exists = matrix3D.transformVectors;
 
 		Assert.isNotNull(exists);
 
 		matrix3D = setupTestMatrix3D();
 
-		var vIn:Vector<Float> = Vector.ofArray([ 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0 ]);
-		var actual:Vector<Float> = Vector.ofArray([ 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 ]);
+		var vIn:Vector<Float> = Vector.ofArray([1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0]);
+		var actual:Vector<Float> = Vector.ofArray([0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]);
 		matrix3D.transformVectors(vIn, actual);
 
-		var expected:Vector<Float> = Vector.ofArray([ -1.6585435612600001, 68.0145399603, 976.8979877785, 6.71389482185, 69.470946012, 995.6405996761, 15.086333204960003, 70.9273520637, 1014.3832115737 ]);
+		var expected:Vector<Float> = Vector.ofArray([
+			-1.6585435612600001,
+			68.0145399603,
+			976.8979877785,
+			6.71389482185,
+			69.470946012,
+			995.6405996761,
+			15.086333204960003,
+			70.9273520637,
+			1014.3832115737
+		]);
 
 		assertVectorNearEquals(expected, actual);
-
 	}
 
-	@Test public function transpose() {
-
+	@Test public function transpose()
+	{
 		// TODO: Confirm functionality
 
-		var matrix3D = new Matrix3D ();
+		var matrix3D = new Matrix3D();
 		var exists = matrix3D.transpose;
 
 		Assert.isNotNull(exists);
@@ -685,43 +696,28 @@ class Matrix3DTest {
 		var expected = clone.rawData;
 		var actual = matrix3D.rawData;
 
-		Assert.areEqual(expected[ 1 ], actual[ 4 ]);
-		Assert.areEqual(expected[ 2 ], actual[ 8 ]);
-		Assert.areEqual(expected[ 3 ], actual[ 12 ]);
-		Assert.areEqual(expected[ 4 ], actual[ 1 ]);
-		Assert.areEqual(expected[ 6 ], actual[ 9 ]);
-		Assert.areEqual(expected[ 7 ], actual[ 13 ]);
-		Assert.areEqual(expected[ 8 ], actual[ 2 ]);
-		Assert.areEqual(expected[ 9 ], actual[ 6 ]);
-		Assert.areEqual(expected[ 11 ], actual[ 14 ]);
-		Assert.areEqual(expected[ 12 ], actual[ 3 ]);
-		Assert.areEqual(expected[ 13 ], actual[ 7 ]);
-		Assert.areEqual(expected[ 14 ], actual[ 11 ]);
-
+		Assert.areEqual(expected[1], actual[4]);
+		Assert.areEqual(expected[2], actual[8]);
+		Assert.areEqual(expected[3], actual[12]);
+		Assert.areEqual(expected[4], actual[1]);
+		Assert.areEqual(expected[6], actual[9]);
+		Assert.areEqual(expected[7], actual[13]);
+		Assert.areEqual(expected[8], actual[2]);
+		Assert.areEqual(expected[9], actual[6]);
+		Assert.areEqual(expected[11], actual[14]);
+		Assert.areEqual(expected[12], actual[3]);
+		Assert.areEqual(expected[13], actual[7]);
+		Assert.areEqual(expected[14], actual[11]);
 	}
 
-	@Test public function interpolate() {
-		var m1 = Vector.ofArray([
-			3.0, 2.0, 7.0, 1.0,
-			5.0, 1.0, 1.1, 0.0,
-			0.0, 1.0, 1.0, 0.0,
-			0.0, 0.0, 3.2, 1.0
-		]);
+	@Test public function interpolate()
+	{
+		var m1 = Vector.ofArray([3.0, 2.0, 7.0, 1.0, 5.0, 1.0, 1.1, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 3.2, 1.0]);
 
-		var m2 = Vector.ofArray([
-			1.0, 10.0, 2.0, 1.0,
-			2.0, 4.0, 2.0, 1.0,
-			3.0, 6.0, 1.0, 0.0,
-			0.0, 0.0, 3.5, 1.0
-		]);
+		var m2 = Vector.ofArray([1.0, 10.0, 2.0, 1.0, 2.0, 4.0, 2.0, 1.0, 3.0, 6.0, 1.0, 0.0, 0.0, 0.0, 3.5, 1.0]);
 
 		#if !flash // TODO: For non-flash it behaves weirdly
-		var result = Vector.ofArray([
-			2.0, 6.0, 4.5, 1.0,
-			3.5, 2.5, 1.55, 0.5,
-			1.5, 3.5, 1.0, 0.0,
-			0.0, 0.0, 3.35, 1.0
-		]);
+		var result = Vector.ofArray([2.0, 6.0, 4.5, 1.0, 3.5, 2.5, 1.55, 0.5, 1.5, 3.5, 1.0, 0.0, 0.0, 0.0, 3.35, 1.0]);
 
 		var m1_matrix3D = new Matrix3D(m1);
 		var m2_matrix3D = new Matrix3D(m2);
@@ -732,21 +728,23 @@ class Matrix3DTest {
 		#end
 	}
 
-	private inline function setupTestMatrix3D():Matrix3D {
-
-		var m1 = new Matrix3D ();
+	private inline function setupTestMatrix3D():Matrix3D
+	{
+		var m1 = new Matrix3D();
 		m1.prependTranslation(100, 200, 300);
 		m1.prependRotation(30, Vector3D.X_AXIS);
 		m1.prependRotation(45, Vector3D.Y_AXIS);
 		m1.prependRotation(60, Vector3D.Z_AXIS);
 		m1.prependScale(3, 4, 5);
 
-		return new Matrix3D (Vector.ofArray([ 1.182695964, 0.7321259575, 6.604626666, 0, 0.07898552537, -0.2466572736, 0.4410853871, 0, 1.529131305, 0, -0.7981747539, 0, -7.586604491, 67.77572855, 971.8057146, 1 ]));
-
+		return new Matrix3D(Vector.ofArray([
+			1.182695964, 0.7321259575, 6.604626666, 0, 0.07898552537, -0.2466572736, 0.4410853871, 0, 1.529131305, 0, -0.7981747539, 0, -7.586604491,
+			67.77572855, 971.8057146, 1
+		]));
 	}
 
-	private function assertMatrix3DnearEquals(expected:Matrix3D, actual:Matrix3D, ?tolerance:Float = 0.001, ?pos:haxe.PosInfos) {
-
+	private function assertMatrix3DnearEquals(expected:Matrix3D, actual:Matrix3D, ?tolerance:Float = 0.001, ?pos:haxe.PosInfos)
+	{
 		var rdExpected = expected.rawData;
 		var rdActual = actual.rawData;
 
@@ -754,50 +752,49 @@ class Matrix3DTest {
 		// trace("Expected (Matrix3D)("+tolerance+"):"+rdExpected.join(", "));
 		// trace("Actual   (Matrix3D)("+tolerance+"):"+rdActual.join(", "));
 
-		Assert.isTrue(nearEquals(rdExpected[ 0 ], rdActual[ 0 ], tolerance));
-		Assert.isTrue(nearEquals(rdExpected[ 1 ], rdActual[ 1 ], tolerance));
-		Assert.isTrue(nearEquals(rdExpected[ 2 ], rdActual[ 2 ], tolerance));
-		Assert.isTrue(nearEquals(rdExpected[ 3 ], rdActual[ 3 ], tolerance));
-		Assert.isTrue(nearEquals(rdExpected[ 4 ], rdActual[ 4 ], tolerance));
-		Assert.isTrue(nearEquals(rdExpected[ 5 ], rdActual[ 5 ], tolerance));
-		Assert.isTrue(nearEquals(rdExpected[ 6 ], rdActual[ 6 ], tolerance));
-		Assert.isTrue(nearEquals(rdExpected[ 7 ], rdActual[ 7 ], tolerance));
-		Assert.isTrue(nearEquals(rdExpected[ 8 ], rdActual[ 8 ], tolerance));
-		Assert.isTrue(nearEquals(rdExpected[ 9 ], rdActual[ 9 ], tolerance));
-		Assert.isTrue(nearEquals(rdExpected[ 10 ], rdActual[ 10 ], tolerance));
-		Assert.isTrue(nearEquals(rdExpected[ 11 ], rdActual[ 11 ], tolerance));
-		Assert.isTrue(nearEquals(rdExpected[ 12 ], rdActual[ 12 ], tolerance));
-		Assert.isTrue(nearEquals(rdExpected[ 13 ], rdActual[ 13 ], tolerance));
-		Assert.isTrue(nearEquals(rdExpected[ 14 ], rdActual[ 14 ], tolerance));
-		Assert.isTrue(nearEquals(rdExpected[ 15 ], rdActual[ 15 ], tolerance));
-
+		Assert.isTrue(nearEquals(rdExpected[0], rdActual[0], tolerance));
+		Assert.isTrue(nearEquals(rdExpected[1], rdActual[1], tolerance));
+		Assert.isTrue(nearEquals(rdExpected[2], rdActual[2], tolerance));
+		Assert.isTrue(nearEquals(rdExpected[3], rdActual[3], tolerance));
+		Assert.isTrue(nearEquals(rdExpected[4], rdActual[4], tolerance));
+		Assert.isTrue(nearEquals(rdExpected[5], rdActual[5], tolerance));
+		Assert.isTrue(nearEquals(rdExpected[6], rdActual[6], tolerance));
+		Assert.isTrue(nearEquals(rdExpected[7], rdActual[7], tolerance));
+		Assert.isTrue(nearEquals(rdExpected[8], rdActual[8], tolerance));
+		Assert.isTrue(nearEquals(rdExpected[9], rdActual[9], tolerance));
+		Assert.isTrue(nearEquals(rdExpected[10], rdActual[10], tolerance));
+		Assert.isTrue(nearEquals(rdExpected[11], rdActual[11], tolerance));
+		Assert.isTrue(nearEquals(rdExpected[12], rdActual[12], tolerance));
+		Assert.isTrue(nearEquals(rdExpected[13], rdActual[13], tolerance));
+		Assert.isTrue(nearEquals(rdExpected[14], rdActual[14], tolerance));
+		Assert.isTrue(nearEquals(rdExpected[15], rdActual[15], tolerance));
 	}
 
-	private function assertVector3DnearEquals(expected:Vector3D, actual:Vector3D, ?tolerance:Float = 0.001, ?pos:haxe.PosInfos) {
-
-		//trace("Test : "+pos.methodName+" ("+pos.lineNumber+")");
-		//trace("Expected (Vector3D)("+tolerance+"):"+expected.x+", "+expected.y+", "+expected.z+", "+expected.w);
-		//trace("Actual   (Vector3D)("+tolerance+"):"+actual.x+", "+actual.y+", "+actual.z+", "+actual.w);
+	private function assertVector3DnearEquals(expected:Vector3D, actual:Vector3D, ?tolerance:Float = 0.001, ?pos:haxe.PosInfos)
+	{
+		// trace("Test : "+pos.methodName+" ("+pos.lineNumber+")");
+		// trace("Expected (Vector3D)("+tolerance+"):"+expected.x+", "+expected.y+", "+expected.z+", "+expected.w);
+		// trace("Actual   (Vector3D)("+tolerance+"):"+actual.x+", "+actual.y+", "+actual.z+", "+actual.w);
 
 		Assert.isTrue(nearEquals(expected.x, actual.x, tolerance));
 		Assert.isTrue(nearEquals(expected.y, actual.y, tolerance));
 		Assert.isTrue(nearEquals(expected.z, actual.z, tolerance));
-
 	}
 
-	private function assertVectorNearEquals(expected:Vector<Float>, actual:Vector<Float>, ?tolerance:Float = 0.001, ?pos:haxe.PosInfos) {
-
-		//trace("Test : "+pos.methodName+" ("+pos.lineNumber+")");
+	private function assertVectorNearEquals(expected:Vector<Float>, actual:Vector<Float>, ?tolerance:Float = 0.001, ?pos:haxe.PosInfos)
+	{
+		// trace("Test : "+pos.methodName+" ("+pos.lineNumber+")");
 
 		Assert.areEqual(expected.length, actual.length);
-		for (i in 0...expected.length) {
-			//trace("Expected (Vector)("+tolerance+"):"+expected[i]+" == "+actual[i]);
+		for (i in 0...expected.length)
+		{
+			// trace("Expected (Vector)("+tolerance+"):"+expected[i]+" == "+actual[i]);
 			Assert.isTrue(nearEquals(expected[i], actual[i], tolerance));
 		}
-
 	}
 
-	private function nearEquals(expected:Float, actual:Float, tolerance:Float = 0.001):Bool {
+	private function nearEquals(expected:Float, actual:Float, tolerance:Float = 0.001):Bool
+	{
 		return (actual > expected - tolerance) && (actual < expected + tolerance);
 	}
 }

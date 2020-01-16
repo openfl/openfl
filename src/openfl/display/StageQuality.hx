@@ -46,9 +46,9 @@ package openfl.display;
 		}
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : StageQuality)
 		{
 			case StageQuality.BEST: "best";
 			case StageQuality.HIGH: "high";
@@ -59,6 +59,7 @@ package openfl.display;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract StageQuality(String) from String to String
 {
 	public var BEST = "best";

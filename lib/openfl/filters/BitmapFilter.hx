@@ -1,7 +1,9 @@
-package openfl.filters; #if (display || !flash)
+package openfl.filters;
 
-
+#if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/filters/BitmapFilter", "default")
+#end
 
 /**
  * The BitmapFilter class is the base class for all image filter effects.
@@ -13,23 +15,18 @@ package openfl.filters; #if (display || !flash)
  *
  * You can neither directly instantiate nor extend BitmapFilter.
  */
-extern class BitmapFilter {
-	
-	
-	public function new ():Void;
-	
+extern class BitmapFilter
+{
+	public function new():Void;
+
 	/**
 	 * Returns a BitmapFilter object that is an exact copy of the original
 	 * BitmapFilter object.
-	 * 
+	 *
 	 * @return A BitmapFilter object.
 	 */
-	public function clone ():BitmapFilter;
-	
-	
+	public function clone():BitmapFilter;
 }
-
-
 #else
 typedef BitmapFilter = flash.filters.BitmapFilter;
 #end

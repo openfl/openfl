@@ -25,3 +25,4 @@ export { default as TimerEvent } from "./TimerEvent";
 export { default as TouchEvent } from "./TouchEvent";
 export { default as UncaughtErrorEvent } from "./UncaughtErrorEvent";
 export { default as UncaughtErrorEvents } from "./UncaughtErrorEvents";
+export { default as VideoTextureEvent } from "./VideoTextureEvent";

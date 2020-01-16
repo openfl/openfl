@@ -2,6 +2,7 @@ package flash.text {
 	
 	
 	/**
+	 * @externs
 	 * The FontType class contains the enumerated constants
 	 * `"embedded"` and `"device"` for the
 	 * `fontType` property of the Font class.

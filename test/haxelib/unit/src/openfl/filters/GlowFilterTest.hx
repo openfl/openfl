@@ -1,116 +1,94 @@
 package openfl.filters;
 
-
 import massive.munit.Assert;
 
+class GlowFilterTest
+{
+	@Test public function alpha()
+	{
+		// TODO: Confirm functionality
 
-class GlowFilterTest {
-	
-	
-	@Test public function alpha () {
-		
-		// TODO: Confirm functionality
-		
-		var glowFilter = new GlowFilter ();
+		var glowFilter = new GlowFilter();
 		var exists = glowFilter.alpha;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function blurX () {
-		
+
+	@Test public function blurX()
+	{
 		// TODO: Confirm functionality
-		
-		var glowFilter = new GlowFilter ();
+
+		var glowFilter = new GlowFilter();
 		var exists = glowFilter.blurX;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function blurY () {
-		
+
+	@Test public function blurY()
+	{
 		// TODO: Confirm functionality
-		
-		var glowFilter = new GlowFilter ();
+
+		var glowFilter = new GlowFilter();
 		var exists = glowFilter.blurY;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function color () {
-		
+
+	@Test public function color()
+	{
 		// TODO: Confirm functionality
-		
-		var glowFilter = new GlowFilter ();
+
+		var glowFilter = new GlowFilter();
 		var exists = glowFilter.color;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function inner () {
-		
+
+	@Test public function inner()
+	{
 		// TODO: Confirm functionality
-		
-		var glowFilter = new GlowFilter ();
+
+		var glowFilter = new GlowFilter();
 		var exists = glowFilter.inner;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function knockout () {
-		
+
+	@Test public function knockout()
+	{
 		// TODO: Confirm functionality
-		
-		var glowFilter = new GlowFilter ();
+
+		var glowFilter = new GlowFilter();
 		var exists = glowFilter.knockout;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function quality () {
-		
+
+	@Test public function quality()
+	{
 		// TODO: Confirm functionality
-		
-		var glowFilter = new GlowFilter ();
+
+		var glowFilter = new GlowFilter();
 		var exists = glowFilter.quality;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function strength () {
-		
+
+	@Test public function strength()
+	{
 		// TODO: Confirm functionality
-		
-		var glowFilter = new GlowFilter ();
+
+		var glowFilter = new GlowFilter();
 		var exists = glowFilter.strength;
-		
-		Assert.isNotNull (exists);
-		
+
+		Assert.isNotNull(exists);
 	}
-	
-	
-	@Test public function new_ () {
-		
+
+	@Test public function new_()
+	{
 		// TODO: Confirm functionality
-		
-		var glowFilter = new GlowFilter ();
-		Assert.isNotNull (glowFilter);
-		
+
+		var glowFilter = new GlowFilter();
+		Assert.isNotNull(glowFilter);
 	}
-	
-	
 }

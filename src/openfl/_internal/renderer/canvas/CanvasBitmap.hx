@@ -1,11 +1,13 @@
 package openfl._internal.renderer.canvas;
 
+#if openfl_html5
 import openfl.display.Bitmap;
-import openfl.display.CanvasRenderer;
 #if lime
-import lime._internal.graphics.ImageCanvasUtil; // TODO
-
+import lime._internal.graphics.ImageCanvasUtil;
+#else
+import openfl._internal.backend.lime_standalone.ImageCanvasUtil;
 #end
+
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)
 @SuppressWarnings("checkstyle:FieldDocComment")
@@ -13,7 +15,7 @@ class CanvasBitmap
 {
 	public static inline function render(bitmap:Bitmap, renderer:CanvasRenderer):Void
 	{
-		#if (js && html5)
+		#if (lime && openfl_html5)
 		if (!bitmap.__renderable) return;
 
 		var alpha = renderer.__getAlpha(bitmap.__worldAlpha);
@@ -24,8 +26,6 @@ class CanvasBitmap
 
 			renderer.__setBlendMode(bitmap.__worldBlendMode);
 			renderer.__pushMaskObject(bitmap, false);
-
-			ImageCanvasUtil.convertToCanvas(bitmap.__bitmapData.image);
 
 			context.globalAlpha = alpha;
 			var scrollRect = bitmap.__scrollRect;
@@ -39,11 +39,19 @@ class CanvasBitmap
 
 			if (scrollRect == null)
 			{
-				context.drawImage(bitmap.__bitmapData.image.src, 0, 0, bitmap.__bitmapData.image.width, bitmap.__bitmapData.image.height);
+				context.drawImage(bitmap.__bitmapData.__getElement(), 0, 0, bitmap.__bitmapData.width, bitmap.__bitmapData.height);
 			}
 			else
 			{
-				context.drawImage(bitmap.__bitmapData.image.src, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height);
+				context.save();
+
+				context.beginPath();
+				context.rect(scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height);
+				context.clip();
+
+				context.drawImage(bitmap.__bitmapData.__getElement(), 0, 0, bitmap.__bitmapData.width, bitmap.__bitmapData.height);
+
+				context.restore();
 			}
 
 			if (!renderer.__allowSmoothing || !bitmap.smoothing)
@@ -56,3 +64,4 @@ class CanvasBitmap
 		#end
 	}
 }
+#end

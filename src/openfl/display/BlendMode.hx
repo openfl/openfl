@@ -11,7 +11,6 @@ package openfl.display;
 	openfl.display.DisplayObject class.
 	*  The `blendMode` parameter of the `draw()`
 	method of the openfl.display.BitmapData class
-
 **/
 @:enum abstract BlendMode(Null<Int>)
 {
@@ -157,6 +156,23 @@ package openfl.display;
 		display object.
 	**/
 	public var SCREEN = 12;
+
+	/**
+		Uses a shader to define the blend between objects.
+
+		Setting the blendShader property to a Shader instance automatically sets the
+		display object's `blendMode` property to `BlendMode.SHADER`. If the `blendMode`
+		property is set to `BlendMode.SHADER` without first setting the `blendShader`
+		property, the `blendMode` property is set to `BlendMode.NORMAL` instead. If the
+		`blendShader` property is set (which sets the `blendMode` property to
+		`BlendMode.SHADER`), then later the value of the `blendMode` property is changed,
+		the blend mode can be reset to use the blend shader simply by setting the
+		`blendMode` property to `BlendMode.SHADER`. The `blendShader` property does not
+		need to be set again except to change the shader that's used to define the blend
+		mode.
+
+		Not supported under GPU rendering.
+	**/
 	public var SHADER = 13;
 
 	/**
@@ -194,9 +210,9 @@ package openfl.display;
 		}
 	}
 
-	@:to private static function toString(value:Int):String
+	@:to private function toString():String
 	{
-		return switch (value)
+		return switch (cast this : BlendMode)
 		{
 			case BlendMode.ADD: "add";
 			case BlendMode.ALPHA: "alpha";
@@ -218,6 +234,7 @@ package openfl.display;
 	}
 }
 #else
+@SuppressWarnings("checkstyle:FieldDocComment")
 @:enum abstract BlendMode(String) from String to String
 {
 	public var ADD = "add";

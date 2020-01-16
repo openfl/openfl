@@ -1,17 +1,13 @@
-package openfl.errors; #if (display || !flash)
+package openfl.errors;
 
-
+#if (display || !flash)
+#if !openfl_global
 @:jsRequire("openfl/errors/TypeError", "default")
-
-extern class TypeError extends Error {
-	
-	
-	public function new (message:String = "");
-	
-	
+#end
+extern class TypeError extends Error
+{
+	public function new(message:String = "");
 }
-
-
 #else
 typedef TypeError = flash.errors.TypeError;
 #end

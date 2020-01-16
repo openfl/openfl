@@ -2,6 +2,7 @@ package openfl.display;
 
 #if !flash
 import haxe.io.Path;
+import openfl.errors.Error;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 import openfl.events.ProgressEvent;
@@ -18,6 +19,8 @@ import openfl.utils.ByteArray;
 import lime.utils.AssetLibrary as LimeAssetLibrary;
 import lime.utils.AssetManifest;
 #end
+
+using openfl._internal.utils.DisplayObjectLinkedList;
 
 /**
 	The Loader class is used to load SWF files or image (JPG, PNG, or GIF)
@@ -123,6 +126,23 @@ class Loader extends DisplayObjectContainer
 		`Loader.contentLoaderInfo.uncaughtErrorEvents` property.
 	**/
 	public var contentLoaderInfo(default, null):LoaderInfo;
+
+	/**
+		An object that dispatches an uncaughtError event when an unhandled error occurs in
+		the SWF that's loaded by this Loader object. An uncaught error happens when an
+		error is thrown outside of any `try..catch` blocks or when an ErrorEvent object is
+		dispatched with no registered listeners.
+
+		Note that a Loader object's `uncaughtErrorEvents` property dispatches events that
+		bubble through it, not events that it dispatches directly. It never dispatches an
+		`uncaughtErrorEvent` in the target phase. It only dispatches the event in the
+		capture and bubbling phases. To detect an uncaught error in the current SWF (the
+		SWF in which the Loader object is defined) use the `LoaderInfo.uncaughtErrorEvents`
+		property instead.
+
+		If the content loaded by the Loader object is an AVM1 (ActionScript 2) SWF file,
+		uncaught errors in the AVM1 SWF file do not result in an `uncaughtError` event.
+	**/
 	public var uncaughtErrorEvents(default, null):UncaughtErrorEvents;
 
 	@:noCompletion private var __library:AssetLibrary;
@@ -158,7 +178,6 @@ class Loader extends DisplayObjectContainer
 		events that the LoaderInfo object associated with the
 		`contentLoaderInfo` property of the Loader object:
 
-
 		* The `open` event is dispatched when loading begins.
 		* The `ioError` or `securityError` event is
 		dispatched if the file cannot be loaded or if an error occured during the
@@ -183,8 +202,22 @@ class Loader extends DisplayObjectContainer
 
 		contentLoaderInfo = LoaderInfo.create(this);
 		uncaughtErrorEvents = contentLoaderInfo.uncaughtErrorEvents;
+		__unloaded = true;
 	}
 
+	public override function addChild(child:DisplayObject):DisplayObject
+	{
+		throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
+		return null;
+	}
+
+	public override function addChildAt(child:DisplayObject, index:Int):DisplayObject
+	{
+		throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
+		return null;
+	}
+
+	#if !openfl_strict
 	/**
 		Cancels a `load()` method operation that is currently in
 		progress for the Loader instance.
@@ -194,6 +227,7 @@ class Loader extends DisplayObjectContainer
 	{
 		openfl._internal.Lib.notImplemented();
 	}
+	#end
 
 	/**
 		Loads a SWF, JPEG, progressive JPEG, unanimated GIF, or PNG file into an
@@ -231,14 +265,12 @@ class Loader extends DisplayObjectContainer
 		body), the POST operation is subject to the security rules applied to
 		uploads:
 
-
 		* The POST operation must be performed in response to a user-initiated
 		action, such as a mouse click or key press.
 		* If the POST operation is cross-domain(the POST target is not on the
 		same server as the SWF file that is sending the POST request), the target
 		server must provide a URL policy file that permits cross-domain
 		access.
-
 
 		Also, for any multipart Content-Type, the syntax must be valid
 		(according to the RFC2046 standard). If the syntax appears to be invalid,
@@ -354,6 +386,8 @@ class Loader extends DisplayObjectContainer
 	**/
 	public function load(request:URLRequest, context:LoaderContext = null):Void
 	{
+		unload();
+
 		contentLoaderInfo.loaderURL = Lib.current.loaderInfo.url;
 		contentLoaderInfo.url = request.url;
 		__unloaded = false;
@@ -411,11 +445,11 @@ class Loader extends DisplayObjectContainer
 			contentLoaderInfo.contentType = request.contentType;
 		}
 
-		#if (js && html5)
-		if (contentLoaderInfo.contentType.indexOf("image/") > -1 &&
-			request.method == URLRequestMethod.GET &&
-			(request.requestHeaders == null || request.requestHeaders.length == 0) &&
-			request.userAgent == null)
+		#if openfl_html5
+		if (contentLoaderInfo.contentType.indexOf("image/") > -1
+			&& request.method == URLRequestMethod.GET
+			&& (request.requestHeaders == null || request.requestHeaders.length == 0)
+			&& request.userAgent == null)
 		{
 			BitmapData.loadFromFile(request.url)
 				.onComplete(BitmapData_onLoad)
@@ -428,7 +462,9 @@ class Loader extends DisplayObjectContainer
 		var loader = new URLLoader();
 		loader.dataFormat = URLLoaderDataFormat.BINARY;
 
-		if (contentLoaderInfo.contentType.indexOf("/json") > -1 || contentLoaderInfo.contentType.indexOf("/javascript") > -1 || contentLoaderInfo.contentType.indexOf("/ecmascript") > -1)
+		if (contentLoaderInfo.contentType.indexOf("/json") > -1
+			|| contentLoaderInfo.contentType.indexOf("/javascript") > -1
+			|| contentLoaderInfo.contentType.indexOf("/ecmascript") > -1)
 		{
 			loader.dataFormat = TEXT;
 		}
@@ -528,6 +564,23 @@ class Loader extends DisplayObjectContainer
 		BitmapData.loadFromBytes(buffer).onComplete(BitmapData_onLoad).onError(BitmapData_onError);
 	}
 
+	// public override function removeChild(child:DisplayObject):DisplayObject
+	// {
+	// 	throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
+	// 	return null;
+	// }
+
+	public override function removeChildAt(index:Int):DisplayObject
+	{
+		throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
+		return null;
+	}
+
+	public override function setChildIndex(child:DisplayObject, index:Int):Void
+	{
+		throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
+	}
+
 	/**
 		Removes a child of this Loader object that was loaded by using the
 		`load()` method. The `property` of the associated
@@ -560,9 +613,9 @@ class Loader extends DisplayObjectContainer
 	{
 		if (!__unloaded)
 		{
-			while (numChildren > 0)
+			if (content != null && content.parent == this)
 			{
-				removeChildAt(0);
+				super.removeChild(content);
 			}
 
 			if (__library != null)
@@ -602,7 +655,6 @@ class Loader extends DisplayObjectContainer
 		* Timers are stopped.
 		* Camera and Microphone instances are detached
 		* Movie clips are stopped.
-
 
 		@param gc Provides a hint to the garbage collector to run on the child SWF
 				  objects(`true`) or not(`false`). If you
@@ -644,7 +696,22 @@ class Loader extends DisplayObjectContainer
 		contentLoaderInfo.dispatchEvent(event);
 	}
 
+	@:noCompletion private function __setContent(content:DisplayObject, width:Int, height:Int):Void
+	{
+		this.content = content;
+
+		contentLoaderInfo.content = content;
+		contentLoaderInfo.width = width;
+		contentLoaderInfo.height = height;
+
+		if (content != null)
+		{
+			super.addChild(content);
+		}
+	}
+
 	// Event Handlers
+
 	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion private function BitmapData_onError(error:Dynamic):Void
 	{
@@ -663,11 +730,7 @@ class Loader extends DisplayObjectContainer
 			return;
 		}
 
-		content = new Bitmap(bitmapData);
-		contentLoaderInfo.content = content;
-		contentLoaderInfo.width = Std.int(content.width);
-		contentLoaderInfo.height = Std.int(content.height);
-		addChild(content);
+		__setContent(new Bitmap(bitmapData), bitmapData.width, bitmapData.height);
 
 		contentLoaderInfo.dispatchEvent(new Event(Event.COMPLETE));
 	}
@@ -717,9 +780,8 @@ class Loader extends DisplayObjectContainer
 						Assets.registerLibrary(manifest.name, __library);
 					}
 
-					content = __library.getMovieClip("");
-					contentLoaderInfo.content = content;
-					addChild(content);
+					var clip = __library.getMovieClip("");
+					__setContent(clip, Std.int(clip.width), Std.int(clip.height));
 
 					contentLoaderInfo.dispatchEvent(new Event(Event.COMPLETE));
 				}).onError(function(e)
@@ -730,14 +792,12 @@ class Loader extends DisplayObjectContainer
 		}
 		else
 		#end
-		if (contentLoaderInfo.contentType != null && (contentLoaderInfo.contentType.indexOf("/javascript") > -1 || contentLoaderInfo.contentType
-				.indexOf("/ecmascript") > -1))
+		if (contentLoaderInfo.contentType != null
+			&& (contentLoaderInfo.contentType.indexOf("/javascript") > -1 || contentLoaderInfo.contentType.indexOf("/ecmascript") > -1))
 		{
-			content = new Sprite();
-			contentLoaderInfo.content = content;
-			addChild(content);
+			__setContent(new Sprite(), 0, 0);
 
-			#if (js && html5)
+			#if openfl_html5
 			// var script:ScriptElement = cast Browser.document.createElement ("script");
 			// script.innerHTML = loader.data;
 			// Browser.document.head.appendChild (script);

@@ -1,14 +1,13 @@
-package openfl.display; #if (display || !flash)
+package openfl.display;
 
-
+#if (display || !flash)
 import openfl.geom.Matrix;
 
+#if !openfl_global
 @:jsRequire("openfl/display/GraphicsGradientFill", "default")
-
-
-@:final extern class GraphicsGradientFill implements IGraphicsData implements IGraphicsFill {
-	
-	
+#end
+@:final extern class GraphicsGradientFill implements IGraphicsData implements IGraphicsFill
+{
 	public var alphas:Array<Float>;
 	public var colors:Array<UInt>;
 	public var focalPointRatio:Float;
@@ -17,14 +16,9 @@ import openfl.geom.Matrix;
 	public var ratios:Array<UInt>;
 	public var spreadMethod:SpreadMethod;
 	public var type:GradientType;
-	
-	
-	public function new (?type:GradientType, colors:Array<UInt> = null, alphas:Array<Float> = null, ratios:Array<UInt> = null, matrix:Matrix = null, ?spreadMethod:SpreadMethod, ?interpolationMethod:InterpolationMethod, focalPointRatio:Float = 0);
-	
-	
+	public function new(?type:GradientType, colors:Array<UInt> = null, alphas:Array<Float> = null, ratios:Array<UInt> = null, matrix:Matrix = null,
+		?spreadMethod:SpreadMethod, ?interpolationMethod:InterpolationMethod, focalPointRatio:Float = 0);
 }
-
-
 #else
 typedef GraphicsGradientFill = flash.display.GraphicsGradientFill;
 #end
