@@ -1,8 +1,10 @@
 package openfl.geom;
 
 #if !flash
-import openfl._internal.backend.math.Vector2;
 import openfl._internal.utils.ObjectPool;
+#if lime
+import lime.math.Vector2;
+#end
 
 /**
 	The Point object represents a location in a two-dimensional coordinate

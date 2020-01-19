@@ -1,7 +1,9 @@
 package openfl.display;
 
 #if (!openfl_doc_gen || openfl_html5)
-import openfl._internal.backend.html5.Element;
+#if openfl_html5
+import js.html.Element;
+#end
 
 class DOMElement extends #if flash Sprite #else DisplayObject #end
 {

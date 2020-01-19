@@ -1,16 +1,17 @@
 package openfl.filters;
 
 #if !flash
-import openfl._internal.backend.math.RGBA;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-#if (!lime && openfl_html5)
+#if lime
+import lime._internal.graphics.ImageCanvasUtil;
+import lime.math.RGBA;
+#elseif openfl_html5
 import openfl._internal.backend.lime_standalone.ImageCanvasUtil;
-#else
-import openfl._internal.backend.lime.ImageCanvasUtil;
+import openfl._internal.backend.lime_standalone.RGBA;
 #end
 
 /**
@@ -150,8 +151,8 @@ import openfl._internal.backend.lime.ImageCanvasUtil;
 			destPoint:Point):BitmapData
 	{
 		#if (lime || openfl_html5)
-		var sourceImage = sourceBitmapData.image;
-		var image = destBitmapData.image;
+		var sourceImage = sourceBitmapData.limeImage;
+		var image = destBitmapData.limeImage;
 
 		#if openfl_html5
 		ImageCanvasUtil.convertToData(sourceImage);
@@ -211,7 +212,7 @@ import openfl._internal.backend.lime.ImageCanvasUtil;
 			}
 		}
 
-		destBitmapData.image.dirty = true;
+		destBitmapData.limeImage.dirty = true;
 		#end
 		return destBitmapData;
 	}

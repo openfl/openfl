@@ -11,9 +11,9 @@ class DOMDisplayObject
 	public static function clear(displayObject:DisplayObject, renderer:DOMRenderer):Void
 	{
 		#if openfl_html5
-		if (displayObject.__cacheBitmap != null)
+		if (displayObject.__renderData.cacheBitmap != null)
 		{
-			DOMBitmap.clear(displayObject.__cacheBitmap, renderer);
+			DOMBitmap.clear(displayObject.__renderData.cacheBitmap, renderer);
 		}
 		DOMShape.clear(displayObject, renderer);
 		#end
@@ -26,7 +26,7 @@ class DOMDisplayObject
 		// if (!displayObject.__renderable || displayObject.__worldAlpha <= 0) return;
 
 		if (displayObject.opaqueBackground != null
-			&& !displayObject.__isCacheBitmapRender
+			&& !displayObject.__renderData.isCacheBitmapRender
 			&& displayObject.width > 0
 			&& displayObject.height > 0)
 		{

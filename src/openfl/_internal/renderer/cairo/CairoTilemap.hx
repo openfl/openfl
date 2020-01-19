@@ -1,10 +1,10 @@
 package openfl._internal.renderer.cairo;
 
 #if openfl_cairo
-import openfl._internal.backend.cairo.CairoFilter;
-import openfl._internal.backend.cairo.CairoPattern;
-import openfl._internal.backend.cairo.CairoSurface;
-import openfl._internal.backend.math.Matrix3;
+import lime.math.Matrix3;
+import openfl._internal.bindings.cairo.CairoFilter;
+import openfl._internal.bindings.cairo.CairoPattern;
+import openfl._internal.bindings.cairo.CairoSurface;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display.TileContainer;

@@ -14,11 +14,11 @@ class DOMShape
 	public static function clear(shape:DisplayObject, renderer:DOMRenderer):Void
 	{
 		#if openfl_html5
-		if (shape.__canvas != null)
+		if (shape.__renderData.canvas != null)
 		{
-			renderer.element.removeChild(shape.__canvas);
-			shape.__canvas = null;
-			shape.__style = null;
+			renderer.element.removeChild(shape.__renderData.canvas);
+			shape.__renderData.canvas = null;
+			shape.__renderData.style = null;
 		}
 		#end
 	}
@@ -32,21 +32,21 @@ class DOMShape
 		{
 			CanvasGraphics.render(graphics, renderer.__canvasRenderer);
 
-			if (graphics.__softwareDirty || shape.__worldAlphaChanged || (shape.__canvas != graphics.__canvas))
+			if (graphics.__softwareDirty || shape.__worldAlphaChanged || (shape.__renderData.canvas != graphics.__renderData.canvas))
 			{
-				if (graphics.__canvas != null)
+				if (graphics.__renderData.canvas != null)
 				{
-					if (shape.__canvas != graphics.__canvas)
+					if (shape.__renderData.canvas != graphics.__renderData.canvas)
 					{
-						if (shape.__canvas != null)
+						if (shape.__renderData.canvas != null)
 						{
-							renderer.element.removeChild(shape.__canvas);
+							renderer.element.removeChild(shape.__renderData.canvas);
 						}
 
-						shape.__canvas = graphics.__canvas;
-						shape.__context = graphics.__context;
+						shape.__renderData.canvas = graphics.__renderData.canvas;
+						shape.__renderData.context = graphics.__renderData.context;
 
-						renderer.__initializeElement(shape, shape.__canvas);
+						renderer.__initializeElement(shape, shape.__renderData.canvas);
 					}
 				}
 				else
@@ -55,7 +55,7 @@ class DOMShape
 				}
 			}
 
-			if (shape.__canvas != null)
+			if (shape.__renderData.canvas != null)
 			{
 				renderer.__pushMaskObject(shape);
 

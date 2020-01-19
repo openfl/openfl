@@ -1,10 +1,6 @@
 package openfl.display3D.textures;
 
 #if !flash
-import haxe.Timer;
-import openfl._internal.backend.gl.GLTexture;
-import openfl._internal.backend.gl.GL;
-import openfl.events.Event;
 import openfl.net.NetStream;
 
 /**
@@ -55,15 +51,14 @@ import openfl.net.NetStream;
 	**/
 	public var videoWidth(default, null):Int;
 
-	@:noCompletion private var __netStream:NetStream;
+	@:noCompletion private var __backend:VideoTextureBackend;
 
 	@:noCompletion private function new(context:Context3D)
 	{
-		super(context);
+		super(context, 0, 0, null, false, 0);
 
-		#if openfl_gl
-		__textureTarget = GL.TEXTURE_2D;
-		#end
+		__backend = new VideoTextureBackend(this);
+		__baseBackend = __backend;
 	}
 
 	#if false
@@ -92,77 +87,15 @@ import openfl.net.NetStream;
 	**/
 	public function attachNetStream(netStream:NetStream):Void
 	{
-		#if openfl_html5
-		if (__netStream != null)
-		{
-			__netStream.__video.removeEventListener("canplay", __onCanPlay, false);
-		}
-		#end
-
-		__netStream = netStream;
-
-		#if openfl_html5
-		if (__netStream.__video.readyState == 4)
-		{
-			Timer.delay(function()
-			{
-				__textureReady();
-			}, 0);
-		}
-		else
-		{
-			__netStream.__video.addEventListener("canplay", __onCanPlay, false);
-		}
-		#end
-	}
-
-	#if openfl_html5
-	@:noCompletion private function __onCanPlay(_):Void
-	{
-		__textureReady();
-	}
-	#end
-
-	#if openfl_gl
-	@:noCompletion private override function __getTexture():GLTexture
-	{
-		#if openfl_html5
-		if ((!__netStream.__video.paused || __netStream.__seeking) && __netStream.__video.readyState > 0)
-		{
-			__netStream.__seeking = false;
-			var gl = __context.gl;
-
-			__context.__bindGLTexture2D(__textureID);
-			gl.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, __netStream.__video);
-		}
-		#end
-
-		return __textureID;
-	}
-	#end
-
-	@:noCompletion private function __textureReady():Void
-	{
-		#if openfl_html5
-		videoWidth = __netStream.__video.videoWidth;
-		videoHeight = __netStream.__video.videoHeight;
-		#end
-
-		var event:Event = null;
-
-		#if openfl_pool_events
-		event = Event.__pool.get(Event.TEXTURE_READY);
-		#else
-		event = new Event(Event.TEXTURE_READY);
-		#end
-
-		dispatchEvent(event);
-
-		#if openfl_pool_events
-		Event.__pool.release(event);
-		#end
+		__backend.attachNetStream(netStream);
 	}
 }
+
+#if openfl_gl
+private typedef VideoTextureBackend = openfl._internal.backend.opengl.OpenGLVideoTextureBackend;
+#else
+private typedef VideoTextureBackend = openfl._internal.backend.dummy.DummyVideoTextureBackend;
+#end
 #else
 typedef VideoTexture = flash.display3D.textures.VideoTexture;
 #end

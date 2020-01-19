@@ -1,13 +1,9 @@
 package openfl.display;
 
+#if lime
+import lime.app.Application as LimeApplication;
+import lime.ui.WindowAttributes;
 import openfl._internal.Lib;
-#if (!lime && openfl_html5)
-import openfl._internal.backend.lime_standalone.Application as LimeApplication;
-import openfl._internal.backend.lime_standalone.WindowAttributes;
-#else
-import openfl._internal.backend.lime.Application as LimeApplication;
-import openfl._internal.backend.lime.WindowAttributes;
-#end
 
 /**
 	The Application class is a Lime Application instance that uses
@@ -21,23 +17,15 @@ import openfl._internal.backend.lime.WindowAttributes;
 @:access(openfl.display.LoaderInfo)
 @:access(openfl.display.Window)
 @SuppressWarnings("checkstyle:FieldDocComment")
-class Application #if (lime || openfl_html5) extends LimeApplication #end
+class Application extends LimeApplication
 {
-	#if (!lime && !openfl_html5)
-	public static var current:Application;
-
-	public var window:Window;
-	#end
-
 	public function new()
 	{
-		#if (lime || openfl_html5)
 		super();
-		#end
 
-		if (Lib.application == null)
+		if (Lib.limeApplication == null)
 		{
-			Lib.application = this;
+			Lib.limeApplication = this;
 		}
 
 		#if (!flash && !macro)
@@ -47,7 +35,6 @@ class Application #if (lime || openfl_html5) extends LimeApplication #end
 		#end
 	}
 
-	#if (lime || openfl_html5)
 	public override function createWindow(attributes:WindowAttributes):Window
 	{
 		var window = new Window(this, attributes);
@@ -94,5 +81,5 @@ class Application #if (lime || openfl_html5) extends LimeApplication #end
 
 		return window;
 	}
-	#end
 }
+#end

@@ -33,14 +33,14 @@ class Shader
 
 	private function init():Void
 	{
-		var gl = @:privateAccess context3D.gl;
+		var gl = @:privateAccess context3D.__backend.gl;
 		program = Shader.compileProgram(context3D, vertexSrc, fragmentSrc);
 		gl.useProgram(program);
 	}
 
 	public function destroy():Void
 	{
-		var gl = @:privateAccess context3D.gl;
+		var gl = @:privateAccess context3D.__backend.gl;
 
 		if (program != null)
 		{
@@ -52,7 +52,7 @@ class Shader
 
 	public function getAttribLocation(attribute:String):Int
 	{
-		var gl = @:privateAccess context3D.gl;
+		var gl = @:privateAccess context3D.__backend.gl;
 
 		if (program == null)
 		{
@@ -72,7 +72,7 @@ class Shader
 
 	public function getUniformLocation(uniform:String):GLUniformLocation
 	{
-		var gl = @:privateAccess context3D.gl;
+		var gl = @:privateAccess context3D.__backend.gl;
 
 		if (program == null)
 		{
@@ -92,7 +92,7 @@ class Shader
 
 	public function enableVertexAttribute(attribute:VertexAttribute, stride:Int, offset:Int):Void
 	{
-		var gl = @:privateAccess context3D.gl;
+		var gl = @:privateAccess context3D.__backend.gl;
 
 		// trace("Enable vertex attribute " + attribute.name);
 		var location = getAttribLocation(attribute.name);
@@ -102,7 +102,7 @@ class Shader
 
 	public function disableVertexAttribute(attribute:VertexAttribute, setDefault:Bool = true):Void
 	{
-		var gl = @:privateAccess context3D.gl;
+		var gl = @:privateAccess context3D.__backend.gl;
 
 		var location = getAttribLocation(attribute.name);
 		gl.disableVertexAttribArray(location);
@@ -151,7 +151,7 @@ class Shader
 
 	public static function compileProgram(context3D:Context3D, vertexSrc:Array<String>, fragmentSrc:Array<String>):GLProgram
 	{
-		var gl = @:privateAccess context3D.gl;
+		var gl = @:privateAccess context3D.__backend.gl;
 
 		var vertexShader = Shader.compileShader(context3D, vertexSrc, gl.VERTEX_SHADER);
 		var fragmentShader = Shader.compileShader(context3D, fragmentSrc, gl.FRAGMENT_SHADER);
@@ -174,7 +174,7 @@ class Shader
 
 	private static function compileShader(context3D:Context3D, shaderSrc:Array<String>, type:Int):GLShader
 	{
-		var gl = @:privateAccess context3D.gl;
+		var gl = @:privateAccess context3D.__backend.gl;
 
 		var src = shaderSrc.join("\n");
 		var shader = gl.createShader(type);

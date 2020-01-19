@@ -7,10 +7,10 @@ import openfl.display.Shader;
 import openfl.geom.ColorTransform;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-#if (!lime && openfl_html5)
-import openfl._internal.backend.lime_standalone.ImageDataUtil;
+#if lime
+import lime._internal.graphics.ImageDataUtil;
 #else
-import openfl._internal.backend.lime.ImageDataUtil;
+import openfl._internal.backend.lime_standalone.ImageDataUtil;
 #end
 
 /**
@@ -285,11 +285,11 @@ import openfl._internal.backend.lime.ImageDataUtil;
 
 		var point = new Point(destPoint.x + __offsetX, destPoint.y + __offsetY);
 
-		var finalImage = ImageDataUtil.gaussianBlur(bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle(), point.__toLimeVector2(),
+		var finalImage = ImageDataUtil.gaussianBlur(bitmapData.limeImage, sourceBitmapData.limeImage, sourceRect.__toLimeRectangle(), point.__toLimeVector2(),
 			__blurX, __blurY, __quality, __strength);
 		finalImage.colorTransform(finalImage.rect, new ColorTransform(0, 0, 0, __alpha, r, g, b, 0).__toLimeColorMatrix());
 
-		if (finalImage == bitmapData.image) return bitmapData;
+		if (finalImage == bitmapData.limeImage) return bitmapData;
 		#end
 		return sourceBitmapData;
 	}

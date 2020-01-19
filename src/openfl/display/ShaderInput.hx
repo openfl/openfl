@@ -4,7 +4,6 @@ package openfl.display;
 import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
 import openfl.display3D.Context3DWrapMode;
-import openfl.display3D.Context3D;
 
 /**
 	// TODO: Document GLSL Shaders
@@ -49,13 +48,12 @@ import openfl.display3D.Context3D;
 	A ShaderInput instance is created for each of a shader's inputs when the
 	Shader instance is created.
 **/
-@:access(openfl.display3D.Context3D)
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
 #if (!js && !display)
-@:generic
+// @:generic
 #end
 @:final class ShaderInput<T> /*implements Dynamic*/
 {
@@ -130,7 +128,7 @@ import openfl.display3D.Context3D;
 	**/
 	public var wrap:Context3DWrapMode;
 
-	@:noCompletion private var __isUniform:Bool;
+	@:noCompletion private var __backend:ShaderInputBackend<T>;
 
 	/**
 		Creates a ShaderInput instance. Developer code does not call the
@@ -146,37 +144,16 @@ import openfl.display3D.Context3D;
 		mipFilter = MIPNONE;
 		width = 0;
 		wrap = CLAMP;
-	}
 
-	@:noCompletion private function __disableGL(context:Context3D, id:Int):Void
-	{
-		var gl = context.gl;
-		context.setTextureAt(id, null);
-	}
-
-	@:noCompletion private function __updateGL(context:Context3D, id:Int, overrideInput:T = null, overrideFilter:Context3DTextureFilter = null,
-			overrideMipFilter:Context3DMipFilter = null, overrideWrap:Context3DWrapMode = null):Void
-	{
-		var gl = context.gl;
-		var input = overrideInput != null ? overrideInput : this.input;
-		var filter = overrideFilter != null ? overrideFilter : this.filter;
-		var mipFilter = overrideMipFilter != null ? overrideMipFilter : this.mipFilter;
-		var wrap = overrideWrap != null ? overrideWrap : this.wrap;
-
-		if (input != null)
-		{
-			// TODO: Improve for other input types? Use an interface perhaps
-
-			var bitmapData:BitmapData = cast input;
-			context.setTextureAt(id, bitmapData.getTexture(context));
-			context.setSamplerStateAt(id, wrap, filter, mipFilter);
-		}
-		else
-		{
-			context.setTextureAt(id, null);
-		}
+		__backend = new ShaderInputBackend<T>(this);
 	}
 }
+
+#if openfl_gl
+private typedef ShaderInputBackend<T> = openfl._internal.backend.opengl.OpenGLShaderInputBackend<T>;
+#else
+private typedef ShaderInputBackend<T> = openfl._internal.backend.dummy.DummyShaderInputBackend<T>;
+#end
 #else
 typedef ShaderInput<T> = flash.display.ShaderInput<T>;
 #end

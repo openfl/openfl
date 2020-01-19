@@ -1,13 +1,15 @@
 package openfl.display;
 
 #if !flash
-import openfl._internal.backend.html5.Browser;
 import openfl.events.EventDispatcher;
 import openfl.events.Event;
 import openfl.events.ProgressEvent;
 import openfl.events.UncaughtErrorEvents;
 import openfl.system.ApplicationDomain;
 import openfl.utils.ByteArray;
+#if openfl_html5
+import js.Browser;
+#end
 
 /**
 	The LoaderInfo class provides information about a loaded SWF file or a

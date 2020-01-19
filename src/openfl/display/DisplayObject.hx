@@ -1,10 +1,8 @@
 package openfl.display;
 
 #if !flash
-import openfl._internal.backend.cairo.Cairo;
-import openfl._internal.backend.html5.CanvasElement;
-import openfl._internal.backend.html5.CanvasRenderingContext2D;
-import openfl._internal.backend.html5.CSSStyleDeclaration;
+import openfl._internal.bindings.cairo.Cairo;
+import openfl._internal.renderer.DisplayObjectRenderData;
 import openfl._internal.renderer.DisplayObjectType;
 import openfl._internal.utils.DisplayObjectIterator;
 import openfl._internal.utils.ObjectPool;
@@ -25,6 +23,11 @@ import openfl.geom.Rectangle;
 import openfl.geom.Transform;
 import openfl.ui.MouseCursor;
 import openfl.Vector;
+#if openfl_html5
+import js.html.CanvasElement;
+import js.html.CanvasRenderingContext2D;
+import js.html.CSSStyleDeclaration;
+#end
 
 /**
 	The DisplayObject class is the base class for all objects that can be
@@ -893,17 +896,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private var __blendMode:BlendMode;
 	@:noCompletion private var __cacheAsBitmap:Bool;
 	@:noCompletion private var __cacheAsBitmapMatrix:Matrix;
-	@:noCompletion private var __cacheBitmap:Bitmap;
-	@:noCompletion private var __cacheBitmapBackground:Null<Int>;
-	@:noCompletion private var __cacheBitmapColorTransform:ColorTransform;
-	@:noCompletion private var __cacheBitmapData:BitmapData;
-	@:noCompletion private var __cacheBitmapData2:BitmapData;
-	@:noCompletion private var __cacheBitmapData3:BitmapData;
-	@:noCompletion private var __cacheBitmapDataTexture:BitmapData;
-	@:noCompletion private var __cacheBitmapMatrix:Matrix;
-	@:noCompletion private var __cacheBitmapRendererHW:DisplayObjectRenderer;
-	@:noCompletion private var __cacheBitmapRendererSW:DisplayObjectRenderer;
-	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __cairo:#if lime Cairo #else Dynamic #end;
 	#if openfl_validate_children
 	@:noCompletion private var __children:Array<DisplayObject> = new Array<DisplayObject>();
 	#end
@@ -914,7 +906,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private var __firstChild:DisplayObject;
 	@:noCompletion private var __graphics:Graphics;
 	@:noCompletion private var __interactive:Bool;
-	@:noCompletion private var __isCacheBitmapRender:Bool;
 	@:noCompletion private var __isMask:Bool;
 	@:noCompletion private var __lastChild:DisplayObject;
 	@:noCompletion private var __loaderInfo:LoaderInfo;
@@ -927,6 +918,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private var __objectTransform:Transform;
 	@:noCompletion private var __previousSibling:DisplayObject;
 	@:noCompletion private var __renderable:Bool;
+	@:noCompletion private var __renderData:DisplayObjectRenderData;
 	@:noCompletion private var __renderDirty:Bool;
 	@:noCompletion private var __renderParent:DisplayObject;
 	@:noCompletion private var __renderTransform:Matrix;
@@ -957,11 +949,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private var __worldVisible:Bool;
 	@:noCompletion private var __worldVisibleChanged:Bool;
 	@:noCompletion private var __worldZ:Int;
-	#if openfl_html5
-	@:noCompletion private var __canvas:CanvasElement;
-	@:noCompletion private var __context:CanvasRenderingContext2D;
-	@:noCompletion private var __style:CSSStyleDeclaration;
-	#end
 
 	#if openfljs
 	@:noCompletion private static function __init__()
@@ -1080,6 +1067,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		__renderTransform = new Matrix();
 		__worldVisible = true;
 		__transformDirty = true;
+
+		__renderData = new DisplayObjectRenderData();
 
 		name = "instance" + (++__instanceCount);
 
@@ -1386,46 +1375,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	{
 		for (child in __childIterator(false))
 		{
-			child.__cairo = null;
-
-			#if openfl_html5
-			child.__canvas = null;
-			child.__context = null;
-			#end
+			child.__renderData.dispose();
 
 			if (child.__graphics != null)
 			{
 				child.__graphics.__cleanup();
-			}
-
-			if (child.__cacheBitmap != null)
-			{
-				child.__cacheBitmap.__cleanup();
-				child.__cacheBitmap = null;
-			}
-
-			if (child.__cacheBitmapDataTexture != null)
-			{
-				child.__cacheBitmapDataTexture.dispose();
-				child.__cacheBitmapDataTexture = null;
-			}
-
-			if (child.__cacheBitmapData != null)
-			{
-				child.__cacheBitmapData.dispose();
-				child.__cacheBitmapData = null;
-			}
-
-			if (child.__cacheBitmapData2 != null)
-			{
-				child.__cacheBitmapData2.dispose();
-				child.__cacheBitmapData2 = null;
-			}
-
-			if (child.__cacheBitmapData3 != null)
-			{
-				child.__cacheBitmapData3.dispose();
-				child.__cacheBitmapData3 = null;
 			}
 
 			switch (child.__type)
@@ -2161,9 +2115,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			value.__setTransformDirty(true);
 		}
 
-		if (__cacheBitmap != null && __cacheBitmap.mask != value)
+		// TODO: Handle in renderer
+		if (__renderData.cacheBitmap != null && __renderData.cacheBitmap.mask != value)
 		{
-			__cacheBitmap.mask = value;
+			__renderData.cacheBitmap.mask = value;
 		}
 
 		return __mask = value;

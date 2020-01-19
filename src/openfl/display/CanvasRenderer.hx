@@ -1,10 +1,10 @@
 package openfl.display;
 
 import openfl.geom.Matrix;
-#if (!lime && openfl_html5)
+#if lime
+import lime.graphics.Canvas2DRenderContext;
+#elseif openfl_html5
 import openfl._internal.backend.lime_standalone.Canvas2DRenderContext;
-#else
-import openfl._internal.backend.lime.Canvas2DRenderContext;
 #end
 
 /**

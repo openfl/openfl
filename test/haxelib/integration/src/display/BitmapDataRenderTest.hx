@@ -90,14 +90,14 @@ class BitmapDataRenderTest
 		var colorTransform = new ColorTransform(0, 0, 0, 1, 0xFF, 0, 0, 0);
 
 		var bitmapData = new BitmapData(100, 100);
-		bitmapData.image.premultiplied = true;
+		bitmapData.limeImage.premultiplied = true;
 		bitmapData.colorTransform(new Rectangle(0, 0, 50, 50), colorTransform);
 
 		Assert.areEqual(hex(0xFFFF0000), hex(bitmapData.getPixel32(0, 0)));
 		Assert.areEqual(hex(0xFFFFFFFF), hex(bitmapData.getPixel32(50, 50)));
 
 		bitmapData = new BitmapData(100, 100);
-		bitmapData.image.premultiplied = true;
+		bitmapData.limeImage.premultiplied = true;
 		bitmapData.colorTransform(bitmapData.rect, colorTransform);
 
 		Assert.areEqual(hex(0xFFFF0000), hex(bitmapData.getPixel32(0, 0)));
@@ -106,7 +106,7 @@ class BitmapDataRenderTest
 		var colorTransform = new ColorTransform(0, 0, 0, 1, 0x88, 0, 0, 0);
 
 		var bitmapData = new BitmapData(100, 100);
-		bitmapData.image.premultiplied = true;
+		bitmapData.limeImage.premultiplied = true;
 		bitmapData.colorTransform(new Rectangle(0, 0, 50, 50), colorTransform);
 
 		Assert.areEqual(hex(0xFF880000), hex(bitmapData.getPixel32(0, 0)));
@@ -181,7 +181,7 @@ class BitmapDataRenderTest
 		bitmapData.copyChannel(bitmapData2, bitmapData2.rect, new Point(), BitmapDataChannel.ALPHA, BitmapDataChannel.ALPHA);
 
 		// #if (!flash && !disable_cffi)
-		// if (bitmapData.image.premultiplied) {
+		// if (bitmapData.limeImage.premultiplied) {
 		//
 		// Assert.areEqual (hex (0x22F7F7F7), hex (bitmapData.getPixel32 (0, 0)));
 		//

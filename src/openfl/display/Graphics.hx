@@ -2,12 +2,13 @@ package openfl.display;
 
 #if !flash
 import openfl._internal.renderer.context3D.Context3DBuffer;
+import openfl._internal.renderer.DisplayObjectRenderData;
 import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.DrawCommandReader;
 import openfl._internal.renderer.ShaderBuffer;
-import openfl._internal.backend.utils.Float32Array;
+import openfl._internal.bindings.typedarray.Float32Array;
 import openfl._internal.utils.ObjectPool;
-import openfl._internal.backend.utils.UInt16Array;
+import openfl._internal.bindings.typedarray.UInt16Array;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
 import openfl.errors.ArgumentError;
@@ -15,11 +16,11 @@ import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.Vector;
 #if openfl_html5
-import openfl._internal.backend.html5.CanvasElement;
-import openfl._internal.backend.html5.CanvasRenderingContext2D;
+import js.html.CanvasElement;
+import js.html.CanvasRenderingContext2D;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 #else
-import openfl._internal.backend.cairo.Cairo;
+import openfl._internal.bindings.cairo.Cairo;
 import openfl._internal.renderer.cairo.CairoGraphics;
 #end
 
@@ -53,6 +54,7 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 	@:noCompletion private static var maxTextureHeight:Null<Int> = null;
 	@:noCompletion private static var maxTextureWidth:Null<Int> = null;
 
+	@:noCompletion private var __bitmap:BitmapData;
 	@:noCompletion private var __bounds:Rectangle;
 	@:noCompletion private var __commands:DrawCommandBuffer;
 	@:noCompletion private var __dirty(default, set):Bool = true;
@@ -61,36 +63,18 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 	@:noCompletion private var __managed:Bool;
 	@:noCompletion private var __positionX:Float;
 	@:noCompletion private var __positionY:Float;
-	#if openfl_gl
-	@:noCompletion private var __quadBuffer:Context3DBuffer;
-	#end
+	@:noCompletion private var __renderData:DisplayObjectRenderData;
 	@:noCompletion private var __renderTransform:Matrix;
 	@:noCompletion private var __shaderBufferPool:ObjectPool<ShaderBuffer>;
 	@:noCompletion private var __softwareDirty:Bool;
 	@:noCompletion private var __strokePadding:Float;
 	@:noCompletion private var __transformDirty:Bool;
-	@:noCompletion private var __triangleIndexBuffer:IndexBuffer3D;
-	@:noCompletion private var __triangleIndexBufferCount:Int;
-	@:noCompletion private var __triangleIndexBufferData:UInt16Array;
 	@:noCompletion private var __usedShaderBuffers:List<ShaderBuffer>;
-	@:noCompletion private var __vertexBuffer:VertexBuffer3D;
-	@:noCompletion private var __vertexBufferCount:Int;
-	@:noCompletion private var __vertexBufferCountUVT:Int;
-	@:noCompletion private var __vertexBufferData:Float32Array;
-	@:noCompletion private var __vertexBufferDataUVT:Float32Array;
-	@:noCompletion private var __vertexBufferUVT:VertexBuffer3D;
 	@:noCompletion private var __visible:Bool;
 	// private var __cachedTexture:RenderTexture;
 	@:noCompletion private var __owner:DisplayObject;
 	@:noCompletion private var __width:Int;
 	@:noCompletion private var __worldTransform:Matrix;
-	#if openfl_html5
-	@:noCompletion private var __canvas:CanvasElement;
-	@:noCompletion private var __context:CanvasRenderingContext2D;
-	#else
-	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __cairo:#if lime Cairo #else Dynamic #end;
-	#end
-	@:noCompletion private var __bitmap:BitmapData;
 
 	#if draft
 	@:noCompletion private var __drawPaths:Array<openfl._internal.renderer.opengl.utils.DrawPath>;
@@ -111,6 +95,7 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 		__width = 0;
 		__height = 0;
 
+		__renderData = new DisplayObjectRenderData();
 		__shaderBufferPool = new ObjectPool<ShaderBuffer>(function() return new ShaderBuffer());
 
 		#if openfl_html5
@@ -1644,7 +1629,7 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 	@:noCompletion private function __cleanup():Void
 	{
 		#if openfl_html5
-		if (__bounds != null && __canvas != null)
+		if (__bounds != null && __renderData.canvas != null)
 		{
 			__dirty = true;
 			__transformDirty = true;
@@ -1658,13 +1643,7 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 		#end
 
 		__bitmap = null;
-
-		#if openfl_html5
-		__canvas = null;
-		__context = null;
-		#else
-		__cairo = null;
-		#end
+		__renderData.dispose();
 	}
 
 	@:noCompletion private function __getBounds(rect:Rectangle, matrix:Matrix):Void

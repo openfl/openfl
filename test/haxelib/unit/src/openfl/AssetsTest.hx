@@ -33,7 +33,7 @@ class AssetsTest
 		// When an embedded bitmap is loaded more than once, it should
 		// reuse the previously loaded image
 		var preload = new BitmapData(1, 1, false, 0);
-		MacroPreloadTest.preload = preload.image;
+		MacroPreloadTest.preload = preload.limeImage;
 		Assert.areEqual(1, new MacroPreloadTest(0, 0).width);
 	}
 	#end

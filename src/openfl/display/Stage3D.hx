@@ -2,25 +2,21 @@ package openfl.display;
 
 #if !flash
 import haxe.Timer;
-import openfl._internal.backend.html5.Browser;
-import openfl._internal.backend.html5.CanvasElement;
-import openfl._internal.backend.html5.CSSStyleDeclaration;
+import openfl._internal.renderer.DisplayObjectRenderData;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DProfile;
 import openfl.display3D.Context3DRenderMode;
-import openfl.display3D.IndexBuffer3D;
-import openfl.display3D.VertexBuffer3D;
 import openfl.events.ErrorEvent;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.geom.Matrix3D;
 import openfl.Vector;
-#if (!lime && openfl_html5)
+#if lime
+import lime.graphics.RenderContext;
+import openfl._internal.bindings.gl.WebGLRenderingContext;
+#elseif openfl_html5
 import openfl._internal.backend.lime_standalone.RenderContext;
 import openfl._internal.backend.lime_standalone.WebGLRenderContext in WebGLRenderingContext;
-#else
-import openfl._internal.backend.lime.RenderContext;
-import openfl._internal.backend.gl.WebGLRenderingContext;
 #end
 
 /**
@@ -178,20 +174,17 @@ class Stage3D extends EventDispatcher
 	@:noCompletion private var __contextLost:Bool;
 	@:noCompletion private var __contextRequested:Bool;
 	@:noCompletion private var __height:Int;
-	@:noCompletion private var __indexBuffer:IndexBuffer3D;
 	@:noCompletion private var __projectionTransform:Matrix3D;
+	@:noCompletion private var __renderData:DisplayObjectRenderData;
 	@:noCompletion private var __renderTransform:Matrix3D;
 	@:noCompletion private var __stage:Stage;
-	@:noCompletion private var __vertexBuffer:VertexBuffer3D;
 	@:noCompletion private var __width:Int;
 	@:noCompletion private var __x:Float;
 	@:noCompletion private var __y:Float;
 	#if openfl_html5
-	@:noCompletion private var __canvas:CanvasElement;
-	@:noCompletion private var __style:CSSStyleDeclaration;
 	@:noCompletion private var __webgl:WebGLRenderingContext;
 	#end
-	#if (lime || !openfl_html5)
+	#if (lime || openfl_html5)
 	@:noCompletion private var __renderContext:RenderContext;
 	#end
 
@@ -219,6 +212,7 @@ class Stage3D extends EventDispatcher
 		__y = 0;
 
 		visible = true;
+		__renderData = new DisplayObjectRenderData();
 
 		if (stage.stageWidth > 0 && stage.stageHeight > 0)
 		{
@@ -381,7 +375,7 @@ class Stage3D extends EventDispatcher
 			__dispatchCreate();
 		}
 		#if (lime && openfl_html5)
-		else if (false && __stage.window.context.type == DOM)
+		else if (false && __stage.limeWindow.context.type == DOM)
 		{
 			// TODO
 
@@ -389,7 +383,7 @@ class Stage3D extends EventDispatcher
 			// __canvas.width = stage.stageWidth;
 			// __canvas.height = stage.stageHeight;
 
-			// var window = stage.window;
+			// var window = stage.limeWindow;
 			// var attributes = @:privateAccess window.__attributes;
 
 			// var transparentBackground = Reflect.hasField(attributes, "background") && attributes.background == null;
@@ -463,7 +457,7 @@ class Stage3D extends EventDispatcher
 
 		if (context3D != null)
 		{
-			context3D.__dispose();
+			context3D.dispose();
 			__contextRequested = true;
 		}
 	}
@@ -473,10 +467,10 @@ class Stage3D extends EventDispatcher
 		if (width != __width || height != __height)
 		{
 			#if openfl_html5
-			if (__canvas != null)
+			if (__renderData.canvas != null)
 			{
-				__canvas.width = width;
-				__canvas.height = height;
+				__renderData.canvas.width = width;
+				__renderData.canvas.height = height;
 			}
 			#end
 

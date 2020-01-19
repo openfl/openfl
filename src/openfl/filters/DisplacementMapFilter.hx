@@ -1,20 +1,20 @@
 package openfl.filters;
 
 #if !flash
-import openfl._internal.backend.math.Vector2;
-import openfl._internal.backend.math.Vector4;
 import openfl.display.BitmapDataChannel;
 import openfl.geom.Rectangle;
 import openfl.geom.Point;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
-#if (!lime && openfl_html5)
+#if lime
+import lime._internal.graphics.ImageCanvasUtil;
+import lime._internal.graphics.ImageDataUtil;
+import lime.math.Vector2;
+import lime.math.Vector4;
+#elseif openfl_html5
 import openfl._internal.backend.lime_standalone.ImageCanvasUtil;
 import openfl._internal.backend.lime_standalone.ImageDataUtil;
-#else
-import openfl._internal.backend.lime.ImageCanvasUtil;
-import openfl._internal.backend.lime.ImageDataUtil;
 #end
 
 /**
@@ -225,12 +225,12 @@ import openfl._internal.backend.lime.ImageDataUtil;
 		__updateMapMatrix();
 
 		#if openfl_html5
-		ImageCanvasUtil.convertToData(bitmapData.image);
-		ImageCanvasUtil.convertToData(sourceBitmapData.image);
-		ImageCanvasUtil.convertToData(__mapBitmap.image);
+		ImageCanvasUtil.convertToData(bitmapData.limeImage);
+		ImageCanvasUtil.convertToData(sourceBitmapData.limeImage);
+		ImageCanvasUtil.convertToData(__mapBitmap.limeImage);
 		#end
 
-		ImageDataUtil.displaceMap(bitmapData.image, sourceBitmapData.image, __mapBitmap.image,
+		ImageDataUtil.displaceMap(bitmapData.limeImage, sourceBitmapData.limeImage, __mapBitmap.limeImage,
 
 			new Vector2(__mapPoint.x / __mapBitmap.width, __mapPoint.y / __mapBitmap.height),
 

@@ -9,7 +9,7 @@ import js.html.ImageElement;
 import js.html.Image as JSImage;
 import js.Browser;
 import openfl._internal.backend.lime_standalone.HTTPRequest;
-import openfl._internal.backend.utils.UInt8Array;
+import openfl._internal.bindings.typedarray.UInt8Array;
 import openfl.display.BitmapDataChannel;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;

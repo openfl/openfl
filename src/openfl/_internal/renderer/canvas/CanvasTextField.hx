@@ -1,8 +1,8 @@
 package openfl._internal.renderer.canvas;
 
 #if openfl_html5
-import openfl._internal.backend.html5.Browser;
-import openfl._internal.backend.html5.CanvasRenderingContext2D;
+import js.html.CanvasRenderingContext2D;
+import js.Browser;
 import openfl._internal.text.TextEngine;
 import openfl.display.BitmapData;
 import openfl.geom.Matrix;
@@ -56,8 +56,8 @@ class CanvasTextField
 				&& (textEngine.type != INPUT || !textEngine.selectable))
 				|| ((textEngine.width <= 0 || textEngine.height <= 0) && textEngine.autoSize != TextFieldAutoSize.NONE))
 			{
-				textField.__graphics.__canvas = null;
-				textField.__graphics.__context = null;
+				textField.__graphics.__renderData.canvas = null;
+				textField.__graphics.__renderData.context = null;
 				textField.__graphics.__bitmap = null;
 				textField.__graphics.__softwareDirty = false;
 				textField.__graphics.__dirty = false;
@@ -65,13 +65,13 @@ class CanvasTextField
 			}
 			else
 			{
-				if (textField.__graphics.__canvas == null)
+				if (textField.__graphics.__renderData.canvas == null)
 				{
-					textField.__graphics.__canvas = cast Browser.document.createElement("canvas");
-					textField.__graphics.__context = textField.__graphics.__canvas.getContext("2d");
+					textField.__graphics.__renderData.canvas = cast Browser.document.createElement("canvas");
+					textField.__graphics.__renderData.context = textField.__graphics.__renderData.canvas.getContext("2d");
 				}
 
-				context = graphics.__context;
+				context = graphics.__renderData.context;
 
 				var transform = graphics.__renderTransform;
 
@@ -79,10 +79,10 @@ class CanvasTextField
 				{
 					var scale = renderer.pixelRatio;
 
-					graphics.__canvas.width = Std.int(width * scale);
-					graphics.__canvas.height = Std.int(height * scale);
-					graphics.__canvas.style.width = width + "px";
-					graphics.__canvas.style.height = height + "px";
+					graphics.__renderData.canvas.width = Std.int(width * scale);
+					graphics.__renderData.canvas.height = Std.int(height * scale);
+					graphics.__renderData.canvas.style.width = width + "px";
+					graphics.__renderData.canvas.style.height = height + "px";
 
 					var matrix = Matrix.__pool.get();
 					matrix.copyFrom(transform);
@@ -94,8 +94,8 @@ class CanvasTextField
 				}
 				else
 				{
-					graphics.__canvas.width = width;
-					graphics.__canvas.height = height;
+					graphics.__renderData.canvas.width = width;
+					graphics.__renderData.canvas.height = height;
 
 					context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 				}
@@ -107,7 +107,7 @@ class CanvasTextField
 
 				if (clearRect)
 				{
-					context.clearRect(0, 0, graphics.__canvas.width, graphics.__canvas.height);
+					context.clearRect(0, 0, graphics.__renderData.canvas.width, graphics.__renderData.canvas.height);
 				}
 
 				if ((textEngine.text != null && textEngine.text != "") || textEngine.__hasFocus)
@@ -116,11 +116,11 @@ class CanvasTextField
 
 					if (!renderer.__allowSmoothing || (textEngine.antiAliasType == ADVANCED && textEngine.sharpness == 400))
 					{
-						graphics.__context.imageSmoothingEnabled = false;
+						graphics.__renderData.context.imageSmoothingEnabled = false;
 					}
 					else
 					{
-						graphics.__context.imageSmoothingEnabled = true;
+						graphics.__renderData.context.imageSmoothingEnabled = true;
 					}
 
 					if (textEngine.border || textEngine.background)
@@ -331,7 +331,7 @@ class CanvasTextField
 					}
 				}
 
-				graphics.__bitmap = BitmapData.fromCanvas(textField.__graphics.__canvas);
+				graphics.__bitmap = BitmapData.fromCanvas(textField.__graphics.__renderData.canvas);
 				graphics.__visible = true;
 				textField.__dirty = false;
 				graphics.__softwareDirty = false;

@@ -97,7 +97,7 @@ class BitmapDataPool
 		{
 			var texture = __context.createRectangleTexture(width, height, BGRA, true);
 			var bitmapData = BitmapData.fromTexture(texture);
-			// bitmapData.__setUVRect(__context, 0, 0, width, height);
+			// bitmapData.setUVRect(__context, 0, 0, width, height);
 			return bitmapData;
 		}
 		else

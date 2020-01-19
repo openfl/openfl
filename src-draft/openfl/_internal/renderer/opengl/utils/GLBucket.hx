@@ -219,7 +219,7 @@ class GLBucket
 
 	public function uploadTile(x:Int, y:Int, w:Int, h:Int):Void
 	{
-		var gl = @:privateAccess context3D.gl;
+		var gl = @:privateAccess context3D.__backend.gl;
 
 		if (tileBuffer == null)
 		{

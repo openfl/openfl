@@ -255,9 +255,9 @@ class BitmapDataTest
 		#if lime
 		var bitmapData = new BitmapData(1, 1);
 		#if flash
-		Assert.isNull(bitmapData.image);
+		Assert.isNull(bitmapData.limeImage);
 		#else
-		Assert.isNotNull(bitmapData.image);
+		Assert.isNotNull(bitmapData.limeImage);
 		#end
 		#end
 	}

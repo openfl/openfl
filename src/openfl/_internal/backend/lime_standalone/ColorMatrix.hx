@@ -1,7 +1,7 @@
 package openfl._internal.backend.lime_standalone;
 
-import openfl._internal.backend.utils.Float32Array;
-import openfl._internal.backend.utils.UInt8Array;
+import openfl._internal.bindings.typedarray.Float32Array;
+import openfl._internal.bindings.typedarray.UInt8Array;
 
 /**
 	`ColorMatrix` is a 4x5 matrix containing color multiplication

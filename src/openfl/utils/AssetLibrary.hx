@@ -1,40 +1,33 @@
 package openfl.utils;
 
 import openfl.display.MovieClip;
-#if (!lime && openfl_html5)
-import openfl._internal.backend.lime_standalone.AssetLibrary as LimeAssetLibrary;
-import openfl._internal.backend.lime_standalone.AssetManifest;
-import openfl._internal.backend.lime_standalone.AudioBuffer;
-import openfl._internal.backend.lime_standalone.LimeBytes as Bytes;
-import openfl.text.Font;
-import openfl._internal.backend.lime_standalone.Image;
-#else
-import openfl._internal.backend.lime.AssetLibrary as LimeAssetLibrary;
-import openfl._internal.backend.lime.AssetManifest;
-import openfl._internal.backend.lime.AudioBuffer;
-import openfl._internal.backend.lime.Bytes;
-import openfl._internal.backend.lime.Font;
-import openfl._internal.backend.lime.Image;
+#if lime
+import lime.graphics.Image;
+import lime.media.AudioBuffer;
+import lime.text.Font;
+import lime.utils.AssetLibrary as LimeAssetLibrary;
+import lime.utils.AssetManifest;
+import lime.utils.Bytes;
 #end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-class AssetLibrary #if (lime || openfl_html5) extends LimeAssetLibrary #end
+class AssetLibrary #if lime extends LimeAssetLibrary #end
 {
-	#if (lime || openfl_html5)
+	#if lime
 	@:noCompletion private var __proxy:LimeAssetLibrary;
 	#end
 
 	public function new()
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		super();
 		#end
 	}
 
-	#if (lime || openfl_html5)
+	#if lime
 	public override function exists(id:String, type:String):Bool
 	{
 		if (__proxy != null)
@@ -50,7 +43,7 @@ class AssetLibrary #if (lime || openfl_html5) extends LimeAssetLibrary #end
 
 	public static function fromBundle(bundle:AssetBundle):AssetLibrary
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		var library = LimeAssetLibrary.fromBundle(bundle);
 
 		if (library != null)
@@ -77,7 +70,7 @@ class AssetLibrary #if (lime || openfl_html5) extends LimeAssetLibrary #end
 
 	public static function fromBytes(bytes:ByteArray, rootPath:String = null):AssetLibrary
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		return cast fromManifest(AssetManifest.fromBytes(bytes, rootPath));
 		#else
 		return null;
@@ -86,7 +79,7 @@ class AssetLibrary #if (lime || openfl_html5) extends LimeAssetLibrary #end
 
 	public static function fromFile(path:String, rootPath:String = null):AssetLibrary
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		return cast fromManifest(AssetManifest.fromFile(path, rootPath));
 		#else
 		return null;
@@ -95,7 +88,7 @@ class AssetLibrary #if (lime || openfl_html5) extends LimeAssetLibrary #end
 
 	public static function fromManifest(manifest:AssetManifest):#if (java && lime) LimeAssetLibrary #else AssetLibrary #end
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		var library = LimeAssetLibrary.fromManifest(manifest);
 
 		if (library != null)
@@ -120,7 +113,7 @@ class AssetLibrary #if (lime || openfl_html5) extends LimeAssetLibrary #end
 		#end
 	}
 
-	#if (lime || openfl_html5)
+	#if lime
 	public override function getAsset(id:String, type:String):Dynamic
 	{
 		if (__proxy != null)
@@ -134,7 +127,7 @@ class AssetLibrary #if (lime || openfl_html5) extends LimeAssetLibrary #end
 	}
 	#end
 
-	#if (lime || openfl_html5)
+	#if lime
 	public override function getAudioBuffer(id:String):AudioBuffer
 	{
 		if (__proxy != null)
@@ -148,7 +141,7 @@ class AssetLibrary #if (lime || openfl_html5) extends LimeAssetLibrary #end
 	}
 	#end
 
-	#if (lime || openfl_html5)
+	#if lime
 	public override function getBytes(id:String):Bytes
 	{
 		if (__proxy != null)
@@ -162,7 +155,7 @@ class AssetLibrary #if (lime || openfl_html5) extends LimeAssetLibrary #end
 	}
 	#end
 
-	#if (lime || openfl_html5)
+	#if lime
 	public override function getFont(id:String):Font
 	{
 		if (__proxy != null)
@@ -176,7 +169,7 @@ class AssetLibrary #if (lime || openfl_html5) extends LimeAssetLibrary #end
 	}
 	#end
 
-	#if (lime || openfl_html5)
+	#if lime
 	public override function getImage(id:String):Image
 	{
 		if (__proxy != null)
@@ -195,7 +188,7 @@ class AssetLibrary #if (lime || openfl_html5) extends LimeAssetLibrary #end
 		return null;
 	}
 
-	#if (lime || openfl_html5)
+	#if lime
 	public override function getPath(id:String):String
 	{
 		if (__proxy != null)
@@ -209,7 +202,7 @@ class AssetLibrary #if (lime || openfl_html5) extends LimeAssetLibrary #end
 	}
 	#end
 
-	#if (lime || openfl_html5)
+	#if lime
 	public override function getText(id:String):String
 	{
 		if (__proxy != null)
@@ -223,7 +216,7 @@ class AssetLibrary #if (lime || openfl_html5) extends LimeAssetLibrary #end
 	}
 	#end
 
-	#if (lime || openfl_html5)
+	#if lime
 	public override function isLocal(id:String, type:String):Bool
 	{
 		if (__proxy != null)
@@ -237,7 +230,7 @@ class AssetLibrary #if (lime || openfl_html5) extends LimeAssetLibrary #end
 	}
 	#end
 
-	#if (lime || openfl_html5)
+	#if lime
 	public override function list(type:String):Array<String>
 	{
 		if (__proxy != null)
@@ -251,7 +244,7 @@ class AssetLibrary #if (lime || openfl_html5) extends LimeAssetLibrary #end
 	}
 	#end
 
-	#if (lime || openfl_html5)
+	#if lime
 	public override function loadAsset(id:String, type:String):Future<Dynamic>
 	{
 		if (__proxy != null)
@@ -265,7 +258,7 @@ class AssetLibrary #if (lime || openfl_html5) extends LimeAssetLibrary #end
 	}
 	#end
 
-	#if (lime || openfl_html5)
+	#if lime
 	public override function load():Future<LimeAssetLibrary>
 	{
 		if (__proxy != null)
@@ -279,7 +272,7 @@ class AssetLibrary #if (lime || openfl_html5) extends LimeAssetLibrary #end
 	}
 	#end
 
-	#if (lime || openfl_html5)
+	#if lime
 	public override function loadAudioBuffer(id:String):Future<AudioBuffer>
 	{
 		if (__proxy != null)
@@ -293,7 +286,7 @@ class AssetLibrary #if (lime || openfl_html5) extends LimeAssetLibrary #end
 	}
 	#end
 
-	#if (lime || openfl_html5)
+	#if lime
 	public override function loadBytes(id:String):Future<Bytes>
 	{
 		if (__proxy != null)
@@ -307,7 +300,7 @@ class AssetLibrary #if (lime || openfl_html5) extends LimeAssetLibrary #end
 	}
 	#end
 
-	#if (lime || openfl_html5)
+	#if lime
 	public override function loadFont(id:String):Future<Font>
 	{
 		if (__proxy != null)
@@ -323,7 +316,7 @@ class AssetLibrary #if (lime || openfl_html5) extends LimeAssetLibrary #end
 
 	public static function loadFromBytes(bytes:ByteArray, rootPath:String = null):#if (java && lime) Future<LimeAssetLibrary> #else Future<AssetLibrary> #end
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		return AssetManifest.loadFromBytes(bytes, rootPath).then(function(manifest)
 		{
 			return loadFromManifest(manifest);
@@ -335,7 +328,7 @@ class AssetLibrary #if (lime || openfl_html5) extends LimeAssetLibrary #end
 
 	public static function loadFromFile(path:String, rootPath:String = null):#if (java && lime) Future<LimeAssetLibrary> #else Future<AssetLibrary> #end
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		return AssetManifest.loadFromFile(path, rootPath).then(function(manifest)
 		{
 			return loadFromManifest(manifest);
@@ -347,7 +340,7 @@ class AssetLibrary #if (lime || openfl_html5) extends LimeAssetLibrary #end
 
 	public static function loadFromManifest(manifest:AssetManifest):#if (java && lime) Future<LimeAssetLibrary> #else Future<AssetLibrary> #end
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		var library:AssetLibrary = cast fromManifest(manifest);
 
 		if (library != null)
@@ -366,7 +359,7 @@ class AssetLibrary #if (lime || openfl_html5) extends LimeAssetLibrary #end
 		#end
 	}
 
-	#if (lime || openfl_html5)
+	#if lime
 	public override function loadImage(id:String):Future<Image>
 	{
 		if (__proxy != null)
@@ -385,7 +378,7 @@ class AssetLibrary #if (lime || openfl_html5) extends LimeAssetLibrary #end
 		return Future.withValue(getMovieClip(id));
 	}
 
-	#if (lime || openfl_html5)
+	#if lime
 	public override function loadText(id:String):Future<String>
 	{
 		if (__proxy != null)
@@ -399,7 +392,7 @@ class AssetLibrary #if (lime || openfl_html5) extends LimeAssetLibrary #end
 	}
 	#end
 
-	#if (lime || openfl_html5)
+	#if lime
 	public override function unload():Void
 	{
 		if (__proxy != null)

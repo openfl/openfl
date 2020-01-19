@@ -1,10 +1,14 @@
 package openfl._internal.renderer.context3D;
 
 #if openfl_gl
-import openfl._internal.backend.math.ARGB;
 import openfl.display3D.Context3DClearMask;
 import openfl.display.DisplayObject;
 import openfl.geom.Rectangle;
+#if !lime
+import openfl._internal.backend.lime_standalone.ARGB;
+#else
+import lime.math.ARGB;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -23,7 +27,7 @@ class Context3DDisplayObject
 		if (!displayObject.__renderable || displayObject.__worldAlpha <= 0) return;
 
 		if (displayObject.opaqueBackground != null
-			&& !displayObject.__isCacheBitmapRender
+			&& !displayObject.__renderData.isCacheBitmapRender
 			&& displayObject.width > 0
 			&& displayObject.height > 0)
 		{
@@ -60,12 +64,10 @@ class Context3DDisplayObject
 		if (displayObject.opaqueBackground == null && displayObject.__graphics == null) return;
 
 		if (displayObject.opaqueBackground != null
-			&& !displayObject.__isCacheBitmapRender
+			&& !displayObject.__renderData.isCacheBitmapRender
 			&& displayObject.width > 0
 			&& displayObject.height > 0)
 		{
-			// var gl = renderer.__context.webgl;
-
 			// TODO
 
 			// var rect = Rectangle.__pool.get ();

@@ -3,29 +3,6 @@ package openfl.display;
 #if !flash
 import haxe.CallStack;
 import haxe.ds.ArraySort;
-import openfl._internal.backend.html5.Element;
-#if lime
-import lime.app.Application;
-import lime.app.IModule;
-import lime.ui.KeyCode;
-import lime.ui.KeyModifier;
-import lime.ui.MouseWheelMode;
-import lime.ui.Touch;
-#elseif openfl_html5
-import openfl._internal.backend.lime_standalone.KeyCode;
-import openfl._internal.backend.lime_standalone.KeyModifier;
-#end
-#if !display
-#if openfl_gl
-import openfl._internal.renderer.context3D.Context3DRenderer;
-#end
-#if openfl_html5
-import openfl._internal.renderer.canvas.CanvasRenderer;
-import openfl._internal.renderer.dom.DOMRenderer;
-#else
-import openfl._internal.renderer.cairo.CairoRenderer;
-#end
-#end
 import openfl._internal.utils.Log;
 import openfl._internal.utils.TouchData;
 import openfl.display3D.Context3D;
@@ -45,6 +22,13 @@ import openfl.geom.Transform;
 import openfl.ui.Keyboard;
 import openfl.ui.Mouse;
 import openfl.ui.MouseCursor;
+#if lime
+import lime.app.Application;
+import lime.app.IModule;
+#end
+#if openfl_html5
+import js.html.Element;
+#end
 #if hxtelemetry
 import openfl.profiler.Telemetry;
 #end
@@ -184,7 +168,7 @@ import openfl._internal.renderer.context3D.stats.Context3DStats;
 @:access(openfl.geom.Point)
 @:access(openfl.ui.Keyboard)
 @:access(openfl.ui.Mouse)
-class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements IModule #end
+class Stage extends DisplayObjectContainer #if lime implements IModule #end
 {
 	/**
 		A value from the StageAlign class that specifies the alignment of the
@@ -211,10 +195,14 @@ class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements
 	public var allowsFullScreenInteractive(default, null):Bool;
 
 	#if lime
-	/**
-		The associated Lime Application instance.
-	**/
-	public var application(default, null):Application;
+	@:noCompletion @:dox(hide) @SuppressWarnings("checkstyle:FieldDocComment")
+	@:deprecated("Stage.application is deprecated. Use Stage.limeApplication instead.")
+	public var application(get, never):Application;
+
+	@:noCompletion private inline function get_application():Application
+	{
+		return this.limeApplication;
+	}
 	#end
 
 	// @:noCompletion @:dox(hide) @:require(flash15) public var browserZoomFactor (default, null):Float;
@@ -513,6 +501,18 @@ class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements
 	**/
 	public var fullScreenWidth(get, never):UInt;
 
+	#if lime
+	/**
+		The associated Lime Application instance.
+	**/
+	public var limeApplication(default, null):Application;
+
+	/**
+		The associated Lime Window instance for this Stage.
+	**/
+	public var limeWindow(default, null):Window;
+	#end
+
 	// @:noCompletion @:dox(hide) @:require(flash11_2) public var mouseLock:Bool;
 
 	/**
@@ -789,10 +789,16 @@ class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements
 	**/
 	public var stageWidth(default, null):Int;
 
-	/**
-		The associated Lime Window instance for this Stage.
-	**/
-	public var window(default, null):Window;
+	#if lime
+	@:noCompletion @:dox(hide) @SuppressWarnings("checkstyle:FieldDocComment")
+	@:deprecated("Stage.window is deprecated. Use Stage.limeWindow instead.")
+	public var window(get, never):Window;
+
+	@:noCompletion private inline function get_window():Window
+	{
+		return this.limeWindow;
+	}
+	#end
 
 	/**
 		Indicates whether GPU compositing is available and in use. The
@@ -876,7 +882,6 @@ class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements
 	@:noCompletion private var __lastClickTime:Int;
 	@:noCompletion private var __logicalWidth:Int;
 	@:noCompletion private var __logicalHeight:Int;
-	@:noCompletion private var __macKeyboard:Bool;
 	@:noCompletion private var __mouseDownLeft:InteractiveObject;
 	@:noCompletion private var __mouseDownMiddle:InteractiveObject;
 	@:noCompletion private var __mouseDownRight:InteractiveObject;
@@ -887,6 +892,7 @@ class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements
 	@:noCompletion private var __pendingMouseEvent:Bool;
 	@:noCompletion private var __pendingMouseX:Int;
 	@:noCompletion private var __pendingMouseY:Int;
+	@:noCompletion private var __primaryTouchID:Null<Int>;
 	@:noCompletion private var __quality:StageQuality;
 	@:noCompletion private var __renderer:DisplayObjectRenderer;
 	@:noCompletion private var __rendering:Bool;
@@ -897,9 +903,6 @@ class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements
 	@:noCompletion private var __transparent:Bool;
 	@:noCompletion private var __wasDirty:Bool;
 	@:noCompletion private var __wasFullscreen:Bool;
-	#if (lime || openfl_html5)
-	@:noCompletion private var __primaryTouch:Touch;
-	#end
 
 	#if openfljs
 	@:noCompletion private static function __init__()
@@ -943,7 +946,7 @@ class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements
 	#end
 
 	public function new(#if (commonjs || (openfl_html5 && !lime)) width:Dynamic = 0, height:Dynamic = 0, color:Null<Int> = null,
-		documentClass:Class<Dynamic> = null, windowAttributes:Dynamic = null #else window:Window, color:Null<Int> = null #end)
+		documentClass:Class<Dynamic> = null, windowAttributes:Dynamic = null #elseif lime window:Window, color:Null<Int> = null #end)
 	{
 		#if hxtelemetry
 		Telemetry.__initialize();
@@ -986,12 +989,6 @@ class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements
 		softKeyboardRect = new Rectangle();
 		stageFocusRect = true;
 
-		#if mac
-		__macKeyboard = true;
-		#elseif openfl_html5
-		__macKeyboard = untyped __js__("/AppleWebKit/.test (navigator.userAgent) && /Mobile\\/\\w+/.test (navigator.userAgent) || /Mac/.test (navigator.platform)");
-		#end
-
 		__clearBeforeRender = true;
 		__forceRender = false;
 		__stack = [];
@@ -1003,6 +1000,8 @@ class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements
 		__backend = new StageBackend(this, width, height, color, documentClass, windowAttributes);
 		#elseif lime
 		__backend = new StageBackend(this, window, color);
+		#else
+		__backend = new StageBackend(this);
 		#end
 	}
 
@@ -1071,78 +1070,6 @@ class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements
 				}
 			}
 		}
-	}
-
-	@:noCompletion private function __createRenderer():Void
-	{
-		#if ((lime || openfl_html5) && !display)
-		#if openfl_html5
-		var pixelRatio = 1;
-
-		if (window.scale > 1)
-		{
-			// TODO: Does this check work?
-			pixelRatio = untyped window.devicePixelRatio || 1;
-		}
-		#end
-
-		var windowWidth = Std.int(window.width * window.scale);
-		var windowHeight = Std.int(window.height * window.scale);
-
-		switch (window.context.type)
-		{
-			case OPENGL, OPENGLES, WEBGL:
-				#if openfl_gl
-				#if (!disable_cffi && (!html5 || !canvas))
-				context3D = new Context3D(this);
-				context3D.configureBackBuffer(windowWidth, windowHeight, 0, true, true, true);
-				context3D.present();
-				if (BitmapData.__hardwareRenderer == null)
-				{
-					BitmapData.__hardwareRenderer = new Context3DRenderer(context3D);
-				}
-				__renderer = new Context3DRenderer(context3D);
-				#end
-				#end
-
-			case CANVAS:
-				#if openfl_html5
-				var renderer = new CanvasRenderer(window.context.canvas2D);
-				renderer.pixelRatio = pixelRatio;
-				__renderer = renderer;
-				#end
-
-			case DOM:
-				#if openfl_html5
-				var renderer = new DOMRenderer(window.context.dom);
-				renderer.pixelRatio = pixelRatio;
-				__renderer = renderer;
-				#end
-
-			case CAIRO:
-				#if (!openfl_html5 && openfl_cairo)
-				__renderer = new CairoRenderer(window.context.cairo);
-				#end
-
-			default:
-		}
-
-		if (__renderer != null)
-		{
-			__renderer.__allowSmoothing = (quality != LOW);
-			__renderer.__worldTransform = __displayMatrix;
-			__renderer.__stage = this;
-
-			__renderer.__resize(windowWidth, windowHeight);
-
-			if (BitmapData.__hardwareRenderer != null)
-			{
-				BitmapData.__hardwareRenderer.__stage = this;
-				BitmapData.__hardwareRenderer.__worldTransform = __displayMatrix.clone();
-				BitmapData.__hardwareRenderer.__resize(windowWidth, windowHeight);
-			}
-		}
-		#end
 	}
 
 	@SuppressWarnings(["checkstyle:Dynamic", "checkstyle:LeftCurly"])
@@ -1367,15 +1294,16 @@ class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements
 		}
 	}
 
-	#if (lime || openfl_html5)
-	@:noCompletion private function __onKey(type:String, keyCode:KeyCode, modifier:KeyModifier):Bool
+	@:noCompletion private function __onKey(event:KeyboardEvent):Bool
 	{
 		__dispatchPendingMouseEvent();
 
-		MouseEvent.__altKey = modifier.altKey;
-		MouseEvent.__commandKey = modifier.metaKey;
-		MouseEvent.__ctrlKey = modifier.ctrlKey;
-		MouseEvent.__shiftKey = modifier.shiftKey;
+		MouseEvent.__altKey = event.altKey;
+		#if !openfl_doc_gen
+		MouseEvent.__commandKey = event.commandKey;
+		#end
+		MouseEvent.__ctrlKey = event.ctrlKey;
+		MouseEvent.__shiftKey = event.shiftKey;
 
 		var preventDefault = false;
 		var stack = new Array<DisplayObject>();
@@ -1391,15 +1319,7 @@ class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements
 
 		if (stack.length > 0)
 		{
-			var keyLocation = Keyboard.__getKeyLocation(keyCode);
-			var keyCode = Keyboard.__convertKeyCode(keyCode);
-			var charCode = Keyboard.__getCharCode(keyCode, modifier.shiftKey);
-
 			// Flash Player events are not cancelable, should we make only some events (like APP_CONTROL_BACK) cancelable?
-
-			var event = new KeyboardEvent(type, true, true, charCode, keyCode, keyLocation,
-				__macKeyboard ? (modifier.ctrlKey || modifier.metaKey) : modifier.ctrlKey, modifier.altKey, modifier.shiftKey, modifier.ctrlKey,
-				modifier.metaKey);
 
 			stack.reverse();
 			__dispatchStack(event, stack);
@@ -1410,7 +1330,7 @@ class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements
 			}
 			else
 			{
-				if (type == KeyboardEvent.KEY_DOWN && keyCode == Keyboard.TAB)
+				if (event.type == KeyboardEvent.KEY_DOWN && event.keyCode == Keyboard.TAB)
 				{
 					var tabStack = new Array<InteractiveObject>();
 
@@ -1418,7 +1338,7 @@ class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements
 
 					var nextIndex = -1;
 					var nextObject:InteractiveObject = null;
-					var nextOffset = modifier.shiftKey ? -1 : 1;
+					var nextOffset = event.shiftKey ? -1 : 1;
 
 					if (tabStack.length > 1)
 					{
@@ -1495,7 +1415,7 @@ class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements
 
 					if (focus != null)
 					{
-						focusEvent = new FocusEvent(FocusEvent.KEY_FOCUS_CHANGE, true, true, nextObject, modifier.shiftKey, 0);
+						focusEvent = new FocusEvent(FocusEvent.KEY_FOCUS_CHANGE, true, true, nextObject, event.shiftKey, 0);
 
 						stack = [];
 
@@ -1520,7 +1440,6 @@ class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements
 
 		return preventDefault;
 	}
-	#end
 
 	@:noCompletion private function __onMouse(type:String, x:Float, y:Float, button:Int):Void
 	{
@@ -1704,15 +1623,14 @@ class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements
 
 					if (cursor != null)
 					{
-						window.cursor = cursor;
-						break;
+						Mouse.__setStageCursor(this, cursor);
 					}
 				}
 			}
 
 			if (cursor == null)
 			{
-				window.cursor = ARROW;
+				Mouse.__setStageCursor(this, ARROW);
 			}
 		}
 
@@ -1853,9 +1771,10 @@ class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements
 		Point.__pool.release(localPoint);
 	}
 
-	#if (lime || openfl_html5)
-	@:noCompletion private function __onMouseWheel(deltaX:Float, deltaY:Float, deltaMode:MouseWheelMode):Void
+	@:noCompletion private function __onMouseWheel(deltaX:Float, deltaY:Float):Bool
 	{
+		// TODO: Support delta modes
+
 		var x = __mouseX;
 		var y = __mouseY;
 
@@ -1881,17 +1800,16 @@ class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements
 		var event = MouseEvent.__create(MouseEvent.MOUSE_WHEEL, 0, __mouseX, __mouseY, target.__globalToLocal(targetPoint, targetPoint), target, delta);
 		event.cancelable = true;
 		__dispatchStack(event, stack);
-		if (event.isDefaultPrevented()) window.onMouseWheel.cancel();
 
 		Point.__pool.release(targetPoint);
-	}
-	#end
 
-	#if (lime || openfl_html5)
-	@:noCompletion private function __onTouch(type:String, touch:Touch):Void
+		return event.isDefaultPrevented();
+	}
+
+	@:noCompletion private function __onTouch(type:String, id:Int, x:Int, y:Int, pressure:Float, isPrimaryTouchPoint:Bool):Void
 	{
 		var targetPoint = Point.__pool.get();
-		targetPoint.setTo(Math.round(touch.x * window.width * window.scale), Math.round(touch.y * window.height * window.scale));
+		targetPoint.setTo(x, y);
 		__displayMatrix.__transformInversePoint(targetPoint);
 
 		var touchX = targetPoint.x;
@@ -1912,19 +1830,17 @@ class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements
 
 		if (target == null) target = this;
 
-		var touchId:Int = touch.id;
 		var touchData:TouchData = null;
 
-		if (__touchData.exists(touchId))
+		if (__touchData.exists(id))
 		{
-			touchData = __touchData.get(touchId);
+			touchData = __touchData.get(id);
 		}
 		else
 		{
 			touchData = TouchData.__pool.get();
 			touchData.reset();
-			touchData.touch = touch;
-			__touchData.set(touchId, touchData);
+			__touchData.set(id, touchData);
 		}
 
 		var touchType = null;
@@ -1948,20 +1864,19 @@ class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements
 		}
 
 		var localPoint = Point.__pool.get();
-		var isPrimaryTouchPoint:Bool = (__primaryTouch == touch);
 		var touchEvent = TouchEvent.__create(type, null, touchX, touchY, target.__globalToLocal(targetPoint, localPoint), cast target);
-		touchEvent.touchPointID = touchId;
+		touchEvent.touchPointID = id;
 		touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
-		touchEvent.pressure = touch.pressure;
+		touchEvent.pressure = pressure;
 
 		__dispatchStack(touchEvent, stack);
 
 		if (touchType != null)
 		{
 			touchEvent = TouchEvent.__create(touchType, null, touchX, touchY, target.__globalToLocal(targetPoint, localPoint), cast target);
-			touchEvent.touchPointID = touchId;
+			touchEvent.touchPointID = id;
 			touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
-			touchEvent.pressure = touch.pressure;
+			touchEvent.pressure = pressure;
 
 			__dispatchStack(touchEvent, stack);
 		}
@@ -1972,9 +1887,9 @@ class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements
 		{
 			touchEvent = TouchEvent.__create(TouchEvent.TOUCH_OUT, null, touchX, touchY, touchOverTarget.__globalToLocal(targetPoint, localPoint),
 				cast touchOverTarget);
-			touchEvent.touchPointID = touchId;
+			touchEvent.touchPointID = id;
 			touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
-			touchEvent.pressure = touch.pressure;
+			touchEvent.pressure = pressure;
 
 			__dispatchTarget(touchOverTarget, touchEvent);
 		}
@@ -1990,10 +1905,10 @@ class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements
 
 				touchEvent = TouchEvent.__create(TouchEvent.TOUCH_ROLL_OUT, null, touchX, touchY, touchOverTarget.__globalToLocal(targetPoint, localPoint),
 					cast touchOverTarget);
-				touchEvent.touchPointID = touchId;
+				touchEvent.touchPointID = id;
 				touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 				touchEvent.bubbles = false;
-				touchEvent.pressure = touch.pressure;
+				touchEvent.pressure = pressure;
 
 				__dispatchTarget(item, touchEvent);
 			}
@@ -2011,10 +1926,10 @@ class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements
 				{
 					touchEvent = TouchEvent.__create(TouchEvent.TOUCH_ROLL_OVER, null, touchX, touchY,
 						touchOverTarget.__globalToLocal(targetPoint, localPoint), cast item);
-					touchEvent.touchPointID = touchId;
+					touchEvent.touchPointID = id;
 					touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 					touchEvent.bubbles = false;
-					touchEvent.pressure = touch.pressure;
+					touchEvent.pressure = pressure;
 
 					__dispatchTarget(item, touchEvent);
 				}
@@ -2031,10 +1946,10 @@ class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements
 			if (target != null)
 			{
 				touchEvent = TouchEvent.__create(TouchEvent.TOUCH_OVER, null, touchX, touchY, target.__globalToLocal(targetPoint, localPoint), cast target);
-				touchEvent.touchPointID = touchId;
+				touchEvent.touchPointID = id;
 				touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 				touchEvent.bubbles = true;
-				touchEvent.pressure = touch.pressure;
+				touchEvent.pressure = pressure;
 
 				__dispatchTarget(target, touchEvent);
 			}
@@ -2047,12 +1962,11 @@ class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements
 
 		if (releaseTouchData)
 		{
-			__touchData.remove(touchId);
+			__touchData.remove(id);
 			touchData.reset();
 			TouchData.__pool.release(touchData);
 		}
 	}
-	#end
 
 	#if lime
 	@:noCompletion private function __registerLimeModule(application:Application):Void
@@ -2171,14 +2085,14 @@ class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements
 			}
 			else if (context3D == null)
 			{
-				window.onRender.cancel();
+				__backend.cancelRender();
 			}
 
 			if (context3D != null)
 			{
 				if (!context3D.__present)
 				{
-					window.onRender.cancel();
+					__backend.cancelRender();
 				}
 				else
 				{
@@ -2214,8 +2128,8 @@ class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements
 		var cacheWidth = stageWidth;
 		var cacheHeight = stageHeight;
 
-		var windowWidth = Std.int(window.width * window.scale);
-		var windowHeight = Std.int(window.height * window.scale);
+		var windowWidth = __backend.getWindowWidth();
+		var windowHeight = __backend.getWindowHeight();
 
 		#if openfl_html5
 		__logicalWidth = windowWidth;
@@ -2224,7 +2138,7 @@ class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements
 
 		__displayMatrix.identity();
 
-		if (fullScreenSourceRect != null && window.fullscreen)
+		if (fullScreenSourceRect != null && __backend.getWindowFullscreen())
 		{
 			stageWidth = Std.int(fullScreenSourceRect.width);
 			stageHeight = Std.int(fullScreenSourceRect.height);
@@ -2412,26 +2326,7 @@ class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements
 
 	@:noCompletion private function set_displayState(value:StageDisplayState):StageDisplayState
 	{
-		if (window != null)
-		{
-			switch (value)
-			{
-				case NORMAL:
-					if (window.fullscreen)
-					{
-						// window.minimized = false;
-						window.fullscreen = false;
-					}
-
-				default:
-					if (!window.fullscreen)
-					{
-						// window.minimized = false;
-						window.fullscreen = true;
-					}
-			}
-		}
-
+		__backend.setDisplayState(value);
 		return __displayState = value;
 	}
 
@@ -2472,27 +2367,18 @@ class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements
 
 	@:noCompletion private function get_frameRate():Float
 	{
-		if (window != null)
-		{
-			return window.frameRate;
-		}
-
-		return 0;
+		return __backend.getFrameRate();
 	}
 
 	@:noCompletion private function set_frameRate(value:Float):Float
 	{
-		if (window != null)
-		{
-			return window.frameRate = value;
-		}
-
+		__backend.setFrameRate(value);
 		return value;
 	}
 
 	@:noCompletion private function get_fullScreenHeight():UInt
 	{
-		return Math.ceil(window.display.currentMode.height * window.scale);
+		return __backend.getFullScreenHeight();
 	}
 
 	@:noCompletion private function get_fullScreenSourceRect():Rectangle
@@ -2521,7 +2407,7 @@ class Stage extends DisplayObjectContainer #if (lime || openfl_html5) implements
 
 	@:noCompletion private function get_fullScreenWidth():UInt
 	{
-		return Math.ceil(window.display.currentMode.width * window.scale);
+		return __backend.getFullScreenWidth();
 	}
 
 	@:noCompletion private override function set_height(value:Float):Float
@@ -2633,7 +2519,7 @@ private typedef StageBackend = openfl._internal.backend.lime.LimeStageBackend;
 #elseif openfl_html5
 private typedef StageBackend = openfl._internal.backend.html5.HTML5StageBackend;
 #else
-private typedef StageBackend = Dynamic;
+private typedef StageBackend = openfl._internal.backend.dummy.DummyStageBackend;
 #end
 #else
 typedef Stage = flash.display.Stage;

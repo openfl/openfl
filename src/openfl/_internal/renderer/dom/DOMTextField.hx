@@ -1,8 +1,8 @@
 package openfl._internal.renderer.dom;
 
 #if openfl_html5
-import openfl._internal.backend.html5.Browser;
-import openfl._internal.backend.html5.Element;
+import js.html.Element;
+import js.Browser;
 import openfl._internal.text.TextEngine;
 import openfl.text.TextField;
 import openfl.text.TextFormatAlign;
@@ -25,7 +25,7 @@ class DOMTextField
 		{
 			renderer.element.removeChild(textField.__div);
 			textField.__div = null;
-			textField.__style = null;
+			textField.__renderData.style = null;
 		}
 		#end
 	}
@@ -81,7 +81,7 @@ class DOMTextField
 					{
 						textField.__div = cast Browser.document.createElement("div");
 						renderer.__initializeElement(textField, textField.__div);
-						textField.__style.setProperty("outline", "none", null);
+						textField.__renderData.style.setProperty("outline", "none", null);
 
 						textField.__div.addEventListener("input", function(event)
 						{
@@ -105,32 +105,32 @@ class DOMTextField
 
 					if (!textEngine.wordWrap)
 					{
-						textField.__style.setProperty("white-space", "nowrap", null);
+						textField.__renderData.style.setProperty("white-space", "nowrap", null);
 					}
 					else
 					{
-						textField.__style.setProperty("word-wrap", "break-word", null);
+						textField.__renderData.style.setProperty("word-wrap", "break-word", null);
 					}
 
-					textField.__style.setProperty("overflow", "hidden", null);
+					textField.__renderData.style.setProperty("overflow", "hidden", null);
 
 					if (textEngine.selectable)
 					{
-						textField.__style.setProperty("cursor", "text", null);
-						textField.__style.setProperty("-webkit-user-select", "text", null);
-						textField.__style.setProperty("-moz-user-select", "text", null);
-						textField.__style.setProperty("-ms-user-select", "text", null);
-						textField.__style.setProperty("-o-user-select", "text", null);
+						textField.__renderData.style.setProperty("cursor", "text", null);
+						textField.__renderData.style.setProperty("-webkit-user-select", "text", null);
+						textField.__renderData.style.setProperty("-moz-user-select", "text", null);
+						textField.__renderData.style.setProperty("-ms-user-select", "text", null);
+						textField.__renderData.style.setProperty("-o-user-select", "text", null);
 					}
 					else
 					{
-						textField.__style.setProperty("cursor", "inherit", null);
+						textField.__renderData.style.setProperty("cursor", "inherit", null);
 					}
 
 					var div = untyped textField.__div;
 					div.contentEditable = (textEngine.type == INPUT);
 
-					var style = textField.__style;
+					var style = textField.__renderData.style;
 
 					// TODO: Handle ranges using span
 					// TODO: Vertical align

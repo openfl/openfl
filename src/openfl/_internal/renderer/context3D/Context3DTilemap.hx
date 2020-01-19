@@ -1,7 +1,7 @@
 package openfl._internal.renderer.context3D;
 
 #if openfl_gl
-import openfl._internal.backend.utils.Float32Array;
+import openfl._internal.bindings.typedarray.Float32Array;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display.Shader;
@@ -131,10 +131,10 @@ class Context3DTilemap
 					tileRect = tile.__rect;
 					if (tileRect == null || tileRect.width <= 0 || tileRect.height <= 0) continue;
 
-					uvX = tileRect.x / bitmapData.__textureWidth;
-					uvY = tileRect.y / bitmapData.__textureHeight;
-					uvWidth = tileRect.right / bitmapData.__textureWidth;
-					uvHeight = tileRect.bottom / bitmapData.__textureHeight;
+					uvX = tileRect.x / bitmapData.__renderData.textureWidth;
+					uvY = tileRect.y / bitmapData.__renderData.textureHeight;
+					uvWidth = tileRect.right / bitmapData.__renderData.textureWidth;
+					uvHeight = tileRect.bottom / bitmapData.__renderData.textureHeight;
 				}
 				else
 				{
@@ -195,7 +195,6 @@ class Context3DTilemap
 		// if (tilemap.__tileArray == null || tilemap.__tileArray.length == 0) return;
 
 		// var renderer:Context3DRenderer = cast renderer.renderer;
-		// var gl = renderer.__gl;
 
 		// var shader = renderer.__maskShader;
 

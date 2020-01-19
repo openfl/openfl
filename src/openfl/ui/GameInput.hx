@@ -5,15 +5,6 @@ import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.EventType;
 import openfl.events.GameInputEvent;
-#if (!lime && openfl_html5)
-import openfl._internal.backend.lime_standalone.Gamepad;
-import openfl._internal.backend.lime_standalone.GamepadAxis;
-import openfl._internal.backend.lime_standalone.GamepadButton;
-#else
-import openfl._internal.backend.lime.Gamepad;
-import openfl._internal.backend.lime.GamepadAxis;
-import openfl._internal.backend.lime.GamepadButton;
-#end
 
 /**
 	The GameInput class is the entry point into the GameInput API. You can use this API to
@@ -83,9 +74,6 @@ import openfl._internal.backend.lime.GamepadButton;
 
 	@:noCompletion private static var __deviceList:Array<GameInputDevice> = new Array();
 	@:noCompletion private static var __instances:Array<GameInput> = [];
-	#if (lime || openfl_html5)
-	@:noCompletion private static var __devices:Map<Gamepad, GameInputDevice> = new Map();
-	#end
 
 	public function new()
 	{
@@ -132,124 +120,27 @@ import openfl._internal.backend.lime.GamepadButton;
 		return null;
 	}
 
-	#if (lime || openfl_html5)
-	@:noCompletion private static function __getDevice(gamepad:Gamepad):GameInputDevice
+	@:noCompletion private static function __addInputDevice(device:GameInputDevice):Void
 	{
-		if (gamepad == null) return null;
-
-		if (!__devices.exists(gamepad))
-		{
-			var device = new GameInputDevice(gamepad.guid, gamepad.name);
-			__deviceList.push(device);
-			__devices.set(gamepad, device);
-			numDevices = __deviceList.length;
-		}
-
-		return __devices.get(gamepad);
-	}
-	#end
-
-	#if (lime || openfl_html5)
-	@:noCompletion private static function __onGamepadAxisMove(gamepad:Gamepad, axis:GamepadAxis, value:Float):Void
-	{
-		var device = __getDevice(gamepad);
-		if (device == null) return;
-
-		if (device.enabled)
-		{
-			if (!device.__axis.exists(axis))
-			{
-				var control = new GameInputControl(device, "AXIS_" + axis, -1, 1);
-				device.__axis.set(axis, control);
-				device.__controls.push(control);
-			}
-
-			var control = device.__axis.get(axis);
-			control.value = value;
-			control.dispatchEvent(new Event(Event.CHANGE));
-		}
-	}
-	#end
-
-	#if (lime || openfl_html5)
-	@:noCompletion private static function __onGamepadButtonDown(gamepad:Gamepad, button:GamepadButton):Void
-	{
-		var device = __getDevice(gamepad);
-		if (device == null) return;
-
-		if (device.enabled)
-		{
-			if (!device.__button.exists(button))
-			{
-				var control = new GameInputControl(device, "BUTTON_" + button, 0, 1);
-				device.__button.set(button, control);
-				device.__controls.push(control);
-			}
-
-			var control = device.__button.get(button);
-			control.value = 1;
-			control.dispatchEvent(new Event(Event.CHANGE));
-		}
-	}
-	#end
-
-	#if (lime || openfl_html5)
-	@:noCompletion private static function __onGamepadButtonUp(gamepad:Gamepad, button:GamepadButton):Void
-	{
-		var device = __getDevice(gamepad);
-		if (device == null) return;
-
-		if (device.enabled)
-		{
-			if (!device.__button.exists(button))
-			{
-				var control = new GameInputControl(device, "BUTTON_" + button, 0, 1);
-				device.__button.set(button, control);
-				device.__controls.push(control);
-			}
-
-			var control = device.__button.get(button);
-			control.value = 0;
-			control.dispatchEvent(new Event(Event.CHANGE));
-		}
-	}
-	#end
-
-	#if (lime || openfl_html5)
-	@:noCompletion private static function __onGamepadConnect(gamepad:Gamepad):Void
-	{
-		var device = __getDevice(gamepad);
-		if (device == null) return;
+		__deviceList.push(device);
+		numDevices = __deviceList.length;
 
 		for (instance in __instances)
 		{
 			instance.dispatchEvent(new GameInputEvent(GameInputEvent.DEVICE_ADDED, true, false, device));
 		}
 	}
-	#end
 
-	#if (lime || openfl_html5)
-	@:noCompletion private static function __onGamepadDisconnect(gamepad:Gamepad):Void
+	@:noCompletion private static function __removeInputDevice(device:GameInputDevice):Void
 	{
-		var device = __devices.get(gamepad);
+		__deviceList.remove(device);
+		numDevices = __deviceList.length;
 
-		if (device != null)
+		for (instance in __instances)
 		{
-			if (__devices.exists(gamepad))
-			{
-				__deviceList.remove(__devices.get(gamepad));
-				__devices.remove(gamepad);
-			}
-
-			numDevices = __deviceList.length;
-
-			for (instance in __instances)
-			{
-				instance.dispatchEvent(new GameInputEvent(GameInputEvent.DEVICE_REMOVED, true, false, device));
-			}
+			instance.dispatchEvent(new GameInputEvent(GameInputEvent.DEVICE_REMOVED, true, false, device));
 		}
 	}
-	#end
 }
 #else
 typedef GameInput = flash.ui.GameInput;

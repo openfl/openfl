@@ -12,11 +12,11 @@ import js.html.webgl.Texture in GLTexture;
 import js.html.webgl.TransformFeedback in GLTransformFeedback;
 import js.html.webgl.UniformLocation in GLUniformLocation;
 import js.html.webgl.VertexArrayObject in GLVertexArrayObject;
-import openfl._internal.backend.utils.ArrayBuffer;
-import openfl._internal.backend.utils.ArrayBufferView;
-import openfl._internal.backend.utils.Float32Array;
-// import openfl._internal.backend.utils.Int32Array;
-// import openfl._internal.backend.utils.UInt32Array;
+import openfl._internal.bindings.typedarray.ArrayBuffer;
+import openfl._internal.bindings.typedarray.ArrayBufferView;
+import openfl._internal.bindings.typedarray.Float32Array;
+// import openfl._internal.bindings.typedarray.Int32Array;
+// import openfl._internal.bindings.typedarray.UInt32Array;
 #if haxe4
 import js.lib.Int32Array;
 import js.html.Uint32Array in UInt32Array;

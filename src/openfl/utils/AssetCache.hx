@@ -3,10 +3,8 @@ package openfl.utils;
 import openfl.display.BitmapData;
 import openfl.media.Sound;
 import openfl.text.Font;
-#if (!lime && openfl_html5)
-import openfl._internal.backend.lime_standalone.Assets as LimeAssets;
-#else
-import openfl._internal.backend.lime.Assets as LimeAssets;
+#if lime
+import lime.utils.Assets as LimeAssets;
 #end
 
 /**
@@ -195,7 +193,7 @@ class AssetCache implements IAssetCache
 	**/
 	public function removeBitmapData(id:String):Bool
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		LimeAssets.cache.image.remove(id);
 		#end
 		return bitmapData.remove(id);
@@ -209,7 +207,7 @@ class AssetCache implements IAssetCache
 	**/
 	public function removeFont(id:String):Bool
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		LimeAssets.cache.font.remove(id);
 		#end
 		return font.remove(id);
@@ -223,7 +221,7 @@ class AssetCache implements IAssetCache
 	**/
 	public function removeSound(id:String):Bool
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		LimeAssets.cache.audio.remove(id);
 		#end
 		return sound.remove(id);

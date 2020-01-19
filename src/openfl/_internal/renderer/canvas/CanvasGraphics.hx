@@ -1,11 +1,11 @@
 package openfl._internal.renderer.canvas;
 
 #if openfl_html5
-import openfl._internal.backend.html5.CanvasElement;
-import openfl._internal.backend.html5.CanvasPattern;
-import openfl._internal.backend.html5.CanvasRenderingContext2D;
-import openfl._internal.backend.html5.CanvasWindingRule;
-import openfl._internal.backend.html5.Browser;
+import js.html.CanvasElement;
+import js.html.CanvasPattern;
+import js.html.CanvasRenderingContext2D;
+import js.html.CanvasWindingRule;
+import js.Browser;
 import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.DrawCommandReader;
 import openfl.display.BitmapData;
@@ -18,10 +18,10 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.Vector;
-#if (!lime && openfl_html5)
+#if !lime
 import openfl._internal.backend.lime_standalone.ImageCanvasUtil;
 #else
-import openfl._internal.backend.lime.ImageCanvasUtil;
+import lime._internal.graphics.ImageCanvasUtil;
 #end
 
 @:access(openfl.display.DisplayObject)
@@ -92,9 +92,8 @@ class CanvasGraphics
 	private static function createBitmapFill(bitmap:BitmapData, bitmapRepeat:Bool, smooth:Bool):#if openfl_html5 CanvasPattern #else Dynamic #end
 	{
 		#if (lime && openfl_html5)
-		ImageCanvasUtil.convertToCanvas(bitmap.image);
 		setSmoothing(smooth);
-		return context.createPattern(bitmap.image.src, bitmapRepeat ? "repeat" : "no-repeat");
+		return context.createPattern(bitmap.__getElement(), bitmapRepeat ? "repeat" : "no-repeat");
 		#else
 		return null;
 		#end
@@ -173,7 +172,7 @@ class CanvasGraphics
 		canvas.width = width;
 		canvas.height = height;
 
-		context.fillStyle = context.createPattern(bitmap.image.src, repeat ? "repeat" : "no-repeat");
+		context.fillStyle = context.createPattern(bitmap.__getElement(), repeat ? "repeat" : "no-repeat");
 		context.beginPath();
 		context.moveTo(0, 0);
 		context.lineTo(0, height);
@@ -264,12 +263,12 @@ class CanvasGraphics
 			x -= transform.__transformX(bounds.x, bounds.y);
 			y -= transform.__transformY(bounds.x, bounds.y);
 
-			var cacheCanvas = graphics.__canvas;
-			var cacheContext = graphics.__context;
-			graphics.__canvas = hitTestCanvas;
-			graphics.__context = hitTestContext;
+			var cacheCanvas = graphics.__renderData.canvas;
+			var cacheContext = graphics.__renderData.context;
+			graphics.__renderData.canvas = hitTestCanvas;
+			graphics.__renderData.context = hitTestContext;
 
-			context = graphics.__context;
+			context = graphics.__renderData.context;
 			context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 
 			fillCommands.clear();
@@ -328,8 +327,8 @@ class CanvasGraphics
 						if (hasFill && context.isPointInPath(x, y, windingRule))
 						{
 							data.destroy();
-							graphics.__canvas = cacheCanvas;
-							graphics.__context = cacheContext;
+							graphics.__renderData.canvas = cacheCanvas;
+							graphics.__renderData.context = cacheContext;
 							return true;
 						}
 
@@ -338,8 +337,8 @@ class CanvasGraphics
 						if (hasStroke && (context : Dynamic).isPointInStroke(x, y))
 						{
 							data.destroy();
-							graphics.__canvas = cacheCanvas;
-							graphics.__context = cacheContext;
+							graphics.__renderData.canvas = cacheCanvas;
+							graphics.__renderData.context = cacheContext;
 							return true;
 						}
 
@@ -352,8 +351,8 @@ class CanvasGraphics
 						if (hasFill && context.isPointInPath(x, y, windingRule))
 						{
 							data.destroy();
-							graphics.__canvas = cacheCanvas;
-							graphics.__context = cacheContext;
+							graphics.__renderData.canvas = cacheCanvas;
+							graphics.__renderData.context = cacheContext;
 							return true;
 						}
 
@@ -362,8 +361,8 @@ class CanvasGraphics
 						if (hasStroke && (context : Dynamic).isPointInStroke(x, y))
 						{
 							data.destroy();
-							graphics.__canvas = cacheCanvas;
-							graphics.__context = cacheContext;
+							graphics.__renderData.canvas = cacheCanvas;
+							graphics.__renderData.context = cacheContext;
 							return true;
 						}
 
@@ -449,8 +448,8 @@ class CanvasGraphics
 
 			data.destroy();
 
-			graphics.__canvas = cacheCanvas;
-			graphics.__context = cacheContext;
+			graphics.__renderData.canvas = cacheCanvas;
+			graphics.__renderData.context = cacheContext;
 			return hitTest;
 		}
 		#end
@@ -859,7 +858,7 @@ class CanvasGraphics
 
 						if (bitmapFill != null)
 						{
-							context.drawImage(bitmapFill.image.src, tileRect.x, tileRect.y, tileRect.width, tileRect.height, 0, 0, tileRect.width,
+							context.drawImage(bitmapFill.__getElement(), tileRect.x, tileRect.y, tileRect.width, tileRect.height, 0, 0, tileRect.width,
 								tileRect.height);
 						}
 						else
@@ -1064,7 +1063,7 @@ class CanvasGraphics
 						if (canOptimizeMatrix && st >= 0 && sl >= 0 && sr <= bitmapFill.width && sb <= bitmapFill.height)
 						{
 							optimizationUsed = true;
-							if (!hitTesting) context.drawImage(bitmapFill.image.src, sl, st, sr - sl, sb - st, c.x - offsetX, c.y - offsetY, c.width,
+							if (!hitTesting) context.drawImage(bitmapFill.__getElement(), sl, st, sr - sl, sb - st, c.x - offsetX, c.y - offsetY, c.width,
 								c.height);
 						}
 					}
@@ -1153,21 +1152,21 @@ class CanvasGraphics
 
 			if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || width < 1 || height < 1)
 			{
-				graphics.__canvas = null;
-				graphics.__context = null;
+				graphics.__renderData.canvas = null;
+				graphics.__renderData.context = null;
 				graphics.__bitmap = null;
 			}
 			else
 			{
-				if (graphics.__canvas == null)
+				if (graphics.__renderData.canvas == null)
 				{
-					graphics.__canvas = cast Browser.document.createElement("canvas");
-					graphics.__context = graphics.__canvas.getContext("2d");
+					graphics.__renderData.canvas = cast Browser.document.createElement("canvas");
+					graphics.__renderData.context = graphics.__renderData.canvas.getContext("2d");
 				}
 
-				context = graphics.__context;
+				context = graphics.__renderData.context;
 				var transform = graphics.__renderTransform;
-				var canvas = graphics.__canvas;
+				var canvas = graphics.__renderData.canvas;
 
 				var scale = renderer.pixelRatio;
 				var scaledWidth = Std.int(width * scale);
@@ -1444,7 +1443,7 @@ class CanvasGraphics
 				}
 
 				data.destroy();
-				graphics.__bitmap = BitmapData.fromCanvas(graphics.__canvas);
+				graphics.__bitmap = BitmapData.fromCanvas(graphics.__renderData.canvas);
 			}
 
 			graphics.__softwareDirty = false;

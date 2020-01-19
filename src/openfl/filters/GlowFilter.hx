@@ -1,13 +1,17 @@
 package openfl.filters;
 
 #if !flash
-import openfl._internal.backend.lime.ImageDataUtil;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
 import openfl.geom.ColorTransform;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+#if lime
+import lime._internal.graphics.ImageDataUtil;
+#else
+import openfl._internal.backend.lime_standalone.ImageDataUtil;
+#end
 
 /**
 	The GlowFilter class lets you apply a glow effect to display objects. You
@@ -248,18 +252,18 @@ import openfl.geom.Rectangle;
 
 		if (__inner || __knockout)
 		{
-			sourceBitmapData.image.colorTransform(sourceBitmapData.image.rect, new ColorTransform(1, 1, 1, 0, 0, 0, 0, -255).__toLimeColorMatrix());
-			sourceBitmapData.image.dirty = true;
-			sourceBitmapData.image.version++;
+			sourceBitmapData.limeImage.colorTransform(sourceBitmapData.limeImage.rect, new ColorTransform(1, 1, 1, 0, 0, 0, 0, -255).__toLimeColorMatrix());
+			sourceBitmapData.limeImage.dirty = true;
+			sourceBitmapData.limeImage.version++;
 			bitmapData = sourceBitmapData.clone();
 			return bitmapData;
 		}
 
-		var finalImage = ImageDataUtil.gaussianBlur(bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle(), destPoint.__toLimeVector2(),
-			__blurX, __blurY, __quality, __strength);
+		var finalImage = ImageDataUtil.gaussianBlur(bitmapData.limeImage, sourceBitmapData.limeImage, sourceRect.__toLimeRectangle(),
+			destPoint.__toLimeVector2(), __blurX, __blurY, __quality, __strength);
 		finalImage.colorTransform(finalImage.rect, new ColorTransform(0, 0, 0, __alpha, r, g, b, 0).__toLimeColorMatrix());
 
-		if (finalImage == bitmapData.image) return bitmapData;
+		if (finalImage == bitmapData.limeImage) return bitmapData;
 		#end
 		return sourceBitmapData;
 	}

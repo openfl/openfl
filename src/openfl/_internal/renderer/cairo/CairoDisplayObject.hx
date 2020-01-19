@@ -1,7 +1,7 @@
 package openfl._internal.renderer.cairo;
 
 #if openfl_cairo
-import openfl._internal.backend.math.ARGB;
+import lime.math.ARGB;
 import openfl.display.DisplayObject;
 
 #if !openfl_debug
@@ -22,7 +22,7 @@ class CairoDisplayObject
 		if (alpha <= 0) return;
 
 		if (displayObject.opaqueBackground != null
-			&& !displayObject.__isCacheBitmapRender
+			&& !displayObject.__renderData.isCacheBitmapRender
 			&& displayObject.width > 0
 			&& displayObject.height > 0)
 		{

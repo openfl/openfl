@@ -1,9 +1,9 @@
 package openfl._internal.renderer.context3D.batcher;
 
 #if openfl_gl
-import openfl._internal.backend.gl.GL;
-import openfl._internal.backend.utils.Float32Array;
-import openfl._internal.backend.utils.UInt16Array;
+import openfl._internal.bindings.gl.GL;
+import openfl._internal.bindings.typedarray.Float32Array;
+import openfl._internal.bindings.typedarray.UInt16Array;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display.Shader;
@@ -12,16 +12,17 @@ import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
-#if (!lime && openfl_html5)
+#if lime
+import openfl._internal.bindings.gl.WebGLRenderingContext;
+#elseif openfl_html5
 import openfl._internal.backend.lime_standalone.WebGLRenderContext in WebGLRenderingContext;
-#else
-import openfl._internal.backend.gl.WebGLRenderingContext;
 #end
 #if gl_stats
 import openfl._internal.renderer.context3D.stats.Context3DStats;
 import openfl._internal.renderer.context3D.stats.DrawCallContext;
 #end
 
+@:access(openfl._internal.backend.opengl) // TODO: Remove backend references
 @:access(openfl.display.Shader)
 @:access(openfl.display.ShaderParameter)
 @:access(openfl.display3D.Context3D)
@@ -75,7 +76,7 @@ class BatchRenderer
 		__indexBuffer.uploadFromTypedArray(__createIndicesForQuads(__maxQuads));
 
 		#if !macro
-		__shader.aTextureId.__useArray = true;
+		__shader.aTextureId.__backend.useArray = true;
 		#end
 		__samplers = [for (i in 0...__maxTextures) Reflect.field(__shader.data, "uSampler" + i)];
 	}
@@ -190,7 +191,7 @@ class BatchRenderer
 		context.setCulling(NONE);
 		renderer.__setBlendMode(__batch.blendMode);
 
-		context.__bindGLArrayBuffer(__vertexBuffer.__id);
+		context.__backend.bindGLArrayBuffer(__vertexBuffer.__backend.glBufferID);
 
 		var subArray = __batch.vertices.subarray(0, __batch.numQuads * Batch.FLOATS_PER_QUAD);
 		gl.bufferSubData(GL.ARRAY_BUFFER, 0, subArray);

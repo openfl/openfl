@@ -1,16 +1,12 @@
 package openfl.display;
 
 #if !flash
+import openfl._internal.renderer.DisplayObjectRendererType;
 import openfl.events.EventDispatcher;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.media.Video;
-#if (!lime && openfl_html5)
-import openfl._internal.backend.lime_standalone.RenderContextType;
-#else
-import openfl._internal.backend.lime.RenderContextType;
-#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -18,6 +14,7 @@ import openfl._internal.backend.lime.RenderContextType;
 #end
 @:allow(openfl._internal.renderer)
 @:access(openfl.display.Bitmap)
+@:access(openfl.display.BitmapData)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.TileContainer)
 @:access(openfl.display.Tilemap)
@@ -33,7 +30,7 @@ class DisplayObjectRenderer extends EventDispatcher
 	@:noCompletion private var __roundPixels:Bool;
 	@:noCompletion private var __stage:Stage;
 	@:noCompletion private var __transparent:Bool;
-	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __type:RenderContextType;
+	@:noCompletion private var __type:DisplayObjectRendererType;
 	@:noCompletion private var __worldAlpha:Float;
 	@:noCompletion private var __worldColorTransform:ColorTransform;
 	@:noCompletion private var __worldTransform:Matrix;
@@ -59,8 +56,8 @@ class DisplayObjectRenderer extends EventDispatcher
 				case BITMAP:
 					var bitmap:Bitmap = cast child;
 					if (bitmap.__bitmapData != null
-						&& bitmap.__bitmapData.image != null
-						&& bitmap.__bitmapData.image.version != bitmap.__imageVersion)
+						&& bitmap.__bitmapData.readable
+						&& bitmap.__bitmapData.__getVersion() != bitmap.__imageVersion)
 					{
 						bitmap.__setRenderDirty();
 					}

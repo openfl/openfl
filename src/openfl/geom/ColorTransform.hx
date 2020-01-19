@@ -1,13 +1,8 @@
 package openfl.geom;
 
 #if !flash
-import openfl._internal.backend.utils.Float32Array;
+import openfl._internal.bindings.typedarray.Float32Array;
 import openfl._internal.utils.ObjectPool;
-#if (!lime && openfl_html5)
-import openfl._internal.backend.lime_standalone.ColorMatrix;
-#else
-import openfl._internal.backend.math.ColorMatrix;
-#end
 
 /**
 	The ColorTransform class lets you adjust the color values in a display
@@ -330,7 +325,7 @@ class ColorTransform
 	}
 
 	#if (lime || openfl_html5)
-	@:noCompletion private function __toLimeColorMatrix():ColorMatrix
+	@:noCompletion private function __toLimeColorMatrix():Float32Array
 	{
 		if (__limeColorMatrix == null)
 		{

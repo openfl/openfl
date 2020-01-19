@@ -1,6 +1,6 @@
 package openfl._internal.backend.lime_standalone; #if openfl_html5
 
-import openfl._internal.backend.utils.UInt8Array;
+import openfl._internal.bindings.typedarray.UInt8Array;
 #if haxe4
 import js.lib.Uint32Array as UInt32Array;
 #else

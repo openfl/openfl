@@ -2,11 +2,6 @@ package openfl.desktop;
 
 #if !flash
 import openfl.utils.Object;
-#if (!lime && openfl_html5)
-import openfl._internal.backend.lime_standalone.Clipboard as LimeClipboard;
-#else
-import openfl._internal.backend.lime.Clipboard as LimeClipboard;
-#end
 
 /**
 	The Clipboard class provides a container for transferring data and objects
@@ -114,10 +109,7 @@ class Clipboard
 	**/
 	public var formats(get, never):Array<ClipboardFormats>;
 
-	@:noCompletion private var __htmlText:String;
-	@:noCompletion private var __richText:String;
-	@:noCompletion private var __systemClipboard:Bool;
-	@:noCompletion private var __text:String;
+	@:noCompletion private var __backend:ClipboardBackend;
 
 	#if openfljs
 	@:noCompletion private static function __init__()
@@ -134,7 +126,10 @@ class Clipboard
 	}
 	#end
 
-	@:noCompletion private function new() {}
+	@:noCompletion private function new()
+	{
+		__backend = new ClipboardBackend(this);
+	}
 
 	/**
 		Deletes all data representations from this Clipboard object.
@@ -149,17 +144,7 @@ class Clipboard
 	**/
 	public function clear():Void
 	{
-		#if (lime || openfl_html5)
-		if (__systemClipboard)
-		{
-			LimeClipboard.text = null;
-			return;
-		}
-		#end
-
-		__htmlText = null;
-		__richText = null;
-		__text = null;
+		__backend.clear();
 	}
 
 	/**
@@ -176,34 +161,7 @@ class Clipboard
 	**/
 	public function clearData(format:ClipboardFormats):Void
 	{
-		#if (lime || openfl_html5)
-		if (__systemClipboard)
-		{
-			switch (format)
-			{
-				case HTML_FORMAT, RICH_TEXT_FORMAT, TEXT_FORMAT:
-					LimeClipboard.text = null;
-
-				default:
-			}
-
-			return;
-		}
-		#end
-
-		switch (format)
-		{
-			case HTML_FORMAT:
-				__htmlText = null;
-
-			case RICH_TEXT_FORMAT:
-				__richText = null;
-
-			case TEXT_FORMAT:
-				__text = null;
-
-			default:
-		}
+		__backend.clearData(format);
 	}
 
 	/**
@@ -256,24 +214,7 @@ class Clipboard
 			transferMode = ORIGINAL_PREFERRED;
 		}
 
-		#if (lime || openfl_html5)
-		if (__systemClipboard)
-		{
-			return switch (format)
-			{
-				case HTML_FORMAT, RICH_TEXT_FORMAT, TEXT_FORMAT: LimeClipboard.text;
-				default: null;
-			}
-		}
-		#end
-
-		return switch (format)
-		{
-			case HTML_FORMAT: __htmlText;
-			case RICH_TEXT_FORMAT: __richText;
-			case TEXT_FORMAT: __text;
-			default: null;
-		}
+		return __backend.getData(format, transferMode);
 	}
 
 	/**
@@ -291,24 +232,7 @@ class Clipboard
 	**/
 	public function hasFormat(format:ClipboardFormats):Bool
 	{
-		#if (lime || openfl_html5)
-		if (__systemClipboard)
-		{
-			return switch (format)
-			{
-				case HTML_FORMAT, RICH_TEXT_FORMAT, TEXT_FORMAT: LimeClipboard.text != null;
-				default: false;
-			}
-		}
-		#end
-
-		return switch (format)
-		{
-			case HTML_FORMAT: __htmlText != null;
-			case RICH_TEXT_FORMAT: __richText != null;
-			case TEXT_FORMAT: __text != null;
-			default: false;
-		}
+		return __backend.hasFormat(format);
 	}
 
 	/**
@@ -398,38 +322,7 @@ class Clipboard
 	**/
 	public function setData(format:ClipboardFormats, data:Object, serializable:Bool = true):Bool
 	{
-		#if (lime || openfl_html5)
-		if (__systemClipboard)
-		{
-			switch (format)
-			{
-				case HTML_FORMAT, RICH_TEXT_FORMAT, TEXT_FORMAT:
-					LimeClipboard.text = data;
-					return true;
-
-				default:
-					return false;
-			}
-		}
-		#end
-
-		switch (format)
-		{
-			case HTML_FORMAT:
-				__htmlText = data;
-				return true;
-
-			case RICH_TEXT_FORMAT:
-				__richText = data;
-				return true;
-
-			case TEXT_FORMAT:
-				__text = data;
-				return true;
-
-			default:
-				return false;
-		}
+		return __backend.setData(format, data, serializable);
 	}
 
 	#if !openfl_strict
@@ -528,12 +421,19 @@ class Clipboard
 		if (__generalClipboard == null)
 		{
 			__generalClipboard = new Clipboard();
-			__generalClipboard.__systemClipboard = true;
 		}
 
 		return __generalClipboard;
 	}
 }
+
+#if lime
+private typedef ClipboardBackend = openfl._internal.backend.lime.LimeClipboardBackend;
+#elseif openfl_html5
+private typedef ClipboardBackend = openfl._internal.backend.html5.HTML5ClipboardBackend;
+#else
+private typedef ClipboardBackend = openfl._internal.backend.dummy.DummyClipboardBackend;
+#end
 #else
 typedef Clipboard = flash.desktop.Clipboard;
 #end

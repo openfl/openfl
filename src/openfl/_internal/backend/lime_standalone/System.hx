@@ -4,9 +4,9 @@ package openfl._internal.backend.lime_standalone;
 import haxe.Constraints;
 import js.html.Element;
 import js.Browser;
-import openfl._internal.backend.utils.ArrayBuffer;
-import openfl._internal.backend.utils.UInt8Array;
-import openfl._internal.backend.utils.UInt16Array;
+import openfl._internal.bindings.typedarray.ArrayBuffer;
+import openfl._internal.bindings.typedarray.UInt8Array;
+import openfl._internal.bindings.typedarray.UInt16Array;
 import openfl.geom.Rectangle;
 import openfl.utils.Endian;
 

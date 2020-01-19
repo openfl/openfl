@@ -1,6 +1,6 @@
 package openfl._internal.renderer.context3D;
 
-import openfl._internal.backend.utils.Float32Array;
+import openfl._internal.bindings.typedarray.Float32Array;
 import openfl.display.Geometry;
 import openfl.geom.Matrix;
 #if gl_stats
@@ -84,7 +84,7 @@ class Context3DGeometry
 			context.setVertexBufferAt(shader.__position.index, vertexBuffer, 0, FLOAT_2);
 			context.setVertexBufferAt(shader.data.aColor.index, vertexBuffer, 2, FLOAT_4);
 
-			context.__drawTriangles(0, geometry.__numVertices);
+			@:privateAccess context.__backend._drawTriangles(0, geometry.__numVertices);
 
 			#if gl_stats
 			Context3DStats.incrementDrawCall(DrawCallContext.BATCHER);
