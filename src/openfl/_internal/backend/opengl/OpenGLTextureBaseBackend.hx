@@ -144,23 +144,31 @@ class OpenGLTextureBaseBackend
 		if (alphaTexture != null)
 		{
 			alphaTexture.dispose();
+			alphaTexture = null;
 		}
 
-		gl.deleteTexture(glTextureID);
+		if (glTextureID != null)
+		{
+			gl.deleteTexture(glTextureID);
+			glTextureID = null;
+		}
 
 		if (glFramebuffer != null)
 		{
 			gl.deleteFramebuffer(glFramebuffer);
+			glFramebuffer = null;
 		}
 
 		if (glDepthRenderbuffer != null)
 		{
 			gl.deleteRenderbuffer(glDepthRenderbuffer);
+			glDepthRenderbuffer = null;
 		}
 
 		if (glStencilRenderbuffer != null)
 		{
 			gl.deleteRenderbuffer(glStencilRenderbuffer);
+			glStencilRenderbuffer = null;
 		}
 	}
 
