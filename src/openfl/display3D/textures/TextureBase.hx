@@ -153,23 +153,31 @@ class TextureBase extends EventDispatcher
 		if (__alphaTexture != null)
 		{
 			__alphaTexture.dispose();
+			__alphaTexture = null;
 		}
 
-		gl.deleteTexture(__textureID);
+		if (__textureID != null)
+		{
+			gl.deleteTexture(__textureID);
+			__textureID = null;
+		}
 
 		if (__glFramebuffer != null)
 		{
 			gl.deleteFramebuffer(__glFramebuffer);
+			__glFramebuffer = null;
 		}
 
 		if (__glDepthRenderbuffer != null)
 		{
 			gl.deleteRenderbuffer(__glDepthRenderbuffer);
+			__glDepthRenderbuffer = null;
 		}
 
 		if (__glStencilRenderbuffer != null)
 		{
 			gl.deleteRenderbuffer(__glStencilRenderbuffer);
+			__glStencilRenderbuffer = null;
 		}
 	}
 
