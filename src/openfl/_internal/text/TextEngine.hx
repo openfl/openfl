@@ -33,6 +33,7 @@ import js.Browser;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class TextEngine
 {
+	private static inline var GUTTER:Int = 2;
 	private static inline var UTF8_TAB:Int = 9;
 	private static inline var UTF8_ENDLINE:Int = 10;
 	private static inline var UTF8_SPACE:Int = 32;
