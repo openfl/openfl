@@ -1,3 +1,84 @@
+8.9.6 (01/27/2020)
+------------------
+
+* Update to allow Lime 7.7.*
+* Reverted `TextField`, filter and renderer changes made in 8.9.2 through 8.9.5
+* Suspended these improvements until the next major release
+* Forced NPM versions of the library to use WebGL 1
+* Improved SWFLite libraries to use a UUID and have a more reliable root value
+* Improved the behavior of `textField.mouseWheelEnabled`
+* Improved the behavior of `context3D.totalGPUMemory`
+* Improved `NetStream` to allow HTML5 MediaStream instead of a URL
+* Fixed an issue where `MovieClip` would behave like a button when `buttonMode` was disabled
+* Fixed a possible crash issue with multi-line text selection
+* Fixed `textField.setTextFormat` when the `TextFormat` object has null values
+* Fixed some missing methods in `openfl.utils.AssetManifest` for parity with Lime
+* Fixed `soundTransform.volume` when playing HTML5 video
+* Fixed support for `event.preventDefault` on `MOUSE_WHEEL` events
+* Fixed texture flush for AGAL shaders that do not have an alpha texture
+* Fixed key modifier values for mouse events when coming back to the window
+
+
+8.9.5 (09/11/2019)
+------------------
+
+* Fixed support for both 32- and 64-bit Neko on Windows (for Haxe 3 and 4)
+* Fixed rendering position of SWF-based `TextField` instances with filters
+* Fixed rendering of updated `TextField` instances when using filters
+* Fixed instances where incorrect blend modes were applied in Cairo rendering
+* Fixed workaround for `compareMethods` on HL target within `EventDispatcher`
+
+
+8.9.4 (09/05/2019)
+------------------
+
+* Reverted UTF character changes to investigate a different fix
+* Fixed support for 64-bit Neko on Windows (included in Haxe 4 RC 4)
+* Fixed a possible issue when using `@:bitmap` assets on HTML5
+
+
+8.9.3 (09/04/2019)
+------------------
+
+* Updated for Haxe 4 RC 4
+* Improved the quality of `scale9Grid` rendering in hardware
+* Improved support for rendering UTF character sets with `TextField`
+* Fixed a type error when running on C++ platforms
+* Fixed incorrect scale value when using `openfl.geom.Transform`
+* Fixed support for array-based form parameters when making HTTP requests
+* Fixed use of an incompatible OpenGL call when using the Electron target
+* Fixed reference to objects that could prevent GC in event pool behavior
+* Fixed the value for the `ClipboardFormats.TEXT_FORMAT` type
+
+
+8.9.2 (08/20/2019)
+------------------
+
+* Updated to Lime 7.6.*
+* Improved `GlowFilter` with hardware shaders for inner and knockout glow
+* Improved the memory used when using hardware filters
+* Improved support for margins, `indent`, and `blockIndent` in `TextField`
+* Improved AGAL item count in converted shaders
+* Improved the performance of `TextField` when translating position
+* Improved `BitmapData.fromTexture` to support `Texture` and `RectangleTexture`
+* Improved the performance of `Tilemap` with multiple child containers
+* Improved the hardware implementation of `DropShadowFilter`
+* Improved performance of `bitmapData.copyPixels` on HTML5 using `alphaBitmapData`
+* Improved rendering when using HTML5 -Ddom
+* Fixed `scrollRect` rendering behavior
+* Fixed a possible runtime error when using `VideoTexture`
+* Fixed parsing issues when using `textField.htmlText`
+* Fixed issues when selecting multiple lines of text in a `TextField`
+* Fixed text styles following new-line breaks
+* Fixed a parsing issue for AGAL conversion when referencing an indirect register
+* Fixed dispatching of roll out and touch out events in some cases
+* Fixed the behavior of alpha PNG and 8-bit lossless exports from SWF files
+* Fixed culling when using `graphics.drawTriangles`
+* Fixed issues where `Loader` did not fully unload previously loaded content
+* Fixed `Loader` to properly disallow access to `DisplayObjectContainer` APIs
+* Fixed multiple cases in `SimpleButton` where state was not changed properly
+
+
 8.9.1 (05/14/2019)
 ------------------
 
