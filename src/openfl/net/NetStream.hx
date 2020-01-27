@@ -1627,7 +1627,7 @@ class NetStream extends EventDispatcher
 		}
 		else
 		{
-			__video.srcObject = url;
+			__video.srcObject = cast url;
 		}
 		__video.play();
 		#end
