@@ -70,7 +70,6 @@ class SWFLiteExporter
 	public var filterClasses:Map<String, Bool>;
 	public var swfLite:SWFLite;
 
-	private var alphaPalette:Bytes;
 	private var data:SWFRoot;
 
 	public function new(data:SWFRoot)
@@ -238,6 +237,7 @@ class SWFLiteExporter
 					if (transparent) alpha.set(i, buffer.readUnsignedByte());
 				}
 
+				var paddedWidth:Int = Math.ceil(data.bitmapWidth / 4) * 4;
 				var values = Bytes.alloc(data.bitmapWidth * data.bitmapHeight + data.bitmapHeight);
 				index = 0;
 
@@ -246,7 +246,7 @@ class SWFLiteExporter
 					values.set(index++, 0);
 					values.blit(index, buffer, buffer.position, data.bitmapWidth);
 					index += data.bitmapWidth;
-					buffer.position += data.bitmapWidth;
+					buffer.position += paddedWidth;
 				}
 
 				var png = new List();
@@ -294,19 +294,6 @@ class SWFLiteExporter
 				alpha.uncompress();
 				alpha.position = 0;
 
-				if (alphaPalette == null)
-				{
-					alphaPalette = Bytes.alloc(256 * 3);
-					var index = 0;
-
-					for (i in 0...256)
-					{
-						alphaPalette.set(index++, i);
-						alphaPalette.set(index++, i);
-						alphaPalette.set(index++, i);
-					}
-				}
-
 				#if !nodejs
 				var image = Image.fromBytes(data.bitmapData);
 				#else
@@ -331,10 +318,9 @@ class SWFLiteExporter
 					width: image.width,
 					height: image.height,
 					colbits: 8,
-					color: ColIndexed,
+					color: ColGrey(false),
 					interlaced: false
 				}));
-				png.add(CPalette(alphaPalette));
 				var valuesBA:ByteArray = values;
 				valuesBA.compress();
 				png.add(CData(valuesBA));
