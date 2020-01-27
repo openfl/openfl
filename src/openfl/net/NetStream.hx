@@ -1152,7 +1152,7 @@ class NetStream extends EventDispatcher
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperties(SoundChannel.prototype, {
+		untyped Object.defineProperties(NetStream.prototype, {
 			"soundTransform": {
 				get: untyped __js__("function () { return this.get_soundTransform (); }"),
 				set: untyped __js__("function (v) { return this.set_soundTransform (v); }")
