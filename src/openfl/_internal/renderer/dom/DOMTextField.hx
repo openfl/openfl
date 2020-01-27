@@ -1,6 +1,7 @@
 package openfl._internal.renderer.dom;
 
 import openfl._internal.text.TextEngine;
+import openfl.display.DOMRenderer;
 import openfl.text.TextField;
 import openfl.text.TextFormatAlign;
 #if (js && html5)

@@ -26,4 +26,5 @@ ImportAll
 -D tools
 -D commonjs
 -D howlerjs
+-D webgl1
 --no-inline

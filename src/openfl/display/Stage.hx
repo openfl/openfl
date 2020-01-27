@@ -40,16 +40,6 @@ import lime.ui.KeyModifier;
 import lime.ui.MouseCursor as LimeMouseCursor;
 import lime.ui.MouseWheelMode;
 import lime.ui.Window;
-#if !display
-import openfl._internal.renderer.context3D.Context3DRenderer;
-#if lime_cairo
-import openfl._internal.renderer.cairo.CairoRenderer;
-#end
-#if (js && html5)
-import openfl._internal.renderer.canvas.CanvasRenderer;
-import openfl._internal.renderer.dom.DOMRenderer;
-#end
-#end
 #end
 #if hxtelemetry
 import openfl.profiler.Telemetry;
@@ -184,9 +174,7 @@ typedef Element = Dynamic;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl._internal.renderer)
 @:access(openfl.display3D.Context3D)
-@:access(openfl.display.BitmapData)
 @:access(openfl.display.DisplayObjectRenderer)
 @:access(openfl.display.LoaderInfo)
 @:access(openfl.display.Sprite)
@@ -1183,7 +1171,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 	@:noCompletion private function __createRenderer():Void
 	{
-		#if (lime && !display)
+		#if lime
 		#if (js && html5)
 		var pixelRatio = 1;
 
@@ -1204,25 +1192,19 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				context3D = new Context3D(this);
 				context3D.configureBackBuffer(windowWidth, windowHeight, 0, true, true, true);
 				context3D.present();
-				if (BitmapData.__hardwareRenderer == null)
-				{
-					BitmapData.__hardwareRenderer = new Context3DRenderer(context3D);
-				}
-				__renderer = new Context3DRenderer(context3D);
+				__renderer = new OpenGLRenderer(context3D);
 				#end
 
 			case CANVAS:
 				#if (js && html5)
-				var renderer = new CanvasRenderer(window.context.canvas2D);
-				renderer.pixelRatio = pixelRatio;
-				__renderer = renderer;
+				__renderer = new CanvasRenderer(window.context.canvas2D);
+				cast(__renderer, CanvasRenderer).pixelRatio = pixelRatio;
 				#end
 
 			case DOM:
 				#if (js && html5)
-				var renderer = new DOMRenderer(window.context.dom);
-				renderer.pixelRatio = pixelRatio;
-				__renderer = renderer;
+				__renderer = new DOMRenderer(window.context.dom);
+				cast(__renderer, DOMRenderer).pixelRatio = pixelRatio;
 				#end
 
 			case CAIRO:
@@ -1942,8 +1924,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				if (__renderer.__type == CAIRO)
 				{
 					#if lime_cairo
-					var renderer:CairoRenderer = cast __renderer;
-					renderer.cairo = context.cairo;
+					cast(__renderer, CairoRenderer).cairo = context.cairo;
 					#end
 				}
 
@@ -1975,14 +1956,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					context3D.__present = false;
 					context3D.__cleared = false;
 				}
-
-				context3D.__bitmapDataPool.cleanup();
 			}
 
 			__renderer.__cleared = false;
-
-			// TODO: Run once for multi-stage application
-			BitmapData.__pool.cleanup();
 		}
 		#end
 
@@ -2210,6 +2186,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		var currentFocus = focus;
 		focus = null;
 		__cacheFocus = currentFocus;
+
+		MouseEvent.__altKey = false;
+		MouseEvent.__commandKey = false;
+		MouseEvent.__ctrlKey = false;
+		MouseEvent.__shiftKey = false;
 	}
 
 	@:noCompletion private function __onLimeWindowFullscreen(window:Window):Void
@@ -2652,8 +2633,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		__displayMatrix.__transformInversePoint(targetPoint);
 		var delta = Std.int(deltaY);
 
-		__dispatchStack(MouseEvent.__create(MouseEvent.MOUSE_WHEEL, 0, __mouseX, __mouseY, target.__globalToLocal(targetPoint, targetPoint), target, delta),
-			stack);
+		var event = MouseEvent.__create(MouseEvent.MOUSE_WHEEL, 0, __mouseX, __mouseY, target.__globalToLocal(targetPoint, targetPoint), target, delta);
+		event.cancelable = true;
+		__dispatchStack(event, stack);
+		if (event.isDefaultPrevented())
+			window.onMouseWheel.cancel();
 
 		Point.__pool.release(targetPoint);
 	}

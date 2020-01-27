@@ -1,5 +1,6 @@
 package openfl._internal.renderer.canvas;
 
+import openfl.display.CanvasRenderer;
 import openfl.display.DisplayObject;
 
 @:access(openfl.display.DisplayObject)
@@ -112,7 +113,7 @@ class CanvasShape
 					{
 						renderer.setTransform(transform, context);
 
-						if (renderer.__domRenderer != null)
+						if (renderer.__isDOM)
 						{
 							var reverseScale = 1 / renderer.pixelRatio;
 							context.scale(reverseScale, reverseScale);

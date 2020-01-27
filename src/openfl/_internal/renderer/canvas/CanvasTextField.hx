@@ -2,6 +2,7 @@ package openfl._internal.renderer.canvas;
 
 import openfl._internal.text.TextEngine;
 import openfl.display.BitmapData;
+import openfl.display.CanvasRenderer;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.text.TextField;
@@ -76,7 +77,7 @@ class CanvasTextField
 
 				var transform = graphics.__renderTransform;
 
-				if (renderer.__domRenderer != null)
+				if (renderer.__isDOM)
 				{
 					var scale = renderer.pixelRatio;
 
@@ -239,7 +240,11 @@ class CanvasTextField
 								if (selectionEnd >= group.endIndex)
 								{
 									end = textField.getCharBoundaries(group.endIndex - 1);
-									end.x += end.width + 2;
+
+									if (end != null)
+									{
+										end.x += end.width + 2;
+									}
 								}
 								else
 								{

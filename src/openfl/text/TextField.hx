@@ -2,6 +2,17 @@ package openfl.text;
 
 #if !flash
 import haxe.Timer;
+import openfl._internal.renderer.cairo.CairoBitmap;
+import openfl._internal.renderer.cairo.CairoDisplayObject;
+import openfl._internal.renderer.cairo.CairoTextField;
+import openfl._internal.renderer.canvas.CanvasBitmap;
+import openfl._internal.renderer.canvas.CanvasDisplayObject;
+import openfl._internal.renderer.canvas.CanvasTextField;
+import openfl._internal.renderer.context3D.Context3DBitmap;
+import openfl._internal.renderer.context3D.Context3DDisplayObject;
+import openfl._internal.renderer.context3D.Context3DTextField;
+import openfl._internal.renderer.dom.DOMBitmap;
+import openfl._internal.renderer.dom.DOMTextField;
 import openfl._internal.formats.swf.SWFLite;
 import openfl._internal.symbols.DynamicTextSymbol;
 import openfl._internal.symbols.FontSymbol;
@@ -11,9 +22,14 @@ import openfl._internal.text.TextFormatRange;
 import openfl._internal.text.TextLayoutGroup;
 import openfl._internal.text.UTF8String;
 import openfl._internal.utils.Log;
+import openfl.display.CanvasRenderer;
+import openfl.display.CairoRenderer;
 import openfl.display.DisplayObject;
+import openfl.display.DisplayObjectRenderer;
+import openfl.display.DOMRenderer;
 import openfl.display.Graphics;
 import openfl.display.InteractiveObject;
+import openfl.display.OpenGLRenderer;
 import openfl.errors.RangeError;
 import openfl.events.Event;
 import openfl.events.FocusEvent;
@@ -808,8 +824,6 @@ class TextField extends InteractiveObject
 	{
 		super();
 
-		__type = TEXTFIELD;
-
 		__caretIndex = -1;
 		__displayAsPassword = false;
 		__graphics = new Graphics(this);
@@ -1443,124 +1457,56 @@ class TextField extends InteractiveObject
 		if (beginIndex == 0 && endIndex >= max)
 		{
 			// set text format for the whole textfield
-
 			__textFormat.__merge(format);
 
 			for (i in 0...__textEngine.textFormatRanges.length)
 			{
 				range = __textEngine.textFormatRanges[i];
-				range.format.__merge(__textFormat);
+				range.format.__merge(format);
 			}
 		}
 		else
 		{
-			var index = __textEngine.textFormatRanges.length;
-			var searchIndex;
+			var index = 0;
+			var newRange;
 
-			while (index > 0)
+			while (index < __textEngine.textFormatRanges.length)
 			{
-				index--;
 				range = __textEngine.textFormatRanges[index];
 
 				if (range.start == beginIndex && range.end == endIndex)
 				{
-					// the new incoming text format range matches an existing range exactly, just replace it
-
-					range.format = __textFormat.clone();
+					// set format range matches an existing range exactly
 					range.format.__merge(format);
-
-					__dirty = true;
-					__layoutDirty = true;
-					__setRenderDirty();
-
-					return;
+					break;
 				}
-
-				if (range.start >= beginIndex && range.end <= endIndex)
+				else if (range.start >= beginIndex && range.end <= endIndex)
 				{
-					// the new incoming text format range completely encompasses this existing range, let's remove it
-
-					searchIndex = __textEngine.textFormatRanges.indexOf(range);
-
-					if (searchIndex > -1)
-					{
-						__textEngine.textFormatRanges.splice(searchIndex, 1);
-					}
+					// set format range completely encompasses this existing range
+					range.format.__merge(format);
 				}
-			}
-
-			var prevRange = null, nextRange = null;
-
-			// find the ranges before and after the new incoming range
-
-			if (beginIndex > 0)
-			{
-				for (i in 0...__textEngine.textFormatRanges.length)
+				else if (range.start >= beginIndex && range.start < endIndex && range.end > beginIndex)
 				{
-					range = __textEngine.textFormatRanges[i];
-
-					if (range.end >= beginIndex)
-					{
-						prevRange = range;
-
-						break;
-					}
+					// set format range is within the first part of the range
+					newRange = new TextFormatRange(range.format.clone(), range.start, endIndex);
+					newRange.format.__merge(format);
+					__textEngine.textFormatRanges.insertAt(index, newRange);
+					range.start = endIndex;
+					index++;
 				}
-			}
-
-			if (endIndex < max)
-			{
-				var ni = __textEngine.textFormatRanges.length;
-
-				while (--ni >= 0)
+				else if (range.start < beginIndex && range.end > beginIndex && range.end >= endIndex)
 				{
-					range = __textEngine.textFormatRanges[ni];
-
-					if (range.start <= endIndex)
-					{
-						nextRange = range;
-
-						break;
-					}
-				}
-			}
-
-			if (nextRange == prevRange)
-			{
-				// the new incoming text format range is completely within this existing range, let's divide it up
-
-				nextRange = new TextFormatRange(nextRange.format.clone(), nextRange.start, nextRange.end);
-				__textEngine.textFormatRanges.push(nextRange);
-			}
-
-			if (prevRange != null)
-			{
-				prevRange.end = beginIndex;
-			}
-
-			if (nextRange != null)
-			{
-				nextRange.start = endIndex;
-			}
-
-			var textFormat = __textFormat.clone();
-			textFormat.__merge(format);
-
-			__textEngine.textFormatRanges.push(new TextFormatRange(textFormat, beginIndex, endIndex));
-
-			__textEngine.textFormatRanges.sort(function(a:TextFormatRange, b:TextFormatRange):Int
-			{
-				if (a.start < b.start || a.end < b.end)
-				{
-					return -1;
-				}
-				else if (a.start > b.start || a.end > b.end)
-				{
-					return 1;
+					// set format range is within the second part of the range
+					newRange = new TextFormatRange(range.format.clone(), beginIndex, range.end);
+					newRange.format.__merge(format);
+					__textEngine.textFormatRanges.insertAt(index + 1, newRange);
+					range.end = beginIndex;
+					index++;
 				}
 
-				return 0;
-			});
+				index++;
+				// TODO: Remove duplicates?
+			}
 		}
 
 		__dirty = true;
@@ -2047,30 +1993,6 @@ class TextField extends InteractiveObject
 		return group.endIndex;
 	}
 
-	@:noCompletion private override function __getRenderBounds(rect:Rectangle, matrix:Matrix):Void
-	{
-		if (__scrollRect == null)
-		{
-			__updateLayout();
-
-			var bounds = Rectangle.__pool.get();
-			bounds.copyFrom(__textEngine.bounds);
-
-			// matrix.tx += __offsetX;
-			// matrix.ty += __offsetY;
-
-			bounds.__transform(bounds, matrix);
-
-			rect.__expand(bounds.x, bounds.y, bounds.width, bounds.height);
-
-			Rectangle.__pool.release(bounds);
-		}
-		else
-		{
-			super.__getRenderBounds(rect, matrix);
-		}
-	}
-
 	@:noCompletion private override function __hitTest(x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool,
 			hitObject:DisplayObject):Bool
 	{
@@ -2110,6 +2032,149 @@ class TextField extends InteractiveObject
 		}
 
 		return false;
+	}
+
+	@:noCompletion private override function __renderCairo(renderer:CairoRenderer):Void
+	{
+		#if lime_cairo
+		__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
+
+		if (__cacheBitmap != null && !__isCacheBitmapRender)
+		{
+			CairoBitmap.render(__cacheBitmap, renderer);
+		}
+		else
+		{
+			CairoTextField.render(this, renderer, __worldTransform);
+			CairoDisplayObject.render(this, renderer);
+		}
+
+		__renderEvent(renderer);
+		#end
+	}
+
+	@:noCompletion private override function __renderCanvas(renderer:CanvasRenderer):Void
+	{
+		#if (js && html5)
+		// TODO: Better DOM workaround on cacheAsBitmap
+
+		if (renderer.__isDOM && !__renderedOnCanvasWhileOnDOM)
+		{
+			__renderedOnCanvasWhileOnDOM = true;
+
+			if (type == TextFieldType.INPUT)
+			{
+				replaceText(0, __text.length, __text);
+			}
+
+			if (__isHTML)
+			{
+				__updateText(HTMLParser.parse(__text, __textFormat, __textEngine.textFormatRanges));
+			}
+
+			__dirty = true;
+			__layoutDirty = true;
+			__setRenderDirty();
+		}
+
+		if (mask == null || (mask.width > 0 && mask.height > 0))
+		{
+			__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
+
+			if (__cacheBitmap != null && !__isCacheBitmapRender)
+			{
+				CanvasBitmap.render(__cacheBitmap, renderer);
+			}
+			else
+			{
+				CanvasTextField.render(this, renderer, __worldTransform);
+
+				var smoothingEnabled = false;
+
+				if (__textEngine.antiAliasType == ADVANCED && __textEngine.gridFitType == PIXEL)
+				{
+					smoothingEnabled = renderer.context.imageSmoothingEnabled;
+
+					if (smoothingEnabled)
+					{
+						renderer.context.imageSmoothingEnabled = false;
+					}
+				}
+
+				CanvasDisplayObject.render(this, renderer);
+
+				if (smoothingEnabled)
+				{
+					renderer.context.imageSmoothingEnabled = true;
+				}
+			}
+		}
+		#end
+	}
+
+	@:noCompletion private override function __renderDOM(renderer:DOMRenderer):Void
+	{
+		#if (js && html5)
+		__domRender = true;
+		__updateCacheBitmap(renderer, __forceCachedBitmapUpdate || /*!__worldColorTransform.__isDefault ()*/ false);
+		__forceCachedBitmapUpdate = false;
+		__domRender = false;
+
+		if (__cacheBitmap != null && !__isCacheBitmapRender)
+		{
+			__renderDOMClear(renderer);
+			__cacheBitmap.stage = stage;
+
+			DOMBitmap.render(__cacheBitmap, renderer);
+		}
+		else
+		{
+			if (__renderedOnCanvasWhileOnDOM)
+			{
+				__renderedOnCanvasWhileOnDOM = false;
+
+				if (__isHTML && __rawHtmlText != null)
+				{
+					__updateText(__rawHtmlText);
+					__dirty = true;
+					__layoutDirty = true;
+					__setRenderDirty();
+				}
+			}
+
+			DOMTextField.render(this, renderer);
+		}
+
+		__renderEvent(renderer);
+		#end
+	}
+
+	@:noCompletion private override function __renderDOMClear(renderer:DOMRenderer):Void
+	{
+		DOMTextField.clear(this, renderer);
+	}
+
+	@:noCompletion private override function __renderGL(renderer:OpenGLRenderer):Void
+	{
+		__updateCacheBitmap(renderer, false);
+
+		if (__cacheBitmap != null && !__isCacheBitmapRender)
+		{
+			Context3DBitmap.render(__cacheBitmap, renderer);
+		}
+		else
+		{
+			Context3DTextField.render(this, renderer);
+			Context3DDisplayObject.render(this, renderer);
+		}
+
+		__renderEvent(renderer);
+	}
+
+	@:noCompletion private override function __renderGLMask(renderer:OpenGLRenderer):Void
+	{
+		Context3DTextField.renderMask(this, renderer);
+		super.__renderGLMask(renderer);
 	}
 
 	@:noCompletion private function __replaceSelectedText(value:String, restrict:Bool = true):Void
@@ -2179,82 +2244,35 @@ class TextField extends InteractiveObject
 		{
 			range = __textEngine.textFormatRanges[i];
 
-			if (beginIndex == endIndex)
+			if (range.start <= beginIndex && range.end >= endIndex)
 			{
-				if (range.end < beginIndex)
+				range.end += offset;
+				i++;
+			}
+			else if (range.start >= beginIndex && range.end <= endIndex)
+			{
+				if (i > 0)
 				{
-					// do nothing, range is completely before insertion point
-				}
-				else if (range.start > endIndex)
-				{
-					// shift range, range is after insertion point
-					range.start += offset;
-					range.end += offset;
+					__textEngine.textFormatRanges.splice(i, 1);
 				}
 				else
 				{
-					if (range.start < range.end && range.end == beginIndex && i < __textEngine.textFormatRanges.length - 1)
-					{
-						// do nothing, insertion point is between two ranges, so it belongs to the next range
-						// unless there are no more ranges after this one (inserting at the end of the text)
-					}
-					else
-					{
-						// add to range, insertion point is within range
-						range.end += offset;
-					}
+					range.start = 0;
+					range.end = beginIndex + newText.length;
+					i++;
 				}
+
+				offset -= (range.end - range.start);
+			}
+			else if (range.start > beginIndex && range.start <= endIndex)
+			{
+				range.start += offset;
+				i++;
 			}
 			else
 			{
-				if (range.end < beginIndex)
-				{
-					// do nothing, range is before selection
-				}
-				else if (range.start >= endIndex)
-				{
-					// shift range, range is completely after selection
-					range.start += offset;
-					range.end += offset;
-				}
-				else if (range.start >= beginIndex && range.end <= endIndex)
-				{
-					// delete range, range is encompassed by selection
-					if (__textEngine.textFormatRanges.length > 1)
-					{
-						__textEngine.textFormatRanges.splice(i, 1);
-					}
-					else
-					{
-						// don't delete if it's the last range though, just modify properties
-						range.start = 0;
-						range.end = newText.length;
-					}
-				}
-				else if (range.start <= beginIndex)
-				{
-					if (range.end < endIndex)
-					{
-						// modify range, range ends before the selection ends
-						range.end = beginIndex;
-					}
-					else
-					{
-						// modify range, range ends where or after the selection ends
-						range.end += offset;
-					}
-				}
-				else
-				{
-					// modify range, selection begins before the range
-					// for deletion: entire range shifts leftward
-					// for addition: added text gains the format of endIndex
-					range.start = beginIndex;
-					range.end += offset;
-				}
+				i++;
 			}
-
-			i++;
 		}
 
 		__updateScrollV();
@@ -2263,6 +2281,11 @@ class TextField extends InteractiveObject
 		__dirty = true;
 		__layoutDirty = true;
 		__setRenderDirty();
+	}
+
+	@:noCompletion private override function __shouldCacheHardware(value:Null<Bool>):Null<Bool>
+	{
+		return value == true ? true : false;
 	}
 
 	@:noCompletion private function __startCursorTimer():Void
@@ -2313,6 +2336,26 @@ class TextField extends InteractiveObject
 		{
 			__disableInput();
 		}
+	}
+
+	@:noCompletion private override function __updateCacheBitmap(renderer:DisplayObjectRenderer, force:Bool):Bool
+	{
+		#if lime
+		if (__filters == null && renderer.__type == OPENGL && __cacheBitmap == null && !__domRender) return false;
+
+		if (super.__updateCacheBitmap(renderer, force || __dirty))
+		{
+			if (__cacheBitmap != null)
+			{
+				__cacheBitmap.__renderTransform.tx -= __offsetX;
+				__cacheBitmap.__renderTransform.ty -= __offsetY;
+			}
+
+			return true;
+		}
+		#end
+
+		return false;
 	}
 
 	@:noCompletion private function __updateLayout():Void
@@ -3234,7 +3277,10 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function this_onMouseWheel(event:MouseEvent):Void
 	{
-		scrollV -= event.delta;
+		if (mouseWheelEnabled)
+		{
+			scrollV -= event.delta;
+		}
 	}
 
 	#if lime

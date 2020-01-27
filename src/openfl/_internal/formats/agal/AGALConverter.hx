@@ -786,7 +786,7 @@ class RegisterMap
 			}
 			else if (entry.usage == RegisterUsage.VECTOR_4_ARRAY)
 			{
-				sb.add(entry.name + "[32]"); // this is an array of "count" elements.
+				sb.add(entry.name + "[128]"); // this is an array of "count" elements.
 				sb.add(";\n");
 			}
 			else

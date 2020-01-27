@@ -12,16 +12,14 @@ import openfl.net.URLRequest;
 #if lime
 import lime.system.System;
 #end
-// #if swf
+#if swf
 // Workaround to keep SWFLibrary/SWFLiteLibrary types available
-import openfl._internal.formats.animate.AnimateLibrary;
 #if flash
 import openfl._internal.formats.swf.SWFLibrary;
-// import openfl._internal.formats.swf.SWFLiteLibrary;
 #else
 import openfl._internal.formats.swf.SWFLiteLibrary;
 #end
-// #end
+#end
 #if (js && html5)
 import js.Browser;
 #end

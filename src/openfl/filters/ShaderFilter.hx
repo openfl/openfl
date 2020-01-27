@@ -1,7 +1,6 @@
 package openfl.filters;
 
 #if !flash
-import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
@@ -155,7 +154,7 @@ class ShaderFilter extends BitmapFilter
 		return filter;
 	}
 
-	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int, sourceBitmapData:BitmapData):Shader
+	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int):Shader
 	{
 		__shaderBlendMode = blendMode;
 		return shader;

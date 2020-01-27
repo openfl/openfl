@@ -5,7 +5,6 @@ import openfl._internal.backend.gl.GLBuffer;
 import openfl._internal.backend.gl.GLFramebuffer;
 import openfl._internal.backend.gl.GLTexture;
 import openfl._internal.renderer.context3D.Context3DState;
-import openfl._internal.renderer.BitmapDataPool;
 import openfl._internal.renderer.SamplerState;
 import openfl._internal.utils.Float32Array;
 import openfl._internal.utils.UInt16Array;
@@ -242,19 +241,21 @@ import lime.math.Vector2;
 		Context3D.
 
 		API totalGPUMemory returns the total memory consumed by the above resources to
-		the user. Default value returned is 0.The total GPU memory returned is in bytes.
+		the user. Default value returned is 0. The total GPU memory returned is in bytes.
 		The information is only provided in Direct mode on mobile, and in Direct and
 		GPU modes on desktop. (On desktop, using `<renderMode>gpu</renderMode>` will
 		fall back to `<renderMode>direct</renderMode>`)
 
 		This API can be used when the SWF version is 32 or later.
 	**/
-	public var totalGPUMemory(default, null):Int = 0;
+	public var totalGPUMemory(get, never):Int;
 
 	@:noCompletion private static var __driverInfo:String;
 	@:noCompletion private static var __glDepthStencil:Int = -1;
 	@:noCompletion private static var __glMaxTextureMaxAnisotropy:Int = -1;
 	@:noCompletion private static var __glMaxViewportDims:Int = -1;
+	@:noCompletion private static var __glMemoryCurrentAvailable:Int = -1;
+	@:noCompletion private static var __glMemoryTotalAvailable:Int = -1;
 	@:noCompletion private static var __glTextureMaxAnisotropy:Int = -1;
 
 	@:noCompletion private var gl:#if lime WebGLRenderContext #else Dynamic #end;
@@ -262,7 +263,6 @@ import lime.math.Vector2;
 	@:noCompletion private var __backBufferTexture:RectangleTexture;
 	@:noCompletion private var __backBufferWantsBestResolution:Bool;
 	@:noCompletion private var __backBufferWantsBestResolutionOnBrowserZoom:Bool;
-	@:noCompletion private var __bitmapDataPool:BitmapDataPool;
 	@:noCompletion private var __cleared:Bool;
 	@:noCompletion private var __context:#if lime RenderContext #else Dynamic #end;
 	@:noCompletion private var __contextState:Context3DState;
@@ -320,9 +320,9 @@ import lime.math.Vector2;
 
 			#if (js && html5)
 			if (extension == null
-				|| extension.MAX_TEXTURE_MAX_ANISOTROPY_EXT == null) extension = gl.getExtension("MOZ_EXT_texture_filter_anisotropic");
+				|| !Reflect.hasField(extension, "MAX_TEXTURE_MAX_ANISOTROPY_EXT")) extension = gl.getExtension("MOZ_EXT_texture_filter_anisotropic");
 			if (extension == null
-				|| extension.MAX_TEXTURE_MAX_ANISOTROPY_EXT == null) extension = gl.getExtension("WEBKIT_EXT_texture_filter_anisotropic");
+				|| !Reflect.hasField(extension, "MAX_TEXTURE_MAX_ANISOTROPY_EXT")) extension = gl.getExtension("WEBKIT_EXT_texture_filter_anisotropic");
 			#end
 
 			if (extension != null)
@@ -369,6 +369,16 @@ import lime.math.Vector2;
 			}
 			#end
 		}
+
+		if (__glMemoryTotalAvailable == -1)
+		{
+			var extension = gl.getExtension("NVX_gpu_memory_info");
+			if (extension != null)
+			{
+				__glMemoryTotalAvailable = extension.GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX;
+				__glMemoryCurrentAvailable = extension.GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX;
+			}
+		}
 		#end
 
 		if (__driverInfo == null)
@@ -408,8 +418,6 @@ import lime.math.Vector2;
 		__quadIndexBuffer = createIndexBuffer(__quadIndexBufferCount);
 		__quadIndexBuffer.uploadFromTypedArray(data);
 		#end
-
-		__bitmapDataPool = new BitmapDataPool(30, this);
 	}
 
 	/**
@@ -2358,7 +2366,10 @@ import lime.math.Vector2;
 				else
 				{
 					__bindGLTexture2D(null);
-					gl.uniform1i(__state.program.__agalAlphaSamplerEnabled[sampler].location, 0);
+					if (__state.program.__agalAlphaSamplerEnabled[sampler] != null)
+					{
+						gl.uniform1i(__state.program.__agalAlphaSamplerEnabled[sampler].location, 0);
+					}
 				}
 			}
 
@@ -2640,6 +2651,22 @@ import lime.math.Vector2;
 	@:noCompletion private function set_enableErrorChecking(value:Bool):Bool
 	{
 		return __enableErrorChecking = value;
+	}
+
+	@:noCompletion private function get_totalGPUMemory():Int
+	{
+		if (__glMemoryCurrentAvailable != -1)
+		{
+			// TODO: Return amount used by this application only
+			var current = gl.getParameter(__glMemoryCurrentAvailable);
+			var total = gl.getParameter(__glMemoryTotalAvailable);
+
+			if (total > 0)
+			{
+				return (total - current) * 1024;
+			}
+		}
+		return 0;
 	}
 }
 #else

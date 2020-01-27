@@ -4,7 +4,6 @@ import openfl._internal.formats.swf.SWFLite;
 import openfl.display.CapsStyle;
 import openfl.display.JointStyle;
 import openfl.display.LineScaleMode;
-import openfl.display.Shape;
 import openfl.geom.Matrix;
 import openfl.text.StaticText;
 
@@ -20,16 +19,16 @@ class StaticTextSymbol extends SWFSymbol
 {
 	public var matrix:Matrix;
 	public var records:Array<StaticTextRecord>;
-	public var rendered:#if flash flash.text.StaticText.StaticText2 #else StaticText #end;
+	public var rendered:StaticText;
 
 	public function new()
 	{
 		super();
 	}
 
-	private override function __createObject(swf:SWFLite):#if flash Shape #else StaticText #end
+	private override function __createObject(swf:SWFLite):StaticText
 	{
-		var staticText = #if flash new flash.text.StaticText.StaticText2() #else new StaticText() #end;
+		var staticText = new StaticText();
 		var graphics = staticText.__graphics;
 
 		if (rendered != null)
@@ -110,7 +109,7 @@ class StaticTextSymbol extends SWFSymbol
 		staticText.text = text;
 
 		records = null;
-		rendered = #if flash new flash.text.StaticText.StaticText2() #else new StaticText() #end;
+		rendered = new StaticText();
 		rendered.text = text;
 		rendered.__graphics.copyFrom(staticText.__graphics);
 

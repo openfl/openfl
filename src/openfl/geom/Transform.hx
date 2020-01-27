@@ -283,6 +283,12 @@ class Transform
 	{
 		if (__displayObject != null)
 		{
+			var transform = __displayObject.__transform;
+			if (transform.a == a && transform.b == b && transform.c == c && transform.d == d && transform.tx == tx && transform.ty == ty)
+			{
+				return;
+			}
+
 			var scaleX = 0.0;
 			var scaleY = 0.0;
 
@@ -317,12 +323,12 @@ class Transform
 				__displayObject.__rotationCosine = Math.cos(radians);
 			}
 
-			__displayObject.__transform.a = a;
-			__displayObject.__transform.b = b;
-			__displayObject.__transform.c = c;
-			__displayObject.__transform.d = d;
-			__displayObject.__transform.tx = tx;
-			__displayObject.__transform.ty = ty;
+			transform.a = a;
+			transform.b = b;
+			transform.c = c;
+			transform.d = d;
+			transform.tx = tx;
+			transform.ty = ty;
 
 			__displayObject.__setTransformDirty();
 		}

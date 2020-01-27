@@ -4,14 +4,13 @@ package openfl.display;
 import openfl._internal.backend.gl.GLFramebuffer;
 import openfl._internal.backend.gl.GLRenderbuffer;
 import openfl._internal.formats.swf.SWFLite;
-import openfl._internal.renderer.BitmapDataPool;
-import openfl._internal.renderer.DisplayObjectType;
 import openfl._internal.symbols.BitmapSymbol;
 import openfl._internal.utils.Float32Array;
 import openfl._internal.utils.PerlinNoise;
 import openfl._internal.utils.UInt16Array;
 import openfl._internal.utils.UInt8Array;
 import openfl.display3D.textures.TextureBase;
+import openfl.display3D.Context3DClearMask;
 import openfl.display3D.Context3D;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
@@ -25,11 +24,14 @@ import openfl.utils.ByteArray;
 import openfl.utils.Endian;
 import openfl.utils.Future;
 import openfl.utils.Object;
+import openfl.Lib;
 import openfl.Vector;
 #if lime
 import lime._internal.graphics.ImageCanvasUtil; // TODO
 import lime.app.Application;
+import lime.graphics.cairo.CairoFilter;
 import lime.graphics.cairo.CairoImageSurface;
+import lime.graphics.cairo.CairoPattern;
 import lime.graphics.cairo.CairoSurface;
 import lime.graphics.cairo.Cairo;
 import lime.graphics.Image;
@@ -38,15 +40,13 @@ import lime.graphics.ImageBuffer;
 import lime.graphics.RenderContext;
 import lime.math.ARGB;
 import lime.math.Vector2;
-import openfl._internal.renderer.context3D.Context3DRenderer;
-#if lime_cairo
-import openfl._internal.renderer.cairo.CairoRenderer;
-#elseif (js && html5)
-import openfl._internal.renderer.canvas.CanvasRenderer;
-#end
 #end
 #if (js && html5)
 import js.html.CanvasElement;
+#end
+#if gl_stats
+import openfl._internal.renderer.context3D.stats.Context3DStats;
+import openfl._internal.renderer.context3D.stats.DrawCallContext;
 #end
 
 /**
@@ -108,12 +108,9 @@ import js.html.CanvasElement;
 @:access(lime.graphics.Image)
 @:access(lime.graphics.ImageBuffer)
 @:access(lime.math.Rectangle)
-@:access(openfl._internal.renderer.canvas.CanvasRenderer)
-@:access(openfl._internal.renderer.cairo.CairoRenderer)
 @:access(openfl.display3D.textures.TextureBase)
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.DisplayObject)
-@:access(openfl.display.DisplayObjectRenderer)
 @:access(openfl.display.DisplayObjectShader)
 @:access(openfl.display.Graphics)
 @:access(openfl.display.Shader)
@@ -130,9 +127,6 @@ import js.html.CanvasElement;
 class BitmapData implements IBitmapDrawable
 {
 	@:noCompletion private static inline var VERTEX_BUFFER_STRIDE:Int = 14;
-	@:noCompletion private static var __hardwareRenderer:#if lime Context3DRenderer #else Dynamic #end;
-	@:noCompletion private static var __pool:BitmapDataPool = new BitmapDataPool();
-	@:noCompletion private static var __softwareRenderer:DisplayObjectRenderer;
 	@:noCompletion private static var __supportsBGRA:Null<Bool> = null;
 	@:noCompletion private static var __textureFormat:Int;
 	@:noCompletion private static var __textureInternalFormat:Int;
@@ -217,7 +211,6 @@ class BitmapData implements IBitmapDrawable
 	@:noCompletion private var __textureVersion:Int;
 	@:noCompletion private var __textureWidth:Int;
 	@:noCompletion private var __transform:Matrix;
-	@:noCompletion private var __type:DisplayObjectType;
 	@:noCompletion private var __uvRect:Rectangle;
 	@:noCompletion private var __vertexBuffer:VertexBuffer3D;
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __vertexBufferContext:#if lime RenderContext #else Dynamic #end;
@@ -705,54 +698,6 @@ class BitmapData implements IBitmapDrawable
 	{
 		if (!readable || sourceBitmapData == null) return;
 
-		#if (js && html5)
-		if (alphaBitmapData != null
-			&& alphaBitmapData.transparent
-			&& (alphaBitmapData != sourceBitmapData || (alphaPoint != null && (alphaPoint.x != 0 || alphaPoint.y != 0))))
-		{
-			var point = Point.__pool.get();
-			var rect = Rectangle.__pool.get();
-			rect.copyFrom(sourceBitmapData.rect);
-			rect.__contract(sourceRect.x, sourceRect.y, sourceRect.width, sourceRect.height);
-
-			var copy = BitmapData.__pool.get(Std.int(rect.width), Std.int(rect.height));
-
-			ImageCanvasUtil.convertToCanvas(copy.image);
-			ImageCanvasUtil.convertToCanvas(sourceBitmapData.image);
-			ImageCanvasUtil.convertToCanvas(alphaBitmapData.image);
-
-			if (alphaPoint != null)
-			{
-				rect.x += alphaPoint.x;
-				rect.y += alphaPoint.y;
-			}
-
-			copy.image.buffer.__srcContext.globalCompositeOperation = "source-over";
-			copy.image.buffer.__srcContext.drawImage(alphaBitmapData.image.buffer.src, Std.int(rect.x + sourceBitmapData.image.offsetX),
-				Std.int(rect.y + sourceBitmapData.image.offsetY), Std.int(rect.width), Std.int(rect.height), Std.int(point.x + image.offsetX),
-				Std.int(point.y + image.offsetY), Std.int(rect.width), Std.int(rect.height));
-
-			if (alphaPoint != null)
-			{
-				rect.x -= alphaPoint.x;
-				rect.y -= alphaPoint.y;
-			}
-
-			copy.image.buffer.__srcContext.globalCompositeOperation = "source-in";
-			copy.image.buffer.__srcContext.drawImage(sourceBitmapData.image.buffer.src, Std.int(rect.x + sourceBitmapData.image.offsetX),
-				Std.int(rect.y + sourceBitmapData.image.offsetY), Std.int(rect.width), Std.int(rect.height), Std.int(point.x + image.offsetX),
-				Std.int(point.y + image.offsetY), Std.int(rect.width), Std.int(rect.height));
-
-			// TODO: Render directly for mergeAlpha=false?
-			image.copyPixels(copy.image, copy.rect.__toLimeRectangle(), destPoint.__toLimeVector2(), null, null, mergeAlpha);
-
-			BitmapData.__pool.release(copy);
-			Rectangle.__pool.release(rect);
-			Point.__pool.release(point);
-			return;
-		}
-		#end
-
 		#if lime
 		if (alphaPoint != null)
 		{
@@ -934,11 +879,20 @@ class BitmapData implements IBitmapDrawable
 			transform.concat(matrix);
 		}
 
+		var clipMatrix = null;
+
+		if (clipRect != null)
+		{
+			clipMatrix = Matrix.__pool.get();
+			clipMatrix.copyFrom(transform);
+			clipMatrix.invert();
+		}
+
 		var _colorTransform = new ColorTransform();
 		_colorTransform.__copyFrom(source.__worldColorTransform);
 		_colorTransform.__invert();
 
-		if (!readable && __texture != null && __hardwareRenderer != null)
+		if (!readable && Lib.current.stage.context3D != null)
 		{
 			if (__textureContext == null)
 			{
@@ -951,16 +905,28 @@ class BitmapData implements IBitmapDrawable
 				_colorTransform.__combine(colorTransform);
 			}
 
-			__hardwareRenderer.__allowSmoothing = smoothing;
-			__hardwareRenderer.__overrideBlendMode = blendMode;
+			var renderer = new OpenGLRenderer(Lib.current.stage.context3D, this);
+			renderer.__allowSmoothing = smoothing;
+			renderer.__overrideBlendMode = blendMode;
 
-			__hardwareRenderer.__worldTransform = transform;
-			__hardwareRenderer.__worldAlpha = 1 / source.__worldAlpha;
-			__hardwareRenderer.__worldColorTransform = _colorTransform;
+			renderer.__worldTransform = transform;
+			renderer.__worldAlpha = 1 / source.__worldAlpha;
+			renderer.__worldColorTransform = _colorTransform;
 
-			__hardwareRenderer.__resize(width, height);
+			renderer.__resize(width, height);
 
-			__hardwareRenderer.__drawBitmapData(this, source, clipRect);
+			if (clipRect != null)
+			{
+				renderer.__pushMaskRect(clipRect, clipMatrix);
+			}
+
+			__drawGL(source, renderer);
+
+			if (clipRect != null)
+			{
+				renderer.__popMaskRect();
+				Matrix.__pool.release(clipMatrix);
+			}
 		}
 		else
 		{
@@ -995,14 +961,10 @@ class BitmapData implements IBitmapDrawable
 			}
 
 			#if (js && html5)
-			if (__softwareRenderer == null) __softwareRenderer = new CanvasRenderer(null);
 			ImageCanvasUtil.convertToCanvas(image);
-			var renderer:CanvasRenderer = cast __softwareRenderer;
-			renderer.context = image.buffer.__srcContext;
+			var renderer = new CanvasRenderer(image.buffer.__srcContext);
 			#else
-			if (__softwareRenderer == null) __softwareRenderer = new CairoRenderer(null);
-			var renderer:CairoRenderer = cast __softwareRenderer;
-			renderer.cairo = new Cairo(getSurface());
+			var renderer = new CairoRenderer(new Cairo(getSurface()));
 			#end
 
 			renderer.__allowSmoothing = smoothing;
@@ -1012,7 +974,22 @@ class BitmapData implements IBitmapDrawable
 			renderer.__worldAlpha = 1 / source.__worldAlpha;
 			renderer.__worldColorTransform = _colorTransform;
 
-			renderer.__drawBitmapData(this, source, clipRect);
+			if (clipRect != null)
+			{
+				renderer.__pushMaskRect(clipRect, clipMatrix);
+			}
+
+			#if (js && html5)
+			__drawCanvas(source, renderer);
+			#else
+			__drawCairo(source, renderer);
+			#end
+
+			if (clipRect != null)
+			{
+				renderer.__popMaskRect();
+				Matrix.__pool.release(clipMatrix);
+			}
 			#end
 		}
 
@@ -1184,23 +1161,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function fillRect(rect:Rectangle, color:Int):Void
 	{
-		#if lime
-		if (rect == null) return;
-
-		if (transparent && (color & 0xFF000000) == 0)
-		{
-			color = 0;
-		}
-
-		if (!readable && __texture != null && __hardwareRenderer != null)
-		{
-			__hardwareRenderer.__fillRect(this, rect, color);
-		}
-		else if (readable)
-		{
-			image.fillRect(rect.__toLimeRectangle(), color, ARGB32);
-		}
-		#end
+		__fillRect(rect, color, true);
 	}
 
 	/**
@@ -1224,19 +1185,15 @@ class BitmapData implements IBitmapDrawable
 
 	#if (!openfl_doc_gen || (!js && !html5 && !flash_doc_gen))
 	/**
-		Creates a new BitmapData instance from Base64-encoded data immediately.
-
-		The returned BitmapData will have a width and height of zero initially, then it
-		will populate with image data once decoding is successful.
-
-		If you must know when the data will be decoded, use the `loadFromBase64` method
-		instead.
-
-		All platforms except for HTML5 will currently return `null`
+		Creates a new BitmapData instance from Base64-encoded data synchronously. This means
+		that the BitmapData will be returned immediately (if supported).
+		
+		HTML5 and Flash do not support creating BitmapData synchronously, so these targets
+		always return `null`. Other targets will return `null` if decoding was unsuccessful.
 
 		@param	base64	Base64-encoded data
 		@param	type	The MIME-type for the encoded data ("image/jpeg", etc)
-		@returns	A BitmapData when targeting HTML5 or `null` on all other targets
+		@returns	A new BitmapData if successful, or `null` if unsuccessful
 	**/
 	public static function fromBase64(base64:String, type:String):BitmapData
 	{
@@ -1436,17 +1393,13 @@ class BitmapData implements IBitmapDrawable
 				{
 					__indexBufferData = new UInt16Array(54);
 
-					//  0 ——— 1    4 ——— 5    8 ——— 9
-					//  |  /  |    |  /  |    |  /  |
-					//  2 ——— 3    6 ——— 7   10 ——— 11
-					//
-					// 12 ——— 13  16 ——— 18  20 ——— 21
-					//  |  /  |    |  /  |    |  /  |
-					// 14 ——— 15  17 ——— 19  22 ——— 23
-					//
-					// 24 ——— 25  28 ——— 29  32 ——— 33
-					//  |  /  |    |  /  |    |  /  |
-					// 26 ——— 27  30 ——— 31  34 ——— 35
+					// 3 ——— 2 ——— 5 ——— 7
+					// |  /  |  /  |  /  |
+					// 1 ——— 0 ——— 4 ——— 6
+					// |  /  |  /  |  /  |
+					// 9 ——— 8 —— 10 —— 11
+					// |  /  |  /  |  /  |
+					// 13 — 12 —— 14 —— 15
 
 					// top left
 					__indexBufferData[0] = 0;
@@ -1458,67 +1411,67 @@ class BitmapData implements IBitmapDrawable
 
 					// top center
 					__indexBufferData[6] = 4;
-					__indexBufferData[7] = 5;
-					__indexBufferData[8] = 6;
-					__indexBufferData[9] = 6;
-					__indexBufferData[10] = 5;
-					__indexBufferData[11] = 7;
+					__indexBufferData[7] = 0;
+					__indexBufferData[8] = 5;
+					__indexBufferData[9] = 5;
+					__indexBufferData[10] = 0;
+					__indexBufferData[11] = 2;
 
 					// top right
-					__indexBufferData[12] = 8;
-					__indexBufferData[13] = 9;
-					__indexBufferData[14] = 10;
-					__indexBufferData[15] = 10;
-					__indexBufferData[16] = 9;
-					__indexBufferData[17] = 11;
+					__indexBufferData[12] = 6;
+					__indexBufferData[13] = 4;
+					__indexBufferData[14] = 7;
+					__indexBufferData[15] = 7;
+					__indexBufferData[16] = 4;
+					__indexBufferData[17] = 5;
 
 					// middle left
-					__indexBufferData[18] = 12;
-					__indexBufferData[19] = 13;
-					__indexBufferData[20] = 14;
-					__indexBufferData[21] = 14;
-					__indexBufferData[22] = 13;
-					__indexBufferData[23] = 15;
+					__indexBufferData[18] = 8;
+					__indexBufferData[19] = 9;
+					__indexBufferData[20] = 0;
+					__indexBufferData[21] = 0;
+					__indexBufferData[22] = 9;
+					__indexBufferData[23] = 1;
 
 					// middle center
-					__indexBufferData[24] = 16;
-					__indexBufferData[25] = 18;
-					__indexBufferData[26] = 17;
-					__indexBufferData[27] = 17;
-					__indexBufferData[28] = 18;
-					__indexBufferData[29] = 19;
+					__indexBufferData[24] = 10;
+					__indexBufferData[25] = 8;
+					__indexBufferData[26] = 4;
+					__indexBufferData[27] = 4;
+					__indexBufferData[28] = 8;
+					__indexBufferData[29] = 0;
 
 					// middle right
-					__indexBufferData[30] = 20;
-					__indexBufferData[31] = 21;
-					__indexBufferData[32] = 22;
-					__indexBufferData[33] = 22;
-					__indexBufferData[34] = 21;
-					__indexBufferData[35] = 23;
+					__indexBufferData[30] = 11;
+					__indexBufferData[31] = 10;
+					__indexBufferData[32] = 6;
+					__indexBufferData[33] = 6;
+					__indexBufferData[34] = 10;
+					__indexBufferData[35] = 4;
 
 					// bottom left
-					__indexBufferData[36] = 24;
-					__indexBufferData[37] = 25;
-					__indexBufferData[38] = 26;
-					__indexBufferData[39] = 26;
-					__indexBufferData[40] = 25;
-					__indexBufferData[41] = 27;
+					__indexBufferData[36] = 12;
+					__indexBufferData[37] = 13;
+					__indexBufferData[38] = 8;
+					__indexBufferData[39] = 8;
+					__indexBufferData[40] = 13;
+					__indexBufferData[41] = 9;
 
 					// bottom center
-					__indexBufferData[42] = 28;
-					__indexBufferData[43] = 29;
-					__indexBufferData[44] = 30;
-					__indexBufferData[45] = 30;
-					__indexBufferData[46] = 29;
-					__indexBufferData[47] = 31;
+					__indexBufferData[42] = 14;
+					__indexBufferData[43] = 12;
+					__indexBufferData[44] = 10;
+					__indexBufferData[45] = 10;
+					__indexBufferData[46] = 12;
+					__indexBufferData[47] = 8;
 
-					// bottom right
-					__indexBufferData[48] = 32;
-					__indexBufferData[49] = 33;
-					__indexBufferData[50] = 34;
-					__indexBufferData[51] = 34;
-					__indexBufferData[52] = 33;
-					__indexBufferData[53] = 35;
+					// bottom center
+					__indexBufferData[48] = 15;
+					__indexBufferData[49] = 14;
+					__indexBufferData[50] = 11;
+					__indexBufferData[51] = 11;
+					__indexBufferData[52] = 14;
+					__indexBufferData[53] = 10;
 
 					__indexBuffer = context.createIndexBuffer(54);
 				}
@@ -1689,6 +1642,14 @@ class BitmapData implements IBitmapDrawable
 			__vertexBufferContext = context.__context;
 			__vertexBuffer = null;
 
+			if (targetObject != null)
+			{
+				__vertexBufferWidth = targetObject.width;
+				__vertexBufferHeight = targetObject.height;
+				__vertexBufferScaleX = targetObject.scaleX;
+				__vertexBufferScaleY = targetObject.scaleY;
+			}
+
 			if (scale9Grid != null && targetObject != null)
 			{
 				if (__vertexBufferGrid == null) __vertexBufferGrid = new Rectangle();
@@ -1703,63 +1664,106 @@ class BitmapData implements IBitmapDrawable
 				var centerY = scale9Grid.height;
 				if (centerX != 0 && centerY != 0)
 				{
-					__vertexBufferData = new Float32Array(VERTEX_BUFFER_STRIDE * 36);
+					__vertexBufferData = new Float32Array(VERTEX_BUFFER_STRIDE * 16);
 
 					var left = scale9Grid.x;
 					var top = scale9Grid.y;
-					var right = __vertexBufferWidth - centerX - left;
-					var bottom = __vertexBufferHeight - centerY - top;
+					var right = width - centerX - left;
+					var bottom = height - centerY - top;
 
-					var uvLeft = left / __vertexBufferWidth;
-					var uvTop = top / __vertexBufferHeight;
-					var uvCenterX = scale9Grid.width / __vertexBufferWidth;
-					var uvCenterY = scale9Grid.height / __vertexBufferHeight;
+					var uvLeft = left / width;
+					var uvTop = top / height;
+					var uvCenterX = centerX / width;
+					var uvCenterY = centerY / height;
 					var uvRight = right / width;
 					var uvBottom = bottom / height;
-					var uvOffsetU = 0.5 / __vertexBufferWidth;
-					var uvOffsetV = 0.5 / __vertexBufferHeight;
 
 					var renderedLeft = left / targetObject.scaleX;
 					var renderedTop = top / targetObject.scaleY;
 					var renderedRight = right / targetObject.scaleX;
 					var renderedBottom = bottom / targetObject.scaleY;
-					var renderedCenterX = (width - renderedLeft - renderedRight);
-					var renderedCenterY = (height - renderedTop - renderedBottom);
+					var renderedCenterX = (targetObject.width / targetObject.scaleX) - renderedLeft - renderedRight;
+					var renderedCenterY = (targetObject.height / targetObject.scaleY) - renderedTop - renderedBottom;
 
-					//  0 ——— 1    4 ——— 5    8 ——— 9
-					//  |  /  |    |  /  |    |  /  |
-					//  2 ——— 3    6 ——— 7   10 ——— 11
-					//
-					// 12 ——— 13  16 ——— 18  20 ——— 21
-					//  |  /  |    |  /  |    |  /  |
-					// 14 ——— 15  17 ——— 19  22 ——— 23
-					//
-					// 24 ——— 25  28 ——— 29  32 ——— 33
-					//  |  /  |    |  /  |    |  /  |
-					// 26 ——— 27  30 ——— 31  34 ——— 35
+					// 3 ——— 2 ——— 5 ——— 7
+					// |  /  |  /  |  /  |
+					// 1 ——— 0 ——— 4 ——— 6
+					// |  /  |  /  |  /  |
+					// 9 ——— 8 —— 10 —— 11
+					// |  /  |  /  |  /  |
+					// 13 — 12 —— 14 —— 15
 
-					__setVertex(0, 0, 0, 0, 0);
-					__setVertices([3, 6, 13, 16], renderedLeft, renderedTop, uvWidth * uvLeft, uvHeight * uvTop);
-					__setVertices([2, 12], 0, renderedTop, 0, uvHeight * uvTop);
-					__setVertices([1, 4], renderedLeft, 0, uvWidth * uvLeft, 0);
-					__setVertices([7, 10, 18, 20], renderedLeft + renderedCenterX, renderedTop, uvWidth * (uvLeft + uvCenterX), uvHeight * uvTop);
-					__setVertices([5, 8], renderedLeft + renderedCenterX, 0, uvWidth * (uvLeft + uvCenterX), 0);
-					__setVertices([11, 21], width, renderedTop, uvWidth, uvHeight * uvTop);
-					__setVertex(9, width, 0, uvWidth, 0);
-					__setVertices([15, 17, 25, 28], renderedLeft, renderedTop + renderedCenterY, uvWidth * uvLeft, uvHeight * (uvTop + uvCenterY));
-					__setVertices([14, 24], 0, renderedTop + renderedCenterY, 0, uvHeight * (uvTop + uvCenterY));
-					__setVertices([19, 22, 29, 32], renderedLeft + renderedCenterX, renderedTop + renderedCenterY, uvWidth * (uvLeft + uvCenterX),
-						uvHeight * (uvTop + uvCenterY));
-					__setVertices([23, 33], width, renderedTop + renderedCenterY, uvWidth, uvHeight * (uvTop + uvCenterY));
-					__setVertices([27, 30], renderedLeft, height, uvWidth * uvLeft, uvHeight);
-					__setVertex(26, 0, height, 0, uvHeight);
-					__setVertices([31, 34], renderedLeft + renderedCenterX, height, uvWidth * (uvLeft + uvCenterX), uvHeight);
-					__setVertex(35, width, height, uvWidth, uvHeight);
+					// top left <0-1-2> <2-1-3>
+					__vertexBufferData[0] = renderedLeft;
+					__vertexBufferData[1] = renderedTop;
+					__vertexBufferData[3] = uvWidth * uvLeft;
+					__vertexBufferData[4] = uvHeight * uvTop;
 
-					__setUOffsets([1, 3, 5, 7, 13, 15, 18, 19, 25, 27, 29, 31], -uvOffsetU);
-					__setUOffsets([4, 6, 8, 10, 16, 17, 20, 22, 28, 30, 32, 34], uvOffsetU);
-					__setVOffsets([2, 3, 6, 7, 10, 11, 14, 15, 17, 19, 22, 23], -uvOffsetV);
-					__setVOffsets([12, 13, 16, 18, 20, 21, 24, 25, 28, 29, 32, 33], uvOffsetV);
+					__vertexBufferData[VERTEX_BUFFER_STRIDE + 1] = renderedTop;
+					__vertexBufferData[VERTEX_BUFFER_STRIDE + 4] = uvHeight * uvTop;
+
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 2] = renderedLeft;
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 2 + 3] = uvWidth * uvLeft;
+
+					// top center <4-0-5> <5-0-2>
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 4] = renderedLeft + renderedCenterX;
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 1] = renderedTop;
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 3] = uvWidth * (uvLeft + uvCenterX);
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 4] = uvHeight * uvTop;
+
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 5] = renderedLeft + renderedCenterX;
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 5 + 3] = uvWidth * (uvLeft + uvCenterX);
+
+					// top right <6-4-7> <7-4-5>
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 6] = width;
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 1] = renderedTop;
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 3] = uvWidth;
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 4] = uvHeight * uvTop;
+
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 7] = width;
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 7 + 3] = uvWidth;
+
+					// middle left <8-9-0> <0-9-1>
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 8] = renderedLeft;
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 8 + 1] = renderedTop + renderedCenterY;
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 8 + 3] = uvWidth * uvLeft;
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 8 + 4] = uvHeight * (uvTop + uvCenterY);
+
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 9 + 1] = renderedTop + renderedCenterY;
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 9 + 4] = uvHeight * (uvTop + uvCenterY);
+
+					// middle center <10-8-4> <4-8-0>
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 10] = renderedLeft + renderedCenterX;
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 10 + 1] = renderedTop + renderedCenterY;
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 10 + 3] = uvWidth * (uvLeft + uvCenterX);
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 10 + 4] = uvHeight * (uvTop + uvCenterY);
+
+					// middle right <11-10-6> <6-10-4>
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 11] = width;
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 11 + 1] = renderedTop + renderedCenterY;
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 11 + 3] = uvWidth;
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 11 + 4] = uvHeight * (uvTop + uvCenterY);
+
+					// bottom left <12-13-8> <8-13-9>
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 12] = renderedLeft;
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 12 + 1] = height;
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 12 + 3] = uvWidth * uvLeft;
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 12 + 4] = uvHeight;
+
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 13 + 1] = height;
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 13 + 4] = uvHeight;
+
+					// bottom center <14-12-10> <10-12-8>
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 14] = renderedLeft + renderedCenterX;
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 14 + 1] = height;
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 14 + 3] = uvWidth * (uvLeft + uvCenterX);
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 14 + 4] = uvHeight;
+
+					// bottom right <15-14-11> <11-14-10>
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 15] = width;
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 15 + 1] = height;
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 15 + 3] = uvWidth;
+					__vertexBufferData[VERTEX_BUFFER_STRIDE * 15 + 4] = uvHeight;
 
 					__vertexBuffer = context.createVertexBuffer(16, VERTEX_BUFFER_STRIDE);
 				}
@@ -3035,6 +3039,125 @@ class BitmapData implements IBitmapDrawable
 		image.version++;
 	}
 
+	@:noCompletion private function __drawCairo(source:IBitmapDrawable, renderer:CairoRenderer):Void
+	{
+		#if lime_cairo
+		var cairo = renderer.cairo;
+
+		if (source == this)
+		{
+			source = clone();
+		}
+
+		if (!renderer.__allowSmoothing) cairo.antialias = NONE;
+
+		renderer.__render(source);
+
+		if (!renderer.__allowSmoothing) cairo.antialias = GOOD;
+
+		cairo.target.flush();
+
+		image.dirty = true;
+		image.version++;
+		#end
+	}
+
+	@:noCompletion private function __drawCanvas(source:IBitmapDrawable, renderer:CanvasRenderer):Void
+	{
+		var buffer = image.buffer;
+
+		if (!renderer.__allowSmoothing) renderer.applySmoothing(buffer.__srcContext, false);
+
+		renderer.__render(source);
+
+		if (!renderer.__allowSmoothing) renderer.applySmoothing(buffer.__srcContext, true);
+
+		buffer.__srcContext.setTransform(1, 0, 0, 1, 0, 0);
+		buffer.__srcImageData = null;
+		buffer.data = null;
+
+		image.dirty = true;
+		image.version++;
+	}
+
+	@:noCompletion private function __drawGL(source:IBitmapDrawable, renderer:OpenGLRenderer):Void
+	{
+		var context = renderer.__context3D;
+
+		var cacheRTT = context.__state.renderToTexture;
+		var cacheRTTDepthStencil = context.__state.renderToTextureDepthStencil;
+		var cacheRTTAntiAlias = context.__state.renderToTextureAntiAlias;
+		var cacheRTTSurfaceSelector = context.__state.renderToTextureSurfaceSelector;
+
+		context.setRenderToTexture(getTexture(context), true);
+
+		renderer.__render(source);
+
+		if (cacheRTT != null)
+		{
+			context.setRenderToTexture(cacheRTT, cacheRTTDepthStencil, cacheRTTAntiAlias, cacheRTTSurfaceSelector);
+		}
+		else
+		{
+			context.setRenderToBackBuffer();
+		}
+	}
+
+	@:noCompletion private function __fillRect(rect:Rectangle, color:Int, allowFramebuffer:Bool):Void
+	{
+		#if lime
+		if (rect == null) return;
+
+		if (transparent && (color & 0xFF000000) == 0)
+		{
+			color = 0;
+		}
+
+		if (allowFramebuffer
+			&& __texture != null
+			&& __texture.__glFramebuffer != null
+			&& Lib.current.stage.__renderer.__type == OPENGL)
+		{
+			var renderer:OpenGLRenderer = cast Lib.current.stage.__renderer;
+			var context = renderer.__context3D;
+			var color:ARGB = (color : ARGB);
+			var useScissor = !this.rect.equals(rect);
+
+			var cacheRTT = context.__state.renderToTexture;
+			var cacheRTTDepthStencil = context.__state.renderToTextureDepthStencil;
+			var cacheRTTAntiAlias = context.__state.renderToTextureAntiAlias;
+			var cacheRTTSurfaceSelector = context.__state.renderToTextureSurfaceSelector;
+
+			context.setRenderToTexture(__texture);
+
+			if (useScissor)
+			{
+				context.setScissorRectangle(rect);
+			}
+
+			context.clear(color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, transparent ? color.a / 0xFF : 1, 0, 0, Context3DClearMask.COLOR);
+
+			if (useScissor)
+			{
+				context.setScissorRectangle(null);
+			}
+
+			if (cacheRTT != null)
+			{
+				context.setRenderToTexture(cacheRTT, cacheRTTDepthStencil, cacheRTTAntiAlias, cacheRTTSurfaceSelector);
+			}
+			else
+			{
+				context.setRenderToBackBuffer();
+			}
+		}
+		else if (readable)
+		{
+			image.fillRect(rect.__toLimeRectangle(), color, ARGB32);
+		}
+		#end
+	}
+
 	@:noCompletion private inline function __fromBase64(base64:String, type:String):Void
 	{
 		#if lime
@@ -3225,6 +3348,115 @@ class BitmapData implements IBitmapDrawable
 		#end
 	}
 
+	@:noCompletion private function __renderCairo(renderer:CairoRenderer):Void
+	{
+		#if lime_cairo
+		if (!readable) return;
+
+		var cairo = renderer.cairo;
+
+		renderer.applyMatrix(__renderTransform, cairo);
+
+		var surface = getSurface();
+
+		if (surface != null)
+		{
+			var pattern = CairoPattern.createForSurface(surface);
+
+			if (!renderer.__allowSmoothing || cairo.antialias == NONE)
+			{
+				pattern.filter = CairoFilter.NEAREST;
+			}
+			else
+			{
+				pattern.filter = CairoFilter.GOOD;
+			}
+
+			cairo.source = pattern;
+			cairo.paint();
+		}
+		#end
+	}
+
+	@:noCompletion private function __renderCairoMask(renderer:CairoRenderer):Void {}
+
+	@:noCompletion private function __renderCanvas(renderer:CanvasRenderer):Void
+	{
+		#if (js && html5)
+		if (!readable) return;
+
+		if (image.type == DATA)
+		{
+			ImageCanvasUtil.convertToCanvas(image);
+		}
+
+		var context = renderer.context;
+		context.globalAlpha = 1;
+
+		renderer.setTransform(__renderTransform, context);
+
+		context.drawImage(image.src, 0, 0, image.width, image.height);
+		#end
+	}
+
+	@:noCompletion private function __renderCanvasMask(renderer:CanvasRenderer):Void {}
+
+	@:noCompletion private function __renderDOM(renderer:DOMRenderer):Void {}
+
+	@:noCompletion private function __renderGL(renderer:OpenGLRenderer):Void
+	{
+		var context = renderer.__context3D;
+		var gl = context.gl;
+
+		renderer.__setBlendMode(NORMAL);
+
+		var shader = renderer.__defaultDisplayShader;
+		renderer.setShader(shader);
+		renderer.applyBitmapData(this, renderer.__upscaled);
+		renderer.applyMatrix(renderer.__getMatrix(__worldTransform, AUTO));
+		renderer.applyAlpha(__worldAlpha);
+		renderer.applyColorTransform(__worldColorTransform);
+		renderer.updateShader();
+
+		// alpha == 1, __worldColorTransform
+
+		var vertexBuffer = getVertexBuffer(context);
+		if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, vertexBuffer, 0, FLOAT_3);
+		if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
+		var indexBuffer = getIndexBuffer(context);
+		context.drawTriangles(indexBuffer);
+
+		#if gl_stats
+		Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
+		#end
+
+		renderer.__clearShader();
+	}
+
+	@:noCompletion private function __renderGLMask(renderer:OpenGLRenderer):Void
+	{
+		var context = renderer.__context3D;
+		var gl = context.gl;
+
+		var shader = renderer.__maskShader;
+		renderer.setShader(shader);
+		renderer.applyBitmapData(this, renderer.__upscaled);
+		renderer.applyMatrix(renderer.__getMatrix(__worldTransform, AUTO));
+		renderer.updateShader();
+
+		var vertexBuffer = getVertexBuffer(context);
+		if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, vertexBuffer, 0, FLOAT_3);
+		if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
+		var indexBuffer = getIndexBuffer(context);
+		context.drawTriangles(indexBuffer);
+
+		#if gl_stats
+		Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
+		#end
+
+		renderer.__clearShader();
+	}
+
 	@:noCompletion private function __resize(width:Int, height:Int):Void
 	{
 		this.width = width;
@@ -3266,39 +3498,6 @@ class BitmapData implements IBitmapDrawable
 			__vertexBufferData[VERTEX_BUFFER_STRIDE * 3 + 4] = uvY;
 
 			__vertexBuffer.uploadFromTypedArray(__vertexBufferData);
-		}
-	}
-
-	@:noCompletion private function __setVertex(index:Int, x:Float, y:Float, u:Float, v:Float):Void
-	{
-		var i = index * VERTEX_BUFFER_STRIDE;
-		__vertexBufferData[i + 0] = x;
-		__vertexBufferData[i + 1] = y;
-		__vertexBufferData[i + 3] = u;
-		__vertexBufferData[i + 4] = v;
-	}
-
-	@:noCompletion private function __setVertices(indices:Array<Int>, x:Float, y:Float, u:Float, v:Float):Void
-	{
-		for (index in indices)
-		{
-			__setVertex(index, x, y, u, v);
-		}
-	}
-
-	@:noCompletion private function __setUOffsets(indices:Array<Int>, offset:Float):Void
-	{
-		for (index in indices)
-		{
-			__vertexBufferData[index * VERTEX_BUFFER_STRIDE + 3] += offset;
-		}
-	}
-
-	@:noCompletion private function __setVOffsets(indices:Array<Int>, offset:Float):Void
-	{
-		for (index in indices)
-		{
-			__vertexBufferData[index * VERTEX_BUFFER_STRIDE + 4] += offset;
 		}
 	}
 

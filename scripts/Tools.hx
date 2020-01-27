@@ -242,8 +242,7 @@ class Tools
 					switch (superClassData.nameSpace)
 					{
 						case NPublic(_) if (!~/^flash\./.match(superClassData.nameSpaceName)):
-							baseClassName = ("" == superClassData.nameSpaceName ? "" : superClassData.nameSpaceName + ".")
-								+ superClassData.name;
+							baseClassName = ("" == superClassData.nameSpaceName ? "" : superClassData.nameSpaceName + ".") + superClassData.name;
 						case _:
 					}
 				}
@@ -322,17 +321,16 @@ class Tools
 					}
 				}
 
-				var context =
-					{
-						PACKAGE_NAME: packageName,
-						NATIVE_CLASS_NAME: StringTools.trim(className),
-						CLASS_NAME: name,
-						BASE_CLASS_NAME: baseClassName,
-						SWF_ID: swfAsset.id,
-						SYMBOL_ID: symbolID,
-						PREFIX: prefix,
-						CLASS_PROPERTIES: classProperties
-					};
+				var context = {
+					PACKAGE_NAME: packageName,
+					NATIVE_CLASS_NAME: StringTools.trim(className),
+					CLASS_NAME: name,
+					BASE_CLASS_NAME: baseClassName,
+					SWF_ID: swfAsset.id,
+					SYMBOL_ID: symbolID,
+					PREFIX: "",
+					CLASS_PROPERTIES: classProperties
+				};
 				var template = new Template(templateData);
 				var targetPath;
 
@@ -346,11 +344,7 @@ class Tools
 
 				// }
 
-				var templateFile = new Asset("", Path.combine(targetPath, Path.directory(className.split(".").join("/")))
-					+ "/"
-					+ prefix
-					+ name
-					+ ".hx",
+				var templateFile = new Asset("", Path.combine(targetPath, Path.directory(className.split(".").join("/"))) + "/" + prefix + name + ".hx",
 					AssetType.TEMPLATE);
 				templateFile.data = template.execute(context);
 				output.assets.push(templateFile);
@@ -424,7 +418,7 @@ class Tools
 					name = className.substr(lastIndexOfPeriod + 1);
 				}
 
-				name = formatClassName(name, prefix);
+				// name = formatClassName(name, prefix);
 
 				var classProperties = [];
 				var objectReferences = new Map<String, Bool>();
@@ -479,7 +473,7 @@ class Tools
 											}
 											else
 											{
-												className = formatClassName(className, prefix);
+												// className = formatClassName(className, prefix);
 											}
 
 											if (className != null)
@@ -495,23 +489,19 @@ class Tools
 					}
 				}
 
-				var context =
-					{
-						PACKAGE_NAME: packageName,
-						NATIVE_CLASS_NAME: className,
-						CLASS_NAME: name,
-						BASE_CLASS_NAME: baseClassName,
-						SWF_ID: swfID,
-						SYMBOL_ID: symbolID,
-						PREFIX: "",
-						CLASS_PROPERTIES: classProperties
-					};
+				var context = {
+					PACKAGE_NAME: packageName,
+					NATIVE_CLASS_NAME: className,
+					CLASS_NAME: name,
+					BASE_CLASS_NAME: baseClassName,
+					SWF_ID: swfID,
+					SYMBOL_ID: symbolID,
+					PREFIX: "",
+					CLASS_PROPERTIES: classProperties
+				};
 				var template = new Template(templateData);
 
-				var templateFile = new Asset("", Path.combine(targetPath, Path.directory(symbol.className.split(".").join("/")))
-					+ "/"
-					+ name
-					+ ".hx",
+				var templateFile = new Asset("", Path.combine(targetPath, Path.directory(symbol.className.split(".").join("/"))) + "/" + name + ".hx",
 					AssetType.TEMPLATE);
 				templateFile.data = template.execute(context);
 				output.push(templateFile);
@@ -655,19 +645,6 @@ class Tools
 
 	private static function processFile(sourcePath:String, targetPath:String, prefix:String = null):Bool
 	{
-		#if false // TODO: Make default
-		if (targetPath == null)
-		{
-			targetPath = Path.withoutExtension(sourcePath) + ".zip";
-		}
-		System.mkdir(Path.directory(targetPath));
-
-		var bytes:ByteArray = File.getBytes(sourcePath);
-		var swf = new SWF(bytes);
-		var exporter = new SWFLibraryExporter(swf.data, targetPath);
-
-		return true;
-		#else
 		var bytes:ByteArray = File.getBytes(sourcePath);
 		var swf = new SWF(bytes);
 		var exporter = new SWFLiteExporter(swf.data);
@@ -805,7 +782,6 @@ class Tools
 		File.saveContent(Path.combine(targetPath, "include.xml"), includeXML);
 
 		return true;
-		#end
 	}
 
 	private static function processLibraries(project:HXProject):HXProject
@@ -821,7 +797,6 @@ class Tools
 		var output = new HXProject();
 		var embeddedSWF = false;
 		var embeddedSWFLite = false;
-		var embeddedAnimate = false;
 		// var filterClasses = [];
 
 		for (library in project.libraries)
@@ -835,100 +810,6 @@ class Tools
 				type = Path.extension(library.sourcePath).toLowerCase();
 			}
 
-			#if !nodejs
-			if (type == "animate")
-			{
-				if (!FileSystem.exists(library.sourcePath))
-				{
-					Log.warn("Could not find library file: " + library.sourcePath);
-					continue;
-				}
-
-				Log.info("", " - \x1b[1mProcessing library:\x1b[0m " + library.sourcePath + " [SWF]");
-
-				var cacheAvailable = false;
-				var cacheDirectory = null;
-				var cacheFile = null;
-
-				if (targetDirectory != null)
-				{
-					cacheDirectory = targetDirectory + "/obj/libraries";
-					cacheFile = cacheDirectory + "/" + library.name + ".zip";
-
-					if (FileSystem.exists(cacheFile))
-					{
-						var cacheDate = FileSystem.stat(cacheFile).mtime;
-						var toolDate = FileSystem.stat(Haxelib.getPath(new Haxelib("openfl"), true) + "/scripts/tools.n").mtime;
-						var sourceDate = FileSystem.stat(library.sourcePath).mtime;
-
-						if (sourceDate.getTime() < cacheDate.getTime() && toolDate.getTime() < cacheDate.getTime())
-						{
-							cacheAvailable = true;
-						}
-					}
-
-					if (!cacheAvailable)
-					{
-						if (cacheDirectory != null)
-						{
-							System.mkdir(cacheDirectory);
-						}
-
-						var bytes:ByteArray = File.getBytes(library.sourcePath);
-						var swf = new SWF(bytes);
-						var exporter = new SWFLibraryExporter(swf.data, cacheFile);
-
-						if (true || library.generate)
-						{
-							var targetPath;
-
-							if (project.target == IOS)
-							{
-								targetPath = Path.tryFullPath(targetDirectory) + "/" + project.app.file + "/" + "/haxe/_generated";
-							}
-							else
-							{
-								targetPath = Path.tryFullPath(targetDirectory) + "/haxe/_generated";
-							}
-
-							var generatedClasses = exporter.generateClasses(targetPath, output.assets, library.prefix);
-
-							// for (className in generatedClasses)
-							// {
-							// 	output.haxeflags.push(className);
-							// }
-
-							// if (cacheDirectory != null)
-							// {
-							// 	File.saveContent(cacheDirectory + "/classNames.txt", generatedClasses.join("\n"));
-							// }
-						}
-					}
-					else
-					{
-						// var generatedClasses = File.getContent(cacheDirectory + "/classNames.txt").split("\n");
-
-						// for (className in generatedClasses)
-						// {
-						// 	output.haxeflags.push(className);
-						// }
-					}
-
-					var asset = new Asset(cacheFile, "lib/" + library.name + ".zip", AssetType.BUNDLE);
-					asset.library = library.name;
-					// This causes problems with the Flash target (embedding a ZIP... use a different method?)
-					// if (library.embed != null)
-					// {
-					// 	asset.embed = library.embed;
-					// }
-					asset.embed = false;
-					output.assets.push(asset);
-
-					embeddedAnimate = true;
-				}
-			}
-			else
-			#end
 			if (type == "swf" || type == "swf_lite" || type == "swflite")
 			{
 				if (project.target == Platform.FLASH || project.target == Platform.AIR)
@@ -1281,7 +1162,7 @@ class Tools
 			// }
 		}
 
-		if (embeddedSWF || embeddedSWFLite || embeddedAnimate)
+		if (embeddedSWF || embeddedSWFLite)
 		{
 			var generatedPath;
 

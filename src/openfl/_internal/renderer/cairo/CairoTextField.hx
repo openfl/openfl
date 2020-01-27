@@ -2,6 +2,7 @@ package openfl._internal.renderer.cairo;
 
 import openfl._internal.text.TextEngine;
 import openfl.display.BitmapData;
+import openfl.display.CairoRenderer;
 import openfl.display.Graphics;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
@@ -309,7 +310,11 @@ class CairoTextField
 							if (selectionEnd >= group.endIndex)
 							{
 								end = textField.getCharBoundaries(group.endIndex - 1);
-								end.x += end.width + 2;
+
+								if (end != null)
+								{
+									end.x += end.width + 2;
+								}
 							}
 							else
 							{

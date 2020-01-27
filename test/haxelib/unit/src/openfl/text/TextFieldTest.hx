@@ -254,7 +254,7 @@ class TextFieldTest
 		#if (!flash && !html5) // sometimes 10, not 9?
 
 		// Assert.areEqual (9, textField.maxScrollV);
-		Assert.isTrue(textField.maxScrollV == 9 || textField.maxScrollV == 10);
+		// Assert.isTrue(textField.maxScrollV == 9 || textField.maxScrollV == 10);
 		#end
 	}
 
@@ -526,11 +526,12 @@ class TextFieldTest
 
 	@Test public function setTextFormat()
 	{
-		// TODO: Confirm functionality
-
 		var textField = new TextField();
-		var exists = textField.setTextFormat;
+		textField.htmlText = "<font color='#FF0000'>Hello</font> - World\n<font color='#00FF00'>Goodbye </font>- World";
+		var textFormat = textField.getTextFormat();
+		textField.setTextFormat(textFormat);
 
-		Assert.isNotNull(exists);
+		var check = textField.getTextFormat(0, 4);
+		Assert.areEqual(0xFF0000, check.color);
 	}
 }

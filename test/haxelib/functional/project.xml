@@ -12,6 +12,6 @@
 	<define name="functional" />
 
 	<assets path="assets" exclude="*.swf" />
-	<library type="animate" path="assets/scale9Grid.swf" preload="true" />
+	<library path="assets/scale9Grid.swf" preload="true" />
 
 </project>

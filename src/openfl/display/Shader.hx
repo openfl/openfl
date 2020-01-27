@@ -211,8 +211,6 @@ class Shader
 	public var program:Program3D;
 
 	@:noCompletion private var __alpha:ShaderParameter<Float>;
-	@:noCompletion private var __alphaTexture:ShaderInput<BitmapData>;
-	@:noCompletion private var __alphaTextureMatrix:ShaderParameter<Float>;
 	@:noCompletion private var __bitmap:ShaderInput<BitmapData>;
 	@:noCompletion private var __colorMultiplier:ShaderParameter<Float>;
 	@:noCompletion private var __colorOffset:ShaderParameter<Float>;
@@ -595,8 +593,6 @@ class Shader
 
 				switch (name)
 				{
-					case "openfl_AlphaTexture":
-						__alphaTexture = input;
 					case "openfl_Texture":
 						__texture = input;
 					case "bitmap":
@@ -703,7 +699,6 @@ class Shader
 							switch (name)
 							{
 								case "openfl_Alpha": __alpha = parameter;
-								case "openfl_AlphaTextureMatrix": __alphaTextureMatrix = parameter;
 								case "openfl_ColorMultiplier": __colorMultiplier = parameter;
 								case "openfl_ColorOffset": __colorOffset = parameter;
 								case "openfl_Matrix": __matrix = parameter;

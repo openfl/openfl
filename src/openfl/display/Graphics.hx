@@ -1,6 +1,8 @@
 package openfl.display;
 
 #if !flash
+import openfl._internal.renderer.cairo.CairoGraphics;
+import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.renderer.context3D.Context3DBuffer;
 import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.DrawCommandReader;
@@ -16,11 +18,6 @@ import openfl.geom.Rectangle;
 import openfl.Vector;
 #if lime
 import lime.graphics.cairo.Cairo;
-#if (js && html5)
-import openfl._internal.renderer.canvas.CanvasGraphics;
-#elseif lime_cffi
-import openfl._internal.renderer.cairo.CairoGraphics;
-#end
 #end
 #if (js && html5)
 import js.html.CanvasElement;

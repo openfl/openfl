@@ -2,6 +2,7 @@ package openfl._internal.renderer.cairo;
 
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
+import openfl.display.CairoRenderer;
 import openfl.display.TileContainer;
 import openfl.display.Tilemap;
 import openfl.display.Tileset;
