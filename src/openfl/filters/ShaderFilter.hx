@@ -154,6 +154,11 @@ class ShaderFilter extends BitmapFilter
 		return filter;
 	}
 
+	public function invalidate():Void
+	{
+		__renderDirty = true;
+	}
+
 	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int):Shader
 	{
 		__shaderBlendMode = blendMode;
