@@ -824,13 +824,14 @@ class LimeStageBackend
 	{
 		// TODO: Should we handle this differently?
 
+		var oldPrimaryTouch = primaryTouch;
 		if (primaryTouch == touch)
 		{
 			primaryTouch = null;
 		}
 
 		parent.__onTouch(TouchEvent.TOUCH_END, touch.id, Math.round(touch.x * parent.limeWindow.width), Math.round(touch.y * parent.limeWindow.width),
-			touch.pressure, touch == primaryTouch);
+			touch.pressure, touch == oldPrimaryTouch);
 	}
 
 	private function touch_onMove(touch:Touch):Void
@@ -841,13 +842,14 @@ class LimeStageBackend
 
 	private function touch_onEnd(touch:Touch):Void
 	{
+		var oldPrimaryTouch = primaryTouch;
 		if (primaryTouch == touch)
 		{
 			primaryTouch = null;
 		}
 
 		parent.__onTouch(TouchEvent.TOUCH_END, touch.id, Math.round(touch.x * parent.limeWindow.width), Math.round(touch.y * parent.limeWindow.width),
-			touch.pressure, touch == primaryTouch);
+			touch.pressure, touch == oldPrimaryTouch);
 	}
 
 	private function touch_onStart(touch:Touch):Void
