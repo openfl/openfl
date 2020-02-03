@@ -4,9 +4,7 @@ package openfl.display;
 import openfl.geom.Rectangle;
 import openfl.media.SoundTransform;
 
-#if !openfl_global
 @:jsRequire("openfl/display/Sprite", "default")
-#end
 
 /**
  * The Sprite class is a basic display list building block: a display list

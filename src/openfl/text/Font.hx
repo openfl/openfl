@@ -1,17 +1,11 @@
 package openfl.text;
 
 #if !flash
-import openfl._internal.utils.Log;
 import openfl.utils.Assets;
 import openfl.utils.ByteArray;
 import openfl.utils.Future;
-import openfl.utils.Promise;
 #if lime
 import lime.text.Font as LimeFont;
-#end
-#if openfl_html5
-import js.html.SpanElement;
-import js.Browser;
 #end
 
 /**
@@ -28,11 +22,6 @@ import js.Browser;
 #end
 class Font #if lime extends LimeFont #end
 {
-	#if (!lime && openfl_html5)
-	@:noCompletion public var ascender:Int;
-	@:noCompletion public var descender:Int;
-	#end
-
 	/**
 		The name of an embedded font.
 	**/
@@ -49,10 +38,6 @@ class Font #if lime extends LimeFont #end
 		the FontType class.
 	**/
 	public var fontType:FontType;
-
-	#if (!lime && openfl_html5)
-	@:noCompletion public var unitsPerEM:Int;
-	#end
 
 	@:noCompletion private static var __fontByName:Map<String, Font> = new Map();
 	@:noCompletion private static var __registeredFonts:Array<Font> = new Array();
@@ -210,10 +195,7 @@ class Font #if lime extends LimeFont #end
 	**/
 	public static function loadFromName(path:String):Future<Font>
 	{
-		#if (!lime && openfl_html5)
-		var font = new Font();
-		return font.__loadFromName(path);
-		#elseif lime
+		#if lime
 		return LimeFont.loadFromName(path).then(function(limeFont)
 		{
 			var font = new Font();
@@ -284,97 +266,6 @@ class Font #if lime extends LimeFont #end
 
 		return __initialized;
 	}
-
-	#if (!lime && openfl_html5)
-	@:noCompletion private function __loadFromName(name:String):Future<Font>
-	{
-		var promise = new Promise<Font>();
-		// this.name = name;
-		this.fontName = name;
-
-		var userAgent = Browser.navigator.userAgent.toLowerCase();
-		var isSafari = (userAgent.indexOf(" safari/") >= 0 && userAgent.indexOf(" chrome/") < 0);
-		var isUIWebView = ~/(iPhone|iPod|iPad).*AppleWebKit(?!.*Version)/i.match(userAgent);
-
-		if (!isSafari && !isUIWebView && untyped (Browser.document).fonts && untyped (Browser.document).fonts.load)
-		{
-			untyped (Browser.document).fonts.load("1em '" + name + "'").then(function(_)
-			{
-				promise.complete(this);
-			}, function(_)
-			{
-				Log.warn("Could not load web font \"" + name + "\"");
-				promise.complete(this);
-			});
-		}
-		else
-		{
-			var node1 = __measureFontNode("'" + name + "', sans-serif");
-			var node2 = __measureFontNode("'" + name + "', serif");
-
-			var width1 = node1.offsetWidth;
-			var width2 = node2.offsetWidth;
-
-			var interval = -1;
-			var timeout = 3000;
-			var intervalLength = 50;
-			var intervalCount = 0;
-			var loaded, timeExpired;
-
-			var checkFont = function()
-			{
-				intervalCount++;
-
-				loaded = (node1.offsetWidth != width1 || node2.offsetWidth != width2);
-				timeExpired = (intervalCount * intervalLength >= timeout);
-
-				if (loaded || timeExpired)
-				{
-					Browser.window.clearInterval(interval);
-					node1.parentNode.removeChild(node1);
-					node2.parentNode.removeChild(node2);
-					node1 = null;
-					node2 = null;
-
-					if (timeExpired)
-					{
-						Log.warn("Could not load web font \"" + name + "\"");
-					}
-
-					promise.complete(this);
-				}
-			}
-
-			interval = Browser.window.setInterval(checkFont, intervalLength);
-		}
-
-		return promise.future;
-	}
-
-	private static function __measureFontNode(fontFamily:String):SpanElement
-	{
-		var node:SpanElement = cast Browser.document.createElement("span");
-		node.setAttribute("aria-hidden", "true");
-		var text = Browser.document.createTextNode("BESbswy");
-		node.appendChild(text);
-		var style = node.style;
-		style.display = "block";
-		style.position = "absolute";
-		style.top = "-9999px";
-		style.left = "-9999px";
-		style.fontSize = "300px";
-		style.width = "auto";
-		style.height = "auto";
-		style.lineHeight = "normal";
-		style.margin = "0";
-		style.padding = "0";
-		style.fontVariant = "normal";
-		style.whiteSpace = "nowrap";
-		style.fontFamily = fontFamily;
-		Browser.document.body.appendChild(node);
-		return node;
-	}
-	#end
 
 	// Get & Set Methods
 	@:noCompletion private inline function get_fontName():String

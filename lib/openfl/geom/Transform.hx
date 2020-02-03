@@ -3,9 +3,7 @@ package openfl.geom;
 #if (display || !flash)
 import openfl.display.DisplayObject;
 
-#if !openfl_global
 @:jsRequire("openfl/geom/Transform", "default")
-#end
 
 /**
  * The Transform class provides access to color adjustment properties and two-

@@ -13,9 +13,7 @@ import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
 import openfl.Vector;
 
-#if !openfl_global
 @:jsRequire("openfl/display3D/Context3D", "default")
-#end
 @:final extern class Context3D extends EventDispatcher
 {
 	public static var supportsVideoTexture(default, null):Bool;

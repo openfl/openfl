@@ -1,9 +1,7 @@
 package openfl.media;
 
 #if (display || !flash)
-#if !openfl_global
 @:jsRequire("openfl/media/ID3Info", "default")
-#end
 @:final extern class ID3Info
 {
 	public var album:String;

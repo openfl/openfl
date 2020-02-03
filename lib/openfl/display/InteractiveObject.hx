@@ -3,9 +3,7 @@ package openfl.display;
 #if (display || !flash)
 import openfl.geom.Rectangle;
 
-#if !openfl_global
 @:jsRequire("openfl/display/InteractiveObject", "default")
-#end
 
 /**
  * The InteractiveObject class is the abstract base class for all display

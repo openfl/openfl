@@ -1,9 +1,7 @@
 package openfl.system;
 
 #if (display || !flash)
-#if !openfl_global
 @:jsRequire("openfl/system/Security", "default")
-#end
 extern class Security
 {
 	#if flash

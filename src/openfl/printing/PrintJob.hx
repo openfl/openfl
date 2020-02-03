@@ -1,9 +1,19 @@
 package openfl.printing;
 
 #if !flash
+import haxe.Timer;
 import openfl.display.BitmapData;
 import openfl.display.Sprite;
 import openfl.geom.Rectangle;
+#if lime
+import lime._internal.graphics.ImageCanvasUtil; // TODO
+#end
+#if (js && html5)
+import js.html.DivElement;
+import js.html.Image;
+import js.html.StyleElement;
+import js.Browser;
+#end
 
 /**
 	The PrintJob class lets you create content and print it to one or more
@@ -54,13 +64,14 @@ import openfl.geom.Rectangle;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@:access(lime.graphics.ImageBuffer)
 class PrintJob
 {
 	/**
 		Indicates whether the PrintJob class is supported on the current
 		platform (`true`) or not (`false`).
 	**/
-	public static var isSupported(default, null) = #if openfl_html5 true #else false #end;
+	public static var isSupported(default, null) = #if (js && html5) true #else false #end;
 
 	/**
 		The image orientation for printing. The acceptable values are defined
@@ -113,7 +124,6 @@ class PrintJob
 	**/
 	public var paperWidth(default, null):Int;
 
-	@:noCompletion private var __backend:PrintJobBackend;
 	@:noCompletion private var __bitmapData:Array<BitmapData>;
 	@:noCompletion private var __started:Bool;
 
@@ -167,10 +177,7 @@ class PrintJob
 									  throws an exception if another PrintJob
 									  object is still active.
 	**/
-	public function new()
-	{
-		__backend = new PrintJobBackend(this);
-	}
+	public function new() {}
 
 	/**
 		Sends the specified Sprite object as a single page to the print
@@ -315,7 +322,53 @@ class PrintJob
 	{
 		if (!__started) return;
 
-		__backend.send();
+		#if (js && html5)
+		var window = Browser.window.open("", "", "width=500,height=500");
+
+		if (window != null)
+		{
+			var style:StyleElement = cast window.document.createElement("style");
+			style.innerText = "@media all {
+					.page-break	{ display: none; }
+				}
+
+				@media print {
+					.page-break	{ display: block; page-break-before: always; }
+				}";
+
+			window.document.head.appendChild(style);
+
+			var div:DivElement;
+			var image:Image;
+			var bitmapData;
+
+			for (i in 0...__bitmapData.length)
+			{
+				bitmapData = __bitmapData[i];
+				ImageCanvasUtil.sync(bitmapData.image, false);
+
+				if (bitmapData.image.buffer.__srcCanvas != null)
+				{
+					if (i > 0)
+					{
+						div = cast window.document.createElement("div");
+						div.className = "page-break";
+						window.document.body.appendChild(div);
+					}
+
+					image = new Image();
+					image.src = bitmapData.image.buffer.__srcCanvas.toDataURL("image/png");
+					window.document.body.appendChild(image);
+				}
+			}
+
+			Timer.delay(function()
+			{
+				window.focus();
+				window.print();
+			}, 500);
+		}
+		#end
 	}
 
 	/**
@@ -382,14 +435,6 @@ class PrintJob
 		return false;
 	}
 }
-
-#if lime
-private typedef PrintJobBackend = openfl._internal.backend.lime.LimePrintJobBackend;
-#elseif openfl_html5
-private typedef PrintJobBackend = openfl._internal.backend.html5.HTML5PrintJobBackend;
-#else
-private typedef PrintJobBackend = openfl._internal.backend.dummy.DummyPrintJobBackend;
-#end
 #else
 typedef PrintJob = flash.printing.PrintJob;
 #end

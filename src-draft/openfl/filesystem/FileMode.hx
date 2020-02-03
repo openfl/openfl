@@ -1,6 +1,7 @@
 package openfl.filesystem;
 
-@:enum abstract FileMode(String) from String to String
+@:enum
+abstract FileMode(String) from String to String
 {
 	var APPEND = "append";
 	var READ = "read";

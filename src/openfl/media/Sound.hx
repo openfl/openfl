@@ -1,13 +1,17 @@
 package openfl.media;
 
 #if !flash
+import haxe.Int64;
+import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.IOErrorEvent;
 import openfl.net.URLRequest;
 import openfl.utils.ByteArray;
 import openfl.utils.Future;
 #if lime
+import openfl._internal.utils.UInt8Array;
 import lime.media.AudioBuffer;
+import lime.media.AudioSource;
 #end
 
 /**
@@ -74,6 +78,10 @@ import lime.media.AudioBuffer;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@:access(lime.media.AudioBuffer)
+@:access(lime.utils.AssetLibrary)
+@:access(openfl.media.SoundMixer)
+@:access(openfl.media.SoundChannel.new)
 @:autoBuild(openfl._internal.macros.AssetsMacro.embedSound())
 class Sound extends EventDispatcher
 {
@@ -220,7 +228,9 @@ class Sound extends EventDispatcher
 	**/
 	public var url(default, null):String;
 
-	@:noCompletion private var __backend:SoundBackend;
+	#if lime
+	@:noCompletion private var __buffer:AudioBuffer;
+	#end
 
 	#if openfljs
 	@:noCompletion private static function __init__()
@@ -263,8 +273,6 @@ class Sound extends EventDispatcher
 		isBuffering = false;
 		url = null;
 
-		__backend = new SoundBackend(this);
-
 		if (stream != null)
 		{
 			load(stream, context);
@@ -280,7 +288,13 @@ class Sound extends EventDispatcher
 	**/
 	public function close():Void
 	{
-		__backend.close();
+		#if lime
+		if (__buffer != null)
+		{
+			__buffer.dispose();
+			__buffer = null;
+		}
+		#end
 	}
 
 	#if false
@@ -316,9 +330,11 @@ class Sound extends EventDispatcher
 		@param	buffer	An AudioBuffer instance
 		@returns	A new Sound
 	**/
-	@:dox(hide) public static function fromAudioBuffer(buffer:AudioBuffer):Sound
+	public static function fromAudioBuffer(buffer:AudioBuffer):Sound
 	{
-		return SoundBackend.fromAudioBuffer(buffer);
+		var sound = new Sound();
+		sound.__buffer = buffer;
+		return sound;
 	}
 	#end
 
@@ -337,9 +353,11 @@ class Sound extends EventDispatcher
 	**/
 	public static function fromFile(path:String):Sound
 	{
-		if (path == null) return null;
-
-		return SoundBackend.fromFile(path);
+		#if lime
+		return fromAudioBuffer(AudioBuffer.fromFile(path));
+		#else
+		return null;
+		#end
 	}
 
 	/**
@@ -418,14 +436,29 @@ class Sound extends EventDispatcher
 	public function load(stream:URLRequest, context:SoundLoaderContext = null):Void
 	{
 		url = stream.url;
-		if (url != null)
+
+		#if lime
+		#if (js && html5)
+		var defaultLibrary = lime.utils.Assets.getLibrary("default"); // TODO: Improve this
+
+		if (defaultLibrary != null && defaultLibrary.cachedAudioBuffers.exists(url))
 		{
-			__backend.load(stream, context);
+			AudioBuffer_onURLLoad(defaultLibrary.cachedAudioBuffers.get(url));
 		}
 		else
 		{
-			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+			AudioBuffer.loadFromFile(url).onComplete(AudioBuffer_onURLLoad).onError(function(_)
+			{
+				AudioBuffer_onURLLoad(null);
+			});
 		}
+		#else
+		AudioBuffer.loadFromFile(url).onComplete(AudioBuffer_onURLLoad).onError(function(_)
+		{
+			AudioBuffer_onURLLoad(null);
+		});
+		#end
+		#end
 	}
 
 	/**
@@ -445,7 +478,27 @@ class Sound extends EventDispatcher
 			return;
 		}
 
-		__backend.loadCompressedDataFromByteArray(bytes, bytesLength);
+		if (bytes.position > 0 || bytes.length > bytesLength)
+		{
+			var copy = new ByteArray(bytesLength);
+			copy.writeBytes(bytes, bytes.position, bytesLength);
+			bytes = copy;
+		}
+
+		#if lime
+		__buffer = AudioBuffer.fromBytes(bytes);
+
+		if (__buffer == null)
+		{
+			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+		}
+		else
+		{
+			dispatchEvent(new Event(Event.COMPLETE));
+		}
+		#else
+		dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+		#end
 	}
 
 	/**
@@ -460,7 +513,14 @@ class Sound extends EventDispatcher
 	**/
 	public static function loadFromFile(path:String):Future<Sound>
 	{
-		return SoundBackend.loadFromFile(path);
+		#if lime
+		return AudioBuffer.loadFromFile(path).then(function(audioBuffer)
+		{
+			return Future.withValue(fromAudioBuffer(audioBuffer));
+		});
+		#else
+		return cast Future.withError("Cannot load audio file");
+		#end
 	}
 
 	/**
@@ -476,9 +536,14 @@ class Sound extends EventDispatcher
 	**/
 	public static function loadFromFiles(paths:Array<String>):Future<Sound>
 	{
-		if (paths == null) return cast Future.withError("");
-
-		return SoundBackend.loadFromFiles(paths);
+		#if lime
+		return AudioBuffer.loadFromFiles(paths).then(function(audioBuffer)
+		{
+			return Future.withValue(fromAudioBuffer(audioBuffer));
+		});
+		#else
+		return cast Future.withError("Cannot load audio files");
+		#end
 	}
 
 	/**
@@ -508,7 +573,30 @@ class Sound extends EventDispatcher
 			return;
 		}
 
-		__backend.loadPCMFromByteArray(bytes, samples, format, stereo, sampleRate);
+		var bitsPerSample = (format == "float" ? 32 : 16); // "short"
+		var channels = (stereo ? 2 : 1);
+		var bytesLength = Std.int(samples * channels * (bitsPerSample / 8));
+
+		if (bytes.position > 0 || bytes.length > bytesLength)
+		{
+			var copy = new ByteArray(bytesLength);
+			copy.writeBytes(bytes, bytes.position, bytesLength);
+			bytes = copy;
+		}
+
+		#if lime
+		var audioBuffer = new AudioBuffer();
+		audioBuffer.bitsPerSample = bitsPerSample;
+		audioBuffer.channels = channels;
+		audioBuffer.data = new UInt8Array(bytes);
+		audioBuffer.sampleRate = Std.int(sampleRate);
+
+		__buffer = audioBuffer;
+
+		dispatchEvent(new Event(Event.COMPLETE));
+		#else
+		dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+		#end
 	}
 
 	/**
@@ -531,28 +619,96 @@ class Sound extends EventDispatcher
 	**/
 	public function play(startTime:Float = 0.0, loops:Int = 0, sndTransform:SoundTransform = null):SoundChannel
 	{
-		return __backend.play(startTime, loops, sndTransform);
+		#if lime
+		if (__buffer == null || SoundMixer.__soundChannels.length >= SoundMixer.MAX_ACTIVE_CHANNELS)
+		{
+			return null;
+		}
+
+		if (sndTransform == null)
+		{
+			sndTransform = new SoundTransform();
+		}
+		else
+		{
+			sndTransform = sndTransform.clone();
+		}
+
+		var pan = SoundMixer.__soundTransform.pan + sndTransform.pan;
+
+		if (pan > 1) pan = 1;
+		if (pan < -1) pan = -1;
+
+		var volume = SoundMixer.__soundTransform.volume * sndTransform.volume;
+
+		var source = new AudioSource(__buffer);
+		source.offset = Std.int(startTime);
+		if (loops > 1) source.loops = loops - 1;
+
+		source.gain = volume;
+
+		var position = source.position;
+		position.x = pan;
+		position.z = -1 * Math.sqrt(1 - Math.pow(pan, 2));
+		source.position = position;
+
+		return new SoundChannel(source, sndTransform);
+		#else
+		return null;
+		#end
 	}
 
 	// Get & Set Methods
 	@:noCompletion private function get_id3():ID3Info
 	{
-		return __backend.getID3();
+		return new ID3Info();
 	}
 
 	@:noCompletion private function get_length():Int
 	{
-		return __backend.getLength();
-	}
-}
+		#if lime
+		if (__buffer != null)
+		{
+			#if (js && html5 && howlerjs)
+			return Std.int(__buffer.src.duration() * 1000);
+			#else
+			if (__buffer.data != null)
+			{
+				var samples = (__buffer.data.length * 8) / (__buffer.channels * __buffer.bitsPerSample);
+				return Std.int(samples / __buffer.sampleRate * 1000);
+			}
+			else if (__buffer.__srcVorbisFile != null)
+			{
+				var samples = Int64.toInt(__buffer.__srcVorbisFile.pcmTotal());
+				return Std.int(samples / __buffer.sampleRate * 1000);
+			}
+			else
+			{
+				return 0;
+			}
+			#end
+		}
+		#end
 
-#if lime
-private typedef SoundBackend = openfl._internal.backend.lime.LimeSoundBackend;
-#elseif openfl_html5
-private typedef SoundBackend = openfl._internal.backend.html5.HTML5SoundBackend;
-#else
-private typedef SoundBackend = openfl._internal.backend.dummy.DummySoundBackend;
-#end
+		return 0;
+	}
+
+	// Event Handlers
+	#if lime
+	@:noCompletion private function AudioBuffer_onURLLoad(buffer:AudioBuffer):Void
+	{
+		if (buffer == null)
+		{
+			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+		}
+		else
+		{
+			__buffer = buffer;
+			dispatchEvent(new Event(Event.COMPLETE));
+		}
+	}
+	#end
+}
 #else
 typedef Sound = flash.media.Sound;
 #end

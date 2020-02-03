@@ -1,9 +1,7 @@
 package openfl.geom;
 
 #if (display || !flash)
-#if !openfl_global
 @:jsRequire("openfl/geom/Vector3D", "default")
-#end
 extern class Vector3D
 {
 	public static var X_AXIS(get, never):Vector3D;

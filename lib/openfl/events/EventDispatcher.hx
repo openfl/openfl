@@ -1,10 +1,7 @@
 package openfl.events;
 
 #if (display || !flash)
-#if !openfl_global
 @:jsRequire("openfl/events/EventDispatcher", "default")
-#end
-
 /**
  * The EventDispatcher class is the base class for all classes that dispatch
  * events. The EventDispatcher class implements the IEventDispatcher interface

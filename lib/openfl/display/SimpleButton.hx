@@ -3,9 +3,7 @@ package openfl.display;
 #if (display || !flash)
 import openfl.media.SoundTransform;
 
-#if !openfl_global
 @:jsRequire("openfl/display/SimpleButton", "default")
-#end
 
 /**
  * The SimpleButton class lets you control all instances of button symbols in

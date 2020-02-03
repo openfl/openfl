@@ -9,9 +9,7 @@ import openfl.geom.Rectangle;
 import openfl.geom.Transform;
 import openfl.geom.Vector3D;
 
-#if !openfl_global
 @:jsRequire("openfl/display/DisplayObject", "default")
-#end
 
 /**
  * The DisplayObject class is the base class for all objects that can be

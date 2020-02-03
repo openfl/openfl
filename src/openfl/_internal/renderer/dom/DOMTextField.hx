@@ -1,11 +1,13 @@
 package openfl._internal.renderer.dom;
 
-#if openfl_html5
-import js.html.Element;
-import js.Browser;
 import openfl._internal.text.TextEngine;
+import openfl.display.DOMRenderer;
 import openfl.text.TextField;
 import openfl.text.TextFormatAlign;
+#if (js && html5)
+import js.html.Element;
+import js.Browser;
+#end
 
 @:access(openfl._internal.text.TextEngine)
 @:access(openfl.text.TextField)
@@ -20,19 +22,19 @@ class DOMTextField
 
 	public static function clear(textField:TextField, renderer:DOMRenderer):Void
 	{
-		#if openfl_html5
+		#if (js && html5)
 		if (textField.__div != null)
 		{
 			renderer.element.removeChild(textField.__div);
 			textField.__div = null;
-			textField.__renderData.style = null;
+			textField.__style = null;
 		}
 		#end
 	}
 
 	public static function measureText(textField:TextField):Void
 	{
-		#if openfl_html5
+		#if (js && html5)
 		var textEngine = textField.__textEngine;
 		var div:Element = textField.__div;
 
@@ -68,7 +70,7 @@ class DOMTextField
 
 	public static inline function render(textField:TextField, renderer:DOMRenderer):Void
 	{
-		#if openfl_html5
+		#if (js && html5)
 		var textEngine = textField.__textEngine;
 
 		if (textField.stage != null && textField.__worldVisible && textField.__renderable)
@@ -81,7 +83,7 @@ class DOMTextField
 					{
 						textField.__div = cast Browser.document.createElement("div");
 						renderer.__initializeElement(textField, textField.__div);
-						textField.__renderData.style.setProperty("outline", "none", null);
+						textField.__style.setProperty("outline", "none", null);
 
 						textField.__div.addEventListener("input", function(event)
 						{
@@ -105,32 +107,32 @@ class DOMTextField
 
 					if (!textEngine.wordWrap)
 					{
-						textField.__renderData.style.setProperty("white-space", "nowrap", null);
+						textField.__style.setProperty("white-space", "nowrap", null);
 					}
 					else
 					{
-						textField.__renderData.style.setProperty("word-wrap", "break-word", null);
+						textField.__style.setProperty("word-wrap", "break-word", null);
 					}
 
-					textField.__renderData.style.setProperty("overflow", "hidden", null);
+					textField.__style.setProperty("overflow", "hidden", null);
 
 					if (textEngine.selectable)
 					{
-						textField.__renderData.style.setProperty("cursor", "text", null);
-						textField.__renderData.style.setProperty("-webkit-user-select", "text", null);
-						textField.__renderData.style.setProperty("-moz-user-select", "text", null);
-						textField.__renderData.style.setProperty("-ms-user-select", "text", null);
-						textField.__renderData.style.setProperty("-o-user-select", "text", null);
+						textField.__style.setProperty("cursor", "text", null);
+						textField.__style.setProperty("-webkit-user-select", "text", null);
+						textField.__style.setProperty("-moz-user-select", "text", null);
+						textField.__style.setProperty("-ms-user-select", "text", null);
+						textField.__style.setProperty("-o-user-select", "text", null);
 					}
 					else
 					{
-						textField.__renderData.style.setProperty("cursor", "inherit", null);
+						textField.__style.setProperty("cursor", "inherit", null);
 					}
 
 					var div = untyped textField.__div;
 					div.contentEditable = (textEngine.type == INPUT);
 
-					var style = textField.__renderData.style;
+					var style = textField.__style;
 
 					// TODO: Handle ranges using span
 					// TODO: Vertical align
@@ -336,4 +338,3 @@ class DOMTextField
 		return regex.matched(2) != null ? regex.matched(2) : regex.matched(3);
 	}
 }
-#end

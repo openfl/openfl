@@ -1,3 +1,24 @@
+8.9.6 (01/27/2020)
+------------------
+
+* Update to allow Lime 7.7.*
+* Reverted `TextField`, filter and renderer changes made in 8.9.2 through 8.9.5
+* Suspended these improvements until the next major release
+* Forced NPM versions of the library to use WebGL 1
+* Improved SWFLite libraries to use a UUID and have a more reliable root value
+* Improved the behavior of `textField.mouseWheelEnabled`
+* Improved the behavior of `context3D.totalGPUMemory`
+* Improved `NetStream` to allow HTML5 MediaStream instead of a URL
+* Fixed an issue where `MovieClip` would behave like a button when `buttonMode` was disabled
+* Fixed a possible crash issue with multi-line text selection
+* Fixed `textField.setTextFormat` when the `TextFormat` object has null values
+* Fixed some missing methods in `openfl.utils.AssetManifest` for parity with Lime
+* Fixed `soundTransform.volume` when playing HTML5 video
+* Fixed support for `event.preventDefault` on `MOUSE_WHEEL` events
+* Fixed texture flush for AGAL shaders that do not have an alpha texture
+* Fixed key modifier values for mouse events when coming back to the window
+
+
 8.9.5 (09/11/2019)
 ------------------
 

@@ -1,7 +1,7 @@
 package openfl._internal.renderer.dom;
 
-#if openfl_html5
 import openfl.display.DisplayObject;
+import openfl.display.DOMRenderer;
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.geom.Matrix)
@@ -10,10 +10,10 @@ class DOMDisplayObject
 {
 	public static function clear(displayObject:DisplayObject, renderer:DOMRenderer):Void
 	{
-		#if openfl_html5
-		if (displayObject.__renderData.cacheBitmap != null)
+		#if (js && html5)
+		if (displayObject.__cacheBitmap != null)
 		{
-			DOMBitmap.clear(displayObject.__renderData.cacheBitmap, renderer);
+			DOMBitmap.clear(displayObject.__cacheBitmap, renderer);
 		}
 		DOMShape.clear(displayObject, renderer);
 		#end
@@ -21,12 +21,12 @@ class DOMDisplayObject
 
 	public static inline function render(displayObject:DisplayObject, renderer:DOMRenderer):Void
 	{
-		#if openfl_html5
+		#if (js && html5)
 		// if (displayObject.opaqueBackground == null && displayObject.__graphics == null) return;
 		// if (!displayObject.__renderable || displayObject.__worldAlpha <= 0) return;
 
 		if (displayObject.opaqueBackground != null
-			&& !displayObject.__renderData.isCacheBitmapRender
+			&& !displayObject.__isCacheBitmapRender
 			&& displayObject.width > 0
 			&& displayObject.height > 0)
 		{
@@ -41,4 +41,3 @@ class DOMDisplayObject
 		#end
 	}
 }
-#end

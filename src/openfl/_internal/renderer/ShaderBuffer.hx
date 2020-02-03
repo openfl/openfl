@@ -1,7 +1,7 @@
 package openfl._internal.renderer;
 
-import openfl._internal.bindings.gl.GLBuffer;
-import openfl._internal.bindings.typedarray.Float32Array;
+import openfl._internal.backend.gl.GLBuffer;
+import openfl._internal.utils.Float32Array;
 import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
 import openfl.display3D.Context3DWrapMode;
@@ -14,7 +14,6 @@ import openfl.display.ShaderParameter;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl._internal.backend.opengl) // TODO: Remove backend references
 @:access(openfl.display.Shader)
 @SuppressWarnings("checkstyle:FieldDocComment")
 class ShaderBuffer
@@ -106,7 +105,7 @@ class ShaderBuffer
 
 	public function update(shader:GraphicsShader):Void
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		inputCount = 0;
 		// overrideCount = 0;
 		overrideIntCount = 0;
@@ -123,12 +122,12 @@ class ShaderBuffer
 
 		shader.__init();
 
-		inputCount = shader.__backend.inputBitmapData.length;
+		inputCount = shader.__inputBitmapData.length;
 		var input;
 
 		for (i in 0...inputCount)
 		{
-			input = shader.__backend.inputBitmapData[i];
+			input = shader.__inputBitmapData[i];
 			inputs[i] = input.input;
 			inputFilter[i] = input.filter;
 			inputMipFilter[i] = input.mipFilter;
@@ -136,9 +135,9 @@ class ShaderBuffer
 			inputWrap[i] = input.wrap;
 		}
 
-		var boolCount = shader.__backend.paramBool.length;
-		var floatCount = shader.__backend.paramFloat.length;
-		var intCount = shader.__backend.paramInt.length;
+		var boolCount = shader.__paramBool.length;
+		var floatCount = shader.__paramFloat.length;
+		var intCount = shader.__paramInt.length;
 		paramCount = boolCount + floatCount + intCount;
 		paramBoolCount = boolCount;
 		paramFloatCount = floatCount;
@@ -149,7 +148,7 @@ class ShaderBuffer
 
 		for (i in 0...boolCount)
 		{
-			param = shader.__backend.paramBool[i];
+			param = shader.__paramBool[i];
 
 			paramPositions[p] = paramDataLength;
 			length = (param.value != null ? param.value.length : 0);
@@ -165,7 +164,7 @@ class ShaderBuffer
 
 		for (i in 0...floatCount)
 		{
-			param = shader.__backend.paramFloat[i];
+			param = shader.__paramFloat[i];
 
 			paramPositions[p] = paramDataLength;
 			length = (param.value != null ? param.value.length : 0);
@@ -181,7 +180,7 @@ class ShaderBuffer
 
 		for (i in 0...intCount)
 		{
-			param = shader.__backend.paramInt[i];
+			param = shader.__paramInt[i];
 
 			paramPositions[p] = paramDataLength;
 			length = (param.value != null ? param.value.length : 0);

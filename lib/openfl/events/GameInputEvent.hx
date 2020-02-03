@@ -3,9 +3,7 @@ package openfl.events;
 #if (display || !flash)
 import openfl.ui.GameInputDevice;
 
-#if !openfl_global
 @:jsRequire("openfl/events/GameInputEvent", "default")
-#end
 
 /**
  * The GameInputEvent class represents an event that is dispatched when a game input device has either been added or removed from the application platform. A game input device also dispatches events when it is turned on or off.

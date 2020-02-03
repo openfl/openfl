@@ -1,0 +1,53 @@
+package ::PACKAGE_NAME::; #if !flash
+
+
+import openfl._internal.formats.swf.SWFLite;
+import openfl.display.MovieClip;
+import openfl.utils.Assets;
+
+
+class ::CLASS_NAME:: extends ::BASE_CLASS_NAME:: {
+
+
+	::foreach CLASS_PROPERTIES::@:keep public var ::name:: (default, null):::type::;
+	::end::
+
+	public function new () {
+
+		super ();
+
+		/*
+		if (!SWFLite.instances.exists ("::SWF_ID::")) {
+
+			SWFLite.instances.set ("::SWF_ID::", SWFLite.unserialize (Assets.getText ("::SWF_ID::")));
+
+		}
+		*/
+
+		var swfLite = SWFLite.instances.get ("::SWF_ID::");
+		var symbol = swfLite.symbols.get (::SYMBOL_ID::);
+
+		__fromSymbol (swfLite, cast symbol);
+
+	}
+
+
+}
+
+
+#else
+@:bind @:native("::NATIVE_CLASS_NAME::") class ::CLASS_NAME:: extends ::BASE_CLASS_NAME:: {
+
+
+	::foreach CLASS_PROPERTIES::@:keep public var ::name:: (default, null):::type::;
+	::end::
+
+	public function new () {
+
+		super ();
+
+	}
+
+
+}
+#end

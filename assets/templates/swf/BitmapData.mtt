@@ -1,0 +1,39 @@
+package ::PACKAGE_NAME::; #if !flash
+
+
+import openfl._internal.formats.swf.SWFLite;
+import openfl.display.BitmapData;
+import openfl.utils.Assets;
+
+
+class ::CLASS_NAME:: extends ::BASE_CLASS_NAME:: {
+
+
+	public function new (width:Int = 0, height:Int = 0, transparent:Bool = false, background:Int = 0) {
+
+		super (0, 0, true, 0);
+
+		var swfLite = SWFLite.instances.get ("::SWF_ID::");
+		var symbol = swfLite.symbols.get (::SYMBOL_ID::);
+
+		__fromSymbol (swfLite, cast symbol);
+
+	}
+
+
+}
+
+
+#else
+@:bind @:native("::NATIVE_CLASS_NAME::") class ::CLASS_NAME:: extends ::BASE_CLASS_NAME:: {
+
+
+	public function new (width:Int = 0, height:Int = 0, transparent:Bool = false, background:Int = 0) {
+
+		super (width, height, transparent, background);
+
+	}
+
+
+}
+#end

@@ -2,10 +2,11 @@ package openfl.display;
 
 #if !flash
 import haxe.Timer;
-import openfl._internal.renderer.DisplayObjectRenderData;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DProfile;
 import openfl.display3D.Context3DRenderMode;
+import openfl.display3D.IndexBuffer3D;
+import openfl.display3D.VertexBuffer3D;
 import openfl.events.ErrorEvent;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
@@ -13,10 +14,12 @@ import openfl.geom.Matrix3D;
 import openfl.Vector;
 #if lime
 import lime.graphics.RenderContext;
-import openfl._internal.bindings.gl.WebGLRenderingContext;
-#elseif openfl_html5
-import openfl._internal.backend.lime_standalone.RenderContext;
-import openfl._internal.backend.lime_standalone.WebGLRenderContext in WebGLRenderingContext;
+#end
+#if (js && html5)
+import js.html.webgl.RenderingContext;
+import js.html.CanvasElement;
+import js.html.CSSStyleDeclaration;
+import js.Browser;
 #end
 
 /**
@@ -133,7 +136,6 @@ import openfl._internal.backend.lime_standalone.WebGLRenderContext in WebGLRende
 @:access(openfl.display3D.Program3D)
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)
-@:access(openfl.display.DisplayObjectRenderer)
 @:access(openfl.display.Stage)
 class Stage3D extends EventDispatcher
 {
@@ -174,18 +176,19 @@ class Stage3D extends EventDispatcher
 	@:noCompletion private var __contextLost:Bool;
 	@:noCompletion private var __contextRequested:Bool;
 	@:noCompletion private var __height:Int;
+	@:noCompletion private var __indexBuffer:IndexBuffer3D;
 	@:noCompletion private var __projectionTransform:Matrix3D;
-	@:noCompletion private var __renderData:DisplayObjectRenderData;
 	@:noCompletion private var __renderTransform:Matrix3D;
 	@:noCompletion private var __stage:Stage;
+	@:noCompletion private var __vertexBuffer:VertexBuffer3D;
 	@:noCompletion private var __width:Int;
 	@:noCompletion private var __x:Float;
 	@:noCompletion private var __y:Float;
-	#if openfl_html5
-	@:noCompletion private var __webgl:WebGLRenderingContext;
-	#end
-	#if (lime || openfl_html5)
+	#if (js && html5)
+	@:noCompletion private var __canvas:CanvasElement;
 	@:noCompletion private var __renderContext:RenderContext;
+	@:noCompletion private var __style:CSSStyleDeclaration;
+	@:noCompletion private var __webgl:RenderingContext;
 	#end
 
 	#if openfljs
@@ -212,7 +215,6 @@ class Stage3D extends EventDispatcher
 		__y = 0;
 
 		visible = true;
-		__renderData = new DisplayObjectRenderData();
 
 		if (stage.stageWidth > 0 && stage.stageHeight > 0)
 		{
@@ -365,75 +367,84 @@ class Stage3D extends EventDispatcher
 
 	@:noCompletion private function __createContext():Void
 	{
-		if (__stage.context3D != null)
+		#if lime
+		var stage = __stage;
+		var renderer = stage.__renderer;
+
+		if (renderer.__type == CAIRO || renderer.__type == CANVAS)
+		{
+			__dispatchError();
+			return;
+		}
+
+		if (renderer.__type == OPENGL)
 		{
 			#if openfl_share_context
-			context3D = __stage.context3D;
+			context3D = stage.context3D;
 			#else
-			context3D = new Context3D(__stage, __stage.context3D.__contextState, this);
+			context3D = new Context3D(stage, stage.context3D.__contextState, this);
 			#end
 			__dispatchCreate();
 		}
-		#if (lime && openfl_html5)
-		else if (false && __stage.limeWindow.context.type == DOM)
+		else if (renderer.__type == DOM)
 		{
-			// TODO
+			#if (js && html5)
+			__canvas = cast Browser.document.createElement("canvas");
+			__canvas.width = stage.stageWidth;
+			__canvas.height = stage.stageHeight;
 
-			// __canvas = cast Browser.document.createElement("canvas");
-			// __canvas.width = stage.stageWidth;
-			// __canvas.height = stage.stageHeight;
+			var window = stage.window;
+			var attributes = renderer.__context.attributes;
 
-			// var window = stage.limeWindow;
-			// var attributes = @:privateAccess window.__attributes;
+			var transparentBackground = Reflect.hasField(attributes, "background") && attributes.background == null;
+			var colorDepth = Reflect.hasField(attributes, "colorDepth") ? attributes.colorDepth : 32;
 
-			// var transparentBackground = Reflect.hasField(attributes, "background") && attributes.background == null;
-			// var colorDepth = Reflect.hasField(attributes, "colorDepth") ? attributes.colorDepth : 32;
+			var options = {
+				alpha: (transparentBackground || colorDepth > 16) ? true : false,
+				antialias: Reflect.hasField(attributes, "antialiasing") ? attributes.antialiasing > 0 : false,
+				depth: true,
+				premultipliedAlpha: true,
+				stencil: true,
+				preserveDrawingBuffer: false
+			};
 
-			// var options = {
-			// 	alpha: (transparentBackground || colorDepth > 16) ? true : false,
-			// 	antialias: Reflect.hasField(attributes, "antialiasing") ? attributes.antialiasing > 0 : false,
-			// 	depth: true,
-			// 	premultipliedAlpha: true,
-			// 	stencil: true,
-			// 	preserveDrawingBuffer: false
-			// };
+			__webgl = cast __canvas.getContextWebGL(options);
 
-			// __webgl = cast __canvas.getContextWebGL(options);
+			if (__webgl != null)
+			{
+				#if webgl_debug
+				__webgl = untyped WebGLDebugUtils.makeDebugContext(__webgl);
+				#end
 
-			// if (__webgl != null)
-			// {
-			// 	#if webgl_debug
-			// 	__webgl = untyped WebGLDebugUtils.makeDebugContext(__webgl);
-			// 	#end
+				// TODO: Need to handle renderer/context better
 
-			// 	// TODO: Need to handle renderer/context better
+				// TODO
 
-			// 	// TODO
+				// __renderContext = new GLRenderContext (cast __webgl);
+				// GL.context = __renderContext;
 
-			// 	// __renderContext = new GLRenderContext (cast __webgl);
-			// 	// GL.context = __renderContext;
+				// context3D = new Context3D (stage, this);
 
-			// 	// context3D = new Context3D (stage, this);
+				// var renderer:DOMRenderer = cast renderer;
+				// renderer.element.appendChild (__canvas);
 
-			// 	// var renderer:DOMRenderer = cast renderer;
-			// 	// renderer.element.appendChild (__canvas);
+				// __style = __canvas.style;
+				// __style.setProperty ("position", "absolute", null);
+				// __style.setProperty ("top", "0", null);
+				// __style.setProperty ("left", "0", null);
+				// __style.setProperty (renderer.__transformOriginProperty, "0 0 0", null);
+				// __style.setProperty ("z-index", "-1", null);
 
-			// 	// __style = __canvas.style;
-			// 	// __style.setProperty ("position", "absolute", null);
-			// 	// __style.setProperty ("top", "0", null);
-			// 	// __style.setProperty ("left", "0", null);
-			// 	// __style.setProperty (renderer.__transformOriginProperty, "0 0 0", null);
-			// 	// __style.setProperty ("z-index", "-1", null);
-
-			// 	// __dispatchCreate ();
-			// 	__dispatchError();
-			// }
+				// __dispatchCreate ();
+				__dispatchError();
+			}
+			else
+			{
+				__dispatchError();
+			}
+			#end
 		}
 		#end
-	else
-	{
-		__dispatchError();
-	}
 	}
 
 	@:noCompletion private function __dispatchError():Void
@@ -457,7 +468,7 @@ class Stage3D extends EventDispatcher
 
 		if (context3D != null)
 		{
-			context3D.dispose();
+			context3D.__dispose();
 			__contextRequested = true;
 		}
 	}
@@ -466,11 +477,11 @@ class Stage3D extends EventDispatcher
 	{
 		if (width != __width || height != __height)
 		{
-			#if openfl_html5
-			if (__renderData.canvas != null)
+			#if (js && html5)
+			if (__canvas != null)
 			{
-				__renderData.canvas.width = width;
-				__renderData.canvas.height = height;
+				__canvas.width = width;
+				__canvas.height = height;
 			}
 			#end
 

@@ -5,9 +5,7 @@ import openfl.events.EventDispatcher;
 import openfl.media.SoundTransform;
 import openfl.utils.ByteArray;
 
-#if !openfl_global
 @:jsRequire("openfl/net/NetStream", "default")
-#end
 extern class NetStream extends EventDispatcher
 {
 	#if flash

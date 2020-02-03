@@ -1,9 +1,7 @@
 package openfl.display;
 
 #if (display || !flash)
-#if !openfl_global
 @:jsRequire("openfl/display/ShaderParameter", "default")
-#end
 #if !js
 @:generic
 #end

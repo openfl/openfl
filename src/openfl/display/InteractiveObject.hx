@@ -1273,12 +1273,12 @@ class InteractiveObject extends DisplayObject
 		return true;
 	}
 
-	// @:noCompletion private override function __hitTest(x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool,
-	// 		hitObject:DisplayObject):Bool
-	// {
-	// 	if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
-	// 	return inline super.__hitTest(x, y, shapeFlag, stack, interactiveOnly, hitObject);
-	// }
+	@:noCompletion private override function __hitTest(x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool,
+			hitObject:DisplayObject):Bool
+	{
+		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
+		return super.__hitTest(x, y, shapeFlag, stack, interactiveOnly, hitObject);
+	}
 
 	@:noCompletion private function __tabTest(stack:Array<InteractiveObject>):Void
 	{

@@ -9,9 +9,7 @@ import js.lib.ArrayBufferView;
 import js.html.ArrayBufferView;
 #end
 
-#if !openfl_global
 @:jsRequire("openfl/display3D/IndexBuffer3D", "default")
-#end
 @:final extern class IndexBuffer3D
 {
 	public function dispose():Void;

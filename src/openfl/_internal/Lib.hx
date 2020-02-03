@@ -14,10 +14,8 @@ import openfl.display.MovieClip;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Lib
 {
+	public static var application:#if !openfl_unit_testing Application #else Dynamic #end;
 	public static var current:#if !openfl_unit_testing MovieClip #else Dynamic #end#if flash = flash.Lib.current #end;
-	#if lime
-	public static var limeApplication:#if !openfl_unit_testing Application #else Dynamic #end;
-	#end
 	@:noCompletion private static var __sentWarnings:Map<String, Bool> = new Map();
 
 	@SuppressWarnings("checkstyle:NullableParameter")

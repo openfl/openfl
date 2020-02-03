@@ -4,9 +4,7 @@ package openfl.printing;
 import openfl.display.Sprite;
 import openfl.geom.Rectangle;
 
-#if !openfl_global
 @:jsRequire("openfl/printing/PrintJob", "default")
-#end
 extern class PrintJob
 {
 	public static var isSupported(default, null):Bool;

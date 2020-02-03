@@ -3,9 +3,6 @@ package openfl.events;
 #if (display || !flash)
 import openfl.display.InteractiveObject;
 
-#if !openfl_global
-@:jsRequire("openfl/events/ContextMenuEvent", "default")
-#end
 extern class ContextMenuEvent extends Event
 {
 	public static inline var MENU_ITEM_SELECT = "menuItemSelect";

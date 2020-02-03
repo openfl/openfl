@@ -1,0 +1,12 @@
+-main Tools
+-neko tools.n
+-cp ../src
+-lib hxp
+-lib lime
+-lib format
+-D lime-cairo
+-D lime-cffi
+-D optional-cffi
+-D openfl
+--remap flash:openfl
+--no-inline

@@ -31,9 +31,7 @@ import openfl.display3D.Context3D;
 import openfl.display3D.Program3D;
 import openfl.Lib;
 
-#if !openfl_global
 @:jsRequire("openfl/utils/AGALMiniAssembler", "default")
-#end
 extern class AGALMiniAssembler
 {
 	public var agalcode(default, null):ByteArray;

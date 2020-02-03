@@ -1,8 +1,8 @@
 package openfl._internal.renderer.dom;
 
-#if openfl_html5
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl.display.DisplayObject;
+import openfl.display.DOMRenderer;
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
@@ -13,40 +13,40 @@ class DOMShape
 {
 	public static function clear(shape:DisplayObject, renderer:DOMRenderer):Void
 	{
-		#if openfl_html5
-		if (shape.__renderData.canvas != null)
+		#if (js && html5)
+		if (shape.__canvas != null)
 		{
-			renderer.element.removeChild(shape.__renderData.canvas);
-			shape.__renderData.canvas = null;
-			shape.__renderData.style = null;
+			renderer.element.removeChild(shape.__canvas);
+			shape.__canvas = null;
+			shape.__style = null;
 		}
 		#end
 	}
 
 	public static inline function render(shape:DisplayObject, renderer:DOMRenderer):Void
 	{
-		#if openfl_html5
+		#if (js && html5)
 		var graphics = shape.__graphics;
 
 		if (shape.stage != null && shape.__worldVisible && shape.__renderable && graphics != null)
 		{
 			CanvasGraphics.render(graphics, renderer.__canvasRenderer);
 
-			if (graphics.__softwareDirty || shape.__worldAlphaChanged || (shape.__renderData.canvas != graphics.__renderData.canvas))
+			if (graphics.__softwareDirty || shape.__worldAlphaChanged || (shape.__canvas != graphics.__canvas))
 			{
-				if (graphics.__renderData.canvas != null)
+				if (graphics.__canvas != null)
 				{
-					if (shape.__renderData.canvas != graphics.__renderData.canvas)
+					if (shape.__canvas != graphics.__canvas)
 					{
-						if (shape.__renderData.canvas != null)
+						if (shape.__canvas != null)
 						{
-							renderer.element.removeChild(shape.__renderData.canvas);
+							renderer.element.removeChild(shape.__canvas);
 						}
 
-						shape.__renderData.canvas = graphics.__renderData.canvas;
-						shape.__renderData.context = graphics.__renderData.context;
+						shape.__canvas = graphics.__canvas;
+						shape.__context = graphics.__context;
 
-						renderer.__initializeElement(shape, shape.__renderData.canvas);
+						renderer.__initializeElement(shape, shape.__canvas);
 					}
 				}
 				else
@@ -55,7 +55,7 @@ class DOMShape
 				}
 			}
 
-			if (shape.__renderData.canvas != null)
+			if (shape.__canvas != null)
 			{
 				renderer.__pushMaskObject(shape);
 
@@ -83,4 +83,3 @@ class DOMShape
 		#end
 	}
 }
-#end

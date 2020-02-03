@@ -48,26 +48,31 @@ class DisplayObjectShader extends Shader
 		uniform bool openfl_HasColorTransform;
 		uniform sampler2D openfl_Texture;
 		uniform vec2 openfl_TextureSize;")
-	@:glFragmentBody("vec4 color = texture2D(openfl_Texture, openfl_TextureCoordv);
+	@:glFragmentBody("vec4 color = texture2D (openfl_Texture, openfl_TextureCoordv);
 
 		if (color.a == 0.0) {
 
-			gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+			gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
 
 		} else if (openfl_HasColorTransform) {
 
-			color = vec4(color.rgb / color.a, color.a);
+			color = vec4 (color.rgb / color.a, color.a);
 
-			vec4 colorMultiplier = vec4(openfl_ColorMultiplierv.rgb, 1.0);
-			color = clamp((color * colorMultiplier) + openfl_ColorOffsetv, 0.0, 1.0);
+			mat4 colorMultiplier = mat4 (0);
+			colorMultiplier[0][0] = openfl_ColorMultiplierv.x;
+			colorMultiplier[1][1] = openfl_ColorMultiplierv.y;
+			colorMultiplier[2][2] = openfl_ColorMultiplierv.z;
+			colorMultiplier[3][3] = 1.0; // openfl_ColorMultiplierv.w;
+
+			color = clamp (openfl_ColorOffsetv + (color * colorMultiplier), 0.0, 1.0);
 
 			if (color.a > 0.0) {
 
-				gl_FragColor = vec4(color.rgb * color.a * openfl_Alphav, color.a * openfl_Alphav);
+				gl_FragColor = vec4 (color.rgb * color.a * openfl_Alphav, color.a * openfl_Alphav);
 
 			} else {
 
-				gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+				gl_FragColor = vec4 (0.0, 0.0, 0.0, 0.0);
 
 			}
 

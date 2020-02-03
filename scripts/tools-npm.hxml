@@ -1,0 +1,25 @@
+-main Tools
+-js ../bin/tools.js
+-cp ../src
+# -lib hxp
+-cp ../node_modules/hxp/src
+-D hxp=1.1.0
+# -lib lime
+-cp ../node_modules/lime/src
+-D lime=7.5.0
+# -lib format
+-cp ../node_modules/format
+-D format=3.4.3
+# -lib nodejs
+-cp ../node_modules/hxnodejs/src
+-cp .
+--macro allowPackage('sys')
+--macro define('nodejs')
+-D nodejs
+-D hxnodejs
+-D nocffi
+-D disable-cffi
+-D openfl
+-D tools
+-D commonjs
+--remap flash:openfl

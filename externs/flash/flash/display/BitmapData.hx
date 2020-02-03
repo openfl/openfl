@@ -1,6 +1,9 @@
 package flash.display;
 
 #if flash
+import lime.app.Future;
+import lime.app.Promise;
+import lime.graphics.Image;
 import openfl.display.BitmapDataChannel;
 import openfl.display3D.textures.TextureBase;
 import openfl.filters.BitmapFilter;
@@ -10,30 +13,15 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.utils.ByteArray;
 import openfl.utils.Object;
-#if lime
-import lime.app.Future;
-import lime.app.Promise;
-import lime.graphics.Image;
-#end
 
 extern class BitmapData implements IBitmapDrawable
 {
 	public var height(default, never):Int;
-	#if lime
-	@:noCompletion @:dox(hide) @SuppressWarnings("checkstyle:FieldDocComment")
-	@:deprecated("BitmapData.image is deprecated. Use BitmapData.limeImage instead.")
 	public var image(get, never):Image;
 	@:noCompletion private inline function get_image():Image
 	{
-		return this.limeImage;
-	}
-
-	public var limeImage(get, never):Image;
-	@:noCompletion private inline function get_limeImage():Image
-	{
 		return null;
 	}
-	#end
 	public var readable(get, never):Bool;
 	@:noCompletion private inline function get_readable():Bool
 	{
@@ -75,7 +63,6 @@ extern class BitmapData implements IBitmapDrawable
 	{
 		return null;
 	}
-	#if lime
 	public static inline function fromImage(image:Image, transparent:Bool = true):BitmapData
 	{
 		#if flash
@@ -84,7 +71,6 @@ extern class BitmapData implements IBitmapDrawable
 		return null;
 		#end
 	}
-	#end
 	public static inline function fromTexture(texture:TextureBase):BitmapData
 	{
 		return null;
@@ -98,7 +84,6 @@ extern class BitmapData implements IBitmapDrawable
 	@:require(flash10) public function histogram(hRect:Rectangle = null):Vector<Vector<Float>>;
 	public function hitTest(firstPoint:Point, firstAlphaThreshold:UInt, secondObject:Object, secondBitmapDataPoint:Point = null,
 		secondAlphaThreshold:UInt = 1):Bool;
-	#if lime
 	public static inline function loadFromBase64(base64:String, type:String):Future<BitmapData>
 	{
 		return Image.loadFromBase64(base64, type).then(function(image)
@@ -155,7 +140,6 @@ extern class BitmapData implements IBitmapDrawable
 			}
 		});
 	}
-	#end
 	public function lock():Void;
 	public function merge(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, redMultiplier:UInt, greenMultiplier:UInt, blueMultiplier:UInt,
 		alphaMultiplier:UInt):Void;

@@ -50,15 +50,15 @@ class AssetsMacro
 
 					if (preload != null)
 					{
-						@:privateAccess __backend.__fromImage(preload);
+						__fromImage(preload);
 					}
 					else
 					{
-						@:privateAccess __backend.__loadFromBase64(haxe.Resource.getString(resourceName), resourceType).onComplete(function(b)
+						__loadFromBase64(haxe.Resource.getString(resourceName), resourceType).onComplete(function(b)
 						{
 							if (preload == null)
 							{
-								preload = b.limeImage;
+								preload = b.image;
 							}
 
 							if (onload != null && Reflect.isFunction(onload))
@@ -71,7 +71,7 @@ class AssetsMacro
 					super(0, 0, transparent, fillRGBA);
 
 					var byteArray = openfl.utils.ByteArray.fromBytes(haxe.Resource.getBytes(resourceName));
-					@:privateAccess __backend.__fromBytes(byteArray);
+					__fromBytes(byteArray);
 					#end
 				};
 
@@ -221,7 +221,7 @@ class AssetsMacro
 				{
 					super();
 
-					@:privateAccess __backend.__fromBytes(haxe.Resource.getBytes(resourceName));
+					__fromBytes(haxe.Resource.getBytes(resourceName));
 				};
 
 			var args = [

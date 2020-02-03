@@ -1,11 +1,18 @@
+<<<<<<< HEAD
 name: Unit Tests
+=======
+name: Unit Test
+>>>>>>> v8.9
 
 on: [push]
 
 jobs:
 
   haxelib:
+<<<<<<< HEAD
     name: "Haxelib"
+=======
+>>>>>>> v8.9
     runs-on: ubuntu-16.04
 
     steps:
@@ -40,6 +47,7 @@ jobs:
       run: |
         hxp unit-test neko
 
+<<<<<<< HEAD
     - name: Notify Discord (success)
       uses: appleboy/discord-action@master
       with:
@@ -59,6 +67,9 @@ jobs:
 
   npm:
     name: "NPM"
+=======
+  npm:
+>>>>>>> v8.9
     runs-on: ubuntu-16.04
 
     steps:
@@ -68,15 +79,25 @@ jobs:
 
     - name: Setup environment
       run: |
+<<<<<<< HEAD
         sudo add-apt-repository ppa:haxe/releases -y
         sudo apt-get update
         sudo apt-get install haxe -y
+=======
+        sudo apt-get install -y --no-install-recommends wget
+        wget --no-check-certificate -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
+        sudo h -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
+        sudo add-apt-repository ppa:haxe/releases -y
+        sudo apt-get update
+        sudo apt-get install google-chrome-stable haxe npm -y
+>>>>>>> v8.9
         mkdir $GITHUB_WORKSPACE/.haxelib
         haxelib setup $GITHUB_WORKSPACE/.haxelib
         haxelib dev openfl $GITHUB_WORKSPACE
 
     - name: Install dependencies
       run: |
+<<<<<<< HEAD
         npm install
         npm install -D mocha-puppeteer
 
@@ -107,4 +128,15 @@ jobs:
         webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
         color: "#FF6562"
         message: "https://github.com/openfl/openfl/actions\nNPM unit tests failed."
+=======
+        sudo npm install
+        
+    - name: Build openfl.js
+      run: |
+        npm run build
+
+    - name: Run unit tests
+      run: |
+        npm run test
+>>>>>>> v8.9
 

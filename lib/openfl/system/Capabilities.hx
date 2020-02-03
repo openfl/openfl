@@ -1,10 +1,7 @@
 package openfl.system;
 
 #if (display || !flash)
-#if !openfl_global
 @:jsRequire("openfl/system/Capabilities", "default")
-#end
-
 /**
  * The Capabilities class provides properties that describe the system and
  * runtime that are hosting the application. For example, a mobile phone's

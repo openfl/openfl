@@ -1,9 +1,7 @@
 package openfl.events;
 
 #if (display || !flash)
-#if !openfl_global
 @:jsRequire("openfl/events/DataEvent", "default")
-#end
 extern class DataEvent extends TextEvent
 {
 	public static inline var DATA = "data";

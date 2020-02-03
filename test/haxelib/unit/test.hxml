@@ -1,9 +1,7 @@
 -neko build/neko/bin/TestMain.n
 -main TestMain
 -cp ../../../src
---macro openfl._internal.macros.ExtraParams.include()
 -cp src
 -lib munit
 -D openfl-unit-testing
--D openfl-validate-children
 --times

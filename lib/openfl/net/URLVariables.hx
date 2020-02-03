@@ -1,10 +1,7 @@
 package openfl.net;
 
 #if (display || !flash)
-#if !openfl_global
 @:jsRequire("openfl/net/URLVariables", "default")
-#end
-
 /**
  * The URLVariables class allows you to transfer variables between an
  * application and a server. Use URLVariables objects with methods of the

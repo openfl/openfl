@@ -1,10 +1,7 @@
 package openfl.external;
 
 #if (display || !flash)
-#if !openfl_global
 @:jsRequire("openfl/external/ExternalInterface", "default")
-#end
-
 /**
  * The ExternalInterface class is an application programming interface that
  * enables straightforward communication between ActionScript and the SWF

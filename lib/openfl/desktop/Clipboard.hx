@@ -3,9 +3,7 @@ package openfl.desktop;
 #if (display || !flash)
 import openfl.utils.Object;
 
-#if !openfl_global
 @:jsRequire("openfl/desktop/Clipboard", "default")
-#end
 extern class Clipboard
 {
 	public static var generalClipboard(default, null):Clipboard;

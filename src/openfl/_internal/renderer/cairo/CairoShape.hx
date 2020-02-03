@@ -1,9 +1,9 @@
 package openfl._internal.renderer.cairo;
 
-#if openfl_cairo
+import lime.graphics.cairo.CairoFilter;
+import lime.graphics.cairo.CairoPattern;
 import lime.math.Matrix3;
-import openfl._internal.bindings.cairo.CairoFilter;
-import openfl._internal.bindings.cairo.CairoPattern;
+import openfl.display.CairoRenderer;
 import openfl.display.DisplayObject;
 import openfl.geom.Matrix;
 
@@ -21,6 +21,7 @@ class CairoShape
 
 	public static function render(shape:DisplayObject, renderer:CairoRenderer):Void
 	{
+		#if lime_cairo
 		if (!shape.__renderable) return;
 
 		var alpha = renderer.__getAlpha(shape.__worldAlpha);
@@ -69,7 +70,7 @@ class CairoShape
 					var renderCenterWidth = Math.round(width * renderScaleX) - renderLeft - renderRight;
 					var renderCenterHeight = Math.round(height * renderScaleY) - renderTop - renderBottom;
 
-					var pattern = CairoPattern.createForSurface(graphics.__renderData.cairo.target);
+					var pattern = CairoPattern.createForSurface(graphics.__cairo.target);
 					// TODO: Allow smoothing, even though it shows seams?
 					pattern.filter = CairoFilter.NEAREST;
 					// pattern.filter = renderer.__allowSmoothing ? CairoFilter.GOOD : CairoFilter.NEAREST;
@@ -144,7 +145,7 @@ class CairoShape
 				{
 					renderer.applyMatrix(transform, cairo);
 
-					cairo.setSourceSurface(graphics.__renderData.cairo.target, 0, 0);
+					cairo.setSourceSurface(graphics.__cairo.target, 0, 0);
 
 					if (alpha >= 1)
 					{
@@ -159,6 +160,6 @@ class CairoShape
 				renderer.__popMaskObject(shape);
 			}
 		}
+		#end
 	}
 }
-#end

@@ -3,9 +3,7 @@ package openfl.geom;
 #if (display || !flash)
 import openfl.Vector;
 
-#if !openfl_global
 @:jsRequire("openfl/geom/Matrix3D", "default")
-#end
 extern class Matrix3D
 {
 	public var determinant(get, never):Float;

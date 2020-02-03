@@ -3,9 +3,7 @@ package openfl.events;
 #if (display || !flash)
 import openfl.utils.ByteArray;
 
-#if !openfl_global
 @:jsRequire("openfl/events/SampleDataEvent", "default")
-#end
 extern class SampleDataEvent extends Event
 {
 	public static inline var SAMPLE_DATA = "sampleData";

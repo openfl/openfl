@@ -5,9 +5,7 @@ import openfl.events.Event;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 
-#if !openfl_global
 @:jsRequire("openfl/events/RenderEvent", "default")
-#end
 extern class RenderEvent extends Event
 {
 	public static inline var CLEAR_DOM = "clearDOM";

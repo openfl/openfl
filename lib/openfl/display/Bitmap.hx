@@ -1,10 +1,7 @@
 package openfl.display;
 
 #if (display || !flash)
-#if !openfl_global
 @:jsRequire("openfl/display/Bitmap", "default")
-#end
-
 /**
  * The Bitmap class represents display objects that represent bitmap images.
  * These can be images that you load with the `openfl.Assets` or

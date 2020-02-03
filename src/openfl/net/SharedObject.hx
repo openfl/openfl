@@ -1,9 +1,24 @@
 package openfl.net;
 
 #if !flash
+import haxe.io.Bytes;
+import haxe.io.Path;
+import haxe.Serializer;
+import haxe.Unserializer;
 import openfl.errors.Error;
 import openfl.events.EventDispatcher;
 import openfl.utils.Object;
+#if lime
+import lime.app.Application;
+import lime.system.System;
+#end
+#if (js && html5)
+import js.Browser;
+#end
+#if sys
+import sys.io.File;
+import sys.FileSystem;
+#end
 
 /**
 	The SharedObject class is used to read and store limited amounts of data on
@@ -274,7 +289,6 @@ class SharedObject extends EventDispatcher
 
 	@:noCompletion private static var __sharedObjects:Map<String, SharedObject>;
 
-	@:noCompletion private var __backend:SharedObjectBackend;
 	@:noCompletion private var __localPath:String;
 	@:noCompletion private var __name:String;
 
@@ -293,8 +307,6 @@ class SharedObject extends EventDispatcher
 
 		client = this;
 		objectEncoding = defaultObjectEncoding;
-
-		__backend = new SharedObjectBackend(this);
 	}
 
 	/**
@@ -313,7 +325,25 @@ class SharedObject extends EventDispatcher
 	{
 		data = {};
 
-		__backend.clear();
+		try
+		{
+			#if (js && html5)
+			var storage = Browser.getLocalStorage();
+
+			if (storage != null)
+			{
+				storage.removeItem(__localPath + ":" + __name);
+			}
+			#else
+			var path = __getPath(__localPath, __name);
+
+			if (FileSystem.exists(path))
+			{
+				FileSystem.deleteFile(path);
+			}
+			#end
+		}
+		catch (e:Dynamic) {}
 	}
 
 	/**
@@ -428,7 +458,38 @@ class SharedObject extends EventDispatcher
 			return SharedObjectFlushStatus.FLUSHED;
 		}
 
-		return __backend.flush(minDiskSpace);
+		var encodedData = Serializer.run(data);
+
+		try
+		{
+			#if (js && html5)
+			var storage = Browser.getLocalStorage();
+
+			if (storage != null)
+			{
+				storage.removeItem(__localPath + ":" + __name);
+				storage.setItem(__localPath + ":" + __name, encodedData);
+			}
+			#else
+			var path = __getPath(__localPath, __name);
+			var directory = Path.directory(path);
+
+			if (!FileSystem.exists(directory))
+			{
+				__mkdir(directory);
+			}
+
+			var output = File.write(path, false);
+			output.writeString(encodedData);
+			output.close();
+			#end
+		}
+		catch (e:Dynamic)
+		{
+			return SharedObjectFlushStatus.PENDING;
+		}
+
+		return SharedObjectFlushStatus.FLUSHED;
 	}
 
 	// @:noCompletion @:dox(hide) public static function getDiskUsage (url:String):Int;
@@ -606,25 +667,75 @@ class SharedObject extends EventDispatcher
 		if (__sharedObjects == null)
 		{
 			__sharedObjects = new Map();
+			// Lib.application.onExit.add (application_onExit);
+			#if lime
+			if (Application.current != null)
+			{
+				Application.current.onExit.add(application_onExit);
+			}
+			#end
 		}
 
 		var id = localPath + "/" + name;
 
 		if (!__sharedObjects.exists(id))
 		{
-			var sharedObject = new SharedObject();
-			sharedObject.__backend.getLocal(name, localPath, secure);
-			if (sharedObject.data == null)
+			var encodedData = null;
+
+			try
 			{
-				sharedObject.data = {};
+				#if (js && html5)
+				var storage = Browser.getLocalStorage();
+
+				if (localPath == null)
+				{
+					// Check old default path, first
+					if (storage != null)
+					{
+						encodedData = storage.getItem(Browser.window.location.href + ":" + name);
+						storage.removeItem(Browser.window.location.href + ":" + name);
+					}
+
+					localPath = Browser.window.location.pathname;
+				}
+
+				if (storage != null && encodedData == null)
+				{
+					encodedData = storage.getItem(localPath + ":" + name);
+				}
+				#else
+				if (localPath == null) localPath = "";
+
+				var path = __getPath(localPath, name);
+
+				if (FileSystem.exists(path))
+				{
+					encodedData = File.getContent(path);
+				}
+				#end
 			}
+			catch (e:Dynamic) {}
+
+			var sharedObject = new SharedObject();
+			sharedObject.data = {};
+			sharedObject.__localPath = localPath;
+			sharedObject.__name = name;
+
+			if (encodedData != null && encodedData != "")
+			{
+				try
+				{
+					var unserializer = new Unserializer(encodedData);
+					unserializer.setResolver(cast {resolveEnum: Type.resolveEnum, resolveClass: __resolveClass});
+					sharedObject.data = unserializer.unserialize();
+				}
+				catch (e:Dynamic) {}
+			}
+
 			__sharedObjects.set(id, sharedObject);
-			return sharedObject;
 		}
-		else
-		{
-			return __sharedObjects.get(id);
-		}
+
+		return __sharedObjects.get(id);
 	}
 
 	#if !openfl_strict
@@ -764,22 +875,149 @@ class SharedObject extends EventDispatcher
 		}
 	}
 
+	@:noCompletion private static function __getPath(localPath:String, name:String):String
+	{
+		#if lime
+		var path = System.applicationStorageDirectory + "/" + localPath + "/";
+
+		name = StringTools.replace(name, "//", "/");
+		name = StringTools.replace(name, "//", "/");
+
+		if (StringTools.startsWith(name, "/"))
+		{
+			name = name.substr(1);
+		}
+
+		if (StringTools.endsWith(name, "/"))
+		{
+			name = name.substring(0, name.length - 1);
+		}
+
+		if (name.indexOf("/") > -1)
+		{
+			var split = name.split("/");
+			name = "";
+
+			for (i in 0...(split.length - 1))
+			{
+				name += "#" + split[i] + "/";
+			}
+
+			name += split[split.length - 1];
+		}
+
+		return path + name + ".sol";
+		#else
+		return name + ".sol";
+		#end
+	}
+
+	@:noCompletion private static function __mkdir(directory:String):Void
+	{
+		// TODO: Move this to Lime somewhere?
+
+		#if sys
+		directory = StringTools.replace(directory, "\\", "/");
+		var total = "";
+
+		if (directory.substr(0, 1) == "/")
+		{
+			total = "/";
+		}
+
+		var parts = directory.split("/");
+		var oldPath = "";
+
+		if (parts.length > 0 && parts[0].indexOf(":") > -1)
+		{
+			oldPath = Sys.getCwd();
+			Sys.setCwd(parts[0] + "\\");
+			parts.shift();
+		}
+
+		for (part in parts)
+		{
+			if (part != "." && part != "")
+			{
+				if (total != "" && total != "/")
+				{
+					total += "/";
+				}
+
+				total += part;
+
+				if (!FileSystem.exists(total))
+				{
+					FileSystem.createDirectory(total);
+				}
+			}
+		}
+
+		if (oldPath != "")
+		{
+			Sys.setCwd(oldPath);
+		}
+		#end
+	}
+
+	@:noCompletion private static function __resolveClass(name:String):Class<Dynamic>
+	{
+		if (name != null)
+		{
+			if (StringTools.startsWith(name, "neash."))
+			{
+				name = StringTools.replace(name, "neash.", "openfl.");
+			}
+
+			if (StringTools.startsWith(name, "native."))
+			{
+				name = StringTools.replace(name, "native.", "openfl.");
+			}
+
+			if (StringTools.startsWith(name, "flash."))
+			{
+				name = StringTools.replace(name, "flash.", "openfl.");
+			}
+
+			if (StringTools.startsWith(name, "openfl._v2."))
+			{
+				name = StringTools.replace(name, "openfl._v2.", "openfl.");
+			}
+
+			if (StringTools.startsWith(name, "openfl._legacy."))
+			{
+				name = StringTools.replace(name, "openfl._legacy.", "openfl.");
+			}
+
+			return Type.resolveClass(name);
+		}
+
+		return null;
+	}
+
+	// Event Handlers
+	@:noCompletion private static function application_onExit(_):Void
+	{
+		for (sharedObject in __sharedObjects)
+		{
+			sharedObject.flush();
+		}
+	}
+
 	// Getters & Setters
 	@:noCompletion private function get_size():Int
 	{
-		return __backend.getSize();
+		try
+		{
+			var d = Serializer.run(data);
+			return Bytes.ofString(d).length;
+		}
+		catch (e:Dynamic)
+		{
+			return 0;
+		}
 	}
 }
-
-#if lime
-private typedef SharedObjectBackend = openfl._internal.backend.lime.LimeSharedObjectBackend;
-#elseif openfl_html5
-private typedef SharedObjectBackend = openfl._internal.backend.html5.HTML5SharedObjectBackend;
-#elseif sys
-private typedef SharedObjectBackend = openfl._internal.backend.sys.SysSharedObjectBackend;
-#else
-private typedef SharedObjectBackend = openfl._internal.backend.dummy.DummySharedObjectBackend;
-#end
 #else
 typedef SharedObject = flash.net.SharedObject;
 #end

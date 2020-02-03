@@ -1,10 +1,7 @@
 package openfl.events;
 
 #if (display || !flash)
-#if !openfl_global
 @:jsRequire("openfl/events/IOErrorEvent", "default")
-#end
-
 /**
  * An IOErrorEvent object is dispatched when an error causes input or output
  * operations to fail.

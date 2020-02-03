@@ -1,10 +1,7 @@
 package openfl.events;
 
 #if (display || !flash)
-#if !openfl_global
 @:jsRequire("openfl/events/TextEvent", "default")
-#end
-
 /**
  * An object dispatches a TextEvent object when a user enters text in a text
  * field or clicks a hyperlink in an HTML-enabled text field. There are two

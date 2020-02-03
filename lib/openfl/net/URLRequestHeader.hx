@@ -1,10 +1,7 @@
 package openfl.net;
 
 #if (display || !flash)
-#if !openfl_global
 @:jsRequire("openfl/net/URLRequestHeader", "default")
-#end
-
 /**
  * A URLRequestHeader object encapsulates a single HTTP request header and
  * consists of a name/value pair. URLRequestHeader objects are used in the

@@ -1,10 +1,7 @@
 package openfl.filters;
 
 #if (display || !flash)
-#if !openfl_global
 @:jsRequire("openfl/filters/BitmapFilter", "default")
-#end
-
 /**
  * The BitmapFilter class is the base class for all image filter effects.
  *

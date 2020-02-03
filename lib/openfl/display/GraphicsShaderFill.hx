@@ -3,9 +3,7 @@ package openfl.display;
 #if (display || !flash)
 import openfl.geom.Matrix;
 
-#if !openfl_global
 @:jsRequire("openfl/display/GraphicsShaderFill", "default")
-#end
 @:final extern class GraphicsShaderFill implements IGraphicsData implements IGraphicsFill
 {
 	public var matrix:Matrix;

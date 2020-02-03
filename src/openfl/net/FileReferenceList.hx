@@ -1,7 +1,15 @@
 package openfl.net;
 
 #if !flash
+import haxe.io.Path;
+import openfl.events.Event;
 import openfl.events.EventDispatcher;
+#if lime
+import lime.ui.FileDialog;
+#end
+#if sys
+import sys.FileSystem;
+#end
 
 /**
 	The FileReferenceList class provides a means to let users select one or
@@ -44,6 +52,7 @@ import openfl.events.EventDispatcher;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@:access(openfl.net.FileReference)
 class FileReferenceList extends EventDispatcher
 {
 	/**
@@ -63,8 +72,6 @@ class FileReferenceList extends EventDispatcher
 	**/
 	public var fileList(default, null):Array<FileReference>;
 
-	@:noCompletion private var __backend:FileReferenceListBackend;
-
 	/**
 		Creates a new FileReferenceList object. A FileReferenceList object
 		contains nothing until you call the `browse()` method on it and the
@@ -75,8 +82,6 @@ class FileReferenceList extends EventDispatcher
 	public function new()
 	{
 		super();
-
-		__backend = new FileReferenceListBackend(this);
 	}
 
 	/**
@@ -127,17 +132,64 @@ class FileReferenceList extends EventDispatcher
 	**/
 	public function browse(typeFilter:Array<FileFilter> = null):Bool
 	{
-		return __backend.browse(typeFilter);
+		#if desktop
+		var filter = null;
+
+		if (typeFilter != null)
+		{
+			var filters = [];
+
+			for (type in typeFilter)
+			{
+				filters.push(StringTools.replace(StringTools.replace(type.extension, "*.", ""), ";", ","));
+			}
+
+			filter = filters.join(";");
+		}
+
+		fileList = new Array();
+
+		var fileDialog = new FileDialog();
+		fileDialog.onCancel.add(fileDialog_onCancel);
+		fileDialog.onSelectMultiple.add(fileDialog_onSelectMultiple);
+		fileDialog.browse(OPEN_MULTIPLE, filter);
+		return true;
+		#end
+
+		return false;
+	}
+
+	// Event Handlers
+	@:noCompletion private function fileDialog_onCancel():Void
+	{
+		dispatchEvent(new Event(Event.CANCEL));
+	}
+
+	@:noCompletion private function fileDialog_onSelectMultiple(paths:Array<String>):Void
+	{
+		var fileReference, fileInfo;
+
+		for (path in paths)
+		{
+			fileReference = new FileReference();
+
+			#if sys
+			var fileInfo = FileSystem.stat(path);
+			fileReference.creationDate = fileInfo.ctime;
+			fileReference.modificationDate = fileInfo.mtime;
+			fileReference.size = fileInfo.size;
+			fileReference.type = "." + Path.extension(path);
+			#end
+
+			fileReference.__path = path;
+			fileReference.name = Path.withoutDirectory(path);
+
+			fileList.push(fileReference);
+		}
+
+		dispatchEvent(new Event(Event.SELECT));
 	}
 }
-
-#if lime
-private typedef FileReferenceListBackend = openfl._internal.backend.lime.LimeFileReferenceListBackend;
-#elseif openfl_html5
-private typedef FileReferenceListBackend = openfl._internal.backend.html5.HTML5FileReferenceListBackend;
-#else
-private typedef FileReferenceListBackend = openfl._internal.backend.dummy.DummyFileReferenceListBackend;
-#end
 #else
 typedef FileReferenceList = flash.net.FileReferenceList;
 #end

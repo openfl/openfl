@@ -1,10 +1,7 @@
 package openfl.events;
 
 #if (display || !flash)
-#if !openfl_global
 @:jsRequire("openfl/events/ErrorEvent", "default")
-#end
-
 /**
  * An object dispatches an ErrorEvent object when an error causes an
  * asynchronous operation to fail.

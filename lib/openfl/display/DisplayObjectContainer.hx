@@ -3,9 +3,7 @@ package openfl.display;
 #if (display || !flash)
 import openfl.geom.Point;
 
-#if !openfl_global
 @:jsRequire("openfl/display/DisplayObjectContainer", "default")
-#end
 
 /**
  * The DisplayObjectContainer class is the base class for all objects that can
@@ -56,7 +54,9 @@ extern class DisplayObjectContainer extends InteractiveObject
 	/**
 	 * Returns the number of children of this object.
 	 */
-	public var numChildren(default, never):Int;
+	public var numChildren(get, never):Int;
+
+	@:noCompletion private function get_numChildren():Int;
 
 	/**
 	 * Determines whether the children of the object are tab enabled. Enables or

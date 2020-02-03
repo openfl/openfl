@@ -147,7 +147,7 @@ class ApplicationMain
 
 			stage.dispatchEvent(new openfl.events.Event(openfl.events.Event.RESIZE, false, false));
 
-			if (stage.limeWindow.fullscreen)
+			if (stage.window.fullscreen)
 			{
 				stage.dispatchEvent(new openfl.events.FullScreenEvent(openfl.events.FullScreenEvent.FULL_SCREEN, false, false, true, true));
 			}

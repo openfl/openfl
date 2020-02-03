@@ -1,10 +1,7 @@
 package openfl.events;
 
 #if (display || !flash)
-#if !openfl_global
 @:jsRequire("openfl/events/Event", "default")
-#end
-
 /**
  * The Event class is used as the base class for the creation of Event
  * objects, which are passed as parameters to event listeners when an event

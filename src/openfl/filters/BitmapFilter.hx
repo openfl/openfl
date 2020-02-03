@@ -64,7 +64,7 @@ class BitmapFilter
 		return sourceBitmapData;
 	}
 
-	@:noCompletion private function __initShader(renderer:DisplayObjectRenderer, pass:Int, sourceBitmapData:BitmapData):Shader
+	@:noCompletion private function __initShader(renderer:DisplayObjectRenderer, pass:Int):Shader
 	{
 		// return renderer.__defaultShader;
 		return null;

@@ -18,9 +18,7 @@ import js.html.CanvasElement;
 // #end
 typedef Image = Dynamic;
 
-#if !openfl_global
 @:jsRequire("openfl/display/BitmapData", "default")
-#end
 
 /**
  * The BitmapData class lets you work with the data(pixels) of a Bitmap
