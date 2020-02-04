@@ -2343,6 +2343,7 @@ class TextField extends InteractiveObject
 		#if lime
 		if (__filters == null && renderer.__type == OPENGL && __cacheBitmap == null && !__domRender) return false;
 
+		if (force) __renderDirty = true;
 		if (super.__updateCacheBitmap(renderer, force || __dirty))
 		{
 			if (__cacheBitmap != null)
