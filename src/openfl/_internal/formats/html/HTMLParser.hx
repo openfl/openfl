@@ -106,7 +106,6 @@ class HTMLParser
 					{
 						value += "\n";
 						noLineBreak = true;
-						textFormatRanges[textFormatRanges.length - 1].end++;
 					}
 
 					if (start < segment.length)
@@ -228,10 +227,6 @@ class HTMLParser
 							textFormatRanges.push(new TextFormatRange(format, value.length, value.length + sub.length));
 							value += sub;
 							noLineBreak = false;
-						}
-						else if (textFormatRanges.length > 0)
-						{
-							textFormatRanges[textFormatRanges.length - 1].end++;
 						}
 					}
 					else
