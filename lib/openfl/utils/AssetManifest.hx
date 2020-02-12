@@ -1,8 +1,6 @@
 package openfl.utils;
 
-#if !openfl_global
 @:jsRequire("openfl/utils/AssetManifest", "default")
-#end
 extern class AssetManifest /*extends LimeAssetManifest*/
 {
 	public function new();

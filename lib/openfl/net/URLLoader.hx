@@ -3,9 +3,7 @@ package openfl.net;
 #if (display || !flash)
 import openfl.events.EventDispatcher;
 
-#if !openfl_global
 @:jsRequire("openfl/net/URLLoader", "default")
-#end
 
 /**
  * The URLLoader class downloads data from a URL as text, binary data, or

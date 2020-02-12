@@ -41,6 +41,18 @@ class StageTest
 		#end
 	}
 
+	@Test public function application()
+	{
+		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
+
+		#if integration
+		var exists = Lib.current.stage.application;
+
+		Assert.isNotNull(exists);
+		#end
+	}
+
 	@Test public function color()
 	{
 		// TODO: Confirm functionality
@@ -84,30 +96,6 @@ class StageTest
 
 		#if integration
 		var exists = Lib.current.stage.frameRate;
-
-		Assert.isNotNull(exists);
-		#end
-	}
-
-	@Test public function limeApplication()
-	{
-		// TODO: Confirm functionality
-		// TODO: Isolate so integration is not needed
-
-		#if (lime && integration)
-		var exists = Lib.current.stage.limeApplication;
-
-		Assert.isNotNull(exists);
-		#end
-	}
-
-	@Test public function limeWindow()
-	{
-		// TODO: Confirm functionality
-		// TODO: Isolate so integration is not needed
-
-		#if (lime && integration)
-		var exists = Lib.current.stage.limeWindow;
 
 		Assert.isNotNull(exists);
 		#end
@@ -180,6 +168,18 @@ class StageTest
 
 		#if integration
 		var exists = Lib.current.stage.stageWidth;
+
+		Assert.isNotNull(exists);
+		#end
+	}
+
+	@Test public function window()
+	{
+		// TODO: Confirm functionality
+		// TODO: Isolate so integration is not needed
+
+		#if integration
+		var exists = Lib.current.stage.window;
 
 		Assert.isNotNull(exists);
 		#end

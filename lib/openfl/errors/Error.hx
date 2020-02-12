@@ -1,9 +1,7 @@
 package openfl.errors;
 
 #if (display || !flash)
-#if !openfl_global
 @:jsRequire("openfl/errors/Error", "default")
-#end
 extern class Error #if openfl_dynamic implements Dynamic #end
 {
 	#if flash

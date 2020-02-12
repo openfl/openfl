@@ -1,8 +1,7 @@
 package openfl._internal.renderer.context3D;
 
-#if openfl_gl
-import openfl._internal.bindings.typedarray.Float32Array;
-import openfl._internal.bindings.typedarray.UInt16Array;
+import openfl._internal.utils.Float32Array;
+import openfl._internal.utils.UInt16Array;
 import openfl.display3D.Context3D;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
@@ -117,6 +116,7 @@ class Context3DBuffer
 
 		var vertexLength = numVertices * dataPerVertex;
 
+		#if lime
 		if (vertexBufferData == null)
 		{
 			vertexBufferData = new Float32Array(vertexLength);
@@ -127,6 +127,7 @@ class Context3DBuffer
 			vertexBufferData = new Float32Array(vertexLength);
 			vertexBufferData.set(cacheBufferData);
 		}
+		#end
 	}
 }
 
@@ -136,4 +137,3 @@ enum Context3DElementType
 	TRIANGLES;
 	TRIANGLE_INDICES;
 }
-#end

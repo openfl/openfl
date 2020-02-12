@@ -3,9 +3,7 @@ package openfl.ui;
 #if (display || !flash)
 import openfl.utils.ByteArray;
 
-#if !openfl_global
 @:jsRequire("openfl/ui/GameInputDevice", "default")
-#end
 @:final extern class GameInputDevice
 {
 	public static var MAX_BUFFER_SIZE:Int;

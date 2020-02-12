@@ -1,8 +1,8 @@
 package openfl._internal.renderer.context3D;
 
-#if openfl_gl
 import openfl._internal.renderer.cairo.CairoTextField;
 import openfl._internal.renderer.canvas.CanvasTextField;
+import openfl.display.OpenGLRenderer;
 import openfl.text.TextField;
 
 #if !openfl_debug
@@ -14,24 +14,23 @@ import openfl.text.TextField;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DTextField
 {
-	public static function render(textField:TextField, renderer:Context3DRenderer):Void
+	public static function render(textField:TextField, renderer:OpenGLRenderer):Void
 	{
-		#if openfl_html5
+		#if (js && html5)
 		CanvasTextField.render(textField, cast renderer.__softwareRenderer, textField.__worldTransform);
-		#elseif openfl_cairo
+		#elseif lime_cairo
 		CairoTextField.render(textField, cast renderer.__softwareRenderer, textField.__worldTransform);
 		#end
 		textField.__graphics.__hardwareDirty = false;
 	}
 
-	public static function renderMask(textField:TextField, renderer:Context3DRenderer):Void
+	public static function renderMask(textField:TextField, renderer:OpenGLRenderer):Void
 	{
-		#if openfl_html5
+		#if (js && html5)
 		CanvasTextField.render(textField, cast renderer.__softwareRenderer, textField.__worldTransform);
-		#elseif openfl_cairo
+		#elseif lime_cairo
 		CairoTextField.render(textField, cast renderer.__softwareRenderer, textField.__worldTransform);
 		#end
 		textField.__graphics.__hardwareDirty = false;
 	}
 }
-#end

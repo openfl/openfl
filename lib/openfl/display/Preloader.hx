@@ -3,9 +3,7 @@ package openfl.display;
 // import lime.app.Preloader in LimePreloader;
 import openfl.display.Sprite;
 
-#if !openfl_global
 @:jsRequire("openfl/display/Preloader", "default")
-#end
 extern class Preloader /*extends LimePreloader*/
 {
 	public function new(display:Sprite = null);

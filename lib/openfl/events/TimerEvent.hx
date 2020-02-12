@@ -1,10 +1,7 @@
 package openfl.events;
 
 #if (display || !flash)
-#if !openfl_global
 @:jsRequire("openfl/events/TimerEvent", "default")
-#end
-
 /**
  * A Timer object dispatches a TimerEvent objects whenever the Timer object
  * reaches the interval specified by the `Timer.delay` property.

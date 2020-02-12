@@ -1,10 +1,7 @@
 package openfl.display;
 
 #if (display || !flash)
-#if !openfl_global
 @:jsRequire("openfl/display/Shape", "default")
-#end
-
 /**
  * This class is used to create lightweight shapes using the ActionScript
  * drawing application program interface(API). The Shape class includes a

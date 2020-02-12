@@ -1,9 +1,7 @@
 package openfl.net;
 
 #if (display || !flash)
-#if !openfl_global
 @:jsRequire("openfl/net/URLRequestDefaults", "default")
-#end
 extern class URLRequestDefaults
 {
 	// public static var authenticate:Bool;

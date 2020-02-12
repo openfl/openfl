@@ -3,9 +3,7 @@ package openfl.ui;
 #if (display || !flash)
 import openfl.Vector;
 
-#if !openfl_global
 @:jsRequire("openfl/ui/Multitouch", "default")
-#end
 
 /**
  * The Multitouch class manages and provides information about the current

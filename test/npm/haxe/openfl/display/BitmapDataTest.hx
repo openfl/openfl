@@ -74,15 +74,15 @@ class BitmapDataTest
 				Assert.equal(bitmapData.height, 100);
 			});
 
-			// Mocha.it("image", function()
-			// {
-			// 	// TODO: Confirm functionality
+			Mocha.it("image", function()
+			{
+				// TODO: Confirm functionality
 
-			// 	var bitmapData = new BitmapData(1, 1);
-			// 	var exists = bitmapData.image;
+				var bitmapData = new BitmapData(1, 1);
+				var exists = bitmapData.image;
 
-			// 	Assert.notEqual(exists, null);
-			// });
+				Assert.notEqual(exists, null);
+			});
 
 			Mocha.it("rect", function()
 			{

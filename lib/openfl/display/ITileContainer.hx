@@ -1,8 +1,6 @@
 package openfl.display;
 
-#if !openfl_global
 @:jsRequire("openfl/display/ITileContainer", "default")
-#end
 extern interface ITileContainer
 {
 	public var numTiles(get, never):Int;

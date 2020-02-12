@@ -186,7 +186,7 @@ class ShaderMacro
 						}
 
 						block.push(Context.parse("__isGenerated = true", pos));
-						block.push(Context.parse("__init()", pos));
+						block.push(Context.parse("__initGL ()", pos));
 
 					default:
 				}

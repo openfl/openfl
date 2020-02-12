@@ -3,9 +3,7 @@ package openfl.display;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 
-#if !openfl_global
 @:jsRequire("openfl/display/Tile", "default")
-#end
 extern class Tile
 {
 	public var alpha(get, set):Float;

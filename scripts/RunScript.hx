@@ -5,6 +5,21 @@ import sys.FileSystem;
 
 class RunScript
 {
+	/*static private function buildDocumentation ():Void {
+
+		var openFLDirectory = PathHelper.getHaxelib (new Haxelib ("openfl"), true);
+		var scriptPath = PathHelper.combine (openFLDirectory, "script");
+		var documentationPath = PathHelper.combine (openFLDirectory, "documentation");
+
+		PathHelper.mkdir (documentationPath);
+
+		runCommand (scriptPath, "haxe", [ "documentation.hxml" ]);
+
+		FileHelper.copyFile (PathHelper.combine (openFLDirectory, "haxedoc.xml"), documentationPath + "/openfl.xml");
+
+		runCommand (documentationPath, "haxedoc", [ "openfl.xml", "-f", "openfl", "-f", "flash" ]);
+
+	}*/
 	public static function main()
 	{
 		var args = Sys.args();
@@ -35,11 +50,26 @@ class RunScript
 		}
 		else if (args.length > 0 && args[0] == "process")
 		{
-			Sys.exit(Sys.command("haxelib", ["run", "swf"].concat(args)));
+			Sys.setCwd(cacheDirectory);
+
+			if (!FileSystem.exists("scripts/tools.n"))
+			{
+				rebuildTools();
+			}
+
+			Sys.exit(Sys.command("neko", ["scripts/tools.n"].concat(Sys.args())));
 			return;
 		}
 
 		var args = ["run", "lime"].concat(args);
 		Sys.exit(Sys.command("haxelib", args.concat(["-openfl"])));
+	}
+
+	private static function rebuildTools(rebuildBinaries = true):Void
+	{
+		var openflDirectory = Haxelib.getPath(new Haxelib("openfl"), true);
+		var scriptsDirectory = Path.combine(openflDirectory, "scripts");
+
+		System.runCommand(scriptsDirectory, "haxe", ["tools.hxml"]);
 	}
 }

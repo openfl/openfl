@@ -3,9 +3,7 @@ package openfl.events;
 #if (display || !flash)
 import openfl.ui.KeyLocation;
 
-#if !openfl_global
 @:jsRequire("openfl/events/KeyboardEvent", "default")
-#end
 
 /**
  * A KeyboardEvent object id dispatched in response to user input through a

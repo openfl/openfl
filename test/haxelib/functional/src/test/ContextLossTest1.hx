@@ -100,7 +100,7 @@ class ContextLossTest1 extends FunctionalTest
 			if (extension != null)
 			{
 				status.text = "Context Loss: " + contextID;
-				stage.limeApplication.onUpdate.add(application_onUpdate);
+				stage.application.onUpdate.add(application_onUpdate);
 			}
 		}
 	}
@@ -108,7 +108,7 @@ class ContextLossTest1 extends FunctionalTest
 	public override function stop():Void
 	{
 		content.removeEventListener(Event.ENTER_FRAME, content_onEnterFrame);
-		stage.limeApplication.onUpdate.remove(application_onUpdate);
+		stage.application.onUpdate.remove(application_onUpdate);
 
 		if (stage.stage3Ds.length > 0)
 		{
@@ -190,21 +190,21 @@ class ContextLossTest1 extends FunctionalTest
 		var vertexSource = "attribute vec4 aPosition;
 			attribute vec2 aTexCoord;
 			varying vec2 vTexCoord;
-
+			
 			uniform mat4 uMatrix;
-
+			
 			void main(void) {
-
+				
 				vTexCoord = aTexCoord;
 				gl_Position = uMatrix * aPosition;
-
+				
 			}";
 
 		var fragmentSource = #if !desktop "precision mediump float;" + #end
 
 		"varying vec2 vTexCoord;
 			uniform sampler2D uImage0;
-
+			
 			void main(void)
 			{
 				gl_FragColor = texture2D (uImage0, vTexCoord);

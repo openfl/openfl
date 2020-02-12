@@ -1,10 +1,7 @@
 package openfl.ui;
 
 #if (display || !flash)
-#if !openfl_global
 @:jsRequire("openfl/ui/Mouse", "default")
-#end
-
 /**
  * The methods of the Mouse class are used to hide and show the mouse pointer,
  * or to set the pointer to a specific style. The Mouse class is a top-level

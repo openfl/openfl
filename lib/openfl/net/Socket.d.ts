@@ -7,29 +7,31 @@ import IDataOutput from "./../utils/IDataOutput";
 
 
 declare namespace openfl.net {
-
-
+	
+	
 	export class Socket extends EventDispatcher implements IDataInput, IDataOutput {
-
-
+		
+		
 		public readonly bytesAvailable:number;
-
+		
 		protected get_bytesAvailable ():number;
-
+		
 		public readonly bytesPending:number;
-
+		
 		protected get_bytesPending ():number;
-
+		
 		public readonly connected:boolean;
-
+		
+		protected get_connected ():boolean;
+		
 		public endian:Endian;
-
+		
 		protected get_endian ():Endian;
 		protected set_endian (value:Endian):Endian;
-
+		
 		public objectEncoding:ObjectEncoding;
 		public timeout:number;
-
+		
 		public constructor (host?:string, port?:number);
 		public close ():void;
 		public connect (host?:string, port?:number):void;
@@ -41,11 +43,11 @@ declare namespace openfl.net {
 		public readFloat ():number;
 		public readInt ():number;
 		public readMultiByte (length:number, charSet:string):string;
-
+		
 		// #if flash
 		// @:noCompletion @:dox(hide) public readObject ():Dynamic;
 		// #end
-
+		
 		public readShort ():number;
 		public readUnsignedByte ():number;
 		public readUnsignedInt ():number;
@@ -59,20 +61,20 @@ declare namespace openfl.net {
 		public writeFloat (value:number):void;
 		public writeInt (value:number):void;
 		public writeMultiByte (value:string, charSet:string):void;
-
+		
 		// #if flash
 		// @:noCompletion @:dox(hide) public writeObject (object:Dynamic):void;
 		// #end
-
+		
 		public writeShort (value:number):void;
 		public writeUnsignedInt (value:number):void;
 		public writeUTF (value:string):void;
 		public writeUTFBytes (value:string):void;
-
-
+		
+		
 	}
-
-
+	
+	
 }
 
 

@@ -106,7 +106,6 @@ class HTMLParser
 					{
 						value += "\n";
 						noLineBreak = true;
-						textFormatRanges[textFormatRanges.length - 1].end++;
 					}
 
 					if (start < segment.length)

@@ -1,7 +1,6 @@
 package openfl.filters;
 
 #if !flash
-import openfl.display.BitmapData;
 import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
 
@@ -232,9 +231,9 @@ class ConvolutionFilter extends BitmapFilter
 		return new ConvolutionFilter(matrixX, matrixY, __matrix, divisor, bias, preserveAlpha, clamp, color, alpha);
 	}
 
-	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int, sourceBitmapData:BitmapData):Shader
+	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int):Shader
 	{
-		#if (!macro && openfl_gl)
+		#if !macro
 		__convolutionShader.uConvoMatrix.value = matrix;
 		__convolutionShader.uDivisor.value[0] = divisor;
 		__convolutionShader.uBias.value[0] = bias;
@@ -347,7 +346,7 @@ private class ConvolutionShader extends BitmapFilterShader
 	{
 		super();
 
-		#if (!macro && openfl_gl)
+		#if !macro
 		uDivisor.value = [1];
 		uBias.value = [0];
 		uPreserveAlpha.value = [true];

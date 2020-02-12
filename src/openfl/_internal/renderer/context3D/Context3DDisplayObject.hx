@@ -1,12 +1,10 @@
 package openfl._internal.renderer.context3D;
 
-#if openfl_gl
 import openfl.display3D.Context3DClearMask;
 import openfl.display.DisplayObject;
+import openfl.display.OpenGLRenderer;
 import openfl.geom.Rectangle;
-#if !lime
-import openfl._internal.backend.lime_standalone.ARGB;
-#else
+#if lime
 import lime.math.ARGB;
 #end
 
@@ -21,31 +19,29 @@ import lime.math.ARGB;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DDisplayObject
 {
-	public static inline function render(displayObject:DisplayObject, renderer:Context3DRenderer):Void
+	public static inline function render(displayObject:DisplayObject, renderer:OpenGLRenderer):Void
 	{
 		if (displayObject.opaqueBackground == null && displayObject.__graphics == null) return;
 		if (!displayObject.__renderable || displayObject.__worldAlpha <= 0) return;
 
 		if (displayObject.opaqueBackground != null
-			&& !displayObject.__renderData.isCacheBitmapRender
+			&& !displayObject.__isCacheBitmapRender
 			&& displayObject.width > 0
 			&& displayObject.height > 0)
 		{
-			#if !disable_batcher
-			renderer.batcher.flush();
-			#end
-
 			renderer.__setBlendMode(displayObject.__worldBlendMode);
 			renderer.__pushMaskObject(displayObject);
 
-			var context = renderer.context3D;
+			var context = renderer.__context3D;
 
 			var rect = Rectangle.__pool.get();
 			rect.setTo(0, 0, displayObject.width, displayObject.height);
 			renderer.__pushMaskRect(rect, displayObject.__renderTransform);
 
+			#if lime
 			var color:ARGB = (displayObject.opaqueBackground : ARGB);
 			context.clear(color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, 1, 0, 0, Context3DClearMask.COLOR);
+			#end
 
 			renderer.__popMaskRect();
 			renderer.__popMaskObject(displayObject);
@@ -59,15 +55,17 @@ class Context3DDisplayObject
 		}
 	}
 
-	public static inline function renderMask(displayObject:DisplayObject, renderer:Context3DRenderer):Void
+	public static inline function renderMask(displayObject:DisplayObject, renderer:OpenGLRenderer):Void
 	{
 		if (displayObject.opaqueBackground == null && displayObject.__graphics == null) return;
 
 		if (displayObject.opaqueBackground != null
-			&& !displayObject.__renderData.isCacheBitmapRender
+			&& !displayObject.__isCacheBitmapRender
 			&& displayObject.width > 0
 			&& displayObject.height > 0)
 		{
+			// var gl = renderer.__context.webgl;
+
 			// TODO
 
 			// var rect = Rectangle.__pool.get ();
@@ -90,4 +88,3 @@ class Context3DDisplayObject
 		}
 	}
 }
-#end

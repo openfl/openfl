@@ -1,9 +1,7 @@
 package openfl.events;
 
 #if (display || !flash)
-#if !openfl_global
 @:jsRequire("openfl/events/FullScreenEvent", "default")
-#end
 extern class FullScreenEvent extends ActivityEvent
 {
 	public static inline var FULL_SCREEN = "fullScreen";

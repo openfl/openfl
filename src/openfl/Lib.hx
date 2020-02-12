@@ -9,33 +9,35 @@ import openfl.display.Application;
 import openfl.display.MovieClip;
 import openfl.net.URLLoader;
 import openfl.net.URLRequest;
+#if lime
+import lime.system.System;
+#end
+#if swf
+// Workaround to keep SWFLibrary/SWFLiteLibrary types available
+#if flash
+import openfl._internal.formats.swf.SWFLibrary;
+#else
+import openfl._internal.formats.swf.SWFLiteLibrary;
+#end
+#end
+#if (js && html5)
+import js.Browser;
+#end
 
-// #end
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
 @:access(openfl.display.Stage) class Lib
 {
-	#if lime
-	@:noCompletion @:dox(hide)
-	@:deprecated("Lib.application is deprecated. Use Lib.limeApplication instead.")
 	public static var application(get, never):Application;
-
-	@:noCompletion private static inline function get_application():Application
-	{
-		return Lib.limeApplication;
-	}
-	#end
-
 	public static var current(get, never):MovieClip;
-	#if lime
-	public static var limeApplication(get, never):Application;
-	#end
-
 	@:noCompletion private static var __lastTimerID:UInt = 0;
 	@:noCompletion private static var __sentWarnings:Map<String, Bool> = new Map();
 	@:noCompletion private static var __timers:Map<UInt, Timer> = new Map();
+	#if 0
+	private static var __unusedImports:Array<Class<Dynamic>> = [SWFLibrary, SWFLiteLibrary];
+	#end
 
 	#if openfljs
 	@:noCompletion private static function __init__()
@@ -44,7 +46,7 @@ import openfl.net.URLRequest;
 			"application": {
 				get: function()
 				{
-					return Lib.get_limeApplication();
+					return Lib.get_application();
 				}
 			},
 			"current": {
@@ -52,13 +54,7 @@ import openfl.net.URLRequest;
 				{
 					return Lib.get_current();
 				}
-			},
-			"limeApplication": {
-				get: function()
-				{
-					return Lib.get_limeApplication();
-				}
-			},
+			}
 		});
 	}
 	#end
@@ -230,10 +226,14 @@ import openfl.net.URLRequest;
 	**/
 	public static function getTimer():Int
 	{
+		#if lime
 		#if flash
 		return flash.Lib.getTimer();
 		#else
-		return LibBackend.getTimer();
+		return System.getTimer();
+		#end
+		#else
+		return 0;
 		#end
 	}
 
@@ -400,8 +400,31 @@ import openfl.net.URLRequest;
 
 		#if flash
 		return flash.Lib.getURL(request, window);
-		#else
-		return LibBackend.navigateToURL(request, window);
+		#elseif lime
+		var uri = request.url;
+
+		if (Type.typeof(request.data) == Type.ValueType.TObject)
+		{
+			var query = "";
+			var fields = Reflect.fields(request.data);
+
+			for (field in fields)
+			{
+				if (query.length > 0) query += "&";
+				query += StringTools.urlEncode(field) + "=" + StringTools.urlEncode(Std.string(Reflect.field(request.data, field)));
+			}
+
+			if (uri.indexOf("?") > -1)
+			{
+				uri += "&" + query;
+			}
+			else
+			{
+				uri += "?" + query;
+			}
+		}
+
+		System.openURL(uri, window);
 		#end
 	}
 
@@ -419,8 +442,11 @@ import openfl.net.URLRequest;
 
 	public static function preventDefaultTouchMove():Void
 	{
-		#if openfl_html5
-		LibBackend.preventDefaultTouchMove();
+		#if (js && html5)
+		Browser.document.addEventListener("touchmove", function(evt:js.html.Event):Void
+		{
+			evt.preventDefault();
+		}, false);
 		#end
 	}
 
@@ -548,6 +574,11 @@ import openfl.net.URLRequest;
 	}
 
 	// Get & Set Methods
+	@:noCompletion private static function get_application():Application
+	{
+		return InternalLib.application;
+	}
+
 	@:noCompletion private static function get_current():MovieClip
 	{
 		#if flash
@@ -561,18 +592,4 @@ import openfl.net.URLRequest;
 	// @:noCompletion private static function set_current (current:MovieClip):MovieClip {
 	// 	return cast flash.Lib.current = cast current;
 	// }
-	#if lime
-	@:noCompletion private static function get_limeApplication():Application
-	{
-		return InternalLib.limeApplication;
-	}
-	#end
 }
-
-#if lime
-private typedef LibBackend = openfl._internal.backend.lime.LimeLibBackend;
-#elseif openfl_html5
-private typedef LibBackend = openfl._internal.backend.html5.HTML5LibBackend;
-#else
-private typedef LibBackend = openfl._internal.backend.dummy.DummyLibBackend;
-#end

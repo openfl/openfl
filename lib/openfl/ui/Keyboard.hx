@@ -1,10 +1,7 @@
 package openfl.ui;
 
 #if (display || !flash)
-#if !openfl_global
 @:jsRequire("openfl/ui/Keyboard", "default")
-#end
-
 /**
  * The Keyboard class is used to build an interface that can be controlled by
  * a user with a standard keyboard. You can use the methods and properties of

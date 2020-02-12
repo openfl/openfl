@@ -1,8 +1,8 @@
 package;
 
 import haxe.macro.Compiler;
+import lime.utils.Log;
 import test.*;
-import openfl._internal.utils.Log;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.events.KeyboardEvent;
@@ -34,15 +34,9 @@ class Main extends Sprite
 		suite.addTest(new ContextLossTest1());
 		suite.addTest(new DropFileTest1());
 		suite.addTest(new Scale9GridTest1());
-		suite.addTest(new Scale9GridTest2());
 		suite.addTest(new BlurTest1());
 		suite.addTest(new GlowTest());
 		suite.addTest(new DropShadowTest());
-		suite.addTest(new BatcherTest());
-		#if draft
-		suite.addTest(new HWGraphicsTest1());
-		suite.addTest(new GeometryTest());
-		#end
 		addChild(suite.content);
 
 		stage.addEventListener(Event.RESIZE, stage_onResize);

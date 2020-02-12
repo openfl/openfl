@@ -1,0 +1,18 @@
+package ::PACKAGE_NAME::;
+
+@:access(openfl._internal.formats.animate)
+
+class ::CLASS_NAME:: extends ::if BASE_CLASS_NAME::::BASE_CLASS_NAME::::else::#if flash flash.display.MovieClip.MovieClip2 #else openfl.display.MovieClip #end::end::
+{
+	::foreach CLASS_PROPERTIES::@:keep public var ::name::(default, null):::type::;
+	::end::
+
+	public function new()
+	{
+		super();
+
+		var library = openfl._internal.formats.animate.AnimateLibrary.get("::UUID::");
+		var symbol = library.symbols.get(::SYMBOL_ID::);
+		symbol.__initObject(library, this);
+	}
+}

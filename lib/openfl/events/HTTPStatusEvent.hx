@@ -3,9 +3,7 @@ package openfl.events;
 #if (display || !flash)
 import openfl.net.URLRequestHeader;
 
-#if !openfl_global
 @:jsRequire("openfl/events/HTTPStatusEvent", "default")
-#end
 
 /**
  * The application dispatches HTTPStatusEvent objects when a network request

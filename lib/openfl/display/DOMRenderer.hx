@@ -5,9 +5,7 @@ import js.html.Element;
 
 typedef DOMRenderContext = js.html.Element;
 
-#if !openfl_global
 @:jsRequire("openfl/display/DOMRenderer", "default")
-#end
 extern class DOMRenderer extends DisplayObjectRenderer
 {
 	public var element:DOMRenderContext;

@@ -1,16 +1,13 @@
 package flash.utils;
 
 #if flash
-#if lime
 import lime.system.Endian in LimeEndian;
-#end
 
 @:enum abstract Endian(String) from String to String
 {
 	public var BIG_ENDIAN = "bigEndian";
 	public var LITTLE_ENDIAN = "littleEndian";
 
-	#if lime
 	@:from private static function fromLimeEndian(value:LimeEndian):Endian
 	{
 		return switch (value)
@@ -30,7 +27,6 @@ import lime.system.Endian in LimeEndian;
 			default: null;
 		}
 	}
-	#end
 }
 #else
 typedef Endian = openfl.utils.Endian;

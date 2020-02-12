@@ -2,6 +2,9 @@ package openfl.desktop;
 
 #if !flash
 import openfl.utils.Object;
+#if lime
+import lime.system.Clipboard as LimeClipboard;
+#end
 
 /**
 	The Clipboard class provides a container for transferring data and objects
@@ -109,7 +112,10 @@ class Clipboard
 	**/
 	public var formats(get, never):Array<ClipboardFormats>;
 
-	@:noCompletion private var __backend:ClipboardBackend;
+	@:noCompletion private var __htmlText:String;
+	@:noCompletion private var __richText:String;
+	@:noCompletion private var __systemClipboard:Bool;
+	@:noCompletion private var __text:String;
 
 	#if openfljs
 	@:noCompletion private static function __init__()
@@ -126,10 +132,7 @@ class Clipboard
 	}
 	#end
 
-	@:noCompletion private function new()
-	{
-		__backend = new ClipboardBackend(this);
-	}
+	@:noCompletion private function new() {}
 
 	/**
 		Deletes all data representations from this Clipboard object.
@@ -144,7 +147,17 @@ class Clipboard
 	**/
 	public function clear():Void
 	{
-		__backend.clear();
+		#if lime
+		if (__systemClipboard)
+		{
+			LimeClipboard.text = null;
+			return;
+		}
+		#end
+
+		__htmlText = null;
+		__richText = null;
+		__text = null;
 	}
 
 	/**
@@ -161,7 +174,34 @@ class Clipboard
 	**/
 	public function clearData(format:ClipboardFormats):Void
 	{
-		__backend.clearData(format);
+		#if lime
+		if (__systemClipboard)
+		{
+			switch (format)
+			{
+				case HTML_FORMAT, RICH_TEXT_FORMAT, TEXT_FORMAT:
+					LimeClipboard.text = null;
+
+				default:
+			}
+
+			return;
+		}
+		#end
+
+		switch (format)
+		{
+			case HTML_FORMAT:
+				__htmlText = null;
+
+			case RICH_TEXT_FORMAT:
+				__richText = null;
+
+			case TEXT_FORMAT:
+				__text = null;
+
+			default:
+		}
 	}
 
 	/**
@@ -214,7 +254,24 @@ class Clipboard
 			transferMode = ORIGINAL_PREFERRED;
 		}
 
-		return __backend.getData(format, transferMode);
+		#if lime
+		if (__systemClipboard)
+		{
+			return switch (format)
+			{
+				case HTML_FORMAT, RICH_TEXT_FORMAT, TEXT_FORMAT: LimeClipboard.text;
+				default: null;
+			}
+		}
+		#end
+
+		return switch (format)
+		{
+			case HTML_FORMAT: __htmlText;
+			case RICH_TEXT_FORMAT: __richText;
+			case TEXT_FORMAT: __text;
+			default: null;
+		}
 	}
 
 	/**
@@ -232,7 +289,24 @@ class Clipboard
 	**/
 	public function hasFormat(format:ClipboardFormats):Bool
 	{
-		return __backend.hasFormat(format);
+		#if lime
+		if (__systemClipboard)
+		{
+			return switch (format)
+			{
+				case HTML_FORMAT, RICH_TEXT_FORMAT, TEXT_FORMAT: LimeClipboard.text != null;
+				default: false;
+			}
+		}
+		#end
+
+		return switch (format)
+		{
+			case HTML_FORMAT: __htmlText != null;
+			case RICH_TEXT_FORMAT: __richText != null;
+			case TEXT_FORMAT: __text != null;
+			default: false;
+		}
 	}
 
 	/**
@@ -322,7 +396,38 @@ class Clipboard
 	**/
 	public function setData(format:ClipboardFormats, data:Object, serializable:Bool = true):Bool
 	{
-		return __backend.setData(format, data, serializable);
+		#if lime
+		if (__systemClipboard)
+		{
+			switch (format)
+			{
+				case HTML_FORMAT, RICH_TEXT_FORMAT, TEXT_FORMAT:
+					LimeClipboard.text = data;
+					return true;
+
+				default:
+					return false;
+			}
+		}
+		#end
+
+		switch (format)
+		{
+			case HTML_FORMAT:
+				__htmlText = data;
+				return true;
+
+			case RICH_TEXT_FORMAT:
+				__richText = data;
+				return true;
+
+			case TEXT_FORMAT:
+				__text = data;
+				return true;
+
+			default:
+				return false;
+		}
 	}
 
 	#if !openfl_strict
@@ -421,19 +526,12 @@ class Clipboard
 		if (__generalClipboard == null)
 		{
 			__generalClipboard = new Clipboard();
+			__generalClipboard.__systemClipboard = true;
 		}
 
 		return __generalClipboard;
 	}
 }
-
-#if lime
-private typedef ClipboardBackend = openfl._internal.backend.lime.LimeClipboardBackend;
-#elseif openfl_html5
-private typedef ClipboardBackend = openfl._internal.backend.html5.HTML5ClipboardBackend;
-#else
-private typedef ClipboardBackend = openfl._internal.backend.dummy.DummyClipboardBackend;
-#end
 #else
 typedef Clipboard = flash.desktop.Clipboard;
 #end

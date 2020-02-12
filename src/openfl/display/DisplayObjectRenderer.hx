@@ -1,36 +1,35 @@
 package openfl.display;
 
 #if !flash
-import openfl._internal.renderer.DisplayObjectRendererType;
 import openfl.events.EventDispatcher;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
-import openfl.media.Video;
+#if lime
+import lime.graphics.RenderContext;
+import lime.graphics.RenderContextType;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@:access(openfl.geom.ColorTransform)
 @:allow(openfl._internal.renderer)
-@:access(openfl.display.Bitmap)
-@:access(openfl.display.BitmapData)
-@:access(openfl.display.DisplayObject)
-@:access(openfl.display.TileContainer)
-@:access(openfl.display.Tilemap)
-@:access(openfl.display.Timeline)
-@:access(openfl.media.Video)
+@:allow(openfl.display)
+@:allow(openfl.text)
 class DisplayObjectRenderer extends EventDispatcher
 {
 	@:noCompletion private var __allowSmoothing:Bool;
 	@:noCompletion private var __blendMode:BlendMode;
 	@:noCompletion private var __cleared:Bool;
-	// @SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __context:#if lime RenderContext #else Dynamic #end;
+	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __context:#if lime RenderContext #else Dynamic #end;
 	@:noCompletion private var __overrideBlendMode:BlendMode;
 	@:noCompletion private var __roundPixels:Bool;
 	@:noCompletion private var __stage:Stage;
+	@:noCompletion private var __tempColorTransform:ColorTransform;
 	@:noCompletion private var __transparent:Bool;
-	@:noCompletion private var __type:DisplayObjectRendererType;
+	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __type:#if lime RenderContextType #else Dynamic #end;
 	@:noCompletion private var __worldAlpha:Float;
 	@:noCompletion private var __worldColorTransform:ColorTransform;
 	@:noCompletion private var __worldTransform:Matrix;
@@ -40,59 +39,48 @@ class DisplayObjectRenderer extends EventDispatcher
 		super();
 
 		__allowSmoothing = true;
+		__tempColorTransform = new ColorTransform();
 		__worldAlpha = 1;
 	}
 
 	@:noCompletion private function __clear():Void {}
 
-	@:noCompletion private function __drawBitmapData(bitmapData:BitmapData, source:IBitmapDrawable, clipRect:Rectangle):Void {}
-
-	@:noCompletion private function __enterFrame(displayObject:DisplayObject, deltaTime:Int):Void
+	@:noCompletion private function __getAlpha(value:Float):Float
 	{
-		for (child in displayObject.__childIterator(false))
+		return value * __worldAlpha;
+	}
+
+	@:noCompletion private function __getColorTransform(value:ColorTransform):ColorTransform
+	{
+		if (__worldColorTransform != null)
 		{
-			switch (child.__type)
-			{
-				case BITMAP:
-					var bitmap:Bitmap = cast child;
-					if (bitmap.__bitmapData != null
-						&& bitmap.__bitmapData.readable
-						&& bitmap.__bitmapData.__getVersion() != bitmap.__imageVersion)
-					{
-						bitmap.__setRenderDirty();
-					}
-
-				case MOVIE_CLIP:
-					var movieClip:MovieClip = cast child;
-					if (movieClip.__timeline != null)
-					{
-						movieClip.__timeline.__enterFrame(deltaTime);
-					}
-
-				case TILEMAP:
-					var tilemap:Tilemap = cast child;
-					if (tilemap.__group.__dirty)
-					{
-						tilemap.__setRenderDirty();
-					}
-
-				case VIDEO:
-					var video:Video = cast child;
-					#if openfl_html5
-					if (video.__renderable && video.__stream != null)
-					{
-						video.__setRenderDirty();
-					}
-					#end
-
-				default:
-			}
+			__tempColorTransform.__copyFrom(__worldColorTransform);
+			__tempColorTransform.__combine(value);
+			return __tempColorTransform;
+		}
+		else
+		{
+			return value;
 		}
 	}
+
+	@:noCompletion private function __popMask():Void {}
+
+	@:noCompletion private function __popMaskObject(object:DisplayObject, handleScrollRect:Bool = true):Void {}
+
+	@:noCompletion private function __popMaskRect():Void {}
+
+	@:noCompletion private function __pushMask(mask:DisplayObject):Void {}
+
+	@:noCompletion private function __pushMaskObject(object:DisplayObject, handleScrollRect:Bool = true):Void {}
+
+	@:noCompletion private function __pushMaskRect(rect:Rectangle, transform:Matrix):Void {}
 
 	@:noCompletion private function __render(object:IBitmapDrawable):Void {}
 
 	@:noCompletion private function __resize(width:Int, height:Int):Void {}
+
+	@:noCompletion private function __setBlendMode(value:BlendMode):Void {}
 }
 #else
 typedef DisplayObjectRenderer = Dynamic;

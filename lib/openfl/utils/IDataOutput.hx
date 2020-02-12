@@ -2,9 +2,7 @@ package openfl.utils;
 
 import openfl.net.ObjectEncoding;
 
-#if !openfl_global
 @:jsRequire("openfl/utils/IDataOutput", "default")
-#end
 #if flash
 @:native("flash.utils.IDataOutput")
 #end

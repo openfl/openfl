@@ -1,10 +1,7 @@
 package openfl.text;
 
 #if (display || !flash)
-#if !openfl_global
 @:jsRequire("openfl/text/TextLineMetrics", "default")
-#end
-
 /**
  * The TextLineMetrics class contains information about the text position and
  * measurements of a line of text within a text field. All measurements are in

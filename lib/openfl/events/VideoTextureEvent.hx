@@ -1,9 +1,7 @@
 package openfl.events;
 
 #if (display || !flash)
-#if !openfl_global
 @:jsRequire("openfl/events/VideoTextureEvent", "default")
-#end
 extern class VideoTextureEvent extends Event
 {
 	public static inline var RENDER_STATE = "renderState";

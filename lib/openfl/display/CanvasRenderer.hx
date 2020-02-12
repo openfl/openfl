@@ -5,9 +5,7 @@ import openfl.geom.Matrix;
 
 typedef CanvasRenderContext = js.html.CanvasRenderingContext2D;
 
-#if !openfl_global
 @:jsRequire("openfl/display/CanvasRenderer", "default")
-#end
 extern class CanvasRenderer extends DisplayObjectRenderer
 {
 	public var context:CanvasRenderContext;

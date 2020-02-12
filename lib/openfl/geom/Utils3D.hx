@@ -3,9 +3,7 @@ package openfl.geom;
 #if (display || !flash)
 import openfl.Vector;
 
-#if !openfl_global
 @:jsRequire("openfl/geom/Utils3D", "default")
-#end
 extern class Utils3D
 {
 	#if flash

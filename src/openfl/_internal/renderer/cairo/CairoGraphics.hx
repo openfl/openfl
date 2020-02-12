@@ -1,16 +1,9 @@
 package openfl._internal.renderer.cairo;
 
-#if openfl_cairo
-import lime.math.Matrix3;
-import lime.math.Vector2;
-import openfl._internal.bindings.cairo.Cairo;
-import openfl._internal.bindings.cairo.CairoExtend;
-import openfl._internal.bindings.cairo.CairoFilter;
-import openfl._internal.bindings.cairo.CairoImageSurface;
-import openfl._internal.bindings.cairo.CairoPattern;
 import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.DrawCommandReader;
 import openfl.display.BitmapData;
+import openfl.display.CairoRenderer;
 import openfl.display.GradientType;
 import openfl.display.Graphics;
 import openfl.display.InterpolationMethod;
@@ -19,6 +12,15 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.Vector;
+#if lime
+import lime.graphics.cairo.Cairo;
+import lime.graphics.cairo.CairoExtend;
+import lime.graphics.cairo.CairoFilter;
+import lime.graphics.cairo.CairoImageSurface;
+import lime.graphics.cairo.CairoPattern;
+import lime.math.Matrix3;
+import lime.math.Vector2;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -33,8 +35,9 @@ import openfl.Vector;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class CairoGraphics
 {
-	private static inline var SIN45:Float = 0.70710678118654752440084436210485;
-	private static inline var TAN22:Float = 0.4142135623730950488016887242097;
+	#if lime_cairo
+	private static var SIN45:Float = 0.70710678118654752440084436210485;
+	private static var TAN22:Float = 0.4142135623730950488016887242097;
 	private static var allowSmoothing:Bool;
 	private static var bitmapFill:BitmapData;
 	private static var bitmapRepeat:Bool;
@@ -51,7 +54,7 @@ class CairoGraphics
 	private static var pendingMatrix:Matrix;
 	private static var strokeCommands:DrawCommandBuffer = new DrawCommandBuffer();
 	private static var strokePattern:CairoPattern;
-	private static var tempMatrix3:Matrix3 = new Matrix3();
+	private static var tempMatrix3 = new Matrix3();
 	private static var worldAlpha:Float;
 
 	private static function closePath(strokeBefore:Bool = false):Void
@@ -212,9 +215,11 @@ class CairoGraphics
 		cairo.closePath();
 		strokeCommands.clear();
 	}
+	#end
 
 	public static function hitTest(graphics:Graphics, x:Float, y:Float):Bool
 	{
+		#if lime_cairo
 		CairoGraphics.graphics = graphics;
 		bounds = graphics.__bounds;
 
@@ -229,15 +234,15 @@ class CairoGraphics
 			x -= bounds.x;
 			y -= bounds.y;
 
-			if (graphics.__renderData.cairo == null)
+			if (graphics.__cairo == null)
 			{
 				var bitmap = new BitmapData(Math.floor(bounds.width), Math.floor(bounds.height), true, 0);
 				var surface = bitmap.getSurface();
-				graphics.__renderData.cairo = new Cairo(surface);
+				graphics.__cairo = new Cairo(surface);
 				// graphics.__bitmap = bitmap;
 			}
 
-			cairo = graphics.__renderData.cairo;
+			cairo = graphics.__cairo;
 
 			fillCommands.clear();
 			strokeCommands.clear();
@@ -414,10 +419,12 @@ class CairoGraphics
 
 			return hitTest;
 		}
+		#end
 
 		return false;
 	}
 
+	#if lime_cairo
 	private static inline function isCCW(x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float)
 	{
 		return ((x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1)) < 0;
@@ -585,7 +592,7 @@ class CairoGraphics
 					positionX = c.x;
 					positionY = c.y;
 
-					if (setStart && c.x != startX && c.y != startY)
+					if (setStart)
 					{
 						closeGap = true;
 					}
@@ -1124,9 +1131,11 @@ class CairoGraphics
 
 		cairo.curveTo(cx1, cy1, cx2, cy2, x, y);
 	}
+	#end
 
 	public static function render(graphics:Graphics, renderer:CairoRenderer):Void
 	{
+		#if lime_cairo
 		CairoGraphics.graphics = graphics;
 		CairoGraphics.allowSmoothing = renderer.__allowSmoothing;
 		CairoGraphics.worldAlpha = renderer.__getAlpha(graphics.__owner.__worldAlpha);
@@ -1142,7 +1151,7 @@ class CairoGraphics
 
 		if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || width < 1 || height < 1)
 		{
-			graphics.__renderData.cairo = null;
+			graphics.__cairo = null;
 			graphics.__bitmap = null;
 		}
 		else
@@ -1150,26 +1159,26 @@ class CairoGraphics
 			hitTesting = false;
 			var needsUpscaling = false;
 
-			if (graphics.__renderData.cairo != null)
+			if (graphics.__cairo != null)
 			{
-				var surface:CairoImageSurface = cast graphics.__renderData.cairo.target;
+				var surface:CairoImageSurface = cast graphics.__cairo.target;
 
 				if (width > surface.width || height > surface.height)
 				{
-					graphics.__renderData.cairo = null;
+					graphics.__cairo = null;
 					needsUpscaling = true;
 				}
 			}
 
-			if (graphics.__renderData.cairo == null || graphics.__bitmap == null)
+			if (graphics.__cairo == null || graphics.__bitmap == null)
 			{
 				var bitmap = needsUpscaling ? new BitmapData(Std.int(width * 1.25), Std.int(height * 1.25), true, 0) : new BitmapData(width, height, true, 0);
 				var surface = bitmap.getSurface();
-				graphics.__renderData.cairo = new Cairo(surface);
+				graphics.__cairo = new Cairo(surface);
 				graphics.__bitmap = bitmap;
 			}
 
-			cairo = graphics.__renderData.cairo;
+			cairo = graphics.__cairo;
 
 			renderer.__setBlendModeCairo(cairo, NORMAL);
 			renderer.applyMatrix(graphics.__renderTransform, cairo);
@@ -1410,15 +1419,18 @@ class CairoGraphics
 
 			data.destroy();
 
-			graphics.__bitmap.__setDirty();
+			graphics.__bitmap.image.dirty = true;
+			graphics.__bitmap.image.version++;
 		}
 
 		graphics.__softwareDirty = false;
 		graphics.__dirty = false;
+		#end
 	}
 
 	public static function renderMask(graphics:Graphics, renderer:CairoRenderer):Void
 	{
+		#if lime_cairo
 		if (graphics.__commands.length != 0)
 		{
 			cairo = renderer.cairo;
@@ -1514,6 +1526,7 @@ class CairoGraphics
 
 			data.destroy();
 		}
+		#end
 	}
 }
 
@@ -1522,4 +1535,3 @@ private typedef NormalizedUVT =
 	max:Float,
 	uvt:Vector<Float>
 }
-#end

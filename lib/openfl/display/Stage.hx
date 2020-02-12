@@ -17,9 +17,7 @@ package openfl.display;
 // import lime.ui.Window;
 import openfl.geom.Rectangle;
 
-#if !openfl_global
 @:jsRequire("openfl/display/Stage", "default")
-#end
 
 /**
  * The Stage class represents the main drawing area.

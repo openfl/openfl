@@ -1,7 +1,15 @@
 package openfl.system;
 
 #if !flash
-import openfl.desktop.Clipboard;
+#if lime
+import lime.system.Clipboard;
+import lime.system.System as LimeSystem;
+#end
+#if neko
+import neko.vm.Gc;
+#elseif cpp
+import cpp.vm.Gc;
+#end
 
 /**
 	The System class contains properties related to local settings and
@@ -169,7 +177,9 @@ import openfl.desktop.Clipboard;
 	**/
 	public static function exit(code:Int):Void
 	{
-		SystemBackend.exit(code);
+		#if lime
+		LimeSystem.exit(code);
+		#end
 	}
 
 	/**
@@ -183,7 +193,9 @@ import openfl.desktop.Clipboard;
 	**/
 	public static function gc():Void
 	{
-		SystemBackend.gc();
+		#if (cpp || neko)
+		return Gc.run(true);
+		#end
 	}
 
 	#if !openfl_strict
@@ -235,13 +247,23 @@ import openfl.desktop.Clipboard;
 	**/
 	public static function setClipboard(string:String):Void
 	{
-		Clipboard.generalClipboard.setData(TEXT_FORMAT, string);
+		#if lime
+		Clipboard.text = string;
+		#end
 	}
 
 	// Getters & Setters
 	@:noCompletion private static function get_totalMemory():Int
 	{
-		return SystemBackend.getTotalMemory();
+		#if neko
+		return Gc.stats().heap;
+		#elseif cpp
+		return untyped __global__.__hxcpp_gc_used_bytes();
+		#elseif (js && html5)
+		return untyped __js__("(window.performance && window.performance.memory) ? window.performance.memory.usedJSHeapSize : 0");
+		#else
+		return 0;
+		#end
 	}
 
 	@:noCompletion private static function get_vmVersion():String
@@ -249,14 +271,6 @@ import openfl.desktop.Clipboard;
 		return "1.0.0";
 	}
 }
-
-#if lime
-private typedef SystemBackend = openfl._internal.backend.lime.LimeSystemBackend;
-#elseif openfl_html5
-private typedef SystemBackend = openfl._internal.backend.html5.HTML5SystemBackend;
-#else
-private typedef SystemBackend = openfl._internal.backend.dummy.DummySystemBackend;
-#end
 #else
 typedef System = flash.system.System;
 #end

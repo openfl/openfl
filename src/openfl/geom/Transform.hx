@@ -331,7 +331,6 @@ class Transform
 			transform.ty = ty;
 
 			__displayObject.__setTransformDirty();
-			__displayObject.__setParentRenderDirty();
 		}
 	}
 }

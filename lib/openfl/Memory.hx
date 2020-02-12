@@ -4,9 +4,7 @@ package openfl;
 import openfl.system.ApplicationDomain;
 import openfl.utils.ByteArray;
 
-#if !openfl_global
 @:jsRequire("openfl/Memory", "default")
-#end
 extern class Memory
 {
 	public static inline function getByte(addr:Int):Int

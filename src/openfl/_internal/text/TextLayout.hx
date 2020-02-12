@@ -1,18 +1,20 @@
 package openfl._internal.text;
 
-#if lime
 import haxe.io.Bytes;
+#if lime
 import lime.math.Vector2;
+import lime.text.harfbuzz.HBBuffer;
+import lime.text.harfbuzz.HBBufferClusterLevel;
+import lime.text.harfbuzz.HBDirection;
+import lime.text.harfbuzz.HBFTFont;
+import lime.text.harfbuzz.HBLanguage;
+import lime.text.harfbuzz.HBScript;
+import lime.text.harfbuzz.HB;
 import lime.text.Font;
 import lime.text.Glyph;
-import openfl._internal.bindings.harfbuzz.HBBuffer;
-import openfl._internal.bindings.harfbuzz.HBBufferClusterLevel;
-import openfl._internal.bindings.harfbuzz.HBDirection;
-import openfl._internal.bindings.harfbuzz.HBFTFont;
-import openfl._internal.bindings.harfbuzz.HBLanguage;
-import openfl._internal.bindings.harfbuzz.HBScript;
-import openfl._internal.bindings.harfbuzz.HB;
+#else
 import openfl.text.Font;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -496,4 +498,3 @@ class TextLayout
 		}
 	}
 }
-#end

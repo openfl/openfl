@@ -6,9 +6,7 @@ import openfl.events.UncaughtErrorEvents;
 import openfl.system.ApplicationDomain;
 import openfl.utils.ByteArray;
 
-#if !openfl_global
 @:jsRequire("openfl/display/LoaderInfo", "default")
-#end
 
 /**
  * The LoaderInfo class provides information about a loaded SWF file or a

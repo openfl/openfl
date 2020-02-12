@@ -1,9 +1,7 @@
 package openfl.display;
 
 #if (display || !flash)
-#if !openfl_global
 @:jsRequire("openfl/display/JPEGEncoderOptions", "default")
-#end
 @:final extern class JPEGEncoderOptions
 {
 	public var quality:UInt;

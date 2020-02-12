@@ -27,7 +27,7 @@ class BitmapDataTest
 	#end
 	@Test public function fromCanvas()
 	{
-		#if openfl_html5
+		#if (js && html5)
 		Assert.isNotNull(BitmapData.fromCanvas);
 		#end
 	}
@@ -255,9 +255,9 @@ class BitmapDataTest
 		#if lime
 		var bitmapData = new BitmapData(1, 1);
 		#if flash
-		Assert.isNull(bitmapData.limeImage);
+		Assert.isNull(bitmapData.image);
 		#else
-		Assert.isNotNull(bitmapData.limeImage);
+		Assert.isNotNull(bitmapData.image);
 		#end
 		#end
 	}

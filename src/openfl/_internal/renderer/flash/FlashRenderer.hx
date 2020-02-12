@@ -25,10 +25,7 @@ class FlashRenderer
 	{
 		for (instance in instances)
 		{
-			if (instance != null)
-			{
-				instance.__renderFlash();
-			}
+			instance.__renderFlash();
 		}
 	}
 }

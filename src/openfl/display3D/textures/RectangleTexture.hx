@@ -1,9 +1,14 @@
 package openfl.display3D.textures;
 
 #if !flash
-import openfl._internal.bindings.typedarray.ArrayBufferView;
+import openfl._internal.renderer.SamplerState;
+import openfl._internal.utils.ArrayBufferView;
+import openfl._internal.utils.UInt8Array;
 import openfl.display.BitmapData;
 import openfl.utils.ByteArray;
+#if lime
+import lime.graphics.Image;
+#end
 
 /**
 	The Rectangle Texture class represents a 2-dimensional texture uploaded to a rendering
@@ -18,16 +23,23 @@ import openfl.utils.ByteArray;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@:access(openfl.display3D.Context3D)
+@:access(openfl.display.Stage)
 @:final class RectangleTexture extends TextureBase
 {
-	@:noCompletion private var __backend:RectangleTextureBackend;
-
 	@:noCompletion private function new(context:Context3D, width:Int, height:Int, format:String, optimizeForRenderToTexture:Bool)
 	{
-		super(context, width, height, format, optimizeForRenderToTexture, 0);
+		super(context);
 
-		__backend = new RectangleTextureBackend(this);
-		__baseBackend = __backend;
+		__width = width;
+		__height = height;
+		// __format = format;
+		__optimizeForRenderToTexture = optimizeForRenderToTexture;
+
+		__textureTarget = __context.gl.TEXTURE_2D;
+		uploadFromTypedArray(null);
+
+		if (optimizeForRenderToTexture) __getGLFramebuffer(true, 0, 0);
 	}
 
 	/**
@@ -42,7 +54,26 @@ import openfl.utils.ByteArray;
 	**/
 	public function uploadFromBitmapData(source:BitmapData):Void
 	{
-		__backend.uploadFromBitmapData(source);
+		#if lime
+		if (source == null) return;
+
+		var image = __getImage(source);
+		if (image == null) return;
+
+		#if (js && html5)
+		if (image.buffer != null && image.buffer.data == null && image.buffer.src != null)
+		{
+			var gl = __context.gl;
+
+			__context.__bindGLTexture2D(__textureID);
+			gl.texImage2D(__textureTarget, 0, __internalFormat, __format, gl.UNSIGNED_BYTE, image.buffer.src);
+			__context.__bindGLTexture2D(null);
+			return;
+		}
+		#end
+
+		uploadFromTypedArray(image.data);
+		#end
 	}
 
 	/**
@@ -63,7 +94,17 @@ import openfl.utils.ByteArray;
 	**/
 	public function uploadFromByteArray(data:ByteArray, byteArrayOffset:UInt):Void
 	{
-		__backend.uploadFromByteArray(data, byteArrayOffset);
+		#if lime
+		#if (js && !display)
+		if (byteArrayOffset == 0)
+		{
+			uploadFromTypedArray(@:privateAccess (data : ByteArrayData).b);
+			return;
+		}
+		#end
+
+		uploadFromTypedArray(new UInt8Array(data.toArrayBuffer(), byteArrayOffset));
+		#end
 	}
 
 	/**
@@ -75,15 +116,44 @@ import openfl.utils.ByteArray;
 	**/
 	public function uploadFromTypedArray(data:ArrayBufferView):Void
 	{
-		__backend.uploadFromTypedArray(data);
+		var gl = __context.gl;
+
+		__context.__bindGLTexture2D(__textureID);
+		gl.texImage2D(__textureTarget, 0, __internalFormat, __width, __height, 0, __format, gl.UNSIGNED_BYTE, data);
+		__context.__bindGLTexture2D(null);
+	}
+
+	@:noCompletion private override function __setSamplerState(state:SamplerState):Bool
+	{
+		if (super.__setSamplerState(state))
+		{
+			var gl = __context.gl;
+
+			if (Context3D.__glMaxTextureMaxAnisotropy != 0)
+			{
+				var aniso = switch (state.filter)
+				{
+					case ANISOTROPIC2X: 2;
+					case ANISOTROPIC4X: 4;
+					case ANISOTROPIC8X: 8;
+					case ANISOTROPIC16X: 16;
+					default: 1;
+				}
+
+				if (aniso > Context3D.__glMaxTextureMaxAnisotropy)
+				{
+					aniso = Context3D.__glMaxTextureMaxAnisotropy;
+				}
+
+				gl.texParameterf(gl.TEXTURE_2D, Context3D.__glTextureMaxAnisotropy, aniso);
+			}
+
+			return true;
+		}
+
+		return false;
 	}
 }
-
-#if openfl_gl
-private typedef RectangleTextureBackend = openfl._internal.backend.opengl.OpenGLRectangleTextureBackend;
-#else
-private typedef RectangleTextureBackend = openfl._internal.backend.dummy.DummyRectangleTextureBackend;
-#end
 #else
 typedef RectangleTexture = flash.display3D.textures.RectangleTexture;
 #end
