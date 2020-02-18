@@ -7,6 +7,10 @@ import openfl._internal.bindings.gl.GL;
 import openfl._internal.renderer.context3D.batcher.BatchRenderer;
 import openfl._internal.renderer.ShaderBuffer;
 import openfl._internal.utils.ObjectPool;
+import openfl.display3D.Context3DClearMask;
+import openfl.display3D.Context3D;
+import openfl.display3D.IndexBuffer3D;
+import openfl.display3D.VertexBuffer3D;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
@@ -23,8 +27,6 @@ import openfl.display.Shader;
 import openfl.display.Shape;
 import openfl.display.SimpleButton;
 import openfl.display.Tilemap;
-import openfl.display3D.Context3DClearMask;
-import openfl.display3D.Context3D;
 import openfl.events.RenderEvent;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
@@ -90,11 +92,13 @@ class Context3DRenderer extends Context3DRendererAPI
 	private static var __colorMultipliersValue:Array<Float> = [0, 0, 0, 0];
 	private static var __colorOffsetsValue:Array<Float> = [0, 0, 0, 0];
 	private static var __defaultColorMultipliersValue:Array<Float> = [1, 1, 1, 1];
+	private static var __drawCommandPool:ObjectPool<Context3DDrawCommand>;
 	private static var __emptyColorValue:Array<Float> = [0, 0, 0, 0];
 	private static var __emptyAlphaValue:Array<Float> = [1];
 	private static var __hasColorTransformValue:Array<Bool> = [false];
 	private static var __scissorRectangle:Rectangle = new Rectangle();
 	private static var __textureSizeValue:Array<Float> = [0, 0];
+	private static var __vertexBufferPool:ObjectPool<VertexBuffer3D>;
 
 	public var batcher:BatchRenderer = null;
 	public var context3D:Context3D;
@@ -105,6 +109,10 @@ class Context3DRenderer extends Context3DRendererAPI
 	private var __limeContext:RenderContext;
 	#end
 	private var __currentDisplayShader:Shader;
+	private var __currentDrawCommand:Context3DDrawCommand;
+	private var __currentVertexBuffer:VertexBuffer3D;
+	private var __currentVertexData:Context3DVertexBufferData;
+	private var __drawCommandList:List<Context3DDrawCommand>;
 	private var __currentGraphicsShader:Shader;
 	private var __currentRenderTarget:BitmapData;
 	private var __currentShader:Shader;
@@ -205,6 +213,9 @@ class Context3DRenderer extends Context3DRendererAPI
 		__alphaMaskShader = new Context3DAlphaMaskShader();
 		__maskShader = new Context3DMaskShader();
 
+		__drawCommandList = new List();
+		__currentVertexData = new Context3DVertexBufferData();
+
 		if (__childRendererPool == null)
 		{
 			__childRendererPool = new ObjectPool<Context3DRenderer>(function()
@@ -214,7 +225,19 @@ class Context3DRenderer extends Context3DRendererAPI
 				renderer.__worldColorTransform = new ColorTransform();
 				return renderer;
 			});
+
+			__drawCommandPool = new ObjectPool<Context3DDrawCommand>(function()
+			{
+				return new Context3DDrawCommand();
+			});
+
+			__vertexBufferPool = new ObjectPool<VertexBuffer3D>(function()
+			{
+				return context3D.createVertexBuffer(Context3DVertexBufferData.MAX_LENGTH, 4, DYNAMIC_DRAW);
+			});
 		}
+
+		__currentVertexBuffer = __vertexBufferPool.get();
 	}
 
 	public override function applyAlpha(alpha:Float):Void
@@ -588,6 +611,66 @@ class Context3DRenderer extends Context3DRendererAPI
 		}
 	}
 
+	private function __flush():Void
+	{
+		var cacheVertexBuffer = null;
+
+		// TODO: Integrate stats
+		// trace("Num Draw Calls: " + __drawCommandList.length);
+
+		for (command in __drawCommandList)
+		{
+			__setBlendMode(command.blendMode);
+			// __pushMaskObject(bitmap);
+
+			var shader = __initDisplayShader(command.shader);
+			setShader(shader);
+			applyBitmapData(command.bitmapData, command.smoothing);
+			// applyBitmapData(bitmap.__bitmapData, renderer.__allowSmoothing && (bitmap.smoothing || renderer.__upscaled));
+			// applyMatrix(__getMatrix(bitmap.__renderTransform, bitmap.pixelSnapping));
+			// applyAlpha(__getAlpha(command.alpha));
+			// applyColorTransform(command.colorTransform);
+			applyMatrix(__getMatrix(null, AUTO));
+
+			// TODO
+			applyAlpha(1);
+			// applyColorTransform(null);
+			applyHasColorTransform(false);
+
+			// Push colorTransform/alpha into separate buffer?
+
+			updateShader();
+
+			if (shader.__position != null) context3D.setVertexBufferAt(shader.__position.index, command.vertexBuffer, command.vertexBufferPosition, FLOAT_2);
+			if (shader.__textureCoord != null) context3D.setVertexBufferAt(shader.__textureCoord.index, command.vertexBuffer,
+				command.vertexBufferPosition + 2, FLOAT_2);
+			context3D.drawTriangles(command.indexBuffer, 0, command.numTriangles);
+
+			// #if gl_stats
+			// Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
+			// #end
+
+			__clearShader();
+
+			// __popMaskObject(bitmap);
+
+			if (cacheVertexBuffer != null && cacheVertexBuffer != command.vertexBuffer)
+			{
+				__vertexBufferPool.release(cacheVertexBuffer);
+			}
+
+			__drawCommandPool.release(command);
+		}
+
+		if (cacheVertexBuffer != null)
+		{
+			__vertexBufferPool.release(cacheVertexBuffer);
+		}
+
+		__drawCommandList.clear();
+		__currentDrawCommand = null;
+	}
+
 	private function __getAlpha(value:Float):Float
 	{
 		return value * __worldAlpha;
@@ -630,7 +713,7 @@ class Context3DRenderer extends Context3DRendererAPI
 	private function __getMatrix(transform:Matrix, pixelSnapping:PixelSnapping):Array<Float>
 	{
 		var _matrix = Matrix.__pool.get();
-		_matrix.copyFrom(transform);
+		if (transform != null) _matrix.copyFrom(transform);
 		_matrix.concat(__worldTransform);
 
 		if (pixelSnapping == ALWAYS
@@ -844,6 +927,32 @@ class Context3DRenderer extends Context3DRendererAPI
 		return newValue;
 	}
 
+	private function __pushElement(numTriangles:Int, bitmapData:BitmapData, shader:Shader, blendMode:BlendMode, smoothing:Bool, indexBuffer:IndexBuffer3D,
+			vertexBuffer:VertexBuffer3D, vertexBufferPosition:Int = 0):Void
+	{
+		if (#if disable_batch true || #end __currentDrawCommand == null
+			|| __currentDrawCommand.bitmapData != bitmapData
+			|| __currentDrawCommand.shader != shader
+			|| __currentDrawCommand.blendMode != blendMode
+			|| __currentDrawCommand.smoothing != smoothing
+			|| __currentDrawCommand.indexBuffer != indexBuffer
+			|| __currentDrawCommand.vertexBuffer != vertexBuffer)
+		{
+			__currentDrawCommand = __drawCommandPool.get();
+			__currentDrawCommand.bitmapData = bitmapData;
+			__currentDrawCommand.shader = shader;
+			__currentDrawCommand.smoothing = smoothing;
+			__currentDrawCommand.blendMode = blendMode;
+			__currentDrawCommand.numTriangles = 0;
+			__currentDrawCommand.indexBuffer = indexBuffer;
+			__currentDrawCommand.vertexBuffer = vertexBuffer;
+			__currentDrawCommand.vertexBufferPosition = vertexBufferPosition;
+			__drawCommandList.push(__currentDrawCommand);
+		}
+
+		__currentDrawCommand.numTriangles += numTriangles;
+	}
+
 	private function __pushMask(mask:DisplayObject):Void
 	{
 		#if !disable_batcher
@@ -959,7 +1068,33 @@ class Context3DRenderer extends Context3DRendererAPI
 			// TODO: BitmapData render
 			if (object != null && object.__type != null)
 			{
+				#if openfl_context3D_dev
+				var object:DisplayObject = cast object;
+
+				// TODO: Use iterator
+				var children = object.__childIterator(false);
+				for (child in children)
+				{
+					if (!child.__renderable || child.__worldAlpha <= 0) return;
+
+					/**
+						1.) Create a pool of vertex/index buffers at max size
+							(Push geometry and shader attributes into separate buffers?)
+
+						2.) Set data in the buffers for each object to be rendered
+						3.) Store the render state for each object to be rendered
+						4.) Upload the buffers
+						5.) Iterate through the render states and flush at once
+					**/
+
+					if (child.__type == BITMAP)
+					{
+						__renderBitmap(cast child);
+					}
+				}
+				#else
 				__renderDisplayObject(cast object);
+				#end
 			}
 
 			#if !disable_batcher
@@ -1056,6 +1191,13 @@ class Context3DRenderer extends Context3DRendererAPI
 			context3D.setScissorRectangle(null);
 		}
 
+		if (__currentVertexData.length > 0)
+		{
+			__currentVertexData.upload(__currentDrawCommand.vertexBuffer);
+		}
+
+		__flush();
+
 		context3D.present();
 	}
 
@@ -1074,8 +1216,53 @@ class Context3DRenderer extends Context3DRendererAPI
 		}
 		else
 		{
+			#if openfl_context3D_dev
+			var bitmapData = bitmap.__bitmapData;
+
+			// TODO: opaqueBackground
+
+			if (bitmapData != null && bitmapData.__isValid)
+			{
+				// renderer.__getMatrix(bitmap.__renderTransform, bitmap.pixelSnapping)
+				var x, y, width, height, textureWidth, textureHeight;
+				textureWidth = bitmapData.__renderData.textureWidth;
+				textureHeight = bitmapData.__renderData.textureHeight;
+				if (bitmap.scrollRect != null)
+				{
+					x = bitmap.scrollRect.x;
+					y = bitmap.scrollRect.y;
+					width = bitmap.scrollRect.width;
+					height = bitmap.scrollRect.height;
+				}
+				else
+				{
+					x = 0;
+					y = 0;
+					width = bitmapData.width;
+					height = bitmapData.height;
+				}
+
+				// TODO: Use cached rects
+				var rect = new Rectangle(x, y, width, height);
+				var uvRect = new Rectangle(x / textureWidth, y / textureHeight, (x + width) / textureWidth, (y + height) / textureHeight);
+				var transform = bitmap.__renderTransform;
+				var shader = bitmap.shader != null ? bitmap.shader : __defaultDisplayShader;
+				var cacheBufferPosition = __currentVertexData.length;
+
+				if (!__currentVertexData.writeQuad(rect, uvRect, transform))
+				{
+					__currentVertexData.upload(__currentVertexBuffer);
+					__currentVertexBuffer = __vertexBufferPool.get();
+					__currentVertexData.writeQuad(rect, uvRect, transform);
+				}
+
+				__pushElement(2, bitmapData, bitmap.shader, bitmap.blendMode, bitmap.smoothing, context3D.__quadIndexBuffer, __currentVertexBuffer,
+					cacheBufferPosition);
+			}
+			#else
 			Context3DDisplayObject.render(bitmap, this);
 			Context3DBitmap.render(bitmap, this);
+			#end
 		}
 	}
 
