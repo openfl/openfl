@@ -12,22 +12,17 @@ import openfl.display.Shader;
 #end
 class Context3DDrawCommand
 {
-	// public var alpha:Float; -- should this be attr instead?
-	// public var colorTransform:ColorTransform -- should this be attr instead?
-	public var attrVertexBuffer:VertexBuffer3D;
-	public var attrVertexBufferPosition:Int;
 	public var blendMode:BlendMode;
 	public var bitmapData:BitmapData;
-	public var geomVertexBuffer:VertexBuffer3D;
-	public var geomVertexBufferPosition:Int;
 	public var indexBuffer:IndexBuffer3D;
 	public var numTriangles:Int;
 	public var repeat:Bool;
 	public var shader:Shader;
 	public var smoothing:Bool;
-
-	// public var vertexBufferLength:Int;
-	// public var vertexBufferStart:Int;
+	public var vertexAttributeBuffer:VertexBuffer3D;
+	public var vertexAttributeBufferPosition:Int;
+	public var vertexGeometryBuffer:VertexBuffer3D;
+	public var vertexGeometryBufferPosition:Int;
 
 	public function new()
 	{
@@ -38,32 +33,32 @@ class Context3DDrawCommand
 	{
 		if (other != null)
 		{
-			attrVertexBuffer = other.attrVertexBuffer;
-			attrVertexBufferPosition = other.attrVertexBufferPosition;
 			blendMode = other.blendMode;
 			bitmapData = other.bitmapData;
-			geomVertexBuffer = other.geomVertexBuffer;
-			geomVertexBufferPosition = other.geomVertexBufferPosition;
 			indexBuffer = other.indexBuffer;
 			numTriangles = other.numTriangles;
 			repeat = other.repeat;
 			shader = other.shader;
 			smoothing = other.smoothing;
+			vertexAttributeBuffer = other.vertexAttributeBuffer;
+			vertexAttributeBufferPosition = other.vertexAttributeBufferPosition;
+			vertexGeometryBuffer = other.vertexGeometryBuffer;
+			vertexGeometryBufferPosition = other.vertexGeometryBufferPosition;
 		}
 	}
 
 	public function reset():Void
 	{
-		attrVertexBuffer = null;
-		attrVertexBufferPosition = 0;
 		blendMode = NORMAL;
 		bitmapData = null;
-		geomVertexBuffer = null;
-		geomVertexBufferPosition = 0;
 		indexBuffer = null;
 		numTriangles = 0;
 		repeat = false;
 		shader = null;
 		smoothing = false;
+		vertexAttributeBuffer = null;
+		vertexAttributeBufferPosition = 0;
+		vertexGeometryBuffer = null;
+		vertexGeometryBufferPosition = 0;
 	}
 }

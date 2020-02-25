@@ -88,7 +88,6 @@ import openfl._internal.renderer.context3D.stats.DrawCallContext;
 class Context3DRenderer extends Context3DRendererAPI
 {
 	private static var __alphaValue:Array<Float> = [1];
-	private static var __attrVertexBufferPool:ObjectPool<VertexBuffer3D>;
 	private static var __childRendererPool:ObjectPool<Context3DRenderer>;
 	private static var __colorMultipliersValue:Array<Float> = [0, 0, 0, 0];
 	private static var __colorOffsetsValue:Array<Float> = [0, 0, 0, 0];
@@ -96,10 +95,11 @@ class Context3DRenderer extends Context3DRendererAPI
 	private static var __drawCommandPool:ObjectPool<Context3DDrawCommand>;
 	private static var __emptyColorValue:Array<Float> = [0, 0, 0, 0];
 	private static var __emptyAlphaValue:Array<Float> = [1];
-	private static var __geomVertexBufferPool:ObjectPool<VertexBuffer3D>;
 	private static var __hasColorTransformValue:Array<Bool> = [false];
 	private static var __scissorRectangle:Rectangle = new Rectangle();
 	private static var __textureSizeValue:Array<Float> = [0, 0];
+	private static var __vertexGeometryBufferPool:ObjectPool<VertexBuffer3D>;
+	private static var __vertexAttributeBufferPool:ObjectPool<VertexBuffer3D>;
 
 	public var batcher:BatchRenderer = null;
 	public var context3D:Context3D;
@@ -113,8 +113,6 @@ class Context3DRenderer extends Context3DRendererAPI
 	private var __currentColorTransform:ColorTransform;
 	private var __currentDisplayShader:Shader;
 	private var __currentDrawCommand:Context3DDrawCommand;
-	private var __currentVertexAttributeData:Context3DVertexBufferData;
-	private var __currentVertexGeometryData:Context3DVertexBufferData;
 	private var __drawCommandList:List<Context3DDrawCommand>;
 	private var __currentGraphicsShader:Shader;
 	private var __currentRenderTarget:BitmapData;
@@ -146,6 +144,8 @@ class Context3DRenderer extends Context3DRendererAPI
 	private var __updatedStencil:Bool;
 	private var __upscaled:Bool;
 	private var __values:Array<Float>;
+	private var __vertexAttributeData:Context3DVertexBufferData;
+	private var __vertexGeometryData:Context3DVertexBufferData;
 	private var __width:Int;
 
 	private function new(context:Context3D, defaultRenderTarget:BitmapData = null)
@@ -217,8 +217,8 @@ class Context3DRenderer extends Context3DRendererAPI
 		__maskShader = new Context3DMaskShader();
 
 		__drawCommandList = new List();
-		__currentVertexAttributeData = new Context3DVertexBufferData();
-		__currentVertexGeometryData = new Context3DVertexBufferData();
+		__vertexAttributeData = new Context3DVertexBufferData();
+		__vertexGeometryData = new Context3DVertexBufferData();
 
 		if (__childRendererPool == null)
 		{
@@ -239,12 +239,12 @@ class Context3DRenderer extends Context3DRendererAPI
 			});
 
 			// TODO: Handle attr of different sizes?
-			__attrVertexBufferPool = new ObjectPool<VertexBuffer3D>(function()
+			__vertexAttributeBufferPool = new ObjectPool<VertexBuffer3D>(function()
 			{
 				return context3D.createVertexBuffer(Context3DVertexBufferData.MAX_LENGTH, 9, DYNAMIC_DRAW);
 			});
 
-			__geomVertexBufferPool = new ObjectPool<VertexBuffer3D>(function()
+			__vertexGeometryBufferPool = new ObjectPool<VertexBuffer3D>(function()
 			{
 				return context3D.createVertexBuffer(Context3DVertexBufferData.MAX_LENGTH, 4, DYNAMIC_DRAW);
 			});
@@ -624,8 +624,8 @@ class Context3DRenderer extends Context3DRendererAPI
 
 	private function __flush():Void
 	{
-		var cacheAttrVertexBuffer = null;
-		var cacheGeomVertexBuffer = null;
+		var cacheVertexAttributeBuffer = null;
+		var cacheVertexGeometryBuffer = null;
 
 		// TODO: Integrate stats
 		// trace("Num Draw Calls: " + __drawCommandList.length);
@@ -638,27 +638,23 @@ class Context3DRenderer extends Context3DRendererAPI
 			var shader = __initDisplayShader(command.shader);
 			setShader(shader);
 			applyBitmapData(command.bitmapData, command.smoothing);
-			// applyBitmapData(bitmap.__bitmapData, renderer.__allowSmoothing && (bitmap.smoothing || renderer.__upscaled));
-			// applyMatrix(__getMatrix(bitmap.__renderTransform, bitmap.pixelSnapping));
-			// applyAlpha(__getAlpha(command.alpha));
-			// applyColorTransform(command.colorTransform);
 			applyMatrix(__getMatrix(null, AUTO));
-
-			updateShader();
-
-			if (shader.__position != null) context3D.setVertexBufferAt(shader.__position.index, command.geomVertexBuffer, command.geomVertexBufferPosition,
-				FLOAT_2);
-			if (shader.__textureCoord != null) context3D.setVertexBufferAt(shader.__textureCoord.index, command.geomVertexBuffer,
-				command.geomVertexBufferPosition + 2, FLOAT_2);
-
 			useAlphaArray();
 			useColorTransformArray();
 
-			if (shader.__alpha != null) context3D.setVertexBufferAt(shader.__alpha.index, command.attrVertexBuffer, command.attrVertexBufferPosition, FLOAT_1);
-			if (shader.__colorMultiplier != null) context3D.setVertexBufferAt(shader.__colorMultiplier.index, command.attrVertexBuffer,
-				command.attrVertexBufferPosition + 1, FLOAT_4);
-			if (shader.__colorOffset != null) context3D.setVertexBufferAt(shader.__colorOffset.index, command.attrVertexBuffer,
-				command.attrVertexBufferPosition + 5, FLOAT_4);
+			updateShader();
+
+			if (shader.__position != null) context3D.setVertexBufferAt(shader.__position.index, command.vertexGeometryBuffer,
+				command.vertexGeometryBufferPosition, FLOAT_2);
+			if (shader.__textureCoord != null) context3D.setVertexBufferAt(shader.__textureCoord.index, command.vertexGeometryBuffer,
+				command.vertexGeometryBufferPosition + 2, FLOAT_2);
+
+			if (shader.__alpha != null) context3D.setVertexBufferAt(shader.__alpha.index, command.vertexAttributeBuffer,
+				command.vertexAttributeBufferPosition, FLOAT_1);
+			if (shader.__colorMultiplier != null) context3D.setVertexBufferAt(shader.__colorMultiplier.index, command.vertexAttributeBuffer,
+				command.vertexAttributeBufferPosition + 1, FLOAT_4);
+			if (shader.__colorOffset != null) context3D.setVertexBufferAt(shader.__colorOffset.index, command.vertexAttributeBuffer,
+				command.vertexAttributeBufferPosition + 5, FLOAT_4);
 
 			context3D.drawTriangles(command.indexBuffer, 0, command.numTriangles);
 
@@ -670,27 +666,27 @@ class Context3DRenderer extends Context3DRendererAPI
 
 			// __popMaskObject(bitmap);
 
-			if (cacheAttrVertexBuffer != null && cacheAttrVertexBuffer != command.attrVertexBuffer)
+			if (cacheVertexAttributeBuffer != null && cacheVertexAttributeBuffer != command.vertexAttributeBuffer)
 			{
-				__attrVertexBufferPool.release(cacheAttrVertexBuffer);
+				__vertexAttributeBufferPool.release(cacheVertexAttributeBuffer);
 			}
 
-			if (cacheGeomVertexBuffer != null && cacheGeomVertexBuffer != command.geomVertexBuffer)
+			if (cacheVertexGeometryBuffer != null && cacheVertexGeometryBuffer != command.vertexGeometryBuffer)
 			{
-				__geomVertexBufferPool.release(cacheGeomVertexBuffer);
+				__vertexGeometryBufferPool.release(cacheVertexGeometryBuffer);
 			}
 
 			__drawCommandPool.release(command);
 		}
 
-		if (cacheAttrVertexBuffer != null)
+		if (cacheVertexAttributeBuffer != null)
 		{
-			__attrVertexBufferPool.release(cacheAttrVertexBuffer);
+			__vertexAttributeBufferPool.release(cacheVertexAttributeBuffer);
 		}
 
-		if (cacheGeomVertexBuffer != null)
+		if (cacheVertexGeometryBuffer != null)
 		{
-			__geomVertexBufferPool.release(cacheGeomVertexBuffer);
+			__vertexGeometryBufferPool.release(cacheVertexGeometryBuffer);
 		}
 
 		__drawCommandList.clear();
@@ -807,6 +803,17 @@ class Context3DRenderer extends Context3DRendererAPI
 
 		__defaultRenderTarget = defaultRenderTarget;
 		__flipped = (__defaultRenderTarget == null);
+	}
+
+	private function __initNewDrawCommand():Context3DDrawCommand
+	{
+		var newCommand = __drawCommandPool.get();
+		newCommand.copyFrom(__currentDrawCommand);
+		newCommand.vertexAttributeBufferPosition = __vertexAttributeData.position;
+		newCommand.vertexGeometryBufferPosition = __vertexGeometryData.position;
+		__drawCommandList.push(newCommand);
+		__currentDrawCommand = newCommand;
+		return newCommand;
 	}
 
 	private function __initShader(shader:Shader):Shader
@@ -953,31 +960,6 @@ class Context3DRenderer extends Context3DRendererAPI
 		return newValue;
 	}
 
-	// private function __pushElement(numTriangles:Int, bitmapData:BitmapData, shader:Shader, blendMode:BlendMode, smoothing:Bool, indexBuffer:IndexBuffer3D,
-	// 		vertexBuffer:VertexBuffer3D, vertexBufferPosition:Int = 0):Void
-	// {
-	// 	if (#if disable_batch true || #end __currentDrawCommand == null
-	// 		|| __currentDrawCommand.bitmapData != bitmapData
-	// 		|| __currentDrawCommand.shader != shader
-	// 		|| __currentDrawCommand.blendMode != blendMode
-	// 		|| __currentDrawCommand.smoothing != smoothing
-	// 		|| __currentDrawCommand.indexBuffer != indexBuffer
-	// 		|| __currentDrawCommand.vertexBuffer != vertexBuffer)
-	// 	{
-	// 		__currentDrawCommand = __drawCommandPool.get();
-	// 		__currentDrawCommand.bitmapData = bitmapData;
-	// 		__currentDrawCommand.shader = shader;
-	// 		__currentDrawCommand.smoothing = smoothing;
-	// 		__currentDrawCommand.blendMode = blendMode;
-	// 		__currentDrawCommand.numTriangles = 0;
-	// 		__currentDrawCommand.indexBuffer = indexBuffer;
-	// 		__currentDrawCommand.vertexBuffer = vertexBuffer;
-	// 		__currentDrawCommand.vertexBufferPosition = vertexBufferPosition;
-	// 		__drawCommandList.push(__currentDrawCommand);
-	// 	}
-	// 	__currentDrawCommand.numTriangles += numTriangles;
-	// }
-
 	private function __pushMask(mask:DisplayObject):Void
 	{
 		#if !disable_batcher
@@ -1076,51 +1058,42 @@ class Context3DRenderer extends Context3DRendererAPI
 		// TODO: Break if index buffer is different
 		__currentDrawCommand.indexBuffer = context3D.__quadIndexBuffer;
 
-		if (!__currentVertexGeometryData.writeQuad(rect, uvRect, transform))
+		if (!__vertexGeometryData.writeQuad(rect, uvRect, transform))
 		{
-			if (__currentDrawCommand.geomVertexBuffer == null)
+			if (__currentDrawCommand.vertexGeometryBuffer == null)
 			{
-				__currentDrawCommand.geomVertexBuffer = __geomVertexBufferPool.get();
+				__currentDrawCommand.vertexGeometryBuffer = __vertexGeometryBufferPool.get();
 			}
-			__currentVertexGeometryData.upload(__currentDrawCommand.geomVertexBuffer);
+			__vertexGeometryData.upload(__currentDrawCommand.vertexGeometryBuffer);
 
-			var newCommand = __drawCommandPool.get();
-			newCommand.copyFrom(__currentDrawCommand);
-			newCommand.attrVertexBufferPosition = __currentVertexAttributeData.position;
-			newCommand.geomVertexBuffer = __geomVertexBufferPool.get();
-			newCommand.geomVertexBufferPosition = 0;
-			__drawCommandList.push(newCommand);
-			__currentDrawCommand = newCommand;
+			__initNewDrawCommand();
+			__currentDrawCommand.vertexGeometryBuffer = __vertexGeometryBufferPool.get();
+			__currentDrawCommand.vertexGeometryBufferPosition = 0;
 
-			__currentVertexGeometryData.writeQuad(rect, uvRect, transform);
+			__vertexGeometryData.writeQuad(rect, uvRect, transform);
 		}
 
 		// TODO: More effective way of looping
 		for (i in 0...4)
 		{
-			if (!__currentVertexAttributeData.writeFloat(__currentAlpha)
-				|| !__currentVertexAttributeData.writeColorTransform(__currentColorTransform))
+			if (!__vertexAttributeData.writeFloat(__currentAlpha) || !__vertexAttributeData.writeColorTransform(__currentColorTransform))
 			{
-				if (__currentDrawCommand.attrVertexBuffer == null)
+				if (__currentDrawCommand.vertexAttributeBuffer == null)
 				{
-					__currentDrawCommand.attrVertexBuffer = __attrVertexBufferPool.get();
+					__currentDrawCommand.vertexAttributeBuffer = __vertexAttributeBufferPool.get();
 				}
-				__currentVertexAttributeData.upload(__currentDrawCommand.attrVertexBuffer);
+				__vertexAttributeData.upload(__currentDrawCommand.vertexAttributeBuffer);
 
 				if (__currentDrawCommand.numTriangles > 0)
 				{
-					var newCommand = __drawCommandPool.get();
-					newCommand.copyFrom(__currentDrawCommand);
-					newCommand.geomVertexBufferPosition = __currentVertexGeometryData.position;
-					__drawCommandList.push(newCommand);
-					__currentDrawCommand = newCommand;
+					__initNewDrawCommand();
 				}
 
-				__currentDrawCommand.attrVertexBuffer = __attrVertexBufferPool.get();
-				__currentDrawCommand.attrVertexBufferPosition = 0;
+				__currentDrawCommand.vertexAttributeBuffer = __vertexAttributeBufferPool.get();
+				__currentDrawCommand.vertexAttributeBufferPosition = 0;
 
-				__currentVertexAttributeData.writeFloat(__currentAlpha);
-				__currentVertexAttributeData.writeColorTransform(__currentColorTransform);
+				__vertexAttributeData.writeFloat(__currentAlpha);
+				__vertexAttributeData.writeColorTransform(__currentColorTransform);
 			}
 		}
 
@@ -1272,22 +1245,22 @@ class Context3DRenderer extends Context3DRendererAPI
 			context3D.setScissorRectangle(null);
 		}
 
-		if (__currentVertexGeometryData.length > 0)
+		if (__vertexGeometryData.length > 0)
 		{
-			if (__currentDrawCommand.geomVertexBuffer == null)
+			if (__currentDrawCommand.vertexGeometryBuffer == null)
 			{
-				__currentDrawCommand.geomVertexBuffer = __geomVertexBufferPool.get();
+				__currentDrawCommand.vertexGeometryBuffer = __vertexGeometryBufferPool.get();
 			}
-			__currentVertexGeometryData.upload(__currentDrawCommand.geomVertexBuffer);
+			__vertexGeometryData.upload(__currentDrawCommand.vertexGeometryBuffer);
 		}
 
-		if (__currentVertexAttributeData.length > 0)
+		if (__vertexAttributeData.length > 0)
 		{
-			if (__currentDrawCommand.attrVertexBuffer == null)
+			if (__currentDrawCommand.vertexAttributeBuffer == null)
 			{
-				__currentDrawCommand.attrVertexBuffer = __attrVertexBufferPool.get();
+				__currentDrawCommand.vertexAttributeBuffer = __vertexAttributeBufferPool.get();
 			}
-			__currentVertexAttributeData.upload(__currentDrawCommand.attrVertexBuffer);
+			__vertexAttributeData.upload(__currentDrawCommand.vertexAttributeBuffer);
 		}
 
 		__flush();
@@ -1344,29 +1317,9 @@ class Context3DRenderer extends Context3DRendererAPI
 
 				// TODO: Apply pixel snapping to transform?
 
-				// __setBlendMode(NORMAL);
-				// var shader = __defaultDisplayShader;
-				// setShader(shader);
-				// applyBitmapData(bitmapData, __upscaled);
-				// applyMatrix(__getMatrix(bitmapData.__worldTransform, AUTO));
-				// applyAlpha(__getAlpha(bitmapData.__worldAlpha));
-				// applyColorTransform(bitmapData.__worldColorTransform);
-
-				__setTexture(bitmapData, bitmap.smoothing);
+				__setTexture(bitmapData, __allowSmoothing && (bitmap.smoothing || __upscaled));
 				__setStyle(shader, bitmap.blendMode, bitmap.__worldAlpha, bitmap.__worldColorTransform);
 				__pushQuad(rect, uvRect, transform);
-
-				// var cacheBufferPosition = __currentVertexGeometryData.length;
-
-				// if (!__currentVertexGeometryData.writeQuad(rect, uvRect, transform))
-				// {
-				// 	__currentVertexGeometryData.upload(__currentVertexBuffer);
-				// 	__currentVertexBuffer = __vertexBufferPool.get();
-				// 	__currentVertexGeometryData.writeQuad(rect, uvRect, transform);
-				// }
-
-				// __pushElement(2, bitmapData, bitmap.shader, bitmap.blendMode, bitmap.smoothing, context3D.__quadIndexBuffer, __currentVertexBuffer,
-				// 	cacheBufferPosition);
 			}
 			#else
 			Context3DDisplayObject.render(bitmap, this);
@@ -1793,6 +1746,8 @@ class Context3DRenderer extends Context3DRendererAPI
 
 	private function __setTexture(bitmapData:BitmapData, smooth:Bool, repeat:Bool = false):Void
 	{
+		// TODO: Switch to Context3D texture instead of BitmapData
+
 		if (#if disable_batch true || #end __currentDrawCommand == null
 			|| __currentDrawCommand.bitmapData != bitmapData
 			|| __currentDrawCommand.smoothing != smooth
@@ -1800,12 +1755,7 @@ class Context3DRenderer extends Context3DRendererAPI
 		{
 			if (__currentDrawCommand == null || __currentDrawCommand.numTriangles > 0)
 			{
-				var newCommand = __drawCommandPool.get();
-				newCommand.copyFrom(__currentDrawCommand);
-				newCommand.attrVertexBufferPosition = __currentVertexAttributeData.position;
-				newCommand.geomVertexBufferPosition = __currentVertexGeometryData.position;
-				__drawCommandList.push(newCommand);
-				__currentDrawCommand = newCommand;
+				__initNewDrawCommand();
 			}
 
 			__currentDrawCommand.bitmapData = bitmapData;
@@ -1822,12 +1772,7 @@ class Context3DRenderer extends Context3DRendererAPI
 		{
 			if (__currentDrawCommand == null || __currentDrawCommand.numTriangles > 0)
 			{
-				var newCommand = __drawCommandPool.get();
-				newCommand.copyFrom(__currentDrawCommand);
-				newCommand.attrVertexBufferPosition = __currentVertexAttributeData.position;
-				newCommand.geomVertexBufferPosition = __currentVertexGeometryData.position;
-				__drawCommandList.push(newCommand);
-				__currentDrawCommand = newCommand;
+				__initNewDrawCommand();
 			}
 
 			__currentDrawCommand.shader = shader;
