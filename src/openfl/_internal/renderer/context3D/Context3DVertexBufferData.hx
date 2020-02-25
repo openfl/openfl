@@ -1,5 +1,6 @@
 package openfl._internal.renderer.context3D;
 
+import openfl.geom.ColorTransform;
 import openfl._internal.bindings.typedarray.Float32Array;
 import openfl.display3D.VertexBuffer3D;
 import openfl.geom.Matrix;
@@ -35,6 +36,43 @@ class Context3DVertexBufferData
 	{
 		vertexBuffer.uploadFromTypedArray(data, length * 4);
 		reset();
+	}
+
+	public function writeColorTransform(colorTransform:ColorTransform):Bool
+	{
+		if (position + 8 > MAX_LENGTH)
+		{
+			return false;
+		}
+
+		data[position] = colorTransform.redMultiplier;
+		data[position + 1] = colorTransform.greenMultiplier;
+		data[position + 2] = colorTransform.blueMultiplier;
+		data[position + 3] = colorTransform.alphaMultiplier;
+		data[position + 4] = colorTransform.redOffset / 255;
+		data[position + 5] = colorTransform.greenOffset / 255;
+		data[position + 6] = colorTransform.blueOffset / 255;
+		data[position + 7] = colorTransform.alphaOffset / 255;
+
+		position += 8;
+		length += 8;
+
+		return true;
+	}
+
+	public function writeFloat(value:Float):Bool
+	{
+		if (position + 1 > MAX_LENGTH)
+		{
+			return false;
+		}
+
+		data[position] = value;
+
+		position += 1;
+		length += 1;
+
+		return true;
 	}
 
 	public function writeQuad(rect:Rectangle, uvRect:Rectangle = null, transform:Matrix = null):Bool
