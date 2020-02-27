@@ -85,6 +85,7 @@ class Bitmap extends DisplayObject
 	@:noCompletion private var __image:ImageElement;
 	#end
 	@:noCompletion private var __imageVersion:Int;
+	@:noCompletion private var __sourceRect:Rectangle;
 
 	#if openfljs
 	@:noCompletion private static function __init__()
@@ -120,6 +121,8 @@ class Bitmap extends DisplayObject
 		{
 			this.pixelSnapping = PixelSnapping.AUTO;
 		}
+
+		__sourceRect = new Rectangle();
 	}
 
 	@:noCompletion private override function __getBounds(rect:Rectangle, matrix:Matrix):Void
@@ -206,6 +209,18 @@ class Bitmap extends DisplayObject
 
 		__imageVersion = -1;
 
+		if (__scrollRect == null)
+		{
+			if (__bitmapData != null)
+			{
+				__sourceRect.setTo(0, 0, __bitmapData.width, __bitmapData.height);
+			}
+			else
+			{
+				__sourceRect.setEmpty();
+			}
+		}
+
 		return __bitmapData;
 	}
 
@@ -219,6 +234,29 @@ class Bitmap extends DisplayObject
 		{
 			scaleY = 0;
 		}
+		return value;
+	}
+
+	@:noCompletion private override function set_scrollRect(value:Rectangle):Rectangle
+	{
+		super.set_scrollRect(value);
+
+		if (__scrollRect == null)
+		{
+			if (__bitmapData != null)
+			{
+				__sourceRect.setTo(0, 0, __bitmapData.width, __bitmapData.height);
+			}
+			else
+			{
+				__sourceRect.setEmpty();
+			}
+		}
+		else
+		{
+			__sourceRect.copyFrom(__scrollRect);
+		}
+
 		return value;
 	}
 

@@ -88,6 +88,7 @@ import openfl._internal.renderer.context3D.stats.DrawCallContext;
 class Context3DRenderer extends Context3DRendererAPI
 {
 	private static var __alphaValue:Array<Float> = [1];
+	private static var __blankBitmapData = new BitmapData(1, 1, false, 0);
 	private static var __childRendererPool:ObjectPool<Context3DRenderer>;
 	private static var __colorMultipliersValue:Array<Float> = [0, 0, 0, 0];
 	private static var __colorOffsetsValue:Array<Float> = [0, 0, 0, 0];
@@ -140,6 +141,7 @@ class Context3DRenderer extends Context3DRendererAPI
 	private var __softwareRenderer:DisplayObjectRenderer;
 	private var __stencilReference:Int;
 	private var __tempColorTransform:ColorTransform;
+	private var __tempMatrix:Matrix;
 	private var __tempRect:Rectangle;
 	private var __updatedStencil:Bool;
 	private var __upscaled:Bool;
@@ -204,6 +206,7 @@ class Context3DRenderer extends Context3DRendererAPI
 			Matrix4
 			#end ();
 		__stencilReference = 0;
+		__tempMatrix = new Matrix();
 		__tempRect = new Rectangle();
 
 		__defaultDisplayShader = new DisplayObjectShader();
@@ -627,19 +630,43 @@ class Context3DRenderer extends Context3DRendererAPI
 		var cacheVertexAttributeBuffer = null;
 		var cacheVertexGeometryBuffer = null;
 
+		if (__vertexGeometryData.length > 0)
+		{
+			if (__currentDrawCommand.vertexGeometryBuffer == null)
+			{
+				__currentDrawCommand.vertexGeometryBuffer = __vertexGeometryBufferPool.get();
+			}
+			__vertexGeometryData.upload(__currentDrawCommand.vertexGeometryBuffer);
+		}
+
+		if (__vertexAttributeData.length > 0)
+		{
+			if (__currentDrawCommand.vertexAttributeBuffer == null)
+			{
+				__currentDrawCommand.vertexAttributeBuffer = __vertexAttributeBufferPool.get();
+			}
+			__vertexAttributeData.upload(__currentDrawCommand.vertexAttributeBuffer);
+		}
+
 		// TODO: Integrate stats
 		// trace("Num Draw Calls: " + __drawCommandList.length);
 
 		for (command in __drawCommandList)
 		{
-			__setBlendMode(command.blendMode);
+			// trace("VA Position: " + command.vertexAttributeBufferPosition);
+			// trace("VG Position: " + command.vertexGeometryBufferPosition);
+			// trace("Index Position: " + command.indexBufferPosition);
+			// trace("Num Triangles: " + command.numTriangles);
+			// trace(command.blendMode);
+
 			// __pushMaskObject(bitmap);
 
 			var shader = __initDisplayShader(command.shader);
 			setShader(shader);
 			applyBitmapData(command.bitmapData, command.smoothing);
-			applyMatrix(__getMatrix(null, AUTO));
+			applyMatrix(__getMatrix(null, NEVER));
 			useAlphaArray();
+			applyHasColorTransform(true);
 			useColorTransformArray();
 
 			updateShader();
@@ -656,7 +683,7 @@ class Context3DRenderer extends Context3DRendererAPI
 			if (shader.__colorOffset != null) context3D.setVertexBufferAt(shader.__colorOffset.index, command.vertexAttributeBuffer,
 				command.vertexAttributeBufferPosition + 5, FLOAT_4);
 
-			context3D.drawTriangles(command.indexBuffer, 0, command.numTriangles);
+			context3D.drawTriangles(command.indexBuffer, command.indexBufferPosition, command.numTriangles);
 
 			// #if gl_stats
 			// Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
@@ -677,6 +704,9 @@ class Context3DRenderer extends Context3DRendererAPI
 			}
 
 			__drawCommandPool.release(command);
+
+			cacheVertexAttributeBuffer = command.vertexAttributeBuffer;
+			cacheVertexGeometryBuffer = command.vertexGeometryBuffer;
 		}
 
 		if (cacheVertexAttributeBuffer != null)
@@ -734,20 +764,7 @@ class Context3DRenderer extends Context3DRendererAPI
 
 	private function __getMatrix(transform:Matrix, pixelSnapping:PixelSnapping):Array<Float>
 	{
-		var _matrix = Matrix.__pool.get();
-		if (transform != null) _matrix.copyFrom(transform);
-		_matrix.concat(__worldTransform);
-
-		if (pixelSnapping == ALWAYS
-			|| (pixelSnapping == AUTO
-				&& _matrix.b == 0
-				&& _matrix.c == 0
-				&& (_matrix.a < 1.001 && _matrix.a > 0.999)
-				&& (_matrix.d < 1.001 && _matrix.d > 0.999)))
-		{
-			_matrix.tx = Math.round(_matrix.tx);
-			_matrix.ty = Math.round(_matrix.ty);
-		}
+		var _matrix = __getMatrix2(transform, pixelSnapping);
 
 		__matrix.identity();
 		#if (!lime && openfl_html5)
@@ -776,9 +793,34 @@ class Context3DRenderer extends Context3DRendererAPI
 			#end
 		}
 
-		Matrix.__pool.release(_matrix);
-
 		return __values;
+	}
+
+	private function __getMatrix2(transform:Matrix, pixelSnapping:PixelSnapping):Matrix
+	{
+		if (transform != null)
+		{
+			__tempMatrix.copyFrom(transform);
+		}
+		else
+		{
+			__tempMatrix.identity();
+		}
+
+		__tempMatrix.concat(__worldTransform);
+
+		if (pixelSnapping == ALWAYS
+			|| (pixelSnapping == AUTO
+				&& __tempMatrix.b == 0
+				&& __tempMatrix.c == 0
+				&& (__tempMatrix.a < 1.001 && __tempMatrix.a > 0.999)
+				&& (__tempMatrix.d < 1.001 && __tempMatrix.d > 0.999)))
+		{
+			__tempMatrix.tx = Math.round(__tempMatrix.tx);
+			__tempMatrix.ty = Math.round(__tempMatrix.ty);
+		}
+
+		return __tempMatrix;
 	}
 
 	private function __init(context:Context3D, defaultRenderTarget:BitmapData):Void
@@ -809,9 +851,10 @@ class Context3DRenderer extends Context3DRendererAPI
 	{
 		var newCommand = __drawCommandPool.get();
 		newCommand.copyFrom(__currentDrawCommand);
+		newCommand.numTriangles = 0;
 		newCommand.vertexAttributeBufferPosition = __vertexAttributeData.position;
 		newCommand.vertexGeometryBufferPosition = __vertexGeometryData.position;
-		__drawCommandList.push(newCommand);
+		__drawCommandList.add(newCommand);
 		__currentDrawCommand = newCommand;
 		return newCommand;
 	}
@@ -1055,8 +1098,18 @@ class Context3DRenderer extends Context3DRendererAPI
 
 	private function __pushQuad(rect:Rectangle, uvRect:Rectangle, transform:Matrix):Void
 	{
-		// TODO: Break if index buffer is different
-		__currentDrawCommand.indexBuffer = context3D.__quadIndexBuffer;
+		if (__currentDrawCommand == null
+			|| __currentDrawCommand.indexBuffer != context3D.__quadIndexBuffer
+			|| __currentDrawCommand.numTriangles + 2 > context3D.__quadIndexBufferCount)
+		{
+			if (__currentDrawCommand == null || __currentDrawCommand.numTriangles > 0)
+			{
+				__initNewDrawCommand();
+			}
+
+			__currentDrawCommand.indexBuffer = context3D.__quadIndexBuffer;
+			__currentDrawCommand.indexBufferPosition = 0;
+		}
 
 		if (!__vertexGeometryData.writeQuad(rect, uvRect, transform))
 		{
@@ -1123,6 +1176,8 @@ class Context3DRenderer extends Context3DRendererAPI
 			if (object != null && object.__type != null)
 			{
 				#if openfl_context3D_dev
+				// trace("RENDER");
+
 				var object:DisplayObject = cast object;
 
 				// TODO: Use iterator
@@ -1245,24 +1300,6 @@ class Context3DRenderer extends Context3DRendererAPI
 			context3D.setScissorRectangle(null);
 		}
 
-		if (__vertexGeometryData.length > 0)
-		{
-			if (__currentDrawCommand.vertexGeometryBuffer == null)
-			{
-				__currentDrawCommand.vertexGeometryBuffer = __vertexGeometryBufferPool.get();
-			}
-			__vertexGeometryData.upload(__currentDrawCommand.vertexGeometryBuffer);
-		}
-
-		if (__vertexAttributeData.length > 0)
-		{
-			if (__currentDrawCommand.vertexAttributeBuffer == null)
-			{
-				__currentDrawCommand.vertexAttributeBuffer = __vertexAttributeBufferPool.get();
-			}
-			__vertexAttributeData.upload(__currentDrawCommand.vertexAttributeBuffer);
-		}
-
 		__flush();
 
 		context3D.present();
@@ -1270,6 +1307,8 @@ class Context3DRenderer extends Context3DRendererAPI
 
 	private function __renderBitmap(bitmap:Bitmap):Void
 	{
+		if (bitmap.width <= 0 || bitmap.height <= 0) return;
+
 		__updateCacheBitmap(bitmap, false);
 
 		if (bitmap.__bitmapData != null && bitmap.__bitmapData.readable)
@@ -1284,42 +1323,57 @@ class Context3DRenderer extends Context3DRendererAPI
 		else
 		{
 			#if openfl_context3D_dev
+			// TODO: Mask, parent scroll rect
 			var bitmapData = bitmap.__bitmapData;
-
-			// TODO: opaqueBackground
 
 			if (bitmapData != null && bitmapData.__isValid)
 			{
-				// renderer.__getMatrix(bitmap.__renderTransform, bitmap.pixelSnapping)
-				var x, y, width, height, textureWidth, textureHeight;
-				textureWidth = bitmapData.__renderData.textureWidth;
-				textureHeight = bitmapData.__renderData.textureHeight;
-				if (bitmap.scrollRect != null)
-				{
-					x = bitmap.scrollRect.x;
-					y = bitmap.scrollRect.y;
-					width = bitmap.scrollRect.width;
-					height = bitmap.scrollRect.height;
-				}
-				else
-				{
-					x = 0;
-					y = 0;
-					width = bitmapData.width;
-					height = bitmapData.height;
-				}
+				var texture = bitmapData.getTexture(context3D);
+				if (texture == null) return;
 
-				// TODO: Use cached rects
-				var rect = new Rectangle(x, y, width, height);
-				var uvRect = new Rectangle(x / textureWidth, y / textureHeight, (x + width) / textureWidth, (y + height) / textureHeight);
-				var transform = bitmap.__renderTransform;
+				var textureWidth = bitmapData.__renderData.textureWidth;
+				var textureHeight = bitmapData.__renderData.textureHeight;
+				var sourceRect = bitmap.__sourceRect;
+
+				// TODO: Use cached rect?
+
+				var uvRect = Rectangle.__pool.get();
+				uvRect.setTo(sourceRect.x / textureWidth, sourceRect.y / textureHeight, sourceRect.right / textureWidth, sourceRect.bottom / textureHeight);
+				var transform = __getMatrix2(bitmap.__renderTransform, bitmap.pixelSnapping);
 				var shader = bitmap.shader != null ? bitmap.shader : __defaultDisplayShader;
 
-				// TODO: Apply pixel snapping to transform?
+				// __setTexture(bitmapData, __allowSmoothing && (bitmap.smoothing || __upscaled));
+
+				if (bitmap.opaqueBackground != null && bitmapData.transparent)
+				{
+					// TODO: Blend mode change?
+					// TODO: Use world alpha?
+					// TODO: Should merge object's color transform?
+					// TODO: Allow use of same texture (requires shader change to colorize 0 alpha pixels)
+					var color:ARGB = (bitmap.opaqueBackground : ARGB);
+					var colorTransform = ColorTransform.__pool.get();
+					colorTransform.redMultiplier = 1;
+					colorTransform.greenMultiplier = 1;
+					colorTransform.blueMultiplier = 1;
+					colorTransform.alphaMultiplier = 1;
+					colorTransform.redOffset = color.r;
+					colorTransform.greenOffset = color.g;
+					colorTransform.blueOffset = color.b;
+					colorTransform.alphaOffset = 0;
+					colorTransform.__combine(__worldColorTransform);
+
+					__setTexture(__blankBitmapData, false);
+					__setStyle(shader, bitmap.blendMode, 1, colorTransform);
+					__pushQuad(sourceRect, __blankBitmapData.rect, transform);
+
+					ColorTransform.__pool.release(colorTransform);
+				}
 
 				__setTexture(bitmapData, __allowSmoothing && (bitmap.smoothing || __upscaled));
 				__setStyle(shader, bitmap.blendMode, bitmap.__worldAlpha, bitmap.__worldColorTransform);
-				__pushQuad(rect, uvRect, transform);
+				__pushQuad(sourceRect, uvRect, transform);
+
+				Rectangle.__pool.release(uvRect);
 			}
 			#else
 			Context3DDisplayObject.render(bitmap, this);

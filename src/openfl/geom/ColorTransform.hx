@@ -226,6 +226,8 @@ class ColorTransform
 
 	@:noCompletion private function __combine(ct:ColorTransform):Void
 	{
+		if (ct == null) return;
+
 		redMultiplier *= ct.redMultiplier;
 		greenMultiplier *= ct.greenMultiplier;
 		blueMultiplier *= ct.blueMultiplier;

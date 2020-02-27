@@ -15,6 +15,7 @@ class Context3DDrawCommand
 	public var blendMode:BlendMode;
 	public var bitmapData:BitmapData;
 	public var indexBuffer:IndexBuffer3D;
+	public var indexBufferPosition:Int;
 	public var numTriangles:Int;
 	public var repeat:Bool;
 	public var shader:Shader;
@@ -36,6 +37,7 @@ class Context3DDrawCommand
 			blendMode = other.blendMode;
 			bitmapData = other.bitmapData;
 			indexBuffer = other.indexBuffer;
+			indexBufferPosition = other.indexBufferPosition;
 			numTriangles = other.numTriangles;
 			repeat = other.repeat;
 			shader = other.shader;
@@ -52,6 +54,7 @@ class Context3DDrawCommand
 		blendMode = NORMAL;
 		bitmapData = null;
 		indexBuffer = null;
+		indexBufferPosition = 0;
 		numTriangles = 0;
 		repeat = false;
 		shader = null;
