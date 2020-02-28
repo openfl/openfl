@@ -236,10 +236,10 @@ class Context3DRenderer extends Context3DRendererAPI
 			__drawCommandPool = new ObjectPool<Context3DDrawCommand>(function()
 			{
 				return new Context3DDrawCommand();
-			}, function(command)
-			{
-				command.reset();
-			});
+			} /*, function(command)
+					{
+						command.reset();
+				}*/);
 
 			// TODO: Handle attr of different sizes?
 			__vertexAttributeBufferPool = new ObjectPool<VertexBuffer3D>(function()
@@ -627,25 +627,26 @@ class Context3DRenderer extends Context3DRendererAPI
 
 	private function __flush():Void
 	{
+		context3D.setColorMask(true, true, true, true);
+		context3D.setCulling(NONE);
+		context3D.setDepthTest(false, ALWAYS);
+		// context3D.setStencilActions();
+		// context3D.setStencilReferenceValue(0, 0, 0);
+		// context3D.setScissorRectangle(null);
+
 		var cacheVertexAttributeBuffer = null;
 		var cacheVertexGeometryBuffer = null;
-
-		if (__vertexGeometryData.length > 0)
-		{
-			if (__currentDrawCommand.vertexGeometryBuffer == null)
-			{
-				__currentDrawCommand.vertexGeometryBuffer = __vertexGeometryBufferPool.get();
-			}
-			__vertexGeometryData.upload(__currentDrawCommand.vertexGeometryBuffer);
-		}
+		var shader = null;
+		var matrix = __getMatrix(null, NEVER);
 
 		if (__vertexAttributeData.length > 0)
 		{
-			if (__currentDrawCommand.vertexAttributeBuffer == null)
-			{
-				__currentDrawCommand.vertexAttributeBuffer = __vertexAttributeBufferPool.get();
-			}
 			__vertexAttributeData.upload(__currentDrawCommand.vertexAttributeBuffer);
+		}
+
+		if (__vertexGeometryData.length > 0)
+		{
+			__vertexGeometryData.upload(__currentDrawCommand.vertexGeometryBuffer);
 		}
 
 		// TODO: Integrate stats
@@ -653,18 +654,18 @@ class Context3DRenderer extends Context3DRendererAPI
 
 		for (command in __drawCommandList)
 		{
-			// trace("VA Position: " + command.vertexAttributeBufferPosition);
-			// trace("VG Position: " + command.vertexGeometryBufferPosition);
-			// trace("Index Position: " + command.indexBufferPosition);
-			// trace("Num Triangles: " + command.numTriangles);
-			// trace(command.blendMode);
-
 			// __pushMaskObject(bitmap);
 
-			var shader = __initDisplayShader(command.shader);
+			if (command.shader != shader)
+			{
+				shader = __initDisplayShader(command.shader);
+			}
+
 			setShader(shader);
+			__setBlendMode(command.blendMode);
+
 			applyBitmapData(command.bitmapData, command.smoothing);
-			applyMatrix(__getMatrix(null, NEVER));
+			applyMatrix(matrix);
 			useAlphaArray();
 			applyHasColorTransform(true);
 			useColorTransformArray();
@@ -852,8 +853,27 @@ class Context3DRenderer extends Context3DRendererAPI
 		var newCommand = __drawCommandPool.get();
 		newCommand.copyFrom(__currentDrawCommand);
 		newCommand.numTriangles = 0;
-		newCommand.vertexAttributeBufferPosition = __vertexAttributeData.position;
-		newCommand.vertexGeometryBufferPosition = __vertexGeometryData.position;
+
+		if (newCommand.vertexAttributeBuffer == null)
+		{
+			newCommand.vertexAttributeBuffer = __vertexAttributeBufferPool.get();
+			newCommand.vertexAttributeBufferPosition = 0;
+		}
+		else
+		{
+			newCommand.vertexAttributeBufferPosition = __vertexAttributeData.position;
+		}
+
+		if (newCommand.vertexGeometryBuffer == null)
+		{
+			newCommand.vertexGeometryBuffer = __vertexGeometryBufferPool.get();
+			newCommand.vertexGeometryBufferPosition = 0;
+		}
+		else
+		{
+			newCommand.vertexGeometryBufferPosition = __vertexGeometryData.position;
+		}
+
 		__drawCommandList.add(newCommand);
 		__currentDrawCommand = newCommand;
 		return newCommand;
@@ -1113,10 +1133,6 @@ class Context3DRenderer extends Context3DRendererAPI
 
 		if (!__vertexGeometryData.writeQuad(rect, uvRect, transform))
 		{
-			if (__currentDrawCommand.vertexGeometryBuffer == null)
-			{
-				__currentDrawCommand.vertexGeometryBuffer = __vertexGeometryBufferPool.get();
-			}
 			__vertexGeometryData.upload(__currentDrawCommand.vertexGeometryBuffer);
 
 			__initNewDrawCommand();
@@ -1131,14 +1147,10 @@ class Context3DRenderer extends Context3DRendererAPI
 		{
 			if (!__vertexAttributeData.writeFloat(__currentAlpha) || !__vertexAttributeData.writeColorTransform(__currentColorTransform))
 			{
-				if (__currentDrawCommand.vertexAttributeBuffer == null)
-				{
-					__currentDrawCommand.vertexAttributeBuffer = __vertexAttributeBufferPool.get();
-				}
-				__vertexAttributeData.upload(__currentDrawCommand.vertexAttributeBuffer);
-
 				if (__currentDrawCommand.numTriangles > 0)
 				{
+					__vertexAttributeData.upload(__currentDrawCommand.vertexAttributeBuffer);
+
 					__initNewDrawCommand();
 				}
 
@@ -1176,8 +1188,6 @@ class Context3DRenderer extends Context3DRendererAPI
 			if (object != null && object.__type != null)
 			{
 				#if openfl_context3D_dev
-				// trace("RENDER");
-
 				var object:DisplayObject = cast object;
 
 				// TODO: Use iterator
@@ -1346,24 +1356,16 @@ class Context3DRenderer extends Context3DRendererAPI
 
 				if (bitmap.opaqueBackground != null && bitmapData.transparent)
 				{
-					// TODO: Blend mode change?
-					// TODO: Use world alpha?
-					// TODO: Should merge object's color transform?
 					// TODO: Allow use of same texture (requires shader change to colorize 0 alpha pixels)
 					var color:ARGB = (bitmap.opaqueBackground : ARGB);
 					var colorTransform = ColorTransform.__pool.get();
-					colorTransform.redMultiplier = 1;
-					colorTransform.greenMultiplier = 1;
-					colorTransform.blueMultiplier = 1;
-					colorTransform.alphaMultiplier = 1;
 					colorTransform.redOffset = color.r;
 					colorTransform.greenOffset = color.g;
 					colorTransform.blueOffset = color.b;
-					colorTransform.alphaOffset = 0;
 					colorTransform.__combine(__worldColorTransform);
 
 					__setTexture(__blankBitmapData, false);
-					__setStyle(shader, bitmap.blendMode, 1, colorTransform);
+					__setStyle(shader, NORMAL, 1, colorTransform);
 					__pushQuad(sourceRect, __blankBitmapData.rect, transform);
 
 					ColorTransform.__pool.release(colorTransform);

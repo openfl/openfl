@@ -49,10 +49,10 @@ class Context3DVertexBufferData
 		data[position + 1] = colorTransform.greenMultiplier;
 		data[position + 2] = colorTransform.blueMultiplier;
 		data[position + 3] = colorTransform.alphaMultiplier;
-		data[position + 4] = colorTransform.redOffset / 255;
-		data[position + 5] = colorTransform.greenOffset / 255;
-		data[position + 6] = colorTransform.blueOffset / 255;
-		data[position + 7] = colorTransform.alphaOffset / 255;
+		data[position + 4] = colorTransform.redOffset;
+		data[position + 5] = colorTransform.greenOffset;
+		data[position + 6] = colorTransform.blueOffset;
+		data[position + 7] = colorTransform.alphaOffset;
 
 		position += 8;
 		length += 8;
