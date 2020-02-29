@@ -277,7 +277,7 @@ class Context3DRenderer extends Context3DRendererAPI
 				__textureSizeValue[0] = bitmapData.__renderData.textureWidth;
 				__textureSizeValue[1] = bitmapData.__renderData.textureHeight;
 
-				__currentShaderBuffer.addFloatOverride("openfl_TextureSize", __textureSizeValue);
+				__currentShaderBuffer.addFloatOverride("openfl_TextureSizes[0]", __textureSizeValue);
 			}
 		}
 		else if (__currentShader != null)
@@ -292,10 +292,10 @@ class Context3DRenderer extends Context3DRendererAPI
 
 			if (__currentShader.__texture != null)
 			{
-				__currentShader.__texture.input = bitmapData;
-				__currentShader.__texture.filter = (smooth && __allowSmoothing) ? LINEAR : NEAREST;
-				__currentShader.__texture.mipFilter = MIPNONE;
-				__currentShader.__texture.wrap = repeat ? REPEAT : CLAMP;
+				__currentShader.__texture[0].input = bitmapData;
+				__currentShader.__texture[0].filter = (smooth && __allowSmoothing) ? LINEAR : NEAREST;
+				__currentShader.__texture[0].mipFilter = MIPNONE;
+				__currentShader.__texture[0].wrap = repeat ? REPEAT : CLAMP;
 			}
 
 			if (__currentShader.__textureSize != null)
@@ -305,11 +305,11 @@ class Context3DRenderer extends Context3DRendererAPI
 					__textureSizeValue[0] = bitmapData.__renderData.textureWidth;
 					__textureSizeValue[1] = bitmapData.__renderData.textureHeight;
 
-					__currentShader.__textureSize.value = __textureSizeValue;
+					__currentShader.__textureSize[0].value = __textureSizeValue;
 				}
 				else
 				{
-					__currentShader.__textureSize.value = null;
+					__currentShader.__textureSize[0].value = null;
 				}
 			}
 		}
@@ -524,8 +524,20 @@ class Context3DRenderer extends Context3DRendererAPI
 				__currentShaderBuffer.clearOverride();
 			}
 
-			if (__currentShader.__texture != null) __currentShader.__texture.input = null;
-			if (__currentShader.__textureSize != null) __currentShader.__textureSize.value = null;
+			if (__currentShader.__texture != null)
+			{
+				for (input in __currentShader.__texture)
+				{
+					input.input = null;
+				}
+			}
+			if (__currentShader.__textureSize != null)
+			{
+				for (param in __currentShader.__textureSize)
+				{
+					param.value = null;
+				}
+			}
 			if (__currentShader.__hasColorTransform != null) __currentShader.__hasColorTransform.value = null;
 			if (__currentShader.__position != null) __currentShader.__position.value = null;
 			if (__currentShader.__matrix != null) __currentShader.__matrix.value = null;
@@ -1338,21 +1350,9 @@ class Context3DRenderer extends Context3DRendererAPI
 
 			if (bitmapData != null && bitmapData.__isValid)
 			{
-				var texture = bitmapData.getTexture(context3D);
-				if (texture == null) return;
-
-				var textureWidth = bitmapData.__renderData.textureWidth;
-				var textureHeight = bitmapData.__renderData.textureHeight;
-				var sourceRect = bitmap.__sourceRect;
-
-				// TODO: Use cached rect?
-
-				var uvRect = Rectangle.__pool.get();
-				uvRect.setTo(sourceRect.x / textureWidth, sourceRect.y / textureHeight, sourceRect.right / textureWidth, sourceRect.bottom / textureHeight);
 				var transform = __getMatrix2(bitmap.__renderTransform, bitmap.pixelSnapping);
 				var shader = bitmap.shader != null ? bitmap.shader : __defaultDisplayShader;
-
-				// __setTexture(bitmapData, __allowSmoothing && (bitmap.smoothing || __upscaled));
+				var sourceRect = bitmap.__sourceRect;
 
 				if (bitmap.opaqueBackground != null && bitmapData.transparent)
 				{
@@ -1370,6 +1370,17 @@ class Context3DRenderer extends Context3DRendererAPI
 
 					ColorTransform.__pool.release(colorTransform);
 				}
+
+				var texture = bitmapData.getTexture(context3D);
+				if (texture == null) return;
+
+				var textureWidth = bitmapData.__renderData.textureWidth;
+				var textureHeight = bitmapData.__renderData.textureHeight;
+
+				// TODO: Use cached rect?
+
+				var uvRect = Rectangle.__pool.get();
+				uvRect.setTo(sourceRect.x / textureWidth, sourceRect.y / textureHeight, sourceRect.right / textureWidth, sourceRect.bottom / textureHeight);
 
 				__setTexture(bitmapData, __allowSmoothing && (bitmap.smoothing || __upscaled));
 				__setStyle(shader, bitmap.blendMode, bitmap.__worldAlpha, bitmap.__worldColorTransform);

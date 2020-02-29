@@ -306,49 +306,88 @@ class OpenGLShaderBackend
 
 	private function processGLData(source:String, storageType:String):Void
 	{
-		var lastMatch = 0, position, regex, name, type;
+		var lastMatch = 0, position, regex, name, count, length, type;
 
 		if (storageType == "uniform")
 		{
-			regex = ~/uniform ([A-Za-z0-9]+) ([A-Za-z0-9_]+)/;
+			regex = ~/uniform ([A-Za-z0-9]+) ([A-Za-z0-9_]+)(\[[0-9]+\])?/;
 		}
 		else
 		{
-			regex = ~/attribute ([A-Za-z0-9]+) ([A-Za-z0-9_]+)/;
+			regex = ~/attribute ([A-Za-z0-9]+) ([A-Za-z0-9_]+)(\[[0-9]+\])?/;
 		}
 
 		while (regex.matchSub(source, lastMatch))
 		{
 			type = regex.matched(1);
 			name = regex.matched(2);
+			count = regex.matched(3);
 
 			if (StringTools.startsWith(name, "gl_"))
 			{
 				continue;
 			}
 
+			if (count != null)
+			{
+				length = Std.parseInt(StringTools.replace(StringTools.replace(count, "[", ""), "]", ""));
+			}
+			else
+			{
+				length = 1;
+			}
+
 			var isUniform = (storageType == "uniform");
 
 			if (StringTools.startsWith(type, "sampler"))
 			{
-				var input = new ShaderInput<BitmapData>();
-				input.name = name;
-				input.__backend.isUniform = isUniform;
-				inputBitmapData.push(input);
-
-				switch (name)
+				if (count == null)
 				{
-					case "openfl_AlphaTexture":
-						parent.__alphaTexture = input;
-					case "openfl_Texture":
-						parent.__texture = input;
-					case "bitmap":
-						parent.__bitmap = input;
-					default:
-				}
+					var input = new ShaderInput<BitmapData>();
+					input.name = name;
+					input.__backend.isUniform = isUniform;
+					inputBitmapData.push(input);
 
-				Reflect.setField(parent.__data, name, input);
-				if (parent.__isGenerated) Reflect.setField(parent, name, input);
+					switch (name)
+					{
+						case "openfl_AlphaTexture":
+							parent.__alphaTexture = input;
+						case "openfl_Texture":
+							parent.__texture = [input];
+						case "bitmap":
+							parent.__bitmap = input;
+						default:
+					}
+
+					Reflect.setField(parent.__data, name, input);
+					if (parent.__isGenerated) Reflect.setField(parent, name, input);
+				}
+				else
+				{
+					var inputs = new Array<ShaderInput<BitmapData>>();
+					for (i in 0...length)
+					{
+						var input = new ShaderInput<BitmapData>();
+						input.name = name + "[" + i + "]";
+						input.__backend.isUniform = isUniform;
+						inputBitmapData.push(input);
+						inputs.push(input);
+					}
+
+					switch (name)
+					{
+						// case "openfl_AlphaTexture":
+						// 	parent.__alphaTexture = input;
+						case "openfl_Textures":
+							parent.__texture = inputs;
+						// case "bitmap":
+						// 	parent.__bitmap = input;
+						default:
+					}
+
+					Reflect.setField(parent.__data, name, inputs);
+					if (parent.__isGenerated) Reflect.setField(parent, name, inputs);
+				}
 			}
 			else if (!Reflect.hasField(parent.__data, name) || Reflect.field(parent.__data, name) == null)
 			{
@@ -399,64 +438,152 @@ class OpenGLShaderBackend
 				switch (parameterType)
 				{
 					case BOOL, BOOL2, BOOL3, BOOL4:
-						var parameter = new ShaderParameter<Bool>();
-						parameter.name = name;
-						parameter.type = parameterType;
-						parameter.__backend.arrayLength = arrayLength;
-						parameter.__backend.isBool = true;
-						parameter.__backend.isUniform = isUniform;
-						parameter.__backend.length = length;
-						paramBool.push(parameter);
-
-						if (name == "openfl_HasColorTransform")
+						if (count == null)
 						{
-							parent.__hasColorTransform = parameter;
-						}
+							var parameter = new ShaderParameter<Bool>();
+							parameter.name = name;
+							parameter.type = parameterType;
+							parameter.__backend.arrayLength = arrayLength;
+							parameter.__backend.isBool = true;
+							parameter.__backend.isUniform = isUniform;
+							parameter.__backend.length = length;
+							paramBool.push(parameter);
 
-						Reflect.setField(parent.__data, name, parameter);
-						if (parent.__isGenerated) Reflect.setField(parent, name, parameter);
+							if (name == "openfl_HasColorTransform")
+							{
+								parent.__hasColorTransform = parameter;
+							}
+
+							Reflect.setField(parent.__data, name, parameter);
+							if (parent.__isGenerated) Reflect.setField(parent, name, parameter);
+						}
+						else
+						{
+							var parameters = new Array<ShaderParameter<Bool>>();
+							for (i in 0...length)
+							{
+								var parameter = new ShaderParameter<Bool>();
+								parameter.name = name + "[" + i + "]";
+								parameter.type = parameterType;
+								parameter.__backend.arrayLength = arrayLength;
+								parameter.__backend.isBool = true;
+								parameter.__backend.isUniform = isUniform;
+								parameter.__backend.length = length;
+								paramBool.push(parameter);
+								parameters.push(parameter);
+
+								// if (name == "openfl_HasColorTransform")
+								// {
+								// 	parent.__hasColorTransform = parameter;
+								// }
+							}
+
+							Reflect.setField(parent.__data, name, parameters);
+							if (parent.__isGenerated) Reflect.setField(parent, name, parameters);
+						}
 
 					case INT, INT2, INT3, INT4:
-						var parameter = new ShaderParameter<Int>();
-						parameter.name = name;
-						parameter.type = parameterType;
-						parameter.__backend.arrayLength = arrayLength;
-						parameter.__backend.isInt = true;
-						parameter.__backend.isUniform = isUniform;
-						parameter.__backend.length = length;
-						paramInt.push(parameter);
-						Reflect.setField(parent.__data, name, parameter);
-						if (parent.__isGenerated) Reflect.setField(parent, name, parameter);
-
-					default:
-						var parameter = new ShaderParameter<Float>();
-						parameter.name = name;
-						parameter.type = parameterType;
-						parameter.__backend.arrayLength = arrayLength;
-						if (arrayLength > 0) parameter.__backend.uniformMatrix = new Float32Array(arrayLength * arrayLength);
-						parameter.__backend.isFloat = true;
-						parameter.__backend.isUniform = isUniform;
-						parameter.__backend.length = length;
-						paramFloat.push(parameter);
-
-						if (StringTools.startsWith(name, "openfl_"))
+						if (count == null)
 						{
-							switch (name)
+							var parameter = new ShaderParameter<Int>();
+							parameter.name = name;
+							parameter.type = parameterType;
+							parameter.__backend.arrayLength = arrayLength;
+							parameter.__backend.isInt = true;
+							parameter.__backend.isUniform = isUniform;
+							parameter.__backend.length = length;
+							paramInt.push(parameter);
+							Reflect.setField(parent.__data, name, parameter);
+							if (parent.__isGenerated) Reflect.setField(parent, name, parameter);
+						}
+						else
+						{
+							var parameters = new Array<ShaderParameter<Int>>();
+							for (i in 0...length)
 							{
-								case "openfl_Alpha": parent.__alpha = parameter;
-								case "openfl_AlphaTextureMatrix": parent.__alphaTextureMatrix = parameter;
-								case "openfl_ColorMultiplier": parent.__colorMultiplier = parameter;
-								case "openfl_ColorOffset": parent.__colorOffset = parameter;
-								case "openfl_Matrix": parent.__matrix = parameter;
-								case "openfl_Position": parent.__position = parameter;
-								case "openfl_TextureCoord": parent.__textureCoord = parameter;
-								case "openfl_TextureSize": parent.__textureSize = parameter;
-								default:
+								var parameter = new ShaderParameter<Int>();
+								parameter.name = name + "[" + i + "]";
+								parameter.type = parameterType;
+								parameter.__backend.arrayLength = arrayLength;
+								parameter.__backend.isInt = true;
+								parameter.__backend.isUniform = isUniform;
+								parameter.__backend.length = length;
+								paramInt.push(parameter);
+								parameters.push(parameter);
 							}
+
+							Reflect.setField(parent.__data, name, parameters);
+							if (parent.__isGenerated) Reflect.setField(parent, name, parameters);
 						}
 
-						Reflect.setField(parent.__data, name, parameter);
-						if (parent.__isGenerated) Reflect.setField(parent, name, parameter);
+					default:
+						if (count == null)
+						{
+							var parameter = new ShaderParameter<Float>();
+							parameter.name = name;
+							parameter.type = parameterType;
+							parameter.__backend.arrayLength = arrayLength;
+							if (arrayLength > 0) parameter.__backend.uniformMatrix = new Float32Array(arrayLength * arrayLength);
+							parameter.__backend.isFloat = true;
+							parameter.__backend.isUniform = isUniform;
+							parameter.__backend.length = length;
+							paramFloat.push(parameter);
+
+							if (StringTools.startsWith(name, "openfl_"))
+							{
+								switch (name)
+								{
+									case "openfl_Alpha": parent.__alpha = parameter;
+									case "openfl_AlphaTextureMatrix": parent.__alphaTextureMatrix = parameter;
+									case "openfl_ColorMultiplier": parent.__colorMultiplier = parameter;
+									case "openfl_ColorOffset": parent.__colorOffset = parameter;
+									case "openfl_Matrix": parent.__matrix = parameter;
+									case "openfl_Position": parent.__position = parameter;
+									case "openfl_TextureCoord": parent.__textureCoord = parameter;
+									case "openfl_TextureSize": parent.__textureSize = [parameter];
+									default:
+								}
+							}
+
+							Reflect.setField(parent.__data, name, parameter);
+							if (parent.__isGenerated) Reflect.setField(parent, name, parameter);
+						}
+						else
+						{
+							var parameters = new Array<ShaderParameter<Float>>();
+							for (i in 0...length)
+							{
+								var parameter = new ShaderParameter<Float>();
+								parameter.name = name + "[" + i + "]";
+								parameter.type = parameterType;
+								parameter.__backend.arrayLength = arrayLength;
+								if (arrayLength > 0) parameter.__backend.uniformMatrix = new Float32Array(arrayLength * arrayLength);
+								parameter.__backend.isFloat = true;
+								parameter.__backend.isUniform = isUniform;
+								parameter.__backend.length = length;
+								paramFloat.push(parameter);
+								parameters.push(parameter);
+							}
+
+							if (StringTools.startsWith(name, "openfl_"))
+							{
+								switch (name)
+								{
+									// case "openfl_Alpha": parent.__alpha = parameter;
+									// case "openfl_AlphaTextureMatrix": parent.__alphaTextureMatrix = parameter;
+									// case "openfl_ColorMultiplier": parent.__colorMultiplier = parameter;
+									// case "openfl_ColorOffset": parent.__colorOffset = parameter;
+									// case "openfl_Matrix": parent.__matrix = parameter;
+									// case "openfl_Position": parent.__position = parameter;
+									// case "openfl_TextureCoord": parent.__textureCoord = parameters;
+									case "openfl_TextureSizes": parent.__textureSize = parameters;
+									default:
+								}
+							}
+
+							Reflect.setField(parent.__data, name, parameters);
+							if (parent.__isGenerated) Reflect.setField(parent, name, parameters);
+						}
 				}
 			}
 

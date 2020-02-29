@@ -13,17 +13,20 @@ class DisplayObjectShader extends Shader
 		attribute vec4 openfl_ColorOffset;
 		attribute vec4 openfl_Position;
 		attribute vec2 openfl_TextureCoord;
+		attribute float openfl_TextureID;
 
 		varying float openfl_Alphav;
 		varying vec4 openfl_ColorMultiplierv;
 		varying vec4 openfl_ColorOffsetv;
 		varying vec2 openfl_TextureCoordv;
+		varying float openfl_TextureIDv;
 
 		uniform mat4 openfl_Matrix;
 		uniform bool openfl_HasColorTransform;
-		uniform vec2 openfl_TextureSize;")
+		uniform vec2 openfl_TextureSizes[8];")
 	@:glVertexBody("openfl_Alphav = openfl_Alpha;
 		openfl_TextureCoordv = openfl_TextureCoord;
+		openfl_TextureIDv = openfl_TextureID;
 
 		if (openfl_HasColorTransform) {
 
@@ -44,11 +47,21 @@ class DisplayObjectShader extends Shader
 		varying vec4 openfl_ColorMultiplierv;
 		varying vec4 openfl_ColorOffsetv;
 		varying vec2 openfl_TextureCoordv;
+		varying float openfl_TextureIDv;
 
 		uniform bool openfl_HasColorTransform;
-		uniform sampler2D openfl_Texture;
-		uniform vec2 openfl_TextureSize;")
-	@:glFragmentBody("vec4 color = texture2D(openfl_Texture, openfl_TextureCoordv);
+		uniform sampler2D openfl_Textures[8];
+		uniform vec2 openfl_TextureSizes[8];")
+	@:glFragmentBody("vec4 color;
+
+		for (int k = 0; k < 8; ++k)
+		{
+			int openfl_TextureID = int(openfl_TextureIDv);
+			if (openfl_TextureID == k)
+			{
+				color = texture2D(openfl_Textures[int(k)], openfl_TextureCoordv);
+			}
+		}
 
 		if (color.a == 0.0) {
 

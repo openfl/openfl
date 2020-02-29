@@ -203,15 +203,15 @@ class ShaderMacro
 	{
 		if (source == null) return;
 
-		var lastMatch = 0, position, regex, field:Field, name, type;
+		var lastMatch = 0, position, regex, field:Field, name, type, count;
 
 		if (storageType == "uniform")
 		{
-			regex = ~/uniform ([A-Za-z0-9]+) ([A-Za-z0-9_]+)/;
+			regex = ~/uniform ([A-Za-z0-9]+) ([A-Za-z0-9_]+)(\[[0-9]+\])?/;
 		}
 		else
 		{
-			regex = ~/attribute ([A-Za-z0-9]+) ([A-Za-z0-9_]+)/;
+			regex = ~/attribute ([A-Za-z0-9]+) ([A-Za-z0-9_]+)(\[[0-9]+\])?/;
 		}
 
 		var fieldAccess;
@@ -220,6 +220,7 @@ class ShaderMacro
 		{
 			type = regex.matched(1);
 			name = regex.matched(2);
+			count = regex.matched(3);
 
 			if (StringTools.startsWith(name, "gl_"))
 			{
@@ -237,13 +238,26 @@ class ShaderMacro
 
 			if (StringTools.startsWith(type, "sampler"))
 			{
-				field = {
-					name: name,
-					meta: [],
-					access: [fieldAccess],
-					kind: FVar(macro:openfl.display.ShaderInput<openfl.display.BitmapData>),
-					pos: pos
-				};
+				if (count == null)
+				{
+					field = {
+						name: name,
+						meta: [],
+						access: [fieldAccess],
+						kind: FVar(macro:openfl.display.ShaderInput<openfl.display.BitmapData>),
+						pos: pos
+					};
+				}
+				else
+				{
+					field = {
+						name: name,
+						meta: [],
+						access: [fieldAccess],
+						kind: FVar(macro:Array<openfl.display.ShaderInput<openfl.display.BitmapData>>),
+						pos: pos
+					};
+				}
 			}
 			else
 			{
@@ -276,31 +290,70 @@ class ShaderMacro
 				switch (parameterType)
 				{
 					case BOOL, BOOL2, BOOL3, BOOL4:
-						field = {
-							name: name,
-							meta: [{name: ":keep", pos: pos}],
-							access: [fieldAccess],
-							kind: FVar(macro:openfl.display.ShaderParameter<Bool>),
-							pos: pos
-						};
+						if (count == null)
+						{
+							field = {
+								name: name,
+								meta: [{name: ":keep", pos: pos}],
+								access: [fieldAccess],
+								kind: FVar(macro:openfl.display.ShaderParameter<Bool>),
+								pos: pos
+							};
+						}
+						else
+						{
+							field = {
+								name: name,
+								meta: [{name: ":keep", pos: pos}],
+								access: [fieldAccess],
+								kind: FVar(macro:Array<openfl.display.ShaderParameter<Bool>>),
+								pos: pos
+							};
+						}
 
 					case INT, INT2, INT3, INT4:
-						field = {
-							name: name,
-							meta: [{name: ":keep", pos: pos}],
-							access: [fieldAccess],
-							kind: FVar(macro:openfl.display.ShaderParameter<Int>),
-							pos: pos
-						};
+						if (count == null)
+						{
+							field = {
+								name: name,
+								meta: [{name: ":keep", pos: pos}],
+								access: [fieldAccess],
+								kind: FVar(macro:openfl.display.ShaderParameter<Int>),
+								pos: pos
+							};
+						}
+						else
+						{
+							field = {
+								name: name,
+								meta: [{name: ":keep", pos: pos}],
+								access: [fieldAccess],
+								kind: FVar(macro:Array<openfl.display.ShaderParameter<Int>>),
+								pos: pos
+							};
+						}
 
 					default:
-						field = {
-							name: name,
-							meta: [{name: ":keep", pos: pos}],
-							access: [fieldAccess],
-							kind: FVar(macro:openfl.display.ShaderParameter<Float>),
-							pos: pos
-						};
+						if (count == null)
+						{
+							field = {
+								name: name,
+								meta: [{name: ":keep", pos: pos}],
+								access: [fieldAccess],
+								kind: FVar(macro:openfl.display.ShaderParameter<Float>),
+								pos: pos
+							};
+						}
+						else
+						{
+							field = {
+								name: name,
+								meta: [{name: ":keep", pos: pos}],
+								access: [fieldAccess],
+								kind: FVar(macro:Array<openfl.display.ShaderParameter<Float>>),
+								pos: pos
+							};
+						}
 				}
 			}
 

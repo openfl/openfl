@@ -173,14 +173,14 @@ class Context3DVideo
 			{
 				__textureSizeValue[0] = (video.__stream != null) ? videoElement.videoWidth : 0;
 				__textureSizeValue[1] = (video.__stream != null) ? videoElement.videoHeight : 0;
-				shader.__textureSize.value = __textureSizeValue;
+				shader.__textureSize[0].value = __textureSizeValue;
 			}
 
 			renderer.updateShader();
 
 			context.setTextureAt(0, getTexture(video, context));
 			context.__backend.flushGLTextures();
-			gl.uniform1i(shader.__texture.index, 0);
+			gl.uniform1i(shader.__texture[0].index, 0);
 
 			if (video.smoothing)
 			{

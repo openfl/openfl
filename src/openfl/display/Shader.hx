@@ -216,9 +216,10 @@ class Shader
 	@:noCompletion private var __glVertexSource:String;
 	@:noCompletion private var __matrix:ShaderParameter<Float>;
 	@:noCompletion private var __position:ShaderParameter<Float>;
+	@:noCompletion private var __texture:Array<ShaderInput<BitmapData>>;
 	@:noCompletion private var __textureCoord:ShaderParameter<Float>;
-	@:noCompletion private var __texture:ShaderInput<BitmapData>;
-	@:noCompletion private var __textureSize:ShaderParameter<Float>;
+	@:noCompletion private var __textureID:ShaderParameter<Int>;
+	@:noCompletion private var __textureSize:Array<ShaderParameter<Float>>;
 
 	#if openfljs
 	@:noCompletion private static function __init__()
