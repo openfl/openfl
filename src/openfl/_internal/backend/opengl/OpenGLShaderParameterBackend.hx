@@ -18,6 +18,7 @@ import openfl.display.ShaderParameter;
 class OpenGLShaderParameterBackend<T> /*implements Dynamic*/
 {
 	private var arrayLength:Int;
+	private var count:Int;
 	private var internal:Bool;
 	private var isBool:Bool;
 	private var isFloat:Bool;

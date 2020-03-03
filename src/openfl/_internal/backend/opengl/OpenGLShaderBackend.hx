@@ -7,6 +7,7 @@ import openfl._internal.bindings.gl.GL;
 import openfl._internal.bindings.gl.WebGLRenderingContext;
 import openfl._internal.renderer.ShaderBuffer;
 import openfl._internal.bindings.typedarray.Float32Array;
+import openfl._internal.bindings.typedarray.Int32Array;
 import openfl._internal.utils.Log;
 import openfl.display3D.Context3D;
 import openfl.display.BitmapData;
@@ -166,10 +167,27 @@ class OpenGLShaderBackend
 	{
 		var textureCount = 0;
 
+		// TODO: Better solution for not activating sampler arrays multiple times
+		var map = new Map<String, Bool>();
+
 		for (input in inputBitmapData)
 		{
-			gl.uniform1i(input.index, textureCount);
-			textureCount++;
+			if (input.__backend.count == 1)
+			{
+				gl.uniform1i(input.index, textureCount);
+			}
+			else if (!map.exists(input.name))
+			{
+				// TODO: Re-use array
+				var samplerArray = new Int32Array(input.__backend.count);
+				for (i in 0...input.__backend.count)
+				{
+					samplerArray[i] = textureCount++;
+				}
+				gl.uniform1iv(input.index, samplerArray);
+				map[input.name] = true;
+			}
+			textureCount += input.__backend.count;
 		}
 
 		#if lime
@@ -306,7 +324,7 @@ class OpenGLShaderBackend
 
 	private function processGLData(source:String, storageType:String):Void
 	{
-		var lastMatch = 0, position, regex, name, count, length, type;
+		var lastMatch = 0, position, regex, name, countStr, count, type;
 
 		if (storageType == "uniform")
 		{
@@ -321,30 +339,31 @@ class OpenGLShaderBackend
 		{
 			type = regex.matched(1);
 			name = regex.matched(2);
-			count = regex.matched(3);
+			countStr = regex.matched(3);
 
 			if (StringTools.startsWith(name, "gl_"))
 			{
 				continue;
 			}
 
-			if (count != null)
+			if (countStr != null)
 			{
-				length = Std.parseInt(StringTools.replace(StringTools.replace(count, "[", ""), "]", ""));
+				count = Std.parseInt(StringTools.replace(StringTools.replace(countStr, "[", ""), "]", ""));
 			}
 			else
 			{
-				length = 1;
+				count = 1;
 			}
 
 			var isUniform = (storageType == "uniform");
 
 			if (StringTools.startsWith(type, "sampler"))
 			{
-				if (count == null)
+				if (count == 1)
 				{
 					var input = new ShaderInput<BitmapData>();
 					input.name = name;
+					input.__backend.count = 1;
 					input.__backend.isUniform = isUniform;
 					inputBitmapData.push(input);
 
@@ -365,13 +384,23 @@ class OpenGLShaderBackend
 				else
 				{
 					var inputs = new Array<ShaderInput<BitmapData>>();
-					for (i in 0...length)
+					for (i in 0...count)
 					{
 						var input = new ShaderInput<BitmapData>();
-						input.name = name + "[" + i + "]";
+						input.name = name;
+						input.__backend.count = count;
 						input.__backend.isUniform = isUniform;
-						inputBitmapData.push(input);
-						inputs.push(input);
+						if (name == "openfl_Textures")
+						{
+							// force into slots 0-x
+							inputBitmapData.unshift(input);
+							inputs.unshift(input);
+						}
+						else
+						{
+							inputBitmapData.push(input);
+							inputs.push(input);
+						}
 					}
 
 					switch (name)
@@ -438,12 +467,13 @@ class OpenGLShaderBackend
 				switch (parameterType)
 				{
 					case BOOL, BOOL2, BOOL3, BOOL4:
-						if (count == null)
+						if (count == 1)
 						{
 							var parameter = new ShaderParameter<Bool>();
 							parameter.name = name;
 							parameter.type = parameterType;
 							parameter.__backend.arrayLength = arrayLength;
+							parameter.__backend.count = 1;
 							parameter.__backend.isBool = true;
 							parameter.__backend.isUniform = isUniform;
 							parameter.__backend.length = length;
@@ -460,12 +490,13 @@ class OpenGLShaderBackend
 						else
 						{
 							var parameters = new Array<ShaderParameter<Bool>>();
-							for (i in 0...length)
+							for (i in 0...count)
 							{
 								var parameter = new ShaderParameter<Bool>();
 								parameter.name = name + "[" + i + "]";
 								parameter.type = parameterType;
 								parameter.__backend.arrayLength = arrayLength;
+								parameter.__backend.count = count;
 								parameter.__backend.isBool = true;
 								parameter.__backend.isUniform = isUniform;
 								parameter.__backend.length = length;
@@ -483,28 +514,40 @@ class OpenGLShaderBackend
 						}
 
 					case INT, INT2, INT3, INT4:
-						if (count == null)
+						if (count == 1)
 						{
 							var parameter = new ShaderParameter<Int>();
 							parameter.name = name;
 							parameter.type = parameterType;
 							parameter.__backend.arrayLength = arrayLength;
+							parameter.__backend.count = 1;
 							parameter.__backend.isInt = true;
 							parameter.__backend.isUniform = isUniform;
 							parameter.__backend.length = length;
 							paramInt.push(parameter);
+
+							// if (StringTools.startsWith(name, "openfl_"))
+							// {
+							// 	switch (name)
+							// 	{
+							// 		case "openfl_TextureID": parent.__textureID = parameter;
+							// 		default:
+							// 	}
+							// }
+
 							Reflect.setField(parent.__data, name, parameter);
 							if (parent.__isGenerated) Reflect.setField(parent, name, parameter);
 						}
 						else
 						{
 							var parameters = new Array<ShaderParameter<Int>>();
-							for (i in 0...length)
+							for (i in 0...count)
 							{
 								var parameter = new ShaderParameter<Int>();
 								parameter.name = name + "[" + i + "]";
 								parameter.type = parameterType;
 								parameter.__backend.arrayLength = arrayLength;
+								parameter.__backend.count = count;
 								parameter.__backend.isInt = true;
 								parameter.__backend.isUniform = isUniform;
 								parameter.__backend.length = length;
@@ -517,12 +560,13 @@ class OpenGLShaderBackend
 						}
 
 					default:
-						if (count == null)
+						if (count == 1)
 						{
 							var parameter = new ShaderParameter<Float>();
 							parameter.name = name;
 							parameter.type = parameterType;
 							parameter.__backend.arrayLength = arrayLength;
+							parameter.__backend.count = 1;
 							if (arrayLength > 0) parameter.__backend.uniformMatrix = new Float32Array(arrayLength * arrayLength);
 							parameter.__backend.isFloat = true;
 							parameter.__backend.isUniform = isUniform;
@@ -540,6 +584,7 @@ class OpenGLShaderBackend
 									case "openfl_Matrix": parent.__matrix = parameter;
 									case "openfl_Position": parent.__position = parameter;
 									case "openfl_TextureCoord": parent.__textureCoord = parameter;
+									case "openfl_TextureID": parent.__textureID = parameter;
 									case "openfl_TextureSize": parent.__textureSize = [parameter];
 									default:
 								}
@@ -551,12 +596,13 @@ class OpenGLShaderBackend
 						else
 						{
 							var parameters = new Array<ShaderParameter<Float>>();
-							for (i in 0...length)
+							for (i in 0...count)
 							{
 								var parameter = new ShaderParameter<Float>();
 								parameter.name = name + "[" + i + "]";
 								parameter.type = parameterType;
 								parameter.__backend.arrayLength = arrayLength;
+								parameter.__backend.count = count;
 								if (arrayLength > 0) parameter.__backend.uniformMatrix = new Float32Array(arrayLength * arrayLength);
 								parameter.__backend.isFloat = true;
 								parameter.__backend.isUniform = isUniform;

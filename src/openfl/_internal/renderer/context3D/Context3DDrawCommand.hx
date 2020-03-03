@@ -13,7 +13,7 @@ import openfl.display.Shader;
 class Context3DDrawCommand
 {
 	public var blendMode:BlendMode;
-	public var bitmapData:BitmapData;
+	public var textures:List<BitmapData>;
 	public var indexBuffer:IndexBuffer3D;
 	public var indexBufferPosition:Int;
 	public var numTriangles:Int;
@@ -27,6 +27,7 @@ class Context3DDrawCommand
 
 	public function new()
 	{
+		textures = new List();
 		reset();
 	}
 
@@ -35,13 +36,13 @@ class Context3DDrawCommand
 		if (other != null)
 		{
 			blendMode = other.blendMode;
-			bitmapData = other.bitmapData;
 			indexBuffer = other.indexBuffer;
 			indexBufferPosition = other.indexBufferPosition;
 			numTriangles = other.numTriangles;
 			repeat = other.repeat;
 			shader = other.shader;
 			smoothing = other.smoothing;
+			textures = other.textures;
 			vertexAttributeBuffer = other.vertexAttributeBuffer;
 			vertexAttributeBufferPosition = other.vertexAttributeBufferPosition;
 			vertexGeometryBuffer = other.vertexGeometryBuffer;
@@ -52,13 +53,13 @@ class Context3DDrawCommand
 	public function reset():Void
 	{
 		blendMode = NORMAL;
-		bitmapData = null;
 		indexBuffer = null;
 		indexBufferPosition = 0;
 		numTriangles = 0;
 		repeat = false;
 		shader = null;
 		smoothing = false;
+		textures.clear();
 		vertexAttributeBuffer = null;
 		vertexAttributeBufferPosition = 0;
 		vertexGeometryBuffer = null;

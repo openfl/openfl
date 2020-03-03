@@ -19,6 +19,7 @@ import openfl.display.ShaderInput;
 #end
 class OpenGLShaderInputBackend<T> /*implements Dynamic*/
 {
+	private var count:Int;
 	private var isUniform:Bool;
 	private var parent:ShaderInput<T>;
 

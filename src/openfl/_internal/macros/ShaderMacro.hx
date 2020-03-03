@@ -238,26 +238,14 @@ class ShaderMacro
 
 			if (StringTools.startsWith(type, "sampler"))
 			{
-				if (count == null)
-				{
-					field = {
-						name: name,
-						meta: [],
-						access: [fieldAccess],
-						kind: FVar(macro:openfl.display.ShaderInput<openfl.display.BitmapData>),
-						pos: pos
-					};
-				}
-				else
-				{
-					field = {
-						name: name,
-						meta: [],
-						access: [fieldAccess],
-						kind: FVar(macro:Array<openfl.display.ShaderInput<openfl.display.BitmapData>>),
-						pos: pos
-					};
-				}
+				var kind = (count == null) ? FVar(macro:openfl.display.ShaderInput<openfl.display.BitmapData>) : FVar(macro:Array<openfl.display.ShaderInput<openfl.display.BitmapData>>);
+				field = {
+					name: name,
+					meta: [],
+					access: [fieldAccess],
+					kind: kind,
+					pos: pos
+				};
 			}
 			else
 			{
@@ -290,70 +278,34 @@ class ShaderMacro
 				switch (parameterType)
 				{
 					case BOOL, BOOL2, BOOL3, BOOL4:
-						if (count == null)
-						{
-							field = {
-								name: name,
-								meta: [{name: ":keep", pos: pos}],
-								access: [fieldAccess],
-								kind: FVar(macro:openfl.display.ShaderParameter<Bool>),
-								pos: pos
-							};
-						}
-						else
-						{
-							field = {
-								name: name,
-								meta: [{name: ":keep", pos: pos}],
-								access: [fieldAccess],
-								kind: FVar(macro:Array<openfl.display.ShaderParameter<Bool>>),
-								pos: pos
-							};
-						}
+						var kind = (count == null) ? FVar(macro:openfl.display.ShaderParameter<Bool>) : FVar(macro:Array<openfl.display.ShaderParameter<Bool>>);
+						field = {
+							name: name,
+							meta: [{name: ":keep", pos: pos}],
+							access: [fieldAccess],
+							kind: kind,
+							pos: pos
+						};
 
 					case INT, INT2, INT3, INT4:
-						if (count == null)
-						{
-							field = {
-								name: name,
-								meta: [{name: ":keep", pos: pos}],
-								access: [fieldAccess],
-								kind: FVar(macro:openfl.display.ShaderParameter<Int>),
-								pos: pos
-							};
-						}
-						else
-						{
-							field = {
-								name: name,
-								meta: [{name: ":keep", pos: pos}],
-								access: [fieldAccess],
-								kind: FVar(macro:Array<openfl.display.ShaderParameter<Int>>),
-								pos: pos
-							};
-						}
+						var kind = (count == null) ? FVar(macro:openfl.display.ShaderParameter<Int>) : FVar(macro:Array<openfl.display.ShaderParameter<Int>>);
+						field = {
+							name: name,
+							meta: [{name: ":keep", pos: pos}],
+							access: [fieldAccess],
+							kind: kind,
+							pos: pos
+						};
 
 					default:
-						if (count == null)
-						{
-							field = {
-								name: name,
-								meta: [{name: ":keep", pos: pos}],
-								access: [fieldAccess],
-								kind: FVar(macro:openfl.display.ShaderParameter<Float>),
-								pos: pos
-							};
-						}
-						else
-						{
-							field = {
-								name: name,
-								meta: [{name: ":keep", pos: pos}],
-								access: [fieldAccess],
-								kind: FVar(macro:Array<openfl.display.ShaderParameter<Float>>),
-								pos: pos
-							};
-						}
+						var kind = (count == null) ? FVar(macro:openfl.display.ShaderParameter<Float>) : FVar(macro:Array<openfl.display.ShaderParameter<Float>>);
+						field = {
+							name: name,
+							meta: [{name: ":keep", pos: pos}],
+							access: [fieldAccess],
+							kind: kind,
+							pos: pos
+						};
 				}
 			}
 

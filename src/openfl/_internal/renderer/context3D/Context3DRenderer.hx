@@ -114,6 +114,8 @@ class Context3DRenderer extends Context3DRendererAPI
 	private var __currentColorTransform:ColorTransform;
 	private var __currentDisplayShader:Shader;
 	private var __currentDrawCommand:Context3DDrawCommand;
+	private var __currentTexture:BitmapData;
+	private var __currentTextureID:Int;
 	private var __drawCommandList:List<Context3DDrawCommand>;
 	private var __currentGraphicsShader:Shader;
 	private var __currentRenderTarget:BitmapData;
@@ -236,15 +238,15 @@ class Context3DRenderer extends Context3DRendererAPI
 			__drawCommandPool = new ObjectPool<Context3DDrawCommand>(function()
 			{
 				return new Context3DDrawCommand();
-			} /*, function(command)
-					{
-						command.reset();
-				}*/);
+			}, function(command)
+			{
+				command.reset();
+			});
 
 			// TODO: Handle attr of different sizes?
 			__vertexAttributeBufferPool = new ObjectPool<VertexBuffer3D>(function()
 			{
-				return context3D.createVertexBuffer(Context3DVertexBufferData.MAX_LENGTH, 9, DYNAMIC_DRAW);
+				return context3D.createVertexBuffer(Context3DVertexBufferData.MAX_LENGTH, 10, DYNAMIC_DRAW);
 			});
 
 			__vertexGeometryBufferPool = new ObjectPool<VertexBuffer3D>(function()
@@ -268,7 +270,7 @@ class Context3DRenderer extends Context3DRendererAPI
 		}
 	}
 
-	public override function applyBitmapData(bitmapData:BitmapData, smooth:Bool, repeat:Bool = false):Void
+	public override function applyBitmapData(bitmapData:BitmapData, smooth:Bool, repeat:Bool = false, index:Int = 0):Void
 	{
 		if (__currentShaderBuffer != null)
 		{
@@ -292,10 +294,10 @@ class Context3DRenderer extends Context3DRendererAPI
 
 			if (__currentShader.__texture != null)
 			{
-				__currentShader.__texture[0].input = bitmapData;
-				__currentShader.__texture[0].filter = (smooth && __allowSmoothing) ? LINEAR : NEAREST;
-				__currentShader.__texture[0].mipFilter = MIPNONE;
-				__currentShader.__texture[0].wrap = repeat ? REPEAT : CLAMP;
+				__currentShader.__texture[index].input = bitmapData;
+				__currentShader.__texture[index].filter = (smooth && __allowSmoothing) ? LINEAR : NEAREST;
+				__currentShader.__texture[index].mipFilter = MIPNONE;
+				__currentShader.__texture[index].wrap = repeat ? REPEAT : CLAMP;
 			}
 
 			if (__currentShader.__textureSize != null)
@@ -305,7 +307,8 @@ class Context3DRenderer extends Context3DRendererAPI
 					__textureSizeValue[0] = bitmapData.__renderData.textureWidth;
 					__textureSizeValue[1] = bitmapData.__renderData.textureHeight;
 
-					__currentShader.__textureSize[0].value = __textureSizeValue;
+					// TODO: Update for multiple textures
+					__currentShader.__textureSize[index].value = __textureSizeValue;
 				}
 				else
 				{
@@ -663,6 +666,7 @@ class Context3DRenderer extends Context3DRendererAPI
 
 		// TODO: Integrate stats
 		// trace("Num Draw Calls: " + __drawCommandList.length);
+		var textures = null;
 
 		for (command in __drawCommandList)
 		{
@@ -676,7 +680,18 @@ class Context3DRenderer extends Context3DRendererAPI
 			setShader(shader);
 			__setBlendMode(command.blendMode);
 
-			applyBitmapData(command.bitmapData, command.smoothing);
+			// if (textures != command.textures)
+			// {
+			var i = 0;
+			for (texture in command.textures)
+			{
+				applyBitmapData(texture, command.smoothing, command.repeat, i);
+				i++;
+			}
+			// textures = command.textures;
+			// }
+
+			// applyBitmapData(command.bitmapData, command.smoothing);
 			applyMatrix(matrix);
 			useAlphaArray();
 			applyHasColorTransform(true);
@@ -689,12 +704,14 @@ class Context3DRenderer extends Context3DRendererAPI
 			if (shader.__textureCoord != null) context3D.setVertexBufferAt(shader.__textureCoord.index, command.vertexGeometryBuffer,
 				command.vertexGeometryBufferPosition + 2, FLOAT_2);
 
-			if (shader.__alpha != null) context3D.setVertexBufferAt(shader.__alpha.index, command.vertexAttributeBuffer,
+			if (shader.__textureID != null) context3D.setVertexBufferAt(shader.__textureID.index, command.vertexAttributeBuffer,
 				command.vertexAttributeBufferPosition, FLOAT_1);
+			if (shader.__alpha != null) context3D.setVertexBufferAt(shader.__alpha.index, command.vertexAttributeBuffer,
+				command.vertexAttributeBufferPosition + 1, FLOAT_1);
 			if (shader.__colorMultiplier != null) context3D.setVertexBufferAt(shader.__colorMultiplier.index, command.vertexAttributeBuffer,
-				command.vertexAttributeBufferPosition + 1, FLOAT_4);
+				command.vertexAttributeBufferPosition + 2, FLOAT_4);
 			if (shader.__colorOffset != null) context3D.setVertexBufferAt(shader.__colorOffset.index, command.vertexAttributeBuffer,
-				command.vertexAttributeBufferPosition + 5, FLOAT_4);
+				command.vertexAttributeBufferPosition + 6, FLOAT_4);
 
 			context3D.drawTriangles(command.indexBuffer, command.indexBufferPosition, command.numTriangles);
 
@@ -734,6 +751,7 @@ class Context3DRenderer extends Context3DRendererAPI
 
 		__drawCommandList.clear();
 		__currentDrawCommand = null;
+		__currentTexture = null;
 	}
 
 	private function __getAlpha(value:Float):Float
@@ -1157,7 +1175,9 @@ class Context3DRenderer extends Context3DRendererAPI
 		// TODO: More effective way of looping
 		for (i in 0...4)
 		{
-			if (!__vertexAttributeData.writeFloat(__currentAlpha) || !__vertexAttributeData.writeColorTransform(__currentColorTransform))
+			if (!__vertexAttributeData.writeFloat(__currentTextureID)
+				|| !__vertexAttributeData.writeFloat(__currentAlpha)
+				|| !__vertexAttributeData.writeColorTransform(__currentColorTransform))
 			{
 				if (__currentDrawCommand.numTriangles > 0)
 				{
@@ -1169,6 +1189,7 @@ class Context3DRenderer extends Context3DRendererAPI
 				__currentDrawCommand.vertexAttributeBuffer = __vertexAttributeBufferPool.get();
 				__currentDrawCommand.vertexAttributeBufferPosition = 0;
 
+				__vertexAttributeData.writeFloat(__currentTextureID);
 				__vertexAttributeData.writeFloat(__currentAlpha);
 				__vertexAttributeData.writeColorTransform(__currentColorTransform);
 			}
@@ -1811,26 +1832,6 @@ class Context3DRenderer extends Context3DRendererAPI
 		__currentShaderBuffer = shaderBuffer;
 	}
 
-	private function __setTexture(bitmapData:BitmapData, smooth:Bool, repeat:Bool = false):Void
-	{
-		// TODO: Switch to Context3D texture instead of BitmapData
-
-		if (#if disable_batch true || #end __currentDrawCommand == null
-			|| __currentDrawCommand.bitmapData != bitmapData
-			|| __currentDrawCommand.smoothing != smooth
-			|| __currentDrawCommand.repeat != repeat)
-		{
-			if (__currentDrawCommand == null || __currentDrawCommand.numTriangles > 0)
-			{
-				__initNewDrawCommand();
-			}
-
-			__currentDrawCommand.bitmapData = bitmapData;
-			__currentDrawCommand.smoothing = smooth;
-			__currentDrawCommand.repeat = repeat;
-		}
-	}
-
 	private function __setStyle(shader:Shader, blendMode:BlendMode, alpha:Float, colorTransform:ColorTransform):Void
 	{
 		if (#if disable_batch true || #end __currentDrawCommand == null
@@ -1848,6 +1849,58 @@ class Context3DRenderer extends Context3DRendererAPI
 
 		__currentAlpha = alpha;
 		__currentColorTransform = colorTransform;
+	}
+
+	private function __setTexture(bitmapData:BitmapData, smooth:Bool, repeat:Bool = false):Void
+	{
+		// TODO: Switch to Context3D texture instead of BitmapData
+		// TODO: Make max textures dynamic?
+
+		if (#if disable_batch true || #end __currentDrawCommand == null
+			|| __currentDrawCommand.smoothing != smooth
+			|| __currentDrawCommand.repeat != repeat)
+		{
+			if (__currentDrawCommand == null || __currentDrawCommand.numTriangles > 0)
+			{
+				__initNewDrawCommand();
+			}
+
+			__currentDrawCommand.smoothing = smooth;
+			__currentDrawCommand.repeat = repeat;
+		}
+
+		var hasTexture = (__currentTexture == bitmapData);
+		if (!hasTexture)
+		{
+			var i = 0;
+			for (texture in __currentDrawCommand.textures)
+			{
+				if (texture == bitmapData)
+				{
+					__currentTexture = bitmapData;
+					__currentTextureID = i;
+					hasTexture = true;
+				}
+				i++;
+			}
+		}
+
+		if (!hasTexture)
+		{
+			if (__currentDrawCommand.textures.length == 8)
+			{
+				if (__currentDrawCommand.numTriangles > 0)
+				{
+					__initNewDrawCommand();
+				}
+
+				__currentDrawCommand.textures = new List();
+			}
+
+			__currentDrawCommand.textures.add(bitmapData);
+			__currentTexture = bitmapData;
+			__currentTextureID = __currentDrawCommand.textures.length - 1;
+		}
 	}
 
 	private function __shouldCacheHardware(object:DisplayObject, value:Null<Bool>):Null<Bool>

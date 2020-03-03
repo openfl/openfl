@@ -218,7 +218,7 @@ class Shader
 	@:noCompletion private var __position:ShaderParameter<Float>;
 	@:noCompletion private var __texture:Array<ShaderInput<BitmapData>>;
 	@:noCompletion private var __textureCoord:ShaderParameter<Float>;
-	@:noCompletion private var __textureID:ShaderParameter<Int>;
+	@:noCompletion private var __textureID:ShaderParameter<Float>;
 	@:noCompletion private var __textureSize:Array<ShaderParameter<Float>>;
 
 	#if openfljs

@@ -43,7 +43,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		Binds a BitmapData object as the first active texture of the current active shader,
 		if compatible with OpenFL core shaders
 	**/
-	public function applyBitmapData(bitmapData:BitmapData, smooth:Bool, repeat:Bool = false):Void {}
+	public function applyBitmapData(bitmapData:BitmapData, smooth:Bool, repeat:Bool = false, index:Int = 0):Void {}
 
 	/**
 		Applies a color transform value to the active shader, if compatible with OpenFL
