@@ -490,7 +490,11 @@ class AGALConverter
 			glsl.add("#version 100\n");
 
 			// Required to set the default precision of vectors
+			glsl.add("#ifdef GL_FRAGMENT_PRECISION_HIGH\n");
 			glsl.add("precision highp float;\n");
+			glsl.add("#else\n");
+			glsl.add("precision mediump float;\n");
+			glsl.add("#endif\n");
 		}
 		else
 		{
