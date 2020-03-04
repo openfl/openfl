@@ -625,7 +625,7 @@ class CanvasGraphics
 					positionX = c.x;
 					positionY = c.y;
 
-					if (setStart)
+					if (setStart && c.x != startX && c.y != startY)
 					{
 						closeGap = true;
 					}
