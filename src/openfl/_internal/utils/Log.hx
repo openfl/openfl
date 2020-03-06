@@ -133,15 +133,8 @@ class Log
 		#end
 
 		#if js
-		if (untyped __js__("typeof console") == "undefined")
-		{
-			untyped __js__("console = {}");
-		}
-		var _console = untyped __js__("console");
-		if (_console.log == null)
-		{
-			_console.log = function() {};
-		}
+		untyped __js__("if (typeof console == undefined) console = {};");
+		untyped __js__("if (!console.log) console.log = function() {};");
 		#end
 	}
 }
