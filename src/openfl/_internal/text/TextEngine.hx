@@ -406,7 +406,8 @@ class TextEngine
 						systemFontDirectory + "/Core/Arial.ttf",
 						systemFontDirectory + "/Core/Helvetica.ttf",
 						systemFontDirectory + "/CoreAddition/Arial.ttf",
-						systemFontDirectory + "/CoreAddition/Helvetica.ttf"
+						systemFontDirectory + "/CoreAddition/Helvetica.ttf",
+						"/System/Library/Fonts/Supplemental/Arial.ttf"
 					];
 					#elseif linux
 					fontList = [new sys.io.Process("fc-match", ["sans", "-f%{file}"]).stdout.readLine()];
@@ -453,7 +454,8 @@ class TextEngine
 						systemFontDirectory + "/Core/Courier New.ttf",
 						systemFontDirectory + "/Core/Courier.ttf",
 						systemFontDirectory + "/CoreAddition/Courier New.ttf",
-						systemFontDirectory + "/CoreAddition/Courier.ttf"
+						systemFontDirectory + "/CoreAddition/Courier.ttf",
+						"/System/Library/Fonts/Supplemental/Courier New.ttf"
 					];
 					#elseif linux
 					fontList = [new sys.io.Process("fc-match", ["mono", "-f%{file}"]).stdout.readLine()];
@@ -516,7 +518,7 @@ class TextEngine
 			systemFontDirectory + "/Cache/Georgia.ttf", systemFontDirectory + "/Cache/Times.ttf", systemFontDirectory + "/Cache/Times New Roman.ttf",
 			systemFontDirectory + "/Core/Georgia.ttf", systemFontDirectory + "/Core/Times.ttf", systemFontDirectory + "/Core/Times New Roman.ttf",
 			systemFontDirectory + "/CoreAddition/Georgia.ttf", systemFontDirectory + "/CoreAddition/Times.ttf",
-			systemFontDirectory + "/CoreAddition/Times New Roman.ttf"
+			systemFontDirectory + "/CoreAddition/Times New Roman.ttf", "/System/Library/Fonts/Supplemental/Times New Roman.ttf"
 		];
 		#elseif linux
 		fontList = [new sys.io.Process("fc-match", ["serif", "-f%{file}"]).stdout.readLine()];
