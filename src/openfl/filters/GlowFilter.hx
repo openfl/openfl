@@ -249,15 +249,6 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 		var g = (__color >> 8) & 0xFF;
 		var b = __color & 0xFF;
 
-		if (__inner || __knockout)
-		{
-			sourceBitmapData.image.colorTransform(sourceBitmapData.image.rect, new ColorTransform(1, 1, 1, 0, 0, 0, 0, -255).__toLimeColorMatrix());
-			sourceBitmapData.image.dirty = true;
-			sourceBitmapData.image.version++;
-			bitmapData = sourceBitmapData.clone();
-			return bitmapData;
-		}
-
 		var finalImage = ImageDataUtil.gaussianBlur(bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle(), destPoint.__toLimeVector2(),
 			__blurX, __blurY, __quality, __strength);
 		finalImage.colorTransform(finalImage.rect, new ColorTransform(0, 0, 0, __alpha, r, g, b, 0).__toLimeColorMatrix());
