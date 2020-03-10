@@ -1511,7 +1511,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 			for (filter in __filters)
 			{
-				extension.__expand(-filter.__leftExtension, -filter.__topExtension, filter.__leftExtension + filter.__rightExtension, filter.__topExtension
+				extension.__expand(-filter.__leftExtension,
+					-filter.__topExtension, filter.__leftExtension
+					+ filter.__rightExtension,
+					filter.__topExtension
 					+ filter.__bottomExtension);
 			}
 
@@ -2372,7 +2375,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 							for (i in 0...filter.__numShaderPasses)
 							{
-								shader = filter.__initShader(childRenderer, i);
+								shader = filter.__initShader(childRenderer, i, filter.__preserveObject ? bitmap3 : null);
 								childRenderer.__setBlendMode(filter.__shaderBlendMode);
 								childRenderer.__setRenderTarget(bitmap2);
 								childRenderer.__renderFilterPass(bitmap, shader, filter.__smooth);
@@ -2380,13 +2383,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 								cacheBitmap = bitmap;
 								bitmap = bitmap2;
 								bitmap2 = cacheBitmap;
-							}
-
-							if (filter.__preserveObject)
-							{
-								childRenderer.__setBlendMode(NORMAL);
-								childRenderer.__setRenderTarget(bitmap);
-								childRenderer.__renderFilterPass(bitmap3, childRenderer.__defaultDisplayShader, filter.__smooth, false);
 							}
 
 							filter.__renderDirty = false;

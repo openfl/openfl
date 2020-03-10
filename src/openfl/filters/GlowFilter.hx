@@ -67,7 +67,12 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 @:access(openfl.geom.Rectangle)
 @:final class GlowFilter extends BitmapFilter
 {
-	@:noCompletion private static var __glowShader:GlowShader = new GlowShader();
+	@:noCompletion private static var __invertAlphaShader = new InvertAlphaShader();
+	@:noCompletion private static var __blurAlphaShader = new BlurAlphaShader();
+	@:noCompletion private static var __combineShader = new CombineShader();
+	@:noCompletion private static var __innerCombineShader = new InnerCombineShader();
+	@:noCompletion private static var __combineKnockoutShader = new CombineKnockoutShader();
+	@:noCompletion private static var __innerCombineKnockoutShader = new InnerCombineKnockoutShader();
 
 	/**
 		The alpha transparency value for the color. Valid values are 0 to 1. For
@@ -153,12 +158,18 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 			"blurY": {get: untyped __js__("function () { return this.get_blurY (); }"), set: untyped __js__("function (v) { return this.set_blurY (v); }")},
 			"color": {get: untyped __js__("function () { return this.get_color (); }"), set: untyped __js__("function (v) { return this.set_color (v); }")},
 			"inner": {get: untyped __js__("function () { return this.get_inner (); }"), set: untyped __js__("function (v) { return this.set_inner (v); }")},
-			"knockout": {get: untyped __js__("function () { return this.get_knockout (); }"),
-				set: untyped __js__("function (v) { return this.set_knockout (v); }")},
-			"quality": {get: untyped __js__("function () { return this.get_quality (); }"),
-				set: untyped __js__("function (v) { return this.set_quality (v); }")},
-			"strength": {get: untyped __js__("function () { return this.get_strength (); }"),
-				set: untyped __js__("function (v) { return this.set_strength (v); }")},
+			"knockout": {
+				get: untyped __js__("function () { return this.get_knockout (); }"),
+				set: untyped __js__("function (v) { return this.set_knockout (v); }")
+			},
+			"quality": {
+				get: untyped __js__("function () { return this.get_quality (); }"),
+				set: untyped __js__("function (v) { return this.set_quality (v); }")
+			},
+			"strength": {
+				get: untyped __js__("function () { return this.get_strength (); }"),
+				set: untyped __js__("function (v) { return this.set_strength (v); }")
+			},
 		});
 	}
 	#end
@@ -209,12 +220,14 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 
 		__color = color;
 		__alpha = alpha;
-		this.blurX = blurX;
-		this.blurY = blurY;
+		__blurX = blurX;
+		__blurY = blurY;
 		__strength = strength;
-		this.quality = quality;
 		__inner = inner;
 		__knockout = knockout;
+		__quality = quality;
+
+		__updateSize();
 
 		__needSecondBitmapData = true;
 		__preserveObject = true;
@@ -245,29 +258,91 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 		return sourceBitmapData;
 	}
 
-	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int):Shader
+	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int, sourceBitmapData:BitmapData):Shader
 	{
 		#if !macro
-		if (pass <= __horizontalPasses)
+		// First pass of inner glow is invert alpha
+		if (__inner && pass == 0)
 		{
-			var scale = Math.pow(0.5, pass >> 1);
-			__glowShader.uRadius.value[0] = blurX * scale;
-			__glowShader.uRadius.value[1] = 0;
+			return __invertAlphaShader;
+		}
+
+		var blurPass = pass - (__inner ? 1 : 0);
+		var numBlurPasses = __horizontalPasses + __verticalPasses;
+
+		if (blurPass < numBlurPasses)
+		{
+			var shader = __blurAlphaShader;
+			if (blurPass < __horizontalPasses)
+			{
+				var scale = Math.pow(0.5, blurPass >> 1) * 0.5;
+				shader.uRadius.value[0] = blurX * scale;
+				shader.uRadius.value[1] = 0;
+			}
+			else
+			{
+				var scale = Math.pow(0.5, (blurPass - __horizontalPasses) >> 1) * 0.5;
+				shader.uRadius.value[0] = 0;
+				shader.uRadius.value[1] = blurY * scale;
+			}
+			shader.uColor.value[0] = ((color >> 16) & 0xFF) / 255;
+			shader.uColor.value[1] = ((color >> 8) & 0xFF) / 255;
+			shader.uColor.value[2] = (color & 0xFF) / 255;
+			shader.uColor.value[3] = alpha;
+			shader.uStrength.value[0] = blurPass == (numBlurPasses - 1) ? __strength : 1.0;
+			return shader;
+		}
+		if (__inner)
+		{
+			if (__knockout)
+			{
+				var shader = __innerCombineKnockoutShader;
+				shader.sourceBitmap.input = sourceBitmapData;
+				shader.offset.value[0] = 0.0;
+				shader.offset.value[1] = 0.0;
+				return shader;
+			}
+			var shader = __innerCombineShader;
+			shader.sourceBitmap.input = sourceBitmapData;
+			shader.offset.value[0] = 0.0;
+			shader.offset.value[1] = 0.0;
+			return shader;
 		}
 		else
 		{
-			var scale = Math.pow(0.5, (pass - __horizontalPasses) >> 1);
-			__glowShader.uRadius.value[0] = 0;
-			__glowShader.uRadius.value[1] = blurY * scale;
+			if (__knockout)
+			{
+				var shader = __combineKnockoutShader;
+				shader.sourceBitmap.input = sourceBitmapData;
+				shader.offset.value[0] = 0.0;
+				shader.offset.value[1] = 0.0;
+				return shader;
+			}
+			var shader = __combineShader;
+			shader.sourceBitmap.input = sourceBitmapData;
+			shader.offset.value[0] = 0.0;
+			shader.offset.value[1] = 0.0;
+			return shader;
 		}
-
-		__glowShader.uColor.value[0] = ((color >> 16) & 0xFF) / 255;
-		__glowShader.uColor.value[1] = ((color >> 8) & 0xFF) / 255;
-		__glowShader.uColor.value[2] = (color & 0xFF) / 255;
-		__glowShader.uColor.value[3] = alpha * (__strength / __numShaderPasses);
+		#else
+		return null;
 		#end
+	}
 
-		return __glowShader;
+	@:noCompletion private function __updateSize():Void
+	{
+		__leftExtension = (__blurX > 0 ? Math.ceil(__blurX * 1.5) : 0);
+		__rightExtension = __leftExtension;
+		__topExtension = (__blurY > 0 ? Math.ceil(__blurY * 1.5) : 0);
+		__bottomExtension = __topExtension;
+		__calculateNumShaderPasses();
+	}
+
+	@:noCompletion private function __calculateNumShaderPasses():Void
+	{
+		__horizontalPasses = (__blurX <= 0) ? 0 : Math.round(__blurX * (__quality / 4)) + 1;
+		__verticalPasses = (__blurY <= 0) ? 0 : Math.round(__blurY * (__quality / 4)) + 1;
+		__numShaderPasses = __horizontalPasses + __verticalPasses + (__inner ? 2 : 1);
 	}
 
 	// Get & Set Methods
@@ -293,8 +368,7 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 		{
 			__blurX = value;
 			__renderDirty = true;
-			__leftExtension = (value > 0 ? Math.ceil(value * 1.5) : 0);
-			__rightExtension = __leftExtension;
+			__updateSize();
 		}
 		return value;
 	}
@@ -310,8 +384,7 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 		{
 			__blurY = value;
 			__renderDirty = true;
-			__topExtension = (value > 0 ? Math.ceil(value * 1.5) : 0);
-			__bottomExtension = __topExtension;
+			__updateSize();
 		}
 		return value;
 	}
@@ -334,7 +407,11 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 
 	@:noCompletion private function set_inner(value:Bool):Bool
 	{
-		if (value != __inner) __renderDirty = true;
+		if (value != __inner)
+		{
+			__renderDirty = true;
+			__calculateNumShaderPasses();
+		}
 		return __inner = value;
 	}
 
@@ -345,7 +422,11 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 
 	@:noCompletion private function set_knockout(value:Bool):Bool
 	{
-		if (value != __knockout) __renderDirty = true;
+		if (value != __knockout)
+		{
+			__renderDirty = true;
+			__calculateNumShaderPasses();
+		}
 		return __knockout = value;
 	}
 
@@ -356,14 +437,11 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 
 	@:noCompletion private function set_quality(value:Int):Int
 	{
-		// TODO: Quality effect with fewer passes?
-
-		__horizontalPasses = (__blurX <= 0) ? 0 : Math.round(__blurX * (value / 4)) + 1;
-		__verticalPasses = (__blurY <= 0) ? 0 : Math.round(__blurY * (value / 4)) + 1;
-
-		__numShaderPasses = __horizontalPasses + __verticalPasses;
-
-		if (value != __quality) __renderDirty = true;
+		if (value != __quality)
+		{
+			__renderDirty = true;
+			__calculateNumShaderPasses();
+		}
 		return __quality = value;
 	}
 
@@ -383,59 +461,259 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-private class GlowShader extends BitmapFilterShader
+private class InvertAlphaShader extends BitmapFilterShader
 {
-	@:glFragmentSource("uniform sampler2D openfl_Texture;
-		
-		uniform vec4 uColor;
-		
-		varying vec2 vBlurCoords[7];
-		
+	@:glFragmentSource("
+		uniform sampler2D openfl_Texture;
+		varying vec2 vTexCoord;
+
 		void main(void) {
-			
-			float a = 0.0;
-			a += texture2D(openfl_Texture, vBlurCoords[0]).a * 0.00443;
-			a += texture2D(openfl_Texture, vBlurCoords[1]).a * 0.05399;
-			a += texture2D(openfl_Texture, vBlurCoords[2]).a * 0.24197;
-			a += texture2D(openfl_Texture, vBlurCoords[3]).a * 0.39894;
-			a += texture2D(openfl_Texture, vBlurCoords[4]).a * 0.24197;
-			a += texture2D(openfl_Texture, vBlurCoords[5]).a * 0.05399;
-			a += texture2D(openfl_Texture, vBlurCoords[6]).a * 0.00443;
-			a *= uColor.a;
-			
-			gl_FragColor = vec4(uColor.rgb * a, a);
-			
-		}")
-	@:glVertexSource("attribute vec4 openfl_Position;
+			vec4 texel = texture2D(openfl_Texture, vTexCoord);
+			gl_FragColor = vec4(texel.rgb, 1.0 - texel.a);
+		}
+	")
+	@:glVertexSource("
+		attribute vec4 openfl_Position;
 		attribute vec2 openfl_TextureCoord;
-		
 		uniform mat4 openfl_Matrix;
-		uniform vec2 openfl_TextureSize;
-		
-		uniform vec2 uRadius;
-		varying vec2 vBlurCoords[7];
-		
+		varying vec2 vTexCoord;
+
 		void main(void) {
-			
 			gl_Position = openfl_Matrix * openfl_Position;
-			
-			vec2 r = uRadius / openfl_TextureSize;
-			vBlurCoords[0] = openfl_TextureCoord - r * 1.0;
-			vBlurCoords[1] = openfl_TextureCoord - r * 0.75;
-			vBlurCoords[2] = openfl_TextureCoord - r * 0.5;
-			vBlurCoords[3] = openfl_TextureCoord;
-			vBlurCoords[4] = openfl_TextureCoord + r * 0.5;
-			vBlurCoords[5] = openfl_TextureCoord + r * 0.75;
-			vBlurCoords[6] = openfl_TextureCoord + r * 1.0;
-			
-		}")
+			vTexCoord = openfl_TextureCoord;
+		}
+	")
 	public function new()
 	{
 		super();
+	}
+}
 
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+private class BlurAlphaShader extends BitmapFilterShader
+{
+	@:glFragmentSource("
+		uniform sampler2D openfl_Texture;
+		uniform vec4 uColor;
+		uniform float uStrength;
+		varying vec2 vTexCoord;
+		varying vec2 vBlurCoords[6];
+
+		void main(void)
+		{
+            vec4 texel = texture2D(openfl_Texture, vTexCoord);
+
+            vec3 contributions = vec3(0.00443, 0.05399, 0.24197);
+            vec3 top = vec3(
+                texture2D(openfl_Texture, vBlurCoords[0]).a,
+                texture2D(openfl_Texture, vBlurCoords[1]).a,
+                texture2D(openfl_Texture, vBlurCoords[2]).a
+            );
+            vec3 bottom = vec3(
+                texture2D(openfl_Texture, vBlurCoords[3]).a,
+                texture2D(openfl_Texture, vBlurCoords[4]).a,
+                texture2D(openfl_Texture, vBlurCoords[5]).a
+            );
+
+            float a = texel.a * 0.39894;
+			a += dot(top, contributions.xyz);
+            a += dot(bottom, contributions.zyx);
+
+			gl_FragColor = uColor * clamp(a * uStrength, 0.0, 1.0);
+		}
+	")
+	@:glVertexSource("
+		attribute vec4 openfl_Position;
+		attribute vec2 openfl_TextureCoord;
+
+		uniform mat4 openfl_Matrix;
+		uniform vec2 openfl_TextureSize;
+
+		uniform vec2 uRadius;
+		varying vec2 vTexCoord;
+		varying vec2 vBlurCoords[6];
+
+		void main(void) {
+
+			gl_Position = openfl_Matrix * openfl_Position;
+			vTexCoord = openfl_TextureCoord;
+
+			vec3 offset = vec3(0.5, 0.75, 1.0);
+			vec2 r = uRadius / openfl_TextureSize;
+			vBlurCoords[0] = openfl_TextureCoord - r * offset.z;
+			vBlurCoords[1] = openfl_TextureCoord - r * offset.y;
+			vBlurCoords[2] = openfl_TextureCoord - r * offset.x;
+			vBlurCoords[3] = openfl_TextureCoord + r * offset.x;
+			vBlurCoords[4] = openfl_TextureCoord + r * offset.y;
+			vBlurCoords[5] = openfl_TextureCoord + r * offset.z;
+		}
+	")
+	public function new()
+	{
+		super();
 		#if !macro
 		uRadius.value = [0, 0];
 		uColor.value = [0, 0, 0, 0];
+		uStrength.value = [1];
+		#end
+	}
+}
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+private class CombineShader extends BitmapFilterShader
+{
+	@:glFragmentSource("
+		uniform sampler2D openfl_Texture;
+		uniform sampler2D sourceBitmap;
+		varying vec4 textureCoords;
+
+		void main(void) {
+			vec4 src = texture2D(sourceBitmap, textureCoords.xy);
+			vec4 glow = texture2D(openfl_Texture, textureCoords.zw);
+
+			gl_FragColor = src + glow * (1.0 - src.a);
+		}
+	")
+	@:glVertexSource("attribute vec4 openfl_Position;
+		attribute vec2 openfl_TextureCoord;
+		uniform mat4 openfl_Matrix;
+		uniform vec2 openfl_TextureSize;
+		uniform vec2 offset;
+		varying vec4 textureCoords;
+
+		void main(void) {
+			gl_Position = openfl_Matrix * openfl_Position;
+			textureCoords = vec4(openfl_TextureCoord, openfl_TextureCoord - offset / openfl_TextureSize);
+		}
+	")
+	public function new()
+	{
+		super();
+		#if !macro
+		offset.value = [0, 0];
+		#end
+	}
+}
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+private class InnerCombineShader extends BitmapFilterShader
+{
+	@:glFragmentSource("
+		uniform sampler2D openfl_Texture;
+		uniform sampler2D sourceBitmap;
+		varying vec4 textureCoords;
+
+		void main(void) {
+			vec4 src = texture2D(sourceBitmap, textureCoords.xy);
+			vec4 glow = texture2D(openfl_Texture, textureCoords.zw);
+
+			gl_FragColor = vec4((src.rgb * (1.0 - glow.a)) + (glow.rgb * src.a), src.a);
+		}
+	")
+	@:glVertexSource("attribute vec4 openfl_Position;
+		attribute vec2 openfl_TextureCoord;
+		uniform mat4 openfl_Matrix;
+		uniform vec2 openfl_TextureSize;
+		uniform vec2 offset;
+		varying vec4 textureCoords;
+
+		void main(void) {
+			gl_Position = openfl_Matrix * openfl_Position;
+			textureCoords = vec4(openfl_TextureCoord, openfl_TextureCoord - offset / openfl_TextureSize);
+		}
+	")
+	public function new()
+	{
+		super();
+		#if !macro
+		offset.value = [0, 0];
+		#end
+	}
+}
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+private class CombineKnockoutShader extends BitmapFilterShader
+{
+	@:glFragmentSource("
+		uniform sampler2D openfl_Texture;
+		uniform sampler2D sourceBitmap;
+		varying vec4 textureCoords;
+
+		void main(void) {
+			vec4 src = texture2D(sourceBitmap, textureCoords.xy);
+			vec4 glow = texture2D(openfl_Texture, textureCoords.zw);
+
+			gl_FragColor = glow * (1.0 - src.a);
+		}
+	")
+	@:glVertexSource("attribute vec4 openfl_Position;
+		attribute vec2 openfl_TextureCoord;
+		uniform mat4 openfl_Matrix;
+		uniform vec2 openfl_TextureSize;
+		uniform vec2 offset;
+		varying vec4 textureCoords;
+
+		void main(void) {
+			gl_Position = openfl_Matrix * openfl_Position;
+			textureCoords = vec4(openfl_TextureCoord, openfl_TextureCoord - offset / openfl_TextureSize);
+		}
+	")
+	public function new()
+	{
+		super();
+		#if !macro
+		offset.value = [0, 0];
+		#end
+	}
+}
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+private class InnerCombineKnockoutShader extends BitmapFilterShader
+{
+	@:glFragmentSource("
+		uniform sampler2D openfl_Texture;
+		uniform sampler2D sourceBitmap;
+		varying vec4 textureCoords;
+
+		void main(void) {
+			vec4 src = texture2D(sourceBitmap, textureCoords.xy);
+			vec4 glow = texture2D(openfl_Texture, textureCoords.zw);
+
+			gl_FragColor = glow * src.a;
+		}
+	")
+	@:glVertexSource("attribute vec4 openfl_Position;
+		attribute vec2 openfl_TextureCoord;
+		uniform mat4 openfl_Matrix;
+		uniform vec2 openfl_TextureSize;
+		uniform vec2 offset;
+		varying vec4 textureCoords;
+
+		void main(void) {
+			gl_Position = openfl_Matrix * openfl_Position;
+			textureCoords = vec4(openfl_TextureCoord, openfl_TextureCoord - offset / openfl_TextureSize);
+		}
+	")
+	public function new()
+	{
+		super();
+		#if !macro
+		offset.value = [0, 0];
 		#end
 	}
 }

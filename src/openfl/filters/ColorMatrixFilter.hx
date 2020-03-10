@@ -214,7 +214,7 @@ import lime.math.RGBA;
 		return destBitmapData;
 	}
 
-	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int):Shader
+	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int, sourceBitmapData:BitmapData):Shader
 	{
 		__colorMatrixShader.init(matrix);
 		return __colorMatrixShader;
