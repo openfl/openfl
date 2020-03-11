@@ -13,12 +13,7 @@ import openfl.utils.ByteArray;
 	screen, the user typically touches the screen with his or her fingers or a
 	pointing device. You can develop applications that respond to basic touch
 	events(such as a single finger tap) with the TouchEvent class. Create
-	event listeners using the event types defined in this class. For user
-	interaction with multiple points of contact(such as several fingers moving
-	across a touch screen at the same time) use the related GestureEvent,
-	PressAndTapGestureEvent, and TransformGestureEvent classes. And, use the
-	properties and methods of these classes to construct event handlers that
-	respond to the user touching the device.
+	event listeners using the event types defined in this class. 
 
 	Use the Multitouch class to determine the current environment's support
 	for touch interaction, and to manage the support of touch interaction if
