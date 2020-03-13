@@ -61,7 +61,6 @@ import openfl.net.NetStream;
 	{
 		super(context);
 
-		__cacheTime = -1;
 		__textureTarget = __context.gl.TEXTURE_2D;
 	}
 
@@ -98,27 +97,31 @@ import openfl.net.NetStream;
 		}
 		#end
 
+		__cacheTime = -1;
 		__netStream = netStream;
 
-		#if (js && html5)
-		if (__netStream.__video.readyState >= 2)
+		if (__netStream != null)
 		{
-			Timer.delay(function()
+			#if (js && html5)
+			if (__netStream.__video.readyState >= 2)
 			{
-				__textureReady();
-			}, 0);
+				Timer.delay(function()
+				{
+					__textureReady();
+				}, 0);
+			}
+			else
+			{
+				__netStream.__video.addEventListener("canplay", __onCanPlay, false);
+			}
+			#end
 		}
-		else
-		{
-			__netStream.__video.addEventListener("canplay", __onCanPlay, false);
-		}
-		#end
 	}
 
 	public override function dispose():Void
 	{
 		#if openfl_html5
-		if (__netStream.__video != null)
+		if (__netStream != null && __netStream.__video != null)
 		{
 			__netStream.__video.removeEventListener("timeupdate", __onTimeUpdate);
 		}
@@ -136,7 +139,7 @@ import openfl.net.NetStream;
 
 	@:noCompletion private function __onTimeUpdate(_):Void
 	{
-		if (__netStream.__video.currentTime != __cacheTime && __netStream.__video.readyState >= 2)
+		if (__netStream != null && __netStream.__video.currentTime != __cacheTime && __netStream.__video.readyState >= 2)
 		{
 			__textureReady();
 		}
