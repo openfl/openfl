@@ -1139,7 +1139,6 @@ class NetStream extends EventDispatcher
 	@:noCompletion private var __backend:NetStreamBackend;
 	@:noCompletion private var __closed:Bool;
 	@:noCompletion private var __connection:NetConnection;
-	@:noCompletion @:isVar private var __seeking(get, set):Bool;
 	@:noCompletion private var __soundTransform:SoundTransform;
 
 	#if openfljs
@@ -2050,16 +2049,6 @@ class NetStream extends EventDispatcher
 	{
 		__backend.setSpeed(value);
 		return value;
-	}
-
-	@:noCompletion private function get___seeking():Bool
-	{
-		return __seeking || __backend.getSeeking();
-	}
-
-	@:noCompletion private function set___seeking(value:Bool):Bool
-	{
-		return __seeking = value;
 	}
 }
 

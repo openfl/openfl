@@ -89,6 +89,11 @@ import openfl.net.NetStream;
 	{
 		__backend.attachNetStream(netStream);
 	}
+
+	public override function dispose():Void
+	{
+		__backend.dispose();
+	}
 }
 
 #if openfl_gl

@@ -23,6 +23,7 @@ import js.html.VideoElement;
 @:access(openfl.events.Event)
 class OpenGLVideoTextureBackend extends OpenGLTextureBaseBackend
 {
+	private var cacheTime:Float;
 	private var netStream:NetStream;
 	private var parent:VideoTexture;
 	#if openfl_html5
@@ -48,10 +49,11 @@ class OpenGLVideoTextureBackend extends OpenGLTextureBaseBackend
 		#end
 
 		this.netStream = netStream;
+		cacheTime = -1;
 
 		#if openfl_html5
 		this.videoElement = netStream.__getVideoElement();
-		if (videoElement.readyState == 4)
+		if (videoElement.readyState == 2)
 		{
 			Timer.delay(function()
 			{
@@ -65,21 +67,42 @@ class OpenGLVideoTextureBackend extends OpenGLTextureBaseBackend
 		#end
 	}
 
+	public override function dispose():Void
+	{
+		#if openfl_html5
+		if (videoElement != null)
+		{
+			videoElement.removeEventListener("timeupdate", onTimeUpdate);
+		}
+		#end
+
+		super.dispose();
+	}
+
 	#if openfl_html5
 	private function onCanPlay(_):Void
 	{
+		videoElement.addEventListener("timeupdate", onTimeUpdate);
 		textureReady();
+	}
+
+	private function onTimeUpdate(_):Void
+	{
+		if (videoElement.currentTime != cacheTime && videoElement.readyState >= 2)
+		{
+			textureReady();
+		}
 	}
 	#end
 
 	private override function getTexture():GLTexture
 	{
 		#if openfl_html5
-		if ((!videoElement.paused || netStream.__seeking) && videoElement.readyState > 0)
+		if (videoElement.currentTime != cacheTime && videoElement.readyState >= 2)
 		{
-			netStream.__seeking = false;
 			contextBackend.bindGLTexture2D(glTextureID);
 			gl.texImage2D(GL.TEXTURE_2D, 0, GL.RGBA, GL.RGBA, GL.UNSIGNED_BYTE, videoElement);
+			cacheTime = videoElement.currentTime;
 		}
 		#end
 
