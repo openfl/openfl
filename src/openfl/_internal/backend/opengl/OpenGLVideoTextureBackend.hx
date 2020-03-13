@@ -44,7 +44,7 @@ class OpenGLVideoTextureBackend extends OpenGLTextureBaseBackend
 		#if openfl_html5
 		if (this.netStream != null)
 		{
-			this.netStream.__getVideoElement().removeEventListener("canplay", onCanPlay, false);
+			videoElement.removeEventListener("canplay", onCanPlay, false);
 		}
 		#end
 
@@ -52,17 +52,24 @@ class OpenGLVideoTextureBackend extends OpenGLTextureBaseBackend
 		cacheTime = -1;
 
 		#if openfl_html5
-		this.videoElement = netStream.__getVideoElement();
-		if (videoElement.readyState == 2)
+		if (netStream != null)
 		{
-			Timer.delay(function()
+			videoElement = netStream.__getVideoElement();
+			if (videoElement.readyState >= 2)
 			{
-				textureReady();
-			}, 0);
+				Timer.delay(function()
+				{
+					textureReady();
+				}, 0);
+			}
+			else
+			{
+				videoElement.addEventListener("canplay", onCanPlay, false);
+			}
 		}
 		else
 		{
-			videoElement.addEventListener("canplay", onCanPlay, false);
+			videoElement = null;
 		}
 		#end
 	}
