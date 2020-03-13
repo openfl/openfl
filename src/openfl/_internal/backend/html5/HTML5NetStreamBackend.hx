@@ -52,6 +52,13 @@ class HTML5NetStreamBackend
 		parent.time = 0;
 	}
 
+	private function dispatchStatus(code:String):Void
+	{
+		var event = new NetStatusEvent(NetStatusEvent.NET_STATUS, false, false, {code: code});
+		parent.__connection.dispatchEvent(event);
+		parent.dispatchEvent(event);
+	}
+
 	public function dispose():Void
 	{
 		close();
@@ -104,10 +111,12 @@ class HTML5NetStreamBackend
 		{
 			if (video.paused)
 			{
+				playStatus("NetStream.Play.Stop");
 				playStatus("NetStream.Play.pause");
 			}
 			else
 			{
+				playStatus("NetStream.Play.Start");
 				playStatus("NetStream.Play.playing");
 			}
 
@@ -133,8 +142,7 @@ class HTML5NetStreamBackend
 			time = video.duration;
 		}
 
-		parent.__seeking = true;
-		parent.__connection.dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, false, {code: "NetStream.SeekStart.Notify"}));
+		dispatchStatus("NetStream.SeekStart.Notify");
 		video.currentTime = time;
 	}
 
@@ -204,14 +212,15 @@ class HTML5NetStreamBackend
 
 	private function video_onEnd(event:Dynamic):Void
 	{
-		parent.__connection.dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, false, {code: "NetStream.Play.Stop"}));
-		parent.__connection.dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, false, {code: "NetStream.Play.Complete"}));
+		dispatchStatus("NetStream.Play.Stop");
+		dispatchStatus("NetStream.Play.Complete");
+		playStatus("NetStream.Play.Stop");
 		playStatus("NetStream.Play.Complete");
 	}
 
 	private function video_onError(event:Dynamic):Void
 	{
-		parent.__connection.dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, false, {code: "NetStream.Play.Stop"}));
+		dispatchStatus("NetStream.Play.Stop");
 		playStatus("NetStream.Play.error");
 	}
 
@@ -246,7 +255,8 @@ class HTML5NetStreamBackend
 
 	private function video_onPlaying(event:Dynamic):Void
 	{
-		parent.__connection.dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, false, {code: "NetStream.Play.Start"}));
+		dispatchStatus("NetStream.Play.Start");
+		playStatus("NetStream.Play.Start");
 		playStatus("NetStream.Play.playing");
 	}
 
@@ -254,8 +264,7 @@ class HTML5NetStreamBackend
 	{
 		playStatus("NetStream.Play.seeking");
 
-		// parent.__seeking = false;
-		parent.__connection.dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, false, {code: "NetStream.Seek.Complete"}));
+		dispatchStatus("NetStream.Seek.Complete");
 	}
 
 	private function video_onStalled(event:Dynamic):Void
