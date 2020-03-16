@@ -54,6 +54,7 @@ import openfl.net.NetStream;
 	**/
 	public var videoWidth(default, null):Int;
 
+	@:noCompletion private var __cacheTime:Float;
 	@:noCompletion private var __netStream:NetStream;
 
 	@:noCompletion private function new(context:Context3D)
@@ -96,40 +97,65 @@ import openfl.net.NetStream;
 		}
 		#end
 
+		__cacheTime = -1;
 		__netStream = netStream;
 
-		#if (js && html5)
-		if (__netStream.__video.readyState == 4)
+		if (__netStream != null)
 		{
-			Timer.delay(function()
+			#if (js && html5)
+			if (__netStream.__video.readyState >= 2)
 			{
-				__textureReady();
-			}, 0);
+				Timer.delay(function()
+				{
+					__textureReady();
+				}, 0);
+			}
+			else
+			{
+				__netStream.__video.addEventListener("canplay", __onCanPlay, false);
+			}
+			#end
 		}
-		else
+	}
+
+	public override function dispose():Void
+	{
+		#if openfl_html5
+		if (__netStream != null && __netStream.__video != null)
 		{
-			__netStream.__video.addEventListener("canplay", __onCanPlay, false);
+			__netStream.__video.removeEventListener("timeupdate", __onTimeUpdate);
 		}
 		#end
+
+		super.dispose();
 	}
 
 	#if (js && html5)
 	@:noCompletion private function __onCanPlay(_):Void
 	{
+		__netStream.__video.addEventListener("timeupdate", __onTimeUpdate);
 		__textureReady();
+	}
+
+	@:noCompletion private function __onTimeUpdate(_):Void
+	{
+		if (__netStream != null && __netStream.__video.currentTime != __cacheTime && __netStream.__video.readyState >= 2)
+		{
+			__textureReady();
+		}
 	}
 	#end
 
 	@:noCompletion private override function __getTexture():GLTexture
 	{
 		#if (js && html5)
-		if ((!__netStream.__video.paused || __netStream.__seeking) && __netStream.__video.readyState > 0)
+		if (__netStream.__video.currentTime != __cacheTime && __netStream.__video.readyState >= 2)
 		{
-			__netStream.__seeking = false;
 			var gl = __context.gl;
 
 			__context.__bindGLTexture2D(__textureID);
 			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, __netStream.__video);
+			__cacheTime = __netStream.__video.currentTime;
 		}
 		#end
 
