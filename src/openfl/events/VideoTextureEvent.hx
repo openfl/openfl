@@ -47,7 +47,7 @@ class VideoTextureEvent extends Event
 
 	public override function clone():VideoTextureEvent
 	{
-		var event = new VideoTextureEvent(type, bubbles, status, colorSpace);
+		var event = new VideoTextureEvent(type, bubbles, cancelable, status, colorSpace);
 		event.target = target;
 		event.currentTarget = currentTarget;
 		event.eventPhase = eventPhase;

@@ -1,0 +1,17 @@
+{
+	"compilerOptions": {
+		"target": "es6",
+		"baseUrl": "src",
+		"paths": {
+			"pako": ["./../node_modules/pako/dist/pako.min.js"]
+			// "openfl": ["src/openfl/index.js"],
+			// "openfl/*": ["src/openfl/*"]
+		},
+		"lib": [ "dom", "es2017" ],
+		"sourceMap": true
+	},
+	"include": [
+		"./src/**/*.ts"
+		// "./src/openfl/utils/ByteArray.ts"
+	]
+}
