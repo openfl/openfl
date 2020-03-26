@@ -136,14 +136,14 @@ private __applyStyle(displayObject: DisplayObject, setTransform : boolean, setAl
 if (displayObject.__worldZ != ++__z)
 {
 	displayObject.__worldZ = __z;
-	style.setProperty("z-index", Std.string(displayObject.__worldZ), null);
+	style.setProperty("z-index", String(displayObject.__worldZ), null);
 }
 
 if (setAlpha && displayObject.__worldAlphaChanged)
 {
 	if (displayObject.__worldAlpha < 1)
 	{
-		style.setProperty("opacity", Std.string(displayObject.__worldAlpha), null);
+		style.setProperty("opacity", String(displayObject.__worldAlpha), null);
 	}
 	else
 	{

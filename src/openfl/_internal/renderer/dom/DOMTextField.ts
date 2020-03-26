@@ -54,7 +54,7 @@ class DOMTextField
 
 		if (textField.__div == null)
 		{
-			div.style.width = Std.string(textEngine.width - 4) + "px";
+			div.style.width = String(textEngine.width - 4) + "px";
 		}
 
 		textEngine.__measuredHeight = div.clientHeight;

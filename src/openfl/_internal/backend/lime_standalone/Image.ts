@@ -27,7 +27,7 @@ import openfl.utils.Promise;
 class Image
 {
 	public buffer: ImageBuffer;
-	public data(get, set): UInt8Array;
+	public data(get, set): number8Array;
 	public dirty: boolean;
 	public format(get, set): PixelFormat;
 	public height: number;
@@ -801,7 +801,7 @@ private static __isWebP(bytes: Bytes) : boolean
 }
 
 	// Get & Set Methods
-	protected get_data(): UInt8Array
+	protected get_data(): number8Array
 {
 	if (buffer.data == null && buffer.width > 0 && buffer.height > 0)
 	{
@@ -811,7 +811,7 @@ private static __isWebP(bytes: Bytes) : boolean
 	return buffer.data;
 }
 
-	protected set_data(value: UInt8Array): UInt8Array
+	protected set_data(value: number8Array): number8Array
 {
 	return buffer.data = value;
 }

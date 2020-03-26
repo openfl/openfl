@@ -56,7 +56,7 @@ namespace openfl.display3D.textures
 			length of data.
 			@throws	Error	3768: The Stage3D API may not be used during background execution.
 		**/
-		public uploadFromByteArray(data: ByteArray, byteArrayOffset: UInt): void
+		public uploadFromByteArray(data: ByteArray, byteArrayOffset: number): void
 		{
 			__backend.uploadFromByteArray(data, byteArrayOffset);
 		}

@@ -23,5 +23,5 @@ class DummyVertexBuffer3DBackend
 
 	public uploadFromTypedArray(data: ArrayBufferView, byteLength: number = -1): void { }
 
-	public uploadFromVector(data: Vector<Float>, startVertex: number, numVertices: number): void { }
+	public uploadFromVector(data: Vector<number>, startVertex: number, numVertices: number): void { }
 }

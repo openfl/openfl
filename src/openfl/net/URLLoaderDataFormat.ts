@@ -1,7 +1,7 @@
 /**
-		The URLLoaderDataFormat class provides values that specify how downloaded
-		data is received.
-	**/
+	The URLLoaderDataFormat class provides values that specify how downloaded
+	data is received.
+**/
 export enum URLLoaderDataFormat
 {
 	/**

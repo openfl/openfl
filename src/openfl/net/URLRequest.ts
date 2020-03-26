@@ -1,40 +1,44 @@
+import URLRequestDefaults from "openfl/net/URLRequestDefaults";
+import URLRequestHeader from "openfl/net/URLRequestHeader";
+import URLRequestMethod from "openfl/net/URLRequestMethod";
+
 /**
-		The URLRequest class captures all of the information in a single HTTP
-		request. URLRequest objects are passed to the `load()` methods
-		of the Loader, URLStream, and URLLoader classes, and to other loading
-		operations, to initiate URL downloads. They are also passed to the
-		`upload()` and `download()` methods of the
-		FileReference class.
+	The URLRequest class captures all of the information in a single HTTP
+	request. URLRequest objects are passed to the `load()` methods
+	of the Loader, URLStream, and URLLoader classes, and to other loading
+	operations, to initiate URL downloads. They are also passed to the
+	`upload()` and `download()` methods of the
+	FileReference class.
 
-		A SWF file in the local-with-filesystem sandbox may not load data from,
-		or provide data to, a resource that is in the network sandbox.
+	A SWF file in the local-with-filesystem sandbox may not load data from,
+	or provide data to, a resource that is in the network sandbox.
 
-		By default, the calling SWF file and the URL you load must be in the
-		same domain. For example, a SWF file at www.adobe.com can load data only
-		from sources that are also at www.adobe.com. To load data from a different
-		domain, place a URL policy file on the server hosting the data.
+	By default, the calling SWF file and the URL you load must be in the
+	same domain. For example, a SWF file at www.adobe.com can load data only
+	from sources that are also at www.adobe.com. To load data from a different
+	domain, place a URL policy file on the server hosting the data.
 
-		 However, in Adobe AIR, content in the application security sandbox
-		(content installed with the AIR application) is not restricted by these
-		security limitations. For content running in Adobe AIR, files in the
-		application security sandbox can access URLs using any of the following URL
-		schemes:
-
-
-		* `http` and `https`
-		* `file`
-		* `app-storage`
-		* `app`
+		However, in Adobe AIR, content in the application security sandbox
+	(content installed with the AIR application) is not restricted by these
+	security limitations. For content running in Adobe AIR, files in the
+	application security sandbox can access URLs using any of the following URL
+	schemes:
 
 
-		Content running in Adobe AIR that is not in the application security
-		sandbox observes the same restrictions as content running in the browser
-		(in Flash Player), and loading is governed by the content's domain and any
-		permissions granted in URL policy files.
+	* `http` and `https`
+	* `file`
+	* `app-storage`
+	* `app`
 
-		For more information related to security, see the Flash Player Developer
-		Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
-	**/
+
+	Content running in Adobe AIR that is not in the application security
+	sandbox observes the same restrictions as content running in the browser
+	(in Flash Player), and loading is governed by the content's domain and any
+	permissions granted in URL policy files.
+
+	For more information related to security, see the Flash Player Developer
+	Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
+**/
 export default class URLRequest
 {
 	/**
@@ -128,7 +132,7 @@ export default class URLRequest
 		the type of data in the `data` property. See the note in the
 		description of the `contentType` property.
 	**/
-	public data: Dynamic;
+	public data: any;
 
 	/**
 		A string that uniquely identifies the signed Adobe platform component
@@ -341,26 +345,22 @@ export default class URLRequest
 			this.url = url;
 		}
 
-		contentType = null; // "application/x-www-form-urlencoded";
-		followRedirects = URLRequestDefaults.followRedirects;
+		this.contentType = null; // "application/x-www-form-urlencoded";
+		this.followRedirects = URLRequestDefaults.followRedirects;
 
 		if (URLRequestDefaults.idleTimeout > 0)
 		{
-			idleTimeout = URLRequestDefaults.idleTimeout;
+			this.idleTimeout = URLRequestDefaults.idleTimeout;
 		}
 		else
 		{
-			#if lime_default_timeout
-			idleTimeout = Std.parseInt(Compiler.getDefine("lime-default-timeout"));
-			#else
-			idleTimeout = 30000;
-			#end
+			this.idleTimeout = 30000;
 		}
 
-		manageCookies = URLRequestDefaults.manageCookies;
-		method = URLRequestMethod.GET;
-		requestHeaders = [];
-		userAgent = URLRequestDefaults.userAgent;
+		this.manageCookies = URLRequestDefaults.manageCookies;
+		this.method = URLRequestMethod.GET;
+		this.requestHeaders = [];
+		this.userAgent = URLRequestDefaults.userAgent;
 	}
 
 	// /** @hidden */ @:dox(hide) public useRedirectedURL (sourceRequest:URLRequest, wholeURL:Bool = false, pattern:Dynamic = null, replace:String = null):Void;

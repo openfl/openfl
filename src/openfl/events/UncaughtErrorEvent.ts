@@ -175,7 +175,7 @@ export class UncaughtErrorEvent extends ErrorEvent
 			} else if (Std.is(event.error, ErrorEvent)) {
 				message = cast(event.error, ErrorEvent).text;
 			} else {
-				message = Std.string(event.error);
+				message = String(event.error);
 			}
 		}
 		```

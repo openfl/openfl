@@ -158,7 +158,7 @@ declare namespace openfl
 			@param	fixed	Whether the Vector's length is fixed (`true`) or can be changed
 			(`false`). This value can also be set using the fixed property.
 		**/
-		public constructor(length: number, fixed: boolean);
+		public constructor(length?: number, fixed?: boolean);
 
 		/**
 			Concatenates the Vectors specified in the parameters list with the elements in

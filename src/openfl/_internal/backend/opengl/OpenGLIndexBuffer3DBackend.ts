@@ -26,7 +26,7 @@ class OpenGLIndexBuffer3DBackend
 	private glUsage: number;
 	private memoryUsage: number;
 	private parent: IndexBuffer3D;
-	private tempUInt16Array: UInt16Array;
+	private tempUInt16Array: number16Array;
 
 	public new(parent: IndexBuffer3D)
 	{

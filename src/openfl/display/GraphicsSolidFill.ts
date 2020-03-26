@@ -37,7 +37,7 @@ namespace openfl.display
 			@param alpha The alpha transparency value. Valid values are 0(fully
 						 transparent) to 1(fully opaque).
 		**/
-		public constructor(color: UInt = 0, alpha: number = 1)
+		public constructor(color: number = 0, alpha: number = 1)
 		{
 			this.alpha = alpha;
 			this.color = color;

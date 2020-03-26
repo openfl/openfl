@@ -974,7 +974,7 @@ namespace openfl.display
 
 		/**
 			Computes a 256-value binary number histogram of a BitmapData object. This method
-			returns a Vector object containing four Vector<Float> instances (four Vector
+			returns a Vector object containing four Vector<number> instances (four Vector
 			objects that contain Float objects). The four Vector instances represent the
 			red, green, blue and alpha components in order. Each Vector instance contains
 			256 values that represent the population count of an individual component value,
@@ -1118,7 +1118,7 @@ namespace openfl.display
 			transparency value.
 			@throws	TypeError	The `sourceBitmapData`, `sourceRect` or `destPoint` are `null`.
 		**/
-		public merge(sourceBitmapData: BitmapData, sourceRect: Rectangle, destPoint: Point, redMultiplier: UInt, greenMultiplier: UInt, blueMultiplier: UInt,
+		public merge(sourceBitmapData: BitmapData, sourceRect: Rectangle, destPoint: Point, redMultiplier: number, greenMultiplier: number, blueMultiplier: number,
 			alphaMultiplier: number): void
 		{
 			if (!readable || sourceBitmapData == null || !sourceBitmapData.readable || sourceRect == null || destPoint == null) return;
@@ -1390,7 +1390,7 @@ namespace openfl.display
 			@throws RangeError The vector array is not large enough to read all the
 							   pixel data.
 		**/
-		public setVector(rect: Rectangle, inputVector: Vector<Number>): void
+		public setVector(rect: Rectangle, inputVector: Vector<number>): void
 		{
 			if (inputVector == null) return;
 			__backend.setVector(rect, inputVector);

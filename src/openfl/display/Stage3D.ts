@@ -457,7 +457,7 @@ public requestContext3DMatchingProfiles(profiles: Vector<Context3DProfile>): voi
 	}
 			#end
 
-	__projectionTransform.copyRawDataFrom(new Vector<Float>([
+	__projectionTransform.copyRawDataFrom(new Vector<number>([
 		2.0 / (width > 0 ? width : 1), 0.0, 0.0, 0.0, 0.0, -2.0 / (height > 0 ? height : 1), 0.0, 0.0, 0.0, 0.0, -2.0 / 2000, 0.0, -1.0, 1.0, 0.0, 1.0
 	]));
 

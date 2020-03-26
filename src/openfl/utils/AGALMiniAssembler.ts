@@ -25,9 +25,10 @@
 	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **/
 
-import Log from "openfl/_internal/utils/Log";
 import Context3D from "openfl/display3D/Context3D";
 import Program3D from "openfl/display3D/Program3D";
+import ByteArray from "openfl/utils/ByteArray";
+import Endian from "openfl/utils/Endian";
 import Lib from "openfl/Lib";
 
 export default class AGALMiniAssembler
@@ -149,26 +150,28 @@ export default class AGALMiniAssembler
 
 	private static initialized: boolean = false;
 
-	public agalcode(default , null): ByteArray;
-	public error(default , null): string;
+	public get agalcode(): ByteArray { return this._agalcode; }
+	public get error(): string { return this._error; }
 	public verbose: boolean;
 
 	private debugEnabled: boolean = false;
+	private _agalcode: ByteArray;
+	private _error: string;
 
 	public constructor(debugging: boolean = false)
 	{
-		debugEnabled = debugging;
+		this.debugEnabled = debugging;
 
-		if (!initialized)
+		if (!AGALMiniAssembler.initialized)
 		{
-			init();
+			AGALMiniAssembler.init();
 		}
 	}
 
 	public assemble2(context3D: Context3D, version: number, vertexSource: string, fragmentSource: string): Program3D
 	{
-		var agalVertex = assemble(VERTEX, vertexSource, version);
-		var agalFragment = assemble(FRAGMENT, fragmentSource, version);
+		var agalVertex = this.assemble(AGALMiniAssembler.VERTEX, vertexSource, version);
+		var agalFragment = this.assemble(AGALMiniAssembler.FRAGMENT, fragmentSource, version);
 		var program = context3D.createProgram();
 		program.upload(agalVertex, agalFragment);
 		return program;
@@ -178,49 +181,49 @@ export default class AGALMiniAssembler
 	{
 		var start = Lib.getTimer();
 
-		agalcode = new ByteArray();
-		error = "";
+		this._agalcode = new ByteArray();
+		this._error = "";
 
 		var isFrag = false;
 
-		if (mode == FRAGMENT)
+		if (mode == AGALMiniAssembler.FRAGMENT)
 		{
 			isFrag = true;
 		}
-		else if (mode != VERTEX)
+		else if (mode != AGALMiniAssembler.VERTEX)
 		{
-			error = 'ERROR: mode needs to be "' + FRAGMENT + '" or "' + VERTEX + '" but is "' + mode + '".';
+			this._error = 'ERROR: mode needs to be "' + AGALMiniAssembler.FRAGMENT + '" or "' + AGALMiniAssembler.VERTEX + '" but is "' + mode + '".';
 		}
 
-		agalcode.endian = Endian.LITTLE_ENDIAN;
-		agalcode.writeByte(0xa0); // tag version
-		agalcode.writeUnsignedInt(version); // AGAL version, big endian, bit pattern will be 0x01000000
-		agalcode.writeByte(0xa1); // tag program id
-		agalcode.writeByte(isFrag ? 1 : 0); // vertex or fragment
+		this._agalcode.endian = Endian.LITTLE_ENDIAN;
+		this._agalcode.writeByte(0xa0); // tag version
+		this._agalcode.writeUnsignedInt(version); // AGAL version, big endian, bit pattern will be 0x01000000
+		this._agalcode.writeByte(0xa1); // tag program id
+		this._agalcode.writeByte(isFrag ? 1 : 0); // vertex or fragment
 
-		initregmap(version, ignoreLimits);
+		this.initregmap(version, ignoreLimits);
 
-		var lines = StringTools.replace(source, "\r", "\n").split("\n");
+		var lines = source.replace(/\r/g, "\n").split("\n");
 		var nops = 0;
 		var lng = lines.length;
 
-		var reg1 = ~/<.*>/g;
-		var reg2 = ~/([\w\.\-\+]+)/gi;
-		var reg3 = ~/^\w{3}/ig;
-		var reg4 = ~/vc\[([vofi][acostdip]?[d]?)(\d*)?(\.[xyzw](\+\d{1,3})?)?\](\.[xyzw]{1,4})?|([vofi][acostdip]?[d]?)(\d*)?(\.[xyzw]{1,4})?/gi;
-		var reg5 = ~/\[.*\]/ig;
-		var reg6 = ~/^\b[A-Za-z]{1,3}/ig;
-		var reg7 = ~/\d+/;
-		var reg8 = ~/(\.[xyzw]{1,4})/;
-		var reg9 = ~/[A-Za-z]{1,3}/ig;
-		var reg10 = ~/(\.[xyzw]{1,1})/;
-		var reg11 = ~/\+\d{1,3}/ig;
+		var reg1 = /<.*>/g;
+		var reg2 = /([\w\.\-\+]+)/gi;
+		var reg3 = /^\w{3}/ig;
+		var reg4 = /vc\[([vofi][acostdip]?[d]?)(\d*)?(\.[xyzw](\+\d{1,3})?)?\](\.[xyzw]{1,4})?|([vofi][acostdip]?[d]?)(\d*)?(\.[xyzw]{1,4})?/gi;
+		var reg5 = /\[.*\]/ig;
+		var reg6 = /^\b[A-Za-z]{1,3}/ig;
+		var reg7 = /\d+/;
+		var reg8 = /(\.[xyzw]{1,4})/;
+		var reg9 = /[A-Za-z]{1,3}/ig;
+		var reg10 = /(\.[xyzw]{1,1})/;
+		var reg11 = /\+\d{1,3}/ig;
 
 		var i = 0;
 
-		while (i < lng && error == "")
+		while (i < lng && this._error == "")
 		{
-			var line = StringTools.trim(lines[i]);
+			var line = lines[i].trim();
 
 			// remove comments
 			var startcomment = line.indexOf("//");
@@ -246,14 +249,14 @@ export default class AGALMiniAssembler
 			if (reg3.match(line))
 			{
 				opCode = reg3.matched(0);
-				opFound = OPMAP[opCode];
+				opFound = AGALMiniAssembler.OPMAP[opCode];
 			}
 
 			if (opFound == null)
 			{
 				if (line.length >= 3)
 				{
-					Log.warn("warning: bad line " + i + ": " + lines[i]);
+					console.warn("warning: bad line " + i + ": " + lines[i]);
 				}
 
 				i++;
@@ -261,16 +264,16 @@ export default class AGALMiniAssembler
 			}
 
 			// if debug is enabled, output the opcodes
-			if (debugEnabled)
+			if (this.debugEnabled)
 			{
-				Log.info(opFound);
+				console.info(opFound);
 			}
 
 			if (opFound == null)
 			{
 				if (line.length >= 3)
 				{
-					Log.warn("warning: bad line " + i + ": " + lines[i]);
+					console.warn("warning: bad line " + i + ": " + lines[i]);
 				}
 
 				i++;
@@ -279,35 +282,35 @@ export default class AGALMiniAssembler
 
 			line = line.substr(line.indexOf(opFound.name) + opFound.name.length);
 
-			if ((opFound.flags & OP_VERSION2 != 0) && version < 2)
+			if ((opFound.flags & AGALMiniAssembler.OP_VERSION2) != 0 && version < 2)
 			{
-				error = "error: opcode requires version 2.";
+				this._error = "error: opcode requires version 2.";
 				break;
 			}
 
-			if ((opFound.flags & OP_VERT_ONLY != 0) && isFrag)
+			if ((opFound.flags & AGALMiniAssembler.OP_VERT_ONLY) != 0 && isFrag)
 			{
-				error = "error: opcode is only allowed in vertex programs.";
+				this._error = "error: opcode is only allowed in vertex programs.";
 				break;
 			}
 
-			if ((opFound.flags & OP_FRAG_ONLY != 0) && !isFrag)
+			if ((opFound.flags & AGALMiniAssembler.OP_FRAG_ONLY) != 0 && !isFrag)
 			{
-				error = "error: opcode is only allowed in fragment programs.";
+				this._error = "error: opcode is only allowed in fragment programs.";
 				break;
 			}
 
-			if (verbose)
+			if (this.verbose)
 			{
-				Log.info("emit opcode=" + opFound);
+				console.info("emit opcode=" + opFound);
 			}
 
-			agalcode.writeUnsignedInt(opFound.emitCode);
+			this._agalcode.writeUnsignedInt(opFound.emitCode);
 			nops++;
 
-			if (nops > MAX_OPCODES)
+			if (nops > AGALMiniAssembler.MAX_OPCODES)
 			{
-				error = "error: too many opcodes. maximum is " + MAX_OPCODES + ".";
+				this._error = "error: too many opcodes. maximum is " + AGALMiniAssembler.MAX_OPCODES + ".";
 				break;
 			}
 
@@ -316,7 +319,7 @@ export default class AGALMiniAssembler
 
 			if (regs.length != opFound.numRegister)
 			{
-				error = "error: wrong number of operands. found " + regs.length + " but expected " + opFound.numRegister + ".";
+				this._error = "error: wrong number of operands. found " + regs.length + " but expected " + opFound.numRegister + ".";
 				break;
 			}
 
@@ -324,7 +327,7 @@ export default class AGALMiniAssembler
 			var pad = 64 + 64 + 32;
 			var regLength = regs.length;
 
-			for (j in 0...regLength)
+			for (let j = 0; j < regLength; j++)
 			{
 				var isRelative = false;
 				var relreg = match(regs[j], reg5);
@@ -333,9 +336,9 @@ export default class AGALMiniAssembler
 				{
 					regs[j] = StringTools.replace(regs[j], relreg[0], "0");
 
-					if (verbose)
+					if (this.verbose)
 					{
-						Log.info("IS REL");
+						console.info("IS REL");
 					}
 
 					isRelative = true;
@@ -344,47 +347,47 @@ export default class AGALMiniAssembler
 				var res = match(regs[j], reg6);
 				if (res.length == 0)
 				{
-					error = "error: could not parse operand " + j + " (" + regs[j] + ").";
+					this._error = "error: could not parse operand " + j + " (" + regs[j] + ").";
 					badreg = true;
 					break;
 				}
 
-				var regFound: Register = REGMAP[res[0]];
+				var regFound: Register = AGAMiniAssembler.REGMAP[res[0]];
 
 				// if debug is enabled, output the registers
-				if (debugEnabled)
+				if (this.debugEnabled)
 				{
-					Log.info(regFound);
+					console.info(regFound);
 				}
 
 				if (regFound == null)
 				{
-					error = "error: could not find register name for operand " + j + " (" + regs[j] + ").";
+					this._error = "error: could not find register name for operand " + j + " (" + regs[j] + ").";
 					badreg = true;
 					break;
 				}
 
 				if (isFrag)
 				{
-					if (regFound.flags & REG_FRAG == 0)
+					if (regFound.flags & AGALMiniAssembler.REG_FRAG == 0)
 					{
-						error = "error: register operand " + j + " (" + regs[j] + ") only allowed in vertex programs.";
+						this._error = "error: register operand " + j + " (" + regs[j] + ") only allowed in vertex programs.";
 						badreg = true;
 						break;
 					}
 
 					if (isRelative)
 					{
-						error = "error: register operand " + j + " (" + regs[j] + ") relative adressing not allowed in fragment programs.";
+						this._error = "error: register operand " + j + " (" + regs[j] + ") relative adressing not allowed in fragment programs.";
 						badreg = true;
 						break;
 					}
 				}
 				else
 				{
-					if (regFound.flags & REG_VERT == 0)
+					if (regFound.flags & AGALMiniAssembler.REG_VERT == 0)
 					{
-						error = "error: register operand " + j + " (" + regs[j] + ") only allowed in fragment programs.";
+						this._error = "error: register operand " + j + " (" + regs[j] + ") only allowed in fragment programs.";
 						badreg = true;
 						break;
 					}
@@ -393,7 +396,7 @@ export default class AGALMiniAssembler
 				regs[j] = regs[j].substr(regs[j].indexOf(regFound.name) + regFound.name.length);
 				// Log.info ("REGNUM: " + regs[j]);
 				var idxmatch = isRelative ? match(relreg[0], reg7) : match(regs[j], reg7);
-				var regidx: UInt = 0;
+				var regidx: number = 0;
 
 				if (idxmatch.length > 0)
 				{
@@ -402,22 +405,22 @@ export default class AGALMiniAssembler
 
 				if (regFound.range < regidx)
 				{
-					error = "error: register operand " + j + " (" + regs[j] + ") index exceeds limit of " + (regFound.range + 1) + ".";
+					this._error = "error: register operand " + j + " (" + regs[j] + ") index exceeds limit of " + (regFound.range + 1) + ".";
 					badreg = true;
 					break;
 				}
 
 				var regmask = 0;
 				var maskmatch = match(regs[j], reg8);
-				var isDest = (j == 0 && (opFound.flags & OP_NO_DEST == 0));
-				var isSampler = (j == 2 && (opFound.flags & OP_SPECIAL_TEX != 0));
+				var isDest = (j == 0 && (opFound.flags & AGALMiniAssembler.OP_NO_DEST) == 0);
+				var isSampler = (j == 2 && (opFound.flags & AGALMiniAssembler.OP_SPECIAL_TEX) != 0);
 				var reltype = 0;
-				var relsel: UInt = 0;
+				var relsel: number = 0;
 				var reloffset = 0;
 
 				if (isDest && isRelative)
 				{
-					error = "error: relative can not be destination";
+					this._error = "error: relative can not be destination";
 					badreg = true;
 					break;
 				}
@@ -425,7 +428,7 @@ export default class AGALMiniAssembler
 				if (maskmatch.length > 0)
 				{
 					regmask = 0;
-					var cv: UInt = 0;
+					var cv: number = 0;
 					var maskLength = maskmatch[0].length;
 					var k = 1;
 
@@ -467,11 +470,11 @@ export default class AGALMiniAssembler
 				if (isRelative)
 				{
 					var relname = match(relreg[0], reg9);
-					var regFoundRel: Register = REGMAP[relname[0]];
+					var regFoundRel: Register = AGALMiniAssembler.REGMAP[relname[0]];
 
 					if (regFoundRel == null)
 					{
-						error = "error: bad index register";
+						this._error = "error: bad index register";
 						badreg = true;
 						break;
 					}
@@ -481,7 +484,7 @@ export default class AGALMiniAssembler
 
 					if (selmatch.length == 0)
 					{
-						error = "error: bad index register select";
+						this._error = "error: bad index register select";
 						badreg = true;
 						break;
 					}
@@ -502,51 +505,51 @@ export default class AGALMiniAssembler
 
 					if (reloffset < 0 || reloffset > 255)
 					{
-						error = "error: index offset " + reloffset + " out of bounds. [0..255]";
+						this._error = "error: index offset " + reloffset + " out of bounds. [0..255]";
 						badreg = true;
 						break;
 					}
 
-					if (verbose)
+					if (this.verbose)
 					{
-						Log.info("RELATIVE: type=" + reltype + "==" + relname[0] + " sel=" + relsel + "==" + selmatch[0] + " idx=" + regidx + " offset="
+						console.info("RELATIVE: type=" + reltype + "==" + relname[0] + " sel=" + relsel + "==" + selmatch[0] + " idx=" + regidx + " offset="
 							+ reloffset);
 					}
 				}
 
-				if (verbose)
+				if (this.verbose)
 				{
-					Log.info("  emit argcode=" + regFound + "[" + regidx + "][" + regmask + "]");
+					console.info("  emit argcode=" + regFound + "[" + regidx + "][" + regmask + "]");
 				}
 
 				if (isDest)
 				{
-					agalcode.writeShort(regidx);
-					agalcode.writeByte(regmask);
-					agalcode.writeByte(regFound.emitCode);
+					this._agalcode.writeShort(regidx);
+					this._agalcode.writeByte(regmask);
+					this._agalcode.writeByte(regFound.emitCode);
 					pad -= 32;
 				}
 				else
 				{
 					if (isSampler)
 					{
-						if (verbose)
+						if (this.verbose)
 						{
-							Log.info("  emit sampler");
+							console.info("  emit sampler");
 						}
 
 						var samplerbits = 5; // type 5
 						var optsLength = opts == null ? 0 : opts.length;
 						var bias = 0.0;
 
-						for (k in 0...optsLength)
+						for (let k = 0; k < optsLength; k++)
 						{
-							if (verbose)
+							if (this.verbose)
 							{
-								Log.info("    opt: " + opts[k]);
+								console.info("    opt: " + opts[k]);
 							}
 
-							var optfound: Sampler = SAMPLEMAP[opts[k]];
+							var optfound: Sampler = AGALMiniAssembler.SAMPLEMAP[opts[k]];
 
 							if (optfound == null)
 							{
@@ -554,14 +557,14 @@ export default class AGALMiniAssembler
 								// Log.info ("Warning, unknown sampler option: " + opts[k]);
 								bias = Std.parseFloat(opts[k]);
 
-								if (verbose)
+								if (this.verbose)
 								{
-									Log.info("    bias: " + bias);
+									console.info("    bias: " + bias);
 								}
 							}
 							else
 							{
-								if (optfound.flag != SAMPLER_SPECIAL_SHIFT)
+								if (optfound.flag != AGALMiniAssembler.SAMPLER_SPECIAL_SHIFT)
 								{
 									samplerbits &= ~(0xf << optfound.flag);
 								}
@@ -570,14 +573,14 @@ export default class AGALMiniAssembler
 							}
 						}
 
-						agalcode.writeShort(regidx);
-						agalcode.writeByte(Std.int(bias * 8.0));
-						agalcode.writeByte(0);
-						agalcode.writeUnsignedInt(samplerbits);
+						this._agalcode.writeShort(regidx);
+						this._agalcode.writeByte(Std.int(bias * 8.0));
+						this._agalcode.writeByte(0);
+						this._agalcode.writeUnsignedInt(samplerbits);
 
-						if (verbose)
+						if (this.verbose)
 						{
-							Log.info("    bits: " + (samplerbits - 5));
+							console.info("    bits: " + (samplerbits - 5));
 						}
 
 						pad -= 64;
@@ -586,16 +589,16 @@ export default class AGALMiniAssembler
 					{
 						if (j == 0)
 						{
-							agalcode.writeUnsignedInt(0);
+							this._agalcode.writeUnsignedInt(0);
 							pad -= 32;
 						}
 
-						agalcode.writeShort(regidx);
-						agalcode.writeByte(reloffset);
-						agalcode.writeByte(regmask);
-						agalcode.writeByte(regFound.emitCode);
-						agalcode.writeByte(reltype);
-						agalcode.writeShort(isRelative ? (relsel | (1 << 15)) : 0);
+						this._agalcode.writeShort(regidx);
+						this._agalcode.writeByte(reloffset);
+						this._agalcode.writeByte(regmask);
+						this._agalcode.writeByte(regFound.emitCode);
+						this._agalcode.writeByte(reltype);
+						this._agalcode.writeShort(isRelative ? (relsel | (1 << 15)) : 0);
 
 						pad -= 64;
 					}
@@ -606,7 +609,7 @@ export default class AGALMiniAssembler
 			var j = 0;
 			while (j < pad)
 			{
-				agalcode.writeByte(0);
+				this._agalcode.writeByte(0);
 				j += 8;
 			}
 
@@ -618,20 +621,20 @@ export default class AGALMiniAssembler
 			i++;
 		}
 
-		if (error != "")
+		if (this._error != "")
 		{
-			error += "\n  at line " + i + " " + lines[i];
-			agalcode.length = 0;
-			Log.info(error);
+			this._error += "\n  at line " + i + " " + lines[i];
+			this._agalcode.length = 0;
+			console.info(this._error);
 		}
 
 		// Log.info the bytecode bytes if debugging is enabled
-		if (debugEnabled)
+		if (this.debugEnabled)
 		{
 			var dbgLine: string = "generated bytecode:";
-			var agalLength = agalcode.length;
+			var agalLength = this._agalcode.length;
 
-			for (index in 0...agalLength)
+			for (let index = 0; i < agalLength; index++)
 			{
 				if (index % 16 == 0)
 				{
@@ -643,7 +646,7 @@ export default class AGALMiniAssembler
 					dbgLine += " ";
 				}
 
-				var byteStr = StringTools.hex(agalcode[index], 2);
+				var byteStr = StringTools.hex(this._agalcode[index], 2);
 
 				if (byteStr.length < 2)
 				{
@@ -653,116 +656,116 @@ export default class AGALMiniAssembler
 				dbgLine += byteStr;
 			}
 
-			Log.info(dbgLine);
+			console.info(dbgLine);
 		}
 
-		if (verbose)
+		if (this.verbose)
 		{
-			Log.info("AGALMiniAssembler.assemble time: " + ((Lib.getTimer() - start) / 1000) + "s");
+			console.info("AGALMiniAssembler.assemble time: " + ((Lib.getTimer() - start) / 1000) + "s");
 		}
 
-		return agalcode;
+		return this._agalcode;
 	}
 
 	private initregmap(version: number, ignorelimits: boolean): void
 	{
-		REGMAP[VA] = new Register(VA, "vertex attribute", 0x0, ignorelimits ? 1024 : ((version == 1 || version == 2) ? 7 : 15), REG_VERT | REG_READ);
-		REGMAP[VC] = new Register(VC, "vertex constant", 0x1, ignorelimits ? 1024 : (version == 1 ? 127 : 249), REG_VERT | REG_READ);
-		REGMAP[VT] = new Register(VT, "vertex temporary", 0x2, ignorelimits ? 1024 : (version == 1 ? 7 : 25), REG_VERT | REG_WRITE | REG_READ);
-		REGMAP[VO] = new Register(VO, "vertex output", 0x3, ignorelimits ? 1024 : 0, REG_VERT | REG_WRITE);
-		REGMAP[VI] = new Register(VI, "varying", 0x4, ignorelimits ? 1024 : (version == 1 ? 7 : 9), REG_VERT | REG_FRAG | REG_READ | REG_WRITE);
-		REGMAP[FC] = new Register(FC, "fragment constant", 0x1, ignorelimits ? 1024 : (version == 1 ? 27 : ((version == 2) ? 63 : 199)), REG_FRAG | REG_READ);
-		REGMAP[FT] = new Register(FT, "fragment temporary", 0x2, ignorelimits ? 1024 : (version == 1 ? 7 : 25), REG_FRAG | REG_WRITE | REG_READ);
-		REGMAP[FS] = new Register(FS, "texture sampler", 0x5, ignorelimits ? 1024 : 7, REG_FRAG | REG_READ);
-		REGMAP[FO] = new Register(FO, "fragment output", 0x3, ignorelimits ? 1024 : (version == 1 ? 0 : 3), REG_FRAG | REG_WRITE);
-		REGMAP[FD] = new Register(FD, "fragment depth output", 0x6, ignorelimits ? 1024 : (version == 1 ? -1 : 0), REG_FRAG | REG_WRITE);
-		REGMAP[IID] = new Register(IID, "instance id", 0x7, ignorelimits ? 1024 : 0, REG_VERT | REG_READ);
+		AGALMiniAssembler.REGMAP[AGALMiniAssembler.VA] = new Register(AGALMiniAssembler.VA, "vertex attribute", 0x0, ignorelimits ? 1024 : ((version == 1 || version == 2) ? 7 : 15), AGALMiniAssembler.REG_VERT | AGALMiniAssembler.REG_READ);
+		AGALMiniAssembler.REGMAP[AGALMiniAssembler.VC] = new Register(AGALMiniAssembler.VC, "vertex constant", 0x1, ignorelimits ? 1024 : (version == 1 ? 127 : 249), AGALMiniAssembler.REG_VERT | AGALMiniAssembler.REG_READ);
+		AGALMiniAssembler.REGMAP[AGALMiniAssembler.VT] = new Register(AGALMiniAssembler.VT, "vertex temporary", 0x2, ignorelimits ? 1024 : (version == 1 ? 7 : 25), AGALMiniAssembler.REG_VERT | AGALMiniAssembler.REG_WRITE | AGALMiniAssembler.REG_READ);
+		AGALMiniAssembler.REGMAP[AGALMiniAssembler.VO] = new Register(AGALMiniAssembler.VO, "vertex output", 0x3, ignorelimits ? 1024 : 0, AGALMiniAssembler.REG_VERT | AGALMiniAssembler.REG_WRITE);
+		AGALMiniAssembler.REGMAP[AGALMiniAssembler.VI] = new Register(AGALMiniAssembler.VI, "varying", 0x4, ignorelimits ? 1024 : (version == 1 ? 7 : 9), AGALMiniAssembler.REG_VERT | AGALMiniAssembler.REG_FRAG | AGALMiniAssembler.REG_READ | AGALMiniAssembler.REG_WRITE);
+		AGALMiniAssembler.REGMAP[AGALMiniAssembler.FC] = new Register(AGALMiniAssembler.FC, "fragment constant", 0x1, ignorelimits ? 1024 : (version == 1 ? 27 : ((version == 2) ? 63 : 199)), AGALMiniAssembler.REG_FRAG | AGALMiniAssembler.REG_READ);
+		AGALMiniAssembler.REGMAP[AGALMiniAssembler.FT] = new Register(AGALMiniAssembler.FT, "fragment temporary", 0x2, ignorelimits ? 1024 : (version == 1 ? 7 : 25), AGALMiniAssembler.REG_FRAG | AGALMiniAssembler.REG_WRITE | AGALMiniAssembler.REG_READ);
+		AGALMiniAssembler.REGMAP[AGALMiniAssembler.FS] = new Register(AGALMiniAssembler.FS, "texture sampler", 0x5, ignorelimits ? 1024 : 7, AGALMiniAssembler.REG_FRAG | AGALMiniAssembler.REG_READ);
+		AGALMiniAssembler.REGMAP[AGALMiniAssembler.FO] = new Register(AGALMiniAssembler.FO, "fragment output", 0x3, ignorelimits ? 1024 : (version == 1 ? 0 : 3), AGALMiniAssembler.REG_FRAG | AGALMiniAssembler.REG_WRITE);
+		AGALMiniAssembler.REGMAP[AGALMiniAssembler.FD] = new Register(AGALMiniAssembler.FD, "fragment depth output", 0x6, ignorelimits ? 1024 : (version == 1 ? -1 : 0), AGALMiniAssembler.REG_FRAG | AGALMiniAssembler.REG_WRITE);
+		AGALMiniAssembler.REGMAP[AGALMiniAssembler.IID] = new Register(AGALMiniAssembler.IID, "instance id", 0x7, ignorelimits ? 1024 : 0, AGALMiniAssembler.REG_VERT | AGALMiniAssembler.REG_READ);
 
 		// aliases
-		REGMAP["op"] = REGMAP[VO];
-		REGMAP["i"] = REGMAP[VI];
-		REGMAP["v"] = REGMAP[VI];
-		REGMAP["oc"] = REGMAP[FO];
-		REGMAP["od"] = REGMAP[FD];
-		REGMAP["fi"] = REGMAP[VI];
+		AGALMiniAssembler.REGMAP["op"] = AGALMiniAssembler.REGMAP[AGALMiniAssembler.VO];
+		AGALMiniAssembler.REGMAP["i"] = AGALMiniAssembler.REGMAP[AGALMiniAssembler.VI];
+		AGALMiniAssembler.REGMAP["v"] = AGALMiniAssembler.REGMAP[AGALMiniAssembler.VI];
+		AGALMiniAssembler.REGMAP["oc"] = AGALMiniAssembler.REGMAP[AGALMiniAssembler.FO];
+		AGALMiniAssembler.REGMAP["od"] = AGALMiniAssembler.REGMAP[AGALMiniAssembler.FD];
+		AGALMiniAssembler.REGMAP["fi"] = AGALMiniAssembler.REGMAP[AGALMiniAssembler.VI];
 	}
 
 	private static init(): void
 	{
-		initialized = true;
+		AGALMiniAssembler.initialized = true;
 
 		// Fill the dictionaries with opcodes and registers
-		OPMAP[MOV] = new OpCode(MOV, 2, 0x00, 0);
-		OPMAP[ADD] = new OpCode(ADD, 3, 0x01, 0);
-		OPMAP[SUB] = new OpCode(SUB, 3, 0x02, 0);
-		OPMAP[MUL] = new OpCode(MUL, 3, 0x03, 0);
-		OPMAP[DIV] = new OpCode(DIV, 3, 0x04, 0);
-		OPMAP[RCP] = new OpCode(RCP, 2, 0x05, 0);
-		OPMAP[MIN] = new OpCode(MIN, 3, 0x06, 0);
-		OPMAP[MAX] = new OpCode(MAX, 3, 0x07, 0);
-		OPMAP[FRC] = new OpCode(FRC, 2, 0x08, 0);
-		OPMAP[SQT] = new OpCode(SQT, 2, 0x09, 0);
-		OPMAP[RSQ] = new OpCode(RSQ, 2, 0x0a, 0);
-		OPMAP[POW] = new OpCode(POW, 3, 0x0b, 0);
-		OPMAP[LOG] = new OpCode(LOG, 2, 0x0c, 0);
-		OPMAP[EXP] = new OpCode(EXP, 2, 0x0d, 0);
-		OPMAP[NRM] = new OpCode(NRM, 2, 0x0e, 0);
-		OPMAP[SIN] = new OpCode(SIN, 2, 0x0f, 0);
-		OPMAP[COS] = new OpCode(COS, 2, 0x10, 0);
-		OPMAP[CRS] = new OpCode(CRS, 3, 0x11, 0);
-		OPMAP[DP3] = new OpCode(DP3, 3, 0x12, 0);
-		OPMAP[DP4] = new OpCode(DP4, 3, 0x13, 0);
-		OPMAP[ABS] = new OpCode(ABS, 2, 0x14, 0);
-		OPMAP[NEG] = new OpCode(NEG, 2, 0x15, 0);
-		OPMAP[SAT] = new OpCode(SAT, 2, 0x16, 0);
-		OPMAP[M33] = new OpCode(M33, 3, 0x17, OP_SPECIAL_MATRIX);
-		OPMAP[M44] = new OpCode(M44, 3, 0x18, OP_SPECIAL_MATRIX);
-		OPMAP[M34] = new OpCode(M34, 3, 0x19, OP_SPECIAL_MATRIX);
-		OPMAP[DDX] = new OpCode(DDX, 2, 0x1a, OP_VERSION2 | OP_FRAG_ONLY);
-		OPMAP[DDY] = new OpCode(DDY, 2, 0x1b, OP_VERSION2 | OP_FRAG_ONLY);
-		OPMAP[IFE] = new OpCode(IFE, 2, 0x1c, OP_NO_DEST | OP_VERSION2 | OP_INCNEST | OP_SCALAR);
-		OPMAP[INE] = new OpCode(INE, 2, 0x1d, OP_NO_DEST | OP_VERSION2 | OP_INCNEST | OP_SCALAR);
-		OPMAP[IFG] = new OpCode(IFG, 2, 0x1e, OP_NO_DEST | OP_VERSION2 | OP_INCNEST | OP_SCALAR);
-		OPMAP[IFL] = new OpCode(IFL, 2, 0x1f, OP_NO_DEST | OP_VERSION2 | OP_INCNEST | OP_SCALAR);
-		OPMAP[ELS] = new OpCode(ELS, 0, 0x20, OP_NO_DEST | OP_VERSION2 | OP_INCNEST | OP_DECNEST | OP_SCALAR);
-		OPMAP[EIF] = new OpCode(EIF, 0, 0x21, OP_NO_DEST | OP_VERSION2 | OP_DECNEST | OP_SCALAR);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.MOV] = new OpCode(AGALMiniAssembler.MOV, 2, 0x00, 0);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.ADD] = new OpCode(AGALMiniAssembler.ADD, 3, 0x01, 0);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.SUB] = new OpCode(AGALMiniAssembler.SUB, 3, 0x02, 0);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.MUL] = new OpCode(AGALMiniAssembler.MUL, 3, 0x03, 0);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.DIV] = new OpCode(AGALMiniAssembler.DIV, 3, 0x04, 0);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.RCP] = new OpCode(AGALMiniAssembler.RCP, 2, 0x05, 0);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.MIN] = new OpCode(AGALMiniAssembler.MIN, 3, 0x06, 0);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.MAX] = new OpCode(AGALMiniAssembler.MAX, 3, 0x07, 0);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.FRC] = new OpCode(AGALMiniAssembler.FRC, 2, 0x08, 0);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.SQT] = new OpCode(AGALMiniAssembler.SQT, 2, 0x09, 0);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.RSQ] = new OpCode(AGALMiniAssembler.RSQ, 2, 0x0a, 0);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.POW] = new OpCode(AGALMiniAssembler.POW, 3, 0x0b, 0);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.LOG] = new OpCode(AGALMiniAssembler.LOG, 2, 0x0c, 0);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.EXP] = new OpCode(AGALMiniAssembler.EXP, 2, 0x0d, 0);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.NRM] = new OpCode(AGALMiniAssembler.NRM, 2, 0x0e, 0);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.SIN] = new OpCode(AGALMiniAssembler.SIN, 2, 0x0f, 0);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.COS] = new OpCode(AGALMiniAssembler.COS, 2, 0x10, 0);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.CRS] = new OpCode(AGALMiniAssembler.CRS, 3, 0x11, 0);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.DP3] = new OpCode(AGALMiniAssembler.DP3, 3, 0x12, 0);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.DP4] = new OpCode(AGALMiniAssembler.DP4, 3, 0x13, 0);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.ABS] = new OpCode(AGALMiniAssembler.ABS, 2, 0x14, 0);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.NEG] = new OpCode(AGALMiniAssembler.NEG, 2, 0x15, 0);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.SAT] = new OpCode(AGALMiniAssembler.SAT, 2, 0x16, 0);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.M33] = new OpCode(AGALMiniAssembler.M33, 3, 0x17, AGALMiniAssembler.OP_SPECIAL_MATRIX);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.M44] = new OpCode(AGALMiniAssembler.M44, 3, 0x18, AGALMiniAssembler.OP_SPECIAL_MATRIX);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.M34] = new OpCode(AGALMiniAssembler.M34, 3, 0x19, AGALMiniAssembler.OP_SPECIAL_MATRIX);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.DDX] = new OpCode(AGALMiniAssembler.DDX, 2, 0x1a, AGALMiniAssembler.OP_VERSION2 | AGALMiniAssembler.OP_FRAG_ONLY);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.DDY] = new OpCode(AGALMiniAssembler.DDY, 2, 0x1b, AGALMiniAssembler.OP_VERSION2 | AGALMiniAssembler.OP_FRAG_ONLY);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.IFE] = new OpCode(AGALMiniAssembler.IFE, 2, 0x1c, AGALMiniAssembler.OP_NO_DEST | AGALMiniAssembler.OP_VERSION2 | AGALMiniAssembler.OP_INCNEST | AGALMiniAssembler.OP_SCALAR);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.INE] = new OpCode(AGALMiniAssembler.INE, 2, 0x1d, AGALMiniAssembler.OP_NO_DEST | AGALMiniAssembler.OP_VERSION2 | AGALMiniAssembler.OP_INCNEST | AGALMiniAssembler.OP_SCALAR);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.IFG] = new OpCode(AGALMiniAssembler.IFG, 2, 0x1e, AGALMiniAssembler.OP_NO_DEST | AGALMiniAssembler.OP_VERSION2 | AGALMiniAssembler.OP_INCNEST | AGALMiniAssembler.OP_SCALAR);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.IFL] = new OpCode(AGALMiniAssembler.IFL, 2, 0x1f, AGALMiniAssembler.OP_NO_DEST | AGALMiniAssembler.OP_VERSION2 | AGALMiniAssembler.OP_INCNEST | AGALMiniAssembler.OP_SCALAR);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.ELS] = new OpCode(AGALMiniAssembler.ELS, 0, 0x20, AGALMiniAssembler.OP_NO_DEST | AGALMiniAssembler.OP_VERSION2 | AGALMiniAssembler.OP_INCNEST | AGALMiniAssembler.OP_DECNEST | AGALMiniAssembler.OP_SCALAR);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.EIF] = new OpCode(AGALMiniAssembler.EIF, 0, 0x21, AGALMiniAssembler.OP_NO_DEST | AGALMiniAssembler.OP_VERSION2 | AGALMiniAssembler.OP_DECNEST | AGALMiniAssembler.OP_SCALAR);
 		// space
 		// OPMAP[TED] = new OpCode (TED, 3, 0x26, OP_FRAG_ONLY | OP_SPECIAL_TEX | OP_VERSION2); //ted is not available in AGAL2
-		OPMAP[KIL] = new OpCode(KIL, 1, 0x27, OP_NO_DEST | OP_FRAG_ONLY);
-		OPMAP[TEX] = new OpCode(TEX, 3, 0x28, OP_FRAG_ONLY | OP_SPECIAL_TEX);
-		OPMAP[SGE] = new OpCode(SGE, 3, 0x29, 0);
-		OPMAP[SLT] = new OpCode(SLT, 3, 0x2a, 0);
-		OPMAP[SGN] = new OpCode(SGN, 2, 0x2b, 0);
-		OPMAP[SEQ] = new OpCode(SEQ, 3, 0x2c, 0);
-		OPMAP[SNE] = new OpCode(SNE, 3, 0x2d, 0);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.KIL] = new OpCode(AGALMiniAssembler.KIL, 1, 0x27, AGALMiniAssembler.OP_NO_DEST | AGALMiniAssembler.OP_FRAG_ONLY);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.TEX] = new OpCode(AGALMiniAssembler.TEX, 3, 0x28, AGALMiniAssembler.OP_FRAG_ONLY | AGALMiniAssembler.OP_SPECIAL_TEX);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.SGE] = new OpCode(AGALMiniAssembler.SGE, 3, 0x29, 0);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.SLT] = new OpCode(AGALMiniAssembler.SLT, 3, 0x2a, 0);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.SGN] = new OpCode(AGALMiniAssembler.SGN, 2, 0x2b, 0);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.SEQ] = new OpCode(AGALMiniAssembler.SEQ, 3, 0x2c, 0);
+		AGALMiniAssembler.OPMAP[AGALMiniAssembler.SNE] = new OpCode(AGALMiniAssembler.SNE, 3, 0x2d, 0);
 
-		SAMPLEMAP[RGBA] = new Sampler(RGBA, SAMPLER_TYPE_SHIFT, 0);
-		SAMPLEMAP[COMPRESSED] = new Sampler(COMPRESSED, SAMPLER_TYPE_SHIFT, 1);
-		SAMPLEMAP[COMPRESSEDALPHA] = new Sampler(COMPRESSEDALPHA, SAMPLER_TYPE_SHIFT, 2);
-		SAMPLEMAP[DXT1] = new Sampler(DXT1, SAMPLER_TYPE_SHIFT, 1);
-		SAMPLEMAP[DXT5] = new Sampler(DXT5, SAMPLER_TYPE_SHIFT, 2);
-		SAMPLEMAP[VIDEO] = new Sampler(VIDEO, SAMPLER_TYPE_SHIFT, 3);
-		SAMPLEMAP[D2] = new Sampler(D2, SAMPLER_DIM_SHIFT, 0);
-		SAMPLEMAP[D3] = new Sampler(D3, SAMPLER_DIM_SHIFT, 2);
-		SAMPLEMAP[CUBE] = new Sampler(CUBE, SAMPLER_DIM_SHIFT, 1);
-		SAMPLEMAP[MIPNEAREST] = new Sampler(MIPNEAREST, SAMPLER_MIPMAP_SHIFT, 1);
-		SAMPLEMAP[MIPLINEAR] = new Sampler(MIPLINEAR, SAMPLER_MIPMAP_SHIFT, 2);
-		SAMPLEMAP[MIPNONE] = new Sampler(MIPNONE, SAMPLER_MIPMAP_SHIFT, 0);
-		SAMPLEMAP[NOMIP] = new Sampler(NOMIP, SAMPLER_MIPMAP_SHIFT, 0);
-		SAMPLEMAP[NEAREST] = new Sampler(NEAREST, SAMPLER_FILTER_SHIFT, 0);
-		SAMPLEMAP[LINEAR] = new Sampler(LINEAR, SAMPLER_FILTER_SHIFT, 1);
-		SAMPLEMAP[ANISOTROPIC2X] = new Sampler(ANISOTROPIC2X, SAMPLER_FILTER_SHIFT, 2);
-		SAMPLEMAP[ANISOTROPIC4X] = new Sampler(ANISOTROPIC4X, SAMPLER_FILTER_SHIFT, 3);
-		SAMPLEMAP[ANISOTROPIC8X] = new Sampler(ANISOTROPIC8X, SAMPLER_FILTER_SHIFT, 4);
-		SAMPLEMAP[ANISOTROPIC16X] = new Sampler(ANISOTROPIC16X, SAMPLER_FILTER_SHIFT, 5);
-		SAMPLEMAP[CENTROID] = new Sampler(CENTROID, SAMPLER_SPECIAL_SHIFT, 1 << 0);
-		SAMPLEMAP[SINGLE] = new Sampler(SINGLE, SAMPLER_SPECIAL_SHIFT, 1 << 1);
-		SAMPLEMAP[IGNORESAMPLER] = new Sampler(IGNORESAMPLER, SAMPLER_SPECIAL_SHIFT, 1 << 2);
-		SAMPLEMAP[REPEAT] = new Sampler(REPEAT, SAMPLER_REPEAT_SHIFT, 1);
-		SAMPLEMAP[WRAP] = new Sampler(WRAP, SAMPLER_REPEAT_SHIFT, 1);
-		SAMPLEMAP[CLAMP] = new Sampler(CLAMP, SAMPLER_REPEAT_SHIFT, 0);
-		SAMPLEMAP[CLAMP_U_REPEAT_V] = new Sampler(CLAMP_U_REPEAT_V, SAMPLER_REPEAT_SHIFT, 2);
-		SAMPLEMAP[REPEAT_U_CLAMP_V] = new Sampler(REPEAT_U_CLAMP_V, SAMPLER_REPEAT_SHIFT, 3);
+		AGALMiniAssembler.SAMPLEMAP[AGALMiniAssembler.RGBA] = new Sampler(AGALMiniAssembler.RGBA, AGALMiniAssembler.SAMPLER_TYPE_SHIFT, 0);
+		AGALMiniAssembler.SAMPLEMAP[AGALMiniAssembler.COMPRESSED] = new Sampler(AGALMiniAssembler.COMPRESSED, AGALMiniAssembler.SAMPLER_TYPE_SHIFT, 1);
+		AGALMiniAssembler.SAMPLEMAP[AGALMiniAssembler.COMPRESSEDALPHA] = new Sampler(AGALMiniAssembler.COMPRESSEDALPHA, AGALMiniAssembler.SAMPLER_TYPE_SHIFT, 2);
+		AGALMiniAssembler.SAMPLEMAP[AGALMiniAssembler.DXT1] = new Sampler(AGALMiniAssembler.DXT1, AGALMiniAssembler.SAMPLER_TYPE_SHIFT, 1);
+		AGALMiniAssembler.SAMPLEMAP[AGALMiniAssembler.DXT5] = new Sampler(AGALMiniAssembler.DXT5, AGALMiniAssembler.SAMPLER_TYPE_SHIFT, 2);
+		AGALMiniAssembler.SAMPLEMAP[AGALMiniAssembler.VIDEO] = new Sampler(AGALMiniAssembler.VIDEO, AGALMiniAssembler.SAMPLER_TYPE_SHIFT, 3);
+		AGALMiniAssembler.SAMPLEMAP[AGALMiniAssembler.D2] = new Sampler(AGALMiniAssembler.D2, AGALMiniAssembler.SAMPLER_DIM_SHIFT, 0);
+		AGALMiniAssembler.SAMPLEMAP[AGALMiniAssembler.D3] = new Sampler(AGALMiniAssembler.D3, AGALMiniAssembler.SAMPLER_DIM_SHIFT, 2);
+		AGALMiniAssembler.SAMPLEMAP[AGALMiniAssembler.CUBE] = new Sampler(AGALMiniAssembler.CUBE, AGALMiniAssembler.SAMPLER_DIM_SHIFT, 1);
+		AGALMiniAssembler.SAMPLEMAP[AGALMiniAssembler.MIPNEAREST] = new Sampler(AGALMiniAssembler.MIPNEAREST, AGALMiniAssembler.SAMPLER_MIPMAP_SHIFT, 1);
+		AGALMiniAssembler.SAMPLEMAP[AGALMiniAssembler.MIPLINEAR] = new Sampler(AGALMiniAssembler.MIPLINEAR, AGALMiniAssembler.SAMPLER_MIPMAP_SHIFT, 2);
+		AGALMiniAssembler.SAMPLEMAP[AGALMiniAssembler.MIPNONE] = new Sampler(AGALMiniAssembler.MIPNONE, AGALMiniAssembler.SAMPLER_MIPMAP_SHIFT, 0);
+		AGALMiniAssembler.SAMPLEMAP[AGALMiniAssembler.NOMIP] = new Sampler(AGALMiniAssembler.NOMIP, AGALMiniAssembler.SAMPLER_MIPMAP_SHIFT, 0);
+		AGALMiniAssembler.SAMPLEMAP[AGALMiniAssembler.NEAREST] = new Sampler(AGALMiniAssembler.NEAREST, AGALMiniAssembler.SAMPLER_FILTER_SHIFT, 0);
+		AGALMiniAssembler.SAMPLEMAP[AGALMiniAssembler.LINEAR] = new Sampler(AGALMiniAssembler.LINEAR, AGALMiniAssembler.SAMPLER_FILTER_SHIFT, 1);
+		AGALMiniAssembler.SAMPLEMAP[AGALMiniAssembler.ANISOTROPIC2X] = new Sampler(AGALMiniAssembler.ANISOTROPIC2X, AGALMiniAssembler.SAMPLER_FILTER_SHIFT, 2);
+		AGALMiniAssembler.SAMPLEMAP[AGALMiniAssembler.ANISOTROPIC4X] = new Sampler(AGALMiniAssembler.ANISOTROPIC4X, AGALMiniAssembler.SAMPLER_FILTER_SHIFT, 3);
+		AGALMiniAssembler.SAMPLEMAP[AGALMiniAssembler.ANISOTROPIC8X] = new Sampler(AGALMiniAssembler.ANISOTROPIC8X, AGALMiniAssembler.SAMPLER_FILTER_SHIFT, 4);
+		AGALMiniAssembler.SAMPLEMAP[AGALMiniAssembler.ANISOTROPIC16X] = new Sampler(AGALMiniAssembler.ANISOTROPIC16X, AGALMiniAssembler.SAMPLER_FILTER_SHIFT, 5);
+		AGALMiniAssembler.SAMPLEMAP[AGALMiniAssembler.CENTROID] = new Sampler(AGALMiniAssembler.CENTROID, AGALMiniAssembler.SAMPLER_SPECIAL_SHIFT, 1 << 0);
+		AGALMiniAssembler.SAMPLEMAP[AGALMiniAssembler.SINGLE] = new Sampler(AGALMiniAssembler.SINGLE, AGALMiniAssembler.SAMPLER_SPECIAL_SHIFT, 1 << 1);
+		AGALMiniAssembler.SAMPLEMAP[AGALMiniAssembler.IGNORESAMPLER] = new Sampler(AGALMiniAssembler.IGNORESAMPLER, AGALMiniAssembler.SAMPLER_SPECIAL_SHIFT, 1 << 2);
+		AGALMiniAssembler.SAMPLEMAP[AGALMiniAssembler.REPEAT] = new Sampler(AGALMiniAssembler.REPEAT, AGALMiniAssembler.SAMPLER_REPEAT_SHIFT, 1);
+		AGALMiniAssembler.SAMPLEMAP[AGALMiniAssembler.WRAP] = new Sampler(AGALMiniAssembler.WRAP, AGALMiniAssembler.SAMPLER_REPEAT_SHIFT, 1);
+		AGALMiniAssembler.SAMPLEMAP[AGALMiniAssembler.CLAMP] = new Sampler(AGALMiniAssembler.CLAMP, AGALMiniAssembler.SAMPLER_REPEAT_SHIFT, 0);
+		AGALMiniAssembler.SAMPLEMAP[AGALMiniAssembler.CLAMP_U_REPEAT_V] = new Sampler(AGALMiniAssembler.CLAMP_U_REPEAT_V, AGALMiniAssembler.SAMPLER_REPEAT_SHIFT, 2);
+		AGALMiniAssembler.SAMPLEMAP[AGALMiniAssembler.REPEAT_U_CLAMP_V] = new Sampler(AGALMiniAssembler.REPEAT_U_CLAMP_V, AGALMiniAssembler.SAMPLER_REPEAT_SHIFT, 3);
 	}
 
 	private match(value: string, reg: EReg): Array<string>
@@ -782,14 +785,14 @@ export default class AGALMiniAssembler
 	}
 }
 
-private class OpCode
+class OpCode
 {
-	public emitCode(default , null): number;
-	public flags(default , null): number;
-	public name(default , null): string;
-	public numRegister(default , null): number;
+	public readonly emitCode: number;
+	public readonly flags: number;
+	public readonly name: string;
+	public readonly numRegister: number;
 
-	public new(name: string, numRegister: number, emitCode: number, flags: number)
+	public constructor(name: string, numRegister: number, emitCode: number, flags: number)
 	{
 		this.name = name;
 		this.numRegister = numRegister;
@@ -799,19 +802,19 @@ private class OpCode
 
 	public toString(): string
 	{
-		return "[OpCode name=\"" + name + "\", numRegister=" + numRegister + ", emitCode=" + emitCode + ", flags=" + flags + "]";
+		return "[OpCode name=\"" + this.name + "\", numRegister=" + this.numRegister + ", emitCode=" + this.emitCode + ", flags=" + this.flags + "]";
 	}
 }
 
-private class Register
+class Register
 {
-	public emitCode(default , null): UInt;
-	public name(default , null): string;
-	public longName(default , null): string;
-	public flags(default , null): UInt;
-	public range(default , null): UInt;
+	public readonly emitCode: number;
+	public readonly name: string;
+	public readonly longName: string;
+	public readonly flags: number;
+	public readonly range: number;
 
-	public new(name: string, longName: string, emitCode: UInt, range: UInt, flags: UInt)
+	public constructor(name: string, longName: string, emitCode: number, range: number, flags: number)
 	{
 		this.name = name;
 		this.longName = longName;
@@ -823,26 +826,26 @@ private class Register
 	public toString(): string
 	{
 		return "[Register name=\""
-			+ name
+			+ this.name
 			+ "\", longName=\""
-			+ longName
+			+ this.longName
 			+ "\", emitCode="
-			+ emitCode
+			+ this.emitCode
 			+ ", range="
-			+ range
+			+ this.range
 			+ ", flags="
-			+ flags
+			+ this.flags
 			+ "]";
 	}
 }
 
-private class Sampler
+class Sampler
 {
-	public flag(default , null): UInt;
-	public mask(default , null): UInt;
-	public name(default , null): string;
+	public readonly flag: number;
+	public readonly mask: number;
+	public readonly name: string;
 
-	public new(name: string, flag: UInt, mask: UInt)
+	public constructor(name: string, flag: number, mask: number)
 	{
 		this.name = name;
 		this.flag = flag;
@@ -851,6 +854,6 @@ private class Sampler
 
 	public toString(): string
 	{
-		return "[Sampler name=\"" + name + "\", flag=\"" + flag + "\", mask=" + mask + "]";
+		return "[Sampler name=\"" + this.name + "\", flag=\"" + this.flag + "\", mask=" + this.mask + "]";
 	}
 }

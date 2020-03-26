@@ -123,7 +123,7 @@ namespace openfl.display3D
 			when `startVertex + numVertices` is greater than `numVertices` given in Context3D
 			`createVertexBuffer()`.
 		**/
-		public uploadFromVector(data: Vector<Float>, startVertex: number, numVertices: number): void
+		public uploadFromVector(data: Vector<number>, startVertex: number, numVertices: number): void
 		{
 			__backend.uploadFromVector(data, startVertex, numVertices);
 		}

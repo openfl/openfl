@@ -86,7 +86,7 @@ if (__applicationEntryPoint.exists(projectName))
 
 	if (Reflect.hasField(config, "background") && Std.is(config.background, String))
 	{
-		var background = StringTools.replace(Std.string(config.background), "#", "");
+		var background = StringTools.replace(String(config.background), "#", "");
 
 		if (background.indexOf("0x") > -1)
 		{

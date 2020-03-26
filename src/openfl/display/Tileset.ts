@@ -26,7 +26,7 @@ namespace openfl.display
 			You can use the Tileset `rectData` property alongside the Graphics
 			`drawQuads` method as a convenient way of re-using a list of rectangles.
 		**/
-		public rectData: Vector<Float>;
+		public rectData: Vector<number>;
 
 		/**
 			Returns the number of rectangles defined in this Tileset.
@@ -60,7 +60,7 @@ namespace openfl.display
 			// TODO: Add support for adding uniform tile rectangles (margin, spacing, width, height)
 
 			__bitmapData = bitmapData;
-			rectData = new Vector<Float>();
+			rectData = new Vector<number>();
 
 			__data = new Array();
 

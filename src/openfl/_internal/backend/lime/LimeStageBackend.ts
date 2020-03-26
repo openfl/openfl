@@ -558,12 +558,12 @@ class LimeStageBackend
 		return 0;
 	}
 
-	public getFullScreenHeight(): UInt
+	public getFullScreenHeight(): number
 	{
 		return Math.ceil(parent.limeWindow.display.currentMode.height * parent.limeWindow.scale);
 	}
 
-	public getFullScreenWidth(): UInt
+	public getFullScreenWidth(): number
 	{
 		return Math.ceil(parent.limeWindow.display.currentMode.width * parent.limeWindow.scale);
 	}

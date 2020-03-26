@@ -19,7 +19,7 @@ import Vector from "openfl/Vector";
 
 class DummyBitmapDataBackend
 {
-	public new(parent: BitmapData, width: number, height: number, transparent: boolean = true, fillColor: UInt = 0xFFFFFFFF) { }
+	public new(parent: BitmapData, width: number, height: number, transparent: boolean = true, fillColor: number = 0xFFFFFFFF) { }
 
 	public applyFilter(sourceBitmapData: BitmapData, sourceRect: Rectangle, destPoint: Point, filter: BitmapFilter): void { }
 
@@ -153,15 +153,15 @@ class DummyBitmapDataBackend
 
 	public lock(): void {}
 
-	public merge(sourceBitmapData: BitmapData, sourceRect: Rectangle, destPoint: Point, redMultiplier: UInt, greenMultiplier: UInt, blueMultiplier: UInt,
-	alphaMultiplier: UInt): void {}
+	public merge(sourceBitmapData: BitmapData, sourceRect: Rectangle, destPoint: Point, redMultiplier: number, greenMultiplier: number, blueMultiplier: number,
+	alphaMultiplier: number): void {}
 
 	public noise(randomSeed : number, low : number = 0, high : number = 255, channelOptions : number = 7, grayScale : boolean = false): void {}
 
 	public paletteMap(sourceBitmapData: BitmapData, sourceRect: Rectangle, destPoint: Point, redArray: Array < Int > = null, greenArray: Array < Int > = null,
 		blueArray: Array < Int > = null, alphaArray: Array < Int > = null): void {}
 
-	public perlinNoise(baseX : number, baseY : number, numOctaves: UInt, randomSeed : number, stitch : boolean, fractalNoise : boolean, channelOptions: UInt = 7,
+	public perlinNoise(baseX : number, baseY : number, numOctaves: number, randomSeed : number, stitch : boolean, fractalNoise : boolean, channelOptions: number = 7,
 			grayScale : boolean = false, offsets: Array < Point > = null): void {}
 
 	public scroll(x : number, y : number): void {}

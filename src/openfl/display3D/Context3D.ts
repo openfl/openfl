@@ -273,8 +273,8 @@ namespace openfl.display3D
 			var data = null;
 		#end
 
-			var index: UInt = 0;
-			var vertex: UInt = 0;
+			var index: number = 0;
+			var vertex: number = 0;
 
 			for (i in 0...__quadIndexBufferElements)
 			{
@@ -325,8 +325,8 @@ namespace openfl.display3D
 			dispose() or because the underlying rendering hardware has been lost.
 			@throws	Error	3768: The Stage3D API may not be used during background execution.
 		**/
-		public clear(red: number = 0, green: number = 0, blue: number = 0, alpha: number = 1, depth: number = 1, stencil: UInt = 0,
-			mask: UInt = Context3DClearMask.ALL): void
+		public clear(red: number = 0, green: number = 0, blue: number = 0, alpha: number = 1, depth: number = 1, stencil: number = 0,
+			mask: number = Context3DClearMask.ALL): void
 		{
 			__backend.clear(red, green, blue, alpha, depth, stencil, mask);
 		}
@@ -1092,7 +1092,7 @@ namespace openfl.display3D
 			`numRegisters*16`
 		**/
 		public setProgramConstantsFromByteArray(programType: Context3DProgramType, firstRegister: number, numRegisters: number, data: ByteArray,
-			byteArrayOffset: UInt): void
+			byteArrayOffset: number): void
 		{
 			if (numRegisters == 0 || __state.program == null) return;
 
@@ -1246,7 +1246,7 @@ namespace openfl.display3D
 			@throws	RangeError	Bad Input Size: When the number of elements in data is less
 			than `numRegisters*4`
 		**/
-		public setProgramConstantsFromVector(programType: Context3DProgramType, firstRegister: number, data: Vector<Float>, numRegisters: number = -1): void
+		public setProgramConstantsFromVector(programType: Context3DProgramType, firstRegister: number, data: Vector<number>, numRegisters: number = -1): void
 		{
 			if (numRegisters == 0) return;
 
@@ -1468,7 +1468,7 @@ namespace openfl.display3D
 			@param	writeMask	an 8-bit mask applied to the reference value before updating
 			the stencil buffer.
 		**/
-		public setStencilReferenceValue(referenceValue: UInt, readMask: UInt = 0xFF, writeMask: UInt = 0xFF): void
+		public setStencilReferenceValue(referenceValue: number, readMask: number = 0xFF, writeMask: number = 0xFF): void
 		{
 			__state.stencilReferenceValue = referenceValue;
 			__state.stencilReadMask = readMask;

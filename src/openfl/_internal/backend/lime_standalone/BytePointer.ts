@@ -104,12 +104,12 @@ abstract BytePointer(BytePointerData) from BytePointerData to BytePointerData
 	return new BytePointerData(bytes, 0);
 }
 
-@: to /** @hidden */ public static toUInt8Array(bytePointer: BytePointer): UInt8Array
+@: to /** @hidden */ public static toUInt8Array(bytePointer: BytePointer): number8Array
 {
 	return new UInt8Array(bytePointer.bytes.getData(), Std.int(bytePointer.offset / 8));
 }
 
-@: to /** @hidden */ public static toUInt8ClampedArray(bytePointer: BytePointer): UInt8ClampedArray
+@: to /** @hidden */ public static toUInt8ClampedArray(bytePointer: BytePointer): number8ClampedArray
 {
 	if (bytePointer == null || bytePointer.bytes == null) return null;
 	return new UInt8ClampedArray(bytePointer.bytes.getData(), Std.int(bytePointer.offset / 8));
@@ -121,7 +121,7 @@ abstract BytePointer(BytePointerData) from BytePointerData to BytePointerData
 	return new Int8Array(bytePointer.bytes.getData(), Std.int(bytePointer.offset / 8));
 }
 
-@: to /** @hidden */ public static toUInt16Array(bytePointer: BytePointer): UInt16Array
+@: to /** @hidden */ public static toUInt16Array(bytePointer: BytePointer): number16Array
 {
 	if (bytePointer == null || bytePointer.bytes == null) return null;
 	return new UInt16Array(bytePointer.bytes.getData(), Std.int(bytePointer.offset / 16));
@@ -133,7 +133,7 @@ abstract BytePointer(BytePointerData) from BytePointerData to BytePointerData
 	return new Int16Array(bytePointer.bytes.getData(), Std.int(bytePointer.offset / 16));
 }
 
-@: to /** @hidden */ public static toUInt32Array(bytePointer: BytePointer): UInt32Array
+@: to /** @hidden */ public static toUInt32Array(bytePointer: BytePointer): number32Array
 {
 	if (bytePointer == null || bytePointer.bytes == null) return null;
 	return new UInt32Array(bytePointer.bytes.getData(), Std.int(bytePointer.offset / 32));

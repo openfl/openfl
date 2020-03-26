@@ -10,8 +10,8 @@ import js.html5.Uint32Array as UInt32Array;
 @: allow(openfl._internal.backend.lime_standalone)
 abstract RGBA(UInt) from Int to Int from UInt to UInt
 {
-	private static __alpha16: UInt32Array;
-	private static __clamp: UInt8Array;
+	private static __alpha16: number32Array;
+	private static __clamp: number8Array;
 	private static a16: number;
 	private static unmult: number;
 
@@ -98,7 +98,7 @@ abstract RGBA(UInt) from Int to Int from UInt to UInt
 	}
 }
 
-	public inline readUInt8(data: UInt8Array, offset : number, format: PixelFormat = RGBA32, premultiplied : boolean = false): void
+	public inline readUInt8(data: number8Array, offset : number, format: PixelFormat = RGBA32, premultiplied : boolean = false): void
 	{
 		switch(format)
 		{
@@ -132,7 +132,7 @@ if (premultiplied)
 	}
 }
 
-	public inline writeUInt8(data: UInt8Array, offset : number, format: PixelFormat = RGBA32, premultiplied : boolean = false): void
+	public inline writeUInt8(data: number8Array, offset : number, format: PixelFormat = RGBA32, premultiplied : boolean = false): void
 	{
 		if(premultiplied)
 		{

@@ -57,7 +57,7 @@ namespace openfl.display3D.textures
 			or if the number of bytes available from `byteArrayOffset` to the end of the data
 			byte array is less than the amount of data required for ATF texture.
 		**/
-		public uploadCompressedTextureFromByteArray(data: ByteArray, byteArrayOffset: UInt, async: boolean = false): void
+		public uploadCompressedTextureFromByteArray(data: ByteArray, byteArrayOffset: number, async: boolean = false): void
 		{
 			__backend.uploadCompressedTextureFromByteArray(data, byteArrayOffset, async);
 		}
@@ -92,7 +92,7 @@ namespace openfl.display3D.textures
 			is not supported.
 			@throws	Error	3768: The Stage3D API may not be used during background execution.
 		**/
-		public uploadFromBitmapData(source: BitmapData, side: UInt, miplevel: UInt = 0, generateMipmap: boolean = false): void
+		public uploadFromBitmapData(source: BitmapData, side: number, miplevel: number = 0, generateMipmap: boolean = false): void
 		{
 			__backend.uploadFromBitmapData(source, side, miplevel, generateMipmap);
 		}
@@ -123,7 +123,7 @@ namespace openfl.display3D.textures
 			@throws	ArgumentError	Texture Format Mismatch: if the texture format is Context3DTextureFormat.COMPRESSED or Context3DTextureFormat.COMPRESSED_ALPHA and the code is executing on a mobile platform where runtime texture compression is not supported.
 			@throws	Error	3768: The Stage3D API may not be used during background execution.
 		**/
-		public uploadFromByteArray(data: ByteArray, byteArrayOffset: UInt, side: UInt, miplevel: UInt = 0): void
+		public uploadFromByteArray(data: ByteArray, byteArrayOffset: number, side: number, miplevel: number = 0): void
 		{
 			__backend.uploadFromByteArray(data, byteArrayOffset, side, miplevel);
 		}
@@ -147,7 +147,7 @@ namespace openfl.display3D.textures
 			@param	miplevel	the mip level to be loaded, level zero is the top-level,
 			full-resolution image.
 		**/
-		public uploadFromTypedArray(data: ArrayBufferView, side: UInt, miplevel: UInt = 0): void
+		public uploadFromTypedArray(data: ArrayBufferView, side: number, miplevel: number = 0): void
 		{
 			__backend.uploadFromTypedArray(data, side, miplevel);
 		}

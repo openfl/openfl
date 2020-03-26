@@ -55,7 +55,7 @@ class HTML5BitmapDataBackend
 	private image: Image;
 	private parent: BitmapData;
 
-	public new(parent: BitmapData, width: number, height: number, transparent: boolean = true, fillColor: UInt = 0xFFFFFFFF)
+	public new(parent: BitmapData, width: number, height: number, transparent: boolean = true, fillColor: number = 0xFFFFFFFF)
 	{
 		this.parent = parent;
 
@@ -885,8 +885,8 @@ class HTML5BitmapDataBackend
 
 	public lock(): void { }
 
-	public merge(sourceBitmapData: BitmapData, sourceRect: Rectangle, destPoint: Point, redMultiplier: UInt, greenMultiplier: UInt, blueMultiplier: UInt,
-		alphaMultiplier: UInt): void
+	public merge(sourceBitmapData: BitmapData, sourceRect: Rectangle, destPoint: Point, redMultiplier: number, greenMultiplier: number, blueMultiplier: number,
+		alphaMultiplier: number): void
 	{
 		this.image.merge(sourceBitmapData.__backend.image, sourceRect, destPoint, redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier);
 	}
@@ -977,7 +977,7 @@ class HTML5BitmapDataBackend
 		Rectangle.__pool.release(destRect);
 	}
 
-	public perlinNoise(baseX: number, baseY: number, numOctaves: UInt, randomSeed: number, stitch: boolean, fractalNoise: boolean, channelOptions: UInt = 7,
+	public perlinNoise(baseX: number, baseY: number, numOctaves: number, randomSeed: number, stitch: boolean, fractalNoise: boolean, channelOptions: number = 7,
 		grayScale: boolean = false, offsets: Array<Point> = null): void
 	{
 		var noise = new PerlinNoise(randomSeed, numOctaves, channelOptions, grayScale, 0.5, stitch, 0.15);

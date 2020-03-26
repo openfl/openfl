@@ -14,9 +14,9 @@ class ImageDataUtil
 {
 	public static displaceMap(target: Image, source: Image, map: Image, mapPoint: Point, componentX: Vector3D, componentY: Vector3D, smooth: boolean): void
 	{
-		var targetData: UInt8Array = target.buffer.data;
-		var sourceData: UInt8Array = source.buffer.data;
-		var mapData: UInt8Array = map.buffer.data;
+		var targetData: number8Array = target.buffer.data;
+		var sourceData: number8Array = source.buffer.data;
+		var mapData: number8Array = map.buffer.data;
 
 		var targetFormat: PixelFormat = target.buffer.format;
 		var sourceFormat: PixelFormat = source.buffer.format;
@@ -1270,7 +1270,7 @@ class ImageDataUtil
 				destPosition,
 				srcPixel: RGBA,
 				destPixel: RGBA,
-				pixelMask: UInt,
+				pixelMask: number,
 				test: boolean,
 				value: number;
 
@@ -1345,7 +1345,7 @@ class ImageDataUtil
 		image.version++;
 	}
 
-	private static __boxBlur(imgA: UInt8Array, imgB: UInt8Array, w: number, h: number, bx: number, by: number): void
+	private static __boxBlur(imgA: number8Array, imgB: number8Array, w: number, h: number, bx: number, by: number): void
 	{
 		// for(i in 0...imgA.length)
 		// 	imgB[i] = imgA[i];
@@ -1365,7 +1365,7 @@ class ImageDataUtil
 		__boxBlurT(imgA, imgB, w, h, by, 3);
 	}
 
-	private static #if cpp inline #end __boxBlurH(imgA: UInt8Array, imgB: UInt8Array, w: number, h: number, r: number, off: number): void
+	private static #if cpp inline #end __boxBlurH(imgA: number8Array, imgB: number8Array, w: number, h: number, r: number, off: number): void
 	{
 		var iarr = 1 / (r + r + 1);
 		var ti, li, ri, fv, lv, val;
@@ -1412,7 +1412,7 @@ class ImageDataUtil
 		}
 	}
 
-	private static readonly __boxBlurT(imgA: UInt8Array, imgB: UInt8Array, w: number, h: number, r: number, off: number): void
+	private static readonly __boxBlurT(imgA: number8Array, imgB: number8Array, w: number, h: number, r: number, off: number): void
 	{
 		var iarr = 1 / (r + r + 1);
 		var ws = w * 4;
@@ -1502,10 +1502,10 @@ class ImageDataUtil
 		return sizes;
 	}
 
-	private static readonly __pixelCompare(n1: UInt, n2: UInt): number
+	private static readonly __pixelCompare(n1: number, n2: number): number
 	{
-		var tmp1: UInt;
-		var tmp2: UInt;
+		var tmp1: number;
+		var tmp2: number;
 
 		tmp1 = (n1 >> 24) & 0xFF;
 		tmp2 = (n2 >> 24) & 0xFF;
@@ -1550,7 +1550,7 @@ class ImageDataUtil
 		}
 	}
 
-	private static #if cpp inline #end __translatePixel(imgB: UInt8Array, sourceRect: Rectangle, destRect: Rectangle, destPoint: Point, destX: number,
+	private static #if cpp inline #end __translatePixel(imgB: number8Array, sourceRect: Rectangle, destRect: Rectangle, destPoint: Point, destX: number,
 		destY: number, strength: number): void
 	{
 		var d = 4 * (destY * Std.int(destRect.width) + destX);

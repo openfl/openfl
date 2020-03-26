@@ -17,7 +17,7 @@ import openfl._internal.bindings.typedarray.UInt8Array;
 class ImageBuffer
 {
 	public bitsPerPixel: number;
-	public data: UInt8Array;
+	public data: number8Array;
 	public format: PixelFormat;
 	public height: number;
 	public premultiplied: boolean;
@@ -32,7 +32,7 @@ class ImageBuffer
 	protected __srcImage: HTMLImage;
 	protected __srcImageData: ImageData;
 
-	public new(data: UInt8Array = null, width: number = 0, height: number = 0, bitsPerPixel: number = 32, format: PixelFormat = null)
+	public new(data: number8Array = null, width: number = 0, height: number = 0, bitsPerPixel: number = 32, format: PixelFormat = null)
 	{
 		this.data = data;
 		this.width = width;

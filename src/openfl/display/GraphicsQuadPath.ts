@@ -28,7 +28,7 @@ namespace openfl.display
 			A Vector containing rectangle coordinates in [ x0, y0, width0, height0, x1, y1 ... ]
 			format.
 		**/
-		public rects: Vector<Float>;
+		public rects: Vector<number>;
 
 		/**
 			A Vector containing optional transform data to adjust _x_, _y_, _a_, _b_, _c_ or _d_
@@ -39,7 +39,7 @@ namespace openfl.display
 			A `transforms` object which is six times the draw count in size will use full matrix
 			[ a, b, c, d, tx, ty, ... ] values per draw.
 		**/
-		public transforms: Vector<Float>;
+		public transforms: Vector<number>;
 
 		protected __graphicsDataType(default , null): GraphicsDataType;
 
@@ -53,7 +53,7 @@ namespace openfl.display
 			@param	transforms	A Vector containing optional transform data to adjust _x_, _y_, _a_, _b_, _c_ or _d_
 			value for the resulting quadrilateral.
 		**/
-		public constructor(rects: Vector<Float> = null, indices: Vector<Int> = null, transforms: Vector<Float> = null)
+		public constructor(rects: Vector<number> = null, indices: Vector<Int> = null, transforms: Vector<number> = null)
 		{
 			this.rects = rects;
 			this.indices = indices;

@@ -551,7 +551,7 @@ private class DestRegister
 		return str;
 	}
 
-	public static parse(v: UInt, programType: ProgramType): DestRegister
+	public static parse(v: number, programType: ProgramType): DestRegister
 	{
 		var dr = new DestRegister();
 		dr.programType = programType;

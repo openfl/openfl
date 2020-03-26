@@ -37,7 +37,7 @@ abstract ARGB(UInt) from Int to Int from UInt to UInt
 	}
 }
 
-	public inline readUInt8(data: UInt8Array, offset : number, format: PixelFormat = RGBA32, premultiplied : boolean = false): void
+	public inline readUInt8(data: number8Array, offset : number, format: PixelFormat = RGBA32, premultiplied : boolean = false): void
 	{
 		switch(format)
 		{
@@ -71,7 +71,7 @@ if (premultiplied)
 	}
 }
 
-	public inline writeUInt8(data: UInt8Array, offset : number, format: PixelFormat = RGBA32, premultiplied : boolean = false): void
+	public inline writeUInt8(data: number8Array, offset : number, format: PixelFormat = RGBA32, premultiplied : boolean = false): void
 	{
 		if(premultiplied)
 		{

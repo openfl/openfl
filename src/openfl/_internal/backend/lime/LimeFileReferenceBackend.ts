@@ -172,7 +172,7 @@ class LimeFileReferenceBackend
 		else
 		{
 			var _data = new ByteArray();
-			_data.writeUTFBytes(Std.string(data));
+			_data.writeUTFBytes(String(data));
 			this.data = _data;
 		}
 
@@ -188,7 +188,7 @@ class LimeFileReferenceBackend
 		else
 		{
 			var _data = new ByteArray();
-			_data.writeUTFBytes(Std.string(data));
+			_data.writeUTFBytes(String(data));
 			this.data = _data;
 		}
 
@@ -270,7 +270,7 @@ class LimeFileReferenceBackend
 		else
 		{
 			data = new ByteArray();
-			data.writeUTFBytes(Std.string(urlLoader.data));
+			data.writeUTFBytes(String(urlLoader.data));
 		}
 
 		if (path != null)

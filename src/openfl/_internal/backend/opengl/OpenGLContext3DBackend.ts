@@ -170,8 +170,8 @@ class OpenGLContext3DBackend
 		#end
 	}
 
-	public clear(red: number = 0, green: number = 0, blue: number = 0, alpha: number = 1, depth: number = 1, stencil: UInt = 0,
-		mask: UInt = Context3DClearMask.ALL): void
+	public clear(red: number = 0, green: number = 0, blue: number = 0, alpha: number = 1, depth: number = 1, stencil: number = 0,
+		mask: number = Context3DClearMask.ALL): void
 	{
 		flushGLFramebuffer();
 		flushGLViewport();
@@ -264,7 +264,7 @@ class OpenGLContext3DBackend
 					parent.__stage3D.__renderData.vertexBuffer = parent.createVertexBuffer(4, 5);
 				}
 
-				var vertexData = new Vector<Float>([width, height, 0, 1, 1, 0, height, 0, 0, 1, width, 0, 0, 1, 0, 0, 0, 0, 0, 0.0]);
+				var vertexData = new Vector<number>([width, height, 0, 1, 1, 0, height, 0, 0, 1, width, 0, 0, 1, 0, 0, 0, 0, 0, 0.0]);
 
 				parent.__stage3D.__renderData.vertexBuffer.uploadFromVector(vertexData, 0, 20);
 

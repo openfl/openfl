@@ -1,3 +1,7 @@
+import Matrix3D from "openfl/geom/Matrix3D";
+import Point from "openfl/geom/Point";
+import Lib from "openfl/Lib";
+
 /**
 	The `PerspectiveProjection` class provides an easy way to assign or modify the perspective
 	transformations of a display object and all of its children. For more complex or custom
@@ -36,23 +40,6 @@ export default class PerspectiveProjection
 	private static readonly TO_RADIAN: number = 0.01745329251994329577; // Math.PI / 180
 
 	/**
-		Specifies an angle, as a degree between 0 and 180, for the field of view in three dimensions.
-		This value determines how strong the perspective transformation and distortion apply to a
-		three-dimensional display object with a non-zero z-coordinate.
-
-		A degree close to 0 means that the screen's two-dimensional x- and y-coordinates are roughly
-		the same as the three-dimensional x-, y-, and z-coordinates with little or no distortion.
-		In other words, for a small angle, a display object moving down the z axis appears to stay
-		near the same size and moves little.
-
-		A value close to 180 degrees results in a fisheye lens effect: positions with a z value smaller
-		than 0 are magnified, while positions with a z value larger than 0 are minimized. With a
-		large angle, a display object moving down the z axis appears to change size quickly and moves
-		a great distance. If the field of view is set to 0 or 180, nothing is seen on the screen.
-	**/
-	public fieldOfView(get, set): number;
-
-	/**
 		The distance between the eye or the viewpoint's origin (0,0,0) and the display object located
 		in the z axis. During the perspective transformation, the `focalLength` is calculated dynamically
 		using the angle of the field of view and the stage's aspect ratio (stage width divided by stage height).
@@ -76,11 +63,11 @@ export default class PerspectiveProjection
 	**/
 	public constructor()
 	{
-		__fieldOfView = 0;
+		this.__fieldOfView = 0;
 		this.focalLength = 0;
 
-		matrix3D = new Matrix3D();
-		projectionCenter = new Point(#if!openfl_unit_testing Lib.current.stage.stageWidth / 2, Lib.current.stage.stageHeight / 2 #end);
+		this.matrix3D = new Matrix3D();
+		this.projectionCenter = new Point(Lib.current.stage.stageWidth / 2, Lib.current.stage.stageHeight / 2);
 	}
 
 	/**
@@ -95,30 +82,44 @@ export default class PerspectiveProjection
 	**/
 	public toMatrix3D(): Matrix3D
 	{
-		if (#if neko __fieldOfView == null || #end projectionCenter == null) return null;
+		if (this.projectionCenter == null) return null;
 
-		var _mp = matrix3D.rawData;
-		_mp[0] = focalLength;
-		_mp[5] = focalLength;
+		var _mp = this.matrix3D.rawData;
+		_mp[0] = this.focalLength;
+		_mp[5] = this.focalLength;
 		_mp[11] = 1.0;
 		_mp[15] = 0;
 
 		// matrix3D.rawData = [357.0370178222656,0,0,0,0,357.0370178222656,0,0,0,0,1,1,0,0,0,0];
-		return matrix3D;
+		return this.matrix3D;
 	}
 
 	// Getters & Setters
-	protected get_fieldOfView(): number
+
+	/**
+		Specifies an angle, as a degree between 0 and 180, for the field of view in three dimensions.
+		This value determines how strong the perspective transformation and distortion apply to a
+		three-dimensional display object with a non-zero z-coordinate.
+
+		A degree close to 0 means that the screen's two-dimensional x- and y-coordinates are roughly
+		the same as the three-dimensional x-, y-, and z-coordinates with little or no distortion.
+		In other words, for a small angle, a display object moving down the z axis appears to stay
+		near the same size and moves little.
+
+		A value close to 180 degrees results in a fisheye lens effect: positions with a z value smaller
+		than 0 are magnified, while positions with a z value larger than 0 are minimized. With a
+		large angle, a display object moving down the z axis appears to change size quickly and moves
+		a great distance. If the field of view is set to 0 or 180, nothing is seen on the screen.
+	**/
+	public get fieldOfView(): number
 	{
-		return __fieldOfView;
+		return this.__fieldOfView;
 	}
 
-	protected set_fieldOfView(fieldOfView: number): number
+	public set fieldOfView(fieldOfView: number)
 	{
-		__fieldOfView = fieldOfView * TO_RADIAN;
+		this.__fieldOfView = fieldOfView * PerspectiveProjection.TO_RADIAN;
 
-		this.focalLength = 250.0 * (1.0 / Math.tan(__fieldOfView * 0.5));
-
-		return __fieldOfView;
+		this.focalLength = 250.0 * (1.0 / Math.tan(this.__fieldOfView * 0.5));
 	}
 }

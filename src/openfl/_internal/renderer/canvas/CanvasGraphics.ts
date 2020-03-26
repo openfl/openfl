@@ -488,7 +488,7 @@ private static normalizeUVT(uvt: Vector < Float >, skipT : boolean = false): Nor
 		return { max: max, uvt: uvt };
 	}
 
-	var result = new Vector<Float>();
+	var result = new Vector<number>();
 
 	for (t in 1...len + 1)
 	{
@@ -650,11 +650,11 @@ private static playCommands(commands: DrawCommandBuffer, stroke : boolean = fals
 			{
 				context.lineWidth = (c.thickness > 0 ? c.thickness : 1);
 
-				context.lineJoin = (c.joints == null ? "round" : Std.string(c.joints).toLowerCase());
+				context.lineJoin = (c.joints == null ? "round" : String(c.joints).toLowerCase());
 				context.lineCap = (c.caps == null ? "round" : switch (c.caps)
 				{
 					case CapsStyle.NONE: "butt";
-					default: Std.string(c.caps).toLowerCase();
+					default: String(c.caps).toLowerCase();
 				});
 
 				context.miterLimit = c.miterLimit;
@@ -892,7 +892,7 @@ private static playCommands(commands: DrawCommandBuffer, stroke : boolean = fals
 
 				if (uvt == null)
 				{
-					uvt = new Vector<Float>();
+					uvt = new Vector<number>();
 
 					for (i in 0...(Std.int(v.length / 2)))
 					{
@@ -1579,6 +1579,6 @@ private static setSmoothing(smooth : boolean): void
 private typedef NormalizedUVT =
 {
 	max: number,
-	uvt: Vector<Float>
+	uvt: Vector<number>
 }
 #end

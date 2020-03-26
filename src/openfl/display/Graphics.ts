@@ -788,7 +788,7 @@ namespace openfl.display
 			@param	winding	Specifies the winding rule using a value defined in the
 			GraphicsPathWinding class.
 		**/
-		public drawPath(commands: Vector<Int>, data: Vector<Float>, winding: GraphicsPathWinding = GraphicsPathWinding.EVEN_ODD): void
+		public drawPath(commands: Vector<Int>, data: Vector<number>, winding: GraphicsPathWinding = GraphicsPathWinding.EVEN_ODD): void
 		{
 			var dataIndex = 0;
 
@@ -861,7 +861,7 @@ namespace openfl.display
 							  which is six times the draw count in size will use full
 							  matrix [ a, b, c, d, tx, ty, ... ] values per draw.
 		**/
-		public drawQuads(rects: Vector<Float>, indices: Vector<Int> = null, transforms: Vector<Float> = null): void
+		public drawQuads(rects: Vector<number>, indices: Vector<Int> = null, transforms: Vector<number> = null): void
 		{
 			if (rects == null) return;
 
@@ -1092,7 +1092,7 @@ namespace openfl.display
 						   parameter can be set to any value defined by the
 						   TriangleCulling class.
 		**/
-		public drawTriangles(vertices: Vector<Float>, indices: Vector<Int> = null, uvtData: Vector<Float> = null,
+		public drawTriangles(vertices: Vector<number>, indices: Vector<Int> = null, uvtData: Vector<number> = null,
 			culling: TriangleCulling = TriangleCulling.NONE): void
 		{
 			if (vertices == null || vertices.length == 0) return;

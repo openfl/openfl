@@ -60,7 +60,7 @@ class DisplayObjectRenderData
 	#end
 	public indexBuffer: IndexBuffer3D;
 	public indexBufferContext: Context3D;
-	public indexBufferData: UInt16Array;
+	public indexBufferData: number16Array;
 	public indexBufferGrid: Rectangle;
 	public isCacheBitmapRender: boolean;
 	#if openfl_gl
@@ -83,7 +83,7 @@ class DisplayObjectRenderData
 	public textureWidth: number;
 	public triangleIndexBuffer: IndexBuffer3D;
 	public triangleIndexBufferCount: number;
-	public triangleIndexBufferData: UInt16Array;
+	public triangleIndexBufferData: number16Array;
 	public uvRect: Rectangle;
 	public vertexBuffer: VertexBuffer3D;
 	public vertexBufferContext: Context3D;

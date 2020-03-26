@@ -1,4 +1,7 @@
+import { GameInputControlInternal } from "openfl/_internal/utils/InternalAccess";
+import GameInputControl from "openfl/ui/GameInputControl";
 import ByteArray from "openfl/utils/ByteArray";
+import Vector from "openfl/Vector";
 
 export default class GameInputDevice
 {
@@ -10,53 +13,48 @@ export default class GameInputDevice
 	public static readonly MAX_BUFFER_SIZE: number = 32000;
 
 	/**
+		Returns the ID of this device.
+	**/
+	public readonly id: string;
+
+	/**
 		Enables or disables this device.
 	**/
 	public enabled: boolean;
 
 	/**
-		Returns the ID of this device.
-	**/
-	public id(default , null): string;
-
-	/**
 		Returns the name of this device.
 	**/
-	public name(default , null): string;
-
-	/**
-		Returns the number of controls on this device.
-	**/
-	public numControls(get, never): number;
+	public readonly name: string;
 
 	/**
 		Specifies the rate (in milliseconds) at which to retrieve control values.
 	**/
 	public sampleInterval: number;
 
-	protected __axis: Map<Int, GameInputControl> = new Map();
-	protected __button: Map<Int, GameInputControl> = new Map();
+	protected __axis: Map<number, GameInputControl> = new Map();
+	protected __button: Map<number, GameInputControl> = new Map();
 	protected __controls: Array<GameInputControl> = new Array();
 
-	protected new(id: string, name: string)
+	private constructor(id: string, name: string)
 	{
 		this.id = id;
 		this.name = name;
 
 		var control;
 
-		for (i in 0...6)
+		for (let i = 0; i < 6; i++)
 		{
-			control = new GameInputControl(this, "AXIS_" + i, -1, 1);
-			__axis.set(i, control);
-			__controls.push(control);
+			control = (<any>GameInputControl as GameInputControlInternal).__new(this, "AXIS_" + i, -1, 1);
+			this.__axis.set(i, control);
+			this.__controls.push(control);
 		}
 
-		for (i in 0...15)
+		for (let i = 0; i < 15; i++)
 		{
-			control = new GameInputControl(this, "BUTTON_" + i, 0, 1);
-			__button.set(i, control);
-			__controls.push(control);
+			control = (<any>GameInputControl as GameInputControlInternal).__new(this, "BUTTON_" + i, 0, 1);
+			this.__button.set(i, control);
+			this.__controls.push(control);
 		}
 	}
 
@@ -78,9 +76,9 @@ export default class GameInputDevice
 	**/
 	public getControlAt(i: number): GameInputControl
 	{
-		if (i >= 0 && i < __controls.length)
+		if (i >= 0 && i < this.__controls.length)
 		{
-			return __controls[i];
+			return this.__controls[i];
 		}
 
 		return null;
@@ -99,8 +97,12 @@ export default class GameInputDevice
 	public stopCachingSamples(): void { }
 
 	// Get & Set Methods
+
+	/**
+		Returns the number of controls on this device.
+	**/
 	protected get_numControls(): number
 	{
-		return __controls.length;
+		return this.__controls.length;
 	}
 }

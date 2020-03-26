@@ -423,7 +423,7 @@ class CairoGraphics
 		return ((x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1)) < 0;
 	}
 
-	private static normalizeUVT(uvt: Vector<Float>, skipT: boolean = false): NormalizedUVT
+	private static normalizeUVT(uvt: Vector<number>, skipT: boolean = false): NormalizedUVT
 	{
 		var max: number = Math.NEGATIVE_INFINITY;
 		var tmp = Math.NEGATIVE_INFINITY;
@@ -449,7 +449,7 @@ class CairoGraphics
 			return { max: max, uvt: uvt };
 		}
 
-		var result = new Vector<Float>();
+		var result = new Vector<number>();
 
 		for (t in 1...len + 1)
 		{
@@ -872,7 +872,7 @@ class CairoGraphics
 					var c = data.readDrawTriangles();
 					var v = c.vertices;
 					var ind = c.indices;
-					var uvt: Vector<Float> = c.uvtData;
+					var uvt: Vector<number> = c.uvtData;
 					var colorFill = bitmapFill == null;
 
 					if (colorFill && uvt != null)
@@ -890,7 +890,7 @@ class CairoGraphics
 
 						if (uvt == null)
 						{
-							uvt = new Vector<Float>();
+							uvt = new Vector<number>();
 
 							for (i in 0...(Std.int(v.length / 2)))
 							{
@@ -1520,6 +1520,6 @@ class CairoGraphics
 private typedef NormalizedUVT =
 {
 	max: number,
-	uvt: Vector<Float>
+	uvt: Vector<number>
 }
 #end

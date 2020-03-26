@@ -11,13 +11,13 @@ import openfl._internal.bindings.typedarray.UInt8Array;
 **/
 abstract ColorMatrix(Float32Array) from Float32Array to Float32Array
 {
-	private static __alphaTable: UInt8Array;
-	private static __blueTable: UInt8Array;
-	private static __greenTable: UInt8Array;
+	private static __alphaTable: number8Array;
+	private static __blueTable: number8Array;
+	private static __greenTable: number8Array;
 	private static __identity = [
 		1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0
 	];
-	private static __redTable: UInt8Array;
+	private static __redTable: number8Array;
 
 	/**
 		The current alpha multiplication value (default is 1.0)
@@ -161,7 +161,7 @@ abstract ColorMatrix(Float32Array) from Float32Array to Float32Array
 		trace (alphaTable[1]); // 13
 		```
 	**/
-	public getAlphaTable(): UInt8Array
+	public getAlphaTable(): number8Array
 	{
 		if (__alphaTable == null)
 		{
@@ -202,7 +202,7 @@ abstract ColorMatrix(Float32Array) from Float32Array to Float32Array
 		trace (blueTable[1]); // 17
 		```
 	**/
-	public getBlueTable(): UInt8Array
+	public getBlueTable(): number8Array
 	{
 		if (__blueTable == null)
 		{
@@ -242,7 +242,7 @@ abstract ColorMatrix(Float32Array) from Float32Array to Float32Array
 		trace (greenTable[1]); // 17
 		```
 	**/
-	public getGreenTable(): UInt8Array
+	public getGreenTable(): number8Array
 	{
 		if (__greenTable == null)
 		{
@@ -282,7 +282,7 @@ abstract ColorMatrix(Float32Array) from Float32Array to Float32Array
 		trace (redTable[1]); // 17
 		```
 	**/
-	public getRedTable(): UInt8Array
+	public getRedTable(): number8Array
 	{
 		if (__redTable == null)
 		{

@@ -1,3 +1,4 @@
+import MultitouchInputMode from "openfl/ui/MultitouchInputMode";
 import Vector from "openfl/Vector";
 
 /**
@@ -58,7 +59,7 @@ export default class Multitouch
 		The maximum number of concurrent touch points supported by the current
 		environment.
 	**/
-	public static maxTouchPoints(default , null): number = 2;
+	public static readonly maxTouchPoints: number = 2;
 
 	/**
 		A Vector array(a typed array of string values) of multi-touch contact
@@ -80,7 +81,7 @@ export default class Multitouch
 		that are not supported in the current evironment, you'll need to create
 		alternative event handling.
 	**/
-	public static supportedGestures(default , null): Vector<string> = null;
+	public static readonly supportedGestures: Vector<string> = null;
 
 	/**
 		Indicates whether the current environment supports gesture input, such as
@@ -93,18 +94,17 @@ export default class Multitouch
 		`true` even if the hardware does not support gesture
 		events.
 	**/
-	public static supportsGestureEvents(default , null): boolean = false;
+	public static readonly supportsGestureEvents: boolean = false;
+
+	// Getters & Setters
 
 	/**
 		Indicates whether the current environment supports basic touch input, such
 		as a single finger tap. Touch events are listed in the TouchEvent class.
 	**/
-	public static supportsTouchEvents(get, never): boolean;
-
-	// Getters & Setters
-	protected static get supportsTouchEvents(): boolean
+	public static get supportsTouchEvents(): boolean
 	{
-		if (untyped __js__("('ontouchstart' in document.documentElement) || (window.DocumentTouch && document instanceof DocumentTouch)"))
+		if ("ontouchstart" in document.documentElement)
 		{
 			return true;
 		}

@@ -1,31 +1,32 @@
 import EventDispatcher from "openfl/events/EventDispatcher";
+import GameInputDevice from "openfl/ui/GameInputDevice";
 
 export default class GameInputControl extends EventDispatcher
 {
 	/**
 		Returns the GameInputDevice object that contains this control.
 	**/
-	public device(default , null): GameInputDevice;
+	public readonly device: GameInputDevice;
 
 	/**
 		Returns the id of this control.
 	**/
-	public id(default , null): string;
+	public readonly id: string;
 
 	/**
 		Returns the maximum value for this control.
 	**/
-	public maxValue(default , null): number;
+	public readonly maxValue: number;
 
 	/**
 		Returns the minimum value for this control.
 	**/
-	public minValue(default , null): number;
+	public readonly minValue: number;
 
 	/**
 		Returns the value for this control.
 	**/
-	public value(default , null): number;
+	public readonly value: number;
 
 	private constructor(device: GameInputDevice, id: string, minValue: number, maxValue: number, value: number = 0)
 	{
@@ -36,5 +37,10 @@ export default class GameInputControl extends EventDispatcher
 		this.minValue = minValue;
 		this.maxValue = maxValue;
 		this.value = value;
+	}
+
+	protected static __new(device: GameInputDevice, id: string, minValue: number, maxValue: number, value: number = 0): GameInputControl
+	{
+		return new GameInputControl(device, id, minValue, maxValue, value);
 	}
 }

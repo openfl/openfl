@@ -36,7 +36,7 @@ class ATFReader
 	private version: number = 0;
 	private width: number;
 
-	public new(data: ByteArray, byteArrayOffset: UInt)
+	public new(data: ByteArray, byteArrayOffset: number)
 	{
 		data.position = byteArrayOffset;
 		var signature: string = data.readUTFBytes(3);
@@ -141,18 +141,18 @@ class ATFReader
 		}
 	}
 
-	private __readUInt24(data: ByteArray): UInt
+	private __readUInt24(data: ByteArray): number
 	{
-		var value: UInt;
+		var value: number;
 		value = (data.readUnsignedByte() << 16);
 		value |= (data.readUnsignedByte() << 8);
 		value |= data.readUnsignedByte();
 		return value;
 	}
 
-	private __readUInt32(data: ByteArray): UInt
+	private __readUInt32(data: ByteArray): number
 	{
-		var value: UInt;
+		var value: number;
 		value = (data.readUnsignedByte() << 24);
 		value |= (data.readUnsignedByte() << 16);
 		value |= (data.readUnsignedByte() << 8);

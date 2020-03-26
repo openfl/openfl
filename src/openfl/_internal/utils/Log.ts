@@ -24,7 +24,7 @@ class Log
 			#if js
 			untyped __js__("console").debug("[" + info.className + "] " + message);
 			#else
-			println("[" + info.className + "] " + Std.string(message));
+			println("[" + info.className + "] " + String(message));
 			#end
 		}
 	}
@@ -57,7 +57,7 @@ class Log
 			#if js
 			untyped __js__("console").info("[" + info.className + "] " + message);
 			#else
-			println("[" + info.className + "] " + Std.string(message));
+			println("[" + info.className + "] " + String(message));
 			#end
 		}
 	}
@@ -65,9 +65,9 @@ class Log
 	public static readonly print(message: Dynamic): void
 	{
 		#if sys
-		Sys.print(Std.string(message));
+		Sys.print(String(message));
 		#elseif flash
-		untyped __global__["trace"](Std.string(message));
+		untyped __global__["trace"](String(message));
 		#elseif js
 		untyped __js__("console").log(message);
 		#else
@@ -78,13 +78,13 @@ class Log
 	public static readonly println(message: Dynamic): void
 	{
 		#if sys
-		Sys.println(Std.string(message));
+		Sys.println(String(message));
 		#elseif flash
-		untyped __global__["trace"](Std.string(message));
+		untyped __global__["trace"](String(message));
 		#elseif js
 		untyped __js__("console").log(message);
 		#else
-		@SuppressWarnings("checkstyle:Trace") trace(Std.string(message));
+		@SuppressWarnings("checkstyle:Trace") trace(String(message));
 		#end
 	}
 
@@ -103,7 +103,7 @@ class Log
 			#if js
 			untyped __js__("console").warn("[" + info.className + "] WARNING: " + message);
 			#else
-			println("[" + info.className + "] WARNING: " + Std.string(message));
+			println("[" + info.className + "] WARNING: " + String(message));
 			#end
 		}
 	}

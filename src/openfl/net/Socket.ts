@@ -3,6 +3,7 @@
 import IOError from "openfl/errors/IOError";
 import SecurityError from "openfl/errors/SecurityError";
 import EventDispatcher from "openfl/events/EventDispatcher";
+import ObjectEncoding from "openfl/net/ObjectEncoding";
 import ByteArray from "openfl/utils/ByteArray";
 import Endian from "openfl/utils/Endian";
 import IDataInput from "openfl/utils/IDataInput";
@@ -95,51 +96,13 @@ import IDataOutput from "openfl/utils/IDataOutput";
 						 Events of type `socketData` do not use the
 						 `ProgressEvent.bytesTotal` property.
 **/
-export default class Socket extends EventDispatcher implements IDataInput implements IDataOutput
+export default class Socket extends EventDispatcher implements IDataInput, IDataOutput
 {
-	/**
-		The number of bytes of data available for reading in the input buffer.
-
-		Your code must access `bytesAvailable` to ensure that sufficient data
-		is available before trying to read it with one of the `read` methods.
-	**/
-	public bytesAvailable(get, never): number;
-
-	/**
-		Indicates the number of bytes remaining in the write buffer.
-
-		Use this property in combination with with the OutputProgressEvent. An
-		OutputProgressEvent is thrown whenever data is written from the write buffer to
-		the network. In the event handler, you can check bytesPending to see how much data
-		is still left in the buffer waiting to be written. When bytesPending returns 0, it
-		means that all the data has been transferred from the write buffer to the network,
-		and it is safe to do things like remove event handlers, null out socket
-		references, start the next upload in a queue, etc.
-	**/
-	public bytesPending(get, never): number;
-
-	/**
-		Indicates whether this Socket object is currently connected. A call to
-		this property returns a value of `true` if the socket is currently
-		connected, or `false` otherwise.
-	**/
-	public connected(default , null): boolean;
-
-	/**
-		Indicates the byte order for the data. Possible values are constants
-		from the openfl.utils.Endian class, `Endian.BIG_ENDIAN` or
-		`Endian.LITTLE_ENDIAN`.
-
-		@default Endian.BIG_ENDIAN
-	**/
-	public endian(get, set): Endian;
-
 	/**
 		Controls the version of AMF used when writing or reading an object.
 	**/
 	public objectEncoding: ObjectEncoding;
 
-	@SuppressWarnings("checkstyle:FieldDocComment")
 	/** @hidden */ public secure: boolean;
 
 	/**
@@ -149,7 +112,8 @@ export default class Socket extends EventDispatcher implements IDataInput implem
 	**/
 	public timeout: number;
 
-	protected __backend: SocketBackend;
+	// protected __backend: SocketBackend;
+	protected __connected: boolean;
 
 	/**
 		Creates a new Socket object. If no parameters are specified, an
@@ -209,14 +173,14 @@ export default class Socket extends EventDispatcher implements IDataInput implem
 	{
 		super();
 
-		__backend = new SocketBackend(this);
+		// __backend = new SocketBackend(this);
 
-		endian = Endian.BIG_ENDIAN;
-		timeout = 20000;
+		this.endian = Endian.BIG_ENDIAN;
+		this.timeout = 20000;
 
 		if (port > 0 && port < 65535)
 		{
-			connect(host, port);
+			this.connect(host, port);
 		}
 	}
 
@@ -234,8 +198,8 @@ export default class Socket extends EventDispatcher implements IDataInput implem
 	**/
 	public close(): void
 	{
-		__checkValid();
-		__backend.close();
+		this.__checkValid();
+		// __backend.close();
 	}
 
 	/**
@@ -289,7 +253,7 @@ export default class Socket extends EventDispatcher implements IDataInput implem
 			throw new SecurityError("Invalid socket port number specified.");
 		}
 
-		__backend.connect(host, port);
+		// __backend.connect(host, port);
 	}
 
 	/**
@@ -306,8 +270,8 @@ export default class Socket extends EventDispatcher implements IDataInput implem
 	**/
 	public flush(): void
 	{
-		__checkValid();
-		__backend.flush();
+		this.__checkValid();
+		// __backend.flush();
 	}
 
 	/**
@@ -323,8 +287,9 @@ export default class Socket extends EventDispatcher implements IDataInput implem
 	**/
 	public readBoolean(): boolean
 	{
-		__checkValid();
-		return __backend.readBoolean();
+		this.__checkValid();
+		return false;
+		// return __backend.readBoolean();
 	}
 
 	/**
@@ -337,8 +302,9 @@ export default class Socket extends EventDispatcher implements IDataInput implem
 	**/
 	public readByte(): number
 	{
-		__checkValid();
-		return __backend.readByte();
+		this.__checkValid();
+		return 0;
+		// return __backend.readByte();
 	}
 
 	/**
@@ -357,8 +323,8 @@ export default class Socket extends EventDispatcher implements IDataInput implem
 	**/
 	public readBytes(bytes: ByteArray, offset: number = 0, length: number = 0): void
 	{
-		__checkValid();
-		__backend.readBytes(bytes, offset, length);
+		this.__checkValid();
+		// __backend.readBytes(bytes, offset, length);
 	}
 
 	/**
@@ -372,8 +338,9 @@ export default class Socket extends EventDispatcher implements IDataInput implem
 	**/
 	public readDouble(): number
 	{
-		__checkValid();
-		return __backend.readDouble();
+		this.__checkValid();
+		return 0;
+		// return __backend.readDouble();
 	}
 
 	/**
@@ -387,8 +354,9 @@ export default class Socket extends EventDispatcher implements IDataInput implem
 	**/
 	public readFloat(): number
 	{
-		__checkValid();
-		return __backend.readFloat();
+		this.__checkValid();
+		return 0;
+		// return __backend.readFloat();
 	}
 
 	/**
@@ -401,8 +369,9 @@ export default class Socket extends EventDispatcher implements IDataInput implem
 	**/
 	public readInt(): number
 	{
-		__checkValid();
-		return __backend.readInt();
+		this.__checkValid();
+		return 0;
+		// return __backend.readInt();
 	}
 
 	/**
@@ -430,8 +399,9 @@ export default class Socket extends EventDispatcher implements IDataInput implem
 	**/
 	public readMultiByte(length: number, charSet: string): string
 	{
-		__checkValid();
-		return __backend.readMultiByte(length, charSet);
+		this.__checkValid();
+		return null;
+		// return __backend.readMultiByte(length, charSet);
 	}
 
 	/**
@@ -442,17 +412,17 @@ export default class Socket extends EventDispatcher implements IDataInput implem
 		@throws IOError  An I/O error occurred on the socket, or the socket is
 						 not open.
 	**/
-	public readObject(): Dynamic
+	public readObject(): any
 	{
-		if (objectEncoding == HXSF)
-		{
-			return Unserializer.run(readUTF());
-		}
-		else
-		{
-			// TODO: Add support for AMF if haxelib "format" is included
-			return null;
-		}
+		// if (objectEncoding == HXSF)
+		// {
+		// 	return Unserializer.run(readUTF());
+		// }
+		// else
+		// {
+		// TODO: Add support for AMF if haxelib "format" is included
+		return null;
+		// }
 	}
 
 	/**
@@ -465,8 +435,9 @@ export default class Socket extends EventDispatcher implements IDataInput implem
 	**/
 	public readShort(): number
 	{
-		__checkValid();
-		return __backend.readShort();
+		this.__checkValid();
+		return 0;
+		// return __backend.readShort();
 	}
 
 	/**
@@ -479,8 +450,9 @@ export default class Socket extends EventDispatcher implements IDataInput implem
 	**/
 	public readUnsignedByte(): number
 	{
-		__checkValid();
-		return __backend.readUnsignedByte();
+		this.__checkValid();
+		return 0;
+		// return __backend.readUnsignedByte();
 	}
 
 	/**
@@ -493,8 +465,9 @@ export default class Socket extends EventDispatcher implements IDataInput implem
 	**/
 	public readUnsignedInt(): number
 	{
-		__checkValid();
-		return __backend.readUnsignedInt();
+		this.__checkValid();
+		return 0;
+		// return __backend.readUnsignedInt();
 	}
 
 	/**
@@ -507,8 +480,9 @@ export default class Socket extends EventDispatcher implements IDataInput implem
 	**/
 	public readUnsignedShort(): number
 	{
-		__checkValid();
-		return __backend.readUnsignedShort();
+		this.__checkValid();
+		return 0;
+		// return __backend.readUnsignedShort();
 	}
 
 	/**
@@ -523,8 +497,9 @@ export default class Socket extends EventDispatcher implements IDataInput implem
 	**/
 	public readUTF(): string
 	{
-		__checkValid();
-		return __backend.readUTF();
+		this.__checkValid();
+		return null;
+		// return __backend.readUTF();
 	}
 
 	/**
@@ -539,8 +514,9 @@ export default class Socket extends EventDispatcher implements IDataInput implem
 	**/
 	public readUTFBytes(length: number): string
 	{
-		__checkValid();
-		return __backend.readUTFBytes(length);
+		this.__checkValid();
+		return null;
+		// return __backend.readUTFBytes(length);
 	}
 
 	/**
@@ -554,8 +530,8 @@ export default class Socket extends EventDispatcher implements IDataInput implem
 	**/
 	public writeBoolean(value: boolean): void
 	{
-		__checkValid();
-		__backend.writeBoolean(value);
+		this.__checkValid();
+		// __backend.writeBoolean(value);
 	}
 
 	/**
@@ -568,8 +544,8 @@ export default class Socket extends EventDispatcher implements IDataInput implem
 	**/
 	public writeByte(value: number): void
 	{
-		__checkValid();
-		__backend.writeByte(value);
+		this.__checkValid();
+		// __backend.writeByte(value);
 	}
 
 	/**
@@ -595,8 +571,8 @@ export default class Socket extends EventDispatcher implements IDataInput implem
 	**/
 	public writeBytes(bytes: ByteArray, offset: number = 0, length: number = 0): void
 	{
-		__checkValid();
-		__backend.writeBytes(bytes, offset, length);
+		this.__checkValid();
+		// __backend.writeBytes(bytes, offset, length);
 	}
 
 	/**
@@ -609,8 +585,8 @@ export default class Socket extends EventDispatcher implements IDataInput implem
 	**/
 	public writeDouble(value: number): void
 	{
-		__checkValid();
-		__backend.writeDouble(value);
+		this.__checkValid();
+		// __backend.writeDouble(value);
 	}
 
 	/**
@@ -623,8 +599,8 @@ export default class Socket extends EventDispatcher implements IDataInput implem
 	**/
 	public writeFloat(value: number): void
 	{
-		__checkValid();
-		__backend.writeFloat(value);
+		this.__checkValid();
+		// __backend.writeFloat(value);
 	}
 
 	/**
@@ -636,8 +612,8 @@ export default class Socket extends EventDispatcher implements IDataInput implem
 	**/
 	public writeInt(value: number): void
 	{
-		__checkValid();
-		__backend.writeInt(value);
+		this.__checkValid();
+		// __backend.writeInt(value);
 	}
 
 	/**
@@ -654,8 +630,8 @@ export default class Socket extends EventDispatcher implements IDataInput implem
 	**/
 	public writeMultiByte(value: string, charSet: string): void
 	{
-		__checkValid();
-		__backend.writeUTFBytes(value);
+		this.__checkValid();
+		// __backend.writeUTFBytes(value);
 	}
 
 	/**
@@ -665,18 +641,18 @@ export default class Socket extends EventDispatcher implements IDataInput implem
 		@throws IOError An I/O error occurred on the socket, or the socket is
 						not open.
 	**/
-	public writeObject(object: Dynamic): void
+	public writeObject(object: any): void
 	{
-		__checkValid();
+		this.__checkValid();
 
-		if (objectEncoding == HXSF)
-		{
-			__backend.writeUTF(Serializer.run(object));
-		}
-		else
-		{
-			// TODO: Add support for AMF if haxelib "format" is included
-		}
+		// if (objectEncoding == HXSF)
+		// {
+		// 	__backend.writeUTF(Serializer.run(object));
+		// }
+		// else
+		// {
+		// TODO: Add support for AMF if haxelib "format" is included
+		// }
 	}
 
 	/**
@@ -696,8 +672,8 @@ export default class Socket extends EventDispatcher implements IDataInput implem
 	**/
 	public writeShort(value: number): void
 	{
-		__checkValid();
-		__backend.writeShort(value);
+		this.__checkValid();
+		// __backend.writeShort(value);
 	}
 
 	/**
@@ -709,8 +685,8 @@ export default class Socket extends EventDispatcher implements IDataInput implem
 	**/
 	public writeUnsignedInt(value: number): void
 	{
-		__checkValid();
-		__backend.writeUnsignedInt(value);
+		this.__checkValid();
+		// __backend.writeUnsignedInt(value);
 	}
 
 	/**
@@ -727,8 +703,8 @@ export default class Socket extends EventDispatcher implements IDataInput implem
 	**/
 	public writeUTF(value: string): void
 	{
-		__checkValid();
-		__backend.writeUTF(value);
+		this.__checkValid();
+		// __backend.writeUTF(value);
 	}
 
 	/**
@@ -740,37 +716,78 @@ export default class Socket extends EventDispatcher implements IDataInput implem
 	**/
 	public writeUTFBytes(value: string): void
 	{
-		__checkValid();
-		__backend.writeUTFBytes(value);
+		this.__checkValid();
+		// __backend.writeUTFBytes(value);
 	}
 
 	protected __checkValid(): void
 	{
-		if (!connected)
+		if (!this.__connected)
 		{
 			throw new IOError("Operation attempted on invalid socket.");
 		}
 	}
 
 	// Get & Set Methods
-	protected get_bytesAvailable(): number
+
+	/**
+		The number of bytes of data available for reading in the input buffer.
+
+		Your code must access `bytesAvailable` to ensure that sufficient data
+		is available before trying to read it with one of the `read` methods.
+	**/
+	public get bytesAvailable(): number
 	{
-		return __backend.getBytesAvailable();
+		// TODO
+		// return __backend.getBytesAvailable();
+		return 0;
 	}
 
-	protected get_bytesPending(): number
+	/**
+		Indicates the number of bytes remaining in the write buffer.
+
+		Use this property in combination with with the OutputProgressEvent. An
+		OutputProgressEvent is thrown whenever data is written from the write buffer to
+		the network. In the event handler, you can check bytesPending to see how much data
+		is still left in the buffer waiting to be written. When bytesPending returns 0, it
+		means that all the data has been transferred from the write buffer to the network,
+		and it is safe to do things like remove event handlers, null out socket
+		references, start the next upload in a queue, etc.
+	**/
+	public get bytesPending(): number
 	{
-		return __backend.getBytesPending();
+		// TODO
+		// return __backend.getBytesPending();
+		return 0;
 	}
 
-	protected get_endian(): Endian
+	/**
+		Indicates whether this Socket object is currently connected. A call to
+		this property returns a value of `true` if the socket is currently
+		connected, or `false` otherwise.
+	**/
+	public get connected(): boolean
 	{
-		return __backend.getEndian();
+		return this.__connected;
 	}
 
-	protected set_endian(value: Endian): Endian
+	/**
+		Indicates the byte order for the data. Possible values are constants
+		from the openfl.utils.Endian class, `Endian.BIG_ENDIAN` or
+		`Endian.LITTLE_ENDIAN`.
+
+		@default Endian.BIG_ENDIAN
+	**/
+	public get endian(): Endian
 	{
-		__backend.setEndian(value);
-		return value;
+		// TODO
+		return Endian.LITTLE_ENDIAN;
+		// return __backend.getEndian();
+	}
+
+	public set endian(value: Endian)
+	{
+		// __backend.setEndian(value);
+		// return value;
 	}
 }

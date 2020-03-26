@@ -49,13 +49,13 @@ namespace openfl.display
 			rendering engine correctly apply perspective when mapping textures in
 			3D.
 		**/
-		public uvtData: Vector<Float>;
+		public uvtData: Vector<number>;
 
 		/**
 			A Vector of Numbers where each pair of numbers is treated as a point
 			(an x, y pair).
 		**/
-		public vertices: Vector<Float>;
+		public vertices: Vector<number>;
 
 		protected __graphicsDataType(default , null): GraphicsDataType;
 
@@ -72,7 +72,7 @@ namespace openfl.display
 						   be set to any value defined by the TriangleCulling
 						   class.
 		**/
-		public constructor(vertices: Vector<Float> = null, indices: Vector<Int> = null, uvtData: Vector<Float> = null, culling: TriangleCulling = NONE)
+		public constructor(vertices: Vector<number> = null, indices: Vector<Int> = null, uvtData: Vector<number> = null, culling: TriangleCulling = NONE)
 		{
 			this.vertices = vertices;
 			this.indices = indices;

@@ -229,7 +229,7 @@ Context3DStats.incrementDrawCall(DrawCallContext.BATCHER);
 __batch.clear();
 }
 
-private static __createIndicesForQuads(numQuads : number): UInt16Array
+private static __createIndicesForQuads(numQuads : number): number16Array
 {
 	var totalIndices = numQuads * 6; // 2 triangles of 3 verties per quad
 	var indices = new UInt16Array(totalIndices);
@@ -252,7 +252,7 @@ private static __createIndicesForQuads(numQuads : number): UInt16Array
 private class Batch
 {
 	public blendMode: BlendMode;
-	public indices: UInt16Array;
+	public indices: number16Array;
 	public vertices: Float32Array;
 	public textures: Array<BitmapData>;
 

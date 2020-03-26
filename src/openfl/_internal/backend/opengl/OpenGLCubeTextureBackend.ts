@@ -43,7 +43,7 @@ class OpenGLCubeTextureBackend extends OpenGLTextureBaseBackend
 		// if (optimizeForRenderToTexture) getFramebuffer (true, 0, 0);
 	}
 
-	public uploadCompressedTextureFromByteArray(data: ByteArray, byteArrayOffset: UInt, async: boolean = false): void
+	public uploadCompressedTextureFromByteArray(data: ByteArray, byteArrayOffset: number, async: boolean = false): void
 	{
 		if (!async)
 		{
@@ -72,7 +72,7 @@ class OpenGLCubeTextureBackend extends OpenGLTextureBaseBackend
 		}
 	}
 
-	public uploadFromBitmapData(source: BitmapData, side: UInt, miplevel: UInt = 0, generateMipmap: boolean = false): void
+	public uploadFromBitmapData(source: BitmapData, side: number, miplevel: number = 0, generateMipmap: boolean = false): void
 	{
 		#if(lime || openfl_html5)
 		if (source == null) return;
@@ -104,7 +104,7 @@ class OpenGLCubeTextureBackend extends OpenGLTextureBaseBackend
 		#end
 	}
 
-	public uploadFromByteArray(data: ByteArray, byteArrayOffset: UInt, side: UInt, miplevel: UInt = 0): void
+	public uploadFromByteArray(data: ByteArray, byteArrayOffset: number, side: number, miplevel: number = 0): void
 	{
 		#if(js && !display)
 		if (byteArrayOffset == 0)
@@ -117,7 +117,7 @@ class OpenGLCubeTextureBackend extends OpenGLTextureBaseBackend
 		uploadFromTypedArray(new UInt8Array(data.toArrayBuffer(), byteArrayOffset), side, miplevel);
 	}
 
-	public uploadFromTypedArray(data: ArrayBufferView, side: UInt, miplevel: UInt = 0): void
+	public uploadFromTypedArray(data: ArrayBufferView, side: number, miplevel: number = 0): void
 	{
 		if (data == null) return;
 
@@ -197,7 +197,7 @@ class OpenGLCubeTextureBackend extends OpenGLTextureBaseBackend
 		return false;
 	}
 
-	private sideToTarget(side: UInt): number
+	private sideToTarget(side: number): number
 	{
 		return switch (side)
 		{
@@ -211,7 +211,7 @@ class OpenGLCubeTextureBackend extends OpenGLTextureBaseBackend
 		}
 	}
 
-	private _uploadCompressedTextureFromByteArray(data: ByteArray, byteArrayOffset: UInt): void
+	private _uploadCompressedTextureFromByteArray(data: ByteArray, byteArrayOffset: number): void
 	{
 		var reader = new ATFReader(data, byteArrayOffset);
 		var alpha = reader.readHeader(parent.__size, parent.__size, true);

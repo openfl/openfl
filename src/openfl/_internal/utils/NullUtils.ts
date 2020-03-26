@@ -22,7 +22,7 @@ class NullUtils
 			case "Int":
 				return (macro($a != null && $b != null) ? (cast $a: number) == (cast $b: number) : ($a == null) && ($b == null));
 			case "UInt":
-				return (macro($a != null && $b != null) ? (cast $a: UInt) == (cast $b: UInt) : ($a == null) && ($b == null));
+				return (macro($a != null && $b != null) ? (cast $a: number) == (cast $b: number) : ($a == null) && ($b == null));
 			case "Float":
 				return (macro($a != null && $b != null) ? (cast $a: number) == (cast $b: number) : ($a == null) && ($b == null));
 			default:

@@ -42,10 +42,10 @@ class Context3DState
 	public stencilDepthFail: Context3DStencilAction;
 	public stencilFail: Context3DStencilAction;
 	public stencilPass: Context3DStencilAction;
-	public stencilReadMask: UInt;
-	public stencilReferenceValue: UInt;
+	public stencilReadMask: number;
+	public stencilReferenceValue: number;
 	public stencilTriangleFace: Context3DTriangleFace;
-	public stencilWriteMask: UInt;
+	public stencilWriteMask: number;
 	public textures: Array<TextureBase>;
 	// vertex buffer at?
 	public shader: Shader; // TODO: Merge shader/program3d

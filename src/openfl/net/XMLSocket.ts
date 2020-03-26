@@ -1,9 +1,10 @@
 import DataEvent from "openfl/events/DataEvent";
-import Event from "openfl.events.Event;
-import IOErrorEvent from openfl.events.IOErrorEvent;
-import EventDispatcher from "openfl.events.EventDispatcher;
-import ProgressEvent from "openfl.events.ProgressEvent;
-import ByteArray from "openfl.utils.ByteArray;
+import Event from "openfl/events/Event";
+import IOErrorEvent from "openfl/events/IOErrorEvent";
+import EventDispatcher from "openfl/events/EventDispatcher";
+import ProgressEvent from "openfl/events/ProgressEvent";
+import Socket from "openfl/net/Socket";
+import ByteArray from "openfl/utils/ByteArray";
 
 /**
 	The XMLSocket class implements client sockets that let the Flash Player or
@@ -84,19 +85,13 @@ import ByteArray from "openfl.utils.ByteArray;
 export default class XMLSocket extends EventDispatcher
 {
 	/**
-		Indicates whether this XMLSocket object is currently connected. You
-		can also check whether the connection succeeded by registering for the
-		`connect` event and `ioError` event.
-	**/
-	public connected(default , null): boolean;
-
-	/**
 		Indicates the number of milliseconds to wait for a connection.
 		If the connection doesn't succeed within the specified time, the
 		connection fails. The default value is 20,000 (twenty seconds).
 	**/
 	public timeout: number;
 
+	protected __connected: boolean;
 	protected __socket: Socket;
 
 	/**
@@ -132,7 +127,7 @@ export default class XMLSocket extends EventDispatcher
 
 		if (host != null)
 		{
-			connect(host, port);
+			this.connect(host, port);
 		}
 	}
 
@@ -144,12 +139,12 @@ export default class XMLSocket extends EventDispatcher
 	**/
 	public close(): void
 	{
-		__socket.removeEventListener(Event.CLOSE, __onClose);
-		__socket.removeEventListener(Event.CONNECT, __onConnect);
-		__socket.removeEventListener(IOErrorEvent.IO_ERROR, __onError);
-		__socket.removeEventListener(ProgressEvent.SOCKET_DATA, __onSocketData);
+		this.__socket.removeEventListener(Event.CLOSE, this.__onClose);
+		this.__socket.removeEventListener(Event.CONNECT, this.__onConnect);
+		this.__socket.removeEventListener(IOErrorEvent.IO_ERROR, this.__onError);
+		this.__socket.removeEventListener(ProgressEvent.SOCKET_DATA, this.__onSocketData);
 
-		__socket.close();
+		this.__socket.close();
 	}
 
 	/**
@@ -200,16 +195,16 @@ export default class XMLSocket extends EventDispatcher
 	**/
 	public connect(host: string, port: number): void
 	{
-		connected = false;
+		this.__connected = false;
 
-		__socket = new Socket();
+		this.__socket = new Socket();
 
-		__socket.addEventListener(Event.CLOSE, __onClose);
-		__socket.addEventListener(Event.CONNECT, __onConnect);
-		__socket.addEventListener(IOErrorEvent.IO_ERROR, __onError);
-		__socket.addEventListener(ProgressEvent.SOCKET_DATA, __onSocketData);
+		this.__socket.addEventListener(Event.CLOSE, this.__onClose);
+		this.__socket.addEventListener(Event.CONNECT, this.__onConnect);
+		this.__socket.addEventListener(IOErrorEvent.IO_ERROR, this.__onError);
+		this.__socket.addEventListener(ProgressEvent.SOCKET_DATA, this.__onSocketData);
 
-		__socket.connect(host, port);
+		this.__socket.connect(host, port);
 	}
 
 	/**
@@ -228,31 +223,43 @@ export default class XMLSocket extends EventDispatcher
 	**/
 	public send(object: Object): void
 	{
-		__socket.writeUTFBytes(Std.string(object));
-		__socket.writeByte(0);
-		__socket.flush();
+		this.__socket.writeUTFBytes(String(object));
+		this.__socket.writeByte(0);
+		this.__socket.flush();
 	}
 
 	// Event Handlers
 	protected __onClose(_): void
 	{
-		connected = false;
-		dispatchEvent(new Event(Event.CLOSE));
+		this.__connected = false;
+		this.dispatchEvent(new Event(Event.CLOSE));
 	}
 
 	protected __onConnect(_): void
 	{
-		connected = true;
-		dispatchEvent(new Event(Event.CONNECT));
+		this.__connected = true;
+		this.dispatchEvent(new Event(Event.CONNECT));
 	}
 
 	protected __onError(_): void
 	{
-		dispatchEvent(new Event(IOErrorEvent.IO_ERROR));
+		this.dispatchEvent(new Event(IOErrorEvent.IO_ERROR));
 	}
 
 	protected __onSocketData(_): void
 	{
-		dispatchEvent(new DataEvent(DataEvent.DATA, false, false, __socket.readUTFBytes(__socket.bytesAvailable)));
+		this.dispatchEvent(new DataEvent(DataEvent.DATA, false, false, this.__socket.readUTFBytes(this.__socket.bytesAvailable)));
+	}
+
+	// Get & Set Methods
+
+	/**
+		Indicates whether this XMLSocket object is currently connected. You
+		can also check whether the connection succeeded by registering for the
+		`connect` event and `ioError` event.
+	**/
+	public get connected(): boolean
+	{
+		return this.__connected;
 	}
 }

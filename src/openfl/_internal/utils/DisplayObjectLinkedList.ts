@@ -498,7 +498,7 @@ class DisplayObjectLinkedList
 			}
 			else
 			{
-				msg += Std.string(arg);
+				msg += String(arg);
 			}
 
 			if (i < args.length - 1)

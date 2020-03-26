@@ -15,8 +15,8 @@ class DummyContext3DBackend
 {
 	public new(parent: Context3D) { }
 
-	public clear(red: number = 0, green: number = 0, blue: number = 0, alpha: number = 1, depth: number = 1, stencil: UInt = 0,
-		mask: UInt = Context3DClearMask.ALL): void { }
+	public clear(red: number = 0, green: number = 0, blue: number = 0, alpha: number = 1, depth: number = 1, stencil: number = 0,
+		mask: number = Context3DClearMask.ALL): void { }
 
 	public configureBackBuffer(width: number, height: number, antiAlias: number, enableDepthAndStencil: boolean = true, wantsBestResolution: boolean = false,
 		wantsBestResolutionOnBrowserZoom: boolean = false): void { }

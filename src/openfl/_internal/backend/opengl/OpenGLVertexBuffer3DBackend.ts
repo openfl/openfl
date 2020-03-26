@@ -21,7 +21,7 @@ import Vector from "openfl/Vector";
 @: access(openfl.display.Stage)
 class OpenGLVertexBuffer3DBackend
 {
-	private data: Vector<Float>;
+	private data: Vector<number>;
 	private gl: WebGLRenderingContext;
 	private glBufferID: GLBuffer;
 	private glUsage: number;
@@ -61,7 +61,7 @@ class OpenGLVertexBuffer3DBackend
 		gl.bufferData(GL.ARRAY_BUFFER, data, glUsage);
 	}
 
-	public uploadFromVector(data: Vector<Float>, startVertex: number, numVertices: number): void
+	public uploadFromVector(data: Vector<number>, startVertex: number, numVertices: number): void
 	{
 		if (data == null) return;
 

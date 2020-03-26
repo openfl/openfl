@@ -16,11 +16,11 @@ class DummyTextureBackend extends DummyTextureBaseBackend
 		super(parent);
 	}
 
-	public uploadCompressedTextureFromByteArray(data: ByteArray, byteArrayOffset: UInt, async: boolean = false): void { }
+	public uploadCompressedTextureFromByteArray(data: ByteArray, byteArrayOffset: number, async: boolean = false): void { }
 
-	public uploadFromBitmapData(source: BitmapData, miplevel: UInt = 0, generateMipmap: boolean = false): void { }
+	public uploadFromBitmapData(source: BitmapData, miplevel: number = 0, generateMipmap: boolean = false): void { }
 
-	public uploadFromByteArray(data: ByteArray, byteArrayOffset: UInt, miplevel: UInt = 0): void { }
+	public uploadFromByteArray(data: ByteArray, byteArrayOffset: number, miplevel: number = 0): void { }
 
-	public uploadFromTypedArray(data: ArrayBufferView, miplevel: UInt = 0): void { }
+	public uploadFromTypedArray(data: ArrayBufferView, miplevel: number = 0): void { }
 }

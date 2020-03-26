@@ -118,7 +118,7 @@ class HTML5URLLoaderBackend
 	}
 	else
 	{
-		httpRequest.data = Bytes.ofString(Std.string(request.data));
+		httpRequest.data = Bytes.ofString(String(request.data));
 	}
 }
 
@@ -152,13 +152,13 @@ httpRequest.enableResponseHeaders = true;
 	if(error == 403)
 {
 	var event = new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR);
-	event.text = Std.string(error);
+	event.text = String(error);
 	parent.dispatchEvent(event);
 }
 	else
 {
 	var event = new IOErrorEvent(IOErrorEvent.IO_ERROR);
-	event.text = Std.string(error);
+	event.text = String(error);
 	parent.dispatchEvent(event);
 }
 }

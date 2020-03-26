@@ -18,12 +18,12 @@ class DummyStageBackend
 		return 0;
 	}
 
-	public getFullScreenHeight(): UInt
+	public getFullScreenHeight(): number
 	{
 		return 0;
 	}
 
-	public getFullScreenWidth(): UInt
+	public getFullScreenWidth(): number
 	{
 		return 0;
 	}

@@ -18,7 +18,7 @@ class DummyRectangleTextureBackend extends DummyTextureBaseBackend
 
 	public uploadFromBitmapData(source: BitmapData): void { }
 
-	public uploadFromByteArray(data: ByteArray, byteArrayOffset: UInt): void { }
+	public uploadFromByteArray(data: ByteArray, byteArrayOffset: number): void { }
 
 	public uploadFromTypedArray(data: ArrayBufferView): void { }
 }

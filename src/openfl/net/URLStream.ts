@@ -3,105 +3,79 @@ import Event from "openfl/events/Event";
 import IOErrorEvent from "openfl/events/IOErrorEvent";
 import SecurityErrorEvent from "openfl/events/SecurityErrorEvent";
 import ProgressEvent from "openfl/events/ProgressEvent";
+import ObjectEncoding from "openfl/net/ObjectEncoding";
+import URLLoader from "openfl/net/URLLoader";
+import URLLoaderDataFormat from "openfl/net/URLLoaderDataFormat";
+import URLRequest from "openfl/net/URLRequest";
 import IDataInput from "openfl/utils/IDataInput";
-import ByteArray from "openfl/utils?ByteArray";
+import ByteArray from "openfl/utils/ByteArray";
 import Endian from "openfl/utils/Endian";
 
 /**
-		The URLStream class provides low-level access to downloading URLs. Data is
-		made available to application code immediately as it is downloaded,
-		instead of waiting until the entire file is complete as with URLLoader.
-		The URLStream class also lets you close a stream before it finishes
-		downloading. The contents of the downloaded file are made available as raw
-		binary data.
-		The read operations in URLStream are nonblocking. This means that you must
-		use the `bytesAvailable` property to determine whether sufficient data is
-		available before reading it. An `EOFError` exception is thrown if
-		insufficient data is available.
+	The URLStream class provides low-level access to downloading URLs. Data is
+	made available to application code immediately as it is downloaded,
+	instead of waiting until the entire file is complete as with URLLoader.
+	The URLStream class also lets you close a stream before it finishes
+	downloading. The contents of the downloaded file are made available as raw
+	binary data.
+	The read operations in URLStream are nonblocking. This means that you must
+	use the `bytesAvailable` property to determine whether sufficient data is
+	available before reading it. An `EOFError` exception is thrown if
+	insufficient data is available.
 
-		All binary data is encoded by default in big-endian format, with the most
-		significant byte first.
+	All binary data is encoded by default in big-endian format, with the most
+	significant byte first.
 
-		The security rules that apply to URL downloading with the URLStream class
-		are identical to the rules applied to URLLoader objects. Policy files may
-		be downloaded as needed. Local file security rules are enforced, and
-		security warnings are raised as needed.
+	The security rules that apply to URL downloading with the URLStream class
+	are identical to the rules applied to URLLoader objects. Policy files may
+	be downloaded as needed. Local file security rules are enforced, and
+	security warnings are raised as needed.
 
-		@event complete           Dispatched when data has loaded successfully.
-		@event httpResponseStatus Dispatched if a call to the `URLStream.load()`
-								  method attempts to access data over HTTP and
-								  Adobe AIR is able to detect and return the
-								  status code for the request.
-								  If a URLStream object registers for an
-								  `httpStatusEvent` event, error responses are
-								  delivered as though they are content. So instead
-								  of dispatching an `ioError` event, the URLStream
-								  dispatches `progress` and `complete` events as
-								  the error data is loaded into the URLStream.
-		@event httpStatus         Dispatched if a call to `URLStream.load()`
-								  attempts to access data over HTTP, and Flash
-								  Player or Adobe AIR is able to detect and return
-								  the status code for the request. (Some browser
-								  environments may not be able to provide this
-								  information.) Note that the `httpStatus` (if
-								  any) will be sent before (and in addition to)
-								  any `complete` or `error` event.
-		@event ioError            Dispatched when an input/output error occurs
-								  that causes a load operation to fail.
-		@event open               Dispatched when a load operation starts.
-		@event progress           Dispatched when data is received as the download
-								  operation progresses. Data that has been
-								  received can be read immediately using the
-								  methods of the URLStream class.
-		@event securityError      Dispatched if a call to `URLStream.load()`
-								  attempts to load data from a server outside the
-								  security sandbox.
-	**/
+	@event complete           Dispatched when data has loaded successfully.
+	@event httpResponseStatus Dispatched if a call to the `URLStream.load()`
+								method attempts to access data over HTTP and
+								Adobe AIR is able to detect and return the
+								status code for the request.
+								If a URLStream object registers for an
+								`httpStatusEvent` event, error responses are
+								delivered as though they are content. So instead
+								of dispatching an `ioError` event, the URLStream
+								dispatches `progress` and `complete` events as
+								the error data is loaded into the URLStream.
+	@event httpStatus         Dispatched if a call to `URLStream.load()`
+								attempts to access data over HTTP, and Flash
+								Player or Adobe AIR is able to detect and return
+								the status code for the request. (Some browser
+								environments may not be able to provide this
+								information.) Note that the `httpStatus` (if
+								any) will be sent before (and in addition to)
+								any `complete` or `error` event.
+	@event ioError            Dispatched when an input/output error occurs
+								that causes a load operation to fail.
+	@event open               Dispatched when a load operation starts.
+	@event progress           Dispatched when data is received as the download
+								operation progresses. Data that has been
+								received can be read immediately using the
+								methods of the URLStream class.
+	@event securityError      Dispatched if a call to `URLStream.load()`
+								attempts to load data from a server outside the
+								security sandbox.
+**/
 export default class URLStream extends EventDispatcher implements IDataInput
 {
-	/**
-		Returns the number of bytes of data available for reading in the input
-		buffer. Your code must call the `bytesAvailable` property to ensure
-		that sufficient data is available before you try to read it with one
-		of the `read` methods.
-	**/
-	public bytesAvailable(get, never): UInt;
-
-	/**
-		Indicates whether this URLStream object is currently connected. A call
-		to this property returns a value of `true` if the URLStream object is
-		connected, or `false` otherwise.
-	**/
-	public connected(get, never): boolean;
-
 	// @:require(flash11_4) public diskCacheEnabled (default, null):Bool;
-
-	/**
-		Indicates the byte order for the data. Possible values are
-		`Endian.BIG_ENDIAN` or `Endian.LITTLE_ENDIAN`.
-
-		@default Endian.BIG_ENDIAN
-	**/
-	public endian(get, set): Endian;
-
 	// @:require(flash11_4) public length (default, null):Float;
-
-	/**
-		Controls the version of Action Message Format (AMF) used when writing
-		or reading an object.
-	**/
-	public objectEncoding: ObjectEncoding;
-
 	// @:require(flash11_4) public position:Float;
 	protected __data: ByteArray;
 	protected __loader: URLLoader;
+	protected __objectEncoding: ObjectEncoding;
 
 	public constructor()
 	{
 		super();
 
-		__loader = new URLLoader();
-		__loader.dataFormat = URLLoaderDataFormat.BINARY;
+		this.__loader = new URLLoader();
+		this.__loader.dataFormat = URLLoaderDataFormat.BINARY;
 	}
 
 	/**
@@ -113,8 +87,8 @@ export default class URLStream extends EventDispatcher implements IDataInput
 	**/
 	public close(): void
 	{
-		__removeEventListeners();
-		__data = null;
+		this.__removeEventListeners();
+		this.__data = null;
 	}
 
 	/**
@@ -247,10 +221,10 @@ export default class URLStream extends EventDispatcher implements IDataInput
 	**/
 	public load(request: URLRequest): void
 	{
-		__removeEventListeners();
-		__addEventListeners();
+		this.__removeEventListeners();
+		this.__addEventListeners();
 
-		__loader.load(request);
+		this.__loader.load(request);
 	}
 
 	/**
@@ -270,7 +244,7 @@ export default class URLStream extends EventDispatcher implements IDataInput
 	**/
 	public readBoolean(): boolean
 	{
-		return __data.readBoolean();
+		return this.__data.readBoolean();
 	}
 
 	/**
@@ -290,7 +264,7 @@ export default class URLStream extends EventDispatcher implements IDataInput
 	**/
 	public readByte(): number
 	{
-		return __data.readByte();
+		return this.__data.readByte();
 	}
 
 	/**
@@ -313,9 +287,9 @@ export default class URLStream extends EventDispatcher implements IDataInput
 		@throws IOError  An I/O error occurred on the stream, or the stream is
 						 not open.
 	**/
-	public readBytes(bytes: ByteArray, offset: UInt = 0, length: number = 0): void
+	public readBytes(bytes: ByteArray, offset: number = 0, length: number = 0): void
 	{
-		__data.readBytes(bytes, offset, length);
+		this.__data.readBytes(bytes, offset, length);
 	}
 
 	/**
@@ -336,7 +310,7 @@ export default class URLStream extends EventDispatcher implements IDataInput
 	**/
 	public readDouble(): number
 	{
-		return __data.readDouble();
+		return this.__data.readDouble();
 	}
 
 	/**
@@ -357,7 +331,7 @@ export default class URLStream extends EventDispatcher implements IDataInput
 	**/
 	public readFloat(): number
 	{
-		return __data.readFloat();
+		return this.__data.readFloat();
 	}
 
 	/**
@@ -377,7 +351,7 @@ export default class URLStream extends EventDispatcher implements IDataInput
 	**/
 	public readInt(): number
 	{
-		return __data.readInt();
+		return this.__data.readInt();
 	}
 
 	/**
@@ -409,9 +383,9 @@ export default class URLStream extends EventDispatcher implements IDataInput
 						 been received, and any of the read methods throws an
 						 EOFError exception.
 	**/
-	public readMultiByte(length: UInt, charSet: string): string
+	public readMultiByte(length: number, charSet: string): string
 	{
-		return __data.readMultiByte(length, charSet);
+		return this.__data.readMultiByte(length, charSet);
 	}
 
 	/**
@@ -429,9 +403,9 @@ export default class URLStream extends EventDispatcher implements IDataInput
 		@throws IOError  An I/O error occurred on the stream, or the stream is
 						 not open.
 	**/
-	public readObject(): Dynamic
+	public readObject(): any
 	{
-		return null;
+		return this.__data.readObject();
 	}
 
 	/**
@@ -451,7 +425,7 @@ export default class URLStream extends EventDispatcher implements IDataInput
 	**/
 	public readShort(): number
 	{
-		return __data.readShort();
+		return this.__data.readShort();
 	}
 
 	/**
@@ -469,9 +443,9 @@ export default class URLStream extends EventDispatcher implements IDataInput
 		@throws IOError  An I/O error occurred on the stream, or the stream is
 						 not open.
 	**/
-	public readUnsignedByte(): UInt
+	public readUnsignedByte(): number
 	{
-		return __data.readUnsignedByte();
+		return this.__data.readUnsignedByte();
 	}
 
 	/**
@@ -489,9 +463,9 @@ export default class URLStream extends EventDispatcher implements IDataInput
 		@throws IOError  An I/O error occurred on the stream, or the stream is
 						 not open.
 	**/
-	public readUnsignedInt(): UInt
+	public readUnsignedInt(): number
 	{
-		return __data.readUnsignedInt();
+		return this.__data.readUnsignedInt();
 	}
 
 	/**
@@ -509,9 +483,9 @@ export default class URLStream extends EventDispatcher implements IDataInput
 		@throws IOError  An I/O error occurred on the stream, or the stream is
 						 not open.
 	**/
-	public readUnsignedShort(): UInt
+	public readUnsignedShort(): number
 	{
-		return __data.readUnsignedShort();
+		return this.__data.readUnsignedShort();
 	}
 
 	/**
@@ -531,7 +505,7 @@ export default class URLStream extends EventDispatcher implements IDataInput
 	**/
 	public readUTF(): string
 	{
-		return __data.readUTF();
+		return this.__data.readUTF();
 	}
 
 	/**
@@ -551,81 +525,118 @@ export default class URLStream extends EventDispatcher implements IDataInput
 		@throws IOError  An I/O error occurred on the stream, or the stream is
 						 not open.
 	**/
-	public readUTFBytes(length: UInt): string
+	public readUTFBytes(length: number): string
 	{
-		return __data.readUTFBytes(length);
+		return this.__data.readUTFBytes(length);
 	}
 
 	// @:require(flash11_4) public stop ():Void;
 	protected __addEventListeners(): void
 	{
-		__loader.addEventListener(Event.COMPLETE, loader_onComplete);
-		__loader.addEventListener(IOErrorEvent.IO_ERROR, loader_onIOError);
-		__loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, loader_onSecurityError);
-		__loader.addEventListener(ProgressEvent.PROGRESS, loader_onProgressEvent);
+		this.__loader.addEventListener(Event.COMPLETE, this.loader_onComplete);
+		this.__loader.addEventListener(IOErrorEvent.IO_ERROR, this.loader_onIOError);
+		this.__loader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, this.loader_onSecurityError);
+		this.__loader.addEventListener(ProgressEvent.PROGRESS, this.loader_onProgressEvent);
 	}
 
 	protected __removeEventListeners(): void
 	{
-		__loader.removeEventListener(Event.COMPLETE, loader_onComplete);
-		__loader.removeEventListener(IOErrorEvent.IO_ERROR, loader_onIOError);
-		__loader.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, loader_onSecurityError);
-		__loader.removeEventListener(ProgressEvent.PROGRESS, loader_onProgressEvent);
+		this.__loader.removeEventListener(Event.COMPLETE, this.loader_onComplete);
+		this.__loader.removeEventListener(IOErrorEvent.IO_ERROR, this.loader_onIOError);
+		this.__loader.removeEventListener(SecurityErrorEvent.SECURITY_ERROR, this.loader_onSecurityError);
+		this.__loader.removeEventListener(ProgressEvent.PROGRESS, this.loader_onProgressEvent);
 	}
 
 	// Event Handlers
 	protected loader_onComplete(event: Event): void
 	{
-		__removeEventListeners();
-		__data = __loader.data;
+		this.__removeEventListeners();
+		this.__data = this.__loader.data;
+		this.__data.objectEncoding = this.__objectEncoding;
 
-		dispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS, false, false, __loader.bytesLoaded, __loader.bytesTotal));
-		dispatchEvent(new Event(Event.COMPLETE));
+		this.dispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS, false, false, this.__loader.bytesLoaded, this.__loader.bytesTotal));
+		this.dispatchEvent(new Event(Event.COMPLETE));
 	}
 
 	protected loader_onIOError(event: IOErrorEvent): void
 	{
-		__removeEventListeners();
+		this.__removeEventListeners();
 
-		dispatchEvent(event);
+		this.dispatchEvent(event);
 	}
 
 	protected loader_onSecurityError(event: SecurityErrorEvent): void
 	{
-		__removeEventListeners();
+		this.__removeEventListeners();
 
-		dispatchEvent(event);
+		this.dispatchEvent(event);
 	}
 
 	protected loader_onProgressEvent(event: ProgressEvent): void
 	{
-		__data = __loader.data;
-		dispatchEvent(event);
+		this.__data = this.__loader.data;
+		this.dispatchEvent(event);
 	}
 
 	// Get & Set Methods
-	private get_bytesAvailable(): UInt
+
+	/**
+		Returns the number of bytes of data available for reading in the input
+		buffer. Your code must call the `bytesAvailable` property to ensure
+		that sufficient data is available before you try to read it with one
+		of the `read` methods.
+	**/
+	public get bytesAvailable(): number
 	{
-		if (__data != null)
+		if (this.__data != null)
 		{
-			return __data.length - __data.position;
+			return this.__data.length - this.__data.position;
 		}
 
 		return 0;
 	}
 
-	private get_connected(): boolean
+	/**
+		Indicates whether this URLStream object is currently connected. A call
+		to this property returns a value of `true` if the URLStream object is
+		connected, or `false` otherwise.
+	**/
+	public get connected(): boolean
 	{
 		return false;
 	}
 
-	private get_endian(): Endian
+	/**
+		Indicates the byte order for the data. Possible values are
+		`Endian.BIG_ENDIAN` or `Endian.LITTLE_ENDIAN`.
+
+		@default Endian.BIG_ENDIAN
+	**/
+	public get endian(): Endian
 	{
-		return __data.endian;
+		return this.__data.endian;
 	}
 
-	private set_endian(value: Endian): Endian
+	public set endian(value: Endian)
 	{
-		return __data.endian = value;
+		this.__data.endian = value;
+	}
+
+	/**
+		Controls the version of Action Message Format (AMF) used when writing
+		or reading an object.
+	**/
+	public get objectEncoding(): ObjectEncoding
+	{
+		return this.__objectEncoding;
+	}
+
+	public set objectEncoding(value: ObjectEncoding)
+	{
+		if (this.__data != null)
+		{
+			this.__data.objectEncoding = value;
+		}
+		this.__objectEncoding = value;
 	}
 }

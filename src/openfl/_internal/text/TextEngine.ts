@@ -56,12 +56,12 @@ class TextEngine
 	public gridFitType: GridFitType;
 	public height: number;
 	public layoutGroups: Vector<TextLayoutGroup>;
-	public lineAscents: Vector<Float>;
+	public lineAscents: Vector<number>;
 	public lineBreaks: Vector<Int>;
-	public lineDescents: Vector<Float>;
-	public lineLeadings: Vector<Float>;
-	public lineHeights: Vector<Float>;
-	public lineWidths: Vector<Float>;
+	public lineDescents: Vector<number>;
+	public lineLeadings: Vector<number>;
+	public lineHeights: Vector<number>;
+	public lineWidths: Vector<number>;
 	public maxChars: number;
 	public maxScrollH(default , null): number;
 	public maxScrollV(default , null): number;

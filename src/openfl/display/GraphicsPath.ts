@@ -34,7 +34,7 @@ namespace openfl.display
 			The Vector of Numbers containing the parameters used with the drawing
 			commands.
 		**/
-		public data: Vector<Float>;
+		public data: Vector<number>;
 
 		/**
 			Specifies the winding rule using a value defined in the
@@ -50,7 +50,7 @@ namespace openfl.display
 			@param winding Specifies the winding rule using a value defined in the
 						   GraphicsPathWinding class.
 		**/
-		public constructor(commands: Vector<Int> = null, data: Vector<Float> = null, winding: GraphicsPathWinding = GraphicsPathWinding.EVEN_ODD)
+		public constructor(commands: Vector<Int> = null, data: Vector<number> = null, winding: GraphicsPathWinding = GraphicsPathWinding.EVEN_ODD)
 		{
 			this.commands = commands;
 			this.data = data;

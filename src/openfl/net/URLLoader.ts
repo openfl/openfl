@@ -1,4 +1,6 @@
 import EventDispatcher from "openfl/events/EventDispatcher";
+import URLLoaderDataFormat from "openfl/net/URLLoaderDataFormat";
+import URLRequest from "openfl/net/URLRequest";
 
 /**
 	The URLLoader class downloads data from a URL as text, binary data, or
@@ -104,7 +106,7 @@ export default class URLLoader extends EventDispatcher
 		`URLLoaderDataFormat.VARIABLES`, the received data is a
 		URLVariables object containing the URL-encoded variables.
 	**/
-	public data: Object;
+	public data: any;
 
 	/**
 		Controls whether the downloaded data is received as text
@@ -128,8 +130,6 @@ export default class URLLoader extends EventDispatcher
 	**/
 	public dataFormat: URLLoaderDataFormat;
 
-	protected __backend: URLLoaderBackend;
-
 	/**
 		Creates a URLLoader object.
 
@@ -142,15 +142,13 @@ export default class URLLoader extends EventDispatcher
 	{
 		super();
 
-		bytesLoaded = 0;
-		bytesTotal = 0;
-		dataFormat = URLLoaderDataFormat.TEXT;
-
-		__backend = new URLLoaderBackend(this);
+		this.bytesLoaded = 0;
+		this.bytesTotal = 0;
+		this.dataFormat = URLLoaderDataFormat.TEXT;
 
 		if (request != null)
 		{
-			load(request);
+			this.load(request);
 		}
 	}
 
@@ -162,7 +160,8 @@ export default class URLLoader extends EventDispatcher
 	**/
 	public close(): void
 	{
-		__backend.close();
+		// TODO
+		// __backend.close();
 	}
 
 	/**
@@ -264,6 +263,7 @@ export default class URLLoader extends EventDispatcher
 	**/
 	public load(request: URLRequest): void
 	{
-		__backend.load(request);
+		// TODO
+		// __backend.load(request);
 	}
 }

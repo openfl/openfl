@@ -24,7 +24,7 @@ class HTML5LibBackend
 			for (field in fields)
 			{
 				if (query.length > 0) query += "&";
-				query += StringTools.urlEncode(field) + "=" + StringTools.urlEncode(Std.string(Reflect.field(request.data, field)));
+				query += StringTools.urlEncode(field) + "=" + StringTools.urlEncode(String(Reflect.field(request.data, field)));
 			}
 
 			if (uri.indexOf("?") > -1)

@@ -57,7 +57,7 @@ namespace openfl.display3D.textures
 			or if the number of bytes available from `byteArrayOffset` to the end of the `data`
 			byte array is less than the amount of data required for ATF texture.
 		**/
-		public uploadCompressedTextureFromByteArray(data: ByteArray, byteArrayOffset: UInt, async: boolean = false): void
+		public uploadCompressedTextureFromByteArray(data: ByteArray, byteArrayOffset: number, async: boolean = false): void
 		{
 			__backend.uploadCompressedTextureFromByteArray(data, byteArrayOffset, async);
 		}
@@ -80,7 +80,7 @@ namespace openfl.display3D.textures
 			not supported.
 			@throws	Error	3768: The Stage3D API may not be used during background execution.
 		**/
-		public uploadFromBitmapData(source: BitmapData, miplevel: UInt = 0, generateMipmap: boolean = false): void
+		public uploadFromBitmapData(source: BitmapData, miplevel: number = 0, generateMipmap: boolean = false): void
 		{
 			__backend.uploadFromBitmapData(source, miplevel, generateMipmap);
 		}
@@ -109,7 +109,7 @@ namespace openfl.display3D.textures
 			supported.
 			@throws	Error	3768: The Stage3D API may not be used during background execution.
 		**/
-		public uploadFromByteArray(data: ByteArray, byteArrayOffset: UInt, miplevel: UInt = 0): void
+		public uploadFromByteArray(data: ByteArray, byteArrayOffset: number, miplevel: number = 0): void
 		{
 			__backend.uploadFromByteArray(data, byteArrayOffset, miplevel);
 		}
@@ -123,7 +123,7 @@ namespace openfl.display3D.textures
 			@param	miplevel	the mip level to be loaded, level zero is the top-level,
 			full-resolution image.
 		**/
-		public uploadFromTypedArray(data: ArrayBufferView, miplevel: UInt = 0): void
+		public uploadFromTypedArray(data: ArrayBufferView, miplevel: number = 0): void
 		{
 			__backend.uploadFromTypedArray(data, miplevel);
 		}

@@ -1,10 +1,10 @@
 /**
-		The URLVariables class allows you to transfer variables between an
-		application and a server. Use URLVariables objects with methods of the
-		URLLoader class, with the `data` property of the URLRequest
-		class, and with openfl.net namespace functions.
-	**/
-abstract URLVariables(Dynamic) from Dynamic to Dynamic
+	The URLVariables class allows you to transfer variables between an
+	application and a server. Use URLVariables objects with methods of the
+	URLLoader class, with the `data` property of the URLRequest
+	class, and with openfl.net namespace functions.
+**/
+export default class URLVariables extends Object implements AllowProperties
 {
 	/**
 		Creates a new URLVariables object. You pass URLVariables objects to the
@@ -18,11 +18,11 @@ abstract URLVariables(Dynamic) from Dynamic to Dynamic
 	**/
 	public constructor(source: string = null)
 	{
-		this = {};
+		super();
 
 		if (source != null)
 		{
-			decode(source);
+			this.decode(source);
 		}
 	}
 
@@ -38,30 +38,30 @@ abstract URLVariables(Dynamic) from Dynamic to Dynamic
 					  containing name/value pairs.
 	**/
 	public decode(source: string): void
-		{
-			var fields = Reflect.fields(this);
-
-			for(f in fields)
-		{
-		Reflect.deleteField(this, f);
-	}
-
-	var fields = source.split(";").join("&").split("&");
-
-	for (f in fields)
 	{
-		var eq = f.indexOf("=");
+		var fields = Object.getOwnPropertyNames(this);
 
-		if (eq > 0)
+		for (let f of fields)
 		{
-			Reflect.setField(this, StringTools.urlDecode(f.substr(0, eq)), StringTools.urlDecode(f.substr(eq + 1)));
+			delete this[f];
 		}
-		else if (eq != 0)
+
+		var fields = source.split(";").join("&").split("&");
+
+		for (let f of fields)
 		{
-			Reflect.setField(this, StringTools.urlDecode(f), "");
+			var eq = f.indexOf("=");
+
+			if (eq > 0)
+			{
+				this[decodeURIComponent(f.substr(0, eq))] = decodeURIComponent(f.substr(eq + 1));
+			}
+			else if (eq != 0)
+			{
+				this[decodeURIComponent(f)] = "";
+			}
 		}
 	}
-}
 
 	/**
 		Returns a string containing all enumerable variables, in the MIME content
@@ -70,27 +70,29 @@ abstract URLVariables(Dynamic) from Dynamic to Dynamic
 		@return A URL-encoded string containing name/value pairs.
 	**/
 	public toString(): string
-{
-	var result = new Array<string>();
-	var fields = Reflect.fields(this);
-
-	for (f in fields)
 	{
-		var value: Dynamic = Reflect.field(this, f);
-		if (f.indexOf("[]") > -1 && Std.is(value, Array))
-		{
-			var arrayValue: string = Lambda.map(value, function (v: string)
-			{
-				return StringTools.urlEncode(v);
-			}).join('&amp;${f}=');
-			result.push(StringTools.urlEncode(f) + "=" + arrayValue);
-		}
-		else
-		{
-			result.push(StringTools.urlEncode(f) + "=" + StringTools.urlEncode(value));
-		}
-	}
+		var result = new Array<string>();
+		var fields = Object.getOwnPropertyNames(this);
 
-	return result.join("&");
+		for (let f of fields)
+		{
+			var value: any = this[f];
+			if (f.indexOf("[]") > -1 && value instanceof Array)
+			{
+				var arrayValue: string = value.map((v: string) => encodeURIComponent(v)).join(`&amp;${f}=`);
+				result.push(`${encodeURIComponent(f)}=${arrayValue}`);
+			}
+			else
+			{
+				result.push(`${encodeURIComponent(f)}=${encodeURIComponent(value)}`);
+			}
+		}
+
+		return result.join("&");
+	}
 }
+
+interface AllowProperties
+{
+	[key: string]: any
 }

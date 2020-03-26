@@ -608,7 +608,7 @@ class AssetLibrary
 					cachedFonts.set(id, Font.fromBytes(data));
 						#end
 						case TEXT:
-					cachedText.set(id, data != null ? Std.string(data) : null);
+					cachedText.set(id, data != null ? String(data) : null);
 						default:
 		cachedBytes.set(id, data);
 					}
@@ -788,7 +788,7 @@ __assetLoaded(id);
 	{
 		if(message != null && message != "")
 {
-	Log.warn("Could not load \"" + id + "\": " + Std.string(message));
+	Log.warn("Could not load \"" + id + "\": " + String(message));
 }
 	else
 {
@@ -826,7 +826,7 @@ loadAudioBuffer_onComplete(id, new AudioBuffer());
 	{
 		if(message != null && message != "")
 {
-	promise.error("Error loading asset \"" + id + "\": " + Std.string(message));
+	promise.error("Error loading asset \"" + id + "\": " + String(message));
 }
 	else
 {

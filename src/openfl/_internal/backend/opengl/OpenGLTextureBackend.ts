@@ -45,7 +45,7 @@ class OpenGLTextureBackend extends OpenGLTextureBaseBackend
 		if (parent.__optimizeForRenderToTexture) getGLFramebuffer(true, 0, 0);
 	}
 
-	public uploadCompressedTextureFromByteArray(data: ByteArray, byteArrayOffset: UInt, async: boolean = false): void
+	public uploadCompressedTextureFromByteArray(data: ByteArray, byteArrayOffset: number, async: boolean = false): void
 	{
 		if (!async)
 		{
@@ -74,7 +74,7 @@ class OpenGLTextureBackend extends OpenGLTextureBaseBackend
 		}
 	}
 
-	public uploadFromBitmapData(source: BitmapData, miplevel: UInt = 0, generateMipmap: boolean = false): void
+	public uploadFromBitmapData(source: BitmapData, miplevel: number = 0, generateMipmap: boolean = false): void
 	{
 		#if(lime || openfl_html5)
 		/* TODO
@@ -132,7 +132,7 @@ class OpenGLTextureBackend extends OpenGLTextureBaseBackend
 		#end
 	}
 
-	public uploadFromByteArray(data: ByteArray, byteArrayOffset: UInt, miplevel: UInt = 0): void
+	public uploadFromByteArray(data: ByteArray, byteArrayOffset: number, miplevel: number = 0): void
 	{
 		#if(js && !display)
 		if (byteArrayOffset == 0)
@@ -145,7 +145,7 @@ class OpenGLTextureBackend extends OpenGLTextureBaseBackend
 		uploadFromTypedArray(new UInt8Array(data.toArrayBuffer(), byteArrayOffset), miplevel);
 	}
 
-	public uploadFromTypedArray(data: ArrayBufferView, miplevel: UInt = 0): void
+	public uploadFromTypedArray(data: ArrayBufferView, miplevel: number = 0): void
 	{
 		if (data == null) return;
 
@@ -197,7 +197,7 @@ class OpenGLTextureBackend extends OpenGLTextureBaseBackend
 		return false;
 	}
 
-	private _uploadCompressedTextureFromByteArray(data: ByteArray, byteArrayOffset: UInt): void
+	private _uploadCompressedTextureFromByteArray(data: ByteArray, byteArrayOffset: number): void
 	{
 		var reader = new ATFReader(data, byteArrayOffset);
 		var alpha = reader.readHeader(parent.__width, parent.__height, false);

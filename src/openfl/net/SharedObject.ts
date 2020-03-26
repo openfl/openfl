@@ -1,5 +1,6 @@
 import Error from "openfl/errors/Error";
 import EventDispatcher from "openfl/events/EventDispatcher";
+import ObjectEncoding from "openfl/net/ObjectEncoding";
 
 /**
 	The SharedObject class is used to read and store limited amounts of data on
@@ -178,7 +179,7 @@ export default class SharedObject extends EventDispatcher
 		@throws TypeError The `client` property must be set to a non-null
 						  object.
 	**/
-	public client: Dynamic;
+	public client: Object;
 
 	/**
 		The collection of attributes assigned to the `data` property of
@@ -193,7 +194,7 @@ export default class SharedObject extends EventDispatcher
 		If one client changes the value of an attribute, all clients now see the
 		new value.
 	**/
-	public data(default , null): Dynamic;
+	public readonly data: Object;
 
 	/**
 		Specifies the number of times per second that a client's changes to a

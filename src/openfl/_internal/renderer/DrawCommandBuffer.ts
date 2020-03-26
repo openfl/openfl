@@ -271,7 +271,7 @@ class DrawCommandBuffer
 		f.push(height);
 	}
 
-	public drawQuads(rects: Vector<Float>, indices: Vector<Int>, transforms: Vector<Float>): void
+	public drawQuads(rects: Vector<number>, indices: Vector<Int>, transforms: Vector<number>): void
 	{
 		prepareWrite();
 
@@ -305,7 +305,7 @@ class DrawCommandBuffer
 		o.push(ellipseHeight);
 	}
 
-	public drawTriangles(vertices: Vector<Float>, indices: Vector<Int>, uvtData: Vector<Float>, culling: TriangleCulling): void
+	public drawTriangles(vertices: Vector<number>, indices: Vector<Int>, uvtData: Vector<number>, culling: TriangleCulling): void
 	{
 		prepareWrite();
 

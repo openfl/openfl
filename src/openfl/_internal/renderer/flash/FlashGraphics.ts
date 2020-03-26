@@ -146,7 +146,7 @@ class FlashGraphics
 		}
 	}
 
-	public static drawQuads(graphics: Graphics, rects: Vector<Float>, indices: Vector<Int>, transforms: Vector<Float>): void
+	public static drawQuads(graphics: Graphics, rects: Vector<number>, indices: Vector<Int>, transforms: Vector<number>): void
 	{
 		var lastBitmapFill = bitmapFill.get(graphics);
 
@@ -178,9 +178,9 @@ class FlashGraphics
 
 		var ri, ti;
 
-		var vertices = new Vector<Float>(length * 8);
+		var vertices = new Vector<number>(length * 8);
 		var vIndices = new Vector<Int>(length * 6);
-		var uvtData = new Vector<Float>(length * 8);
+		var uvtData = new Vector<number>(length * 8);
 		var offset4 = 0;
 		var offset6 = 0;
 		var offset8 = 0;

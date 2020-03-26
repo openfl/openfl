@@ -528,18 +528,6 @@ export default class Keyboard
 	public static readonly QUOTE: number = 222;
 
 	/**
-		Specifies whether the Caps Lock key is activated(`true`) or
-		not(`false`).
-	**/
-	public static capsLock(default , null): boolean;
-
-	/**
-		Specifies whether the Num Lock key is activated(`true`) or not
-		(`false`).
-	**/
-	public static numLock(default , null): boolean;
-
-	/**
 		Specifies whether the last key pressed is accessible by other SWF files.
 		By default, security restrictions prevent code from a SWF file in one
 		domain from accessing a keystroke generated from a SWF file in another
@@ -553,5 +541,28 @@ export default class Keyboard
 	{
 		// default browser security restrictions are always enforced
 		return false;
+	}
+
+	protected static __capsLock: boolean;
+	protected static __numLock: boolean;
+
+	// Get & Set Methods
+
+	/**
+		Specifies whether the Caps Lock key is activated(`true`) or
+		not(`false`).
+	**/
+	public static get capsLock(): boolean
+	{
+		return Keyboard.__capsLock;
+	}
+
+	/**
+		Specifies whether the Num Lock key is activated(`true`) or not
+		(`false`).
+	**/
+	public static numLock(): boolean
+	{
+		return Keyboard.__numLock;
 	}
 }

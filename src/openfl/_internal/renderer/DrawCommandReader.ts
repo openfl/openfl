@@ -624,7 +624,7 @@ abstract DrawQuadsView(DrawCommandReader)
 		this = d;
 	}
 
-	public rects(get, never): Vector<Float>;
+	public rects(get, never): Vector<number>;
 
 	private inline get_rects(): Vector < Float >
 	{
@@ -638,7 +638,7 @@ abstract DrawQuadsView(DrawCommandReader)
 		return cast this.obj(1);
 	}
 
-	public transforms(get, never): Vector<Float>;
+	public transforms(get, never): Vector<number>;
 
 	private inline get_transforms(): Vector < Float >
 	{
@@ -739,7 +739,7 @@ abstract DrawTrianglesView(DrawCommandReader)
 		this = d;
 	}
 
-	public vertices(get, never): Vector<Float>;
+	public vertices(get, never): Vector<number>;
 
 	private inline get_vertices(): Vector < Float >
 	{
@@ -753,7 +753,7 @@ abstract DrawTrianglesView(DrawCommandReader)
 		return cast this.obj(1);
 	}
 
-	public uvtData(get, never): Vector<Float>;
+	public uvtData(get, never): Vector<number>;
 
 	private inline get_uvtData(): Vector < Float >
 	{

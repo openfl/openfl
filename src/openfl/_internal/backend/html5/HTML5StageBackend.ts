@@ -775,13 +775,13 @@ class HTML5StageBackend
 		// return window.frameRate;
 	}
 
-	public getFullScreenHeight(): UInt
+	public getFullScreenHeight(): number
 	{
 		// return Math.ceil(window.display.currentMode.height * window.scale);
 		return 0;
 	}
 
-	public getFullScreenWidth(): UInt
+	public getFullScreenWidth(): number
 	{
 		// return Math.ceil(window.display.currentMode.width * window.scale);
 		return 0;

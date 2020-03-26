@@ -123,7 +123,7 @@ class HTML5FileReferenceBackend
 		else
 		{
 			var _data = new ByteArray();
-			_data.writeUTFBytes(Std.string(data));
+			_data.writeUTFBytes(String(data));
 			this.data = _data;
 		}
 

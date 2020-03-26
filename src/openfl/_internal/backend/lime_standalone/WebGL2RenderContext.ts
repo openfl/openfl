@@ -870,7 +870,7 @@ public clearBufferfv(buffer : number, drawbuffer : number, values: Array < Float
 @: overload(function (buffer: number, drawbuffer: number, values: Float32Array, ?srcOffset: number): void { })
 @: overload(function (buffer: number, drawbuffer: number, depth: number, stencil: number): void { })
 public clearBufferiv(buffer : number, drawbuffer : number, values: Array < Int >, ?srcOffset : number): void;
-@: overload(function (buffer: number, drawbuffer: number, values: UInt32Array, ?srcOffset: number): void { })
+@: overload(function (buffer: number, drawbuffer: number, values: number32Array, ?srcOffset: number): void { })
 @: overload(function (buffer: number, drawbuffer: number, depth: number, stencil: number): void { })
 public clearBufferuiv(buffer : number, drawbuffer : number, values: Array < Int >, ?srcOffset : number): void;
 public clientWaitSync(sync: GLSync, flags : number, timeout: Dynamic /*Int64*/) : number;
@@ -1015,28 +1015,28 @@ override uniform1fv(location: GLUniformLocation, data: Array<Float>): void;
 @: overload(function (location: GLUniformLocation, data: Float32Array, ?srcOffset: number, ?srcLength: number): void { })
 @: overload(function (location: GLUniformLocation, data: Array<Int>, ?srcOffset: number, ?srcLength: number): void { })
 override uniform1iv(location: GLUniformLocation, data: Array<Int>): void;
-public uniform1uiv(location: GLUniformLocation, data: UInt32Array, ?srcOffset : number, ?srcLength : number): void;
+public uniform1uiv(location: GLUniformLocation, data: number32Array, ?srcOffset : number, ?srcLength : number): void;
 @: overload(function (location: GLUniformLocation, data: Float32Array, ?srcOffset: number, ?srcLength: number): void { })
 @: overload(function (location: GLUniformLocation, data: Array<Float>, ?srcOffset: number, ?srcLength: number): void { })
 override uniform2fv(location: GLUniformLocation, data: Array<Float>): void;
 @: overload(function (location: GLUniformLocation, data: Float32Array, ?srcOffset: number, ?srcLength: number): void { })
 @: overload(function (location: GLUniformLocation, data: Array<Int>, ?srcOffset: number, ?srcLength: number): void { })
 override uniform2iv(location: GLUniformLocation, data: Array<Int>): void;
-public uniform2uiv(location: GLUniformLocation, data: UInt32Array, ?srcOffset : number, ?srcLength : number): void;
+public uniform2uiv(location: GLUniformLocation, data: number32Array, ?srcOffset : number, ?srcLength : number): void;
 @: overload(function (location: GLUniformLocation, data: Float32Array, ?srcOffset: number, ?srcLength: number): void { })
 @: overload(function (location: GLUniformLocation, data: Array<Float>, ?srcOffset: number, ?srcLength: number): void { })
 override uniform3fv(location: GLUniformLocation, data: Array<Float>): void;
 @: overload(function (location: GLUniformLocation, data: Float32Array, ?srcOffset: number, ?srcLength: number): void { })
 @: overload(function (location: GLUniformLocation, data: Array<Int>, ?srcOffset: number, ?srcLength: number): void { })
 override uniform3iv(location: GLUniformLocation, data: Array<Int>): void;
-public uniform3uiv(location: GLUniformLocation, data: UInt32Array, ?srcOffset : number, ?srcLength : number): void;
+public uniform3uiv(location: GLUniformLocation, data: number32Array, ?srcOffset : number, ?srcLength : number): void;
 @: overload(function (location: GLUniformLocation, data: Float32Array, ?srcOffset: number, ?srcLength: number): void { })
 @: overload(function (location: GLUniformLocation, data: Array<Float>, ?srcOffset: number, ?srcLength: number): void { })
 override uniform4fv(location: GLUniformLocation, data: Array<Float>): void;
 @: overload(function (location: GLUniformLocation, data: Float32Array, ?srcOffset: number, ?srcLength: number): void { })
 @: overload(function (location: GLUniformLocation, data: Array<Int>, ?srcOffset: number, ?srcLength: number): void { })
 override uniform4iv(location: GLUniformLocation, data: Array<Int>): void;
-public uniform4uiv(location: GLUniformLocation, data: UInt32Array, ?srcOffset : number, ?srcLength : number): void;
+public uniform4uiv(location: GLUniformLocation, data: number32Array, ?srcOffset : number, ?srcLength : number): void;
 public uniformBlockBinding(program: GLProgram, uniformBlockIndex : number, uniformBlockBinding : number): void;
 @: overload(function (location: GLUniformLocation, transpose: boolean, data: Float32Array, ?srcOffset: number, ?srcLength: number): void { })
 @: overload(function (location: GLUniformLocation, transpose: boolean, data: Array<Float>, ?srcOffset: number, ?srcLength: number): void { })
@@ -1058,7 +1058,7 @@ public vertexAttribI4i(index : number, v0 : number, v1 : number, v2 : number, v3
 public vertexAttribI4ui(index : number, v0 : number, v1 : number, v2 : number, v3 : number): void;
 @: overload(function (index: number, value: Float32Array): void { })
 public vertexAttribI4iv(index : number, value: Array<Int>): void;
-@: overload(function (index: number, value: UInt32Array): void { })
+@: overload(function (index: number, value: number32Array): void { })
 public vertexAttribI4uiv(index : number, value: Array<Int>): void;
 public vertexAttribIPointer(index : number, size : number, type : number, stride : number, offset: DataPointer): void;
 public waitSync(sync: GLSync, flags : number, timeout: Dynamic /*int64*/): void;

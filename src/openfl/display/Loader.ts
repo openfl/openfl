@@ -702,7 +702,7 @@ namespace openfl.display
 		{
 			// TODO: Dispatch HTTPStatusEvent
 
-			__dispatchError(Std.string(error));
+			__dispatchError(String(error));
 		}
 
 		protected BitmapData_onLoad(bitmapData: BitmapData): void

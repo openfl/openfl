@@ -56,7 +56,7 @@ class OpenGLRectangleTextureBackend extends OpenGLTextureBaseBackend
 		#end
 	}
 
-	public uploadFromByteArray(data: ByteArray, byteArrayOffset: UInt): void
+	public uploadFromByteArray(data: ByteArray, byteArrayOffset: number): void
 	{
 		#if(js && !display)
 		if (byteArrayOffset == 0)

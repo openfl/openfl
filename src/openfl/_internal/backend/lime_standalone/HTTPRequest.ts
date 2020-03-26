@@ -224,7 +224,7 @@ class HTML5HTTPRequest
 				}
 				else
 				{
-					query += StringTools.urlEncode(key) + "=" + StringTools.urlEncode(Std.string(value));
+					query += StringTools.urlEncode(key) + "=" + StringTools.urlEncode(String(value));
 				}
 			}
 
@@ -243,7 +243,7 @@ class HTML5HTTPRequest
 			}
 		}
 
-		request.open(Std.string(parent.method), uri, true);
+		request.open(String(parent.method), uri, true);
 
 		if (parent.timeout > 0)
 		{

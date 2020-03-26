@@ -56,7 +56,7 @@ class LimeCommonJSStageBackend extends LimeStageBackend
 			var contextAttributes = windowAttributes.context;
 			if (Reflect.hasField(windowAttributes, "renderer"))
 			{
-				var type = Std.string(windowAttributes.renderer);
+				var type = String(windowAttributes.renderer);
 				if (type == "webgl1")
 				{
 					contextAttributes.type = RenderContextType.WEBGL;

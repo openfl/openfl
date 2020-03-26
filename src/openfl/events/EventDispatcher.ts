@@ -71,7 +71,7 @@ export default class EventDispatcher implements IEventDispatcher
 					  this parameter in simple cases in which a class extends
 					  EventDispatcher.
 	**/
-	public constructor(target: IEventDispatcher = null): void
+	public constructor(target: IEventDispatcher = null)
 	{
 		if (target != null)
 		{
@@ -295,7 +295,7 @@ export default class EventDispatcher implements IEventDispatcher
 
 		var iterators = this.__iterators.get(type);
 
-		for (let i = 0; i < list.length)
+		for (let i = 0; i < list.length; i++)
 		{
 			if (list[i].match(listener, useCapture))
 			{
@@ -446,7 +446,7 @@ export default class EventDispatcher implements IEventDispatcher
 	}
 }
 
-private class DispatchIterator implements Iterator<Listener>
+class DispatchIterator implements Iterator<Listener>
 {
 	public active: boolean;
 	public index: number;
@@ -476,7 +476,7 @@ private class DispatchIterator implements Iterator<Listener>
 
 	public next(): IteratorResult<Listener>
 	{
-		return { value: this.list[index++], done: index < this.list.length };
+		return { value: this.list[this.index++], done: this.index < this.list.length };
 	}
 
 	public remove(listener: Listener, listIndex: number): void
@@ -485,14 +485,14 @@ private class DispatchIterator implements Iterator<Listener>
 		{
 			if (!this.isCopy)
 			{
-				if (listIndex < index)
+				if (listIndex < this.index)
 				{
-					index--;
+					this.index--;
 				}
 			}
 			else
 			{
-				for (let i = index; i < this.list.length; i++)
+				for (let i = this.index; i < this.list.length; i++)
 				{
 					if (this.list[i] == listener)
 					{
@@ -509,7 +509,7 @@ private class DispatchIterator implements Iterator<Listener>
 		this.list = list;
 
 		this.isCopy = false;
-		index = 0;
+		this.index = 0;
 	}
 
 	public start(): void
@@ -523,7 +523,7 @@ private class DispatchIterator implements Iterator<Listener>
 	}
 }
 
-private class Listener
+class Listener
 {
 	public callback: (event: Object) => void;
 	public priority: number;

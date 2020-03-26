@@ -396,7 +396,7 @@ namespace openfl.display
 			height would be if `Stage.align` is set to `StageAlign.TOP_LEFT` and
 			`Stage.scaleMode` is set to `StageScaleMode.NO_SCALE`.
 		**/
-		public fullScreenHeight(get, never): UInt;
+		public fullScreenHeight(get, never): number;
 
 		/**
 			Sets the Flash runtime to scale a specific region of the stage to
@@ -452,7 +452,7 @@ namespace openfl.display
 			width would be if `Stage.align` is set to `StageAlign.TOP_LEFT` and
 			`Stage.scaleMode` is set to `StageScaleMode.NO_SCALE`.
 		**/
-		public fullScreenWidth(get, never): UInt;
+		public fullScreenWidth(get, never): number;
 
 		// /** @hidden */ @:dox(hide) @:require(flash11_2) public mouseLock:Bool;
 
@@ -735,9 +735,9 @@ namespace openfl.display
 			* GPU compositing has been requested.
 			* GPU compositing is available.
 			* GPU compositing is in use.
-	
+
 			Specifically, the `wmodeGPU` property indicates one of the following:
-	
+
 			1. GPU compositing has not been requested or is unavailable. In this
 			case, the `wmodeGPU` property value is `false`.
 			2. GPU compositing has been requested (if applicable and available),
@@ -747,31 +747,31 @@ namespace openfl.display
 			3. GPU compositing has been requested (if applicable and available),
 			and the environment is operating in the best mode. In this case, the
 			`wmodeGPU` property value is also `true`.
-	
+
 			In other words, the `wmodeGPU` property identifies the capability and
 			state of the rendering environment. For runtimes that do not support
 			GPU compositing, such as AIR 1.5.2, the value is always `false`,
 			because (as stated above) the value is `true` only when GPU
 			compositing has been requested, is available, and is in use.
-	
+
 			The `wmodeGPU` property is useful to determine, at runtime, whether or
 			not GPU compositing is in use. The value of `wmodeGPU` indicates if
 			your content is going to be scaled by hardware, or not, so you can
 			present graphics at the correct size. You can also determine if you're
 			rendering in a fast path or not, so that you can adjust your content
 			complexity accordingly.
-	
+
 			For Flash Player in a browser, GPU compositing can be requested by the
 			value of `gpu` for the `wmode` HTML parameter in the page hosting the
 			SWF file. For other configurations, GPU compositing can be requested
 			in the header of a SWF file (set using SWF authoring tools).
-	
+
 			However, the `wmodeGPU` property does not identify the current
 			rendering performance. Even if GPU compositing is "in use" the
 			rendering process might not be operating in the best mode. To adjust
 			your content for optimal rendering, use a Flash runtime debugger
 			version, and set the `DisplayGPUBlendsetting` in your mm.cfg file.
-	
+
 			**Note:** This property is always `false` when referenced from
 			ActionScript that runs before the runtime performs its first rendering
 			pass. For example, if you examine `wmodeGPU` from a script in Frame 1
@@ -1145,7 +1145,7 @@ protected __handleError(e: Dynamic): void
 	{
 			#if mobile
 	Log.println(CallStack.toString(CallStack.exceptionStack()));
-	Log.println(Std.string(e));
+	Log.println(String(e));
 			#end
 
 			#if(cpp && !cppia)
@@ -2262,7 +2262,7 @@ return value;
 	return value;
 }
 
-	protected get_fullScreenHeight(): UInt
+	protected get_fullScreenHeight(): number
 {
 	return __backend.getFullScreenHeight();
 }
@@ -2291,7 +2291,7 @@ return value;
 	return value;
 }
 
-	protected get_fullScreenWidth(): UInt
+	protected get_fullScreenWidth(): number
 {
 	return __backend.getFullScreenWidth();
 }

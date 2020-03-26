@@ -1,7 +1,7 @@
-import Event from "openfl/events/Event";
 import EventDispatcher from "openfl/events/EventDispatcher";
 import EventType from "openfl/events/EventType";
 import GameInputEvent from "openfl/events/GameInputEvent";
+import GameInputDevice from "openfl/ui/GameInputDevice";
 
 /**
 	The GameInput class is the entry point into the GameInput API. You can use this API to
@@ -55,13 +55,7 @@ export default class GameInput extends EventDispatcher
 	/**
 		Indicates whether the current platform supports the GameInput API.
 	**/
-	public static isSupported(default , null) = true;
-
-	/**
-		Provides the number of connected input devices. When a device is connected, the
-		`GameInputEvent.DEVICE_ADDED` event is fired.
-	**/
-	public static numDevices(default , null) = 0;
+	public static readonly isSupported = true;
 
 	protected static __deviceList: Array<GameInputDevice> = new Array();
 	protected static __instances: Array<GameInput> = [];
@@ -70,7 +64,7 @@ export default class GameInput extends EventDispatcher
 	{
 		super();
 
-		__instances.push(this);
+		GameInput.__instances.push(this);
 	}
 
 
@@ -81,9 +75,9 @@ export default class GameInput extends EventDispatcher
 
 		if (type == GameInputEvent.DEVICE_ADDED)
 		{
-			for (device in __deviceList)
+			for (let device of GameInput.__deviceList)
 			{
-				dispatchEvent(new GameInputEvent(GameInputEvent.DEVICE_ADDED, true, false, device));
+				this.dispatchEvent(new GameInputEvent(GameInputEvent.DEVICE_ADDED, true, false, device));
 			}
 		}
 	}
@@ -103,9 +97,9 @@ export default class GameInput extends EventDispatcher
 	**/
 	public static getDeviceAt(index: number): GameInputDevice
 	{
-		if (index >= 0 && index < __deviceList.length)
+		if (index >= 0 && index < GameInput.__deviceList.length)
 		{
-			return __deviceList[index];
+			return GameInput.__deviceList[index];
 		}
 
 		return null;
@@ -113,10 +107,9 @@ export default class GameInput extends EventDispatcher
 
 	protected static __addInputDevice(device: GameInputDevice): void
 	{
-		__deviceList.push(device);
-		numDevices = __deviceList.length;
+		GameInput.__deviceList.push(device);
 
-		for (instance in __instances)
+		for (let instance of GameInput.__instances)
 		{
 			instance.dispatchEvent(new GameInputEvent(GameInputEvent.DEVICE_ADDED, true, false, device));
 		}
@@ -124,12 +117,23 @@ export default class GameInput extends EventDispatcher
 
 	protected static __removeInputDevice(device: GameInputDevice): void
 	{
-		__deviceList.remove(device);
-		numDevices = __deviceList.length;
+		let index = GameInput.__deviceList.indexOf(device);
+		if (index > -1) GameInput.__deviceList.splice(index, 1);
 
-		for (instance in __instances)
+		for (let instance of GameInput.__instances)
 		{
 			instance.dispatchEvent(new GameInputEvent(GameInputEvent.DEVICE_REMOVED, true, false, device));
 		}
+	}
+
+	// Get & Set Methods
+
+	/**
+		Provides the number of connected input devices. When a device is connected, the
+		`GameInputEvent.DEVICE_ADDED` event is fired.
+	**/
+	public static get numDevices(): number
+	{
+		return GameInput.__deviceList.length;
 	}
 }
