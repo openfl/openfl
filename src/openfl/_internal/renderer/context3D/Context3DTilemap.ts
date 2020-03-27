@@ -2,9 +2,9 @@ namespace openfl._internal.renderer.context3D;
 
 #if openfl_gl
 import openfl._internal.bindings.typedarray.Float32Array;
-import openfl.display.BitmapData;
-import openfl.display.BlendMode;
-import openfl.display.Shader;
+import BitmapData from "../display/BitmapData";
+import BlendMode from "../display/BlendMode";
+import Shader from "../display/Shader";
 import openfl.display.TileContainer;
 import openfl.display.Tilemap;
 import openfl.display.Tileset;

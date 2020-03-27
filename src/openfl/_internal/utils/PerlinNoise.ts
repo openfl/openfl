@@ -11,7 +11,7 @@ namespace openfl._internal.utils;
 	Haxe port and optimization by Nicolas Cannasse http://haxe.org
 **/
 import openfl.display.BitmapDataChannel;
-import openfl.display.BitmapData;
+import BitmapData from "../display/BitmapData";
 
 #if!openfl_debug
 @: fileXml('tags="haxe,release"')

@@ -10,7 +10,7 @@ import openfl._internal.bindings.typedarray.ArrayBufferView;
 import openfl._internal.bindings.typedarray.UInt8Array;
 import openfl.display3D.textures.Texture;
 import openfl.display3D.Context3DTextureFormat;
-import openfl.display.BitmapData;
+import BitmapData from "../display/BitmapData";
 import Event from "../events/Event";
 import ByteArray from "../utils/ByteArray";
 

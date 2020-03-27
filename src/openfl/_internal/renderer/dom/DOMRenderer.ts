@@ -4,7 +4,7 @@ namespace openfl._internal.renderer.dom;
 import js.html.Element;
 import openfl._internal.renderer.canvas.CanvasRenderer;
 import openfl.display.Bitmap;
-import openfl.display.BlendMode;
+import BlendMode from "../display/BlendMode";
 import openfl.display.DOMElement;
 import openfl.display.DOMRenderer as DOMRendererAPI;
 import openfl.display.DisplayObject;

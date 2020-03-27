@@ -5,7 +5,7 @@ import openfl._internal.bindings.typedarray.Float32Array;
 import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
 import openfl.display3D.Context3DWrapMode;
-import openfl.display.BitmapData;
+import BitmapData from "../display/BitmapData";
 import openfl.display.GraphicsShader;
 import openfl.display.ShaderInput;
 import openfl.display.ShaderParameter;

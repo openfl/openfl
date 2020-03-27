@@ -5,7 +5,7 @@ import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
 import openfl.display3D.Context3DWrapMode;
 import Context3D from "../display3D/Context3D";
-import openfl.display.BitmapData;
+import BitmapData from "../display/BitmapData";
 import openfl.display.ShaderInput;
 
 #if!openfl_debug

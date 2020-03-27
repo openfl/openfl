@@ -2,9 +2,9 @@ namespace openfl.filters;
 
 import haxe.Timer;
 #if!flash
-import openfl.display.BitmapData;
-import openfl.display.DisplayObjectRenderer;
-import openfl.display.Shader;
+import BitmapData from "../display/BitmapData";
+import DisplayObjectRenderer from "../display/DisplayObjectRenderer";
+import Shader from "../display/Shader";
 import Point from "../geom/Point";
 import Rectangle from "../geom/Rectangle";
 #if lime

@@ -2,9 +2,9 @@ namespace openfl._internal.backend.dummy;
 
 import openfl.display3D.textures.TextureBase;
 import Context3D from "../display3D/Context3D";
-import openfl.display.BitmapData;
+import BitmapData from "../display/BitmapData";
 import openfl.display.BitmapDataChannel;
-import openfl.display.BlendMode;
+import BlendMode from "../display/BlendMode";
 import openfl.display.IBitmapDrawable;
 import openfl.display.StageQuality;
 import openfl.filters.BitmapFilter;

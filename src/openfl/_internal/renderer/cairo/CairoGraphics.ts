@@ -10,7 +10,7 @@ import openfl._internal.bindings.cairo.CairoImageSurface;
 import openfl._internal.bindings.cairo.CairoPattern;
 import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.DrawCommandReader;
-import openfl.display.BitmapData;
+import BitmapData from "../display/BitmapData";
 import openfl.display.GradientType;
 import openfl.display.Graphics;
 import openfl.display.InterpolationMethod;

@@ -12,7 +12,7 @@ import lime.ui.MouseWheelMode;
 import lime.ui.Touch;
 import lime.ui.Window;
 import Context3D from "../display3D/Context3D";
-import openfl.display.BitmapData;
+import BitmapData from "../display/BitmapData";
 import openfl.display.DisplayObject;
 import openfl.display.Stage;
 import openfl.display.StageDisplayState;

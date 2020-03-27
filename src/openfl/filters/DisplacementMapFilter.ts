@@ -4,9 +4,9 @@ namespace openfl.filters;
 import openfl.display.BitmapDataChannel;
 import Rectangle from "../geom/Rectangle";
 import Point from "../geom/Point";
-import openfl.display.BitmapData;
-import openfl.display.DisplayObjectRenderer;
-import openfl.display.Shader;
+import BitmapData from "../display/BitmapData";
+import DisplayObjectRenderer from "../display/DisplayObjectRenderer";
+import Shader from "../display/Shader";
 #if lime
 import lime._internal.graphics.ImageCanvasUtil;
 import lime._internal.graphics.ImageDataUtil;

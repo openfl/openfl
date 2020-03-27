@@ -5,7 +5,7 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 import openfl._internal.renderer.canvas.CanvasGraphics;
 import openfl._internal.bindings.typedarray.Float32Array;
 import openfl._internal.bindings.typedarray.UInt16Array;
-import openfl.display.BitmapData;
+import BitmapData from "../display/BitmapData";
 import openfl.display.Graphics;
 import ColorTransfrom from "../geom/ColorTransform";
 import Matrix from "../geom/Matrix";

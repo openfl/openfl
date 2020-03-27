@@ -1,10 +1,7 @@
-namespace openfl.filters;
-
-#if!flash
-import openfl.display.BitmapData;
-import openfl.display.BlendMode;
-import openfl.display.DisplayObjectRenderer;
-import openfl.display.Shader;
+import BitmapData from "../display/BitmapData";
+import BlendMode from "../display/BlendMode";
+import DisplayObjectRenderer from "../display/DisplayObjectRenderer";
+import Shader from "../display/Shader";
 import Point from "../geom/Point";
 import Rectangle from "../geom/Rectangle";
 
@@ -18,11 +15,7 @@ import Rectangle from "../geom/Rectangle";
 
 	You can neither directly instantiate nor extend BitmapFilter.
 **/
-#if!openfl_debug
-@: fileXml('tags="haxe,release"')
-@: noDebug
-#end
-class BitmapFilter
+export default class BitmapFilter
 {
 	protected __bottomExtension: number;
 	protected __leftExtension: number;
@@ -37,15 +30,15 @@ class BitmapFilter
 
 	public constructor()
 	{
-		__bottomExtension = 0;
-		__leftExtension = 0;
-		__needSecondBitmapData = true;
-		__numShaderPasses = 0;
-		__preserveObject = false;
-		__rightExtension = 0;
-		__shaderBlendMode = NORMAL;
-		__topExtension = 0;
-		__smooth = true;
+		this.__bottomExtension = 0;
+		this.__leftExtension = 0;
+		this.__needSecondBitmapData = true;
+		this.__numShaderPasses = 0;
+		this.__preserveObject = false;
+		this.__rightExtension = 0;
+		this.__shaderBlendMode = BlendMode.NORMAL;
+		this.__topExtension = 0;
+		this.__smooth = true;
 	}
 
 	/**
@@ -70,6 +63,3 @@ class BitmapFilter
 		return null;
 	}
 }
-#else
-typedef BitmapFilter = flash.filters.BitmapFilter;
-#end

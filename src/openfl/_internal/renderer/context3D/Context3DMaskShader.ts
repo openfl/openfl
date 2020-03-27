@@ -1,8 +1,8 @@
 namespace openfl._internal.renderer.context3D;
 
 #if openfl_gl
-import openfl.display.BitmapData;
-import openfl.display.Shader;
+import BitmapData from "../display/BitmapData";
+import Shader from "../display/Shader";
 
 #if!openfl_debug
 @: fileXml('tags="haxe,release"')

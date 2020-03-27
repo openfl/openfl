@@ -19,7 +19,7 @@ import openfl.display3D.Context3DTriangleFace;
 import openfl.display3D.Context3DVertexBufferFormat;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
-import openfl.display.BitmapData;
+import BitmapData from "../display/BitmapData";
 import openfl.errors.Error;
 import IllegalOperationError from "../errors/IllegalOperationError";
 import Matrix3D from "../geom/Matrix3D";

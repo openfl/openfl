@@ -6,7 +6,7 @@ import openfl._internal.renderer.SamplerState;
 import openfl._internal.bindings.typedarray.ArrayBufferView;
 import openfl._internal.bindings.typedarray.UInt8Array;
 import openfl.display3D.textures.RectangleTexture;
-import openfl.display.BitmapData;
+import BitmapData from "../display/BitmapData";
 import ByteArray from "../utils/ByteArray";
 
 #if!openfl_debug

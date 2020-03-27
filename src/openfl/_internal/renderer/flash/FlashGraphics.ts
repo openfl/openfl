@@ -1,6 +1,6 @@
 namespace openfl._internal.renderer.flash;
 
-import openfl.display.BitmapData;
+import BitmapData from "../display/BitmapData";
 import openfl.display.Graphics;
 import openfl.display.GraphicsBitmapFill;
 import openfl.display.GraphicsEndFill;

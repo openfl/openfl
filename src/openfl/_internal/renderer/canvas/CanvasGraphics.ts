@@ -8,7 +8,7 @@ import js.html.CanvasWindingRule;
 import js.Browser;
 import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.DrawCommandReader;
-import openfl.display.BitmapData;
+import BitmapData from "../display/BitmapData";
 import openfl.display.CapsStyle;
 import openfl.display.GradientType;
 import openfl.display.Graphics;

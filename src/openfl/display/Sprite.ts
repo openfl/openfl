@@ -23,12 +23,6 @@ import MouseCursor from "../ui/MouseCursor";
 export default class Sprite extends DisplayObjectContainer
 {
 	/**
-		Specifies the display object over which the sprite is being dragged,
-		or on which the sprite was dropped.
-	**/
-	public readonly dropTarget: DisplayObject;
-
-	/**
 		Designates another sprite to serve as the hit area for a sprite. If
 		the `hitArea` property does not exist or the value is `null` or
 		`undefined`, the sprite itself is used as the hit area. The value of
@@ -75,6 +69,7 @@ export default class Sprite extends DisplayObjectContainer
 	public useHandCursor: boolean;
 
 	protected __buttonMode: boolean;
+	protected __dropTarget: DisplayObject;
 
 	/**
 		Creates a new Sprite instance. After you create the Sprite instance, call
@@ -251,6 +246,15 @@ export default class Sprite extends DisplayObjectContainer
 	}
 
 	// Get & Set Methods
+
+	/**
+		Specifies the display object over which the sprite is being dragged,
+		or on which the sprite was dropped.
+	**/
+	public get dropTarget(): DisplayObject
+	{
+		return this.__dropTarget;
+	}
 
 	/**
 		Specifies the Graphics object that belongs to this sprite where vector

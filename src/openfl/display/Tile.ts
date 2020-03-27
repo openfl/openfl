@@ -1,4 +1,10 @@
-import ColorTransfrom from "../geom/ColorTransform";
+import * as internal from "../_internal/utils/InternalAccess";
+import BlendMode from "../display/BlendMode";
+import Shader from "../display/Shader";
+import TileContainer from "../display/TileContainer";
+import Tilemap from "../display/Tilemap";
+import Tileset from "../display/Tileset";
+import ColorTransform from "../geom/ColorTransform";
 import Matrix from "../geom/Matrix";
 import Rectangle from "../geom/Rectangle";
 
@@ -19,150 +25,12 @@ import Rectangle from "../geom/Rectangle";
 	Tile objects cannot be rendered on their own. In order to display a Tile object,
 	it should be contained within a Tilemap instance.
 **/
-export class Tile
+export default class Tile
 {
-	/**
-		A ColorTransform object containing values that universally adjust the
-		colors in the display object.
-
-		This property is supported only when using hardware rendering.
-	**/
-	public colorTransform(get, set): ColorTransform;
-
 	/**
 		An additional field for custom user-data
 	**/
 	public data: any;
-
-	/**
-		Indicates the height of the tile, in pixels. The height is
-		calculated based on the bounds of the tile after local transformations.
-		When you set the `height` property, the `scaleY` property
-		is adjusted accordingly.
-		If a tile has a height of zero, no change is applied
-	**/
-	public height(get, set): number;
-
-	/**
-		The ID of the tile to draw from the Tileset
-	**/
-	public id(get, set): number;
-
-	/**
-		A Matrix object containing values that alter the scaling, rotation, and
-		translation of the tile object.
-
-		If the `matrix` property is set to a value (not `null`), the `x`, `y`,
-		`scaleX`, `scaleY` and the `rotation` values will be overwritten.
-	**/
-	public matrix(get, set): Matrix;
-
-	/**
-		Modifies the origin x coordinate for this tile, which is the center value
-		used when determining position, scale and rotation.
-	**/
-	public originX(get, set): number;
-
-	/**
-		Modifies the origin y coordinate for this tile, which is the center value
-		used when determining position, scale and rotation.
-	**/
-	public originY(get, set): number;
-
-	/**
-		Indicates the ITileContainer object that contains this display
-		object. Use the `parent` property to specify a relative path to
-		tile objects that are above the current tile object in the tile
-		list hierarchy.
-	**/
-	public parent(default , null): TileContainer;
-
-	/**
-		The custom rectangle to draw from the Tileset
-	**/
-	public rect(get, set): Rectangle;
-
-	/**
-		Indicates the rotation of the Tile instance, in degrees, from its
-		original orientation. Values from 0 to 180 represent clockwise rotation;
-		values from 0 to -180 represent counterclockwise rotation. Values outside
-		this range are added to or subtracted from 360 to obtain a value within
-		the range. For example, the statement `tile.rotation = 450`
-		is the same as ` tile.rotation = 90`.
-	**/
-	public rotation(get, set): number;
-
-	/**
-		Indicates the horizontal scale (percentage) of the object as applied from
-		the origin point. The default origin point is (0,0). 1.0
-		equals 100% scale.
-
-		Scaling the local coordinate system changes the `x` and
-		`y` property values, which are defined in whole pixels.
-	**/
-	public scaleX(get, set): number;
-
-	/**
-		Indicates the vertical scale (percentage) of an object as applied from the
-		origin point of the object. The default origin point is (0,0).
-		1.0 is 100% scale.
-
-		Scaling the local coordinate system changes the `x` and
-		`y` property values, which are defined in whole pixels.
-	**/
-	public scaleY(get, set): number;
-
-	/**
-		Uses a custom Shader instance when rendering this tile.
-
-		This property is only supported when using hardware rendering.
-	**/
-	public shader(get, set): Shader;
-
-	/**
-		The Tileset that this Tile is rendered from.
-
-		If `null`, this Tile will use the Tileset value of its parent.
-	**/
-	public tileset(get, set): Tileset;
-
-	/**
-		Whether or not the tile object is visible.
-	**/
-	public visible(get, set): boolean;
-
-	/**
-		Indicates the width of the tile, in pixels. The width is
-		calculated based on the bounds of the tile after local transformations.
-		When you set the `width` property, the `scaleX` property
-		is adjusted accordingly.
-		If a tile has a width of zero, no change is applied
-	**/
-	public width(get, set): number;
-
-	/**
-		Indicates the _x_ coordinate of the Tile instance relative
-		to the local coordinates of the parent ITileContainer. If the
-		object is inside a TileContainer that has transformations, it is
-		in the local coordinate system of the enclosing TileContainer.
-		Thus, for a TileContainer rotated 90° counterclockwise, the
-		TileContainer's children inherit a coordinate system that is
-		rotated 90° counterclockwise. The object's coordinates refer to the
-		registration point position.
-	**/
-	public x(get, set): number;
-
-	/**
-		Indicates the _y_ coordinate of the Tile instance relative
-		to the local coordinates of the parent ITileContainer. If the
-		object is inside a TileContainer that has transformations, it is
-		in the local coordinate system of the enclosing TileContainer.
-		Thus, for a TileContainer rotated 90° counterclockwise, the
-		TileContainer's children inherit a coordinate system that is
-		rotated 90° counterclockwise. The object's coordinates refer to the
-		registration point position.
-	**/
-	public y(get, set): number;
 
 	protected __alpha: number;
 	protected __blendMode: BlendMode;
@@ -173,6 +41,7 @@ export class Tile
 	protected __matrix: Matrix;
 	protected __originX: number;
 	protected __originY: number;
+	protected __parent: TileContainer;
 	protected __rect: Rectangle;
 	protected __rotation: null | number;
 	protected __rotationCosine: number;
@@ -185,22 +54,22 @@ export class Tile
 
 	public constructor(id: number = 0, x: number = 0, y: number = 0, scaleX: number = 1, scaleY: number = 1, rotation: number = 0, originX: number = 0, originY: number = 0)
 	{
-		__id = id;
+		this.__id = id;
 
-		__matrix = new Matrix();
+		this.__matrix = new Matrix();
 		if (x != 0) this.x = x;
 		if (y != 0) this.y = y;
 		if (scaleX != 1) this.scaleX = scaleX;
 		if (scaleY != 1) this.scaleY = scaleY;
 		if (rotation != 0) this.rotation = rotation;
 
-		__dirty = true;
-		__length = 0;
-		__originX = originX;
-		__originY = originY;
-		__alpha = 1;
-		__blendMode = null;
-		__visible = true;
+		this.__dirty = true;
+		this.__length = 0;
+		this.__originX = originX;
+		this.__originY = originY;
+		this.__alpha = 1;
+		this.__blendMode = null;
+		this.__visible = true;
 	}
 
 	/**
@@ -210,27 +79,21 @@ export class Tile
 	**/
 	public clone(): Tile
 	{
-		var tile = new Tile(__id);
-		tile.__alpha = __alpha;
-		tile.__blendMode = __blendMode;
-		tile.__originX = __originX;
-		tile.__originY = __originY;
+		var tile = new Tile(this.__id);
+		tile.__alpha = this.__alpha;
+		tile.__blendMode = this.__blendMode;
+		tile.__originX = this.__originX;
+		tile.__originY = this.__originY;
 
-		if (__rect != null) tile.__rect = __rect.clone();
+		if (this.__rect != null) tile.__rect = this.__rect.clone();
 
-		tile.matrix = __matrix.clone();
-		tile.__shader = __shader;
-		tile.tileset = __tileset;
+		tile.matrix = this.__matrix.clone();
+		tile.__shader = this.__shader;
+		tile.tileset = this.__tileset;
 
-		if (__colorTransform != null)
+		if (this.__colorTransform != null)
 		{
-			#if flash
-			tile.__colorTransform = new ColorTransform(__colorTransform.redMultiplier, __colorTransform.greenMultiplier, __colorTransform.blueMultiplier,
-				__colorTransform.alphaMultiplier, __colorTransform.redOffset, __colorTransform.greenOffset, __colorTransform.blueOffset,
-				__colorTransform.alphaOffset);
-			#else
-			tile.__colorTransform = __colorTransform.__clone();
-			#end
+			tile.__colorTransform = (<internal.ColorTransform><any>this.__colorTransform).__clone();
 		}
 
 		return tile;
@@ -248,79 +111,38 @@ export class Tile
 	{
 		var result: Rectangle = new Rectangle();
 
-		__findTileRect(result);
+		this.__findTileRect(result);
 
 		// Copied from DisplayObject. Create the translation matrix.
-		var matrix = #if flash __tempMatrix #else Matrix.__pool.get() #end;
+		var matrix = (<internal.Matrix><any>Matrix).__pool.get();
 
 		if (targetCoordinateSpace != null && targetCoordinateSpace != this)
 		{
-			matrix.copyFrom(__getWorldTransform()); // ? Is this correct?
-			var targetMatrix = #if flash new Matrix() #else Matrix.__pool.get() #end;
+			matrix.copyFrom(this.__getWorldTransform()); // ? Is this correct?
+			var targetMatrix = (<internal.Matrix><any>Matrix).__pool.get();
 
 			targetMatrix.copyFrom(targetCoordinateSpace.__getWorldTransform());
 			targetMatrix.invert();
 
 			matrix.concat(targetMatrix);
 
-			#if!flash
-			Matrix.__pool.release(targetMatrix);
-			#end
+			(<internal.Matrix><any>Matrix).__pool.release(targetMatrix);
 		}
 		else
 		{
 			matrix.identity();
 		}
 
-		__getBounds(result, matrix);
+		this.__getBounds(result, matrix);
 
-		#if!flash
-		Matrix.__pool.release(matrix);
-		#end
+		(<internal.Matrix><any>Matrix).__pool.release(matrix);
 
 		return result;
 	}
 
 	protected __getBounds(result: Rectangle, matrix: Matrix): void
 	{
-			#if flash
-		function __transform(rect: Rectangle, m: Matrix): void
-		{
-			var tx0 = m.a * rect.x + m.c * rect.y;
-			var tx1 = tx0;
-			var ty0 = m.b * rect.x + m.d * rect.y;
-			var ty1 = ty0;
-
-			var tx = m.a * (rect.x + rect.width) + m.c * rect.y;
-			var ty = m.b * (rect.x + rect.width) + m.d * rect.y;
-
-			if (tx < tx0) tx0 = tx;
-			if (ty < ty0) ty0 = ty;
-			if (tx > tx1) tx1 = tx;
-			if (ty > ty1) ty1 = ty;
-
-			tx = m.a * (rect.x + rect.width) + m.c * (rect.y + rect.height);
-			ty = m.b * (rect.x + rect.width) + m.d * (rect.y + rect.height);
-
-			if (tx < tx0) tx0 = tx;
-			if (ty < ty0) ty0 = ty;
-			if (tx > tx1) tx1 = tx;
-			if (ty > ty1) ty1 = ty;
-
-			tx = m.a * rect.x + m.c * (rect.y + rect.height);
-			ty = m.b * rect.x + m.d * (rect.y + rect.height);
-
-			if (tx < tx0) tx0 = tx;
-			if (ty < ty0) ty0 = ty;
-			if (tx > tx1) tx1 = tx;
-			if (ty > ty1) ty1 = ty;
-
-			rect.setTo(tx0 + m.tx, ty0 + m.ty, tx1 - tx0, ty1 - ty0);
-		}
-		__transform(result, matrix);
-		#else
-		result.__transform(result, matrix);
-		#end
+		(<internal.Rectangle><any>result).__transform(result, matrix);
 	}
 
 	/**
@@ -336,7 +158,7 @@ export class Tile
 	{
 		if (obj != null && obj.parent != null && parent != null)
 		{
-			var currentBounds = getBounds(this);
+			var currentBounds = this.getBounds(this);
 			var targetBounds = obj.getBounds(this);
 			return currentBounds.intersects(targetBounds);
 		}
@@ -354,29 +176,30 @@ export class Tile
 	**/
 	public invalidate(): void
 	{
-		__setRenderDirty();
+		this.__setRenderDirty();
 	}
 
 	protected __findTileRect(result: Rectangle): void
 	{
-		if (tileset == null)
+		if (this.tileset == null)
 		{
 			if (parent != null)
 			{
-				var parentTileset: Tileset = parent.__findTileset();
+				var parentTileset: Tileset = (<internal.Tile><any>parent).__findTileset();
 				if (parentTileset == null)
 				{
 					result.setTo(0, 0, 0, 0);
 				}
 				else
 				{
-					// ? Is this a way to call getRect once without making extra vars? I don't fully grasp haxe pattern matching. Could be done with an if?
-					switch parentTileset.getRect(id)
+					var rect = parentTileset.getRect(this.id);
+					if (rect == null)
 					{
-						case null:
-							result.setTo(0, 0, 0, 0);
-						case not_null:
-							result.copyFrom(not_null);
+						result.setTo(0, 0, 0, 0);
+					}
+					else
+					{
+						result.copyFrom(rect);
 					}
 				}
 			}
@@ -387,7 +210,7 @@ export class Tile
 		}
 		else
 		{
-			result.copyFrom(tileset.getRect(id));
+			result.copyFrom(this.tileset.getRect(this.id));
 		}
 
 		result.x = 0;
@@ -398,10 +221,10 @@ export class Tile
 	{
 		// TODO: Avoid Std.is
 
-		if (tileset != null) return tileset;
-		if (Std.is(parent, Tilemap)) return parent.tileset;
-		if (parent == null) return null;
-		return parent.__findTileset();
+		if (this.tileset != null) return this.tileset;
+		if (this.parent instanceof Tilemap) return (<Tilemap>this.parent).tileset;
+		if (this.parent == null) return null;
+		return (<internal.Tile><any>this.parent).__findTileset();
 	}
 
 	/**
@@ -411,11 +234,11 @@ export class Tile
 	**/
 	protected __getWorldTransform(): Matrix
 	{
-		var retval = matrix.clone();
+		var retval = this.matrix.clone();
 
 		if (parent != null)
 		{
-			retval.concat(parent.__getWorldTransform());
+			retval.concat((<internal.Tile><any>this.parent).__getWorldTransform());
 		}
 
 		return retval;
@@ -423,17 +246,15 @@ export class Tile
 
 	protected __setRenderDirty(): void
 	{
-		#if!flash
-		if (!__dirty)
+		if (!this.__dirty)
 		{
-			__dirty = true;
+			this.__dirty = true;
 
 			if (parent != null)
 			{
-				parent.__setRenderDirty();
+				(<internal.Tile><any>parent).__setRenderDirty();
 			}
 		}
-		#end
 	}
 
 	// Get & Set Methods
@@ -445,15 +266,15 @@ export class Tile
 	**/
 	public get alpha(): number
 	{
-		return __alpha;
+		return this.__alpha;
 	}
 
 	public set alpha(value: number)
 	{
-		if (value != __alpha)
+		if (value != this.__alpha)
 		{
-			__alpha = value;
-			__setRenderDirty();
+			this.__alpha = value;
+			this.__setRenderDirty();
 		}
 	}
 
@@ -464,387 +285,458 @@ export class Tile
 	**/
 	public get blendMode(): BlendMode
 	{
-		return __blendMode;
+		return this.__blendMode;
 	}
 
 	public set blendMode(value: BlendMode)
 	{
-		if (value != __blendMode)
+		if (value != this.__blendMode)
 		{
-			__blendMode = value;
-			__setRenderDirty();
+			this.__blendMode = value;
+			this.__setRenderDirty();
 		}
 	}
 
+	/**
+		A ColorTransform object containing values that universally adjust the
+		colors in the display object.
+
+		This property is supported only when using hardware rendering.
+	**/
 	public get colorTransform(): ColorTransform
 	{
-		return __colorTransform;
+		return this.__colorTransform;
 	}
 
-	public set colorTransform(value: ColorTransform): ColorTransform
+	public set colorTransform(value: ColorTransform)
 	{
-		if (value != __colorTransform)
+		if (value != this.__colorTransform)
 		{
-			__colorTransform = value;
-			__setRenderDirty();
+			this.__colorTransform = value;
+			this.__setRenderDirty();
 		}
-
-		return value;
 	}
 
+	/**
+		Indicates the height of the tile, in pixels. The height is
+		calculated based on the bounds of the tile after local transformations.
+		When you set the `height` property, the `scaleY` property
+		is adjusted accordingly.
+		If a tile has a height of zero, no change is applied
+	**/
 	public get height(): number
 	{
-		var result: Rectangle = #if flash __tempRectangle #else Rectangle.__pool.get() #end;
+		var result: Rectangle = (<internal.Rectangle><any>Rectangle).__pool.get();
 
-		__findTileRect(result);
+		this.__findTileRect(result);
 
-		__getBounds(result, matrix);
+		this.__getBounds(result, this.matrix);
 		var h = result.height;
-		#if!flash
-		Rectangle.__pool.release(result);
-		#end
+		(<internal.Rectangle><any>Rectangle).__pool.release(result);
 		return h;
 	}
 
-	public set height(value: number): number
+	public set height(value: number)
 	{
-		var result: Rectangle = #if flash __tempRectangle #else Rectangle.__pool.get() #end;
+		var result: Rectangle = (<internal.Rectangle><any>Rectangle).__pool.get();
 
-		__findTileRect(result);
+		this.__findTileRect(result);
 		if (result.height != 0)
 		{
-			scaleY = value / result.height;
+			this.scaleY = value / result.height;
 		}
-		#if!flash
-		Rectangle.__pool.release(result);
-		#end
-		return value;
+		(<internal.Rectangle><any>Rectangle).__pool.release(result);
 	}
 
+	/**
+		The ID of the tile to draw from the Tileset
+	**/
 	public get id(): number
 	{
-		return __id;
+		return this.__id;
 	}
 
-	public set id(value: number): number
+	public set id(value: number)
 	{
-		if (value != __id)
+		if (value != this.__id)
 		{
-			__id = value;
-			__setRenderDirty();
+			this.__id = value;
+			this.__setRenderDirty();
 		}
-
-		return value;
 	}
 
+	/**
+		A Matrix object containing values that alter the scaling, rotation, and
+		translation of the tile object.
+
+		If the `matrix` property is set to a value (not `null`), the `x`, `y`,
+		`scaleX`, `scaleY` and the `rotation` values will be overwritten.
+	**/
 	public get matrix(): Matrix
 	{
-		return __matrix;
+		return this.__matrix;
 	}
 
-	public set matrix(value: Matrix): Matrix
+	public set matrix(value: Matrix)
 	{
-		if (value != __matrix)
+		if (value != this.__matrix)
 		{
-			__rotation = null;
-			__scaleX = null;
-			__scaleY = null;
-			__matrix = value;
-			__setRenderDirty();
+			this.__rotation = null;
+			this.__scaleX = null;
+			this.__scaleY = null;
+			this.__matrix = value;
+			this.__setRenderDirty();
 		}
-
-		return value;
 	}
 
+	/**
+		Modifies the origin x coordinate for this tile, which is the center value
+		used when determining position, scale and rotation.
+	**/
 	public get originX(): number
 	{
-		return __originX;
+		return this.__originX;
 	}
 
-	public set originX(value: number): number
+	public set originX(value: number)
 	{
-		if (value != __originX)
+		if (value != this.__originX)
 		{
-			__originX = value;
-			__setRenderDirty();
+			this.__originX = value;
+			this.__setRenderDirty();
 		}
-
-		return value;
 	}
 
+	/**
+		Modifies the origin y coordinate for this tile, which is the center value
+		used when determining position, scale and rotation.
+	**/
 	public get originY(): number
 	{
-		return __originY;
+		return this.__originY;
 	}
 
-	public set originY(value: number): number
+	public set originY(value: number)
 	{
-		if (value != __originY)
+		if (value != this.__originY)
 		{
-			__originY = value;
-			__setRenderDirty();
+			this.__originY = value;
+			this.__setRenderDirty();
 		}
-
-		return value;
 	}
 
+	/**
+		Indicates the ITileContainer object that contains this display
+		object. Use the `parent` property to specify a relative path to
+		tile objects that are above the current tile object in the tile
+		list hierarchy.
+	**/
+	public get parent(): TileContainer
+	{
+		return this.__parent;
+	}
+
+	/**
+		The custom rectangle to draw from the Tileset
+	**/
 	public get rect(): Rectangle
 	{
-		return __rect;
+		return this.__rect;
 	}
 
-	public set rect(value: Rectangle): Rectangle
+	public set rect(value: Rectangle)
 	{
-		if (value != __rect)
+		if (value != this.__rect)
 		{
-			__rect = value;
-			__setRenderDirty();
+			this.__rect = value;
+			this.__setRenderDirty();
 		}
-
-		return value;
 	}
 
+	/**
+		Indicates the rotation of the Tile instance, in degrees, from its
+		original orientation. Values from 0 to 180 represent clockwise rotation;
+		values from 0 to -180 represent counterclockwise rotation. Values outside
+		this range are added to or subtracted from 360 to obtain a value within
+		the range. For example, the statement `tile.rotation = 450`
+		is the same as ` tile.rotation = 90`.
+	**/
 	public get rotation(): number
 	{
-		if (__rotation == null)
+		if (this.__rotation == null)
 		{
-			if (__matrix.b == 0 && __matrix.c == 0)
+			if (this.__matrix.b == 0 && this.__matrix.c == 0)
 			{
-				__rotation = 0;
-				__rotationSine = 0;
-				__rotationCosine = 1;
+				this.__rotation = 0;
+				this.__rotationSine = 0;
+				this.__rotationCosine = 1;
 			}
 			else
 			{
-				var radians = Math.atan2(__matrix.d, __matrix.c) - (Math.PI / 2);
+				var radians = Math.atan2(this.__matrix.d, this.__matrix.c) - (Math.PI / 2);
 
-				__rotation = radians * (180 / Math.PI);
-				__rotationSine = Math.sin(radians);
-				__rotationCosine = Math.cos(radians);
+				this.__rotation = radians * (180 / Math.PI);
+				this.__rotationSine = Math.sin(radians);
+				this.__rotationCosine = Math.cos(radians);
 			}
 		}
 
-		return __rotation;
+		return this.__rotation;
 	}
 
-	public set rotation(value: number): number
+	public set rotation(value: number)
 	{
-		if (value != __rotation)
+		if (value != this.__rotation)
 		{
-			__rotation = value;
+			this.__rotation = value;
 			var radians = value * (Math.PI / 180);
-			__rotationSine = Math.sin(radians);
-			__rotationCosine = Math.cos(radians);
+			this.__rotationSine = Math.sin(radians);
+			this.__rotationCosine = Math.cos(radians);
 
 			var __scaleX = this.scaleX;
 			var __scaleY = this.scaleY;
 
-			__matrix.a = __rotationCosine * __scaleX;
-			__matrix.b = __rotationSine * __scaleX;
-			__matrix.c = -__rotationSine * __scaleY;
-			__matrix.d = __rotationCosine * __scaleY;
+			this.__matrix.a = this.__rotationCosine * __scaleX;
+			this.__matrix.b = this.__rotationSine * __scaleX;
+			this.__matrix.c = -this.__rotationSine * __scaleY;
+			this.__matrix.d = this.__rotationCosine * __scaleY;
 
-			__setRenderDirty();
+			this.__setRenderDirty();
 		}
-
-		return value;
 	}
 
+	/**
+		Indicates the horizontal scale (percentage) of the object as applied from
+		the origin point. The default origin point is (0,0). 1.0
+		equals 100% scale.
+
+		Scaling the local coordinate system changes the `x` and
+		`y` property values, which are defined in whole pixels.
+	**/
 	public get scaleX(): number
 	{
-		if (__scaleX == null)
+		if (this.__scaleX == null)
 		{
-			if (matrix.b == 0)
+			if (this.matrix.b == 0)
 			{
-				__scaleX = __matrix.a;
+				this.__scaleX = this.__matrix.a;
 			}
 			else
 			{
-				__scaleX = Math.sqrt(__matrix.a * __matrix.a + __matrix.b * __matrix.b);
+				this.__scaleX = Math.sqrt(this.__matrix.a * this.__matrix.a + this.__matrix.b * this.__matrix.b);
 			}
 		}
 
-		return __scaleX;
+		return this.__scaleX;
 	}
 
-	public set scaleX(value: number): number
+	public set scaleX(value: number)
 	{
-		if (value != __scaleX)
+		if (value != this.__scaleX)
 		{
-			__scaleX = value;
+			this.__scaleX = value;
 
-			if (__matrix.b == 0)
+			if (this.__matrix.b == 0)
 			{
-				__matrix.a = value;
+				this.__matrix.a = value;
 			}
 			else
 			{
 				var rotation = this.rotation;
 
-				var a = __rotationCosine * value;
-				var b = __rotationSine * value;
+				var a = this.__rotationCosine * value;
+				var b = this.__rotationSine * value;
 
-				__matrix.a = a;
-				__matrix.b = b;
+				this.__matrix.a = a;
+				this.__matrix.b = b;
 			}
 
-			__setRenderDirty();
+			this.__setRenderDirty();
 		}
-
-		return value;
 	}
 
+	/**
+		Indicates the vertical scale (percentage) of an object as applied from the
+		origin point of the object. The default origin point is (0,0).
+		1.0 is 100% scale.
+
+		Scaling the local coordinate system changes the `x` and
+		`y` property values, which are defined in whole pixels.
+	**/
 	public get scaleY(): number
 	{
-		if (__scaleY == null)
+		if (this.__scaleY == null)
 		{
-			if (__matrix.c == 0)
+			if (this.__matrix.c == 0)
 			{
-				__scaleY = matrix.d;
+				this.__scaleY = this.matrix.d;
 			}
 			else
 			{
-				__scaleY = Math.sqrt(__matrix.c * __matrix.c + __matrix.d * __matrix.d);
+				this.__scaleY = Math.sqrt(this.__matrix.c * this.__matrix.c + this.__matrix.d * this.__matrix.d);
 			}
 		}
 
-		return __scaleY;
+		return this.__scaleY;
 	}
 
-	public set scaleY(value: number): number
+	public set scaleY(value: number)
 	{
-		if (value != __scaleY)
+		if (value != this.__scaleY)
 		{
-			__scaleY = value;
+			this.__scaleY = value;
 
-			if (__matrix.c == 0)
+			if (this.__matrix.c == 0)
 			{
-				__matrix.d = value;
+				this.__matrix.d = value;
 			}
 			else
 			{
 				var rotation = this.rotation;
 
-				var c = -__rotationSine * value;
-				var d = __rotationCosine * value;
+				var c = -this.__rotationSine * value;
+				var d = this.__rotationCosine * value;
 
-				__matrix.c = c;
-				__matrix.d = d;
+				this.__matrix.c = c;
+				this.__matrix.d = d;
 			}
 
-			__setRenderDirty();
+			this.__setRenderDirty();
 		}
-
-		return value;
 	}
 
+	/**
+		Uses a custom Shader instance when rendering this tile.
+
+		This property is only supported when using hardware rendering.
+	**/
 	public get shader(): Shader
 	{
-		return __shader;
+		return this.__shader;
 	}
 
-	public set shader(value: Shader): Shader
+	public set shader(value: Shader)
 	{
-		if (value != __shader)
+		if (value != this.__shader)
 		{
-			__shader = value;
-			__setRenderDirty();
+			this.__shader = value;
+			this.__setRenderDirty();
 		}
-
-		return value;
 	}
 
+	/**
+		The Tileset that this Tile is rendered from.
+
+		If `null`, this Tile will use the Tileset value of its parent.
+	**/
 	public get tileset(): Tileset
 	{
-		return __tileset;
+		return this.__tileset;
 	}
 
-	public set tileset(value: Tileset): Tileset
+	public set tileset(value: Tileset)
 	{
-		if (value != __tileset)
+		if (value != this.__tileset)
 		{
-			__tileset = value;
-			__setRenderDirty();
+			this.__tileset = value;
+			this.__setRenderDirty();
 		}
-
-		return value;
 	}
 
+	/**
+		Whether or not the tile object is visible.
+	**/
 	public get visible(): boolean
 	{
-		return __visible;
+		return this.__visible;
 	}
 
-	public set visible(value: boolean): boolean
+	public set visible(value: boolean)
 	{
-		if (value != __visible)
+		if (value != this.__visible)
 		{
-			__visible = value;
-			__setRenderDirty();
+			this.__visible = value;
+			this.__setRenderDirty();
 		}
-
-		return value;
 	}
 
+	/**
+		Indicates the width of the tile, in pixels. The width is
+		calculated based on the bounds of the tile after local transformations.
+		When you set the `width` property, the `scaleX` property
+		is adjusted accordingly.
+		If a tile has a width of zero, no change is applied
+	**/
 	public get width(): number
 	{
 		// TODO how does pooling work with flash target?
-		var result: Rectangle = #if flash new Rectangle() #else Rectangle.__pool.get() #end;
+		var result: Rectangle = (<internal.Rectangle><any>Rectangle).__pool.get();
 
-		__findTileRect(result);
+		this.__findTileRect(result);
 
-		__getBounds(result, matrix);
+		this.__getBounds(result, this.matrix);
 		var w = result.width;
-		#if!flash
-		Rectangle.__pool.release(result);
-		#end
+		(<internal.Rectangle><any>Rectangle).__pool.release(result);
 		return w;
 	}
 
-	public set width(value: number): number
+	public set width(value: number)
 	{
-		var result: Rectangle = #if flash __tempRectangle #else Rectangle.__pool.get() #end;
+		var result: Rectangle = (<internal.Rectangle><any>Rectangle).__pool.get();
 
-		__findTileRect(result);
+		this.__findTileRect(result);
 		if (result.width != 0)
 		{
-			scaleX = value / result.width;
+			this.scaleX = value / result.width;
 		}
-		#if!flash
-		Rectangle.__pool.release(result);
-		#end
-		return value;
+		(<internal.Rectangle><any>Rectangle).__pool.release(result);
 	}
 
+	/**
+		Indicates the _x_ coordinate of the Tile instance relative
+		to the local coordinates of the parent ITileContainer. If the
+		object is inside a TileContainer that has transformations, it is
+		in the local coordinate system of the enclosing TileContainer.
+		Thus, for a TileContainer rotated 90° counterclockwise, the
+		TileContainer's children inherit a coordinate system that is
+		rotated 90° counterclockwise. The object's coordinates refer to the
+		registration point position.
+	**/
 	public get x(): number
 	{
-		return __matrix.tx;
+		return this.__matrix.tx;
 	}
 
-	public set x(value: number): number
+	public set x(value: number)
 	{
-		if (value != __matrix.tx)
+		if (value != this.__matrix.tx)
 		{
-			__matrix.tx = value;
-			__setRenderDirty();
+			this.__matrix.tx = value;
+			this.__setRenderDirty();
 		}
-
-		return value;
 	}
 
+	/**
+		Indicates the _y_ coordinate of the Tile instance relative
+		to the local coordinates of the parent ITileContainer. If the
+		object is inside a TileContainer that has transformations, it is
+		in the local coordinate system of the enclosing TileContainer.
+		Thus, for a TileContainer rotated 90° counterclockwise, the
+		TileContainer's children inherit a coordinate system that is
+		rotated 90° counterclockwise. The object's coordinates refer to the
+		registration point position.
+	**/
 	public get y(): number
 	{
-		return __matrix.ty;
+		return this.__matrix.ty;
 	}
 
-	public set y(value: number): number
+	public set y(value: number)
 	{
-		if (value != __matrix.ty)
+		if (value != this.__matrix.ty)
 		{
-			__matrix.ty = value;
-			__setRenderDirty();
+			this.__matrix.ty = value;
+			this.__setRenderDirty();
 		}
-
-		return value;
 	}
 }

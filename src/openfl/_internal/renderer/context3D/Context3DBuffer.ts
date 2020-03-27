@@ -1,14 +1,9 @@
-namespace openfl._internal.renderer.context3D;
+import Context3D from "../../../display3D/Context3D";
+import Context3DBufferUsage from "../../../display3D/Context3DBufferUsage";
+import IndexBuffer3D from "../../../display3D/IndexBuffer3D";
+import VertexBuffer3D from "../../../display3D/VertexBuffer3D";
 
-#if openfl_gl
-import openfl._internal.bindings.typedarray.Float32Array;
-import openfl._internal.bindings.typedarray.UInt16Array;
-import Context3D from "../display3D/Context3D";
-import openfl.display3D.IndexBuffer3D;
-import openfl.display3D.VertexBuffer3D;
-
-@SuppressWarnings("checkstyle:FieldDocComment")
-class Context3DBuffer
+export default class Context3DBuffer
 {
 	private static readonly MAX_INDEX_BUFFER_LENGTH: number = 0xFFFF;
 	private static readonly MAX_QUADS_PER_INDEX_BUFFER: number = 0x2AAA;
@@ -17,7 +12,7 @@ class Context3DBuffer
 	public dataPerVertex: number;
 	public elementCount: number;
 	public elementType: Context3DElementType;
-	public indexBufferData: Array<UInt16Array>;
+	public indexBufferData: Array<Uint16Array>;
 	public indexBuffers: Array<IndexBuffer3D>;
 	public indexCount: number;
 	public vertexBuffer: VertexBuffer3D;
@@ -32,24 +27,24 @@ class Context3DBuffer
 		this.elementType = elementType;
 		this.dataPerVertex = dataPerVertex;
 
-		indexCount = 0;
-		vertexCount = 0;
+		this.indexCount = 0;
+		this.vertexCount = 0;
 
-		resize(elementCount);
+		this.resize(elementCount);
 	}
 
 	public drawElements(start: number, length: number = -1): void
 	{
-		if (indexCount == 0 || vertexCount == 0) return;
+		if (this.indexCount == 0 || this.vertexCount == 0) return;
 
-		switch (elementType)
+		switch (this.elementType)
 		{
-			case QUADS:
-				if (length == -1) length = (elementCount * 2);
+			case Context3DElementType.QUADS:
+				if (length == -1) length = (this.elementCount * 2);
 
-				if (start < MAX_QUADS_PER_INDEX_BUFFER && length - start < MAX_QUADS_PER_INDEX_BUFFER)
+				if (start < Context3DBuffer.MAX_QUADS_PER_INDEX_BUFFER && length - start < Context3DBuffer.MAX_QUADS_PER_INDEX_BUFFER)
 				{
-					context3D.drawTriangles(indexBuffers[0], start, length * 2);
+					this.context3D.drawTriangles(this.indexBuffers[0], start, length * 2);
 				}
 				else
 				{
@@ -57,17 +52,18 @@ class Context3DBuffer
 
 					while (start < end)
 					{
-						var arrayBufferIndex = Math.floor(start / MAX_QUADS_PER_INDEX_BUFFER);
+						var arrayBufferIndex = Math.floor(start / Context3DBuffer.MAX_QUADS_PER_INDEX_BUFFER);
 
-						length = Std.int(Math.min(end - start, MAX_QUADS_PER_INDEX_BUFFER));
+						length = Math.floor(Math.min(end - start, Context3DBuffer.MAX_QUADS_PER_INDEX_BUFFER));
 						if (length <= 0) break;
 
 						// TODO: Need to advance all vertex buffer bindings past start of 0xFFFF
 
-						context3D.drawTriangles(indexBuffers[arrayBufferIndex], (start - (arrayBufferIndex * MAX_QUADS_PER_INDEX_BUFFER)) * 3, length * 2);
+						this.context3D.drawTriangles(this.indexBuffers[arrayBufferIndex], (start - (arrayBufferIndex * Context3DBuffer.MAX_QUADS_PER_INDEX_BUFFER)) * 3, length * 2);
 						start += length;
 					}
 				}
+				break;
 
 			default:
 		}
@@ -75,13 +71,13 @@ class Context3DBuffer
 
 	public flushVertexBufferData(): void
 	{
-		if (vertexBufferData.length > vertexCount)
+		if (this.vertexBufferData.length > this.vertexCount)
 		{
-			vertexCount = vertexBufferData.length;
-			vertexBuffer = context3D.createVertexBuffer(vertexCount, dataPerVertex, DYNAMIC_DRAW);
+			this.vertexCount = this.vertexBufferData.length;
+			this.vertexBuffer = this.context3D.createVertexBuffer(this.vertexCount, this.dataPerVertex, Context3DBufferUsage.DYNAMIC_DRAW);
 		}
 
-		vertexBuffer.uploadFromTypedArray(vertexBufferData);
+		this.vertexBuffer.uploadFromTypedArray(this.vertexBufferData);
 	}
 
 	public resize(elementCount: number, dataPerVertex: number = -1): void
@@ -92,48 +88,50 @@ class Context3DBuffer
 
 		if (dataPerVertex != this.dataPerVertex)
 		{
-			vertexBuffer = null;
-			vertexCount = 0;
+			this.vertexBuffer = null;
+			this.vertexCount = 0;
 
 			this.dataPerVertex = dataPerVertex;
 		}
 
 		var numVertices = 0;
 
-		switch (elementType)
+		switch (this.elementType)
 		{
-			case QUADS:
+			case Context3DElementType.QUADS:
 				numVertices = elementCount * 4;
+				break;
 
-			case TRIANGLES:
+			case Context3DElementType.TRIANGLES:
 				numVertices = elementCount * 3;
+				break;
 
-			case TRIANGLE_INDICES:
+			case Context3DElementType.TRIANGLE_INDICES:
 				// TODO: Different index/triangle buffer lengths
 				numVertices = elementCount * 3;
+				break;
 
 			default:
 		}
 
 		var vertexLength = numVertices * dataPerVertex;
 
-		if (vertexBufferData == null)
+		if (this.vertexBufferData == null)
 		{
-			vertexBufferData = new Float32Array(vertexLength);
+			this.vertexBufferData = new Float32Array(vertexLength);
 		}
-		else if (vertexLength > vertexBufferData.length)
+		else if (vertexLength > this.vertexBufferData.length)
 		{
-			var cacheBufferData = vertexBufferData;
-			vertexBufferData = new Float32Array(vertexLength);
-			vertexBufferData.set(cacheBufferData);
+			var cacheBufferData = this.vertexBufferData;
+			this.vertexBufferData = new Float32Array(vertexLength);
+			this.vertexBufferData.set(cacheBufferData);
 		}
 	}
 }
 
 enum Context3DElementType
 {
-	QUADS;
-	TRIANGLES;
-	TRIANGLE_INDICES;
+	QUADS,
+	TRIANGLES,
+	TRIANGLE_INDICES,
 }
-#end

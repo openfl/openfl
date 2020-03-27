@@ -1,7 +1,7 @@
 namespace openfl._internal.renderer.context3D;
 
 #if openfl_gl
-import openfl.display.Shader;
+import Shader from "../display/Shader";
 
 #if!openfl_debug
 @: fileXml('tags="haxe,release"')

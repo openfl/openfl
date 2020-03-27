@@ -3,7 +3,7 @@ namespace openfl._internal.backend.dummy;
 import Context3D from "../display3D/Context3D";
 import openfl.display3D.Context3DClearMask;
 import openfl.display3D.IndexBuffer3D;
-import openfl.display.BitmapData;
+import BitmapData from "../display/BitmapData";
 import Point from "../geom/Point";
 import Rectangle from "../geom/Rectangle";
 

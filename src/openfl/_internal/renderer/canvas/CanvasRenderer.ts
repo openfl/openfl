@@ -3,8 +3,8 @@ namespace openfl._internal.renderer.canvas;
 #if openfl_html5
 import openfl._internal.formats.html.HTMLParser;
 import openfl.display.Bitmap;
-import openfl.display.BitmapData;
-import openfl.display.BlendMode;
+import BitmapData from "../display/BitmapData";
+import BlendMode from "../display/BlendMode";
 import openfl.display.CanvasRenderer as CanvasRendererAPI;
 import openfl.display.DisplayObject;
 import openfl.display.DisplayObjectContainer;

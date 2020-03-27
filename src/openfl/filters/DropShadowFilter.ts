@@ -1,7 +1,7 @@
 // #if!flash
-// import openfl.display.BitmapData;
-// import openfl.display.DisplayObjectRenderer;
-// import openfl.display.Shader;
+// import BitmapData from "../display/BitmapData";
+// import DisplayObjectRenderer from "../display/DisplayObjectRenderer";
+// import Shader from "../display/Shader";
 // import ColorTransfrom from "../geom/ColorTransform";
 // import Point from "../geom/Point";
 // import Rectangle from "../geom/Rectangle";

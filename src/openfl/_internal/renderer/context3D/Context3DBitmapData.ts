@@ -6,7 +6,7 @@ import openfl._internal.bindings.typedarray.UInt16Array;
 import Context3D from "../display3D/Context3D";
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
-import openfl.display.BitmapData;
+import BitmapData from "../display/BitmapData";
 import openfl.display.DisplayObject;
 import Matrix from "../geom/Matrix";
 import Rectangle from "../geom/Rectangle";

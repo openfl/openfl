@@ -4,7 +4,7 @@ namespace openfl._internal.renderer.canvas;
 import js.html.CanvasRenderingContext2D;
 import js.Browser;
 import openfl._internal.text.TextEngine;
-import openfl.display.BitmapData;
+import BitmapData from "../display/BitmapData";
 import Matrix from "../geom/Matrix";
 import Rectangle from "../geom/Rectangle";
 import openfl.text.TextField;

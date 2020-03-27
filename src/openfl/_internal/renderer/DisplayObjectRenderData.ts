@@ -1,38 +1,20 @@
-namespace openfl._internal.renderer;
+import Context3DBuffer from "../../_internal/renderer/context3D/Context3DBuffer";
+import * as internal from "../../_internal/utils/InternalAccess";
+import TextureBase from "../../display3D/textures/TextureBase";
+import Context3D from "../../display3D/Context3D";
+import IndexBuffer3D from "../../display3D/IndexBuffer3D";
+import VertexBuffer3D from "../../display3D/VertexBuffer3D";
+import Bitmap from "../../display/Bitmap";
+import BitmapData from "../../display/BitmapData";
+import DisplayObjectRenderer from "../../display/DisplayObjectRenderer";
+import ColorTransform from "../../geom/ColorTransform";
+import Matrix from "../../geom/Matrix";
+import Rectangle from "../../geom/Rectangle";
 
-import openfl._internal.bindings.cairo.CairoSurface;
-import openfl._internal.bindings.cairo.Cairo;
-import openfl._internal.bindings.gl.GLBuffer;
-import openfl._internal.bindings.gl.GLFramebuffer;
-import openfl._internal.bindings.gl.GLRenderbuffer;
-import openfl._internal.bindings.typedarray.Float32Array;
-import openfl._internal.bindings.typedarray.UInt16Array;
-import openfl._internal.renderer.context3D.Context3DBuffer;
-import openfl.display3D.textures.TextureBase;
-import Context3D from "../display3D/Context3D";
-import openfl.display3D.IndexBuffer3D;
-import openfl.display3D.VertexBuffer3D;
-import openfl.display.Bitmap;
-import openfl.display.BitmapData;
-import openfl.display.DisplayObjectRenderer;
-import ColorTransfrom from "../geom/ColorTransform";
-import Matrix from "../geom/Matrix";
-import Rectangle from "../geom/Rectangle";
-#if openfl_html5
-import js.html.CanvasElement;
-import js.html.CanvasRenderingContext2D;
-import js.html.CSSStyleDeclaration;
-#end
-
-#if!openfl_debug
-@: fileXml('tags="haxe,release"')
-@: noDebug
-#end
-@: access(openfl.display.Bitmap)
-class DisplayObjectRenderData
+export default class DisplayObjectRenderData
 {
 	// TODO: Trim down number of variables?
-	public buffer: GLBuffer;
+	public buffer: WebGLBuffer;
 	public bufferAlpha: number;
 	public bufferColorTransform: ColorTransform;
 	public bufferContext: Context3D;
@@ -47,34 +29,18 @@ class DisplayObjectRenderData
 	public cacheBitmapMatrix: Matrix;
 	public cacheBitmapRendererHW: DisplayObjectRenderer;
 	public cacheBitmapRendererSW: DisplayObjectRenderer;
-	#if openfl_cairo
-	public cairo: Cairo;
-	#end
-	#if openfl_html5
-	public canvas: CanvasElement;
+	public canvas: HTMLCanvasElement;
 	public context: CanvasRenderingContext2D;
-	#end
-	#if openfl_gl
-	public framebuffer: GLFramebuffer;
+	public framebuffer: WebGLFramebuffer;
 	public framebufferContext: Context3D;
-	#end
 	public indexBuffer: IndexBuffer3D;
 	public indexBufferContext: Context3D;
-	public indexBufferData: number16Array;
+	public indexBufferData: Int16Array;
 	public indexBufferGrid: Rectangle;
 	public isCacheBitmapRender: boolean;
-	#if openfl_gl
 	public quadBuffer: Context3DBuffer;
-	#end
-	#if openfl_gl
-	public stencilBuffer: GLRenderbuffer;
-	#end
-	#if openfl_html5
+	public stencilBuffer: WebGLRenderbuffer;
 	public style: CSSStyleDeclaration;
-	#end
-	#if openfl_cairo
-	public surface: CairoSurface;
-	#end
 	public texture: TextureBase;
 	public textureContext: Context3D;
 	public textureHeight: number;
@@ -83,7 +49,7 @@ class DisplayObjectRenderData
 	public textureWidth: number;
 	public triangleIndexBuffer: IndexBuffer3D;
 	public triangleIndexBufferCount: number;
-	public triangleIndexBufferData: number16Array;
+	public triangleIndexBufferData: Int16Array;
 	public uvRect: Rectangle;
 	public vertexBuffer: VertexBuffer3D;
 	public vertexBufferContext: Context3D;
@@ -102,53 +68,44 @@ class DisplayObjectRenderData
 
 	public dispose(): void
 	{
-		if (cacheBitmap != null)
+		if (this.cacheBitmap != null)
 		{
-			cacheBitmap.__cleanup();
-			cacheBitmap = null;
+			(<internal.DisplayObject><any>this.cacheBitmap).__cleanup();
+			this.cacheBitmap = null;
 		}
 
-		if (cacheBitmapDataTexture != null)
+		if (this.cacheBitmapDataTexture != null)
 		{
-			cacheBitmapDataTexture.dispose();
-			cacheBitmapDataTexture = null;
+			this.cacheBitmapDataTexture.dispose();
+			this.cacheBitmapDataTexture = null;
 		}
 
-		if (cacheBitmapData != null)
+		if (this.cacheBitmapData != null)
 		{
-			cacheBitmapData.dispose();
-			cacheBitmapData = null;
+			this.cacheBitmapData.dispose();
+			this.cacheBitmapData = null;
 		}
 
-		if (cacheBitmapData2 != null)
+		if (this.cacheBitmapData2 != null)
 		{
-			cacheBitmapData2.dispose();
-			cacheBitmapData2 = null;
+			this.cacheBitmapData2.dispose();
+			this.cacheBitmapData2 = null;
 		}
 
-		if (cacheBitmapData3 != null)
+		if (this.cacheBitmapData3 != null)
 		{
-			cacheBitmapData3.dispose();
-			cacheBitmapData3 = null;
+			this.cacheBitmapData3.dispose();
+			this.cacheBitmapData3 = null;
 		}
 
-		#if openfl_cairo
-		cairo = null;
-		surface = null;
-		#end
+		this.vertexBuffer = null;
+		this.framebuffer = null;
+		this.framebufferContext = null;
+		this.texture = null;
+		this.textureContext = null;
 
-		#if openfl_gl
-		vertexBuffer = null;
-		framebuffer = null;
-		framebufferContext = null;
-		texture = null;
-		textureContext = null;
-		#end
-
-		#if openfl_html5
-		canvas = null;
-		context = null;
-		style = null;
-		#end
+		this.canvas = null;
+		this.context = null;
+		this.style = null;
 	}
 }

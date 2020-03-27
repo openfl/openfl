@@ -7,7 +7,7 @@ namespace openfl._internal.utils;
 
 **/
 import openfl.display.BitmapDataChannel;
-import openfl.display.BitmapData;
+import BitmapData from "../display/BitmapData";
 
 #if!openfl_debug
 @: fileXml('tags="haxe,release"')

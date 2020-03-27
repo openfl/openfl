@@ -8,8 +8,10 @@ import BlendMode from "../display/BlendMode";
 import DisplayObjectContainer from "../display/DisplayObjectContainer";
 import Graphics from "../display/Graphics";
 import IBitmapDrawable from "../display/IBitmapDrawable";
+import IGraphicsData from "../display/IGraphicsData";
 import LoaderInfo from "../display/LoaderInfo";
 import Shader from "../display/Shader";
+import SimpleButton from "../display/SimpleButton";
 import Stage from "../display/Stage";
 import TypeError from "../errors/TypeError";
 import Event from "../events/Event";
@@ -163,8 +165,8 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 	private static __initStage: Stage;
 	private static __instanceCount: number = 0;
 	private static __supportDOM: boolean;
-	// private static __tempStack: ObjectPool<Vector<DisplayObject>> = new ObjectPool<Vector<DisplayObject>>(function () return
-	// new Vector<DisplayObject>(), (stack) stack.length = 0);
+	private static __tempStack: ObjectPool<Vector<DisplayObject>> = new ObjectPool<Vector<DisplayObject>>(() =>
+		new Vector<DisplayObject>(), (stack) => stack.length = 0);
 
 	/**
 		The current accessibility options for this display object. If you modify the `accessibilityProperties`
@@ -279,18 +281,6 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 	**/
 	// /** @hidden */ @:dox(hide) @:require(flash10) public scaleZ:Float;
 
-	/**
-		The Stage of the display object. A Flash runtime application has only one
-		Stage object. For example, you can create and load multiple display
-		objects into the display list, and the `stage` property of each
-		display object refers to the same Stage object(even if the display object
-		belongs to a loaded SWF file).
-
-		If a display object is not added to the display list, its
-		`stage` property is set to `null`.
-	**/
-	public readonly stage: Stage;
-
 	protected static __childIterators: ObjectPool<DisplayObjectIterator> = new ObjectPool<DisplayObjectIterator>(() => new DisplayObjectIterator());
 
 	// /** @hidden */ @:dox(hide) @:require(flash10) z:Float;
@@ -331,6 +321,7 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 	protected __scaleY: number;
 	protected __scrollRect: Rectangle;
 	protected __shader: Shader;
+	protected __stage: Stage;
 	protected __tempPoint: Point;
 	protected __transform: Matrix;
 	protected __transformDirty: boolean;
@@ -381,7 +372,7 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 
 		if (DisplayObject.__initStage != null)
 		{
-			this.stage = DisplayObject.__initStage;
+			this.__stage = DisplayObject.__initStage;
 			DisplayObject.__initStage = null;
 			this.stage.addChild(this);
 		}
@@ -716,7 +707,7 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 				case DisplayObjectType.DISPLAY_OBJECT_CONTAINER:
 				case DisplayObjectType.MOVIE_CLIP:
 					var displayObjectContainer: DisplayObjectContainer = child as DisplayObjectContainer;
-					displayObjectContainer.__cleanupRemovedChildren();
+					(<internal.DisplayObjectContainer><any>displayObjectContainer).__cleanupRemovedChildren();
 					break;
 				default:
 			}
@@ -768,7 +759,7 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 
 	protected __dispatchEvent(event: Event): boolean
 	{
-		var parent = event.bubbles ? this.parent : null;
+		var parent: DisplayObject = event.bubbles ? this.parent : null;
 		var result = super.__dispatchEvent(event);
 
 		if ((<internal.Event><any>event).__isCanceled)
@@ -808,7 +799,7 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 			}
 			else
 			{
-				var stack = this.__tempStack.get();
+				var stack = DisplayObject.__tempStack.get();
 				var parent = parent;
 				var i = 0;
 
@@ -819,12 +810,12 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 					i++;
 				}
 
-				for (j in 0...i)
+				for (let j = 0; j < i; j++)
 				{
 					stack[i - j - 1].__dispatch(event);
 				}
 
-				this.__tempStack.release(stack);
+				DisplayObject.__tempStack.release(stack);
 			}
 		}
 
@@ -837,7 +828,7 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 	{
 		if (this.__graphics != null)
 		{
-			this.__graphics.__getBounds(rect, matrix);
+			(<internal.Graphics><any>this.__graphics).__getBounds(rect, matrix);
 		}
 	}
 
@@ -850,17 +841,17 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 	{
 		this.__getRenderBounds(rect, matrix);
 
-		if (__filters != null)
+		if (this.__filters != null)
 		{
-			var extension = Rectangle.__pool.get();
+			var extension = (<internal.Rectangle><any>Rectangle).__pool.get();
 
-			for (filter in __filters)
+			for (let filter of this.__filters)
 			{
-				extension.__expand(-filter.__leftExtension,
-					-filter.__topExtension, filter.__leftExtension
-				+ filter.__rightExtension,
-					filter.__topExtension
-					+ filter.__bottomExtension);
+				(<internal.Rectangle><any>extension).__expand(-(<internal.BitmapFilter><any>filter).__leftExtension,
+					-(<internal.BitmapFilter><any>filter).__topExtension, (<internal.BitmapFilter><any>filter).__leftExtension
+				+ (<internal.BitmapFilter><any>filter).__rightExtension,
+					(<internal.BitmapFilter><any>filter).__topExtension
+					+ (<internal.BitmapFilter><any>filter).__bottomExtension);
 			}
 
 			rect.width += extension.width;
@@ -868,7 +859,7 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 			rect.x += extension.x;
 			rect.y += extension.y;
 
-			Rectangle.__pool.release(extension);
+			(<internal.Rectangle><any>Rectangle).__pool.release(extension);
 		}
 	}
 
@@ -912,11 +903,11 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 		{
 			// TODO: Should we have smaller bounds if scrollRect is larger than content?
 
-			var r = Rectangle.__pool.get();
+			var r = (<internal.Rectangle><any>Rectangle).__pool.get();
 			r.copyFrom(this.__scrollRect);
-			r.__transform(r, matrix);
-			rect.__expand(r.x, r.y, r.width, r.height);
-			Rectangle.__pool.release(r);
+			(<internal.Rectangle><any>r).__transform(r, matrix);
+			(<internal.Rectangle><any>rect).__expand(r.x, r.y, r.width, r.height);
+			(<internal.Rectangle><any>Rectangle).__pool.release(r);
 		}
 	}
 
@@ -933,14 +924,14 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 			var renderParent = this.__renderParent != null ? this.__renderParent : parent;
 			if (this.__isMask && renderParent == null) renderParent = this.__maskTarget;
 
-			if (parent == null || (!parent.__transformDirty && !renderParent.__transformDirty))
+			if (parent == null || (!(<internal.DisplayObject><any>parent).__transformDirty && !(<internal.DisplayObject><any>renderParent).__transformDirty))
 			{
 				this.__update(true, false);
 			}
 			else
 			{
 				var list = [];
-				var current = this;
+				var current: DisplayObject = this;
 
 				while (current != this.stage && current.__transformDirty)
 				{
@@ -989,7 +980,7 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 			{
 				hitTest = false;
 			}
-			else if (this.__graphics.__hitTest(x, y, shapeFlag, this.__getRenderTransform()))
+			else if ((<internal.Graphics><any>this.__graphics).__hitTest(x, y, shapeFlag, this.__getRenderTransform()))
 			{
 				if (stack != null && !interactiveOnly)
 				{
@@ -1005,27 +996,27 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 
 	protected __hitTestMask(x: number, y: number): boolean
 	{
-		return (this.__graphics != null && this.__graphics.__hitTest(x, y, true, this.__getRenderTransform()));
+		return (this.__graphics != null && (<internal.Graphics><any>this.__graphics).__hitTest(x, y, true, this.__getRenderTransform()));
 	}
 
 	protected __readGraphicsData(graphicsData: Vector<IGraphicsData>, recurse: boolean): void
 	{
 		if (this.__graphics != null)
 		{
-			this.__graphics.__readGraphicsData(graphicsData);
+			(<internal.Graphics><any>this.__graphics).__readGraphicsData(graphicsData);
 		}
 	}
 
 	protected __setParentRenderDirty(): void
 	{
 		var renderParent = this.__renderParent != null ? this.__renderParent : parent;
-		if (renderParent != null && !renderParent.__renderDirty)
+		if (renderParent != null && !(<internal.DisplayObject><any>renderParent).__renderDirty)
 		{
 			// TODO: Use separate method? Based on transform, not render change
-			renderParent.__localBoundsDirty = true;
+			(<internal.DisplayObject><any>renderParent).__localBoundsDirty = true;
 
-			renderParent.__renderDirty = true;
-			renderParent.__setParentRenderDirty();
+			(<internal.DisplayObject><any>renderParent).__renderDirty = true;
+			(<internal.DisplayObject><any>renderParent).__setParentRenderDirty();
 		}
 	}
 
@@ -1040,21 +1031,21 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 
 	protected __setStageReferences(stage: Stage): void
 	{
-		this.stage = stage;
+		this.__stage = stage;
 
 		if (this.__firstChild != null)
 		{
-			for (child in this.__childIterator())
+			for (let child of this.__childIterator())
 			{
 				child.stage = stage;
 				if (child.__type == DisplayObjectType.SIMPLE_BUTTON)
 				{
 					var button: SimpleButton = child as SimpleButton;
-					if (button.__currentState != null)
+					if ((<internal.SimpleButton><any>button).__currentState != null)
 					{
-						button.__currentState.__setStageReferences(stage);
+						(<internal.SimpleButton><any>button).__currentState.__setStageReferences(stage);
 					}
-					if (button.hitTestState != null && button.hitTestState != button.__currentState)
+					if (button.hitTestState != null && button.hitTestState != (<internal.SimpleButton><any>button).__currentState)
 					{
 						button.hitTestState.__setStageReferences(stage);
 					}
@@ -1079,7 +1070,7 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 	{
 		var renderParent = this.__renderParent != null ? this.__renderParent : parent;
 		if (this.__isMask && renderParent == null) renderParent = this.__maskTarget;
-		this.__renderable = (this.__visible && __scaleX != 0 && __scaleY != 0 && !this.__isMask && (renderParent == null || !renderParent.__isMask));
+		this.__renderable = (this.__visible && this.__scaleX != 0 && this.__scaleY != 0 && !this.__isMask && (renderParent == null || !(<internal.DisplayObject><any>renderParent).__isMask));
 
 		if (this.__transformDirty)
 		{
@@ -1095,7 +1086,7 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 
 			if (parent != null)
 			{
-				this.__calculateAbsoluteTransform(this.__transform, parent.__worldTransform, this.__worldTransform);
+				DisplayObject.__calculateAbsoluteTransform(this.__transform, (<internal.DisplayObject><any>parent).__worldTransform, this.__worldTransform);
 			}
 			else
 			{
@@ -1104,7 +1095,7 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 
 			if (renderParent != null)
 			{
-				this.__calculateAbsoluteTransform(this.__transform, renderParent.__renderTransform, this.__renderTransform);
+				DisplayObject.__calculateAbsoluteTransform(this.__transform, (<internal.DisplayObject><any>renderParent).__renderTransform, this.__renderTransform);
 			}
 			else
 			{
@@ -1113,7 +1104,7 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 
 			if (this.__scrollRect != null)
 			{
-				this.__renderTransform.__translateTransformed(-this.__scrollRect.x, -this.__scrollRect.y);
+				(<internal.Matrix><any>this.__renderTransform).__translateTransformed(-this.__scrollRect.x, -this.__scrollRect.y);
 			}
 
 			this.__transformDirty = false;
@@ -1139,33 +1130,33 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 			{
 				if (DisplayObject.__supportDOM)
 				{
-					var worldVisible = (renderParent.__worldVisible && this.__visible);
+					var worldVisible = ((<internal.DisplayObject><any>renderParent).__worldVisible && this.__visible);
 					this.__worldVisibleChanged = (this.__worldVisible != worldVisible);
 					this.__worldVisible = worldVisible;
 
-					var worldAlpha = alpha * renderParent.__worldAlpha;
+					var worldAlpha = this.alpha * (<internal.DisplayObject><any>renderParent).__worldAlpha;
 					this.__worldAlphaChanged = (this.__worldAlpha != worldAlpha);
 					this.__worldAlpha = worldAlpha;
 				}
 				else
 				{
-					this.__worldAlpha = alpha * renderParent.__worldAlpha;
+					this.__worldAlpha = this.alpha * (<internal.DisplayObject><any>renderParent).__worldAlpha;
 				}
 
 				if (this.__objectTransform != null)
 				{
-					this.__worldColorTransform.__copyFrom(this.__objectTransform.colorTransform);
-					this.__worldColorTransform.__combine(renderParent.__worldColorTransform);
+					(<internal.ColorTransform><any>this.__worldColorTransform).__copyFrom(this.__objectTransform.colorTransform);
+					(<internal.ColorTransform><any>this.__worldColorTransform).__combine((<internal.DisplayObject><any>renderParent).__worldColorTransform);
 				}
 				else
 				{
-					this.__worldColorTransform.__copyFrom(renderParent.__worldColorTransform);
+					(<internal.ColorTransform><any>this.__worldColorTransform).__copyFrom((<internal.DisplayObject><any>renderParent).__worldColorTransform);
 				}
 
 				if (this.__blendMode == null || this.__blendMode == BlendMode.NORMAL)
 				{
 					// TODO: Handle multiple blend modes better
-					this.__worldBlendMode = renderParent.__worldBlendMode;
+					this.__worldBlendMode = (<internal.DisplayObject><any>renderParent).__worldBlendMode;
 				}
 				else
 				{
@@ -1174,7 +1165,7 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 
 				if (this.__shader == null)
 				{
-					this.__worldShader = renderParent.__shader;
+					this.__worldShader = (<internal.DisplayObject><any>renderParent).__shader;
 				}
 				else
 				{
@@ -1183,7 +1174,7 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 
 				if (this.__scale9Grid == null)
 				{
-					this.__worldScale9Grid = renderParent.__scale9Grid;
+					this.__worldScale9Grid = (<internal.DisplayObject><any>renderParent).__scale9Grid;
 				}
 				else
 				{
@@ -1192,23 +1183,23 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 			}
 			else
 			{
-				this.__worldAlpha = alpha;
+				this.__worldAlpha = this.alpha;
 
-				if (this.__supportDOM)
+				if (DisplayObject.__supportDOM)
 				{
 					this.__worldVisibleChanged = (this.__worldVisible != this.__visible);
 					this.__worldVisible = this.__visible;
 
-					this.__worldAlphaChanged = (this.__worldAlpha != alpha);
+					this.__worldAlphaChanged = (this.__worldAlpha != this.alpha);
 				}
 
 				if (this.__objectTransform != null)
 				{
-					this.__worldColorTransform.__copyFrom(this.__objectTransform.colorTransform);
+					(<internal.ColorTransform><any>this.__worldColorTransform).__copyFrom(this.__objectTransform.colorTransform);
 				}
 				else
 				{
-					this.__worldColorTransform.__identity();
+					(<internal.ColorTransform><any>this.__worldColorTransform).__identity();
 				}
 
 				this.__worldBlendMode = this.__blendMode;
@@ -1236,7 +1227,7 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 		return this.__alpha;
 	}
 
-	public set alpha(value: number): void
+	public set alpha(value: number)
 	{
 		if (value > 1.0) value = 1.0;
 		if (value < 0.0) value = 0.0;
@@ -1294,7 +1285,7 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 		return this.__blendMode;
 	}
 
-	public set blendMode(value: BlendMode): void
+	public set blendMode(value: BlendMode)
 	{
 		if (value == null) value = BlendMode.NORMAL;
 
@@ -1356,7 +1347,7 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 		return (this.__filters == null ? this.__cacheAsBitmap : true);
 	}
 
-	public set cacheAsBitmap(value: boolean): void
+	public set cacheAsBitmap(value: boolean)
 	{
 		if (value != this.__cacheAsBitmap)
 		{
@@ -1367,60 +1358,60 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 	}
 
 	/**
-			If non-null, this Matrix object defines how a display object is rendered when `cacheAsBitmap` is set to
-			`true`. The application uses this matrix as a transformation matrix that is applied when rendering the
-			bitmap version of the display object.
+		If non-null, this Matrix object defines how a display object is rendered when `cacheAsBitmap` is set to
+		`true`. The application uses this matrix as a transformation matrix that is applied when rendering the
+		bitmap version of the display object.
 
-			_AIR profile support:_ This feature is supported on mobile devices, but it is not supported on desktop
-			operating systems. It also has limited support on AIR for TV devices. Specifically, on AIR for TV devices,
-			supported transformations include scaling and translation, but not rotation and skewing. See AIR Profile
-			Support for more information regarding API support across multiple profiles.
+		_AIR profile support:_ This feature is supported on mobile devices, but it is not supported on desktop
+		operating systems. It also has limited support on AIR for TV devices. Specifically, on AIR for TV devices,
+		supported transformations include scaling and translation, but not rotation and skewing. See AIR Profile
+		Support for more information regarding API support across multiple profiles.
 
-			With `cacheAsBitmapMatrix` set, the application retains a cached bitmap image across various 2D
-			transformations, including translation, rotation, and scaling. If the application uses hardware acceleration,
-			the object will be stored in video memory as a texture. This allows the GPU to apply the supported
-			transformations to the object. The GPU can perform these transformations faster than the CPU.
+		With `cacheAsBitmapMatrix` set, the application retains a cached bitmap image across various 2D
+		transformations, including translation, rotation, and scaling. If the application uses hardware acceleration,
+		the object will be stored in video memory as a texture. This allows the GPU to apply the supported
+		transformations to the object. The GPU can perform these transformations faster than the CPU.
 
-			To use the hardware acceleration, set Rendering to GPU in the General tab of the iPhone Settings dialog box
-			in Flash Professional CS5. Or set the `renderMode` property to gpu in the application descriptor file. Note
-			that AIR for TV devices automatically use hardware acceleration if it is available.
+		To use the hardware acceleration, set Rendering to GPU in the General tab of the iPhone Settings dialog box
+		in Flash Professional CS5. Or set the `renderMode` property to gpu in the application descriptor file. Note
+		that AIR for TV devices automatically use hardware acceleration if it is available.
 
-			For example, the following code sends an untransformed bitmap representation of the display object to the GPU:
+		For example, the following code sends an untransformed bitmap representation of the display object to the GPU:
 
-			```haxe
-			var matrix:Matrix = new Matrix(); // creates an identity matrix
-			mySprite.cacheAsBitmapMatrix = matrix;
-			mySprite.cacheAsBitmap = true;
-			```
+		```haxe
+		var matrix:Matrix = new Matrix(); // creates an identity matrix
+		mySprite.cacheAsBitmapMatrix = matrix;
+		mySprite.cacheAsBitmap = true;
+		```
 
-			Usually, the identity matrix (`new Matrix()`) suffices. However, you can use another matrix, such as a
-			scaled-down matrix, to upload a different bitmap to the GPU. For example, the following example applies a
-			`cacheAsBitmapMatrix` matrix that is scaled by 0.5 on the x and y axes. The bitmap object that the GPU uses
-			is smaller, however the GPU adjusts its size to match the `transform.matrix` property of the display object:
+		Usually, the identity matrix (`new Matrix()`) suffices. However, you can use another matrix, such as a
+		scaled-down matrix, to upload a different bitmap to the GPU. For example, the following example applies a
+		`cacheAsBitmapMatrix` matrix that is scaled by 0.5 on the x and y axes. The bitmap object that the GPU uses
+		is smaller, however the GPU adjusts its size to match the `transform.matrix` property of the display object:
 
-			```haxe
-			var matrix:Matrix = new Matrix(); // creates an identity matrix
-			matrix.scale(0.5, 0.5); // scales the matrix
-			mySprite.cacheAsBitmapMatrix = matrix;
-			mySprite.cacheAsBitmap = true;
-			```
+		```haxe
+		var matrix:Matrix = new Matrix(); // creates an identity matrix
+		matrix.scale(0.5, 0.5); // scales the matrix
+		mySprite.cacheAsBitmapMatrix = matrix;
+		mySprite.cacheAsBitmap = true;
+		```
 
-			Generally, you should choose to use a matrix that transforms the display object to the size that it will
-			appear in the application. For example, if your application displays the bitmap version of the sprite scaled
-			down by a half, use a matrix that scales down by a half. If you application will display the sprite larger
-			than its current dimensions, use a matrix that scales up by that factor.
+		Generally, you should choose to use a matrix that transforms the display object to the size that it will
+		appear in the application. For example, if your application displays the bitmap version of the sprite scaled
+		down by a half, use a matrix that scales down by a half. If you application will display the sprite larger
+		than its current dimensions, use a matrix that scales up by that factor.
 
-			**Note:** The `cacheAsBitmapMatrix` property is suitable for 2D transformations. If you need to apply
-			transformations in 3D, you may do so by setting a 3D property of the object and manipulating its
-			`transform.matrix3D` property. If the application is packaged using GPU mode, this allows the 3D transforms
-			to be applied to the object by the GPU. The `cacheAsBitmapMatrix` is ignored for 3D objects.
-		**/
+		**Note:** The `cacheAsBitmapMatrix` property is suitable for 2D transformations. If you need to apply
+		transformations in 3D, you may do so by setting a 3D property of the object and manipulating its
+		`transform.matrix3D` property. If the application is packaged using GPU mode, this allows the 3D transforms
+		to be applied to the object by the GPU. The `cacheAsBitmapMatrix` is ignored for 3D objects.
+	**/
 	public get cacheAsBitmapMatrix(): Matrix
 	{
 		return this.__cacheAsBitmapMatrix;
 	}
 
-	public set cacheAsBitmapMatrix(value: Matrix): void
+	public set cacheAsBitmapMatrix(value: Matrix)
 	{
 		this.__setRenderDirty();
 		this.__cacheAsBitmapMatrix = (value != null ? value.clone() : value);
@@ -1509,11 +1500,11 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 		}
 		else
 		{
-			return this.__filters.copy();
+			return this.__filters.slice();
 		}
 	}
 
-	public set filters(value: Array<BitmapFilter>): void
+	public set filters(value: Array<BitmapFilter>)
 	{
 		if (value != null && value.length > 0)
 		{
@@ -1532,39 +1523,39 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 	}
 
 	/**
-			Indicates the height of the display object, in pixels. The height is
-			calculated based on the bounds of the content of the display object. When
-			you set the `height` property, the `scaleY` property
-			is adjusted accordingly, as shown in the following code:
+		Indicates the height of the display object, in pixels. The height is
+		calculated based on the bounds of the content of the display object. When
+		you set the `height` property, the `scaleY` property
+		is adjusted accordingly, as shown in the following code:
 
-			Except for TextField and Video objects, a display object with no
-			content(such as an empty sprite) has a height of 0, even if you try to
-			set `height` to a different value.
-		**/
+		Except for TextField and Video objects, a display object with no
+		content(such as an empty sprite) has a height of 0, even if you try to
+		set `height` to a different value.
+	**/
 	public get height(): number
 	{
 		return this.__getLocalBounds().height;
 	}
 
-	public set height(value: number): void
+	public set height(value: number)
 	{
-		var rect = Rectangle.__pool.get();
-		var matrix = Matrix.__pool.get();
+		var rect = (<internal.Rectangle><any>Rectangle).__pool.get();
+		var matrix = (<internal.Matrix><any>Matrix).__pool.get();
 		matrix.identity();
 
 		this.__getBounds(rect, matrix);
 
 		if (value != rect.height)
 		{
-			scaleY = value / rect.height;
+			this.scaleY = value / rect.height;
 		}
 		else
 		{
-			scaleY = 1;
+			this.scaleY = 1;
 		}
 
-		Rectangle.__pool.release(rect);
-		Matrix.__pool.release(matrix);
+		(<internal.Rectangle><any>Rectangle).__pool.release(rect);
+		(<internal.Matrix><any>Matrix).__pool.release(matrix);
 	}
 
 	/**
@@ -1584,7 +1575,7 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 	{
 		if (this.stage != null)
 		{
-			return Lib.current.__loaderInfo;
+			return (<internal.DisplayObject><any>Lib.current).__loaderInfo;
 		}
 
 		return null;
@@ -1627,11 +1618,11 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 		return this.__mask;
 	}
 
-	public set mask(value: DisplayObject): void
+	public set mask(value: DisplayObject)
 	{
 		if (value == this.__mask)
 		{
-			return value;
+			return;
 		}
 
 		if (value != this.__mask)
@@ -1672,81 +1663,81 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 	}
 
 	/**
-			Indicates the x coordinate of the mouse or user input device position, in
-			pixels.
+		Indicates the x coordinate of the mouse or user input device position, in
+		pixels.
 
-			**Note**: For a DisplayObject that has been rotated, the returned x
-			coordinate will reflect the non-rotated object.
-		**/
+		**Note**: For a DisplayObject that has been rotated, the returned x
+		coordinate will reflect the non-rotated object.
+	**/
 	public get mouseX(): number
 	{
-		var mouseX = (this.stage != null ? this.stage.__mouseX : Lib.current.stage.__mouseX);
-		var mouseY = (this.stage != null ? this.stage.__mouseY : Lib.current.stage.__mouseY);
+		var mouseX = (this.stage != null ? (<internal.Stage><any>this.stage).__mouseX : (<internal.Stage><any>Lib.current.stage).__mouseX);
+		var mouseY = (this.stage != null ? (<internal.Stage><any>this.stage).__mouseY : (<internal.Stage><any>Lib.current.stage).__mouseY);
 
-		return this.__getRenderTransform().__transformInverseX(mouseX, mouseY);
+		return (<internal.Matrix><any>this.__getRenderTransform()).__transformInverseX(mouseX, mouseY);
 	}
 
 	/**
-			Indicates the y coordinate of the mouse or user input device position, in
-			pixels.
+		Indicates the y coordinate of the mouse or user input device position, in
+		pixels.
 
-			**Note**: For a DisplayObject that has been rotated, the returned y
-			coordinate will reflect the non-rotated object.
-		**/
+		**Note**: For a DisplayObject that has been rotated, the returned y
+		coordinate will reflect the non-rotated object.
+	**/
 	public get mouseY(): number
 	{
-		var mouseX = (this.stage != null ? this.stage.__mouseX : Lib.current.stage.__mouseX);
-		var mouseY = (this.stage != null ? this.stage.__mouseY : Lib.current.stage.__mouseY);
+		var mouseX = (this.stage != null ? (<internal.Stage><any>this.stage).__mouseX : (<internal.Stage><any>Lib.current.stage).__mouseX);
+		var mouseY = (this.stage != null ? (<internal.Stage><any>this.stage).__mouseY : (<internal.Stage><any>Lib.current.stage).__mouseY);
 
-		return this.__getRenderTransform().__transformInverseY(mouseX, mouseY);
+		return (<internal.Matrix><any>this.__getRenderTransform()).__transformInverseY(mouseX, mouseY);
 	}
 
 	/**
-			Indicates the instance name of the DisplayObject. The object can be
-			identified in the child list of its parent display object container by
-			calling the `getChildByName()` method of the display object
-			container.
+		Indicates the instance name of the DisplayObject. The object can be
+		identified in the child list of its parent display object container by
+		calling the `getChildByName()` method of the display object
+		container.
 
-			@throws IllegalOperationError If you are attempting to set this property
-										on an object that was placed on the timeline
-										in the Flash authoring tool.
-		**/
+		@throws IllegalOperationError If you are attempting to set this property
+									on an object that was placed on the timeline
+									in the Flash authoring tool.
+	**/
 	public get name(): string
 	{
 		return this.__name;
 	}
 
-	public set name(value: string): void
+	public set name(value: string)
 	{
 		this.__name = value;
 	}
 
 	/**
-			For a display object in a loaded SWF file, the `root` property
-			is the top-most display object in the portion of the display list's tree
-			structure represented by that SWF file. For a Bitmap object representing a
-			loaded image file, the `root` property is the Bitmap object
-			itself. For the instance of the main class of the first SWF file loaded,
-			the `root` property is the display object itself. The
-			`root` property of the Stage object is the Stage object itself.
-			The `root` property is set to `null` for any display
-			object that has not been added to the display list, unless it has been
-			added to a display object container that is off the display list but that
-			is a child of the top-most display object in a loaded SWF file.
+		For a display object in a loaded SWF file, the `root` property
+		is the top-most display object in the portion of the display list's tree
+		structure represented by that SWF file. For a Bitmap object representing a
+		loaded image file, the `root` property is the Bitmap object
+		itself. For the instance of the main class of the first SWF file loaded,
+		the `root` property is the display object itself. The
+		`root` property of the Stage object is the Stage object itself.
+		The `root` property is set to `null` for any display
+		object that has not been added to the display list, unless it has been
+		added to a display object container that is off the display list but that
+		is a child of the top-most display object in a loaded SWF file.
 
-			For example, if you create a new Sprite object by calling the
-			`Sprite()` constructor method, its `root` property
-			is `null` until you add it to the display list(or to a display
-			object container that is off the display list but that is a child of the
-			top-most display object in a SWF file).
+		For example, if you create a new Sprite object by calling the
+		`Sprite()` constructor method, its `root` property
+		is `null` until you add it to the display list(or to a display
+		object container that is off the display list but that is a child of the
+		top-most display object in a SWF file).
 
-			For a loaded SWF file, even though the Loader object used to load the
-			file may not be on the display list, the top-most display object in the
-			SWF file has its `root` property set to itself. The Loader
-			object does not have its `root` property set until it is added
-			as a child of a display object for which the `root` property is
-			set.
-		**/
+		For a loaded SWF file, even though the Loader object used to load the
+		file may not be on the display list, the top-most display object in the
+		SWF file has its `root` property set to itself. The Loader
+		object does not have its `root` property set until it is added
+		as a child of a display object for which the `root` property is
+		set.
+	**/
 	public get root(): DisplayObject
 	{
 		if (this.stage != null)
@@ -1758,19 +1749,19 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 	}
 
 	/**
-				Indicates the rotation of the DisplayObject instance, in degrees, from its
-				original orientation. Values from 0 to 180 represent clockwise rotation;
-				values from 0 to -180 represent counterclockwise rotation. Values outside
-				this range are added to or subtracted from 360 to obtain a value within
-				the range. For example, the statement `my_video.rotation = 450`
-				is the same as ` my_video.rotation = 90`.
-			**/
+		Indicates the rotation of the DisplayObject instance, in degrees, from its
+		original orientation. Values from 0 to 180 represent clockwise rotation;
+		values from 0 to -180 represent counterclockwise rotation. Values outside
+		this range are added to or subtracted from 360 to obtain a value within
+		the range. For example, the statement `my_video.rotation = 450`
+		is the same as ` my_video.rotation = 90`.
+	**/
 	public get rotation(): number
 	{
 		return this.__rotation;
 	}
 
-	public set rotation(value: number): void
+	public set rotation(value: number)
 	{
 		if (value != this.__rotation)
 		{
@@ -1791,68 +1782,68 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 	}
 
 	/**
-				The current scaling grid that is in effect. If set to `null`,
-				the entire display object is scaled normally when any scale transformation
-				is applied.
+		The current scaling grid that is in effect. If set to `null`,
+		the entire display object is scaled normally when any scale transformation
+		is applied.
 
-				When you define the `scale9Grid` property, the display
-				object is divided into a grid with nine regions based on the
-				`scale9Grid` rectangle, which defines the center region of the
-				grid. The eight other regions of the grid are the following areas:
+		When you define the `scale9Grid` property, the display
+		object is divided into a grid with nine regions based on the
+		`scale9Grid` rectangle, which defines the center region of the
+		grid. The eight other regions of the grid are the following areas:
 
-				* The upper-left corner outside of the rectangle
-				* The area above the rectangle
-				* The upper-right corner outside of the rectangle
-				* The area to the left of the rectangle
-				* The area to the right of the rectangle
-				* The lower-left corner outside of the rectangle
-				* The area below the rectangle
-				* The lower-right corner outside of the rectangle
+		* The upper-left corner outside of the rectangle
+		* The area above the rectangle
+		* The upper-right corner outside of the rectangle
+		* The area to the left of the rectangle
+		* The area to the right of the rectangle
+		* The lower-left corner outside of the rectangle
+		* The area below the rectangle
+		* The lower-right corner outside of the rectangle
 
-				You can think of the eight regions outside of the center (defined by
-				the rectangle) as being like a picture frame that has special rules
-				applied to it when scaled.
+		You can think of the eight regions outside of the center (defined by
+		the rectangle) as being like a picture frame that has special rules
+		applied to it when scaled.
 
-				**Note:** Content that is not rendered through the `graphics` interface
-				of a display object will not be affected by the `scale9Grid` property.
+		**Note:** Content that is not rendered through the `graphics` interface
+		of a display object will not be affected by the `scale9Grid` property.
 
-				When the `scale9Grid` property is set and a display object
-				is scaled, all text and gradients are scaled normally; however, for other
-				types of objects the following rules apply:
+		When the `scale9Grid` property is set and a display object
+		is scaled, all text and gradients are scaled normally; however, for other
+		types of objects the following rules apply:
 
-				* Content in the center region is scaled normally.
-				* Content in the corners is not scaled.
-				* Content in the top and bottom regions is scaled horizontally only.
-				* Content in the left and right regions is scaled vertically only.
-				* All fills (including bitmaps, video, and gradients) are stretched to
-				fit their shapes.
+		* Content in the center region is scaled normally.
+		* Content in the corners is not scaled.
+		* Content in the top and bottom regions is scaled horizontally only.
+		* Content in the left and right regions is scaled vertically only.
+		* All fills (including bitmaps, video, and gradients) are stretched to
+		fit their shapes.
 
-				If a display object is rotated, all subsequent scaling is normal(and
-				the `scale9Grid` property is ignored).
+		If a display object is rotated, all subsequent scaling is normal(and
+		the `scale9Grid` property is ignored).
 
-				For example, consider the following display object and a rectangle that
-				is applied as the display object's `scale9Grid`:
+		For example, consider the following display object and a rectangle that
+		is applied as the display object's `scale9Grid`:
 
-				| | |
-				| --- | --- |
-				| ![display object image](/images/scale9Grid-a.jpg)<br>The display object. | ![display object scale 9 region](/images/scale9Grid-b.jpg)<br>The red rectangle shows the scale9Grid. |
+		| | |
+		| --- | --- |
+		| ![display object image](/images/scale9Grid-a.jpg)<br>The display object. | ![display object scale 9 region](/images/scale9Grid-b.jpg)<br>The red rectangle shows the scale9Grid. |
 
-				When the display object is scaled or stretched, the objects within the rectangle scale normally, but the
-				objects outside of the rectangle scale according to the `scale9Grid` rules:
+		When the display object is scaled or stretched, the objects within the rectangle scale normally, but the
+		objects outside of the rectangle scale according to the `scale9Grid` rules:
 
-				| | |
-				| --- | --- |
-				| Scaled to 75%: | ![display object at 75%](/images/scale9Grid-c.jpg) |
-				| Scaled to 50%: | ![display object at 50%](/images/scale9Grid-d.jpg) |
-				| Scaled to 25%: | ![display object at 25%](/images/scale9Grid-e.jpg) |
-				| Stretched horizontally 150%: | ![display stretched 150%](/images/scale9Grid-f.jpg) |
+		| | |
+		| --- | --- |
+		| Scaled to 75%: | ![display object at 75%](/images/scale9Grid-c.jpg) |
+		| Scaled to 50%: | ![display object at 50%](/images/scale9Grid-d.jpg) |
+		| Scaled to 25%: | ![display object at 25%](/images/scale9Grid-e.jpg) |
+		| Stretched horizontally 150%: | ![display stretched 150%](/images/scale9Grid-f.jpg) |
 
-				A common use for setting `scale9Grid` is to set up a display
-				object to be used as a component, in which edge regions retain the same
-				width when the component is scaled.
+		A common use for setting `scale9Grid` is to set up a display
+		object to be used as a component, in which edge regions retain the same
+		width when the component is scaled.
 
-				@throws ArgumentError If you pass an invalid argument to the method.
-			**/
+		@throws ArgumentError If you pass an invalid argument to the method.
+	**/
 	public get scale9Grid(): Rectangle
 	{
 		if (this.__scale9Grid == null)
@@ -1863,10 +1854,10 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 		return this.__scale9Grid.clone();
 	}
 
-	public get scale9Grid(value: Rectangle): void
+	public set scale9Grid(value: Rectangle)
 	{
-		if (value == null && this.__scale9Grid == null) return value;
-		if (value != null && this.__scale9Grid != null && this.__scale9Grid.equals(value)) return value;
+		if (value == null && this.__scale9Grid == null) return;
+		if (value != null && this.__scale9Grid != null && this.__scale9Grid.equals(value)) return;
 
 		if (value != null)
 		{
@@ -1882,19 +1873,19 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 	}
 
 	/**
-				Indicates the horizontal scale (percentage) of the object as applied from
-				the registration point. The default registration point is (0,0). 1.0
-				equals 100% scale.
+		Indicates the horizontal scale (percentage) of the object as applied from
+		the registration point. The default registration point is (0,0). 1.0
+		equals 100% scale.
 
-				Scaling the local coordinate system changes the `x` and
-				`y` property values, which are defined in whole pixels.
-			**/
+		Scaling the local coordinate system changes the `x` and
+		`y` property values, which are defined in whole pixels.
+	**/
 	public get scaleX(): number
 	{
 		return this.__scaleX;
 	}
 
-	public set scaleX(value: number): void
+	public set scaleX(value: number)
 	{
 		if (value != this.__scaleX)
 		{
@@ -1930,19 +1921,19 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 	}
 
 	/**
-				Indicates the vertical scale (percentage) of an object as applied from the
-				registration point of the object. The default registration point is (0,0).
-				1.0 is 100% scale.
+		Indicates the vertical scale (percentage) of an object as applied from the
+		registration point of the object. The default registration point is (0,0).
+		1.0 is 100% scale.
 
-				Scaling the local coordinate system changes the `x` and
-				`y` property values, which are defined in whole pixels.
-			**/
+		Scaling the local coordinate system changes the `x` and
+		`y` property values, which are defined in whole pixels.
+	**/
 	public get scaleY(): number
 	{
 		return this.__scaleY;
 	}
 
-	public set scaleY(value: number): void
+	public set scaleY(value: number)
 	{
 		if (value != this.__scaleY)
 		{
@@ -1975,32 +1966,30 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 				this.__transform.d = d;
 			}
 		}
-
-		return value;
 	}
 
 	/**
-				The scroll rectangle bounds of the display object. The display object is
-				cropped to the size defined by the rectangle, and it scrolls within the
-				rectangle when you change the `x` and `y` properties
-				of the `scrollRect` object.
+		The scroll rectangle bounds of the display object. The display object is
+		cropped to the size defined by the rectangle, and it scrolls within the
+		rectangle when you change the `x` and `y` properties
+		of the `scrollRect` object.
 
-				The properties of the `scrollRect` Rectangle object use the
-				display object's coordinate space and are scaled just like the overall
-				display object. The corner bounds of the cropped window on the scrolling
-				display object are the origin of the display object(0,0) and the point
-				defined by the width and height of the rectangle. They are not centered
-				around the origin, but use the origin to define the upper-left corner of
-				the area. A scrolled display object always scrolls in whole pixel
-				increments.
+		The properties of the `scrollRect` Rectangle object use the
+		display object's coordinate space and are scaled just like the overall
+		display object. The corner bounds of the cropped window on the scrolling
+		display object are the origin of the display object(0,0) and the point
+		defined by the width and height of the rectangle. They are not centered
+		around the origin, but use the origin to define the upper-left corner of
+		the area. A scrolled display object always scrolls in whole pixel
+		increments.
 
-				You can scroll an object left and right by setting the `x`
-				property of the `scrollRect` Rectangle object. You can scroll
-				an object up and down by setting the `y` property of the
-				`scrollRect` Rectangle object. If the display object is rotated
-				90° and you scroll it left and right, the display object actually scrolls
-				up and down.
-			**/
+		You can scroll an object left and right by setting the `x`
+		property of the `scrollRect` Rectangle object. You can scroll
+		an object up and down by setting the `y` property of the
+		`scrollRect` Rectangle object. If the display object is rotated
+		90° and you scroll it left and right, the display object actually scrolls
+		up and down.
+	**/
 	public get scrollRect(): Rectangle
 	{
 		if (this.__scrollRect == null)
@@ -2011,10 +2000,10 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 		return this.__scrollRect.clone();
 	}
 
-	public set scrollRect(value: Rectangle): void
+	public set scrollRect(value: Rectangle)
 	{
-		if (value == null && this.__scrollRect == null) return value;
-		if (value != null && this.__scrollRect != null && this.__scrollRect.equals(value)) return value;
+		if (value == null && this.__scrollRect == null) return;
+		if (value != null && this.__scrollRect != null && this.__scrollRect.equals(value)) return;
 
 		if (value != null)
 		{
@@ -2029,69 +2018,84 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 		this.__setTransformDirty();
 		this.__setParentRenderDirty();
 
-		if (this.__supportDOM)
+		if (DisplayObject.__supportDOM)
 		{
 			this.__setRenderDirty();
 		}
 	}
 
 	/**
-				**BETA**
+		**BETA**
 
-				Applies a custom Shader object to use when rendering this display object (or its children) when using
-				hardware rendering. This occurs as a single-pass render on this object only, if visible. In order to
-				apply a post-process effect to multiple display objects at once, enable `cacheAsBitmap` or use the
-				`filters` property with a ShaderFilter
-			**/
+		Applies a custom Shader object to use when rendering this display object (or its children) when using
+		hardware rendering. This occurs as a single-pass render on this object only, if visible. In order to
+		apply a post-process effect to multiple display objects at once, enable `cacheAsBitmap` or use the
+		`filters` property with a ShaderFilter
+	**/
 	public get shader(): Shader
 	{
 		return this.__shader;
 	}
 
-	public set shader(value: Shader): void
+	public set shader(value: Shader)
 	{
 		this.__shader = value;
 		this.__setRenderDirty();
 	}
 
 	/**
-				An object with properties pertaining to a display object's matrix, color
-				transform, and pixel bounds. The specific properties  -  matrix,
-				colorTransform, and three read-only properties
-				(`concatenatedMatrix`, `concatenatedColorTransform`,
-				and `pixelBounds`)  -  are described in the entry for the
-				Transform class.
+		The Stage of the display object. A Flash runtime application has only one
+		Stage object. For example, you can create and load multiple display
+		objects into the display list, and the `stage` property of each
+		display object refers to the same Stage object(even if the display object
+		belongs to a loaded SWF file).
 
-				Each of the transform object's properties is itself an object. This
-				concept is important because the only way to set new values for the matrix
-				or colorTransform objects is to create a new object and copy that object
-				into the transform.matrix or transform.colorTransform property.
+		If a display object is not added to the display list, its
+		`stage` property is set to `null`.
+	**/
+	public get stage(): Stage
+	{
+		return this.__stage;
+	}
 
-				For example, to increase the `tx` value of a display
-				object's matrix, you must make a copy of the entire matrix object, then
-				copy the new object into the matrix property of the transform object:
-				` myMatrix:Matrix =
-				myDisplayObject.transform.matrix; myMatrix.tx += 10;
-				myDisplayObject.transform.matrix = myMatrix; `
+	/**
+		An object with properties pertaining to a display object's matrix, color
+		transform, and pixel bounds. The specific properties  -  matrix,
+		colorTransform, and three read-only properties
+		(`concatenatedMatrix`, `concatenatedColorTransform`,
+		and `pixelBounds`)  -  are described in the entry for the
+		Transform class.
 
-				You cannot directly set the `tx` property. The following
-				code has no effect on `myDisplayObject`:
-				` myDisplayObject.transform.matrix.tx +=
-				10; `
+		Each of the transform object's properties is itself an object. This
+		concept is important because the only way to set new values for the matrix
+		or colorTransform objects is to create a new object and copy that object
+		into the transform.matrix or transform.colorTransform property.
 
-				You can also copy an entire transform object and assign it to another
-				display object's transform property. For example, the following code
-				copies the entire transform object from `myOldDisplayObj` to
-				`myNewDisplayObj`:
-				`myNewDisplayObj.transform = myOldDisplayObj.transform;`
+		For example, to increase the `tx` value of a display
+		object's matrix, you must make a copy of the entire matrix object, then
+		copy the new object into the matrix property of the transform object:
+		` myMatrix:Matrix =
+		myDisplayObject.transform.matrix; myMatrix.tx += 10;
+		myDisplayObject.transform.matrix = myMatrix; `
 
-				The resulting display object, `myNewDisplayObj`, now has the
-				same values for its matrix, color transform, and pixel bounds as the old
-				display object, `myOldDisplayObj`.
+		You cannot directly set the `tx` property. The following
+		code has no effect on `myDisplayObject`:
+		` myDisplayObject.transform.matrix.tx +=
+		10; `
 
-				Note that AIR for TV devices use hardware acceleration, if it is
-				available, for color transforms.
-			**/
+		You can also copy an entire transform object and assign it to another
+		display object's transform property. For example, the following code
+		copies the entire transform object from `myOldDisplayObj` to
+		`myNewDisplayObj`:
+		`myNewDisplayObj.transform = myOldDisplayObj.transform;`
+
+		The resulting display object, `myNewDisplayObj`, now has the
+		same values for its matrix, color transform, and pixel bounds as the old
+		display object, `myOldDisplayObj`.
+
+		Note that AIR for TV devices use hardware acceleration, if it is
+		available, for color transforms.
+	**/
 	public get transform(): Transform
 	{
 		if (this.__objectTransform == null)
@@ -2102,7 +2106,7 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 		return this.__objectTransform;
 	}
 
-	public set transform(value: Transform): void
+	public set transform(value: Transform)
 	{
 		if (value == null)
 		{
@@ -2116,84 +2120,82 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 
 		this.__objectTransform.matrix = value.matrix;
 
-		if (!this.__objectTransform.colorTransform.__equals(value.colorTransform, true)
-			|| (!cacheAsBitmap && this.__objectTransform.colorTransform.alphaMultiplier != value.colorTransform.alphaMultiplier))
+		if (!(<internal.ColorTransform><any>this.__objectTransform.colorTransform).__equals(value.colorTransform, true)
+			|| (!this.cacheAsBitmap && this.__objectTransform.colorTransform.alphaMultiplier != value.colorTransform.alphaMultiplier))
 		{
-			this.__objectTransform.colorTransform.__copyFrom(value.colorTransform);
+			(<internal.ColorTransform><any>this.__objectTransform.colorTransform).__copyFrom(value.colorTransform);
 			this.__setRenderDirty();
 		}
 	}
 
 	/**
-				Whether or not the display object is visible. Display objects that are not
-				visible are disabled. For example, if `visible=false` for an
-				InteractiveObject instance, it cannot be clicked.
-			**/
+		Whether or not the display object is visible. Display objects that are not
+		visible are disabled. For example, if `visible=false` for an
+		InteractiveObject instance, it cannot be clicked.
+	**/
 	public get visible(): boolean
 	{
 		return this.__visible;
 	}
 
-	public set visible(value: boolean): void
+	public set visible(value: boolean)
 	{
 		if (value != this.__visible) this.__setRenderDirty();
 		this.__visible = value;
 	}
 
 	/**
-				Indicates the width of the display object, in pixels. The width is
-				calculated based on the bounds of the content of the display object. When
-				you set the `width` property, the `scaleX` property
-				is adjusted accordingly, as shown in the following code:
+		Indicates the width of the display object, in pixels. The width is
+		calculated based on the bounds of the content of the display object. When
+		you set the `width` property, the `scaleX` property
+		is adjusted accordingly, as shown in the following code:
 
-				Except for TextField and Video objects, a display object with no
-				content(such as an empty sprite) has a width of 0, even if you try to set
-				`width` to a different value.
-			**/
+		Except for TextField and Video objects, a display object with no
+		content(such as an empty sprite) has a width of 0, even if you try to set
+		`width` to a different value.
+	**/
 	public get width(): number
 	{
 		return this.__getLocalBounds().width;
 	}
 
-	public set width(value: number): number
+	public set width(value: number)
 	{
-		var rect = Rectangle.__pool.get();
-		var matrix = Matrix.__pool.get();
+		var rect = (<internal.Rectangle><any>Rectangle).__pool.get();
+		var matrix = (<internal.Matrix><any>Matrix).__pool.get();
 		matrix.identity();
 
-		__getBounds(rect, matrix);
+		this.__getBounds(rect, matrix);
 
 		if (value != rect.width)
 		{
-			scaleX = value / rect.width;
+			this.scaleX = value / rect.width;
 		}
 		else
 		{
-			scaleX = 1;
+			this.scaleX = 1;
 		}
 
-		Rectangle.__pool.release(rect);
-		Matrix.__pool.release(matrix);
-
-		return value;
+		(<internal.Rectangle><any>Rectangle).__pool.release(rect);
+		(<internal.Matrix><any>Matrix).__pool.release(matrix);
 	}
 
 	/**
-				Indicates the _x_ coordinate of the DisplayObject instance relative
-				to the local coordinates of the parent DisplayObjectContainer. If the
-				object is inside a DisplayObjectContainer that has transformations, it is
-				in the local coordinate system of the enclosing DisplayObjectContainer.
-				Thus, for a DisplayObjectContainer rotated 90° counterclockwise, the
-				DisplayObjectContainer's children inherit a coordinate system that is
-				rotated 90° counterclockwise. The object's coordinates refer to the
-				registration point position.
-			**/
+		Indicates the _x_ coordinate of the DisplayObject instance relative
+		to the local coordinates of the parent DisplayObjectContainer. If the
+		object is inside a DisplayObjectContainer that has transformations, it is
+		in the local coordinate system of the enclosing DisplayObjectContainer.
+		Thus, for a DisplayObjectContainer rotated 90° counterclockwise, the
+		DisplayObjectContainer's children inherit a coordinate system that is
+		rotated 90° counterclockwise. The object's coordinates refer to the
+		registration point position.
+	**/
 	public get x(): number
 	{
-		this.__transform.tx;
+		return this.__transform.tx;
 	}
 
-	public set x(value: number): void
+	public set x(value: number)
 	{
 		if (value != this.__transform.tx)
 		{
@@ -2205,21 +2207,21 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 	}
 
 	/**
-				Indicates the _y_ coordinate of the DisplayObject instance relative
-				to the local coordinates of the parent DisplayObjectContainer. If the
-				object is inside a DisplayObjectContainer that has transformations, it is
-				in the local coordinate system of the enclosing DisplayObjectContainer.
-				Thus, for a DisplayObjectContainer rotated 90° counterclockwise, the
-				DisplayObjectContainer's children inherit a coordinate system that is
-				rotated 90° counterclockwise. The object's coordinates refer to the
-				registration point position.
-			**/
+		Indicates the _y_ coordinate of the DisplayObject instance relative
+		to the local coordinates of the parent DisplayObjectContainer. If the
+		object is inside a DisplayObjectContainer that has transformations, it is
+		in the local coordinate system of the enclosing DisplayObjectContainer.
+		Thus, for a DisplayObjectContainer rotated 90° counterclockwise, the
+		DisplayObjectContainer's children inherit a coordinate system that is
+		rotated 90° counterclockwise. The object's coordinates refer to the
+		registration point position.
+	**/
 	public get y(): number
 	{
 		return this.__transform.ty;
 	}
 
-	public set y(value: number): void
+	public set y(value: number)
 	{
 		if (value != this.__transform.ty)
 		{

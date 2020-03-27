@@ -11,7 +11,7 @@ import openfl._internal.renderer.SamplerState;
 import openfl._internal.utils.Log;
 import openfl.display3D.textures.CubeTexture;
 import openfl.display3D.Context3DTextureFormat;
-import openfl.display.BitmapData;
+import BitmapData from "../display/BitmapData";
 import IllegalOperationError from "../errors/IllegalOperationError";
 import Event from "../events/Event";
 import ByteArray from "../utils/ByteArray";

@@ -1,4 +1,11 @@
+import DisplayObjectType from "../_internal/renderer/DisplayObjectType";
+import * as internal from "../_internal/utils/InternalAccess";
+import Bitmap from "../display/Bitmap";
+import DisplayObject from "../display/DisplayObject";
+import IGraphicsData from "../display/IGraphicsData";
 import InteractiveObject from "../display/InteractiveObject";
+import MovieClip from "../display/MovieClip";
+import SimpleButton from "../display/SimpleButton";
 import ArgumentError from "../errors/ArgumentError";
 import RangeError from "../errors/RangeError";
 import TypeError from "../errors/TypeError";
@@ -9,8 +16,6 @@ import Rectangle from "../geom/Rectangle";
 import TextField from "../text/TextField";
 import Video from "../media/Video";
 import Vector from "../Vector";
-
-// using openfl._internal.utils.DisplayObjectLinkedList;
 
 /**
 	The DisplayObjectContainer class is the base class for all objects that can
@@ -58,27 +63,8 @@ export default class DisplayObjectContainer extends InteractiveObject
 	**/
 	public mouseChildren: boolean;
 
-	/**
-		Returns the number of children of this object.
-	**/
-	public numChildren(default , null): number;
-
-	/**
-		Determines whether the children of the object are tab enabled. Enables or
-		disables tabbing for the children of the object. The default is
-		`true`.
-
-		**Note:** Do not use the `tabChildren` property with
-		Flex. Instead, use the
-		`mx.core.UIComponent.hasFocusableChildren` property.
-
-		@throws IllegalOperationError Calling this property of the Stage object
-										throws an exception. The Stage object does
-										not implement this property.
-	**/
-	public tabChildren(get, set): boolean;
-
 	// /** @hidden */ @:dox(hide) public textSnapshot (default, never):openfl.text.TextSnapshot;
+	protected __numChildren: number;
 	protected __removedChildren: Vector<DisplayObject>;
 	protected __tabChildren: boolean;
 
@@ -96,12 +82,12 @@ export default class DisplayObjectContainer extends InteractiveObject
 	{
 		super();
 
-		this.__type = DISPLAY_OBJECT_CONTAINER;
+		this.__type = DisplayObjectType.DISPLAY_OBJECT_CONTAINER;
 
 		this.mouseChildren = true;
 		this.__tabChildren = true;
 
-		this.numChildren = 0;
+		this.__numChildren = 0;
 		this.__removedChildren = new Vector<DisplayObject>();
 	}
 
@@ -140,13 +126,13 @@ export default class DisplayObjectContainer extends InteractiveObject
 		if (child == null)
 		{
 			var error = new TypeError("Error #2007: Parameter child must be non-null.");
-			error.errorID = 2007;
+			(<internal.Error><any>error).__errorID = 2007;
 			throw error;
 		}
 		else if (child.stage == child)
 		{
 			var error = new ArgumentError("Error #3783: A Stage object cannot be added as the child of another object.");
-			error.errorID = 3783;
+			(<internal.Error><any>error).__errorID = 3783;
 			throw error;
 		}
 
@@ -159,37 +145,37 @@ export default class DisplayObjectContainer extends InteractiveObject
 			this.__reparent(child);
 			this.__addChild(child);
 
-			var addedToStage = (stage != null && child.stage == null);
+			var addedToStage = (this.stage != null && child.stage == null);
 
 			if (addedToStage)
 			{
-				child.__setStageReferences(stage);
+				(<internal.DisplayObject><any>child).__setStageReferences(this.stage);
 			}
 
 			child.__setTransformDirty(true);
 			child.__setParentRenderDirty();
 			child.__setRenderDirty();
-			__localBoundsDirty = true;
-			__setRenderDirty();
+			this.__localBoundsDirty = true;
+			this.__setRenderDirty();
 
-			var event = Event.__pool.get();
-			event.type = Event.ADDED;
-			event.bubbles = true;
+			var event = (<internal.Event><any>Event).__pool.get();
+			(<internal.Event><any>event).__type = Event.ADDED;
+			(<internal.Event><any>event).__bubbles = true;
 
-			event.target = child;
+			(<internal.Event><any>event).__target = child;
 
 			child.__dispatchWithCapture(event);
 
-			Event.__pool.release(event);
+			(<internal.Event><any>Event).__pool.release(event);
 
 			if (addedToStage)
 			{
-				event = Event.__pool.get(Event.ADDED_TO_STAGE);
+				event = (<internal.Event><any>Event).__pool.get(Event.ADDED_TO_STAGE);
 
 				child.__dispatchWithCapture(event);
 				child.__dispatchChildren(event);
 
-				Event.__pool.release(event);
+				(<internal.Event><any>Event).__pool.release(event);
 			}
 		}
 
@@ -229,25 +215,25 @@ export default class DisplayObjectContainer extends InteractiveObject
 	**/
 	public addChildAt(child: DisplayObject, index: number): DisplayObject
 	{
-		if (index == numChildren)
+		if (index == this.__numChildren)
 		{
-			return addChild(child);
+			return this.addChild(child);
 		}
 
 		if (child == null)
 		{
 			var error = new TypeError("Error #2007: Parameter child must be non-null.");
-			error.errorID = 2007;
+			(<internal.Error><any>error).__errorID = 2007;
 			throw error;
 		}
 		else if (child.stage == child)
 		{
 			var error = new ArgumentError("Error #3783: A Stage object cannot be added as the child of another object.");
-			error.errorID = 3783;
+			(<internal.Error><any>error).__errorID = 3783;
 			throw error;
 		}
 
-		if (index < 0 || index > numChildren)
+		if (index < 0 || index > this.__numChildren)
 		{
 			throw "Invalid index position " + index;
 		}
@@ -256,55 +242,55 @@ export default class DisplayObjectContainer extends InteractiveObject
 		{
 			if (index == 0)
 			{
-				if (__firstChild != child)
+				if (this.__firstChild != child)
 				{
 					this.__unshiftChild(child);
-					__setRenderDirty();
+					this.__setRenderDirty();
 				}
 			}
 			else
 			{
-				this.__swapChildren(child, getChildAt(index));
-				__setRenderDirty();
+				this.__swapChildren(child, this.getChildAt(index));
+				this.__setRenderDirty();
 			}
 		}
 		else
 		{
 			this.__reparent(child);
 			this.__insertChildAt(child, index);
-			__setRenderDirty();
+			this.__setRenderDirty();
 
-			var addedToStage = (stage != null && child.stage == null);
+			var addedToStage = (this.stage != null && child.stage == null);
 
 			if (addedToStage)
 			{
-				child.__setStageReferences(stage);
+				(<internal.DisplayObject><any>child).__setStageReferences(this.stage);
 			}
 
-			child.__setTransformDirty(true);
-			child.__setParentRenderDirty();
-			child.__setRenderDirty();
-			__localBoundsDirty = true;
-			__setRenderDirty();
+			(<internal.DisplayObject><any>child).__setTransformDirty(true);
+			(<internal.DisplayObject><any>child).__setParentRenderDirty();
+			(<internal.DisplayObject><any>child).__setRenderDirty();
+			this.__localBoundsDirty = true;
+			this.__setRenderDirty();
 
-			var event = Event.__pool.get();
-			event.type = Event.ADDED;
-			event.bubbles = true;
+			var event = (<internal.Event><any>Event).__pool.get();
+			(<internal.Event><any>event).__type = Event.ADDED;
+			(<internal.Event><any>event).__event.bubbles = true;
 
-			event.target = child;
+			(<internal.Event><any>event).__target = child;
 
-			child.__dispatchWithCapture(event);
+			(<internal.DisplayObject><any>child).__dispatchWithCapture(event);
 
-			Event.__pool.release(event);
+			(<internal.Event><any>Event).__pool.release(event);
 
 			if (addedToStage)
 			{
-				event = Event.__pool.get(Event.ADDED_TO_STAGE);
+				event = (<internal.Event><any>Event).__pool.get(Event.ADDED_TO_STAGE);
 
-				child.__dispatchWithCapture(event);
-				child.__dispatchChildren(event);
+				(<internal.DisplayObject><any>child).__dispatchWithCapture(event);
+				(<internal.DisplayObject><any>child).__dispatchChildren(event);
 
-				Event.__pool.release(event);
+				(<internal.Event><any>Event).__pool.release(event);
 			}
 		}
 
@@ -373,17 +359,17 @@ export default class DisplayObjectContainer extends InteractiveObject
 	**/
 	public getChildAt(index: number): DisplayObject
 	{
-		if (index < 0 || index > numChildren - 1)
+		if (index < 0 || index > this.__numChildren - 1)
 		{
 			return null;
 		}
 
-		var child = __firstChild;
+		var child = this.__firstChild;
 		if (child != null)
 		{
-			for (i in 0...index)
+			for (let i = 0; i < index; i++)
 			{
-				child = child.__nextSibling;
+				child = (<internal.DisplayObject><any>child).__nextSibling;
 			}
 		}
 
@@ -410,14 +396,14 @@ export default class DisplayObjectContainer extends InteractiveObject
 	**/
 	public getChildByName(name: string): DisplayObject
 	{
-		var child = __firstChild;
+		var child = this.__firstChild;
 		while (child != null)
 		{
 			if (child.name == name)
 			{
 				return child;
 			}
-			child = child.__nextSibling;
+			child = (<internal.DisplayObject><any>child).__nextSibling;
 		}
 		return null;
 	}
@@ -432,13 +418,13 @@ export default class DisplayObjectContainer extends InteractiveObject
 	**/
 	public getChildIndex(child: DisplayObject): number
 	{
-		var current = __firstChild;
+		var current = this.__firstChild;
 		if (current != null)
 		{
-			for (i in 0...numChildren)
+			for (let i = 0; i < this.__numChildren; i++)
 			{
 				if (current == child) return i;
-				current = current.__nextSibling;
+				current = (<internal.DisplayObject><any>current).__nextSibling;
 			}
 		}
 		return -1;
@@ -466,7 +452,7 @@ export default class DisplayObjectContainer extends InteractiveObject
 	public getObjectsUnderPoint(point: Point): Array<DisplayObject>
 	{
 		var stack = new Array<DisplayObject>();
-		__hitTest(point.x, point.y, false, stack, false, this);
+		this.__hitTest(point.x, point.y, false, stack, false, this);
 		stack.reverse();
 		return stack;
 	}
@@ -494,33 +480,33 @@ export default class DisplayObjectContainer extends InteractiveObject
 	{
 		if (child != null && child.parent == this)
 		{
-			child.__setTransformDirty();
-			child.__setParentRenderDirty();
-			child.__setRenderDirty();
-			__localBoundsDirty = true;
-			__setRenderDirty();
+			(<internal.DisplayObject><any>child).__setTransformDirty();
+			(<internal.DisplayObject><any>child).__setParentRenderDirty();
+			(<internal.DisplayObject><any>child).__setRenderDirty();
+			this.__localBoundsDirty = true;
+			this.__setRenderDirty();
 
 			var event = new Event(Event.REMOVED, true);
-			child.__dispatchWithCapture(event);
+			(<internal.DisplayObject><any>child).__dispatchWithCapture(event);
 
-			if (stage != null)
+			if (this.stage != null)
 			{
-				if (child.stage != null && stage.focus == child)
+				if (child.stage != null && this.stage.focus == child)
 				{
-					stage.focus = null;
+					this.stage.focus = null;
 				}
 
 				var event = new Event(Event.REMOVED_FROM_STAGE, false, false);
-				child.__dispatchWithCapture(event);
-				child.__dispatchChildren(event);
-				child.__setStageReferences(null);
+				(<internal.DisplayObject><any>child).__dispatchWithCapture(event);
+				(<internal.DisplayObject><any>child).__dispatchChildren(event);
+				(<internal.DisplayObject><any>child).__setStageReferences(null);
 			}
 
 			this.__removeChild(child);
 
-			__removedChildren.push(child);
-			child.__setTransformDirty(true);
-			child.__setParentRenderDirty();
+			this.__removedChildren.push(child);
+			(<internal.DisplayObject><any>child).__setTransformDirty(true);
+			(<internal.DisplayObject><any>child).__setParentRenderDirty();
 		}
 
 		return child;
@@ -550,18 +536,18 @@ export default class DisplayObjectContainer extends InteractiveObject
 	**/
 	public removeChildAt(index: number): DisplayObject
 	{
-		if (index >= 0 && index < numChildren)
+		if (index >= 0 && index < this.__numChildren)
 		{
-			var child = __firstChild;
+			var child = this.__firstChild;
 			if (child != null)
 			{
-				for (i in 0...numChildren)
+				for (let i = 0; i < this.__numChildren; i++)
 				{
 					if (i == index)
 					{
-						return removeChild(child);
+						return this.removeChild(child);
 					}
-					child = child.__nextSibling;
+					child = (<internal.DisplayObject><any>child).__nextSibling;
 				}
 			}
 		}
@@ -584,7 +570,7 @@ export default class DisplayObjectContainer extends InteractiveObject
 	{
 		if (endIndex == 0x7FFFFFFF)
 		{
-			endIndex = numChildren - 1;
+			endIndex = this.__numChildren - 1;
 
 			if (endIndex < 0)
 			{
@@ -592,21 +578,21 @@ export default class DisplayObjectContainer extends InteractiveObject
 			}
 		}
 
-		if (beginIndex > numChildren - 1)
+		if (beginIndex > this.__numChildren - 1)
 		{
 			return;
 		}
-		else if (endIndex < beginIndex || beginIndex < 0 || endIndex > numChildren)
+		else if (endIndex < beginIndex || beginIndex < 0 || endIndex > this.__numChildren)
 		{
 			throw new RangeError("The supplied index is out of bounds.");
 		}
 
-		var child = __firstChild;
+		var child = this.__firstChild;
 		if (child != null)
 		{
-			for (i in 0...beginIndex)
+			for (let i = 0; i < beginIndex; i++)
 			{
-				child = child.__nextSibling;
+				child = (<internal.DisplayObject><any>child).__nextSibling;
 			}
 		}
 
@@ -615,8 +601,8 @@ export default class DisplayObjectContainer extends InteractiveObject
 
 		while (numRemovals >= 0)
 		{
-			next = child.__nextSibling;
-			removeChild(child);
+			next = (<internal.DisplayObject><any>child).__nextSibling;
+			this.removeChild(child);
 			child = next;
 			numRemovals--;
 		}
@@ -624,14 +610,14 @@ export default class DisplayObjectContainer extends InteractiveObject
 
 	protected resolve(fieldName: string): DisplayObject
 	{
-		var child = __firstChild;
+		var child = this.__firstChild;
 		while (child != null)
 		{
 			if (child.name == fieldName)
 			{
 				return child;
 			}
-			child = child.__nextSibling;
+			child = (<internal.DisplayObject><any>child).__nextSibling;
 		}
 
 		return null;
@@ -675,13 +661,13 @@ export default class DisplayObjectContainer extends InteractiveObject
 	**/
 	public setChildIndex(child: DisplayObject, index: number): void
 	{
-		if (index >= 0 && index <= numChildren && numChildren > 1 && child.parent == this)
+		if (index >= 0 && index <= this.__numChildren && this.__numChildren > 1 && child.parent == this)
 		{
 			if (index == 0)
 			{
 				this.__unshiftChild(child);
 			}
-			else if (index >= numChildren - 1)
+			else if (index >= this.__numChildren - 1)
 			{
 				this.__addChild(child);
 			}
@@ -689,7 +675,7 @@ export default class DisplayObjectContainer extends InteractiveObject
 			{
 				this.__insertChildAt(child, index);
 			}
-			__setRenderDirty();
+			this.__setRenderDirty();
 		}
 	}
 
@@ -704,7 +690,7 @@ export default class DisplayObjectContainer extends InteractiveObject
 	**/
 	public stopAllMovieClips(): void
 	{
-		__stopAllMovieClips();
+		this.__stopAllMovieClips();
 	}
 
 	/**
@@ -722,7 +708,7 @@ export default class DisplayObjectContainer extends InteractiveObject
 		if (child1.parent == this && child2.parent == this && child1 != child2)
 		{
 			this.__swapChildren(child1, child2);
-			__setRenderDirty();
+			this.__setRenderDirty();
 		}
 	}
 
@@ -737,14 +723,14 @@ export default class DisplayObjectContainer extends InteractiveObject
 	**/
 	public swapChildrenAt(index1: number, index2: number): void
 	{
-		if (index1 >= 0 && index1 < numChildren && index1 != index2 && index2 >= 0 && index2 < numChildren)
+		if (index1 >= 0 && index1 < this.__numChildren && index1 != index2 && index2 >= 0 && index2 < this.__numChildren)
 		{
 			var child1 = null, child2 = null;
-			var current = __firstChild;
+			var current = this.__firstChild;
 
 			if (current != null)
 			{
-				for (i in 0...numChildren)
+				for (let i = 0; i < this.__numChildren; i++)
 				{
 					if (i == index1)
 					{
@@ -754,76 +740,76 @@ export default class DisplayObjectContainer extends InteractiveObject
 					{
 						child2 = current;
 					}
-					current = current.__nextSibling;
+					current = (<internal.DisplayObject><any>current).__nextSibling;
 				}
 			}
 
 			this.__swapChildren(child1, child2);
-			__setRenderDirty();
+			this.__setRenderDirty();
 		}
 	}
 
-	protected inline __cleanupRemovedChildren(): void
+	protected __cleanupRemovedChildren(): void
 	{
-		for (orphan in __removedChildren)
+		for (let orphan of this.__removedChildren)
 		{
 			if (orphan.stage == null)
 			{
-				orphan.__cleanup();
+				(<internal.DisplayObject><any>orphan).__cleanup();
 			}
 		}
 
-		__removedChildren.length = 0;
+		this.__removedChildren.length = 0;
 	}
 
 	protected __getBounds(rect: Rectangle, matrix: Matrix): void
 	{
 		super.__getBounds(rect, matrix);
 
-		if (numChildren == 0) return;
+		if (this.__numChildren == 0) return;
 
-		var childWorldTransform = Matrix.__pool.get();
+		var childWorldTransform = (<internal.Matrix><any>Matrix).__pool.get();
 
-		var child = __firstChild;
+		var child = this.__firstChild;
 		while (child != null)
 		{
-			if (child.__scaleX != 0 && child.__scaleY != 0)
+			if ((<internal.DisplayObject><any>child).__scaleX != 0 && (<internal.DisplayObject><any>child).__scaleY != 0)
 			{
-				DisplayObject.__calculateAbsoluteTransform(child.__transform, matrix, childWorldTransform);
-				child.__getBounds(rect, childWorldTransform);
+				DisplayObject.__calculateAbsoluteTransform((<internal.DisplayObject><any>child).__transform, matrix, childWorldTransform);
+				(<internal.DisplayObject><any>child).__getBounds(rect, childWorldTransform);
 			}
-			child = child.__nextSibling;
+			child = (<internal.DisplayObject><any>child).__nextSibling;
 		}
 
-		Matrix.__pool.release(childWorldTransform);
+		(<internal.Matrix><any>Matrix).__pool.release(childWorldTransform);
 	}
 
 	protected __getFilterBounds(rect: Rectangle, matrix: Matrix): void
 	{
 		super.__getFilterBounds(rect, matrix);
-		if (__scrollRect != null) return;
+		if (this.__scrollRect != null) return;
 
-		if (numChildren == 0) return;
+		if (this.__numChildren == 0) return;
 
-		var childWorldTransform = Matrix.__pool.get();
+		var childWorldTransform = (<internal.Matrix><any>Matrix).__pool.get();
 
-		var child = __firstChild;
+		var child = this.__firstChild;
 		while (child != null)
 		{
-			if (child.__scaleX != 0 && child.__scaleY != 0 && !child.__isMask)
+			if ((<internal.DisplayObject><any>child).__scaleX != 0 && (<internal.DisplayObject><any>child).__scaleY != 0 && !(<internal.DisplayObject><any>child).__isMask)
 			{
-				DisplayObject.__calculateAbsoluteTransform(child.__transform, matrix, childWorldTransform);
-				child.__getFilterBounds(rect, childWorldTransform);
+				DisplayObject.__calculateAbsoluteTransform((<internal.DisplayObject><any>child).__transform, matrix, childWorldTransform);
+				(<internal.DisplayObject><any>child).__getFilterBounds(rect, childWorldTransform);
 			}
-			child = child.__nextSibling;
+			child = (<internal.DisplayObject><any>child).__nextSibling;
 		}
 
-		Matrix.__pool.release(childWorldTransform);
+		(<internal.Matrix><any>Matrix).__pool.release(childWorldTransform);
 	}
 
 	protected __getRenderBounds(rect: Rectangle, matrix: Matrix): void
 	{
-		if (__scrollRect != null)
+		if (this.__scrollRect != null)
 		{
 			super.__getRenderBounds(rect, matrix);
 			return;
@@ -833,53 +819,53 @@ export default class DisplayObjectContainer extends InteractiveObject
 			super.__getBounds(rect, matrix);
 		}
 
-		if (numChildren == 0) return;
+		if (this.__numChildren == 0) return;
 
-		var childWorldTransform = Matrix.__pool.get();
+		var childWorldTransform = (<internal.Matrix><any>Matrix).__pool.get();
 
-		var child = __firstChild;
+		var child = this.__firstChild;
 		while (child != null)
 		{
-			if (child.__scaleX != 0 && child.__scaleY != 0 && !child.__isMask)
+			if ((<internal.DisplayObject><any>child).__scaleX != 0 && (<internal.DisplayObject><any>child).__scaleY != 0 && !(<internal.DisplayObject><any>child).__isMask)
 			{
-				DisplayObject.__calculateAbsoluteTransform(child.__transform, matrix, childWorldTransform);
-				child.__getRenderBounds(rect, childWorldTransform);
+				DisplayObject.__calculateAbsoluteTransform((<internal.DisplayObject><any>child).__transform, matrix, childWorldTransform);
+				(<internal.DisplayObject><any>child).__getRenderBounds(rect, childWorldTransform);
 			}
-			child = child.__nextSibling;
+			child = (<internal.DisplayObject><any>child).__nextSibling;
 		}
 
-		Matrix.__pool.release(childWorldTransform);
+		(<internal.Matrix><any>Matrix).__pool.release(childWorldTransform);
 	}
 
 	protected __hitTest(x: number, y: number, shapeFlag: boolean, stack: Array<DisplayObject>, interactiveOnly: boolean,
 		hitObject: DisplayObject): boolean
 	{
-		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled && !mouseChildren)) return false;
-		if (mask != null && !mask.__hitTestMask(x, y)) return false;
+		if (!hitObject.visible || this.__isMask || (interactiveOnly && !this.mouseEnabled && !this.mouseChildren)) return false;
+		if (this.mask != null && !(<internal.DisplayObject><any>this.mask).__hitTestMask(x, y)) return false;
 
-		if (__scrollRect != null)
+		if (this.__scrollRect != null)
 		{
-			var point = Point.__pool.get();
+			var point = (<internal.Point><any>Point).__pool.get();
 			point.setTo(x, y);
-			__getRenderTransform().__transformInversePoint(point);
+			(<internal.Matrix><any>this.__getRenderTransform()).__transformInversePoint(point);
 
-			if (!__scrollRect.containsPoint(point))
+			if (!this.__scrollRect.containsPoint(point))
 			{
-				Point.__pool.release(point);
+				(<internal.Point><any>Point).__pool.release(point);
 				return false;
 			}
 
-			Point.__pool.release(point);
+			(<internal.Point><any>Point).__pool.release(point);
 		}
 
-		var child = __lastChild;
+		var child = this.__lastChild;
 		if (interactiveOnly)
 		{
-			if (stack == null || !mouseChildren)
+			if (stack == null || !this.mouseChildren)
 			{
 				while (child != null)
 				{
-					if (child.__hitTest(x, y, shapeFlag, null, true, cast child))
+					if ((<internal.DisplayObject><any>child).__hitTest(x, y, shapeFlag, null, true, child))
 					{
 						if (stack != null)
 						{
@@ -888,7 +874,7 @@ export default class DisplayObjectContainer extends InteractiveObject
 
 						return true;
 					}
-					child = child.__previousSibling;
+					child = (<internal.DisplayObject><any>child).__previousSibling;
 				}
 			}
 			else if (stack != null)
@@ -900,11 +886,11 @@ export default class DisplayObjectContainer extends InteractiveObject
 
 				while (child != null)
 				{
-					interactive = child.__getInteractive(null);
+					interactive = (<internal.DisplayObject><any>child).__getInteractive(null);
 
-					if (interactive || (mouseEnabled && !hitTest))
+					if (interactive || (this.mouseEnabled && !hitTest))
 					{
-						if (child.__hitTest(x, y, shapeFlag, stack, true, cast child))
+						if ((<internal.DisplayObject><any>child).__hitTest(x, y, shapeFlag, stack, true, child))
 						{
 							hitTest = true;
 
@@ -914,12 +900,12 @@ export default class DisplayObjectContainer extends InteractiveObject
 							}
 						}
 					}
-					child = child.__previousSibling;
+					child = (<internal.DisplayObject><any>child).__previousSibling;
 				}
 
 				if (hitTest)
 				{
-					stack.insert(length, hitObject);
+					stack.splice(length, 0, hitObject);
 					return true;
 				}
 			}
@@ -930,12 +916,12 @@ export default class DisplayObjectContainer extends InteractiveObject
 
 			while (child != null)
 			{
-				if (child.__hitTest(x, y, shapeFlag, stack, false, cast child))
+				if ((<internal.DisplayObject><any>child).__hitTest(x, y, shapeFlag, stack, false, child))
 				{
 					hitTest = true;
 					if (stack == null) break;
 				}
-				child = child.__previousSibling;
+				child = (<internal.DisplayObject><any>child).__previousSibling;
 			}
 
 			return hitTest;
@@ -961,7 +947,7 @@ export default class DisplayObjectContainer extends InteractiveObject
 	// 		}
 	// 		Point.__pool.release(point);
 	// 	}
-	// 	if (numChildren > 0)
+	// 	if (this.__numChildren > 0)
 	// 	{
 	// 		var stackRef = (interactiveOnly && !mouseChildren) ? null : stack;
 	// 		var hitTest = false;
@@ -1057,39 +1043,44 @@ export default class DisplayObjectContainer extends InteractiveObject
 		// {
 		// 	return true;
 		// }
-		if (__graphics != null && __graphics.__hitTest(x, y, true, __getRenderTransform()))
+		if (this.__graphics != null && (<internal.Graphics><any>this.__graphics).__hitTest(x, y, true, this.__getRenderTransform()))
 		{
 			return true;
 		}
 
-		if (numChildren > 0)
+		if (this.__numChildren > 0)
 		{
-			for (child in __childIterator())
+			for (let child of this.__childIterator())
 			{
-				if (switch (child.__type)
-					{
-						case BITMAP:
-							var bitmap: Bitmap = cast child;
-							bitmap.__hitTestMask(x, y);
-							break;
-						case SIMPLE_BUTTON:
-							var simpleButton: SimpleButton = cast child;
-							simpleButton.__hitTestMask(x, y);
-							break;
-						case TEXTFIELD:
-							var textField: TextField = cast child;
-							textField.__hitTestMask(x, y);
-							break;
-						case VIDEO:
-							var video: Video = cast child;
-							video.__hitTestMask(x, y);
-							break;
-						case DISPLAY_OBJECT_CONTAINER,
-							MOVIE_CLIP: // inline super.__hitTestMask(x, y) || (child.__graphics != null && child.__graphics.__hitTest(x, y, true, child.__getRenderTransform()));
-							(__graphics != null && __graphics.__hitTest(x, y, true, __getRenderTransform()))
-								|| (child.__graphics != null && child.__graphics.__hitTest(x, y, true, child.__getRenderTransform()));
-						default: super.__hitTestMask(x, y);
-					})
+				var hitTest = false;
+				switch (child.__type)
+				{
+					case DisplayObjectType.BITMAP:
+						var bitmap: Bitmap = child as Bitmap;
+						hitTest = bitmap.__hitTestMask(x, y);
+						break;
+					case DisplayObjectType.SIMPLE_BUTTON:
+						var simpleButton: SimpleButton = child as SimpleButton;
+						hitTest = simpleButton.__hitTestMask(x, y);
+						break;
+					case DisplayObjectType.TEXTFIELD:
+						var textField: TextField = child as TextField;
+						hitTest = (<internal.DisplayObject><any>textField).__hitTestMask(x, y);
+						break;
+					case DisplayObjectType.VIDEO:
+						var video: Video = child as Video;
+						hitTest = (<internal.DisplayObject><any>video).__hitTestMask(x, y);
+						break;
+					case DisplayObjectType.DISPLAY_OBJECT_CONTAINER:
+					case DisplayObjectType.MOVIE_CLIP: // inline super.__hitTestMask(x, y) || (child.__graphics != null && child.__graphics.__hitTest(x, y, true, child.__getRenderTransform()));
+						hitTest = (this.__graphics != null && (<internal.Graphics><any>this.__graphics).__hitTest(x, y, true, this.__getRenderTransform()))
+							|| (child.__graphics != null && child.__graphics.__hitTest(x, y, true, child.__getRenderTransform()));
+						break;
+					default:
+						hitTest = super.__hitTestMask(x, y);
+				}
+
+				if (hitTest)
 				{
 					return true;
 				}
@@ -1102,14 +1093,14 @@ export default class DisplayObjectContainer extends InteractiveObject
 	protected __readGraphicsData(graphicsData: Vector<IGraphicsData>, recurse: boolean): void
 	{
 		// super.__readGraphicsData(graphicsData, recurse);
-		if (__graphics != null)
+		if (this.__graphics != null)
 		{
-			__graphics.__readGraphicsData(graphicsData);
+			(<internal.Graphics><any>this.__graphics).__readGraphicsData(graphicsData);
 		}
 
-		if (recurse && numChildren > 0)
+		if (recurse && this.__numChildren > 0)
 		{
-			for (child in __childIterator())
+			for (let child of this.__childIterator())
 			{
 				// inline super.__readGraphicsData(graphicsData, recurse);
 				if (child.__graphics != null)
@@ -1123,16 +1114,16 @@ export default class DisplayObjectContainer extends InteractiveObject
 	protected __setTransformDirty(force: boolean = false): void
 	{
 		// inline super.__setTransformDirty(force);
-		__transformDirty = true;
+		this.__transformDirty = true;
 
-		if (numChildren > 0 && (!__childTransformDirty || force))
+		if (this.__numChildren > 0 && (!this.__childTransformDirty || force))
 		{
-			for (child in __childIterator())
+			for (let child of this.__childIterator())
 			{
-				if (child.__type == SIMPLE_BUTTON)
+				if (child.__type == DisplayObjectType.SIMPLE_BUTTON)
 				{
-					var simpleButton: SimpleButton = cast child;
-					simpleButton.__setTransformDirty(force);
+					var simpleButton: SimpleButton = child as SimpleButton;
+					(<internal.DisplayObject><any>simpleButton).__setTransformDirty(force);
 				}
 				else
 				{
@@ -1141,19 +1132,19 @@ export default class DisplayObjectContainer extends InteractiveObject
 				}
 			}
 
-			__childTransformDirty = true;
+			this.__childTransformDirty = true;
 		}
 	}
 
 	protected __stopAllMovieClips(): void
 	{
-		if (numChildren > 0)
+		if (this.__numChildren > 0)
 		{
-			for (child in __childIterator())
+			for (let child of this.__childIterator())
 			{
-				if (child.__type == MOVIE_CLIP)
+				if (child.__type == DisplayObjectType.MOVIE_CLIP)
 				{
-					var movieClip: MovieClip = cast child;
+					var movieClip: MovieClip = child as MovieClip;
 					movieClip.stop();
 				}
 			}
@@ -1163,21 +1154,22 @@ export default class DisplayObjectContainer extends InteractiveObject
 	protected __tabTest(stack: Array<InteractiveObject>): void
 	{
 		// inline super.__tabTest(stack);
-		if (tabEnabled)
+		if (this.__tabEnabled)
 		{
 			stack.push(this);
 		}
-		if (!tabChildren) return;
 
-		if (numChildren > 0)
+		if (!this.__tabChildren) return;
+
+		if (this.__numChildren > 0)
 		{
-			var children = __childIterator();
+			var children = this.__childIterator();
 			for (child in children)
 			{
 				switch (child.__type)
 				{
-					case MOVIE_CLIP:
-						var movieClip: MovieClip = cast child;
+					case DisplayObjectType.MOVIE_CLIP:
+						var movieClip: MovieClip = child as MovieClip;
 						if (!movieClip.enabled)
 						{
 							children.skip(movieClip);
@@ -1193,21 +1185,22 @@ export default class DisplayObjectContainer extends InteractiveObject
 							continue;
 						}
 						break;
-					case DISPLAY_OBJECT_CONTAINER:
-						var displayObjectContainer: DisplayObjectContainer = cast child;
-						if (displayObjectContainer.tabEnabled)
+					case DisplayObjectType.DISPLAY_OBJECT_CONTAINER:
+						var displayObjectContainer: DisplayObjectContainer = child as DisplayObjectContainer;
+						if (displayObjectContainer.__tabEnabled)
 						{
 							stack.push(displayObjectContainer);
 						}
-						if (!displayObjectContainer.tabChildren)
+						if (!displayObjectContainer.__tabChildren)
 						{
 							children.skip(displayObjectContainer);
 							continue;
 						}
 						break;
-					case SIMPLE_BUTTON, TEXTFIELD:
-						var interactiveObject: InteractiveObject = cast child;
-						if (interactiveObject.tabEnabled)
+					case DisplayObjectType.SIMPLE_BUTTON:
+					case DisplayObjectType.TEXTFIELD:
+						var interactiveObject: InteractiveObject = child as InteractiveObject;
+						if (interactiveObject.__tabEnabled)
 						{
 							stack.push(interactiveObject);
 						}
@@ -1220,11 +1213,11 @@ export default class DisplayObjectContainer extends InteractiveObject
 
 	protected __update(transformOnly: boolean, updateChildren: boolean): void
 	{
-		__updateSingle(transformOnly, updateChildren);
+		this.__updateSingle(transformOnly, updateChildren);
 
-		if (updateChildren && numChildren > 0)
+		if (updateChildren && this.__numChildren > 0)
 		{
-			for (child in __childIterator())
+			for (let child of this.__childIterator())
 			{
 				var transformDirty = child.__transformDirty;
 
@@ -1233,32 +1226,33 @@ export default class DisplayObjectContainer extends InteractiveObject
 
 				switch (child.__type)
 				{
-					case SIMPLE_BUTTON:
+					case DisplayObjectType.SIMPLE_BUTTON:
 						// TODO: Flatten this into the allChildren() call?
 						if (updateChildren)
 						{
-							var button: SimpleButton = cast child;
-							if (button.__currentState != null)
+							var button: SimpleButton = child as SimpleButton;
+							if ((<internal.SimpleButton><any>button).__currentState != null)
 							{
-								button.__currentState.__update(transformOnly, true);
+								(<internal.DisplayObject><any>(<internal.SimpleButton><any>button).__currentState).__update(transformOnly, true);
 							}
 
-							if (button.hitTestState != null && button.hitTestState != button.__currentState)
+							if (button.hitTestState != null && button.hitTestState != (<internal.SimpleButton><any>button).__currentState)
 							{
-								button.hitTestState.__update(transformOnly, true);
+								(<internal.DisplayObject><any>button.hitTestState).__update(transformOnly, true);
 							}
 						}
 						break;
 
-					case TEXTFIELD:
+					case DisplayObjectType.TEXTFIELD:
 						if (transformDirty)
 						{
-							var textField: TextField = cast child;
-							textField.__renderTransform.__translateTransformed(textField.__offsetX, textField.__offsetY);
+							var textField: TextField = child as TextField;
+							(<internal.Matrix><new>(<internal.DisplayObject><any>textField).__renderTransform).__translateTransformed((<internal.TextField><any>textField).__offsetX, (<internal.TextField><any>textField).__offsetY);
 						}
 						break;
 
-					case DISPLAY_OBJECT_CONTAINER, MOVIE_CLIP:
+					case DisplayObjectType.DISPLAY_OBJECT_CONTAINER:
+					case DisplayObjectType.MOVIE_CLIP:
 						// Ensure children are marked as dirty again
 						// as we no longer know if they all are dirty
 						// since at least one has been updated
@@ -1270,24 +1264,44 @@ export default class DisplayObjectContainer extends InteractiveObject
 			}
 		}
 
-		__childTransformDirty = false;
+		this.__childTransformDirty = false;
 	}
 
 	// Get & Set Methods
-	public get tabChildren(): boolean
+
+	/**
+		Returns the number of children of this object.
+	**/
+	public get numChildren(): number
 	{
-		return __tabChildren;
+		return this.__numChildren;
 	}
 
-	public set tabChildren(value: boolean): boolean
+	/**
+		Determines whether the children of the object are tab enabled. Enables or
+		disables tabbing for the children of the object. The default is
+		`true`.
+
+		**Note:** Do not use the `tabChildren` property with
+		Flex. Instead, use the
+		`mx.core.UIComponent.hasFocusableChildren` property.
+
+		@throws IllegalOperationError Calling this property of the Stage object
+										throws an exception. The Stage object does
+										not implement this property.
+	**/
+	public get tabChildren(): boolean
 	{
-		if (__tabChildren != value)
+		return this.__tabChildren;
+	}
+
+	public set tabChildren(value: boolean)
+	{
+		if (this.__tabChildren != value)
 		{
-			__tabChildren = value;
+			this.__tabChildren = value;
 
-			dispatchEvent(new Event(Event.TAB_CHILDREN_CHANGE, true, false));
+			this.dispatchEvent(new Event(Event.TAB_CHILDREN_CHANGE, true, false));
 		}
-
-		return __tabChildren;
 	}
 }

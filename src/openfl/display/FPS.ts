@@ -1,4 +1,3 @@
-// import haxe.Timer;
 import Event from "../events/Event";
 import TextField from "../text/TextField";
 import TextFormat from "../text/TextFormat";
@@ -43,8 +42,7 @@ export default class FPS extends TextField
 
 	// Event Handlers
 
-	/** @hidden */
-	private /*#if !flash#end*/ __enterFrame(deltaTime: number): void
+	private __enterFrame(deltaTime: number): void
 	{
 		this.currentTime += deltaTime;
 		this.times.push(this.currentTime);

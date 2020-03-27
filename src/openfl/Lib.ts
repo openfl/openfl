@@ -422,7 +422,8 @@ export default class Lib
 	}
 
 	// Get & Set Methods
-	private static get current(): MovieClip
+
+	public static get current(): MovieClip
 	{
 		if (InternalLib.current == null) InternalLib.current = new MovieClip();
 		return InternalLib.current;

@@ -1,3 +1,5 @@
+import DisplayObjectType from "../_internal/renderer/DisplayObjectType";
+import * as internal from "../_internal/utils/InternalAccess";
 import BitmapData from "../display/BitmapData";
 import DisplayObject from "../display/DisplayObject";
 import PixelSnapping from "../display/PixelSnapping";
@@ -63,9 +65,9 @@ export default class Bitmap extends DisplayObject
 	**/
 	public smoothing: boolean;
 
-	private __bitmapData: BitmapData;
-	private __image: HTMLImageElement;
-	private __imageVersion: number;
+	protected __bitmapData: BitmapData;
+	protected __image: HTMLImageElement;
+	protected __imageVersion: number;
 
 	/**
 		Initializes a Bitmap object to refer to the specified BitmapData object.
@@ -81,7 +83,7 @@ export default class Bitmap extends DisplayObject
 	{
 		super();
 
-		this.__type = BITMAP;
+		this.__type = DisplayObjectType.BITMAP;
 
 		this.__bitmapData = bitmapData;
 		this.pixelSnapping = pixelSnapping;
@@ -93,9 +95,9 @@ export default class Bitmap extends DisplayObject
 		}
 	}
 
-	private __getBounds(rect: Rectangle, matrix: Matrix): void
+	protected __getBounds(rect: Rectangle, matrix: Matrix): void
 	{
-		var bounds = Rectangle.__pool.get();
+		var bounds = (<internal.Rectangle><any>Rectangle).__pool.get();
 		if (this.__bitmapData != null)
 		{
 			bounds.setTo(0, 0, this.__bitmapData.width, this.__bitmapData.height);
@@ -105,21 +107,21 @@ export default class Bitmap extends DisplayObject
 			bounds.setTo(0, 0, 0, 0);
 		}
 
-		bounds.__transform(bounds, matrix);
-		rect.__expand(bounds.x, bounds.y, bounds.width, bounds.height);
-		Rectangle.__pool.release(bounds);
+		(<internal.Rectangle><any>bounds).__transform(bounds, matrix);
+		(<internal.Rectangle><any>rect).__expand(bounds.x, bounds.y, bounds.width, bounds.height);
+		(<internal.Rectangle><any>Rectangle).__pool.release(bounds);
 	}
 
-	private __hitTest(x: number, y: number, shapeFlag: boolean, stack: Array<DisplayObject>, interactiveOnly: boolean,
+	protected __hitTest(x: number, y: number, shapeFlag: boolean, stack: Array<DisplayObject>, interactiveOnly: boolean,
 		hitObject: DisplayObject): boolean
 	{
 		if (!hitObject.visible || this.__isMask || this.__bitmapData == null) return false;
-		if (this.mask != null && !this.mask.__hitTestMask(x, y)) return false;
+		if (this.mask != null && !(<internal.DisplayObject><any>this.mask).__hitTestMask(x, y)) return false;
 
 		this.__getRenderTransform();
 
-		var px = this.__renderTransform.__transformInverseX(x, y);
-		var py = this.__renderTransform.__transformInverseY(x, y);
+		var px = (<internal.Matrix><any>this.__renderTransform).__transformInverseX(x, y);
+		var py = (<internal.Matrix><any>this.__renderTransform).__transformInverseY(x, y);
 
 		if (px > 0 && py > 0 && px <= this.__bitmapData.width && py <= this.__bitmapData.height)
 		{
@@ -139,14 +141,14 @@ export default class Bitmap extends DisplayObject
 		return false;
 	}
 
-	private __hitTestMask(x: number, y: number): boolean
+	protected __hitTestMask(x: number, y: number): boolean
 	{
 		if (this.__bitmapData == null) return false;
 
 		this.__getRenderTransform();
 
-		var px = this.__renderTransform.__transformInverseX(x, y);
-		var py = this.__renderTransform.__transformInverseY(x, y);
+		var px = (<internal.Matrix><any>this.__renderTransform).__transformInverseX(x, y);
+		var py = (<internal.Matrix><any>this.__renderTransform).__transformInverseY(x, y);
 
 		if (px > 0 && py > 0 && px <= this.__bitmapData.width && py <= this.__bitmapData.height)
 		{

@@ -10,7 +10,7 @@ import openfl.display3D.Context3DCompareMode;
 import openfl.display3D.Context3DStencilAction;
 import openfl.display3D.Context3DTriangleFace;
 import openfl.display3D.Program3D;
-import openfl.display.Shader;
+import Shader from "../display/Shader";
 import Rectangle from "../geom/Rectangle";
 
 @SuppressWarnings("checkstyle:FieldDocComment")

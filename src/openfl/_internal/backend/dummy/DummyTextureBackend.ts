@@ -2,7 +2,7 @@ namespace openfl._internal.backend.dummy;
 
 import openfl._internal.bindings.typedarray.ArrayBufferView;
 import openfl.display3D.textures.Texture;
-import openfl.display.BitmapData;
+import BitmapData from "../display/BitmapData";
 import ByteArray from "../utils/ByteArray";
 
 #if!openfl_debug

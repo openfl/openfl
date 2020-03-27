@@ -10,7 +10,7 @@ namespace openfl._internal.utils;
 	AS3 optimizations by Mario Klingemann http://www.quasimondo.com
 	Haxe port and optimization by Nicolas Cannasse http://haxe.org
 **/
-import openfl.display.BitmapData;
+import BitmapData from "../display/BitmapData";
 
 #if!openfl_debug
 @: fileXml('tags="haxe,release"')

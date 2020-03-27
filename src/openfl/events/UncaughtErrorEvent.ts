@@ -71,7 +71,7 @@ import EventType from "../events/EventType";
 	result in an `uncaughtError` event.
 
 **/
-export class UncaughtErrorEvent extends ErrorEvent
+export default class UncaughtErrorEvent extends ErrorEvent
 {
 	/**
 		Defines the value of the `type` property of an `uncaughtError` event

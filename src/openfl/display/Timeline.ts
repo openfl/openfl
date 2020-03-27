@@ -1,65 +1,67 @@
+import FrameLabel from "../display/FrameLabel";
+import FrameScript from "../display/FrameScript";
+import MovieClip from "../display/MovieClip";
+import Scene from "../display/Scene";
 import ArgumentError from "../errors/ArgumentError";
 
-namespace openfl.display
+/**
+	The Timeline class is the base class for frame-by-frame animation.
+
+	Timeline is an abstract base class; therefore, you cannot call
+	Timeline directly. Extend the Timeline class in order to provide animation
+	compatible with the MovieClip class.
+
+	It is possible to create a MovieClip with a Timeline using the
+	`MovieClip.fromTimeline` static readonlyructor.
+**/
+export default class Timeline
 {
 	/**
-		The Timeline class is the base class for frame-by-frame animation.
+		The frame rate of the Timeline. The frame rate is defined as
+		frames per second.
 
-		Timeline is an abstract base class; therefore, you cannot call
-		Timeline directly. Extend the Timeline class in order to provide animation
-		compatible with the MovieClip class.
-
-		It is possible to create a MovieClip with a Timeline using the
-		`MovieClip.fromTimeline` static readonlyructor.
+		The frame rate can be different than the Stage `frameRate` and will
+		playback at an independent rate, or the frame rate value can be
+		`null` to match the rate of Stage.
 	**/
-	export class Timeline
+	public frameRate: null | number;
+
+	/**
+		An array of Scene objects, each listing the name, the number of frames,
+		and the frame labels for a scene in the Timeline instance.
+	**/
+	public scenes: Array<Scene>;
+
+	/**
+		An array of scripts to be run when the playhead enters each frame.
+	**/
+	public scripts: Array<FrameScript>;
+
+	protected __currentFrame: number;
+	protected __currentFrameLabel: string;
+	protected __currentLabel: string;
+	protected __currentLabels: Array<FrameLabel>;
+	protected __currentScene: Scene;
+	protected __frameScripts: Map<number, (scope: MovieClip) => void>;
+	protected __framesLoaded: number;
+	protected __frameTime: number;
+	protected __isPlaying: boolean;
+	protected __lastFrameScriptEval: number;
+	protected __lastFrameUpdate: number;
+	protected __scope: MovieClip;
+	protected __timeElapsed: number;
+	protected __totalFrames: number;
+
+	private constructor()
 	{
-		/**
-			The frame rate of the Timeline. The frame rate is defined as
-			frames per second.
+		this.__framesLoaded = 1;
+		this.__totalFrames = 1;
+		this.__currentLabels = [];
 
-			The frame rate can be different than the Stage `frameRate` and will
-			playback at an independent rate, or the frame rate value can be
-			`null` to match the rate of Stage.
-		**/
-		public frameRate: null | number;
+		this.__currentFrame = 1;
 
-		/**
-			An array of Scene objects, each listing the name, the number of frames,
-			and the frame labels for a scene in the Timeline instance.
-		**/
-		public scenes: Array<Scene>;
-
-		/**
-			An array of scripts to be run when the playhead enters each frame.
-		**/
-		public scripts: Array<FrameScript>;
-
-		protected __currentFrame: number;
-		protected __currentFrameLabel: string;
-		protected __currentLabel: string;
-		protected __currentLabels: Array<FrameLabel>;
-		protected __currentScene: Scene;
-		protected __frameScripts: Map<Int, MovieClip-> Void >;
-		protected __framesLoaded: number;
-		protected __frameTime: number;
-		protected __isPlaying: boolean;
-		protected __lastFrameScriptEval: number;
-		protected __lastFrameUpdate: number;
-		protected __scope: MovieClip;
-		protected __timeElapsed: number;
-		protected __totalFrames: number;
-
-private constructor()
-	{
-		__framesLoaded = 1;
-		__totalFrames = 1;
-		__currentLabels = [];
-
-		__currentFrame = 1;
-
-		__lastFrameScriptEval = -1;
-		__lastFrameUpdate = -1;
+		this.__lastFrameScriptEval = -1;
+		this.__lastFrameUpdate = -1;
 	}
 
 	/**
@@ -70,7 +72,7 @@ private constructor()
 
 		@param	movieClip	The parent MovieClip being attached to this Timeline
 	**/
-	/** @hidden */ public attachMovieClip(movieClip: MovieClip): void {}
+	/** @hidden */ public attachMovieClip(movieClip: MovieClip): void { }
 
 	/**
 		Called internally when the Timeline object enters a new frame.
@@ -84,187 +86,187 @@ private constructor()
 
 		@param	frame	The current frame
 	**/
-	/** @hidden */ public enterFrame(frame : number): void {}
+	/** @hidden */ public enterFrame(frame: number): void { }
 
-	protected __addFrameScript(index : number, method: void -> Void): void
-		{
-			if(index < 0) return;
-
-			var frame = index + 1;
-
-			if(method != null)
+	protected __addFrameScript(index: number, method: () => void): void
 	{
-		if (__frameScripts == null)
+		if (index < 0) return;
+
+		var frame = index + 1;
+
+		if (method != null)
 		{
-			__frameScripts = new Map();
+			if (this.__frameScripts == null)
+			{
+				this.__frameScripts = new Map();
+			}
+
+			this.__frameScripts.set(frame, function (scope)
+			{
+				method();
+			});
 		}
-
-		__frameScripts.set(frame, (scope)
+		else if (this.__frameScripts != null)
 		{
-			method();
-		});
+			this.__frameScripts.delete(frame);
+		}
 	}
-	else if (__frameScripts != null)
-	{
-		__frameScripts.remove(frame);
-	}
-}
 
 	protected __attachMovieClip(movieClip: MovieClip): void
 	{
-		__scope = movieClip;
+		this.__scope = movieClip;
 
-		__totalFrames = 0;
-		__framesLoaded = 0;
+		this.__totalFrames = 0;
+		this.__framesLoaded = 0;
 
-		if(scenes != null && scenes.length > 0)
-{
-	for (scene in scenes)
-	{
-		__totalFrames += scene.numFrames;
-		__framesLoaded += scene.numFrames;
-		if (scene.labels != null)
+		if (this.scenes != null && this.scenes.length > 0)
 		{
-			// TODO: Handle currentLabels properly for multiple scenes
-			__currentLabels = __currentLabels.concat(scene.labels);
+			for (let scene of this.scenes)
+			{
+				this.__totalFrames += scene.numFrames;
+				this.__framesLoaded += scene.numFrames;
+				if (scene.labels != null)
+				{
+					// TODO: Handle currentLabels properly for multiple scenes
+					this.__currentLabels = this.__currentLabels.concat(scene.labels);
+				}
+			}
+
+			this.__currentScene = this.scenes[0];
 		}
-	}
 
-	__currentScene = scenes[0];
-}
-
-if (scripts != null && scripts.length > 0)
-{
-	__frameScripts = new Map();
-	for (script in scripts)
-	{
-		// TODO: Merge multiple scripts from the same frame together
-		__frameScripts.set(script.frame, script.script);
-	}
-}
-
-attachMovieClip(movieClip);
-}
-
-	protected __enterFrame(deltaTime : number): void
-	{
-		if(__isPlaying)
+		if (this.scripts != null && this.scripts.length > 0)
 		{
-			var nextFrame = __getNextFrame(deltaTime);
+			this.__frameScripts = new Map();
+			for (let script of this.scripts)
+			{
+				// TODO: Merge multiple scripts from the same frame together
+				this.__frameScripts.set(script.frame, script.script);
+			}
+		}
 
-			if (__lastFrameScriptEval == nextFrame)
+		this.attachMovieClip(movieClip);
+	}
+
+	protected __enterFrame(deltaTime: number): void
+	{
+		if (this.__isPlaying)
+		{
+			var nextFrame = this.__getNextFrame(deltaTime);
+
+			if (this.__lastFrameScriptEval == nextFrame)
 			{
 				return;
 			}
 
-			if (__frameScripts != null)
+			if (this.__frameScripts != null)
 			{
-				if (nextFrame < __currentFrame)
+				if (nextFrame < this.__currentFrame)
 				{
-					if (!__evaluateFrameScripts(__totalFrames))
+					if (!this.__evaluateFrameScripts(this.__totalFrames))
 					{
 						return;
 					}
 
-					__currentFrame = 1;
+					this.__currentFrame = 1;
 				}
 
-				if (!__evaluateFrameScripts(nextFrame))
+				if (!this.__evaluateFrameScripts(nextFrame))
 				{
 					return;
 				}
 			}
 			else
 			{
-				__currentFrame = nextFrame;
+				this.__currentFrame = nextFrame;
 			}
 		}
 
-	__updateSymbol(__currentFrame);
+		this.__updateSymbol(this.__currentFrame);
 	}
 
-	protected __evaluateFrameScripts(advanceToFrame : number) : boolean
-{
-	if (__frameScripts == null) return true;
-
-	for (frame in __currentFrame...advanceToFrame + 1)
+	protected __evaluateFrameScripts(advanceToFrame: number): boolean
 	{
-		if (frame == __lastFrameScriptEval) continue;
+		if (this.__frameScripts == null) return true;
 
-		__lastFrameScriptEval = frame;
-		__currentFrame = frame;
-
-		if (__frameScripts.exists(frame))
+		for (let frame = this.__currentFrame; frame < advanceToFrame + 1; frame++)
 		{
-			__updateSymbol(frame);
-			var script = __frameScripts.get(frame);
-			script(__scope);
+			if (frame == this.__lastFrameScriptEval) continue;
 
-			if (__currentFrame != frame)
+			this.__lastFrameScriptEval = frame;
+			this.__currentFrame = frame;
+
+			if (this.__frameScripts.has(frame))
+			{
+				this.__updateSymbol(frame);
+				var script = this.__frameScripts.get(frame);
+				script(this.__scope);
+
+				if (this.__currentFrame != frame)
+				{
+					return false;
+				}
+			}
+
+			if (!this.__isPlaying)
 			{
 				return false;
 			}
 		}
 
-		if (!__isPlaying)
+		return true;
+	}
+
+	protected __getNextFrame(deltaTime: number): number
+	{
+		var nextFrame: number = 0;
+
+		if (this.frameRate != null)
 		{
-			return false;
+			this.__timeElapsed += deltaTime;
+			nextFrame = this.__currentFrame + Math.floor(this.__timeElapsed / this.__frameTime);
+			if (nextFrame < 1) nextFrame = 1;
+			if (nextFrame > this.__totalFrames) nextFrame = Math.floor((nextFrame - 1) % this.__totalFrames) + 1;
+			this.__timeElapsed = (this.__timeElapsed % this.__frameTime);
 		}
+		else
+		{
+			nextFrame = this.__currentFrame + 1;
+			if (nextFrame > this.__totalFrames) nextFrame = 1;
+		}
+
+		return nextFrame;
 	}
 
-	return true;
-}
-
-	protected __getNextFrame(deltaTime : number) : number
-{
-	var nextFrame: number = 0;
-
-	if (frameRate != null)
+	protected __goto(frame: number): void
 	{
-		__timeElapsed += deltaTime;
-		nextFrame = __currentFrame + Math.floor(__timeElapsed / __frameTime);
-		if (nextFrame < 1) nextFrame = 1;
-		if (nextFrame > __totalFrames) nextFrame = Math.floor((nextFrame - 1) % __totalFrames) + 1;
-		__timeElapsed = (__timeElapsed % __frameTime);
-	}
-	else
-	{
-		nextFrame = __currentFrame + 1;
-		if (nextFrame > __totalFrames) nextFrame = 1;
+		if (frame < 1) frame = 1;
+		else if (frame > this.__totalFrames) frame = this.__totalFrames;
+
+		this.__lastFrameScriptEval = -1;
+		this.__currentFrame = frame;
+
+		this.__updateSymbol(this.__currentFrame);
+		this.__evaluateFrameScripts(this.__currentFrame);
 	}
 
-	return nextFrame;
-}
-
-	protected __goto(frame : number): void
+	protected __gotoAndPlay(frame: number | string, scene: string = null): void
 	{
-		if(frame < 1) frame = 1;
-		else if(frame > __totalFrames) frame = __totalFrames;
+		this.__play();
+		this.__goto(this.__resolveFrameReference(frame));
+	}
 
-__lastFrameScriptEval = -1;
-__currentFrame = frame;
-
-__updateSymbol(__currentFrame);
-__evaluateFrameScripts(__currentFrame);
-}
-
-	protected __gotoAndPlay(frame: #if(haxe_ver >= "3.4.2") Any #else Dynamic #end, scene: string = null): void
+	protected __gotoAndStop(frame: number | string, scene: string = null): void
 	{
-		__play();
-	__goto(__resolveFrameReference(frame));
-}
-
-	protected __gotoAndStop(frame: #if(haxe_ver >= "3.4.2") Any #else Dynamic #end, scene: string = null): void
-	{
-		__stop();
-	__goto(__resolveFrameReference(frame));
-}
+		this.__stop();
+		this.__goto(this.__resolveFrameReference(frame));
+	}
 
 	protected __nextFrame(): void
 	{
-		__stop();
-	__goto(__currentFrame + 1);
-}
+		this.__stop();
+		this.__goto(this.__currentFrame + 1);
+	}
 
 	protected __nextScene(): void
 	{
@@ -273,22 +275,22 @@ __evaluateFrameScripts(__currentFrame);
 
 	protected __play(): void
 	{
-		if(__isPlaying || __totalFrames < 2) return;
+		if (this.__isPlaying || this.__totalFrames < 2) return;
 
-__isPlaying = true;
+		this.__isPlaying = true;
 
-if (frameRate != null)
-{
-	__frameTime = Std.int(1000 / frameRate);
-	__timeElapsed = 0;
-}
-}
+		if (this.frameRate != null)
+		{
+			this.__frameTime = Math.round(1000 / this.frameRate);
+			this.__timeElapsed = 0;
+		}
+	}
 
 	protected __prevFrame(): void
 	{
-		__stop();
-	__goto(__currentFrame - 1);
-}
+		this.__stop();
+		this.__goto(this.__currentFrame - 1);
+	}
 
 	protected __prevScene(): void
 	{
@@ -297,70 +299,67 @@ if (frameRate != null)
 
 	protected __stop(): void
 	{
-		__isPlaying = false;
+		this.__isPlaying = false;
 	}
 
-	protected __resolveFrameReference(frame: #if(haxe_ver >= "3.4.2") Any #else Dynamic #end) : number
-{
-	if (Std.is(frame, Int))
+	protected __resolveFrameReference(frame: number | string): number
 	{
-		return cast frame;
-	}
-	else if (Std.is(frame, String))
-	{
-		var label: string = cast frame;
-
-		for (frameLabel in __currentLabels)
+		if (typeof frame === "number")
 		{
-			if (frameLabel.name == label)
-			{
-				return frameLabel.frame;
-			}
+			return frame;
 		}
+		else if (typeof frame === "string")
+		{
+			var label: string = frame;
 
-		throw new ArgumentError("Error #2109: Frame label " + label + " not found in scene.");
+			for (let frameLabel of this.__currentLabels)
+			{
+				if (frameLabel.name == label)
+				{
+					return frameLabel.frame;
+				}
+			}
+
+			throw new ArgumentError("Error #2109: Frame label " + label + " not found in scene.");
+		}
+		else
+		{
+			throw "Invalid type for frame " + (typeof frame);
+		}
 	}
-	else
-	{
-		throw "Invalid type for frame " + Type.getClassName(frame);
-	}
-}
 
 	protected __updateFrameLabel(): void
 	{
-		__currentLabel = null;
-		__currentFrameLabel = null;
+		this.__currentLabel = null;
+		this.__currentFrameLabel = null;
 
 		// TODO: Update without looping so much
 
-		for(label in __currentLabels)
-	{
-	if (label.frame < __currentFrame)
-	{
-		__currentLabel = label.name;
+		for (let label of this.__currentLabels)
+		{
+			if (label.frame < this.__currentFrame)
+			{
+				this.__currentLabel = label.name;
+			}
+			else if (label.frame == this.__currentFrame)
+			{
+				this.__currentLabel = label.name;
+				this.__currentFrameLabel = label.name;
+			}
+			else
+			{
+				break;
+			}
+		}
 	}
-	else if (label.frame == __currentFrame)
-	{
-		__currentLabel = label.name;
-		__currentFrameLabel = label.name;
-	}
-	else
-	{
-		break;
-	}
-}
-}
 
-	protected __updateSymbol(targetFrame : number): void
+	protected __updateSymbol(targetFrame: number): void
 	{
-		if(__currentFrame != __lastFrameUpdate)
-{
-	__updateFrameLabel();
-	enterFrame(targetFrame);
-	__lastFrameUpdate = __currentFrame;
+		if (this.__currentFrame != this.__lastFrameUpdate)
+		{
+			this.__updateFrameLabel();
+			this.enterFrame(targetFrame);
+			this.__lastFrameUpdate = this.__currentFrame;
+		}
+	}
 }
-}
-}
-}
-
-export default openfl.display.Timeline;

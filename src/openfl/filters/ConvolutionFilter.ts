@@ -1,9 +1,9 @@
 namespace openfl.filters;
 
 #if!flash
-import openfl.display.BitmapData;
-import openfl.display.DisplayObjectRenderer;
-import openfl.display.Shader;
+import BitmapData from "../display/BitmapData";
+import DisplayObjectRenderer from "../display/DisplayObjectRenderer";
+import Shader from "../display/Shader";
 
 /**
 	The ConvolutionFilter class applies a matrix convolution filter effect. A

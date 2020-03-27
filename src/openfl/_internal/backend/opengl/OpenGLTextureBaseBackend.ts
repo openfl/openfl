@@ -11,7 +11,7 @@ import openfl._internal.renderer.SamplerState;
 import openfl.display3D.textures.TextureBase;
 import Context3D from "../display3D/Context3D";
 import openfl.display3D.Context3DMipFilter;
-import openfl.display.BitmapData;
+import BitmapData from "../display/BitmapData";
 import openfl.errors.Error;
 import openfl._internal.utils.Log;
 #if lime

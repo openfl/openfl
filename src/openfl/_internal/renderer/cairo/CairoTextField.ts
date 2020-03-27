@@ -9,7 +9,7 @@ import openfl._internal.bindings.cairo.CairoGlyph;
 import openfl._internal.bindings.cairo.CairoHintMetrics;
 import openfl._internal.bindings.cairo.CairoHintStyle;
 import openfl._internal.text.TextEngine;
-import openfl.display.BitmapData;
+import BitmapData from "../display/BitmapData";
 import openfl.display.Graphics;
 import Matrix from "../geom/Matrix";
 import Rectangle from "../geom/Rectangle";

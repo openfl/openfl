@@ -315,7 +315,7 @@ export default class Stage3D extends EventDispatcher
 			this.__context3D = new (<internal.Context3D><any>Context3D)(this.__stage, (<internal.Context3D><any>this.__stage.context3D).__contextState, this);
 			this.__dispatchCreate();
 		}
-		else if (false && /*__stage.limeWindow.context.type == DOM*/)
+		else if (false /*&& __stage.limeWindow.context.type == DOM*/)
 		{
 			// TODO
 

@@ -1,478 +1,450 @@
+import * as internal from "../_internal/utils/InternalAccess";
+import ITileContainer from "../display/ITileContainer";
+import Tile from "../display/Tile";
 import Rectangle from "../geom/Rectangle";
 
-namespace openfl.display
-{
-	/**
-		The TileContainer type is a special kind of Tile that can hold
-		other tiles within it.
-
-		Tile and TileContainer objects can be rendered by adding them to
-		a Tilemap instance.
-	**/
-	export class TileContainer extends Tile implements ITileContainer
-	{
-		/**
-			Returns the number of tiles of this object.
-		**/
-		public numTiles(get, never): number;
-
-		protected __tiles: Array<Tile>;
-
-		public constructor(x: number = 0, y: number = 0, scaleX: number = 1, scaleY: number = 1, rotation: number = 0, originX: number = 0, originY: number = 0)
-		{
-			super(-1, x, y, scaleX, scaleY, rotation, originX, originY);
-
-			__tiles = new Array();
-			__length = 0;
-		}
-
-		/**
-			Adds a Tile instance to this TileContainer instance. The tile is
-			added to the front (top) of all other tiles in this TileContainer
-			instance. (To add a tile to a specific index position, use the `addTileAt()`
-			method.)
-
-			@param tile The Tile instance to add to this TileContainer instance.
-			@return The Tile instance that you pass in the `tile` parameter.
-		**/
-		public addTile(tile: Tile): Tile
-		{
-			if (tile == null) return null;
-
-			if (tile.parent == this)
-			{
-				__tiles.remove(tile);
-				__length--;
-			}
-
-			__tiles[numTiles] = tile;
-			tile.parent = this;
-			__length++;
-
-			__setRenderDirty();
-
-			return tile;
-		}
-
-		/**
-			Adds a Tile instance to this TileContainer instance. The tile is added
-			at the index position specified. An index of 0 represents the back (bottom)
-			of the rendered list for this TileContainer object.
-
-			For example, the following example shows three tiles, labeled
-			a, b, and c, at index positions 0, 2, and 1, respectively:
-
-			![b over c over a](/images/DisplayObjectContainer_layers.jpg)
-
-			@param tile The Tile instance to add to this TileContainer instance.
-			@param index The index position to which the tile is added. If you
-						 specify a currently occupied index position, the tile object
-						 that exists at that position and all higher positions are
-						 moved up one position in the tile list.
-			@return The Tile instance that you pass in the `tile` parameter.
-		**/
-		public addTileAt(tile: Tile, index: number): Tile
-		{
-			if (tile == null) return null;
-
-			if (tile.parent == this)
-			{
-				__tiles.remove(tile);
-				__length--;
-			}
-
-			__tiles.insert(index, tile);
-			tile.parent = this;
-			__length++;
-
-			__setRenderDirty();
-
-			return tile;
-		}
-
-		/**
-			Adds an Array of Tile instances to this TileContainer instance. The tiles
-			are added to the front (top) of all other tiles in this TileContainer
-			instance.
-
-			@param tiles The Tile instances to add to this TileContainer instance.
-			@return The Tile Array that you pass in the `tiles` parameter.
-		**/
-		public addTiles(tiles: Array<Tile>): Array<Tile>
-		{
-			for (tile in tiles)
-			{
-				addTile(tile);
-			}
-
-			return tiles;
-		}
-
-		publicclone(): TileContainer
-		{
-			var group = new TileContainer();
-			for (tile in __tiles)
-			{
-				group.addTile(tile.clone());
-			}
-			return group;
-		}
-
-		/**
-			Determines whether the specified tile is contained within the
-			TileContainer instance. The search includes the entire tile list including
-			this TileContainer instance. Grandchildren, great-grandchildren, and so on
-			each return `true`.
-
-			@param	tile	The tile object to test.
-			@return	`true` if the `tile` object is contained within the TileContainer;
-			otherwise `false`.
-		**/
-		public contains(tile: Tile): boolean
-		{
-			return (__tiles.indexOf(tile) > -1);
-		}
-
-		/**
-			Override from tile. A single tile, just has his rectangle.
-			A container must get a rectangle that contains all other rectangles.
-
-			@param targetCoordinateSpace The tile that works as a coordinate system.
-			@return Rectangle The bounding box. If no box found, this will return {0,0,0,0} rectangle instead of null.
-		**/
-		publicgetBounds(targetCoordinateSpace: Tile): Rectangle
-		{
-			var result = new Rectangle();
-			var rect = null;
-
-			for (tile in __tiles)
-			{
-				// TODO: Generate less Rectangle objects? Could be done with __getBounds but need a initial rectangle and the stack of transformations
-				rect = tile.getBounds(targetCoordinateSpace);
-
-			#if flash
-				result = result.union(rect);
-			#else
-				result.__expand(rect.x, rect.y, rect.width, rect.height);
-			#end
-			}
-
-			return result;
-		}
-
-		/**
-			Returns the tile instance that exists at the specified index.
-
-			@param index The index position of the tile object.
-			@return The tile object at the specified index position.
-		**/
-		public getTileAt(index: number): Tile
-		{
-			if (index >= 0 && index < numTiles)
-			{
-				return __tiles[index];
-			}
-
-			return null;
-		}
-
-		/**
-			Returns the index position of a contained Tile instance.
-
-			@param child The Tile instance to identify.
-			@return The index position of the tile object to identify.
-		**/
-		public getTileIndex(tile: Tile): number
-		{
-			for (i in 0...__tiles.length)
-			{
-				if (__tiles[i] == tile) return i;
-			}
-
-			return -1;
-		}
-
-		/**
-			Removes the specified Tile instance from the tile list of the TileContainer
-			instance. The index positions of any tile objects above the tile in the
-			TileContainer are decreased by 1.
-
-			@param	tile	The Tile instance to remove.
-			@return	The Tile instance that you pass in the `tile` parameter.
-		**/
-		public removeTile(tile: Tile): Tile
-		{
-			if (tile != null && tile.parent == this)
-			{
-				tile.parent = null;
-				__tiles.remove(tile);
-				__length--;
-				__setRenderDirty();
-			}
-
-			return tile;
-		}
-
-		/**
-			Removes a Tile from the specified `index` position in the tile list of the
-			TileContainer. The index positions of any tile objects above the tile in
-			the TileContainer are decreased by 1.
-
-			@param	index	The index of the Tile to remove.
-			@return	The Tile instance that was removed.
-		**/
-		public removeTileAt(index: number): Tile
-		{
-			if (index >= 0 && index < numTiles)
-			{
-				return removeTile(__tiles[index]);
-			}
-
-			return null;
-		}
-
-		/**
-			Removes all Tile instances from the tile list of the TileContainer instance.
-
-			@param	beginIndex	The beginning position.
-			@param	endIndex	The ending position.
-		**/
-		public removeTiles(beginIndex: number = 0, endIndex: number = 0x7fffffff): void
-		{
-			if (beginIndex < 0) beginIndex = 0;
-			if (endIndex > __tiles.length - 1) endIndex = __tiles.length - 1;
-
-			var removed = __tiles.splice(beginIndex, endIndex - beginIndex + 1);
-			for (tile in removed)
-			{
-				tile.parent = null;
-			}
-			__length = __tiles.length;
-
-			__setRenderDirty();
-		}
-
-		/**
-			Changes the position of an existing tile in the tile container.
-			This affects the layering of tile objects. For example, the following
-			example shows three tile objects, labeled a, b, and c, at index
-			positions 0, 1, and 2, respectively:
-
-			![c over b over a](/images/DisplayObjectContainerSetChildIndex1.jpg)
-
-			When you use the `setTileIndex()` method and specify an
-			index position that is already occupied, the only positions that change
-			are those in between the tile object's former and new position. All
-			others will stay the same. If a tile is moved to an index LOWER than its
-			current index, all tiles in between will INCREASE by 1 for their index
-			reference. If a tile is moved to an index HIGHER than its current index,
-			all tiles in between will DECREASE by 1 for their index reference. For
-			example, if the tile container in the previous example is named
-			`container`, you can swap the position of the tile objects
-			labeled a and b by calling the following code:
-
-			```haxe
-			container.setTileIndex(container.getTileAt(1), 0);
-			```
-
-			This code results in the following arrangement of objects:
-
-			![c over a over b](/images/DisplayObjectContainerSetChildIndex2.jpg)
-
-			@param	tile	The Tile instance for which you want to change the index
-			number.
-			@param	index	The resulting index number for the `tile` object.
-		**/
-		public setTileIndex(tile: Tile, index: number): void
-		{
-			if (index >= 0 && index <= numTiles && tile.parent == this)
-			{
-				__tiles.remove(tile);
-				__tiles.insert(index, tile);
-				__setRenderDirty();
-			}
-		}
-
-		/**
-			Sorts the z-order (front-to-back order) of all the tile objects in this
-			container based on a comparison function.
-
-			A comparison should take two arguments to compare. Given the elements
-			A and B, the result of `compareFunction` can have a negative, 0, or positive value:
-
-			* A negative return value specifies that A appears before B in the sorted sequence.
-			* A return value of 0 specifies that A and B have the same sort order.
-			* A positive return value specifies that A appears after B in the sorted sequence.
-
-			The sort operation is not guaranteed to be stable, which means that the
-			order of equal elements may not be retained.
-
-			@param	compareFunction	A comparison to use when sorting.
-		**/
-		#if(openfl < "9.0.0") #end public sortTiles(compareFunction: Tile -> Tile -> Int): void
-			{
-				__tiles.sort(compareFunction);
-				__setRenderDirty();
-			}
-
 /**
+	The TileContainer type is a special kind of Tile that can hold
+	other tiles within it.
+
+	Tile and TileContainer objects can be rendered by adding them to
+	a Tilemap instance.
+**/
+export default class TileContainer extends Tile implements ITileContainer
+{
+	protected __tiles: Array<Tile>;
+
+	public constructor(x: number = 0, y: number = 0, scaleX: number = 1, scaleY: number = 1, rotation: number = 0, originX: number = 0, originY: number = 0)
+	{
+		super(-1, x, y, scaleX, scaleY, rotation, originX, originY);
+
+		this.__tiles = new Array();
+		this.__length = 0;
+	}
+
+	/**
+		Adds a Tile instance to this TileContainer instance. The tile is
+		added to the front (top) of all other tiles in this TileContainer
+		instance. (To add a tile to a specific index position, use the `addTileAt()`
+		method.)
+
+		@param tile The Tile instance to add to this TileContainer instance.
+		@return The Tile instance that you pass in the `tile` parameter.
+	**/
+	public addTile(tile: Tile): Tile
+	{
+		if (tile == null) return null;
+
+		if (tile.parent == this)
+		{
+			var index = this.__tiles.indexOf(tile);
+			if (index > -1) this.__tiles.splice(index, 1);
+			this.__length--;
+		}
+
+		this.__tiles[this.numTiles] = tile;
+		(<internal.Tile><any>tile).__parent = this;
+		this.__length++;
+
+		this.__setRenderDirty();
+
+		return tile;
+	}
+
+	/**
+		Adds a Tile instance to this TileContainer instance. The tile is added
+		at the index position specified. An index of 0 represents the back (bottom)
+		of the rendered list for this TileContainer object.
+
+		For example, the following example shows three tiles, labeled
+		a, b, and c, at index positions 0, 2, and 1, respectively:
+
+		![b over c over a](/images/DisplayObjectContainer_layers.jpg)
+
+		@param tile The Tile instance to add to this TileContainer instance.
+		@param index The index position to which the tile is added. If you
+						specify a currently occupied index position, the tile object
+						that exists at that position and all higher positions are
+						moved up one position in the tile list.
+		@return The Tile instance that you pass in the `tile` parameter.
+	**/
+	public addTileAt(tile: Tile, index: number): Tile
+	{
+		if (tile == null) return null;
+
+		if (tile.parent == this)
+		{
+			var i = this.__tiles.indexOf(tile);
+			if (i > -1) this.__tiles.splice(i, 1);
+			this.__length--;
+		}
+
+		this.__tiles.splice(index, 0, tile);
+		(<internal.Tile><any>tile).__parent = this;
+		this.__length++;
+
+		this.__setRenderDirty();
+
+		return tile;
+	}
+
+	/**
+		Adds an Array of Tile instances to this TileContainer instance. The tiles
+		are added to the front (top) of all other tiles in this TileContainer
+		instance.
+
+		@param tiles The Tile instances to add to this TileContainer instance.
+		@return The Tile Array that you pass in the `tiles` parameter.
+	**/
+	public addTiles(tiles: Array<Tile>): Array<Tile>
+	{
+		for (let tile of tiles)
+		{
+			this.addTile(tile);
+		}
+
+		return tiles;
+	}
+
+	public clone(): TileContainer
+	{
+		var group = new TileContainer();
+		for (let tile of this.__tiles)
+		{
+			group.addTile(tile.clone());
+		}
+		return group;
+	}
+
+	/**
+		Determines whether the specified tile is contained within the
+		TileContainer instance. The search includes the entire tile list including
+		this TileContainer instance. Grandchildren, great-grandchildren, and so on
+		each return `true`.
+
+		@param	tile	The tile object to test.
+		@return	`true` if the `tile` object is contained within the TileContainer;
+		otherwise `false`.
+	**/
+	public contains(tile: Tile): boolean
+	{
+		return (this.__tiles.indexOf(tile) > -1);
+	}
+
+	/**
+		Override from tile. A single tile, just has his rectangle.
+		A container must get a rectangle that contains all other rectangles.
+
+		@param targetCoordinateSpace The tile that works as a coordinate system.
+		@return Rectangle The bounding box. If no box found, this will return {0,0,0,0} rectangle instead of null.
+	**/
+	public getBounds(targetCoordinateSpace: Tile): Rectangle
+	{
+		var result = new Rectangle();
+		var rect = null;
+
+		for (let tile of this.__tiles)
+		{
+			// TODO: Generate less Rectangle objects? Could be done with __getBounds but need a initial rectangle and the stack of transformations
+			rect = tile.getBounds(targetCoordinateSpace);
+
+			(<internal.Rectangle><any>result).__expand(rect.x, rect.y, rect.width, rect.height);
+		}
+
+		return result;
+	}
+
+	/**
+		Returns the tile instance that exists at the specified index.
+
+		@param index The index position of the tile object.
+		@return The tile object at the specified index position.
+	**/
+	public getTileAt(index: number): Tile
+	{
+		if (index >= 0 && index < this.numTiles)
+		{
+			return this.__tiles[index];
+		}
+
+		return null;
+	}
+
+	/**
+		Returns the index position of a contained Tile instance.
+
+		@param child The Tile instance to identify.
+		@return The index position of the tile object to identify.
+	**/
+	public getTileIndex(tile: Tile): number
+	{
+		for (let i = 0; i < this.__tiles.length; i++)
+		{
+			if (this.__tiles[i] == tile) return i;
+		}
+
+		return -1;
+	}
+
+	/**
+		Removes the specified Tile instance from the tile list of the TileContainer
+		instance. The index positions of any tile objects above the tile in the
+		TileContainer are decreased by 1.
+
+		@param	tile	The Tile instance to remove.
+		@return	The Tile instance that you pass in the `tile` parameter.
+	**/
+	public removeTile(tile: Tile): Tile
+	{
+		if (tile != null && tile.parent == this)
+		{
+			(<internal.Tile><any>tile).__parent = null;
+			var index = this.__tiles.indexOf(tile);
+			if (index > -1) this.__tiles.splice(index, 1);
+			this.__length--;
+			this.__setRenderDirty();
+		}
+
+		return tile;
+	}
+
+	/**
+		Removes a Tile from the specified `index` position in the tile list of the
+		TileContainer. The index positions of any tile objects above the tile in
+		the TileContainer are decreased by 1.
+
+		@param	index	The index of the Tile to remove.
+		@return	The Tile instance that was removed.
+	**/
+	public removeTileAt(index: number): Tile
+	{
+		if (index >= 0 && index < this.numTiles)
+		{
+			return this.removeTile(this.__tiles[index]);
+		}
+
+		return null;
+	}
+
+	/**
+		Removes all Tile instances from the tile list of the TileContainer instance.
+
+		@param	beginIndex	The beginning position.
+		@param	endIndex	The ending position.
+	**/
+	public removeTiles(beginIndex: number = 0, endIndex: number = 0x7fffffff): void
+	{
+		if (beginIndex < 0) beginIndex = 0;
+		if (endIndex > this.__tiles.length - 1) endIndex = this.__tiles.length - 1;
+
+		var removed = this.__tiles.splice(beginIndex, endIndex - beginIndex + 1);
+		for (let tile of removed)
+		{
+			(<internal.Tile><any>tile).__parent = null;
+		}
+		this.__length = this.__tiles.length;
+
+		this.__setRenderDirty();
+	}
+
+	/**
+		Changes the position of an existing tile in the tile container.
+		This affects the layering of tile objects. For example, the following
+		example shows three tile objects, labeled a, b, and c, at index
+		positions 0, 1, and 2, respectively:
+
+		![c over b over a](/images/DisplayObjectContainerSetChildIndex1.jpg)
+
+		When you use the `setTileIndex()` method and specify an
+		index position that is already occupied, the only positions that change
+		are those in between the tile object's former and new position. All
+		others will stay the same. If a tile is moved to an index LOWER than its
+		current index, all tiles in between will INCREASE by 1 for their index
+		reference. If a tile is moved to an index HIGHER than its current index,
+		all tiles in between will DECREASE by 1 for their index reference. For
+		example, if the tile container in the previous example is named
+		`container`, you can swap the position of the tile objects
+		labeled a and b by calling the following code:
+
+		```haxe
+		container.setTileIndex(container.getTileAt(1), 0);
+		```
+
+		This code results in the following arrangement of objects:
+
+		![c over a over b](/images/DisplayObjectContainerSetChildIndex2.jpg)
+
+		@param	tile	The Tile instance for which you want to change the index
+		number.
+		@param	index	The resulting index number for the `tile` object.
+	**/
+	public setTileIndex(tile: Tile, index: number): void
+	{
+		if (index >= 0 && index <= this.numTiles && tile.parent == this)
+		{
+			var i = this.__tiles.indexOf(tile);
+			if (i != index)
+			{
+				if (i > -1) this.__tiles.splice(i, 1);
+				this.__tiles.splice(index, 0, tile);
+			}
+			this.__setRenderDirty();
+		}
+	}
+
+	/**
+		Sorts the z-order (front-to-back order) of all the tile objects in this
+		container based on a comparison function.
+
+		A comparison should take two arguments to compare. Given the elements
+		A and B, the result of `compareFunction` can have a negative, 0, or positive value:
+
+		* A negative return value specifies that A appears before B in the sorted sequence.
+		* A return value of 0 specifies that A and B have the same sort order.
+		* A positive return value specifies that A appears after B in the sorted sequence.
+
+		The sort operation is not guaranteed to be stable, which means that the
+		order of equal elements may not be retained.
+
+		@param	compareFunction	A comparison to use when sorting.
+	**/
+	public sortTiles(compareFunction: (a: Tile, b: Tile) => number): void
+	{
+		this.__tiles.sort(compareFunction);
+		this.__setRenderDirty();
+	}
+
+	/**
 	Swaps the z-order (front-to-back order) of the two specified tile
 	objects. All other tile objects in the tile container remain in
 	the same index positions.
 
 	@param	child1	The first tile object.
 	@param	child2	The second tile object.
-**/
-public swapTiles(tile1: Tile, tile2: Tile): void
-		{
-			if(tile1.parent == this && tile2.parent == this)
+	**/
+	public swapTiles(tile1: Tile, tile2: Tile): void
 	{
-		var index1 = __tiles.indexOf(tile1);
-		var index2 = __tiles.indexOf(tile2);
+		if (tile1.parent == this && tile2.parent == this)
+		{
+			var index1 = this.__tiles.indexOf(tile1);
+			var index2 = this.__tiles.indexOf(tile2);
 
-		__tiles[index1] = tile2;
-		__tiles[index2] = tile1;
+			this.__tiles[index1] = tile2;
+			this.__tiles[index2] = tile1;
 
-		__setRenderDirty();
+			this.__setRenderDirty();
+		}
 	}
-}
 
-/**
+	/**
 	Swaps the z-order (front-to-back order) of the tile objects at the two
 	specified index positions in the tile list. All other tile objects in
 	the tile container remain in the same index positions.
 
 	@param	index1	The index position of the first tile object.
 	@param	index2	The index position of the second tile object.
-**/
-public swapTilesAt(index1 : number, index2 : number): void
+	**/
+	public swapTilesAt(index1: number, index2: number): void
 	{
-		var swap = __tiles[index1];
-		__tiles[index1] = __tiles[index2];
-		__tiles[index2] = swap;
+		var swap = this.__tiles[index1];
+		this.__tiles[index1] = this.__tiles[index2];
+		this.__tiles[index2] = swap;
 		swap = null;
 
-		__setRenderDirty();
+		this.__setRenderDirty();
 	}
 
-	// Event Handlers
-	public get numTiles() : number
-{
-	return __length;
-}
+	// Get & Set Methods
 
-override get_height() : number
-{
-	var result: Rectangle = #if flash __tempRectangle #else Rectangle.__pool.get() #end;
-	var rect = null;
-
-	for (tile in __tiles)
+	/**
+		Returns the number of tiles of this object.
+	**/
+	public get numTiles(): number
 	{
-		// TODO: Generate less Rectangle objects? Could be done with __getBounds but need a initial rectangle and the stack of transformations
-		rect = tile.getBounds(this);
-
-			#if flash
-		result = result.union(rect);
-			#else
-		result.__expand(rect.x, rect.y, rect.width, rect.height);
-			#end
+		return this.__length;
 	}
 
-	__getBounds(result, matrix);
-
-	var h = result.height;
-		#if!flash
-	Rectangle.__pool.release(result);
-		#end
-
-	return h;
-}
-
-override set_height(value : number) : number
-{
-	var result: Rectangle = #if flash __tempRectangle #else Rectangle.__pool.get() #end;
-	var rect = null;
-
-	for (tile in __tiles)
+	public get height(): number
 	{
-		// TODO: Generate less Rectangle objects? Could be done with __getBounds but need a initial rectangle and the stack of transformations
-		rect = tile.getBounds(this);
+		var result: Rectangle = (<internal.Rectangle><any>Rectangle).__pool.get();
+		var rect = null;
 
-			#if flash
-		result = result.union(rect);
-			#else
-		result.__expand(rect.x, rect.y, rect.width, rect.height);
-			#end
+		for (let tile of this.__tiles)
+		{
+			// TODO: Generate less Rectangle objects? Could be done with __getBounds but need a initial rectangle and the stack of transformations
+			rect = tile.getBounds(this);
+
+			(<internal.Rectangle><any>result).__expand(rect.x, rect.y, rect.width, rect.height);
+		}
+
+		this.__getBounds(result, this.matrix);
+
+		var h = result.height;
+		(<internal.Rectangle><any>Rectangle).__pool.release(result);
+
+		return h;
 	}
 
-	if (result.height != 0)
+	public set height(value: number)
 	{
-		scaleY = value / result.height;
+		var result: Rectangle = (<internal.Rectangle><any>Rectangle).__pool.get();
+		var rect = null;
+
+		for (let tile of this.__tiles)
+		{
+			// TODO: Generate less Rectangle objects? Could be done with __getBounds but need a initial rectangle and the stack of transformations
+			rect = tile.getBounds(this);
+
+			(<internal.Rectangle><any>result).__expand(rect.x, rect.y, rect.width, rect.height);
+		}
+
+		if (result.height != 0)
+		{
+			this.scaleY = value / result.height;
+		}
+
+		(<internal.Rectangle><any>Rectangle).__pool.release(result);
 	}
 
-		#if!flash
-	Rectangle.__pool.release(result);
-		#end
-
-	return value;
-}
-
-override get_width() : number
-{
-	var result: Rectangle = #if flash __tempRectangle #else Rectangle.__pool.get() #end;
-	var rect = null;
-
-	for (tile in __tiles)
+	public get width(): number
 	{
-		// TODO: Generate less Rectangle objects? Could be done with __getBounds but need a initial rectangle and the stack of transformations
-		rect = tile.getBounds(this);
+		var result: Rectangle = (<internal.Rectangle><any>Rectangle).__pool.get();
+		var rect = null;
 
-			#if flash
-		result = result.union(rect);
-			#else
-		result.__expand(rect.x, rect.y, rect.width, rect.height);
-			#end
+		for (let tile of this.__tiles)
+		{
+			// TODO: Generate less Rectangle objects? Could be done with __getBounds but need a initial rectangle and the stack of transformations
+			rect = tile.getBounds(this);
+
+			(<internal.Rectangle><any>result).__expand(rect.x, rect.y, rect.width, rect.height);
+		}
+
+		this.__getBounds(result, this.matrix);
+
+		var w = result.width;
+		(<internal.Rectangle><any>Rectangle).__pool.release(result);
+
+		return w;
 	}
 
-	__getBounds(result, matrix);
-
-	var w = result.width;
-		#if!flash
-	Rectangle.__pool.release(result);
-		#end
-
-	return w;
-}
-
-override set_width(value : number) : number
-{
-	var result: Rectangle = #if flash __tempRectangle #else Rectangle.__pool.get() #end;
-	var rect = null;
-
-	for (tile in __tiles)
+	public set width(value: number)
 	{
-		// TODO: Generate less Rectangle objects? Could be done with __getBounds but need a initial rectangle and the stack of transformations
-		rect = tile.getBounds(this);
+		var result: Rectangle = (<internal.Rectangle><any>Rectangle).__pool.get();
+		var rect = null;
 
-			#if flash
-		result = result.union(rect);
-			#else
-		result.__expand(rect.x, rect.y, rect.width, rect.height);
-			#end
+		for (let tile of this.__tiles)
+		{
+			// TODO: Generate less Rectangle objects? Could be done with __getBounds but need a initial rectangle and the stack of transformations
+			rect = tile.getBounds(this);
+
+			(<internal.Rectangle><any>result).__expand(rect.x, rect.y, rect.width, rect.height);
+		}
+
+		if (result.width != 0)
+		{
+			this.scaleX = value / result.width;
+		}
+
+		(<internal.Rectangle><any>Rectangle).__pool.release(result);
 	}
-
-	if (result.width != 0)
-	{
-		scaleX = value / result.width;
-	}
-
-		#if!flash
-	Rectangle.__pool.release(result);
-		#end
-
-	return value;
 }
-}
-}
-
-export default openfl.display.TileContainer;

@@ -2,7 +2,7 @@ namespace openfl._internal.renderer;
 
 import ObjectPool from "../_internal/utils/ObjectPool";
 import Context3D from "../display3D/Context3D";
-import openfl.display.BitmapData;
+import BitmapData from "../display/BitmapData";
 
 #if!openfl_debug
 @: fileXml(' tags="haxe,release" ')

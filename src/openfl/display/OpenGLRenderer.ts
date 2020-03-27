@@ -1,3 +1,4 @@
+import DisplayObjectRenderer from "../display/DisplayObjectRenderer";
 import Context3D from "../display3D/Context3D";
 import ColorTransfrom from "../geom/ColorTransform";
 import Matrix from "../geom/Matrix";
@@ -8,63 +9,61 @@ import Matrix from "../geom/Matrix";
 // import openfl._internal.backend.lime_standalone.WebGLRenderContext in WebGLRenderingContext;
 // #end
 
-namespace openfl.display
+/**
+	**BETA**
+
+	The OpenGL3DRenderer API exposes support for OpenGL render instructions within the
+	`RenderEvent.RENDER_OPENGL` event.
+**/
+export default class OpenGLRenderer extends DisplayObjectRenderer
 {
 	/**
-		**BETA**
-
-		The OpenGL3DRenderer API exposes support for OpenGL render instructions within the
-		`RenderEvent.RENDER_OPENGL` event.
+		The current OpenGL render context
 	**/
-	export class OpenGLRenderer extends DisplayObjectRenderer
+	public gl: WebGLRenderingContext;
+
+	protected constructor(context: Context3D, defaultRenderTarget: BitmapData = null)
 	{
-		/**
-			The current OpenGL render context
-		**/
-		public gl: WebGLRenderingContext;
-
-		protected constructor(context: Context3D, defaultRenderTarget: BitmapData = null)
-		{
-			super();
-		}
-
-		/**
-			Applies an alpha value to the active shader, if compatible with OpenFL core shaders
-		**/
-		public applyAlpha(alpha: number): void { }
-
-		/**
-			Binds a BitmapData object as the first active texture of the current active shader,
-			if compatible with OpenFL core shaders
-		**/
-		public applyBitmapData(bitmapData: BitmapData, smooth: boolean, repeat: boolean = false): void { }
-
-		/**
-			Applies a color transform value to the active shader, if compatible with OpenFL
-			core shaders
-		**/
-		public applyColorTransform(colorTransform: ColorTransform): void { }
-
-		/**
-			Applies the "has color transform" uniform value for the active shader, if
-			compatible with OpenFL core shaders
-		**/
-		public applyHasColorTransform(enabled: boolean): void { }
-
-		/**
-			Applies render matrix to the active shader, if compatible with OpenFL core shaders
-		**/
-		public applyMatrix(matrix: Array<Float>): void { }
-
-		/**
-			Converts an OpenFL two-dimensional matrix to a compatible 3D matrix for use with
-			OpenGL rendering. Repeated calls to this method will return the same object with
-			new values, so it will need to be cloned if the result must be cached
-		**/
-		public getMatrix(transform: Matrix): #if lime Matrix4 #else Dynamic #end
-	{
-		return null;
+		super();
 	}
+
+	/**
+		Applies an alpha value to the active shader, if compatible with OpenFL core shaders
+	**/
+	public applyAlpha(alpha: number): void { }
+
+	/**
+		Binds a BitmapData object as the first active texture of the current active shader,
+		if compatible with OpenFL core shaders
+	**/
+	public applyBitmapData(bitmapData: BitmapData, smooth: boolean, repeat: boolean = false): void { }
+
+	/**
+		Applies a color transform value to the active shader, if compatible with OpenFL
+		core shaders
+	**/
+	public applyColorTransform(colorTransform: ColorTransform): void { }
+
+	/**
+		Applies the "has color transform" uniform value for the active shader, if
+		compatible with OpenFL core shaders
+	**/
+	public applyHasColorTransform(enabled: boolean): void { }
+
+	/**
+		Applies render matrix to the active shader, if compatible with OpenFL core shaders
+	**/
+	public applyMatrix(matrix: Array<Float>): void { }
+
+	/**
+		Converts an OpenFL two-dimensional matrix to a compatible 3D matrix for use with
+		OpenGL rendering. Repeated calls to this method will return the same object with
+		new values, so it will need to be cloned if the result must be cached
+	**/
+	public getMatrix(transform: Matrix): #if lime Matrix4 #else Dynamic #end
+	{
+	return null;
+}
 
 /**
 	Sets the current active shader, which automatically unbinds the previous shader
@@ -96,6 +95,3 @@ public useAlphaArray(): void {}
 **/
 public useColorTransformArray(): void {}
 }
-}
-
-export default openfl.display.OpenGLRenderer;

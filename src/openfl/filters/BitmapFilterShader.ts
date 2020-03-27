@@ -1,6 +1,6 @@
 namespace openfl.filters;
 
-import openfl.display.Shader;
+import Shader from "../display/Shader";
 import ByteArray from "../utils/ByteArray";
 
 #if!openfl_debug
