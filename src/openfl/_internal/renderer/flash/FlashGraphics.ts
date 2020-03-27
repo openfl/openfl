@@ -12,10 +12,10 @@ import openfl.display.GraphicsSolidFill;
 import openfl.display.GraphicsStroke;
 import openfl.display.GraphicsTrianglePath;
 import openfl.display.IGraphicsData;
-import Matrix from "openfl/geom/Matrix";
-import Rectangle from "openfl/geom/Rectangle";
+import Matrix from "../geom/Matrix";
+import Rectangle from "../geom/Rectangle";
 import openfl.utils.Dictionary;
-import Vector from "openfl/Vector";
+import Vector from "../Vector";
 
 @: access(flash.display.Graphics)
 @SuppressWarnings("checkstyle:FieldDocComment")

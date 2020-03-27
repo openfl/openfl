@@ -1,5 +1,7 @@
-import EventDispatcher from "openfl/events/EventDispatcher";
-import SoundTransform from "openfl/media/SoundTransform";
+import EventDispatcher from "../events/EventDispatcher";
+import SoundTransform from "../media/SoundTransform";
+import NetConnection from "../net/NetConnection";
+import ObjectEncoding from "../net/ObjectEncoding";
 
 /**
 	The NetStream class opens a one-way streaming channel over a
@@ -517,7 +519,7 @@ export default class NetStream extends EventDispatcher
 	// /** @hidden */ @:dox(hide) @:require(flash10) public static DIRECT_CONNECTIONS:String;
 
 	/** @hidden */
-	public audioCodec(default , null): number;
+	public readonly audioCodec: number;
 
 	/**
 		For RTMFP connections, specifies whether audio is sent with full
@@ -585,7 +587,7 @@ export default class NetStream extends EventDispatcher
 		buffer is to being full נfor example, to display feedback to a user
 		who is waiting for data to be loaded into the buffer.
 	**/
-	public bufferLength(default , null): number;
+	public readonly bufferLength: number;
 
 	/**
 		Specifies how long to buffer messages before starting to display the
@@ -691,12 +693,12 @@ export default class NetStream extends EventDispatcher
 		display feedback to a user who is waiting for data to be loaded into
 		the buffer.
 	**/
-	public bytesLoaded(default , null): number;
+	public readonly bytesLoaded: number;
 
 	/**
 		The total size in bytes of the file being loaded into the application.
 	**/
-	public bytesTotal(default , null): number;
+	public readonly bytesTotal: number;
 
 	/**
 		Specifies whether the application tries to download a cross-domain
@@ -822,7 +824,7 @@ export default class NetStream extends EventDispatcher
 		@throws TypeError The `client` property must be set to a non-null
 						  object.
 	**/
-	public client: Dynamic;
+	public client: Object;
 
 	/**
 		The number of frames per second being displayed. If you are exporting
@@ -830,7 +832,7 @@ export default class NetStream extends EventDispatcher
 		this value during testing to help you determine how much compression
 		to apply when exporting the file.
 	**/
-	public currentFPS(default , null): number;
+	public readonly currentFPS: number;
 
 	/**
 		For RTMFP connections, specifies whether `NetStream.send()` calls are
@@ -847,7 +849,7 @@ export default class NetStream extends EventDispatcher
 	// /** @hidden */ @:dox(hide) @:require(flash10_1) public dataReliable:Bool;
 	#end
 	/** @hidden */
-	public decodedFrames(default , null): number;
+	public readonly decodedFrames: number;
 
 	/**
 		For RTMFP connections, the identifier of the far end that is connected
@@ -909,7 +911,7 @@ export default class NetStream extends EventDispatcher
 		You can get the value of this property to roughly gauge the
 		transmission quality of the stream and communicate it to the user.
 	**/
-	public liveDelay(default , null): number;
+	public readonly liveDelay: number;
 
 	/**
 		Specifies how long to buffer messages during pause mode, in seconds.
@@ -1016,22 +1018,13 @@ export default class NetStream extends EventDispatcher
 		If you try to read this property when not connected, or if you try to
 		change this property, the application throws an exception.
 	**/
-	public objectEncoding(default , null): ObjectEncoding;
+	public readonly objectEncoding: ObjectEncoding;
 
 	/**
 		An object that holds all of the subscribing NetStream instances that
 		are listening to this publishing NetStream instance.
 	**/
 	// /** @hidden */ @:dox(hide) @:require(flash10) public peerStreams (default, null):Array<Dynamic>;
-
-	/**
-		Controls sound in this NetStream object. For more information, see the
-		SoundTransform class.
-	**/
-	public soundTransform(get, set): SoundTransform;
-
-	/** @hidden */
-	public speed(get, set): number;
 
 	/**
 		The position of the playhead, in seconds.
@@ -1052,11 +1045,11 @@ export default class NetStream extends EventDispatcher
 		`NetStream.play()` is called with `reset` set to `1` or `true`, or
 		when `NetStream.close()` is called.
 	**/
-	public time(default , null): number;
+	public readonly time: number;
 
 	// /** @hidden */ @:dox(hide) @:require(flash11) public useHardwareDecoder:Bool;
 	// /** @hidden */ @:dox(hide) @:require(flash11_3) public useJitterBuffer:Bool;
-	public videoCode(default , null): number;
+	public readonly videoCode: number;
 
 	/**
 		For RTMFP connections, specifies whether video is sent with full
@@ -1080,24 +1073,10 @@ export default class NetStream extends EventDispatcher
 	// /** @hidden */ @:dox(hide) @:require(flash10_1) public videoSampleAccess:Bool;
 
 	// /** @hidden */ @:dox(hide) @:require(flash11) public videoStreamSettings:openfl.media.VideoStreamSettings;
-	protected __backend: NetStreamBackend;
+
 	protected __closed: boolean;
 	protected __connection: NetConnection;
 	protected __soundTransform: SoundTransform;
-
-	protected static __init__()
-	{
-		untyped Object.defineProperties(NetStream.prototype, {
-			"soundTransform": {
-				get: untyped __js__("function () { return this.get_soundTransform (); }"),
-				set: untyped __js__("function (v) { return this.set_soundTransform (v); }")
-			},
-			"speed": {
-				get: untyped __js__("function () { return this.get_speed (); }"),
-				set: untyped __js__("function (v) { return this.set_speed (v); }")
-			},
-		});
-	}
 
 	/**
 		Creates a stream that you can use to play media files and send data
@@ -1139,14 +1118,14 @@ export default class NetStream extends EventDispatcher
 						  set to `"connectToFMS"`.
 		@throws ArgumentError The NetConnection instance is not connected.
 	**/
-	public constructor(connection: NetConnection, peerID: string = null): void
+	public constructor(connection: NetConnection, peerID: string = null)
 	{
 		super();
 
-		__connection = connection;
-		__soundTransform = new SoundTransform();
+		this.__connection = connection;
+		this.__soundTransform = new SoundTransform();
 
-		__backend = new NetStreamBackend(this);
+		// __backend = new NetStreamBackend(this);
 	}
 
 	/**
@@ -1348,8 +1327,8 @@ export default class NetStream extends EventDispatcher
 	**/
 	public close(): void
 	{
-		__closed = true;
-		__backend.close();
+		this.__closed = true;
+		// __backend.close();
 	}
 
 	/**
@@ -1363,7 +1342,7 @@ export default class NetStream extends EventDispatcher
 	**/
 	public dispose(): void
 	{
-		__backend.dispose();
+		// __backend.dispose();
 	}
 
 	/**
@@ -1427,7 +1406,7 @@ export default class NetStream extends EventDispatcher
 	**/
 	public pause(): void
 	{
-		__backend.pause();
+		// __backend.pause();
 	}
 
 	/**
@@ -1506,9 +1485,9 @@ export default class NetStream extends EventDispatcher
 					  with digital rights management (DRM). The value of the
 					  `code` property is `"DRM.encryptedFLV"`.
 	**/
-	public play(url: HTMLMediaObject | string, p1 = null, p2 = null, p3 = null, p4 = null, p5 = null): void
+	public play(url: MediaStream | string, ...parameters: any[]): void
 	{
-		__backend.play(url, p1, p2, p3, p4, p5);
+		// __backend.play(url, p1, p2, p3, p4, p5);
 	}
 
 	/**
@@ -1748,7 +1727,7 @@ export default class NetStream extends EventDispatcher
 	**/
 	public resume(): void
 	{
-		__backend.resume();
+		// __backend.resume();
 	}
 
 	/**
@@ -1828,7 +1807,7 @@ export default class NetStream extends EventDispatcher
 	**/
 	public seek(time: number): void
 	{
-		__backend.seek(time);
+		// __backend.seek(time);
 	}
 
 	/**
@@ -1925,41 +1904,45 @@ export default class NetStream extends EventDispatcher
 	**/
 	public togglePause(): void
 	{
-		__backend.togglePause();
+		// __backend.togglePause();
 	}
 
-	protected __getVideoElement(): VideoElement
+	protected __getVideoElement(): HTMLVideoElement
 	{
-		return __backend.video;
+		// return __backend.video;
+		return null;
 	}
 
 	// Get & Set Methods
-	protected get_soundTransform(): SoundTransform
+
+	/**
+		Controls sound in this NetStream object. For more information, see the
+		SoundTransform class.
+	**/
+	public get soundTransform(): SoundTransform
 	{
-		return __soundTransform.clone();
+		return this.__soundTransform.clone();
 	}
 
-	protected set_soundTransform(value: SoundTransform): SoundTransform
+	public set soundTransform(value: SoundTransform)
 	{
 		if (value != null)
 		{
-			__soundTransform.pan = value.pan;
-			__soundTransform.volume = value.volume;
+			this.__soundTransform.pan = value.pan;
+			this.__soundTransform.volume = value.volume;
 
-			__backend.setSoundTransform(value);
+			// this.__backend.setSoundTransform(value);
 		}
-
-		return value;
 	}
 
-	protected get_speed(): number
+	public get speed(): number
 	{
-		return __backend.getSpeed();
+		// return __backend.getSpeed();
+		return 0;
 	}
 
-	protected set_speed(value: number): number
+	public set speed(value: number)
 	{
-		__backend.setSpeed(value);
-		return value;
+		// __backend.setSpeed(value);
 	}
 }

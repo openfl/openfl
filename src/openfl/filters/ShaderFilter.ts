@@ -1,7 +1,7 @@
-import BitmapData from "openfl/display/BitmapData";
-import BlendMode from "openfl/display/BlendMode";
-import DisplayObjectRenderer from "openfl/display/DisplayObjectRenderer";
-import Shader from "openfl/display/Shader";
+import BitmapData from "../display/BitmapData";
+import BlendMode from "../display/BlendMode";
+import DisplayObjectRenderer from "../display/DisplayObjectRenderer";
+import Shader from "../display/Shader";
 
 namespace openfl.filters
 {

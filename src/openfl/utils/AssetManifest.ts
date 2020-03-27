@@ -1,4 +1,4 @@
-import AssetType from "openfl/utils/AssetType";
+import AssetType from "../utils/AssetType";
 
 export default class AssetManifest
 {

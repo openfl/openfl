@@ -1,3 +1,3 @@
-namespace openfl;
+import AssetsImpl from "./utils/Assets";
 
-typedef Assets = openfl.utils.Assets;
+export type Assets = AssetsImpl;

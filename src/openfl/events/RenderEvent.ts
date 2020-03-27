@@ -1,10 +1,10 @@
-import { ColorTransformInternal } from "openfl/_internal/utils/InternalAccess";
-import ObjectPool from "openfl/_internal/utils/ObjectPool";
-import DisplayObjectRenderer from "openfl/display/DisplayObjectRenderer";
-import Event from "openfl/events/Event";
-import EventType from "openfl/events/EventType";
-import ColorTransform from "openfl/geom/ColorTransform";
-import Matrix from "openfl/geom/Matrix";
+import * as internal from "../_internal/utils/InternalAccess";
+import ObjectPool from "../_internal/utils/ObjectPool";
+import DisplayObjectRenderer from "../display/DisplayObjectRenderer";
+import Event from "../events/Event";
+import EventType from "../events/EventType";
+import ColorTransform from "../geom/ColorTransform";
+import Matrix from "../geom/Matrix";
 
 /**
 	**BETA**
@@ -154,7 +154,7 @@ export default class RenderEvent extends Event
 
 	public clone(): RenderEvent
 	{
-		var event = new RenderEvent(this.__type, this.__bubbles, this.__cancelable, this.objectMatrix.clone(), (<any>this.objectColorTransform as ColorTransformInternal).__clone(), this.allowSmoothing);
+		var event = new RenderEvent(this.__type, this.__bubbles, this.__cancelable, this.objectMatrix.clone(), (<internal.ColorTransform><any>this.objectColorTransform).__clone(), this.allowSmoothing);
 		event.__target = this.__target;
 		event.__currentTarget = this.__currentTarget;
 		event.__eventPhase = this.__eventPhase;

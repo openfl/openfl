@@ -1,15 +1,15 @@
-import EventDispatcher from "openfl/events/EventDispatcher";
-import Event from "openfl/events/Event";
-import IOErrorEvent from "openfl/events/IOErrorEvent";
-import SecurityErrorEvent from "openfl/events/SecurityErrorEvent";
-import ProgressEvent from "openfl/events/ProgressEvent";
-import ObjectEncoding from "openfl/net/ObjectEncoding";
-import URLLoader from "openfl/net/URLLoader";
-import URLLoaderDataFormat from "openfl/net/URLLoaderDataFormat";
-import URLRequest from "openfl/net/URLRequest";
-import IDataInput from "openfl/utils/IDataInput";
-import ByteArray from "openfl/utils/ByteArray";
-import Endian from "openfl/utils/Endian";
+import EventDispatcher from "../events/EventDispatcher";
+import Event from "../events/Event";
+import IOErrorEvent from "../events/IOErrorEvent";
+import SecurityErrorEvent from "../events/SecurityErrorEvent";
+import ProgressEvent from "../events/ProgressEvent";
+import ObjectEncoding from "../net/ObjectEncoding";
+import URLLoader from "../net/URLLoader";
+import URLLoaderDataFormat from "../net/URLLoaderDataFormat";
+import URLRequest from "../net/URLRequest";
+import IDataInput from "../utils/IDataInput";
+import ByteArray from "../utils/ByteArray";
+import Endian from "../utils/Endian";
 
 /**
 	The URLStream class provides low-level access to downloading URLs. Data is

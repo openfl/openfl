@@ -1,7 +1,7 @@
 namespace openfl.filters;
 
 import openfl.display.Shader;
-import ByteArray from "openfl/utils/ByteArray";
+import ByteArray from "../utils/ByteArray";
 
 #if!openfl_debug
 @: fileXml('tags="haxe,release"')
@@ -50,8 +50,8 @@ uniform vec2 openfl_TextureSize; ")
 
 }")
 	#end
-	public new (code: ByteArray = null)
+	public constructor(code: ByteArray = null)
 {
-	super(code);
-}
+		super(code);
+	}
 }

@@ -9,7 +9,7 @@ import openfl._internal.bindings.gl.WebGLRenderingContext;
 import openfl._internal.renderer.SamplerState;
 import openfl._internal.bindings.typedarray.Float32Array;
 import openfl._internal.bindings.typedarray.UInt8Array;
-import Context3D from "openfl/display3D/Context3D";
+import Context3D from "../display3D/Context3D";
 import openfl.display3D.Context3DBlendFactor;
 import openfl.display3D.Context3DClearMask;
 import openfl.display3D.Context3DCompareMode;
@@ -21,10 +21,10 @@ import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
 import openfl.display.BitmapData;
 import openfl.errors.Error;
-import IllegalOperationError from "openfl/errors/IllegalOperationError";
-import Matrix3D from "openfl/geom/Matrix3D";
-import Point from "openfl/geom/Point";
-import Rectangle from "openfl/geom/Rectangle";
+import IllegalOperationError from "../errors/IllegalOperationError";
+import Matrix3D from "../geom/Matrix3D";
+import Point from "../geom/Point";
+import Rectangle from "../geom/Rectangle";
 #if lime
 import lime.graphics.Image;
 import lime.graphics.ImageBuffer;
@@ -69,7 +69,7 @@ class OpenGLContext3DBackend
 	private parent: Context3D;
 	private positionScale: Float32Array; // TODO: Better approach?
 
-	public new(parent: Context3D)
+	public constructor(parent: Context3D)
 	{
 		this.parent = parent;
 

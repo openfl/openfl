@@ -10,12 +10,12 @@ import openfl._internal.bindings.typedarray.Float32Array;
 import openfl._internal.formats.agal.AGALConverter;
 import openfl._internal.renderer.SamplerState;
 import openfl._internal.utils.Log;
-import Context3D from "openfl/display3D/Context3D";
+import Context3D from "../display3D/Context3D";
 import openfl.display3D.Program3D;
 import openfl.display.ShaderParameterType;
-import IllegalOperationError from "openfl/errors/IllegalOperationError";
-import ByteArray from "openfl/utils/ByteArray";
-import Vector from "openfl/Vector";
+import IllegalOperationError from "../errors/IllegalOperationError";
+import ByteArray from "../utils/ByteArray";
+import Vector from "../Vector";
 #if lime
 import lime.graphics.OpenGLES2RenderContext;
 import lime.utils.BytePointer;
@@ -58,7 +58,7 @@ class OpenGLProgram3DBackend
 	// private memUsage:Int;
 	private parent: Program3D;
 
-	public new(parent: Program3D)
+	public constructor(parent: Program3D)
 	{
 		this.parent = parent;
 
@@ -648,7 +648,7 @@ class Uniform
 	private gl: WebGLRenderingContext;
 	#end
 
-public new (context: Context3D)
+public constructor(context: Context3D)
 {
 	this.context = context;
 		#if(lime && !openfl_html5)
@@ -732,7 +732,7 @@ class UniformMap
 	private registerLookup: Vector<Uniform>;
 	private uniforms: Array<Uniform>;
 
-	public new(list: Array<Uniform>)
+	public constructor(list: Array<Uniform>)
 	{
 		uniforms = list;
 

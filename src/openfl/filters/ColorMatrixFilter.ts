@@ -4,8 +4,8 @@ namespace openfl.filters;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
-import Point from "openfl/geom/Point";
-import Rectangle from "openfl/geom/Rectangle";
+import Point from "../geom/Point";
+import Rectangle from "../geom/Rectangle";
 #if lime
 import lime._internal.graphics.ImageCanvasUtil;
 import lime.math.RGBA;
@@ -132,7 +132,7 @@ import openfl._internal.backend.lime_standalone.RGBA;
 		Initializes a new ColorMatrixFilter instance with the specified
 		parameters.
 	**/
-	public new(matrix: Array<Float> = null)
+	public constructor(matrix: Array<Float> = null)
 	{
 		super();
 
@@ -147,7 +147,7 @@ import openfl._internal.backend.lime_standalone.RGBA;
 		return new ColorMatrixFilter(__matrix);
 	}
 
-	protected__applyFilter(destBitmapData: BitmapData, sourceBitmapData: BitmapData, sourceRect: Rectangle,
+	protected __applyFilter(destBitmapData: BitmapData, sourceBitmapData: BitmapData, sourceRect: Rectangle,
 		destPoint: Point): BitmapData
 	{
 		#if(lime || openfl_html5)
@@ -217,19 +217,19 @@ import openfl._internal.backend.lime_standalone.RGBA;
 		return destBitmapData;
 	}
 
-	protected__initShader(renderer: DisplayObjectRenderer, pass: number, sourceBitmapData: BitmapData): Shader
+	protected __initShader(renderer: DisplayObjectRenderer, pass: number, sourceBitmapData: BitmapData): Shader
 	{
 		__colorMatrixShader.init(matrix);
 		return __colorMatrixShader;
 	}
 
 	// Get & Set Methods
-	protected get_matrix(): Array<Float>
+	public get matrix(): Array<Float>
 	{
 		return __matrix;
 	}
 
-	protected set_matrix(value: Array<Float>): Array<Float>
+	public set matrix(value: Array<Float>): Array<Float>
 	{
 		if (value == null)
 		{
@@ -273,7 +273,7 @@ void main(void) {
 	}
 
 } ")
-public new ()
+public constructor()
 {
 	super();
 

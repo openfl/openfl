@@ -13,7 +13,7 @@ class LimeEvent<T>
 
 	protected __priorities: Array<Int>;
 
-	public new()
+	public constructor()
 	{
 		#if!macro
 		canceled = false;

@@ -1,11 +1,11 @@
 namespace openfl._internal.backend.dummy;
 
-import Context3D from "openfl/display3D/Context3D";
+import Context3D from "../display3D/Context3D";
 import openfl.display3D.Context3DClearMask;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display.BitmapData;
-import Point from "openfl/geom/Point";
-import Rectangle from "openfl/geom/Rectangle";
+import Point from "../geom/Point";
+import Rectangle from "../geom/Rectangle";
 
 #if!openfl_debug
 @: fileXml('tags="haxe,release"')
@@ -13,7 +13,7 @@ import Rectangle from "openfl/geom/Rectangle";
 #end
 class DummyContext3DBackend
 {
-	public new(parent: Context3D) { }
+	public constructor(parent: Context3D) { }
 
 	public clear(red: number = 0, green: number = 0, blue: number = 0, alpha: number = 1, depth: number = 1, stencil: number = 0,
 		mask: number = Context3DClearMask.ALL): void { }

@@ -5,7 +5,7 @@ class HTTPRequestHeader
 	public name: string;
 	public value: string;
 
-	public new(name: string, value: string = "")
+	public constructor(name: string, value: string = "")
 	{
 		this.name = name;
 		this.value = value;

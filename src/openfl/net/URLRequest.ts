@@ -1,6 +1,6 @@
-import URLRequestDefaults from "openfl/net/URLRequestDefaults";
-import URLRequestHeader from "openfl/net/URLRequestHeader";
-import URLRequestMethod from "openfl/net/URLRequestMethod";
+import URLRequestDefaults from "../net/URLRequestDefaults";
+import URLRequestHeader from "../net/URLRequestHeader";
+import URLRequestMethod from "../net/URLRequestMethod";
 
 /**
 	The URLRequest class captures all of the information in a single HTTP

@@ -1,6 +1,6 @@
 // import openfl._internal.bindings.typedarray.ArrayBufferView;
-import BitmapData from "openfl/display/BitmapData";
-import ByteArray from "openfl/utils/ByteArray";
+import BitmapData from "../display/BitmapData";
+import ByteArray from "../utils/ByteArray";
 
 namespace openfl.display3D.textures
 {

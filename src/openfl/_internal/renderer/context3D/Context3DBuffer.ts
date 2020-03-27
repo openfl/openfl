@@ -3,7 +3,7 @@ namespace openfl._internal.renderer.context3D;
 #if openfl_gl
 import openfl._internal.bindings.typedarray.Float32Array;
 import openfl._internal.bindings.typedarray.UInt16Array;
-import Context3D from "openfl/display3D/Context3D";
+import Context3D from "../display3D/Context3D";
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
 
@@ -26,7 +26,7 @@ class Context3DBuffer
 
 	private context3D: Context3D;
 
-	public new(context3D: Context3D, elementType: Context3DElementType, elementCount: number, dataPerVertex: number)
+	public constructor(context3D: Context3D, elementType: Context3DElementType, elementCount: number, dataPerVertex: number)
 	{
 		this.context3D = context3D;
 		this.elementType = elementType;

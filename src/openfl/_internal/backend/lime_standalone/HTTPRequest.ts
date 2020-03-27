@@ -39,7 +39,7 @@ private class AbstractHTTPRequest<T> implements _IHTTPRequest
 	public withCredentials: boolean;
 	protected __backend: HTTPRequestBackend;
 
-	public new(uri: string = null)
+	public constructor(uri: string = null)
 	{
 		this.uri = uri;
 
@@ -69,7 +69,7 @@ private class AbstractHTTPRequest<T> implements _IHTTPRequest
 
 /** @hidden */ class _HTTPRequest_Bytes<T> extends AbstractHTTPRequest<T>
 {
-	public new(uri: string = null)
+	public constructor(uri: string = null)
 	{
 		super(uri);
 	}
@@ -104,7 +104,7 @@ private class AbstractHTTPRequest<T> implements _IHTTPRequest
 
 /** @hidden */ class _HTTPRequest_String<T> extends AbstractHTTPRequest<T>
 {
-	public new(uri: string = null)
+	public constructor(uri: string = null)
 	{
 		super(uri);
 	}
@@ -173,7 +173,7 @@ class HTML5HTTPRequest
 	private request: XMLHttpRequest;
 	private validStatus0: boolean;
 
-	public new()
+	public constructor()
 	{
 		validStatus0 = #if allow_status_0 true #else ~/Tizen/gi.match(Browser.window.navigator.userAgent) #end;
 	}

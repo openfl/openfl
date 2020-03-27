@@ -27,7 +27,7 @@ abstract KeyModifier(Int) from Int to Int from UInt to UInt
 	public numLock(get, set) : boolean;
 	public shiftKey(get, set) : boolean;
 
-	protected get_altKey() : boolean
+	public get altKey() : boolean
 	{
 		return (this & LEFT_ALT > 0) || (this & RIGHT_ALT > 0);
 	}
@@ -46,7 +46,7 @@ abstract KeyModifier(Int) from Int to Int from UInt to UInt
 		return value;
 	}
 
-	protected get_capsLock() : boolean
+	public get capsLock() : boolean
 	{
 		return (this & CAPS_LOCK > 0) || (this & CAPS_LOCK > 0);
 	}
@@ -65,7 +65,7 @@ abstract KeyModifier(Int) from Int to Int from UInt to UInt
 		return value;
 	}
 
-	protected get_ctrlKey() : boolean
+	public get ctrlKey() : boolean
 	{
 		return (this & LEFT_CTRL > 0) || (this & RIGHT_CTRL > 0);
 	}
@@ -84,7 +84,7 @@ abstract KeyModifier(Int) from Int to Int from UInt to UInt
 		return value;
 	}
 
-	protected get_metaKey() : boolean
+	public get metaKey() : boolean
 	{
 		return (this & LEFT_META > 0) || (this & RIGHT_META > 0);
 	}
@@ -103,7 +103,7 @@ abstract KeyModifier(Int) from Int to Int from UInt to UInt
 		return value;
 	}
 
-	protected get_numLock() : boolean
+	public get numLock() : boolean
 	{
 		return (this & NUM_LOCK > 0) || (this & NUM_LOCK > 0);
 	}
@@ -122,7 +122,7 @@ abstract KeyModifier(Int) from Int to Int from UInt to UInt
 		return value;
 	}
 
-	protected get_shiftKey() : boolean
+	public get shiftKey() : boolean
 	{
 		return (this & LEFT_SHIFT > 0) || (this & RIGHT_SHIFT > 0);
 	}

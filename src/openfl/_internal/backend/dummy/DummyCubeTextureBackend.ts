@@ -3,7 +3,7 @@ namespace openfl._internal.backend.dummy;
 import openfl._internal.bindings.typedarray.ArrayBufferView;
 import openfl.display3D.textures.CubeTexture;
 import openfl.display.BitmapData;
-import ByteArray from "openfl/utils/ByteArray";
+import ByteArray from "../utils/ByteArray";
 
 #if!openfl_debug
 @: fileXml('tags="haxe,release"')
@@ -11,7 +11,7 @@ import ByteArray from "openfl/utils/ByteArray";
 #end
 class DummyCubeTextureBackend extends DummyTextureBaseBackend
 {
-	public new(parent: CubeTexture)
+	public constructor(parent: CubeTexture)
 	{
 		super(parent);
 	}

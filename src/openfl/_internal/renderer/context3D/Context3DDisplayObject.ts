@@ -3,7 +3,7 @@ namespace openfl._internal.renderer.context3D;
 #if openfl_gl
 import openfl.display3D.Context3DClearMask;
 import openfl.display.DisplayObject;
-import Rectangle from "openfl/geom/Rectangle";
+import Rectangle from "../geom/Rectangle";
 #if!lime
 import openfl._internal.backend.lime_standalone.ARGB;
 #else

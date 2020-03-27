@@ -46,7 +46,7 @@ void main(void) {
 	gl_Position = openfl_Matrix * openfl_Position;
 
 } ")
-public new ()
+public constructor()
 {
 	super();
 }

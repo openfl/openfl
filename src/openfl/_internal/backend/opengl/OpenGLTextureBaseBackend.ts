@@ -9,7 +9,7 @@ import openfl._internal.bindings.gl.WebGLRenderingContext;
 import openfl._internal.formats.atf.ATFGPUFormat;
 import openfl._internal.renderer.SamplerState;
 import openfl.display3D.textures.TextureBase;
-import Context3D from "openfl/display3D/Context3D";
+import Context3D from "../display3D/Context3D";
 import openfl.display3D.Context3DMipFilter;
 import openfl.display.BitmapData;
 import openfl.errors.Error;
@@ -56,7 +56,7 @@ class OpenGLTextureBaseBackend
 	// private outputTextureMemoryUsage:Bool = false;
 	private samplerState: SamplerState;
 
-	public new(parent: TextureBase)
+	public constructor(parent: TextureBase)
 	{
 		baseParent = parent;
 		contextBackend = parent.__context.__backend;

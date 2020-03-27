@@ -7,7 +7,7 @@ import openfl._internal.bindings.typedarray.ArrayBufferView;
 import openfl._internal.bindings.typedarray.UInt8Array;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.display.BitmapData;
-import ByteArray from "openfl/utils/ByteArray";
+import ByteArray from "../utils/ByteArray";
 
 #if!openfl_debug
 @: fileXml('tags="haxe,release"')
@@ -21,7 +21,7 @@ class OpenGLRectangleTextureBackend extends OpenGLTextureBaseBackend
 {
 	private parent: RectangleTexture;
 
-	public new(parent: RectangleTexture)
+	public constructor(parent: RectangleTexture)
 	{
 		super(parent);
 

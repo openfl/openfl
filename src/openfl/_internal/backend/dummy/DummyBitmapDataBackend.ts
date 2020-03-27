@@ -1,25 +1,25 @@
 namespace openfl._internal.backend.dummy;
 
 import openfl.display3D.textures.TextureBase;
-import Context3D from "openfl/display3D/Context3D";
+import Context3D from "../display3D/Context3D";
 import openfl.display.BitmapData;
 import openfl.display.BitmapDataChannel;
 import openfl.display.BlendMode;
 import openfl.display.IBitmapDrawable;
 import openfl.display.StageQuality;
 import openfl.filters.BitmapFilter;
-import ColorTransfrom from "openfl/geom/ColorTransform";
-import Matrix from "openfl/geom/Matrix";
-import Point from "openfl/geom/Point";
-import Rectangle from "openfl/geom/Rectangle";
-import ByteArray from "openfl/utils/ByteArray";
+import ColorTransfrom from "../geom/ColorTransform";
+import Matrix from "../geom/Matrix";
+import Point from "../geom/Point";
+import Rectangle from "../geom/Rectangle";
+import ByteArray from "../utils/ByteArray";
 import openfl.utils.Future;
 import openfl.utils.Object;
-import Vector from "openfl/Vector";
+import Vector from "../Vector";
 
 class DummyBitmapDataBackend
 {
-	public new(parent: BitmapData, width: number, height: number, transparent: boolean = true, fillColor: number = 0xFFFFFFFF) { }
+	public constructor(parent: BitmapData, width: number, height: number, transparent: boolean = true, fillColor: number = 0xFFFFFFFF) { }
 
 	public applyFilter(sourceBitmapData: BitmapData, sourceRect: Rectangle, destPoint: Point, filter: BitmapFilter): void { }
 

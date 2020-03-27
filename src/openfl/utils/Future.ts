@@ -1,4 +1,4 @@
-import Promise from "openfl/utils/Promise";
+import Promise from "../utils/Promise";
 
 /**
 	`Future` is an implementation of Futures and Promises, with the exception that

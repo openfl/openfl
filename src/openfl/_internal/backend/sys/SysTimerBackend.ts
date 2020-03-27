@@ -14,7 +14,7 @@ class SysTimerBackend
 	private parent: Timer;
 	private timer: HaxeTimer;
 
-	public new(parent: Timer)
+	public constructor(parent: Timer)
 	{
 		this.parent = parent;
 	}

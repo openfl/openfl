@@ -27,7 +27,7 @@ class TextLayoutGroup
 	public startIndex: number;
 	public width: number;
 
-public new (format: TextFormat, startIndex : number, endIndex : number)
+public constructor(format: TextFormat, startIndex : number, endIndex : number)
 {
 	this.format = format;
 	this.startIndex = startIndex;

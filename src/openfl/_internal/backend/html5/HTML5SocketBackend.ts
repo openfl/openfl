@@ -6,13 +6,13 @@ import haxe.Timer;
 import js.html.WebSocket;
 import js.Browser;
 import openfl._internal.bindings.typedarray.ArrayBuffer;
-import openfl._internal.Lib;
+import Lib from "../_internal/Lib";
 import openfl.errors.IOError;
-import Event from "openfl/events/Event";
+import Event from "../events/Event";
 import openfl.events.IOErrorEvent;
 import openfl.events.ProgressEvent;
 import openfl.net.Socket;
-import ByteArray from "openfl/utils/ByteArray";
+import ByteArray from "../utils/ByteArray";
 import openfl.utils.Endian;
 
 @: access(openfl.net.Socket)
@@ -26,7 +26,7 @@ class HTML5SocketBackend
 	private socket: WebSocket;
 	private timestamp: number;
 
-	public new(parent: Socket)
+	public constructor(parent: Socket)
 	{
 		this.parent = parent;
 

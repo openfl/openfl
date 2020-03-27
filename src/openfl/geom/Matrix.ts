@@ -1,6 +1,6 @@
-import ObjectPool from "openfl/_internal/utils/ObjectPool";
-import Point from "openfl/geom/Point";
-import Vector3D from "openfl/geom/Vector3D";
+import ObjectPool from "../_internal/utils/ObjectPool";
+import Point from "../geom/Point";
+import Vector3D from "../geom/Vector3D";
 
 /**
 	The Matrix class represents a transformation matrix that determines how to
@@ -336,7 +336,7 @@ export default class Matrix
 		following:
 
 		```haxe
-		import Matrix from "openfl/geom/Matrix";
+		import Matrix from "../geom/Matrix";
 
 		var mat1 = new Matrix();
 		mat1.identity();

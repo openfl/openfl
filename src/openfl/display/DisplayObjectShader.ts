@@ -1,4 +1,4 @@
-import ByteArray from "openfl/utils/ByteArray";
+import ByteArray from "../utils/ByteArray";
 
 namespace openfl.display
 {

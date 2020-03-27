@@ -1,4 +1,4 @@
-import Error from "openfl/errors/Error";
+import Error from "../errors/Error";
 
 /**
 	The IOError exception is thrown when some type of input or output failure

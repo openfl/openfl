@@ -21,7 +21,7 @@ class LimePrintJobBackend
 {
 	private parent: PrintJob;
 
-	public new(parent: PrintJob)
+	public constructor(parent: PrintJob)
 	{
 		this.parent = parent;
 	}

@@ -1,8 +1,8 @@
-import { EventInternal } from "openfl/_internal/utils/InternalAccess";
-import Event from "openfl/events/Event";
-import EventPhase from "openfl/events/EventPhase";
-import EventType from "openfl/events/EventType";
-import IEventDispatcher from "openfl/events/IEventDispatcher";
+import * as internal from "../_internal/utils/InternalAccess";
+import Event from "../events/Event";
+import EventPhase from "../events/EventPhase";
+import EventType from "../events/EventType";
+import IEventDispatcher from "../events/IEventDispatcher";
 
 /**
 		The EventDispatcher class is the base class for all classes that dispatch
@@ -234,11 +234,11 @@ export default class EventDispatcher implements IEventDispatcher
 	{
 		if (this.__targetDispatcher != null)
 		{
-			(<any>event as EventInternal).__target = this.__targetDispatcher;
+			(<internal.Event><any>event).__target = this.__targetDispatcher;
 		}
 		else
 		{
-			(<any>event as EventInternal).__target = this;
+			(<internal.Event><any>event).__target = this;
 		}
 
 		return this.__dispatchEvent(event);
@@ -351,8 +351,7 @@ export default class EventDispatcher implements IEventDispatcher
 		return this.hasEventListener(type);
 	}
 
-	/** @hidden */
-	private __dispatchEvent(event: Event): boolean
+	protected __dispatchEvent(event: Event): boolean
 	{
 		if (this.__eventMap == null || event == null) return true;
 
@@ -361,19 +360,19 @@ export default class EventDispatcher implements IEventDispatcher
 		var list = this.__eventMap.get(type);
 		if (list == null) return true;
 
-		if ((<any>event as EventInternal).__target == null)
+		if ((<internal.Event><any>event).__target == null)
 		{
 			if (this.__targetDispatcher != null)
 			{
-				(<any>event as EventInternal).__target = this.__targetDispatcher;
+				(<internal.Event><any>event).__target = this.__targetDispatcher;
 			}
 			else
 			{
-				(<any>event as EventInternal).__target = this;
+				(<internal.Event><any>event).__target = this;
 			}
 		}
 
-		(<any>event as EventInternal).__currentTarget = this;
+		(<internal.Event><any>event).__currentTarget = this;
 
 		var capture = (event.eventPhase == EventPhase.CAPTURING_PHASE);
 
@@ -397,7 +396,7 @@ export default class EventDispatcher implements IEventDispatcher
 				// listener.callback (event.clone ());
 				listener.callback(event);
 
-				if ((<any>event as EventInternal).__isCanceledNow)
+				if ((<internal.Event><any>event).__isCanceledNow)
 				{
 					break;
 				}

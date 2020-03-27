@@ -17,7 +17,7 @@ abstract Locale(String) from String to String
 	public language(get, never): string;
 	public region(get, never): string;
 
-	public new (value: string)
+	public constructor(value: string)
 	{
 		this = value;
 	}
@@ -91,7 +91,7 @@ abstract Locale(String) from String to String
 }
 
 	// Get & Set Methods
-	protected get_language(): string
+	public get language(): string
 {
 	if (this != null)
 	{
@@ -116,7 +116,7 @@ abstract Locale(String) from String to String
 	return this;
 }
 
-	protected get_region(): string
+	public get region(): string
 {
 	if (this != null)
 	{

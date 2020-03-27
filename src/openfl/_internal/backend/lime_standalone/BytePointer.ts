@@ -163,7 +163,7 @@ abstract BytePointer(BytePointerData) from BytePointerData to BytePointerData
 	public bytes: Bytes;
 	public offset: number;
 
-	public new(bytes: Bytes, offset: number)
+	public constructor(bytes: Bytes, offset: number)
 	{
 		this.bytes = bytes;
 		this.offset = offset;

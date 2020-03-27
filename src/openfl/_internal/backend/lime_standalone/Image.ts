@@ -11,8 +11,8 @@ import js.Browser;
 import openfl._internal.backend.lime_standalone.HTTPRequest;
 import openfl._internal.bindings.typedarray.UInt8Array;
 import openfl.display.BitmapDataChannel;
-import Point from "openfl/geom/Point";
-import Rectangle from "openfl/geom/Rectangle";
+import Point from "../geom/Point";
+import Rectangle from "../geom/Rectangle";
 import openfl.utils.Endian;
 import openfl.utils.Future;
 import openfl.utils.Promise;
@@ -44,7 +44,7 @@ class Image
 	public x: number;
 	public y: number;
 
-	public new(buffer: ImageBuffer = null, offsetX: number = 0, offsetY: number = 0, width: number = -1, height: number = -1, color: null | number = null,
+	public constructor(buffer: ImageBuffer = null, offsetX: number = 0, offsetY: number = 0, width: number = -1, height: number = -1, color: null | number = null,
 		type: ImageType = null)
 	{
 		this.offsetX = offsetX;
@@ -801,7 +801,7 @@ private static __isWebP(bytes: Bytes) : boolean
 }
 
 	// Get & Set Methods
-	protected get_data(): number8Array
+	public get data(): number8Array
 {
 	if (buffer.data == null && buffer.width > 0 && buffer.height > 0)
 	{
@@ -811,17 +811,17 @@ private static __isWebP(bytes: Bytes) : boolean
 	return buffer.data;
 }
 
-	protected set_data(value: number8Array): number8Array
+	public set data(value: number8Array): number8Array
 {
 	return buffer.data = value;
 }
 
-	protected get_format(): PixelFormat
+	public get format(): PixelFormat
 {
 	return buffer.format;
 }
 
-	protected set_format(value: PixelFormat): PixelFormat
+	public set format(value: PixelFormat): PixelFormat
 {
 	if (buffer.format != value)
 	{
@@ -837,14 +837,14 @@ private static __isWebP(bytes: Bytes) : boolean
 	return buffer.format = value;
 }
 
-	protected get_powerOfTwo() : boolean
+	public get powerOfTwo() : boolean
 {
 	return ((buffer.width != 0)
 		&& ((buffer.width & (~buffer.width + 1)) == buffer.width))
 		&& ((buffer.height != 0) && ((buffer.height & (~buffer.height + 1)) == buffer.height));
 }
 
-	protected set_powerOfTwo(value : boolean) : boolean
+	public set powerOfTwo(value : boolean) : boolean
 {
 	if (value != powerOfTwo)
 	{
@@ -882,12 +882,12 @@ private static __isWebP(bytes: Bytes) : boolean
 	return value;
 }
 
-	protected get_premultiplied() : boolean
+	public get premultiplied() : boolean
 {
 	return buffer.premultiplied;
 }
 
-	protected set_premultiplied(value : boolean) : boolean
+	public set premultiplied(value : boolean) : boolean
 {
 	if (value && !buffer.premultiplied)
 	{
@@ -917,12 +917,12 @@ private static __isWebP(bytes: Bytes) : boolean
 	return value;
 }
 
-	protected get_rect(): Rectangle
+	public get rect(): Rectangle
 {
 	return new Rectangle(0, 0, width, height);
 }
 
-	protected get_src(): Dynamic
+	public get src(): Dynamic
 {
 	if (buffer.__srcCanvas == null && (buffer.data != null || type == DATA))
 	{
@@ -931,18 +931,18 @@ private static __isWebP(bytes: Bytes) : boolean
 	return buffer.src;
 }
 
-	protected set_src(value: Dynamic): Dynamic
+	public set src(value: Dynamic): Dynamic
 {
 	return buffer.src = value;
 }
 
-	protected get_transparent() : boolean
+	public get transparent() : boolean
 {
 	if (buffer == null) return false;
 	return buffer.transparent;
 }
 
-	protected set_transparent(value : boolean) : boolean
+	public set transparent(value : boolean) : boolean
 {
 	// TODO, modify data to set transparency
 	if (buffer == null) return false;

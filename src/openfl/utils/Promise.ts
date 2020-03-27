@@ -1,4 +1,4 @@
-import { FutureInternal } from "openfl/_internal/utils/InternalAccess";
+import * as internal from "../_internal/utils/InternalAccess";
 import Future from "./Future";
 
 /**
@@ -59,7 +59,7 @@ export default class Promise<T>
 	**/
 	public complete(data: T): Promise<T>
 	{
-		var future = (<any>this.__future as FutureInternal<T>);
+		var future = (<internal.Future<T>><any>this.__future);
 		if (!future.__isError)
 		{
 			future.__isComplete = true;
@@ -101,7 +101,7 @@ export default class Promise<T>
 	**/
 	public error(msg: any): Promise<T>
 	{
-		var future = (<any>this.__future as FutureInternal<T>);
+		var future = (<internal.Future<T>><any>this.__future);
 		if (!future.__isComplete)
 		{
 			future.__isError = true;
@@ -129,7 +129,7 @@ export default class Promise<T>
 	**/
 	public progress(progress: number, total: number): Promise<T>
 	{
-		var future = (<any>this.__future as FutureInternal<T>);
+		var future = (<internal.Future<T>><any>this.__future);
 		if (!future.__isError && !future.__isComplete)
 		{
 			if (future.__progressListeners != null)

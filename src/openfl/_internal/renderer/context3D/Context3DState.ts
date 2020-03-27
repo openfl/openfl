@@ -11,7 +11,7 @@ import openfl.display3D.Context3DStencilAction;
 import openfl.display3D.Context3DTriangleFace;
 import openfl.display3D.Program3D;
 import openfl.display.Shader;
-import Rectangle from "openfl/geom/Rectangle";
+import Rectangle from "../geom/Rectangle";
 
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DState
@@ -70,7 +70,7 @@ class Context3DState
 	private __rttStencilGLRenderbuffer: GLRenderbuffer;
 	#end
 
-	public new()
+	public constructor()
 	{
 		backBufferEnableDepthAndStencil = false;
 		blendDestinationAlphaFactor = ZERO;

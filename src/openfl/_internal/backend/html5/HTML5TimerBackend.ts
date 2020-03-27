@@ -10,7 +10,7 @@ class HTML5TimerBackend
 	private parent: Timer;
 	private timerID: null | number;
 
-	public new(parent: Timer)
+	public constructor(parent: Timer)
 	{
 		this.parent = parent;
 	}

@@ -15,7 +15,7 @@ class LimeClipboardBackend
 {
 	private parent: Clipboard;
 
-	public new(parent: Clipboard)
+	public constructor(parent: Clipboard)
 	{
 		this.parent = parent;
 	}

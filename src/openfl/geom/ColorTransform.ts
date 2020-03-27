@@ -1,4 +1,4 @@
-import ObjectPool from "openfl/_internal/utils/ObjectPool";
+import ObjectPool from "../_internal/utils/ObjectPool";
 
 /**
 	The ColorTransform class lets you adjust the color values in a display

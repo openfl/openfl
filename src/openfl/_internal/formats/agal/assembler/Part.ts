@@ -1,6 +1,6 @@
 namespace openfl._internal.formats.agal.assembler;
 
-import ByteArray from "openfl/utils/ByteArray";
+import ByteArray from "../utils/ByteArray";
 import openfl.utils.Endian;
 
 #if!openfl_debug
@@ -13,7 +13,7 @@ class Part
 	public name: string;
 	public version: number;
 
-	public new(name: string = "", version: number = 0)
+	public constructor(name: string = "", version: number = 0)
 	{
 		this.name = name;
 		this.version = version;

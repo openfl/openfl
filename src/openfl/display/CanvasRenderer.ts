@@ -1,4 +1,4 @@
-import Matrix from "openfl/geom/Matrix";
+import Matrix from "../geom/Matrix";
 // import openfl._internal.backend.lime_standalone.Canvas2DRenderContext;
 
 namespace openfl.display

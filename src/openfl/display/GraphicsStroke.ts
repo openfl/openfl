@@ -1,4 +1,4 @@
-import GraphicsDataType from "openfl/_internal/renderer/GraphicsDataType";
+import GraphicsDataType from "../_internal/renderer/GraphicsDataType";
 
 namespace openfl.display
 {

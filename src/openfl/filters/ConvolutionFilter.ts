@@ -209,7 +209,7 @@ class ConvolutionFilter extends BitmapFilter
 							 that are off the source image.
 		@param alpha         The alpha of the substitute color.
 	**/
-	public new(matrixX: number = 0, matrixY: number = 0, matrix: Array<Float> = null, divisor: number = 1.0, bias: number = 0.0, preserveAlpha: boolean = true,
+	public constructor(matrixX: number = 0, matrixY: number = 0, matrix: Array<Float> = null, divisor: number = 1.0, bias: number = 0.0, preserveAlpha: boolean = true,
 		clamp: boolean = true, color: number = 0, alpha: number = 0.0)
 	{
 		super();
@@ -232,7 +232,7 @@ class ConvolutionFilter extends BitmapFilter
 		return new ConvolutionFilter(matrixX, matrixY, __matrix, divisor, bias, preserveAlpha, clamp, color, alpha);
 	}
 
-	protected__initShader(renderer: DisplayObjectRenderer, pass: number, sourceBitmapData: BitmapData): Shader
+	protected __initShader(renderer: DisplayObjectRenderer, pass: number, sourceBitmapData: BitmapData): Shader
 	{
 		#if(!macro && openfl_gl)
 		__convolutionShader.uConvoMatrix.value = matrix;
@@ -245,12 +245,12 @@ class ConvolutionFilter extends BitmapFilter
 	}
 
 	// Get & Set Methods
-	protected get_matrix(): Array<Float>
+	public get matrix(): Array<Float>
 	{
 		return __matrix;
 	}
 
-	protected set_matrix(v: Array<Float>): Array<Float>
+	public set matrix(v: Array<Float>): Array<Float>
 	{
 		if (v == null)
 		{
@@ -345,7 +345,7 @@ void main(void) {
 	gl_Position = openfl_Matrix * openfl_Position;
 
 } ")
-public new ()
+public constructor()
 {
 	super();
 

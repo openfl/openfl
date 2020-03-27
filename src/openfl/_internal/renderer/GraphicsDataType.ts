@@ -1,14 +1,14 @@
-namespace openfl._internal.renderer;
-
-@: enum abstract GraphicsDataType(Int)
+export enum GraphicsDataType
 {
-	var STROKE = 0;
-	var SOLID = 1;
-	var GRADIENT = 2;
-	var PATH = 3;
-	var BITMAP = 4;
-	var END = 5;
-	var QUAD_PATH = 6;
-	var TRIANGLE_PATH = 7;
-	var SHADER = 8;
+	STROKE = 0,
+	SOLID = 1,
+	GRADIENT = 2,
+	PATH = 3,
+	BITMAP = 4,
+	END = 5,
+	QUAD_PATH = 6,
+	TRIANGLE_PATH = 7,
+	SHADER = 8
 }
+
+export default GraphicsDataType;

@@ -5,16 +5,16 @@ import haxe.io.Bytes;
 import openfl._internal.backend.lime_standalone.Base64;
 import openfl._internal.bindings.howlerjs.Howl;
 import openfl._internal.utils.Log;
-import Event from "openfl/events/Event";
+import Event from "../events/Event";
 import openfl.events.IOErrorEvent;
 import openfl.media.ID3Info;
 import openfl.media.Sound;
 import openfl.media.SoundChannel;
 import openfl.media.SoundLoaderContext;
 import openfl.media.SoundMixer;
-import SoundTransform from "openfl/media/SoundTransform";
+import SoundTransform from "../media/SoundTransform";
 import openfl.net.URLRequest;
-import ByteArray from "openfl/utils/ByteArray";
+import ByteArray from "../utils/ByteArray";
 import openfl.utils.Future;
 import openfl.utils.Promise;
 
@@ -26,7 +26,7 @@ class HTML5SoundBackend
 	private parent: Sound;
 	private srcHowl: Howl;
 
-	public new(parent: Sound)
+	public constructor(parent: Sound)
 	{
 		this.parent = parent;
 	}

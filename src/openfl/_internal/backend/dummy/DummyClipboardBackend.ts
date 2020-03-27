@@ -15,7 +15,7 @@ class DummyClipboardBackend
 	private richText: string;
 	private text: string;
 
-	public new(parent: Clipboard)
+	public constructor(parent: Clipboard)
 	{
 		htmlText = null;
 		richText = null;

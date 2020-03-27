@@ -1,7 +1,7 @@
 // import haxe.Timer;
-import ArgumentError from "openfl/errors/ArgumentError";
-import AccelerometerEvent from "openfl/events/AccelerometerEvent";
-import EventDispatcher from "openfl/events/EventDispatcher";
+import ArgumentError from "../errors/ArgumentError";
+import AccelerometerEvent from "../events/AccelerometerEvent";
+import EventDispatcher from "../events/EventDispatcher";
 
 /**
 	The Accelerometer class dispatches events based on activity detected by the
@@ -170,12 +170,12 @@ export default class Accelerometer extends EventDispatcher
 		return supported;
 	}
 
-	protected get_muted(): boolean
+	public get muted(): boolean
 	{
 		return __muted;
 	}
 
-	protected set_muted(value: boolean): boolean
+	public set muted(value: boolean): boolean
 	{
 		__muted = value;
 		setRequestedUpdateInterval(__interval);

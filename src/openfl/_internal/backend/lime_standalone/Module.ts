@@ -11,7 +11,7 @@ class Module implements IModule
 	/**
 		Creates a new `Module` instance
 	**/
-	public new() { }
+	public constructor() { }
 
 	protected __registerLimeModule(application: Application): void { }
 

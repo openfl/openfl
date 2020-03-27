@@ -1,6 +1,6 @@
-import ObjectEncoding from "openfl/net/ObjectEncoding";
-import ByteArray from "openfl/utils/ByteArray";
-import Endian from "openfl/utils/Endian";
+import ObjectEncoding from "../net/ObjectEncoding";
+import ByteArray from "../utils/ByteArray";
+import Endian from "../utils/Endian";
 
 /**
 	The IDataOutput interface provides a set of methods for writing binary data. This

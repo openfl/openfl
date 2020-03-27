@@ -10,6 +10,7 @@ import openfl.display.GraphicsShader;
 import openfl.display.ShaderInput;
 import openfl.display.ShaderParameter;
 
+
 #if!openfl_debug
 @: fileXml('tags="haxe,release"')
 @: noDebug
@@ -52,7 +53,7 @@ class ShaderBuffer
 	public paramTypes: Array<Int>;
 	public shader: GraphicsShader;
 
-	public new()
+	public constructor()
 	{
 		inputRefs = [];
 		inputFilter = [];

@@ -9,8 +9,8 @@ import openfl.display.JointStyle;
 import openfl.display.LineScaleMode;
 import openfl.display.SpreadMethod;
 import openfl.display.TriangleCulling;
-import Matrix from "openfl/geom/Matrix";
-import Vector from "openfl/Vector";
+import Matrix from "../geom/Matrix";
+import Vector from "../Vector";
 
 #if!openfl_debug
 @: fileXml('tags="haxe,release"')
@@ -31,7 +31,7 @@ class DrawCommandReader
 	private prev: DrawCommandType;
 	private tsPos: number;
 
-	public new(buffer: DrawCommandBuffer)
+	public constructor(buffer: DrawCommandBuffer)
 	{
 		this.buffer = buffer;
 

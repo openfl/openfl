@@ -1,7 +1,7 @@
-import EventDispatcher from "openfl/events/EventDispatcher";
-import EventType from "openfl/events/EventType";
-import GameInputEvent from "openfl/events/GameInputEvent";
-import GameInputDevice from "openfl/ui/GameInputDevice";
+import EventDispatcher from "../events/EventDispatcher";
+import EventType from "../events/EventType";
+import GameInputEvent from "../events/GameInputEvent";
+import GameInputDevice from "../ui/GameInputDevice";
 
 /**
 	The GameInput class is the entry point into the GameInput API. You can use this API to

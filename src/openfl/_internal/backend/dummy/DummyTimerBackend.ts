@@ -4,7 +4,7 @@ import openfl.utils.Timer;
 
 class DummyTimerBackend
 {
-	public new(parent: Timer) { }
+	public constructor(parent: Timer) { }
 
 	public start(): void { }
 

@@ -1,7 +1,7 @@
-import { GameInputControlInternal } from "openfl/_internal/utils/InternalAccess";
-import GameInputControl from "openfl/ui/GameInputControl";
-import ByteArray from "openfl/utils/ByteArray";
-import Vector from "openfl/Vector";
+import * as internal from "../_internal/utils/InternalAccess";
+import GameInputControl from "../ui/GameInputControl";
+import ByteArray from "../utils/ByteArray";
+import Vector from "../Vector";
 
 export default class GameInputDevice
 {
@@ -45,14 +45,14 @@ export default class GameInputDevice
 
 		for (let i = 0; i < 6; i++)
 		{
-			control = (<any>GameInputControl as GameInputControlInternal).__new(this, "AXIS_" + i, -1, 1);
+			control = new (<internal.GameInputControl><any>GameInputControl)(this, "AXIS_" + i, -1, 1);
 			this.__axis.set(i, control);
 			this.__controls.push(control);
 		}
 
 		for (let i = 0; i < 15; i++)
 		{
-			control = (<any>GameInputControl as GameInputControlInternal).__new(this, "BUTTON_" + i, 0, 1);
+			control = new (<internal.GameInputControl><any>GameInputControl)(this, "BUTTON_" + i, 0, 1);
 			this.__button.set(i, control);
 			this.__controls.push(control);
 		}
@@ -101,7 +101,7 @@ export default class GameInputDevice
 	/**
 		Returns the number of controls on this device.
 	**/
-	protected get_numControls(): number
+	public get numControls(): number
 	{
 		return this.__controls.length;
 	}

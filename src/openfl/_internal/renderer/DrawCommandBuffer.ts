@@ -9,8 +9,8 @@ import openfl.display.JointStyle;
 import openfl.display.LineScaleMode;
 import openfl.display.SpreadMethod;
 import openfl.display.TriangleCulling;
-import Matrix from "openfl/geom/Matrix";
-import Vector from "openfl/Vector";
+import Matrix from "../geom/Matrix";
+import Vector from "../Vector";
 
 #if!openfl_debug
 @: fileXml('tags="haxe,release"')
@@ -33,7 +33,7 @@ class DrawCommandBuffer
 	private ii: Array<Array<Int>>;
 	@SuppressWarnings("checkstyle:Dynamic") private o: Array<Dynamic>;
 
-	public new()
+	public constructor()
 	{
 		if (empty == null)
 		{

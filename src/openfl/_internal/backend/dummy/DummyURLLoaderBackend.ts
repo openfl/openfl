@@ -5,7 +5,7 @@ import openfl.net.URLRequest;
 
 class DummyURLLoaderBackend
 {
-	public new(parent: URLLoader) { }
+	public constructor(parent: URLLoader) { }
 
 	public close(): void { }
 

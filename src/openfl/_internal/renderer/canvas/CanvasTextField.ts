@@ -5,8 +5,8 @@ import js.html.CanvasRenderingContext2D;
 import js.Browser;
 import openfl._internal.text.TextEngine;
 import openfl.display.BitmapData;
-import Matrix from "openfl/geom/Matrix";
-import Rectangle from "openfl/geom/Rectangle";
+import Matrix from "../geom/Matrix";
+import Rectangle from "../geom/Rectangle";
 import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
 

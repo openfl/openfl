@@ -1,4 +1,4 @@
-import ByteArray from "openfl/utils/ByteArray";
+import ByteArray from "../utils/ByteArray";
 
 namespace openfl.display
 {
@@ -102,10 +102,10 @@ namespace openfl.display
 
 	}")
 	#end
-	public new (code: ByteArray = null)
+	public constructor(code: ByteArray = null)
 	{
-		super(code);
-	}
+			super(code);
+		}
 }
 }
 

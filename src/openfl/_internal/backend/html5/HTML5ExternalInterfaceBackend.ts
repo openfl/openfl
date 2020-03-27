@@ -1,7 +1,7 @@
 namespace openfl._internal.backend.html5;
 
 #if openfl_html5
-import openfl._internal.Lib;
+import Lib from "../_internal/Lib";
 
 @: access(openfl.display.Stage)
 class HTML5ExternalInterfaceBackend

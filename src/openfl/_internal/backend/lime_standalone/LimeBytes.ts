@@ -10,7 +10,7 @@ import openfl.utils.Future;
 @: forward()
 abstract LimeBytes(HaxeBytes) from HaxeBytes to HaxeBytes
 {
-	public new (length : number, bytesData: BytesData)
+	public constructor(length : number, bytesData: BytesData)
 	{
 		this = new HaxeBytes(bytesData);
 	}

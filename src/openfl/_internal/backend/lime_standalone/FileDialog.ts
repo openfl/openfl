@@ -31,7 +31,7 @@ class FileDialog
 	public onSelect = new Event < String -> Void > ();
 	public onSelectMultiple = new Event < Array < String > -> Void > ();
 
-	public new() { }
+	public constructor() { }
 
 	public browse(type: FileDialogType = null, filter: string = null, defaultPath: string = null, title: string = null): boolean
 	{

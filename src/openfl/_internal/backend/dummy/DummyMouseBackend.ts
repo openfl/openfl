@@ -1,7 +1,7 @@
 namespace openfl._internal.backend.dummy;
 
 import openfl.display.Stage;
-import MouseCursor from "openfl/ui/MouseCursor";
+import MouseCursor from "../ui/MouseCursor";
 
 class DummyMouseBackend
 {

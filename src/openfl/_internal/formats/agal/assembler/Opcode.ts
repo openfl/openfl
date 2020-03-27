@@ -12,7 +12,7 @@ class Opcode
 	public flags: Flags;
 	public opcode: number;
 
-	public new(dest: string, aformat: string, asize: number, bformat: string, bsize: number, opcode: number, simple: boolean, horizontal: boolean = false,
+	public constructor(dest: string, aformat: string, asize: number, bformat: string, bsize: number, opcode: number, simple: boolean, horizontal: boolean = false,
 		fragonly: boolean = false, matrix: boolean = false)
 	{
 		this.a = new FS();

@@ -1,17 +1,21 @@
 {
 	"compilerOptions": {
 		"target": "es6",
-		"baseUrl": "src",
+		"baseUrl": "./src",
 		"paths": {
+			"openfl/*": ["./openfl/*"],
 			"pako": ["./../node_modules/pako/dist/pako.min.js"]
-			// "openfl": ["src/openfl/index.js"],
-			// "openfl/*": ["src/openfl/*"]
 		},
 		"lib": [ "dom", "es2017" ],
-		"sourceMap": true
+		"sourceMap": true,
+		"assumeChangesOnlyAffectDirectDependencies": false,
+		"outDir": "./lib-ts"
 	},
 	"include": [
-		"./src/openfl/ui/**/*.ts"
-		// "./src/openfl/utils/ByteArray.ts"
+		"./src/openfl/**/*.ts"
+	],
+	"exclude": [
+		"node_modules",
+		".npm"
 	]
 }

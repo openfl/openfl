@@ -1,4 +1,4 @@
-import ByteArray from "openfl/utils/ByteArray";
+import ByteArray from "../utils/ByteArray";
 
 namespace openfl.display
 {
@@ -16,14 +16,14 @@ namespace openfl.display
 		shader metadata are instances of the ActionScript class corresponding to
 		their data type (for example, a String instance for textual metadata and a
 		uint for uint metadata).
-	
+
 		For example, consider this shader, which is defined with one input image
 		(`src`), two parameters (`size` and `radius`), and three metadata values
 		(`nameSpace`, `version`, and `description`):
-	
+
 		```as3
 		<languageVersion : 1.0;>
-	
+
 		kernel DoNothing
 		<
 			namespace: "Adobe::Example";
@@ -33,9 +33,9 @@ namespace openfl.display
 		>
 		{
 			input image4 src;
-	
+
 			output pixel4 dst;
-	
+
 			parameter float2 size
 			<
 				description: "The size of the image to which the kernel is applied";
@@ -43,7 +43,7 @@ namespace openfl.display
 				maxValue : number2(100.0, 100.0);
 				defaultValue : number2(50.0, 50.0);
 			>;
-	
+
 			parameter float radius
 			<
 				description: "The radius of the effect";
@@ -51,7 +51,7 @@ namespace openfl.display
 				maxValue: 50.0;
 				defaultValue: 25.0;
 			>;
-	
+
 			void evaluatePixel()
 			{
 				float2 one = (radius / radius) ∗ (size / size);
@@ -59,10 +59,10 @@ namespace openfl.display
 			}
 		}
 		```
-	
+
 		If you create a Shader instance by loading the byte code for this shader,
 		the ShaderData instance in its `data` property contains these properties:
-	
+
 		| Property | Data type | Value |
 		| --- | --- | --- |
 		| name | `String` | "DoNothing" |
@@ -72,13 +72,13 @@ namespace openfl.display
 		| src | `ShaderInput` | _[A ShaderInput instance]_ |
 		| size | `ShaderParameter` | _[A ShaderParameter instance, with properties for the parameter metadata]_ |
 		| radius | `ShaderParameter` | _[A ShaderParameter instance, with properties for the parameter metadata]_ |
-	
+
 		Note that any input image or parameter that is defined in the shader
 		source code but not used in the shader's `evaluatePixel()` is
 		removed when the shader is compiled to byte code. In that case, there is
 		no corresponding ShaderInput or ShaderParameter instance added as a
 		property of the ShaderData instance.
-	
+
 		Generally, developer code does not create a ShaderData instance. A
 		ShaderData instance containing data, parameters, and inputs for a shader
 		is available as the Shader instance's `data` property.
@@ -93,7 +93,7 @@ namespace openfl.display
 
 		@param byteCode The shader's byte code.
 	**/
-	public new (byteArray: ByteArray)
+	public constructor(byteArray: ByteArray)
 		{
 			this = {};
 		}

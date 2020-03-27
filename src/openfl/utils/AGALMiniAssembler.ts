@@ -25,11 +25,11 @@
 	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **/
 
-import Context3D from "openfl/display3D/Context3D";
-import Program3D from "openfl/display3D/Program3D";
-import ByteArray from "openfl/utils/ByteArray";
-import Endian from "openfl/utils/Endian";
-import Lib from "openfl/Lib";
+import Context3D from "../display3D/Context3D";
+import Program3D from "../display3D/Program3D";
+import ByteArray from "../utils/ByteArray";
+import Endian from "../utils/Endian";
+import Lib from "../Lib";
 
 export default class AGALMiniAssembler
 {

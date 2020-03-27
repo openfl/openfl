@@ -1,12 +1,13 @@
-import Log from "openfl/_internal/utils/Log";
-import BitmapData from "openfl/display/BitmapData";
-import MovieClip from "openfl/display/MovieClip";
-import Event from "openfl/events/Event";
-import EventDispatcher from "openfl/events/EventDispatcher";
-import Sound from "openfl/media/Sound";
-import Font from "openfl/text/Font";
-import AssetType from "openfl/utils/AssetType";
-import IAssetCache from "openfl/utils/IAssetCache";
+import BitmapData from "../display/BitmapData";
+import MovieClip from "../display/MovieClip";
+import Event from "../events/Event";
+import EventDispatcher from "../events/EventDispatcher";
+import Sound from "../media/Sound";
+import Font from "../text/Font";
+import AssetType from "../utils/AssetType";
+import ByteArray from "../utils/ByteArray";
+import Future from "../utils/Future";
+import IAssetCache from "../utils/IAssetCache";
 
 /**
 	The Assets class provides a cross-platform interface to access
@@ -29,7 +30,7 @@ export default class Assets
 	public static cache: IAssetCache = new AssetCache();
 	protected static dispatcher: EventDispatcher = new EventDispatcher();
 
-	public static addEventListener(type: string, listener: Object, useCapture: boolean = false, priority: number = 0, useWeakReference: boolean = false): void
+	public static addEventListener<T>(type: string, listener: (event: T) => void, useCapture: boolean = false, priority: number = 0, useWeakReference: boolean = false): void
 	{
 		Assets.dispatcher.addEventListener(type, listener, useCapture, priority, useWeakReference);
 	}
@@ -105,7 +106,7 @@ export default class Assets
 	{
 		// TODO: Streaming sound
 
-		return getSound(id, useCache);
+		return this.getSound(id, useCache);
 	}
 
 	/**
@@ -192,11 +193,11 @@ export default class Assets
 		@param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
 		@return		Returns a Future<BitmapData>
 	**/
-	public static loadBitmapData(id: string, useCache: Null<Bool> = true): Future<BitmapData>
+	public static loadBitmapData(id: string, useCache: null | boolean = true): Future<BitmapData>
 	{
 		if (useCache == null) useCache = true;
 
-		return Future.withValue(getBitmapData(id, useCache));
+		return Future.withValue(this.getBitmapData(id, useCache));
 	}
 
 	/**
@@ -207,7 +208,7 @@ export default class Assets
 	**/
 	public static loadBytes(id: string): Future<ByteArray>
 	{
-		return Future.withValue(getBytes(id));
+		return Future.withValue(this.getBytes(id));
 	}
 
 	/**
@@ -217,11 +218,11 @@ export default class Assets
 		@param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
 		@return		Returns a Future<Font>
 	**/
-	public static loadFont(id: string, useCache: Null<Bool> = true): Future<Font>
+	public static loadFont(id: string, useCache: null | boolean = true): Future<Font>
 	{
 		if (useCache == null) useCache = true;
 
-		return Future.withValue(getFont(id, useCache));
+		return Future.withValue(this.getFont(id, useCache));
 	}
 
 	/**
@@ -231,7 +232,7 @@ export default class Assets
 	**/
 	public static loadLibrary(name: string): Future<AssetLibrary>
 	{
-		return cast Future.withError("Cannot load library");
+		return Future.withError("Cannot load library") as Future<AssetLibrary>;
 	}
 
 	/**
@@ -241,11 +242,11 @@ export default class Assets
 		@param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
 		@return		Returns a Future<Sound>
 	**/
-	public static loadMusic(id: string, useCache: Null<Bool> = true): Future<Sound>
+	public static loadMusic(id: string, useCache: null | boolean = true): Future<Sound>
 	{
 		if (useCache == null) useCache = true;
 
-		return Future.withValue(getMusic(id, useCache));
+		return Future.withValue(this.getMusic(id, useCache));
 	}
 
 	/**
@@ -257,7 +258,7 @@ export default class Assets
 	**/
 	public static loadMovieClip(id: string): Future<MovieClip>
 	{
-		return Future.withValue(getMovieClip(id));
+		return Future.withValue(this.getMovieClip(id));
 	}
 
 	/**
@@ -267,11 +268,11 @@ export default class Assets
 		@param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
 		@return		Returns a Future<Sound>
 	**/
-	public static loadSound(id: string, useCache: Null<Bool> = true): Future<Sound>
+	public static loadSound(id: string, useCache: null | boolean = true): Future<Sound>
 	{
 		if (useCache == null) useCache = true;
 
-		return Future.withValue(getSound(id, useCache));
+		return Future.withValue(this.getSound(id, useCache));
 	}
 
 	/**
@@ -283,7 +284,7 @@ export default class Assets
 	**/
 	public static loadText(id: string): Future<String>
 	{
-		return Future.withValue(getText(id));
+		return Future.withValue(this.getText(id));
 	}
 
 	/**
@@ -295,20 +296,22 @@ export default class Assets
 	{
 	}
 
-	public static removeEventListener(type: string, listener: Object, capture: boolean = false): void
+	public static removeEventListener<T>(type: string, listener: (event: T) => void, capture: boolean = false): void
 	{
 		Assets.dispatcher.removeEventListener(type, listener, capture);
 	}
 
-	protected static resolveClass(name: string): Class<Object>
+	protected static resolveClass(name: string): any
 	{
-		return Type.resolveClass(name);
+		// return Type.resolveClass(name);
+		return null;
 	}
 
-	protected static resolveEnum(name: string): Enum<Dynamic>
+	protected static resolveEnum(name: string): any
 	{
-		var value = Type.resolveEnum(name);
-		return value;
+		// var value = Type.resolveEnum(name);
+		// return value;
+		return null;
 	}
 
 	public static unloadLibrary(name: string): void
@@ -320,7 +323,7 @@ export default class Assets
 			cache.clear(":");
 		}
 
-		var library = getLibrary(name);
+		var library = this.getLibrary(name);
 		if (library != null)
 		{
 			cache.clear(name + ":");
@@ -328,8 +331,9 @@ export default class Assets
 	}
 
 	// Event Handlers
+
 	protected static LimeAssets_onChange(): void
 	{
-		dispatchEvent(new Event(Event.CHANGE));
+		this.dispatchEvent(new Event(Event.CHANGE));
 	}
 }

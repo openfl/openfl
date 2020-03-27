@@ -8,14 +8,14 @@ import openfl.display.DisplayObject;
 import openfl.display.LoaderInfo;
 import openfl.display.Sprite;
 import openfl.display.Stage;
-import Event from "openfl/events/Event";
+import Event from "../events/Event";
 import openfl.Lib;
 
 @: access(openfl.display.DisplayObject)
 @: access(openfl.display.LoaderInfo)
 class LimeCommonJSStageBackend extends LimeStageBackend
 {
-	public new(stage: Stage, width: Dynamic = 0, height: Dynamic = 0, color: null | number = null, documentClass: Class<Dynamic> = null,
+	public constructor(stage: Stage, width: Dynamic = 0, height: Dynamic = 0, color: null | number = null, documentClass: Class<Dynamic> = null,
 		windowAttributes: Dynamic = null)
 	{
 		parent = stage;

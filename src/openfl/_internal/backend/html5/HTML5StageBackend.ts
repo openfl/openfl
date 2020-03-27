@@ -13,9 +13,9 @@ import openfl.display.MovieClip;
 import openfl.display.Sprite;
 import openfl.display.Stage;
 import openfl.display.StageDisplayState;
-import Event from "openfl/events/Event";
-import KeyboardEvent from "openfl/events/KeyboardEvent";
-import Keyboard from "openfl/ui/Keyboard";
+import Event from "../events/Event";
+import KeyboardEvent from "../events/KeyboardEvent";
+import Keyboard from "../ui/Keyboard";
 import openfl.ui.KeyLocation;
 
 @: access(openfl.display.DisplayObject)
@@ -30,7 +30,7 @@ class HTML5StageBackend
 	private nextUpdate: number;
 	private parent: Stage;
 
-	public new(parent: Stage, width: Dynamic = 0, height: Dynamic = 0, color: null | number = null, documentClass: Class<Dynamic> = null,
+	public constructor(parent: Stage, width: Dynamic = 0, height: Dynamic = 0, color: null | number = null, documentClass: Class<Dynamic> = null,
 		windowAttributes: Dynamic = null)
 	{
 		this.parent = parent;

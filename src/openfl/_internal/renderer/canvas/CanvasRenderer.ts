@@ -13,13 +13,13 @@ import openfl.display.IBitmapDrawable;
 import openfl.display.SimpleButton;
 import openfl.display.Tilemap;
 import openfl.events.RenderEvent;
-import Point from "openfl/geom/Point";
+import Point from "../geom/Point";
 import openfl.media.Video;
 import openfl.text.TextField;
 import openfl.text.TextFieldType;
-import ColorTransfrom from "openfl/geom/ColorTransform";
-import Matrix from "openfl/geom/Matrix";
-import Rectangle from "openfl/geom/Rectangle";
+import ColorTransfrom from "../geom/ColorTransform";
+import Matrix from "../geom/Matrix";
+import Rectangle from "../geom/Rectangle";
 #if lime
 import lime.graphics.Canvas2DRenderContext;
 #else

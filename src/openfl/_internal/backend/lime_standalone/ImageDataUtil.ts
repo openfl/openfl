@@ -3,8 +3,8 @@ namespace openfl._internal.backend.lime_standalone; #if openfl_html5
 import haxe.io.Bytes;
 import openfl._internal.bindings.typedarray.UInt8Array;
 import openfl.display.BitmapDataChannel;
-import Point from "openfl/geom/Point";
-import Rectangle from "openfl/geom/Rectangle";
+import Point from "../geom/Point";
+import Rectangle from "../geom/Rectangle";
 import openfl.geom.Vector3D;
 import openfl.utils.Endian;
 
@@ -1585,7 +1585,7 @@ private class ImageDataView
 	private stride: number;
 	private tempRect: Rectangle;
 
-	public new(image: Image, rect: Rectangle = null)
+	public constructor(image: Image, rect: Rectangle = null)
 	{
 		this.image = image;
 

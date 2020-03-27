@@ -6,10 +6,10 @@ import openfl.display.BlendMode;
 import openfl.display.TileContainer;
 import openfl.display.Tilemap;
 import openfl.display.Tileset;
-import ColorTransfrom from "openfl/geom/ColorTransform";
-import Matrix from "openfl/geom/Matrix";
-import Point from "openfl/geom/Point";
-import Rectangle from "openfl/geom/Rectangle";
+import ColorTransfrom from "../geom/ColorTransform";
+import Matrix from "../geom/Matrix";
+import Point from "../geom/Point";
+import Rectangle from "../geom/Rectangle";
 
 @: access(openfl.display.Tile)
 @: access(openfl.display.TileContainer)

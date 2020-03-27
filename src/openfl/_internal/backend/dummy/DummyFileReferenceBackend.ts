@@ -6,7 +6,7 @@ import openfl.net.URLRequest;
 
 class DummyFileReferenceBackend
 {
-	public new(parent: FileReference) { }
+	public constructor(parent: FileReference) { }
 
 	public browse(typeFilter: Array<FileFilter> = null): boolean
 	{

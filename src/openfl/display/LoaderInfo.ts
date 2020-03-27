@@ -1,9 +1,9 @@
-import EventDispatcher from "openfl/events/EventDispatcher";
-import Event from "openfl/events/Event";
-import ProgressEvent from "openfl/events/ProgressEvent";
-import UncaughtErrorEvents from "openfl/events/UncaughtErrorEvents";
-import ApplicationDomain from "openfl/system/ApplicationDomain";
-import ByteArray from "openfl/utils/ByteArray";
+import EventDispatcher from "../events/EventDispatcher";
+import Event from "../events/Event";
+import ProgressEvent from "../events/ProgressEvent";
+import UncaughtErrorEvents from "../events/UncaughtErrorEvents";
+import ApplicationDomain from "../system/ApplicationDomain";
+import ByteArray from "../utils/ByteArray";
 
 namespace openfl.display
 {

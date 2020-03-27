@@ -5,7 +5,7 @@ import haxe.Timer;
 import openfl._internal.bindings.gl.GLTexture;
 import openfl._internal.bindings.gl.GL;
 import openfl.display3D.textures.VideoTexture;
-import Event from "openfl/events/Event";
+import Event from "../events/Event";
 import openfl.net.NetStream;
 #if openfl_html5
 import js.html.VideoElement;
@@ -30,7 +30,7 @@ class OpenGLVideoTextureBackend extends OpenGLTextureBaseBackend
 	private videoElement: VideoElement;
 	#end
 
-	public new(parent: VideoTexture)
+	public constructor(parent: VideoTexture)
 	{
 		super(parent);
 

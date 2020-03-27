@@ -2,8 +2,8 @@ namespace openfl._internal.formats.atf;
 
 import haxe.io.Bytes;
 import openfl._internal.utils.Log;
-import IllegalOperationError from "openfl/errors/IllegalOperationError";
-import ByteArray from "openfl/utils/ByteArray";
+import IllegalOperationError from "../errors/IllegalOperationError";
+import ByteArray from "../utils/ByteArray";
 
 typedef UploadCallback = UInt -> Int -> ATFGPUFormat -> Int -> Int -> Int -> Bytes -> Void;
 
@@ -36,7 +36,7 @@ class ATFReader
 	private version: number = 0;
 	private width: number;
 
-	public new(data: ByteArray, byteArrayOffset: number)
+	public constructor(data: ByteArray, byteArrayOffset: number)
 	{
 		data.position = byteArrayOffset;
 		var signature: string = data.readUTFBytes(3);

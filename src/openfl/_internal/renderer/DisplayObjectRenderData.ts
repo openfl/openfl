@@ -9,15 +9,15 @@ import openfl._internal.bindings.typedarray.Float32Array;
 import openfl._internal.bindings.typedarray.UInt16Array;
 import openfl._internal.renderer.context3D.Context3DBuffer;
 import openfl.display3D.textures.TextureBase;
-import Context3D from "openfl/display3D/Context3D";
+import Context3D from "../display3D/Context3D";
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectRenderer;
-import ColorTransfrom from "openfl/geom/ColorTransform";
-import Matrix from "openfl/geom/Matrix";
-import Rectangle from "openfl/geom/Rectangle";
+import ColorTransfrom from "../geom/ColorTransform";
+import Matrix from "../geom/Matrix";
+import Rectangle from "../geom/Rectangle";
 #if openfl_html5
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
@@ -98,7 +98,7 @@ class DisplayObjectRenderData
 	public vertexBufferScaleY: number;
 	public vertexBufferWidth: number;
 
-	public new() { }
+	public constructor() { }
 
 	public dispose(): void
 	{

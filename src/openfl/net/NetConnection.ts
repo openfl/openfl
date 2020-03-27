@@ -1,5 +1,5 @@
-import EventDispatcher from "openfl/events/EventDispatcher";
-import NetStatusevent from "openfl/events/NetStatusEvent";
+import EventDispatcher from "../events/EventDispatcher";
+import NetStatusEvent from "../events/NetStatusEvent";
 
 /**
 	The NetConnection class creates a two-way connection between a client and
@@ -43,8 +43,7 @@ import NetStatusevent from "openfl/events/NetStatusEvent";
 **/
 export default class NetConnection extends EventDispatcher
 {
-	@SuppressWarnings("checkstyle:FieldDocComment")
-	/** @hidden */ public static readonly CONNECT_SUCCESS: string = "NetConnection.Connect.Success";
+	private static readonly CONNECT_SUCCESS: string = "NetConnection.Connect.Success";
 
 	/**
 		The default object encoding for NetConnection objects. When an object
@@ -482,7 +481,7 @@ export default class NetConnection extends EventDispatcher
 							  "Restricting Networking APIs" in the
 							  _ActionScript 3.0 Developer's Guide_.
 	**/
-	public connect(command: string, p1 = null, p2 = null, p3 = null, p4 = null, p5 = null): void
+	public connect(command: string, ...parameters: any[]): void
 	{
 		if (command != null)
 		{

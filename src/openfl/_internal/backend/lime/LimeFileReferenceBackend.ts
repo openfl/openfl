@@ -5,14 +5,14 @@ import haxe.io.Path;
 import haxe.Timer;
 import lime.ui.FileDialog;
 import lime.utils.Bytes;
-import Event from "openfl/events/Event";
+import Event from "../events/Event";
 import openfl.events.IOErrorEvent;
 import openfl.events.ProgressEvent;
 import openfl.net.FileFilter;
 import openfl.net.FileReference;
 import openfl.net.URLLoader;
 import openfl.net.URLRequest;
-import ByteArray from "openfl/utils/ByteArray";
+import ByteArray from "../utils/ByteArray";
 #if openfl_html5
 import js.html.FileReader;
 import js.html.InputElement;
@@ -38,7 +38,7 @@ class LimeFileReferenceBackend
 	private inputControl: InputElement;
 	#end
 
-	public new(parent: FileReference)
+	public constructor(parent: FileReference)
 	{
 		this.parent = parent;
 

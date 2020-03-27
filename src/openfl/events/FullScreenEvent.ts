@@ -1,6 +1,6 @@
-import ObjectPool from "openfl/_internal/utils/ObjectPool";
-import ActivityEvent from "openfl/events/ActivityEvent";
-import EventType from "openfl/events/EventType";
+import ObjectPool from "../_internal/utils/ObjectPool";
+import ActivityEvent from "../events/ActivityEvent";
+import EventType from "../events/EventType";
 
 /**
 	The Stage object dispatches a FullScreenEvent object whenever the Stage

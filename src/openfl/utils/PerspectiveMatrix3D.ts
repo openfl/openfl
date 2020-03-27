@@ -24,9 +24,9 @@
 	NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 	SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **/
-import Matrix3D from "openfl/geom/Matrix3D";
-import Vector3D from "openfl/geom/Vector3D";
-import Vector from "openfl/Vector";
+import Matrix3D from "../geom/Matrix3D";
+import Vector3D from "../geom/Vector3D";
+import Vector from "../Vector";
 
 export class PerspectiveMatrix3D extends Matrix3D
 {

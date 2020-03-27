@@ -6,7 +6,7 @@ import js.html.VideoElement;
 import js.Browser;
 import openfl.events.NetStatusEvent;
 import openfl.media.SoundMixer;
-import SoundTransform from "openfl/media/SoundTransform";
+import SoundTransform from "../media/SoundTransform";
 import openfl.net.NetStream;
 
 @: access(openfl.media.SoundMixer)
@@ -18,7 +18,7 @@ class HTML5NetStreamBackend
 	private parent: NetStream;
 	private timer: Timer;
 
-	public new(parent: NetStream): void
+	public constructor(parent: NetStream): void
 	{
 		this.parent = parent;
 

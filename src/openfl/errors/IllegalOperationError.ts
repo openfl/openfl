@@ -1,4 +1,4 @@
-import Error from "openfl/errors/Error";
+import Error from "../errors/Error";
 
 /**
 	The IllegalOperationError exception is thrown when a method is not

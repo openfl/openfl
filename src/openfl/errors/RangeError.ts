@@ -1,4 +1,4 @@
-import Error from "openfl/errors/Error";
+import Error from "../errors/Error";
 
 export default class RangeError extends Error
 {

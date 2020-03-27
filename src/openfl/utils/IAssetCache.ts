@@ -1,6 +1,6 @@
-import BitmapData from "openfl/display/BitmapData";
-import Sound from "openfl/media/Sound";
-import Font from "openfl/text/Font";
+import BitmapData from "../display/BitmapData";
+import Sound from "../media/Sound";
+import Font from "../text/Font";
 
 /**
 	The IAssetCache interface provides methods for caching

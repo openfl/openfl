@@ -17,7 +17,7 @@ namespace openfl.display
 
 			@param	fastCompression	The initial compression mode.
 		**/
-		public new(fastCompression: boolean = false)
+		public constructor(fastCompression: boolean = false)
 		{
 			this.fastCompression = fastCompression;
 		}

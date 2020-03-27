@@ -1,6 +1,6 @@
 // import openfl._internal.bindings.typedarray.ArrayBufferView;
-import ByteArray from "openfl/utils/ByteArray";
-import Vector from "openfl/Vector";
+import ByteArray from "../utils/ByteArray";
+import Vector from "../Vector";
 
 namespace openfl.display3D
 {

@@ -1,13 +1,13 @@
 // import haxe.Serializer;
 // import haxe.Unserializer;
-import IOError from "openfl/errors/IOError";
-import SecurityError from "openfl/errors/SecurityError";
-import EventDispatcher from "openfl/events/EventDispatcher";
-import ObjectEncoding from "openfl/net/ObjectEncoding";
-import ByteArray from "openfl/utils/ByteArray";
-import Endian from "openfl/utils/Endian";
-import IDataInput from "openfl/utils/IDataInput";
-import IDataOutput from "openfl/utils/IDataOutput";
+import IOError from "../errors/IOError";
+import SecurityError from "../errors/SecurityError";
+import EventDispatcher from "../events/EventDispatcher";
+import ObjectEncoding from "../net/ObjectEncoding";
+import ByteArray from "../utils/ByteArray";
+import Endian from "../utils/Endian";
+import IDataInput from "../utils/IDataInput";
+import IDataOutput from "../utils/IDataOutput";
 
 /**
 	The Socket class enables code to establish Transport Control Protocol

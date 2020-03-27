@@ -1,4 +1,4 @@
-import EventDispatcher from "openfl/events/EventDispatcher";
+import EventDispatcher from "../events/EventDispatcher";
 
 namespace openfl.display3D.textures
 {

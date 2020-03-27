@@ -1,5 +1,5 @@
-import EventDispatcher from "openfl/events/EventDispatcher";
-import GameInputDevice from "openfl/ui/GameInputDevice";
+import EventDispatcher from "../events/EventDispatcher";
+import GameInputDevice from "../ui/GameInputDevice";
 
 export default class GameInputControl extends EventDispatcher
 {
@@ -37,10 +37,5 @@ export default class GameInputControl extends EventDispatcher
 		this.minValue = minValue;
 		this.maxValue = maxValue;
 		this.value = value;
-	}
-
-	protected static __new(device: GameInputDevice, id: string, minValue: number, maxValue: number, value: number = 0): GameInputControl
-	{
-		return new GameInputControl(device, id, minValue, maxValue, value);
 	}
 }

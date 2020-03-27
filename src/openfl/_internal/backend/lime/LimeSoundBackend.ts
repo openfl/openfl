@@ -5,16 +5,16 @@ import haxe.Int64;
 import lime.media.AudioBuffer;
 import lime.utils.UInt8Array;
 import lime.utils.Assets;
-import Event from "openfl/events/Event";
+import Event from "../events/Event";
 import openfl.events.IOErrorEvent;
 import openfl.media.ID3Info;
 import openfl.media.Sound;
 import openfl.media.SoundChannel;
 import openfl.media.SoundLoaderContext;
 import openfl.media.SoundMixer;
-import SoundTransform from "openfl/media/SoundTransform";
+import SoundTransform from "../media/SoundTransform";
 import openfl.net.URLRequest;
-import ByteArray from "openfl/utils/ByteArray";
+import ByteArray from "../utils/ByteArray";
 import openfl.utils.Future;
 
 #if!openfl_debug
@@ -31,7 +31,7 @@ class LimeSoundBackend
 	private buffer: AudioBuffer;
 	private parent: Sound;
 
-	public new(parent: Sound)
+	public constructor(parent: Sound)
 	{
 		this.parent = parent;
 	}

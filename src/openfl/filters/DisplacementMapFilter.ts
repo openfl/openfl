@@ -2,8 +2,8 @@ namespace openfl.filters;
 
 #if!flash
 import openfl.display.BitmapDataChannel;
-import Rectangle from "openfl/geom/Rectangle";
-import Point from "openfl/geom/Point";
+import Rectangle from "../geom/Rectangle";
+import Point from "../geom/Point";
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
@@ -192,7 +192,7 @@ import openfl._internal.backend.lime_standalone.ImageDataUtil;
 						  transparency value of 25%. Use this parameter if
 						  `mode` is set to `DisplacementMapFilterMode.COLOR`.
 	**/
-	public new(mapBitmap: BitmapData = null, mapPoint: Point = null, componentX: number = 0, componentY: number = 0, scaleX: number = 0.0, scaleY: number = 0.0,
+	public constructor(mapBitmap: BitmapData = null, mapPoint: Point = null, componentX: number = 0, componentY: number = 0, scaleX: number = 0.0, scaleY: number = 0.0,
 		mode: DisplacementMapFilterMode = WRAP, color: number = 0, alpha: number = 0.0)
 	{
 		super();
@@ -219,7 +219,7 @@ import openfl._internal.backend.lime_standalone.ImageDataUtil;
 		return new DisplacementMapFilter(__mapBitmap, __mapPoint.clone(), __componentX, __componentY, __scaleX, __scaleY, __mode, __color, __alpha);
 	}
 
-	protected__applyFilter(bitmapData: BitmapData, sourceBitmapData: BitmapData, sourceRect: Rectangle,
+	protected __applyFilter(bitmapData: BitmapData, sourceBitmapData: BitmapData, sourceRect: Rectangle,
 		destPoint: Point): BitmapData
 	{
 		__updateMapMatrix();
@@ -240,7 +240,7 @@ import openfl._internal.backend.lime_standalone.ImageDataUtil;
 		return bitmapData;
 	}
 
-	protected__initShader(renderer: DisplayObjectRenderer, pass: number, sourceBitmapData: BitmapData): Shader
+	protected __initShader(renderer: DisplayObjectRenderer, pass: number, sourceBitmapData: BitmapData): Shader
 	{
 		#if(!macro && openfl_gl)
 		// TODO: mapX/mapY/mapU/mapV + offsets
@@ -287,100 +287,100 @@ import openfl._internal.backend.lime_standalone.ImageDataUtil;
 	}
 
 	// Get & Set Methods
-	protected get_alpha(): number
+	public get alpha(): number
 	{
 		return __alpha;
 	}
 
-	protected set_alpha(value: number): number
+	public set alpha(value: number): number
 	{
 		if (value != __alpha) __renderDirty = true;
 		return __alpha = value;
 	}
 
-	protected get_componentX(): number
+	public get componentX(): number
 	{
 		return __componentX;
 	}
 
-	protected set_componentX(value: number): number
+	public set componentX(value: number): number
 	{
 		if (value != __componentX) __renderDirty = true;
 		return __componentX = value;
 	}
 
-	protected get_componentY(): number
+	public get componentY(): number
 	{
 		return __componentY;
 	}
 
-	protected set_componentY(value: number): number
+	public set componentY(value: number): number
 	{
 		if (value != __componentY) __renderDirty = true;
 		return __componentY = value;
 	}
 
-	protected get_color(): number
+	public get color(): number
 	{
 		return __color;
 	}
 
-	protected set_color(value: number): number
+	public set color(value: number): number
 	{
 		if (value != __color) __renderDirty = true;
 		return __color = value;
 	}
 
-	protected get_scaleX(): number
+	public get scaleX(): number
 	{
 		return __scaleX;
 	}
 
-	protected set_scaleX(value: number): number
+	public set scaleX(value: number): number
 	{
 		if (value != __scaleX) __renderDirty = true;
 		return __scaleX = value;
 	}
 
-	protected get_scaleY(): number
+	public get scaleY(): number
 	{
 		return __scaleY;
 	}
 
-	protected set_scaleY(value: number): number
+	public set scaleY(value: number): number
 	{
 		if (value != __scaleY) __renderDirty = true;
 		return __scaleY = value;
 	}
 
-	protected get_mapBitmap(): BitmapData
+	public get mapBitmap(): BitmapData
 	{
 		return __mapBitmap;
 	}
 
-	protected set_mapBitmap(value: BitmapData): BitmapData
+	public set mapBitmap(value: BitmapData): BitmapData
 	{
 		if (value != __mapBitmap) __renderDirty = true;
 		return __mapBitmap = value;
 	}
 
-	protected get_mapPoint(): Point
+	public get mapPoint(): Point
 	{
 		return __mapPoint;
 	}
 
-	protected set_mapPoint(value: Point): Point
+	public set mapPoint(value: Point): Point
 	{
 		if (value != __mapPoint) __renderDirty = true;
 		return __mapPoint = value;
 	}
 
-	protected get_mode(): string
+	public get mode(): string
 	{
 		return __mode;
 	}
 
-	protected set_mode(value: string): string
+	public set mode(value: string): string
 	{
 		if (value != __mode) __renderDirty = true;
 		return __mode = value;
@@ -444,7 +444,7 @@ void main(void) {
 }
 
 ")
-public new ()
+public constructor()
 {
 	super();
 }

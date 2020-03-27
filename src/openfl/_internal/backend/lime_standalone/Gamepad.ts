@@ -16,7 +16,7 @@ class Gamepad
 	public onButtonUp = new LimeEvent < GamepadButton -> Void > ();
 	public onDisconnect = new LimeEvent < Void -> Void > ();
 
-	public new(id: number)
+	public constructor(id: number)
 	{
 		this.id = id;
 		connected = true;

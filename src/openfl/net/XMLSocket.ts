@@ -1,10 +1,10 @@
-import DataEvent from "openfl/events/DataEvent";
-import Event from "openfl/events/Event";
-import IOErrorEvent from "openfl/events/IOErrorEvent";
-import EventDispatcher from "openfl/events/EventDispatcher";
-import ProgressEvent from "openfl/events/ProgressEvent";
-import Socket from "openfl/net/Socket";
-import ByteArray from "openfl/utils/ByteArray";
+import DataEvent from "../events/DataEvent";
+import Event from "../events/Event";
+import IOErrorEvent from "../events/IOErrorEvent";
+import EventDispatcher from "../events/EventDispatcher";
+import ProgressEvent from "../events/ProgressEvent";
+import Socket from "../net/Socket";
+import ByteArray from "../utils/ByteArray";
 
 /**
 	The XMLSocket class implements client sockets that let the Flash Player or

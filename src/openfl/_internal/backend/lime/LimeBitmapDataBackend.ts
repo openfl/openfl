@@ -6,7 +6,7 @@ import openfl._internal.bindings.cairo.Cairo;
 import openfl._internal.utils.PerlinNoise;
 import openfl._internal.bindings.typedarray.UInt8Array;
 import openfl.display3D.textures.TextureBase;
-import Context3D from "openfl/display3D/Context3D";
+import Context3D from "../display3D/Context3D";
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.BitmapDataChannel;
@@ -16,15 +16,15 @@ import openfl.display.JPEGEncoderOptions;
 import openfl.display.PNGEncoderOptions;
 import openfl.display.StageQuality;
 import openfl.filters.BitmapFilter;
-import ColorTransfrom from "openfl/geom/ColorTransform";
-import Matrix from "openfl/geom/Matrix";
-import Point from "openfl/geom/Point";
-import Rectangle from "openfl/geom/Rectangle";
-import ByteArray from "openfl/utils/ByteArray";
+import ColorTransfrom from "../geom/ColorTransform";
+import Matrix from "../geom/Matrix";
+import Point from "../geom/Point";
+import Rectangle from "../geom/Rectangle";
+import ByteArray from "../utils/ByteArray";
 import openfl.utils.Endian;
 import openfl.utils.Future;
 import openfl.utils.Object;
-import Vector from "openfl/Vector";
+import Vector from "../Vector";
 import lime._internal.graphics.ImageCanvasUtil;
 import lime.graphics.Image;
 import lime.graphics.ImageChannel;
@@ -68,7 +68,7 @@ class LimeBitmapDataBackend
 {
 	private parent: BitmapData;
 
-	public new(parent: BitmapData, width: number, height: number, transparent: boolean = true, fillColor: number = 0xFFFFFFFF)
+	public constructor(parent: BitmapData, width: number, height: number, transparent: boolean = true, fillColor: number = 0xFFFFFFFF)
 	{
 		this.parent = parent;
 

@@ -6,7 +6,7 @@ import openfl._internal.bindings.gl.ext.KHR_debug;
 import openfl._internal.bindings.gl.GL;
 import openfl._internal.renderer.context3D.batcher.BatchRenderer;
 import openfl._internal.renderer.ShaderBuffer;
-import openfl._internal.utils.ObjectPool;
+import ObjectPool from "../_internal/utils/ObjectPool";
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
@@ -24,11 +24,11 @@ import openfl.display.Shape;
 import openfl.display.SimpleButton;
 import openfl.display.Tilemap;
 import openfl.display3D.Context3DClearMask;
-import Context3D from "openfl/display3D/Context3D";
+import Context3D from "../display3D/Context3D";
 import openfl.events.RenderEvent;
-import ColorTransfrom from "openfl/geom/ColorTransform";
-import Matrix from "openfl/geom/Matrix";
-import Rectangle from "openfl/geom/Rectangle";
+import ColorTransfrom from "../geom/ColorTransform";
+import Matrix from "../geom/Matrix";
+import Rectangle from "../geom/Rectangle";
 import openfl.media.Video;
 import openfl.text.TextField;
 #if lime
@@ -40,7 +40,7 @@ import openfl._internal.bindings.gl.WebGLRenderingContext in WebGLRenderContext;
 import openfl._internal.backend.lime_standalone.ARGB;
 import openfl._internal.backend.lime_standalone.RenderContext;
 import openfl._internal.backend.lime_standalone.WebGLRenderContext;
-import Matrix3D from "openfl/geom/Matrix3D";
+import Matrix3D from "../geom/Matrix3D";
 #end
 #if openfl_html5
 import openfl._internal.renderer.canvas.CanvasRenderer;

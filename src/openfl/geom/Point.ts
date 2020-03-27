@@ -1,4 +1,4 @@
-import ObjectPool from "openfl/_internal/utils/ObjectPool";
+import ObjectPool from "../_internal/utils/ObjectPool";
 
 /**
 	The Point object represents a location in a two-dimensional coordinate

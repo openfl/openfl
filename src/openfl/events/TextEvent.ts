@@ -1,6 +1,6 @@
-import ObjectPool from "openfl/_internal/utils/ObjectPool";
-import Event from "openfl/events/Event";
-import EventType from "openfl/events/EventType";
+import ObjectPool from "../_internal/utils/ObjectPool";
+import Event from "../events/Event";
+import EventType from "../events/EventType";
 
 /**
 	An object dispatches a TextEvent object when a user enters text in a text
@@ -94,7 +94,7 @@ export default class TextEvent extends Event
 		return this.formatToString("TextEvent", "type", "bubbles", "cancelable", "text");
 	}
 
-	protected__init(): void
+	protected __init(): void
 	{
 		super.__init();
 		this.text = "";

@@ -4,7 +4,7 @@ namespace openfl._internal.backend.html5;
 import haxe.io.Bytes;
 import openfl._internal.backend.lime_standalone.HTTPRequest;
 import openfl._internal.backend.lime_standalone.HTTPRequestHeader;
-import Event from "openfl/events/Event";
+import Event from "../events/Event";
 import openfl.events.HTTPStatusEvent;
 import openfl.events.IOErrorEvent;
 import openfl.events.ProgressEvent;
@@ -12,14 +12,14 @@ import openfl.events.SecurityErrorEvent;
 import openfl.net.URLLoader;
 import openfl.net.URLRequest;
 import openfl.net.URLRequestHeader;
-import ByteArray from "openfl/utils/ByteArray";
+import ByteArray from "../utils/ByteArray";
 
 class HTML5URLLoaderBackend
 {
 	private httpRequest: _IHTTPRequest; // TODO: Better (non-private) solution
 	private parent: URLLoader;
 
-	public new(parent: URLLoader)
+	public constructor(parent: URLLoader)
 	{
 		this.parent = parent;
 	}

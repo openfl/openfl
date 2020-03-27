@@ -7,9 +7,9 @@ import openfl._internal.bindings.typedarray.Float32Array;
 import openfl._internal.bindings.typedarray.UInt16Array;
 import openfl.display.BitmapData;
 import openfl.display.Graphics;
-import ColorTransfrom from "openfl/geom/ColorTransform";
-import Matrix from "openfl/geom/Matrix";
-import Rectangle from "openfl/geom/Rectangle";
+import ColorTransfrom from "../geom/ColorTransform";
+import Matrix from "../geom/Matrix";
+import Rectangle from "../geom/Rectangle";
 #if!lime
 import openfl._internal.backend.lime_standalone.ARGB;
 #else

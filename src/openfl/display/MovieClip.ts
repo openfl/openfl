@@ -1,4 +1,4 @@
-import MouseEvent from "openfl/events/MouseEvent";
+import MouseEvent from "../events/MouseEvent";
 
 namespace openfl.display
 {
@@ -318,22 +318,22 @@ namespace openfl.display
 }
 	}
 
-protected__stopAllMovieClips(): void
+protected __stopAllMovieClips(): void
 	{
 		super.__stopAllMovieClips();
 		stop();
 	}
 
-protected__tabTest(stack: Array<InteractiveObject>): void
-	{
-		if(!__enabled) return;
-		super.__tabTest(stack);
-	}
+protected __tabTest(stack: Array<InteractiveObject>): void
+		{
+			if(!__enabled) return;
+			super.__tabTest(stack);
+		}
 
 	// Event Handlers
 	protected __onMouseDown(event: MouseEvent): void
-{
-	if(__enabled && __hasDown)
+	{
+		if(__enabled && __hasDown)
 {
 	gotoAndStop("_down");
 }
@@ -389,7 +389,7 @@ else if (__enabled && __hasUp)
 }
 
 // Getters & Setters
-protectedset_buttonMode(value : boolean) : boolean
+public set buttonMode(value : boolean) : boolean
 {
 	if (__buttonMode != value)
 	{
@@ -433,7 +433,7 @@ protectedset_buttonMode(value : boolean) : boolean
 	return value;
 }
 
-	protected get_currentFrame() : number
+	public get currentFrame() : number
 {
 	if (__timeline != null)
 	{
@@ -445,7 +445,7 @@ protectedset_buttonMode(value : boolean) : boolean
 	}
 }
 
-	protected get_currentFrameLabel(): string
+	public get currentFrameLabel(): string
 {
 	if (__timeline != null)
 	{
@@ -457,7 +457,7 @@ protectedset_buttonMode(value : boolean) : boolean
 	}
 }
 
-	protected get_currentLabel(): string
+	public get currentLabel(): string
 {
 	if (__timeline != null)
 	{
@@ -469,7 +469,7 @@ protectedset_buttonMode(value : boolean) : boolean
 	}
 }
 
-	protected get_currentLabels(): Array < FrameLabel >
+	public get currentLabels(): Array < FrameLabel >
 {
 	if(__timeline != null)
 {
@@ -481,7 +481,7 @@ protectedset_buttonMode(value : boolean) : boolean
 }
 	}
 
-	protected get_currentScene(): Scene
+	public get currentScene(): Scene
 {
 	if (__timeline != null)
 	{
@@ -497,17 +497,17 @@ protectedset_buttonMode(value : boolean) : boolean
 	}
 }
 
-	protected get_enabled() : boolean
+	public get enabled() : boolean
 {
 	return __enabled;
 }
 
-	protected set_enabled(value : boolean) : boolean
+	public set enabled(value : boolean) : boolean
 {
 	return __enabled = value;
 }
 
-	protected get_framesLoaded() : number
+	public get framesLoaded() : number
 {
 	if (__timeline != null)
 	{
@@ -519,7 +519,7 @@ protectedset_buttonMode(value : boolean) : boolean
 	}
 }
 
-	protected get_isPlaying() : boolean
+	public get isPlaying() : boolean
 {
 	if (__timeline != null)
 	{
@@ -531,7 +531,7 @@ protectedset_buttonMode(value : boolean) : boolean
 	}
 }
 
-	protected get_scenes(): Array < Scene >
+	public get scenes(): Array < Scene >
 {
 	if(__timeline != null)
 {
@@ -543,7 +543,7 @@ protectedset_buttonMode(value : boolean) : boolean
 }
 	}
 
-	protected get_totalFrames() : number
+	public get totalFrames() : number
 {
 	if (__timeline != null)
 	{

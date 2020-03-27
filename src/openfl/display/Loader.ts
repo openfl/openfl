@@ -1,17 +1,17 @@
 // import haxe.io.Path;
-import Error from "openfl/errors/Error";
-import Event from "openfl/events/Event";
-import IOErrorEvent from "openfl/events/IOErrorEvent";
-import ProgressEvent from "openfl/events/ProgressEvent";
-import UncaughtErrorEvents from "openfl/events/UncaughtErrorEvents";
-import URLLoader from "openfl/net/URLLoader";
-import URLLoaderDataFormat from "openfl/net/URLLoaderDataFormat";
-import URLRequest from "openfl/net/URLRequest";
-import URLRequestMethod from "openfl/net/URLRequestMethod";
-import LoaderContext from "openfl/system/LoaderContext";
-import Assets from "openfl/utils/Assets";
-import AssetLibrary from "openfl/utils/AssetLibrary";
-import ByteArray from "openfl/utils/ByteArray";
+import Error from "../errors/Error";
+import Event from "../events/Event";
+import IOErrorEvent from "../events/IOErrorEvent";
+import ProgressEvent from "../events/ProgressEvent";
+import UncaughtErrorEvents from "../events/UncaughtErrorEvents";
+import URLLoader from "../net/URLLoader";
+import URLLoaderDataFormat from "../net/URLLoaderDataFormat";
+import URLRequest from "../net/URLRequest";
+import URLRequestMethod from "../net/URLRequestMethod";
+import LoaderContext from "../system/LoaderContext";
+import Assets from "../utils/Assets";
+import AssetLibrary from "../utils/AssetLibrary";
+import ByteArray from "../utils/ByteArray";
 
 // using openfl._internal.utils.DisplayObjectLinkedList;
 

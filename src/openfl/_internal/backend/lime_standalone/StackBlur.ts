@@ -1,7 +1,7 @@
 namespace openfl._internal.backend.lime_standalone; #if openfl_html5
 
-import Point from "openfl/geom/Point";
-import Rectangle from "openfl/geom/Rectangle";
+import Point from "../geom/Point";
+import Rectangle from "../geom/Rectangle";
 
 // Ported from https://github.com/CreateJS/EaselJS/blob/master/src/easeljs/filters/BlurFilter.js
 class StackBlur
@@ -243,7 +243,7 @@ class BlurStack
 	public a: number;
 	public n: BlurStack;
 
-	public new()
+	public constructor()
 	{
 		this.r = 0;
 		this.g = 0;

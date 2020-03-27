@@ -1,5 +1,5 @@
-import ClipboardFormats from "openfl/desktop/ClipboardFormats";
-import ClipboardTransferMode from "openfl/desktop/ClipboardTransferMode";
+import ClipboardFormats from "./ClipboardFormats";
+import ClipboardTransferMode from "./ClipboardTransferMode";
 
 /**
 	The Clipboard class provides a container for transferring data and objects

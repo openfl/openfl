@@ -24,7 +24,7 @@ class Application extends Module
 	protected __windowByID: Map<Int, Window>;
 	protected __windows: Array<Window>;
 
-	public new()
+	public constructor()
 	{
 		super();
 
@@ -223,7 +223,7 @@ class Application extends Module
 		return window;
 	}
 
-	protected__registerLimeModule(application: Application): void
+	protected __registerLimeModule(application: Application): void
 	{
 		application.onUpdate.add(update);
 		application.onExit.add(onModuleExit, false, 0);
@@ -308,7 +308,7 @@ class Application extends Module
 		__removeWindow(window);
 	}
 
-	protected__unregisterLimeModule(application: Application): void
+	protected __unregisterLimeModule(application: Application): void
 	{
 		application.onUpdate.remove(update);
 		application.onExit.remove(__onModuleExit);
@@ -965,7 +965,7 @@ class GameDeviceData
 	public buttons: Array<Float>;
 	public axes: Array<Float>;
 
-	public new()
+	public constructor()
 	{
 		connected = true;
 		buttons = [];

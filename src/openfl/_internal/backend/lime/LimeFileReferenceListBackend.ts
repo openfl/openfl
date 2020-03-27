@@ -3,7 +3,7 @@ namespace openfl._internal.backend.lime;
 #if lime
 import haxe.io.Path;
 import lime.ui.FileDialog;
-import Event from "openfl/events/Event";
+import Event from "../events/Event";
 import openfl.net.FileFilter;
 import openfl.net.FileReference;
 import openfl.net.FileReferenceList;
@@ -21,7 +21,7 @@ class LimeFileReferenceListBackend
 {
 	private parent: FileReferenceList;
 
-	public new(parent: FileReferenceList)
+	public constructor(parent: FileReferenceList)
 	{
 		this.parent = parent;
 	}

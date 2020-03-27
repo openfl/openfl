@@ -1,6 +1,6 @@
-import ObjectPool from "openfl/_internal/utils/ObjectPool";
-import Event from "openfl/events/Event";
-import EventType from "openfl/events/EventType";
+import ObjectPool from "../_internal/utils/ObjectPool";
+import Event from "../events/Event";
+import EventType from "../events/EventType";
 
 /**
 	A Timer object dispatches a TimerEvent objects whenever the Timer object

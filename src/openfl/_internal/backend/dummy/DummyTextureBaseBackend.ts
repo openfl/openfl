@@ -8,7 +8,7 @@ import openfl.display3D.textures.TextureBase;
 #end
 class DummyTextureBaseBackend
 {
-	public new(parent: TextureBase) { }
+	public constructor(parent: TextureBase) { }
 
 	public dispose(): void { }
 }

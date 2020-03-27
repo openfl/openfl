@@ -16,7 +16,7 @@ class Touch
 	public x: number;
 	public y: number;
 
-	public new(x: number, y: number, id: number, dx: number, dy: number, pressure: number, device: number)
+	public constructor(x: number, y: number, id: number, dx: number, dy: number, pressure: number, device: number)
 	{
 		this.x = x;
 		this.y = y;

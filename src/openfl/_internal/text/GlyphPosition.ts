@@ -15,7 +15,7 @@ class GlyphPosition
 	public glyph: Glyph;
 	public offset: Vector2;
 
-	public new(glyph: Glyph, advance: Vector2, offset: Vector2 = null)
+	public constructor(glyph: Glyph, advance: Vector2, offset: Vector2 = null)
 	{
 		this.glyph = glyph;
 		this.advance = advance;

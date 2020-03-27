@@ -12,7 +12,7 @@ class TextFormatRange
 	public format: TextFormat;
 	public start: number;
 
-	public new(format: TextFormat, start: number, end: number)
+	public constructor(format: TextFormat, start: number, end: number)
 	{
 		this.format = format;
 		this.start = start;

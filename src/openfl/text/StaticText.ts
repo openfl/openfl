@@ -1,5 +1,5 @@
-import DisplayObject from "openfl/display/DisplayObject";
-import Graphics from "openfl/display/Graphics";
+import DisplayObject from "../display/DisplayObject";
+import Graphics from "../display/Graphics";
 
 /**
 	This class represents StaticText objects on the display list. You cannot

@@ -8,7 +8,7 @@ import openfl.display.ShaderParameter;
 #end
 class DummyShaderParameterBackend<T> /*implements Dynamic*/
 {
-	public new(parent: ShaderParameter<T>) { }
+	public constructor(parent: ShaderParameter<T>) { }
 
 	public setName(value: string): void { }
 }

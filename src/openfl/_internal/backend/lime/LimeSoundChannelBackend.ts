@@ -5,7 +5,7 @@ import lime.media.AudioSource;
 import openfl.media.Sound;
 import openfl.media.SoundChannel;
 import openfl.media.SoundMixer;
-import SoundTransform from "openfl/media/SoundTransform";
+import SoundTransform from "../media/SoundTransform";
 
 #if!openfl_debug
 @: fileXml('tags="haxe,release"')
@@ -18,7 +18,7 @@ class LimeSoundChannelBackend
 	private parent: SoundChannel;
 	private source: AudioSource;
 
-	public new(parent: SoundChannel, sound: Sound = null, startTime: number = 0, loops: number = 0)
+	public constructor(parent: SoundChannel, sound: Sound = null, startTime: number = 0, loops: number = 0)
 	{
 		this.parent = parent;
 

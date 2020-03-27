@@ -1,6 +1,6 @@
-import Point from "openfl/geom/Point";
-import Rectangle from "openfl/geom/Rectangle";
-import Vector from "openfl/Vector";
+import Point from "../geom/Point";
+import Rectangle from "../geom/Rectangle";
+import Vector from "../Vector";
 
 namespace openfl.display
 {
@@ -55,7 +55,7 @@ namespace openfl.display
 			@param	bitmapData	A BitmapData object to reference
 			@param	rects	An optional array of rectangles to define with the referenced BitmapData
 		**/
-		public new(bitmapData: BitmapData, rects: Array<Rectangle> = null)
+		public constructor(bitmapData: BitmapData, rects: Array<Rectangle> = null)
 		{
 			// TODO: Add support for adding uniform tile rectangles (margin, spacing, width, height)
 
@@ -185,12 +185,12 @@ namespace openfl.display
 		}
 
 		// Get & Set Methods
-		protected get_bitmapData(): BitmapData
+		public get bitmapData(): BitmapData
 		{
 			return __bitmapData;
 		}
 
-		protected set_bitmapData(value: BitmapData): BitmapData
+		public set bitmapData(value: BitmapData): BitmapData
 		{
 			__bitmapData = value;
 
@@ -202,7 +202,7 @@ namespace openfl.display
 			return value;
 		}
 
-		protected get_numRects(): number
+		public get numRects(): number
 		{
 			return __data.length;
 		}
@@ -220,7 +220,7 @@ namespace openfl.display
 		public __uvX: number;
 		public __uvY: number;
 
-		public new(rect: Rectangle = null)
+		public constructor(rect: Rectangle = null)
 		{
 			if (rect != null)
 			{

@@ -1,8 +1,8 @@
-import ObjectPool from "openfl/_internal/utils/ObjectPool";
-import Event from "openfl/events/Event";
-import EventType from "openfl/events/EventType";
-import ByteArray from "openfl/utils/ByteArray";
-import Endian from "openfl/utils/Endian";
+import ObjectPool from "../_internal/utils/ObjectPool";
+import Event from "../events/Event";
+import EventType from "../events/EventType";
+import ByteArray from "../utils/ByteArray";
+import Endian from "../utils/Endian";
 
 /**
 	Dispatched when a Sound object requests new audio data or when a

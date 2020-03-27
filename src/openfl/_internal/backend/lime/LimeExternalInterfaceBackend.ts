@@ -1,7 +1,7 @@
 namespace openfl._internal.backend.lime;
 
 #if lime
-import openfl._internal.Lib;
+import Lib from "../_internal/Lib";
 
 #if!openfl_debug
 @: fileXml('tags="haxe,release"')

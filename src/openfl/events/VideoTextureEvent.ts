@@ -1,6 +1,6 @@
-import ObjectPool from "openfl/_internal/utils/ObjectPool";
-import Event from "openfl/events/Event";
-import EventType from "openfl/events/EventType";
+import ObjectPool from "../_internal/utils/ObjectPool";
+import Event from "../events/Event";
+import EventType from "../events/EventType";
 
 /**
 	Almost exactly StageVideoEvent.
@@ -51,7 +51,7 @@ export default class VideoTextureEvent extends Event
 		return this.formatToString("VideoTextureEvent", "type", "bubbles", "cancelable", "status", "colorSpace");
 	}
 
-	protected__init(): void
+	protected __init(): void
 	{
 		super.__init();
 		this.__status = null;

@@ -15,7 +15,7 @@ class HTML5PrintJobBackend
 {
 	private parent: PrintJob;
 
-	public new(parent: PrintJob)
+	public constructor(parent: PrintJob)
 	{
 		this.parent = parent;
 	}

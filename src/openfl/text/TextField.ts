@@ -3,22 +3,22 @@
 // import openfl._internal.text.TextEngine;
 // import openfl._internal.text.TextFormatRange;
 // import openfl._internal.text.TextLayoutGroup;
-import Clipboard from "openfl/desktop/Clipboard";
-import DisplayObject from "openfl/display/DisplayObject";
-import Graphics from "openfl/display/Graphics";
-import InteractiveObject from "openfl/display/InteractiveObject";
-import RangeError from "openfl/errors/RangeError";
-import Event from "openfl/events/Event";
-import FocusEvent from "openfl/events/FocusEvent";
-import KeyboardEvent from "openfl/events/KeyboardEvent";
-import MouseEvent from "openfl/events/MouseEvent";
-import TextEvent from "openfl/events/TextEvent";
-import Matrix from "openfl/geom/Matrix";
-import Rectangle from "openfl/geom/Rectangle";
-import URLRequest from "openfl/net/URLRequest";
-import Keyboard from "openfl/ui/Keyboard";
-import MouseCursor from "openfl/ui/MouseCursor";
-import Lib from "openfl/Lib";
+import Clipboard from "../desktop/Clipboard";
+import DisplayObject from "../display/DisplayObject";
+import Graphics from "../display/Graphics";
+import InteractiveObject from "../display/InteractiveObject";
+import RangeError from "../errors/RangeError";
+import Event from "../events/Event";
+import FocusEvent from "../events/FocusEvent";
+import KeyboardEvent from "../events/KeyboardEvent";
+import MouseEvent from "../events/MouseEvent";
+import TextEvent from "../events/TextEvent";
+import Matrix from "../geom/Matrix";
+import Rectangle from "../geom/Rectangle";
+import URLRequest from "../net/URLRequest";
+import Keyboard from "../ui/Keyboard";
+import MouseCursor from "../ui/MouseCursor";
+import Lib from "../Lib";
 
 /**
 	The TextField class is used to create display objects for text display and
@@ -779,7 +779,7 @@ export default class TextField extends InteractiveObject
 
 		The default size for a text field is 100 x 100 pixels.
 	**/
-	public new()
+	public constructor()
 	{
 		super();
 
@@ -1481,7 +1481,7 @@ export default class TextField extends InteractiveObject
 		__setRenderDirty();
 	}
 
-	protected__allowMouseFocus(): boolean
+	protected __allowMouseFocus(): boolean
 	{
 		return __textEngine.type == INPUT || tabEnabled || selectable;
 	}
@@ -1592,7 +1592,7 @@ export default class TextField extends InteractiveObject
 		}
 	}
 
-	protected__dispatch(event: Event): boolean
+	protected __dispatch(event: Event): boolean
 	{
 		if (event.eventPhase == AT_TARGET && event.type == MouseEvent.MOUSE_UP)
 		{
@@ -1643,7 +1643,7 @@ export default class TextField extends InteractiveObject
 		#end
 	}
 
-	protected__getBounds(rect: Rectangle, matrix: Matrix): void
+	protected __getBounds(rect: Rectangle, matrix: Matrix): void
 	{
 		__updateLayout();
 
@@ -1729,7 +1729,7 @@ export default class TextField extends InteractiveObject
 		return -1;
 	}
 
-	protected__getCursor(): MouseCursor
+	protected __getCursor(): MouseCursor
 	{
 		var group = __getGroup(mouseX, mouseY, true);
 
@@ -1825,7 +1825,7 @@ export default class TextField extends InteractiveObject
 		return group.endIndex;
 	}
 
-	protected__getRenderBounds(rect: Rectangle, matrix: Matrix): void
+	protected __getRenderBounds(rect: Rectangle, matrix: Matrix): void
 	{
 		if (__scrollRect == null)
 		{
@@ -1849,7 +1849,7 @@ export default class TextField extends InteractiveObject
 		}
 	}
 
-	protected__hitTest(x: number, y: number, shapeFlag: boolean, stack: Array<DisplayObject>, interactiveOnly: boolean,
+	protected __hitTest(x: number, y: number, shapeFlag: boolean, stack: Array<DisplayObject>, interactiveOnly: boolean,
 		hitObject: DisplayObject): boolean
 	{
 		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
@@ -1874,7 +1874,7 @@ export default class TextField extends InteractiveObject
 		return false;
 	}
 
-	protected__hitTestMask(x: number, y: number): boolean
+	protected __hitTestMask(x: number, y: number): boolean
 	{
 		__getRenderTransform();
 		__updateLayout();
@@ -2093,7 +2093,7 @@ export default class TextField extends InteractiveObject
 		}
 	}
 
-	protected__update(transformOnly: boolean, updateChildren: boolean): void
+	protected __update(transformOnly: boolean, updateChildren: boolean): void
 	{
 		var transformDirty = __transformDirty;
 
@@ -2256,12 +2256,12 @@ export default class TextField extends InteractiveObject
 }
 
 	// Getters & Setters
-	protected get_antiAliasType(): AntiAliasType
+	public get antiAliasType(): AntiAliasType
 {
 	return __textEngine.antiAliasType;
 }
 
-	protected set_antiAliasType(value: AntiAliasType): AntiAliasType
+	public set antiAliasType(value: AntiAliasType): AntiAliasType
 {
 	if (value != __textEngine.antiAliasType)
 	{
@@ -2271,12 +2271,12 @@ export default class TextField extends InteractiveObject
 	return __textEngine.antiAliasType = value;
 }
 
-	protected get_autoSize(): TextFieldAutoSize
+	public get autoSize(): TextFieldAutoSize
 {
 	return __textEngine.autoSize;
 }
 
-	protected set_autoSize(value: TextFieldAutoSize): TextFieldAutoSize
+	public set autoSize(value: TextFieldAutoSize): TextFieldAutoSize
 {
 	if (value != __textEngine.autoSize)
 	{
@@ -2288,12 +2288,12 @@ export default class TextField extends InteractiveObject
 	return __textEngine.autoSize = value;
 }
 
-	protected get_background() : boolean
+	public get background() : boolean
 {
 	return __textEngine.background;
 }
 
-	protected set_background(value : boolean) : boolean
+	public set background(value : boolean) : boolean
 {
 	if (value != __textEngine.background)
 	{
@@ -2304,12 +2304,12 @@ export default class TextField extends InteractiveObject
 	return __textEngine.background = value;
 }
 
-	protected get_backgroundColor() : number
+	public get backgroundColor() : number
 {
 	return __textEngine.backgroundColor;
 }
 
-	protected set_backgroundColor(value : number) : number
+	public set backgroundColor(value : number) : number
 {
 	if (value != __textEngine.backgroundColor)
 	{
@@ -2320,12 +2320,12 @@ export default class TextField extends InteractiveObject
 	return __textEngine.backgroundColor = value;
 }
 
-	protected get_border() : boolean
+	public get border() : boolean
 {
 	return __textEngine.border;
 }
 
-	protected set_border(value : boolean) : boolean
+	public set border(value : boolean) : boolean
 {
 	if (value != __textEngine.border)
 	{
@@ -2336,12 +2336,12 @@ export default class TextField extends InteractiveObject
 	return __textEngine.border = value;
 }
 
-	protected get_borderColor() : number
+	public get borderColor() : number
 {
 	return __textEngine.borderColor;
 }
 
-	protected set_borderColor(value : number) : number
+	public set borderColor(value : number) : number
 {
 	if (value != __textEngine.borderColor)
 	{
@@ -2352,24 +2352,24 @@ export default class TextField extends InteractiveObject
 	return __textEngine.borderColor = value;
 }
 
-	protected get_bottomScrollV() : number
+	public get bottomScrollV() : number
 {
 	__updateLayout();
 
 	return __textEngine.bottomScrollV;
 }
 
-	protected get_caretIndex() : number
+	public get caretIndex() : number
 {
 	return __caretIndex;
 }
 
-	protected get_defaultTextFormat(): TextFormat
+	public get defaultTextFormat(): TextFormat
 {
 	return __textFormat.clone();
 }
 
-	protected set_defaultTextFormat(value: TextFormat): TextFormat
+	public set defaultTextFormat(value: TextFormat): TextFormat
 {
 	__textFormat.__merge(value);
 
@@ -2380,12 +2380,12 @@ export default class TextField extends InteractiveObject
 	return value;
 }
 
-	protected get_displayAsPassword() : boolean
+	public get displayAsPassword() : boolean
 {
 	return __displayAsPassword;
 }
 
-	protected set_displayAsPassword(value : boolean) : boolean
+	public set displayAsPassword(value : boolean) : boolean
 {
 	if (value != __displayAsPassword)
 	{
@@ -2400,12 +2400,12 @@ export default class TextField extends InteractiveObject
 	return value;
 }
 
-	protected get_embedFonts() : boolean
+	public get embedFonts() : boolean
 {
 	return __textEngine.embedFonts;
 }
 
-	protected set_embedFonts(value : boolean) : boolean
+	public set embedFonts(value : boolean) : boolean
 {
 	// if (value != __textEngine.embedFonts) {
 	//
@@ -2417,12 +2417,12 @@ export default class TextField extends InteractiveObject
 	return __textEngine.embedFonts = value;
 }
 
-	protected get_gridFitType(): GridFitType
+	public get gridFitType(): GridFitType
 {
 	return __textEngine.gridFitType;
 }
 
-	protected set_gridFitType(value: GridFitType): GridFitType
+	public set gridFitType(value: GridFitType): GridFitType
 {
 	// if (value != __textEngine.gridFitType) {
 	//
@@ -2434,13 +2434,13 @@ export default class TextField extends InteractiveObject
 	return __textEngine.gridFitType = value;
 }
 
-protectedget_height() : number
+public get height() : number
 {
 	__updateLayout();
 	return __textEngine.height * Math.abs(scaleY);
 }
 
-protectedset_height(value : number) : number
+public set height(value : number) : number
 {
 	if (value != __textEngine.height)
 	{
@@ -2456,7 +2456,7 @@ protectedset_height(value : number) : number
 	return __textEngine.height * Math.abs(scaleY);
 }
 
-	protected get_htmlText(): string
+	public get htmlText(): string
 {
 		#if openfl_html5
 	return __isHTML ? __rawHtmlText : __text;
@@ -2465,7 +2465,7 @@ protectedset_height(value : number) : number
 		#end
 }
 
-	protected set_htmlText(value: string): string
+	public set htmlText(value: string): string
 {
 	if (!__isHTML || __text != value)
 	{
@@ -2517,7 +2517,7 @@ protectedset_height(value : number) : number
 	return value;
 }
 
-	protected get_length() : number
+	public get length() : number
 {
 	if (__text != null)
 	{
@@ -2527,12 +2527,12 @@ protectedset_height(value : number) : number
 	return 0;
 }
 
-	protected get_maxChars() : number
+	public get maxChars() : number
 {
 	return __textEngine.maxChars;
 }
 
-	protected set_maxChars(value : number) : number
+	public set maxChars(value : number) : number
 {
 	if (value != __textEngine.maxChars)
 	{
@@ -2546,36 +2546,36 @@ protectedset_height(value : number) : number
 	return value;
 }
 
-	protected get_maxScrollH() : number
+	public get maxScrollH() : number
 {
 	__updateLayout();
 
 	return __textEngine.maxScrollH;
 }
 
-	protected get_maxScrollV() : number
+	public get maxScrollV() : number
 {
 	__updateLayout();
 
 	return __textEngine.maxScrollV;
 }
 
-	protected get_mouseWheelEnabled() : boolean
+	public get mouseWheelEnabled() : boolean
 {
 	return __mouseWheelEnabled;
 }
 
-	protected set_mouseWheelEnabled(value : boolean) : boolean
+	public set mouseWheelEnabled(value : boolean) : boolean
 {
 	return __mouseWheelEnabled = value;
 }
 
-	protected get_multiline() : boolean
+	public get multiline() : boolean
 {
 	return __textEngine.multiline;
 }
 
-	protected set_multiline(value : boolean) : boolean
+	public set multiline(value : boolean) : boolean
 {
 	if (value != __textEngine.multiline)
 	{
@@ -2590,19 +2590,19 @@ protectedset_height(value : number) : number
 	return __textEngine.multiline = value;
 }
 
-	protected get_numLines() : number
+	public get numLines() : number
 {
 	__updateLayout();
 
 	return __textEngine.numLines;
 }
 
-	protected get_restrict(): string
+	public get restrict(): string
 {
 	return __textEngine.restrict;
 }
 
-	protected set_restrict(value: string): string
+	public set restrict(value: string): string
 {
 	if (__textEngine.restrict != value)
 	{
@@ -2613,12 +2613,12 @@ protectedset_height(value : number) : number
 	return value;
 }
 
-	protected get_scrollH() : number
+	public get scrollH() : number
 {
 	return __textEngine.scrollH;
 }
 
-	protected set_scrollH(value : number) : number
+	public set scrollH(value : number) : number
 {
 	__updateLayout();
 
@@ -2636,12 +2636,12 @@ protectedset_height(value : number) : number
 	return __textEngine.scrollH;
 }
 
-	protected get_scrollV() : number
+	public get scrollV() : number
 {
 	return __textEngine.scrollV;
 }
 
-	protected set_scrollV(value : number) : number
+	public set scrollV(value : number) : number
 {
 	__updateLayout();
 
@@ -2656,12 +2656,12 @@ protectedset_height(value : number) : number
 	return __textEngine.scrollV;
 }
 
-	protected get_selectable() : boolean
+	public get selectable() : boolean
 {
 	return __textEngine.selectable;
 }
 
-	protected set_selectable(value : boolean) : boolean
+	public set selectable(value : boolean) : boolean
 {
 	if (value != __textEngine.selectable && type == INPUT)
 	{
@@ -2678,22 +2678,22 @@ protectedset_height(value : number) : number
 	return __textEngine.selectable = value;
 }
 
-	protected get_selectionBeginIndex() : number
+	public get selectionBeginIndex() : number
 {
 	return Std.int(Math.min(__caretIndex, __selectionIndex));
 }
 
-	protected get_selectionEndIndex() : number
+	public get selectionEndIndex() : number
 {
 	return Std.int(Math.max(__caretIndex, __selectionIndex));
 }
 
-	protected get_sharpness() : number
+	public get sharpness() : number
 {
 	return __textEngine.sharpness;
 }
 
-	protected set_sharpness(value : number) : number
+	public set sharpness(value : number) : number
 {
 	if (value != __textEngine.sharpness)
 	{
@@ -2704,17 +2704,17 @@ protectedset_height(value : number) : number
 	return __textEngine.sharpness = value;
 }
 
-protectedget_tabEnabled() : boolean
+public get tabEnabled() : boolean
 {
 	return (__tabEnabled == null ? __textEngine.type == INPUT : __tabEnabled);
 }
 
-	protected get_text(): string
+	public get text(): string
 {
 	return __text;
 }
 
-	protected set_text(value: string): string
+	public set text(value: string): string
 {
 	if (__isHTML || __text != value)
 	{
@@ -2745,12 +2745,12 @@ protectedget_tabEnabled() : boolean
 	return value;
 }
 
-	protected get_textColor() : number
+	public get textColor() : number
 {
 	return __textFormat.color;
 }
 
-	protected set_textColor(value : number) : number
+	public set textColor(value : number) : number
 {
 	if (value != __textFormat.color)
 	{
@@ -2766,24 +2766,24 @@ protectedget_tabEnabled() : boolean
 	return __textFormat.color = value;
 }
 
-	protected get_textWidth() : number
+	public get textWidth() : number
 {
 	__updateLayout();
 	return __textEngine.textWidth;
 }
 
-	protected get_textHeight() : number
+	public get textHeight() : number
 {
 	__updateLayout();
 	return __textEngine.textHeight;
 }
 
-	protected get_type(): TextFieldType
+	public get type(): TextFieldType
 {
 	return __textEngine.type;
 }
 
-	protected set_type(value: TextFieldType): TextFieldType
+	public set type(value: TextFieldType): TextFieldType
 {
 	if (value != __textEngine.type)
 	{
@@ -2832,12 +2832,12 @@ override private set_width(value : number) : number
 	return __textEngine.width * Math.abs(__scaleX);
 }
 
-	protected get_wordWrap() : boolean
+	public get wordWrap() : boolean
 {
 	return __textEngine.wordWrap;
 }
 
-	protected set_wordWrap(value : boolean) : boolean
+	public set wordWrap(value : boolean) : boolean
 {
 	if (value != __textEngine.wordWrap)
 	{
@@ -2849,12 +2849,12 @@ override private set_width(value : number) : number
 	return __textEngine.wordWrap = value;
 }
 
-protectedget_x() : number
+public get x() : number
 {
 	return __transform.tx + __offsetX;
 }
 
-protectedset_x(value : number) : number
+public set x(value : number) : number
 {
 	if (value != __transform.tx + __offsetX)
 	{
@@ -2865,12 +2865,12 @@ protectedset_x(value : number) : number
 	return __transform.tx = value - __offsetX;
 }
 
-protectedget_y() : number
+public get y() : number
 {
 	return __transform.ty + __offsetY;
 }
 
-protectedset_y(value : number) : number
+public set y(value : number) : number
 {
 	if (value != __transform.ty + __offsetY)
 	{

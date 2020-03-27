@@ -8,8 +8,8 @@ import openfl._internal.bindings.typedarray.ArrayBufferView;
 import openfl._internal.bindings.typedarray.UInt16Array;
 import openfl.display3D.Context3DBufferUsage;
 import openfl.display3D.IndexBuffer3D;
-import ByteArray from "openfl/utils/ByteArray";
-import Vector from "openfl/Vector";
+import ByteArray from "../utils/ByteArray";
+import Vector from "../Vector";
 
 #if!openfl_debug
 @: fileXml('tags="haxe,release"')
@@ -28,7 +28,7 @@ class OpenGLIndexBuffer3DBackend
 	private parent: IndexBuffer3D;
 	private tempUInt16Array: number16Array;
 
-	public new(parent: IndexBuffer3D)
+	public constructor(parent: IndexBuffer3D)
 	{
 		this.parent = parent;
 

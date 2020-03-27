@@ -1,4 +1,4 @@
-import Rectangle from "openfl/geom/Rectangle";
+import Rectangle from "../geom/Rectangle";
 
 namespace openfl.display
 {
@@ -356,7 +356,7 @@ public swapTilesAt(index1 : number, index2 : number): void
 	}
 
 	// Event Handlers
-	protected get_numTiles() : number
+	public get numTiles() : number
 {
 	return __length;
 }

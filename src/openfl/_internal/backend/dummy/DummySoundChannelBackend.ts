@@ -2,7 +2,7 @@ namespace openfl._internal.backend.dummy;
 
 import openfl.media.Sound;
 import openfl.media.SoundChannel;
-import SoundTransform from "openfl/media/SoundTransform";
+import SoundTransform from "../media/SoundTransform";
 
 #if!openfl_debug
 @: fileXml('tags="haxe,release"')
@@ -10,7 +10,7 @@ import SoundTransform from "openfl/media/SoundTransform";
 #end
 class DummySoundChannelBackend
 {
-	public new(parent: SoundChannel, sound: Sound = null, startTime: number = 0, loops: number = 0) { }
+	public constructor(parent: SoundChannel, sound: Sound = null, startTime: number = 0, loops: number = 0) { }
 
 	public dispose(): void { }
 

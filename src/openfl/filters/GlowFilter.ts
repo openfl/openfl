@@ -1,9 +1,9 @@
-import BitmapData from "openfl/display/BitmapData";
-import DisplayObjectRenderer from "openfl/display/DisplayObjectRenderer";
-import Shader from "openfl/display/Shader";
-import ColorTransform from "openfl/geom/ColorTransform";
-import Point from "openfl/geom/Point";
-import Rectangle from "openfl/geom/Rectangle";
+import BitmapData from "../display/BitmapData";
+import DisplayObjectRenderer from "../display/DisplayObjectRenderer";
+import Shader from "../display/Shader";
+import ColorTransform from "../geom/ColorTransform";
+import Point from "../geom/Point";
+import Rectangle from "../geom/Rectangle";
 
 namespace openfl.filters
 {
@@ -312,23 +312,23 @@ namespace openfl.filters
 		}
 
 		// Get & Set Methods
-		protected get_alpha(): number
+		public get alpha(): number
 		{
 			return __alpha;
 		}
 
-		protected set_alpha(value: number): number
+		public set alpha(value: number): number
 		{
 			if (value != __alpha) __renderDirty = true;
 			return __alpha = value;
 		}
 
-		protected get_blurX(): number
+		public get blurX(): number
 		{
 			return __blurX;
 		}
 
-		protected set_blurX(value: number): number
+		public set blurX(value: number): number
 		{
 			if (value != __blurX)
 			{
@@ -339,12 +339,12 @@ namespace openfl.filters
 			return value;
 		}
 
-		protected get_blurY(): number
+		public get blurY(): number
 		{
 			return __blurY;
 		}
 
-		protected set_blurY(value: number): number
+		public set blurY(value: number): number
 		{
 			if (value != __blurY)
 			{
@@ -355,23 +355,23 @@ namespace openfl.filters
 			return value;
 		}
 
-		protected get_color(): number
+		public get color(): number
 		{
 			return __color;
 		}
 
-		protected set_color(value: number): number
+		public set color(value: number): number
 		{
 			if (value != __color) __renderDirty = true;
 			return __color = value;
 		}
 
-		protected get_inner(): boolean
+		public get inner(): boolean
 		{
 			return __inner;
 		}
 
-		protected set_inner(value: boolean): boolean
+		public set inner(value: boolean): boolean
 		{
 			if (value != __inner)
 			{
@@ -381,12 +381,12 @@ namespace openfl.filters
 			return __inner = value;
 		}
 
-		protected get_knockout(): boolean
+		public get knockout(): boolean
 		{
 			return __knockout;
 		}
 
-		protected set_knockout(value: boolean): boolean
+		public set knockout(value: boolean): boolean
 		{
 			if (value != __knockout)
 			{
@@ -396,12 +396,12 @@ namespace openfl.filters
 			return __knockout = value;
 		}
 
-		protected get_quality(): number
+		public get quality(): number
 		{
 			return __quality;
 		}
 
-		protected set_quality(value: number): number
+		public set quality(value: number): number
 		{
 			if (value != __quality)
 			{
@@ -411,12 +411,12 @@ namespace openfl.filters
 			return __quality = value;
 		}
 
-		protected get_strength(): number
+		public get strength(): number
 		{
 			return __strength;
 		}
 
-		protected set_strength(value: number): number
+		public set strength(value: number): number
 		{
 			if (value != __strength) __renderDirty = true;
 			return __strength = value;
@@ -445,7 +445,7 @@ namespace openfl.filters
 		vTexCoord = openfl_TextureCoord;
 	}
 	")
-public new ()
+public constructor()
 	{
 		super();
 	}
@@ -509,7 +509,7 @@ void main(void) {
 	vBlurCoords[5] = openfl_TextureCoord + r * offset.z;
 }
 ")
-public new ()
+public constructor()
 {
 	super();
 		#if(!macro && openfl_gl)
@@ -550,7 +550,7 @@ void main(void) {
 	textureCoords = vec4(openfl_TextureCoord, openfl_TextureCoord - offset / openfl_TextureSize);
 }
 ")
-public new ()
+public constructor()
 {
 	super();
 		#if(!macro && openfl_gl)
@@ -589,7 +589,7 @@ void main(void) {
 	textureCoords = vec4(openfl_TextureCoord, openfl_TextureCoord - offset / openfl_TextureSize);
 }
 ")
-public new ()
+public constructor()
 {
 	super();
 		#if(!macro && openfl_gl)
@@ -628,7 +628,7 @@ void main(void) {
 	textureCoords = vec4(openfl_TextureCoord, openfl_TextureCoord - offset / openfl_TextureSize);
 }
 ")
-public new ()
+public constructor()
 {
 	super();
 		#if(!macro && openfl_gl)
@@ -667,7 +667,7 @@ void main(void) {
 	textureCoords = vec4(openfl_TextureCoord, openfl_TextureCoord - offset / openfl_TextureSize);
 }
 ")
-public new ()
+public constructor()
 {
 	super();
 		#if(!macro && openfl_gl)

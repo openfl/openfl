@@ -8,5 +8,5 @@ import openfl.display.ShaderInput;
 #end
 class DummyShaderInputBackend<T> /*implements Dynamic*/
 {
-	public new(parent: ShaderInput<T>) { }
+	public constructor(parent: ShaderInput<T>) { }
 }

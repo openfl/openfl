@@ -10,7 +10,7 @@ import haxe.Constraints.Function;
 #end
 extern class Howl
 {
-	public new(options: HowlOptions);
+	public constructor(options: HowlOptions);
 	public duration(?id: number): number;
 	public fade(from: number, to: number, len: number, ?id: number): Howl;
 	public load(): Howl;

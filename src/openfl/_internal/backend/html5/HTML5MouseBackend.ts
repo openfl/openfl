@@ -4,8 +4,8 @@ namespace openfl._internal.backend.html5;
 import openfl._internal.backend.lime_standalone.Application;
 import openfl._internal.backend.lime_standalone.MouseCursor as LimeMouseCursor;
 import openfl.display.Stage;
-import Mouse from "openfl/ui/Mouse";
-import MouseCursor from "openfl/ui/MouseCursor";
+import Mouse from "../ui/Mouse";
+import MouseCursor from "../ui/MouseCursor";
 
 @: access(openfl.ui.Mouse)
 class HTML5MouseBackend

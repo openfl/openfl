@@ -19,7 +19,7 @@ import js.html.ClipboardEvent;
 import js.Browser;
 import openfl._internal.backend.lime_standalone.WebGL2RenderContext;
 import openfl.display.Stage;
-import Rectangle from "openfl/geom/Rectangle";
+import Rectangle from "../geom/Rectangle";
 
 class Window
 {
@@ -168,27 +168,27 @@ public warpMouse(x : number, y : number): void
 	}
 
 	// Get & Set Methods
-	protected get_cursor(): MouseCursor
+	public get cursor(): MouseCursor
 {
 	return __backend.getCursor();
 }
 
-	protected set_cursor(value: MouseCursor): MouseCursor
+	public set cursor(value: MouseCursor): MouseCursor
 {
 	return __backend.setCursor(value);
 }
 
-	protected get_display(): Display
+	public get display(): Display
 {
 	return __backend.getDisplay();
 }
 
-	protected get_displayMode(): DisplayMode
+	public get displayMode(): DisplayMode
 {
 	return __backend.getDisplayMode();
 }
 
-	protected set_displayMode(value: DisplayMode): DisplayMode
+	public set displayMode(value: DisplayMode): DisplayMode
 {
 	return __backend.setDisplayMode(value);
 }
@@ -198,7 +198,7 @@ public warpMouse(x : number, y : number): void
 	return __borderless;
 }
 
-	protected set_borderless(value : boolean) : boolean
+	public set borderless(value : boolean) : boolean
 {
 	return __borderless = __backend.setBorderless(value);
 }
@@ -218,7 +218,7 @@ public warpMouse(x : number, y : number): void
 	return __fullscreen;
 }
 
-	protected set_fullscreen(value : boolean) : boolean
+	public set fullscreen(value : boolean) : boolean
 {
 	return __fullscreen = __backend.setFullscreen(value);
 }
@@ -228,7 +228,7 @@ public warpMouse(x : number, y : number): void
 	return __height;
 }
 
-	protected set_height(value : number) : number
+	public set height(value : number) : number
 {
 	resize(__width, value);
 	return __height;
@@ -255,18 +255,18 @@ public warpMouse(x : number, y : number): void
 	return __minimized;
 }
 
-	protected set_minimized(value : boolean) : boolean
+	public set minimized(value : boolean) : boolean
 {
 	__maximized = false;
 	return __minimized = __backend.setMinimized(value);
 }
 
-	protected get_mouseLock() : boolean
+	public get mouseLock() : boolean
 {
 	return __backend.getMouseLock();
 }
 
-	protected set_mouseLock(value : boolean) : boolean
+	public set mouseLock(value : boolean) : boolean
 {
 	__backend.setMouseLock(value);
 	return value;
@@ -277,7 +277,7 @@ public warpMouse(x : number, y : number): void
 	return __resizable;
 }
 
-	protected set_resizable(value : boolean) : boolean
+	public set resizable(value : boolean) : boolean
 {
 	__resizable = __backend.setResizable(value);
 	return __resizable;
@@ -303,7 +303,7 @@ public warpMouse(x : number, y : number): void
 	return __title;
 }
 
-	protected set_title(value: string): string
+	public set title(value: string): string
 {
 	return __title = __backend.setTitle(value);
 }
@@ -313,7 +313,7 @@ public warpMouse(x : number, y : number): void
 	return __width;
 }
 
-	protected set_width(value : number) : number
+	public set width(value : number) : number
 {
 	resize(value, __height);
 	return __width;
@@ -324,7 +324,7 @@ public warpMouse(x : number, y : number): void
 	return __x;
 }
 
-	protected set_x(value : number) : number
+	public set x(value : number) : number
 {
 	move(value, __y);
 	return __x;
@@ -335,7 +335,7 @@ public warpMouse(x : number, y : number): void
 	return __y;
 }
 
-	protected set_y(value : number) : number
+	public set y(value : number) : number
 {
 	move(__x, value);
 	return __y;
@@ -384,7 +384,7 @@ class HTML5Window
 	private textInputEnabled: boolean;
 	private unusedTouchesPool = new List<Touch>();
 
-	public new(parent: Window)
+	public constructor(parent: Window)
 	{
 		this.parent = parent;
 

@@ -31,7 +31,7 @@ class Preloader
 	protected preloadStarted: boolean;
 	protected simulateProgress: boolean;
 
-	public new()
+	public constructor()
 	{
 		// TODO: Split out core preloader support from generic Preloader type
 

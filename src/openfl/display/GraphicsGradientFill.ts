@@ -1,6 +1,6 @@
-import GraphicsDataType from "openfl/_internal/renderer/GraphicsDataType";
-import GraphicsFillType from "openfl/_internal/renderer/GraphicsFillType";
-import Matrix from "openfl/geom/Matrix";
+import GraphicsDataType from "../_internal/renderer/GraphicsDataType";
+import GraphicsFillType from "../_internal/renderer/GraphicsFillType";
+import Matrix from "../geom/Matrix";
 
 namespace openfl.display
 {

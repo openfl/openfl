@@ -1,6 +1,8 @@
-import BitmapData from "openfl/display/BitmapData";
-import Sprite from "openfl/display/Sprite";
-import Rectangle from "openfl/geom/Rectangle";
+import BitmapData from "../display/BitmapData";
+import Sprite from "../display/Sprite";
+import Rectangle from "../geom/Rectangle";
+import PrintJobOptions from "../printing/PrintJobOptions";
+import PrintJobOrientation from "../printing/PrintJobOrientation";
 
 /**
 	The PrintJob class lets you create content and print it to one or more
@@ -53,7 +55,7 @@ export default class PrintJob
 		Indicates whether the PrintJob class is supported on the current
 		platform (`true`) or not (`false`).
 	**/
-	public static isSupported(default , null) = true;
+	public static readonly isSupported = true;
 
 	/**
 		The image orientation for printing. The acceptable values are defined
@@ -75,7 +77,7 @@ export default class PrintJob
 		`printableArea` instead, which measures the printable area in
 		fractional points and describes off-center printable areas accurately.
 	**/
-	public pageHeight(default , null): number;
+	public readonly pageHeight: number;
 
 	/**
 		The width of the largest area which can be centered in the actual
@@ -86,7 +88,7 @@ export default class PrintJob
 		`printableArea` instead, which measures the printable area in
 		fractional points and describes off-center printable areas accurately.
 	**/
-	public pageWidth(default , null): number;
+	public readonly pageWidth: number;
 
 	/**
 		The overall paper height, in points. This property is available only
@@ -95,7 +97,7 @@ export default class PrintJob
 		`paperArea` instead, which measures the paper dimensions in fractional
 		points.
 	**/
-	public paperHeight(default , null): number;
+	public readonly paperHeight: number;
 
 	/**
 		The overall paper width, in points. This property is available only
@@ -104,9 +106,8 @@ export default class PrintJob
 		`paperArea` instead, which measures the paper dimensions in fractional
 		points.
 	**/
-	public paperWidth(default , null): number;
+	public readonly paperWidth: number;
 
-	protected __backend: PrintJobBackend;
 	protected __bitmapData: Array<BitmapData>;
 	protected __started: boolean;
 
@@ -162,7 +163,7 @@ export default class PrintJob
 	**/
 	public constructor()
 	{
-		__backend = new PrintJobBackend(this);
+		// __backend = new PrintJobBackend(this);
 	}
 
 	/**
@@ -269,7 +270,7 @@ export default class PrintJob
 	**/
 	public addPage(sprite: Sprite, printArea: Rectangle = null, options: PrintJobOptions = null, frameNum: number = 0): void
 	{
-		if (!__started) return;
+		if (!this.__started) return;
 
 		if (printArea == null)
 		{
@@ -279,7 +280,7 @@ export default class PrintJob
 		var bitmapData = new BitmapData(Math.ceil(printArea.width), Math.ceil(printArea.height), true, 0);
 		bitmapData.draw(sprite);
 
-		__bitmapData.push(bitmapData);
+		this.__bitmapData.push(bitmapData);
 	}
 
 	/**
@@ -306,9 +307,9 @@ export default class PrintJob
 	**/
 	public send(): void
 	{
-		if (!__started) return;
+		if (!this.__started) return;
 
-		__backend.send();
+		// __backend.send();
 	}
 
 	/**
@@ -364,10 +365,10 @@ export default class PrintJob
 	**/
 	public start(): boolean
 	{
-		if (isSupported)
+		if (PrintJob.isSupported)
 		{
-			__started = true;
-			__bitmapData = new Array();
+			this.__started = true;
+			this.__bitmapData = new Array();
 
 			return true;
 		}

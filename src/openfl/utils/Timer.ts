@@ -1,6 +1,6 @@
-import Error from "openfl/errors/Error";
-import EventDispatcher from "openfl/events/EventDispatcher";
-import TimerEvent from "openfl/events/TimerEvent";
+import Error from "../errors/Error";
+import EventDispatcher from "../events/EventDispatcher";
+import TimerEvent from "../events/TimerEvent";
 
 /**
 	The Timer class is the interface to timers, which let you run code on a

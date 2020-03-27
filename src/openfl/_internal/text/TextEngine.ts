@@ -4,7 +4,7 @@ import haxe.Timer;
 import openfl._internal.bindings.cairo.CairoFontFace;
 import openfl._internal.bindings.gl.GLTexture;
 import openfl._internal.utils.Log;
-import Rectangle from "openfl/geom/Rectangle";
+import Rectangle from "../geom/Rectangle";
 import openfl.text.AntiAliasType;
 import openfl.text.Font;
 import openfl.text.GridFitType;
@@ -13,7 +13,7 @@ import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFieldType;
 import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
-import Vector from "openfl/Vector";
+import Vector from "../Vector";
 #if lime
 import lime.system.System;
 #end
@@ -103,7 +103,7 @@ class TextEngine
 @SuppressWarnings("checkstyle:Dynamic") /** @hidden */ public __cairoFont:#if lime CairoFontFace #else Dynamic #end;
 	/** @hidden */ public __font: Font;
 
-	public new (textField: TextField)
+	public constructor(textField: TextField)
 {
 	this.textField = textField;
 

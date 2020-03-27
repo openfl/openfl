@@ -1,6 +1,6 @@
-import Context3DMipFilter from "openfl/display3D/Context3DMipFilter";
-import Context3DTextureFilter from "openfl/display3D/Context3DTextureFilter";
-import Context3DWrapMode from "openfl/display3D/Context3DWrapMode";
+import Context3DMipFilter from "../display3D/Context3DMipFilter";
+import Context3DTextureFilter from "../display3D/Context3DTextureFilter";
+import Context3DWrapMode from "../display3D/Context3DWrapMode";
 
 namespace openfl.display
 {

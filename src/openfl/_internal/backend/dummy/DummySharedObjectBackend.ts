@@ -8,7 +8,7 @@ import openfl.net.SharedObject;
 #end
 class DummySharedObjectBackend
 {
-	public new(parent: SharedObject) { }
+	public constructor(parent: SharedObject) { }
 
 	publicgetLocal(name: string, localPath: string = null, secure: boolean = false /* note: unsupported**/): void { }
 }

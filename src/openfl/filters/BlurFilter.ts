@@ -5,8 +5,8 @@ import haxe.Timer;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
-import Point from "openfl/geom/Point";
-import Rectangle from "openfl/geom/Rectangle";
+import Point from "../geom/Point";
+import Rectangle from "../geom/Rectangle";
 #if lime
 import lime._internal.graphics.ImageDataUtil;
 #elseif openfl_html5
@@ -157,7 +157,7 @@ import openfl._internal.backend.lime_standalone.ImageDataUtil;
 					   different effects, be aware that higher values are rendered
 					   more slowly.
 	**/
-	public new(blurX: number = 4, blurY: number = 4, quality: number = 1)
+	public constructor(blurX: number = 4, blurY: number = 4, quality: number = 1)
 	{
 		super();
 
@@ -175,7 +175,7 @@ import openfl._internal.backend.lime_standalone.ImageDataUtil;
 		return new BlurFilter(__blurX, __blurY, __quality);
 	}
 
-	protected__applyFilter(bitmapData: BitmapData, sourceBitmapData: BitmapData, sourceRect: Rectangle,
+	protected __applyFilter(bitmapData: BitmapData, sourceBitmapData: BitmapData, sourceRect: Rectangle,
 		destPoint: Point): BitmapData
 	{
 		#if(lime || openfl_html5)
@@ -189,7 +189,7 @@ import openfl._internal.backend.lime_standalone.ImageDataUtil;
 		return sourceBitmapData;
 	}
 
-	protected__initShader(renderer: DisplayObjectRenderer, pass: number, sourceBitmapData: BitmapData): Shader
+	protected __initShader(renderer: DisplayObjectRenderer, pass: number, sourceBitmapData: BitmapData): Shader
 	{
 		#if!macro
 		if (pass < __horizontalPasses)
@@ -210,12 +210,12 @@ import openfl._internal.backend.lime_standalone.ImageDataUtil;
 	}
 
 	// Get & Set Methods
-	protected get_blurX(): number
+	public get blurX(): number
 	{
 		return __blurX;
 	}
 
-	protected set_blurX(value: number): number
+	public set blurX(value: number): number
 	{
 		if (value != __blurX)
 		{
@@ -227,12 +227,12 @@ import openfl._internal.backend.lime_standalone.ImageDataUtil;
 		return value;
 	}
 
-	protected get_blurY(): number
+	public get blurY(): number
 	{
 		return __blurY;
 	}
 
-	protected set_blurY(value: number): number
+	public set blurY(value: number): number
 	{
 		if (value != __blurY)
 		{
@@ -244,12 +244,12 @@ import openfl._internal.backend.lime_standalone.ImageDataUtil;
 		return value;
 	}
 
-	protected get_quality(): number
+	public get quality(): number
 	{
 		return __quality;
 	}
 
-	protected set_quality(value: number): number
+	public set quality(value: number): number
 	{
 		// TODO: Quality effect with fewer passes?
 
@@ -310,7 +310,7 @@ void main(void) {
 	vBlurCoords[6] = openfl_TextureCoord + r;
 
 } ")
-public new ()
+public constructor()
 {
 	super();
 
@@ -319,7 +319,7 @@ public new ()
 		#end
 }
 
-protected__update(): void
+protected __update(): void
 	{
 		#if(!macro && openfl_gl)
 uTextureSize.value = [__texture.input.width, __texture.input.height];

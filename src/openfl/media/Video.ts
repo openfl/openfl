@@ -1,8 +1,8 @@
-import DisplayObject from "openfl/display/DisplayObject";
-import Matrix from "openfl/geom/Matrix";
-import Point from "openfl/geom/Point";
-import Rectangle from "openfl/geom/Rectangle";
-import NetStream from "openfl/net/NetStream";
+import DisplayObject from "../display/DisplayObject";
+import Matrix from "../geom/Matrix";
+import Point from "../geom/Point";
+import Rectangle from "../geom/Rectangle";
+import NetStream from "../net/NetStream";
 
 namespace openfl.media
 {
@@ -221,7 +221,7 @@ namespace openfl.media
 		**/
 		public clear(): void { }
 
-		protected__getBounds(rect: Rectangle, matrix: Matrix): void
+		protected __getBounds(rect: Rectangle, matrix: Matrix): void
 		{
 			var bounds = Rectangle.__pool.get();
 			bounds.setTo(0, 0, __width, __height);
@@ -232,7 +232,7 @@ namespace openfl.media
 			Rectangle.__pool.release(bounds);
 		}
 
-		protected__hitTest(x: number, y: number, shapeFlag: boolean, stack: Array<DisplayObject>, interactiveOnly: boolean,
+		protected __hitTest(x: number, y: number, shapeFlag: boolean, stack: Array<DisplayObject>, interactiveOnly: boolean,
 			hitObject: DisplayObject): boolean
 		{
 			if (!hitObject.visible || __isMask) return false;
@@ -256,7 +256,7 @@ namespace openfl.media
 			return false;
 		}
 
-		protected__hitTestMask(x: number, y: number): boolean
+		protected __hitTestMask(x: number, y: number): boolean
 		{
 			var point = Point.__pool.get();
 			point.setTo(x, y);
@@ -270,12 +270,12 @@ namespace openfl.media
 		}
 
 		// Get & Set Methods
-		protectedget_height(): number
+		public get height(): number
 		{
 			return __height * scaleY;
 		}
 
-		protectedset_height(value: number): number
+		public set height(value: number): number
 		{
 			if (scaleY != 1 || value != __height)
 			{
@@ -288,7 +288,7 @@ namespace openfl.media
 			return __height = value;
 		}
 
-		protected get_videoHeight(): number
+		public get videoHeight(): number
 		{
 			if (__stream != null)
 			{
@@ -302,7 +302,7 @@ namespace openfl.media
 			return 0;
 		}
 
-		protected get_videoWidth(): number
+		public get videoWidth(): number
 		{
 			if (__stream != null)
 			{
@@ -316,12 +316,12 @@ namespace openfl.media
 			return 0;
 		}
 
-		protectedget_width(): number
+		public get width(): number
 		{
 			return __width * __scaleX;
 		}
 
-		protectedset_width(value: number): number
+		public set width(value: number): number
 		{
 			if (__scaleX != 1 || __width != value)
 			{

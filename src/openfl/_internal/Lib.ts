@@ -1,35 +1,20 @@
-namespace openfl._internal;
+import MovieClip from "../display/MovieClip";
 
-import haxe.PosInfos;
-import openfl._internal.utils.Log;
-#if!openfl_unit_testing
-import openfl.display.Application;
-import openfl.display.MovieClip;
-#end
-
-#if!openfl_debug
-@: fileXml('tags="haxe,release"')
-@: noDebug
-#end
-@SuppressWarnings("checkstyle:FieldDocComment")
-class Lib
+export default class Lib
 {
-	public static current: #if !openfl_unit_testing MovieClip #else Dynamic #end#if flash = flash.Lib.current #end;
-	#if lime
-	public static limeApplication: #if !openfl_unit_testing Application #else Dynamic #end;
-	#end
-	protected static __sentWarnings: Map<string, Bool> = new Map();
+	public static current: MovieClip;
 
-	@SuppressWarnings("checkstyle:NullableParameter")
-	public static notImplemented(?posInfo: PosInfos): void
+	protected static __sentWarnings: Map<string, boolean> = new Map();
+
+	public static notImplemented(): void
 	{
-		var api = posInfo.className + "." + posInfo.methodName;
+		var api = arguments.callee.name;
 
-		if (!__sentWarnings.exists(api))
+		if (!Lib.__sentWarnings.has(api))
 		{
-			__sentWarnings.set(api, true);
+			Lib.__sentWarnings.set(api, true);
 
-			Log.warn(posInfo.methodName + " is not implemented", posInfo);
+			console.warn(api + " is not implemented");
 		}
 	}
 }

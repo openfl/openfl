@@ -1,6 +1,6 @@
-import ObjectPool from "openfl/_internal/utils/ObjectPool";
-import Event from "openfl/events/Event";
-import EventType from "openfl/events/EventType";
+import ObjectPool from "../_internal/utils/ObjectPool";
+import Event from "../events/Event";
+import EventType from "../events/EventType";
 
 /**
 	A Camera or Microphone object dispatches an ActivityEvent object whenever

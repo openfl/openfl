@@ -28,7 +28,7 @@ class AbstractNoise
 	private octaves_persistences(null, null): Array<Float>; // persistence per octave
 	private persistence_max(null, null): number; // 1 / max persistence
 
-	public new(seed: number, octaves: number, channels: number, grayScale: boolean, falloff: number, stitch: boolean = false, stitch_threshold: number = 0.05)
+	public constructor(seed: number, octaves: number, channels: number, grayScale: boolean, falloff: number, stitch: boolean = false, stitch_threshold: number = 0.05)
 	{
 		this.stitch = stitch;
 		this.stitch_threshold = stitch_threshold;

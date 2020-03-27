@@ -2,8 +2,8 @@ namespace openfl._internal.backend.dummy;
 
 import openfl._internal.bindings.typedarray.ArrayBufferView;
 import openfl.display3D.IndexBuffer3D;
-import ByteArray from "openfl/utils/ByteArray";
-import Vector from "openfl/Vector";
+import ByteArray from "../utils/ByteArray";
+import Vector from "../Vector";
 
 #if!openfl_debug
 @: fileXml('tags="haxe,release"')
@@ -11,7 +11,7 @@ import Vector from "openfl/Vector";
 #end
 class DummyIndexBuffer3DBackend
 {
-	public new(parent: IndexBuffer3D) { }
+	public constructor(parent: IndexBuffer3D) { }
 
 	public dispose(): void { }
 

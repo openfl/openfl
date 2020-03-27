@@ -1,10 +1,10 @@
-import EOFError from "openfl/errors/EOFError";
-import ObjectEncoding from "openfl/net/ObjectEncoding";
-import CompressionAlgorithm from "openfl/utils/CompressionAlgorithm";
-import Endian from "openfl/utils/Endian";
-import Future from "openfl/utils/Future";
-import IDataInput from "openfl/utils/IDataInput";
-import IDataOutput from "openfl/utils/IDataOutput";
+import EOFError from "../errors/EOFError";
+import ObjectEncoding from "../net/ObjectEncoding";
+import CompressionAlgorithm from "../utils/CompressionAlgorithm";
+import Endian from "../utils/Endian";
+import Future from "../utils/Future";
+import IDataInput from "../utils/IDataInput";
+import IDataOutput from "../utils/IDataOutput";
 import * as pako from "pako";
 
 /**

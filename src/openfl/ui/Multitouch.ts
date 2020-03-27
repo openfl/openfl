@@ -1,5 +1,5 @@
-import MultitouchInputMode from "openfl/ui/MultitouchInputMode";
-import Vector from "openfl/Vector";
+import MultitouchInputMode from "../ui/MultitouchInputMode";
+import Vector from "../Vector";
 
 /**
 	The Multitouch class manages and provides information about the current

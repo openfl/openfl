@@ -8,14 +8,14 @@ import openfl._internal.bindings.gl.WebGLRenderingContext;
 import openfl._internal.renderer.ShaderBuffer;
 import openfl._internal.bindings.typedarray.Float32Array;
 import openfl._internal.utils.Log;
-import Context3D from "openfl/display3D/Context3D";
+import Context3D from "../display3D/Context3D";
 import openfl.display.BitmapData;
 import openfl.display.Shader;
 import openfl.display.ShaderData;
 import openfl.display.ShaderInput;
 import openfl.display.ShaderParameter;
 import openfl.display.ShaderParameterType;
-import ByteArray from "openfl/utils/ByteArray";
+import ByteArray from "../utils/ByteArray";
 
 #if!openfl_debug
 @: fileXml('tags="haxe,release"')
@@ -38,7 +38,7 @@ class OpenGLShaderBackend
 	private paramInt: Array<ShaderParameter<Int>>;
 	private parent: Shader;
 
-	public new(parent: Shader)
+	public constructor(parent: Shader)
 	{
 		this.parent = parent;
 	}

@@ -40,7 +40,7 @@ class PerlinNoise2D extends AbstractNoise
 
 	private p_perm(null, null): Array<Int>;
 
-	public new(seed: number, octaves: number, channels: number, grayScale: boolean, falloff: number, stitch: boolean = false, stitch_threshold: number = 0.05)
+	public constructor(seed: number, octaves: number, channels: number, grayScale: boolean, falloff: number, stitch: boolean = false, stitch_threshold: number = 0.05)
 	{
 		super(seed, octaves, channels, grayScale, falloff, stitch, stitch_threshold);
 

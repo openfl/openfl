@@ -11,7 +11,7 @@ class AssetCache
 	public font: Map<string, Dynamic /*Font*/>;
 	public version: number;
 
-	public new()
+	public constructor()
 	{
 		audio = new Map<string, AudioBuffer>();
 		font = new Map<string, Dynamic /*Font*/>();

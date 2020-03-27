@@ -4,9 +4,9 @@ import openfl.media.ID3Info;
 import openfl.media.Sound;
 import openfl.media.SoundChannel;
 import openfl.media.SoundLoaderContext;
-import SoundTransform from "openfl/media/SoundTransform";
+import SoundTransform from "../media/SoundTransform";
 import openfl.net.URLRequest;
-import ByteArray from "openfl/utils/ByteArray";
+import ByteArray from "../utils/ByteArray";
 import openfl.utils.Future;
 
 #if!openfl_debug
@@ -15,7 +15,7 @@ import openfl.utils.Future;
 #end
 class DummySoundBackend
 {
-	public new(parent: Sound) { }
+	public constructor(parent: Sound) { }
 
 	public close(): void { }
 

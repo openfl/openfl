@@ -4,8 +4,8 @@ import haxe.io.Bytes;
 import js.Browser;
 import openfl._internal.bindings.typedarray.UInt8Array;
 import openfl.display.BitmapDataChannel;
-import Point from "openfl/geom/Point";
-import Rectangle from "openfl/geom/Rectangle";
+import Point from "../geom/Point";
+import Rectangle from "../geom/Rectangle";
 import openfl.utils.Endian;
 
 @: access(openfl._internal.backend.lime_standalone.ImageBuffer)

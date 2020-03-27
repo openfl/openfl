@@ -1,6 +1,6 @@
-import EventDispatcher from "openfl/events/EventDispatcher";
-import URLLoaderDataFormat from "openfl/net/URLLoaderDataFormat";
-import URLRequest from "openfl/net/URLRequest";
+import EventDispatcher from "../events/EventDispatcher";
+import URLLoaderDataFormat from "../net/URLLoaderDataFormat";
+import URLRequest from "../net/URLRequest";
 
 /**
 	The URLLoader class downloads data from a URL as text, binary data, or

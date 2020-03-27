@@ -3,13 +3,13 @@ namespace openfl._internal.renderer.context3D;
 import openfl._internal.renderer.context3D.batcher.BatchRenderer;
 import openfl._internal.bindings.typedarray.Float32Array;
 import openfl._internal.bindings.typedarray.UInt16Array;
-import Context3D from "openfl/display3D/Context3D";
+import Context3D from "../display3D/Context3D";
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObject;
-import Matrix from "openfl/geom/Matrix";
-import Rectangle from "openfl/geom/Rectangle";
+import Matrix from "../geom/Matrix";
+import Rectangle from "../geom/Rectangle";
 
 #if!openfl_debug
 @: fileXml('tags="haxe,release"')

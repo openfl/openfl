@@ -1,4 +1,4 @@
-import EventDispatcher from "openfl/events/EventDispatcher";
+import EventDispatcher from "../events/EventDispatcher";
 
 /**
 	The UncaughtErrorEvents class provides a way to receive uncaught error

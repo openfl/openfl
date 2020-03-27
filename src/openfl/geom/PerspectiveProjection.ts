@@ -1,6 +1,6 @@
-import Matrix3D from "openfl/geom/Matrix3D";
-import Point from "openfl/geom/Point";
-import Lib from "openfl/Lib";
+import Matrix3D from "../geom/Matrix3D";
+import Point from "../geom/Point";
+import Lib from "../Lib";
 
 /**
 	The `PerspectiveProjection` class provides an easy way to assign or modify the perspective

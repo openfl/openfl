@@ -9,7 +9,7 @@ import openfl.display.StageDisplayState;
 #end
 class DummyStageBackend
 {
-	public new(parent: Stage) { }
+	public constructor(parent: Stage) { }
 
 	public cancelRender(): void { }
 

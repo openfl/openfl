@@ -5,7 +5,7 @@ import lime.math.Matrix3;
 import openfl._internal.bindings.cairo.CairoFilter;
 import openfl._internal.bindings.cairo.CairoPattern;
 import openfl.display.DisplayObject;
-import Matrix from "openfl/geom/Matrix";
+import Matrix from "../geom/Matrix";
 
 #if!openfl_debug
 @: fileXml('tags="haxe,release"')

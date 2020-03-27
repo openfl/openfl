@@ -5,7 +5,7 @@ import openfl._internal.bindings.gl.GL;
 import openfl._internal.bindings.typedarray.Float32Array;
 import openfl._internal.bindings.typedarray.UInt16Array;
 import openfl.display3D.textures.RectangleTexture;
-import Context3D from "openfl/display3D/Context3D";
+import Context3D from "../display3D/Context3D";
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
 import openfl.media.Video;

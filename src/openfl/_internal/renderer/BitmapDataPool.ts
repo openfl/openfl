@@ -1,7 +1,7 @@
 namespace openfl._internal.renderer;
 
-import openfl._internal.utils.ObjectPool;
-import Context3D from "openfl/display3D/Context3D";
+import ObjectPool from "../_internal/utils/ObjectPool";
+import Context3D from "../display3D/Context3D";
 import openfl.display.BitmapData;
 
 #if!openfl_debug
@@ -16,7 +16,7 @@ class BitmapDataPool
 	private __context: Context3D;
 	private __lifetime: number;
 
-	public new(lifetime: number = 2, context3D: Context3D = null)
+	public constructor(lifetime: number = 2, context3D: Context3D = null)
 	{
 		__lifetime = lifetime;
 		__context = context3D;

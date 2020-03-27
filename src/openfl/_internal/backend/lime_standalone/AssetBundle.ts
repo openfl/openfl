@@ -12,7 +12,7 @@ class AssetBundle
 	public data: Map<string, Bytes>;
 	public paths: Array<string>;
 
-	public new()
+	public constructor()
 	{
 		// compressed = new Map();
 		data = new Map();

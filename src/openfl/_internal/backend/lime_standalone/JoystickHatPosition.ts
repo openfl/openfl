@@ -19,12 +19,12 @@ abstract JoystickHatPosition(Int) from Int to Int from UInt to UInt
 	public right(get, set) : boolean;
 	public up(get, set) : boolean;
 
-	public new (value : number)
+	public constructor(value : number)
 	{
 		this = value;
 	}
 
-	protected get_center() : boolean
+	public get center() : boolean
 	{
 		return (this == 0);
 	}
@@ -39,7 +39,7 @@ abstract JoystickHatPosition(Int) from Int to Int from UInt to UInt
 		return value;
 	}
 
-	protected get_down() : boolean
+	public get down() : boolean
 	{
 		return (this & DOWN > 0);
 	}
@@ -58,7 +58,7 @@ abstract JoystickHatPosition(Int) from Int to Int from UInt to UInt
 		return value;
 	}
 
-	protected get_left() : boolean
+	public get left() : boolean
 	{
 		return (this & LEFT > 0);
 	}
@@ -77,7 +77,7 @@ abstract JoystickHatPosition(Int) from Int to Int from UInt to UInt
 		return value;
 	}
 
-	protected get_right() : boolean
+	public get right() : boolean
 	{
 		return (this & RIGHT > 0);
 	}
@@ -96,7 +96,7 @@ abstract JoystickHatPosition(Int) from Int to Int from UInt to UInt
 		return value;
 	}
 
-	protected get_up() : boolean
+	public get up() : boolean
 	{
 		return (this & UP > 0);
 	}

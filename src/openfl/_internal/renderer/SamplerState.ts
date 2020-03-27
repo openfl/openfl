@@ -20,7 +20,7 @@ class SamplerState
 	public textureAlpha: boolean;
 	public wrap: Context3DWrapMode;
 
-	public new(wrap: Context3DWrapMode = CLAMP, filter: Context3DTextureFilter = NEAREST, mipfilter: Context3DMipFilter = MIPNONE, lodBias: number = 0.0,
+	public constructor(wrap: Context3DWrapMode = CLAMP, filter: Context3DTextureFilter = NEAREST, mipfilter: Context3DMipFilter = MIPNONE, lodBias: number = 0.0,
 		ignoreSampler: boolean = false, centroid: boolean = false, textureAlpha: boolean = false)
 	{
 		this.wrap = wrap;

@@ -1,7 +1,7 @@
 // import openfl._internal.bindings.gl.GLProgram;
-import Context3D from "openfl/display3D/Context3D";
-import Program3D from "openfl/display3D/Program3D";
-import ByteArray from "openfl/utils/ByteArray";
+import Context3D from "../display3D/Context3D";
+import Program3D from "../display3D/Program3D";
+import ByteArray from "../utils/ByteArray";
 
 namespace openfl.display
 {
@@ -241,7 +241,7 @@ namespace openfl.display
 		}
 
 		// Get & Set Methods
-		protected get_data(): ShaderData
+		public get data(): ShaderData
 		{
 			if (__glSourceDirty || __data == null)
 			{
@@ -251,17 +251,17 @@ namespace openfl.display
 			return __data;
 		}
 
-		protected set_data(value: ShaderData): ShaderData
+		public set data(value: ShaderData): ShaderData
 		{
 			return __data = cast value;
 		}
 
-		protected get_glFragmentSource(): string
+		public get glFragmentSource(): string
 		{
 			return __glFragmentSource;
 		}
 
-		protected set_glFragmentSource(value: string): string
+		public set glFragmentSource(value: string): string
 		{
 			if (value != __glFragmentSource)
 			{
@@ -271,12 +271,12 @@ namespace openfl.display
 			return __glFragmentSource = value;
 		}
 
-		protected get_glVertexSource(): string
+		public get glVertexSource(): string
 		{
 			return __glVertexSource;
 		}
 
-		protected set_glVertexSource(value: string): string
+		public set glVertexSource(value: string): string
 		{
 			if (value != __glVertexSource)
 			{

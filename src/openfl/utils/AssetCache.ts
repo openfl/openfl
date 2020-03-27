@@ -1,7 +1,7 @@
-import BitmapData from "openfl/display/BitmapData";
-import Sound from "openfl/media/Sound";
-import Font from "openfl/text/Font";
-import IAssetCache from "openfl/utils/IAssetCache";
+import BitmapData from "../display/BitmapData";
+import Sound from "../media/Sound";
+import Font from "../text/Font";
+import IAssetCache from "../utils/IAssetCache";
 
 /**
 	The AssetCache class is the default cache implementation used

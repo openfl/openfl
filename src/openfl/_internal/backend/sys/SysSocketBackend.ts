@@ -5,13 +5,13 @@ import haxe.io.Bytes;
 import haxe.io.BytesBuffer;
 import haxe.io.Eof;
 import haxe.io.Error;
-import openfl._internal.Lib;
+import Lib from "../_internal/Lib";
 import openfl.errors.IOError;
-import Event from "openfl/events/Event";
+import Event from "../events/Event";
 import openfl.events.IOErrorEvent;
 import openfl.events.ProgressEvent;
 import openfl.net.Socket;
-import ByteArray from "openfl/utils/ByteArray";
+import ByteArray from "../utils/ByteArray";
 import openfl.utils.Endian;
 import sys.net.Host;
 import sys.net.Socket as SysSocket;
@@ -31,7 +31,7 @@ class SysSocketBackend
 	private socket: SysSocket;
 	private timestamp: number;
 
-	public new(parent: Socket)
+	public constructor(parent: Socket)
 	{
 		this.parent = parent;
 

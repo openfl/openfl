@@ -1,6 +1,6 @@
-import ObjectPool from "openfl/_internal/utils/ObjectPool";
-import Event from "openfl/events/Event";
-import EventType from "openfl/events/EventType";
+import ObjectPool from "../_internal/utils/ObjectPool";
+import Event from "../events/Event";
+import EventType from "../events/EventType";
 
 /**
 	A ProgressEvent object is dispatched when a load operation has begun or a
@@ -102,7 +102,7 @@ export default class ProgressEvent extends Event
 		return this.formatToString("ProgressEvent", "type", "bubbles", "cancelable", "bytesLoaded", "bytesTotal");
 	}
 
-	protected__init(): void
+	protected __init(): void
 	{
 		super.__init();
 		this.bytesLoaded = 0;

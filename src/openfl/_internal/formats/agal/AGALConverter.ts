@@ -8,8 +8,8 @@ import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
 import openfl.display3D.Context3DWrapMode;
 import openfl.display3D.Program3D;
-import IllegalOperationError from "openfl/errors/IllegalOperationError";
-import ByteArray from "openfl/utils/ByteArray";
+import IllegalOperationError from "../errors/IllegalOperationError";
+import ByteArray from "../utils/ByteArray";
 import openfl.utils.Endian;
 
 #if!openfl_debug
@@ -539,7 +539,7 @@ private class DestRegister
 	public programType: ProgramType;
 	public type: RegisterType;
 
-	public new() { }
+	public constructor() { }
 
 	public getWriteMask(): string
 	{
@@ -598,7 +598,7 @@ class RegisterMap
 {
 	private mEntries: Array<RegisterMapEntry> = new Array();
 
-	public new()
+	public constructor()
 	{
 		// Stub.
 	}
@@ -816,7 +816,7 @@ private class RegisterMapEntry
 	public type: RegisterType;
 	public usage: RegisterUsage;
 
-	public new() { }
+	public constructor() { }
 }
 
 @: enum abstract RegisterType(Int)
@@ -859,7 +859,7 @@ private class SamplerRegister
 	public type: RegisterType;
 	public w: number; // wrap (0=clamp 1=repeat)
 
-	public new() { }
+	public constructor() { }
 
 	public static parse(v: number64, programType: ProgramType): SamplerRegister
 	{
@@ -959,7 +959,7 @@ private class SourceRegister
 	public sourceMask: number;
 	public type: RegisterType;
 
-	public new() { }
+	public constructor() { }
 
 	public static parse(v: number64, programType: ProgramType, sourceMask: number): SourceRegister
 	{

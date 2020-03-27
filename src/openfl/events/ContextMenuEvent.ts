@@ -1,7 +1,7 @@
-import ObjectPool from "openfl/_internal/utils/ObjectPool";
-import InteractiveObject from "openfl/display/InteractiveObject";
-import Event from "openfl/events/Event";
-import EventType from "openfl/events/EventType";
+import ObjectPool from "../_internal/utils/ObjectPool";
+import InteractiveObject from "../display/InteractiveObject";
+import Event from "../events/Event";
+import EventType from "../events/EventType";
 
 /**
 	An InteractiveObject dispatches a ContextMenuEvent object when the user

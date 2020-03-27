@@ -1,4 +1,4 @@
-import IOError from "openfl/errors/IOError";
+import IOError from "../errors/IOError";
 
 /**
 	An EOFError exception is thrown when you attempt to read past the end of

@@ -9,7 +9,7 @@ import openfl.net.NetStream;
 #end
 class DummyVideoTextureBackend extends DummyTextureBaseBackend
 {
-	public new(parent: VideoTexture)
+	public constructor(parent: VideoTexture)
 	{
 		super(parent);
 	}

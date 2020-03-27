@@ -151,7 +151,7 @@ namespace openfl.display
 		}
 
 		// Get & Set Methods
-		protected set_name(value: string): string
+		public set name(value: string): string
 		{
 			__backend.setName(value);
 			return this.name = value;

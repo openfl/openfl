@@ -1,5 +1,5 @@
-import Event from "openfl/events/Event";
-import EventType from "openfl/events/EventType";
+import Event from "../events/Event";
+import EventType from "../events/EventType";
 
 /**
 	The IEventDispatcher interface defines methods for adding or removing event listeners,

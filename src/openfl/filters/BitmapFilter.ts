@@ -5,8 +5,8 @@ import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display.DisplayObjectRenderer;
 import openfl.display.Shader;
-import Point from "openfl/geom/Point";
-import Rectangle from "openfl/geom/Rectangle";
+import Point from "../geom/Point";
+import Rectangle from "../geom/Rectangle";
 
 /**
 	The BitmapFilter class is the base class for all image filter effects.
@@ -35,7 +35,7 @@ class BitmapFilter
 	protected __smooth: boolean;
 	protected __topExtension: number;
 
-	public new()
+	public constructor()
 	{
 		__bottomExtension = 0;
 		__leftExtension = 0;

@@ -11,5 +11,5 @@ class Flags
 	public matrix: boolean;
 	public simple: boolean;
 
-	public new() { }
+	public constructor() { }
 }

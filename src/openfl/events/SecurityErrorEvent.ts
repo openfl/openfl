@@ -1,6 +1,6 @@
-import ObjectPool from "openfl/_internal/utils/ObjectPool";
-import ErrorEvent from "openfl/events/ErrorEvent";
-import EventType from "openfl/events/EventType";
+import ObjectPool from "../_internal/utils/ObjectPool";
+import ErrorEvent from "../events/ErrorEvent";
+import EventType from "../events/EventType";
 
 /**
 	An object dispatches a SecurityErrorEvent object to report the occurrence

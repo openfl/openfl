@@ -1,6 +1,9 @@
-namespace openfl.display
-{
-	/**
+import DisplayObjectType from "../_internal/renderer/DisplayObjectType";
+import * as internal from "../_internal/utils/InternalAccess";
+import DisplayObject from "../display/DisplayObject";
+import Graphics from "../display/Graphics";
+
+/**
 	This class is used to create lightweight shapes using the ActionScript
 	drawing application program interface(API). The Shape class includes a
 	`graphics` property, which lets you access methods from the
@@ -14,35 +17,30 @@ namespace openfl.display
 	However, a Sprite object supports user input events, while a Shape object
 	does not.
 **/
-	export class Shape extends DisplayObject
+export default class Shape extends DisplayObject
+{
+	/**
+		Creates a new Shape object.
+	**/
+	public constructor()
 	{
-		/**
-			Specifies the Graphics object belonging to this Shape object, where vector
-			drawing commands can occur.
-		**/
-		public graphics(get, never): Graphics;
+		super();
 
-		/**
-			Creates a new Shape object.
-		**/
-		public constructor()
+		this.__type = DisplayObjectType.SHAPE;
+	}
+
+	// Get & Set Methods
+	/**
+		Specifies the Graphics object belonging to this Shape object, where vector
+		drawing commands can occur.
+	**/
+	public get graphics(): Graphics
+	{
+		if (this.__graphics == null)
 		{
-			super();
-
-			__type = SHAPE;
+			this.__graphics = new (<internal.Graphics><any>Graphics)(this);
 		}
 
-		// Get & Set Methods
-		protected get_graphics(): Graphics
-		{
-			if (__graphics == null)
-			{
-				__graphics = new Graphics(this);
-			}
-
-			return __graphics;
-		}
+		return this.__graphics;
 	}
 }
-
-export default openfl.display.Shape;

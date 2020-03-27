@@ -5,7 +5,7 @@ import openfl.net.FileReferenceList;
 
 class DummyFileReferenceListBackend
 {
-	public new(parent: FileReferenceList) { }
+	public constructor(parent: FileReferenceList) { }
 
 	public browse(typeFilter: Array<FileFilter> = null): boolean
 	{

@@ -1,10 +1,10 @@
-namespace openfl._internal.renderer;
-
-@: enum abstract GraphicsFillType(Int)
+export enum GraphicsFillType
 {
-	var SOLID_FILL = 0;
-	var GRADIENT_FILL = 1;
-	var BITMAP_FILL = 2;
-	var END_FILL = 3;
-	var SHADER_FILL = 4;
+	SOLID_FILL = 0,
+	GRADIENT_FILL = 1,
+	BITMAP_FILL = 2,
+	END_FILL = 3,
+	SHADER_FILL = 4
 }
+
+export default GraphicsFillType;

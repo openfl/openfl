@@ -7,14 +7,14 @@ import js.html.FileReader;
 import js.html.InputElement;
 import js.Browser;
 import openfl._internal.backend.lime_standalone.FileDialog;
-import Event from "openfl/events/Event";
+import Event from "../events/Event";
 import openfl.events.IOErrorEvent;
 import openfl.events.ProgressEvent;
 import openfl.net.FileFilter;
 import openfl.net.FileReference;
 import openfl.net.URLLoader;
 import openfl.net.URLRequest;
-import ByteArray from "openfl/utils/ByteArray";
+import ByteArray from "../utils/ByteArray";
 
 class HTML5FileReferenceBackend
 {
@@ -24,7 +24,7 @@ class HTML5FileReferenceBackend
 	private path: string;
 	private urlLoader: URLLoader;
 
-	public new(parent: FileReference)
+	public constructor(parent: FileReference)
 	{
 		this.parent = parent;
 

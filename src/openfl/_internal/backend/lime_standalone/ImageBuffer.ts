@@ -32,7 +32,7 @@ class ImageBuffer
 	protected __srcImage: HTMLImage;
 	protected __srcImageData: ImageData;
 
-	public new(data: number8Array = null, width: number = 0, height: number = 0, bitsPerPixel: number = 32, format: PixelFormat = null)
+	public constructor(data: number8Array = null, width: number = 0, height: number = 0, bitsPerPixel: number = 32, format: PixelFormat = null)
 	{
 		this.data = data;
 		this.width = width;
@@ -84,13 +84,13 @@ class ImageBuffer
 	}
 
 	// Get & Set Methods
-	protected get_src(): Dynamic
+	public get src(): Dynamic
 	{
 		if (__srcImage != null) return __srcImage;
 		return __srcCanvas;
 	}
 
-	protected set_src(value: Dynamic): Dynamic
+	public set src(value: Dynamic): Dynamic
 	{
 		if (Std.is(value, HTMLImage))
 		{
@@ -104,7 +104,7 @@ class ImageBuffer
 		return value;
 	}
 
-	protected get_stride(): number
+	public get stride(): number
 	{
 		return width * Std.int(bitsPerPixel / 8);
 	}

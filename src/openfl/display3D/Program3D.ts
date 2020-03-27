@@ -1,5 +1,5 @@
 // import openfl._internal.renderer.SamplerState;
-import ByteArray from "openfl/utils/ByteArray";
+import ByteArray from "../utils/ByteArray";
 
 namespace openfl.display3D
 {

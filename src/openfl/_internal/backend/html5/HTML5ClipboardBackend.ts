@@ -14,7 +14,7 @@ class HTML5ClipboardBackend
 	private text: Object;
 	private textArea: TextAreaElement;
 
-	public new(parent: Clipboard)
+	public constructor(parent: Clipboard)
 	{
 		this.parent = parent;
 		text = null;

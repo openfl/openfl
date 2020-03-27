@@ -4,7 +4,7 @@ namespace openfl._internal.backend.lime;
 import haxe.io.Bytes;
 import lime.net.HTTPRequest;
 import lime.net.HTTPRequestHeader;
-import Event from "openfl/events/Event";
+import Event from "../events/Event";
 import openfl.events.HTTPStatusEvent;
 import openfl.events.IOErrorEvent;
 import openfl.events.ProgressEvent;
@@ -12,7 +12,7 @@ import openfl.events.SecurityErrorEvent;
 import openfl.net.URLLoader;
 import openfl.net.URLRequest;
 import openfl.net.URLRequestHeader;
-import ByteArray from "openfl/utils/ByteArray";
+import ByteArray from "../utils/ByteArray";
 
 #if!openfl_debug
 @: fileXml('tags="haxe,release"')
@@ -23,7 +23,7 @@ class LimeURLLoaderBackend
 	private httpRequest: #if (display || macro || doc_gen) Dynamic #else _IHTTPRequest #end; // TODO: Better (non-private) solution
 private parent: URLLoader;
 
-public new (parent: URLLoader)
+public constructor(parent: URLLoader)
 {
 	this.parent = parent;
 }

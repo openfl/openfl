@@ -1,5 +1,5 @@
-import GraphicsDataType from "openfl/_internal/renderer/GraphicsDataType";
-import GraphicsFillType from "openfl/_internal/renderer/GraphicsFillType";
+import GraphicsDataType from "../_internal/renderer/GraphicsDataType";
+import GraphicsFillType from "../_internal/renderer/GraphicsFillType";
 
 namespace openfl.display
 {

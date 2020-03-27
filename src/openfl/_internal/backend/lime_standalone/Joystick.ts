@@ -21,7 +21,7 @@ class Joystick
 	public onHatMove = new LimeEvent < Int -> JoystickHatPosition -> Void > ();
 	public onTrackballMove = new LimeEvent < Int -> Float -> Float -> Void > ();
 
-	public new(id: number)
+	public constructor(id: number)
 	{
 		this.id = id;
 		connected = true;

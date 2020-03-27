@@ -1,6 +1,6 @@
-import ObjectPool from "openfl/_internal/utils/ObjectPool";
-import EventPhase from "openfl/events/EventPhase";
-import EventType from "openfl/events/EventType";
+import ObjectPool from "../_internal/utils/ObjectPool";
+import EventPhase from "../events/EventPhase";
+import EventType from "../events/EventType";
 
 /**
 	The Event class is used as the base class for the creation of Event
@@ -719,7 +719,7 @@ export default class Event
 		class PingEvent extends Event {
 			var URL:String;
 
-			public new() {
+			public constructor() {
 				super();
 			}
 

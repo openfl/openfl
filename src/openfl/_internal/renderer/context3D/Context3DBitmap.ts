@@ -2,7 +2,7 @@ namespace openfl._internal.renderer.context3D;
 
 #if openfl_gl
 import openfl.display.Bitmap;
-import Matrix from "openfl/geom/Matrix";
+import Matrix from "../geom/Matrix";
 #if gl_stats
 import openfl._internal.renderer.context3D.stats.Context3DStats;
 import openfl._internal.renderer.context3D.stats.DrawCallContext;

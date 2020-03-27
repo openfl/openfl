@@ -1,9 +1,9 @@
 // import openfl._internal.renderer.DisplayObjectRendererType;
-import EventDispatcher from "openfl/events/EventDispatcher";
-import ColorTransfrom from "openfl/geom/ColorTransform";
-import Matrix from "openfl/geom/Matrix";
-import Rectangle from "openfl/geom/Rectangle";
-import Video from "openfl/media/Video";
+import EventDispatcher from "../events/EventDispatcher";
+import ColorTransfrom from "../geom/ColorTransform";
+import Matrix from "../geom/Matrix";
+import Rectangle from "../geom/Rectangle";
+import Video from "../media/Video";
 
 namespace openfl.display
 {

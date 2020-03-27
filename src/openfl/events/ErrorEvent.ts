@@ -1,6 +1,6 @@
-import ObjectPool from "openfl/_internal/utils/ObjectPool";
-import EventType from "openfl/events/EventType";
-import TextEvent from "openfl/events/TextEvent";
+import ObjectPool from "../_internal/utils/ObjectPool";
+import EventType from "../events/EventType";
+import TextEvent from "../events/TextEvent";
 
 /**
 	An object dispatches an ErrorEvent object when an error causes an

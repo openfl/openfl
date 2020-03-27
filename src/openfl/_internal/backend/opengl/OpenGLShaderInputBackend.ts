@@ -4,7 +4,7 @@ namespace openfl._internal.backend.opengl;
 import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
 import openfl.display3D.Context3DWrapMode;
-import Context3D from "openfl/display3D/Context3D";
+import Context3D from "../display3D/Context3D";
 import openfl.display.BitmapData;
 import openfl.display.ShaderInput;
 
@@ -22,7 +22,7 @@ class OpenGLShaderInputBackend<T> /*implements Dynamic*/
 	private isUniform: boolean;
 	private parent: ShaderInput<T>;
 
-	public new(parent: ShaderInput<T>)
+	public constructor(parent: ShaderInput<T>)
 	{
 		this.parent = parent;
 	}

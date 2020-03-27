@@ -8,8 +8,8 @@ import openfl._internal.bindings.typedarray.ArrayBufferView;
 import openfl._internal.bindings.typedarray.Float32Array;
 import openfl.display3D.Context3DBufferUsage;
 import openfl.display3D.VertexBuffer3D;
-import ByteArray from "openfl/utils/ByteArray";
-import Vector from "openfl/Vector";
+import ByteArray from "../utils/ByteArray";
+import Vector from "../Vector";
 
 #if!openfl_debug
 @: fileXml('tags="haxe,release"')
@@ -30,7 +30,7 @@ class OpenGLVertexBuffer3DBackend
 	private stride: number;
 	private tempFloat32Array: Float32Array;
 
-	public new(parent: VertexBuffer3D)
+	public constructor(parent: VertexBuffer3D)
 	{
 		this.parent = parent;
 		gl = parent.__context.__backend.gl;

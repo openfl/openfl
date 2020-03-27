@@ -1,6 +1,6 @@
-import GraphicsDataType from "openfl/_internal/renderer/GraphicsDataType";
-import GraphicsFillType from "openfl/_internal/renderer/GraphicsFillType";
-import Matrix from "openfl/geom/Matrix";
+import GraphicsDataType from "../_internal/renderer/GraphicsDataType";
+import GraphicsFillType from "../_internal/renderer/GraphicsFillType";
+import Matrix from "../geom/Matrix";
 
 namespace openfl.display
 {
@@ -58,7 +58,7 @@ namespace openfl.display
 			@param matrix A matrix object (of the openfl.geom.Matrix class), which
 						  you can use to define transformations on the shader.
 		**/
-		public new(shader: Shader, matrix: Matrix = null)
+		public constructor(shader: Shader, matrix: Matrix = null)
 		{
 			this.shader = shader;
 			this.matrix = matrix;

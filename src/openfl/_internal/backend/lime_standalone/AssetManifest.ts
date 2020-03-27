@@ -18,7 +18,7 @@ class AssetManifest
 	public rootPath: string;
 	public version: number;
 
-	public new()
+	public constructor()
 	{
 		assets = [];
 		libraryArgs = [];

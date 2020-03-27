@@ -10,8 +10,8 @@ import openfl.display.Shader;
 import openfl.display.ShaderInput;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
-import ColorTransfrom from "openfl/geom/ColorTransform";
-import Matrix from "openfl/geom/Matrix";
+import ColorTransfrom from "../geom/ColorTransform";
+import Matrix from "../geom/Matrix";
 #if lime
 import openfl._internal.bindings.gl.WebGLRenderingContext;
 #elseif openfl_html5
@@ -55,7 +55,7 @@ class BatchRenderer
 	0, 1
 ];
 
-public new (renderer: Context3DRenderer, maxQuads : number)
+public constructor(renderer: Context3DRenderer, maxQuads : number)
 {
 	this.renderer = renderer;
 	this.gl = renderer.gl;
@@ -262,7 +262,7 @@ private class Batch
 	public static readonly FLOATS_PER_QUAD = BatchShader.FLOATS_PER_VERTEX * 4;
 	public static IDENTITY_COLOR_TRANSFORM = new ColorTransform();
 
-	public new(maxQuads: number, maxTextures: number)
+	public constructor(maxQuads: number, maxTextures: number)
 	{
 		blendMode = null;
 		vertices = new Float32Array(maxQuads * FLOATS_PER_QUAD);
@@ -394,7 +394,7 @@ void main(void) {
 	}
 }
 ')
-public new ()
+public constructor()
 {
 	super();
 }

@@ -1,10 +1,10 @@
-import { ColorTransformInternal, DisplayObjectInternal } from "openfl/_internal/utils/InternalAccess";
-import DisplayObject from "openfl/display/DisplayObject";
-import ColorTransform from "openfl/geom/ColorTransform";
-import Matrix from "openfl/geom/Matrix";
-import Matrix3D from "openfl/geom/Matrix3D";
-import Rectangle from "openfl/geom/Rectangle";
-import Vector from "openfl/Vector";
+import * as internal from "../_internal/utils/InternalAccess";
+import DisplayObject from "../display/DisplayObject";
+import ColorTransform from "../geom/ColorTransform";
+import Matrix from "../geom/Matrix";
+import Matrix3D from "../geom/Matrix3D";
+import Rectangle from "../geom/Rectangle";
+import Vector from "../Vector";
 
 /**
 	The Transform class provides access to color adjustment properties and two-
@@ -105,7 +105,7 @@ export default class Transform
 	{
 		if (this.__displayObject != null)
 		{
-			var transform = (<any>this.__displayObject as DisplayObjectInternal).__transform;
+			var transform = (<internal.DisplayObject><any>this.__displayObject).__transform;
 			if (transform.a == a && transform.b == b && transform.c == c && transform.d == d && transform.tx == tx && transform.ty == ty)
 			{
 				return;
@@ -132,17 +132,17 @@ export default class Transform
 				scaleY = Math.sqrt(c * c + d * d);
 			}
 
-			(<any>this.__displayObject as DisplayObjectInternal).__scaleX = scaleX;
-			(<any>this.__displayObject as DisplayObjectInternal).__scaleY = scaleY;
+			(<internal.DisplayObject><any>this.__displayObject).__scaleX = scaleX;
+			(<internal.DisplayObject><any>this.__displayObject).__scaleY = scaleY;
 
 			var rotation = (180 / Math.PI) * Math.atan2(d, c) - 90;
 
-			if (rotation != (<any>this.__displayObject as DisplayObjectInternal).__rotation)
+			if (rotation != (<internal.DisplayObject><any>this.__displayObject).__rotation)
 			{
-				(<any>this.__displayObject as DisplayObjectInternal).__rotation = rotation;
+				(<internal.DisplayObject><any>this.__displayObject).__rotation = rotation;
 				var radians = rotation * (Math.PI / 180);
-				(<any>this.__displayObject as DisplayObjectInternal).__rotationSine = Math.sin(radians);
-				(<any>this.__displayObject as DisplayObjectInternal).__rotationCosine = Math.cos(radians);
+				(<internal.DisplayObject><any>this.__displayObject).__rotationSine = Math.sin(radians);
+				(<internal.DisplayObject><any>this.__displayObject).__rotationCosine = Math.cos(radians);
 			}
 
 			transform.a = a;
@@ -152,8 +152,8 @@ export default class Transform
 			transform.tx = tx;
 			transform.ty = ty;
 
-			(<any>this.__displayObject as DisplayObjectInternal).__setTransformDirty();
-			(<any>this.__displayObject as DisplayObjectInternal).__setParentRenderDirty();
+			(<internal.DisplayObject><any>this.__displayObject).__setTransformDirty();
+			(<internal.DisplayObject><any>this.__displayObject).__setParentRenderDirty();
 		}
 	}
 
@@ -172,16 +172,16 @@ export default class Transform
 
 	public set colorTransform(value: ColorTransform)
 	{
-		if (!(<any>this.__colorTransform as ColorTransformInternal).__equals(value, false))
+		if (!(<internal.ColorTransform><any>this.__colorTransform).__equals(value, false))
 		{
-			(<any>this.__colorTransform as ColorTransformInternal).__copyFrom(value);
+			(<internal.ColorTransform><any>this.__colorTransform).__copyFrom(value);
 
 			if (value != null)
 			{
 				this.__displayObject.alpha = value.alphaMultiplier;
 			}
 
-			(<any>this.__displayObject as DisplayObjectInternal).__setRenderDirty();
+			(<internal.DisplayObject><any>this.__displayObject).__setRenderDirty();
 		}
 	}
 
@@ -212,7 +212,7 @@ export default class Transform
 	{
 		if (this.__hasMatrix)
 		{
-			return (<any>this.__displayObject as DisplayObjectInternal).__getWorldTransform().clone();
+			return (<internal.DisplayObject><any>this.__displayObject).__getWorldTransform().clone();
 		}
 
 		return null;
@@ -234,7 +234,7 @@ export default class Transform
 	{
 		if (this.__hasMatrix)
 		{
-			return (<any>this.__displayObject as DisplayObjectInternal).__transform.clone();
+			return (<internal.DisplayObject><any>this.__displayObject).__transform.clone();
 		}
 
 		return null;
@@ -274,7 +274,7 @@ export default class Transform
 	{
 		if (this.__hasMatrix3D)
 		{
-			var matrix = (<any>this.__displayObject as DisplayObjectInternal).__transform;
+			var matrix = (<internal.DisplayObject><any>this.__displayObject).__transform;
 			return new Matrix3D(Vector.ofArray([
 				matrix.a, matrix.b, 0.0, 0.0, matrix.c, matrix.d, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, matrix.tx, matrix.ty, 0.0, 1.0
 			]));

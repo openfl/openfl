@@ -11,8 +11,8 @@ import openfl._internal.bindings.cairo.CairoHintStyle;
 import openfl._internal.text.TextEngine;
 import openfl.display.BitmapData;
 import openfl.display.Graphics;
-import Matrix from "openfl/geom/Matrix";
-import Rectangle from "openfl/geom/Rectangle";
+import Matrix from "../geom/Matrix";
+import Rectangle from "../geom/Rectangle";
 import openfl.text.TextField;
 
 #if!openfl_debug

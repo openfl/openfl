@@ -9,5 +9,5 @@ class FS
 	public format: string;
 	public size: number;
 
-	public new() { }
+	public constructor() { }
 }

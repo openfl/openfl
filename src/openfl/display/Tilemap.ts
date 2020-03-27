@@ -1,8 +1,8 @@
 
 // import openfl._internal.renderer.flash.FlashRenderer;
 // import openfl._internal.renderer.flash.FlashTilemap;
-import Matrix from "openfl/geom/Matrix";
-import Rectangle from "openfl/geom/Rectangle";
+import Matrix from "../geom/Matrix";
+import Rectangle from "../geom/Rectangle";
 // #if!flash
 // import openfl._internal.renderer.context3D.Context3DBuffer;
 // #end
@@ -348,7 +348,7 @@ namespace openfl.display
 		}
 
 	#if!flash
-	protected__getBounds(rect: Rectangle, matrix: Matrix): void
+	protected __getBounds(rect: Rectangle, matrix: Matrix): void
 		{
 			var bounds = Rectangle.__pool.get();
 			bounds.setTo(0, 0, __width, __height);
@@ -361,8 +361,8 @@ namespace openfl.display
 	#end
 
 	#if!flash
-	protected__hitTest(x : number, y : number, shapeFlag : boolean, stack: Array < DisplayObject >, interactiveOnly : boolean,
-		hitObject: DisplayObject) : boolean
+	protected __hitTest(x : number, y : number, shapeFlag : boolean, stack: Array < DisplayObject >, interactiveOnly : boolean,
+			hitObject: DisplayObject) : boolean
 	{
 		if (!hitObject.visible || __isMask) return false;
 		if (mask != null && !mask.__hitTestMask(x, y)) return false;
@@ -393,14 +393,14 @@ namespace openfl.display
 
 	// Get & Set Methods
 	#if!flash
-	protectedget_height() : number
+	public get height() : number
 	{
 		return __height * Math.abs(scaleY);
 	}
 	#end
 
 	#if!flash
-	protectedset_height(value : number) : number
+	public set height(value : number) : number
 	{
 		__height = Std.int(value);
 		__localBoundsDirty = true;
@@ -418,17 +418,17 @@ namespace openfl.display
 }
 	#end
 
-	protected get_numTiles() : number
+	public get numTiles() : number
 {
 	return __group.__length;
 }
 
-	protected get_tileset(): Tileset
+	public get tileset(): Tileset
 {
 	return __tileset;
 }
 
-	protected set_tileset(value: Tileset): Tileset
+	public set tileset(value: Tileset): Tileset
 {
 	if (value != __tileset)
 	{
@@ -445,14 +445,14 @@ namespace openfl.display
 }
 
 	#if!flash
-protectedget_width() : number
+public get width() : number
 {
 	return __width * Math.abs(__scaleX);
 }
 	#end
 
 	#if!flash
-protectedset_width(value : number) : number
+public set width(value : number) : number
 {
 	__width = Std.int(value);
 	__localBoundsDirty = true;

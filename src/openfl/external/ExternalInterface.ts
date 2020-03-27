@@ -1,5 +1,3 @@
-import Lib from "openfl/_internal/Lib"
-
 /**
 	The ExternalInterface class is an application programming interface that
 	enables straightforward communication between ActionScript and the SWF
@@ -78,7 +76,7 @@ export default class ExternalInterface
 		the HTML has finished loading before you attempt to call any JavaScript
 		methods.
 	**/
-	public static available(default , null) = #if openfl_html5 true #else false #end;
+	public static readonly available = true;
 
 	/**
 		Indicates whether the external interface should attempt to pass
@@ -94,141 +92,136 @@ export default class ExternalInterface
 		Internet Explorer, or the `name` attribute of the
 		`embed` tag in Netscape.
 	**/
-	public static objectID(get, null): string;
+	public static readonly objectID: string;
 
-/**
-	Registers an ActionScript method as callable from the container. After a
-	successful invocation of `addCallBack()`, the registered
-	function in the player can be called by JavaScript or ActiveX code in the
-	container.
-
-	**Note:** For _local_ content running in a browser, calls to
-	the `ExternalInterface.addCallback()` method work only if the
-	SWF file and the containing web page are in the local-trusted security
-	sandbox. For more information, see the Flash Player Developer Center
-	Topic: [Security](http://www.adobe.com/go/devnet_security_en).
-
-	@param functionName The name by which the container can invoke the
-						function.
-	@param closure      The closure to invoke. This could be a
-						free-standing function, or it could be a method
-						closure referencing a method of an object instance. By
-						passing a method closure, you can direct the callback
-						at a method of a particular object instance.
-
-						**Note:** Repeating `addCallback()`
-						on an existing callback with a
-						`null` closure value removes the
-						callback.
-	@throws Error         The container does not support incoming calls.
-						  Incoming calls are supported only in Internet
-						  Explorer for Windows and browsers that use the
-						  NPRuntime API such as Mozilla 1.7.5 and later or
-						  Firefox 1.0 and later.
-	@throws SecurityError A callback with the specified name has already been
-						  added by ActionScript in a sandbox to which you do
-						  not have access; you cannot overwrite that callback.
-						  To work around this problem, rewrite the
-						  ActionScript that originally called the
-						  `addCallback()` method so that it also
-						  calls the `Security.allowDomain()`
-						  method.
-	@throws SecurityError The containing environment belongs to a security
-						  sandbox to which the calling code does not have
-						  access. To fix this problem, follow these steps:
-
-						   1. In the `object` tag for the SWF
-						  file in the containing HTML page, set the following
-						  parameter:
-
-						  `<param name="allowScriptAccess"
-						  value="always" />`
-
-						   2. In the SWF file, add the following
-						  ActionScript:
-
-
-						  `openfl.system.Security.allowDomain(_sourceDomain_)`
-**/
-public static addCallback(functionName: string, closure: Dynamic): void
+	/**
+		Registers an ActionScript method as callable from the container. After a
+		successful invocation of `addCallBack()`, the registered
+		function in the player can be called by JavaScript or ActiveX code in the
+		container.
+	
+		**Note:** For _local_ content running in a browser, calls to
+		the `ExternalInterface.addCallback()` method work only if the
+		SWF file and the containing web page are in the local-trusted security
+		sandbox. For more information, see the Flash Player Developer Center
+		Topic: [Security](http://www.adobe.com/go/devnet_security_en).
+	
+		@param functionName The name by which the container can invoke the
+							function.
+		@param closure      The closure to invoke. This could be a
+							free-standing function, or it could be a method
+							closure referencing a method of an object instance. By
+							passing a method closure, you can direct the callback
+							at a method of a particular object instance.
+	
+							**Note:** Repeating `addCallback()`
+							on an existing callback with a
+							`null` closure value removes the
+							callback.
+		@throws Error         The container does not support incoming calls.
+							  Incoming calls are supported only in Internet
+							  Explorer for Windows and browsers that use the
+							  NPRuntime API such as Mozilla 1.7.5 and later or
+							  Firefox 1.0 and later.
+		@throws SecurityError A callback with the specified name has already been
+							  added by ActionScript in a sandbox to which you do
+							  not have access; you cannot overwrite that callback.
+							  To work around this problem, rewrite the
+							  ActionScript that originally called the
+							  `addCallback()` method so that it also
+							  calls the `Security.allowDomain()`
+							  method.
+		@throws SecurityError The containing environment belongs to a security
+							  sandbox to which the calling code does not have
+							  access. To fix this problem, follow these steps:
+	
+							   1. In the `object` tag for the SWF
+							  file in the containing HTML page, set the following
+							  parameter:
+	
+							  `<param name="allowScriptAccess"
+							  value="always" />`
+	
+							   2. In the SWF file, add the following
+							  ActionScript:
+	
+	
+							  `openfl.system.Security.allowDomain(_sourceDomain_)`
+	**/
+	public static addCallback(functionName: string, closure: Function): void
 	{
-		ExternalInterfaceBackend.addCallback(functionName, closure);
+		// ExternalInterfaceBackend.addCallback(functionName, closure);
 	}
 
-/**
-	Calls a exposed by the SWF container, passing zero or more
-	arguments. If the is not available, the call returns
-	`null`; otherwise it returns the value provided by the
-	function. Recursion is _not_ permitted on Opera or Netscape browsers;
-	on these browsers a recursive call produces a `null` response.
-	(Recursion is supported on Internet Explorer and Firefox browsers.)
-
-	If the container is an HTML page, this method invokes a JavaScript
-	function in a `script` element.
-
-	If the container is another ActiveX container, this method dispatches
-	the FlashCall ActiveX event with the specified name, and the container
-	processes the event.
-
-	If the container is hosting the Netscape plug-in, you can either write
-	custom support for the new NPRuntime interface or embed an HTML control
-	and embed the player within the HTML control. If you embed an HTML
-	control, you can communicate with the player through a JavaScript
-	interface to the native container application.
-
-	**Note:** For _local_ content running in a browser, calls to
-	the `ExternalInterface.call()` method are permitted only if the
-	SWF file and the containing web page(if there is one) are in the
-	local-trusted security sandbox. Also, you can prevent a SWF file from
-	using this method by setting the `allowNetworking` parameter of
-	the `object` and `embed` tags in the HTML page that
-	contains the SWF content. For more information, see the Flash Player
-	Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
-
-	**Note for Flash Player applications:** In Flash Player 10 and Flash
-	Player 9 Update 5, some web browsers restrict this method if a pop-up
-	blocker is enabled. In this scenario, you can only call this method
-	successfully in response to a user event(for example, in an event handler
-	for a mouse click or keypress event).
-
-	@param functionName The alphanumeric name of the to call in the
-						container. Using a non-alphanumeric name
-						causes a runtime error(error 2155). You can use a
-						`try..catch` block to handle the error.
-	@return The response received from the container. If the call failed–
-			for example, if there is no such in the container, the
-			interface is not available, a recursion occurred(with a Netscape
-			or Opera browser), or there is a security issue–
-			`null` is returned and an error is thrown.
-	@throws Error         The container does not support outgoing calls.
-						  Outgoing calls are supported only in Internet
-						  Explorer for Windows and browsers that use the
-						  NPRuntime API such as Mozilla 1.7.5 and later or
-						  Firefox 1.0 and later.
-	@throws SecurityError The containing environment belongs to a security
-						  sandbox to which the calling code does not have
-						  access. To fix this problem, follow these steps:
-
-						   1. In the `object` tag for the SWF
-						  file in the containing HTML page, set the following
-						  parameter:
-
-						  `<param name="allowScriptAccess"
-						  value="always" />`
-
-						   2. In the SWF file, add the following
-						  ActionScript:
-
-
-						  `openfl.system.Security.allowDomain(_sourceDomain_)`
-**/
-public static call(functionName: string, p1: Dynamic = null, p2: Dynamic = null, p3: Dynamic = null, p4: Dynamic = null, p5: Dynamic = null): Dynamic
-{
-	return ExternalInterfaceBackend.call(functionName, p1, p2, p3, p4, p5);
-}
-
-private static get_objectID(): string
-{
-	return ExternalInterfaceBackend.getObjectID();
-}
+	/**
+		Calls a exposed by the SWF container, passing zero or more
+		arguments. If the is not available, the call returns
+		`null`; otherwise it returns the value provided by the
+		function. Recursion is _not_ permitted on Opera or Netscape browsers;
+		on these browsers a recursive call produces a `null` response.
+		(Recursion is supported on Internet Explorer and Firefox browsers.)
+	
+		If the container is an HTML page, this method invokes a JavaScript
+		function in a `script` element.
+	
+		If the container is another ActiveX container, this method dispatches
+		the FlashCall ActiveX event with the specified name, and the container
+		processes the event.
+	
+		If the container is hosting the Netscape plug-in, you can either write
+		custom support for the new NPRuntime interface or embed an HTML control
+		and embed the player within the HTML control. If you embed an HTML
+		control, you can communicate with the player through a JavaScript
+		interface to the native container application.
+	
+		**Note:** For _local_ content running in a browser, calls to
+		the `ExternalInterface.call()` method are permitted only if the
+		SWF file and the containing web page(if there is one) are in the
+		local-trusted security sandbox. Also, you can prevent a SWF file from
+		using this method by setting the `allowNetworking` parameter of
+		the `object` and `embed` tags in the HTML page that
+		contains the SWF content. For more information, see the Flash Player
+		Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
+	
+		**Note for Flash Player applications:** In Flash Player 10 and Flash
+		Player 9 Update 5, some web browsers restrict this method if a pop-up
+		blocker is enabled. In this scenario, you can only call this method
+		successfully in response to a user event(for example, in an event handler
+		for a mouse click or keypress event).
+	
+		@param functionName The alphanumeric name of the to call in the
+							container. Using a non-alphanumeric name
+							causes a runtime error(error 2155). You can use a
+							`try..catch` block to handle the error.
+		@return The response received from the container. If the call failed–
+				for example, if there is no such in the container, the
+				interface is not available, a recursion occurred(with a Netscape
+				or Opera browser), or there is a security issue–
+				`null` is returned and an error is thrown.
+		@throws Error         The container does not support outgoing calls.
+							  Outgoing calls are supported only in Internet
+							  Explorer for Windows and browsers that use the
+							  NPRuntime API such as Mozilla 1.7.5 and later or
+							  Firefox 1.0 and later.
+		@throws SecurityError The containing environment belongs to a security
+							  sandbox to which the calling code does not have
+							  access. To fix this problem, follow these steps:
+	
+							   1. In the `object` tag for the SWF
+							  file in the containing HTML page, set the following
+							  parameter:
+	
+							  `<param name="allowScriptAccess"
+							  value="always" />`
+	
+							   2. In the SWF file, add the following
+							  ActionScript:
+	
+	
+							  `openfl.system.Security.allowDomain(_sourceDomain_)`
+	**/
+	public static call(functionName: string, ...parameters: any[]): any
+	{
+		// return ExternalInterfaceBackend.call(functionName, p1, p2, p3, p4, p5);
+	}
 }

@@ -11,8 +11,8 @@ import openfl._internal.bindings.typedarray.UInt8Array;
 import openfl.display3D.textures.Texture;
 import openfl.display3D.Context3DTextureFormat;
 import openfl.display.BitmapData;
-import Event from "openfl/events/Event";
-import ByteArray from "openfl/utils/ByteArray";
+import Event from "../events/Event";
+import ByteArray from "../utils/ByteArray";
 
 #if!openfl_debug
 @: fileXml('tags="haxe,release"')
@@ -29,7 +29,7 @@ class OpenGLTextureBackend extends OpenGLTextureBaseBackend
 
 	private parent: Texture;
 
-	public new(parent: Texture)
+	public constructor(parent: Texture)
 	{
 		this.parent = parent;
 

@@ -32,7 +32,7 @@ class AssetLibrary
 	protected sizes = new Map<string, Int>();
 	protected types = new Map<string, AssetType>();
 
-	public new()
+	public constructor()
 	{
 		bytesLoaded = 0;
 		bytesTotal = 0;

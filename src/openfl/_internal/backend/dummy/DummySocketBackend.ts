@@ -1,12 +1,12 @@
 namespace openfl._internal.backend.dummy;
 
 import openfl.net.Socket;
-import ByteArray from "openfl/utils/ByteArray";
+import ByteArray from "../utils/ByteArray";
 import openfl.utils.Endian;
 
 class DummySocketBackend
 {
-	public new(parent: Socket) { }
+	public constructor(parent: Socket) { }
 
 	public close(): void { }
 

@@ -1,6 +1,6 @@
-import Context3D from "openfl/display3D/Context3D";
-import ColorTransfrom from "openfl/geom/ColorTransform";
-import Matrix from "openfl/geom/Matrix";
+import Context3D from "../display3D/Context3D";
+import ColorTransfrom from "../geom/ColorTransform";
+import Matrix from "../geom/Matrix";
 // #if lime
 // import lime.math.Matrix4;
 // import openfl._internal.bindings.gl.WebGLRenderingContext;

@@ -1,5 +1,5 @@
-import IDataInput from "openfl/utils/IDataInput";
-import IDataOutput from "openfl/utils/IDataOutput";
+import IDataInput from "../utils/IDataInput";
+import IDataOutput from "../utils/IDataOutput";
 
 /**
 	The IExternalizable interface provides control over serialization of a class as it is

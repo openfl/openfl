@@ -11,22 +11,22 @@ import lime.ui.KeyModifier;
 import lime.ui.MouseWheelMode;
 import lime.ui.Touch;
 import lime.ui.Window;
-import Context3D from "openfl/display3D/Context3D";
+import Context3D from "../display3D/Context3D";
 import openfl.display.BitmapData;
 import openfl.display.DisplayObject;
 import openfl.display.Stage;
 import openfl.display.StageDisplayState;
 import openfl.display.Window in OpenFLWindow;
-import Event from "openfl/events/Event";
+import Event from "../events/Event";
 import openfl.events.FullScreenEvent;
-import KeyboardEvent from "openfl/events/KeyboardEvent";
-import MouseEvent from "openfl/events/MouseEvent";
+import KeyboardEvent from "../events/KeyboardEvent";
+import MouseEvent from "../events/MouseEvent";
 import openfl.events.TextEvent;
-import TouchEvent from "openfl/events/TouchEvent";
+import TouchEvent from "../events/TouchEvent";
 import openfl.ui.GameInput;
 import openfl.ui.GameInputControl;
 import openfl.ui.GameInputDevice;
-import Keyboard from "openfl/ui/Keyboard";
+import Keyboard from "../ui/Keyboard";
 import openfl.ui.KeyLocation;
 import openfl.Lib;
 #if!display
@@ -66,7 +66,7 @@ class LimeStageBackend
 	private parent: Stage;
 	private primaryTouch: Touch;
 
-	public new(parent: Stage, window: OpenFLWindow, color: null | number = null)
+	public constructor(parent: Stage, window: OpenFLWindow, color: null | number = null)
 	{
 		this.parent = parent;
 

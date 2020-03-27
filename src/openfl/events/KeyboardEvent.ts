@@ -1,7 +1,7 @@
-import ObjectPool from "openfl/_internal/utils/ObjectPool";
-import Event from "openfl/events/Event";
-import EventType from "openfl/events/EventType";
-import KeyLocation from "openfl/ui/KeyLocation";
+import ObjectPool from "../_internal/utils/ObjectPool";
+import Event from "../events/Event";
+import EventType from "../events/EventType";
+import KeyLocation from "../ui/KeyLocation";
 
 /**
 	A KeyboardEvent object id dispatched in response to user input through a

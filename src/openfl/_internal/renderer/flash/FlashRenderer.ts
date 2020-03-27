@@ -1,6 +1,6 @@
 namespace openfl._internal.renderer.flash;
 
-import Event from "openfl/events/Event";
+import Event from "../events/Event";
 import openfl.utils.Dictionary;
 import openfl.Lib;
 

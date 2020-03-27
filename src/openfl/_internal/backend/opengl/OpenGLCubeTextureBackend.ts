@@ -12,9 +12,9 @@ import openfl._internal.utils.Log;
 import openfl.display3D.textures.CubeTexture;
 import openfl.display3D.Context3DTextureFormat;
 import openfl.display.BitmapData;
-import IllegalOperationError from "openfl/errors/IllegalOperationError";
-import Event from "openfl/events/Event";
-import ByteArray from "openfl/utils/ByteArray";
+import IllegalOperationError from "../errors/IllegalOperationError";
+import Event from "../events/Event";
+import ByteArray from "../utils/ByteArray";
 
 #if!openfl_debug
 @: fileXml('tags="haxe,release"')
@@ -31,7 +31,7 @@ class OpenGLCubeTextureBackend extends OpenGLTextureBaseBackend
 	private parent: CubeTexture;
 	private uploadedSides: number;
 
-	public new(parent: CubeTexture)
+	public constructor(parent: CubeTexture)
 	{
 		super(parent);
 

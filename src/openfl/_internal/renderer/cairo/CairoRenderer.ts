@@ -19,10 +19,10 @@ import openfl.display.Tilemap;
 import openfl.events.RenderEvent;
 import openfl.media.Video;
 import openfl.text.TextField;
-import ColorTransfrom from "openfl/geom/ColorTransform";
-import Matrix from "openfl/geom/Matrix";
-import Point from "openfl/geom/Point";
-import Rectangle from "openfl/geom/Rectangle";
+import ColorTransfrom from "../geom/ColorTransform";
+import Matrix from "../geom/Matrix";
+import Point from "../geom/Point";
+import Rectangle from "../geom/Rectangle";
 
 /**
 	**BETA**

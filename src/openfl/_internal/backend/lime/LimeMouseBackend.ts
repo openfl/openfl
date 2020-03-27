@@ -4,8 +4,8 @@ namespace openfl._internal.backend.lime;
 import lime.app.Application;
 import lime.ui.MouseCursor as LimeMouseCursor;
 import openfl.display.Stage;
-import Mouse from "openfl/ui/Mouse";
-import MouseCursor from "openfl/ui/MouseCursor";
+import Mouse from "../ui/Mouse";
+import MouseCursor from "../ui/MouseCursor";
 
 #if!openfl_debug
 @: fileXml('tags="haxe,release"')

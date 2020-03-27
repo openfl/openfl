@@ -10,8 +10,8 @@ import openfl.display.BlendMode;
 import openfl.display.TileContainer;
 import openfl.display.Tilemap;
 import openfl.display.Tileset;
-import Matrix from "openfl/geom/Matrix";
-import Rectangle from "openfl/geom/Rectangle";
+import Matrix from "../geom/Matrix";
+import Rectangle from "../geom/Rectangle";
 
 #if!openfl_debug
 @: fileXml('tags="haxe,release"')

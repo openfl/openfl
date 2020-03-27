@@ -7,7 +7,7 @@ import js.Browser;
 import openfl._internal.bindings.typedarray.ArrayBuffer;
 import openfl._internal.bindings.typedarray.UInt8Array;
 import openfl._internal.bindings.typedarray.UInt16Array;
-import Rectangle from "openfl/geom/Rectangle";
+import Rectangle from "../geom/Rectangle";
 import openfl.utils.Endian;
 
 @: access(openfl._internal.backend.lime_standalone.Display)

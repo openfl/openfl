@@ -67,7 +67,7 @@ private __font: Font;
 @SuppressWarnings("checkstyle:Dynamic") private __hbBuffer: #if lime HBBuffer #else Dynamic #end;
 @SuppressWarnings("checkstyle:Dynamic") private __hbFont: #if lime HBFTFont #else Dynamic #end;
 
-public new (text: string = "", font: Font = null, size : number = 12, direction: TextDirection = LEFT_TO_RIGHT, script: TextScript = COMMON,
+public constructor(text: string = "", font: Font = null, size : number = 12, direction: TextDirection = LEFT_TO_RIGHT, script: TextScript = COMMON,
 	language: string = "en")
 {
 	this.text = text;
@@ -180,7 +180,7 @@ if (text != null && text != "" && font != null && font.src != null)
 }
 
 	// Get & Set Methods
-	protected get_positions(): Array < GlyphPosition >
+	public get positions(): Array < GlyphPosition >
 {
 	if(__dirty)
 	{
@@ -191,12 +191,12 @@ if (text != null && text != "" && font != null && font.src != null)
 	return positions;
 }
 
-	protected get_direction(): TextDirection
+	public get direction(): TextDirection
 {
 	return __direction;
 }
 
-	protected set_direction(value: TextDirection): TextDirection
+	public set direction(value: TextDirection): TextDirection
 {
 	if (value == __direction) return value;
 
@@ -206,7 +206,7 @@ if (text != null && text != "" && font != null && font.src != null)
 	return value;
 }
 
-	protected set_font(value: Font): Font
+	public set font(value: Font): Font
 {
 	if (value == this.font) return value;
 
@@ -229,12 +229,12 @@ private get_glyphs(): Array <#if lime Glyph #else Dynamic #end >
 return glyphs;
 	}
 
-	protected get_language(): string
+	public get language(): string
 {
 	return __language;
 }
 
-	protected set_language(value: string): string
+	public set language(value: string): string
 {
 	if (value == __language) return value;
 
@@ -244,12 +244,12 @@ return glyphs;
 	return value;
 }
 
-	protected get_script(): TextScript
+	public get script(): TextScript
 {
 	return __script;
 }
 
-	protected set_script(value: TextScript): TextScript
+	public set script(value: TextScript): TextScript
 {
 	if (value == __script) return value;
 
@@ -259,7 +259,7 @@ return glyphs;
 	return value;
 }
 
-	protected set_size(value : number) : number
+	public set size(value : number) : number
 {
 	if (value == this.size) return value;
 
@@ -268,7 +268,7 @@ return glyphs;
 	return value;
 }
 
-	protected set_text(value: string): string
+	public set text(value: string): string
 {
 	if (value == this.text) return value;
 
@@ -404,7 +404,7 @@ return glyphs;
 	public COPTIC = "Copt";
 	public GLAGOLITIC = "Glag";
 	public KHAROSHTHI = "Khar";
-	public NEW_TAI_LUE = "Talu";
+	public constructor_TAI_LUE = "Talu";
 	public OLD_PERSIAN = "Xpeo";
 	public SYLOTI_NAGRI = "Sylo";
 	public TIFINAGH = "Tfng";

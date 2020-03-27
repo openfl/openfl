@@ -1,6 +1,6 @@
-import ObjectPool from "openfl/_internal/utils/ObjectPool";
-import Matrix from "openfl/geom/Matrix";
-import Point from "openfl/geom/Point";
+import ObjectPool from "../_internal/utils/ObjectPool";
+import Matrix from "../geom/Matrix";
+import Point from "../geom/Point";
 
 /**
 	A Rectangle object is an area defined by its position, as indicated by its

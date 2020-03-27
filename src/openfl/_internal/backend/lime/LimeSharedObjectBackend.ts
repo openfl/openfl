@@ -30,7 +30,7 @@ class LimeSharedObjectBackend
 	private name: string;
 	private parent: SharedObject;
 
-	public new(parent: SharedObject)
+	public constructor(parent: SharedObject)
 	{
 		this.parent = parent;
 	}

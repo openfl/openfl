@@ -72,7 +72,7 @@ abstract ColorMatrix(Float32Array) from Float32Array to Float32Array
 		Creates a new `ColorMatrix` instance
 		@param	data	(Optional) Initial `Float32Array` data to use
 	**/
-	public new (data : Float32Array = null)
+	public constructor(data : Float32Array = null)
 	{
 		if (data != null && data.length == 20)
 		{
@@ -343,12 +343,12 @@ abstract ColorMatrix(Float32Array) from Float32Array to Float32Array
 		return this[14] = value / 255;
 	}
 
-	protected get_color() : number
+	public get color() : number
 	{
 		return ((Std.int(redOffset) << 16) | (Std.int(greenOffset) << 8) | Std.int(blueOffset));
 	}
 
-	protected set_color(value : number) : number
+	public set color(value : number) : number
 	{
 		redOffset = (value >> 16) & 0xFF;
 		greenOffset = (value >> 8) & 0xFF;

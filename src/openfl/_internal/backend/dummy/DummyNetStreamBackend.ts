@@ -1,11 +1,11 @@
 namespace openfl._internal.backend.dummy;
 
-import SoundTransform from "openfl/media/SoundTransform";
+import SoundTransform from "../media/SoundTransform";
 import openfl.net.NetStream;
 
 class DummyNetStreamBackend
 {
-	public new(parent: NetStream): void { }
+	public constructor(parent: NetStream): void { }
 
 	public close(): void { }
 

@@ -1,4 +1,4 @@
-import ArgumentError from "openfl/errors/ArgumentError";
+import ArgumentError from "../errors/ArgumentError";
 
 namespace openfl.display
 {

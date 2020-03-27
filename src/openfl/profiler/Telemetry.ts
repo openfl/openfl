@@ -1,5 +1,3 @@
-import Lib from "openfl/_internal/Lib";
-
 /**
 	The Telemetry class lets an application profile ActionScript code and register handlers
 	for commands
@@ -7,14 +5,9 @@ import Lib from "openfl/_internal/Lib";
 export default class Telemetry
 {
 	/**
-		Indicates whether Telemetry is connected to a server
-	**/
-	public static connected(get, never): boolean;
-
-	/**
 		Returns a marker for use with `Telemetry.sendSpanMetric`
 	**/
-	public static spanMarker(default , null) = 0.0;
+	public static readonly spanMarker = 0.0;
 
 	/**
 		Register a that can be called by issuing a command over a socket
@@ -82,7 +75,7 @@ export default class Telemetry
 		@throws	ArgumentError	If metric uses reserved namespaces like flash native
 		namespace (i.e. if metric name starts with '.')
 	**/
-	public static sendSpanMetric(metric: string, startSpanMarker: number, value: Dynamic = null): void { }
+	public static sendSpanMetric(metric: string, startSpanMarker: number, value: any = null): void { }
 
 	/**
 		@param	commandName
@@ -121,7 +114,11 @@ export default class Telemetry
 	}
 
 	// Get & Set Methods
-	protected static get_connected(): boolean
+
+	/**
+		Indicates whether Telemetry is connected to a server
+	**/
+	public static get connected(): boolean
 	{
 		return false;
 	}

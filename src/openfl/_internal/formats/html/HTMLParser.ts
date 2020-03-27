@@ -3,7 +3,7 @@ namespace openfl._internal.formats.html;
 import openfl._internal.text.TextFormatRange;
 import openfl._internal.utils.Log;
 import openfl.text.TextFormat;
-import Vector from "openfl/Vector";
+import Vector from "../Vector";
 
 #if!openfl_debug
 @: fileXml('tags="haxe,release"')

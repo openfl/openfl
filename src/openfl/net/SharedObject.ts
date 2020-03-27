@@ -1,6 +1,8 @@
-import Error from "openfl/errors/Error";
-import EventDispatcher from "openfl/events/EventDispatcher";
-import ObjectEncoding from "openfl/net/ObjectEncoding";
+import Error from "../errors/Error";
+import EventDispatcher from "../events/EventDispatcher";
+import NetConnection from "../net/NetConnection";
+import ObjectEncoding from "../net/ObjectEncoding";
+import SharedObjectFlushStatus from "../net/SharedObjectFlushStatus";
 
 /**
 	The SharedObject class is used to read and store limited amounts of data on
@@ -215,7 +217,7 @@ export default class SharedObject extends EventDispatcher
 		updates may be sent to the server less frequently than the value
 		specified in this property.
 	**/
-	public fps(null, default ): number;
+	public fps: number;
 
 	/**
 		The object encoding (AMF version) for this shared object. When a local
@@ -254,20 +256,8 @@ export default class SharedObject extends EventDispatcher
 	**/
 	public objectEncoding: ObjectEncoding;
 
-	/**
-		The current size of the shared object, in bytes.
-
-		Flash calculates the size of a shared object by stepping through all of
-		its data properties; the more data properties the object has, the longer
-		it takes to estimate its size. Estimating object size can take significant
-		processing time, so you may want to avoid using this method unless you
-		have a specific need for it.
-	**/
-	public size(get, never): number;
-
 	protected static __sharedObjects: Map<string, SharedObject>;
 
-	protected __backend: SharedObjectBackend;
 	protected __localPath: string;
 	protected __name: string;
 
@@ -275,10 +265,10 @@ export default class SharedObject extends EventDispatcher
 	{
 		super();
 
-		client = this;
-		objectEncoding = defaultObjectEncoding;
+		this.client = this;
+		this.objectEncoding = SharedObject.defaultObjectEncoding;
 
-		__backend = new SharedObjectBackend(this);
+		// __backend = new SharedObjectBackend(this);
 	}
 
 	/**
@@ -295,9 +285,9 @@ export default class SharedObject extends EventDispatcher
 	**/
 	public clear(): void
 	{
-		data = {};
+		(<any>this.data) = {};
 
-		__backend.clear();
+		// __backend.clear();
 	}
 
 	/**
@@ -342,7 +332,7 @@ export default class SharedObject extends EventDispatcher
 	**/
 	public connect(myConnection: NetConnection, params: string = null): void
 	{
-		openfl._internal.Lib.notImplemented();
+		// openfl._internal.Lib.notImplemented();
 	}
 
 	// /** @hidden */ @:dox(hide) public static deleteAll (url:String):Int;
@@ -405,12 +395,13 @@ export default class SharedObject extends EventDispatcher
 	**/
 	public flush(minDiskSpace: number = 0): SharedObjectFlushStatus
 	{
-		if (Reflect.fields(data).length == 0)
+		if (Object.getOwnPropertyNames(this.data).length == 0)
 		{
 			return SharedObjectFlushStatus.FLUSHED;
 		}
 
-		return __backend.flush(minDiskSpace);
+		// return __backend.flush(minDiskSpace);
+		return null;
 	}
 
 	// /** @hidden */ @:dox(hide) public static getDiskUsage (url:String):Int;
@@ -569,7 +560,7 @@ export default class SharedObject extends EventDispatcher
 		}
 		else
 		{
-			for (value in illegalValues)
+			for (let value of illegalValues)
 			{
 				if (name.indexOf(value) > -1)
 				{
@@ -585,27 +576,27 @@ export default class SharedObject extends EventDispatcher
 			return null;
 		}
 
-		if (__sharedObjects == null)
+		if (SharedObject.__sharedObjects == null)
 		{
-			__sharedObjects = new Map();
+			SharedObject.__sharedObjects = new Map();
 		}
 
 		var id = localPath + "/" + name;
 
-		if (!__sharedObjects.exists(id))
+		if (!SharedObject.__sharedObjects.has(id))
 		{
 			var sharedObject = new SharedObject();
-			sharedObject.__backend.getLocal(name, localPath, secure);
+			// sharedObject.__backend.getLocal(name, localPath, secure);
 			if (sharedObject.data == null)
 			{
-				sharedObject.data = {};
+				(<any>sharedObject.data) = {};
 			}
-			__sharedObjects.set(id, sharedObject);
+			SharedObject.__sharedObjects.set(id, sharedObject);
 			return sharedObject;
 		}
 		else
 		{
-			return __sharedObjects.get(id);
+			return SharedObject.__sharedObjects.get(id);
 		}
 	}
 
@@ -673,9 +664,9 @@ export default class SharedObject extends EventDispatcher
 					  This might occur if nonexistent paths were specified for
 					  the `remotePath` and `persistence` parameters.
 	**/
-	public static getRemote(name: string, remotePath: string = null, persistence: Dynamic = false, secure: boolean = false): SharedObject
+	public static getRemote(name: string, remotePath: string = null, persistence: string | boolean = false, secure: boolean = false): SharedObject
 	{
-		openfl._internal.Lib.notImplemented();
+		// openfl._internal.Lib.notImplemented();
 
 		return null;
 	}
@@ -687,9 +678,9 @@ export default class SharedObject extends EventDispatcher
 		shared object.
 
 	**/
-	public send(args: Array<Object>): void
+	public send(args: Array<any>): void
 	{
-		openfl._internal.Lib.notImplemented();
+		// openfl._internal.Lib.notImplemented();
 	}
 
 	/**
@@ -734,17 +725,28 @@ export default class SharedObject extends EventDispatcher
 		@param value        The value of the property (an ActionScript
 							object), or `null` to delete the property.
 	**/
-	public setProperty(propertyName: string, value: Object = null): void
+	public setProperty(propertyName: string, value: any = null): void
 	{
-		if (data != null)
+		if (this.data != null)
 		{
-			Reflect.setField(data, propertyName, value);
+			this.data[propertyName] = value;
 		}
 	}
 
 	// Getters & Setters
-	protected get_size(): number
+
+	/**
+		The current size of the shared object, in bytes.
+
+		Flash calculates the size of a shared object by stepping through all of
+		its data properties; the more data properties the object has, the longer
+		it takes to estimate its size. Estimating object size can take significant
+		processing time, so you may want to avoid using this method unless you
+		have a specific need for it.
+	**/
+	public get size(): number
 	{
-		return __backend.getSize();
+		// return __backend.getSize();
+		return 0;
 	}
 }

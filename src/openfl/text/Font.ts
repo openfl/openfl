@@ -1,8 +1,8 @@
-import Log from "openfl/_internal/utils/Log";
-import Assets from "openfl/utils/Assets";
-import ByteArray from "openfl/utils/ByteArray";
-import Future from "openfl/utils/Future";
-import Promise from "openfl/utils/Promise";
+import Log from "../_internal/utils/Log";
+import Assets from "../utils/Assets";
+import ByteArray from "../utils/ByteArray";
+import Future from "../utils/Future";
+import Promise from "../utils/Promise";
 
 /**
 	The Font class is used to manage embedded fonts in SWF files. Embedded

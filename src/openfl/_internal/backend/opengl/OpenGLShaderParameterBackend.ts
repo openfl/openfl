@@ -3,7 +3,7 @@ namespace openfl._internal.backend.opengl;
 #if openfl_gl
 import openfl._internal.bindings.gl.GL;
 import openfl._internal.bindings.typedarray.Float32Array;
-import Context3D from "openfl/display3D/Context3D";
+import Context3D from "../display3D/Context3D";
 import openfl.display.ShaderParameter;
 
 #if!openfl_debug
@@ -28,7 +28,7 @@ class OpenGLShaderParameterBackend<T> /*implements Dynamic*/
 	private uniformMatrix: Float32Array;
 	private useArray: boolean;
 
-	public new(parent: ShaderParameter<T>)
+	public constructor(parent: ShaderParameter<T>)
 	{
 		this.parent = parent;
 	}

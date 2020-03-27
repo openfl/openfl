@@ -1,5 +1,5 @@
-import Stage from "openfl/display/Stage";
-import MouseCursor from "openfl/ui/MouseCursor";
+import Stage from "../display/Stage";
+import MouseCursor from "../ui/MouseCursor";
 
 /**
 	The methods of the Mouse class are used to hide and show the mouse pointer,

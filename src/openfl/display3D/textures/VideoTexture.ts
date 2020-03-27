@@ -1,4 +1,4 @@
-import NetStream from "openfl/net/NetStream";
+import NetStream from "../net/NetStream";
 
 namespace openfl.display3D.textures
 {

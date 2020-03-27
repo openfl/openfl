@@ -8,7 +8,7 @@ class HTML5FileReferenceListBackend
 {
 	private parent: FileReferenceList;
 
-	public new(parent: FileReferenceList)
+	public constructor(parent: FileReferenceList)
 	{
 		this.parent = parent;
 	}

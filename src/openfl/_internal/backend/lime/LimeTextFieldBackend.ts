@@ -1,7 +1,7 @@
 namespace openfl._internal.backend.lime;
 
 #if lime
-import Event from "openfl/events/Event";
+import Event from "../events/Event";
 import openfl.text.TextField;
 
 #if!openfl_debug
@@ -13,7 +13,7 @@ class LimeTextFieldBackend
 {
 	private parent: TextField;
 
-	public new(parent: TextField)
+	public constructor(parent: TextField)
 	{
 		this.parent = parent;
 	}

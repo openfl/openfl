@@ -1,6 +1,6 @@
-import Orientation3D from "openfl/geom/Orientation3D";
-import Vector3D from "openfl/geom/Vector3D";
-import Vector from "openfl/Vector";
+import Orientation3D from "../geom/Orientation3D";
+import Vector3D from "../geom/Vector3D";
+import Vector from "../Vector";
 
 /**
 	The Matrix3D class represents a transformation matrix that determines the position and

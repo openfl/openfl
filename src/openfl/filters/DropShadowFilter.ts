@@ -2,9 +2,9 @@
 // import openfl.display.BitmapData;
 // import openfl.display.DisplayObjectRenderer;
 // import openfl.display.Shader;
-// import ColorTransfrom from "openfl/geom/ColorTransform";
-// import Point from "openfl/geom/Point";
-// import Rectangle from "openfl/geom/Rectangle";
+// import ColorTransfrom from "../geom/ColorTransform";
+// import Point from "../geom/Point";
+// import Rectangle from "../geom/Rectangle";
 // #if lime
 // import lime._internal.graphics.ImageDataUtil;
 // #else
@@ -241,7 +241,7 @@ namespace openfl.filters
 							  of `true` indicates that the object itself is
 							  not drawn; only the shadow is visible.
 		**/
-		public new(distance: number = 4, angle: number = 45, color: number = 0, alpha: number = 1, blurX: number = 4, blurY: number = 4, strength: number = 1,
+		public constructor(distance: number = 4, angle: number = 45, color: number = 0, alpha: number = 1, blurX: number = 4, blurY: number = 4, strength: number = 1,
 			quality: number = 1, inner: boolean = false, knockout: boolean = false, hideObject: boolean = false)
 		{
 			super();
@@ -273,7 +273,7 @@ namespace openfl.filters
 			return new DropShadowFilter(__distance, __angle, __color, __alpha, __blurX, __blurY, __strength, __quality, __inner, __knockout, __hideObject);
 		}
 
-		protected__applyFilter(bitmapData: BitmapData, sourceBitmapData: BitmapData, sourceRect: Rectangle,
+		protected __applyFilter(bitmapData: BitmapData, sourceBitmapData: BitmapData, sourceRect: Rectangle,
 			destPoint: Point): BitmapData
 		{
 		#if(lime || openfl_html5)
@@ -294,7 +294,7 @@ namespace openfl.filters
 			return sourceBitmapData;
 		}
 
-		protected__initShader(renderer: DisplayObjectRenderer, pass: number, sourceBitmapData: BitmapData): Shader
+		protected __initShader(renderer: DisplayObjectRenderer, pass: number, sourceBitmapData: BitmapData): Shader
 		{
 		#if(!macro && openfl_gl)
 			// Drop shadow is glow with an offset
@@ -392,23 +392,23 @@ namespace openfl.filters
 		}
 
 		// Get & Set Methods
-		protected get_alpha(): number
+		public get alpha(): number
 		{
 			return __alpha;
 		}
 
-		protected set_alpha(value: number): number
+		public set alpha(value: number): number
 		{
 			if (value != __alpha) __renderDirty = true;
 			return __alpha = value;
 		}
 
-		protected get_angle(): number
+		public get angle(): number
 		{
 			return __angle;
 		}
 
-		protected set_angle(value: number): number
+		public set angle(value: number): number
 		{
 			if (value != __angle)
 			{
@@ -419,12 +419,12 @@ namespace openfl.filters
 			return value;
 		}
 
-		protected get_blurX(): number
+		public get blurX(): number
 		{
 			return __blurX;
 		}
 
-		protected set_blurX(value: number): number
+		public set blurX(value: number): number
 		{
 			if (value != __blurX)
 			{
@@ -435,12 +435,12 @@ namespace openfl.filters
 			return value;
 		}
 
-		protected get_blurY(): number
+		public get blurY(): number
 		{
 			return __blurY;
 		}
 
-		protected set_blurY(value: number): number
+		public set blurY(value: number): number
 		{
 			if (value != __blurY)
 			{
@@ -451,23 +451,23 @@ namespace openfl.filters
 			return value;
 		}
 
-		protected get_color(): number
+		public get color(): number
 		{
 			return __color;
 		}
 
-		protected set_color(value: number): number
+		public set color(value: number): number
 		{
 			if (value != __color) __renderDirty = true;
 			return __color = value;
 		}
 
-		protected get_distance(): number
+		public get distance(): number
 		{
 			return __distance;
 		}
 
-		protected set_distance(value: number): number
+		public set distance(value: number): number
 		{
 			if (value != __distance)
 			{
@@ -478,12 +478,12 @@ namespace openfl.filters
 			return value;
 		}
 
-		protected get_hideObject(): boolean
+		public get hideObject(): boolean
 		{
 			return __hideObject;
 		}
 
-		protected set_hideObject(value: boolean): boolean
+		public set hideObject(value: boolean): boolean
 		{
 			if (value != __hideObject)
 			{
@@ -492,45 +492,45 @@ namespace openfl.filters
 			return __hideObject = value;
 		}
 
-		protected get_inner(): boolean
+		public get inner(): boolean
 		{
 			return __inner;
 		}
 
-		protected set_inner(value: boolean): boolean
+		public set inner(value: boolean): boolean
 		{
 			if (value != __inner) __renderDirty = true;
 			return __inner = value;
 		}
 
-		protected get_knockout(): boolean
+		public get knockout(): boolean
 		{
 			return __knockout;
 		}
 
-		protected set_knockout(value: boolean): boolean
+		public set knockout(value: boolean): boolean
 		{
 			if (value != __knockout) __renderDirty = true;
 			return __knockout = value;
 		}
 
-		protected get_quality(): number
+		public get quality(): number
 		{
 			return __quality;
 		}
 
-		protected set_quality(value: number): number
+		public set quality(value: number): number
 		{
 			if (value != __quality) __renderDirty = true;
 			return __quality = value;
 		}
 
-		protected get_strength(): number
+		public get strength(): number
 		{
 			return __strength;
 		}
 
-		protected set_strength(value: number): number
+		public set strength(value: number): number
 		{
 			if (value != __strength) __renderDirty = true;
 			return __strength = value;
@@ -564,7 +564,7 @@ namespace openfl.filters
 		textureCoords = vec4(openfl_TextureCoord, openfl_TextureCoord - offset / openfl_TextureSize);
 	}
 	")
-public new ()
+public constructor()
 	{
 		super();
 		#if(!macro && openfl_gl)

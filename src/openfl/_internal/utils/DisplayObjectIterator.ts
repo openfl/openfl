@@ -13,7 +13,7 @@ class DisplayObjectIterator
 	private current: DisplayObject;
 	private entry: DisplayObject;
 
-	public new()
+	public constructor()
 	{
 		entry = null;
 		current = null;

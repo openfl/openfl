@@ -1,6 +1,6 @@
-import Matrix3D from "openfl/geom/Matrix3D";
-import Vector3D from "openfl/geom/Vector3D";
-import Vector from "openfl/Vector";
+import Matrix3D from "../geom/Matrix3D";
+import Vector3D from "../geom/Vector3D";
+import Vector from "../Vector";
 
 /**
 	The Utils3D class contains static methods that simplify the implementation of

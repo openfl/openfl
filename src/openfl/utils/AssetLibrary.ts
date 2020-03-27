@@ -1,7 +1,7 @@
-import MovieClip from "openfl/display/MovieClip";
-import AssetManifest from "openfl/utils/AssetManifest";
-import ByteArray from "openfl/utils/ByteArray";
-import Future from "openfl/utils/Future";
+import MovieClip from "../display/MovieClip";
+import AssetManifest from "../utils/AssetManifest";
+import ByteArray from "../utils/ByteArray";
+import Future from "../utils/Future";
 
 export default class AssetLibrary
 {

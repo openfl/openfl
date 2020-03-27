@@ -43,7 +43,7 @@ export default class PrintJobOptions
 							 _Note:_Adobe AIR does not support vector printing
 							 on Mac OS.
 	**/
-	public new(printAsBitmap: boolean = false)
+	public constructor(printAsBitmap: boolean = false)
 	{
 		this.printAsBitmap = printAsBitmap;
 	}

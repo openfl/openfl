@@ -1,4 +1,4 @@
-import Clipboard from "openfl/desktop/Clipboard";
+import Clipboard from "../desktop/Clipboard";
 
 /**
 		The System class contains properties related to local settings and

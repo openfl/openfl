@@ -11,7 +11,7 @@ class DrawCallCounter
 
 	private drawCallsCounter: number = 0;
 
-	public new()
+	public constructor()
 	{
 		currentDrawCallsNum = 0;
 		drawCallsCounter = 0;

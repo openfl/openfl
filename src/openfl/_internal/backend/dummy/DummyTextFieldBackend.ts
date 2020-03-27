@@ -4,7 +4,7 @@ import openfl.text.TextField;
 
 class DummyTextFieldBackend
 {
-	public new(parent: TextField) { }
+	public constructor(parent: TextField) { }
 
 	public disableInput(): void { }
 

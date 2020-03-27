@@ -1,9 +1,9 @@
-import ObjectPool from "openfl/_internal/utils/ObjectPool";
-import InteractiveObject from "openfl/display/InteractiveObject";
-import Event from "openfl/events/Event";
-import EventType from "openfl/events/EventType";
-import Point from "openfl/geom/Point";
-import ByteArray from "openfl/utils/ByteArray";
+import ObjectPool from "../_internal/utils/ObjectPool";
+import InteractiveObject from "../display/InteractiveObject";
+import Event from "../events/Event";
+import EventType from "../events/EventType";
+import Point from "../geom/Point";
+import ByteArray from "../utils/ByteArray";
 
 /**
 	The TouchEvent class lets you handle events on devices that detect user
