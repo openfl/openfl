@@ -1,15 +1,19 @@
 import Context3DState from "../../_internal/renderer/context3D/Context3DState";
 import DisplayObjectRenderData from "../../_internal/renderer/DisplayObjectRenderData";
 import DisplayObjectType from "../../_internal/renderer/DisplayObjectType";
+import GraphicsDataType from "../../_internal/renderer/GraphicsDataType";
+import GraphicsFillType from "../../_internal/renderer/GraphicsFillType";
 import ObjectPool from "../../_internal/utils/ObjectPool";
 import BlendMode from "../../display/BlendMode";
 import DisplayObject from "../../display/DisplayObject";
 import Graphics from "../../display/Graphics";
+import IGraphicsData from "../../display/IGraphicsData";
 import LoaderInfo from "../../display/LoaderInfo";
 import Shader from "../../display/Shader";
 import Sprite from "../../display/Sprite";
 import Stage from "../../display/Stage";
 import Stage3D from "../../display/Stage3D";
+import Context3D from "../../display3D/Context3D";
 import EventPhase from "../../events/EventPhase";
 import RenderEvent from "../../events/RenderEvent";
 import BitmapFilter from "../../filters/BitmapFilter";
@@ -21,7 +25,7 @@ import Transform from "../../geom/Transform";
 import SoundChannel from "../../media/SoundChannel";
 import GameInputDevice from "../../ui/GameInputDevice";
 import GameInputControl from "../../ui/GameInputControl";
-import Context3D from "openfl/display3D/Context3D";
+import Vector from "../../Vector";
 
 interface ColorTransformInternal
 {
@@ -103,6 +107,7 @@ interface DisplayObjectInternal
 	__getWorldTransform(): Matrix;
 	__hitTest(x: number, y: number, shapeFlag: boolean, stack: Array<DisplayObject>, interactiveOnly: boolean, hitObject: DisplayObject): boolean;
 	__hitTestMask(x: number, y: number): boolean;
+	__readGraphicsData(graphicsData: Vector<IGraphicsData>, recurse: boolean): void;
 	__setParentRenderDirty(): void;
 	__setRenderDirty(): void;
 	__setStageReferences(stage: Stage): void;
@@ -168,6 +173,19 @@ interface IBitmapDrawableInternal
 	__update(transformOnly: boolean, updateChildren: boolean): void;
 }
 export { IBitmapDrawableInternal as IBitmapDrawable }
+
+interface IGraphicsDataInternal
+{
+	__graphicsDataType: GraphicsDataType;
+}
+export { IGraphicsDataInternal as IGraphicsData }
+
+interface IGraphicsFillInternal
+{
+	__graphicsFillType: GraphicsFillType;
+}
+export { IGraphicsFillInternal as IGraphicsFill }
+
 
 interface MatrixInternal
 {

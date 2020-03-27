@@ -1,24 +1,19 @@
-namespace openfl._internal.renderer;
+import DrawCommandBuffer from "../../_internal/renderer/DrawCommandBuffer";
+import DrawCommandType from "../../_internal/renderer/DrawCommandType";
+import * as internal from "../../_internal/utils/InternalAccess";
+import BitmapData from "../../display/BitmapData";
+import BlendMode from "../../display/BlendMode";
+import CapsStyle from "../../display/CapsStyle";
+import GradientType from "../../display/GradientType";
+import InterpolationMethod from "../../display/InterpolationMethod";
+import JointStyle from "../../display/JointStyle";
+import LineScaleMode from "../../display/LineScaleMode";
+import SpreadMethod from "../../display/SpreadMethod";
+import TriangleCulling from "../../display/TriangleCulling";
+import Matrix from "../../geom/Matrix";
+import Vector from "../../Vector";
 
-import openfl.display.BitmapData;
-import openfl.display.BlendMode;
-import openfl.display.CapsStyle;
-import openfl.display.GradientType;
-import openfl.display.InterpolationMethod;
-import openfl.display.JointStyle;
-import openfl.display.LineScaleMode;
-import openfl.display.SpreadMethod;
-import openfl.display.TriangleCulling;
-import Matrix from "../geom/Matrix";
-import Vector from "../Vector";
-
-#if!openfl_debug
-@: fileXml('tags="haxe,release"')
-@: noDebug
-#end
-@: allow(openfl._internal.renderer)
-@SuppressWarnings("checkstyle:FieldDocComment")
-class DrawCommandReader
+export default class DrawCommandReader
 {
 	public buffer: DrawCommandBuffer;
 
@@ -35,89 +30,110 @@ class DrawCommandReader
 	{
 		this.buffer = buffer;
 
-		bPos = iPos = fPos = oPos = ffPos = iiPos = tsPos = 0;
-		prev = UNKNOWN;
+		this.bPos = this.iPos = this.fPos = this.oPos = this.ffPos = this.iiPos = this.tsPos = 0;
+		this.prev = UNKNOWN;
 	}
 
-	protected inline advance(): void
+	protected advance(): void
 	{
-		switch (prev)
+		switch (this.prev)
 		{
-			case BEGIN_BITMAP_FILL:
-				oPos += 2; // bitmap, matrix
-				bPos += 2; // repeat, smooth
+			case DrawCommandType.BEGIN_BITMAP_FILL:
+				this.oPos += 2; // bitmap, matrix
+				this.bPos += 2; // repeat, smooth
+				break;
 
-			case BEGIN_FILL:
-				iPos += 1; // color
-				fPos += 1; // alpha
+			case DrawCommandType.BEGIN_FILL:
+				this.iPos += 1; // color
+				this.fPos += 1; // alpha
+				break;
 
-			case BEGIN_GRADIENT_FILL:
-				oPos += 4; // type, matrix, spreadMethod, interpolationMethod
-				iiPos += 2; // colors, ratios
-				ffPos += 1; // alphas
-				fPos += 1; // focalPointRatio
+			case DrawCommandType.BEGIN_GRADIENT_FILL:
+				this.oPos += 4; // type, matrix, spreadMethod, interpolationMethod
+				this.iiPos += 2; // colors, ratios
+				this.ffPos += 1; // alphas
+				this.fPos += 1; // focalPointRatio
+				break;
 
-			case BEGIN_SHADER_FILL:
-				oPos += 1; // shaderBuffer
+			case DrawCommandType.BEGIN_SHADER_FILL:
+				this.oPos += 1; // shaderBuffer
+				break;
 
-			case CUBIC_CURVE_TO:
-				fPos += 6; // controlX1, controlY1, controlX2, controlY2, anchorX, anchorY
+			case DrawCommandType.CUBIC_CURVE_TO:
+				this.fPos += 6; // controlX1, controlY1, controlX2, controlY2, anchorX, anchorY
+				break;
 
-			case CURVE_TO:
-				fPos += 4; // controlX, controlY, anchorX, anchorY
+			case DrawCommandType.CURVE_TO:
+				this.fPos += 4; // controlX, controlY, anchorX, anchorY
+				break;
 
-			case DRAW_CIRCLE:
-				fPos += 3; // x, y, radius
+			case DrawCommandType.DRAW_CIRCLE:
+				this.fPos += 3; // x, y, radius
+				break;
 
-			case DRAW_ELLIPSE:
-				fPos += 4; // x, y, width, height
+			case DrawCommandType.DRAW_ELLIPSE:
+				this.fPos += 4; // x, y, width, height
+				break;
 
-			case DRAW_QUADS:
-				oPos += 3; // rects, indices, transforms
+			case DrawCommandType.DRAW_QUADS:
+				this.oPos += 3; // rects, indices, transforms
+				break;
 
-			case DRAW_RECT:
-				fPos += 4; // x, y, width, height
+			case DrawCommandType.DRAW_RECT:
+				this.fPos += 4; // x, y, width, height
+				break;
 
-			case DRAW_ROUND_RECT:
-				fPos += 5; // x, y, width, height, ellipseWidth
-				oPos += 1; // ellipseHeight
+			case DrawCommandType.DRAW_ROUND_RECT:
+				this.fPos += 5; // x, y, width, height, ellipseWidth
+				this.oPos += 1; // ellipseHeight
+				break;
 
-			case DRAW_TRIANGLES:
-				oPos += 4; // vertices, indices, uvtData, culling
+			case DrawCommandType.DRAW_TRIANGLES:
+				this.oPos += 4; // vertices, indices, uvtData, culling
+				break;
 
-			case END_FILL:
+			case DrawCommandType.END_FILL:
+				break;
 
 			// no parameters
 
-			case LINE_BITMAP_STYLE:
-				oPos += 2; // bitmap, matrix
-				bPos += 2; // repeat, smooth
+			case DrawCommandType.LINE_BITMAP_STYLE:
+				this.oPos += 2; // bitmap, matrix
+				this.bPos += 2; // repeat, smooth
+				break;
 
-			case LINE_GRADIENT_STYLE:
-				oPos += 4; // type, matrix, spreadMethod, interpolationMethod
-				iiPos += 2; // colors, ratios
-				ffPos += 1; // alphas
-				fPos += 1; // focalPointRatio
+			case DrawCommandType.LINE_GRADIENT_STYLE:
+				this.oPos += 4; // type, matrix, spreadMethod, interpolationMethod
+				this.iiPos += 2; // colors, ratios
+				this.ffPos += 1; // alphas
+				this.fPos += 1; // focalPointRatio
+				break;
 
-			case LINE_STYLE:
-				oPos += 4; // thickness, scaleMode, caps, joints
-				iPos += 1; // color
-				fPos += 2; // alpha, miterLimit
-				bPos += 1; // pixelHinting
+			case DrawCommandType.LINE_STYLE:
+				this.oPos += 4; // thickness, scaleMode, caps, joints
+				this.iPos += 1; // color
+				this.fPos += 2; // alpha, miterLimit
+				this.bPos += 1; // pixelHinting
+				break;
 
-			case LINE_TO:
-				fPos += 2; // x, y
+			case DrawCommandType.LINE_TO:
+				this.fPos += 2; // x, y
+				break;
 
-			case MOVE_TO:
-				fPos += 2; // x, y
+			case DrawCommandType.MOVE_TO:
+				this.fPos += 2; // x, y
+				break;
 
-			case OVERRIDE_BLEND_MODE:
-				oPos += 1; // blendMode
+			case DrawCommandType.OVERRIDE_BLEND_MODE:
+				this.oPos += 1; // blendMode
+				break;
 
-			case OVERRIDE_MATRIX:
-				oPos += 1; // matrix
+			case DrawCommandType.OVERRIDE_MATRIX:
+				this.oPos += 1; // matrix
+				break;
 
-			case WINDING_EVEN_ODD, WINDING_NON_ZERO:
+			case DrawCommandType.WINDING_EVEN_ODD:
+			case DrawCommandType.WINDING_NON_ZERO:
 
 			// no parameters
 
@@ -125,907 +141,530 @@ class DrawCommandReader
 		}
 	}
 
-	protected inline bool(index: number): boolean
+	public bool(index: number): boolean
 	{
-		return buffer.b[bPos + index];
+		return this.buffer.b[this.bPos + index];
 	}
 
 	public destroy(): void
 	{
-		buffer = null;
-		reset();
+		this.buffer = null;
+		this.reset();
 	}
 
-	protected inline fArr(index: number): Array<Float>
+	public fArr(index: number): Array<number>
 	{
-		return buffer.ff[ffPos + index];
+		return this.buffer.ff[this.ffPos + index];
 	}
 
-	protected inline float(index: number): number
+	public float(index: number): number
 	{
-		return buffer.f[fPos + index];
+		return this.buffer.f[this.fPos + index];
 	}
 
-	protected inline iArr(index: number): Array<Int>
+	public iArr(index: number): Array<number>
 	{
-		return buffer.ii[iiPos + index];
+		return this.buffer.ii[this.iiPos + index];
 	}
 
-	protected inline int(index: number): number
+	public int(index: number): number
 	{
-		return buffer.i[iPos + index];
+		return this.buffer.i[this.iPos + index];
 	}
 
-	/** @hidden */
-	@SuppressWarnings("checkstyle:Dynamic")
-	private inline obj(index: number): Dynamic
+	public obj(index: number): any
 	{
-		return buffer.o[oPos + index];
+		return this.buffer.o[this.oPos + index];
 	}
 
-	public inline readBeginBitmapFill(): BeginBitmapFillView
+	public readBeginBitmapFill(): BeginBitmapFillView
 	{
-		advance();
-		prev = BEGIN_BITMAP_FILL;
+		this.advance();
+		this.prev = DrawCommandType.BEGIN_BITMAP_FILL;
 		return new BeginBitmapFillView(this);
 	}
 
-	public inline readBeginFill(): BeginFillView
+	public readBeginFill(): BeginFillView
 	{
-		advance();
-		prev = BEGIN_FILL;
+		this.advance();
+		this.prev = DrawCommandType.BEGIN_FILL;
 		return new BeginFillView(this);
 	}
 
-	public inline readBeginGradientFill(): BeginGradientFillView
+	public readBeginGradientFill(): BeginGradientFillView
 	{
-		advance();
-		prev = BEGIN_GRADIENT_FILL;
+		this.advance();
+		this.prev = DrawCommandType.BEGIN_GRADIENT_FILL;
 		return new BeginGradientFillView(this);
 	}
 
-	public inline readBeginShaderFill(): BeginShaderFillView
+	public readBeginShaderFill(): BeginShaderFillView
 	{
-		advance();
-		prev = BEGIN_SHADER_FILL;
+		this.advance();
+		this.prev = DrawCommandType.BEGIN_SHADER_FILL;
 		return new BeginShaderFillView(this);
 	}
 
-	public inline readCubicCurveTo(): CubicCurveToView
+	public readCubicCurveTo(): CubicCurveToView
 	{
-		advance();
-		prev = CUBIC_CURVE_TO;
+		this.advance();
+		this.prev = DrawCommandType.CUBIC_CURVE_TO;
 		return new CubicCurveToView(this);
 	}
 
-	public inline readCurveTo(): CurveToView
+	public readCurveTo(): CurveToView
 	{
-		advance();
-		prev = CURVE_TO;
+		this.advance();
+		this.prev = DrawCommandType.CURVE_TO;
 		return new CurveToView(this);
 	}
 
-	public inline readDrawCircle(): DrawCircleView
+	public readDrawCircle(): DrawCircleView
 	{
-		advance();
-		prev = DRAW_CIRCLE;
+		this.advance();
+		this.prev = DrawCommandType.DRAW_CIRCLE;
 		return new DrawCircleView(this);
 	}
 
-	public inline readDrawEllipse(): DrawEllipseView
+	public readDrawEllipse(): DrawEllipseView
 	{
-		advance();
-		prev = DRAW_ELLIPSE;
+		this.advance();
+		this.prev = DrawCommandType.DRAW_ELLIPSE;
 		return new DrawEllipseView(this);
 	}
 
-	public inline readDrawQuads(): DrawQuadsView
+	public readDrawQuads(): DrawQuadsView
 	{
-		advance();
-		prev = DRAW_QUADS;
+		this.advance();
+		this.prev = DrawCommandType.DRAW_QUADS;
 		return new DrawQuadsView(this);
 	}
 
-	public inline readDrawRect(): DrawRectView
+	public readDrawRect(): DrawRectView
 	{
-		advance();
-		prev = DRAW_RECT;
+		this.advance();
+		this.prev = DrawCommandType.DRAW_RECT;
 		return new DrawRectView(this);
 	}
 
-	public inline readDrawRoundRect(): DrawRoundRectView
+	public readDrawRoundRect(): DrawRoundRectView
 	{
-		advance();
-		prev = DRAW_ROUND_RECT;
+		this.advance();
+		this.prev = DrawCommandType.DRAW_ROUND_RECT;
 		return new DrawRoundRectView(this);
 	}
 
-	public inline readDrawTriangles(): DrawTrianglesView
+	public readDrawTriangles(): DrawTrianglesView
 	{
-		advance();
-		prev = DRAW_TRIANGLES;
+		this.advance();
+		this.prev = DrawCommandType.DRAW_TRIANGLES;
 		return new DrawTrianglesView(this);
 	}
 
-	public inline readEndFill(): EndFillView
+	public readEndFill(): EndFillView
 	{
-		advance();
-		prev = END_FILL;
+		this.advance();
+		this.prev = DrawCommandType.END_FILL;
 		return new EndFillView(this);
 	}
 
-	public inline readLineBitmapStyle(): LineBitmapStyleView
+	public readLineBitmapStyle(): LineBitmapStyleView
 	{
-		advance();
-		prev = LINE_BITMAP_STYLE;
+		this.advance();
+		this.prev = DrawCommandType.LINE_BITMAP_STYLE;
 		return new LineBitmapStyleView(this);
 	}
 
-	public inline readLineGradientStyle(): LineGradientStyleView
+	public readLineGradientStyle(): LineGradientStyleView
 	{
-		advance();
-		prev = LINE_GRADIENT_STYLE;
+		this.advance();
+		this.prev = DrawCommandType.LINE_GRADIENT_STYLE;
 		return new LineGradientStyleView(this);
 	}
 
-	public inline readLineStyle(): LineStyleView
+	public readLineStyle(): LineStyleView
 	{
-		advance();
-		prev = LINE_STYLE;
+		this.advance();
+		this.prev = DrawCommandType.LINE_STYLE;
 		return new LineStyleView(this);
 	}
 
-	public inline readLineTo(): LineToView
+	public readLineTo(): LineToView
 	{
-		advance();
-		prev = LINE_TO;
+		this.advance();
+		this.prev = DrawCommandType.LINE_TO;
 		return new LineToView(this);
 	}
 
-	public inline readMoveTo(): MoveToView
+	public readMoveTo(): MoveToView
 	{
-		advance();
-		prev = MOVE_TO;
+		this.advance();
+		this.prev = DrawCommandType.MOVE_TO;
 		return new MoveToView(this);
 	}
 
-	public inline readOverrideBlendMode(): OverrideBlendModeView
+	public readOverrideBlendMode(): OverrideBlendModeView
 	{
-		advance();
-		prev = OVERRIDE_BLEND_MODE;
+		this.advance();
+		this.prev = DrawCommandType.OVERRIDE_BLEND_MODE;
 		return new OverrideBlendModeView(this);
 	}
 
-	public inline readOverrideMatrix(): OverrideMatrixView
+	public readOverrideMatrix(): OverrideMatrixView
 	{
-		advance();
-		prev = OVERRIDE_MATRIX;
+		this.advance();
+		this.prev = DrawCommandType.OVERRIDE_MATRIX;
 		return new OverrideMatrixView(this);
 	}
 
-	public inline readWindingEvenOdd(): WindingEvenOddView
+	public readWindingEvenOdd(): WindingEvenOddView
 	{
-		advance();
-		prev = WINDING_EVEN_ODD;
+		this.advance();
+		this.prev = DrawCommandType.WINDING_EVEN_ODD;
 		return new WindingEvenOddView(this);
 	}
 
-	public inline readWindingNonZero(): WindingNonZeroView
+	public readWindingNonZero(): WindingNonZeroView
 	{
-		advance();
-		prev = WINDING_NON_ZERO;
+		this.advance();
+		this.prev = DrawCommandType.WINDING_NON_ZERO;
 		return new WindingNonZeroView(this);
 	}
 
 	public reset(): void
 	{
-		bPos = iPos = fPos = oPos = ffPos = iiPos = tsPos = 0;
+		this.bPos = this.iPos = this.fPos = this.oPos = this.ffPos = this.iiPos = this.tsPos = 0;
 	}
 
-	public inline skip(type: DrawCommandType): void
+	public skip(type: DrawCommandType): void
 	{
-		advance();
-		prev = type;
-	}
-}
-
-abstract BeginBitmapFillView(DrawCommandReader)
-{
-	public inline new (d: DrawCommandReader)
-	{
-		this = d;
-	}
-
-	public bitmap(get, never): BitmapData;
-
-	private inline get_bitmap(): BitmapData
-	{
-		return cast this.obj(0);
-	}
-
-	public matrix(get, never): Matrix;
-
-	private inline get_matrix(): Matrix
-	{
-		return cast this.obj(1);
-	}
-
-	public repeat(get, never) : boolean;
-
-	private inline get_repeat() : boolean
-	{
-		return this.bool(0);
-	}
-
-	public smooth(get, never) : boolean;
-
-	private inline get_smooth() : boolean
-	{
-		return this.bool(1);
+		this.advance();
+		this.prev = type;
 	}
 }
 
-abstract BeginFillView(DrawCommandReader)
+class BeginBitmapFillView
 {
-	public inline new (d: DrawCommandReader)
+	readonly bitmap: BitmapData;
+	readonly matrix: Matrix;
+	readonly repeat: boolean;
+	readonly smooth: boolean;
+
+	public constructor(d: DrawCommandReader)
 	{
-		this = d;
-	}
-
-	public color(get, never) : number;
-
-	private inline get_color() : number
-	{
-		return this.int(0);
-	}
-
-	public alpha(get, never) : number;
-
-	private inline get_alpha() : number
-	{
-		return this.float(0);
+		this.bitmap = d.obj(0);
+		this.matrix = d.obj(1);
+		this.repeat = d.bool(0);
+		this.smooth = d.bool(1);
 	}
 }
 
-abstract BeginGradientFillView(DrawCommandReader)
+class BeginFillView
 {
-	public inline new (d: DrawCommandReader)
+	readonly color: number;
+	readonly alpha: number;
+
+	public constructor(d: DrawCommandReader)
 	{
-		this = d;
-	}
-
-	public type(get, never): GradientType;
-
-	private inline get_type(): GradientType
-	{
-		return cast this.obj(0);
-	}
-
-	public colors(get, never): Array<Int>;
-
-	private inline get_colors(): Array < Int >
-	{
-		return cast this.iArr(0);
-	}
-
-	public alphas(get, never): Array<Float>;
-
-	private inline get_alphas(): Array < Float >
-	{
-		return cast this.fArr(0);
-	}
-
-	public ratios(get, never): Array<Int>;
-
-	private inline get_ratios(): Array < Int >
-	{
-		return cast this.iArr(1);
-	}
-
-	public matrix(get, never): Matrix;
-
-	private inline get_matrix(): Matrix
-	{
-		return cast this.obj(1);
-	}
-
-	public spreadMethod(get, never): SpreadMethod;
-
-	private inline get_spreadMethod(): SpreadMethod
-	{
-		return cast this.obj(2);
-	}
-
-	public interpolationMethod(get, never) : numbererpolationMethod;
-
-	private inline get_interpolationMethod() : numbererpolationMethod
-	{
-		return cast this.obj(3);
-	}
-
-	public focalPointRatio(get, never) : number;
-
-	private inline get_focalPointRatio() : number
-	{
-		return cast this.float(0);
+		this.color = d.int(0);
+		this.alpha = d.float(0);
 	}
 }
 
-abstract BeginShaderFillView(DrawCommandReader)
+class BeginGradientFillView
 {
-	public inline new (d: DrawCommandReader)
-	{
-		this = d;
-	}
+	readonly type: GradientType;
+	readonly colors: Array<number>;
+	readonly alphas: Array<number>;
+	readonly ratios: Array<number>;
+	readonly matrix: Matrix;
+	readonly spreadMethod: SpreadMethod;
+	readonly interpolationMethod: InterpolationMethod;
+	readonly focalPointRatio: number;
 
-	public shaderBuffer(get, never): ShaderBuffer;
-
-	private inline get_shaderBuffer(): ShaderBuffer
+	public constructor(d: DrawCommandReader)
 	{
-		return cast this.obj(0);
+		this.type = d.obj(0);
+		this.colors = d.iArr(0);
+		this.alphas = d.fArr(0);
+		this.ratios = d.iArr(1);
+		this.matrix = d.obj(1);
+		this.spreadMethod = d.obj(2);
+		this.interpolationMethod = d.obj(3);
+		this.focalPointRatio = d.float(0);
 	}
 }
 
-abstract CubicCurveToView(DrawCommandReader)
+class BeginShaderFillView
 {
-	public inline new (d: DrawCommandReader)
+	readonly shaderBuffer: ShaderBuffer;
+
+	public constructor(d: DrawCommandReader)
 	{
-		this = d;
-	}
-
-	public controlX1(get, never) : number;
-
-	private inline get_controlX1() : number
-	{
-		return this.float(0);
-	}
-
-	public controlY1(get, never) : number;
-
-	private inline get_controlY1() : number
-	{
-		return this.float(1);
-	}
-
-	public controlX2(get, never) : number;
-
-	private inline get_controlX2() : number
-	{
-		return this.float(2);
-	}
-
-	public controlY2(get, never) : number;
-
-	private inline get_controlY2() : number
-	{
-		return this.float(3);
-	}
-
-	public anchorX(get, never) : number;
-
-	private inline get_anchorX() : number
-	{
-		return this.float(4);
-	}
-
-	public anchorY(get, never) : number;
-
-	private inline get_anchorY() : number
-	{
-		return this.float(5);
+		this.shaderBuffer = d.obj(0);
 	}
 }
 
-abstract CurveToView(DrawCommandReader)
+class CubicCurveToView
 {
-	public inline new (d: DrawCommandReader)
+	readonly controlX1: number;
+	readonly controlY1: number;
+	readonly controlX2: number;
+	readonly controlY2: number;
+	readonly anchorX: number;
+	readonly anchorY: number;
+
+	public constructor(d: DrawCommandReader)
 	{
-		this = d;
-	}
-
-	public controlX(get, never) : number;
-
-	private inline get_controlX() : number
-	{
-		return this.float(0);
-	}
-
-	public controlY(get, never) : number;
-
-	private inline get_controlY() : number
-	{
-		return this.float(1);
-	}
-
-	public anchorX(get, never) : number;
-
-	private inline get_anchorX() : number
-	{
-		return this.float(2);
-	}
-
-	public anchorY(get, never) : number;
-
-	private inline get_anchorY() : number
-	{
-		return this.float(3);
+		this.controlX1 = d.float(0);
+		this.controlY1 = d.float(1);
+		this.controlX2 = d.float(2);
+		this.controlY2 = d.float(3);
+		this.anchorX = d.float(4);
+		this.anchorY = d.float(5);
 	}
 }
 
-abstract DrawCircleView(DrawCommandReader)
+class CurveToView
 {
-	public inline new (d: DrawCommandReader)
+	readonly controlX: number;
+	readonly controlY: number;
+	readonly anchorX: number;
+	readonly anchorY: number;
+
+	public constructor(d: DrawCommandReader)
 	{
-		this = d;
-	}
-
-	public x(get, never) : number;
-
-	private inline get_x() : number
-	{
-		return this.float(0);
-	}
-
-	public y(get, never) : number;
-
-	private inline get_y() : number
-	{
-		return this.float(1);
-	}
-
-	public radius(get, never) : number;
-
-	private inline get_radius() : number
-	{
-		return this.float(2);
+		this.controlX = d.float(0);
+		this.controlY = d.float(1);
+		this.anchorX = d.float(2);
+		this.anchorY = d.float(3);
 	}
 }
 
-abstract DrawEllipseView(DrawCommandReader)
+class DrawCircleView
 {
-	public inline new (d: DrawCommandReader)
+	readonly x: number;
+	readonly y: number;
+	readonly radius: number;
+
+	public constructor(d: DrawCommandReader)
 	{
-		this = d;
-	}
-
-	public x(get, never) : number;
-
-	private inline get_x() : number
-	{
-		return this.float(0);
-	}
-
-	public y(get, never) : number;
-
-	private inline get_y() : number
-	{
-		return this.float(1);
-	}
-
-	public width(get, never) : number;
-
-	private inline get_width() : number
-	{
-		return this.float(2);
-	}
-
-	public height(get, never) : number;
-
-	private inline get_height() : number
-	{
-		return this.float(3);
+		this.x = d.float(0);
+		this.y = d.float(1);
+		this.radius = d.float(2);
 	}
 }
 
-abstract DrawQuadsView(DrawCommandReader)
+class DrawEllipseView
 {
-	public inline new (d: DrawCommandReader)
+	readonly x: number;
+	readonly y: number;
+	readonly width: number;
+	readonly height: number;
+
+	public constructor(d: DrawCommandReader)
 	{
-		this = d;
-	}
-
-	public rects(get, never): Vector<number>;
-
-	private inline get_rects(): Vector < Float >
-	{
-		return cast this.obj(0);
-	}
-
-	public indices(get, never): Vector<Int>;
-
-	private inline get_indices(): Vector < Int >
-	{
-		return cast this.obj(1);
-	}
-
-	public transforms(get, never): Vector<number>;
-
-	private inline get_transforms(): Vector < Float >
-	{
-		return cast this.obj(2);
+		this.x = d.float(0);
+		this.y = d.float(1);
+		this.width = d.float(2);
+		this.height = d.float(3);
 	}
 }
 
-abstract DrawRectView(DrawCommandReader)
+class DrawQuadsView
 {
-	public inline new (d: DrawCommandReader)
+	readonly rects: Vector<number>;
+	readonly indices: Vector<number>;
+	readonly transforms: Vector<number>;
+
+	public constructor(d: DrawCommandReader)
 	{
-		this = d;
-	}
-
-	public x(get, never) : number;
-
-	private inline get_x() : number
-	{
-		return this.float(0);
-	}
-
-	public y(get, never) : number;
-
-	private inline get_y() : number
-	{
-		return this.float(1);
-	}
-
-	public width(get, never) : number;
-
-	private inline get_width() : number
-	{
-		return this.float(2);
-	}
-
-	public height(get, never) : number;
-
-	private inline get_height() : number
-	{
-		return this.float(3);
+		this.rects = d.obj(0);
+		this.indices = d.obj(1);
+		this.transforms = d.obj(2);
 	}
 }
 
-abstract DrawRoundRectView(DrawCommandReader)
+class DrawRectView
 {
-	public inline new (d: DrawCommandReader)
+	readonly x: number;
+	readonly y: number;
+	readonly width: number;
+	readonly height: number;
+
+	public constructor(d: DrawCommandReader)
 	{
-		this = d;
-	}
-
-	public x(get, never) : number;
-
-	private inline get_x() : number
-	{
-		return this.float(0);
-	}
-
-	public y(get, never) : number;
-
-	private inline get_y() : number
-	{
-		return this.float(1);
-	}
-
-	public width(get, never) : number;
-
-	private inline get_width() : number
-	{
-		return this.float(2);
-	}
-
-	public height(get, never) : number;
-
-	private inline get_height() : number
-	{
-		return this.float(3);
-	}
-
-	public ellipseWidth(get, never) : number;
-
-	private inline get_ellipseWidth() : number
-	{
-		return this.float(4);
-	}
-
-	public ellipseHeight(get, never): null | number;
-
-	private inline get_ellipseHeight(): Null < Float >
-	{
-		return this.obj(0);
+		this.x = d.float(0);
+		this.y = d.float(1);
+		this.width = d.float(2);
+		this.height = d.float(3);
 	}
 }
 
-abstract DrawTrianglesView(DrawCommandReader)
+class DrawRoundRectView
 {
-	public inline new (d: DrawCommandReader)
+	readonly x: number;
+	readonly y: number;
+	readonly width: number;
+	readonly height: number;
+	readonly ellipseWidth: number;
+	readonly ellipseHeight: null | number;
+
+	public constructor(d: DrawCommandReader)
 	{
-		this = d;
-	}
-
-	public vertices(get, never): Vector<number>;
-
-	private inline get_vertices(): Vector < Float >
-	{
-		return cast this.obj(0);
-	}
-
-	public indices(get, never): Vector<Int>;
-
-	private inline get_indices(): Vector < Int >
-	{
-		return cast this.obj(1);
-	}
-
-	public uvtData(get, never): Vector<number>;
-
-	private inline get_uvtData(): Vector < Float >
-	{
-		return cast this.obj(2);
-	}
-
-	public culling(get, never): TriangleCulling;
-
-	private inline get_culling(): TriangleCulling
-	{
-		return cast this.obj(3);
+		this.x = d.float(0);
+		this.y = d.float(1);
+		this.width = d.float(2);
+		this.height = d.float(3);
+		this.ellipseWidth = d.float(4);
+		this.ellipseHeight = d.obj(0);
 	}
 }
 
-abstract EndFillView(DrawCommandReader)
+class DrawTrianglesView
 {
-	public inline new (d: DrawCommandReader)
+	readonly vertices: Vector<number>;
+	readonly indices: Vector<number>;
+	readonly uvtData: Vector<number>;
+	readonly culling: TriangleCulling;
+
+	public constructor(d: DrawCommandReader)
 	{
-		this = d;
+		this.vertices = d.obj(0);
+		this.indices = d.obj(1);
+		this.uvtData = d.obj(2);
+		this.culling = d.obj(3);
 	}
 }
 
-abstract LineBitmapStyleView(DrawCommandReader)
+class EndFillView
 {
-	public inline new (d: DrawCommandReader)
+	public constructor(d: DrawCommandReader)
 	{
-		this = d;
-	}
 
-	public bitmap(get, never): BitmapData;
-
-	private inline get_bitmap(): BitmapData
-	{
-		return cast this.obj(0);
-	}
-
-	public matrix(get, never): Matrix;
-
-	private inline get_matrix(): Matrix
-	{
-		return cast this.obj(1);
-	}
-
-	public repeat(get, never) : boolean;
-
-	private inline get_repeat() : boolean
-	{
-		return cast this.bool(0);
-	}
-
-	public smooth(get, never) : boolean;
-
-	private inline get_smooth() : boolean
-	{
-		return cast this.bool(1);
 	}
 }
 
-abstract LineGradientStyleView(DrawCommandReader)
+class LineBitmapStyleView
 {
-	public inline new (d: DrawCommandReader)
+	readonly bitmap: BitmapData;
+	readonly matrix: Matrix;
+	readonly repeat: boolean;
+	readonly smooth: boolean;
+
+	public constructor(d: DrawCommandReader)
 	{
-		this = d;
-	}
-
-	public type(get, never): GradientType;
-
-	private inline get_type(): GradientType
-	{
-		return cast this.obj(0);
-	}
-
-	public colors(get, never): Array<Int>;
-
-	private inline get_colors(): Array < Int >
-	{
-		return cast this.iArr(0);
-	}
-
-	public alphas(get, never): Array<Float>;
-
-	private inline get_alphas(): Array < Float >
-	{
-		return cast this.fArr(0);
-	}
-
-	public ratios(get, never): Array<Int>;
-
-	private inline get_ratios(): Array < Int >
-	{
-		return cast this.iArr(1);
-	}
-
-	public matrix(get, never): Matrix;
-
-	private inline get_matrix(): Matrix
-	{
-		return cast this.obj(1);
-	}
-
-	public spreadMethod(get, never): SpreadMethod;
-
-	private inline get_spreadMethod(): SpreadMethod
-	{
-		return cast this.obj(2);
-	}
-
-	public interpolationMethod(get, never) : numbererpolationMethod;
-
-	private inline get_interpolationMethod() : numbererpolationMethod
-	{
-		return cast this.obj(3);
-	}
-
-	public focalPointRatio(get, never) : number;
-
-	private inline get_focalPointRatio() : number
-	{
-		return cast this.float(0);
+		this.bitmap = d.obj(0);
+		this.matrix = d.obj(1);
+		this.repeat = d.bool(0);
+		this.smooth = d.bool(1);
 	}
 }
 
-abstract LineStyleView(DrawCommandReader)
+class LineGradientStyleView
 {
-	public inline new (d: DrawCommandReader)
+	readonly type: GradientType;
+	readonly colors: Array<number>;
+	readonly alphas: Array<number>;
+	readonly ratios: Array<number>;
+	readonly matrix: Matrix;
+	readonly spreadMethod: SpreadMethod;
+	readonly interpolationMethod: InterpolationMethod;
+	readonly focalPointRatio: number;
+
+	public constructor(d: DrawCommandReader)
 	{
-		this = d;
-	}
-
-	public thickness(get, never): null | number;
-
-	private inline get_thickness(): Null < Float >
-	{
-		return cast this.obj(0);
-	}
-
-	public color(get, never) : number;
-
-	private inline get_color() : number
-	{
-		return cast this.int(0);
-	}
-
-	public alpha(get, never) : number;
-
-	private inline get_alpha() : number
-	{
-		return cast this.float(0);
-	}
-
-	public pixelHinting(get, never) : boolean;
-
-	private inline get_pixelHinting() : boolean
-	{
-		return cast this.bool(0);
-	}
-
-	public scaleMode(get, never): LineScaleMode;
-
-	private inline get_scaleMode(): LineScaleMode
-	{
-		return cast this.obj(1);
-	}
-
-	public caps(get, never): CapsStyle;
-
-	private inline get_caps(): CapsStyle
-	{
-		return cast this.obj(2);
-	}
-
-	public joints(get, never): JointStyle;
-
-	private inline get_joints(): JointStyle
-	{
-		return cast this.obj(3);
-	}
-
-	public miterLimit(get, never) : number;
-
-	private inline get_miterLimit() : number
-	{
-		return cast this.float(1);
+		this.type = d.obj(0);
+		this.colors = d.iArr(0);
+		this.alphas = d.fArr(0);
+		this.ratios = d.iArr(1);
+		this.matrix = d.obj(1);
+		this.spreadMethod = d.obj(2);
+		this.interpolationMethod = d.obj(3);
+		this.focalPointRatio = d.float(0);
 	}
 }
 
-abstract LineToView(DrawCommandReader)
+class LineStyleView
 {
-	public inline new (d: DrawCommandReader)
+	readonly thickness: null | number;
+	readonly color: number;
+	readonly alpha: number;
+	readonly pixelHinting: boolean;
+	readonly scaleMode: LineScaleMode;
+	readonly caps: CapsStyle;
+	readonly joints: JointStyle;
+	readonly miterLimit: number;
+
+	public constructor(d: DrawCommandReader)
 	{
-		this = d;
-	}
-
-	public x(get, never) : number;
-
-	private inline get_x() : number
-	{
-		return this.float(0);
-	}
-
-	public y(get, never) : number;
-
-	private inline get_y() : number
-	{
-		return this.float(1);
+		this.thickness = d.obj(0);
+		this.color = d.int(0);
+		this.alpha = d.float(0);
+		this.pixelHinting = d.bool(0);
+		this.scaleMode = d.obj(1);
+		this.caps = d.obj(2);
+		this.joints = d.obj(3);
+		this.miterLimit = d.float(1);
 	}
 }
 
-abstract MoveToView(DrawCommandReader)
+class LineToView
 {
-	public inline new (d: DrawCommandReader)
+	readonly x: number;
+	readonly y: number;
+
+	public constructor(d: DrawCommandReader)
 	{
-		this = d;
-	}
-
-	public x(get, never) : number;
-
-	private inline get_x() : number
-	{
-		return this.float(0);
-	}
-
-	public y(get, never) : number;
-
-	private inline get_y() : number
-	{
-		return this.float(1);
+		this.x = d.float(0);
+		this.y = d.float(1);
 	}
 }
 
-abstract OverrideBlendModeView(DrawCommandReader)
+class MoveToView
 {
-	public inline new (d: DrawCommandReader)
-	{
-		this = d;
-	}
+	readonly x: number;
+	readonly y: number;
 
-	public blendMode(get, never): BlendMode;
-
-	private inline get_blendMode(): BlendMode
+	public constructor(d: DrawCommandReader)
 	{
-		return cast this.obj(0);
+		this.x = d.float(0);
+		this.y = d.float(1);
 	}
 }
 
-abstract OverrideMatrixView(DrawCommandReader)
+class OverrideBlendModeView
 {
-	public inline new (d: DrawCommandReader)
-	{
-		this = d;
-	}
+	readonly blendMode: BlendMode;
 
-	public matrix(get, never): Matrix;
-
-	private inline get_matrix(): Matrix
+	public constructor(d: DrawCommandReader)
 	{
-		return cast this.obj(0);
+		this.blendMode = d.obj(0);
 	}
 }
 
-abstract WindingEvenOddView(DrawCommandReader)
+class OverrideMatrixView
 {
-	public inline new (d: DrawCommandReader)
+	readonly matrix: Matrix;
+
+	public constructor(d: DrawCommandReader)
 	{
-		this = d;
+		this.matrix = d.obj(0);
 	}
 }
 
-abstract WindingNonZeroView(DrawCommandReader)
+class WindingEvenOddView
 {
-	public inline new (d: DrawCommandReader)
+	public constructor(d: DrawCommandReader)
 	{
-		this = d;
+
+	}
+}
+
+class WindingNonZeroView
+{
+	public constructor(d: DrawCommandReader)
+	{
+
 	}
 }

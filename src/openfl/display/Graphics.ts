@@ -1,7 +1,9 @@
 import Context3DBuffer from "../_internal/renderer/context3D/Context3DBuffer";
+import CanvasGraphics from "../_internal/renderer/canvas/CanvasGraphics";
 import DisplayObjectRenderData from "../_internal/renderer/DisplayObjectRenderData";
 import DrawCommandBuffer from "../_internal/renderer/DrawCommandBuffer";
 import DrawCommandReader from "../_internal/renderer/DrawCommandReader";
+import DrawCommandType from "../_internal/renderer/DrawCommandType";
 import GraphicsDataType from "../_internal/renderer/GraphicsDataType";
 import GraphicsFillType from "../_internal/renderer/GraphicsFillType";
 import ShaderBuffer from "../_internal/renderer/ShaderBuffer";
@@ -684,31 +686,31 @@ export default class Graphics
 
 		for (let graphics of graphicsData)
 		{
-			switch (graphics.__graphicsDataType)
+			switch ((<internal.IGraphicsData>graphics).__graphicsDataType)
 			{
 				case GraphicsDataType.SOLID:
-					fill = graphics;
+					fill = graphics as GraphicsSolidFill;
 					this.beginFill(fill.color, fill.alpha);
 					break;
 
 				case GraphicsDataType.BITMAP:
-					bitmapFill = graphics;
+					bitmapFill = graphics as GraphicsBitmapFill;
 					this.beginBitmapFill(bitmapFill.bitmapData, bitmapFill.matrix, bitmapFill.repeat, bitmapFill.smooth);
 					break;
 
 				case GraphicsDataType.GRADIENT:
-					gradientFill = graphics;
+					gradientFill = graphics as GraphicsGradientFill;
 					this.beginGradientFill(gradientFill.type, gradientFill.colors, gradientFill.alphas, gradientFill.ratios, gradientFill.matrix,
 						gradientFill.spreadMethod, gradientFill.interpolationMethod, gradientFill.focalPointRatio);
 					break;
 
 				case GraphicsDataType.SHADER:
-					shaderFill = graphics;
+					shaderFill = graphics as GraphicsShaderFill;
 					this.beginShaderFill(shaderFill.shader, shaderFill.matrix);
 					break;
 
 				case GraphicsDataType.STROKE:
-					stroke = graphics;
+					stroke = graphics as GraphicsStroke;
 
 					if (stroke.fill != null)
 					{
@@ -755,7 +757,7 @@ export default class Graphics
 					break;
 
 				case GraphicsDataType.TRIANGLE_PATH:
-					trianglePath = graphics;
+					trianglePath = graphics as GraphicsTrianglePath;
 					this.drawTriangles(trianglePath.vertices, trianglePath.indices, trianglePath.uvtData, trianglePath.culling);
 					break;
 
@@ -764,7 +766,7 @@ export default class Graphics
 					break;
 
 				case GraphicsDataType.QUAD_PATH:
-					quadPath = graphics;
+					quadPath = graphics as GraphicsQuadPath;
 					this.drawQuads(quadPath.rects, quadPath.indices, quadPath.transforms);
 					break;
 			}
@@ -1622,7 +1624,7 @@ export default class Graphics
 	public readGraphicsData(recurse: boolean = true): Vector<IGraphicsData>
 	{
 		var graphicsData = new Vector<IGraphicsData>();
-		this.__owner.__readGraphicsData(graphicsData, recurse);
+		(<internal.DisplayObject><any>this.__owner).__readGraphicsData(graphicsData, recurse);
 		return graphicsData;
 	}
 
@@ -1655,7 +1657,7 @@ export default class Graphics
 		if (this.__bounds == null) return;
 
 		var bounds = (<internal.Rectangle><any>Rectangle).__pool.get();
-		this.__bounds.__transform(bounds, matrix);
+		(<internal.Rectangle><any>this.__bounds).__transform(bounds, matrix);
 		(<internal.Rectangle><any>rect).__expand(bounds.x, bounds.y, bounds.width, bounds.height);
 		(<internal.Rectangle><any>Rectangle).__pool.release(bounds);
 	}
@@ -1722,7 +1724,7 @@ export default class Graphics
 
 	protected __readGraphicsData(graphicsData: Vector<IGraphicsData>): void
 	{
-		var data = new DrawCommandReader((<internal.DisplayObject><any>this.__owner).__commands);
+		var data = new DrawCommandReader(this.__commands);
 		var path = null, stroke;
 
 		for (let type of this.__commands.types)
@@ -1759,44 +1761,44 @@ export default class Graphics
 					break;
 
 				case DrawCommandType.CURVE_TO:
-					var c = data.readCurveTo();
-					path.curveTo(c.controlX, c.controlY, c.anchorX, c.anchorY);
+					var c2 = data.readCurveTo();
+					path.curveTo(c2.controlX, c2.controlY, c2.anchorX, c2.anchorY);
 					break;
 
 				case DrawCommandType.LINE_TO:
-					var c = data.readLineTo();
-					path.lineTo(c.x, c.y);
+					var c3 = data.readLineTo();
+					path.lineTo(c3.x, c3.y);
 					break;
 
 				case DrawCommandType.MOVE_TO:
-					var c = data.readMoveTo();
-					path.moveTo(c.x, c.y);
+					var c4 = data.readMoveTo();
+					path.moveTo(c4.x, c4.y);
 					break;
 
 				case DrawCommandType.DRAW_CIRCLE:
-					var c = data.readDrawCircle();
-					path.__drawCircle(c.x, c.y, c.radius);
+					var c5 = data.readDrawCircle();
+					path.__drawCircle(c5.x, c5.y, c5.radius);
 					break;
 
 				case DrawCommandType.DRAW_ELLIPSE:
-					var c = data.readDrawEllipse();
-					path.__drawEllipse(c.x, c.y, c.width, c.height);
+					var c6 = data.readDrawEllipse();
+					path.__drawEllipse(c6.x, c6.y, c6.width, c6.height);
 					break;
 
 				case DrawCommandType.DRAW_RECT:
-					var c = data.readDrawRect();
-					path.__drawRect(c.x, c.y, c.width, c.height);
+					var c7 = data.readDrawRect();
+					path.__drawRect(c7.x, c7.y, c7.width, c7.height);
 					break;
 
 				case DrawCommandType.DRAW_ROUND_RECT:
-					var c = data.readDrawRoundRect();
-					path.__drawRoundRect(c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight != null ? c.ellipseHeight : c.ellipseWidth);
+					var c8 = data.readDrawRoundRect();
+					path.__drawRoundRect(c8.x, c8.y, c8.width, c8.height, c8.ellipseWidth, c8.ellipseHeight != null ? c8.ellipseHeight : c8.ellipseWidth);
 					break;
 
 				case DrawCommandType.LINE_GRADIENT_STYLE:
 					// TODO
 
-					var c = data.readLineGradientStyle();
+					var c9 = data.readLineGradientStyle();
 					// stroke = new GraphicsStroke (c.thickness, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
 					// stroke.fill = new GraphicsGradientFill (c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
 					// graphicsData.push (stroke);
@@ -1805,7 +1807,7 @@ export default class Graphics
 				case DrawCommandType.LINE_BITMAP_STYLE:
 					// TODO
 
-					var c = data.readLineBitmapStyle();
+					var c10 = data.readLineBitmapStyle();
 					path = null;
 					// stroke = new GraphicsStroke (c.thickness, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
 					// stroke.fill = new GraphicsBitmapFill (c.bitmap, c.matrix, c.repeat, c.smooth);
@@ -1813,9 +1815,9 @@ export default class Graphics
 					break;
 
 				case DrawCommandType.LINE_STYLE:
-					var c = data.readLineStyle();
-					stroke = new GraphicsStroke(c.thickness, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
-					stroke.fill = new GraphicsSolidFill(c.color, c.alpha);
+					var c11 = data.readLineStyle();
+					stroke = new GraphicsStroke(c11.thickness, c11.pixelHinting, c11.scaleMode, c11.caps, c11.joints, c11.miterLimit);
+					stroke.fill = new GraphicsSolidFill(c11.color, c11.alpha);
 					graphicsData.push(stroke);
 					break;
 
@@ -1825,19 +1827,19 @@ export default class Graphics
 					break;
 
 				case DrawCommandType.BEGIN_BITMAP_FILL:
-					var c = data.readBeginBitmapFill();
-					graphicsData.push(new GraphicsBitmapFill(c.bitmap, c.matrix, c.repeat, c.smooth));
+					var c12 = data.readBeginBitmapFill();
+					graphicsData.push(new GraphicsBitmapFill(c12.bitmap, c12.matrix, c12.repeat, c12.smooth));
 					break;
 
 				case DrawCommandType.BEGIN_FILL:
-					var c = data.readBeginFill();
-					graphicsData.push(new GraphicsSolidFill(c.color, 1));
+					var c13 = data.readBeginFill();
+					graphicsData.push(new GraphicsSolidFill(c13.color, 1));
 					break;
 
 				case DrawCommandType.BEGIN_GRADIENT_FILL:
-					var c = data.readBeginGradientFill();
-					graphicsData.push(new GraphicsGradientFill(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod,
-						c.focalPointRatio));
+					var c14 = data.readBeginGradientFill();
+					graphicsData.push(new GraphicsGradientFill(c14.type, c14.colors, c14.alphas, c14.ratios, c14.matrix, c14.spreadMethod, c14.interpolationMethod,
+						c14.focalPointRatio));
 					break;
 
 				// case DrawCommandType.BEGIN_SHADER_FILL:
@@ -1934,46 +1936,46 @@ export default class Graphics
 		if (width < 1 || height < 1)
 		{
 			if (this.__width >= 1 || this.__height >= 1) this.__setDirty();
-			__width = 0;
-			__height = 0;
+			this.__width = 0;
+			this.__height = 0;
 			return;
 		}
 
-		if (maxTextureWidth != null && width > maxTextureWidth)
+		if (Graphics.maxTextureWidth != null && width > Graphics.maxTextureWidth)
 		{
-			width = maxTextureWidth;
-			scaleX = maxTextureWidth / __bounds.width;
+			width = Graphics.maxTextureWidth;
+			scaleX = Graphics.maxTextureWidth / this.__bounds.width;
 		}
 
-		if (maxTextureWidth != null && height > maxTextureHeight)
+		if (Graphics.maxTextureWidth != null && height > Graphics.maxTextureHeight)
 		{
-			height = maxTextureHeight;
-			scaleY = maxTextureHeight / __bounds.height;
+			height = Graphics.maxTextureHeight;
+			scaleY = Graphics.maxTextureHeight / this.__bounds.height;
 		}
 
-		__renderTransform.a = width / __bounds.width;
-		__renderTransform.d = height / __bounds.height;
-		var inverseA = (1 / __renderTransform.a);
-		var inverseD = (1 / __renderTransform.d);
+		this.__renderTransform.a = width / this.__bounds.width;
+		this.__renderTransform.d = height / this.__bounds.height;
+		var inverseA = (1 / this.__renderTransform.a);
+		var inverseD = (1 / this.__renderTransform.d);
 
 		// Inlined & simplified `__worldTransform.concat (parentTransform)` below:
-		__worldTransform.a = inverseA * parentTransform.a;
-		__worldTransform.b = inverseA * parentTransform.b;
-		__worldTransform.c = inverseD * parentTransform.c;
-		__worldTransform.d = inverseD * parentTransform.d;
+		this.__worldTransform.a = inverseA * parentTransform.a;
+		this.__worldTransform.b = inverseA * parentTransform.b;
+		this.__worldTransform.c = inverseD * parentTransform.c;
+		this.__worldTransform.d = inverseD * parentTransform.d;
 
-		var x = __bounds.x;
-		var y = __bounds.y;
+		var x = this.__bounds.x;
+		var y = this.__bounds.y;
 		var tx = x * parentTransform.a + y * parentTransform.c + parentTransform.tx;
 		var ty = x * parentTransform.b + y * parentTransform.d + parentTransform.ty;
 
 		// Floor the world position for crisp graphics rendering
-		__worldTransform.tx = Math.ffloor(tx);
-		__worldTransform.ty = Math.ffloor(ty);
+		this.__worldTransform.tx = Math.floor(tx);
+		this.__worldTransform.ty = Math.floor(ty);
 
 		// Offset the rendering with the subpixel offset removed by Math.floor above
-		__renderTransform.tx = __worldTransform.__transformInverseX(tx, ty);
-		__renderTransform.ty = __worldTransform.__transformInverseY(tx, ty);
+		this.__renderTransform.tx = (<internal.Matrix><any>this.__worldTransform).__transformInverseX(tx, ty);
+		this.__renderTransform.ty = (<internal.Matrix><any>this.__worldTransform).__transformInverseY(tx, ty);
 
 		// Calculate the size to contain the graphics and an extra subpixel
 		// We used to add tx and ty from __renderTransform instead of 1.0
@@ -1983,14 +1985,14 @@ export default class Graphics
 		var newHeight = Math.ceil(height + 1.0);
 
 		// Mark dirty if render size changed
-		if (newWidth != __width || newHeight != __height)
+		if (newWidth != this.__width || newHeight != this.__height)
 		{
-			#if!openfl_disable_graphics_upscaling
+			// #if!openfl_disable_graphics_upscaling
 			this.__setDirty();
-			#end
+			// #end
 		}
 
-		__width = newWidth;
-		__height = newHeight;
+		this.__width = newWidth;
+		this.__height = newHeight;
 	}
 }

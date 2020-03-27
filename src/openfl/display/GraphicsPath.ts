@@ -1,4 +1,6 @@
 import GraphicsDataType from "../_internal/renderer/GraphicsDataType";
+import GraphicsPathCommand from "../display/GraphicsPathCommand";
+import GraphicsPathWinding from "../display/GraphicsPathWinding";
 import IGraphicsData from "../display/IGraphicsData";
 import IGraphicsPath from "../display/IGraphicsPath";
 import Vector from "../Vector";
@@ -19,7 +21,7 @@ import Vector from "../Vector";
 	`GraphicsPath.commands` and `GraphicsPath.data`
 	vector arrays.
 **/
-export class GraphicsPath implements IGraphicsData, IGraphicsPath
+export default class GraphicsPath implements IGraphicsData, IGraphicsPath
 {
 	private static readonly SIN45: number = 0.70710678118654752440084436210485;
 	private static readonly TAN22: number = 0.4142135623730950488016887242097;
@@ -28,7 +30,7 @@ export class GraphicsPath implements IGraphicsData, IGraphicsPath
 		The Vector of drawing commands as integers representing the path. Each
 		command can be one of the values defined by the GraphicsPathCommand class.
 	**/
-	public commands: Vector<Int>;
+	public commands: Vector<number>;
 
 	/**
 		The Vector of Numbers containing the parameters used with the drawing
@@ -42,7 +44,7 @@ export class GraphicsPath implements IGraphicsData, IGraphicsPath
 	**/
 	public winding: GraphicsPathWinding;
 
-	protected __graphicsDataType(default , null): GraphicsDataType;
+	protected __graphicsDataType: GraphicsDataType;
 
 	/**
 		Creates a new GraphicsPath object.
@@ -50,12 +52,12 @@ export class GraphicsPath implements IGraphicsData, IGraphicsPath
 		@param winding Specifies the winding rule using a value defined in the
 						GraphicsPathWinding class.
 	**/
-	public constructor(commands: Vector<Int> = null, data: Vector<number> = null, winding: GraphicsPathWinding = GraphicsPathWinding.EVEN_ODD)
+	public constructor(commands: Vector<number> = null, data: Vector<number> = null, winding: GraphicsPathWinding = GraphicsPathWinding.EVEN_ODD)
 	{
 		this.commands = commands;
 		this.data = data;
 		this.winding = winding;
-		this.__graphicsDataType = PATH;
+		this.__graphicsDataType = GraphicsDataType.PATH;
 	}
 
 	/**
@@ -77,10 +79,11 @@ export class GraphicsPath implements IGraphicsData, IGraphicsPath
 	**/
 	public cubicCurveTo(controlX1: number, controlY1: number, controlX2: number, controlY2: number, anchorX: number, anchorY: number): void
 	{
-		if (commands == null) commands = new Vector();
-		if (data == null) data = new Vector();
+		if (this.commands == null) this.commands = new Vector();
+		if (this.data == null) this.data = new Vector();
 
-		commands.push(GraphicsPathCommand.CUBIC_CURVE_TO);
+		this.commands.push(GraphicsPathCommand.CUBIC_CURVE_TO);
+		var data = this.data;
 		data.push(controlX1);
 		data.push(controlY1);
 		data.push(controlX2);
@@ -108,10 +111,11 @@ export class GraphicsPath implements IGraphicsData, IGraphicsPath
 	**/
 	public curveTo(controlX: number, controlY: number, anchorX: number, anchorY: number): void
 	{
-		if (commands == null) commands = new Vector();
-		if (data == null) data = new Vector();
+		if (this.commands == null) this.commands = new Vector();
+		if (this.data == null) this.data = new Vector();
 
-		commands.push(GraphicsPathCommand.CURVE_TO);
+		this.commands.push(GraphicsPathCommand.CURVE_TO);
+		var data = this.data;
 		data.push(controlX);
 		data.push(controlY);
 		data.push(anchorX);
@@ -127,12 +131,12 @@ export class GraphicsPath implements IGraphicsData, IGraphicsPath
 	**/
 	public lineTo(x: number, y: number): void
 	{
-		if (commands == null) commands = new Vector();
-		if (data == null) data = new Vector();
+		if (this.commands == null) this.commands = new Vector();
+		if (this.data == null) this.data = new Vector();
 
-		commands.push(GraphicsPathCommand.LINE_TO);
-		data.push(x);
-		data.push(y);
+		this.commands.push(GraphicsPathCommand.LINE_TO);
+		this.data.push(x);
+		this.data.push(y);
 	}
 
 	/**
@@ -144,12 +148,12 @@ export class GraphicsPath implements IGraphicsData, IGraphicsPath
 	**/
 	public moveTo(x: number, y: number): void
 	{
-		if (commands == null) commands = new Vector();
-		if (data == null) data = new Vector();
+		if (this.commands == null) this.commands = new Vector();
+		if (this.data == null) this.data = new Vector();
 
-		commands.push(GraphicsPathCommand.MOVE_TO);
-		data.push(x);
-		data.push(y);
+		this.commands.push(GraphicsPathCommand.MOVE_TO);
+		this.data.push(x);
+		this.data.push(y);
 	}
 
 	/**
@@ -161,12 +165,12 @@ export class GraphicsPath implements IGraphicsData, IGraphicsPath
 	**/
 	public wideLineTo(x: number, y: number): void
 	{
-		if (commands == null) commands = new Vector();
-		if (data == null) data = new Vector();
+		if (this.commands == null) this.commands = new Vector();
+		if (this.data == null) this.data = new Vector();
 
-		commands.push(GraphicsPathCommand.LINE_TO);
-		data.push(x);
-		data.push(y);
+		this.commands.push(GraphicsPathCommand.LINE_TO);
+		this.data.push(x);
+		this.data.push(y);
 	}
 
 	/**
@@ -178,31 +182,31 @@ export class GraphicsPath implements IGraphicsData, IGraphicsPath
 	**/
 	public wideMoveTo(x: number, y: number): void
 	{
-		if (commands == null) commands = new Vector();
-		if (data == null) data = new Vector();
+		if (this.commands == null) this.commands = new Vector();
+		if (this.data == null) this.data = new Vector();
 
-		commands.push(GraphicsPathCommand.MOVE_TO);
-		data.push(x);
-		data.push(y);
+		this.commands.push(GraphicsPathCommand.MOVE_TO);
+		this.data.push(x);
+		this.data.push(y);
 	}
 
 	protected __drawCircle(x: number, y: number, radius: number): void
 	{
-		__drawRoundRect(x - radius, y - radius, radius * 2, radius * 2, radius * 2, radius * 2);
+		this.__drawRoundRect(x - radius, y - radius, radius * 2, radius * 2, radius * 2, radius * 2);
 	}
 
 	protected __drawEllipse(x: number, y: number, width: number, height: number): void
 	{
-		__drawRoundRect(x, y, width, height, width, height);
+		this.__drawRoundRect(x, y, width, height, width, height);
 	}
 
 	protected __drawRect(x: number, y: number, width: number, height: number): void
 	{
-		moveTo(x, y);
-		lineTo(x + width, y);
-		lineTo(x + width, y + height);
-		lineTo(x, y + height);
-		lineTo(x, y);
+		this.moveTo(x, y);
+		this.lineTo(x + width, y);
+		this.lineTo(x + width, y + height);
+		this.lineTo(x, y + height);
+		this.lineTo(x, y);
 	}
 
 	protected __drawRoundRect(x: number, y: number, width: number, height: number, ellipseWidth: number, ellipseHeight: number): void
@@ -215,23 +219,23 @@ export class GraphicsPath implements IGraphicsData, IGraphicsPath
 
 		var xe = x + width,
 			ye = y + height,
-			cx1 = -ellipseWidth + (ellipseWidth * SIN45),
-			cx2 = -ellipseWidth + (ellipseWidth * TAN22),
-			cy1 = -ellipseHeight + (ellipseHeight * SIN45),
-			cy2 = -ellipseHeight + (ellipseHeight * TAN22);
+			cx1 = -ellipseWidth + (ellipseWidth * GraphicsPath.SIN45),
+			cx2 = -ellipseWidth + (ellipseWidth * GraphicsPath.TAN22),
+			cy1 = -ellipseHeight + (ellipseHeight * GraphicsPath.SIN45),
+			cy2 = -ellipseHeight + (ellipseHeight * GraphicsPath.TAN22);
 
-		moveTo(xe, ye - ellipseHeight);
-		curveTo(xe, ye + cy2, xe + cx1, ye + cy1);
-		curveTo(xe + cx2, ye, xe - ellipseWidth, ye);
-		lineTo(x + ellipseWidth, ye);
-		curveTo(x - cx2, ye, x - cx1, ye + cy1);
-		curveTo(x, ye + cy2, x, ye - ellipseHeight);
-		lineTo(x, y + ellipseHeight);
-		curveTo(x, y - cy2, x - cx1, y - cy1);
-		curveTo(x - cx2, y, x + ellipseWidth, y);
-		lineTo(xe - ellipseWidth, y);
-		curveTo(xe + cx2, y, xe + cx1, y - cy1);
-		curveTo(xe, y - cy2, xe, y + ellipseHeight);
-		lineTo(xe, ye - ellipseHeight);
+		this.moveTo(xe, ye - ellipseHeight);
+		this.curveTo(xe, ye + cy2, xe + cx1, ye + cy1);
+		this.curveTo(xe + cx2, ye, xe - ellipseWidth, ye);
+		this.lineTo(x + ellipseWidth, ye);
+		this.curveTo(x - cx2, ye, x - cx1, ye + cy1);
+		this.curveTo(x, ye + cy2, x, ye - ellipseHeight);
+		this.lineTo(x, y + ellipseHeight);
+		this.curveTo(x, y - cy2, x - cx1, y - cy1);
+		this.curveTo(x - cx2, y, x + ellipseWidth, y);
+		this.lineTo(xe - ellipseWidth, y);
+		this.curveTo(xe + cx2, y, xe + cx1, y - cy1);
+		this.curveTo(xe, y - cy2, xe, y + ellipseHeight);
+		this.lineTo(xe, ye - ellipseHeight);
 	}
 }

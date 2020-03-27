@@ -1,56 +1,49 @@
-namespace openfl._internal.renderer;
+import DrawCommandType from "../../_internal/renderer/DrawCommandType";
+import DrawCommandReader from "../../_internal/renderer/DrawCommandReader";
+import BitmapData from "../../display/BitmapData";
+import BlendMode from "../../display/BlendMode";
+import CapsStyle from "../../display/CapsStyle";
+import GradientType from "../../display/GradientType";
+import InterpolationMethod from "../../display/InterpolationMethod";
+import JointStyle from "../../display/JointStyle";
+import LineScaleMode from "../../display/LineScaleMode";
+import SpreadMethod from "../../display/SpreadMethod";
+import TriangleCulling from "../../display/TriangleCulling";
+import Matrix from "../../geom/Matrix";
+import Vector from "../../Vector";
 
-import openfl.display.BitmapData;
-import openfl.display.BlendMode;
-import openfl.display.CapsStyle;
-import openfl.display.GradientType;
-import openfl.display.InterpolationMethod;
-import openfl.display.JointStyle;
-import openfl.display.LineScaleMode;
-import openfl.display.SpreadMethod;
-import openfl.display.TriangleCulling;
-import Matrix from "../geom/Matrix";
-import Vector from "../Vector";
-
-#if!openfl_debug
-@: fileXml('tags="haxe,release"')
-@: noDebug
-#end
-@: allow(openfl._internal.renderer.DrawCommandReader)
-@SuppressWarnings("checkstyle:FieldDocComment")
-class DrawCommandBuffer
+export default class DrawCommandBuffer
 {
 	private static empty: DrawCommandBuffer = new DrawCommandBuffer();
 
-	public length(get, never): number;
 	public types: Array<DrawCommandType>;
 
-	private b: Array<Bool>;
+	public b: Array<boolean>;
 	private copyOnWrite: boolean;
-	private f: Array<Float>;
-	private ff: Array<Array<Float>>;
-	private i: Array<Int>;
-	private ii: Array<Array<Int>>;
-	@SuppressWarnings("checkstyle:Dynamic") private o: Array<Dynamic>;
+	public f: Array<number>;
+	public ff: Array<Array<number>>;
+	public i: Array<number>;
+	public ii: Array<Array<number>>;
+	public o: Array<Object>;
 
 	public constructor()
 	{
-		if (empty == null)
+		if (DrawCommandBuffer.empty == null)
 		{
-			types = [];
+			this.types = [];
 
-			b = [];
-			i = [];
-			f = [];
-			o = [];
-			ff = [];
-			ii = [];
+			this.b = [];
+			this.i = [];
+			this.f = [];
+			this.o = [];
+			this.ff = [];
+			this.ii = [];
 
-			copyOnWrite = true;
+			this.copyOnWrite = true;
 		}
 		else
 		{
-			clear();
+			this.clear();
 		}
 	}
 
@@ -72,73 +65,94 @@ class DrawCommandBuffer
 
 		var data = new DrawCommandReader(other);
 
-		for (type in other.types)
+		for (let type of other.types)
 		{
 			switch (type)
 			{
-				case BEGIN_BITMAP_FILL:
+				case DrawCommandType.BEGIN_BITMAP_FILL:
 					var c = data.readBeginBitmapFill();
-					beginBitmapFill(c.bitmap, c.matrix, c.repeat, c.smooth);
-				case BEGIN_FILL:
-					var c = data.readBeginFill();
-					beginFill(c.color, c.alpha);
-				case BEGIN_GRADIENT_FILL:
-					var c = data.readBeginGradientFill();
-					beginGradientFill(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
-				case BEGIN_SHADER_FILL:
-					var c = data.readBeginShaderFill();
-					beginShaderFill(c.shaderBuffer);
-				case CUBIC_CURVE_TO:
-					var c = data.readCubicCurveTo();
-					cubicCurveTo(c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
-				case CURVE_TO:
-					var c = data.readCurveTo();
-					curveTo(c.controlX, c.controlY, c.anchorX, c.anchorY);
-				case DRAW_CIRCLE:
-					var c = data.readDrawCircle();
-					drawCircle(c.x, c.y, c.radius);
-				case DRAW_ELLIPSE:
-					var c = data.readDrawEllipse();
-					drawEllipse(c.x, c.y, c.width, c.height);
-				case DRAW_QUADS:
-					var c = data.readDrawQuads();
-					drawQuads(c.rects, c.indices, c.transforms);
-				case DRAW_RECT:
-					var c = data.readDrawRect();
-					drawRect(c.x, c.y, c.width, c.height);
-				case DRAW_ROUND_RECT:
-					var c = data.readDrawRoundRect();
-					drawRoundRect(c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight);
-				case DRAW_TRIANGLES:
-					var c = data.readDrawTriangles();
-					drawTriangles(c.vertices, c.indices, c.uvtData, c.culling);
-				case END_FILL:
-					var c = data.readEndFill();
-					endFill();
-				case LINE_BITMAP_STYLE:
-					var c = data.readLineBitmapStyle();
-					lineBitmapStyle(c.bitmap, c.matrix, c.repeat, c.smooth);
-				case LINE_GRADIENT_STYLE:
-					var c = data.readLineGradientStyle();
-					lineGradientStyle(c.type, c.colors, c.alphas, c.ratios, c.matrix, c.spreadMethod, c.interpolationMethod, c.focalPointRatio);
-				case LINE_STYLE:
-					var c = data.readLineStyle();
-					lineStyle(c.thickness, c.color, c.alpha, c.pixelHinting, c.scaleMode, c.caps, c.joints, c.miterLimit);
-				case LINE_TO:
-					var c = data.readLineTo();
-					lineTo(c.x, c.y);
-				case MOVE_TO:
-					var c = data.readMoveTo();
-					moveTo(c.x, c.y);
-				case OVERRIDE_MATRIX:
-					var c = data.readOverrideMatrix();
-					overrideMatrix(c.matrix);
-				case WINDING_EVEN_ODD:
-					var c = data.readWindingEvenOdd();
-					windingEvenOdd();
-				case WINDING_NON_ZERO:
-					var c = data.readWindingNonZero();
-					windingNonZero();
+					this.beginBitmapFill(c.bitmap, c.matrix, c.repeat, c.smooth);
+					break;
+				case DrawCommandType.BEGIN_FILL:
+					var c2 = data.readBeginFill();
+					this.beginFill(c2.color, c2.alpha);
+					break;
+				case DrawCommandType.BEGIN_GRADIENT_FILL:
+					var c3 = data.readBeginGradientFill();
+					this.beginGradientFill(c3.type, c3.colors, c3.alphas, c3.ratios, c3.matrix, c3.spreadMethod, c3.interpolationMethod, c3.focalPointRatio);
+					break;
+				case DrawCommandType.BEGIN_SHADER_FILL:
+					var c4 = data.readBeginShaderFill();
+					this.beginShaderFill(c4.shaderBuffer);
+					break;
+				case DrawCommandType.CUBIC_CURVE_TO:
+					var c5 = data.readCubicCurveTo();
+					this.cubicCurveTo(c5.controlX1, c5.controlY1, c5.controlX2, c5.controlY2, c5.anchorX, c5.anchorY);
+					break;
+				case DrawCommandType.CURVE_TO:
+					var c6 = data.readCurveTo();
+					this.curveTo(c6.controlX, c6.controlY, c6.anchorX, c6.anchorY);
+					break;
+				case DrawCommandType.DRAW_CIRCLE:
+					var c7 = data.readDrawCircle();
+					this.drawCircle(c7.x, c7.y, c7.radius);
+					break;
+				case DrawCommandType.DRAW_ELLIPSE:
+					var c8 = data.readDrawEllipse();
+					this.drawEllipse(c8.x, c8.y, c8.width, c8.height);
+					break;
+				case DrawCommandType.DRAW_QUADS:
+					var c9 = data.readDrawQuads();
+					this.drawQuads(c9.rects, c9.indices, c9.transforms);
+					break;
+				case DrawCommandType.DRAW_RECT:
+					var c10 = data.readDrawRect();
+					this.drawRect(c10.x, c10.y, c10.width, c10.height);
+					break;
+				case DrawCommandType.DRAW_ROUND_RECT:
+					var c11 = data.readDrawRoundRect();
+					this.drawRoundRect(c11.x, c11.y, c11.width, c11.height, c11.ellipseWidth, c11.ellipseHeight);
+					break;
+				case DrawCommandType.DRAW_TRIANGLES:
+					var c12 = data.readDrawTriangles();
+					this.drawTriangles(c12.vertices, c12.indices, c12.uvtData, c12.culling);
+					break;
+				case DrawCommandType.END_FILL:
+					var c13 = data.readEndFill();
+					this.endFill();
+					break;
+				case DrawCommandType.LINE_BITMAP_STYLE:
+					var c14 = data.readLineBitmapStyle();
+					this.lineBitmapStyle(c14.bitmap, c14.matrix, c14.repeat, c14.smooth);
+					break;
+				case DrawCommandType.LINE_GRADIENT_STYLE:
+					var c15 = data.readLineGradientStyle();
+					this.lineGradientStyle(c15.type, c15.colors, c15.alphas, c15.ratios, c15.matrix, c15.spreadMethod, c15.interpolationMethod, c15.focalPointRatio);
+					break;
+				case DrawCommandType.LINE_STYLE:
+					var c16 = data.readLineStyle();
+					this.lineStyle(c16.thickness, c16.color, c16.alpha, c16.pixelHinting, c16.scaleMode, c16.caps, c16.joints, c16.miterLimit);
+					break;
+				case DrawCommandType.LINE_TO:
+					var c17 = data.readLineTo();
+					this.lineTo(c17.x, c17.y);
+					break;
+				case DrawCommandType.MOVE_TO:
+					var c18 = data.readMoveTo();
+					this.moveTo(c18.x, c18.y);
+					break;
+				case DrawCommandType.OVERRIDE_MATRIX:
+					var c19 = data.readOverrideMatrix();
+					this.overrideMatrix(c19.matrix);
+					break;
+				case DrawCommandType.WINDING_EVEN_ODD:
+					var c20 = data.readWindingEvenOdd();
+					this.windingEvenOdd();
+					break;
+				case DrawCommandType.WINDING_NON_ZERO:
+					var c21 = data.readWindingNonZero();
+					this.windingNonZero();
+					break;
 				default:
 			}
 		}
@@ -149,60 +163,61 @@ class DrawCommandBuffer
 
 	public beginBitmapFill(bitmap: BitmapData, matrix: Matrix, repeat: boolean, smooth: boolean): void
 	{
-		prepareWrite();
+		this.prepareWrite();
 
-		types.push(BEGIN_BITMAP_FILL);
-		o.push(bitmap);
-		o.push(matrix);
-		b.push(repeat);
-		b.push(smooth);
+		this.types.push(DrawCommandType.BEGIN_BITMAP_FILL);
+		this.o.push(bitmap);
+		this.o.push(matrix);
+		this.b.push(repeat);
+		this.b.push(smooth);
 	}
 
 	public beginFill(color: number, alpha: number): void
 	{
-		prepareWrite();
+		this.prepareWrite();
 
-		types.push(BEGIN_FILL);
-		i.push(color);
-		f.push(alpha);
+		this.types.push(DrawCommandType.BEGIN_FILL);
+		this.i.push(color);
+		this.f.push(alpha);
 	}
 
-	public beginGradientFill(type: GradientType, colors: Array<Int>, alphas: Array<Float>, ratios: Array<Int>, matrix: Matrix, spreadMethod: SpreadMethod,
-		interpolationMethod: numbererpolationMethod, focalPointRatio: number): void
+	public beginGradientFill(type: GradientType, colors: Array<number>, alphas: Array<number>, ratios: Array<number>, matrix: Matrix, spreadMethod: SpreadMethod,
+		interpolationMethod: InterpolationMethod, focalPointRatio: number): void
 	{
-		prepareWrite();
+		this.prepareWrite();
 
-		types.push(BEGIN_GRADIENT_FILL);
-		o.push(type);
-		ii.push(colors);
-		ff.push(alphas);
-		ii.push(ratios);
-		o.push(matrix);
-		o.push(spreadMethod);
-		o.push(interpolationMethod);
-		f.push(focalPointRatio);
+		this.types.push(DrawCommandType.BEGIN_GRADIENT_FILL);
+		this.o.push(type);
+		this.ii.push(colors);
+		this.ff.push(alphas);
+		this.ii.push(ratios);
+		this.o.push(matrix);
+		this.o.push(spreadMethod);
+		this.o.push(interpolationMethod);
+		this.f.push(focalPointRatio);
 	}
 
 	public beginShaderFill(shaderBuffer: ShaderBuffer): void
 	{
-		prepareWrite();
+		this.prepareWrite();
 
-		types.push(BEGIN_SHADER_FILL);
-		o.push(shaderBuffer);
+		this.types.push(DrawCommandType.BEGIN_SHADER_FILL);
+		this.o.push(shaderBuffer);
 	}
 
 	public clear(): void
 	{
-		types = empty.types;
+		var empty = DrawCommandBuffer.empty;
+		this.types = empty.types;
 
-		b = empty.b;
-		i = empty.i;
-		f = empty.f;
-		o = empty.o;
-		ff = empty.ff;
-		ii = empty.ii;
+		this.b = empty.b;
+		this.i = empty.i;
+		this.f = empty.f;
+		this.o = empty.o;
+		this.ff = empty.ff;
+		this.ii = empty.ii;
 
-		copyOnWrite = true;
+		this.copyOnWrite = true;
 	}
 
 	public copy(): DrawCommandBuffer
@@ -214,225 +229,226 @@ class DrawCommandBuffer
 
 	public cubicCurveTo(controlX1: number, controlY1: number, controlX2: number, controlY2: number, anchorX: number, anchorY: number): void
 	{
-		prepareWrite();
+		this.prepareWrite();
 
-		types.push(CUBIC_CURVE_TO);
-		f.push(controlX1);
-		f.push(controlY1);
-		f.push(controlX2);
-		f.push(controlY2);
-		f.push(anchorX);
-		f.push(anchorY);
+		this.types.push(DrawCommandType.CUBIC_CURVE_TO);
+		this.f.push(controlX1);
+		this.f.push(controlY1);
+		this.f.push(controlX2);
+		this.f.push(controlY2);
+		this.f.push(anchorX);
+		this.f.push(anchorY);
 	}
 
 	public curveTo(controlX: number, controlY: number, anchorX: number, anchorY: number): void
 	{
-		prepareWrite();
+		this.prepareWrite();
 
-		types.push(CURVE_TO);
-		f.push(controlX);
-		f.push(controlY);
-		f.push(anchorX);
-		f.push(anchorY);
+		this.types.push(DrawCommandType.CURVE_TO);
+		this.f.push(controlX);
+		this.f.push(controlY);
+		this.f.push(anchorX);
+		this.f.push(anchorY);
 	}
 
 	public destroy(): void
 	{
-		clear();
+		this.clear();
 
-		types = null;
+		this.types = null;
 
-		b = null;
-		i = null;
-		f = null;
-		o = null;
-		ff = null;
-		ii = null;
+		this.b = null;
+		this.i = null;
+		this.f = null;
+		this.o = null;
+		this.ff = null;
+		this.ii = null;
 	}
 
 	public drawCircle(x: number, y: number, radius: number): void
 	{
-		prepareWrite();
+		this.prepareWrite();
 
-		types.push(DRAW_CIRCLE);
-		f.push(x);
-		f.push(y);
-		f.push(radius);
+		this.types.push(DrawCommandType.DRAW_CIRCLE);
+		this.f.push(x);
+		this.f.push(y);
+		this.f.push(radius);
 	}
 
 	public drawEllipse(x: number, y: number, width: number, height: number): void
 	{
-		prepareWrite();
+		this.prepareWrite();
 
-		types.push(DRAW_ELLIPSE);
-		f.push(x);
-		f.push(y);
-		f.push(width);
-		f.push(height);
+		this.types.push(DrawCommandType.DRAW_ELLIPSE);
+		this.f.push(x);
+		this.f.push(y);
+		this.f.push(width);
+		this.f.push(height);
 	}
 
-	public drawQuads(rects: Vector<number>, indices: Vector<Int>, transforms: Vector<number>): void
+	public drawQuads(rects: Vector<number>, indices: Vector<number>, transforms: Vector<number>): void
 	{
-		prepareWrite();
+		this.prepareWrite();
 
-		types.push(DRAW_QUADS);
-		o.push(rects);
-		o.push(indices);
-		o.push(transforms);
+		this.types.push(DrawCommandType.DRAW_QUADS);
+		this.o.push(rects);
+		this.o.push(indices);
+		this.o.push(transforms);
 	}
 
 	public drawRect(x: number, y: number, width: number, height: number): void
 	{
-		prepareWrite();
+		this.prepareWrite();
 
-		types.push(DRAW_RECT);
-		f.push(x);
-		f.push(y);
-		f.push(width);
-		f.push(height);
+		this.types.push(DrawCommandType.DRAW_RECT);
+		this.f.push(x);
+		this.f.push(y);
+		this.f.push(width);
+		this.f.push(height);
 	}
 
 	public drawRoundRect(x: number, y: number, width: number, height: number, ellipseWidth: number, ellipseHeight: null | number): void
 	{
-		prepareWrite();
+		this.prepareWrite();
 
-		types.push(DRAW_ROUND_RECT);
-		f.push(x);
-		f.push(y);
-		f.push(width);
-		f.push(height);
-		f.push(ellipseWidth);
-		o.push(ellipseHeight);
+		this.types.push(DrawCommandType.DRAW_ROUND_RECT);
+		this.f.push(x);
+		this.f.push(y);
+		this.f.push(width);
+		this.f.push(height);
+		this.f.push(ellipseWidth);
+		this.o.push(ellipseHeight);
 	}
 
-	public drawTriangles(vertices: Vector<number>, indices: Vector<Int>, uvtData: Vector<number>, culling: TriangleCulling): void
+	public drawTriangles(vertices: Vector<number>, indices: Vector<number>, uvtData: Vector<number>, culling: TriangleCulling): void
 	{
-		prepareWrite();
+		this.prepareWrite();
 
-		types.push(DRAW_TRIANGLES);
-		o.push(vertices);
-		o.push(indices);
-		o.push(uvtData);
-		o.push(culling);
+		this.types.push(DrawCommandType.DRAW_TRIANGLES);
+		this.o.push(vertices);
+		this.o.push(indices);
+		this.o.push(uvtData);
+		this.o.push(culling);
 	}
 
 	public endFill(): void
 	{
-		prepareWrite();
+		this.prepareWrite();
 
-		types.push(END_FILL);
+		this.types.push(DrawCommandType.END_FILL);
 	}
 
 	public lineBitmapStyle(bitmap: BitmapData, matrix: Matrix, repeat: boolean, smooth: boolean): void
 	{
-		prepareWrite();
+		this.prepareWrite();
 
-		types.push(LINE_BITMAP_STYLE);
-		o.push(bitmap);
-		o.push(matrix);
-		b.push(repeat);
-		b.push(smooth);
+		this.types.push(DrawCommandType.LINE_BITMAP_STYLE);
+		this.o.push(bitmap);
+		this.o.push(matrix);
+		this.b.push(repeat);
+		this.b.push(smooth);
 	}
 
-	public lineGradientStyle(type: GradientType, colors: Array<Int>, alphas: Array<Float>, ratios: Array<Int>, matrix: Matrix, spreadMethod: SpreadMethod,
-		interpolationMethod: numbererpolationMethod, focalPointRatio: number): void
+	public lineGradientStyle(type: GradientType, colors: Array<number>, alphas: Array<number>, ratios: Array<number>, matrix: Matrix, spreadMethod: SpreadMethod,
+		interpolationMethod: InterpolationMethod, focalPointRatio: number): void
 	{
-		prepareWrite();
+		this.prepareWrite();
 
-		types.push(LINE_GRADIENT_STYLE);
-		o.push(type);
-		ii.push(colors);
-		ff.push(alphas);
-		ii.push(ratios);
-		o.push(matrix);
-		o.push(spreadMethod);
-		o.push(interpolationMethod);
-		f.push(focalPointRatio);
+		this.types.push(DrawCommandType.LINE_GRADIENT_STYLE);
+		this.o.push(type);
+		this.ii.push(colors);
+		this.ff.push(alphas);
+		this.ii.push(ratios);
+		this.o.push(matrix);
+		this.o.push(spreadMethod);
+		this.o.push(interpolationMethod);
+		this.f.push(focalPointRatio);
 	}
 
 	public lineStyle(thickness: null | number, color: number, alpha: number, pixelHinting: boolean, scaleMode: LineScaleMode, caps: CapsStyle, joints: JointStyle,
 		miterLimit: number): void
 	{
-		prepareWrite();
+		this.prepareWrite();
 
-		types.push(LINE_STYLE);
-		o.push(thickness);
-		i.push(color);
-		f.push(alpha);
-		b.push(pixelHinting);
-		o.push(scaleMode);
-		o.push(caps);
-		o.push(joints);
-		f.push(miterLimit);
+		this.types.push(DrawCommandType.LINE_STYLE);
+		this.o.push(thickness);
+		this.i.push(color);
+		this.f.push(alpha);
+		this.b.push(pixelHinting);
+		this.o.push(scaleMode);
+		this.o.push(caps);
+		this.o.push(joints);
+		this.f.push(miterLimit);
 	}
 
 	public lineTo(x: number, y: number): void
 	{
-		prepareWrite();
+		this.prepareWrite();
 
-		types.push(LINE_TO);
-		f.push(x);
-		f.push(y);
+		this.types.push(DrawCommandType.LINE_TO);
+		this.f.push(x);
+		this.f.push(y);
 	}
 
 	public moveTo(x: number, y: number): void
 	{
-		prepareWrite();
+		this.prepareWrite();
 
-		types.push(MOVE_TO);
-		f.push(x);
-		f.push(y);
+		this.types.push(DrawCommandType.MOVE_TO);
+		this.f.push(x);
+		this.f.push(y);
 	}
 
 	private prepareWrite(): void
 	{
-		if (copyOnWrite)
+		if (this.copyOnWrite)
 		{
-			types = types.copy();
-			b = b.copy();
-			i = i.copy();
-			f = f.copy();
-			o = o.copy();
-			ff = ff.copy();
-			ii = ii.copy();
+			this.types = this.types.slice();
+			this.b = this.b.slice();
+			this.i = this.i.slice();
+			this.f = this.f.slice();
+			this.o = this.o.slice();
+			this.ff = this.ff.slice();
+			this.ii = this.ii.slice();
 
-			copyOnWrite = false;
+			this.copyOnWrite = false;
 		}
 	}
 
 	public overrideBlendMode(blendMode: BlendMode): void
 	{
-		prepareWrite();
+		this.prepareWrite();
 
-		types.push(OVERRIDE_BLEND_MODE);
-		o.push(blendMode);
+		this.types.push(DrawCommandType.OVERRIDE_BLEND_MODE);
+		this.o.push(blendMode);
 	}
 
 	public overrideMatrix(matrix: Matrix): void
 	{
-		prepareWrite();
+		this.prepareWrite();
 
-		types.push(OVERRIDE_MATRIX);
-		o.push(matrix);
+		this.types.push(DrawCommandType.OVERRIDE_MATRIX);
+		this.o.push(matrix);
 	}
 
 	public windingEvenOdd(): void
 	{
-		prepareWrite();
+		this.prepareWrite();
 
-		types.push(WINDING_EVEN_ODD);
+		this.types.push(DrawCommandType.WINDING_EVEN_ODD);
 	}
 
 	public windingNonZero(): void
 	{
-		prepareWrite();
+		this.prepareWrite();
 
-		types.push(WINDING_NON_ZERO);
+		this.types.push(DrawCommandType.WINDING_NON_ZERO);
 	}
 
 	// Get & Set Methods
-	private get_length(): number
+
+	public get length(): number
 	{
-		return types.length;
+		return this.types.length;
 	}
 }
