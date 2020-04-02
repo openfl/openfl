@@ -1,9 +1,99 @@
-namespace openfl.filters;
-
-#if!flash
 import BitmapData from "../display/BitmapData";
 import DisplayObjectRenderer from "../display/DisplayObjectRenderer";
 import Shader from "../display/Shader";
+import BitmapFilter from "../filters/BitmapFilter";
+import BitmapFilterShader from "../filters/BitmapFilterShader";
+
+class ConvolutionShader extends BitmapFilterShader
+{
+	glFragmentSource = `
+		varying vec2 vBlurCoords[9];
+
+		uniform sampler2D openfl_Texture;
+
+		uniform float uBias;
+		uniform mat3 uConvoMatrix;
+		uniform float uDivisor;
+		uniform bool uPreserveAlpha;
+
+		void main(void) {
+
+			vec4 tc = texture2D(openfl_Texture, vBlurCoords[4]);
+			vec4 c = vec4(0.0);
+
+			c += texture2D(openfl_Texture, vBlurCoords[0]) * uConvoMatrix[0][0];
+			c += texture2D(openfl_Texture, vBlurCoords[1]) * uConvoMatrix[0][1];
+			c += texture2D(openfl_Texture, vBlurCoords[2]) * uConvoMatrix[0][2];
+
+			c += texture2D(openfl_Texture, vBlurCoords[3]) * uConvoMatrix[1][0];
+			c += tc * uConvoMatrix[1][1];
+			c += texture2D(openfl_Texture, vBlurCoords[5]) * uConvoMatrix[1][2];
+
+			c += texture2D(openfl_Texture, vBlurCoords[6]) * uConvoMatrix[2][0];
+			c += texture2D(openfl_Texture, vBlurCoords[7]) * uConvoMatrix[2][1];
+			c += texture2D(openfl_Texture, vBlurCoords[8]) * uConvoMatrix[2][2];
+
+			if (uDivisor > 0.0)
+			{
+
+				c /= vec4(uDivisor, uDivisor, uDivisor, uDivisor);
+
+			}
+
+			c += vec4(uBias, uBias, uBias, uBias);
+
+			if (uPreserveAlpha)
+			{
+
+				c.a = tc.a;
+
+			}
+
+			gl_FragColor = c;
+
+		}
+	`;
+
+	glVertexSource = `
+		attribute vec4 openfl_Position;
+		attribute vec2 openfl_TextureCoord;
+
+		varying vec2 vBlurCoords[9];
+
+		uniform mat4 openfl_Matrix;
+		uniform vec2 openfl_TextureSize;
+
+		void main(void) {
+
+			vec2 r = vec2(1.0, 1.0) / openfl_TextureSize;
+			vec2 t = openfl_TextureCoord;
+
+			vBlurCoords[0] = t + r * vec2(-1.0, -1.0);
+			vBlurCoords[1] = t + r * vec2(0.0, -1.0);
+			vBlurCoords[2] = t + r * vec2(1.0, -1.0);
+
+			vBlurCoords[3] = t + r * vec2(-1.0, 0.0);
+			vBlurCoords[4] = t;
+			vBlurCoords[5] = t + r * vec2(1.0, 0.0);
+
+			vBlurCoords[6] = t + r * vec2(-1.0, 1.0);
+			vBlurCoords[7] = t + r * vec2(0.0, 1.0);
+			vBlurCoords[8] = t + r * vec2(1.0, 1.0);
+
+			gl_Position = openfl_Matrix * openfl_Position;
+
+		}
+	`;
+
+	public constructor()
+	{
+		super();
+
+		uDivisor.value = [1];
+		uBias.value = [0];
+		uPreserveAlpha.value = [true];
+	}
+}
 
 /**
 	The ConvolutionFilter class applies a matrix convolution filter effect. A
@@ -39,11 +129,7 @@ import Shader from "../display/Shader";
 	example, if you zoom in on a large movie clip with a filter applied, the
 	filter is turned off if the resulting image exceeds maximum dimensions.
 **/
-#if!openfl_debug
-@: fileXml('tags="haxe,release"')
-@: noDebug
-#end
-class ConvolutionFilter extends BitmapFilter
+export class ConvolutionFilter extends BitmapFilter
 {
 	protected static __convolutionShader: ConvolutionShader = new ConvolutionShader();
 
@@ -141,7 +227,7 @@ class ConvolutionFilter extends BitmapFilter
 
 		@throws TypeError The Array is null when being set
 	**/
-	public matrix(get, set): Array<Float>;
+	public matrix(get, set): Array<number>;
 
 	/**
 		The _x_ dimension of the matrix (the number of columns in the matrix).
@@ -165,16 +251,7 @@ class ConvolutionFilter extends BitmapFilter
 	**/
 	public preserveAlpha: boolean;
 
-	protected __matrix: Array<Float>;
-
-	#if openfljs
-	protected static __init__()
-	{
-		untyped Object.defineProperties(ConvolutionFilter.prototype, {
-			"matrix": { get: untyped __js__("function () { return this.get_matrix (); }"), set: untyped __js__("function (v) { return this.set_matrix (v); }") },
-		});
-	}
-	#end
+	protected __matrix: Array<number>;
 
 	/**
 		Initializes a ConvolutionFilter instance with the specified
@@ -209,7 +286,7 @@ class ConvolutionFilter extends BitmapFilter
 							 that are off the source image.
 		@param alpha         The alpha of the substitute color.
 	**/
-	public constructor(matrixX: number = 0, matrixY: number = 0, matrix: Array<Float> = null, divisor: number = 1.0, bias: number = 0.0, preserveAlpha: boolean = true,
+	public constructor(matrixX: number = 0, matrixY: number = 0, matrix: Array<number> = null, divisor: number = 1.0, bias: number = 0.0, preserveAlpha: boolean = true,
 		clamp: boolean = true, color: number = 0, alpha: number = 0.0)
 	{
 		super();
@@ -234,23 +311,21 @@ class ConvolutionFilter extends BitmapFilter
 
 	protected __initShader(renderer: DisplayObjectRenderer, pass: number, sourceBitmapData: BitmapData): Shader
 	{
-		#if(!macro && openfl_gl)
 		__convolutionShader.uConvoMatrix.value = matrix;
 		__convolutionShader.uDivisor.value[0] = divisor;
 		__convolutionShader.uBias.value[0] = bias;
 		__convolutionShader.uPreserveAlpha.value[0] = preserveAlpha;
-		#end
 
 		return __convolutionShader;
 	}
 
 	// Get & Set Methods
-	public get matrix(): Array<Float>
+	public get matrix(): Array<number>
 	{
 		return __matrix;
 	}
 
-	public set matrix(v: Array<Float>): Array<Float>
+	public set matrix(v: Array<number>): Array<number>
 	{
 		if (v == null)
 		{
@@ -265,97 +340,3 @@ class ConvolutionFilter extends BitmapFilter
 		return __matrix = v;
 	}
 }
-
-#if!openfl_debug
-@: fileXml('tags="haxe,release"')
-@: noDebug
-#end
-private class ConvolutionShader extends BitmapFilterShader
-{
-	@: glFragmentSource("varying vec2 vBlurCoords[9];
-
-		uniform sampler2D openfl_Texture;
-
-uniform float uBias;
-uniform mat3 uConvoMatrix;
-uniform float uDivisor;
-uniform bool uPreserveAlpha;
-
-void main(void) {
-
-	vec4 tc = texture2D(openfl_Texture, vBlurCoords[4]);
-	vec4 c = vec4(0.0);
-
-	c += texture2D(openfl_Texture, vBlurCoords[0]) * uConvoMatrix[0][0];
-	c += texture2D(openfl_Texture, vBlurCoords[1]) * uConvoMatrix[0][1];
-	c += texture2D(openfl_Texture, vBlurCoords[2]) * uConvoMatrix[0][2];
-
-	c += texture2D(openfl_Texture, vBlurCoords[3]) * uConvoMatrix[1][0];
-	c += tc * uConvoMatrix[1][1];
-	c += texture2D(openfl_Texture, vBlurCoords[5]) * uConvoMatrix[1][2];
-
-	c += texture2D(openfl_Texture, vBlurCoords[6]) * uConvoMatrix[2][0];
-	c += texture2D(openfl_Texture, vBlurCoords[7]) * uConvoMatrix[2][1];
-	c += texture2D(openfl_Texture, vBlurCoords[8]) * uConvoMatrix[2][2];
-
-	if (uDivisor > 0.0)
-	{
-
-		c /= vec4(uDivisor, uDivisor, uDivisor, uDivisor);
-
-	}
-
-	c += vec4(uBias, uBias, uBias, uBias);
-
-	if (uPreserveAlpha)
-	{
-
-		c.a = tc.a;
-
-	}
-
-	gl_FragColor = c;
-
-} ")
-@: glVertexSource("attribute vec4 openfl_Position;
-		attribute vec2 openfl_TextureCoord;
-
-varying vec2 vBlurCoords[9];
-
-uniform mat4 openfl_Matrix;
-uniform vec2 openfl_TextureSize;
-
-void main(void) {
-
-	vec2 r = vec2(1.0, 1.0) / openfl_TextureSize;
-	vec2 t = openfl_TextureCoord;
-
-	vBlurCoords[0] = t + r * vec2(-1.0, -1.0);
-	vBlurCoords[1] = t + r * vec2(0.0, -1.0);
-	vBlurCoords[2] = t + r * vec2(1.0, -1.0);
-
-	vBlurCoords[3] = t + r * vec2(-1.0, 0.0);
-	vBlurCoords[4] = t;
-	vBlurCoords[5] = t + r * vec2(1.0, 0.0);
-
-	vBlurCoords[6] = t + r * vec2(-1.0, 1.0);
-	vBlurCoords[7] = t + r * vec2(0.0, 1.0);
-	vBlurCoords[8] = t + r * vec2(1.0, 1.0);
-
-	gl_Position = openfl_Matrix * openfl_Position;
-
-} ")
-public constructor()
-{
-	super();
-
-		#if(!macro && openfl_gl)
-	uDivisor.value = [1];
-	uBias.value = [0];
-	uPreserveAlpha.value = [true];
-		#end
-}
-}
-#else
-typedef ConvolutionFilter = flash.filters.ConvolutionFilter;
-#end

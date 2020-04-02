@@ -1,10 +1,4 @@
-namespace openfl._internal.formats.agal.assembler;
-
-#if!openfl_debug
-@: fileXml('tags="haxe,release"')
-@: noDebug
-#end
-class Sampler
+export default class Sampler
 {
 	public mask: number;
 	public shift: number;

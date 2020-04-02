@@ -1,13 +1,30 @@
-// import openfl._internal.bindings.typedarray.Float32Array;
-// import openfl._internal.bindings.typedarray.UInt16Array;
-// import openfl._internal.renderer.context3D.Context3DState;
-// import openfl._internal.renderer.BitmapDataPool;
-// import openfl._internal.renderer.SamplerState;
+import Context3DState from "../_internal/renderer/context3D/Context3DState";
+import BitmapDataPool from "../_internal/renderer/BitmapDataPool";
+import SamplerState from "../_internal/renderer/SamplerState";
+import * as internal from "../_internal/utils/InternalAccess";
 import CubeTexture from "../display3D/textures/CubeTexture";
 import RectangleTexture from "../display3D/textures/RectangleTexture";
 import TextureBase from "../display3D/textures/TextureBase";
 import Texture from "../display3D/textures/Texture";
 import VideoTexture from "../display3D/textures/VideoTexture";
+import Context3DBlendFactor from "../display3D/Context3DBlendFactor";
+import Context3DBufferUsage from "../display3D/Context3DBufferUsage";
+import Context3DClearMask from "../display3D/Context3DClearMask";
+import Context3DCompareMode from "../display3D/Context3DCompareMode";
+import Context3DMipFilter from "../display3D/Context3DMipFilter";
+import Context3DProfile from "../display3D/Context3DProfile";
+import Context3DProgramFormat from "../display3D/Context3DProgramFormat";
+import Context3DProgramType from "../display3D/Context3DProgramType";
+import Context3DRenderMode from "../display3D/Context3DRenderMode";
+import Context3DStencilAction from "../display3D/Context3DStencilAction";
+import Context3DTextureFilter from "../display3D/Context3DTextureFilter";
+import Context3DTextureFormat from "../display3D/Context3DTextureFormat";
+import Context3DTriangleFace from "../display3D/Context3DTriangleFace";
+import Context3DVertexBufferFormat from "../display3D/Context3DVertexBufferFormat";
+import Context3DWrapMode from "../display3D/Context3DWrapMode";
+import IndexBuffer3D from "../display3D/IndexBuffer3D";
+import Program3D from "../display3D/Program3D";
+import VertexBuffer3D from "../display3D/VertexBuffer3D";
 import BitmapData from "../display/BitmapData";
 import Stage from "../display/Stage";
 import Stage3D from "../display/Stage3D";
@@ -18,11 +35,12 @@ import Point from "../geom/Point";
 import Rectangle from "../geom/Rectangle";
 import AGALMiniAssembler from "../utils/AGALMiniAssembler";
 import ByteArray from "../utils/ByteArray";
+import Vector from "../Vector";
 
 /**
 	The Context3D class provides a context for rendering geometrically defined graphics.
 	A rendering context includes a drawing surface and its associated resources and
-	__state. When possible, the rendering context uses the hardware graphics processing
+	this.__state. When possible, the rendering context uses the hardware graphics processing
 	unit (GPU). Otherwise, the rendering context uses software. (If rendering through
 	Context3D is not supported on a platform, the stage3Ds property of the Stage object
 	contains an empty list.)
@@ -110,124 +128,26 @@ import ByteArray from "../utils/ByteArray";
 **/
 export default class Context3D extends EventDispatcher
 {
-	/**
-		Indicates if Context3D supports video texture.
-	**/
-	public static readonly supportsVideoTexture: boolean = true;
-
-	/**
-		Specifies the height of the back buffer, which can be changed by a successful
-		call to the `configureBackBuffer()` method. The height may be modified when the
-		browser zoom factor changes if the `wantsBestResolutionOnBrowserZoom` parameter
-		is set to `true` in the last successful call to the `configureBackBuffer()`
-		method. The change in height can be detected by registering an event listener
-		for the browser zoom change event.
-	**/
-	public readonly backBufferHeight: number = 0;
-
-	/**
-		Specifies the width of the back buffer, which can be changed by a successful
-		call to the `configureBackBuffer()` method. The width may be modified when the
-		browser zoom factor changes if the `wantsBestResolutionOnBrowserZoom` parameter
-		is set to `true` in the last successful call to the `configureBackBuffer()`
-		method. The change in width can be detected by registering an event listener
-		for the browser zoom change event.
-	**/
-	public readonly backBufferWidth: number = 0;
-
-	/**
-		The type of graphics library driver used by this rendering context. Indicates
-		whether the rendering is using software, a DirectX driver, or an OpenGL driver.
-		Also indicates whether hardware rendering failed. If hardware rendering fails,
-		Flash Player uses software rendering for Stage3D and `driverInfo` contains one
-		of the following values:
-
-		* "Software Hw_disabled=userDisabled" - The Enable hardware acceleration
-		checkbox in the Adobe Flash Player Settings UI is not selected.
-		* "Software Hw_disabled=oldDriver" - There are known problems with the
-		hardware graphics driver. Updating the graphics driver may fix this problem.
-		* "Software Hw_disabled=unavailable" - Known problems with the hardware
-		graphics driver or hardware graphics initialization failure.
-		* "Software Hw_disabled=explicit" - The content explicitly requested software
-		rendering through requestContext3D.
-		* "Software Hw_disabled=domainMemory" - The content uses domainMemory, which
-		requires a license when used with Stage3D hardware rendering. Visit
-		adobe.com/go/fpl.
-	**/
-	public driverInfo(default , null): string = "OpenGL (Direct blitting)";
-
-	/**
-		Specifies whether errors encountered by the renderer are reported to the
-		application.
-
-		When `enableErrorChecking` is `true`, the `clear()`, and `drawTriangles()`
-		methods are synchronous and can throw errors. When `enableErrorChecking`
-		is `false`, the default, the `clear()`, and `drawTriangles()` methods are
-		asynchronous and errors are not reported. Enabling error checking reduces
-		rendering performance. You should only enable error checking when debugging.
-	**/
-	public enableErrorChecking(get, set): boolean;
-
-	/**
-		Specifies the maximum height of the back buffer. The inital value is the system
-		limit in the platform. The property can be set to a value smaller than or equal
-		to, but not greater than, the system limit. The property can be set to a value
-		greater than or equal to, but not smaller than, the minimum limit. The minimum
-		limit is a constant value, 32, when the back buffer is not configured. The
-		minimum limit will be the value of the `height` parameter in the last successful
-		call to the `configureBackBuffer()` method after the back buffer is configured.
-	**/
-	public maxBackBufferHeight(default , null): number;
-
-	/**
-		Specifies the maximum width of the back buffer. The inital value is the system
-		limit in the platform. The property can be set to a value smaller than or equal
-		to, but not greater than, the system limit. The property can be set to a value
-		greater than or equal to, but not smaller than, the minimum limit. The minimum
-		limit is a constant value, 32, when the back buffer is not configured. The
-		minimum limit will be the value of the width parameter in the last successful
-		call to the `configureBackBuffer()` method after the back buffer is configured.
-	**/
-	public maxBackBufferWidth(default , null): number;
-
-	/**
-		The feature-support profile in use by this Context3D object.
-	**/
-	public profile(default , null): Context3DProfile = STANDARD;
-
-	/**
-		Returns the total GPU memory allocated by Stage3D data structures of an
-		application.
-
-		Whenever a GPU resource object is created, memory utilized is stored in
-		Context3D. This memory includes index buffers, vertex buffers,
-		textures (excluding video texture), and programs that were created through this
-		Context3D.
-
-		API totalGPUMemory returns the total memory consumed by the above resources to
-		the user. Default value returned is 0. The total GPU memory returned is in bytes.
-		The information is only provided in Direct mode on mobile, and in Direct and
-		GPU modes on desktop. (On desktop, using `<renderMode>gpu</renderMode>` will
-		fall back to `<renderMode>direct</renderMode>`)
-
-		This API can be used when the SWF version is 32 or later.
-	**/
-	public totalGPUMemory(get, never): number;
-
-	protected static __supportsBGRA: Null<Bool> = null;
+	protected static __supportsBGRA: null | boolean = null;
+	protected static __supportsVideoTexture: boolean = true;
 
 	protected __backBufferAntiAlias: number;
+	protected __backBufferHeight: number = 0;
+	protected __backBufferWidth: number = 0;
 	protected __backBufferTexture: RectangleTexture;
 	protected __backBufferWantsBestResolution: boolean;
 	protected __backBufferWantsBestResolutionOnBrowserZoom: boolean;
-	protected __backend: Context3DBackend;
 	protected __bitmapDataPool: BitmapDataPool;
 	protected __cleared: boolean;
 	protected __contextState: Context3DState;
+	protected __driverInfo: string = "OpenGL (Direct blitting)";
 	protected __enableErrorChecking: boolean;
 	protected __fragmentConstants: Float32Array;
 	protected __frontBufferTexture: RectangleTexture;
+	protected __maxBackBufferHeight: number;
+	protected __maxBackBufferWidth: number;
 	protected __present: boolean;
+	protected __profile: Context3DProfile = Context3DProfile.STANDARD;
 	protected __programs: Map<string, Program3D>;
 	protected __quadIndexBuffer: IndexBuffer3D;
 	protected __quadIndexBufferCount: number;
@@ -242,39 +162,33 @@ export default class Context3D extends EventDispatcher
 	{
 		super();
 
-		__stage = stage;
-		__contextState = contextState;
-		__stage3D = stage3D;
+		this.__stage = stage;
+		this.__contextState = contextState;
+		this.__stage3D = stage3D;
 
-		if (__contextState == null) __contextState = new Context3DState();
-		__state = new Context3DState();
+		if (this.__contextState == null) this.__contextState = new Context3DState();
+		this.__state = new Context3DState();
 
-		#if(lime || js)
 		// TODO: Dummy impl?
-		__vertexConstants = new Float32Array(4 * 128);
-		__fragmentConstants = new Float32Array(4 * 128);
-		#end
+		this.__vertexConstants = new Float32Array(4 * 128);
+		this.__fragmentConstants = new Float32Array(4 * 128);
 
-		__programs = new Map<string, Program3D>();
+		this.__programs = new Map<string, Program3D>();
 
-		__backend = new Context3DBackend(this);
+		// this.__backend = new Context3DBackend(this);
 
-		__bitmapDataPool = new BitmapDataPool(30, this);
+		this.__bitmapDataPool = new BitmapDataPool(30, this);
 
-		__quadIndexBufferElements = Math.floor(0xFFFF / 4);
-		__quadIndexBufferCount = __quadIndexBufferElements * 6;
+		this.__quadIndexBufferElements = Math.floor(0xFFFF / 4);
+		this.__quadIndexBufferCount = this.__quadIndexBufferElements * 6;
 
-		#if(lime || js)
 		// TODO: Dummy impl?
-		var data = new UInt16Array(__quadIndexBufferCount);
-		#else
-		var data = null;
-		#end
+		var data = new Uint16Array(this.__quadIndexBufferCount);
 
 		var index: number = 0;
 		var vertex: number = 0;
 
-		for (i in 0...__quadIndexBufferElements)
+		for (let i = 0; i < this.__quadIndexBufferElements; i++)
 		{
 			data[index] = vertex;
 			data[index + 1] = vertex + 1;
@@ -287,8 +201,8 @@ export default class Context3D extends EventDispatcher
 			vertex += 4;
 		}
 
-		__quadIndexBuffer = createIndexBuffer(__quadIndexBufferCount);
-		__quadIndexBuffer.uploadFromTypedArray(data);
+		this.__quadIndexBuffer = this.createIndexBuffer(this.__quadIndexBufferCount);
+		this.__quadIndexBuffer.uploadFromTypedArray(data);
 	}
 
 	/**
@@ -326,7 +240,7 @@ export default class Context3D extends EventDispatcher
 	public clear(red: number = 0, green: number = 0, blue: number = 0, alpha: number = 1, depth: number = 1, stencil: number = 0,
 		mask: number = Context3DClearMask.ALL): void
 	{
-		__backend.clear(red, green, blue, alpha, depth, stencil, mask);
+		// this.__backend.clear(red, green, blue, alpha, depth, stencil, mask);
 	}
 
 	/**
@@ -385,7 +299,7 @@ export default class Context3D extends EventDispatcher
 	public configureBackBuffer(width: number, height: number, antiAlias: number, enableDepthAndStencil: boolean = true, wantsBestResolution: boolean = false,
 		wantsBestResolutionOnBrowserZoom: boolean = false): void
 	{
-		__backend.configureBackBuffer(width, height, antiAlias, enableDepthAndStencil, wantsBestResolution, wantsBestResolutionOnBrowserZoom);
+		// this.__backend.configureBackBuffer(width, height, antiAlias, enableDepthAndStencil, wantsBestResolution, wantsBestResolutionOnBrowserZoom);
 	}
 
 	/**
@@ -467,7 +381,7 @@ export default class Context3D extends EventDispatcher
 	**/
 	public createCubeTexture(size: number, format: Context3DTextureFormat, optimizeForRenderToTexture: boolean, streamingLevels: number = 0): CubeTexture
 	{
-		return new CubeTexture(this, size, format, optimizeForRenderToTexture, streamingLevels);
+		return new (<internal.CubeTexture><any>CubeTexture)(this, size, format, optimizeForRenderToTexture, streamingLevels);
 	}
 
 	/**
@@ -498,9 +412,9 @@ export default class Context3D extends EventDispatcher
 		@throws	ArgumentError	Buffer Too Big: when `numIndices` is greater than or equal
 		to 0xf0000.
 	**/
-	public createIndexBuffer(numIndices: number, bufferUsage: Context3DBufferUsage = STATIC_DRAW): IndexBuffer3D
+	public createIndexBuffer(numIndices: number, bufferUsage: Context3DBufferUsage = Context3DBufferUsage.STATIC_DRAW): IndexBuffer3D
 	{
-		return new IndexBuffer3D(this, numIndices, bufferUsage);
+		return new (<internal.IndexBuffer3D><any>IndexBuffer3D)(this, numIndices, bufferUsage);
 	}
 
 	/**
@@ -523,9 +437,9 @@ export default class Context3D extends EventDispatcher
 		@throws	Error	The number of programs exceeds 4096 or the total memory size
 		exceeds 16MB (use dispose to free Program3D resources).
 	**/
-	public createProgram(format: Context3DProgramFormat = AGAL): Program3D
+	public createProgram(format: Context3DProgramFormat = Context3DProgramFormat.AGAL): Program3D
 	{
-		return new Program3D(this, format);
+		return new (<internal.Program3D><any>Program3D)(this, format);
 	}
 
 	/**
@@ -574,7 +488,7 @@ export default class Context3D extends EventDispatcher
 	**/
 	public createRectangleTexture(width: number, height: number, format: Context3DTextureFormat, optimizeForRenderToTexture: boolean): RectangleTexture
 	{
-		return new RectangleTexture(this, width, height, format, optimizeForRenderToTexture);
+		return new (<internal.RectangleTexture><any>RectangleTexture)(this, width, height, format, optimizeForRenderToTexture);
 	}
 
 	/**
@@ -650,7 +564,7 @@ export default class Context3D extends EventDispatcher
 	**/
 	public createTexture(width: number, height: number, format: Context3DTextureFormat, optimizeForRenderToTexture: boolean, streamingLevels: number = 0): Texture
 	{
-		return new Texture(this, width, height, format, optimizeForRenderToTexture, streamingLevels);
+		return new (<internal.Texture><any>Texture)(this, width, height, format, optimizeForRenderToTexture, streamingLevels);
 	}
 
 	/**
@@ -693,9 +607,9 @@ export default class Context3D extends EventDispatcher
 		the reason is not available).
 		@throws	Error	3768: The Stage3D API may not be used during background execution.
 	**/
-	public createVertexBuffer(numVertices: number, data32PerVertex: number, bufferUsage: Context3DBufferUsage = STATIC_DRAW): VertexBuffer3D
+	public createVertexBuffer(numVertices: number, data32PerVertex: number, bufferUsage: Context3DBufferUsage = Context3DBufferUsage.STATIC_DRAW): VertexBuffer3D
 	{
-		return new VertexBuffer3D(this, numVertices, data32PerVertex, bufferUsage);
+		return new (<internal.VertexBuffer3D><any>VertexBuffer3D)(this, numVertices, data32PerVertex, bufferUsage);
 	}
 
 	/**
@@ -732,9 +646,9 @@ export default class Context3D extends EventDispatcher
 	**/
 	public createVideoTexture(): VideoTexture
 	{
-		if (supportsVideoTexture)
+		if (Context3D.supportsVideoTexture)
 		{
-			return new VideoTexture(this);
+			return new (<internal.VideoTexture><any>VideoTexture)(this);
 		}
 		else
 		{
@@ -765,16 +679,16 @@ export default class Context3D extends EventDispatcher
 	**/
 	public dispose(recreate: boolean = true): void
 	{
-		__backend.dispose(recreate);
+		// this.__backend.dispose(recreate);
 
-		__renderStage3DProgram = null;
-		__frontBufferTexture = null;
-		__present = false;
-		__backBufferTexture = null;
-		__fragmentConstants = null;
-		__quadIndexBuffer = null;
-		__stage = null;
-		__vertexConstants = null;
+		this.__renderStage3DProgram = null;
+		this.__frontBufferTexture = null;
+		this.__present = false;
+		this.__backBufferTexture = null;
+		this.__fragmentConstants = null;
+		this.__quadIndexBuffer = null;
+		this.__stage = null;
+		this.__vertexConstants = null;
 	}
 
 	/**
@@ -818,7 +732,7 @@ export default class Context3D extends EventDispatcher
 	**/
 	public drawToBitmapData(destination: BitmapData, srcRect: Rectangle = null, destPoint: Point = null): void
 	{
-		__backend.drawToBitmapData(destination, srcRect, destPoint);
+		// this.__backend.drawToBitmapData(destination, srcRect, destPoint);
 	}
 
 	/**
@@ -847,7 +761,7 @@ export default class Context3D extends EventDispatcher
 		been disposed or there are too many draw calls. If the rendering context state
 		is invalid rendering fails silently. When the `enableErrorChecking` property is
 		`true`, this returns after the triangles are drawn and throws exceptions
-		for any drawing errors or invalid context __state.
+		for any drawing errors or invalid context this.__state.
 
 		@param	indexBuffer:IndexBuffer3D — a set of vertex indices referencing the
 		vertices to render.
@@ -900,7 +814,7 @@ export default class Context3D extends EventDispatcher
 	**/
 	public drawTriangles(indexBuffer: IndexBuffer3D, firstIndex: number = 0, numTriangles: number = -1): void
 	{
-		__backend.drawTriangles(indexBuffer, firstIndex, numTriangles);
+		// this.__backend.drawTriangles(indexBuffer, firstIndex, numTriangles);
 	}
 
 	/**
@@ -923,7 +837,7 @@ export default class Context3D extends EventDispatcher
 	**/
 	public present(): void
 	{
-		__backend.present();
+		// this.__backend.present();
 	}
 
 	/**
@@ -961,21 +875,19 @@ export default class Context3D extends EventDispatcher
 	**/
 	public setBlendFactors(sourceFactor: Context3DBlendFactor, destinationFactor: Context3DBlendFactor): void
 	{
-		setBlendFactorsSeparate(sourceFactor, destinationFactor, sourceFactor, destinationFactor);
+		this.setBlendFactorsSeparate(sourceFactor, destinationFactor, sourceFactor, destinationFactor);
 	}
 
 	protected setBlendFactorsSeparate(sourceRGBFactor: Context3DBlendFactor, destinationRGBFactor: Context3DBlendFactor,
 		sourceAlphaFactor: Context3DBlendFactor, destinationAlphaFactor: Context3DBlendFactor): void
 	{
-		__state.blendSourceRGBFactor = sourceRGBFactor;
-		__state.blendDestinationRGBFactor = destinationRGBFactor;
-		__state.blendSourceAlphaFactor = sourceAlphaFactor;
-		__state.blendDestinationAlphaFactor = destinationAlphaFactor;
+		this.__state.blendSourceRGBFactor = sourceRGBFactor;
+		this.__state.blendDestinationRGBFactor = destinationRGBFactor;
+		this.__state.blendSourceAlphaFactor = sourceAlphaFactor;
+		this.__state.blendDestinationAlphaFactor = destinationAlphaFactor;
 
-					#if openfl_gl
 		// TODO: Better way to handle this?
-		__backend.resetGLBlendEquation();
-					#end
+		// this.__backend.resetGLBlendEquation();
 	}
 
 	/**
@@ -994,10 +906,10 @@ export default class Context3D extends EventDispatcher
 	**/
 	public setColorMask(red: boolean, green: boolean, blue: boolean, alpha: boolean): void
 	{
-		__state.colorMaskRed = red;
-		__state.colorMaskGreen = green;
-		__state.colorMaskBlue = blue;
-		__state.colorMaskAlpha = alpha;
+		this.__state.colorMaskRed = red;
+		this.__state.colorMaskGreen = green;
+		this.__state.colorMaskBlue = blue;
+		this.__state.colorMaskAlpha = alpha;
 	}
 
 	/**
@@ -1015,7 +927,7 @@ export default class Context3D extends EventDispatcher
 	**/
 	public setCulling(triangleFaceToCull: Context3DTriangleFace): void
 	{
-		__state.culling = triangleFaceToCull;
+		this.__state.culling = triangleFaceToCull;
 	}
 
 	/**
@@ -1040,8 +952,8 @@ export default class Context3D extends EventDispatcher
 	**/
 	public setDepthTest(depthMask: boolean, passCompareMode: Context3DCompareMode): void
 	{
-		__state.depthMask = depthMask;
-		__state.depthCompareMode = passCompareMode;
+		this.__state.depthMask = depthMask;
+		this.__state.depthCompareMode = passCompareMode;
 	}
 
 	/**
@@ -1052,20 +964,20 @@ export default class Context3D extends EventDispatcher
 	**/
 	public setProgram(program: Program3D): void
 	{
-		__state.program = program;
-		__state.shader = null; // TODO: Merge this logic
+		this.__state.program = program;
+		this.__state.shader = null; // TODO: Merge this logic
 
 		if (program != null)
 		{
-			for (i in 0...program.__samplerStates.length)
+			for (let i = 0; i < (<internal.Program3D><any>program).__samplerStates.length; i++)
 			{
-				if (__state.samplerStates[i] == null)
+				if (this.__state.samplerStates[i] == null)
 				{
-					__state.samplerStates[i] = program.__samplerStates[i].clone();
+					this.__state.samplerStates[i] = (<internal.Program3D><any>program).__samplerStates[i].clone();
 				}
 				else
 				{
-					__state.samplerStates[i].copyFrom(program.__samplerStates[i]);
+					this.__state.samplerStates[i].copyFrom((<internal.Program3D><any>program).__samplerStates[i]);
 				}
 			}
 		}
@@ -1092,9 +1004,9 @@ export default class Context3D extends EventDispatcher
 	public setProgramConstantsFromByteArray(programType: Context3DProgramType, firstRegister: number, numRegisters: number, data: ByteArray,
 		byteArrayOffset: number): void
 	{
-		if (numRegisters == 0 || __state.program == null) return;
+		if (numRegisters == 0 || this.__state.program == null) return;
 
-		if (__state.program != null && __state.program.__format == GLSL)
+		if (this.__state.program != null && (<internal.Program3D><any>this.__state.program).__format == Context3DProgramFormat.GLSL)
 		{
 			// TODO
 		}
@@ -1107,29 +1019,22 @@ export default class Context3D extends EventDispatcher
 				numRegisters = ((data.length >> 2) - byteArrayOffset);
 			}
 
-			var isVertex = (programType == VERTEX);
-			var dest = isVertex ? __vertexConstants : __fragmentConstants;
+			var isVertex = (programType == Context3DProgramType.VERTEX);
+			var dest = isVertex ? this.__vertexConstants : this.__fragmentConstants;
 
-			#if lime
-			var floatData = Float32Array.fromBytes(data, 0, data.length);
-			#elseif openfl_html5
-			var bytes: haxe.io.Bytes = cast data;
-			var floatData = new Float32Array(bytes.getData(), 0, data.length);
-			#else
-			// TODO: Dummy impl?
-			var floatData = null;
-			#end
+			var floatData = new Float32Array((<internal.ByteArray><any>bytes.__buffer), 0, data.length);
+
 			var outOffset = firstRegister * 4;
-			var inOffset = Std.int(byteArrayOffset / 4);
+			var inOffset = Math.floor(byteArrayOffset / 4);
 
-			for (i in 0...(numRegisters * 4))
+			for (let i = 0; i < (numRegisters * 4); i++)
 			{
 				dest[outOffset + i] = floatData[inOffset + i];
 			}
 
-			if (__state.program != null)
+			if (this.__state.program != null)
 			{
-				__state.program.__backend.markDirty(isVertex, firstRegister, numRegisters);
+				(<internal.Program3D><any>this.__state.program).__markDirty(isVertex, firstRegister, numRegisters);
 			}
 		}
 	}
@@ -1156,16 +1061,14 @@ export default class Context3D extends EventDispatcher
 	**/
 	public setProgramConstantsFromMatrix(programType: Context3DProgramType, firstRegister: number, matrix: Matrix3D, transposedMatrix: boolean = false): void
 	{
-		if (__state.program != null && __state.program.__format == GLSL)
+		if (this.__state.program != null && (<internal.Program3D><any>this.__state.program).__format == Context3DProgramFormat.GLSL)
 		{
-			#if openfl_gl
-			__backend.setGLSLProgramConstantsFromMatrix(programType, firstRegister, matrix, transposedMatrix);
-			#end
+			// this.__backend.setGLSLProgramConstantsFromMatrix(programType, firstRegister, matrix, transposedMatrix);
 		}
 		else
 		{
-			var isVertex = (programType == VERTEX);
-			var dest = isVertex ? __vertexConstants : __fragmentConstants;
+			var isVertex = (programType == Context3DProgramType.VERTEX);
+			var dest = isVertex ? this.__vertexConstants : this.__fragmentConstants;
 			var source = matrix.rawData;
 			var i = firstRegister * 4;
 
@@ -1214,9 +1117,9 @@ export default class Context3D extends EventDispatcher
 				dest[i++] = source[15];
 			}
 
-			if (__state.program != null)
+			if (this.__state.program != null)
 			{
-				__state.program.__backend.markDirty(isVertex, firstRegister, 4);
+				(<internal.Program3D><any>this.__state.program).__markDirty(isVertex, firstRegister, 4);
 			}
 		}
 	}
@@ -1248,7 +1151,7 @@ export default class Context3D extends EventDispatcher
 	{
 		if (numRegisters == 0) return;
 
-		if (__state.program != null && __state.program.__format == GLSL) { }
+		if (this.__state.program != null && (<internal.Program3D><any>this.__state.program).__format == Context3DProgramFormat.GLSL) { }
 		else
 		{
 			if (numRegisters == -1)
@@ -1256,14 +1159,14 @@ export default class Context3D extends EventDispatcher
 				numRegisters = (data.length >> 2);
 			}
 
-			var isVertex = (programType == VERTEX);
-			var dest = isVertex ? __vertexConstants : __fragmentConstants;
+			var isVertex = (programType == Context3DProgramType.VERTEX);
+			var dest = isVertex ? this.__vertexConstants : this.__fragmentConstants;
 			var source = data;
 
 			var sourceIndex = 0;
 			var destIndex = firstRegister * 4;
 
-			for (i in 0...numRegisters)
+			for (let i = 0; i < numRegisters; i++)
 			{
 				dest[destIndex++] = source[sourceIndex++];
 				dest[destIndex++] = source[sourceIndex++];
@@ -1271,9 +1174,9 @@ export default class Context3D extends EventDispatcher
 				dest[destIndex++] = source[sourceIndex++];
 			}
 
-			if (__state.program != null)
+			if (this.__state.program != null)
 			{
-				__state.program.__backend.markDirty(isVertex, firstRegister, numRegisters);
+				(<internal.Program3D><any>this.__state.program).__markDirty(isVertex, firstRegister, numRegisters);
 			}
 		}
 	}
@@ -1286,7 +1189,7 @@ export default class Context3D extends EventDispatcher
 	**/
 	public setRenderToBackBuffer(): void
 	{
-		__state.renderToTexture = null;
+		this.__state.renderToTexture = null;
 	}
 
 	/**
@@ -1327,14 +1230,14 @@ export default class Context3D extends EventDispatcher
 	**/
 	public setRenderToTexture(texture: TextureBase, enableDepthAndStencil: boolean = false, antiAlias: number = 0, surfaceSelector: number = 0): void
 	{
-		__state.renderToTexture = texture;
-		__state.renderToTextureDepthStencil = enableDepthAndStencil;
-		__state.renderToTextureAntiAlias = antiAlias;
-		__state.renderToTextureSurfaceSelector = surfaceSelector;
+		this.__state.renderToTexture = texture;
+		this.__state.renderToTextureDepthStencil = enableDepthAndStencil;
+		this.__state.renderToTextureAntiAlias = antiAlias;
+		this.__state.renderToTextureSurfaceSelector = surfaceSelector;
 	}
 
 	/**
-		Manuallytexture sampler __state.
+		Manuallytexture sampler this.__state.
 
 		Texture sampling state is typically set at the time setProgram is called.
 		However, you cantexture sampler state with this function. If you do not
@@ -1361,12 +1264,12 @@ export default class Context3D extends EventDispatcher
 
 		// }
 
-		if (__state.samplerStates[sampler] == null)
+		if (this.__state.samplerStates[sampler] == null)
 		{
-			__state.samplerStates[sampler] = new SamplerState();
+			this.__state.samplerStates[sampler] = new SamplerState();
 		}
 
-		var state = __state.samplerStates[sampler];
+		var state = this.__state.samplerStates[sampler];
 		state.wrap = wrap;
 		state.filter = filter;
 		state.mipfilter = mipfilter;
@@ -1388,12 +1291,12 @@ export default class Context3D extends EventDispatcher
 	{
 		if (rectangle != null)
 		{
-			__state.scissorEnabled = true;
-			__state.scissorRectangle.copyFrom(rectangle);
+			this.__state.scissorEnabled = true;
+			this.__state.scissorRectangle.copyFrom(rectangle);
 		}
 		else
 		{
-			__state.scissorEnabled = false;
+			this.__state.scissorEnabled = false;
 		}
 	}
 
@@ -1441,15 +1344,15 @@ export default class Context3D extends EventDispatcher
 		or `actionOnDepthPassStencilFail` is not one of the values defined in the
 		Context3DStencilAction class.
 	**/
-	public setStencilActions(triangleFace: Context3DTriangleFace = FRONT_AND_BACK, compareMode: Context3DCompareMode = ALWAYS,
-		actionOnBothPass: Context3DStencilAction = KEEP, actionOnDepthFail: Context3DStencilAction = KEEP,
-		actionOnDepthPassStencilFail: Context3DStencilAction = KEEP): void
+	public setStencilActions(triangleFace: Context3DTriangleFace = Context3DTriangleFace.FRONT_AND_BACK, compareMode: Context3DCompareMode = Context3DCompareMode.ALWAYS,
+		actionOnBothPass: Context3DStencilAction = Context3DStencilAction.KEEP, actionOnDepthFail: Context3DStencilAction = Context3DStencilAction.KEEP,
+		actionOnDepthPassStencilFail: Context3DStencilAction = Context3DStencilAction.KEEP): void
 	{
-		__state.stencilTriangleFace = triangleFace;
-		__state.stencilCompareMode = compareMode;
-		__state.stencilPass = actionOnBothPass;
-		__state.stencilDepthFail = actionOnDepthFail;
-		__state.stencilFail = actionOnDepthPassStencilFail;
+		this.__state.stencilTriangleFace = triangleFace;
+		this.__state.stencilCompareMode = compareMode;
+		this.__state.stencilPass = actionOnBothPass;
+		this.__state.stencilDepthFail = actionOnDepthFail;
+		this.__state.stencilFail = actionOnDepthPassStencilFail;
 	}
 
 	/**
@@ -1468,9 +1371,9 @@ export default class Context3D extends EventDispatcher
 	**/
 	public setStencilReferenceValue(referenceValue: number, readMask: number = 0xFF, writeMask: number = 0xFF): void
 	{
-		__state.stencilReferenceValue = referenceValue;
-		__state.stencilReadMask = readMask;
-		__state.stencilWriteMask = writeMask;
+		this.__state.stencilReferenceValue = referenceValue;
+		this.__state.stencilReadMask = readMask;
+		this.__state.stencilWriteMask = writeMask;
 	}
 
 	/**
@@ -1499,7 +1402,7 @@ export default class Context3D extends EventDispatcher
 
 		// }
 
-		__state.textures[sampler] = texture;
+		this.__state.textures[sampler] = texture;
 	}
 
 	/**
@@ -1552,12 +1455,10 @@ export default class Context3D extends EventDispatcher
 		is outside the range from 0 through 7. (A maximum of eight vertex attribute
 		registers can be used by a shader.)
 	**/
-	public setVertexBufferAt(index: number, buffer: VertexBuffer3D, bufferOffset: number = 0, format: Context3DVertexBufferFormat = FLOAT_4): void
+	public setVertexBufferAt(index: number, buffer: VertexBuffer3D, bufferOffset: number = 0, format: Context3DVertexBufferFormat = Context3DVertexBufferFormat.FLOAT_4): void
 	{
 		// TODO: Don't flush immediately?
-		#if openfl_gl
-		__backend.setVertexBufferAt(index, buffer, bufferOffset, format);
-		#end
+		// this.__backend.setVertexBufferAt(index, buffer, bufferOffset, format);
 	}
 
 	protected __renderStage3D(stage3D: Stage3D): void
@@ -1570,12 +1471,12 @@ export default class Context3D extends EventDispatcher
 			&& context != this
 			&& context.__frontBufferTexture != null
 			&& stage3D.visible
-			&& backBufferHeight > 0
-			&& backBufferWidth > 0)
+			&& this.backBufferHeight > 0
+			&& this.backBufferWidth > 0)
 		{
 			// if (!stage.renderer.cleared) stage.renderer.clear ();
 
-			if (__renderStage3DProgram == null)
+			if (this.__renderStage3DProgram == null)
 			{
 				var vertexAssembler = new AGALMiniAssembler();
 				vertexAssembler.assemble(Context3DProgramType.VERTEX, "m44 op, va0, vc0\n" + "mov v0, va1");
@@ -1583,43 +1484,166 @@ export default class Context3D extends EventDispatcher
 				var fragmentAssembler = new AGALMiniAssembler();
 				fragmentAssembler.assemble(Context3DProgramType.FRAGMENT, "tex ft1, v0, fs0 <2d,nearest,nomip>\n" + "mov oc, ft1");
 
-				__renderStage3DProgram = createProgram();
-				__renderStage3DProgram.upload(vertexAssembler.agalcode, fragmentAssembler.agalcode);
+				this.__renderStage3DProgram = this.createProgram();
+				this.__renderStage3DProgram.upload(vertexAssembler.agalcode, fragmentAssembler.agalcode);
 			}
 
-			setProgram(__renderStage3DProgram);
+			this.setProgram(this.__renderStage3DProgram);
 
-			setBlendFactors(ONE, ZERO);
-			setColorMask(true, true, true, true);
-			setCulling(NONE);
-			setDepthTest(false, ALWAYS);
-			setStencilActions();
-			setStencilReferenceValue(0, 0, 0);
-			setScissorRectangle(null);
+			this.setBlendFactors(Context3DBlendFactor.ONE, Context3DBlendFactor.ZERO);
+			this.setColorMask(true, true, true, true);
+			this.setCulling(Context3DTriangleFace.NONE);
+			this.setDepthTest(false, Context3DCompareMode.ALWAYS);
+			this.setStencilActions();
+			this.setStencilReferenceValue(0, 0, 0);
+			this.setScissorRectangle(null);
 
-			setTextureAt(0, context.__frontBufferTexture);
-			setVertexBufferAt(0, stage3D.__renderData.vertexBuffer, 0, Context3DVertexBufferFormat.FLOAT_3);
-			setVertexBufferAt(1, stage3D.__renderData.vertexBuffer, 3, Context3DVertexBufferFormat.FLOAT_2);
-			setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, stage3D.__renderTransform, true);
-			drawTriangles(stage3D.__renderData.indexBuffer);
+			this.setTextureAt(0, (<internal.Context3D><any>context).__frontBufferTexture);
+			this.setVertexBufferAt(0, (<internal.Stage3D><any>stage3D).__renderData.vertexBuffer, 0, Context3DVertexBufferFormat.FLOAT_3);
+			this.setVertexBufferAt(1, (<internal.Stage3D><any>stage3D).__renderData.vertexBuffer, 3, Context3DVertexBufferFormat.FLOAT_2);
+			this.setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, (<internal.Stage3D><any>stage3D).__renderTransform, true);
+			this.drawTriangles((<internal.Stage3D><any>stage3D).__renderData.indexBuffer);
 
-			__present = true;
+			this.__present = true;
 		}
 	}
 
 	// Get & Set Methods
+
+	/**
+		Indicates if Context3D supports video texture.
+	**/
+	public static get supportsVideoTexture(): boolean
+	{
+		return Context3D.__supportsVideoTexture;
+	}
+
+	/**
+		Specifies the height of the back buffer, which can be changed by a successful
+		call to the `configureBackBuffer()` method. The height may be modified when the
+		browser zoom factor changes if the `wantsBestResolutionOnBrowserZoom` parameter
+		is set to `true` in the last successful call to the `configureBackBuffer()`
+		method. The change in height can be detected by registering an event listener
+		for the browser zoom change event.
+	**/
+	public get backBufferHeight(): number
+	{
+		return this.__backBufferHeight;
+	}
+
+	/**
+		Specifies the width of the back buffer, which can be changed by a successful
+		call to the `configureBackBuffer()` method. The width may be modified when the
+		browser zoom factor changes if the `wantsBestResolutionOnBrowserZoom` parameter
+		is set to `true` in the last successful call to the `configureBackBuffer()`
+		method. The change in width can be detected by registering an event listener
+		for the browser zoom change event.
+	**/
+	public get backBufferWidth(): number
+	{
+		return this.__backBufferWidth;
+	}
+
+	/**
+		The type of graphics library driver used by this rendering context. Indicates
+		whether the rendering is using software, a DirectX driver, or an OpenGL driver.
+		Also indicates whether hardware rendering failed. If hardware rendering fails,
+		Flash Player uses software rendering for Stage3D and `driverInfo` contains one
+		of the following values:
+
+		* "Software Hw_disabled=userDisabled" - The Enable hardware acceleration
+		checkbox in the Adobe Flash Player Settings UI is not selected.
+		* "Software Hw_disabled=oldDriver" - There are known problems with the
+		hardware graphics driver. Updating the graphics driver may fix this problem.
+		* "Software Hw_disabled=unavailable" - Known problems with the hardware
+		graphics driver or hardware graphics initialization failure.
+		* "Software Hw_disabled=explicit" - The content explicitly requested software
+		rendering through requestContext3D.
+		* "Software Hw_disabled=domainMemory" - The content uses domainMemory, which
+		requires a license when used with Stage3D hardware rendering. Visit
+		adobe.com/go/fpl.
+	**/
+	public get driverInfo(): string
+	{
+		return this.__driverInfo;
+	}
+
+	/**
+		Specifies whether errors encountered by the renderer are reported to the
+		application.
+
+		When `enableErrorChecking` is `true`, the `clear()`, and `drawTriangles()`
+		methods are synchronous and can throw errors. When `enableErrorChecking`
+		is `false`, the default, the `clear()`, and `drawTriangles()` methods are
+		asynchronous and errors are not reported. Enabling error checking reduces
+		rendering performance. You should only enable error checking when debugging.
+	**/
 	public get enableErrorChecking(): boolean
 	{
-		return __enableErrorChecking;
+		return this.__enableErrorChecking;
 	}
 
-	public set enableErrorChecking(value: boolean): boolean
+	public set enableErrorChecking(value: boolean)
 	{
-		return __enableErrorChecking = value;
+		this.__enableErrorChecking = value;
 	}
 
+	/**
+		Specifies the maximum height of the back buffer. The inital value is the system
+		limit in the platform. The property can be set to a value smaller than or equal
+		to, but not greater than, the system limit. The property can be set to a value
+		greater than or equal to, but not smaller than, the minimum limit. The minimum
+		limit is a constant value, 32, when the back buffer is not configured. The
+		minimum limit will be the value of the `height` parameter in the last successful
+		call to the `configureBackBuffer()` method after the back buffer is configured.
+	**/
+	public get maxBackBufferHeight(): number
+	{
+		return this.__maxBackBufferHeight;
+	}
+
+	/**
+		Specifies the maximum width of the back buffer. The inital value is the system
+		limit in the platform. The property can be set to a value smaller than or equal
+		to, but not greater than, the system limit. The property can be set to a value
+		greater than or equal to, but not smaller than, the minimum limit. The minimum
+		limit is a constant value, 32, when the back buffer is not configured. The
+		minimum limit will be the value of the width parameter in the last successful
+		call to the `configureBackBuffer()` method after the back buffer is configured.
+	**/
+	public get maxBackBufferWidth(): number
+	{
+		return this.__maxBackBufferWidth;
+	}
+
+	/**
+		The feature-support profile in use by this Context3D object.
+	**/
+	public get profile(): Context3DProfile
+	{
+		return this.__profile;
+	}
+
+	/**
+		Returns the total GPU memory allocated by Stage3D data structures of an
+		application.
+
+		Whenever a GPU resource object is created, memory utilized is stored in
+		Context3D. This memory includes index buffers, vertex buffers,
+		textures (excluding video texture), and programs that were created through this
+		Context3D.
+
+		API totalGPUMemory returns the total memory consumed by the above resources to
+		the user. Default value returned is 0. The total GPU memory returned is in bytes.
+		The information is only provided in Direct mode on mobile, and in Direct and
+		GPU modes on desktop. (On desktop, using `<renderMode>gpu</renderMode>` will
+		fall back to `<renderMode>direct</renderMode>`)
+
+		This API can be used when the SWF version is 32 or later.
+	**/
 	public get totalGPUMemory(): number
 	{
-		return __backend.getTotalGPUMemory();
+		// return this.__backend.getTotalGPUMemory();
+		return 0;
 	}
 }

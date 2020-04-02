@@ -1,5 +1,3 @@
-namespace openfl._internal.utils;
-
 /**
 	Title:      Perlin noise
 	Version:    1.3
@@ -10,23 +8,18 @@ namespace openfl._internal.utils;
 	AS3 optimizations by Mario Klingemann http://www.quasimondo.com
 	Haxe port and optimization by Nicolas Cannasse http://haxe.org
 **/
-import BitmapData from "../display/BitmapData";
+import BitmapData from "../../display/BitmapData";
 
-#if!openfl_debug
-@: fileXml('tags="haxe,release"')
-@: noDebug
-#end
-@SuppressWarnings("checkstyle:FieldDocComment")
-class AbstractNoise
+export default class AbstractNoise
 {
-	private octaves(null, null): number;
-	private stitch(null, null): boolean;
-	private stitch_threshold(null, null): number;
-	private channels(null, null): number;
-	private grayscale(null, null): boolean;
-	private octaves_frequencies(null, null): Array<Float>; // frequency per octave
-	private octaves_persistences(null, null): Array<Float>; // persistence per octave
-	private persistence_max(null, null): number; // 1 / max persistence
+	private octaves: number;
+	private stitch: boolean;
+	private stitch_threshold: number;
+	private channels: number;
+	private grayscale: boolean;
+	private octaves_frequencies: Array<number>; // frequency per octave
+	private octaves_persistences: Array<number>; // persistence per octave
+	private persistence_max: number; // 1 / max persistence
 
 	public constructor(seed: number, octaves: number, channels: number, grayScale: boolean, falloff: number, stitch: boolean = false, stitch_threshold: number = 0.05)
 	{
@@ -134,12 +127,12 @@ class AbstractNoise
 		return x > 0 ? Std.int(x) : Std.int(x - 1);
 	}
 
-	private dot2d(grad: Array<Int>, x: number, y: number): number
+	private dot2d(grad: Array<number>, x: number, y: number): number
 	{
 		return grad[0] * x + grad[1] * y;
 	}
 
-	private dot(grad: Array<Int>, x: number, y: number, z: number): number
+	private dot(grad: Array<number>, x: number, y: number, z: number): number
 	{
 		return grad[0] * x + grad[1] * y + grad[2] * z;
 	}
@@ -152,7 +145,7 @@ class AbstractNoise
 		this.octaves_persistences = [];
 		this.persistence_max = 0;
 
-		for (i in 0...this.octaves)
+		for (let i = 0; i < this.octaves; i++)
 		{
 			fFreq = Math.pow(2.0, i);
 			fPers = Math.pow(fPersistence, i);

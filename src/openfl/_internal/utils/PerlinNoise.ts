@@ -1,5 +1,3 @@
-namespace openfl._internal.utils;
-
 /**
 	Title:      Perlin noise
 	Version:    1.3
@@ -10,18 +8,13 @@ namespace openfl._internal.utils;
 	AS3 optimizations by Mario Klingemann http://www.quasimondo.com
 	Haxe port and optimization by Nicolas Cannasse http://haxe.org
 **/
-import openfl.display.BitmapDataChannel;
-import BitmapData from "../display/BitmapData";
+import BitmapDataChannel from "../../display/BitmapDataChannel";
+import BitmapData from "../../display/BitmapData";
+import AbstractNoise from "./AbstractNoise";
 
-#if!openfl_debug
-@: fileXml('tags="haxe,release"')
-@: noDebug
-#end
-@SuppressWarnings("checkstyle:FieldDocComment")
-class PerlinNoise extends AbstractNoise
+export default class PerlinNoise extends AbstractNoise
 {
-	@SuppressWarnings("checkstyle:ConstantName")
-	private static P: Array<Int> = [
+	private static P: Array<number> = [
 		151, 160, 137, 91, 90, 15, 131, 13, 201, 95, 96, 53, 194, 233, 7, 225, 140, 36, 103, 30, 69, 142, 8, 99, 37, 240, 21, 10, 23, 190, 6, 148, 247, 120,
 		234, 75, 0, 26, 197, 62, 94, 252, 219, 203, 117, 35, 11, 32, 57, 177, 33, 88, 237, 149, 56, 87, 174, 20, 125, 136, 171, 168, 68, 175, 74, 165, 71,
 		134, 139, 48, 27, 166, 77, 146, 158, 231, 83, 111, 229, 122, 60, 211, 133, 230, 220, 105, 92, 41, 55, 46, 245, 40, 244, 102, 143, 54, 65, 25, 63, 161,
@@ -40,11 +33,11 @@ class PerlinNoise extends AbstractNoise
 		150, 254, 138, 236, 205, 93, 222, 114, 67, 29, 24, 72, 243, 141, 128, 195, 78, 66, 215, 61, 156, 180
 	];
 
-	private p_perm(null, null): Array<Int>;
-	private x_offset(null, null): number;
-	private y_offset(null, null): number;
-	private z_offset(null, null): number;
-	private base_factor(null, null): number;
+	private p_perm: Array<number>;
+	private x_offset: number;
+	private y_offset: number;
+	private z_offset: number;
+	private base_factor: number;
 
 	public constructor(seed: number, octaves: number, channels: number, grayScale: boolean, falloff: number, stitch: boolean = false, stitch_threshold: number = 0.05)
 	{
@@ -62,14 +55,14 @@ class PerlinNoise extends AbstractNoise
 		this.setSeed(seed);
 	}
 
-	override public fill(bitmap: BitmapData, _scale_x: number, _scale_y: number, _scale_z: number): void
+	public fill(bitmap: BitmapData, _scale_x: number, _scale_y: number, _scale_z: number): void
 	{
 		var width: number = bitmap.width;
 		var height: number = bitmap.height;
 
 		var octaves: number = this.octaves;
-		var octaves_frequencies: Array<Float> = this.octaves_frequencies;
-		var octaves_persistences: Array<Float> = this.octaves_persistences;
+		var octaves_frequencies: Array<number> = this.octaves_frequencies;
+		var octaves_persistences: Array<number> = this.octaves_persistences;
 
 		var isRed: boolean = BitmapDataChannel.RED & this.channels == BitmapDataChannel.RED;
 		var isGreen: boolean = BitmapDataChannel.GREEN & this.channels == BitmapDataChannel.GREEN;

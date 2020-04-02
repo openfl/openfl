@@ -1,4 +1,5 @@
-import Log from "../_internal/utils/Log";
+import FontStyle from "../text/FontStyle";
+import FontType from "../text/FontType";
 import Assets from "../utils/Assets";
 import ByteArray from "../utils/ByteArray";
 import Future from "../utils/Future";
@@ -14,13 +15,16 @@ import Promise from "../utils/Promise";
 **/
 export default class Font
 {
-		/** @hidden */ public ascender: number;
-		/** @hidden */ public descender: number;
+	/** @hidden */
+	public ascender: number;
+
+	/** @hidden */
+	public descender: number;
 
 	/**
 		The name of an embedded font.
 	**/
-	public fontName(get, set): string;
+	public fontName: string;
 
 	/**
 		The style of the font. This value can be any of the values defined in the
@@ -61,7 +65,7 @@ export default class Font
 	**/
 	public static enumerateFonts(enumerateDeviceFonts: boolean = false): Array<Font>
 	{
-		return __registeredFonts;
+		return Font.__registeredFonts;
 	}
 
 	/**
@@ -154,13 +158,13 @@ export default class Font
 	{
 		var instance: Font = null;
 
-		if (Type.getClass(font) == null)
+		if (false /*Type.getClass(font) == null*/)
 		{
-			instance = cast(Type.createInstance(font, []), Font);
+			// instance = cast(Type.createInstance(font, []), Font);
 		}
 		else
 		{
-			instance = cast(font, Font);
+			instance = font as Font;
 		}
 
 		if (instance != null)
@@ -171,14 +175,14 @@ export default class Font
 
 			}*/
 
-			__registeredFonts.push(instance);
-			__fontByName[instance.fontName] = instance;
+			Font.__registeredFonts.push(instance);
+			Font.__fontByName[instance.fontName] = instance;
 		}
 	}
 
 	protected __initialize(): boolean
 	{
-		return __initialized;
+		return this.__initialized;
 	}
 
 	protected __loadFromName(name: string): Future<Font>
@@ -187,25 +191,25 @@ export default class Font
 		// this.name = name;
 		this.fontName = name;
 
-		var userAgent = Browser.navigator.userAgent.toLowerCase();
+		var userAgent = navigator.userAgent.toLowerCase();
 		var isSafari = (userAgent.indexOf(" safari/") >= 0 && userAgent.indexOf(" chrome/") < 0);
-		var isUIWebView = ~/(iPhone|iPod|iPad).*AppleWebKit(?!.*Version)/i.match(userAgent);
+		var isUIWebView = userAgent.match(/(iPhone|iPod|iPad).*AppleWebKit(?!.*Version)/i).length > 0;
 
-		if (!isSafari && !isUIWebView && untyped(Browser.document).fonts && untyped(Browser.document).fonts.load)
+		if (!isSafari && !isUIWebView && document["fonts"] && document["fonts"].load)
 		{
-			untyped(Browser.document).fonts.load("1em '" + name + "'").then(function (_)
+			document["fonts"].load("1em '" + name + "'").then(function (_)
 			{
 				promise.complete(this);
-			}, (_)
+			}, () =>
 			{
-				Log.warn("Could not load web font \"" + name + "\"");
+				console.warn("Could not load web font \"" + name + "\"");
 				promise.complete(this);
 			});
 		}
 		else
 		{
-			var node1 = __measureFontNode("'" + name + "', sans-serif");
-			var node2 = __measureFontNode("'" + name + "', serif");
+			var node1 = Font.__measureFontNode("'" + name + "', sans-serif");
+			var node2 = Font.__measureFontNode("'" + name + "', serif");
 
 			var width1 = node1.offsetWidth;
 			var width2 = node2.offsetWidth;
@@ -216,7 +220,7 @@ export default class Font
 			var intervalCount = 0;
 			var loaded, timeExpired;
 
-			var checkFont = ()
+			var checkFont = () =>
 			{
 				intervalCount++;
 
@@ -225,7 +229,7 @@ export default class Font
 
 				if (loaded || timeExpired)
 				{
-					Browser.window.clearInterval(interval);
+					window.clearInterval(interval);
 					node1.parentNode.removeChild(node1);
 					node2.parentNode.removeChild(node2);
 					node1 = null;
@@ -233,14 +237,14 @@ export default class Font
 
 					if (timeExpired)
 					{
-						Log.warn("Could not load web font \"" + name + "\"");
+						console.warn("Could not load web font \"" + name + "\"");
 					}
 
 					promise.complete(this);
 				}
 			}
 
-			interval = Browser.window.setInterval(checkFont, intervalLength);
+			interval = window.setInterval(checkFont, intervalLength);
 		}
 
 		return promise.future;
@@ -248,9 +252,9 @@ export default class Font
 
 	private static __measureFontNode(fontFamily: string): HTMLSpanElement
 	{
-		var node: HTMLSpanElement = cast Browser.document.createElement("span");
+		var node: HTMLSpanElement = document.createElement("span");
 		node.setAttribute("aria-hidden", "true");
-		var text = Browser.document.createTextNode("BESbswy");
+		var text = document.createTextNode("BESbswy");
 		node.appendChild(text);
 		var style = node.style;
 		style.display = "block";
@@ -266,18 +270,7 @@ export default class Font
 		style.fontVariant = "normal";
 		style.whiteSpace = "nowrap";
 		style.fontFamily = fontFamily;
-		Browser.document.body.appendChild(node);
+		document.body.appendChild(node);
 		return node;
-	}
-
-	// Get & Set Methods
-	protected get fontName(): string
-	{
-		return null;
-	}
-
-	protected set fontName(value: string): void
-	{
-		name = value;
 	}
 }

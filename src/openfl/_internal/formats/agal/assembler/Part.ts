@@ -1,13 +1,7 @@
-namespace openfl._internal.formats.agal.assembler;
+import ByteArray from "../../../../utils/ByteArray";
+import Endian from "../../../../utils/Endian";
 
-import ByteArray from "../utils/ByteArray";
-import openfl.utils.Endian;
-
-#if!openfl_debug
-@: fileXml('tags="haxe,release"')
-@: noDebug
-#end
-class Part
+export default class Part
 {
 	public data: ByteArray;
 	public name: string;
@@ -19,6 +13,6 @@ class Part
 		this.version = version;
 
 		this.data = new ByteArray();
-		data.endian = Endian.LITTLE_ENDIAN;
+		this.data.endian = Endian.LITTLE_ENDIAN;
 	}
 }

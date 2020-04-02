@@ -1,10 +1,4 @@
-namespace openfl._internal.formats.agal.assembler;
-
-#if!openfl_debug
-@: fileXml('tags="haxe,release"')
-@: noDebug
-#end
-class FS
+export default class FS
 {
 	public format: string;
 	public size: number;

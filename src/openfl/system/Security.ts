@@ -1,7 +1,7 @@
 /**
-		The Security class lets you specify how content in different domains can
-		communicate with each other.
-	**/
+	The Security class lets you specify how content in different domains can
+	communicate with each other.
+**/
 export default class Security
 {
 	/**
@@ -96,39 +96,7 @@ export default class Security
 	**/
 	// /** @hidden */ @:dox(hide) @:require(flash11) public static pageDomain (default, null):String;
 
-	/**
-		Indicates the type of security sandbox in which the calling file is
-		operating.
-		`Security.sandboxType` has one of the following values:
-
-		* `remote` (`Security.REMOTE`)הhis file is from an Internet URL and
-		operates under domain-based sandbox rules.
-		* `localWithFile` (`Security.LOCAL_WITH_FILE`)הhis file is a local
-		file, has not been trusted by the user, and it is not a SWF file that
-		was published with a networking designation. The file may read from
-		local data sources but may not communicate with the Internet.
-		* `localWithNetwork` (`Security.LOCAL_WITH_NETWORK`)הhis SWF file
-		is a local file, has not been trusted by the user, and was published
-		with a networking designation. The SWF file can communicate with the
-		Internet but cannot read from local data sources.
-		* `localTrusted` (`Security.LOCAL_TRUSTED`)הhis file is a local
-		file and has been trusted by the user, using either the Flash Player
-		Settings Manager or a FlashPlayerTrust configuration file. The file
-		can read from local data sources and communicate with the Internet.
-		* `application` (`Security.APPLICATION`)הhis file is running in an
-		AIR application, and it was installed with the namespace (AIR file) for
-		that application. By default, files in the AIR application sandbox can
-		cross-script any file from any domain (although files outside the AIR
-		application sandbox may not be permitted to cross-script the AIR
-		file). By default, files in the AIR application sandbox can load
-		content and data from any domain.
-
-		For more information related to security, see the Flash Player
-		Developer Center Topic: <a
-		href="http://www.adobe.com/go/devnet_security_en"
-		scope="external">Security</a>.
-	**/
-	public static sandboxType(default , null): string;
+	protected static __sandboxType: string;
 
 	/**
 		Lets SWF files in the identified domains access objects and variables
@@ -309,7 +277,7 @@ export default class Security
 							  application security sandbox cannot cross-script
 							  content in the application security sandbox.
 	**/
-	public static allowDomain(p1: Dynamic = null, p2: Dynamic = null, p3: Dynamic = null, p4: Dynamic = null, p5: Dynamic = null): void { }
+	public static allowDomain(...parameters: any[]): void { }
 
 	/**
 		Lets SWF files and HTML files in the identified domains access objects
@@ -463,7 +431,7 @@ export default class Security
 							  cannot cross-script content in the application
 							  security sandbox.
 	**/
-	public static allowInsecureDomain(p1: Dynamic = null, p2: Dynamic = null, p3: Dynamic = null, p4: Dynamic = null, p5: Dynamic = null): void { }
+	public static allowInsecureDomain(...parameters: any[]): void { }
 
 	// /** @hidden */ @:dox(hide) @:require(flash10_1) public static duplicateSandboxBridgeInputArguments (toplevel:Dynamic, args:Array<Dynamic>):Array<Dynamic>;
 	// /** @hidden */ @:dox(hide) @:require(flash10_1) public static duplicateSandboxBridgeOutputArgument (toplevel:Dynamic, arg:Dynamic):Dynamic;
@@ -566,7 +534,6 @@ export default class Security
 		// res = haxe.Http.requestUrl( url );
 	}
 
-	#if false
 	/**
 		Displays the Security Settings panel in Flash Player. This method does
 		not apply to content in Adobe AIR; calling it in an AIR application
@@ -577,5 +544,44 @@ export default class Security
 					 this parameter, `SecurityPanel.DEFAULT` is used.
 	**/
 	// /** @hidden */ @:dox(hide) public static showSettings (panel:openfl.system.SecurityPanel = null):Void;
-	#end
+
+	// Get & Set Methods
+
+
+	/**
+		Indicates the type of security sandbox in which the calling file is
+		operating.
+		`Security.sandboxType` has one of the following values:
+
+		* `remote` (`Security.REMOTE`)הhis file is from an Internet URL and
+		operates under domain-based sandbox rules.
+		* `localWithFile` (`Security.LOCAL_WITH_FILE`)הhis file is a local
+		file, has not been trusted by the user, and it is not a SWF file that
+		was published with a networking designation. The file may read from
+		local data sources but may not communicate with the Internet.
+		* `localWithNetwork` (`Security.LOCAL_WITH_NETWORK`)הhis SWF file
+		is a local file, has not been trusted by the user, and was published
+		with a networking designation. The SWF file can communicate with the
+		Internet but cannot read from local data sources.
+		* `localTrusted` (`Security.LOCAL_TRUSTED`)הhis file is a local
+		file and has been trusted by the user, using either the Flash Player
+		Settings Manager or a FlashPlayerTrust configuration file. The file
+		can read from local data sources and communicate with the Internet.
+		* `application` (`Security.APPLICATION`)הhis file is running in an
+		AIR application, and it was installed with the namespace (AIR file) for
+		that application. By default, files in the AIR application sandbox can
+		cross-script any file from any domain (although files outside the AIR
+		application sandbox may not be permitted to cross-script the AIR
+		file). By default, files in the AIR application sandbox can load
+		content and data from any domain.
+
+		For more information related to security, see the Flash Player
+		Developer Center Topic: <a
+		href="http://www.adobe.com/go/devnet_security_en"
+		scope="external">Security</a>.
+	**/
+	public static get sandboxType(): string
+	{
+		return Security.__sandboxType;
+	}
 }

@@ -1,10 +1,10 @@
-namespace openfl._internal.renderer;
-
-enum DisplayObjectRendererType
+export enum DisplayObjectRendererType
 {
-	CAIRO;
-	CANVAS;
-	CONTEXT3D;
-	DOM;
-	FLASH;
+	CAIRO,
+	CANVAS,
+	CONTEXT3D,
+	DOM,
+	FLASH
 }
+
+export default DisplayObjectRendererType;

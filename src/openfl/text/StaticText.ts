@@ -1,3 +1,4 @@
+import * as internal from "../_internal/utils/InternalAccess";
 import DisplayObject from "../display/DisplayObject";
 import Graphics from "../display/Graphics";
 
@@ -24,18 +25,25 @@ import Graphics from "../display/Graphics";
 **/
 export default class StaticText extends DisplayObject
 {
+	protected __text: string;
+
+	protected constructor()
+	{
+		super();
+
+		this.__graphics = new (<internal.Graphics><any>Graphics)(this);
+	}
+
+	// Get & Set Methods
+
 	/**
 		Returns the current text of the static text field. The authoring tool
 		may export multiple text field objects comprising the complete text.
 		For example, for vertical text, the authoring tool will create one
 		text field per character.
 	**/
-	public text(default , null): string;
-
-	protected constructor()
+	public get text(): string
 	{
-		super();
-
-		__graphics = new Graphics(this);
+		return this.__text;
 	}
 }

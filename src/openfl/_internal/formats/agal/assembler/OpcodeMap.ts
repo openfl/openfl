@@ -1,15 +1,10 @@
-namespace openfl._internal.formats.agal.assembler;
+import Opcode from "./Opcode";
 
-#if!openfl_debug
-@: fileXml('tags="haxe,release"')
-@: noDebug
-#end
-class OpcodeMap
+export default class OpcodeMap
 {
-	public static map(get, never): Map<string, Opcode>;
 	private static _map: Map<string, Opcode>;
 
-	private static get_map(): Map<string, Opcode>
+	public static get map(): Map<string, Opcode>
 	{
 		if (OpcodeMap._map == null)
 		{

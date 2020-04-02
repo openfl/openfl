@@ -1,24 +1,13 @@
-namespace openfl._internal.renderer;
+import * as internal from "../../_internal/utils/InternalAccess";
+import Context3DMipFilter from "../../display3D/Context3DMipFilter";
+import Context3DTextureFilter from "../../display3D/Context3DTextureFilter";
+import Context3DWrapMode from "../../display3D/Context3DWrapMode";
+import BitmapData from "../../display/BitmapData";
+import GraphicsShader from "../../display/GraphicsShader";
+import ShaderInput from "../../display/ShaderInput";
+import ShaderParameter from "../../display/ShaderParameter";
 
-import openfl._internal.bindings.gl.GLBuffer;
-import openfl._internal.bindings.typedarray.Float32Array;
-import openfl.display3D.Context3DMipFilter;
-import openfl.display3D.Context3DTextureFilter;
-import openfl.display3D.Context3DWrapMode;
-import BitmapData from "../display/BitmapData";
-import openfl.display.GraphicsShader;
-import openfl.display.ShaderInput;
-import openfl.display.ShaderParameter;
-
-
-#if!openfl_debug
-@: fileXml('tags="haxe,release"')
-@: noDebug
-#end
-@: access(openfl._internal.backend.opengl) // TODO: Remove backend references
-@: access(openfl.display.Shader)
-@SuppressWarnings("checkstyle:FieldDocComment")
-class ShaderBuffer
+export default class ShaderBuffer
 {
 	public inputCount: number;
 	public inputRefs: Array<ShaderInput<BitmapData>>;
@@ -28,183 +17,182 @@ class ShaderBuffer
 	public inputWrap: Array<Context3DWrapMode>;
 	public overrideBoolCount: number;
 	public overrideBoolNames: Array<string>;
-	public overrideBoolValues: Array<Array<Bool>>;
+	public overrideBoolValues: Array<Array<boolean>>;
 	// public overrideCount:Int;
 	public overrideFloatCount: number;
 	public overrideFloatNames: Array<string>;
-	public overrideFloatValues: Array<Array<Float>>;
+	public overrideFloatValues: Array<Array<number>>;
 	public overrideIntCount: number;
 	public overrideIntNames: Array<string>;
-	@SuppressWarnings("checkstyle:Dynamic") public overrideIntValues: Array<Array<Dynamic>>;
+	public overrideIntValues: Array<Array<number>>;
 	// public overrideNames:Array<string>;
 	// public overrideValues:Array<Array<Dynamic>>;
 	public paramBoolCount: number;
 	public paramCount: number;
 	public paramData: Float32Array;
-	public paramDataBuffer: GLBuffer;
+	public paramDataBuffer: WebGLBuffer;
 	public paramDataLength: number;
 	public paramFloatCount: number;
 	public paramIntCount: number;
-	public paramLengths: Array<Int>;
-	public paramPositions: Array<Int>;
-	public paramRefs_Bool: Array<ShaderParameter<Bool>>;
-	public paramRefs_Float: Array<ShaderParameter<Float>>;
-	public paramRefs_Int: Array<ShaderParameter<Int>>;
-	public paramTypes: Array<Int>;
+	public paramLengths: Array<number>;
+	public paramPositions: Array<number>;
+	public paramRefs_Bool: Array<ShaderParameter<boolean>>;
+	public paramRefs_Float: Array<ShaderParameter<number>>;
+	public paramRefs_Int: Array<ShaderParameter<number>>;
+	public paramTypes: Array<number>;
 	public shader: GraphicsShader;
 
 	public constructor()
 	{
-		inputRefs = [];
-		inputFilter = [];
-		inputMipFilter = [];
-		inputs = [];
-		inputWrap = [];
+		this.inputRefs = [];
+		this.inputFilter = [];
+		this.inputMipFilter = [];
+		this.inputs = [];
+		this.inputWrap = [];
 		// overrideNames = [];
 		// overrideValues = [];
-		overrideIntNames = [];
-		overrideIntValues = [];
-		overrideFloatNames = [];
-		overrideFloatValues = [];
-		overrideBoolNames = [];
-		overrideBoolValues = [];
-		paramLengths = [];
-		paramPositions = [];
-		paramRefs_Bool = [];
-		paramRefs_Float = [];
-		paramRefs_Int = [];
-		paramTypes = [];
+		this.overrideIntNames = [];
+		this.overrideIntValues = [];
+		this.overrideFloatNames = [];
+		this.overrideFloatValues = [];
+		this.overrideBoolNames = [];
+		this.overrideBoolValues = [];
+		this.paramLengths = [];
+		this.paramPositions = [];
+		this.paramRefs_Bool = [];
+		this.paramRefs_Float = [];
+		this.paramRefs_Int = [];
+		this.paramTypes = [];
 	}
 
-	public addBoolOverride(name: string, values: Array<Bool>): void
+	public addBoolOverride(name: string, values: Array<boolean>): void
 	{
-		overrideBoolNames[overrideBoolCount] = name;
-		overrideBoolValues[overrideBoolCount] = values;
-		overrideBoolCount++;
+		this.overrideBoolNames[this.overrideBoolCount] = name;
+		this.overrideBoolValues[this.overrideBoolCount] = values;
+		this.overrideBoolCount++;
 	}
 
-	public addFloatOverride(name: string, values: Array<Float>): void
+	public addFloatOverride(name: string, values: Array<number>): void
 	{
-		overrideFloatNames[overrideFloatCount] = name;
-		overrideFloatValues[overrideFloatCount] = values;
-		overrideFloatCount++;
+		this.overrideFloatNames[this.overrideFloatCount] = name;
+		this.overrideFloatValues[this.overrideFloatCount] = values;
+		this.overrideFloatCount++;
 	}
 
-	public addIntOverride(name: string, values: Array<Int>): void
+	public addIntOverride(name: string, values: Array<number>): void
 	{
-		overrideIntNames[overrideIntCount] = name;
-		overrideIntValues[overrideIntCount] = values;
-		overrideIntCount++;
+		this.overrideIntNames[this.overrideIntCount] = name;
+		this.overrideIntValues[this.overrideIntCount] = values;
+		this.overrideIntCount++;
 	}
 
 	public clearOverride(): void
 	{
 		// overrideCount = 0;
-		overrideIntCount = 0;
-		overrideFloatCount = 0;
-		overrideBoolCount = 0;
+		this.overrideIntCount = 0;
+		this.overrideFloatCount = 0;
+		this.overrideBoolCount = 0;
 	}
 
 	public update(shader: GraphicsShader): void
 	{
-		#if(lime || openfl_html5)
-		inputCount = 0;
+		this.inputCount = 0;
 		// overrideCount = 0;
-		overrideIntCount = 0;
-		overrideFloatCount = 0;
-		overrideBoolCount = 0;
-		paramBoolCount = 0;
-		paramCount = 0;
-		paramDataLength = 0;
-		paramFloatCount = 0;
-		paramIntCount = 0;
+		this.overrideIntCount = 0;
+		this.overrideFloatCount = 0;
+		this.overrideBoolCount = 0;
+		this.paramBoolCount = 0;
+		this.paramCount = 0;
+		this.paramDataLength = 0;
+		this.paramFloatCount = 0;
+		this.paramIntCount = 0;
 		this.shader = null;
 
 		if (shader == null) return;
 
-		shader.__init();
+		(<internal.Shader><any>shader).__init();
 
-		inputCount = shader.__backend.inputBitmapData.length;
+		this.inputCount = (<internal.Shader><any>shader).__inputBitmapData.length;
 		var input;
 
-		for (i in 0...inputCount)
+		for (let i = 0; i < this.inputCount; i++)
 		{
-			input = shader.__backend.inputBitmapData[i];
-			inputs[i] = input.input;
-			inputFilter[i] = input.filter;
-			inputMipFilter[i] = input.mipFilter;
-			inputRefs[i] = input;
-			inputWrap[i] = input.wrap;
+			input = (<internal.Shader><any>shader).__inputBitmapData[i];
+			this.inputs[i] = input.input;
+			this.inputFilter[i] = input.filter;
+			this.inputMipFilter[i] = input.mipFilter;
+			this.inputRefs[i] = input;
+			this.inputWrap[i] = input.wrap;
 		}
 
-		var boolCount = shader.__backend.paramBool.length;
-		var floatCount = shader.__backend.paramFloat.length;
-		var intCount = shader.__backend.paramInt.length;
-		paramCount = boolCount + floatCount + intCount;
-		paramBoolCount = boolCount;
-		paramFloatCount = floatCount;
-		paramIntCount = intCount;
+		var boolCount = (<internal.Shader><any>shader).__paramBool.length;
+		var floatCount = (<internal.Shader><any>shader).__paramFloat.length;
+		var intCount = (<internal.Shader><any>shader).__paramInt.length;
+		this.paramCount = boolCount + floatCount + intCount;
+		this.paramBoolCount = boolCount;
+		this.paramFloatCount = floatCount;
+		this.paramIntCount = intCount;
 
-		var length = 0, p = 0;
+		var length: number = 0, p = 0;
 		var param;
 
-		for (i in 0...boolCount)
+		for (let i = 0; i < boolCount; i++)
 		{
-			param = shader.__backend.paramBool[i];
+			param = (<internal.Shader><any>shader).__paramBool[i];
 
-			paramPositions[p] = paramDataLength;
+			this.paramPositions[p] = this.paramDataLength;
 			length = (param.value != null ? param.value.length : 0);
-			paramLengths[p] = length;
-			paramDataLength += length;
-			paramTypes[p] = 0;
+			this.paramLengths[p] = length;
+			this.paramDataLength += length;
+			this.paramTypes[p] = 0;
 
-			paramRefs_Bool[i] = param;
+			this.paramRefs_Bool[i] = param;
 			p++;
 		}
 
 		var param;
 
-		for (i in 0...floatCount)
+		for (let i = 0; i < floatCount; i++)
 		{
-			param = shader.__backend.paramFloat[i];
+			param = (<internal.Shader><any>shader).__paramFloat[i];
 
-			paramPositions[p] = paramDataLength;
+			this.paramPositions[p] = this.paramDataLength;
 			length = (param.value != null ? param.value.length : 0);
-			paramLengths[p] = length;
-			paramDataLength += length;
-			paramTypes[p] = 1;
+			this.paramLengths[p] = length;
+			this.paramDataLength += length;
+			this.paramTypes[p] = 1;
 
-			paramRefs_Float[i] = param;
+			this.paramRefs_Float[i] = param;
 			p++;
 		}
 
 		var param;
 
-		for (i in 0...intCount)
+		for (let i = 0; i < intCount; i++)
 		{
-			param = shader.__backend.paramInt[i];
+			param = (<internal.Shader><any>shader).__paramInt[i];
 
-			paramPositions[p] = paramDataLength;
+			this.paramPositions[p] = this.paramDataLength;
 			length = (param.value != null ? param.value.length : 0);
-			paramLengths[p] = length;
-			paramDataLength += length;
-			paramTypes[p] = 2;
+			this.paramLengths[p] = length;
+			this.paramDataLength += length;
+			this.paramTypes[p] = 2;
 
-			paramRefs_Int[i] = param;
+			this.paramRefs_Int[i] = param;
 			p++;
 		}
 
-		if (paramDataLength > 0)
+		if (this.paramDataLength > 0)
 		{
-			if (paramData == null)
+			if (this.paramData == null)
 			{
-				paramData = new Float32Array(paramDataLength);
+				this.paramData = new Float32Array(this.paramDataLength);
 			}
-			else if (paramDataLength > paramData.length)
+			else if (this.paramDataLength > this.paramData.length)
 			{
-				var data = new Float32Array(paramDataLength);
-				data.set(paramData);
-				paramData = data;
+				var data = new Float32Array(this.paramDataLength);
+				data.set(this.paramData);
+				this.paramData = data;
 			}
 		}
 
@@ -213,48 +201,47 @@ class ShaderBuffer
 		var intIndex = 0;
 
 		var paramPosition: number = 0;
-		var boolParam, floatParam, intParam, length;
+		var boolParam, floatParam, intParam;
 
-		for (i in 0...paramCount)
+		for (let i = 0; i < this.paramCount; i++)
 		{
-			length = paramLengths[i];
+			length = this.paramLengths[i];
 
 			if (i < boolCount)
 			{
-				boolParam = paramRefs_Bool[boolIndex];
+				boolParam = this.paramRefs_Bool[boolIndex];
 				boolIndex++;
 
-				for (j in 0...length)
+				for (let j = 0; j < length; j++)
 				{
-					paramData[paramPosition] = boolParam.value[j] ? 1 : 0;
+					this.paramData[paramPosition] = boolParam.value[j] ? 1 : 0;
 					paramPosition++;
 				}
 			}
 			else if (i < boolCount + floatCount)
 			{
-				floatParam = paramRefs_Float[floatIndex];
+				floatParam = this.paramRefs_Float[floatIndex];
 				floatIndex++;
 
-				for (j in 0...length)
+				for (let j = 0; j < length; j++)
 				{
-					paramData[paramPosition] = floatParam.value[j];
+					this.paramData[paramPosition] = floatParam.value[j];
 					paramPosition++;
 				}
 			}
 			else
 			{
-				intParam = paramRefs_Int[intIndex];
+				intParam = this.paramRefs_Int[intIndex];
 				intIndex++;
 
-				for (j in 0...length)
+				for (let j = 0; j < length; j++)
 				{
-					paramData[paramPosition] = intParam.value[j];
+					this.paramData[paramPosition] = intParam.value[j];
 					paramPosition++;
 				}
 			}
 		}
 
 		this.shader = shader;
-		#end
 	}
 }

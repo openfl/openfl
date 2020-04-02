@@ -1,4 +1,5 @@
 import Clipboard from "../desktop/Clipboard";
+import ClipboardFormats from "../desktop/ClipboardFormats";
 
 /**
 		The System class contains properties related to local settings and
@@ -42,23 +43,6 @@ export default class System
 	// /** @hidden */ @:dox(hide) @:require(flash10_1) public static privateMemory (default, null):Float;
 
 	// /** @hidden */ @:dox(hide) @:require(flash11) public static processCPUUsage (default, null):Float;
-
-	/**
-		The amount of memory(in bytes) currently in use that has been directly
-		allocated by Flash Player or AIR.
-
-		This property does not return _all_ memory used by an Adobe AIR
-		application or by the application(such as a browser) containing Flash
-		Player content. The browser or operating system may consume other memory.
-		The `System.privateMemory` property reflects _all_ memory
-		used by an application.
-
-		If the amount of memory allocated is greater than the maximum value for
-		a uint object(`uint.MAX_VALUE`, or 4,294,967,295), then this
-		property is set to 0. The `System.totalMemoryNumber` property
-		allows larger values.
-	**/
-	public static totalMemory(get, never): number;
 
 	// /** @hidden */ @:dox(hide) @:require(flash10_1) public static totalMemoryNumber (default, null):Float;
 
@@ -109,20 +93,16 @@ export default class System
 	**/
 	public static useCodePage: boolean = false;
 
-		/**
-			Undocumented property
-		**/
-		/** @hidden */ public static vmVersion(get, never): string;
+	/**
+		Makes the specified XML object immediately available for garbage
+		collection. This method will remove parent and child connections
+		between all the nodes for the specified XML node.
 
-		/**
-			Makes the specified XML object immediately available for garbage
-			collection. This method will remove parent and child connections
-			between all the nodes for the specified XML node.
-
-			@param node XML reference that should be made available for garbage
-						collection.
-		**/
-		/** @hidden */ public static disposeXML(node: Object): void { }
+		@hidden
+		@param node XML reference that should be made available for garbage
+					collection.
+	**/
+	public static disposeXML(node: Object): void { }
 
 	/**
 		Closes Flash Player.
@@ -137,7 +117,7 @@ export default class System
 	**/
 	public static exit(code: number): void
 	{
-		SystemBackend.exit(code);
+		// SystemBackend.exit(code);
 	}
 
 	/**
@@ -151,7 +131,7 @@ export default class System
 	**/
 	public static gc(): void
 	{
-		SystemBackend.gc();
+		// SystemBackend.gc();
 	}
 
 	/**
@@ -165,7 +145,7 @@ export default class System
 	**/
 	public static pause(): void
 	{
-		openfl._internal.Lib.notImplemented();
+		// openfl._internal.Lib.notImplemented();
 	}
 
 	// /** @hidden */ @:dox(hide) @:require(flash11) public static pauseForGCIfCollectionImminent (imminence:Float = 0.75):Void;
@@ -179,7 +159,7 @@ export default class System
 	**/
 	public static resume(): void
 	{
-		openfl._internal.Lib.notImplemented();
+		// openfl._internal.Lib.notImplemented();
 	}
 
 	/**
@@ -199,16 +179,37 @@ export default class System
 	**/
 	public static setClipboard(string: string): void
 	{
-		Clipboard.generalClipboard.setData(TEXT_FORMAT, string);
+		Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, string);
 	}
 
 	// Getters & Setters
-	protected static get_totalMemory(): number
+
+	/**
+		The amount of memory(in bytes) currently in use that has been directly
+		allocated by Flash Player or AIR.
+
+		This property does not return _all_ memory used by an Adobe AIR
+		application or by the application(such as a browser) containing Flash
+		Player content. The browser or operating system may consume other memory.
+		The `System.privateMemory` property reflects _all_ memory
+		used by an application.
+
+		If the amount of memory allocated is greater than the maximum value for
+		a uint object(`uint.MAX_VALUE`, or 4,294,967,295), then this
+		property is set to 0. The `System.totalMemoryNumber` property
+		allows larger values.
+	**/
+	public static get totalMemory(): number
 	{
-		return SystemBackend.getTotalMemory();
+		return 0;
+		// return SystemBackend.getTotalMemory();
 	}
 
-	protected static get_vmVersion(): string
+	/**
+		Undocumented property
+		@hidden
+	**/
+	public static get vmVersion(): string
 	{
 		return "1.0.0";
 	}

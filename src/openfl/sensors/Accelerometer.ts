@@ -1,7 +1,7 @@
-// import haxe.Timer;
 import ArgumentError from "../errors/ArgumentError";
 import AccelerometerEvent from "../events/AccelerometerEvent";
 import EventDispatcher from "../events/EventDispatcher";
+import Lib from "../Lib";
 
 /**
 	The Accelerometer class dispatches events based on activity detected by the
@@ -52,13 +52,6 @@ import EventDispatcher from "../events/EventDispatcher";
 **/
 export default class Accelerometer extends EventDispatcher
 {
-	/**
-		The `isSupported` property is set to `true` if the
-		accelerometer sensor is available on the device, otherwise it is set to
-		`false`.
-	**/
-	public static isSupported(get, never): boolean;
-
 	protected static currentX: number = 0.0;
 	protected static currentY: number = 1.0;
 	protected static currentZ: number = 0.0;
@@ -66,16 +59,9 @@ export default class Accelerometer extends EventDispatcher
 	protected static initialized: boolean = false;
 	protected static supported: boolean = false;
 
-	/**
-		Specifies whether the user has denied access to the accelerometer
-		(`true`) or allowed access(`false`). When this
-		value changes, a `status` event is dispatched.
-	**/
-	public muted(get, set): boolean;
-
 	protected __interval: number;
 	protected __muted: boolean;
-	protected __timer: Timer;
+	protected __timerID: number;
 
 	/**
 		Creates a new Accelerometer instance.
@@ -84,27 +70,28 @@ export default class Accelerometer extends EventDispatcher
 	{
 		super();
 
-		initialize();
+		Accelerometer.initialize();
 
-		__interval = 0;
-		__muted = false;
+		this.__interval = 0;
+		this.__muted = false;
+		this.__timerID = 0;
 
-		setRequestedUpdateInterval(defaultInterval);
+		this.setRequestedUpdateInterval(Accelerometer.defaultInterval);
 	}
 
-	public addEventListener(type: string, listener: (event: Object) => void, useCapture: boolean = false, priority: number = 0,
+	public addEventListener<T>(type: string, listener: (event: T) => void, useCapture: boolean = false, priority: number = 0,
 		useWeakReference: boolean = false): void
 	{
 		super.addEventListener(type, listener, useCapture, priority, useWeakReference);
-		update();
+		this.update();
 	}
 
 	protected static initialize(): void
 	{
-		if (!initialized)
+		if (!Accelerometer.initialized)
 		{
-			AccelerometerBackend.initialize();
-			initialized = true;
+			// AccelerometerBackend.initialize();
+			Accelerometer.initialized = true;
 		}
 	}
 
@@ -126,27 +113,26 @@ export default class Accelerometer extends EventDispatcher
 	**/
 	public setRequestedUpdateInterval(interval: number): void
 	{
-		__interval = interval;
+		this.__interval = interval;
 
-		if (__interval < 0)
+		if (this.__interval < 0)
 		{
 			throw new ArgumentError();
 		}
-		else if (__interval == 0)
+		else if (this.__interval == 0)
 		{
-			__interval = defaultInterval;
+			this.__interval = Accelerometer.defaultInterval;
 		}
 
-		if (__timer != null)
+		if (this.__timerID != 0)
 		{
-			__timer.stop();
-			__timer = null;
+			clearInterval(this.__timerID);
+			this.__timerID = 0;
 		}
 
-		if (supported && !muted)
+		if (Accelerometer.supported && !this.muted)
 		{
-			__timer = new Timer(__interval);
-			__timer.run = update;
+			this.__timerID = window.setInterval(this.update, this.__interval);
 		}
 	}
 
@@ -154,32 +140,41 @@ export default class Accelerometer extends EventDispatcher
 	{
 		var event = new AccelerometerEvent(AccelerometerEvent.UPDATE);
 
-		event.timestamp = Timer.stamp();
-		event.accelerationX = currentX;
-		event.accelerationY = currentY;
-		event.accelerationZ = currentZ;
+		event.timestamp = Lib.getTimer();
+		event.accelerationX = Accelerometer.currentX;
+		event.accelerationY = Accelerometer.currentY;
+		event.accelerationZ = Accelerometer.currentZ;
 
-		dispatchEvent(event);
+		this.dispatchEvent(event);
 	}
 
 	// Getters & Setters
-	protected static get_isSupported(): boolean
-	{
-		initialize();
 
-		return supported;
+	/**
+		The `isSupported` property is set to `true` if the
+		accelerometer sensor is available on the device, otherwise it is set to
+		`false`.
+	**/
+	public static get isSupported(): boolean
+	{
+		Accelerometer.initialize();
+
+		return Accelerometer.supported;
 	}
 
+	/**
+		Specifies whether the user has denied access to the accelerometer
+		(`true`) or allowed access(`false`). When this
+		value changes, a `status` event is dispatched.
+	**/
 	public get muted(): boolean
 	{
-		return __muted;
+		return this.__muted;
 	}
 
-	public set muted(value: boolean): boolean
+	public set muted(value: boolean)
 	{
-		__muted = value;
-		setRequestedUpdateInterval(__interval);
-
-		return value;
+		this.__muted = value;
+		this.setRequestedUpdateInterval(this.__interval);
 	}
 }

@@ -1,10 +1,7 @@
-namespace openfl._internal.formats.agal.assembler;
+import Flags from "./Flags";
+import FS from "./FS";
 
-#if!openfl_debug
-@: fileXml('tags="haxe,release"')
-@: noDebug
-#end
-class Opcode
+export default class Opcode
 {
 	public a: FS;
 	public b: FS;

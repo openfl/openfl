@@ -1,12 +1,6 @@
-namespace openfl._internal.text;
+import TextFormat from "../../text/TextFormat";
 
-import openfl.text.TextFormat;
-
-#if!openfl_debug
-@: fileXml('tags="haxe,release"')
-@: noDebug
-#end
-class TextFormatRange
+export default class TextFormatRange
 {
 	public end: number;
 	public format: TextFormat;

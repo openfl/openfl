@@ -1,17 +1,11 @@
-namespace openfl.filters;
-
-import haxe.Timer;
-#if!flash
 import BitmapData from "../display/BitmapData";
 import DisplayObjectRenderer from "../display/DisplayObjectRenderer";
 import Shader from "../display/Shader";
+import BitmapFilter from "../filters/BitmapFilter";
+import BitmapFilterShader from "../filters/BitmapFilterShader";
 import Point from "../geom/Point";
 import Rectangle from "../geom/Rectangle";
-#if lime
-import lime._internal.graphics.ImageDataUtil;
-#elseif openfl_html5
-import openfl._internal.backend.lime_standalone.ImageDataUtil;
-#end
+// import openfl._internal.backend.lime_standalone.ImageDataUtil;
 
 /**
 	The BlurFilter class lets you apply a blur visual effect to display
@@ -63,74 +57,15 @@ import openfl._internal.backend.lime_standalone.ImageDataUtil;
 	filter is turned off if the resulting image exceeds the maximum
 	dimensions.
 **/
-#if!openfl_debug
-@: fileXml('tags="haxe,release"')
-@: noDebug
-#end
-@: access(openfl.geom.Point)
-@: access(openfl.geom.Rectangle)
-@: final class BlurFilter extends BitmapFilter
+export default class BlurFilter extends BitmapFilter
 {
 	protected static __blurShader: BlurShader = new BlurShader();
-
-	/**
-		The amount of horizontal blur. Valid values are from 0 to 255(floating
-		point). The default value is 4. Values that are a power of 2(such as 2,
-		4, 8, 16 and 32) are optimized to render more quickly than other values.
-	**/
-	public blurX(get, set): number;
-
-	/**
-		The amount of vertical blur. Valid values are from 0 to 255(floating
-		point). The default value is 4. Values that are a power of 2(such as 2,
-		4, 8, 16 and 32) are optimized to render more quickly than other values.
-	**/
-	public blurY(get, set): number;
-
-	/**
-		The number of times to perform the blur. The default value is
-		`BitmapFilterQuality.LOW`, which is equivalent to applying the
-		filter once. The value `BitmapFilterQuality.MEDIUM` applies the
-		filter twice; the value `BitmapFilterQuality.HIGH` applies it
-		three times and approximates a Gaussian blur. Filters with lower values
-		are rendered more quickly.
-
-		For most applications, a `quality` value of low, medium, or
-		high is sufficient. Although you can use additional numeric values up to
-		15 to increase the number of times the blur is applied, higher values are
-		rendered more slowly. Instead of increasing the value of
-		`quality`, you can often get a similar effect, and with faster
-		rendering, by simply increasing the values of the `blurX` and
-		`blurY` properties.
-
-		You can use the following BitmapFilterQuality constants to specify
-		values of the `quality` property:
-
-		* `BitmapFilterQuality.LOW`
-		* `BitmapFilterQuality.MEDIUM`
-		* `BitmapFilterQuality.HIGH`
-	**/
-	public quality(get, set): number;
 
 	protected __blurX: number;
 	protected __blurY: number;
 	protected __horizontalPasses: number;
 	protected __quality: number;
 	protected __verticalPasses: number;
-
-	#if openfljs
-	protected static __init__()
-	{
-		untyped Object.defineProperties(BlurFilter.prototype, {
-			"blurX": { get: untyped __js__("function () { return this.get_blurX (); }"), set: untyped __js__("function (v) { return this.set_blurX (v); }") },
-			"blurY": { get: untyped __js__("function () { return this.get_blurY (); }"), set: untyped __js__("function (v) { return this.set_blurY (v); }") },
-			"quality": {
-				get: untyped __js__("function () { return this.get_quality (); }"),
-				set: untyped __js__("function (v) { return this.set_quality (v); }")
-			},
-		});
-	}
-	#end
 
 	/**
 		Initializes the filter with the specified parameters. The default values
@@ -165,169 +100,192 @@ import openfl._internal.backend.lime_standalone.ImageDataUtil;
 		this.blurY = blurY;
 		this.quality = quality;
 
-		__needSecondBitmapData = true;
-		__preserveObject = false;
-		__renderDirty = true;
+		this.__needSecondBitmapData = true;
+		this.__preserveObject = false;
+		this.__renderDirty = true;
 	}
 
 	publicclone(): BitmapFilter
 	{
-		return new BlurFilter(__blurX, __blurY, __quality);
+		return new BlurFilter(this.__blurX, this.__blurY, this.__quality);
 	}
 
 	protected __applyFilter(bitmapData: BitmapData, sourceBitmapData: BitmapData, sourceRect: Rectangle,
 		destPoint: Point): BitmapData
 	{
-		#if(lime || openfl_html5)
-		var time = Timer.stamp();
-		var finalImage = ImageDataUtil.gaussianBlur(bitmapData.limeImage, sourceBitmapData.limeImage, sourceRect.__toLimeRectangle(),
-			destPoint.__toLimeVector2(), __blurX, __blurY, __quality);
-		var elapsed = Timer.stamp() - time;
-		// trace("blurX: " + __blurX + " blurY: " + __blurY + " quality: " + __quality + " elapsed: " + elapsed * 1000 + "ms");
-		if (finalImage == bitmapData.limeImage) return bitmapData;
-		#end
+		// var time = Timer.stamp();
+		// var finalImage = ImageDataUtil.gaussianBlur(bitmapData.limeImage, sourceBitmapData.limeImage, sourceRect.__toLimeRectangle(),
+		// 	destPoint.__toLimeVector2(), __blurX, __blurY, __quality);
+		// var elapsed = Timer.stamp() - time;
+		// // trace("blurX: " + __blurX + " blurY: " + __blurY + " quality: " + __quality + " elapsed: " + elapsed * 1000 + "ms");
+		// if (finalImage == bitmapData.limeImage) return bitmapData;
 		return sourceBitmapData;
 	}
 
 	protected __initShader(renderer: DisplayObjectRenderer, pass: number, sourceBitmapData: BitmapData): Shader
 	{
-		#if!macro
-		if (pass < __horizontalPasses)
+		if (pass < this.__horizontalPasses)
 		{
 			var scale = Math.pow(0.5, pass >> 1);
-			__blurShader.uRadius.value[0] = blurX * scale;
-			__blurShader.uRadius.value[1] = 0;
+			this.__blurShader.uRadius.value[0] = this.blurX * scale;
+			this.__blurShader.uRadius.value[1] = 0;
 		}
 		else
 		{
-			var scale = Math.pow(0.5, (pass - __horizontalPasses) >> 1);
-			__blurShader.uRadius.value[0] = 0;
-			__blurShader.uRadius.value[1] = blurY * scale;
+			var scale = Math.pow(0.5, (pass - this.__horizontalPasses) >> 1);
+			this.__blurShader.uRadius.value[0] = 0;
+			this.__blurShader.uRadius.value[1] = this.blurY * scale;
 		}
-		#end
 
-		return __blurShader;
+		return this.__blurShader;
 	}
 
 	// Get & Set Methods
+
+	/**
+		The amount of horizontal blur. Valid values are from 0 to 255(floating
+		point). The default value is 4. Values that are a power of 2(such as 2,
+		4, 8, 16 and 32) are optimized to render more quickly than other values.
+	**/
 	public get blurX(): number
 	{
-		return __blurX;
+		return this.__blurX;
 	}
 
-	public set blurX(value: number): number
+	public set blurX(value: number)
 	{
-		if (value != __blurX)
+		if (value != this.__blurX)
 		{
-			__blurX = value;
-			__renderDirty = true;
-			__leftExtension = (value > 0 ? Math.ceil(value) : 0);
-			__rightExtension = __leftExtension;
+			this.__blurX = value;
+			this.__renderDirty = true;
+			this.__leftExtension = (value > 0 ? Math.ceil(value) : 0);
+			this.__rightExtension = this.__leftExtension;
 		}
-		return value;
 	}
 
+	/**
+		The amount of vertical blur. Valid values are from 0 to 255(floating
+		point). The default value is 4. Values that are a power of 2(such as 2,
+		4, 8, 16 and 32) are optimized to render more quickly than other values.
+	**/
 	public get blurY(): number
 	{
-		return __blurY;
+		return this.__blurY;
 	}
 
-	public set blurY(value: number): number
+	public set blurY(value: number)
 	{
-		if (value != __blurY)
+		if (value != this.__blurY)
 		{
-			__blurY = value;
-			__renderDirty = true;
-			__topExtension = (value > 0 ? Math.ceil(value) : 0);
-			__bottomExtension = __topExtension;
+			this.__blurY = value;
+			this.__renderDirty = true;
+			this.__topExtension = (value > 0 ? Math.ceil(value) : 0);
+			this.__bottomExtension = this.__topExtension;
 		}
-		return value;
 	}
 
+	/**
+		The number of times to perform the blur. The default value is
+		`BitmapFilterQuality.LOW`, which is equivalent to applying the
+		filter once. The value `BitmapFilterQuality.MEDIUM` applies the
+		filter twice; the value `BitmapFilterQuality.HIGH` applies it
+		three times and approximates a Gaussian blur. Filters with lower values
+		are rendered more quickly.
+
+		For most applications, a `quality` value of low, medium, or
+		high is sufficient. Although you can use additional numeric values up to
+		15 to increase the number of times the blur is applied, higher values are
+		rendered more slowly. Instead of increasing the value of
+		`quality`, you can often get a similar effect, and with faster
+		rendering, by simply increasing the values of the `blurX` and
+		`blurY` properties.
+
+		You can use the following BitmapFilterQuality constants to specify
+		values of the `quality` property:
+
+		* `BitmapFilterQuality.LOW`
+		* `BitmapFilterQuality.MEDIUM`
+		* `BitmapFilterQuality.HIGH`
+	**/
 	public get quality(): number
 	{
-		return __quality;
+		return this.__quality;
 	}
 
 	public set quality(value: number): number
 	{
 		// TODO: Quality effect with fewer passes?
 
-		__horizontalPasses = (__blurX <= 0) ? 0 : Math.round(__blurX * (value / 4)) + 1;
-		__verticalPasses = (__blurY <= 0) ? 0 : Math.round(__blurY * (value / 4)) + 1;
+		this.__horizontalPasses = (this.__blurX <= 0) ? 0 : Math.round(this.__blurX * (value / 4)) + 1;
+		this.__verticalPasses = (this.__blurY <= 0) ? 0 : Math.round(this.__blurY * (value / 4)) + 1;
 
-		__numShaderPasses = __horizontalPasses + __verticalPasses;
+		this.__numShaderPasses = this.__horizontalPasses + this.__verticalPasses;
 
-		if (value != __quality) __renderDirty = true;
-		return __quality = value;
+		if (value != this.__quality) this.__renderDirty = true;
+		this.__quality = value;
 	}
 }
 
-#if!openfl_debug
-@: fileXml('tags="haxe,release"')
-@: noDebug
-#end
-private class BlurShader extends BitmapFilterShader
+class BlurShader extends BitmapFilterShader
 {
-	@: glFragmentSource("uniform sampler2D openfl_Texture;
+	glFragmentSource = `
+		uniform sampler2D openfl_Texture;
 
 		varying vec2 vBlurCoords[7];
 
-void main(void) {
+		void main(void) {
 
-	vec4 sum = vec4(0.0);
-	sum += texture2D(openfl_Texture, vBlurCoords[0]) * 0.00443;
-	sum += texture2D(openfl_Texture, vBlurCoords[1]) * 0.05399;
-	sum += texture2D(openfl_Texture, vBlurCoords[2]) * 0.24197;
-	sum += texture2D(openfl_Texture, vBlurCoords[3]) * 0.39894;
-	sum += texture2D(openfl_Texture, vBlurCoords[4]) * 0.24197;
-	sum += texture2D(openfl_Texture, vBlurCoords[5]) * 0.05399;
-	sum += texture2D(openfl_Texture, vBlurCoords[6]) * 0.00443;
+			vec4 sum = vec4(0.0);
+			sum += texture2D(openfl_Texture, vBlurCoords[0]) * 0.00443;
+			sum += texture2D(openfl_Texture, vBlurCoords[1]) * 0.05399;
+			sum += texture2D(openfl_Texture, vBlurCoords[2]) * 0.24197;
+			sum += texture2D(openfl_Texture, vBlurCoords[3]) * 0.39894;
+			sum += texture2D(openfl_Texture, vBlurCoords[4]) * 0.24197;
+			sum += texture2D(openfl_Texture, vBlurCoords[5]) * 0.05399;
+			sum += texture2D(openfl_Texture, vBlurCoords[6]) * 0.00443;
 
-	gl_FragColor = sum;
+			gl_FragColor = sum;
 
-} ")
-@: glVertexSource("attribute vec4 openfl_Position;
+		}
+	`;
+
+	glVertexSource = `
+		attribute vec4 openfl_Position;
 		attribute vec2 openfl_TextureCoord;
 
-uniform mat4 openfl_Matrix;
+		uniform mat4 openfl_Matrix;
 
-uniform vec2 uRadius;
-varying vec2 vBlurCoords[7];
-uniform vec2 uTextureSize;
+		uniform vec2 uRadius;
+		varying vec2 vBlurCoords[7];
+		uniform vec2 uTextureSize;
 
-void main(void) {
+		void main(void) {
 
-	gl_Position = openfl_Matrix * openfl_Position;
+			gl_Position = openfl_Matrix * openfl_Position;
 
-	vec2 r = uRadius / uTextureSize;
-	vBlurCoords[0] = openfl_TextureCoord - r;
-	vBlurCoords[1] = openfl_TextureCoord - r * 0.75;
-	vBlurCoords[2] = openfl_TextureCoord - r * 0.5;
-	vBlurCoords[3] = openfl_TextureCoord;
-	vBlurCoords[4] = openfl_TextureCoord + r * 0.5;
-	vBlurCoords[5] = openfl_TextureCoord + r * 0.75;
-	vBlurCoords[6] = openfl_TextureCoord + r;
+			vec2 r = uRadius / uTextureSize;
+			vBlurCoords[0] = openfl_TextureCoord - r;
+			vBlurCoords[1] = openfl_TextureCoord - r * 0.75;
+			vBlurCoords[2] = openfl_TextureCoord - r * 0.5;
+			vBlurCoords[3] = openfl_TextureCoord;
+			vBlurCoords[4] = openfl_TextureCoord + r * 0.5;
+			vBlurCoords[5] = openfl_TextureCoord + r * 0.75;
+			vBlurCoords[6] = openfl_TextureCoord + r;
 
-} ")
-public constructor()
-{
-	super();
+		}
+	`;
 
-		#if(!macro && openfl_gl)
-	uRadius.value = [0, 0];
-		#end
-}
-
-protected __update(): void
+	public constructor()
 	{
-		#if(!macro && openfl_gl)
-uTextureSize.value = [__texture.input.width, __texture.input.height];
-		#end
+		super();
 
-super.__update();
+		this.data.uRadius.value = [0, 0];
+	}
+
+	protected __update(): void
+	{
+		this.data.uTextureSize.value = [this.__texture.input.width, this.__texture.input.height];
+
+		super.__update();
+	}
 }
-}
-#else
-typedef BlurFilter = flash.filters.BlurFilter;
-#end

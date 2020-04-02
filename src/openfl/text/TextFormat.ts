@@ -1,49 +1,51 @@
+import TextFormatAlign from "../text/TextFormatAlign";
+
 /**
-		The TextFormat class represents character formatting information. Use the
-		TextFormat class to create specific text formatting for text fields. You
-		can apply text formatting to both static and dynamic text fields. The
-		properties of the TextFormat class apply to device and embedded fonts.
-		However, for embedded fonts, bold and italic text actually require
-		specific fonts. If you want to display bold or italic text with an
-		embedded font, you need to embed the bold and italic variations of that
-		font.
+	The TextFormat class represents character formatting information. Use the
+	TextFormat class to create specific text formatting for text fields. You
+	can apply text formatting to both static and dynamic text fields. The
+	properties of the TextFormat class apply to device and embedded fonts.
+	However, for embedded fonts, bold and italic text actually require
+	specific fonts. If you want to display bold or italic text with an
+	embedded font, you need to embed the bold and italic variations of that
+	font.
 
-		You must use the constructor `new TextFormat()` to create a TextFormat
-		object before setting its properties. When you apply a TextFormat object
-		to a text field using the `TextField.defaultTextFormat` property or the
-		`TextField.setTextFormat()` method, only its defined properties are
-		applied. Use the `TextField.defaultTextFormat` property to apply
-		formatting BEFORE you add text to the `TextField`, and the
-		`setTextFormat()` method to add formatting AFTER you add text to the
-		`TextField`. The TextFormat properties are `null` by default because if
-		you don't provide values for the properties, Flash Player uses its own
-		default formatting. The default formatting that Flash Player uses for each
-		property (if property's value is `null`) is as follows:
+	You must use the constructor `new TextFormat()` to create a TextFormat
+	object before setting its properties. When you apply a TextFormat object
+	to a text field using the `TextField.defaultTextFormat` property or the
+	`TextField.setTextFormat()` method, only its defined properties are
+	applied. Use the `TextField.defaultTextFormat` property to apply
+	formatting BEFORE you add text to the `TextField`, and the
+	`setTextFormat()` method to add formatting AFTER you add text to the
+	`TextField`. The TextFormat properties are `null` by default because if
+	you don't provide values for the properties, Flash Player uses its own
+	default formatting. The default formatting that Flash Player uses for each
+	property (if property's value is `null`) is as follows:
 
-		| | |
-		| --- | --- |
-		| align = "left" | |
-		| blockIndent = 0 | |
-		| bold = false | |
-		| bullet = false | |
-		| color = 0x000000 | |
-		| font = "Times New Roman" (default font is Times on Mac OS X) | |
-		| indent = 0 | |
-		| italic = false | |
-		| kerning = false | |
-		| leading = 0 | |
-		| leftMargin = 0 | |
-		| letterSpacing = 0 | |
-		| rightMargin = 0 | |
-		| size = 12 | |
-		| tabStops = [] (empty array) | |
-		| target = "" (empty string) | |
-		| underline = false | |
-		| url = "" (empty string) | |
+	| | |
+	| --- | --- |
+	| align = "left" | |
+	| blockIndent = 0 | |
+	| bold = false | |
+	| bullet = false | |
+	| color = 0x000000 | |
+	| font = "Times New Roman" (default font is Times on Mac OS X) | |
+	| indent = 0 | |
+	| italic = false | |
+	| kerning = false | |
+	| leading = 0 | |
+	| leftMargin = 0 | |
+	| letterSpacing = 0 | |
+	| rightMargin = 0 | |
+	| size = 12 | |
+	| tabStops = [] (empty array) | |
+	| target = "" (empty string) | |
+	| underline = false | |
+	| url = "" (empty string) | |
 
-		The default formatting for each property is also described in each
-		property description.
-	**/
+	The default formatting for each property is also described in each
+	property description.
+**/
 export default class TextFormat
 {
 	/**
@@ -71,7 +73,7 @@ export default class TextFormat
 		`null`, which means no boldface is used. If the value is
 		`true`, then the text is boldface.
 	**/
-	public bold: Null<Bool>;
+	public bold: null | boolean;
 
 	/**
 		Indicates that the text is part of a bulleted list. In a bulleted list,
@@ -79,7 +81,7 @@ export default class TextFormat
 		paragraph, a bullet symbol is displayed. The default value is
 		`null`, which means no bulleted list is used.
 	**/
-	public bullet: Null<Bool>;
+	public bullet: null | boolean;
 
 	/**
 		Indicates the color of the text. A number containing three 8-bit RGB
@@ -109,7 +111,7 @@ export default class TextFormat
 		Indicates whether text in this text format is italicized. The default
 		value is `null`, which means no italics are used.
 	**/
-	public italic: Null<Bool>;
+	public italic: null | boolean;
 
 	/**
 		A Boolean value that indicates whether kerning is enabled
@@ -124,7 +126,7 @@ export default class TextFormat
 		The default value is `null`, which means that kerning is not
 		enabled.
 	**/
-	public kerning: Null<Bool>;
+	public kerning: null | boolean;
 
 	/**
 		An integer representing the amount of vertical space(called
@@ -165,7 +167,7 @@ export default class TextFormat
 		stop is specified in pixels. If custom tab stops are not specified
 		(`null`), the default tab stop is 4(average character width).
 	**/
-	public tabStops: Array<Int>;
+	public tabStops: Array<number>;
 
 	/**
 		Indicates the target window where the hyperlink is displayed. If the
@@ -189,7 +191,7 @@ export default class TextFormat
 		default value is `null`, which indicates that underlining is
 		not used.
 	**/
-	public underline: Null<Bool>;
+	public underline: null | boolean;
 
 	/**
 		Indicates the target URL for the text in this text format. If the
@@ -244,8 +246,8 @@ export default class TextFormat
 		@param leading     A number that indicates the amount of leading vertical
 						   space between lines.
 	**/
-	public constructor(font: string = null, size: null | number = null, color: null | number = null, bold: Null<Bool> = null, italic: Null<Bool> = null,
-		underline: Null<Bool> = null, url: string = null, target: string = null, align: TextFormatAlign = null, leftMargin: null | number = null,
+	public constructor(font: string = null, size: null | number = null, color: null | number = null, bold: null | boolean = null, italic: null | boolean = null,
+		underline: null | boolean = null, url: string = null, target: string = null, align: TextFormatAlign = null, leftMargin: null | number = null,
 		rightMargin: null | number = null, indent: null | number = null, leading: null | number = null)
 	{
 		this.font = font;
@@ -263,50 +265,51 @@ export default class TextFormat
 		this.leading = leading;
 	}
 
-	/** @hidden */ public clone(): TextFormat
+	/** @hidden */
+	public clone(): TextFormat
 	{
-		var newFormat = new TextFormat(font, size, color, bold, italic, underline, url, target);
+		var newFormat = new TextFormat(this.font, this.size, this.color, this.bold, this.italic, this.underline, this.url, this.target);
 
-		newFormat.align = align;
-		newFormat.leftMargin = leftMargin;
-		newFormat.rightMargin = rightMargin;
-		newFormat.indent = indent;
-		newFormat.leading = leading;
+		newFormat.align = this.align;
+		newFormat.leftMargin = this.leftMargin;
+		newFormat.rightMargin = this.rightMargin;
+		newFormat.indent = this.indent;
+		newFormat.leading = this.leading;
 
-		newFormat.blockIndent = blockIndent;
-		newFormat.bullet = bullet;
-		newFormat.kerning = kerning;
-		newFormat.letterSpacing = letterSpacing;
-		newFormat.tabStops = tabStops;
+		newFormat.blockIndent = this.blockIndent;
+		newFormat.bullet = this.bullet;
+		newFormat.kerning = this.kerning;
+		newFormat.letterSpacing = this.letterSpacing;
+		newFormat.tabStops = this.tabStops;
 
-		newFormat.__ascent = __ascent;
-		newFormat.__descent = __descent;
+		newFormat.__ascent = this.__ascent;
+		newFormat.__descent = this.__descent;
 
 		return newFormat;
 	}
 
 	protected __merge(format: TextFormat): void
 	{
-		if (format.font != null) font = format.font;
-		if (format.size != null) size = format.size;
-		if (format.color != null) color = format.color;
-		if (format.bold != null) bold = format.bold;
-		if (format.italic != null) italic = format.italic;
-		if (format.underline != null) underline = format.underline;
-		if (format.url != null) url = format.url;
-		if (format.target != null) target = format.target;
-		if (format.align != null) align = format.align;
-		if (format.leftMargin != null) leftMargin = format.leftMargin;
-		if (format.rightMargin != null) rightMargin = format.rightMargin;
-		if (format.indent != null) indent = format.indent;
-		if (format.leading != null) leading = format.leading;
-		if (format.blockIndent != null) blockIndent = format.blockIndent;
-		if (format.bullet != null) bullet = format.bullet;
-		if (format.kerning != null) kerning = format.kerning;
-		if (format.letterSpacing != null) letterSpacing = format.letterSpacing;
-		if (format.tabStops != null) tabStops = format.tabStops;
+		if (format.font != null) this.font = format.font;
+		if (format.size != null) this.size = format.size;
+		if (format.color != null) this.color = format.color;
+		if (format.bold != null) this.bold = format.bold;
+		if (format.italic != null) this.italic = format.italic;
+		if (format.underline != null) this.underline = format.underline;
+		if (format.url != null) this.url = format.url;
+		if (format.target != null) this.target = format.target;
+		if (format.align != null) this.align = format.align;
+		if (format.leftMargin != null) this.leftMargin = format.leftMargin;
+		if (format.rightMargin != null) this.rightMargin = format.rightMargin;
+		if (format.indent != null) this.indent = format.indent;
+		if (format.leading != null) this.leading = format.leading;
+		if (format.blockIndent != null) this.blockIndent = format.blockIndent;
+		if (format.bullet != null) this.bullet = format.bullet;
+		if (format.kerning != null) this.kerning = format.kerning;
+		if (format.letterSpacing != null) this.letterSpacing = format.letterSpacing;
+		if (format.tabStops != null) this.tabStops = format.tabStops;
 
-		if (format.__ascent != null) __ascent = format.__ascent;
-		if (format.__descent != null) __descent = format.__descent;
+		if (format.__ascent != null) this.__ascent = format.__ascent;
+		if (format.__descent != null) this.__descent = format.__descent;
 	}
 }

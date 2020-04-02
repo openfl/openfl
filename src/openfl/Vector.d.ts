@@ -35,7 +35,7 @@ declare namespace openfl
 		A variable declared with the Vector.<T> data type can only store a Vector instance
 		that is constructed with the same base type T. For example, a Vector that's
 		constructed by calling `new Vector.<String>()` can't be assigned to a variable that's
-		declared with the Vector.<int> data type. The base types must match exactly. For
+		declared with the Vector.<number> data type. The base types must match exactly. For
 		example, the following code doesn't compile because the object's base type isn't
 		the same as the variable's declared base type (even though Sprite is a subclass of
 		DisplayObject):
@@ -129,7 +129,7 @@ declare namespace openfl
 			```as3
 			// var v:Vector.<T> = new <T>[E0, ..., En-1 ,];
 			// For example:
-			var v:Vector.<int> = new <int>[0,1,2,];
+			var v:Vector.<number> = new <number>[0,1,2,];
 			```
 
 			The following information applies to this syntax:
@@ -138,7 +138,7 @@ declare namespace openfl
 			and Flex 4 and later.
 			* The trailing comma is optional.
 			* Empty items in the array are not supported; a statement such as
-			`var v:Vector.<int> = new <int>[0,,2,]` throws a compiler error.
+			`var v:Vector.<number> = new <number>[0,,2,]` throws a compiler error.
 			* You can't specify a default length for the Vector instance. Instead, the length
 			is the same as the number of elements in the initialization list.
 			* You can't specify whether the Vector instance has a fixed length. Instead, use
@@ -147,7 +147,7 @@ declare namespace openfl
 			specified type. For example:
 
 			```as3
-			var v:Vector.<int> = new <int>[4.2]; // compiler error when running in strict mode
+			var v:Vector.<number> = new <number>[4.2]; // compiler error when running in strict mode
 			trace(v[0]); //returns 4 when not running in strict mode
 			```
 

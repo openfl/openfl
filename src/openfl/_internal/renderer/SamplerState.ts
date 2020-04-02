@@ -1,15 +1,8 @@
-namespace openfl._internal.renderer;
+import Context3DMipFilter from "../../display3D/Context3DMipFilter";
+import Context3DTextureFilter from "../../display3D/Context3DTextureFilter";
+import Context3DWrapMode from "../../display3D/Context3DWrapMode";
 
-import openfl.display3D.Context3DMipFilter;
-import openfl.display3D.Context3DTextureFilter;
-import openfl.display3D.Context3DWrapMode;
-
-#if!openfl_debug
-@: fileXml('tags="haxe,release"')
-@: noDebug
-#end
-@SuppressWarnings("checkstyle:FieldDocComment")
-class SamplerState
+export default class SamplerState
 {
 	public centroid: boolean;
 	public filter: Context3DTextureFilter;
@@ -20,7 +13,7 @@ class SamplerState
 	public textureAlpha: boolean;
 	public wrap: Context3DWrapMode;
 
-	public constructor(wrap: Context3DWrapMode = CLAMP, filter: Context3DTextureFilter = NEAREST, mipfilter: Context3DMipFilter = MIPNONE, lodBias: number = 0.0,
+	public constructor(wrap: Context3DWrapMode = Context3DWrapMode.CLAMP, filter: Context3DTextureFilter = Context3DTextureFilter.NEAREST, mipfilter: Context3DMipFilter = Context3DMipFilter.MIPNONE, lodBias: number = 0.0,
 		ignoreSampler: boolean = false, centroid: boolean = false, textureAlpha: boolean = false)
 	{
 		this.wrap = wrap;
@@ -34,8 +27,8 @@ class SamplerState
 
 	public clone(): SamplerState
 	{
-		var copy = new SamplerState(wrap, filter, mipfilter, lodBias, ignoreSampler, centroid, textureAlpha);
-		copy.mipmapGenerated = mipmapGenerated;
+		var copy = new SamplerState(this.wrap, this.filter, this.mipfilter, this.lodBias, this.ignoreSampler, this.centroid, this.textureAlpha);
+		copy.mipmapGenerated = this.mipmapGenerated;
 		return copy;
 	}
 
@@ -58,6 +51,6 @@ class SamplerState
 			return false;
 		}
 
-		return (wrap == other.wrap && filter == other.filter && mipfilter == other.mipfilter && lodBias == other.lodBias && textureAlpha == other.textureAlpha);
+		return (this.wrap == other.wrap && this.filter == other.filter && this.mipfilter == other.mipfilter && this.lodBias == other.lodBias && this.textureAlpha == other.textureAlpha);
 	}
 }

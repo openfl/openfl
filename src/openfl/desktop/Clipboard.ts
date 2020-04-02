@@ -61,7 +61,7 @@ import ClipboardTransferMode from "./ClipboardTransferMode";
 
 	On Linux, clipboard data does not persist when an AIR application closes.
 **/
-export class Clipboard
+export default class Clipboard
 {
 	private static __generalClipboard: Clipboard;
 

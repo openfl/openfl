@@ -1,16 +1,10 @@
-namespace openfl._internal.formats.atf;
+import IllegalOperationError from "../../../errors/IllegalOperationError";
+import ByteArray from "../../../utils/ByteArray";
+import ATFFormat from "./ATFFormat";
+import ATFGPUFormat from "./ATFGPUFormat";
+import ATFType from "./ATFType";
 
-import haxe.io.Bytes;
-import openfl._internal.utils.Log;
-import IllegalOperationError from "../errors/IllegalOperationError";
-import ByteArray from "../utils/ByteArray";
-
-typedef UploadCallback = UInt -> Int -> ATFGPUFormat -> Int -> Int -> Int -> Bytes -> Void;
-
-#if!openfl_debug
-@: fileXml('tags="haxe,release"')
-@: noDebug
-#end
+type UploadCallback = (side: number, level: number, gpuFormat: ATFGPUFormat, width: number, height: number, blockLength: number, bytes: ByteArray) => void;
 
 /**
 	This class can read textures from Adobe Texture Format containers.
@@ -25,8 +19,7 @@ typedef UploadCallback = UInt -> Int -> ATFGPUFormat -> Int -> Int -> Int -> Byt
 	The ATF specification can be found here:
 	<https://www.adobe.com/devnet/archive/flashruntimes/articles/atf-file-format.html>
 **/
-@SuppressWarnings("checkstyle:FieldDocComment")
-class ATFReader
+export default class ATFReader
 {
 	private atfFormat: ATFFormat;
 	private cubeMap: boolean;
@@ -52,18 +45,18 @@ class ATFReader
 		// When the 6th byte is 0xff, we have one of the new formats
 		if (data[byteArrayOffset + 6] == 0xff)
 		{
-			version = data[byteArrayOffset + 7];
+			this.version = data[byteArrayOffset + 7];
 			data.position = byteArrayOffset + 8;
-			length = __readUInt32(data);
+			length = this.__readUInt32(data);
 		}
 		else
 		{
-			version = 0;
+			this.version = 0;
 			data.position = byteArrayOffset + 3;
-			length = __readUInt24(data);
+			length = this.__readUInt24(data);
 		}
 
-		if (cast((byteArrayOffset + length), Int) > data.length)
+		if ((byteArrayOffset + length) > data.length)
 		{
 			throw new IllegalOperationError("ATF length exceeds byte array length");
 		}
@@ -73,8 +66,8 @@ class ATFReader
 
 	public readHeader(__width: number, __height: number, cubeMap: boolean): boolean
 	{
-		var tdata = data.readUnsignedByte();
-		var type: ATFType = cast(tdata >> 7);
+		var tdata = this.data.readUnsignedByte();
+		var type: ATFType = (tdata >> 7);
 
 		if (!cubeMap && (type != ATFType.NORMAL))
 		{
@@ -88,53 +81,53 @@ class ATFReader
 
 		this.cubeMap = cubeMap;
 
-		atfFormat = cast(tdata & 0x7f);
+		this.atfFormat = (tdata & 0x7f);
 
 		// Make sure it is one of the supported formats
-		if (atfFormat != ATFFormat.RAW_COMPRESSED && atfFormat != ATFFormat.RAW_COMPRESSED_ALPHA)
+		if (this.atfFormat != ATFFormat.RAW_COMPRESSED && this.atfFormat != ATFFormat.RAW_COMPRESSED_ALPHA)
 		{
-			Log.warn("Only ATF block compressed textures without JPEG-XR+LZMA are supported");
+			console.warn("Only ATF block compressed textures without JPEG-XR+LZMA are supported");
 		}
 
-		width = (1 << cast data.readUnsignedByte());
-		height = (1 << cast data.readUnsignedByte());
+		this.width = (1 << this.data.readUnsignedByte());
+		this.height = (1 << this.data.readUnsignedByte());
 
-		if (width != __width || height != __height)
+		if (this.width != __width || this.height != __height)
 		{
 			throw new IllegalOperationError("ATF width and height dont match");
 		}
 
-		mipCount = cast data.readUnsignedByte();
+		this.mipCount = this.data.readUnsignedByte();
 
-		return (atfFormat == ATFFormat.RAW_COMPRESSED_ALPHA);
+		return (this.atfFormat == ATFFormat.RAW_COMPRESSED_ALPHA);
 	}
 
 	public readTextures(uploadCallback: UploadCallback): void
 	{
 		// DXT1/5, ETC1, PVRTC4, ETC2
 		// ETC2 is available with ATF version 3
-		var gpuFormats = (version < 3) ? 3 : 4;
-		var sideCount = cubeMap ? 6 : 1; // a cubemap has 6 sides
+		var gpuFormats = (this.version < 3) ? 3 : 4;
+		var sideCount = this.cubeMap ? 6 : 1; // a cubemap has 6 sides
 
-		for (side in 0...sideCount)
+		for (let side = 0; side < sideCount; side++)
 		{
-			for (level in 0...mipCount)
+			for (let level = 0; level < this.mipCount; level++)
 			{
-				for (gpuFormat in 0...gpuFormats)
+				for (let gpuFormat = 0; gpuFormat < gpuFormats; gpuFormat++)
 				{
-					var blockLength = (version == 0) ? __readUInt24(data) : __readUInt32(data);
+					var blockLength = (this.version == 0) ? this.__readUInt24(this.data) : this.__readUInt32(this.data);
 
-					if ((data.position + blockLength) > data.length)
+					if ((this.data.position + blockLength) > this.data.length)
 					{
 						throw new IllegalOperationError("Block length exceeds ATF file length");
 					}
 
 					if (blockLength > 0)
 					{
-						var bytes = Bytes.alloc(blockLength);
-						data.readBytes(bytes, 0, blockLength);
+						var bytes = new ByteArray(blockLength);
+						this.data.readBytes(bytes, 0, blockLength);
 
-						uploadCallback(side, level, gpuFormat, width >> level, height >> level, blockLength, bytes);
+						uploadCallback(side, level, gpuFormat, this.width >> level, this.height >> level, blockLength, bytes);
 					}
 				}
 			}

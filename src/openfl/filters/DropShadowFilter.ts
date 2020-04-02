@@ -1,18 +1,46 @@
-// #if!flash
-// import BitmapData from "../display/BitmapData";
-// import DisplayObjectRenderer from "../display/DisplayObjectRenderer";
-// import Shader from "../display/Shader";
-// import ColorTransfrom from "../geom/ColorTransform";
-// import Point from "../geom/Point";
-// import Rectangle from "../geom/Rectangle";
-// #if lime
-// import lime._internal.graphics.ImageDataUtil;
-// #else
+import BitmapData from "../display/BitmapData";
+import DisplayObjectRenderer from "../display/DisplayObjectRenderer";
+import Shader from "../display/Shader";
+import BitmapFilter from "../filters/BitmapFilter";
+import BitmapFilterShader from "../filters/BitmapFilterShader";
+import ColorTransform from "../geom/ColorTransform";
+import Point from "../geom/Point";
+import Rectangle from "../geom/Rectangle";
 // import openfl._internal.backend.lime_standalone.ImageDataUtil;
-// #end
 
-namespace openfl.filters
+class HideShader extends BitmapFilterShader
 {
+	glFragmentSource = `
+		uniform sampler2D openfl_Texture;
+		uniform sampler2D sourceBitmap;
+		varying vec4 textureCoords;
+
+		void main(void) {
+			gl_FragColor = texture2D(openfl_Texture, textureCoords.zw);
+		}
+	`;
+
+	glVertexSource = `
+		attribute vec4 openfl_Position;
+		attribute vec2 openfl_TextureCoord;
+		uniform mat4 openfl_Matrix;
+		uniform vec2 openfl_TextureSize;
+		uniform vec2 offset;
+		varying vec4 textureCoords;
+
+		void main(void) {
+			gl_Position = openfl_Matrix * openfl_Position;
+			textureCoords = vec4(openfl_TextureCoord, openfl_TextureCoord - offset / openfl_TextureSize);
+		}
+	`;
+
+	public constructor()
+	{
+		super();
+		this.data.offset.value = [0, 0];
+	}
+}
+
 /**
 	The DropShadowFilter class lets you add a drop shadow to display objects.
 	The shadow algorithm is based on the same box filter that the blur filter
@@ -58,520 +86,408 @@ namespace openfl.filters
 	filter is turned off if the resulting image exceeds the maximum
 	dimensions.
 **/
-#if!openfl_debug
-	@: fileXml('tags="haxe,release"')
-	@: noDebug
-#end
-	@: access(openfl.filters.GlowFilter)
-	@: access(openfl.geom.ColorTransform)
-	@: access(openfl.geom.Point)
-	@: access(openfl.geom.Rectangle)
-	@: final class DropShadowFilter extends BitmapFilter
+export default class DropShadowFilter extends BitmapFilter
+{
+	protected static __hideShader = new HideShader();
+
+	protected __alpha: number;
+	protected __angle: number;
+	protected __blurX: number;
+	protected __blurY: number;
+	protected __color: number;
+	protected __distance: number;
+	protected __hideObject: boolean;
+	protected __horizontalPasses: number;
+	protected __inner: boolean;
+	protected __knockout: boolean;
+	protected __offsetX: number;
+	protected __offsetY: number;
+	protected __quality: number;
+	protected __strength: number;
+	protected __verticalPasses: number;
+
+	/**
+		Creates a new DropShadowFilter instance with the specified parameters.
+
+		@param distance   Offset distance for the shadow, in pixels.
+		@param angle      Angle of the shadow, 0 to 360 degrees(floating point).
+		@param color      Color of the shadow, in hexadecimal format
+						  _0xRRGGBB_. The default value is 0x000000.
+		@param alpha      Alpha transparency value for the shadow color. Valid
+						  values are 0.0 to 1.0. For example, .25 sets a
+						  transparency value of 25%.
+		@param blurX      Amount of horizontal blur. Valid values are 0 to 255.0
+						 (floating point).
+		@param blurY      Amount of vertical blur. Valid values are 0 to 255.0
+						 (floating point).
+		@param strength   The strength of the imprint or spread. The higher the
+						  value, the more color is imprinted and the stronger the
+						  contrast between the shadow and the background. Valid
+						  values are 0 to 255.0.
+		@param quality    The number of times to apply the filter. Use the
+						  BitmapFilterQuality constants:
+
+						   * `BitmapFilterQuality.LOW`
+						   * `BitmapFilterQuality.MEDIUM`
+						   * `BitmapFilterQuality.HIGH`
+
+
+						  For more information about these values, see the
+						  `quality` property description.
+		@param inner      Indicates whether or not the shadow is an inner shadow.
+						  A value of `true` specifies an inner shadow.
+						  A value of `false` specifies an outer shadow
+						 (a shadow around the outer edges of the object).
+		@param knockout   Applies a knockout effect(`true`), which
+						  effectively makes the object's fill transparent and
+						  reveals the background color of the document.
+		@param hideObject Indicates whether or not the object is hidden. A value
+						  of `true` indicates that the object itself is
+						  not drawn; only the shadow is visible.
+	**/
+	public constructor(distance: number = 4, angle: number = 45, color: number = 0, alpha: number = 1, blurX: number = 4, blurY: number = 4, strength: number = 1,
+		quality: number = 1, inner: boolean = false, knockout: boolean = false, hideObject: boolean = false)
 	{
-		protected static __hideShader = new HideShader();
+		super();
 
-		/**
-			The alpha transparency value for the shadow color. Valid values are 0.0 to
-			1.0. For example, .25 sets a transparency value of 25%. The default value
-			is 1.0.
-		**/
-		public alpha(get, set): number;
+		this.__offsetX = 0;
+		this.__offsetY = 0;
 
-		/**
-			The angle of the shadow. Valid values are 0 to 360 degrees(floating
-			point). The default value is 45.
-		**/
-		public angle(get, set): number;
+		this.__distance = distance;
+		this.__angle = angle;
+		this.__color = color;
+		this.__alpha = alpha;
+		this.__blurX = blurX;
+		this.__blurY = blurY;
+		this.__strength = strength;
+		this.__quality = quality;
+		this.__inner = inner;
+		this.__knockout = knockout;
+		this.__hideObject = hideObject;
 
-		/**
-			The amount of horizontal blur. Valid values are 0 to 255.0(floating
-			point). The default value is 4.0.
-		**/
-		public blurX(get, set): number;
+		this.__updateSize();
 
-		/**
-			The amount of vertical blur. Valid values are 0 to 255.0(floating point).
-			The default value is 4.0.
-		**/
-		public blurY(get, set): number;
+		this.__needSecondBitmapData = true;
+		this.__preserveObject = true;
+		this.__renderDirty = true;
+	}
 
-		/**
-			The color of the shadow. Valid values are in hexadecimal format
-			_0xRRGGBB_. The default value is 0x000000.
-		**/
-		public color(get, set): number;
+	public clone(): BitmapFilter
+	{
+		return new DropShadowFilter(this.__distance, this.__angle, this.__color, this.__alpha, this.__blurX, this.__blurY, this.__strength, this.__quality, this.__inner, this.__knockout, this.__hideObject);
+	}
 
-		/**
-			The offset distance for the shadow, in pixels. The default value is 4.0
-			(floating point).
-		**/
-		public distance(get, set): number;
+	protected __applyFilter(bitmapData: BitmapData, sourceBitmapData: BitmapData, sourceRect: Rectangle,
+		destPoint: Point): BitmapData
+	{
+		// TODO: Support knockout, inner
 
-		/**
-			Indicates whether or not the object is hidden. The value `true`
-			indicates that the object itself is not drawn; only the shadow is visible.
-			The default is `false`(the object is shown).
-		**/
-		public hideObject(get, set): boolean;
+		// var r = (this.__color >> 16) & 0xFF;
+		// var g = (this.__color >> 8) & 0xFF;
+		// var b = this.__color & 0xFF;
 
-		/**
-			Indicates whether or not the shadow is an inner shadow. The value
-			`true` indicates an inner shadow. The default is
-			`false`, an outer shadow(a shadow around the outer edges of
-			the object).
-		**/
-		public inner(get, set): boolean;
+		// var point = new Point(destPoint.x + this.__offsetX, destPoint.y + this.__offsetY);
 
-		/**
-			Applies a knockout effect(`true`), which effectively makes the
-			object's fill transparent and reveals the background color of the
-			document. The default is `false`(no knockout).
-		**/
-		public knockout(get, set): boolean;
+		// var finalImage = ImageDataUtil.gaussianBlur(bitmapData.limeImage, sourceBitmapData.limeImage, sourceRect.__toLimeRectangle(), point.__toLimeVector2(),
+		// 	this.__blurX, this.__blurY, this.__quality, this.__strength);
+		// finalImage.colorTransform(finalImage.rect, new ColorTransform(0, 0, 0, this.__alpha, r, g, b, 0).__toLimeColorMatrix());
 
-		/**
-			The number of times to apply the filter. The default value is
-			`BitmapFilterQuality.LOW`, which is equivalent to applying the
-			filter once. The value `BitmapFilterQuality.MEDIUM` applies the
-			filter twice; the value `BitmapFilterQuality.HIGH` applies it
-			three times. Filters with lower values are rendered more quickly.
+		// if (finalImage == bitmapData.limeImage) return bitmapData;
+		return sourceBitmapData;
+	}
 
-			For most applications, a quality value of low, medium, or high is
-			sufficient. Although you can use additional numeric values up to 15 to
-			achieve different effects, higher values are rendered more slowly. Instead
-			of increasing the value of `quality`, you can often get a
-			similar effect, and with faster rendering, by simply increasing the values
-			of the `blurX` and `blurY` properties.
-		**/
-		public quality(get, set): number;
-
-		/**
-			The strength of the imprint or spread. The higher the value, the more
-			color is imprinted and the stronger the contrast between the shadow and
-			the background. Valid values are from 0 to 255.0. The default is 1.0.
-		**/
-		public strength(get, set): number;
-
-		protected __alpha: number;
-		protected __angle: number;
-		protected __blurX: number;
-		protected __blurY: number;
-		protected __color: number;
-		protected __distance: number;
-		protected __hideObject: boolean;
-		protected __horizontalPasses: number;
-		protected __inner: boolean;
-		protected __knockout: boolean;
-		protected __offsetX: number;
-		protected __offsetY: number;
-		protected __quality: number;
-		protected __strength: number;
-		protected __verticalPasses: number;
-
-		#if openfljs
-		protected static __init__()
+	protected __initShader(renderer: DisplayObjectRenderer, pass: number, sourceBitmapData: BitmapData): Shader
+	{
+		// Drop shadow is glow with an offset
+		if (this.__inner && pass == 0)
 		{
-			untyped Object.defineProperties(DropShadowFilter.prototype, {
-				"alpha": { get: untyped __js__("function () { return this.get_alpha (); }"), set: untyped __js__("function (v) { return this.set_alpha (v); }") },
-				"angle": { get: untyped __js__("function () { return this.get_angle (); }"), set: untyped __js__("function (v) { return this.set_angle (v); }") },
-				"blurX": { get: untyped __js__("function () { return this.get_blurX (); }"), set: untyped __js__("function (v) { return this.set_blurX (v); }") },
-				"blurY": { get: untyped __js__("function () { return this.get_blurY (); }"), set: untyped __js__("function (v) { return this.set_blurY (v); }") },
-				"color": { get: untyped __js__("function () { return this.get_color (); }"), set: untyped __js__("function (v) { return this.set_color (v); }") },
-				"distance": {
-					get: untyped __js__("function () { return this.get_distance (); }"),
-					set: untyped __js__("function (v) { return this.set_distance (v); }")
-				},
-				"hideObject": {
-					get: untyped __js__("function () { return this.get_hideObject (); }"),
-					set: untyped __js__("function (v) { return this.set_hideObject (v); }")
-				},
-				"inner": { get: untyped __js__("function () { return this.get_inner (); }"), set: untyped __js__("function (v) { return this.set_inner (v); }") },
-				"knockout": {
-					get: untyped __js__("function () { return this.get_knockout (); }"),
-					set: untyped __js__("function (v) { return this.set_knockout (v); }")
-				},
-				"quality": {
-					get: untyped __js__("function () { return this.get_quality (); }"),
-					set: untyped __js__("function (v) { return this.set_quality (v); }")
-				},
-				"strength": {
-					get: untyped __js__("function () { return this.get_strength (); }"),
-					set: untyped __js__("function (v) { return this.set_strength (v); }")
-				},
-			});
-		}
-		#end
-
-		/**
-			Creates a new DropShadowFilter instance with the specified parameters.
-
-			@param distance   Offset distance for the shadow, in pixels.
-			@param angle      Angle of the shadow, 0 to 360 degrees(floating point).
-			@param color      Color of the shadow, in hexadecimal format
-							  _0xRRGGBB_. The default value is 0x000000.
-			@param alpha      Alpha transparency value for the shadow color. Valid
-							  values are 0.0 to 1.0. For example, .25 sets a
-							  transparency value of 25%.
-			@param blurX      Amount of horizontal blur. Valid values are 0 to 255.0
-							 (floating point).
-			@param blurY      Amount of vertical blur. Valid values are 0 to 255.0
-							 (floating point).
-			@param strength   The strength of the imprint or spread. The higher the
-							  value, the more color is imprinted and the stronger the
-							  contrast between the shadow and the background. Valid
-							  values are 0 to 255.0.
-			@param quality    The number of times to apply the filter. Use the
-							  BitmapFilterQuality constants:
-
-							   * `BitmapFilterQuality.LOW`
-							   * `BitmapFilterQuality.MEDIUM`
-							   * `BitmapFilterQuality.HIGH`
-
-
-							  For more information about these values, see the
-							  `quality` property description.
-			@param inner      Indicates whether or not the shadow is an inner shadow.
-							  A value of `true` specifies an inner shadow.
-							  A value of `false` specifies an outer shadow
-							 (a shadow around the outer edges of the object).
-			@param knockout   Applies a knockout effect(`true`), which
-							  effectively makes the object's fill transparent and
-							  reveals the background color of the document.
-			@param hideObject Indicates whether or not the object is hidden. A value
-							  of `true` indicates that the object itself is
-							  not drawn; only the shadow is visible.
-		**/
-		public constructor(distance: number = 4, angle: number = 45, color: number = 0, alpha: number = 1, blurX: number = 4, blurY: number = 4, strength: number = 1,
-			quality: number = 1, inner: boolean = false, knockout: boolean = false, hideObject: boolean = false)
-		{
-			super();
-
-			__offsetX = 0;
-			__offsetY = 0;
-
-			__distance = distance;
-			__angle = angle;
-			__color = color;
-			__alpha = alpha;
-			__blurX = blurX;
-			__blurY = blurY;
-			__strength = strength;
-			__quality = quality;
-			__inner = inner;
-			__knockout = knockout;
-			__hideObject = hideObject;
-
-			__updateSize();
-
-			__needSecondBitmapData = true;
-			__preserveObject = true;
-			__renderDirty = true;
+			return GlowFilter.__invertAlphaShader;
 		}
 
-		publicclone(): BitmapFilter
+		var blurPass = pass - (this.__inner ? 1 : 0);
+		var numBlurPasses = this.__horizontalPasses + this.__verticalPasses;
+
+		if (blurPass < numBlurPasses)
 		{
-			return new DropShadowFilter(__distance, __angle, __color, __alpha, __blurX, __blurY, __strength, __quality, __inner, __knockout, __hideObject);
-		}
-
-		protected __applyFilter(bitmapData: BitmapData, sourceBitmapData: BitmapData, sourceRect: Rectangle,
-			destPoint: Point): BitmapData
-		{
-		#if(lime || openfl_html5)
-			// TODO: Support knockout, inner
-
-			var r = (__color >> 16) & 0xFF;
-			var g = (__color >> 8) & 0xFF;
-			var b = __color & 0xFF;
-
-			var point = new Point(destPoint.x + __offsetX, destPoint.y + __offsetY);
-
-			var finalImage = ImageDataUtil.gaussianBlur(bitmapData.limeImage, sourceBitmapData.limeImage, sourceRect.__toLimeRectangle(), point.__toLimeVector2(),
-				__blurX, __blurY, __quality, __strength);
-			finalImage.colorTransform(finalImage.rect, new ColorTransform(0, 0, 0, __alpha, r, g, b, 0).__toLimeColorMatrix());
-
-			if (finalImage == bitmapData.limeImage) return bitmapData;
-		#end
-			return sourceBitmapData;
-		}
-
-		protected __initShader(renderer: DisplayObjectRenderer, pass: number, sourceBitmapData: BitmapData): Shader
-		{
-		#if(!macro && openfl_gl)
-			// Drop shadow is glow with an offset
-			if (__inner && pass == 0)
+			var shader = GlowFilter.__blurAlphaShader;
+			if (blurPass < this.__horizontalPasses)
 			{
-				return GlowFilter.__invertAlphaShader;
-			}
-
-			var blurPass = pass - (__inner ? 1 : 0);
-			var numBlurPasses = __horizontalPasses + __verticalPasses;
-
-			if (blurPass < numBlurPasses)
-			{
-				var shader = GlowFilter.__blurAlphaShader;
-				if (blurPass < __horizontalPasses)
-				{
-					var scale = Math.pow(0.5, blurPass >> 1) * 0.5;
-					shader.uRadius.value[0] = blurX * scale;
-					shader.uRadius.value[1] = 0;
-				}
-				else
-				{
-					var scale = Math.pow(0.5, (blurPass - __horizontalPasses) >> 1) * 0.5;
-					shader.uRadius.value[0] = 0;
-					shader.uRadius.value[1] = blurY * scale;
-				}
-				shader.uColor.value[0] = ((color >> 16) & 0xFF) / 255;
-				shader.uColor.value[1] = ((color >> 8) & 0xFF) / 255;
-				shader.uColor.value[2] = (color & 0xFF) / 255;
-				shader.uColor.value[3] = alpha;
-				shader.uStrength.value[0] = blurPass == (numBlurPasses - 1) ? __strength : 1.0;
-				return shader;
-			}
-			if (__inner)
-			{
-				if (__knockout || __hideObject)
-				{
-					var shader = GlowFilter.__innerCombineKnockoutShader;
-					shader.sourceBitmap.input = sourceBitmapData;
-					shader.offset.value[0] = __offsetX;
-					shader.offset.value[1] = __offsetY;
-					return shader;
-				}
-				var shader = GlowFilter.__innerCombineShader;
-				shader.sourceBitmap.input = sourceBitmapData;
-				shader.offset.value[0] = __offsetX;
-				shader.offset.value[1] = __offsetY;
-				return shader;
+				var scale = Math.pow(0.5, blurPass >> 1) * 0.5;
+				shader.uRadius.value[0] = blurX * scale;
+				shader.uRadius.value[1] = 0;
 			}
 			else
 			{
-				if (__knockout)
-				{
-					var shader = GlowFilter.__combineKnockoutShader;
-					shader.sourceBitmap.input = sourceBitmapData;
-					shader.offset.value[0] = __offsetX;
-					shader.offset.value[1] = __offsetY;
-					return shader;
-				}
-				else if (__hideObject)
-				{
-					var shader = __hideShader;
-					shader.sourceBitmap.input = sourceBitmapData;
-					shader.offset.value[0] = __offsetX;
-					shader.offset.value[1] = __offsetY;
-					return shader;
-				}
-				var shader = GlowFilter.__combineShader;
+				var scale = Math.pow(0.5, (blurPass - this.__horizontalPasses) >> 1) * 0.5;
+				shader.uRadius.value[0] = 0;
+				shader.uRadius.value[1] = blurY * scale;
+			}
+			shader.uColor.value[0] = ((color >> 16) & 0xFF) / 255;
+			shader.uColor.value[1] = ((color >> 8) & 0xFF) / 255;
+			shader.uColor.value[2] = (color & 0xFF) / 255;
+			shader.uColor.value[3] = alpha;
+			shader.uStrength.value[0] = blurPass == (numBlurPasses - 1) ? this.__strength : 1.0;
+			return shader;
+		}
+		if (this.__inner)
+		{
+			if (this.__knockout || this.__hideObject)
+			{
+				var shader = GlowFilter.__innerCombineKnockoutShader;
 				shader.sourceBitmap.input = sourceBitmapData;
-				shader.offset.value[0] = __offsetX;
-				shader.offset.value[1] = __offsetY;
+				shader.offset.value[0] = this.__offsetX;
+				shader.offset.value[1] = this.__offsetY;
 				return shader;
 			}
-		#else
-			return null;
-		#end
+			var shader = GlowFilter.__innerCombineShader;
+			shader.sourceBitmap.input = sourceBitmapData;
+			shader.offset.value[0] = this.__offsetX;
+			shader.offset.value[1] = this.__offsetY;
+			return shader;
 		}
-
-		protected __updateSize(): void
+		else
 		{
-			__offsetX = Std.int(__distance * Math.cos(__angle * Math.PI / 180));
-			__offsetY = Std.int(__distance * Math.sin(__angle * Math.PI / 180));
-			__topExtension = Math.ceil((__offsetY < 0 ? -__offsetY : 0) + __blurY);
-			__bottomExtension = Math.ceil((__offsetY > 0 ? __offsetY : 0) + __blurY);
-			__leftExtension = Math.ceil((__offsetX < 0 ? -__offsetX : 0) + __blurX);
-			__rightExtension = Math.ceil((__offsetX > 0 ? __offsetX : 0) + __blurX);
-			__calculateNumShaderPasses();
-		}
-
-		protected __calculateNumShaderPasses(): void
-		{
-			__horizontalPasses = Math.round(__blurX * (__quality / 4)) + 1;
-			__verticalPasses = Math.round(__blurY * (__quality / 4)) + 1;
-			__numShaderPasses = __horizontalPasses + __verticalPasses + (__inner ? 2 : 1);
-		}
-
-		// Get & Set Methods
-		public get alpha(): number
-		{
-			return __alpha;
-		}
-
-		public set alpha(value: number): number
-		{
-			if (value != __alpha) __renderDirty = true;
-			return __alpha = value;
-		}
-
-		public get angle(): number
-		{
-			return __angle;
-		}
-
-		public set angle(value: number): number
-		{
-			if (value != __angle)
+			if (this.__knockout)
 			{
-				__angle = value;
-				__renderDirty = true;
-				__updateSize();
+				var shader = GlowFilter.__combineKnockoutShader;
+				shader.sourceBitmap.input = sourceBitmapData;
+				shader.offset.value[0] = this.__offsetX;
+				shader.offset.value[1] = this.__offsetY;
+				return shader;
 			}
-			return value;
-		}
-
-		public get blurX(): number
-		{
-			return __blurX;
-		}
-
-		public set blurX(value: number): number
-		{
-			if (value != __blurX)
+			else if (this.__hideObject)
 			{
-				__blurX = value;
-				__renderDirty = true;
-				__updateSize();
+				var shader = this.__hideShader;
+				shader.sourceBitmap.input = sourceBitmapData;
+				shader.offset.value[0] = this.__offsetX;
+				shader.offset.value[1] = this.__offsetY;
+				return shader;
 			}
-			return value;
-		}
-
-		public get blurY(): number
-		{
-			return __blurY;
-		}
-
-		public set blurY(value: number): number
-		{
-			if (value != __blurY)
-			{
-				__blurY = value;
-				__renderDirty = true;
-				__updateSize();
-			}
-			return value;
-		}
-
-		public get color(): number
-		{
-			return __color;
-		}
-
-		public set color(value: number): number
-		{
-			if (value != __color) __renderDirty = true;
-			return __color = value;
-		}
-
-		public get distance(): number
-		{
-			return __distance;
-		}
-
-		public set distance(value: number): number
-		{
-			if (value != __distance)
-			{
-				__distance = value;
-				__renderDirty = true;
-				__updateSize();
-			}
-			return value;
-		}
-
-		public get hideObject(): boolean
-		{
-			return __hideObject;
-		}
-
-		public set hideObject(value: boolean): boolean
-		{
-			if (value != __hideObject)
-			{
-				__renderDirty = true;
-			}
-			return __hideObject = value;
-		}
-
-		public get inner(): boolean
-		{
-			return __inner;
-		}
-
-		public set inner(value: boolean): boolean
-		{
-			if (value != __inner) __renderDirty = true;
-			return __inner = value;
-		}
-
-		public get knockout(): boolean
-		{
-			return __knockout;
-		}
-
-		public set knockout(value: boolean): boolean
-		{
-			if (value != __knockout) __renderDirty = true;
-			return __knockout = value;
-		}
-
-		public get quality(): number
-		{
-			return __quality;
-		}
-
-		public set quality(value: number): number
-		{
-			if (value != __quality) __renderDirty = true;
-			return __quality = value;
-		}
-
-		public get strength(): number
-		{
-			return __strength;
-		}
-
-		public set strength(value: number): number
-		{
-			if (value != __strength) __renderDirty = true;
-			return __strength = value;
+			var shader = GlowFilter.__combineShader;
+			shader.sourceBitmap.input = sourceBitmapData;
+			shader.offset.value[0] = this.__offsetX;
+			shader.offset.value[1] = this.__offsetY;
+			return shader;
 		}
 	}
 
-#if!openfl_debug
-	@: fileXml('tags="haxe,release"')
-	@: noDebug
-#end
-	private class HideShader extends BitmapFilterShader
+	protected __updateSize(): void
 	{
-		@: glFragmentSource("
-		uniform sampler2D openfl_Texture;
-	uniform sampler2D sourceBitmap;
-	varying vec4 textureCoords;
-
-	void main(void) {
-		gl_FragColor = texture2D(openfl_Texture, textureCoords.zw);
+		this.__offsetX = Std.int(this.__distance * Math.cos(this.__angle * Math.PI / 180));
+		this.__offsetY = Std.int(this.__distance * Math.sin(this.__angle * Math.PI / 180));
+		this.__topExtension = Math.ceil((this.__offsetY < 0 ? -this.__offsetY : 0) + this.__blurY);
+		this.__bottomExtension = Math.ceil((this.__offsetY > 0 ? this.__offsetY : 0) + this.__blurY);
+		this.__leftExtension = Math.ceil((this.__offsetX < 0 ? -this.__offsetX : 0) + this.__blurX);
+		this.__rightExtension = Math.ceil((this.__offsetX > 0 ? this.__offsetX : 0) + this.__blurX);
+		this.__calculateNumShaderPasses();
 	}
-	")
-	@: glVertexSource("attribute vec4 openfl_Position;
-		attribute vec2 openfl_TextureCoord;
-	uniform mat4 openfl_Matrix;
-	uniform vec2 openfl_TextureSize;
-	uniform vec2 offset;
-	varying vec4 textureCoords;
 
-	void main(void) {
-		gl_Position = openfl_Matrix * openfl_Position;
-		textureCoords = vec4(openfl_TextureCoord, openfl_TextureCoord - offset / openfl_TextureSize);
-	}
-	")
-public constructor()
+	protected __calculateNumShaderPasses(): void
 	{
-		super();
-		#if(!macro && openfl_gl)
-		offset.value = [0, 0];
-		#end
+		this.__horizontalPasses = Math.round(this.__blurX * (this.__quality / 4)) + 1;
+		this.__verticalPasses = Math.round(this.__blurY * (this.__quality / 4)) + 1;
+		this.__numShaderPasses = this.__horizontalPasses + this.__verticalPasses + (this.__inner ? 2 : 1);
+	}
+
+	// Get & Set Methods
+
+	/**
+		The alpha transparency value for the shadow color. Valid values are 0.0 to
+		1.0. For example, .25 sets a transparency value of 25%. The default value
+		is 1.0.
+	**/
+	public get alpha(): number
+	{
+		return this.__alpha;
+	}
+
+	public set alpha(value: number)
+	{
+		if (value != this.__alpha) this.__renderDirty = true;
+		this.__alpha = value;
+	}
+
+	/**
+		The angle of the shadow. Valid values are 0 to 360 degrees(floating
+		point). The default value is 45.
+	**/
+	public get angle(): number
+	{
+		return this.__angle;
+	}
+
+	public set angle(value: number)
+	{
+		if (value != this.__angle)
+		{
+			this.__angle = value;
+			this.__renderDirty = true;
+			this.__updateSize();
+		}
+	}
+
+	/**
+		The amount of horizontal blur. Valid values are 0 to 255.0(floating
+		point). The default value is 4.0.
+	**/
+	public get blurX(): number
+	{
+		return this.__blurX;
+	}
+
+	public set blurX(value: number)
+	{
+		if (value != this.__blurX)
+		{
+			this.__blurX = value;
+			this.__renderDirty = true;
+			this.__updateSize();
+		}
+	}
+
+	/**
+		The amount of vertical blur. Valid values are 0 to 255.0(floating point).
+		The default value is 4.0.
+	**/
+	public get blurY(): number
+	{
+		return this.__blurY;
+	}
+
+	public set blurY(value: number)
+	{
+		if (value != this.__blurY)
+		{
+			this.__blurY = value;
+			this.__renderDirty = true;
+			this.__updateSize();
+		}
+	}
+
+	/**
+		The color of the shadow. Valid values are in hexadecimal format
+		_0xRRGGBB_. The default value is 0x000000.
+	**/
+	public get color(): number
+	{
+		return this.__color;
+	}
+
+	public set color(value: number)
+	{
+		if (value != this.__color) this.__renderDirty = true;
+		this.__color = value;
+	}
+
+	/**
+		The offset distance for the shadow, in pixels. The default value is 4.0
+		(floating point).
+	**/
+	public get distance(): number
+	{
+		return this.__distance;
+	}
+
+	public set distance(value: number)
+	{
+		if (value != this.__distance)
+		{
+			this.__distance = value;
+			this.__renderDirty = true;
+			this.__updateSize();
+		}
+	}
+
+	/**
+		Indicates whether or not the object is hidden. The value `true`
+		indicates that the object itself is not drawn; only the shadow is visible.
+		The default is `false`(the object is shown).
+	**/
+	public get hideObject(): boolean
+	{
+		return this.__hideObject;
+	}
+
+	public set hideObject(value: boolean)
+	{
+		if (value != this.__hideObject)
+		{
+			this.__renderDirty = true;
+		}
+		this.__hideObject = value;
+	}
+
+	/**
+		Indicates whether or not the shadow is an inner shadow. The value
+		`true` indicates an inner shadow. The default is
+		`false`, an outer shadow(a shadow around the outer edges of
+		the object).
+	**/
+	public get inner(): boolean
+	{
+		return this.__inner;
+	}
+
+	public set inner(value: boolean)
+	{
+		if (value != this.__inner) this.__renderDirty = true;
+		this.__inner = value;
+	}
+
+	/**
+		Applies a knockout effect(`true`), which effectively makes the
+		object's fill transparent and reveals the background color of the
+		document. The default is `false`(no knockout).
+	**/
+	public get knockout(): boolean
+	{
+		return this.__knockout;
+	}
+
+	public set knockout(value: boolean)
+	{
+		if (value != this.__knockout) this.__renderDirty = true;
+		this.__knockout = value;
+	}
+
+	/**
+		The number of times to apply the filter. The default value is
+		`BitmapFilterQuality.LOW`, which is equivalent to applying the
+		filter once. The value `BitmapFilterQuality.MEDIUM` applies the
+		filter twice; the value `BitmapFilterQuality.HIGH` applies it
+		three times. Filters with lower values are rendered more quickly.
+
+		For most applications, a quality value of low, medium, or high is
+		sufficient. Although you can use additional numeric values up to 15 to
+		achieve different effects, higher values are rendered more slowly. Instead
+		of increasing the value of `quality`, you can often get a
+		similar effect, and with faster rendering, by simply increasing the values
+		of the `blurX` and `blurY` properties.
+	**/
+	public get quality(): number
+	{
+		return this.__quality;
+	}
+
+	public set quality(value: number)
+	{
+		if (value != this.__quality) this.__renderDirty = true;
+		this.__quality = value;
+	}
+
+	/**
+		The strength of the imprint or spread. The higher the value, the more
+		color is imprinted and the stronger the contrast between the shadow and
+		the background. Valid values are from 0 to 255.0. The default is 1.0.
+	**/
+	public get strength(): number
+	{
+		return this.__strength;
+	}
+
+	public set strength(value: number)
+	{
+		if (value != this.__strength) this.__renderDirty = true;
+		this.__strength = value;
 	}
 }
-}
-
-export default openfl.filters.DropShadowFilter;

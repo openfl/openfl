@@ -1,39 +1,31 @@
-namespace openfl._internal.formats.html;
+import TextFormatRange from "../../../_internal/text/TextFormatRange";
+import TextFormat from "../../../text/TextFormat";
+import Vector from "../../../Vector";
 
-import openfl._internal.text.TextFormatRange;
-import openfl._internal.utils.Log;
-import openfl.text.TextFormat;
-import Vector from "../Vector";
-
-#if!openfl_debug
-@: fileXml('tags="haxe,release"')
-@: noDebug
-#end
-@SuppressWarnings("checkstyle:FieldDocComment")
-class HTMLParser
+export default class HTMLParser
 {
-	private static __regexAlign: EReg = ~/align\s?=\s?("([^"]+)"|'([^']+)')/i;
-	private static __regexBreakTag: EReg = ~/<br\s*\/?>/gi;
-	private static __regexBlockIndent: EReg = ~/blockindent\s?=\s?("([^"]+)"|'([^']+)')/i;
-	private static __regexColor: EReg = ~/color\s?=\s?("#([^"]+)"|'#([^']+)')/i;
-	private static __regexEntities: Array<EReg> = [~/&quot;/g, ~/&apos;/g, ~/&amp;/g, ~/&lt;/g, ~/&gt;/g, ~/&nbsp;/g];
-	private static __regexFace: EReg = ~/face\s?=\s?("([^"]+)"|'([^']+)')/i;
-	private static __regexHTMLTag: EReg = ~/<.*?>/g;
-	private static __regexHref: EReg = ~/href\s?=\s?("([^"]+)"|'([^']+)')/i;
-	private static __regexIndent: EReg = ~/ indent\s?=\s?("([^"]+)"|'([^']+)')/i;
-	private static __regexLeading: EReg = ~/leading\s?=\s?("([^"]+)"|'([^']+)')/i;
-	private static __regexLeftMargin: EReg = ~/leftmargin\s?=\s?("([^"]+)"|'([^']+)')/i;
-	private static __regexRightMargin: EReg = ~/rightmargin\s?=\s?("([^"]+)"|'([^']+)')/i;
-	private static __regexSize: EReg = ~/size\s?=\s?("([^"]+)"|'([^']+)')/i;
-	private static __regexTabStops: EReg = ~/tabstops\s?=\s?("([^"]+)"|'([^']+)')/i;
+	private static __regexAlign: RegExp = /align\s?=\s?("([^"]+)"|'([^']+)')/i;
+	private static __regexBreakTag: RegExp = /<br\s*\/?>/gi;
+	private static __regexBlockIndent: RegExp = /blockindent\s?=\s?("([^"]+)"|'([^']+)')/i;
+	private static __regexColor: RegExp = /color\s?=\s?("#([^"]+)"|'#([^']+)')/i;
+	private static __regexEntities: Array<RegExp> = [/&quot;/g, /&apos;/g, /&amp;/g, /&lt;/g, /&gt;/g, /&nbsp;/g];
+	private static __regexFace: RegExp = /face\s?=\s?("([^"]+)"|'([^']+)')/i;
+	private static __regexHTMLTag: RegExp = /<.*?>/g;
+	private static __regexHref: RegExp = /href\s?=\s?("([^"]+)"|'([^']+)')/i;
+	private static __regexIndent: RegExp = / indent\s?=\s?("([^"]+)"|'([^']+)')/i;
+	private static __regexLeading: RegExp = /leading\s?=\s?("([^"]+)"|'([^']+)')/i;
+	private static __regexLeftMargin: RegExp = /leftmargin\s?=\s?("([^"]+)"|'([^']+)')/i;
+	private static __regexRightMargin: RegExp = /rightmargin\s?=\s?("([^"]+)"|'([^']+)')/i;
+	private static __regexSize: RegExp = /size\s?=\s?("([^"]+)"|'([^']+)')/i;
+	private static __regexTabStops: RegExp = /tabstops\s?=\s?("([^"]+)"|'([^']+)')/i;
 
 	public static parse(value: string, textFormat: TextFormat, textFormatRanges: Vector<TextFormatRange>): string
 	{
-		value = __regexBreakTag.replace(value, "\n");
-		value = __regexEntities[0].replace(value, "\"");
-		value = __regexEntities[1].replace(value, "'");
-		value = __regexEntities[2].replace(value, "&");
-		value = __regexEntities[5].replace(value, " ");
+		value = value.replace(this.__regexBreakTag, "\n");
+		value = value.replace(this.__regexEntities[0], "\"");
+		value = value.replace(this.__regexEntities[1], "'");
+		value = value.replace(this.__regexEntities[2], "&");
+		value = value.replace(this.__regexEntities[5], " ");
 
 		// crude solution
 
@@ -41,15 +33,15 @@ class HTMLParser
 
 		if (segments.length == 1)
 		{
-			value = __regexHTMLTag.replace(value, "");
+			value = value.replace(this.__regexHTMLTag, "");
 
 			if (textFormatRanges.length > 1)
 			{
 				textFormatRanges.splice(1, textFormatRanges.length - 1);
 			}
 
-			value = __regexEntities[3].replace(value, "<");
-			value = __regexEntities[4].replace(value, ">");
+			value = value.replace(this.__regexEntities[3], "<");
+			value = value.replace(this.__regexEntities[4], ">");
 
 			var range = textFormatRanges[0];
 			range.format = textFormat;
@@ -65,11 +57,11 @@ class HTMLParser
 			value = "";
 			var segment;
 
-			for (i in 0...segments.length)
+			for (let i = 0; i < segments.length; i++)
 			{
 				segment = segments[i];
-				segment = __regexEntities[3].replace(segment, "<");
-				segment = __regexEntities[4].replace(segment, ">");
+				segment = segment.replace(this.__regexEntities[3], "<");
+				segment = segment.replace(this.__regexEntities[4], ">");
 				segments[i] = segment;
 			}
 
@@ -78,7 +70,7 @@ class HTMLParser
 			var sub: string;
 			var noLineBreak = false;
 
-			for (segment in segments)
+			for (let segment of segments)
 			{
 				if (segment == "") continue;
 
@@ -94,7 +86,7 @@ class HTMLParser
 				{
 					if (tagStack.length == 0 || tagName.toLowerCase() != tagStack[tagStack.length - 1].toLowerCase())
 					{
-						Log.info("Invalid HTML, unexpected closing tag ignored: " + tagName);
+						console.info("Invalid HTML, unexpected closing tag ignored: " + tagName);
 						continue;
 					}
 
@@ -120,16 +112,19 @@ class HTMLParser
 				else
 				{
 					format = formatStack[formatStack.length - 1].clone();
+					var result = null;
 
 					if (tagEndIndex > -1)
 					{
 						switch (tagName.toLowerCase())
 						{
 							case "a":
-								if (__regexHref.match(segment))
+								result = this.__getAttributeMatch(this.__regexHref, segment);
+								if (result != null)
 								{
-									format.url = __getAttributeMatch(__regexHref);
+									format.url = result;
 								}
+								break;
 
 							case "p":
 								if (textFormatRanges.length > 0 && !noLineBreak)
@@ -137,86 +132,101 @@ class HTMLParser
 									value += "\n";
 								}
 
-								if (__regexAlign.match(segment))
+								result = this.__getAttributeMatch(this.__regexAlign, segment);
+								if (result != null)
 								{
-									var align = __getAttributeMatch(__regexAlign).toLowerCase();
-									format.align = align;
+									format.align = result.toLowerCase();
 								}
+								break;
 
 							case "font":
-								if (__regexFace.match(segment))
+								result = this.__getAttributeMatch(this.__regexFace, segment);
+								if (result != null)
 								{
-									format.font = __getAttributeMatch(__regexFace);
+									format.font = result;
 								}
 
-								if (__regexColor.match(segment))
+								result = this.__getAttributeMatch(this.__regexColor, segment);
+								if (result != null)
 								{
-									format.color = Std.parseInt("0x" + __getAttributeMatch(__regexColor));
+									format.color = Math.round(parseFloat(("0x" + result)));
 								}
 
-								if (__regexSize.match(segment))
+								result = this.__getAttributeMatch(this.__regexSize, segment);
+								if (result != null)
 								{
-									var sizeAttr = __getAttributeMatch(__regexSize);
-									var firstChar = sizeAttr.charCodeAt(0);
+									var firstChar = result.charCodeAt(0);
 
-									if (firstChar == "+".code || firstChar == "-".code)
+									if (firstChar == "+".charCodeAt(0) || firstChar == "-".charCodeAt(0))
 									{
 										var parentFormat = (formatStack.length >= 2) ? formatStack[formatStack.length - 2] : textFormat;
-										format.size = parentFormat.size + Std.parseInt(sizeAttr);
+										format.size = parentFormat.size + Math.round(parseFloat((result)));
 									}
 									else
 									{
-										format.size = Std.parseInt(sizeAttr);
+										format.size = Math.round(parseFloat(result));
 									}
 								}
+								break;
 
 							case "b":
 								format.bold = true;
+								break;
 
 							case "u":
 								format.underline = true;
+								break;
 
-							case "i", "em":
+							case "i":
+							case "em":
 								format.italic = true;
+								break;
 
 							case "textformat":
-								if (__regexBlockIndent.match(segment))
+								result = this.__getAttributeMatch(this.__regexBlockIndent, segment);
+								if (result != null)
 								{
-									format.blockIndent = Std.parseInt(__getAttributeMatch(__regexBlockIndent));
+									format.blockIndent = Math.round(parseFloat(result));
 								}
 
-								if (__regexIndent.match(segment))
+								result = this.__getAttributeMatch(this.__regexIndent, segment);
+								if (result != null)
 								{
-									format.indent = Std.parseInt(__getAttributeMatch(__regexIndent));
+									format.indent = Math.round(parseFloat(result));
 								}
 
-								if (__regexLeading.match(segment))
+								result = this.__getAttributeMatch(this.__regexLeading, segment);
+								if (result != null)
 								{
-									format.leading = Std.parseInt(__getAttributeMatch(__regexLeading));
+									format.leading = Math.round(parseFloat(result));
 								}
 
-								if (__regexLeftMargin.match(segment))
+								result = this.__getAttributeMatch(this.__regexLeftMargin, segment);
+								if (result != null)
 								{
-									format.leftMargin = Std.parseInt(__getAttributeMatch(__regexLeftMargin));
+									format.leftMargin = Math.round(parseFloat(result));
 								}
 
-								if (__regexRightMargin.match(segment))
+								result = this.__getAttributeMatch(this.__regexRightMargin, segment);
+								if (result != null)
 								{
-									format.rightMargin = Std.parseInt(__getAttributeMatch(__regexRightMargin));
+									format.rightMargin = Math.round(parseFloat(result));
 								}
 
-								if (__regexTabStops.match(segment))
+								result = this.__getAttributeMatch(this.__regexTabStops, segment);
+								if (result != null)
 								{
-									var values = __getAttributeMatch(__regexTabStops).split(" ");
+									var values = result.split(" ");
 									var tabStops = [];
 
-									for (stop in values)
+									for (let stop of values)
 									{
-										tabStops.push(Std.parseInt(stop));
+										tabStops.push(Math.round(parseFloat(stop)));
 									}
 
 									format.tabStops = tabStops;
 								}
+								break;
 						}
 
 						formatStack.push(format);
@@ -248,8 +258,13 @@ class HTMLParser
 		return value;
 	}
 
-	private static __getAttributeMatch(regex: EReg): string
+	private static __getAttributeMatch(regex: RegExp, segment: string): string
 	{
-		return regex.matched(2) != null ? regex.matched(2) : regex.matched(3);
+		var result = regex.exec(segment);
+		if (result != null)
+		{
+			return result[2] != null ? result[2] : result[3];
+		}
+		return null;
 	}
 }

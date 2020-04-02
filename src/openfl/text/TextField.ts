@@ -1,14 +1,17 @@
-// import haxe.Timer;
-// import openfl._internal.formats.html.HTMLParser;
-// import openfl._internal.text.TextEngine;
-// import openfl._internal.text.TextFormatRange;
-// import openfl._internal.text.TextLayoutGroup;
+import HTMLParser from "../_internal/formats/html/HTMLParser";
+import DisplayObjectType from "../_internal/renderer/DisplayObjectType";
+import TextEngine from "../_internal/text/TextEngine";
+import TextFormatRange from "../_internal/text/TextFormatRange";
+import TextLayoutGroup from "../_internal/text/TextLayoutGroup";
+import * as internal from "../_internal/utils/InternalAccess";
 import Clipboard from "../desktop/Clipboard";
+import ClipboardFormats from "../desktop/ClipboardFormats";
 import DisplayObject from "../display/DisplayObject";
 import Graphics from "../display/Graphics";
 import InteractiveObject from "../display/InteractiveObject";
 import RangeError from "../errors/RangeError";
 import Event from "../events/Event";
+import EventPhase from "../events/EventPhase";
 import FocusEvent from "../events/FocusEvent";
 import KeyboardEvent from "../events/KeyboardEvent";
 import MouseEvent from "../events/MouseEvent";
@@ -16,6 +19,13 @@ import TextEvent from "../events/TextEvent";
 import Matrix from "../geom/Matrix";
 import Rectangle from "../geom/Rectangle";
 import URLRequest from "../net/URLRequest";
+import AntiAliasType from "../text/AntiAliasType";
+import GridFitType from "../text/GridFitType";
+import TextFieldAutoSize from "../text/TextFieldAutoSize";
+import TextFieldType from "../text/TextFieldType";
+import TextFormat from "../text/TextFormat";
+import TextFormatAlign from "../text/TextFormatAlign";
+import TextLineMetrics from "../text/TextLineMetrics";
 import Keyboard from "../ui/Keyboard";
 import MouseCursor from "../ui/MouseCursor";
 import Lib from "../Lib";
@@ -102,7 +112,7 @@ import Lib from "../Lib";
 export default class TextField extends InteractiveObject
 {
 	protected static __defaultTextFormat: TextFormat;
-	protected static __missingFontWarning: Map<string, Bool> = new Map();
+	protected static __missingFontWarning: Map<string, boolean> = new Map();
 
 	/**
 		When set to `true` and the text field is not in focus, Flash Player
@@ -113,120 +123,6 @@ export default class TextField extends InteractiveObject
 		@default false
 	**/
 	// alwaysShowSelection  : boolean;
-
-	/**
-		The type of anti-aliasing used for this text field. Use
-		`openfl.text.AntiAliasType` constants for this property. You can
-		control this setting only if the font is embedded(with the
-		`embedFonts` property set to `true`). The default
-		setting is `openfl.text.AntiAliasType.NORMAL`.
-
-		To set values for this property, use the following string values:
-	**/
-	public antiAliasType(get, set): AntiAliasType;
-
-	/**
-		Controls automatic sizing and alignment of text fields. Acceptable values
-		for the `TextFieldAutoSize` constants:
-		`TextFieldAutoSize.NONE`(the default),
-		`TextFieldAutoSize.LEFT`, `TextFieldAutoSize.RIGHT`,
-		and `TextFieldAutoSize.CENTER`.
-
-		If `autoSize` is set to `TextFieldAutoSize.NONE`
-		(the default) no resizing occurs.
-
-		If `autoSize` is set to `TextFieldAutoSize.LEFT`,
-		the text is treated as left-justified text, meaning that the left margin
-		of the text field remains fixed and any resizing of a single line of the
-		text field is on the right margin. If the text includes a line break(for
-		example, `"\n"` or `"\r"`), the bottom is also
-		resized to fit the next line of text. If `wordWrap` is also set
-		to `true`, only the bottom of the text field is resized and the
-		right side remains fixed.
-
-		If `autoSize` is set to
-		`TextFieldAutoSize.RIGHT`, the text is treated as
-		right-justified text, meaning that the right margin of the text field
-		remains fixed and any resizing of a single line of the text field is on
-		the left margin. If the text includes a line break(for example,
-		`"\n" or "\r")`, the bottom is also resized to fit the next
-		line of text. If `wordWrap` is also set to `true`,
-		only the bottom of the text field is resized and the left side remains
-		fixed.
-
-		If `autoSize` is set to
-		`TextFieldAutoSize.CENTER`, the text is treated as
-		center-justified text, meaning that any resizing of a single line of the
-		text field is equally distributed to both the right and left margins. If
-		the text includes a line break(for example, `"\n"` or
-		`"\r"`), the bottom is also resized to fit the next line of
-		text. If `wordWrap` is also set to `true`, only the
-		bottom of the text field is resized and the left and right sides remain
-		fixed.
-
-		@throws ArgumentError The `autoSize` specified is not a member
-							  of openfl.text.TextFieldAutoSize.
-	**/
-	public autoSize(get, set): TextFieldAutoSize;
-
-	/**
-		Specifies whether the text field has a background fill. If
-		`true`, the text field has a background fill. If
-		`false`, the text field has no background fill. Use the
-		`backgroundColor` property to set the background color of a
-		text field.
-
-		@default false
-	**/
-	public background(get, set): boolean;
-
-	/**
-		The color of the text field background. The default value is
-		`0xFFFFFF`(white). This property can be retrieved or set, even
-		if there currently is no background, but the color is visible only if the
-		text field has the `background` property set to
-		`true`.
-	**/
-	public backgroundColor(get, set): number;
-
-	/**
-		Specifies whether the text field has a border. If `true`, the
-		text field has a border. If `false`, the text field has no
-		border. Use the `borderColor` property to set the border color.
-
-		@default false
-	**/
-	public border(get, set): boolean;
-
-	/**
-		The color of the text field border. The default value is
-		`0x000000`(black). This property can be retrieved or set, even
-		if there currently is no border, but the color is visible only if the text
-		field has the `border` property set to `true`.
-	**/
-	public borderColor(get, set): number;
-
-	/**
-		An integer(1-based index) that indicates the bottommost line that is
-		currently visible in the specified text field. Think of the text field as
-		a window onto a block of text. The `scrollV` property is the
-		1-based index of the topmost visible line in the window.
-
-		All the text between the lines indicated by `scrollV` and
-		`bottomScrollV` is currently visible in the text field.
-	**/
-	public bottomScrollV(get, never): number;
-
-	/**
-		The index of the insertion point(caret) position. If no insertion point
-		is displayed, the value is the position the insertion point would be if
-		you restored focus to the field(typically where the insertion point last
-		was, or 0 if the field has not had focus).
-
-		Selection span indexes are zero-based(for example, the first position
-		is 0, the second position is 1, and so on).
-	**/
-	public caretIndex(get, never): number;
 
 	/**
 		A Boolean value that specifies whether extra white space (spaces, line
@@ -242,307 +138,7 @@ export default class TextField extends InteractiveObject
 	**/
 	// condenseWhite  : boolean;
 
-	/**
-		Specifies the format applied to newly inserted text, such as text entered
-		by a user or text inserted with the `replaceSelectedText()`
-		method.
-
-		**Note:** When selecting characters to be replaced with
-		`setSelection()` and `replaceSelectedText()`, the
-		`defaultTextFormat` will be applied only if the text has been
-		selected up to and including the last character. Here is an example:
-
-		```
-		var my_txt:TextField new TextField();
-		my_txt.text = "Flash Macintosh version"; my_fmt:TextFormat = new
-		TextFormat(); my_fmt.color = 0xFF0000; my_txt.defaultTextFormat = my_fmt;
-		my_txt.setSelection(6,15); // partial text selected - defaultTextFormat
-		not applied my_txt.setSelection(6,23); // text selected to end -
-		defaultTextFormat applied my_txt.replaceSelectedText("Windows version");
-		```
-
-		When you access the `defaultTextFormat` property, the
-		returned TextFormat object has all of its properties defined. No property
-		is `null`.
-
-		**Note:** You can't set this property if a style sheet is applied to
-		the text field.
-
-		@throws Error This method cannot be used on a text field with a style
-					  sheet.
-	**/
-	public defaultTextFormat(get, set): TextFormat;
-
-	/**
-		Specifies whether the text field is a password text field. If the value of
-		this property is `true`, the text field is treated as a
-		password text field and hides the input characters using asterisks instead
-		of the actual characters. If `false`, the text field is not
-		treated as a password text field. When password mode is enabled, the Cut
-		and Copy commands and their corresponding keyboard shortcuts will not
-		function. This security mechanism prevents an unscrupulous user from using
-		the shortcuts to discover a password on an unattended computer.
-
-		@default false
-	**/
-	public displayAsPassword(get, set): boolean;
-
-	/**
-		Specifies whether to render by using embedded font outlines. If
-		`false`, Flash Player renders the text field by using device
-		fonts.
-
-		If you set the `embedFonts` property to `true`
-		for a text field, you must specify a font for that text by using the
-		`font` property of a TextFormat object applied to the text
-		field. If the specified font is not embedded in the SWF file, the text is
-		not displayed.
-
-		@default false
-	**/
-	public embedFonts(get, set): boolean;
-
-	/**
-		The type of grid fitting used for this text field. This property
-		applies only if the `openfl.text.AntiAliasType` property of the text
-		field is set to `openfl.text.AntiAliasType.ADVANCED`.
-		The type of grid fitting used determines whether Flash Player forces
-		strong horizontal and vertical lines to fit to a pixel or subpixel
-		grid, or not at all.
-
-		For the `openfl.text.GridFitType` property, you can use the following
-		string values:
-
-		| String value | Description |
-		| --- | --- |
-		| `openfl.text.GridFitType.NONE` | Specifies no grid fitting. Horizontal and vertical lines in the glyphs are not forced to the pixel grid. This setting is recommended for animation or for large font sizes. |
-		| `openfl.text.GridFitType.PIXEL` | Specifies that strong horizontal and vertical lines are fit to the pixel grid. This setting works only for left-aligned text fields. To use this setting, the `openfl.dispaly.AntiAliasType` property of the text field must be set to `openfl.text.AntiAliasType.ADVANCED`. This setting generally provides the best legibility for left-aligned text. |
-		| `openfl.text.GridFitType.SUBPIXEL` | Specifies that strong horizontal and vertical lines are fit to the subpixel grid on an LCD monitor. To use this setting, the `openfl.text.AntiAliasType` property of the text field must be set to `openfl.text.AntiAliasType.ADVANCED`. The `openfl.text.GridFitType.SUBPIXEL` setting is often good for right-aligned or centered dynamic text, and it is sometimes a useful trade-off for animation versus text quality. |
-
-		@default pixel
-	**/
-	public gridFitType(get, set): GridFitType;
-
-	/**
-		Contains the HTML representation of the text field contents.
-		Flash Player supports the following HTML tags:
-
-		| Tag |  Description  |
-		| --- | --- |
-		| Anchor tag | The `<a>` tag creates a hypertext link and supports the following attributes:<ul><li>`target`: Specifies the name of the target window where you load the page. Options include `_self`, `_blank`, `_parent`, and `_top`. The `_self` option specifies the current frame in the current window, `_blank` specifies a new window, `_parent` specifies the parent of the current frame, and `_top` specifies the top-level frame in the current window.</li><li>`href`: Specifies a URL or an ActionScript `link` event.The URL can be either absolute or relative to the location of the SWF file that is loading the page. An example of an absolute reference to a URL is `http://www.adobe.com`; an example of a relative reference is `/index.html`. Absolute URLs must be prefixed with http://; otherwise, Flash Player or AIR treats them as relative URLs. You can use the `link` event to cause the link to execute an ActionScript in a SWF file instead of opening a URL. To specify a `link` event, use the event scheme instead of the http scheme in your `href` attribute. An example is `href="event:myText"` instead of `href="http://myURL"`; when the user clicks a hypertext link that contains the event scheme, the text field dispatches a `link` TextEvent with its `text` property set to "`myText`". You can then create an ActionScript that executes whenever the link TextEvent is dispatched. You can also define `a:link`, `a:hover`, and `a:active` styles for anchor tags by using style sheets.</li></ul> |
-		| Bold tag | The `<b>` tag renders text as bold. A bold typeface must be available for the font used. |
-		| Break tag | The `<br>` tag creates a line break in the text field. Set the text field to be a multiline text field to use this tag.  |
-		| Font tag | The `<font>` tag specifies a font or list of fonts to display the text.The font tag supports the following attributes:<ul><li>`color`: Only hexadecimal color (`#FFFFFF`) values are supported.</li><li>`face`: Specifies the name of the font to use. As shown in the following example, you can specify a list of comma-delimited font names, in which case Flash Player selects the first available font. If the specified font is not installed on the local computer system or isn't embedded in the SWF file, Flash Player selects a substitute font.</li><li>`size`: Specifies the size of the font. You can use absolute pixel sizes, such as 16 or 18, or relative point sizes, such as +2 or -4.</li></ul> |
-		| Image tag | The `<img>` tag lets you embed external image files (JPEG, GIF, PNG), SWF files, and movie clips inside text fields. Text automatically flows around images you embed in text fields. You must set the text field to be multiline to wrap text around an image.<br>The `<img>` tag supports the following attributes:<ul><li>`src`: Specifies the URL to an image or SWF file, or the linkage identifier for a movie clip symbol in the library. This attribute is required; all other attributes are optional. External files (JPEG, GIF, PNG, and SWF files) do not show until they are downloaded completely.</li><li>`width`: The width of the image, SWF file, or movie clip being inserted, in pixels.</li><li>`height`: The height of the image, SWF file, or movie clip being inserted, in pixels.</li><li>`align`: Specifies the horizontal alignment of the embedded image within the text field. Valid values are `left` and `right`. The default value is `left`.</li><li>`hspace`: Specifies the amount of horizontal space that surrounds the image where no text appears. The default value is 8.</li><li>`vspace`: Specifies the amount of vertical space that surrounds the image where no text appears. The default value is 8.</li><li>`id`: Specifies the name for the movie clip instance (created by Flash Player) that contains the embedded image file, SWF file, or movie clip. This approach is used to control the embedded content with ActionScript.</li><li>`checkPolicyFile`: Specifies that Flash Player checks for a URL policy file on the server associated with the image domain. If a policy file exists, SWF files in the domains listed in the file can access the data of the loaded image, for example, by calling the `BitmapData.draw()` method with this image as the `source` parameter. For more information related to security, see the Flash Player Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).</li></ul>Flash displays media embedded in a text field at full size. To specify the dimensions of the media you are embedding, use the `<img>` tag `height` and `width` attributes. <br>In general, an image embedded in a text field appears on the line following the `<img>` tag. However, when the `<img>` tag is the first character in the text field, the image appears on the first line of the text field.<br>For AIR content in the application security sandbox, AIR ignores `img` tags in HTML content in ActionScript TextField objects. This is to prevent possible phishing attacks. |
-		| Italic tag | The `<i>` tag displays the tagged text in italics. An italic typeface must be available for the font used. |
-		| List item tag | The `<li>` tag places a bullet in front of the text that it encloses.<br>**Note:** Because Flash Player and AIR do not recognize ordered and unordered list tags (`<ol>` and `<ul>`, they do not modify how your list is rendered. All lists are unordered and all list items use bullets. |
-		| Paragraph tag | The `<p>` tag creates a new paragraph. The text field must be set to be a multiline text field to use this tag. The `<p>` tag supports the following attributes:<ul><li>align: Specifies alignment of text within the paragraph; valid values are `left`, `right`, `justify`, and `center`.</li><li>class: Specifies a CSS style class defined by a openfl.text.StyleSheet object.</li></ul> |
-		| Span tag | The `<span>` tag is available only for use with CSS text styles. It supports the following attribute:<ul><li>class: Specifies a CSS style class defined by a openfl.text.StyleSheet object.</li></ul> |
-		| Text format tag | The `<textformat>` tag lets you use a subset of paragraph formatting properties of the TextFormat class within text fields, including line leading, indentation, margins, and tab stops. You can combine `<textformat>` tags with the built-in HTML tags.<br>The `<textformat>` tag has the following attributes:<li>`blockindent`: Specifies the block indentation in points; corresponds to `TextFormat.blockIndent`.</li><li>`indent`: Specifies the indentation from the left margin to the first character in the paragraph; corresponds to `TextFormat.indent`. Both positive and negative numbers are acceptable.</li><li>`leading`: Specifies the amount of leading (vertical space) between lines; corresponds to `TextFormat.leading`. Both positive and negative numbers are acceptable.</li><li>`leftmargin`: Specifies the left margin of the paragraph, in points; corresponds to `TextFormat.leftMargin`.</li><li>`rightmargin`: Specifies the right margin of the paragraph, in points; corresponds to `TextFormat.rightMargin`.</li><li>`tabstops`: Specifies custom tab stops as an array of non-negative integers; corresponds to `TextFormat.tabStops`.</li></ul> |
-		| Underline tag | The `<u>` tag underlines the tagged text. |
-
-		Flash Player and AIR support the following HTML entities:
-
-		| Entity | Description |
-		| --- | --- |
-		| &amp;lt; | < (less than) |
-		| &amp;gt; | > (greater than) |
-		| &amp;amp; | & (ampersand) |
-		| &amp;quot; | " (double quotes) |
-		| &amp;apos; | ' (apostrophe, single quote) |
-
-		Flash Player and AIR also support explicit character codes, such as
-		&#38; (ASCII ampersand) and &#x20AC; (Unicode € symbol).
-	**/
-	public htmlText(get, set): string;
-
-	/**
-		The number of characters in a text field. A character such as tab
-		(`\t`) counts as one character.
-	**/
-	public length(get, never): number;
-
-	/**
-		The maximum number of characters that the text field can contain, as
-		entered by a user. A script can insert more text than
-		`maxChars` allows; the `maxChars` property indicates
-		only how much text a user can enter. If the value of this property is
-		`0`, a user can enter an unlimited amount of text.
-
-		@default 0
-	**/
-	public maxChars(get, set): number;
-
-	/**
-		The maximum value of `scrollH`.
-	**/
-	public maxScrollH(get, never): number;
-
-	/**
-		The maximum value of `scrollV`.
-	**/
-	public maxScrollV(get, never): number;
-
-	/**
-		A Boolean value that indicates whether Flash Player automatically scrolls
-		multiline text fields when the user clicks a text field and rolls the mouse wheel.
-		By default, this value is `true`. This property is useful if you want to prevent
-		mouse wheel scrolling of text fields, or implement your own text field scrolling.
-	**/
-	public mouseWheelEnabled(get, set): boolean;
-
-	/**
-		Indicates whether field is a multiline text field. If the value is
-		`true`, the text field is multiline; if the value is
-		`false`, the text field is a single-line text field. In a field
-		of type `TextFieldType.INPUT`, the `multiline` value
-		determines whether the `Enter` key creates a new line(a value
-		of `false`, and the `Enter` key is ignored). If you
-		paste text into a `TextField` with a `multiline`
-		value of `false`, newlines are stripped out of the text.
-
-		@default false
-	**/
-	public multiline(get, set): boolean;
-
-	/**
-		Defines the number of text lines in a multiline text field. If
-		`wordWrap` property is set to `true`, the number of
-		lines increases when text wraps.
-	**/
-	public numLines(get, never): number;
-
-	/**
-		Indicates the set of characters that a user can enter into the text field.
-		If the value of the `restrict` property is `null`,
-		you can enter any character. If the value of the `restrict`
-		property is an empty string, you cannot enter any character. If the value
-		of the `restrict` property is a string of characters, you can
-		enter only characters in the string into the text field. The string is
-		scanned from left to right. You can specify a range by using the hyphen
-		(-) character. Only user interaction is restricted; a script can put any
-		text into the text field. <ph outputclass="flashonly">This property does
-		not synchronize with the Embed font options in the Property inspector.
-
-		If the string begins with a caret(^) character, all characters are
-		initially accepted and succeeding characters in the string are excluded
-		from the set of accepted characters. If the string does not begin with a
-		caret(^) character, no characters are initially accepted and succeeding
-		characters in the string are included in the set of accepted
-		characters.
-
-		The following example allows only uppercase characters, spaces, and
-		numbers to be entered into a text field:
-		`my_txt.restrict = "A-Z 0-9";`
-
-		The following example includes all characters, but excludes lowercase
-		letters:
-		`my_txt.restrict = "^a-z";`
-
-		You can use a backslash to enter a ^ or - verbatim. The accepted
-		backslash sequences are \-, \^ or \\. The backslash must be an actual
-		character in the string, so when specified in ActionScript, a double
-		backslash must be used. For example, the following code includes only the
-		dash(-) and caret(^):
-		`my_txt.restrict = "\\-\\^";`
-
-		The ^ can be used anywhere in the string to toggle between including
-		characters and excluding characters. The following code includes only
-		uppercase letters, but excludes the uppercase letter Q:
-		`my_txt.restrict = "A-Z^Q";`
-
-		You can use the `\u` escape sequence to construct
-		`restrict` strings. The following code includes only the
-		characters from ASCII 32(space) to ASCII 126(tilde).
-		`my_txt.restrict = "\u0020-\u007E";`
-
-		@default null
-	**/
-	public restrict(get, set): string;
-
-	/**
-		The current horizontal scrolling position. If the `scrollH`
-		property is 0, the text is not horizontally scrolled. This property value
-		is an integer that represents the horizontal position in pixels.
-
-		The units of horizontal scrolling are pixels, whereas the units of
-		vertical scrolling are lines. Horizontal scrolling is measured in pixels
-		because most fonts you typically use are proportionally spaced; that is,
-		the characters can have different widths. Flash Player performs vertical
-		scrolling by line because users usually want to see a complete line of
-		text rather than a partial line. Even if a line uses multiple fonts, the
-		height of the line adjusts to fit the largest font in use.
-
-		**Note: **The `scrollH` property is zero-based, not
-		1-based like the `scrollV` vertical scrolling property.
-	**/
-	public scrollH(get, set): number;
-
-	/**
-		The vertical position of text in a text field. The `scrollV`
-		property is useful for directing users to a specific paragraph in a long
-		passage, or creating scrolling text fields.
-
-		The units of vertical scrolling are lines, whereas the units of
-		horizontal scrolling are pixels. If the first line displayed is the first
-		line in the text field, scrollV is set to 1(not 0). Horizontal scrolling
-		is measured in pixels because most fonts are proportionally spaced; that
-		is, the characters can have different widths. Flash performs vertical
-		scrolling by line because users usually want to see a complete line of
-		text rather than a partial line. Even if there are multiple fonts on a
-		line, the height of the line adjusts to fit the largest font in use.
-	**/
-	public scrollV(get, set): number;
-
-	/**
-		A Boolean value that indicates whether the text field is selectable. The
-		value `true` indicates that the text is selectable. The
-		`selectable` property controls whether a text field is
-		selectable, not whether a text field is editable. A dynamic text field can
-		be selectable even if it is not editable. If a dynamic text field is not
-		selectable, the user cannot select its text.
-
-		If `selectable` is set to `false`, the text in
-		the text field does not respond to selection commands from the mouse or
-		keyboard, and the text cannot be copied with the Copy command. If
-		`selectable` is set to `true`, the text in the text
-		field can be selected with the mouse or keyboard, and the text can be
-		copied with the Copy command. You can select text this way even if the
-		text field is a dynamic text field instead of an input text field.
-
-		@default true
-	**/
-	public selectable(get, set): boolean;
-
 	// selectedText(default,never) : string;
-
-	/**
-		The zero-based character index value of the first character in the current
-		selection. For example, the first character is 0, the second character is
-		1, and so on. If no text is selected, this property is the value of
-		`caretIndex`.
-	**/
-	public selectionBeginIndex(get, never): number;
-
-	/**
-		The zero-based character index value of the last character in the current
-		selection. For example, the first character is 0, the second character is
-		1, and so on. If no text is selected, this property is the value of
-		`caretIndex`.
-	**/
-	public selectionEndIndex(get, never): number;
-
-	/**
-		The sharpness of the glyph edges in this text field. This property applies
-		only if the `openfl.text.AntiAliasType` property of the text
-		field is set to `openfl.text.AntiAliasType.ADVANCED`. The range
-		for `sharpness` is a number from -400 to 400. If you attempt to
-		set `sharpness` to a value outside that range, Flash sets the
-		property to the nearest value in the range(either -400 or 400).
-
-		@default 0
-	**/
-	public sharpness(get, set): number;
 
 	/**
 		Attaches a style sheet to the text field. For information on creating
@@ -563,32 +159,6 @@ export default class TextField extends InteractiveObject
 	// styleSheet : StyleSheet;
 
 	/**
-		A string that is the current text in the text field. Lines are separated
-		by the carriage return character(`'\r'`, ASCII 13). This
-		property contains unformatted text in the text field, without HTML tags.
-
-		To get the text in HTML form, use the `htmlText`
-		property.
-	**/
-	public text(get, set): string;
-
-	/**
-		The color of the text in a text field, in hexadecimal format. The
-		hexadecimal color system uses six digits to represent color values. Each
-		digit has 16 possible values or characters. The characters range from 0-9
-		and then A-F. For example, black is `0x000000`; white is
-		`0xFFFFFF`.
-
-		@default 0(0x000000)
-	**/
-	public textColor(get, set): number;
-
-	/**
-		The height of the text in pixels.
-	**/
-	public textHeight(get, never): number;
-
-	/**
 		The interaction mode property, Default value is
 		TextInteractionMode.NORMAL. On mobile platforms, the normal mode
 		implies that the text can be scrolled but not selected. One can switch
@@ -597,11 +167,6 @@ export default class TextField extends InteractiveObject
 		scrollable as well as selection mode.
 	**/
 	// @:require(flash11) textInteractionMode(default,never) : TextInteractionMode;
-
-	/**
-		The width of the text in pixels.
-	**/
-	public textWidth(get, never): number;
 
 	/**
 		The thickness of the glyph edges in this text field. This property
@@ -616,18 +181,6 @@ export default class TextField extends InteractiveObject
 	// thickness  : number;
 
 	/**
-		The type of the text field. Either one of the following TextFieldType
-		constants: `TextFieldType.DYNAMIC`, which specifies a dynamic
-		text field, which a user cannot edit, or `TextFieldType.INPUT`,
-		which specifies an input text field, which a user can edit.
-
-		@default dynamic
-		@throws ArgumentError The `type` specified is not a member of
-							  openfl.text.TextFieldType.
-	**/
-	public type(get, set): TextFieldType;
-
-	/**
 		Specifies whether to copy and paste the text formatting along with the
 		text. When set to `true`, Flash Player copies and pastes formatting
 		(such as alignment, bold, and italics) when you copy and paste between
@@ -637,18 +190,9 @@ export default class TextField extends InteractiveObject
 	**/
 	// useRichTextClipboard  : boolean;
 
-	/**
-		A Boolean value that indicates whether the text field has word wrap. If
-		the value of `wordWrap` is `true`, the text field
-		has word wrap; if the value is `false`, the text field does not
-		have word wrap. The default value is `false`.
-	**/
-	public wordWrap(get, set): boolean;
-
-	protected __backend: TextFieldBackend;
 	protected __bounds: Rectangle;
 	protected __caretIndex: number;
-	protected __cursorTimer: Timer;
+	protected __cursorTimerID: number;
 	protected __dirty: boolean;
 	protected __displayAsPassword: boolean;
 	protected __domRender: boolean;
@@ -664,112 +208,10 @@ export default class TextField extends InteractiveObject
 	protected __htmlText: string;
 	protected __textEngine: TextEngine;
 	protected __textFormat: TextFormat;
-	#if openfl_html5
-	protected __div: DivElement;
+	protected __div: HTMLDivElement;
 	protected __renderedOnCanvasWhileOnDOM: boolean = false;
 	protected __rawHtmlText: string;
 	protected __forceCachedBitmapUpdate: boolean = false;
-	#end
-
-	#if openfljs
-	protected static __init__()
-	{
-		untyped Object.defineProperties(TextField.prototype, {
-			"antiAliasType": {
-				get: untyped __js__("function () { return this.get_antiAliasType (); }"),
-				set: untyped __js__("function (v) { return this.set_antiAliasType (v); }")
-			},
-			"autoSize": {
-				get: untyped __js__("function () { return this.get_autoSize (); }"),
-				set: untyped __js__("function (v) { return this.set_autoSize (v); }")
-			},
-			"background": {
-				get: untyped __js__("function () { return this.get_background (); }"),
-				set: untyped __js__("function (v) { return this.set_background (v); }")
-			},
-			"backgroundColor": {
-				get: untyped __js__("function () { return this.get_backgroundColor (); }"),
-				set: untyped __js__("function (v) { return this.set_backgroundColor (v); }")
-			},
-			"border": { get: untyped __js__("function () { return this.get_border (); }"), set: untyped __js__("function (v) { return this.set_border (v); }") },
-			"borderColor": {
-				get: untyped __js__("function () { return this.get_borderColor (); }"),
-				set: untyped __js__("function (v) { return this.set_borderColor (v); }")
-			},
-			"bottomScrollV": { get: untyped __js__("function () { return this.get_bottomScrollV (); }") },
-			"defaultTextFormat": {
-				get: untyped __js__("function () { return this.get_defaultTextFormat (); }"),
-				set: untyped __js__("function (v) { return this.set_defaultTextFormat (v); }")
-			},
-			"displayAsPassword": {
-				get: untyped __js__("function () { return this.get_displayAsPassword (); }"),
-				set: untyped __js__("function (v) { return this.set_displayAsPassword (v); }")
-			},
-			"embedFonts": {
-				get: untyped __js__("function () { return this.get_embedFonts (); }"),
-				set: untyped __js__("function (v) { return this.set_embedFonts (v); }")
-			},
-			"gridFitType": {
-				get: untyped __js__("function () { return this.get_gridFitType (); }"),
-				set: untyped __js__("function (v) { return this.set_gridFitType (v); }")
-			},
-			"htmlText": {
-				get: untyped __js__("function () { return this.get_htmlText (); }"),
-				set: untyped __js__("function (v) { return this.set_htmlText (v); }")
-			},
-			"length": { get: untyped __js__("function () { return this.get_length (); }") },
-			"maxChars": {
-				get: untyped __js__("function () { return this.get_maxChars (); }"),
-				set: untyped __js__("function (v) { return this.set_maxChars (v); }")
-			},
-			"maxScrollH": { get: untyped __js__("function () { return this.get_maxScrollH (); }") },
-			"maxScrollV": { get: untyped __js__("function () { return this.get_maxScrollV (); }") },
-			"mouseWheelEnabled": {
-				get: untyped __js__("function () { return this.get_mouseWheelEnabled (); }"),
-				set: untyped __js__("function (v) { return this.set_mouseWheelEnabled (v); }")
-			},
-			"multiline": {
-				get: untyped __js__("function () { return this.get_multiline (); }"),
-				set: untyped __js__("function (v) { return this.set_multiline (v); }")
-			},
-			"numLines": { get: untyped __js__("function () { return this.get_numLines (); }") },
-			"restrict": {
-				get: untyped __js__("function () { return this.get_restrict (); }"),
-				set: untyped __js__("function (v) { return this.set_restrict (v); }")
-			},
-			"scrollH": {
-				get: untyped __js__("function () { return this.get_scrollH (); }"),
-				set: untyped __js__("function (v) { return this.set_scrollH (v); }")
-			},
-			"scrollV": {
-				get: untyped __js__("function () { return this.get_scrollV (); }"),
-				set: untyped __js__("function (v) { return this.set_scrollV (v); }")
-			},
-			"selectable": {
-				get: untyped __js__("function () { return this.get_selectable (); }"),
-				set: untyped __js__("function (v) { return this.set_selectable (v); }")
-			},
-			"selectionBeginIndex": { get: untyped __js__("function () { return this.get_selectionBeginIndex (); }") },
-			"selectionEndIndex": { get: untyped __js__("function () { return this.get_selectionEndIndex (); }") },
-			"sharpness": {
-				get: untyped __js__("function () { return this.get_sharpness (); }"),
-				set: untyped __js__("function (v) { return this.set_sharpness (v); }")
-			},
-			"text": { get: untyped __js__("function () { return this.get_text (); }"), set: untyped __js__("function (v) { return this.set_text (v); }") },
-			"textColor": {
-				get: untyped __js__("function () { return this.get_textColor (); }"),
-				set: untyped __js__("function (v) { return this.set_textColor (v); }")
-			},
-			"textHeight": { get: untyped __js__("function () { return this.get_textHeight (); }") },
-			"textWidth": { get: untyped __js__("function () { return this.get_textWidth (); }") },
-			"type": { get: untyped __js__("function () { return this.get_type (); }"), set: untyped __js__("function (v) { return this.set_type (v); }") },
-			"wordWrap": {
-				get: untyped __js__("function () { return this.get_wordWrap (); }"),
-				set: untyped __js__("function (v) { return this.set_wordWrap (v); }")
-			},
-		});
-	}
-	#end
 
 	/**
 		Creates a new TextField instance. After you create the TextField instance,
@@ -783,41 +225,42 @@ export default class TextField extends InteractiveObject
 	{
 		super();
 
-		__type = TEXTFIELD;
+		this.__type = DisplayObjectType.TEXTFIELD;
 
-		__caretIndex = -1;
-		__displayAsPassword = false;
-		__graphics = new Graphics(this);
-		__textEngine = new TextEngine(this);
-		__layoutDirty = true;
-		__offsetX = 0;
-		__offsetY = 0;
-		__mouseWheelEnabled = true;
-		__text = "";
+		this.__caretIndex = -1;
+		this.__cursorTimerID = 0;
+		this.__displayAsPassword = false;
+		this.__graphics = new (<internal.Graphics><any>Graphics)(this);
+		this.__textEngine = new TextEngine(this);
+		this.__layoutDirty = true;
+		this.__offsetX = 0;
+		this.__offsetY = 0;
+		this.__mouseWheelEnabled = true;
+		this.__text = "";
 
-		doubleClickEnabled = true;
+		this.doubleClickEnabled = true;
 
-		if (__defaultTextFormat == null)
+		if (TextField.__defaultTextFormat == null)
 		{
-			__defaultTextFormat = new TextFormat("Times New Roman", 12, 0x000000, false, false, false, "", "", TextFormatAlign.LEFT, 0, 0, 0, 0);
-			__defaultTextFormat.blockIndent = 0;
-			__defaultTextFormat.bullet = false;
-			__defaultTextFormat.letterSpacing = 0;
-			__defaultTextFormat.kerning = false;
+			TextField.__defaultTextFormat = new TextFormat("Times New Roman", 12, 0x000000, false, false, false, "", "", TextFormatAlign.LEFT, 0, 0, 0, 0);
+			TextField.__defaultTextFormat.blockIndent = 0;
+			TextField.__defaultTextFormat.bullet = false;
+			TextField.__defaultTextFormat.letterSpacing = 0;
+			TextField.__defaultTextFormat.kerning = false;
 		}
 
-		__textFormat = __defaultTextFormat.clone();
-		__textEngine.textFormatRanges.push(new TextFormatRange(__textFormat, 0, 0));
+		this.__textFormat = TextField.__defaultTextFormat.clone();
+		this.__textEngine.textFormatRanges.push(new TextFormatRange(this.__textFormat, 0, 0));
 
-		__backend = new TextFieldBackend(this);
+		// __backend = new TextFieldBackend(this);
 
-		addEventListener(MouseEvent.MOUSE_DOWN, this_onMouseDown);
-		addEventListener(FocusEvent.FOCUS_IN, this_onFocusIn);
-		addEventListener(FocusEvent.FOCUS_OUT, this_onFocusOut);
-		addEventListener(KeyboardEvent.KEY_DOWN, this_onKeyDown);
-		addEventListener(MouseEvent.MOUSE_WHEEL, this_onMouseWheel);
+		this.addEventListener(MouseEvent.MOUSE_DOWN, this.this_onMouseDown);
+		this.addEventListener(FocusEvent.FOCUS_IN, this.this_onFocusIn);
+		this.addEventListener(FocusEvent.FOCUS_OUT, this.this_onFocusOut);
+		this.addEventListener(KeyboardEvent.KEY_DOWN, this.this_onKeyDown);
+		this.addEventListener(MouseEvent.MOUSE_WHEEL, this.this_onMouseWheel);
 
-		addEventListener(MouseEvent.DOUBLE_CLICK, this_onDoubleClick);
+		this.addEventListener(MouseEvent.DOUBLE_CLICK, this.this_onDoubleClick);
 	}
 
 	/**
@@ -833,16 +276,16 @@ export default class TextField extends InteractiveObject
 	{
 		if (text == null || text == "") return;
 
-		__dirty = true;
-		__layoutDirty = true;
-		__setRenderDirty();
+		this.__dirty = true;
+		this.__layoutDirty = true;
+		this.__setRenderDirty();
 
-		__updateText(__text + text);
+		this.__updateText(this.__text + text);
 
-		__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __text.length;
+		this.__textEngine.textFormatRanges[this.__textEngine.textFormatRanges.length - 1].end = this.__text.length;
 
-		__updateScrollV();
-		__updateScrollH();
+		this.__updateScrollV();
+		this.__updateScrollH();
 	}
 
 	// copyRichText() : string;
@@ -858,11 +301,11 @@ export default class TextField extends InteractiveObject
 	**/
 	public getCharBoundaries(charIndex: number): Rectangle
 	{
-		if (charIndex < 0 || charIndex > __text.length - 1) return null;
+		if (charIndex < 0 || charIndex > this.__text.length - 1) return null;
 
 		var rect = new Rectangle();
 
-		if (__getCharBoundaries(charIndex, rect))
+		if (this.__getCharBoundaries(charIndex, rect))
 		{
 			return rect;
 		}
@@ -884,18 +327,18 @@ export default class TextField extends InteractiveObject
 	**/
 	public getCharIndexAtPoint(x: number, y: number): number
 	{
-		if (x <= 2 || x > width + 4 || y <= 0 || y > height + 4) return -1;
+		if (x <= 2 || x > this.width + 4 || y <= 0 || y > this.height + 4) return -1;
 
-		__updateLayout();
+		this.__updateLayout();
 
-		x += scrollH;
+		x += this.scrollH;
 
-		for (i in 0...scrollV - 1)
+		for (let i = 0; i < this.scrollV; i++)
 		{
-			y += __textEngine.lineHeights[i];
+			y += this.__textEngine.lineHeights[i];
 		}
 
-		for (group in __textEngine.layoutGroups)
+		for (let group of this.__textEngine.layoutGroups)
 		{
 			if (y >= group.offsetY && y <= group.offsetY + group.height)
 			{
@@ -903,7 +346,7 @@ export default class TextField extends InteractiveObject
 				{
 					var advance = 0.0;
 
-					for (i in 0...group.positions.length)
+					for (let i = 0; i < group.positions.length; i++)
 					{
 						advance += group.getAdvance(i);
 
@@ -934,9 +377,9 @@ export default class TextField extends InteractiveObject
 	**/
 	public getFirstCharInParagraph(charIndex: number): number
 	{
-		if (charIndex < 0 || charIndex > text.length) return -1;
+		if (charIndex < 0 || charIndex > this.text.length) return -1;
 
-		var index = __textEngine.getLineBreakIndex();
+		var index = this.__textEngine.getLineBreakIndex();
 		var startIndex = 0;
 
 		while (index > -1)
@@ -950,7 +393,7 @@ export default class TextField extends InteractiveObject
 				break;
 			}
 
-			index = __textEngine.getLineBreakIndex(index + 1);
+			index = this.__textEngine.getLineBreakIndex(index + 1);
 		}
 
 		return startIndex;
@@ -989,16 +432,16 @@ export default class TextField extends InteractiveObject
 	**/
 	public getLineIndexAtPoint(x: number, y: number): number
 	{
-		__updateLayout();
+		this.__updateLayout();
 
-		if (x <= 2 || x > width + 4 || y <= 0 || y > height + 4) return -1;
+		if (x <= 2 || x > this.width + 4 || y <= 0 || y > this.height + 4) return -1;
 
-		for (i in 0...scrollV - 1)
+		for (let i = 0; i < this.scrollV - 1; i++)
 		{
-			y += __textEngine.lineHeights[i];
+			y += this.__textEngine.lineHeights[i];
 		}
 
-		for (group in __textEngine.layoutGroups)
+		for (let group of this.__textEngine.layoutGroups)
 		{
 			if (y >= group.offsetY && y <= group.offsetY + group.height)
 			{
@@ -1021,11 +464,11 @@ export default class TextField extends InteractiveObject
 	**/
 	public getLineIndexOfChar(charIndex: number): number
 	{
-		if (charIndex < 0 || charIndex > __text.length) return -1;
+		if (charIndex < 0 || charIndex > this.__text.length) return -1;
 
-		__updateLayout();
+		this.__updateLayout();
 
-		for (group in __textEngine.layoutGroups)
+		for (let group of this.__textEngine.layoutGroups)
 		{
 			if (group.startIndex <= charIndex && group.endIndex >= charIndex)
 			{
@@ -1045,14 +488,14 @@ export default class TextField extends InteractiveObject
 	**/
 	public getLineLength(lineIndex: number): number
 	{
-		__updateLayout();
+		this.__updateLayout();
 
-		if (lineIndex < 0 || lineIndex > __textEngine.numLines - 1) return 0;
+		if (lineIndex < 0 || lineIndex > this.__textEngine.numLines - 1) return 0;
 
 		var startIndex = -1;
 		var endIndex = -1;
 
-		for (group in __textEngine.layoutGroups)
+		for (let group of this.__textEngine.layoutGroups)
 		{
 			if (group.lineIndex == lineIndex)
 			{
@@ -1065,7 +508,7 @@ export default class TextField extends InteractiveObject
 			}
 		}
 
-		if (endIndex == -1) endIndex = __text.length;
+		if (endIndex == -1) endIndex = this.__text.length;
 		return endIndex - startIndex;
 	}
 
@@ -1078,21 +521,28 @@ export default class TextField extends InteractiveObject
 	**/
 	public getLineMetrics(lineIndex: number): TextLineMetrics
 	{
-		__updateLayout();
+		this.__updateLayout();
 
-		var ascender = __textEngine.lineAscents[lineIndex];
-		var descender = __textEngine.lineDescents[lineIndex];
-		var leading = __textEngine.lineLeadings[lineIndex];
-		var lineHeight = __textEngine.lineHeights[lineIndex];
-		var lineWidth = __textEngine.lineWidths[lineIndex];
+		var ascender = this.__textEngine.lineAscents[lineIndex];
+		var descender = this.__textEngine.lineDescents[lineIndex];
+		var leading = this.__textEngine.lineLeadings[lineIndex];
+		var lineHeight = this.__textEngine.lineHeights[lineIndex];
+		var lineWidth = this.__textEngine.lineWidths[lineIndex];
 
 		// TODO: Handle START and END based on language (don't assume LTR)
 
-		var margin = switch (__textFormat.align)
+		var margin = 2;
+
+		switch (this.__textFormat.align)
 		{
-			case LEFT, JUSTIFY, START: 2;
-			case RIGHT, END: (__textEngine.width - lineWidth) - 2;
-			case CENTER: (__textEngine.width - lineWidth) / 2;
+			case TextFormatAlign.RIGHT:
+			case TextFormatAlign.END:
+				margin = (this.__textEngine.width - lineWidth) - 2;
+				break;
+
+			case TextFormatAlign.CENTER:
+				margin = (this.__textEngine.width - lineWidth) / 2;
+				break;
 		}
 
 		return new TextLineMetrics(margin, lineWidth, lineHeight, ascender, descender, leading);
@@ -1109,11 +559,11 @@ export default class TextField extends InteractiveObject
 	**/
 	public getLineOffset(lineIndex: number): number
 	{
-		__updateLayout();
+		this.__updateLayout();
 
-		if (lineIndex < 0 || lineIndex > __textEngine.numLines - 1) return -1;
+		if (lineIndex < 0 || lineIndex > this.__textEngine.numLines - 1) return -1;
 
-		for (group in __textEngine.layoutGroups)
+		for (let group of this.__textEngine.layoutGroups)
 		{
 			if (group.lineIndex == lineIndex)
 			{
@@ -1135,14 +585,14 @@ export default class TextField extends InteractiveObject
 	**/
 	public getLineText(lineIndex: number): string
 	{
-		__updateLayout();
+		this.__updateLayout();
 
-		if (lineIndex < 0 || lineIndex > __textEngine.numLines - 1) return null;
+		if (lineIndex < 0 || lineIndex > this.__textEngine.numLines - 1) return null;
 
 		var startIndex = -1;
 		var endIndex = -1;
 
-		for (group in __textEngine.layoutGroups)
+		for (let group of this.__textEngine.layoutGroups)
 		{
 			if (group.lineIndex == lineIndex)
 			{
@@ -1155,9 +605,9 @@ export default class TextField extends InteractiveObject
 			}
 		}
 
-		if (endIndex == -1) endIndex = __text.length;
+		if (endIndex == -1) endIndex = this.__text.length;
 
-		return __textEngine.text.substring(startIndex, endIndex);
+		return this.__textEngine.text.substring(startIndex, endIndex);
 	}
 
 	/**
@@ -1174,15 +624,15 @@ export default class TextField extends InteractiveObject
 	**/
 	public getParagraphLength(charIndex: number): number
 	{
-		if (charIndex < 0 || charIndex > text.length) return -1;
+		if (charIndex < 0 || charIndex > this.text.length) return -1;
 
-		var startIndex = getFirstCharInParagraph(charIndex);
+		var startIndex = this.getFirstCharInParagraph(charIndex);
 
-		if (charIndex >= text.length) return text.length - startIndex + 1;
+		if (charIndex >= this.text.length) return this.text.length - startIndex + 1;
 
-		var endIndex = __textEngine.getLineBreakIndex(charIndex) + 1;
+		var endIndex = this.__textEngine.getLineBreakIndex(charIndex) + 1;
 
-		if (endIndex == 0) endIndex = __text.length;
+		if (endIndex == 0) endIndex = this.__text.length;
 		return endIndex - startIndex;
 	}
 
@@ -1215,15 +665,15 @@ export default class TextField extends InteractiveObject
 	{
 		var format = null;
 
-		if (beginIndex >= text.length || beginIndex < -1 || endIndex > text.length || endIndex < -1)
+		if (beginIndex >= this.text.length || beginIndex < -1 || endIndex > this.text.length || endIndex < -1)
 			throw new RangeError("The supplied index is out of bounds");
 
 		if (beginIndex == -1) beginIndex = 0;
-		if (endIndex == -1) endIndex = text.length;
+		if (endIndex == -1) endIndex = this.text.length;
 
 		if (beginIndex >= endIndex) return new TextFormat();
 
-		for (group in __textEngine.textFormatRanges)
+		for (let group of this.__textEngine.textFormatRanges)
 		{
 			if ((group.start <= beginIndex && group.end > beginIndex) || (group.start < endIndex && group.end >= endIndex))
 			{
@@ -1306,7 +756,7 @@ export default class TextField extends InteractiveObject
 	**/
 	public replaceSelectedText(value: string): void
 	{
-		__replaceSelectedText(value, false);
+		this.__replaceSelectedText(value, false);
 	}
 
 	/**
@@ -1327,7 +777,7 @@ export default class TextField extends InteractiveObject
 	**/
 	public replaceText(beginIndex: number, endIndex: number, newText: string): void
 	{
-		__replaceText(beginIndex, endIndex, newText, false);
+		this.__replaceText(beginIndex, endIndex, newText, false);
 	}
 
 	/**
@@ -1345,13 +795,13 @@ export default class TextField extends InteractiveObject
 	**/
 	public setSelection(beginIndex: number, endIndex: number): void
 	{
-		__selectionIndex = beginIndex;
-		__caretIndex = endIndex;
+		this.__selectionIndex = beginIndex;
+		this.__caretIndex = endIndex;
 
-		__updateScrollV();
+		this.__updateScrollV();
 
-		__stopCursorTimer();
-		__startCursorTimer();
+		this.__stopCursorTimer();
+		this.__startCursorTimer();
 	}
 
 	/**
@@ -1401,7 +851,7 @@ export default class TextField extends InteractiveObject
 	**/
 	public setTextFormat(format: TextFormat, beginIndex: number = 0, endIndex: number = 0): void
 	{
-		var max = text.length;
+		var max = this.text.length;
 		var range;
 
 		if (beginIndex < 0) beginIndex = 0;
@@ -1424,11 +874,11 @@ export default class TextField extends InteractiveObject
 		if (beginIndex == 0 && endIndex >= max)
 		{
 			// set text format for the whole textfield
-			__textFormat.__merge(format);
+			(<internal.TextFormat><any>this.__textFormat).__merge(format);
 
-			for (i in 0...__textEngine.textFormatRanges.length)
+			for (let i = 0; i < this.__textEngine.textFormatRanges.length; i++)
 			{
-				range = __textEngine.textFormatRanges[i];
+				range = this.__textEngine.textFormatRanges[i];
 				range.format.__merge(format);
 			}
 		}
@@ -1437,9 +887,9 @@ export default class TextField extends InteractiveObject
 			var index = 0;
 			var newRange;
 
-			while (index < __textEngine.textFormatRanges.length)
+			while (index < this.__textEngine.textFormatRanges.length)
 			{
-				range = __textEngine.textFormatRanges[index];
+				range = this.__textEngine.textFormatRanges[index];
 
 				if (range.start == beginIndex && range.end == endIndex)
 				{
@@ -1457,7 +907,7 @@ export default class TextField extends InteractiveObject
 					// set format range is within the first part of the range
 					newRange = new TextFormatRange(range.format.clone(), range.start, endIndex);
 					newRange.format.__merge(format);
-					__textEngine.textFormatRanges.insertAt(index, newRange);
+					this.__textEngine.textFormatRanges.insertAt(index, newRange);
 					range.start = endIndex;
 					index++;
 				}
@@ -1466,7 +916,7 @@ export default class TextField extends InteractiveObject
 					// set format range is within the second part of the range
 					newRange = new TextFormatRange(range.format.clone(), beginIndex, range.end);
 					newRange.format.__merge(format);
-					__textEngine.textFormatRanges.insertAt(index + 1, newRange);
+					this.__textEngine.textFormatRanges.insertAt(index + 1, newRange);
 					range.end = beginIndex;
 					index++;
 				}
@@ -1476,25 +926,25 @@ export default class TextField extends InteractiveObject
 			}
 		}
 
-		__dirty = true;
-		__layoutDirty = true;
-		__setRenderDirty();
+		this.__dirty = true;
+		this.__layoutDirty = true;
+		this.__setRenderDirty();
 	}
 
 	protected __allowMouseFocus(): boolean
 	{
-		return __textEngine.type == INPUT || tabEnabled || selectable;
+		return this.__textEngine.type == TextFieldType.INPUT || this.tabEnabled || this.selectable;
 	}
 
 	protected __caretBeginningOfLine(): void
 	{
-		if (__selectionIndex == __caretIndex || __caretIndex < __selectionIndex)
+		if (this.__selectionIndex == this.__caretIndex || this.__caretIndex < this.__selectionIndex)
 		{
-			__caretIndex = getLineOffset(getLineIndexOfChar(__caretIndex));
+			this.__caretIndex = this.getLineOffset(this.getLineIndexOfChar(this.__caretIndex));
 		}
 		else
 		{
-			__selectionIndex = getLineOffset(getLineIndexOfChar(__selectionIndex));
+			this.__selectionIndex = this.getLineOffset(this.getLineIndexOfChar(this.__selectionIndex));
 		}
 	}
 
@@ -1502,30 +952,30 @@ export default class TextField extends InteractiveObject
 	{
 		var lineIndex;
 
-		if (__selectionIndex == __caretIndex)
+		if (this.__selectionIndex == this.__caretIndex)
 		{
-			lineIndex = getLineIndexOfChar(__caretIndex);
+			lineIndex = this.getLineIndexOfChar(this.__caretIndex);
 		}
 		else
 		{
-			lineIndex = getLineIndexOfChar(Std.int(Math.max(__caretIndex, __selectionIndex)));
+			lineIndex = this.getLineIndexOfChar(Math.max(this.__caretIndex, this.__selectionIndex));
 		}
 
-		if (lineIndex < __textEngine.numLines - 1)
+		if (lineIndex < this.__textEngine.numLines - 1)
 		{
-			__caretIndex = getLineOffset(lineIndex + 1) - 1;
+			this.__caretIndex = this.getLineOffset(lineIndex + 1) - 1;
 		}
 		else
 		{
-			__caretIndex = __text.length;
+			this.__caretIndex = this.__text.length;
 		}
 	}
 
 	protected __caretNextCharacter(): void
 	{
-		if (__caretIndex < __text.length)
+		if (this.__caretIndex < this.__text.length)
 		{
-			__caretIndex++;
+			this.__caretIndex++;
 		}
 	}
 
@@ -1533,29 +983,29 @@ export default class TextField extends InteractiveObject
 	{
 		if (lineIndex == null)
 		{
-			lineIndex = getLineIndexOfChar(__caretIndex);
+			lineIndex = this.getLineIndexOfChar(this.__caretIndex);
 		}
 
-		if (lineIndex < __textEngine.numLines - 1)
+		if (lineIndex < this.__textEngine.numLines - 1)
 		{
 			if (caretIndex == null)
 			{
-				caretIndex = __caretIndex;
+				caretIndex = this.__caretIndex;
 			}
 
-			__caretIndex = __getCharIndexOnDifferentLine(caretIndex, lineIndex + 1);
+			this.__caretIndex = this.__getCharIndexOnDifferentLine(caretIndex, lineIndex + 1);
 		}
 		else
 		{
-			__caretIndex = __text.length;
+			this.__caretIndex = this.__text.length;
 		}
 	}
 
 	protected __caretPreviousCharacter(): void
 	{
-		if (__caretIndex > 0)
+		if (this.__caretIndex > 0)
 		{
-			__caretIndex--;
+			this.__caretIndex--;
 		}
 	}
 
@@ -1563,41 +1013,40 @@ export default class TextField extends InteractiveObject
 	{
 		if (lineIndex == null)
 		{
-			lineIndex = getLineIndexOfChar(__caretIndex);
+			lineIndex = this.getLineIndexOfChar(this.__caretIndex);
 		}
 
 		if (lineIndex > 0)
 		{
 			if (caretIndex == null)
 			{
-				caretIndex = __caretIndex;
+				caretIndex = this.__caretIndex;
 			}
 
-			__caretIndex = __getCharIndexOnDifferentLine(caretIndex, lineIndex - 1);
+			this.__caretIndex = this.__getCharIndexOnDifferentLine(caretIndex, lineIndex - 1);
 		}
 		else
 		{
-			__caretIndex = 0;
+			this.__caretIndex = 0;
 		}
 	}
 
 	protected __disableInput(): void
 	{
-		if (__inputEnabled && stage != null)
+		if (this.__inputEnabled && this.stage != null)
 		{
-			__backend.disableInput();
+			// this.__backend.disableInput();
 
-			__inputEnabled = false;
-			__stopCursorTimer();
+			this.__inputEnabled = false;
+			this.__stopCursorTimer();
 		}
 	}
 
 	protected __dispatch(event: Event): boolean
 	{
-		if (event.eventPhase == AT_TARGET && event.type == MouseEvent.MOUSE_UP)
+		if (event.eventPhase == EventPhase.AT_TARGET && event.type == MouseEvent.MOUSE_UP)
 		{
-			var event: MouseEvent = cast event;
-			var group = __getGroup(mouseX, mouseY, true);
+			var group = this.__getGroup(this.mouseX, this.mouseY, true);
 
 			if (group != null)
 			{
@@ -1605,9 +1054,9 @@ export default class TextField extends InteractiveObject
 
 				if (url != null && url != "")
 				{
-					if (StringTools.startsWith(url, "event:"))
+					if (url.startsWith("event:"))
 					{
-						dispatchEvent(new TextEvent(TextEvent.LINK, false, false, url.substr(6)));
+						this.dispatchEvent(new TextEvent(TextEvent.LINK, false, false, url.substr(6)));
 					}
 					else
 					{
@@ -1622,51 +1071,47 @@ export default class TextField extends InteractiveObject
 
 	protected __enableInput(): void
 	{
-		if (stage != null)
+		if (this.stage != null)
 		{
-			__backend.enableInput();
+			// this.__backend.enableInput();
 
-			if (!__inputEnabled)
+			if (!this.__inputEnabled)
 			{
-				__inputEnabled = true;
-				__startCursorTimer();
+				this.__inputEnabled = true;
+				this.__startCursorTimer();
 			}
 		}
 	}
 
-	protected inline __getAdvance(position): number
+	protected __getAdvance(position): number
 	{
-		#if openfl_html5
 		return position;
-		#else
-		return position.advance.x;
-		#end
 	}
 
 	protected __getBounds(rect: Rectangle, matrix: Matrix): void
 	{
-		__updateLayout();
+		this.__updateLayout();
 
-		var bounds = Rectangle.__pool.get();
-		bounds.copyFrom(__textEngine.bounds);
+		var bounds = (<internal.Rectangle><any>Rectangle).__pool.get();
+		bounds.copyFrom(this.__textEngine.bounds);
 
-		matrix.tx += __offsetX;
-		matrix.ty += __offsetY;
+		matrix.tx += this.__offsetX;
+		matrix.ty += this.__offsetY;
 
-		bounds.__transform(bounds, matrix);
+		(<internal.Rectangle><any>bounds).__transform(bounds, matrix);
 
-		rect.__expand(bounds.x, bounds.y, bounds.width, bounds.height);
+		(<internal.Rectangle><any>rect).__expand(bounds.x, bounds.y, bounds.width, bounds.height);
 
-		Rectangle.__pool.release(bounds);
+		(<internal.Rectangle><any>Rectangle).__pool.release(bounds);
 	}
 
 	protected __getCharBoundaries(charIndex: number, rect: Rectangle): boolean
 	{
-		if (charIndex < 0 || charIndex > __text.length - 1) return false;
+		if (charIndex < 0 || charIndex > this.__text.length - 1) return false;
 
-		__updateLayout();
+		this.__updateLayout();
 
-		for (group in __textEngine.layoutGroups)
+		for (let group of this.__textEngine.layoutGroups)
 		{
 			if (charIndex >= group.startIndex && charIndex < group.endIndex)
 			{
@@ -1674,7 +1119,7 @@ export default class TextField extends InteractiveObject
 				{
 					var x = group.offsetX;
 
-					for (i in 0...(charIndex - group.startIndex))
+					for (let i = 0; i < (charIndex - group.startIndex); i++)
 					{
 						x += group.getAdvance(i);
 					}
@@ -1685,7 +1130,7 @@ export default class TextField extends InteractiveObject
 					rect.setTo(x, group.offsetY, lastPosition, group.ascent + group.descent);
 					return true;
 				}
-				catch (e: Dynamic) { }
+				catch (e) { }
 			}
 		}
 
@@ -1694,35 +1139,35 @@ export default class TextField extends InteractiveObject
 
 	protected __getCharIndexOnDifferentLine(charIndex: number, lineIndex: number): number
 	{
-		if (charIndex < 0 || charIndex > __text.length) return -1;
-		if (lineIndex < 0 || lineIndex > __textEngine.numLines - 1) return -1;
+		if (charIndex < 0 || charIndex > this.__text.length) return -1;
+		if (lineIndex < 0 || lineIndex > this.__textEngine.numLines - 1) return -1;
 
 		var x: null | number = null, y: null | number = null;
 
-		for (group in __textEngine.layoutGroups)
+		for (let group of this.__textEngine.layoutGroups)
 		{
 			if (charIndex >= group.startIndex && charIndex <= group.endIndex)
 			{
 				x = group.offsetX;
 
-				for (i in 0...(charIndex - group.startIndex))
+				for (let i = 0; i < (charIndex - group.startIndex); i++)
 				{
 					x += group.getAdvance(i);
 				}
 
-				if (y != null) return __getPosition(x, y);
+				if (y != null) return this.__getPosition(x, y);
 			}
 
 			if (group.lineIndex == lineIndex)
 			{
 				y = group.offsetY + group.height / 2;
 
-				for (i in 0...scrollV - 1)
+				for (let i = 0; i < this.scrollV - 1; i++)
 				{
-					y -= __textEngine.lineHeights[i];
+					y -= this.__textEngine.lineHeights[i];
 				}
 
-				if (x != null) return __getPosition(x, y);
+				if (x != null) return this.__getPosition(x, y);
 			}
 		}
 
@@ -1731,15 +1176,15 @@ export default class TextField extends InteractiveObject
 
 	protected __getCursor(): MouseCursor
 	{
-		var group = __getGroup(mouseX, mouseY, true);
+		var group = this.__getGroup(this.mouseX, this.mouseY, true);
 
 		if (group != null && group.format.url != "")
 		{
-			return BUTTON;
+			return MouseCursor.BUTTON;
 		}
-		else if (__textEngine.selectable)
+		else if (this.__textEngine.selectable)
 		{
-			return IBEAM;
+			return MouseCursor.IBEAM;
 		}
 
 		return null;
@@ -1747,27 +1192,27 @@ export default class TextField extends InteractiveObject
 
 	protected __getGroup(x: number, y: number, precise = false): TextLayoutGroup
 	{
-		__updateLayout();
+		this.__updateLayout();
 
-		x += scrollH;
+		x += this.scrollH;
 
-		for (i in 0...scrollV - 1)
+		for (let i = 0; i < this.scrollV - 1; i++)
 		{
-			y += __textEngine.lineHeights[i];
+			y += this.__textEngine.lineHeights[i];
 		}
 
-		if (!precise && y > __textEngine.textHeight) y = __textEngine.textHeight;
+		if (!precise && y > this.__textEngine.textHeight) y = this.__textEngine.textHeight;
 
 		var firstGroup = true;
 		var group, nextGroup;
 
-		for (i in 0...__textEngine.layoutGroups.length)
+		for (let i = 0; i < this.__textEngine.layoutGroups.length; i++)
 		{
-			group = __textEngine.layoutGroups[i];
+			group = this.__textEngine.layoutGroups[i];
 
-			if (i < __textEngine.layoutGroups.length - 1)
+			if (i < this.__textEngine.layoutGroups.length - 1)
 			{
-				nextGroup = __textEngine.layoutGroups[i + 1];
+				nextGroup = this.__textEngine.layoutGroups[i + 1];
 			}
 			else
 			{
@@ -1796,16 +1241,16 @@ export default class TextField extends InteractiveObject
 
 	protected __getPosition(x: number, y: number): number
 	{
-		var group = __getGroup(x, y);
+		var group = this.__getGroup(x, y);
 
 		if (group == null)
 		{
-			return __text.length;
+			return this.__text.length;
 		}
 
 		var advance = 0.0;
 
-		for (i in 0...group.positions.length)
+		for (let i = 0; i < group.positions.length; i++)
 		{
 			advance += group.getAdvance(i);
 
@@ -1827,21 +1272,21 @@ export default class TextField extends InteractiveObject
 
 	protected __getRenderBounds(rect: Rectangle, matrix: Matrix): void
 	{
-		if (__scrollRect == null)
+		if (this.__scrollRect == null)
 		{
-			__updateLayout();
+			this.__updateLayout();
 
-			var bounds = Rectangle.__pool.get();
-			bounds.copyFrom(__textEngine.bounds);
+			var bounds = (<internal.Rectangle><any>Rectangle).__pool.get();
+			bounds.copyFrom(this.__textEngine.bounds);
 
-			// matrix.tx += __offsetX;
-			// matrix.ty += __offsetY;
+			// matrix.tx += this.__offsetX;
+			// matrix.ty += this.__offsetY;
 
-			bounds.__transform(bounds, matrix);
+			(<internal.Rectangle><any>bounds).__transform(bounds, matrix);
 
-			rect.__expand(bounds.x, bounds.y, bounds.width, bounds.height);
+			(<internal.Rectangle><any>rect).__expand(bounds.x, bounds.y, bounds.width, bounds.height);
 
-			Rectangle.__pool.release(bounds);
+			(<internal.Rectangle><any>Rectangle).__pool.release(bounds);
 		}
 		else
 		{
@@ -1852,16 +1297,16 @@ export default class TextField extends InteractiveObject
 	protected __hitTest(x: number, y: number, shapeFlag: boolean, stack: Array<DisplayObject>, interactiveOnly: boolean,
 		hitObject: DisplayObject): boolean
 	{
-		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
-		if (mask != null && !mask.__hitTestMask(x, y)) return false;
+		if (!hitObject.visible || this.__isMask || (interactiveOnly && !this.mouseEnabled)) return false;
+		if (this.mask != null && !(<internal.DisplayObject><any>this.mask).__hitTestMask(x, y)) return false;
 
-		__getRenderTransform();
-		__updateLayout();
+		this.__getRenderTransform();
+		this.__updateLayout();
 
-		var px = __renderTransform.__transformInverseX(x, y);
-		var py = __renderTransform.__transformInverseY(x, y);
+		var px = (<internal.Matrix><any>this.__renderTransform).__transformInverseX(x, y);
+		var py = (<internal.Matrix><any>this.__renderTransform).__transformInverseY(x, y);
 
-		if (__textEngine.bounds.contains(px, py))
+		if (this.__textEngine.bounds.contains(px, py))
 		{
 			if (stack != null)
 			{
@@ -1876,13 +1321,13 @@ export default class TextField extends InteractiveObject
 
 	protected __hitTestMask(x: number, y: number): boolean
 	{
-		__getRenderTransform();
-		__updateLayout();
+		this.__getRenderTransform();
+		this.__updateLayout();
 
-		var px = __renderTransform.__transformInverseX(x, y);
-		var py = __renderTransform.__transformInverseY(x, y);
+		var px = (<internal.Matrix><any>this.__renderTransform).__transformInverseX(x, y);
+		var py = (<internal.Matrix><any>this.__renderTransform).__transformInverseY(x, y);
 
-		if (__textEngine.bounds.contains(px, py))
+		if (this.__textEngine.bounds.contains(px, py))
 		{
 			return true;
 		}
@@ -1893,15 +1338,15 @@ export default class TextField extends InteractiveObject
 	protected __replaceSelectedText(value: string, restrict: boolean = true): void
 	{
 		if (value == null) value = "";
-		if (value == "" && __selectionIndex == __caretIndex) return;
+		if (value == "" && this.__selectionIndex == this.__caretIndex) return;
 
-		var startIndex = __caretIndex < __selectionIndex ? __caretIndex : __selectionIndex;
-		var endIndex = __caretIndex > __selectionIndex ? __caretIndex : __selectionIndex;
+		var startIndex = this.__caretIndex < this.__selectionIndex ? this.__caretIndex : this.__selectionIndex;
+		var endIndex = this.__caretIndex > this.__selectionIndex ? this.__caretIndex : this.__selectionIndex;
 
-		if (startIndex == endIndex && __textEngine.maxChars > 0 && __text.length == __textEngine.maxChars) return;
+		if (startIndex == endIndex && this.__textEngine.maxChars > 0 && this.__text.length == this.__textEngine.maxChars) return;
 
-		if (startIndex > __text.length) startIndex = __text.length;
-		if (endIndex > __text.length) endIndex = __text.length;
+		if (startIndex > this.__text.length) startIndex = this.__text.length;
+		if (endIndex > this.__text.length) endIndex = this.__text.length;
 		if (endIndex < startIndex)
 		{
 			var cache = endIndex;
@@ -1910,29 +1355,29 @@ export default class TextField extends InteractiveObject
 		}
 		if (startIndex < 0) startIndex = 0;
 
-		__replaceText(startIndex, endIndex, value, restrict);
+		this.__replaceText(startIndex, endIndex, value, restrict);
 
 		var i = startIndex + value.length;
-		if (i > __text.length) i = __text.length;
+		if (i > this.__text.length) i = this.__text.length;
 
-		setSelection(i, i);
+		this.setSelection(i, i);
 
 		// TODO: Solution where this is not run twice (run inside replaceText above)
-		__updateScrollH();
+		this.__updateScrollH();
 	}
 
 	protected __replaceText(beginIndex: number, endIndex: number, newText: string, restrict: boolean): void
 	{
-		if (endIndex < beginIndex || beginIndex < 0 || endIndex > __text.length || newText == null) return;
+		if (endIndex < beginIndex || beginIndex < 0 || endIndex > this.__text.length || newText == null) return;
 
 		if (restrict)
 		{
-			newText = __textEngine.restrictText(newText);
+			newText = this.__textEngine.restrictText(newText);
 
-			if (__textEngine.maxChars > 0)
+			if (this.__textEngine.maxChars > 0)
 			{
 				var removeLength = (endIndex - beginIndex);
-				var maxLength = __textEngine.maxChars - __text.length + removeLength;
+				var maxLength = this.__textEngine.maxChars - this.__text.length + removeLength;
 
 				if (maxLength <= 0)
 				{
@@ -1945,17 +1390,17 @@ export default class TextField extends InteractiveObject
 			}
 		}
 
-		__updateText(__text.substring(0, beginIndex) + newText + __text.substring(endIndex));
-		if (endIndex > __text.length) endIndex = __text.length;
+		this.__updateText(this.__text.substring(0, beginIndex) + newText + this.__text.substring(endIndex));
+		if (endIndex > this.__text.length) endIndex = this.__text.length;
 
 		var offset = newText.length - (endIndex - beginIndex);
 
 		var i = 0;
 		var range;
 
-		while (i < __textEngine.textFormatRanges.length)
+		while (i < this.__textEngine.textFormatRanges.length)
 		{
-			range = __textEngine.textFormatRanges[i];
+			range = this.__textEngine.textFormatRanges[i];
 
 			if (beginIndex == endIndex)
 			{
@@ -1971,7 +1416,7 @@ export default class TextField extends InteractiveObject
 				}
 				else
 				{
-					if (range.start < range.end && range.end == beginIndex && i < __textEngine.textFormatRanges.length - 1)
+					if (range.start < range.end && range.end == beginIndex && i < this.__textEngine.textFormatRanges.length - 1)
 					{
 						// do nothing, insertion point is between two ranges, so it belongs to the next range
 						// unless there are no more ranges after this one (inserting at the end of the text)
@@ -1998,9 +1443,9 @@ export default class TextField extends InteractiveObject
 				else if (range.start >= beginIndex && range.end <= endIndex)
 				{
 					// delete range, range is encompassed by selection
-					if (__textEngine.textFormatRanges.length > 1)
+					if (this.__textEngine.textFormatRanges.length > 1)
 					{
-						__textEngine.textFormatRanges.splice(i, 1);
+						this.__textEngine.textFormatRanges.splice(i, 1);
 					}
 					else
 					{
@@ -2035,1253 +1480,1636 @@ export default class TextField extends InteractiveObject
 			i++;
 		}
 
-		__updateScrollV();
-		__updateScrollH();
+		this.__updateScrollV();
+		this.__updateScrollH();
 
-		__dirty = true;
-		__layoutDirty = true;
-		__setRenderDirty();
+		this.__dirty = true;
+		this.__layoutDirty = true;
+		this.__setRenderDirty();
 	}
 
 	protected __startCursorTimer(): void
 	{
-		__cursorTimer = Timer.delay(__startCursorTimer, 600);
-		__showCursor = !__showCursor;
-		__dirty = true;
-		__setRenderDirty();
+		this.__cursorTimerID = window.setTimeout(this.__startCursorTimer, 600);
+		this.__showCursor = !this.__showCursor;
+		this.__dirty = true;
+		this.__setRenderDirty();
 	}
 
 	protected __startTextInput(): void
 	{
-		if (__caretIndex < 0)
+		if (this.__caretIndex < 0)
 		{
-			__caretIndex = __text.length;
-			__selectionIndex = __caretIndex;
+			this.__caretIndex = this.__text.length;
+			this.__selectionIndex = this.__caretIndex;
 		}
 
-		var enableInput = #if openfl_html5 (DisplayObject.__supportDOM ? __renderedOnCanvasWhileOnDOM : true) #else true #end;
+		var enableInput = ((<internal.DisplayObject><any>DisplayObject).__supportDOM ? this.__renderedOnCanvasWhileOnDOM : true);
 
 		if (enableInput)
 		{
-			__enableInput();
+			this.__enableInput();
 		}
 	}
 
 	protected __stopCursorTimer(): void
 	{
-		if (__cursorTimer != null)
+		if (this.__cursorTimerID != 0)
 		{
-			__cursorTimer.stop();
-			__cursorTimer = null;
+			window.clearTimeout(this.__cursorTimerID);
+			this.__cursorTimerID = 0;
 		}
 
-		if (__showCursor)
+		if (this.__showCursor)
 		{
-			__showCursor = false;
-			__dirty = true;
-			__setRenderDirty();
+			this.__showCursor = false;
+			this.__dirty = true;
+			this.__setRenderDirty();
 		}
 	}
 
 	protected __stopTextInput(): void
 	{
-		var disableInput = #if openfl_html5 (DisplayObject.__supportDOM ? __renderedOnCanvasWhileOnDOM : true) #else true #end;
+		var disableInput = ((<internal.DisplayObject><any>DisplayObject).__supportDOM ? this.__renderedOnCanvasWhileOnDOM : true);
 
 		if (disableInput)
 		{
-			__disableInput();
+			this.__disableInput();
 		}
 	}
 
 	protected __update(transformOnly: boolean, updateChildren: boolean): void
 	{
-		var transformDirty = __transformDirty;
+		var transformDirty = this.__transformDirty;
 
-		__updateSingle(transformOnly, updateChildren);
+		this.__updateSingle(transformOnly, updateChildren);
 
 		if (transformDirty)
 		{
-			__renderTransform.__translateTransformed(__offsetX, __offsetY);
+			(<internal.Matrix><any>this.__renderTransform).__translateTransformed(this.__offsetX, this.__offsetY);
 		}
 	}
 
 	protected __updateLayout(): void
 	{
-		if (__layoutDirty)
+		if (this.__layoutDirty)
 		{
-			var cacheWidth = __textEngine.width;
-			__textEngine.update();
+			var cacheWidth = this.__textEngine.width;
+			this.__textEngine.update();
 
-			if (__textEngine.autoSize != NONE)
+			if (this.__textEngine.autoSize != TextFieldAutoSize.NONE)
 			{
-				if (__textEngine.width != cacheWidth)
+				if (this.__textEngine.width != cacheWidth)
 				{
-					switch (__textEngine.autoSize)
+					switch (this.__textEngine.autoSize)
 					{
-						case RIGHT:
-							x += cacheWidth - __textEngine.width;
+						case TextFormatAlign.RIGHT:
+							this.x += cacheWidth - this.__textEngine.width;
+							break;
 
-						case CENTER:
-							x += (cacheWidth - __textEngine.width) / 2;
+						case TextFormatAlign.CENTER:
+							this.x += (cacheWidth - this.__textEngine.width) / 2;
+							break;
 
 						default:
 					}
 				}
 
-				__textEngine.getBounds();
+				this.__textEngine.getBounds();
 			}
 
-			__layoutDirty = false;
+			this.__layoutDirty = false;
 		}
 	}
 
 	protected __updateScrollH(): void
 	{
-		if (!multiline && type == INPUT)
+		if (!this.multiline && this.type == TextFieldType.INPUT)
 		{
-			__layoutDirty = true;
-			__updateLayout();
+			this.__layoutDirty = true;
+			this.__updateLayout();
 
-			var offsetX = __textEngine.textWidth - __textEngine.width + 4;
+			var offsetX = this.__textEngine.textWidth - this.__textEngine.width + 4;
 
 			if (offsetX > 0)
 			{
 				// TODO: Handle __selectionIndex on drag select?
 				// TODO: Update scrollH by one character width at a time when able
 
-				if (__caretIndex >= text.length)
+				if (this.__caretIndex >= this.text.length)
 				{
-					scrollH = Math.ceil(offsetX);
+					this.scrollH = Math.ceil(offsetX);
 				}
 				else
 				{
-					var caret = Rectangle.__pool.get();
-					__getCharBoundaries(__caretIndex, caret);
+					var caret = (<internal.Rectangle><any>Rectangle).__pool.get();
+					this.__getCharBoundaries(this.__caretIndex, caret);
 
-					if (caret.x < scrollH)
+					if (caret.x < this.scrollH)
 					{
-						scrollH = Math.floor(caret.x - 2);
+						this.scrollH = Math.floor(caret.x - 2);
 					}
-					else if (caret.x > scrollH + __textEngine.width)
+					else if (caret.x > this.scrollH + this.__textEngine.width)
 					{
-						scrollH = Math.ceil(caret.x - __textEngine.width - 2);
+						this.scrollH = Math.ceil(caret.x - this.__textEngine.width - 2);
 					}
 
-					Rectangle.__pool.release(caret);
+					(<internal.Rectangle><any>Rectangle).__pool.release(caret);
 				}
 			}
 			else
 			{
-				scrollH = 0;
+				this.scrollH = 0;
 			}
 		}
 	}
 
 	protected __updateScrollV(): void
 	{
-		__layoutDirty = true;
-		__updateLayout();
+		this.__layoutDirty = true;
+		this.__updateLayout();
 
-		var lineIndex = getLineIndexOfChar(__caretIndex);
+		var lineIndex = this.getLineIndexOfChar(this.__caretIndex);
 
-		if (lineIndex == -1 && __caretIndex > 0)
+		if (lineIndex == -1 && this.__caretIndex > 0)
 		{
 			// new paragraph
-			lineIndex = getLineIndexOfChar(__caretIndex - 1) + 1;
+			lineIndex = this.getLineIndexOfChar(this.__caretIndex - 1) + 1;
 		}
 
-		if (lineIndex + 1 < scrollV)
+		if (lineIndex + 1 < this.scrollV)
 		{
-			scrollV = lineIndex + 1;
+			this.scrollV = lineIndex + 1;
 		}
-		else if (lineIndex + 1 > bottomScrollV)
+		else if (lineIndex + 1 > this.bottomScrollV)
 		{
 			var i = lineIndex, tempHeight = 0.0;
 
 			while (i >= 0)
 			{
-				if (tempHeight + __textEngine.lineHeights[i] <= height - 4)
+				if (tempHeight + this.__textEngine.lineHeights[i] <= this.height - 4)
 				{
-					tempHeight += __textEngine.lineHeights[i];
+					tempHeight += this.__textEngine.lineHeights[i];
 					i--;
 				}
 				else
 					break;
 			}
 
-			scrollV = i + 2;
+			this.scrollV = i + 2;
 		}
 		else
 		{
 			// TODO: can this be avoided? this doesn't need to hit the setter each time, just a couple times
-			scrollV = scrollV;
+			this.scrollV = this.scrollV;
 		}
 	}
 
 	protected __updateText(value: string): void
 	{
-		#if openfl_html5
-		if (DisplayObject.__supportDOM && __renderedOnCanvasWhileOnDOM)
+		if ((<internal.DisplayObject><any>DisplayObject).__supportDOM && this.__renderedOnCanvasWhileOnDOM)
 		{
-			__forceCachedBitmapUpdate = __text != value;
+			this.__forceCachedBitmapUpdate = this.__text != value;
 		}
-		#end
 
 		// applies maxChars and restrict on text
 
-		__textEngine.text = value;
-		__text = __textEngine.text;
+		this.__textEngine.text = value;
+		this.__text = this.__textEngine.text;
 
-		if (__text.length < __caretIndex)
+		if (this.__text.length < this.__caretIndex)
 		{
-			__selectionIndex = __caretIndex = __text.length;
+			this.__selectionIndex = this.__caretIndex = this.__text.length;
 		}
 
-		if (!__displayAsPassword #if openfl_html5 || (DisplayObject.__supportDOM && !__renderedOnCanvasWhileOnDOM) #end)
+		if (!this.__displayAsPassword || (<internal.DisplayObject><any>DisplayObject).__supportDOM && !this.__renderedOnCanvasWhileOnDOM)
 		{
-			__textEngine.text = __text;
+			this.__textEngine.text = this.__text;
 		}
 		else
-	{
-	var length = text.length;
-	var mask = "";
+		{
+			var length = this.text.length;
+			var mask = "";
 
-	for (i in 0...length)
-	{
-		mask += "*";
+			for (let i = 0; i < length; i++)
+			{
+				mask += "*";
+			}
+
+			this.__textEngine.text = mask;
+		}
 	}
-
-	__textEngine.text = mask;
-}
-}
 
 	// Getters & Setters
+
+	/**
+		The type of anti-aliasing used for this text field. Use
+		`openfl.text.AntiAliasType` constants for this property. You can
+		control this setting only if the font is embedded(with the
+		`embedFonts` property set to `true`). The default
+		setting is `openfl.text.AntiAliasType.NORMAL`.
+
+		To set values for this property, use the following string values:
+	**/
 	public get antiAliasType(): AntiAliasType
-{
-	return __textEngine.antiAliasType;
-}
-
-	public set antiAliasType(value: AntiAliasType): AntiAliasType
-{
-	if (value != __textEngine.antiAliasType)
 	{
-		// __dirty = true;
+		return this.__textEngine.antiAliasType;
 	}
 
-	return __textEngine.antiAliasType = value;
-}
+	public set antiAliasType(value: AntiAliasType)
+	{
+		if (value != this.__textEngine.antiAliasType)
+		{
+			// __dirty = true;
+		}
 
+		this.__textEngine.antiAliasType = value;
+	}
+
+	/**
+		Controls automatic sizing and alignment of text fields. Acceptable values
+		for the `TextFieldAutoSize` constants:
+		`TextFieldAutoSize.NONE`(the default),
+		`TextFieldAutoSize.LEFT`, `TextFieldAutoSize.RIGHT`,
+		and `TextFieldAutoSize.CENTER`.
+
+		If `autoSize` is set to `TextFieldAutoSize.NONE`
+		(the default) no resizing occurs.
+
+		If `autoSize` is set to `TextFieldAutoSize.LEFT`,
+		the text is treated as left-justified text, meaning that the left margin
+		of the text field remains fixed and any resizing of a single line of the
+		text field is on the right margin. If the text includes a line break(for
+		example, `"\n"` or `"\r"`), the bottom is also
+		resized to fit the next line of text. If `wordWrap` is also set
+		to `true`, only the bottom of the text field is resized and the
+		right side remains fixed.
+
+		If `autoSize` is set to
+		`TextFieldAutoSize.RIGHT`, the text is treated as
+		right-justified text, meaning that the right margin of the text field
+		remains fixed and any resizing of a single line of the text field is on
+		the left margin. If the text includes a line break(for example,
+		`"\n" or "\r")`, the bottom is also resized to fit the next
+		line of text. If `wordWrap` is also set to `true`,
+		only the bottom of the text field is resized and the left side remains
+		fixed.
+
+		If `autoSize` is set to
+		`TextFieldAutoSize.CENTER`, the text is treated as
+		center-justified text, meaning that any resizing of a single line of the
+		text field is equally distributed to both the right and left margins. If
+		the text includes a line break(for example, `"\n"` or
+		`"\r"`), the bottom is also resized to fit the next line of
+		text. If `wordWrap` is also set to `true`, only the
+		bottom of the text field is resized and the left and right sides remain
+		fixed.
+
+		@throws ArgumentError The `autoSize` specified is not a member
+							  of openfl.text.TextFieldAutoSize.
+	**/
 	public get autoSize(): TextFieldAutoSize
-{
-	return __textEngine.autoSize;
-}
-
-	public set autoSize(value: TextFieldAutoSize): TextFieldAutoSize
-{
-	if (value != __textEngine.autoSize)
 	{
-		__dirty = true;
-		__layoutDirty = true;
-		__setRenderDirty();
+		return this.__textEngine.autoSize;
 	}
 
-	return __textEngine.autoSize = value;
-}
-
-	public get background() : boolean
-{
-	return __textEngine.background;
-}
-
-	public set background(value : boolean) : boolean
-{
-	if (value != __textEngine.background)
+	public set autoSize(value: TextFieldAutoSize)
 	{
-		__dirty = true;
-		__setRenderDirty();
+		if (value != this.__textEngine.autoSize)
+		{
+			this.__dirty = true;
+			this.__layoutDirty = true;
+			this.__setRenderDirty();
+		}
+
+		this.__textEngine.autoSize = value;
 	}
 
-	return __textEngine.background = value;
-}
+	/**
+		Specifies whether the text field has a background fill. If
+		`true`, the text field has a background fill. If
+		`false`, the text field has no background fill. Use the
+		`backgroundColor` property to set the background color of a
+		text field.
 
-	public get backgroundColor() : number
-{
-	return __textEngine.backgroundColor;
-}
-
-	public set backgroundColor(value : number) : number
-{
-	if (value != __textEngine.backgroundColor)
+		@default false
+	**/
+	public get background(): boolean
 	{
-		__dirty = true;
-		__setRenderDirty();
+		return this.__textEngine.background;
 	}
 
-	return __textEngine.backgroundColor = value;
-}
-
-	public get border() : boolean
-{
-	return __textEngine.border;
-}
-
-	public set border(value : boolean) : boolean
-{
-	if (value != __textEngine.border)
+	public set background(value: boolean)
 	{
-		__dirty = true;
-		__setRenderDirty();
+		if (value != this.__textEngine.background)
+		{
+			this.__dirty = true;
+			this.__setRenderDirty();
+		}
+
+		this.__textEngine.background = value;
 	}
 
-	return __textEngine.border = value;
-}
-
-	public get borderColor() : number
-{
-	return __textEngine.borderColor;
-}
-
-	public set borderColor(value : number) : number
-{
-	if (value != __textEngine.borderColor)
+	/**
+		The color of the text field background. The default value is
+		`0xFFFFFF`(white). This property can be retrieved or set, even
+		if there currently is no background, but the color is visible only if the
+		text field has the `background` property set to
+		`true`.
+	**/
+	public get backgroundColor(): number
 	{
-		__dirty = true;
-		__setRenderDirty();
+		return this.__textEngine.backgroundColor;
 	}
 
-	return __textEngine.borderColor = value;
-}
+	public set backgroundColor(value: number)
+	{
+		if (value != this.__textEngine.backgroundColor)
+		{
+			this.__dirty = true;
+			this.__setRenderDirty();
+		}
 
-	public get bottomScrollV() : number
-{
-	__updateLayout();
+		this.__textEngine.backgroundColor = value;
+	}
 
-	return __textEngine.bottomScrollV;
-}
+	/**
+		Specifies whether the text field has a border. If `true`, the
+		text field has a border. If `false`, the text field has no
+		border. Use the `borderColor` property to set the border color.
 
-	public get caretIndex() : number
-{
-	return __caretIndex;
-}
+		@default false
+	**/
+	public get border(): boolean
+	{
+		return this.__textEngine.border;
+	}
 
+	public set border(value: boolean)
+	{
+		if (value != this.__textEngine.border)
+		{
+			this.__dirty = true;
+			this.__setRenderDirty();
+		}
+
+		this.__textEngine.border = value;
+	}
+
+	/**
+		The color of the text field border. The default value is
+		`0x000000`(black). This property can be retrieved or set, even
+		if there currently is no border, but the color is visible only if the text
+		field has the `border` property set to `true`.
+	**/
+	public get borderColor(): number
+	{
+		return this.__textEngine.borderColor;
+	}
+
+	public set borderColor(value: number)
+	{
+		if (value != this.__textEngine.borderColor)
+		{
+			this.__dirty = true;
+			this.__setRenderDirty();
+		}
+
+		this.__textEngine.borderColor = value;
+	}
+
+	/**
+		An integer(1-based index) that indicates the bottommost line that is
+		currently visible in the specified text field. Think of the text field as
+		a window onto a block of text. The `scrollV` property is the
+		1-based index of the topmost visible line in the window.
+
+		All the text between the lines indicated by `scrollV` and
+		`bottomScrollV` is currently visible in the text field.
+	**/
+	public get bottomScrollV(): number
+	{
+		this.__updateLayout();
+
+		return this.__textEngine.bottomScrollV;
+	}
+
+	/**
+		The index of the insertion point(caret) position. If no insertion point
+		is displayed, the value is the position the insertion point would be if
+		you restored focus to the field(typically where the insertion point last
+		was, or 0 if the field has not had focus).
+
+		Selection span indexes are zero-based(for example, the first position
+		is 0, the second position is 1, and so on).
+	**/
+	public get caretIndex(): number
+	{
+		return this.__caretIndex;
+	}
+
+	/**
+		Specifies the format applied to newly inserted text, such as text entered
+		by a user or text inserted with the `replaceSelectedText()`
+		method.
+
+		**Note:** When selecting characters to be replaced with
+		`setSelection()` and `replaceSelectedText()`, the
+		`defaultTextFormat` will be applied only if the text has been
+		selected up to and including the last character. Here is an example:
+
+		```
+		var my_txt:TextField new TextField();
+		my_txt.text = "Flash Macintosh version"; my_fmt:TextFormat = new
+		TextFormat(); my_fmt.color = 0xFF0000; my_txt.defaultTextFormat = my_fmt;
+		my_txt.setSelection(6,15); // partial text selected - defaultTextFormat
+		not applied my_txt.setSelection(6,23); // text selected to end -
+		defaultTextFormat applied my_txt.replaceSelectedText("Windows version");
+		```
+
+		When you access the `defaultTextFormat` property, the
+		returned TextFormat object has all of its properties defined. No property
+		is `null`.
+
+		**Note:** You can't set this property if a style sheet is applied to
+		the text field.
+
+		@throws Error This method cannot be used on a text field with a style
+					  sheet.
+	**/
 	public get defaultTextFormat(): TextFormat
-{
-	return __textFormat.clone();
-}
-
-	public set defaultTextFormat(value: TextFormat): TextFormat
-{
-	__textFormat.__merge(value);
-
-	__layoutDirty = true;
-	__dirty = true;
-	__setRenderDirty();
-
-	return value;
-}
-
-	public get displayAsPassword() : boolean
-{
-	return __displayAsPassword;
-}
-
-	public set displayAsPassword(value : boolean) : boolean
-{
-	if (value != __displayAsPassword)
 	{
-		__dirty = true;
-		__layoutDirty = true;
-		__setRenderDirty();
-
-		__displayAsPassword = value;
-		__updateText(__text);
+		return this.__textFormat.clone();
 	}
 
-	return value;
-}
+	public set defaultTextFormat(value: TextFormat)
+	{
+		(<internal.TextFormat><any>this.__textFormat).__merge(value);
 
-	public get embedFonts() : boolean
-{
-	return __textEngine.embedFonts;
-}
+		this.__layoutDirty = true;
+		this.__dirty = true;
+		this.__setRenderDirty();
+	}
 
-	public set embedFonts(value : boolean) : boolean
-{
-	// if (value != __textEngine.embedFonts) {
-	//
-	// __dirty = true;
-	// __layoutDirty = true;
-	//
-	// }
+	/**
+		Specifies whether the text field is a password text field. If the value of
+		this property is `true`, the text field is treated as a
+		password text field and hides the input characters using asterisks instead
+		of the actual characters. If `false`, the text field is not
+		treated as a password text field. When password mode is enabled, the Cut
+		and Copy commands and their corresponding keyboard shortcuts will not
+		function. This security mechanism prevents an unscrupulous user from using
+		the shortcuts to discover a password on an unattended computer.
 
-	return __textEngine.embedFonts = value;
-}
+		@default false
+	**/
+	public get displayAsPassword(): boolean
+	{
+		return this.__displayAsPassword;
+	}
 
+	public set displayAsPassword(value: boolean)
+	{
+		if (value != this.__displayAsPassword)
+		{
+			this.__dirty = true;
+			this.__layoutDirty = true;
+			this.__setRenderDirty();
+
+			this.__displayAsPassword = value;
+			this.__updateText(this.__text);
+		}
+	}
+
+	/**
+		Specifies whether to render by using embedded font outlines. If
+		`false`, Flash Player renders the text field by using device
+		fonts.
+
+		If you set the `embedFonts` property to `true`
+		for a text field, you must specify a font for that text by using the
+		`font` property of a TextFormat object applied to the text
+		field. If the specified font is not embedded in the SWF file, the text is
+		not displayed.
+
+		@default false
+	**/
+	public get embedFonts(): boolean
+	{
+		return this.__textEngine.embedFonts;
+	}
+
+	public set embedFonts(value: boolean)
+	{
+		// if (value != this.__textEngine.embedFonts) {
+		//
+		// __dirty = true;
+		// __layoutDirty = true;
+		//
+		// }
+
+		this.__textEngine.embedFonts = value;
+	}
+
+	/**
+		The type of grid fitting used for this text field. This property
+		applies only if the `openfl.text.AntiAliasType` property of the text
+		field is set to `openfl.text.AntiAliasType.ADVANCED`.
+		The type of grid fitting used determines whether Flash Player forces
+		strong horizontal and vertical lines to fit to a pixel or subpixel
+		grid, or not at all.
+
+		For the `openfl.text.GridFitType` property, you can use the following
+		string values:
+
+		| String value | Description |
+		| --- | --- |
+		| `openfl.text.GridFitType.NONE` | Specifies no grid fitting. Horizontal and vertical lines in the glyphs are not forced to the pixel grid. This setting is recommended for animation or for large font sizes. |
+		| `openfl.text.GridFitType.PIXEL` | Specifies that strong horizontal and vertical lines are fit to the pixel grid. This setting works only for left-aligned text fields. To use this setting, the `openfl.dispaly.AntiAliasType` property of the text field must be set to `openfl.text.AntiAliasType.ADVANCED`. This setting generally provides the best legibility for left-aligned text. |
+		| `openfl.text.GridFitType.SUBPIXEL` | Specifies that strong horizontal and vertical lines are fit to the subpixel grid on an LCD monitor. To use this setting, the `openfl.text.AntiAliasType` property of the text field must be set to `openfl.text.AntiAliasType.ADVANCED`. The `openfl.text.GridFitType.SUBPIXEL` setting is often good for right-aligned or centered dynamic text, and it is sometimes a useful trade-off for animation versus text quality. |
+
+		@default pixel
+	**/
 	public get gridFitType(): GridFitType
-{
-	return __textEngine.gridFitType;
-}
-
-	public set gridFitType(value: GridFitType): GridFitType
-{
-	// if (value != __textEngine.gridFitType) {
-	//
-	// __dirty = true;
-	// __layoutDirty = true;
-	//
-	// }
-
-	return __textEngine.gridFitType = value;
-}
-
-public get height() : number
-{
-	__updateLayout();
-	return __textEngine.height * Math.abs(scaleY);
-}
-
-public set height(value : number) : number
-{
-	if (value != __textEngine.height)
 	{
-		__setTransformDirty();
-		__setParentRenderDirty();
-		__setRenderDirty();
-		__dirty = true;
-		__layoutDirty = true;
-
-		__textEngine.height = value;
+		return this.__textEngine.gridFitType;
 	}
 
-	return __textEngine.height * Math.abs(scaleY);
-}
+	public set gridFitType(value: GridFitType)
+	{
+		// if (value != this.__textEngine.gridFitType) {
+		//
+		// __dirty = true;
+		// __layoutDirty = true;
+		//
+		// }
 
+		this.__textEngine.gridFitType = value;
+	}
+
+	public get height(): number
+	{
+		this.__updateLayout();
+		return this.__textEngine.height * Math.abs(this.scaleY);
+	}
+
+	public set height(value: number)
+	{
+		if (value != this.__textEngine.height)
+		{
+			this.__setTransformDirty();
+			this.__setParentRenderDirty();
+			this.__setRenderDirty();
+			this.__dirty = true;
+			this.__layoutDirty = true;
+
+			this.__textEngine.height = value;
+		}
+
+		this.__textEngine.height * Math.abs(this.scaleY);
+	}
+
+	/**
+		Contains the HTML representation of the text field contents.
+		Flash Player supports the following HTML tags:
+
+		| Tag |  Description  |
+		| --- | --- |
+		| Anchor tag | The `<a>` tag creates a hypertext link and supports the following attributes:<ul><li>`target`: Specifies the name of the target window where you load the page. Options include `_self`, `_blank`, `_parent`, and `_top`. The `_self` option specifies the current frame in the current window, `_blank` specifies a new window, `_parent` specifies the parent of the current frame, and `_top` specifies the top-level frame in the current window.</li><li>`href`: Specifies a URL or an ActionScript `link` event.The URL can be either absolute or relative to the location of the SWF file that is loading the page. An example of an absolute reference to a URL is `http://www.adobe.com`; an example of a relative reference is `/index.html`. Absolute URLs must be prefixed with http://; otherwise, Flash Player or AIR treats them as relative URLs. You can use the `link` event to cause the link to execute an ActionScript in a SWF file instead of opening a URL. To specify a `link` event, use the event scheme instead of the http scheme in your `href` attribute. An example is `href="event:myText"` instead of `href="http://myURL"`; when the user clicks a hypertext link that contains the event scheme, the text field dispatches a `link` TextEvent with its `text` property set to "`myText`". You can then create an ActionScript that executes whenever the link TextEvent is dispatched. You can also define `a:link`, `a:hover`, and `a:active` styles for anchor tags by using style sheets.</li></ul> |
+		| Bold tag | The `<b>` tag renders text as bold. A bold typeface must be available for the font used. |
+		| Break tag | The `<br>` tag creates a line break in the text field. Set the text field to be a multiline text field to use this tag.  |
+		| Font tag | The `<font>` tag specifies a font or list of fonts to display the text.The font tag supports the following attributes:<ul><li>`color`: Only hexadecimal color (`#FFFFFF`) values are supported.</li><li>`face`: Specifies the name of the font to use. As shown in the following example, you can specify a list of comma-delimited font names, in which case Flash Player selects the first available font. If the specified font is not installed on the local computer system or isn't embedded in the SWF file, Flash Player selects a substitute font.</li><li>`size`: Specifies the size of the font. You can use absolute pixel sizes, such as 16 or 18, or relative point sizes, such as +2 or -4.</li></ul> |
+		| Image tag | The `<img>` tag lets you embed external image files (JPEG, GIF, PNG), SWF files, and movie clips inside text fields. Text automatically flows around images you embed in text fields. You must set the text field to be multiline to wrap text around an image.<br>The `<img>` tag supports the following attributes:<ul><li>`src`: Specifies the URL to an image or SWF file, or the linkage identifier for a movie clip symbol in the library. This attribute is required; all other attributes are optional. External files (JPEG, GIF, PNG, and SWF files) do not show until they are downloaded completely.</li><li>`width`: The width of the image, SWF file, or movie clip being inserted, in pixels.</li><li>`height`: The height of the image, SWF file, or movie clip being inserted, in pixels.</li><li>`align`: Specifies the horizontal alignment of the embedded image within the text field. Valid values are `left` and `right`. The default value is `left`.</li><li>`hspace`: Specifies the amount of horizontal space that surrounds the image where no text appears. The default value is 8.</li><li>`vspace`: Specifies the amount of vertical space that surrounds the image where no text appears. The default value is 8.</li><li>`id`: Specifies the name for the movie clip instance (created by Flash Player) that contains the embedded image file, SWF file, or movie clip. This approach is used to control the embedded content with ActionScript.</li><li>`checkPolicyFile`: Specifies that Flash Player checks for a URL policy file on the server associated with the image domain. If a policy file exists, SWF files in the domains listed in the file can access the data of the loaded image, for example, by calling the `BitmapData.draw()` method with this image as the `source` parameter. For more information related to security, see the Flash Player Developer Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).</li></ul>Flash displays media embedded in a text field at full size. To specify the dimensions of the media you are embedding, use the `<img>` tag `height` and `width` attributes. <br>In general, an image embedded in a text field appears on the line following the `<img>` tag. However, when the `<img>` tag is the first character in the text field, the image appears on the first line of the text field.<br>For AIR content in the application security sandbox, AIR ignores `img` tags in HTML content in ActionScript TextField objects. This is to prevent possible phishing attacks. |
+		| Italic tag | The `<i>` tag displays the tagged text in italics. An italic typeface must be available for the font used. |
+		| List item tag | The `<li>` tag places a bullet in front of the text that it encloses.<br>**Note:** Because Flash Player and AIR do not recognize ordered and unordered list tags (`<ol>` and `<ul>`, they do not modify how your list is rendered. All lists are unordered and all list items use bullets. |
+		| Paragraph tag | The `<p>` tag creates a new paragraph. The text field must be set to be a multiline text field to use this tag. The `<p>` tag supports the following attributes:<ul><li>align: Specifies alignment of text within the paragraph; valid values are `left`, `right`, `justify`, and `center`.</li><li>class: Specifies a CSS style class defined by a openfl.text.StyleSheet object.</li></ul> |
+		| Span tag | The `<span>` tag is available only for use with CSS text styles. It supports the following attribute:<ul><li>class: Specifies a CSS style class defined by a openfl.text.StyleSheet object.</li></ul> |
+		| Text format tag | The `<textformat>` tag lets you use a subset of paragraph formatting properties of the TextFormat class within text fields, including line leading, indentation, margins, and tab stops. You can combine `<textformat>` tags with the built-in HTML tags.<br>The `<textformat>` tag has the following attributes:<li>`blockindent`: Specifies the block indentation in points; corresponds to `TextFormat.blockIndent`.</li><li>`indent`: Specifies the indentation from the left margin to the first character in the paragraph; corresponds to `TextFormat.indent`. Both positive and negative numbers are acceptable.</li><li>`leading`: Specifies the amount of leading (vertical space) between lines; corresponds to `TextFormat.leading`. Both positive and negative numbers are acceptable.</li><li>`leftmargin`: Specifies the left margin of the paragraph, in points; corresponds to `TextFormat.leftMargin`.</li><li>`rightmargin`: Specifies the right margin of the paragraph, in points; corresponds to `TextFormat.rightMargin`.</li><li>`tabstops`: Specifies custom tab stops as an array of non-negative integers; corresponds to `TextFormat.tabStops`.</li></ul> |
+		| Underline tag | The `<u>` tag underlines the tagged text. |
+
+		Flash Player and AIR support the following HTML entities:
+
+		| Entity | Description |
+		| --- | --- |
+		| &amp;lt; | < (less than) |
+		| &amp;gt; | > (greater than) |
+		| &amp;amp; | & (ampersand) |
+		| &amp;quot; | " (double quotes) |
+		| &amp;apos; | ' (apostrophe, single quote) |
+
+		Flash Player and AIR also support explicit character codes, such as
+		&#38; (ASCII ampersand) and &#x20AC; (Unicode € symbol).
+	**/
 	public get htmlText(): string
-{
-		#if openfl_html5
-	return __isHTML ? __rawHtmlText : __text;
-		#else
-	return __text;
-		#end
-}
-
-	public set htmlText(value: string): string
-{
-	if (!__isHTML || __text != value)
 	{
-		__dirty = true;
-		__layoutDirty = true;
-		__setRenderDirty();
+		return this.__isHTML ? this.__rawHtmlText : this.__text;
 	}
 
-	__isHTML = true;
-
-		#if openfl_html5
-	__rawHtmlText = value;
-		#end
-
-	value = HTMLParser.parse(value, __textFormat, __textEngine.textFormatRanges);
-
-		#if openfl_html5
-	if (DisplayObject.__supportDOM)
+	public set htmlText(value: string)
 	{
-		if (__textEngine.textFormatRanges.length > 1)
+		if (!this.__isHTML || this.__text != value)
 		{
-			__textEngine.textFormatRanges.splice(1, __textEngine.textFormatRanges.length - 1);
+			this.__dirty = true;
+			this.__layoutDirty = true;
+			this.__setRenderDirty();
 		}
 
-		var range = __textEngine.textFormatRanges[0];
-		range.format = __textFormat;
-		range.start = 0;
+		this.__isHTML = true;
+		this.__rawHtmlText = value;
 
-		if (__renderedOnCanvasWhileOnDOM)
+		value = HTMLParser.parse(value, this.__textFormat, this.__textEngine.textFormatRanges);
+
+		if ((<internal.DisplayObject><any>DisplayObject).__supportDOM)
 		{
-			range.end = value.length;
-			__updateText(value);
+			if (this.__textEngine.textFormatRanges.length > 1)
+			{
+				this.__textEngine.textFormatRanges.splice(1, this.__textEngine.textFormatRanges.length - 1);
+			}
+
+			var range = this.__textEngine.textFormatRanges[0];
+			range.format = this.__textFormat;
+			range.start = 0;
+
+			if (this.__renderedOnCanvasWhileOnDOM)
+			{
+				range.end = value.length;
+				this.__updateText(value);
+			}
+			else
+			{
+				range.end = this.__rawHtmlText.length;
+				this.__updateText(this.__rawHtmlText);
+			}
 		}
 		else
 		{
-			range.end = __rawHtmlText.length;
-			__updateText(__rawHtmlText);
+			this.__updateText(value);
+		}
+
+		this.__updateScrollV();
+	}
+
+	/**
+		The number of characters in a text field. A character such as tab
+		(`\t`) counts as one character.
+	**/
+	public get length(): number
+	{
+		if (this.__text != null)
+		{
+			return this.__text.length;
+		}
+
+		return 0;
+	}
+
+	/**
+		The maximum number of characters that the text field can contain, as
+		entered by a user. A script can insert more text than
+		`maxChars` allows; the `maxChars` property indicates
+		only how much text a user can enter. If the value of this property is
+		`0`, a user can enter an unlimited amount of text.
+
+		@default 0
+	**/
+	public get maxChars(): number
+	{
+		return this.__textEngine.maxChars;
+	}
+
+	public set maxChars(value: number)
+	{
+		if (value != this.__textEngine.maxChars)
+		{
+			this.__textEngine.maxChars = value;
+
+			this.__dirty = true;
+			this.__layoutDirty = true;
+			this.__setRenderDirty();
 		}
 	}
-	else
-	{
-		__updateText(value);
-	}
-		#else
-	__updateText(value);
-		#end
-	__updateScrollV();
 
-	return value;
-}
-
-	public get length() : number
-{
-	if (__text != null)
+	/**
+		The maximum value of `scrollH`.
+	**/
+	public get maxScrollH(): number
 	{
-		return __text.length;
+		this.__updateLayout();
+
+		return this.__textEngine.maxScrollH;
 	}
 
-	return 0;
-}
-
-	public get maxChars() : number
-{
-	return __textEngine.maxChars;
-}
-
-	public set maxChars(value : number) : number
-{
-	if (value != __textEngine.maxChars)
+	/**
+		The maximum value of `scrollV`.
+	**/
+	public get maxScrollV(): number
 	{
-		__textEngine.maxChars = value;
+		this.__updateLayout();
 
-		__dirty = true;
-		__layoutDirty = true;
-		__setRenderDirty();
+		return this.__textEngine.maxScrollV;
 	}
 
-	return value;
-}
-
-	public get maxScrollH() : number
-{
-	__updateLayout();
-
-	return __textEngine.maxScrollH;
-}
-
-	public get maxScrollV() : number
-{
-	__updateLayout();
-
-	return __textEngine.maxScrollV;
-}
-
-	public get mouseWheelEnabled() : boolean
-{
-	return __mouseWheelEnabled;
-}
-
-	public set mouseWheelEnabled(value : boolean) : boolean
-{
-	return __mouseWheelEnabled = value;
-}
-
-	public get multiline() : boolean
-{
-	return __textEngine.multiline;
-}
-
-	public set multiline(value : boolean) : boolean
-{
-	if (value != __textEngine.multiline)
+	/**
+		A Boolean value that indicates whether Flash Player automatically scrolls
+		multiline text fields when the user clicks a text field and rolls the mouse wheel.
+		By default, this value is `true`. This property is useful if you want to prevent
+		mouse wheel scrolling of text fields, or implement your own text field scrolling.
+	**/
+	public get mouseWheelEnabled(): boolean
 	{
-		__dirty = true;
-		__layoutDirty = true;
-		__updateText(__text);
-		// __updateScrollV();
-		__updateScrollH();
-		__setRenderDirty();
+		return this.__mouseWheelEnabled;
 	}
 
-	return __textEngine.multiline = value;
-}
+	public set mouseWheelEnabled(value: boolean)
+	{
+		this.__mouseWheelEnabled = value;
+	}
 
-	public get numLines() : number
-{
-	__updateLayout();
+	/**
+		Indicates whether field is a multiline text field. If the value is
+		`true`, the text field is multiline; if the value is
+		`false`, the text field is a single-line text field. In a field
+		of type `TextFieldType.INPUT`, the `multiline` value
+		determines whether the `Enter` key creates a new line(a value
+		of `false`, and the `Enter` key is ignored). If you
+		paste text into a `TextField` with a `multiline`
+		value of `false`, newlines are stripped out of the text.
 
-	return __textEngine.numLines;
-}
+		@default false
+	**/
+	public get multiline(): boolean
+	{
+		return this.__textEngine.multiline;
+	}
 
+	public set multiline(value: boolean)
+	{
+		if (value != this.__textEngine.multiline)
+		{
+			this.__dirty = true;
+			this.__layoutDirty = true;
+			this.__updateText(this.__text);
+			// __updateScrollV();
+			this.__updateScrollH();
+			this.__setRenderDirty();
+		}
+
+		this.__textEngine.multiline = value;
+	}
+
+	/**
+		Defines the number of text lines in a multiline text field. If
+		`wordWrap` property is set to `true`, the number of
+		lines increases when text wraps.
+	**/
+	public get numLines(): number
+	{
+		this.__updateLayout();
+
+		return this.__textEngine.numLines;
+	}
+
+	/**
+		Indicates the set of characters that a user can enter into the text field.
+		If the value of the `restrict` property is `null`,
+		you can enter any character. If the value of the `restrict`
+		property is an empty string, you cannot enter any character. If the value
+		of the `restrict` property is a string of characters, you can
+		enter only characters in the string into the text field. The string is
+		scanned from left to right. You can specify a range by using the hyphen
+		(-) character. Only user interaction is restricted; a script can put any
+		text into the text field. <ph outputclass="flashonly">This property does
+		not synchronize with the Embed font options in the Property inspector.
+
+		If the string begins with a caret(^) character, all characters are
+		initially accepted and succeeding characters in the string are excluded
+		from the set of accepted characters. If the string does not begin with a
+		caret(^) character, no characters are initially accepted and succeeding
+		characters in the string are included in the set of accepted
+		characters.
+
+		The following example allows only uppercase characters, spaces, and
+		numbers to be entered into a text field:
+		`my_txt.restrict = "A-Z 0-9";`
+
+		The following example includes all characters, but excludes lowercase
+		letters:
+		`my_txt.restrict = "^a-z";`
+
+		You can use a backslash to enter a ^ or - verbatim. The accepted
+		backslash sequences are \-, \^ or \\. The backslash must be an actual
+		character in the string, so when specified in ActionScript, a double
+		backslash must be used. For example, the following code includes only the
+		dash(-) and caret(^):
+		`my_txt.restrict = "\\-\\^";`
+
+		The ^ can be used anywhere in the string to toggle between including
+		characters and excluding characters. The following code includes only
+		uppercase letters, but excludes the uppercase letter Q:
+		`my_txt.restrict = "A-Z^Q";`
+
+		You can use the `\u` escape sequence to construct
+		`restrict` strings. The following code includes only the
+		characters from ASCII 32(space) to ASCII 126(tilde).
+		`my_txt.restrict = "\u0020-\u007E";`
+
+		@default null
+	**/
 	public get restrict(): string
-{
-	return __textEngine.restrict;
-}
-
-	public set restrict(value: string): string
-{
-	if (__textEngine.restrict != value)
 	{
-		__textEngine.restrict = value;
-		__updateText(__text);
+		return this.__textEngine.restrict;
 	}
 
-	return value;
-}
-
-	public get scrollH() : number
-{
-	return __textEngine.scrollH;
-}
-
-	public set scrollH(value : number) : number
-{
-	__updateLayout();
-
-	if (value > __textEngine.maxScrollH) value = __textEngine.maxScrollH;
-	if (value < 0) value = 0;
-
-	if (value != __textEngine.scrollH)
+	public set restrict(value: string)
 	{
-		__dirty = true;
-		__setRenderDirty();
-		__textEngine.scrollH = value;
-		dispatchEvent(new Event(Event.SCROLL));
-	}
-
-	return __textEngine.scrollH;
-}
-
-	public get scrollV() : number
-{
-	return __textEngine.scrollV;
-}
-
-	public set scrollV(value : number) : number
-{
-	__updateLayout();
-
-	if (value > 0 && value != __textEngine.scrollV)
-	{
-		__dirty = true;
-		__setRenderDirty();
-		__textEngine.scrollV = value;
-		dispatchEvent(new Event(Event.SCROLL));
-	}
-
-	return __textEngine.scrollV;
-}
-
-	public get selectable() : boolean
-{
-	return __textEngine.selectable;
-}
-
-	public set selectable(value : boolean) : boolean
-{
-	if (value != __textEngine.selectable && type == INPUT)
-	{
-		if (stage != null && stage.focus == this)
+		if (this.__textEngine.restrict != value)
 		{
-			__startTextInput();
-		}
-		else if (!value)
-		{
-			__stopTextInput();
+			this.__textEngine.restrict = value;
+			this.__updateText(this.__text);
 		}
 	}
 
-	return __textEngine.selectable = value;
-}
+	/**
+		The current horizontal scrolling position. If the `scrollH`
+		property is 0, the text is not horizontally scrolled. This property value
+		is an integer that represents the horizontal position in pixels.
 
-	public get selectionBeginIndex() : number
-{
-	return Std.int(Math.min(__caretIndex, __selectionIndex));
-}
+		The units of horizontal scrolling are pixels, whereas the units of
+		vertical scrolling are lines. Horizontal scrolling is measured in pixels
+		because most fonts you typically use are proportionally spaced; that is,
+		the characters can have different widths. Flash Player performs vertical
+		scrolling by line because users usually want to see a complete line of
+		text rather than a partial line. Even if a line uses multiple fonts, the
+		height of the line adjusts to fit the largest font in use.
 
-	public get selectionEndIndex() : number
-{
-	return Std.int(Math.max(__caretIndex, __selectionIndex));
-}
-
-	public get sharpness() : number
-{
-	return __textEngine.sharpness;
-}
-
-	public set sharpness(value : number) : number
-{
-	if (value != __textEngine.sharpness)
+		**Note: **The `scrollH` property is zero-based, not
+		1-based like the `scrollV` vertical scrolling property.
+	**/
+	public get scrollH(): number
 	{
-		__dirty = true;
-		__setRenderDirty();
+		return this.__textEngine.scrollH;
 	}
 
-	return __textEngine.sharpness = value;
-}
+	public set scrollH(value: number)
+	{
+		this.__updateLayout();
 
-public get tabEnabled() : boolean
-{
-	return (__tabEnabled == null ? __textEngine.type == INPUT : __tabEnabled);
-}
+		if (value > this.__textEngine.maxScrollH) value = this.__textEngine.maxScrollH;
+		if (value < 0) value = 0;
 
+		if (value != this.__textEngine.scrollH)
+		{
+			this.__dirty = true;
+			this.__setRenderDirty();
+			this.__textEngine.scrollH = value;
+			this.dispatchEvent(new Event(Event.SCROLL));
+		}
+	}
+
+	/**
+		The vertical position of text in a text field. The `scrollV`
+		property is useful for directing users to a specific paragraph in a long
+		passage, or creating scrolling text fields.
+
+		The units of vertical scrolling are lines, whereas the units of
+		horizontal scrolling are pixels. If the first line displayed is the first
+		line in the text field, scrollV is set to 1(not 0). Horizontal scrolling
+		is measured in pixels because most fonts are proportionally spaced; that
+		is, the characters can have different widths. Flash performs vertical
+		scrolling by line because users usually want to see a complete line of
+		text rather than a partial line. Even if there are multiple fonts on a
+		line, the height of the line adjusts to fit the largest font in use.
+	**/
+	public get scrollV(): number
+	{
+		return this.__textEngine.scrollV;
+	}
+
+	public set scrollV(value: number)
+	{
+		this.__updateLayout();
+
+		if (value > 0 && value != this.__textEngine.scrollV)
+		{
+			this.__dirty = true;
+			this.__setRenderDirty();
+			this.__textEngine.scrollV = value;
+			this.dispatchEvent(new Event(Event.SCROLL));
+		}
+	}
+
+	/**
+		A Boolean value that indicates whether the text field is selectable. The
+		value `true` indicates that the text is selectable. The
+		`selectable` property controls whether a text field is
+		selectable, not whether a text field is editable. A dynamic text field can
+		be selectable even if it is not editable. If a dynamic text field is not
+		selectable, the user cannot select its text.
+
+		If `selectable` is set to `false`, the text in
+		the text field does not respond to selection commands from the mouse or
+		keyboard, and the text cannot be copied with the Copy command. If
+		`selectable` is set to `true`, the text in the text
+		field can be selected with the mouse or keyboard, and the text can be
+		copied with the Copy command. You can select text this way even if the
+		text field is a dynamic text field instead of an input text field.
+
+		@default true
+	**/
+	public get selectable(): boolean
+	{
+		return this.__textEngine.selectable;
+	}
+
+	public set selectable(value: boolean)
+	{
+		if (value != this.__textEngine.selectable && this.type == TextFieldType.INPUT)
+		{
+			if (this.stage != null && this.stage.focus == this)
+			{
+				this.__startTextInput();
+			}
+			else if (!value)
+			{
+				this.__stopTextInput();
+			}
+		}
+
+		this.__textEngine.selectable = value;
+	}
+
+	/**
+		The zero-based character index value of the first character in the current
+		selection. For example, the first character is 0, the second character is
+		1, and so on. If no text is selected, this property is the value of
+		`caretIndex`.
+	**/
+	public get selectionBeginIndex(): number
+	{
+		return Math.min(this.__caretIndex, this.__selectionIndex);
+	}
+
+	/**
+		The zero-based character index value of the last character in the current
+		selection. For example, the first character is 0, the second character is
+		1, and so on. If no text is selected, this property is the value of
+		`caretIndex`.
+	**/
+	public get selectionEndIndex(): number
+	{
+		return Math.max(this.__caretIndex, this.__selectionIndex);
+	}
+
+	/**
+		The sharpness of the glyph edges in this text field. This property applies
+		only if the `openfl.text.AntiAliasType` property of the text
+		field is set to `openfl.text.AntiAliasType.ADVANCED`. The range
+		for `sharpness` is a number from -400 to 400. If you attempt to
+		set `sharpness` to a value outside that range, Flash sets the
+		property to the nearest value in the range(either -400 or 400).
+
+		@default 0
+	**/
+	public get sharpness(): number
+	{
+		return this.__textEngine.sharpness;
+	}
+
+	public set sharpness(value: number)
+	{
+		if (value != this.__textEngine.sharpness)
+		{
+			this.__dirty = true;
+			this.__setRenderDirty();
+		}
+
+		this.__textEngine.sharpness = value;
+	}
+
+	public get tabEnabled(): boolean
+	{
+		return (this.__tabEnabled == null ? this.__textEngine.type == TextFieldType.INPUT : this.__tabEnabled);
+	}
+
+	/**
+		A string that is the current text in the text field. Lines are separated
+		by the carriage return character(`'\r'`, ASCII 13). This
+		property contains unformatted text in the text field, without HTML tags.
+
+		To get the text in HTML form, use the `htmlText`
+		property.
+	**/
 	public get text(): string
-{
-	return __text;
-}
-
-	public set text(value: string): string
-{
-	if (__isHTML || __text != value)
 	{
-		__dirty = true;
-		__layoutDirty = true;
-		__setRenderDirty();
-	}
-	else
-	{
-		return value;
+		return this.__text;
 	}
 
-	if (__textEngine.textFormatRanges.length > 1)
+	public set text(value: string)
 	{
-		__textEngine.textFormatRanges.splice(1, __textEngine.textFormatRanges.length - 1);
-	}
-
-	var range = __textEngine.textFormatRanges[0];
-	range.format = __textFormat;
-	range.start = 0;
-	range.end = value.length;
-
-	__isHTML = false;
-
-	__updateText(value);
-	__updateScrollV();
-
-	return value;
-}
-
-	public get textColor() : number
-{
-	return __textFormat.color;
-}
-
-	public set textColor(value : number) : number
-{
-	if (value != __textFormat.color)
-	{
-		__dirty = true;
-		__setRenderDirty();
-	}
-
-	for (range in __textEngine.textFormatRanges)
-	{
-		range.format.color = value;
-	}
-
-	return __textFormat.color = value;
-}
-
-	public get textWidth() : number
-{
-	__updateLayout();
-	return __textEngine.textWidth;
-}
-
-	public get textHeight() : number
-{
-	__updateLayout();
-	return __textEngine.textHeight;
-}
-
-	public get type(): TextFieldType
-{
-	return __textEngine.type;
-}
-
-	public set type(value: TextFieldType): TextFieldType
-{
-	if (value != __textEngine.type)
-	{
-		if (value == TextFieldType.INPUT)
+		if (this.__isHTML || this.__text != value)
 		{
-			addEventListener(Event.ADDED_TO_STAGE, this_onAddedToStage);
-
-			this_onFocusIn(null);
-			__textEngine.__useIntAdvances = true;
+			this.__dirty = true;
+			this.__layoutDirty = true;
+			this.__setRenderDirty();
 		}
 		else
 		{
-			removeEventListener(Event.ADDED_TO_STAGE, this_onAddedToStage);
-
-			__stopTextInput();
-			__textEngine.__useIntAdvances = null;
+			return;
 		}
 
-		__dirty = true;
-		__layoutDirty = true;
-		__setRenderDirty();
+		if (this.__textEngine.textFormatRanges.length > 1)
+		{
+			this.__textEngine.textFormatRanges.splice(1, this.__textEngine.textFormatRanges.length - 1);
+		}
+
+		var range = this.__textEngine.textFormatRanges[0];
+		range.format = this.__textFormat;
+		range.start = 0;
+		range.end = value.length;
+
+		this.__isHTML = false;
+
+		this.__updateText(value);
+		this.__updateScrollV();
 	}
 
-	return __textEngine.type = value;
-}
+	/**
+		The color of the text in a text field, in hexadecimal format. The
+		hexadecimal color system uses six digits to represent color values. Each
+		digit has 16 possible values or characters. The characters range from 0-9
+		and then A-F. For example, black is `0x000000`; white is
+		`0xFFFFFF`.
 
-override private get_width() : number
-{
-	__updateLayout();
-	return __textEngine.width * Math.abs(__scaleX);
-}
-
-override private set_width(value : number) : number
-{
-	if (value != __textEngine.width)
+		@default 0(0x000000)
+	**/
+	public get textColor(): number
 	{
-		__setTransformDirty();
-		__setParentRenderDirty();
-		__setRenderDirty();
-		__dirty = true;
-		__layoutDirty = true;
-
-		__textEngine.width = value;
+		return this.__textFormat.color;
 	}
 
-	return __textEngine.width * Math.abs(__scaleX);
-}
-
-	public get wordWrap() : boolean
-{
-	return __textEngine.wordWrap;
-}
-
-	public set wordWrap(value : boolean) : boolean
-{
-	if (value != __textEngine.wordWrap)
+	public set textColor(value: number)
 	{
-		__dirty = true;
-		__layoutDirty = true;
-		__setRenderDirty();
+		if (value != this.__textFormat.color)
+		{
+			this.__dirty = true;
+			this.__setRenderDirty();
+		}
+
+		for (let range of this.__textEngine.textFormatRanges)
+		{
+			range.format.color = value;
+		}
+
+		this.__textFormat.color = value;
 	}
 
-	return __textEngine.wordWrap = value;
-}
-
-public get x() : number
-{
-	return __transform.tx + __offsetX;
-}
-
-public set x(value : number) : number
-{
-	if (value != __transform.tx + __offsetX)
+	/**
+		The height of the text in pixels.
+	**/
+	public get textHeight(): number
 	{
-		__setTransformDirty();
-		__setParentRenderDirty();
+		this.__updateLayout();
+		return this.__textEngine.textHeight;
 	}
 
-	return __transform.tx = value - __offsetX;
-}
-
-public get y() : number
-{
-	return __transform.ty + __offsetY;
-}
-
-public set y(value : number) : number
-{
-	if (value != __transform.ty + __offsetY)
+	/**
+		The width of the text in pixels.
+	**/
+	public get textWidth(): number
 	{
-		__setTransformDirty();
-		__setParentRenderDirty();
+		this.__updateLayout();
+		return this.__textEngine.textWidth;
 	}
 
-	return __transform.ty = value - __offsetY;
-}
+	/**
+		The type of the text field. Either one of the following TextFieldType
+		constants: `TextFieldType.DYNAMIC`, which specifies a dynamic
+		text field, which a user cannot edit, or `TextFieldType.INPUT`,
+		which specifies an input text field, which a user can edit.
+
+		@default dynamic
+		@throws ArgumentError The `type` specified is not a member of
+							  openfl.text.TextFieldType.
+	**/
+	public get type(): TextFieldType
+	{
+		return this.__textEngine.type;
+	}
+
+	public set type(value: TextFieldType)
+	{
+		if (value != this.__textEngine.type)
+		{
+			if (value == TextFieldType.INPUT)
+			{
+				this.addEventListener(Event.ADDED_TO_STAGE, this.this_onAddedToStage);
+
+				this.this_onFocusIn(null);
+				this.__textEngine.__useIntAdvances = true;
+			}
+			else
+			{
+				this.removeEventListener(Event.ADDED_TO_STAGE, this.this_onAddedToStage);
+
+				this.__stopTextInput();
+				this.__textEngine.__useIntAdvances = null;
+			}
+
+			this.__dirty = true;
+			this.__layoutDirty = true;
+			this.__setRenderDirty();
+		}
+
+		this.__textEngine.type = value;
+	}
+
+	public get width(): number
+	{
+		this.__updateLayout();
+		return this.__textEngine.width * Math.abs(this.__scaleX);
+	}
+
+	public set width(value: number)
+	{
+		if (value != this.__textEngine.width)
+		{
+			this.__setTransformDirty();
+			this.__setParentRenderDirty();
+			this.__setRenderDirty();
+			this.__dirty = true;
+			this.__layoutDirty = true;
+
+			this.__textEngine.width = value;
+		}
+
+		this.__textEngine.width * Math.abs(this.__scaleX);
+	}
+
+	/**
+		A Boolean value that indicates whether the text field has word wrap. If
+		the value of `wordWrap` is `true`, the text field
+		has word wrap; if the value is `false`, the text field does not
+		have word wrap. The default value is `false`.
+	**/
+	public get wordWrap(): boolean
+	{
+		return this.__textEngine.wordWrap;
+	}
+
+	public set wordWrap(value: boolean)
+	{
+		if (value != this.__textEngine.wordWrap)
+		{
+			this.__dirty = true;
+			this.__layoutDirty = true;
+			this.__setRenderDirty();
+		}
+
+		this.__textEngine.wordWrap = value;
+	}
+
+	public get x(): number
+	{
+		return this.__transform.tx + this.__offsetX;
+	}
+
+	public set x(value: number)
+	{
+		if (value != this.__transform.tx + this.__offsetX)
+		{
+			this.__setTransformDirty();
+			this.__setParentRenderDirty();
+		}
+
+		this.__transform.tx = value - this.__offsetX;
+	}
+
+	public get y(): number
+	{
+		return this.__transform.ty + this.__offsetY;
+	}
+
+	public set y(value: number)
+	{
+		if (value != this.__transform.ty + this.__offsetY)
+		{
+			this.__setTransformDirty();
+			this.__setParentRenderDirty();
+		}
+
+		this.__transform.ty = value - this.__offsetY;
+	}
 
 	// Event Handlers
+
 	protected stage_onMouseMove(event: MouseEvent): void
 	{
-		if(stage == null) return;
+		if (this.stage == null) return;
 
-if (selectable && __selectionIndex >= 0)
-{
-	__updateLayout();
-
-	var position = __getPosition(mouseX + scrollH, mouseY);
-
-	if (position != __caretIndex)
-	{
-		__caretIndex = position;
-
-		var setDirty = true;
-
-				#if openfl_html5
-		if (DisplayObject.__supportDOM)
+		if (this.selectable && this.__selectionIndex >= 0)
 		{
-			if (__renderedOnCanvasWhileOnDOM)
+			this.__updateLayout();
+
+			var position = this.__getPosition(this.mouseX + this.scrollH, this.mouseY);
+
+			if (position != this.__caretIndex)
 			{
-				__forceCachedBitmapUpdate = true;
-			}
-			setDirty = false;
-		}
-				#end
+				this.__caretIndex = position;
 
-		if (setDirty)
-		{
-			__dirty = true;
-			__setRenderDirty();
+				var setDirty = true;
+
+				if ((<internal.DisplayObject><any>DisplayObject).__supportDOM)
+				{
+					if (this.__renderedOnCanvasWhileOnDOM)
+					{
+						this.__forceCachedBitmapUpdate = true;
+					}
+					setDirty = false;
+				}
+
+				if (setDirty)
+				{
+					this.__dirty = true;
+					this.__setRenderDirty();
+				}
+			}
 		}
 	}
-}
-}
 
 	protected stage_onMouseUp(event: MouseEvent): void
 	{
-		if(stage == null) return;
+		if (this.stage == null) return;
 
-stage.removeEventListener(MouseEvent.MOUSE_MOVE, stage_onMouseMove);
-stage.removeEventListener(MouseEvent.MOUSE_UP, stage_onMouseUp);
+		this.stage.removeEventListener(MouseEvent.MOUSE_MOVE, this.stage_onMouseMove);
+		this.stage.removeEventListener(MouseEvent.MOUSE_UP, this.stage_onMouseUp);
 
-if (stage.focus == this)
-{
-	__getWorldTransform();
-	__updateLayout();
-
-	var upPos: number = __getPosition(mouseX + scrollH, mouseY);
-	var leftPos: number;
-	var rightPos: number;
-
-	leftPos = Std.int(Math.min(__selectionIndex, upPos));
-	rightPos = Std.int(Math.max(__selectionIndex, upPos));
-
-	__selectionIndex = leftPos;
-	__caretIndex = rightPos;
-
-	if (__inputEnabled)
-	{
-		this_onFocusIn(null);
-
-		__stopCursorTimer();
-		__startCursorTimer();
-
-				#if openfl_html5
-		if (DisplayObject.__supportDOM && __renderedOnCanvasWhileOnDOM)
+		if (this.stage.focus == this)
 		{
-			__forceCachedBitmapUpdate = true;
+			this.__getWorldTransform();
+			this.__updateLayout();
+
+			var upPos: number = this.__getPosition(this.mouseX + this.scrollH, this.mouseY);
+			var leftPos: number;
+			var rightPos: number;
+
+			leftPos = Math.round(Math.min(this.__selectionIndex, upPos));
+			rightPos = Math.round(Math.max(this.__selectionIndex, upPos));
+
+			this.__selectionIndex = leftPos;
+			this.__caretIndex = rightPos;
+
+			if (this.__inputEnabled)
+			{
+				this.this_onFocusIn(null);
+
+				this.__stopCursorTimer();
+				this.__startCursorTimer();
+
+				if ((<internal.DisplayObject><any>DisplayObject).__supportDOM && this.__renderedOnCanvasWhileOnDOM)
+				{
+					this.__forceCachedBitmapUpdate = true;
+				}
+			}
 		}
-				#end
 	}
-}
-}
 
 	protected this_onAddedToStage(event: Event): void
 	{
-		this_onFocusIn(null);
+		this.this_onFocusIn(null);
 	}
 
 	protected this_onFocusIn(event: FocusEvent): void
 	{
-		if(type == INPUT && stage != null && stage.focus == this)
-{
-	__startTextInput();
-}
-}
+		if (this.type == TextFieldType.INPUT && this.stage != null && this.stage.focus == this)
+		{
+			this.__startTextInput();
+		}
+	}
 
 	protected this_onFocusOut(event: FocusEvent): void
 	{
-		__stopCursorTimer();
+		this.__stopCursorTimer();
 
-	// TODO: Better system
+		// TODO: Better system
 
-	if(event.relatedObject == null || !Std.is(event.relatedObject, TextField))
-	{
-	__stopTextInput();
-}
-	else
-{
-	if (stage != null)
-	{
-		__backend.stopInput();
+		if (event.relatedObject == null || !(event.relatedObject instanceof TextField))
+		{
+			this.__stopTextInput();
+		}
+		else
+		{
+			if (this.stage != null)
+			{
+				// this.__backend.stopInput();
+			}
+
+			this.__inputEnabled = false;
+		}
+
+		if (this.__selectionIndex != this.__caretIndex)
+		{
+			this.__selectionIndex = this.__caretIndex;
+			this.__dirty = true;
+			this.__setRenderDirty();
+		}
 	}
-
-	__inputEnabled = false;
-}
-
-if (__selectionIndex != __caretIndex)
-{
-	__selectionIndex = __caretIndex;
-	__dirty = true;
-	__setRenderDirty();
-}
-}
 
 	protected this_onKeyDown(event: KeyboardEvent): void
 	{
-		#if!openfl_doc_gen
-	if(type == INPUT)
-{
-	switch (event.keyCode)
-	{
-		case Keyboard.ENTER, Keyboard.NUMPAD_ENTER:
-			if (__textEngine.multiline)
+		if (this.type == TextFieldType.INPUT)
+		{
+			switch (event.keyCode)
 			{
-				var te = new TextEvent(TextEvent.TEXT_INPUT, true, true, "\n");
-
-				dispatchEvent(te);
-
-				if (!te.isDefaultPrevented())
-				{
-					__replaceSelectedText("\n", true);
-
-					dispatchEvent(new Event(Event.CHANGE, true));
-				}
-			}
-
-		case Keyboard.BACKSPACE:
-			if (__selectionIndex == __caretIndex && __caretIndex > 0)
-			{
-				__selectionIndex = __caretIndex - 1;
-			}
-
-			if (__selectionIndex != __caretIndex)
-			{
-				replaceSelectedText("");
-				__selectionIndex = __caretIndex;
-
-				dispatchEvent(new Event(Event.CHANGE, true));
-			}
-
-		case Keyboard.DELETE:
-			if (__selectionIndex == __caretIndex && __caretIndex < __text.length)
-			{
-				__selectionIndex = __caretIndex + 1;
-			}
-
-			if (__selectionIndex != __caretIndex)
-			{
-				replaceSelectedText("");
-				__selectionIndex = __caretIndex;
-
-				dispatchEvent(new Event(Event.CHANGE, true));
-			}
-
-		case Keyboard.LEFT if (selectable):
-			if (event.commandKey)
-			{
-				__caretBeginningOfLine();
-
-				if (!event.shiftKey)
-				{
-					__selectionIndex = __caretIndex;
-				}
-			}
-			else if (event.shiftKey)
-			{
-				__caretPreviousCharacter();
-			}
-			else
-			{
-				if (__selectionIndex == __caretIndex)
-				{
-					__caretPreviousCharacter();
-				}
-				else
-				{
-					__caretIndex = Std.int(Math.min(__caretIndex, __selectionIndex));
-				}
-
-				__selectionIndex = __caretIndex;
-			}
-
-			__updateScrollH();
-			__updateScrollV();
-			__stopCursorTimer();
-			__startCursorTimer();
-
-		case Keyboard.RIGHT if (selectable):
-			if (event.commandKey)
-			{
-				__caretEndOfLine();
-
-				if (!event.shiftKey)
-				{
-					__selectionIndex = __caretIndex;
-				}
-			}
-			else if (event.shiftKey)
-			{
-				__caretNextCharacter();
-			}
-			else
-			{
-				if (__selectionIndex == __caretIndex)
-				{
-					__caretNextCharacter();
-				}
-				else
-				{
-					__caretIndex = Std.int(Math.max(__caretIndex, __selectionIndex));
-				}
-
-				__selectionIndex = __caretIndex;
-			}
-
-			__updateScrollH();
-			__updateScrollV();
-
-			__stopCursorTimer();
-			__startCursorTimer();
-
-		case Keyboard.DOWN if (selectable):
-			if (!__textEngine.multiline) return;
-
-			if (event.shiftKey)
-			{
-				__caretNextLine();
-			}
-			else
-			{
-				if (__selectionIndex == __caretIndex)
-				{
-					__caretNextLine();
-				}
-				else
-				{
-					var lineIndex = getLineIndexOfChar(Std.int(Math.max(__caretIndex, __selectionIndex)));
-					__caretNextLine(lineIndex, Std.int(Math.min(__caretIndex, __selectionIndex)));
-				}
-
-				__selectionIndex = __caretIndex;
-			}
-
-			__updateScrollV();
-
-			__stopCursorTimer();
-			__startCursorTimer();
-
-		case Keyboard.UP if (selectable):
-			if (!__textEngine.multiline) return;
-
-			if (event.shiftKey)
-			{
-				__caretPreviousLine();
-			}
-			else
-			{
-				if (__selectionIndex == __caretIndex)
-				{
-					__caretPreviousLine();
-				}
-				else
-				{
-					var lineIndex = getLineIndexOfChar(Std.int(Math.min(__caretIndex, __selectionIndex)));
-					__caretPreviousLine(lineIndex, Std.int(Math.min(__caretIndex, __selectionIndex)));
-				}
-
-				__selectionIndex = __caretIndex;
-			}
-
-			__updateScrollV();
-
-			__stopCursorTimer();
-			__startCursorTimer();
-
-		case Keyboard.HOME if (selectable):
-			__caretBeginningOfLine();
-			__stopCursorTimer();
-			__startCursorTimer();
-
-		case Keyboard.END if (selectable):
-			__caretEndOfLine();
-			__stopCursorTimer();
-			__startCursorTimer();
-
-		case Keyboard.C if (#if mac event.commandKey #else event.ctrlKey #end):
-			if (__caretIndex != __selectionIndex)
-			{
-				Clipboard.generalClipboard.setData(TEXT_FORMAT, __text.substring(__caretIndex, __selectionIndex));
-			}
-
-		case Keyboard.X if (#if mac event.commandKey #else event.ctrlKey #end):
-			if (__caretIndex != __selectionIndex)
-			{
-				Clipboard.generalClipboard.setData(TEXT_FORMAT, __text.substring(__caretIndex, __selectionIndex));
-
-				replaceSelectedText("");
-				dispatchEvent(new Event(Event.CHANGE, true));
-			}
-
-				#if!js
-		case Keyboard.V:
-			if (#if mac event.commandKey #else event.ctrlKey #end)
-			{
-				if (Clipboard.generalClipboard.getData(TEXT_FORMAT) != null)
-				{
-					var te = new TextEvent(TextEvent.TEXT_INPUT, true, true, Clipboard.generalClipboard.getData(TEXT_FORMAT));
-
-					dispatchEvent(te);
-
-					if (!te.isDefaultPrevented())
+				case Keyboard.ENTER, Keyboard.NUMPAD_ENTER:
+					if (this.__textEngine.multiline)
 					{
-						__replaceSelectedText(Clipboard.generalClipboard.getData(TEXT_FORMAT), true);
+						var te = new TextEvent(TextEvent.TEXT_INPUT, true, true, "\n");
 
-						dispatchEvent(new Event(Event.CHANGE, true));
+						this.dispatchEvent(te);
+
+						if (!te.isDefaultPrevented())
+						{
+							this.__replaceSelectedText("\n", true);
+
+							this.dispatchEvent(new Event(Event.CHANGE, true));
+						}
 					}
-				}
-			}
-					else
-			{
-				// TODO: does this need to occur?
-				__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __text.length;
-			}
-				#end
+					break;
 
-		case Keyboard.A if (selectable):
-			if (#if mac event.commandKey #else event.ctrlKey #end)
-			{
-				__caretIndex = __text.length;
-				__selectionIndex = 0;
-			}
+				case Keyboard.BACKSPACE:
+					if (this.__selectionIndex == this.__caretIndex && this.__caretIndex > 0)
+					{
+						this.__selectionIndex = this.__caretIndex - 1;
+					}
 
-		default:
+					if (this.__selectionIndex != this.__caretIndex)
+					{
+						this.replaceSelectedText("");
+						this.__selectionIndex = this.__caretIndex;
+
+						this.dispatchEvent(new Event(Event.CHANGE, true));
+					}
+					break;
+
+				case Keyboard.DELETE:
+					if (this.__selectionIndex == this.__caretIndex && this.__caretIndex < this.__text.length)
+					{
+						this.__selectionIndex = this.__caretIndex + 1;
+					}
+
+					if (this.__selectionIndex != this.__caretIndex)
+					{
+						this.replaceSelectedText("");
+						this.__selectionIndex = this.__caretIndex;
+
+						this.dispatchEvent(new Event(Event.CHANGE, true));
+					}
+					break;
+
+				case Keyboard.LEFT:
+					if (this.selectable)
+					{
+						if (event.commandKey)
+						{
+							this.__caretBeginningOfLine();
+
+							if (!event.shiftKey)
+							{
+								this.__selectionIndex = this.__caretIndex;
+							}
+						}
+						else if (event.shiftKey)
+						{
+							this.__caretPreviousCharacter();
+						}
+						else
+						{
+							if (this.__selectionIndex == this.__caretIndex)
+							{
+								this.__caretPreviousCharacter();
+							}
+							else
+							{
+								this.__caretIndex = Math.min(this.__caretIndex, this.__selectionIndex);
+							}
+
+							this.__selectionIndex = this.__caretIndex;
+						}
+
+						this.__updateScrollH();
+						this.__updateScrollV();
+						this.__stopCursorTimer();
+						this.__startCursorTimer();
+					}
+					break;
+
+				case Keyboard.RIGHT:
+					if (this.selectable)
+					{
+						if (event.commandKey)
+						{
+							this.__caretEndOfLine();
+
+							if (!event.shiftKey)
+							{
+								this.__selectionIndex = this.__caretIndex;
+							}
+						}
+						else if (event.shiftKey)
+						{
+							this.__caretNextCharacter();
+						}
+						else
+						{
+							if (this.__selectionIndex == this.__caretIndex)
+							{
+								this.__caretNextCharacter();
+							}
+							else
+							{
+								this.__caretIndex = Math.max(this.__caretIndex, this.__selectionIndex);
+							}
+
+							this.__selectionIndex = this.__caretIndex;
+						}
+
+						this.__updateScrollH();
+						this.__updateScrollV();
+
+						this.__stopCursorTimer();
+						this.__startCursorTimer();
+					}
+					break;
+
+				case Keyboard.DOWN:
+					if (this.selectable)
+					{
+						if (!this.__textEngine.multiline) return;
+
+						if (event.shiftKey)
+						{
+							this.__caretNextLine();
+						}
+						else
+						{
+							if (this.__selectionIndex == this.__caretIndex)
+							{
+								this.__caretNextLine();
+							}
+							else
+							{
+								var lineIndex = this.getLineIndexOfChar(Math.max(this.__caretIndex, this.__selectionIndex));
+								this.__caretNextLine(lineIndex, Math.min(this.__caretIndex, this.__selectionIndex));
+							}
+
+							this.__selectionIndex = this.__caretIndex;
+						}
+
+						this.__updateScrollV();
+
+						this.__stopCursorTimer();
+						this.__startCursorTimer();
+					}
+					break;
+
+				case Keyboard.UP:
+					if (this.selectable)
+					{
+						if (!this.__textEngine.multiline) return;
+
+						if (event.shiftKey)
+						{
+							this.__caretPreviousLine();
+						}
+						else
+						{
+							if (this.__selectionIndex == this.__caretIndex)
+							{
+								this.__caretPreviousLine();
+							}
+							else
+							{
+								var lineIndex = this.getLineIndexOfChar(Math.min(this.__caretIndex, this.__selectionIndex));
+								this.__caretPreviousLine(lineIndex, Math.min(this.__caretIndex, this.__selectionIndex));
+							}
+
+							this.__selectionIndex = this.__caretIndex;
+						}
+
+						this.__updateScrollV();
+
+						this.__stopCursorTimer();
+						this.__startCursorTimer();
+					}
+					break;
+
+				case Keyboard.HOME:
+					if (this.selectable)
+					{
+						this.__caretBeginningOfLine();
+						this.__stopCursorTimer();
+						this.__startCursorTimer();
+					}
+					break;
+
+				case Keyboard.END:
+					if (this.selectable)
+					{
+						this.__caretEndOfLine();
+						this.__stopCursorTimer();
+						this.__startCursorTimer();
+					}
+					break;
+
+				case Keyboard.C:
+					if (event.ctrlKey)
+					{
+						if (this.__caretIndex != this.__selectionIndex)
+						{
+							Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, this.__text.substring(this.__caretIndex, this.__selectionIndex));
+						}
+					}
+					break;
+
+				case Keyboard.X:
+					if (event.ctrlKey)
+					{
+						if (this.__caretIndex != this.__selectionIndex)
+						{
+							Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, this.__text.substring(this.__caretIndex, this.__selectionIndex));
+
+							this.replaceSelectedText("");
+							this.dispatchEvent(new Event(Event.CHANGE, true));
+						}
+					}
+					break;
+
+				case Keyboard.A:
+					if (this.selectable)
+					{
+						if (event.ctrlKey)
+						{
+							this.__caretIndex = this.__text.length;
+							this.__selectionIndex = 0;
+						}
+					}
+					break;
+
+				default:
+			}
+		}
+		else if (this.selectable && event.keyCode == Keyboard.C && (event.commandKey || event.ctrlKey))
+		{
+			if (this.__caretIndex != this.__selectionIndex)
+			{
+				Clipboard.generalClipboard.setData(ClipboardFormats.TEXT_FORMAT, this.__text.substring(this.__caretIndex, this.__selectionIndex));
+			}
+		}
 	}
-}
-	else if (selectable && event.keyCode == Keyboard.C && (event.commandKey || event.ctrlKey))
-{
-	if (__caretIndex != __selectionIndex)
-	{
-		Clipboard.generalClipboard.setData(TEXT_FORMAT, __text.substring(__caretIndex, __selectionIndex));
-	}
-}
-		#end
-}
 
 	protected this_onMouseDown(event: MouseEvent): void
 	{
-		if(!selectable && type != INPUT) return;
+		if (!this.selectable && this.type != TextFieldType.INPUT) return;
 
-__updateLayout();
+		this.__updateLayout();
 
-__caretIndex = __getPosition(mouseX + scrollH, mouseY);
-__selectionIndex = __caretIndex;
+		this.__caretIndex = this.__getPosition(this.mouseX + this.scrollH, this.mouseY);
+		this.__selectionIndex = this.__caretIndex;
 
-if (!DisplayObject.__supportDOM)
-{
-	__dirty = true;
-	__setRenderDirty();
-}
+		if (!(<internal.DisplayObject><any>DisplayObject).__supportDOM)
+		{
+			this.__dirty = true;
+			this.__setRenderDirty();
+		}
 
-stage.addEventListener(MouseEvent.MOUSE_MOVE, stage_onMouseMove);
-stage.addEventListener(MouseEvent.MOUSE_UP, stage_onMouseUp);
-}
+		this.stage.addEventListener(MouseEvent.MOUSE_MOVE, this.stage_onMouseMove);
+		this.stage.addEventListener(MouseEvent.MOUSE_UP, this.stage_onMouseUp);
+	}
 
 	protected this_onMouseWheel(event: MouseEvent): void
 	{
-		if(mouseWheelEnabled)
+		if (this.mouseWheelEnabled)
 		{
-			scrollV -= event.delta;
+			this.scrollV -= event.delta;
 		}
 	}
 
 	protected this_onDoubleClick(event: MouseEvent): void
 	{
-		if(selectable)
+		if (this.selectable)
 		{
-			__updateLayout();
+			this.__updateLayout();
 
 			var delimiters: Array<string> = ['\n', '.', '!', '?', ',', ' ', ';', ':', '(', ')', '-', '_', '/'];
 
-			var txtStr: string = __text;
+			var txtStr: string = this.__text;
 			var leftPos: number = -1;
 			var rightPos: number = txtStr.length;
 			var pos: number = 0;
-			var startPos: number = Std.int(Math.max(__caretIndex, 1));
-			if (txtStr.length > 0 && __caretIndex >= 0 && rightPos >= __caretIndex)
+			var startPos: number = Math.max(this.__caretIndex, 1);
+			if (txtStr.length > 0 && this.__caretIndex >= 0 && rightPos >= this.__caretIndex)
 			{
-				for (c in delimiters)
+				for (let c of delimiters)
 				{
 					pos = txtStr.lastIndexOf(c, startPos - 1);
 					if (pos > leftPos) leftPos = pos + 1;
@@ -3292,23 +3120,22 @@ stage.addEventListener(MouseEvent.MOUSE_UP, stage_onMouseUp);
 
 				if (leftPos != rightPos)
 				{
-					setSelection(leftPos, rightPos);
+					this.setSelection(leftPos, rightPos);
 
 					var setDirty: boolean = true;
-					#if openfl_html5
-					if (DisplayObject.__supportDOM)
+					if ((<internal.DisplayObject><any>DisplayObject).__supportDOM)
 					{
-						if (__renderedOnCanvasWhileOnDOM)
+						if (this.__renderedOnCanvasWhileOnDOM)
 						{
-							__forceCachedBitmapUpdate = true;
+							this.__forceCachedBitmapUpdate = true;
 						}
 						setDirty = false;
 					}
-					#end
+
 					if (setDirty)
 					{
-						__dirty = true;
-						__setRenderDirty();
+						this.__dirty = true;
+						this.__setRenderDirty();
 					}
 				}
 			}

@@ -1,18 +1,12 @@
-namespace openfl.filters;
-
-#if!flash
 import BitmapData from "../display/BitmapData";
 import DisplayObjectRenderer from "../display/DisplayObjectRenderer";
 import Shader from "../display/Shader";
+import BitmapFilter from "../filters/BitmapFilter";
+import BitmapFilterShader from "../filters/BitmapFilterShader";
 import Point from "../geom/Point";
 import Rectangle from "../geom/Rectangle";
-#if lime
-import lime._internal.graphics.ImageCanvasUtil;
-import lime.math.RGBA;
-#elseif openfl_html5
-import openfl._internal.backend.lime_standalone.ImageCanvasUtil;
-import openfl._internal.backend.lime_standalone.RGBA;
-#end
+// import openfl._internal.backend.lime_standalone.ImageCanvasUtil;
+// import openfl._internal.backend.lime_standalone.RGBA;
 
 /**
 	The ColorMatrixFilter class lets you apply a 4 x 5 matrix transformation
@@ -53,13 +47,104 @@ import openfl._internal.backend.lime_standalone.RGBA;
 	filter is turned off if the resulting image reaches the maximum
 	dimensions.
 **/
-#if!openfl_debug
-@: fileXml('tags="haxe,release"')
-@: noDebug
-#end
-@: final class ColorMatrixFilter extends BitmapFilter
+export default class ColorMatrixFilter extends BitmapFilter
 {
 	protected static __colorMatrixShader: ColorMatrixShader = new ColorMatrixShader();
+
+	protected __matrix: Array<number>;
+
+	/**
+		Initializes a new ColorMatrixFilter instance with the specified
+		parameters.
+	**/
+	public constructor(matrix: Array<number> = null)
+	{
+		super();
+
+		this.matrix = matrix;
+
+		this.__numShaderPasses = 1;
+		this.__needSecondBitmapData = false;
+	}
+
+	publicclone(): BitmapFilter
+	{
+		return new ColorMatrixFilter(this.__matrix);
+	}
+
+	protected __applyFilter(destBitmapData: BitmapData, sourceBitmapData: BitmapData, sourceRect: Rectangle,
+		destPoint: Point): BitmapData
+	{
+		var sourceImage = sourceBitmapData.limeImage;
+		var image = destBitmapData.limeImage;
+
+		// ImageCanvasUtil.convertToData(sourceImage);
+		// ImageCanvasUtil.convertToData(image);
+
+		var sourceData = sourceImage.data;
+		var destData = image.data;
+
+		var offsetX = Math.round(destPoint.x - sourceRect.x);
+		var offsetY = Math.round(destPoint.y - sourceRect.y);
+		var sourceStride = sourceBitmapData.width * 4;
+		var destStride = destBitmapData.width * 4;
+
+		var sourceFormat = sourceImage.buffer.format;
+		var destFormat = image.buffer.format;
+		var sourcePremultiplied = sourceImage.buffer.premultiplied;
+		var destPremultiplied = image.buffer.premultiplied;
+
+		var sourcePixel: RGBA, destPixel: RGBA = 0;
+		var sourceOffset: number, destOffset: number;
+
+		for (let row = Math.round(sourceRect.y); row < Math.round(sourceRect.height); row++)
+		{
+			for (let column = Math.round(sourceRect.x); column < Math.round(sourceRect.width); column++)
+			{
+				sourceOffset = (row * sourceStride) + (column * 4);
+				destOffset = ((row + offsetX) * destStride) + ((column + offsetY) * 4);
+
+				sourcePixel.readUInt8(sourceData, sourceOffset, sourceFormat, sourcePremultiplied);
+
+				if (sourcePixel.a == 0)
+				{
+					destPixel = 0;
+				}
+				else
+				{
+					destPixel.r = Math.round(Math.max(0,
+						Math.min((this.__matrix[0] * sourcePixel.r) + (this.__matrix[1] * sourcePixel.g) + (this.__matrix[2] * sourcePixel.b)
+							+ (this.__matrix[3] * sourcePixel.a) + __matrix[4],
+							255)));
+					destPixel.g = Math.round(Math.max(0,
+						Math.min((this.__matrix[5] * sourcePixel.r) + (this.__matrix[6] * sourcePixel.g) + (this.__matrix[7] * sourcePixel.b)
+							+ (this.__matrix[8] * sourcePixel.a) + __matrix[9],
+							255)));
+					destPixel.b = Math.round(Math.max(0,
+						Math.min((this.__matrix[10] * sourcePixel.r) + (this.__matrix[11] * sourcePixel.g) + (this.__matrix[12] * sourcePixel.b)
+							+ (this.__matrix[13] * sourcePixel.a) + __matrix[14],
+							255)));
+					destPixel.a = Math.round(Math.max(0,
+						Math.min((this.__matrix[15] * sourcePixel.r) + (this.__matrix[16] * sourcePixel.g) + (this.__matrix[17] * sourcePixel.b)
+							+ (this.__matrix[18] * sourcePixel.a) + __matrix[19],
+							255)));
+				}
+
+				destPixel.writeUInt8(destData, destOffset, destFormat, destPremultiplied);
+			}
+		}
+
+		destBitmapData.limeImage.dirty = true;
+		return destBitmapData;
+	}
+
+	protected __initShader(renderer: DisplayObjectRenderer, pass: number, sourceBitmapData: BitmapData): Shader
+	{
+		this.__colorMatrixShader.init(this.matrix);
+		return this.__colorMatrixShader;
+	}
+
+	// Get & Set Methods
 
 	/**
 		An array of 20 items for 4 x 5 color transform. The `matrix` property
@@ -115,204 +200,86 @@ import openfl._internal.backend.lime_standalone.RGBA;
 
 		@throws TypeError The Array is `null` when being set
 	**/
-	public matrix(get, set): Array<Float>;
-
-	protected __matrix: Array<Float>;
-
-	#if openfljs
-	protected static __init__()
+	public get matrix(): Array<number>
 	{
-		untyped Object.defineProperties(ColorMatrixFilter.prototype, {
-			"matrix": { get: untyped __js__("function () { return this.get_matrix (); }"), set: untyped __js__("function (v) { return this.set_matrix (v); }") },
-		});
-	}
-	#end
-
-	/**
-		Initializes a new ColorMatrixFilter instance with the specified
-		parameters.
-	**/
-	public constructor(matrix: Array<Float> = null)
-	{
-		super();
-
-		this.matrix = matrix;
-
-		__numShaderPasses = 1;
-		__needSecondBitmapData = false;
+		return this.__matrix;
 	}
 
-	publicclone(): BitmapFilter
-	{
-		return new ColorMatrixFilter(__matrix);
-	}
-
-	protected __applyFilter(destBitmapData: BitmapData, sourceBitmapData: BitmapData, sourceRect: Rectangle,
-		destPoint: Point): BitmapData
-	{
-		#if(lime || openfl_html5)
-		var sourceImage = sourceBitmapData.limeImage;
-		var image = destBitmapData.limeImage;
-
-		#if openfl_html5
-		ImageCanvasUtil.convertToData(sourceImage);
-		ImageCanvasUtil.convertToData(image);
-		#end
-
-		var sourceData = sourceImage.data;
-		var destData = image.data;
-
-		var offsetX = Std.int(destPoint.x - sourceRect.x);
-		var offsetY = Std.int(destPoint.y - sourceRect.y);
-		var sourceStride = sourceBitmapData.width * 4;
-		var destStride = destBitmapData.width * 4;
-
-		var sourceFormat = sourceImage.buffer.format;
-		var destFormat = image.buffer.format;
-		var sourcePremultiplied = sourceImage.buffer.premultiplied;
-		var destPremultiplied = image.buffer.premultiplied;
-
-		var sourcePixel: RGBA, destPixel: RGBA = 0;
-		var sourceOffset: number, destOffset: number;
-
-		for (row in Std.int(sourceRect.y)...Std.int(sourceRect.height))
-		{
-			for (column in Std.int(sourceRect.x)...Std.int(sourceRect.width))
-			{
-				sourceOffset = (row * sourceStride) + (column * 4);
-				destOffset = ((row + offsetX) * destStride) + ((column + offsetY) * 4);
-
-				sourcePixel.readUInt8(sourceData, sourceOffset, sourceFormat, sourcePremultiplied);
-
-				if (sourcePixel.a == 0)
-				{
-					destPixel = 0;
-				}
-				else
-				{
-					destPixel.r = Std.int(Math.max(0,
-						Math.min((__matrix[0] * sourcePixel.r) + (__matrix[1] * sourcePixel.g) + (__matrix[2] * sourcePixel.b)
-							+ (__matrix[3] * sourcePixel.a) + __matrix[4],
-							255)));
-					destPixel.g = Std.int(Math.max(0,
-						Math.min((__matrix[5] * sourcePixel.r) + (__matrix[6] * sourcePixel.g) + (__matrix[7] * sourcePixel.b)
-							+ (__matrix[8] * sourcePixel.a) + __matrix[9],
-							255)));
-					destPixel.b = Std.int(Math.max(0,
-						Math.min((__matrix[10] * sourcePixel.r) + (__matrix[11] * sourcePixel.g) + (__matrix[12] * sourcePixel.b)
-							+ (__matrix[13] * sourcePixel.a) + __matrix[14],
-							255)));
-					destPixel.a = Std.int(Math.max(0,
-						Math.min((__matrix[15] * sourcePixel.r) + (__matrix[16] * sourcePixel.g) + (__matrix[17] * sourcePixel.b)
-							+ (__matrix[18] * sourcePixel.a) + __matrix[19],
-							255)));
-				}
-
-				destPixel.writeUInt8(destData, destOffset, destFormat, destPremultiplied);
-			}
-		}
-
-		destBitmapData.limeImage.dirty = true;
-		#end
-		return destBitmapData;
-	}
-
-	protected __initShader(renderer: DisplayObjectRenderer, pass: number, sourceBitmapData: BitmapData): Shader
-	{
-		__colorMatrixShader.init(matrix);
-		return __colorMatrixShader;
-	}
-
-	// Get & Set Methods
-	public get matrix(): Array<Float>
-	{
-		return __matrix;
-	}
-
-	public set matrix(value: Array<Float>): Array<Float>
+	public set matrix(value: Array<number>)
 	{
 		if (value == null)
 		{
 			value = [1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0];
 		}
 
-		return __matrix = value;
+		this.__matrix = value;
 	}
 }
 
-#if!openfl_debug
-@: fileXml('tags="haxe,release"')
-@: noDebug
-#end
-@SuppressWarnings("checkstyle:FieldDocComment")
-private class ColorMatrixShader extends BitmapFilterShader
+class ColorMatrixShader extends BitmapFilterShader
 {
-	@: glFragmentSource("varying vec2 openfl_TextureCoordv;
+	glFragmentSource = `
+		varying vec2 openfl_TextureCoordv;
 		uniform sampler2D openfl_Texture;
 
-uniform mat4 uMultipliers;
-uniform vec4 uOffsets;
+		uniform mat4 uMultipliers;
+		uniform vec4 uOffsets;
 
-void main(void) {
+		void main(void) {
 
-	vec4 color = texture2D(openfl_Texture, openfl_TextureCoordv);
+			vec4 color = texture2D(openfl_Texture, openfl_TextureCoordv);
 
-	if (color.a == 0.0)
+			if (color.a == 0.0)
+			{
+
+				gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
+
+			} else
+			{
+
+				color = vec4(color.rgb / color.a, color.a);
+				color = uOffsets + color * uMultipliers;
+
+				gl_FragColor = vec4(color.rgb * color.a, color.a);
+
+			}
+
+		}
+	`;
+
+	public constructor()
 	{
+		super();
 
-		gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0);
-
-	} else
-	{
-
-		color = vec4(color.rgb / color.a, color.a);
-		color = uOffsets + color * uMultipliers;
-
-		gl_FragColor = vec4(color.rgb * color.a, color.a);
-
+		this.data.uMultipliers.value = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+		this.data.uOffsets.value = [0, 0, 0, 0];
 	}
 
-} ")
-public constructor()
-{
-	super();
-
-		#if(!macro && openfl_gl)
-	uMultipliers.value = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
-	uOffsets.value = [0, 0, 0, 0];
-		#end
-}
-
-public init(matrix: Array<Float>): void
+	public init(matrix: Array<number>): void
 	{
-		#if(!macro && openfl_gl)
-var multipliers = uMultipliers.value;
-var offsets = uOffsets.value;
+		var multipliers = this.data.uMultipliers.value;
+		var offsets = this.data.uOffsets.value;
 
-multipliers[0] = matrix[0];
-multipliers[1] = matrix[1];
-multipliers[2] = matrix[2];
-multipliers[3] = matrix[3];
-multipliers[4] = matrix[5];
-multipliers[5] = matrix[6];
-multipliers[6] = matrix[7];
-multipliers[7] = matrix[8];
-multipliers[8] = matrix[10];
-multipliers[9] = matrix[11];
-multipliers[10] = matrix[12];
-multipliers[11] = matrix[13];
-multipliers[12] = matrix[15];
-multipliers[13] = matrix[16];
-multipliers[14] = matrix[17];
-multipliers[15] = matrix[18];
+		multipliers[0] = matrix[0];
+		multipliers[1] = matrix[1];
+		multipliers[2] = matrix[2];
+		multipliers[3] = matrix[3];
+		multipliers[4] = matrix[5];
+		multipliers[5] = matrix[6];
+		multipliers[6] = matrix[7];
+		multipliers[7] = matrix[8];
+		multipliers[8] = matrix[10];
+		multipliers[9] = matrix[11];
+		multipliers[10] = matrix[12];
+		multipliers[11] = matrix[13];
+		multipliers[12] = matrix[15];
+		multipliers[13] = matrix[16];
+		multipliers[14] = matrix[17];
+		multipliers[15] = matrix[18];
 
-offsets[0] = matrix[4] / 255.0;
-offsets[1] = matrix[9] / 255.0;
-offsets[2] = matrix[14] / 255.0;
-offsets[3] = matrix[19] / 255.0;
-		#end
+		offsets[0] = matrix[4] / 255.0;
+		offsets[1] = matrix[9] / 255.0;
+		offsets[2] = matrix[14] / 255.0;
+		offsets[3] = matrix[19] / 255.0;
+	}
 }
-}
-#else
-typedef ColorMatrixFilter = flash.filters.ColorMatrixFilter;
-#end

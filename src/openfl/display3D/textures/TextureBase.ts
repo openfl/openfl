@@ -1,45 +1,41 @@
-import EventDispatcher from "../events/EventDispatcher";
+import Context3D from "../../display3D/Context3D";
+import Context3DTextureFormat from "../../display3D/Context3DTextureFormat";
+import EventDispatcher from "../../events/EventDispatcher";
 
-namespace openfl.display3D.textures
+/**
+	The TextureBase class is the base class for Context3D texture objects.
+
+	**Note:** You cannot create your own texture classes using TextureBase. To add
+	functionality to a texture class, extend either Texture or CubeTexture instead.
+**/
+export default class TextureBase extends EventDispatcher
 {
-	/**
-		The TextureBase class is the base class for Context3D texture objects.
+	protected __context: Context3D;
+	protected __format: Context3DTextureFormat;
+	protected __height: number;
+	protected __optimizeForRenderToTexture: boolean;
+	protected __streamingLevels: number;
+	protected __width: number;
 
-		**Note:** You cannot create your own texture classes using TextureBase. To add
-		functionality to a texture class, extend either Texture or CubeTexture instead.
-	**/
-	export class TextureBase extends EventDispatcher
+	protected constructor(context: Context3D, width: number, height: number, format: Context3DTextureFormat, optimizeForRenderToTexture: boolean,
+		streamingLevels: number)
 	{
-		protected __baseBackend: TextureBaseBackend;
-		protected __context: Context3D;
-		protected __format: Context3DTextureFormat;
-		protected __height: number;
-		protected __optimizeForRenderToTexture: boolean;
-		protected __streamingLevels: number;
-		protected __width: number;
+		super();
 
-		protected constructor(context: Context3D, width: number, height: number, format: Context3DTextureFormat, optimizeForRenderToTexture: boolean,
-			streamingLevels: number)
-		{
-			super();
+		this.__context = context;
+		this.__width = width;
+		this.__height = height;
+		this.__format = format;
+		this.__optimizeForRenderToTexture = optimizeForRenderToTexture;
+		this.__streamingLevels = streamingLevels;
+	}
 
-			__context = context;
-			__width = width;
-			__height = height;
-			__format = format;
-			__optimizeForRenderToTexture = optimizeForRenderToTexture;
-			__streamingLevels = streamingLevels;
-		}
-
-		/**
-			Frees all GPU resources associated with this texture. After disposal, calling
-			`upload()` or rendering with this object fails.
-		**/
-		public dispose(): void
-		{
-			__baseBackend.dispose();
-		}
+	/**
+		Frees all GPU resources associated with this texture. After disposal, calling
+		`upload()` or rendering with this object fails.
+	**/
+	public dispose(): void
+	{
+		// __baseBackend.dispose();
 	}
 }
-
-export default openfl.display3D.textures.TextureBase;

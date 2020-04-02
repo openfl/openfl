@@ -1,14 +1,6 @@
-namespace openfl._internal.utils;
+import DisplayObject from "../../display/DisplayObject";
 
-import openfl.display.DisplayObject;
-
-#if!openfl_debug
-@: fileXml('tags="haxe,release"')
-@: noDebug
-#end
-@SuppressWarnings("checkstyle:FieldDocComment")
-@: access(openfl.display.DisplayObject)
-class DisplayObjectIterator
+export default class DisplayObjectIterator
 {
 	private current: DisplayObject;
 	private entry: DisplayObject;

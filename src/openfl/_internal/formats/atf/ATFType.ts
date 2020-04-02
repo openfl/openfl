@@ -1,7 +1,7 @@
-namespace openfl._internal.formats.atf;
-
-@: enum abstract ATFType(Int)
+export enum ATFType
 {
-	public NORMAL = 0;
-	public CUBE_MAP = 1;
+	NORMAL = 0,
+	CUBE_MAP = 1
 }
+
+export default ATFType;

@@ -1,28 +1,15 @@
-namespace openfl._internal.formats.agal;
+import SamplerState from "../../../_internal/renderer/SamplerState";
+import Context3DMipFilter from "../../../display3D/Context3DMipFilter";
+import Context3DTextureFilter from "../../../display3D/Context3DTextureFilter";
+import Context3DWrapMode from "../../../display3D/Context3DWrapMode";
+import Program3D from "../../../display3D/Program3D";
+import IllegalOperationError from "../../../errors/IllegalOperationError";
+import ByteArray from "../../../utils/ByteArray";
+import Endian from "../../../utils/Endian";
 
-import haxe.Int64;
-import openfl._internal.bindings.gl.GL;
-import openfl._internal.renderer.SamplerState;
-import openfl._internal.utils.Log;
-import openfl.display3D.Context3DMipFilter;
-import openfl.display3D.Context3DTextureFilter;
-import openfl.display3D.Context3DWrapMode;
-import openfl.display3D.Program3D;
-import IllegalOperationError from "../errors/IllegalOperationError";
-import ByteArray from "../utils/ByteArray";
-import openfl.utils.Endian;
-
-#if!openfl_debug
-@: fileXml('tags="haxe,release"')
-@: noDebug
-#end
-@: access(openfl._internal.backend.opengl) // TODO: Remove backend references
-@: access(openfl.display3D.Context3D)
-@: access(openfl.display3D.Program3D)
-@SuppressWarnings("checkstyle:FieldDocComment")
-class AGALConverter
+export default class AGALConverter
 {
-	private static limitedProfile: Null<Bool>#if !desktop = true #end;
+	private static limitedProfile: null | boolean = true;
 
 	public static prefixFromType(regType: RegisterType, programType: ProgramType): string
 	{
@@ -54,7 +41,6 @@ class AGALConverter
 
 	public static convertToGLSL(program: Program3D, agal: ByteArray, samplerState: Array<SamplerState>): string
 	{
-		#if openfl_gl
 		agal.position = 0;
 		agal.endian = Endian.LITTLE_ENDIAN;
 
@@ -85,7 +71,7 @@ class AGALConverter
 			throw new IllegalOperationError("Shader type ID must be 0xA1");
 		}
 
-		var programType = (agal.readByte() & 0xFF == 0) ? ProgramType.VERTEX : ProgramType.FRAGMENT;
+		var programType = ((agal.readByte() & 0xFF) == 0) ? ProgramType.VERTEX : ProgramType.FRAGMENT;
 
 		var map = new RegisterMap();
 		var sb = new StringBuf();
@@ -113,6 +99,7 @@ class AGALConverter
 					sb.add(dr.toGLSL() + " = " + sr1.toGLSL() + "; // mov");
 					map.addDR(dr, RegisterUsage.VECTOR_4);
 					map.addSR(sr1, RegisterUsage.VECTOR_4);
+					break;
 
 				case 0x01: // add
 
@@ -120,6 +107,7 @@ class AGALConverter
 					map.addDR(dr, RegisterUsage.VECTOR_4);
 					map.addSR(sr1, RegisterUsage.VECTOR_4);
 					map.addSR(sr2, RegisterUsage.VECTOR_4);
+					break;
 
 				case 0x02: // sub
 
@@ -127,6 +115,7 @@ class AGALConverter
 					map.addDR(dr, RegisterUsage.VECTOR_4);
 					map.addSR(sr1, RegisterUsage.VECTOR_4);
 					map.addSR(sr2, RegisterUsage.VECTOR_4);
+					break;
 
 				case 0x03: // mul
 
@@ -134,6 +123,7 @@ class AGALConverter
 					map.addDR(dr, RegisterUsage.VECTOR_4);
 					map.addSR(sr1, RegisterUsage.VECTOR_4);
 					map.addSR(sr2, RegisterUsage.VECTOR_4);
+					break;
 
 				case 0x04: // div
 
@@ -141,6 +131,7 @@ class AGALConverter
 					map.addDR(dr, RegisterUsage.VECTOR_4);
 					map.addSR(sr1, RegisterUsage.VECTOR_4);
 					map.addSR(sr2, RegisterUsage.VECTOR_4);
+					break;
 
 				case 0x05: // rcp
 
@@ -158,6 +149,7 @@ class AGALConverter
 
 					map.addDR(dr, RegisterUsage.VECTOR_4);
 					map.addSR(sr1, RegisterUsage.VECTOR_4);
+					break;
 
 				case 0x06: // min
 
@@ -165,6 +157,7 @@ class AGALConverter
 					map.addDR(dr, RegisterUsage.VECTOR_4);
 					map.addSR(sr1, RegisterUsage.VECTOR_4);
 					map.addSR(sr2, RegisterUsage.VECTOR_4);
+					break;
 
 				case 0x07: // max
 
@@ -172,24 +165,28 @@ class AGALConverter
 					map.addDR(dr, RegisterUsage.VECTOR_4);
 					map.addSR(sr1, RegisterUsage.VECTOR_4);
 					map.addSR(sr2, RegisterUsage.VECTOR_4);
+					break;
 
 				case 0x08: // frc
 
 					sb.add(dr.toGLSL() + " = fract(" + sr1.toGLSL() + "); // frc");
 					map.addDR(dr, RegisterUsage.VECTOR_4);
 					map.addSR(sr1, RegisterUsage.VECTOR_4);
+					break;
 
 				case 0x09: // sqrt
 
 					sb.add(dr.toGLSL() + " = sqrt(" + sr1.toGLSL() + "); // sqrt");
 					map.addDR(dr, RegisterUsage.VECTOR_4);
 					map.addSR(sr1, RegisterUsage.VECTOR_4);
+					break;
 
 				case 0x0A: // rsq
 
 					sb.add(dr.toGLSL() + " = inversesqrt(" + sr1.toGLSL() + "); // rsq");
 					map.addDR(dr, RegisterUsage.VECTOR_4);
 					map.addSR(sr1, RegisterUsage.VECTOR_4);
+					break;
 
 				case 0x0B: // pow
 
@@ -197,36 +194,42 @@ class AGALConverter
 					map.addDR(dr, RegisterUsage.VECTOR_4);
 					map.addSR(sr1, RegisterUsage.VECTOR_4);
 					map.addSR(sr2, RegisterUsage.VECTOR_4);
+					break;
 
 				case 0x0C: // log
 
 					sb.add(dr.toGLSL() + " = log2(" + sr1.toGLSL() + "); // log");
 					map.addDR(dr, RegisterUsage.VECTOR_4);
 					map.addSR(sr1, RegisterUsage.VECTOR_4);
+					break;
 
 				case 0x0D: // exp
 
 					sb.add(dr.toGLSL() + " = exp2(" + sr1.toGLSL() + "); // exp");
 					map.addDR(dr, RegisterUsage.VECTOR_4);
 					map.addSR(sr1, RegisterUsage.VECTOR_4);
+					break;
 
 				case 0x0E: // normalize
 
 					sb.add(dr.toGLSL() + " = normalize(" + sr1.toGLSL() + "); // normalize");
 					map.addDR(dr, RegisterUsage.VECTOR_4);
 					map.addSR(sr1, RegisterUsage.VECTOR_4);
+					break;
 
 				case 0x0F: // sin
 
 					sb.add(dr.toGLSL() + " = sin(" + sr1.toGLSL() + "); // sin");
 					map.addDR(dr, RegisterUsage.VECTOR_4);
 					map.addSR(sr1, RegisterUsage.VECTOR_4);
+					break;
 
 				case 0x10: // cos
 
 					sb.add(dr.toGLSL() + " = cos(" + sr1.toGLSL() + "); // cos");
 					map.addDR(dr, RegisterUsage.VECTOR_4);
 					map.addSR(sr1, RegisterUsage.VECTOR_4);
+					break;
 
 				case 0x11: // crs
 
@@ -235,6 +238,7 @@ class AGALConverter
 					map.addDR(dr, RegisterUsage.VECTOR_4);
 					map.addSR(sr1, RegisterUsage.VECTOR_4);
 					map.addSR(sr2, RegisterUsage.VECTOR_4);
+					break;
 
 				case 0x12: // dp3
 
@@ -243,6 +247,7 @@ class AGALConverter
 					map.addDR(dr, RegisterUsage.VECTOR_4);
 					map.addSR(sr1, RegisterUsage.VECTOR_4);
 					map.addSR(sr2, RegisterUsage.VECTOR_4);
+					break;
 
 				case 0x13: // dp4
 
@@ -251,24 +256,28 @@ class AGALConverter
 					map.addDR(dr, RegisterUsage.VECTOR_4);
 					map.addSR(sr1, RegisterUsage.VECTOR_4);
 					map.addSR(sr2, RegisterUsage.VECTOR_4);
+					break;
 
 				case 0x14: // abs
 
 					sb.add(dr.toGLSL() + " = abs(" + sr1.toGLSL() + "); // abs");
 					map.addDR(dr, RegisterUsage.VECTOR_4);
 					map.addSR(sr1, RegisterUsage.VECTOR_4);
+					break;
 
 				case 0x15: // neg
 
 					sb.add(dr.toGLSL() + " = -" + sr1.toGLSL() + "; // neg");
 					map.addDR(dr, RegisterUsage.VECTOR_4);
 					map.addSR(sr1, RegisterUsage.VECTOR_4);
+					break;
 
 				case 0x16: // saturate
 
 					sb.add(dr.toGLSL() + " = clamp(" + sr1.toGLSL() + ", 0.0, 1.0); // saturate");
 					map.addDR(dr, RegisterUsage.VECTOR_4);
 					map.addSR(sr1, RegisterUsage.VECTOR_4);
+					break;
 
 				case 0x17: // m33
 
@@ -298,6 +307,7 @@ class AGALConverter
 						map.addSR(sr2, RegisterUsage.VECTOR_4, 1);
 						map.addSR(sr2, RegisterUsage.VECTOR_4, 2);
 					}
+					break;
 
 				case 0x18: // m44
 
@@ -331,6 +341,7 @@ class AGALConverter
 						map.addSR(sr2, RegisterUsage.VECTOR_4, 2);
 						map.addSR(sr2, RegisterUsage.VECTOR_4, 3);
 					}
+					break;
 
 				case 0x19: // m34
 
@@ -364,6 +375,7 @@ class AGALConverter
 						map.addSR(sr2, RegisterUsage.VECTOR_4, 1);
 						map.addSR(sr2, RegisterUsage.VECTOR_4, 2);
 					}
+					break;
 
 				case 0x27: // kill /  discard
 
@@ -376,6 +388,7 @@ class AGALConverter
 						sb.add("if (any(lessThan(" + sr1.toGLSL() + ", vec4(0)))) discard;");
 						map.addSR(sr1, RegisterUsage.VECTOR_4);
 					}
+					break;
 
 				case 0x28: // tex
 
@@ -403,6 +416,7 @@ class AGALConverter
 								map.addSaR(sampler, RegisterUsage.SAMPLER_2D);
 								sb.add(dr.toGLSL() + " = texture2D(" + sampler.toGLSL() + ", " + sr1.toGLSL() + "); // tex");
 							}
+							break;
 
 						case 1: // cube texture
 
@@ -424,6 +438,7 @@ class AGALConverter
 								sb.add(dr.toGLSL() + " = textureCube(" + sampler.toGLSL() + ", " + sr1.toGLSL() + "); // tex");
 								map.addSaR(sampler, RegisterUsage.SAMPLER_CUBE);
 							}
+							break;
 					}
 
 					// sb.AppendFormat("{0} = vec4(0,1,0,1);", dr.toGLSL () );
@@ -435,6 +450,7 @@ class AGALConverter
 						// add sampler state to output list for caller
 						samplerState[sampler.n] = sampler.toSamplerState();
 					}
+					break;
 
 				case 0x29: // sge
 
@@ -443,6 +459,7 @@ class AGALConverter
 					map.addDR(dr, RegisterUsage.VECTOR_4);
 					map.addSR(sr1, RegisterUsage.VECTOR_4);
 					map.addSR(sr2, RegisterUsage.VECTOR_4);
+					break;
 
 				case 0x2A: // slt
 
@@ -451,6 +468,7 @@ class AGALConverter
 					map.addDR(dr, RegisterUsage.VECTOR_4);
 					map.addSR(sr1, RegisterUsage.VECTOR_4);
 					map.addSR(sr2, RegisterUsage.VECTOR_4);
+					break;
 
 				case 0x2C: // seq
 
@@ -459,6 +477,7 @@ class AGALConverter
 					map.addDR(dr, RegisterUsage.VECTOR_4);
 					map.addSR(sr1, RegisterUsage.VECTOR_4);
 					map.addSR(sr2, RegisterUsage.VECTOR_4);
+					break;
 
 				case 0x2D: // sne
 
@@ -467,6 +486,7 @@ class AGALConverter
 					map.addDR(dr, RegisterUsage.VECTOR_4);
 					map.addSR(sr1, RegisterUsage.VECTOR_4);
 					map.addSR(sr2, RegisterUsage.VECTOR_4);
+					break;
 
 				default:
 					// sb.AppendFormat ("unsupported opcode" + opcode);
@@ -476,18 +496,18 @@ class AGALConverter
 			sb.add("\n");
 		}
 
-		if (limitedProfile == null)
-		{
-			var gl = program.__context.__backend.gl;
-			var version: string = gl.getParameter(GL.VERSION);
-			limitedProfile = (version.indexOf("OpenGL ES") > -1 || version.indexOf("WebGL") > -1);
-		}
+		// if (this.limitedProfile == null)
+		// {
+		// var gl = (<internal.Context3D><any>(<internal.Program3D><any>program).__context).__gl;
+		// var version: string = gl.getParameter(GL.VERSION);
+		// this.limitedProfile = (version.indexOf("OpenGL ES") > -1 || version.indexOf("WebGL") > -1);
+		// }
 
 		// combine parts into final progam
 		var glsl = new StringBuf();
 		glsl.add("// AGAL " + ((programType == ProgramType.VERTEX) ? "vertex" : "fragment") + " shader\n");
 
-		if (limitedProfile)
+		if (this.limitedProfile)
 		{
 			glsl.add("#version 100\n");
 
@@ -521,18 +541,10 @@ class AGALConverter
 
 		// System.Console.WriteLine(glsl);
 		return glsl.toString();
-		#else
-		return null;
-		#end
 	}
 }
 
-#if!openfl_debug
-@: fileXml('tags="haxe,release"')
-@: noDebug
-#end
-@SuppressWarnings("checkstyle:FieldDocComment")
-private class DestRegister
+class DestRegister
 {
 	public mask: number;
 	public n: number;
@@ -544,10 +556,10 @@ private class DestRegister
 	public getWriteMask(): string
 	{
 		var str: string = ".";
-		if ((mask & 1) != 0) str += "x";
-		if ((mask & 2) != 0) str += "y";
-		if ((mask & 4) != 0) str += "z";
-		if ((mask & 8) != 0) str += "w";
+		if ((this.mask & 1) != 0) str += "x";
+		if ((this.mask & 2) != 0) str += "y";
+		if ((this.mask & 4) != 0) str += "z";
+		if ((this.mask & 8) != 0) str += "w";
 		return str;
 	}
 
@@ -555,7 +567,7 @@ private class DestRegister
 	{
 		var dr = new DestRegister();
 		dr.programType = programType;
-		dr.type = cast((v >> 24) & 0xF);
+		dr.type = ((v >> 24) & 0xF);
 		dr.mask = ((v >> 16) & 0xF);
 		dr.n = (v & 0xFFFF);
 		return dr;
@@ -565,35 +577,30 @@ private class DestRegister
 	{
 		var str: string;
 
-		if (type == RegisterType.OUTPUT)
+		if (this.type == RegisterType.OUTPUT)
 		{
-			str = programType == ProgramType.VERTEX ? "gl_Position" : "gl_FragColor";
+			str = this.programType == ProgramType.VERTEX ? "gl_Position" : "gl_FragColor";
 		}
 		else
 		{
-			str = AGALConverter.prefixFromType(type, programType) + n;
+			str = AGALConverter.prefixFromType(this.type, this.programType) + this.n;
 		}
 
-		if (useMask && mask != 0xF)
+		if (useMask && this.mask != 0xF)
 		{
-			str += getWriteMask();
+			str += this.getWriteMask();
 		}
 
 		return str;
 	}
 }
 
-private enum ProgramType
+enum ProgramType
 {
-	VERTEX;
-	FRAGMENT;
+	VERTEX,
+	FRAGMENT
 }
 
-#if!openfl_debug
-@: fileXml('tags="haxe,release"')
-@: noDebug
-#end
-@SuppressWarnings("checkstyle:FieldDocComment")
 class RegisterMap
 {
 	private mEntries: Array<RegisterMapEntry> = new Array();
@@ -605,7 +612,7 @@ class RegisterMap
 
 	public add(type: RegisterType, name: string, number: number, usage: RegisterUsage): void
 	{
-		for (entry in mEntries)
+		for (let entry of this.mEntries)
 		{
 			if (entry.type == type && entry.name == name && entry.number == number)
 			{
@@ -623,29 +630,29 @@ class RegisterMap
 		entry.name = name;
 		entry.number = number;
 		entry.usage = usage;
-		mEntries.push(entry);
+		this.mEntries.push(entry);
 	}
 
 	public addDR(dr: DestRegister, usage: RegisterUsage): void
 	{
-		add(dr.type, dr.toGLSL(false), dr.n, usage);
+		this.add(dr.type, dr.toGLSL(false), dr.n, usage);
 	}
 
 	public addSaR(sr: SamplerRegister, usage: RegisterUsage): void
 	{
-		add(sr.type, sr.toGLSL(), sr.n, usage);
+		this.add(sr.type, sr.toGLSL(), sr.n, usage);
 	}
 
 	public addSR(sr: SourceRegister, usage: RegisterUsage, offset: number = 0): void
 	{
 		if (sr.d != 0)
 		{
-			add(sr.itype, AGALConverter.prefixFromType(sr.itype, sr.programType) + sr.n, sr.n, RegisterUsage.VECTOR_4);
-			add(sr.type, AGALConverter.prefixFromType(sr.type, sr.programType) + sr.o, sr.o, RegisterUsage.VECTOR_4_ARRAY);
+			this.add(sr.itype, AGALConverter.prefixFromType(sr.itype, sr.programType) + sr.n, sr.n, RegisterUsage.VECTOR_4);
+			this.add(sr.type, AGALConverter.prefixFromType(sr.type, sr.programType) + sr.o, sr.o, RegisterUsage.VECTOR_4_ARRAY);
 			return;
 		}
 
-		add(sr.type, sr.toGLSL(false, offset), sr.n + offset, usage);
+		this.add(sr.type, sr.toGLSL(false, offset), sr.n + offset, usage);
 	}
 
 	public getRegisterUsage(sr: SourceRegister): RegisterUsage
@@ -655,12 +662,12 @@ class RegisterMap
 			return RegisterUsage.VECTOR_4_ARRAY;
 		}
 
-		return getUsage(sr.type, sr.toGLSL(false), sr.n);
+		return this.getUsage(sr.type, sr.toGLSL(false), sr.n);
 	}
 
 	public getUsage(type: RegisterType, name: string, number: number): RegisterUsage
 	{
-		for (entry in mEntries)
+		for (let entry of this.mEntries)
 		{
 			if (entry.type == type && entry.name == name && entry.number == number)
 			{
@@ -673,23 +680,23 @@ class RegisterMap
 
 	public toGLSL(tempRegistersOnly: boolean): string
 	{
-		mEntries.sort(function (a: RegisterMapEntry, b: RegisterMapEntry): number
+		this.mEntries.sort(function (a: RegisterMapEntry, b: RegisterMapEntry): number
 		{
 			return a.number - b.number;
 		});
 
 		var entry: RegisterMapEntry;
 
-		mEntries.sort(function (a: RegisterMapEntry, b: RegisterMapEntry): number
+		this.mEntries.sort(function (a: RegisterMapEntry, b: RegisterMapEntry): number
 		{
-			return cast(a.type, Int) - cast(b.type, Int);
+			return a.type - b.type;
 		});
 
 		var sb = new StringBuf();
 
-		for (i in 0...mEntries.length)
+		for (let i = 0; i < this.mEntries.length; i++)
 		{
-			entry = mEntries[i];
+			entry = this.mEntries[i];
 
 			// only emit temporary registers based on Boolean passed in
 			// this is so temp registers can be grouped in the main() block
@@ -710,21 +717,27 @@ class RegisterMap
 				case RegisterType.ATTRIBUTE:
 					// sb.AppendFormat("layout(location = {0}) ", entry.number);
 					sb.add("attribute ");
+					break;
 
 				case RegisterType.CONSTANT:
 					// sb.AppendFormat("layout(location = {0}) ", entry.number);
 					sb.add("uniform ");
+					break;
 
 				case RegisterType.TEMPORARY:
 					sb.add("\t");
+					break;
 
 				case RegisterType.OUTPUT:
+					break;
 
 				case RegisterType.VARYING:
 					sb.add("varying ");
+					break;
 
 				case RegisterType.SAMPLER:
 					sb.add("uniform ");
+					break;
 
 				default:
 					throw new IllegalOperationError();
@@ -734,27 +747,35 @@ class RegisterMap
 			{
 				case RegisterUsage.VECTOR_4:
 					sb.add("vec4 ");
+					break;
 
 				case RegisterUsage.VECTOR_4_ARRAY:
 					sb.add("vec4 ");
+					break;
 
 				case RegisterUsage.MATRIX_4_4:
 					sb.add("mat4 ");
+					break;
 
 				case RegisterUsage.SAMPLER_2D:
 					sb.add("sampler2D ");
+					break;
 
 				case RegisterUsage.SAMPLER_CUBE:
 					sb.add("samplerCube ");
+					break;
 
 				case RegisterUsage.UNUSED:
-					Log.info("Missing switch patten: RegisterUsage.UNUSED");
+					console.info("Missing switch patten: RegisterUsage.UNUSED");
+					break;
 
 				case RegisterUsage.SAMPLER_2D_ALPHA:
+					break;
 
 				// trace ("Missing switch patten: RegisterUsage.SAMPLER_2D_ALPHA");
 
 				case RegisterUsage.SAMPLER_CUBE_ALPHA:
+					break;
 			}
 
 			if (entry.usage == RegisterUsage.SAMPLER_2D_ALPHA)
@@ -805,11 +826,7 @@ class RegisterMap
 	}
 }
 
-#if!openfl_debug
-@: fileXml('tags="haxe,release"')
-@: noDebug
-#end
-private class RegisterMapEntry
+class RegisterMapEntry
 {
 	public name: string;
 	public number: number;
@@ -819,34 +836,29 @@ private class RegisterMapEntry
 	public constructor() { }
 }
 
-@: enum abstract RegisterType(Int)
+enum RegisterType
 {
-	public ATTRIBUTE = 0;
-	public CONSTANT = 1;
-	public TEMPORARY = 2;
-	public OUTPUT = 3;
-	public VARYING = 4;
-	public SAMPLER = 5;
+	ATTRIBUTE = 0,
+	CONSTANT = 1,
+	TEMPORARY = 2,
+	OUTPUT = 3,
+	VARYING = 4,
+	SAMPLER = 5
 }
 
-private enum RegisterUsage
+enum RegisterUsage
 {
-	UNUSED;
-	VECTOR_4;
-	MATRIX_4_4;
-	SAMPLER_2D;
-	SAMPLER_2D_ALPHA;
-	SAMPLER_CUBE;
-	SAMPLER_CUBE_ALPHA;
-	VECTOR_4_ARRAY;
+	UNUSED,
+	VECTOR_4,
+	MATRIX_4_4,
+	SAMPLER_2D,
+	SAMPLER_2D_ALPHA,
+	SAMPLER_CUBE,
+	SAMPLER_CUBE_ALPHA,
+	VECTOR_4_ARRAY
 }
 
-#if!openfl_debug
-@: fileXml('tags="haxe,release"')
-@: noDebug
-#end
-@SuppressWarnings("checkstyle:FieldDocComment")
-private class SamplerRegister
+class SamplerRegister
 {
 	public b: number; // lod bias
 	public d: number; // dimension 0=2d 1=cube
@@ -879,7 +891,7 @@ private class SamplerRegister
 
 	public toGLSL(): string
 	{
-		var str = AGALConverter.prefixFromType(type, programType) + n;
+		var str = AGALConverter.prefixFromType(this.type, this.programType) + this.n;
 		return str;
 	}
 
@@ -892,28 +904,33 @@ private class SamplerRegister
 		// TODO: anisotropic support?
 
 		// translate texture filter
-		switch (f)
+		switch (this.f)
 		{
 			case 0:
-				filter = NEAREST;
+				filter = Context3DTextureFilter.NEAREST;
+				break;
 			case 1:
-				filter = LINEAR;
+				filter = Context3DTextureFilter.LINEAR;
+				break;
 			default:
 				throw new IllegalOperationError();
 		}
 
 		// translate min filter
-		switch (m)
+		switch (this.m)
 		{
 			// disable
 			case 0:
-				mipfilter = MIPNONE;
+				mipfilter = Context3DMipFilter.MIPNONE;
+				break;
 			// nearest
 			case 1:
-				mipfilter = MIPNEAREST;
+				mipfilter = Context3DMipFilter.MIPNEAREST;
+				break;
 			// linear
 			case 2:
-				mipfilter = MIPLINEAR;
+				mipfilter = Context3DMipFilter.MIPLINEAR;
+				break;
 			default:
 				throw new IllegalOperationError();
 		}
@@ -921,33 +938,30 @@ private class SamplerRegister
 		// TODO: Clamp + repeat modes?
 
 		// translate wrapping mode
-		switch (w)
+		switch (this.w)
 		{
 			case 0:
-				wrap = CLAMP;
+				wrap = Context3DWrapMode.CLAMP;
+				break;
 			case 1:
-				wrap = REPEAT;
+				wrap = Context3DWrapMode.REPEAT;
+				break;
 			default:
 				throw new IllegalOperationError();
 		}
 
-		var ignoreSampler = (s & 4 == 4);
-		var centroid = (s & 1 == 1);
-		var textureAlpha = (t == 2);
+		var ignoreSampler = ((this.s & 4) == 4);
+		var centroid = ((this.s & 1) == 1);
+		var textureAlpha = (this.t == 2);
 
 		// translate lod bias, sign extend and /8
-		var lodBias: number = ((b << 24) >> 24) / 8.0;
+		var lodBias: number = ((this.b << 24) >> 24) / 8.0;
 
 		return new SamplerState(wrap, filter, mipfilter, lodBias, ignoreSampler, centroid, textureAlpha);
 	}
 }
 
-#if!openfl_debug
-@: fileXml('tags="haxe,release"')
-@: noDebug
-#end
-@SuppressWarnings("checkstyle:FieldDocComment")
-private class SourceRegister
+class SourceRegister
 {
 	public d: number;
 	public itype: RegisterType;
@@ -978,60 +992,68 @@ private class SourceRegister
 
 	public toGLSL(emitSwizzle: boolean = true, offset: number = 0): string
 	{
-		if (type == RegisterType.OUTPUT)
+		if (this.type == RegisterType.OUTPUT)
 		{
-			return programType == ProgramType.VERTEX ? "gl_Position" : "gl_FragColor";
+			return this.programType == ProgramType.VERTEX ? "gl_Position" : "gl_FragColor";
 		}
 
-		var fullxyzw = (s == 228) && (sourceMask == 0xF);
+		var fullxyzw = (this.s == 228) && (this.sourceMask == 0xF);
 		var swizzle = "";
 
-		if (type != RegisterType.SAMPLER && !fullxyzw)
+		if (this.type != RegisterType.SAMPLER && !fullxyzw)
 		{
-			for (i in 0...4)
+			for (let i = 0; i < 4; i++)
 			{
 				// only output swizzles for each source mask
-				if ((sourceMask & (1 << i)) != 0)
+				if ((this.sourceMask & (1 << i)) != 0)
 				{
-					switch ((s >> (i * 2)) & 3)
+					switch ((this.s >> (i * 2)) & 3)
 					{
 						case 0:
 							swizzle += "x";
+							break;
 						case 1:
 							swizzle += "y";
+							break;
 						case 2:
 							swizzle += "z";
+							break;
 						case 3:
 							swizzle += "w";
+							break;
 					}
 				}
 			}
 		}
 
-		var str = AGALConverter.prefixFromType(type, programType);
+		var str = AGALConverter.prefixFromType(this.type, this.programType);
 
-		if (d == 0)
+		if (this.d == 0)
 		{
 			// direct register
-			str += (n + offset);
+			str += (this.n + offset);
 		}
 		else
 		{
 			// indirect register
-			str += o;
+			str += this.o;
 			var indexComponent = "";
-			switch (q)
+			switch (this.q)
 			{
 				case 0:
 					indexComponent = "x";
+					break;
 				case 1:
 					indexComponent = "y";
+					break;
 				case 2:
 					indexComponent = "z";
+					break;
 				case 3:
 					indexComponent = "w";
+					break;
 			}
-			var indexRegister = AGALConverter.prefixFromType(itype, programType) + this.n + "." + indexComponent;
+			var indexRegister = AGALConverter.prefixFromType(this.itype, this.programType) + this.n + "." + indexComponent;
 			str += "[ int(" + indexRegister + ") +" + offset + "]";
 		}
 

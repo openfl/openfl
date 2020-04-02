@@ -1,28 +1,31 @@
+import ApplicationDomain from "../system/ApplicationDomain";
+import SecurityDomain from "../system/SecurityDomain";
+
 /**
-		The LoaderContext class provides options for loading SWF files and other
-		media by using the Loader class. The LoaderContext class is used as the
-		`context` parameter in the `load()` and `loadBytes()` methods of the
-		Loader class.
-		When loading SWF files with the `Loader.load()` method, you have two
-		decisions to make : numbero which security domain the loaded SWF file should
-		be placed, and into which application domain within that security domain?
-		For more details on these choices, see the `applicationDomain` and
-		`securityDomain` properties.
+	The LoaderContext class provides options for loading SWF files and other
+	media by using the Loader class. The LoaderContext class is used as the
+	`context` parameter in the `load()` and `loadBytes()` methods of the
+	Loader class.
+	When loading SWF files with the `Loader.load()` method, you have two
+	decisions to make : numbero which security domain the loaded SWF file should
+	be placed, and into which application domain within that security domain?
+	For more details on these choices, see the `applicationDomain` and
+	`securityDomain` properties.
 
-		When loading a SWF file with the `Loader.loadBytes()` method, you have the
-		same application domain choice to make as for `Loader.load()`, but it's
-		not necessary to specify a security domain, because `Loader.loadBytes()`
-		always places its loaded SWF file into the security domain of the loading
-		SWF file.
+	When loading a SWF file with the `Loader.loadBytes()` method, you have the
+	same application domain choice to make as for `Loader.load()`, but it's
+	not necessary to specify a security domain, because `Loader.loadBytes()`
+	always places its loaded SWF file into the security domain of the loading
+	SWF file.
 
-		When loading images (JPEG, GIF, or PNG) instead of SWF files, there is no
-		need to specify a SecurityDomain or an application domain, because those
-		concepts are meaningful only for SWF files. Instead, you have only one
-		decision to make: do you need programmatic access to the pixels of the
-		loaded image? If so, see the `checkPolicyFile` property. If you want to
-		apply deblocking when loading an image, use the JPEGLoaderContext class
-		instead of the LoaderContext class.
-	**/
+	When loading images (JPEG, GIF, or PNG) instead of SWF files, there is no
+	need to specify a SecurityDomain or an application domain, because those
+	concepts are meaningful only for SWF files. Instead, you have only one
+	decision to make: do you need programmatic access to the pixels of the
+	loaded image? If so, see the `checkPolicyFile` property. If you want to
+	apply deblocking when loading an image, use the JPEGLoaderContext class
+	instead of the LoaderContext class.
+**/
 export default class LoaderContext
 {
 	/**
@@ -406,13 +409,13 @@ export default class LoaderContext
 								 security sandbox cannot load content from
 								 other sandboxes into its SecurityDomain.
 	**/
-	public constructor(checkPolicyFile: boolean = false, applicationDomain: ApplicationDomain = null, securityDomain: SecurityDomain = null): void
+	public constructor(checkPolicyFile: boolean = false, applicationDomain: ApplicationDomain = null, securityDomain: SecurityDomain = null)
 	{
 		this.checkPolicyFile = checkPolicyFile;
 		this.securityDomain = securityDomain;
 		this.applicationDomain = applicationDomain;
 
-		allowCodeImport = true;
-		allowLoadBytesCodeExecution = true;
+		this.allowCodeImport = true;
+		this.allowLoadBytesCodeExecution = true;
 	}
 }

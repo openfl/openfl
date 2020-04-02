@@ -1247,10 +1247,11 @@ export default class DisplayObjectContainer extends InteractiveObject
 						if (transformDirty)
 						{
 							var textField: TextField = child as TextField;
-							(<internal.Matrix><new>(<internal.DisplayObject><any>textField).__renderTransform).__translateTransformed((<internal.TextField><any>textField).__offsetX, (<internal.TextField><any>textField).__offsetY);
+							(<internal.Matrix><any>(<internal.DisplayObject><any>textField).__renderTransform).__translateTransformed((<internal.TextField><any>textField).__offsetX, (<internal.TextField><any>textField).__offsetY);
 						}
 						break;
 
+						
 					case DisplayObjectType.DISPLAY_OBJECT_CONTAINER:
 					case DisplayObjectType.MOVIE_CLIP:
 						// Ensure children are marked as dirty again

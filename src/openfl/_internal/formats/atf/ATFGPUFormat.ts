@@ -1,9 +1,9 @@
-namespace openfl._internal.formats.atf;
-
-@: enum abstract ATFGPUFormat(Int) from Int to Int
+export enum ATFGPUFormat
 {
-	public DXT = 0; // DXT1/DXT5 depending on alpha
-	public PVRTC = 1;
-	public ETC1 = 2;
-	public ETC2 = 3;
+	DXT = 0, // DXT1/DXT5 depending on alpha
+	PVRTC = 1,
+	ETC1 = 2,
+	ETC2 = 3
 }
+
+export default ATFGPUFormat;

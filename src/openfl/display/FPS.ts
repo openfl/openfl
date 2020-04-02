@@ -32,7 +32,7 @@ export default class FPS extends TextField
 		this.times = [];
 
 		// #if flash
-		this.addEventListener(Event.ENTER_FRAME, (e)
+		this.addEventListener(Event.ENTER_FRAME, (e) =>
 		{
 			var time = Lib.getTimer();
 			this.__enterFrame(time - this.currentTime);

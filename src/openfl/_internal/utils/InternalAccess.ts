@@ -1,6 +1,7 @@
 import Context3DState from "../../_internal/renderer/context3D/Context3DState";
 import BitmapDataPool from "../../_internal/renderer/BitmapDataPool";
 import DisplayObjectRenderData from "../../_internal/renderer/DisplayObjectRenderData";
+import DisplayObjectRendererType from "../../_internal/renderer/DisplayObjectRendererType";
 import DisplayObjectType from "../../_internal/renderer/DisplayObjectType";
 import GraphicsDataType from "../../_internal/renderer/GraphicsDataType";
 import GraphicsFillType from "../../_internal/renderer/GraphicsFillType";
@@ -38,6 +39,7 @@ import Rectangle from "../../geom/Rectangle";
 import Transform from "../../geom/Transform";
 import SoundChannel from "../../media/SoundChannel";
 import ApplicationDomain from "../../system/ApplicationDomain";
+import TextFormat from "../../text/TextFormat";
 import GameInputDevice from "../../ui/GameInputDevice";
 import GameInputControl from "../../ui/GameInputControl";
 import MouseCursor from "../../ui/MouseCursor";
@@ -351,6 +353,12 @@ interface MouseInternal
 }
 export { MouseInternal as Mouse }
 
+interface NetStreamInternal
+{
+	__getVideoElement(): HTMLVideoElement;
+}
+export { NetStreamInternal as NetStream }
+
 interface PointInternal
 {
 	__pool: ObjectPool<Point>;
@@ -364,6 +372,12 @@ interface RectangleInternal
 	__transform(rect: Rectangle, m: Matrix): void;
 }
 export { RectangleInternal as Rectangle }
+
+interface ShaderInternal
+{
+	__init(context3D: Context3D = null): void;
+}
+export { ShaderInternal as Shader }
 
 interface SimpleButtonInternal
 {
@@ -406,6 +420,12 @@ interface StageInternal
 	__stopDrag(sprite: Sprite): void;
 }
 export { StageInternal as Stage }
+
+interface TextFormatInternal
+{
+	__merge(format: TextFormat): void;
+}
+export { TextFormatInternal as TextFormat }
 
 interface TileContainerInternal
 {

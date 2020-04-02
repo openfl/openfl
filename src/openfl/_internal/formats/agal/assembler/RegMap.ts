@@ -1,21 +1,14 @@
-namespace openfl._internal.formats.agal.assembler;
+import Reg from "./Reg";
 
-import haxe.ds.StringMap;
-
-#if!openfl_debug
-@: fileXml('tags="haxe,release"')
-@: noDebug
-#end
-class RegMap
+export default class RegMap
 {
-	public static map(get, never): stringMap<Reg>;
-	private static _map: stringMap<Reg>;
+	private static _map: Map<string, Reg>;
 
-	private static get_map(): stringMap<Reg>
+	public static get map(): Map<string, Reg>
 	{
 		if (RegMap._map == null)
 		{
-			RegMap._map = new StringMap<Reg>();
+			RegMap._map = new Map<string, Reg>();
 			RegMap._map.set("va", new Reg(0x00, "vertex attribute"));
 			RegMap._map.set("fc", new Reg(0x01, "fragment constant"));
 			RegMap._map.set("vc", new Reg(0x01, "vertex constant"));
