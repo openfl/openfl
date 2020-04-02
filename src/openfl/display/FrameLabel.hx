@@ -17,45 +17,19 @@ import openfl.events.EventDispatcher;
 	/**
 		The frame number containing the label.
 	**/
-	public var frame(get, never):Int;
+	public var frame(default, null):Int;
 
 	/**
 		The name of the label.
 	**/
-	public var name(get, never):String;
-
-	@:noCompletion private var __frame:Int;
-	@:noCompletion private var __name:String;
-
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperty(FrameLabel.prototype, "frame", {
-			get: untyped __js__("function () { return this.get_frame (); }")
-		});
-		untyped Object.defineProperty(FrameLabel.prototype, "name", {
-			get: untyped __js__("function () { return this.get_name (); }")
-		});
-	}
-	#end
+	public var name(default, null):String;
 
 	public function new(name:String, frame:Int)
 	{
 		super();
 
-		__name = name;
-		__frame = frame;
-	}
-
-	// Getters & Setters
-	@:noCompletion private function get_frame():Int
-	{
-		return __frame;
-	}
-
-	@:noCompletion private function get_name():String
-	{
-		return __name;
+		this.name = name;
+		this.frame = frame;
 	}
 }
 #else

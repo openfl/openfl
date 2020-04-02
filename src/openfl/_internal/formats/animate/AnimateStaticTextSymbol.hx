@@ -1,6 +1,5 @@
-package openfl._internal.symbols;
+package openfl._internal.formats.animate;
 
-import openfl._internal.formats.swf.SWFLite;
 import openfl.display.CapsStyle;
 import openfl.display.JointStyle;
 import openfl.display.LineScaleMode;
@@ -12,11 +11,12 @@ import openfl.text.StaticText;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@:access(openfl._internal.formats.animate.AnimateLibrary)
 @:access(openfl.display.CapsStyle)
 @:access(openfl.display.JointStyle)
 @:access(openfl.display.LineScaleMode)
 @:access(openfl.text.StaticText)
-class StaticTextSymbol extends SWFSymbol
+class AnimateStaticTextSymbol extends AnimateSymbol
 {
 	public var matrix:Matrix;
 	public var records:Array<StaticTextRecord>;
@@ -27,7 +27,7 @@ class StaticTextSymbol extends SWFSymbol
 		super();
 	}
 
-	private override function __createObject(swf:SWFLite):#if flash Shape #else StaticText #end
+	private override function __createObject(library:AnimateLibrary):#if flash Shape #else StaticText #end
 	{
 		var staticText = #if flash new flash.text.StaticText.StaticText2() #else new StaticText() #end;
 		var graphics = staticText.__graphics;
@@ -43,7 +43,7 @@ class StaticTextSymbol extends SWFSymbol
 
 		if (records != null)
 		{
-			var font:FontSymbol = null;
+			var font:AnimateFontSymbol = null;
 			var color = 0xFFFFFF;
 			var offsetX = matrix.tx;
 			var offsetY = matrix.ty;
@@ -52,9 +52,12 @@ class StaticTextSymbol extends SWFSymbol
 
 			for (record in records)
 			{
-				if (record.fontID != null) font = cast swf.symbols.get(record.fontID);
-				if (record.offsetX != null) offsetX = matrix.tx + record.offsetX * 0.05;
-				if (record.offsetY != null) offsetY = matrix.ty + record.offsetY * 0.05;
+				if (record.fontID != null) font = cast library.symbols.get(record.fontID);
+				if (record.offset != null)
+				{
+					offsetX = matrix.tx + record.offset[0] * 0.05;
+					offsetY = matrix.ty + record.offset[1] * 0.05;
+				}
 				if (record.color != null) color = record.color;
 
 				if (font != null)
@@ -118,15 +121,13 @@ class StaticTextSymbol extends SWFSymbol
 	}
 }
 
-@:keep class StaticTextRecord
+@:keep typedef StaticTextRecord =
 {
 	public var advances:Array<Int>;
 	public var color:Null<Int>;
 	public var fontHeight:Int;
 	public var fontID:Null<Int>;
 	public var glyphs:Array<Int>;
-	public var offsetX:Null<Int>;
-	public var offsetY:Null<Int>;
-
-	public function new() {}
+	public var offset:Null<Array<Int>>;
+	// public function new() {}
 }

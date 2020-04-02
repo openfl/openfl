@@ -1,6 +1,5 @@
-package openfl._internal.symbols;
+package openfl._internal.formats.animate;
 
-import openfl._internal.formats.swf.SWFLite;
 import openfl._internal.utils.Log;
 import openfl.text.Font;
 import openfl.text.TextField;
@@ -11,9 +10,10 @@ import openfl.text.TextFormatAlign;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@:access(openfl._internal.formats.animate.AnimateLibrary)
 @:access(openfl.text.TextField)
 @:access(openfl.text.TextFormat)
-class DynamicTextSymbol extends SWFSymbol
+class AnimateDynamicTextSymbol extends AnimateSymbol
 {
 	public var align: /*TextFormatAlign*/ String;
 	public var border:Bool;
@@ -42,13 +42,13 @@ class DynamicTextSymbol extends SWFSymbol
 		super();
 	}
 
-	private override function __createObject(swf:SWFLite):TextField
+	private override function __createObject(library:AnimateLibrary):TextField
 	{
 		var textField = new TextField();
 
-		#if !flash
-		textField.__symbol = this;
-		#end
+		// #if !flash
+		// textField.__symbol = this;
+		// #end
 
 		textField.width = width;
 		textField.height = height;
@@ -79,7 +79,7 @@ class DynamicTextSymbol extends SWFSymbol
 		if (color != null) format.color = (color & 0x00FFFFFF);
 		format.size = Math.round(fontHeight / 20);
 
-		var font:FontSymbol = cast swf.symbols.get(fontID);
+		var font:AnimateFontSymbol = cast library.symbols.get(fontID);
 
 		if (font != null)
 		{
@@ -136,7 +136,7 @@ class DynamicTextSymbol extends SWFSymbol
 		{
 			textField.embedFonts = true;
 		}
-		#if (lime && !flash)
+		#if !flash
 		else if (!TextField.__missingFontWarning.exists(format.font))
 		{
 			TextField.__missingFontWarning[format.font] = true;

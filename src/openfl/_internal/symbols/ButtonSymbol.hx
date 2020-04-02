@@ -23,9 +23,17 @@ class ButtonSymbol extends SWFSymbol
 	private override function __createObject(swf:SWFLite):SimpleButton
 	{
 		var simpleButton:SimpleButton = null;
-
+		#if (!macro && !flash)
 		SimpleButton.__initSWF = swf;
 		SimpleButton.__initSymbol = this;
+		#end
+
+		#if flash
+		if (className == "flash.display.SimpleButton")
+		{
+			className = "flash.display.SimpleButton2";
+		}
+		#end
 
 		if (className != null)
 		{
@@ -43,7 +51,7 @@ class ButtonSymbol extends SWFSymbol
 
 		if (simpleButton == null)
 		{
-			simpleButton = new SimpleButton();
+			simpleButton = #if flash new flash.display.SimpleButton.SimpleButton2() #else new SimpleButton() #end;
 		}
 
 		return simpleButton;

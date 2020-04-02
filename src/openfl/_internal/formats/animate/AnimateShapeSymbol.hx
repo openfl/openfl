@@ -1,7 +1,6 @@
-package openfl._internal.symbols;
+package openfl._internal.formats.animate;
 
 import openfl._internal.formats.swf.ShapeCommand;
-import openfl._internal.formats.swf.SWFLite;
 import openfl.display.BitmapData;
 import openfl.display.CapsStyle;
 import openfl.display.GradientType;
@@ -15,14 +14,14 @@ import openfl.display.SpreadMethod;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl._internal.symbols.BitmapSymbol)
+@:access(openfl._internal.formats.animate.AnimateLibrary)
 @:access(openfl.display.CapsStyle)
 @:access(openfl.display.GradientType)
 @:access(openfl.display.InterpolationMethod)
 @:access(openfl.display.JointStyle)
 @:access(openfl.display.LineScaleMode)
 @:access(openfl.display.SpreadMethod)
-class ShapeSymbol extends SWFSymbol
+class AnimateShapeSymbol extends AnimateSymbol
 {
 	public var commands:Array<ShapeCommand>;
 	public var rendered:Shape;
@@ -32,7 +31,7 @@ class ShapeSymbol extends SWFSymbol
 		super();
 	}
 
-	private override function __createObject(swf:SWFLite):Shape
+	private override function __createObject(library:AnimateLibrary):Shape
 	{
 		var shape = new Shape();
 		var graphics = shape.graphics;
@@ -52,8 +51,8 @@ class ShapeSymbol extends SWFSymbol
 
 				case BeginBitmapFill(bitmapID, matrix, repeat, smooth):
 					#if lime
-					var bitmapSymbol:BitmapSymbol = cast swf.symbols.get(bitmapID);
-					var bitmap = swf.library.getImage(bitmapSymbol.path);
+					var bitmapSymbol:AnimateBitmapSymbol = cast library.symbols.get(bitmapID);
+					var bitmap = library.getImage(bitmapSymbol.path);
 
 					if (bitmap != null)
 					{
