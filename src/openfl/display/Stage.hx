@@ -3,6 +3,10 @@ package openfl.display;
 #if !flash
 import haxe.CallStack;
 import haxe.ds.ArraySort;
+import openfl._internal.renderer.cairo.CairoRenderer;
+import openfl._internal.renderer.canvas.CanvasRenderer;
+import openfl._internal.renderer.context3D.Context3DRenderer;
+import openfl._internal.renderer.dom.DOMRenderer;
 import openfl._internal.utils.Log;
 import openfl._internal.utils.TouchData;
 import openfl.display3D.Context3D;
@@ -174,6 +178,7 @@ typedef Element = Dynamic;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@:access(openfl._internal.renderer)
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.DisplayObjectRenderer)
 @:access(openfl.display.LoaderInfo)
@@ -1192,7 +1197,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				context3D = new Context3D(this);
 				context3D.configureBackBuffer(windowWidth, windowHeight, 0, true, true, true);
 				context3D.present();
-				__renderer = new OpenGLRenderer(context3D);
+				__renderer = new Context3DRenderer(context3D);
 				#end
 
 			case CANVAS:
@@ -2636,8 +2641,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		var event = MouseEvent.__create(MouseEvent.MOUSE_WHEEL, 0, __mouseX, __mouseY, target.__globalToLocal(targetPoint, targetPoint), target, delta);
 		event.cancelable = true;
 		__dispatchStack(event, stack);
-		if (event.isDefaultPrevented())
-			window.onMouseWheel.cancel();
+		if (event.isDefaultPrevented()) window.onMouseWheel.cancel();
 
 		Point.__pool.release(targetPoint);
 	}

@@ -2150,11 +2150,6 @@ class TextField extends InteractiveObject
 		__setRenderDirty();
 	}
 
-	@:noCompletion private override function __shouldCacheHardware(value:Null<Bool>):Null<Bool>
-	{
-		return value == true ? true : false;
-	}
-
 	@:noCompletion private function __startCursorTimer():Void
 	{
 		__cursorTimer = Timer.delay(__startCursorTimer, 600);
@@ -2203,27 +2198,6 @@ class TextField extends InteractiveObject
 		{
 			__disableInput();
 		}
-	}
-
-	@:noCompletion private override function __updateCacheBitmap(renderer:DisplayObjectRenderer, force:Bool):Bool
-	{
-		#if lime
-		if (__filters == null && renderer.__type == OPENGL && __cacheBitmap == null && !__domRender) return false;
-
-		if (force) __renderDirty = true;
-		if (super.__updateCacheBitmap(renderer, force || __dirty))
-		{
-			if (__cacheBitmap != null)
-			{
-				__cacheBitmap.__renderTransform.tx -= __offsetX;
-				__cacheBitmap.__renderTransform.ty -= __offsetY;
-			}
-
-			return true;
-		}
-		#end
-
-		return false;
 	}
 
 	@:noCompletion private function __updateLayout():Void

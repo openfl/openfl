@@ -37,12 +37,6 @@ class Context3DShape
 
 			if (graphics.__bitmap != null && graphics.__visible)
 			{
-				#if !disable_batcher
-				var bitmapData = graphics.__bitmap;
-				var transform = renderer.__getDisplayTransformTempMatrix(graphics.__worldTransform, AUTO);
-				var alpha = renderer.__getAlpha(shape.__worldAlpha);
-				bitmapData.pushQuadsToBatcher(renderer.batcher, transform, alpha, shape);
-				#else
 				var context = renderer.context3D;
 				var scale9Grid = shape.__worldScale9Grid;
 
@@ -54,10 +48,12 @@ class Context3DShape
 				renderer.applyColorTransform(shape.__worldColorTransform);
 				renderer.updateShader();
 
-				var vertexBuffer = graphics.__bitmap.getVertexBuffer(context, scale9Grid, shape);
+				// TODO: scale9Grid
+
+				var vertexBuffer = graphics.__bitmap.getVertexBuffer(context /*, scale9Grid, shape*/);
 				if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, vertexBuffer, 0, FLOAT_3);
 				if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
-				var indexBuffer = graphics.__bitmap.getIndexBuffer(context, scale9Grid);
+				var indexBuffer = graphics.__bitmap.getIndexBuffer(context /*, scale9Grid*/);
 				context.drawTriangles(indexBuffer);
 
 				#if gl_stats
@@ -84,10 +80,6 @@ class Context3DShape
 
 			if (graphics.__bitmap != null)
 			{
-				#if !disable_batcher
-				renderer.batcher.flush();
-				#end
-
 				var context = renderer.context3D;
 
 				var shader = renderer.__maskShader;

@@ -18,7 +18,7 @@ import lime.math.ARGB;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DDisplayObject
 {
-	public static inline function render(displayObject:DisplayObject, renderer:OpenGLRenderer):Void
+	public static inline function render(displayObject:DisplayObject, renderer:Context3DRenderer):Void
 	{
 		if (displayObject.opaqueBackground == null && displayObject.__graphics == null) return;
 		if (!displayObject.__renderable || displayObject.__worldAlpha <= 0) return;
@@ -28,10 +28,6 @@ class Context3DDisplayObject
 			&& displayObject.width > 0
 			&& displayObject.height > 0)
 		{
-			#if !disable_batcher
-			renderer.batcher.flush();
-			#end
-
 			renderer.__setBlendMode(displayObject.__worldBlendMode);
 			renderer.__pushMaskObject(displayObject);
 

@@ -120,7 +120,7 @@ import openfl.net.NetStream;
 
 	public override function dispose():Void
 	{
-		#if openfl_html5
+		#if (js && html5)
 		if (__netStream != null && __netStream.__video != null)
 		{
 			__netStream.__video.removeEventListener("timeupdate", __onTimeUpdate);

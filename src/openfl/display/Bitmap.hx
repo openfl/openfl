@@ -193,18 +193,6 @@ class Bitmap extends DisplayObject
 		return false;
 	}
 
-	@:noCompletion private override function __updateCacheBitmap(renderer:DisplayObjectRenderer, force:Bool):Bool
-	{
-		// TODO: Handle filters without an intermediate draw
-
-		#if lime
-		if (__bitmapData == null || (__filters == null && renderer.__type == OPENGL && __cacheBitmap == null)) return false;
-		return super.__updateCacheBitmap(renderer, __bitmapData.image != null && __bitmapData.image.version != __imageVersion);
-		#else
-		return false;
-		#end
-	}
-
 	// Get & Set Methods
 	@:noCompletion private function get_bitmapData():BitmapData
 	{
@@ -232,7 +220,7 @@ class Bitmap extends DisplayObject
 	{
 		if (__bitmapData != null)
 		{
-			scaleY = value / __bitmapData.height; //get_height();
+			scaleY = value / __bitmapData.height; // get_height();
 		}
 		else
 		{
@@ -245,7 +233,7 @@ class Bitmap extends DisplayObject
 	{
 		if (__bitmapData != null)
 		{
-			scaleX = value / __bitmapData.width;// get_width();
+			scaleX = value / __bitmapData.width; // get_width();
 		}
 		else
 		{

@@ -4,6 +4,7 @@ package openfl.display;
 import openfl._internal.backend.gl.GLFramebuffer;
 import openfl._internal.backend.gl.GLRenderbuffer;
 import openfl._internal.formats.swf.SWFLite;
+import openfl._internal.renderer.DisplayObjectType;
 import openfl._internal.symbols.BitmapSymbol;
 import openfl._internal.utils.Float32Array;
 import openfl._internal.utils.PerlinNoise;
@@ -1188,7 +1189,7 @@ class BitmapData implements IBitmapDrawable
 	/**
 		Creates a new BitmapData instance from Base64-encoded data synchronously. This means
 		that the BitmapData will be returned immediately (if supported).
-		
+
 		HTML5 and Flash do not support creating BitmapData synchronously, so these targets
 		always return `null`. Other targets will return `null` if decoding was unsuccessful.
 

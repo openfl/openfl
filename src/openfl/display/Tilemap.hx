@@ -83,6 +83,8 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	@:noCompletion private var __group:TileContainer;
 	@:noCompletion private var __tileset:Tileset;
 	#if !flash
+	@:noCompletion private var __buffer:Context3DBuffer;
+	@:noCompletion private var __bufferDirty:Bool;
 	@:noCompletion private var __height:Int;
 	@:noCompletion private var __width:Int;
 	#end
@@ -424,18 +426,6 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	{
 		FlashTilemap.render(this);
 	}
-
-	#if !flash
-	@:noCompletion private override function __updateCacheBitmap(renderer:DisplayObjectRenderer, force:Bool):Bool
-	{
-		#if lime
-		if (__filters == null && renderer.__type == OPENGL && __cacheBitmap == null) return false;
-		return super.__updateCacheBitmap(renderer, force);
-		#else
-		return false;
-		#end
-	}
-	#end
 
 	// Get & Set Methods
 	#if !flash

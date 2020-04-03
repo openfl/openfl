@@ -529,13 +529,6 @@ class Context3DGraphics
 				var vertexBufferPosition = 0;
 				var vertexBufferPositionUVT = 0;
 
-				#if !disable_batcher
-				if (graphics.__commands.length > 0)
-				{
-					renderer.batcher.flush();
-				}
-				#end
-
 				for (type in graphics.__commands.types)
 				{
 					switch (type)

@@ -1,6 +1,6 @@
 package openfl._internal.renderer.dom;
 
-#if openfl_html5
+#if (js && html5)
 import openfl._internal.backend.html5.Element;
 import openfl._internal.backend.lime.DOMRenderContext;
 import openfl._internal.renderer.canvas.CanvasRenderer;
@@ -121,7 +121,7 @@ class DOMRenderer extends DOMRendererAPI
 
 	private function __applyStyle(displayObject:DisplayObject, setTransform:Bool, setAlpha:Bool, setClip:Bool):Void
 	{
-		#if openfl_html5
+		#if (js && html5)
 		var style = displayObject.__style;
 
 		// TODO: displayMatrix
@@ -277,7 +277,7 @@ class DOMRenderer extends DOMRendererAPI
 		}
 	}
 
-	#if openfl_html5
+	#if (js && html5)
 	private function __initializeElement(displayObject:DisplayObject, element:Element):Void
 	{
 		var style = displayObject.__style = element.style;
@@ -595,7 +595,7 @@ class DOMRenderer extends DOMRendererAPI
 
 	private function __renderTextField(textField:TextField):Void
 	{
-		#if openfl_html5
+		#if (js && html5)
 		textField.__domRender = true;
 		__canvasRenderer.__updateCacheBitmap(textField, textField.__forceCachedBitmapUpdate
 			|| /*!__worldColorTransform.__isDefault ()*/ false);
@@ -778,4 +778,6 @@ class DOMRenderer extends DOMRendererAPI
 		}
 	}
 }
+#else
+typedef DOMRenderer = Dynamic;
 #end

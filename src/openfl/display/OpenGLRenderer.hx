@@ -25,7 +25,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	/**
 		The current OpenGL render context
 	**/
-	public var gl:WebGLRenderingContext;
+	public var gl:WebGLRenderContext;
 
 	@:noCompletion private function new(context:Context3D, defaultRenderTarget:BitmapData = null)
 	{
