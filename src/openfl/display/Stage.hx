@@ -174,7 +174,9 @@ typedef Element = Dynamic;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@:access(openfl._internal.renderer)
 @:access(openfl.display3D.Context3D)
+@:access(openfl.display.BitmapData)
 @:access(openfl.display.DisplayObjectRenderer)
 @:access(openfl.display.LoaderInfo)
 @:access(openfl.display.Sprite)
@@ -1956,9 +1958,14 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					context3D.__present = false;
 					context3D.__cleared = false;
 				}
+
+				context3D.__bitmapDataPool.cleanup();
 			}
 
 			__renderer.__cleared = false;
+
+			// TODO: Run once for multi-stage application
+			BitmapData.__pool.cleanup();
 		}
 		#end
 

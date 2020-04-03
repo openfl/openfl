@@ -2296,81 +2296,38 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 					if (hasFilters)
 					{
-						var needSecondBitmapData = true;
 						var needCopyOfOriginal = false;
 
-						for (filter in __filters)
+						for (filter in object.__filters)
 						{
-							// if (filter.__needSecondBitmapData) {
-							// 	needSecondBitmapData = true;
-							// }
 							if (filter.__preserveObject)
 							{
 								needCopyOfOriginal = true;
 							}
 						}
 
-						var bitmap = __cacheBitmapData;
-						var bitmap2 = null;
-						var bitmap3 = null;
+						var bitmap = context3D.__bitmapDataPool.get(filterWidth, filterHeight);
+						var bitmap2 = context3D.__bitmapDataPool.get(filterWidth, filterHeight);
+						var bitmap3 = needCopyOfOriginal ? context3D.__bitmapDataPool.get(filterWidth, filterHeight) : null;
 
-						// if (needSecondBitmapData) {
-						if (__cacheBitmapData2 == null
-							|| bitmapWidth > __cacheBitmapData2.width
-							|| bitmapHeight > __cacheBitmapData2.height)
-						{
-							__cacheBitmapData2 = new BitmapData(bitmapWidth, bitmapHeight, true, 0);
-						}
-						else
-						{
-							__cacheBitmapData2.fillRect(__cacheBitmapData2.rect, 0);
-							if (__cacheBitmapData2.image != null)
-							{
-								__cacheBitmapData2.__textureVersion = __cacheBitmapData2.image.version + 1;
-							}
-						}
-						__cacheBitmapData2.__setUVRect(context, 0, 0, filterWidth, filterHeight);
-						bitmap2 = __cacheBitmapData2;
-						// } else {
-						// 	bitmap2 = bitmapData;
-						// }
-
-						if (needCopyOfOriginal)
-						{
-							if (__cacheBitmapData3 == null
-								|| bitmapWidth > __cacheBitmapData3.width
-								|| bitmapHeight > __cacheBitmapData3.height)
-							{
-								__cacheBitmapData3 = new BitmapData(bitmapWidth, bitmapHeight, true, 0);
-							}
-							else
-							{
-								__cacheBitmapData3.fillRect(__cacheBitmapData3.rect, 0);
-								if (__cacheBitmapData3.image != null)
-								{
-									__cacheBitmapData3.__textureVersion = __cacheBitmapData3.image.version + 1;
-								}
-							}
-							__cacheBitmapData3.__setUVRect(context, 0, 0, filterWidth, filterHeight);
-							bitmap3 = __cacheBitmapData3;
-						}
+						bitmap.__setUVRect(context3D, 0, 0, filterWidth, filterHeight);
+						bitmap2.__setUVRect(context3D, 0, 0, filterWidth, filterHeight);
+						if (bitmap3 != null) bitmap3.__setUVRect(context3D, 0, 0, filterWidth, filterHeight);
 
 						childRenderer.__setBlendMode(NORMAL);
 						childRenderer.__worldAlpha = 1;
 						childRenderer.__worldTransform.identity();
 						childRenderer.__worldColorTransform.__identity();
 
-						// var sourceRect = bitmap.rect;
-						// if (__tempPoint == null) __tempPoint = new Point ();
-						// var destPoint = __tempPoint;
-						var shader, cacheBitmap;
+						var shader, cacheBitmap, firstPass = true;
 
-						for (filter in __filters)
+						for (filter in object.__filters)
 						{
 							if (filter.__preserveObject)
 							{
 								childRenderer.__setRenderTarget(bitmap3);
-								childRenderer.__renderFilterPass(bitmap, childRenderer.__defaultDisplayShader, filter.__smooth);
+								childRenderer.__renderFilterPass(firstPass ? object.__cacheBitmapData : bitmap, childRenderer.__defaultDisplayShader,
+									filter.__smooth);
 							}
 
 							for (i in 0...filter.__numShaderPasses)
@@ -2378,8 +2335,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 								shader = filter.__initShader(childRenderer, i, filter.__preserveObject ? bitmap3 : null);
 								childRenderer.__setBlendMode(filter.__shaderBlendMode);
 								childRenderer.__setRenderTarget(bitmap2);
-								childRenderer.__renderFilterPass(bitmap, shader, filter.__smooth);
+								childRenderer.__renderFilterPass(firstPass ? object.__cacheBitmapData : bitmap, shader, filter.__smooth);
 
+								firstPass = false;
 								cacheBitmap = bitmap;
 								bitmap = bitmap2;
 								bitmap2 = cacheBitmap;
@@ -2388,7 +2346,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 							filter.__renderDirty = false;
 						}
 
-						__cacheBitmap.__bitmapData = bitmap;
+						if (bitmap != null)
+						{
+							object.__cacheBitmapData.fillRect(object.__cacheBitmapData.rect, 0);
+							childRenderer.__setRenderTarget(object.__cacheBitmapData);
+							childRenderer.__renderFilterPass(bitmap, childRenderer.__defaultDisplayShader, true);
+							// object.__cacheBitmap.bitmapData = object.__cacheBitmapData;
+						}
+
+						context3D.__bitmapDataPool.release(bitmap);
+						context3D.__bitmapDataPool.release(bitmap2);
+						if (bitmap3 != null) context3D.__bitmapDataPool.release(bitmap3);
 					}
 
 					parentRenderer.__blendMode = NORMAL;
