@@ -2,7 +2,6 @@ package openfl._internal.renderer.cairo;
 
 import openfl._internal.text.TextEngine;
 import openfl.display.BitmapData;
-import openfl.display.CairoRenderer;
 import openfl.display.Graphics;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;

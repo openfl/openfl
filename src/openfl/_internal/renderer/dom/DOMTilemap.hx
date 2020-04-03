@@ -1,7 +1,6 @@
 package openfl._internal.renderer.dom;
 
 import openfl._internal.renderer.canvas.CanvasTilemap;
-import openfl.display.DOMRenderer;
 import openfl.display.Tilemap;
 #if (js && html5)
 import js.Browser;

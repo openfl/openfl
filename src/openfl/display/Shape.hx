@@ -43,6 +43,8 @@ class Shape extends DisplayObject
 	public function new()
 	{
 		super();
+
+		__type = SHAPE;
 	}
 
 	// Get & Set Methods

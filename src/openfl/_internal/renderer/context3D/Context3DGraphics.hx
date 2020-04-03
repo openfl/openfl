@@ -6,7 +6,6 @@ import openfl._internal.utils.Float32Array;
 import openfl._internal.utils.UInt16Array;
 import openfl.display.BitmapData;
 import openfl.display.Graphics;
-import openfl.display.OpenGLRenderer;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
@@ -23,6 +22,7 @@ import openfl._internal.renderer.context3D.stats.DrawCallContext;
 @:noDebug
 #end
 @:access(openfl.display3D.Context3D)
+@:access(openfl.display.BitmapData)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
 @:access(openfl.display.Shader)
@@ -36,7 +36,7 @@ class Context3DGraphics
 	private static var maskRender:Bool;
 	private static var tempColorTransform = new ColorTransform(1, 1, 1, 1, 0, 0, 0, 0);
 
-	private static function buildBuffer(graphics:Graphics, renderer:OpenGLRenderer):Void
+	private static function buildBuffer(graphics:Graphics, renderer:Context3DRenderer):Void
 	{
 		var quadBufferPosition = 0;
 		var triangleIndexBufferPosition = 0;
@@ -45,7 +45,7 @@ class Context3DGraphics
 
 		var data = new DrawCommandReader(graphics.__commands);
 
-		var context = renderer.__context3D;
+		var context = renderer.context3D;
 
 		var tileRect = Rectangle.__pool.get();
 		var tileTransform = Matrix.__pool.get();
@@ -458,7 +458,7 @@ class Context3DGraphics
 		return true;
 	}
 
-	public static function render(graphics:Graphics, renderer:OpenGLRenderer):Void
+	public static function render(graphics:Graphics, renderer:Context3DRenderer):Void
 	{
 		if (!graphics.__visible || graphics.__commands.length == 0) return;
 
@@ -509,7 +509,7 @@ class Context3DGraphics
 
 				var data = new DrawCommandReader(graphics.__commands);
 
-				var context = renderer.__context3D;
+				var context = renderer.context3D;
 				var gl = context.gl;
 
 				var matrix = Matrix.__pool.get();
@@ -528,6 +528,13 @@ class Context3DGraphics
 				var triangleIndexBufferPosition = 0;
 				var vertexBufferPosition = 0;
 				var vertexBufferPositionUVT = 0;
+
+				#if !disable_batcher
+				if (graphics.__commands.length > 0)
+				{
+					renderer.batcher.flush();
+				}
+				#end
 
 				for (type in graphics.__commands.types)
 				{
@@ -593,7 +600,7 @@ class Context3DGraphics
 									renderer.__setShaderBuffer(shaderBuffer);
 									renderer.applyMatrix(uMatrix);
 									renderer.applyBitmapData(bitmap, false /* ignored */, repeat);
-									renderer.applyAlpha(graphics.__owner.__worldAlpha);
+									renderer.applyAlpha(renderer.__getAlpha(graphics.__owner.__worldAlpha));
 									renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
 									// renderer.__updateShaderBuffer ();
 								}
@@ -603,7 +610,7 @@ class Context3DGraphics
 									renderer.setShader(shader);
 									renderer.applyMatrix(uMatrix);
 									renderer.applyBitmapData(bitmap, smooth, repeat);
-									renderer.applyAlpha(graphics.__owner.__worldAlpha);
+									renderer.applyAlpha(renderer.__getAlpha(graphics.__owner.__worldAlpha));
 									renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
 									renderer.updateShader();
 								}
@@ -626,14 +633,13 @@ class Context3DGraphics
 										graphics.__quadBuffer.vertexBuffer, (quadBufferPosition * 16) + 2, FLOAT_2);
 
 									context.drawTriangles(context.__quadIndexBuffer, 0, length * 2);
+									#if gl_stats
+									Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
+									#end
 
 									shaderBufferOffset += length * 4;
 									quadBufferPosition += length;
 								}
-
-								#if gl_stats
-								Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
-								#end
 
 								renderer.__clearShader();
 							}
@@ -666,7 +672,7 @@ class Context3DGraphics
 								renderer.applyMatrix(renderer.__getMatrix(matrix, AUTO));
 								renderer.applyBitmapData(blankBitmapData, true, repeat);
 								#if lime
-								renderer.applyAlpha((color.a / 0xFF) * graphics.__owner.__worldAlpha);
+								renderer.applyAlpha(renderer.__getAlpha((color.a / 0xFF) * graphics.__owner.__worldAlpha));
 								#end
 								renderer.applyColorTransform(tempColorTransform);
 								renderer.updateShader();
@@ -716,7 +722,7 @@ class Context3DGraphics
 								renderer.__setShaderBuffer(shaderBuffer);
 								renderer.applyMatrix(uMatrix);
 								renderer.applyBitmapData(bitmap, false, repeat);
-								renderer.applyAlpha(1);
+								renderer.applyAlpha(renderer.__getAlpha(1));
 								renderer.applyColorTransform(null);
 								renderer.__updateShaderBuffer(shaderBufferOffset);
 							}
@@ -726,7 +732,7 @@ class Context3DGraphics
 								renderer.setShader(shader);
 								renderer.applyMatrix(uMatrix);
 								renderer.applyBitmapData(bitmap, smooth, repeat);
-								renderer.applyAlpha(graphics.__owner.__worldAlpha);
+								renderer.applyAlpha(renderer.__getAlpha(graphics.__owner.__worldAlpha));
 								renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
 								renderer.updateShader();
 							}
@@ -815,7 +821,7 @@ class Context3DGraphics
 		}
 	}
 
-	public static function renderMask(graphics:Graphics, renderer:OpenGLRenderer):Void
+	public static function renderMask(graphics:Graphics, renderer:Context3DRenderer):Void
 	{
 		// TODO: Support invisible shapes
 

@@ -1,7 +1,6 @@
 package openfl._internal.renderer.canvas;
 
 import openfl.display.BitmapData;
-import openfl.display.CanvasRenderer;
 import openfl.display.CapsStyle;
 import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.DrawCommandReader;

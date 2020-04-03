@@ -136,6 +136,7 @@ import js.Browser;
 @:access(openfl.display3D.Program3D)
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)
+@:access(openfl.display.DisplayObjectRenderer)
 @:access(openfl.display.Stage)
 class Stage3D extends EventDispatcher
 {

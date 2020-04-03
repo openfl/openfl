@@ -2,7 +2,6 @@ package openfl._internal.renderer.context3D;
 
 import openfl.display3D.Context3DClearMask;
 import openfl.display.DisplayObject;
-import openfl.display.OpenGLRenderer;
 import openfl.geom.Rectangle;
 #if lime
 import lime.math.ARGB;
@@ -29,10 +28,14 @@ class Context3DDisplayObject
 			&& displayObject.width > 0
 			&& displayObject.height > 0)
 		{
+			#if !disable_batcher
+			renderer.batcher.flush();
+			#end
+
 			renderer.__setBlendMode(displayObject.__worldBlendMode);
 			renderer.__pushMaskObject(displayObject);
 
-			var context = renderer.__context3D;
+			var context = renderer.context3D;
 
 			var rect = Rectangle.__pool.get();
 			rect.setTo(0, 0, displayObject.width, displayObject.height);
@@ -55,7 +58,7 @@ class Context3DDisplayObject
 		}
 	}
 
-	public static inline function renderMask(displayObject:DisplayObject, renderer:OpenGLRenderer):Void
+	public static inline function renderMask(displayObject:DisplayObject, renderer:Context3DRenderer):Void
 	{
 		if (displayObject.opaqueBackground == null && displayObject.__graphics == null) return;
 

@@ -1,6 +1,5 @@
 package openfl._internal.renderer.dom;
 
-import openfl.display.DOMRenderer;
 import openfl.media.Video;
 
 @:access(openfl.media.Video)

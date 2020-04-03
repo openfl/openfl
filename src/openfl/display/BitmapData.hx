@@ -211,6 +211,7 @@ class BitmapData implements IBitmapDrawable
 	@:noCompletion private var __textureVersion:Int;
 	@:noCompletion private var __textureWidth:Int;
 	@:noCompletion private var __transform:Matrix;
+	@:noCompletion private var __type:DisplayObjectType;
 	@:noCompletion private var __uvRect:Rectangle;
 	@:noCompletion private var __vertexBuffer:VertexBuffer3D;
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __vertexBufferContext:#if lime RenderContext #else Dynamic #end;

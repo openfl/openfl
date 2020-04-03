@@ -1,7 +1,6 @@
 package openfl._internal.renderer.dom;
 
 import openfl.display.Bitmap;
-import openfl.display.DOMRenderer;
 #if lime
 // TODO: Avoid use of private APIs
 import lime._internal.graphics.ImageCanvasUtil;

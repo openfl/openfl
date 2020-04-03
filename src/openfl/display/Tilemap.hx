@@ -5,19 +5,7 @@ import openfl._internal.renderer.flash.FlashTilemap;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 #if !flash
-import openfl._internal.renderer.cairo.CairoBitmap;
-import openfl._internal.renderer.cairo.CairoDisplayObject;
-import openfl._internal.renderer.cairo.CairoTilemap;
-import openfl._internal.renderer.canvas.CanvasBitmap;
-import openfl._internal.renderer.canvas.CanvasDisplayObject;
-import openfl._internal.renderer.canvas.CanvasTilemap;
 import openfl._internal.renderer.context3D.Context3DBuffer;
-import openfl._internal.renderer.dom.DOMBitmap;
-import openfl._internal.renderer.dom.DOMDisplayObject;
-import openfl._internal.renderer.dom.DOMTilemap;
-import openfl._internal.renderer.context3D.Context3DBitmap;
-import openfl._internal.renderer.context3D.Context3DDisplayObject;
-import openfl._internal.renderer.context3D.Context3DTilemap;
 #end
 
 /**
@@ -95,8 +83,6 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	@:noCompletion private var __group:TileContainer;
 	@:noCompletion private var __tileset:Tileset;
 	#if !flash
-	@:noCompletion private var __buffer:Context3DBuffer;
-	@:noCompletion private var __bufferDirty:Bool;
 	@:noCompletion private var __height:Int;
 	@:noCompletion private var __width:Int;
 	#end
@@ -141,6 +127,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		#if !flash
 		__width = width;
 		__height = height;
+		__type = TILEMAP;
 		#else
 		bitmapData = new BitmapData(width, height, true, 0);
 		this.smoothing = smoothing;
@@ -433,113 +420,12 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	}
 	#end
 
-	#if !flash
-	@:noCompletion private override function __renderCairo(renderer:CairoRenderer):Void
-	{
-		#if lime_cairo
-		__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
-
-		if (__cacheBitmap != null && !__isCacheBitmapRender)
-		{
-			CairoBitmap.render(__cacheBitmap, renderer);
-		}
-		else
-		{
-			CairoDisplayObject.render(this, renderer);
-			CairoTilemap.render(this, renderer);
-		}
-
-		__renderEvent(renderer);
-		#end
-	}
-
-	@:noCompletion private override function __renderCanvas(renderer:CanvasRenderer):Void
-	{
-		__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
-
-		if (__cacheBitmap != null && !__isCacheBitmapRender)
-		{
-			CanvasBitmap.render(__cacheBitmap, renderer);
-		}
-		else
-		{
-			CanvasDisplayObject.render(this, renderer);
-			CanvasTilemap.render(this, renderer);
-		}
-
-		__renderEvent(renderer);
-	}
-
-	@:noCompletion private override function __renderDOM(renderer:DOMRenderer):Void
-	{
-		__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
-
-		if (__cacheBitmap != null && !__isCacheBitmapRender)
-		{
-			__renderDOMClear(renderer);
-			__cacheBitmap.stage = stage;
-
-			DOMBitmap.render(__cacheBitmap, renderer);
-		}
-		else
-		{
-			DOMDisplayObject.render(this, renderer);
-			DOMTilemap.render(this, renderer);
-		}
-
-		__renderEvent(renderer);
-	}
-
-	@:noCompletion private override function __renderDOMClear(renderer:DOMRenderer):Void
-	{
-		DOMTilemap.clear(this, renderer);
-	}
-	#end
-
 	@:noCompletion private function __renderFlash():Void
 	{
 		FlashTilemap.render(this);
 	}
 
 	#if !flash
-	@:noCompletion private override function __renderGL(renderer:OpenGLRenderer):Void
-	{
-		__updateCacheBitmap(renderer, false);
-
-		if (__cacheBitmap != null && !__isCacheBitmapRender)
-		{
-			Context3DBitmap.render(__cacheBitmap, renderer);
-		}
-		else
-		{
-			Context3DDisplayObject.render(this, renderer);
-			Context3DTilemap.render(this, renderer);
-		}
-
-		__renderEvent(renderer);
-	}
-
-	@:noCompletion private override function __renderGLMask(renderer:OpenGLRenderer):Void
-	{
-		// __updateCacheBitmap (renderer, false);
-
-		// if (__cacheBitmap != null && !__isCacheBitmapRender) {
-
-		// 	Context3DBitmap.renderMask (__cacheBitmap, renderer);
-
-		// } else {
-
-		Context3DDisplayObject.renderMask(this, renderer);
-		Context3DTilemap.renderMask(this, renderer);
-
-		// }
-	}
-
-	@:noCompletion private override function __shouldCacheHardware(value:Null<Bool>):Null<Bool>
-	{
-		return true;
-	}
-
 	@:noCompletion private override function __updateCacheBitmap(renderer:DisplayObjectRenderer, force:Bool):Bool
 	{
 		#if lime

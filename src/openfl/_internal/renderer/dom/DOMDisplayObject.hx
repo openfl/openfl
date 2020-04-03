@@ -1,7 +1,6 @@
 package openfl._internal.renderer.dom;
 
 import openfl.display.DisplayObject;
-import openfl.display.DOMRenderer;
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.geom.Matrix)

@@ -4,4 +4,5 @@ package openfl._internal.renderer.context3D.stats;
 {
 	public var STAGE = 0;
 	public var STAGE3D = 1;
+	public var BATCHER = 2;
 }

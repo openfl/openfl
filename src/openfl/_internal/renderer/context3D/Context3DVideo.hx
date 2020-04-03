@@ -1,6 +1,5 @@
 package openfl._internal.renderer.context3D;
 
-import openfl.display.OpenGLRenderer;
 import openfl.media.Video;
 #if gl_stats
 import openfl._internal.renderer.context3D.stats.Context3DStats;
@@ -21,14 +20,14 @@ class Context3DVideo
 {
 	private static var __textureSizeValue:Array<Float> = [0, 0.];
 
-	public static function render(video:Video, renderer:OpenGLRenderer):Void
+	public static function render(video:Video, renderer:Context3DRenderer):Void
 	{
 		#if (js && html5)
 		if (!video.__renderable || video.__worldAlpha <= 0 || video.__stream == null) return;
 
 		if (video.__stream.__video != null)
 		{
-			var context = renderer.__context3D;
+			var context = renderer.context3D;
 			var gl = context.gl;
 
 			var texture = video.__getTexture(context);
@@ -47,7 +46,7 @@ class Context3DVideo
 			// shader.uImage0.input = bitmap.__bitmapData;
 			// shader.uImage0.smoothing = renderer.__allowSmoothing && (bitmap.smoothing || renderer.__upscaled);
 			renderer.applyMatrix(renderer.__getMatrix(video.__renderTransform, AUTO));
-			renderer.applyAlpha(video.__worldAlpha);
+			renderer.applyAlpha(renderer.__getAlpha(video.__worldAlpha));
 			renderer.applyColorTransform(video.__worldColorTransform);
 
 			if (shader.__textureSize != null)
@@ -92,14 +91,14 @@ class Context3DVideo
 		#end
 	}
 
-	public static function renderMask(video:Video, renderer:OpenGLRenderer):Void
+	public static function renderMask(video:Video, renderer:Context3DRenderer):Void
 	{
 		#if (js && html5)
 		if (video.__stream == null) return;
 
 		if (video.__stream.__video != null)
 		{
-			var context = renderer.__context3D;
+			var context = renderer.context3D;
 			var gl = context.gl;
 
 			var shader = renderer.__maskShader;

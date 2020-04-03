@@ -944,6 +944,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private var __tempPoint:Point;
 	@:noCompletion private var __transform:Matrix;
 	@:noCompletion private var __transformDirty:Bool;
+	@:noCompletion private var __type:DisplayObjectType;
 	@:noCompletion private var __visible:Bool;
 	@:noCompletion private var __worldAlpha:Float;
 	@:noCompletion private var __worldAlphaChanged:Bool;
@@ -1059,6 +1060,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private function new()
 	{
 		super();
+
+		__type = DISPLAY_OBJECT;
 
 		__alpha = 1;
 		__blendMode = NORMAL;
@@ -1398,6 +1401,18 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			__cacheBitmapData.dispose();
 			__cacheBitmapData = null;
 		}
+
+		if (__cacheBitmapData2 != null)
+		{
+			__cacheBitmapData2.dispose();
+			__cacheBitmapData2 = null;
+		}
+
+		if (__cacheBitmapData3 != null)
+		{
+			__cacheBitmapData3.dispose();
+			__cacheBitmapData3 = null;
+		}
 	}
 
 	@:noCompletion private function __dispatch(event:Event):Bool
@@ -1662,167 +1677,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		if (__graphics != null)
 		{
 			__graphics.__readGraphicsData(graphicsData);
-		}
-	}
-
-	@:noCompletion private function __renderCairo(renderer:CairoRenderer):Void
-	{
-		#if lime_cairo
-		__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
-
-		if (__cacheBitmap != null && !__isCacheBitmapRender)
-		{
-			CairoBitmap.render(__cacheBitmap, renderer);
-		}
-		else
-		{
-			CairoDisplayObject.render(this, renderer);
-		}
-
-		__renderEvent(renderer);
-		#end
-	}
-
-	@:noCompletion private function __renderCairoMask(renderer:CairoRenderer):Void
-	{
-		#if lime_cairo
-		if (__graphics != null)
-		{
-			CairoGraphics.renderMask(__graphics, renderer);
-		}
-		#end
-	}
-
-	@:noCompletion private function __renderCanvas(renderer:CanvasRenderer):Void
-	{
-		if (mask == null || (mask.width > 0 && mask.height > 0))
-		{
-			__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
-
-			if (__cacheBitmap != null && !__isCacheBitmapRender)
-			{
-				CanvasBitmap.render(__cacheBitmap, renderer);
-			}
-			else
-			{
-				CanvasDisplayObject.render(this, renderer);
-			}
-		}
-
-		__renderEvent(renderer);
-	}
-
-	@:noCompletion private function __renderCanvasMask(renderer:CanvasRenderer):Void
-	{
-		if (__graphics != null)
-		{
-			CanvasGraphics.renderMask(__graphics, renderer);
-		}
-	}
-
-	@:noCompletion private function __renderDOM(renderer:DOMRenderer):Void
-	{
-		__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
-
-		if (__cacheBitmap != null && !__isCacheBitmapRender)
-		{
-			__renderDOMClear(renderer);
-			__cacheBitmap.stage = stage;
-
-			DOMBitmap.render(__cacheBitmap, renderer);
-		}
-		else
-		{
-			DOMDisplayObject.render(this, renderer);
-		}
-
-		__renderEvent(renderer);
-	}
-
-	@:noCompletion private function __renderDOMClear(renderer:DOMRenderer):Void
-	{
-		DOMDisplayObject.clear(this, renderer);
-	}
-
-	@:noCompletion private function __renderEvent(renderer:DisplayObjectRenderer):Void
-	{
-		#if lime
-		if (__customRenderEvent != null && __renderable)
-		{
-			__customRenderEvent.allowSmoothing = renderer.__allowSmoothing;
-			__customRenderEvent.objectMatrix.copyFrom(__renderTransform);
-			__customRenderEvent.objectColorTransform.__copyFrom(__worldColorTransform);
-			__customRenderEvent.renderer = renderer;
-
-			switch (renderer.__type)
-			{
-				case OPENGL:
-					if (!renderer.__cleared) renderer.__clear();
-
-					var renderer:OpenGLRenderer = cast renderer;
-					renderer.setShader(__worldShader);
-					renderer.__context3D.__flushGL();
-
-					__customRenderEvent.type = RenderEvent.RENDER_OPENGL;
-
-				case CAIRO:
-					__customRenderEvent.type = RenderEvent.RENDER_CAIRO;
-
-				case DOM:
-					if (stage != null && __worldVisible)
-					{
-						__customRenderEvent.type = RenderEvent.RENDER_DOM;
-					}
-					else
-					{
-						__customRenderEvent.type = RenderEvent.CLEAR_DOM;
-					}
-
-				case CANVAS:
-					__customRenderEvent.type = RenderEvent.RENDER_CANVAS;
-
-				default:
-					return;
-			}
-
-			renderer.__setBlendMode(__worldBlendMode);
-			renderer.__pushMaskObject(this);
-
-			dispatchEvent(__customRenderEvent);
-
-			renderer.__popMaskObject(this);
-
-			if (renderer.__type == OPENGL)
-			{
-				var renderer:OpenGLRenderer = cast renderer;
-				renderer.setViewport();
-			}
-		}
-		#end
-	}
-
-	@:noCompletion private function __renderGL(renderer:OpenGLRenderer):Void
-	{
-		__updateCacheBitmap(renderer, false);
-
-		if (__cacheBitmap != null && !__isCacheBitmapRender)
-		{
-			Context3DBitmap.render(__cacheBitmap, renderer);
-		}
-		else
-		{
-			Context3DDisplayObject.render(this, renderer);
-		}
-
-		__renderEvent(renderer);
-	}
-
-	@:noCompletion private function __renderGLMask(renderer:OpenGLRenderer):Void
-	{
-		if (__graphics != null)
-		{
-			// Context3DGraphics.renderMask (__graphics, renderer);
-			Context3DShape.renderMask(this, renderer);
 		}
 	}
 
