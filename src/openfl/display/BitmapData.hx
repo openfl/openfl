@@ -4,6 +4,7 @@ package openfl.display;
 import openfl._internal.backend.gl.GLFramebuffer;
 import openfl._internal.backend.gl.GLRenderbuffer;
 import openfl._internal.formats.swf.SWFLite;
+import openfl._internal.renderer.DisplayObjectType;
 import openfl._internal.symbols.BitmapSymbol;
 import openfl._internal.utils.Float32Array;
 import openfl._internal.utils.PerlinNoise;
@@ -26,6 +27,15 @@ import openfl.utils.Future;
 import openfl.utils.Object;
 import openfl.Lib;
 import openfl.Vector;
+import openfl._internal.renderer.context3D.batcher.BatchRenderer;
+import openfl._internal.renderer.context3D.Context3DRenderer;
+
+#if openfl_html5
+import openfl._internal.renderer.canvas.CanvasRenderer;
+#else
+import openfl._internal.renderer.cairo.CairoRenderer;
+#end
+
 #if lime
 import lime._internal.graphics.ImageCanvasUtil; // TODO
 import lime.app.Application;
@@ -1572,6 +1582,150 @@ class BitmapData implements IBitmapDrawable
 
 		return __indexBuffer;
 	}
+
+	#if !disable_batcher
+	@:dox(hide) public function pushQuadsToBatcher(batcher:BatchRenderer, transform:Matrix, alpha:Float, object:DisplayObject):Void
+	{
+		var blendMode = object.__worldBlendMode;
+		var colorTransform = object.__worldColorTransform;
+		var scale9Grid = object.__worldScale9Grid;
+
+		#if openfl_power_of_two
+		var uvWidth = width / __textureWidth;
+		var uvHeight = height / __textureHeight;
+		#else
+		var uvWidth = 1;
+		var uvHeight = 1;
+		#end
+
+		if (object != null && scale9Grid != null)
+		{
+			var pixelRatio = Context3DRenderer.pixelRatio;
+			var vertexBufferWidth = object.width;
+			var vertexBufferHeight = object.height;
+			var vertexBufferScaleX = object.scaleX / pixelRatio;
+			var vertexBufferScaleY = object.scaleY / pixelRatio;
+
+			var centerX = scale9Grid.width;
+			var centerY = scale9Grid.height;
+			if (centerX != 0 && centerY != 0)
+			{
+				var left = scale9Grid.x;
+				var top = scale9Grid.y;
+				var right = vertexBufferWidth - centerX - left;
+				var bottom = vertexBufferHeight - centerY - top;
+
+				var uvLeft = left / vertexBufferWidth;
+				var uvTop = top / vertexBufferHeight;
+				var uvCenterX = scale9Grid.width / vertexBufferWidth;
+				var uvCenterY = scale9Grid.height / vertexBufferHeight;
+				var uvRight = right / width;
+				var uvBottom = bottom / height;
+				var uvOffsetU = (pixelRatio * 0.5) / vertexBufferWidth;
+				var uvOffsetV = (pixelRatio * 0.5) / vertexBufferHeight;
+
+				var renderedLeft = left / vertexBufferScaleX;
+				var renderedTop = top / vertexBufferScaleY;
+				var renderedRight = right / vertexBufferScaleX;
+				var renderedBottom = bottom / vertexBufferScaleY;
+				var renderedCenterX = (width - renderedLeft - renderedRight);
+				var renderedCenterY = (height - renderedTop - renderedBottom);
+
+				//  a         b          c         d
+				// p  0 ——— 1    4 ——— 5    8 ——— 9
+				//    |  /  |    |  /  |    |  /  |
+				//    2 ——— 3    6 ——— 7   10 ——— 11
+				// q
+				//   12 ——— 13  16 ——— 18  20 ——— 21
+				//    |  /  |    |  /  |    |  /  |
+				//   14 ——— 15  17 ——— 19  22 ——— 23
+				// r
+				//   24 ——— 25  28 ——— 29  32 ——— 33
+				//    |  /  |    |  /  |    |  /  |
+				//   26 ——— 27  30 ——— 31  34 ——— 35
+				// s
+
+				var a = 0;
+				var b = renderedLeft;
+				var c = renderedLeft + renderedCenterX;
+				var bc = renderedCenterX;
+				var d = width;
+				var cd = d - c;
+
+				var p = 0;
+				var q = renderedTop;
+				var r = renderedTop + renderedCenterY;
+				var qr = renderedCenterY;
+				var s = height;
+				var rs = s - r;
+
+				batcher.setVs(0, (uvHeight * uvTop) - uvOffsetV);
+				batcher.setVertices(transform, a, p, b, q);
+				batcher.setUs(0, (uvWidth * uvLeft) - uvOffsetU);
+				batcher.pushQuad(this, blendMode, alpha, colorTransform);
+
+				batcher.setVertices(transform, b, p, bc, q);
+				batcher.setUs((uvWidth * uvLeft) + uvOffsetU, (uvWidth * (uvLeft + uvCenterX)) - uvOffsetU);
+				batcher.pushQuad(this, blendMode, alpha, colorTransform);
+
+				batcher.setVertices(transform, c, p, cd, q);
+				batcher.setUs((uvWidth * (uvLeft + uvCenterX)) + uvOffsetU, uvWidth);
+				batcher.pushQuad(this, blendMode, alpha, colorTransform);
+
+				batcher.setVs((uvHeight * uvTop) + uvOffsetV, (uvHeight * (uvTop + uvCenterY)) - uvOffsetV);
+				batcher.setVertices(transform, a, q, b, qr);
+				batcher.setUs(0, (uvWidth * uvLeft) - uvOffsetU);
+				batcher.pushQuad(this, blendMode, alpha, colorTransform);
+
+				batcher.setVertices(transform, b, q, bc, qr);
+				batcher.setUs((uvWidth * uvLeft) + uvOffsetU, (uvWidth * (uvLeft + uvCenterX)) - uvOffsetU);
+				batcher.pushQuad(this, blendMode, alpha, colorTransform);
+
+				batcher.setVertices(transform, c, q, cd, qr);
+				batcher.setUs((uvWidth * (uvLeft + uvCenterX)) + uvOffsetU, uvWidth);
+				batcher.pushQuad(this, blendMode, alpha, colorTransform);
+
+				batcher.setVs((uvHeight * (uvTop + uvCenterY)) + uvOffsetV, uvHeight);
+				batcher.setVertices(transform, a, r, b, rs);
+				batcher.setUs(0, (uvWidth * uvLeft) - uvOffsetU);
+				batcher.pushQuad(this, blendMode, alpha, colorTransform);
+
+				batcher.setVertices(transform, b, r, bc, rs);
+				batcher.setUs((uvWidth * uvLeft) + uvOffsetU, (uvWidth * (uvLeft + uvCenterX)) - uvOffsetU);
+				batcher.pushQuad(this, blendMode, alpha, colorTransform);
+
+				batcher.setVertices(transform, c, r, cd, rs);
+				batcher.setUs((uvWidth * (uvLeft + uvCenterX)) + uvOffsetU, uvWidth);
+				batcher.pushQuad(this, blendMode, alpha, colorTransform);
+			}
+			else if (centerX == 0 && centerY != 0)
+			{
+				// TODO
+				// 3 ——— 2
+				// |  /  |
+				// 1 ——— 0
+				// |  /  |
+				// 5 ——— 4
+				// |  /  |
+				// 7 ——— 6
+			}
+			else if (centerY == 0 && centerX != 0)
+			{
+				// TODO
+				// 3 ——— 2 ——— 5 ——— 7
+				// |  /  |  /  |  /  |
+				// 1 ——— 0 ——— 4 ——— 6
+			}
+		}
+		else
+		{
+			batcher.setVertices(transform, 0, 0, width, height);
+			batcher.setUs(0, uvWidth);
+			batcher.setVs(0, uvHeight);
+			batcher.pushQuad(this, blendMode, alpha, colorTransform);
+		}
+	}
+	#end
 
 	/**
 		**BETA**
@@ -3502,6 +3656,39 @@ class BitmapData implements IBitmapDrawable
 		}
 	}
 
+	@:noCompletion private function __setVertex(index:Int, x:Float, y:Float, u:Float, v:Float):Void
+	{
+		var i = index * VERTEX_BUFFER_STRIDE;
+		__vertexBufferData[i + 0] = x;
+		__vertexBufferData[i + 1] = y;
+		__vertexBufferData[i + 3] = u;
+		__vertexBufferData[i + 4] = v;
+	}
+
+	@:noCompletion private function __setVertices(indices:Array<Int>, x:Float, y:Float, u:Float, v:Float):Void
+	{
+		for (index in indices)
+		{
+			__setVertex(index, x, y, u, v);
+		}
+	}
+
+	@:noCompletion private function __setUOffsets(indices:Array<Int>, offset:Float):Void
+	{
+		for (index in indices)
+		{
+			__vertexBufferData[index * VERTEX_BUFFER_STRIDE + 3] += offset;
+		}
+	}
+
+	@:noCompletion private function __setVOffsets(indices:Array<Int>, offset:Float):Void
+	{
+		for (index in indices)
+		{
+			__vertexBufferData[index * VERTEX_BUFFER_STRIDE + 4] += offset;
+		}
+	}
+
 	@:noCompletion private function __sync():Void
 	{
 		#if (js && html5)
@@ -3526,6 +3713,16 @@ class BitmapData implements IBitmapDrawable
 		}
 
 		__renderTransform.copyFrom(__worldTransform);
+	}
+
+	@:noCompletion private inline function __powerOfTwo(value:Int):Int
+	{
+		var newValue = 1;
+		while (newValue < value)
+		{
+			newValue <<= 1;
+		}
+		return newValue;
 	}
 }
 #else
