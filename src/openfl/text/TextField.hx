@@ -2888,10 +2888,11 @@ class TextField extends InteractiveObject
 		{
 			__dirty = true;
 			__setRenderDirty();
+			__textEngine.scrollH = value;
 			dispatchEvent(new Event(Event.SCROLL));
 		}
 
-		return __textEngine.scrollH = value;
+		return __textEngine.scrollH;
 	}
 
 	@:noCompletion private function get_scrollV():Int
@@ -2903,14 +2904,15 @@ class TextField extends InteractiveObject
 	{
 		__updateLayout();
 
-		if (value != __textEngine.scrollV)
+		if (value > 0 && value != __textEngine.scrollV)
 		{
 			__dirty = true;
 			__setRenderDirty();
+			__textEngine.scrollV = value;
 			dispatchEvent(new Event(Event.SCROLL));
 		}
 
-		return __textEngine.scrollV = value;
+		return __textEngine.scrollV;
 	}
 
 	@:noCompletion private function get_selectable():Bool
