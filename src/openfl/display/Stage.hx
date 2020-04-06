@@ -2031,28 +2031,29 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	@:noCompletion private function __onLimeTouchCancel(touch:Touch):Void
 	{
 		// TODO: Should we handle this differently?
-
-		if (__primaryTouch == touch)
+		var isPrimaryTouchPoint = __primaryTouch == touch;
+		if (isPrimaryTouchPoint)
 		{
 			__primaryTouch = null;
 		}
 
-		__onTouch(TouchEvent.TOUCH_END, touch);
+		__onTouch(TouchEvent.TOUCH_END, touch, isPrimaryTouchPoint);
 	}
 
 	@:noCompletion private function __onLimeTouchMove(touch:Touch):Void
 	{
-		__onTouch(TouchEvent.TOUCH_MOVE, touch);
+		__onTouch(TouchEvent.TOUCH_MOVE, touch, __primaryTouch == touch);
 	}
 
 	@:noCompletion private function __onLimeTouchEnd(touch:Touch):Void
 	{
-		if (__primaryTouch == touch)
+		var isPrimaryTouchPoint = __primaryTouch == touch;
+		if (isPrimaryTouchPoint)
 		{
 			__primaryTouch = null;
 		}
 
-		__onTouch(TouchEvent.TOUCH_END, touch);
+		__onTouch(TouchEvent.TOUCH_END, touch, isPrimaryTouchPoint);
 	}
 
 	@:noCompletion private function __onLimeTouchStart(touch:Touch):Void
@@ -2062,7 +2063,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			__primaryTouch = touch;
 		}
 
-		__onTouch(TouchEvent.TOUCH_BEGIN, touch);
+		__onTouch(TouchEvent.TOUCH_BEGIN, touch, __primaryTouch == touch);
 	}
 
 	@:noCompletion private function __onLimeUpdate(deltaTime:Int):Void
@@ -2644,7 +2645,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	#end
 
 	#if lime
-	@:noCompletion private function __onTouch(type:String, touch:Touch):Void
+	@:noCompletion private function __onTouch(type:String, touch:Touch, isPrimaryTouchPoint:Bool):Void
 	{
 		var targetPoint = Point.__pool.get();
 		targetPoint.setTo(Math.round(touch.x * window.width * window.scale), Math.round(touch.y * window.height * window.scale));
@@ -2704,7 +2705,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		}
 
 		var localPoint = Point.__pool.get();
-		var isPrimaryTouchPoint:Bool = (__primaryTouch == touch);
 		var touchEvent = TouchEvent.__create(type, null, touchX, touchY, target.__globalToLocal(targetPoint, localPoint), cast target);
 		touchEvent.touchPointID = touchId;
 		touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
