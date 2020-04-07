@@ -1,11 +1,13 @@
 import BitmapData from "../display/BitmapData";
 import DisplayObjectRenderer from "../display/DisplayObjectRenderer";
 import Shader from "../display/Shader";
+import ShaderParameter from "../display/ShaderParameter";
 import BitmapFilter from "../filters/BitmapFilter";
 import BitmapFilterShader from "../filters/BitmapFilterShader";
 import ColorTransform from "../geom/ColorTransform";
 import Point from "../geom/Point";
 import Rectangle from "../geom/Rectangle";
+import { ShaderInput } from "openfl/display/index";
 
 class InvertAlphaShader extends BitmapFilterShader
 {
@@ -100,9 +102,9 @@ class BlurAlphaShader extends BitmapFilterShader
 	public constructor()
 	{
 		super();
-		this.data.uRadius.value = [0, 0];
-		this.data.uColor.value = [0, 0, 0, 0];
-		this.data.uStrength.value = [1];
+		(this.data.uRadius as ShaderParameter).value = [0, 0];
+		(this.data.uColor as ShaderParameter).value = [0, 0, 0, 0];
+		(this.data.uStrength as ShaderParameter).value = [1];
 	}
 }
 
@@ -138,7 +140,7 @@ class CombineShader extends BitmapFilterShader
 	public constructor()
 	{
 		super();
-		offset.value = [0, 0];
+		(this.data.offset as ShaderParameter).value = [0, 0];
 	}
 }
 
@@ -174,7 +176,7 @@ class InnerCombineShader extends BitmapFilterShader
 	public constructor()
 	{
 		super();
-		offset.value = [0, 0];
+		(this.data.offset as ShaderParameter).value = [0, 0];
 	}
 }
 
@@ -210,7 +212,7 @@ class CombineKnockoutShader extends BitmapFilterShader
 	public constructor()
 	{
 		super();
-		offset.value = [0, 0];
+		(this.data.offset as ShaderParameter).value = [0, 0];
 	}
 }
 
@@ -246,7 +248,7 @@ class InnerCombineKnockoutShader extends BitmapFilterShader
 	public constructor()
 	{
 		super();
-		offset.value = [0, 0];
+		(this.data.offset as ShaderParameter).value = [0, 0];
 	}
 }
 
@@ -305,70 +307,6 @@ export default class GlowFilter extends BitmapFilter
 	protected static __combineKnockoutShader = new CombineKnockoutShader();
 	protected static __innerCombineKnockoutShader = new InnerCombineKnockoutShader();
 
-	/**
-		The alpha transparency value for the color. Valid values are 0 to 1. For
-		example, .25 sets a transparency value of 25%. The default value is 1.
-	**/
-	public alpha(get, set): number;
-
-	/**
-		The amount of horizontal blur. Valid values are 0 to 255(floating point).
-		The default value is 6. Values that are a power of 2(such as 2, 4, 8, 16,
-		and 32) are optimized to render more quickly than other values.
-	**/
-	public blurX(get, set): number;
-
-	/**
-		The amount of vertical blur. Valid values are 0 to 255(floating point).
-		The default value is 6. Values that are a power of 2(such as 2, 4, 8, 16,
-		and 32) are optimized to render more quickly than other values.
-	**/
-	public blurY(get, set): number;
-
-	/**
-		The color of the glow. Valid values are in the hexadecimal format
-		0x_RRGGBB_. The default value is 0xFF0000.
-	**/
-	public color(get, set): number;
-
-	/**
-		Specifies whether the glow is an inner glow. The value `true`
-		indicates an inner glow. The default is `false`, an outer glow
-		(a glow around the outer edges of the object).
-	**/
-	public inner(get, set): boolean;
-
-	/**
-		Specifies whether the object has a knockout effect. A value of
-		`true` makes the object's fill transparent and reveals the
-		background color of the document. The default value is `false`
-		(no knockout effect).
-	**/
-	public knockout(get, set): boolean;
-
-	/**
-		The number of times to apply the filter. The default value is
-		`BitmapFilterQuality.LOW`, which is equivalent to applying the
-		filter once. The value `BitmapFilterQuality.MEDIUM` applies the
-		filter twice; the value `BitmapFilterQuality.HIGH` applies it
-		three times. Filters with lower values are rendered more quickly.
-
-		For most applications, a `quality` value of low, medium, or
-		high is sufficient. Although you can use additional numeric values up to
-		15 to achieve different effects, higher values are rendered more slowly.
-		Instead of increasing the value of `quality`, you can often get
-		a similar effect, and with faster rendering, by simply increasing the
-		values of the `blurX` and `blurY` properties.
-	**/
-	public quality(get, set): number;
-
-	/**
-		The strength of the imprint or spread. The higher the value, the more
-		color is imprinted and the stronger the contrast between the glow and the
-		background. Valid values are 0 to 255. The default is 2.
-	**/
-	public strength(get, set): number;
-
 	protected __alpha: number;
 	protected __blurX: number;
 	protected __blurY: number;
@@ -424,244 +362,296 @@ export default class GlowFilter extends BitmapFilter
 	{
 		super();
 
-		__color = color;
-		__alpha = alpha;
-		__blurX = blurX;
-		__blurY = blurY;
-		__strength = strength;
-		__inner = inner;
-		__knockout = knockout;
-		__quality = quality;
+		this.__color = color;
+		this.__alpha = alpha;
+		this.__blurX = blurX;
+		this.__blurY = blurY;
+		this.__strength = strength;
+		this.__inner = inner;
+		this.__knockout = knockout;
+		this.__quality = quality;
 
-		__updateSize();
+		this.__updateSize();
 
-		__needSecondBitmapData = true;
-		__preserveObject = true;
-		__renderDirty = true;
+		this.__needSecondBitmapData = true;
+		this.__preserveObject = true;
+		this.__renderDirty = true;
 	}
 
 	public clone(): BitmapFilter
 	{
-		return new GlowFilter(__color, __alpha, __blurX, __blurY, __strength, __quality, __inner, __knockout);
+		return new GlowFilter(this.__color, this.__alpha, this.__blurX, this.__blurY, this.__strength, this.__quality, this.__inner, this.__knockout);
 	}
 
 	protected __applyFilter(bitmapData: BitmapData, sourceBitmapData: BitmapData, sourceRect: Rectangle,
 		destPoint: Point): BitmapData
 	{
-		// TODO: Support knockout, inner
+		// // TODO: Support knockout, inner
 
-		var r = (__color >> 16) & 0xFF;
-		var g = (__color >> 8) & 0xFF;
-		var b = __color & 0xFF;
+		// var r = (__color >> 16) & 0xFF;
+		// var g = (__color >> 8) & 0xFF;
+		// var b = __color & 0xFF;
 
-		if (__inner || __knockout)
-		{
-			sourceBitmapData.limeImage.colorTransform(sourceBitmapData.limeImage.rect, new ColorTransform(1, 1, 1, 0, 0, 0, 0, -255).__toLimeColorMatrix());
-			sourceBitmapData.limeImage.dirty = true;
-			sourceBitmapData.limeImage.version++;
-			bitmapData = sourceBitmapData.clone();
-			return bitmapData;
-		}
+		// if (__inner || __knockout)
+		// {
+		// 	sourceBitmapData.limeImage.colorTransform(sourceBitmapData.limeImage.rect, new ColorTransform(1, 1, 1, 0, 0, 0, 0, -255).__toLimeColorMatrix());
+		// 	sourceBitmapData.limeImage.dirty = true;
+		// 	sourceBitmapData.limeImage.version++;
+		// 	bitmapData = sourceBitmapData.clone();
+		// 	return bitmapData;
+		// }
 
-		var finalImage = ImageDataUtil.gaussianBlur(bitmapData.limeImage, sourceBitmapData.limeImage, sourceRect.__toLimeRectangle(),
-			destPoint.__toLimeVector2(), __blurX, __blurY, __quality, __strength);
-		finalImage.colorTransform(finalImage.rect, new ColorTransform(0, 0, 0, __alpha, r, g, b, 0).__toLimeColorMatrix());
+		// var finalImage = ImageDataUtil.gaussianBlur(bitmapData.limeImage, sourceBitmapData.limeImage, sourceRect.__toLimeRectangle(),
+		// 	destPoint.__toLimeVector2(), __blurX, __blurY, __quality, __strength);
+		// finalImage.colorTransform(finalImage.rect, new ColorTransform(0, 0, 0, __alpha, r, g, b, 0).__toLimeColorMatrix());
 
-		if (finalImage == bitmapData.limeImage) return bitmapData;
+		// if (finalImage == bitmapData.limeImage) return bitmapData;
 		return sourceBitmapData;
 	}
 
 	protected __initShader(renderer: DisplayObjectRenderer, pass: number, sourceBitmapData: BitmapData): Shader
 	{
 		// First pass of inner glow is invert alpha
-		if (__inner && pass == 0)
+		if (this.__inner && pass == 0)
 		{
-			return __invertAlphaShader;
+			return GlowFilter.__invertAlphaShader;
 		}
 
-		var blurPass = pass - (__inner ? 1 : 0);
-		var numBlurPasses = __horizontalPasses + __verticalPasses;
+		var blurPass = pass - (this.__inner ? 1 : 0);
+		var numBlurPasses = this.__horizontalPasses + this.__verticalPasses;
 
 		if (blurPass < numBlurPasses)
 		{
-			var shader = __blurAlphaShader;
-			if (blurPass < __horizontalPasses)
+			var shader = GlowFilter.__blurAlphaShader;
+			var uRadius = shader.data.uRadius as ShaderParameter;
+			var uColor = shader.data.uColor as ShaderParameter;
+			var uStrength = shader.data.uStrength as ShaderParameter;
+
+			if (blurPass < this.__horizontalPasses)
 			{
 				var scale = Math.pow(0.5, blurPass >> 1) * 0.5;
-				shader.uRadius.value[0] = blurX * scale;
-				shader.uRadius.value[1] = 0;
+				uRadius.value[0] = this.blurX * scale;
+				uRadius.value[1] = 0;
 			}
 			else
 			{
-				var scale = Math.pow(0.5, (blurPass - __horizontalPasses) >> 1) * 0.5;
-				shader.uRadius.value[0] = 0;
-				shader.uRadius.value[1] = blurY * scale;
+				var scale = Math.pow(0.5, (blurPass - this.__horizontalPasses) >> 1) * 0.5;
+				uRadius.value[0] = 0;
+				uRadius.value[1] = this.blurY * scale;
 			}
-			shader.uColor.value[0] = ((color >> 16) & 0xFF) / 255;
-			shader.uColor.value[1] = ((color >> 8) & 0xFF) / 255;
-			shader.uColor.value[2] = (color & 0xFF) / 255;
-			shader.uColor.value[3] = alpha;
-			shader.uStrength.value[0] = blurPass == (numBlurPasses - 1) ? __strength : 1.0;
+			uColor.value[0] = ((this.color >> 16) & 0xFF) / 255;
+			uColor.value[1] = ((this.color >> 8) & 0xFF) / 255;
+			uColor.value[2] = (this.color & 0xFF) / 255;
+			uColor.value[3] = this.alpha;
+			uStrength.value[0] = blurPass == (numBlurPasses - 1) ? this.__strength : 1.0;
 			return shader;
 		}
-		if (__inner)
+		if (this.__inner)
 		{
-			if (__knockout)
+			if (this.__knockout)
 			{
-				var shader = __innerCombineKnockoutShader;
-				shader.sourceBitmap.input = sourceBitmapData;
-				shader.offset.value[0] = 0.0;
-				shader.offset.value[1] = 0.0;
+				var shader = GlowFilter.__innerCombineKnockoutShader;
+				(shader.data.sourceBitmap as ShaderInput).input = sourceBitmapData;
+				(shader.data.offset as ShaderParameter).value[0] = 0.0;
+				(shader.data.offset as ShaderParameter).value[1] = 0.0;
 				return shader;
 			}
-			var shader = __innerCombineShader;
-			shader.sourceBitmap.input = sourceBitmapData;
-			shader.offset.value[0] = 0.0;
-			shader.offset.value[1] = 0.0;
+			var shader = GlowFilter.__innerCombineShader;
+			(shader.data.sourceBitmap as ShaderInput).input = sourceBitmapData;
+			(shader.data.offset as ShaderParameter).value[0] = 0.0;
+			(shader.data.offset as ShaderParameter).value[1] = 0.0;
 			return shader;
 		}
 		else
 		{
-			if (__knockout)
+			if (this.__knockout)
 			{
-				var shader = __combineKnockoutShader;
-				shader.sourceBitmap.input = sourceBitmapData;
-				shader.offset.value[0] = 0.0;
-				shader.offset.value[1] = 0.0;
+				var shader = GlowFilter.__combineKnockoutShader;
+				(shader.data.sourceBitmap as ShaderInput).input = sourceBitmapData;
+				(shader.data.offset as ShaderParameter).value[0] = 0.0;
+				(shader.data.offset as ShaderParameter).value[1] = 0.0;
 				return shader;
 			}
-			var shader = __combineShader;
-			shader.sourceBitmap.input = sourceBitmapData;
-			shader.offset.value[0] = 0.0;
-			shader.offset.value[1] = 0.0;
+			var shader = GlowFilter.__combineShader;
+			(shader.data.sourceBitmap as ShaderInput).input = sourceBitmapData;
+			(shader.data.offset as ShaderParameter).value[0] = 0.0;
+			(shader.data.offset as ShaderParameter).value[1] = 0.0;
 			return shader;
 		}
 	}
 
 	protected __updateSize(): void
 	{
-		__leftExtension = (__blurX > 0 ? Math.ceil(__blurX * 1.5) : 0);
-		__rightExtension = __leftExtension;
-		__topExtension = (__blurY > 0 ? Math.ceil(__blurY * 1.5) : 0);
-		__bottomExtension = __topExtension;
-		__calculateNumShaderPasses();
+		this.__leftExtension = (this.__blurX > 0 ? Math.ceil(this.__blurX * 1.5) : 0);
+		this.__rightExtension = this.__leftExtension;
+		this.__topExtension = (this.__blurY > 0 ? Math.ceil(this.__blurY * 1.5) : 0);
+		this.__bottomExtension = this.__topExtension;
+		this.__calculateNumShaderPasses();
 	}
 
 	protected __calculateNumShaderPasses(): void
 	{
-		__horizontalPasses = (__blurX <= 0) ? 0 : Math.round(__blurX * (__quality / 4)) + 1;
-		__verticalPasses = (__blurY <= 0) ? 0 : Math.round(__blurY * (__quality / 4)) + 1;
-		__numShaderPasses = __horizontalPasses + __verticalPasses + (__inner ? 2 : 1);
+		this.__horizontalPasses = (this.__blurX <= 0) ? 0 : Math.round(this.__blurX * (this.__quality / 4)) + 1;
+		this.__verticalPasses = (this.__blurY <= 0) ? 0 : Math.round(this.__blurY * (this.__quality / 4)) + 1;
+		this.__numShaderPasses = this.__horizontalPasses + this.__verticalPasses + (this.__inner ? 2 : 1);
 	}
 
 	// Get & Set Methods
+
+	/**
+		The alpha transparency value for the color. Valid values are 0 to 1. For
+		example, .25 sets a transparency value of 25%. The default value is 1.
+	**/
 	public get alpha(): number
 	{
-		return __alpha;
+		return this.__alpha;
 	}
 
-	public set alpha(value: number): number
+	public set alpha(value: number)
 	{
-		if (value != __alpha) __renderDirty = true;
-		return __alpha = value;
+		if (value != this.__alpha) this.__renderDirty = true;
+		this.__alpha = value;
 	}
 
+	/**
+		The amount of horizontal blur. Valid values are 0 to 255(floating point).
+		The default value is 6. Values that are a power of 2(such as 2, 4, 8, 16,
+		and 32) are optimized to render more quickly than other values.
+	**/
 	public get blurX(): number
 	{
-		return __blurX;
+		return this.__blurX;
 	}
 
-	public set blurX(value: number): number
+	public set blurX(value: number)
 	{
-		if (value != __blurX)
+		if (value != this.__blurX)
 		{
-			__blurX = value;
-			__renderDirty = true;
-			__updateSize();
+			this.__blurX = value;
+			this.__renderDirty = true;
+			this.__updateSize();
 		}
-		return value;
 	}
 
+	/**
+		The amount of vertical blur. Valid values are 0 to 255(floating point).
+		The default value is 6. Values that are a power of 2(such as 2, 4, 8, 16,
+		and 32) are optimized to render more quickly than other values.
+	**/
 	public get blurY(): number
 	{
-		return __blurY;
+		return this.__blurY;
 	}
 
-	public set blurY(value: number): number
+	public set blurY(value: number)
 	{
-		if (value != __blurY)
+		if (value != this.__blurY)
 		{
-			__blurY = value;
-			__renderDirty = true;
-			__updateSize();
+			this.__blurY = value;
+			this.__renderDirty = true;
+			this.__updateSize();
 		}
-		return value;
 	}
 
+	/**
+		The color of the glow. Valid values are in the hexadecimal format
+		0x_RRGGBB_. The default value is 0xFF0000.
+	**/
 	public get color(): number
 	{
-		return __color;
+		return this.__color;
 	}
 
-	public set color(value: number): number
+	public set color(value: number)
 	{
-		if (value != __color) __renderDirty = true;
-		return __color = value;
+		if (value != this.__color) this.__renderDirty = true;
+		this.__color = value;
 	}
 
+	/**
+		Specifies whether the glow is an inner glow. The value `true`
+		indicates an inner glow. The default is `false`, an outer glow
+		(a glow around the outer edges of the object).
+	**/
 	public get inner(): boolean
 	{
-		return __inner;
+		return this.__inner;
 	}
 
-	public set inner(value: boolean): boolean
+	public set inner(value: boolean)
 	{
-		if (value != __inner)
+		if (value != this.__inner)
 		{
-			__renderDirty = true;
-			__calculateNumShaderPasses();
+			this.__renderDirty = true;
+			this.__calculateNumShaderPasses();
 		}
-		return __inner = value;
+		this.__inner = value;
 	}
 
+	/**
+		Specifies whether the object has a knockout effect. A value of
+		`true` makes the object's fill transparent and reveals the
+		background color of the document. The default value is `false`
+		(no knockout effect).
+	**/
 	public get knockout(): boolean
 	{
-		return __knockout;
+		return this.__knockout;
 	}
 
-	public set knockout(value: boolean): boolean
+	public set knockout(value: boolean)
 	{
-		if (value != __knockout)
+		if (value != this.__knockout)
 		{
-			__renderDirty = true;
-			__calculateNumShaderPasses();
+			this.__renderDirty = true;
+			this.__calculateNumShaderPasses();
 		}
-		return __knockout = value;
+		this.__knockout = value;
 	}
 
+
+	/**
+		The number of times to apply the filter. The default value is
+		`BitmapFilterQuality.LOW`, which is equivalent to applying the
+		filter once. The value `BitmapFilterQuality.MEDIUM` applies the
+		filter twice; the value `BitmapFilterQuality.HIGH` applies it
+		three times. Filters with lower values are rendered more quickly.
+
+		For most applications, a `quality` value of low, medium, or
+		high is sufficient. Although you can use additional numeric values up to
+		15 to achieve different effects, higher values are rendered more slowly.
+		Instead of increasing the value of `quality`, you can often get
+		a similar effect, and with faster rendering, by simply increasing the
+		values of the `blurX` and `blurY` properties.
+	**/
 	public get quality(): number
 	{
-		return __quality;
+		return this.__quality;
 	}
 
-	public set quality(value: number): number
+	public set quality(value: number)
 	{
-		if (value != __quality)
+		if (value != this.__quality)
 		{
-			__renderDirty = true;
-			__calculateNumShaderPasses();
+			this.__renderDirty = true;
+			this.__calculateNumShaderPasses();
 		}
-		return __quality = value;
+		this.__quality = value;
 	}
 
+	/**
+		The strength of the imprint or spread. The higher the value, the more
+		color is imprinted and the stronger the contrast between the glow and the
+		background. Valid values are 0 to 255. The default is 2.
+	**/
 	public get strength(): number
 	{
-		return __strength;
+		return this.__strength;
 	}
 
-	public set strength(value: number): number
+	public set strength(value: number)
 	{
-		if (value != __strength) __renderDirty = true;
-		return __strength = value;
+		if (value != this.__strength) this.__renderDirty = true;
+		this.__strength = value;
 	}
 }

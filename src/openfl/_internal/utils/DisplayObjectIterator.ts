@@ -1,3 +1,4 @@
+import * as internal from "../../_internal/utils/InternalAccess";
 import DisplayObject from "../../display/DisplayObject";
 
 export default class DisplayObjectIterator
@@ -7,88 +8,94 @@ export default class DisplayObjectIterator
 
 	public constructor()
 	{
-		entry = null;
-		current = null;
+		this.entry = null;
+		this.current = null;
 	}
 
-	public hasNext(): boolean
-	{
-		return (current != null);
-	}
+	// public hasNext(): boolean
+	// {
+	// 	return (current != null);
+	// }
 
 	public init(displayObject: DisplayObject, childrenOnly: boolean): void
 	{
-		entry = displayObject;
+		this.entry = displayObject;
 
-		if (entry != null)
+		if (this.entry != null)
 		{
-			current = childrenOnly ? entry.__firstChild : entry;
+			this.current = childrenOnly ? (<internal.DisplayObject><any>this.entry).__firstChild : this.entry;
 		}
 		else
 		{
-			current = null;
+			this.current = null;
 		}
 	}
 
-	public next(): DisplayObject
+	public [Symbol.iterator]()
 	{
-		var _current = current;
-		if (current.__firstChild != null)
+		return this;
+	}
+
+	public next(): IteratorResult<DisplayObject>
+	{
+		var _current = this.current;
+		if ((<internal.DisplayObject><any>this.current).__firstChild != null)
 		{
-			current = current.__firstChild;
+			this.current = (<internal.DisplayObject><any>this.current).__firstChild;
 		}
-		else if (current.__nextSibling != null)
+		else if ((<internal.DisplayObject><any>this.current).__nextSibling != null)
 		{
-			current = current.__nextSibling;
+			this.current = (<internal.DisplayObject><any>this.current).__nextSibling;
 		}
 		else
 		{
 			do
 			{
-				if (current.parent == null || current.parent == entry)
+				if (this.current.parent == null || this.current.parent == this.entry)
 				{
-					current = null;
-					DisplayObject.__childIterators.release(this);
-					return _current;
+					this.current = null;
+					(<internal.DisplayObject><any>DisplayObject).__childIterators.release(this);
+					return { value: _current, done: (this.current != null) };
 				}
-				current = current.parent;
+				this.current = this.current.parent;
 			}
-			while (current.__nextSibling == null);
-			current = current.__nextSibling;
-			if (current == null)
+			while ((<internal.DisplayObject><any>this.current).__nextSibling == null);
+			this.current = (<internal.DisplayObject><any>this.current).__nextSibling;
+			if (this.current == null)
 			{
-				DisplayObject.__childIterators.release(this);
+				(<internal.DisplayObject><any>DisplayObject).__childIterators.release(this);
 			}
 		}
-		return _current;
+
+		return { value: _current, done: (this.current != null) };
 	}
 
 	public skip(current: DisplayObject): void
 	{
-		if (current.__firstChild == null)
+		if ((<internal.DisplayObject><any>current).__firstChild == null)
 		{
 			return;
 		}
 
-		if (current.__firstChild == this.current)
+		if ((<internal.DisplayObject><any>current).__firstChild == this.current)
 		{
-			if (current.__nextSibling != null)
+			if ((<internal.DisplayObject><any>current).__nextSibling != null)
 			{
-				this.current = current.__nextSibling;
+				this.current = (<internal.DisplayObject><any>current).__nextSibling;
 			}
 			else
 			{
 				do
 				{
-					if (current.parent == null || current.parent == entry)
+					if (current.parent == null || current.parent == this.entry)
 					{
 						this.current = null;
 						return;
 					}
 					current = current.parent;
 				}
-				while (current.__nextSibling == null);
-				this.current = current.__nextSibling;
+				while ((<internal.DisplayObject><any>current).__nextSibling == null);
+				this.current = (<internal.DisplayObject><any>current).__nextSibling;
 			}
 		}
 	}

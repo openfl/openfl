@@ -1,5 +1,6 @@
 import DrawCommandType from "../../_internal/renderer/DrawCommandType";
 import DrawCommandReader from "../../_internal/renderer/DrawCommandReader";
+import ShaderBuffer from "../../_internal/renderer/ShaderBuffer";
 import BitmapData from "../../display/BitmapData";
 import BlendMode from "../../display/BlendMode";
 import CapsStyle from "../../display/CapsStyle";

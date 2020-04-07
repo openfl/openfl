@@ -1,5 +1,6 @@
 import DrawCommandBuffer from "../../_internal/renderer/DrawCommandBuffer";
 import DrawCommandType from "../../_internal/renderer/DrawCommandType";
+import ShaderBuffer from "../../_internal/renderer/ShaderBuffer";
 import * as internal from "../../_internal/utils/InternalAccess";
 import BitmapData from "../../display/BitmapData";
 import BlendMode from "../../display/BlendMode";
@@ -31,7 +32,7 @@ export default class DrawCommandReader
 		this.buffer = buffer;
 
 		this.bPos = this.iPos = this.fPos = this.oPos = this.ffPos = this.iiPos = this.tsPos = 0;
-		this.prev = UNKNOWN;
+		this.prev = DrawCommandType.UNKNOWN;
 	}
 
 	protected advance(): void

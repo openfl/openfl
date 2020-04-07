@@ -121,7 +121,7 @@ export default class SampleDataEvent extends Event
 
 		this.data = new ByteArray();
 		this.data.endian = Endian.LITTLE_ENDIAN;
-		position = 0.0;
+		this.position = 0.0;
 	}
 
 	public clone(): SampleDataEvent

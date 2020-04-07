@@ -1,11 +1,76 @@
 import BitmapData from "../display/BitmapData";
 import DisplayObjectRenderer from "../display/DisplayObjectRenderer";
 import Shader from "../display/Shader";
+import ShaderParameter from "../display/ShaderParameter";
 import BitmapFilter from "../filters/BitmapFilter";
 import BitmapFilterShader from "../filters/BitmapFilterShader";
 import Point from "../geom/Point";
 import Rectangle from "../geom/Rectangle";
 // import openfl._internal.backend.lime_standalone.ImageDataUtil;
+
+class BlurShader extends BitmapFilterShader
+{
+	glFragmentSource = `
+		uniform sampler2D openfl_Texture;
+
+		varying vec2 vBlurCoords[7];
+
+		void main(void) {
+
+			vec4 sum = vec4(0.0);
+			sum += texture2D(openfl_Texture, vBlurCoords[0]) * 0.00443;
+			sum += texture2D(openfl_Texture, vBlurCoords[1]) * 0.05399;
+			sum += texture2D(openfl_Texture, vBlurCoords[2]) * 0.24197;
+			sum += texture2D(openfl_Texture, vBlurCoords[3]) * 0.39894;
+			sum += texture2D(openfl_Texture, vBlurCoords[4]) * 0.24197;
+			sum += texture2D(openfl_Texture, vBlurCoords[5]) * 0.05399;
+			sum += texture2D(openfl_Texture, vBlurCoords[6]) * 0.00443;
+
+			gl_FragColor = sum;
+
+		}
+	`;
+
+	glVertexSource = `
+		attribute vec4 openfl_Position;
+		attribute vec2 openfl_TextureCoord;
+
+		uniform mat4 openfl_Matrix;
+
+		uniform vec2 uRadius;
+		varying vec2 vBlurCoords[7];
+		uniform vec2 uTextureSize;
+
+		void main(void) {
+
+			gl_Position = openfl_Matrix * openfl_Position;
+
+			vec2 r = uRadius / uTextureSize;
+			vBlurCoords[0] = openfl_TextureCoord - r;
+			vBlurCoords[1] = openfl_TextureCoord - r * 0.75;
+			vBlurCoords[2] = openfl_TextureCoord - r * 0.5;
+			vBlurCoords[3] = openfl_TextureCoord;
+			vBlurCoords[4] = openfl_TextureCoord + r * 0.5;
+			vBlurCoords[5] = openfl_TextureCoord + r * 0.75;
+			vBlurCoords[6] = openfl_TextureCoord + r;
+
+		}
+	`;
+
+	public constructor()
+	{
+		super();
+
+		(this.data.uRadius as ShaderParameter<number>).value = [0, 0];
+	}
+
+	protected __update(): void
+	{
+		(this.data.uTextureSize as ShaderParameter<number>).value = [this.__texture.input.width, this.__texture.input.height];
+
+		super.__update();
+	}
+}
 
 /**
 	The BlurFilter class lets you apply a blur visual effect to display
@@ -124,20 +189,22 @@ export default class BlurFilter extends BitmapFilter
 
 	protected __initShader(renderer: DisplayObjectRenderer, pass: number, sourceBitmapData: BitmapData): Shader
 	{
+		var uRadius = BlurFilter.__blurShader.data.uRadius as ShaderParameter<number>;
+
 		if (pass < this.__horizontalPasses)
 		{
 			var scale = Math.pow(0.5, pass >> 1);
-			this.__blurShader.uRadius.value[0] = this.blurX * scale;
-			this.__blurShader.uRadius.value[1] = 0;
+			uRadius.value[0] = this.blurX * scale;
+			uRadius.value[1] = 0;
 		}
 		else
 		{
 			var scale = Math.pow(0.5, (pass - this.__horizontalPasses) >> 1);
-			this.__blurShader.uRadius.value[0] = 0;
-			this.__blurShader.uRadius.value[1] = this.blurY * scale;
+			uRadius.value[0] = 0;
+			uRadius.value[1] = this.blurY * scale;
 		}
 
-		return this.__blurShader;
+		return BlurFilter.__blurShader;
 	}
 
 	// Get & Set Methods
@@ -212,7 +279,7 @@ export default class BlurFilter extends BitmapFilter
 		return this.__quality;
 	}
 
-	public set quality(value: number): number
+	public set quality(value: number)
 	{
 		// TODO: Quality effect with fewer passes?
 
@@ -223,69 +290,5 @@ export default class BlurFilter extends BitmapFilter
 
 		if (value != this.__quality) this.__renderDirty = true;
 		this.__quality = value;
-	}
-}
-
-class BlurShader extends BitmapFilterShader
-{
-	glFragmentSource = `
-		uniform sampler2D openfl_Texture;
-
-		varying vec2 vBlurCoords[7];
-
-		void main(void) {
-
-			vec4 sum = vec4(0.0);
-			sum += texture2D(openfl_Texture, vBlurCoords[0]) * 0.00443;
-			sum += texture2D(openfl_Texture, vBlurCoords[1]) * 0.05399;
-			sum += texture2D(openfl_Texture, vBlurCoords[2]) * 0.24197;
-			sum += texture2D(openfl_Texture, vBlurCoords[3]) * 0.39894;
-			sum += texture2D(openfl_Texture, vBlurCoords[4]) * 0.24197;
-			sum += texture2D(openfl_Texture, vBlurCoords[5]) * 0.05399;
-			sum += texture2D(openfl_Texture, vBlurCoords[6]) * 0.00443;
-
-			gl_FragColor = sum;
-
-		}
-	`;
-
-	glVertexSource = `
-		attribute vec4 openfl_Position;
-		attribute vec2 openfl_TextureCoord;
-
-		uniform mat4 openfl_Matrix;
-
-		uniform vec2 uRadius;
-		varying vec2 vBlurCoords[7];
-		uniform vec2 uTextureSize;
-
-		void main(void) {
-
-			gl_Position = openfl_Matrix * openfl_Position;
-
-			vec2 r = uRadius / uTextureSize;
-			vBlurCoords[0] = openfl_TextureCoord - r;
-			vBlurCoords[1] = openfl_TextureCoord - r * 0.75;
-			vBlurCoords[2] = openfl_TextureCoord - r * 0.5;
-			vBlurCoords[3] = openfl_TextureCoord;
-			vBlurCoords[4] = openfl_TextureCoord + r * 0.5;
-			vBlurCoords[5] = openfl_TextureCoord + r * 0.75;
-			vBlurCoords[6] = openfl_TextureCoord + r;
-
-		}
-	`;
-
-	public constructor()
-	{
-		super();
-
-		this.data.uRadius.value = [0, 0];
-	}
-
-	protected __update(): void
-	{
-		this.data.uTextureSize.value = [this.__texture.input.width, this.__texture.input.height];
-
-		super.__update();
 	}
 }

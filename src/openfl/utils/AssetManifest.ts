@@ -1,4 +1,6 @@
 import AssetType from "../utils/AssetType";
+import ByteArray from "../utils/ByteArray";
+import Future from "../utils/Future";
 
 export default class AssetManifest
 {
@@ -58,7 +60,7 @@ export default class AssetManifest
 		});
 	}
 
-	public static fromBytes(bytes: Bytes, rootPath: string = null): AssetManifest
+	public static fromBytes(bytes: ByteArray, rootPath: string = null): AssetManifest
 	{
 		return null;
 	}
@@ -68,7 +70,7 @@ export default class AssetManifest
 		return null;
 	}
 
-	public static loadFromBytes(bytes: Bytes, rootPath: string = null): Future<AssetManifest>
+	public static loadFromBytes(bytes: ByteArray, rootPath: string = null): Future<AssetManifest>
 	{
 		return null;
 	}

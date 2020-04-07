@@ -25,7 +25,7 @@ export default class BitmapDataPool
 	{
 		for (let bitmapData of this.__bitmapDataList)
 		{
-			var age = this.__bitmapDataAge[bitmapData];
+			var age = this.__bitmapDataAge.get(bitmapData);
 			if (age >= this.__lifetime)
 			{
 				this.__bitmapData[bitmapData.width][bitmapData.height].remove(bitmapData);
@@ -36,7 +36,7 @@ export default class BitmapDataPool
 			}
 			else if (age > -1)
 			{
-				this.__bitmapDataAge[bitmapData] = age + 1;
+				this.__bitmapDataAge.set(bitmapData, age + 1);
 			}
 		}
 	}
@@ -75,10 +75,10 @@ export default class BitmapDataPool
 
 	public release(bitmapData: BitmapData): void
 	{
-		if (__bitmapDataAge.exists(bitmapData))
+		if (this.__bitmapDataAge.has(bitmapData))
 		{
-			__bitmapData[bitmapData.width][bitmapData.height].release(bitmapData);
-			__bitmapDataAge[bitmapData] = 0;
+			this.__bitmapData[bitmapData.width][bitmapData.height].release(bitmapData);
+			this.__bitmapDataAge.set(bitmapData, 0);
 		}
 	}
 

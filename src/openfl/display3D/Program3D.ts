@@ -36,7 +36,7 @@ export default class Program3D
 	protected __samplerStates: Array<SamplerState>;
 
 	/** @hidden */
-	private constructor(context3D: Context3D, format: Context3DProgramFormat)
+	protected constructor(context3D: Context3D, format: Context3DProgramFormat)
 	{
 		this.__context = context3D;
 		this.__format = format;
@@ -347,7 +347,7 @@ export default class Program3D
 		// __backend.markDirty(isVertex, index, count);
 	}
 
-	private __setSamplerState(sampler: number, state: SamplerState): void
+	protected __setSamplerState(sampler: number, state: SamplerState): void
 	{
 		this.__samplerStates[sampler] = state;
 	}

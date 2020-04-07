@@ -81,7 +81,7 @@ import ShaderParameterType from "../display/ShaderParameterType";
 	directly. A ShaderParameter instance is created for each of a shader's
 	parameters when the Shader instance is created.
 **/
-export default class ShaderParameter<T> /*implements Dynamic*/
+export default class ShaderParameter<T = number | boolean> /*implements Dynamic*/
 {
 	/**
 		The value or values that are passed in as the parameter value to the

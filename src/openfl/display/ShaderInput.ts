@@ -1,6 +1,8 @@
+import BitmapData from "../display/BitmapData";
 import Context3DMipFilter from "../display3D/Context3DMipFilter";
 import Context3DTextureFilter from "../display3D/Context3DTextureFilter";
 import Context3DWrapMode from "../display3D/Context3DWrapMode";
+import Video from "../media/Video";
 
 /**
 	// TODO: Document GLSL Shaders
@@ -45,7 +47,7 @@ import Context3DWrapMode from "../display3D/Context3DWrapMode";
 	A ShaderInput instance is created for each of a shader's inputs when the
 	Shader instance is created.
 **/
-export default class ShaderInput<T> /*implements Dynamic*/
+export default class ShaderInput<T = BitmapData | Video> /*implements Dynamic*/
 {
 	/**
 		The texture filter to use when binding this shader input.

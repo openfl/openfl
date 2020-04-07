@@ -20,6 +20,7 @@ import GraphicsPath from "../display/GraphicsPath";
 import GraphicsPathCommand from "../display/GraphicsPathCommand";
 import GraphicsPathWinding from "../display/GraphicsPathWinding";
 import GraphicsQuadPath from "../display/GraphicsQuadPath";
+import GraphicsShader from "../display/GraphicsShader";
 import GraphicsShaderFill from "../display/GraphicsShaderFill";
 import GraphicsSolidFill from "../display/GraphicsSolidFill";
 import GraphicsStroke from "../display/GraphicsStroke";
@@ -369,7 +370,7 @@ export default class Graphics
 		{
 			var shaderBuffer = this.__shaderBufferPool.get();
 			this.__usedShaderBuffers.push(shaderBuffer);
-			shaderBuffer.update(shader);
+			shaderBuffer.update(shader as GraphicsShader);
 
 			this.__commands.beginShaderFill(shaderBuffer);
 		}
@@ -721,22 +722,22 @@ export default class Graphics
 							thickness = null;
 						}
 
-						switch (stroke.fill.__graphicsFillType)
+						switch ((<internal.IGraphicsFill><any>stroke.fill).__graphicsFillType)
 						{
 							case GraphicsFillType.SOLID_FILL:
-								fill = stroke.fill;
+								fill = stroke.fill as GraphicsSolidFill;
 								this.lineStyle(thickness, fill.color, fill.alpha, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints,
 									stroke.miterLimit);
 								break;
 
 							case GraphicsFillType.BITMAP_FILL:
-								bitmapFill = stroke.fill;
+								bitmapFill = stroke.fill as GraphicsBitmapFill;
 								this.lineStyle(thickness, 0, 1, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
 								this.lineBitmapStyle(bitmapFill.bitmapData, bitmapFill.matrix, bitmapFill.repeat, bitmapFill.smooth);
 								break;
 
 							case GraphicsFillType.GRADIENT_FILL:
-								gradientFill = stroke.fill;
+								gradientFill = stroke.fill as GraphicsGradientFill;
 								this.lineStyle(thickness, 0, 1, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
 								this.lineGradientStyle(gradientFill.type, gradientFill.colors, gradientFill.alphas, gradientFill.ratios, gradientFill.matrix,
 									gradientFill.spreadMethod, gradientFill.interpolationMethod, gradientFill.focalPointRatio);
@@ -752,7 +753,7 @@ export default class Graphics
 					break;
 
 				case GraphicsDataType.PATH:
-					path = graphics;
+					path = graphics as GraphicsPath;
 					this.drawPath(path.commands, path.data, path.winding);
 					break;
 
@@ -1856,7 +1857,7 @@ export default class Graphics
 		}
 	}
 
-	protected __setDirty(): void
+	protected __setDirty(value: boolean = true): void
 	{
 		if (value && this.__owner != null)
 		{

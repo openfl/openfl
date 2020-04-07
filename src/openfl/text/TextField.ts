@@ -1563,11 +1563,11 @@ export default class TextField extends InteractiveObject
 				{
 					switch (this.__textEngine.autoSize)
 					{
-						case TextFormatAlign.RIGHT:
+						case TextFieldAutoSize.RIGHT:
 							this.x += cacheWidth - this.__textEngine.width;
 							break;
 
-						case TextFormatAlign.CENTER:
+						case TextFieldAutoSize.CENTER:
 							this.x += (cacheWidth - this.__textEngine.width) / 2;
 							break;
 

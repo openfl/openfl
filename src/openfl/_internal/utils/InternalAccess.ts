@@ -2,13 +2,16 @@ import Context3DState from "../../_internal/renderer/context3D/Context3DState";
 import BitmapDataPool from "../../_internal/renderer/BitmapDataPool";
 import DisplayObjectRenderData from "../../_internal/renderer/DisplayObjectRenderData";
 import DisplayObjectRendererType from "../../_internal/renderer/DisplayObjectRendererType";
+import SamplerState from "../../_internal/renderer/SamplerState";
 import DisplayObjectType from "../../_internal/renderer/DisplayObjectType";
 import GraphicsDataType from "../../_internal/renderer/GraphicsDataType";
 import GraphicsFillType from "../../_internal/renderer/GraphicsFillType";
+import DisplayObjectIterator from "../../_internal/utils/DisplayObjectIterator";
 import ObjectPool from "../../_internal/utils/ObjectPool";
 import BitmapData from "../../display/BitmapData";
 import BlendMode from "../../display/BlendMode";
 import DisplayObject from "../../display/DisplayObject";
+import DisplayObjectContainer from "../../display/DisplayObjectContainer";
 import FrameLabel from "../../display/FrameLabel";
 import Graphics from "../../display/Graphics";
 import IBitmapDrawable from "../../display/IBitmapDrawable";
@@ -25,7 +28,12 @@ import Stage3D from "../../display/Stage3D";
 import Tile from "../../display/Tile";
 import TileContainer from "../../display/TileContainer";
 import Tileset from "../../display/Tileset";
+import Timeline from "../../display/Timeline";
+import RectangleTexture from "../../display3D/textures/RectangleTexture";
 import Context3D from "../../display3D/Context3D";
+import Context3DBufferUsage from "../../display3D/Context3DBufferUsage";
+import Context3DProgramFormat from "../../display3D/Context3DProgramFormat";
+import Context3DTextureFormat from "../../display3D/Context3DTextureFormat";
 import Event from "../../events/Event";
 import EventPhase from "../../events/EventPhase";
 import MouseEvent from "../../events/MouseEvent";
@@ -34,11 +42,14 @@ import TouchEvent from "../../events/TouchEvent";
 import BitmapFilter from "../../filters/BitmapFilter";
 import ColorTransform from "../../geom/ColorTransform";
 import Matrix from "../../geom/Matrix";
+import Matrix3D from "../../geom/Matrix3D";
 import Point from "../../geom/Point";
 import Rectangle from "../../geom/Rectangle";
 import Transform from "../../geom/Transform";
 import SoundChannel from "../../media/SoundChannel";
+import NetStream from "../../net/NetStream";
 import ApplicationDomain from "../../system/ApplicationDomain";
+import Font from "../../text/Font";
 import TextFormat from "../../text/TextFormat";
 import GameInputDevice from "../../ui/GameInputDevice";
 import GameInputControl from "../../ui/GameInputControl";
@@ -46,9 +57,18 @@ import MouseCursor from "../../ui/MouseCursor";
 import ByteArray from "../../utils/ByteArray";
 import Vector from "../../Vector";
 
+interface BitmapInternal
+{
+	__bitmapData: BitmapData;
+	__imageVersion: number;
+}
+export { BitmapInternal as Bitmap }
+
 interface BitmapDataInternal
 {
 	__pool: BitmapDataPool;
+
+	__getVersion(): number;
 }
 export { BitmapDataInternal as BitmapData }
 
@@ -67,6 +87,12 @@ interface BitmapFilterInternal
 }
 export { BitmapFilterInternal as BitmapFilter }
 
+interface ByteArrayInternal
+{
+	__buffer: ArrayBuffer;
+}
+export { ByteArrayInternal as ByteArray }
+
 interface ColorTransformInternal
 {
 	__clone(): ColorTransform;
@@ -83,6 +109,7 @@ interface Context3DInternal
 	__bitmapDataPool: BitmapDataPool;
 	__cleared: boolean;
 	__contextState: Context3DState;
+	__frontBufferTexture: RectangleTexture;
 	__present: boolean;
 
 	new(stage: Stage, contextState?: Context3DState, stage3D?: Stage3D): Context3D;
@@ -90,8 +117,16 @@ interface Context3DInternal
 }
 export { Context3DInternal as Context3D }
 
+interface CubeTextureInternal
+{
+	new(context: Context3D, size: number, format: Context3DTextureFormat, optimizeForRenderToTexture: boolean, streamingLevels: number);
+}
+export { CubeTextureInternal as CubeTexture }
+
 interface DisplayObjectContainerInternal
 {
+	__numChildren: number;
+
 	__cleanupRemovedChildren(): void;
 	__removedChildren: Vector<DisplayObject>;
 }
@@ -100,6 +135,7 @@ export { DisplayObjectContainerInternal as DisplayObjectContainer }
 interface DisplayObjectInternal
 {
 	__broadcastEvents: Map<string, Array<DisplayObject>>;
+	__childIterators: ObjectPool<DisplayObjectIterator>;
 	__supportDOM: boolean;
 
 	__alpha: number;
@@ -123,6 +159,7 @@ interface DisplayObjectInternal
 	__name: string;
 	__nextSibling: DisplayObject;
 	__objectTransform: Transform;
+	__parent: DisplayObjectContainer;
 	__previousSibling: DisplayObject;
 	__renderable: boolean;
 	__renderData: DisplayObjectRenderData;
@@ -157,12 +194,17 @@ interface DisplayObjectInternal
 	__worldVisibleChanged: boolean;
 	__worldZ: number;
 
+	__childIterator(childrenOnly?: boolean): DisplayObjectIterator;
 	__cleanup(): void;
 	__dispatch(event: Event): boolean;
+	__dispatchChildren(event: Event): void;
+	__dispatchWithCapture(event: Event): boolean;
 	__getBounds(rect: Rectangle, matrix: Matrix): void;
 	__getCursor(): MouseCursor;
+	__getFilterBounds(rect: Rectangle, matrix: Matrix): void;
 	__getInteractive(stack: Array<DisplayObject>): boolean;
 	__getRenderBounds(rect: Rectangle, matrix: Matrix): void;
+	__getRenderTransform(): Matrix;
 	__getWorldTransform(): Matrix;
 	__globalToLocal(global: Point, local: Point): Point;
 	__hitTest(x: number, y: number, shapeFlag: boolean, stack: Array<DisplayObject>, interactiveOnly: boolean, hitObject: DisplayObject): boolean;
@@ -228,6 +270,12 @@ interface EventInternal
 }
 export { EventInternal as Event }
 
+interface FontInternal
+{
+	__fontByName: Map<String, Font>;
+}
+export { FontInternal as Font }
+
 interface FutureInternal<T>
 {
 	__completeListeners: Array<(value: T) => void>;
@@ -246,10 +294,22 @@ interface GameInputControlInternal
 }
 export { GameInputControlInternal as GameInputControl }
 
+interface GlowFilterInternal
+{
+	__blurAlphaShader: Shader;
+	__combineKnockoutShader: Shader;
+	__combineShader: Shader;
+	__innerCombineShader: Shader;
+	__innerCombineKnockoutShader: Shader;
+	__invertAlphaShader: Shader;
+}
+export { GlowFilterInternal as GlowFilter }
+
 interface GraphicsInternal
 {
 	new(owner: DisplayObject): Graphics;
 
+	__cleanup(): void;
 	__getBounds(rect: Rectangle, matrix: Matrix): void;
 	__hitTest(x: number, y: number, shapeFlag: boolean, matrix: Matrix): boolean;
 	__readGraphicsData(graphicsData: Vector<IGraphicsData>): void;
@@ -286,8 +346,16 @@ interface IGraphicsFillInternal
 }
 export { IGraphicsFillInternal as IGraphicsFill }
 
+interface IndexBuffer3DInternal
+{
+	new(context3D: Context3D, numIndices: number, bufferUsage: Context3DBufferUsage);
+}
+export { IndexBuffer3DInternal as IndexBuffer3D }
+
 interface InteractiveObjectInternal
 {
+	__tabEnabled: boolean;
+
 	__allowMouseFocus(): boolean;
 }
 export { InteractiveObjectInternal as InteractiveObject }
@@ -353,8 +421,16 @@ interface MouseInternal
 }
 export { MouseInternal as Mouse }
 
+interface MovieClipInternal
+{
+	__timeline: Timeline;
+}
+export { MovieClipInternal as MovieClip }
+
 interface NetStreamInternal
 {
+	__closed: boolean;
+
 	__getVideoElement(): HTMLVideoElement;
 }
 export { NetStreamInternal as NetStream }
@@ -365,6 +441,19 @@ interface PointInternal
 }
 export { PointInternal as Point }
 
+interface Program3DInternal
+{
+	__context: Context3D;
+	__format: Context3DProgramFormat;
+	__samplerStates: Array<SamplerState>;
+
+	new(context3D: Context3D, format: Context3DProgramFormat);
+
+	__markDirty(isVertex: boolean, index: number, count: number): void;
+	__setSamplerState(sampler: number, state: SamplerState): void;
+}
+export { Program3DInternal as Program3D }
+
 interface RectangleInternal
 {
 	__pool: ObjectPool<Rectangle>;
@@ -373,9 +462,15 @@ interface RectangleInternal
 }
 export { RectangleInternal as Rectangle }
 
+interface RectangleTextureInternal
+{
+	new(context: Context3D, width: number, height: number, format: Context3DTextureFormat, optimizeForRenderToTexture: boolean);
+}
+export { RectangleTextureInternal as RectangleTexture }
+
 interface ShaderInternal
 {
-	__init(context3D: Context3D = null): void;
+	__init(context3D?: Context3D): void;
 }
 export { ShaderInternal as Shader }
 
@@ -406,6 +501,9 @@ export { SpriteInternal as Sprite }
 
 interface Stage3DInternal
 {
+	__renderData: DisplayObjectRenderData;
+	__renderTransform: Matrix3D;
+
 	new(stage: Stage): Stage3D;
 	__resize(width: number, height: number): void;
 }
@@ -421,11 +519,31 @@ interface StageInternal
 }
 export { StageInternal as Stage }
 
+interface TextFieldInternal
+{
+	__defaultTextFormat: TextFormat;
+
+	__offsetX: number;
+	__offsetY: number;
+	__textFormat: TextFormat;
+}
+export { TextFieldInternal as TextField }
+
 interface TextFormatInternal
 {
+	__ascent: null | number;
+	__descent: null | number;
+
 	__merge(format: TextFormat): void;
 }
 export { TextFormatInternal as TextFormat }
+
+interface TextureInternal
+{
+	new(context: Context3D, width: number, height: number, format: Context3DTextureFormat, optimizeForRenderToTexture: boolean,
+		streamingLevels: number);
+}
+export { TextureInternal as Texture }
 
 interface TileContainerInternal
 {
@@ -444,6 +562,12 @@ interface TileInternal
 	__setRenderDirty(): void;
 }
 export { TileInternal as Tile }
+
+interface TilemapInternal
+{
+	__group: TileContainer;
+}
+export { TilemapInternal as Tilemap }
 
 interface TimelineInternal
 {
@@ -482,5 +606,23 @@ interface TouchEventInternal
 		local: Point, target: InteractiveObject): TouchEvent;
 }
 export { TouchEventInternal as TouchEvent }
+
+interface VertexBuffer3DInternal
+{
+	new(context3D: Context3D, numVertices: number, dataPerVertex: number, bufferUsage: Context3DBufferUsage);
+}
+export { VertexBuffer3DInternal as VertexBuffer3D }
+
+interface VideoInternal
+{
+	__stream: NetStream;
+}
+export { VideoInternal as Video }
+
+interface VideoTextureInternal
+{
+	new(context: Context3D);
+}
+export { VideoTextureInternal as VideoTexture }
 
 export type Write<T> = { -readonly [P in keyof T]?: T[P]; };

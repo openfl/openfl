@@ -50,7 +50,7 @@ import Vector from "../Vector";
 					is called with a `false` value for the `waitForCompletion`
 					parameter.
 **/
-export class ShaderJob extends EventDispatcher
+export default class ShaderJob extends EventDispatcher
 {
 	/**
 		The height of the result data in the `target` if it is a ByteArray or

@@ -1,3 +1,4 @@
+import * as internal from "../../_internal/utils/InternalAccess";
 import DisplayObjectContainer from "../../display/DisplayObjectContainer";
 import DisplayObject from "../../display/DisplayObject";
 
@@ -5,7 +6,7 @@ export default class DisplayObjectLinkedList
 {
 	public static __addChild(displayObject: DisplayObjectContainer, child: DisplayObject): void
 	{
-		if (child == displayObject.__lastChild)
+		if (child == (<internal.DisplayObject><any>displayObject).__lastChild)
 		{
 			return;
 		}
@@ -13,38 +14,38 @@ export default class DisplayObjectLinkedList
 		// args:Array<Dynamic> = [child];
 		// __validateChildrenInit(displayObject, "__addChild", args);
 
-		if (displayObject.__firstChild == child)
+		if ((<internal.DisplayObject><any>displayObject).__firstChild == child)
 		{
-			displayObject.__firstChild = child.__nextSibling;
+			(<internal.DisplayObject><any>displayObject).__firstChild = (<internal.DisplayObject><any>child).__nextSibling;
 		}
-		else if (child.__previousSibling != null)
+		else if ((<internal.DisplayObject><any>child).__previousSibling != null)
 		{
-			child.__previousSibling.__nextSibling = child.__nextSibling;
-		}
-
-		if (child.__nextSibling != null)
-		{
-			child.__nextSibling.__previousSibling = child.__previousSibling;
+			(<internal.DisplayObject><any>(<internal.DisplayObject><any>child).__previousSibling).__nextSibling = (<internal.DisplayObject><any>child).__nextSibling;
 		}
 
-		if (displayObject.__firstChild == null)
+		if ((<internal.DisplayObject><any>child).__nextSibling != null)
 		{
-			displayObject.__firstChild = child;
+			(<internal.DisplayObject><any>(<internal.DisplayObject><any>child).__nextSibling).__previousSibling = (<internal.DisplayObject><any>child).__previousSibling;
 		}
 
-		if (displayObject.__lastChild != null)
+		if ((<internal.DisplayObject><any>displayObject).__firstChild == null)
 		{
-			displayObject.__lastChild.__nextSibling = child;
-			child.__previousSibling = displayObject.__lastChild;
+			(<internal.DisplayObject><any>displayObject).__firstChild = child;
 		}
 
-		displayObject.__lastChild = child;
-		child.__nextSibling = null;
+		if ((<internal.DisplayObject><any>displayObject).__lastChild != null)
+		{
+			(<internal.DisplayObject><any>(<internal.DisplayObject><any>displayObject).__lastChild).__nextSibling = child;
+			(<internal.DisplayObject><any>child).__previousSibling = (<internal.DisplayObject><any>displayObject).__lastChild;
+		}
+
+		(<internal.DisplayObject><any>displayObject).__lastChild = child;
+		(<internal.DisplayObject><any>child).__nextSibling = null;
 	}
 
 	public static __insertChildAfter(displayObject: DisplayObjectContainer, child: DisplayObject, before: DisplayObject): void
 	{
-		if (before == child || before.__nextSibling == child)
+		if (before == child || (<internal.DisplayObject><any>before).__nextSibling == child)
 		{
 			return;
 		}
@@ -52,57 +53,57 @@ export default class DisplayObjectLinkedList
 		// args:Array<Dynamic> = [child, before];
 		// __validateChildrenInit(displayObject, "__insertChildAfter", args);
 
-		var after = before.__nextSibling;
+		var after = (<internal.DisplayObject><any>before).__nextSibling;
 
-		if (displayObject.__firstChild == child)
+		if ((<internal.DisplayObject><any>displayObject).__firstChild == child)
 		{
-			displayObject.__firstChild = child.__nextSibling;
+			(<internal.DisplayObject><any>displayObject).__firstChild = (<internal.DisplayObject><any>child).__nextSibling;
 		}
 
-		if (displayObject.__lastChild == child)
+		if ((<internal.DisplayObject><any>displayObject).__lastChild == child)
 		{
-			displayObject.__lastChild = child.__previousSibling;
+			(<internal.DisplayObject><any>displayObject).__lastChild = (<internal.DisplayObject><any>child).__previousSibling;
 		}
 
-		if (child.__previousSibling != null)
+		if ((<internal.DisplayObject><any>child).__previousSibling != null)
 		{
-			child.__previousSibling.__nextSibling = child.__nextSibling;
+			(<internal.DisplayObject><any>(<internal.DisplayObject><any>child).__previousSibling).__nextSibling = (<internal.DisplayObject><any>child).__nextSibling;
 		}
 
-		if (child.__nextSibling != null)
+		if ((<internal.DisplayObject><any>child).__nextSibling != null)
 		{
-			child.__nextSibling.__previousSibling = child.__previousSibling;
+			(<internal.DisplayObject><any>(<internal.DisplayObject><any>child).__nextSibling).__previousSibling = (<internal.DisplayObject><any>child).__previousSibling;
 		}
 
-		child.__previousSibling = before;
-		child.__nextSibling = after;
+		(<internal.DisplayObject><any>child).__previousSibling = before;
+		(<internal.DisplayObject><any>child).__nextSibling = after;
 
 		if (before != null)
 		{
-			before.__nextSibling = child;
+			(<internal.DisplayObject><any>before).__nextSibling = child;
 		}
 
 		if (after != null)
 		{
-			after.__previousSibling = child;
+			(<internal.DisplayObject><any>after).__previousSibling = child;
 		}
 		else
 		{
-			displayObject.__lastChild = child;
+			(<internal.DisplayObject><any>displayObject).__lastChild = child;
 		}
 	}
 
 	public static __insertChildBefore(displayObject: DisplayObjectContainer, child: DisplayObject, after: DisplayObject): void
 	{
-		if (after != null && child != after && after.__previousSibling != child)
+		if (after != null && child != after && (<internal.DisplayObject><any>after).__previousSibling != child)
 		{
-			if (after.__previousSibling != null)
+			if ((<internal.DisplayObject><any>after).__previousSibling != null)
 			{
-				__insertChildAfter(displayObject, child, after.__previousSibling);
+				this.__insertChildAfter(displayObject, child, (<internal.DisplayObject><any>after).__previousSibling);
 			}
 			else
 			{
-				__unshiftChild(displayObject, child);
+				this.__unshiftChild(displayObject, child);
 			}
 		}
 	}
@@ -112,18 +113,18 @@ export default class DisplayObjectLinkedList
 	{
 		if (index == 0)
 		{
-			__unshiftChild(displayObject, child);
+			this.__unshiftChild(displayObject, child);
 		}
 		else
 		{
 			// args:Array<Dynamic> = [child, index];
 			// __validateChildrenInit(displayObject, "__insertChildAt", args);
 
-			var ref = displayObject.__firstChild;
+			var ref = (<internal.DisplayObject><any>displayObject).__firstChild;
 			var childFound = (ref == child);
-			for (i in 0...(index - 1))
+			for (let i = 0; i < (index - 1); i++)
 			{
-				ref = ref.__nextSibling;
+				ref = (<internal.DisplayObject><any>ref).__nextSibling;
 				if (ref == null)
 				{
 					break;
@@ -134,9 +135,9 @@ export default class DisplayObjectLinkedList
 				}
 			}
 
-			if (childFound && ref.__nextSibling != null)
+			if (childFound && (<internal.DisplayObject><any>ref).__nextSibling != null)
 			{
-				ref = ref.__nextSibling;
+				ref = (<internal.DisplayObject><any>ref).__nextSibling;
 			}
 
 			if (ref == child)
@@ -144,7 +145,7 @@ export default class DisplayObjectLinkedList
 				return;
 			}
 
-			__insertChildAfter(displayObject, child, ref);
+			this.__insertChildAfter(displayObject, child, ref);
 		}
 	}
 
@@ -153,34 +154,34 @@ export default class DisplayObjectLinkedList
 		// args:Array<Dynamic> = [child];
 		// __validateChildrenInit(displayObject, "__removeChild", args);
 
-		child.parent = null;
-		displayObject.numChildren--;
+		(<internal.DisplayObject><any>child).__parent = null;
+		(<internal.DisplayObjectContainer><any>displayObject).__numChildren--;
 
-		if (displayObject.__firstChild == child)
+		if ((<internal.DisplayObject><any>displayObject).__firstChild == child)
 		{
-			displayObject.__firstChild = child.__nextSibling;
+			(<internal.DisplayObject><any>displayObject).__firstChild = (<internal.DisplayObject><any>child).__nextSibling;
 		}
 
-		if (displayObject.__lastChild == child)
+		if ((<internal.DisplayObject><any>displayObject).__lastChild == child)
 		{
-			displayObject.__lastChild = child.__previousSibling;
+			(<internal.DisplayObject><any>displayObject).__lastChild = (<internal.DisplayObject><any>child).__previousSibling;
 		}
 
-		if (child.__previousSibling != null)
+		if ((<internal.DisplayObject><any>child).__previousSibling != null)
 		{
-			child.__previousSibling.__nextSibling = child.__nextSibling;
+			(<internal.DisplayObject><any>(<internal.DisplayObject><any>child).__previousSibling).__nextSibling = (<internal.DisplayObject><any>child).__nextSibling;
 		}
 
-		if (child.__nextSibling != null)
+		if ((<internal.DisplayObject><any>child).__nextSibling != null)
 		{
-			child.__nextSibling.__previousSibling = child.__previousSibling;
+			(<internal.DisplayObject><any>(<internal.DisplayObject><any>child).__nextSibling).__previousSibling = (<internal.DisplayObject><any>child).__previousSibling;
 		}
 
-		child.__previousSibling = null;
-		child.__nextSibling = null;
+		(<internal.DisplayObject><any>child).__previousSibling = null;
+		(<internal.DisplayObject><any>child).__nextSibling = null;
 	}
 
-	public static readonly __reparent(displayObject: DisplayObjectContainer, child: DisplayObject): void
+	public static __reparent(displayObject: DisplayObjectContainer, child: DisplayObject): void
 	{
 		if (child.parent != displayObject)
 		{
@@ -188,8 +189,8 @@ export default class DisplayObjectLinkedList
 			{
 				child.parent.removeChild(child);
 			}
-			child.parent = displayObject;
-			displayObject.numChildren++;
+			(<internal.DisplayObject><any>child).__parent = displayObject;
+			(<internal.DisplayObjectContainer><any>displayObject).__numChildren++;
 		}
 	}
 
@@ -198,10 +199,10 @@ export default class DisplayObjectLinkedList
 		// args:Array<Dynamic> = [child1, child2];
 		// __validateChildrenInit(displayObject, "__swapChildren", args);
 
-		if (child1.__nextSibling == child2 || child2.__nextSibling == child1)
+		if ((<internal.DisplayObject><any>child1).__nextSibling == child2 || (<internal.DisplayObject><any>child2).__nextSibling == child1)
 		{
 			var first, second;
-			if (child1.__nextSibling == child2)
+			if ((<internal.DisplayObject><any>child1).__nextSibling == child2)
 			{
 				first = child1;
 				second = child2;
@@ -222,69 +223,69 @@ export default class DisplayObjectLinkedList
 
 			if (before != null)
 			{
-				before.__nextSibling = second;
+				(<internal.DisplayObject><any>before).__nextSibling = second;
 			}
 
 			if (after != null)
 			{
-				after.__previousSibling = first;
+				(<internal.DisplayObject><any>after).__previousSibling = first;
 			}
 		}
 		else
 		{
-			var prev1 = child1.__previousSibling;
-			var next1 = child1.__nextSibling;
-			var prev2 = child2.__previousSibling;
-			var next2 = child2.__nextSibling;
+			var prev1 = (<internal.DisplayObject><any>child1).__previousSibling;
+			var next1 = (<internal.DisplayObject><any>child1).__nextSibling;
+			var prev2 = (<internal.DisplayObject><any>child2).__previousSibling;
+			var next2 = (<internal.DisplayObject><any>child2).__nextSibling;
 
-			child1.__previousSibling = prev2;
-			child1.__nextSibling = next2;
-			child2.__previousSibling = prev1;
-			child2.__nextSibling = next1;
+			(<internal.DisplayObject><any>child1).__previousSibling = prev2;
+			(<internal.DisplayObject><any>child1).__nextSibling = next2;
+			(<internal.DisplayObject><any>child2).__previousSibling = prev1;
+			(<internal.DisplayObject><any>child2).__nextSibling = next1;
 
 			if (prev1 != null)
 			{
-				prev1.__nextSibling = child2;
+				(<internal.DisplayObject><any>prev1).__nextSibling = child2;
 			}
 
 			if (next1 != null)
 			{
-				next1.__previousSibling = child2;
+				(<internal.DisplayObject><any>next1).__previousSibling = child2;
 			}
 
 			if (prev2 != null)
 			{
-				prev2.__nextSibling = child1;
+				(<internal.DisplayObject><any>prev2).__nextSibling = child1;
 			}
 
 			if (next2 != null)
 			{
-				next2.__previousSibling = child1;
+				(<internal.DisplayObject><any>next2).__previousSibling = child1;
 			}
 		}
 
-		if (displayObject.__firstChild == child1)
+		if ((<internal.DisplayObject><any>displayObject).__firstChild == child1)
 		{
-			displayObject.__firstChild = child2;
+			(<internal.DisplayObject><any>displayObject).__firstChild = child2;
 		}
-		else if (displayObject.__firstChild == child2)
+		else if ((<internal.DisplayObject><any>displayObject).__firstChild == child2)
 		{
-			displayObject.__firstChild = child1;
+			(<internal.DisplayObject><any>displayObject).__firstChild = child1;
 		}
 
-		if (displayObject.__lastChild == child1)
+		if ((<internal.DisplayObject><any>displayObject).__lastChild == child1)
 		{
-			displayObject.__lastChild = child2;
+			(<internal.DisplayObject><any>displayObject).__lastChild = child2;
 		}
-		else if (displayObject.__lastChild == child2)
+		else if ((<internal.DisplayObject><any>displayObject).__lastChild == child2)
 		{
-			displayObject.__lastChild = child1;
+			(<internal.DisplayObject><any>displayObject).__lastChild = child1;
 		}
 	}
 
 	public static __unshiftChild(displayObject: DisplayObjectContainer, child: DisplayObject): void
 	{
-		if (displayObject.__firstChild == child)
+		if ((<internal.DisplayObject><any>displayObject).__firstChild == child)
 		{
 			return;
 		}
@@ -292,33 +293,33 @@ export default class DisplayObjectLinkedList
 		// args:Array<Dynamic> = [child];
 		// __validateChildrenInit(displayObject, "__unshiftChild", args);
 
-		if (child.__previousSibling != null)
+		if ((<internal.DisplayObject><any>child).__previousSibling != null)
 		{
-			child.__previousSibling.__nextSibling = child.__nextSibling;
+			(<internal.DisplayObject><any>(<internal.DisplayObject><any>child).__previousSibling).__nextSibling = (<internal.DisplayObject><any>child).__nextSibling;
 		}
 
-		if (child.__nextSibling != null)
+		if ((<internal.DisplayObject><any>child).__nextSibling != null)
 		{
-			child.__nextSibling.__previousSibling = child.__previousSibling;
+			(<internal.DisplayObject><any>(<internal.DisplayObject><any>child).__nextSibling).__previousSibling = (<internal.DisplayObject><any>child).__previousSibling;
 		}
 
-		if (displayObject.__firstChild != null)
+		if ((<internal.DisplayObject><any>displayObject).__firstChild != null)
 		{
-			displayObject.__firstChild.__previousSibling = child;
+			(<internal.DisplayObject><any>(<internal.DisplayObject><any>displayObject).__firstChild).__previousSibling = child;
 		}
 
-		if (child == displayObject.__lastChild)
+		if (child == (<internal.DisplayObject><any>displayObject).__lastChild)
 		{
-			displayObject.__lastChild = child.__previousSibling;
+			(<internal.DisplayObject><any>displayObject).__lastChild = (<internal.DisplayObject><any>child).__previousSibling;
 		}
 
-		child.__previousSibling = null;
-		child.__nextSibling = displayObject.__firstChild;
-		displayObject.__firstChild = child;
+		(<internal.DisplayObject><any>child).__previousSibling = null;
+		(<internal.DisplayObject><any>child).__nextSibling = (<internal.DisplayObject><any>displayObject).__firstChild;
+		(<internal.DisplayObject><any>displayObject).__firstChild = child;
 
-		if (child.__nextSibling == null)
+		if ((<internal.DisplayObject><any>child).__nextSibling == null)
 		{
-			displayObject.__lastChild = child;
+			(<internal.DisplayObject><any>displayObject).__lastChild = child;
 		}
 	}
 }

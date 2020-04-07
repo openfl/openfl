@@ -1,6 +1,7 @@
 import MovieClip from "../display/MovieClip";
 import AssetManifest from "../utils/AssetManifest";
 import ByteArray from "../utils/ByteArray";
+import AssetBundle from "../utils/AssetBundle";
 import Future from "../utils/Future";
 
 export default class AssetLibrary

@@ -1,3 +1,4 @@
+import * as internal from "../../_internal/utils/InternalAccess";
 import Rectangle from "../../geom/Rectangle";
 import AntiAliasType from "../../text/AntiAliasType";
 import Font from "../../text/Font";
@@ -8,6 +9,8 @@ import TextFieldType from "../../text/TextFieldType";
 import TextFormat from "../../text/TextFormat";
 import TextFormatAlign from "../../text/TextFormatAlign";
 import Vector from "../../Vector";
+import TextFormatRange from "./TextFormatRange";
+import TextLayoutGroup from "./TextLayoutGroup";
 
 export default class TextEngine
 {
@@ -25,7 +28,7 @@ export default class TextEngine
 	public backgroundColor: number;
 	public border: boolean;
 	public borderColor: number;
-	public bottomScrollV(default , null): number;
+
 	public bounds: Rectangle;
 	public caretIndex: number;
 	public embedFonts: boolean;
@@ -39,16 +42,10 @@ export default class TextEngine
 	public lineHeights: Vector<number>;
 	public lineWidths: Vector<number>;
 	public maxChars: number;
-	public maxScrollH(default , null): number;
-	public maxScrollV(default , null): number;
 	public multiline: boolean;
-	public numLines(default , null): number;
-	public restrict(default , set): string;
 	public scrollH: number;
-	@: isVar public scrollV(get, set): number;
 	public selectable: boolean;
 	public sharpness: number;
-	public text(default , set): string;
 	public textBounds: Rectangle;
 	public textHeight: number;
 	public textFormatRanges: Vector<TextFormatRange>;
@@ -58,20 +55,28 @@ export default class TextEngine
 	public wordWrap: boolean;
 
 	private textField: TextField;
-	protected __cursorTimer: Timer;
+
+	protected __bottomScrollV: number;
+	protected __cursorTimerID: number;
 	protected __hasFocus: boolean;
 	protected __isKeyDown: boolean;
+	protected __maxScrollH: number;
+	protected __maxScrollV: number;
 	protected __measuredHeight: number;
 	protected __measuredWidth: number;
-	protected __restrictRegexp: EReg;
+	protected __numLines: number;
+	protected __restrict: string;
+	protected __restrictRegexp: RegExp;
 	protected __selectionStart: number;
+	protected __scrollV: number;
 	protected __showCursor: boolean;
+	protected __text: string;
 	protected __textFormat: TextFormat;
 	protected __texture: WebGLTexture;
 	// protected __tileData:Map<Tilesheet, Array<number>>;
 	// protected __tileDataLength:Map<Tilesheet, Int>;
 	// protected __tilesheets:Map<Tilesheet, Bool>;
-	private __useIntAdvances: null | boolean;
+	public __useIntAdvances: null | boolean;
 
 	public __cairoFont: any;
 	/** @hidden */ public __font: Font;
@@ -80,74 +85,78 @@ export default class TextEngine
 	{
 		this.textField = textField;
 
-		width = 100;
-		height = 100;
-		text = "";
+		this.width = 100;
+		this.height = 100;
+		this.text = "";
 
-		bounds = new Rectangle(0, 0, 0, 0);
-		textBounds = new Rectangle(0, 0, 0, 0);
+		this.bounds = new Rectangle(0, 0, 0, 0);
+		this.textBounds = new Rectangle(0, 0, 0, 0);
 
-		type = TextFieldType.DYNAMIC;
-		autoSize = TextFieldAutoSize.NONE;
-		embedFonts = false;
-		selectable = true;
-		borderColor = 0x000000;
-		border = false;
-		backgroundColor = 0xffffff;
-		background = false;
-		gridFitType = GridFitType.PIXEL;
-		maxChars = 0;
-		multiline = false;
-		numLines = 1;
-		sharpness = 0;
-		scrollH = 0;
-		scrollV = 1;
-		wordWrap = false;
+		this.type = TextFieldType.DYNAMIC;
+		this.autoSize = TextFieldAutoSize.NONE;
+		this.embedFonts = false;
+		this.selectable = true;
+		this.borderColor = 0x000000;
+		this.border = false;
+		this.backgroundColor = 0xffffff;
+		this.background = false;
+		this.gridFitType = GridFitType.PIXEL;
+		this.maxChars = 0;
+		this.multiline = false;
+		this.__numLines = 1;
+		this.sharpness = 0;
+		this.scrollH = 0;
+		this.scrollV = 1;
+		this.wordWrap = false;
 
-		lineAscents = new Vector();
-		lineBreaks = new Vector();
-		lineDescents = new Vector();
-		lineLeadings = new Vector();
-		lineHeights = new Vector();
-		lineWidths = new Vector();
-		layoutGroups = new Vector();
-		textFormatRanges = new Vector();
+		this.lineAscents = new Vector();
+		this.lineBreaks = new Vector();
+		this.lineDescents = new Vector();
+		this.lineLeadings = new Vector();
+		this.lineHeights = new Vector();
+		this.lineWidths = new Vector();
+		this.layoutGroups = new Vector();
+		this.textFormatRanges = new Vector();
 
-		if (__context == null)
+		if (TextEngine.__context == null)
 		{
-			__context = (cast Browser.document.createElement("canvas") : CanvasElement).getContext("2d");
+			TextEngine.__context = document.createElement("canvas").getContext("2d");
 		}
 	}
 
-	private createRestrictRegexp(restrict: string): EReg
+	private createRestrictRegexp(restrict: string): RegExp
 	{
-		var declinedRange = ~/\^(.-.|.)/gu;
+		var declinedRange = /\^(.-.|.)/gu;
 		var declined = "";
 
-		var accepted = declinedRange.map(restrict, function (ereg)
+		var result = declinedRange.exec(restrict);
+		if (result != null)
 		{
-			declined += ereg.matched(1);
-			return "";
-		});
+			restrict = restrict.replace(declinedRange, "");
+			for (let i = 0; i < result.length; i++)
+			{
+				declined += result[i];
+			}
+		}
 
 		var testRegexpParts: Array<string> = [];
 
-		if (accepted.length > 0)
+		if (restrict.length > 0)
 		{
-			testRegexpParts.push('[^$restrict]');
+			testRegexpParts.push(`[^${restrict}]`);
 		}
 
 		if (declined.length > 0)
 		{
-			testRegexpParts.push('[$declined]');
+			testRegexpParts.push(`[${declined}]`);
 		}
 
-		return new EReg('(${testRegexpParts.join(' | ')})', "g");
+		return new RegExp(`(${testRegexpParts.join(' | ')})`, "g");
 	}
 
 	private static findFont(name: string): Font
 	{
-		return Font.__fontByName.get(name);
+		return (<internal.Font><any>Font).__fontByName.get(name);
 	}
 
 	private static findFontVariant(format: TextFormat): Font
@@ -157,60 +166,60 @@ export default class TextEngine
 		var italic = format.italic;
 
 		if (fontName == null) fontName = "_serif";
-		var fontNamePrefix = StringTools.replace(StringTools.replace(fontName, " Normal", ""), " Regular", "");
+		var fontNamePrefix = fontName.replace(" Normal", "").replace(" Regular", "");
 
-		if (bold && italic && Font.__fontByName.exists(fontNamePrefix + " Bold Italic"))
+		if (bold && italic && (<internal.Font><any>Font).__fontByName.has(fontNamePrefix + " Bold Italic"))
 		{
-			return findFont(fontNamePrefix + " Bold Italic");
+			return this.findFont(fontNamePrefix + " Bold Italic");
 		}
-		else if (bold && Font.__fontByName.exists(fontNamePrefix + " Bold"))
+		else if (bold && (<internal.Font><any>Font).__fontByName.has(fontNamePrefix + " Bold"))
 		{
-			return findFont(fontNamePrefix + " Bold");
+			return this.findFont(fontNamePrefix + " Bold");
 		}
-		else if (italic && Font.__fontByName.exists(fontNamePrefix + " Italic"))
+		else if (italic && (<internal.Font><any>Font).__fontByName.has(fontNamePrefix + " Italic"))
 		{
-			return findFont(fontNamePrefix + " Italic");
+			return this.findFont(fontNamePrefix + " Italic");
 		}
 
-		return findFont(fontName);
+		return this.findFont(fontName);
 	}
 
-	private getBounds(): void
+	public getBounds(): void
 	{
-		var padding = border ? 1 : 0;
+		var padding = this.border ? 1 : 0;
 
-		bounds.width = width + padding;
-		bounds.height = height + padding;
+		this.bounds.width = this.width + padding;
+		this.bounds.height = this.height + padding;
 
-		var x = width, y = width;
+		var x = this.width, y = this.width;
 
-		for (group in layoutGroups)
+		for (let group of this.layoutGroups)
 		{
 			if (group.offsetX < x) x = group.offsetX;
 			if (group.offsetY < y) y = group.offsetY;
 		}
 
-		if (x >= width) x = GUTTER;
-		if (y >= height) y = GUTTER;
+		if (x >= this.width) x = TextEngine.GUTTER;
+		if (y >= this.height) y = TextEngine.GUTTER;
 
 		var textHeight = textHeight * 1.185; // measurement isn't always accurate, add padding
 
-		textBounds.setTo(Math.max(x - GUTTER, 0), Math.max(y - GUTTER, 0), Math.min(textWidth + GUTTER * 2, bounds.width + GUTTER * 2),
-			Math.min(textHeight + GUTTER * 2, bounds.height + GUTTER * 2));
+		this.textBounds.setTo(Math.max(x - TextEngine.GUTTER, 0), Math.max(y - TextEngine.GUTTER, 0), Math.min(this.textWidth + TextEngine.GUTTER * 2, this.bounds.width + TextEngine.GUTTER * 2),
+			Math.min(textHeight + TextEngine.GUTTER * 2, this.bounds.height + TextEngine.GUTTER * 2));
 	}
 
 	public static getFormatHeight(format: TextFormat): number
 	{
 		var ascent: number, descent: number, leading: number;
 
-		__context.font = getFont(format);
+		this.__context.font = this.getFont(format);
 
-		var font = getFontInstance(format);
+		var font = this.getFontInstance(format);
 
-		if (format.__ascent != null)
+		if ((<internal.TextFormat><any>format).__ascent != null)
 		{
-			ascent = format.size * format.__ascent;
-			descent = format.size * format.__descent;
+			ascent = format.size * (<internal.TextFormat><any>format).__ascent;
+			descent = format.size * (<internal.TextFormat><any>format).__descent;
 		}
 		else if (font != null && font.unitsPerEM != 0)
 		{
@@ -235,20 +244,20 @@ export default class TextEngine
 		var italic = format.italic;
 
 		if (fontName == null) fontName = "_serif";
-		var fontNamePrefix = StringTools.replace(StringTools.replace(fontName, " Normal", ""), " Regular", "");
+		var fontNamePrefix = fontName.replace(" Normal", "").replace(" Regular", "");
 
-		if (bold && italic && Font.__fontByName.exists(fontNamePrefix + " Bold Italic"))
+		if (bold && italic && (<internal.Font><any>Font).__fontByName.has(fontNamePrefix + " Bold Italic"))
 		{
 			fontName = fontNamePrefix + " Bold Italic";
 			bold = false;
 			italic = false;
 		}
-		else if (bold && Font.__fontByName.exists(fontNamePrefix + " Bold"))
+		else if (bold && (<internal.Font><any>Font).__fontByName.has(fontNamePrefix + " Bold"))
 		{
 			fontName = fontNamePrefix + " Bold";
 			bold = false;
 		}
-		else if (italic && Font.__fontByName.exists(fontNamePrefix + " Italic"))
+		else if (italic && (<internal.Font><any>Font).__fontByName.has(fontNamePrefix + " Italic"))
 		{
 			fontName = fontNamePrefix + " Italic";
 			italic = false;
@@ -257,12 +266,12 @@ export default class TextEngine
 		{
 			// Prevent "extra" bold and italic fonts
 
-			if (bold && (fontName.indexOf(" Bold ") > -1 || StringTools.endsWith(fontName, " Bold")))
+			if (bold && (fontName.indexOf(" Bold ") > -1 || fontName.endsWith(" Bold")))
 			{
 				bold = false;
 			}
 
-			if (italic && (fontName.indexOf(" Italic ") > -1 || StringTools.endsWith(fontName, " Italic")))
+			if (italic && (fontName.indexOf(" Italic ") > -1 || fontName.endsWith(" Italic")))
 			{
 				italic = false;
 			}
@@ -274,12 +283,20 @@ export default class TextEngine
 		font += format.size + "px";
 		font += "/" + (format.leading + format.size + 3) + "px ";
 
-		font += "" + switch (fontName)
+		switch (fontName)
 		{
-			case "_sans": "sans-serif";
-			case "_serif": "serif";
-			case "_typewriter": "monospace";
-			default: "'" + ~/^[\s'"]+(.*)[\s'"]+$/.replace(fontName, '$1') + "'";
+			case "_sans":
+				font += "sans-serif";
+				break;
+			case "_serif":
+				font += "serif";
+				break;
+			case "_typewriter":
+				font += "monospace";
+				break;
+			default:
+				font += "'" + fontName.replace(/^[\s'"]+(.*)[\s'"]+$/, '$1') + "'";
+				break;
 		}
 
 		return font;
@@ -287,30 +304,30 @@ export default class TextEngine
 
 	public static getFontInstance(format: TextFormat): Font
 	{
-		return findFontVariant(format);
+		return this.findFontVariant(format);
 	}
 
 	public getLine(index: number): string
 	{
-		if (index < 0 || index > lineBreaks.length + 1)
+		if (index < 0 || index > this.lineBreaks.length + 1)
 		{
 			return null;
 		}
 
-		if (lineBreaks.length == 0)
+		if (this.lineBreaks.length == 0)
 		{
-			return text;
+			return this.text;
 		}
 		else
 		{
-			return text.substring(index > 0 ? lineBreaks[index - 1] : 0, lineBreaks[index]);
+			return this.text.substring(index > 0 ? this.lineBreaks[index - 1] : 0, this.lineBreaks[index]);
 		}
 	}
 
 	public getLineBreakIndex(startIndex: number = 0): number
 	{
-		var cr = text.indexOf("\n", startIndex);
-		var lf = text.indexOf("\r", startIndex);
+		var cr = this.text.indexOf("\n", startIndex);
+		var lf = this.text.indexOf("\r", startIndex);
 
 		if (cr == -1) return lf;
 		if (lf == -1) return cr;
@@ -319,11 +336,11 @@ export default class TextEngine
 
 	private getLineMeasurements(): void
 	{
-		lineAscents.length = 0;
-		lineDescents.length = 0;
-		lineLeadings.length = 0;
-		lineHeights.length = 0;
-		lineWidths.length = 0;
+		this.lineAscents.length = 0;
+		this.lineDescents.length = 0;
+		this.lineLeadings.length = 0;
+		this.lineHeights.length = 0;
+		this.lineWidths.length = 0;
 
 		var currentLineAscent = 0.0;
 		var currentLineDescent = 0.0;
@@ -332,20 +349,20 @@ export default class TextEngine
 		var currentLineWidth = 0.0;
 		var currentTextHeight = 0.0;
 
-		textWidth = 0;
-		textHeight = 0;
-		numLines = 1;
-		maxScrollH = 0;
+		this.textWidth = 0;
+		this.textHeight = 0;
+		this.__numLines = 1;
+		this.__maxScrollH = 0;
 
-		for (group in layoutGroups)
+		for (let group of this.layoutGroups)
 		{
-			while (group.lineIndex > numLines - 1)
+			while (group.lineIndex > this.numLines - 1)
 			{
-				lineAscents.push(currentLineAscent);
-				lineDescents.push(currentLineDescent);
-				lineLeadings.push(currentLineLeading != null ? currentLineLeading : 0);
-				lineHeights.push(currentLineHeight);
-				lineWidths.push(currentLineWidth);
+				this.lineAscents.push(currentLineAscent);
+				this.lineDescents.push(currentLineDescent);
+				this.lineLeadings.push(currentLineLeading != null ? currentLineLeading : 0);
+				this.lineHeights.push(currentLineHeight);
+				this.lineWidths.push(currentLineWidth);
 
 				currentLineAscent = 0;
 				currentLineDescent = 0;
@@ -353,7 +370,7 @@ export default class TextEngine
 				currentLineHeight = 0;
 				currentLineWidth = 0;
 
-				numLines++;
+				this.__numLines++;
 			}
 
 			currentLineAscent = Math.max(currentLineAscent, group.ascent);
@@ -365,38 +382,38 @@ export default class TextEngine
 			}
 			else
 			{
-				currentLineLeading = Std.int(Math.max(currentLineLeading, group.leading));
+				currentLineLeading = Math.max(currentLineLeading, group.leading);
 			}
 
 			currentLineHeight = Math.max(currentLineHeight, group.height);
-			currentLineWidth = Math.max(currentLineWidth, group.offsetX - GUTTER + group.width);
+			currentLineWidth = Math.max(currentLineWidth, group.offsetX - TextEngine.GUTTER + group.width);
 
 			// TODO: confirm whether textWidth ignores margins, indents, etc or not
 			// currently they are not ignored, and setTextAlignment() happens to work due to this (gut feeling is that it does ignore them)
-			if (currentLineWidth > textWidth)
+			if (currentLineWidth > this.textWidth)
 			{
-				textWidth = currentLineWidth;
+				this.textWidth = currentLineWidth;
 			}
 
-			currentTextHeight = group.offsetY - GUTTER + group.ascent + group.descent;
+			currentTextHeight = group.offsetY - TextEngine.GUTTER + group.ascent + group.descent;
 
-			if (currentTextHeight > textHeight)
+			if (currentTextHeight > this.textHeight)
 			{
-				textHeight = currentTextHeight;
+				this.textHeight = currentTextHeight;
 			}
 		}
 
-		if (textHeight == 0 && textField != null && textField.type == INPUT)
+		if (this.textHeight == 0 && this.textField != null && this.textField.type == TextFieldType.INPUT)
 		{
-			var currentFormat = textField.__textFormat;
+			var currentFormat = (<internal.TextField><any>this.textField).__textFormat;
 			var ascent, descent, leading, heightValue;
 
-			var font = getFontInstance(currentFormat);
+			var font = TextEngine.getFontInstance(currentFormat);
 
-			if (currentFormat.__ascent != null)
+			if ((<internal.TextFormat><any>currentFormat).__ascent != null)
 			{
-				ascent = currentFormat.size * currentFormat.__ascent;
-				descent = currentFormat.size * currentFormat.__descent;
+				ascent = currentFormat.size * (<internal.TextFormat><any>currentFormat).__ascent;
+				descent = currentFormat.size * (<internal.TextFormat><any>currentFormat).__descent;
 			}
 			else if (font != null && font.unitsPerEM != 0)
 			{
@@ -419,106 +436,109 @@ export default class TextEngine
 
 			// TODO : numbereger line heights/text heights
 			currentTextHeight = ascent + descent;
-			textHeight = currentTextHeight;
+			this.textHeight = currentTextHeight;
 		}
 
-		lineAscents.push(currentLineAscent);
-		lineDescents.push(currentLineDescent);
-		lineLeadings.push(currentLineLeading != null ? currentLineLeading : 0);
-		lineHeights.push(currentLineHeight);
-		lineWidths.push(currentLineWidth);
+		this.lineAscents.push(currentLineAscent);
+		this.lineDescents.push(currentLineDescent);
+		this.lineLeadings.push(currentLineLeading != null ? currentLineLeading : 0);
+		this.lineHeights.push(currentLineHeight);
+		this.lineWidths.push(currentLineWidth);
 
-		if (numLines == 1)
+		if (this.numLines == 1)
 		{
 			if (currentLineLeading > 0)
 			{
-				textHeight += currentLineLeading;
+				this.textHeight += currentLineLeading;
 			}
 		}
 
-		if (layoutGroups.length > 0)
+		if (this.layoutGroups.length > 0)
 		{
-			var group = layoutGroups[layoutGroups.length - 1];
+			var group = this.layoutGroups[this.layoutGroups.length - 1];
 
 			if (group != null && group.startIndex == group.endIndex)
 			{
-				textHeight -= currentLineHeight;
+				this.textHeight -= currentLineHeight;
 			}
 		}
 
-		if (autoSize != NONE)
+		if (this.autoSize != TextFieldAutoSize.NONE)
 		{
-			switch (autoSize)
+			switch (this.autoSize)
 			{
-				case LEFT, RIGHT, CENTER:
-					if (!wordWrap /*&& (width < textWidth + GUTTER * 2)*/)
+				case TextFieldAutoSize.LEFT:
+				case TextFieldAutoSize.RIGHT:
+				case TextFieldAutoSize.CENTER:
+					if (!this.wordWrap /*&& (width < textWidth + GUTTER * 2)*/)
 					{
-						width = textWidth + GUTTER * 2;
+						this.width = this.textWidth + TextEngine.GUTTER * 2;
 					}
 
-					height = textHeight + GUTTER * 2;
-				// bottomScrollV = numLines;
+					this.height = this.textHeight + TextEngine.GUTTER * 2;
+					// bottomScrollV = numLines;
+					break;
 
 				default:
 			}
 		}
 
 		// TODO: see if margins and stuff affect this
-		if (textWidth > width - GUTTER * 2)
+		if (this.textWidth > this.width - TextEngine.GUTTER * 2)
 		{
-			maxScrollH = Std.int(textWidth - width + GUTTER * 2);
+			this.__maxScrollH = Math.floor(this.textWidth - this.width + TextEngine.GUTTER * 2);
 		}
 		else
 		{
-			maxScrollH = 0;
+			this.__maxScrollH = 0;
 		}
 
-		if (scrollH > maxScrollH) scrollH = maxScrollH;
+		if (this.scrollH > this.maxScrollH) this.scrollH = this.maxScrollH;
 
-		updateScrollV();
+		this.updateScrollV();
 	}
 
 	private getLayoutGroups(): void
 	{
-		layoutGroups.length = 0;
+		this.layoutGroups.length = 0;
 
-		if (text == null || text == "") return;
+		if (this.text == null || this.text == "") return;
 
-		var rangeIndex = -1;
-		var formatRange: TextFormatRange = null;
-		var font = null;
+		let rangeIndex = -1;
+		let formatRange: TextFormatRange = null;
+		let font = null;
 
-		var currentFormat = TextField.__defaultTextFormat.clone();
+		let currentFormat = (<internal.TextField><any>TextField).__defaultTextFormat.clone();
 
 		// line metrics
-		var leading = 0; // TODO: is maxLeading needed, just like with ascent? In case multiple formats in the same line have different leading values
-		var ascent = 0.0, maxAscent = 0.0;
-		var descent = 0.0;
+		let leading = 0; // TODO: is maxLeading needed, just like with ascent? In case multiple formats in the same line have different leading values
+		let ascent = 0.0, maxAscent = 0.0;
+		let descent = 0.0;
 
 		// paragraph metrics
-		var align: TextFormatAlign = LEFT;
-		var blockIndent = 0;
-		var bullet = false;
-		var indent = 0;
-		var leftMargin = 0;
-		var rightMargin = 0;
-		var firstLineOfParagraph = true;
+		let align = TextFormatAlign.LEFT;
+		let blockIndent = 0;
+		let bullet = false;
+		let indent = 0;
+		let leftMargin = 0;
+		let rightMargin = 0;
+		let firstLineOfParagraph = true;
 
-		var tabStops = null; // TODO: maybe there's a better init value (not sure what this actually is)
+		let tabStops = null; // TODO: maybe there's a better init value (not sure what this actually is)
 
-		var layoutGroup: TextLayoutGroup = null, positions = null;
-		var widthValue = 0.0, heightValue = 0, maxHeightValue = 0;
-		var previousSpaceIndex = -2; // -1 equals not found, -2 saves extra comparison in `breakIndex == previousSpaceIndex`
-		var previousBreakIndex = -1;
-		var spaceIndex = text.indexOf(" ");
-		var breakIndex = getLineBreakIndex();
+		let layoutGroup: TextLayoutGroup = null, positions = null;
+		let widthValue = 0.0, heightValue = 0, maxHeightValue = 0;
+		let previousSpaceIndex = -2; // -1 equals not found, -2 saves extra comparison in `breakIndex == previousSpaceIndex`
+		let previousBreakIndex = -1;
+		let spaceIndex = this.text.indexOf(" ");
+		let breakIndex = this.getLineBreakIndex();
 
-		var offsetX = 0.0;
-		var offsetY = 0.0;
-		var textIndex = 0;
-		var lineIndex = 0;
+		let offsetX = 0.0;
+		let offsetY = 0.0;
+		let textIndex = 0;
+		let lineIndex = 0;
 
-		let getPositions = (text: string, startIndex: number, endIndex: number): Array<number> =>
+		var getPositions = (text: string, startIndex: number, endIndex: number): Array<number> =>
 		{
 			// TODO: optimize
 
@@ -530,21 +550,21 @@ export default class TextEngine
 				letterSpacing = formatRange.format.letterSpacing;
 			}
 
-			if (__useIntAdvances == null)
+			if (this.__useIntAdvances == null)
 			{
-				__useIntAdvances = ~/Trident\/7.0/.match(Browser.navigator.userAgent); // IE
+				this.__useIntAdvances = /Trident\/7.0/.test(navigator.userAgent); // IE
 			}
 
-			if (__useIntAdvances)
+			if (this.__useIntAdvances)
 			{
 				// slower, but more accurate if browser returns Int measurements
 
 				var previousWidth = 0.0;
 				var width;
 
-				for (i in startIndex...endIndex)
+				for (let i = startIndex; i < endIndex; i++)
 				{
-					width = __context.measureText(text.substring(startIndex, i + 1)).width;
+					width = TextEngine.__context.measureText(text.substring(startIndex, i + 1)).width;
 					// if (i > 0) width += letterSpacing;
 
 					positions.push(width - previousWidth);
@@ -554,20 +574,20 @@ export default class TextEngine
 			}
 			else
 			{
-				for (i in startIndex...endIndex)
+				for (let i = startIndex; i < endIndex; i++)
 				{
 					var advance;
 
-					if (i < text.length - 1)
+					if (i < this.text.length - 1)
 					{
 						// Advance can be less for certain letter combinations, e.g. 'Yo' vs. 'Do'
-						var nextWidth = __context.measureText(text.charAt(i + 1)).width;
-						var twoWidths = __context.measureText(text.substr(i, 2)).width;
+						var nextWidth = TextEngine.__context.measureText(text.charAt(i + 1)).width;
+						var twoWidths = TextEngine.__context.measureText(text.substr(i, 2)).width;
 						advance = twoWidths - nextWidth;
 					}
 					else
 					{
-						advance = __context.measureText(text.charAt(i)).width;
+						advance = TextEngine.__context.measureText(text.charAt(i)).width;
 					}
 
 					// if (i > 0) advance += letterSpacing;
@@ -579,11 +599,11 @@ export default class TextEngine
 			return positions;
 		}
 
-		let getPositionsWidth = (positions: Array<number>): number =>
+		var getPositionsWidth = (positions: Array<number>): number =>
 		{
 			var width = 0.0;
 
-			for (position in positions)
+			for (let position of positions)
 			{
 				width += position;
 			}
@@ -591,29 +611,29 @@ export default class TextEngine
 			return width;
 		}
 
-		let getTextWidth = (text: string): number =>
+		var getTextWidth = (text: string): number =>
 		{
-			return __context.measureText(text).width;
+			return TextEngine.__context.measureText(text).width;
 		}
 
-		let getBaseX = (): number =>
-		{
-			// TODO: swap margins in RTL
-			return GUTTER + leftMargin + blockIndent + (firstLineOfParagraph ? indent : 0);
-		}
-
-		let getWrapWidth = (): number =>
+		var getBaseX = (): number =>
 		{
 			// TODO: swap margins in RTL
-			return width - GUTTER - rightMargin - getBaseX();
+			return TextEngine.GUTTER + leftMargin + blockIndent + (firstLineOfParagraph ? indent : 0);
 		}
 
-		let nextLayoutGroup = (startIndex, endIndex): void =>
+		var getWrapWidth = (): number =>
+		{
+			// TODO: swap margins in RTL
+			return this.width - TextEngine.GUTTER - rightMargin - getBaseX();
+		}
+
+		var nextLayoutGroup = (startIndex, endIndex): void =>
 		{
 			if (layoutGroup == null || layoutGroup.startIndex != layoutGroup.endIndex)
 			{
 				layoutGroup = new TextLayoutGroup(formatRange.format, startIndex, endIndex);
-				layoutGroups.push(layoutGroup);
+				this.layoutGroups.push(layoutGroup);
 			}
 			else
 			{
@@ -623,12 +643,12 @@ export default class TextEngine
 			}
 		}
 
-		let setLineMetrics = (): void =>
+		var setLineMetrics = (): void =>
 		{
-			if (currentFormat.__ascent != null)
+			if ((<internal.TextFormat><any>currentFormat).__ascent != null)
 			{
-				ascent = currentFormat.size * currentFormat.__ascent;
-				descent = currentFormat.size * currentFormat.__descent;
+				ascent = currentFormat.size * (<internal.TextFormat><any>currentFormat).__ascent;
+				descent = currentFormat.size * (<internal.TextFormat><any>currentFormat).__descent;
 			}
 			else if (font != null && font.unitsPerEM != 0)
 			{
@@ -656,11 +676,11 @@ export default class TextEngine
 			}
 		}
 
-		let setParagraphMetrics = (): void =>
+		var setParagraphMetrics = (): void =>
 		{
 			firstLineOfParagraph = true;
 
-			align = currentFormat.align != null ? currentFormat.align : LEFT;
+			align = currentFormat.align != null ? currentFormat.align : TextFormatAlign.LEFT;
 			blockIndent = currentFormat.blockIndent != null ? currentFormat.blockIndent : 0;
 
 			if (currentFormat.bullet != null)
@@ -678,17 +698,17 @@ export default class TextEngine
 			}
 		}
 
-		let nextFormatRange = (): boolean =>
+		var nextFormatRange = (): boolean =>
 		{
-			if (rangeIndex < textFormatRanges.length - 1)
+			if (rangeIndex < this.textFormatRanges.length - 1)
 			{
 				rangeIndex++;
-				formatRange = textFormatRanges[rangeIndex];
-				currentFormat.__merge(formatRange.format);
+				formatRange = this.textFormatRanges[rangeIndex];
+				(<internal.TextFormat><any>currentFormat).__merge(formatRange.format);
 
-				__context.font = getFont(currentFormat);
+				TextEngine.__context.font = TextEngine.getFont(currentFormat);
 
-				font = getFontInstance(currentFormat);
+				font = TextEngine.getFontInstance(currentFormat);
 
 				return true;
 			}
@@ -696,7 +716,7 @@ export default class TextEngine
 			return false;
 		}
 
-		let setFormattedPositions = (startIndex: number, endIndex: number) =>
+		var setFormattedPositions = (startIndex: number, endIndex: number) =>
 		{
 			// sets the positions of the text from start to end, including format changes if there are any
 			if (startIndex >= endIndex)
@@ -706,7 +726,7 @@ export default class TextEngine
 			}
 			else if (endIndex <= formatRange.end)
 			{
-				positions = getPositions(text, startIndex, endIndex);
+				positions = getPositions(this.text, startIndex, endIndex);
 				widthValue = getPositionsWidth(positions);
 			}
 			else
@@ -722,7 +742,7 @@ export default class TextEngine
 				{
 					if (tempIndex != tempRangeEnd)
 					{
-						var tempPositions = getPositions(text, tempIndex, tempRangeEnd);
+						var tempPositions = getPositions(this.text, tempIndex, tempRangeEnd);
 						positions = positions.concat(tempPositions);
 					}
 
@@ -730,7 +750,7 @@ export default class TextEngine
 					{
 						if (!nextFormatRange())
 						{
-							Log.warn("You found a bug in OpenFL's text code! Please save a copy of your project and contact Joshua Granick (@singmajesty) so we can fix this.");
+							console.warn("You found a bug in OpenFL's text code! Please save a copy of your project and contact Joshua Granick (@singmajesty) so we can fix this.");
 							break;
 						}
 
@@ -751,13 +771,13 @@ export default class TextEngine
 			}
 		}
 
-		let placeFormattedText = (endIndex: number): void =>
+		var placeFormattedText = (endIndex: number): void =>
 		{
 			if (endIndex <= formatRange.end)
 			{
 				// don't worry about placing multiple formats if a space or break happens first
 
-				positions = getPositions(text, textIndex, endIndex);
+				positions = getPositions(this.text, textIndex, endIndex);
 				widthValue = getPositionsWidth(positions);
 
 				nextLayoutGroup(textIndex, endIndex);
@@ -768,7 +788,7 @@ export default class TextEngine
 				layoutGroup.descent = descent;
 				layoutGroup.leading = leading;
 				layoutGroup.lineIndex = lineIndex;
-				layoutGroup.offsetY = offsetY + GUTTER;
+				layoutGroup.offsetY = offsetY + TextEngine.GUTTER;
 				layoutGroup.width = widthValue;
 				layoutGroup.height = heightValue;
 
@@ -791,7 +811,7 @@ export default class TextEngine
 
 					if (textIndex != tempRangeEnd)
 					{
-						positions = getPositions(text, textIndex, tempRangeEnd);
+						positions = getPositions(this.text, textIndex, tempRangeEnd);
 						widthValue = getPositionsWidth(positions);
 
 						nextLayoutGroup(textIndex, tempRangeEnd);
@@ -802,7 +822,7 @@ export default class TextEngine
 						layoutGroup.descent = descent;
 						layoutGroup.leading = leading;
 						layoutGroup.lineIndex = lineIndex;
-						layoutGroup.offsetY = offsetY + GUTTER;
+						layoutGroup.offsetY = offsetY + TextEngine.GUTTER;
 						layoutGroup.width = widthValue;
 						layoutGroup.height = heightValue;
 
@@ -817,7 +837,7 @@ export default class TextEngine
 
 					if (!nextFormatRange())
 					{
-						Log.warn("You found a bug in OpenFL's text code! Please save a copy of your project and contact Joshua Granick (@singmajesty) so we can fix this.");
+						console.warn("You found a bug in OpenFL's text code! Please save a copy of your project and contact Joshua Granick (@singmajesty) so we can fix this.");
 						break;
 					}
 
@@ -828,17 +848,17 @@ export default class TextEngine
 			textIndex = endIndex;
 		}
 
-		let alignBaseline = (): void =>
+		var alignBaseline = (): void =>
 		{
 			// aligns the baselines of all characters in a single line
 
 			setLineMetrics();
 
-			var i = layoutGroups.length;
+			var i = this.layoutGroups.length;
 
 			while (--i > -1)
 			{
-				var lg = layoutGroups[i];
+				var lg = this.layoutGroups[i];
 
 				if (lg.lineIndex < lineIndex) break;
 				if (lg.lineIndex > lineIndex) continue;
@@ -858,7 +878,7 @@ export default class TextEngine
 			firstLineOfParagraph = false; // TODO: need to thoroughly test this
 		}
 
-		let breakLongWords = (endIndex: number): void =>
+		var breakLongWords = (endIndex: number): void =>
 		{
 			// breaks up words that are too long to fit in a single line
 
@@ -936,9 +956,9 @@ export default class TextEngine
 			// positions only contains the final unbroken line at the end
 		}
 
-		let placeText = (endIndex: number): void =>
+		var placeText = (endIndex: number): void =>
 		{
-			if (width >= GUTTER * 2 && wordWrap)
+			if (this.width >= TextEngine.GUTTER * 2 && this.wordWrap)
 			{
 				breakLongWords(endIndex);
 			}
@@ -951,7 +971,7 @@ export default class TextEngine
 		setLineMetrics();
 
 		var wrap;
-		var maxLoops = text.length + 1;
+		var maxLoops = this.text.length + 1;
 		// Do an extra iteration to ensure a LayoutGroup is created in case the last line is empty (trailing line break).
 
 		while (textIndex < maxLoops)
@@ -990,7 +1010,7 @@ export default class TextEngine
 
 				textIndex = breakIndex + 1;
 				previousBreakIndex = breakIndex;
-				breakIndex = getLineBreakIndex(textIndex);
+				breakIndex = this.getLineBreakIndex(textIndex);
 
 				setParagraphMetrics();
 			}
@@ -1007,7 +1027,7 @@ export default class TextEngine
 
 				while (true)
 				{
-					if (textIndex >= text.length) break;
+					if (textIndex >= this.text.length) break;
 
 					var endIndex = -1;
 
@@ -1027,12 +1047,12 @@ export default class TextEngine
 
 					if (endIndex == -1)
 					{
-						endIndex = text.length;
+						endIndex = this.text.length;
 					}
 
 					setFormattedPositions(textIndex, endIndex);
 
-					if (align == JUSTIFY)
+					if (align == TextFormatAlign.JUSTIFY)
 					{
 						if (positions.length > 0 && textIndex == previousSpaceIndex)
 						{
@@ -1054,7 +1074,7 @@ export default class TextEngine
 						}
 					}
 
-					if (wordWrap)
+					if (this.wordWrap)
 					{
 						if (offsetX + widthValue > getWrapWidth())
 						{
@@ -1078,12 +1098,12 @@ export default class TextEngine
 
 					if (wrap)
 					{
-						if (align != JUSTIFY && (layoutGroup != null || layoutGroups.length > 0))
+						if (align != TextFormatAlign.JUSTIFY && (layoutGroup != null || this.layoutGroups.length > 0))
 						{
 							var previous = layoutGroup;
 							if (previous == null)
 							{
-								previous = layoutGroups[layoutGroups.length - 1];
+								previous = this.layoutGroups[this.layoutGroups.length - 1];
 							}
 
 							// For correct selection rectangles and alignment, trim the trailing space of the previous line:
@@ -1091,12 +1111,12 @@ export default class TextEngine
 							previous.endIndex--;
 						}
 
-						var i = layoutGroups.length - 1;
+						var i = this.layoutGroups.length - 1;
 						var offsetCount = 0;
 
 						while (true)
 						{
-							layoutGroup = layoutGroups[i];
+							layoutGroup = this.layoutGroups[i];
 
 							if (i > 0 && layoutGroup.startIndex > previousSpaceIndex)
 							{
@@ -1119,13 +1139,13 @@ export default class TextEngine
 
 						if (offsetCount > 0)
 						{
-							var bumpX = layoutGroups[layoutGroups.length - offsetCount].offsetX;
+							var bumpX = this.layoutGroups[this.layoutGroups.length - offsetCount].offsetX;
 
-							for (i in (layoutGroups.length - offsetCount)...layoutGroups.length)
+							for (let i = (this.layoutGroups.length - offsetCount); i < this.layoutGroups.length; i++)
 							{
-								layoutGroup = layoutGroups[i];
+								layoutGroup = this.layoutGroups[i];
 								layoutGroup.offsetX -= bumpX;
-								layoutGroup.offsetY = offsetY + GUTTER;
+								layoutGroup.offsetY = offsetY + TextEngine.GUTTER;
 								layoutGroup.lineIndex = lineIndex;
 								offsetX += layoutGroup.width;
 							}
@@ -1140,7 +1160,7 @@ export default class TextEngine
 						if (layoutGroup != null && textIndex == spaceIndex)
 						{
 							// TODO: does this case ever happen?
-							if (align != JUSTIFY)
+							if (align != TextFormatAlign.JUSTIFY)
 							{
 								layoutGroup.endIndex = spaceIndex;
 								layoutGroup.positions = layoutGroup.positions.concat(positions);
@@ -1151,7 +1171,7 @@ export default class TextEngine
 
 							textIndex = endIndex;
 						}
-						else if (layoutGroup == null || align == JUSTIFY)
+						else if (layoutGroup == null || align == TextFormatAlign.JUSTIFY)
 						{
 							placeText(endIndex);
 						}
@@ -1161,7 +1181,7 @@ export default class TextEngine
 
 							if (tempRangeEnd < endIndex)
 							{
-								positions = getPositions(text, textIndex, tempRangeEnd);
+								positions = getPositions(this.text, textIndex, tempRangeEnd);
 								widthValue = getPositionsWidth(positions);
 							}
 
@@ -1191,11 +1211,11 @@ export default class TextEngine
 
 							textIndex = endIndex;
 
-							if (endIndex == text.length) alignBaseline();
+							if (endIndex == this.text.length) alignBaseline();
 						}
 					}
 
-					var nextSpaceIndex = text.indexOf(" ", textIndex);
+					var nextSpaceIndex = this.text.indexOf(" ", textIndex);
 
 					// Check if we can continue wrapping this line until the next line-break or end-of-String.
 					// When `previousSpaceIndex == breakIndex`, the loop has finished growing layoutGroup.endIndex until the end of this line.
@@ -1217,7 +1237,7 @@ export default class TextEngine
 					spaceIndex = nextSpaceIndex;
 
 					if ((breakIndex > -1 && breakIndex <= textIndex && (spaceIndex > breakIndex || spaceIndex == -1))
-						|| textIndex > text.length)
+						|| textIndex > this.text.length)
 					{
 						break;
 					}
@@ -1225,12 +1245,12 @@ export default class TextEngine
 			}
 			else
 			{
-				if (textIndex < text.length)
+				if (textIndex < this.text.length)
 				{
 					// if there are no line breaks or spaces to deal with next, place all remaining text
 
-					setFormattedPositions(textIndex, text.length);
-					placeText(text.length);
+					setFormattedPositions(textIndex, this.text.length);
+					placeText(this.text.length);
 
 					alignBaseline();
 				}
@@ -1250,7 +1270,7 @@ export default class TextEngine
 			layoutGroup.leading = leading;
 			layoutGroup.lineIndex = lineIndex - 1;
 			layoutGroup.offsetX = getBaseX(); // TODO: double check it doesn't default to GUTTER or something
-			layoutGroup.offsetY = offsetY + GUTTER;
+			layoutGroup.offsetY = offsetY + TextEngine.GUTTER;
 			layoutGroup.width = 0;
 			layoutGroup.height = heightValue;
 		}
@@ -1270,9 +1290,9 @@ export default class TextEngine
 			return value;
 		}
 
-		if (__restrictRegexp != null)
+		if (this.__restrictRegexp != null)
 		{
-			value = __restrictRegexp.split(value).join("");
+			value = value.split(this.__restrictRegexp).join("");
 		}
 
 		// if (maxChars > 0 && value.length > maxChars) {
@@ -1288,51 +1308,51 @@ export default class TextEngine
 	{
 		var lineIndex = -1;
 		var offsetX = 0.0;
-		var totalWidth = this.width - GUTTER * 2; // TODO: do margins and stuff affect this at all?
+		var totalWidth = this.width - TextEngine.GUTTER * 2; // TODO: do margins and stuff affect this at all?
 		var group, lineLength;
 		var lineMeasurementsDirty = false;
 
-		for (i in 0...layoutGroups.length)
+		for (let i = 0; i < this.layoutGroups.length; i++)
 		{
-			group = layoutGroups[i];
+			group = this.layoutGroups[i];
 
 			if (group.lineIndex != lineIndex)
 			{
 				lineIndex = group.lineIndex;
-				totalWidth = this.width - GUTTER * 2 - group.format.rightMargin;
+				totalWidth = this.width - TextEngine.GUTTER * 2 - group.format.rightMargin;
 
 				switch (group.format.align)
 				{
-					case CENTER:
-						if (lineWidths[lineIndex] < totalWidth)
+					case TextFormatAlign.CENTER:
+						if (this.lineWidths[lineIndex] < totalWidth)
 						{
-							offsetX = Math.round((totalWidth - lineWidths[lineIndex]) / 2);
+							offsetX = Math.round((totalWidth - this.lineWidths[lineIndex]) / 2);
 						}
 						else
 						{
 							offsetX = 0;
 						}
 
-					case RIGHT:
-						if (lineWidths[lineIndex] < totalWidth)
+					case TextFormatAlign.RIGHT:
+						if (this.lineWidths[lineIndex] < totalWidth)
 						{
-							offsetX = Math.round(totalWidth - lineWidths[lineIndex]);
+							offsetX = Math.round(totalWidth - this.lineWidths[lineIndex]);
 						}
 						else
 						{
 							offsetX = 0;
 						}
 
-					case JUSTIFY:
-						if (lineWidths[lineIndex] < totalWidth)
+					case TextFormatAlign.JUSTIFY:
+						if (this.lineWidths[lineIndex] < totalWidth)
 						{
 							lineLength = 1;
 
-							for (j in (i + 1)...layoutGroups.length)
+							for (let j = (i + 1); i < this.layoutGroups.length; i++)
 							{
-								if (layoutGroups[j].lineIndex == lineIndex)
+								if (this.layoutGroups[j].lineIndex == lineIndex)
 								{
-									if (j == 0 || text.charCodeAt(layoutGroups[j].startIndex - 1) == " ".code)
+									if (j == 0 || this.text.charCodeAt(this.layoutGroups[j].startIndex - 1) == " ".charCodeAt(0))
 									{
 										lineLength++;
 									}
@@ -1345,25 +1365,25 @@ export default class TextEngine
 
 							if (lineLength > 1)
 							{
-								group = layoutGroups[i + lineLength - 1];
+								group = this.layoutGroups[i + lineLength - 1];
 
-								var endChar = text.charCodeAt(group.endIndex);
-								if (group.endIndex < text.length && endChar != "\n".code && endChar != "\r".code)
+								var endChar = this.text.charCodeAt(group.endIndex);
+								if (group.endIndex < this.text.length && endChar != "\n".charCodeAt(0) && endChar != "\r".charCodeAt(0))
 								{
-									offsetX = (totalWidth - lineWidths[lineIndex]) / (lineLength - 1);
+									offsetX = (totalWidth - this.lineWidths[lineIndex]) / (lineLength - 1);
 									lineMeasurementsDirty = true;
 
 									var j = 1;
 									do
 									{
-										// if (text.charCodeAt (layoutGroups[j].startIndex - 1) != " ".code) {
+										// if (text.charCodeAt (this.layoutGroups[j].startIndex - 1) != " ".code) {
 
 										// 	layoutGroups[i + j].offsetX += (offsetX * (j-1));
 										// 	j++;
 
 										// }
 
-										layoutGroups[i + j].offsetX += (offsetX * j);
+										this.layoutGroups[i + j].offsetX += (offsetX * j);
 									}
 									while (++j < lineLength);
 								}
@@ -1387,7 +1407,7 @@ export default class TextEngine
 		{
 			// TODO: Better way to fix justify textWidth?
 
-			getLineMeasurements();
+			this.getLineMeasurements();
 		}
 	}
 
@@ -1398,60 +1418,60 @@ export default class TextEngine
 			return value;
 		}
 
-		if (maxChars > 0 && value.length > maxChars)
+		if (this.maxChars > 0 && value.length > this.maxChars)
 		{
-			value = value.substr(0, maxChars);
+			value = value.substr(0, this.maxChars);
 		}
 
 		return value;
 	}
 
-	private update(): void
+	public update(): void
 	{
-		if (text == null /*|| text == ""*/ || textFormatRanges.length == 0)
+		if (this.text == null /*|| text == ""*/ || this.textFormatRanges.length == 0)
 		{
-			lineAscents.length = 0;
-			lineBreaks.length = 0;
-			lineDescents.length = 0;
-			lineLeadings.length = 0;
-			lineHeights.length = 0;
-			lineWidths.length = 0;
-			layoutGroups.length = 0;
+			this.lineAscents.length = 0;
+			this.lineBreaks.length = 0;
+			this.lineDescents.length = 0;
+			this.lineLeadings.length = 0;
+			this.lineHeights.length = 0;
+			this.lineWidths.length = 0;
+			this.layoutGroups.length = 0;
 
-			textWidth = 0;
-			textHeight = 0;
-			numLines = 1;
-			maxScrollH = 0;
+			this.textWidth = 0;
+			this.textHeight = 0;
+			this.__numLines = 1;
+			this.__maxScrollH = 0;
 			// maxScrollV = 1;
 			// bottomScrollV = 1;
-			updateScrollV();
+			this.updateScrollV();
 		}
 		else
 		{
-			getLayoutGroups();
-			getLineMeasurements();
-			setTextAlignment();
+			this.getLayoutGroups();
+			this.getLineMeasurements();
+			this.setTextAlignment();
 		}
 
-		getBounds();
+		this.getBounds();
 	}
 
 	private updateScrollV(): void
 	{
-		if (numLines == 1 || lineHeights == null)
+		if (this.numLines == 1 || this.lineHeights == null)
 		{
-			maxScrollV = 1;
+			this.__maxScrollV = 1;
 		}
 		else
 		{
-			var i = numLines - 1, tempHeight = 0.0;
+			var i = this.numLines - 1, tempHeight = 0.0;
 			var j = i;
 
 			while (i >= 0)
 			{
-				if (tempHeight + lineHeights[i] <= Math.ceil(height - GUTTER * 2))
+				if (tempHeight + this.lineHeights[i] <= Math.ceil(this.height - TextEngine.GUTTER * 2))
 				{
-					tempHeight += lineHeights[i];
+					tempHeight += this.lineHeights[i];
 					i--;
 				}
 				else
@@ -1462,7 +1482,7 @@ export default class TextEngine
 
 			if (i == j)
 			{
-				i = numLines; // maxScrollV defaults to numLines if the height - 4 is less than the line's height
+				i = this.numLines; // maxScrollV defaults to numLines if the height - 4 is less than the line's height
 				// TODO: check if it's based on the first or last line's height
 			}
 			else
@@ -1472,28 +1492,28 @@ export default class TextEngine
 
 			if (i < 1)
 			{
-				maxScrollV = 1;
+				this.__maxScrollV = 1;
 			}
 			else
 			{
-				maxScrollV = i;
+				this.__maxScrollV = i;
 			}
 		}
 
-		if (numLines == 1 || lineHeights == null)
+		if (this.numLines == 1 || this.lineHeights == null)
 		{
-			bottomScrollV = 1;
+			this.__bottomScrollV = 1;
 		}
 		else
 		{
 			var tempHeight = 0.0;
-			var ret = scrollV;
+			var ret = this.__scrollV;
 
-			while (ret <= lineHeights.length)
+			while (ret <= this.lineHeights.length)
 			{
-				if (tempHeight + lineHeights[ret - 1] <= Math.ceil(height - GUTTER))
+				if (tempHeight + this.lineHeights[ret - 1] <= Math.ceil(this.height - TextEngine.GUTTER))
 				{
-					tempHeight += lineHeights[ret - 1];
+					tempHeight += this.lineHeights[ret - 1];
 				}
 				else
 				{
@@ -1503,52 +1523,80 @@ export default class TextEngine
 				ret++;
 			}
 
-			bottomScrollV = ret - 1;
+			this.__bottomScrollV = ret - 1;
 		}
 	}
 
 	// Get & Set Methods
-	private set_restrict(value: string): string
+
+	public get bottomScrollV(): number
 	{
-		if (restrict == value)
+		return this.__bottomScrollV;
+	}
+
+	public get maxScrollH(): number
+	{
+		return this.__maxScrollH;
+	}
+
+	public get maxScrollV(): number
+	{
+		return this.__maxScrollV;
+	}
+
+	public get numLines(): number
+	{
+		return this.__numLines;
+	}
+
+	public get restrict(): string
+	{
+		return this.__restrict;
+	}
+
+	public set restrict(value: string)
+	{
+		if (this.__restrict == value)
 		{
-			return restrict;
+			return;
 		}
 
-		restrict = value;
+		this.__restrict = value;
 
-		if (restrict == null || restrict.length == 0)
+		if (this.__restrict == null || this.__restrict.length == 0)
 		{
-			__restrictRegexp = null;
+			this.__restrictRegexp = null;
 		}
 		else
 		{
-			__restrictRegexp = createRestrictRegexp(value);
+			this.__restrictRegexp = this.createRestrictRegexp(value);
 		}
-
-		return restrict;
 	}
 
-	private get_scrollV(): number
+	public get scrollV(): number
 	{
-		if (numLines == 1 || lineHeights == null) return 1;
+		if (this.__numLines == 1 || this.lineHeights == null) return 1;
 
-		var max = maxScrollV;
-		if (scrollV > max) return max;
-		return scrollV;
+		var max = this.__maxScrollV;
+		if (this.__scrollV > max) return max;
+		return this.__scrollV;
 	}
 
-	private set_scrollV(value: number): number
+	public set scrollV(value: number)
 	{
 		if (value < 1) value = 1;
-		scrollV = value;
+		this.__scrollV = value;
 		// TODO: Cheaper way to update bottomScrollV?
-		updateScrollV();
-		return value;
+		this.updateScrollV();
 	}
 
-	private set_text(value: string): string
+	public get text(): string
 	{
-		return text = value;
+		return this.__text;
+	}
+
+	public set text(value: string)
+	{
+		this.__text = value;
 	}
 }

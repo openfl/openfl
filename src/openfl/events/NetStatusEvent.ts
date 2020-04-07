@@ -165,6 +165,6 @@ export default class NetStatusEvent extends Event
 	protected __init(): void
 	{
 		super.__init();
-		info = null;
+		this.info = null;
 	}
 }

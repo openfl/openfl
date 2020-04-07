@@ -106,7 +106,7 @@ export default class Rectangle
 		@param width  The width of the rectangle, in pixels.
 		@param height The height of the rectangle, in pixels.
 	**/
-	public constructor(x: number = 0, y: number = 0, width: number = 0, height: number = 0): void
+	public constructor(x: number = 0, y: number = 0, width: number = 0, height: number = 0)
 	{
 		this.x = x;
 		this.y = y;
@@ -173,11 +173,11 @@ export default class Rectangle
 	{
 		if (rect.width <= 0 || rect.height <= 0)
 		{
-			return rect.x > this.x && rect.y > y && rect.right < this.right && rect.bottom < this.bottom;
+			return rect.x > this.x && rect.y > this.y && rect.right < this.right && rect.bottom < this.bottom;
 		}
 		else
 		{
-			return rect.x >= this.x && rect.y >= y && rect.right <= this.right && rect.bottom <= this.bottom;
+			return rect.x >= this.x && rect.y >= this.y && rect.right <= this.right && rect.bottom <= this.bottom;
 		}
 	}
 

@@ -1,12 +1,8 @@
 import BitmapData from "../display/BitmapData";
 import ShaderInput from "../display/ShaderInput";
-import ShaderParameter from "../display/ShaderInput";
+import ShaderParameter from "../display/ShaderParameter";
+import Video from "../media/Video";
 import ByteArray from "../utils/ByteArray";
-
-interface DynamicProperties
-{
-	[key: string]: any; //ShaderParameter<number> | ShaderInput<BitmapData>;
-}
 
 /**
 	// TODO: Document GLSL Shaders
@@ -89,8 +85,10 @@ interface DynamicProperties
 	ShaderData instance containing data, parameters, and inputs for a shader
 	is available as the Shader instance's `data` property.
 **/
-export default class ShaderData implements DynamicProperties
+export default class ShaderData
 {
+	[key: string]: ShaderParameter<number | boolean> | ShaderInput<BitmapData | Video>;
+
 	/**
 		Creates a ShaderData instance. Generally, developer code does not call
 		the ShaderData constructor directly. A ShaderData instance containing
@@ -99,8 +97,5 @@ export default class ShaderData implements DynamicProperties
 
 		@param byteCode The shader's byte code.
 	**/
-	public constructor(byteArray: ByteArray)
-	{
-
-	}
+	constructor(byteArray: ByteArray) { }
 }

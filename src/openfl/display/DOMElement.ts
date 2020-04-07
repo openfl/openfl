@@ -1,18 +1,16 @@
-namespace openfl.display
+import DisplayObjectType from "../_internal/renderer/DisplayObjectType";
+import DisplayObject from "../display/DisplayObject";
+
+export default class DOMElement extends DisplayObject
 {
-	export class DOMElement extends DisplayObject
+	protected __active: boolean;
+	protected __element: HTMLElement;
+
+	public constructor(element: HTMLElement)
 	{
-		protected __active: boolean;
-		protected __element: HTMLElement;
+		super();
 
-		public constructor(element: HTMLElement)
-		{
-			super();
-
-			__element = element;
-			__type = DOM_ELEMENT;
-		}
+		this.__element = element;
+		this.__type = DisplayObjectType.DOM_ELEMENT;
 	}
 }
-
-export default openfl.display.DOMElement;

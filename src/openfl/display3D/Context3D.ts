@@ -1022,7 +1022,7 @@ export default class Context3D extends EventDispatcher
 			var isVertex = (programType == Context3DProgramType.VERTEX);
 			var dest = isVertex ? this.__vertexConstants : this.__fragmentConstants;
 
-			var floatData = new Float32Array((<internal.ByteArray><any>bytes.__buffer), 0, data.length);
+			var floatData = new Float32Array((<internal.ByteArray><any>data).__buffer, 0, data.length);
 
 			var outOffset = firstRegister * 4;
 			var inOffset = Math.floor(byteArrayOffset / 4);

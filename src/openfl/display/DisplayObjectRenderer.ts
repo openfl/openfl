@@ -46,7 +46,7 @@ export default class DisplayObjectRenderer extends EventDispatcher
 	{
 		for (let child of (<internal.DisplayObject><any>displayObject).__childIterator(false))
 		{
-			switch (child.__type)
+			switch ((<internal.DisplayObject><any>child).__type)
 			{
 				case DisplayObjectType.BITMAP:
 					var bitmap: Bitmap = child as Bitmap;
@@ -54,7 +54,7 @@ export default class DisplayObjectRenderer extends EventDispatcher
 						&& (<internal.Bitmap><any>bitmap).__bitmapData.readable
 						&& (<internal.BitmapData><any>(<internal.Bitmap><any>bitmap).__bitmapData).__getVersion() != (<internal.Bitmap><any>bitmap).__imageVersion)
 					{
-						(<internal.Bitmap><any>bitmap).__setRenderDirty();
+						(<internal.DisplayObject><any>bitmap).__setRenderDirty();
 					}
 					break;
 
@@ -68,17 +68,17 @@ export default class DisplayObjectRenderer extends EventDispatcher
 
 				case DisplayObjectType.TILEMAP:
 					var tilemap: Tilemap = child as Tilemap;
-					if ((<internal.Tilemap><any>tilemap).__group.__dirty)
+					if ((<internal.Tile><any>(<internal.Tilemap><any>tilemap).__group).__dirty)
 					{
-						(<internal.Tilemap><any>tilemap).__setRenderDirty();
+						(<internal.DisplayObject><any>tilemap).__setRenderDirty();
 					}
 					break;
 
 				case DisplayObjectType.VIDEO:
 					var video: Video = child as Video;
-					if ((<internal.Video><any>video).__renderable && (<internal.Video><any>video).__stream != null)
+					if ((<internal.DisplayObject><any>video).__renderable && (<internal.Video><any>video).__stream != null)
 					{
-						(<internal.Video><any>video).__setRenderDirty();
+						(<internal.DisplayObject><any>video).__setRenderDirty();
 					}
 					break;
 

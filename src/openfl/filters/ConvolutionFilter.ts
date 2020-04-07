@@ -1,6 +1,7 @@
 import BitmapData from "../display/BitmapData";
 import DisplayObjectRenderer from "../display/DisplayObjectRenderer";
 import Shader from "../display/Shader";
+import ShaderParameter from "../display/ShaderParameter";
 import BitmapFilter from "../filters/BitmapFilter";
 import BitmapFilterShader from "../filters/BitmapFilterShader";
 
@@ -89,9 +90,9 @@ class ConvolutionShader extends BitmapFilterShader
 	{
 		super();
 
-		uDivisor.value = [1];
-		uBias.value = [0];
-		uPreserveAlpha.value = [true];
+		(this.data.uDivisor as ShaderParameter).value = [1];
+		(this.data.uBias as ShaderParameter).value = [0];
+		(this.data.uPreserveAlpha as ShaderParameter).value = [true];
 	}
 }
 
@@ -129,7 +130,7 @@ class ConvolutionShader extends BitmapFilterShader
 	example, if you zoom in on a large movie clip with a filter applied, the
 	filter is turned off if the resulting image exceeds maximum dimensions.
 **/
-export class ConvolutionFilter extends BitmapFilter
+export default class ConvolutionFilter extends BitmapFilter
 {
 	protected static __convolutionShader: ConvolutionShader = new ConvolutionShader();
 
@@ -170,64 +171,6 @@ export class ConvolutionFilter extends BitmapFilter
 		default is used instead.
 	**/
 	public divisor: number;
-
-	/**
-		An array of values used for matrix transformation. The number of items
-		in the array must equal `matrixX * matrixY`.
-		A matrix convolution is based on an _n_ x _m_ matrix, which describes
-		how a given pixel value in the input image is combined with its
-		neighboring pixel values to produce a resulting pixel value. Each
-		result pixel is determined by applying the matrix to the corresponding
-		source pixel and its neighboring pixels.
-
-		For a 3 x 3 matrix convolution, the following formula is used for each
-		independent color channel:
-
-		```
-		dst (x, y) = ((src (x-1, y-1) * a0 + src(x, y-1) * a1....
-					   src(x, y+1) * a7 + src (x+1,y+1) * a8) / divisor) + bias
-		```
-
-		Certain filter specifications perform faster when run by a processor
-		that offers SSE (Streaming SIMD Extensions). The following are
-		criteria for faster convolution operations:
-
-		* The filter must be a 3x3 filter.
-		* All the filter terms must be integers between -127 and +127.
-		* The sum of all the filter terms must not have an absolute value
-		greater than 127.
-		* If any filter term is negative, the divisor must be between 2.00001
-		and 256.
-		* If all filter terms are positive, the divisor must be between 1.1
-		and 256.
-		* The bias must be an integer.
-
-		**Note:** If you create a ConvolutionFilter instance using the
-		constructor without parameters, the order you assign values to matrix
-		properties affects the behavior of the filter. In the following case,
-		the matrix array is assigned while the `matrixX` and `matrixY`
-		properties are still set to `0` (the default value):
-
-		```haxe
-		public myfilter = new ConvolutionFilter();
-		myfilter.matrix = [0, 0, 0, 0, 1, 0, 0, 0, 0];
-		myfilter.matrixX = 3;
-		myfilter.matrixY = 3;
-		```
-
-		In the following case, the matrix array is assigned while the
-		`matrixX` and `matrixY` properties are set to `3`:
-
-		```haxe
-		public myfilter = new ConvolutionFilter();
-		myfilter.matrixX = 3;
-		myfilter.matrixY = 3;
-		myfilter.matrix = [0, 0, 0, 0, 1, 0, 0, 0, 0];
-		```
-
-		@throws TypeError The Array is null when being set
-	**/
-	public matrix(get, set): Array<number>;
 
 	/**
 		The _x_ dimension of the matrix (the number of columns in the matrix).
@@ -293,7 +236,7 @@ export class ConvolutionFilter extends BitmapFilter
 
 		this.matrixX = matrixX;
 		this.matrixY = matrixY;
-		__matrix = matrix;
+		this.__matrix = matrix;
 		this.divisor = divisor;
 		this.bias = bias;
 		this.preserveAlpha = preserveAlpha;
@@ -301,31 +244,90 @@ export class ConvolutionFilter extends BitmapFilter
 		this.color = color;
 		this.alpha = alpha;
 
-		__numShaderPasses = 1;
+		this.__numShaderPasses = 1;
 	}
 
-	publicclone(): BitmapFilter
+	public clone(): BitmapFilter
 	{
-		return new ConvolutionFilter(matrixX, matrixY, __matrix, divisor, bias, preserveAlpha, clamp, color, alpha);
+		return new ConvolutionFilter(this.matrixX, this.matrixY, this.__matrix, this.divisor, this.bias, this.preserveAlpha, this.clamp, this.color, this.alpha);
 	}
 
 	protected __initShader(renderer: DisplayObjectRenderer, pass: number, sourceBitmapData: BitmapData): Shader
 	{
-		__convolutionShader.uConvoMatrix.value = matrix;
-		__convolutionShader.uDivisor.value[0] = divisor;
-		__convolutionShader.uBias.value[0] = bias;
-		__convolutionShader.uPreserveAlpha.value[0] = preserveAlpha;
+		var data = ConvolutionFilter.__convolutionShader.data;
+		(data.uConvoMatrix as ShaderParameter).value = this.matrix;
+		(data.uDivisor as ShaderParameter).value[0] = this.divisor;
+		(data.uBias as ShaderParameter).value[0] = this.bias;
+		(data.uPreserveAlpha as ShaderParameter).value[0] = this.preserveAlpha;
 
-		return __convolutionShader;
+		return ConvolutionFilter.__convolutionShader;
 	}
 
 	// Get & Set Methods
+
+
+	/**
+		An array of values used for matrix transformation. The number of items
+		in the array must equal `matrixX * matrixY`.
+		A matrix convolution is based on an _n_ x _m_ matrix, which describes
+		how a given pixel value in the input image is combined with its
+		neighboring pixel values to produce a resulting pixel value. Each
+		result pixel is determined by applying the matrix to the corresponding
+		source pixel and its neighboring pixels.
+
+		For a 3 x 3 matrix convolution, the following formula is used for each
+		independent color channel:
+
+		```
+		dst (x, y) = ((src (x-1, y-1) * a0 + src(x, y-1) * a1....
+					   src(x, y+1) * a7 + src (x+1,y+1) * a8) / divisor) + bias
+		```
+
+		Certain filter specifications perform faster when run by a processor
+		that offers SSE (Streaming SIMD Extensions). The following are
+		criteria for faster convolution operations:
+
+		* The filter must be a 3x3 filter.
+		* All the filter terms must be integers between -127 and +127.
+		* The sum of all the filter terms must not have an absolute value
+		greater than 127.
+		* If any filter term is negative, the divisor must be between 2.00001
+		and 256.
+		* If all filter terms are positive, the divisor must be between 1.1
+		and 256.
+		* The bias must be an integer.
+
+		**Note:** If you create a ConvolutionFilter instance using the
+		constructor without parameters, the order you assign values to matrix
+		properties affects the behavior of the filter. In the following case,
+		the matrix array is assigned while the `matrixX` and `matrixY`
+		properties are still set to `0` (the default value):
+
+		```haxe
+		public myfilter = new ConvolutionFilter();
+		myfilter.matrix = [0, 0, 0, 0, 1, 0, 0, 0, 0];
+		myfilter.matrixX = 3;
+		myfilter.matrixY = 3;
+		```
+
+		In the following case, the matrix array is assigned while the
+		`matrixX` and `matrixY` properties are set to `3`:
+
+		```haxe
+		public myfilter = new ConvolutionFilter();
+		myfilter.matrixX = 3;
+		myfilter.matrixY = 3;
+		myfilter.matrix = [0, 0, 0, 0, 1, 0, 0, 0, 0];
+		```
+
+		@throws TypeError The Array is null when being set
+	**/
 	public get matrix(): Array<number>
 	{
-		return __matrix;
+		return this.__matrix;
 	}
 
-	public set matrix(v: Array<number>): Array<number>
+	public set matrix(v: Array<number>)
 	{
 		if (v == null)
 		{
@@ -337,6 +339,6 @@ export class ConvolutionFilter extends BitmapFilter
 			throw "Only a 3x3 matrix is supported";
 		}
 
-		return __matrix = v;
+		this.__matrix = v;
 	}
 }

@@ -1,20 +1,14 @@
-namespace openfl._internal.renderer.context3D;
+import SamplerState from "../../../_internal/renderer/SamplerState";
+import TextureBase from "../../../display3D/textures/TextureBase";
+import Context3DBlendFactor from "../../../display3D/Context3DBlendFactor";
+import Context3DCompareMode from "../../../display3D/Context3DCompareMode";
+import Context3DStencilAction from "../../../display3D/Context3DStencilAction";
+import Context3DTriangleFace from "../../../display3D/Context3DTriangleFace";
+import Program3D from "../../../display3D/Program3D";
+import Shader from "../../../display/Shader";
+import Rectangle from "../../../geom/Rectangle";
 
-import openfl._internal.bindings.gl.GLBuffer;
-import openfl._internal.bindings.gl.GLFramebuffer;
-import openfl._internal.bindings.gl.GLRenderbuffer;
-import openfl._internal.bindings.gl.GLTexture;
-import openfl.display3D.textures.TextureBase;
-import openfl.display3D.Context3DBlendFactor;
-import openfl.display3D.Context3DCompareMode;
-import openfl.display3D.Context3DStencilAction;
-import openfl.display3D.Context3DTriangleFace;
-import openfl.display3D.Program3D;
-import Shader from "../display/Shader";
-import Rectangle from "../geom/Rectangle";
-
-@SuppressWarnings("checkstyle:FieldDocComment")
-class Context3DState
+export default class Context3DState
 {
 	public backBufferEnableDepthAndStencil: boolean;
 	public blendDestinationAlphaFactor: Context3DBlendFactor;
@@ -50,12 +44,11 @@ class Context3DState
 	// vertex buffer at?
 	public shader: Shader; // TODO: Merge shader/program3d
 
-	#if openfl_gl
-	private __currentGLArrayBuffer: GLBuffer;
-	private __currentGLElementArrayBuffer: GLBuffer;
-	private __currentGLFramebuffer: GLFramebuffer;
-	private __currentGLTexture2D: GLTexture;
-	private __currentGLTextureCubeMap: GLTexture;
+	private __currentGLArrayBuffer: WebGLBuffer;
+	private __currentGLElementArrayBuffer: WebGLBuffer;
+	private __currentGLFramebuffer: WebGLFramebuffer;
+	private __currentGLTexture2D: WebGLTexture;
+	private __currentGLTextureCubeMap: WebGLTexture;
 	private __enableGLBlend: boolean;
 	private __enableGLCullFace: boolean;
 	private __enableGLDepthTest: boolean;
@@ -63,42 +56,39 @@ class Context3DState
 	private __enableGLStencilTest: boolean;
 	private __frontFaceGLCCW: boolean;
 	private __glBlendEquation: number;
-	private __primaryGLFramebuffer: GLFramebuffer;
-	private __rttDepthGLRenderbuffer: GLRenderbuffer;
-	private __rttGLFramebuffer: GLFramebuffer;
-	private __rttGLRenderbuffer: GLRenderbuffer;
-	private __rttStencilGLRenderbuffer: GLRenderbuffer;
-	#end
+	private __primaryGLFramebuffer: WebGLFramebuffer;
+	private __rttDepthGLRenderbuffer: WebGLRenderbuffer;
+	private __rttGLFramebuffer: WebGLFramebuffer;
+	private __rttGLRenderbuffer: WebGLRenderbuffer;
+	private __rttStencilGLRenderbuffer: WebGLRenderbuffer;
 
 	public constructor()
 	{
-		backBufferEnableDepthAndStencil = false;
-		blendDestinationAlphaFactor = ZERO;
-		blendSourceAlphaFactor = ONE;
-		blendDestinationRGBFactor = ZERO;
-		blendSourceRGBFactor = ONE;
-		colorMaskRed = true;
-		colorMaskGreen = true;
-		colorMaskBlue = true;
-		colorMaskAlpha = true;
-		culling = NONE;
-		depthCompareMode = LESS;
-		depthMask = true;
-		samplerStates = new Array();
-		scissorRectangle = new Rectangle();
-		stencilCompareMode = ALWAYS;
-		stencilDepthFail = KEEP;
-		stencilFail = KEEP;
-		stencilPass = KEEP;
-		stencilReadMask = 0xFF;
-		stencilReferenceValue = 0;
-		stencilTriangleFace = FRONT_AND_BACK;
-		stencilWriteMask = 0xFF;
-		textures = new Array();
+		this.backBufferEnableDepthAndStencil = false;
+		this.blendDestinationAlphaFactor = Context3DBlendFactor.ZERO;
+		this.blendSourceAlphaFactor = Context3DBlendFactor.ONE;
+		this.blendDestinationRGBFactor = Context3DBlendFactor.ZERO;
+		this.blendSourceRGBFactor = Context3DBlendFactor.ONE;
+		this.colorMaskRed = true;
+		this.colorMaskGreen = true;
+		this.colorMaskBlue = true;
+		this.colorMaskAlpha = true;
+		this.culling = Context3DTriangleFace.NONE;
+		this.depthCompareMode = Context3DCompareMode.LESS;
+		this.depthMask = true;
+		this.samplerStates = new Array();
+		this.scissorRectangle = new Rectangle();
+		this.stencilCompareMode = Context3DCompareMode.ALWAYS;
+		this.stencilDepthFail = Context3DStencilAction.KEEP;
+		this.stencilFail = Context3DStencilAction.KEEP;
+		this.stencilPass = Context3DStencilAction.KEEP;
+		this.stencilReadMask = 0xFF;
+		this.stencilReferenceValue = 0;
+		this.stencilTriangleFace = Context3DTriangleFace.FRONT_AND_BACK;
+		this.stencilWriteMask = 0xFF;
+		this.textures = new Array();
 
-		#if openfl_gl
-		__frontFaceGLCCW = true;
-		__glBlendEquation = 0x8006; // GL.FUNC_ADD
-		#end
+		this.__frontFaceGLCCW = true;
+		this.__glBlendEquation = 0x8006; // GL.FUNC_ADD
 	}
 }

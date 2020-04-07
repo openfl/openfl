@@ -10,16 +10,16 @@
 **/
 import BitmapData from "../../display/BitmapData";
 
-export default class AbstractNoise
+export default abstract class AbstractNoise
 {
-	private octaves: number;
-	private stitch: boolean;
-	private stitch_threshold: number;
-	private channels: number;
-	private grayscale: boolean;
-	private octaves_frequencies: Array<number>; // frequency per octave
-	private octaves_persistences: Array<number>; // persistence per octave
-	private persistence_max: number; // 1 / max persistence
+	protected octaves: number;
+	protected stitch: boolean;
+	protected stitch_threshold: number;
+	protected channels: number;
+	protected grayscale: boolean;
+	protected octaves_frequencies: Array<number>; // frequency per octave
+	protected octaves_persistences: Array<number>; // persistence per octave
+	protected persistence_max: number; // 1 / max persistence
 
 	public constructor(seed: number, octaves: number, channels: number, grayScale: boolean, falloff: number, stitch: boolean = false, stitch_threshold: number = 0.05)
 	{
@@ -39,7 +39,7 @@ export default class AbstractNoise
 		// put your noise code in here ...
 	}
 
-	private stitching(bitmap: BitmapData, color: number, px: number, py: number, stitch_w: number, stitch_h: number, width: number, height: number): number
+	protected stitching(bitmap: BitmapData, color: number, px: number, py: number, stitch_w: number, stitch_h: number, width: number, height: number): number
 	{
 		var r: number = (color >> 16) & 255;
 		var g: number = (color >> 8) & 255;
@@ -55,9 +55,9 @@ export default class AbstractNoise
 			var u: number = (width - px) / stitch_w;
 			var uu: number = u * u;
 
-			r = mixI(dest_r, r, u);
-			g = mixI(dest_g, g, u);
-			b = mixI(dest_b, b, u);
+			r = this.mixI(dest_r, r, u);
+			g = this.mixI(dest_g, g, u);
+			b = this.mixI(dest_b, b, u);
 		}
 
 		if (height - stitch_h < py)
@@ -70,15 +70,15 @@ export default class AbstractNoise
 			var u: number = (height - py) / stitch_h;
 			var uu: number = u * u;
 
-			r = mixI(dest_r, r, u);
-			g = mixI(dest_g, g, u);
-			b = mixI(dest_b, b, u);
+			r = this.mixI(dest_r, r, u);
+			g = this.mixI(dest_g, g, u);
+			b = this.mixI(dest_b, b, u);
 		}
 
 		return 0xFF000000 | r << 16 | g << 8 | b;
 	}
 
-	private color(r_noise: null | number, g_noise: null | number, b_noise: null | number): number
+	protected color(r_noise: null | number, g_noise: null | number, b_noise: null | number): number
 	{
 		var color_r: number = 0;
 		var color_g: number = 0;
@@ -102,42 +102,42 @@ export default class AbstractNoise
 		return 0xFF000000 | color_r << 16 | color_g << 8 | color_b;
 	}
 
-	private noiseToColor(noise: number): number
+	protected noiseToColor(noise: number): number
 	{
-		return Std.int((noise * this.persistence_max + 1.0) * 128);
+		return Math.floor((noise * this.persistence_max + 1.0) * 128);
 	}
 
-	private fade(t: number): number
+	protected fade(t: number): number
 	{
 		return t * t * t * (t * (t * 6.0 - 15.0) + 10.0);
 	}
 
-	private mixI(x: number, y: number, t: number): number
+	protected mixI(x: number, y: number, t: number): number
 	{
-		return Std.int((1.0 - t) * x + t * y);
+		return Math.floor((1.0 - t) * x + t * y);
 	}
 
-	private mix(x: number, y: number, t: number): number
+	protected mix(x: number, y: number, t: number): number
 	{
 		return (1.0 - t) * x + t * y;
 	}
 
-	private fastfloor(x: number): number
+	protected fastfloor(x: number): number
 	{
-		return x > 0 ? Std.int(x) : Std.int(x - 1);
+		return x > 0 ? Math.floor(x) : Math.floor(x - 1);
 	}
 
-	private dot2d(grad: Array<number>, x: number, y: number): number
+	protected dot2d(grad: Array<number>, x: number, y: number): number
 	{
 		return grad[0] * x + grad[1] * y;
 	}
 
-	private dot(grad: Array<number>, x: number, y: number, z: number): number
+	protected dot(grad: Array<number>, x: number, y: number, z: number): number
 	{
 		return grad[0] * x + grad[1] * y + grad[2] * z;
 	}
 
-	private calculateOctaves(fPersistence: number): void
+	protected calculateOctaves(fPersistence: number): void
 	{
 		var fFreq: number, fPers: number;
 

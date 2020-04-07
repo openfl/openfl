@@ -203,7 +203,7 @@ export default class Video extends DisplayObject
 	{
 		var bounds = (<internal.Rectangle><any>Rectangle).__pool.get();
 		bounds.setTo(0, 0, this.__width, this.__height);
-		(<internal.Matrix><any>bounds).__transform(bounds, matrix);
+		(<internal.Rectangle><any>bounds).__transform(bounds, matrix);
 
 		(<internal.Rectangle><any>rect).__expand(bounds.x, bounds.y, bounds.width, bounds.height);
 

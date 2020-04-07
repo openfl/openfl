@@ -43,11 +43,11 @@ export default class PerlinNoise extends AbstractNoise
 	{
 		super(seed, octaves, channels, grayScale, falloff, stitch, stitch_threshold);
 
-		p_perm = [];
+		this.p_perm = [];
 
-		for (i in 0...512)
+		for (let i = 0; i < 512; i++)
 		{
-			p_perm[i] = P[i & 255];
+			this.p_perm[i] = PerlinNoise.P[i & 255];
 		}
 
 		this.base_factor = 1 / 32;
@@ -64,9 +64,9 @@ export default class PerlinNoise extends AbstractNoise
 		var octaves_frequencies: Array<number> = this.octaves_frequencies;
 		var octaves_persistences: Array<number> = this.octaves_persistences;
 
-		var isRed: boolean = BitmapDataChannel.RED & this.channels == BitmapDataChannel.RED;
-		var isGreen: boolean = BitmapDataChannel.GREEN & this.channels == BitmapDataChannel.GREEN;
-		var isBlue: boolean = BitmapDataChannel.BLUE & this.channels == BitmapDataChannel.BLUE;
+		var isRed: boolean = (BitmapDataChannel.RED & this.channels) == BitmapDataChannel.RED;
+		var isGreen: boolean = (BitmapDataChannel.GREEN & this.channels) == BitmapDataChannel.GREEN;
+		var isBlue: boolean = (BitmapDataChannel.BLUE & this.channels) == BitmapDataChannel.BLUE;
 
 		var channels: number = 0;
 
@@ -87,8 +87,8 @@ export default class PerlinNoise extends AbstractNoise
 
 		var grayscale: boolean = this.grayscale;
 
-		var stitch_w: number = Std.int(this.stitch_threshold * width);
-		var stitch_h: number = Std.int(this.stitch_threshold * height);
+		var stitch_w: number = Math.floor(this.stitch_threshold * width);
+		var stitch_h: number = Math.floor(this.stitch_threshold * height);
 
 		var base_x: number = _scale_x * this.base_factor + this.x_offset;
 
@@ -98,17 +98,17 @@ export default class PerlinNoise extends AbstractNoise
 		var g_offset: number = 1.0;
 		var b_offset: number = 2.0;
 
-		for (py in 0...height)
+		for (let py = 0; py < height; py++)
 		{
 			_scale_x = base_x;
 
-			for (px in 0...width)
+			for (let px = 0; px < width; px++)
 			{
 				var color1 = 0.0;
 				var color2 = 0.0;
 				var color3 = 0.0;
 
-				for (i in 0...octaves)
+				for (let i = 0; i < octaves; i++)
 				{
 					var frequency: number = octaves_frequencies[i];
 					var persistence: number = octaves_persistences[i];
@@ -188,54 +188,54 @@ export default class PerlinNoise extends AbstractNoise
 		y -= yf;
 		z -= zf;
 
-		var X: number = Std.int(xf) & 255;
-		var Y: number = Std.int(yf) & 255;
-		var Z: number = Std.int(zf) & 255;
+		var X: number = Math.floor(xf) & 255;
+		var Y: number = Math.floor(yf) & 255;
+		var Z: number = Math.floor(zf) & 255;
 
 		var u = this.fade(x);
 		var v = this.fade(y);
 		var w = this.fade(z);
 
-		var A = (p_perm[X]) + Y;
-		var AA = (p_perm[A]) + Z;
-		var AB = (p_perm[A + 1]) + Z;
-		var B = (p_perm[X + 1]) + Y;
-		var BA = (p_perm[B]) + Z;
-		var BB = (p_perm[B + 1]) + Z;
+		var A = (this.p_perm[X]) + Y;
+		var AA = (this.p_perm[A]) + Z;
+		var AB = (this.p_perm[A + 1]) + Z;
+		var B = (this.p_perm[X + 1]) + Y;
+		var BA = (this.p_perm[B]) + Z;
+		var BB = (this.p_perm[B + 1]) + Z;
 
 		var x1 = x - 1;
 		var y1 = y - 1;
 		var z1 = z - 1;
 
-		var hash = (p_perm[BB + 1]) & 15;
+		var hash = (this.p_perm[BB + 1]) & 15;
 		var g1 = ((hash & 1) == 0 ? (hash < 8 ? x1 : y1) : (hash < 8 ? -x1 : -y1))
 			+ ((hash & 2) == 0 ? hash < 4 ? y1 : (hash == 12 ? x1 : z1) : hash < 4 ? -y1 : (hash == 14 ? -x1 : -z1));
 
-		hash = (p_perm[AB + 1]) & 15;
+		hash = (this.p_perm[AB + 1]) & 15;
 		var g2 = ((hash & 1) == 0 ? (hash < 8 ? x : y1) : (hash < 8 ? -x : -y1))
 			+ ((hash & 2) == 0 ? hash < 4 ? y1 : (hash == 12 ? x : z1) : hash < 4 ? -y1 : (hash == 14 ? -x : -z1));
 
-		hash = (p_perm[BA + 1]) & 15;
+		hash = (this.p_perm[BA + 1]) & 15;
 		var g3 = ((hash & 1) == 0 ? (hash < 8 ? x1 : y) : (hash < 8 ? -x1 : -y))
 			+ ((hash & 2) == 0 ? hash < 4 ? y : (hash == 12 ? x1 : z1) : hash < 4 ? -y : (hash == 14 ? -x1 : -z1));
 
-		hash = (p_perm[AA + 1]) & 15;
+		hash = (this.p_perm[AA + 1]) & 15;
 		var g4 = ((hash & 1) == 0 ? (hash < 8 ? x : y) : (hash < 8 ? -x : -y))
 			+ ((hash & 2) == 0 ? hash < 4 ? y : (hash == 12 ? x : z1) : hash < 4 ? -y : (hash == 14 ? -x : -z1));
 
-		hash = (p_perm[BB]) & 15;
+		hash = (this.p_perm[BB]) & 15;
 		var g5 = ((hash & 1) == 0 ? (hash < 8 ? x1 : y1) : (hash < 8 ? -x1 : -y1))
 			+ ((hash & 2) == 0 ? hash < 4 ? y1 : (hash == 12 ? x1 : z) : hash < 4 ? -y1 : (hash == 14 ? -x1 : -z));
 
-		hash = (p_perm[AB]) & 15;
+		hash = (this.p_perm[AB]) & 15;
 		var g6 = ((hash & 1) == 0 ? (hash < 8 ? x : y1) : (hash < 8 ? -x : -y1))
 			+ ((hash & 2) == 0 ? hash < 4 ? y1 : (hash == 12 ? x : z) : hash < 4 ? -y1 : (hash == 14 ? -x : -z));
 
-		hash = (p_perm[BA]) & 15;
+		hash = (this.p_perm[BA]) & 15;
 		var g7 = ((hash & 1) == 0 ? (hash < 8 ? x1 : y) : (hash < 8 ? -x1 : -y))
 			+ ((hash & 2) == 0 ? hash < 4 ? y : (hash == 12 ? x1 : z) : hash < 4 ? -y : (hash == 14 ? -x1 : -z));
 
-		hash = (p_perm[AA]) & 15;
+		hash = (this.p_perm[AA]) & 15;
 		var g8 = ((hash & 1) == 0 ? (hash < 8 ? x : y) : (hash < 8 ? -x : -y))
 			+ ((hash & 2) == 0 ? hash < 4 ? y : (hash == 12 ? x : z) : hash < 4 ? -y : (hash == 14 ? -x : -z));
 
@@ -252,8 +252,8 @@ export default class PerlinNoise extends AbstractNoise
 
 	private setSeed(seed: number): void
 	{
-		this.x_offset = seed = Std.int((seed * 16807.0) % 2147483647);
-		this.y_offset = seed = Std.int((seed * 16807.0) % 2147483647);
-		this.z_offset = seed = Std.int((seed * 16807.0) % 2147483647);
+		this.x_offset = seed = Math.floor((seed * 16807.0) % 2147483647);
+		this.y_offset = seed = Math.floor((seed * 16807.0) % 2147483647);
+		this.z_offset = seed = Math.floor((seed * 16807.0) % 2147483647);
 	}
 }

@@ -1,7 +1,7 @@
 /**
-		The TextFormatAlign class provides values for text alignment in the
-		TextFormat class.
-	**/
+	The TextFormatAlign class provides values for text alignment in the
+	TextFormat class.
+**/
 export enum TextFormatAlign
 {
 	/**

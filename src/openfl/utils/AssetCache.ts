@@ -12,11 +12,6 @@ import IAssetCache from "../utils/IAssetCache";
 export default class AssetCache implements IAssetCache
 {
 	/**
-		Whether caching is currently enabled.
-	**/
-	public enabled(get, set): boolean;
-
-	/**
 		Internal
 		@hidden
 	**/
@@ -41,9 +36,9 @@ export default class AssetCache implements IAssetCache
 	**/
 	public constructor()
 	{
-		bitmapData = new Map<string, BitmapData>();
-		font = new Map<string, Font>();
-		sound = new Map<string, Sound>();
+		this.bitmapData = new Map<string, BitmapData>();
+		this.font = new Map<string, Font>();
+		this.sound = new Map<string, Sound>();
 	}
 
 	/**
@@ -66,39 +61,39 @@ export default class AssetCache implements IAssetCache
 	{
 		if (prefix == null)
 		{
-			bitmapData = new Map<string, BitmapData>();
-			font = new Map<string, Font>();
-			sound = new Map<string, Sound>();
+			this.bitmapData = new Map<string, BitmapData>();
+			this.font = new Map<string, Font>();
+			this.sound = new Map<string, Sound>();
 		}
 		else
 		{
-			var keys = bitmapData.keys();
+			var keys = this.bitmapData.keys();
 
-			for (key in keys)
+			for (let key of keys)
 			{
-				if (StringTools.startsWith(key, prefix))
+				if (key.startsWith(prefix))
 				{
-					removeBitmapData(key);
+					this.removeBitmapData(key);
 				}
 			}
 
-			var keys = font.keys();
+			var keys = this.font.keys();
 
-			for (key in keys)
+			for (let key of keys)
 			{
-				if (StringTools.startsWith(key, prefix))
+				if (key.startsWith(prefix))
 				{
-					removeFont(key);
+					this.removeFont(key);
 				}
 			}
 
-			var keys = sound.keys();
+			var keys = this.sound.keys();
 
-			for (key in keys)
+			for (let key of keys)
 			{
-				if (StringTools.startsWith(key, prefix))
+				if (key.startsWith(prefix))
 				{
-					removeSound(key);
+					this.removeSound(key);
 				}
 			}
 		}
@@ -112,7 +107,7 @@ export default class AssetCache implements IAssetCache
 	**/
 	public getBitmapData(id: string): BitmapData
 	{
-		return bitmapData.get(id);
+		return this.bitmapData.get(id);
 	}
 
 	/**
@@ -123,7 +118,7 @@ export default class AssetCache implements IAssetCache
 	**/
 	public getFont(id: string): Font
 	{
-		return font.get(id);
+		return this.font.get(id);
 	}
 
 	/**
@@ -134,7 +129,7 @@ export default class AssetCache implements IAssetCache
 	**/
 	public getSound(id: string): Sound
 	{
-		return sound.get(id);
+		return this.sound.get(id);
 	}
 
 	/**
@@ -145,7 +140,7 @@ export default class AssetCache implements IAssetCache
 	**/
 	public hasBitmapData(id: string): boolean
 	{
-		return bitmapData.exists(id);
+		return this.bitmapData.has(id);
 	}
 
 	/**
@@ -156,7 +151,7 @@ export default class AssetCache implements IAssetCache
 	**/
 	public hasFont(id: string): boolean
 	{
-		return font.exists(id);
+		return this.font.has(id);
 	}
 
 	/**
@@ -167,7 +162,7 @@ export default class AssetCache implements IAssetCache
 	**/
 	public hasSound(id: string): boolean
 	{
-		return sound.exists(id);
+		return this.sound.delete(id);
 	}
 
 	/**
@@ -178,7 +173,7 @@ export default class AssetCache implements IAssetCache
 	**/
 	public removeBitmapData(id: string): boolean
 	{
-		return bitmapData.remove(id);
+		return this.bitmapData.delete(id);
 	}
 
 	/**
@@ -189,7 +184,7 @@ export default class AssetCache implements IAssetCache
 	**/
 	public removeFont(id: string): boolean
 	{
-		return font.remove(id);
+		return this.font.delete(id);
 	}
 
 	/**
@@ -200,7 +195,7 @@ export default class AssetCache implements IAssetCache
 	**/
 	public removeSound(id: string): boolean
 	{
-		return sound.remove(id);
+		return this.sound.delete(id);
 	}
 
 	/**
@@ -236,14 +231,18 @@ export default class AssetCache implements IAssetCache
 		this.sound.set(id, sound);
 	}
 
-		// Get & Set Methods
-		/** @hidden */ public get enabled(): boolean
+	// Get & Set Methods
+
+	/**
+		Whether caching is currently enabled.
+	**/
+	public get enabled(): boolean
 	{
-		return __enabled;
+		return this.__enabled;
 	}
 
-		/** @hidden */ public set enabled(value: boolean): void
+	public set enabled(value: boolean)
 	{
-		__enabled = value;
+		this.__enabled = value;
 	}
 }

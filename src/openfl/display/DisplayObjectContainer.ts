@@ -1,4 +1,5 @@
 import DisplayObjectType from "../_internal/renderer/DisplayObjectType";
+import DisplayObjectLinkedList from "../_internal/utils/DisplayObjectLinkedList";
 import * as internal from "../_internal/utils/InternalAccess";
 import Bitmap from "../display/Bitmap";
 import DisplayObject from "../display/DisplayObject";
@@ -138,12 +139,12 @@ export default class DisplayObjectContainer extends InteractiveObject
 
 		if (child.parent == this)
 		{
-			this.__addChild(child);
+			DisplayObjectLinkedList.__addChild(this, child);
 		}
 		else
 		{
-			this.__reparent(child);
-			this.__addChild(child);
+			DisplayObjectLinkedList.__reparent(this, child);
+			DisplayObjectLinkedList.__addChild(this, child);
 
 			var addedToStage = (this.stage != null && child.stage == null);
 
@@ -152,30 +153,32 @@ export default class DisplayObjectContainer extends InteractiveObject
 				(<internal.DisplayObject><any>child).__setStageReferences(this.stage);
 			}
 
-			child.__setTransformDirty(true);
-			child.__setParentRenderDirty();
-			child.__setRenderDirty();
+			(<internal.DisplayObject><any>child).__setTransformDirty(true);
+			(<internal.DisplayObject><any>child).__setParentRenderDirty();
+			(<internal.DisplayObject><any>child).__setRenderDirty();
 			this.__localBoundsDirty = true;
 			this.__setRenderDirty();
 
-			var event = (<internal.Event><any>Event).__pool.get();
+			// var event = (<internal.Event><any>Event).__pool.get();
+			var event = new Event(Event.ADDED);
 			(<internal.Event><any>event).__type = Event.ADDED;
 			(<internal.Event><any>event).__bubbles = true;
 
 			(<internal.Event><any>event).__target = child;
 
-			child.__dispatchWithCapture(event);
+			(<internal.DisplayObject><any>child).__dispatchWithCapture(event);
 
-			(<internal.Event><any>Event).__pool.release(event);
+			// (<internal.Event><any>Event).__pool.release(event);
 
 			if (addedToStage)
 			{
-				event = (<internal.Event><any>Event).__pool.get(Event.ADDED_TO_STAGE);
+				// event = (<internal.Event><any>Event).__pool.get(Event.ADDED_TO_STAGE);
+				event = new Event(Event.ADDED_TO_STAGE);
 
-				child.__dispatchWithCapture(event);
-				child.__dispatchChildren(event);
+				(<internal.DisplayObject><any>child).__dispatchWithCapture(event);
+				(<internal.DisplayObject><any>child).__dispatchChildren(event);
 
-				(<internal.Event><any>Event).__pool.release(event);
+				// (<internal.Event><any>Event).__pool.release(event);
 			}
 		}
 
@@ -244,20 +247,20 @@ export default class DisplayObjectContainer extends InteractiveObject
 			{
 				if (this.__firstChild != child)
 				{
-					this.__unshiftChild(child);
+					DisplayObjectLinkedList.__unshiftChild(this, child);
 					this.__setRenderDirty();
 				}
 			}
 			else
 			{
-				this.__swapChildren(child, this.getChildAt(index));
+				DisplayObjectLinkedList.__swapChildren(this, child, this.getChildAt(index));
 				this.__setRenderDirty();
 			}
 		}
 		else
 		{
-			this.__reparent(child);
-			this.__insertChildAt(child, index);
+			DisplayObjectLinkedList.__reparent(this, child);
+			DisplayObjectLinkedList.__insertChildAt(this, child, index);
 			this.__setRenderDirty();
 
 			var addedToStage = (this.stage != null && child.stage == null);
@@ -273,24 +276,26 @@ export default class DisplayObjectContainer extends InteractiveObject
 			this.__localBoundsDirty = true;
 			this.__setRenderDirty();
 
-			var event = (<internal.Event><any>Event).__pool.get();
-			(<internal.Event><any>event).__type = Event.ADDED;
-			(<internal.Event><any>event).__event.bubbles = true;
+			// var event = (<internal.Event><any>Event).__pool.get();
+			// (<internal.Event><any>event).__type = Event.ADDED;
+			var event = new Event(Event.ADDED);
+			(<internal.Event><any>event).__bubbles = true;
 
 			(<internal.Event><any>event).__target = child;
 
 			(<internal.DisplayObject><any>child).__dispatchWithCapture(event);
 
-			(<internal.Event><any>Event).__pool.release(event);
+			// (<internal.Event><any>Event).__pool.release(event);
 
 			if (addedToStage)
 			{
-				event = (<internal.Event><any>Event).__pool.get(Event.ADDED_TO_STAGE);
+				// event = (<internal.Event><any>Event).__pool.get(Event.ADDED_TO_STAGE);
+				event = new Event(Event.ADDED_TO_STAGE);
 
 				(<internal.DisplayObject><any>child).__dispatchWithCapture(event);
 				(<internal.DisplayObject><any>child).__dispatchChildren(event);
 
-				(<internal.Event><any>Event).__pool.release(event);
+				// (<internal.Event><any>Event).__pool.release(event);
 			}
 		}
 
@@ -502,7 +507,7 @@ export default class DisplayObjectContainer extends InteractiveObject
 				(<internal.DisplayObject><any>child).__setStageReferences(null);
 			}
 
-			this.__removeChild(child);
+			DisplayObjectLinkedList.__removeChild(this, child);
 
 			this.__removedChildren.push(child);
 			(<internal.DisplayObject><any>child).__setTransformDirty(true);
@@ -665,15 +670,15 @@ export default class DisplayObjectContainer extends InteractiveObject
 		{
 			if (index == 0)
 			{
-				this.__unshiftChild(child);
+				DisplayObjectLinkedList.__unshiftChild(this, child);
 			}
 			else if (index >= this.__numChildren - 1)
 			{
-				this.__addChild(child);
+				DisplayObjectLinkedList.__addChild(this, child);
 			}
 			else
 			{
-				this.__insertChildAt(child, index);
+				DisplayObjectLinkedList.__insertChildAt(this, child, index);
 			}
 			this.__setRenderDirty();
 		}
@@ -707,7 +712,7 @@ export default class DisplayObjectContainer extends InteractiveObject
 	{
 		if (child1.parent == this && child2.parent == this && child1 != child2)
 		{
-			this.__swapChildren(child1, child2);
+			DisplayObjectLinkedList.__swapChildren(this, child1, child2);
 			this.__setRenderDirty();
 		}
 	}
@@ -744,7 +749,7 @@ export default class DisplayObjectContainer extends InteractiveObject
 				}
 			}
 
-			this.__swapChildren(child1, child2);
+			DisplayObjectLinkedList.__swapChildren(this, child1, child2);
 			this.__setRenderDirty();
 		}
 	}
@@ -1053,15 +1058,15 @@ export default class DisplayObjectContainer extends InteractiveObject
 			for (let child of this.__childIterator())
 			{
 				var hitTest = false;
-				switch (child.__type)
+				switch ((<internal.DisplayObject><any>child).__type)
 				{
 					case DisplayObjectType.BITMAP:
 						var bitmap: Bitmap = child as Bitmap;
-						hitTest = bitmap.__hitTestMask(x, y);
+						hitTest = (<internal.DisplayObject><any>bitmap).__hitTestMask(x, y);
 						break;
 					case DisplayObjectType.SIMPLE_BUTTON:
 						var simpleButton: SimpleButton = child as SimpleButton;
-						hitTest = simpleButton.__hitTestMask(x, y);
+						hitTest = (<internal.DisplayObject><any>simpleButton).__hitTestMask(x, y);
 						break;
 					case DisplayObjectType.TEXTFIELD:
 						var textField: TextField = child as TextField;
@@ -1074,7 +1079,7 @@ export default class DisplayObjectContainer extends InteractiveObject
 					case DisplayObjectType.DISPLAY_OBJECT_CONTAINER:
 					case DisplayObjectType.MOVIE_CLIP: // inline super.__hitTestMask(x, y) || (child.__graphics != null && child.__graphics.__hitTest(x, y, true, child.__getRenderTransform()));
 						hitTest = (this.__graphics != null && (<internal.Graphics><any>this.__graphics).__hitTest(x, y, true, this.__getRenderTransform()))
-							|| (child.__graphics != null && child.__graphics.__hitTest(x, y, true, child.__getRenderTransform()));
+							|| ((<internal.DisplayObject><any>child).__graphics != null && (<internal.Graphics><any>(<internal.DisplayObject><any>child).__graphics).__hitTest(x, y, true, (<internal.DisplayObject><any>child).__getRenderTransform()));
 						break;
 					default:
 						hitTest = super.__hitTestMask(x, y);
@@ -1103,9 +1108,9 @@ export default class DisplayObjectContainer extends InteractiveObject
 			for (let child of this.__childIterator())
 			{
 				// inline super.__readGraphicsData(graphicsData, recurse);
-				if (child.__graphics != null)
+				if ((<internal.DisplayObject><any>child).__graphics != null)
 				{
-					child.__graphics.__readGraphicsData(graphicsData);
+					(<internal.Graphics><any>(<internal.DisplayObject><any>child).__graphics).__readGraphicsData(graphicsData);
 				}
 			}
 		}
@@ -1120,7 +1125,7 @@ export default class DisplayObjectContainer extends InteractiveObject
 		{
 			for (let child of this.__childIterator())
 			{
-				if (child.__type == DisplayObjectType.SIMPLE_BUTTON)
+				if ((<internal.DisplayObject><any>child).__type == DisplayObjectType.SIMPLE_BUTTON)
 				{
 					var simpleButton: SimpleButton = child as SimpleButton;
 					(<internal.DisplayObject><any>simpleButton).__setTransformDirty(force);
@@ -1128,7 +1133,7 @@ export default class DisplayObjectContainer extends InteractiveObject
 				else
 				{
 					// inline super.__setTransformDirty(force);
-					child.__transformDirty = true;
+					(<internal.DisplayObject><any>child).__transformDirty = true;
 				}
 			}
 
@@ -1142,7 +1147,7 @@ export default class DisplayObjectContainer extends InteractiveObject
 		{
 			for (let child of this.__childIterator())
 			{
-				if (child.__type == DisplayObjectType.MOVIE_CLIP)
+				if ((<internal.DisplayObject><any>child).__type == DisplayObjectType.MOVIE_CLIP)
 				{
 					var movieClip: MovieClip = child as MovieClip;
 					movieClip.stop();
@@ -1164,9 +1169,9 @@ export default class DisplayObjectContainer extends InteractiveObject
 		if (this.__numChildren > 0)
 		{
 			var children = this.__childIterator();
-			for (child in children)
+			for (let child of children)
 			{
-				switch (child.__type)
+				switch ((<internal.DisplayObject><any>child).__type)
 				{
 					case DisplayObjectType.MOVIE_CLIP:
 						var movieClip: MovieClip = child as MovieClip;
@@ -1200,7 +1205,7 @@ export default class DisplayObjectContainer extends InteractiveObject
 					case DisplayObjectType.SIMPLE_BUTTON:
 					case DisplayObjectType.TEXTFIELD:
 						var interactiveObject: InteractiveObject = child as InteractiveObject;
-						if (interactiveObject.__tabEnabled)
+						if ((<internal.InteractiveObject><any>interactiveObject).__tabEnabled)
 						{
 							stack.push(interactiveObject);
 						}
@@ -1219,12 +1224,12 @@ export default class DisplayObjectContainer extends InteractiveObject
 		{
 			for (let child of this.__childIterator())
 			{
-				var transformDirty = child.__transformDirty;
+				var transformDirty = (<internal.DisplayObject><any>child).__transformDirty;
 
 				// TODO: Flatten masks
-				child.__updateSingle(transformOnly, updateChildren);
+				(<internal.DisplayObject><any>child).__updateSingle(transformOnly, updateChildren);
 
-				switch (child.__type)
+				switch ((<internal.DisplayObject><any>child).__type)
 				{
 					case DisplayObjectType.SIMPLE_BUTTON:
 						// TODO: Flatten this into the allChildren() call?
@@ -1251,13 +1256,13 @@ export default class DisplayObjectContainer extends InteractiveObject
 						}
 						break;
 
-						
+
 					case DisplayObjectType.DISPLAY_OBJECT_CONTAINER:
 					case DisplayObjectType.MOVIE_CLIP:
 						// Ensure children are marked as dirty again
 						// as we no longer know if they all are dirty
 						// since at least one has been updated
-						child.__childTransformDirty = false;
+						(<internal.DisplayObject><any>child).__childTransformDirty = false;
 						break;
 
 					default:

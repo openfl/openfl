@@ -56,7 +56,7 @@ export default class AsyncErrorEvent extends ErrorEvent
 						  the event's `errorId` property is set from the
 						  error's `errorId` property.
 	**/
-	public constructor(type: string, bubbles: boolean = false, cancelable: boolean = false, text: string = "", error: Error = null): void
+	public constructor(type: string, bubbles: boolean = false, cancelable: boolean = false, text: string = "", error: Error = null)
 	{
 		super(type, bubbles, cancelable);
 

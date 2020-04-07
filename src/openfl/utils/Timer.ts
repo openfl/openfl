@@ -23,7 +23,7 @@ import TimerEvent from "../events/TimerEvent";
 	@event timerComplete Dispatched whenever it has completed the number of
 						 requests set by `Timer.repeatCount`.
 **/
-export class Timer extends EventDispatcher
+export default class Timer extends EventDispatcher
 {
 	private __currentCount: number;
 	private __delay: number;
@@ -192,14 +192,12 @@ export class Timer extends EventDispatcher
 		if (this.__repeatCount > 0 && this.__currentCount >= this.__repeatCount)
 		{
 			stop();
-			dispatchEvent(new TimerEvent(TimerEvent.TIMER));
-			dispatchEvent(new TimerEvent(TimerEvent.TIMER_COMPLETE));
+			this.dispatchEvent(new TimerEvent(TimerEvent.TIMER));
+			this.dispatchEvent(new TimerEvent(TimerEvent.TIMER_COMPLETE));
 		}
 		else
 		{
-			dispatchEvent(new TimerEvent(TimerEvent.TIMER));
+			this.dispatchEvent(new TimerEvent(TimerEvent.TIMER));
 		}
 	}
 }
-
-export default openfl.utils.Timer;

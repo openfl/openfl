@@ -238,7 +238,7 @@ export default class AGALMiniAssembler
 
 			if (optsi != -1)
 			{
-				opts = match(line.substr(optsi), reg2);
+				opts = this.match(line.substr(optsi), reg2);
 				line = line.substr(0, optsi);
 			}
 
@@ -315,7 +315,7 @@ export default class AGALMiniAssembler
 			}
 
 			// get operands, use regexp
-			var regs = match(line, reg4);
+			var regs = this.match(line, reg4);
 
 			if (regs.length != opFound.numRegister)
 			{
@@ -330,11 +330,11 @@ export default class AGALMiniAssembler
 			for (let j = 0; j < regLength; j++)
 			{
 				var isRelative = false;
-				var relreg = match(regs[j], reg5);
+				var relreg = this.match(regs[j], reg5);
 
 				if (relreg.length > 0)
 				{
-					regs[j] = StringTools.replace(regs[j], relreg[0], "0");
+					regs[j] = regs[j].replace(relreg[0], "0");
 
 					if (this.verbose)
 					{
@@ -344,7 +344,7 @@ export default class AGALMiniAssembler
 					isRelative = true;
 				}
 
-				var res = match(regs[j], reg6);
+				var res = this.match(regs[j], reg6);
 				if (res.length == 0)
 				{
 					this._error = "error: could not parse operand " + j + " (" + regs[j] + ").";
@@ -352,7 +352,7 @@ export default class AGALMiniAssembler
 					break;
 				}
 
-				var regFound: Register = AGAMiniAssembler.REGMAP[res[0]];
+				var regFound: Register = AGALMiniAssembler.REGMAP[res[0]];
 
 				// if debug is enabled, output the registers
 				if (this.debugEnabled)
@@ -369,7 +369,7 @@ export default class AGALMiniAssembler
 
 				if (isFrag)
 				{
-					if (regFound.flags & AGALMiniAssembler.REG_FRAG == 0)
+					if ((regFound.flags & AGALMiniAssembler.REG_FRAG) == 0)
 					{
 						this._error = "error: register operand " + j + " (" + regs[j] + ") only allowed in vertex programs.";
 						badreg = true;
@@ -385,7 +385,7 @@ export default class AGALMiniAssembler
 				}
 				else
 				{
-					if (regFound.flags & AGALMiniAssembler.REG_VERT == 0)
+					if ((regFound.flags & AGALMiniAssembler.REG_VERT) == 0)
 					{
 						this._error = "error: register operand " + j + " (" + regs[j] + ") only allowed in fragment programs.";
 						badreg = true;
@@ -395,12 +395,12 @@ export default class AGALMiniAssembler
 
 				regs[j] = regs[j].substr(regs[j].indexOf(regFound.name) + regFound.name.length);
 				// Log.info ("REGNUM: " + regs[j]);
-				var idxmatch = isRelative ? match(relreg[0], reg7) : match(regs[j], reg7);
+				var idxmatch = isRelative ? this.match(relreg[0], reg7) : this.match(regs[j], reg7);
 				var regidx: number = 0;
 
 				if (idxmatch.length > 0)
 				{
-					regidx = Std.parseInt(idxmatch[0]);
+					regidx = parseInt(idxmatch[0]);
 				}
 
 				if (regFound.range < regidx)
@@ -411,7 +411,7 @@ export default class AGALMiniAssembler
 				}
 
 				var regmask = 0;
-				var maskmatch = match(regs[j], reg8);
+				var maskmatch = this.match(regs[j], reg8);
 				var isDest = (j == 0 && (opFound.flags & AGALMiniAssembler.OP_NO_DEST) == 0);
 				var isSampler = (j == 2 && (opFound.flags & AGALMiniAssembler.OP_SPECIAL_TEX) != 0);
 				var reltype = 0;
@@ -434,7 +434,7 @@ export default class AGALMiniAssembler
 
 					while (k < maskLength)
 					{
-						cv = maskmatch[0].charCodeAt(k) - "x".code;
+						cv = maskmatch[0].charCodeAt(k) - "x".charCodeAt(0);
 
 						if (cv > 2)
 						{
@@ -469,7 +469,7 @@ export default class AGALMiniAssembler
 
 				if (isRelative)
 				{
-					var relname = match(relreg[0], reg9);
+					var relname = this.match(relreg[0], reg9);
 					var regFoundRel: Register = AGALMiniAssembler.REGMAP[relname[0]];
 
 					if (regFoundRel == null)
@@ -480,7 +480,7 @@ export default class AGALMiniAssembler
 					}
 
 					reltype = regFoundRel.emitCode;
-					var selmatch = match(relreg[0], reg10);
+					var selmatch = this.match(relreg[0], reg10);
 
 					if (selmatch.length == 0)
 					{
@@ -489,18 +489,18 @@ export default class AGALMiniAssembler
 						break;
 					}
 
-					relsel = selmatch[0].charCodeAt(1) - "x".code;
+					relsel = selmatch[0].charCodeAt(1) - "x".charCodeAt(0);
 
 					if (relsel > 2)
 					{
 						relsel = 3;
 					}
 
-					var relofs = match(relreg[0], reg11);
+					var relofs = this.match(relreg[0], reg11);
 
 					if (relofs.length > 0)
 					{
-						reloffset = Std.parseInt(relofs[0]);
+						reloffset = parseInt(relofs[0]);
 					}
 
 					if (reloffset < 0 || reloffset > 255)
@@ -555,7 +555,7 @@ export default class AGALMiniAssembler
 							{
 								// todo check that it's a number...
 								// Log.info ("Warning, unknown sampler option: " + opts[k]);
-								bias = Std.parseFloat(opts[k]);
+								bias = parseInt(opts[k]);
 
 								if (this.verbose)
 								{
@@ -574,7 +574,7 @@ export default class AGALMiniAssembler
 						}
 
 						this._agalcode.writeShort(regidx);
-						this._agalcode.writeByte(Std.int(bias * 8.0));
+						this._agalcode.writeByte(Math.floor(bias * 8.0));
 						this._agalcode.writeByte(0);
 						this._agalcode.writeUnsignedInt(samplerbits);
 

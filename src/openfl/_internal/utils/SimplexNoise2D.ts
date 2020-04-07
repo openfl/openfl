@@ -38,11 +38,11 @@ export default class SimplexNoise2D extends AbstractNoise
 	{
 		super(seed, octaves, channels, grayScale, falloff, stitch, stitch_threshold);
 
-		p_perm = [];
+		this.p_perm = [];
 
-		for (i in 0...512)
+		for (let i = 0; i < 512; i++)
 		{
-			p_perm[i] = P[i & 255];
+			this.p_perm[i] = SimplexNoise2D.P[i & 255];
 		}
 	}
 
@@ -55,9 +55,9 @@ export default class SimplexNoise2D extends AbstractNoise
 		var octaves_frequencies: Array<number> = this.octaves_frequencies;
 		var octaves_persistences: Array<number> = this.octaves_persistences;
 
-		var isRed: boolean = BitmapDataChannel.RED & this.channels == BitmapDataChannel.RED;
-		var isGreen: boolean = BitmapDataChannel.GREEN & this.channels == BitmapDataChannel.GREEN;
-		var isBlue: boolean = BitmapDataChannel.BLUE & this.channels == BitmapDataChannel.BLUE;
+		var isRed: boolean = (BitmapDataChannel.RED & this.channels) == BitmapDataChannel.RED;
+		var isGreen: boolean = (BitmapDataChannel.GREEN & this.channels) == BitmapDataChannel.GREEN;
+		var isBlue: boolean = (BitmapDataChannel.BLUE & this.channels) == BitmapDataChannel.BLUE;
 
 		var channels: number = 0;
 
@@ -78,15 +78,15 @@ export default class SimplexNoise2D extends AbstractNoise
 
 		var grayscale: boolean = this.grayscale;
 
-		var stitch_w: number = Std.int(this.stitch_threshold * width);
-		var stitch_h: number = Std.int(this.stitch_threshold * height);
+		var stitch_w: number = Math.floor(this.stitch_threshold * width);
+		var stitch_h: number = Math.floor(this.stitch_threshold * height);
 
-		for (py in 0...height)
+		for (let py = 0; py < height; py++)
 		{
 			var py_delta_g: number = py - 10.0;
 			var py_delta_b: number = py + 10.0;
 
-			for (px in 0...width)
+			for (let px = 0; px < width; px++)
 			{
 				var color1 = 0.0;
 				var color2 = 0.0;
@@ -95,7 +95,7 @@ export default class SimplexNoise2D extends AbstractNoise
 				var px_delta_g: number = px - 10.0;
 				var px_delta_b: number = px + 10.0;
 
-				for (i in 0...octaves)
+				for (let i = 0; i < octaves; i++)
 				{
 					var frequency = octaves_frequencies[i];
 					var persistence = octaves_persistences[i];
@@ -163,9 +163,9 @@ export default class SimplexNoise2D extends AbstractNoise
 		}
 	}
 
-	override private noiseToColor(noise: number): number
+	protected noiseToColor(noise: number): number
 	{
-		return Std.int(((noise * this.persistence_max + 1.0) * 0.5) * 255);
+		return Math.floor(((noise * this.persistence_max + 1.0) * 0.5) * 255);
 	}
 
 	private noise(xin: number, yin: number): number
@@ -177,8 +177,8 @@ export default class SimplexNoise2D extends AbstractNoise
 		var f2: number = 0.5 * (sqrt3 - 1.0);
 		var s: number = (xin + yin) * f2;
 
-		var i: number = fastfloor(xin + s);
-		var j: number = fastfloor(yin + s);
+		var i: number = this.fastfloor(xin + s);
+		var j: number = this.fastfloor(yin + s);
 
 		var g2: number = (3.0 - sqrt3) / 6.0;
 
@@ -210,9 +210,9 @@ export default class SimplexNoise2D extends AbstractNoise
 		var ii: number = i & 255;
 		var jj: number = j & 255;
 
-		var gi0: number = p_perm[ii + p_perm[jj]] % 12;
-		var gi1: number = p_perm[ii + i1 + p_perm[jj + j1]] % 12;
-		var gi2: number = p_perm[ii + 1 + p_perm[jj + 1]] % 12;
+		var gi0: number = this.p_perm[ii + this.p_perm[jj]] % 12;
+		var gi1: number = this.p_perm[ii + i1 + this.p_perm[jj + j1]] % 12;
+		var gi2: number = this.p_perm[ii + 1 + this.p_perm[jj + 1]] % 12;
 
 		var t0: number = 0.5 - x0 * x0 - y0 * y0;
 
@@ -223,7 +223,7 @@ export default class SimplexNoise2D extends AbstractNoise
 		else
 		{
 			t0 *= t0;
-			n0 = t0 * t0 * dot2d(grad3[gi0], x0, y0);
+			n0 = t0 * t0 * this.dot2d(SimplexNoise2D.grad3[gi0], x0, y0);
 		}
 
 		var t1 = 0.5 - x1 * x1 - y1 * y1;
@@ -234,7 +234,7 @@ export default class SimplexNoise2D extends AbstractNoise
 		else
 		{
 			t1 *= t1;
-			n1 = t1 * t1 * dot2d(grad3[gi1], x1, y1);
+			n1 = t1 * t1 * this.dot2d(SimplexNoise2D.grad3[gi1], x1, y1);
 		}
 
 		var t2 = 0.5 - x2 * x2 - y2 * y2;
@@ -245,7 +245,7 @@ export default class SimplexNoise2D extends AbstractNoise
 		else
 		{
 			t2 *= t2;
-			n2 = t2 * t2 * dot2d(grad3[gi2], x2, y2);
+			n2 = t2 * t2 * this.dot2d(SimplexNoise2D.grad3[gi2], x2, y2);
 		}
 
 		return 70.0 * (n0 + n1 + n2);

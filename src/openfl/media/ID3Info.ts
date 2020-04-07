@@ -43,7 +43,7 @@ namespace openfl.media
 		**/
 		public year: string;
 
-		public constructor(): void { }
+		public constructor() { }
 	}
 }
 

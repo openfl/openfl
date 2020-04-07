@@ -4,6 +4,8 @@ import Event from "../events/Event";
 import EventDispatcher from "../events/EventDispatcher";
 import Sound from "../media/Sound";
 import Font from "../text/Font";
+import AssetCache from "../utils/AssetCache";
+import AssetLibrary from "../utils/AssetLibrary";
 import AssetType from "../utils/AssetType";
 import ByteArray from "../utils/ByteArray";
 import Future from "../utils/Future";
@@ -320,13 +322,13 @@ export default class Assets
 		{
 			name = "default";
 			// TODO: Do we cache with the default prefix?
-			cache.clear(":");
+			Assets.cache.clear(":");
 		}
 
 		var library = this.getLibrary(name);
 		if (library != null)
 		{
-			cache.clear(name + ":");
+			Assets.cache.clear(name + ":");
 		}
 	}
 

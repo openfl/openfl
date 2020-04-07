@@ -229,26 +229,6 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 	public opaqueBackground?: number;
 
 	/**
-		Indicates the DisplayObjectContainer object that contains this display
-		object. Use the `parent` property to specify a relative path to
-		display objects that are above the current display object in the display
-		list hierarchy.
-
-		You can use `parent` to move up multiple levels in the
-		display list as in the following:
-
-		```haxe
-		this.parent.parent.alpha = 20;
-		```
-
-		@throws SecurityError The parent display object belongs to a security
-							sandbox to which you do not have access. You can
-							avoid this situation by having the parent movie call
-							the `Security.allowDomain()` method.
-	**/
-	public readonly parent: DisplayObjectContainer;
-
-	/**
 		Indicates the x-axis rotation of the DisplayObject instance, in degrees, from its original orientation
 		relative to the 3D parent container. Values from 0 to 180 represent clockwise rotation; values from 0 to
 		-180 represent counterclockwise rotation. Values outside this range are added to or subtracted from 360 to
@@ -305,6 +285,7 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 	protected __name: string;
 	protected __nextSibling: DisplayObject;
 	protected __objectTransform: Transform;
+	protected __parent: DisplayObjectContainer;
 	protected __previousSibling: DisplayObject;
 	protected __renderable: boolean;
 	protected __renderData: DisplayObjectRenderData;
@@ -699,7 +680,7 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 
 			if (child.__graphics != null)
 			{
-				child.__graphics.__cleanup();
+				(<internal.Graphics><any>child.__graphics).__cleanup();
 			}
 
 			switch (child.__type)
@@ -1037,7 +1018,7 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 		{
 			for (let child of this.__childIterator())
 			{
-				child.stage = stage;
+				child.__stage = stage;
 				if (child.__type == DisplayObjectType.SIMPLE_BUTTON)
 				{
 					var button: SimpleButton = child as SimpleButton;
@@ -1710,6 +1691,29 @@ export default class DisplayObject extends EventDispatcher implements IBitmapDra
 	public set name(value: string)
 	{
 		this.__name = value;
+	}
+
+	/**
+		Indicates the DisplayObjectContainer object that contains this display
+		object. Use the `parent` property to specify a relative path to
+		display objects that are above the current display object in the display
+		list hierarchy.
+
+		You can use `parent` to move up multiple levels in the
+		display list as in the following:
+
+		```haxe
+		this.parent.parent.alpha = 20;
+		```
+
+		@throws SecurityError The parent display object belongs to a security
+							sandbox to which you do not have access. You can
+							avoid this situation by having the parent movie call
+							the `Security.allowDomain()` method.
+	**/
+	public get parent(): DisplayObjectContainer
+	{
+		return this.__parent;
 	}
 
 	/**

@@ -38,11 +38,11 @@ export default class PerlinNoise2D extends AbstractNoise
 	{
 		super(seed, octaves, channels, grayScale, falloff, stitch, stitch_threshold);
 
-		p_perm = [];
+		this.p_perm = [];
 
-		for (i in 0...512)
+		for (let i = 0; i < 512; i++)
 		{
-			p_perm[i] = P[i & 255];
+			this.p_perm[i] = PerlinNoise2D.P[i & 255];
 		}
 	}
 
@@ -55,9 +55,9 @@ export default class PerlinNoise2D extends AbstractNoise
 		var octaves_frequencies: Array<number> = this.octaves_frequencies;
 		var octaves_persistences: Array<number> = this.octaves_persistences;
 
-		var isRed: boolean = BitmapDataChannel.RED & this.channels == BitmapDataChannel.RED;
-		var isGreen: boolean = BitmapDataChannel.GREEN & this.channels == BitmapDataChannel.GREEN;
-		var isBlue: boolean = BitmapDataChannel.BLUE & this.channels == BitmapDataChannel.BLUE;
+		var isRed: boolean = (BitmapDataChannel.RED & this.channels) == BitmapDataChannel.RED;
+		var isGreen: boolean = (BitmapDataChannel.GREEN & this.channels) == BitmapDataChannel.GREEN;
+		var isBlue: boolean = (BitmapDataChannel.BLUE & this.channels) == BitmapDataChannel.BLUE;
 
 		var channels: number = 0;
 
@@ -78,15 +78,15 @@ export default class PerlinNoise2D extends AbstractNoise
 
 		var grayscale: boolean = this.grayscale;
 
-		var stitch_w: number = Std.int(this.stitch_threshold * width);
-		var stitch_h: number = Std.int(this.stitch_threshold * height);
+		var stitch_w: number = Math.floor(this.stitch_threshold * width);
+		var stitch_h: number = Math.floor(this.stitch_threshold * height);
 
-		for (py in 0...height)
+		for (let py = 0; py < height; py++)
 		{
 			var py_delta_g: number = py - 10.0;
 			var py_delta_b: number = py + 10.0;
 
-			for (px in 0...width)
+			for (let px = 0; px < width; px++)
 			{
 				var color1 = 0.0;
 				var color2 = 0.0;
@@ -95,7 +95,7 @@ export default class PerlinNoise2D extends AbstractNoise
 				var px_delta_g: number = px - 10.0;
 				var px_delta_b: number = px + 10.0;
 
-				for (i in 0...octaves)
+				for (let i = 0; i < octaves; i++)
 				{
 					var frequency = octaves_frequencies[i];
 					var persistence = octaves_persistences[i];
@@ -163,16 +163,16 @@ export default class PerlinNoise2D extends AbstractNoise
 		}
 	}
 
-	override private noiseToColor(noise: number): number
+	protected noiseToColor(noise: number): number
 	{
-		return Std.int(((noise * this.persistence_max + 1.0) * 0.5) * 255);
+		return Math.floor(((noise * this.persistence_max + 1.0) * 0.5) * 255);
 	}
 
 	private noise(xin: number, yin: number, zin: number): number
 	{
-		var X: number = fastfloor(xin);
-		var Y: number = fastfloor(yin);
-		var Z: number = fastfloor(zin);
+		var X: number = this.fastfloor(xin);
+		var Y: number = this.fastfloor(yin);
+		var Z: number = this.fastfloor(zin);
 
 		var x = xin - X;
 		var y = yin - Y;
@@ -182,15 +182,16 @@ export default class PerlinNoise2D extends AbstractNoise
 		var Y = Y & 255;
 		var Z = Z & 255;
 
-		var gi000: number = p_perm[X + p_perm[Y + p_perm[Z]]] % 12;
-		var gi001: number = p_perm[X + p_perm[Y + p_perm[Z + 1]]] % 12;
-		var gi010: number = p_perm[X + p_perm[Y + 1 + p_perm[Z]]] % 12;
-		var gi011: number = p_perm[X + p_perm[Y + 1 + p_perm[Z + 1]]] % 12;
-		var gi100: number = p_perm[X + 1 + p_perm[Y + p_perm[Z]]] % 12;
-		var gi101: number = p_perm[X + 1 + p_perm[Y + p_perm[Z + 1]]] % 12;
-		var gi110: number = p_perm[X + 1 + p_perm[Y + 1 + p_perm[Z]]] % 12;
-		var gi111: number = p_perm[X + 1 + p_perm[Y + 1 + p_perm[Z + 1]]] % 12;
+		var gi000: number = this.p_perm[X + this.p_perm[Y + this.p_perm[Z]]] % 12;
+		var gi001: number = this.p_perm[X + this.p_perm[Y + this.p_perm[Z + 1]]] % 12;
+		var gi010: number = this.p_perm[X + this.p_perm[Y + 1 + this.p_perm[Z]]] % 12;
+		var gi011: number = this.p_perm[X + this.p_perm[Y + 1 + this.p_perm[Z + 1]]] % 12;
+		var gi100: number = this.p_perm[X + 1 + this.p_perm[Y + this.p_perm[Z]]] % 12;
+		var gi101: number = this.p_perm[X + 1 + this.p_perm[Y + this.p_perm[Z + 1]]] % 12;
+		var gi110: number = this.p_perm[X + 1 + this.p_perm[Y + 1 + this.p_perm[Z]]] % 12;
+		var gi111: number = this.p_perm[X + 1 + this.p_perm[Y + 1 + this.p_perm[Z + 1]]] % 12;
 
+		var grad3 = PerlinNoise2D.grad3;
 		var n000: number = this.dot(grad3[gi000], x, y, z);
 		var n100: number = this.dot(grad3[gi100], x - 1, y, z);
 		var n010: number = this.dot(grad3[gi010], x, y - 1, z);
