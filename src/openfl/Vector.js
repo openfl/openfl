@@ -178,7 +178,6 @@ var openfl;
         return data;
     }
 
-    Vector.name = "Vector";
     openfl.Vector = Vector;
 })(openfl || (openfl = {}));
 export default openfl.Vector;

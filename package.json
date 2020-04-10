@@ -49,7 +49,7 @@
     "build-test-es5": "cd test/npm/es5 && webpack",
     "build-test-es6": "cd test/npm/es6 && webpack",
     "build-test-haxe": "cd test/npm/haxe && haxe build.hxml && webpack",
-    "build-test-typescript": "cd test/npm/typescript && tsc -p tsconfig.json && webpack",
+    "build-test-typescript": "npm run build-lib && cd test/npm/typescript && tsc -p tsconfig.json && webpack",
     "build-test": "npm run build-test-es5 && npm run build-test-es6 && npm run build-test-haxe && npm run build-test-typescript",
     "dev-link": "npm link lime && npm link hxgenjs && npm link hxnodejs && npm link hxp && npm link format",
     "prepublishOnly": "npm run build",

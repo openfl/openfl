@@ -1,8 +1,7 @@
 import * as internal from "../_internal/utils/InternalAccess";
 import BlendMode from "../display/BlendMode";
+import ITileContainer from "../display/ITileContainer";
 import Shader from "../display/Shader";
-import TileContainer from "../display/TileContainer";
-import Tilemap from "../display/Tilemap";
 import Tileset from "../display/Tileset";
 import ColorTransform from "../geom/ColorTransform";
 import Matrix from "../geom/Matrix";
@@ -41,7 +40,7 @@ export default class Tile
 	protected __matrix: Matrix;
 	protected __originX: number;
 	protected __originY: number;
-	protected __parent: TileContainer;
+	protected __parent: ITileContainer;
 	protected __rect: Rectangle;
 	protected __rotation: null | number;
 	protected __rotationCosine: number;
@@ -222,7 +221,6 @@ export default class Tile
 		// TODO: Avoid Std.is
 
 		if (this.tileset != null) return this.tileset;
-		if (this.parent instanceof Tilemap) return (<Tilemap>this.parent).tileset;
 		if (this.parent == null) return null;
 		return (<internal.Tile><any>this.parent).__findTileset();
 	}
@@ -431,7 +429,7 @@ export default class Tile
 		tile objects that are above the current tile object in the tile
 		list hierarchy.
 	**/
-	public get parent(): TileContainer
+	public get parent(): ITileContainer
 	{
 		return this.__parent;
 	}
