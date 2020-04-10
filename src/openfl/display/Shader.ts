@@ -180,6 +180,14 @@ export default class Shader
 	protected __texture: ShaderInput<BitmapData>;
 	protected __textureSize: ShaderParameter<number>;
 
+	protected __context: Context3D;
+	protected __gl: WebGLRenderingContext;
+	protected __inputBitmapData: Array<ShaderInput<BitmapData>>;
+	protected __numPasses: number;
+	protected __paramBool: Array<ShaderParameter<boolean>>;
+	protected __paramFloat: Array<ShaderParameter<number>>;
+	protected __paramInt: Array<ShaderParameter<number>>;
+
 	/**
 		Creates a new Shader instance.
 

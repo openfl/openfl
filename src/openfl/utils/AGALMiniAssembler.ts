@@ -233,7 +233,7 @@ export default class AGALMiniAssembler
 			}
 
 			// grab options
-			var optsi = reg1.match(line) ? reg1.matchedPos().pos : -1;
+			var optsi = reg1.test(line) ? reg1.lastIndex : -1;
 			var opts = null;
 
 			if (optsi != -1)
@@ -245,10 +245,11 @@ export default class AGALMiniAssembler
 			// find opcode
 			var opCode = null;
 			var opFound = null;
+			var result = reg3.exec(line);
 
-			if (reg3.match(line))
+			if (result != null)
 			{
-				opCode = reg3.matched(0);
+				opCode = result[0];
 				opFound = AGALMiniAssembler.OPMAP[opCode];
 			}
 
@@ -768,17 +769,19 @@ export default class AGALMiniAssembler
 		AGALMiniAssembler.SAMPLEMAP[AGALMiniAssembler.REPEAT_U_CLAMP_V] = new Sampler(AGALMiniAssembler.REPEAT_U_CLAMP_V, AGALMiniAssembler.SAMPLER_REPEAT_SHIFT, 3);
 	}
 
-	private match(value: string, reg: EReg): Array<string>
+	private match(value: string, reg: RegExp): Array<string>
 	{
 		var matches = [];
 		var index = 0;
 		var match;
 
-		while (reg.matchSub(value, index))
+		var result = null;
+
+		while ((result = reg.exec(value)) != null)
 		{
-			match = reg.matched(0);
+			match = result[0]
 			matches.push(match);
-			index = reg.matchedPos().pos + match.length;
+			index = reg.lastIndex + match.length;
 		}
 
 		return matches;

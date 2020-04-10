@@ -548,6 +548,14 @@ interface ShaderInternal
 	__texture: ShaderInput<BitmapData>;
 	__textureSize: ShaderParameter<number>;
 
+	// __context: Context3D;
+	__gl: WebGLRenderingContext;
+	__inputBitmapData: Array<ShaderInput<BitmapData>>;
+	__numPasses: number;
+	__paramBool: Array<ShaderParameter<boolean>>;
+	__paramFloat: Array<ShaderParameter<number>>;
+	__paramInt: Array<ShaderParameter<number>>;
+
 	__init(context3D?: Context3D): void;
 }
 export { ShaderInternal as Shader }

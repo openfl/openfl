@@ -516,7 +516,8 @@ export default class TextEngine
 		let descent = 0.0;
 
 		// paragraph metrics
-		let align = TextFormatAlign.LEFT;
+		let align = null;
+		align = TextFormatAlign.LEFT;
 		let blockIndent = 0;
 		let bullet = false;
 		let indent = 0;
