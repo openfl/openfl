@@ -58,12 +58,12 @@ export default class TextEngine
 
 	protected __bottomScrollV: number;
 	protected __cursorTimerID: number;
-	protected __hasFocus: boolean;
+	public __hasFocus: boolean;
 	protected __isKeyDown: boolean;
 	protected __maxScrollH: number;
 	protected __maxScrollV: number;
-	protected __measuredHeight: number;
-	protected __measuredWidth: number;
+	public __measuredHeight: number;
+	public __measuredWidth: number;
 	protected __numLines: number;
 	protected __restrict: string;
 	protected __restrictRegexp: RegExp;

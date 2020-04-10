@@ -1477,7 +1477,7 @@ export default class BitmapData implements IBitmapDrawable
 		return null;
 	}
 
-	protected __getElement(clearData: boolean = false): HTMLElement
+	protected __getElement(clearData: boolean = false): CanvasImageSource
 	{
 		// return __backend.getElement(clearData);
 		return null;

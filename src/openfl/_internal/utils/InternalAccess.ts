@@ -1,5 +1,6 @@
 import Context3DState from "../../_internal/renderer/context3D/Context3DState";
 import BitmapDataPool from "../../_internal/renderer/BitmapDataPool";
+import DrawCommandBuffer from "../../_internal/renderer/DrawCommandBuffer";
 import DisplayObjectRenderData from "../../_internal/renderer/DisplayObjectRenderData";
 import DisplayObjectRendererType from "../../_internal/renderer/DisplayObjectRendererType";
 import SamplerState from "../../_internal/renderer/SamplerState";
@@ -8,10 +9,12 @@ import GraphicsDataType from "../../_internal/renderer/GraphicsDataType";
 import GraphicsFillType from "../../_internal/renderer/GraphicsFillType";
 import DisplayObjectIterator from "../../_internal/utils/DisplayObjectIterator";
 import ObjectPool from "../../_internal/utils/ObjectPool";
+import Bitmap from "../../display/Bitmap";
 import BitmapData from "../../display/BitmapData";
 import BlendMode from "../../display/BlendMode";
 import DisplayObject from "../../display/DisplayObject";
 import DisplayObjectContainer from "../../display/DisplayObjectContainer";
+import DisplayObjectRenderer from "../../display/DisplayObjectRenderer";
 import FrameLabel from "../../display/FrameLabel";
 import Graphics from "../../display/Graphics";
 import IBitmapDrawable from "../../display/IBitmapDrawable";
@@ -22,6 +25,8 @@ import LoaderInfo from "../../display/LoaderInfo";
 import MovieClip from "../../display/MovieClip";
 import Scene from "../../display/Scene";
 import Shader from "../../display/Shader";
+import ShaderInput from "../../display/ShaderInput";
+import ShaderParameter from "../../display/ShaderParameter";
 import Sprite from "../../display/Sprite";
 import Stage from "../../display/Stage";
 import Stage3D from "../../display/Stage3D";
@@ -34,6 +39,7 @@ import Context3D from "../../display3D/Context3D";
 import Context3DBufferUsage from "../../display3D/Context3DBufferUsage";
 import Context3DProgramFormat from "../../display3D/Context3DProgramFormat";
 import Context3DTextureFormat from "../../display3D/Context3DTextureFormat";
+import IndexBuffer3D from "../../display3D/IndexBuffer3D";
 import Event from "../../events/Event";
 import EventPhase from "../../events/EventPhase";
 import MouseEvent from "../../events/MouseEvent";
@@ -56,19 +62,29 @@ import GameInputControl from "../../ui/GameInputControl";
 import MouseCursor from "../../ui/MouseCursor";
 import ByteArray from "../../utils/ByteArray";
 import Vector from "../../Vector";
+import TextEngine from "../text/TextEngine";
 
 interface BitmapInternal
 {
 	__bitmapData: BitmapData;
+	__image: HTMLImageElement;
 	__imageVersion: number;
 }
 export { BitmapInternal as Bitmap }
 
 interface BitmapDataInternal
 {
+	__isValid: boolean;
 	__pool: BitmapDataPool;
+	__renderData: DisplayObjectRenderData;
+	__renderTransform: Matrix;
 
+	__getCanvas(clearData?: boolean): HTMLCanvasElement;
+	__getCanvasContext(clearData?: boolean): CanvasRenderingContext2D;
+	__getElement(clearData?: boolean): CanvasImageSource;
+	__getJSImage(): HTMLImageElement;
 	__getVersion(): number;
+	__setDirty(): void;
 }
 export { BitmapDataInternal as BitmapData }
 
@@ -84,6 +100,8 @@ interface BitmapFilterInternal
 	__shaderBlendMode: BlendMode;
 	__smooth: boolean;
 	__topExtension: number;
+
+	__applyFilter(bitmapData: BitmapData, sourceBitmapData: BitmapData, sourceRect: Rectangle, destPoint: Point): BitmapData;
 }
 export { BitmapFilterInternal as BitmapFilter }
 
@@ -95,12 +113,16 @@ export { ByteArrayInternal as ByteArray }
 
 interface ColorTransformInternal
 {
+	__pool: ObjectPool<ColorTransform>;
+
 	__clone(): ColorTransform;
 	__combine(ct: ColorTransform): void;
 	__copyFrom(ct: ColorTransform): void;
 	__equals(ct: ColorTransform, ignoreAlphaMultiplier: boolean): boolean;
 	__identity(): void;
 	__invert(): void;
+	__isDefault(ignoreAlphaMultiplier: boolean): boolean;
+	__setArrays(colorMultipliers: Array<number>, colorOffsets: Array<number>): void;
 }
 export { ColorTransformInternal as ColorTransform }
 
@@ -111,6 +133,9 @@ interface Context3DInternal
 	__contextState: Context3DState;
 	__frontBufferTexture: RectangleTexture;
 	__present: boolean;
+	__quadIndexBuffer: IndexBuffer3D;
+	__quadIndexBufferElements: number;
+	__state: Context3DState;
 
 	new(stage: Stage, contextState?: Context3DState, stage3D?: Stage3D): Context3D;
 	__renderStage3D(stage3D: Stage3D): void;
@@ -176,6 +201,7 @@ interface DisplayObjectInternal
 	__scaleY: number;
 	__scrollRect: Rectangle;
 	__shader: Shader;
+	__stage: Stage;
 	__tempPoint: Point;
 	__transform: Matrix;
 	__transformDirty: boolean;
@@ -242,6 +268,19 @@ interface DisplayObjectRendererInternal
 }
 export { DisplayObjectRendererInternal as DisplayObjectRenderer }
 
+interface DOMElementInternal
+{
+	__active: boolean;
+	__element: HTMLElement;
+}
+export { DOMElementInternal as DOMElement }
+
+interface DOMRendererInternal
+{
+	__clearBitmap(bitmap: Bitmap): void;
+}
+export { DOMRendererInternal as DOMRenderer }
+
 interface ErrorInternal
 {
 	__errorID: number;
@@ -307,12 +346,28 @@ export { GlowFilterInternal as GlowFilter }
 
 interface GraphicsInternal
 {
+	__bitmap: BitmapData;
+	__bounds: Rectangle;
+	__commands: DrawCommandBuffer;
+	__dirty: boolean;
+	__hardwareDirty: boolean;
+	__height: number;
+	__owner: DisplayObject;
+	__renderData: DisplayObjectRenderData;
+	__renderTransform: Matrix;
+	__softwareDirty: boolean;
+	__transformDirty: boolean;
+	__visible: boolean;
+	__width: number;
+	__worldTransform: Matrix;
+
 	new(owner: DisplayObject): Graphics;
 
 	__cleanup(): void;
 	__getBounds(rect: Rectangle, matrix: Matrix): void;
 	__hitTest(x: number, y: number, shapeFlag: boolean, matrix: Matrix): boolean;
 	__readGraphicsData(graphicsData: Vector<IGraphicsData>): void;
+	__update(displayMatrix: Matrix): void;
 }
 export { GraphicsInternal as Graphics }
 
@@ -386,6 +441,7 @@ export { LoaderInfoInternal as LoaderInfo }
 
 interface MatrixInternal
 {
+	__identity: Matrix;
 	__pool: ObjectPool<Matrix>;
 
 	__transformInversePoint(point: Point): void;
@@ -457,6 +513,8 @@ export { Program3DInternal as Program3D }
 interface RectangleInternal
 {
 	__pool: ObjectPool<Rectangle>;
+
+	__contract(x: number, y: number, width: number, height: number): void;
 	__expand(x: number, y: number, width: number, height: number): void;
 	__transform(rect: Rectangle, m: Matrix): void;
 }
@@ -468,8 +526,28 @@ interface RectangleTextureInternal
 }
 export { RectangleTextureInternal as RectangleTexture }
 
+interface RenderEventInternal
+{
+	__renderer: DisplayObjectRenderer;
+}
+export { RenderEventInternal as RenderEvent }
+
 interface ShaderInternal
 {
+	__alpha: ShaderParameter<number>;
+	__alphaTexture: ShaderInput<BitmapData>;
+	__alphaTextureMatrix: ShaderParameter<number>;
+	__bitmap: ShaderInput<BitmapData>;
+	__colorMultiplier: ShaderParameter<number>;
+	__colorOffset: ShaderParameter<number>;
+	__context: Context3D;
+	__hasColorTransform: ShaderParameter<boolean>;
+	__matrix: ShaderParameter<number>;
+	__position: ShaderParameter<number>;
+	__textureCoord: ShaderParameter<number>;
+	__texture: ShaderInput<BitmapData>;
+	__textureSize: ShaderParameter<number>;
+
 	__init(context3D?: Context3D): void;
 }
 export { ShaderInternal as Shader }
@@ -477,6 +555,7 @@ export { ShaderInternal as Shader }
 interface SimpleButtonInternal
 {
 	__currentState: DisplayObject;
+	__previousStates: Vector<DisplayObject>;
 }
 export { SimpleButtonInternal as SimpleButton }
 
@@ -511,8 +590,13 @@ export { Stage3DInternal as Stage3D }
 
 interface StageInternal
 {
+	__clearBeforeRender: boolean;
+	__colorSplit: Array<number>;
+	__colorString: string;
+	__contentsScaleFactor: number;
 	__mouseX: number;
 	__mouseY: number;
+	__transparent: boolean;
 
 	__startDrag(sprite: Sprite, lockCenter: boolean, bounds: Rectangle): void;
 	__stopDrag(sprite: Sprite): void;
@@ -521,11 +605,28 @@ export { StageInternal as Stage }
 
 interface TextFieldInternal
 {
+	__caretIndex: number;
 	__defaultTextFormat: TextFormat;
-
+	__dirty: boolean;
+	__displayAsPassword: boolean;
+	__div: HTMLDivElement;
+	__domRender: boolean;
+	__forceCachedBitmapUpdate: boolean;
+	__isHTML: boolean;
+	__layoutDirty: boolean;
 	__offsetX: number;
 	__offsetY: number;
+	__rawHtmlText: string;
+	__renderedOnCanvasWhileOnDOM: boolean;
+	__selectionIndex: number;
+	__showCursor: boolean;
+	__text: string;
+	__textEngine: TextEngine;
 	__textFormat: TextFormat;
+
+	__setRenderDirty(): void;
+	__updateLayout(): void;
+	__updateText(value: string): void
 }
 export { TextFieldInternal as TextField }
 
@@ -538,6 +639,12 @@ interface TextFormatInternal
 }
 export { TextFormatInternal as TextFormat }
 
+interface TextureBaseInternal
+{
+	__context: Context3D;
+}
+export { TextureBaseInternal as TextureBase }
+
 interface TextureInternal
 {
 	new(context: Context3D, width: number, height: number, format: Context3DTextureFormat, optimizeForRenderToTexture: boolean,
@@ -547,6 +654,7 @@ export { TextureInternal as Texture }
 
 interface TileContainerInternal
 {
+	__length: number;
 	__tiles: Array<Tile>;
 }
 export { TileContainerInternal as TileContainer }
@@ -566,6 +674,9 @@ export { TileInternal as Tile }
 interface TilemapInternal
 {
 	__group: TileContainer;
+	__tileset: Tileset;
+	__height: number;
+	__width: number;
 }
 export { TilemapInternal as Tilemap }
 
@@ -615,7 +726,11 @@ export { VertexBuffer3DInternal as VertexBuffer3D }
 
 interface VideoInternal
 {
+	__active: boolean;
+	__dirty: boolean;
+	__height: number;
 	__stream: NetStream;
+	__width: number;
 }
 export { VideoInternal as Video }
 

@@ -143,7 +143,7 @@ export default class ShaderInput<T = BitmapData | Video> /*implements Dynamic*/
 		The zero-based index of the input in the shader, indicating the order
 		of the input definitions in the shader.
 	**/
-	public get index(): WebGLUniformLocation
+	public get index(): WebGLUniformLocation | number
 	{
 		return this.__index;
 	}

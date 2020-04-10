@@ -35,7 +35,7 @@ export default class DisplayObjectRenderData
 	public framebufferContext: Context3D;
 	public indexBuffer: IndexBuffer3D;
 	public indexBufferContext: Context3D;
-	public indexBufferData: Int16Array;
+	public indexBufferData: Uint16Array;
 	public indexBufferGrid: Rectangle;
 	public isCacheBitmapRender: boolean;
 	public quadBuffer: Context3DBuffer;

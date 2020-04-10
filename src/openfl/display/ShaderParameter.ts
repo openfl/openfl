@@ -143,7 +143,7 @@ export default class ShaderParameter<T = number | boolean> /*implements Dynamic*
 	/**
 		The zero-based index of the parameter.
 	**/
-	public get index(): WebGLUniformLocation
+	public get index(): WebGLUniformLocation | number
 	{
 		return this.__index;
 	}

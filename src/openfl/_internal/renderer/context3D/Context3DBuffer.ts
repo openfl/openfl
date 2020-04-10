@@ -129,7 +129,7 @@ export default class Context3DBuffer
 	}
 }
 
-enum Context3DElementType
+export enum Context3DElementType
 {
 	QUADS,
 	TRIANGLES,

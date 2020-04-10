@@ -646,7 +646,7 @@ export default class AGALMiniAssembler
 					dbgLine += " ";
 				}
 
-				var byteStr = StringTools.hex(this._agalcode[index], 2);
+				var byteStr = (this._agalcode[index] & 0xFF).toString(16);
 
 				if (byteStr.length < 2)
 				{

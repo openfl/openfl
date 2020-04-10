@@ -1455,7 +1455,7 @@ export default class Context3D extends EventDispatcher
 		is outside the range from 0 through 7. (A maximum of eight vertex attribute
 		registers can be used by a shader.)
 	**/
-	public setVertexBufferAt(index: number, buffer: VertexBuffer3D, bufferOffset: number = 0, format: Context3DVertexBufferFormat = Context3DVertexBufferFormat.FLOAT_4): void
+	public setVertexBufferAt(index: number | WebGLUniformLocation, buffer: VertexBuffer3D, bufferOffset: number = 0, format: Context3DVertexBufferFormat = Context3DVertexBufferFormat.FLOAT_4): void
 	{
 		// TODO: Don't flush immediately?
 		// this.__backend.setVertexBufferAt(index, buffer, bufferOffset, format);
