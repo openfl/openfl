@@ -15,6 +15,7 @@ import Rectangle from "../../../geom/Rectangle";
 // import openfl._internal.backend.lime_standalone.ARGB;
 import CanvasGraphics from "../canvas/CanvasGraphics";
 import CanvasRenderer from "../canvas/CanvasRenderer";
+import ARGB from "../../graphics/ARGB";
 import { default as Context3DBuffer, Context3DElementType } from "./Context3DBuffer";
 import Context3DRenderer from "./Context3DRenderer";
 

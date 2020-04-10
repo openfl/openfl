@@ -1,4 +1,5 @@
 import DisplayObject from "../../../display/DisplayObject";
+import ARGB from "../../graphics/ARGB";
 import * as internal from "../../utils/InternalAccess";
 import CanvasRenderer from "./CanvasRenderer";
 import CanvasShape from "./CanvasShape";
@@ -26,7 +27,7 @@ export default class CanvasDisplayObject
 
 			renderer.setTransform((<internal.DisplayObject><any>displayObject).__renderTransform, context);
 
-			var color: ARGB = (displayObject.opaqueBackground : ARGB);
+			var color = new ARGB(displayObject.opaqueBackground);
 			context.fillStyle = 'rgb(${color.r},${color.g},${color.b})';
 			context.fillRect(0, 0, displayObject.width, displayObject.height);
 

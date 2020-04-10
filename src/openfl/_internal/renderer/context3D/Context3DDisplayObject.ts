@@ -2,6 +2,7 @@ import * as internal from "../../../_internal/utils/InternalAccess";
 import Context3DClearMask from "../../../display3D/Context3DClearMask";
 import DisplayObject from "../../../display/DisplayObject";
 import Rectangle from "../../../geom/Rectangle";
+import ARGB from "../../graphics/ARGB";
 // import openfl._internal.backend.lime_standalone.ARGB;
 import Context3DRenderer from "./Context3DRenderer";
 import Context3DShape from "./Context3DShape";

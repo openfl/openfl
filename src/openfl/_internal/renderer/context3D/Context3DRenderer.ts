@@ -40,6 +40,7 @@ import TextField from "../../../text/TextField";
 // import openfl._internal.backend.lime_standalone.ARGB;
 import Matrix3D from "../../../geom/Matrix3D";
 import CanvasRenderer from "../../../_internal/renderer/canvas/CanvasRenderer";
+import ARGB from "../../graphics/ARGB";
 import Context3DAlphaMaskShader from "./Context3DAlphaMaskShader";
 import Context3DBitmap from "./Context3DBitmap";
 import Context3DBitmapData from "./Context3DBitmapData";

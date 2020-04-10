@@ -1,4 +1,4 @@
-import Context3DRenderer from "../_internal/renderer/context3D/Context3DRenderer";
+// import Context3DRenderer from "../_internal/renderer/context3D/Context3DRenderer";
 import BitmapDataPool from "../_internal/renderer/BitmapDataPool";
 import DisplayObjectRenderData from "../_internal/renderer/DisplayObjectRenderData";
 import DisplayObjectType from "../_internal/renderer/DisplayObjectType";
@@ -80,7 +80,7 @@ import Vector from "../Vector";
 **/
 export default class BitmapData implements IBitmapDrawable
 {
-	protected static __hardwareRenderer: Context3DRenderer;
+	// protected static __hardwareRenderer: Context3DRenderer;
 	protected static __pool: BitmapDataPool = new BitmapDataPool();
 	protected static __softwareRenderer: DisplayObjectRenderer;
 	protected static __textureFormat: number;
