@@ -9,7 +9,7 @@
 		"lib": [ "dom", "es2017" ],
 		"sourceMap": true,
 		"assumeChangesOnlyAffectDirectDependencies": false,
-		"outDir": "./lib-ts"
+		"outDir": "./lib/openfl"
 	},
 	"include": [
 		"./src/openfl/index.ts"
