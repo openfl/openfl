@@ -169,7 +169,7 @@ var openfl;
         }
         var data = new Vector();
         var i = 0;
-        var count = a.length;
+        var count = array.length;
         while (i < count)
         {
             data[i] = array[i];
