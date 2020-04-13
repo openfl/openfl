@@ -1,11 +1,7 @@
-import URLRequest from "./URLRequest";
+import URLRequest from "../net/URLRequest";
+import Lib from "../Lib";
 
-
-declare namespace openfl.net {
-	
-	export function sendToURL (request:URLRequest):void;
-	
+export default function sendToURL(request: URLRequest): void
+{
+	return Lib.sendToURL(request);
 }
-
-
-export default openfl.net.sendToURL;

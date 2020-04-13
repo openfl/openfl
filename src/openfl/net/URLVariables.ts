@@ -4,8 +4,10 @@
 	URLLoader class, with the `data` property of the URLRequest
 	class, and with openfl.net namespace functions.
 **/
-export default class URLVariables extends Object implements AllowProperties
+export default class URLVariables extends Object
 {
+	[key: string]: any;
+
 	/**
 		Creates a new URLVariables object. You pass URLVariables objects to the
 		`data` property of URLRequest objects.
@@ -90,9 +92,4 @@ export default class URLVariables extends Object implements AllowProperties
 
 		return result.join("&");
 	}
-}
-
-interface AllowProperties
-{
-	[key: string]: any
 }

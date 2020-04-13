@@ -2,6 +2,8 @@ import BitmapData from "../display/BitmapData";
 import BitmapDataChannel from "../display/BitmapDataChannel";
 import DisplayObjectRenderer from "../display/DisplayObjectRenderer";
 import Shader from "../display/Shader";
+import ShaderInput from "../display/ShaderInput";
+import ShaderParameter from "../display/ShaderParameter";
 import BitmapFilter from "../filters/BitmapFilter";
 import BitmapFilterShader from "../filters/BitmapFilterShader";
 import DisplacementMapFilterMode from "../filters/DisplacementMapFilterMode";
@@ -117,7 +119,7 @@ export default class DisplacementMapFilter extends BitmapFilter
 	protected __componentY: number;
 	protected __mapBitmap: BitmapData;
 	protected __mapPoint: Point;
-	protected __mode: string;
+	protected __mode: DisplacementMapFilterMode;
 	protected __scaleX: number;
 	protected __scaleY: number;
 
@@ -184,16 +186,16 @@ export default class DisplacementMapFilter extends BitmapFilter
 	{
 		this.__updateMapMatrix();
 
-		ImageCanvasUtil.convertToData(bitmapData.limeImage);
-		ImageCanvasUtil.convertToData(sourceBitmapData.limeImage);
-		ImageCanvasUtil.convertToData(this.__mapBitmap.limeImage);
+		// ImageCanvasUtil.convertToData(bitmapData.limeImage);
+		// ImageCanvasUtil.convertToData(sourceBitmapData.limeImage);
+		// ImageCanvasUtil.convertToData(this.__mapBitmap.limeImage);
 
-		ImageDataUtil.displaceMap(bitmapData.limeImage, sourceBitmapData.limeImage, this.__mapBitmap.limeImage,
+		// ImageDataUtil.displaceMap(bitmapData.limeImage, sourceBitmapData.limeImage, this.__mapBitmap.limeImage,
 
-			new Vector2(this.__mapPoint.x / this.__mapBitmap.width, this.__mapPoint.y / this.__mapBitmap.height),
+		// 	new Vector2(this.__mapPoint.x / this.__mapBitmap.width, this.__mapPoint.y / this.__mapBitmap.height),
 
-			new Vector4(this.__matrixData[0], this.__matrixData[4], this.__matrixData[8], this.__matrixData[12]),
-			new Vector4(this.__matrixData[1], this.__matrixData[5], this.__matrixData[9], this.__matrixData[13]), this.__smooth);
+		// 	new Vector4(this.__matrixData[0], this.__matrixData[4], this.__matrixData[8], this.__matrixData[12]),
+		// 	new Vector4(this.__matrixData[1], this.__matrixData[5], this.__matrixData[9], this.__matrixData[13]), this.__smooth);
 
 		return bitmapData;
 	}
@@ -204,12 +206,15 @@ export default class DisplacementMapFilter extends BitmapFilter
 
 		this.__updateMapMatrix();
 
-		DisplacementMapFilter.__displacementMapShader.data.uOffsets.value = DisplacementMapFilter.__offset;
-		DisplacementMapFilter.__displacementMapShader.data.uDisplacements.value = DisplacementMapFilter.__matrixData;
+		if (DisplacementMapFilter.__displacementMapShader.data != null)
+		{
+			(DisplacementMapFilter.__displacementMapShader.data.uOffsets as ShaderParameter).value = DisplacementMapFilter.__offset;
+			(DisplacementMapFilter.__displacementMapShader.data.uDisplacements as ShaderParameter).value = DisplacementMapFilter.__matrixData;
 
-		DisplacementMapFilter.__displacementMapShader.data.mapTextureCoordsOffset.value = [mapPoint.x / this.__mapBitmap.width, mapPoint.y / this.__mapBitmap.height];
+			(DisplacementMapFilter.__displacementMapShader.data.mapTextureCoordsOffset as ShaderParameter).value = [this.mapPoint.x / this.__mapBitmap.width, this.mapPoint.y / this.__mapBitmap.height];
 
-		DisplacementMapFilter.__displacementMapShader.data.mapTexture.input = this.__mapBitmap;
+			(DisplacementMapFilter.__displacementMapShader.data.mapTexture as ShaderInput).input = this.__mapBitmap;
+		}
 
 		return DisplacementMapFilter.__displacementMapShader;
 	}
@@ -366,12 +371,12 @@ export default class DisplacementMapFilter extends BitmapFilter
 		@throws ArgumentError The mode string is not one of the valid types
 		@throws TypeError     The String is null when being set
 	**/
-	public get mode(): string
+	public get mode(): DisplacementMapFilterMode
 	{
 		return this.__mode;
 	}
 
-	public set mode(value: string)
+	public set mode(value: DisplacementMapFilterMode)
 	{
 		if (value != this.__mode) this.__renderDirty = true;
 		this.__mode = value;

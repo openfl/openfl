@@ -275,6 +275,11 @@ export default class Sprite extends DisplayObjectContainer
 		return (this.__tabEnabled == null ? this.__buttonMode : this.__tabEnabled);
 	}
 
+	public set tabEnabled(value: boolean)
+	{
+		super.tabEnabled = value;
+	}
+
 	/**
 		Specifies the button mode of this sprite. If `true`, this
 		sprite behaves as a button, which means that it triggers the display of

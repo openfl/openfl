@@ -1,26 +1,23 @@
-namespace openfl.display3D
+/**
+	Defines the values to use for sampler mipmap filter mode
+**/
+export enum Context3DMipFilter
 {
 	/**
-		Defines the values to use for sampler mipmap filter mode
+		Select the two closest MIP levels and linearly blend between them (the highest
+		quality mode, but has some performance cost).
 	**/
-	export enum Context3DMipFilter
-	{
-		/**
-			Select the two closest MIP levels and linearly blend between them (the highest
-			quality mode, but has some performance cost).
-		**/
-		MIPLINEAR = "miplinear",
+	MIPLINEAR = "miplinear",
 
-		/**
-			Use the nearest neighbor metric to select MIP levels (the fastest rendering method).
-		**/
-		MIPNEAREST = "mipnearest",
+	/**
+		Use the nearest neighbor metric to select MIP levels (the fastest rendering method).
+	**/
+	MIPNEAREST = "mipnearest",
 
-		/**
-			Always use the top level texture (has a performance penalty when downscaling).
-		**/
-		MIPNONE = "mipnone"
-	}
+	/**
+		Always use the top level texture (has a performance penalty when downscaling).
+	**/
+	MIPNONE = "mipnone"
 }
 
-export default openfl.display3D.Context3DMipFilter;
+export default Context3DMipFilter;

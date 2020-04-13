@@ -35,7 +35,7 @@ export default class Future<T>
 {
 	protected __completeListeners: Array<(value: T) => void>;
 	protected __error: any;
-	protected __errorListeners: Array<(error: Object) => void>;
+	protected __errorListeners: Array<(error: any) => void>;
 	protected __isComplete: boolean;
 	protected __isError: boolean;
 	protected __progressListeners: Array<(bytesLoaded: number, bytesTotal: number) => void>;
@@ -121,7 +121,7 @@ export default class Future<T>
 		@param	listener	A callback method to receive the error value
 		@return	The current `Future`
 	**/
-	public onError(listener: (error: Object) => void): Future<T>
+	public onError(listener: (error: any) => void): Future<T>
 	{
 		if (listener != null)
 		{
@@ -242,9 +242,9 @@ export default class Future<T>
 		@param	error	The error value to set
 		@return	A new `Future` instance
 	**/
-	public static withError(error: Object): Future<Object>
+	public static withError(error: any): Future<any>
 	{
-		var future = new Future<Object>();
+		var future = new Future<any>();
 		future.__isError = true;
 		future.__error = error;
 		return future;

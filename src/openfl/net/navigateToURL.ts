@@ -1,11 +1,7 @@
-import URLRequest from "./URLRequest";
+import URLRequest from "../net/URLRequest";
+import Lib from "../Lib";
 
-
-declare namespace openfl.net {
-	
-	export function navigateToURL (request:URLRequest, window?:string):void;
-	
+export default function navigateToURL(request: URLRequest, window?: string): void
+{
+	return Lib.navigateToURL(request, window);
 }
-
-
-export default openfl.net.navigateToURL;

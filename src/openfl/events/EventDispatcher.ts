@@ -524,18 +524,18 @@ class DispatchIterator implements Iterator<Listener>
 
 class Listener
 {
-	public callback: (event: Object) => void;
+	public callback: (event: any) => void;
 	public priority: number;
 	public useCapture: boolean;
 
-	public constructor(callback: (event: Object) => void, useCapture: boolean, priority: number)
+	public constructor(callback: (event: any) => void, useCapture: boolean, priority: number)
 	{
 		this.callback = callback;
 		this.useCapture = useCapture;
 		this.priority = priority;
 	}
 
-	public match(callback: (event: Object) => void, useCapture: boolean): boolean
+	public match(callback: (event: any) => void, useCapture: boolean): boolean
 	{
 		return (this.callback === callback && this.useCapture == useCapture);
 	}

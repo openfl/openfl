@@ -44,36 +44,42 @@ class ColorMatrixShader extends BitmapFilterShader
 	{
 		super();
 
-		(this.data.uMultipliers as ShaderParameter).value = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
-		(this.data.uOffsets as ShaderParameter).value = [0, 0, 0, 0];
+		if (this.data.uMultipliers != null)
+		{
+			(this.data.uMultipliers as ShaderParameter).value = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
+			(this.data.uOffsets as ShaderParameter).value = [0, 0, 0, 0];
+		}
 	}
 
 	public init(matrix: Array<number>): void
 	{
-		var multipliers = (this.data.uMultipliers as ShaderParameter).value;
-		var offsets = (this.data.uOffsets as ShaderParameter).value;
+		if (this.data.uMultipliers != null)
+		{
+			var multipliers = (this.data.uMultipliers as ShaderParameter).value;
+			var offsets = (this.data.uOffsets as ShaderParameter).value;
 
-		multipliers[0] = matrix[0];
-		multipliers[1] = matrix[1];
-		multipliers[2] = matrix[2];
-		multipliers[3] = matrix[3];
-		multipliers[4] = matrix[5];
-		multipliers[5] = matrix[6];
-		multipliers[6] = matrix[7];
-		multipliers[7] = matrix[8];
-		multipliers[8] = matrix[10];
-		multipliers[9] = matrix[11];
-		multipliers[10] = matrix[12];
-		multipliers[11] = matrix[13];
-		multipliers[12] = matrix[15];
-		multipliers[13] = matrix[16];
-		multipliers[14] = matrix[17];
-		multipliers[15] = matrix[18];
+			multipliers[0] = matrix[0];
+			multipliers[1] = matrix[1];
+			multipliers[2] = matrix[2];
+			multipliers[3] = matrix[3];
+			multipliers[4] = matrix[5];
+			multipliers[5] = matrix[6];
+			multipliers[6] = matrix[7];
+			multipliers[7] = matrix[8];
+			multipliers[8] = matrix[10];
+			multipliers[9] = matrix[11];
+			multipliers[10] = matrix[12];
+			multipliers[11] = matrix[13];
+			multipliers[12] = matrix[15];
+			multipliers[13] = matrix[16];
+			multipliers[14] = matrix[17];
+			multipliers[15] = matrix[18];
 
-		offsets[0] = matrix[4] / 255.0;
-		offsets[1] = matrix[9] / 255.0;
-		offsets[2] = matrix[14] / 255.0;
-		offsets[3] = matrix[19] / 255.0;
+			offsets[0] = matrix[4] / 255.0;
+			offsets[1] = matrix[9] / 255.0;
+			offsets[2] = matrix[14] / 255.0;
+			offsets[3] = matrix[19] / 255.0;
+		}
 	}
 }
 

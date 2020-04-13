@@ -5,6 +5,7 @@ var allTests = glob.sync ('./**/*.js', { "ignore": [ './webpack.config.js', './b
 
 module.exports = {
 	mode: "development",
+	devtool: "source-map",
 	node: {
 		fs: 'empty'
 	},

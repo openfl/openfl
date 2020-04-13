@@ -57,7 +57,7 @@ export default class BitmapDataPool
 		var pool = heightMap[height];
 		if (pool == null)
 		{
-			pool = heightMap[height] = new ObjectPool<BitmapData>(this.__createBitmapData.bind(width, height), this.__cleanBitmapData);
+			pool = heightMap[height] = new ObjectPool<BitmapData>(() => this.__createBitmapData(width, height), this.__cleanBitmapData);
 		}
 
 		var bitmapData = pool.get();

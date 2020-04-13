@@ -386,7 +386,7 @@ export default class Lib
 	**/
 	public static setInterval(closure: Function, delay: number, ...args: any[]): number
 	{
-		return window.setInterval.apply(this, arguments);
+		return <any>window.setInterval.apply(this, <any>arguments);
 	}
 
 	/**
@@ -413,7 +413,7 @@ export default class Lib
 	**/
 	public static setTimeout(closure: Function, delay: number, ...args: any[]): number
 	{
-		return window.setTimeout.apply(this, arguments);
+		return <any>window.setTimeout.apply(this, <any>arguments);
 	}
 
 	public static trace(arg: any): void

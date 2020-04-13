@@ -1,8 +1,6 @@
-declare namespace openfl.utils {
-	
-	export function getTimer ():number;
-	
+import Lib from "../Lib";
+
+export default function getTimer(): number
+{
+	return Lib.getTimer();
 }
-
-
-export default openfl.utils.getTimer;

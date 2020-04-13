@@ -75,7 +75,7 @@ declare namespace openfl
 		* Reliability: runtime range checking (or fixed-length checking) increases
 		reliability significantly over Arrays.
 	**/
-	export class Vector<T> extends Array<T>
+	export class Vector<T> /*extends Array<T>*/
 	{
 		/**
 			Indicates whether the `length` property of the Vector can be changed. If the
@@ -189,7 +189,7 @@ declare namespace openfl
 			Vector matches the base type of the Vector on which the method is called.
 			@param	callback	The function to run on each item in the Vector.
 		**/
-		public filter(callback): Vector<T>;
+		public filter(callback: (value: T) => boolean): Vector<T>;
 
 		/**
 			Searches for an item in the Vector and returns the index position of the item.
@@ -428,6 +428,8 @@ declare namespace openfl
 			@return	A new Vector object
 		**/
 		public static ofArray<T>(array: Array<T>): Vector<T>;
+
+		public [Symbol.iterator]();
 	}
 }
 

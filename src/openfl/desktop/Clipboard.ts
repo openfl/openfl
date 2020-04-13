@@ -318,83 +318,83 @@ export default class Clipboard
 		}
 	}
 
-	// 	/**
-	// 		Adds a reference to a handler that produces the data to be
-	// 		transfered.
-	// 		Use a handler to defer creation or rendering of the data
-	// 		until it is actually accessed.
+	/**
+		Adds a reference to a handler that produces the data to be
+		transfered.
+		Use a handler to defer creation or rendering of the data
+		until it is actually accessed.
 
-	// 		The handler must return the appropriate data type for the
-	// 		specified format:
+		The handler must return the appropriate data type for the
+		specified format:
 
-	// 		| Format | Return Type |
-	// 		| --- | --- |
-	// 		| `ClipboardFormats.TEXT_FORMAT` | `String` |
-	// 		| `ClipboardFormats.HTML_FORMAT` | `String` |
-	// 		| `ClipboardFormats.URL_FORMAT` | `String` (AIR only) |
-	// 		| `ClipboardFormats.RICH_TEXT_FORMAT` | `ByteArray` |
-	// 		| `ClipboardFormats.BITMAP_FORMAT` | `BitmapData` (AIR only) |
-	// 		| `ClipboardFormats.FILE_LIST_FORMAT` | Array of `File` (AIR only) |
-	// 		| `ClipboardFormats.FILE_PROMISE_LIST_FORMAT` | Array of `File` (AIR only) |
-	// 		| Custom format name | Non-void |
+		| Format | Return Type |
+		| --- | --- |
+		| `ClipboardFormats.TEXT_FORMAT` | `String` |
+		| `ClipboardFormats.HTML_FORMAT` | `String` |
+		| `ClipboardFormats.URL_FORMAT` | `String` (AIR only) |
+		| `ClipboardFormats.RICH_TEXT_FORMAT` | `ByteArray` |
+		| `ClipboardFormats.BITMAP_FORMAT` | `BitmapData` (AIR only) |
+		| `ClipboardFormats.FILE_LIST_FORMAT` | Array of `File` (AIR only) |
+		| `ClipboardFormats.FILE_PROMISE_LIST_FORMAT` | Array of `File` (AIR only) |
+		| Custom format name | Non-void |
 
-	// 		The handler is called when and only when the data in the
-	// 		specified format is read. Note that in some cases, the operating
-	// 		system calls the before a drop occurs. For example, when you
-	// 		use a handler to provide the data for a file dragged from an
-	// 		AIR application to the file system, the operating system calls the
-	// 		data handler as soon as the drag gesture leaves the AIR
-	// 		application�typically resulting in an undesireable pause as the file
-	// 		data is downloaded or created. You can use a URLFilePromise for this
-	// 		purpose instead.
+		The handler is called when and only when the data in the
+		specified format is read. Note that in some cases, the operating
+		system calls the before a drop occurs. For example, when you
+		use a handler to provide the data for a file dragged from an
+		AIR application to the file system, the operating system calls the
+		data handler as soon as the drag gesture leaves the AIR
+		application�typically resulting in an undesireable pause as the file
+		data is downloaded or created. You can use a URLFilePromise for this
+		purpose instead.
 
-	// 		Note that the underlying data can change between the time the handler
-	// 		is added and the time the data is read unless your application takes
-	// 		steps to protect the data. The behavior that occurs when data on the
-	// 		clipboard represented by a handler is read more than once is
-	// 		not guaranteed. The clipboard might return the data produced by the
-	// 		first call or it might call the again. Do not rely
-	// 		on either behavior.
+		Note that the underlying data can change between the time the handler
+		is added and the time the data is read unless your application takes
+		steps to protect the data. The behavior that occurs when data on the
+		clipboard represented by a handler is read more than once is
+		not guaranteed. The clipboard might return the data produced by the
+		first call or it might call the again. Do not rely
+		on either behavior.
 
-	// 		In the application sandbox of Adobe AIR, `setDataHandler()` can be
-	// 		called anytime. In other contexts, `setDataHandler()` can only be
-	// 		called in response to a user-generated event such as a key press or
-	// 		mouse click.
+		In the application sandbox of Adobe AIR, `setDataHandler()` can be
+		called anytime. In other contexts, `setDataHandler()` can only be
+		called in response to a user-generated event such as a key press or
+		mouse click.
 
-	// 		To add data directly to this Clipboard object, use the `setData()`
-	// 		method instead. If both the `setData()` and the `setDataHandler()`
-	// 		methods are called with the same format name, then the handler
-	// 		function is never called.
+		To add data directly to this Clipboard object, use the `setData()`
+		method instead. If both the `setData()` and the `setDataHandler()`
+		methods are called with the same format name, then the handler
+		function is never called.
 
-	// 		**Note:** On Mac OS, when you set the `format` parameter to
-	// 		`ClipboardFormats.URL_FORMAT`, the URL is transferred only if the
-	// 		handler returns a valid URL. Otherwise, the Clipboard object
-	// 		is emptied (and calling `getData()` returns `null`).
+		**Note:** On Mac OS, when you set the `format` parameter to
+		`ClipboardFormats.URL_FORMAT`, the URL is transferred only if the
+		handler returns a valid URL. Otherwise, the Clipboard object
+		is emptied (and calling `getData()` returns `null`).
 
-	// 		@param format       A that returns the data to be
-	// 							transferred.
-	// 		@param handler      The format of the data.
-	// 		@param serializable Specify `true` if the object returned by `handler`
-	// 							can be serialized (and deserialized).
-	// 		@return `true` if the handler was succesfully set; `false` otherwise.
-	// 		@throws IllegalOperationError The Clipboard object requested is no
-	// 									  longer in scope (AIR only).
-	// 		@throws SecurityError         Reading from or writing to the clipboard
-	// 									  is not permitted in this context. In
-	// 									  Flash Player, you can only call this
-	// 									  method successfully during the
-	// 									  processing of a user event (such as a
-	// 									  key press or mouse click). In AIR, this
-	// 									  restriction only applies to content
-	// 									  outside of the application security
-	// 									  sandbox.
-	// 		@throws TypeError             `format` or `handler` is `null`.
-	// 	**/
-	// 	public setDataHandler(format: ClipboardFormats, handler: void-> Dynamic, serializable  : boolean = true) : boolean
-	// {
-	// 	openfl._internal.Lib.notImplemented();
-	// 	return false;
-	// }
+		@param format       A that returns the data to be
+							transferred.
+		@param handler      The format of the data.
+		@param serializable Specify `true` if the object returned by `handler`
+							can be serialized (and deserialized).
+		@return `true` if the handler was succesfully set; `false` otherwise.
+		@throws IllegalOperationError The Clipboard object requested is no
+									  longer in scope (AIR only).
+		@throws SecurityError         Reading from or writing to the clipboard
+									  is not permitted in this context. In
+									  Flash Player, you can only call this
+									  method successfully during the
+									  processing of a user event (such as a
+									  key press or mouse click). In AIR, this
+									  restriction only applies to content
+									  outside of the application security
+									  sandbox.
+		@throws TypeError             `format` or `handler` is `null`.
+	**/
+	public setDataHandler(format: ClipboardFormats, handler: () => any, serializable: boolean = true): boolean
+	{
+		// openfl._internal.Lib.notImplemented();
+		return false;
+	}
 
 	// Get & Set Methods
 

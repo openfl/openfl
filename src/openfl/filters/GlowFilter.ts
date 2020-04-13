@@ -1,13 +1,13 @@
 import BitmapData from "../display/BitmapData";
 import DisplayObjectRenderer from "../display/DisplayObjectRenderer";
 import Shader from "../display/Shader";
+import ShaderInput from "../display/ShaderInput";
 import ShaderParameter from "../display/ShaderParameter";
 import BitmapFilter from "../filters/BitmapFilter";
 import BitmapFilterShader from "../filters/BitmapFilterShader";
 import ColorTransform from "../geom/ColorTransform";
 import Point from "../geom/Point";
 import Rectangle from "../geom/Rectangle";
-import { ShaderInput } from "openfl/display/index";
 
 class InvertAlphaShader extends BitmapFilterShader
 {
@@ -102,9 +102,13 @@ class BlurAlphaShader extends BitmapFilterShader
 	public constructor()
 	{
 		super();
-		(this.data.uRadius as ShaderParameter).value = [0, 0];
-		(this.data.uColor as ShaderParameter).value = [0, 0, 0, 0];
-		(this.data.uStrength as ShaderParameter).value = [1];
+
+		if (this.data.uRadius != null)
+		{
+			(this.data.uRadius as ShaderParameter).value = [0, 0];
+			(this.data.uColor as ShaderParameter).value = [0, 0, 0, 0];
+			(this.data.uStrength as ShaderParameter).value = [1];
+		}
 	}
 }
 
@@ -140,7 +144,11 @@ class CombineShader extends BitmapFilterShader
 	public constructor()
 	{
 		super();
-		(this.data.offset as ShaderParameter).value = [0, 0];
+
+		if (this.data.offset != null)
+		{
+			(this.data.offset as ShaderParameter).value = [0, 0];
+		}
 	}
 }
 
@@ -176,7 +184,11 @@ class InnerCombineShader extends BitmapFilterShader
 	public constructor()
 	{
 		super();
-		(this.data.offset as ShaderParameter).value = [0, 0];
+
+		if (this.data.offset != null)
+		{
+			(this.data.offset as ShaderParameter).value = [0, 0];
+		}
 	}
 }
 
@@ -212,7 +224,11 @@ class CombineKnockoutShader extends BitmapFilterShader
 	public constructor()
 	{
 		super();
-		(this.data.offset as ShaderParameter).value = [0, 0];
+
+		if (this.data.offset != null)
+		{
+			(this.data.offset as ShaderParameter).value = [0, 0];
+		}
 	}
 }
 
@@ -248,7 +264,11 @@ class InnerCombineKnockoutShader extends BitmapFilterShader
 	public constructor()
 	{
 		super();
-		(this.data.offset as ShaderParameter).value = [0, 0];
+
+		if (this.data.offset != null)
+		{
+			(this.data.offset as ShaderParameter).value = [0, 0];
+		}
 	}
 }
 
@@ -417,66 +437,71 @@ export default class GlowFilter extends BitmapFilter
 			return GlowFilter.__invertAlphaShader;
 		}
 
-		var blurPass = pass - (this.__inner ? 1 : 0);
-		var numBlurPasses = this.__horizontalPasses + this.__verticalPasses;
-
-		if (blurPass < numBlurPasses)
+		if (GlowFilter.__blurAlphaShader.data.uRadius != null)
 		{
-			var shader = GlowFilter.__blurAlphaShader;
-			var uRadius = shader.data.uRadius as ShaderParameter;
-			var uColor = shader.data.uColor as ShaderParameter;
-			var uStrength = shader.data.uStrength as ShaderParameter;
+			var blurPass = pass - (this.__inner ? 1 : 0);
+			var numBlurPasses = this.__horizontalPasses + this.__verticalPasses;
 
-			if (blurPass < this.__horizontalPasses)
+			if (blurPass < numBlurPasses)
 			{
-				var scale = Math.pow(0.5, blurPass >> 1) * 0.5;
-				uRadius.value[0] = this.blurX * scale;
-				uRadius.value[1] = 0;
+				var shader = GlowFilter.__blurAlphaShader;
+				var uRadius = shader.data.uRadius as ShaderParameter;
+				var uColor = shader.data.uColor as ShaderParameter;
+				var uStrength = shader.data.uStrength as ShaderParameter;
+
+				if (blurPass < this.__horizontalPasses)
+				{
+					var scale = Math.pow(0.5, blurPass >> 1) * 0.5;
+					uRadius.value[0] = this.blurX * scale;
+					uRadius.value[1] = 0;
+				}
+				else
+				{
+					var scale = Math.pow(0.5, (blurPass - this.__horizontalPasses) >> 1) * 0.5;
+					uRadius.value[0] = 0;
+					uRadius.value[1] = this.blurY * scale;
+				}
+				uColor.value[0] = ((this.color >> 16) & 0xFF) / 255;
+				uColor.value[1] = ((this.color >> 8) & 0xFF) / 255;
+				uColor.value[2] = (this.color & 0xFF) / 255;
+				uColor.value[3] = this.alpha;
+				uStrength.value[0] = blurPass == (numBlurPasses - 1) ? this.__strength : 1.0;
+				return shader;
+			}
+			if (this.__inner)
+			{
+				if (this.__knockout)
+				{
+					var shader = GlowFilter.__innerCombineKnockoutShader;
+					(shader.data.sourceBitmap as ShaderInput).input = sourceBitmapData;
+					(shader.data.offset as ShaderParameter).value[0] = 0.0;
+					(shader.data.offset as ShaderParameter).value[1] = 0.0;
+					return shader;
+				}
+				var shader = GlowFilter.__innerCombineShader;
+				(shader.data.sourceBitmap as ShaderInput).input = sourceBitmapData;
+				(shader.data.offset as ShaderParameter).value[0] = 0.0;
+				(shader.data.offset as ShaderParameter).value[1] = 0.0;
+				return shader;
 			}
 			else
 			{
-				var scale = Math.pow(0.5, (blurPass - this.__horizontalPasses) >> 1) * 0.5;
-				uRadius.value[0] = 0;
-				uRadius.value[1] = this.blurY * scale;
-			}
-			uColor.value[0] = ((this.color >> 16) & 0xFF) / 255;
-			uColor.value[1] = ((this.color >> 8) & 0xFF) / 255;
-			uColor.value[2] = (this.color & 0xFF) / 255;
-			uColor.value[3] = this.alpha;
-			uStrength.value[0] = blurPass == (numBlurPasses - 1) ? this.__strength : 1.0;
-			return shader;
-		}
-		if (this.__inner)
-		{
-			if (this.__knockout)
-			{
-				var shader = GlowFilter.__innerCombineKnockoutShader;
+				if (this.__knockout)
+				{
+					var shader = GlowFilter.__combineKnockoutShader;
+					(shader.data.sourceBitmap as ShaderInput).input = sourceBitmapData;
+					(shader.data.offset as ShaderParameter).value[0] = 0.0;
+					(shader.data.offset as ShaderParameter).value[1] = 0.0;
+					return shader;
+				}
+				var shader = GlowFilter.__combineShader;
 				(shader.data.sourceBitmap as ShaderInput).input = sourceBitmapData;
 				(shader.data.offset as ShaderParameter).value[0] = 0.0;
 				(shader.data.offset as ShaderParameter).value[1] = 0.0;
 				return shader;
 			}
-			var shader = GlowFilter.__innerCombineShader;
-			(shader.data.sourceBitmap as ShaderInput).input = sourceBitmapData;
-			(shader.data.offset as ShaderParameter).value[0] = 0.0;
-			(shader.data.offset as ShaderParameter).value[1] = 0.0;
-			return shader;
-		}
-		else
-		{
-			if (this.__knockout)
-			{
-				var shader = GlowFilter.__combineKnockoutShader;
-				(shader.data.sourceBitmap as ShaderInput).input = sourceBitmapData;
-				(shader.data.offset as ShaderParameter).value[0] = 0.0;
-				(shader.data.offset as ShaderParameter).value[1] = 0.0;
-				return shader;
-			}
-			var shader = GlowFilter.__combineShader;
-			(shader.data.sourceBitmap as ShaderInput).input = sourceBitmapData;
-			(shader.data.offset as ShaderParameter).value[0] = 0.0;
-			(shader.data.offset as ShaderParameter).value[1] = 0.0;
-			return shader;
+
+			return null;
 		}
 	}
 

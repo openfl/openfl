@@ -90,9 +90,12 @@ class ConvolutionShader extends BitmapFilterShader
 	{
 		super();
 
-		(this.data.uDivisor as ShaderParameter).value = [1];
-		(this.data.uBias as ShaderParameter).value = [0];
-		(this.data.uPreserveAlpha as ShaderParameter).value = [true];
+		if (this.data.uDivisor != null)
+		{
+			(this.data.uDivisor as ShaderParameter).value = [1];
+			(this.data.uBias as ShaderParameter).value = [0];
+			(this.data.uPreserveAlpha as ShaderParameter).value = [true];
+		}
 	}
 }
 
@@ -255,10 +258,13 @@ export default class ConvolutionFilter extends BitmapFilter
 	protected __initShader(renderer: DisplayObjectRenderer, pass: number, sourceBitmapData: BitmapData): Shader
 	{
 		var data = ConvolutionFilter.__convolutionShader.data;
-		(data.uConvoMatrix as ShaderParameter).value = this.matrix;
-		(data.uDivisor as ShaderParameter).value[0] = this.divisor;
-		(data.uBias as ShaderParameter).value[0] = this.bias;
-		(data.uPreserveAlpha as ShaderParameter).value[0] = this.preserveAlpha;
+		if (data.uConvoMatrix != null)
+		{
+			(data.uConvoMatrix as ShaderParameter).value = this.matrix;
+			(data.uDivisor as ShaderParameter).value[0] = this.divisor;
+			(data.uBias as ShaderParameter).value[0] = this.bias;
+			(data.uPreserveAlpha as ShaderParameter).value[0] = this.preserveAlpha;
+		}
 
 		return ConvolutionFilter.__convolutionShader;
 	}

@@ -2491,6 +2491,11 @@ export default class TextField extends InteractiveObject
 		return (this.__tabEnabled == null ? this.__textEngine.type == TextFieldType.INPUT : this.__tabEnabled);
 	}
 
+	public set tabEnabled(value: boolean)
+	{
+		super.tabEnabled = value;
+	}
+
 	/**
 		A string that is the current text in the text field. Lines are separated
 		by the carriage return character(`'\r'`, ASCII 13). This

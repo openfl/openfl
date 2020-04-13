@@ -9,7 +9,14 @@
 		"lib": [ "dom", "es2017" ],
 		"sourceMap": true,
 		"assumeChangesOnlyAffectDirectDependencies": false,
-		"outDir": "./lib/openfl"
+		"outDir": "./lib/openfl",
+		"declaration": true,
+		"declarationDir": "./lib/openfl",
+		// "preserveConstEnums": true,
+		"strictBindCallApply": true,
+		"strictFunctionTypes": true
+		// "strictPropertyInitialization": true,
+		// "strictNullChecks": true
 	},
 	"include": [
 		"./src/openfl/index.ts"

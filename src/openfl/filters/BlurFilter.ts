@@ -61,12 +61,18 @@ class BlurShader extends BitmapFilterShader
 	{
 		super();
 
-		(this.data.uRadius as ShaderParameter<number>).value = [0, 0];
+		if (this.data.uRadius != null)
+		{
+			(this.data.uRadius as ShaderParameter<number>).value = [0, 0];
+		}
 	}
 
 	protected __update(): void
 	{
-		(this.data.uTextureSize as ShaderParameter<number>).value = [this.__texture.input.width, this.__texture.input.height];
+		if (this.data.uTextureSize != null)
+		{
+			(this.data.uTextureSize as ShaderParameter<number>).value = [this.__texture.input.width, this.__texture.input.height];
+		}
 
 		super.__update();
 	}
@@ -189,19 +195,22 @@ export default class BlurFilter extends BitmapFilter
 
 	protected __initShader(renderer: DisplayObjectRenderer, pass: number, sourceBitmapData: BitmapData): Shader
 	{
-		var uRadius = BlurFilter.__blurShader.data.uRadius as ShaderParameter<number>;
+		if (BlurFilter.__blurShader.data.uRadius != null)
+		{
+			var uRadius = BlurFilter.__blurShader.data.uRadius as ShaderParameter<number>;
 
-		if (pass < this.__horizontalPasses)
-		{
-			var scale = Math.pow(0.5, pass >> 1);
-			uRadius.value[0] = this.blurX * scale;
-			uRadius.value[1] = 0;
-		}
-		else
-		{
-			var scale = Math.pow(0.5, (pass - this.__horizontalPasses) >> 1);
-			uRadius.value[0] = 0;
-			uRadius.value[1] = this.blurY * scale;
+			if (pass < this.__horizontalPasses)
+			{
+				var scale = Math.pow(0.5, pass >> 1);
+				uRadius.value[0] = this.blurX * scale;
+				uRadius.value[1] = 0;
+			}
+			else
+			{
+				var scale = Math.pow(0.5, (pass - this.__horizontalPasses) >> 1);
+				uRadius.value[0] = 0;
+				uRadius.value[1] = this.blurY * scale;
+			}
 		}
 
 		return BlurFilter.__blurShader;

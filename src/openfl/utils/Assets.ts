@@ -284,7 +284,7 @@ export default class Assets
 		@param	useCache		(Optional) Whether to allow use of the asset cache (Default: true)
 		@return		Returns a Future<string>
 	**/
-	public static loadText(id: string): Future<String>
+	public static loadText(id: string): Future<string>
 	{
 		return Future.withValue(this.getText(id));
 	}

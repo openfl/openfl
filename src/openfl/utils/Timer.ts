@@ -118,7 +118,7 @@ export default class Timer extends EventDispatcher
 		The total number of times the timer has fired since it started at zero. If
 		the timer has been reset, only the fires since the reset are counted.
 	**/
-	protected get currentCount(): number
+	public get currentCount(): number
 	{
 		return this.__currentCount;
 	}
@@ -135,12 +135,12 @@ export default class Timer extends EventDispatcher
 		@throws Error Throws an exception if the delay specified is negative or
 					  not a finite number.
 	**/
-	protected get delay(): number
+	public get delay(): number
 	{
 		return this.__delay;
 	}
 
-	protected set delay(value: number)
+	public set delay(value: number)
 	{
 		this.__delay = value;
 
@@ -159,12 +159,12 @@ export default class Timer extends EventDispatcher
 		is set to a total that is the same or less then `currentCount`
 		the timer stops and will not fire again.
 	**/
-	protected get repeatCount(): number
+	public get repeatCount(): number
 	{
 		return this.__repeatCount;
 	}
 
-	protected set repeatCount(v: number)
+	public set repeatCount(v: number)
 	{
 		if (this.__running && v != 0 && v <= this.__currentCount)
 		{
@@ -178,7 +178,7 @@ export default class Timer extends EventDispatcher
 		The timer's current state; `true` if the timer is running,
 		otherwise `false`.
 	**/
-	protected get running(): boolean
+	public get running(): boolean
 	{
 		return this.__running;
 	}
