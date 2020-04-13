@@ -257,7 +257,7 @@ export default class ByteArray implements IDataInput, IDataOutput
 
 	public get(pos: number): number
 	{
-		return this.__buffer[pos];
+		return this.__view.getUint8(pos);
 	}
 
 	/**
@@ -306,7 +306,7 @@ export default class ByteArray implements IDataInput, IDataOutput
 	{
 		if (this.position < this.__length)
 		{
-			return (this.__buffer[this.position++] != 0);
+			return (this.__view.getUint8(this.position++) != 0);
 		}
 		else
 		{
@@ -373,13 +373,13 @@ export default class ByteArray implements IDataInput, IDataOutput
 			while (i > 0)
 			{
 				i--;
-				this.__buffer[i + offset] = this.__buffer[i + this.position];
+				this.__view.setUint8(i + offset, this.__view.getUint8(i + this.position));
 			}
 		}
 
 		for (let i = 0; i < length; i++)
 		{
-			bytes.__buffer[i + offset] = this.__buffer[i + this.position];
+			bytes.__view.setUint8(i + offset, this.__view.getUint8(i + this.position));
 		}
 
 		this.position += length;
@@ -519,7 +519,7 @@ export default class ByteArray implements IDataInput, IDataOutput
 	{
 		if (this.position < this.__length)
 		{
-			return this.__buffer[this.position++];
+			return this.__view.getUint8(this.position++);
 		}
 		else
 		{
@@ -633,7 +633,7 @@ export default class ByteArray implements IDataInput, IDataOutput
 
 	public set(pos: number, v: number): void
 	{
-		this.__buffer[pos] = v & 0xFF;
+		this.__view.setUint8(pos, v & 0xFF);
 	}
 
 	/**
@@ -745,7 +745,7 @@ export default class ByteArray implements IDataInput, IDataOutput
 	public writeByte(value: number): void
 	{
 		this.__resize(this.position + 1);
-		this.__view.setInt8(this.position++, value & 0xFF);
+		this.__view.setUint8(this.position++, value & 0xFF);
 	}
 
 	/**
@@ -780,13 +780,13 @@ export default class ByteArray implements IDataInput, IDataOutput
 			while (i > 0)
 			{
 				i--;
-				this.__buffer[i + offset] = this.__buffer[i + this.position];
+				this.__view.setUint8(i + offset, this.__view.getUint8(i + this.position));
 			}
 		}
 
 		for (let i = 0; i < length; i++)
 		{
-			this.__buffer[i + offset] = bytes.__buffer[i + this.position];
+			this.__view.setUint8(i + offset, bytes.__view.getUint8(i + this.position));
 		}
 
 		this.position += length;
@@ -878,9 +878,9 @@ export default class ByteArray implements IDataInput, IDataOutput
 		**/
 	public writeUnsignedInt(value: number): void
 	{
-		this.__resize(this.position + 2);
-		this.__view.setUint16(this.position, value, this.__littleEndian);
-		this.position += 2;
+		this.__resize(this.position + 4);
+		this.__view.setUint32(this.position, value, this.__littleEndian);
+		this.position += 4;
 	}
 
 	/**
