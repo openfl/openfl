@@ -162,6 +162,8 @@ var openfl;
         return Object.defineProperties(array, VectorDescriptor);
     };
 
+    VectorDescriptor.constructor = Vector;
+
     Vector.ofArray = function (array) {
         if (array == null)
         {

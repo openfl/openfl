@@ -598,37 +598,8 @@ export default class ByteArray implements IDataInput, IDataOutput
 
 		this.position += length;
 
-		var s = "";
-		var b = this.__buffer;
-		var fcc = String.fromCharCode;
-		var i = this.position - length;
-		var max = this.position;
-		// utf8-decode and utf16-encode
-		while (i < max)
-		{
-			var c = b[i++];
-			if (c < 0x80)
-			{
-				if (c == 0)
-					break;
-				s += fcc(c);
-			} else if (c < 0xE0)
-				s += fcc(((c & 0x3F) << 6) | (b[i++] & 0x7F));
-			else if (c < 0xF0)
-			{
-				var c2 = b[i++];
-				s += fcc(((c & 0x1F) << 12) | ((c2 & 0x7F) << 6) | (b[i++] & 0x7F));
-			} else
-			{
-				var c2 = b[i++];
-				var c3 = b[i++];
-				var u = ((c & 0x0F) << 18) | ((c2 & 0x7F) << 12) | ((c3 & 0x7F) << 6) | (b[i++] & 0x7F);
-				// surrogate pair
-				s += fcc((u >> 10) + 0xD7C0);
-				s += fcc((u & 0x3FF) | 0xDC00);
-			}
-		}
-		return s;
+		var decoder = new TextDecoder();
+		return decoder.decode(new Uint8Array(this.__buffer, this.position - length, length));
 	}
 
 	public set(pos: number, v: number): void
@@ -893,12 +864,13 @@ export default class ByteArray implements IDataInput, IDataOutput
 	**/
 	public writeUTF(value: string): void
 	{
-		var bytes = this.__bytesOfString(value);
+		var encoder = new TextEncoder();
+		var bytes = encoder.encode(value);
+
+		this.__resize(this.position + bytes.byteLength + 2);
 		this.writeShort(bytes.length);
-		for (let value of bytes)
-		{
-			this.writeByte(value);
-		}
+		new Uint8Array(this.__buffer).set(bytes, this.position);
+		this.position += bytes.byteLength;
 	}
 
 	/**
@@ -910,46 +882,12 @@ export default class ByteArray implements IDataInput, IDataOutput
 	**/
 	public writeUTFBytes(value: string): void
 	{
-		var bytes = this.__bytesOfString(value);
-		for (let value of bytes)
-		{
-			this.writeByte(value);
-		}
-	}
+		var encoder = new TextEncoder();
+		var bytes = encoder.encode(value);
 
-	protected __bytesOfString(value: string): Array<number>
-	{
-		var a = new Array<number>();
-		// utf16-decode and utf8-encode
-		var i = 0;
-		while (i < value.length)
-		{
-			var c: number = value.charCodeAt(i++);
-			// surrogate pair
-			if (0xD800 <= c && c <= 0xDBFF)
-				c = (c - 0xD7C0 << 10) | (value.charCodeAt(i++) & 0x3FF);
-			if (c <= 0x7F)
-				a.push(c);
-			else if (c <= 0x7FF)
-			{
-				a.push(0xC0 | (c >> 6));
-				a.push(0x80 | (c & 63));
-			}
-			else if (c <= 0xFFFF)
-			{
-				a.push(0xE0 | (c >> 12));
-				a.push(0x80 | ((c >> 6) & 63));
-				a.push(0x80 | (c & 63));
-			}
-			else
-			{
-				a.push(0xF0 | (c >> 18));
-				a.push(0x80 | ((c >> 12) & 63));
-				a.push(0x80 | ((c >> 6) & 63));
-				a.push(0x80 | (c & 63));
-			}
-		}
-		return a;
+		this.__resize(this.position + bytes.byteLength);
+		new Uint8Array(this.__buffer).set(bytes, this.position);
+		this.position += bytes.byteLength;
 	}
 
 	protected __resize(size: number): void
