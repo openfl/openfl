@@ -292,7 +292,6 @@ describe("TypeScript | Vector", function ()
 
 	it("sort", function ()
 	{
-
 		var sort = function (a: number, b: number): number
 		{
 
@@ -312,49 +311,48 @@ describe("TypeScript | Vector", function ()
 			lastValue = vector[i];
 
 		}
-
 	});
 
 
 	it("splice", function ()
 	{
-		console.log(1);
+
 		var vector = new Vector<number>(10);
-		console.log(2);
+
 		for (var i: number = 0; i < 10; i++)
 		{
 
 			vector[i] = i;
 
 		}
-		console.log(3);
+
 		var vector2 = vector.splice(-1, -1);
-		console.log(4);
+
 		assert.equal(vector2.length, 0);
 		assert.equal(vector.length, 10);
-		console.log(5);
+
 		var vector2 = vector.splice(-1, 0);
-		console.log(6);
+
 		assert.equal(vector2.length, 0);
 		assert.equal(vector.length, 10);
-		console.log(7);
+
 		var vector2 = vector.splice(-1, 1);
-		console.log(8);
+
 		assert.equal(vector2.length, 1);
 		assert.equal(vector2[0], 9);
 		assert.equal(vector.length, 9);
-		console.log(9);
+
 		vector2 = vector.splice(2, 3);
-		console.log(10);
+
 		assert.equal(vector2.length, 3);
 		assert.equal(vector2[0], 2);
 		assert.equal(vector.length, 6);
-		console.log(11);
+
 		vector2 = vector.splice(5, 20);
-		console.log(12);
+
 		assert.equal(vector2.length, 1);
 		assert.equal(vector.length, 5);
-		console.log(13);
+
 	});
 
 
