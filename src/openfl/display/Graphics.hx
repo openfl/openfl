@@ -1625,13 +1625,13 @@ import js.html.CanvasRenderingContext2D;
 		return graphicsData;
 	}
 
-	@:noCompletion private function __calculateBezierCubicPoint(t:Float, p1:Float, p2:Float, p3:Float, p4:Float):Float
+	@:noCompletion private #if !js inline #end function __calculateBezierCubicPoint(t:Float, p1:Float, p2:Float, p3:Float, p4:Float):Float
 	{
 		var iT = 1 - t;
 		return p1 * (iT * iT * iT) + 3 * p2 * t * (iT * iT) + 3 * p3 * iT * (t * t) + p4 * (t * t * t);
 	}
 
-	@:noCompletion private function __calculateBezierQuadPoint(t:Float, p1:Float, p2:Float, p3:Float):Float
+	@:noCompletion private #if !js inline #end function __calculateBezierQuadPoint(t:Float, p1:Float, p2:Float, p3:Float):Float
 	{
 		var iT = 1 - t;
 		return iT * iT * p1 + 2 * iT * t * p2 + t * t * p3;
