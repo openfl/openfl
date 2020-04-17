@@ -1,6 +1,6 @@
 package flash.display;
 
-import openfl._internal.renderer.flash.FlashRenderer;
+import openfl.display._internal.FlashRenderer;
 import openfl.display.Timeline;
 import openfl.events.Event;
 import openfl.events.MouseEvent;

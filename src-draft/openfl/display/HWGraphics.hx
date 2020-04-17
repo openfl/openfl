@@ -1,7 +1,7 @@
 package openfl.display;
 
 #if !flash
-import openfl._internal.renderer.context3D.Context3DRenderer;
+import openfl.display._internal.Context3DRenderer;
 import openfl._internal.renderer.opengl.utils.GraphicsRenderer;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;

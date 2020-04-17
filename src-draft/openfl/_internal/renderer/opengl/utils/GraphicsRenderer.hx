@@ -2,7 +2,7 @@ package openfl._internal.renderer.opengl.utils;
 
 import lime.utils.Float32Array;
 import lime.utils.UInt32Array;
-import openfl._internal.renderer.context3D.Context3DRenderer;
+import openfl.display._internal.Context3DRenderer;
 import openfl._internal.renderer.opengl.shaders2.DefaultShader.DefUniform;
 import openfl._internal.renderer.opengl.shaders2.FillShader;
 import openfl._internal.renderer.opengl.shaders2.PatternFillShader;

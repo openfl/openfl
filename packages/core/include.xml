@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension>
+
+	<haxelib name="openfl.bitmapdata" path="../bitmapdata" unless="openfl.bitmapdata" />
+	<haxelib name="openfl.clipboard" path="../clipboard" unless="openfl.clipboard" />
+	<haxelib name="openfl.externalinterface" path="../externalinterface" unless="openfl.externalinterface" />
+	<haxelib name="openfl.filereference" path="../filereference" unless="openfl.filereference" />
+	<haxelib name="openfl.netstream" path="../netstream" unless="openfl.netstream" />
+	<haxelib name="openfl.printing" path="../printing" unless="openfl.printing" />
+	<haxelib name="openfl.renderer-cairo" path="../renderer-cairo" unless="openfl.renderer-cairo" />
+	<haxelib name="openfl.renderer-canvas" path="../renderer-canvas" unless="openfl.renderer-canvas" />
+	<haxelib name="openfl.renderer-dom" path="../renderer-dom" unless="openfl.renderer-dom" />
+	<haxelib name="openfl.renderer-flash" path="../renderer-flash" unless="openfl.renderer-flash" />
+	<haxelib name="openfl.renderer-stage3D" path="../renderer-stage3D" unless="openfl.renderer-stage3D" />
+	<haxelib name="openfl.sensors" path="../sensors" unless="openfl.sensors" />
+	<haxelib name="openfl.shader" path="../shader" unless="openfl.shader" />
+	<haxelib name="openfl.sharedobject" path="../sharedobject" unless="openfl.sharedobject" />
+	<haxelib name="openfl.socket" path="../socket" unless="openfl.socket" />
+	<haxelib name="openfl.sound" path="../sound" unless="openfl.sound" />
+	<haxelib name="openfl.stage" path="../stage" unless="openfl.stage" />
+	<haxelib name="openfl.stage3D" path="../stage3D" unless="openfl.stage3D" />
+	<haxelib name="openfl.system" path="../system" unless="openfl.system" />
+	<haxelib name="openfl.textfield" path="../textfield" unless="openfl.textfield" />
+	<haxelib name="openfl.timer" path="../timer" unless="openfl.timer" />
+	<haxelib name="openfl.urlloader" path="../urlloader" unless="openfl.urlloader" />
+
+</extension>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension>
+
+	<haxelib name="openfl.core" path="../core" unless="openfl.core" />
+	<haxelib name="openfl.stage3D" path="../stage3D" unless="openfl.stage3D" />
+
+</extension>

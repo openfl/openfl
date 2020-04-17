@@ -1,7 +1,7 @@
 package flash.display;
 
 #if flash
-import openfl._internal.renderer.flash.FlashGraphics;
+import openfl.display._internal.FlashGraphics;
 import openfl.display.BlendMode;
 import openfl.geom.Matrix;
 import openfl.geom.Point;

@@ -1,11 +1,11 @@
-package openfl._internal.renderer.context3D;
+package openfl.display._internal;
 
-import openfl._internal.bindings.typedarray.Float32Array;
+import lime.utils.Float32Array;
 import openfl.display.Geometry;
 import openfl.geom.Matrix;
 #if gl_stats
-import openfl._internal.renderer.context3D.stats.Context3DStats;
-import openfl._internal.renderer.context3D.stats.DrawCallContext;
+import openfl.display._internal.stats.Context3DStats;
+import openfl.display._internal.stats.DrawCallContext;
 #end
 
 #if !openfl_debug
@@ -19,7 +19,7 @@ import openfl._internal.renderer.context3D.stats.DrawCallContext;
 @:access(openfl.display3D.VertexBuffer3D)
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Matrix)
-@:access(openfl._internal.renderer.context3D.batcher.BatchRenderer)
+@:access(openfl.display._internal.batcher.BatchRenderer)
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DGeometry
 {

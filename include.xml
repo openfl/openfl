@@ -35,6 +35,8 @@
 
 	</section>
 
+	<haxelib name="openfl.core" path="packages/core" />
+
 	<section if="${lime < 7.6.0} || ${lime >= 7.8.0}" unless="setup || create || disable-version-check">
 
 		<log warn="Lime version ${lime} may not be compatible with OpenFL ${openfl} (expected version ${expect-lime-version})" />
