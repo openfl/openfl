@@ -1594,6 +1594,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 						stack.reverse();
 
 						__dispatchStack(focusEvent, stack);
+
+						if (focusEvent.isDefaultPrevented())
+						{
+							window.onKeyDown.cancel();
+						}
 					}
 
 					if (focusEvent == null || !focusEvent.isDefaultPrevented())
