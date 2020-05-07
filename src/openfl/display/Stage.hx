@@ -1545,15 +1545,10 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 							return a.tabIndex - b.tabIndex;
 						});
 
-						if (tabStack[tabStack.length - 1].tabIndex == -1)
+						if (tabStack[tabStack.length - 1].tabIndex != -1)
 						{
-							// all tabIndices are equal to -1
-							if (focus != null) nextIndex = 0;
-							else
-								nextIndex = __currentTabOrderIndex;
-						}
-						else
-						{
+							// if some tabIndices aren't equal to -1, remove all
+							// of the ones that are
 							var i = 0;
 							while (i < tabStack.length)
 							{
@@ -1565,19 +1560,56 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 								i++;
 							}
+						}
 
-							if (focus != null)
-							{
-								var index = tabStack.indexOf(focus);
-
-								if (index < 0) nextIndex = 0;
-								else
-									nextIndex = index + nextOffset;
+						if (focus != null)
+						{
+							var current = focus;
+							var index = tabStack.indexOf(current);
+							while (index == -1 && current != null) {
+								// if the current focus is not in the tab stack,
+								// try to find the nearest object in the display
+								// list that is in the stack
+								var currentParent = current.parent;
+								if (currentParent != null && currentParent.tabChildren)
+								{
+									var currentIndex = currentParent.getChildIndex(current);
+									if (currentIndex == -1)
+									{
+										continue;
+									}
+									var i = currentIndex + nextOffset;
+									while(modifier.shiftKey ? (i >= 0) : (i < currentParent.numChildren))
+									{
+										var sibling = currentParent.getChildAt(i);
+										if (Std.is(sibling, InteractiveObject))
+										{
+											var interactiveSibling = cast(sibling, InteractiveObject);
+											index = tabStack.indexOf(interactiveSibling);
+											if (index != -1)
+											{
+												nextOffset = 0;
+												break;
+											}
+										}
+										i += nextOffset;
+									}
+								}
+								else if (modifier.shiftKey)
+								{
+									index = tabStack.indexOf(currentParent);
+									if (index != -1) nextOffset = 0;
+								}
+								current = currentParent;
 							}
+
+							if (index < 0) nextIndex = 0;
 							else
-							{
-								nextIndex = __currentTabOrderIndex;
-							}
+								nextIndex = index + nextOffset;
+						}
+						else
+						{
+							nextIndex = __currentTabOrderIndex;
 						}
 					}
 					else if (tabStack.length == 1)
