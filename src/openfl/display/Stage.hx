@@ -1479,6 +1479,33 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			var keyCode = Keyboard.__convertKeyCode(keyCode);
 			var charCode = Keyboard.__getCharCode(keyCode, modifier.shiftKey);
 
+			if (type == KeyboardEvent.KEY_UP && (keyCode == Keyboard.SPACE || keyCode == Keyboard.ENTER) && Std.is(__focus, Sprite))
+			{
+				var sprite = cast(__focus, Sprite);
+				if (sprite.buttonMode)
+				{
+					var localPoint = Point.__pool.get();
+					var targetPoint = Point.__pool.get();
+					targetPoint.x = __mouseX;
+					targetPoint.y = __mouseY;
+
+					#if openfl_pool_events
+					var clickEvent = MouseEvent.__pool.get(MouseEvent.CLICK, __mouseX, __mouseY, sprite.__globalToLocal(targetPoint, localPoint), sprite);
+					#else
+					var clickEvent = MouseEvent.__create(MouseEvent.CLICK, 0, __mouseX, __mouseY, sprite.__globalToLocal(targetPoint, localPoint), sprite);
+					#end
+
+					__dispatchStack(clickEvent, stack);
+
+					#if openfl_pool_events
+					MouseEvent.__pool.release(clickEvent);
+					#end
+
+					Point.__pool.release(targetPoint);
+					Point.__pool.release(localPoint);
+				}
+			}
+
 			// Flash Player events are not cancelable, should we make only some events (like APP_CONTROL_BACK) cancelable?
 
 			var event = new KeyboardEvent(type, true, true, charCode, keyCode, keyLocation,
