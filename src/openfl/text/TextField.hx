@@ -1467,7 +1467,7 @@ class TextField extends InteractiveObject
 		// the order and logic of cases really matters!!
 		//	beginIndex == 0 && endIndex == max -> replace all format ranges with new one
 		//	existing range.end < beginIndex -> continue
-		//	existing range.start >= endIndex -> continue
+		//	existing range.start >= endIndex -> done
 		//	existing range encompassed by beginIndex...endIndex -> 
 		//		existing range == new range -> merge new format into existing
 		//		range.start == beginIndex -> existing.start = endIndex, insert new before existing
