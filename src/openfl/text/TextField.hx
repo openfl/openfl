@@ -1440,34 +1440,53 @@ class TextField extends InteractiveObject
 	{
 		var max = text.length;
 		var range;
-
-		if (beginIndex < 0) beginIndex = 0;
-		if (endIndex < 0) endIndex = 0;
-
-		if (endIndex == 0)
+		
+		// NOTE TO SELF: add tests and put comments there
+		// if endindex == -1 and beginIndex == -1, endindex = max
+		// if beginindex == -1, beginindex = 0
+		// if beginIndex > -1 and endIndex == -1, endIndex = beginIndex + 1
+		// if endindex > max or <= 0 or < beginindex, beginindex < 0 or >= max, rangeerror
+		// if beginindex == endindex, return (?, check inserting at this point)
+		
+		if (beginIndex == -1)
 		{
-			if (beginIndex == 0)
-			{
-				endIndex = max;
-			}
-			else
-			{
-				endIndex = beginIndex + 1;
-			}
+			if (endIndex == -1) endIndex = max;
+			beginIndex = 0;
 		}
+		
+		else if (endIndex == -1)
+		{
+			endIndex = beginIndex + 1;
+		}
+		
+		if (beginIndex == endIndex) return;
+		if (beginIndex < 0 || endIndex <= 0 || endIndex < beginIndex || beginIndex >= max || endIndex > max) throw new RangeError();
 
-		if (endIndex < beginIndex) return;
-
-		if (beginIndex == 0 && endIndex >= max)
+		// NOTE TO SELF: add tests
+		// there are 10 cases that have to be handled
+		// the order and logic of cases really matters!!
+		//	beginIndex == 0 && endIndex == max -> replace all format ranges with new one
+		//	existing range.end < beginIndex -> continue
+		//	existing range.start >= endIndex -> continue
+		//	existing range encompassed by beginIndex...endIndex -> 
+		//		existing range == new range -> merge new format into existing
+		//		range.start == beginIndex -> existing.start = endIndex, insert new before existing
+		//		range.end == endIndex -> existing.end = beginIndex, insert new after existing
+		//		else -> split existing into two (existing.end = beginIndex; newExisting.start = endIndex), insert new in between
+		//	existing range completely encompasses beginIndex...endIndex -> delete existing
+		//	existing range encompasses beginIndex but not endIndex -> existing.start = endIndex
+		//	existing range encompasses endIndex but not beginIndex -> existing.end = beginIndex, insert new
+		
+		if (beginIndex == 0 && endIndex == max)
 		{
 			// set text format for the whole textfield
 			__textFormat.__merge(format);
 
-			for (i in 0...__textEngine.textFormatRanges.length)
-			{
-				range = __textEngine.textFormatRanges[i];
-				range.format.__merge(format);
-			}
+			__textEngine.textFormatRanges.length = 1;
+			
+			range = __textEngine.textFormatRanges[0];
+			range.start = 0; range.end = max;
+			range.format.__merge(format);
 		}
 		else
 		{
@@ -1478,38 +1497,82 @@ class TextField extends InteractiveObject
 			{
 				range = __textEngine.textFormatRanges[index];
 
-				if (range.start == beginIndex && range.end == endIndex)
+				if (range.end <= beginIndex)
 				{
-					// set format range matches an existing range exactly
-					range.format.__merge(format);
+					// skip until relevant format ranges
+					index++;
+				}
+				else if (range.start >= endIndex)
+				{
+					// stop iterating if set format range has been handled
 					break;
+				}
+				else if (range.start <= beginIndex && range.end >= endIndex)
+				{
+					if (range.start == beginIndex && range.end == endIndex)
+					{
+						// set format range matches an existing range exactly
+						range.format.__merge(format);
+						break;
+					}
+					else if (range.start == beginIndex)
+					{
+						// existing range encompasses set format range, with start == beginIndex
+						newRange = new TextFormatRange(range.format.clone(), beginIndex, endIndex);
+						newRange.format.__merge(format);
+						__textEngine.textFormatRanges.insertAt(index, newRange);
+						range.start = endIndex;
+						index += 2;
+					}
+					else if (range.end == endIndex)
+					{
+						// existing range encompasses set format range, with end == endIndex
+						newRange = new TextFormatRange(range.format.clone(), beginIndex, endIndex);
+						newRange.format.__merge(format);
+						__textEngine.textFormatRanges.insertAt(index + 1, newRange);
+						
+						range.end = beginIndex;
+						break;
+					}
+					else
+					{
+						// existing range completely encompasses set format range
+						newRange = new TextFormatRange(range.format.clone(), beginIndex, endIndex);
+						newRange.format.__merge(format);
+						__textEngine.textFormatRanges.insertAt(index + 1, newRange);
+						
+						newRange = new TextFormatRange(range.format.clone(), endIndex, range.end);
+						__textEngine.textFormatRanges.insertAt(index + 2, newRange);
+						
+						range.end = beginIndex;
+						break;
+					}
 				}
 				else if (range.start >= beginIndex && range.end <= endIndex)
 				{
 					// set format range completely encompasses this existing range
-					range.format.__merge(format);
+					__textEngine.textFormatRanges.removeAt(index);
 				}
-				else if (range.start >= beginIndex && range.start < endIndex && range.end > beginIndex)
+				else if (range.start > beginIndex && range.end > beginIndex)
 				{
 					// set format range is within the first part of the range
-					newRange = new TextFormatRange(range.format.clone(), range.start, endIndex);
-					newRange.format.__merge(format);
-					__textEngine.textFormatRanges.insertAt(index, newRange);
 					range.start = endIndex;
-					index++;
+					break;
 				}
-				else if (range.start < beginIndex && range.end > beginIndex && range.end >= endIndex)
+				else if (range.start < beginIndex && range.end >= endIndex)
 				{
 					// set format range is within the second part of the range
-					newRange = new TextFormatRange(range.format.clone(), beginIndex, range.end);
+					newRange = new TextFormatRange(range.format.clone(), beginIndex, endIndex);
 					newRange.format.__merge(format);
 					__textEngine.textFormatRanges.insertAt(index + 1, newRange);
 					range.end = beginIndex;
+					index += 2;
+				}
+				else
+				{
+					// should never happen...
 					index++;
 				}
-
-				index++;
-				// TODO: Remove duplicates?
 			}
 		}
 
