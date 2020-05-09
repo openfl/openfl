@@ -1786,7 +1786,7 @@ class TextEngine
 			var tempHeight = 0.0;
 			var ret = lineHeights.length;
 
-			for (i in ret - 1...lineHeights.length)
+			for (i in scrollV - 1...lineHeights.length)
 			{
 				if (tempHeight + lineHeights[i] <= height - 4)
 				{
