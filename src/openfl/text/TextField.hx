@@ -1525,29 +1525,15 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function __caretBeginningOfLine():Void
 	{
-		if (__selectionIndex == __caretIndex || __caretIndex < __selectionIndex)
-		{
-			__caretIndex = getLineOffset(getLineIndexOfChar(__caretIndex));
-		}
-		else
-		{
-			__selectionIndex = getLineOffset(getLineIndexOfChar(__selectionIndex));
-		}
+		__caretIndex = getLineOffset(getLineIndexOfChar(__caretIndex));
 	}
 
 	@:noCompletion private function __caretEndOfLine():Void
 	{
 		var lineIndex;
 
-		if (__selectionIndex == __caretIndex)
-		{
-			lineIndex = getLineIndexOfChar(__caretIndex);
-		}
-		else
-		{
-			lineIndex = getLineIndexOfChar(Std.int(Math.max(__caretIndex, __selectionIndex)));
-		}
-
+		lineIndex = getLineIndexOfChar(__caretIndex);
+		
 		if (lineIndex < __textEngine.numLines - 1)
 		{
 			__caretIndex = getLineOffset(lineIndex + 1) - 1;
@@ -3512,14 +3498,40 @@ class TextField extends InteractiveObject
 				__startCursorTimer();
 
 			case HOME if (selectable):
-				__caretBeginningOfLine();
-				__stopCursorTimer();
-				__startCursorTimer();
+				
+				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end)
+				{
+					__caretIndex = 0;
+				}
+				else
+				{
+					__caretBeginningOfLine();
+				}
+				
+				if (!modifier.shiftKey)
+				{
+					__selectionIndex = __caretIndex;
+				}
+				
+				setSelection(__selectionIndex, __caretIndex);
 
 			case END if (selectable):
-				__caretEndOfLine();
-				__stopCursorTimer();
-				__startCursorTimer();
+				
+				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end)
+				{
+					__caretIndex = __text.length;
+				}
+				else
+				{
+					__caretEndOfLine();
+				}
+				
+				if (!modifier.shiftKey)
+				{
+					__selectionIndex = __caretIndex;
+				}
+				
+				setSelection(__selectionIndex, __caretIndex);
 
 			case C:
 				#if lime
