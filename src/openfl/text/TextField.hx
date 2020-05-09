@@ -1530,9 +1530,7 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function __caretEndOfLine():Void
 	{
-		var lineIndex;
-
-		lineIndex = getLineIndexOfChar(__caretIndex);
+		var lineIndex = getLineIndexOfChar(__caretIndex);
 		
 		if (lineIndex < __textEngine.numLines - 1)
 		{
@@ -1552,25 +1550,13 @@ class TextField extends InteractiveObject
 		}
 	}
 
-	@:noCompletion private function __caretNextLine(lineIndex:Null<Int> = null, caretIndex:Null<Int> = null):Void
+	@:noCompletion private function __caretNextLine():Void
 	{
-		if (lineIndex == null)
-		{
-			lineIndex = getLineIndexOfChar(__caretIndex);
-		}
+		var lineIndex = getLineIndexOfChar(__caretIndex);
 
 		if (lineIndex < __textEngine.numLines - 1)
 		{
-			if (caretIndex == null)
-			{
-				caretIndex = __caretIndex;
-			}
-
 			__caretIndex = __getCharIndexOnDifferentLine(caretIndex, lineIndex + 1);
-		}
-		else
-		{
-			__caretIndex = __text.length;
 		}
 	}
 
@@ -1582,25 +1568,13 @@ class TextField extends InteractiveObject
 		}
 	}
 
-	@:noCompletion private function __caretPreviousLine(lineIndex:Null<Int> = null, caretIndex:Null<Int> = null):Void
+	@:noCompletion private function __caretPreviousLine():Void
 	{
-		if (lineIndex == null)
-		{
-			lineIndex = getLineIndexOfChar(__caretIndex);
-		}
+		var lineIndex = getLineIndexOfChar(__caretIndex);
 
 		if (lineIndex > 0)
 		{
-			if (caretIndex == null)
-			{
-				caretIndex = __caretIndex;
-			}
-
 			__caretIndex = __getCharIndexOnDifferentLine(caretIndex, lineIndex - 1);
-		}
-		else
-		{
-			__caretIndex = 0;
 		}
 	}
 
@@ -3343,9 +3317,13 @@ class TextField extends InteractiveObject
 					if (!te.isDefaultPrevented())
 					{
 						__replaceSelectedText("\n", true);
-
 						dispatchEvent(new Event(Event.CHANGE, true));
 					}
+				}
+				else
+				{
+					__stopCursorTimer();
+					__startCursorTimer();
 				}
 
 			case BACKSPACE:
@@ -3357,9 +3335,12 @@ class TextField extends InteractiveObject
 				if (__selectionIndex != __caretIndex)
 				{
 					replaceSelectedText("");
-					__selectionIndex = __caretIndex;
-
 					dispatchEvent(new Event(Event.CHANGE, true));
+				}
+				else
+				{
+					__stopCursorTimer();
+					__startCursorTimer();
 				}
 
 			case DELETE:
@@ -3371,9 +3352,12 @@ class TextField extends InteractiveObject
 				if (__selectionIndex != __caretIndex)
 				{
 					replaceSelectedText("");
-					__selectionIndex = __caretIndex;
-
 					dispatchEvent(new Event(Event.CHANGE, true));
+				}
+				else
+				{
+					__stopCursorTimer();
+					__startCursorTimer();
 				}
 
 			case LEFT if (selectable):
@@ -3404,10 +3388,8 @@ class TextField extends InteractiveObject
 					__selectionIndex = __caretIndex;
 				}
 
-				__updateScrollH();
-				__updateScrollV();
-				__stopCursorTimer();
-				__startCursorTimer();
+				__updateScrollH();// TODO: move into setSelection
+				setSelection(__selectionIndex, __caretIndex);
 
 			case RIGHT if (selectable):
 				if (modifier.metaKey)
@@ -3438,64 +3420,43 @@ class TextField extends InteractiveObject
 				}
 
 				__updateScrollH();
-				__updateScrollV();
-
-				__stopCursorTimer();
-				__startCursorTimer();
+				setSelection(__selectionIndex, __caretIndex);
 
 			case DOWN if (selectable):
-				if (!__textEngine.multiline) return;
-
-				if (modifier.shiftKey)
+				
+				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end)
+				{
+					__caretIndex = __text.length;
+				}
+				else
 				{
 					__caretNextLine();
 				}
-				else
+				
+				if (!modifier.shiftKey)
 				{
-					if (__selectionIndex == __caretIndex)
-					{
-						__caretNextLine();
-					}
-					else
-					{
-						var lineIndex = getLineIndexOfChar(Std.int(Math.max(__caretIndex, __selectionIndex)));
-						__caretNextLine(lineIndex, Std.int(Math.min(__caretIndex, __selectionIndex)));
-					}
-
 					__selectionIndex = __caretIndex;
 				}
-
-				__updateScrollV();
-
-				__stopCursorTimer();
-				__startCursorTimer();
+				
+				setSelection(__selectionIndex, __caretIndex);
 
 			case UP if (selectable):
-				if (!__textEngine.multiline) return;
-
-				if (modifier.shiftKey)
+				
+				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end)
+				{
+					__caretIndex = 0;
+				}
+				else
 				{
 					__caretPreviousLine();
 				}
-				else
+				
+				if (!modifier.shiftKey)
 				{
-					if (__selectionIndex == __caretIndex)
-					{
-						__caretPreviousLine();
-					}
-					else
-					{
-						var lineIndex = getLineIndexOfChar(Std.int(Math.min(__caretIndex, __selectionIndex)));
-						__caretPreviousLine(lineIndex, Std.int(Math.min(__caretIndex, __selectionIndex)));
-					}
-
 					__selectionIndex = __caretIndex;
 				}
-
-				__updateScrollV();
-
-				__stopCursorTimer();
-				__startCursorTimer();
+				
+				setSelection(__selectionIndex, __caretIndex);
 
 			case HOME if (selectable):
 				
