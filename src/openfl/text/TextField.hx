@@ -1528,6 +1528,39 @@ class TextField extends InteractiveObject
 		__caretIndex = getLineOffset(getLineIndexOfChar(__caretIndex));
 	}
 
+	@:noCompletion private function __caretBeginningOfNextLine():Void
+	{
+		var lineIndex = getLineIndexOfChar(__caretIndex);
+		
+		if (lineIndex < __textEngine.numLines - 1)
+		{
+			__caretIndex = getLineOffset(lineIndex + 1);
+		}
+		else
+		{
+			__caretIndex = __text.length;
+		}
+	}
+
+	@:noCompletion private function __caretBeginningOfPreviousLine():Void
+	{
+		var lineIndex = getLineIndexOfChar(__caretIndex);
+		
+		if (lineIndex > 0)
+		{
+			var index = getLineOffset(getLineIndexOfChar(__caretIndex));
+			
+			if (__caretIndex == index)
+			{
+				__caretIndex = getLineOffset(lineIndex - 1);
+			}
+			else
+			{
+				__caretIndex = index;
+			}
+		}
+	}
+
 	@:noCompletion private function __caretEndOfLine():Void
 	{
 		var lineIndex = getLineIndexOfChar(__caretIndex);
@@ -3361,69 +3394,42 @@ class TextField extends InteractiveObject
 				}
 
 			case LEFT if (selectable):
-				if (modifier.metaKey)
+				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end)
 				{
-					__caretBeginningOfLine();
-
-					if (!modifier.shiftKey)
-					{
-						__selectionIndex = __caretIndex;
-					}
+					__caretBeginningOfPreviousLine();
 				}
-				else if (modifier.shiftKey)
+				else
 				{
 					__caretPreviousCharacter();
 				}
-				else
+				
+				if (!modifier.shiftKey)
 				{
-					if (__selectionIndex == __caretIndex)
-					{
-						__caretPreviousCharacter();
-					}
-					else
-					{
-						__caretIndex = Std.int(Math.min(__caretIndex, __selectionIndex));
-					}
-
 					__selectionIndex = __caretIndex;
 				}
 
-				__updateScrollH();// TODO: move into setSelection
 				setSelection(__selectionIndex, __caretIndex);
+				__updateScrollH(); // TODO: fix and move into setSelection
 
 			case RIGHT if (selectable):
-				if (modifier.metaKey)
+				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end)
 				{
-					__caretEndOfLine();
-
-					if (!modifier.shiftKey)
-					{
-						__selectionIndex = __caretIndex;
-					}
+					__caretBeginningOfNextLine();
 				}
-				else if (modifier.shiftKey)
+				else
 				{
 					__caretNextCharacter();
 				}
-				else
+				
+				if (!modifier.shiftKey)
 				{
-					if (__selectionIndex == __caretIndex)
-					{
-						__caretNextCharacter();
-					}
-					else
-					{
-						__caretIndex = Std.int(Math.max(__caretIndex, __selectionIndex));
-					}
-
 					__selectionIndex = __caretIndex;
 				}
 
-				__updateScrollH();
 				setSelection(__selectionIndex, __caretIndex);
+				__updateScrollH(); // TODO: fix and move into setSelection
 
 			case DOWN if (selectable):
-				
 				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end)
 				{
 					__caretIndex = __text.length;
@@ -3441,7 +3447,6 @@ class TextField extends InteractiveObject
 				setSelection(__selectionIndex, __caretIndex);
 
 			case UP if (selectable):
-				
 				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end)
 				{
 					__caretIndex = 0;
@@ -3459,7 +3464,6 @@ class TextField extends InteractiveObject
 				setSelection(__selectionIndex, __caretIndex);
 
 			case HOME if (selectable):
-				
 				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end)
 				{
 					__caretIndex = 0;
@@ -3477,7 +3481,6 @@ class TextField extends InteractiveObject
 				setSelection(__selectionIndex, __caretIndex);
 
 			case END if (selectable):
-				
 				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end)
 				{
 					__caretIndex = __text.length;
