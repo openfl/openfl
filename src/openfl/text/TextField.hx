@@ -2456,6 +2456,10 @@ class TextField extends InteractiveObject
 		{
 			scrollH = 0;
 		}
+		else if (tempScrollH > maxScrollH)
+		{
+			scrollH = maxScrollH;
+		}
 		else
 		{
 			scrollH = tempScrollH;
