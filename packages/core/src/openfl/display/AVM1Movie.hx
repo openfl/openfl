@@ -38,7 +38,7 @@ import openfl.errors.ArgumentError;
 @SuppressWarnings("checkstyle:Dynamic")
 class AVM1Movie extends DisplayObject
 {
-	@:noCompletion private function new()
+	@:allow(openfl) @:noCompletion private function new()
 	{
 		super();
 		throw new ArgumentError("Error #2012: AVM1Movie$ class cannot be instantiated.");

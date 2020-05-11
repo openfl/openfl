@@ -15,7 +15,7 @@ import sys.io.Process;
 @:noCompletion
 class _Capabilities
 {
-	@:noCompletion private static var __standardDensities:Array<Int> = [120, 160, 240, 320, 480, 640, 800, 960];
+	@:noCompletion public static var __standardDensities:Array<Int> = [120, 160, 240, 320, 480, 640, 800, 960];
 
 	public static function getLanguage():String
 	{

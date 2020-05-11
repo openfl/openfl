@@ -538,13 +538,13 @@ package openfl.ui;
 		Specifies whether the Caps Lock key is activated(`true`) or
 		not(`false`).
 	**/
-	public static var capsLock(default, null):Bool;
+	public static var capsLock(get, never):Bool;
 
 	/**
 		Specifies whether the Num Lock key is activated(`true`) or not
 		(`false`).
 	**/
-	public static var numLock(default, null):Bool;
+	public static var numLock(get, never):Bool;
 
 	/**
 		Specifies whether the last key pressed is accessible by other SWF files.
@@ -558,8 +558,19 @@ package openfl.ui;
 	**/
 	public static function isAccessible():Bool
 	{
-		// default browser security restrictions are always enforced
-		return false;
+		return _Keyboard.isAccessible();
+	}
+
+	// Get & Set Methods
+
+	@:noCompletion private static function get_capsLock():Bool
+	{
+		return _Keyboard.capsLock;
+	}
+
+	@:noCompletion private static function get_numLock():Bool
+	{
+		return _Keyboard.numLock;
 	}
 }
 #else

@@ -1,14 +1,16 @@
 package openfl.net;
 
-#if lime
 import haxe.io.Bytes;
 import haxe.io.Path;
 import haxe.Serializer;
 import haxe.Unserializer;
 import lime.app.Application;
 import lime.system.System;
+import openfl.errors.Error;
+import openfl.events.EventDispatcher;
 import openfl.net.SharedObject;
 import openfl.net.SharedObjectFlushStatus;
+import openfl.utils.Object;
 #if openfl_html5
 import js.Browser;
 #end
@@ -21,23 +23,34 @@ import sys.FileSystem;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.net.SharedObject)
 @:noCompletion
-class _SharedObject
+class _SharedObject extends _EventDispatcher
 {
-	private static var sharedObjects:Map<String, SharedObject>;
+	public static var defaultObjectEncoding:ObjectEncoding = ObjectEncoding.DEFAULT;
 
-	private var localPath:String;
-	private var name:String;
-	private var parent:SharedObject;
+	public var client:Dynamic;
+	public var data:Dynamic;
+	public var fps(null, default):Float;
+	public var objectEncoding:ObjectEncoding;
+	public var size(get, never):Int;
 
-	public function new(parent:SharedObject)
+	public static var sharedObjects:Map<String, SharedObject>;
+
+	public var localPath:String;
+	public var name:String;
+
+	public function new()
 	{
-		this.parent = parent;
+		super();
+
+		client = this;
+		objectEncoding = defaultObjectEncoding;
 	}
 
 	public function clear():Void
 	{
+		data = {};
+
 		#if sys
 		try
 		{
@@ -63,8 +76,15 @@ class _SharedObject
 		#end
 	}
 
+	public function close():Void {}
+
 	public function flush(minDiskSpace:Int = 0):SharedObjectFlushStatus
 	{
+		if (Reflect.fields(data).length == 0)
+		{
+			return SharedObjectFlushStatus.FLUSHED;
+		}
+
 		if (Reflect.fields(parent.data).length == 0)
 		{
 			return SharedObjectFlushStatus.FLUSHED;
@@ -104,10 +124,61 @@ class _SharedObject
 		return SharedObjectFlushStatus.FLUSHED;
 	}
 
-	public function getLocal(name:String, localPath:String = null, secure:Bool = false /* note: unsupported**/):Void
+	public static function getLocal(name:String, localPath:String = null, secure:Bool = false /* note: unsupported**/):SharedObject
+	{
+		var illegalValues = [" ", "~", "%", "&", "\\", ";", ":", "\"", "'", ",", "<", ">", "?", "#"];
+		var allowed = true;
+
+		if (name == null || name == "")
+		{
+			allowed = false;
+		}
+		else
+		{
+			for (value in illegalValues)
+			{
+				if (name.indexOf(value) > -1)
+				{
+					allowed = false;
+					break;
+				}
+			}
+		}
+
+		if (!allowed)
+		{
+			throw new Error("Error #2134: Cannot create SharedObject.");
+			return null;
+		}
+
+		if (sharedObjects == null)
+		{
+			sharedObjects = new Map();
+		}
+
+		var id = localPath + "/" + name;
+
+		if (!sharedObjects.exists(id))
+		{
+			var sharedObject = new SharedObject();
+			sharedObject._._getLocal(name, localPath, secure);
+			if (sharedObject.data == null)
+			{
+				sharedObject.data = {};
+			}
+			sharedObjects.set(id, sharedObject);
+			return sharedObject;
+		}
+		else
+		{
+			return sharedObjects.get(id);
+		}
+	}
+
+	public function _getLocal(name:String, localPath:String = null, secure:Bool = false /* note: unsupported**/):Void
 	{
 		#if sys
-		if (SharedObject.__sharedObjects == null)
+		if (SharedObject.sharedObjects == null)
 		{
 			if (Application.current != null)
 			{
@@ -185,7 +256,7 @@ class _SharedObject
 		#end
 	}
 
-	private function getPath(localPath:String, name:String):String
+	public function getPath(localPath:String, name:String):String
 	{
 		var path = System.applicationStorageDirectory + "/" + localPath + "/";
 
@@ -218,20 +289,7 @@ class _SharedObject
 		return path + name + ".sol";
 	}
 
-	public function getSize():Int
-	{
-		try
-		{
-			var d = Serializer.run(parent.data);
-			return Bytes.ofString(d).length;
-		}
-		catch (e:Dynamic)
-		{
-			return 0;
-		}
-	}
-
-	private static function mkdir(directory:String):Void
+	public static function mkdir(directory:String):Void
 	{
 		// TODO: Move this to Lime somewhere?
 
@@ -279,7 +337,7 @@ class _SharedObject
 		#end
 	}
 
-	private static function resolveClass(name:String):Class<Dynamic>
+	public static function resolveClass(name:String):Class<Dynamic>
 	{
 		if (name != null)
 		{
@@ -314,13 +372,38 @@ class _SharedObject
 		return null;
 	}
 
-	// Event Handlers
-	private static function application_onExit(_):Void
+	public function setDirty(propertyName:String):Void {}
+
+	public function setProperty(propertyName:String, value:Object = null):Void
 	{
-		for (sharedObject in SharedObject.__sharedObjects)
+		if (data != null)
+		{
+			Reflect.setField(data, propertyName, value);
+		}
+	}
+
+	// Event Handlers
+
+	public static function application_onExit(_):Void
+	{
+		for (sharedObject in SharedObject.sharedObjects)
 		{
 			sharedObject.flush();
 		}
 	}
+
+	// Get & Set Methods
+
+	private function get_size():Int
+	{
+		try
+		{
+			var d = Serializer.run(parent.data);
+			return Bytes.ofString(d).length;
+		}
+		catch (e:Dynamic)
+		{
+			return 0;
+		}
+	}
 }
-#end

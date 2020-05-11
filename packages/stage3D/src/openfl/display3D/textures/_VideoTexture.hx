@@ -25,11 +25,11 @@ import js.html.VideoElement;
 @:noCompletion
 class _VideoTexture extends _TextureBase
 {
-	private var cacheTime:Float;
-	private var netStream:NetStream;
-	private var parent:VideoTexture;
+	public var cacheTime:Float;
+	public var netStream:NetStream;
+	public var parent:VideoTexture;
 	#if openfl_html5
-	private var videoElement:VideoElement;
+	public var videoElement:VideoElement;
 	#end
 
 	public function new(parent:VideoTexture)
@@ -56,7 +56,7 @@ class _VideoTexture extends _TextureBase
 		#if openfl_html5
 		if (netStream != null)
 		{
-			videoElement = netStream.__getVideoElement();
+			videoElement = netStream._.__getVideoElement();
 			if (videoElement.readyState >= 2)
 			{
 				Timer.delay(function()
@@ -89,13 +89,13 @@ class _VideoTexture extends _TextureBase
 	}
 
 	#if openfl_html5
-	private function onCanPlay(_):Void
+	public function onCanPlay(_):Void
 	{
 		videoElement.addEventListener("timeupdate", onTimeUpdate);
 		textureReady();
 	}
 
-	private function onTimeUpdate(_):Void
+	public function onTimeUpdate(_):Void
 	{
 		if (videoElement.currentTime != cacheTime && videoElement.readyState >= 2)
 		{
@@ -104,7 +104,7 @@ class _VideoTexture extends _TextureBase
 	}
 	#end
 
-	private override function getTexture():GLTexture
+	public override function getTexture():GLTexture
 	{
 		#if openfl_html5
 		if (videoElement.currentTime != cacheTime && videoElement.readyState >= 2)
@@ -118,7 +118,7 @@ class _VideoTexture extends _TextureBase
 		return glTextureID;
 	}
 
-	private function textureReady():Void
+	public function textureReady():Void
 	{
 		#if openfl_html5
 		parent.videoWidth = videoElement.videoWidth;
@@ -128,7 +128,7 @@ class _VideoTexture extends _TextureBase
 		var event:Event = null;
 
 		#if openfl_pool_events
-		event = Event.__pool.get(Event.TEXTURE_READY);
+		event = Event._.__pool.get(Event.TEXTURE_READY);
 		#else
 		event = new Event(Event.TEXTURE_READY);
 		#end
@@ -136,7 +136,7 @@ class _VideoTexture extends _TextureBase
 		parent.dispatchEvent(event);
 
 		#if openfl_pool_events
-		Event.__pool.release(event);
+		Event._.__pool.release(event);
 		#end
 	}
 }

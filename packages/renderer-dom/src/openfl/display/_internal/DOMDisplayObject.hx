@@ -11,9 +11,9 @@ class DOMDisplayObject
 	public static function clear(displayObject:DisplayObject, renderer:DOMRenderer):Void
 	{
 		#if openfl_html5
-		if (displayObject.__renderData.cacheBitmap != null)
+		if (displayObject._.__renderData.cacheBitmap != null)
 		{
-			DOMBitmap.clear(displayObject.__renderData.cacheBitmap, renderer);
+			DOMBitmap.clear(displayObject._.__renderData.cacheBitmap, renderer);
 		}
 		DOMShape.clear(displayObject, renderer);
 		#end
@@ -22,19 +22,19 @@ class DOMDisplayObject
 	public static inline function render(displayObject:DisplayObject, renderer:DOMRenderer):Void
 	{
 		#if openfl_html5
-		// if (displayObject.opaqueBackground == null && displayObject.__graphics == null) return;
-		// if (!displayObject.__renderable || displayObject.__worldAlpha <= 0) return;
+		// if (displayObject.opaqueBackground == null && displayObject._.__graphics == null) return;
+		// if (!displayObject._.__renderable || displayObject._.__worldAlpha <= 0) return;
 
 		if (displayObject.opaqueBackground != null
-			&& !displayObject.__renderData.isCacheBitmapRender
+			&& !displayObject._.__renderData.isCacheBitmapRender
 			&& displayObject.width > 0
 			&& displayObject.height > 0)
 		{
-			// renderer.__pushMaskObject (displayObject);
+			// renderer._.__pushMaskObject (displayObject);
 
 			// TODO: opaqueBackground using DIV element
 
-			// renderer.__popMaskObject (displayObject);
+			// renderer._.__popMaskObject (displayObject);
 		}
 
 		DOMShape.render(displayObject, renderer);

@@ -17,21 +17,21 @@ class Context3DTextField
 	public static function render(textField:TextField, renderer:Context3DRenderer):Void
 	{
 		#if openfl_html5
-		CanvasTextField.render(textField, cast renderer.__softwareRenderer, textField.__worldTransform);
+		CanvasTextField.render(textField, cast renderer._.__softwareRenderer, textField._.__worldTransform);
 		#elseif openfl_cairo
-		CairoTextField.render(textField, cast renderer.__softwareRenderer, textField.__worldTransform);
+		CairoTextField.render(textField, cast renderer._.__softwareRenderer, textField._.__worldTransform);
 		#end
-		textField.__graphics.__hardwareDirty = false;
+		textField._.__graphics._.__hardwareDirty = false;
 	}
 
 	public static function renderMask(textField:TextField, renderer:Context3DRenderer):Void
 	{
 		#if openfl_html5
-		CanvasTextField.render(textField, cast renderer.__softwareRenderer, textField.__worldTransform);
+		CanvasTextField.render(textField, cast renderer._.__softwareRenderer, textField._.__worldTransform);
 		#elseif openfl_cairo
-		CairoTextField.render(textField, cast renderer.__softwareRenderer, textField.__worldTransform);
+		CairoTextField.render(textField, cast renderer._.__softwareRenderer, textField._.__worldTransform);
 		#end
-		textField.__graphics.__hardwareDirty = false;
+		textField._.__graphics._.__hardwareDirty = false;
 	}
 }
 #end

@@ -37,7 +37,7 @@ class URLRequestDefaults
 
 		The default value is `true`.
 	**/
-	public static var followRedirects:Bool = true;
+	public static var followRedirects(get, set):Bool;
 
 	/**
 		The default setting for the `idleTimeout` property of URLRequest objects and
@@ -61,7 +61,7 @@ class URLRequestDefaults
 
 		The default value is 0.
 	**/
-	public static var idleTimeout:Float = 0;
+	public static var idleTimeout(get, set):Float;
 
 	/**
 		The default setting for the manageCookies property of URLRequest objects. Setting
@@ -72,7 +72,7 @@ class URLRequestDefaults
 
 		The default value is `true`.
 	**/
-	public static var manageCookies:Bool = false;
+	public static var manageCookies(get, set):Bool;
 
 	// public static var useCache:Bool;
 
@@ -93,12 +93,53 @@ class URLRequestDefaults
 		* `"Mozilla/5.0 (Windows; U; en) AppleWebKit/526.9+ (KHTML, like Gecko) AdobeAIR/1.5"`
 		* `"Mozilla/5.0 (X11; U; Linux i686; en-US) AppleWebKit/526.9+ (KHTML, like Gecko) AdobeAIR/1.5"`
 	**/
-	public static var userAgent:String;
+	public static var userAgent(get, set):String;
 
 	// public static function setLoginCredentialsForHost (hostname:String, user:String, password:String):Dynamic {
 	// 	openfl._internal.Lib.notImplemented ();
 	// 	return null;
 	// }
+	// Get & Set Methods
+
+	@:noCompletion private static function get_followRedirects():Bool
+	{
+		return _URLRequestDefaults.followRedirects;
+	}
+
+	@:noCompletion private static function set_followRedirects(value:Bool):Bool
+	{
+		return _URLRequestDefaults.followRedirects = value;
+	}
+
+	@:noCompletion private static function get_idleTimeout():Float
+	{
+		return _URLRequestDefaults.idleTimeout;
+	}
+
+	@:noCompletion private static function set_idleTimeout(value:Float):Float
+	{
+		return _URLRequestDefaults.idleTimeout = value;
+	}
+
+	@:noCompletion private static function get_manageCookies():Bool
+	{
+		return _URLRequestDefaults.manageCookies;
+	}
+
+	@:noCompletion private static function set_manageCookies(value:Bool):Bool
+	{
+		return _URLRequestDefaults.manageCookies = value;
+	}
+
+	@:noCompletion private static function get_userAgent():String
+	{
+		return _URLRequestDefaults.userAgent;
+	}
+
+	@:noCompletion private static function set_userAgent(value:String):String
+	{
+		return _URLRequestDefaults.userAgent = value;
+	}
 }
 #else
 typedef URLRequestDefaults = flash.net.URLRequestDefaults;

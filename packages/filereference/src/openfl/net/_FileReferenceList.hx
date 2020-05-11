@@ -16,15 +16,16 @@ import sys.FileSystem;
 @:noDebug
 #end
 @:access(openfl.net.FileReference)
-@:access(openfl.net.FileReferenceList)
 @:noCompletion
-class _FileReferenceList
+class _FileReferenceList extends _EventDispatcher
 {
-	private var parent:FileReferenceList;
+	public var fileList:Array<FileReference>;
 
-	public function new(parent:FileReferenceList)
+	public function new()
 	{
-		this.parent = parent;
+		super();
+
+		__backend = new FileReferenceListBackend(this);
 	}
 
 	public function browse(typeFilter:Array<FileFilter> = null):Bool
@@ -44,7 +45,7 @@ class _FileReferenceList
 			filter = filters.join(";");
 		}
 
-		parent.fileList = new Array();
+		fileList = new Array();
 
 		var fileDialog = new FileDialog();
 		fileDialog.onCancel.add(fileDialog_onCancel);
@@ -57,12 +58,12 @@ class _FileReferenceList
 	}
 
 	// Event Handlers
-	private function fileDialog_onCancel():Void
+	public function fileDialog_onCancel():Void
 	{
-		parent.dispatchEvent(new Event(Event.CANCEL));
+		dispatchEvent(new Event(Event.CANCEL));
 	}
 
-	private function fileDialog_onSelectMultiple(paths:Array<String>):Void
+	public function fileDialog_onSelectMultiple(paths:Array<String>):Void
 	{
 		var fileReference, fileInfo;
 
@@ -78,13 +79,13 @@ class _FileReferenceList
 			fileReference.type = "." + Path.extension(path);
 			#end
 
-			@:privateAccess fileReference._.path = path;
+			fileReference._.path = path;
 			fileReference.name = Path.withoutDirectory(path);
 
-			parent.fileList.push(fileReference);
+			fileList.push(fileReference);
 		}
 
-		parent.dispatchEvent(new Event(Event.SELECT));
+		dispatchEvent(new Event(Event.SELECT));
 	}
 }
 #end

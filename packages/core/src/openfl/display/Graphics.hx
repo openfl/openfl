@@ -13,7 +13,9 @@ import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
 import openfl.errors.ArgumentError;
 import openfl.geom.Matrix;
+import openfl.geom._Matrix;
 import openfl.geom.Rectangle;
+import openfl.geom._Rectangle;
 import openfl.Vector;
 #if openfl_html5
 import js.html.CanvasElement;
@@ -397,7 +399,7 @@ import openfl.display._internal.CairoGraphics;
 			__dirty = true;
 			__transformDirty = true;
 			__bounds = null;
-			__owner.__localBoundsDirty = true;
+			__owner._.__localBoundsDirty = true;
 		}
 
 		__visible = false;
@@ -418,15 +420,15 @@ import openfl.display._internal.CairoGraphics;
 	**/
 	public function copyFrom(sourceGraphics:Graphics):Void
 	{
-		__bounds = sourceGraphics.__bounds != null ? sourceGraphics.__bounds.clone() : null;
-		__owner.__localBoundsDirty = true;
-		__commands = sourceGraphics.__commands.copy();
+		__bounds = sourceGraphics._.__bounds != null ? sourceGraphics._.__bounds.clone() : null;
+		__owner._.__localBoundsDirty = true;
+		__commands = sourceGraphics._.__commands.copy();
 		__dirty = true;
-		__strokePadding = sourceGraphics.__strokePadding;
-		__positionX = sourceGraphics.__positionX;
-		__positionY = sourceGraphics.__positionY;
+		__strokePadding = sourceGraphics._.__strokePadding;
+		__positionX = sourceGraphics._.__positionX;
+		__positionY = sourceGraphics._.__positionY;
 		__transformDirty = true;
-		__visible = sourceGraphics.__visible;
+		__visible = sourceGraphics._.__visible;
 	}
 
 	/**
@@ -689,7 +691,7 @@ import openfl.display._internal.CairoGraphics;
 
 		for (graphics in graphicsData)
 		{
-			switch (graphics.__graphicsDataType)
+			switch (graphics._.__graphicsDataType)
 			{
 				case SOLID:
 					fill = cast graphics;
@@ -720,7 +722,7 @@ import openfl.display._internal.CairoGraphics;
 							thickness = null;
 						}
 
-						switch (stroke.fill.__graphicsFillType)
+						switch (stroke.fill._.__graphicsFillType)
 						{
 							case SOLID_FILL:
 								fill = cast stroke.fill;
@@ -907,8 +909,8 @@ import openfl.display._internal.CairoGraphics;
 			}
 		}
 
-		var tileRect = Rectangle.__pool.get();
-		var tileTransform = Matrix.__pool.get();
+		var tileRect = _Rectangle._.__pool.get();
+		var tileTransform = _Matrix._.__pool.get();
 
 		var minX = Math.POSITIVE_INFINITY;
 		var minY = Math.POSITIVE_INFINITY;
@@ -950,7 +952,7 @@ import openfl.display._internal.CairoGraphics;
 				tileTransform.ty = tileRect.y;
 			}
 
-			tileRect.__transform(tileRect, tileTransform);
+			tileRect._.__transform(tileRect, tileTransform);
 
 			if (minX > tileRect.x) minX = tileRect.x;
 			if (minY > tileRect.y) minY = tileRect.y;
@@ -966,8 +968,8 @@ import openfl.display._internal.CairoGraphics;
 		__dirty = true;
 		__visible = true;
 
-		Rectangle.__pool.release(tileRect);
-		Matrix.__pool.release(tileTransform);
+		_Rectangle._.__pool.release(tileRect);
+		_Matrix._.__pool.release(tileTransform);
 	}
 
 	/**
@@ -1610,7 +1612,7 @@ import openfl.display._internal.CairoGraphics;
 	public function readGraphicsData(recurse:Bool = true):Vector<IGraphicsData>
 	{
 		var graphicsData = new Vector<IGraphicsData>();
-		__owner.__readGraphicsData(graphicsData, recurse);
+		__owner._.__readGraphicsData(graphicsData, recurse);
 		return graphicsData;
 	}
 
@@ -1650,18 +1652,18 @@ import openfl.display._internal.CairoGraphics;
 	{
 		if (__bounds == null) return;
 
-		var bounds = Rectangle.__pool.get();
-		__bounds.__transform(bounds, matrix);
-		rect.__expand(bounds.x, bounds.y, bounds.width, bounds.height);
-		Rectangle.__pool.release(bounds);
+		var bounds = _Rectangle._.__pool.get();
+		__bounds._.__transform(bounds, matrix);
+		rect._.__expand(bounds.x, bounds.y, bounds.width, bounds.height);
+		_Rectangle._.__pool.release(bounds);
 	}
 
 	@:noCompletion private function __hitTest(x:Float, y:Float, shapeFlag:Bool, matrix:Matrix):Bool
 	{
 		if (__bounds == null) return false;
 
-		var px = matrix.__transformInverseX(x, y);
-		var py = matrix.__transformInverseY(x, y);
+		var px = matrix._.__transformInverseX(x, y);
+		var py = matrix._.__transformInverseY(x, y);
 
 		if (px > __bounds.x && py > __bounds.y && __bounds.contains(px, py))
 		{
@@ -1685,7 +1687,7 @@ import openfl.display._internal.CairoGraphics;
 		if (__bounds == null)
 		{
 			__bounds = new Rectangle(x, y, 0, 0);
-			__owner.__localBoundsDirty = true;
+			__owner._._.__localBoundsDirty = true;
 			__transformDirty = true;
 		}
 		else
@@ -1694,7 +1696,7 @@ import openfl.display._internal.CairoGraphics;
 			{
 				__bounds.width += __bounds.x - x;
 				__bounds.x = x;
-				__owner.__localBoundsDirty = true;
+				__owner._.__localBoundsDirty = true;
 				__transformDirty = true;
 			}
 
@@ -1702,19 +1704,19 @@ import openfl.display._internal.CairoGraphics;
 			{
 				__bounds.height += __bounds.y - y;
 				__bounds.y = y;
-				__owner.__localBoundsDirty = true;
+				__owner._.__localBoundsDirty = true;
 				__transformDirty = true;
 			}
 
 			if (x > __bounds.x + __bounds.width)
 			{
-				__owner.__localBoundsDirty = true;
+				__owner._.__localBoundsDirty = true;
 				__bounds.width = x - __bounds.x;
 			}
 
 			if (y > __bounds.y + __bounds.height)
 			{
-				__owner.__localBoundsDirty = true;
+				__owner._.__localBoundsDirty = true;
 				__bounds.height = y - __bounds.y;
 			}
 		}
@@ -1763,19 +1765,19 @@ import openfl.display._internal.CairoGraphics;
 
 				case DRAW_CIRCLE:
 					var c = data.readDrawCircle();
-					path.__drawCircle(c.x, c.y, c.radius);
+					path._.__drawCircle(c.x, c.y, c.radius);
 
 				case DRAW_ELLIPSE:
 					var c = data.readDrawEllipse();
-					path.__drawEllipse(c.x, c.y, c.width, c.height);
+					path._.__drawEllipse(c.x, c.y, c.width, c.height);
 
 				case DRAW_RECT:
 					var c = data.readDrawRect();
-					path.__drawRect(c.x, c.y, c.width, c.height);
+					path._.__drawRect(c.x, c.y, c.width, c.height);
 
 				case DRAW_ROUND_RECT:
 					var c = data.readDrawRoundRect();
-					path.__drawRoundRect(c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight != null ? c.ellipseHeight : c.ellipseWidth);
+					path._.__drawRoundRect(c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight != null ? c.ellipseHeight : c.ellipseWidth);
 
 				case LINE_GRADIENT_STYLE:
 					// TODO
@@ -1834,7 +1836,7 @@ import openfl.display._internal.CairoGraphics;
 	{
 		if (__bounds == null || __bounds.width <= 0 || __bounds.height <= 0) return;
 
-		var parentTransform = __owner.__renderTransform;
+		var parentTransform = __owner._.__renderTransform;
 		var scaleX = 1.0, scaleY = 1.0;
 
 		if (parentTransform != null)
@@ -1932,8 +1934,8 @@ import openfl.display._internal.CairoGraphics;
 		__worldTransform.ty = Math.ffloor(ty);
 
 		// Offset the rendering with the subpixel offset removed by Math.floor above
-		__renderTransform.tx = __worldTransform.__transformInverseX(tx, ty);
-		__renderTransform.ty = __worldTransform.__transformInverseY(tx, ty);
+		__renderTransform.tx = __worldTransform._.__transformInverseX(tx, ty);
+		__renderTransform.ty = __worldTransform._.__transformInverseY(tx, ty);
 
 		// Calculate the size to contain the graphics and an extra subpixel
 		// We used to add tx and ty from __renderTransform instead of 1.0
@@ -1959,7 +1961,7 @@ import openfl.display._internal.CairoGraphics;
 	{
 		if (value && __owner != null)
 		{
-			@:privateAccess __owner.__setRenderDirty();
+			@:privateAccess __owner._.__setRenderDirty();
 		}
 
 		if (value)

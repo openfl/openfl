@@ -1,8 +1,6 @@
 package openfl.external;
 
 #if !flash
-import openfl._internal.Lib;
-
 /**
 	The ExternalInterface class is an application programming interface that
 	enables straightforward communication between ActionScript and the SWF
@@ -74,8 +72,6 @@ import openfl._internal.Lib;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.display.Stage)
-@:access(lime.ui.Window)
 @:final class ExternalInterface
 {
 	/**
@@ -87,7 +83,7 @@ import openfl._internal.Lib;
 		the HTML has finished loading before you attempt to call any JavaScript
 		methods.
 	**/
-	public static var available(default, null) = #if openfl_html5 true #else false #end;
+	public static var available(get, never):Bool;
 
 	/**
 		Indicates whether the external interface should attempt to pass
@@ -96,14 +92,14 @@ import openfl._internal.Lib;
 		to catch JavaScript exceptions in ActionScript and to catch ActionScript
 		exceptions in JavaScript.
 	**/
-	public static var marshallExceptions:Bool = false;
+	public static var marshallExceptions(get, set):Bool = false;
 
 	/**
 		Returns the `id` attribute of the `object` tag in
 		Internet Explorer, or the `name` attribute of the
 		`embed` tag in Netscape.
 	**/
-	public static var objectID(get, null):String;
+	public static var objectID(get, never):String;
 
 	/**
 		Registers an ActionScript method as callable from the container. After a
@@ -161,7 +157,7 @@ import openfl._internal.Lib;
 	**/
 	public static function addCallback(functionName:String, closure:Dynamic):Void
 	{
-		ExternalInterfaceBackend.addCallback(functionName, closure);
+		_ExternalInterface.addCallback(functionName, closure);
 	}
 
 	/**
@@ -233,22 +229,31 @@ import openfl._internal.Lib;
 	**/
 	public static function call(functionName:String, p1:Dynamic = null, p2:Dynamic = null, p3:Dynamic = null, p4:Dynamic = null, p5:Dynamic = null):Dynamic
 	{
-		return ExternalInterfaceBackend.call(functionName, p1, p2, p3, p4, p5);
+		return _ExternalInterface.call(functionName, p1, p2, p3, p4, p5);
+	}
+
+	// Get & Set Methods
+
+	private static function get_available():Bool
+	{
+		return _ExternalInterface.available;
+	}
+
+	private static function get_marshallExceptions():Bool
+	{
+		return _ExternalInterface.marshallExceptions;
+	}
+
+	private static function set_marshallExceptions(value:Bool):Bool
+	{
+		return _ExternalInterface.marshallExceptions = value;
 	}
 
 	private static function get_objectID():String
 	{
-		return ExternalInterfaceBackend.getObjectID();
+		return _ExternalInterface.getObjectID();
 	}
 }
-
-#if lime
-private typedef ExternalInterfaceBackend = openfl._internal.backend.lime.LimeExternalInterfaceBackend;
-#elseif openfl_html5
-private typedef ExternalInterfaceBackend = openfl._internal.backend.html5.HTML5ExternalInterfaceBackend;
-#else
-private typedef ExternalInterfaceBackend = openfl._internal.backend.dummy.DummyExternalInterfaceBackend;
-#end
 #else
 typedef ExternalInterface = flash.external.ExternalInterface;
 #end

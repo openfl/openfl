@@ -23,21 +23,21 @@ import openfl.Vector;
 @:noCompletion
 class _IndexBuffer3D
 {
-	private var gl:WebGLRenderContext;
-	private var glBufferID:GLBuffer;
-	private var glUsage:Int;
-	private var memoryUsage:Int;
-	private var parent:IndexBuffer3D;
-	private var tempUInt16Array:UInt16Array;
+	public var gl:WebGLRenderContext;
+	public var glBufferID:GLBuffer;
+	public var glUsage:Int;
+	public var memoryUsage:Int;
+	public var parent:IndexBuffer3D;
+	public var tempUInt16Array:UInt16Array;
 
 	public function new(parent:IndexBuffer3D)
 	{
 		this.parent = parent;
 
-		gl = parent.__context._.gl;
+		gl = parent._.__context._.gl;
 		glBufferID = gl.createBuffer();
 
-		glUsage = (parent.__bufferUsage == Context3DBufferUsage.DYNAMIC_DRAW) ? GL.DYNAMIC_DRAW : GL.STATIC_DRAW;
+		glUsage = (parent._.__bufferUsage == Context3DBufferUsage.DYNAMIC_DRAW) ? GL.DYNAMIC_DRAW : GL.STATIC_DRAW;
 	}
 
 	public function dispose():Void
@@ -54,7 +54,7 @@ class _IndexBuffer3D
 	public function uploadFromTypedArray(data:ArrayBufferView, byteLength:Int = -1):Void
 	{
 		if (data == null) return;
-		parent.__context._.bindGLElementArrayBuffer(glBufferID);
+		parent._.__context._.bindGLElementArrayBuffer(glBufferID);
 		gl.bufferData(GL.ELEMENT_ARRAY_BUFFER, data, glUsage);
 	}
 

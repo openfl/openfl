@@ -196,13 +196,13 @@ class SimpleButton extends InteractiveObject
 	{
 		super.__getBounds(rect, matrix);
 
-		var childWorldTransform = Matrix.__pool.get();
+		var childWorldTransform = _Matrix.__pool.get();
 
 		DisplayObject.__calculateAbsoluteTransform(__currentState.__transform, matrix, childWorldTransform);
 
 		__currentState.__getBounds(rect, childWorldTransform);
 
-		Matrix.__pool.release(childWorldTransform);
+		_Matrix.__pool.release(childWorldTransform);
 	}
 
 	@:noCompletion private override function __getRenderBounds(rect:Rectangle, matrix:Matrix):Void
@@ -217,13 +217,13 @@ class SimpleButton extends InteractiveObject
 			super.__getBounds(rect, matrix);
 		}
 
-		var childWorldTransform = Matrix.__pool.get();
+		var childWorldTransform = _Matrix.__pool.get();
 
 		DisplayObject.__calculateAbsoluteTransform(__currentState.__transform, matrix, childWorldTransform);
 
 		__currentState.__getRenderBounds(rect, childWorldTransform);
 
-		Matrix.__pool.release(childWorldTransform);
+		_Matrix.__pool.release(childWorldTransform);
 	}
 
 	@:noCompletion private override function __getCursor():MouseCursor

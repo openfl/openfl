@@ -22,8 +22,8 @@ import openfl.Vector;
 class FlashGraphics
 {
 	public static var bitmapFill:Dictionary<Graphics, BitmapData> = new Dictionary(true);
-	private static var tileRect:Rectangle = new Rectangle();
-	private static var tileTransform:Matrix = new Matrix();
+	public static var tileRect:Rectangle = new Rectangle();
+	public static var tileTransform:Matrix = new Matrix();
 
 	public static function drawGraphicsData(graphics:Graphics, graphicsData:Vector<IGraphicsData>):Void
 	{
@@ -142,7 +142,7 @@ class FlashGraphics
 		}
 		else
 		{
-			graphics.__drawGraphicsData(graphicsData);
+			graphics._.__drawGraphicsData(graphicsData);
 		}
 	}
 

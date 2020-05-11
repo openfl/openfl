@@ -33,10 +33,6 @@ import openfl.display._internal.Context3DBuffer;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.display.Tile)
-@:access(openfl.geom.ColorTransform)
-@:access(openfl.geom.Matrix)
-@:access(openfl.geom.Rectangle)
 class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayObject #end implements ITileContainer
 {
 	/**
@@ -48,19 +44,19 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		Enable or disable support for the `alpha` property of contained tiles. Disabling
 		this property can improve performance on certain renderers.
 	**/
-	public var tileAlphaEnabled:Bool;
+	public var tileAlphaEnabled(get, set):Bool;
 
 	/**
 		Enable or disable support for the `blendMode` property of contained tiles.
 		Disabling this property can improve performance on certain renderers.
 	**/
-	public var tileBlendModeEnabled:Bool;
+	public var tileBlendModeEnabled(get, set):Bool;
 
 	/**
 		Enable or disable support for the `colorTransform` property of contained tiles.
 		Disabling this property can improve performance on certain renderers.
 	**/
-	public var tileColorTransformEnabled:Bool;
+	public var tileColorTransformEnabled(get, set):Bool;
 
 	/**
 		Optionally define a default Tileset to be used for all contained tiles. Tile
@@ -77,27 +73,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 		`true`, the bitmap is smoothed when scaled. If `false`, the tilemap is not
 		smoothed when scaled.
 	**/
-	public var smoothing:Bool;
-	#end
-
-	@:noCompletion private var __group:TileContainer;
-	@:noCompletion private var __tileset:Tileset;
-	#if !flash
-	@:noCompletion private var __height:Int;
-	@:noCompletion private var __width:Int;
-	#end
-
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperties(Tilemap.prototype, {
-			"numTiles": {get: untyped __js__("function () { return this.get_numTiles (); }")},
-			"tileset": {
-				get: untyped __js__("function () { return this.get_tileset (); }"),
-				set: untyped __js__("function (v) { return this.set_tileset (v); }")
-			}
-		});
-	}
+	public var smoothing(get, set):Bool;
 	#end
 
 	/**
@@ -113,26 +89,12 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	**/
 	public function new(width:Int, height:Int, tileset:Tileset = null, smoothing:Bool = true)
 	{
+		if (_ == null)
+		{
+			_ = new _Tilemap(width, height, tileset, smoothing);
+		}
+
 		super();
-
-		__tileset = tileset;
-		this.smoothing = smoothing;
-
-		tileAlphaEnabled = true;
-		tileBlendModeEnabled = true;
-		tileColorTransformEnabled = true;
-
-		__group = new TileContainer();
-		__group.tileset = tileset;
-		#if !flash
-		__width = width;
-		__height = height;
-		__type = TILEMAP;
-		#else
-		bitmapData = new BitmapData(width, height, true, 0);
-		this.smoothing = smoothing;
-		FlashRenderer.register(this);
-		#end
 	}
 
 	/**
@@ -146,7 +108,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	**/
 	public function addTile(tile:Tile):Tile
 	{
-		return __group.addTile(tile);
+		return _.addTile(tile);
 	}
 
 	/**
@@ -168,7 +130,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	**/
 	public function addTileAt(tile:Tile, index:Int):Tile
 	{
-		return __group.addTileAt(tile, index);
+		return _.addTileAt(tile, index);
 	}
 
 	/**
@@ -181,7 +143,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	**/
 	public function addTiles(tiles:Array<Tile>):Array<Tile>
 	{
-		return __group.addTiles(tiles);
+		return _.addTiles(tiles);
 	}
 
 	/**
@@ -196,7 +158,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	**/
 	public function contains(tile:Tile):Bool
 	{
-		return __group.contains(tile);
+		return _.contains(tile);
 	}
 
 	/**
@@ -207,7 +169,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	**/
 	public function getTileAt(index:Int):Tile
 	{
-		return __group.getTileAt(index);
+		return _.getTileAt(index);
 	}
 
 	/**
@@ -218,7 +180,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	**/
 	public function getTileIndex(tile:Tile):Int
 	{
-		return __group.getTileIndex(tile);
+		return _.getTileIndex(tile);
 	}
 
 	/**
@@ -229,7 +191,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	**/
 	public function getTiles():TileContainer
 	{
-		return __group.clone();
+		return _.getTiles();
 	}
 
 	/**
@@ -242,7 +204,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	**/
 	public function removeTile(tile:Tile):Tile
 	{
-		return __group.removeTile(tile);
+		return _.removeTile(tile);
 	}
 
 	/**
@@ -255,7 +217,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	**/
 	public function removeTileAt(index:Int):Tile
 	{
-		return __group.removeTileAt(index);
+		return _.removeTileAt(index);
 	}
 
 	/**
@@ -266,7 +228,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	**/
 	public function removeTiles(beginIndex:Int = 0, endIndex:Int = 0x7fffffff):Void
 	{
-		return __group.removeTiles(beginIndex, endIndex);
+		return _.removeTiles(beginIndex, endIndex);
 	}
 
 	/**
@@ -302,7 +264,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	**/
 	public function setTileIndex(tile:Tile, index:Int):Void
 	{
-		__group.setTileIndex(tile, index);
+		_.setTileIndex(tile, index);
 	}
 
 	/**
@@ -313,15 +275,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	**/
 	public function setTiles(group:TileContainer):Void
 	{
-		for (tile in __group.__tiles)
-		{
-			removeTile(tile);
-		}
-
-		for (tile in group.__tiles)
-		{
-			addTile(tile);
-		}
+		_.setTiles(group);
 	}
 
 	/**
@@ -342,7 +296,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	**/
 	public function sortTiles(compareFunction:Tile->Tile->Int):Void
 	{
-		__group.sortTiles(compareFunction);
+		_.sortTiles(compareFunction);
 	}
 
 	/**
@@ -355,7 +309,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	**/
 	public function swapTiles(tile1:Tile, tile2:Tile):Void
 	{
-		__group.swapTiles(tile1, tile2);
+		_.swapTiles(tile1, tile2);
 	}
 
 	/**
@@ -368,129 +322,65 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	**/
 	public function swapTilesAt(index1:Int, index2:Int):Void
 	{
-		__group.swapTilesAt(index1, index2);
-	}
-
-	#if !flash
-	@:noCompletion private override function __getBounds(rect:Rectangle, matrix:Matrix):Void
-	{
-		var bounds = Rectangle.__pool.get();
-		bounds.setTo(0, 0, __width, __height);
-		bounds.__transform(bounds, matrix);
-
-		rect.__expand(bounds.x, bounds.y, bounds.width, bounds.height);
-
-		Rectangle.__pool.release(bounds);
-	}
-	#end
-
-	#if !flash
-	@:noCompletion private override function __hitTest(x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool,
-			hitObject:DisplayObject):Bool
-	{
-		if (!hitObject.visible || __isMask) return false;
-		if (mask != null && !mask.__hitTestMask(x, y)) return false;
-
-		__getRenderTransform();
-
-		var px = __renderTransform.__transformInverseX(x, y);
-		var py = __renderTransform.__transformInverseY(x, y);
-
-		if (px > 0 && py > 0 && px <= __width && py <= __height)
-		{
-			if (stack != null && !interactiveOnly)
-			{
-				stack.push(hitObject);
-			}
-
-			return true;
-		}
-
-		return false;
-	}
-	#end
-
-	@:noCompletion private function __renderFlash():Void
-	{
-		FlashTilemap.render(this);
+		_.swapTilesAt(index1, index2);
 	}
 
 	// Get & Set Methods
-	#if !flash
-	@:noCompletion private override function get_height():Float
-	{
-		return __height * Math.abs(scaleY);
-	}
-	#end
-
-	#if !flash
-	@:noCompletion private override function set_height(value:Float):Float
-	{
-		__height = Std.int(value);
-		__localBoundsDirty = true;
-		return __height * Math.abs(scaleY);
-	}
-	#else
-	@:setter(height) private function set_height(value:Float):Void
-	{
-		if (value != bitmapData.height)
-		{
-			var cacheSmoothing = smoothing;
-			bitmapData = new BitmapData(bitmapData.width, Std.int(value), true, 0);
-			smoothing = cacheSmoothing;
-		}
-	}
-	#end
 
 	@:noCompletion private function get_numTiles():Int
 	{
-		return __group.__length;
+		return _.numTiles;
+	}
+
+	@:noCompletion private function get_tileAlphaEnabled():Bool
+	{
+		return _.tileAlphaEnabled;
+	}
+
+	@:noCompletion private function set_tileAlphaEnabled(value:Bool):Bool
+	{
+		return _.tileAlphaEnabled = value;
+	}
+
+	@:noCompletion private function get_tileBlendModeEnabled():Bool
+	{
+		return _.tileBlendModeEnabled;
+	}
+
+	@:noCompletion private function set_tileBlendModeEnabled(value:Bool):Bool
+	{
+		return _.tileBlendModeEnabled = value;
+	}
+
+	@:noCompletion private function get_tileColorTransformEnabled():Bool
+	{
+		return _.tileColorTransformEnabled;
+	}
+
+	@:noCompletion private function set_tileColorTransformEnabled(value:Bool):Bool
+	{
+		return _.tileColorTransformEnabled = value;
 	}
 
 	@:noCompletion private function get_tileset():Tileset
 	{
-		return __tileset;
+		return _.tileset;
 	}
 
 	@:noCompletion private function set_tileset(value:Tileset):Tileset
 	{
-		if (value != __tileset)
-		{
-			__tileset = value;
-			__group.tileset = value;
-			__group.__dirty = true;
-
-			#if !flash
-			__setRenderDirty();
-			#end
-		}
-
-		return value;
+		return _.tileset = value;
 	}
 
-	#if !flash
-	@:noCompletion private override function get_width():Float
+	#if flash
+	@:setter(height) private function set_height(value:Float):Void
 	{
-		return __width * Math.abs(__scaleX);
+		_.set_height(value);
 	}
-	#end
 
-	#if !flash
-	@:noCompletion private override function set_width(value:Float):Float
-	{
-		__width = Std.int(value);
-		__localBoundsDirty = true;
-		return __width * Math.abs(__scaleX);
-	}
-	#else
 	@:setter(width) private function set_width(value:Float):Void
 	{
-		if (value != bitmapData.width)
-		{
-			var cacheSmoothing = smoothing;
-			bitmapData = new BitmapData(Std.int(value), bitmapData.height, true, 0);
-			smoothing = cacheSmoothing;
-		}
+		_.set_width(value);
 	}
 	#end
 }

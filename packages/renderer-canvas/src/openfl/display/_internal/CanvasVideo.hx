@@ -11,24 +11,24 @@ class CanvasVideo
 	public static function render(video:Video, renderer:CanvasRenderer):Void
 	{
 		#if (lime && openfl_html5)
-		if (!video.__renderable || video.__stream == null) return;
+		if (!video._.__renderable || video._.__stream == null) return;
 
-		var alpha = renderer.__getAlpha(video.__worldAlpha);
+		var alpha = renderer._.__getAlpha(video._.__worldAlpha);
 		if (alpha <= 0) return;
 
 		var context = renderer.context;
-		var videoElement = video.__stream.__getVideoElement();
+		var videoElement = video._.__stream._.__getVideoElement();
 
 		if (videoElement != null)
 		{
-			renderer.__setBlendMode(video.__worldBlendMode);
-			renderer.__pushMaskObject(video);
+			renderer._.__setBlendMode(video._.__worldBlendMode);
+			renderer._.__pushMaskObject(video);
 
 			context.globalAlpha = alpha;
-			var scrollRect = video.__scrollRect;
+			var scrollRect = video._.__scrollRect;
 			var smoothing = video.smoothing;
 
-			renderer.setTransform(video.__worldTransform, context);
+			renderer.setTransform(video._.__worldTransform, context);
 
 			if (!smoothing)
 			{
@@ -50,7 +50,7 @@ class CanvasVideo
 				context.imageSmoothingEnabled = true;
 			}
 
-			renderer.__popMaskObject(video);
+			renderer._.__popMaskObject(video);
 		}
 		#end
 	}

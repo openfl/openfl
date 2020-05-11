@@ -1,6 +1,5 @@
 package openfl.external;
 
-#if lime
 import openfl._internal.Lib;
 
 #if !openfl_debug
@@ -12,6 +11,10 @@ import openfl._internal.Lib;
 @:noCompletion
 class _ExternalInterface
 {
+	public static var available = #if openfl_html5 true #else false #end;
+	public static var marshallExceptions:Bool = false;
+	public static var objectID(get, null):String;
+
 	public static function addCallback(functionName:String, closure:Dynamic):Void
 	{
 		#if openfl_html5
@@ -85,7 +88,7 @@ class _ExternalInterface
 		#end
 	}
 
-	public static function getObjectID():String
+	public static function get_objectID():String
 	{
 		#if openfl_html5
 		if (Lib.limeApplication.window.element != null)
@@ -97,4 +100,3 @@ class _ExternalInterface
 		return null;
 	}
 }
-#end

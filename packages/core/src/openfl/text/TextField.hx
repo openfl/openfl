@@ -661,132 +661,6 @@ class TextField extends InteractiveObject
 	**/
 	public var wordWrap(get, set):Bool;
 
-	@:noCompletion private var _:_TextField;
-	@:noCompletion private var __bounds:Rectangle;
-	@:noCompletion private var __caretIndex:Int;
-	@:noCompletion private var __cursorTimer:Timer;
-	@:noCompletion private var __dirty:Bool;
-	@:noCompletion private var __displayAsPassword:Bool;
-	@:noCompletion private var __domRender:Bool;
-	@:noCompletion private var __inputEnabled:Bool;
-	@:noCompletion private var __isHTML:Bool;
-	@:noCompletion private var __layoutDirty:Bool;
-	@:noCompletion private var __mouseWheelEnabled:Bool;
-	@:noCompletion private var __offsetX:Float;
-	@:noCompletion private var __offsetY:Float;
-	@:noCompletion private var __selectionIndex:Int;
-	@:noCompletion private var __showCursor:Bool;
-	@:noCompletion private var __text:String;
-	@:noCompletion private var __htmlText:String;
-	@:noCompletion private var __textEngine:TextEngine;
-	@:noCompletion private var __textFormat:TextFormat;
-	#if openfl_html5
-	@:noCompletion private var __div:DivElement;
-	@:noCompletion private var __renderedOnCanvasWhileOnDOM:Bool = false;
-	@:noCompletion private var __rawHtmlText:String;
-	@:noCompletion private var __forceCachedBitmapUpdate:Bool = false;
-	#end
-
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperties(TextField.prototype, {
-			"antiAliasType": {
-				get: untyped __js__("function () { return this.get_antiAliasType (); }"),
-				set: untyped __js__("function (v) { return this.set_antiAliasType (v); }")
-			},
-			"autoSize": {
-				get: untyped __js__("function () { return this.get_autoSize (); }"),
-				set: untyped __js__("function (v) { return this.set_autoSize (v); }")
-			},
-			"background": {
-				get: untyped __js__("function () { return this.get_background (); }"),
-				set: untyped __js__("function (v) { return this.set_background (v); }")
-			},
-			"backgroundColor": {
-				get: untyped __js__("function () { return this.get_backgroundColor (); }"),
-				set: untyped __js__("function (v) { return this.set_backgroundColor (v); }")
-			},
-			"border": {get: untyped __js__("function () { return this.get_border (); }"), set: untyped __js__("function (v) { return this.set_border (v); }")},
-			"borderColor": {
-				get: untyped __js__("function () { return this.get_borderColor (); }"),
-				set: untyped __js__("function (v) { return this.set_borderColor (v); }")
-			},
-			"bottomScrollV": {get: untyped __js__("function () { return this.get_bottomScrollV (); }")},
-			"defaultTextFormat": {
-				get: untyped __js__("function () { return this.get_defaultTextFormat (); }"),
-				set: untyped __js__("function (v) { return this.set_defaultTextFormat (v); }")
-			},
-			"displayAsPassword": {
-				get: untyped __js__("function () { return this.get_displayAsPassword (); }"),
-				set: untyped __js__("function (v) { return this.set_displayAsPassword (v); }")
-			},
-			"embedFonts": {
-				get: untyped __js__("function () { return this.get_embedFonts (); }"),
-				set: untyped __js__("function (v) { return this.set_embedFonts (v); }")
-			},
-			"gridFitType": {
-				get: untyped __js__("function () { return this.get_gridFitType (); }"),
-				set: untyped __js__("function (v) { return this.set_gridFitType (v); }")
-			},
-			"htmlText": {
-				get: untyped __js__("function () { return this.get_htmlText (); }"),
-				set: untyped __js__("function (v) { return this.set_htmlText (v); }")
-			},
-			"length": {get: untyped __js__("function () { return this.get_length (); }")},
-			"maxChars": {
-				get: untyped __js__("function () { return this.get_maxChars (); }"),
-				set: untyped __js__("function (v) { return this.set_maxChars (v); }")
-			},
-			"maxScrollH": {get: untyped __js__("function () { return this.get_maxScrollH (); }")},
-			"maxScrollV": {get: untyped __js__("function () { return this.get_maxScrollV (); }")},
-			"mouseWheelEnabled": {
-				get: untyped __js__("function () { return this.get_mouseWheelEnabled (); }"),
-				set: untyped __js__("function (v) { return this.set_mouseWheelEnabled (v); }")
-			},
-			"multiline": {
-				get: untyped __js__("function () { return this.get_multiline (); }"),
-				set: untyped __js__("function (v) { return this.set_multiline (v); }")
-			},
-			"numLines": {get: untyped __js__("function () { return this.get_numLines (); }")},
-			"restrict": {
-				get: untyped __js__("function () { return this.get_restrict (); }"),
-				set: untyped __js__("function (v) { return this.set_restrict (v); }")
-			},
-			"scrollH": {
-				get: untyped __js__("function () { return this.get_scrollH (); }"),
-				set: untyped __js__("function (v) { return this.set_scrollH (v); }")
-			},
-			"scrollV": {
-				get: untyped __js__("function () { return this.get_scrollV (); }"),
-				set: untyped __js__("function (v) { return this.set_scrollV (v); }")
-			},
-			"selectable": {
-				get: untyped __js__("function () { return this.get_selectable (); }"),
-				set: untyped __js__("function (v) { return this.set_selectable (v); }")
-			},
-			"selectionBeginIndex": {get: untyped __js__("function () { return this.get_selectionBeginIndex (); }")},
-			"selectionEndIndex": {get: untyped __js__("function () { return this.get_selectionEndIndex (); }")},
-			"sharpness": {
-				get: untyped __js__("function () { return this.get_sharpness (); }"),
-				set: untyped __js__("function (v) { return this.set_sharpness (v); }")
-			},
-			"text": {get: untyped __js__("function () { return this.get_text (); }"), set: untyped __js__("function (v) { return this.set_text (v); }")},
-			"textColor": {
-				get: untyped __js__("function () { return this.get_textColor (); }"),
-				set: untyped __js__("function (v) { return this.set_textColor (v); }")
-			},
-			"textHeight": {get: untyped __js__("function () { return this.get_textHeight (); }")},
-			"textWidth": {get: untyped __js__("function () { return this.get_textWidth (); }")},
-			"type": {get: untyped __js__("function () { return this.get_type (); }"), set: untyped __js__("function (v) { return this.set_type (v); }")},
-			"wordWrap": {
-				get: untyped __js__("function () { return this.get_wordWrap (); }"),
-				set: untyped __js__("function (v) { return this.set_wordWrap (v); }")
-			},
-		});
-	}
-	#end
-
 	/**
 		Creates a new TextField instance. After you create the TextField instance,
 		call the `addChild()` or `addChildAt()` method of
@@ -797,43 +671,12 @@ class TextField extends InteractiveObject
 	**/
 	public function new()
 	{
-		super();
-
-		__type = TEXTFIELD;
-
-		__caretIndex = -1;
-		__displayAsPassword = false;
-		__graphics = new Graphics(this);
-		__textEngine = new TextEngine(this);
-		__layoutDirty = true;
-		__offsetX = 0;
-		__offsetY = 0;
-		__mouseWheelEnabled = true;
-		__text = "";
-
-		doubleClickEnabled = true;
-
-		if (__defaultTextFormat == null)
+		if (_ == null)
 		{
-			__defaultTextFormat = new TextFormat("Times New Roman", 12, 0x000000, false, false, false, "", "", TextFormatAlign.LEFT, 0, 0, 0, 0);
-			__defaultTextFormat.blockIndent = 0;
-			__defaultTextFormat.bullet = false;
-			__defaultTextFormat.letterSpacing = 0;
-			__defaultTextFormat.kerning = false;
+			_ = new _TextField(this);
 		}
 
-		__textFormat = __defaultTextFormat.clone();
-		__textEngine.textFormatRanges.push(new TextFormatRange(__textFormat, 0, 0));
-
-		_ = new _TextField(this);
-
-		addEventListener(MouseEvent.MOUSE_DOWN, this_onMouseDown);
-		addEventListener(FocusEvent.FOCUS_IN, this_onFocusIn);
-		addEventListener(FocusEvent.FOCUS_OUT, this_onFocusOut);
-		addEventListener(KeyboardEvent.KEY_DOWN, this_onKeyDown);
-		addEventListener(MouseEvent.MOUSE_WHEEL, this_onMouseWheel);
-
-		addEventListener(MouseEvent.DOUBLE_CLICK, this_onDoubleClick);
+		super();
 	}
 
 	/**
@@ -847,18 +690,7 @@ class TextField extends InteractiveObject
 	**/
 	public function appendText(text:String):Void
 	{
-		if (text == null || text == "") return;
-
-		__dirty = true;
-		__layoutDirty = true;
-		__setRenderDirty();
-
-		__updateText(__text + text);
-
-		__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __text.length;
-
-		__updateScrollV();
-		__updateScrollH();
+		_.appendText(text);
 	}
 
 	// function copyRichText() : String;
@@ -874,18 +706,7 @@ class TextField extends InteractiveObject
 	**/
 	public function getCharBoundaries(charIndex:Int):Rectangle
 	{
-		if (charIndex < 0 || charIndex > __text.length - 1) return null;
-
-		var rect = new Rectangle();
-
-		if (__getCharBoundaries(charIndex, rect))
-		{
-			return rect;
-		}
-		else
-		{
-			return null;
-		}
+		return _.getCharBoundaries(charIndex);
 	}
 
 	/**
@@ -900,41 +721,7 @@ class TextField extends InteractiveObject
 	**/
 	public function getCharIndexAtPoint(x:Float, y:Float):Int
 	{
-		if (x <= 2 || x > width + 4 || y <= 0 || y > height + 4) return -1;
-
-		__updateLayout();
-
-		x += scrollH;
-
-		for (i in 0...scrollV - 1)
-		{
-			y += __textEngine.lineHeights[i];
-		}
-
-		for (group in __textEngine.layoutGroups)
-		{
-			if (y >= group.offsetY && y <= group.offsetY + group.height)
-			{
-				if (x >= group.offsetX && x <= group.offsetX + group.width)
-				{
-					var advance = 0.0;
-
-					for (i in 0...group.positions.length)
-					{
-						advance += group.getAdvance(i);
-
-						if (x <= group.offsetX + advance)
-						{
-							return group.startIndex + i;
-						}
-					}
-
-					return group.endIndex;
-				}
-			}
-		}
-
-		return -1;
+		return _.getCharIndexAtPoint(x, y);
 	}
 
 	/**
@@ -950,26 +737,7 @@ class TextField extends InteractiveObject
 	**/
 	public function getFirstCharInParagraph(charIndex:Int):Int
 	{
-		if (charIndex < 0 || charIndex > text.length) return -1;
-
-		var index = __textEngine.getLineBreakIndex();
-		var startIndex = 0;
-
-		while (index > -1)
-		{
-			if (index < charIndex)
-			{
-				startIndex = index + 1;
-			}
-			else if (index >= charIndex)
-			{
-				break;
-			}
-
-			index = __textEngine.getLineBreakIndex(index + 1);
-		}
-
-		return startIndex;
+		return _.getFirstCharInParagraph(charIndex);
 	}
 
 	/**
@@ -1005,24 +773,7 @@ class TextField extends InteractiveObject
 	**/
 	public function getLineIndexAtPoint(x:Float, y:Float):Int
 	{
-		__updateLayout();
-
-		if (x <= 2 || x > width + 4 || y <= 0 || y > height + 4) return -1;
-
-		for (i in 0...scrollV - 1)
-		{
-			y += __textEngine.lineHeights[i];
-		}
-
-		for (group in __textEngine.layoutGroups)
-		{
-			if (y >= group.offsetY && y <= group.offsetY + group.height)
-			{
-				return group.lineIndex;
-			}
-		}
-
-		return -1;
+		return _.getLineIndexAtPoint(x, y);
 	}
 
 	/**
@@ -1037,19 +788,7 @@ class TextField extends InteractiveObject
 	**/
 	public function getLineIndexOfChar(charIndex:Int):Int
 	{
-		if (charIndex < 0 || charIndex > __text.length) return -1;
-
-		__updateLayout();
-
-		for (group in __textEngine.layoutGroups)
-		{
-			if (group.startIndex <= charIndex && group.endIndex >= charIndex)
-			{
-				return group.lineIndex;
-			}
-		}
-
-		return -1;
+		return _.getLineIndexOfChar(charIndex);
 	}
 
 	/**
@@ -1061,28 +800,7 @@ class TextField extends InteractiveObject
 	**/
 	public function getLineLength(lineIndex:Int):Int
 	{
-		__updateLayout();
-
-		if (lineIndex < 0 || lineIndex > __textEngine.numLines - 1) return 0;
-
-		var startIndex = -1;
-		var endIndex = -1;
-
-		for (group in __textEngine.layoutGroups)
-		{
-			if (group.lineIndex == lineIndex)
-			{
-				if (startIndex == -1) startIndex = group.startIndex;
-			}
-			else if (group.lineIndex == lineIndex + 1)
-			{
-				endIndex = group.startIndex;
-				break;
-			}
-		}
-
-		if (endIndex == -1) endIndex = __text.length;
-		return endIndex - startIndex;
+		return _.getLineLength(lineIndex);
 	}
 
 	/**
@@ -1094,24 +812,7 @@ class TextField extends InteractiveObject
 	**/
 	public function getLineMetrics(lineIndex:Int):TextLineMetrics
 	{
-		__updateLayout();
-
-		var ascender = __textEngine.lineAscents[lineIndex];
-		var descender = __textEngine.lineDescents[lineIndex];
-		var leading = __textEngine.lineLeadings[lineIndex];
-		var lineHeight = __textEngine.lineHeights[lineIndex];
-		var lineWidth = __textEngine.lineWidths[lineIndex];
-
-		// TODO: Handle START and END based on language (don't assume LTR)
-
-		var margin = switch (__textFormat.align)
-		{
-			case LEFT, JUSTIFY, START: 2;
-			case RIGHT, END: (__textEngine.width - lineWidth) - 2;
-			case CENTER: (__textEngine.width - lineWidth) / 2;
-		}
-
-		return new TextLineMetrics(margin, lineWidth, lineHeight, ascender, descender, leading);
+		return _.getLineMetrics(lineIndex);
 	}
 
 	/**
@@ -1125,19 +826,7 @@ class TextField extends InteractiveObject
 	**/
 	public function getLineOffset(lineIndex:Int):Int
 	{
-		__updateLayout();
-
-		if (lineIndex < 0 || lineIndex > __textEngine.numLines - 1) return -1;
-
-		for (group in __textEngine.layoutGroups)
-		{
-			if (group.lineIndex == lineIndex)
-			{
-				return group.startIndex;
-			}
-		}
-
-		return 0;
+		return _.getLineOffset(lineIndex);
 	}
 
 	/**
@@ -1151,29 +840,7 @@ class TextField extends InteractiveObject
 	**/
 	public function getLineText(lineIndex:Int):String
 	{
-		__updateLayout();
-
-		if (lineIndex < 0 || lineIndex > __textEngine.numLines - 1) return null;
-
-		var startIndex = -1;
-		var endIndex = -1;
-
-		for (group in __textEngine.layoutGroups)
-		{
-			if (group.lineIndex == lineIndex)
-			{
-				if (startIndex == -1) startIndex = group.startIndex;
-			}
-			else if (group.lineIndex == lineIndex + 1)
-			{
-				endIndex = group.startIndex;
-				break;
-			}
-		}
-
-		if (endIndex == -1) endIndex = __text.length;
-
-		return __textEngine.text.substring(startIndex, endIndex);
+		return _.getLineText(lineIndex);
 	}
 
 	/**
@@ -1190,16 +857,7 @@ class TextField extends InteractiveObject
 	**/
 	public function getParagraphLength(charIndex:Int):Int
 	{
-		if (charIndex < 0 || charIndex > text.length) return -1;
-
-		var startIndex = getFirstCharInParagraph(charIndex);
-
-		if (charIndex >= text.length) return text.length - startIndex + 1;
-
-		var endIndex = __textEngine.getLineBreakIndex(charIndex) + 1;
-
-		if (endIndex == 0) endIndex = __text.length;
-		return endIndex - startIndex;
+		return _.getParagraphLength(charIndex);
 	}
 
 	// function getRawText() : String;
@@ -1229,50 +887,7 @@ class TextField extends InteractiveObject
 	**/
 	public function getTextFormat(beginIndex:Int = -1, endIndex:Int = -1):TextFormat
 	{
-		var format = null;
-
-		if (beginIndex >= text.length || beginIndex < -1 || endIndex > text.length || endIndex < -1)
-			throw new RangeError("The supplied index is out of bounds");
-
-		if (beginIndex == -1) beginIndex = 0;
-		if (endIndex == -1) endIndex = text.length;
-
-		if (beginIndex >= endIndex) return new TextFormat();
-
-		for (group in __textEngine.textFormatRanges)
-		{
-			if ((group.start <= beginIndex && group.end > beginIndex) || (group.start < endIndex && group.end >= endIndex))
-			{
-				if (format == null)
-				{
-					format = group.format.clone();
-				}
-				else
-				{
-					if (group.format.font != format.font) format.font = null;
-					if (group.format.size != format.size) format.size = null;
-					if (group.format.color != format.color) format.color = null;
-					if (group.format.bold != format.bold) format.bold = null;
-					if (group.format.italic != format.italic) format.italic = null;
-					if (group.format.underline != format.underline) format.underline = null;
-					if (group.format.url != format.url) format.url = null;
-					if (group.format.target != format.target) format.target = null;
-					if (group.format.align != format.align) format.align = null;
-					if (group.format.leftMargin != format.leftMargin) format.leftMargin = null;
-					if (group.format.rightMargin != format.rightMargin) format.rightMargin = null;
-					if (group.format.indent != format.indent) format.indent = null;
-					if (group.format.leading != format.leading) format.leading = null;
-					if (group.format.blockIndent != format.blockIndent) format.blockIndent = null;
-					if (group.format.bullet != format.bullet) format.bullet = null;
-					if (group.format.kerning != format.kerning) format.kerning = null;
-					if (group.format.letterSpacing != format.letterSpacing) format.letterSpacing = null;
-					if (group.format.tabStops != format.tabStops) format.tabStops = null;
-				}
-			}
-		}
-
-		if (format == null) format = new TextFormat();
-		return format;
+		return _.getTextFormat(beginIndex, endIndex);
 	}
 
 	/**
@@ -1322,7 +937,7 @@ class TextField extends InteractiveObject
 	**/
 	public function replaceSelectedText(value:String):Void
 	{
-		__replaceSelectedText(value, false);
+		_.replaceSelectedText(value);
 	}
 
 	/**
@@ -1343,7 +958,7 @@ class TextField extends InteractiveObject
 	**/
 	public function replaceText(beginIndex:Int, endIndex:Int, newText:String):Void
 	{
-		__replaceText(beginIndex, endIndex, newText, false);
+		_.replaceText(beginIndex, endIndex, newText);
 	}
 
 	/**
@@ -1361,13 +976,7 @@ class TextField extends InteractiveObject
 	**/
 	public function setSelection(beginIndex:Int, endIndex:Int):Void
 	{
-		__selectionIndex = beginIndex;
-		__caretIndex = endIndex;
-
-		__updateScrollV();
-
-		__stopCursorTimer();
-		__startCursorTimer();
+		_.setSelection(beginIndex, endIndex);
 	}
 
 	/**
@@ -1417,1918 +1026,294 @@ class TextField extends InteractiveObject
 	**/
 	public function setTextFormat(format:TextFormat, beginIndex:Int = 0, endIndex:Int = 0):Void
 	{
-		var max = text.length;
-		var range;
-
-		if (beginIndex < 0) beginIndex = 0;
-		if (endIndex < 0) endIndex = 0;
-
-		if (endIndex == 0)
-		{
-			if (beginIndex == 0)
-			{
-				endIndex = max;
-			}
-			else
-			{
-				endIndex = beginIndex + 1;
-			}
-		}
-
-		if (endIndex < beginIndex) return;
-
-		if (beginIndex == 0 && endIndex >= max)
-		{
-			// set text format for the whole textfield
-			__textFormat.__merge(format);
-
-			for (i in 0...__textEngine.textFormatRanges.length)
-			{
-				range = __textEngine.textFormatRanges[i];
-				range.format.__merge(format);
-			}
-		}
-		else
-		{
-			var index = 0;
-			var newRange;
-
-			while (index < __textEngine.textFormatRanges.length)
-			{
-				range = __textEngine.textFormatRanges[index];
-
-				if (range.start == beginIndex && range.end == endIndex)
-				{
-					// set format range matches an existing range exactly
-					range.format.__merge(format);
-					break;
-				}
-				else if (range.start >= beginIndex && range.end <= endIndex)
-				{
-					// set format range completely encompasses this existing range
-					range.format.__merge(format);
-				}
-				else if (range.start >= beginIndex && range.start < endIndex && range.end > beginIndex)
-				{
-					// set format range is within the first part of the range
-					newRange = new TextFormatRange(range.format.clone(), range.start, endIndex);
-					newRange.format.__merge(format);
-					__textEngine.textFormatRanges.insertAt(index, newRange);
-					range.start = endIndex;
-					index++;
-				}
-				else if (range.start < beginIndex && range.end > beginIndex && range.end >= endIndex)
-				{
-					// set format range is within the second part of the range
-					newRange = new TextFormatRange(range.format.clone(), beginIndex, range.end);
-					newRange.format.__merge(format);
-					__textEngine.textFormatRanges.insertAt(index + 1, newRange);
-					range.end = beginIndex;
-					index++;
-				}
-
-				index++;
-				// TODO: Remove duplicates?
-			}
-		}
-
-		__dirty = true;
-		__layoutDirty = true;
-		__setRenderDirty();
+		_.setTextFormta(format, beginIndex, endIndex);
 	}
 
-	@:noCompletion private override function __allowMouseFocus():Bool
-	{
-		return __textEngine.type == INPUT || tabEnabled || selectable;
-	}
+	// Get & Set Methods
 
-	@:noCompletion private function __caretBeginningOfLine():Void
-	{
-		if (__selectionIndex == __caretIndex || __caretIndex < __selectionIndex)
-		{
-			__caretIndex = getLineOffset(getLineIndexOfChar(__caretIndex));
-		}
-		else
-		{
-			__selectionIndex = getLineOffset(getLineIndexOfChar(__selectionIndex));
-		}
-	}
-
-	@:noCompletion private function __caretEndOfLine():Void
-	{
-		var lineIndex;
-
-		if (__selectionIndex == __caretIndex)
-		{
-			lineIndex = getLineIndexOfChar(__caretIndex);
-		}
-		else
-		{
-			lineIndex = getLineIndexOfChar(Std.int(Math.max(__caretIndex, __selectionIndex)));
-		}
-
-		if (lineIndex < __textEngine.numLines - 1)
-		{
-			__caretIndex = getLineOffset(lineIndex + 1) - 1;
-		}
-		else
-		{
-			__caretIndex = __text.length;
-		}
-	}
-
-	@:noCompletion private function __caretNextCharacter():Void
-	{
-		if (__caretIndex < __text.length)
-		{
-			__caretIndex++;
-		}
-	}
-
-	@:noCompletion private function __caretNextLine(lineIndex:Null<Int> = null, caretIndex:Null<Int> = null):Void
-	{
-		if (lineIndex == null)
-		{
-			lineIndex = getLineIndexOfChar(__caretIndex);
-		}
-
-		if (lineIndex < __textEngine.numLines - 1)
-		{
-			if (caretIndex == null)
-			{
-				caretIndex = __caretIndex;
-			}
-
-			__caretIndex = __getCharIndexOnDifferentLine(caretIndex, lineIndex + 1);
-		}
-		else
-		{
-			__caretIndex = __text.length;
-		}
-	}
-
-	@:noCompletion private function __caretPreviousCharacter():Void
-	{
-		if (__caretIndex > 0)
-		{
-			__caretIndex--;
-		}
-	}
-
-	@:noCompletion private function __caretPreviousLine(lineIndex:Null<Int> = null, caretIndex:Null<Int> = null):Void
-	{
-		if (lineIndex == null)
-		{
-			lineIndex = getLineIndexOfChar(__caretIndex);
-		}
-
-		if (lineIndex > 0)
-		{
-			if (caretIndex == null)
-			{
-				caretIndex = __caretIndex;
-			}
-
-			__caretIndex = __getCharIndexOnDifferentLine(caretIndex, lineIndex - 1);
-		}
-		else
-		{
-			__caretIndex = 0;
-		}
-	}
-
-	@:noCompletion private function __disableInput():Void
-	{
-		if (__inputEnabled && stage != null)
-		{
-			_.disableInput();
-
-			__inputEnabled = false;
-			__stopCursorTimer();
-		}
-	}
-
-	@:noCompletion private override function __dispatch(event:Event):Bool
-	{
-		if (event.eventPhase == AT_TARGET && event.type == MouseEvent.MOUSE_UP)
-		{
-			var event:MouseEvent = cast event;
-			var group = __getGroup(mouseX, mouseY, true);
-
-			if (group != null)
-			{
-				var url = group.format.url;
-
-				if (url != null && url != "")
-				{
-					if (StringTools.startsWith(url, "event:"))
-					{
-						dispatchEvent(new TextEvent(TextEvent.LINK, false, false, url.substr(6)));
-					}
-					else
-					{
-						Lib.getURL(new URLRequest(url));
-					}
-				}
-			}
-		}
-
-		return super.__dispatch(event);
-	}
-
-	@:noCompletion private function __enableInput():Void
-	{
-		if (stage != null)
-		{
-			_.enableInput();
-
-			if (!__inputEnabled)
-			{
-				__inputEnabled = true;
-				__startCursorTimer();
-			}
-		}
-	}
-
-	@:noCompletion private inline function __getAdvance(position):Float
-	{
-		#if openfl_html5
-		return position;
-		#else
-		return position.advance.x;
-		#end
-	}
-
-	@:noCompletion private override function __getBounds(rect:Rectangle, matrix:Matrix):Void
-	{
-		__updateLayout();
-
-		var bounds = Rectangle.__pool.get();
-		bounds.copyFrom(__textEngine.bounds);
-
-		matrix.tx += __offsetX;
-		matrix.ty += __offsetY;
-
-		bounds.__transform(bounds, matrix);
-
-		rect.__expand(bounds.x, bounds.y, bounds.width, bounds.height);
-
-		Rectangle.__pool.release(bounds);
-	}
-
-	@:noCompletion private function __getCharBoundaries(charIndex:Int, rect:Rectangle):Bool
-	{
-		if (charIndex < 0 || charIndex > __text.length - 1) return false;
-
-		__updateLayout();
-
-		for (group in __textEngine.layoutGroups)
-		{
-			if (charIndex >= group.startIndex && charIndex < group.endIndex)
-			{
-				try
-				{
-					var x = group.offsetX;
-
-					for (i in 0...(charIndex - group.startIndex))
-					{
-						x += group.getAdvance(i);
-					}
-
-					// TODO: Is this actually right for combining characters?
-					var lastPosition = group.getAdvance(charIndex - group.startIndex);
-
-					rect.setTo(x, group.offsetY, lastPosition, group.ascent + group.descent);
-					return true;
-				}
-				catch (e:Dynamic) {}
-			}
-		}
-
-		return false;
-	}
-
-	@:noCompletion private function __getCharIndexOnDifferentLine(charIndex:Int, lineIndex:Int):Int
-	{
-		if (charIndex < 0 || charIndex > __text.length) return -1;
-		if (lineIndex < 0 || lineIndex > __textEngine.numLines - 1) return -1;
-
-		var x:Null<Float> = null, y:Null<Float> = null;
-
-		for (group in __textEngine.layoutGroups)
-		{
-			if (charIndex >= group.startIndex && charIndex <= group.endIndex)
-			{
-				x = group.offsetX;
-
-				for (i in 0...(charIndex - group.startIndex))
-				{
-					x += group.getAdvance(i);
-				}
-
-				if (y != null) return __getPosition(x, y);
-			}
-
-			if (group.lineIndex == lineIndex)
-			{
-				y = group.offsetY + group.height / 2;
-
-				for (i in 0...scrollV - 1)
-				{
-					y -= __textEngine.lineHeights[i];
-				}
-
-				if (x != null) return __getPosition(x, y);
-			}
-		}
-
-		return -1;
-	}
-
-	@:noCompletion private override function __getCursor():MouseCursor
-	{
-		var group = __getGroup(mouseX, mouseY, true);
-
-		if (group != null && group.format.url != "")
-		{
-			return BUTTON;
-		}
-		else if (__textEngine.selectable)
-		{
-			return IBEAM;
-		}
-
-		return null;
-	}
-
-	@:noCompletion private function __getGroup(x:Float, y:Float, precise = false):TextLayoutGroup
-	{
-		__updateLayout();
-
-		x += scrollH;
-
-		for (i in 0...scrollV - 1)
-		{
-			y += __textEngine.lineHeights[i];
-		}
-
-		if (!precise && y > __textEngine.textHeight) y = __textEngine.textHeight;
-
-		var firstGroup = true;
-		var group, nextGroup;
-
-		for (i in 0...__textEngine.layoutGroups.length)
-		{
-			group = __textEngine.layoutGroups[i];
-
-			if (i < __textEngine.layoutGroups.length - 1)
-			{
-				nextGroup = __textEngine.layoutGroups[i + 1];
-			}
-			else
-			{
-				nextGroup = null;
-			}
-
-			if (firstGroup)
-			{
-				if (y < group.offsetY) y = group.offsetY;
-				if (x < group.offsetX) x = group.offsetX;
-				firstGroup = false;
-			}
-
-			if ((y >= group.offsetY && y <= group.offsetY + group.height) || (!precise && nextGroup == null))
-			{
-				if ((x >= group.offsetX && x <= group.offsetX + group.width)
-					|| (!precise && (nextGroup == null || nextGroup.lineIndex != group.lineIndex)))
-				{
-					return group;
-				}
-			}
-		}
-
-		return null;
-	}
-
-	@:noCompletion private function __getPosition(x:Float, y:Float):Int
-	{
-		var group = __getGroup(x, y);
-
-		if (group == null)
-		{
-			return __text.length;
-		}
-
-		var advance = 0.0;
-
-		for (i in 0...group.positions.length)
-		{
-			advance += group.getAdvance(i);
-
-			if (x <= group.offsetX + advance)
-			{
-				if (x <= group.offsetX + (advance - group.getAdvance(i)) + (group.getAdvance(i) / 2))
-				{
-					return group.startIndex + i;
-				}
-				else
-				{
-					return (group.startIndex + i < group.endIndex) ? group.startIndex + i + 1 : group.endIndex;
-				}
-			}
-		}
-
-		return group.endIndex;
-	}
-
-	@:noCompletion private override function __getRenderBounds(rect:Rectangle, matrix:Matrix):Void
-	{
-		if (__scrollRect == null)
-		{
-			__updateLayout();
-
-			var bounds = Rectangle.__pool.get();
-			bounds.copyFrom(__textEngine.bounds);
-
-			// matrix.tx += __offsetX;
-			// matrix.ty += __offsetY;
-
-			bounds.__transform(bounds, matrix);
-
-			rect.__expand(bounds.x, bounds.y, bounds.width, bounds.height);
-
-			Rectangle.__pool.release(bounds);
-		}
-		else
-		{
-			super.__getRenderBounds(rect, matrix);
-		}
-	}
-
-	@:noCompletion private override function __hitTest(x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool,
-			hitObject:DisplayObject):Bool
-	{
-		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
-		if (mask != null && !mask.__hitTestMask(x, y)) return false;
-
-		__getRenderTransform();
-		__updateLayout();
-
-		var px = __renderTransform.__transformInverseX(x, y);
-		var py = __renderTransform.__transformInverseY(x, y);
-
-		if (__textEngine.bounds.contains(px, py))
-		{
-			if (stack != null)
-			{
-				stack.push(hitObject);
-			}
-
-			return true;
-		}
-
-		return false;
-	}
-
-	@:noCompletion private override function __hitTestMask(x:Float, y:Float):Bool
-	{
-		__getRenderTransform();
-		__updateLayout();
-
-		var px = __renderTransform.__transformInverseX(x, y);
-		var py = __renderTransform.__transformInverseY(x, y);
-
-		if (__textEngine.bounds.contains(px, py))
-		{
-			return true;
-		}
-
-		return false;
-	}
-
-	@:noCompletion private function __replaceSelectedText(value:String, restrict:Bool = true):Void
-	{
-		if (value == null) value = "";
-		if (value == "" && __selectionIndex == __caretIndex) return;
-
-		var startIndex = __caretIndex < __selectionIndex ? __caretIndex : __selectionIndex;
-		var endIndex = __caretIndex > __selectionIndex ? __caretIndex : __selectionIndex;
-
-		if (startIndex == endIndex && __textEngine.maxChars > 0 && __text.length == __textEngine.maxChars) return;
-
-		if (startIndex > __text.length) startIndex = __text.length;
-		if (endIndex > __text.length) endIndex = __text.length;
-		if (endIndex < startIndex)
-		{
-			var cache = endIndex;
-			endIndex = startIndex;
-			startIndex = cache;
-		}
-		if (startIndex < 0) startIndex = 0;
-
-		__replaceText(startIndex, endIndex, value, restrict);
-
-		var i = startIndex + value.length;
-		if (i > __text.length) i = __text.length;
-
-		setSelection(i, i);
-
-		// TODO: Solution where this is not run twice (run inside replaceText above)
-		__updateScrollH();
-	}
-
-	@:noCompletion private function __replaceText(beginIndex:Int, endIndex:Int, newText:String, restrict:Bool):Void
-	{
-		if (endIndex < beginIndex || beginIndex < 0 || endIndex > __text.length || newText == null) return;
-
-		if (restrict)
-		{
-			newText = __textEngine.restrictText(newText);
-
-			if (__textEngine.maxChars > 0)
-			{
-				var removeLength = (endIndex - beginIndex);
-				var maxLength = __textEngine.maxChars - __text.length + removeLength;
-
-				if (maxLength <= 0)
-				{
-					newText = "";
-				}
-				else if (maxLength < newText.length)
-				{
-					newText = newText.substr(0, maxLength);
-				}
-			}
-		}
-
-		__updateText(__text.substring(0, beginIndex) + newText + __text.substring(endIndex));
-		if (endIndex > __text.length) endIndex = __text.length;
-
-		var offset = newText.length - (endIndex - beginIndex);
-
-		var i = 0;
-		var range;
-
-		while (i < __textEngine.textFormatRanges.length)
-		{
-			range = __textEngine.textFormatRanges[i];
-
-			if (beginIndex == endIndex)
-			{
-				if (range.end < beginIndex)
-				{
-					// do nothing, range is completely before insertion point
-				}
-				else if (range.start > endIndex)
-				{
-					// shift range, range is after insertion point
-					range.start += offset;
-					range.end += offset;
-				}
-				else
-				{
-					if (range.start < range.end && range.end == beginIndex && i < __textEngine.textFormatRanges.length - 1)
-					{
-						// do nothing, insertion point is between two ranges, so it belongs to the next range
-						// unless there are no more ranges after this one (inserting at the end of the text)
-					}
-					else
-					{
-						// add to range, insertion point is within range
-						range.end += offset;
-					}
-				}
-			}
-			else
-			{
-				if (range.end < beginIndex)
-				{
-					// do nothing, range is before selection
-				}
-				else if (range.start >= endIndex)
-				{
-					// shift range, range is completely after selection
-					range.start += offset;
-					range.end += offset;
-				}
-				else if (range.start >= beginIndex && range.end <= endIndex)
-				{
-					// delete range, range is encompassed by selection
-					if (__textEngine.textFormatRanges.length > 1)
-					{
-						__textEngine.textFormatRanges.splice(i, 1);
-					}
-					else
-					{
-						// don't delete if it's the last range though, just modify properties
-						range.start = 0;
-						range.end = newText.length;
-					}
-				}
-				else if (range.start <= beginIndex)
-				{
-					if (range.end < endIndex)
-					{
-						// modify range, range ends before the selection ends
-						range.end = beginIndex;
-					}
-					else
-					{
-						// modify range, range ends where or after the selection ends
-						range.end += offset;
-					}
-				}
-				else
-				{
-					// modify range, selection begins before the range
-					// for deletion: entire range shifts leftward
-					// for addition: added text gains the format of endIndex
-					range.start = beginIndex;
-					range.end += offset;
-				}
-			}
-
-			i++;
-		}
-
-		__updateScrollV();
-		__updateScrollH();
-
-		__dirty = true;
-		__layoutDirty = true;
-		__setRenderDirty();
-	}
-
-	@:noCompletion private function __startCursorTimer():Void
-	{
-		__cursorTimer = Timer.delay(__startCursorTimer, 600);
-		__showCursor = !__showCursor;
-		__dirty = true;
-		__setRenderDirty();
-	}
-
-	@:noCompletion private function __startTextInput():Void
-	{
-		if (__caretIndex < 0)
-		{
-			__caretIndex = __text.length;
-			__selectionIndex = __caretIndex;
-		}
-
-		var enableInput = #if openfl_html5 (DisplayObject.__supportDOM ? __renderedOnCanvasWhileOnDOM : true) #else true #end;
-
-		if (enableInput)
-		{
-			__enableInput();
-		}
-	}
-
-	@:noCompletion private function __stopCursorTimer():Void
-	{
-		if (__cursorTimer != null)
-		{
-			__cursorTimer.stop();
-			__cursorTimer = null;
-		}
-
-		if (__showCursor)
-		{
-			__showCursor = false;
-			__dirty = true;
-			__setRenderDirty();
-		}
-	}
-
-	@:noCompletion private function __stopTextInput():Void
-	{
-		var disableInput = #if openfl_html5 (DisplayObject.__supportDOM ? __renderedOnCanvasWhileOnDOM : true) #else true #end;
-
-		if (disableInput)
-		{
-			__disableInput();
-		}
-	}
-
-	@:noCompletion private override function __update(transformOnly:Bool, updateChildren:Bool):Void
-	{
-		var transformDirty = __transformDirty;
-
-		__updateSingle(transformOnly, updateChildren);
-
-		if (transformDirty)
-		{
-			__renderTransform.__translateTransformed(__offsetX, __offsetY);
-		}
-	}
-
-	@:noCompletion private function __updateLayout():Void
-	{
-		if (__layoutDirty)
-		{
-			var cacheWidth = __textEngine.width;
-			__textEngine.update();
-
-			if (__textEngine.autoSize != NONE)
-			{
-				if (__textEngine.width != cacheWidth)
-				{
-					switch (__textEngine.autoSize)
-					{
-						case RIGHT:
-							x += cacheWidth - __textEngine.width;
-
-						case CENTER:
-							x += (cacheWidth - __textEngine.width) / 2;
-
-						default:
-					}
-				}
-
-				__textEngine.getBounds();
-			}
-
-			__layoutDirty = false;
-		}
-	}
-
-	@:noCompletion private function __updateScrollH():Void
-	{
-		if (!multiline && type == INPUT)
-		{
-			__layoutDirty = true;
-			__updateLayout();
-
-			var offsetX = __textEngine.textWidth - __textEngine.width + 4;
-
-			if (offsetX > 0)
-			{
-				// TODO: Handle __selectionIndex on drag select?
-				// TODO: Update scrollH by one character width at a time when able
-
-				if (__caretIndex >= text.length)
-				{
-					scrollH = Math.ceil(offsetX);
-				}
-				else
-				{
-					var caret = Rectangle.__pool.get();
-					__getCharBoundaries(__caretIndex, caret);
-
-					if (caret.x < scrollH)
-					{
-						scrollH = Math.floor(caret.x - 2);
-					}
-					else if (caret.x > scrollH + __textEngine.width)
-					{
-						scrollH = Math.ceil(caret.x - __textEngine.width - 2);
-					}
-
-					Rectangle.__pool.release(caret);
-				}
-			}
-			else
-			{
-				scrollH = 0;
-			}
-		}
-	}
-
-	@:noCompletion private function __updateScrollV():Void
-	{
-		__layoutDirty = true;
-		__updateLayout();
-
-		var lineIndex = getLineIndexOfChar(__caretIndex);
-
-		if (lineIndex == -1 && __caretIndex > 0)
-		{
-			// new paragraph
-			lineIndex = getLineIndexOfChar(__caretIndex - 1) + 1;
-		}
-
-		if (lineIndex + 1 < scrollV)
-		{
-			scrollV = lineIndex + 1;
-		}
-		else if (lineIndex + 1 > bottomScrollV)
-		{
-			var i = lineIndex, tempHeight = 0.0;
-
-			while (i >= 0)
-			{
-				if (tempHeight + __textEngine.lineHeights[i] <= height - 4)
-				{
-					tempHeight += __textEngine.lineHeights[i];
-					i--;
-				}
-				else
-					break;
-			}
-
-			scrollV = i + 2;
-		}
-		else
-		{
-			// TODO: can this be avoided? this doesn't need to hit the setter each time, just a couple times
-			scrollV = scrollV;
-		}
-	}
-
-	@:noCompletion private function __updateText(value:String):Void
-	{
-		#if openfl_html5
-		if (DisplayObject.__supportDOM && __renderedOnCanvasWhileOnDOM)
-		{
-			__forceCachedBitmapUpdate = __text != value;
-		}
-		#end
-
-		// applies maxChars and restrict on text
-
-		__textEngine.text = value;
-		__text = __textEngine.text;
-
-		if (__text.length < __caretIndex)
-		{
-			__selectionIndex = __caretIndex = __text.length;
-		}
-
-		if (!__displayAsPassword #if openfl_html5 || (DisplayObject.__supportDOM && !__renderedOnCanvasWhileOnDOM) #end)
-		{
-			__textEngine.text = __text;
-		}
-		else
-		{
-			var length = text.length;
-			var mask = "";
-
-			for (i in 0...length)
-			{
-				mask += "*";
-			}
-
-			__textEngine.text = mask;
-		}
-	}
-
-	// Getters & Setters
 	@:noCompletion private function get_antiAliasType():AntiAliasType
 	{
-		return __textEngine.antiAliasType;
+		return _.antiAliasType;
 	}
 
 	@:noCompletion private function set_antiAliasType(value:AntiAliasType):AntiAliasType
 	{
-		if (value != __textEngine.antiAliasType)
-		{
-			// __dirty = true;
-		}
-
-		return __textEngine.antiAliasType = value;
+		return _.antiAliasType = value;
 	}
 
 	@:noCompletion private function get_autoSize():TextFieldAutoSize
 	{
-		return __textEngine.autoSize;
+		return _.autoSize;
 	}
 
 	@:noCompletion private function set_autoSize(value:TextFieldAutoSize):TextFieldAutoSize
 	{
-		if (value != __textEngine.autoSize)
-		{
-			__dirty = true;
-			__layoutDirty = true;
-			__setRenderDirty();
-		}
-
-		return __textEngine.autoSize = value;
+		return _.autoSize = value;
 	}
 
 	@:noCompletion private function get_background():Bool
 	{
-		return __textEngine.background;
+		return _.background;
 	}
 
 	@:noCompletion private function set_background(value:Bool):Bool
 	{
-		if (value != __textEngine.background)
-		{
-			__dirty = true;
-			__setRenderDirty();
-		}
-
-		return __textEngine.background = value;
+		return _.background = value;
 	}
 
 	@:noCompletion private function get_backgroundColor():Int
 	{
-		return __textEngine.backgroundColor;
+		return _.backgroundColor;
 	}
 
 	@:noCompletion private function set_backgroundColor(value:Int):Int
 	{
-		if (value != __textEngine.backgroundColor)
-		{
-			__dirty = true;
-			__setRenderDirty();
-		}
-
-		return __textEngine.backgroundColor = value;
+		return _.backgroundColor = value;
 	}
 
 	@:noCompletion private function get_border():Bool
 	{
-		return __textEngine.border;
+		return _.border;
 	}
 
 	@:noCompletion private function set_border(value:Bool):Bool
 	{
-		if (value != __textEngine.border)
-		{
-			__dirty = true;
-			__setRenderDirty();
-		}
-
-		return __textEngine.border = value;
+		return _.border = value;
 	}
 
 	@:noCompletion private function get_borderColor():Int
 	{
-		return __textEngine.borderColor;
+		return _.borderColor;
 	}
 
 	@:noCompletion private function set_borderColor(value:Int):Int
 	{
-		if (value != __textEngine.borderColor)
-		{
-			__dirty = true;
-			__setRenderDirty();
-		}
-
-		return __textEngine.borderColor = value;
+		return _.borderColor = value;
 	}
 
 	@:noCompletion private function get_bottomScrollV():Int
 	{
-		__updateLayout();
-
-		return __textEngine.bottomScrollV;
+		return _.bottomScrollV;
 	}
 
 	@:noCompletion private function get_caretIndex():Int
 	{
-		return __caretIndex;
+		return _.caretIndex;
 	}
 
 	@:noCompletion private function get_defaultTextFormat():TextFormat
 	{
-		return __textFormat.clone();
+		return _.defaultTextFormat;
 	}
 
 	@:noCompletion private function set_defaultTextFormat(value:TextFormat):TextFormat
 	{
-		__textFormat.__merge(value);
-
-		__layoutDirty = true;
-		__dirty = true;
-		__setRenderDirty();
-
-		return value;
+		return _.defaultTextFormat = value;
 	}
 
 	@:noCompletion private function get_displayAsPassword():Bool
 	{
-		return __displayAsPassword;
+		return _.displayAsPassword;
 	}
 
 	@:noCompletion private function set_displayAsPassword(value:Bool):Bool
 	{
-		if (value != __displayAsPassword)
-		{
-			__dirty = true;
-			__layoutDirty = true;
-			__setRenderDirty();
-
-			__displayAsPassword = value;
-			__updateText(__text);
-		}
-
-		return value;
+		return _.displayAsPassword = value;
 	}
 
 	@:noCompletion private function get_embedFonts():Bool
 	{
-		return __textEngine.embedFonts;
+		return _.embedFonts;
 	}
 
 	@:noCompletion private function set_embedFonts(value:Bool):Bool
 	{
-		// if (value != __textEngine.embedFonts) {
-		//
-		// __dirty = true;
-		// __layoutDirty = true;
-		//
-		// }
-
-		return __textEngine.embedFonts = value;
+		return _.embedFonts = value;
 	}
 
 	@:noCompletion private function get_gridFitType():GridFitType
 	{
-		return __textEngine.gridFitType;
+		return _.gridFitType;
 	}
 
 	@:noCompletion private function set_gridFitType(value:GridFitType):GridFitType
 	{
-		// if (value != __textEngine.gridFitType) {
-		//
-		// __dirty = true;
-		// __layoutDirty = true;
-		//
-		// }
-
-		return __textEngine.gridFitType = value;
-	}
-
-	@:noCompletion private override function get_height():Float
-	{
-		__updateLayout();
-		return __textEngine.height * Math.abs(scaleY);
-	}
-
-	@:noCompletion private override function set_height(value:Float):Float
-	{
-		if (value != __textEngine.height)
-		{
-			__setTransformDirty();
-			__setParentRenderDirty();
-			__setRenderDirty();
-			__dirty = true;
-			__layoutDirty = true;
-
-			__textEngine.height = value;
-		}
-
-		return __textEngine.height * Math.abs(scaleY);
+		return _.gridFitType = value;
 	}
 
 	@:noCompletion private function get_htmlText():String
 	{
-		#if openfl_html5
-		return __isHTML ? __rawHtmlText : __text;
-		#else
-		return __text;
-		#end
+		return _.htmlText;
 	}
 
 	@:noCompletion private function set_htmlText(value:String):String
 	{
-		if (!__isHTML || __text != value)
-		{
-			__dirty = true;
-			__layoutDirty = true;
-			__setRenderDirty();
-		}
-
-		__isHTML = true;
-
-		#if openfl_html5
-		__rawHtmlText = value;
-		#end
-
-		value = HTMLParser.parse(value, __textFormat, __textEngine.textFormatRanges);
-
-		#if openfl_html5
-		if (DisplayObject.__supportDOM)
-		{
-			if (__textEngine.textFormatRanges.length > 1)
-			{
-				__textEngine.textFormatRanges.splice(1, __textEngine.textFormatRanges.length - 1);
-			}
-
-			var range = __textEngine.textFormatRanges[0];
-			range.format = __textFormat;
-			range.start = 0;
-
-			if (__renderedOnCanvasWhileOnDOM)
-			{
-				range.end = value.length;
-				__updateText(value);
-			}
-			else
-			{
-				range.end = __rawHtmlText.length;
-				__updateText(__rawHtmlText);
-			}
-		}
-		else
-		{
-			__updateText(value);
-		}
-		#else
-		__updateText(value);
-		#end
-		__updateScrollV();
-
-		return value;
+		return _.htmlText = value;
 	}
 
 	@:noCompletion private function get_length():Int
 	{
-		if (__text != null)
-		{
-			return __text.length;
-		}
-
-		return 0;
+		return _.length;
 	}
 
 	@:noCompletion private function get_maxChars():Int
 	{
-		return __textEngine.maxChars;
+		return _.maxChars;
 	}
 
 	@:noCompletion private function set_maxChars(value:Int):Int
 	{
-		if (value != __textEngine.maxChars)
-		{
-			__textEngine.maxChars = value;
-
-			__dirty = true;
-			__layoutDirty = true;
-			__setRenderDirty();
-		}
-
-		return value;
+		return _.maxChars = value;
 	}
 
 	@:noCompletion private function get_maxScrollH():Int
 	{
-		__updateLayout();
-
-		return __textEngine.maxScrollH;
+		return _.maxScrollH;
 	}
 
 	@:noCompletion private function get_maxScrollV():Int
 	{
-		__updateLayout();
-
-		return __textEngine.maxScrollV;
+		return _.maxScrollV;
 	}
 
 	@:noCompletion private function get_mouseWheelEnabled():Bool
 	{
-		return __mouseWheelEnabled;
+		return _.mouseWheelEnabled;
 	}
 
 	@:noCompletion private function set_mouseWheelEnabled(value:Bool):Bool
 	{
-		return __mouseWheelEnabled = value;
+		return _.mouseWheelEnabled = value;
 	}
 
 	@:noCompletion private function get_multiline():Bool
 	{
-		return __textEngine.multiline;
+		return _.multiline;
 	}
 
 	@:noCompletion private function set_multiline(value:Bool):Bool
 	{
-		if (value != __textEngine.multiline)
-		{
-			__dirty = true;
-			__layoutDirty = true;
-			__updateText(__text);
-			// __updateScrollV();
-			__updateScrollH();
-			__setRenderDirty();
-		}
-
-		return __textEngine.multiline = value;
+		return _.multiline = value;
 	}
 
 	@:noCompletion private function get_numLines():Int
 	{
-		__updateLayout();
-
-		return __textEngine.numLines;
+		return _.numLines;
 	}
 
 	@:noCompletion private function get_restrict():String
 	{
-		return __textEngine.restrict;
+		return _.restrict;
 	}
 
 	@:noCompletion private function set_restrict(value:String):String
 	{
-		if (__textEngine.restrict != value)
-		{
-			__textEngine.restrict = value;
-			__updateText(__text);
-		}
-
-		return value;
+		return _.restrict = value;
 	}
 
 	@:noCompletion private function get_scrollH():Int
 	{
-		return __textEngine.scrollH;
+		return _.scrollH;
 	}
 
 	@:noCompletion private function set_scrollH(value:Int):Int
 	{
-		__updateLayout();
-
-		if (value > __textEngine.maxScrollH) value = __textEngine.maxScrollH;
-		if (value < 0) value = 0;
-
-		if (value != __textEngine.scrollH)
-		{
-			__dirty = true;
-			__setRenderDirty();
-			__textEngine.scrollH = value;
-			dispatchEvent(new Event(Event.SCROLL));
-		}
-
-		return __textEngine.scrollH;
+		return _.scrollH = value;
 	}
 
 	@:noCompletion private function get_scrollV():Int
 	{
-		return __textEngine.scrollV;
+		return _.scrollV;
 	}
 
 	@:noCompletion private function set_scrollV(value:Int):Int
 	{
-		__updateLayout();
-
-		if (value > 0 && value != __textEngine.scrollV)
-		{
-			__dirty = true;
-			__setRenderDirty();
-			__textEngine.scrollV = value;
-			dispatchEvent(new Event(Event.SCROLL));
-		}
-
-		return __textEngine.scrollV;
+		return _.scrollV = value;
 	}
 
 	@:noCompletion private function get_selectable():Bool
 	{
-		return __textEngine.selectable;
+		return _.selectable;
 	}
 
 	@:noCompletion private function set_selectable(value:Bool):Bool
 	{
-		if (value != __textEngine.selectable && type == INPUT)
-		{
-			if (stage != null && stage.focus == this)
-			{
-				__startTextInput();
-			}
-			else if (!value)
-			{
-				__stopTextInput();
-			}
-		}
-
-		return __textEngine.selectable = value;
+		return _.selectable = value;
 	}
 
 	@:noCompletion private function get_selectionBeginIndex():Int
 	{
-		return Std.int(Math.min(__caretIndex, __selectionIndex));
+		return _.selectionBeginIndex;
 	}
 
 	@:noCompletion private function get_selectionEndIndex():Int
 	{
-		return Std.int(Math.max(__caretIndex, __selectionIndex));
+		return _.selectionEndIndex;
 	}
 
 	@:noCompletion private function get_sharpness():Float
 	{
-		return __textEngine.sharpness;
+		return _.sharpness;
 	}
 
 	@:noCompletion private function set_sharpness(value:Float):Float
 	{
-		if (value != __textEngine.sharpness)
-		{
-			__dirty = true;
-			__setRenderDirty();
-		}
-
-		return __textEngine.sharpness = value;
+		return _.sharpness = value;
 	}
 
 	@:noCompletion private override function get_tabEnabled():Bool
 	{
-		return (__tabEnabled == null ? __textEngine.type == INPUT : __tabEnabled);
+		return _.tabEnabled;
 	}
 
 	@:noCompletion private function get_text():String
 	{
-		return __text;
+		return _.text;
 	}
 
 	@:noCompletion private function set_text(value:String):String
 	{
-		if (__isHTML || __text != value)
-		{
-			__dirty = true;
-			__layoutDirty = true;
-			__setRenderDirty();
-		}
-		else
-		{
-			return value;
-		}
-
-		if (__textEngine.textFormatRanges.length > 1)
-		{
-			__textEngine.textFormatRanges.splice(1, __textEngine.textFormatRanges.length - 1);
-		}
-
-		var range = __textEngine.textFormatRanges[0];
-		range.format = __textFormat;
-		range.start = 0;
-		range.end = value.length;
-
-		__isHTML = false;
-
-		__updateText(value);
-		__updateScrollV();
-
-		return value;
+		return _.text = value;
 	}
 
 	@:noCompletion private function get_textColor():Int
 	{
-		return __textFormat.color;
+		return _.textColor;
 	}
 
 	@:noCompletion private function set_textColor(value:Int):Int
 	{
-		if (value != __textFormat.color)
-		{
-			__dirty = true;
-			__setRenderDirty();
-		}
-
-		for (range in __textEngine.textFormatRanges)
-		{
-			range.format.color = value;
-		}
-
-		return __textFormat.color = value;
+		return _.textColor = value;
 	}
 
 	@:noCompletion private function get_textWidth():Float
 	{
-		__updateLayout();
-		return __textEngine.textWidth;
+		return _.textWidth;
 	}
 
 	@:noCompletion private function get_textHeight():Float
 	{
-		__updateLayout();
-		return __textEngine.textHeight;
+		return _.textHeight;
 	}
 
 	@:noCompletion private function get_type():TextFieldType
 	{
-		return __textEngine.type;
+		return _.type;
 	}
 
 	@:noCompletion private function set_type(value:TextFieldType):TextFieldType
 	{
-		if (value != __textEngine.type)
-		{
-			if (value == TextFieldType.INPUT)
-			{
-				addEventListener(Event.ADDED_TO_STAGE, this_onAddedToStage);
-
-				this_onFocusIn(null);
-				__textEngine.__useIntAdvances = true;
-			}
-			else
-			{
-				removeEventListener(Event.ADDED_TO_STAGE, this_onAddedToStage);
-
-				__stopTextInput();
-				__textEngine.__useIntAdvances = null;
-			}
-
-			__dirty = true;
-			__layoutDirty = true;
-			__setRenderDirty();
-		}
-
-		return __textEngine.type = value;
-	}
-
-	override private function get_width():Float
-	{
-		__updateLayout();
-		return __textEngine.width * Math.abs(__scaleX);
-	}
-
-	override private function set_width(value:Float):Float
-	{
-		if (value != __textEngine.width)
-		{
-			__setTransformDirty();
-			__setParentRenderDirty();
-			__setRenderDirty();
-			__dirty = true;
-			__layoutDirty = true;
-
-			__textEngine.width = value;
-		}
-
-		return __textEngine.width * Math.abs(__scaleX);
+		return _.type = value;
 	}
 
 	@:noCompletion private function get_wordWrap():Bool
 	{
-		return __textEngine.wordWrap;
+		return _.wordWrap;
 	}
 
 	@:noCompletion private function set_wordWrap(value:Bool):Bool
 	{
-		if (value != __textEngine.wordWrap)
-		{
-			__dirty = true;
-			__layoutDirty = true;
-			__setRenderDirty();
-		}
-
-		return __textEngine.wordWrap = value;
-	}
-
-	@:noCompletion private override function get_x():Float
-	{
-		return __transform.tx + __offsetX;
-	}
-
-	@:noCompletion private override function set_x(value:Float):Float
-	{
-		if (value != __transform.tx + __offsetX)
-		{
-			__setTransformDirty();
-			__setParentRenderDirty();
-		}
-
-		return __transform.tx = value - __offsetX;
-	}
-
-	@:noCompletion private override function get_y():Float
-	{
-		return __transform.ty + __offsetY;
-	}
-
-	@:noCompletion private override function set_y(value:Float):Float
-	{
-		if (value != __transform.ty + __offsetY)
-		{
-			__setTransformDirty();
-			__setParentRenderDirty();
-		}
-
-		return __transform.ty = value - __offsetY;
-	}
-
-	// Event Handlers
-	@:noCompletion private function stage_onMouseMove(event:MouseEvent):Void
-	{
-		if (stage == null) return;
-
-		if (selectable && __selectionIndex >= 0)
-		{
-			__updateLayout();
-
-			var position = __getPosition(mouseX + scrollH, mouseY);
-
-			if (position != __caretIndex)
-			{
-				__caretIndex = position;
-
-				var setDirty = true;
-
-				#if openfl_html5
-				if (DisplayObject.__supportDOM)
-				{
-					if (__renderedOnCanvasWhileOnDOM)
-					{
-						__forceCachedBitmapUpdate = true;
-					}
-					setDirty = false;
-				}
-				#end
-
-				if (setDirty)
-				{
-					__dirty = true;
-					__setRenderDirty();
-				}
-			}
-		}
-	}
-
-	@:noCompletion private function stage_onMouseUp(event:MouseEvent):Void
-	{
-		if (stage == null) return;
-
-		stage.removeEventListener(MouseEvent.MOUSE_MOVE, stage_onMouseMove);
-		stage.removeEventListener(MouseEvent.MOUSE_UP, stage_onMouseUp);
-
-		if (stage.focus == this)
-		{
-			__getWorldTransform();
-			__updateLayout();
-
-			var upPos:Int = __getPosition(mouseX + scrollH, mouseY);
-			var leftPos:Int;
-			var rightPos:Int;
-
-			leftPos = Std.int(Math.min(__selectionIndex, upPos));
-			rightPos = Std.int(Math.max(__selectionIndex, upPos));
-
-			__selectionIndex = leftPos;
-			__caretIndex = rightPos;
-
-			if (__inputEnabled)
-			{
-				this_onFocusIn(null);
-
-				__stopCursorTimer();
-				__startCursorTimer();
-
-				#if openfl_html5
-				if (DisplayObject.__supportDOM && __renderedOnCanvasWhileOnDOM)
-				{
-					__forceCachedBitmapUpdate = true;
-				}
-				#end
-			}
-		}
-	}
-
-	@:noCompletion private function this_onAddedToStage(event:Event):Void
-	{
-		this_onFocusIn(null);
-	}
-
-	@:noCompletion private function this_onFocusIn(event:FocusEvent):Void
-	{
-		if (type == INPUT && stage != null && stage.focus == this)
-		{
-			__startTextInput();
-		}
-	}
-
-	@:noCompletion private function this_onFocusOut(event:FocusEvent):Void
-	{
-		__stopCursorTimer();
-
-		// TODO: Better system
-
-		if (event.relatedObject == null || !Std.is(event.relatedObject, TextField))
-		{
-			__stopTextInput();
-		}
-		else
-		{
-			if (stage != null)
-			{
-				_.stopInput();
-			}
-
-			__inputEnabled = false;
-		}
-
-		if (__selectionIndex != __caretIndex)
-		{
-			__selectionIndex = __caretIndex;
-			__dirty = true;
-			__setRenderDirty();
-		}
-	}
-
-	@:noCompletion private function this_onKeyDown(event:KeyboardEvent):Void
-	{
-		#if !openfl_doc_gen
-		if (type == INPUT)
-		{
-			switch (event.keyCode)
-			{
-				case Keyboard.ENTER, Keyboard.NUMPAD_ENTER:
-					if (__textEngine.multiline)
-					{
-						var te = new TextEvent(TextEvent.TEXT_INPUT, true, true, "\n");
-
-						dispatchEvent(te);
-
-						if (!te.isDefaultPrevented())
-						{
-							__replaceSelectedText("\n", true);
-
-							dispatchEvent(new Event(Event.CHANGE, true));
-						}
-					}
-
-				case Keyboard.BACKSPACE:
-					if (__selectionIndex == __caretIndex && __caretIndex > 0)
-					{
-						__selectionIndex = __caretIndex - 1;
-					}
-
-					if (__selectionIndex != __caretIndex)
-					{
-						replaceSelectedText("");
-						__selectionIndex = __caretIndex;
-
-						dispatchEvent(new Event(Event.CHANGE, true));
-					}
-
-				case Keyboard.DELETE:
-					if (__selectionIndex == __caretIndex && __caretIndex < __text.length)
-					{
-						__selectionIndex = __caretIndex + 1;
-					}
-
-					if (__selectionIndex != __caretIndex)
-					{
-						replaceSelectedText("");
-						__selectionIndex = __caretIndex;
-
-						dispatchEvent(new Event(Event.CHANGE, true));
-					}
-
-				case Keyboard.LEFT if (selectable):
-					if (event.commandKey)
-					{
-						__caretBeginningOfLine();
-
-						if (!event.shiftKey)
-						{
-							__selectionIndex = __caretIndex;
-						}
-					}
-					else if (event.shiftKey)
-					{
-						__caretPreviousCharacter();
-					}
-					else
-					{
-						if (__selectionIndex == __caretIndex)
-						{
-							__caretPreviousCharacter();
-						}
-						else
-						{
-							__caretIndex = Std.int(Math.min(__caretIndex, __selectionIndex));
-						}
-
-						__selectionIndex = __caretIndex;
-					}
-
-					__updateScrollH();
-					__updateScrollV();
-					__stopCursorTimer();
-					__startCursorTimer();
-
-				case Keyboard.RIGHT if (selectable):
-					if (event.commandKey)
-					{
-						__caretEndOfLine();
-
-						if (!event.shiftKey)
-						{
-							__selectionIndex = __caretIndex;
-						}
-					}
-					else if (event.shiftKey)
-					{
-						__caretNextCharacter();
-					}
-					else
-					{
-						if (__selectionIndex == __caretIndex)
-						{
-							__caretNextCharacter();
-						}
-						else
-						{
-							__caretIndex = Std.int(Math.max(__caretIndex, __selectionIndex));
-						}
-
-						__selectionIndex = __caretIndex;
-					}
-
-					__updateScrollH();
-					__updateScrollV();
-
-					__stopCursorTimer();
-					__startCursorTimer();
-
-				case Keyboard.DOWN if (selectable):
-					if (!__textEngine.multiline) return;
-
-					if (event.shiftKey)
-					{
-						__caretNextLine();
-					}
-					else
-					{
-						if (__selectionIndex == __caretIndex)
-						{
-							__caretNextLine();
-						}
-						else
-						{
-							var lineIndex = getLineIndexOfChar(Std.int(Math.max(__caretIndex, __selectionIndex)));
-							__caretNextLine(lineIndex, Std.int(Math.min(__caretIndex, __selectionIndex)));
-						}
-
-						__selectionIndex = __caretIndex;
-					}
-
-					__updateScrollV();
-
-					__stopCursorTimer();
-					__startCursorTimer();
-
-				case Keyboard.UP if (selectable):
-					if (!__textEngine.multiline) return;
-
-					if (event.shiftKey)
-					{
-						__caretPreviousLine();
-					}
-					else
-					{
-						if (__selectionIndex == __caretIndex)
-						{
-							__caretPreviousLine();
-						}
-						else
-						{
-							var lineIndex = getLineIndexOfChar(Std.int(Math.min(__caretIndex, __selectionIndex)));
-							__caretPreviousLine(lineIndex, Std.int(Math.min(__caretIndex, __selectionIndex)));
-						}
-
-						__selectionIndex = __caretIndex;
-					}
-
-					__updateScrollV();
-
-					__stopCursorTimer();
-					__startCursorTimer();
-
-				case Keyboard.HOME if (selectable):
-					__caretBeginningOfLine();
-					__stopCursorTimer();
-					__startCursorTimer();
-
-				case Keyboard.END if (selectable):
-					__caretEndOfLine();
-					__stopCursorTimer();
-					__startCursorTimer();
-
-				case Keyboard.C if (#if mac event.commandKey #else event.ctrlKey #end):
-					if (__caretIndex != __selectionIndex)
-					{
-						Clipboard.generalClipboard.setData(TEXT_FORMAT, __text.substring(__caretIndex, __selectionIndex));
-					}
-
-				case Keyboard.X if (#if mac event.commandKey #else event.ctrlKey #end):
-					if (__caretIndex != __selectionIndex)
-					{
-						Clipboard.generalClipboard.setData(TEXT_FORMAT, __text.substring(__caretIndex, __selectionIndex));
-
-						replaceSelectedText("");
-						dispatchEvent(new Event(Event.CHANGE, true));
-					}
-
-				#if !js
-				case Keyboard.V:
-					if (#if mac event.commandKey #else event.ctrlKey #end)
-					{
-						if (Clipboard.generalClipboard.getData(TEXT_FORMAT) != null)
-						{
-							var te = new TextEvent(TextEvent.TEXT_INPUT, true, true, Clipboard.generalClipboard.getData(TEXT_FORMAT));
-
-							dispatchEvent(te);
-
-							if (!te.isDefaultPrevented())
-							{
-								__replaceSelectedText(Clipboard.generalClipboard.getData(TEXT_FORMAT), true);
-
-								dispatchEvent(new Event(Event.CHANGE, true));
-							}
-						}
-					}
-					else
-					{
-						// TODO: does this need to occur?
-						__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __text.length;
-					}
-				#end
-
-				case Keyboard.A if (selectable):
-					if (#if mac event.commandKey #else event.ctrlKey #end)
-					{
-						__caretIndex = __text.length;
-						__selectionIndex = 0;
-					}
-
-				default:
-			}
-		}
-		else if (selectable && event.keyCode == Keyboard.C && (event.commandKey || event.ctrlKey))
-		{
-			if (__caretIndex != __selectionIndex)
-			{
-				Clipboard.generalClipboard.setData(TEXT_FORMAT, __text.substring(__caretIndex, __selectionIndex));
-			}
-		}
-		#end
-	}
-
-	@:noCompletion private function this_onMouseDown(event:MouseEvent):Void
-	{
-		if (!selectable && type != INPUT) return;
-
-		__updateLayout();
-
-		__caretIndex = __getPosition(mouseX + scrollH, mouseY);
-		__selectionIndex = __caretIndex;
-
-		if (!DisplayObject.__supportDOM)
-		{
-			__dirty = true;
-			__setRenderDirty();
-		}
-
-		stage.addEventListener(MouseEvent.MOUSE_MOVE, stage_onMouseMove);
-		stage.addEventListener(MouseEvent.MOUSE_UP, stage_onMouseUp);
-	}
-
-	@:noCompletion private function this_onMouseWheel(event:MouseEvent):Void
-	{
-		if (mouseWheelEnabled)
-		{
-			scrollV -= event.delta;
-		}
-	}
-
-	@:noCompletion private function this_onDoubleClick(event:MouseEvent):Void
-	{
-		if (selectable)
-		{
-			__updateLayout();
-
-			var delimiters:Array<String> = ['\n', '.', '!', '?', ',', ' ', ';', ':', '(', ')', '-', '_', '/'];
-
-			var txtStr:String = __text;
-			var leftPos:Int = -1;
-			var rightPos:Int = txtStr.length;
-			var pos:Int = 0;
-			var startPos:Int = Std.int(Math.max(__caretIndex, 1));
-			if (txtStr.length > 0 && __caretIndex >= 0 && rightPos >= __caretIndex)
-			{
-				for (c in delimiters)
-				{
-					pos = txtStr.lastIndexOf(c, startPos - 1);
-					if (pos > leftPos) leftPos = pos + 1;
-
-					pos = txtStr.indexOf(c, startPos);
-					if (pos < rightPos && pos != -1) rightPos = pos;
-				}
-
-				if (leftPos != rightPos)
-				{
-					setSelection(leftPos, rightPos);
-
-					var setDirty:Bool = true;
-					#if openfl_html5
-					if (DisplayObject.__supportDOM)
-					{
-						if (__renderedOnCanvasWhileOnDOM)
-						{
-							__forceCachedBitmapUpdate = true;
-						}
-						setDirty = false;
-					}
-					#end
-					if (setDirty)
-					{
-						__dirty = true;
-						__setRenderDirty();
-					}
-				}
-			}
-		}
+		return _.wordWrap = value;
 	}
 }
 #else

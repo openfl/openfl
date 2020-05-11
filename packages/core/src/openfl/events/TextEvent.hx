@@ -53,10 +53,7 @@ class TextEvent extends Event
 		the `event` attribute of the `href` attribute of the
 		`<a>` tag.
 	**/
-	public var text:String;
-
-	@:noCompletion private static var __pool:ObjectPool<TextEvent> = new ObjectPool<TextEvent>(function() return new TextEvent(null),
-	function(event) event.__init());
+	public var text(get, set):String;
 
 	/**
 		Creates an Event object that contains information about text events. Event
@@ -80,29 +77,29 @@ class TextEvent extends Event
 	**/
 	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false, text:String = "")
 	{
-		super(type, bubbles, cancelable);
+		if (_ == null)
+		{
+			_ = new _TextEvent(type, bubbles, cancelable, text);
+		}
 
-		this.text = text;
+		super(type, bubbles, cancelable);
 	}
 
 	public override function clone():TextEvent
 	{
-		var event = new TextEvent(type, bubbles, cancelable, text);
-		event.target = target;
-		event.currentTarget = currentTarget;
-		event.eventPhase = eventPhase;
-		return event;
+		return _.clone();
 	}
 
-	public override function toString():String
+	// Get & Set Methods
+
+	@:noCompletion private function get_text():String
 	{
-		return __formatToString("TextEvent", ["type", "bubbles", "cancelable", "text"]);
+		return _.text;
 	}
 
-	@:noCompletion private override function __init():Void
+	@:noCompletion private function set_text(value:String):String
 	{
-		super.__init();
-		text = "";
+		return _.text = value;
 	}
 }
 #else

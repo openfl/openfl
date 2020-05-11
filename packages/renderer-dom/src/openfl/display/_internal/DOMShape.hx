@@ -14,11 +14,11 @@ class DOMShape
 	public static function clear(shape:DisplayObject, renderer:DOMRenderer):Void
 	{
 		#if openfl_html5
-		if (shape.__renderData.canvas != null)
+		if (shape._.__renderData.canvas != null)
 		{
-			renderer.element.removeChild(shape.__renderData.canvas);
-			shape.__renderData.canvas = null;
-			shape.__renderData.style = null;
+			renderer.element.removeChild(shape._.__renderData.canvas);
+			shape._.__renderData.canvas = null;
+			shape._.__renderData.style = null;
 		}
 		#end
 	}
@@ -26,27 +26,29 @@ class DOMShape
 	public static inline function render(shape:DisplayObject, renderer:DOMRenderer):Void
 	{
 		#if openfl_html5
-		var graphics = shape.__graphics;
+		var graphics = shape._.__graphics;
 
-		if (shape.stage != null && shape.__worldVisible && shape.__renderable && graphics != null)
+		if (shape.stage != null && shape._.__worldVisible && shape._.__renderable && graphics != null)
 		{
-			CanvasGraphics.render(graphics, renderer.__canvasRenderer);
+			CanvasGraphics.render(graphics, renderer._.__canvasRenderer);
 
-			if (graphics.__softwareDirty || shape.__worldAlphaChanged || (shape.__renderData.canvas != graphics.__renderData.canvas))
+			if (graphics._.__softwareDirty
+				|| shape._.__worldAlphaChanged
+				|| (shape._.__renderData.canvas != graphics._.__renderData.canvas))
 			{
-				if (graphics.__renderData.canvas != null)
+				if (graphics._.__renderData.canvas != null)
 				{
-					if (shape.__renderData.canvas != graphics.__renderData.canvas)
+					if (shape._.__renderData.canvas != graphics._.__renderData.canvas)
 					{
-						if (shape.__renderData.canvas != null)
+						if (shape._.__renderData.canvas != null)
 						{
-							renderer.element.removeChild(shape.__renderData.canvas);
+							renderer.element.removeChild(shape._.__renderData.canvas);
 						}
 
-						shape.__renderData.canvas = graphics.__renderData.canvas;
-						shape.__renderData.context = graphics.__renderData.context;
+						shape._.__renderData.canvas = graphics._.__renderData.canvas;
+						shape._.__renderData.context = graphics._.__renderData.context;
 
-						renderer.__initializeElement(shape, shape.__renderData.canvas);
+						renderer._.__initializeElement(shape, shape._.__renderData.canvas);
 					}
 				}
 				else
@@ -55,25 +57,25 @@ class DOMShape
 				}
 			}
 
-			if (shape.__renderData.canvas != null)
+			if (shape._.__renderData.canvas != null)
 			{
-				renderer.__pushMaskObject(shape);
+				renderer._.__pushMaskObject(shape);
 
-				var cacheTransform = shape.__renderTransform;
-				shape.__renderTransform = graphics.__worldTransform;
+				var cacheTransform = shape._.__renderTransform;
+				shape._.__renderTransform = graphics._.__worldTransform;
 
-				if (graphics.__transformDirty)
+				if (graphics._.__transformDirty)
 				{
-					graphics.__transformDirty = false;
-					shape.__renderTransformChanged = true;
+					graphics._.__transformDirty = false;
+					shape._.__renderTransformChanged = true;
 				}
 
-				renderer.__updateClip(shape);
-				renderer.__applyStyle(shape, true, true, true);
+				renderer._.__updateClip(shape);
+				renderer._.__applyStyle(shape, true, true, true);
 
-				shape.__renderTransform = cacheTransform;
+				shape._.__renderTransform = cacheTransform;
 
-				renderer.__popMaskObject(shape);
+				renderer._.__popMaskObject(shape);
 			}
 		}
 		else

@@ -66,13 +66,6 @@ class Accelerometer extends EventDispatcher
 	**/
 	public static var isSupported(get, never):Bool;
 
-	@:noCompletion private static var currentX:Float = 0.0;
-	@:noCompletion private static var currentY:Float = 1.0;
-	@:noCompletion private static var currentZ:Float = 0.0;
-	@:noCompletion private static var defaultInterval:Int = 34;
-	@:noCompletion private static var initialized:Bool = false;
-	@:noCompletion private static var supported:Bool = false;
-
 	/**
 		Specifies whether the user has denied access to the accelerometer
 		(`true`) or allowed access(`false`). When this
@@ -80,57 +73,17 @@ class Accelerometer extends EventDispatcher
 	**/
 	public var muted(get, set):Bool;
 
-	@:noCompletion private var __interval:Int;
-	@:noCompletion private var __muted:Bool;
-	@:noCompletion private var __timer:Timer;
-
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperty(Accelerometer.prototype, "muted", {
-			get: untyped __js__("function () { return this.get_muted (); }"),
-			set: untyped __js__("function (v) { return this.set_muted (v); }")
-		});
-		untyped Object.defineProperty(Accelerometer, "isSupported", {
-			get: function()
-			{
-				return Accelerometer.get_isSupported();
-			}
-		});
-	}
-	#end
-
 	/**
 		Creates a new Accelerometer instance.
 	**/
 	public function new()
 	{
-		super();
-
-		initialize();
-
-		__interval = 0;
-		__muted = false;
-
-		setRequestedUpdateInterval(defaultInterval);
-	}
-
-	override public function addEventListener(type:String, listener:Dynamic->Void, useCapture:Bool = false, priority:Int = 0,
-			useWeakReference:Bool = false):Void
-	{
-		super.addEventListener(type, listener, useCapture, priority, useWeakReference);
-		update();
-	}
-
-	@:noCompletion private static function initialize():Void
-	{
-		#if (lime || openfl_html5)
-		if (!initialized)
+		if (_ == null)
 		{
-			AccelerometerBackend.initialize();
-			initialized = true;
+			_ = new _Accelerometer();
 		}
-		#end
+
+		super();
 	}
 
 	/**
@@ -151,71 +104,26 @@ class Accelerometer extends EventDispatcher
 	**/
 	public function setRequestedUpdateInterval(interval:Int):Void
 	{
-		__interval = interval;
-
-		if (__interval < 0)
-		{
-			throw new ArgumentError();
-		}
-		else if (__interval == 0)
-		{
-			__interval = defaultInterval;
-		}
-
-		if (__timer != null)
-		{
-			__timer.stop();
-			__timer = null;
-		}
-
-		if (supported && !muted)
-		{
-			__timer = new Timer(__interval);
-			__timer.run = update;
-		}
+		_.setRequestedUpdateInterval(interval);
 	}
 
-	@:noCompletion private function update():Void
-	{
-		var event = new AccelerometerEvent(AccelerometerEvent.UPDATE);
+	// Get & Set Methods
 
-		event.timestamp = Timer.stamp();
-		event.accelerationX = currentX;
-		event.accelerationY = currentY;
-		event.accelerationZ = currentZ;
-
-		dispatchEvent(event);
-	}
-
-	// Getters & Setters
 	@:noCompletion private static function get_isSupported():Bool
 	{
-		initialize();
-
-		return supported;
+		return _Accelerometer.isSupported;
 	}
 
 	@:noCompletion private function get_muted():Bool
 	{
-		return __muted;
+		return _.muted;
 	}
 
 	@:noCompletion private function set_muted(value:Bool):Bool
 	{
-		__muted = value;
-		setRequestedUpdateInterval(__interval);
-
-		return value;
+		return _.muted = value;
 	}
 }
-
-#if lime
-private typedef AccelerometerBackend = openfl._internal.backend.lime.LimeAccelerometerBackend;
-#elseif openfl_html5
-private typedef AccelerometerBackend = openfl._internal.backend.html5.HTML5AccelerometerBackend;
-#else
-private typedef AccelerometerBackend = openfl._internal.backend.dummy.DummyAccelerometerBackend;
-#end
 #else
 typedef Accelerometer = flash.sensors.Accelerometer;
 #end

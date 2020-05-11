@@ -1,7 +1,6 @@
 package openfl.events;
 
 #if !flash
-import openfl._internal.utils.ObjectPool;
 import openfl.utils.ByteArray;
 import openfl.utils.Endian;
 
@@ -97,15 +96,12 @@ class SampleDataEvent extends Event
 	/**
 		The data in the audio stream.
 	**/
-	public var data:ByteArray;
+	public var data(get, set):ByteArray;
 
 	/**
 		The position of the data in the audio stream.
 	**/
-	public var position:Float;
-
-	@:noCompletion private static var __pool:ObjectPool<SampleDataEvent> = new ObjectPool<SampleDataEvent>(function() return new SampleDataEvent(null),
-	function(event) event.__init());
+	public var position(get, set):Float;
 
 	/**
 		Creates an event object that contains information about audio data
@@ -122,33 +118,39 @@ class SampleDataEvent extends Event
 	**/
 	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false)
 	{
-		super(type, bubbles, cancelable);
+		if (_ == null)
+		{
+			_ = new _SampleDataEvent(type, bubbles, cancelable);
+		}
 
-		data = new ByteArray();
-		data.endian = Endian.LITTLE_ENDIAN;
-		position = 0.0;
+		super(type, bubbles, cancelable);
 	}
 
 	public override function clone():SampleDataEvent
 	{
-		var event = new SampleDataEvent(type, bubbles, cancelable);
-		event.target = target;
-		event.currentTarget = currentTarget;
-		event.eventPhase = eventPhase;
-		return event;
+		return _.clone();
 	}
 
-	public override function toString():String
+	// Get & Set Methods
+
+	@:noCompletion private function get_data():ByteArray
 	{
-		return __formatToString("SampleDataEvent", ["type", "bubbles", "cancelable"]);
+		return _.data;
 	}
 
-	@:noCompletion private override function __init():Void
+	@:noCompletion private function set_data(value:ByteArray):ByteArray
 	{
-		super.__init();
-		data = new ByteArray();
-		data.endian = Endian.LITTLE_ENDIAN;
-		position = 0.0;
+		return _.data = value;
+	}
+
+	@:noCompletion private function get_position():Float
+	{
+		return _.position;
+	}
+
+	@:noCompletion private function set_position(value:Float):Float
+	{
+		return _.position = value;
 	}
 }
 #else

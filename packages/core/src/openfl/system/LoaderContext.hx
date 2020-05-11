@@ -58,7 +58,7 @@ class LoaderContext
 		2.0. However, this property is made available to SWF files and AIR
 		applications of all versions when the Flash Runtime supports it.
 	**/
-	public var allowCodeImport:Bool;
+	public var allowCodeImport(get, set):Bool;
 
 	/**
 		Legacy property, replaced by `allowCodeImport`, but still supported
@@ -80,7 +80,7 @@ class LoaderContext
 		In AIR content in the application sandbox, the default value is
 		`false`. In non-application content, the default value is `true`.
 	**/
-	public var allowLoadBytesCodeExecution:Bool;
+	public var allowLoadBytesCodeExecution(get, set):Bool;
 
 	/**
 		Specifies the application domain to use for the `Loader.load()` or
@@ -157,7 +157,7 @@ class LoaderContext
 		"Client System Environment" chapter of the _ActionScript 3.0
 		Developer's Guide_.
 	**/
-	public var applicationDomain:ApplicationDomain;
+	public var applicationDomain(get, set):ApplicationDomain;
 
 	/**
 		Specifies whether the application should attempt to download a URL
@@ -243,7 +243,7 @@ class LoaderContext
 		the `BitmapData.draw()` method using any loaded image content as the
 		source.
 	**/
-	public var checkPolicyFile:Bool;
+	public var checkPolicyFile(get, set):Bool;
 
 	#if false
 	/**
@@ -401,7 +401,9 @@ class LoaderContext
 		For more information, see the "Security" chapter in the _ActionScript
 		3.0 Developer's Guide_.
 	**/
-	public var securityDomain:SecurityDomain;
+	public var securityDomain(get, set):SecurityDomain;
+
+	@:allow(openfl) @:noCompletion private var _:_LoaderContext;
 
 	/**
 		Creates a new LoaderContext object, with the specified settings. For
@@ -421,12 +423,62 @@ class LoaderContext
 	**/
 	public function new(checkPolicyFile:Bool = false, applicationDomain:ApplicationDomain = null, securityDomain:SecurityDomain = null):Void
 	{
-		this.checkPolicyFile = checkPolicyFile;
-		this.securityDomain = securityDomain;
-		this.applicationDomain = applicationDomain;
+		if (_ == null)
+		{
+			_ = new _LoaderContext(checkPolicyFile, applicationDomain, securityDomain);
+		}
+	}
 
-		allowCodeImport = true;
-		allowLoadBytesCodeExecution = true;
+	// Get & Set Methods
+
+	@:noCompletion private function get_allowCodeImport():Bool
+	{
+		return _.allowCodeImport;
+	}
+
+	@:noCompletion private function set_allowCodeImport(value:Bool):Bool
+	{
+		return _.allowCodeImport = value;
+	}
+
+	@:noCompletion private function get_allowLoadBytesCodeExecution():Bool
+	{
+		return _.allowLoadBytesCodeExecution;
+	}
+
+	@:noCompletion private function set_allowLoadBytesCodeExecution(value:Bool):Bool
+	{
+		return _.allowLoadBytesCodeExecution = value;
+	}
+
+	@:noCompletion private function get_applicationDomain():ApplicationDomain
+	{
+		return _.applicationDomain;
+	}
+
+	@:noCompletion private function set_applicationDomain(value:ApplicationDomain):ApplicationDomain
+	{
+		return _.applicationDomain = value;
+	}
+
+	@:noCompletion private function get_checkPolicyFile():Bool
+	{
+		return _.checkPolicyFile;
+	}
+
+	@:noCompletion private function set_checkPolicyFile(value:Bool):Bool
+	{
+		return _.checkPolicyFile = value;
+	}
+
+	@:noCompletion private function get_securityDomain():SecurityDomain
+	{
+		return _.securityDomain;
+	}
+
+	@:noCompletion private function set_securityDomain(value:SecurityDomain):SecurityDomain
+	{
+		return _.securityDomain = value;
 	}
 }
 #else

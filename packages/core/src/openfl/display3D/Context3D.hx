@@ -115,22 +115,12 @@ import openfl.utils.ByteArray;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.display3D._internal.Context3DState)
-@:access(openfl.display3D.textures.CubeTexture)
-@:access(openfl.display3D.textures.RectangleTexture)
-@:access(openfl.display3D.textures.TextureBase)
-@:access(openfl.display3D.textures.Texture)
-@:access(openfl.display3D.textures.VideoTexture)
-@:access(openfl.display3D.IndexBuffer3D)
-@:access(openfl.display3D.Program3D)
-@:access(openfl.display3D.VertexBuffer3D)
-@:access(openfl.display.Stage3D)
 @:final class Context3D extends EventDispatcher
 {
 	/**
 		Indicates if Context3D supports video texture.
 	**/
-	public static var supportsVideoTexture(default, null):Bool = #if openfl_html5 true #else false #end;
+	public static var supportsVideoTexture(get, never):Bool;
 
 	/**
 		Specifies the height of the back buffer, which can be changed by a successful
@@ -140,7 +130,7 @@ import openfl.utils.ByteArray;
 		method. The change in height can be detected by registering an event listener
 		for the browser zoom change event.
 	**/
-	public var backBufferHeight(default, null):Int = 0;
+	public var backBufferHeight(get, never):Int;
 
 	/**
 		Specifies the width of the back buffer, which can be changed by a successful
@@ -150,7 +140,7 @@ import openfl.utils.ByteArray;
 		method. The change in width can be detected by registering an event listener
 		for the browser zoom change event.
 	**/
-	public var backBufferWidth(default, null):Int = 0;
+	public var backBufferWidth(get, never):Int;
 
 	/**
 		The type of graphics library driver used by this rendering context. Indicates
@@ -171,7 +161,7 @@ import openfl.utils.ByteArray;
 		requires a license when used with Stage3D hardware rendering. Visit
 		adobe.com/go/fpl.
 	**/
-	public var driverInfo(default, null):String = "OpenGL (Direct blitting)";
+	public var driverInfo(get, never):String;
 
 	/**
 		Specifies whether errors encountered by the renderer are reported to the
@@ -194,7 +184,7 @@ import openfl.utils.ByteArray;
 		minimum limit will be the value of the `height` parameter in the last successful
 		call to the `configureBackBuffer()` method after the back buffer is configured.
 	**/
-	public var maxBackBufferHeight(default, null):Int;
+	public var maxBackBufferHeight(get, never):Int;
 
 	/**
 		Specifies the maximum width of the back buffer. The inital value is the system
@@ -205,12 +195,12 @@ import openfl.utils.ByteArray;
 		minimum limit will be the value of the width parameter in the last successful
 		call to the `configureBackBuffer()` method after the back buffer is configured.
 	**/
-	public var maxBackBufferWidth(default, null):Int;
+	public var maxBackBufferWidth(get, never):Int;
 
 	/**
 		The feature-support profile in use by this Context3D object.
 	**/
-	public var profile(default, null):Context3DProfile = STANDARD;
+	public var profile(get, never):Context3DProfile;
 
 	/**
 		Returns the total GPU memory allocated by Stage3D data structures of an
@@ -231,81 +221,14 @@ import openfl.utils.ByteArray;
 	**/
 	public var totalGPUMemory(get, never):Int;
 
-	@:noCompletion private static var __supportsBGRA:Null<Bool> = null;
-
-	@:noCompletion private var _:_Context3D;
-	@:noCompletion private var __backBufferAntiAlias:Int;
-	@:noCompletion private var __backBufferTexture:RectangleTexture;
-	@:noCompletion private var __backBufferWantsBestResolution:Bool;
-	@:noCompletion private var __backBufferWantsBestResolutionOnBrowserZoom:Bool;
-	@:noCompletion private var __bitmapDataPool:BitmapDataPool;
-	@:noCompletion private var __cleared:Bool;
-	@:noCompletion private var __contextState:Context3DState;
-	@:noCompletion private var __enableErrorChecking:Bool;
-	@:noCompletion private var __fragmentConstants:Float32Array;
-	@:noCompletion private var __frontBufferTexture:RectangleTexture;
-	@:noCompletion private var __present:Bool;
-	@:noCompletion private var __programs:Map<String, Program3D>;
-	@:noCompletion private var __quadIndexBuffer:IndexBuffer3D;
-	@:noCompletion private var __quadIndexBufferCount:Int;
-	@:noCompletion private var __quadIndexBufferElements:Int;
-	@:noCompletion private var __renderStage3DProgram:Program3D;
-	@:noCompletion private var __stage:Stage;
-	@:noCompletion private var __stage3D:Stage3D;
-	@:noCompletion private var __state:Context3DState;
-	@:noCompletion private var __vertexConstants:Float32Array;
-
-	@:noCompletion private function new(stage:Stage, contextState:Context3DState = null, stage3D:Stage3D = null)
+	@:allow(openfl) @:noCompletion private function new(stage:Stage, contextState:Context3DState = null, stage3D:Stage3D = null)
 	{
-		super();
-
-		__stage = stage;
-		__contextState = contextState;
-		__stage3D = stage3D;
-
-		if (__contextState == null) __contextState = new Context3DState();
-		__state = new Context3DState();
-
-		#if (lime || js)
-		// TODO: Dummy impl?
-		__vertexConstants = new Float32Array(4 * 128);
-		__fragmentConstants = new Float32Array(4 * 128);
-		#end
-
-		__programs = new Map<String, Program3D>();
-
-		_ = new _Context3D(this);
-
-		__bitmapDataPool = new BitmapDataPool(30, this);
-
-		__quadIndexBufferElements = Math.floor(0xFFFF / 4);
-		__quadIndexBufferCount = __quadIndexBufferElements * 6;
-
-		#if (lime || js)
-		// TODO: Dummy impl?
-		var data = new UInt16Array(__quadIndexBufferCount);
-		#else
-		var data = null;
-		#end
-
-		var index:UInt = 0;
-		var vertex:UInt = 0;
-
-		for (i in 0...__quadIndexBufferElements)
+		if (_ == null)
 		{
-			data[index] = vertex;
-			data[index + 1] = vertex + 1;
-			data[index + 2] = vertex + 2;
-			data[index + 3] = vertex + 2;
-			data[index + 4] = vertex + 1;
-			data[index + 5] = vertex + 3;
-
-			index += 6;
-			vertex += 4;
+			_ = new _Context3D(this, stage, contextState, stage3D);
 		}
 
-		__quadIndexBuffer = createIndexBuffer(__quadIndexBufferCount);
-		__quadIndexBuffer.uploadFromTypedArray(data);
+		super();
 	}
 
 	/**
@@ -484,7 +407,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function createCubeTexture(size:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool, streamingLevels:Int = 0):CubeTexture
 	{
-		return new CubeTexture(this, size, format, optimizeForRenderToTexture, streamingLevels);
+		return _.createCubeTexture(size, format, optimizeForRenderToTexture, streamingLevels);
 	}
 
 	/**
@@ -517,7 +440,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function createIndexBuffer(numIndices:Int, bufferUsage:Context3DBufferUsage = STATIC_DRAW):IndexBuffer3D
 	{
-		return new IndexBuffer3D(this, numIndices, bufferUsage);
+		return _.createIndexBuffer(numIndices, bufferUsage);
 	}
 
 	/**
@@ -542,7 +465,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function createProgram(format:Context3DProgramFormat = AGAL):Program3D
 	{
-		return new Program3D(this, format);
+		return _.createProgram(format);
 	}
 
 	/**
@@ -591,7 +514,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function createRectangleTexture(width:Int, height:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool):RectangleTexture
 	{
-		return new RectangleTexture(this, width, height, format, optimizeForRenderToTexture);
+		return _.createRectangleTexture(width, height, format, optimizeForRenderToTexture);
 	}
 
 	/**
@@ -667,7 +590,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function createTexture(width:Int, height:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool, streamingLevels:Int = 0):Texture
 	{
-		return new Texture(this, width, height, format, optimizeForRenderToTexture, streamingLevels);
+		return _.createTexture(width, height, format, optimizeForRenderToTexture, streamingLevels);
 	}
 
 	/**
@@ -712,7 +635,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function createVertexBuffer(numVertices:Int, data32PerVertex:Int, bufferUsage:Context3DBufferUsage = STATIC_DRAW):VertexBuffer3D
 	{
-		return new VertexBuffer3D(this, numVertices, data32PerVertex, bufferUsage);
+		return _.createVertexBuffer(numVertices, data32PerVertex, bufferUsage);
 	}
 
 	/**
@@ -749,15 +672,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function createVideoTexture():VideoTexture
 	{
-		if (supportsVideoTexture)
-		{
-			return new VideoTexture(this);
-		}
-		else
-		{
-			throw new Error("Video textures are not currently supported");
-			return null;
-		}
+		return _.createVideoTexture();
 	}
 
 	/**
@@ -783,15 +698,6 @@ import openfl.utils.ByteArray;
 	public function dispose(recreate:Bool = true):Void
 	{
 		_.dispose(recreate);
-
-		__renderStage3DProgram = null;
-		__frontBufferTexture = null;
-		__present = false;
-		__backBufferTexture = null;
-		__fragmentConstants = null;
-		__quadIndexBuffer = null;
-		__stage = null;
-		__vertexConstants = null;
 	}
 
 	/**
@@ -978,21 +884,13 @@ import openfl.utils.ByteArray;
 	**/
 	public function setBlendFactors(sourceFactor:Context3DBlendFactor, destinationFactor:Context3DBlendFactor):Void
 	{
-		setBlendFactorsSeparate(sourceFactor, destinationFactor, sourceFactor, destinationFactor);
+		_.setBlendFactors(sourceFactor, destinationFactor);
 	}
 
 	@:dox(hide) @:noCompletion private function setBlendFactorsSeparate(sourceRGBFactor:Context3DBlendFactor, destinationRGBFactor:Context3DBlendFactor,
 			sourceAlphaFactor:Context3DBlendFactor, destinationAlphaFactor:Context3DBlendFactor):Void
 	{
-		__state.blendSourceRGBFactor = sourceRGBFactor;
-		__state.blendDestinationRGBFactor = destinationRGBFactor;
-		__state.blendSourceAlphaFactor = sourceAlphaFactor;
-		__state.blendDestinationAlphaFactor = destinationAlphaFactor;
-
-		#if openfl_gl
-		// TODO: Better way to handle this?
-		_.resetGLBlendEquation();
-		#end
+		_.setBlendFactorsSeparate(sourceRGBFactor, destinationRGBFactor, sourceAlphaFactor, destinationAlphaFactor);
 	}
 
 	/**
@@ -1011,10 +909,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function setColorMask(red:Bool, green:Bool, blue:Bool, alpha:Bool):Void
 	{
-		__state.colorMaskRed = red;
-		__state.colorMaskGreen = green;
-		__state.colorMaskBlue = blue;
-		__state.colorMaskAlpha = alpha;
+		_.setColorMask(red, green, blue, alpha);
 	}
 
 	/**
@@ -1032,7 +927,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function setCulling(triangleFaceToCull:Context3DTriangleFace):Void
 	{
-		__state.culling = triangleFaceToCull;
+		_.setCulling(triangleFaceToCull);
 	}
 
 	/**
@@ -1057,8 +952,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function setDepthTest(depthMask:Bool, passCompareMode:Context3DCompareMode):Void
 	{
-		__state.depthMask = depthMask;
-		__state.depthCompareMode = passCompareMode;
+		_.setDepthTest(depthMask, passCompareMode);
 	}
 
 	/**
@@ -1069,23 +963,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function setProgram(program:Program3D):Void
 	{
-		__state.program = program;
-		__state.shader = null; // TODO: Merge this logic
-
-		if (program != null)
-		{
-			for (i in 0...program.__samplerStates.length)
-			{
-				if (__state.samplerStates[i] == null)
-				{
-					__state.samplerStates[i] = program.__samplerStates[i].clone();
-				}
-				else
-				{
-					__state.samplerStates[i].copyFrom(program.__samplerStates[i]);
-				}
-			}
-		}
+		_.setProgram(program);
 	}
 
 	/**
@@ -1109,46 +987,7 @@ import openfl.utils.ByteArray;
 	public function setProgramConstantsFromByteArray(programType:Context3DProgramType, firstRegister:Int, numRegisters:Int, data:ByteArray,
 			byteArrayOffset:UInt):Void
 	{
-		if (numRegisters == 0 || __state.program == null) return;
-
-		if (__state.program != null && __state.program.__format == GLSL)
-		{
-			// TODO
-		}
-		else
-		{
-			// TODO: Cleanup?
-
-			if (numRegisters == -1)
-			{
-				numRegisters = ((data.length >> 2) - byteArrayOffset);
-			}
-
-			var isVertex = (programType == VERTEX);
-			var dest = isVertex ? __vertexConstants : __fragmentConstants;
-
-			#if lime
-			var floatData = Float32Array.fromBytes(data, 0, data.length);
-			#elseif openfl_html5
-			var bytes:haxe.io.Bytes = cast data;
-			var floatData = new Float32Array(bytes.getData(), 0, data.length);
-			#else
-			// TODO: Dummy impl?
-			var floatData = null;
-			#end
-			var outOffset = firstRegister * 4;
-			var inOffset = Std.int(byteArrayOffset / 4);
-
-			for (i in 0...(numRegisters * 4))
-			{
-				dest[outOffset + i] = floatData[inOffset + i];
-			}
-
-			if (__state.program != null)
-			{
-				__state.program._.markDirty(isVertex, firstRegister, numRegisters);
-			}
-		}
+		_.setProgramConstantsFromByteArray(programType, firstRegister, numRegisters, data, byteArrayOffset);
 	}
 
 	/**
@@ -1173,69 +1012,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function setProgramConstantsFromMatrix(programType:Context3DProgramType, firstRegister:Int, matrix:Matrix3D, transposedMatrix:Bool = false):Void
 	{
-		if (__state.program != null && __state.program.__format == GLSL)
-		{
-			#if openfl_gl
-			_.setGLSLProgramConstantsFromMatrix(programType, firstRegister, matrix, transposedMatrix);
-			#end
-		}
-		else
-		{
-			var isVertex = (programType == VERTEX);
-			var dest = isVertex ? __vertexConstants : __fragmentConstants;
-			var source = matrix.rawData;
-			var i = firstRegister * 4;
-
-			if (transposedMatrix)
-			{
-				dest[i++] = source[0];
-				dest[i++] = source[4];
-				dest[i++] = source[8];
-				dest[i++] = source[12];
-
-				dest[i++] = source[1];
-				dest[i++] = source[5];
-				dest[i++] = source[9];
-				dest[i++] = source[13];
-
-				dest[i++] = source[2];
-				dest[i++] = source[6];
-				dest[i++] = source[10];
-				dest[i++] = source[14];
-
-				dest[i++] = source[3];
-				dest[i++] = source[7];
-				dest[i++] = source[11];
-				dest[i++] = source[15];
-			}
-			else
-			{
-				dest[i++] = source[0];
-				dest[i++] = source[1];
-				dest[i++] = source[2];
-				dest[i++] = source[3];
-
-				dest[i++] = source[4];
-				dest[i++] = source[5];
-				dest[i++] = source[6];
-				dest[i++] = source[7];
-
-				dest[i++] = source[8];
-				dest[i++] = source[9];
-				dest[i++] = source[10];
-				dest[i++] = source[11];
-
-				dest[i++] = source[12];
-				dest[i++] = source[13];
-				dest[i++] = source[14];
-				dest[i++] = source[15];
-			}
-
-			if (__state.program != null)
-			{
-				__state.program._.markDirty(isVertex, firstRegister, 4);
-			}
-		}
+		_.setProgramConstantsFromMatrix(programType, firstRegister, matrix, transposedMatrix);
 	}
 
 	/**
@@ -1263,36 +1040,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function setProgramConstantsFromVector(programType:Context3DProgramType, firstRegister:Int, data:Vector<Float>, numRegisters:Int = -1):Void
 	{
-		if (numRegisters == 0) return;
-
-		if (__state.program != null && __state.program.__format == GLSL) {}
-		else
-		{
-			if (numRegisters == -1)
-			{
-				numRegisters = (data.length >> 2);
-			}
-
-			var isVertex = (programType == VERTEX);
-			var dest = isVertex ? __vertexConstants : __fragmentConstants;
-			var source = data;
-
-			var sourceIndex = 0;
-			var destIndex = firstRegister * 4;
-
-			for (i in 0...numRegisters)
-			{
-				dest[destIndex++] = source[sourceIndex++];
-				dest[destIndex++] = source[sourceIndex++];
-				dest[destIndex++] = source[sourceIndex++];
-				dest[destIndex++] = source[sourceIndex++];
-			}
-
-			if (__state.program != null)
-			{
-				__state.program._.markDirty(isVertex, firstRegister, numRegisters);
-			}
-		}
+		_.setProgramConstantsFromVector(programType, firstRegister, data, numRegisters);
 	}
 
 	/**
@@ -1303,7 +1051,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function setRenderToBackBuffer():Void
 	{
-		__state.renderToTexture = null;
+		_.setRenderToBackBuffer();
 	}
 
 	/**
@@ -1344,10 +1092,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function setRenderToTexture(texture:TextureBase, enableDepthAndStencil:Bool = false, antiAlias:Int = 0, surfaceSelector:Int = 0):Void
 	{
-		__state.renderToTexture = texture;
-		__state.renderToTextureDepthStencil = enableDepthAndStencil;
-		__state.renderToTextureAntiAlias = antiAlias;
-		__state.renderToTextureSurfaceSelector = surfaceSelector;
+		_.setRenderToTexture(texture, enableDepthAndStencil, antiAlias, surfaceSelector);
 	}
 
 	/**
@@ -1372,21 +1117,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function setSamplerStateAt(sampler:Int, wrap:Context3DWrapMode, filter:Context3DTextureFilter, mipfilter:Context3DMipFilter):Void
 	{
-		// if (sampler < 0 || sampler > Context3D.MAX_SAMPLERS) {
-
-		// 	throw new Error ("sampler out of range");
-
-		// }
-
-		if (__state.samplerStates[sampler] == null)
-		{
-			__state.samplerStates[sampler] = new SamplerState();
-		}
-
-		var state = __state.samplerStates[sampler];
-		state.wrap = wrap;
-		state.filter = filter;
-		state.mipfilter = mipfilter;
+		_.setSamplerStateAt(sampler, wrap, filter, mipFilter);
 	}
 
 	/**
@@ -1403,15 +1134,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function setScissorRectangle(rectangle:Rectangle):Void
 	{
-		if (rectangle != null)
-		{
-			__state.scissorEnabled = true;
-			__state.scissorRectangle.copyFrom(rectangle);
-		}
-		else
-		{
-			__state.scissorEnabled = false;
-		}
+		_.setScissorRectangle(rectangle);
 	}
 
 	/**
@@ -1462,11 +1185,7 @@ import openfl.utils.ByteArray;
 			actionOnBothPass:Context3DStencilAction = KEEP, actionOnDepthFail:Context3DStencilAction = KEEP,
 			actionOnDepthPassStencilFail:Context3DStencilAction = KEEP):Void
 	{
-		__state.stencilTriangleFace = triangleFace;
-		__state.stencilCompareMode = compareMode;
-		__state.stencilPass = actionOnBothPass;
-		__state.stencilDepthFail = actionOnDepthFail;
-		__state.stencilFail = actionOnDepthPassStencilFail;
+		_.setStencilActions(triangleFace, compareMode, actionOnBothPass, actionOnDepthFail, actionOnDepthPassStencilFail);
 	}
 
 	/**
@@ -1485,9 +1204,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function setStencilReferenceValue(referenceValue:UInt, readMask:UInt = 0xFF, writeMask:UInt = 0xFF):Void
 	{
-		__state.stencilReferenceValue = referenceValue;
-		__state.stencilReadMask = readMask;
-		__state.stencilWriteMask = writeMask;
+		_.setStencilReferenceValue(referenceValue, readMask, writeMask);
 	}
 
 	/**
@@ -1510,13 +1227,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function setTextureAt(sampler:Int, texture:TextureBase):Void
 	{
-		// if (sampler < 0 || sampler > Context3D.MAX_SAMPLERS) {
-
-		// 	throw new Error ("sampler out of range");
-
-		// }
-
-		__state.textures[sampler] = texture;
+		_.setTextureAt(sampler, texture);
 	}
 
 	/**
@@ -1571,73 +1282,54 @@ import openfl.utils.ByteArray;
 	**/
 	public function setVertexBufferAt(index:Int, buffer:VertexBuffer3D, bufferOffset:Int = 0, format:Context3DVertexBufferFormat = FLOAT_4):Void
 	{
-		// TODO: Don't flush immediately?
-		#if openfl_gl
 		_.setVertexBufferAt(index, buffer, bufferOffset, format);
-		#end
-	}
-
-	@:noCompletion private function __renderStage3D(stage3D:Stage3D):Void
-	{
-		// Assume this is the primary Context3D
-
-		var context = stage3D.context3D;
-
-		if (context != null
-			&& context != this
-			&& context.__frontBufferTexture != null
-			&& stage3D.visible
-			&& backBufferHeight > 0
-			&& backBufferWidth > 0)
-		{
-			// if (!stage.renderer.cleared) stage.renderer.clear ();
-
-			if (__renderStage3DProgram == null)
-			{
-				var vertexAssembler = new AGALMiniAssembler();
-				vertexAssembler.assemble(Context3DProgramType.VERTEX, "m44 op, va0, vc0\n" + "mov v0, va1");
-
-				var fragmentAssembler = new AGALMiniAssembler();
-				fragmentAssembler.assemble(Context3DProgramType.FRAGMENT, "tex ft1, v0, fs0 <2d,nearest,nomip>\n" + "mov oc, ft1");
-
-				__renderStage3DProgram = createProgram();
-				__renderStage3DProgram.upload(vertexAssembler.agalcode, fragmentAssembler.agalcode);
-			}
-
-			setProgram(__renderStage3DProgram);
-
-			setBlendFactors(ONE, ZERO);
-			setColorMask(true, true, true, true);
-			setCulling(NONE);
-			setDepthTest(false, ALWAYS);
-			setStencilActions();
-			setStencilReferenceValue(0, 0, 0);
-			setScissorRectangle(null);
-
-			setTextureAt(0, context.__frontBufferTexture);
-			setVertexBufferAt(0, stage3D.__renderData.vertexBuffer, 0, Context3DVertexBufferFormat.FLOAT_3);
-			setVertexBufferAt(1, stage3D.__renderData.vertexBuffer, 3, Context3DVertexBufferFormat.FLOAT_2);
-			setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, stage3D.__renderTransform, true);
-			drawTriangles(stage3D.__renderData.indexBuffer);
-
-			__present = true;
-		}
 	}
 
 	// Get & Set Methods
+
+	@:noCompletion private function get_backBufferHeight():Int
+	{
+		return _.backBufferHeight;
+	}
+
+	@:noCompletion private function get_backBufferWidth():Int
+	{
+		return _.backBufferWidth;
+	}
+
+	@:noCompletion private function get_driverInfo():String
+	{
+		return _.driverInfo;
+	}
+
 	@:noCompletion private function get_enableErrorChecking():Bool
 	{
-		return __enableErrorChecking;
+		return _.enableErrorChecking;
 	}
 
 	@:noCompletion private function set_enableErrorChecking(value:Bool):Bool
 	{
-		return __enableErrorChecking = value;
+		return _.enableErrorChecking = value;
+	}
+
+	@:noCompletion private function get_maxBackBufferHeight():Int
+	{
+		return _.maxBackBufferHeight;
+	}
+
+	@:noCompletion private function get_maxBackBufferWidth():Int
+	{
+		return _.maxBackBufferWidth;
+	}
+
+	@:noCompletion private function get_profile():Context3DProfile
+	{
+		return _.profile;
 	}
 
 	@:noCompletion private function get_totalGPUMemory():Int
 	{
-		return _.getTotalGPUMemory();
+		return _.totalGPUMemory;
 	}
 }
 #else

@@ -119,32 +119,12 @@ import openfl.desktop.Clipboard;
 		the application(Flash Player 6 and later, or AIR) interprets the text as
 		Unicode.
 	**/
-	public static var useCodePage:Bool = false;
+	public static var useCodePage(get, set):Bool;
 
 	/**
 		Undocumented property
 	**/
 	@:noCompletion @:dox(hide) public static var vmVersion(get, never):String;
-
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperties(System, {
-			"totalMemory": {
-				get: function()
-				{
-					return System.get_totalMemory();
-				}
-			},
-			"vmVersion": {
-				get: function()
-				{
-					return System.get_vmVersion();
-				}
-			},
-		});
-	}
-	#end
 
 	/**
 		Makes the specified XML object immediately available for garbage
@@ -154,7 +134,10 @@ import openfl.desktop.Clipboard;
 		@param node XML reference that should be made available for garbage
 					collection.
 	**/
-	@:noCompletion @:dox(hide) public static function disposeXML(node:Dynamic):Void {}
+	@:noCompletion @:dox(hide) public static function disposeXML(node:Dynamic):Void
+	{
+		return _System.disposeXML(node);
+	}
 
 	/**
 		Closes Flash Player.
@@ -235,18 +218,29 @@ import openfl.desktop.Clipboard;
 	**/
 	public static function setClipboard(string:String):Void
 	{
-		Clipboard.generalClipboard.setData(TEXT_FORMAT, string);
+		_System.setClipboard(string);
 	}
 
 	// Getters & Setters
+
 	@:noCompletion private static function get_totalMemory():Int
 	{
-		return _System.getTotalMemory();
+		return _System.totalMemory;
+	}
+
+	@:noCompletion private static function get_useCodePage():Bool
+	{
+		return _System.useCodePage;
+	}
+
+	@:noCompletion private static function set_useCodePage(value:Bool):Bool
+	{
+		return _System.useCodePage = value;
 	}
 
 	@:noCompletion private static function get_vmVersion():String
 	{
-		return "1.0.0";
+		return _System.vmVersion;
 	}
 }
 #else

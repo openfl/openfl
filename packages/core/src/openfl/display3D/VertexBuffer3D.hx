@@ -47,13 +47,14 @@ import openfl.Vector;
 #end
 class VertexBuffer3D
 {
-	@:noCompletion private var _:_VertexBuffer3D;
+	@:allow(openfl) @:noCompletion private var _:Dynamic;
+
 	@:noCompletion private var __bufferUsage:Context3DBufferUsage;
 	@:noCompletion private var __context:Context3D;
 	@:noCompletion private var __dataPerVertex:Int;
 	@:noCompletion private var __numVertices:Int;
 
-	@:noCompletion private function new(context3D:Context3D, numVertices:Int, dataPerVertex:Int, bufferUsage:Context3DBufferUsage)
+	@:allow(openfl) @:noCompletion private function new(context3D:Context3D, numVertices:Int, dataPerVertex:Int, bufferUsage:Context3DBufferUsage)
 	{
 		__context = context3D;
 		__numVertices = numVertices;

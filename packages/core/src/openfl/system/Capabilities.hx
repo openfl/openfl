@@ -97,7 +97,7 @@ import haxe.macro.Compiler;
 		the application security sandbox can always access the user's camera and
 		microphone.
 	**/
-	public static var avHardwareDisable(default, null) = true;
+	public static var avHardwareDisable(get, never):Bool;
 
 	/**
 		Specifies the current CPU architecture. The `cpuArchitecture`
@@ -112,48 +112,48 @@ import haxe.macro.Compiler;
 		support(`false`) communication with accessibility aids. The
 		server string is `ACC`.
 	**/
-	public static var hasAccessibility(default, null) = false;
+	public static var hasAccessibility(get, never):Bool;
 
 	/**
 		Specifies whether the system has audio capabilities. This property is
 		always `true`. The server string is `A`.
 	**/
-	public static var hasAudio(default, null) = true;
+	public static var hasAudio(get, never):Bool;
 
 	/**
 		Specifies whether the system can(`true`) or cannot
 		(`false`) encode an audio stream, such as that coming from a
 		microphone. The server string is `AE`.
 	**/
-	public static var hasAudioEncoder(default, null) = false;
+	public static var hasAudioEncoder(get, never):Bool;
 
 	/**
 		Specifies whether the system supports(`true`) or does not
 		support(`false`) embedded video. The server string is
 		`EV`.
 	**/
-	public static var hasEmbeddedVideo(default, null) = false;
+	public static var hasEmbeddedVideo(get, never):Bool;
 
 	/**
 		Specifies whether the system does(`true`) or does not
 		(`false`) have an input method editor(IME) installed. The
 		server string is `IME`.
 	**/
-	public static var hasIME(default, null) = false;
+	public static var hasIME(get, never):Bool;
 
 	/**
 		Specifies whether the system does(`true`) or does not
 		(`false`) have an MP3 decoder. The server string is
 		`MP3`.
 	**/
-	public static var hasMP3(default, null) = false;
+	public static var hasMP3(get, never):Bool;
 
 	/**
 		Specifies whether the system does(`true`) or does not
 		(`false`) support printing. The server string is
 		`PR`.
 	**/
-	public static var hasPrinting(default, null) = #if html5 true #else false #end;
+	public static var hasPrinting(get, never):Bool;
 
 	/**
 		Specifies whether the system does(`true`) or does not
@@ -161,7 +161,7 @@ import haxe.macro.Compiler;
 		applications to be run through Flash Media Server. The server string is
 		`SB`.
 	**/
-	public static var hasScreenBroadcast(default, null) = false;
+	public static var hasScreenBroadcast(get, never):Bool;
 
 	/**
 		Specifies whether the system does(`true`) or does not
@@ -169,35 +169,35 @@ import haxe.macro.Compiler;
 		that are being run through Flash Media Server. The server string is
 		`SP`.
 	**/
-	public static var hasScreenPlayback(default, null) = false;
+	public static var hasScreenPlayback(get, never):Bool;
 
 	/**
 		Specifies whether the system can(`true`) or cannot
 		(`false`) play streaming audio. The server string is
 		`SA`.
 	**/
-	public static var hasStreamingAudio(default, null) = false;
+	public static var hasStreamingAudio(get, never):Bool;
 
 	/**
 		Specifies whether the system can(`true`) or cannot
 		(`false`) play streaming video. The server string is
 		`SV`.
 	**/
-	public static var hasStreamingVideo(default, null) = false;
+	public static var hasStreamingVideo(get, never):Bool;
 
 	/**
 		Specifies whether the system supports native SSL sockets through
 		NetConnection(`true`) or does not(`false`). The
 		server string is `TLS`.
 	**/
-	public static var hasTLS(default, null) = true;
+	public static var hasTLS(get, never):Bool;
 
 	/**
 		Specifies whether the system can(`true`) or cannot
 		(`false`) encode a video stream, such as that coming from a web
 		camera. The server string is `VE`.
 	**/
-	public static var hasVideoEncoder(default, null) = #if html5 true #else false #end;
+	public static var hasVideoEncoder(get, never):Bool;
 
 	/**
 		Specifies whether the system is a special debugging version
@@ -206,13 +206,13 @@ import haxe.macro.Compiler;
 		is set to `true` when running in the debug version of Flash
 		Player or the AIR Debug Launcher(ADL).
 	**/
-	public static var isDebugger(default, null) = #if debug true #else false #end;
+	public static var isDebugger(get, never):Bool;
 
 	/**
 		Specifies whether the Flash runtime is embedded in a PDF file that is open
 		in Acrobat 9.0 or higher(`true`) or not(`false`).
 	**/
-	public static var isEmbeddedInAcrobat(default, null) = false;
+	public static var isEmbeddedInAcrobat(get, never):Bool;
 
 	/**
 		Specifies the language code of the system on which the content is
@@ -281,7 +281,7 @@ import haxe.macro.Compiler;
 
 		The server string is `LFD`.
 	**/
-	public static var localFileReadDisable(default, null) = #if web true #else false #end;
+	public static var localFileReadDisable(get, never):Bool;
 
 	/**
 		Specifies the manufacturer of the running version of Flash Player or the
@@ -311,7 +311,7 @@ import haxe.macro.Compiler;
 
 		The server string is `ML`.
 	**/
-	public static var maxLevelIDC(default, null) = 0;
+	public static var maxLevelIDC(get, never):Int;
 
 	/**
 		Specifies the current operating system. The `os` property can return
@@ -377,7 +377,7 @@ import haxe.macro.Compiler;
 
 		The server string is `PT`.
 	**/
-	public static var playerType(default, null) = #if web "PlugIn" #else "StandAlone" #end;
+	public static var playerType(get, never):String;
 
 	/**
 		Specifies the screen color. This property can have the value
@@ -385,7 +385,7 @@ import haxe.macro.Compiler;
 		`"bw"`(for black and white). The server string is
 		`COL`.
 	**/
-	public static var screenColor(default, null) = "color";
+	public static var screenColor(get, never):String;
 
 	/**
 		Specifies the dots-per-inch(dpi) resolution of the screen, in pixels. The
@@ -422,25 +422,25 @@ import haxe.macro.Compiler;
 		R=1600x1200&DP=72&COL=color&AR=1.0&OS=Windows%20XP&
 		L=en&PT=External&AVD=f&LFD=f&WD=f`
 	**/
-	public static var serverString(default, null) = ""; // TODO
+	public static var serverString(get, never):String;
 
 	/**
 		Specifies whether the system supports running 32-bit processes. The server
 		string is `PR32`.
 	**/
-	public static var supports32BitProcesses(default, null) = #if sys true #else false #end;
+	public static var supports32BitProcesses(get, never):Bool;
 
 	/**
 		Specifies whether the system supports running 64-bit processes. The server
 		string is `PR64`.
 	**/
-	public static var supports64BitProcesses(default, null) = #if desktop true #else false #end; // TODO
+	public static var supports64BitProcesses(get, never):Bool;
 
 	/**
 		Specifies the type of touchscreen supported, if any. Values are defined in
 		the openfl.system.TouchscreenType class.
 	**/
-	public static var touchscreenType(default, null) = TouchscreenType.FINGER; // TODO
+	public static var touchscreenType(get, never):TouchscreenType;
 
 	/**
 		Specifies the Flash Player or Adobe<sup>®</sup> AIR<sup>®</sup> platform
@@ -464,68 +464,6 @@ import haxe.macro.Compiler;
 		The server string is `V`.
 	**/
 	public static var version(get, never):String;
-
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperties(Capabilities, {
-			"cpuArchitecture": {
-				get: function()
-				{
-					return Capabilities.get_cpuArchitecture();
-				}
-			},
-			"language": {
-				get: function()
-				{
-					return Capabilities.get_language();
-				}
-			},
-			"manufacturer": {
-				get: function()
-				{
-					return Capabilities.get_manufacturer();
-				}
-			},
-			"os": {
-				get: function()
-				{
-					return Capabilities.get_os();
-				}
-			},
-			"pixelAspectRatio": {
-				get: function()
-				{
-					return Capabilities.get_pixelAspectRatio();
-				}
-			},
-			"screenDPI": {
-				get: function()
-				{
-					return Capabilities.get_screenDPI();
-				}
-			},
-			"screenResolutionX": {
-				get: function()
-				{
-					return Capabilities.get_screenResolutionX();
-				}
-			},
-			"screenResolutionY": {
-				get: function()
-				{
-					return Capabilities.get_screenResolutionY();
-				}
-			},
-			"version": {
-				get: function()
-				{
-					return Capabilities.get_version();
-				}
-			}
-		});
-	}
-	#end
 
 	/**
 		Specifies whether the system supports multichannel audio of a specific type. The
@@ -563,95 +501,176 @@ import haxe.macro.Compiler;
 	**/
 	public static function hasMultiChannelAudio(type:String):Bool
 	{
-		return false;
+		return _Capabilities.hasMultiChannelAudio(type);
 	}
 
-	// Getters & Setters
-	@:noCompletion private static inline function get_cpuArchitecture():String
+	// Get & Set Methods
+
+	@:noCompletion private static function get_avHardwareDisable():Bool
 	{
-		// TODO: Check architecture
-		#if (mobile && !simulator && !emulator)
-		return "ARM";
-		#else
-		return "x86";
-		#end
+		return _Capabilities.avHardwareDisable;
+	}
+
+	@:noCompletion private static function get_cpuArchitecture():String
+	{
+		return _Capabilities.cpuArchitecture;
+	}
+
+	@:noCompletion private static function get_hasAccessibility():Bool
+	{
+		return _Capabilities.hasAccessibility;
+	}
+
+	@:noCompletion private static function get_hasAudio():Bool
+	{
+		return _Capabilities.hasAudio;
+	}
+
+	@:noCompletion private static function get_hasAudioEncoder():Bool
+	{
+		return _Capabilities.hasAudioEncoder;
+	}
+
+	@:noCompletion private static function get_hasEmbeddedVideo():Bool
+	{
+		return _Capabilities.hasEmbeddedVideo;
+	}
+
+	@:noCompletion private static function get_hasIME():Bool
+	{
+		return _Capabilities.hasIME;
+	}
+
+	@:noCompletion private static function get_hasMP3():Bool
+	{
+		return _Capabilities.hasMP3;
+	}
+
+	@:noCompletion private static function get_hasPrinting():Bool
+	{
+		return _Capabilities.hasPrinting;
+	}
+
+	@:noCompletion private static function get_hasScreenBroadcast():Bool
+	{
+		return _Capabilities.hasScreenBroadcast;
+	}
+
+	@:noCompletion private static function get_hasScreenPlayback():Bool
+	{
+		return _Capabilities.hasScreenPlayback;
+	}
+
+	@:noCompletion private static function get_hasStreamingAudio():Bool
+	{
+		return _Capabilities.hasStreamingAudio;
+	}
+
+	@:noCompletion private static function get_hasStreamingVideo():Bool
+	{
+		return _Capabilities.hasStreamingVideo;
+	}
+
+	@:noCompletion private static function get_hasTLS():Bool
+	{
+		return _Capabilities.hasTLS;
+	}
+
+	@:noCompletion private static function get_hasVideoEncoder():Bool
+	{
+		return _Capabilities.hasVideoEncoder;
+	}
+
+	@:noCompletion private static function get_isDebugger():Bool
+	{
+		return _Capabilities.isDebugger;
+	}
+
+	@:noCompletion private static function get_isEmbeddedInAcrobat():Bool
+	{
+		return _Capabilities.isEmbeddedInAcrobat;
 	}
 
 	@:noCompletion private static function get_language():String
 	{
-		return CapabilitiesBackend.getLanguage();
+		return _Capabilities.language;
 	}
 
-	@:noCompletion private static inline function get_manufacturer():String
+	@:noCompletion private static function get_localFileReadDisable():Bool
 	{
-		return CapabilitiesBackend.getManufacturer();
+		return _Capabilities.localFileReadDisable;
 	}
 
-	@:noCompletion private static inline function get_os():String
+	@:noCompletion private static function get_manufacturer():String
 	{
-		return CapabilitiesBackend.getOS();
+		return _Capabilities.manufacturer;
+	}
+
+	@:noCompletion private static function get_maxLevelIDC():Int
+	{
+		return _Capabilities.maxLevelIDC;
+	}
+
+	@:noCompletion private static function get_os():String
+	{
+		return _Capabilities.os;
 	}
 
 	@:noCompletion private static function get_pixelAspectRatio():Float
 	{
-		return 1;
+		return _Capabilities.pixelAspectRatio;
+	}
+
+	@:noCompletion private static function get_playerType():String
+	{
+		return _Capabilities.playerType;
+	}
+
+	@:noCompletion private static function get_screenColor():String
+	{
+		return _Capabilities.screenColor;
 	}
 
 	@:noCompletion private static function get_screenDPI():Float
 	{
-		return CapabilitiesBackend.getScreenDPI();
+		return _Capabilities.screenDPI;
 	}
 
 	@:noCompletion private static function get_screenResolutionX():Float
 	{
-		return CapabilitiesBackend.getScreenResolutionX();
+		return _Capabilities.screenResolutionX;
 	}
 
 	@:noCompletion private static function get_screenResolutionY():Float
 	{
-		return CapabilitiesBackend.getScreenResolutionY();
+		return _Capabilities.screenResolutionY;
+	}
+
+	@:noCompletion private static function get_serverString():String
+	{
+		return _Capabilities.serverString;
+	}
+
+	@:noCompletion private static function get_supports32BitProcesses():Bool
+	{
+		return _Capabilities.supports32BitProcesses;
+	}
+
+	@:noCompletion private static function get_supports64BitProcesses():Bool
+	{
+		return _Capabilities.supports64BitProcesses;
+	}
+
+	@:noCompletion private static function get_touchscreenType():TouchscreenType
+	{
+		return _Capabilities.touchscreenType;
 	}
 
 	@:noCompletion private static function get_version():String
 	{
-		#if windows
-		var value = "WIN";
-		#elseif mac
-		var value = "MAC";
-		#elseif linux
-		var value = "LNX";
-		#elseif ios
-		var value = "IOS";
-		#elseif tvos
-		var value = "TVO";
-		#elseif android
-		var value = "AND";
-		#elseif blackberry
-		var value = "QNX";
-		#elseif firefox
-		var value = "MOZ";
-		#elseif html5
-		var value = "WEB";
-		#else
-		var value = "OFL";
-		#end
-
-		if (Compiler.getDefine("openfl") != null)
-		{
-			value += " " + StringTools.replace(Compiler.getDefine("openfl"), ".", ",") + ",0";
-		}
-
-		return value;
+		return _Capabilities.version;
 	}
 }
-
-#if lime
-private typedef CapabilitiesBackend = openfl._internal.backend.lime.LimeCapabilitiesBackend;
-#elseif openfl_html5
-private typedef CapabilitiesBackend = openfl._internal.backend.html5.HTML5CapabilitiesBackend;
-#else
-private typedef CapabilitiesBackend = openfl._internal.backend.dummy.DummyCapabilitiesBackend;
-#end
 #else
 typedef Capabilities = flash.system.Capabilities;
 #end

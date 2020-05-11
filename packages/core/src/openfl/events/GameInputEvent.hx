@@ -31,36 +31,28 @@ import openfl.ui.GameInputDevice;
 	/**
 		Returns a reference to the device that was added or removed. When a device is added, use this property to get a reference to the new device, instead of enumerating all of the devices to find the new one.
 	**/
-	public var device(default, null):GameInputDevice;
-
-	@:noCompletion private static var __pool:ObjectPool<GameInputEvent> = new ObjectPool<GameInputEvent>(function() return new GameInputEvent(null),
-	function(event) event.__init());
+	public var device(get, never):GameInputDevice;
 
 	public function new(type:String, bubbles:Bool = true, cancelable:Bool = false, device:GameInputDevice = null)
 	{
-		super(type, bubbles, cancelable);
+		if (_ == null)
+		{
+			_ = new _GameInputEvent(type, bubbles, cancelable, device);
+		}
 
-		this.device = device;
+		super(type, bubbles, cancelable);
 	}
 
 	public override function clone():GameInputEvent
 	{
-		var event = new GameInputEvent(type, bubbles, cancelable, device);
-		event.target = target;
-		event.currentTarget = currentTarget;
-		event.eventPhase = eventPhase;
-		return event;
+		return _.clone();
 	}
 
-	public override function toString():String
-	{
-		return __formatToString("GameInputEvent", ["type", "bubbles", "cancelable", "device"]);
-	}
+	// Get & Set Methods
 
-	@:noCompletion private override function __init():Void
+	@:noCompletion private static function get_device():GameInputDevice
 	{
-		super.__init();
-		device = null;
+		return _.device;
 	}
 }
 #else

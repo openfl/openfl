@@ -28,9 +28,11 @@ import openfl.utils.ByteArray;
 @:noCompletion
 class _CubeTexture extends _TextureBase
 {
-	private var framebufferSurface:Int;
-	private var parent:CubeTexture;
-	private var uploadedSides:Int;
+	public var framebufferSurface:Int;
+	public var parent:CubeTexture;
+	public var uploadedSides:Int;
+
+	private var __size:Int;
 
 	public function new(parent:CubeTexture)
 	{
@@ -77,7 +79,7 @@ class _CubeTexture extends _TextureBase
 	{
 		#if (lime || openfl_html5)
 		if (source == null) return;
-		var size = parent.__size >> miplevel;
+		var size = parent._.__size >> miplevel;
 		if (size == 0) return;
 
 		var image = getImage(source);
@@ -88,7 +90,7 @@ class _CubeTexture extends _TextureBase
 		#if openfl_html5
 		if (miplevel == 0 && image.buffer != null && image.buffer.data == null && image.buffer.src != null)
 		{
-			var size = parent.__size >> miplevel;
+			var size = parent._.__size >> miplevel;
 			if (size == 0) return;
 
 			var target = sideToTarget(side);
@@ -122,7 +124,7 @@ class _CubeTexture extends _TextureBase
 	{
 		if (data == null) return;
 
-		var size = parent.__size >> miplevel;
+		var size = parent._.__size >> miplevel;
 		if (size == 0) return;
 
 		var target = sideToTarget(side);
@@ -134,7 +136,7 @@ class _CubeTexture extends _TextureBase
 		uploadedSides |= 1 << side;
 	}
 
-	private override function getGLFramebuffer(enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):GLFramebuffer
+	public override function getGLFramebuffer(enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):GLFramebuffer
 	{
 		if (glFramebuffer == null)
 		{
@@ -149,13 +151,13 @@ class _CubeTexture extends _TextureBase
 			contextBackend.bindGLFramebuffer(glFramebuffer);
 			gl.framebufferTexture2D(GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_CUBE_MAP_POSITIVE_X + surfaceSelector, glTextureID, 0);
 
-			if (parent.__context.enableErrorChecking)
+			if (parent._.__context.enableErrorChecking)
 			{
 				var code = gl.checkFramebufferStatus(GL.FRAMEBUFFER);
 
 				if (code != GL.FRAMEBUFFER_COMPLETE)
 				{
-					Log.error('Error: Context3D.setRenderToTexture status:${code} size:${parent.__size}');
+					Log.error('Error: Context3D.setRenderToTexture status:${code} size:${parent._.__size}');
 				}
 			}
 		}
@@ -163,7 +165,7 @@ class _CubeTexture extends _TextureBase
 		return super.getGLFramebuffer(enableDepthAndStencil, antiAlias, surfaceSelector);
 	}
 
-	private override function setSamplerState(state:SamplerState):Bool
+	public override function setSamplerState(state:SamplerState):Bool
 	{
 		if (super.setSamplerState(state))
 		{
@@ -198,7 +200,7 @@ class _CubeTexture extends _TextureBase
 		return false;
 	}
 
-	private function sideToTarget(side:UInt):Int
+	public function sideToTarget(side:UInt):Int
 	{
 		return switch (side)
 		{
@@ -212,10 +214,10 @@ class _CubeTexture extends _TextureBase
 		}
 	}
 
-	private function _uploadCompressedTextureFromByteArray(data:ByteArray, byteArrayOffset:UInt):Void
+	public function _uploadCompressedTextureFromByteArray(data:ByteArray, byteArrayOffset:UInt):Void
 	{
 		var reader = new ATFReader(data, byteArrayOffset);
-		var alpha = reader.readHeader(parent.__size, parent.__size, true);
+		var alpha = reader.readHeader(parent._.__size, parent._.__size, true);
 
 		contextBackend.bindGLTextureCubeMap(glTextureID);
 
@@ -239,8 +241,8 @@ class _CubeTexture extends _TextureBase
 				gl.compressedTexImage2D(target, level, glInternalFormat, width, height, 0,
 					new UInt8Array(#if js @:privateAccess bytes.b.buffer #else bytes #end, 0, size));
 
-				var alphaTexture = new CubeTexture(parent.__context, parent.__size, Context3DTextureFormat.COMPRESSED, parent.__optimizeForRenderToTexture,
-					parent.__streamingLevels);
+				var alphaTexture = new CubeTexture(parent._.__context, parent._.__size, Context3DTextureFormat.COMPRESSED,
+					parent._.__optimizeForRenderToTexture, parent._.__streamingLevels);
 				alphaTexture._.glFormat = format;
 				alphaTexture._.glInternalFormat = format;
 
@@ -261,8 +263,8 @@ class _CubeTexture extends _TextureBase
 		{
 			for (side in 0...6)
 			{
-				var data = new UInt8Array(parent.__size * parent.__size * 4);
-				gl.texImage2D(sideToTarget(side), 0, glInternalFormat, parent.__size, parent.__size, 0, glFormat, GL.UNSIGNED_BYTE, data);
+				var data = new UInt8Array(parent._.__size * parent._.__size * 4);
+				gl.texImage2D(sideToTarget(side), 0, glInternalFormat, parent._.__size, parent._.__size, 0, glFormat, GL.UNSIGNED_BYTE, data);
 			}
 		}
 

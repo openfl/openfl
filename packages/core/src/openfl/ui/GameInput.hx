@@ -57,44 +57,27 @@ import openfl.events.GameInputEvent;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.ui.GameInputControl)
-@:access(openfl.ui.GameInputDevice)
 @:final class GameInput extends EventDispatcher
 {
 	/**
 		Indicates whether the current platform supports the GameInput API.
 	**/
-	public static var isSupported(default, null) = true;
+	public static var isSupported(get, never):Bool;
 
 	/**
 		Provides the number of connected input devices. When a device is connected, the
 		`GameInputEvent.DEVICE_ADDED` event is fired.
 	**/
-	public static var numDevices(default, null) = 0;
-
-	@:noCompletion private static var __deviceList:Array<GameInputDevice> = new Array();
-	@:noCompletion private static var __instances:Array<GameInput> = [];
+	public static var numDevices(get, never):Int;
 
 	public function new()
 	{
-		super();
-
-		__instances.push(this);
-	}
-
-	@SuppressWarnings("checkstyle:Dynamic")
-	public override function addEventListener<T>(type:EventType<T>, listener:T->Void, useCapture:Bool = false, priority:Int = 0,
-			useWeakReference:Bool = false):Void
-	{
-		super.addEventListener(type, listener, useCapture, priority, useWeakReference);
-
-		if (type == GameInputEvent.DEVICE_ADDED)
+		if (_ == null)
 		{
-			for (device in __deviceList)
-			{
-				dispatchEvent(new GameInputEvent(GameInputEvent.DEVICE_ADDED, true, false, device));
-			}
+			_ = new _GameInput();
 		}
+
+		super();
 	}
 
 	/**
@@ -112,34 +95,19 @@ import openfl.events.GameInputEvent;
 	**/
 	public static function getDeviceAt(index:Int):GameInputDevice
 	{
-		if (index >= 0 && index < __deviceList.length)
-		{
-			return __deviceList[index];
-		}
-
-		return null;
+		return _GameInput.getDeviceAt(index);
 	}
 
-	@:noCompletion private static function __addInputDevice(device:GameInputDevice):Void
-	{
-		__deviceList.push(device);
-		numDevices = __deviceList.length;
+	// Get & Set Methods
 
-		for (instance in __instances)
-		{
-			instance.dispatchEvent(new GameInputEvent(GameInputEvent.DEVICE_ADDED, true, false, device));
-		}
+	@:noCompletion private static function get_isSupported():Bool
+	{
+		return _GameInput.isSupported;
 	}
 
-	@:noCompletion private static function __removeInputDevice(device:GameInputDevice):Void
+	@:noCompletion private static function get_numDevices():Int
 	{
-		__deviceList.remove(device);
-		numDevices = __deviceList.length;
-
-		for (instance in __instances)
-		{
-			instance.dispatchEvent(new GameInputEvent(GameInputEvent.DEVICE_REMOVED, true, false, device));
-		}
+		return _GameInput.numDevices;
 	}
 }
 #else

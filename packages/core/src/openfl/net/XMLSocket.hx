@@ -95,19 +95,14 @@ class XMLSocket extends EventDispatcher
 		can also check whether the connection succeeded by registering for the
 		`connect` event and `ioError` event.
 	**/
-	public var connected(default, null):Bool;
+	public var connected(get, never):Bool;
 
 	/**
 		Indicates the number of milliseconds to wait for a connection.
 		If the connection doesn't succeed within the specified time, the
 		connection fails. The default value is 20,000 (twenty seconds).
 	**/
-	public var timeout:Int;
-
-	#if !js
-	@:noCompletion private var __inputBuffer:ByteArray;
-	#end
-	@:noCompletion private var __socket:Socket;
+	public var timeout(get, set):Int;
 
 	/**
 		Creates a new XMLSocket object. If no parameters are specified, an
@@ -138,16 +133,12 @@ class XMLSocket extends EventDispatcher
 	**/
 	public function new(host:String = null, port:Int = 80)
 	{
-		super();
-
-		#if !js
-		__inputBuffer = new ByteArray();
-		#end
-
-		if (host != null)
+		if (_ == null)
 		{
-			connect(host, port);
+			_ = new _XMLSocket(host, port);
 		}
+
+		super();
 	}
 
 	/**
@@ -158,12 +149,7 @@ class XMLSocket extends EventDispatcher
 	**/
 	public function close():Void
 	{
-		__socket.removeEventListener(Event.CLOSE, __onClose);
-		__socket.removeEventListener(Event.CONNECT, __onConnect);
-		__socket.removeEventListener(IOErrorEvent.IO_ERROR, __onError);
-		__socket.removeEventListener(ProgressEvent.SOCKET_DATA, __onSocketData);
-
-		__socket.close();
+		_.close();
 	}
 
 	/**
@@ -214,16 +200,7 @@ class XMLSocket extends EventDispatcher
 	**/
 	public function connect(host:String, port:Int):Void
 	{
-		connected = false;
-
-		__socket = new Socket();
-
-		__socket.addEventListener(Event.CLOSE, __onClose);
-		__socket.addEventListener(Event.CONNECT, __onConnect);
-		__socket.addEventListener(IOErrorEvent.IO_ERROR, __onError);
-		__socket.addEventListener(ProgressEvent.SOCKET_DATA, __onSocketData);
-
-		__socket.connect(host, port);
+		_.connect(host, port);
 	}
 
 	/**
@@ -242,54 +219,24 @@ class XMLSocket extends EventDispatcher
 	**/
 	public function send(object:Dynamic):Void
 	{
-		__socket.writeUTFBytes(Std.string(object));
-		__socket.writeByte(0);
-		__socket.flush();
+		_.send(object);
 	}
 
-	// Event Handlers
-	@:noCompletion private function __onClose(_):Void
+	// Get & Set Methods
+
+	@:noCompletion private function get_connected():Bool
 	{
-		connected = false;
-		dispatchEvent(new Event(Event.CLOSE));
+		return _.connected;
 	}
 
-	@:noCompletion private function __onConnect(_):Void
+	@:noCompletion private function get_timeout():Int
 	{
-		connected = true;
-		dispatchEvent(new Event(Event.CONNECT));
+		return _.timeout;
 	}
 
-	@:noCompletion private function __onError(_):Void
+	@:noCompletion private function set_timeout(value:Int):Int
 	{
-		dispatchEvent(new Event(IOErrorEvent.IO_ERROR));
-	}
-
-	@:noCompletion private function __onSocketData(_):Void
-	{
-		#if !js
-		var bytesAvailable = __socket.bytesAvailable;
-		var byte, data;
-
-		for (i in 0...bytesAvailable)
-		{
-			byte = __socket.readByte();
-			__inputBuffer.writeByte(byte);
-
-			if (byte == 0)
-			{
-				__inputBuffer.endian = __socket.endian;
-				__inputBuffer.position = 0;
-				data = __inputBuffer.readUTFBytes(__inputBuffer.bytesAvailable);
-				__inputBuffer.position = 0;
-				__inputBuffer.length = 0;
-
-				dispatchEvent(new DataEvent(DataEvent.DATA, false, false, data));
-			}
-		}
-		#else
-		dispatchEvent(new DataEvent(DataEvent.DATA, false, false, __socket.readUTFBytes(__socket.bytesAvailable)));
-		#end
+		return _.timeout = value;
 	}
 }
 #else

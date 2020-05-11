@@ -98,8 +98,6 @@ class Clipboard
 	**/
 	public static var generalClipboard(get, never):Clipboard;
 
-	@:noCompletion private static var __generalClipboard:Clipboard;
-
 	/**
 		An array of strings containing the names of the data formats available
 		in this Clipboard object.
@@ -109,24 +107,9 @@ class Clipboard
 	**/
 	public var formats(get, never):Array<ClipboardFormats>;
 
-	@:noCompletion private var _:_Clipboard;
+	@:allow(openfl) @:noCompletion private var _:Dynamic;
 
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped global.Object.defineProperty(Clipboard, "generalClipboard", {
-			get: function()
-			{
-				return Clipboard.get_generalClipboard();
-			}
-		});
-		untyped global.Object.defineProperty(Clipboard.prototype, "formats", {
-			get: untyped __js__("function () { return this.get_formats (); }")
-		});
-	}
-	#end
-
-	@:noCompletion private function new()
+	@:allow(openfl) @:noCompletion private function new()
 	{
 		_ = new _Clipboard(this);
 	}
@@ -207,13 +190,8 @@ class Clipboard
 									  outside of the application security
 									  sandbox.
 	**/
-	public function getData(format:ClipboardFormats, transferMode:ClipboardTransferMode = null):Object
+	public function getData(format:ClipboardFormats, transferMode:ClipboardTransferMode = ORIGINAL_PREFERRED):Object
 	{
-		if (transferMode == null)
-		{
-			transferMode = ORIGINAL_PREFERRED;
-		}
-
 		return _.getData(format, transferMode);
 	}
 
@@ -407,23 +385,15 @@ class Clipboard
 	#end
 
 	// Get & Set Methods
+
 	@:noCompletion private function get_formats():Array<ClipboardFormats>
 	{
-		var formats:Array<ClipboardFormats> = [];
-		if (hasFormat(HTML_FORMAT)) formats.push(HTML_FORMAT);
-		if (hasFormat(RICH_TEXT_FORMAT)) formats.push(RICH_TEXT_FORMAT);
-		if (hasFormat(TEXT_FORMAT)) formats.push(TEXT_FORMAT);
-		return formats;
+		return _.formats;
 	}
 
 	@:noCompletion private static function get_generalClipboard():Clipboard
 	{
-		if (__generalClipboard == null)
-		{
-			__generalClipboard = new Clipboard();
-		}
-
-		return __generalClipboard;
+		return _Clipboard.generalClipboard;
 	}
 }
 #else

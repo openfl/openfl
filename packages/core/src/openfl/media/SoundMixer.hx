@@ -12,11 +12,8 @@ package openfl.media;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.media.SoundChannel)
 @:final class SoundMixer
 {
-	@:noCompletion private static inline var MAX_ACTIVE_CHANNELS:Int = 32;
-
 	/**
 		The number of seconds to preload an embedded streaming sound into a
 		buffer before it starts to stream. The data in a loaded sound,
@@ -36,7 +33,7 @@ package openfl.media;
 		set the default of the buffer time specified in the SoundLoaderContext
 		object that is passed to the `Sound.load()` method.
 	**/
-	public static var bufferTime:Int;
+	public static var bufferTime(get, set):Int;
 
 	/**
 		The SoundTransform object that controls global sound properties. A
@@ -47,25 +44,6 @@ package openfl.media;
 		settings are applied.
 	**/
 	public static var soundTransform(get, set):SoundTransform;
-
-	@:noCompletion private static var __soundChannels:Array<SoundChannel> = new Array();
-	@:noCompletion private static var __soundTransform:SoundTransform = #if (mute || mute_sound) new SoundTransform(0) #else new SoundTransform() #end;
-
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperty(SoundMixer, "soundTransform", {
-			get: function()
-			{
-				return SoundMixer.get_soundTransform();
-			},
-			set: function(value)
-			{
-				return SoundMixer.set_soundTransform(value);
-			}
-		});
-	}
-	#end
 
 	/**
 		Determines whether any sounds are not accessible due to security
@@ -84,7 +62,7 @@ package openfl.media;
 	**/
 	public static function areSoundsInaccessible():Bool
 	{
-		return false;
+		return _SoundMixer.areSoundsInaccessible();
 	}
 
 	#if false
@@ -170,38 +148,29 @@ package openfl.media;
 	**/
 	public static function stopAll():Void
 	{
-		for (channel in __soundChannels)
-		{
-			channel.stop();
-		}
-	}
-
-	@:noCompletion private static function __registerSoundChannel(soundChannel:SoundChannel):Void
-	{
-		__soundChannels.push(soundChannel);
-	}
-
-	@:noCompletion private static function __unregisterSoundChannel(soundChannel:SoundChannel):Void
-	{
-		__soundChannels.remove(soundChannel);
+		_SoundMixer.stopAll();
 	}
 
 	// Get & Set Methods
+
+	@:noCompletion private static function get_bufferTime():Int
+	{
+		return _SoundMixer.bufferTime;
+	}
+
+	@:noCompletion private static function set_bufferTime(value:Int):Int
+	{
+		return _SoundMixer.bufferTime = value;
+	}
+
 	@:noCompletion private static function get_soundTransform():SoundTransform
 	{
-		return __soundTransform;
+		return _SoundMixer.soundTransform;
 	}
 
 	@:noCompletion private static function set_soundTransform(value:SoundTransform):SoundTransform
 	{
-		__soundTransform = value.clone();
-
-		for (channel in __soundChannels)
-		{
-			channel.__updateTransform();
-		}
-
-		return value;
+		return _SoundMixer.soundTransform = value;
 	}
 }
 #else

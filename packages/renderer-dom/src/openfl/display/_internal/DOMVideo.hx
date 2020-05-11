@@ -11,10 +11,10 @@ class DOMVideo
 	public static function clear(video:Video, renderer:DOMRenderer):Void
 	{
 		#if openfl_html5
-		if (video.__active)
+		if (video._.__active)
 		{
-			renderer.element.removeChild(video.__stream.__getVideoElement());
-			video.__active = false;
+			renderer.element.removeChild(video._.__stream._.__getVideoElement());
+			video._.__active = false;
 		}
 		#end
 	}
@@ -22,26 +22,26 @@ class DOMVideo
 	public static function render(video:Video, renderer:DOMRenderer):Void
 	{
 		#if openfl_html5
-		if (video.stage != null && video.__stream != null && video.__worldVisible && video.__renderable)
+		if (video.stage != null && video._.__stream != null && video._.__worldVisible && video._.__renderable)
 		{
-			var videoElement = video.__stream.__getVideoElement();
+			var videoElement = video._.__stream._.__getVideoElement();
 
-			if (!video.__active)
+			if (!video._.__active)
 			{
-				renderer.__initializeElement(video, videoElement);
-				video.__active = true;
-				video.__dirty = true;
+				renderer._.__initializeElement(video, videoElement);
+				video._.__active = true;
+				video._.__dirty = true;
 			}
 
-			if (video.__dirty)
+			if (video._.__dirty)
 			{
-				videoElement.width = Std.int(video.__width);
-				videoElement.height = Std.int(video.__height);
-				video.__dirty = false;
+				videoElement.width = Std.int(video._.__width);
+				videoElement.height = Std.int(video._.__height);
+				video._.__dirty = false;
 			}
 
-			renderer.__updateClip(video);
-			renderer.__applyStyle(video, true, true, true);
+			renderer._.__updateClip(video);
+			renderer._.__applyStyle(video, true, true, true);
 		}
 		else
 		{

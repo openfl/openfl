@@ -61,7 +61,7 @@ class TextFormat
 		@throws ArgumentError The `align` specified is not a member of
 							  openfl.text.TextFormatAlign.
 	**/
-	public var align:TextFormatAlign;
+	public var align(get, set):TextFormatAlign;
 
 	/**
 		Indicates the block indentation in pixels. Block indentation is applied to
@@ -71,14 +71,14 @@ class TextFormat
 		TextFormat object does not specify block indentation(block indentation is
 		0).
 	**/
-	public var blockIndent:Null<Int>;
+	public var blockIndent(get, set):Null<Int>;
 
 	/**
 		Specifies whether the text is boldface. The default value is
 		`null`, which means no boldface is used. If the value is
 		`true`, then the text is boldface.
 	**/
-	public var bold:Null<Bool>;
+	public var bold(get, set):Null<Bool>;
 
 	/**
 		Indicates that the text is part of a bulleted list. In a bulleted list,
@@ -86,7 +86,7 @@ class TextFormat
 		paragraph, a bullet symbol is displayed. The default value is
 		`null`, which means no bulleted list is used.
 	**/
-	public var bullet:Null<Bool>;
+	public var bullet(get, set):Null<Bool>;
 
 	/**
 		Indicates the color of the text. A number containing three 8-bit RGB
@@ -94,7 +94,7 @@ class TextFormat
 		default value is `null`, which means that Flash Player uses the
 		color black(0x000000).
 	**/
-	public var color:Null<Int>;
+	public var color(get, set):Null<Int>;
 
 	// @:noCompletion @:dox(hide) public var display:openfl.text.TextFormatDisplay;
 
@@ -103,20 +103,20 @@ class TextFormat
 		default value is `null`, which means that Flash Player uses
 		Times New Roman font for the text.
 	**/
-	public var font:String;
+	public var font(get, set):String;
 
 	/**
 		Indicates the indentation from the left margin to the first character in
 		the paragraph. The default value is `null`, which indicates
 		that no indentation is used.
 	**/
-	public var indent:Null<Int>;
+	public var indent(get, set):Null<Int>;
 
 	/**
 		Indicates whether text in this text format is italicized. The default
 		value is `null`, which means no italics are used.
 	**/
-	public var italic:Null<Bool>;
+	public var italic(get, set):Null<Bool>;
 
 	/**
 		A Boolean value that indicates whether kerning is enabled
@@ -131,20 +131,20 @@ class TextFormat
 		The default value is `null`, which means that kerning is not
 		enabled.
 	**/
-	public var kerning:Null<Bool>;
+	public var kerning(get, set):Null<Bool>;
 
 	/**
 		An integer representing the amount of vertical space(called
 		_leading_) between lines. The default value is `null`,
 		which indicates that the amount of leading used is 0.
 	**/
-	public var leading:Null<Int>;
+	public var leading(get, set):Null<Int>;
 
 	/**
 		The left margin of the paragraph, in pixels. The default value is
 		`null`, which indicates that the left margin is 0 pixels.
 	**/
-	public var leftMargin:Null<Int>;
+	public var leftMargin(get, set):Null<Int>;
 
 	/**
 		A number representing the amount of space that is uniformly distributed
@@ -153,26 +153,26 @@ class TextFormat
 		`null`, which means that 0 pixels of letter spacing is used.
 		You can use decimal values such as `1.75`.
 	**/
-	public var letterSpacing:Null<Float>;
+	public var letterSpacing(get, set):Null<Float>;
 
 	/**
 		The right margin of the paragraph, in pixels. The default value is
 		`null`, which indicates that the right margin is 0 pixels.
 	**/
-	public var rightMargin:Null<Int>;
+	public var rightMargin(get, set):Null<Int>;
 
 	/**
 		The size in pixels of text in this text format. The default value is
 		`null`, which means that a size of 12 is used.
 	**/
-	public var size:Null<Int>;
+	public var size(get, set):Null<Int>;
 
 	/**
 		Specifies custom tab stops as an array of non-negative integers. Each tab
 		stop is specified in pixels. If custom tab stops are not specified
 		(`null`), the default tab stop is 4(average character width).
 	**/
-	public var tabStops:Array<Int>;
+	public var tabStops(get, set):Array<Int>;
 
 	/**
 		Indicates the target window where the hyperlink is displayed. If the
@@ -186,7 +186,7 @@ class TextFormat
 		`null`, you can get or set this property, but the property will
 		have no effect.
 	**/
-	public var target:String;
+	public var target(get, set):String;
 
 	/**
 		Indicates whether the text that uses this text format is underlined
@@ -196,7 +196,7 @@ class TextFormat
 		default value is `null`, which indicates that underlining is
 		not used.
 	**/
-	public var underline:Null<Bool>;
+	public var underline(get, set):Null<Bool>;
 
 	/**
 		Indicates the target URL for the text in this text format. If the
@@ -207,10 +207,9 @@ class TextFormat
 		**Note:** The text with the assigned text format must be set with
 		the `htmlText` property for the hyperlink to work.
 	**/
-	public var url:String;
+	public var url(get, set):String;
 
-	@:noCompletion private var __ascent:Null<Float>;
-	@:noCompletion private var __descent:Null<Float>;
+	@:allow(openfl) @:noCompletion private var _:_TextFormat;
 
 	/**
 		Creates a TextFormat object with the specified properties. You can then
@@ -255,67 +254,192 @@ class TextFormat
 			underline:Null<Bool> = null, url:String = null, target:String = null, align:TextFormatAlign = null, leftMargin:Null<Int> = null,
 			rightMargin:Null<Int> = null, indent:Null<Int> = null, leading:Null<Int> = null)
 	{
-		this.font = font;
-		this.size = size;
-		this.color = color;
-		this.bold = bold;
-		this.italic = italic;
-		this.underline = underline;
-		this.url = url;
-		this.target = target;
-		this.align = align;
-		this.leftMargin = leftMargin;
-		this.rightMargin = rightMargin;
-		this.indent = indent;
-		this.leading = leading;
+		if (_ == null)
+		{
+			_ = new _TextFormat(font, size, color, bold, italic, underline, url, target, align, leftMargin, rightMargin, indent, leading);
+		}
 	}
 
-	@SuppressWarnings("checkstyle:FieldDocComment")
-	@:dox(hide) @:noCompletion public function clone():TextFormat
+	// Get & Set Methods
+
+	@:noCompletion private function get_align():TextFormatAlign
 	{
-		var newFormat = new TextFormat(font, size, color, bold, italic, underline, url, target);
-
-		newFormat.align = align;
-		newFormat.leftMargin = leftMargin;
-		newFormat.rightMargin = rightMargin;
-		newFormat.indent = indent;
-		newFormat.leading = leading;
-
-		newFormat.blockIndent = blockIndent;
-		newFormat.bullet = bullet;
-		newFormat.kerning = kerning;
-		newFormat.letterSpacing = letterSpacing;
-		newFormat.tabStops = tabStops;
-
-		newFormat.__ascent = __ascent;
-		newFormat.__descent = __descent;
-
-		return newFormat;
+		return _.align;
 	}
 
-	@:noCompletion private function __merge(format:TextFormat):Void
+	@:noCompletion private function set_align(value:TextFormatAlign):TextFormatAlign
 	{
-		if (format.font != null) font = format.font;
-		if (format.size != null) size = format.size;
-		if (format.color != null) color = format.color;
-		if (format.bold != null) bold = format.bold;
-		if (format.italic != null) italic = format.italic;
-		if (format.underline != null) underline = format.underline;
-		if (format.url != null) url = format.url;
-		if (format.target != null) target = format.target;
-		if (format.align != null) align = format.align;
-		if (format.leftMargin != null) leftMargin = format.leftMargin;
-		if (format.rightMargin != null) rightMargin = format.rightMargin;
-		if (format.indent != null) indent = format.indent;
-		if (format.leading != null) leading = format.leading;
-		if (format.blockIndent != null) blockIndent = format.blockIndent;
-		if (format.bullet != null) bullet = format.bullet;
-		if (format.kerning != null) kerning = format.kerning;
-		if (format.letterSpacing != null) letterSpacing = format.letterSpacing;
-		if (format.tabStops != null) tabStops = format.tabStops;
+		return _.align = value;
+	}
 
-		if (format.__ascent != null) __ascent = format.__ascent;
-		if (format.__descent != null) __descent = format.__descent;
+	@:noCompletion private function get_blockIndent():Null<Int>
+	{
+		return _.blockIndent;
+	}
+
+	@:noCompletion private function set_blockIndent(value:Null<Int>):Null<Int>
+	{
+		return _.blockIndent = value;
+	}
+
+	@:noCompletion private function get_bold():Null<Bool>
+	{
+		return _.bold;
+	}
+
+	@:noCompletion private function set_bold(value:Null<Bool>):Null<Bool>
+	{
+		return _.bold = value;
+	}
+
+	@:noCompletion private function get_bullet():Null<Bool>
+	{
+		return _.bullet;
+	}
+
+	@:noCompletion private function set_bullet(value:Null<Bool>):Null<Bool>
+	{
+		return _.bullet = value;
+	}
+
+	@:noCompletion private function get_color():Null<Int>
+	{
+		return _.color;
+	}
+
+	@:noCompletion private function set_color(value:Null<Int>):Null<Int>
+	{
+		return _.color = value;
+	}
+
+	@:noCompletion private function get_font():String
+	{
+		return _.font;
+	}
+
+	@:noCompletion private function set_font(value:String):String
+	{
+		return _.font = value;
+	}
+
+	@:noCompletion private function get_indent():Null<Int>
+	{
+		return _.indent;
+	}
+
+	@:noCompletion private function set_indent(value:Null<Int>):Null<Int>
+	{
+		return _.indent = value;
+	}
+
+	@:noCompletion private function get_italic():Null<Bool>
+	{
+		return _.italic;
+	}
+
+	@:noCompletion private function set_italic(value:Null<Bool>):Null<Bool>
+	{
+		return _.italic = value;
+	}
+
+	@:noCompletion private function get_kerning():Null<Bool>
+	{
+		return _.kerning;
+	}
+
+	@:noCompletion private function set_kerning(value:Null<Bool>):Null<Bool>
+	{
+		return _.kerning = value;
+	}
+
+	@:noCompletion private function get_leading():Null<Int>
+	{
+		return _.leading;
+	}
+
+	@:noCompletion private function set_leading(value:Null<Int>):Null<Int>
+	{
+		return _.leading = value;
+	}
+
+	@:noCompletion private function get_leftMargin():Null<Int>
+	{
+		return _.leftMargin;
+	}
+
+	@:noCompletion private function set_leftMargin(value:Null<Int>):Null<Int>
+	{
+		return _.leftMargin = value;
+	}
+
+	@:noCompletion private function get_letterSpacing():Null<Float>
+	{
+		return _.letterSpacing;
+	}
+
+	@:noCompletion private function set_letterSpacing(value:Null<Float>):Null<Float>
+	{
+		return _.letterSpacing = value;
+	}
+
+	@:noCompletion private function get_rightMargin():Null<Int>
+	{
+		return _.rightMargin;
+	}
+
+	@:noCompletion private function set_rightMargin(value:Null<Int>):Null<Int>
+	{
+		return _.rightMargin = value;
+	}
+
+	@:noCompletion private function get_size():Null<Int>
+	{
+		return _.size;
+	}
+
+	@:noCompletion private function set_size(value:Null<Int>):Null<Int>
+	{
+		return _.size = value;
+	}
+
+	@:noCompletion private function get_tabStops():Array<Int>
+	{
+		return _.tabStops;
+	}
+
+	@:noCompletion private function set_tabStops(value:Array<Int>):Array<Int>
+	{
+		return _.tabStops = value;
+	}
+
+	@:noCompletion private function get_target():String
+	{
+		return _.target;
+	}
+
+	@:noCompletion private function set_target(value:String):String
+	{
+		return _.target = value;
+	}
+
+	@:noCompletion private function get_underline():Null<Bool>
+	{
+		return _.underline;
+	}
+
+	@:noCompletion private function set_underline(value:Null<Bool>):Null<Bool>
+	{
+		return _.underline = value;
+	}
+
+	@:noCompletion private function get_url():String
+	{
+		return _.url;
+	}
+
+	@:noCompletion private function set_url(value:String):String
+	{
+		return _.url = value;
 	}
 }
 #else

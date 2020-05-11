@@ -40,9 +40,6 @@ class TimerEvent extends Event
 	**/
 	public static inline var TIMER_COMPLETE:EventType<TimerEvent> = "timerComplete";
 
-	@:noCompletion private static var __pool:ObjectPool<TimerEvent> = new ObjectPool<TimerEvent>(function() return new TimerEvent(null),
-	function(event) event.__init());
-
 	/**
 		Creates an Event object with specific information relevant to
 		`timer` events. Event objects are passed as parameters to event
@@ -60,21 +57,17 @@ class TimerEvent extends Event
 	**/
 	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false):Void
 	{
+		if (_ == null)
+		{
+			_ = new _TimerEvent(type, bubbles, cancelable);
+		}
+
 		super(type, bubbles, cancelable);
 	}
 
 	public override function clone():TimerEvent
 	{
-		var event = new TimerEvent(type, bubbles, cancelable);
-		event.target = target;
-		event.currentTarget = currentTarget;
-		event.eventPhase = eventPhase;
-		return event;
-	}
-
-	public override function toString():String
-	{
-		return __formatToString("TimerEvent", ["type", "bubbles", "cancelable"]);
+		return _.clone();
 	}
 
 	/**
@@ -82,7 +75,10 @@ class TimerEvent extends Event
 		this event completes, if the display list has been modified.
 
 	**/
-	public function updateAfterEvent():Void {}
+	public function updateAfterEvent():Void
+	{
+		_.updateAfterEvent();
+	}
 }
 #else
 typedef TimerEvent = flash.events.TimerEvent;

@@ -13,8 +13,6 @@ import openfl.geom.Rectangle;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.geom.Matrix)
-@:access(openfl.geom.Rectangle)
 class TileContainer extends Tile implements ITileContainer
 {
 	/**
@@ -22,23 +20,14 @@ class TileContainer extends Tile implements ITileContainer
 	**/
 	public var numTiles(get, never):Int;
 
-	@:noCompletion private var __tiles:Array<Tile>;
-
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperty(TileContainer.prototype, "numTiles", {
-			get: untyped __js__("function () { return this.get_numTiles (); }")
-		});
-	}
-	#end
-
 	public function new(x:Float = 0, y:Float = 0, scaleX:Float = 1, scaleY:Float = 1, rotation:Float = 0, originX:Float = 0, originY:Float = 0)
 	{
-		super(-1, x, y, scaleX, scaleY, rotation, originX, originY);
+		if (_ == null)
+		{
+			_ = new _TileContainer(x, y, scaleX, scaleY, rotation, originX, originY);
+		}
 
-		__tiles = new Array();
-		__length = 0;
+		super(-1, x, y, scaleX, scaleY, rotation, originX, originY);
 	}
 
 	/**
@@ -52,21 +41,7 @@ class TileContainer extends Tile implements ITileContainer
 	**/
 	public function addTile(tile:Tile):Tile
 	{
-		if (tile == null) return null;
-
-		if (tile.parent == this)
-		{
-			__tiles.remove(tile);
-			__length--;
-		}
-
-		__tiles[numTiles] = tile;
-		tile.parent = this;
-		__length++;
-
-		__setRenderDirty();
-
-		return tile;
+		return _.addTile(tile);
 	}
 
 	/**
@@ -88,21 +63,7 @@ class TileContainer extends Tile implements ITileContainer
 	**/
 	public function addTileAt(tile:Tile, index:Int):Tile
 	{
-		if (tile == null) return null;
-
-		if (tile.parent == this)
-		{
-			__tiles.remove(tile);
-			__length--;
-		}
-
-		__tiles.insert(index, tile);
-		tile.parent = this;
-		__length++;
-
-		__setRenderDirty();
-
-		return tile;
+		return _.addTileAt(tile, index);
 	}
 
 	/**
@@ -115,22 +76,12 @@ class TileContainer extends Tile implements ITileContainer
 	**/
 	public function addTiles(tiles:Array<Tile>):Array<Tile>
 	{
-		for (tile in tiles)
-		{
-			addTile(tile);
-		}
-
-		return tiles;
+		return _.addTiles(tiles);
 	}
 
 	public override function clone():TileContainer
 	{
-		var group = new TileContainer();
-		for (tile in __tiles)
-		{
-			group.addTile(tile.clone());
-		}
-		return group;
+		return _.clone();
 	}
 
 	/**
@@ -145,34 +96,7 @@ class TileContainer extends Tile implements ITileContainer
 	**/
 	public function contains(tile:Tile):Bool
 	{
-		return (__tiles.indexOf(tile) > -1);
-	}
-
-	/**
-		Override from tile. A single tile, just has his rectangle.
-		A container must get a rectangle that contains all other rectangles.
-
-		@param targetCoordinateSpace The tile that works as a coordinate system.
-		@return Rectangle The bounding box. If no box found, this will return {0,0,0,0} rectangle instead of null.
-	**/
-	public override function getBounds(targetCoordinateSpace:Tile):Rectangle
-	{
-		var result = new Rectangle();
-		var rect = null;
-
-		for (tile in __tiles)
-		{
-			// TODO: Generate less Rectangle objects? Could be done with __getBounds but need a initial rectangle and the stack of transformations
-			rect = tile.getBounds(targetCoordinateSpace);
-
-			#if flash
-			result = result.union(rect);
-			#else
-			result.__expand(rect.x, rect.y, rect.width, rect.height);
-			#end
-		}
-
-		return result;
+		return _.contains(tile);
 	}
 
 	/**
@@ -183,12 +107,7 @@ class TileContainer extends Tile implements ITileContainer
 	**/
 	public function getTileAt(index:Int):Tile
 	{
-		if (index >= 0 && index < numTiles)
-		{
-			return __tiles[index];
-		}
-
-		return null;
+		return _.getTileAt(index);
 	}
 
 	/**
@@ -199,12 +118,7 @@ class TileContainer extends Tile implements ITileContainer
 	**/
 	public function getTileIndex(tile:Tile):Int
 	{
-		for (i in 0...__tiles.length)
-		{
-			if (__tiles[i] == tile) return i;
-		}
-
-		return -1;
+		return _.getTileIndex(tile);
 	}
 
 	/**
@@ -217,15 +131,7 @@ class TileContainer extends Tile implements ITileContainer
 	**/
 	public function removeTile(tile:Tile):Tile
 	{
-		if (tile != null && tile.parent == this)
-		{
-			tile.parent = null;
-			__tiles.remove(tile);
-			__length--;
-			__setRenderDirty();
-		}
-
-		return tile;
+		return _.removeTile(tile);
 	}
 
 	/**
@@ -238,12 +144,7 @@ class TileContainer extends Tile implements ITileContainer
 	**/
 	public function removeTileAt(index:Int):Tile
 	{
-		if (index >= 0 && index < numTiles)
-		{
-			return removeTile(__tiles[index]);
-		}
-
-		return null;
+		return _.removeTileAt(index);
 	}
 
 	/**
@@ -254,17 +155,7 @@ class TileContainer extends Tile implements ITileContainer
 	**/
 	public function removeTiles(beginIndex:Int = 0, endIndex:Int = 0x7fffffff):Void
 	{
-		if (beginIndex < 0) beginIndex = 0;
-		if (endIndex > __tiles.length - 1) endIndex = __tiles.length - 1;
-
-		var removed = __tiles.splice(beginIndex, endIndex - beginIndex + 1);
-		for (tile in removed)
-		{
-			tile.parent = null;
-		}
-		__length = __tiles.length;
-
-		__setRenderDirty();
+		_.removeTiles(beginIndex, endIndex);
 	}
 
 	/**
@@ -300,12 +191,7 @@ class TileContainer extends Tile implements ITileContainer
 	**/
 	public function setTileIndex(tile:Tile, index:Int):Void
 	{
-		if (index >= 0 && index <= numTiles && tile.parent == this)
-		{
-			__tiles.remove(tile);
-			__tiles.insert(index, tile);
-			__setRenderDirty();
-		}
+		_.setTileIndex(tile, index);
 	}
 
 	/**
@@ -326,8 +212,7 @@ class TileContainer extends Tile implements ITileContainer
 	**/
 	#if (openfl < "9.0.0") @:dox(hide) #end public function sortTiles(compareFunction:Tile->Tile->Int):Void
 	{
-		__tiles.sort(compareFunction);
-		__setRenderDirty();
+		_.sortTiles(compareFunction);
 	}
 
 	/**
@@ -340,16 +225,7 @@ class TileContainer extends Tile implements ITileContainer
 	**/
 	public function swapTiles(tile1:Tile, tile2:Tile):Void
 	{
-		if (tile1.parent == this && tile2.parent == this)
-		{
-			var index1 = __tiles.indexOf(tile1);
-			var index2 = __tiles.indexOf(tile2);
-
-			__tiles[index1] = tile2;
-			__tiles[index2] = tile1;
-
-			__setRenderDirty();
-		}
+		_.swapTiles(tile1, tile2);
 	}
 
 	/**
@@ -362,129 +238,13 @@ class TileContainer extends Tile implements ITileContainer
 	**/
 	public function swapTilesAt(index1:Int, index2:Int):Void
 	{
-		var swap = __tiles[index1];
-		__tiles[index1] = __tiles[index2];
-		__tiles[index2] = swap;
-		swap = null;
-
-		__setRenderDirty();
+		_.swapTilesAt(index1, index2);
 	}
 
-	// Event Handlers
+	// Get & Set Methods
+
 	@:noCompletion private function get_numTiles():Int
 	{
-		return __length;
-	}
-
-	override function get_height():Float
-	{
-		var result:Rectangle = #if flash __tempRectangle #else Rectangle.__pool.get() #end;
-		var rect = null;
-
-		for (tile in __tiles)
-		{
-			// TODO: Generate less Rectangle objects? Could be done with __getBounds but need a initial rectangle and the stack of transformations
-			rect = tile.getBounds(this);
-
-			#if flash
-			result = result.union(rect);
-			#else
-			result.__expand(rect.x, rect.y, rect.width, rect.height);
-			#end
-		}
-
-		__getBounds(result, matrix);
-
-		var h = result.height;
-		#if !flash
-		Rectangle.__pool.release(result);
-		#end
-
-		return h;
-	}
-
-	override function set_height(value:Float):Float
-	{
-		var result:Rectangle = #if flash __tempRectangle #else Rectangle.__pool.get() #end;
-		var rect = null;
-
-		for (tile in __tiles)
-		{
-			// TODO: Generate less Rectangle objects? Could be done with __getBounds but need a initial rectangle and the stack of transformations
-			rect = tile.getBounds(this);
-
-			#if flash
-			result = result.union(rect);
-			#else
-			result.__expand(rect.x, rect.y, rect.width, rect.height);
-			#end
-		}
-
-		if (result.height != 0)
-		{
-			scaleY = value / result.height;
-		}
-
-		#if !flash
-		Rectangle.__pool.release(result);
-		#end
-
-		return value;
-	}
-
-	override function get_width():Float
-	{
-		var result:Rectangle = #if flash __tempRectangle #else Rectangle.__pool.get() #end;
-		var rect = null;
-
-		for (tile in __tiles)
-		{
-			// TODO: Generate less Rectangle objects? Could be done with __getBounds but need a initial rectangle and the stack of transformations
-			rect = tile.getBounds(this);
-
-			#if flash
-			result = result.union(rect);
-			#else
-			result.__expand(rect.x, rect.y, rect.width, rect.height);
-			#end
-		}
-
-		__getBounds(result, matrix);
-
-		var w = result.width;
-		#if !flash
-		Rectangle.__pool.release(result);
-		#end
-
-		return w;
-	}
-
-	override function set_width(value:Float):Float
-	{
-		var result:Rectangle = #if flash __tempRectangle #else Rectangle.__pool.get() #end;
-		var rect = null;
-
-		for (tile in __tiles)
-		{
-			// TODO: Generate less Rectangle objects? Could be done with __getBounds but need a initial rectangle and the stack of transformations
-			rect = tile.getBounds(this);
-
-			#if flash
-			result = result.union(rect);
-			#else
-			result.__expand(rect.x, rect.y, rect.width, rect.height);
-			#end
-		}
-
-		if (result.width != 0)
-		{
-			scaleX = value / result.width;
-		}
-
-		#if !flash
-		Rectangle.__pool.release(result);
-		#end
-
-		return value;
+		return _.numTiles;
 	}
 }

@@ -56,7 +56,7 @@ class Security
 	/**
 		Undocumented property
 	**/
-	@:noCompletion @:dox(hide) public static var disableAVM1Loading:Bool;
+	@:noCompletion @:dox(hide) public static var disableAVM1Loading(get, set):Bool;
 
 	/**
 		Determines how Flash Player or AIR chooses the domain to use for
@@ -96,7 +96,7 @@ class Security
 							  the value of `exactSettings` at least once in a
 							  decision about player settings.
 	**/
-	public static var exactSettings:Bool;
+	public static var exactSettings(get, set):Bool;
 
 	#if false
 	/**
@@ -139,7 +139,7 @@ class Security
 		href="http://www.adobe.com/go/devnet_security_en"
 		scope="external">Security</a>.
 	**/
-	public static var sandboxType(default, null):String;
+	public static var sandboxType(get, never):String;
 
 	/**
 		Lets SWF files in the identified domains access objects and variables
@@ -320,7 +320,10 @@ class Security
 							  application security sandbox cannot cross-script
 							  content in the application security sandbox.
 	**/
-	public static function allowDomain(p1:Dynamic = null, p2:Dynamic = null, p3:Dynamic = null, p4:Dynamic = null, p5:Dynamic = null):Void {}
+	public static function allowDomain(p1:Dynamic = null, p2:Dynamic = null, p3:Dynamic = null, p4:Dynamic = null, p5:Dynamic = null):Void
+	{
+		return _Security.allowDomain(p1, p2, p3, p4, p5);
+	}
 
 	/**
 		Lets SWF files and HTML files in the identified domains access objects
@@ -474,7 +477,10 @@ class Security
 							  cannot cross-script content in the application
 							  security sandbox.
 	**/
-	public static function allowInsecureDomain(p1:Dynamic = null, p2:Dynamic = null, p3:Dynamic = null, p4:Dynamic = null, p5:Dynamic = null):Void {}
+	public static function allowInsecureDomain(p1:Dynamic = null, p2:Dynamic = null, p3:Dynamic = null, p4:Dynamic = null, p5:Dynamic = null):Void
+	{
+		return _Security.allowInsecureDomain(p1, p2, p3, p4, p5);
+	}
 
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public static function duplicateSandboxBridgeInputArguments (toplevel:Dynamic, args:Array<Dynamic>):Array<Dynamic>;
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public static function duplicateSandboxBridgeOutputArgument (toplevel:Dynamic, arg:Dynamic):Dynamic;
@@ -574,7 +580,7 @@ class Security
 	**/
 	public static function loadPolicyFile(url:String):Void
 	{
-		// var res = haxe.Http.requestUrl( url );
+		_Security.loadPolicyFile(url);
 	}
 
 	#if false

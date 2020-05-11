@@ -307,7 +307,7 @@ class FileReference extends EventDispatcher
 									  unsuccessful. In this case, the value of
 									  the `creationDate` property is `null`.
 	**/
-	public var creationDate(default, null):Date;
+	public var creationDate(get, never):Date;
 
 	/**
 		The Macintosh creator type of the file, which is only used in Mac OS
@@ -326,7 +326,7 @@ class FileReference extends EventDispatcher
 									  unsuccessful. In this case, the value of
 									  the `creator` property is `null`.
 	**/
-	public var creator(default, null):String;
+	public var creator(get, never):String;
 
 	/**
 		The ByteArray object representing the data from the loaded file after
@@ -346,7 +346,7 @@ class FileReference extends EventDispatcher
 									  this case, the value of the `data`
 									  property is `null`.
 	**/
-	public var data(default, null):ByteArray;
+	public var data(get, never):ByteArray;
 
 	/**
 		The date that the file on the local disk was last modified. If the
@@ -367,7 +367,7 @@ class FileReference extends EventDispatcher
 									  the `modificationDate` property is
 									  `null`.
 	**/
-	public var modificationDate(default, null):Date;
+	public var modificationDate(get, never):Date;
 
 	/**
 		The name of the file on the local disk. If the FileReference object
@@ -388,7 +388,7 @@ class FileReference extends EventDispatcher
 									  sequence or an earlier call was
 									  unsuccessful.
 	**/
-	public var name(default, null):String;
+	public var name(get, never):String;
 
 	/**
 		The size of the file on the local disk in bytes. If `size` is 0, an
@@ -412,7 +412,7 @@ class FileReference extends EventDispatcher
 									  sequence or an earlier call was
 									  unsuccessful.
 	**/
-	public var size(default, null):Int;
+	public var size(get, never):Int;
 
 	/**
 		The file type.
@@ -436,9 +436,7 @@ class FileReference extends EventDispatcher
 									  unsuccessful. In this case, the value of
 									  the `type` property is `null`.
 	**/
-	public var type(default, null):String;
-
-	@:noCompletion private var __backend:FileReferenceBackend;
+	public var type(get, never):String;
 
 	/**
 		Creates a new FileReference object. When populated, a FileReference
@@ -446,9 +444,12 @@ class FileReference extends EventDispatcher
 	**/
 	public function new()
 	{
-		super();
+		if (_ == null)
+		{
+			_ = new _FileReference();
+		}
 
-		__backend = new FileReferenceBackend(this);
+		super();
 	}
 
 	/**
@@ -519,7 +520,7 @@ class FileReference extends EventDispatcher
 	**/
 	public function browse(typeFilter:Array<FileFilter> = null):Bool
 	{
-		return __backend.browse(typeFilter);
+		return _.browse(typeFilter);
 	}
 
 	/**
@@ -531,7 +532,7 @@ class FileReference extends EventDispatcher
 	**/
 	public function cancel():Void
 	{
-		__backend.cancel();
+		_.cancel();
 	}
 
 	/**
@@ -720,7 +721,7 @@ class FileReference extends EventDispatcher
 	**/
 	public function download(request:URLRequest, defaultFileName:String = null):Void
 	{
-		__backend.download(request, defaultFileName);
+		_.download(request, defaultFileName);
 	}
 
 	/**
@@ -804,7 +805,7 @@ class FileReference extends EventDispatcher
 	**/
 	public function load():Void
 	{
-		__backend.load();
+		_.load();
 	}
 
 	/**
@@ -910,7 +911,7 @@ class FileReference extends EventDispatcher
 	**/
 	public function save(data:Dynamic, defaultFileName:String = null):Void
 	{
-		__backend.save(data, defaultFileName);
+		_.save(data, defaultFileName);
 	}
 
 	#if !openfl_strict
@@ -1138,15 +1139,44 @@ class FileReference extends EventDispatcher
 		openfl._internal.Lib.notImplemented();
 	}
 	#end
-}
 
-#if lime
-private typedef FileReferenceBackend = openfl._internal.backend.lime.LimeFileReferenceBackend;
-#elseif openfl_html5
-private typedef FileReferenceBackend = openfl._internal.backend.html5.HTML5FileReferenceBackend;
-#else
-private typedef FileReferenceBackend = openfl._internal.backend.dummy.DummyFileReferenceBackend;
-#end
+	// Get & Set Methods
+
+	@:noCompletion private function get_creationDate():Date
+	{
+		return _.creationDate;
+	}
+
+	@:noCompletion private function get_creator():String
+	{
+		return _.creator;
+	}
+
+	@:noCompletion private function get_data():ByteArray
+	{
+		return _.data;
+	}
+
+	@:noCompletion private function get_modificationDate():Date
+	{
+		return _.modificationDate;
+	}
+
+	@:noCompletion private function get_name():String
+	{
+		return _.name;
+	}
+
+	@:noCompletion private function get_size():Int
+	{
+		return _.size;
+	}
+
+	@:noCompletion private function get_type():String
+	{
+		return _.type;
+	}
+}
 #else
 typedef FileReference = flash.net.FileReference;
 #end

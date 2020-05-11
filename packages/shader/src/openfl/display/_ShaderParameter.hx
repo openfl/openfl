@@ -18,23 +18,23 @@ import openfl.display.ShaderParameter;
 @:noCompletion
 class _ShaderParameter<T> /*implements Dynamic*/
 {
-	private var arrayLength:Int;
-	private var internal:Bool;
-	private var isBool:Bool;
-	private var isFloat:Bool;
-	private var isInt:Bool;
-	private var isUniform:Bool;
-	private var length:Int;
-	private var parent:ShaderParameter<T>;
-	private var uniformMatrix:Float32Array;
-	private var useArray:Bool;
+	public var arrayLength:Int;
+	public var internal:Bool;
+	public var isBool:Bool;
+	public var isFloat:Bool;
+	public var isInt:Bool;
+	public var isUniform:Bool;
+	public var length:Int;
+	public var parent:ShaderParameter<T>;
+	public var uniformMatrix:Float32Array;
+	public var useArray:Bool;
 
 	public function new(parent:ShaderParameter<T>)
 	{
 		this.parent = parent;
 	}
 
-	private function disableGL(context:Context3D):Void
+	public function disableGL(context:Context3D):Void
 	{
 		var gl = context._.gl;
 
@@ -47,7 +47,7 @@ class _ShaderParameter<T> /*implements Dynamic*/
 		}
 	}
 
-	private function updateGL(context:Context3D, overrideValue:Array<T> = null):Void
+	public function updateGL(context:Context3D, overrideValue:Array<T> = null):Void
 	{
 		var gl = context._.gl;
 
@@ -279,7 +279,7 @@ class _ShaderParameter<T> /*implements Dynamic*/
 		}
 	}
 
-	private function updateGLFromBuffer(context:Context3D, buffer:Float32Array, position:Int, length:Int, bufferOffset:Int):Void
+	public function updateGLFromBuffer(context:Context3D, buffer:Float32Array, position:Int, length:Int, bufferOffset:Int):Void
 	{
 		var gl = context._.gl;
 

@@ -1,6 +1,7 @@
 package openfl.display;
 
-#if lime
+import haxe.CallStack;
+import haxe.ds.ArraySort;
 import lime.app.Application;
 import lime.graphics.RenderContext;
 import lime.ui.Gamepad;
@@ -11,24 +12,47 @@ import lime.ui.KeyModifier;
 import lime.ui.MouseWheelMode;
 import lime.ui.Touch;
 import lime.ui.Window;
+import openfl._internal.utils.Log;
+import openfl._internal.utils.TouchData;
 import openfl.display3D.Context3D;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObject;
 import openfl.display.Stage;
 import openfl.display.StageDisplayState;
 import openfl.display.Window in OpenFLWindow;
+import openfl.errors.IllegalOperationError;
 import openfl.events.Event;
+import openfl.events.EventDispatcher;
+import openfl.events.EventPhase;
+import openfl.events.FocusEvent;
 import openfl.events.FullScreenEvent;
 import openfl.events.KeyboardEvent;
 import openfl.events.MouseEvent;
 import openfl.events.TextEvent;
 import openfl.events.TouchEvent;
+import openfl.events.UncaughtErrorEvent;
+import openfl.geom.Matrix;
+import openfl.geom.Point;
+import openfl.geom._Point;
+import openfl.geom.Rectangle;
+import openfl.geom.Transform;
 import openfl.ui.GameInput;
 import openfl.ui.GameInputControl;
 import openfl.ui.GameInputDevice;
 import openfl.ui.Keyboard;
 import openfl.ui.KeyLocation;
+import openfl.ui.Mouse;
+import openfl.ui.MouseCursor;
 import openfl.Lib;
+#if openfl_html5
+import js.html.Element;
+#end
+#if hxtelemetry
+import openfl.profiler.Telemetry;
+#end
+#if gl_stats
+import openfl.display._internal.stats.Context3DStats;
+#end
 #if !display
 #if openfl_gl
 import openfl.display._internal.Context3DRenderer;
@@ -44,42 +68,147 @@ import openfl.display._internal.CairoRenderer;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.display._internal.CairoRenderer)
-@:access(openfl.display._internal.CanvasRenderer)
-@:access(openfl.display._internal.Context3DRenderer)
-@:access(openfl.display._internal.DOMRenderer)
-@:access(openfl.display3D.Context3D)
-@:access(openfl.display.BitmapData)
-@:access(openfl.display.DisplayObjectRenderer)
-@:access(openfl.display.InteractiveObject)
-@:access(openfl.display.Stage)
-@:access(openfl.display.Stage3D)
-@:access(openfl.events.MouseEvent)
-@:access(openfl.ui.GameInput)
-@:access(openfl.ui.GameInputControl)
-@:access(openfl.ui.GameInputDevice)
 @:noCompletion
-class _Stage
+class _Stage extends _DisplayObjectContainer
 {
-	private static var gameInputDevices:Map<Gamepad, GameInputDevice> = new Map();
+	public static var gameInputDevices:Map<Gamepad, GameInputDevice> = new Map();
 
-	private var macKeyboard:Bool;
-	private var parent:Stage;
-	private var primaryTouch:Touch;
+	public var align:StageAlign;
+	public var allowsFullScreen:Bool;
+	public var allowsFullScreenInteractive:Bool;
+	public var color(get, set):Null<Int>;
+	public var contentsScaleFactor(get, never):Float;
+	public var context3D:Context3D;
+	public var displayState(get, set):StageDisplayState;
+	#if (commonjs || (openfl_html5 && !lime))
+	public var element:Element;
+	#end
+	public var focus(get, set):InteractiveObject;
+	public var frameRate(get, set):Float;
+	public var fullScreenHeight(get, never):UInt;
+	public var fullScreenSourceRect(get, set):Rectangle;
+	public var fullScreenWidth(get, never):UInt;
+	#if lime
+	public var limeApplication:Application;
+	public var limeWindow:Window;
+	#end
+	public var quality(get, set):StageQuality;
+	public var scaleMode(get, set):StageScaleMode;
+	public var showDefaultContextMenu:Bool;
+	public var softKeyboardRect:Rectangle;
+	public var stage3Ds:Vector<Stage3D>;
+	public var stageFocusRect:Bool;
+	public var stageHeight:Int;
+	public var stageWidth:Int;
 
-	public function new(parent:Stage, window:OpenFLWindow, color:Null<Int> = null)
+	public var macKeyboard:Bool;
+	public var primaryTouch:Touch;
+	public var __cacheFocus:InteractiveObject;
+	public var __clearBeforeRender:Bool;
+	public var __color:Int;
+	public var __colorSplit:Array<Float>;
+	public var __colorString:String;
+	public var __contentsScaleFactor:Float;
+	public var __currentTabOrderIndex:Int;
+	public var __deltaTime:Int;
+	public var __dirty:Bool;
+	public var __displayMatrix:Matrix;
+	public var __displayRect:Rectangle;
+	public var __displayState:StageDisplayState;
+	public var __dragBounds:Rectangle;
+	public var __dragObject:Sprite;
+	public var __dragOffsetX:Float;
+	public var __dragOffsetY:Float;
+	public var __focus:InteractiveObject;
+	public var __forceRender:Bool;
+	public var __fullscreen:Bool;
+	public var __fullScreenSourceRect:Rectangle;
+	public var __invalidated:Bool;
+	public var __lastClickTime:Int;
+	public var __logicalWidth:Int;
+	public var __logicalHeight:Int;
+	public var __mouseDownLeft:InteractiveObject;
+	public var __mouseDownMiddle:InteractiveObject;
+	public var __mouseDownRight:InteractiveObject;
+	public var __mouseOutStack:Array<DisplayObject>;
+	public var __mouseOverTarget:InteractiveObject;
+	public var __mouseX:Float;
+	public var __mouseY:Float;
+	public var __pendingMouseEvent:Bool;
+	public var __pendingMouseX:Int;
+	public var __pendingMouseY:Int;
+	public var __primaryTouchID:Null<Int>;
+	public var __quality:StageQuality;
+	public var __renderer:DisplayObjectRenderer;
+	public var __rendering:Bool;
+	public var __rollOutStack:Array<DisplayObject>;
+	public var __scaleMode:StageScaleMode;
+	public var __stack:Array<DisplayObject>;
+	public var __touchData:Map<Int, TouchData>;
+	public var __transparent:Bool;
+	public var __wasDirty:Bool;
+	public var __wasFullscreen:Bool;
+
+	public function new(#if (commonjs || (openfl_html5 && !lime)) width:Dynamic = 0, height:Dynamic = 0, color:Null<Int> = null,
+		documentClass:Class<Dynamic> = null, windowAttributes:Dynamic = null #elseif lime window:Window, color:Null<Int> = null #end)
 	{
-		this.parent = parent;
+		#if hxtelemetry
+		Telemetry._.__initialize();
+		#end
 
-		parent.limeApplication = window.application;
-		parent.limeWindow = window;
-		parent.color = color;
+		super();
+
+		this.name = null;
+
+		__color = 0xFFFFFFFF;
+		__colorSplit = [0xFF, 0xFF, 0xFF];
+		__colorString = "#FFFFFF";
+		__contentsScaleFactor = 1;
+		__currentTabOrderIndex = 0;
+		__deltaTime = 0;
+		__displayState = NORMAL;
+		__mouseX = 0;
+		__mouseY = 0;
+		__lastClickTime = 0;
+		__logicalWidth = 0;
+		__logicalHeight = 0;
+		__displayMatrix = new Matrix();
+		__displayRect = new Rectangle();
+		__renderDirty = true;
+
+		stage3Ds = new Vector();
+		for (i in 0...#if mobile 2 #else 4 #end)
+		{
+			stage3Ds.push(new Stage3D(this));
+		}
+
+		this.stage = this;
+
+		align = StageAlign.TOP_LEFT;
+		allowsFullScreen = true;
+		allowsFullScreenInteractive = true;
+		__quality = StageQuality.HIGH;
+		__scaleMode = StageScaleMode.NO_SCALE;
+		showDefaultContextMenu = true;
+		softKeyboardRect = new Rectangle();
+		stageFocusRect = true;
+
+		__clearBeforeRender = true;
+		__forceRender = false;
+		__stack = [];
+		__rollOutStack = [];
+		__mouseOutStack = [];
+		__touchData = new Map<Int, TouchData>();
+
+		limeApplication = window.application;
+		limeWindow = window;
+		color = color;
 
 		// TODO: Workaround need to set reference here
-		parent._ = cast this;
+		_ = cast this;
 
-		parent.__contentsScaleFactor = window.scale;
-		parent.__wasFullscreen = window.fullscreen;
+		__contentsScaleFactor = window.scale;
+		__wasFullscreen = window.fullscreen;
 
 		#if mac
 		macKeyboard = true;
@@ -87,20 +216,15 @@ class _Stage
 		macKeyboard = untyped __js__("/AppleWebKit/.test (navigator.userAgent) && /Mobile\\/\\w+/.test (navigator.userAgent) || /Mac/.test (navigator.platform)");
 		#end
 
-		parent.__resize();
+		__resize();
 
 		if (Lib.current.stage == null)
 		{
-			parent.addChild(Lib.current);
+			addChild(Lib.current);
 		}
 	}
 
-	public function cancelRender():Void
-	{
-		parent.limeWindow.onRender.cancel();
-	}
-
-	private function convertKeyCode(key:KeyCode):Int
+	public function convertKeyCode(key:KeyCode):Int
 	{
 		return switch (key)
 		{
@@ -345,7 +469,7 @@ class _Stage
 
 	public function createRenderer():Void
 	{
-		var window = parent.limeWindow;
+		var window = limeWindow;
 
 		#if !display
 		#if openfl_html5
@@ -366,14 +490,14 @@ class _Stage
 			case OPENGL, OPENGLES, WEBGL:
 				#if openfl_gl
 				#if (!disable_cffi && (!html5 || !canvas))
-				parent.context3D = new Context3D(parent);
-				parent.context3D.configureBackBuffer(windowWidth, windowHeight, 0, true, true, true);
-				parent.context3D.present();
-				if (BitmapData.__hardwareRenderer == null)
+				context3D = new Context3D(parent);
+				context3D.configureBackBuffer(windowWidth, windowHeight, 0, true, true, true);
+				context3D.present();
+				if (BitmapData._.__hardwareRenderer == null)
 				{
-					BitmapData.__hardwareRenderer = new Context3DRenderer(parent.context3D);
+					BitmapData._.__hardwareRenderer = new Context3DRenderer(context3D);
 				}
-				parent.__renderer = new Context3DRenderer(parent.context3D);
+				__renderer = new Context3DRenderer(context3D);
 				#end
 				#end
 
@@ -381,43 +505,43 @@ class _Stage
 				#if openfl_html5
 				var renderer = new CanvasRenderer(window.context.canvas2D);
 				renderer.pixelRatio = pixelRatio;
-				parent.__renderer = renderer;
+				__renderer = renderer;
 				#end
 
 			case DOM:
 				#if openfl_html5
 				var renderer = new DOMRenderer(window.context.dom);
 				renderer.pixelRatio = pixelRatio;
-				parent.__renderer = renderer;
+				__renderer = renderer;
 				#end
 
 			case CAIRO:
 				#if (!openfl_html5 && openfl_cairo)
-				parent.__renderer = new CairoRenderer(window.context.cairo);
+				__renderer = new CairoRenderer(window.context.cairo);
 				#end
 
 			default:
 		}
 
-		if (parent.__renderer != null)
+		if (__renderer != null)
 		{
-			parent.__renderer.__allowSmoothing = (parent.quality != LOW);
-			parent.__renderer.__worldTransform = parent.__displayMatrix;
-			parent.__renderer.__stage = parent;
+			__renderer._.__allowSmoothing = (quality != LOW);
+			__renderer._.__worldTransform = __displayMatrix;
+			__renderer._.__stage = parent;
 
-			parent.__renderer.__resize(windowWidth, windowHeight);
+			__renderer._.__resize(windowWidth, windowHeight);
 
-			if (BitmapData.__hardwareRenderer != null)
+			if (BitmapData._.__hardwareRenderer != null)
 			{
-				BitmapData.__hardwareRenderer.__stage = parent;
-				BitmapData.__hardwareRenderer.__worldTransform = parent.__displayMatrix.clone();
-				BitmapData.__hardwareRenderer.__resize(windowWidth, windowHeight);
+				BitmapData._.__hardwareRenderer._.__stage = parent;
+				BitmapData._.__hardwareRenderer._.__worldTransform = __displayMatrix.clone();
+				BitmapData._.__hardwareRenderer._.__resize(windowWidth, windowHeight);
 			}
 		}
 		#end
 	}
 
-	private function getCharCode(key:Int, shift:Bool = false):Int
+	public function getCharCode(key:Int, shift:Bool = false):Int
 	{
 		if (!shift)
 		{
@@ -549,27 +673,7 @@ class _Stage
 		return 0;
 	}
 
-	public function getFrameRate():Float
-	{
-		if (parent.limeWindow != null)
-		{
-			return parent.limeWindow.frameRate;
-		}
-
-		return 0;
-	}
-
-	public function getFullScreenHeight():UInt
-	{
-		return Math.ceil(parent.limeWindow.display.currentMode.height * parent.limeWindow.scale);
-	}
-
-	public function getFullScreenWidth():UInt
-	{
-		return Math.ceil(parent.limeWindow.display.currentMode.width * parent.limeWindow.scale);
-	}
-
-	private function getGameInputDevice(gamepad:Gamepad):GameInputDevice
+	public function getGameInputDevice(gamepad:Gamepad):GameInputDevice
 	{
 		if (gamepad == null) return null;
 
@@ -577,13 +681,13 @@ class _Stage
 		{
 			var device = new GameInputDevice(gamepad.guid, gamepad.name);
 			gameInputDevices.set(gamepad, device);
-			GameInput.__addInputDevice(device);
+			GameInput._.__addInputDevice(device);
 		}
 
 		return gameInputDevices.get(gamepad);
 	}
 
-	private function getKeyLocation(key:KeyCode):KeyLocation
+	public function getKeyLocation(key:KeyCode):KeyLocation
 	{
 		return switch (key)
 		{
@@ -597,19 +701,17 @@ class _Stage
 		}
 	}
 
-	public function getWindowFullscreen():Bool
+	public override function invalidate():Void
 	{
-		return parent.limeWindow.fullscreen;
+		__invalidated = true;
+
+		// TODO: Should this not mark as dirty?
+		__renderDirty = true;
 	}
 
-	public function getWindowHeight():Int
+	public override function localToGlobal(pos:Point):Point
 	{
-		return Std.int(parent.limeWindow.height * parent.limeWindow.scale);
-	}
-
-	public function getWindowWidth():Int
-	{
-		return Std.int(parent.limeWindow.width * parent.limeWindow.scale);
+		return pos.clone();
 	}
 
 	public function registerLimeModule(application:Application):Void
@@ -630,35 +732,6 @@ class _Stage
 		Touch.onCancel.add(touch_onCancel);
 	}
 
-	public function setDisplayState(value:StageDisplayState):Void
-	{
-		if (parent.limeWindow != null)
-		{
-			switch (value)
-			{
-				case NORMAL:
-					if (parent.limeWindow.fullscreen)
-					{
-						parent.limeWindow.fullscreen = false;
-					}
-
-				default:
-					if (!parent.limeWindow.fullscreen)
-					{
-						parent.limeWindow.fullscreen = true;
-					}
-			}
-		}
-	}
-
-	public function setFrameRate(value:Float):Void
-	{
-		if (parent.limeWindow != null)
-		{
-			parent.limeWindow.frameRate = value;
-		}
-	}
-
 	public function unregisterLimeModule(application:Application):Void
 	{
 		application.onCreateWindow.remove(application_onCreateWindow);
@@ -672,10 +745,1242 @@ class _Stage
 		Touch.onCancel.remove(touch_onCancel);
 	}
 
-	// Event Handlers
-	private function application_onCreateWindow(window:Window):Void
+	@SuppressWarnings("checkstyle:Dynamic")
+	public function __broadcastEvent(event:Event):Void
 	{
-		if (parent.limeWindow != window) return;
+		if (DisplayObject._.__broadcastEvents.exists(event.type))
+		{
+			var dispatchers = DisplayObject._.__broadcastEvents.get(event.type);
+
+			for (dispatcher in dispatchers)
+			{
+				// TODO: Way to resolve dispatching occurring if object not on stage
+				// and there are multiple stage objects running in HTML5?
+
+				if (dispatcher.stage == this || dispatcher.stage == null)
+				{
+					#if !openfl_disable_handle_error
+					try
+					{
+						dispatcher._.__dispatch(event);
+					}
+					catch (e:Dynamic)
+					{
+						__handleError(e);
+					}
+					#else
+					dispatcher._.__dispatch(event);
+					#end
+				}
+			}
+		}
+	}
+
+	@SuppressWarnings(["checkstyle:Dynamic", "checkstyle:LeftCurly"])
+	public override function __dispatchEvent(event:Event):Bool
+	{
+		#if !openfl_disable_handle_error
+		try
+		{
+		#end
+
+			return super._.__dispatchEvent(event);
+
+		#if !openfl_disable_handle_error
+		}
+		catch (e:Dynamic)
+		{
+			__handleError(e);
+			return false;
+		}
+		#end
+	}
+
+	public function __dispatchPendingMouseEvent():Void
+	{
+		if (__pendingMouseEvent)
+		{
+			__onMouse(MouseEvent.MOUSE_MOVE, __pendingMouseX, __pendingMouseY, 0);
+			__pendingMouseEvent = false;
+		}
+	}
+
+	@SuppressWarnings(["checkstyle:Dynamic", "checkstyle:LeftCurly"])
+	public function __dispatchStack(event:Event, stack:Array<DisplayObject>):Void
+	{
+		#if !openfl_disable_handle_error
+		try
+		{
+		#end
+
+			var target:DisplayObject;
+			var length = stack.length;
+
+			if (length == 0)
+			{
+				event.eventPhase = EventPhase.AT_TARGET;
+				target = cast event.target;
+				target._.__dispatch(event);
+			}
+			else
+			{
+				event.eventPhase = EventPhase.CAPTURING_PHASE;
+				event.target = stack[stack.length - 1];
+
+				for (i in 0...length - 1)
+				{
+					stack[i]._.__dispatch(event);
+
+					if (event._.__isCanceled)
+					{
+						return;
+					}
+				}
+
+				event.eventPhase = EventPhase.AT_TARGET;
+				target = cast event.target;
+				target._.__dispatch(event);
+
+				if (event._.__isCanceled)
+				{
+					return;
+				}
+
+				if (event.bubbles)
+				{
+					event.eventPhase = EventPhase.BUBBLING_PHASE;
+					var i = length - 2;
+
+					while (i >= 0)
+					{
+						stack[i]._.__dispatch(event);
+
+						if (event._.__isCanceled)
+						{
+							return;
+						}
+
+						i--;
+					}
+				}
+			}
+
+		#if !openfl_disable_handle_error
+		}
+		catch (e:Dynamic)
+		{
+			__handleError(e);
+		}
+		#end
+	}
+
+	@SuppressWarnings("checkstyle:Dynamic")
+	public function __dispatchTarget(target:EventDispatcher, event:Event):Bool
+	{
+		#if !openfl_disable_handle_error
+		try
+		{
+			return target._.__dispatchEvent(event);
+		}
+		catch (e:Dynamic)
+		{
+			__handleError(e);
+			return false;
+		}
+		#else
+		return target._.__dispatchEvent(event);
+		#end
+	}
+
+	public function __drag(mouse:Point):Void
+	{
+		var parent = __dragObject.parent;
+		if (parent != null)
+		{
+			__getWorldTransform()._.__transformInversePoint(mouse);
+		}
+
+		var x = mouse.x + __dragOffsetX;
+		var y = mouse.y + __dragOffsetY;
+
+		if (__dragBounds != null)
+		{
+			if (x < __dragBounds.x)
+			{
+				x = __dragBounds.x;
+			}
+			else if (x > __dragBounds.right)
+			{
+				x = __dragBounds.right;
+			}
+
+			if (y < __dragBounds.y)
+			{
+				y = __dragBounds.y;
+			}
+			else if (y > __dragBounds.bottom)
+			{
+				y = __dragBounds.bottom;
+			}
+		}
+
+		__dragObject.x = x;
+		__dragObject.y = y;
+	}
+
+	public override function __getInteractive(stack:Array<DisplayObject>):Bool
+	{
+		if (stack != null)
+		{
+			stack.push(this);
+		}
+
+		return true;
+	}
+
+	public override function __globalToLocal(global:Point, local:Point):Point
+	{
+		if (global != local)
+		{
+			local.copyFrom(global);
+		}
+
+		return local;
+	}
+
+	@SuppressWarnings("checkstyle:Dynamic")
+	public function __handleError(e:Dynamic):Void
+	{
+		var event = new UncaughtErrorEvent(UncaughtErrorEvent.UNCAUGHT_ERROR, true, true, e);
+
+		try
+		{
+			Lib.current._.__loaderInfo.uncaughtErrorEvents.dispatchEvent(event);
+		}
+		catch (e:Dynamic) {}
+
+		if (!event._.__preventDefault)
+		{
+			#if mobile
+			Log.println(CallStack.toString(CallStack.exceptionStack()));
+			Log.println(Std.string(e));
+			#end
+
+			#if (cpp && !cppia)
+			untyped __cpp__("throw e");
+			#elseif neko
+			neko.Lib.rethrow(e);
+			#elseif js
+			try
+			{
+				#if (haxe >= "4.1.0")
+				var exc = e;
+				#else
+				var exc = @:privateAccess haxe.CallStack.lastException;
+				#end
+				if (exc != null && Reflect.hasField(exc, "stack") && exc.stack != null && exc.stack != "")
+				{
+					untyped __js__("console.log")(exc.stack);
+					e.stack = exc.stack;
+				}
+				else
+				{
+					var msg = CallStack.toString(CallStack.callStack());
+					untyped __js__("console.log")(msg);
+				}
+			}
+			catch (e2:Dynamic) {}
+			untyped __js__("throw e");
+			#elseif cs
+			throw e;
+			// cs.Lib.rethrow (e);
+			#elseif hl
+			hl.Api.rethrow(e);
+			#else
+			throw e;
+			#end
+		}
+	}
+
+	public function __onKey(event:KeyboardEvent):Bool
+	{
+		__dispatchPendingMouseEvent();
+
+		MouseEvent._.__altKey = event.altKey;
+		#if !openfl_doc_gen
+		MouseEvent._.__commandKey = event.commandKey;
+		#end
+		MouseEvent._.__ctrlKey = event.ctrlKey;
+		MouseEvent._.__shiftKey = event.shiftKey;
+
+		var preventDefault = false;
+		var stack = new Array<DisplayObject>();
+
+		if (__focus == null)
+		{
+			__getInteractive(stack);
+		}
+		else
+		{
+			__focus._.__getInteractive(stack);
+		}
+
+		if (stack.length > 0)
+		{
+			// Flash Player events are not cancelable, should we make only some events (like APP_CONTROL_BACK) cancelable?
+
+			stack.reverse();
+			__dispatchStack(event, stack);
+
+			if (event._.__preventDefault)
+			{
+				preventDefault = true;
+			}
+			else
+			{
+				if (event.type == KeyboardEvent.KEY_DOWN && event.keyCode == Keyboard.TAB)
+				{
+					var tabStack = new Array<InteractiveObject>();
+
+					__tabTest(tabStack);
+
+					var nextIndex = -1;
+					var nextObject:InteractiveObject = null;
+					var nextOffset = event.shiftKey ? -1 : 1;
+
+					if (tabStack.length > 1)
+					{
+						ArraySort.sort(tabStack, function(a, b)
+						{
+							return a.tabIndex - b.tabIndex;
+						});
+
+						if (tabStack[tabStack.length - 1].tabIndex == -1)
+						{
+							// all tabIndices are equal to -1
+							if (focus != null) nextIndex = 0;
+							else
+								nextIndex = __currentTabOrderIndex;
+						}
+						else
+						{
+							var i = 0;
+							while (i < tabStack.length)
+							{
+								if (tabStack[i].tabIndex > -1)
+								{
+									if (i > 0) tabStack.splice(0, i);
+									break;
+								}
+
+								i++;
+							}
+
+							if (focus != null)
+							{
+								var index = tabStack.indexOf(focus);
+
+								if (index < 0) nextIndex = 0;
+								else
+									nextIndex = index + nextOffset;
+							}
+							else
+							{
+								nextIndex = __currentTabOrderIndex;
+							}
+						}
+					}
+					else if (tabStack.length == 1)
+					{
+						nextObject = tabStack[0];
+
+						if (focus == nextObject) nextObject = null;
+					}
+
+					if (tabStack.length == 1 || tabStack.length == 0 && focus != null)
+					{
+						nextIndex = 0;
+					}
+					else if (tabStack.length > 1)
+					{
+						if (nextIndex < 0) nextIndex += tabStack.length;
+
+						nextIndex %= tabStack.length;
+						nextObject = tabStack[nextIndex];
+
+						if (nextObject == focus)
+						{
+							nextIndex += nextOffset;
+
+							if (nextIndex < 0) nextIndex += tabStack.length;
+
+							nextIndex %= tabStack.length;
+							nextObject = tabStack[nextIndex];
+						}
+					}
+
+					var focusEvent = null;
+
+					if (focus != null)
+					{
+						focusEvent = new FocusEvent(FocusEvent.KEY_FOCUS_CHANGE, true, true, nextObject, event.shiftKey, 0);
+
+						stack = [];
+
+						focus._.__getInteractive(stack);
+						stack.reverse();
+
+						__dispatchStack(focusEvent, stack);
+					}
+
+					if (focusEvent == null || !focusEvent.isDefaultPrevented())
+					{
+						__currentTabOrderIndex = nextIndex;
+						if (nextObject != null) focus = nextObject;
+
+						// TODO: handle border around focus
+					}
+				}
+
+				// TODO: handle arrow keys changing the focus
+			}
+		}
+
+		return preventDefault;
+	}
+
+	public function __onMouse(type:String, x:Float, y:Float, button:Int):Void
+	{
+		if (button > 2) return;
+
+		var targetPoint = _Point.__pool.get();
+		targetPoint.setTo(x, y);
+		__displayMatrix._.__transformInversePoint(targetPoint);
+
+		__mouseX = targetPoint.x;
+		__mouseY = targetPoint.y;
+
+		var stack = [];
+		var target:InteractiveObject = null;
+
+		if (__hitTest(__mouseX, __mouseY, true, stack, true, this))
+		{
+			target = cast stack[stack.length - 1];
+		}
+		else
+		{
+			target = this;
+			stack = [this];
+		}
+
+		if (target == null) target = this;
+
+		var clickType = null;
+
+		switch (type)
+		{
+			case MouseEvent.MOUSE_DOWN:
+				if (target._.__allowMouseFocus())
+				{
+					if (focus != null)
+					{
+						var focusEvent = new FocusEvent(FocusEvent.MOUSE_FOCUS_CHANGE, true, true, target, false, 0);
+
+						__dispatchStack(focusEvent, stack);
+
+						if (!focusEvent.isDefaultPrevented())
+						{
+							focus = target;
+						}
+					}
+					else
+					{
+						focus = target;
+					}
+				}
+				else
+				{
+					focus = null;
+				}
+
+				__mouseDownLeft = target;
+				MouseEvent._.__buttonDown = true;
+
+			case MouseEvent.MIDDLE_MOUSE_DOWN:
+				__mouseDownMiddle = target;
+
+			case MouseEvent.RIGHT_MOUSE_DOWN:
+				__mouseDownRight = target;
+
+			case MouseEvent.MOUSE_UP:
+				if (__mouseDownLeft != null)
+				{
+					MouseEvent._.__buttonDown = false;
+
+					if (__mouseDownLeft == target)
+					{
+						clickType = MouseEvent.CLICK;
+					}
+					else
+					{
+						var event:MouseEvent = null;
+
+						#if openfl_pool_events
+						event = MouseEvent._.__pool.get(MouseEvent.RELEASE_OUTSIDE, __mouseX, __mouseY, new Point(__mouseX, __mouseY), this);
+						#else
+						event = MouseEvent._.__create(MouseEvent.RELEASE_OUTSIDE, 1, __mouseX, __mouseY, new Point(__mouseX, __mouseY), this);
+						#end
+
+						__mouseDownLeft.dispatchEvent(event);
+
+						#if openfl_pool_events
+						MouseEvent._.__pool.release(event);
+						#end
+					}
+
+					__mouseDownLeft = null;
+				}
+
+			case MouseEvent.MIDDLE_MOUSE_UP:
+				if (__mouseDownMiddle == target)
+				{
+					clickType = MouseEvent.MIDDLE_CLICK;
+				}
+
+				__mouseDownMiddle = null;
+
+			case MouseEvent.RIGHT_MOUSE_UP:
+				if (__mouseDownRight == target)
+				{
+					clickType = MouseEvent.RIGHT_CLICK;
+				}
+
+				__mouseDownRight = null;
+
+			default:
+		}
+
+		var localPoint = _Point.__pool.get();
+		var event:MouseEvent = null;
+
+		#if openfl_pool_events
+		event = MouseEvent._.__pool.get(type, __mouseX, __mouseY, target._.__globalToLocal(targetPoint, localPoint), target);
+		#else
+		event = MouseEvent._.__create(type, button, __mouseX, __mouseY, target._.__globalToLocal(targetPoint, localPoint), target);
+		#end
+
+		__dispatchStack(event, stack);
+
+		#if openfl_pool_events
+		MouseEvent._.__pool.release(event);
+		#end
+
+		if (clickType != null)
+		{
+			#if openfl_pool_events
+			event = MouseEvent._.__pool.get(clickType, __mouseX, __mouseY, target._.__globalToLocal(targetPoint, localPoint), target);
+			#else
+			event = MouseEvent._.__create(clickType, button, __mouseX, __mouseY, target._.__globalToLocal(targetPoint, localPoint), target);
+			#end
+
+			__dispatchStack(event, stack);
+
+			#if openfl_pool_events
+			MouseEvent._.__pool.release(event);
+			#end
+
+			if (type == MouseEvent.MOUSE_UP && cast(target, openfl.display.InteractiveObject).doubleClickEnabled)
+			{
+				var currentTime = Lib.getTimer();
+				if (currentTime - __lastClickTime < 500)
+				{
+					#if openfl_pool_events
+					event = MouseEvent._.__pool.get(MouseEvent.DOUBLE_CLICK, __mouseX, __mouseY, target._.__globalToLocal(targetPoint, localPoint), target);
+					#else
+					event = MouseEvent._.__create(MouseEvent.DOUBLE_CLICK, button, __mouseX, __mouseY, target._.__globalToLocal(targetPoint, localPoint),
+						target);
+					#end
+
+					__dispatchStack(event, stack);
+
+					#if openfl_pool_events
+					MouseEvent._.__pool.release(event);
+					#end
+
+					__lastClickTime = 0;
+				}
+				else
+				{
+					__lastClickTime = currentTime;
+				}
+			}
+		}
+
+		if (Mouse._.__cursor == MouseCursor.AUTO && !Mouse._.__hidden)
+		{
+			var cursor = null;
+
+			if (__mouseDownLeft != null)
+			{
+				cursor = __mouseDownLeft._.__getCursor();
+			}
+			else
+			{
+				for (target in stack)
+				{
+					cursor = target._.__getCursor();
+
+					if (cursor != null)
+					{
+						Mouse._.__setStageCursor(this, cursor);
+					}
+				}
+			}
+
+			if (cursor == null)
+			{
+				Mouse._.__setStageCursor(this, ARROW);
+			}
+		}
+
+		var event;
+
+		if (target != __mouseOverTarget)
+		{
+			if (__mouseOverTarget != null)
+			{
+				#if openfl_pool_events
+				event = MouseEvent._.__pool.get(MouseEvent.MOUSE_OUT, __mouseX, __mouseY, __mouseOverTarget._.__globalToLocal(targetPoint, localPoint),
+					cast __mouseOverTarget);
+				#else
+				event = MouseEvent._.__create(MouseEvent.MOUSE_OUT, button, __mouseX, __mouseY, __mouseOverTarget._.__globalToLocal(targetPoint, localPoint),
+					cast __mouseOverTarget);
+				#end
+
+				__dispatchStack(event, __mouseOutStack);
+
+				#if openfl_pool_events
+				MouseEvent._.__pool.release(event);
+				#end
+			}
+		}
+
+		var item, i = 0;
+		while (i < __rollOutStack.length)
+		{
+			item = __rollOutStack[i];
+			if (stack.indexOf(item) == -1)
+			{
+				__rollOutStack.remove(item);
+
+				#if openfl_pool_events
+				event = MouseEvent._.__pool.get(MouseEvent.ROLL_OUT, __mouseX, __mouseY, __mouseOverTarget._.__globalToLocal(targetPoint, localPoint),
+					cast __mouseOverTarget);
+				#else
+				event = MouseEvent._.__create(MouseEvent.ROLL_OUT, button, __mouseX, __mouseY, __mouseOverTarget._.__globalToLocal(targetPoint, localPoint),
+					cast __mouseOverTarget);
+				#end
+				event.bubbles = false;
+
+				__dispatchTarget(item, event);
+
+				#if openfl_pool_events
+				MouseEvent._.__pool.release(event);
+				#end
+			}
+			else
+			{
+				i++;
+			}
+		}
+
+		for (item in stack)
+		{
+			if (__rollOutStack.indexOf(item) == -1 && __mouseOverTarget != null)
+			{
+				if (item.hasEventListener(MouseEvent.ROLL_OVER))
+				{
+					#if openfl_pool_events
+					event = MouseEvent._.__pool.get(MouseEvent.ROLL_OVER, __mouseX, __mouseY, __mouseOverTarget._.__globalToLocal(targetPoint, localPoint),
+						cast item);
+					#else
+					event = MouseEvent._.__create(MouseEvent.ROLL_OVER, button, __mouseX, __mouseY,
+						__mouseOverTarget._.__globalToLocal(targetPoint, localPoint), cast item);
+					#end
+					event.bubbles = false;
+
+					__dispatchTarget(item, event);
+
+					#if openfl_pool_events
+					MouseEvent._.__pool.release(event);
+					#end
+				}
+
+				if (item.hasEventListener(MouseEvent.ROLL_OUT) || item.hasEventListener(MouseEvent.ROLL_OVER))
+				{
+					__rollOutStack.push(item);
+				}
+			}
+		}
+
+		if (target != __mouseOverTarget)
+		{
+			if (target != null)
+			{
+				#if openfl_pool_events
+				event = MouseEvent._.__pool.get(MouseEvent.MOUSE_OVER, __mouseX, __mouseY, target._.__globalToLocal(targetPoint, localPoint), cast target);
+				#else
+				event = MouseEvent._.__create(MouseEvent.MOUSE_OVER, button, __mouseX, __mouseY, target._.__globalToLocal(targetPoint, localPoint),
+					cast target);
+				#end
+
+				__dispatchStack(event, stack);
+
+				#if openfl_pool_events
+				MouseEvent._.__pool.release(event);
+				#end
+			}
+
+			__mouseOverTarget = target;
+			__mouseOutStack = stack;
+		}
+
+		if (__dragObject != null)
+		{
+			__drag(targetPoint);
+
+			var dropTarget = null;
+
+			if (__mouseOverTarget == __dragObject)
+			{
+				var cacheMouseEnabled = __dragObject.mouseEnabled;
+				var cacheMouseChildren = __dragObject.mouseChildren;
+
+				__dragObject.mouseEnabled = false;
+				__dragObject.mouseChildren = false;
+
+				var stack = [];
+
+				if (__hitTest(__mouseX, __mouseY, true, stack, true, this))
+				{
+					dropTarget = stack[stack.length - 1];
+				}
+
+				__dragObject.mouseEnabled = cacheMouseEnabled;
+				__dragObject.mouseChildren = cacheMouseChildren;
+			}
+			else if (__mouseOverTarget != this)
+			{
+				dropTarget = __mouseOverTarget;
+			}
+
+			__dragObject.dropTarget = dropTarget;
+		}
+
+		_Point.__pool.release(targetPoint);
+		_Point.__pool.release(localPoint);
+	}
+
+	public function __onMouseWheel(deltaX:Float, deltaY:Float):Bool
+	{
+		// TODO: Support delta modes
+
+		var x = __mouseX;
+		var y = __mouseY;
+
+		var stack = [];
+		var target:InteractiveObject = null;
+
+		if (__hitTest(__mouseX, __mouseY, true, stack, true, this))
+		{
+			target = cast stack[stack.length - 1];
+		}
+		else
+		{
+			target = this;
+			stack = [this];
+		}
+
+		if (target == null) target = this;
+		var targetPoint = _Point.__pool.get();
+		targetPoint.setTo(x, y);
+		__displayMatrix._.__transformInversePoint(targetPoint);
+		var delta = Std.int(deltaY);
+
+		var event = MouseEvent._.__create(MouseEvent.MOUSE_WHEEL, 0, __mouseX, __mouseY, target._.__globalToLocal(targetPoint, targetPoint), target, delta);
+		event.cancelable = true;
+		__dispatchStack(event, stack);
+
+		_Point.__pool.release(targetPoint);
+
+		return event.isDefaultPrevented();
+	}
+
+	public function __onTouch(type:String, id:Int, x:Int, y:Int, pressure:Float, isPrimaryTouchPoint:Bool):Void
+	{
+		var targetPoint = _Point.__pool.get();
+		targetPoint.setTo(x, y);
+		__displayMatrix._.__transformInversePoint(targetPoint);
+
+		var touchX = targetPoint.x;
+		var touchY = targetPoint.y;
+
+		var stack = [];
+		var target:InteractiveObject = null;
+
+		if (__hitTest(touchX, touchY, false, stack, true, this))
+		{
+			target = cast stack[stack.length - 1];
+		}
+		else
+		{
+			target = this;
+			stack = [this];
+		}
+
+		if (target == null) target = this;
+
+		var touchData:TouchData = null;
+
+		if (__touchData.exists(id))
+		{
+			touchData = __touchData.get(id);
+		}
+		else
+		{
+			touchData = TouchData._.__pool.get();
+			touchData.reset();
+			__touchData.set(id, touchData);
+		}
+
+		var touchType = null;
+		var releaseTouchData:Bool = false;
+
+		switch (type)
+		{
+			case TouchEvent.TOUCH_BEGIN:
+				touchData.touchDownTarget = target;
+
+			case TouchEvent.TOUCH_END:
+				if (touchData.touchDownTarget == target)
+				{
+					touchType = TouchEvent.TOUCH_TAP;
+				}
+
+				touchData.touchDownTarget = null;
+				releaseTouchData = true;
+
+			default:
+		}
+
+		var localPoint = _Point.__pool.get();
+		var touchEvent = TouchEvent._.__create(type, null, touchX, touchY, target._.__globalToLocal(targetPoint, localPoint), cast target);
+		touchEvent.touchPointID = id;
+		touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
+		touchEvent.pressure = pressure;
+
+		__dispatchStack(touchEvent, stack);
+
+		if (touchType != null)
+		{
+			touchEvent = TouchEvent._.__create(touchType, null, touchX, touchY, target._.__globalToLocal(targetPoint, localPoint), cast target);
+			touchEvent.touchPointID = id;
+			touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
+			touchEvent.pressure = pressure;
+
+			__dispatchStack(touchEvent, stack);
+		}
+
+		var touchOverTarget = touchData.touchOverTarget;
+
+		if (target != touchOverTarget && touchOverTarget != null)
+		{
+			touchEvent = TouchEvent._.__create(TouchEvent.TOUCH_OUT, null, touchX, touchY, touchOverTarget._.__globalToLocal(targetPoint, localPoint),
+				cast touchOverTarget);
+			touchEvent.touchPointID = id;
+			touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
+			touchEvent.pressure = pressure;
+
+			__dispatchTarget(touchOverTarget, touchEvent);
+		}
+
+		var touchOutStack = touchData.rollOutStack;
+		var item, i = 0;
+		while (i < touchOutStack.length)
+		{
+			item = touchOutStack[i];
+			if (stack.indexOf(item) == -1)
+			{
+				touchOutStack.remove(item);
+
+				touchEvent = TouchEvent._.__create(TouchEvent.TOUCH_ROLL_OUT, null, touchX, touchY,
+					touchOverTarget._.__globalToLocal(targetPoint, localPoint), cast touchOverTarget);
+				touchEvent.touchPointID = id;
+				touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
+				touchEvent.bubbles = false;
+				touchEvent.pressure = pressure;
+
+				__dispatchTarget(item, touchEvent);
+			}
+			else
+			{
+				i++;
+			}
+		}
+
+		for (item in stack)
+		{
+			if (touchOutStack.indexOf(item) == -1)
+			{
+				if (item.hasEventListener(TouchEvent.TOUCH_ROLL_OVER))
+				{
+					touchEvent = TouchEvent._.__create(TouchEvent.TOUCH_ROLL_OVER, null, touchX, touchY,
+						touchOverTarget._.__globalToLocal(targetPoint, localPoint), cast item);
+					touchEvent.touchPointID = id;
+					touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
+					touchEvent.bubbles = false;
+					touchEvent.pressure = pressure;
+
+					__dispatchTarget(item, touchEvent);
+				}
+
+				if (item.hasEventListener(TouchEvent.TOUCH_ROLL_OUT))
+				{
+					touchOutStack.push(item);
+				}
+			}
+		}
+
+		if (target != touchOverTarget)
+		{
+			if (target != null)
+			{
+				touchEvent = TouchEvent._.__create(TouchEvent.TOUCH_OVER, null, touchX, touchY, target._.__globalToLocal(targetPoint, localPoint),
+					cast target);
+				touchEvent.touchPointID = id;
+				touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
+				touchEvent.bubbles = true;
+				touchEvent.pressure = pressure;
+
+				__dispatchTarget(target, touchEvent);
+			}
+
+			touchData.touchOverTarget = target;
+		}
+
+		_Point.__pool.release(targetPoint);
+		_Point.__pool.release(localPoint);
+
+		if (releaseTouchData)
+		{
+			__touchData.remove(id);
+			touchData.reset();
+			TouchData._.__pool.release(touchData);
+		}
+	}
+
+	public function __render():Void
+	{
+		if (__rendering) return;
+		__rendering = true;
+
+		#if hxtelemetry
+		Telemetry._.__advanceFrame();
+		#end
+
+		#if gl_stats
+		Context3DStats.resetDrawCalls();
+		#end
+
+		var event = null;
+
+		#if openfl_pool_events
+		event = Event._.__pool.get(Event.ENTER_FRAME);
+
+		__broadcastEvent(event);
+
+		Event._.__pool.release(event);
+		event = Event._.__pool.get(Event.FRAME_CONSTRUCTED);
+
+		__broadcastEvent(event);
+
+		Event._.__pool.release(event);
+		event = Event._.__pool.get(Event.EXIT_FRAME);
+
+		__broadcastEvent(event);
+
+		Event._.__pool.release(event);
+		#else
+		__broadcastEvent(new Event(Event.ENTER_FRAME));
+		__broadcastEvent(new Event(Event.FRAME_CONSTRUCTED));
+		__broadcastEvent(new Event(Event.EXIT_FRAME));
+		#end
+
+		__renderable = true;
+		if (__renderer != null)
+		{
+			__renderer._.__enterFrame(this, __deltaTime);
+		}
+		__deltaTime = 0;
+
+		var shouldRender = #if !openfl_disable_display_render (__renderer != null #if !openfl_always_render && (__renderDirty || __forceRender) #end) #else false #end;
+		var shouldUpdate = shouldRender || __transformDirty;
+
+		if (__invalidated && shouldRender)
+		{
+			__invalidated = false;
+
+			#if openfl_pool_events
+			event = Event._.__pool.get(Event.RENDER);
+			#else
+			event = new Event(Event.RENDER);
+			#end
+
+			__broadcastEvent(event);
+
+			#if openfl_pool_events
+			Event._.__pool.release(event);
+			#end
+		}
+
+		#if hxtelemetry
+		var stack = Telemetry._.__unwindStack();
+		Telemetry._.__startTiming(TelemetryCommandName.RENDER);
+		#end
+
+		if (DisplayObject._.__supportDOM)
+		{
+			if (shouldUpdate || __wasDirty)
+			{
+				// If we were dirty last time, we need at least one more
+				// update in order to clear "changed" properties
+				__update(false, true);
+				__wasDirty = shouldUpdate;
+			}
+		}
+		else if (shouldUpdate)
+		{
+			__update(false, true);
+		}
+
+		#if (lime || openfl_html5)
+		if (__renderer != null)
+		{
+			if (context3D != null)
+			{
+				for (stage3D in stage3Ds)
+				{
+					context3D._.__renderStage3D(stage3D);
+				}
+
+				#if !openfl_disable_display_render
+				if (context3D._.__present) shouldRender = true;
+				#end
+			}
+
+			if (shouldRender)
+			{
+				if (context3D == null)
+				{
+					__renderer._.__clear();
+				}
+
+				__renderer._.__render(this);
+			}
+			else if (context3D == null)
+			{
+				limeWindow.onRender.cancel();
+			}
+
+			if (context3D != null)
+			{
+				if (!context3D._.__present)
+				{
+					limeWindow.onRender.cancel();
+				}
+				else
+				{
+					if (!__renderer._.__cleared)
+					{
+						__renderer._.__clear();
+					}
+
+					context3D._.__present = false;
+					context3D._.__cleared = false;
+				}
+
+				context3D._.__bitmapDataPool.cleanup();
+			}
+
+			__renderer._.__cleared = false;
+
+			// TODO: Run once for multi-stage application
+			BitmapData._.__pool.cleanup();
+		}
+		#end
+
+		#if hxtelemetry
+		Telemetry._.__endTiming(TelemetryCommandName.RENDER);
+		Telemetry._.__rewindStack(stack);
+		#end
+
+		__rendering = false;
+	}
+
+	public function __resize():Void
+	{
+		var cacheWidth = stageWidth;
+		var cacheHeight = stageHeight;
+
+		var windowWidth = return Std.int(limeWindow.width * limeWindow.scale);
+		var windowHeight = return Std.int(limeWindow.height * limeWindow.scale);
+
+		#if openfl_html5
+		__logicalWidth = windowWidth;
+		__logicalHeight = windowHeight;
+		#end
+
+		__displayMatrix.identity();
+
+		if (fullScreenSourceRect != null && limeWindow.fullscreen)
+		{
+			stageWidth = Std.int(fullScreenSourceRect.width);
+			stageHeight = Std.int(fullScreenSourceRect.height);
+
+			var displayScaleX = windowWidth / stageWidth;
+			var displayScaleY = windowHeight / stageHeight;
+
+			__displayMatrix.translate(-fullScreenSourceRect.x, -fullScreenSourceRect.y);
+			__displayMatrix.scale(displayScaleX, displayScaleY);
+
+			__displayRect.setTo(fullScreenSourceRect.left, fullScreenSourceRect.right, fullScreenSourceRect.top, fullScreenSourceRect.bottom);
+		}
+		else
+		{
+			if (__logicalWidth == 0 && __logicalHeight == 0)
+			{
+				stageWidth = windowWidth;
+				stageHeight = windowHeight;
+			}
+			else
+			{
+				stageWidth = __logicalWidth;
+				stageHeight = __logicalHeight;
+
+				var scaleX = windowWidth / stageWidth;
+				var scaleY = windowHeight / stageHeight;
+				var targetScale = Math.min(scaleX, scaleY);
+
+				var offsetX = Math.round((windowWidth - (stageWidth * targetScale)) / 2);
+				var offsetY = Math.round((windowHeight - (stageHeight * targetScale)) / 2);
+
+				__displayMatrix.scale(targetScale, targetScale);
+				__displayMatrix.translate(offsetX, offsetY);
+			}
+
+			__displayRect.setTo(0, 0, stageWidth, stageHeight);
+		}
+
+		if (context3D != null)
+		{
+			context3D.configureBackBuffer(windowWidth, windowHeight, 0, true, true, true);
+		}
+
+		for (stage3D in stage3Ds)
+		{
+			stage3D._.__resize(windowWidth, windowHeight);
+		}
+
+		if (__renderer != null)
+		{
+			__renderer._.__resize(windowWidth, windowHeight);
+		}
+
+		if (stageWidth != cacheWidth || stageHeight != cacheHeight)
+		{
+			__renderDirty = true;
+			__setTransformDirty();
+
+			var event:Event = null;
+
+			#if openfl_pool_events
+			event = Event._.__pool.get(Event.RESIZE);
+			#else
+			event = new Event(Event.RESIZE);
+			#end
+
+			__dispatchEvent(event);
+
+			#if openfl_pool_events
+			Event._.__pool.release(event);
+			#end
+		}
+	}
+
+	public function __setLogicalSize(width:Int, height:Int):Void
+	{
+		__logicalWidth = width;
+		__logicalHeight = height;
+
+		__resize();
+	}
+
+	public function __startDrag(sprite:Sprite, lockCenter:Bool, bounds:Rectangle):Void
+	{
+		if (bounds == null)
+		{
+			__dragBounds = null;
+		}
+		else
+		{
+			__dragBounds = new Rectangle();
+
+			var right = bounds.right;
+			var bottom = bounds.bottom;
+			__dragBounds.x = right < bounds.x ? right : bounds.x;
+			__dragBounds.y = bottom < bounds.y ? bottom : bounds.y;
+			__dragBounds.width = Math.abs(bounds.width);
+			__dragBounds.height = Math.abs(bounds.height);
+		}
+
+		__dragObject = sprite;
+
+		if (__dragObject != null)
+		{
+			if (lockCenter)
+			{
+				__dragOffsetX = 0;
+				__dragOffsetY = 0;
+			}
+			else
+			{
+				var mouse = _Point.__pool.get();
+				mouse.setTo(mouseX, mouseY);
+				var parent = __dragObject.parent;
+
+				if (parent != null)
+				{
+					__getWorldTransform()._.__transformInversePoint(mouse);
+				}
+
+				__dragOffsetX = __dragObject.x - mouse.x;
+				__dragOffsetY = __dragObject.y - mouse.y;
+				_Point.__pool.release(mouse);
+			}
+		}
+	}
+
+	public function __stopDrag(sprite:Sprite):Void
+	{
+		__dragBounds = null;
+		__dragObject = null;
+	}
+
+	// Event Handlers
+
+	public function application_onCreateWindow(window:Window):Void
+	{
+		if (limeWindow != window) return;
 
 		window.onActivate.add(window_onActivate.bind(window));
 		window.onClose.add(window_onClose.bind(window), false, -9000);
@@ -707,98 +2012,98 @@ class _Stage
 		window_onCreate(window);
 	}
 
-	private function application_onExit(code:Int):Void
+	public function application_onExit(code:Int):Void
 	{
-		if (parent.limeWindow != null)
+		if (limeWindow != null)
 		{
 			var event:Event = null;
 
 			#if openfl_pool_events
-			event = Event.__pool.get(Event.DEACTIVATE);
+			event = Event._.__pool.get(Event.DEACTIVATE);
 			#else
 			event = new Event(Event.DEACTIVATE);
 			#end
 
-			parent.__broadcastEvent(event);
+			__broadcastEvent(event);
 
 			#if openfl_pool_events
-			Event.__pool.release(event);
+			Event._.__pool.release(event);
 			#end
 		}
 	}
 
-	private function application_onUpdate(deltaTime:Int):Void
+	public function application_onUpdate(deltaTime:Int):Void
 	{
-		parent.__deltaTime = deltaTime;
-		parent.__dispatchPendingMouseEvent();
+		__deltaTime = deltaTime;
+		__dispatchPendingMouseEvent();
 	}
 
-	private function gamepad_onAxisMove(gamepad:Gamepad, axis:GamepadAxis, value:Float):Void
+	public function gamepad_onAxisMove(gamepad:Gamepad, axis:GamepadAxis, value:Float):Void
 	{
 		var device = getGameInputDevice(gamepad);
 		if (device == null) return;
 
 		if (device.enabled)
 		{
-			if (!device.__axis.exists(axis))
+			if (!device._.__axis.exists(axis))
 			{
 				var control = new GameInputControl(device, "AXIS_" + axis, -1, 1);
-				device.__axis.set(axis, control);
-				device.__controls.push(control);
+				device._.__axis.set(axis, control);
+				device._.__controls.push(control);
 			}
 
-			var control = device.__axis.get(axis);
+			var control = device._.__axis.get(axis);
 			control.value = value;
 			control.dispatchEvent(new Event(Event.CHANGE));
 		}
 	}
 
-	private function gamepad_onButtonDown(gamepad:Gamepad, button:GamepadButton):Void
+	public function gamepad_onButtonDown(gamepad:Gamepad, button:GamepadButton):Void
 	{
 		var device = getGameInputDevice(gamepad);
 		if (device == null) return;
 
 		if (device.enabled)
 		{
-			if (!device.__button.exists(button))
+			if (!device._.__button.exists(button))
 			{
 				var control = new GameInputControl(device, "BUTTON_" + button, 0, 1);
-				device.__button.set(button, control);
-				device.__controls.push(control);
+				device._.__button.set(button, control);
+				device._.__controls.push(control);
 			}
 
-			var control = device.__button.get(button);
+			var control = device._.__button.get(button);
 			control.value = 1;
 			control.dispatchEvent(new Event(Event.CHANGE));
 		}
 	}
 
-	private function gamepad_onButtonUp(gamepad:Gamepad, button:GamepadButton):Void
+	public function gamepad_onButtonUp(gamepad:Gamepad, button:GamepadButton):Void
 	{
 		var device = getGameInputDevice(gamepad);
 		if (device == null) return;
 
 		if (device.enabled)
 		{
-			if (!device.__button.exists(button))
+			if (!device._.__button.exists(button))
 			{
 				var control = new GameInputControl(device, "BUTTON_" + button, 0, 1);
-				device.__button.set(button, control);
-				device.__controls.push(control);
+				device._.__button.set(button, control);
+				device._.__controls.push(control);
 			}
 
-			var control = device.__button.get(button);
+			var control = device._.__button.get(button);
 			control.value = 0;
 			control.dispatchEvent(new Event(Event.CHANGE));
 		}
 	}
 
-	private function gamepad_onConnect(gamepad:Gamepad):Void
+	public function gamepad_onConnect(gamepad:Gamepad):Void
 	{
 		var device = getGameInputDevice(gamepad);
 		if (device == null) return;
 
-		// GameInput.__dispatchEvent(new GameInputEvent(GameInputEvent.DEVICE_ADDED, true, false, device));
+		// GameInput._.__dispatchEvent(new GameInputEvent(GameInputEvent.DEVICE_ADDED, true, false, device));
 
 		gamepad.onAxisMove.add(gamepad_onAxisMove.bind(gamepad));
 		gamepad.onButtonDown.add(gamepad_onButtonDown.bind(gamepad));
@@ -806,7 +2111,7 @@ class _Stage
 		gamepad.onDisconnect.add(gamepad_onDisconnect.bind(gamepad));
 	}
 
-	private function gamepad_onDisconnect(gamepad:Gamepad):Void
+	public function gamepad_onDisconnect(gamepad:Gamepad):Void
 	{
 		var device = gameInputDevices.get(gamepad);
 
@@ -816,12 +2121,12 @@ class _Stage
 			{
 				var device = gameInputDevices.get(gamepad);
 				gameInputDevices.remove(gamepad);
-				GameInput.__removeInputDevice(device);
+				GameInput._.__removeInputDevice(device);
 			}
 		}
 	}
 
-	private function touch_onCancel(touch:Touch):Void
+	public function touch_onCancel(touch:Touch):Void
 	{
 		// TODO: Should we handle this differently?
 
@@ -831,17 +2136,17 @@ class _Stage
 			primaryTouch = null;
 		}
 
-		parent.__onTouch(TouchEvent.TOUCH_END, touch.id, Math.round(touch.x * parent.limeWindow.width), Math.round(touch.y * parent.limeWindow.width),
-			touch.pressure, touch == oldPrimaryTouch);
+		__onTouch(TouchEvent.TOUCH_END, touch.id, Math.round(touch.x * limeWindow.width), Math.round(touch.y * limeWindow.width), touch.pressure,
+			touch == oldPrimaryTouch);
 	}
 
-	private function touch_onMove(touch:Touch):Void
+	public function touch_onMove(touch:Touch):Void
 	{
-		parent.__onTouch(TouchEvent.TOUCH_MOVE, touch.id, Math.round(touch.x * parent.limeWindow.width), Math.round(touch.y * parent.limeWindow.width),
-			touch.pressure, touch == primaryTouch);
+		__onTouch(TouchEvent.TOUCH_MOVE, touch.id, Math.round(touch.x * limeWindow.width), Math.round(touch.y * limeWindow.width), touch.pressure,
+			touch == primaryTouch);
 	}
 
-	private function touch_onEnd(touch:Touch):Void
+	public function touch_onEnd(touch:Touch):Void
 	{
 		var oldPrimaryTouch = primaryTouch;
 		if (primaryTouch == touch)
@@ -849,33 +2154,33 @@ class _Stage
 			primaryTouch = null;
 		}
 
-		parent.__onTouch(TouchEvent.TOUCH_END, touch.id, Math.round(touch.x * parent.limeWindow.width), Math.round(touch.y * parent.limeWindow.width),
-			touch.pressure, touch == oldPrimaryTouch);
+		__onTouch(TouchEvent.TOUCH_END, touch.id, Math.round(touch.x * limeWindow.width), Math.round(touch.y * limeWindow.width), touch.pressure,
+			touch == oldPrimaryTouch);
 	}
 
-	private function touch_onStart(touch:Touch):Void
+	public function touch_onStart(touch:Touch):Void
 	{
 		if (primaryTouch == null)
 		{
 			primaryTouch = touch;
 		}
 
-		parent.__onTouch(TouchEvent.TOUCH_BEGIN, touch.id, Math.round(touch.x * parent.limeWindow.width), Math.round(touch.y * parent.limeWindow.width),
-			touch.pressure, touch == primaryTouch);
+		__onTouch(TouchEvent.TOUCH_BEGIN, touch.id, Math.round(touch.x * limeWindow.width), Math.round(touch.y * limeWindow.width), touch.pressure,
+			touch == primaryTouch);
 	}
 
-	private function window_onActivate(window:Window):Void
+	public function window_onActivate(window:Window):Void
 	{
-		if (parent.limeWindow == null || parent.limeWindow != window) return;
+		if (limeWindow == null || limeWindow != window) return;
 
 		// __broadcastEvent (new Event (Event.ACTIVATE));
 	}
 
-	private function window_onClose(window:Window):Void
+	public function window_onClose(window:Window):Void
 	{
-		if (parent.limeWindow == window)
+		if (limeWindow == window)
 		{
-			parent.limeWindow = null;
+			limeWindow = null;
 		}
 
 		primaryTouch = null;
@@ -883,21 +2188,21 @@ class _Stage
 		var event:Event = null;
 
 		#if openfl_pool_events
-		event = Event.__pool.get(Event.DEACTIVATE);
+		event = Event._.__pool.get(Event.DEACTIVATE);
 		#else
 		event = new Event(Event.DEACTIVATE);
 		#end
 
-		parent.__broadcastEvent(event);
+		__broadcastEvent(event);
 
 		#if openfl_pool_events
-		Event.__pool.release(event);
+		Event._.__pool.release(event);
 		#end
 	}
 
-	private function window_onCreate(window:Window):Void
+	public function window_onCreate(window:Window):Void
 	{
-		if (parent.limeWindow == null || parent.limeWindow != window) return;
+		if (limeWindow == null || limeWindow != window) return;
 
 		if (window.context != null)
 		{
@@ -905,103 +2210,103 @@ class _Stage
 		}
 	}
 
-	private function window_onDeactivate(window:Window):Void
+	public function window_onDeactivate(window:Window):Void
 	{
-		if (parent.limeWindow == null || parent.limeWindow != window) return;
+		if (limeWindow == null || limeWindow != window) return;
 
 		// __primaryTouch = null;
 		// __broadcastEvent (new Event (Event.DEACTIVATE));
 	}
 
-	private function window_onDropFile(window:Window, file:String):Void {}
+	public function window_onDropFile(window:Window, file:String):Void {}
 
-	private function window_onEnter(window:Window):Void
+	public function window_onEnter(window:Window):Void
 	{
-		// if (parent.limeWindow == null || parent.limeWindow != window) return;
+		// if (limeWindow == null || limeWindow != window) return;
 	}
 
-	private function window_onExpose(window:Window):Void
+	public function window_onExpose(window:Window):Void
 	{
-		if (parent.limeWindow == null || parent.limeWindow != window) return;
+		if (limeWindow == null || limeWindow != window) return;
 
-		parent.__renderDirty = true;
+		__renderDirty = true;
 	}
 
-	private function window_onFocusIn(window:Window):Void
+	public function window_onFocusIn(window:Window):Void
 	{
-		if (parent.limeWindow == null || parent.limeWindow != window) return;
+		if (limeWindow == null || limeWindow != window) return;
 
 		#if !desktop
 		// TODO: Is this needed?
-		parent.__renderDirty = true;
+		__renderDirty = true;
 		#end
 
 		var event:Event = null;
 
 		#if openfl_pool_events
-		event = Event.__pool.get(Event.ACTIVATE);
+		event = Event._.__pool.get(Event.ACTIVATE);
 		#else
 		event = new Event(Event.ACTIVATE);
 		#end
 
-		parent.__broadcastEvent(event);
+		__broadcastEvent(event);
 
 		#if openfl_pool_events
-		Event.__pool.release(event);
+		Event._.__pool.release(event);
 		#end
 
 		#if !desktop
-		parent.focus = parent.__cacheFocus;
+		focus = __cacheFocus;
 		#end
 	}
 
-	private function window_onFocusOut(window:Window):Void
+	public function window_onFocusOut(window:Window):Void
 	{
-		if (parent.limeWindow == null || parent.limeWindow != window) return;
+		if (limeWindow == null || limeWindow != window) return;
 
 		primaryTouch = null;
 
 		var event:Event = null;
 
 		#if openfl_pool_events
-		event = Event.__pool.get(Event.DEACTIVATE);
+		event = Event._.__pool.get(Event.DEACTIVATE);
 		#else
 		event = new Event(Event.DEACTIVATE);
 		#end
 
-		parent.__broadcastEvent(event);
+		__broadcastEvent(event);
 
 		#if openfl_pool_events
-		Event.__pool.release(event);
+		Event._.__pool.release(event);
 		#end
 
-		var currentFocus = parent.focus;
-		parent.focus = null;
-		parent.__cacheFocus = currentFocus;
+		var currentFocus = focus;
+		focus = null;
+		__cacheFocus = currentFocus;
 
-		MouseEvent.__altKey = false;
-		MouseEvent.__commandKey = false;
-		MouseEvent.__ctrlKey = false;
-		MouseEvent.__shiftKey = false;
+		MouseEvent._.__altKey = false;
+		MouseEvent._.__commandKey = false;
+		MouseEvent._.__ctrlKey = false;
+		MouseEvent._.__shiftKey = false;
 	}
 
-	private function window_onFullscreen(window:Window):Void
+	public function window_onFullscreen(window:Window):Void
 	{
-		if (parent.limeWindow == null || parent.limeWindow != window) return;
+		if (limeWindow == null || limeWindow != window) return;
 
-		parent.__resize();
+		__resize();
 
-		if (!parent.__wasFullscreen)
+		if (!__wasFullscreen)
 		{
-			parent.__wasFullscreen = true;
-			if (parent.__displayState == NORMAL) parent.__displayState = FULL_SCREEN_INTERACTIVE;
-			parent.__dispatchEvent(new FullScreenEvent(FullScreenEvent.FULL_SCREEN, false, false, true, true));
+			__wasFullscreen = true;
+			if (__displayState == NORMAL) __displayState = FULL_SCREEN_INTERACTIVE;
+			__dispatchEvent(new FullScreenEvent(FullScreenEvent.FULL_SCREEN, false, false, true, true));
 		}
 	}
 
-	private function window_onKeyDown(window:Window, keyCode:KeyCode, modifier:KeyModifier):Void
+	public function window_onKeyDown(window:Window, keyCode:KeyCode, modifier:KeyModifier):Void
 	{
-		if (parent.limeWindow == null || parent.limeWindow != window) return;
+		if (limeWindow == null || limeWindow != window) return;
 
 		var keyLocation = getKeyLocation(keyCode);
 		var keyCode = convertKeyCode(keyCode);
@@ -1010,15 +2315,15 @@ class _Stage
 		var event = new KeyboardEvent(KeyboardEvent.KEY_DOWN, true, true, charCode, keyCode, keyLocation,
 			macKeyboard ? (modifier.ctrlKey || modifier.metaKey) : modifier.ctrlKey, modifier.altKey, modifier.shiftKey, modifier.ctrlKey, modifier.metaKey);
 
-		if (parent.__onKey(event))
+		if (__onKey(event))
 		{
 			window.onKeyDown.cancel();
 		}
 	}
 
-	private function window_onKeyUp(window:Window, keyCode:KeyCode, modifier:KeyModifier):Void
+	public function window_onKeyUp(window:Window, keyCode:KeyCode, modifier:KeyModifier):Void
 	{
-		if (parent.limeWindow == null || parent.limeWindow != window) return;
+		if (limeWindow == null || limeWindow != window) return;
 
 		var keyLocation = getKeyLocation(keyCode);
 		var keyCode = convertKeyCode(keyCode);
@@ -1027,46 +2332,46 @@ class _Stage
 		var event = new KeyboardEvent(KeyboardEvent.KEY_UP, true, true, charCode, keyCode, keyLocation,
 			macKeyboard ? (modifier.ctrlKey || modifier.metaKey) : modifier.ctrlKey, modifier.altKey, modifier.shiftKey, modifier.ctrlKey, modifier.metaKey);
 
-		if (parent.__onKey(event))
+		if (__onKey(event))
 		{
 			window.onKeyUp.cancel();
 		}
 	}
 
-	private function window_onLeave(window:Window):Void
+	public function window_onLeave(window:Window):Void
 	{
-		if (parent.limeWindow == null || parent.limeWindow != window || MouseEvent.__buttonDown) return;
+		if (limeWindow == null || limeWindow != window || MouseEvent._.__buttonDown) return;
 
-		parent.__dispatchPendingMouseEvent();
+		__dispatchPendingMouseEvent();
 
 		var event:Event = null;
 
 		#if openfl_pool_events
-		event = Event.__pool.get(Event.MOUSE_LEAVE);
+		event = Event._.__pool.get(Event.MOUSE_LEAVE);
 		#else
 		event = new Event(Event.MOUSE_LEAVE);
 		#end
 
-		parent.__dispatchEvent(event);
+		__dispatchEvent(event);
 
 		#if openfl_pool_events
-		Event.__pool.release(event);
+		Event._.__pool.release(event);
 		#end
 	}
 
-	private function window_onMinimize(window:Window):Void
+	public function window_onMinimize(window:Window):Void
 	{
-		if (parent.limeWindow == null || parent.limeWindow != window) return;
+		if (limeWindow == null || limeWindow != window) return;
 
 		// __primaryTouch = null;
 		// __broadcastEvent (new Event (Event.DEACTIVATE));
 	}
 
-	private function window_onMouseDown(window:Window, x:Float, y:Float, button:Int):Void
+	public function window_onMouseDown(window:Window, x:Float, y:Float, button:Int):Void
 	{
-		if (parent.limeWindow == null || parent.limeWindow != window) return;
+		if (limeWindow == null || limeWindow != window) return;
 
-		parent.__dispatchPendingMouseEvent();
+		__dispatchPendingMouseEvent();
 
 		var type = switch (button)
 		{
@@ -1075,37 +2380,37 @@ class _Stage
 			default: MouseEvent.MOUSE_DOWN;
 		}
 
-		parent.__onMouse(type, Std.int(x * window.scale), Std.int(y * window.scale), button);
+		__onMouse(type, Std.int(x * window.scale), Std.int(y * window.scale), button);
 
-		if (!parent.showDefaultContextMenu && button == 2)
+		if (!showDefaultContextMenu && button == 2)
 		{
 			window.onMouseDown.cancel();
 		}
 	}
 
-	private function window_onMouseMove(window:Window, x:Float, y:Float):Void
+	public function window_onMouseMove(window:Window, x:Float, y:Float):Void
 	{
-		if (parent.limeWindow == null || parent.limeWindow != window) return;
+		if (limeWindow == null || limeWindow != window) return;
 
 		#if openfl_always_dispatch_mouse_events
-		parent.__onMouse(MouseEvent.MOUSE_MOVE, Std.int(x * window.scale), Std.int(y * window.scale), 0);
+		__onMouse(MouseEvent.MOUSE_MOVE, Std.int(x * window.scale), Std.int(y * window.scale), 0);
 		#else
-		parent.__pendingMouseEvent = true;
-		parent.__pendingMouseX = Std.int(x * window.scale);
-		parent.__pendingMouseY = Std.int(y * window.scale);
+		__pendingMouseEvent = true;
+		__pendingMouseX = Std.int(x * window.scale);
+		__pendingMouseY = Std.int(y * window.scale);
 		#end
 	}
 
-	private function window_onMouseMoveRelative(window:Window, x:Float, y:Float):Void
+	public function window_onMouseMoveRelative(window:Window, x:Float, y:Float):Void
 	{
-		// if (parent.limeWindow == null || parent.limeWindow != window) return;
+		// if (limeWindow == null || limeWindow != window) return;
 	}
 
-	private function window_onMouseUp(window:Window, x:Float, y:Float, button:Int):Void
+	public function window_onMouseUp(window:Window, x:Float, y:Float, button:Int):Void
 	{
-		if (parent.limeWindow == null || parent.limeWindow != window) return;
+		if (limeWindow == null || limeWindow != window) return;
 
-		parent.__dispatchPendingMouseEvent();
+		__dispatchPendingMouseEvent();
 
 		var type = switch (button)
 		{
@@ -1114,28 +2419,28 @@ class _Stage
 			default: MouseEvent.MOUSE_UP;
 		}
 
-		parent.__onMouse(type, Std.int(x * window.scale), Std.int(y * window.scale), button);
+		__onMouse(type, Std.int(x * window.scale), Std.int(y * window.scale), button);
 
-		if (!parent.showDefaultContextMenu && button == 2)
+		if (!showDefaultContextMenu && button == 2)
 		{
 			window.onMouseUp.cancel();
 		}
 	}
 
-	private function window_onMouseWheel(window:Window, deltaX:Float, deltaY:Float, deltaMode:MouseWheelMode):Void
+	public function window_onMouseWheel(window:Window, deltaX:Float, deltaY:Float, deltaMode:MouseWheelMode):Void
 	{
-		if (parent.limeWindow == null || parent.limeWindow != window) return;
+		if (limeWindow == null || limeWindow != window) return;
 
-		parent.__dispatchPendingMouseEvent();
+		__dispatchPendingMouseEvent();
 		var preventDefault = false;
 
 		if (deltaMode == PIXELS)
 		{
-			preventDefault = parent.__onMouseWheel(Std.int(deltaX * window.scale), Std.int(deltaY * window.scale));
+			preventDefault = __onMouseWheel(Std.int(deltaX * window.scale), Std.int(deltaY * window.scale));
 		}
 		else
 		{
-			preventDefault = parent.__onMouseWheel(Std.int(deltaX), Std.int(deltaY));
+			preventDefault = __onMouseWheel(Std.int(deltaX), Std.int(deltaY));
 		}
 
 		if (preventDefault)
@@ -1144,109 +2449,109 @@ class _Stage
 		}
 	}
 
-	private function window_onMove(window:Window, x:Float, y:Float):Void
+	public function window_onMove(window:Window, x:Float, y:Float):Void
 	{
-		// if (parent.limeWindow == null || parent.limeWindow != window) return;
+		// if (limeWindow == null || limeWindow != window) return;
 	}
 
-	private function window_onRender(context:RenderContext):Void
+	public function window_onRender(context:RenderContext):Void
 	{
 		#if (openfl_cairo && !display)
-		if (parent.__renderer != null && parent.__renderer.__type == CAIRO)
+		if (__renderer != null && __renderer._.__type == CAIRO)
 		{
-			var renderer:CairoRenderer = cast parent.__renderer;
+			var renderer:CairoRenderer = cast __renderer;
 			renderer.cairo = context.cairo;
 		}
 		#end
 
-		parent.__render();
+		__render();
 	}
 
-	private function window_onRenderContextLost():Void
+	public function window_onRenderContextLost():Void
 	{
-		parent.__renderer = null;
-		parent.context3D = null;
+		__renderer = null;
+		context3D = null;
 
-		for (stage3D in parent.stage3Ds)
+		for (stage3D in stage3Ds)
 		{
-			stage3D.__lostContext();
+			stage3D._.__lostContext();
 		}
 	}
 
-	private function window_onRenderContextRestored(context:RenderContext):Void
+	public function window_onRenderContextRestored(context:RenderContext):Void
 	{
 		createRenderer();
 
-		for (stage3D in parent.stage3Ds)
+		for (stage3D in stage3Ds)
 		{
-			stage3D.__restoreContext();
+			stage3D._.__restoreContext();
 		}
 	}
 
-	private function window_onResize(window:Window, width:Int, height:Int):Void
+	public function window_onResize(window:Window, width:Int, height:Int):Void
 	{
-		if (parent.limeWindow == null || parent.limeWindow != window) return;
+		if (limeWindow == null || limeWindow != window) return;
 
-		parent.__resize();
+		__resize();
 
 		#if android
 		// workaround for newer behavior
-		parent.__forceRender = true;
+		__forceRender = true;
 		Lib.setTimeout(function()
 		{
-			parent.__forceRender = false;
+			__forceRender = false;
 		}, 500);
 		#end
 
-		if (parent.__wasFullscreen && !window.fullscreen)
+		if (__wasFullscreen && !window.fullscreen)
 		{
-			parent.__wasFullscreen = false;
-			parent.__displayState = NORMAL;
-			parent.__dispatchEvent(new FullScreenEvent(FullScreenEvent.FULL_SCREEN, false, false, false, true));
+			__wasFullscreen = false;
+			__displayState = NORMAL;
+			__dispatchEvent(new FullScreenEvent(FullScreenEvent.FULL_SCREEN, false, false, false, true));
 		}
 	}
 
-	private function window_onRestore(window:Window):Void
+	public function window_onRestore(window:Window):Void
 	{
-		if (parent.limeWindow == null || parent.limeWindow != window) return;
+		if (limeWindow == null || limeWindow != window) return;
 
-		if (parent.__wasFullscreen && !window.fullscreen)
+		if (__wasFullscreen && !window.fullscreen)
 		{
-			parent.__wasFullscreen = false;
-			parent.__displayState = NORMAL;
-			parent.__dispatchEvent(new FullScreenEvent(FullScreenEvent.FULL_SCREEN, false, false, false, true));
+			__wasFullscreen = false;
+			__displayState = NORMAL;
+			__dispatchEvent(new FullScreenEvent(FullScreenEvent.FULL_SCREEN, false, false, false, true));
 		}
 	}
 
-	private function window_onTextEdit(window:Window, text:String, start:Int, length:Int):Void
+	public function window_onTextEdit(window:Window, text:String, start:Int, length:Int):Void
 	{
-		// if (parent.limeWindow == null || parent.limeWindow != window) return;
+		// if (limeWindow == null || limeWindow != window) return;
 	}
 
-	private function window_onTextInput(window:Window, text:String):Void
+	public function window_onTextInput(window:Window, text:String):Void
 	{
-		if (parent.limeWindow == null || parent.limeWindow != window) return;
+		if (limeWindow == null || limeWindow != window) return;
 
 		var stack = new Array<DisplayObject>();
 
-		if (parent.__focus == null)
+		if (__focus == null)
 		{
-			parent.__getInteractive(stack);
+			__getInteractive(stack);
 		}
 		else
 		{
-			parent.__focus.__getInteractive(stack);
+			__focus._.__getInteractive(stack);
 		}
 
 		var event = new TextEvent(TextEvent.TEXT_INPUT, true, true, text);
 		if (stack.length > 0)
 		{
 			stack.reverse();
-			parent.__dispatchStack(event, stack);
+			__dispatchStack(event, stack);
 		}
 		else
 		{
-			parent.__dispatchEvent(event);
+			__dispatchEvent(event);
 		}
 
 		if (event.isDefaultPrevented())
@@ -1254,5 +2559,258 @@ class _Stage
 			window.onTextInput.cancel();
 		}
 	}
+
+	// Get & Set Methods
+	private function get_color():Null<Int>
+	{
+		return __color;
+	}
+
+	private function set_color(value:Null<Int>):Null<Int>
+	{
+		if (value == null)
+		{
+			__transparent = true;
+			value = 0x000000;
+		}
+		else
+		{
+			__transparent = false;
+		}
+
+		if (__color != value)
+		{
+			var r = (value & 0xFF0000) >>> 16;
+			var g = (value & 0x00FF00) >>> 8;
+			var b = (value & 0x0000FF);
+
+			__colorSplit[0] = r / 0xFF;
+			__colorSplit[1] = g / 0xFF;
+			__colorSplit[2] = b / 0xFF;
+			__colorString = "#" + StringTools.hex(value & 0xFFFFFF, 6);
+			__renderDirty = true;
+			__color = (0xFF << 24) | (value & 0xFFFFFF);
+		}
+
+		return value;
+	}
+
+	private function get_contentsScaleFactor():Float
+	{
+		return __contentsScaleFactor;
+	}
+
+	private function get_displayState():StageDisplayState
+	{
+		return __displayState;
+	}
+
+	private function set_displayState(value:StageDisplayState):StageDisplayState
+	{
+		if (limeWindow != null)
+		{
+			switch (value)
+			{
+				case NORMAL:
+					if (limeWindow.fullscreen)
+					{
+						limeWindow.fullscreen = false;
+					}
+
+				default:
+					if (!limeWindow.fullscreen)
+					{
+						limeWindow.fullscreen = true;
+					}
+			}
+		}
+		return __displayState = value;
+	}
+
+	private function get_focus():InteractiveObject
+	{
+		return __focus;
+	}
+
+	private function set_focus(value:InteractiveObject):InteractiveObject
+	{
+		if (value != __focus)
+		{
+			var oldFocus = __focus;
+			__focus = value;
+			__cacheFocus = value;
+
+			if (oldFocus != null)
+			{
+				var event = new FocusEvent(FocusEvent.FOCUS_OUT, true, false, value, false, 0);
+				var stack = new Array<DisplayObject>();
+				oldFocus._.__getInteractive(stack);
+				stack.reverse();
+				__dispatchStack(event, stack);
+			}
+
+			if (value != null)
+			{
+				var event = new FocusEvent(FocusEvent.FOCUS_IN, true, false, oldFocus, false, 0);
+				var stack = new Array<DisplayObject>();
+				value._.__getInteractive(stack);
+				stack.reverse();
+				__dispatchStack(event, stack);
+			}
+		}
+
+		return value;
+	}
+
+	private function get_frameRate():Float
+	{
+		if (limeWindow != null)
+		{
+			return limeWindow.frameRate;
+		}
+
+		return 0;
+	}
+
+	private function set_frameRate(value:Float):Float
+	{
+		if (limeWindow != null)
+		{
+			limeWindow.frameRate = value;
+		}
+		return value;
+	}
+
+	private function get_fullScreenHeight():UInt
+	{
+		return Math.ceil(limeWindow.display.currentMode.height * limeWindow.scale);
+	}
+
+	private function get_fullScreenSourceRect():Rectangle
+	{
+		return __fullScreenSourceRect == null ? null : __fullScreenSourceRect.clone();
+	}
+
+	private function set_fullScreenSourceRect(value:Rectangle):Rectangle
+	{
+		if (value == null)
+		{
+			if (__fullScreenSourceRect != null)
+			{
+				__fullScreenSourceRect = null;
+				__resize();
+			}
+		}
+		else if (!value.equals(__fullScreenSourceRect))
+		{
+			__fullScreenSourceRect = value.clone();
+			__resize();
+		}
+
+		return value;
+	}
+
+	private function get_fullScreenWidth():UInt
+	{
+		return Math.ceil(limeWindow.display.currentMode.width * limeWindow.scale);
+	}
+
+	public override function set_height(value:Float):Float
+	{
+		return this.height;
+	}
+
+	public override function get_mouseX():Float
+	{
+		return __mouseX;
+	}
+
+	public override function get_mouseY():Float
+	{
+		return __mouseY;
+	}
+
+	private function get_quality():StageQuality
+	{
+		return __quality;
+	}
+
+	private function set_quality(value:StageQuality):StageQuality
+	{
+		__quality = value;
+
+		if (__renderer != null)
+		{
+			__renderer._.__allowSmoothing = (quality != LOW);
+		}
+
+		return value;
+	}
+
+	public override function set_rotation(value:Float):Float
+	{
+		return 0;
+	}
+
+	private function get_scaleMode():StageScaleMode
+	{
+		return __scaleMode;
+	}
+
+	private function set_scaleMode(value:StageScaleMode):StageScaleMode
+	{
+		// TODO
+
+		return __scaleMode = value;
+	}
+
+	public override function set_scaleX(value:Float):Float
+	{
+		return 0;
+	}
+
+	public override function set_scaleY(value:Float):Float
+	{
+		return 0;
+	}
+
+	public override function get_tabEnabled():Bool
+	{
+		return false;
+	}
+
+	public override function set_tabEnabled(value:Bool):Bool
+	{
+		throw new IllegalOperationError("Error: The Stage class does not implement this property or method.");
+	}
+
+	public override function get_tabIndex():Int
+	{
+		return -1;
+	}
+
+	public override function set_tabIndex(value:Int):Int
+	{
+		throw new IllegalOperationError("Error: The Stage class does not implement this property or method.");
+	}
+
+	public override function set_transform(value:Transform):Transform
+	{
+		return this.transform;
+	}
+
+	public override function set_width(value:Float):Float
+	{
+		return this.width;
+	}
+
+	public override function set_x(value:Float):Float
+	{
+		return 0;
+	}
+
+	public override function set_y(value:Float):Float
+	{
+		return 0;
+	}
 }
-#end

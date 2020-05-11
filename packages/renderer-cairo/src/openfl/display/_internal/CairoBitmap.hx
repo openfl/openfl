@@ -19,27 +19,27 @@ class CairoBitmap
 {
 	public static inline function render(bitmap:Bitmap, renderer:CairoRenderer):Void
 	{
-		if (!bitmap.__renderable) return;
+		if (!bitmap._.__renderable) return;
 
-		var alpha = renderer.__getAlpha(bitmap.__worldAlpha);
-		// var colorTransform = renderer.__getColorTransform (bitmap.__worldColorTransform);
-		// var blendMode = renderer.__getBlendMode (bitmap.__worldBlendMode);
+		var alpha = renderer._.__getAlpha(bitmap._.__worldAlpha);
+		// var colorTransform = renderer._.__getColorTransform (bitmap._.__worldColorTransform);
+		// var blendMode = renderer._.__getBlendMode (bitmap._.__worldBlendMode);
 
-		if (alpha > 0 && bitmap.__bitmapData != null && bitmap.__bitmapData.__isValid)
+		if (alpha > 0 && bitmap._.__bitmapData != null && bitmap._.__bitmapData._.__isValid)
 		{
 			var cairo = renderer.cairo;
 
-			renderer.__setBlendMode(bitmap.__worldBlendMode);
-			renderer.__pushMaskObject(bitmap);
+			renderer._.__setBlendMode(bitmap._.__worldBlendMode);
+			renderer._.__pushMaskObject(bitmap);
 
-			renderer.applyMatrix(bitmap.__renderTransform, cairo);
+			renderer.applyMatrix(bitmap._.__renderTransform, cairo);
 
-			var surface = bitmap.__bitmapData.getSurface();
+			var surface = bitmap._.__bitmapData.getSurface();
 
 			if (surface != null)
 			{
 				var pattern = CairoPattern.createForSurface(surface);
-				pattern.filter = (renderer.__allowSmoothing && bitmap.smoothing) ? CairoFilter.GOOD : CairoFilter.NEAREST;
+				pattern.filter = (renderer._.__allowSmoothing && bitmap.smoothing) ? CairoFilter.GOOD : CairoFilter.NEAREST;
 
 				cairo.source = pattern;
 
@@ -53,10 +53,10 @@ class CairoBitmap
 				}
 			}
 
-			renderer.__popMaskObject(bitmap);
+			renderer._.__popMaskObject(bitmap);
 
 			// TODO: Find cause of leaking blend modes?
-			renderer.__setBlendMode(NORMAL);
+			renderer._.__setBlendMode(NORMAL);
 		}
 	}
 }

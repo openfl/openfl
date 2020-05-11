@@ -20,14 +20,14 @@ import openfl.utils.ByteArray;
 #end
 @:final class RectangleTexture extends TextureBase
 {
-	@:noCompletion private var _:_RectangleTexture;
-
-	@:noCompletion private function new(context:Context3D, width:Int, height:Int, format:String, optimizeForRenderToTexture:Bool)
+	@:allow(openfl) @:noCompletion private function new(context:Context3D, width:Int, height:Int, format:String, optimizeForRenderToTexture:Bool)
 	{
-		super(context, width, height, format, optimizeForRenderToTexture, 0);
+		if (_ == null)
+		{
+			_ = new _RectangleTexture(this, context, width, height, format, optimizeForRenderToTexture);
+		}
 
-		_ = new _RectangleTexture(this);
-		__base = _;
+		super(context, width, height, format, optimizeForRenderToTexture, 0);
 	}
 
 	/**

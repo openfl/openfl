@@ -40,9 +40,6 @@ package openfl.geom;
 #end
 class PerspectiveProjection
 {
-	@SuppressWarnings("checkstyle:FieldDocComment")
-	@:dox(hide) @:noCompletion public static inline var TO_RADIAN:Float = 0.01745329251994329577; // Math.PI / 180
-
 	/**
 		Specifies an angle, as a degree between 0 and 180, for the field of view in three dimensions.
 		This value determines how strong the perspective transformation and distortion apply to a
@@ -65,7 +62,7 @@ class PerspectiveProjection
 		in the z axis. During the perspective transformation, the `focalLength` is calculated dynamically
 		using the angle of the field of view and the stage's aspect ratio (stage width divided by stage height).
 	**/
-	public var focalLength:Float;
+	public var focalLength(get, set):Float;
 
 	/**
 		A two-dimensional point representing the center of the projection, the vanishing point for the display object.
@@ -74,31 +71,19 @@ class PerspectiveProjection
 		point (0,0). The default projection transformation center is in the middle of the stage, which means the
 		three-dimensional display objects disappear toward the center of the stage as they move backwards in the z axis.
 	**/
-	public var projectionCenter:Point; // FIXME: does this do anything at all?
+	public var projectionCenter(get, set):Point;
 
-	@:noCompletion private var __fieldOfView:Float;
-	@:noCompletion private var matrix3D:Matrix3D;
-
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperty(PerspectiveProjection.prototype, "fieldOfView", {
-			get: untyped __js__("function () { return this.get_fieldOfView (); }"),
-			set: untyped __js__("function (v) { return this.set_fieldOfView (v); }")
-		});
-	}
-	#end
+	@:allow(openfl) @:noCompletion private var _:_PerspectiveProjection;
 
 	/**
 		Creates an instance of a PerspectiveProjection object.
 	**/
 	public function new()
 	{
-		__fieldOfView = 0;
-		this.focalLength = 0;
-
-		matrix3D = new Matrix3D();
-		projectionCenter = new Point(#if !openfl_unit_testing Lib.current.stage.stageWidth / 2, Lib.current.stage.stageHeight / 2 #end);
+		if (_ == null)
+		{
+			_ = new _PerspectiveProjection();
+		}
 	}
 
 	/**
@@ -113,31 +98,39 @@ class PerspectiveProjection
 	**/
 	public function toMatrix3D():Matrix3D
 	{
-		if (#if neko __fieldOfView == null || #end projectionCenter == null) return null;
-
-		var _mp = matrix3D.rawData;
-		_mp[0] = focalLength;
-		_mp[5] = focalLength;
-		_mp[11] = 1.0;
-		_mp[15] = 0;
-
-		// matrix3D.rawData = [357.0370178222656,0,0,0,0,357.0370178222656,0,0,0,0,1,1,0,0,0,0];
-		return matrix3D;
+		return _.toMatrix3D();
 	}
 
-	// Getters & Setters
+	// Get & Set Methods
+
 	@:noCompletion private function get_fieldOfView():Float
 	{
-		return __fieldOfView;
+		return _.fieldOfView;
 	}
 
-	@:noCompletion private function set_fieldOfView(fieldOfView:Float):Float
+	@:noCompletion private function set_fieldOfView(value:Float):Float
 	{
-		__fieldOfView = fieldOfView * TO_RADIAN;
+		return _.fieldOfView = value;
+	}
 
-		this.focalLength = 250.0 * (1.0 / Math.tan(__fieldOfView * 0.5));
+	@:noCompletion private function get_focalLength():Float
+	{
+		return _.focalLength;
+	}
 
-		return __fieldOfView;
+	@:noCompletion private function set_focalLength(value:Float):Float
+	{
+		return _.focalLength = value;
+	}
+
+	@:noCompletion private function get_projectionCenter():Float
+	{
+		return _.projectionCenter;
+	}
+
+	@:noCompletion private function set_projectionCenter(value:Float):Float
+	{
+		return _.projectionCenter = value;
 	}
 }
 #else

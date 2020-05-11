@@ -12,34 +12,34 @@ class CanvasShape
 	public static inline function render(shape:DisplayObject, renderer:CanvasRenderer):Void
 	{
 		#if (lime && openfl_html5)
-		if (!shape.__renderable) return;
+		if (!shape._.__renderable) return;
 
-		var alpha = renderer.__getAlpha(shape.__worldAlpha);
+		var alpha = renderer._.__getAlpha(shape._.__worldAlpha);
 		if (alpha <= 0) return;
 
-		var graphics = shape.__graphics;
+		var graphics = shape._.__graphics;
 
 		if (graphics != null)
 		{
 			CanvasGraphics.render(graphics, renderer);
 
-			var width = graphics.__width;
-			var height = graphics.__height;
-			var canvas = graphics.__renderData.canvas;
+			var width = graphics._.__width;
+			var height = graphics._.__height;
+			var canvas = graphics._.__renderData.canvas;
 
-			if (canvas != null && graphics.__visible && width >= 1 && height >= 1)
+			if (canvas != null && graphics._.__visible && width >= 1 && height >= 1)
 			{
-				var transform = graphics.__worldTransform;
+				var transform = graphics._.__worldTransform;
 				var context = renderer.context;
-				var scrollRect = shape.__scrollRect;
-				var scale9Grid = shape.__worldScale9Grid;
+				var scrollRect = shape._.__scrollRect;
+				var scale9Grid = shape._.__worldScale9Grid;
 
 				// TODO: Render for scroll rect?
 
 				if (scrollRect == null || (scrollRect.width > 0 && scrollRect.height > 0))
 				{
-					renderer.__setBlendMode(shape.__worldBlendMode);
-					renderer.__pushMaskObject(shape);
+					renderer._.__setBlendMode(shape._.__worldBlendMode);
+					renderer._.__pushMaskObject(shape);
 
 					context.globalAlpha = alpha;
 
@@ -47,10 +47,10 @@ class CanvasShape
 					{
 						context.setTransform(1, 0, 0, 1, transform.tx, transform.ty);
 
-						var bounds = graphics.__bounds;
+						var bounds = graphics._.__bounds;
 
-						var scaleX = graphics.__renderTransform.a;
-						var scaleY = graphics.__renderTransform.d;
+						var scaleX = graphics._.__renderTransform.a;
+						var scaleY = graphics._.__renderTransform.d;
 						var renderScaleX = transform.a;
 						var renderScaleY = transform.d;
 
@@ -113,7 +113,7 @@ class CanvasShape
 					{
 						renderer.setTransform(transform, context);
 
-						if (renderer.__domRenderer != null)
+						if (renderer._.__domRenderer != null)
 						{
 							var reverseScale = 1 / renderer.pixelRatio;
 							context.scale(reverseScale, reverseScale);
@@ -122,7 +122,7 @@ class CanvasShape
 						context.drawImage(canvas, 0, 0, width, height);
 					}
 
-					renderer.__popMaskObject(shape);
+					renderer._.__popMaskObject(shape);
 				}
 			}
 		}

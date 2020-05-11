@@ -1,8 +1,6 @@
 package openfl.events;
 
 #if !flash
-import openfl._internal.utils.ObjectPool;
-
 /**
 	An IOErrorEvent object is dispatched when an error causes input or output
 	operations to fail.
@@ -38,8 +36,6 @@ class IOErrorEvent extends ErrorEvent
 
 	// @:noCompletion @:dox(hide) public static var NETWORK_ERROR:String;
 	// @:noCompletion @:dox(hide) public static var VERIFY_ERROR:String;
-	@:noCompletion private static var __pool:ObjectPool<IOErrorEvent> = new ObjectPool<IOErrorEvent>(function() return new IOErrorEvent(null),
-	function(event) event.__init());
 
 	/**
 		Creates an Event object that contains specific information about
@@ -65,21 +61,17 @@ class IOErrorEvent extends ErrorEvent
 	**/
 	public function new(type:String, bubbles:Bool = true, cancelable:Bool = false, text:String = "", id:Int = 0)
 	{
+		if (_ == null)
+		{
+			_ = new _IOErrorEvent(type, bubbles, cancelable, text, id);
+		}
+
 		super(type, bubbles, cancelable, text, id);
 	}
 
 	public override function clone():IOErrorEvent
 	{
-		var event = new IOErrorEvent(type, bubbles, cancelable, text, errorID);
-		event.target = target;
-		event.currentTarget = currentTarget;
-		event.eventPhase = eventPhase;
-		return event;
-	}
-
-	public override function toString():String
-	{
-		return __formatToString("IOErrorEvent", ["type", "bubbles", "cancelable", "text", "errorID"]);
+		return cast _.clone();
 	}
 }
 #else

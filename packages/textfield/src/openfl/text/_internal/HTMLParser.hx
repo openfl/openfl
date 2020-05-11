@@ -12,20 +12,20 @@ import openfl.Vector;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class HTMLParser
 {
-	private static var __regexAlign:EReg = ~/align\s?=\s?("([^"]+)"|'([^']+)')/i;
-	private static var __regexBreakTag:EReg = ~/<br\s*\/?>/gi;
-	private static var __regexBlockIndent:EReg = ~/blockindent\s?=\s?("([^"]+)"|'([^']+)')/i;
-	private static var __regexColor:EReg = ~/color\s?=\s?("#([^"]+)"|'#([^']+)')/i;
-	private static var __regexEntities:Array<EReg> = [~/&quot;/g, ~/&apos;/g, ~/&amp;/g, ~/&lt;/g, ~/&gt;/g, ~/&nbsp;/g];
-	private static var __regexFace:EReg = ~/face\s?=\s?("([^"]+)"|'([^']+)')/i;
-	private static var __regexHTMLTag:EReg = ~/<.*?>/g;
-	private static var __regexHref:EReg = ~/href\s?=\s?("([^"]+)"|'([^']+)')/i;
-	private static var __regexIndent:EReg = ~/ indent\s?=\s?("([^"]+)"|'([^']+)')/i;
-	private static var __regexLeading:EReg = ~/leading\s?=\s?("([^"]+)"|'([^']+)')/i;
-	private static var __regexLeftMargin:EReg = ~/leftmargin\s?=\s?("([^"]+)"|'([^']+)')/i;
-	private static var __regexRightMargin:EReg = ~/rightmargin\s?=\s?("([^"]+)"|'([^']+)')/i;
-	private static var __regexSize:EReg = ~/size\s?=\s?("([^"]+)"|'([^']+)')/i;
-	private static var __regexTabStops:EReg = ~/tabstops\s?=\s?("([^"]+)"|'([^']+)')/i;
+	public static var __regexAlign:EReg = ~/align\s?=\s?("([^"]+)"|'([^']+)')/i;
+	public static var __regexBreakTag:EReg = ~/<br\s*\/?>/gi;
+	public static var __regexBlockIndent:EReg = ~/blockindent\s?=\s?("([^"]+)"|'([^']+)')/i;
+	public static var __regexColor:EReg = ~/color\s?=\s?("#([^"]+)"|'#([^']+)')/i;
+	public static var __regexEntities:Array<EReg> = [~/&quot;/g, ~/&apos;/g, ~/&amp;/g, ~/&lt;/g, ~/&gt;/g, ~/&nbsp;/g];
+	public static var __regexFace:EReg = ~/face\s?=\s?("([^"]+)"|'([^']+)')/i;
+	public static var __regexHTMLTag:EReg = ~/<.*?>/g;
+	public static var __regexHref:EReg = ~/href\s?=\s?("([^"]+)"|'([^']+)')/i;
+	public static var __regexIndent:EReg = ~/ indent\s?=\s?("([^"]+)"|'([^']+)')/i;
+	public static var __regexLeading:EReg = ~/leading\s?=\s?("([^"]+)"|'([^']+)')/i;
+	public static var __regexLeftMargin:EReg = ~/leftmargin\s?=\s?("([^"]+)"|'([^']+)')/i;
+	public static var __regexRightMargin:EReg = ~/rightmargin\s?=\s?("([^"]+)"|'([^']+)')/i;
+	public static var __regexSize:EReg = ~/size\s?=\s?("([^"]+)"|'([^']+)')/i;
+	public static var __regexTabStops:EReg = ~/tabstops\s?=\s?("([^"]+)"|'([^']+)')/i;
 
 	public static function parse(value:String, textFormat:TextFormat, textFormatRanges:Vector<TextFormatRange>):String
 	{
@@ -248,7 +248,7 @@ class HTMLParser
 		return value;
 	}
 
-	private static function __getAttributeMatch(regex:EReg):String
+	public static function __getAttributeMatch(regex:EReg):String
 	{
 		return regex.matched(2) != null ? regex.matched(2) : regex.matched(3);
 	}

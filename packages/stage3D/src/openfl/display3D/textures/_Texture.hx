@@ -26,9 +26,9 @@ import openfl.utils.ByteArray;
 @:noCompletion
 class _Texture extends _TextureBase
 {
-	private static var lowMemoryMode:Bool = false;
+	public static var lowMemoryMode:Bool = false;
 
-	private var parent:Texture;
+	public var parent:Texture;
 
 	public function new(parent:Texture)
 	{
@@ -40,10 +40,10 @@ class _Texture extends _TextureBase
 		glTextureTarget = GL.TEXTURE_2D;
 
 		contextBackend.bindGLTexture2D(glTextureID);
-		gl.texImage2D(glTextureTarget, 0, glInternalFormat, parent.__width, parent.__height, 0, glFormat, GL.UNSIGNED_BYTE, null);
+		gl.texImage2D(glTextureTarget, 0, glInternalFormat, parent._.__width, parent._.__height, 0, glFormat, GL.UNSIGNED_BYTE, null);
 		contextBackend.bindGLTexture2D(null);
 
-		if (parent.__optimizeForRenderToTexture) getGLFramebuffer(true, 0, 0);
+		if (parent._.__optimizeForRenderToTexture) getGLFramebuffer(true, 0, 0);
 	}
 
 	public function uploadCompressedTextureFromByteArray(data:ByteArray, byteArrayOffset:UInt, async:Bool = false):Void
@@ -90,8 +90,8 @@ class _Texture extends _TextureBase
 
 		if (source == null) return;
 
-		var width = parent.__width >> miplevel;
-		var height = parent.__height >> miplevel;
+		var width = parent._.__width >> miplevel;
+		var height = parent._.__height >> miplevel;
 
 		if (width == 0 && height == 0) return;
 
@@ -113,8 +113,8 @@ class _Texture extends _TextureBase
 		#if openfl_html5
 		if (miplevel == 0 && image.buffer != null && image.buffer.data == null && image.buffer.src != null)
 		{
-			var width = parent.__width >> miplevel;
-			var height = parent.__height >> miplevel;
+			var width = parent._.__width >> miplevel;
+			var height = parent._.__height >> miplevel;
 
 			if (width == 0 && height == 0) return;
 
@@ -150,8 +150,8 @@ class _Texture extends _TextureBase
 	{
 		if (data == null) return;
 
-		var width = parent.__width >> miplevel;
-		var height = parent.__height >> miplevel;
+		var width = parent._.__width >> miplevel;
+		var height = parent._.__height >> miplevel;
 
 		if (width == 0 && height == 0) return;
 
@@ -163,7 +163,7 @@ class _Texture extends _TextureBase
 		contextBackend.bindGLTexture2D(null);
 	}
 
-	private override function setSamplerState(state:SamplerState):Bool
+	public override function setSamplerState(state:SamplerState):Bool
 	{
 		if (super.setSamplerState(state))
 		{
@@ -198,10 +198,10 @@ class _Texture extends _TextureBase
 		return false;
 	}
 
-	private function _uploadCompressedTextureFromByteArray(data:ByteArray, byteArrayOffset:UInt):Void
+	public function _uploadCompressedTextureFromByteArray(data:ByteArray, byteArrayOffset:UInt):Void
 	{
 		var reader = new ATFReader(data, byteArrayOffset);
-		var alpha = reader.readHeader(parent.__width, parent.__height, false);
+		var alpha = reader.readHeader(parent._.__width, parent._.__height, false);
 
 		contextBackend.bindGLTexture2D(glTextureID);
 
@@ -223,8 +223,8 @@ class _Texture extends _TextureBase
 				gl.compressedTexImage2D(glTextureTarget, level, glInternalFormat, width, height, 0,
 					new UInt8Array(#if js @:privateAccess bytes.b.buffer #else bytes #end, 0, size));
 
-				var alphaTexture = new Texture(parent.__context, parent.__width, parent.__height, Context3DTextureFormat.COMPRESSED,
-					parent.__optimizeForRenderToTexture, parent.__streamingLevels);
+				var alphaTexture = new Texture(parent._.__context, parent._.__width, parent._.__height, Context3DTextureFormat.COMPRESSED,
+					parent._.__optimizeForRenderToTexture, parent._.__streamingLevels);
 				alphaTexture._.glFormat = format;
 				alphaTexture._.glInternalFormat = format;
 
@@ -243,8 +243,8 @@ class _Texture extends _TextureBase
 
 		if (!hasTexture)
 		{
-			var data = new UInt8Array(parent.__width * parent.__height * 4);
-			gl.texImage2D(glTextureTarget, 0, glInternalFormat, parent.__width, parent.__height, 0, glFormat, GL.UNSIGNED_BYTE, data);
+			var data = new UInt8Array(parent._.__width * parent._.__height * 4);
+			gl.texImage2D(glTextureTarget, 0, glInternalFormat, parent._.__width, parent._.__height, 0, glFormat, GL.UNSIGNED_BYTE, data);
 		}
 
 		contextBackend.bindGLTexture2D(null);

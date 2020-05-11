@@ -18,9 +18,6 @@ import openfl.utils.ByteArray;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Memory
 {
-	@:noCompletion private static var __byteArray:ByteArray;
-	@:noCompletion private static var __length:Int;
-
 	/**
 		Get a byte from the specified memory address
 		@param	position	An existing address in the selected `ByteArray` memory
@@ -28,11 +25,7 @@ class Memory
 	**/
 	public static #if !debug inline #end function getByte(position:Int):Int
 	{
-		#if debug
-		if (position < 0 || position + 1 > __length) throw("Bad address");
-		#end
-
-		return __byteArray[position];
+		return _Memory.getByte(position);
 	}
 
 	/**
@@ -42,14 +35,7 @@ class Memory
 	**/
 	public static #if !debug inline #end function getDouble(position:Int):Float
 	{
-		#if debug
-		if (position < 0 || position + 8 > __length) throw("Bad address");
-		#end
-
-		return _setPositionTemporarily(position, function()
-		{
-			return __byteArray.readDouble();
-		});
+		return _Memory.getDouble(position);
 	}
 
 	/**
@@ -59,14 +45,7 @@ class Memory
 	**/
 	public static #if !debug inline #end function getFloat(position:Int):Float
 	{
-		#if debug
-		if (position < 0 || position + 4 > __length) throw("Bad address");
-		#end
-
-		return _setPositionTemporarily(position, function()
-		{
-			return __byteArray.readFloat();
-		});
+		return _Memory.getFloat(position);
 	}
 
 	/**
@@ -76,14 +55,7 @@ class Memory
 	**/
 	public static #if !debug inline #end function getI32(position:Int):Int
 	{
-		#if debug
-		if (position < 0 || position + 4 > __length) throw("Bad address");
-		#end
-
-		return _setPositionTemporarily(position, function()
-		{
-			return __byteArray.readInt();
-		});
+		return _Memory.getI32(position);
 	}
 
 	/**
@@ -93,14 +65,7 @@ class Memory
 	**/
 	public static #if !debug inline #end function getUI16(position:Int):Int
 	{
-		#if debug
-		if (position < 0 || position + 2 > __length) throw("Bad address");
-		#end
-
-		return _setPositionTemporarily(position, function()
-		{
-			return __byteArray.readUnsignedShort();
-		});
+		return _Memory.getUI16(position);
 	}
 
 	/**
@@ -109,8 +74,7 @@ class Memory
 	**/
 	public static function select(byteArray:ByteArray):Void
 	{
-		__byteArray = byteArray;
-		__length = (byteArray != null) ? byteArray.length : 0;
+		_Memory.select(byteArray);
 	}
 
 	/**
@@ -120,11 +84,7 @@ class Memory
 	**/
 	public static #if !debug inline #end function setByte(position:Int, v:Int):Void
 	{
-		#if debug
-		if (position < 0 || position + 1 > __length) throw("Bad address");
-		#end
-
-		__byteArray[position] = v;
+		_Memory.setByte(position, v);
 	}
 
 	/**
@@ -134,14 +94,7 @@ class Memory
 	**/
 	public static #if !debug inline #end function setDouble(position:Int, v:Float):Void
 	{
-		#if debug
-		if (position < 0 || position + 8 > __length) throw("Bad address");
-		#end
-
-		_setPositionTemporarily(position, function()
-		{
-			__byteArray.writeDouble(v);
-		});
+		_Memory.setDouble(position, v);
 	}
 
 	/**
@@ -151,14 +104,7 @@ class Memory
 	**/
 	public static #if !debug inline #end function setFloat(position:Int, v:Float):Void
 	{
-		#if debug
-		if (position < 0 || position + 4 > __length) throw("Bad address");
-		#end
-
-		_setPositionTemporarily(position, function()
-		{
-			__byteArray.writeFloat(v);
-		});
+		_Memory.setFloat(position, v);
 	}
 
 	/**
@@ -168,14 +114,7 @@ class Memory
 	**/
 	public static #if !debug inline #end function setI16(position:Int, v:Int):Void
 	{
-		#if debug
-		if (position < 0 || position + 2 > __length) throw("Bad address");
-		#end
-
-		_setPositionTemporarily(position, function()
-		{
-			__byteArray.writeShort(v);
-		});
+		_Memory.setI16(position, v);
 	}
 
 	/**
@@ -185,24 +124,7 @@ class Memory
 	**/
 	public static #if !debug inline #end function setI32(position:Int, v:Int):Void
 	{
-		#if debug
-		if (position < 0 || position + 4 > __length) throw("Bad address");
-		#end
-
-		_setPositionTemporarily(position, function()
-		{
-			__byteArray.writeInt(v);
-		});
-	}
-
-	@:noCompletion private static function _setPositionTemporarily<T>(position:Int, action:Void->T):T
-	{
-		var oldPosition:Int = __byteArray.position;
-		__byteArray.position = position;
-		var value:T = action();
-		__byteArray.position = oldPosition;
-
-		return value;
+		_Memory.setI32(position, v);
 	}
 }
 #else

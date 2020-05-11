@@ -23,10 +23,6 @@ import openfl.ui.MouseCursor;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.display.Graphics)
-@:access(openfl.display.Stage)
-@:access(openfl.geom.Matrix)
-@:access(openfl.geom.Point)
 class Sprite extends DisplayObjectContainer
 {
 	/**
@@ -64,7 +60,7 @@ class Sprite extends DisplayObjectContainer
 		Specifies the display object over which the sprite is being dragged,
 		or on which the sprite was dropped.
 	**/
-	public var dropTarget(default, null):DisplayObject;
+	public var dropTarget(get, never):DisplayObject;
 
 	/**
 		Specifies the Graphics object that belongs to this sprite where vector
@@ -87,7 +83,7 @@ class Sprite extends DisplayObjectContainer
 		not work because the sprite designated as the hit area receives the
 		user input events instead of your sprite button.
 	**/
-	public var hitArea:Sprite;
+	public var hitArea(get, set):Sprite;
 
 	#if false
 	/**
@@ -118,22 +114,7 @@ class Sprite extends DisplayObjectContainer
 		`buttonMode` properties to `true`, and the
 		`mouseChildren` property to `false`.
 	**/
-	public var useHandCursor:Bool;
-
-	@:noCompletion private var __buttonMode:Bool;
-
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperties(Sprite.prototype, {
-			"buttonMode": {
-				get: untyped __js__("function () { return this.get_buttonMode (); }"),
-				set: untyped __js__("function (v) { return this.set_buttonMode (v); }")
-			},
-			"graphics": {get: untyped __js__("function () { return this.get_graphics (); }")},
-		});
-	}
-	#end
+	public var useHandCursor(get, set):Bool;
 
 	/**
 		Creates a new Sprite instance. After you create the Sprite instance, call
@@ -143,10 +124,12 @@ class Sprite extends DisplayObjectContainer
 	**/
 	public function new()
 	{
-		super();
+		if (_ == null)
+		{
+			_ = new _Sprite(this);
+		}
 
-		__buttonMode = false;
-		useHandCursor = true;
+		super();
 	}
 
 	/**
@@ -171,10 +154,7 @@ class Sprite extends DisplayObjectContainer
 	**/
 	public function startDrag(lockCenter:Bool = false, bounds:Rectangle = null):Void
 	{
-		if (stage != null)
-		{
-			stage.__startDrag(this, lockCenter, bounds);
-		}
+		_.startDrag(lockCenter, bounds);
 	}
 
 	#if false
@@ -212,10 +192,7 @@ class Sprite extends DisplayObjectContainer
 	**/
 	public function stopDrag():Void
 	{
-		if (stage != null)
-		{
-			stage.__stopDrag(this);
-		}
+		_.stopDrag();
 	}
 
 	#if false
@@ -231,111 +208,46 @@ class Sprite extends DisplayObjectContainer
 	**/
 	// @:noCompletion @:dox(hide) public function stopTouchDrag (touchPointID:Int):Void;
 	#end
-	@:noCompletion private override function __getCursor():MouseCursor
-	{
-		return (__buttonMode && useHandCursor) ? BUTTON : null;
-	}
-
-	@:noCompletion private override function __hitTest(x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool,
-			hitObject:DisplayObject):Bool
-	{
-		if (interactiveOnly && !mouseEnabled && !mouseChildren) return false;
-		if (!hitObject.visible || __isMask) return __hitTestHitArea(x, y, shapeFlag, stack, interactiveOnly, hitObject);
-		if (mask != null && !mask.__hitTestMask(x, y)) return __hitTestHitArea(x, y, shapeFlag, stack, interactiveOnly, hitObject);
-
-		if (__scrollRect != null)
-		{
-			var point = Point.__pool.get();
-			point.setTo(x, y);
-			__getRenderTransform().__transformInversePoint(point);
-
-			if (!__scrollRect.containsPoint(point))
-			{
-				Point.__pool.release(point);
-				return __hitTestHitArea(x, y, shapeFlag, stack, true, hitObject);
-			}
-
-			Point.__pool.release(point);
-		}
-
-		if (super.__hitTest(x, y, shapeFlag, stack, interactiveOnly, hitObject))
-		{
-			return (stack == null || interactiveOnly);
-		}
-		else if (hitArea == null && __graphics != null && __graphics.__hitTest(x, y, shapeFlag, __getRenderTransform()))
-		{
-			if (stack != null && (!interactiveOnly || mouseEnabled))
-			{
-				stack.push(hitObject);
-			}
-
-			return true;
-		}
-
-		return __hitTestHitArea(x, y, shapeFlag, stack, interactiveOnly, hitObject);
-	}
-
-	@:noCompletion private function __hitTestHitArea(x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool,
-			hitObject:DisplayObject):Bool
-	{
-		if (hitArea != null)
-		{
-			if (!hitArea.mouseEnabled)
-			{
-				hitArea.mouseEnabled = true;
-				var hitTest = hitArea.__hitTest(x, y, shapeFlag, null, true, hitObject);
-				hitArea.mouseEnabled = false;
-
-				if (stack != null && hitTest)
-				{
-					stack[stack.length] = hitObject;
-				}
-
-				return hitTest;
-			}
-		}
-
-		return false;
-	}
-
-	@:noCompletion private override function __hitTestMask(x:Float, y:Float):Bool
-	{
-		if (super.__hitTestMask(x, y))
-		{
-			return true;
-		}
-		else if (__graphics != null && __graphics.__hitTest(x, y, true, __getRenderTransform()))
-		{
-			return true;
-		}
-
-		return false;
-	}
-
 	// Get & Set Methods
-	@:noCompletion private function get_graphics():Graphics
-	{
-		if (__graphics == null)
-		{
-			__graphics = new Graphics(this);
-		}
-
-		return __graphics;
-	}
-
-	@:noCompletion private override function get_tabEnabled():Bool
-	{
-		return (__tabEnabled == null ? __buttonMode : __tabEnabled);
-	}
 
 	@:noCompletion private function get_buttonMode():Bool
 	{
-		return __buttonMode;
+		return _.buttonMode;
 	}
 
 	@:noCompletion private function set_buttonMode(value:Bool):Bool
 	{
-		return __buttonMode = value;
+		return _.buttonMode = value;
+	}
+
+	@:noCompletion private function get_dropTarget():DisplayObject
+	{
+		return _.dropTarget;
+	}
+
+	@:noCompletion private function get_graphics():Graphics
+	{
+		return _.graphics;
+	}
+
+	@:noCompletion private function get_hitArea():Sprite
+	{
+		return _.hitArea;
+	}
+
+	@:noCompletion private function set_hitArea(value:Sprite):Sprite
+	{
+		return _.hitArea = value;
+	}
+
+	@:noCompletion private function get_useHandCursor():Bool
+	{
+		return _.useHandCursor;
+	}
+
+	@:noCompletion private function set_useHandCursor(value:Bool):Bool
+	{
+		return _.useHandCursor = value;
 	}
 }
 #else

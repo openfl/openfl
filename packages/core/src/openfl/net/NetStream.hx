@@ -531,7 +531,7 @@ class NetStream extends EventDispatcher
 	// @:noCompletion @:dox(hide) @:require(flash10) public static var DIRECT_CONNECTIONS:String;
 	#end
 	@:dox(hide) @:noCompletion @SuppressWarnings("checkstyle:FieldDocComment")
-	public var audioCodec(default, null):Int;
+	public var audioCodec(get, never):Int;
 
 	#if false
 	/**
@@ -607,7 +607,7 @@ class NetStream extends EventDispatcher
 		buffer is to being full נfor example, to display feedback to a user
 		who is waiting for data to be loaded into the buffer.
 	**/
-	public var bufferLength(default, null):Float;
+	public var bufferLength(get, never):Float;
 
 	/**
 		Specifies how long to buffer messages before starting to display the
@@ -678,7 +678,7 @@ class NetStream extends EventDispatcher
 		later played (for example, from a playlist), this buffer time
 		persists. That is, `bufferTime` remains nonzero for the stream.
 	**/
-	public var bufferTime:Float;
+	public var bufferTime(get, set):Float;
 
 	#if false
 	/**
@@ -715,12 +715,12 @@ class NetStream extends EventDispatcher
 		display feedback to a user who is waiting for data to be loaded into
 		the buffer.
 	**/
-	public var bytesLoaded(default, null):Int;
+	public var bytesLoaded(get, never):Int;
 
 	/**
 		The total size in bytes of the file being loaded into the application.
 	**/
-	public var bytesTotal(default, null):Int;
+	public var bytesTotal(get, never):Int;
 
 	/**
 		Specifies whether the application tries to download a cross-domain
@@ -785,7 +785,7 @@ class NetStream extends EventDispatcher
 		href="http://www.adobe.com/go/devnet_security_en"
 		scope="external">Security</a>.
 	**/
-	public var checkPolicyFile:Bool;
+	public var checkPolicyFile(get, set):Bool;
 
 	/**
 		Specifies the object on which callback methods are invoked to handle
@@ -846,7 +846,7 @@ class NetStream extends EventDispatcher
 		@throws TypeError The `client` property must be set to a non-null
 						  object.
 	**/
-	public var client:Dynamic;
+	public var client(get, set):Dynamic;
 
 	/**
 		The number of frames per second being displayed. If you are exporting
@@ -854,7 +854,7 @@ class NetStream extends EventDispatcher
 		this value during testing to help you determine how much compression
 		to apply when exporting the file.
 	**/
-	public var currentFPS(default, null):Float;
+	public var currentFPS(get, never):Float;
 
 	#if false
 	/**
@@ -872,7 +872,7 @@ class NetStream extends EventDispatcher
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public var dataReliable:Bool;
 	#end
 	@:dox(hide) @:noCompletion @SuppressWarnings("checkstyle:FieldDocComment")
-	public var decodedFrames(default, null):Int;
+	public var decodedFrames(get, never):Int;
 
 	#if false
 	/**
@@ -942,7 +942,7 @@ class NetStream extends EventDispatcher
 		You can get the value of this property to roughly gauge the
 		transmission quality of the stream and communicate it to the user.
 	**/
-	public var liveDelay(default, null):Float;
+	public var liveDelay(get, never):Float;
 
 	#if false
 	/**
@@ -1067,7 +1067,7 @@ class NetStream extends EventDispatcher
 		If you try to read this property when not connected, or if you try to
 		change this property, the application throws an exception.
 	**/
-	public var objectEncoding(default, null):ObjectEncoding;
+	public var objectEncoding(get, never):ObjectEncoding;
 
 	#if false
 	/**
@@ -1105,11 +1105,11 @@ class NetStream extends EventDispatcher
 		`NetStream.play()` is called with `reset` set to `1` or `true`, or
 		when `NetStream.close()` is called.
 	**/
-	public var time(default, null):Float;
+	public var time(get, never):Float;
 
 	// @:noCompletion @:dox(hide) @:require(flash11) public var useHardwareDecoder:Bool;
 	// @:noCompletion @:dox(hide) @:require(flash11_3) public var useJitterBuffer:Bool;
-	public var videoCode(default, null):Int;
+	public var videoCode(get, never):Int;
 
 	#if false
 	/**
@@ -1136,26 +1136,6 @@ class NetStream extends EventDispatcher
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public var videoSampleAccess:Bool;
 	#end
 	// @:noCompletion @:dox(hide) @:require(flash11) public var videoStreamSettings:openfl.media.VideoStreamSettings;
-	@:noCompletion private var _:_NetStream;
-	@:noCompletion private var __closed:Bool;
-	@:noCompletion private var __connection:NetConnection;
-	@:noCompletion private var __soundTransform:SoundTransform;
-
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperties(NetStream.prototype, {
-			"soundTransform": {
-				get: untyped __js__("function () { return this.get_soundTransform (); }"),
-				set: untyped __js__("function (v) { return this.set_soundTransform (v); }")
-			},
-			"speed": {
-				get: untyped __js__("function () { return this.get_speed (); }"),
-				set: untyped __js__("function (v) { return this.set_speed (v); }")
-			},
-		});
-	}
-	#end
 
 	/**
 		Creates a stream that you can use to play media files and send data
@@ -1199,12 +1179,12 @@ class NetStream extends EventDispatcher
 	**/
 	public function new(connection:NetConnection, peerID:String = null):Void
 	{
+		if (_ == null)
+		{
+			_ = new _NetStream(connection, peerID);
+		}
+
 		super();
-
-		__connection = connection;
-		__soundTransform = new SoundTransform();
-
-		_ = new _NetStream(this);
 	}
 
 	#if false
@@ -1416,7 +1396,6 @@ class NetStream extends EventDispatcher
 	**/
 	public function close():Void
 	{
-		__closed = true;
 		_.close();
 	}
 
@@ -2014,41 +1993,106 @@ class NetStream extends EventDispatcher
 		_.togglePause();
 	}
 
-	#if openfl_html5
-	@:noCompletion private function __getVideoElement():VideoElement
-	{
-		return _.video;
-	}
-	#end
-
 	// Get & Set Methods
+
+	@:noCompletion private function get_audioCodec():Int
+	{
+		return _.audioCodec;
+	}
+
+	@:noCompletion private function get_bufferLength():Float
+	{
+		return _.bufferLength;
+	}
+
+	@:noCompletion private function get_bufferTime():Float
+	{
+		return _.bufferTime;
+	}
+
+	@:noCompletion private function set_bufferTime(value:Float):Float
+	{
+		return _.bufferTime = value;
+	}
+
+	@:noCompletion private function get_bytesLoaded():Int
+	{
+		return _.bytesLoaded;
+	}
+
+	@:noCompletion private function get_bytesTotal():Int
+	{
+		return _.bytesTotal;
+	}
+
+	@:noCompletion private function get_checkPolicyFile():Bool
+	{
+		return _.checkPolicyFile;
+	}
+
+	@:noCompletion private function set_checkPolicyFile(value:Bool):Bool
+	{
+		return _.checkPolicyFile = value;
+	}
+
+	@:noCompletion private function get_client():Dynamic
+	{
+		return _.client;
+	}
+
+	@:noCompletion private function set_client(value:Dynamic):Dynamic
+	{
+		return _.client = value;
+	}
+
+	@:noCompletion private function get_currentFPS():Float
+	{
+		return _.currentFPS;
+	}
+
+	@:noCompletion private function get_decodedFrames():Int
+	{
+		return _.decodedFrames;
+	}
+
+	@:noCompletion private function get_liveDelay():Float
+	{
+		return _.liveDelay;
+	}
+
+	@:noCompletion private function get_objectEncoding():ObjectEncoding
+	{
+		return _.objectEncoding;
+	}
+
 	@:noCompletion private function get_soundTransform():SoundTransform
 	{
-		return __soundTransform.clone();
+		return _.soundTransform;
 	}
 
 	@:noCompletion private function set_soundTransform(value:SoundTransform):SoundTransform
 	{
-		if (value != null)
-		{
-			__soundTransform.pan = value.pan;
-			__soundTransform.volume = value.volume;
-
-			_.setSoundTransform(value);
-		}
-
-		return value;
+		return _.soundTransform = value;
 	}
 
 	@:noCompletion private function get_speed():Float
 	{
-		return _.getSpeed();
+		return _.speed;
 	}
 
 	@:noCompletion private function set_speed(value:Float):Float
 	{
-		_.setSpeed(value);
-		return value;
+		return _.speed = value;
+	}
+
+	@:noCompletion private function get_time():Float
+	{
+		return _.time;
+	}
+
+	@:noCompletion private function get_videoCode():Int
+	{
+		return _.videoCode;
 	}
 }
 #else

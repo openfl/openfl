@@ -18,14 +18,13 @@ import openfl.events.EventDispatcher;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.media.SoundMixer)
 @:final @:keep class SoundChannel extends EventDispatcher
 {
 	/**
 		The current amplitude(volume) of the left channel, from 0(silent) to 1
 		(full amplitude).
 	**/
-	public var leftPeak(default, null):Float;
+	public var leftPeak(get, never):Float;
 
 	/**
 		When the sound is playing, the `position` property indicates in
@@ -46,7 +45,7 @@ import openfl.events.EventDispatcher;
 		The current amplitude(volume) of the right channel, from 0(silent) to 1
 		(full amplitude).
 	**/
-	public var rightPeak(default, null):Float;
+	public var rightPeak(get, never):Float;
 
 	/**
 		The SoundTransform object assigned to the sound channel. A SoundTransform
@@ -55,46 +54,11 @@ import openfl.events.EventDispatcher;
 	**/
 	public var soundTransform(get, set):SoundTransform;
 
-	@:noCompletion private var _:_SoundChannel;
-	@:noCompletion private var __soundTransform:SoundTransform;
-
-	#if openfljs
-	@:noCompletion private static function __init__()
+	@:allow(openfl) @:noCompletion private function new(sound:Sound = null, startTime:Float = 0, loops:Int = 0, soundTransform:SoundTransform = null):Void
 	{
-		untyped Object.defineProperties(SoundChannel.prototype, {
-			"position": {
-				get: untyped __js__("function () { return this.get_position (); }"),
-				set: untyped __js__("function (v) { return this.set_position (v); }")
-			},
-			"soundTransform": {
-				get: untyped __js__("function () { return this.get_soundTransform (); }"),
-				set: untyped __js__("function (v) { return this.set_soundTransform (v); }")
-			},
-		});
-	}
-	#end
+		_ = new _SoundChannel(sound, startTime, loops, soundTransform);
 
-	@:noCompletion private function new(sound:Sound = null, startTime:Float = 0, loops:Int = 0, soundTransform:SoundTransform = null):Void
-	{
 		super(this);
-
-		leftPeak = 1;
-		rightPeak = 1;
-
-		if (soundTransform != null)
-		{
-			__soundTransform = soundTransform.clone();
-		}
-		else
-		{
-			__soundTransform = new SoundTransform();
-		}
-
-		if (sound != null)
-		{
-			SoundMixer.__registerSoundChannel(this);
-			_ = new _SoundChannel(this, sound, startTime, loops);
-		}
 	}
 
 	/**
@@ -102,70 +66,39 @@ import openfl.events.EventDispatcher;
 	**/
 	public function stop():Void
 	{
-		SoundMixer.__unregisterSoundChannel(this);
-
-		if (_ == null) return;
-
 		_.stop();
-		__dispose();
-	}
-
-	@:noCompletion private function __dispose():Void
-	{
-		if (_ == null) return;
-
-		_.dispose();
-		_ = null;
-	}
-
-	@:noCompletion private function __onComplete():Void
-	{
-		SoundMixer.__unregisterSoundChannel(this);
-
-		__dispose();
-		dispatchEvent(new Event(Event.SOUND_COMPLETE));
-	}
-
-	@:noCompletion private function __updateTransform():Void
-	{
-		this.soundTransform = soundTransform;
 	}
 
 	// Get & Set Methods
+
+	@:noCompletion private function get_leftPeak():Float
+	{
+		return _.leftPeak;
+	}
+
 	@:noCompletion private function get_position():Float
 	{
-		if (_ == null) return 0;
-
-		return _.getPosition();
+		return _.position;
 	}
 
 	@:noCompletion private function set_position(value:Float):Float
 	{
-		if (_ == null) return 0;
+		return _.position = value;
+	}
 
-		_.setPosition(value);
-		return value;
+	@:noCompletion private function get_rightPeak():Float
+	{
+		return _.rightPeak;
 	}
 
 	@:noCompletion private function get_soundTransform():SoundTransform
 	{
-		return __soundTransform.clone();
+		return _.soundTransform;
 	}
 
 	@:noCompletion private function set_soundTransform(value:SoundTransform):SoundTransform
 	{
-		if (value != null)
-		{
-			__soundTransform.pan = value.pan;
-			__soundTransform.volume = value.volume;
-
-			if (_ != null)
-			{
-				_.setSoundTransform(value);
-			}
-		}
-
-		return value;
+		return _.soundTransform = value;
 	}
 }
 #else

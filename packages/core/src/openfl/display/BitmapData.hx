@@ -91,24 +91,6 @@ import js.html.Image in JSImage;
 	it can only be 2,048 pixels high.) In Flash Player 9 and earlier, the limitation
 	is 2,880 pixels in height and 2,880 in width.
 **/
-@:access(lime.graphics.opengl.GL)
-@:access(lime.graphics.Image)
-@:access(lime.graphics.ImageBuffer)
-@:access(lime.math.Rectangle)
-@:access(openfl._internal.backend.lime.cairo.CairoRenderer)
-@:access(openfl.display._internal.CanvasRenderer)
-@:access(openfl.display3D.textures.TextureBase)
-@:access(openfl.display3D.Context3D)
-@:access(openfl.display.DisplayObject)
-@:access(openfl.display.DisplayObjectRenderer)
-@:access(openfl.display.DisplayObjectShader)
-@:access(openfl.display.Graphics)
-@:access(openfl.display.Shader)
-@:access(openfl.filters.BitmapFilter)
-@:access(openfl.geom.ColorTransform)
-@:access(openfl.geom.Matrix)
-@:access(openfl.geom.Point)
-@:access(openfl.geom.Rectangle)
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -116,21 +98,10 @@ import js.html.Image in JSImage;
 @:autoBuild(openfl._internal.macros.AssetsMacro.embedBitmap())
 class BitmapData implements IBitmapDrawable
 {
-	@:noCompletion private static var __hardwareRenderer:#if openfl_gl Context3DRenderer #else Dynamic #end;
-	@:noCompletion private static var __pool:BitmapDataPool = new BitmapDataPool();
-	@:noCompletion private static var __softwareRenderer:DisplayObjectRenderer;
-	@:noCompletion private static var __textureFormat:Int;
-	@:noCompletion private static var __textureInternalFormat:Int;
-	#if (!lime && openfl_html5)
-	@:noCompletion private static var __tempVector:Point = new Point();
-	#elseif lime
-	@:noCompletion private static var __tempVector:Vector2 = new Vector2();
-	#end
-
 	/**
 		The height of the bitmap image in pixels.
 	**/
-	public var height(default, null):Int;
+	public var height(get, never):Int;
 
 	#if lime
 	@:noCompletion @:dox(hide) @SuppressWarnings("checkstyle:FieldDocComment")
@@ -139,7 +110,7 @@ class BitmapData implements IBitmapDrawable
 
 	@:noCompletion private inline function get_image():Image
 	{
-		return this.limeImage;
+		return _.limeImage;
 	}
 
 	/**
@@ -147,7 +118,7 @@ class BitmapData implements IBitmapDrawable
 
 		In Flash Player, this property is always `null`.
 	**/
-	public var limeImage(default, null):Image;
+	public var limeImage(get, never):Image;
 	#end
 
 	// #if !flash_doc_gen
@@ -164,7 +135,7 @@ class BitmapData implements IBitmapDrawable
 		Since non-readable bitmap images do not have a software image buffer, they
 		will need to be recreated if the current hardware rendering context is lost.
 	**/
-	@:beta public var readable(default, null):Bool;
+	@:beta public var readable(get, never):Bool;
 
 	// #end
 
@@ -173,7 +144,7 @@ class BitmapData implements IBitmapDrawable
 		top and left of the rectangle are 0; the width and height are equal to the
 		width and height in pixels of the BitmapData object.
 	**/
-	public var rect(default, null):Rectangle;
+	public var rect(get, never):Rectangle;
 
 	/**
 		Defines whether the bitmap image supports per-pixel transparency. You can
@@ -183,27 +154,14 @@ class BitmapData implements IBitmapDrawable
 		whether it supports per-pixel transparency by determining if the value of
 		the `transparent` property is `true`.
 	**/
-	public var transparent(default, null):Bool;
+	public var transparent(get, never):Bool;
 
 	/**
 		The width of the bitmap image in pixels.
 	**/
-	public var width(default, null):Int;
+	public var width(get, never):Int;
 
-	@:noCompletion private var _:_BitmapData;
-	@:noCompletion private var __blendMode:BlendMode;
-	@:noCompletion private var __isMask:Bool;
-	@:noCompletion private var __isValid:Bool;
-	@:noCompletion private var __mask:DisplayObject;
-	@:noCompletion private var __renderable:Bool;
-	@:noCompletion private var __renderData:DisplayObjectRenderData;
-	@:noCompletion private var __renderTransform:Matrix;
-	@:noCompletion private var __scrollRect:Rectangle;
-	@:noCompletion private var __transform:Matrix;
-	@:noCompletion private var __type:DisplayObjectType;
-	@:noCompletion private var __worldAlpha:Float;
-	@:noCompletion private var __worldColorTransform:ColorTransform;
-	@:noCompletion private var __worldTransform:Matrix;
+	@:allow(openfl) @:noCompletion private var _:Dynamic;
 
 	/**
 		Creates a BitmapData object with a specified width and height. If you specify a value for
@@ -222,27 +180,6 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function new(width:Int, height:Int, transparent:Bool = true, fillColor:UInt = 0xFFFFFFFF)
 	{
-		this.transparent = transparent;
-
-		#if (neko || openfl_html5)
-		width = width == null ? 0 : width;
-		height = height == null ? 0 : height;
-		#end
-
-		width = width < 0 ? 0 : width;
-		height = height < 0 ? 0 : height;
-
-		this.width = width;
-		this.height = height;
-		rect = new Rectangle(0, 0, width, height);
-
-		__renderData = new DisplayObjectRenderData();
-		__renderTransform = new Matrix();
-		__worldAlpha = 1;
-		__worldTransform = new Matrix();
-		__worldColorTransform = new ColorTransform();
-		__renderable = true;
-
 		_ = new _BitmapData(this, width, height, transparent, fillColor);
 	}
 
@@ -273,7 +210,6 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function applyFilter(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, filter:BitmapFilter):Void
 	{
-		if (!readable || sourceBitmapData == null || !sourceBitmapData.readable) return;
 		_.applyFilter(sourceBitmapData, sourceRect, destPoint, filter);
 	}
 
@@ -295,7 +231,6 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function colorTransform(rect:Rectangle, colorTransform:ColorTransform):Void
 	{
-		if (!readable) return;
 		_.colorTransform(rect, colorTransform);
 	}
 
@@ -312,27 +247,6 @@ class BitmapData implements IBitmapDrawable
 	@SuppressWarnings("checkstyle:Dynamic")
 	public function compare(otherBitmapData:BitmapData):Dynamic
 	{
-		if (otherBitmapData == this)
-		{
-			return 0;
-		}
-		else if (otherBitmapData == null)
-		{
-			return -1;
-		}
-		else if (readable == false || otherBitmapData.readable == false)
-		{
-			return -2;
-		}
-		else if (width != otherBitmapData.width)
-		{
-			return -3;
-		}
-		else if (height != otherBitmapData.height)
-		{
-			return -4;
-		}
-
 		return _.compare(otherBitmapData);
 	}
 
@@ -381,7 +295,6 @@ class BitmapData implements IBitmapDrawable
 	public function copyChannel(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, sourceChannel:BitmapDataChannel,
 			destChannel:BitmapDataChannel):Void
 	{
-		if (!readable) return;
 		_.copyChannel(sourceBitmapData, sourceRect, destPoint, sourceChannel, destChannel);
 	}
 
@@ -427,7 +340,6 @@ class BitmapData implements IBitmapDrawable
 	public function copyPixels(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, alphaBitmapData:BitmapData = null, alphaPoint:Point = null,
 			mergeAlpha:Bool = false):Void
 	{
-		if (!readable || sourceBitmapData == null) return;
 		_.copyPixels(sourceBitmapData, sourceRect, destPoint, alphaBitmapData, alphaPoint, mergeAlpha);
 	}
 
@@ -454,11 +366,6 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function dispose():Void
 	{
-		width = 0;
-		height = 0;
-		rect = null;
-		readable = false;
-
 		_.dispose();
 	}
 
@@ -556,23 +463,7 @@ class BitmapData implements IBitmapDrawable
 	public function draw(source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null,
 			clipRect:Rectangle = null, smoothing:Bool = false):Void
 	{
-		if (source == null) return;
-
-		source.__update(false, true);
-
-		var transform = Matrix.__pool.get();
-
-		transform.copyFrom(source.__renderTransform);
-		transform.invert();
-
-		if (matrix != null)
-		{
-			transform.concat(matrix);
-		}
-
 		_.draw(source, transform, colorTransform, blendMode, clipRect, smoothing);
-
-		Matrix.__pool.release(transform);
 	}
 
 	/**
@@ -694,7 +585,6 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function encode(rect:Rectangle, compressor:Object, byteArray:ByteArray = null):ByteArray
 	{
-		if (!readable || rect == null) return byteArray = null;
 		return _.encode(rect, compressor, byteArray);
 	}
 
@@ -709,7 +599,6 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function fillRect(rect:Rectangle, color:Int):Void
 	{
-		if (rect == null) return;
 		return _.fillRect(rect, color);
 	}
 
@@ -726,8 +615,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function floodFill(x:Int, y:Int, color:Int):Void
 	{
-		if (!readable) return;
-		return _.floodFill(x, y, color);
+		_.floodFill(x, y, color);
 	}
 
 	#if (!openfl_doc_gen || (!openfl_html5 && !flash_doc_gen))
@@ -744,7 +632,6 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public static function fromBase64(base64:String, type:String):BitmapData
 	{
-		if (base64 == null) return null;
 		return _BitmapData.fromBase64(base64, type);
 	}
 	#end
@@ -767,7 +654,6 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public static function fromBytes(bytes:ByteArray, rawAlpha:ByteArray = null):BitmapData
 	{
-		if (bytes == null) return null;
 		return _BitmapData.fromBytes(bytes, rawAlpha);
 	}
 	#end
@@ -785,7 +671,6 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public static function fromCanvas(canvas:CanvasElement, transparent:Bool = true):BitmapData
 	{
-		if (canvas == null) return null;
 		return _BitmapData.fromCanvas(canvas, transparent);
 	}
 	#end
@@ -806,7 +691,6 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public static function fromFile(path:String):BitmapData
 	{
-		if (path == null) return null;
 		return _BitmapData.fromFile(path);
 	}
 	#end
@@ -823,7 +707,6 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public static function fromImage(image:Image, transparent:Bool = true):BitmapData
 	{
-		if (image == null || image.buffer == null) return null;
 		return _BitmapData.fromImage(image, transparent);
 	}
 	#end
@@ -840,7 +723,6 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public static function fromTexture(texture:TextureBase):BitmapData
 	{
-		if (texture == null) return null;
 		return _BitmapData.fromTexture(texture);
 	}
 
@@ -886,11 +768,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	@:dox(hide) public function getIndexBuffer(context:Context3D, scale9Grid:Rectangle = null):IndexBuffer3D
 	{
-		#if openfl_gl
-		return Context3DBitmapData.getIndexBuffer(this, context, scale9Grid);
-		#else
-		return null;
-		#end
+		return _.getIndexBuffer(context, scale9Grid);
 	}
 
 	/**
@@ -903,11 +781,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	@:dox(hide) public function getVertexBuffer(context:Context3D, scale9Grid:Rectangle = null, targetObject:DisplayObject = null):VertexBuffer3D
 	{
-		#if openfl_gl
-		return Context3DBitmapData.getVertexBuffer(this, context, scale9Grid, targetObject);
-		#else
-		return null;
-		#end
+		return _.getVertexBuffer(context, scale9Grid, targetObject);
 	}
 
 	/**
@@ -946,7 +820,6 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function getColorBoundsRect(mask:Int, color:Int, findColor:Bool = true):Rectangle
 	{
-		if (!readable) return new Rectangle(0, 0, width, height);
 		return _.getColorBoundsRect(mask, color, findColor);
 	}
 
@@ -975,7 +848,6 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function getPixel(x:Int, y:Int):Int
 	{
-		if (!readable) return 0;
 		return _.getPixel(x, y);
 	}
 
@@ -1003,7 +875,6 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function getPixel32(x:Int, y:Int):Int
 	{
-		if (!readable) return 0;
 		return _.getPixel32(x, y);
 	}
 
@@ -1018,8 +889,6 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function getPixels(rect:Rectangle):ByteArray
 	{
-		if (!readable) return null;
-		if (rect == null) rect = this.rect;
 		return _.getPixels(rect);
 	}
 
@@ -1048,7 +917,6 @@ class BitmapData implements IBitmapDrawable
 	**/
 	@:dox(hide) public function getTexture(context:Context3D):TextureBase
 	{
-		if (!__isValid) return null;
 		return _.getTexture(context);
 	}
 
@@ -1113,7 +981,6 @@ class BitmapData implements IBitmapDrawable
 	public function hitTest(firstPoint:Point, firstAlphaThreshold:Int, secondObject:Object, secondBitmapDataPoint:Point = null,
 			secondAlphaThreshold:Int = 1):Bool
 	{
-		if (!readable) return false;
 		return _.hitTest(firstPoint, firstAlphaThreshold, secondObject, secondBitmapDataPoint, secondAlphaThreshold);
 	}
 
@@ -1172,7 +1039,10 @@ class BitmapData implements IBitmapDrawable
 		`setPixel()` or `setPixel32()` method.
 
 	**/
-	public function lock():Void {}
+	public function lock():Void
+	{
+		_.lock();
+	}
 
 	/**
 		Performs per-channel blending from a source image to a destination image. For
@@ -1214,7 +1084,6 @@ class BitmapData implements IBitmapDrawable
 	public function merge(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, redMultiplier:UInt, greenMultiplier:UInt, blueMultiplier:UInt,
 			alphaMultiplier:UInt):Void
 	{
-		if (!readable || sourceBitmapData == null || !sourceBitmapData.readable || sourceRect == null || destPoint == null) return;
 		_.merge(sourceBitmapData, sourceRect, destPoint, redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier);
 	}
 
@@ -1248,8 +1117,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function noise(randomSeed:Int, low:Int = 0, high:Int = 255, channelOptions:Int = 7, grayScale:Bool = false):Void
 	{
-		if (!readable) return;
-		return _.noise(randomSeed, low, high, channelOptions, grayScale);
+		_.noise(randomSeed, low, high, channelOptions, grayScale);
 	}
 
 	/**
@@ -1295,7 +1163,7 @@ class BitmapData implements IBitmapDrawable
 	public function paletteMap(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, redArray:Array<Int> = null, greenArray:Array<Int> = null,
 			blueArray:Array<Int> = null, alphaArray:Array<Int> = null):Void
 	{
-		return _.paletteMap(sourceBitmapData, sourceRect, destPoint, redArray, greenArray, blueArray, alphaArray);
+		_.paletteMap(sourceBitmapData, sourceRect, destPoint, redArray, greenArray, blueArray, alphaArray);
 	}
 
 	/**
@@ -1367,8 +1235,7 @@ class BitmapData implements IBitmapDrawable
 	public function perlinNoise(baseX:Float, baseY:Float, numOctaves:UInt, randomSeed:Int, stitch:Bool, fractalNoise:Bool, channelOptions:UInt = 7,
 			grayScale:Bool = false, offsets:Array<Point> = null):Void
 	{
-		if (!readable) return;
-		return _.perlinNoise(baseX, baseY, numOctaves, randomSeed, stitch, fractalNoise, channelOptions, grayScale, offsets);
+		_.perlinNoise(baseX, baseY, numOctaves, randomSeed, stitch, fractalNoise, channelOptions, grayScale, offsets);
 	}
 
 	// @:noCompletion @:dox(hide) public function pixelDissolve (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, randomSeed:Int = 0, numPixels:Int = 0, fillColor:UInt = 0):Int;
@@ -1382,8 +1249,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function scroll(x:Int, y:Int):Void
 	{
-		if (!readable) return;
-		return _.scroll(x, y);
+		_.scroll(x, y);
 	}
 
 	/**
@@ -1405,8 +1271,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function setPixel(x:Int, y:Int, color:Int):Void
 	{
-		if (!readable) return;
-		return _.setPixel(x, y, color);
+		_.setPixel(x, y, color);
 	}
 
 	/**
@@ -1442,7 +1307,6 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function setPixel32(x:Int, y:Int, color:Int):Void
 	{
-		if (!readable) return;
 		return _.setPixel32(x, y, color);
 	}
 
@@ -1467,11 +1331,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function setPixels(rect:Rectangle, byteArray:ByteArray):Void
 	{
-		if (!readable || rect == null || byteArray == null) return;
-		var length = (rect.width * rect.height * 4);
-		if (byteArray.bytesAvailable < length) throw new Error("End of file was encountered.", 2030);
-
-		return _.setPixels(rect, byteArray);
+		_.setPixels(rect, byteArray);
 	}
 
 	/**
@@ -1485,7 +1345,6 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function setVector(rect:Rectangle, inputVector:Vector<UInt>):Void
 	{
-		if (inputVector == null) return;
 		_.setVector(rect, inputVector);
 	}
 
@@ -1540,17 +1399,6 @@ class BitmapData implements IBitmapDrawable
 	public function threshold(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, operation:String, threshold:Int, color:Int = 0x00000000,
 			mask:Int = 0xFFFFFFFF, copySource:Bool = false):Int
 	{
-		if (sourceBitmapData == null
-			|| sourceRect == null
-			|| destPoint == null
-			|| sourceRect.x > sourceBitmapData.width
-			|| sourceRect.y > sourceBitmapData.height
-			|| destPoint.x > width
-			|| destPoint.y > height)
-		{
-			return 0;
-		}
-
 		return _.threshold(sourceBitmapData, sourceRect, destPoint, operation, threshold, color, mask, copySource);
 	}
 
@@ -1566,62 +1414,44 @@ class BitmapData implements IBitmapDrawable
 						  entire area of the BitmapData object is considered
 						  changed.
 	**/
-	public function unlock(changeRect:Rectangle = null):Void {}
-
-	@:noCompletion private function __getBounds(rect:Rectangle, matrix:Matrix):Void
+	public function unlock(changeRect:Rectangle = null):Void
 	{
-		var bounds = Rectangle.__pool.get();
-		this.rect.__transform(bounds, matrix);
-		rect.__expand(bounds.x, bounds.y, bounds.width, bounds.height);
-		Rectangle.__pool.release(bounds);
+		_.unlock(changeRect);
 	}
 
-	#if openfl_html5
-	@:noCompletion private function __getCanvas(clearData:Bool = false):CanvasElement
-	{
-		return _.getCanvas(clearData);
-	}
-	#end
+	// Get & Set Methods
 
-	#if openfl_html5
-	@:noCompletion private function __getCanvasContext(clearData:Bool = false):Canvas2DRenderContext
+	@:noCompletion private function get_height():Int
 	{
-		return _.getCanvasContext(clearData);
+		return _.height;
+	}
+
+	#if lime
+	@:noCompletion private function get_limeImage():Image
+	{
+		return _.limeImage;
 	}
 	#end
 
-	#if openfl_html5
-	@:noCompletion private function __getElement(clearData:Bool = false):Dynamic
+	@:noCompletion private function get_readable():Bool
 	{
-		return _.getElement(clearData);
-	}
-	#end
-
-	#if openfl_html5
-	@:noCompletion private function __getJSImage():JSImage
-	{
-		return _.getJSImage();
-	}
-	#end
-
-	#if openfl_cairo
-	@:noCompletion private function __getSurface():CairoImageSurface
-	{
-		return _.getSurface();
-	}
-	#end
-
-	@:noCompletion private function __getVersion():Int
-	{
-		return _.getVersion();
+		return _.readable;
 	}
 
-	@:noCompletion private function __setDirty():Void
+	@:noCompletion private function get_rect():Rectangle
 	{
-		_.setDirty();
+		return _.rect;
 	}
 
-	@:noCompletion private function __update(transformOnly:Bool, updateChildren:Bool):Void {}
+	@:noCompletion private function get_transparent():Bool
+	{
+		return _.transparent;
+	}
+
+	@:noCompletion private function get_width():Int
+	{
+		return _.width;
+	}
 }
 #else
 typedef BitmapData = flash.display.BitmapData;

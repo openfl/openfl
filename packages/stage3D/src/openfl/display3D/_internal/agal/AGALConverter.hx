@@ -23,7 +23,7 @@ import openfl.utils.Endian;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class AGALConverter
 {
-	private static var limitedProfile:Null<Bool>#if !desktop = true #end;
+	public static var limitedProfile:Null<Bool>#if !desktop = true #end;
 
 	public static function prefixFromType(regType:RegisterType, programType:ProgramType):String
 	{
@@ -46,7 +46,7 @@ class AGALConverter
 		}
 	}
 
-	private static function readUInt64(byteArray:ByteArray):Int64
+	public static function readUInt64(byteArray:ByteArray):Int64
 	{
 		var low = byteArray.readInt();
 		var high = byteArray.readInt();
@@ -479,7 +479,7 @@ class AGALConverter
 
 		if (limitedProfile == null)
 		{
-			var gl = program.__context._.gl;
+			var gl = program._.__context._.gl;
 			var version:String = gl.getParameter(GL.VERSION);
 			limitedProfile = (version.indexOf("OpenGL ES") > -1 || version.indexOf("WebGL") > -1);
 		}
@@ -597,7 +597,7 @@ private enum ProgramType
 @SuppressWarnings("checkstyle:FieldDocComment")
 class RegisterMap
 {
-	private var mEntries:Array<RegisterMapEntry> = new Array();
+	public var mEntries:Array<RegisterMapEntry> = new Array();
 
 	public function new()
 	{

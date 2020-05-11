@@ -68,10 +68,6 @@ import openfl.net.NetStream;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.geom.Matrix)
-@:access(openfl.geom.Point)
-@:access(openfl.geom.Rectangle)
-@:access(openfl.net.NetStream)
 class Video extends DisplayObject
 {
 	/**
@@ -109,7 +105,7 @@ class Video extends DisplayObject
 		If a user's system is not powerful enough, the user may experience
 		difficulties playing back video with a deblocking filter enabled.
 	**/
-	public var deblocking:Int;
+	public var deblocking(get, set):Int;
 
 	/**
 		Specifies whether the video should be smoothed (interpolated) when it
@@ -119,7 +115,7 @@ class Video extends DisplayObject
 		set this property to `true` to take advantage of mipmapping image
 		optimization.
 	**/
-	public var smoothing:Bool;
+	public var smoothing(get, set):Bool;
 
 	/**
 		An integer specifying the height of the video stream, in pixels. For
@@ -143,22 +139,6 @@ class Video extends DisplayObject
 	**/
 	public var videoWidth(get, never):Int;
 
-	@:noCompletion private var __active:Bool;
-	@:noCompletion private var __dirty:Bool;
-	@:noCompletion private var __height:Float;
-	@:noCompletion private var __stream:NetStream;
-	@:noCompletion private var __width:Float;
-
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperties(Video.prototype, {
-			"videoHeight": {get: untyped __js__("function () { return this.get_videoHeight (); }")},
-			"videoWidth": {get: untyped __js__("function () { return this.get_videoWidth (); }")},
-		});
-	}
-	#end
-
 	/**
 		Creates a new Video instance. If no values for the `width` and
 		`height` parameters are supplied, the default values are used. You can
@@ -175,17 +155,10 @@ class Video extends DisplayObject
 	**/
 	public function new(width:Int = 320, height:Int = 240):Void
 	{
-		super();
-
-		__type = VIDEO;
-
-		__width = width;
-		__height = height;
-
-		__renderData.textureTime = -1;
-
-		smoothing = false;
-		deblocking = 0;
+		if (_ == null)
+		{
+			_ = new _Video(width, height);
+		}
 	}
 
 	/**
@@ -222,15 +195,7 @@ class Video extends DisplayObject
 	**/
 	public function attachNetStream(netStream:NetStream):Void
 	{
-		__stream = netStream;
-
-		#if openfl_html5
-		if (__stream != null && !__stream.__closed)
-		{
-			// @:privateAccess __stream.__getVideoElement().play();
-			__stream.resume();
-		}
-		#end
+		_.attachNetStream(netStream);
 	}
 
 	/**
@@ -240,123 +205,41 @@ class Video extends DisplayObject
 		information without hiding the Video object.
 
 	**/
-	public function clear():Void {}
-
-	@:noCompletion private override function __getBounds(rect:Rectangle, matrix:Matrix):Void
+	public function clear():Void
 	{
-		var bounds = Rectangle.__pool.get();
-		bounds.setTo(0, 0, __width, __height);
-		bounds.__transform(bounds, matrix);
-
-		rect.__expand(bounds.x, bounds.y, bounds.width, bounds.height);
-
-		Rectangle.__pool.release(bounds);
-	}
-
-	@:noCompletion private override function __hitTest(x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool,
-			hitObject:DisplayObject):Bool
-	{
-		if (!hitObject.visible || __isMask) return false;
-		if (mask != null && !mask.__hitTestMask(x, y)) return false;
-
-		__getRenderTransform();
-
-		var px = __renderTransform.__transformInverseX(x, y);
-		var py = __renderTransform.__transformInverseY(x, y);
-
-		if (px > 0 && py > 0 && px <= __width && py <= __height)
-		{
-			if (stack != null && !interactiveOnly)
-			{
-				stack.push(hitObject);
-			}
-
-			return true;
-		}
-
-		return false;
-	}
-
-	@:noCompletion private override function __hitTestMask(x:Float, y:Float):Bool
-	{
-		var point = Point.__pool.get();
-		point.setTo(x, y);
-
-		__globalToLocal(point, point);
-
-		var hit = (point.x > 0 && point.y > 0 && point.x <= __width && point.y <= __height);
-
-		Point.__pool.release(point);
-		return hit;
+		_.clear();
 	}
 
 	// Get & Set Methods
-	@:noCompletion private override function get_height():Float
+
+	@:noCompletion private function get_deblocking():Int
 	{
-		return __height * scaleY;
+		return _.deblocking;
 	}
 
-	@:noCompletion private override function set_height(value:Float):Float
+	@:noCompletion private function set_deblocking(value:Int):Int
 	{
-		if (scaleY != 1 || value != __height)
-		{
-			__setTransformDirty();
-			__setParentRenderDirty();
-			__dirty = true;
-		}
+		return _.deblocking = value;
+	}
 
-		scaleY = 1;
-		return __height = value;
+	@:noCompletion private function get_smoothing():Bool
+	{
+		return _.smoothing;
+	}
+
+	@:noCompletion private function set_smoothing(value:Bool):Bool
+	{
+		return _.smoothing = value;
 	}
 
 	@:noCompletion private function get_videoHeight():Int
 	{
-		#if openfl_html5
-		if (__stream != null)
-		{
-			var videoElement = __stream.__getVideoElement();
-			if (videoElement != null)
-			{
-				return Std.int(videoElement.videoHeight);
-			}
-		}
-		#end
-
-		return 0;
+		return _.videoHeight;
 	}
 
 	@:noCompletion private function get_videoWidth():Int
 	{
-		#if openfl_html5
-		if (__stream != null)
-		{
-			var videoElement = __stream.__getVideoElement();
-			if (videoElement != null)
-			{
-				return Std.int(videoElement.videoWidth);
-			}
-		}
-		#end
-
-		return 0;
-	}
-
-	@:noCompletion private override function get_width():Float
-	{
-		return __width * __scaleX;
-	}
-
-	@:noCompletion private override function set_width(value:Float):Float
-	{
-		if (__scaleX != 1 || __width != value)
-		{
-			__setTransformDirty();
-			__setParentRenderDirty();
-			__dirty = true;
-		}
-
-		scaleX = 1;
-		return __width = value;
+		return _.videoWidth;
 	}
 }
 #else

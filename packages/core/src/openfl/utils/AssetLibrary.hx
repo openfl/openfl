@@ -16,12 +16,15 @@ import lime.utils.Bytes;
 #end
 class AssetLibrary #if lime extends LimeAssetLibrary #end
 {
-	#if lime
-	@:noCompletion private var __proxy:LimeAssetLibrary;
-	#end
+	@:allow(openfl) @:noCompletion private var _:_AssetLibrary;
 
 	public function new()
 	{
+		if (_ != null)
+		{
+			_ = new _AssetLibrary();
+		}
+
 		#if lime
 		super();
 		#end
@@ -30,9 +33,9 @@ class AssetLibrary #if lime extends LimeAssetLibrary #end
 	#if lime
 	public override function exists(id:String, type:String):Bool
 	{
-		if (__proxy != null)
+		if (_.__proxy != null)
 		{
-			return __proxy.exists(id, type);
+			return _.__proxy.exists(id, type);
 		}
 		else
 		{
@@ -43,82 +46,30 @@ class AssetLibrary #if lime extends LimeAssetLibrary #end
 
 	public static function fromBundle(bundle:AssetBundle):AssetLibrary
 	{
-		#if lime
-		var library = LimeAssetLibrary.fromBundle(bundle);
-
-		if (library != null)
-		{
-			if (Std.is(library, AssetLibrary))
-			{
-				return cast library;
-			}
-			else
-			{
-				var _library = new AssetLibrary();
-				_library.__proxy = library;
-				return _library;
-			}
-		}
-		else
-		{
-			return null;
-		}
-		#else
-		return null;
-		#end
+		return _AssetLibrary.fromBundle(bundle);
 	}
 
 	public static function fromBytes(bytes:ByteArray, rootPath:String = null):AssetLibrary
 	{
-		#if lime
-		return cast fromManifest(AssetManifest.fromBytes(bytes, rootPath));
-		#else
-		return null;
-		#end
+		return _AssetLibrary.fromBytes(bytes, rootPath);
 	}
 
 	public static function fromFile(path:String, rootPath:String = null):AssetLibrary
 	{
-		#if lime
-		return cast fromManifest(AssetManifest.fromFile(path, rootPath));
-		#else
-		return null;
-		#end
+		return _AssetLibrary.fromFile(path, rootPath);
 	}
 
 	public static function fromManifest(manifest:AssetManifest):#if (java && lime) LimeAssetLibrary #else AssetLibrary #end
 	{
-		#if lime
-		var library = LimeAssetLibrary.fromManifest(manifest);
-
-		if (library != null)
-		{
-			if (Std.is(library, AssetLibrary))
-			{
-				return cast library;
-			}
-			else
-			{
-				var _library = new AssetLibrary();
-				_library.__proxy = library;
-				return _library;
-			}
-		}
-		else
-		{
-			return null;
-		}
-		#else
-		return null;
-		#end
+		return _AssetLibrary.fromManifest(manifest);
 	}
 
 	#if lime
 	public override function getAsset(id:String, type:String):Dynamic
 	{
-		if (__proxy != null)
+		if (_.__proxy != null)
 		{
-			return __proxy.getAsset(id, type);
+			return _.__proxy.getAsset(id, type);
 		}
 		else
 		{
@@ -130,9 +81,9 @@ class AssetLibrary #if lime extends LimeAssetLibrary #end
 	#if lime
 	public override function getAudioBuffer(id:String):AudioBuffer
 	{
-		if (__proxy != null)
+		if (_.__proxy != null)
 		{
-			return __proxy.getAudioBuffer(id);
+			return _.__proxy.getAudioBuffer(id);
 		}
 		else
 		{
@@ -144,9 +95,9 @@ class AssetLibrary #if lime extends LimeAssetLibrary #end
 	#if lime
 	public override function getBytes(id:String):Bytes
 	{
-		if (__proxy != null)
+		if (_.__proxy != null)
 		{
-			return __proxy.getBytes(id);
+			return _.__proxy.getBytes(id);
 		}
 		else
 		{
@@ -158,9 +109,9 @@ class AssetLibrary #if lime extends LimeAssetLibrary #end
 	#if lime
 	public override function getFont(id:String):Font
 	{
-		if (__proxy != null)
+		if (_.__proxy != null)
 		{
-			return __proxy.getFont(id);
+			return _.__proxy.getFont(id);
 		}
 		else
 		{
@@ -172,9 +123,9 @@ class AssetLibrary #if lime extends LimeAssetLibrary #end
 	#if lime
 	public override function getImage(id:String):Image
 	{
-		if (__proxy != null)
+		if (_.__proxy != null)
 		{
-			return __proxy.getImage(id);
+			return _.__proxy.getImage(id);
 		}
 		else
 		{
@@ -185,15 +136,15 @@ class AssetLibrary #if lime extends LimeAssetLibrary #end
 
 	public function getMovieClip(id:String):MovieClip
 	{
-		return null;
+		return _.getMovieClip(id);
 	}
 
 	#if lime
 	public override function getPath(id:String):String
 	{
-		if (__proxy != null)
+		if (_.__proxy != null)
 		{
-			return __proxy.getPath(id);
+			return _.__proxy.getPath(id);
 		}
 		else
 		{
@@ -205,9 +156,9 @@ class AssetLibrary #if lime extends LimeAssetLibrary #end
 	#if lime
 	public override function getText(id:String):String
 	{
-		if (__proxy != null)
+		if (_.__proxy != null)
 		{
-			return __proxy.getText(id);
+			return _.__proxy.getText(id);
 		}
 		else
 		{
@@ -219,9 +170,9 @@ class AssetLibrary #if lime extends LimeAssetLibrary #end
 	#if lime
 	public override function isLocal(id:String, type:String):Bool
 	{
-		if (__proxy != null)
+		if (_.__proxy != null)
 		{
-			return __proxy.isLocal(id, type);
+			return _.__proxy.isLocal(id, type);
 		}
 		else
 		{
@@ -233,9 +184,9 @@ class AssetLibrary #if lime extends LimeAssetLibrary #end
 	#if lime
 	public override function list(type:String):Array<String>
 	{
-		if (__proxy != null)
+		if (_.__proxy != null)
 		{
-			return __proxy.list(type);
+			return _.__proxy.list(type);
 		}
 		else
 		{
@@ -247,9 +198,9 @@ class AssetLibrary #if lime extends LimeAssetLibrary #end
 	#if lime
 	public override function loadAsset(id:String, type:String):Future<Dynamic>
 	{
-		if (__proxy != null)
+		if (_.__proxy != null)
 		{
-			return __proxy.loadAsset(id, type);
+			return _.__proxy.loadAsset(id, type);
 		}
 		else
 		{
@@ -261,9 +212,9 @@ class AssetLibrary #if lime extends LimeAssetLibrary #end
 	#if lime
 	public override function load():Future<LimeAssetLibrary>
 	{
-		if (__proxy != null)
+		if (_.__proxy != null)
 		{
-			return __proxy.load();
+			return _.__proxy.load();
 		}
 		else
 		{
@@ -275,9 +226,9 @@ class AssetLibrary #if lime extends LimeAssetLibrary #end
 	#if lime
 	public override function loadAudioBuffer(id:String):Future<AudioBuffer>
 	{
-		if (__proxy != null)
+		if (_.__proxy != null)
 		{
-			return __proxy.loadAudioBuffer(id);
+			return _.__proxy.loadAudioBuffer(id);
 		}
 		else
 		{
@@ -289,9 +240,9 @@ class AssetLibrary #if lime extends LimeAssetLibrary #end
 	#if lime
 	public override function loadBytes(id:String):Future<Bytes>
 	{
-		if (__proxy != null)
+		if (_.__proxy != null)
 		{
-			return __proxy.loadBytes(id);
+			return _.__proxy.loadBytes(id);
 		}
 		else
 		{
@@ -303,9 +254,9 @@ class AssetLibrary #if lime extends LimeAssetLibrary #end
 	#if lime
 	public override function loadFont(id:String):Future<Font>
 	{
-		if (__proxy != null)
+		if (_.__proxy != null)
 		{
-			return __proxy.loadFont(id);
+			return _.__proxy.loadFont(id);
 		}
 		else
 		{
@@ -316,55 +267,25 @@ class AssetLibrary #if lime extends LimeAssetLibrary #end
 
 	public static function loadFromBytes(bytes:ByteArray, rootPath:String = null):#if (java && lime) Future<LimeAssetLibrary> #else Future<AssetLibrary> #end
 	{
-		#if lime
-		return AssetManifest.loadFromBytes(bytes, rootPath).then(function(manifest)
-		{
-			return loadFromManifest(manifest);
-		});
-		#else
-		return cast Future.withValue(null);
-		#end
+		return _AssetLibrary.loadFromBytes(bytes, rootPath);
 	}
 
 	public static function loadFromFile(path:String, rootPath:String = null):#if (java && lime) Future<LimeAssetLibrary> #else Future<AssetLibrary> #end
 	{
-		#if lime
-		return AssetManifest.loadFromFile(path, rootPath).then(function(manifest)
-		{
-			return loadFromManifest(manifest);
-		});
-		#else
-		return cast Future.withValue(null);
-		#end
+		return _AssetLibrary.loadFromFile(path, rootPath);
 	}
 
 	public static function loadFromManifest(manifest:AssetManifest):#if (java && lime) Future<LimeAssetLibrary> #else Future<AssetLibrary> #end
 	{
-		#if lime
-		var library:AssetLibrary = cast fromManifest(manifest);
-
-		if (library != null)
-		{
-			return library.load().then(function(library)
-			{
-				return Future.withValue(cast library);
-			});
-		}
-		else
-		{
-			return cast Future.withError("Could not load asset manifest");
-		}
-		#else
-		return cast Future.withValue(null);
-		#end
+		return _AssetLibrary.loadFromManifest(manifest);
 	}
 
 	#if lime
 	public override function loadImage(id:String):Future<Image>
 	{
-		if (__proxy != null)
+		if (_.__proxy != null)
 		{
-			return __proxy.loadImage(id);
+			return _.__proxy.loadImage(id);
 		}
 		else
 		{
@@ -375,15 +296,15 @@ class AssetLibrary #if lime extends LimeAssetLibrary #end
 
 	public function loadMovieClip(id:String):Future<MovieClip>
 	{
-		return Future.withValue(getMovieClip(id));
+		return _.loadMovieClip(id);
 	}
 
 	#if lime
 	public override function loadText(id:String):Future<String>
 	{
-		if (__proxy != null)
+		if (_.__proxy != null)
 		{
-			return __proxy.loadText(id);
+			return _.__proxy.loadText(id);
 		}
 		else
 		{
@@ -395,9 +316,9 @@ class AssetLibrary #if lime extends LimeAssetLibrary #end
 	#if lime
 	public override function unload():Void
 	{
-		if (__proxy != null)
+		if (_.__proxy != null)
 		{
-			return __proxy.unload();
+			return _.__proxy.unload();
 		}
 		else
 		{

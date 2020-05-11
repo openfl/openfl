@@ -130,7 +130,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 		this property returns a value of `true` if the socket is currently
 		connected, or `false` otherwise.
 	**/
-	public var connected(default, null):Bool;
+	public var connected(get, never):Bool;
 
 	/**
 		Indicates the byte order for the data. Possible values are constants
@@ -144,30 +144,17 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	/**
 		Controls the version of AMF used when writing or reading an object.
 	**/
-	public var objectEncoding:ObjectEncoding;
+	public var objectEncoding(get, set):ObjectEncoding;
 
 	@SuppressWarnings("checkstyle:FieldDocComment")
-	@:noCompletion @:dox(hide) public var secure:Bool;
+	@:noCompletion @:dox(hide) public var secure(get, set):Bool;
 
 	/**
 		Indicates the number of milliseconds to wait for a connection.
 		If the connection doesn't succeed within the specified time, the
 		connection fails. The default value is 20,000 (twenty seconds).
 	**/
-	public var timeout:Int;
-
-	@:noCompletion private var __backend:SocketBackend;
-
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperties(Socket.prototype, {
-			"bytesAvailable": {get: untyped __js__("function () { return this.get_bytesAvailable (); }")},
-			"bytesPending": {get: untyped __js__("function () { return this.get_bytesPending (); }")},
-			"endian": {get: untyped __js__("function () { return this.get_endian (); }"), set: untyped __js__("function (v) { return this.set_endian (v); }")},
-		});
-	}
-	#end
+	public var timeout(get, set):Int;
 
 	/**
 		Creates a new Socket object. If no parameters are specified, an
@@ -225,17 +212,12 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	**/
 	public function new(host:String = null, port:Int = 0)
 	{
-		super();
-
-		__backend = new SocketBackend(this);
-
-		endian = Endian.BIG_ENDIAN;
-		timeout = 20000;
-
-		if (port > 0 && port < 65535)
+		if (_ == null)
 		{
-			connect(host, port);
+			_ = new _Socket(host, port);
 		}
+
+		super();
 	}
 
 	/**
@@ -252,8 +234,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	**/
 	public function close():Void
 	{
-		__checkValid();
-		__backend.close();
+		_.close();
 	}
 
 	/**
@@ -302,12 +283,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	**/
 	public function connect(host:String = null, port:Int = 0):Void
 	{
-		if (port < 0 || port > 65535)
-		{
-			throw new SecurityError("Invalid socket port number specified.");
-		}
-
-		__backend.connect(host, port);
+		_.connect(host, port);
 	}
 
 	/**
@@ -324,8 +300,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	**/
 	public function flush():Void
 	{
-		__checkValid();
-		__backend.flush();
+		_.flush();
 	}
 
 	/**
@@ -341,8 +316,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	**/
 	public function readBoolean():Bool
 	{
-		__checkValid();
-		return __backend.readBoolean();
+		return _.readBoolean();
 	}
 
 	/**
@@ -355,8 +329,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	**/
 	public function readByte():Int
 	{
-		__checkValid();
-		return __backend.readByte();
+		return _.readByte();
 	}
 
 	/**
@@ -375,8 +348,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	**/
 	public function readBytes(bytes:ByteArray, offset:Int = 0, length:Int = 0):Void
 	{
-		__checkValid();
-		__backend.readBytes(bytes, offset, length);
+		_.readBytes(bytes, offset, length);
 	}
 
 	/**
@@ -390,8 +362,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	**/
 	public function readDouble():Float
 	{
-		__checkValid();
-		return __backend.readDouble();
+		return _.readDouble();
 	}
 
 	/**
@@ -405,8 +376,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	**/
 	public function readFloat():Float
 	{
-		__checkValid();
-		return __backend.readFloat();
+		return _.readFloat();
 	}
 
 	/**
@@ -419,8 +389,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	**/
 	public function readInt():Int
 	{
-		__checkValid();
-		return __backend.readInt();
+		return _.readInt();
 	}
 
 	/**
@@ -448,8 +417,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	**/
 	public function readMultiByte(length:Int, charSet:String):String
 	{
-		__checkValid();
-		return __backend.readMultiByte(length, charSet);
+		return _.readMultiByte(length, charSet);
 	}
 
 	/**
@@ -462,15 +430,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	**/
 	public function readObject():Dynamic
 	{
-		if (objectEncoding == HXSF)
-		{
-			return Unserializer.run(readUTF());
-		}
-		else
-		{
-			// TODO: Add support for AMF if haxelib "format" is included
-			return null;
-		}
+		return _.readObject();
 	}
 
 	/**
@@ -483,8 +443,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	**/
 	public function readShort():Int
 	{
-		__checkValid();
-		return __backend.readShort();
+		return _.readShort();
 	}
 
 	/**
@@ -497,8 +456,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	**/
 	public function readUnsignedByte():Int
 	{
-		__checkValid();
-		return __backend.readUnsignedByte();
+		return _.readUnsignedByte();
 	}
 
 	/**
@@ -511,8 +469,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	**/
 	public function readUnsignedInt():Int
 	{
-		__checkValid();
-		return __backend.readUnsignedInt();
+		return _.readUnsignedInt();
 	}
 
 	/**
@@ -525,8 +482,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	**/
 	public function readUnsignedShort():Int
 	{
-		__checkValid();
-		return __backend.readUnsignedShort();
+		return _.readUnsignedShort();
 	}
 
 	/**
@@ -541,8 +497,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	**/
 	public function readUTF():String
 	{
-		__checkValid();
-		return __backend.readUTF();
+		return _.readUTF();
 	}
 
 	/**
@@ -557,8 +512,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	**/
 	public function readUTFBytes(length:Int):String
 	{
-		__checkValid();
-		return __backend.readUTFBytes(length);
+		return _.readUTFBytes(length);
 	}
 
 	/**
@@ -572,8 +526,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	**/
 	public function writeBoolean(value:Bool):Void
 	{
-		__checkValid();
-		__backend.writeBoolean(value);
+		_.writeBoolean(value);
 	}
 
 	/**
@@ -586,8 +539,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	**/
 	public function writeByte(value:Int):Void
 	{
-		__checkValid();
-		__backend.writeByte(value);
+		_.writeByte(value);
 	}
 
 	/**
@@ -613,8 +565,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	**/
 	public function writeBytes(bytes:ByteArray, offset:Int = 0, length:Int = 0):Void
 	{
-		__checkValid();
-		__backend.writeBytes(bytes, offset, length);
+		_.writeBytes(bytes, offset, length);
 	}
 
 	/**
@@ -627,8 +578,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	**/
 	public function writeDouble(value:Float):Void
 	{
-		__checkValid();
-		__backend.writeDouble(value);
+		_.writeDouble(value);
 	}
 
 	/**
@@ -641,8 +591,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	**/
 	public function writeFloat(value:Float):Void
 	{
-		__checkValid();
-		__backend.writeFloat(value);
+		_.writeFloat(value);
 	}
 
 	/**
@@ -654,8 +603,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	**/
 	public function writeInt(value:Int):Void
 	{
-		__checkValid();
-		__backend.writeInt(value);
+		_.writeInt(value);
 	}
 
 	/**
@@ -672,8 +620,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	**/
 	public function writeMultiByte(value:String, charSet:String):Void
 	{
-		__checkValid();
-		__backend.writeUTFBytes(value);
+		_.writeUTFBytes(value);
 	}
 
 	/**
@@ -685,16 +632,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	**/
 	public function writeObject(object:Dynamic):Void
 	{
-		__checkValid();
-
-		if (objectEncoding == HXSF)
-		{
-			__backend.writeUTF(Serializer.run(object));
-		}
-		else
-		{
-			// TODO: Add support for AMF if haxelib "format" is included
-		}
+		_.writeObject(object);
 	}
 
 	/**
@@ -714,8 +652,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	**/
 	public function writeShort(value:Int):Void
 	{
-		__checkValid();
-		__backend.writeShort(value);
+		_.writeShort(value);
 	}
 
 	/**
@@ -727,8 +664,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	**/
 	public function writeUnsignedInt(value:Int):Void
 	{
-		__checkValid();
-		__backend.writeUnsignedInt(value);
+		_.writeUnsignedInt(value);
 	}
 
 	/**
@@ -745,8 +681,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	**/
 	public function writeUTF(value:String):Void
 	{
-		__checkValid();
-		__backend.writeUTF(value);
+		_.writeUTF(value);
 	}
 
 	/**
@@ -758,48 +693,66 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	**/
 	public function writeUTFBytes(value:String):Void
 	{
-		__checkValid();
-		__backend.writeUTFBytes(value);
-	}
-
-	@:noCompletion private function __checkValid():Void
-	{
-		if (!connected)
-		{
-			throw new IOError("Operation attempted on invalid socket.");
-		}
+		_.writeUTFBytes(value);
 	}
 
 	// Get & Set Methods
+
 	@:noCompletion private function get_bytesAvailable():Int
 	{
-		return __backend.getBytesAvailable();
+		return _.bytesAvailable;
 	}
 
 	@:noCompletion private function get_bytesPending():Int
 	{
-		return __backend.getBytesPending();
+		return _.bytesPending;
+	}
+
+	@:noCompletion private function get_connected():Bool
+	{
+		return _.connected;
 	}
 
 	@:noCompletion private function get_endian():Endian
 	{
-		return __backend.getEndian();
+		return _.endian;
 	}
 
 	@:noCompletion private function set_endian(value:Endian):Endian
 	{
-		__backend.setEndian(value);
-		return value;
+		return _.endian = value;
+	}
+
+	@:noCompletion private function get_objectEncoding():ObjectEncoding
+	{
+		return _.objectEncoding;
+	}
+
+	@:noCompletion private function set_objectEncoding(value:ObjectEncoding):ObjectEncoding
+	{
+		return _.objectEncoding = value;
+	}
+
+	@:noCompletion private function get_secure():Bool
+	{
+		return _.secure;
+	}
+
+	@:noCompletion private function set_secure(value:Bool):Bool
+	{
+		return _.secure = value;
+	}
+
+	@:noCompletion private function get_timeout():Int
+	{
+		return _.timeout;
+	}
+
+	@:noCompletion private function set_timeout(value:Int):Int
+	{
+		return _.timeout = value;
 	}
 }
-
-#if openfl_html5
-private typedef SocketBackend = openfl._internal.backend.html5.HTML5SocketBackend;
-#elseif sys
-private typedef SocketBackend = openfl._internal.backend.sys.SysSocketBackend;
-#else
-private typedef SocketBackend = openfl._internal.backend.dummy.DummySocketBackend;
-#end
 #else
 typedef Socket = flash.net.Socket;
 #end

@@ -2,7 +2,6 @@ package openfl.text;
 
 #if !flash
 import openfl.display.DisplayObject;
-import openfl.display.Graphics;
 
 /**
 	This class represents StaticText objects on the display list. You cannot
@@ -29,7 +28,6 @@ import openfl.display.Graphics;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.display.Graphics)
 class StaticText extends DisplayObject
 {
 	/**
@@ -38,13 +36,23 @@ class StaticText extends DisplayObject
 		For example, for vertical text, the authoring tool will create one
 		text field per character.
 	**/
-	public var text(default, null):String;
+	public var text(get, never):String;
 
-	@:noCompletion private function new()
+	@:allow(openfl) @:noCompletion private function new()
 	{
-		super();
+		if (_ == null)
+		{
+			_ = new _StaticText(this);
+		}
 
-		__graphics = new Graphics(this);
+		super();
+	}
+
+	// Get & Set Methods
+
+	@:noCompletion private function get_text():String
+	{
+		return _.text;
 	}
 }
 #else

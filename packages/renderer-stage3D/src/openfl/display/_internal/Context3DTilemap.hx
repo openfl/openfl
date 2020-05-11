@@ -36,17 +36,17 @@ import openfl.display._internal.stats.DrawCallContext;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DTilemap
 {
-	private static var cacheColorTransform:ColorTransform;
+	public static var cacheColorTransform:ColorTransform;
 
-	private static function buildBufferTileContainer(tilemap:Tilemap, group:TileContainer, renderer:Context3DRenderer, parentTransform:Matrix,
+	public static function buildBufferTileContainer(tilemap:Tilemap, group:TileContainer, renderer:Context3DRenderer, parentTransform:Matrix,
 			defaultTileset:Tileset, alphaEnabled:Bool, worldAlpha:Float, colorTransformEnabled:Bool, defaultColorTransform:ColorTransform,
 			cacheBitmapData:BitmapData, rect:Rectangle, matrix:Matrix):Void
 	{
-		var tileTransform = Matrix.__pool.get();
-		var roundPixels = renderer.__roundPixels;
+		var tileTransform = _Matrix.__pool.get();
+		var roundPixels = renderer._.__roundPixels;
 
-		var tiles = group.__tiles;
-		var length = group.__length;
+		var tiles = group._.__tiles;
+		var length = group._.__length;
 
 		var tile,
 			tileset,
@@ -75,7 +75,7 @@ class Context3DTilemap
 
 			alpha = tile.alpha * worldAlpha;
 			visible = tile.visible;
-			tile.__dirty = false;
+			tile._.__dirty = false;
 
 			if (!visible || alpha <= 0) continue;
 
@@ -113,7 +113,7 @@ class Context3DTilemap
 
 			if (!alphaEnabled) alpha = 1;
 
-			if (tile.__length > 0)
+			if (tile._.__length > 0)
 			{
 				buildBufferTileContainer(tilemap, cast tile, renderer, tileTransform, tileset, alphaEnabled, alpha, colorTransformEnabled, colorTransform,
 					cacheBitmapData, rect, matrix);
@@ -124,31 +124,31 @@ class Context3DTilemap
 
 				id = tile.id;
 
-				bitmapData = tileset.__bitmapData;
+				bitmapData = tileset._.__bitmapData;
 				if (bitmapData == null) continue;
 
 				if (id == -1)
 				{
-					tileRect = tile.__rect;
+					tileRect = tile._.__rect;
 					if (tileRect == null || tileRect.width <= 0 || tileRect.height <= 0) continue;
 
-					uvX = tileRect.x / bitmapData.__renderData.textureWidth;
-					uvY = tileRect.y / bitmapData.__renderData.textureHeight;
-					uvWidth = tileRect.right / bitmapData.__renderData.textureWidth;
-					uvHeight = tileRect.bottom / bitmapData.__renderData.textureHeight;
+					uvX = tileRect.x / bitmapData._.__renderData.textureWidth;
+					uvY = tileRect.y / bitmapData._.__renderData.textureHeight;
+					uvWidth = tileRect.right / bitmapData._.__renderData.textureWidth;
+					uvHeight = tileRect.bottom / bitmapData._.__renderData.textureHeight;
 				}
 				else
 				{
-					tileData = tileset.__data[id];
+					tileData = tileset._.__data[id];
 					if (tileData == null) continue;
 
 					rect.setTo(tileData.x, tileData.y, tileData.width, tileData.height);
 					tileRect = rect;
 
-					uvX = tileData.__uvX;
-					uvY = tileData.__uvY;
-					uvWidth = tileData.__uvWidth;
-					uvHeight = tileData.__uvHeight;
+					uvX = tileData._.__uvX;
+					uvY = tileData._.__uvY;
+					uvWidth = tileData._.__uvWidth;
+					uvHeight = tileData._.__uvHeight;
 				}
 
 				tileWidth = tileRect.width;
@@ -157,63 +157,63 @@ class Context3DTilemap
 				renderer.batcher.setVertices(tileTransform, 0, 0, tileWidth, tileHeight);
 				renderer.batcher.setUvs(uvX, uvY, uvWidth, uvHeight);
 
-				var blendMode = tilemap.__worldBlendMode;
+				var blendMode = tilemap._.__worldBlendMode;
 				if (tilemap.tileBlendModeEnabled)
 				{
-					blendMode = (tile.__blendMode != null) ? tile.__blendMode : blendMode;
+					blendMode = (tile._.__blendMode != null) ? tile._.__blendMode : blendMode;
 				}
 
 				renderer.batcher.pushQuad(bitmapData, blendMode, alpha, colorTransform);
 			}
 		}
 
-		group.__dirty = false;
-		Matrix.__pool.release(tileTransform);
+		group._.__dirty = false;
+		_Matrix.__pool.release(tileTransform);
 	}
 
 	public static function render(tilemap:Tilemap, renderer:Context3DRenderer):Void
 	{
-		if (!tilemap.__renderable || tilemap.__worldAlpha <= 0) return;
+		if (!tilemap._.__renderable || tilemap._.__worldAlpha <= 0) return;
 
-		if (!tilemap.__renderable || tilemap.__group.__tiles.length == 0 || tilemap.__worldAlpha <= 0) return;
+		if (!tilemap._.__renderable || tilemap._.__group._.__tiles.length == 0 || tilemap._.__worldAlpha <= 0) return;
 
-		var rect = Rectangle.__pool.get();
-		var matrix = Matrix.__pool.get();
-		var parentTransform = tilemap.__renderTransform;
-		var worldAlpha = (tilemap.__filters == null) ? tilemap.__worldAlpha : 1.0;
+		var rect = _Rectangle.__pool.get();
+		var matrix = _Matrix.__pool.get();
+		var parentTransform = tilemap._.__renderTransform;
+		var worldAlpha = (tilemap._.__filters == null) ? tilemap._.__worldAlpha : 1.0;
 
-		buildBufferTileContainer(tilemap, tilemap.__group, renderer, parentTransform, tilemap.__tileset, tilemap.tileAlphaEnabled, worldAlpha,
-			tilemap.tileColorTransformEnabled, tilemap.__worldColorTransform, null, rect, matrix);
+		buildBufferTileContainer(tilemap, tilemap._.__group, renderer, parentTransform, tilemap._.__tileset, tilemap.tileAlphaEnabled, worldAlpha,
+			tilemap.tileColorTransformEnabled, tilemap._.__worldColorTransform, null, rect, matrix);
 
-		Rectangle.__pool.release(rect);
-		Matrix.__pool.release(matrix);
+		_Rectangle.__pool.release(rect);
+		_Matrix.__pool.release(matrix);
 	}
 
 	public static function renderMask(tilemap:Tilemap, renderer:Context3DRenderer):Void
 	{
-		// tilemap.__updateTileArray ();
+		// tilemap._.__updateTileArray ();
 
-		// if (tilemap.__tileArray == null || tilemap.__tileArray.length == 0) return;
+		// if (tilemap._.__tileArray == null || tilemap._.__tileArray.length == 0) return;
 
 		// var renderer:Context3DRenderer = cast renderer.renderer;
 
-		// var shader = renderer.__maskShader;
+		// var shader = renderer._.__maskShader;
 
-		// var uMatrix = renderer.__getMatrix (tilemap.__renderTransform);
-		// var smoothing = (renderer.__allowSmoothing && tilemap.smoothing);
+		// var uMatrix = renderer._.__getMatrix (tilemap._.__renderTransform);
+		// var smoothing = (renderer._.__allowSmoothing && tilemap.smoothing);
 
-		// var tileArray = tilemap.__tileArray;
-		// var defaultTileset = tilemap.__tileset;
+		// var tileArray = tilemap._.__tileArray;
+		// var defaultTileset = tilemap._.__tileset;
 
-		// tileArray.__updateGLBuffer (gl, defaultTileset, tilemap.__worldAlpha, tilemap.__worldColorTransform);
+		// tileArray._.__updateGLBuffer (gl, defaultTileset, tilemap._.__worldAlpha, tilemap._.__worldColorTransform);
 
 		// gl.vertexAttribPointer (shader.openfl_Position.index, 2, gl.FLOAT, false, 25 * Float32Array.BYTES_PER_ELEMENT, 0);
 		// gl.vertexAttribPointer (shader.openfl_TextureCoord.index, 2, gl.FLOAT, false, 25 * Float32Array.BYTES_PER_ELEMENT, 2 * Float32Array.BYTES_PER_ELEMENT);
 
 		// var cacheBitmapData = null;
 		// var lastIndex = 0;
-		// var skipped = tileArray.__bufferSkipped;
-		// var drawCount = tileArray.__length;
+		// var skipped = tileArray._.__bufferSkipped;
+		// var drawCount = tileArray._.__length;
 
 		// tileArray.position = 0;
 
@@ -233,7 +233,7 @@ class Context3DTilemap
 		// 	if (tileset == null) tileset = defaultTileset;
 		// 	if (tileset == null) continue;
 
-		// 	if (tileset.__bitmapData != cacheBitmapData && cacheBitmapData != null) {
+		// 	if (tileset._.__bitmapData != cacheBitmapData && cacheBitmapData != null) {
 
 		// 		flush = true;
 
@@ -255,11 +255,11 @@ class Context3DTilemap
 
 		// 	}
 
-		// 	cacheBitmapData = tileset.__bitmapData;
+		// 	cacheBitmapData = tileset._.__bitmapData;
 
-		// 	if (i == drawCount && tileset.__bitmapData != null) {
+		// 	if (i == drawCount && tileset._.__bitmapData != null) {
 
-		// 		shader.openfl_Texture.input = tileset.__bitmapData;
+		// 		shader.openfl_Texture.input = tileset._.__bitmapData;
 		// 		renderer.shaderManager.updateShader ();
 		// 		gl.drawArrays (gl.TRIANGLES, lastIndex * 6, (i - lastIndex) * 6);
 

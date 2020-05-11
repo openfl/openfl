@@ -9,9 +9,9 @@ import haxe.ds.StringMap;
 class RegMap
 {
 	public static var map(get, never):StringMap<Reg>;
-	private static var _map:StringMap<Reg>;
+	public static var _map:StringMap<Reg>;
 
-	private static function get_map():StringMap<Reg>
+	public static function get_map():StringMap<Reg>
 	{
 		if (RegMap._map == null)
 		{

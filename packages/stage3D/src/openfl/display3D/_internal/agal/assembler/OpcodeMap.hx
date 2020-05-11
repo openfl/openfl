@@ -7,9 +7,9 @@ package openfl.display3D._internal.agal.assembler;
 class OpcodeMap
 {
 	public static var map(get, never):Map<String, Opcode>;
-	private static var _map:Map<String, Opcode>;
+	public static var _map:Map<String, Opcode>;
 
-	private static function get_map():Map<String, Opcode>
+	public static function get_map():Map<String, Opcode>
 	{
 		if (OpcodeMap._map == null)
 		{

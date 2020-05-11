@@ -51,21 +51,21 @@ import lime.graphics.DOMRenderContext;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class DOMRenderer extends DOMRendererAPI
 {
-	private var __canvasRenderer:CanvasRenderer;
-	private var __clipRects:Array<Rectangle>;
-	private var __colorTransform:ColorTransform;
-	private var __currentClipRect:Rectangle;
-	private var __numClipRects:Int;
-	private var __transformOriginProperty:String;
-	private var __transformProperty:String;
-	private var __vendorPrefix:String;
-	private var __z:Int;
+	public var __canvasRenderer:CanvasRenderer;
+	public var __clipRects:Array<Rectangle>;
+	public var __colorTransform:ColorTransform;
+	public var __currentClipRect:Rectangle;
+	public var __numClipRects:Int;
+	public var __transformOriginProperty:String;
+	public var __transformProperty:String;
+	public var __vendorPrefix:String;
+	public var __z:Int;
 
-	private function new(element:DOMRenderContext)
+	public function new(element:DOMRenderContext)
 	{
 		super(element);
 
-		DisplayObject.__supportDOM = true;
+		DisplayObject._.__supportDOM = true;
 
 		var prefix = untyped __js__("(function () {
 		  var styles = window.getComputedStyle(document.documentElement, ''),
@@ -95,19 +95,19 @@ class DOMRenderer extends DOMRendererAPI
 		__type = DOM;
 
 		__canvasRenderer = new CanvasRenderer(null);
-		__canvasRenderer.__domRenderer = this;
+		__canvasRenderer._.__domRenderer = this;
 	}
 
 	public override function applyStyle(parent:DisplayObject, childElement:Element):Void
 	{
 		if (parent != null && childElement != null)
 		{
-			if (parent.__renderData.style == null || childElement.parentElement != element)
+			if (parent._.__renderData.style == null || childElement.parentElement != element)
 			{
 				__initializeElement(parent, childElement);
 			}
 
-			parent.__renderData.style = childElement.style;
+			parent._.__renderData.style = childElement.style;
 
 			__updateClip(parent);
 			__applyStyle(parent, true, true, true);
@@ -122,29 +122,29 @@ class DOMRenderer extends DOMRendererAPI
 		}
 	}
 
-	private function __applyStyle(displayObject:DisplayObject, setTransform:Bool, setAlpha:Bool, setClip:Bool):Void
+	public function __applyStyle(displayObject:DisplayObject, setTransform:Bool, setAlpha:Bool, setClip:Bool):Void
 	{
 		#if openfl_html5
-		var style = displayObject.__renderData.style;
+		var style = displayObject._.__renderData.style;
 
 		// TODO: displayMatrix
 
-		if (setTransform && displayObject.__renderTransformChanged)
+		if (setTransform && displayObject._.__renderTransformChanged)
 		{
-			style.setProperty(__transformProperty, displayObject.__renderTransform.to3DString(__roundPixels), null);
+			style.setProperty(__transformProperty, displayObject._.__renderTransform.to3DString(__roundPixels), null);
 		}
 
-		if (displayObject.__worldZ != ++__z)
+		if (displayObject._.__worldZ != ++__z)
 		{
-			displayObject.__worldZ = __z;
-			style.setProperty("z-index", Std.string(displayObject.__worldZ), null);
+			displayObject._.__worldZ = __z;
+			style.setProperty("z-index", Std.string(displayObject._.__worldZ), null);
 		}
 
-		if (setAlpha && displayObject.__worldAlphaChanged)
+		if (setAlpha && displayObject._.__worldAlphaChanged)
 		{
-			if (displayObject.__worldAlpha < 1)
+			if (displayObject._.__worldAlpha < 1)
 			{
-				style.setProperty("opacity", Std.string(displayObject.__worldAlpha), null);
+				style.setProperty("opacity", Std.string(displayObject._.__worldAlpha), null);
 			}
 			else
 			{
@@ -152,32 +152,32 @@ class DOMRenderer extends DOMRendererAPI
 			}
 		}
 
-		if (setClip && displayObject.__worldClipChanged)
+		if (setClip && displayObject._.__worldClipChanged)
 		{
-			if (displayObject.__worldClip == null)
+			if (displayObject._.__worldClip == null)
 			{
 				style.removeProperty("clip");
 			}
 			else
 			{
-				var clip = displayObject.__worldClip;
+				var clip = displayObject._.__worldClip;
 				style.setProperty("clip", "rect(" + clip.y + "px, " + clip.right + "px, " + clip.bottom + "px, " + clip.x + "px)", null);
 			}
 		}
 		#end
 	}
 
-	private override function __clearBitmap(bitmap:Bitmap):Void
+	public override function __clearBitmap(bitmap:Bitmap):Void
 	{
 		DOMDisplayObject.clear(bitmap, this);
 		DOMBitmap.clear(bitmap, this);
 	}
 
-	private function __clearDisplayObject(object:DisplayObject):Void
+	public function __clearDisplayObject(object:DisplayObject):Void
 	{
-		if (object != null && object.__type != null)
+		if (object != null && object._.__type != null)
 		{
-			switch (object.__type)
+			switch (object._.__type)
 			{
 				case BITMAP:
 					__clearBitmap(cast object);
@@ -200,9 +200,9 @@ class DOMRenderer extends DOMRendererAPI
 		}
 	}
 
-	private function __clearDisplayObjectContainer(container:DisplayObjectContainer):Void
+	public function __clearDisplayObjectContainer(container:DisplayObjectContainer):Void
 	{
-		for (orphan in container.__removedChildren)
+		for (orphan in container._.__removedChildren)
 		{
 			if (orphan.stage == null)
 			{
@@ -210,70 +210,70 @@ class DOMRenderer extends DOMRendererAPI
 			}
 		}
 
-		container.__cleanupRemovedChildren();
+		container._.__cleanupRemovedChildren();
 
 		__clearShape(cast container);
 
-		var child = container.__firstChild;
+		var child = container._.__firstChild;
 		while (child != null)
 		{
 			__clearDisplayObject(child);
-			child = child.__nextSibling;
+			child = child._.__nextSibling;
 		}
 	}
 
-	private function __clearDOMElement(domElement:DOMElement):Void
+	public function __clearDOMElement(domElement:DOMElement):Void
 	{
 		DOMDisplayObject.clear(domElement, this);
 	}
 
-	private function __clearShape(shape:DisplayObject):Void
+	public function __clearShape(shape:DisplayObject):Void
 	{
 		DOMDisplayObject.clear(shape, this);
 	}
 
-	private function __clearSimpleButton(button:SimpleButton):Void
+	public function __clearSimpleButton(button:SimpleButton):Void
 	{
-		for (previousState in button.__previousStates)
+		for (previousState in button._.__previousStates)
 		{
 			__clearDisplayObject(previousState);
 		}
 
-		if (button.__currentState != null)
+		if (button._.__currentState != null)
 		{
-			__clearDisplayObject(button.__currentState);
+			__clearDisplayObject(button._.__currentState);
 		}
 	}
 
-	private function __clearTextField(textField:TextField):Void
+	public function __clearTextField(textField:TextField):Void
 	{
 		DOMDisplayObject.clear(textField, this);
 		DOMTextField.clear(textField, this);
 	}
 
-	private function __clearTilemap(tilemap:Tilemap):Void
+	public function __clearTilemap(tilemap:Tilemap):Void
 	{
 		DOMDisplayObject.clear(tilemap, this);
 		DOMTilemap.clear(tilemap, this);
 	}
 
-	private function __clearVideo(video:Video):Void
+	public function __clearVideo(video:Video):Void
 	{
 		DOMDisplayObject.clear(video, this);
 		DOMVideo.clear(video, this);
 	}
 
-	private function __getAlpha(value:Float):Float
+	public function __getAlpha(value:Float):Float
 	{
 		return value * __worldAlpha;
 	}
 
-	private function __getColorTransform(value:ColorTransform):ColorTransform
+	public function __getColorTransform(value:ColorTransform):ColorTransform
 	{
 		if (__worldColorTransform != null)
 		{
-			__colorTransform.__copyFrom(__worldColorTransform);
-			__colorTransform.__combine(value);
+			__colorTransform._.__copyFrom(__worldColorTransform);
+			__colorTransform._.__combine(value);
 			return __colorTransform;
 		}
 		else
@@ -283,9 +283,9 @@ class DOMRenderer extends DOMRendererAPI
 	}
 
 	#if openfl_html5
-	private function __initializeElement(displayObject:DisplayObject, element:Element):Void
+	public function __initializeElement(displayObject:DisplayObject, element:Element):Void
 	{
-		var style = displayObject.__renderData.style = element.style;
+		var style = displayObject._.__renderData.style = element.style;
 
 		style.setProperty("position", "absolute", null);
 		style.setProperty("top", "0", null);
@@ -294,34 +294,34 @@ class DOMRenderer extends DOMRendererAPI
 
 		this.element.appendChild(element);
 
-		displayObject.__worldAlphaChanged = true;
-		displayObject.__renderTransformChanged = true;
-		displayObject.__worldVisibleChanged = true;
-		displayObject.__worldClipChanged = true;
-		displayObject.__worldClip = null;
-		displayObject.__worldZ = -1;
+		displayObject._.__worldAlphaChanged = true;
+		displayObject._.__renderTransformChanged = true;
+		displayObject._.__worldVisibleChanged = true;
+		displayObject._.__worldClipChanged = true;
+		displayObject._.__worldClip = null;
+		displayObject._.__worldZ = -1;
 	}
 	#end
 
-	private function __popMask():Void
+	public function __popMask():Void
 	{
 		__popMaskRect();
 	}
 
-	private function __popMaskObject(object:DisplayObject, handleScrollRect:Bool = true):Void
+	public function __popMaskObject(object:DisplayObject, handleScrollRect:Bool = true):Void
 	{
-		if (object.__mask != null)
+		if (object._.__mask != null)
 		{
 			__popMask();
 		}
 
-		if (handleScrollRect && object.__scrollRect != null)
+		if (handleScrollRect && object._.__scrollRect != null)
 		{
 			__popMaskRect();
 		}
 	}
 
-	private function __popMaskRect():Void
+	public function __popMaskRect():Void
 	{
 		if (__numClipRects > 0)
 		{
@@ -338,27 +338,27 @@ class DOMRenderer extends DOMRendererAPI
 		}
 	}
 
-	private function __pushMask(mask:DisplayObject):Void
+	public function __pushMask(mask:DisplayObject):Void
 	{
 		// TODO: Handle true mask shape, as well as alpha test
 
-		__pushMaskRect(mask.getBounds(mask), mask.__renderTransform);
+		__pushMaskRect(mask.getBounds(mask), mask._.__renderTransform);
 	}
 
-	private function __pushMaskObject(object:DisplayObject, handleScrollRect:Bool = true):Void
+	public function __pushMaskObject(object:DisplayObject, handleScrollRect:Bool = true):Void
 	{
-		if (handleScrollRect && object.__scrollRect != null)
+		if (handleScrollRect && object._.__scrollRect != null)
 		{
-			__pushMaskRect(object.__scrollRect, object.__renderTransform);
+			__pushMaskRect(object._.__scrollRect, object._.__renderTransform);
 		}
 
-		if (object.__mask != null)
+		if (object._.__mask != null)
 		{
-			__pushMask(object.__mask);
+			__pushMask(object._.__mask);
 		}
 	}
 
-	private function __pushMaskRect(rect:Rectangle, transform:Matrix):Void
+	public function __pushMaskRect(rect:Rectangle, transform:Matrix):Void
 	{
 		// TODO: Handle rotation?
 
@@ -368,12 +368,12 @@ class DOMRenderer extends DOMRendererAPI
 		}
 
 		var clipRect = __clipRects[__numClipRects];
-		rect.__transform(clipRect, transform);
+		rect._.__transform(clipRect, transform);
 
 		if (__numClipRects > 0)
 		{
 			var parentClipRect = __clipRects[__numClipRects - 1];
-			clipRect.__contract(parentClipRect.x, parentClipRect.y, parentClipRect.width, parentClipRect.height);
+			clipRect._.__contract(parentClipRect.x, parentClipRect.y, parentClipRect.width, parentClipRect.height);
 		}
 
 		if (clipRect.height < 0)
@@ -390,11 +390,11 @@ class DOMRenderer extends DOMRendererAPI
 		__numClipRects++;
 	}
 
-	private override function __render(object:IBitmapDrawable):Void
+	public override function __render(object:IBitmapDrawable):Void
 	{
-		if (!__stage.__transparent)
+		if (!__stage._.__transparent)
 		{
-			element.style.background = __stage.__colorString;
+			element.style.background = __stage._.__colorString;
 		}
 		else
 		{
@@ -404,22 +404,22 @@ class DOMRenderer extends DOMRendererAPI
 		__z = 1;
 
 		// TODO: BitmapData render
-		if (object != null && object.__type != null)
+		if (object != null && object._.__type != null)
 		{
 			__renderDisplayObject(cast object);
 		}
 	}
 
-	private function __renderBitmap(bitmap:Bitmap):Void
+	public function __renderBitmap(bitmap:Bitmap):Void
 	{
-		__canvasRenderer.__updateCacheBitmap(bitmap, /*!__worldColorTransform.__isDefault ()*/ false);
+		__canvasRenderer._.__updateCacheBitmap(bitmap, /*!__worldColorTransform._.__isDefault ()*/ false);
 
-		if (bitmap.__renderData.cacheBitmap != null && !bitmap.__renderData.isCacheBitmapRender)
+		if (bitmap._.__renderData.cacheBitmap != null && !bitmap._.__renderData.isCacheBitmapRender)
 		{
 			__clearBitmap(bitmap);
-			bitmap.__renderData.cacheBitmap.stage = bitmap.stage;
+			bitmap._.__renderData.cacheBitmap.stage = bitmap.stage;
 
-			DOMBitmap.render(bitmap.__renderData.cacheBitmap, this);
+			DOMBitmap.render(bitmap._.__renderData.cacheBitmap, this);
 		}
 		else
 		{
@@ -428,11 +428,11 @@ class DOMRenderer extends DOMRendererAPI
 		}
 	}
 
-	private function __renderDisplayObject(object:DisplayObject):Void
+	public function __renderDisplayObject(object:DisplayObject):Void
 	{
-		if (object != null && object.__type != null)
+		if (object != null && object._.__type != null)
 		{
-			switch (object.__type)
+			switch (object._.__type)
 			{
 				case BITMAP:
 					__renderBitmap(cast object);
@@ -454,15 +454,15 @@ class DOMRenderer extends DOMRendererAPI
 					return;
 			}
 
-			if (object.__customRenderEvent != null)
+			if (object._.__customRenderEvent != null)
 			{
-				var event = object.__customRenderEvent;
+				var event = object._.__customRenderEvent;
 				event.allowSmoothing = __allowSmoothing;
-				event.objectMatrix.copyFrom(object.__renderTransform);
-				event.objectColorTransform.__copyFrom(object.__worldColorTransform);
+				event.objectMatrix.copyFrom(object._.__renderTransform);
+				event.objectColorTransform._.__copyFrom(object._.__worldColorTransform);
 				event.renderer = this;
 
-				if (object.stage != null && object.__worldVisible)
+				if (object.stage != null && object._.__worldVisible)
 				{
 					event.type = RenderEvent.RENDER_DOM;
 				}
@@ -471,7 +471,7 @@ class DOMRenderer extends DOMRendererAPI
 					event.type = RenderEvent.CLEAR_DOM;
 				}
 
-				__setBlendMode(object.__worldBlendMode);
+				__setBlendMode(object._.__worldBlendMode);
 				__pushMaskObject(object);
 
 				object.dispatchEvent(event);
@@ -481,9 +481,9 @@ class DOMRenderer extends DOMRendererAPI
 		}
 	}
 
-	private function __renderDisplayObjectContainer(container:DisplayObjectContainer):Void
+	public function __renderDisplayObjectContainer(container:DisplayObjectContainer):Void
 	{
-		for (orphan in container.__removedChildren)
+		for (orphan in container._.__removedChildren)
 		{
 			if (orphan.stage == null)
 			{
@@ -491,43 +491,43 @@ class DOMRenderer extends DOMRendererAPI
 			}
 		}
 
-		container.__cleanupRemovedChildren();
+		container._.__cleanupRemovedChildren();
 
-		__canvasRenderer.__updateCacheBitmap(container, /*!__worldColorTransform.__isDefault ()*/ false);
+		__canvasRenderer._.__updateCacheBitmap(container, /*!__worldColorTransform._.__isDefault ()*/ false);
 
-		if (container.__renderData.cacheBitmap != null && !container.__renderData.isCacheBitmapRender)
+		if (container._.__renderData.cacheBitmap != null && !container._.__renderData.isCacheBitmapRender)
 		{
 			__clearDisplayObjectContainer(container);
-			container.__renderData.cacheBitmap.stage = container.stage;
+			container._.__renderData.cacheBitmap.stage = container.stage;
 
-			DOMBitmap.render(container.__renderData.cacheBitmap, this);
+			DOMBitmap.render(container._.__renderData.cacheBitmap, this);
 		}
 		else
 		{
 			DOMDisplayObject.render(container, this);
 
-			if (container.__renderData.cacheBitmap != null && !container.__renderData.isCacheBitmapRender) return;
+			if (container._.__renderData.cacheBitmap != null && !container._.__renderData.isCacheBitmapRender) return;
 
 			__pushMaskObject(container);
 
-			var child = container.__firstChild;
+			var child = container._.__firstChild;
 			if (__stage != null)
 			{
 				while (child != null)
 				{
 					__renderDisplayObject(child);
-					child.__renderDirty = false;
-					child = child.__nextSibling;
+					child._.__renderDirty = false;
+					child = child._.__nextSibling;
 				}
 
-				container.__renderDirty = false;
+				container._.__renderDirty = false;
 			}
 			else
 			{
 				while (child != null)
 				{
 					__renderDisplayObject(child);
-					child = child.__nextSibling;
+					child = child._.__nextSibling;
 				}
 			}
 
@@ -535,14 +535,14 @@ class DOMRenderer extends DOMRendererAPI
 		}
 	}
 
-	private function __renderDOMElement(domElement:DOMElement):Void
+	public function __renderDOMElement(domElement:DOMElement):Void
 	{
-		if (domElement.stage != null && domElement.__worldVisible && domElement.__renderable)
+		if (domElement.stage != null && domElement._.__worldVisible && domElement._.__renderable)
 		{
-			if (!domElement.__active)
+			if (!domElement._.__active)
 			{
-				__initializeElement(domElement, domElement.__element);
-				domElement.__active = true;
+				__initializeElement(domElement, domElement._.__element);
+				domElement._.__active = true;
 			}
 
 			__updateClip(domElement);
@@ -550,26 +550,26 @@ class DOMRenderer extends DOMRendererAPI
 		}
 		else
 		{
-			if (domElement.__active)
+			if (domElement._.__active)
 			{
-				element.removeChild(domElement.__element);
-				domElement.__active = false;
+				element.removeChild(domElement._.__element);
+				domElement._.__active = false;
 			}
 		}
 
 		DOMDisplayObject.render(domElement, this);
 	}
 
-	private function __renderShape(shape:DisplayObject):Void
+	public function __renderShape(shape:DisplayObject):Void
 	{
-		__canvasRenderer.__updateCacheBitmap(shape, /*!__worldColorTransform.__isDefault ()*/ false);
+		__canvasRenderer._.__updateCacheBitmap(shape, /*!__worldColorTransform._.__isDefault ()*/ false);
 
-		if (shape.__renderData.cacheBitmap != null && !shape.__renderData.isCacheBitmapRender)
+		if (shape._.__renderData.cacheBitmap != null && !shape._.__renderData.isCacheBitmapRender)
 		{
 			__clearShape(shape);
-			shape.__renderData.cacheBitmap.stage = shape.stage;
+			shape._.__renderData.cacheBitmap.stage = shape.stage;
 
-			DOMBitmap.render(shape.__renderData.cacheBitmap, this);
+			DOMBitmap.render(shape._.__renderData.cacheBitmap, this);
 		}
 		else
 		{
@@ -577,58 +577,58 @@ class DOMRenderer extends DOMRendererAPI
 		}
 	}
 
-	private function __renderSimpleButton(button:SimpleButton):Void
+	public function __renderSimpleButton(button:SimpleButton):Void
 	{
 		__pushMaskObject(button);
 
-		for (previousState in button.__previousStates)
+		for (previousState in button._.__previousStates)
 		{
 			__clearDisplayObject(previousState);
 		}
 
-		button.__previousStates.length = 0;
+		button._.__previousStates.length = 0;
 
-		if (button.__currentState != null)
+		if (button._.__currentState != null)
 		{
-			if (button.__currentState.stage != button.stage)
+			if (button._.__currentState.stage != button.stage)
 			{
-				button.__currentState.__setStageReferences(button.stage);
+				button._.__currentState._.__setStageReferences(button.stage);
 			}
 
-			__renderDisplayObject(button.__currentState);
+			__renderDisplayObject(button._.__currentState);
 		}
 
 		__popMaskObject(button);
 	}
 
-	private function __renderTextField(textField:TextField):Void
+	public function __renderTextField(textField:TextField):Void
 	{
 		#if openfl_html5
-		textField.__domRender = true;
-		__canvasRenderer.__updateCacheBitmap(textField, textField.__forceCachedBitmapUpdate
-			|| /*!__worldColorTransform.__isDefault ()*/ false);
-		textField.__forceCachedBitmapUpdate = false;
-		textField.__domRender = false;
+		textField._.__domRender = true;
+		__canvasRenderer._.__updateCacheBitmap(textField, textField._.__forceCachedBitmapUpdate
+			|| /*!__worldColorTransform._.__isDefault ()*/ false);
+		textField._.__forceCachedBitmapUpdate = false;
+		textField._.__domRender = false;
 
-		if (textField.__renderData.cacheBitmap != null && !textField.__renderData.isCacheBitmapRender)
+		if (textField._.__renderData.cacheBitmap != null && !textField._.__renderData.isCacheBitmapRender)
 		{
 			__clearTextField(textField);
-			textField.__renderData.cacheBitmap.stage = textField.stage;
+			textField._.__renderData.cacheBitmap.stage = textField.stage;
 
-			DOMBitmap.render(textField.__renderData.cacheBitmap, this);
+			DOMBitmap.render(textField._.__renderData.cacheBitmap, this);
 		}
 		else
 		{
-			if (textField.__renderedOnCanvasWhileOnDOM)
+			if (textField._.__renderedOnCanvasWhileOnDOM)
 			{
-				textField.__renderedOnCanvasWhileOnDOM = false;
+				textField._.__renderedOnCanvasWhileOnDOM = false;
 
-				if (textField.__isHTML && textField.__rawHtmlText != null)
+				if (textField._.__isHTML && textField._.__rawHtmlText != null)
 				{
-					textField.__updateText(textField.__rawHtmlText);
-					textField.__dirty = true;
-					textField.__layoutDirty = true;
-					textField.__setRenderDirty();
+					textField._.__updateText(textField._.__rawHtmlText);
+					textField._.__dirty = true;
+					textField._.__layoutDirty = true;
+					textField._.__setRenderDirty();
 				}
 			}
 
@@ -637,16 +637,16 @@ class DOMRenderer extends DOMRendererAPI
 		#end
 	}
 
-	private function __renderTilemap(tilemap:Tilemap):Void
+	public function __renderTilemap(tilemap:Tilemap):Void
 	{
-		__canvasRenderer.__updateCacheBitmap(tilemap, /*!__worldColorTransform.__isDefault ()*/ false);
+		__canvasRenderer._.__updateCacheBitmap(tilemap, /*!__worldColorTransform._.__isDefault ()*/ false);
 
-		if (tilemap.__renderData.cacheBitmap != null && !tilemap.__renderData.isCacheBitmapRender)
+		if (tilemap._.__renderData.cacheBitmap != null && !tilemap._.__renderData.isCacheBitmapRender)
 		{
 			__clearTilemap(tilemap);
-			tilemap.__renderData.cacheBitmap.stage = tilemap.stage;
+			tilemap._.__renderData.cacheBitmap.stage = tilemap.stage;
 
-			DOMBitmap.render(tilemap.__renderData.cacheBitmap, this);
+			DOMBitmap.render(tilemap._.__renderData.cacheBitmap, this);
 		}
 		else
 		{
@@ -655,12 +655,12 @@ class DOMRenderer extends DOMRendererAPI
 		}
 	}
 
-	private function __renderVideo(video:Video):Void
+	public function __renderVideo(video:Video):Void
 	{
 		DOMVideo.render(video, this);
 	}
 
-	private function __setBlendMode(value:BlendMode):Void
+	public function __setBlendMode(value:BlendMode):Void
 	{
 		if (__overrideBlendMode != null) value = __overrideBlendMode;
 		if (__blendMode == value) return;
@@ -736,12 +736,12 @@ class DOMRenderer extends DOMRendererAPI
 		// }
 	}
 
-	private function __updateCacheBitmap(object:DisplayObject, force:Bool):Bool
+	public function __updateCacheBitmap(object:DisplayObject, force:Bool):Bool
 	{
-		var bitmap = object.__renderData.cacheBitmap;
-		var updated = __canvasRenderer.__updateCacheBitmap(object, force);
+		var bitmap = object._.__renderData.cacheBitmap;
+		var updated = __canvasRenderer._.__updateCacheBitmap(object, force);
 
-		if (updated && bitmap != null && object.__renderData.cacheBitmap == null)
+		if (updated && bitmap != null && object._.__renderData.cacheBitmap == null)
 		{
 			__clearBitmap(bitmap);
 		}
@@ -749,40 +749,40 @@ class DOMRenderer extends DOMRendererAPI
 		return updated;
 	}
 
-	private function __updateClip(displayObject:DisplayObject):Void
+	public function __updateClip(displayObject:DisplayObject):Void
 	{
 		if (__currentClipRect == null)
 		{
-			displayObject.__worldClipChanged = (displayObject.__worldClip != null);
-			displayObject.__worldClip = null;
+			displayObject._.__worldClipChanged = (displayObject._.__worldClip != null);
+			displayObject._.__worldClip = null;
 		}
 		else
 		{
-			if (displayObject.__worldClip == null)
+			if (displayObject._.__worldClip == null)
 			{
-				displayObject.__worldClip = new Rectangle();
+				displayObject._.__worldClip = new Rectangle();
 			}
 
-			var clip = Rectangle.__pool.get();
-			var matrix = Matrix.__pool.get();
+			var clip = _Rectangle.__pool.get();
+			var matrix = _Matrix.__pool.get();
 
-			matrix.copyFrom(displayObject.__renderTransform);
+			matrix.copyFrom(displayObject._.__renderTransform);
 			matrix.invert();
 
-			__currentClipRect.__transform(clip, matrix);
+			__currentClipRect._.__transform(clip, matrix);
 
-			if (clip.equals(displayObject.__worldClip))
+			if (clip.equals(displayObject._.__worldClip))
 			{
-				displayObject.__worldClipChanged = false;
+				displayObject._.__worldClipChanged = false;
 			}
 			else
 			{
-				displayObject.__worldClip.copyFrom(clip);
-				displayObject.__worldClipChanged = true;
+				displayObject._.__worldClip.copyFrom(clip);
+				displayObject._.__worldClipChanged = true;
 			}
 
-			Rectangle.__pool.release(clip);
-			Matrix.__pool.release(matrix);
+			_Rectangle.__pool.release(clip);
+			_Matrix.__pool.release(matrix);
 		}
 	}
 }

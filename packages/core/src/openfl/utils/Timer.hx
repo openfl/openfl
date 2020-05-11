@@ -36,7 +36,7 @@ class Timer extends EventDispatcher
 		The total number of times the timer has fired since it started at zero. If
 		the timer has been reset, only the fires since the reset are counted.
 	**/
-	public var currentCount(default, null):Int;
+	public var currentCount(get, never):Int;
 
 	/**
 		The delay, in milliseconds, between timer events. If you set the delay
@@ -66,22 +66,9 @@ class Timer extends EventDispatcher
 		The timer's current state; `true` if the timer is running,
 		otherwise `false`.
 	**/
-	public var running(default, null):Bool;
+	public var running(get, never):Bool;
 
-	@:noCompletion private var __backend:TimerBackend;
-	@:noCompletion private var __delay:Float;
-	@:noCompletion private var __repeatCount:Int;
-
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		var p = untyped Timer.prototype;
-		untyped global.Object.defineProperties(p, {
-			"delay": {get: p.get_delay, set: p.set_delay},
-			"repeatCount": {get: p.get_repeatCount, set: p.set_repeatCount}
-		});
-	}
-	#end
+	@:allow(openfl) @:noCompletion private var _:_Timer;
 
 	/**
 		Constructs a new Timer object with the specified `delay` and
@@ -102,20 +89,10 @@ class Timer extends EventDispatcher
 	**/
 	public function new(delay:Float, repeatCount:Int = 0):Void
 	{
-		if (Math.isNaN(delay) || delay < 0)
+		if (_ == null)
 		{
-			throw new Error("The delay specified is negative or not a finite number");
+			_ = new _Timer(delay, repeatCount);
 		}
-
-		super();
-
-		__delay = delay;
-		__repeatCount = repeatCount;
-
-		running = false;
-		currentCount = 0;
-
-		__backend = new TimerBackend(this);
 	}
 
 	/**
@@ -127,12 +104,7 @@ class Timer extends EventDispatcher
 	**/
 	public function reset():Void
 	{
-		if (running)
-		{
-			stop();
-		}
-
-		currentCount = 0;
+		_.reset();
 	}
 
 	/**
@@ -141,11 +113,7 @@ class Timer extends EventDispatcher
 	**/
 	public function start():Void
 	{
-		if (!running)
-		{
-			running = true;
-			__backend.start();
-		}
+		_.start();
 	}
 
 	/**
@@ -156,69 +124,41 @@ class Timer extends EventDispatcher
 	**/
 	public function stop():Void
 	{
-		running = false;
-		__backend.stop();
+		_.stop();
 	}
 
 	// Getters & Setters
+
+	@:noCompletion private function get_currentCount():Int
+	{
+		return _.currentCount;
+	}
+
 	@:noCompletion private function get_delay():Float
 	{
-		return __delay;
+		return _.delay;
 	}
 
 	@:noCompletion private function set_delay(value:Float):Float
 	{
-		__delay = value;
-
-		if (running)
-		{
-			stop();
-			start();
-		}
-
-		return __delay;
+		return _.delay = value;
 	}
 
 	@:noCompletion private function get_repeatCount():Int
 	{
-		return __repeatCount;
+		return _.repeatCount;
 	}
 
 	@:noCompletion private function set_repeatCount(v:Int):Int
 	{
-		if (running && v != 0 && v <= currentCount)
-		{
-			stop();
-		}
-
-		return __repeatCount = v;
+		return _.repeatCount = v;
 	}
 
-	// Event Handlers
-	@:noCompletion private function timer_onTimer():Void
+	@:noCompletion private function get_running():Bool
 	{
-		currentCount++;
-
-		if (__repeatCount > 0 && currentCount >= __repeatCount)
-		{
-			stop();
-			dispatchEvent(new TimerEvent(TimerEvent.TIMER));
-			dispatchEvent(new TimerEvent(TimerEvent.TIMER_COMPLETE));
-		}
-		else
-		{
-			dispatchEvent(new TimerEvent(TimerEvent.TIMER));
-		}
+		return _.running;
 	}
 }
-
-#if openfl_html5
-private typedef TimerBackend = openfl._internal.backend.html5.HTML5TimerBackend;
-#elseif sys
-private typedef TimerBackend = openfl._internal.backend.sys.SysTimerBackend;
-#else
-private typedef TimerBackend = openfl._internal.backend.dummy.DummyTimerBackend;
-#end
 #else
 typedef Timer = flash.utils.Timer;
 #end

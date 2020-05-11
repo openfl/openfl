@@ -60,7 +60,7 @@ class PrintJob
 		Indicates whether the PrintJob class is supported on the current
 		platform (`true`) or not (`false`).
 	**/
-	public static var isSupported(default, null) = #if openfl_html5 true #else false #end;
+	public static var isSupported(get, never):Bool;
 
 	/**
 		The image orientation for printing. The acceptable values are defined
@@ -71,7 +71,7 @@ class PrintJob
 		calling `start()` or `start2()` to set the orientation for a range of
 		pages within the job.
 	**/
-	public var orientation:PrintJobOrientation;
+	public var orientation(get, set):PrintJobOrientation;
 
 	/**
 		The height of the largest area which can be centered in the actual
@@ -82,7 +82,7 @@ class PrintJob
 		`printableArea` instead, which measures the printable area in
 		fractional points and describes off-center printable areas accurately.
 	**/
-	public var pageHeight(default, null):Int;
+	public var pageHeight(get, never):Int;
 
 	/**
 		The width of the largest area which can be centered in the actual
@@ -93,7 +93,7 @@ class PrintJob
 		`printableArea` instead, which measures the printable area in
 		fractional points and describes off-center printable areas accurately.
 	**/
-	public var pageWidth(default, null):Int;
+	public var pageWidth(get, never):Int;
 
 	/**
 		The overall paper height, in points. This property is available only
@@ -102,7 +102,7 @@ class PrintJob
 		`paperArea` instead, which measures the paper dimensions in fractional
 		points.
 	**/
-	public var paperHeight(default, null):Int;
+	public var paperHeight(get, never):Int;
 
 	/**
 		The overall paper width, in points. This property is available only
@@ -111,11 +111,9 @@ class PrintJob
 		`paperArea` instead, which measures the paper dimensions in fractional
 		points.
 	**/
-	public var paperWidth(default, null):Int;
+	public var paperWidth(get, never):Int;
 
-	@:noCompletion private var __backend:PrintJobBackend;
-	@:noCompletion private var __bitmapData:Array<BitmapData>;
-	@:noCompletion private var __started:Bool;
+	@:allow(openfl) @:noCompletion private var _:_PrintJob;
 
 	/**
 		Creates a PrintJob object that you can use to print one or more pages.
@@ -169,7 +167,10 @@ class PrintJob
 	**/
 	public function new()
 	{
-		__backend = new PrintJobBackend(this);
+		if (_ == null)
+		{
+			_ = new _PrintJob();
+		}
 	}
 
 	/**
@@ -276,17 +277,7 @@ class PrintJob
 	**/
 	public function addPage(sprite:Sprite, printArea:Rectangle = null, options:PrintJobOptions = null, frameNum:Int = 0):Void
 	{
-		if (!__started) return;
-
-		if (printArea == null)
-		{
-			printArea = sprite.getBounds(sprite);
-		}
-
-		var bitmapData = new BitmapData(Math.ceil(printArea.width), Math.ceil(printArea.height), true, 0);
-		bitmapData.draw(sprite);
-
-		__bitmapData.push(bitmapData);
+		_.addPage(sprite, printArea, options, frameNum);
 	}
 
 	/**
@@ -313,9 +304,7 @@ class PrintJob
 	**/
 	public function send():Void
 	{
-		if (!__started) return;
-
-		__backend.send();
+		_.send();
 	}
 
 	/**
@@ -371,25 +360,46 @@ class PrintJob
 	**/
 	public function start():Bool
 	{
-		if (isSupported)
-		{
-			__started = true;
-			__bitmapData = new Array();
+		return _.start();
+	}
 
-			return true;
-		}
+	// Get & Set Methods
 
-		return false;
+	@:noCompletion public static function get_isSupported():Bool
+	{
+		return _PrintJob.isSupported;
+	}
+
+	@:noCompletion public function get_orientation():PrintJobOrientation
+	{
+		return _.orientation;
+	}
+
+	@:noCompletion public function set_orientation(value:PrintJobOrientation):PrintJobOrientation
+	{
+		return _.orientation = value;
+	}
+
+	@:noCompletion public function get_pageHeight():Int
+	{
+		return _.pageHeight;
+	}
+
+	@:noCompletion public function get_pageWidth():Int
+	{
+		return _.pageWidth;
+	}
+
+	@:noCompletion public function get_paperHeight():Int
+	{
+		return _.paperHeight;
+	}
+
+	@:noCompletion public function get_paperWidth():Int
+	{
+		return _.paperWidth;
 	}
 }
-
-#if lime
-private typedef PrintJobBackend = openfl._internal.backend.lime.LimePrintJobBackend;
-#elseif openfl_html5
-private typedef PrintJobBackend = openfl._internal.backend.html5.HTML5PrintJobBackend;
-#else
-private typedef PrintJobBackend = openfl._internal.backend.dummy.DummyPrintJobBackend;
-#end
 #else
 typedef PrintJob = flash.printing.PrintJob;
 #end

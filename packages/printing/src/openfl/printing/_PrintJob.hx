@@ -1,8 +1,9 @@
 package openfl.printing;
 
-#if lime
 import haxe.Timer;
-import openfl.printing.PrintJob;
+import openfl.display.BitmapData;
+import openfl.display.Sprite;
+import openfl.geom.Rectangle;
 #if openfl_html5
 import js.html.DivElement;
 import js.html.Image;
@@ -20,15 +21,38 @@ import js.Browser;
 @:noCompletion
 class _PrintJob
 {
-	private var parent:PrintJob;
+	public static var isSupported = #if openfl_html5 true #else false #end;
 
-	public function new(parent:PrintJob)
+	public var orientation:PrintJobOrientation;
+	public var pageHeight:Int;
+	public var pageWidth:Int;
+	public var paperHeight:Int;
+	public var paperWidth:Int;
+
+	public var __bitmapData:Array<BitmapData>;
+	public var __started:Bool;
+
+	public function new() {}
+
+	public function addPage(sprite:Sprite, printArea:Rectangle = null, options:PrintJobOptions = null, frameNum:Int = 0):Void
 	{
-		this.parent = parent;
+		if (!__started) return;
+
+		if (printArea == null)
+		{
+			printArea = sprite.getBounds(sprite);
+		}
+
+		var bitmapData = new BitmapData(Math.ceil(printArea.width), Math.ceil(printArea.height), true, 0);
+		bitmapData.draw(sprite);
+
+		__bitmapData.push(bitmapData);
 	}
 
 	public function send():Void
 	{
+		if (!__started) return;
+
 		#if openfl_html5
 		var window = Browser.window.open("", "", "width=500,height=500");
 
@@ -50,10 +74,10 @@ class _PrintJob
 			var bitmapData;
 			var canvas;
 
-			for (i in 0...parent.__bitmapData.length)
+			for (i in 0...__bitmapData.length)
 			{
-				bitmapData = parent.__bitmapData[i];
-				canvas = bitmapData.__getCanvas();
+				bitmapData = __bitmapData[i];
+				canvas = bitmapData._.__getCanvas();
 
 				if (canvas != null)
 				{
@@ -78,5 +102,17 @@ class _PrintJob
 		}
 		#end
 	}
+
+	public function start():Bool
+	{
+		if (isSupported)
+		{
+			__started = true;
+			__bitmapData = new Array();
+
+			return true;
+		}
+
+		return false;
+	}
 }
-#end

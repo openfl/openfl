@@ -37,27 +37,27 @@ import openfl.display._internal.stats.DrawCallContext;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DGraphics
 {
-	private static var blankBitmapData = new BitmapData(1, 1, false, 0);
-	private static var maskRender:Bool;
-	private static var tempColorTransform = new ColorTransform(1, 1, 1, 1, 0, 0, 0, 0);
+	public static var blankBitmapData = new BitmapData(1, 1, false, 0);
+	public static var maskRender:Bool;
+	public static var tempColorTransform = new ColorTransform(1, 1, 1, 1, 0, 0, 0, 0);
 
-	private static function buildBuffer(graphics:Graphics, renderer:Context3DRenderer):Void
+	public static function buildBuffer(graphics:Graphics, renderer:Context3DRenderer):Void
 	{
 		var quadBufferPosition = 0;
 		var triangleIndexBufferPosition = 0;
 		var vertexBufferPosition = 0;
 		var vertexBufferPositionUVT = 0;
 
-		var data = new DrawCommandReader(graphics.__commands);
+		var data = new DrawCommandReader(graphics._.__commands);
 
 		var context = renderer.context3D;
 
-		var tileRect = Rectangle.__pool.get();
-		var tileTransform = Matrix.__pool.get();
+		var tileRect = _Rectangle.__pool.get();
+		var tileTransform = _Matrix.__pool.get();
 
 		var bitmap = null;
 
-		for (type in graphics.__commands.types)
+		for (type in graphics._.__commands.types)
 		{
 			switch (type)
 			{
@@ -98,9 +98,9 @@ class Context3DGraphics
 						var transforms = c.transforms;
 
 						#if cpp
-						var rects:Array<Float> = rects == null ? null : untyped (rects).__array;
-						var indices:Array<Int> = indices == null ? null : untyped (indices).__array;
-						var transforms:Array<Float> = transforms == null ? null : untyped (transforms).__array;
+						var rects:Array<Float> = rects == null ? null : untyped (rects)._.__array;
+						var indices:Array<Int> = indices == null ? null : untyped (indices)._.__array;
+						var transforms:Array<Float> = transforms == null ? null : untyped (transforms)._.__array;
 						#end
 
 						var hasIndices = (indices != null);
@@ -129,13 +129,13 @@ class Context3DGraphics
 						var dataPerVertex = 4;
 						var stride = dataPerVertex * 4;
 
-						if (graphics.__renderData.quadBuffer == null)
+						if (graphics._.__renderData.quadBuffer == null)
 						{
-							graphics.__renderData.quadBuffer = new Context3DBuffer(context, QUADS, length, dataPerVertex);
+							graphics._.__renderData.quadBuffer = new Context3DBuffer(context, QUADS, length, dataPerVertex);
 						}
 						else
 						{
-							graphics.__renderData.quadBuffer.resize(quadBufferPosition + length, dataPerVertex);
+							graphics._.__renderData.quadBuffer.resize(quadBufferPosition + length, dataPerVertex);
 						}
 
 						var vertexOffset, alpha = 1.0, tileData, id;
@@ -147,7 +147,7 @@ class Context3DGraphics
 						var x, y, x2, y2, x3, y3, x4, y4;
 						var ri, ti;
 
-						var vertexBufferData = graphics.__renderData.quadBuffer.vertexBufferData;
+						var vertexBufferData = graphics._.__renderData.quadBuffer.vertexBufferData;
 
 						#if openfl_power_of_two
 						bitmapWidth = 1;
@@ -211,14 +211,14 @@ class Context3DGraphics
 							uvWidth = tileRect.right / bitmapWidth;
 							uvHeight = tileRect.bottom / bitmapHeight;
 
-							x = tileTransform.__transformX(0, 0);
-							y = tileTransform.__transformY(0, 0);
-							x2 = tileTransform.__transformX(tileWidth, 0);
-							y2 = tileTransform.__transformY(tileWidth, 0);
-							x3 = tileTransform.__transformX(0, tileHeight);
-							y3 = tileTransform.__transformY(0, tileHeight);
-							x4 = tileTransform.__transformX(tileWidth, tileHeight);
-							y4 = tileTransform.__transformY(tileWidth, tileHeight);
+							x = tileTransform._.__transformX(0, 0);
+							y = tileTransform._.__transformY(0, 0);
+							x2 = tileTransform._.__transformX(tileWidth, 0);
+							y2 = tileTransform._.__transformY(tileWidth, 0);
+							x3 = tileTransform._.__transformX(0, tileHeight);
+							y3 = tileTransform._.__transformY(0, tileHeight);
+							x4 = tileTransform._.__transformX(tileWidth, tileHeight);
+							y4 = tileTransform._.__transformY(tileWidth, tileHeight);
 
 							vertexBufferData[vertexOffset + 0] = x;
 							vertexBufferData[vertexOffset + 1] = y;
@@ -268,12 +268,12 @@ class Context3DGraphics
 					// if (hasIndices) resizeIndexBuffer (graphics, false, triangleIndexBufferPosition + length);
 					resizeVertexBuffer(graphics, hasUVTData, vertexOffset + (length * dataPerVertex));
 
-					// var indexBufferData = graphics.__triangleIndexBufferData;
-					var vertexBufferData = hasUVTData ? graphics.__renderData.vertexBufferDataUVT : graphics.__renderData.vertexBufferData;
+					// var indexBufferData = graphics._.__triangleIndexBufferData;
+					var vertexBufferData = hasUVTData ? graphics._.__renderData.vertexBufferDataUVT : graphics._.__renderData.vertexBufferData;
 					var offset, vertOffset, uvOffset, t;
 
-					var uScale = bitmap.width / bitmap.__renderData.textureWidth;
-					var vScale = bitmap.height / bitmap.__renderData.textureHeight;
+					var uScale = bitmap.width / bitmap._.__renderData.textureWidth;
+					var vScale = bitmap.height / bitmap._.__renderData.textureHeight;
 
 					for (i in 0...length)
 					{
@@ -329,56 +329,56 @@ class Context3DGraphics
 
 		if (quadBufferPosition > 0)
 		{
-			graphics.__renderData.quadBuffer.flushVertexBufferData();
+			graphics._.__renderData.quadBuffer.flushVertexBufferData();
 		}
 
 		if (triangleIndexBufferPosition > 0)
 		{
-			var buffer = graphics.__renderData.triangleIndexBuffer;
+			var buffer = graphics._.__renderData.triangleIndexBuffer;
 
-			if (buffer == null || triangleIndexBufferPosition > graphics.__renderData.triangleIndexBufferCount)
+			if (buffer == null || triangleIndexBufferPosition > graphics._.__renderData.triangleIndexBufferCount)
 			{
 				buffer = context.createIndexBuffer(triangleIndexBufferPosition, DYNAMIC_DRAW);
-				graphics.__renderData.triangleIndexBuffer = buffer;
-				graphics.__renderData.triangleIndexBufferCount = triangleIndexBufferPosition;
+				graphics._.__renderData.triangleIndexBuffer = buffer;
+				graphics._.__renderData.triangleIndexBufferCount = triangleIndexBufferPosition;
 			}
 
-			buffer.uploadFromTypedArray(graphics.__renderData.triangleIndexBufferData);
+			buffer.uploadFromTypedArray(graphics._.__renderData.triangleIndexBufferData);
 		}
 
 		if (vertexBufferPosition > 0)
 		{
-			var buffer = graphics.__renderData.vertexBuffer;
+			var buffer = graphics._.__renderData.vertexBuffer;
 
-			if (buffer == null || vertexBufferPosition > graphics.__renderData.vertexBufferCount)
+			if (buffer == null || vertexBufferPosition > graphics._.__renderData.vertexBufferCount)
 			{
 				buffer = context.createVertexBuffer(vertexBufferPosition, 4, DYNAMIC_DRAW);
-				graphics.__renderData.vertexBuffer = buffer;
-				graphics.__renderData.vertexBufferCount = vertexBufferPosition;
+				graphics._.__renderData.vertexBuffer = buffer;
+				graphics._.__renderData.vertexBufferCount = vertexBufferPosition;
 			}
 
-			buffer.uploadFromTypedArray(graphics.__renderData.vertexBufferData);
+			buffer.uploadFromTypedArray(graphics._.__renderData.vertexBufferData);
 		}
 
 		if (vertexBufferPositionUVT > 0)
 		{
-			var buffer = graphics.__renderData.vertexBufferUVT;
+			var buffer = graphics._.__renderData.vertexBufferUVT;
 
-			if (buffer == null || vertexBufferPositionUVT > graphics.__renderData.vertexBufferCountUVT)
+			if (buffer == null || vertexBufferPositionUVT > graphics._.__renderData.vertexBufferCountUVT)
 			{
 				buffer = context.createVertexBuffer(vertexBufferPositionUVT, 6, DYNAMIC_DRAW);
-				graphics.__renderData.vertexBufferUVT = buffer;
-				graphics.__renderData.vertexBufferCountUVT = vertexBufferPositionUVT;
+				graphics._.__renderData.vertexBufferUVT = buffer;
+				graphics._.__renderData.vertexBufferCountUVT = vertexBufferPositionUVT;
 			}
 
-			buffer.uploadFromTypedArray(graphics.__renderData.vertexBufferDataUVT);
+			buffer.uploadFromTypedArray(graphics._.__renderData.vertexBufferDataUVT);
 		}
 
-		Rectangle.__pool.release(tileRect);
-		Matrix.__pool.release(tileTransform);
+		_Rectangle.__pool.release(tileRect);
+		_Matrix.__pool.release(tileTransform);
 	}
 
-	private static function isCompatible(graphics:Graphics):Bool
+	public static function isCompatible(graphics:Graphics):Bool
 	{
 		#if (openfl_force_sw_graphics || force_sw_graphics)
 		return false;
@@ -386,15 +386,15 @@ class Context3DGraphics
 		return true;
 		#end
 
-		if (graphics.__owner.__worldScale9Grid != null)
+		if (graphics._.__owner._.__worldScale9Grid != null)
 		{
 			return false;
 		}
 
-		var data = new DrawCommandReader(graphics.__commands);
+		var data = new DrawCommandReader(graphics._.__commands);
 		var hasColorFill = false, hasBitmapFill = false, hasShaderFill = false;
 
-		for (type in graphics.__commands.types)
+		for (type in graphics._.__commands.types)
 		{
 			switch (type)
 			{
@@ -473,34 +473,34 @@ class Context3DGraphics
 
 	public static function render(graphics:Graphics, renderer:Context3DRenderer):Void
 	{
-		if (!graphics.__visible || graphics.__commands.length == 0) return;
+		if (!graphics._.__visible || graphics._.__commands.length == 0) return;
 
-		if ((graphics.__bitmap != null && !graphics.__dirty) #if !hwgraphics || !isCompatible(graphics) #end)
+		if ((graphics._.__bitmap != null && !graphics._.__dirty) #if !hwgraphics || !isCompatible(graphics) #end)
 		{
-			// if (graphics.__renderData.quadBuffer != null || graphics.__triangleIndexBuffer != null) {
+			// if (graphics._.__renderData.quadBuffer != null || graphics._.__triangleIndexBuffer != null) {
 
 			// TODO: Should this be kept?
 
-			// graphics.__renderData.quadBuffer = null;
-			// graphics.__triangleIndexBuffer = null;
-			// graphics.__triangleIndexBufferData = null;
-			// graphics.__renderData.vertexBuffer = null;
-			// graphics.__renderData.vertexBufferData = null;
-			// graphics.__renderData.vertexBufferDataUVT = null;
-			// graphics.__renderData.vertexBufferUVT = null;
+			// graphics._.__renderData.quadBuffer = null;
+			// graphics._.__triangleIndexBuffer = null;
+			// graphics._.__triangleIndexBufferData = null;
+			// graphics._.__renderData.vertexBuffer = null;
+			// graphics._.__renderData.vertexBufferData = null;
+			// graphics._.__renderData.vertexBufferDataUVT = null;
+			// graphics._.__renderData.vertexBufferUVT = null;
 
 			// }
 
-			var cacheTransform = renderer.__softwareRenderer.__worldTransform;
-			renderer.__softwareRenderer.__worldTransform = renderer.__worldTransform;
+			var cacheTransform = renderer._.__softwareRenderer._.__worldTransform;
+			renderer._.__softwareRenderer._.__worldTransform = renderer._.__worldTransform;
 
 			#if openfl_html5
-			CanvasGraphics.render(graphics, cast renderer.__softwareRenderer);
+			CanvasGraphics.render(graphics, cast renderer._.__softwareRenderer);
 			#elseif openfl_cairo
-			CairoGraphics.render(graphics, cast renderer.__softwareRenderer);
+			CairoGraphics.render(graphics, cast renderer._.__softwareRenderer);
 			#end
 
-			renderer.__softwareRenderer.__worldTransform = cacheTransform;
+			renderer._.__softwareRenderer._.__worldTransform = cacheTransform;
 		}
 		else
 		{
@@ -508,35 +508,35 @@ class Context3DGraphics
 			if (!isCompatible(graphics))
 			{
 				openfl._internal.renderer.opengl.utils.GraphicsRenderer.render(graphics, renderer);
-				graphics.__hardwareDirty = false;
-				graphics.__dirty = false;
+				graphics._.__hardwareDirty = false;
+				graphics._.__dirty = false;
 				return;
 			}
 			#end
 
-			graphics.__bitmap = null;
-			graphics.__update(renderer.__worldTransform);
+			graphics._.__bitmap = null;
+			graphics._.__update(renderer._.__worldTransform);
 
-			var bounds = graphics.__bounds;
+			var bounds = graphics._.__bounds;
 
-			var width = graphics.__width;
-			var height = graphics.__height;
+			var width = graphics._.__width;
+			var height = graphics._.__height;
 
 			if (bounds != null && width >= 1 && height >= 1)
 			{
-				if (graphics.__hardwareDirty
-					|| (graphics.__renderData.quadBuffer == null
-						&& graphics.__renderData.vertexBuffer == null
-						&& graphics.__renderData.vertexBufferUVT == null))
+				if (graphics._.__hardwareDirty
+					|| (graphics._.__renderData.quadBuffer == null
+						&& graphics._.__renderData.vertexBuffer == null
+						&& graphics._.__renderData.vertexBufferUVT == null))
 				{
 					buildBuffer(graphics, renderer);
 				}
 
-				var data = new DrawCommandReader(graphics.__commands);
+				var data = new DrawCommandReader(graphics._.__commands);
 
 				var context = renderer.context3D;
 
-				var matrix = Matrix.__pool.get();
+				var matrix = _Matrix.__pool.get();
 
 				var shaderBuffer = null;
 				var bitmap = null;
@@ -554,13 +554,13 @@ class Context3DGraphics
 				var vertexBufferPositionUVT = 0;
 
 				#if !disable_batcher
-				if (graphics.__commands.length > 0)
+				if (graphics._.__commands.length > 0)
 				{
 					renderer.batcher.flush();
 				}
 				#end
 
-				for (type in graphics.__commands.types)
+				for (type in graphics._.__commands.types)
 				{
 					switch (type)
 					{
@@ -586,13 +586,13 @@ class Context3DGraphics
 							shaderBuffer = c.shaderBuffer;
 							shaderBufferOffset = 0;
 
-							if (shaderBuffer == null || shaderBuffer.shader == null || shaderBuffer.shader.__bitmap == null)
+							if (shaderBuffer == null || shaderBuffer.shader == null || shaderBuffer.shader._.__bitmap == null)
 							{
 								bitmap = null;
 							}
 							else
 							{
-								bitmap = shaderBuffer.shader.__bitmap.input;
+								bitmap = shaderBuffer.shader._.__bitmap.input;
 							}
 
 							fill = null;
@@ -606,36 +606,36 @@ class Context3DGraphics
 								var transforms = c.transforms;
 
 								#if cpp
-								var rects:Array<Float> = rects == null ? null : untyped (rects).__array;
-								var indices:Array<Int> = indices == null ? null : untyped (indices).__array;
-								var transforms:Array<Float> = transforms == null ? null : untyped (transforms).__array;
+								var rects:Array<Float> = rects == null ? null : untyped (rects)._.__array;
+								var indices:Array<Int> = indices == null ? null : untyped (indices)._.__array;
+								var transforms:Array<Float> = transforms == null ? null : untyped (transforms)._.__array;
 								#end
 
 								var hasIndices = (indices != null);
 								var length = hasIndices ? indices.length : Math.floor(rects.length / 4);
 
-								var uMatrix = renderer.__getMatrix(graphics.__owner.__renderTransform, AUTO);
+								var uMatrix = renderer._.__getMatrix(graphics._.__owner._.__renderTransform, AUTO);
 								var shader;
 
 								if (shaderBuffer != null && !maskRender)
 								{
-									shader = renderer.__initShaderBuffer(shaderBuffer);
+									shader = renderer._.__initShaderBuffer(shaderBuffer);
 
-									renderer.__setShaderBuffer(shaderBuffer);
+									renderer._.__setShaderBuffer(shaderBuffer);
 									renderer.applyMatrix(uMatrix);
 									renderer.applyBitmapData(bitmap, false /* ignored */, repeat);
-									renderer.applyAlpha(renderer.__getAlpha(graphics.__owner.__worldAlpha));
-									renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
-									// renderer.__updateShaderBuffer ();
+									renderer.applyAlpha(renderer._.__getAlpha(graphics._.__owner._.__worldAlpha));
+									renderer.applyColorTransform(graphics._.__owner._.__worldColorTransform);
+									// renderer._.__updateShaderBuffer ();
 								}
 								else
 								{
-									shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(null);
+									shader = maskRender ? renderer._.__maskShader : renderer._.__initGraphicsShader(null);
 									renderer.setShader(shader);
 									renderer.applyMatrix(uMatrix);
 									renderer.applyBitmapData(bitmap, smooth, repeat);
-									renderer.applyAlpha(renderer.__getAlpha(graphics.__owner.__worldAlpha));
-									renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
+									renderer.applyAlpha(renderer._.__getAlpha(graphics._.__owner._.__worldAlpha));
+									renderer.applyColorTransform(graphics._.__owner._.__worldColorTransform);
 									renderer.updateShader();
 								}
 
@@ -643,20 +643,20 @@ class Context3DGraphics
 
 								while (quadBufferPosition < end)
 								{
-									length = Std.int(Math.min(end - quadBufferPosition, context.__quadIndexBufferElements));
+									length = Std.int(Math.min(end - quadBufferPosition, context._.__quadIndexBufferElements));
 									if (length <= 0) break;
 
 									if (shaderBuffer != null && !maskRender)
 									{
-										renderer.__updateShaderBuffer(shaderBufferOffset);
+										renderer._.__updateShaderBuffer(shaderBufferOffset);
 									}
 
-									if (shader.__position != null) context.setVertexBufferAt(shader.__position.index,
-										graphics.__renderData.quadBuffer.vertexBuffer, quadBufferPosition * 16, FLOAT_2);
-									if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index,
-										graphics.__renderData.quadBuffer.vertexBuffer, (quadBufferPosition * 16) + 2, FLOAT_2);
+									if (shader._.__position != null) context.setVertexBufferAt(shader._.__position.index,
+										graphics._.__renderData.quadBuffer.vertexBuffer, quadBufferPosition * 16, FLOAT_2);
+									if (shader._.__textureCoord != null) context.setVertexBufferAt(shader._.__textureCoord.index,
+										graphics._.__renderData.quadBuffer.vertexBuffer, (quadBufferPosition * 16) + 2, FLOAT_2);
 
-									context.drawTriangles(context.__quadIndexBuffer, 0, length * 2);
+									context.drawTriangles(context._.__quadIndexBuffer, 0, length * 2);
 									#if gl_stats
 									Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
 									#end
@@ -665,7 +665,7 @@ class Context3DGraphics
 									quadBufferPosition += length;
 								}
 
-								renderer.__clearShader();
+								renderer._.__clearShader();
 							}
 
 						case DRAW_RECT:
@@ -681,25 +681,25 @@ class Context3DGraphics
 								tempColorTransform.redOffset = color.r;
 								tempColorTransform.greenOffset = color.g;
 								tempColorTransform.blueOffset = color.b;
-								tempColorTransform.__combine(graphics.__owner.__worldColorTransform);
+								tempColorTransform._.__combine(graphics._.__owner._.__worldColorTransform);
 
 								matrix.identity();
 								matrix.scale(width, height);
 								matrix.tx = x;
 								matrix.ty = y;
-								matrix.concat(graphics.__owner.__renderTransform);
+								matrix.concat(graphics._.__owner._.__renderTransform);
 
-								var shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(null);
+								var shader = maskRender ? renderer._.__maskShader : renderer._.__initGraphicsShader(null);
 								renderer.setShader(shader);
-								renderer.applyMatrix(renderer.__getMatrix(matrix, AUTO));
+								renderer.applyMatrix(renderer._.__getMatrix(matrix, AUTO));
 								renderer.applyBitmapData(blankBitmapData, true, repeat);
-								renderer.applyAlpha(renderer.__getAlpha((color.a / 0xFF) * graphics.__owner.__worldAlpha));
+								renderer.applyAlpha(renderer._.__getAlpha((color.a / 0xFF) * graphics._.__owner._.__worldAlpha));
 								renderer.applyColorTransform(tempColorTransform);
 								renderer.updateShader();
 
 								var vertexBuffer = blankBitmapData.getVertexBuffer(context);
-								if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, vertexBuffer, 0, FLOAT_3);
-								if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
+								if (shader._.__position != null) context.setVertexBufferAt(shader._.__position.index, vertexBuffer, 0, FLOAT_3);
+								if (shader._.__textureCoord != null) context.setVertexBufferAt(shader._.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
 								var indexBuffer = blankBitmapData.getIndexBuffer(context);
 								context.drawTriangles(indexBuffer);
 
@@ -709,7 +709,7 @@ class Context3DGraphics
 								Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
 								#end
 
-								renderer.__clearShader();
+								renderer._.__clearShader();
 							}
 
 						case DRAW_TRIANGLES:
@@ -729,37 +729,37 @@ class Context3DGraphics
 							var uvStride = hasUVTData ? 3 : 2;
 
 							var dataPerVertex = vertLength + 2;
-							var vertexBuffer = hasUVTData ? graphics.__renderData.vertexBufferUVT : graphics.__renderData.vertexBuffer;
+							var vertexBuffer = hasUVTData ? graphics._.__renderData.vertexBufferUVT : graphics._.__renderData.vertexBuffer;
 							var bufferPosition = hasUVTData ? vertexBufferPositionUVT : vertexBufferPosition;
 
-							var uMatrix = renderer.__getMatrix(graphics.__owner.__renderTransform, AUTO);
+							var uMatrix = renderer._.__getMatrix(graphics._.__owner._.__renderTransform, AUTO);
 							var shader;
 
 							if (shaderBuffer != null && !maskRender)
 							{
-								shader = renderer.__initShaderBuffer(shaderBuffer);
+								shader = renderer._.__initShaderBuffer(shaderBuffer);
 
-								renderer.__setShaderBuffer(shaderBuffer);
+								renderer._.__setShaderBuffer(shaderBuffer);
 								renderer.applyMatrix(uMatrix);
 								renderer.applyBitmapData(bitmap, false, repeat);
-								renderer.applyAlpha(renderer.__getAlpha(1));
+								renderer.applyAlpha(renderer._.__getAlpha(1));
 								renderer.applyColorTransform(null);
-								renderer.__updateShaderBuffer(shaderBufferOffset);
+								renderer._.__updateShaderBuffer(shaderBufferOffset);
 							}
 							else
 							{
-								shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(null);
+								shader = maskRender ? renderer._.__maskShader : renderer._.__initGraphicsShader(null);
 								renderer.setShader(shader);
 								renderer.applyMatrix(uMatrix);
 								renderer.applyBitmapData(bitmap, smooth, repeat);
-								renderer.applyAlpha(renderer.__getAlpha(graphics.__owner.__worldAlpha));
-								renderer.applyColorTransform(graphics.__owner.__worldColorTransform);
+								renderer.applyAlpha(renderer._.__getAlpha(graphics._.__owner._.__worldAlpha));
+								renderer.applyColorTransform(graphics._.__owner._.__worldColorTransform);
 								renderer.updateShader();
 							}
 
-							if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, vertexBuffer, bufferPosition,
+							if (shader._.__position != null) context.setVertexBufferAt(shader._.__position.index, vertexBuffer, bufferPosition,
 								hasUVTData ? FLOAT_4 : FLOAT_2);
-							if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer,
+							if (shader._.__textureCoord != null) context.setVertexBufferAt(shader._.__textureCoord.index, vertexBuffer,
 								bufferPosition + vertLength, FLOAT_2);
 
 							switch (culling)
@@ -778,7 +778,7 @@ class Context3DGraphics
 
 							// if (hasIndices) {
 
-							// 	context.drawTriangles (graphics.__triangleIndexBuffer, triangleIndexBufferPosition, Math.floor (length / 3));
+							// 	context.drawTriangles (graphics._.__triangleIndexBuffer, triangleIndexBufferPosition, Math.floor (length / 3));
 							// 	triangleIndexBufferPosition += length;
 
 							// } else {
@@ -811,7 +811,7 @@ class Context3DGraphics
 							Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
 							#end
 
-							renderer.__clearShader();
+							renderer._.__clearShader();
 
 						case END_FILL:
 							bitmap = null;
@@ -826,18 +826,18 @@ class Context3DGraphics
 
 						case OVERRIDE_BLEND_MODE:
 							var c = data.readOverrideBlendMode();
-							renderer.__setBlendMode(c.blendMode);
+							renderer._.__setBlendMode(c.blendMode);
 
 						default:
 							data.skip(type);
 					}
 				}
 
-				Matrix.__pool.release(matrix);
+				_Matrix.__pool.release(matrix);
 			}
 
-			graphics.__hardwareDirty = false;
-			graphics.__dirty = false;
+			graphics._.__hardwareDirty = false;
+			graphics._.__dirty = false;
 		}
 	}
 
@@ -850,11 +850,11 @@ class Context3DGraphics
 		maskRender = false;
 	}
 
-	private static function resizeIndexBuffer(graphics:Graphics, isQuad:Bool, length:Int):Void
+	public static function resizeIndexBuffer(graphics:Graphics, isQuad:Bool, length:Int):Void
 	{
 		if (isQuad) return;
 
-		var buffer = (isQuad ? null /*graphics.__quadIndexBufferData*/ : graphics.__renderData.triangleIndexBufferData);
+		var buffer = (isQuad ? null /*graphics._.__quadIndexBufferData*/ : graphics._.__renderData.triangleIndexBufferData);
 		var position = 0, newBuffer = null;
 
 		if (buffer == null)
@@ -887,18 +887,18 @@ class Context3DGraphics
 
 				// }
 
-				// graphics.__quadIndexBufferData = newBuffer;
+				// graphics._.__quadIndexBufferData = newBuffer;
 			}
 			else
 			{
-				graphics.__renderData.triangleIndexBufferData = newBuffer;
+				graphics._.__renderData.triangleIndexBufferData = newBuffer;
 			}
 		}
 	}
 
-	private static function resizeVertexBuffer(graphics:Graphics, hasUVTData:Bool, length:Int):Void
+	public static function resizeVertexBuffer(graphics:Graphics, hasUVTData:Bool, length:Int):Void
 	{
-		var buffer = (hasUVTData ? graphics.__renderData.vertexBufferDataUVT : graphics.__renderData.vertexBufferData);
+		var buffer = (hasUVTData ? graphics._.__renderData.vertexBufferDataUVT : graphics._.__renderData.vertexBufferData);
 		var newBuffer = null;
 
 		if (buffer == null)
@@ -913,7 +913,7 @@ class Context3DGraphics
 
 		if (newBuffer != null)
 		{
-			hasUVTData ? graphics.__renderData.vertexBufferDataUVT = newBuffer : graphics.__renderData.vertexBufferData = newBuffer;
+			hasUVTData ? graphics._.__renderData.vertexBufferDataUVT = newBuffer : graphics._.__renderData.vertexBufferData = newBuffer;
 		}
 	}
 }

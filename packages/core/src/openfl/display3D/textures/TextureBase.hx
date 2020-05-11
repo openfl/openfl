@@ -15,25 +15,15 @@ import openfl.events.EventDispatcher;
 #end
 class TextureBase extends EventDispatcher
 {
-	@:noCompletion private var __base:_TextureBase;
-	@:noCompletion private var __context:Context3D;
-	@:noCompletion private var __format:Context3DTextureFormat;
-	@:noCompletion private var __height:Int;
-	@:noCompletion private var __optimizeForRenderToTexture:Bool;
-	@:noCompletion private var __streamingLevels:Int;
-	@:noCompletion private var __width:Int;
-
 	@:noCompletion private function new(context:Context3D, width:Int, height:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool,
 			streamingLevels:Int)
 	{
-		super();
+		if (_ == null)
+		{
+			_ = new _TextureBase(this, context, width, height, format, optimizeForRenderToTexture, streamingLevels);
+		}
 
-		__context = context;
-		__width = width;
-		__height = height;
-		__format = format;
-		__optimizeForRenderToTexture = optimizeForRenderToTexture;
-		__streamingLevels = streamingLevels;
+		super();
 	}
 
 	/**
@@ -42,7 +32,7 @@ class TextureBase extends EventDispatcher
 	**/
 	public function dispose():Void
 	{
-		__base.dispose();
+		_.dispose();
 	}
 }
 #else

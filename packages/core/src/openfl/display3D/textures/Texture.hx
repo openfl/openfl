@@ -19,15 +19,15 @@ import openfl.utils.ByteArray;
 #end
 @:final class Texture extends TextureBase
 {
-	@:noCompletion private var _:_Texture;
-
-	@:noCompletion private function new(context:Context3D, width:Int, height:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool,
-			streamingLevels:Int)
+	@:allow(openfl) @:noCompletion private function new(context:Context3D, width:Int, height:Int, format:Context3DTextureFormat,
+			optimizeForRenderToTexture:Bool, streamingLevels:Int)
 	{
-		super(context, width, height, format, optimizeForRenderToTexture, streamingLevels);
+		if (_ == null)
+		{
+			_ = new _Texture(this, context, width, height, format, optimizeForRenderToTexture, streamingLevels);
+		}
 
-		_ = new _Texture(this);
-		__base = _;
+		super(context, width, height, format, optimizeForRenderToTexture, streamingLevels);
 	}
 
 	/**

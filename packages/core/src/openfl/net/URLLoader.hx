@@ -135,7 +135,7 @@ class URLLoader extends EventDispatcher
 	**/
 	public var dataFormat:URLLoaderDataFormat;
 
-	@:noCompletion private var _:_URLLoader;
+	@:allow(openfl) @:noCompletion private var _:Dynamic;
 
 	/**
 		Creates a URLLoader object.

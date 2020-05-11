@@ -18,7 +18,6 @@ import js.Browser;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.display.Stage)
 class Lib
 {
 	#if lime
@@ -28,7 +27,7 @@ class Lib
 
 	@:noCompletion private static inline function get_application():Application
 	{
-		return Lib.limeApplication;
+		return _Lib.limeApplication;
 	}
 	#end
 
@@ -37,52 +36,14 @@ class Lib
 	public static var limeApplication(get, never):Application;
 	#end
 
-	@:noCompletion private static var __lastTimerID:UInt = 0;
-	@:noCompletion private static var __sentWarnings:Map<String, Bool> = new Map();
-	@:noCompletion private static var __timers:Map<UInt, Timer> = new Map();
-
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperties(Lib, {
-			"application": {
-				get: function()
-				{
-					return Lib.get_limeApplication();
-				}
-			},
-			"current": {
-				get: function()
-				{
-					return Lib.get_current();
-				}
-			},
-			"limeApplication": {
-				get: function()
-				{
-					return Lib.get_limeApplication();
-				}
-			},
-		});
-	}
-	#end
-
 	public static function as<T>(v:Dynamic, c:Class<T>):Null<T>
 	{
-		#if flash
-		return flash.Lib.as(v, c);
-		#else
-		return Std.is(v, c) ? v : null;
-		#end
+		return _Lib.as(v, c);
 	}
 
 	public static function attach(name:String):MovieClip
 	{
-		#if flash
-		return cast flash.Lib.attach(name);
-		#else
-		return new MovieClip();
-		#end
+		return _Lib.attach(name);
 	}
 
 	/**
@@ -93,12 +54,7 @@ class Lib
 	**/
 	public static function clearInterval(id:UInt):Void
 	{
-		if (__timers.exists(id))
-		{
-			var timer = __timers[id];
-			timer.stop();
-			__timers.remove(id);
-		}
+		_Lib.clearInterval(id);
 	}
 
 	/**
@@ -109,25 +65,20 @@ class Lib
 	**/
 	public static function clearTimeout(id:UInt):Void
 	{
-		if (__timers.exists(id))
-		{
-			var timer = __timers[id];
-			timer.stop();
-			__timers.remove(id);
-		}
+		_Lib.clearTimeout(id);
 	}
 
 	#if flash
 	public static function eval(path:String):Dynamic
 	{
-		return flash.Lib.eval(path);
+		return _Lib.eval(path);
 	}
 	#end
 
 	#if flash
 	public static function fscommand(cmd:String, ?param:String)
 	{
-		return flash.Lib.fscommand(cmd, param);
+		return _Lib.fscommand(cmd, param);
 	}
 	#end
 
@@ -142,16 +93,7 @@ class Lib
 	**/
 	public static function getDefinitionByName(name:String):Class<Dynamic>
 	{
-		if (name == null) return null;
-		#if flash
-		if (StringTools.startsWith(name, "openfl."))
-		{
-			var value = Type.resolveClass(name);
-			if (value == null) value = Type.resolveClass(StringTools.replace(name, "openfl.", "flash."));
-			return value;
-		}
-		#end
-		return Type.resolveClass(name);
+		return _Lib.getDefinitionByName(name);
 	}
 
 	/**
@@ -165,18 +107,7 @@ class Lib
 	**/
 	public static function getQualifiedClassName(value:Dynamic):String
 	{
-		if (value == null) return null;
-		var ref = Std.is(value, Class) ? value : Type.getClass(value);
-		if (ref == null)
-		{
-			if (Std.is(value, Bool) || value == Bool) return "Bool";
-			else if (Std.is(value, Int) || value == Int) return "Int";
-			else if (Std.is(value, Float) || value == Float) return "Float";
-			// TODO: Array? Map?
-			else
-				return null;
-		}
-		return Type.getClassName(ref);
+		return _Lib.getQualifiedClassName(value);
 	}
 
 	/**
@@ -205,12 +136,7 @@ class Lib
 	**/
 	public static function getQualifiedSuperclassName(value:Dynamic):String
 	{
-		if (value == null) return null;
-		var ref = Std.is(value, Class) ? value : Type.getClass(value);
-		if (ref == null) return null;
-		var parentRef = Type.getSuperClass(ref);
-		if (parentRef == null) return null;
-		return Type.getClassName(parentRef);
+		return _Lib.getQualifiedSuperclassName(value);
 	}
 
 	/**
@@ -234,16 +160,12 @@ class Lib
 	**/
 	public static function getTimer():Int
 	{
-		#if flash
-		return flash.Lib.getTimer();
-		#else
-		return System.getTimer();
-		#end
+		return _Lib.getTimer();
 	}
 
 	public static function getURL(request:URLRequest, target:String = null):Void
 	{
-		navigateToURL(request, target);
+		_Lib.getURL(request, target);
 	}
 
 	/**
@@ -397,67 +319,18 @@ class Lib
 	**/
 	public static function navigateToURL(request:URLRequest, window:String = null):Void
 	{
-		if (window == null)
-		{
-			window = "_blank";
-		}
-
-		#if flash
-		return flash.Lib.getURL(request, window);
-		#else
-		var uri = request.url;
-
-		if (Type.typeof(request.data) == Type.ValueType.TObject)
-		{
-			var query = "";
-			var fields = Reflect.fields(request.data);
-
-			for (field in fields)
-			{
-				if (query.length > 0) query += "&";
-				query += StringTools.urlEncode(field) + "=" + StringTools.urlEncode(Std.string(Reflect.field(request.data, field)));
-			}
-
-			if (uri.indexOf("?") > -1)
-			{
-				uri += "&" + query;
-			}
-			else
-			{
-				uri += "?" + query;
-			}
-		}
-
-		System.openURL(uri, window);
-		#end
-	}
-
-	public static function notImplemented(?posInfo:PosInfos):Void
-	{
-		var api = posInfo.className + "." + posInfo.methodName;
-
-		if (!__sentWarnings.exists(api))
-		{
-			__sentWarnings.set(api, true);
-
-			Log.warn(posInfo.methodName + " is not implemented", posInfo);
-		}
+		_Lib.navigateToURL(request, window);
 	}
 
 	public static function preventDefaultTouchMove():Void
 	{
-		#if openfl_html5
-		Browser.document.addEventListener("touchmove", function(evt:js.html.Event):Void
-		{
-			evt.preventDefault();
-		}, false);
-		#end
+		_Lib.preventDefaultTouchMove();
 	}
 
 	#if flash
 	public static function redirectTraces()
 	{
-		return flash.Lib.redirectTraces();
+		return _Lib.redirectTraces();
 	}
 	#end
 
@@ -501,8 +374,7 @@ class Lib
 	**/
 	public static function sendToURL(request:URLRequest):Void
 	{
-		var urlLoader = new URLLoader();
-		urlLoader.load(request);
+		_Lib.sendToURL(request);
 	}
 
 	/**
@@ -530,14 +402,7 @@ class Lib
 	**/
 	public static function setInterval(closure:Function, delay:Int, args:Array<Dynamic> = null):UInt
 	{
-		var id = ++__lastTimerID;
-		var timer = new Timer(delay);
-		__timers[id] = timer;
-		timer.run = function()
-		{
-			Reflect.callMethod(closure, closure, args == null ? [] : args);
-		};
-		return id;
+		return _Lib.setInterval(closure, delay, args);
 	}
 
 	/**
@@ -564,37 +429,24 @@ class Lib
 	**/
 	public static function setTimeout(closure:Function, delay:Int, args:Array<Dynamic> = null):UInt
 	{
-		var id = ++__lastTimerID;
-		__timers[id] = Timer.delay(function()
-		{
-			Reflect.callMethod(closure, closure, args == null ? [] : args);
-		}, delay);
-		return id;
+		return _Lib.setTimeout(closure, delay, args);
 	}
 
 	public static function trace(arg:Dynamic):Void
 	{
-		haxe.Log.trace(arg);
+		_Lib.trace(arg);
 	}
 
 	// Get & Set Methods
 	@:noCompletion private static function get_current():MovieClip
 	{
-		#if flash
-		return cast flash.Lib.current;
-		#else
-		if (InternalLib.current == null) InternalLib.current = new MovieClip();
-		return InternalLib.current;
-		#end
+		return _Lib.current;
 	}
 
-	// @:noCompletion private static function set_current (current:MovieClip):MovieClip {
-	// 	return cast flash.Lib.current = cast current;
-	// }
 	#if lime
 	@:noCompletion private static function get_limeApplication():Application
 	{
-		return InternalLib.limeApplication;
+		return _Lib.limeApplication;
 	}
 	#end
 }

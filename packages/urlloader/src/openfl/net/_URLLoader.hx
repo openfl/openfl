@@ -21,8 +21,8 @@ import openfl.utils.ByteArray;
 @:noCompletion
 class _URLLoader
 {
-	private var httpRequest:#if (display || macro || doc_gen) Dynamic #else _IHTTPRequest #end; // TODO: Better (non-private) solution
-	private var parent:URLLoader;
+	public var httpRequest:#if (display || macro || doc_gen) Dynamic #else _IHTTPRequest #end; // TODO: Better (non-private) solution
+	public var parent:URLLoader;
 
 	public function new(parent:URLLoader)
 	{
@@ -38,7 +38,7 @@ class _URLLoader
 		}
 	}
 
-	private function dispatchStatus():Void
+	public function dispatchStatus():Void
 	{
 		var event = new HTTPStatusEvent(HTTPStatusEvent.HTTP_STATUS, false, false, httpRequest.responseStatus);
 		event.responseURL = httpRequest.uri;
@@ -99,7 +99,7 @@ class _URLLoader
 		#end
 	}
 
-	private function prepareRequest(httpRequest:#if (display || macro || doc_gen) Dynamic #else _IHTTPRequest #end, request:URLRequest):Void
+	public function prepareRequest(httpRequest:#if (display || macro || doc_gen) Dynamic #else _IHTTPRequest #end, request:URLRequest):Void
 	{
 		this.httpRequest = httpRequest;
 		httpRequest.uri = request.url;
@@ -149,7 +149,7 @@ class _URLLoader
 	}
 
 	// Event Handlers
-	@:noCompletion private function httpRequest_onError(error:Dynamic):Void
+	@:noCompletion public function httpRequest_onError(error:Dynamic):Void
 	{
 		dispatchStatus();
 
@@ -167,7 +167,7 @@ class _URLLoader
 		}
 	}
 
-	@:noCompletion private function httpRequest_onProgress(bytesLoaded:Int, bytesTotal:Int):Void
+	@:noCompletion public function httpRequest_onProgress(bytesLoaded:Int, bytesTotal:Int):Void
 	{
 		var event = new ProgressEvent(ProgressEvent.PROGRESS);
 		event.bytesLoaded = bytesLoaded;

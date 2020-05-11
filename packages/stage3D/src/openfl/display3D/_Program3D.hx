@@ -1,6 +1,5 @@
 package openfl.display3D;
 
-#if openfl_gl
 import lime.graphics.opengl.GLProgram;
 import lime.graphics.opengl.GLShader;
 import lime.graphics.opengl.GLUniformLocation;
@@ -22,53 +21,52 @@ import lime.utils.BytePointer;
 #elseif openfl_html5
 import openfl._internal.backend.lime_standalone.BytePointer;
 #end
+import openfl._internal.renderer.SamplerState;
+import openfl.utils.ByteArray;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.display3D.Context3D)
-@:access(openfl.display3D._Context3D) // TODO: Remove backend references
-@:access(openfl.display3D.Program3D)
-@:access(openfl.display3D._Program3D) // TODO: Remove backend references
-@:access(openfl.display.ShaderInput)
-@:access(openfl.display._ShaderInput) // TODO: Remove backend references
-@:access(openfl.display.ShaderParameter)
-@:access(openfl.display._ShaderParameter) // TODO: Remove backend references
-@:access(openfl.display.Stage)
 @:noCompletion
 class _Program3D
 {
-	private var agalAlphaSamplerEnabled:Array<Uniform>;
-	private var agalAlphaSamplerUniforms:List<Uniform>;
-	private var agalFragmentUniformMap:UniformMap;
-	private var agalPositionScale:Uniform;
-	private var agalSamplerUniforms:List<Uniform>;
-	private var agalSamplerUsageMask:Int;
-	private var agalUniforms:List<Uniform>;
-	private var agalVertexUniformMap:UniformMap;
-	private var gl:WebGLRenderContext;
-	private var glFragmentShader:GLShader;
-	private var glFragmentSource:String;
-	private var glProgram:GLProgram;
-	private var glslAttribNames:Array<String>;
-	private var glslAttribTypes:Array<ShaderParameterType>;
-	private var glslSamplerNames:Array<String>;
-	private var glslUniformLocations:Array<GLUniformLocation>;
-	private var glslUniformNames:Array<String>;
-	private var glslUniformTypes:Array<ShaderParameterType>;
-	private var glVertexShader:GLShader;
-	private var glVertexSource:String;
-	// private var memUsage:Int;
-	private var parent:Program3D;
+	public var agalAlphaSamplerEnabled:Array<Uniform>;
+	public var agalAlphaSamplerUniforms:List<Uniform>;
+	public var agalFragmentUniformMap:UniformMap;
+	public var agalPositionScale:Uniform;
+	public var agalSamplerUniforms:List<Uniform>;
+	public var agalSamplerUsageMask:Int;
+	public var agalUniforms:List<Uniform>;
+	public var agalVertexUniformMap:UniformMap;
+	public var gl:WebGLRenderContext;
+	public var glFragmentShader:GLShader;
+	public var glFragmentSource:String;
+	public var glProgram:GLProgram;
+	public var glslAttribNames:Array<String>;
+	public var glslAttribTypes:Array<ShaderParameterType>;
+	public var glslSamplerNames:Array<String>;
+	public var glslUniformLocations:Array<GLUniformLocation>;
+	public var glslUniformNames:Array<String>;
+	public var glslUniformTypes:Array<ShaderParameterType>;
+	public var glVertexShader:GLShader;
+	public var glVertexSource:String;
 
-	public function new(parent:Program3D)
+	// public var memUsage:Int;
+	public var __context:Context3D;
+	public var __format:Context3DProgramFormat;
+	public var __samplerStates:Array<SamplerState>;
+
+	public function new(context3D:Context3D, format:Context3DProgramFormat)
 	{
-		this.parent = parent;
+		__context = context3D;
+		__format = format;
 
-		gl = parent.__context._.gl;
+		__samplerStates = new Array<SamplerState>();
 
-		switch (parent.__format)
+		gl = __context._.gl;
+
+		switch (__format)
 		{
 			case AGAL:
 				// memUsage = 0;
@@ -95,29 +93,73 @@ class _Program3D
 		deleteShaders();
 	}
 
-	public function getGLSLAttributeIndex(name:String):Int
+	public function getAttributeIndex(name:String):Int
 	{
-		for (i in 0...glslAttribNames.length)
+		switch (__format)
 		{
-			if (glslAttribNames[i] == name) return i;
-		}
+			case AGAL:
+				// TODO: Validate that it exists in the current program
+				if (StringTools.startsWith(name, "va"))
+				{
+					return Std.parseInt(name.substring(2));
+				}
+				else
+				{
+					return -1;
+				}
 
-		return -1;
+			#if openfl_gl
+			case GLSL:
+				for (i in 0...glslAttribNames.length)
+				{
+					if (glslAttribNames[i] == name) return i;
+				}
+
+				return -1;
+			#end
+
+			default:
+				return -1;
+		}
 	}
 
-	public function getGLSLConstantIndex(name:String):Int
+	public function getConstantIndex(name:String):Int
 	{
-		for (i in 0...glslUniformNames.length)
+		switch (__format)
 		{
-			if (glslUniformNames[i] == name) return cast glslUniformLocations[i];
-		}
+			case AGAL:
+				// TODO: Validate that it exists in the current program
+				if (StringTools.startsWith(name, "vc"))
+				{
+					return Std.parseInt(name.substring(2));
+				}
+				else if (StringTools.startsWith(name, "fc"))
+				{
+					return Std.parseInt(name.substring(2));
+				}
+				else
+				{
+					return -1;
+				}
 
-		return -1;
+			#if openfl_gl
+			case GLSL:
+				for (i in 0...glslUniformNames.length)
+				{
+					if (glslUniformNames[i] == name) return cast glslUniformLocations[i];
+				}
+
+				return -1;
+			#end
+
+			default:
+				return -1;
+		}
 	}
 
 	public function upload(vertexProgram:ByteArray, fragmentProgram:ByteArray):Void
 	{
-		if (parent.__format != AGAL) return;
+		if (__format != AGAL) return;
 
 		// var samplerStates = new Vector<SamplerState> (Context3D.MAX_SAMPLERS);
 		var samplerStates = new Array<SamplerState>();
@@ -137,13 +179,13 @@ class _Program3D
 
 		for (i in 0...samplerStates.length)
 		{
-			parent.__samplerStates[i] = samplerStates[i];
+			__samplerStates[i] = samplerStates[i];
 		}
 	}
 
 	public function uploadSources(vertexSource:String, fragmentSource:String):Void
 	{
-		if (parent.__format != GLSL) return;
+		if (__format != GLSL) return;
 
 		// TODO: Precision hint?
 
@@ -202,9 +244,33 @@ class _Program3D
 		}
 	}
 
-	private function buildAGALUniformList():Void
+	private function __getSamplerState(sampler:Int):SamplerState
 	{
-		if (parent.__format == GLSL) return;
+		return __samplerStates[sampler];
+	}
+
+	private function __markDirty(isVertex:Bool, index:Int, count:Int):Void
+	{
+		if (__format != AGAL) return;
+
+		if (isVertex)
+		{
+			agalVertexUniformMap.markDirty(index, count);
+		}
+		else
+		{
+			agalFragmentUniformMap.markDirty(index, count);
+		}
+	}
+
+	private function __setSamplerState(sampler:Int, state:SamplerState):Void
+	{
+		__samplerStates[sampler] = state;
+	}
+
+	public function buildAGALUniformList():Void
+	{
+		if (__format == GLSL) return;
 
 		agalUniforms.clear();
 		agalSamplerUniforms.clear();
@@ -226,7 +292,7 @@ class _Program3D
 			var size = info.size;
 			var uniformType = info.type;
 
-			var uniform = new Uniform(parent.__context);
+			var uniform = new Uniform(__context);
 			uniform.name = name;
 			uniform.size = size;
 			uniform.type = uniformType;
@@ -263,13 +329,13 @@ class _Program3D
 			else if (StringTools.startsWith(uniform.name, "vc"))
 			{
 				uniform.regIndex = Std.parseInt(uniform.name.substring(2));
-				uniform.regData = parent.__context.__vertexConstants;
+				uniform.regData = __context._.__vertexConstants;
 				vertexUniforms.add(uniform);
 			}
 			else if (StringTools.startsWith(uniform.name, "fc"))
 			{
 				uniform.regIndex = Std.parseInt(uniform.name.substring(2));
-				uniform.regData = parent.__context.__fragmentConstants;
+				uniform.regData = __context._.__fragmentConstants;
 				fragmentUniforms.add(uniform);
 			}
 			else if (StringTools.startsWith(uniform.name, "sampler") && uniform.name.indexOf("alpha") == -1)
@@ -304,7 +370,7 @@ class _Program3D
 		agalFragmentUniformMap = new UniformMap(Lambda.array(fragmentUniforms));
 	}
 
-	private function deleteShaders():Void
+	public function deleteShaders():Void
 	{
 		if (glProgram != null)
 		{
@@ -324,40 +390,40 @@ class _Program3D
 		}
 	}
 
-	private function disable():Void
+	public function disable():Void
 	{
-		if (parent.__format == GLSL)
+		if (__format == GLSL)
 		{
 			// var textureCount = 0;
 
 			// for (input in __glslInputBitmapData) {
 
-			// 	input.__disableGL (__context, textureCount);
+			// 	input._.__disableGL (__context, textureCount);
 			// 	textureCount++;
 
 			// }
 
 			// for (parameter in __glslParamBool) {
 
-			// 	parameter.__disableGL (__context);
+			// 	parameter._.__disableGL (__context);
 
 			// }
 
 			// for (parameter in __glslParamFloat) {
 
-			// 	parameter.__disableGL (__context);
+			// 	parameter._.__disableGL (__context);
 
 			// }
 
 			// for (parameter in __glslParamInt) {
 
-			// 	parameter.__disableGL (__context);
+			// 	parameter._.__disableGL (__context);
 
 			// }
 
-			// // __context.__bindGLArrayBuffer (null);
+			// // __context._.__bindGLArrayBuffer (null);
 
-			// if (__context.__context.type == OPENGL) {
+			// if (__context._.__context.type == OPENGL) {
 
 			// 	gl.disable (gl.TEXTURE_2D);
 
@@ -365,11 +431,11 @@ class _Program3D
 		}
 	}
 
-	private function enable():Void
+	public function enable():Void
 	{
 		gl.useProgram(glProgram);
 
-		if (parent.__format == AGAL)
+		if (__format == AGAL)
 		{
 			agalVertexUniformMap.markAllDirty();
 			agalFragmentUniformMap.markAllDirty();
@@ -409,7 +475,7 @@ class _Program3D
 
 			// }
 
-			// if (__context.__context.type == OPENGL && textureCount > 0) {
+			// if (__context._.__context.type == OPENGL && textureCount > 0) {
 
 			// 	gl.enable (gl.TEXTURE_2D);
 
@@ -417,9 +483,9 @@ class _Program3D
 		}
 	}
 
-	private function flush():Void
+	public function flush():Void
 	{
-		if (parent.__format == AGAL)
+		if (__format == AGAL)
 		{
 			agalVertexUniformMap.flush();
 			agalFragmentUniformMap.flush();
@@ -433,46 +499,34 @@ class _Program3D
 
 			// for (input in __glslInputBitmapData) {
 
-			// 	input.__updateGL (__context, textureCount);
+			// 	input._.__updateGL (__context, textureCount);
 			// 	textureCount++;
 
 			// }
 
 			// for (parameter in __glslParamBool) {
 
-			// 	parameter.__updateGL (__context);
+			// 	parameter._.__updateGL (__context);
 
 			// }
 
 			// for (parameter in __glslParamFloat) {
 
-			// 	parameter.__updateGL (__context);
+			// 	parameter._.__updateGL (__context);
 
 			// }
 
 			// for (parameter in __glslParamInt) {
 
-			// 	parameter.__updateGL (__context);
+			// 	parameter._.__updateGL (__context);
 
 			// }
 		}
 	}
 
-	public function markDirty(isVertex:Bool, index:Int, count:Int):Void
-	{
-		if (parent.__format != AGAL) return;
+	public function markDirty(isVertex:Bool, index:Int, count:Int):Void {}
 
-		if (isVertex)
-		{
-			agalVertexUniformMap.markDirty(index, count);
-		}
-		else
-		{
-			agalFragmentUniformMap.markDirty(index, count);
-		}
-	}
-
-	private function processGLSLData(source:String, storageType:String):Void
+	public function processGLSLData(source:String, storageType:String):Void
 	{
 		var lastMatch = 0, position, regex, name, type;
 
@@ -544,9 +598,9 @@ class _Program3D
 		}
 	}
 
-	private function setPositionScale(positionScale:Float32Array):Void
+	public function setPositionScale(positionScale:Float32Array):Void
 	{
-		if (parent.__format == GLSL) return;
+		if (__format == GLSL) return;
 
 		if (agalPositionScale != null)
 		{
@@ -554,7 +608,7 @@ class _Program3D
 		}
 	}
 
-	private function uploadFromGLSL(vertexShaderSource:String, fragmentShaderSource:String):Void
+	public function uploadFromGLSL(vertexShaderSource:String, fragmentShaderSource:String):Void
 	{
 		glVertexSource = vertexShaderSource;
 		glFragmentSource = fragmentShaderSource;
@@ -585,7 +639,7 @@ class _Program3D
 
 		glProgram = gl.createProgram();
 
-		if (parent.__format == AGAL)
+		if (__format == AGAL)
 		{
 			// TODO: AGAL version specific number of attributes?
 			for (i in 0...16)
@@ -646,10 +700,10 @@ class _Program3D
 	public var context:Context3D;
 
 	#if (lime && !openfl_html5)
-	private var gl:OpenGLES2RenderContext;
-	private var regDataPointer:BytePointer;
+	public var gl:OpenGLES2RenderContext;
+	public var regDataPointer:BytePointer;
 	#else
-	private var gl:WebGLRenderContext;
+	public var gl:WebGLRenderContext;
 	#end
 
 	public function new(context:Context3D)
@@ -705,18 +759,18 @@ class _Program3D
 	}
 
 	#if openfl_html5
-	private inline function __getUniformRegisters(index:Int, size:Int):Float32Array
+	public inline function __getUniformRegisters(index:Int, size:Int):Float32Array
 	{
 		return regData.subarray(index, index + size);
 	}
 	#elseif lime
-	private inline function __getUniformRegisters(index:Int, size:Int):BytePointer
+	public inline function __getUniformRegisters(index:Int, size:Int):BytePointer
 	{
 		regDataPointer.set(regData, index * 4);
 		return regDataPointer;
 	}
 	#else
-	private inline function __getUniformRegisters(index:Int, size:Int):Dynamic
+	public inline function __getUniformRegisters(index:Int, size:Int):Dynamic
 	{
 		return regData.subarray(index, index + size);
 	}
@@ -731,10 +785,10 @@ class _Program3D
 @:dox(hide) class UniformMap
 {
 	// TODO: it would be better to use a bitmask with a dirty bit per uniform, but not super important now
-	private var allDirty:Bool;
-	private var anyDirty:Bool;
-	private var registerLookup:Vector<Uniform>;
-	private var uniforms:Array<Uniform>;
+	public var allDirty:Bool;
+	public var anyDirty:Bool;
+	public var registerLookup:Vector<Uniform>;
+	public var uniforms:Array<Uniform>;
 
 	public function new(list:Array<Uniform>)
 	{
@@ -825,4 +879,3 @@ class _Program3D
 		}
 	}
 }
-#end

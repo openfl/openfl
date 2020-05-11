@@ -48,7 +48,7 @@ package openfl.system;
 	/**
 		Gets the current application domain in which your code is executing.
 	**/
-	public static var currentDomain(default, null) = new ApplicationDomain(null);
+	public static var currentDomain(get, never):ApplicationDomain;
 
 	#if false
 	/**
@@ -61,7 +61,9 @@ package openfl.system;
 	/**
 		Gets the parent domain of this application domain.
 	**/
-	public var parentDomain(default, null):ApplicationDomain;
+	public var parentDomain(get, never):ApplicationDomain;
+
+	@:allow(openfl) @:noCompletion private var _:_ApplicationDomain;
 
 	/**
 		Creates a new application domain.
@@ -71,14 +73,7 @@ package openfl.system;
 	**/
 	public function new(parentDomain:ApplicationDomain = null)
 	{
-		if (parentDomain != null)
-		{
-			this.parentDomain = parentDomain;
-		}
-		else
-		{
-			this.parentDomain = currentDomain;
-		}
+		_ = new _ApplicationDomain(parentDomain);
 	}
 
 	/**
@@ -92,7 +87,7 @@ package openfl.system;
 	**/
 	public function getDefinition(name:String):Class<Dynamic>
 	{
-		return Type.resolveClass(name);
+		return _.getDefinition(name);
 	}
 
 	// @:noCompletion @:dox(hide) @:require(flash11_3) function getQualifiedDefinitionNames() : openfl.Vector<String>;
@@ -108,7 +103,19 @@ package openfl.system;
 	**/
 	public function hasDefinition(name:String):Bool
 	{
-		return (Type.resolveClass(name) != null);
+		return _.hasDefinition(name);
+	}
+
+	// Get & Set Methods
+
+	@:noCompletion private static function get_currentDomain():ApplicationDomain
+	{
+		return _ApplicationDomain.currentDomain;
+	}
+
+	@:noCompletion private function get_parentDomain():ApplicationDomain
+	{
+		return _.parentDomain;
 	}
 }
 #else

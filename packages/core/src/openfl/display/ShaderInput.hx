@@ -128,7 +128,7 @@ import openfl.display3D.Context3DWrapMode;
 	**/
 	public var wrap:Context3DWrapMode;
 
-	@:noCompletion private var _:_ShaderInput<T>;
+	@:allow(openfl) @:noCompletion private var _:Dynamic;
 
 	/**
 		Creates a ShaderInput instance. Developer code does not call the

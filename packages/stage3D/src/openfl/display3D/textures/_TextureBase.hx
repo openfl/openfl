@@ -1,6 +1,5 @@
 package openfl.display3D.textures;
 
-#if openfl_gl
 import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.opengl.GLRenderbuffer;
 import lime.graphics.opengl.GLTexture;
@@ -21,52 +20,65 @@ import lime.graphics.Image;
 import openfl._internal.backend.lime_standalone.ImageCanvasUtil;
 import openfl._internal.backend.lime_standalone.Image;
 #end
+import openfl.events.EventDispatcher;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl._internal.renderer.SamplerState)
-@:access(openfl.display3D.textures.TextureBase)
-@:access(openfl.display3D.Context3D)
-@:access(openfl.display3D._Context3D)
-@:access(openfl.display.BitmapData)
-@:access(openfl.display.Stage)
 @:noCompletion
-class _TextureBase
+class _TextureBase extends _EventDispatcher
 {
-	private static var glCompressedFormats:Map<Int, Int>;
-	private static var glCompressedFormatsAlpha:Map<Int, Int>;
-	private static var glTextureFormat:Int;
-	private static var glTextureInternalFormat:Int;
+	public static var glCompressedFormats:Map<Int, Int>;
+	public static var glCompressedFormatsAlpha:Map<Int, Int>;
+	public static var glTextureFormat:Int;
+	public static var glTextureInternalFormat:Int;
 
-	private var alphaTexture:TextureBase;
-	private var baseParent:TextureBase;
-	// private var compressedMemoryUsage:Int;
-	// private var context:Context3D;
-	private var contextBackend:_Context3D;
-	private var gl:WebGLRenderContext;
-	private var glDepthRenderbuffer:GLRenderbuffer;
-	private var glFormat:Int;
-	private var glFramebuffer:GLFramebuffer;
-	private var glStencilRenderbuffer:GLRenderbuffer;
-	private var glInternalFormat:Int;
-	private var glTextureID:GLTexture;
-	private var glTextureTarget:Int;
-	// private var memoryUsage:Int;
-	// private var outputTextureMemoryUsage:Bool = false;
-	private var samplerState:SamplerState;
+	public var alphaTexture:TextureBase;
+	public var baseParent:TextureBase;
+	// public var compressedMemoryUsage:Int;
+	// public var context:Context3D;
+	public var contextBackend:_Context3D;
+	public var gl:WebGLRenderContext;
+	public var glDepthRenderbuffer:GLRenderbuffer;
+	public var glFormat:Int;
+	public var glFramebuffer:GLFramebuffer;
+	public var glStencilRenderbuffer:GLRenderbuffer;
+	public var glInternalFormat:Int;
+	public var glTextureID:GLTexture;
+	public var glTextureTarget:Int;
+	// public var memoryUsage:Int;
+	// public var outputTextureMemoryUsage:Bool = false;
+	public var samplerState:SamplerState;
 
-	public function new(parent:TextureBase)
+	private var __base:_TextureBase;
+	private var __context:Context3D;
+	private var __format:Context3DTextureFormat;
+	private var __height:Int;
+	private var __optimizeForRenderToTexture:Bool;
+	private var __streamingLevels:Int;
+	private var __width:Int;
+
+	private function new(textureBase:TextureBase, context:Context3D, width:Int, height:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool,
+			streamingLevels:Int)
 	{
+		super(textureBase);
+
+		__context = context;
+		__width = width;
+		__height = height;
+		__format = format;
+		__optimizeForRenderToTexture = optimizeForRenderToTexture;
+		__streamingLevels = streamingLevels;
+
 		baseParent = parent;
-		contextBackend = parent.__context._;
+		contextBackend = __context._;
 		gl = contextBackend.gl;
 		// textureTarget = target;
 
 		glTextureID = gl.createTexture();
 
-		if (Context3D.__supportsBGRA == null)
+		if (Context3D._.__supportsBGRA == null)
 		{
 			glTextureInternalFormat = GL.RGBA;
 
@@ -79,7 +91,7 @@ class _TextureBase
 
 			if (bgraExtension != null)
 			{
-				Context3D.__supportsBGRA = true;
+				Context3D._.__supportsBGRA = true;
 				glTextureFormat = bgraExtension.BGRA_EXT;
 
 				#if (lime && !ios && !tvos)
@@ -91,7 +103,7 @@ class _TextureBase
 			}
 			else
 			{
-				Context3D.__supportsBGRA = false;
+				Context3D._.__supportsBGRA = false;
 				glTextureFormat = GL.RGBA;
 			}
 
@@ -174,7 +186,7 @@ class _TextureBase
 	}
 
 	@SuppressWarnings("checkstyle:Dynamic")
-	private function getGLFramebuffer(enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):GLFramebuffer
+	public function getGLFramebuffer(enableDepthAndStencil:Bool, antiAlias:Int, surfaceSelector:Int):GLFramebuffer
 	{
 		if (glFramebuffer == null)
 		{
@@ -182,13 +194,13 @@ class _TextureBase
 			contextBackend.bindGLFramebuffer(glFramebuffer);
 			gl.framebufferTexture2D(GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_2D, glTextureID, 0);
 
-			if (baseParent.__context.enableErrorChecking)
+			if (__context.enableErrorChecking)
 			{
 				var code = gl.checkFramebufferStatus(GL.FRAMEBUFFER);
 
 				if (code != GL.FRAMEBUFFER_COMPLETE)
 				{
-					Log.warn('Error: Context3D.setRenderToTexture status:${code} width:${baseParent.__width} height:${baseParent.__height}');
+					Log.warn('Error: Context3D.setRenderToTexture status:${code} width:${__width} height:${__height}');
 				}
 			}
 		}
@@ -203,7 +215,7 @@ class _TextureBase
 				glStencilRenderbuffer = glDepthRenderbuffer;
 
 				gl.bindRenderbuffer(GL.RENDERBUFFER, glDepthRenderbuffer);
-				gl.renderbufferStorage(GL.RENDERBUFFER, _Context3D.glDepthStencil, baseParent.__width, baseParent.__height);
+				gl.renderbufferStorage(GL.RENDERBUFFER, _Context3D.glDepthStencil, __width, __height);
 				gl.framebufferRenderbuffer(GL.FRAMEBUFFER, GL.DEPTH_STENCIL_ATTACHMENT, GL.RENDERBUFFER, glDepthRenderbuffer);
 			}
 			else
@@ -212,21 +224,21 @@ class _TextureBase
 				glStencilRenderbuffer = gl.createRenderbuffer();
 
 				gl.bindRenderbuffer(GL.RENDERBUFFER, glDepthRenderbuffer);
-				gl.renderbufferStorage(GL.RENDERBUFFER, GL.DEPTH_COMPONENT16, baseParent.__width, baseParent.__height);
+				gl.renderbufferStorage(GL.RENDERBUFFER, GL.DEPTH_COMPONENT16, __width, __height);
 				gl.bindRenderbuffer(GL.RENDERBUFFER, glStencilRenderbuffer);
-				gl.renderbufferStorage(GL.RENDERBUFFER, GL.STENCIL_INDEX8, baseParent.__width, baseParent.__height);
+				gl.renderbufferStorage(GL.RENDERBUFFER, GL.STENCIL_INDEX8, __width, __height);
 
 				gl.framebufferRenderbuffer(GL.FRAMEBUFFER, GL.DEPTH_ATTACHMENT, GL.RENDERBUFFER, glDepthRenderbuffer);
 				gl.framebufferRenderbuffer(GL.FRAMEBUFFER, GL.STENCIL_ATTACHMENT, GL.RENDERBUFFER, glStencilRenderbuffer);
 			}
 
-			if (baseParent.__context.enableErrorChecking)
+			if (__context.enableErrorChecking)
 			{
 				var code = gl.checkFramebufferStatus(GL.FRAMEBUFFER);
 
 				if (code != GL.FRAMEBUFFER_COMPLETE)
 				{
-					Log.warn('Error: Context3D.setRenderToTexture status:${code} width:${baseParent.__width} height:${baseParent.__height}');
+					Log.warn('Error: Context3D.setRenderToTexture status:${code} width:${__width} height:${__height}');
 				}
 			}
 
@@ -237,7 +249,7 @@ class _TextureBase
 	}
 
 	#if (lime || openfl_html5)
-	private function getImage(bitmapData:BitmapData):Image
+	public function getImage(bitmapData:BitmapData):Image
 	{
 		#if lime
 		var image = bitmapData.limeImage;
@@ -245,7 +257,7 @@ class _TextureBase
 		var image = @:privateAccess bitmapData._.image;
 		#end
 
-		if (!bitmapData.__isValid || image == null)
+		if (!bitmapData._.__isValid || image == null)
 		{
 			return null;
 		}
@@ -292,12 +304,12 @@ class _TextureBase
 	}
 	#end
 
-	private function getTexture():GLTexture
+	public function getTexture():GLTexture
 	{
 		return glTextureID;
 	}
 
-	private function setSamplerState(state:SamplerState):Bool
+	public function setSamplerState(state:SamplerState):Bool
 	{
 		if (!state.equals(samplerState))
 		{
@@ -368,7 +380,7 @@ class _TextureBase
 	}
 
 	#if (lime || openfl_html5)
-	private function uploadFromImage(image:Image):Void
+	public function uploadFromImage(image:Image):Void
 	{
 		var internalFormat, format;
 
@@ -416,4 +428,3 @@ class _TextureBase
 	}
 	#end
 }
-#end

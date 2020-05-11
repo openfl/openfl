@@ -24,28 +24,14 @@ import openfl.geom.Rectangle;
 #end
 class BitmapFilter
 {
-	@:noCompletion private var __bottomExtension:Int;
-	@:noCompletion private var __leftExtension:Int;
-	@:noCompletion private var __needSecondBitmapData:Bool;
-	@:noCompletion private var __numShaderPasses:Int;
-	@:noCompletion private var __preserveObject:Bool;
-	@:noCompletion private var __renderDirty:Bool;
-	@:noCompletion private var __rightExtension:Int;
-	@:noCompletion private var __shaderBlendMode:BlendMode;
-	@:noCompletion private var __smooth:Bool;
-	@:noCompletion private var __topExtension:Int;
+	@:allow(openfl) @:noCompletion private var _:_BitmapFilter;
 
 	public function new()
 	{
-		__bottomExtension = 0;
-		__leftExtension = 0;
-		__needSecondBitmapData = true;
-		__numShaderPasses = 0;
-		__preserveObject = false;
-		__rightExtension = 0;
-		__shaderBlendMode = NORMAL;
-		__topExtension = 0;
-		__smooth = true;
+		if (_ == null)
+		{
+			_ = new _BitmapFilter();
+		}
 	}
 
 	/**
@@ -56,18 +42,7 @@ class BitmapFilter
 	**/
 	public function clone():BitmapFilter
 	{
-		return new BitmapFilter();
-	}
-
-	@:noCompletion private function __applyFilter(bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData
-	{
-		return sourceBitmapData;
-	}
-
-	@:noCompletion private function __initShader(renderer:DisplayObjectRenderer, pass:Int, sourceBitmapData:BitmapData):Shader
-	{
-		// return renderer.__defaultShader;
-		return null;
+		return _.clone();
 	}
 }
 #else

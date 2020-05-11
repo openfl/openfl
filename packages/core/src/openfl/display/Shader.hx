@@ -201,7 +201,8 @@ class Shader
 	**/
 	public var program:Program3D;
 
-	@:noCompletion private var _:_Shader;
+	@:allow(openfl) @:noCompletion private var _:Dynamic;
+
 	@:noCompletion private var __alpha:ShaderParameter<Float>;
 	@:noCompletion private var __alphaTexture:ShaderInput<BitmapData>;
 	@:noCompletion private var __alphaTextureMatrix:ShaderParameter<Float>;

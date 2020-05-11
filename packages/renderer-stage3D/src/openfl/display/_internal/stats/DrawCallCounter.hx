@@ -7,9 +7,9 @@ package openfl.display._internal.stats;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class DrawCallCounter
 {
-	public var currentDrawCallsNum(default, null):Int = 0;
+	public var currentDrawCallsNum:Int = 0;
 
-	private var drawCallsCounter:Int = 0;
+	public var drawCallsCounter:Int = 0;
 
 	public function new()
 	{

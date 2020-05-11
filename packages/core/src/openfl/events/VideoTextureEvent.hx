@@ -6,6 +6,10 @@ import openfl._internal.utils.ObjectPool;
 /**
 	Almost exactly StageVideoEvent.
 **/
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
 class VideoTextureEvent extends Event
 {
 	/**
@@ -28,42 +32,38 @@ class VideoTextureEvent extends Event
 	/**
 		The color space used by the video being displayed in the VideoTexture object.
 	**/
-	@:isVar public var colorSpace(default, null):String;
+	public var colorSpace(get, never):String;
 
 	/**
 		The status of the VideoTexture object.
 	**/
-	@:isVar public var status(default, null):String;
-
-	@:noCompletion private static var __pool:ObjectPool<VideoTextureEvent> = new ObjectPool<VideoTextureEvent>(function() return new VideoTextureEvent(null),
-	function(event) event.__init());
+	public var status(get, never):String;
 
 	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false, status:String = null, colorSpace:String = null)
 	{
+		if (_ == null)
+		{
+			_ = new _VideoTextureEvent(type, bubbles, cancelable, status, colorSpace);
+		}
+
 		super(type, bubbles, cancelable);
-		this.status = status;
-		this.colorSpace = colorSpace;
 	}
 
 	public override function clone():VideoTextureEvent
 	{
-		var event = new VideoTextureEvent(type, bubbles, cancelable, status, colorSpace);
-		event.target = target;
-		event.currentTarget = currentTarget;
-		event.eventPhase = eventPhase;
-		return event;
+		return _.clone();
 	}
 
-	public override function toString():String
+	// Get & Set Methods
+
+	@:noCompletion private function get_colorSpace():String
 	{
-		return __formatToString("VideoTextureEvent", ["type", "bubbles", "cancelable", "status", "colorSpace"]);
+		return _.colorSpace;
 	}
 
-	@:noCompletion private override function __init():Void
+	@:noCompletion private function get_status():String
 	{
-		super.__init();
-		status = null;
-		colorSpace = null;
+		return _.status;
 	}
 }
 #else

@@ -52,23 +52,23 @@ class Context3DState
 	public var shader:Shader; // TODO: Merge shader/program3d
 
 	#if openfl_gl
-	private var __currentGLArrayBuffer:GLBuffer;
-	private var __currentGLElementArrayBuffer:GLBuffer;
-	private var __currentGLFramebuffer:GLFramebuffer;
-	private var __currentGLTexture2D:GLTexture;
-	private var __currentGLTextureCubeMap:GLTexture;
-	private var __enableGLBlend:Bool;
-	private var __enableGLCullFace:Bool;
-	private var __enableGLDepthTest:Bool;
-	private var __enableGLScissorTest:Bool;
-	private var __enableGLStencilTest:Bool;
-	private var __frontFaceGLCCW:Bool;
-	private var __glBlendEquation:Int;
-	private var __primaryGLFramebuffer:GLFramebuffer;
-	private var __rttDepthGLRenderbuffer:GLRenderbuffer;
-	private var __rttGLFramebuffer:GLFramebuffer;
-	private var __rttGLRenderbuffer:GLRenderbuffer;
-	private var __rttStencilGLRenderbuffer:GLRenderbuffer;
+	public var __currentGLArrayBuffer:GLBuffer;
+	public var __currentGLElementArrayBuffer:GLBuffer;
+	public var __currentGLFramebuffer:GLFramebuffer;
+	public var __currentGLTexture2D:GLTexture;
+	public var __currentGLTextureCubeMap:GLTexture;
+	public var __enableGLBlend:Bool;
+	public var __enableGLCullFace:Bool;
+	public var __enableGLDepthTest:Bool;
+	public var __enableGLScissorTest:Bool;
+	public var __enableGLStencilTest:Bool;
+	public var __frontFaceGLCCW:Bool;
+	public var __glBlendEquation:Int;
+	public var __primaryGLFramebuffer:GLFramebuffer;
+	public var __rttDepthGLRenderbuffer:GLRenderbuffer;
+	public var __rttGLFramebuffer:GLFramebuffer;
+	public var __rttGLRenderbuffer:GLRenderbuffer;
+	public var __rttStencilGLRenderbuffer:GLRenderbuffer;
 	#end
 
 	public function new()

@@ -23,11 +23,11 @@ class Context3DDisplayObject
 {
 	public static inline function render(displayObject:DisplayObject, renderer:Context3DRenderer):Void
 	{
-		if (displayObject.opaqueBackground == null && displayObject.__graphics == null) return;
-		if (!displayObject.__renderable || displayObject.__worldAlpha <= 0) return;
+		if (displayObject.opaqueBackground == null && displayObject._.__graphics == null) return;
+		if (!displayObject._.__renderable || displayObject._.__worldAlpha <= 0) return;
 
 		if (displayObject.opaqueBackground != null
-			&& !displayObject.__renderData.isCacheBitmapRender
+			&& !displayObject._.__renderData.isCacheBitmapRender
 			&& displayObject.width > 0
 			&& displayObject.height > 0)
 		{
@@ -35,25 +35,25 @@ class Context3DDisplayObject
 			renderer.batcher.flush();
 			#end
 
-			renderer.__setBlendMode(displayObject.__worldBlendMode);
-			renderer.__pushMaskObject(displayObject);
+			renderer._.__setBlendMode(displayObject._.__worldBlendMode);
+			renderer._.__pushMaskObject(displayObject);
 
 			var context = renderer.context3D;
 
-			var rect = Rectangle.__pool.get();
+			var rect = _Rectangle.__pool.get();
 			rect.setTo(0, 0, displayObject.width, displayObject.height);
-			renderer.__pushMaskRect(rect, displayObject.__renderTransform);
+			renderer._.__pushMaskRect(rect, displayObject._.__renderTransform);
 
 			var color:ARGB = (displayObject.opaqueBackground : ARGB);
 			context.clear(color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, 1, 0, 0, Context3DClearMask.COLOR);
 
-			renderer.__popMaskRect();
-			renderer.__popMaskObject(displayObject);
+			renderer._.__popMaskRect();
+			renderer._.__popMaskObject(displayObject);
 
-			Rectangle.__pool.release(rect);
+			_Rectangle.__pool.release(rect);
 		}
 
-		if (displayObject.__graphics != null)
+		if (displayObject._.__graphics != null)
 		{
 			Context3DShape.render(displayObject, renderer);
 		}
@@ -61,30 +61,30 @@ class Context3DDisplayObject
 
 	public static inline function renderMask(displayObject:DisplayObject, renderer:Context3DRenderer):Void
 	{
-		if (displayObject.opaqueBackground == null && displayObject.__graphics == null) return;
+		if (displayObject.opaqueBackground == null && displayObject._.__graphics == null) return;
 
 		if (displayObject.opaqueBackground != null
-			&& !displayObject.__renderData.isCacheBitmapRender
+			&& !displayObject._.__renderData.isCacheBitmapRender
 			&& displayObject.width > 0
 			&& displayObject.height > 0)
 		{
 			// TODO
 
-			// var rect = Rectangle.__pool.get ();
+			// var rect = _Rectangle.__pool.get ();
 			// rect.setTo (0, 0, displayObject.width, displayObject.height);
-			// renderer.__pushMaskRect (rect, displayObject.__renderTransform);
+			// renderer._.__pushMaskRect (rect, displayObject._.__renderTransform);
 
 			// var color:ARGB = (displayObject.opaqueBackground:ARGB);
 			// gl.clearColor (color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, 1);
 			// gl.clear (gl.COLOR_BUFFER_BIT);
 
-			// renderer.__popMaskRect ();
-			// renderer.__popMaskObject (displayObject);
+			// renderer._.__popMaskRect ();
+			// renderer._.__popMaskObject (displayObject);
 
-			// Rectangle.__pool.release (rect);
+			// _Rectangle.__pool.release (rect);
 		}
 
-		if (displayObject.__graphics != null)
+		if (displayObject._.__graphics != null)
 		{
 			Context3DShape.renderMask(displayObject, renderer);
 		}

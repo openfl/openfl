@@ -1,12 +1,6 @@
 package openfl.display;
 
 #if !flash
-import openfl.geom.Matrix;
-import openfl.geom.Rectangle;
-#if openfl_html5
-import js.html.ImageElement;
-#end
-
 /**
 	The Bitmap class represents display objects that represent bitmap images.
 	These can be images that you load with the `openfl.Assets` or
@@ -43,11 +37,6 @@ import js.html.ImageElement;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.display.BitmapData)
-@:access(openfl.display.Graphics)
-@:access(openfl.geom.ColorTransform)
-@:access(openfl.geom.Matrix)
-@:access(openfl.geom.Rectangle)
 class Bitmap extends DisplayObject
 {
 	/**
@@ -71,30 +60,16 @@ class Bitmap extends DisplayObject
 		as possible using the internal vector renderer.
 
 	**/
-	public var pixelSnapping:PixelSnapping;
+	public var pixelSnapping(get, set):PixelSnapping;
 
 	/**
 		Controls whether or not the bitmap is smoothed when scaled. If
 		`true`, the bitmap is smoothed when scaled. If
 		`false`, the bitmap is not smoothed when scaled.
 	**/
-	public var smoothing:Bool;
+	public var smoothing(get, set):Bool;
 
-	@:noCompletion private var __bitmapData:BitmapData;
-	#if openfl_html5
-	@:noCompletion private var __image:ImageElement;
-	#end
-	@:noCompletion private var __imageVersion:Int;
-
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperty(Bitmap.prototype, "bitmapData", {
-			get: untyped __js__("function () { return this.get_bitmapData (); }"),
-			set: untyped __js__("function (v) { return this.set_bitmapData (v); }")
-		});
-	}
-	#end
+	@:allow(openfl) @:noCompletion private var _:Dynamic;
 
 	/**
 		Initializes a Bitmap object to refer to the specified BitmapData object.
@@ -108,131 +83,41 @@ class Bitmap extends DisplayObject
 	**/
 	public function new(bitmapData:BitmapData = null, pixelSnapping:PixelSnapping = null, smoothing:Bool = false)
 	{
+		_ = new _Bitmap(this, bitmapData, pixelSnapping, smoothing);
+
 		super();
-
-		__type = BITMAP;
-
-		__bitmapData = bitmapData;
-		this.pixelSnapping = pixelSnapping;
-		this.smoothing = smoothing;
-
-		if (pixelSnapping == null)
-		{
-			this.pixelSnapping = PixelSnapping.AUTO;
-		}
-	}
-
-	@:noCompletion private override function __getBounds(rect:Rectangle, matrix:Matrix):Void
-	{
-		var bounds = Rectangle.__pool.get();
-		if (__bitmapData != null)
-		{
-			bounds.setTo(0, 0, __bitmapData.width, __bitmapData.height);
-		}
-		else
-		{
-			bounds.setTo(0, 0, 0, 0);
-		}
-
-		bounds.__transform(bounds, matrix);
-		rect.__expand(bounds.x, bounds.y, bounds.width, bounds.height);
-		Rectangle.__pool.release(bounds);
-	}
-
-	@:noCompletion private override function __hitTest(x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool,
-			hitObject:DisplayObject):Bool
-	{
-		if (!hitObject.visible || __isMask || __bitmapData == null) return false;
-		if (mask != null && !mask.__hitTestMask(x, y)) return false;
-
-		__getRenderTransform();
-
-		var px = __renderTransform.__transformInverseX(x, y);
-		var py = __renderTransform.__transformInverseY(x, y);
-
-		if (px > 0 && py > 0 && px <= __bitmapData.width && py <= __bitmapData.height)
-		{
-			if (__scrollRect != null && !__scrollRect.contains(px, py))
-			{
-				return false;
-			}
-
-			if (stack != null && !interactiveOnly)
-			{
-				stack.push(hitObject);
-			}
-
-			return true;
-		}
-
-		return false;
-	}
-
-	@:noCompletion private override function __hitTestMask(x:Float, y:Float):Bool
-	{
-		if (__bitmapData == null) return false;
-
-		__getRenderTransform();
-
-		var px = __renderTransform.__transformInverseX(x, y);
-		var py = __renderTransform.__transformInverseY(x, y);
-
-		if (px > 0 && py > 0 && px <= __bitmapData.width && py <= __bitmapData.height)
-		{
-			return true;
-		}
-
-		return false;
 	}
 
 	// Get & Set Methods
+
 	@:noCompletion private function get_bitmapData():BitmapData
 	{
-		return __bitmapData;
+		return _.bitmapData;
 	}
 
 	@:noCompletion private function set_bitmapData(value:BitmapData):BitmapData
 	{
-		__bitmapData = value;
-		smoothing = false;
-
-		__localBoundsDirty = true;
-		__setRenderDirty();
-
-		if (__filters != null)
-		{
-			// __updateFilters = true;
-		}
-
-		__imageVersion = -1;
-
-		return __bitmapData;
+		return _.bitmapData = value;
 	}
 
-	@:noCompletion private override function set_height(value:Float):Float
+	@:noCompletion private function get_pixelSnapping():PixelSnapping
 	{
-		if (__bitmapData != null)
-		{
-			scaleY = value / __bitmapData.height; // get_height();
-		}
-		else
-		{
-			scaleY = 0;
-		}
-		return value;
+		return _.pixelSnapping;
 	}
 
-	@:noCompletion private override function set_width(value:Float):Float
+	@:noCompletion private function set_pixelSnapping(value:PixelSnapping):PixelSnapping
 	{
-		if (__bitmapData != null)
-		{
-			scaleX = value / __bitmapData.width; // get_width();
-		}
-		else
-		{
-			scaleX = 0;
-		}
-		return value;
+		return _.pixelSnapping = value;
+	}
+
+	@:noCompletion private function get_smoothing():Bool
+	{
+		return _.smoothing;
+	}
+
+	@:noCompletion private function set_smoothing(value:Bool):Bool
+	{
+		return _.smoothing = value;
 	}
 }
 #else

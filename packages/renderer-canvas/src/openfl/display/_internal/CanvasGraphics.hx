@@ -34,38 +34,38 @@ import lime._internal.graphics.ImageCanvasUtil;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class CanvasGraphics
 {
-	private static inline var SIN45:Float = 0.70710678118654752440084436210485;
-	private static inline var TAN22:Float = 0.4142135623730950488016887242097;
-	private static var allowSmoothing:Bool;
-	private static var bitmapFill:BitmapData;
-	private static var bitmapStroke:BitmapData;
-	private static var bitmapRepeat:Bool;
-	private static var bounds:Rectangle;
-	private static var fillCommands:DrawCommandBuffer = new DrawCommandBuffer();
-	private static var graphics:Graphics;
-	private static var hasFill:Bool;
-	private static var hasStroke:Bool;
-	private static var hitTesting:Bool;
-	private static var inversePendingMatrix:Matrix;
-	private static var pendingMatrix:Matrix;
-	private static var strokeCommands:DrawCommandBuffer = new DrawCommandBuffer();
-	@SuppressWarnings("checkstyle:Dynamic") private static var windingRule:#if openfl_html5 CanvasWindingRule #else Dynamic #end;
-	private static var worldAlpha:Float;
+	public static inline var SIN45:Float = 0.70710678118654752440084436210485;
+	public static inline var TAN22:Float = 0.4142135623730950488016887242097;
+	public static var allowSmoothing:Bool;
+	public static var bitmapFill:BitmapData;
+	public static var bitmapStroke:BitmapData;
+	public static var bitmapRepeat:Bool;
+	public static var bounds:Rectangle;
+	public static var fillCommands:DrawCommandBuffer = new DrawCommandBuffer();
+	public static var graphics:Graphics;
+	public static var hasFill:Bool;
+	public static var hasStroke:Bool;
+	public static var hitTesting:Bool;
+	public static var inversePendingMatrix:Matrix;
+	public static var pendingMatrix:Matrix;
+	public static var strokeCommands:DrawCommandBuffer = new DrawCommandBuffer();
+	@SuppressWarnings("checkstyle:Dynamic") public static var windingRule:#if openfl_html5 CanvasWindingRule #else Dynamic #end;
+	public static var worldAlpha:Float;
 	#if openfl_html5
-	private static var context:CanvasRenderingContext2D;
-	private static var hitTestCanvas:CanvasElement;
-	private static var hitTestContext:CanvasRenderingContext2D;
+	public static var context:CanvasRenderingContext2D;
+	public static var hitTestCanvas:CanvasElement;
+	public static var hitTestContext:CanvasRenderingContext2D;
 	#end
 
 	#if openfl_html5
-	private static function __init__():Void
+	public static function __init__():Void
 	{
 		hitTestCanvas = Browser.supported ? cast Browser.document.createElement("canvas") : null;
 		hitTestContext = Browser.supported ? hitTestCanvas.getContext("2d") : null;
 	}
 	#end
 
-	private static function closePath(strokeBefore:Bool = false):Void
+	public static function closePath(strokeBefore:Bool = false):Void
 	{
 		#if openfl_html5
 		if (context.strokeStyle == null)
@@ -90,18 +90,18 @@ class CanvasGraphics
 	}
 
 	@SuppressWarnings("checkstyle:Dynamic")
-	private static function createBitmapFill(bitmap:BitmapData, bitmapRepeat:Bool, smooth:Bool):#if openfl_html5 CanvasPattern #else Dynamic #end
+	public static function createBitmapFill(bitmap:BitmapData, bitmapRepeat:Bool, smooth:Bool):#if openfl_html5 CanvasPattern #else Dynamic #end
 	{
 		#if (lime && openfl_html5)
 		setSmoothing(smooth);
-		return context.createPattern(bitmap.__getElement(), bitmapRepeat ? "repeat" : "no-repeat");
+		return context.createPattern(bitmap._.__getElement(), bitmapRepeat ? "repeat" : "no-repeat");
 		#else
 		return null;
 		#end
 	}
 
 	@SuppressWarnings("checkstyle:Dynamic")
-	private static function createGradientPattern(type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix,
+	public static function createGradientPattern(type:GradientType, colors:Array<Dynamic>, alphas:Array<Dynamic>, ratios:Array<Dynamic>, matrix:Matrix,
 			spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float):#if openfl_html5 CanvasPattern #else Void #end
 	{
 		#if openfl_html5
@@ -112,27 +112,27 @@ class CanvasGraphics
 
 		if (matrix == null)
 		{
-			matrix = Matrix.__pool.get();
+			matrix = _Matrix.__pool.get();
 			releaseMatrix = true;
 		}
 
 		switch (type)
 		{
 			case RADIAL:
-				point = Point.__pool.get();
+				point = _Point.__pool.get();
 				point.setTo(1638.4, 0);
-				matrix.__transformPoint(point);
+				matrix._.__transformPoint(point);
 
 				gradientFill = context.createRadialGradient(matrix.tx, matrix.ty, 0, matrix.tx, matrix.ty, Math.abs((point.x - matrix.tx) / 2));
 
 			case LINEAR:
-				point = Point.__pool.get();
+				point = _Point.__pool.get();
 				point.setTo(-819.2, 0);
-				matrix.__transformPoint(point);
+				matrix._.__transformPoint(point);
 
-				point2 = Point.__pool.get();
+				point2 = _Point.__pool.get();
 				point2.setTo(819.2, 0);
-				matrix.__transformPoint(point2);
+				matrix._.__transformPoint(point2);
 
 				gradientFill = context.createLinearGradient(point.x, point.y, point2.x, point2.y);
 		}
@@ -154,15 +154,15 @@ class CanvasGraphics
 			gradientFill.addColorStop(ratio, "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")");
 		}
 
-		if (point != null) Point.__pool.release(point);
-		if (point2 != null) Point.__pool.release(point2);
-		if (releaseMatrix) Matrix.__pool.release(matrix);
+		if (point != null) _Point.__pool.release(point);
+		if (point2 != null) _Point.__pool.release(point2);
+		if (releaseMatrix) _Matrix.__pool.release(matrix);
 
 		return cast(gradientFill);
 		#end
 	}
 
-	private static function createTempPatternCanvas(bitmap:BitmapData, repeat:Bool, width:Int, height:Int):#if openfl_html5 CanvasElement #else Void #end
+	public static function createTempPatternCanvas(bitmap:BitmapData, repeat:Bool, width:Int, height:Int):#if openfl_html5 CanvasElement #else Void #end
 	{
 		// TODO: Don't create extra canvas elements like this
 
@@ -173,7 +173,7 @@ class CanvasGraphics
 		canvas.width = width;
 		canvas.height = height;
 
-		context.fillStyle = context.createPattern(bitmap.__getElement(), repeat ? "repeat" : "no-repeat");
+		context.fillStyle = context.createPattern(bitmap._.__getElement(), repeat ? "repeat" : "no-repeat");
 		context.beginPath();
 		context.moveTo(0, 0);
 		context.lineTo(0, height);
@@ -186,7 +186,7 @@ class CanvasGraphics
 		#end
 	}
 
-	private static function drawRoundRect(x:Float, y:Float, width:Float, height:Float, ellipseWidth:Float, ellipseHeight:Null<Float>):Void
+	public static function drawRoundRect(x:Float, y:Float, width:Float, height:Float, ellipseWidth:Float, ellipseHeight:Null<Float>):Void
 	{
 		#if openfl_html5
 		if (ellipseHeight == null) ellipseHeight = ellipseWidth;
@@ -220,7 +220,7 @@ class CanvasGraphics
 		#end
 	}
 
-	private static function endFill():Void
+	public static function endFill():Void
 	{
 		#if openfl_html5
 		context.beginPath();
@@ -229,7 +229,7 @@ class CanvasGraphics
 		#end
 	}
 
-	private static function endStroke():Void
+	public static function endStroke():Void
 	{
 		#if openfl_html5
 		context.beginPath();
@@ -242,10 +242,10 @@ class CanvasGraphics
 	public static function hitTest(graphics:Graphics, x:Float, y:Float):Bool
 	{
 		#if openfl_html5
-		bounds = graphics.__bounds;
+		bounds = graphics._.__bounds;
 		CanvasGraphics.graphics = graphics;
 
-		if (graphics.__commands.length == 0 || bounds == null || bounds.width <= 0 || bounds.height <= 0)
+		if (graphics._.__commands.length == 0 || bounds == null || bounds.width <= 0 || bounds.height <= 0)
 		{
 			return false;
 		}
@@ -253,23 +253,23 @@ class CanvasGraphics
 		{
 			hitTesting = true;
 
-			var transform = graphics.__renderTransform;
+			var transform = graphics._.__renderTransform;
 
-			var px = transform.__transformX(x, y);
-			var py = transform.__transformY(x, y);
+			var px = transform._.__transformX(x, y);
+			var py = transform._.__transformY(x, y);
 
 			x = px;
 			y = py;
 
-			x -= transform.__transformX(bounds.x, bounds.y);
-			y -= transform.__transformY(bounds.x, bounds.y);
+			x -= transform._.__transformX(bounds.x, bounds.y);
+			y -= transform._.__transformY(bounds.x, bounds.y);
 
-			var cacheCanvas = graphics.__renderData.canvas;
-			var cacheContext = graphics.__renderData.context;
-			graphics.__renderData.canvas = hitTestCanvas;
-			graphics.__renderData.context = hitTestContext;
+			var cacheCanvas = graphics._.__renderData.canvas;
+			var cacheContext = graphics._.__renderData.context;
+			graphics._.__renderData.canvas = hitTestCanvas;
+			graphics._.__renderData.context = hitTestContext;
 
-			context = graphics.__renderData.context;
+			context = graphics._.__renderData.context;
 			context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 
 			fillCommands.clear();
@@ -282,9 +282,9 @@ class CanvasGraphics
 
 			windingRule = CanvasWindingRule.EVENODD;
 
-			var data = new DrawCommandReader(graphics.__commands);
+			var data = new DrawCommandReader(graphics._.__commands);
 
-			for (type in graphics.__commands.types)
+			for (type in graphics._.__commands.types)
 			{
 				switch (type)
 				{
@@ -328,8 +328,8 @@ class CanvasGraphics
 						if (hasFill && context.isPointInPath(x, y, windingRule))
 						{
 							data.destroy();
-							graphics.__renderData.canvas = cacheCanvas;
-							graphics.__renderData.context = cacheContext;
+							graphics._.__renderData.canvas = cacheCanvas;
+							graphics._.__renderData.context = cacheContext;
 							return true;
 						}
 
@@ -338,8 +338,8 @@ class CanvasGraphics
 						if (hasStroke && (context : Dynamic).isPointInStroke(x, y))
 						{
 							data.destroy();
-							graphics.__renderData.canvas = cacheCanvas;
-							graphics.__renderData.context = cacheContext;
+							graphics._.__renderData.canvas = cacheCanvas;
+							graphics._.__renderData.context = cacheContext;
 							return true;
 						}
 
@@ -352,8 +352,8 @@ class CanvasGraphics
 						if (hasFill && context.isPointInPath(x, y, windingRule))
 						{
 							data.destroy();
-							graphics.__renderData.canvas = cacheCanvas;
-							graphics.__renderData.context = cacheContext;
+							graphics._.__renderData.canvas = cacheCanvas;
+							graphics._.__renderData.context = cacheContext;
 							return true;
 						}
 
@@ -362,8 +362,8 @@ class CanvasGraphics
 						if (hasStroke && (context : Dynamic).isPointInStroke(x, y))
 						{
 							data.destroy();
-							graphics.__renderData.canvas = cacheCanvas;
-							graphics.__renderData.context = cacheContext;
+							graphics._.__renderData.canvas = cacheCanvas;
+							graphics._.__renderData.context = cacheContext;
 							return true;
 						}
 
@@ -449,8 +449,8 @@ class CanvasGraphics
 
 			data.destroy();
 
-			graphics.__renderData.canvas = cacheCanvas;
-			graphics.__renderData.context = cacheContext;
+			graphics._.__renderData.canvas = cacheCanvas;
+			graphics._.__renderData.context = cacheContext;
 			return hitTest;
 		}
 		#end
@@ -458,12 +458,12 @@ class CanvasGraphics
 		return false;
 	}
 
-	private static inline function isCCW(x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float):Bool
+	public static inline function isCCW(x1:Float, y1:Float, x2:Float, y2:Float, x3:Float, y3:Float):Bool
 	{
 		return ((x2 - x1) * (y3 - y1) - (y2 - y1) * (x3 - x1)) < 0;
 	}
 
-	private static function normalizeUVT(uvt:Vector<Float>, skipT:Bool = false):NormalizedUVT
+	public static function normalizeUVT(uvt:Vector<Float>, skipT:Bool = false):NormalizedUVT
 	{
 		var max:Float = Math.NEGATIVE_INFINITY;
 		var tmp = Math.NEGATIVE_INFINITY;
@@ -504,10 +504,10 @@ class CanvasGraphics
 		return {max: max, uvt: result};
 	}
 
-	private static function playCommands(commands:DrawCommandBuffer, stroke:Bool = false):Void
+	public static function playCommands(commands:DrawCommandBuffer, stroke:Bool = false):Void
 	{
 		#if openfl_html5
-		bounds = graphics.__bounds;
+		bounds = graphics._.__bounds;
 
 		var offsetX = bounds.x;
 		var offsetY = bounds.y;
@@ -799,11 +799,11 @@ class CanvasGraphics
 						}
 					}
 
-					var tileRect = Rectangle.__pool.get();
-					var tileTransform = Matrix.__pool.get();
+					var tileRect = _Rectangle.__pool.get();
+					var tileTransform = _Matrix.__pool.get();
 
-					var transform = graphics.__renderTransform;
-					// var roundPixels = renderer.__roundPixels;
+					var transform = graphics._.__renderTransform;
+					// var roundPixels = renderer._.__roundPixels;
 					var alpha = CanvasGraphics.worldAlpha;
 
 					var ri, ti;
@@ -859,7 +859,7 @@ class CanvasGraphics
 
 						if (bitmapFill != null)
 						{
-							context.drawImage(bitmapFill.__getElement(), tileRect.x, tileRect.y, tileRect.width, tileRect.height, 0, 0, tileRect.width,
+							context.drawImage(bitmapFill._.__getElement(), tileRect.x, tileRect.y, tileRect.width, tileRect.height, 0, 0, tileRect.width,
 								tileRect.height);
 						}
 						else
@@ -868,8 +868,8 @@ class CanvasGraphics
 						}
 					}
 
-					Rectangle.__pool.release(tileRect);
-					Matrix.__pool.release(tileTransform);
+					_Rectangle.__pool.release(tileRect);
+					_Matrix.__pool.release(tileTransform);
 
 					context.restore();
 
@@ -1038,14 +1038,14 @@ class CanvasGraphics
 							}
 							else
 							{
-								if (stl == null) stl = Point.__pool.get();
-								if (sbr == null) sbr = Point.__pool.get();
+								if (stl == null) stl = _Point.__pool.get();
+								if (sbr == null) sbr = _Point.__pool.get();
 
 								stl.setTo(c.x, c.y);
-								inversePendingMatrix.__transformPoint(stl);
+								inversePendingMatrix._.__transformPoint(stl);
 
 								sbr.setTo(c.x + c.width, c.y + c.height);
-								inversePendingMatrix.__transformPoint(sbr);
+								inversePendingMatrix._.__transformPoint(sbr);
 
 								st = stl.y;
 								sl = stl.x;
@@ -1064,7 +1064,7 @@ class CanvasGraphics
 						if (canOptimizeMatrix && st >= 0 && sl >= 0 && sr <= bitmapFill.width && sb <= bitmapFill.height)
 						{
 							optimizationUsed = true;
-							if (!hitTesting) context.drawImage(bitmapFill.__getElement(), sl, st, sr - sl, sb - st, c.x - offsetX, c.y - offsetY, c.width,
+							if (!hitTesting) context.drawImage(bitmapFill._.__getElement(), sl, st, sr - sl, sb - st, c.x - offsetX, c.y - offsetY, c.width,
 								c.height);
 						}
 					}
@@ -1086,8 +1086,8 @@ class CanvasGraphics
 			}
 		}
 
-		if (stl != null) Point.__pool.release(stl);
-		if (sbr != null) Point.__pool.release(sbr);
+		if (stl != null) _Point.__pool.release(stl);
+		if (sbr != null) _Point.__pool.release(sbr);
 
 		data.destroy();
 
@@ -1137,45 +1137,45 @@ class CanvasGraphics
 	public static function render(graphics:Graphics, renderer:CanvasRenderer):Void
 	{
 		#if openfl_html5
-		graphics.__update(renderer.__worldTransform);
+		graphics._.__update(renderer._.__worldTransform);
 
-		if (graphics.__softwareDirty)
+		if (graphics._.__softwareDirty)
 		{
 			hitTesting = false;
 
 			CanvasGraphics.graphics = graphics;
-			CanvasGraphics.allowSmoothing = renderer.__allowSmoothing;
-			CanvasGraphics.worldAlpha = renderer.__getAlpha(graphics.__owner.__worldAlpha);
-			bounds = graphics.__bounds;
+			CanvasGraphics.allowSmoothing = renderer._.__allowSmoothing;
+			CanvasGraphics.worldAlpha = renderer._.__getAlpha(graphics._.__owner._.__worldAlpha);
+			bounds = graphics._.__bounds;
 
-			var width = graphics.__width;
-			var height = graphics.__height;
+			var width = graphics._.__width;
+			var height = graphics._.__height;
 
-			if (!graphics.__visible || graphics.__commands.length == 0 || bounds == null || width < 1 || height < 1)
+			if (!graphics._.__visible || graphics._.__commands.length == 0 || bounds == null || width < 1 || height < 1)
 			{
-				graphics.__renderData.canvas = null;
-				graphics.__renderData.context = null;
-				graphics.__bitmap = null;
+				graphics._.__renderData.canvas = null;
+				graphics._.__renderData.context = null;
+				graphics._.__bitmap = null;
 			}
 			else
 			{
-				if (graphics.__renderData.canvas == null)
+				if (graphics._.__renderData.canvas == null)
 				{
-					graphics.__renderData.canvas = cast Browser.document.createElement("canvas");
-					graphics.__renderData.context = graphics.__renderData.canvas.getContext("2d");
+					graphics._.__renderData.canvas = cast Browser.document.createElement("canvas");
+					graphics._.__renderData.context = graphics._.__renderData.canvas.getContext("2d");
 				}
 
-				context = graphics.__renderData.context;
-				var transform = graphics.__renderTransform;
-				var canvas = graphics.__renderData.canvas;
+				context = graphics._.__renderData.context;
+				var transform = graphics._.__renderTransform;
+				var canvas = graphics._.__renderData.canvas;
 
 				var scale = renderer.pixelRatio;
 				var scaledWidth = Std.int(width * scale);
 				var scaledHeight = Std.int(height * scale);
 
-				renderer.__setBlendModeContext(context, NORMAL);
+				renderer._.__setBlendModeContext(context, NORMAL);
 
-				if (renderer.__domRenderer != null)
+				if (renderer._.__domRenderer != null)
 				{
 					if (canvas.width == scaledWidth && canvas.height == scaledHeight)
 					{
@@ -1189,7 +1189,7 @@ class CanvasGraphics
 						canvas.style.height = height + "px";
 					}
 
-					var transform = graphics.__renderTransform;
+					var transform = graphics._.__renderTransform;
 					context.setTransform(transform.a * scale, transform.b * scale, transform.c * scale, transform.d * scale, transform.tx * scale,
 						transform.ty * scale);
 				}
@@ -1224,9 +1224,9 @@ class CanvasGraphics
 
 				windingRule = CanvasWindingRule.EVENODD;
 
-				var data = new DrawCommandReader(graphics.__commands);
+				var data = new DrawCommandReader(graphics._.__commands);
 
-				for (type in graphics.__commands.types)
+				for (type in graphics._.__commands.types)
 				{
 					switch (type)
 					{
@@ -1416,7 +1416,7 @@ class CanvasGraphics
 
 						case OVERRIDE_BLEND_MODE:
 							var c = data.readOverrideBlendMode();
-							renderer.__setBlendModeContext(context, c.blendMode);
+							renderer._.__setBlendModeContext(context, c.blendMode);
 
 						case WINDING_EVEN_ODD:
 							data.readWindingEvenOdd();
@@ -1444,11 +1444,11 @@ class CanvasGraphics
 				}
 
 				data.destroy();
-				graphics.__bitmap = BitmapData.fromCanvas(graphics.__renderData.canvas);
+				graphics._.__bitmap = BitmapData.fromCanvas(graphics._.__renderData.canvas);
 			}
 
-			graphics.__softwareDirty = false;
-			graphics.__dirty = false;
+			graphics._.__softwareDirty = false;
+			graphics._.__dirty = false;
 		}
 		#end
 	}
@@ -1459,7 +1459,7 @@ class CanvasGraphics
 		// TODO: Move to normal render method, browsers appear to support more than
 		// one path in clipping now
 
-		if (graphics.__commands.length != 0)
+		if (graphics._.__commands.length != 0)
 		{
 			context = cast renderer.context;
 
@@ -1471,11 +1471,11 @@ class CanvasGraphics
 			var offsetX = 0;
 			var offsetY = 0;
 
-			var data = new DrawCommandReader(graphics.__commands);
+			var data = new DrawCommandReader(graphics._.__commands);
 
 			var x, y, width, height, kappa = .5522848, ox, oy, xe, ye, xm, ym;
 
-			for (type in graphics.__commands.types)
+			for (type in graphics._.__commands.types)
 			{
 				switch (type)
 				{
@@ -1561,7 +1561,7 @@ class CanvasGraphics
 		#end
 	}
 
-	private static function setSmoothing(smooth:Bool):Void
+	public static function setSmoothing(smooth:Bool):Void
 	{
 		#if openfl_html5
 		if (!allowSmoothing)

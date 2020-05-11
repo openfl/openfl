@@ -17,41 +17,41 @@ import openfl.geom.Matrix;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class CairoShape
 {
-	private static var sourceTransform:Matrix3 = new Matrix3();
+	public static var sourceTransform:Matrix3 = new Matrix3();
 
 	public static function render(shape:DisplayObject, renderer:CairoRenderer):Void
 	{
-		if (!shape.__renderable) return;
+		if (!shape._.__renderable) return;
 
-		var alpha = renderer.__getAlpha(shape.__worldAlpha);
+		var alpha = renderer._.__getAlpha(shape._.__worldAlpha);
 		if (alpha <= 0) return;
 
-		var graphics = shape.__graphics;
+		var graphics = shape._.__graphics;
 
 		if (graphics != null)
 		{
 			CairoGraphics.render(graphics, renderer);
 
-			var width = graphics.__width;
-			var height = graphics.__height;
+			var width = graphics._.__width;
+			var height = graphics._.__height;
 			var cairo = renderer.cairo;
 
-			if (cairo != null && graphics.__visible && width >= 1 && height >= 1)
+			if (cairo != null && graphics._.__visible && width >= 1 && height >= 1)
 			{
-				var transform = graphics.__worldTransform;
-				var scale9Grid = shape.__worldScale9Grid;
+				var transform = graphics._.__worldTransform;
+				var scale9Grid = shape._.__worldScale9Grid;
 
-				renderer.__setBlendMode(shape.__worldBlendMode);
-				renderer.__pushMaskObject(shape);
+				renderer._.__setBlendMode(shape._.__worldBlendMode);
+				renderer._.__pushMaskObject(shape);
 
 				if (scale9Grid != null && transform.b == 0 && transform.c == 0)
 				{
-					var bounds = graphics.__bounds;
+					var bounds = graphics._.__bounds;
 
-					var renderTransform = Matrix.__pool.get();
+					var renderTransform = _Matrix.__pool.get();
 
-					var scaleX = graphics.__renderTransform.a;
-					var scaleY = graphics.__renderTransform.d;
+					var scaleX = graphics._.__renderTransform.a;
+					var scaleY = graphics._.__renderTransform.d;
 					var renderScaleX = transform.a;
 					var renderScaleY = transform.d;
 
@@ -69,10 +69,10 @@ class CairoShape
 					var renderCenterWidth = Math.round(width * renderScaleX) - renderLeft - renderRight;
 					var renderCenterHeight = Math.round(height * renderScaleY) - renderTop - renderBottom;
 
-					var pattern = CairoPattern.createForSurface(graphics.__renderData.cairo.target);
+					var pattern = CairoPattern.createForSurface(graphics._.__renderData.cairo.target);
 					// TODO: Allow smoothing, even though it shows seams?
 					pattern.filter = CairoFilter.NEAREST;
-					// pattern.filter = renderer.__allowSmoothing ? CairoFilter.GOOD : CairoFilter.NEAREST;
+					// pattern.filter = renderer._.__allowSmoothing ? CairoFilter.GOOD : CairoFilter.NEAREST;
 
 					function drawImage(sx:Float, sy:Float, sWidth:Float, sHeight:Float, dx:Float, dy:Float, dWidth:Float, dHeight:Float):Void
 					{
@@ -138,13 +138,13 @@ class CairoShape
 						drawImage(left + centerWidth, 0, right, height, renderLeft + renderCenterWidth, 0, renderRight, renderHeight);
 					}
 
-					Matrix.__pool.release(renderTransform);
+					_Matrix.__pool.release(renderTransform);
 				}
 				else
 				{
 					renderer.applyMatrix(transform, cairo);
 
-					cairo.setSourceSurface(graphics.__renderData.cairo.target, 0, 0);
+					cairo.setSourceSurface(graphics._.__renderData.cairo.target, 0, 0);
 
 					if (alpha >= 1)
 					{
@@ -156,7 +156,7 @@ class CairoShape
 					}
 				}
 
-				renderer.__popMaskObject(shape);
+				renderer._.__popMaskObject(shape);
 			}
 		}
 	}

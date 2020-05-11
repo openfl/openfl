@@ -36,12 +36,13 @@ import openfl.utils.ByteArray;
 #end
 @:final class Program3D
 {
-	@:noCompletion private var _:_Program3D;
+	@:allow(openfl) @:noCompletion private var _:_Program3D;
+
 	@:noCompletion private var __context:Context3D;
 	@:noCompletion private var __format:Context3DProgramFormat;
 	@:noCompletion private var __samplerStates:Array<SamplerState>;
 
-	@:noCompletion private function new(context3D:Context3D, format:Context3DProgramFormat)
+	@:allow(openfl) @:noCompletion private function new(context3D:Context3D, format:Context3DProgramFormat)
 	{
 		__context = context3D;
 		__format = format;

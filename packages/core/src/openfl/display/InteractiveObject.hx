@@ -1065,7 +1065,7 @@ class InteractiveObject extends DisplayObject
 		`addEventListener()` method to add an event listener for the
 		`doubleClick` event.
 	**/
-	public var doubleClickEnabled:Bool;
+	public var doubleClickEnabled(get, set):Bool;
 
 	/**
 		Specifies whether this object displays a focus rectangle. It can take
@@ -1074,7 +1074,7 @@ class InteractiveObject extends DisplayObject
 		rectangle appears. A value of `null` indicates that this object obeys
 		the `stageFocusRect` property of the Stage.
 	**/
-	public var focusRect:Null<Bool>;
+	public var focusRect(get, set):Null<Bool>;
 
 	/**
 		Specifies whether this object receives mouse, or other user input,
@@ -1092,7 +1092,7 @@ class InteractiveObject extends DisplayObject
 		`addEventListener()` method to create interactive
 		functionality.
 	**/
-	public var mouseEnabled:Bool;
+	public var mouseEnabled(get, set):Bool;
 
 	/**
 		Specifies whether a virtual keyboard(an on-screen, software keyboard)
@@ -1116,7 +1116,7 @@ class InteractiveObject extends DisplayObject
 		**Note:** This property is not supported in AIR applications on
 		iOS.
 	**/
-	public var needsSoftKeyboard:Bool;
+	public var needsSoftKeyboard(get, set):Bool;
 
 	/**
 		Defines the area that should remain on-screen when a soft keyboard is
@@ -1133,7 +1133,7 @@ class InteractiveObject extends DisplayObject
 		**Note:** On Android, the `softKeyboardInputAreaOfInterest` is not
 		respected in landscape orientations.
 	**/
-	public var softKeyboardInputAreaOfInterest:Rectangle;
+	public var softKeyboardInputAreaOfInterest(get, set):Rectangle;
 
 	/**
 		Specifies whether this object is in the tab order. If this object is
@@ -1188,25 +1188,6 @@ class InteractiveObject extends DisplayObject
 	**/
 	public var tabIndex(get, set):Int;
 
-	@:noCompletion private var __tabEnabled:Null<Bool>;
-	@:noCompletion private var __tabIndex:Int;
-
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperties(InteractiveObject.prototype, {
-			"tabEnabled": {
-				get: untyped __js__("function () { return this.get_tabEnabled (); }"),
-				set: untyped __js__("function (v) { return this.set_tabEnabled (v); }")
-			},
-			"tabIndex": {
-				get: untyped __js__("function () { return this.get_tabIndex (); }"),
-				set: untyped __js__("function (v) { return this.set_tabIndex (v); }")
-			},
-		});
-	}
-	#end
-
 	/**
 		Calling the `new InteractiveObject()` constructor throws an
 		`ArgumentError` exception. You can, however, call constructors
@@ -1220,13 +1201,12 @@ class InteractiveObject extends DisplayObject
 	**/
 	public function new()
 	{
-		super();
+		if (_ == null)
+		{
+			_ = new _InteractiveObject(this);
+		}
 
-		doubleClickEnabled = false;
-		mouseEnabled = true;
-		needsSoftKeyboard = false;
-		__tabEnabled = null;
-		__tabIndex = -1;
+		super();
 	}
 
 	#if !openfl_strict
@@ -1253,76 +1233,76 @@ class InteractiveObject extends DisplayObject
 	}
 	#end
 
-	@:noCompletion private function __allowMouseFocus():Bool
-	{
-		return tabEnabled;
-	}
-
-	@:noCompletion private override function __getInteractive(stack:Array<DisplayObject>):Bool
-	{
-		if (stack != null)
-		{
-			stack.push(this);
-
-			if (parent != null)
-			{
-				parent.__getInteractive(stack);
-			}
-		}
-
-		return true;
-	}
-
-	// @:noCompletion private override function __hitTest(x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool,
-	// 		hitObject:DisplayObject):Bool
-	// {
-	// 	if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
-	// 	return inline super.__hitTest(x, y, shapeFlag, stack, interactiveOnly, hitObject);
-	// }
-
-	@:noCompletion private function __tabTest(stack:Array<InteractiveObject>):Void
-	{
-		if (tabEnabled)
-		{
-			stack.push(this);
-		}
-	}
-
 	// Get & Set Methods
+
+	@:noCompletion private function get_doubleClickEnabled():Bool
+	{
+		return _.doubleClickEnabled;
+	}
+
+	@:noCompletion private function set_doubleClickEnabled(value:Bool):Bool
+	{
+		return _.doubleClickEnabled = value;
+	}
+
+	@:noCompletion private function get_focusRect():Null<Bool>
+	{
+		return _.focusRect;
+	}
+
+	@:noCompletion private function set_focusRect(value:Null<Bool>):Null<Bool>
+	{
+		return _.focusRect = value;
+	}
+
+	@:noCompletion private function get_mouseEnabled():Bool
+	{
+		return _.mouseEnabled;
+	}
+
+	@:noCompletion private function set_mouseEnabled(value:Bool):Bool
+	{
+		return _.mouseEnabled = value;
+	}
+
+	@:noCompletion private function get_needsSoftKeyboard():Bool
+	{
+		return _.needsSoftKeyboard;
+	}
+
+	@:noCompletion private function set_needsSoftKeyboard(value:Bool):Bool
+	{
+		return _.needsSoftKeyboard = value;
+	}
+
+	@:noCompletion private function get_softKeyboardInputAreaOfInterest():Rectangle
+	{
+		return _.softKeyboardInputAreaOfInterest;
+	}
+
+	@:noCompletion private function set_softKeyboardInputAreaOfInterest(value:Rectangle):Rectangle
+	{
+		return _.softKeyboardInputAreaOfInterest = value;
+	}
+
 	@:noCompletion private function get_tabEnabled():Bool
 	{
-		return __tabEnabled == true ? true : false;
+		return _.tabEnabled;
 	}
 
 	@:noCompletion private function set_tabEnabled(value:Bool):Bool
 	{
-		if (__tabEnabled != value)
-		{
-			__tabEnabled = value;
-
-			dispatchEvent(new Event(Event.TAB_ENABLED_CHANGE, true, false));
-		}
-
-		return __tabEnabled;
+		return _.tabEnabled = value;
 	}
 
 	@:noCompletion private function get_tabIndex():Int
 	{
-		return __tabIndex;
+		return _.tabIndex;
 	}
 
 	@:noCompletion private function set_tabIndex(value:Int):Int
 	{
-		if (__tabIndex != value)
-		{
-			if (value < -1) throw new RangeError("Parameter tabIndex must be a non-negative number; got " + value);
-
-			__tabIndex = value;
-
-			dispatchEvent(new Event(Event.TAB_INDEX_CHANGE, true, false));
-		}
-
-		return __tabIndex;
+		return _.tabIndex = value;
 	}
 }
 #else

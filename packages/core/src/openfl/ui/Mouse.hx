@@ -14,7 +14,6 @@ import openfl.display.Stage;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.display.Stage)
 @:final class Mouse
 {
 	/**
@@ -55,31 +54,12 @@ import openfl.display.Stage;
 		is `true`. However, mouse events may behave differently depending on
 		the physical characteristics of the pointing device.
 	**/
-	public static var supportsCursor(default, null):Bool = #if !mobile true; #else false; #end
+	public static var supportsCursor(get, never):Bool;
 
 	/**
 		Indicates whether the current configuration supports native cursors.
 	**/
-	public static var supportsNativeCursor(default, null):Bool = #if !mobile true; #else false; #end
-
-	@:noCompletion private static var __cursor:MouseCursor = MouseCursor.AUTO;
-	@:noCompletion private static var __hidden:Bool;
-
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperty(Mouse, "cursor", {
-			get: function()
-			{
-				return Mouse.get_cursor();
-			},
-			set: function(value)
-			{
-				return Mouse.set_cursor(value);
-			}
-		});
-	}
-	#end
+	public static var supportsNativeCursor(get, never):Bool;
 
 	/**
 		Hides the pointer. The pointer is visible by default.
@@ -91,7 +71,6 @@ import openfl.display.Stage;
 	**/
 	public static function hide():Void
 	{
-		__hidden = true;
 		_Mouse.hide();
 	}
 
@@ -117,13 +96,7 @@ import openfl.display.Stage;
 	**/
 	public static function show():Void
 	{
-		__hidden = false;
 		_Mouse.show();
-	}
-
-	@:noCompletion private static function __setStageCursor(stage:Stage, cursor:MouseCursor):Void
-	{
-		_Mouse.setStageCursor(stage, cursor);
 	}
 
 	#if false
@@ -135,16 +108,25 @@ import openfl.display.Stage;
 	// @:noCompletion @:dox(hide) @:require(flash11) public static function unregisterCursor (name:String):Void;
 	#end
 	// Get & Set Methods
+
 	@:noCompletion private static function get_cursor():MouseCursor
 	{
-		return __cursor;
+		return _Mouse.cursor;
 	}
 
 	@:noCompletion private static function set_cursor(value:MouseCursor):MouseCursor
 	{
-		if (value == null) value = AUTO;
-		_Mouse.setCursor(value);
-		return __cursor = value;
+		return _Mouse.cursor = value;
+	}
+
+	@:noCompletion private static function get_supportsCursor():Bool
+	{
+		return _Mouse.supportsCursor;
+	}
+
+	@:noCompletion private static function get_supportsNativeCursor():Bool
+	{
+		return _Mouse.supportsNativeCursor;
 	}
 }
 #else

@@ -28,13 +28,13 @@ typedef UploadCallback = UInt->Int->ATFGPUFormat->Int->Int->Int->Bytes->Void;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class ATFReader
 {
-	private var atfFormat:ATFFormat;
-	private var cubeMap:Bool;
-	private var data:ByteArray;
-	private var height:Int;
-	private var mipCount:Int;
-	private var version:Int = 0;
-	private var width:Int;
+	public var atfFormat:ATFFormat;
+	public var cubeMap:Bool;
+	public var data:ByteArray;
+	public var height:Int;
+	public var mipCount:Int;
+	public var version:Int = 0;
+	public var width:Int;
 
 	public function new(data:ByteArray, byteArrayOffset:UInt)
 	{
@@ -141,7 +141,7 @@ class ATFReader
 		}
 	}
 
-	private function __readUInt24(data:ByteArray):UInt
+	public function __readUInt24(data:ByteArray):UInt
 	{
 		var value:UInt;
 		value = (data.readUnsignedByte() << 16);
@@ -150,7 +150,7 @@ class ATFReader
 		return value;
 	}
 
-	private function __readUInt32(data:ByteArray):UInt
+	public function __readUInt32(data:ByteArray):UInt
 	{
 		var value:UInt;
 		value = (data.readUnsignedByte() << 24);

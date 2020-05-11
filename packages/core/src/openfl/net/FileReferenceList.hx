@@ -61,9 +61,7 @@ class FileReferenceList extends EventDispatcher
 		The properties of `FileReference` objects are described in the
 		FileReference class documentation.
 	**/
-	public var fileList(default, null):Array<FileReference>;
-
-	@:noCompletion private var __backend:FileReferenceListBackend;
+	public var fileList(get, never):Array<FileReference>;
 
 	/**
 		Creates a new FileReferenceList object. A FileReferenceList object
@@ -74,9 +72,12 @@ class FileReferenceList extends EventDispatcher
 	**/
 	public function new()
 	{
-		super();
+		if (_ == null)
+		{
+			_ = new _FileReferenceList();
+		}
 
-		__backend = new FileReferenceListBackend(this);
+		super();
 	}
 
 	/**
@@ -127,17 +128,16 @@ class FileReferenceList extends EventDispatcher
 	**/
 	public function browse(typeFilter:Array<FileFilter> = null):Bool
 	{
-		return __backend.browse(typeFilter);
+		return _.browse(typeFilter);
+	}
+
+	// Get & Set Methods
+
+	@:noCompletion private function get_fileList():Array<FileReference>
+	{
+		return _.fileList;
 	}
 }
-
-#if lime
-private typedef FileReferenceListBackend = openfl._internal.backend.lime.LimeFileReferenceListBackend;
-#elseif openfl_html5
-private typedef FileReferenceListBackend = openfl._internal.backend.html5.HTML5FileReferenceListBackend;
-#else
-private typedef FileReferenceListBackend = openfl._internal.backend.dummy.DummyFileReferenceListBackend;
-#end
 #else
 typedef FileReferenceList = flash.net.FileReferenceList;
 #end

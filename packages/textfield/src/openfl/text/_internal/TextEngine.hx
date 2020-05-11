@@ -7,8 +7,10 @@ import openfl._internal.utils.Log;
 import openfl.geom.Rectangle;
 import openfl.text.AntiAliasType;
 import openfl.text.Font;
+import openfl.text._Font;
 import openfl.text.GridFitType;
 import openfl.text.TextField;
+import openfl.text._TextField;
 import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFieldType;
 import openfl.text.TextFormat;
@@ -33,14 +35,14 @@ import js.Browser;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class TextEngine
 {
-	private static inline var UTF8_TAB:Int = 9;
-	private static inline var UTF8_ENDLINE:Int = 10;
-	private static inline var UTF8_SPACE:Int = 32;
-	private static inline var UTF8_HYPHEN:Int = 0x2D;
-	private static inline var GUTTER:Int = 2;
-	private static var __defaultFonts:Map<String, Font> = new Map();
+	public static inline var UTF8_TAB:Int = 9;
+	public static inline var UTF8_ENDLINE:Int = 10;
+	public static inline var UTF8_SPACE:Int = 32;
+	public static inline var UTF8_HYPHEN:Int = 0x2D;
+	public static inline var GUTTER:Int = 2;
+	public static var __defaultFonts:Map<String, Font> = new Map();
 	#if openfl_html5
-	private static var __context:CanvasRenderingContext2D;
+	public static var __context:CanvasRenderingContext2D;
 	#end
 
 	public var antiAliasType:AntiAliasType;
@@ -49,7 +51,7 @@ class TextEngine
 	public var backgroundColor:Int;
 	public var border:Bool;
 	public var borderColor:Int;
-	public var bottomScrollV(default, null):Int;
+	public var bottomScrollV:Int;
 	public var bounds:Rectangle;
 	public var caretIndex:Int;
 	public var embedFonts:Bool;
@@ -63,10 +65,10 @@ class TextEngine
 	public var lineHeights:Vector<Float>;
 	public var lineWidths:Vector<Float>;
 	public var maxChars:Int;
-	public var maxScrollH(default, null):Int;
-	public var maxScrollV(default, null):Int;
+	public var maxScrollH:Int;
+	public var maxScrollV:Int;
 	public var multiline:Bool;
-	public var numLines(default, null):Int;
+	public var numLines:Int;
 	public var restrict(default, set):String;
 	public var scrollH:Int;
 	@:isVar public var scrollV(get, set):Int;
@@ -81,24 +83,24 @@ class TextEngine
 	public var width:Float;
 	public var wordWrap:Bool;
 
-	private var textField:TextField;
-	@:noCompletion private var __cursorTimer:Timer;
-	@:noCompletion private var __hasFocus:Bool;
-	@:noCompletion private var __isKeyDown:Bool;
-	@:noCompletion private var __measuredHeight:Int;
-	@:noCompletion private var __measuredWidth:Int;
-	@:noCompletion private var __restrictRegexp:EReg;
-	@:noCompletion private var __selectionStart:Int;
-	@:noCompletion private var __showCursor:Bool;
-	@:noCompletion private var __textFormat:TextFormat;
+	public var textField:TextField;
+	@:noCompletion public var __cursorTimer:Timer;
+	@:noCompletion public var __hasFocus:Bool;
+	@:noCompletion public var __isKeyDown:Bool;
+	@:noCompletion public var __measuredHeight:Int;
+	@:noCompletion public var __measuredWidth:Int;
+	@:noCompletion public var __restrictRegexp:EReg;
+	@:noCompletion public var __selectionStart:Int;
+	@:noCompletion public var __showCursor:Bool;
+	@:noCompletion public var __textFormat:TextFormat;
 	#if (lime && !openfl_html5)
-	@:noCompletion private var __textLayout:TextLayout;
+	@:noCompletion public var __textLayout:TextLayout;
 	#end
-	@:noCompletion private var __texture:GLTexture;
-	// @:noCompletion private var __tileData:Map<Tilesheet, Array<Float>>;
-	// @:noCompletion private var __tileDataLength:Map<Tilesheet, Int>;
-	// @:noCompletion private var __tilesheets:Map<Tilesheet, Bool>;
-	private var __useIntAdvances:Null<Bool>;
+	@:noCompletion public var __texture:GLTexture;
+	// @:noCompletion public var __tileData:Map<Tilesheet, Array<Float>>;
+	// @:noCompletion public var __tileDataLength:Map<Tilesheet, Int>;
+	// @:noCompletion public var __tilesheets:Map<Tilesheet, Bool>;
+	public var __useIntAdvances:Null<Bool>;
 
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion @:dox(hide) public var __cairoFont:#if lime CairoFontFace #else Dynamic #end;
 	@:noCompletion @:dox(hide) public var __font:Font;
@@ -148,7 +150,7 @@ class TextEngine
 		#end
 	}
 
-	private function createRestrictRegexp(restrict:String):EReg
+	public function createRestrictRegexp(restrict:String):EReg
 	{
 		var declinedRange = ~/\^(.-.|.)/gu;
 		var declined = "";
@@ -174,20 +176,20 @@ class TextEngine
 		return new EReg('(${testRegexpParts.join('|')})', "g");
 	}
 
-	private static function findFont(name:String):Font
+	public static function findFont(name:String):Font
 	{
 		#if openfl_html5
-		return Font.__fontByName.get(name);
+		return _Font.__fontByName.get(name);
 		#elseif lime_cffi
-		for (registeredFont in Font.__registeredFonts)
+		for (registeredFont in Font._.__registeredFonts)
 		{
 			if (registeredFont == null) continue;
 
 			if (registeredFont.fontName == name
-				|| (registeredFont.__fontPath != null
-					&& (registeredFont.__fontPath == name || registeredFont.__fontPathWithoutDirectory == name)))
+				|| (registeredFont._.__fontPath != null
+					&& (registeredFont._.__fontPath == name || registeredFont._.__fontPathWithoutDirectory == name)))
 			{
-				if (registeredFont.__initialize())
+				if (registeredFont._.__initialize())
 				{
 					return registeredFont;
 				}
@@ -202,7 +204,7 @@ class TextEngine
 
 		if (font != null)
 		{
-			Font.__registeredFonts.push(font);
+			Font._.__registeredFonts.push(font);
 			return font;
 		}
 		#end
@@ -210,7 +212,7 @@ class TextEngine
 		return null;
 	}
 
-	private static function findFontVariant(format:TextFormat):Font
+	public static function findFontVariant(format:TextFormat):Font
 	{
 		var fontName = format.font;
 		var bold = format.bold;
@@ -219,15 +221,15 @@ class TextEngine
 		if (fontName == null) fontName = "_serif";
 		var fontNamePrefix = StringTools.replace(StringTools.replace(fontName, " Normal", ""), " Regular", "");
 
-		if (bold && italic && Font.__fontByName.exists(fontNamePrefix + " Bold Italic"))
+		if (bold && italic && _Font.__fontByName.exists(fontNamePrefix + " Bold Italic"))
 		{
 			return findFont(fontNamePrefix + " Bold Italic");
 		}
-		else if (bold && Font.__fontByName.exists(fontNamePrefix + " Bold"))
+		else if (bold && _Font.__fontByName.exists(fontNamePrefix + " Bold"))
 		{
 			return findFont(fontNamePrefix + " Bold");
 		}
-		else if (italic && Font.__fontByName.exists(fontNamePrefix + " Italic"))
+		else if (italic && _Font.__fontByName.exists(fontNamePrefix + " Italic"))
 		{
 			return findFont(fontNamePrefix + " Italic");
 		}
@@ -235,7 +237,7 @@ class TextEngine
 		return findFont(fontName);
 	}
 
-	private function getBounds():Void
+	public function getBounds():Void
 	{
 		var padding = border ? 1 : 0;
 
@@ -271,10 +273,10 @@ class TextEngine
 
 		var font = getFontInstance(format);
 
-		if (format.__ascent != null)
+		if (format._.__ascent != null)
 		{
-			ascent = format.size * format.__ascent;
-			descent = format.size * format.__descent;
+			ascent = format.size * format._.__ascent;
+			descent = format.size * format._.__descent;
 		}
 		else if (#if (lime || openfl_html5) font != null && font.unitsPerEM != 0 #else false #end)
 		{
@@ -306,18 +308,18 @@ class TextEngine
 		if (fontName == null) fontName = "_serif";
 		var fontNamePrefix = StringTools.replace(StringTools.replace(fontName, " Normal", ""), " Regular", "");
 
-		if (bold && italic && Font.__fontByName.exists(fontNamePrefix + " Bold Italic"))
+		if (bold && italic && _Font.__fontByName.exists(fontNamePrefix + " Bold Italic"))
 		{
 			fontName = fontNamePrefix + " Bold Italic";
 			bold = false;
 			italic = false;
 		}
-		else if (bold && Font.__fontByName.exists(fontNamePrefix + " Bold"))
+		else if (bold && _Font.__fontByName.exists(fontNamePrefix + " Bold"))
 		{
 			fontName = fontNamePrefix + " Bold";
 			bold = false;
 		}
-		else if (italic && Font.__fontByName.exists(fontNamePrefix + " Italic"))
+		else if (italic && _Font.__fontByName.exists(fontNamePrefix + " Italic"))
 		{
 			fontName = fontNamePrefix + " Italic";
 			italic = false;
@@ -578,7 +580,7 @@ class TextEngine
 		return cr < lf ? cr : lf;
 	}
 
-	private function getLineMeasurements():Void
+	public function getLineMeasurements():Void
 	{
 		lineAscents.length = 0;
 		lineDescents.length = 0;
@@ -649,21 +651,21 @@ class TextEngine
 
 		if (textHeight == 0 && textField != null && textField.type == INPUT)
 		{
-			var currentFormat = textField.__textFormat;
+			var currentFormat = textField._.__textFormat;
 			var ascent, descent, leading, heightValue;
 
 			var font = getFontInstance(currentFormat);
 
-			if (currentFormat.__ascent != null)
+			if (currentFormat._.__ascent != null)
 			{
-				ascent = currentFormat.size * currentFormat.__ascent;
-				descent = currentFormat.size * currentFormat.__descent;
+				ascent = currentFormat.size * currentFormat._.__ascent;
+				descent = currentFormat.size * currentFormat._.__descent;
 			}
-			else if (#if (lime || openfl_html) font != null && font.unitsPerEM != 0 #else false #end)
+			else if (#if (lime || openfl_html) font != null && font.limeFont.unitsPerEM != 0 #else false #end)
 			{
 				#if (lime || openfl_html5)
-				ascent = (font.ascender / font.unitsPerEM) * currentFormat.size;
-				descent = Math.abs((font.descender / font.unitsPerEM) * currentFormat.size);
+				ascent = (font.limeFont.ascender / font.limeFont.unitsPerEM) * currentFormat.size;
+				descent = Math.abs((font.limeFont.descender / font.limeFont.unitsPerEM) * currentFormat.size);
 				#else
 				ascent = 0;
 				descent = 0;
@@ -744,7 +746,7 @@ class TextEngine
 		updateScrollV();
 	}
 
-	private function getLayoutGroups():Void
+	public function getLayoutGroups():Void
 	{
 		layoutGroups.length = 0;
 
@@ -754,7 +756,7 @@ class TextEngine
 		var formatRange:TextFormatRange = null;
 		var font = null;
 
-		var currentFormat = TextField.__defaultTextFormat.clone();
+		var currentFormat = _TextField.__defaultTextFormat.clone();
 
 		// line metrics
 		var leading = 0; // TODO: is maxLeading needed, just like with ascent? In case multiple formats in the same line have different leading values
@@ -963,10 +965,10 @@ class TextEngine
 		#if !js inline #end function setLineMetrics():Void
 
 		{
-			if (currentFormat.__ascent != null)
+			if (currentFormat._.__ascent != null)
 			{
-				ascent = currentFormat.size * currentFormat.__ascent;
-				descent = currentFormat.size * currentFormat.__descent;
+				ascent = currentFormat.size * currentFormat._.__ascent;
+				descent = currentFormat.size * currentFormat._.__descent;
 			}
 			else if (#if (lime || openfl_html5) font != null && font.unitsPerEM != 0 #else false #end)
 			{
@@ -1020,13 +1022,12 @@ class TextEngine
 		}
 
 		#if !js inline #end function nextFormatRange():Bool
-
 		{
 			if (rangeIndex < textFormatRanges.length - 1)
 			{
 				rangeIndex++;
 				formatRange = textFormatRanges[rangeIndex];
-				currentFormat.__merge(formatRange.format);
+				currentFormat._.__merge(formatRange.format);
 
 				#if openfl_html5
 				__context.font = getFont(currentFormat);
@@ -1633,7 +1634,7 @@ class TextEngine
 		return value;
 	}
 
-	private function setTextAlignment():Void
+	public function setTextAlignment():Void
 	{
 		var lineIndex = -1;
 		var offsetX = 0.0;
@@ -1755,7 +1756,7 @@ class TextEngine
 		return value;
 	}
 
-	private function update():Void
+	public function update():Void
 	{
 		if (text == null /*|| text == ""*/ || textFormatRanges.length == 0)
 		{
@@ -1785,7 +1786,7 @@ class TextEngine
 		getBounds();
 	}
 
-	private function updateScrollV():Void
+	public function updateScrollV():Void
 	{
 		if (numLines == 1 || lineHeights == null)
 		{

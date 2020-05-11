@@ -69,7 +69,7 @@ class KeyboardEvent extends Event
 		(`false`) on Windows; indicates whether the Option key is
 		active on Mac OS.
 	**/
-	public var altKey:Bool;
+	public var altKey(get, set):Bool;
 
 	/**
 		Contains the character code value of the key pressed or released. The
@@ -80,7 +80,7 @@ class KeyboardEvent extends Event
 		**Note: **When an input method editor(IME) is running,
 		`charCode` does not report accurate character codes.
 	**/
-	public var charCode:Int;
+	public var charCode(get, set):Int;
 
 	#if (!flash_doc_gen || air_doc_gen)
 	/**
@@ -88,14 +88,14 @@ class KeyboardEvent extends Event
 		(`false`). Supported for Mac OS only. On Mac OS, the `commandKey`
 		property has the same value as the `ctrlKey` property.
 	**/
-	public var commandKey:Bool;
+	public var commandKey(get, set):Bool;
 
 	/**
 		Indicates whether the Control key is active (`true`) or inactive
 		(`false`). On Windows and Linux, this is also true when the Ctrl key
 		is active.
 	**/
-	public var controlKey:Bool;
+	public var controlKey(get, set):Bool;
 	#end
 
 	/**
@@ -103,7 +103,7 @@ class KeyboardEvent extends Event
 		(`true`) or inactive(`false`); On Mac OS, indicates
 		whether either the Ctrl key or the Command key is active.
 	**/
-	public var ctrlKey:Bool;
+	public var ctrlKey(get, set):Bool;
 
 	/**
 		The key code value of the key pressed or released.
@@ -111,7 +111,7 @@ class KeyboardEvent extends Event
 		**Note: **When an input method editor(IME) is running,
 		`keyCode` does not report accurate key codes.
 	**/
-	public var keyCode:Int;
+	public var keyCode(get, set):Int;
 
 	/**
 		Indicates the location of the key on the keyboard. This is useful for
@@ -123,16 +123,13 @@ class KeyboardEvent extends Event
 		(`KeyLocation.STANDARD`) versus the numeric keypad
 		(`KeyLocation.NUM_PAD`).
 	**/
-	public var keyLocation:KeyLocation;
+	public var keyLocation(get, set):KeyLocation;
 
 	/**
 		Indicates whether the Shift key modifier is active(`true`) or
 		inactive(`false`).
 	**/
-	public var shiftKey:Bool;
-
-	@:noCompletion private static var __pool:ObjectPool<KeyboardEvent> = new ObjectPool<KeyboardEvent>(function() return new KeyboardEvent(null),
-	function(event) event.__init());
+	public var shiftKey(get, set):Bool;
 
 	/**
 		Creates an Event object that contains specific information about keyboard
@@ -167,61 +164,100 @@ class KeyboardEvent extends Event
 			keyLocationValue:KeyLocation = null, ctrlKeyValue:Bool = false, altKeyValue:Bool = false, shiftKeyValue:Bool = false,
 			controlKeyValue:Bool = false, commandKeyValue:Bool = false)
 	{
+		if (_ == null)
+		{
+			_ = new _KeyboardEvent(type, bubbles, cancelable, charCodeValue, keyCodeValue, keyLocationValue, ctrlKeyValue, altKeyValue, shiftKeyValue,
+				controlKeyValue, commandKeyValue);
+		}
+
 		super(type, bubbles, cancelable);
-
-		charCode = charCodeValue;
-		keyCode = keyCodeValue;
-		keyLocation = keyLocationValue != null ? keyLocationValue : KeyLocation.STANDARD;
-		ctrlKey = ctrlKeyValue;
-		altKey = altKeyValue;
-		shiftKey = shiftKeyValue;
-
-		#if !openfl_doc_gen
-		controlKey = controlKeyValue;
-		commandKey = commandKeyValue;
-		#end
 	}
 
 	public override function clone():KeyboardEvent
 	{
-		var event = new KeyboardEvent(type, bubbles, cancelable, charCode, keyCode, keyLocation, ctrlKey, altKey, shiftKey
-			#if !openfl_doc_gen, controlKey, commandKey #end);
-
-		event.target = target;
-		event.currentTarget = currentTarget;
-		event.eventPhase = eventPhase;
-		return event;
+		return _.clone();
 	}
 
-	public override function toString():String
+	// Get & Set Methods
+
+	@:noCompletion private function get_altKey():Bool
 	{
-		return __formatToString("KeyboardEvent", [
-			"type",
-			"bubbles",
-			"cancelable",
-			"charCode",
-			"keyCode",
-			"keyLocation",
-			"ctrlKey",
-			"altKey",
-			"shiftKey"
-		]);
+		return _.altKey;
 	}
 
-	@:noCompletion private override function __init():Void
+	@:noCompletion private function set_altKey(value:Bool):Bool
 	{
-		super.__init();
-		charCode = 0;
-		keyCode = 0;
-		keyLocation = STANDARD;
-		ctrlKey = false;
-		altKey = false;
-		shiftKey = false;
+		return _.altKey = value;
+	}
 
-		#if !openfl_doc_gen
-		controlKey = false;
-		commandKey = false;
-		#end
+	@:noCompletion private function get_charCode():Int
+	{
+		return _.charCode;
+	}
+
+	@:noCompletion private function set_charCode(value:Int):Int
+	{
+		return _.charCode = value;
+	}
+
+	@:noCompletion private function get_commandKey():Bool
+	{
+		return _.commandKey;
+	}
+
+	@:noCompletion private function set_commandKey(value:Bool):Bool
+	{
+		return _.commandKey = value;
+	}
+
+	@:noCompletion private function get_controlKey():Bool
+	{
+		return _.controlKey;
+	}
+
+	@:noCompletion private function set_controlKey(value:Bool):Bool
+	{
+		return _.controlKey = value;
+	}
+
+	@:noCompletion private function get_ctrlKey():Bool
+	{
+		return _.ctrlKey;
+	}
+
+	@:noCompletion private function set_ctrlKey(value:Bool):Bool
+	{
+		return _.ctrlKey = value;
+	}
+
+	@:noCompletion private function get_keyCode():Int
+	{
+		return _.keyCode;
+	}
+
+	@:noCompletion private function set_keyCode(value:Int):Int
+	{
+		return _.keyCode = value;
+	}
+
+	@:noCompletion private function get_keyLocation():KeyLocation
+	{
+		return _.keyLocation;
+	}
+
+	@:noCompletion private function set_keyLocation(value:KeyLocation):KeyLocation
+	{
+		return _.keyLocation = value;
+	}
+
+	@:noCompletion private function get_shiftKey():Bool
+	{
+		return _.shiftKey;
+	}
+
+	@:noCompletion private function set_shiftKey(value:Bool):Bool
+	{
+		return _.shiftKey = value;
 	}
 }
 #else

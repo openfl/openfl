@@ -33,21 +33,21 @@ import openfl.utils.ByteArray;
 @:noCompletion
 class _Shader
 {
-	private var context:Context3D;
-	private var gl:WebGLRenderContext;
-	private var inputBitmapData:Array<ShaderInput<BitmapData>>;
-	private var numPasses:Int;
-	private var paramBool:Array<ShaderParameter<Bool>>;
-	private var paramFloat:Array<ShaderParameter<Float>>;
-	private var paramInt:Array<ShaderParameter<Int>>;
-	private var parent:Shader;
+	public var context:Context3D;
+	public var gl:WebGLRenderContext;
+	public var inputBitmapData:Array<ShaderInput<BitmapData>>;
+	public var numPasses:Int;
+	public var paramBool:Array<ShaderParameter<Bool>>;
+	public var paramFloat:Array<ShaderParameter<Float>>;
+	public var paramInt:Array<ShaderParameter<Int>>;
+	public var parent:Shader;
 
 	public function new(parent:Shader)
 	{
 		this.parent = parent;
 	}
 
-	private function clearUseArray():Void
+	public function clearUseArray():Void
 	{
 		for (parameter in paramBool)
 		{
@@ -65,7 +65,7 @@ class _Shader
 		}
 	}
 
-	private function createGLShader(source:String, type:Int):GLShader
+	public function createGLShader(source:String, type:Int):GLShader
 	{
 		var shader = gl.createShader(type);
 		gl.shaderSource(shader, source);
@@ -82,7 +82,7 @@ class _Shader
 		return shader;
 	}
 
-	private function createGLProgram(vertexSource:String, fragmentSource:String):GLProgram
+	public function createGLProgram(vertexSource:String, fragmentSource:String):GLProgram
 	{
 		var vertexShader = createGLShader(vertexSource, GL.VERTEX_SHADER);
 		var fragmentShader = createGLShader(fragmentSource, GL.FRAGMENT_SHADER);
@@ -113,7 +113,7 @@ class _Shader
 		return program;
 	}
 
-	private function disable():Void
+	public function disable():Void
 	{
 		if (parent.program != null)
 		{
@@ -121,7 +121,7 @@ class _Shader
 		}
 	}
 
-	private function disableGL():Void
+	public function disableGL():Void
 	{
 		var textureCount = 0;
 
@@ -156,7 +156,7 @@ class _Shader
 		#end
 	}
 
-	private function enable():Void
+	public function enable():Void
 	{
 		init();
 
@@ -166,7 +166,7 @@ class _Shader
 		}
 	}
 
-	private function enableGL():Void
+	public function enableGL():Void
 	{
 		var textureCount = 0;
 
@@ -192,22 +192,24 @@ class _Shader
 			gl = context._.gl;
 		}
 
-		if (parent.__data == null)
+		if (parent._.__data == null)
 		{
-			parent.__data = cast new ShaderData(null);
+			parent._.__data = cast new ShaderData(null);
 		}
 
-		if (parent.__glFragmentSource != null && parent.__glVertexSource != null && (parent.program == null || parent.__glSourceDirty))
+		if (parent._.__glFragmentSource != null
+			&& parent._.__glVertexSource != null
+			&& (parent.program == null || parent._.__glSourceDirty))
 		{
 			initGL();
 		}
 	}
 
-	private function initGL():Void
+	public function initGL():Void
 	{
-		if (parent.__glSourceDirty || paramBool == null)
+		if (parent._.__glSourceDirty || paramBool == null)
 		{
-			parent.__glSourceDirty = false;
+			parent._.__glSourceDirty = false;
 			parent.program = null;
 
 			inputBitmapData = new Array();
@@ -215,9 +217,9 @@ class _Shader
 			paramFloat = new Array();
 			paramInt = new Array();
 
-			processGLData(parent.__glVertexSource, "attribute");
-			processGLData(parent.__glVertexSource, "uniform");
-			processGLData(parent.__glFragmentSource, "uniform");
+			processGLData(parent._.__glVertexSource, "attribute");
+			processGLData(parent._.__glVertexSource, "uniform");
+			processGLData(parent._.__glFragmentSource, "uniform");
 		}
 
 		if (context != null && parent.program == null)
@@ -233,14 +235,14 @@ class _Shader
 				#endif
 				";
 
-			var vertex = prefix + parent.__glVertexSource;
-			var fragment = prefix + parent.__glFragmentSource;
+			var vertex = prefix + parent._.__glVertexSource;
+			var fragment = prefix + parent._.__glFragmentSource;
 
 			var id = vertex + fragment;
 
-			if (context.__programs.exists(id))
+			if (context._.__programs.exists(id))
 			{
-				parent.program = context.__programs.get(id);
+				parent.program = context._.__programs.get(id);
 			}
 			else
 			{
@@ -250,7 +252,7 @@ class _Shader
 				// program.uploadSources (vertex, fragment);
 				parent.program._.glProgram = createGLProgram(vertex, fragment);
 
-				context.__programs.set(id, parent.program);
+				context._.__programs.set(id, parent.program);
 			}
 
 			if (parent.program != null)
@@ -308,7 +310,7 @@ class _Shader
 		}
 	}
 
-	private function processGLData(source:String, storageType:String):Void
+	public function processGLData(source:String, storageType:String):Void
 	{
 		var lastMatch = 0, position, regex, name, type;
 
@@ -343,18 +345,18 @@ class _Shader
 				switch (name)
 				{
 					case "openfl_AlphaTexture":
-						parent.__alphaTexture = input;
+						parent._.__alphaTexture = input;
 					case "openfl_Texture":
-						parent.__texture = input;
+						parent._.__texture = input;
 					case "bitmap":
-						parent.__bitmap = input;
+						parent._.__bitmap = input;
 					default:
 				}
 
-				Reflect.setField(parent.__data, name, input);
-				if (parent.__isGenerated) Reflect.setField(parent, name, input);
+				Reflect.setField(parent._.__data, name, input);
+				if (parent._.__isGenerated) Reflect.setField(parent, name, input);
 			}
-			else if (!Reflect.hasField(parent.__data, name) || Reflect.field(parent.__data, name) == null)
+			else if (!Reflect.hasField(parent._.__data, name) || Reflect.field(parent._.__data, name) == null)
 			{
 				var parameterType:ShaderParameterType = switch (type)
 				{
@@ -414,11 +416,11 @@ class _Shader
 
 						if (name == "openfl_HasColorTransform")
 						{
-							parent.__hasColorTransform = parameter;
+							parent._.__hasColorTransform = parameter;
 						}
 
-						Reflect.setField(parent.__data, name, parameter);
-						if (parent.__isGenerated) Reflect.setField(parent, name, parameter);
+						Reflect.setField(parent._.__data, name, parameter);
+						if (parent._.__isGenerated) Reflect.setField(parent, name, parameter);
 
 					case INT, INT2, INT3, INT4:
 						var parameter = new ShaderParameter<Int>();
@@ -429,8 +431,8 @@ class _Shader
 						parameter._.isUniform = isUniform;
 						parameter._.length = length;
 						paramInt.push(parameter);
-						Reflect.setField(parent.__data, name, parameter);
-						if (parent.__isGenerated) Reflect.setField(parent, name, parameter);
+						Reflect.setField(parent._.__data, name, parameter);
+						if (parent._.__isGenerated) Reflect.setField(parent, name, parameter);
 
 					default:
 						var parameter = new ShaderParameter<Float>();
@@ -447,20 +449,20 @@ class _Shader
 						{
 							switch (name)
 							{
-								case "openfl_Alpha": parent.__alpha = parameter;
-								case "openfl_AlphaTextureMatrix": parent.__alphaTextureMatrix = parameter;
-								case "openfl_ColorMultiplier": parent.__colorMultiplier = parameter;
-								case "openfl_ColorOffset": parent.__colorOffset = parameter;
-								case "openfl_Matrix": parent.__matrix = parameter;
-								case "openfl_Position": parent.__position = parameter;
-								case "openfl_TextureCoord": parent.__textureCoord = parameter;
-								case "openfl_TextureSize": parent.__textureSize = parameter;
+								case "openfl_Alpha": parent._.__alpha = parameter;
+								case "openfl_AlphaTextureMatrix": parent._.__alphaTextureMatrix = parameter;
+								case "openfl_ColorMultiplier": parent._.__colorMultiplier = parameter;
+								case "openfl_ColorOffset": parent._.__colorOffset = parameter;
+								case "openfl_Matrix": parent._.__matrix = parameter;
+								case "openfl_Position": parent._.__position = parameter;
+								case "openfl_TextureCoord": parent._.__textureCoord = parameter;
+								case "openfl_TextureSize": parent._.__textureSize = parameter;
 								default:
 							}
 						}
 
-						Reflect.setField(parent.__data, name, parameter);
-						if (parent.__isGenerated) Reflect.setField(parent, name, parameter);
+						Reflect.setField(parent._.__data, name, parameter);
+						if (parent._.__isGenerated) Reflect.setField(parent, name, parameter);
 				}
 			}
 
@@ -477,7 +479,7 @@ class _Shader
 		}
 	}
 
-	private function updateFromBuffer(shaderBuffer:ShaderBuffer, bufferOffset:Int):Void
+	public function updateFromBuffer(shaderBuffer:ShaderBuffer, bufferOffset:Int):Void
 	{
 		if (parent.program != null)
 		{
@@ -485,7 +487,7 @@ class _Shader
 		}
 	}
 
-	private function updateGL():Void
+	public function updateGL():Void
 	{
 		var textureCount = 0;
 
@@ -511,7 +513,7 @@ class _Shader
 		}
 	}
 
-	private function updateGLFromBuffer(shaderBuffer:ShaderBuffer, bufferOffset:Int):Void
+	public function updateGLFromBuffer(shaderBuffer:ShaderBuffer, bufferOffset:Int):Void
 	{
 		var textureCount = 0;
 		var input, inputData, inputFilter, inputMipFilter, inputWrap;

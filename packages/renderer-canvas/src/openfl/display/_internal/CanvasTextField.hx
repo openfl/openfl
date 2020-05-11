@@ -20,83 +20,83 @@ import openfl.text.TextFieldAutoSize;
 class CanvasTextField
 {
 	#if openfl_html5
-	private static var context:CanvasRenderingContext2D;
-	private static var clearRect:Null<Bool>;
+	public static var context:CanvasRenderingContext2D;
+	public static var clearRect:Null<Bool>;
 	#end
 
 	public static inline function render(textField:TextField, renderer:CanvasRenderer, transform:Matrix):Void
 	{
 		#if openfl_html5
-		var textEngine = textField.__textEngine;
+		var textEngine = textField._.__textEngine;
 		var bounds = (textEngine.background || textEngine.border) ? textEngine.bounds : textEngine.textBounds;
-		var graphics = textField.__graphics;
+		var graphics = textField._.__graphics;
 
-		if (textField.__dirty)
+		if (textField._.__dirty)
 		{
-			textField.__updateLayout();
+			textField._.__updateLayout();
 
-			if (graphics.__bounds == null)
+			if (graphics._.__bounds == null)
 			{
-				graphics.__bounds = new Rectangle();
+				graphics._.__bounds = new Rectangle();
 			}
 
-			graphics.__bounds.copyFrom(bounds);
+			graphics._.__bounds.copyFrom(bounds);
 		}
 
-		graphics.__update(renderer.__worldTransform);
+		graphics._.__update(renderer._.__worldTransform);
 
-		if (textField.__dirty || graphics.__softwareDirty)
+		if (textField._.__dirty || graphics._.__softwareDirty)
 		{
-			var width = graphics.__width;
-			var height = graphics.__height;
+			var width = graphics._.__width;
+			var height = graphics._.__height;
 
 			if (((textEngine.text == null || textEngine.text == "")
 				&& !textEngine.background
 				&& !textEngine.border
-				&& !textEngine.__hasFocus
+				&& !textEngine._.__hasFocus
 				&& (textEngine.type != INPUT || !textEngine.selectable))
 				|| ((textEngine.width <= 0 || textEngine.height <= 0) && textEngine.autoSize != TextFieldAutoSize.NONE))
 			{
-				textField.__graphics.__renderData.canvas = null;
-				textField.__graphics.__renderData.context = null;
-				textField.__graphics.__bitmap = null;
-				textField.__graphics.__softwareDirty = false;
-				textField.__graphics.__dirty = false;
-				textField.__dirty = false;
+				textField._.__graphics._.__renderData.canvas = null;
+				textField._.__graphics._.__renderData.context = null;
+				textField._.__graphics._.__bitmap = null;
+				textField._.__graphics._.__softwareDirty = false;
+				textField._.__graphics._.__dirty = false;
+				textField._.__dirty = false;
 			}
 			else
 			{
-				if (textField.__graphics.__renderData.canvas == null)
+				if (textField._.__graphics._.__renderData.canvas == null)
 				{
-					textField.__graphics.__renderData.canvas = cast Browser.document.createElement("canvas");
-					textField.__graphics.__renderData.context = textField.__graphics.__renderData.canvas.getContext("2d");
+					textField._.__graphics._.__renderData.canvas = cast Browser.document.createElement("canvas");
+					textField._.__graphics._.__renderData.context = textField._.__graphics._.__renderData.canvas.getContext("2d");
 				}
 
-				context = graphics.__renderData.context;
+				context = graphics._.__renderData.context;
 
-				var transform = graphics.__renderTransform;
+				var transform = graphics._.__renderTransform;
 
-				if (renderer.__domRenderer != null)
+				if (renderer._.__domRenderer != null)
 				{
 					var scale = renderer.pixelRatio;
 
-					graphics.__renderData.canvas.width = Std.int(width * scale);
-					graphics.__renderData.canvas.height = Std.int(height * scale);
-					graphics.__renderData.canvas.style.width = width + "px";
-					graphics.__renderData.canvas.style.height = height + "px";
+					graphics._.__renderData.canvas.width = Std.int(width * scale);
+					graphics._.__renderData.canvas.height = Std.int(height * scale);
+					graphics._.__renderData.canvas.style.width = width + "px";
+					graphics._.__renderData.canvas.style.height = height + "px";
 
-					var matrix = Matrix.__pool.get();
+					var matrix = _Matrix.__pool.get();
 					matrix.copyFrom(transform);
 					matrix.scale(scale, scale);
 
 					renderer.setTransform(matrix, context);
 
-					Matrix.__pool.release(matrix);
+					_Matrix.__pool.release(matrix);
 				}
 				else
 				{
-					graphics.__renderData.canvas.width = width;
-					graphics.__renderData.canvas.height = height;
+					graphics._.__renderData.canvas.width = width;
+					graphics._.__renderData.canvas.height = height;
 
 					context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
 				}
@@ -108,20 +108,20 @@ class CanvasTextField
 
 				if (clearRect)
 				{
-					context.clearRect(0, 0, graphics.__renderData.canvas.width, graphics.__renderData.canvas.height);
+					context.clearRect(0, 0, graphics._.__renderData.canvas.width, graphics._.__renderData.canvas.height);
 				}
 
-				if ((textEngine.text != null && textEngine.text != "") || textEngine.__hasFocus)
+				if ((textEngine.text != null && textEngine.text != "") || textEngine._.__hasFocus)
 				{
 					var text = textEngine.text;
 
-					if (!renderer.__allowSmoothing || (textEngine.antiAliasType == ADVANCED && textEngine.sharpness == 400))
+					if (!renderer._.__allowSmoothing || (textEngine.antiAliasType == ADVANCED && textEngine.sharpness == 400))
 					{
-						graphics.__renderData.context.imageSmoothingEnabled = false;
+						graphics._.__renderData.context.imageSmoothingEnabled = false;
 					}
 					else
 					{
-						graphics.__renderData.context.imageSmoothingEnabled = true;
+						graphics._.__renderData.context.imageSmoothingEnabled = true;
 					}
 
 					if (textEngine.border || textEngine.background)
@@ -173,17 +173,17 @@ class CanvasTextField
 							+ scrollY
 							- bounds.y);
 
-						if (textField.__caretIndex > -1 && textEngine.selectable)
+						if (textField._.__caretIndex > -1 && textEngine.selectable)
 						{
-							if (textField.__selectionIndex == textField.__caretIndex)
+							if (textField._.__selectionIndex == textField._.__caretIndex)
 							{
-								if (textField.__showCursor
-									&& group.startIndex <= textField.__caretIndex
-									&& group.endIndex >= textField.__caretIndex)
+								if (textField._.__showCursor
+									&& group.startIndex <= textField._.__caretIndex
+									&& group.endIndex >= textField._.__caretIndex)
 								{
 									advance = 0.0;
 
-									for (i in 0...(textField.__caretIndex - group.startIndex))
+									for (i in 0...(textField._.__caretIndex - group.startIndex))
 									{
 										if (group.positions.length <= i) break;
 										advance += group.getAdvance(i);
@@ -214,13 +214,13 @@ class CanvasTextField
 									// context.fillRect (group.offsetX + advance - textField.scrollH, scrollY + 2, 1, TextEngine.getFormatHeight (textField.defaultTextFormat) - 1);
 								}
 							}
-							else if ((group.startIndex <= textField.__caretIndex && group.endIndex >= textField.__caretIndex)
-								|| (group.startIndex <= textField.__selectionIndex && group.endIndex >= textField.__selectionIndex)
-								|| (group.startIndex > textField.__caretIndex && group.endIndex < textField.__selectionIndex)
-								|| (group.startIndex > textField.__selectionIndex && group.endIndex < textField.__caretIndex))
+							else if ((group.startIndex <= textField._.__caretIndex && group.endIndex >= textField._.__caretIndex)
+								|| (group.startIndex <= textField._.__selectionIndex && group.endIndex >= textField._.__selectionIndex)
+								|| (group.startIndex > textField._.__caretIndex && group.endIndex < textField._.__selectionIndex)
+								|| (group.startIndex > textField._.__selectionIndex && group.endIndex < textField._.__caretIndex))
 							{
-								var selectionStart = Std.int(Math.min(textField.__selectionIndex, textField.__caretIndex));
-								var selectionEnd = Std.int(Math.max(textField.__selectionIndex, textField.__caretIndex));
+								var selectionStart = Std.int(Math.min(textField._.__selectionIndex, textField._.__caretIndex));
+								var selectionEnd = Std.int(Math.max(textField._.__selectionIndex, textField._.__caretIndex));
 
 								if (group.startIndex > selectionStart)
 								{
@@ -305,7 +305,7 @@ class CanvasTextField
 						}
 					}
 
-					if (textField.__caretIndex > -1 && textEngine.selectable && textField.__showCursor)
+					if (textField._.__caretIndex > -1 && textEngine.selectable && textField._.__showCursor)
 					{
 						var scrollX = -textField.scrollH;
 						var scrollY = 0.0;
@@ -332,11 +332,11 @@ class CanvasTextField
 					}
 				}
 
-				graphics.__bitmap = BitmapData.fromCanvas(textField.__graphics.__renderData.canvas);
-				graphics.__visible = true;
-				textField.__dirty = false;
-				graphics.__softwareDirty = false;
-				graphics.__dirty = false;
+				graphics._.__bitmap = BitmapData.fromCanvas(textField._.__graphics._.__renderData.canvas);
+				graphics._.__visible = true;
+				textField._.__dirty = false;
+				graphics._.__softwareDirty = false;
+				graphics._.__dirty = false;
 			}
 		}
 		#end

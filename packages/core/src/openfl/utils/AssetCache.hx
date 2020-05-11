@@ -24,41 +24,17 @@ class AssetCache implements IAssetCache
 	**/
 	public var enabled(get, set):Bool;
 
-	/**
-		Internal
-	**/
-	@:noCompletion @:dox(hide) public var bitmapData:Map<String, BitmapData>;
-
-	/**
-		Internal
-	**/
-	@:noCompletion @:dox(hide) public var font:Map<String, Font>;
-
-	/**
-		Internal
-	**/
-	@:noCompletion @:dox(hide) public var sound:Map<String, Sound>;
-
-	@:noCompletion private var __enabled:Bool = true;
-
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped global.Object.defineProperty(AssetCache.prototype, "enabled", {
-			get: untyped __js__("function () { return this.get_enabled (); }"),
-			set: untyped __js__("function (v) { return this.set_enabled (v); }")
-		});
-	}
-	#end
+	@:allow(openfl) @:noCompletion private var _:_AssetCache;
 
 	/**
 		Creates a new AssetCache instance.
 	**/
 	public function new()
 	{
-		bitmapData = new Map<String, BitmapData>();
-		font = new Map<String, Font>();
-		sound = new Map<String, Sound>();
+		if (_ == null)
+		{
+			_ = new _AssetCache();
+		}
 	}
 
 	/**
@@ -79,44 +55,7 @@ class AssetCache implements IAssetCache
 	**/
 	public function clear(prefix:String = null):Void
 	{
-		if (prefix == null)
-		{
-			bitmapData = new Map<String, BitmapData>();
-			font = new Map<String, Font>();
-			sound = new Map<String, Sound>();
-		}
-		else
-		{
-			var keys = bitmapData.keys();
-
-			for (key in keys)
-			{
-				if (StringTools.startsWith(key, prefix))
-				{
-					removeBitmapData(key);
-				}
-			}
-
-			var keys = font.keys();
-
-			for (key in keys)
-			{
-				if (StringTools.startsWith(key, prefix))
-				{
-					removeFont(key);
-				}
-			}
-
-			var keys = sound.keys();
-
-			for (key in keys)
-			{
-				if (StringTools.startsWith(key, prefix))
-				{
-					removeSound(key);
-				}
-			}
-		}
+		_.clear(prefix);
 	}
 
 	/**
@@ -127,7 +66,7 @@ class AssetCache implements IAssetCache
 	**/
 	public function getBitmapData(id:String):BitmapData
 	{
-		return bitmapData.get(id);
+		return _.getBitmapData(id);
 	}
 
 	/**
@@ -138,7 +77,7 @@ class AssetCache implements IAssetCache
 	**/
 	public function getFont(id:String):Font
 	{
-		return font.get(id);
+		return return _.getFont(id);
 	}
 
 	/**
@@ -149,7 +88,7 @@ class AssetCache implements IAssetCache
 	**/
 	public function getSound(id:String):Sound
 	{
-		return sound.get(id);
+		return _.getSound(id);
 	}
 
 	/**
@@ -160,7 +99,7 @@ class AssetCache implements IAssetCache
 	**/
 	public function hasBitmapData(id:String):Bool
 	{
-		return bitmapData.exists(id);
+		return _.hasBitmapData(id);
 	}
 
 	/**
@@ -171,7 +110,7 @@ class AssetCache implements IAssetCache
 	**/
 	public function hasFont(id:String):Bool
 	{
-		return font.exists(id);
+		return _.hasFont(id);
 	}
 
 	/**
@@ -182,7 +121,7 @@ class AssetCache implements IAssetCache
 	**/
 	public function hasSound(id:String):Bool
 	{
-		return sound.exists(id);
+		return _.hasSound(id);
 	}
 
 	/**
@@ -193,10 +132,7 @@ class AssetCache implements IAssetCache
 	**/
 	public function removeBitmapData(id:String):Bool
 	{
-		#if lime
-		LimeAssets.cache.image.remove(id);
-		#end
-		return bitmapData.remove(id);
+		return _.removeBitmapData(id);
 	}
 
 	/**
@@ -207,10 +143,7 @@ class AssetCache implements IAssetCache
 	**/
 	public function removeFont(id:String):Bool
 	{
-		#if lime
-		LimeAssets.cache.font.remove(id);
-		#end
-		return font.remove(id);
+		return _.removeFont(id);
 	}
 
 	/**
@@ -221,10 +154,7 @@ class AssetCache implements IAssetCache
 	**/
 	public function removeSound(id:String):Bool
 	{
-		#if lime
-		LimeAssets.cache.audio.remove(id);
-		#end
-		return sound.remove(id);
+		return _.removeSound(id);
 	}
 
 	/**
@@ -235,7 +165,7 @@ class AssetCache implements IAssetCache
 	**/
 	public function setBitmapData(id:String, bitmapData:BitmapData):Void
 	{
-		this.bitmapData.set(id, bitmapData);
+		_.setBitmapData(id, bitmapData);
 	}
 
 	/**
@@ -246,7 +176,7 @@ class AssetCache implements IAssetCache
 	**/
 	public function setFont(id:String, font:Font):Void
 	{
-		this.font.set(id, font);
+		_.setFont(id, font);
 	}
 
 	/**
@@ -257,17 +187,17 @@ class AssetCache implements IAssetCache
 	**/
 	public function setSound(id:String, sound:Sound):Void
 	{
-		this.sound.set(id, sound);
+		_.setSound(id, sound);
 	}
 
 	// Get & Set Methods
 	@:noCompletion private function get_enabled():Bool
 	{
-		return __enabled;
+		return _.enabled;
 	}
 
 	@:noCompletion private function set_enabled(value:Bool):Bool
 	{
-		return __enabled = value;
+		return _.enabled = value;
 	}
 }

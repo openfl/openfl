@@ -23,23 +23,23 @@ import openfl.Vector;
 @:noCompletion
 class _VertexBuffer3D
 {
-	private var data:Vector<Float>;
-	private var gl:WebGLRenderContext;
-	private var glBufferID:GLBuffer;
-	private var glUsage:Int;
-	// private var memoryUsage:Int;
-	private var parent:VertexBuffer3D;
-	private var stride:Int;
-	private var tempFloat32Array:Float32Array;
+	public var data:Vector<Float>;
+	public var gl:WebGLRenderContext;
+	public var glBufferID:GLBuffer;
+	public var glUsage:Int;
+	// public var memoryUsage:Int;
+	public var parent:VertexBuffer3D;
+	public var stride:Int;
+	public var tempFloat32Array:Float32Array;
 
 	public function new(parent:VertexBuffer3D)
 	{
 		this.parent = parent;
-		gl = parent.__context._.gl;
+		gl = parent._.__context._.gl;
 
 		glBufferID = gl.createBuffer();
-		stride = parent.__dataPerVertex * 4;
-		glUsage = (parent.__bufferUsage == Context3DBufferUsage.DYNAMIC_DRAW) ? GL.DYNAMIC_DRAW : GL.STATIC_DRAW;
+		stride = parent._.__dataPerVertex * 4;
+		glUsage = (parent._.__bufferUsage == Context3DBufferUsage.DYNAMIC_DRAW) ? GL.DYNAMIC_DRAW : GL.STATIC_DRAW;
 	}
 
 	public function dispose():Void
@@ -50,7 +50,7 @@ class _VertexBuffer3D
 	public function uploadFromByteArray(data:ByteArray, byteArrayOffset:Int, startVertex:Int, numVertices:Int):Void
 	{
 		var offset = byteArrayOffset + startVertex * stride;
-		var length = numVertices * parent.__dataPerVertex;
+		var length = numVertices * parent._.__dataPerVertex;
 
 		uploadFromTypedArray(new Float32Array(data, offset, length));
 	}
@@ -59,7 +59,7 @@ class _VertexBuffer3D
 	{
 		if (data == null) return;
 
-		parent.__context._.bindGLArrayBuffer(glBufferID);
+		parent._.__context._.bindGLArrayBuffer(glBufferID);
 		gl.bufferData(GL.ARRAY_BUFFER, data, glUsage);
 	}
 
@@ -69,8 +69,8 @@ class _VertexBuffer3D
 
 		// TODO: Optimize more
 
-		var start = startVertex * parent.__dataPerVertex;
-		var count = numVertices * parent.__dataPerVertex;
+		var start = startVertex * parent._.__dataPerVertex;
+		var count = numVertices * parent._.__dataPerVertex;
 		var length = start + count;
 
 		var existingFloat32Array = tempFloat32Array;

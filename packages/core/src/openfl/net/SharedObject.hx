@@ -174,7 +174,7 @@ class SharedObject extends EventDispatcher
 		objects created by the SWF file, set the objectEncoding property of the local
 		shared object instead.
 	**/
-	public static var defaultObjectEncoding:ObjectEncoding = ObjectEncoding.DEFAULT;
+	public static var defaultObjectEncoding(get, set):ObjectEncoding;
 
 	// @:noCompletion @:dox(hide) @:require(flash11_7) public static var preventBackup:Bool;
 
@@ -186,7 +186,7 @@ class SharedObject extends EventDispatcher
 		@throws TypeError The `client` property must be set to a non-null
 						  object.
 	**/
-	public var client:Dynamic;
+	public var client(get, set):Dynamic;
 
 	/**
 		The collection of attributes assigned to the `data` property of
@@ -201,7 +201,7 @@ class SharedObject extends EventDispatcher
 		If one client changes the value of an attribute, all clients now see the
 		new value.
 	**/
-	public var data(default, null):Dynamic;
+	public var data(get, never):Dynamic;
 
 	/**
 		Specifies the number of times per second that a client's changes to a
@@ -222,7 +222,7 @@ class SharedObject extends EventDispatcher
 		updates may be sent to the server less frequently than the value
 		specified in this property.
 	**/
-	public var fps(null, default):Float;
+	public var fps(get, set):Float;
 
 	/**
 		The object encoding (AMF version) for this shared object. When a local
@@ -259,7 +259,7 @@ class SharedObject extends EventDispatcher
 							   shared objects because its value is determined
 							   by the associated NetConnection instance.
 	**/
-	public var objectEncoding:ObjectEncoding;
+	public var objectEncoding(get, set):ObjectEncoding;
 
 	/**
 		The current size of the shared object, in bytes.
@@ -272,29 +272,14 @@ class SharedObject extends EventDispatcher
 	**/
 	public var size(get, never):Int;
 
-	@:noCompletion private static var __sharedObjects:Map<String, SharedObject>;
-
-	@:noCompletion private var __backend:SharedObjectBackend;
-	@:noCompletion private var __localPath:String;
-	@:noCompletion private var __name:String;
-
-	#if openfljs
-	@:noCompletion private static function __init__()
+	@:allow(openfl) @:noCompletion private function new()
 	{
-		untyped global.Object.defineProperty(SharedObject.prototype, "size", {
-			get: untyped __js__("function () { return this.get_size (); }")
-		});
-	}
-	#end
+		if (_ == null)
+		{
+			_ = new _SharedObject();
+		}
 
-	@:noCompletion private function new()
-	{
 		super();
-
-		client = this;
-		objectEncoding = defaultObjectEncoding;
-
-		__backend = new SharedObjectBackend(this);
 	}
 
 	/**
@@ -311,9 +296,7 @@ class SharedObject extends EventDispatcher
 	**/
 	public function clear():Void
 	{
-		data = {};
-
-		__backend.clear();
+		_.clear();
 	}
 
 	/**
@@ -423,12 +406,7 @@ class SharedObject extends EventDispatcher
 	**/
 	public function flush(minDiskSpace:Int = 0):SharedObjectFlushStatus
 	{
-		if (Reflect.fields(data).length == 0)
-		{
-			return SharedObjectFlushStatus.FLUSHED;
-		}
-
-		return __backend.flush(minDiskSpace);
+		return _.flush(minDiskSpace);
 	}
 
 	// @:noCompletion @:dox(hide) public static function getDiskUsage (url:String):Int;
@@ -578,53 +556,7 @@ class SharedObject extends EventDispatcher
 	**/
 	public static function getLocal(name:String, localPath:String = null, secure:Bool = false /* note: unsupported**/):SharedObject
 	{
-		var illegalValues = [" ", "~", "%", "&", "\\", ";", ":", "\"", "'", ",", "<", ">", "?", "#"];
-		var allowed = true;
-
-		if (name == null || name == "")
-		{
-			allowed = false;
-		}
-		else
-		{
-			for (value in illegalValues)
-			{
-				if (name.indexOf(value) > -1)
-				{
-					allowed = false;
-					break;
-				}
-			}
-		}
-
-		if (!allowed)
-		{
-			throw new Error("Error #2134: Cannot create SharedObject.");
-			return null;
-		}
-
-		if (__sharedObjects == null)
-		{
-			__sharedObjects = new Map();
-		}
-
-		var id = localPath + "/" + name;
-
-		if (!__sharedObjects.exists(id))
-		{
-			var sharedObject = new SharedObject();
-			sharedObject._.getLocal(name, localPath, secure);
-			if (sharedObject.data == null)
-			{
-				sharedObject.data = {};
-			}
-			__sharedObjects.set(id, sharedObject);
-			return sharedObject;
-		}
-		else
-		{
-			return __sharedObjects.get(id);
-		}
+		_SharedObject.getLocal(name, localPath, secure);
 	}
 
 	#if !openfl_strict
@@ -730,7 +662,10 @@ class SharedObject extends EventDispatcher
 
 		@param propertyName The name of the property that has changed.
 	**/
-	public function setDirty(propertyName:String):Void {}
+	public function setDirty(propertyName:String):Void
+	{
+		_.setDirty(propertyName);
+	}
 
 	/**
 		Updates the value of a property in a shared object and indicates to
@@ -758,28 +693,66 @@ class SharedObject extends EventDispatcher
 	**/
 	public function setProperty(propertyName:String, value:Object = null):Void
 	{
-		if (data != null)
-		{
-			Reflect.setField(data, propertyName, value);
-		}
+		_.setProperty(propertyName, value);
 	}
 
-	// Getters & Setters
+	// Get & Set Methods
+
+	@:noCompletion private static function get_defaultObjectEncoding():ObjectEncoding
+	{
+		return _SharedObject.defaultObjectEncoding;
+	}
+
+	@:noCompletion private static function set_defaultObjectEncoding(value:ObjectEncoding):ObjectEncoding
+	{
+		return _SharedObject.defaultObjectEncoding = value;
+	}
+
+	@:noCompletion private function get_client():Dynamic
+	{
+		return _.client;
+	}
+
+	@:noCompletion private function set_client(value:Dynamic):Dynamic
+	{
+		return _.client = value;
+	}
+
+	@:noCompletion private function get_data():Dynamic
+	{
+		return _.data;
+	}
+
+	@:noCompletion private function set_data(value:Dynamic):Dynamic
+	{
+		return _.data = value;
+	}
+
+	@:noCompletion private function get_fps():Float
+	{
+		return _.fps;
+	}
+
+	@:noCompletion private function set_fps(value:Float):Float
+	{
+		return _.fps = value;
+	}
+
+	@:noCompletion private function get_objectEncoding():ObjectEncoding
+	{
+		return _.objectEncoding;
+	}
+
+	@:noCompletion private function set_objectEncoding(value:ObjectEncoding):ObjectEncoding
+	{
+		return _.objectEncoding = value;
+	}
+
 	@:noCompletion private function get_size():Int
 	{
-		return __backend.getSize();
+		return _.size;
 	}
 }
-
-#if lime
-private typedef SharedObjectBackend = openfl._internal.backend.lime.LimeSharedObjectBackend;
-#elseif openfl_html5
-private typedef SharedObjectBackend = openfl._internal.backend.html5.HTML5SharedObjectBackend;
-#elseif sys
-private typedef SharedObjectBackend = openfl._internal.backend.sys.SysSharedObjectBackend;
-#else
-private typedef SharedObjectBackend = openfl._internal.backend.dummy.DummySharedObjectBackend;
-#end
 #else
 typedef SharedObject = flash.net.SharedObject;
 #end

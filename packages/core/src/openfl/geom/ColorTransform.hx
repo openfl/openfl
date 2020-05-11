@@ -1,9 +1,6 @@
 package openfl.geom;
 
 #if !flash
-import lime.utils.Float32Array;
-import openfl._internal.utils.ObjectPool;
-
 /**
 	The ColorTransform class lets you adjust the color values in a display
 	object. The color adjustment or _color transformation_ can be applied
@@ -50,12 +47,6 @@ import openfl._internal.utils.ObjectPool;
 #end
 class ColorTransform
 {
-	#if (lime || openfl_html5)
-	@:noCompletion private static var __limeColorMatrix:Float32Array;
-	#end
-	@:noCompletion private static var __pool:ObjectPool<ColorTransform> = new ObjectPool<ColorTransform>(function() return new ColorTransform(),
-		function(ct) ct.__identity());
-
 	/**
 		A decimal value that is multiplied with the alpha transparency channel
 		value.
@@ -65,25 +56,25 @@ class ColorTransform
 		affects the value of the `alphaMultiplier` property of that
 		display object's `transform.colorTransform` property.
 	**/
-	public var alphaMultiplier:Float;
+	public var alphaMultiplier(get, set):Float;
 
 	/**
 		A number from -255 to 255 that is added to the alpha transparency channel
 		value after it has been multiplied by the `alphaMultiplier`
 		value.
 	**/
-	public var alphaOffset:Float;
+	public var alphaOffset(get, set):Float;
 
 	/**
 		A decimal value that is multiplied with the blue channel value.
 	**/
-	public var blueMultiplier:Float;
+	public var blueMultiplier(get, set):Float;
 
 	/**
 		A number from -255 to 255 that is added to the blue channel value after it
 		has been multiplied by the `blueMultiplier` value.
 	**/
-	public var blueOffset:Float;
+	public var blueOffset(get, set):Float;
 
 	/**
 		The RGB color value for a ColorTransform object.
@@ -106,34 +97,26 @@ class ColorTransform
 	/**
 		A decimal value that is multiplied with the green channel value.
 	**/
-	public var greenMultiplier:Float;
+	public var greenMultiplier(get, set):Float;
 
 	/**
 		A number from -255 to 255 that is added to the green channel value after
 		it has been multiplied by the `greenMultiplier` value.
 	**/
-	public var greenOffset:Float;
+	public var greenOffset(get, set):Float;
 
 	/**
 		A decimal value that is multiplied with the red channel value.
 	**/
-	public var redMultiplier:Float;
+	public var redMultiplier(get, set):Float;
 
 	/**
 		A number from -255 to 255 that is added to the red channel value after it
 		has been multiplied by the `redMultiplier` value.
 	**/
-	public var redOffset:Float;
+	public var redOffset(get, set):Float;
 
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperty(ColorTransform.prototype, "color", {
-			get: untyped __js__("function () { return this.get_color (); }"),
-			set: untyped __js__("function (v) { return this.set_color (v); }")
-		});
-	}
-	#end
+	@:allow(openfl) @:noCompletion private var _:_ColorTransform;
 
 	/**
 		Creates a ColorTransform object for a display object with the specified
@@ -159,14 +142,10 @@ class ColorTransform
 	public function new(redMultiplier:Float = 1, greenMultiplier:Float = 1, blueMultiplier:Float = 1, alphaMultiplier:Float = 1, redOffset:Float = 0,
 			greenOffset:Float = 0, blueOffset:Float = 0, alphaOffset:Float = 0):Void
 	{
-		this.redMultiplier = redMultiplier;
-		this.greenMultiplier = greenMultiplier;
-		this.blueMultiplier = blueMultiplier;
-		this.alphaMultiplier = alphaMultiplier;
-		this.redOffset = redOffset;
-		this.greenOffset = greenOffset;
-		this.blueOffset = blueOffset;
-		this.alphaOffset = alphaOffset;
+		if (_ == null)
+		{
+			_ = new _ColorTransform(redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier, redOffset, greenOffset, blueOffset, alphaOffset);
+		}
 	}
 
 	/**
@@ -182,15 +161,7 @@ class ColorTransform
 	**/
 	public function concat(second:ColorTransform):Void
 	{
-		redOffset = second.redOffset * redMultiplier + redOffset;
-		greenOffset = second.greenOffset * greenMultiplier + greenOffset;
-		blueOffset = second.blueOffset * blueMultiplier + blueOffset;
-		alphaOffset = second.alphaOffset * alphaMultiplier + alphaOffset;
-
-		redMultiplier *= second.redMultiplier;
-		greenMultiplier *= second.greenMultiplier;
-		blueMultiplier *= second.blueMultiplier;
-		alphaMultiplier *= second.alphaMultiplier;
+		_.concat(second);
 	}
 
 	/**
@@ -202,148 +173,100 @@ class ColorTransform
 	**/
 	public function toString():String
 	{
-		return
-			'(redMultiplier=$redMultiplier, greenMultiplier=$greenMultiplier, blueMultiplier=$blueMultiplier, alphaMultiplier=$alphaMultiplier, redOffset=$redOffset, greenOffset=$greenOffset, blueOffset=$blueOffset, alphaOffset=$alphaOffset)';
+		return _.toString();
 	}
 
-	@:noCompletion private function __clone():ColorTransform
+	// Get & Set Methods
+
+	@:noCompletion private function get_alphaMultiplier():Float
 	{
-		return new ColorTransform(redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier, redOffset, greenOffset, blueOffset, alphaOffset);
+		return _.alphaMultiplier;
 	}
 
-	@:noCompletion private function __copyFrom(ct:ColorTransform):Void
+	@:noCompletion private function set_alphaMultiplier(value:Float):Float
 	{
-		redMultiplier = ct.redMultiplier;
-		greenMultiplier = ct.greenMultiplier;
-		blueMultiplier = ct.blueMultiplier;
-		alphaMultiplier = ct.alphaMultiplier;
-
-		redOffset = ct.redOffset;
-		greenOffset = ct.greenOffset;
-		blueOffset = ct.blueOffset;
-		alphaOffset = ct.alphaOffset;
+		return _.alphaMultiplier = value;
 	}
 
-	@:noCompletion private function __combine(ct:ColorTransform):Void
+	@:noCompletion private function get_alphaOffset():Float
 	{
-		redMultiplier *= ct.redMultiplier;
-		greenMultiplier *= ct.greenMultiplier;
-		blueMultiplier *= ct.blueMultiplier;
-		alphaMultiplier *= ct.alphaMultiplier;
-
-		redOffset += ct.redOffset;
-		greenOffset += ct.greenOffset;
-		blueOffset += ct.blueOffset;
-		alphaOffset += ct.alphaOffset;
+		return _.alphaOffset;
 	}
 
-	@:noCompletion private function __identity():Void
+	@:noCompletion private function set_alphaOffset(value:Float):Float
 	{
-		redMultiplier = 1;
-		greenMultiplier = 1;
-		blueMultiplier = 1;
-		alphaMultiplier = 1;
-		redOffset = 0;
-		greenOffset = 0;
-		blueOffset = 0;
-		alphaOffset = 0;
+		return _.alphaOffset = value;
 	}
 
-	@:noCompletion private function __invert():Void
+	@:noCompletion private function get_blueMultiplier():Float
 	{
-		redMultiplier = redMultiplier != 0 ? 1 / redMultiplier : 1;
-		greenMultiplier = greenMultiplier != 0 ? 1 / greenMultiplier : 1;
-		blueMultiplier = blueMultiplier != 0 ? 1 / blueMultiplier : 1;
-		alphaMultiplier = alphaMultiplier != 0 ? 1 / alphaMultiplier : 1;
-		redOffset = -redOffset;
-		greenOffset = -greenOffset;
-		blueOffset = -blueOffset;
-		alphaOffset = -alphaOffset;
+		return _.blueMultiplier;
 	}
 
-	@:noCompletion private function __equals(ct:ColorTransform, ignoreAlphaMultiplier:Bool):Bool
+	@:noCompletion private function set_blueMultiplier(value:Float):Float
 	{
-		return (ct != null
-			&& redMultiplier == ct.redMultiplier
-			&& greenMultiplier == ct.greenMultiplier
-			&& blueMultiplier == ct.blueMultiplier
-			&& (ignoreAlphaMultiplier || alphaMultiplier == ct.alphaMultiplier)
-			&& redOffset == ct.redOffset
-			&& greenOffset == ct.greenOffset
-			&& blueOffset == ct.blueOffset
-			&& alphaOffset == ct.alphaOffset);
+		return _.blueMultiplier = value;
 	}
 
-	@:noCompletion private function __isDefault(ignoreAlphaMultiplier:Bool):Bool
+	@:noCompletion private function get_blueOffset():Float
 	{
-		if (ignoreAlphaMultiplier)
-		{
-			return (redMultiplier == 1
-				&& greenMultiplier == 1
-				&& blueMultiplier == 1
-				&& /*alphaMultiplier == 1 &&*/ redOffset == 0
-				&& greenOffset == 0
-				&& blueOffset == 0
-				&& alphaOffset == 0);
-		}
-		else
-		{
-			return (redMultiplier == 1 && greenMultiplier == 1 && blueMultiplier == 1 && alphaMultiplier == 1 && redOffset == 0 && greenOffset == 0
-				&& blueOffset == 0 && alphaOffset == 0);
-		}
+		return _.blueOffset;
 	}
 
-	@:noCompletion private function __setArrays(colorMultipliers:Array<Float>, colorOffsets:Array<Float>):Void
+	@:noCompletion private function set_blueOffset(value:Float):Float
 	{
-		colorMultipliers[0] = redMultiplier;
-		colorMultipliers[1] = greenMultiplier;
-		colorMultipliers[2] = blueMultiplier;
-		colorMultipliers[3] = alphaMultiplier;
-		colorOffsets[0] = redOffset;
-		colorOffsets[1] = greenOffset;
-		colorOffsets[2] = blueOffset;
-		colorOffsets[3] = alphaOffset;
+		return _.blueOffset = value;
 	}
 
-	// Getters & Setters
 	@:noCompletion private function get_color():Int
 	{
-		return ((Std.int(redOffset) << 16) | (Std.int(greenOffset) << 8) | Std.int(blueOffset));
+		return _.color;
 	}
 
 	@:noCompletion private function set_color(value:Int):Int
 	{
-		redOffset = (value >> 16) & 0xFF;
-		greenOffset = (value >> 8) & 0xFF;
-		blueOffset = value & 0xFF;
-
-		redMultiplier = 0;
-		greenMultiplier = 0;
-		blueMultiplier = 0;
-
-		return color;
+		return _.color = value;
 	}
 
-	#if (lime || openfl_html5)
-	@:noCompletion private function __toLimeColorMatrix():Float32Array
+	@:noCompletion private function get_greenMultiplier():Float
 	{
-		if (__limeColorMatrix == null)
-		{
-			__limeColorMatrix = new Float32Array(20);
-		}
-
-		__limeColorMatrix[0] = redMultiplier;
-		__limeColorMatrix[4] = redOffset / 255;
-		__limeColorMatrix[6] = greenMultiplier;
-		__limeColorMatrix[9] = greenOffset / 255;
-		__limeColorMatrix[12] = blueMultiplier;
-		__limeColorMatrix[14] = blueOffset / 255;
-		__limeColorMatrix[18] = alphaMultiplier;
-		__limeColorMatrix[19] = alphaOffset / 255;
-
-		return __limeColorMatrix;
+		return _.greenMultiplier;
 	}
-	#end
+
+	@:noCompletion private function set_greenMultiplier(value:Float):Float
+	{
+		return _.greenMultiplier = value;
+	}
+
+	@:noCompletion private function get_greenOffset():Float
+	{
+		return _.greenOffset;
+	}
+
+	@:noCompletion private function set_greenOffset(value:Float):Float
+	{
+		return _.greenOffset = value;
+	}
+
+	@:noCompletion private function get_redMultiplier():Float
+	{
+		return _.redMultiplier;
+	}
+
+	@:noCompletion private function set_redMultiplier(value:Float):Float
+	{
+		return _.redMultiplier = value;
+	}
+
+	@:noCompletion private function get_redOffset():Float
+	{
+		return _.redOffset;
+	}
+
+	@:noCompletion private function set_redOffset(value:Float):Float
+	{
+		return _.redOffset = value;
+	}
 }
 #else
 typedef ColorTransform = flash.geom.ColorTransform;

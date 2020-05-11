@@ -13,20 +13,20 @@ import openfl.text.TextFormatAlign;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class DOMTextField
 {
-	private static var __regexColor:EReg = ~/color=("#([^"]+)"|'#([^']+)')/i;
-	private static var __regexFace:EReg = ~/face=("([^"]+)"|'([^']+)')/i;
-	private static var __regexFont:EReg = ~/<font ([^>]+)>/gi;
-	private static var __regexCloseFont:EReg = new EReg("</font>", "gi");
-	private static var __regexSize:EReg = ~/size=("([^"]+)"|'([^']+)')/i;
+	public static var __regexColor:EReg = ~/color=("#([^"]+)"|'#([^']+)')/i;
+	public static var __regexFace:EReg = ~/face=("([^"]+)"|'([^']+)')/i;
+	public static var __regexFont:EReg = ~/<font ([^>]+)>/gi;
+	public static var __regexCloseFont:EReg = new EReg("</font>", "gi");
+	public static var __regexSize:EReg = ~/size=("([^"]+)"|'([^']+)')/i;
 
 	public static function clear(textField:TextField, renderer:DOMRenderer):Void
 	{
 		#if openfl_html5
-		if (textField.__div != null)
+		if (textField._.__div != null)
 		{
-			renderer.element.removeChild(textField.__div);
-			textField.__div = null;
-			textField.__renderData.style = null;
+			renderer.element.removeChild(textField._.__div);
+			textField._.__div = null;
+			textField._.__renderData.style = null;
 		}
 		#end
 	}
@@ -34,33 +34,33 @@ class DOMTextField
 	public static function measureText(textField:TextField):Void
 	{
 		#if openfl_html5
-		var textEngine = textField.__textEngine;
-		var div:Element = textField.__div;
+		var textEngine = textField._.__textEngine;
+		var div:Element = textField._.__div;
 
 		if (div == null)
 		{
 			div = cast Browser.document.createElement("div");
 			div.innerHTML = new EReg("\n", "g").replace(textEngine.text, "<br>");
-			div.style.setProperty("font", TextEngine.getFont(textField.__textFormat), null);
+			div.style.setProperty("font", TextEngine.getFont(textField._.__textFormat), null);
 			div.style.setProperty("pointer-events", "none", null);
 			div.style.position = "absolute";
 			div.style.top = "110%"; // position off-screen!
 			Browser.document.body.appendChild(div);
 		}
 
-		textEngine.__measuredWidth = div.clientWidth;
+		textEngine._.__measuredWidth = div.clientWidth;
 
 		// Now set the width so that the height is accurate as a
 		// function of the flow within the width bounds...
 
-		if (textField.__div == null)
+		if (textField._.__div == null)
 		{
 			div.style.width = Std.string(textEngine.width - 4) + "px";
 		}
 
-		textEngine.__measuredHeight = div.clientHeight;
+		textEngine._.__measuredHeight = div.clientHeight;
 
-		if (textField.__div == null)
+		if (textField._.__div == null)
 		{
 			Browser.document.body.removeChild(div);
 		}
@@ -70,73 +70,73 @@ class DOMTextField
 	public static inline function render(textField:TextField, renderer:DOMRenderer):Void
 	{
 		#if openfl_html5
-		var textEngine = textField.__textEngine;
+		var textEngine = textField._.__textEngine;
 
-		if (textField.stage != null && textField.__worldVisible && textField.__renderable)
+		if (textField.stage != null && textField._.__worldVisible && textField._.__renderable)
 		{
-			if (textField.__dirty || textField.__renderTransformChanged || textField.__div == null)
+			if (textField._.__dirty || textField._.__renderTransformChanged || textField._.__div == null)
 			{
 				if (textEngine.text != "" || textEngine.background || textEngine.border || textEngine.type == INPUT)
 				{
-					if (textField.__div == null)
+					if (textField._.__div == null)
 					{
-						textField.__div = cast Browser.document.createElement("div");
-						renderer.__initializeElement(textField, textField.__div);
-						textField.__renderData.style.setProperty("outline", "none", null);
+						textField._.__div = cast Browser.document.createElement("div");
+						renderer._.__initializeElement(textField, textField._.__div);
+						textField._.__renderData.style.setProperty("outline", "none", null);
 
-						textField.__div.addEventListener("input", function(event)
+						textField._.__div.addEventListener("input", function(event)
 						{
 							event.preventDefault();
 
 							// TODO: Set caret index, and replace only selection
 
-							if (textField.htmlText != textField.__div.innerHTML)
+							if (textField.htmlText != textField._.__div.innerHTML)
 							{
-								textField.htmlText = textField.__div.innerHTML;
+								textField.htmlText = textField._.__div.innerHTML;
 
-								if (textField.__displayAsPassword)
+								if (textField._.__displayAsPassword)
 								{
 									// TODO: Enable display as password
 								}
 
-								textField.__dirty = false;
+								textField._.__dirty = false;
 							}
 						}, true);
 					}
 
 					if (!textEngine.wordWrap)
 					{
-						textField.__renderData.style.setProperty("white-space", "nowrap", null);
+						textField._.__renderData.style.setProperty("white-space", "nowrap", null);
 					}
 					else
 					{
-						textField.__renderData.style.setProperty("word-wrap", "break-word", null);
+						textField._.__renderData.style.setProperty("word-wrap", "break-word", null);
 					}
 
-					textField.__renderData.style.setProperty("overflow", "hidden", null);
+					textField._.__renderData.style.setProperty("overflow", "hidden", null);
 
 					if (textEngine.selectable)
 					{
-						textField.__renderData.style.setProperty("cursor", "text", null);
-						textField.__renderData.style.setProperty("-webkit-user-select", "text", null);
-						textField.__renderData.style.setProperty("-moz-user-select", "text", null);
-						textField.__renderData.style.setProperty("-ms-user-select", "text", null);
-						textField.__renderData.style.setProperty("-o-user-select", "text", null);
+						textField._.__renderData.style.setProperty("cursor", "text", null);
+						textField._.__renderData.style.setProperty("-webkit-user-select", "text", null);
+						textField._.__renderData.style.setProperty("-moz-user-select", "text", null);
+						textField._.__renderData.style.setProperty("-ms-user-select", "text", null);
+						textField._.__renderData.style.setProperty("-o-user-select", "text", null);
 					}
 					else
 					{
-						textField.__renderData.style.setProperty("cursor", "inherit", null);
+						textField._.__renderData.style.setProperty("cursor", "inherit", null);
 					}
 
-					var div = untyped textField.__div;
+					var div = untyped textField._.__div;
 					div.contentEditable = (textEngine.type == INPUT);
 
-					var style = textField.__renderData.style;
+					var style = textField._.__renderData.style;
 
 					// TODO: Handle ranges using span
 					// TODO: Vertical align
 
-					// textField.__div.innerHTML = textEngine.text;
+					// textField._.__div.innerHTML = textEngine.text;
 
 					if (textEngine.background)
 					{
@@ -150,10 +150,10 @@ class DOMTextField
 					var w = textEngine.width;
 					var h = textEngine.height;
 					var scale:Float = 1;
-					var unscaledSize = textField.__textFormat.size;
+					var unscaledSize = textField._.__textFormat.size;
 					var scaledSize:Float = unscaledSize;
 
-					var t = textField.__renderTransform;
+					var t = textField._.__renderTransform;
 					if (t.a != 1.0 || t.d != 1.0)
 					{
 						if (t.a == t.d)
@@ -200,12 +200,12 @@ class DOMTextField
 						h = Math.ceil(h * scale);
 					}
 
-					untyped textField.__textFormat.size = scaledSize;
+					untyped textField._.__textFormat.size = scaledSize;
 
 					var text = textEngine.text;
 					var adjustment:Float = 0;
 
-					if (!textField.__isHTML)
+					if (!textField._.__isHTML)
 					{
 						text = StringTools.htmlEscape(text);
 					}
@@ -255,39 +255,39 @@ class DOMTextField
 
 					text = StringTools.replace(text, "<p ", "<p style='margin-top:0; margin-bottom:0;' ");
 
-					var unscaledLeading = textField.__textFormat.leading;
-					textField.__textFormat.leading += Std.int(adjustment);
+					var unscaledLeading = textField._.__textFormat.leading;
+					textField._.__textFormat.leading += Std.int(adjustment);
 
-					textField.__div.innerHTML = new EReg("\r\n", "g").replace(text, "<br>");
-					textField.__div.innerHTML = new EReg("\n", "g").replace(textField.__div.innerHTML, "<br>");
-					textField.__div.innerHTML = new EReg("\r", "g").replace(textField.__div.innerHTML, "<br>");
+					textField._.__div.innerHTML = new EReg("\r\n", "g").replace(text, "<br>");
+					textField._.__div.innerHTML = new EReg("\n", "g").replace(textField._.__div.innerHTML, "<br>");
+					textField._.__div.innerHTML = new EReg("\r", "g").replace(textField._.__div.innerHTML, "<br>");
 
-					style.setProperty("font", TextEngine.getFont(textField.__textFormat), null);
+					style.setProperty("font", TextEngine.getFont(textField._.__textFormat), null);
 
-					textField.__textFormat.size = unscaledSize;
-					textField.__textFormat.leading = unscaledLeading;
+					textField._.__textFormat.size = unscaledSize;
+					textField._.__textFormat.leading = unscaledLeading;
 
 					style.setProperty("top", "3px", null);
 
 					if (textEngine.border)
 					{
 						style.setProperty("border", "solid 1px #" + StringTools.hex(textEngine.borderColor & 0xFFFFFF, 6), null);
-						textField.__renderTransform.translate(-1, -1);
-						textField.__renderTransformChanged = true;
-						textField.__transformDirty = true;
+						textField._.__renderTransform.translate(-1, -1);
+						textField._.__renderTransformChanged = true;
+						textField._.__transformDirty = true;
 					}
 					else if (style.border != "")
 					{
 						style.removeProperty("border");
-						textField.__renderTransformChanged = true;
+						textField._.__renderTransformChanged = true;
 					}
 
-					style.setProperty("color", "#" + StringTools.hex(textField.__textFormat.color & 0xFFFFFF, 6), null);
+					style.setProperty("color", "#" + StringTools.hex(textField._.__textFormat.color & 0xFFFFFF, 6), null);
 
 					style.setProperty("width", w + "px", null);
 					style.setProperty("height", h + "px", null);
 
-					switch (textField.__textFormat.align)
+					switch (textField._.__textFormat.align)
 					{
 						case TextFormatAlign.CENTER:
 							style.setProperty("text-align", "center", null);
@@ -299,30 +299,30 @@ class DOMTextField
 							style.setProperty("text-align", "left", null);
 					}
 
-					textField.__dirty = false;
+					textField._.__dirty = false;
 				}
 				else
 				{
-					if (textField.__div != null)
+					if (textField._.__div != null)
 					{
-						renderer.element.removeChild(textField.__div);
-						textField.__div = null;
+						renderer.element.removeChild(textField._.__div);
+						textField._.__div = null;
 					}
 				}
 			}
 
-			if (textField.__div != null)
+			if (textField._.__div != null)
 			{
 				// force roundPixels = true for TextFields
 				// Chrome shows blurry text if coordinates are fractional
 
-				var old = renderer.__roundPixels;
-				renderer.__roundPixels = true;
+				var old = renderer._.__roundPixels;
+				renderer._.__roundPixels = true;
 
-				renderer.__updateClip(textField);
-				renderer.__applyStyle(textField, true, true, true);
+				renderer._.__updateClip(textField);
+				renderer._.__applyStyle(textField, true, true, true);
 
-				renderer.__roundPixels = old;
+				renderer._.__roundPixels = old;
 			}
 		}
 		else
@@ -332,7 +332,7 @@ class DOMTextField
 		#end
 	}
 
-	private static function __getAttributeMatch(regex:EReg):String
+	public static function __getAttributeMatch(regex:EReg):String
 	{
 		return regex.matched(2) != null ? regex.matched(2) : regex.matched(3);
 	}

@@ -1,17 +1,172 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension>
 
+	<log warn="OpenFL expects Haxe 3.4.3 or greater, but version ${haxe} is being used" if="${${haxe} < 3.4.3}" />
+
+	<set name="expect-lime-version" value="7.7.*" />
+
+	<set name="expect-lime-version" value="${lime-version}" if="lime-version" />
+	<!-- <set name="lime-version" value="${expect-lime-version}" if="setup" unless="lime-version" /> -->
+
+	<haxedef name="native" if="cpp || neko" />
+	<set name="native" if="cpp || neko" />
+
+	<window stencil-buffer="true" depth-buffer="true" color-depth="32" />
+
+	<unset name="custom-backend" />
+
+	<section if="${target}-backend" unless="no-custom-backend">
+
+		<set name="target-backend" value="${target}-backend" />
+		<set name="custom-backend" value="$${target-backend}" />
+
+	</section>
+
+	<section unless="lime || custom-backend">
+
+		<section if="lime-version">
+			<haxelib name="lime" version="${lime-version}" unless="create" />
+			<haxelib name="lime" version="${lime-version}" if="display || rebuild" />
+		</section>
+		<section unless="lime-version">
+			<haxelib name="lime" unless="create" />
+			<haxelib name="lime" if="display || rebuild" />
+		</section>
+
+	</section>
+
+	<!-- <haxelib name="openfl.core" path="packages/core" /> -->
+
+	<section if="${lime < 7.6.0} || ${lime >= 7.8.0}" unless="setup || create || disable-version-check">
+
+		<log warn="Lime version ${lime} may not be compatible with OpenFL ${openfl} (expected version ${expect-lime-version})" />
+		<log info='Use &lt;lime version="" /&gt; before &lt;haxelib name="openfl" /&gt; to include a specific version' />
+
+	</section>
+
+	<template path="../../assets/templates" />
+
+	<source path="../../externs/flash" if="flash" />
+	<source path="../../src-draft" if="draft" />
+
+	<include haxelib="${custom-backend}" if="display custom-backend" />
+	<haxelib name="${custom-backend}" if="custom-backend" unless="display" />
+
+	<section unless="custom-backend">
+
+		<define name="openfl-disable-handle-error" unless="openfl-enable-handle-error" if="debug" />
+
+		<section if="native">
+
+			<set name="openfl-native" />
+			<haxedef name="openfl-native" />
+			<set name="openfl" />
+			<haxeflag name="--remap" value="flash:openfl" />
+
+			<section if="telemetry || advanced-telemetry || openfl-telemetry">
+
+				<haxelib name="hxtelemetry" unless="flash" />
+				<config:hxtelemetry allocations="true" host="localhost" unless="flash" />
+				<haxedef name="advanced-telemetry" if="flash" />
+
+			</section>
+
+			<haxedef name="openfl-debug" if="openfl-telemetry" />
+			<haxedef name="lime-debug" if="openfl-telemetry" />
+
+		</section>
+
+		<section if="flash">
+
+			<set name="openfl-flash" />
+			<haxedef name="openfl-flash" />
+			<haxedef name="advanced-telemetry" if="telemetry" />
+
+		</section>
+
+		<section if="html5">
+
+			<set name="openfl-html5" />
+			<haxedef name="openfl-html5" />
+			<haxeflag name="--remap" value="flash:openfl" />
+
+			<module name="openfl" if="html5 lime-modular">
+
+				<source path="src" package="openfl" exclude="openfl._internal.renderer.console.*|*.Context3DGraphics|*.SWFLibrary" />
+
+				<!-- @:expose on enums do not work in Haxe 3.4.2 -->
+				<class remove="lime.graphics.opengl.GLContextType" />
+				<class remove="lime.graphics.ImageChannel" />
+				<class remove="lime.graphics.ImageType" />
+				<class remove="lime.graphics.RendererType" />
+				<class remove="lime.ui.FileDialogType" />
+				<class remove="lime.ui.MouseCursor" />
+				<class remove="lime.system.Endian" />
+				<class remove="lime.system.SensorType" />
+
+				<include type="openfl.display3D._Program3D.Uniform" />
+				<include type="openfl.display3D._Program3D.UniformMap" />
+				<include type="openfl.display.DefaultPreloader" />
+				<include type="openfl.events._EventDispatcher.Listener" />
+				<include type="openfl.utils.ByteArrayData" />
+				<include type="openfl._Vector.IVector" />
+				<include type="openfl._Vector.BoolVector" />
+				<include type="openfl._Vector.FloatVector" />
+				<include type="openfl._Vector.FunctionVector" />
+				<include type="openfl._Vector.IntVector" />
+				<include type="openfl._Vector.ObjectVector" />
+				<include type="openfl._internal.renderer.console.ConsoleRenderer" />
+				<include type="openfl._internal.stage3D._AGALConverter.DestRegister" />
+				<include type="openfl._internal.stage3D.RegisterMap" />
+				<include type="openfl._internal.stage3D._AGALConverter.RegisterMapEntry" />
+				<include type="openfl._internal.stage3D._AGALConverter.SamplerRegister" />
+				<include type="openfl._internal.stage3D._AGALConverter.SourceRegister" />
+
+			</module>
+
+		</section>
+
+		<set name="openfl-has-default-fonts" if="windows || mac || linux || ios || android || flash || html5 || emscripten || tvos" />
+		<assets path="assets/fonts" unless="openfl-has-default-fonts || openfl-no-default-fonts" />
+
+	</section>
+
+	<library handler="swf" type="swf" />
+	<library handler="swf" type="swflite" />
+	<library handler="swf" type="swf_lite" />
+	<library handler="swf" type="animate" />
+
+	<section if="setup">
+
+		<haxelib name="lime" version="${lime-version}" if="lime-version" />
+		<haxelib name="lime" unless="lime-version" />
+		<haxelib name="openfl-samples" />
+
+	</section>
+
+	<include haxelib="openfl-samples" if="create" />
+
+	<haxelib name="openfl.application" path="../application" unless="openfl.application" />
+	<haxelib name="openfl.assets" path="../assets" unless="openfl.assets" />
 	<haxelib name="openfl.bitmapdata" path="../bitmapdata" unless="openfl.bitmapdata" />
-	<haxelib name="openfl.clipboard" path="../clipboard" unless="openfl.clipboard" />
+	<haxelib name="openfl.displayobject" path="../displayobject" unless="openfl.displayobject" />
+	<haxelib name="openfl.eventdispatcher" path="../eventdispatcher" unless="openfl.eventdispatcher" />
 	<haxelib name="openfl.externalinterface" path="../externalinterface" unless="openfl.externalinterface" />
 	<haxelib name="openfl.filereference" path="../filereference" unless="openfl.filereference" />
+	<haxelib name="openfl.filters" path="../filters" unless="openfl.filters" />
+	<haxelib name="openfl.geom" path="../geom" unless="openfl.geom" />
+	<haxelib name="openfl.input" path="../input" unless="openfl.input" />
+	<haxelib name="openfl.loader" path="../loader" unless="openfl.loader" />
+	<haxelib name="openfl.movieclip" path="../movieclip" unless="openfl.movieclip" />
 	<haxelib name="openfl.netstream" path="../netstream" unless="openfl.netstream" />
 	<haxelib name="openfl.printing" path="../printing" unless="openfl.printing" />
 	<haxelib name="openfl.renderer-cairo" path="../renderer-cairo" unless="openfl.renderer-cairo" />
 	<haxelib name="openfl.renderer-canvas" path="../renderer-canvas" unless="openfl.renderer-canvas" />
+	<haxelib name="openfl.renderer-core" path="../renderer-core" unless="openfl.renderer-core" />
 	<haxelib name="openfl.renderer-dom" path="../renderer-dom" unless="openfl.renderer-dom" />
 	<haxelib name="openfl.renderer-flash" path="../renderer-flash" unless="openfl.renderer-flash" />
 	<haxelib name="openfl.renderer-stage3D" path="../renderer-stage3D" unless="openfl.renderer-stage3D" />
+	<haxelib name="openfl.security" path="../security" unless="openfl.security" />
 	<haxelib name="openfl.sensors" path="../sensors" unless="openfl.sensors" />
 	<haxelib name="openfl.shader" path="../shader" unless="openfl.shader" />
 	<haxelib name="openfl.sharedobject" path="../sharedobject" unless="openfl.sharedobject" />
@@ -20,8 +175,11 @@
 	<haxelib name="openfl.stage" path="../stage" unless="openfl.stage" />
 	<haxelib name="openfl.stage3D" path="../stage3D" unless="openfl.stage3D" />
 	<haxelib name="openfl.system" path="../system" unless="openfl.system" />
+	<haxelib name="openfl.telemetry" path="../telemetry" unless="openfl.telemetry" />
 	<haxelib name="openfl.textfield" path="../textfield" unless="openfl.textfield" />
-	<haxelib name="openfl.timer" path="../timer" unless="openfl.timer" />
+	<haxelib name="openfl.tilemap" path="../tilemap" unless="openfl.tilemap" />
 	<haxelib name="openfl.urlloader" path="../urlloader" unless="openfl.urlloader" />
+	<haxelib name="openfl.urlrequest" path="../urlrequest" unless="openfl.urlrequest" />
+	<haxelib name="openfl.utils" path="../utils" unless="openfl.utils" />
 
 </extension>

@@ -57,7 +57,7 @@ import openfl.Vector;
 
 		@default gesture
 	**/
-	public static var inputMode:MultitouchInputMode;
+	public static var inputMode(get, set):MultitouchInputMode;
 
 	// @:noCompletion @:dox(hide) public static var mapTouchToMouse:Bool;
 
@@ -65,7 +65,7 @@ import openfl.Vector;
 		The maximum number of concurrent touch points supported by the current
 		environment.
 	**/
-	public static var maxTouchPoints(default, null):Int;
+	public static var maxTouchPoints(get, never):Int;
 
 	/**
 		A Vector array(a typed array of string values) of multi-touch contact
@@ -87,7 +87,7 @@ import openfl.Vector;
 		that are not supported in the current evironment, you'll need to create
 		alternative event handling.
 	**/
-	public static var supportedGestures(default, null):Vector<String>;
+	public static var supportedGestures(get, never):Vector<String>;
 
 	/**
 		Indicates whether the current environment supports gesture input, such as
@@ -100,7 +100,7 @@ import openfl.Vector;
 		`true` even if the hardware does not support gesture
 		events.
 	**/
-	public static var supportsGestureEvents(default, null):Bool;
+	public static var supportsGestureEvents(get, never):Bool;
 
 	/**
 		Indicates whether the current environment supports basic touch input, such
@@ -108,40 +108,36 @@ import openfl.Vector;
 	**/
 	public static var supportsTouchEvents(get, never):Bool;
 
-	private static function __init__():Void
-	{
-		maxTouchPoints = 2;
-		supportedGestures = null;
-		supportsGestureEvents = false;
-		inputMode = MultitouchInputMode.TOUCH_POINT;
+	// Getters & Setters
 
-		#if openfljs
-		untyped Object.defineProperties(Multitouch, {
-			"supportsTouchEvents": {
-				get: function()
-				{
-					return Multitouch.get_supportsTouchEvents();
-				}
-			}
-		});
-		#end
+	@:noCompletion private static function get_inputMode():MultitouchInputMode
+	{
+		return _Multitouch.inputMode;
 	}
 
-	// Getters & Setters
+	@:noCompletion private static function set_inputMode(value:MultitouchInputMode):MultitouchInputMode
+	{
+		return _Multitouch.inputMode = value;
+	}
+
+	@:noCompletion private static function get_maxTouchPoints():Int
+	{
+		return _Multitouch.maxTouchPoints;
+	}
+
+	@:noCompletion private static function get_supportedGestures():Vector<String>
+	{
+		return _Multitouch.supportedGestures;
+	}
+
+	@:noCompletion private static function get_supportsGestureEvents():Bool
+	{
+		return _Multitouch.supportsGestureEvents;
+	}
+
 	@:noCompletion private static function get_supportsTouchEvents():Bool
 	{
-		#if openfl_html5
-		if (untyped __js__("('ontouchstart' in document.documentElement) || (window.DocumentTouch && document instanceof DocumentTouch)"))
-		{
-			return true;
-		}
-
-		return false;
-		#elseif !mac
-		return true;
-		#else
-		return false;
-		#end
+		return _Multitouch.supportsTouchEvents;
 	}
 }
 #else

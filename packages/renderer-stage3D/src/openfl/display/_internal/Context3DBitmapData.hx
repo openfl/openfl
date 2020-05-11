@@ -20,31 +20,31 @@ import openfl.geom.Rectangle;
 @:access(openfl.display.DisplayObject)
 class Context3DBitmapData
 {
-	private static inline var VERTEX_BUFFER_STRIDE:Int = 14;
+	public static inline var VERTEX_BUFFER_STRIDE:Int = 14;
 
 	public static function getIndexBuffer(bitmapData:BitmapData, context:Context3D, scale9Grid:Rectangle = null):IndexBuffer3D
 	{
-		if (bitmapData.__renderData.indexBuffer == null
-			|| bitmapData.__renderData.indexBufferContext != context
-			|| (scale9Grid != null && bitmapData.__renderData.indexBufferGrid == null)
-			|| (bitmapData.__renderData.indexBufferGrid != null && !bitmapData.__renderData.indexBufferGrid.equals(scale9Grid)))
+		if (bitmapData._.__renderData.indexBuffer == null
+			|| bitmapData._.__renderData.indexBufferContext != context
+			|| (scale9Grid != null && bitmapData._.__renderData.indexBufferGrid == null)
+			|| (bitmapData._.__renderData.indexBufferGrid != null && !bitmapData._.__renderData.indexBufferGrid.equals(scale9Grid)))
 		{
 			// TODO: Use shared buffer on context
 			// TODO: Support for UVs other than scale-9 grid?
 
-			bitmapData.__renderData.indexBufferContext = context;
-			bitmapData.__renderData.indexBuffer = null;
+			bitmapData._.__renderData.indexBufferContext = context;
+			bitmapData._.__renderData.indexBuffer = null;
 
 			if (scale9Grid != null)
 			{
-				if (bitmapData.__renderData.indexBufferGrid == null) bitmapData.__renderData.indexBufferGrid = new Rectangle();
-				bitmapData.__renderData.indexBufferGrid.copyFrom(scale9Grid);
+				if (bitmapData._.__renderData.indexBufferGrid == null) bitmapData._.__renderData.indexBufferGrid = new Rectangle();
+				bitmapData._.__renderData.indexBufferGrid.copyFrom(scale9Grid);
 
 				var centerX = scale9Grid.width;
 				var centerY = scale9Grid.height;
 				if (centerX != 0 && centerY != 0)
 				{
-					bitmapData.__renderData.indexBufferData = new UInt16Array(54);
+					bitmapData._.__renderData.indexBufferData = new UInt16Array(54);
 
 					//  0 ——— 1    4 ——— 5    8 ——— 9
 					//  |  /  |    |  /  |    |  /  |
@@ -59,82 +59,82 @@ class Context3DBitmapData
 					// 26 ——— 27  30 ——— 31  34 ——— 35
 
 					// top left
-					bitmapData.__renderData.indexBufferData[0] = 0;
-					bitmapData.__renderData.indexBufferData[1] = 1;
-					bitmapData.__renderData.indexBufferData[2] = 2;
-					bitmapData.__renderData.indexBufferData[3] = 2;
-					bitmapData.__renderData.indexBufferData[4] = 1;
-					bitmapData.__renderData.indexBufferData[5] = 3;
+					bitmapData._.__renderData.indexBufferData[0] = 0;
+					bitmapData._.__renderData.indexBufferData[1] = 1;
+					bitmapData._.__renderData.indexBufferData[2] = 2;
+					bitmapData._.__renderData.indexBufferData[3] = 2;
+					bitmapData._.__renderData.indexBufferData[4] = 1;
+					bitmapData._.__renderData.indexBufferData[5] = 3;
 
 					// top center
-					bitmapData.__renderData.indexBufferData[6] = 4;
-					bitmapData.__renderData.indexBufferData[7] = 5;
-					bitmapData.__renderData.indexBufferData[8] = 6;
-					bitmapData.__renderData.indexBufferData[9] = 6;
-					bitmapData.__renderData.indexBufferData[10] = 5;
-					bitmapData.__renderData.indexBufferData[11] = 7;
+					bitmapData._.__renderData.indexBufferData[6] = 4;
+					bitmapData._.__renderData.indexBufferData[7] = 5;
+					bitmapData._.__renderData.indexBufferData[8] = 6;
+					bitmapData._.__renderData.indexBufferData[9] = 6;
+					bitmapData._.__renderData.indexBufferData[10] = 5;
+					bitmapData._.__renderData.indexBufferData[11] = 7;
 
 					// top right
-					bitmapData.__renderData.indexBufferData[12] = 8;
-					bitmapData.__renderData.indexBufferData[13] = 9;
-					bitmapData.__renderData.indexBufferData[14] = 10;
-					bitmapData.__renderData.indexBufferData[15] = 10;
-					bitmapData.__renderData.indexBufferData[16] = 9;
-					bitmapData.__renderData.indexBufferData[17] = 11;
+					bitmapData._.__renderData.indexBufferData[12] = 8;
+					bitmapData._.__renderData.indexBufferData[13] = 9;
+					bitmapData._.__renderData.indexBufferData[14] = 10;
+					bitmapData._.__renderData.indexBufferData[15] = 10;
+					bitmapData._.__renderData.indexBufferData[16] = 9;
+					bitmapData._.__renderData.indexBufferData[17] = 11;
 
 					// middle left
-					bitmapData.__renderData.indexBufferData[18] = 12;
-					bitmapData.__renderData.indexBufferData[19] = 13;
-					bitmapData.__renderData.indexBufferData[20] = 14;
-					bitmapData.__renderData.indexBufferData[21] = 14;
-					bitmapData.__renderData.indexBufferData[22] = 13;
-					bitmapData.__renderData.indexBufferData[23] = 15;
+					bitmapData._.__renderData.indexBufferData[18] = 12;
+					bitmapData._.__renderData.indexBufferData[19] = 13;
+					bitmapData._.__renderData.indexBufferData[20] = 14;
+					bitmapData._.__renderData.indexBufferData[21] = 14;
+					bitmapData._.__renderData.indexBufferData[22] = 13;
+					bitmapData._.__renderData.indexBufferData[23] = 15;
 
 					// middle center
-					bitmapData.__renderData.indexBufferData[24] = 16;
-					bitmapData.__renderData.indexBufferData[25] = 18;
-					bitmapData.__renderData.indexBufferData[26] = 17;
-					bitmapData.__renderData.indexBufferData[27] = 17;
-					bitmapData.__renderData.indexBufferData[28] = 18;
-					bitmapData.__renderData.indexBufferData[29] = 19;
+					bitmapData._.__renderData.indexBufferData[24] = 16;
+					bitmapData._.__renderData.indexBufferData[25] = 18;
+					bitmapData._.__renderData.indexBufferData[26] = 17;
+					bitmapData._.__renderData.indexBufferData[27] = 17;
+					bitmapData._.__renderData.indexBufferData[28] = 18;
+					bitmapData._.__renderData.indexBufferData[29] = 19;
 
 					// middle right
-					bitmapData.__renderData.indexBufferData[30] = 20;
-					bitmapData.__renderData.indexBufferData[31] = 21;
-					bitmapData.__renderData.indexBufferData[32] = 22;
-					bitmapData.__renderData.indexBufferData[33] = 22;
-					bitmapData.__renderData.indexBufferData[34] = 21;
-					bitmapData.__renderData.indexBufferData[35] = 23;
+					bitmapData._.__renderData.indexBufferData[30] = 20;
+					bitmapData._.__renderData.indexBufferData[31] = 21;
+					bitmapData._.__renderData.indexBufferData[32] = 22;
+					bitmapData._.__renderData.indexBufferData[33] = 22;
+					bitmapData._.__renderData.indexBufferData[34] = 21;
+					bitmapData._.__renderData.indexBufferData[35] = 23;
 
 					// bottom left
-					bitmapData.__renderData.indexBufferData[36] = 24;
-					bitmapData.__renderData.indexBufferData[37] = 25;
-					bitmapData.__renderData.indexBufferData[38] = 26;
-					bitmapData.__renderData.indexBufferData[39] = 26;
-					bitmapData.__renderData.indexBufferData[40] = 25;
-					bitmapData.__renderData.indexBufferData[41] = 27;
+					bitmapData._.__renderData.indexBufferData[36] = 24;
+					bitmapData._.__renderData.indexBufferData[37] = 25;
+					bitmapData._.__renderData.indexBufferData[38] = 26;
+					bitmapData._.__renderData.indexBufferData[39] = 26;
+					bitmapData._.__renderData.indexBufferData[40] = 25;
+					bitmapData._.__renderData.indexBufferData[41] = 27;
 
 					// bottom center
-					bitmapData.__renderData.indexBufferData[42] = 28;
-					bitmapData.__renderData.indexBufferData[43] = 29;
-					bitmapData.__renderData.indexBufferData[44] = 30;
-					bitmapData.__renderData.indexBufferData[45] = 30;
-					bitmapData.__renderData.indexBufferData[46] = 29;
-					bitmapData.__renderData.indexBufferData[47] = 31;
+					bitmapData._.__renderData.indexBufferData[42] = 28;
+					bitmapData._.__renderData.indexBufferData[43] = 29;
+					bitmapData._.__renderData.indexBufferData[44] = 30;
+					bitmapData._.__renderData.indexBufferData[45] = 30;
+					bitmapData._.__renderData.indexBufferData[46] = 29;
+					bitmapData._.__renderData.indexBufferData[47] = 31;
 
 					// bottom right
-					bitmapData.__renderData.indexBufferData[48] = 32;
-					bitmapData.__renderData.indexBufferData[49] = 33;
-					bitmapData.__renderData.indexBufferData[50] = 34;
-					bitmapData.__renderData.indexBufferData[51] = 34;
-					bitmapData.__renderData.indexBufferData[52] = 33;
-					bitmapData.__renderData.indexBufferData[53] = 35;
+					bitmapData._.__renderData.indexBufferData[48] = 32;
+					bitmapData._.__renderData.indexBufferData[49] = 33;
+					bitmapData._.__renderData.indexBufferData[50] = 34;
+					bitmapData._.__renderData.indexBufferData[51] = 34;
+					bitmapData._.__renderData.indexBufferData[52] = 33;
+					bitmapData._.__renderData.indexBufferData[53] = 35;
 
-					bitmapData.__renderData.indexBuffer = context.createIndexBuffer(54);
+					bitmapData._.__renderData.indexBuffer = context.createIndexBuffer(54);
 				}
 				else if (centerX == 0 && centerY != 0)
 				{
-					bitmapData.__renderData.indexBufferData = new UInt16Array(18);
+					bitmapData._.__renderData.indexBufferData = new UInt16Array(18);
 
 					// 3 ——— 2
 					// |  /  |
@@ -145,95 +145,95 @@ class Context3DBitmapData
 					// 7 ——— 6
 
 					// top
-					bitmapData.__renderData.indexBufferData[0] = 0;
-					bitmapData.__renderData.indexBufferData[1] = 1;
-					bitmapData.__renderData.indexBufferData[2] = 2;
-					bitmapData.__renderData.indexBufferData[3] = 2;
-					bitmapData.__renderData.indexBufferData[4] = 1;
-					bitmapData.__renderData.indexBufferData[5] = 3;
+					bitmapData._.__renderData.indexBufferData[0] = 0;
+					bitmapData._.__renderData.indexBufferData[1] = 1;
+					bitmapData._.__renderData.indexBufferData[2] = 2;
+					bitmapData._.__renderData.indexBufferData[3] = 2;
+					bitmapData._.__renderData.indexBufferData[4] = 1;
+					bitmapData._.__renderData.indexBufferData[5] = 3;
 
 					// middle
-					bitmapData.__renderData.indexBufferData[6] = 4;
-					bitmapData.__renderData.indexBufferData[7] = 5;
-					bitmapData.__renderData.indexBufferData[8] = 0;
-					bitmapData.__renderData.indexBufferData[9] = 0;
-					bitmapData.__renderData.indexBufferData[10] = 5;
-					bitmapData.__renderData.indexBufferData[11] = 1;
+					bitmapData._.__renderData.indexBufferData[6] = 4;
+					bitmapData._.__renderData.indexBufferData[7] = 5;
+					bitmapData._.__renderData.indexBufferData[8] = 0;
+					bitmapData._.__renderData.indexBufferData[9] = 0;
+					bitmapData._.__renderData.indexBufferData[10] = 5;
+					bitmapData._.__renderData.indexBufferData[11] = 1;
 
 					// bottom
-					bitmapData.__renderData.indexBufferData[12] = 6;
-					bitmapData.__renderData.indexBufferData[13] = 7;
-					bitmapData.__renderData.indexBufferData[14] = 4;
-					bitmapData.__renderData.indexBufferData[15] = 4;
-					bitmapData.__renderData.indexBufferData[16] = 7;
-					bitmapData.__renderData.indexBufferData[17] = 5;
+					bitmapData._.__renderData.indexBufferData[12] = 6;
+					bitmapData._.__renderData.indexBufferData[13] = 7;
+					bitmapData._.__renderData.indexBufferData[14] = 4;
+					bitmapData._.__renderData.indexBufferData[15] = 4;
+					bitmapData._.__renderData.indexBufferData[16] = 7;
+					bitmapData._.__renderData.indexBufferData[17] = 5;
 
-					bitmapData.__renderData.indexBuffer = context.createIndexBuffer(18);
+					bitmapData._.__renderData.indexBuffer = context.createIndexBuffer(18);
 				}
 				else if (centerX != 0 && centerY == 0)
 				{
-					bitmapData.__renderData.indexBufferData = new UInt16Array(18);
+					bitmapData._.__renderData.indexBufferData = new UInt16Array(18);
 
 					// 3 ——— 2 ——— 5 ——— 7
 					// |  /  |  /  |  /  |
 					// 1 ——— 0 ——— 4 ——— 6
 
 					// left
-					bitmapData.__renderData.indexBufferData[0] = 0;
-					bitmapData.__renderData.indexBufferData[1] = 1;
-					bitmapData.__renderData.indexBufferData[2] = 2;
-					bitmapData.__renderData.indexBufferData[3] = 2;
-					bitmapData.__renderData.indexBufferData[4] = 1;
-					bitmapData.__renderData.indexBufferData[5] = 3;
+					bitmapData._.__renderData.indexBufferData[0] = 0;
+					bitmapData._.__renderData.indexBufferData[1] = 1;
+					bitmapData._.__renderData.indexBufferData[2] = 2;
+					bitmapData._.__renderData.indexBufferData[3] = 2;
+					bitmapData._.__renderData.indexBufferData[4] = 1;
+					bitmapData._.__renderData.indexBufferData[5] = 3;
 
 					// center
-					bitmapData.__renderData.indexBufferData[6] = 4;
-					bitmapData.__renderData.indexBufferData[7] = 0;
-					bitmapData.__renderData.indexBufferData[8] = 5;
-					bitmapData.__renderData.indexBufferData[9] = 5;
-					bitmapData.__renderData.indexBufferData[10] = 0;
-					bitmapData.__renderData.indexBufferData[11] = 2;
+					bitmapData._.__renderData.indexBufferData[6] = 4;
+					bitmapData._.__renderData.indexBufferData[7] = 0;
+					bitmapData._.__renderData.indexBufferData[8] = 5;
+					bitmapData._.__renderData.indexBufferData[9] = 5;
+					bitmapData._.__renderData.indexBufferData[10] = 0;
+					bitmapData._.__renderData.indexBufferData[11] = 2;
 
 					// right
-					bitmapData.__renderData.indexBufferData[12] = 6;
-					bitmapData.__renderData.indexBufferData[13] = 4;
-					bitmapData.__renderData.indexBufferData[14] = 7;
-					bitmapData.__renderData.indexBufferData[15] = 7;
-					bitmapData.__renderData.indexBufferData[16] = 4;
-					bitmapData.__renderData.indexBufferData[17] = 5;
+					bitmapData._.__renderData.indexBufferData[12] = 6;
+					bitmapData._.__renderData.indexBufferData[13] = 4;
+					bitmapData._.__renderData.indexBufferData[14] = 7;
+					bitmapData._.__renderData.indexBufferData[15] = 7;
+					bitmapData._.__renderData.indexBufferData[16] = 4;
+					bitmapData._.__renderData.indexBufferData[17] = 5;
 
-					bitmapData.__renderData.indexBuffer = context.createIndexBuffer(18);
+					bitmapData._.__renderData.indexBuffer = context.createIndexBuffer(18);
 				}
 			}
 			else
 			{
-				bitmapData.__renderData.indexBufferGrid = null;
+				bitmapData._.__renderData.indexBufferGrid = null;
 			}
 
-			if (bitmapData.__renderData.indexBuffer == null)
+			if (bitmapData._.__renderData.indexBuffer == null)
 			{
-				bitmapData.__renderData.indexBufferData = new UInt16Array(6);
-				bitmapData.__renderData.indexBufferData[0] = 0;
-				bitmapData.__renderData.indexBufferData[1] = 1;
-				bitmapData.__renderData.indexBufferData[2] = 2;
-				bitmapData.__renderData.indexBufferData[3] = 2;
-				bitmapData.__renderData.indexBufferData[4] = 1;
-				bitmapData.__renderData.indexBufferData[5] = 3;
-				bitmapData.__renderData.indexBuffer = context.createIndexBuffer(6);
+				bitmapData._.__renderData.indexBufferData = new UInt16Array(6);
+				bitmapData._.__renderData.indexBufferData[0] = 0;
+				bitmapData._.__renderData.indexBufferData[1] = 1;
+				bitmapData._.__renderData.indexBufferData[2] = 2;
+				bitmapData._.__renderData.indexBufferData[3] = 2;
+				bitmapData._.__renderData.indexBufferData[4] = 1;
+				bitmapData._.__renderData.indexBufferData[5] = 3;
+				bitmapData._.__renderData.indexBuffer = context.createIndexBuffer(6);
 			}
 
-			bitmapData.__renderData.indexBuffer.uploadFromTypedArray(bitmapData.__renderData.indexBufferData);
+			bitmapData._.__renderData.indexBuffer.uploadFromTypedArray(bitmapData._.__renderData.indexBufferData);
 		}
 
-		return bitmapData.__renderData.indexBuffer;
+		return bitmapData._.__renderData.indexBuffer;
 	}
 
 	#if (openfl_gl && !disable_batcher)
 	public static function pushQuadsToBatcher(bitmapData:BitmapData, batcher:BatchRenderer, transform:Matrix, alpha:Float, object:DisplayObject):Void
 	{
-		var blendMode = object.__worldBlendMode;
-		var colorTransform = object.__worldColorTransform;
-		var scale9Grid = object.__worldScale9Grid;
+		var blendMode = object._.__worldBlendMode;
+		var colorTransform = object._.__worldColorTransform;
+		var scale9Grid = object._.__worldScale9Grid;
 
 		#if openfl_power_of_two
 		var uvWidth = width / __textureWidth;
@@ -377,20 +377,20 @@ class Context3DBitmapData
 		// TODO: Support for UVs other than scale-9 grid?
 		// TODO: Better way of handling object transform?
 
-		if (bitmapData.__renderData.vertexBuffer == null
-			|| bitmapData.__renderData.vertexBufferContext != context
-			|| (scale9Grid != null && bitmapData.__renderData.vertexBufferGrid == null)
-			|| (bitmapData.__renderData.vertexBufferGrid != null && !bitmapData.__renderData.vertexBufferGrid.equals(scale9Grid))
+		if (bitmapData._.__renderData.vertexBuffer == null
+			|| bitmapData._.__renderData.vertexBufferContext != context
+			|| (scale9Grid != null && bitmapData._.__renderData.vertexBufferGrid == null)
+			|| (bitmapData._.__renderData.vertexBufferGrid != null && !bitmapData._.__renderData.vertexBufferGrid.equals(scale9Grid))
 			|| (targetObject != null
-				&& (bitmapData.__renderData.vertexBufferWidth != targetObject.width
-					|| bitmapData.__renderData.vertexBufferHeight != targetObject.height
-					|| bitmapData.__renderData.vertexBufferScaleX != targetObject.scaleX
-					|| bitmapData.__renderData.vertexBufferScaleY != targetObject.scaleY)))
+				&& (bitmapData._.__renderData.vertexBufferWidth != targetObject.width
+					|| bitmapData._.__renderData.vertexBufferHeight != targetObject.height
+					|| bitmapData._.__renderData.vertexBufferScaleX != targetObject.scaleX
+					|| bitmapData._.__renderData.vertexBufferScaleY != targetObject.scaleY)))
 		{
-			bitmapData.__renderData.uvRect = new Rectangle(0, 0, bitmapData.__renderData.textureWidth, bitmapData.__renderData.textureHeight);
+			bitmapData._.__renderData.uvRect = new Rectangle(0, 0, bitmapData._.__renderData.textureWidth, bitmapData._.__renderData.textureHeight);
 
-			var uvWidth = bitmapData.width / bitmapData.__renderData.textureWidth;
-			var uvHeight = bitmapData.height / bitmapData.__renderData.textureHeight;
+			var uvWidth = bitmapData.width / bitmapData._.__renderData.textureWidth;
+			var uvHeight = bitmapData.height / bitmapData._.__renderData.textureHeight;
 
 			// __renderData.vertexBufferData = new Float32Array ([
 			//
@@ -405,46 +405,46 @@ class Context3DBitmapData
 			// [ colorTransform.redMultiplier, 0, 0, 0, 0, colorTransform.greenMultiplier, 0, 0, 0, 0, colorTransform.blueMultiplier, 0, 0, 0, 0, colorTransform.alphaMultiplier ];
 			// [ colorTransform.redOffset / 255, colorTransform.greenOffset / 255, colorTransform.blueOffset / 255, colorTransform.alphaOffset / 255 ]
 
-			bitmapData.__renderData.vertexBufferContext = context;
-			bitmapData.__renderData.vertexBuffer = null;
+			bitmapData._.__renderData.vertexBufferContext = context;
+			bitmapData._.__renderData.vertexBuffer = null;
 
 			if (targetObject != null)
 			{
-				bitmapData.__renderData.vertexBufferWidth = targetObject.width;
-				bitmapData.__renderData.vertexBufferHeight = targetObject.height;
-				bitmapData.__renderData.vertexBufferScaleX = targetObject.scaleX;
-				bitmapData.__renderData.vertexBufferScaleY = targetObject.scaleY;
+				bitmapData._.__renderData.vertexBufferWidth = targetObject.width;
+				bitmapData._.__renderData.vertexBufferHeight = targetObject.height;
+				bitmapData._.__renderData.vertexBufferScaleX = targetObject.scaleX;
+				bitmapData._.__renderData.vertexBufferScaleY = targetObject.scaleY;
 			}
 
 			if (scale9Grid != null && targetObject != null)
 			{
-				if (bitmapData.__renderData.vertexBufferGrid == null) bitmapData.__renderData.vertexBufferGrid = new Rectangle();
-				bitmapData.__renderData.vertexBufferGrid.copyFrom(scale9Grid);
+				if (bitmapData._.__renderData.vertexBufferGrid == null) bitmapData._.__renderData.vertexBufferGrid = new Rectangle();
+				bitmapData._.__renderData.vertexBufferGrid.copyFrom(scale9Grid);
 
-				bitmapData.__renderData.vertexBufferWidth = targetObject.width;
-				bitmapData.__renderData.vertexBufferHeight = targetObject.height;
-				bitmapData.__renderData.vertexBufferScaleX = targetObject.scaleX;
-				bitmapData.__renderData.vertexBufferScaleY = targetObject.scaleY;
+				bitmapData._.__renderData.vertexBufferWidth = targetObject.width;
+				bitmapData._.__renderData.vertexBufferHeight = targetObject.height;
+				bitmapData._.__renderData.vertexBufferScaleX = targetObject.scaleX;
+				bitmapData._.__renderData.vertexBufferScaleY = targetObject.scaleY;
 
 				var centerX = scale9Grid.width;
 				var centerY = scale9Grid.height;
 				if (centerX != 0 && centerY != 0)
 				{
-					bitmapData.__renderData.vertexBufferData = new Float32Array(VERTEX_BUFFER_STRIDE * 36);
+					bitmapData._.__renderData.vertexBufferData = new Float32Array(VERTEX_BUFFER_STRIDE * 36);
 
 					var left = scale9Grid.x;
 					var top = scale9Grid.y;
-					var right = bitmapData.__renderData.vertexBufferWidth - centerX - left;
-					var bottom = bitmapData.__renderData.vertexBufferHeight - centerY - top;
+					var right = bitmapData._.__renderData.vertexBufferWidth - centerX - left;
+					var bottom = bitmapData._.__renderData.vertexBufferHeight - centerY - top;
 
-					var uvLeft = left / bitmapData.__renderData.vertexBufferWidth;
-					var uvTop = top / bitmapData.__renderData.vertexBufferHeight;
-					var uvCenterX = scale9Grid.width / bitmapData.__renderData.vertexBufferWidth;
-					var uvCenterY = scale9Grid.height / bitmapData.__renderData.vertexBufferHeight;
+					var uvLeft = left / bitmapData._.__renderData.vertexBufferWidth;
+					var uvTop = top / bitmapData._.__renderData.vertexBufferHeight;
+					var uvCenterX = scale9Grid.width / bitmapData._.__renderData.vertexBufferWidth;
+					var uvCenterY = scale9Grid.height / bitmapData._.__renderData.vertexBufferHeight;
 					var uvRight = right / bitmapData.width;
 					var uvBottom = bottom / bitmapData.height;
-					var uvOffsetU = 0.5 / bitmapData.__renderData.vertexBufferWidth;
-					var uvOffsetV = 0.5 / bitmapData.__renderData.vertexBufferHeight;
+					var uvOffsetU = 0.5 / bitmapData._.__renderData.vertexBufferWidth;
+					var uvOffsetV = 0.5 / bitmapData._.__renderData.vertexBufferHeight;
 
 					var renderedLeft = left / targetObject.scaleX;
 					var renderedTop = top / targetObject.scaleY;
@@ -488,11 +488,11 @@ class Context3DBitmapData
 					setVOffsets(bitmapData, [2, 3, 6, 7, 10, 11, 14, 15, 17, 19, 22, 23], -uvOffsetV);
 					setVOffsets(bitmapData, [12, 13, 16, 18, 20, 21, 24, 25, 28, 29, 32, 33], uvOffsetV);
 
-					bitmapData.__renderData.vertexBuffer = context.createVertexBuffer(16, VERTEX_BUFFER_STRIDE);
+					bitmapData._.__renderData.vertexBuffer = context.createVertexBuffer(16, VERTEX_BUFFER_STRIDE);
 				}
 				else if (centerX == 0 && centerY != 0)
 				{
-					bitmapData.__renderData.vertexBufferData = new Float32Array(VERTEX_BUFFER_STRIDE * 8);
+					bitmapData._.__renderData.vertexBufferData = new Float32Array(VERTEX_BUFFER_STRIDE * 8);
 
 					var top = scale9Grid.y;
 					var bottom = bitmapData.height - centerY - top;
@@ -516,40 +516,40 @@ class Context3DBitmapData
 					// 7 ——— 6
 
 					// top <0-1-2> <2-1-3>
-					bitmapData.__renderData.vertexBufferData[0] = renderedWidth;
-					bitmapData.__renderData.vertexBufferData[1] = renderedTop;
-					bitmapData.__renderData.vertexBufferData[3] = uvWidth;
-					bitmapData.__renderData.vertexBufferData[4] = uvHeight * uvTop;
+					bitmapData._.__renderData.vertexBufferData[0] = renderedWidth;
+					bitmapData._.__renderData.vertexBufferData[1] = renderedTop;
+					bitmapData._.__renderData.vertexBufferData[3] = uvWidth;
+					bitmapData._.__renderData.vertexBufferData[4] = uvHeight * uvTop;
 
-					bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE + 1] = renderedTop;
-					bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE + 4] = uvHeight * uvTop;
+					bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE + 1] = renderedTop;
+					bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE + 4] = uvHeight * uvTop;
 
-					bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 2] = renderedWidth;
-					bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 2 + 3] = uvWidth;
+					bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 2] = renderedWidth;
+					bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 2 + 3] = uvWidth;
 
 					// middle <4-5-0> <0-5-1>
-					bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 4] = renderedWidth;
-					bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 1] = renderedTop + renderedCenterY;
-					bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 3] = uvWidth;
-					bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 4] = uvHeight * (uvTop + uvCenterY);
+					bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 4] = renderedWidth;
+					bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 1] = renderedTop + renderedCenterY;
+					bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 3] = uvWidth;
+					bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 4] = uvHeight * (uvTop + uvCenterY);
 
-					bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 5 + 1] = renderedTop + renderedCenterY;
-					bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 5 + 4] = uvHeight * (uvTop + uvCenterY);
+					bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 5 + 1] = renderedTop + renderedCenterY;
+					bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 5 + 4] = uvHeight * (uvTop + uvCenterY);
 
 					// bottom <6-7-4> <4-7-5>
-					bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 6] = renderedWidth;
-					bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 1] = bitmapData.height;
-					bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 3] = uvWidth;
-					bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 4] = uvHeight;
+					bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 6] = renderedWidth;
+					bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 1] = bitmapData.height;
+					bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 3] = uvWidth;
+					bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 4] = uvHeight;
 
-					bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 7 + 1] = bitmapData.height;
-					bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 7 + 4] = uvHeight;
+					bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 7 + 1] = bitmapData.height;
+					bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 7 + 4] = uvHeight;
 
-					bitmapData.__renderData.vertexBuffer = context.createVertexBuffer(8, VERTEX_BUFFER_STRIDE);
+					bitmapData._.__renderData.vertexBuffer = context.createVertexBuffer(8, VERTEX_BUFFER_STRIDE);
 				}
 				else if (centerY == 0 && centerX != 0)
 				{
-					bitmapData.__renderData.vertexBufferData = new Float32Array(VERTEX_BUFFER_STRIDE * 8);
+					bitmapData._.__renderData.vertexBufferData = new Float32Array(VERTEX_BUFFER_STRIDE * 8);
 
 					var left = scale9Grid.x;
 					var right = bitmapData.width - centerX - left;
@@ -569,57 +569,57 @@ class Context3DBitmapData
 					// 1 ——— 0 ——— 4 ——— 6
 
 					// top left <0-1-2> <2-1-3>
-					bitmapData.__renderData.vertexBufferData[0] = renderedLeft;
-					bitmapData.__renderData.vertexBufferData[1] = renderedHeight;
-					bitmapData.__renderData.vertexBufferData[3] = uvWidth * uvLeft;
-					bitmapData.__renderData.vertexBufferData[4] = uvHeight;
+					bitmapData._.__renderData.vertexBufferData[0] = renderedLeft;
+					bitmapData._.__renderData.vertexBufferData[1] = renderedHeight;
+					bitmapData._.__renderData.vertexBufferData[3] = uvWidth * uvLeft;
+					bitmapData._.__renderData.vertexBufferData[4] = uvHeight;
 
-					bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE + 1] = renderedHeight;
-					bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE + 4] = uvHeight;
+					bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE + 1] = renderedHeight;
+					bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE + 4] = uvHeight;
 
-					bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 2] = renderedLeft;
-					bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 2 + 3] = uvWidth * uvLeft;
+					bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 2] = renderedLeft;
+					bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 2 + 3] = uvWidth * uvLeft;
 
 					// top center <4-0-5> <5-0-2>
-					bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 4] = renderedLeft + renderedCenterX;
-					bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 1] = renderedHeight;
-					bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 3] = uvWidth * (uvLeft + uvCenterX);
-					bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 4] = uvHeight;
+					bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 4] = renderedLeft + renderedCenterX;
+					bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 1] = renderedHeight;
+					bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 3] = uvWidth * (uvLeft + uvCenterX);
+					bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 4] = uvHeight;
 
-					bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 5] = renderedLeft + renderedCenterX;
-					bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 5 + 3] = uvWidth * (uvLeft + uvCenterX);
+					bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 5] = renderedLeft + renderedCenterX;
+					bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 5 + 3] = uvWidth * (uvLeft + uvCenterX);
 
 					// top right <6-4-7> <7-4-5>
-					bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 6] = bitmapData.width;
-					bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 1] = renderedHeight;
-					bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 3] = uvWidth;
-					bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 4] = uvHeight;
+					bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 6] = bitmapData.width;
+					bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 1] = renderedHeight;
+					bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 3] = uvWidth;
+					bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 4] = uvHeight;
 
-					bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 7] = bitmapData.width;
-					bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 7 + 3] = uvWidth;
+					bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 7] = bitmapData.width;
+					bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 7 + 3] = uvWidth;
 
-					bitmapData.__renderData.vertexBuffer = context.createVertexBuffer(8, VERTEX_BUFFER_STRIDE);
+					bitmapData._.__renderData.vertexBuffer = context.createVertexBuffer(8, VERTEX_BUFFER_STRIDE);
 				}
 			}
 			else
 			{
-				bitmapData.__renderData.vertexBufferGrid = null;
+				bitmapData._.__renderData.vertexBufferGrid = null;
 			}
 
-			if (bitmapData.__renderData.vertexBuffer == null)
+			if (bitmapData._.__renderData.vertexBuffer == null)
 			{
-				bitmapData.__renderData.vertexBufferData = new Float32Array(VERTEX_BUFFER_STRIDE * 4);
+				bitmapData._.__renderData.vertexBufferData = new Float32Array(VERTEX_BUFFER_STRIDE * 4);
 
-				bitmapData.__renderData.vertexBufferData[0] = bitmapData.width;
-				bitmapData.__renderData.vertexBufferData[1] = bitmapData.height;
-				bitmapData.__renderData.vertexBufferData[3] = uvWidth;
-				bitmapData.__renderData.vertexBufferData[4] = uvHeight;
-				bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE + 1] = bitmapData.height;
-				bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE + 4] = uvHeight;
-				bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 2] = bitmapData.width;
-				bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 2 + 3] = uvWidth;
+				bitmapData._.__renderData.vertexBufferData[0] = bitmapData.width;
+				bitmapData._.__renderData.vertexBufferData[1] = bitmapData.height;
+				bitmapData._.__renderData.vertexBufferData[3] = uvWidth;
+				bitmapData._.__renderData.vertexBufferData[4] = uvHeight;
+				bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE + 1] = bitmapData.height;
+				bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE + 4] = uvHeight;
+				bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 2] = bitmapData.width;
+				bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 2 + 3] = uvWidth;
 
-				bitmapData.__renderData.vertexBuffer = context.createVertexBuffer(3, VERTEX_BUFFER_STRIDE);
+				bitmapData._.__renderData.vertexBuffer = context.createVertexBuffer(3, VERTEX_BUFFER_STRIDE);
 			}
 
 			// for (i in 0...4) {
@@ -642,9 +642,9 @@ class Context3DBitmapData
 			// }
 
 			// __renderData.vertexBufferAlpha = alpha;
-			// __renderData.vertexBufferColorTransform = colorTransform != null ? colorTransform.__clone () : null;
+			// __renderData.vertexBufferColorTransform = colorTransform != null ? colorTransform._.__clone () : null;
 
-			bitmapData.__renderData.vertexBuffer.uploadFromTypedArray(bitmapData.__renderData.vertexBufferData);
+			bitmapData._.__renderData.vertexBuffer.uploadFromTypedArray(bitmapData._.__renderData.vertexBufferData);
 		}
 		else
 		{
@@ -664,16 +664,16 @@ class Context3DBitmapData
 
 			// }
 
-			// if ((__renderData.vertexBufferColorTransform == null && colorTransform != null) || (__renderData.vertexBufferColorTransform != null && !__renderData.vertexBufferColorTransform.__equals (colorTransform))) {
+			// if ((__renderData.vertexBufferColorTransform == null && colorTransform != null) || (__renderData.vertexBufferColorTransform != null && !__renderData.vertexBufferColorTransform._.__equals (colorTransform))) {
 
 			// 	dirty = true;
 
 			// 	if (colorTransform != null) {
 
 			// 		if (__renderData.vertexBufferColorTransform == null) {
-			// 			__renderData.vertexBufferColorTransform = colorTransform.__clone ();
+			// 			__renderData.vertexBufferColorTransform = colorTransform._.__clone ();
 			// 		} else {
-			// 			__renderData.vertexBufferColorTransform.__copyFrom (colorTransform);
+			// 			__renderData.vertexBufferColorTransform._.__copyFrom (colorTransform);
 			// 		}
 
 			// 		for (i in 0...4) {
@@ -708,7 +708,7 @@ class Context3DBitmapData
 
 			// }
 
-			// context.__bindGLArrayBuffer (__renderData.vertexBuffer);
+			// context._.__bindGLArrayBuffer (__renderData.vertexBuffer);
 
 			// if (dirty) {
 
@@ -717,7 +717,7 @@ class Context3DBitmapData
 			// }
 		}
 
-		return bitmapData.__renderData.vertexBuffer;
+		return bitmapData._.__renderData.vertexBuffer;
 	}
 
 	public static function setUVRect(bitmapData:BitmapData, context:Context3D, x:Float, y:Float, width:Float, height:Float):Void
@@ -725,46 +725,46 @@ class Context3DBitmapData
 		var buffer = getVertexBuffer(bitmapData, context);
 
 		if (buffer != null
-			&& (width != bitmapData.__renderData.uvRect.width
-				|| height != bitmapData.__renderData.uvRect.height
-				|| x != bitmapData.__renderData.uvRect.x
-				|| y != bitmapData.__renderData.uvRect.y))
+			&& (width != bitmapData._.__renderData.uvRect.width
+				|| height != bitmapData._.__renderData.uvRect.height
+				|| x != bitmapData._.__renderData.uvRect.x
+				|| y != bitmapData._.__renderData.uvRect.y))
 		{
-			if (bitmapData.__renderData.uvRect == null) bitmapData.__renderData.uvRect = new Rectangle();
-			bitmapData.__renderData.uvRect.setTo(x, y, width, height);
+			if (bitmapData._.__renderData.uvRect == null) bitmapData._.__renderData.uvRect = new Rectangle();
+			bitmapData._.__renderData.uvRect.setTo(x, y, width, height);
 
-			var uvX = bitmapData.__renderData.textureWidth > 0 ? x / bitmapData.__renderData.textureWidth : 0;
-			var uvY = bitmapData.__renderData.textureHeight > 0 ? y / bitmapData.__renderData.textureHeight : 0;
-			var uvWidth = bitmapData.__renderData.textureWidth > 0 ? width / bitmapData.__renderData.textureWidth : 0;
-			var uvHeight = bitmapData.__renderData.textureHeight > 0 ? height / bitmapData.__renderData.textureHeight : 0;
+			var uvX = bitmapData._.__renderData.textureWidth > 0 ? x / bitmapData._.__renderData.textureWidth : 0;
+			var uvY = bitmapData._.__renderData.textureHeight > 0 ? y / bitmapData._.__renderData.textureHeight : 0;
+			var uvWidth = bitmapData._.__renderData.textureWidth > 0 ? width / bitmapData._.__renderData.textureWidth : 0;
+			var uvHeight = bitmapData._.__renderData.textureHeight > 0 ? height / bitmapData._.__renderData.textureHeight : 0;
 
-			bitmapData.__renderData.vertexBufferData[0] = width;
-			bitmapData.__renderData.vertexBufferData[1] = height;
-			bitmapData.__renderData.vertexBufferData[3] = uvX + uvWidth;
-			bitmapData.__renderData.vertexBufferData[4] = uvY + uvHeight;
-			bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE + 1] = height;
-			bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE + 3] = uvX;
-			bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE + 4] = uvY + uvHeight;
-			bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 2] = width;
-			bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 2 + 3] = uvX + uvWidth;
-			bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 2 + 4] = uvY;
-			bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 3 + 3] = uvX;
-			bitmapData.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 3 + 4] = uvY;
+			bitmapData._.__renderData.vertexBufferData[0] = width;
+			bitmapData._.__renderData.vertexBufferData[1] = height;
+			bitmapData._.__renderData.vertexBufferData[3] = uvX + uvWidth;
+			bitmapData._.__renderData.vertexBufferData[4] = uvY + uvHeight;
+			bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE + 1] = height;
+			bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE + 3] = uvX;
+			bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE + 4] = uvY + uvHeight;
+			bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 2] = width;
+			bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 2 + 3] = uvX + uvWidth;
+			bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 2 + 4] = uvY;
+			bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 3 + 3] = uvX;
+			bitmapData._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 3 + 4] = uvY;
 
-			bitmapData.__renderData.vertexBuffer.uploadFromTypedArray(bitmapData.__renderData.vertexBufferData);
+			bitmapData._.__renderData.vertexBuffer.uploadFromTypedArray(bitmapData._.__renderData.vertexBufferData);
 		}
 	}
 
-	private static function setVertex(bitmapData:BitmapData, index:Int, x:Float, y:Float, u:Float, v:Float):Void
+	public static function setVertex(bitmapData:BitmapData, index:Int, x:Float, y:Float, u:Float, v:Float):Void
 	{
 		var i = index * VERTEX_BUFFER_STRIDE;
-		bitmapData.__renderData.vertexBufferData[i + 0] = x;
-		bitmapData.__renderData.vertexBufferData[i + 1] = y;
-		bitmapData.__renderData.vertexBufferData[i + 3] = u;
-		bitmapData.__renderData.vertexBufferData[i + 4] = v;
+		bitmapData._.__renderData.vertexBufferData[i + 0] = x;
+		bitmapData._.__renderData.vertexBufferData[i + 1] = y;
+		bitmapData._.__renderData.vertexBufferData[i + 3] = u;
+		bitmapData._.__renderData.vertexBufferData[i + 4] = v;
 	}
 
-	private static function setVertices(bitmapData:BitmapData, indices:Array<Int>, x:Float, y:Float, u:Float, v:Float):Void
+	public static function setVertices(bitmapData:BitmapData, indices:Array<Int>, x:Float, y:Float, u:Float, v:Float):Void
 	{
 		for (index in indices)
 		{
@@ -772,19 +772,19 @@ class Context3DBitmapData
 		}
 	}
 
-	private static function setUOffsets(bitmapData:BitmapData, indices:Array<Int>, offset:Float):Void
+	public static function setUOffsets(bitmapData:BitmapData, indices:Array<Int>, offset:Float):Void
 	{
 		for (index in indices)
 		{
-			bitmapData.__renderData.vertexBufferData[index * VERTEX_BUFFER_STRIDE + 3] += offset;
+			bitmapData._.__renderData.vertexBufferData[index * VERTEX_BUFFER_STRIDE + 3] += offset;
 		}
 	}
 
-	private static function setVOffsets(bitmapData:BitmapData, indices:Array<Int>, offset:Float):Void
+	public static function setVOffsets(bitmapData:BitmapData, indices:Array<Int>, offset:Float):Void
 	{
 		for (index in indices)
 		{
-			bitmapData.__renderData.vertexBufferData[index * VERTEX_BUFFER_STRIDE + 4] += offset;
+			bitmapData._.__renderData.vertexBufferData[index * VERTEX_BUFFER_STRIDE + 4] += offset;
 		}
 	}
 }

@@ -51,14 +51,14 @@ import openfl.net.NetStream;
 	**/
 	public var videoWidth(default, null):Int;
 
-	@:noCompletion private var _:_VideoTexture;
-
-	@:noCompletion private function new(context:Context3D)
+	@:allow(openfl) @:noCompletion private function new(context:Context3D)
 	{
-		super(context, 0, 0, null, false, 0);
+		if (_ == null)
+		{
+			_ = new _VideoTexture(this, context);
+		}
 
-		_ = new _VideoTexture(this);
-		__base = _;
+		super(context, 0, 0, null, false, 0);
 	}
 
 	#if false

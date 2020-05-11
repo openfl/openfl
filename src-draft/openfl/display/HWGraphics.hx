@@ -52,10 +52,10 @@ class HWGraphics extends Shape
 
 	@:noCompletion private override function __getBounds(rect:Rectangle, matrix:Matrix):Void
 	{
-		var bounds = Rectangle.__pool.get();
+		var bounds = _Rectangle.__pool.get();
 		__bounds.__transform(bounds, matrix);
 		rect.__expand(bounds.x, bounds.y, bounds.width, bounds.height);
-		Rectangle.__pool.release(bounds);
+		_Rectangle.__pool.release(bounds);
 	}
 }
 #else

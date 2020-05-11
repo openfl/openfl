@@ -34,24 +34,24 @@ import openfl.display._internal.stats.DrawCallContext;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class BatchRenderer
 {
-	private var gl:WebGLRenderContext;
-	private var renderer:Context3DRenderer;
+	public var gl:WebGLRenderContext;
+	public var renderer:Context3DRenderer;
 
-	private var __batch:Batch;
-	private var __indexBuffer:IndexBuffer3D;
-	private var __emptyBitmapData:BitmapData;
-	private var __maxQuads:Int;
-	private var __maxTextures:Int;
-	private var __samplers:Array<ShaderInput<BitmapData>> = [];
-	private var __shader:BatchShader;
-	private var __userUvs:Array<Float> = [for (i in 0...8) 0.0];
-	private var __uvs:Array<Float>;
-	private var __vertexBuffer:VertexBuffer3D;
-	private var __vertices:Array<Float> = [for (i in 0...8) 0.0];
+	public var __batch:Batch;
+	public var __indexBuffer:IndexBuffer3D;
+	public var __emptyBitmapData:BitmapData;
+	public var __maxQuads:Int;
+	public var __maxTextures:Int;
+	public var __samplers:Array<ShaderInput<BitmapData>> = [];
+	public var __shader:BatchShader;
+	public var __userUvs:Array<Float> = [for (i in 0...8) 0.0];
+	public var __uvs:Array<Float>;
+	public var __vertexBuffer:VertexBuffer3D;
+	public var __vertices:Array<Float> = [for (i in 0...8) 0.0];
 
-	private static inline var MAX_TEXTURES:Int = 16;
+	public static inline var MAX_TEXTURES:Int = 16;
 
-	private static var DEFAULT_UVS:Array<Float> = [
+	public static var DEFAULT_UVS:Array<Float> = [
 		0, 0,
 		1, 0,
 		1, 1,
@@ -89,17 +89,17 @@ class BatchRenderer
 		var x1 = x + w;
 		var y1 = y + h;
 
-		__vertices[0] = transform.__transformX(x, y);
-		__vertices[1] = transform.__transformY(x, y);
+		__vertices[0] = transform._.__transformX(x, y);
+		__vertices[1] = transform._.__transformY(x, y);
 
-		__vertices[2] = transform.__transformX(x1, y);
-		__vertices[3] = transform.__transformY(x1, y);
+		__vertices[2] = transform._.__transformX(x1, y);
+		__vertices[3] = transform._.__transformY(x1, y);
 
-		__vertices[4] = transform.__transformX(x1, y1);
-		__vertices[5] = transform.__transformY(x1, y1);
+		__vertices[4] = transform._.__transformX(x1, y1);
+		__vertices[5] = transform._.__transformY(x1, y1);
 
-		__vertices[6] = transform.__transformX(x, y1);
-		__vertices[7] = transform.__transformY(x, y1);
+		__vertices[6] = transform._.__transformX(x, y1);
+		__vertices[7] = transform._.__transformY(x, y1);
 	}
 
 	public function useDefaultUvs():Void
@@ -192,7 +192,7 @@ class BatchRenderer
 		var context = renderer.context3D;
 
 		context.setCulling(NONE);
-		renderer.__setBlendMode(__batch.blendMode);
+		renderer._.__setBlendMode(__batch.blendMode);
 
 		context._.bindGLArrayBuffer(__vertexBuffer._.glBufferID);
 
@@ -201,7 +201,7 @@ class BatchRenderer
 
 		renderer.setShader(__shader);
 
-		renderer.applyMatrix(renderer.__getMatrix(Matrix.__identity, AUTO));
+		renderer.applyMatrix(renderer._.__getMatrix(Matrix._.__identity, AUTO));
 		renderer.useColorTransformArray();
 		for (i in 0...__batch.numTextures)
 		{
@@ -214,10 +214,10 @@ class BatchRenderer
 		}
 		renderer.updateShader();
 
-		context.setVertexBufferAt(__shader.__position.index, __vertexBuffer, 0, FLOAT_2);
-		context.setVertexBufferAt(__shader.__textureCoord.index, __vertexBuffer, 2, FLOAT_2);
-		context.setVertexBufferAt(__shader.__colorMultiplier.index, __vertexBuffer, 4, FLOAT_4);
-		context.setVertexBufferAt(__shader.__colorOffset.index, __vertexBuffer, 8, FLOAT_4);
+		context.setVertexBufferAt(__shader._.__position.index, __vertexBuffer, 0, FLOAT_2);
+		context.setVertexBufferAt(__shader._.__textureCoord.index, __vertexBuffer, 2, FLOAT_2);
+		context.setVertexBufferAt(__shader._.__colorMultiplier.index, __vertexBuffer, 4, FLOAT_4);
+		context.setVertexBufferAt(__shader._.__colorOffset.index, __vertexBuffer, 8, FLOAT_4);
 		#if !macro
 		context.setVertexBufferAt(__shader.aTextureId.index, __vertexBuffer, 12, FLOAT_1);
 		#end
@@ -232,7 +232,7 @@ class BatchRenderer
 		__batch.clear();
 	}
 
-	private static function __createIndicesForQuads(numQuads:Int):UInt16Array
+	public static function __createIndicesForQuads(numQuads:Int):UInt16Array
 	{
 		var totalIndices = numQuads * 6; // 2 triangles of 3 verties per quad
 		var indices = new UInt16Array(totalIndices);

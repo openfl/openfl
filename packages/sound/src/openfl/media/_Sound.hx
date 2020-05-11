@@ -1,11 +1,11 @@
 package openfl.media;
 
-#if lime
 import haxe.Int64;
 import lime.media.AudioBuffer;
 import lime.utils.UInt8Array;
 import lime.utils.Assets;
 import openfl.events.Event;
+import openfl.events._EventDispatcher;
 import openfl.events.IOErrorEvent;
 import openfl.media.ID3Info;
 import openfl.media.Sound;
@@ -16,25 +16,43 @@ import openfl.media.SoundTransform;
 import openfl.net.URLRequest;
 import openfl.utils.ByteArray;
 import openfl.utils.Future;
+import openfl.events.EventDispatcher;
+import openfl.events.IOErrorEvent;
+import openfl.net.URLRequest;
+import openfl.utils.ByteArray;
+import openfl.utils.Future;
+#if lime
+import lime.media.AudioBuffer;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(lime.media.AudioBuffer)
-@:access(lime.utils.AssetLibrary)
-@:access(openfl.media.Sound)
-@:access(openfl.media.SoundChannel.new)
-@:access(openfl.media.SoundMixer)
-@:noCompletion
-class _Sound
+class _Sound extends _EventDispatcher
 {
-	private var buffer:AudioBuffer;
-	private var parent:Sound;
+	public var bytesLoaded(default, null):Int;
+	public var bytesTotal(default, null):Int;
+	public var id3(get, never):ID3Info;
+	public var isBuffering(default, null):Bool;
+	public var length(get, never):Float;
+	public var url(default, null):String;
 
-	public function new(parent:Sound)
+	public var buffer:AudioBuffer;
+
+	public function new(sound:Sound, stream:URLRequest = null, context:SoundLoaderContext = null)
 	{
-		this.parent = parent;
+		super(sound);
+
+		bytesLoaded = 0;
+		bytesTotal = 0;
+		isBuffering = false;
+		url = null;
+
+		if (stream != null)
+		{
+			load(stream, context);
+		}
 	}
 
 	public function close():Void
@@ -46,76 +64,62 @@ class _Sound
 		}
 	}
 
-	public static function fromAudioBuffer(buffer:AudioBuffer):Sound
+	#if lime
+	@:dox(hide) public static function fromAudioBuffer(buffer:AudioBuffer):Sound
 	{
 		var sound = new Sound();
 		sound._.buffer = buffer;
 		return sound;
 	}
+	#end
 
 	public static function fromFile(path:String):Sound
 	{
+		if (path == null) return null;
+
 		return fromAudioBuffer(AudioBuffer.fromFile(path));
-	}
-
-	public function getID3():ID3Info
-	{
-		return new ID3Info();
-	}
-
-	public function getLength():Int
-	{
-		if (buffer != null)
-		{
-			#if (openfl_html5 && howlerjs)
-			return Std.int(buffer.src.duration() * 1000);
-			#else
-			if (buffer.data != null)
-			{
-				var samples = (buffer.data.length * 8) / (buffer.channels * buffer.bitsPerSample);
-				return Std.int(samples / buffer.sampleRate * 1000);
-			}
-			else if (buffer.__srcVorbisFile != null)
-			{
-				var samples = Int64.toInt(buffer.__srcVorbisFile.pcmTotal());
-				return Std.int(samples / buffer.sampleRate * 1000);
-			}
-			else
-			{
-				return 0;
-			}
-			#end
-		}
-
-		return 0;
 	}
 
 	public function load(stream:URLRequest, context:SoundLoaderContext = null):Void
 	{
-		#if openfl_html5
-		var defaultLibrary = Assets.getLibrary("default"); // TODO: Improve this
+		url = stream.url;
+		if (url != null)
+		{
+			#if openfl_html5
+			var defaultLibrary = Assets.getLibrary("default"); // TODO: Improve this
 
-		if (defaultLibrary != null && defaultLibrary.cachedAudioBuffers.exists(parent.url))
-		{
-			AudioBuffer_onURLLoad(defaultLibrary.cachedAudioBuffers.get(parent.url));
-		}
-		else
-		{
-			AudioBuffer.loadFromFile(parent.url).onComplete(AudioBuffer_onURLLoad).onError(function(_)
+			if (defaultLibrary != null && defaultLibrary.cachedAudioBuffers.exists(url))
+			{
+				AudioBuffer_onURLLoad(defaultLibrary.cachedAudioBuffers.get(url));
+			}
+			else
+			{
+				AudioBuffer.loadFromFile(url).onComplete(AudioBuffer_onURLLoad).onError(function(_)
+				{
+					AudioBuffer_onURLLoad(null);
+				});
+			}
+			#else
+			AudioBuffer.loadFromFile(url).onComplete(AudioBuffer_onURLLoad).onError(function(_)
 			{
 				AudioBuffer_onURLLoad(null);
 			});
+			#end
 		}
-		#else
-		AudioBuffer.loadFromFile(parent.url).onComplete(AudioBuffer_onURLLoad).onError(function(_)
+		else
 		{
-			AudioBuffer_onURLLoad(null);
-		});
-		#end
+			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+		}
 	}
 
 	public function loadCompressedDataFromByteArray(bytes:ByteArray, bytesLength:Int):Void
 	{
+		if (bytes == null || bytesLength <= 0)
+		{
+			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+			return;
+		}
+
 		if (bytes.position > 0 || bytes.length > bytesLength)
 		{
 			var copy = new ByteArray(bytesLength);
@@ -127,11 +131,11 @@ class _Sound
 
 		if (buffer == null)
 		{
-			parent.dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
 		}
 		else
 		{
-			parent.dispatchEvent(new Event(Event.COMPLETE));
+			dispatchEvent(new Event(Event.COMPLETE));
 		}
 	}
 
@@ -155,6 +159,12 @@ class _Sound
 
 	public function loadPCMFromByteArray(bytes:ByteArray, samples:Int, format:String = "float", stereo:Bool = true, sampleRate:Float = 44100):Void
 	{
+		if (bytes == null)
+		{
+			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+			return;
+		}
+
 		var bitsPerSample = (format == "float" ? 32 : 16); // "short"
 		var channels = (stereo ? 2 : 1);
 		var bytesLength = Std.int(samples * channels * (bitsPerSample / 8));
@@ -174,14 +184,14 @@ class _Sound
 
 		buffer = audioBuffer;
 
-		parent.dispatchEvent(new Event(Event.COMPLETE));
+		dispatchEvent(new Event(Event.COMPLETE));
 	}
 
 	public function play(startTime:Float = 0.0, loops:Int = 0, sndTransform:SoundTransform = null):SoundChannel
 	{
 		if (buffer == null) return null;
 
-		if (SoundMixer.__soundChannels.length >= SoundMixer.MAX_ACTIVE_CHANNELS)
+		if (SoundMixer._.__soundChannels.length >= SoundMixer.MAX_ACTIVE_CHANNELS)
 		{
 			return null;
 		}
@@ -189,18 +199,37 @@ class _Sound
 		return new SoundChannel(parent, startTime, loops, sndTransform);
 	}
 
-	// Event Handlers
-	private function AudioBuffer_onURLLoad(buffer:AudioBuffer):Void
+	// Get & Set Methods
+
+	private function get_id3():ID3Info
 	{
-		if (buffer == null)
+		return new ID3Info();
+	}
+
+	private function get_length():Int
+	{
+		if (buffer != null)
 		{
-			parent.dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+			#if (openfl_html5 && howlerjs)
+			return Std.int(buffer.src.duration() * 1000);
+			#else
+			if (buffer.data != null)
+			{
+				var samples = (buffer.data.length * 8) / (buffer.channels * buffer.bitsPerSample);
+				return Std.int(samples / buffer.sampleRate * 1000);
+			}
+			else if (buffer._.__srcVorbisFile != null)
+			{
+				var samples = Int64.toInt(buffer._.__srcVorbisFile.pcmTotal());
+				return Std.int(samples / buffer.sampleRate * 1000);
+			}
+			else
+			{
+				return 0;
+			}
+			#end
 		}
-		else
-		{
-			this.buffer = buffer;
-			parent.dispatchEvent(new Event(Event.COMPLETE));
-		}
+
+		return 0;
 	}
 }
-#end

@@ -20,16 +20,15 @@ import openfl.utils.ByteArray;
 #end
 @:final class CubeTexture extends TextureBase
 {
-	@:noCompletion private var _:_CubeTexture;
-	@:noCompletion private var __size:Int;
-
-	@:noCompletion private function new(context:Context3D, size:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool, streamingLevels:Int)
+	@:allow(openfl) @:noCompletion private function new(context:Context3D, size:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool,
+			streamingLevels:Int)
 	{
-		super(context, size, size, format, optimizeForRenderToTexture, streamingLevels);
-		__size = size;
+		if (_ == null)
+		{
+			_ = new _CubeTexture(this, context, size, format, optimizeForRenderToTexture, streamingLevels);
+		}
 
-		_ = new _CubeTexture(this);
-		__base = _;
+		super(context, size, size, format, optimizeForRenderToTexture, streamingLevels);
 	}
 
 	/**

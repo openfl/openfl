@@ -111,8 +111,6 @@ import js.Browser;
 #end
 class LoaderInfo extends EventDispatcher
 {
-	@:noCompletion private static var __rootURL:String = #if openfl_html5 (Browser.supported ? Browser.document.URL : "") #else "" #end;
-
 	// @:noCompletion @:dox(hide) public var actionScriptVersion (default, never):openfl.display.ActionScriptVersion;
 
 	/**
@@ -137,7 +135,7 @@ class LoaderInfo extends EventDispatcher
 		@throws SecurityError This security sandbox of the caller is not allowed
 							  to access this ApplicationDomain.
 	**/
-	public var applicationDomain(default, null):ApplicationDomain;
+	public var applicationDomain(get, never):ApplicationDomain;
 
 	/**
 		The bytes associated with a LoaderInfo object.
@@ -154,13 +152,13 @@ class LoaderInfo extends EventDispatcher
 							  Flash Player Developer Center Topic:
 							  [Security](http://www.adobe.com/go/devnet_security_en).
 	**/
-	public var bytes(default, null):ByteArray;
+	public var bytes(get, never):ByteArray;
 
 	/**
 		The number of bytes that are loaded for the media. When this number equals
 		the value of `bytesTotal`, all of the bytes are loaded.
 	**/
-	public var bytesLoaded(default, null):Int;
+	public var bytesLoaded(get, never):Int;
 
 	/**
 		The number of compressed bytes in the entire media file.
@@ -171,7 +169,7 @@ class LoaderInfo extends EventDispatcher
 		`bytesTotal` reflects the actual number of bytes to be
 		downloaded.
 	**/
-	public var bytesTotal(default, null):Int;
+	public var bytesTotal(get, never):Int;
 
 	/**
 		Expresses the trust relationship from content(child) to the Loader
@@ -188,7 +186,7 @@ class LoaderInfo extends EventDispatcher
 		@throws Error Thrown if the file is not downloaded sufficiently to
 					  retrieve the requested information.
 	**/
-	public var childAllowsParent(default, null):Bool;
+	public var childAllowsParent(get, never):Bool;
 
 	// @:noCompletion @:dox(hide) @:require(flash11_4) public var childSandboxBridge:Dynamic;
 
@@ -207,7 +205,7 @@ class LoaderInfo extends EventDispatcher
 							  Flash Player Developer Center Topic:
 							  [Security](http://www.adobe.com/go/devnet_security_en).
 	**/
-	public var content(default, null):DisplayObject;
+	public var content(get, never):DisplayObject;
 
 	/**
 		The MIME type of the loaded file. The value is `null` if not
@@ -219,7 +217,7 @@ class LoaderInfo extends EventDispatcher
 		* `"image/gif"`
 		* `"image/png"`
 	**/
-	public var contentType(default, null):String;
+	public var contentType(get, never):String;
 
 	/**
 		The nominal frame rate, in frames per second, of the loaded SWF file. This
@@ -236,7 +234,7 @@ class LoaderInfo extends EventDispatcher
 					  requested information.
 		@throws Error If the file is not a SWF file.
 	**/
-	public var frameRate(default, null):Float;
+	public var frameRate(get, never):Float;
 
 	/**
 		The nominal height of the loaded file. This value might differ from the
@@ -246,9 +244,9 @@ class LoaderInfo extends EventDispatcher
 		@throws Error If the file is not downloaded sufficiently to retrieve the
 					  requested information.
 	**/
-	public var height(default, null):Int;
+	public var height(get, never):Int;
 
-	// @:noCompletion @:dox(hide) @:require(flash10_1) public var isURLInaccessible (default, null):Bool;
+	// @:noCompletion @:dox(hide) @:require(flash10_1) public var isURLInaccessible (get, never):Bool;
 
 	/**
 		The Loader object associated with this LoaderInfo object. If this
@@ -267,14 +265,14 @@ class LoaderInfo extends EventDispatcher
 							  Flash Player Developer Center Topic:
 							  [Security](http://www.adobe.com/go/devnet_security_en).
 	**/
-	public var loader(default, null):Loader;
+	public var loader(get, never):Loader;
 
 	/**
 		The URL of the SWF file that initiated the loading of the media described
 		by this LoaderInfo object. For the instance of the main class of the SWF
 		file, this URL is the same as the SWF file's own URL.
 	**/
-	public var loaderURL(default, null):String;
+	public var loaderURL(get, never):String;
 
 	/**
 		An object that contains name-value pairs that represent the parameters
@@ -297,7 +295,7 @@ class LoaderInfo extends EventDispatcher
 		ActionScript 3.0.
 	**/
 	@SuppressWarnings("checkstyle:Dynamic")
-	public var parameters(default, null):Dynamic<String>;
+	public var parameters(get, never):Dynamic<String>;
 
 	/**
 		Expresses the trust relationship from Loader(parent) to the content
@@ -314,7 +312,7 @@ class LoaderInfo extends EventDispatcher
 		@throws Error Thrown if the file is not downloaded sufficiently to
 					  retrieve the requested information.
 	**/
-	public var parentAllowsChild(default, null):Bool;
+	public var parentAllowsChild(get, never):Bool;
 
 	// @:noCompletion @:dox(hide) @:require(flash11_4) public var parentSandboxBridge:Dynamic;
 
@@ -326,7 +324,7 @@ class LoaderInfo extends EventDispatcher
 		@throws Error Thrown if the file is not downloaded sufficiently to
 					  retrieve the requested information.
 	**/
-	public var sameDomain(default, null):Bool;
+	public var sameDomain(get, never):Bool;
 
 	/**
 		An EventDispatcher instance that can be used to exchange events across
@@ -335,9 +333,9 @@ class LoaderInfo extends EventDispatcher
 		access `sharedEvents` and send and receive events via this
 		object.
 	**/
-	public var sharedEvents(default, null):EventDispatcher;
+	public var sharedEvents(get, never):EventDispatcher;
 
-	// @:noCompletion @:dox(hide) public var swfVersion (default, null):UInt;
+	// @:noCompletion @:dox(hide) public var swfVersion (get, never):UInt;
 
 	/**
 		An object that dispatches an `uncaughtError` event when an
@@ -354,7 +352,7 @@ class LoaderInfo extends EventDispatcher
 		`uncaughtErrorEvents` property is available after the
 		`applicationComplete` event is dispatched.
 	**/
-	public var uncaughtErrorEvents(default, null):UncaughtErrorEvents;
+	public var uncaughtErrorEvents(get, never):UncaughtErrorEvents;
 
 	/**
 		The URL of the media being loaded.
@@ -370,7 +368,7 @@ class LoaderInfo extends EventDispatcher
 		In some cases, the value of the `url` property is truncated;
 		see the `isURLInaccessible` property for details.
 	**/
-	public var url(default, null):String;
+	public var url(get, never):String;
 
 	/**
 		The nominal width of the loaded content. This value might differ from the
@@ -380,63 +378,109 @@ class LoaderInfo extends EventDispatcher
 		@throws Error If the file is not downloaded sufficiently to retrieve the
 					  requested information.
 	**/
-	public var width(default, null):Int;
+	public var width(get, never):Int;
 
-	@:noCompletion private var __completed:Bool;
-
-	@:noCompletion private function new()
+	@:allow(openfl) @:noCompletion private function new()
 	{
+		if (_ == null)
+		{
+			_ = new _LoaderInfo();
+		}
+
 		super();
-
-		applicationDomain = ApplicationDomain.currentDomain;
-		bytesLoaded = 0;
-		bytesTotal = 0;
-		childAllowsParent = true;
-		parameters = {};
-	}
-
-	@:noCompletion @:dox(hide)
-	@SuppressWarnings("checkstyle:FieldDocComment")
-	public static function create(loader:Loader):LoaderInfo
-	{
-		var loaderInfo = new LoaderInfo();
-		loaderInfo.uncaughtErrorEvents = new UncaughtErrorEvents();
-
-		if (loader != null)
-		{
-			loaderInfo.loader = loader;
-		}
-		else
-		{
-			loaderInfo.url = __rootURL;
-		}
-
-		return loaderInfo;
 	}
 
 	// @:noCompletion @:dox(hide) public static function getLoaderInfoByDefinition (object:Dynamic):LoaderInfo;
-	@:noCompletion private function __complete():Void
+	// Get & Set Methods
+
+	@:noCompletion private function get_applicationDomain():ApplicationDomain
 	{
-		if (!__completed)
-		{
-			if (bytesLoaded < bytesTotal)
-			{
-				bytesLoaded = bytesTotal;
-			}
-
-			__update(bytesLoaded, bytesTotal);
-			__completed = true;
-
-			dispatchEvent(new Event(Event.COMPLETE));
-		}
+		return _.applicationDomain;
 	}
 
-	@:noCompletion private function __update(bytesLoaded:Int, bytesTotal:Int):Void
+	@:noCompletion private function get_bytes():ByteArray
 	{
-		this.bytesLoaded = bytesLoaded;
-		this.bytesTotal = bytesTotal;
+		return _.bytes;
+	}
 
-		dispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS, false, false, bytesLoaded, bytesTotal));
+	@:noCompletion private function get_bytesLoaded():Int
+	{
+		return _.bytesLoaded;
+	}
+
+	@:noCompletion private function get_bytesTotal():Int
+	{
+		return _.bytesTotal;
+	}
+
+	@:noCompletion private function get_childAllowsParent():Bool
+	{
+		return _.childAllowsParent;
+	}
+
+	@:noCompletion private function get_content():DisplayObject
+	{
+		return _.content;
+	}
+
+	@:noCompletion private function get_contentType():String
+	{
+		return _.contentType;
+	}
+
+	@:noCompletion private function get_frameRate():Float
+	{
+		return _.frameRate;
+	}
+
+	@:noCompletion private function get_height():Int
+	{
+		return _.height;
+	}
+
+	@:noCompletion private function get_loader():Loader
+	{
+		return _.loader;
+	}
+
+	@:noCompletion private function get_loaderURL():String
+	{
+		return _.loaderURL;
+	}
+
+	@:noCompletion private function get_parameters():Dynamic<String>
+	{
+		return _.parameters;
+	}
+
+	@:noCompletion private function get_parentAllowsChild():Bool
+	{
+		return _.parentAllowsChild;
+	}
+
+	@:noCompletion private function get_sameDomain():Bool
+	{
+		return _.sameDomain;
+	}
+
+	@:noCompletion private function get_sharedEvents():EventDispatcher
+	{
+		return _.sharedEvents;
+	}
+
+	@:noCompletion private function get_uncaughtErrorEvents():UncaughtErrorEvents
+	{
+		return _.uncaughtErrorEvents;
+	}
+
+	@:noCompletion private function get_url():String
+	{
+		return _.url;
+	}
+
+	@:noCompletion private function get_width():Int
+	{
+		return _.width;
 	}
 }
 #else

@@ -20,19 +20,19 @@ import openfl.utils.ByteArray;
 @:noCompletion
 class _RectangleTexture extends _TextureBase
 {
-	private var parent:RectangleTexture;
+	public var parent:RectangleTexture;
 
 	public function new(parent:RectangleTexture)
 	{
 		super(parent);
 
 		this.parent = parent;
-		gl = parent.__context._.gl;
+		gl = parent._.__context._.gl;
 
 		glTextureTarget = GL.TEXTURE_2D;
 		uploadFromTypedArray(null);
 
-		if (parent.__optimizeForRenderToTexture) getGLFramebuffer(true, 0, 0);
+		if (parent._.__optimizeForRenderToTexture) getGLFramebuffer(true, 0, 0);
 	}
 
 	public function uploadFromBitmapData(source:BitmapData):Void
@@ -73,11 +73,11 @@ class _RectangleTexture extends _TextureBase
 	public function uploadFromTypedArray(data:ArrayBufferView):Void
 	{
 		contextBackend.bindGLTexture2D(glTextureID);
-		gl.texImage2D(glTextureTarget, 0, glInternalFormat, parent.__width, parent.__height, 0, glFormat, GL.UNSIGNED_BYTE, data);
+		gl.texImage2D(glTextureTarget, 0, glInternalFormat, parent._.__width, parent._.__height, 0, glFormat, GL.UNSIGNED_BYTE, data);
 		contextBackend.bindGLTexture2D(null);
 	}
 
-	private override function setSamplerState(state:SamplerState):Bool
+	public override function setSamplerState(state:SamplerState):Bool
 	{
 		if (super.setSamplerState(state))
 		{

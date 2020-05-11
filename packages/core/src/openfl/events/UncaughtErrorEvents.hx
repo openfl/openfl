@@ -48,6 +48,11 @@ class UncaughtErrorEvents extends EventDispatcher
 	**/
 	public function new()
 	{
+		if (_ == null)
+		{
+			_ = new _UncaughtErrorEvents();
+		}
+
 		super();
 	}
 }

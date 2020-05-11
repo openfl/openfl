@@ -1,8 +1,6 @@
 package openfl.events;
 
 #if !flash
-import openfl._internal.utils.ObjectPool;
-
 /**
 	The Event class is used as the base class for the creation of Event
 	objects, which are passed as parameters to event listeners when an event
@@ -669,14 +667,14 @@ class Event
 		has a value of `false` for events that do not have a bubbling
 		phase.
 	**/
-	public var bubbles(default, null):Bool;
+	public var bubbles(get, never):Bool;
 
 	/**
 		Indicates whether the behavior associated with the event can be prevented.
 		If the behavior can be canceled, this value is `true`;
 		otherwise it is `false`.
 	**/
-	public var cancelable(default, null):Bool;
+	public var cancelable(get, never):Bool;
 
 	/**
 		The object that is actively processing the Event object with an event
@@ -684,7 +682,7 @@ class Event
 		could be the node containing that button or one of its ancestors that has
 		registered an event listener for that event.
 	**/
-	public var currentTarget(default, null):#if (haxe_ver >= "3.4.2") Any #else IEventDispatcher #end;
+	public var currentTarget(get, never):#if (haxe_ver >= "3.4.2") Any #else IEventDispatcher #end;
 
 	/**
 		The current phase in the event flow. This property can contain the
@@ -694,25 +692,21 @@ class Event
 		* The target phase(`EventPhase.AT_TARGET`).
 		* The bubbling phase(`EventPhase.BUBBLING_PHASE`).
 	**/
-	public var eventPhase(default, null):EventPhase;
+	public var eventPhase(get, never):EventPhase;
 
 	/**
 		The event target. This property contains the target node. For example, if
 		a user clicks an OK button, the target node is the display list node
 		containing that button.
 	**/
-	public var target(default, null):#if (haxe_ver >= "3.4.2") Any #else IEventDispatcher #end;
+	public var target(get, never):#if (haxe_ver >= "3.4.2") Any #else IEventDispatcher #end;
 
 	/**
 		The type of event. The type is case-sensitive.
 	**/
-	public var type(default, null):String;
+	public var type(get, never):String;
 
-	@:noCompletion private static var __pool:ObjectPool<Event> = new ObjectPool<Event>(function() return new Event(null), function(event) event.__init());
-
-	@:noCompletion private var __isCanceled:Bool;
-	@:noCompletion private var __isCanceledNow:Bool;
-	@:noCompletion private var __preventDefault:Bool;
+	@:allow(openfl) @:noCompletion private var _:_Event;
 
 	/**
 		Creates an Event object to pass as a parameter to event listeners.
@@ -727,10 +721,10 @@ class Event
 	**/
 	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false)
 	{
-		this.type = type;
-		this.bubbles = bubbles;
-		this.cancelable = cancelable;
-		eventPhase = EventPhase.AT_TARGET;
+		if (_ == null)
+		{
+			_ = new _Event(type, bubbles, cancelable);
+		}
 	}
 
 	/**
@@ -758,11 +752,7 @@ class Event
 	**/
 	public function clone():Event
 	{
-		var event = new Event(type, bubbles, cancelable);
-		event.eventPhase = eventPhase;
-		event.target = target;
-		event.currentTarget = currentTarget;
-		return event;
+		return _.clone();
 	}
 
 	/**
@@ -791,14 +781,7 @@ class Event
 	**/
 	public function formatToString(className:String, p1:String = null, p2:String = null, p3:String = null, p4:String = null, p5:String = null):String
 	{
-		var parameters = [];
-		if (p1 != null) parameters.push(p1);
-		if (p2 != null) parameters.push(p2);
-		if (p3 != null) parameters.push(p3);
-		if (p4 != null) parameters.push(p4);
-		if (p5 != null) parameters.push(p5);
-
-		return Reflect.callMethod(this, __formatToString, [className, parameters]);
+		return _.formatToString(className, p1, p2, p3, p4, p5);
 	}
 
 	/**
@@ -811,7 +794,7 @@ class Event
 	**/
 	public function isDefaultPrevented():Bool
 	{
-		return __preventDefault;
+		return _.isDefaultPrevented();
 	}
 
 	/**
@@ -822,10 +805,7 @@ class Event
 	**/
 	public function preventDefault():Void
 	{
-		if (cancelable)
-		{
-			__preventDefault = true;
-		}
+		_.preventDefault();
 	}
 
 	/**
@@ -841,8 +821,7 @@ class Event
 	**/
 	public function stopImmediatePropagation():Void
 	{
-		__isCanceled = true;
-		__isCanceledNow = true;
+		_.stopImmediatePropagation();
 	}
 
 	/**
@@ -860,7 +839,7 @@ class Event
 	**/
 	public function stopPropagation():Void
 	{
-		__isCanceled = true;
+		_.stopPropagation();
 	}
 
 	/**
@@ -874,45 +853,39 @@ class Event
 	**/
 	public function toString():String
 	{
-		return __formatToString("Event", ["type", "bubbles", "cancelable"]);
+		return _.toString();
 	}
 
-	@:noCompletion private function __formatToString(className:String, parameters:Array<String>):String
+	// Get & Set Methods
+
+	@:noCompletion private function get_bubbles():Bool
 	{
-		// TODO: Make this a macro function, and handle at compile-time, with rest parameters?
-
-		var output = '[$className';
-		var arg:Dynamic = null;
-
-		for (param in parameters)
-		{
-			arg = Reflect.field(this, param);
-
-			if (Std.is(arg, String))
-			{
-				output += ' $param="$arg"';
-			}
-			else
-			{
-				output += ' $param=$arg';
-			}
-		}
-
-		output += "]";
-		return output;
+		return _.bubbles;
 	}
 
-	@:noCompletion private function __init():Void
+	@:noCompletion private function get_cancelable():Bool
 	{
-		// type = null;
-		target = null;
-		currentTarget = null;
-		bubbles = false;
-		cancelable = false;
-		eventPhase = AT_TARGET;
-		__isCanceled = false;
-		__isCanceledNow = false;
-		__preventDefault = false;
+		return _.cancelable;
+	}
+
+	@:noCompletion private function get_currentTarget():#if (haxe_ver >= "3.4.2") Any #else IEventDispatcher #end
+	{
+		return _.currentTarget;
+	}
+
+	@:noCompletion private function get_eventPhase():EventPhase
+	{
+		return _.eventPhase;
+	}
+
+	@:noCompletion private function get_target():#if (haxe_ver >= "3.4.2") Any #else IEventDispatcher #end
+	{
+		return _.target;
+	}
+
+	@:noCompletion private function get_type():String
+	{
+		return _.type;
 	}
 }
 #else

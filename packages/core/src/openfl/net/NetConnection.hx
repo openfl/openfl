@@ -50,9 +50,6 @@ import openfl.events.NetStatusEvent;
 #end
 class NetConnection extends EventDispatcher
 {
-	@SuppressWarnings("checkstyle:FieldDocComment")
-	@:noCompletion @:dox(hide) public static inline var CONNECT_SUCCESS:String = "NetConnection.Connect.Success";
-
 	#if false
 	/**
 		The default object encoding for NetConnection objects. When an object
@@ -322,6 +319,11 @@ class NetConnection extends EventDispatcher
 	**/
 	public function new()
 	{
+		if (_ == null)
+		{
+			_ = new _NetConnection();
+		}
+
 		super();
 	}
 
@@ -527,12 +529,7 @@ class NetConnection extends EventDispatcher
 	**/
 	public function connect(command:String, p1 = null, p2 = null, p3 = null, p4 = null, p5 = null):Void
 	{
-		if (command != null)
-		{
-			throw "Error: Can only connect in \"HTTP streaming\" mode";
-		}
-
-		this.dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, true, {code: NetConnection.CONNECT_SUCCESS}));
+		_.connect(command, p1, p2, p3, p4, p5);
 	}
 }
 #else

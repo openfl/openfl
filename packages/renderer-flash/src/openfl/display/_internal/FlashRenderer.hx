@@ -7,7 +7,7 @@ import openfl.Lib;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class FlashRenderer
 {
-	private static var instances:Dictionary<IDisplayObject, Bool>;
+	public static var instances:Dictionary<IDisplayObject, Bool>;
 
 	public static function register(renderObject:IDisplayObject):Void
 	{
@@ -21,13 +21,13 @@ class FlashRenderer
 		instances[renderObject] = true;
 	}
 
-	private static function render(_):Void
+	public static function render(_):Void
 	{
 		for (instance in instances)
 		{
 			if (instance != null)
 			{
-				instance.__renderFlash();
+				instance._.__renderFlash();
 			}
 		}
 	}
@@ -36,5 +36,5 @@ class FlashRenderer
 @:allow(openfl.display._internal.FlashRenderer)
 interface IDisplayObject
 {
-	private function __renderFlash():Void;
+	public function __renderFlash():Void;
 }

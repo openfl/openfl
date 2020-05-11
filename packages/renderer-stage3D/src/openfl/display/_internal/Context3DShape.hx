@@ -24,59 +24,59 @@ class Context3DShape
 {
 	public static function render(shape:DisplayObject, renderer:Context3DRenderer):Void
 	{
-		if (!shape.__renderable || shape.__worldAlpha <= 0) return;
+		if (!shape._.__renderable || shape._.__worldAlpha <= 0) return;
 
-		var graphics = shape.__graphics;
+		var graphics = shape._.__graphics;
 
 		if (graphics != null)
 		{
-			renderer.__setBlendMode(shape.__worldBlendMode);
-			renderer.__pushMaskObject(shape);
+			renderer._.__setBlendMode(shape._.__worldBlendMode);
+			renderer._.__pushMaskObject(shape);
 			// renderer.filterManager.pushObject (shape);
 
 			Context3DGraphics.render(graphics, renderer);
 
-			if (graphics.__bitmap != null && graphics.__visible)
+			if (graphics._.__bitmap != null && graphics._.__visible)
 			{
 				#if !disable_batcher
-				var bitmapData = graphics.__bitmap;
-				var transform = renderer.__getDisplayTransformTempMatrix(graphics.__worldTransform, AUTO);
-				var alpha = renderer.__getAlpha(shape.__worldAlpha);
+				var bitmapData = graphics._.__bitmap;
+				var transform = renderer._.__getDisplayTransformTempMatrix(graphics._.__worldTransform, AUTO);
+				var alpha = renderer._.__getAlpha(shape._.__worldAlpha);
 				Context3DBitmapData.pushQuadsToBatcher(bitmapData, renderer.batcher, transform, alpha, shape);
 				#else
 				var context = renderer.context3D;
-				var scale9Grid = shape.__worldScale9Grid;
+				var scale9Grid = shape._.__worldScale9Grid;
 
-				var shader = renderer.__initDisplayShader(cast shape.__worldShader);
+				var shader = renderer._.__initDisplayShader(cast shape._.__worldShader);
 				renderer.setShader(shader);
-				renderer.applyBitmapData(graphics.__bitmap, true);
-				renderer.applyMatrix(renderer.__getMatrix(graphics.__worldTransform, AUTO));
-				renderer.applyAlpha(renderer.__getAlpha(shape.__worldAlpha));
-				renderer.applyColorTransform(shape.__worldColorTransform);
+				renderer.applyBitmapData(graphics._.__bitmap, true);
+				renderer.applyMatrix(renderer._.__getMatrix(graphics._.__worldTransform, AUTO));
+				renderer.applyAlpha(renderer._.__getAlpha(shape._.__worldAlpha));
+				renderer.applyColorTransform(shape._.__worldColorTransform);
 				renderer.updateShader();
 
-				var vertexBuffer = graphics.__bitmap.getVertexBuffer(context, scale9Grid, shape);
-				if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, vertexBuffer, 0, FLOAT_3);
-				if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
-				var indexBuffer = graphics.__bitmap.getIndexBuffer(context, scale9Grid);
+				var vertexBuffer = graphics._.__bitmap.getVertexBuffer(context, scale9Grid, shape);
+				if (shader._.__position != null) context.setVertexBufferAt(shader._.__position.index, vertexBuffer, 0, FLOAT_3);
+				if (shader._.__textureCoord != null) context.setVertexBufferAt(shader._.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
+				var indexBuffer = graphics._.__bitmap.getIndexBuffer(context, scale9Grid);
 				context.drawTriangles(indexBuffer);
 
 				#if gl_stats
 				Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
 				#end
 
-				renderer.__clearShader();
+				renderer._.__clearShader();
 				#end
 			}
 
 			// renderer.filterManager.popObject (shape);
-			renderer.__popMaskObject(shape);
+			renderer._.__popMaskObject(shape);
 		}
 	}
 
 	public static function renderMask(shape:DisplayObject, renderer:Context3DRenderer):Void
 	{
-		var graphics = shape.__graphics;
+		var graphics = shape._.__graphics;
 
 		if (graphics != null)
 		{
@@ -84,7 +84,7 @@ class Context3DShape
 
 			Context3DGraphics.renderMask(graphics, renderer);
 
-			if (graphics.__bitmap != null)
+			if (graphics._.__bitmap != null)
 			{
 				#if !disable_batcher
 				renderer.batcher.flush();
@@ -92,23 +92,23 @@ class Context3DShape
 
 				var context = renderer.context3D;
 
-				var shader = renderer.__maskShader;
+				var shader = renderer._.__maskShader;
 				renderer.setShader(shader);
-				renderer.applyBitmapData(graphics.__bitmap, true);
-				renderer.applyMatrix(renderer.__getMatrix(graphics.__worldTransform, AUTO));
+				renderer.applyBitmapData(graphics._.__bitmap, true);
+				renderer.applyMatrix(renderer._.__getMatrix(graphics._.__worldTransform, AUTO));
 				renderer.updateShader();
 
-				var vertexBuffer = graphics.__bitmap.getVertexBuffer(context);
-				if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, vertexBuffer, 0, FLOAT_3);
-				if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
-				var indexBuffer = graphics.__bitmap.getIndexBuffer(context);
+				var vertexBuffer = graphics._.__bitmap.getVertexBuffer(context);
+				if (shader._.__position != null) context.setVertexBufferAt(shader._.__position.index, vertexBuffer, 0, FLOAT_3);
+				if (shader._.__textureCoord != null) context.setVertexBufferAt(shader._.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
+				var indexBuffer = graphics._.__bitmap.getIndexBuffer(context);
 				context.drawTriangles(indexBuffer);
 
 				#if gl_stats
 				Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
 				#end
 
-				renderer.__clearShader();
+				renderer._.__clearShader();
 			}
 		}
 	}

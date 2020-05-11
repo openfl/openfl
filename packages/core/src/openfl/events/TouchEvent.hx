@@ -291,7 +291,7 @@ class TouchEvent extends Event
 		(`false`). Supported for Windows and Linux operating systems
 		only.
 	**/
-	public var altKey:Bool;
+	public var altKey(get, set):Bool;
 
 	/**
 		Indicates whether the command key is activated (Mac only).
@@ -299,28 +299,28 @@ class TouchEvent extends Event
 		On a Mac OS, the value of the `commandKey` property is the same value as the
 		`ctrlKey` property. This property is always `false` on Windows or Linux.
 	**/
-	public var commandKey:Bool;
+	public var commandKey(get, set):Bool;
 
 	/**
 		Indicates whether the Control key is activated on Mac and whether the Ctrl key is
 		activated on Windows or Linux.
 	**/
-	public var controlKey:Bool;
+	public var controlKey(get, set):Bool;
 
 	/**
 		On Windows or Linux, indicates whether the Ctrl key is active
 		(`true`) or inactive(`false`). On Macintosh,
 		indicates whether either the Control key or the Command key is activated.
 	**/
-	public var ctrlKey:Bool;
+	public var ctrlKey(get, set):Bool;
 
 	@SuppressWarnings("checkstyle:FieldDocComment")
-	@:noCompletion @:dox(hide) public var delta:Int;
+	@:noCompletion @:dox(hide) public var delta(get, set):Int;
 
 	/**
 		Indicates whether the first point of contact is mapped to mouse events.
 	**/
-	public var isPrimaryTouchPoint:Bool;
+	public var isPrimaryTouchPoint(get, set):Bool;
 
 	#if false
 	/**
@@ -340,20 +340,20 @@ class TouchEvent extends Event
 		The horizontal coordinate at which the event occurred relative to the
 		containing sprite.
 	**/
-	public var localX:Float;
+	public var localX(get, set):Float;
 
 	/**
 		The vertical coordinate at which the event occurred relative to the
 		containing sprite.
 	**/
-	public var localY:Float;
+	public var localY(get, set):Float;
 
 	/**
 		A value between `0.0` and `1.0` indicating force of
 		the contact with the device. If the device does not support detecting the
 		pressure, the value is `1.0`.
 	**/
-	public var pressure:Float;
+	public var pressure(get, set):Float;
 
 	/**
 		A reference to a display list object that is related to the event. For
@@ -369,47 +369,44 @@ class TouchEvent extends Event
 		Use the `isRelatedObjectInaccessible()` property to determine
 		which of these reasons applies.
 	**/
-	public var relatedObject:InteractiveObject;
+	public var relatedObject(get, set):InteractiveObject;
 
 	/**
 		Indicates whether the Shift key is active(`true`) or inactive
 		(`false`).
 	**/
-	public var shiftKey:Bool;
+	public var shiftKey(get, set):Bool;
 
 	/**
 		Width of the contact area.
 		Only supported on Android(C++ target), in the range of 0-1.
 	**/
-	public var sizeX:Float;
+	public var sizeX(get, set):Float;
 
 	/**
 		Height of the contact area.
 		Only supported on Android(C++ target), in the range of 0-1.
 	**/
-	public var sizeY:Float;
+	public var sizeY(get, set):Float;
 
 	/**
 		The horizontal coordinate at which the event occurred in global Stage
 		coordinates. This property is calculated when the `localX`
 		property is set.
 	**/
-	public var stageX:Float;
+	public var stageX(get, set):Float;
 
 	/**
 		The vertical coordinate at which the event occurred in global Stage
 		coordinates. This property is calculated when the `localY`
 		property is set.
 	**/
-	public var stageY:Float;
+	public var stageY(get, set):Float;
 
 	/**
 		A unique identification number(as an int) assigned to the touch point.
 	**/
-	public var touchPointID:Int;
-
-	@:noCompletion private static var __pool:ObjectPool<TouchEvent> = new ObjectPool<TouchEvent>(function() return new TouchEvent(null),
-	function(event) event.__init());
+	public var touchPointID(get, set):Int;
 
 	/**
 		Creates an Event object that contains information about touch events.
@@ -452,42 +449,18 @@ class TouchEvent extends Event
 			altKey:Bool = false, shiftKey:Bool = false, commandKey:Bool = false, controlKey:Bool = false, timestamp:Float = 0, touchIntent:String = null,
 			samples:ByteArray = null, isTouchPointCanceled:Bool = false)
 	{
+		if (_ == null)
+		{
+			_ = new _TouchEvent(type, bubbles, cancelable, touchPointID, isPrimaryTouchPoint, localX, localY, sizeX, sizeY, pressure, relatedObject, ctrlKey,
+				altKey, shiftKey, commandKey, controlKey, timestamp, touchIntent, samples, isTouchPointCanceled);
+		}
+
 		super(type, bubbles, cancelable);
-
-		this.touchPointID = touchPointID;
-		this.isPrimaryTouchPoint = isPrimaryTouchPoint;
-		this.localX = localX;
-		this.localY = localY;
-		this.sizeX = sizeX;
-		this.sizeY = sizeY;
-		this.pressure = pressure;
-		this.relatedObject = relatedObject;
-		this.ctrlKey = ctrlKey;
-		this.altKey = altKey;
-		this.shiftKey = shiftKey;
-		this.commandKey = commandKey;
-		this.controlKey = controlKey;
-
-		stageX = Math.NaN;
-		stageY = Math.NaN;
 	}
 
 	public override function clone():TouchEvent
 	{
-		var event = new TouchEvent(type, bubbles, cancelable, touchPointID, isPrimaryTouchPoint, localX, localY, sizeX, sizeY, pressure, relatedObject,
-			ctrlKey, altKey, shiftKey, commandKey, controlKey);
-		event.target = target;
-		event.currentTarget = currentTarget;
-		event.eventPhase = eventPhase;
-		return event;
-	}
-
-	public override function toString():String
-	{
-		return __formatToString("TouchEvent", [
-			"type", "bubbles", "cancelable", "touchPointID", "isPrimaryTouchPoint", "localX", "localY", "sizeX", "sizeY", "pressure", "relatedObject",
-			"ctrlKey", "altKey", "shiftKey", "commandKey", "controlKey"
-		]);
+		return cast _.clone();
 	}
 
 	/**
@@ -495,38 +468,171 @@ class TouchEvent extends Event
 		event completes, if the display list has been modified.
 
 	**/
-	public function updateAfterEvent():Void {}
-
-	@:noCompletion private static function __create(type:String, /*event:lime.ui.TouchEvent,*/ touch:Dynamic /*js.html.Touch*/, stageX:Float, stageY:Float,
-			local:Point, target:InteractiveObject):TouchEvent
+	public function updateAfterEvent():Void
 	{
-		var evt = new TouchEvent(type, true, false, 0, true, local.x, local.y, 1, 1, 1);
-		evt.stageX = stageX;
-		evt.stageY = stageY;
-		evt.target = target;
-
-		return evt;
+		(cast _ : _TouchEvent).updateAfterEvent();
 	}
 
-	@:noCompletion private override function __init():Void
-	{
-		super.__init();
-		touchPointID = 0;
-		isPrimaryTouchPoint = false;
-		localX = 0;
-		localY = 0;
-		sizeX = 0;
-		sizeY = 0;
-		pressure = 0;
-		relatedObject = null;
-		ctrlKey = false;
-		altKey = false;
-		shiftKey = false;
-		commandKey = false;
-		controlKey = false;
+	// Get & Set Methods
 
-		stageX = Math.NaN;
-		stageY = Math.NaN;
+	@:noCompletion private function get_altKey():Bool
+	{
+		return (cast _ : _TouchEvent).altKey;
+	}
+
+	@:noCompletion private function set_altKey(value:Bool):Bool
+	{
+		return (cast _ : _TouchEvent).altKey = value;
+	}
+
+	@:noCompletion private function get_commandKey():Bool
+	{
+		return (cast _ : _TouchEvent).commandKey;
+	}
+
+	@:noCompletion private function set_commandKey(value:Bool):Bool
+	{
+		return (cast _ : _TouchEvent).commandKey = value;
+	}
+
+	@:noCompletion private function get_controlKey():Bool
+	{
+		return (cast _ : _TouchEvent).controlKey;
+	}
+
+	@:noCompletion private function set_controlKey(value:Bool):Bool
+	{
+		return (cast _ : _TouchEvent).controlKey = value;
+	}
+
+	@:noCompletion private function get_ctrlKey():Bool
+	{
+		return (cast _ : _TouchEvent).ctrlKey;
+	}
+
+	@:noCompletion private function set_ctrlKey(value:Bool):Bool
+	{
+		return (cast _ : _TouchEvent).ctrlKey = value;
+	}
+
+	@:noCompletion private function get_delta():Int
+	{
+		return (cast _ : _TouchEvent).delta;
+	}
+
+	@:noCompletion private function set_delta(value:Int):Int
+	{
+		return (cast _ : _TouchEvent).delta = value;
+	}
+
+	@:noCompletion private function get_isPrimaryTouchPoint():Bool
+	{
+		return (cast _ : _TouchEvent).isPrimaryTouchPoint;
+	}
+
+	@:noCompletion private function set_isPrimaryTouchPoint(value:Bool):Bool
+	{
+		return (cast _ : _TouchEvent).isPrimaryTouchPoint = value;
+	}
+
+	@:noCompletion private function get_localX():Float
+	{
+		return (cast _ : _TouchEvent).localX;
+	}
+
+	@:noCompletion private function set_localX(value:Float):Float
+	{
+		return (cast _ : _TouchEvent).localX = value;
+	}
+
+	@:noCompletion private function get_localY():Float
+	{
+		return (cast _ : _TouchEvent).localY;
+	}
+
+	@:noCompletion private function set_localY(value:Float):Float
+	{
+		return (cast _ : _TouchEvent).localY = value;
+	}
+
+	@:noCompletion private function get_pressure():Float
+	{
+		return (cast _ : _TouchEvent).pressure;
+	}
+
+	@:noCompletion private function set_pressure(value:Float):Float
+	{
+		return (cast _ : _TouchEvent).pressure = value;
+	}
+
+	@:noCompletion private function get_relatedObject():InteractiveObject
+	{
+		return (cast _ : _TouchEvent).relatedObject;
+	}
+
+	@:noCompletion private function set_relatedObject(value:InteractiveObject):InteractiveObject
+	{
+		return (cast _ : _TouchEvent).relatedObject = value;
+	}
+
+	@:noCompletion private function get_shiftKey():Bool
+	{
+		return (cast _ : _TouchEvent).shiftKey;
+	}
+
+	@:noCompletion private function set_shiftKey(value:Bool):Bool
+	{
+		return (cast _ : _TouchEvent).shiftKey = value;
+	}
+
+	@:noCompletion private function get_sizeX():Float
+	{
+		return (cast _ : _TouchEvent).sizeX;
+	}
+
+	@:noCompletion private function set_sizeX(value:Float):Float
+	{
+		return (cast _ : _TouchEvent).sizeX = value;
+	}
+
+	@:noCompletion private function get_sizeY():Float
+	{
+		return (cast _ : _TouchEvent).sizeY;
+	}
+
+	@:noCompletion private function set_sizeY(value:Float):Float
+	{
+		return (cast _ : _TouchEvent).sizeY = value;
+	}
+
+	@:noCompletion private function get_stageX():Float
+	{
+		return (cast _ : _TouchEvent).stageX;
+	}
+
+	@:noCompletion private function set_stageX(value:Float):Float
+	{
+		return (cast _ : _TouchEvent).stageX = value;
+	}
+
+	@:noCompletion private function get_stageY():Float
+	{
+		return (cast _ : _TouchEvent).stageY;
+	}
+
+	@:noCompletion private function set_stageY(value:Float):Float
+	{
+		return (cast _ : _TouchEvent).stageY = value;
+	}
+
+	@:noCompletion private function get_touchPointID():Int
+	{
+		return (cast _ : _TouchEvent).touchPointID;
+	}
+
+	@:noCompletion private function set_touchPointID(value:Int):Int
+	{
+		return (cast _ : _TouchEvent).touchPointID = value;
 	}
 }
 #else

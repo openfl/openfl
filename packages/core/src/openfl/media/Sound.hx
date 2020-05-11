@@ -81,12 +81,12 @@ class Sound extends EventDispatcher
 		Returns the currently available number of bytes in this sound object. This
 		property is usually useful only for externally loaded files.
 	**/
-	public var bytesLoaded(default, null):Int;
+	public var bytesLoaded(get, never):Int;
 
 	/**
 		Returns the total number of bytes in this sound object.
 	**/
-	public var bytesTotal(default, null):Int;
+	public var bytesTotal(get, never):Int;
 
 	/**
 		Provides access to the metadata that is part of an MP3 file.
@@ -182,7 +182,7 @@ class Sound extends EventDispatcher
 		`true`, any playback is currently suspended while the object
 		waits for more data.
 	**/
-	public var isBuffering(default, null):Bool;
+	public var isBuffering(get, never):Bool;
 
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public var isURLInaccessible (default, null):Bool;
 
@@ -218,19 +218,7 @@ class Sound extends EventDispatcher
 		In some cases, the value of the `url` property is truncated;
 		see the `isURLInaccessible` property for details.
 	**/
-	public var url(default, null):String;
-
-	@:noCompletion private var _:_Sound;
-
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperties(Sound.prototype, {
-			"id3": {get: untyped __js__("function () { return this.get_id3 (); }")},
-			"length": {get: untyped __js__("function () { return this.get_length (); }")},
-		});
-	}
-	#end
+	public var url(get, never):String;
 
 	/**
 		Creates a new Sound object. If you pass a valid URLRequest object to the
@@ -256,19 +244,12 @@ class Sound extends EventDispatcher
 	**/
 	public function new(stream:URLRequest = null, context:SoundLoaderContext = null)
 	{
-		super(this);
-
-		bytesLoaded = 0;
-		bytesTotal = 0;
-		isBuffering = false;
-		url = null;
-
-		_ = new _Sound(this);
-
-		if (stream != null)
+		if (_ == null)
 		{
-			load(stream, context);
+			_ = new _Sound(this, stream, context);
 		}
+
+		super(this);
 	}
 
 	/**
@@ -337,8 +318,6 @@ class Sound extends EventDispatcher
 	**/
 	public static function fromFile(path:String):Sound
 	{
-		if (path == null) return null;
-
 		return _Sound.fromFile(path);
 	}
 
@@ -417,15 +396,7 @@ class Sound extends EventDispatcher
 	**/
 	public function load(stream:URLRequest, context:SoundLoaderContext = null):Void
 	{
-		url = stream.url;
-		if (url != null)
-		{
-			_.load(stream, context);
-		}
-		else
-		{
-			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
-		}
+		_.load(stream, context);
 	}
 
 	/**
@@ -439,12 +410,6 @@ class Sound extends EventDispatcher
 	**/
 	public function loadCompressedDataFromByteArray(bytes:ByteArray, bytesLength:Int):Void
 	{
-		if (bytes == null || bytesLength <= 0)
-		{
-			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
-			return;
-		}
-
 		_.loadCompressedDataFromByteArray(bytes, bytesLength);
 	}
 
@@ -476,8 +441,6 @@ class Sound extends EventDispatcher
 	**/
 	public static function loadFromFiles(paths:Array<String>):Future<Sound>
 	{
-		if (paths == null) return cast Future.withError("");
-
 		return _Sound.loadFromFiles(paths);
 	}
 
@@ -502,12 +465,6 @@ class Sound extends EventDispatcher
 	**/
 	public function loadPCMFromByteArray(bytes:ByteArray, samples:Int, format:String = "float", stereo:Bool = true, sampleRate:Float = 44100):Void
 	{
-		if (bytes == null)
-		{
-			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
-			return;
-		}
-
 		_.loadPCMFromByteArray(bytes, samples, format, stereo, sampleRate);
 	}
 
@@ -535,14 +492,35 @@ class Sound extends EventDispatcher
 	}
 
 	// Get & Set Methods
+
+	@:noCompletion private function get_bytesLoaded():Int
+	{
+		return _.bytesLoaded;
+	}
+
+	@:noCompletion private function get_bytesTotal():Int
+	{
+		return _.bytesTotal;
+	}
+
 	@:noCompletion private function get_id3():ID3Info
 	{
-		return _.getID3();
+		return _.id3;
+	}
+
+	@:noCompletion private function get_isBuffering():Bool
+	{
+		return _.isBuffering;
 	}
 
 	@:noCompletion private function get_length():Int
 	{
-		return _.getLength();
+		return _.length;
+	}
+
+	@:noCompletion private function get_url():String
+	{
+		return _.url;
 	}
 }
 #else

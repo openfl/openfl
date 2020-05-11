@@ -7,5 +7,5 @@
 	"version": "9.0.0",
 	"releasenote": "See CHANGELOG",
 	"contributors": [ "singmajesty" ],
-	"classPath": ""
+	"classPath": "packages/core/src"
 }

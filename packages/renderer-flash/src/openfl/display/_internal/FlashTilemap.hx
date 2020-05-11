@@ -18,39 +18,39 @@ import openfl.geom.Rectangle;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class FlashTilemap
 {
-	private static var alphaColorTransform:ColorTransform = new ColorTransform();
-	private static var bitmap:Bitmap = new Bitmap();
-	private static var destPoint:Point = new Point();
-	private static var sourceRect:Rectangle = new Rectangle();
+	public static var alphaColorTransform:ColorTransform = new ColorTransform();
+	public static var bitmap:Bitmap = new Bitmap();
+	public static var destPoint:Point = new Point();
+	public static var sourceRect:Rectangle = new Rectangle();
 
 	public static inline function render(tilemap:Tilemap):Void
 	{
 		// TODO: Do not render if top-level group is not dirty
 
 		#if flash
-		if (tilemap.stage == null || !tilemap.visible || tilemap.alpha <= 0 || tilemap.__group.__tiles.length == 0) return;
+		if (tilemap.stage == null || !tilemap.visible || tilemap.alpha <= 0 || tilemap._.__group._.__tiles.length == 0) return;
 
 		var bitmapData = tilemap.bitmapData;
 
 		bitmapData.lock();
 		bitmapData.fillRect(bitmapData.rect, 0);
 
-		renderTileContainer(tilemap.__group, bitmapData, new Matrix(), tilemap.__tileset, tilemap.smoothing, tilemap.tileAlphaEnabled, 1,
+		renderTileContainer(tilemap._.__group, bitmapData, new Matrix(), tilemap._.__tileset, tilemap.smoothing, tilemap.tileAlphaEnabled, 1,
 			tilemap.tileColorTransformEnabled, null, tilemap.tileBlendModeEnabled, NORMAL, null);
 
 		bitmapData.unlock();
 		#end
 	}
 
-	private static function renderTileContainer(group:TileContainer, bitmapData:BitmapData, parentTransform:Matrix, defaultTileset:Tileset, smooth:Bool,
+	public static function renderTileContainer(group:TileContainer, bitmapData:BitmapData, parentTransform:Matrix, defaultTileset:Tileset, smooth:Bool,
 			alphaEnabled:Bool, worldAlpha:Float, colorTransformEnabled:Bool, defaultColorTransform:ColorTransform, blendModeEnabled:Bool,
 			defaultBlendMode:BlendMode, cacheBitmapData:BitmapData):Void
 	{
 		#if flash
 		var tileTransform = new Matrix();
 
-		var tiles = group.__tiles;
-		var length = group.__length;
+		var tiles = group._.__tiles;
+		var length = group._.__length;
 
 		var tile,
 			tileset,
@@ -87,7 +87,7 @@ class FlashTilemap
 
 			if (blendModeEnabled)
 			{
-				blendMode = (tile.__blendMode != null) ? tile.__blendMode : defaultBlendMode;
+				blendMode = (tile._.__blendMode != null) ? tile._.__blendMode : defaultBlendMode;
 			}
 
 			if (colorTransformEnabled)
@@ -119,7 +119,7 @@ class FlashTilemap
 
 			if (!alphaEnabled) alpha = 1;
 
-			if (tile.__length > 0)
+			if (tile._.__length > 0)
 			{
 				renderTileContainer(cast tile, bitmapData, tileTransform, tileset, smooth, alphaEnabled, alpha, colorTransformEnabled, colorTransform,
 					blendModeEnabled, blendMode, cacheBitmapData);
@@ -132,19 +132,19 @@ class FlashTilemap
 
 				if (id == -1)
 				{
-					tileRect = tile.__rect;
+					tileRect = tile._.__rect;
 					if (tileRect == null || tileRect.width <= 0 || tileRect.height <= 0) continue;
 				}
 				else
 				{
-					tileData = tileset.__data[id];
+					tileData = tileset._.__data[id];
 					if (tileData == null) continue;
 
 					sourceRect.setTo(tileData.x, tileData.y, tileData.width, tileData.height);
 					tileRect = sourceRect;
 				}
 
-				sourceBitmapData = tileset.__bitmapData;
+				sourceBitmapData = tileset._.__bitmapData;
 				if (sourceBitmapData == null) continue;
 
 				if (colorTransform != null)

@@ -1,8 +1,6 @@
 package openfl.events;
 
 #if !flash
-import openfl._internal.utils.ObjectPool;
-
 /**
 	A ProgressEvent object is dispatched when a load operation has begun or a
 	socket has received data. These events are usually generated when SWF
@@ -53,7 +51,7 @@ class ProgressEvent extends Event
 	/**
 		The number of items or bytes loaded when the listener processes the event.
 	**/
-	public var bytesLoaded:Float;
+	public var bytesLoaded(get, set):Float;
 
 	/**
 		The total number of items or bytes that will be loaded if the loading
@@ -62,10 +60,7 @@ class ProgressEvent extends Event
 		bytesTotal parameter of the constructor. The actual number of bytes sent
 		back or forth is not set and is up to the application developer.
 	**/
-	public var bytesTotal:Float;
-
-	@:noCompletion private static var __pool:ObjectPool<ProgressEvent> = new ObjectPool<ProgressEvent>(function() return new ProgressEvent(null),
-	function(event) event.__init());
+	public var bytesTotal(get, set):Float;
 
 	/**
 		Creates an Event object that contains information about progress events.
@@ -87,31 +82,39 @@ class ProgressEvent extends Event
 	**/
 	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false, bytesLoaded:Float = 0, bytesTotal:Float = 0)
 	{
-		super(type, bubbles, cancelable);
+		if (_ == null)
+		{
+			_ = new _ProgressEvent(type, bubbles, cancelable, bytesLoaded, bytesTotal);
+		}
 
-		this.bytesLoaded = bytesLoaded;
-		this.bytesTotal = bytesTotal;
+		super(type, bubbles, cancelable);
 	}
 
 	public override function clone():ProgressEvent
 	{
-		var event = new ProgressEvent(type, bubbles, cancelable, bytesLoaded, bytesTotal);
-		event.target = target;
-		event.currentTarget = currentTarget;
-		event.eventPhase = eventPhase;
-		return event;
+		return cast _.clone();
 	}
 
-	public override function toString():String
+	// Get & Set Methods
+
+	@:noCompletion private function get_bytesLoaded():Float
 	{
-		return __formatToString("ProgressEvent", ["type", "bubbles", "cancelable", "bytesLoaded", "bytesTotal"]);
+		return _.bytesLoaded;
 	}
 
-	@:noCompletion private override function __init():Void
+	@:noCompletion private function set_bytesLoaded(value:Float):Float
 	{
-		super.__init();
-		bytesLoaded = 0;
-		bytesTotal = 0;
+		return _.bytesLoaded = value;
+	}
+
+	@:noCompletion private function get_bytesTotal():Float
+	{
+		return _.bytesTotal;
+	}
+
+	@:noCompletion private function set_bytesTotal(value:Float):Float
+	{
+		return _.bytesTotal = value;
 	}
 }
 #else

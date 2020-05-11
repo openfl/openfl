@@ -1,11 +1,6 @@
 package openfl.geom;
 
 #if !flash
-import openfl._internal.utils.ObjectPool;
-#if lime
-import lime.math.Vector2;
-#end
-
 /**
 	The Point object represents a location in a two-dimensional coordinate
 	system, where _x_ represents the horizontal axis and _y_
@@ -34,11 +29,6 @@ import lime.math.Vector2;
 #end
 class Point
 {
-	@:noCompletion private static var __pool:ObjectPool<Point> = new ObjectPool<Point>(function() return new Point(), function(p) p.setTo(0, 0));
-	#if lime
-	@:noCompletion private static var __limeVector2:Vector2;
-	#end
-
 	/**
 		The length of the line segment from(0,0) to this point.
 	**/
@@ -47,21 +37,14 @@ class Point
 	/**
 		The horizontal coordinate of the point. The default value is 0.
 	**/
-	public var x:Float;
+	public var x(get, set):Float;
 
 	/**
 		The vertical coordinate of the point. The default value is 0.
 	**/
-	public var y:Float;
+	public var y(get, set):Float;
 
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperty(Point.prototype, "length", {
-			get: untyped __js__("function () { return this.get_length (); }")
-		});
-	}
-	#end
+	@:allow(openfl) @:noCompletion private var _:_Point;
 
 	/**
 		Creates a new point. If you pass no parameters to this method, a point is
@@ -72,8 +55,10 @@ class Point
 	**/
 	public function new(x:Float = 0, y:Float = 0)
 	{
-		this.x = x;
-		this.y = y;
+		if (_ == null)
+		{
+			_ = new _Point(x, y);
+		}
 	}
 
 	/**
@@ -85,7 +70,7 @@ class Point
 	**/
 	public function add(v:Point):Point
 	{
-		return new Point(v.x + x, v.y + y);
+		return _.add(v);
 	}
 
 	/**
@@ -95,7 +80,7 @@ class Point
 	**/
 	public function clone():Point
 	{
-		return new Point(x, y);
+		return _.clone();
 	}
 
 	/**
@@ -106,8 +91,7 @@ class Point
 	**/
 	public function copyFrom(sourcePoint:Point):Void
 	{
-		x = sourcePoint.x;
-		y = sourcePoint.y;
+		_.copyFrom(sourcePoint);
 	}
 
 	/**
@@ -119,9 +103,7 @@ class Point
 	**/
 	public static function distance(pt1:Point, pt2:Point):Float
 	{
-		var dx = pt1.x - pt2.x;
-		var dy = pt1.y - pt2.y;
-		return Math.sqrt(dx * dx + dy * dy);
+		return _.distance(pt1, pt2);
 	}
 
 	/**
@@ -134,7 +116,7 @@ class Point
 	**/
 	public function equals(toCompare:Point):Bool
 	{
-		return toCompare != null && toCompare.x == x && toCompare.y == y;
+		return _.equals(toCompare);
 	}
 
 	/**
@@ -158,7 +140,7 @@ class Point
 	**/
 	public static function interpolate(pt1:Point, pt2:Point, f:Float):Point
 	{
-		return new Point(pt2.x + f * (pt1.x - pt2.x), pt2.y + f * (pt1.y - pt2.y));
+		return _.interpolate(pt1, pt2, f);
 	}
 
 	/**
@@ -172,16 +154,7 @@ class Point
 	**/
 	public function normalize(thickness:Float):Void
 	{
-		if (x == 0 && y == 0)
-		{
-			return;
-		}
-		else
-		{
-			var norm = thickness / Math.sqrt(x * x + y * y);
-			x *= norm;
-			y *= norm;
-		}
+		_.normalize(thickness);
 	}
 
 	/**
@@ -196,8 +169,7 @@ class Point
 	**/
 	public function offset(dx:Float, dy:Float):Void
 	{
-		x += dx;
-		y += dy;
+		_.offset(dx, dy);
 	}
 
 	/**
@@ -209,7 +181,7 @@ class Point
 	**/
 	public static function polar(len:Float, angle:Float):Point
 	{
-		return new Point(len * Math.cos(angle), len * Math.sin(angle));
+		return _.polar(len, angle);
 	}
 
 	/**
@@ -220,8 +192,7 @@ class Point
 	**/
 	public function setTo(xa:Float, ya:Float):Void
 	{
-		x = xa;
-		y = ya;
+		_.setTo(xa, ya);
 	}
 
 	/**
@@ -233,7 +204,7 @@ class Point
 	**/
 	public function subtract(v:Point):Point
 	{
-		return new Point(x - v.x, y - v.y);
+		return _.subtract(v);
 	}
 
 	/**
@@ -246,26 +217,24 @@ class Point
 	**/
 	public function toString():String
 	{
-		return '(x=$x, y=$y)';
+		return _.toString();
 	}
 
-	#if lime
-	@:noCompletion private function __toLimeVector2():Vector2
-	{
-		if (__limeVector2 == null)
-		{
-			__limeVector2 = new Vector2();
-		}
+	// Get & Set Methods
 
-		__limeVector2.setTo(x, y);
-		return __limeVector2;
-	}
-	#end
-
-	// Getters & Setters
 	@:noCompletion private function get_length():Float
 	{
-		return Math.sqrt(x * x + y * y);
+		return _.length;
+	}
+
+	@:noCompletion private function get_x():Float
+	{
+		return _.x;
+	}
+
+	@:noCompletion private function get_y():Float
+	{
+		return _.y;
 	}
 }
 #else

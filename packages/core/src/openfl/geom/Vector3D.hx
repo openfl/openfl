@@ -83,56 +83,27 @@ class Vector3D
 		object. You can use the `Vector3D.project()` method to divide the first three
 		elements of a Vector3D object by its fourth element.
 	**/
-	public var w:Float;
+	public var w(get, set):Float;
 
 	/**
 		The first element of a Vector3D object, such as the x coordinate of a point in
 		the three-dimensional space. The default value is 0.
 	**/
-	public var x:Float;
+	public var x(get, set):Float;
 
 	/**
 		The second element of a Vector3D object, such as the y coordinate of a point in
 		the three-dimensional space. The default value is 0.
 	**/
-	public var y:Float;
+	public var y(get, set):Float;
 
 	/**
 		The third element of a Vector3D object, such as the z coordinate of a point in
 		three-dimensional space. The default value is 0.
 	**/
-	public var z:Float;
+	public var z(get, set):Float;
 
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperties(Vector3D, {
-			"X_AXIS": {
-				get: function()
-				{
-					return Vector3D.get_X_AXIS();
-				}
-			},
-			"Y_AXIS": {
-				get: function()
-				{
-					return Vector3D.get_Y_AXIS();
-				}
-			},
-			"Z_AXIS": {
-				get: function()
-				{
-					return Vector3D.get_Z_AXIS();
-				}
-			}
-		});
-
-		untyped Object.defineProperties(Vector3D.prototype, {
-			"length": {get: untyped __js__("function () { return this.get_length (); }")},
-			"lengthSquared": {get: untyped __js__("function () { return this.get_lengthSquared (); }")},
-		});
-	}
-	#end
+	@:allow(openfl) @:noCompletion private var _:_Vector3D;
 
 	/**
 		Creates an instance of a Vector3D object. If you do not specify a parameter for
@@ -145,10 +116,10 @@ class Vector3D
 	**/
 	public function new(x:Float = 0, y:Float = 0, z:Float = 0, w:Float = 0)
 	{
-		this.w = w;
-		this.x = x;
-		this.y = y;
-		this.z = z;
+		if (_ == null)
+		{
+			_ = new _Vector3D(x, y, z, w);
+		}
 	}
 
 	/**
@@ -171,7 +142,7 @@ class Vector3D
 	**/
 	public function add(a:Vector3D):Vector3D
 	{
-		return new Vector3D(this.x + a.x, this.y + a.y, this.z + a.z);
+		return _.add(a);
 	}
 
 	/**
@@ -195,21 +166,7 @@ class Vector3D
 	**/
 	public static function angleBetween(a:Vector3D, b:Vector3D):Float
 	{
-		var la = a.length;
-		var lb = b.length;
-		var dot = a.dotProduct(b);
-
-		if (la != 0)
-		{
-			dot /= la;
-		}
-
-		if (lb != 0)
-		{
-			dot /= lb;
-		}
-
-		return Math.acos(dot);
+		return _Vector3D.angleBetween(a, b);
 	}
 
 	/**
@@ -219,7 +176,7 @@ class Vector3D
 	**/
 	public function clone():Vector3D
 	{
-		return new Vector3D(x, y, z, w);
+		return _.clone();
 	}
 
 	/**
@@ -230,9 +187,7 @@ class Vector3D
 	**/
 	public function copyFrom(sourceVector3D:Vector3D):Void
 	{
-		x = sourceVector3D.x;
-		y = sourceVector3D.y;
-		z = sourceVector3D.z;
+		_.copyFrom(sourceVector3D);
 	}
 
 	/**
@@ -253,7 +208,7 @@ class Vector3D
 	**/
 	public function crossProduct(a:Vector3D):Vector3D
 	{
-		return new Vector3D(y * a.z - z * a.y, z * a.x - x * a.z, x * a.y - y * a.x, 1);
+		return _.crossProduct(a);
 	}
 
 	/**
@@ -267,9 +222,7 @@ class Vector3D
 	**/
 	public function decrementBy(a:Vector3D):Void
 	{
-		x -= a.x;
-		y -= a.y;
-		z -= a.z;
+		_.decrementBy(a);
 	}
 
 	/**
@@ -283,11 +236,7 @@ class Vector3D
 	**/
 	public static function distance(pt1:Vector3D, pt2:Vector3D):Float
 	{
-		var x:Float = pt2.x - pt1.x;
-		var y:Float = pt2.y - pt1.y;
-		var z:Float = pt2.z - pt1.z;
-
-		return Math.sqrt(x * x + y * y + z * z);
+		return _Vector3D.distance(pt1, pt2);
 	}
 
 	/**
@@ -312,7 +261,7 @@ class Vector3D
 	**/
 	public function dotProduct(a:Vector3D):Float
 	{
-		return x * a.x + y * a.y + z * a.z;
+		return _.dotProduct(a);
 	}
 
 	/**
@@ -330,7 +279,7 @@ class Vector3D
 	**/
 	public function equals(toCompare:Vector3D, allFour:Bool = false):Bool
 	{
-		return x == toCompare.x && y == toCompare.y && z == toCompare.z && (!allFour || w == toCompare.w);
+		return _.equals(toCompare, allFour);
 	}
 
 	/**
@@ -343,9 +292,7 @@ class Vector3D
 	**/
 	public function incrementBy(a:Vector3D):Void
 	{
-		x += a.x;
-		y += a.y;
-		z += a.z;
+		_.incrementBy(a);
 	}
 
 	/**
@@ -370,10 +317,7 @@ class Vector3D
 	**/
 	public function nearEquals(toCompare:Vector3D, tolerance:Float, ?allFour:Bool = false):Bool
 	{
-		return Math.abs(x - toCompare.x) < tolerance
-			&& Math.abs(y - toCompare.y) < tolerance
-			&& Math.abs(z - toCompare.z) < tolerance
-			&& (!allFour || Math.abs(w - toCompare.w) < tolerance);
+		return _.nearEquals(toCompare, tolerance, allFour);
 	}
 
 	/**
@@ -383,9 +327,7 @@ class Vector3D
 	**/
 	public function negate():Void
 	{
-		x *= -1;
-		y *= -1;
-		z *= -1;
+		_.negate();
 	}
 
 	/**
@@ -397,16 +339,7 @@ class Vector3D
 	**/
 	public function normalize():Float
 	{
-		var l = length;
-
-		if (l != 0)
-		{
-			x /= l;
-			y /= l;
-			z /= l;
-		}
-
-		return l;
+		return _.normalize();
 	}
 
 	/**
@@ -421,9 +354,7 @@ class Vector3D
 	**/
 	public function project():Void
 	{
-		x /= w;
-		y /= w;
-		z /= w;
+		_.project();
 	}
 
 	/**
@@ -437,9 +368,7 @@ class Vector3D
 	**/
 	public function scaleBy(s:Float):Void
 	{
-		x *= s;
-		y *= s;
-		z *= s;
+		_.scaleBy(s);
 	}
 
 	/**
@@ -451,9 +380,7 @@ class Vector3D
 	**/
 	public function setTo(xa:Float, ya:Float, za:Float):Void
 	{
-		x = xa;
-		y = ya;
-		z = za;
+		_.setTo(xa, ya, za);
 	}
 
 	/**
@@ -468,7 +395,7 @@ class Vector3D
 	**/
 	public function subtract(a:Vector3D):Vector3D
 	{
-		return new Vector3D(x - a.x, y - a.y, z - a.z);
+		return _.subtract(a);
 	}
 
 	/**
@@ -479,33 +406,74 @@ class Vector3D
 	**/
 	public function toString():String
 	{
-		return 'Vector3D($x, $y, $z)';
+		return _.toString();
 	}
 
-	// Getters & Setters
+	// Get & Set Methods
+
 	@:noCompletion private function get_length():Float
 	{
-		return Math.sqrt(x * x + y * y + z * z);
+		return _.length;
 	}
 
 	@:noCompletion private function get_lengthSquared():Float
 	{
-		return x * x + y * y + z * z;
+		return _.lengthSquared;
 	}
 
 	private inline static function get_X_AXIS():Vector3D
 	{
-		return new Vector3D(1, 0, 0);
+		return _Vector3D.X_AXIS;
 	}
 
 	private inline static function get_Y_AXIS():Vector3D
 	{
-		return new Vector3D(0, 1, 0);
+		return _Vector3D.Y_AXIS;
 	}
 
 	private inline static function get_Z_AXIS():Vector3D
 	{
-		return new Vector3D(0, 0, 1);
+		return _Vector3D.Z_AXIS;
+	}
+
+	@:noCompletion private function get_w():Float
+	{
+		return _.w;
+	}
+
+	@:noCompletion private function set_w(value:Float):Float
+	{
+		return _.w = value;
+	}
+
+	@:noCompletion private function get_x():Float
+	{
+		return _.x;
+	}
+
+	@:noCompletion private function set_x(value:Float):Float
+	{
+		return _.x = value;
+	}
+
+	@:noCompletion private function get_y():Float
+	{
+		return _.y;
+	}
+
+	@:noCompletion private function set_y(value:Float):Float
+	{
+		return _.y = value;
+	}
+
+	@:noCompletion private function get_z():Float
+	{
+		return _.z;
+	}
+
+	@:noCompletion private function set_z(value:Float):Float
+	{
+		return _.z = value;
 	}
 }
 #else

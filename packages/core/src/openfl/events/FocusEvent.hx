@@ -1,7 +1,6 @@
 package openfl.events;
 
 #if !flash
-import openfl._internal.utils.ObjectPool;
 import openfl.display.InteractiveObject;
 
 /**
@@ -114,7 +113,7 @@ class FocusEvent extends Event
 		The key code value of the key pressed to trigger a
 		`keyFocusChange` event.
 	**/
-	public var keyCode:Int;
+	public var keyCode(get, set):Int;
 
 	/**
 		A reference to the complementary InteractiveObject instance that is
@@ -128,7 +127,7 @@ class FocusEvent extends Event
 		`isRelatedObjectInaccessible()` property to determine which of
 		these reasons applies.
 	**/
-	public var relatedObject:InteractiveObject;
+	public var relatedObject(get, set):InteractiveObject;
 
 	/**
 		Indicates whether the Shift key modifier is activated, in which case the
@@ -136,10 +135,7 @@ class FocusEvent extends Event
 		This property is used only if the FocusEvent is of type
 		`keyFocusChange`.
 	**/
-	public var shiftKey:Bool;
-
-	@:noCompletion private static var __pool:ObjectPool<FocusEvent> = new ObjectPool<FocusEvent>(function() return new FocusEvent(null),
-	function(event) event.__init());
+	public var shiftKey(get, set):Bool;
 
 	/**
 		Creates an Event object with specific information relevant to focus
@@ -166,33 +162,49 @@ class FocusEvent extends Event
 	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false, relatedObject:InteractiveObject = null, shiftKey:Bool = false,
 			keyCode:Int = 0)
 	{
-		super(type, bubbles, cancelable);
+		if (_ == null)
+		{
+			_ = new _FocusEvent(type, bubbles, cancelable, relatedObject, shiftKey, keyCode);
+		}
 
-		this.keyCode = keyCode;
-		this.shiftKey = shiftKey;
-		this.relatedObject = relatedObject;
+		super(type, bubbles, cancelable);
 	}
 
 	public override function clone():FocusEvent
 	{
-		var event = new FocusEvent(type, bubbles, cancelable, relatedObject, shiftKey, keyCode);
-		event.target = target;
-		event.currentTarget = currentTarget;
-		event.eventPhase = eventPhase;
-		return event;
+		return cast _.clone();
 	}
 
-	public override function toString():String
+	// Get & Set Methods
+
+	@:noCompletion private function get_keyCode():Int
 	{
-		return __formatToString("FocusEvent", ["type", "bubbles", "cancelable", "relatedObject", "shiftKey", "keyCode"]);
+		return _.keyCode;
 	}
 
-	@:noCompletion private override function __init():Void
+	@:noCompletion private function set_keyCode(value:Int):Int
 	{
-		super.__init();
-		keyCode = 0;
-		shiftKey = false;
-		relatedObject = null;
+		return _.keyCode = value;
+	}
+
+	@:noCompletion private function get_relatedObject():InteractiveObject
+	{
+		return _.keyCode;
+	}
+
+	@:noCompletion private function set_relatedObject(value:InteractiveObject):InteractiveObject
+	{
+		return _.relatedObject = value;
+	}
+
+	@:noCompletion private function get_shiftKey():Bool
+	{
+		return _.keyCode;
+	}
+
+	@:noCompletion private function set_shiftKey(value:Bool):Bool
+	{
+		return _.shiftKey = value;
 	}
 }
 #else

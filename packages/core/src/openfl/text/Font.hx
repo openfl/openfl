@@ -26,54 +26,37 @@ import js.Browser;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-class Font #if lime extends LimeFont #end
+class Font
 {
-	#if (!lime && openfl_html5)
-	@:noCompletion public var ascender:Int;
-	@:noCompletion public var descender:Int;
-	#end
-
 	/**
 		The name of an embedded font.
 	**/
-	public var fontName(get, set):String;
+	public var fontName(get, never):String;
 
 	/**
 		The style of the font. This value can be any of the values defined in the
 		FontStyle class.
 	**/
-	public var fontStyle:FontStyle;
+	public var fontStyle(get, never):FontStyle;
 
 	/**
 		The type of the font. This value can be any of the constants defined in
 		the FontType class.
 	**/
-	public var fontType:FontType;
+	public var fontType(get, never):FontType;
 
-	#if (!lime && openfl_html5)
-	@:noCompletion public var unitsPerEM:Int;
+	#if lime
+	public var limeFont(get, never):LimeFont;
 	#end
 
-	@:noCompletion private static var __fontByName:Map<String, Font> = new Map();
-	@:noCompletion private static var __registeredFonts:Array<Font> = new Array();
+	@:allow(openfl) @:noCompletion private var _:_Font;
 
-	@:noCompletion private var __initialized:Bool;
-
-	#if openfljs
-	@:noCompletion private static function __init__()
+	private function new()
 	{
-		untyped Object.defineProperty(Font.prototype, "fontName", {
-			get: untyped __js__("function () { return this.get_fontName (); }"),
-			set: untyped __js__("function (v) { return this.set_fontName (v); }")
-		});
-	}
-	#end
-
-	public function new(name:String = null)
-	{
-		#if lime
-		super(name);
-		#end
+		if (_ == null)
+		{
+			_ = new _Font();
+		}
 	}
 
 	/**
@@ -91,7 +74,7 @@ class Font #if lime extends LimeFont #end
 	**/
 	public static function enumerateFonts(enumerateDeviceFonts:Bool = false):Array<Font>
 	{
-		return __registeredFonts;
+		return _Font.enumerateFonts(enumerateDeviceFonts);
 	}
 
 	/**
@@ -104,16 +87,7 @@ class Font #if lime extends LimeFont #end
 	**/
 	public static function fromBytes(bytes:ByteArray):Font
 	{
-		var font = new Font();
-		#if lime
-		font.__fromBytes(bytes);
-		#end
-
-		#if lime_cffi
-		return (font.src != null) ? font : null;
-		#else
-		return font;
-		#end
+		return _Font.fromBytes(bytes);
 	}
 
 	/**
@@ -125,17 +99,15 @@ class Font #if lime extends LimeFont #end
 	**/
 	public static function fromFile(path:String):Font
 	{
-		var font = new Font();
-		#if lime
-		font.__fromFile(path);
-		#end
-
-		#if lime_cffi
-		return (font.src != null) ? font : null;
-		#else
-		return font;
-		#end
+		return _Font.fromFile(path);
 	}
+
+	#if lime
+	public static function fromLimeFont(limeFont:LimeFont):Font
+	{
+		return _Font.fromLimeFont(limeFont);
+	}
+	#end
 
 	#if false
 	/**
@@ -160,17 +132,7 @@ class Font #if lime extends LimeFont #end
 	**/
 	public static function loadFromBytes(bytes:ByteArray):Future<Font>
 	{
-		#if lime
-		return LimeFont.loadFromBytes(bytes).then(function(limeFont)
-		{
-			var font = new Font();
-			font.__fromLimeFont(limeFont);
-
-			return Future.withValue(font);
-		});
-		#else
-		return cast Future.withError("Cannot load font from bytes");
-		#end
+		return _Font.loadFromBytes(bytes);
 	}
 
 	/**
@@ -184,17 +146,7 @@ class Font #if lime extends LimeFont #end
 	**/
 	public static function loadFromFile(path:String):Future<Font>
 	{
-		#if lime
-		return LimeFont.loadFromFile(path).then(function(limeFont)
-		{
-			var font = new Font();
-			font.__fromLimeFont(limeFont);
-
-			return Future.withValue(font);
-		});
-		#else
-		return cast Future.withError("Cannot load font from file");
-		#end
+		return _Font.loadFromFile(path);
 	}
 
 	/**
@@ -210,20 +162,7 @@ class Font #if lime extends LimeFont #end
 	**/
 	public static function loadFromName(path:String):Future<Font>
 	{
-		#if (!lime && openfl_html5)
-		var font = new Font();
-		return font.__loadFromName(path);
-		#elseif lime
-		return LimeFont.loadFromName(path).then(function(limeFont)
-		{
-			var font = new Font();
-			font.__fromLimeFont(limeFont);
-
-			return Future.withValue(font);
-		});
-		#else
-		return cast Future.withError("Cannot load font from name");
-		#end
+		return _Font.loadFromName(path);
 	}
 
 	/**
@@ -232,167 +171,24 @@ class Font #if lime extends LimeFont #end
 	**/
 	public static function registerFont(font:Dynamic):Void
 	{
-		var instance:Font = null;
-
-		if (Type.getClass(font) == null)
-		{
-			instance = cast(Type.createInstance(font, []), Font);
-		}
-		else
-		{
-			instance = cast(font, Font);
-		}
-
-		if (instance != null)
-		{
-			/*if (Reflect.hasField (font, "resourceName")) {
-
-				instance.fontName = __ofResource (Reflect.field (font, "resourceName"));
-
-			}*/
-
-			__registeredFonts.push(instance);
-			__fontByName[instance.fontName] = instance;
-		}
+		_Font.registerFont(font);
 	}
-
-	#if lime
-	@:noCompletion private function __fromLimeFont(font:LimeFont):Void
-	{
-		__copyFrom(font);
-	}
-	#end
-
-	@:noCompletion private function __initialize():Bool
-	{
-		#if native
-		if (!__initialized)
-		{
-			if (src != null)
-			{
-				// TODO: How does src get defined without being initialized in Lime?
-				if (unitsPerEM == 0) __initializeSource();
-				__initialized = true;
-			}
-			else if (src == null && __fontID != null && Assets.isLocal(__fontID))
-			{
-				__fromBytes(Assets.getBytes(__fontID));
-				__initialized = true;
-			}
-		}
-		#end
-
-		return __initialized;
-	}
-
-	#if (!lime && openfl_html5)
-	@:noCompletion private function __loadFromName(name:String):Future<Font>
-	{
-		var promise = new Promise<Font>();
-		// this.name = name;
-		this.fontName = name;
-
-		var userAgent = Browser.navigator.userAgent.toLowerCase();
-		var isSafari = (userAgent.indexOf(" safari/") >= 0 && userAgent.indexOf(" chrome/") < 0);
-		var isUIWebView = ~/(iPhone|iPod|iPad).*AppleWebKit(?!.*Version)/i.match(userAgent);
-
-		if (!isSafari && !isUIWebView && untyped (Browser.document).fonts && untyped (Browser.document).fonts.load)
-		{
-			untyped (Browser.document).fonts.load("1em '" + name + "'").then(function(_)
-			{
-				promise.complete(this);
-			}, function(_)
-			{
-				Log.warn("Could not load web font \"" + name + "\"");
-				promise.complete(this);
-			});
-		}
-		else
-		{
-			var node1 = __measureFontNode("'" + name + "', sans-serif");
-			var node2 = __measureFontNode("'" + name + "', serif");
-
-			var width1 = node1.offsetWidth;
-			var width2 = node2.offsetWidth;
-
-			var interval = -1;
-			var timeout = 3000;
-			var intervalLength = 50;
-			var intervalCount = 0;
-			var loaded, timeExpired;
-
-			var checkFont = function()
-			{
-				intervalCount++;
-
-				loaded = (node1.offsetWidth != width1 || node2.offsetWidth != width2);
-				timeExpired = (intervalCount * intervalLength >= timeout);
-
-				if (loaded || timeExpired)
-				{
-					Browser.window.clearInterval(interval);
-					node1.parentNode.removeChild(node1);
-					node2.parentNode.removeChild(node2);
-					node1 = null;
-					node2 = null;
-
-					if (timeExpired)
-					{
-						Log.warn("Could not load web font \"" + name + "\"");
-					}
-
-					promise.complete(this);
-				}
-			}
-
-			interval = Browser.window.setInterval(checkFont, intervalLength);
-		}
-
-		return promise.future;
-	}
-
-	private static function __measureFontNode(fontFamily:String):SpanElement
-	{
-		var node:SpanElement = cast Browser.document.createElement("span");
-		node.setAttribute("aria-hidden", "true");
-		var text = Browser.document.createTextNode("BESbswy");
-		node.appendChild(text);
-		var style = node.style;
-		style.display = "block";
-		style.position = "absolute";
-		style.top = "-9999px";
-		style.left = "-9999px";
-		style.fontSize = "300px";
-		style.width = "auto";
-		style.height = "auto";
-		style.lineHeight = "normal";
-		style.margin = "0";
-		style.padding = "0";
-		style.fontVariant = "normal";
-		style.whiteSpace = "nowrap";
-		style.fontFamily = fontFamily;
-		Browser.document.body.appendChild(node);
-		return node;
-	}
-	#end
 
 	// Get & Set Methods
+
 	@:noCompletion private inline function get_fontName():String
 	{
-		#if lime
-		return name;
-		#else
-		return null;
-		#end
+		return _.fontName;
 	}
 
-	@:noCompletion private inline function set_fontName(value:String):String
+	@:noCompletion private inline function get_fontStyle():FontStyle
 	{
-		#if lime
-		return name = value;
-		#else
-		return value;
-		#end
+		return _.fontStyle;
+	}
+
+	@:noCompletion private inline function get_fontType():FontType
+	{
+		return _.fontType;
 	}
 }
 #else

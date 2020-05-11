@@ -9,9 +9,9 @@ import haxe.ds.StringMap;
 class SamplerMap
 {
 	public static var map(get, never):StringMap<Sampler>;
-	private static var _map:StringMap<Sampler>;
+	public static var _map:StringMap<Sampler>;
 
-	private static function get_map():StringMap<Sampler>
+	public static function get_map():StringMap<Sampler>
 	{
 		if (SamplerMap._map == null)
 		{

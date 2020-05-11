@@ -1,6 +1,5 @@
 package openfl.net;
 
-#if lime
 import haxe.io.Path;
 import haxe.Timer;
 import lime.ui.FileDialog;
@@ -27,21 +26,28 @@ import sys.FileSystem;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.net.FileReference)
 @:noCompletion
-class _FileReference
+class _FileReference extends _EventDispatcher
 {
-	private var data:ByteArray;
-	private var parent:FileReference;
-	private var path:String;
-	private var urlLoader:URLLoader;
+	public var creationDate:Date;
+	public var creator:String;
+	public var data:ByteArray;
+	public var modificationDate:Date;
+	public var name:String;
+	public var size:Int;
+	public var type:String;
+
+	public var data:ByteArray;
+	public var parent:FileReference;
+	public var path:String;
+	public var urlLoader:URLLoader;
 	#if openfl_html5
-	private var inputControl:InputElement;
+	public var inputControl:InputElement;
 	#end
 
-	public function new(parent:FileReference)
+	public function new()
 	{
-		this.parent = parent;
+		super();
 
 		#if openfl_html5
 		inputControl = cast Browser.document.createElement("input");
@@ -97,13 +103,13 @@ class _FileReference
 		inputControl.onchange = function()
 		{
 			var file = inputControl.files[0];
-			parent.modificationDate = Date.fromTime(file.lastModified);
-			parent.creationDate = parent.modificationDate;
-			parent.size = file.size;
-			parent.type = "." + Path.extension(file.name);
-			parent.name = Path.withoutDirectory(file.name);
+			modificationDate = Date.fromTime(file.lastModified);
+			creationDate = modificationDate;
+			size = file.size;
+			type = "." + Path.extension(file.name);
+			name = Path.withoutDirectory(file.name);
 			path = file.name;
-			parent.dispatchEvent(new Event(Event.SELECT));
+			dispatchEvent(new Event(Event.SELECT));
 		}
 		inputControl.click();
 		return true;
@@ -201,49 +207,50 @@ class _FileReference
 	}
 
 	// Event Handlers
-	private function openFileDialog_onCancel():Void
+
+	public function openFileDialog_onCancel():Void
 	{
-		parent.dispatchEvent(new Event(Event.CANCEL));
+		dispatchEvent(new Event(Event.CANCEL));
 	}
 
-	private function openFileDialog_onComplete():Void
+	public function openFileDialog_onComplete():Void
 	{
-		parent.dispatchEvent(new Event(Event.COMPLETE));
+		dispatchEvent(new Event(Event.COMPLETE));
 	}
 
-	private function openFileDialog_onSelect(path:String):Void
+	public function openFileDialog_onSelect(path:String):Void
 	{
 		#if sys
 		var fileInfo = FileSystem.stat(path);
-		parent.creationDate = fileInfo.ctime;
-		parent.modificationDate = fileInfo.mtime;
-		parent.size = fileInfo.size;
-		parent.type = "." + Path.extension(path);
+		creationDate = fileInfo.ctime;
+		modificationDate = fileInfo.mtime;
+		size = fileInfo.size;
+		type = "." + Path.extension(path);
 		#end
 
-		parent.name = Path.withoutDirectory(path);
+		name = Path.withoutDirectory(path);
 		this.path = path;
 
-		parent.dispatchEvent(new Event(Event.SELECT));
+		dispatchEvent(new Event(Event.SELECT));
 	}
 
-	private function saveFileDialog_onCancel():Void
+	public function saveFileDialog_onCancel():Void
 	{
-		parent.dispatchEvent(new Event(Event.CANCEL));
+		dispatchEvent(new Event(Event.CANCEL));
 	}
 
-	private function saveFileDialog_onSave(path:String):Void
+	public function saveFileDialog_onSave(path:String):Void
 	{
 		Timer.delay(function()
 		{
-			parent.dispatchEvent(new Event(Event.COMPLETE));
+			dispatchEvent(new Event(Event.COMPLETE));
 		}, 1);
 	}
 
-	private function saveFileDialog_onSelect(path:String):Void
+	public function saveFileDialog_onSelect(path:String):Void
 	{
 		#if desktop
-		parent.name = Path.withoutDirectory(path);
+		name = Path.withoutDirectory(path);
 
 		if (this.data != null)
 		{
@@ -258,10 +265,10 @@ class _FileReference
 		}
 		#end
 
-		parent.dispatchEvent(new Event(Event.SELECT));
+		dispatchEvent(new Event(Event.SELECT));
 	}
 
-	private function urlLoader_onComplete(event:Event):Void
+	public function urlLoader_onComplete(event:Event):Void
 	{
 		#if desktop
 		if (Std.is(urlLoader.data, ByteArrayData))
@@ -283,17 +290,16 @@ class _FileReference
 		}
 		#end
 
-		parent.dispatchEvent(event);
+		dispatchEvent(event);
 	}
 
-	private function urlLoader_onIOError(event:IOErrorEvent):Void
+	public function urlLoader_onIOError(event:IOErrorEvent):Void
 	{
-		parent.dispatchEvent(event);
+		dispatchEvent(event);
 	}
 
-	private function urlLoader_onProgress(event:ProgressEvent):Void
+	public function urlLoader_onProgress(event:ProgressEvent):Void
 	{
-		parent.dispatchEvent(event);
+		dispatchEvent(event);
 	}
 }
-#end

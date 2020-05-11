@@ -150,7 +150,7 @@ package openfl.display;
 	**/
 	public var value:Array<T>;
 
-	@:noCompletion private var _:_ShaderParameter<T>;
+	@:allow(openfl) @:noCompletion private var _:Dynamic;
 
 	public function new()
 	{

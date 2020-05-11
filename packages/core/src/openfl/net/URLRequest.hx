@@ -92,7 +92,7 @@ import haxe.macro.Compiler;
 		the POST operation is subject to the security rules applied to
 		uploads.
 	**/
-	public var contentType:String;
+	public var contentType(get, set):String;
 
 	/**
 		An object containing data to be transmitted with the URL request.
@@ -137,7 +137,7 @@ import haxe.macro.Compiler;
 		the type of data in the `data` property. See the note in the
 		description of the `contentType` property.
 	**/
-	public var data:Dynamic;
+	public var data(get, set):Dynamic;
 
 	#if false
 	/**
@@ -187,7 +187,7 @@ import haxe.macro.Compiler;
 
 		The default value is `true`.
 	**/
-	public var followRedirects:Bool;
+	public var followRedirects(get, set):Bool;
 
 	/**
 		Specifies the idle timeout value (in milliseconds) for this request.
@@ -201,7 +201,7 @@ import haxe.macro.Compiler;
 
 		The default value is initialized from the `URLRequestDefaults.idleTimeout` property.
 	**/
-	public var idleTimeout:Float;
+	public var idleTimeout(get, set):Float;
 
 	/**
 		Specifies whether the HTTP protocol stack should manage cookies for this request.
@@ -228,7 +228,7 @@ import haxe.macro.Compiler;
 
 		The default value is `true`.
 	**/
-	public var manageCookies:Bool;
+	public var manageCookies(get, set):Bool;
 
 	/**
 		Controls the HTTP form submission method.
@@ -259,7 +259,7 @@ import haxe.macro.Compiler;
 							  `URLRequestMethod.GET` or
 							  `URLRequestMethod.POST`.
 	**/
-	public var method:String;
+	public var method(get, set):String;
 
 	/**
 		The array of HTTP request headers to be appended to the HTTP request. The
@@ -282,7 +282,7 @@ import haxe.macro.Compiler;
 		supported for `POST` requests, not for `GET`
 		requests.
 	**/
-	public var requestHeaders:Array<URLRequestHeader>;
+	public var requestHeaders(get, set):Array<URLRequestHeader>;
 
 	/**
 		The URL to be requested.
@@ -320,7 +320,7 @@ import haxe.macro.Compiler;
 		brackets([]), as in the following.
 		`rtmp://[2001:db8:ccc3:ffff:0:444d:555e:666f]:1935/test`
 	**/
-	public var url:String;
+	public var url(get, set):String;
 
 	/**
 		Specifies the user-agent string to be used in the HTTP request.
@@ -333,7 +333,9 @@ import haxe.macro.Compiler;
 		the user agent string for an HTMLLoader object, set the `userAgent` property of the
 		HTMLLoader object or set the static `URLRequestDefaults.userAgent` property.
 	**/
-	public var userAgent:String;
+	public var userAgent(get, set):String;
+
+	@:allow(openfl) @:noCompletion private var _:_URLRequest;
 
 	/**
 		Creates a URLRequest object. If `System.useCodePage` is
@@ -347,34 +349,104 @@ import haxe.macro.Compiler;
 	**/
 	public function new(url:String = null)
 	{
-		if (url != null)
+		if (_ == null)
 		{
-			this.url = url;
+			_ = new _URLRequest(url);
 		}
-
-		contentType = null; // "application/x-www-form-urlencoded";
-		followRedirects = URLRequestDefaults.followRedirects;
-
-		if (URLRequestDefaults.idleTimeout > 0)
-		{
-			idleTimeout = URLRequestDefaults.idleTimeout;
-		}
-		else
-		{
-			#if lime_default_timeout
-			idleTimeout = Std.parseInt(Compiler.getDefine("lime-default-timeout"));
-			#else
-			idleTimeout = 30000;
-			#end
-		}
-
-		manageCookies = URLRequestDefaults.manageCookies;
-		method = URLRequestMethod.GET;
-		requestHeaders = [];
-		userAgent = URLRequestDefaults.userAgent;
 	}
 
 	// @:noCompletion @:dox(hide) public function useRedirectedURL (sourceRequest:URLRequest, wholeURL:Bool = false, pattern:Dynamic = null, replace:String = null):Void;
+	// Get & Set Methods
+
+	@:noCompletion private function get_contentType():String
+	{
+		return _.contentType;
+	}
+
+	@:noCompletion private function set_contentType(value:String):String
+	{
+		return _.contentType = value;
+	}
+
+	@:noCompletion private function get_data():Dynamic
+	{
+		return _.data;
+	}
+
+	@:noCompletion private function set_data(value:Dynamic):Dynamic
+	{
+		return _.data = value;
+	}
+
+	@:noCompletion private function get_followRedirects():Bool
+	{
+		return _.followRedirects;
+	}
+
+	@:noCompletion private function set_followRedirects(value:Bool):Bool
+	{
+		return _.followRedirects = value;
+	}
+
+	@:noCompletion private function get_idleTimeout():Float
+	{
+		return _.idleTimeout;
+	}
+
+	@:noCompletion private function set_idleTimeout(value:Float):Float
+	{
+		return _.idleTimeout = value;
+	}
+
+	@:noCompletion private function get_manageCookies():Bool
+	{
+		return _.manageCookies;
+	}
+
+	@:noCompletion private function set_manageCookies(value:Bool):Bool
+	{
+		return _.manageCookies = value;
+	}
+
+	@:noCompletion private function get_method():String
+	{
+		return _.method;
+	}
+
+	@:noCompletion private function set_method(value:String):String
+	{
+		return _.method = value;
+	}
+
+	@:noCompletion private function get_requestHeaders():Array<URLRequestHeader>
+	{
+		return _.requestHeaders;
+	}
+
+	@:noCompletion private function set_requestHeaders(value:Array<URLRequestHeader>):Array<URLRequestHeader>
+	{
+		return _.requestHeaders = value;
+	}
+
+	@:noCompletion private function get_url():String
+	{
+		return _.url;
+	}
+
+	@:noCompletion private function set_url(value:String):String
+	{
+		return _.url = value;
+	}
+
+	@:noCompletion private function get_userAgent():String
+	{
+		return _.userAgent;
+	}
+
+	@:noCompletion private function set_userAgent(value:String):String
+	{
+		return _.userAgent = value;
+	}
 }
 #else
 typedef URLRequest = flash.net.URLRequest;

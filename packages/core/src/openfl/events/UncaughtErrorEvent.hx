@@ -1,8 +1,6 @@
 package openfl.events;
 
 #if !flash
-import openfl._internal.utils.ObjectPool;
-
 /**
 	An UncaughtErrorEvent object is dispatched by an instance of the
 	UncaughtErrorEvents class when an uncaught error occurs. An uncaught error
@@ -154,10 +152,7 @@ class UncaughtErrorEvent extends ErrorEvent
 		All other properties and methods of the Error class are available in
 		all runtime versions.
 	**/
-	public var error(default, null):Dynamic;
-
-	@:noCompletion private static var __pool:ObjectPool<UncaughtErrorEvent> = new ObjectPool<UncaughtErrorEvent>(function() return
-		new UncaughtErrorEvent(null), function(event) event.__init());
+	public var error(get, never):Dynamic;
 
 	/**
 		Creates an UncaughtErrorEvent object that contains information about
@@ -177,29 +172,24 @@ class UncaughtErrorEvent extends ErrorEvent
 	**/
 	public function new(type:String, bubbles:Bool = true, cancelable:Bool = true, error:Dynamic = null)
 	{
-		super(type, bubbles, cancelable);
+		if (_ == null)
+		{
+			_ = new _UncaughtErrorEvent(type, bubbles, cancelable, error);
+		}
 
-		this.error = error;
+		super(type, bubbles, cancelable);
 	}
 
 	public override function clone():UncaughtErrorEvent
 	{
-		var event = new UncaughtErrorEvent(type, bubbles, cancelable, error);
-		event.target = target;
-		event.currentTarget = currentTarget;
-		event.eventPhase = eventPhase;
-		return event;
+		return cast _.clone();
 	}
 
-	public override function toString():String
-	{
-		return __formatToString("UncaughtErrorEvent", ["type", "bubbles", "cancelable", "error"]);
-	}
+	// Get & Set Methods
 
-	@:noCompletion private override function __init():Void
+	@:noCompletion private function get_error():Dynamic
 	{
-		super.__init();
-		error = null;
+		return _.error;
 	}
 }
 #else

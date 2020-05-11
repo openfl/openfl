@@ -20,21 +20,21 @@ import openfl.display.ShaderInput;
 @:noCompletion
 class _ShaderInput<T> /*implements Dynamic*/
 {
-	private var isUniform:Bool;
-	private var parent:ShaderInput<T>;
+	public var isUniform:Bool;
+	public var parent:ShaderInput<T>;
 
 	public function new(parent:ShaderInput<T>)
 	{
 		this.parent = parent;
 	}
 
-	private function disableGL(context:Context3D, id:Int):Void
+	public function disableGL(context:Context3D, id:Int):Void
 	{
 		var gl = context._.gl;
 		context.setTextureAt(id, null);
 	}
 
-	private function updateGL(context:Context3D, id:Int, overrideInput:T = null, overrideFilter:Context3DTextureFilter = null,
+	public function updateGL(context:Context3D, id:Int, overrideInput:T = null, overrideFilter:Context3DTextureFilter = null,
 			overrideMipFilter:Context3DMipFilter = null, overrideWrap:Context3DWrapMode = null):Void
 	{
 		var gl = context._.gl;

@@ -456,13 +456,13 @@ class MouseEvent extends Event
 		(`false`). Supported for Windows only. On other operating
 		systems, this property is always set to `false`.
 	**/
-	public var altKey:Bool;
+	public var altKey(get, set):Bool;
 
 	/**
 		Indicates whether the primary mouse button is pressed(`true`)
 		or not(`false`).
 	**/
-	public var buttonDown:Bool;
+	public var buttonDown(get, set):Bool;
 
 	/**
 		Indicates whether the command key is activated (Mac only.)
@@ -470,7 +470,7 @@ class MouseEvent extends Event
 		The value of property `commandKey` will have the same value as property `ctrlKey`
 		on the Mac. Always `false` on Windows or Linux.
 	**/
-	public var commandKey:Bool;
+	public var commandKey(get, set):Bool;
 
 	/**
 		Indicates whether or not the mouse down event is part of a multi-click sequence.
@@ -486,14 +486,14 @@ class MouseEvent extends Event
 		will have a `clickCount` of 1. The `doubleClick` event will continue to fire as
 		expected.
 	**/
-	public var clickCount:Int;
+	public var clickCount(get, set):Int;
 
 	/**
 		On Windows or Linux, indicates whether the Ctrl key is active
 		(`true`) or inactive(`false`). On Macintosh,
 		indicates whether either the Control key or the Command key is activated.
 	**/
-	public var ctrlKey:Bool;
+	public var ctrlKey(get, set):Bool;
 
 	/**
 		Indicates how many lines should be scrolled for each unit the user rotates
@@ -503,7 +503,7 @@ class MouseEvent extends Event
 		device and operating system and is usually configurable by the user. This
 		property applies only to the `MouseEvent.mouseWheel` event.
 	**/
-	public var delta:Int;
+	public var delta(get, set):Int;
 
 	/**
 		If `true`, the `relatedObject` property is set to `null` for reasons related to
@@ -514,19 +514,19 @@ class MouseEvent extends Event
 		policy file from the server of an image file, and setting the
 		`LoaderContext.checkPolicyFile` property when loading the image.
 	**/
-	public var isRelatedObjectInaccessible:Bool;
+	public var isRelatedObjectInaccessible(get, set):Bool;
 
 	/**
 		The horizontal coordinate at which the event occurred relative to the
 		containing sprite.
 	**/
-	public var localX:Float;
+	public var localX(get, set):Float;
 
 	/**
 		The vertical coordinate at which the event occurred relative to the
 		containing sprite.
 	**/
-	public var localY:Float;
+	public var localY(get, set):Float;
 
 	// @:noCompletion @:dox(hide) @:require(flash11_2) public var movementX:Float;
 	// @:noCompletion @:dox(hide) @:require(flash11_2) public var movementY:Float;
@@ -545,35 +545,27 @@ class MouseEvent extends Event
 		`isRelatedObjectInaccessible()` property to determine which of
 		these reasons applies.
 	**/
-	public var relatedObject:InteractiveObject;
+	public var relatedObject(get, set):InteractiveObject;
 
 	/**
 		Indicates whether the Shift key is active(`true`) or inactive
 		(`false`).
 	**/
-	public var shiftKey:Bool;
+	public var shiftKey(get, set):Bool;
 
 	/**
 		The horizontal coordinate at which the event occurred in global Stage
 		coordinates. This property is calculated when the `localX`
 		property is set.
 	**/
-	public var stageX:Float;
+	public var stageX(get, set):Float;
 
 	/**
 		The vertical coordinate at which the event occurred in global Stage
 		coordinates. This property is calculated when the `localY`
 		property is set.
 	**/
-	public var stageY:Float;
-
-	@:noCompletion private static var __altKey:Bool;
-	@:noCompletion private static var __buttonDown:Bool;
-	@:noCompletion private static var __commandKey:Bool;
-	@:noCompletion private static var __ctrlKey:Bool;
-	@:noCompletion private static var __pool:ObjectPool<MouseEvent> = new ObjectPool<MouseEvent>(function() return new MouseEvent(null),
-	function(event) event.__init());
-	@:noCompletion private static var __shiftKey:Bool;
+	public var stageY(get, set):Float;
 
 	/**
 		Creates an Event object that contains information about mouse events.
@@ -628,40 +620,18 @@ class MouseEvent extends Event
 			ctrlKey:Bool = false, altKey:Bool = false, shiftKey:Bool = false, buttonDown:Bool = false, delta:Int = 0, commandKey:Bool = false,
 			clickCount:Int = 0)
 	{
+		if (_ == null)
+		{
+			_ = new _MouseEvent(type, bubbles, cancelable, localX, localY, relatedObject, ctrlKey, altKey, shiftKey, buttonDown, delta, commandKey,
+				clickCount);
+		}
+
 		super(type, bubbles, cancelable);
-
-		this.shiftKey = shiftKey;
-		this.altKey = altKey;
-		this.ctrlKey = ctrlKey;
-		this.bubbles = bubbles;
-		this.relatedObject = relatedObject;
-		this.delta = delta;
-		this.localX = localX;
-		this.localY = localY;
-		this.buttonDown = buttonDown;
-		this.commandKey = commandKey;
-		this.clickCount = clickCount;
-
-		isRelatedObjectInaccessible = false;
-		stageX = Math.NaN;
-		stageY = Math.NaN;
 	}
 
 	public override function clone():MouseEvent
 	{
-		var event = new MouseEvent(type, bubbles, cancelable, localX, localY, relatedObject, ctrlKey, altKey, shiftKey, buttonDown, delta, commandKey,
-			clickCount);
-		event.target = target;
-		event.currentTarget = currentTarget;
-		event.eventPhase = eventPhase;
-		return event;
-	}
-
-	public override function toString():String
-	{
-		return __formatToString("MouseEvent", [
-			"type", "bubbles", "cancelable", "localX", "localY", "relatedObject", "ctrlKey", "altKey", "shiftKey", "buttonDown", "delta"
-		]);
+		return _.clone();
 	}
 
 	/**
@@ -669,37 +639,141 @@ class MouseEvent extends Event
 		event completes, if the display list has been modified.
 
 	**/
-	public function updateAfterEvent():Void {}
-
-	@:noCompletion private static function __create(type:String, button:Int, stageX:Float, stageY:Float, local:Point, target:InteractiveObject,
-			delta:Int = 0):MouseEvent
+	public function updateAfterEvent():Void
 	{
-		var event = new MouseEvent(type, true, false, local.x, local.y, null, __ctrlKey, __altKey, __shiftKey, __buttonDown, delta, __commandKey);
-		event.stageX = stageX;
-		event.stageY = stageY;
-		event.target = target;
-
-		return event;
+		_.updateAfterEvent();
 	}
 
-	@:noCompletion private override function __init():Void
-	{
-		super.__init();
-		shiftKey = false;
-		altKey = false;
-		ctrlKey = false;
-		bubbles = false;
-		relatedObject = null;
-		delta = 0;
-		localX = 0;
-		localY = 0;
-		buttonDown = false;
-		commandKey = false;
-		clickCount = 0;
+	// Get & Set Methods
 
-		isRelatedObjectInaccessible = false;
-		stageX = Math.NaN;
-		stageY = Math.NaN;
+	@:noCompletion private function get_altKey():Bool
+	{
+		return _.altKey;
+	}
+
+	@:noCompletion private function set_altKey(value:Bool):Bool
+	{
+		return _.altKey = value;
+	}
+
+	@:noCompletion private function get_buttonDown():Bool
+	{
+		return _.buttonDown;
+	}
+
+	@:noCompletion private function set_buttonDown(value:Bool):Bool
+	{
+		return _.buttonDown = value;
+	}
+
+	@:noCompletion private function get_commandKey():Bool
+	{
+		return _.commandKey;
+	}
+
+	@:noCompletion private function set_commandKey(value:Bool):Bool
+	{
+		return _.commandKey = value;
+	}
+
+	@:noCompletion private function get_clickCount():Int
+	{
+		return _.clickCount;
+	}
+
+	@:noCompletion private function set_clickCount(value:Int):Int
+	{
+		return _.clickCount = value;
+	}
+
+	@:noCompletion private function get_ctrlKey():Bool
+	{
+		return _.ctrlKey;
+	}
+
+	@:noCompletion private function set_ctrlKey(value:Bool):Bool
+	{
+		return _.ctrlKey = value;
+	}
+
+	@:noCompletion private function get_delta():Int
+	{
+		return _.delta;
+	}
+
+	@:noCompletion private function set_delta(value:Int):Int
+	{
+		return _.delta = value;
+	}
+
+	@:noCompletion private function get_isRelatedObjectInaccessible():Bool
+	{
+		return _.isRelatedObjectInaccessible;
+	}
+
+	@:noCompletion private function set_isRelatedObjectInaccessible(value:Bool):Bool
+	{
+		return _.isRelatedObjectInaccessible = value;
+	}
+
+	@:noCompletion private function get_localX():Float
+	{
+		return _.localX;
+	}
+
+	@:noCompletion private function set_localX(value:Float):Float
+	{
+		return _.localX = value;
+	}
+
+	@:noCompletion private function get_localY():Float
+	{
+		return _.localY;
+	}
+
+	@:noCompletion private function set_localY(value:Float):Float
+	{
+		return _.localY = value;
+	}
+
+	@:noCompletion private function get_relatedObject():InteractiveObject
+	{
+		return _.relatedObject;
+	}
+
+	@:noCompletion private function set_relatedObject(value:InteractiveObject):InteractiveObject
+	{
+		return _.relatedObject = value;
+	}
+
+	@:noCompletion private function get_shiftKey():Bool
+	{
+		return _.shiftKey;
+	}
+
+	@:noCompletion private function set_shiftKey(value:Bool):Bool
+	{
+		return _.shiftKey = value;
+	}
+
+	@:noCompletion private function get_stageX():Float
+	{
+		return _.stageX;
+	}
+
+	@:noCompletion private function set_stageX(value:Float):Float
+	{
+		return _.stageX = value;
+	}
+
+	@:noCompletion private function get_stageY():Float
+	{
+		return _.stageY;
+	}
+
+	@:noCompletion private function set_stageY(value:Float):Float
+	{
+		return _.stageY = value;
 	}
 }
 #else
