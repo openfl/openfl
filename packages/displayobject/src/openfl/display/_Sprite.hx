@@ -1,6 +1,7 @@
 package openfl.display;
 
 import openfl.geom.Point;
+import openfl.geom._Point;
 import openfl.geom.Rectangle;
 import openfl.ui.MouseCursor;
 

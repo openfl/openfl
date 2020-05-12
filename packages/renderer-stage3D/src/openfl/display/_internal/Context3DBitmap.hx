@@ -1,8 +1,10 @@
 package openfl.display._internal;
 
 #if openfl_gl
+import openfl.display._Context3DRenderer;
 import openfl.display.Bitmap;
 import openfl.geom.Matrix;
+import openfl.geom._Matrix;
 #if gl_stats
 import openfl.display._internal.stats.Context3DStats;
 import openfl.display._internal.stats.DrawCallContext;
@@ -25,7 +27,7 @@ import openfl.display._internal.stats.DrawCallContext;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DBitmap
 {
-	public static function render(bitmap:Bitmap, renderer:Context3DRenderer):Void
+	public static function render(bitmap:Bitmap, renderer:_Context3DRenderer):Void
 	{
 		if (!bitmap._.__renderable || bitmap._.__worldAlpha <= 0) return;
 
@@ -111,7 +113,7 @@ class Context3DBitmap
 		}
 	}
 
-	public static function render2(bitmap:Bitmap, renderer:Context3DRenderer):Void
+	public static function render2(bitmap:Bitmap, renderer:_Context3DRenderer):Void
 	{
 		if (!bitmap._.__renderable || bitmap._.__worldAlpha <= 0) return;
 
@@ -198,7 +200,7 @@ class Context3DBitmap
 		}
 	}
 
-	public static function renderMask(bitmap:Bitmap, renderer:Context3DRenderer):Void
+	public static function renderMask(bitmap:Bitmap, renderer:_Context3DRenderer):Void
 	{
 		if (bitmap._.__bitmapData != null && bitmap._.__bitmapData._.__isValid)
 		{

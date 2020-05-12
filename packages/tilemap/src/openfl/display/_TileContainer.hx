@@ -1,6 +1,7 @@
 package openfl.display;
 
 import openfl.geom.Rectangle;
+import openfl.geom._Rectangle;
 
 /**
 	The TileContainer type is a special kind of Tile that can hold

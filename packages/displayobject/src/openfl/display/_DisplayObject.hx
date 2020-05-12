@@ -7,6 +7,7 @@ import openfl._internal.utils.ObjectPool;
 import openfl._internal.Lib;
 import openfl.errors.TypeError;
 import openfl.events.Event;
+import openfl.events._Event;
 import openfl.events._EventDispatcher;
 import openfl.events.EventPhase;
 import openfl.events.EventType;
@@ -255,7 +256,7 @@ class _DisplayObject extends _EventDispatcher
 
 			var targetMatrix = _Matrix.__pool.get();
 
-			targetMatrix.copyFrom(targetCoordinateSpace._.__getWorldTransform());
+			targetMatrix.copyFrom((targetCoordinateSpace._:_DisplayObject).__getWorldTransform());
 			targetMatrix.invert();
 
 			matrix.concat(targetMatrix);
@@ -371,18 +372,19 @@ class _DisplayObject extends _EventDispatcher
 	{
 		for (child in __childIterator(false))
 		{
-			child._.__renderData.dispose();
+			var _child:_DisplayObject = cast child._;
+			_child.__renderData.dispose();
 
-			if (child._.__graphics != null)
+			if (_child.__graphics != null)
 			{
-				child._.__graphics._.__cleanup();
+				(_child.__graphics._:_Graphics).__cleanup();
 			}
 
-			switch (child._.__type)
+			switch (_child.__type)
 			{
 				case DISPLAY_OBJECT_CONTAINER, MOVIE_CLIP:
 					var displayObjectContainer:DisplayObjectContainer = cast child;
-					displayObjectContainer._.__cleanupRemovedChildren();
+					(displayObjectContainer._:_DisplayObjectContainer).__cleanupRemovedChildren();
 				default:
 			}
 		}
@@ -417,9 +419,9 @@ class _DisplayObject extends _EventDispatcher
 					{
 						for (child in __childIterator())
 						{
-							event._.target = child;
+							(event._:_Event).target = child;
 
-							if (!child._.__dispatchWithCapture(event))
+							if (!(child._:_DisplayObject).__dispatchWithCapture(event))
 							{
 								break;
 							}
@@ -704,23 +706,24 @@ class _DisplayObject extends _EventDispatcher
 
 	public function __setStageReferences(stage:Stage):Void
 	{
-		this_displayObject._.stage = stage;
+		(this_displayObject._:_DisplayObject).stage = stage;
 
 		if (__firstChild != null)
 		{
 			for (child in __childIterator())
 			{
-				child._.stage = stage;
-				if (child._.__type == SIMPLE_BUTTON)
+				(child._:_DisplayObject).stage = stage;
+				if ((child._:_DisplayObject).__type == SIMPLE_BUTTON)
 				{
 					var button:SimpleButton = cast child;
-					if (button._.__currentState != null)
+					var _button:_SimpleButton = cast button._;
+					if (_button.__currentState != null)
 					{
-						button._.__currentState._.__setStageReferences(stage);
+						(_button.__currentState._:_DisplayObject).__setStageReferences(stage);
 					}
-					if (button.hitTestState != null && button.hitTestState != button._.__currentState)
+					if (button.hitTestState != null && button.hitTestState != _button.__currentState)
 					{
-						button.hitTestState._.__setStageReferences(stage);
+						(button.hitTestState._:_DisplayObject).__setStageReferences(stage);
 					}
 				}
 			}

@@ -15,7 +15,9 @@ import openfl.display.Tilemap;
 import openfl.events.RenderEvent;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
+import openfl.geom._Matrix;
 import openfl.geom.Rectangle;
+import openfl.geom._Rectangle;
 import openfl.media.Video;
 import openfl.text.TextField;
 #if !lime

@@ -154,7 +154,7 @@ class Sprite extends DisplayObjectContainer
 	**/
 	public function startDrag(lockCenter:Bool = false, bounds:Rectangle = null):Void
 	{
-		_.startDrag(lockCenter, bounds);
+		(_ : _Sprite).startDrag(lockCenter, bounds);
 	}
 
 	#if false
@@ -192,7 +192,7 @@ class Sprite extends DisplayObjectContainer
 	**/
 	public function stopDrag():Void
 	{
-		_.stopDrag();
+		(_ : _Sprite).stopDrag();
 	}
 
 	#if false
@@ -212,42 +212,42 @@ class Sprite extends DisplayObjectContainer
 
 	@:noCompletion private function get_buttonMode():Bool
 	{
-		return _.buttonMode;
+		return (_ : _Sprite).buttonMode;
 	}
 
 	@:noCompletion private function set_buttonMode(value:Bool):Bool
 	{
-		return _.buttonMode = value;
+		return (_ : _Sprite).buttonMode = value;
 	}
 
 	@:noCompletion private function get_dropTarget():DisplayObject
 	{
-		return _.dropTarget;
+		return (_ : _Sprite).dropTarget;
 	}
 
 	@:noCompletion private function get_graphics():Graphics
 	{
-		return _.graphics;
+		return (_ : _Sprite).graphics;
 	}
 
 	@:noCompletion private function get_hitArea():Sprite
 	{
-		return _.hitArea;
+		return (_ : _Sprite).hitArea;
 	}
 
 	@:noCompletion private function set_hitArea(value:Sprite):Sprite
 	{
-		return _.hitArea = value;
+		return (_ : _Sprite).hitArea = value;
 	}
 
 	@:noCompletion private function get_useHandCursor():Bool
 	{
-		return _.useHandCursor;
+		return (_ : _Sprite).useHandCursor;
 	}
 
 	@:noCompletion private function set_useHandCursor(value:Bool):Bool
 	{
-		return _.useHandCursor = value;
+		return (_ : _Sprite).useHandCursor = value;
 	}
 }
 #else

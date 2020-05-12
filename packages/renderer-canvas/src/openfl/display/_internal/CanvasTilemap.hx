@@ -7,7 +7,9 @@ import openfl.display.TileContainer;
 import openfl.display.Tilemap;
 import openfl.display.Tileset;
 import openfl.geom.Matrix;
+import openfl.geom._Matrix;
 import openfl.geom.Rectangle;
+import openfl.geom._Rectangle;
 #if !lime
 import openfl._internal.backend.lime_standalone.ImageCanvasUtil;
 #else

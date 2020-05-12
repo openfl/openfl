@@ -63,7 +63,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function uploadCompressedTextureFromByteArray(data:ByteArray, byteArrayOffset:UInt, async:Bool = false):Void
 	{
-		_.uploadCompressedTextureFromByteArray(data, byteArrayOffset, async);
+		(_ : _CubeTexture).uploadCompressedTextureFromByteArray(data, byteArrayOffset, async);
 	}
 
 	/**
@@ -98,7 +98,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function uploadFromBitmapData(source:BitmapData, side:UInt, miplevel:UInt = 0, generateMipmap:Bool = false):Void
 	{
-		_.uploadFromBitmapData(source, side, miplevel, generateMipmap);
+		(_ : _CubeTexture).uploadFromBitmapData(source, side, miplevel, generateMipmap);
 	}
 
 	/**
@@ -129,7 +129,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function uploadFromByteArray(data:ByteArray, byteArrayOffset:UInt, side:UInt, miplevel:UInt = 0):Void
 	{
-		_.uploadFromByteArray(data, byteArrayOffset, side, miplevel);
+		(_ : _CubeTexture).uploadFromByteArray(data, byteArrayOffset, side, miplevel);
 	}
 
 	/**
@@ -153,7 +153,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function uploadFromTypedArray(data:ArrayBufferView, side:UInt, miplevel:UInt = 0):Void
 	{
-		_.uploadFromTypedArray(data, side, miplevel);
+		(_ : _CubeTexture).uploadFromTypedArray(data, side, miplevel);
 	}
 }
 #else

@@ -1,4 +1,4 @@
-package openfl.display._internal;
+package openfl.display;
 
 #if !flash
 #if openfl_gl
@@ -7,10 +7,23 @@ import lime.graphics.opengl.GL;
 import openfl.display._internal.batcher.BatchRenderer;
 import openfl._internal.renderer.ShaderBuffer;
 import openfl._internal.utils.ObjectPool;
+import openfl.display._internal.Context3DAlphaMaskShader;
+import openfl.display._internal.Context3DBitmap;
+import openfl.display._internal.Context3DBitmapData;
+import openfl.display._internal.Context3DBuffer;
+import openfl.display._internal.Context3DDisplayObject;
+import openfl.display._internal.Context3DGraphics;
+import openfl.display._internal.Context3DMaskShader;
+import openfl.display._internal.Context3DShape;
+import openfl.display._internal.Context3DTextField;
+import openfl.display._internal.Context3DTilemap;
+import openfl.display._internal.Context3DVideo;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
+import openfl.display._BitmapData;
 import openfl.display.BlendMode;
 import openfl.display.DisplayObject;
+import openfl.display._DisplayObject;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.DisplayObjectRenderer;
 import openfl.display.DisplayObjectShader;
@@ -27,8 +40,11 @@ import openfl.display3D.Context3DClearMask;
 import openfl.display3D.Context3D;
 import openfl.events.RenderEvent;
 import openfl.geom.ColorTransform;
+import openfl.geom._ColorTransform;
 import openfl.geom.Matrix;
+import openfl.geom._Matrix;
 import openfl.geom.Rectangle;
+import openfl.geom._Rectangle;
 import openfl.media.Video;
 import openfl.text.TextField;
 #if lime
@@ -85,10 +101,10 @@ import openfl.display._internal.stats.DrawCallContext;
 @:allow(openfl.display)
 @:allow(openfl.text)
 @SuppressWarnings("checkstyle:FieldDocComment")
-class Context3DRenderer extends Context3DRendererAPI
+class _Context3DRenderer extends _DisplayObjectRenderer
 {
 	public static var __alphaValue:Array<Float> = [1];
-	public static var __childRendererPool:ObjectPool<Context3DRenderer>;
+	public static var __childRendererPool:ObjectPool<_Context3DRenderer>;
 	public static var __colorMultipliersValue:Array<Float> = [0, 0, 0, 0];
 	public static var __colorOffsetsValue:Array<Float> = [0, 0, 0, 0];
 	public static var __defaultColorMultipliersValue:Array<Float> = [1, 1, 1, 1];
@@ -209,17 +225,17 @@ class Context3DRenderer extends Context3DRendererAPI
 
 		if (__childRendererPool == null)
 		{
-			__childRendererPool = new ObjectPool<Context3DRenderer>(function()
+			__childRendererPool = new ObjectPool<_Context3DRenderer>(function()
 			{
-				var renderer = new Context3DRenderer(context3D, null);
-				renderer._.__worldTransform = new Matrix();
-				renderer._.__worldColorTransform = new ColorTransform();
+				var renderer = new _Context3DRenderer(context3D, null);
+				renderer.__worldTransform = new Matrix();
+				renderer.__worldColorTransform = new ColorTransform();
 				return renderer;
 			});
 		}
 	}
 
-	public override function applyAlpha(alpha:Float):Void
+	public function applyAlpha(alpha:Float):Void
 	{
 		__alphaValue[0] = alpha;
 
@@ -233,7 +249,7 @@ class Context3DRenderer extends Context3DRendererAPI
 		}
 	}
 
-	public override function applyBitmapData(bitmapData:BitmapData, smooth:Bool, repeat:Bool = false):Void
+	public function applyBitmapData(bitmapData:BitmapData, smooth:Bool, repeat:Bool = false):Void
 	{
 		if (__currentShaderBuffer != null)
 		{
@@ -280,7 +296,7 @@ class Context3DRenderer extends Context3DRendererAPI
 		}
 	}
 
-	public override function applyColorTransform(colorTransform:ColorTransform):Void
+	public function applyColorTransform(colorTransform:ColorTransform):Void
 	{
 		var enabled = (colorTransform != null && !colorTransform._.__isDefault(true));
 		applyHasColorTransform(enabled);
@@ -315,7 +331,7 @@ class Context3DRenderer extends Context3DRendererAPI
 		}
 	}
 
-	public override function applyHasColorTransform(enabled:Bool):Void
+	public function applyHasColorTransform(enabled:Bool):Void
 	{
 		__hasColorTransformValue[0] = enabled;
 
@@ -329,7 +345,7 @@ class Context3DRenderer extends Context3DRendererAPI
 		}
 	}
 
-	public override function applyMatrix(matrix:Array<Float>):Void
+	public function applyMatrix(matrix:Array<Float>):Void
 	{
 		if (__currentShaderBuffer != null)
 		{
@@ -341,7 +357,7 @@ class Context3DRenderer extends Context3DRendererAPI
 		}
 	}
 
-	public override function getMatrix(transform:Matrix):#if (!lime && openfl_html5) Matrix3D #else Matrix4 #end
+	public function getMatrix(transform:Matrix):#if (!lime && openfl_html5) Matrix3D #else Matrix4 #end
 	{
 		if (__gl != null)
 		{
@@ -380,7 +396,7 @@ class Context3DRenderer extends Context3DRendererAPI
 		}
 	}
 
-	public override function setShader(shader:Shader):Void
+	public function setShader(shader:Shader):Void
 	{
 		__currentShaderBuffer = null;
 
@@ -411,12 +427,12 @@ class Context3DRenderer extends Context3DRendererAPI
 		}
 	}
 
-	public override function setViewport():Void
+	public function setViewport():Void
 	{
 		__gl.viewport(__offsetX, __offsetY, __displayWidth, __displayHeight);
 	}
 
-	public override function updateShader():Void
+	public function updateShader():Void
 	{
 		if (__currentShader != null)
 		{
@@ -429,7 +445,7 @@ class Context3DRenderer extends Context3DRendererAPI
 		}
 	}
 
-	public override function useAlphaArray():Void
+	public function useAlphaArray():Void
 	{
 		if (__currentShader != null)
 		{
@@ -437,7 +453,7 @@ class Context3DRenderer extends Context3DRendererAPI
 		}
 	}
 
-	public override function useColorTransformArray():Void
+	public function useColorTransformArray():Void
 	{
 		if (__currentShader != null)
 		{
@@ -498,7 +514,7 @@ class Context3DRenderer extends Context3DRendererAPI
 		}
 	}
 
-	public function __copyShader(other:Context3DRenderer):Void
+	public function __copyShader(other:_Context3DRenderer):Void
 	{
 		__currentShader = other._.__currentShader;
 		__currentShaderBuffer = other._.__currentShaderBuffer;
@@ -1112,7 +1128,7 @@ class Context3DRenderer extends Context3DRendererAPI
 	{
 		if (object != null && object._.__type != null)
 		{
-			switch (object._.__type)
+			switch ((object._ : _DisplayObject).__type)
 			{
 				case BITMAP:
 					__renderBitmap(cast object);
@@ -1267,7 +1283,7 @@ class Context3DRenderer extends Context3DRendererAPI
 	{
 		if (mask != null)
 		{
-			switch (mask._.__type)
+			switch ((mask._ : _DisplayObject).__type)
 			{
 				case BITMAP:
 					Context3DBitmap.renderMask(cast mask, this);
@@ -1394,7 +1410,7 @@ class Context3DRenderer extends Context3DRendererAPI
 		#end
 	}
 
-	public function __resumeClipAndMask(childRenderer:Context3DRenderer):Void
+	public function __resumeClipAndMask(childRenderer:_Context3DRenderer):Void
 	{
 		if (__stencilReference > 0)
 		{
@@ -1501,7 +1517,7 @@ class Context3DRenderer extends Context3DRendererAPI
 	{
 		if (value == true) return true;
 
-		switch (object._.__type)
+		switch ((object._ : _DisplayObject).__type)
 		{
 			case DISPLAY_OBJECT_CONTAINER, MOVIE_CLIP:
 				if (object._.__filters != null) return true;
@@ -1733,22 +1749,22 @@ class Context3DRenderer extends Context3DRendererAPI
 			if (needRender)
 			{
 				var childRenderer = __childRendererPool.get();
-				childRenderer._.__init(context3D, object._.__renderData.cacheBitmapDataTexture);
+				childRenderer.__init(context3D, object._.__renderData.cacheBitmapDataTexture);
 
-				childRenderer._.__stage = object.stage;
+				childRenderer.__stage = object.stage;
 
-				childRenderer._.__allowSmoothing = __allowSmoothing;
-				(cast childRenderer : Context3DRenderer)._.__setBlendMode(NORMAL);
-				childRenderer._.__worldAlpha = 1 / object._.__worldAlpha;
+				childRenderer.__allowSmoothing = __allowSmoothing;
+				(cast childRenderer : _Context3DRenderer)._.__setBlendMode(NORMAL);
+				childRenderer.__worldAlpha = 1 / object._.__worldAlpha;
 
-				childRenderer._.__worldTransform.copyFrom(object._.__renderTransform);
-				childRenderer._.__worldTransform.invert();
-				childRenderer._.__worldTransform.concat(object._.__renderData.cacheBitmapMatrix);
-				childRenderer._.__worldTransform.tx -= offsetX;
-				childRenderer._.__worldTransform.ty -= offsetY;
+				childRenderer.__worldTransform.copyFrom(object._.__renderTransform);
+				childRenderer.__worldTransform.invert();
+				childRenderer.__worldTransform.concat(object._.__renderData.cacheBitmapMatrix);
+				childRenderer.__worldTransform.tx -= offsetX;
+				childRenderer.__worldTransform.ty -= offsetY;
 
-				childRenderer._.__worldColorTransform._.__copyFrom(colorTransform);
-				childRenderer._.__worldColorTransform._.__invert();
+				childRenderer.__worldColorTransform._.__copyFrom(colorTransform);
+				childRenderer.__worldColorTransform._.__invert();
 
 				object._.__renderData.isCacheBitmapRender = true;
 
@@ -1759,13 +1775,13 @@ class Context3DRenderer extends Context3DRendererAPI
 
 				var cacheBlendMode = __blendMode;
 				__suspendClipAndMask();
-				childRenderer._.__copyShader(this);
+				childRenderer.__copyShader(this);
 
 				Context3DBitmapData.setUVRect(object._.__renderData.cacheBitmapDataTexture, context3D, 0, 0, filterWidth, filterHeight);
-				childRenderer._.__setRenderTarget(object._.__renderData.cacheBitmapDataTexture);
+				childRenderer.__setRenderTarget(object._.__renderData.cacheBitmapDataTexture);
 				// if (object._.__renderData.cacheBitmapDataTexture.image != null) object._.__renderData.cacheBitmapData._.__renderData.textureVersion = object._.__renderData.cacheBitmapData._.__getVersion() + 1;
 
-				childRenderer._.__drawBitmapData(object._.__renderData.cacheBitmapDataTexture, object, null);
+				childRenderer.__drawBitmapData(object._.__renderData.cacheBitmapDataTexture, object, null);
 
 				if (hasFilters)
 				{
@@ -1790,10 +1806,10 @@ class Context3DRenderer extends Context3DRendererAPI
 					Context3DBitmapData.setUVRect(bitmap2, context3D, 0, 0, filterWidth, filterHeight);
 					if (bitmap3 != null) Context3DBitmapData.setUVRect(bitmap3, context3D, 0, 0, filterWidth, filterHeight);
 
-					childRenderer._.__setBlendMode(NORMAL);
-					childRenderer._.__worldAlpha = 1;
-					childRenderer._.__worldTransform.identity();
-					childRenderer._.__worldColorTransform._.__identity();
+					childRenderer.__setBlendMode(NORMAL);
+					childRenderer.__worldAlpha = 1;
+					childRenderer.__worldTransform.identity();
+					childRenderer.__worldColorTransform._.__identity();
 
 					var shader, cacheBitmap, firstPass = true;
 
@@ -1801,17 +1817,17 @@ class Context3DRenderer extends Context3DRendererAPI
 					{
 						if (filter._.__preserveObject)
 						{
-							childRenderer._.__setRenderTarget(bitmap3);
-							childRenderer._.__renderFilterPass(firstPass ? object._.__renderData.cacheBitmapDataTexture : bitmap,
-								childRenderer._.__defaultDisplayShader, filter._.__smooth);
+							childRenderer.__setRenderTarget(bitmap3);
+							childRenderer.__renderFilterPass(firstPass ? object._.__renderData.cacheBitmapDataTexture : bitmap,
+								childRenderer.__defaultDisplayShader, filter._.__smooth);
 						}
 
 						for (i in 0...filter._.__numShaderPasses)
 						{
 							shader = filter._.__initShader(childRenderer, i, filter._.__preserveObject ? bitmap3 : null);
-							childRenderer._.__setBlendMode(filter._.__shaderBlendMode);
-							childRenderer._.__setRenderTarget(bitmap2);
-							childRenderer._.__renderFilterPass(firstPass ? object._.__renderData.cacheBitmapDataTexture : bitmap, shader, filter._.__smooth);
+							childRenderer.__setBlendMode(filter._.__shaderBlendMode);
+							childRenderer.__setRenderTarget(bitmap2);
+							childRenderer.__renderFilterPass(firstPass ? object._.__renderData.cacheBitmapDataTexture : bitmap, shader, filter._.__smooth);
 
 							firstPass = false;
 							cacheBitmap = bitmap;
@@ -1825,8 +1841,8 @@ class Context3DRenderer extends Context3DRendererAPI
 					if (bitmap != null)
 					{
 						object._.__renderData.cacheBitmapDataTexture.fillRect(object._.__renderData.cacheBitmapDataTexture.rect, 0);
-						childRenderer._.__setRenderTarget(object._.__renderData.cacheBitmapDataTexture);
-						childRenderer._.__renderFilterPass(bitmap, childRenderer._.__defaultDisplayShader, true);
+						childRenderer.__setRenderTarget(object._.__renderData.cacheBitmapDataTexture);
+						childRenderer.__renderFilterPass(bitmap, childRenderer.__defaultDisplayShader, true);
 						// object._.__renderData.cacheBitmap.bitmapData = object._.__renderData.cacheBitmapData;
 					}
 
@@ -1834,7 +1850,7 @@ class Context3DRenderer extends Context3DRendererAPI
 					context3D._.__bitmapDataPool.release(bitmap2);
 					if (bitmap3 != null) context3D._.__bitmapDataPool.release(bitmap3);
 
-					BitmapData._.__hardwareRenderer = cacheRenderer;
+					_BitmapData.__hardwareRenderer = cacheRenderer;
 				}
 
 				__blendMode = NORMAL;
@@ -1864,7 +1880,7 @@ class Context3DRenderer extends Context3DRendererAPI
 
 			updated = updateTransform;
 
-			ColorTransform._.__pool.release(colorTransform);
+			_ColorTransform.__pool.release(colorTransform);
 		}
 		else if (object._.__renderData.cacheBitmap != null)
 		{

@@ -23,28 +23,54 @@ class CanvasRenderer extends DisplayObjectRenderer
 	/**
 		The current HTML5 canvas render context
 	**/
-	public var context:#if (lime || openfl_html5) Canvas2DRenderContext #else Dynamic #end;
+	public var context(get, set):#if (lime || openfl_html5) Canvas2DRenderContext #else Dynamic #end;
 
 	/**
 		The active pixel ratio used during rendering
 	**/
-	public var pixelRatio(default, null):Float = 1;
+	public var pixelRatio(get, never):Float;
 
 	@:noCompletion private function new(context:#if (lime || openfl_html5) Canvas2DRenderContext #else Dynamic #end)
 	{
-		super();
+		if (_ == null)
+		{
+			_ = new _CanvasRenderer(context);
+		}
 
-		this.context = context;
+		super();
 	}
 
 	/**
 		Set whether smoothing should be enabled on a canvas context
 	**/
-	public function applySmoothing(context:#if (lime || openfl_html5) Canvas2DRenderContext #else Dynamic #end, value:Bool):Void {}
+	public function applySmoothing(context:#if (lime || openfl_html5) Canvas2DRenderContext #else Dynamic #end, value:Bool):Void
+	{
+		_.applySmoothing(context, value);
+	}
 
 	/**
 		Set the matrix value for the current render context, or (optionally) another canvas
 		context
 	**/
-	public function setTransform(transform:Matrix, context:#if (lime || openfl_html5) Canvas2DRenderContext #else Dynamic #end = null):Void {}
+	public function setTransform(transform:Matrix, context:#if (lime || openfl_html5) Canvas2DRenderContext #else Dynamic #end = null):Void
+	{
+		_.setTransform(transform, context);
+	}
+
+	// Get & Set Methods
+
+	@:noCompletion private function get_context():#if (lime || openfl_html5) Canvas2DRenderContext #else Dynamic #end
+	{
+		return _.context;
+	}
+
+	@:noCompletion private function set_context(value:#if (lime || openfl_html5) Canvas2DRenderContext #else Dynamic #end):#if (lime || openfl_html5) Canvas2DRenderContext #else Dynamic #end
+	{
+		return _.context = value;
+	}
+
+	@:noCompletion private function get_pixelRatio():Float
+	{
+		return _.pixelRatio;
+	}
 }

@@ -168,7 +168,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		calling object by calling the `Security.allowDomain()` method
 		or the `Security.alowInsecureDomain()` method. For more
 		information, see the "Security" chapter in the _ActionScript 3.0
-		Developer's Guide_.
+		Developer's Guide(_ : _Stage).
 	**/
 	public var align(get, set):StageAlign;
 
@@ -189,7 +189,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 	@:noCompletion private inline function get_application():Application
 	{
-		return _.limeApplication;
+		return (_ : _Stage).limeApplication;
 	}
 	#end
 
@@ -360,7 +360,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 							  `Security.allowDomain()` method or the
 							  `Security.allowInsecureDomain()` method.
 							  For more information, see the "Security" chapter in
-							  the _ActionScript 3.0 Developer's Guide_.
+							  the _ActionScript 3.0 Developer's Guide(_ : _Stage).
 							  Trying to set the `displayState` property
 							  while the settings dialog is displayed, without a
 							  user response, or if the `param` or
@@ -412,7 +412,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 							  `Security.allowDomain()` method or the
 							  `Security.allowInsecureDomain()` method.
 							  For more information, see the "Security" chapter in
-							  the _ActionScript 3.0 Developer's Guide_.
+							  the _ActionScript 3.0 Developer's Guide(_ : _Stage).
 	**/
 	public var frameRate(get, set):Float;
 
@@ -556,7 +556,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 							  method or the
 							  `Security.allowInsecureDomain()` method.
 							  For more information, see the "Security" chapter in
-							  the _ActionScript 3.0 Developer's Guide_.
+							  the _ActionScript 3.0 Developer's Guide(_ : _Stage).
 	**/
 	public var quality(get, set):StageQuality;
 
@@ -590,7 +590,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 							  `Security.allowDomain()` method or the
 							  `Security.allowInsecureDomain()` method.
 							  For more information, see the "Security" chapter in
-							  the _ActionScript 3.0 Developer's Guide_.
+							  the _ActionScript 3.0 Developer's Guide(_ : _Stage).
 	**/
 	public var scaleMode(get, set):StageScaleMode;
 
@@ -611,7 +611,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 							  `Security.allowDomain()` method or the
 							  `Security.allowInsecureDomain()` method. For
 							  more information, see the "Security" chapter in
-							  the _ActionScript 3.0 Developer's Guide_.
+							  the _ActionScript 3.0 Developer's Guide(_ : _Stage).
 	**/
 	public var showDefaultContextMenu(get, set):Bool;
 
@@ -658,7 +658,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 							  `Security.allowDomain()` method or the
 							  `Security.allowInsecureDomain()` method.
 							  For more information, see the "Security" chapter in
-							  the _ActionScript 3.0 Developer's Guide_.
+							  the _ActionScript 3.0 Developer's Guide(_ : _Stage).
 	**/
 	public var stageFocusRect(get, set):Bool;
 
@@ -701,7 +701,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 							  `Security.allowDomain()` method or the
 							  `Security.allowInsecureDomain()` method.
 							  For more information, see the "Security" chapter in
-							  the _ActionScript 3.0 Developer's Guide_.
+							  the _ActionScript 3.0 Developer's Guide(_ : _Stage).
 	**/
 	public var stageHeight(get, never):Int;
 
@@ -773,7 +773,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 							  `Security.allowDomain()` method or the
 							  `Security.allowInsecureDomain()` method.
 							  For more information, see the "Security" chapter in
-							  the _ActionScript 3.0 Developer's Guide_.
+							  the _ActionScript 3.0 Developer's Guide(_ : _Stage).
 	**/
 	public var stageWidth(get, never):Int;
 
@@ -784,7 +784,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 	@:noCompletion private inline function get_window():Window
 	{
-		return _.limeWindow;
+		return (_ : _Stage).limeWindow;
 	}
 	#end
 
@@ -884,18 +884,18 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	**/
 	public override function invalidate():Void
 	{
-		_.invalidate();
+		(_ : _Stage).invalidate();
 	}
 
 	#if lime
 	@:noCompletion private function __registerLimeModule(application:Application):Void
 	{
-		_.registerLimeModule(application);
+		(_ : _Stage).registerLimeModule(application);
 	}
 
 	@:noCompletion private function __unregisterLimeModule(application:Application):Void
 	{
-		_.unregisterLimeModule(application);
+		(_ : _Stage).unregisterLimeModule(application);
 	}
 	#end
 
@@ -904,176 +904,176 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 	@:noCompletion private function get_align():StageAlign
 	{
-		return _.align;
+		return (_ : _Stage).align;
 	}
 
 	@:noCompletion private function set_align(value:StageAlign):StageAlign
 	{
-		return _.align = value;
+		return (_ : _Stage).align = value;
 	}
 
 	@:noCompletion private function get_allowsFullScreen():Bool
 	{
-		return _.allowsFullScreen;
+		return (_ : _Stage).allowsFullScreen;
 	}
 
 	@:noCompletion private function get_allowsFullScreenInteractive():Bool
 	{
-		return _.allowsFullScreenInteractive;
+		return (_ : _Stage).allowsFullScreenInteractive;
 	}
 
 	@:noCompletion private function get_color():Null<Int>
 	{
-		return _.color;
+		return (_ : _Stage).color;
 	}
 
 	@:noCompletion private function set_color(value:Null<Int>):Null<Int>
 	{
-		return _.color = value;
+		return (_ : _Stage).color = value;
 	}
 
 	@:noCompletion private function get_contentsScaleFactor():Float
 	{
-		return _.contentsScaleFactor;
+		return (_ : _Stage).contentsScaleFactor;
 	}
 
 	@:noCompletion private function get_context3D():Context3D
 	{
-		return _.context3D;
+		return (_ : _Stage).context3D;
 	}
 
 	@:noCompletion private function get_displayState():StageDisplayState
 	{
-		return _.displayState;
+		return (_ : _Stage).displayState;
 	}
 
 	@:noCompletion private function set_displayState(value:StageDisplayState):StageDisplayState
 	{
-		return _.displayState = value;
+		return (_ : _Stage).displayState = value;
 	}
 
 	#if (commonjs || (openfl_html5 && !lime))
 	@:noCompletion private function get_element():Element
 	{
-		return _.element;
+		return (_ : _Stage).element;
 	}
 	#end
 
 	@:noCompletion private function get_focus():InteractiveObject
 	{
-		return _.focus;
+		return (_ : _Stage).focus;
 	}
 
 	@:noCompletion private function set_focus(value:InteractiveObject):InteractiveObject
 	{
-		return _.focus = value;
+		return (_ : _Stage).focus = value;
 	}
 
 	@:noCompletion private function get_frameRate():Float
 	{
-		return _.frameRate;
+		return (_ : _Stage).frameRate;
 	}
 
 	@:noCompletion private function set_frameRate(value:Float):Float
 	{
-		return _.frameRate = value;
+		return (_ : _Stage).frameRate = value;
 	}
 
 	@:noCompletion private function get_fullScreenHeight():UInt
 	{
-		return _.fullScreenHeight;
+		return (_ : _Stage).fullScreenHeight;
 	}
 
 	@:noCompletion private function get_fullScreenSourceRect():Rectangle
 	{
-		return _.fullScreenSourceRect;
+		return (_ : _Stage).fullScreenSourceRect;
 	}
 
 	@:noCompletion private function set_fullScreenSourceRect(value:Rectangle):Rectangle
 	{
-		return _.fullScreenSourceRect = value;
+		return (_ : _Stage).fullScreenSourceRect = value;
 	}
 
 	@:noCompletion private function get_fullScreenWidth():UInt
 	{
-		return _.fullScreenWidth;
+		return (_ : _Stage).fullScreenWidth;
 	}
 
 	#if lime
 	@:noCompletion private function get_limeApplication():Application
 	{
-		return _.limeApplication;
+		return (_ : _Stage).limeApplication;
 	}
 
 	@:noCompletion private function get_limeWindow():Window
 	{
-		return _.limeWindow;
+		return (_ : _Stage).limeWindow;
 	}
 	#end
 
 	@:noCompletion private function get_quality():StageQuality
 	{
-		return _.quality;
+		return (_ : _Stage).quality;
 	}
 
 	@:noCompletion private function set_quality(value:StageQuality):StageQuality
 	{
-		return _.quality = value;
+		return (_ : _Stage).quality = value;
 	}
 
 	@:noCompletion private function get_scaleMode():StageScaleMode
 	{
-		return _.scaleMode;
+		return (_ : _Stage).scaleMode;
 	}
 
 	@:noCompletion private function set_scaleMode(value:StageScaleMode):StageScaleMode
 	{
-		return _.scaleMode = value;
+		return (_ : _Stage).scaleMode = value;
 	}
 
 	@:noCompletion private function get_showDefaultContextMenu():Bool
 	{
-		return _.showDefaultContextMenu;
+		return (_ : _Stage).showDefaultContextMenu;
 	}
 
 	@:noCompletion private function set_showDefaultContextMenu(value:Bool):Bool
 	{
-		return _.showDefaultContextMenu = value;
+		return (_ : _Stage).showDefaultContextMenu = value;
 	}
 
 	@:noCompletion private function get_softKeyboardRect():Rectangle
 	{
-		return _.softKeyboardRect;
+		return (_ : _Stage).softKeyboardRect;
 	}
 
 	@:noCompletion private function set_softKeyboardRect(value:Rectangle):Rectangle
 	{
-		return _.softKeyboardRect = value;
+		return (_ : _Stage).softKeyboardRect = value;
 	}
 
 	@:noCompletion private function get_stage3Ds():Vector<Stage3D>
 	{
-		return _.stage3Ds;
+		return (_ : _Stage).stage3Ds;
 	}
 
 	@:noCompletion private function get_stageFocusRect():Bool
 	{
-		return _.stageFocusRect;
+		return (_ : _Stage).stageFocusRect;
 	}
 
 	@:noCompletion private function set_stageFocusRect(value:Bool):Bool
 	{
-		return _.stageFocusRect = value;
+		return (_ : _Stage).stageFocusRect = value;
 	}
 
 	@:noCompletion private function get_stageHeight():Int
 	{
-		return _.stageHeight;
+		return (_ : _Stage).stageHeight;
 	}
 
 	@:noCompletion private function get_stageWidth():Int
 	{
-		return _.stageWidth;
+		return (_ : _Stage).stageWidth;
 	}
 }
 #else

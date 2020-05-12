@@ -75,7 +75,7 @@ import js.html.CSSStyleDeclaration;
 	longer begin with the underscore(_) character.
 
 	For more information, see the "Display Programming" chapter of the
-	_ActionScript 3.0 Developer's Guide_.
+	_ActionScript 3.0 Developer's Guide(_:_DisplayObject).
 
 	@event added            Dispatched when a display object is added to the
 							display list. The following methods trigger this
@@ -897,7 +897,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	**/
 	public function getBounds(targetCoordinateSpace:DisplayObject):Rectangle
 	{
-		return _.getBounds(targetCoordinateSpace);
+		return (_ : _DisplayObject).getBounds(targetCoordinateSpace);
 	}
 
 	/**
@@ -920,7 +920,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	**/
 	public function getRect(targetCoordinateSpace:DisplayObject):Rectangle
 	{
-		return _.getRect(targetCoordinateSpace);
+		return (_ : _DisplayObject).getRect(targetCoordinateSpace);
 	}
 
 	/**
@@ -942,7 +942,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	**/
 	public function globalToLocal(pos:Point):Point
 	{
-		return _.globalToLocal(pos);
+		return (_ : _DisplayObject).globalToLocal(pos);
 	}
 
 	// @:noCompletion @:dox(hide) @:require(flash10) public function globalToLocal3D (point:Point):Vector3D;
@@ -957,7 +957,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	**/
 	public function hitTestObject(obj:DisplayObject):Bool
 	{
-		return _.hitTestObject(obj);
+		return (_ : _DisplayObject).hitTestObject(obj);
 	}
 
 	/**
@@ -978,7 +978,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	**/
 	public function hitTestPoint(x:Float, y:Float, shapeFlag:Bool = false):Bool
 	{
-		return _.hitTestPoint(x, y, shapeFlag);
+		return (_ : _DisplayObject).hitTestPoint(x, y, shapeFlag);
 	}
 
 	/**
@@ -987,7 +987,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	**/
 	public function invalidate():Void
 	{
-		_.invalidate();
+		(_ : _DisplayObject).invalidate();
 	}
 
 	/**
@@ -1015,7 +1015,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	**/
 	public function localToGlobal(point:Point):Point
 	{
-		return _.localToGlobal(point);
+		return (_ : _DisplayObject).localToGlobal(point);
 	}
 
 	// @:noCompletion @:dox(hide) @:require(flash10) public function local3DToGlobal (point3d:Vector3D):Point;
@@ -1023,232 +1023,232 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 	@:keep @:noCompletion private function get_alpha():Float
 	{
-		return _.alpha;
+		return (_ : _DisplayObject).alpha;
 	}
 
 	@:keep @:noCompletion private function set_alpha(value:Float):Float
 	{
-		return _.alpha = value;
+		return (_ : _DisplayObject).alpha = value;
 	}
 
 	@:noCompletion private function get_blendMode():BlendMode
 	{
-		return _.blendMode;
+		return (_ : _DisplayObject).blendMode;
 	}
 
 	@:noCompletion private function set_blendMode(value:BlendMode):BlendMode
 	{
-		return _.blendMode = value;
+		return (_ : _DisplayObject).blendMode = value;
 	}
 
 	@:noCompletion private function get_cacheAsBitmap():Bool
 	{
-		return _.cacheAsBitmap;
+		return (_ : _DisplayObject).cacheAsBitmap;
 	}
 
 	@:noCompletion private function set_cacheAsBitmap(value:Bool):Bool
 	{
-		return _.cacheAsBitmap = value;
+		return (_ : _DisplayObject).cacheAsBitmap = value;
 	}
 
 	@:noCompletion private function get_cacheAsBitmapMatrix():Matrix
 	{
-		return _.cacheAsBitmapMatrix;
+		return (_ : _DisplayObject).cacheAsBitmapMatrix;
 	}
 
 	@:noCompletion private function set_cacheAsBitmapMatrix(value:Matrix):Matrix
 	{
-		return _.cacheAsBitmapMatrix = value;
+		return (_ : _DisplayObject).cacheAsBitmapMatrix = value;
 	}
 
 	@:noCompletion private function get_filters():Array<BitmapFilter>
 	{
-		return _.filters;
+		return (_ : _DisplayObject).filters;
 	}
 
 	@:noCompletion private function set_filters(value:Array<BitmapFilter>):Array<BitmapFilter>
 	{
-		return _.filters = value;
+		return (_ : _DisplayObject).filters = value;
 	}
 
 	@:keep @:noCompletion private function get_height():Float
 	{
-		return _.height;
+		return (_ : _DisplayObject).height;
 	}
 
 	@:keep @:noCompletion private function set_height(value:Float):Float
 	{
-		return _.height = value;
+		return (_ : _DisplayObject).height = value;
 	}
 
 	@:noCompletion private function get_loaderInfo():LoaderInfo
 	{
-		return _.loaderInfo;
+		return (_ : _DisplayObject).loaderInfo;
 	}
 
 	@:noCompletion private function get_mask():DisplayObject
 	{
-		return _.mask;
+		return (_ : _DisplayObject).mask;
 	}
 
 	@:noCompletion private function set_mask(value:DisplayObject):DisplayObject
 	{
-		return _.mask = value;
+		return (_ : _DisplayObject).mask = value;
 	}
 
 	@:noCompletion private function get_mouseX():Float
 	{
-		return _.mouseX;
+		return (_ : _DisplayObject).mouseX;
 	}
 
 	@:noCompletion private function get_mouseY():Float
 	{
-		return _.mouseY;
+		return (_ : _DisplayObject).mouseY;
 	}
 
 	@:noCompletion private function get_name():String
 	{
-		return _.name;
+		return (_ : _DisplayObject).name;
 	}
 
 	@:noCompletion private function set_name(value:String):String
 	{
-		return _.name = value;
+		return (_ : _DisplayObject).name = value;
 	}
 
 	@:noCompletion private function get_opaqueBackground():Null<Int>
 	{
-		return _.opaqueBackground;
+		return (_ : _DisplayObject).opaqueBackground;
 	}
 
 	@:noCompletion private function set_opaqueBackground(value:Null<Int>):Null<Int>
 	{
-		return _.opaqueBackground = value;
+		return (_ : _DisplayObject).opaqueBackground = value;
 	}
 
 	@:noCompletion private function get_parent():DisplayObjectContainer
 	{
-		return _.parent;
+		return (_ : _DisplayObject).parent;
 	}
 
 	@:noCompletion private function get_root():DisplayObject
 	{
-		return _.root;
+		return (_ : _DisplayObject).root;
 	}
 
 	@:keep @:noCompletion private function get_rotation():Float
 	{
-		return _.rotation;
+		return (_ : _DisplayObject).rotation;
 	}
 
 	@:keep @:noCompletion private function set_rotation(value:Float):Float
 	{
-		return _.rotation = value;
+		return (_ : _DisplayObject).rotation = value;
 	}
 
 	@:noCompletion private function get_scale9Grid():Rectangle
 	{
-		return _.scale9Grid;
+		return (_ : _DisplayObject).scale9Grid;
 	}
 
 	@:noCompletion private function set_scale9Grid(value:Rectangle):Rectangle
 	{
-		return _.scale9Grid = value;
+		return (_ : _DisplayObject).scale9Grid = value;
 	}
 
 	@:keep @:noCompletion private function get_scaleX():Float
 	{
-		return _.scaleX;
+		return (_ : _DisplayObject).scaleX;
 	}
 
 	@:keep @:noCompletion private function set_scaleX(value:Float):Float
 	{
-		return _.scaleX = value;
+		return (_ : _DisplayObject).scaleX = value;
 	}
 
 	@:keep @:noCompletion private function get_scaleY():Float
 	{
-		return _.scaleY;
+		return (_ : _DisplayObject).scaleY;
 	}
 
 	@:keep @:noCompletion private function set_scaleY(value:Float):Float
 	{
-		return _.scaleY = value;
+		return (_ : _DisplayObject).scaleY = value;
 	}
 
 	@:noCompletion private function get_scrollRect():Rectangle
 	{
-		return _.scrollRect;
+		return (_ : _DisplayObject).scrollRect;
 	}
 
 	@:noCompletion private function set_scrollRect(value:Rectangle):Rectangle
 	{
-		return _.scrollRect = value;
+		return (_ : _DisplayObject).scrollRect = value;
 	}
 
 	@:noCompletion private function get_shader():Shader
 	{
-		return _.shader;
+		return (_ : _DisplayObject).shader;
 	}
 
 	@:noCompletion private function set_shader(value:Shader):Shader
 	{
-		return _.shader = value;
+		return (_ : _DisplayObject).shader = value;
 	}
 
 	@:noCompletion private function get_stage():Stage
 	{
-		return _.stage;
+		return (_ : _DisplayObject).stage;
 	}
 
 	@:keep @:noCompletion private function get_transform():Transform
 	{
-		return _.transform;
+		return (_ : _DisplayObject).transform;
 	}
 
 	@:keep @:noCompletion private function set_transform(value:Transform):Transform
 	{
-		return _.transform = value;
+		return (_ : _DisplayObject).transform = value;
 	}
 
 	@:noCompletion private function get_visible():Bool
 	{
-		return _.visible;
+		return (_ : _DisplayObject).visible;
 	}
 
 	@:noCompletion private function set_visible(value:Bool):Bool
 	{
-		return _.visible = value;
+		return (_ : _DisplayObject).visible = value;
 	}
 
 	@:keep @:noCompletion private function get_width():Float
 	{
-		return _.width;
+		return (_ : _DisplayObject).width;
 	}
 
 	@:keep @:noCompletion private function set_width(value:Float):Float
 	{
-		return _.width = value;
+		return (_ : _DisplayObject).width = value;
 	}
 
 	@:keep @:noCompletion private function get_x():Float
 	{
-		return _.x;
+		return (_ : _DisplayObject).x;
 	}
 
 	@:keep @:noCompletion private function set_x(value:Float):Float
 	{
-		return _.x = value;
+		return (_ : _DisplayObject).x = value;
 	}
 
 	@:keep @:noCompletion private function get_y():Float
 	{
-		return _.y;
+		return (_ : _DisplayObject).y;
 	}
 
 	@:keep @:noCompletion private function set_y(value:Float):Float
 	{
-		return _.y = value;
+		return (_ : _DisplayObject).y = value;
 	}
 }
 #else

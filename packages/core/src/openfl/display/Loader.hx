@@ -67,7 +67,7 @@ using openfl._internal.utils.DisplayObjectLinkedList;
 	prevented.
 	* You cannot connect to commonly reserved ports. For a complete list of
 	blocked ports, see "Restricting Networking APIs" in the _ActionScript 3.0
-	Developer's Guide_.
+	Developer's Guide(_:_Loader).
 
 	However, in AIR, content in the `application` security
 	sandbox(content installed with the AIR application) are not restricted by
@@ -316,7 +316,7 @@ class Loader extends DisplayObjectContainer
 		@throws SecurityError         You cannot connect to commonly reserved
 									  ports. For a complete list of blocked ports,
 									  see "Restricting Networking APIs" in the
-									  _ActionScript 3.0 Developer's Guide_.
+									  _ActionScript 3.0 Developer's Guide(_:_Loader).
 		@throws SecurityError         If the `applicationDomain` or
 									  `securityDomain` properties of
 									  the `context` parameter are from
@@ -369,7 +369,7 @@ class Loader extends DisplayObjectContainer
 	**/
 	public function load(request:URLRequest, context:LoaderContext = null):Void
 	{
-		_.load(request, context);
+		(_ : _Loader).load(request, context);
 	}
 
 	/**
@@ -420,7 +420,7 @@ class Loader extends DisplayObjectContainer
 		@throws SecurityError         You cannot connect to commonly reserved
 									  ports. For a complete list of blocked ports,
 									  see "Restricting Networking APIs" in the
-									  _ActionScript 3.0 Developer's Guide_.
+									  _ActionScript 3.0 Developer's Guide(_:_Loader).
 		@event asyncError    Dispatched by the `contentLoaderInfo`
 							 object if the
 							 `LoaderContext.requestedContentParent`
@@ -458,7 +458,7 @@ class Loader extends DisplayObjectContainer
 	**/
 	public function loadBytes(buffer:ByteArray, context:LoaderContext = null):Void
 	{
-		_.loadBytes(buffer, context);
+		(_ : _Loader).loadBytes(buffer, context);
 	}
 
 	/**
@@ -491,7 +491,7 @@ class Loader extends DisplayObjectContainer
 	**/
 	public function unload():Void
 	{
-		_.unload();
+		(_ : _Loader).unload();
 	}
 
 	/**
@@ -523,24 +523,24 @@ class Loader extends DisplayObjectContainer
 	**/
 	public function unloadAndStop(gc:Bool = true):Void
 	{
-		_.unloadAndStop(gc);
+		(_ : _Loader).unloadAndStop(gc);
 	}
 
 	// Get & Set Methods
 
 	@:noCompletion public function get_content():DisplayObject
 	{
-		return _.content;
+		return (_ : _Loader).content;
 	}
 
 	@:noCompletion public function get_contentLoaderInfo():LoaderInfo
 	{
-		return _.contentLoaderInfo;
+		return (_ : _Loader).contentLoaderInfo;
 	}
 
 	@:noCompletion public function get_uncaughtErrorEvents():UncaughtErrorEvents
 	{
-		return _.uncaughtErrorEvents;
+		return (_ : _Loader).uncaughtErrorEvents;
 	}
 }
 #else

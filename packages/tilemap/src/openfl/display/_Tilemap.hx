@@ -3,7 +3,9 @@ package openfl.display;
 import openfl.display._internal.FlashRenderer;
 import openfl.display._internal.FlashTilemap;
 import openfl.geom.Matrix;
+import openfl.geom._Matrix;
 import openfl.geom.Rectangle;
+import openfl.geom._Rectangle;
 #if !flash
 import openfl.display._internal.Context3DBuffer;
 #end

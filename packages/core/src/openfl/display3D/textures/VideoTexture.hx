@@ -87,12 +87,12 @@ import openfl.net.NetStream;
 	**/
 	public function attachNetStream(netStream:NetStream):Void
 	{
-		_.attachNetStream(netStream);
+		(_ : _VideoTexture).attachNetStream(netStream);
 	}
 
 	public override function dispose():Void
 	{
-		_.dispose();
+		(_ : _VideoTexture).dispose();
 	}
 }
 #else

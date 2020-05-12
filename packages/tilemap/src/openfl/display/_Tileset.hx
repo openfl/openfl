@@ -2,6 +2,7 @@ package openfl.display;
 
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import openfl.geom._Rectangle;
 import openfl.Vector;
 
 #if !openfl_debug

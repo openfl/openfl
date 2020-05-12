@@ -1,6 +1,7 @@
 package openfl.net;
 
 import openfl.events.EventDispatcher;
+import openfl.events._EventDispatcher;
 import openfl.events.NetStatusEvent;
 
 #if !openfl_debug

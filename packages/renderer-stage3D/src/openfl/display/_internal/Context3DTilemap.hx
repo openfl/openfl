@@ -2,6 +2,7 @@ package openfl.display._internal;
 
 #if openfl_gl
 import lime.utils.Float32Array;
+import openfl.display._Context3DRenderer;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display.Shader;
@@ -11,7 +12,9 @@ import openfl.display.Tileset;
 import openfl.display3D.Context3D;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
+import openfl.geom._Matrix;
 import openfl.geom.Rectangle;
+import openfl.geom._Rectangle;
 #if gl_stats
 import openfl.display._internal.stats.Context3DStats;
 import openfl.display._internal.stats.DrawCallContext;
@@ -38,7 +41,7 @@ class Context3DTilemap
 {
 	public static var cacheColorTransform:ColorTransform;
 
-	public static function buildBufferTileContainer(tilemap:Tilemap, group:TileContainer, renderer:Context3DRenderer, parentTransform:Matrix,
+	public static function buildBufferTileContainer(tilemap:Tilemap, group:TileContainer, renderer:_Context3DRenderer, parentTransform:Matrix,
 			defaultTileset:Tileset, alphaEnabled:Bool, worldAlpha:Float, colorTransformEnabled:Bool, defaultColorTransform:ColorTransform,
 			cacheBitmapData:BitmapData, rect:Rectangle, matrix:Matrix):Void
 	{
@@ -171,7 +174,7 @@ class Context3DTilemap
 		_Matrix.__pool.release(tileTransform);
 	}
 
-	public static function render(tilemap:Tilemap, renderer:Context3DRenderer):Void
+	public static function render(tilemap:Tilemap, renderer:_Context3DRenderer):Void
 	{
 		if (!tilemap._.__renderable || tilemap._.__worldAlpha <= 0) return;
 
@@ -189,13 +192,13 @@ class Context3DTilemap
 		_Matrix.__pool.release(matrix);
 	}
 
-	public static function renderMask(tilemap:Tilemap, renderer:Context3DRenderer):Void
+	public static function renderMask(tilemap:Tilemap, renderer:_Context3DRenderer):Void
 	{
 		// tilemap._.__updateTileArray ();
 
 		// if (tilemap._.__tileArray == null || tilemap._.__tileArray.length == 0) return;
 
-		// var renderer:Context3DRenderer = cast renderer.renderer;
+		// var renderer:_Context3DRenderer = cast renderer.renderer;
 
 		// var shader = renderer._.__maskShader;
 

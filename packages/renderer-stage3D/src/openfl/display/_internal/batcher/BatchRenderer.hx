@@ -35,7 +35,7 @@ import openfl.display._internal.stats.DrawCallContext;
 class BatchRenderer
 {
 	public var gl:WebGLRenderContext;
-	public var renderer:Context3DRenderer;
+	public var renderer:_Context3DRenderer;
 
 	public var __batch:Batch;
 	public var __indexBuffer:IndexBuffer3D;
@@ -58,7 +58,7 @@ class BatchRenderer
 		0, 1
 	];
 
-	public function new(renderer:Context3DRenderer, maxQuads:Int)
+	public function new(renderer:_Context3DRenderer, maxQuads:Int)
 	{
 		this.renderer = renderer;
 		this.gl = renderer.gl;

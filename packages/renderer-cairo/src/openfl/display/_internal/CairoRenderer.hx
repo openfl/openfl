@@ -21,8 +21,10 @@ import openfl.media.Video;
 import openfl.text.TextField;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
+import openfl.geom._Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import openfl.geom._Rectangle;
 
 /**
 	**BETA**

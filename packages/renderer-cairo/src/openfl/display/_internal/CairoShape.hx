@@ -6,6 +6,7 @@ import lime.graphics.cairo.CairoFilter;
 import lime.graphics.cairo.CairoPattern;
 import openfl.display.DisplayObject;
 import openfl.geom.Matrix;
+import openfl.geom._Matrix;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

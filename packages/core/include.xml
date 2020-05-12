@@ -155,6 +155,7 @@
 	<haxelib name="openfl.filereference" path="../filereference" unless="openfl.filereference" />
 	<haxelib name="openfl.filters" path="../filters" unless="openfl.filters" />
 	<haxelib name="openfl.geom" path="../geom" unless="openfl.geom" />
+	<haxelib name="openfl.graphics" path="../graphics" unless="openfl.graphics" />
 	<haxelib name="openfl.input" path="../input" unless="openfl.input" />
 	<haxelib name="openfl.loader" path="../loader" unless="openfl.loader" />
 	<haxelib name="openfl.movieclip" path="../movieclip" unless="openfl.movieclip" />

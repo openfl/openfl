@@ -8,6 +8,7 @@ import openfl.display3D.textures.RectangleTexture;
 import openfl.display3D.Context3D;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
+import openfl.display._Context3DRenderer;
 import openfl.media.Video;
 #if gl_stats
 import openfl.display._internal.stats.Context3DStats;
@@ -138,7 +139,7 @@ class Context3DVideo
 		#end
 	}
 
-	public static function render(video:Video, renderer:Context3DRenderer):Void
+	public static function render(video:Video, renderer:_Context3DRenderer):Void
 	{
 		#if openfl_html5
 		if (!video._.__renderable || video._.__worldAlpha <= 0 || video._.__stream == null) return;
@@ -211,7 +212,7 @@ class Context3DVideo
 		#end
 	}
 
-	public static function renderMask(video:Video, renderer:Context3DRenderer):Void
+	public static function renderMask(video:Video, renderer:_Context3DRenderer):Void
 	{
 		#if openfl_html5
 		if (video._.__stream == null) return;

@@ -266,7 +266,7 @@ import openfl.utils.ByteArray;
 	public function clear(red:Float = 0, green:Float = 0, blue:Float = 0, alpha:Float = 1, depth:Float = 1, stencil:UInt = 0,
 			mask:UInt = Context3DClearMask.ALL):Void
 	{
-		_.clear(red, green, blue, alpha, depth, stencil, mask);
+		(_ : _Context3D).clear(red, green, blue, alpha, depth, stencil, mask);
 	}
 
 	/**
@@ -325,7 +325,7 @@ import openfl.utils.ByteArray;
 	public function configureBackBuffer(width:Int, height:Int, antiAlias:Int, enableDepthAndStencil:Bool = true, wantsBestResolution:Bool = false,
 			wantsBestResolutionOnBrowserZoom:Bool = false):Void
 	{
-		_.configureBackBuffer(width, height, antiAlias, enableDepthAndStencil, wantsBestResolution, wantsBestResolutionOnBrowserZoom);
+		(_ : _Context3D).configureBackBuffer(width, height, antiAlias, enableDepthAndStencil, wantsBestResolution, wantsBestResolutionOnBrowserZoom);
 	}
 
 	/**
@@ -407,7 +407,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function createCubeTexture(size:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool, streamingLevels:Int = 0):CubeTexture
 	{
-		return _.createCubeTexture(size, format, optimizeForRenderToTexture, streamingLevels);
+		return (_ : _Context3D).createCubeTexture(size, format, optimizeForRenderToTexture, streamingLevels);
 	}
 
 	/**
@@ -440,7 +440,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function createIndexBuffer(numIndices:Int, bufferUsage:Context3DBufferUsage = STATIC_DRAW):IndexBuffer3D
 	{
-		return _.createIndexBuffer(numIndices, bufferUsage);
+		return (_ : _Context3D).createIndexBuffer(numIndices, bufferUsage);
 	}
 
 	/**
@@ -465,7 +465,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function createProgram(format:Context3DProgramFormat = AGAL):Program3D
 	{
-		return _.createProgram(format);
+		return (_ : _Context3D).createProgram(format);
 	}
 
 	/**
@@ -514,7 +514,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function createRectangleTexture(width:Int, height:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool):RectangleTexture
 	{
-		return _.createRectangleTexture(width, height, format, optimizeForRenderToTexture);
+		return (_ : _Context3D).createRectangleTexture(width, height, format, optimizeForRenderToTexture);
 	}
 
 	/**
@@ -590,7 +590,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function createTexture(width:Int, height:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool, streamingLevels:Int = 0):Texture
 	{
-		return _.createTexture(width, height, format, optimizeForRenderToTexture, streamingLevels);
+		return (_ : _Context3D).createTexture(width, height, format, optimizeForRenderToTexture, streamingLevels);
 	}
 
 	/**
@@ -635,7 +635,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function createVertexBuffer(numVertices:Int, data32PerVertex:Int, bufferUsage:Context3DBufferUsage = STATIC_DRAW):VertexBuffer3D
 	{
-		return _.createVertexBuffer(numVertices, data32PerVertex, bufferUsage);
+		return (_ : _Context3D).createVertexBuffer(numVertices, data32PerVertex, bufferUsage);
 	}
 
 	/**
@@ -672,7 +672,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function createVideoTexture():VideoTexture
 	{
-		return _.createVideoTexture();
+		return (_ : _Context3D).createVideoTexture();
 	}
 
 	/**
@@ -697,7 +697,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function dispose(recreate:Bool = true):Void
 	{
-		_.dispose(recreate);
+		(_ : _Context3D).dispose(recreate);
 	}
 
 	/**
@@ -741,7 +741,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function drawToBitmapData(destination:BitmapData, srcRect:Rectangle = null, destPoint:Point = null):Void
 	{
-		_.drawToBitmapData(destination, srcRect, destPoint);
+		(_ : _Context3D).drawToBitmapData(destination, srcRect, destPoint);
 	}
 
 	/**
@@ -823,7 +823,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function drawTriangles(indexBuffer:IndexBuffer3D, firstIndex:Int = 0, numTriangles:Int = -1):Void
 	{
-		_.drawTriangles(indexBuffer, firstIndex, numTriangles);
+		(_ : _Context3D).drawTriangles(indexBuffer, firstIndex, numTriangles);
 	}
 
 	/**
@@ -846,7 +846,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function present():Void
 	{
-		_.present();
+		(_ : _Context3D).present();
 	}
 
 	/**
@@ -884,13 +884,13 @@ import openfl.utils.ByteArray;
 	**/
 	public function setBlendFactors(sourceFactor:Context3DBlendFactor, destinationFactor:Context3DBlendFactor):Void
 	{
-		_.setBlendFactors(sourceFactor, destinationFactor);
+		(_ : _Context3D).setBlendFactors(sourceFactor, destinationFactor);
 	}
 
 	@:dox(hide) @:noCompletion private function setBlendFactorsSeparate(sourceRGBFactor:Context3DBlendFactor, destinationRGBFactor:Context3DBlendFactor,
 			sourceAlphaFactor:Context3DBlendFactor, destinationAlphaFactor:Context3DBlendFactor):Void
 	{
-		_.setBlendFactorsSeparate(sourceRGBFactor, destinationRGBFactor, sourceAlphaFactor, destinationAlphaFactor);
+		(_ : _Context3D).setBlendFactorsSeparate(sourceRGBFactor, destinationRGBFactor, sourceAlphaFactor, destinationAlphaFactor);
 	}
 
 	/**
@@ -909,7 +909,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function setColorMask(red:Bool, green:Bool, blue:Bool, alpha:Bool):Void
 	{
-		_.setColorMask(red, green, blue, alpha);
+		(_ : _Context3D).setColorMask(red, green, blue, alpha);
 	}
 
 	/**
@@ -927,7 +927,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function setCulling(triangleFaceToCull:Context3DTriangleFace):Void
 	{
-		_.setCulling(triangleFaceToCull);
+		(_ : _Context3D).setCulling(triangleFaceToCull);
 	}
 
 	/**
@@ -952,7 +952,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function setDepthTest(depthMask:Bool, passCompareMode:Context3DCompareMode):Void
 	{
-		_.setDepthTest(depthMask, passCompareMode);
+		(_ : _Context3D).setDepthTest(depthMask, passCompareMode);
 	}
 
 	/**
@@ -963,7 +963,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function setProgram(program:Program3D):Void
 	{
-		_.setProgram(program);
+		(_ : _Context3D).setProgram(program);
 	}
 
 	/**
@@ -987,7 +987,7 @@ import openfl.utils.ByteArray;
 	public function setProgramConstantsFromByteArray(programType:Context3DProgramType, firstRegister:Int, numRegisters:Int, data:ByteArray,
 			byteArrayOffset:UInt):Void
 	{
-		_.setProgramConstantsFromByteArray(programType, firstRegister, numRegisters, data, byteArrayOffset);
+		(_ : _Context3D).setProgramConstantsFromByteArray(programType, firstRegister, numRegisters, data, byteArrayOffset);
 	}
 
 	/**
@@ -1012,7 +1012,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function setProgramConstantsFromMatrix(programType:Context3DProgramType, firstRegister:Int, matrix:Matrix3D, transposedMatrix:Bool = false):Void
 	{
-		_.setProgramConstantsFromMatrix(programType, firstRegister, matrix, transposedMatrix);
+		(_ : _Context3D).setProgramConstantsFromMatrix(programType, firstRegister, matrix, transposedMatrix);
 	}
 
 	/**
@@ -1040,7 +1040,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function setProgramConstantsFromVector(programType:Context3DProgramType, firstRegister:Int, data:Vector<Float>, numRegisters:Int = -1):Void
 	{
-		_.setProgramConstantsFromVector(programType, firstRegister, data, numRegisters);
+		(_ : _Context3D).setProgramConstantsFromVector(programType, firstRegister, data, numRegisters);
 	}
 
 	/**
@@ -1051,7 +1051,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function setRenderToBackBuffer():Void
 	{
-		_.setRenderToBackBuffer();
+		(_ : _Context3D).setRenderToBackBuffer();
 	}
 
 	/**
@@ -1092,7 +1092,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function setRenderToTexture(texture:TextureBase, enableDepthAndStencil:Bool = false, antiAlias:Int = 0, surfaceSelector:Int = 0):Void
 	{
-		_.setRenderToTexture(texture, enableDepthAndStencil, antiAlias, surfaceSelector);
+		(_ : _Context3D).setRenderToTexture(texture, enableDepthAndStencil, antiAlias, surfaceSelector);
 	}
 
 	/**
@@ -1117,7 +1117,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function setSamplerStateAt(sampler:Int, wrap:Context3DWrapMode, filter:Context3DTextureFilter, mipfilter:Context3DMipFilter):Void
 	{
-		_.setSamplerStateAt(sampler, wrap, filter, mipFilter);
+		(_ : _Context3D).setSamplerStateAt(sampler, wrap, filter, mipFilter);
 	}
 
 	/**
@@ -1134,7 +1134,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function setScissorRectangle(rectangle:Rectangle):Void
 	{
-		_.setScissorRectangle(rectangle);
+		(_ : _Context3D).setScissorRectangle(rectangle);
 	}
 
 	/**
@@ -1185,7 +1185,7 @@ import openfl.utils.ByteArray;
 			actionOnBothPass:Context3DStencilAction = KEEP, actionOnDepthFail:Context3DStencilAction = KEEP,
 			actionOnDepthPassStencilFail:Context3DStencilAction = KEEP):Void
 	{
-		_.setStencilActions(triangleFace, compareMode, actionOnBothPass, actionOnDepthFail, actionOnDepthPassStencilFail);
+		(_ : _Context3D).setStencilActions(triangleFace, compareMode, actionOnBothPass, actionOnDepthFail, actionOnDepthPassStencilFail);
 	}
 
 	/**
@@ -1204,7 +1204,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function setStencilReferenceValue(referenceValue:UInt, readMask:UInt = 0xFF, writeMask:UInt = 0xFF):Void
 	{
-		_.setStencilReferenceValue(referenceValue, readMask, writeMask);
+		(_ : _Context3D).setStencilReferenceValue(referenceValue, readMask, writeMask);
 	}
 
 	/**
@@ -1227,7 +1227,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function setTextureAt(sampler:Int, texture:TextureBase):Void
 	{
-		_.setTextureAt(sampler, texture);
+		(_ : _Context3D).setTextureAt(sampler, texture);
 	}
 
 	/**
@@ -1282,54 +1282,54 @@ import openfl.utils.ByteArray;
 	**/
 	public function setVertexBufferAt(index:Int, buffer:VertexBuffer3D, bufferOffset:Int = 0, format:Context3DVertexBufferFormat = FLOAT_4):Void
 	{
-		_.setVertexBufferAt(index, buffer, bufferOffset, format);
+		(_ : _Context3D).setVertexBufferAt(index, buffer, bufferOffset, format);
 	}
 
 	// Get & Set Methods
 
 	@:noCompletion private function get_backBufferHeight():Int
 	{
-		return _.backBufferHeight;
+		return (_ : _Context3D).backBufferHeight;
 	}
 
 	@:noCompletion private function get_backBufferWidth():Int
 	{
-		return _.backBufferWidth;
+		return (_ : _Context3D).backBufferWidth;
 	}
 
 	@:noCompletion private function get_driverInfo():String
 	{
-		return _.driverInfo;
+		return (_ : _Context3D).driverInfo;
 	}
 
 	@:noCompletion private function get_enableErrorChecking():Bool
 	{
-		return _.enableErrorChecking;
+		return (_ : _Context3D).enableErrorChecking;
 	}
 
 	@:noCompletion private function set_enableErrorChecking(value:Bool):Bool
 	{
-		return _.enableErrorChecking = value;
+		return (_ : _Context3D).enableErrorChecking = value;
 	}
 
 	@:noCompletion private function get_maxBackBufferHeight():Int
 	{
-		return _.maxBackBufferHeight;
+		return (_ : _Context3D).maxBackBufferHeight;
 	}
 
 	@:noCompletion private function get_maxBackBufferWidth():Int
 	{
-		return _.maxBackBufferWidth;
+		return (_ : _Context3D).maxBackBufferWidth;
 	}
 
 	@:noCompletion private function get_profile():Context3DProfile
 	{
-		return _.profile;
+		return (_ : _Context3D).profile;
 	}
 
 	@:noCompletion private function get_totalGPUMemory():Int
 	{
-		return _.totalGPUMemory;
+		return (_ : _Context3D).totalGPUMemory;
 	}
 }
 #else

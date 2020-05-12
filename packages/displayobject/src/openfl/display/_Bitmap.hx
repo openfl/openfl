@@ -2,6 +2,7 @@ package openfl.display;
 
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+import openfl.geom._Rectangle;
 #if openfl_html5
 import js.html.ImageElement;
 #end

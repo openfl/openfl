@@ -19,7 +19,9 @@ import openfl.text.TextField;
 import openfl.text.TextFieldType;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
+import openfl.geom._Matrix;
 import openfl.geom.Rectangle;
+import openfl.geom._Rectangle;
 #if lime
 import lime.graphics.Canvas2DRenderContext;
 #else

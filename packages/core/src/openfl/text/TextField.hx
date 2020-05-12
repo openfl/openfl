@@ -563,7 +563,7 @@ class TextField extends InteractiveObject
 	/**
 		Attaches a style sheet to the text field. For information on creating
 		style sheets, see the StyleSheet class and the _ActionScript 3.0
-		Developer's Guide_.
+		Developer's Guide(_ : _TextField).
 		You can change the style sheet associated with a text field at any
 		time. If you change the style sheet in use, the text field is redrawn
 		with the new style sheet. You can set the style sheet to `null` or
@@ -690,7 +690,7 @@ class TextField extends InteractiveObject
 	**/
 	public function appendText(text:String):Void
 	{
-		_.appendText(text);
+		(_ : _TextField).appendText(text);
 	}
 
 	// function copyRichText() : String;
@@ -706,7 +706,7 @@ class TextField extends InteractiveObject
 	**/
 	public function getCharBoundaries(charIndex:Int):Rectangle
 	{
-		return _.getCharBoundaries(charIndex);
+		return (_ : _TextField).getCharBoundaries(charIndex);
 	}
 
 	/**
@@ -721,7 +721,7 @@ class TextField extends InteractiveObject
 	**/
 	public function getCharIndexAtPoint(x:Float, y:Float):Int
 	{
-		return _.getCharIndexAtPoint(x, y);
+		return (_ : _TextField).getCharIndexAtPoint(x, y);
 	}
 
 	/**
@@ -737,7 +737,7 @@ class TextField extends InteractiveObject
 	**/
 	public function getFirstCharInParagraph(charIndex:Int):Int
 	{
-		return _.getFirstCharInParagraph(charIndex);
+		return (_ : _TextField).getFirstCharInParagraph(charIndex);
 	}
 
 	/**
@@ -773,7 +773,7 @@ class TextField extends InteractiveObject
 	**/
 	public function getLineIndexAtPoint(x:Float, y:Float):Int
 	{
-		return _.getLineIndexAtPoint(x, y);
+		return (_ : _TextField).getLineIndexAtPoint(x, y);
 	}
 
 	/**
@@ -788,7 +788,7 @@ class TextField extends InteractiveObject
 	**/
 	public function getLineIndexOfChar(charIndex:Int):Int
 	{
-		return _.getLineIndexOfChar(charIndex);
+		return (_ : _TextField).getLineIndexOfChar(charIndex);
 	}
 
 	/**
@@ -800,7 +800,7 @@ class TextField extends InteractiveObject
 	**/
 	public function getLineLength(lineIndex:Int):Int
 	{
-		return _.getLineLength(lineIndex);
+		return (_ : _TextField).getLineLength(lineIndex);
 	}
 
 	/**
@@ -812,7 +812,7 @@ class TextField extends InteractiveObject
 	**/
 	public function getLineMetrics(lineIndex:Int):TextLineMetrics
 	{
-		return _.getLineMetrics(lineIndex);
+		return (_ : _TextField).getLineMetrics(lineIndex);
 	}
 
 	/**
@@ -826,7 +826,7 @@ class TextField extends InteractiveObject
 	**/
 	public function getLineOffset(lineIndex:Int):Int
 	{
-		return _.getLineOffset(lineIndex);
+		return (_ : _TextField).getLineOffset(lineIndex);
 	}
 
 	/**
@@ -840,7 +840,7 @@ class TextField extends InteractiveObject
 	**/
 	public function getLineText(lineIndex:Int):String
 	{
-		return _.getLineText(lineIndex);
+		return (_ : _TextField).getLineText(lineIndex);
 	}
 
 	/**
@@ -857,7 +857,7 @@ class TextField extends InteractiveObject
 	**/
 	public function getParagraphLength(charIndex:Int):Int
 	{
-		return _.getParagraphLength(charIndex);
+		return (_ : _TextField).getParagraphLength(charIndex);
 	}
 
 	// function getRawText() : String;
@@ -887,7 +887,7 @@ class TextField extends InteractiveObject
 	**/
 	public function getTextFormat(beginIndex:Int = -1, endIndex:Int = -1):TextFormat
 	{
-		return _.getTextFormat(beginIndex, endIndex);
+		return (_ : _TextField).getTextFormat(beginIndex, endIndex);
 	}
 
 	/**
@@ -937,7 +937,7 @@ class TextField extends InteractiveObject
 	**/
 	public function replaceSelectedText(value:String):Void
 	{
-		_.replaceSelectedText(value);
+		(_ : _TextField).replaceSelectedText(value);
 	}
 
 	/**
@@ -958,7 +958,7 @@ class TextField extends InteractiveObject
 	**/
 	public function replaceText(beginIndex:Int, endIndex:Int, newText:String):Void
 	{
-		_.replaceText(beginIndex, endIndex, newText);
+		(_ : _TextField).replaceText(beginIndex, endIndex, newText);
 	}
 
 	/**
@@ -976,7 +976,7 @@ class TextField extends InteractiveObject
 	**/
 	public function setSelection(beginIndex:Int, endIndex:Int):Void
 	{
-		_.setSelection(beginIndex, endIndex);
+		(_ : _TextField).setSelection(beginIndex, endIndex);
 	}
 
 	/**
@@ -1026,294 +1026,294 @@ class TextField extends InteractiveObject
 	**/
 	public function setTextFormat(format:TextFormat, beginIndex:Int = 0, endIndex:Int = 0):Void
 	{
-		_.setTextFormta(format, beginIndex, endIndex);
+		(_ : _TextField).setTextFormat(format, beginIndex, endIndex);
 	}
 
 	// Get & Set Methods
 
 	@:noCompletion private function get_antiAliasType():AntiAliasType
 	{
-		return _.antiAliasType;
+		return (_ : _TextField).antiAliasType;
 	}
 
 	@:noCompletion private function set_antiAliasType(value:AntiAliasType):AntiAliasType
 	{
-		return _.antiAliasType = value;
+		return (_ : _TextField).antiAliasType = value;
 	}
 
 	@:noCompletion private function get_autoSize():TextFieldAutoSize
 	{
-		return _.autoSize;
+		return (_ : _TextField).autoSize;
 	}
 
 	@:noCompletion private function set_autoSize(value:TextFieldAutoSize):TextFieldAutoSize
 	{
-		return _.autoSize = value;
+		return (_ : _TextField).autoSize = value;
 	}
 
 	@:noCompletion private function get_background():Bool
 	{
-		return _.background;
+		return (_ : _TextField).background;
 	}
 
 	@:noCompletion private function set_background(value:Bool):Bool
 	{
-		return _.background = value;
+		return (_ : _TextField).background = value;
 	}
 
 	@:noCompletion private function get_backgroundColor():Int
 	{
-		return _.backgroundColor;
+		return (_ : _TextField).backgroundColor;
 	}
 
 	@:noCompletion private function set_backgroundColor(value:Int):Int
 	{
-		return _.backgroundColor = value;
+		return (_ : _TextField).backgroundColor = value;
 	}
 
 	@:noCompletion private function get_border():Bool
 	{
-		return _.border;
+		return (_ : _TextField).border;
 	}
 
 	@:noCompletion private function set_border(value:Bool):Bool
 	{
-		return _.border = value;
+		return (_ : _TextField).border = value;
 	}
 
 	@:noCompletion private function get_borderColor():Int
 	{
-		return _.borderColor;
+		return (_ : _TextField).borderColor;
 	}
 
 	@:noCompletion private function set_borderColor(value:Int):Int
 	{
-		return _.borderColor = value;
+		return (_ : _TextField).borderColor = value;
 	}
 
 	@:noCompletion private function get_bottomScrollV():Int
 	{
-		return _.bottomScrollV;
+		return (_ : _TextField).bottomScrollV;
 	}
 
 	@:noCompletion private function get_caretIndex():Int
 	{
-		return _.caretIndex;
+		return (_ : _TextField).caretIndex;
 	}
 
 	@:noCompletion private function get_defaultTextFormat():TextFormat
 	{
-		return _.defaultTextFormat;
+		return (_ : _TextField).defaultTextFormat;
 	}
 
 	@:noCompletion private function set_defaultTextFormat(value:TextFormat):TextFormat
 	{
-		return _.defaultTextFormat = value;
+		return (_ : _TextField).defaultTextFormat = value;
 	}
 
 	@:noCompletion private function get_displayAsPassword():Bool
 	{
-		return _.displayAsPassword;
+		return (_ : _TextField).displayAsPassword;
 	}
 
 	@:noCompletion private function set_displayAsPassword(value:Bool):Bool
 	{
-		return _.displayAsPassword = value;
+		return (_ : _TextField).displayAsPassword = value;
 	}
 
 	@:noCompletion private function get_embedFonts():Bool
 	{
-		return _.embedFonts;
+		return (_ : _TextField).embedFonts;
 	}
 
 	@:noCompletion private function set_embedFonts(value:Bool):Bool
 	{
-		return _.embedFonts = value;
+		return (_ : _TextField).embedFonts = value;
 	}
 
 	@:noCompletion private function get_gridFitType():GridFitType
 	{
-		return _.gridFitType;
+		return (_ : _TextField).gridFitType;
 	}
 
 	@:noCompletion private function set_gridFitType(value:GridFitType):GridFitType
 	{
-		return _.gridFitType = value;
+		return (_ : _TextField).gridFitType = value;
 	}
 
 	@:noCompletion private function get_htmlText():String
 	{
-		return _.htmlText;
+		return (_ : _TextField).htmlText;
 	}
 
 	@:noCompletion private function set_htmlText(value:String):String
 	{
-		return _.htmlText = value;
+		return (_ : _TextField).htmlText = value;
 	}
 
 	@:noCompletion private function get_length():Int
 	{
-		return _.length;
+		return (_ : _TextField).length;
 	}
 
 	@:noCompletion private function get_maxChars():Int
 	{
-		return _.maxChars;
+		return (_ : _TextField).maxChars;
 	}
 
 	@:noCompletion private function set_maxChars(value:Int):Int
 	{
-		return _.maxChars = value;
+		return (_ : _TextField).maxChars = value;
 	}
 
 	@:noCompletion private function get_maxScrollH():Int
 	{
-		return _.maxScrollH;
+		return (_ : _TextField).maxScrollH;
 	}
 
 	@:noCompletion private function get_maxScrollV():Int
 	{
-		return _.maxScrollV;
+		return (_ : _TextField).maxScrollV;
 	}
 
 	@:noCompletion private function get_mouseWheelEnabled():Bool
 	{
-		return _.mouseWheelEnabled;
+		return (_ : _TextField).mouseWheelEnabled;
 	}
 
 	@:noCompletion private function set_mouseWheelEnabled(value:Bool):Bool
 	{
-		return _.mouseWheelEnabled = value;
+		return (_ : _TextField).mouseWheelEnabled = value;
 	}
 
 	@:noCompletion private function get_multiline():Bool
 	{
-		return _.multiline;
+		return (_ : _TextField).multiline;
 	}
 
 	@:noCompletion private function set_multiline(value:Bool):Bool
 	{
-		return _.multiline = value;
+		return (_ : _TextField).multiline = value;
 	}
 
 	@:noCompletion private function get_numLines():Int
 	{
-		return _.numLines;
+		return (_ : _TextField).numLines;
 	}
 
 	@:noCompletion private function get_restrict():String
 	{
-		return _.restrict;
+		return (_ : _TextField).restrict;
 	}
 
 	@:noCompletion private function set_restrict(value:String):String
 	{
-		return _.restrict = value;
+		return (_ : _TextField).restrict = value;
 	}
 
 	@:noCompletion private function get_scrollH():Int
 	{
-		return _.scrollH;
+		return (_ : _TextField).scrollH;
 	}
 
 	@:noCompletion private function set_scrollH(value:Int):Int
 	{
-		return _.scrollH = value;
+		return (_ : _TextField).scrollH = value;
 	}
 
 	@:noCompletion private function get_scrollV():Int
 	{
-		return _.scrollV;
+		return (_ : _TextField).scrollV;
 	}
 
 	@:noCompletion private function set_scrollV(value:Int):Int
 	{
-		return _.scrollV = value;
+		return (_ : _TextField).scrollV = value;
 	}
 
 	@:noCompletion private function get_selectable():Bool
 	{
-		return _.selectable;
+		return (_ : _TextField).selectable;
 	}
 
 	@:noCompletion private function set_selectable(value:Bool):Bool
 	{
-		return _.selectable = value;
+		return (_ : _TextField).selectable = value;
 	}
 
 	@:noCompletion private function get_selectionBeginIndex():Int
 	{
-		return _.selectionBeginIndex;
+		return (_ : _TextField).selectionBeginIndex;
 	}
 
 	@:noCompletion private function get_selectionEndIndex():Int
 	{
-		return _.selectionEndIndex;
+		return (_ : _TextField).selectionEndIndex;
 	}
 
 	@:noCompletion private function get_sharpness():Float
 	{
-		return _.sharpness;
+		return (_ : _TextField).sharpness;
 	}
 
 	@:noCompletion private function set_sharpness(value:Float):Float
 	{
-		return _.sharpness = value;
+		return (_ : _TextField).sharpness = value;
 	}
 
 	@:noCompletion private override function get_tabEnabled():Bool
 	{
-		return _.tabEnabled;
+		return (_ : _TextField).tabEnabled;
 	}
 
 	@:noCompletion private function get_text():String
 	{
-		return _.text;
+		return (_ : _TextField).text;
 	}
 
 	@:noCompletion private function set_text(value:String):String
 	{
-		return _.text = value;
+		return (_ : _TextField).text = value;
 	}
 
 	@:noCompletion private function get_textColor():Int
 	{
-		return _.textColor;
+		return (_ : _TextField).textColor;
 	}
 
 	@:noCompletion private function set_textColor(value:Int):Int
 	{
-		return _.textColor = value;
+		return (_ : _TextField).textColor = value;
 	}
 
 	@:noCompletion private function get_textWidth():Float
 	{
-		return _.textWidth;
+		return (_ : _TextField).textWidth;
 	}
 
 	@:noCompletion private function get_textHeight():Float
 	{
-		return _.textHeight;
+		return (_ : _TextField).textHeight;
 	}
 
 	@:noCompletion private function get_type():TextFieldType
 	{
-		return _.type;
+		return (_ : _TextField).type;
 	}
 
 	@:noCompletion private function set_type(value:TextFieldType):TextFieldType
 	{
-		return _.type = value;
+		return (_ : _TextField).type = value;
 	}
 
 	@:noCompletion private function get_wordWrap():Bool
 	{
-		return _.wordWrap;
+		return (_ : _TextField).wordWrap;
 	}
 
 	@:noCompletion private function set_wordWrap(value:Bool):Bool
 	{
-		return _.wordWrap = value;
+		return (_ : _TextField).wordWrap = value;
 	}
 }
 #else

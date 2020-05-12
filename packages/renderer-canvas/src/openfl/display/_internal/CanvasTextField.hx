@@ -6,6 +6,7 @@ import js.Browser;
 import openfl.text._internal.TextEngine;
 import openfl.display.BitmapData;
 import openfl.geom.Matrix;
+import openfl.geom._Matrix;
 import openfl.geom.Rectangle;
 import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;

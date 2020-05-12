@@ -55,7 +55,7 @@ import openfl.display._internal.stats.Context3DStats;
 #end
 #if !display
 #if openfl_gl
-import openfl.display._internal.Context3DRenderer;
+import openfl.display._Context3DRenderer;
 #end
 #if openfl_html5
 import openfl.display._internal.CanvasRenderer;

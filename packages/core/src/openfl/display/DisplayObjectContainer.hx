@@ -31,7 +31,7 @@ import openfl.Vector;
 	`ArgumentError` exception.
 
 	For more information, see the "Display Programming" chapter of the
-	_ActionScript 3.0 Developer's Guide_.
+	_ActionScript 3.0 Developer's Guide(_:_DisplayObjectContainer).
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -134,7 +134,7 @@ class DisplayObjectContainer extends InteractiveObject
 	**/
 	public function addChild(child:DisplayObject):DisplayObject
 	{
-		return _.addChild(child);
+		return (_ : _DisplayObjectContainer).addChild(child);
 	}
 
 	/**
@@ -170,7 +170,7 @@ class DisplayObjectContainer extends InteractiveObject
 	**/
 	public function addChildAt(child:DisplayObject, index:Int):DisplayObject
 	{
-		return _.addChildAt(child, index);
+		return (_ : _DisplayObjectContainer).addChildAt(child, index);
 	}
 
 	/**
@@ -195,7 +195,7 @@ class DisplayObjectContainer extends InteractiveObject
 	**/
 	public function areInaccessibleObjectsUnderPoint(point:Point):Bool
 	{
-		return _.areInaccessibleObjectsUnderPoint(point);
+		return (_ : _DisplayObjectContainer).areInaccessibleObjectsUnderPoint(point);
 	}
 
 	/**
@@ -212,7 +212,7 @@ class DisplayObjectContainer extends InteractiveObject
 	**/
 	public function contains(child:DisplayObject):Bool
 	{
-		return _.contains(child);
+		return (_ : _DisplayObjectContainer).contains(child);
 	}
 
 	/**
@@ -230,7 +230,7 @@ class DisplayObjectContainer extends InteractiveObject
 	**/
 	public function getChildAt(index:Int):DisplayObject
 	{
-		return _.getChildAt(index);
+		return (_ : _DisplayObjectContainer).getChildAt(index);
 	}
 
 	/**
@@ -253,7 +253,7 @@ class DisplayObjectContainer extends InteractiveObject
 	**/
 	public function getChildByName(name:String):DisplayObject
 	{
-		return _.getChildByName(name);
+		return (_ : _DisplayObjectContainer).getChildByName(name);
 	}
 
 	/**
@@ -266,7 +266,7 @@ class DisplayObjectContainer extends InteractiveObject
 	**/
 	public function getChildIndex(child:DisplayObject):Int
 	{
-		return _.getChildIndex(child);
+		return (_ : _DisplayObjectContainer).getChildIndex(child);
 	}
 
 	/**
@@ -290,7 +290,7 @@ class DisplayObjectContainer extends InteractiveObject
 	**/
 	public function getObjectsUnderPoint(point:Point):Array<DisplayObject>
 	{
-		return _.getObjectsUnderPoint(point);
+		return (_ : _DisplayObjectContainer).getObjectsUnderPoint(point);
 	}
 
 	/**
@@ -314,7 +314,7 @@ class DisplayObjectContainer extends InteractiveObject
 	**/
 	public function removeChild(child:DisplayObject):DisplayObject
 	{
-		return _.removeChild(child);
+		return (_ : _DisplayObjectContainer).removeChild(child);
 	}
 
 	/**
@@ -341,7 +341,7 @@ class DisplayObjectContainer extends InteractiveObject
 	**/
 	public function removeChildAt(index:Int):DisplayObject
 	{
-		return _.removeChildAt(index);
+		return (_ : _DisplayObjectContainer).removeChildAt(index);
 	}
 
 	/**
@@ -357,7 +357,7 @@ class DisplayObjectContainer extends InteractiveObject
 	**/
 	public function removeChildren(beginIndex:Int = 0, endIndex:Int = 0x7FFFFFFF):Void
 	{
-		_.removeChildren(beginIndex, endIndex);
+		(_ : _DisplayObjectContainer).removeChildren(beginIndex, endIndex);
 	}
 
 	/**
@@ -398,7 +398,7 @@ class DisplayObjectContainer extends InteractiveObject
 	**/
 	public function setChildIndex(child:DisplayObject, index:Int):Void
 	{
-		_.setChildIndex(child, index);
+		(_ : _DisplayObjectContainer).setChildIndex(child, index);
 	}
 
 	/**
@@ -412,7 +412,7 @@ class DisplayObjectContainer extends InteractiveObject
 	**/
 	public function stopAllMovieClips():Void
 	{
-		_.stopAllMovieClips();
+		(_ : _DisplayObjectContainer).stopAllMovieClips();
 	}
 
 	/**
@@ -427,7 +427,7 @@ class DisplayObjectContainer extends InteractiveObject
 	**/
 	public function swapChildren(child1:DisplayObject, child2:DisplayObject):Void
 	{
-		_.swapChildren(child1, child2);
+		(_ : _DisplayObjectContainer).swapChildren(child1, child2);
 	}
 
 	/**
@@ -441,34 +441,34 @@ class DisplayObjectContainer extends InteractiveObject
 	**/
 	public function swapChildrenAt(index1:Int, index2:Int):Void
 	{
-		_.swapChildrenAt(index1, index2);
+		(_ : _DisplayObjectContainer).swapChildrenAt(index1, index2);
 	}
 
 	// Get & Set Methods
 
 	@:noCompletion private function get_mouseChildren():Bool
 	{
-		return _.mouseChildren;
+		return (_ : _DisplayObjectContainer).mouseChildren;
 	}
 
 	@:noCompletion private function set_mouseChildren(value:Bool):Bool
 	{
-		return _.mouseChildren = value;
+		return (_ : _DisplayObjectContainer).mouseChildren = value;
 	}
 
 	@:noCompletion private function get_numChildren():Int
 	{
-		return _.numChildren;
+		return (_ : _DisplayObjectContainer).numChildren;
 	}
 
 	@:noCompletion private function get_tabChildren():Bool
 	{
-		return _.tabChildren;
+		return (_ : _DisplayObjectContainer).tabChildren;
 	}
 
 	@:noCompletion private function set_tabChildren(value:Bool):Bool
 	{
-		return _.tabChildren = value;
+		return (_ : _DisplayObjectContainer).tabChildren = value;
 	}
 }
 #else

@@ -17,8 +17,11 @@ import openfl.display.StageQuality;
 import openfl.filters.BitmapFilter;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
+import openfl.geom._Matrix;
 import openfl.geom.Point;
+import openfl.geom._Point;
 import openfl.geom.Rectangle;
+import openfl.geom._Rectangle;
 import openfl.utils.ByteArray;
 import openfl.utils.Endian;
 import openfl.utils.Future;
@@ -49,8 +52,10 @@ import openfl.errors.Error;
 import openfl.filters.BitmapFilter;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
+import openfl.geom._Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import openfl.geom._Rectangle;
 import openfl.utils.ByteArray;
 import openfl.utils.Future;
 import openfl.utils.Object;
@@ -65,7 +70,7 @@ import openfl._internal.backend.lime_standalone.Image;
 #end
 #if openfl_gl
 import openfl.display._internal.Context3DBitmapData;
-import openfl.display._internal.Context3DRenderer;
+import openfl.display._Context3DRenderer;
 #end
 #if openfl_html5
 import js.html.CanvasElement;
@@ -118,7 +123,7 @@ import js.html.Image in JSImage;
 @:noCompletion
 class _BitmapData
 {
-	public static var __hardwareRenderer:#if openfl_gl Context3DRenderer #else Dynamic #end;
+	public static var __hardwareRenderer:#if openfl_gl _Context3DRenderer #else Dynamic #end;
 	public static var __pool:BitmapDataPool = new BitmapDataPool();
 	public static var __softwareRenderer:DisplayObjectRenderer;
 	public static var __textureFormat:Int;

@@ -4,13 +4,16 @@ import openfl._internal.renderer.DrawCommandReader;
 #if openfl_gl
 import openfl.display._internal.CairoGraphics;
 import openfl.display._internal.CanvasGraphics;
+import openfl.display._Context3DRenderer;
 import lime.utils.Float32Array;
 import lime.utils.UInt16Array;
 import openfl.display.BitmapData;
 import openfl.display.Graphics;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
+import openfl.geom._Matrix;
 import openfl.geom.Rectangle;
+import openfl.geom._Rectangle;
 #if !lime
 import openfl._internal.backend.lime_standalone.ARGB;
 #else
@@ -41,7 +44,7 @@ class Context3DGraphics
 	public static var maskRender:Bool;
 	public static var tempColorTransform = new ColorTransform(1, 1, 1, 1, 0, 0, 0, 0);
 
-	public static function buildBuffer(graphics:Graphics, renderer:Context3DRenderer):Void
+	public static function buildBuffer(graphics:Graphics, renderer:_Context3DRenderer):Void
 	{
 		var quadBufferPosition = 0;
 		var triangleIndexBufferPosition = 0;
@@ -471,7 +474,7 @@ class Context3DGraphics
 		return true;
 	}
 
-	public static function render(graphics:Graphics, renderer:Context3DRenderer):Void
+	public static function render(graphics:Graphics, renderer:_Context3DRenderer):Void
 	{
 		if (!graphics._.__visible || graphics._.__commands.length == 0) return;
 
@@ -841,7 +844,7 @@ class Context3DGraphics
 		}
 	}
 
-	public static function renderMask(graphics:Graphics, renderer:Context3DRenderer):Void
+	public static function renderMask(graphics:Graphics, renderer:_Context3DRenderer):Void
 	{
 		// TODO: Support invisible shapes
 

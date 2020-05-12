@@ -29,7 +29,7 @@ import openfl._internal.backend.lime_standalone.Image;
 #end
 #if openfl_gl
 import openfl.display._internal.Context3DBitmapData;
-import openfl.display._internal.Context3DRenderer;
+import openfl.display._Context3DRenderer;
 #end
 #if openfl_html5
 import js.html.CanvasElement;
@@ -463,7 +463,7 @@ class BitmapData implements IBitmapDrawable
 	public function draw(source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null,
 			clipRect:Rectangle = null, smoothing:Bool = false):Void
 	{
-		_.draw(source, transform, colorTransform, blendMode, clipRect, smoothing);
+		_.draw(source, matrix, colorTransform, blendMode, clipRect, smoothing);
 	}
 
 	/**

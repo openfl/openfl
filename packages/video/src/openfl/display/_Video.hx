@@ -3,7 +3,9 @@ package openfl.media;
 import openfl.display.DisplayObject;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
+import openfl.geom._Point;
 import openfl.geom.Rectangle;
+import openfl.geom._Rectangle;
 import openfl.net.NetStream;
 
 #if !openfl_debug

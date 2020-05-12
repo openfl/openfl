@@ -2,6 +2,7 @@ package openfl.display._internal;
 
 #if openfl_gl
 import openfl.display.DisplayObject;
+import openfl.display._Context3DRenderer;
 #if gl_stats
 import openfl.display._internal.stats.Context3DStats;
 import openfl.display._internal.stats.DrawCallContext;
@@ -22,7 +23,7 @@ import openfl.display._internal.stats.DrawCallContext;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DShape
 {
-	public static function render(shape:DisplayObject, renderer:Context3DRenderer):Void
+	public static function render(shape:DisplayObject, renderer:_Context3DRenderer):Void
 	{
 		if (!shape._.__renderable || shape._.__worldAlpha <= 0) return;
 
@@ -74,7 +75,7 @@ class Context3DShape
 		}
 	}
 
-	public static function renderMask(shape:DisplayObject, renderer:Context3DRenderer):Void
+	public static function renderMask(shape:DisplayObject, renderer:_Context3DRenderer):Void
 	{
 		var graphics = shape._.__graphics;
 

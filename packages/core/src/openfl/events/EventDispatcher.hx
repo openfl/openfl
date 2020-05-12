@@ -49,7 +49,7 @@ package openfl.events;
 #end
 class EventDispatcher implements IEventDispatcher
 {
-	@:allow(openfl) @:noCompletion private var _:Dynamic;
+	@:allow(openfl) @:noCompletion private var _:Any;
 
 	/**
 		Aggregates an instance of the EventDispatcher class.
@@ -243,7 +243,7 @@ class EventDispatcher implements IEventDispatcher
 
 	public function toString():String
 	{
-		return _.toString();
+		return (_ : _EventDispatcher).toString();
 	}
 
 	/**
@@ -268,7 +268,7 @@ class EventDispatcher implements IEventDispatcher
 	**/
 	public function willTrigger(type:String):Bool
 	{
-		return _.willTrigger(type);
+		return (_ : _EventDispatcher).willTrigger(type);
 	}
 }
 #else

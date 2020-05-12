@@ -2,8 +2,10 @@ package openfl.display._internal;
 
 #if openfl_gl
 import openfl.display3D.Context3DClearMask;
+import openfl.display._Context3DRenderer;
 import openfl.display.DisplayObject;
 import openfl.geom.Rectangle;
+import openfl.geom._Rectangle;
 #if !lime
 import openfl._internal.backend.lime_standalone.ARGB;
 #else
@@ -21,7 +23,7 @@ import lime.math.ARGB;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DDisplayObject
 {
-	public static inline function render(displayObject:DisplayObject, renderer:Context3DRenderer):Void
+	public static inline function render(displayObject:DisplayObject, renderer:_Context3DRenderer):Void
 	{
 		if (displayObject.opaqueBackground == null && displayObject._.__graphics == null) return;
 		if (!displayObject._.__renderable || displayObject._.__worldAlpha <= 0) return;
@@ -59,7 +61,7 @@ class Context3DDisplayObject
 		}
 	}
 
-	public static inline function renderMask(displayObject:DisplayObject, renderer:Context3DRenderer):Void
+	public static inline function renderMask(displayObject:DisplayObject, renderer:_Context3DRenderer):Void
 	{
 		if (displayObject.opaqueBackground == null && displayObject._.__graphics == null) return;
 

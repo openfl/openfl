@@ -23,20 +23,38 @@ class CairoRenderer extends DisplayObjectRenderer
 	/**
 		The current Cairo render context
 	**/
-	public var cairo:#if lime CairoRenderContext #else Dynamic #end;
+	public var cairo(get, set):#if lime CairoRenderContext #else Dynamic #end;
 
 	@:noCompletion private function new(cairo:#if lime Cairo #else Dynamic #end)
 	{
-		super();
+		if (_ == null)
+		{
+			_ = new _CairoRenderer(cairo);
+		}
 
-		this.cairo = cairo;
+		super();
 	}
 
 	/**
 		Set the matrix value for the current render context, or (optionally) another Cairo
 		object
 	**/
-	public function applyMatrix(transform:Matrix, cairo:#if lime Cairo #else Dynamic #end = null):Void {}
+	public function applyMatrix(transform:Matrix, cairo:#if lime Cairo #else Dynamic #end = null):Void
+	{
+		_.applyMatrix(transform, cairo);
+	}
+
+	// Get & Set Methods
+
+	@:noCompletion private function get_cairo():#if lime CairoRenderContext #else Dynamic #end
+	{
+		return _.cairo;
+	}
+
+	@:noCompletion private function set_cairo(value:#if lime CairoRenderContext #else Dynamic #end):#if lime CairoRenderContext #else Dynamic #end
+	{
+		return _.cairo = value;
+	}
 }
 #else
 typedef CairoRenderer = Dynamic;

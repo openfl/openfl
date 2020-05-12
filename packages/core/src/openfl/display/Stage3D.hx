@@ -233,7 +233,7 @@ class Stage3D extends EventDispatcher
 	**/
 	public function requestContext3D(context3DRenderMode:Context3DRenderMode = AUTO, profile:Context3DProfile = BASELINE):Void
 	{
-		_.requestContext3D(context3DRenderMode, profile);
+		(_ : _Stage3D).requestContext3D(context3DRenderMode, profile);
 	}
 
 	/**
@@ -297,44 +297,44 @@ class Stage3D extends EventDispatcher
 	**/
 	public function requestContext3DMatchingProfiles(profiles:Vector<Context3DProfile>):Void
 	{
-		_.requestContext3DMatchingProfiles(profiles);
+		(_ : _Stage3D).requestContext3DMatchingProfiles(profiles);
 	}
 
 	// Get & Set Methods
 
 	@:noCompletion private function get_context3D():Context3D
 	{
-		return _.context3D;
+		return (_ : _Stage3D).context3D;
 	}
 
 	@:noCompletion private function get_visible():Bool
 	{
-		return _.visible;
+		return (_ : _Stage3D).visible;
 	}
 
 	@:noCompletion private function set_visible(value:Bool):Bool
 	{
-		return _.visible = value;
+		return (_ : _Stage3D).visible = value;
 	}
 
 	@:noCompletion private function get_x():Float
 	{
-		return _.x;
+		return (_ : _Stage3D).x;
 	}
 
 	@:noCompletion private function set_x(value:Float):Float
 	{
-		return _.x = value;
+		return (_ : _Stage3D).x = value;
 	}
 
 	@:noCompletion private function get_y():Float
 	{
-		return _.y;
+		return (_ : _Stage3D).y;
 	}
 
 	@:noCompletion private function set_y(value:Float):Float
 	{
-		return _.y = value;
+		return (_ : _Stage3D).y = value;
 	}
 }
 #else

@@ -8,6 +8,7 @@ import openfl.display3D.Context3DRenderMode;
 import openfl.events.ErrorEvent;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
+import openfl.events._EventDispatcher;
 import openfl.geom.Matrix3D;
 import openfl.Vector;
 #if lime

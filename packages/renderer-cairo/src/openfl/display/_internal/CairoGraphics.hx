@@ -16,8 +16,11 @@ import openfl.display.Graphics;
 import openfl.display.InterpolationMethod;
 import openfl.display.SpreadMethod;
 import openfl.geom.Matrix;
+import openfl.geom._Matrix;
 import openfl.geom.Point;
+import openfl.geom._Point;
 import openfl.geom.Rectangle;
+import openfl.geom._Rectangle;
 import openfl.Vector;
 
 #if !openfl_debug
