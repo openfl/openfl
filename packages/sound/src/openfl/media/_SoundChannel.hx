@@ -97,7 +97,7 @@ class _SoundChannel extends _EventDispatcher
 		dispatchEvent(new Event(Event.SOUND_COMPLETE));
 	}
 
-	private function __updateTransform():Void
+	public function __updateTransform():Void
 	{
 		this.soundTransform = soundTransform;
 	}
@@ -135,12 +135,12 @@ class _SoundChannel extends _EventDispatcher
 
 			if (source != null)
 			{
-				var pan = SoundMixer._.__soundTransform.pan + value.pan;
+				var pan = _SoundMixer.__soundTransform.pan + value.pan;
 
 				if (pan < -1) pan = -1;
 				if (pan > 1) pan = 1;
 
-				var volume = SoundMixer._.__soundTransform.volume * value.volume;
+				var volume = _SoundMixer.__soundTransform.volume * value.volume;
 
 				source.gain = volume;
 				var position = source.position;

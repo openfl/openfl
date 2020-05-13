@@ -32,7 +32,7 @@ import openfl.geom.Matrix;
 		the coordinates in the shader are local pixel coordinates which can be
 		used to sample an input.
 	**/
-	public var matrix:Matrix;
+	public var matrix(get, set):Matrix;
 
 	/**
 		The shader to use for the fill. This Shader instance is not required
@@ -46,10 +46,9 @@ import openfl.geom.Matrix;
 		such as changing a parameter value, input, or bytecode, are not
 		applied to the copied shader that's used for the fill.
 	**/
-	public var shader:Shader;
+	public var shader(get, set):Shader;
 
-	@:noCompletion private var __graphicsDataType(default, null):GraphicsDataType;
-	@:noCompletion private var __graphicsFillType(default, null):GraphicsFillType;
+	@:allow(openfl) @:noCompletion private var _:Any;
 
 	/**
 		Creates a new GraphicsShaderFill object.
@@ -65,11 +64,29 @@ import openfl.geom.Matrix;
 	**/
 	public function new(shader:Shader, matrix:Matrix = null)
 	{
-		this.shader = shader;
-		this.matrix = matrix;
+		_ = new _GraphicsShaderFill(shader, matrix);
+	}
 
-		this.__graphicsDataType = SHADER;
-		this.__graphicsFillType = SHADER_FILL;
+	// Get & Set Methods
+
+	@:noCompletion private function get_matrix():Matrix
+	{
+		return (_ : _GraphicsShaderFill).matrix;
+	}
+
+	@:noCompletion private function set_matrix(value:Matrix):Matrix
+	{
+		return (_ : _GraphicsShaderFill).matrix = value;
+	}
+
+	@:noCompletion private function get_shader():Shader
+	{
+		return (_ : _GraphicsShaderFill).shader;
+	}
+
+	@:noCompletion private function set_shader(value:Shader):Shader
+	{
+		return (_ : _GraphicsShaderFill).shader = value;
 	}
 }
 #else

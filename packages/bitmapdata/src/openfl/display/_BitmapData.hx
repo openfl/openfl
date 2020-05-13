@@ -36,9 +36,9 @@ import lime.math.ARGB;
 import js.html.CanvasElement;
 import js.html.Image in JSImage;
 import lime.graphics.Canvas2DRenderContext;
-import openfl.display._internal.CanvasRenderer;
+// import openfl.display._internal.CanvasRenderer;
 #elseif openfl_cairo
-import openfl.display._internal.CairoRenderer;
+// import openfl.display._internal.CairoRenderer;
 #end
 import lime.graphics.cairo.CairoImageSurface;
 import openfl._internal.renderer.BitmapDataPool;
@@ -69,8 +69,8 @@ import openfl._internal.backend.lime_standalone.Canvas2DRenderContext;
 import openfl._internal.backend.lime_standalone.Image;
 #end
 #if openfl_gl
-import openfl.display._internal.Context3DBitmapData;
-import openfl.display._Context3DRenderer;
+// import openfl.display._internal.Context3DBitmapData;
+// import openfl.display._Context3DRenderer;
 #end
 #if openfl_html5
 import js.html.CanvasElement;
@@ -123,7 +123,8 @@ import js.html.Image in JSImage;
 @:noCompletion
 class _BitmapData
 {
-	public static var __hardwareRenderer:#if openfl_gl _Context3DRenderer #else Dynamic #end;
+	// public static var __hardwareRenderer:#if openfl_gl _Context3DRenderer #else Dynamic #end;
+	public static var __hardwareRenderer:Dynamic;
 	public static var __pool:BitmapDataPool = new BitmapDataPool();
 	public static var __softwareRenderer:DisplayObjectRenderer;
 	public static var __textureFormat:Int;
@@ -631,28 +632,27 @@ class _BitmapData
 				_Matrix.__pool.release(boundsMatrix);
 			}
 
-			#if openfl_html5
-			if (BitmapData._.__softwareRenderer == null) BitmapData._.__softwareRenderer = new CanvasRenderer(null);
-			ImageCanvasUtil.convertToCanvas(limeImage);
-			var renderer:CanvasRenderer = cast BitmapData._.__softwareRenderer;
-			renderer.context = limeImage.buffer._.__srcContext;
-			#elseif openfl_cairo
-			if (BitmapData._.__softwareRenderer == null) BitmapData._.__softwareRenderer = new CairoRenderer(null);
-			var renderer:CairoRenderer = cast BitmapData._.__softwareRenderer;
-			renderer.cairo = new Cairo(getSurface());
-			#end
+			// #if openfl_html5
+			// if (BitmapData._.__softwareRenderer == null) BitmapData._.__softwareRenderer = new CanvasRenderer(null);
+			// ImageCanvasUtil.convertToCanvas(limeImage);
+			// var renderer:CanvasRenderer = cast BitmapData._.__softwareRenderer;
+			// renderer.context = limeImage.buffer._.__srcContext;
+			// #elseif openfl_cairo
+			// if (BitmapData._.__softwareRenderer == null) BitmapData._.__softwareRenderer = new CairoRenderer(null);
+			// var renderer:CairoRenderer = cast BitmapData._.__softwareRenderer;
+			// renderer.cairo = new Cairo(getSurface());
+			// #end
 
-			renderer._.__allowSmoothing = smoothing;
-			renderer._.__overrideBlendMode = blendMode;
+			// renderer._.__allowSmoothing = smoothing;
+			// renderer._.__overrideBlendMode = blendMode;
 
-			renderer._.__worldTransform = matrix;
-			renderer._.__worldAlpha = 1 / source._.__worldAlpha;
-			renderer._.__worldColorTransform = _colorTransform;
+			// renderer._.__worldTransform = matrix;
+			// renderer._.__worldAlpha = 1 / source._.__worldAlpha;
+			// renderer._.__worldColorTransform = _colorTransform;
 
-			renderer._.__drawBitmapData(parent, source, clipRect);
+			// renderer._.__drawBitmapData(parent, source, clipRect);
 			#end
 		}
-
 		_Matrix.__pool.release(transform);
 	}
 
@@ -805,20 +805,20 @@ class _BitmapData
 
 	@:dox(hide) public function getIndexBuffer(context:Context3D, scale9Grid:Rectangle = null):IndexBuffer3D
 	{
-		#if openfl_gl
-		return Context3DBitmapData.getIndexBuffer(this, context, scale9Grid);
-		#else
+		// #if openfl_gl
+		// return Context3DBitmapData.getIndexBuffer(this, context, scale9Grid);
+		// #else
 		return null;
-		#end
+		// #end
 	}
 
 	@:dox(hide) public function getVertexBuffer(context:Context3D, scale9Grid:Rectangle = null, targetObject:DisplayObject = null):VertexBuffer3D
 	{
-		#if openfl_gl
-		return Context3DBitmapData.getVertexBuffer(this, context, scale9Grid, targetObject);
-		#else
+		// #if openfl_gl
+		// return Context3DBitmapData.getVertexBuffer(this, context, scale9Grid, targetObject);
+		// #else
 		return null;
-		#end
+		// #end
 	}
 
 	public function getColorBoundsRect(mask:Int, color:Int, findColor:Bool = true):Rectangle

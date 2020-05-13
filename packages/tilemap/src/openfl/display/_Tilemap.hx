@@ -1,7 +1,7 @@
 package openfl.display;
 
-import openfl.display._internal.FlashRenderer;
-import openfl.display._internal.FlashTilemap;
+// import openfl.display._internal.FlashRenderer;
+// import openfl.display._internal.FlashTilemap;
 import openfl.geom.Matrix;
 import openfl.geom._Matrix;
 import openfl.geom.Rectangle;

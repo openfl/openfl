@@ -2,7 +2,7 @@ package openfl._internal.renderer;
 
 import lime.utils.Float32Array;
 import lime.utils.UInt16Array;
-import openfl.display._internal.Context3DBuffer;
+// import openfl.display._internal.Context3DBuffer;
 import openfl.display3D.textures.TextureBase;
 import openfl.display3D.Context3D;
 import openfl.display3D.IndexBuffer3D;
@@ -68,7 +68,7 @@ class DisplayObjectRenderData
 	public var indexBufferGrid:Rectangle;
 	public var isCacheBitmapRender:Bool;
 	#if openfl_gl
-	public var quadBuffer:Context3DBuffer;
+	// public var quadBuffer:Context3DBuffer;
 	#end
 	#if openfl_gl
 	public var stencilBuffer:GLRenderbuffer;

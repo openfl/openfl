@@ -187,9 +187,9 @@ class _DisplayObject extends _EventDispatcher
 
 		if (__initStage != null)
 		{
-			this_displayObject.stage = __initStage;
+			this.stage = __initStage;
 			__initStage = null;
-			this_displayObject.stage.addChild(this_displayObject);
+			this.stage.addChild(this_displayObject);
 		}
 	}
 
@@ -396,7 +396,7 @@ class _DisplayObject extends _EventDispatcher
 		{
 			var result = super.__dispatchEvent(event);
 
-			if (event._.__isCanceled)
+			if ((event._:_Event).__isCanceled)
 			{
 				return true;
 			}
@@ -435,23 +435,24 @@ class _DisplayObject extends _EventDispatcher
 	public override function __dispatchEvent(event:Event):Bool
 	{
 		var parent = event.bubbles ? this_displayObject.parent : null;
-		var result = super._.__dispatchEvent(event);
+		var result = super.__dispatchEvent(event);
+		var _event:_Event = cast event._;
 
-		if (event._.__isCanceled)
+		if (_event.__isCanceled)
 		{
 			return true;
 		}
 
 		if (parent != null && parent != this_displayObject)
 		{
-			event.eventPhase = EventPhase.BUBBLING_PHASE;
+			_event.eventPhase = EventPhase.BUBBLING_PHASE;
 
-			if (event.target == null)
+			if (_event.target == null)
 			{
-				event.target = this_displayObject;
+				_event.target = this_displayObject;
 			}
 
-			parent._.__dispatchEvent(event);
+			(parent._:_DisplayObject).__dispatchEvent(event);
 		}
 
 		return result;
@@ -459,18 +460,19 @@ class _DisplayObject extends _EventDispatcher
 
 	public function __dispatchWithCapture(event:Event):Bool
 	{
-		if (event.target == null)
+		var _event:_Event = cast event._;
+		if (_event.target == null)
 		{
-			event.target = this_displayObject;
+			_event.target = this_displayObject;
 		}
 
 		if (parent != null)
 		{
-			event.eventPhase = CAPTURING_PHASE;
+			_event.eventPhase = CAPTURING_PHASE;
 
 			if (parent == stage)
 			{
-				parent._.__dispatch(event);
+				(parent._:_DisplayObject).__dispatch(event);
 			}
 			else
 			{
@@ -487,14 +489,14 @@ class _DisplayObject extends _EventDispatcher
 
 				for (j in 0...i)
 				{
-					stack[i - j - 1]._.__dispatch(event);
+					(stack[i - j - 1]._:_DisplayObject).__dispatch(event);
 				}
 
 				__tempStack.release(stack);
 			}
 		}
 
-		event.eventPhase = AT_TARGET;
+		_event.eventPhase = AT_TARGET;
 
 		return __dispatchEvent(event);
 	}
@@ -685,13 +687,13 @@ class _DisplayObject extends _EventDispatcher
 	public function __setParentRenderDirty():Void
 	{
 		var renderParent = __renderParent != null ? __renderParent : parent;
-		if (renderParent != null && !renderParent._.__renderDirty)
+		if (renderParent != null && !(renderParent._:_DisplayObject).__renderDirty)
 		{
 			// TODO: Use separate method? Based on transform, not render change
-			renderParent._.__localBoundsDirty = true;
+			(renderParent._:_DisplayObject).__localBoundsDirty = true;
 
-			renderParent._.__renderDirty = true;
-			renderParent._.__setParentRenderDirty();
+			(renderParent._:_DisplayObject).__renderDirty = true;
+			(renderParent._:_DisplayObject).__setParentRenderDirty();
 		}
 	}
 

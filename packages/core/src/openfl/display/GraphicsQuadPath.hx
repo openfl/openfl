@@ -28,13 +28,13 @@ import openfl.Vector;
 		`rects`. Each index is a rectangle index in the Vector, not an array index. If
 		this parameter is omitted, each index from `rects` will be used in order.
 	**/
-	public var indices:Vector<Int>;
+	public var indices(get, set):Vector<Int>;
 
 	/**
 		A Vector containing rectangle coordinates in [ x0, y0, width0, height0, x1, y1 ... ]
 		format.
 	**/
-	public var rects:Vector<Float>;
+	public var rects(get, set):Vector<Float>;
 
 	/**
 		A Vector containing optional transform data to adjust _x_, _y_, _a_, _b_, _c_ or _d_
@@ -45,11 +45,9 @@ import openfl.Vector;
 		A `transforms` object which is six times the draw count in size will use full matrix
 		[ a, b, c, d, tx, ty, ... ] values per draw.
 	**/
-	public var transforms:Vector<Float>;
+	public var transforms(get, set):Vector<Float>;
 
-	#if !flash
-	@:noCompletion private var __graphicsDataType(default, null):GraphicsDataType;
-	#end
+	@:allow(openfl) @:noCompletion private var _:Any;
 
 	/**
 		Creates a new GraphicsTrianglePath object.
@@ -63,12 +61,38 @@ import openfl.Vector;
 	**/
 	public function new(rects:Vector<Float> = null, indices:Vector<Int> = null, transforms:Vector<Float> = null)
 	{
-		this.rects = rects;
-		this.indices = indices;
-		this.transforms = transforms;
+		_ = new _GraphicsQuadPath(rects, indices, transforms);
+	}
 
-		#if !flash
-		__graphicsDataType = QUAD_PATH;
-		#end
+	// Get & Set Methods
+
+	@:noCompletion private function get_indices():Vector<Int>
+	{
+		return (_ : _GraphicsQuadPath).indices;
+	}
+
+	@:noCompletion private function set_indices(value:Vector<Int>):Vector<Int>
+	{
+		return (_ : _GraphicsQuadPath).indices = value;
+	}
+
+	@:noCompletion private function get_rects():Vector<Float>
+	{
+		return (_ : _GraphicsQuadPath).rects;
+	}
+
+	@:noCompletion private function set_rects(value:Vector<Float>):Vector<Float>
+	{
+		return (_ : _GraphicsQuadPath).rects = value;
+	}
+
+	@:noCompletion private function get_transforms():Vector<Float>
+	{
+		return (_ : _GraphicsQuadPath).transforms;
+	}
+
+	@:noCompletion private function set_transforms(value:Vector<Float>):Vector<Float>
+	{
+		return (_ : _GraphicsQuadPath).transforms = value;
 	}
 }

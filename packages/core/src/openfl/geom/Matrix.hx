@@ -433,6 +433,68 @@ class Matrix
 	{
 		_.translate(dx, dy);
 	}
+
+	// Get & Set Methods
+
+	@:noCompletion private function get_a():Float
+	{
+		return _.a;
+	}
+
+	@:noCompletion private function set_a(value:Float):Float
+	{
+		return _.a = value;
+	}
+
+	@:noCompletion private function get_b():Float
+	{
+		return _.b;
+	}
+
+	@:noCompletion private function set_b(value:Float):Float
+	{
+		return _.b = value;
+	}
+
+	@:noCompletion private function get_c():Float
+	{
+		return _.c;
+	}
+
+	@:noCompletion private function set_c(value:Float):Float
+	{
+		return _.c = value;
+	}
+
+	@:noCompletion private function get_d():Float
+	{
+		return _.d;
+	}
+
+	@:noCompletion private function set_d(value:Float):Float
+	{
+		return _.d = value;
+	}
+
+	@:noCompletion private function get_tx():Float
+	{
+		return _.tx;
+	}
+
+	@:noCompletion private function set_tx(value:Float):Float
+	{
+		return _.tx = value;
+	}
+
+	@:noCompletion private function get_ty():Float
+	{
+		return _.ty;
+	}
+
+	@:noCompletion private function set_ty(value:Float):Float
+	{
+		return _.ty = value;
+	}
 }
 #else
 typedef Matrix = flash.geom.Matrix;

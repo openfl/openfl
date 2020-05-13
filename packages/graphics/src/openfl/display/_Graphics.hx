@@ -1,6 +1,6 @@
 package openfl.display;
 
-import openfl.display._internal.Context3DBuffer;
+// import openfl.display._internal.Context3DBuffer;
 import openfl._internal.renderer.DisplayObjectRenderData;
 import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.DrawCommandReader;
@@ -10,6 +10,7 @@ import openfl._internal.utils.ObjectPool;
 import lime.utils.UInt16Array;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
+import openfl.display._DisplayObject;
 import openfl.errors.ArgumentError;
 import openfl.geom.Matrix;
 import openfl.geom._Matrix;
@@ -19,12 +20,12 @@ import openfl.Vector;
 #if openfl_html5
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
-import openfl.display._internal.CanvasGraphics;
+// import openfl.display._internal.CanvasGraphics;
 #else
 import lime.graphics.cairo.Cairo;
-import openfl.display._internal.CairoGraphics;
-#end
 
+// import openfl.display._internal.CairoGraphics;
+#end
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -180,7 +181,7 @@ import openfl.display._internal.CairoGraphics;
 	public function copyFrom(sourceGraphics:Graphics):Void
 	{
 		__bounds = sourceGraphics._.__bounds != null ? sourceGraphics._.__bounds.clone() : null;
-		__owner._.__localBoundsDirty = true;
+			(__owner._ : _DisplayObject).__localBoundsDirty = true;
 		__commands = sourceGraphics._.__commands.copy();
 		__dirty = true;
 		__strokePadding = sourceGraphics._.__strokePadding;
@@ -336,7 +337,7 @@ import openfl.display._internal.CairoGraphics;
 
 		for (graphics in graphicsData)
 		{
-			switch (graphics._.__graphicsDataType)
+			switch ((graphics._ : _IGraphicsData).__graphicsDataType)
 			{
 				case SOLID:
 					fill = cast graphics;
@@ -367,7 +368,7 @@ import openfl.display._internal.CairoGraphics;
 							thickness = null;
 						}
 
-						switch (stroke.fill._.__graphicsFillType)
+						switch ((stroke.fill._ : _IGraphicsFill).__graphicsFillType)
 						{
 							case SOLID_FILL:
 								fill = cast stroke.fill;
@@ -482,8 +483,8 @@ import openfl.display._internal.CairoGraphics;
 			}
 		}
 
-		var tileRect = _Rectangle._.__pool.get();
-		var tileTransform = _Matrix._.__pool.get();
+		var tileRect = _Rectangle.__pool.get();
+		var tileTransform = _Matrix.__pool.get();
 
 		var minX = Math.POSITIVE_INFINITY;
 		var minY = Math.POSITIVE_INFINITY;
@@ -541,8 +542,8 @@ import openfl.display._internal.CairoGraphics;
 		__dirty = true;
 		__visible = true;
 
-		_Rectangle._.__pool.release(tileRect);
-		_Matrix._.__pool.release(tileTransform);
+		_Rectangle.__pool.release(tileRect);
+		_Matrix.__pool.release(tileTransform);
 	}
 
 	public function drawRect(x:Float, y:Float, width:Float, height:Float):Void
@@ -754,7 +755,7 @@ import openfl.display._internal.CairoGraphics;
 	public function readGraphicsData(recurse:Bool = true):Vector<IGraphicsData>
 	{
 		var graphicsData = new Vector<IGraphicsData>();
-		__owner._.__readGraphicsData(graphicsData, recurse);
+		(__owner._ : _DisplayObject).__readGraphicsData(graphicsData, recurse);
 		return graphicsData;
 	}
 
@@ -812,9 +813,9 @@ import openfl.display._internal.CairoGraphics;
 			if (shapeFlag)
 			{
 				#if openfl_html5
-				return CanvasGraphics.hitTest(this, px, py);
+				// return CanvasGraphics.hitTest(this, px, py);
 				#elseif openfl_cairo
-				return CairoGraphics.hitTest(this, px, py);
+				// return CairoGraphics.hitTest(this, px, py);
 				#end
 			}
 
@@ -867,7 +868,7 @@ import openfl.display._internal.CairoGraphics;
 	public function __readGraphicsData(graphicsData:Vector<IGraphicsData>):Void
 	{
 		var data = new DrawCommandReader(__commands);
-		var path = null, stroke;
+		var path = null, _path:_GraphicsPath = null, stroke;
 
 		for (type in __commands.types)
 		{
@@ -887,39 +888,41 @@ import openfl.display._internal.CairoGraphics;
 					}
 			}
 
+			_path = path._;
+
 			switch (type)
 			{
 				case CUBIC_CURVE_TO:
 					var c = data.readCubicCurveTo();
-					path.cubicCurveTo(c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
+					_path.cubicCurveTo(c.controlX1, c.controlY1, c.controlX2, c.controlY2, c.anchorX, c.anchorY);
 
 				case CURVE_TO:
 					var c = data.readCurveTo();
-					path.curveTo(c.controlX, c.controlY, c.anchorX, c.anchorY);
+					_path.curveTo(c.controlX, c.controlY, c.anchorX, c.anchorY);
 
 				case LINE_TO:
 					var c = data.readLineTo();
-					path.lineTo(c.x, c.y);
+					_path.lineTo(c.x, c.y);
 
 				case MOVE_TO:
 					var c = data.readMoveTo();
-					path.moveTo(c.x, c.y);
+					_path.moveTo(c.x, c.y);
 
 				case DRAW_CIRCLE:
 					var c = data.readDrawCircle();
-					path._.__drawCircle(c.x, c.y, c.radius);
+					_path.__drawCircle(c.x, c.y, c.radius);
 
 				case DRAW_ELLIPSE:
 					var c = data.readDrawEllipse();
-					path._.__drawEllipse(c.x, c.y, c.width, c.height);
+					_path.__drawEllipse(c.x, c.y, c.width, c.height);
 
 				case DRAW_RECT:
 					var c = data.readDrawRect();
-					path._.__drawRect(c.x, c.y, c.width, c.height);
+					_path.__drawRect(c.x, c.y, c.width, c.height);
 
 				case DRAW_ROUND_RECT:
 					var c = data.readDrawRoundRect();
-					path._.__drawRoundRect(c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight != null ? c.ellipseHeight : c.ellipseWidth);
+					_path.__drawRoundRect(c.x, c.y, c.width, c.height, c.ellipseWidth, c.ellipseHeight != null ? c.ellipseHeight : c.ellipseWidth);
 
 				case LINE_GRADIENT_STYLE:
 					// TODO
@@ -978,7 +981,7 @@ import openfl.display._internal.CairoGraphics;
 	{
 		if (__bounds == null || __bounds.width <= 0 || __bounds.height <= 0) return;
 
-		var parentTransform = __owner._.__renderTransform;
+		var parentTransform = (__owner._ : _DisplayObject).__renderTransform;
 		var scaleX = 1.0, scaleY = 1.0;
 
 		if (parentTransform != null)

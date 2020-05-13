@@ -7,6 +7,7 @@ import openfl.text._internal.TextFormatRange;
 import openfl.text._internal.TextLayoutGroup;
 import openfl.desktop.Clipboard;
 import openfl.display.DisplayObject;
+import openfl.display._DisplayObject;
 import openfl.display.Graphics;
 import openfl.display.InteractiveObject;
 import openfl.display._InteractiveObject;
@@ -916,7 +917,7 @@ class _TextField extends _InteractiveObject
 	public override function __hitTest(x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool
 	{
 		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
-		if (mask != null && !mask._.__hitTestMask(x, y)) return false;
+		if (mask != null && !(mask._ : _DisplayObject).__hitTestMask(x, y)) return false;
 
 		__getRenderTransform();
 		__updateLayout();

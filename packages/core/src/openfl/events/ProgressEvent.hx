@@ -92,29 +92,29 @@ class ProgressEvent extends Event
 
 	public override function clone():ProgressEvent
 	{
-		return cast _.clone();
+		return cast(_ : _ProgressEvent).clone();
 	}
 
 	// Get & Set Methods
 
 	@:noCompletion private function get_bytesLoaded():Float
 	{
-		return _.bytesLoaded;
+		return (_ : _ProgressEvent).bytesLoaded;
 	}
 
 	@:noCompletion private function set_bytesLoaded(value:Float):Float
 	{
-		return _.bytesLoaded = value;
+		return (_ : _ProgressEvent).bytesLoaded = value;
 	}
 
 	@:noCompletion private function get_bytesTotal():Float
 	{
-		return _.bytesTotal;
+		return (_ : _ProgressEvent).bytesTotal;
 	}
 
 	@:noCompletion private function set_bytesTotal(value:Float):Float
 	{
-		return _.bytesTotal = value;
+		return (_ : _ProgressEvent).bytesTotal = value;
 	}
 }
 #else

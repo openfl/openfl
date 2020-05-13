@@ -32,13 +32,13 @@ import openfl._internal.renderer.GraphicsDataType;
 		applies), and a superimposed black line with a thickness of 1(for which
 		no `capsStyle` applies):
 	**/
-	public var caps:CapsStyle;
+	public var caps(get, set):CapsStyle;
 
 	/**
 		Specifies the instance containing data for filling a stroke. An
 		IGraphicsFill instance can represent a series of fill commands.
 	**/
-	public var fill:IGraphicsFill;
+	public var fill(get, set):IGraphicsFill;
 
 	/**
 		Specifies the type of joint appearance used at angles. Valid values are:
@@ -56,7 +56,7 @@ import openfl._internal.renderer.GraphicsDataType;
 		`JointStyle.MITER`, you can use the `miterLimit`
 		parameter to limit the length of the miter.
 	**/
-	public var joints:JointStyle;
+	public var joints(get, set):JointStyle;
 
 	/**
 		Indicates the limit at which a miter is cut off. Valid values range from 1
@@ -78,7 +78,7 @@ import openfl._internal.renderer.GraphicsDataType;
 		maximum angle for which the miter is cut off. The following table lists
 		some examples:
 	**/
-	public var miterLimit:Float;
+	public var miterLimit(get, set):Float;
 
 	/**
 		Specifies whether to hint strokes to full pixels. This affects both the
@@ -92,7 +92,7 @@ import openfl._internal.renderer.GraphicsDataType;
 		method is set differently(the images are scaled by 200%, to emphasize the
 		difference):
 	**/
-	public var pixelHinting:Bool;
+	public var pixelHinting(get, set):Bool;
 
 	/**
 		Specifies the stroke thickness scaling. Valid values are:
@@ -102,14 +102,14 @@ import openfl._internal.renderer.GraphicsDataType;
 		* `LineScaleMode.NONE` - Never scale the line thickness.
 
 		* `LineScaleMode.VERTICAL` - Do not scale the line
-		thickness if the object is scaled vertically _only_. For example,
+		thickness if the object is scaled vertically _only(_ : _GraphicsStroke). For example,
 		consider the following circles, drawn with a one-pixel line, and each with
 		the `scaleMode` parameter set to
 		`LineScaleMode.VERTICAL`. The circle on the left is scaled
 		vertically only, and the circle on the right is scaled both vertically and
 		horizontally:
 		* `LineScaleMode.HORIZONTAL` - Do not scale the line
-		thickness if the object is scaled horizontally _only_. For example,
+		thickness if the object is scaled horizontally _only(_ : _GraphicsStroke). For example,
 		consider the following circles, drawn with a one-pixel line, and each with
 		the `scaleMode` parameter set to
 		`LineScaleMode.HORIZONTAL`. The circle on the left is scaled
@@ -117,7 +117,7 @@ import openfl._internal.renderer.GraphicsDataType;
 		and horizontally:
 
 	**/
-	public var scaleMode:LineScaleMode;
+	public var scaleMode(get, set):LineScaleMode;
 
 	/**
 		Indicates the thickness of the line in points; valid values are 0-255. If
@@ -126,9 +126,9 @@ import openfl._internal.renderer.GraphicsDataType;
 		indicates hairline thickness; the maximum thickness is 255. If a value
 		greater than 255 is passed, the default is 255.
 	**/
-	public var thickness:Float;
+	public var thickness(get, set):Float;
 
-	@:noCompletion private var __graphicsDataType(default, null):GraphicsDataType;
+	@:allow(openfl) @:noCompletion private var _:Any;
 
 	/**
 		Creates a new GraphicsStroke object.
@@ -160,7 +160,7 @@ import openfl._internal.renderer.GraphicsDataType;
 							the line thickness.
 							 *  `LineScaleMode.VERTICAL` - Do not
 							scale the line thickness if the object is scaled
-							vertically _only_. For example, consider the
+							vertically _only(_ : _GraphicsStroke). For example, consider the
 							following circles, drawn with a one-pixel line, and
 							each with the `scaleMode` parameter set to
 							`LineScaleMode.VERTICAL`. The circle on the
@@ -169,7 +169,7 @@ import openfl._internal.renderer.GraphicsDataType;
 
 							 *  `LineScaleMode.HORIZONTAL` - Do not
 							scale the line thickness if the object is scaled
-							horizontally _only_. For example, consider the
+							horizontally _only(_ : _GraphicsStroke). For example, consider the
 							following circles, drawn with a one-pixel line, and
 							each with the `scaleMode` parameter set to
 							`LineScaleMode.HORIZONTAL`. The circle on
@@ -214,16 +214,79 @@ import openfl._internal.renderer.GraphicsDataType;
 	public function new(thickness:Null<Float> = null, pixelHinting:Bool = false, scaleMode:LineScaleMode = LineScaleMode.NORMAL,
 			caps:CapsStyle = CapsStyle.NONE, joints:JointStyle = JointStyle.ROUND, miterLimit:Float = 3, fill:IGraphicsFill = null)
 	{
-		if (thickness == null) thickness = Math.NaN;
+		_ = new _GraphicsStroke(thickness, pixelHinting, scaleMode, caps, joints, miterLimit, fill);
+	}
 
-		this.caps = caps;
-		this.fill = fill;
-		this.joints = joints;
-		this.miterLimit = miterLimit;
-		this.pixelHinting = pixelHinting;
-		this.scaleMode = scaleMode;
-		this.thickness = thickness;
-		this.__graphicsDataType = STROKE;
+	// Get & Set Methods
+
+	@:noCompletion private function get_caps():CapsStyle
+	{
+		return (_ : _GraphicsStroke).caps;
+	}
+
+	@:noCompletion private function set_caps(value:CapsStyle):CapsStyle
+	{
+		return (_ : _GraphicsStroke).caps = value;
+	}
+
+	@:noCompletion private function get_fill():IGraphicsFill
+	{
+		return (_ : _GraphicsStroke).fill;
+	}
+
+	@:noCompletion private function set_fill(value:IGraphicsFill):IGraphicsFill
+	{
+		return (_ : _GraphicsStroke).fill = value;
+	}
+
+	@:noCompletion private function get_joints():JointStyle
+	{
+		return (_ : _GraphicsStroke).joints;
+	}
+
+	@:noCompletion private function set_joints(value:JointStyle):JointStyle
+	{
+		return (_ : _GraphicsStroke).joints = value;
+	}
+
+	@:noCompletion private function get_miterLimit():Float
+	{
+		return (_ : _GraphicsStroke).miterLimit;
+	}
+
+	@:noCompletion private function set_miterLimit(value:Float):Float
+	{
+		return (_ : _GraphicsStroke).miterLimit = value;
+	}
+
+	@:noCompletion private function get_pixelHinting():Bool
+	{
+		return (_ : _GraphicsStroke).pixelHinting;
+	}
+
+	@:noCompletion private function set_pixelHinting(value:Bool):Bool
+	{
+		return (_ : _GraphicsStroke).pixelHinting = value;
+	}
+
+	@:noCompletion private function get_scaleMode():LineScaleMode
+	{
+		return (_ : _GraphicsStroke).scaleMode;
+	}
+
+	@:noCompletion private function set_scaleMode(value:LineScaleMode):LineScaleMode
+	{
+		return (_ : _GraphicsStroke).scaleMode = value;
+	}
+
+	@:noCompletion private function get_thickness():Float
+	{
+		return (_ : _GraphicsStroke).thickness;
+	}
+
+	@:noCompletion private function set_thickness(value:Float):Float
+	{
+		return (_ : _GraphicsStroke).thickness = value;
 	}
 }
 #else

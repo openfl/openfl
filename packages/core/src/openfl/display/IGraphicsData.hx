@@ -5,7 +5,7 @@ import openfl._internal.renderer.GraphicsDataType;
 
 interface IGraphicsData
 {
-	@:noCompletion private var __graphicsDataType(default, null):GraphicsDataType;
+	@:allow(openfl) @:noCompletion private var _:Any;
 }
 #else
 typedef IGraphicsData = flash.display.IGraphicsData;

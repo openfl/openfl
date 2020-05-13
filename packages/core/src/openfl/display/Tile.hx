@@ -187,7 +187,7 @@ class Tile
 	**/
 	@:keep public var y(get, set):Float;
 
-	@:allow(openfl) @:noCompletion private var _:_Tile;
+	@:allow(openfl) @:noCompletion private var _:Any;
 
 	public function new(id:Int = 0, x:Float = 0, y:Float = 0, scaleX:Float = 1, scaleY:Float = 1, rotation:Float = 0, originX:Float = 0, originY:Float = 0)
 	{
@@ -204,7 +204,7 @@ class Tile
 	**/
 	public function clone():Tile
 	{
-		return _.clone();
+		return (_ : _Tile).clone();
 	}
 
 	/**
@@ -217,7 +217,7 @@ class Tile
 	**/
 	public function getBounds(targetCoordinateSpace:Tile):Rectangle
 	{
-		return _.getBounds(targetCoordinateSpace);
+		return (_ : _Tile).getBounds(targetCoordinateSpace);
 	}
 
 	/**
@@ -231,7 +231,7 @@ class Tile
 	**/
 	public function hitTestTile(obj:Tile):Bool
 	{
-		return _.hitTestTile(obj);
+		return (_ : _Tile).hitTestTile(obj);
 	}
 
 	/**
@@ -244,198 +244,198 @@ class Tile
 	**/
 	public function invalidate():Void
 	{
-		_.invalidate();
+		(_ : _Tile).invalidate();
 	}
 
 	// Get & Set Methods
 
 	@:keep @:noCompletion private function get_alpha():Float
 	{
-		return _.alpha;
+		return (_ : _Tile).alpha;
 	}
 
 	@:keep @:noCompletion private function set_alpha(value:Float):Float
 	{
-		return _.alpha = value;
+		return (_ : _Tile).alpha = value;
 	}
 
 	@:noCompletion private function get_blendMode():BlendMode
 	{
-		return _.blendMode;
+		return (_ : _Tile).blendMode;
 	}
 
 	@:noCompletion private function set_blendMode(value:BlendMode):BlendMode
 	{
-		return _.blendMode = value;
+		return (_ : _Tile).blendMode = value;
 	}
 
 	@:noCompletion private function get_colorTransform():ColorTransform
 	{
-		return _.colorTransform;
+		return (_ : _Tile).colorTransform;
 	}
 
 	@:noCompletion private function set_colorTransform(value:ColorTransform):ColorTransform
 	{
-		return _.colorTransform = value;
+		return (_ : _Tile).colorTransform = value;
 	}
 
 	@:noCompletion private function get_data():Dynamic
 	{
-		return _.data;
+		return (_ : _Tile).data;
 	}
 
 	@:noCompletion private function set_data(value:Dynamic):Dynamic
 	{
-		return _.data = value;
+		return (_ : _Tile).data = value;
 	}
 
 	@:keep @:noCompletion private function get_height():Float
 	{
-		return _.height;
+		return (_ : _Tile).height;
 	}
 
 	@:keep @:noCompletion private function set_height(value:Float):Float
 	{
-		return _.height = value;
+		return (_ : _Tile).height = value;
 	}
 
 	@:noCompletion private function get_id():Int
 	{
-		return _.id;
+		return (_ : _Tile).id;
 	}
 
 	@:noCompletion private function set_id(value:Int):Int
 	{
-		return _.id = value;
+		return (_ : _Tile).id = value;
 	}
 
 	@:noCompletion private function get_matrix():Matrix
 	{
-		return _.matrix;
+		return (_ : _Tile).matrix;
 	}
 
 	@:noCompletion private function set_matrix(value:Matrix):Matrix
 	{
-		return _.matrix = value;
+		return (_ : _Tile).matrix = value;
 	}
 
 	@:keep @:noCompletion private function get_originX():Float
 	{
-		return _.originX;
+		return (_ : _Tile).originX;
 	}
 
 	@:keep @:noCompletion private function set_originX(value:Float):Float
 	{
-		return _.originX = value;
+		return (_ : _Tile).originX = value;
 	}
 
 	@:keep @:noCompletion private function get_originY():Float
 	{
-		return _.originY;
+		return (_ : _Tile).originY;
 	}
 
 	@:keep @:noCompletion private function set_originY(value:Float):Float
 	{
-		return _.originY = value;
+		return (_ : _Tile).originY = value;
 	}
 
 	@:noCompletion private function get_rect():Rectangle
 	{
-		return _.rect;
+		return (_ : _Tile).rect;
 	}
 
 	@:noCompletion private function set_rect(value:Rectangle):Rectangle
 	{
-		return _.rect = value;
+		return (_ : _Tile).rect = value;
 	}
 
 	@:keep @:noCompletion private function get_rotation():Float
 	{
-		return _.rotation;
+		return (_ : _Tile).rotation;
 	}
 
 	@:keep @:noCompletion private function set_rotation(value:Float):Float
 	{
-		return _.rotation = value;
+		return (_ : _Tile).rotation = value;
 	}
 
 	@:keep @:noCompletion private function get_scaleX():Float
 	{
-		return _.scaleX;
+		return (_ : _Tile).scaleX;
 	}
 
 	@:keep @:noCompletion private function set_scaleX(value:Float):Float
 	{
-		return _.scaleX = value;
+		return (_ : _Tile).scaleX = value;
 	}
 
 	@:keep @:noCompletion private function get_scaleY():Float
 	{
-		return _.scaleY;
+		return (_ : _Tile).scaleY;
 	}
 
 	@:keep @:noCompletion private function set_scaleY(value:Float):Float
 	{
-		return _.scaleY = value;
+		return (_ : _Tile).scaleY = value;
 	}
 
 	@:noCompletion private function get_shader():Shader
 	{
-		return _.shader;
+		return (_ : _Tile).shader;
 	}
 
 	@:noCompletion private function set_shader(value:Shader):Shader
 	{
-		return _.shader = value;
+		return (_ : _Tile).shader = value;
 	}
 
 	@:noCompletion private function get_tileset():Tileset
 	{
-		return _.tileset;
+		return (_ : _Tile).tileset;
 	}
 
 	@:noCompletion private function set_tileset(value:Tileset):Tileset
 	{
-		return _.tileset = value;
+		return (_ : _Tile).tileset = value;
 	}
 
 	@:noCompletion private function get_visible():Bool
 	{
-		return _.visible;
+		return (_ : _Tile).visible;
 	}
 
 	@:noCompletion private function set_visible(value:Bool):Bool
 	{
-		return _.visible = value;
+		return (_ : _Tile).visible = value;
 	}
 
 	@:keep @:noCompletion private function get_width():Float
 	{
-		return _.width;
+		return (_ : _Tile).width;
 	}
 
 	@:keep @:noCompletion private function set_width(value:Float):Float
 	{
-		return _.width = value;
+		return (_ : _Tile).width = value;
 	}
 
 	@:keep @:noCompletion private function get_x():Float
 	{
-		return _.x;
+		return (_ : _Tile).x;
 	}
 
 	@:keep @:noCompletion private function set_x(value:Float):Float
 	{
-		return _.x = value;
+		return (_ : _Tile).x = value;
 	}
 
 	@:keep @:noCompletion private function get_y():Float
 	{
-		return _.y;
+		return (_ : _Tile).y;
 	}
 
 	@:keep @:noCompletion private function set_y(value:Float):Float
 	{
-		return _.y = value;
+		return (_ : _Tile).y = value;
 	}
 }

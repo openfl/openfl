@@ -53,15 +53,16 @@ import openfl.profiler.Telemetry;
 #if gl_stats
 import openfl.display._internal.stats.Context3DStats;
 #end
+
 #if !display
 #if openfl_gl
-import openfl.display._Context3DRenderer;
+// import openfl.display._Context3DRenderer;
 #end
 #if openfl_html5
-import openfl.display._internal.CanvasRenderer;
-import openfl.display._internal.DOMRenderer;
+// import openfl.display._internal.CanvasRenderer;
+// import openfl.display._internal.DOMRenderer;
 #else
-import openfl.display._internal.CairoRenderer;
+// import openfl.display._internal.CairoRenderer;
 #end
 #end
 #if !openfl_debug
@@ -493,31 +494,31 @@ class _Stage extends _DisplayObjectContainer
 				context3D = new Context3D(parent);
 				context3D.configureBackBuffer(windowWidth, windowHeight, 0, true, true, true);
 				context3D.present();
-				if (BitmapData._.__hardwareRenderer == null)
-				{
-					BitmapData._.__hardwareRenderer = new Context3DRenderer(context3D);
-				}
-				__renderer = new Context3DRenderer(context3D);
+				// if (BitmapData._.__hardwareRenderer == null)
+				// {
+				// 	BitmapData._.__hardwareRenderer = new Context3DRenderer(context3D);
+				// }
+				// __renderer = new Context3DRenderer(context3D);
 				#end
 				#end
 
 			case CANVAS:
 				#if openfl_html5
-				var renderer = new CanvasRenderer(window.context.canvas2D);
-				renderer.pixelRatio = pixelRatio;
-				__renderer = renderer;
+				// var renderer = new CanvasRenderer(window.context.canvas2D);
+				// renderer.pixelRatio = pixelRatio;
+				// __renderer = renderer;
 				#end
 
 			case DOM:
 				#if openfl_html5
-				var renderer = new DOMRenderer(window.context.dom);
-				renderer.pixelRatio = pixelRatio;
-				__renderer = renderer;
+				// var renderer = new DOMRenderer(window.context.dom);
+				// renderer.pixelRatio = pixelRatio;
+				// __renderer = renderer;
 				#end
 
 			case CAIRO:
 				#if (!openfl_html5 && openfl_cairo)
-				__renderer = new CairoRenderer(window.context.cairo);
+				// __renderer = new CairoRenderer(window.context.cairo);
 				#end
 
 			default:
@@ -2459,8 +2460,8 @@ class _Stage extends _DisplayObjectContainer
 		#if (openfl_cairo && !display)
 		if (__renderer != null && __renderer._.__type == CAIRO)
 		{
-			var renderer:CairoRenderer = cast __renderer;
-			renderer.cairo = context.cairo;
+			// var renderer:CairoRenderer = cast __renderer;
+			// renderer.cairo = context.cairo;
 		}
 		#end
 

@@ -1,11 +1,12 @@
 package openfl.display;
 
-import openfl.display._internal.FlashRenderer;
-import openfl.display._internal.FlashTilemap;
+// import openfl.display._internal.FlashRenderer;
+// import openfl.display._internal.FlashTilemap;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+
 #if !flash
-import openfl.display._internal.Context3DBuffer;
+// import openfl.display._internal.Context3DBuffer;
 #end
 
 /**
@@ -108,7 +109,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	**/
 	public function addTile(tile:Tile):Tile
 	{
-		return _.addTile(tile);
+		return (_ : _Tilemap).addTile(tile);
 	}
 
 	/**
@@ -130,7 +131,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	**/
 	public function addTileAt(tile:Tile, index:Int):Tile
 	{
-		return _.addTileAt(tile, index);
+		return (_ : _Tilemap).addTileAt(tile, index);
 	}
 
 	/**
@@ -143,7 +144,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	**/
 	public function addTiles(tiles:Array<Tile>):Array<Tile>
 	{
-		return _.addTiles(tiles);
+		return (_ : _Tilemap).addTiles(tiles);
 	}
 
 	/**
@@ -158,7 +159,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	**/
 	public function contains(tile:Tile):Bool
 	{
-		return _.contains(tile);
+		return (_ : _Tilemap).contains(tile);
 	}
 
 	/**
@@ -169,7 +170,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	**/
 	public function getTileAt(index:Int):Tile
 	{
-		return _.getTileAt(index);
+		return (_ : _Tilemap).getTileAt(index);
 	}
 
 	/**
@@ -180,7 +181,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	**/
 	public function getTileIndex(tile:Tile):Int
 	{
-		return _.getTileIndex(tile);
+		return (_ : _Tilemap).getTileIndex(tile);
 	}
 
 	/**
@@ -191,7 +192,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	**/
 	public function getTiles():TileContainer
 	{
-		return _.getTiles();
+		return (_ : _Tilemap).getTiles();
 	}
 
 	/**
@@ -204,7 +205,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	**/
 	public function removeTile(tile:Tile):Tile
 	{
-		return _.removeTile(tile);
+		return (_ : _Tilemap).removeTile(tile);
 	}
 
 	/**
@@ -217,7 +218,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	**/
 	public function removeTileAt(index:Int):Tile
 	{
-		return _.removeTileAt(index);
+		return (_ : _Tilemap).removeTileAt(index);
 	}
 
 	/**
@@ -228,7 +229,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	**/
 	public function removeTiles(beginIndex:Int = 0, endIndex:Int = 0x7fffffff):Void
 	{
-		return _.removeTiles(beginIndex, endIndex);
+		return (_ : _Tilemap).removeTiles(beginIndex, endIndex);
 	}
 
 	/**
@@ -264,7 +265,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	**/
 	public function setTileIndex(tile:Tile, index:Int):Void
 	{
-		_.setTileIndex(tile, index);
+		(_ : _Tilemap).setTileIndex(tile, index);
 	}
 
 	/**
@@ -275,7 +276,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	**/
 	public function setTiles(group:TileContainer):Void
 	{
-		_.setTiles(group);
+		(_ : _Tilemap).setTiles(group);
 	}
 
 	/**
@@ -296,7 +297,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	**/
 	public function sortTiles(compareFunction:Tile->Tile->Int):Void
 	{
-		_.sortTiles(compareFunction);
+		(_ : _Tilemap).sortTiles(compareFunction);
 	}
 
 	/**
@@ -309,7 +310,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	**/
 	public function swapTiles(tile1:Tile, tile2:Tile):Void
 	{
-		_.swapTiles(tile1, tile2);
+		(_ : _Tilemap).swapTiles(tile1, tile2);
 	}
 
 	/**
@@ -322,65 +323,65 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	**/
 	public function swapTilesAt(index1:Int, index2:Int):Void
 	{
-		_.swapTilesAt(index1, index2);
+		(_ : _Tilemap).swapTilesAt(index1, index2);
 	}
 
 	// Get & Set Methods
 
 	@:noCompletion private function get_numTiles():Int
 	{
-		return _.numTiles;
+		return (_ : _Tilemap).numTiles;
 	}
 
 	@:noCompletion private function get_tileAlphaEnabled():Bool
 	{
-		return _.tileAlphaEnabled;
+		return (_ : _Tilemap).tileAlphaEnabled;
 	}
 
 	@:noCompletion private function set_tileAlphaEnabled(value:Bool):Bool
 	{
-		return _.tileAlphaEnabled = value;
+		return (_ : _Tilemap).tileAlphaEnabled = value;
 	}
 
 	@:noCompletion private function get_tileBlendModeEnabled():Bool
 	{
-		return _.tileBlendModeEnabled;
+		return (_ : _Tilemap).tileBlendModeEnabled;
 	}
 
 	@:noCompletion private function set_tileBlendModeEnabled(value:Bool):Bool
 	{
-		return _.tileBlendModeEnabled = value;
+		return (_ : _Tilemap).tileBlendModeEnabled = value;
 	}
 
 	@:noCompletion private function get_tileColorTransformEnabled():Bool
 	{
-		return _.tileColorTransformEnabled;
+		return (_ : _Tilemap).tileColorTransformEnabled;
 	}
 
 	@:noCompletion private function set_tileColorTransformEnabled(value:Bool):Bool
 	{
-		return _.tileColorTransformEnabled = value;
+		return (_ : _Tilemap).tileColorTransformEnabled = value;
 	}
 
 	@:noCompletion private function get_tileset():Tileset
 	{
-		return _.tileset;
+		return (_ : _Tilemap).tileset;
 	}
 
 	@:noCompletion private function set_tileset(value:Tileset):Tileset
 	{
-		return _.tileset = value;
+		return (_ : _Tilemap).tileset = value;
 	}
 
 	#if flash
 	@:setter(height) private function set_height(value:Float):Void
 	{
-		_.set_height(value);
+		(_ : _Tilemap).set_height(value);
 	}
 
 	@:setter(width) private function set_width(value:Float):Void
 	{
-		_.set_width(value);
+		(_ : _Tilemap).set_width(value);
 	}
 	#end
 }

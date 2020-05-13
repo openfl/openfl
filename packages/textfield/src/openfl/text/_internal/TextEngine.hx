@@ -278,11 +278,11 @@ class TextEngine
 			ascent = format.size * format._.__ascent;
 			descent = format.size * format._.__descent;
 		}
-		else if (#if (lime || openfl_html5) font != null && font.unitsPerEM != 0 #else false #end)
+		else if (#if (lime || openfl_html5) font != null && font.limeFont.unitsPerEM != 0 #else false #end)
 		{
 			#if (lime || openfl_html5)
-			ascent = (font.ascender / font.unitsPerEM) * format.size;
-			descent = Math.abs((font.descender / font.unitsPerEM) * format.size);
+			ascent = (font.limeFont.ascender / font.limeFont.unitsPerEM) * format.size;
+			descent = Math.abs((font.limeFont.descender / font.limeFont.unitsPerEM) * format.size);
 			#else
 			ascent = 0;
 			descent = 0;

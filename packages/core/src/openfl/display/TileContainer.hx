@@ -41,7 +41,7 @@ class TileContainer extends Tile implements ITileContainer
 	**/
 	public function addTile(tile:Tile):Tile
 	{
-		return _.addTile(tile);
+		return (_ : _TileContainer).addTile(tile);
 	}
 
 	/**
@@ -63,7 +63,7 @@ class TileContainer extends Tile implements ITileContainer
 	**/
 	public function addTileAt(tile:Tile, index:Int):Tile
 	{
-		return _.addTileAt(tile, index);
+		return (_ : _TileContainer).addTileAt(tile, index);
 	}
 
 	/**
@@ -76,12 +76,12 @@ class TileContainer extends Tile implements ITileContainer
 	**/
 	public function addTiles(tiles:Array<Tile>):Array<Tile>
 	{
-		return _.addTiles(tiles);
+		return (_ : _TileContainer).addTiles(tiles);
 	}
 
 	public override function clone():TileContainer
 	{
-		return _.clone();
+		return (_ : _TileContainer).clone();
 	}
 
 	/**
@@ -96,7 +96,7 @@ class TileContainer extends Tile implements ITileContainer
 	**/
 	public function contains(tile:Tile):Bool
 	{
-		return _.contains(tile);
+		return (_ : _TileContainer).contains(tile);
 	}
 
 	/**
@@ -107,7 +107,7 @@ class TileContainer extends Tile implements ITileContainer
 	**/
 	public function getTileAt(index:Int):Tile
 	{
-		return _.getTileAt(index);
+		return (_ : _TileContainer).getTileAt(index);
 	}
 
 	/**
@@ -118,7 +118,7 @@ class TileContainer extends Tile implements ITileContainer
 	**/
 	public function getTileIndex(tile:Tile):Int
 	{
-		return _.getTileIndex(tile);
+		return (_ : _TileContainer).getTileIndex(tile);
 	}
 
 	/**
@@ -131,7 +131,7 @@ class TileContainer extends Tile implements ITileContainer
 	**/
 	public function removeTile(tile:Tile):Tile
 	{
-		return _.removeTile(tile);
+		return (_ : _TileContainer).removeTile(tile);
 	}
 
 	/**
@@ -144,7 +144,7 @@ class TileContainer extends Tile implements ITileContainer
 	**/
 	public function removeTileAt(index:Int):Tile
 	{
-		return _.removeTileAt(index);
+		return (_ : _TileContainer).removeTileAt(index);
 	}
 
 	/**
@@ -155,7 +155,7 @@ class TileContainer extends Tile implements ITileContainer
 	**/
 	public function removeTiles(beginIndex:Int = 0, endIndex:Int = 0x7fffffff):Void
 	{
-		_.removeTiles(beginIndex, endIndex);
+		(_ : _TileContainer).removeTiles(beginIndex, endIndex);
 	}
 
 	/**
@@ -191,7 +191,7 @@ class TileContainer extends Tile implements ITileContainer
 	**/
 	public function setTileIndex(tile:Tile, index:Int):Void
 	{
-		_.setTileIndex(tile, index);
+		(_ : _TileContainer).setTileIndex(tile, index);
 	}
 
 	/**
@@ -212,7 +212,7 @@ class TileContainer extends Tile implements ITileContainer
 	**/
 	#if (openfl < "9.0.0") @:dox(hide) #end public function sortTiles(compareFunction:Tile->Tile->Int):Void
 	{
-		_.sortTiles(compareFunction);
+		(_ : _TileContainer).sortTiles(compareFunction);
 	}
 
 	/**
@@ -225,7 +225,7 @@ class TileContainer extends Tile implements ITileContainer
 	**/
 	public function swapTiles(tile1:Tile, tile2:Tile):Void
 	{
-		_.swapTiles(tile1, tile2);
+		(_ : _TileContainer).swapTiles(tile1, tile2);
 	}
 
 	/**
@@ -238,13 +238,13 @@ class TileContainer extends Tile implements ITileContainer
 	**/
 	public function swapTilesAt(index1:Int, index2:Int):Void
 	{
-		_.swapTilesAt(index1, index2);
+		(_ : _TileContainer).swapTilesAt(index1, index2);
 	}
 
 	// Get & Set Methods
 
 	@:noCompletion private function get_numTiles():Int
 	{
-		return _.numTiles;
+		return (_ : _TileContainer).numTiles;
 	}
 }

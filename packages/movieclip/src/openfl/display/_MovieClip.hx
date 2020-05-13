@@ -30,9 +30,9 @@ class _MovieClip extends _Sprite
 	public var __scene:Scene;
 	public var __timeline:Timeline;
 
-	public function new()
+	public function new(movieClip:MovieClip)
 	{
-		super();
+		super(movieClip);
 
 		__enabled = true;
 		__type = MOVIE_CLIP;
@@ -42,7 +42,7 @@ class _MovieClip extends _Sprite
 			var method = __constructor;
 			__constructor = null;
 
-			method(this);
+			method(movieClip);
 		}
 	}
 

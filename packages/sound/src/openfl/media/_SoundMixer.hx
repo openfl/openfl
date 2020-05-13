@@ -52,7 +52,7 @@ class _SoundMixer
 
 		for (channel in __soundChannels)
 		{
-			channel._.__updateTransform();
+			(channel._ : _SoundChannel).__updateTransform();
 		}
 
 		return value;

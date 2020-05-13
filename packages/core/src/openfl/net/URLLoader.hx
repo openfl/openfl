@@ -135,8 +135,6 @@ class URLLoader extends EventDispatcher
 	**/
 	public var dataFormat:URLLoaderDataFormat;
 
-	@:allow(openfl) @:noCompletion private var _:Dynamic;
-
 	/**
 		Creates a URLLoader object.
 
@@ -169,7 +167,7 @@ class URLLoader extends EventDispatcher
 	**/
 	public function close():Void
 	{
-		_.close();
+		(_ : _URLLoader).close();
 	}
 
 	/**

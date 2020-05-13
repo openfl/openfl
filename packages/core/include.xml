@@ -150,6 +150,7 @@
 	<haxelib name="openfl.assets" path="../assets" unless="openfl.assets" />
 	<haxelib name="openfl.bitmapdata" path="../bitmapdata" unless="openfl.bitmapdata" />
 	<haxelib name="openfl.displayobject" path="../displayobject" unless="openfl.displayobject" />
+	<haxelib name="openfl.errors" path="../errors" unless="openfl.errors" />
 	<haxelib name="openfl.eventdispatcher" path="../eventdispatcher" unless="openfl.eventdispatcher" />
 	<haxelib name="openfl.externalinterface" path="../externalinterface" unless="openfl.externalinterface" />
 	<haxelib name="openfl.filereference" path="../filereference" unless="openfl.filereference" />
@@ -161,12 +162,12 @@
 	<haxelib name="openfl.movieclip" path="../movieclip" unless="openfl.movieclip" />
 	<haxelib name="openfl.netstream" path="../netstream" unless="openfl.netstream" />
 	<haxelib name="openfl.printing" path="../printing" unless="openfl.printing" />
-	<haxelib name="openfl.renderer-cairo" path="../renderer-cairo" unless="openfl.renderer-cairo" />
-	<haxelib name="openfl.renderer-canvas" path="../renderer-canvas" unless="openfl.renderer-canvas" />
+	<!-- <haxelib name="openfl.renderer-cairo" path="../renderer-cairo" unless="openfl.renderer-cairo" /> -->
+	<!-- <haxelib name="openfl.renderer-canvas" path="../renderer-canvas" unless="openfl.renderer-canvas" /> -->
 	<haxelib name="openfl.renderer-core" path="../renderer-core" unless="openfl.renderer-core" />
-	<haxelib name="openfl.renderer-dom" path="../renderer-dom" unless="openfl.renderer-dom" />
-	<haxelib name="openfl.renderer-flash" path="../renderer-flash" unless="openfl.renderer-flash" />
-	<haxelib name="openfl.renderer-stage3D" path="../renderer-stage3D" unless="openfl.renderer-stage3D" />
+	<!-- <haxelib name="openfl.renderer-dom" path="../renderer-dom" unless="openfl.renderer-dom" /> -->
+	<!-- <haxelib name="openfl.renderer-flash" path="../renderer-flash" unless="openfl.renderer-flash" /> -->
+	<!-- <haxelib name="openfl.renderer-stage3D" path="../renderer-stage3D" unless="openfl.renderer-stage3D" /> -->
 	<haxelib name="openfl.security" path="../security" unless="openfl.security" />
 	<haxelib name="openfl.sensors" path="../sensors" unless="openfl.sensors" />
 	<haxelib name="openfl.shader" path="../shader" unless="openfl.shader" />
@@ -182,5 +183,6 @@
 	<haxelib name="openfl.urlloader" path="../urlloader" unless="openfl.urlloader" />
 	<haxelib name="openfl.urlrequest" path="../urlrequest" unless="openfl.urlrequest" />
 	<haxelib name="openfl.utils" path="../utils" unless="openfl.utils" />
+	<haxelib name="openfl.video" path="../video" unless="openfl.video" />
 
 </extension>

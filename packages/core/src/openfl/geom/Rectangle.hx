@@ -511,7 +511,7 @@ class Rectangle
 		return _.top;
 	}
 
-	@:noCompletion private function set_top(t:Float):Float
+	@:noCompletion private function set_top(value:Float):Float
 	{
 		return _.top = value;
 	}

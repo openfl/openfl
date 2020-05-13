@@ -70,7 +70,7 @@ class Point
 	**/
 	public function add(v:Point):Point
 	{
-		return _.add(v);
+		return (_ : _Point).add(v);
 	}
 
 	/**
@@ -80,7 +80,7 @@ class Point
 	**/
 	public function clone():Point
 	{
-		return _.clone();
+		return (_ : _Point).clone();
 	}
 
 	/**
@@ -91,7 +91,7 @@ class Point
 	**/
 	public function copyFrom(sourcePoint:Point):Void
 	{
-		_.copyFrom(sourcePoint);
+		(_ : _Point).copyFrom(sourcePoint);
 	}
 
 	/**
@@ -103,7 +103,7 @@ class Point
 	**/
 	public static function distance(pt1:Point, pt2:Point):Float
 	{
-		return _.distance(pt1, pt2);
+		return (_ : _Point).distance(pt1, pt2);
 	}
 
 	/**
@@ -116,7 +116,7 @@ class Point
 	**/
 	public function equals(toCompare:Point):Bool
 	{
-		return _.equals(toCompare);
+		return (_ : _Point).equals(toCompare);
 	}
 
 	/**
@@ -140,7 +140,7 @@ class Point
 	**/
 	public static function interpolate(pt1:Point, pt2:Point, f:Float):Point
 	{
-		return _.interpolate(pt1, pt2, f);
+		return (_ : _Point).interpolate(pt1, pt2, f);
 	}
 
 	/**
@@ -154,7 +154,7 @@ class Point
 	**/
 	public function normalize(thickness:Float):Void
 	{
-		_.normalize(thickness);
+		(_ : _Point).normalize(thickness);
 	}
 
 	/**
@@ -164,12 +164,12 @@ class Point
 		value of _y_ to create the new _y_ value.
 
 		@param dx The amount by which to offset the horizontal coordinate,
-				  _x_.
-		@param dy The amount by which to offset the vertical coordinate, _y_.
+				  _x(_ : _Point).
+		@param dy The amount by which to offset the vertical coordinate, _y(_ : _Point).
 	**/
 	public function offset(dx:Float, dy:Float):Void
 	{
-		_.offset(dx, dy);
+		(_ : _Point).offset(dx, dy);
 	}
 
 	/**
@@ -181,7 +181,7 @@ class Point
 	**/
 	public static function polar(len:Float, angle:Float):Point
 	{
-		return _.polar(len, angle);
+		return (_ : _Point).polar(len, angle);
 	}
 
 	/**
@@ -192,7 +192,7 @@ class Point
 	**/
 	public function setTo(xa:Float, ya:Float):Void
 	{
-		_.setTo(xa, ya);
+		(_ : _Point).setTo(xa, ya);
 	}
 
 	/**
@@ -204,7 +204,7 @@ class Point
 	**/
 	public function subtract(v:Point):Point
 	{
-		return _.subtract(v);
+		return (_ : _Point).subtract(v);
 	}
 
 	/**
@@ -217,24 +217,34 @@ class Point
 	**/
 	public function toString():String
 	{
-		return _.toString();
+		return (_ : _Point).toString();
 	}
 
 	// Get & Set Methods
 
 	@:noCompletion private function get_length():Float
 	{
-		return _.length;
+		return (_ : _Point).length;
 	}
 
 	@:noCompletion private function get_x():Float
 	{
-		return _.x;
+		return (_ : _Point).x;
+	}
+
+	@:noCompletion private function set_x(value:Float):Float
+	{
+		return (_ : _Point).x = value;
 	}
 
 	@:noCompletion private function get_y():Float
 	{
-		return _.y;
+		return (_ : _Point).y;
+	}
+
+	@:noCompletion private function set_y(value:Float):Float
+	{
+		return (_ : _Point).y = value;
 	}
 }
 #else

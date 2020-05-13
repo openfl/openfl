@@ -12,7 +12,7 @@ import openfl.geom.Point;
 
 	When nested nodes are involved, mouse events target the deepest possible
 	nested node that is visible in the display list. This node is called the
-	_target node_. To have a target node's ancestor receive notification
+	_target node(_ : _MouseEvent). To have a target node's ancestor receive notification
 	of a mouse event, use `EventDispatcher.addEventListener()` on
 	the ancestor node with the `type` parameter set to the specific
 	mouse event you want to detect.
@@ -631,7 +631,7 @@ class MouseEvent extends Event
 
 	public override function clone():MouseEvent
 	{
-		return _.clone();
+		return (_ : _MouseEvent).clone();
 	}
 
 	/**
@@ -641,139 +641,139 @@ class MouseEvent extends Event
 	**/
 	public function updateAfterEvent():Void
 	{
-		_.updateAfterEvent();
+		(_ : _MouseEvent).updateAfterEvent();
 	}
 
 	// Get & Set Methods
 
 	@:noCompletion private function get_altKey():Bool
 	{
-		return _.altKey;
+		return (_ : _MouseEvent).altKey;
 	}
 
 	@:noCompletion private function set_altKey(value:Bool):Bool
 	{
-		return _.altKey = value;
+		return (_ : _MouseEvent).altKey = value;
 	}
 
 	@:noCompletion private function get_buttonDown():Bool
 	{
-		return _.buttonDown;
+		return (_ : _MouseEvent).buttonDown;
 	}
 
 	@:noCompletion private function set_buttonDown(value:Bool):Bool
 	{
-		return _.buttonDown = value;
+		return (_ : _MouseEvent).buttonDown = value;
 	}
 
 	@:noCompletion private function get_commandKey():Bool
 	{
-		return _.commandKey;
+		return (_ : _MouseEvent).commandKey;
 	}
 
 	@:noCompletion private function set_commandKey(value:Bool):Bool
 	{
-		return _.commandKey = value;
+		return (_ : _MouseEvent).commandKey = value;
 	}
 
 	@:noCompletion private function get_clickCount():Int
 	{
-		return _.clickCount;
+		return (_ : _MouseEvent).clickCount;
 	}
 
 	@:noCompletion private function set_clickCount(value:Int):Int
 	{
-		return _.clickCount = value;
+		return (_ : _MouseEvent).clickCount = value;
 	}
 
 	@:noCompletion private function get_ctrlKey():Bool
 	{
-		return _.ctrlKey;
+		return (_ : _MouseEvent).ctrlKey;
 	}
 
 	@:noCompletion private function set_ctrlKey(value:Bool):Bool
 	{
-		return _.ctrlKey = value;
+		return (_ : _MouseEvent).ctrlKey = value;
 	}
 
 	@:noCompletion private function get_delta():Int
 	{
-		return _.delta;
+		return (_ : _MouseEvent).delta;
 	}
 
 	@:noCompletion private function set_delta(value:Int):Int
 	{
-		return _.delta = value;
+		return (_ : _MouseEvent).delta = value;
 	}
 
 	@:noCompletion private function get_isRelatedObjectInaccessible():Bool
 	{
-		return _.isRelatedObjectInaccessible;
+		return (_ : _MouseEvent).isRelatedObjectInaccessible;
 	}
 
 	@:noCompletion private function set_isRelatedObjectInaccessible(value:Bool):Bool
 	{
-		return _.isRelatedObjectInaccessible = value;
+		return (_ : _MouseEvent).isRelatedObjectInaccessible = value;
 	}
 
 	@:noCompletion private function get_localX():Float
 	{
-		return _.localX;
+		return (_ : _MouseEvent).localX;
 	}
 
 	@:noCompletion private function set_localX(value:Float):Float
 	{
-		return _.localX = value;
+		return (_ : _MouseEvent).localX = value;
 	}
 
 	@:noCompletion private function get_localY():Float
 	{
-		return _.localY;
+		return (_ : _MouseEvent).localY;
 	}
 
 	@:noCompletion private function set_localY(value:Float):Float
 	{
-		return _.localY = value;
+		return (_ : _MouseEvent).localY = value;
 	}
 
 	@:noCompletion private function get_relatedObject():InteractiveObject
 	{
-		return _.relatedObject;
+		return (_ : _MouseEvent).relatedObject;
 	}
 
 	@:noCompletion private function set_relatedObject(value:InteractiveObject):InteractiveObject
 	{
-		return _.relatedObject = value;
+		return (_ : _MouseEvent).relatedObject = value;
 	}
 
 	@:noCompletion private function get_shiftKey():Bool
 	{
-		return _.shiftKey;
+		return (_ : _MouseEvent).shiftKey;
 	}
 
 	@:noCompletion private function set_shiftKey(value:Bool):Bool
 	{
-		return _.shiftKey = value;
+		return (_ : _MouseEvent).shiftKey = value;
 	}
 
 	@:noCompletion private function get_stageX():Float
 	{
-		return _.stageX;
+		return (_ : _MouseEvent).stageX;
 	}
 
 	@:noCompletion private function set_stageX(value:Float):Float
 	{
-		return _.stageX = value;
+		return (_ : _MouseEvent).stageX = value;
 	}
 
 	@:noCompletion private function get_stageY():Float
 	{
-		return _.stageY;
+		return (_ : _MouseEvent).stageY;
 	}
 
 	@:noCompletion private function set_stageY(value:Float):Float
 	{
-		return _.stageY = value;
+		return (_ : _MouseEvent).stageY = value;
 	}
 }
 #else

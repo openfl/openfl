@@ -4,6 +4,7 @@ import openfl.errors.ArgumentError;
 import openfl.errors.RangeError;
 import openfl.errors.TypeError;
 import openfl.events.Event;
+import openfl.events._Event;
 import openfl.geom.Matrix;
 import openfl.geom._Matrix;
 import openfl.geom.Point;
@@ -38,8 +39,12 @@ class _DisplayObjectContainer extends _InteractiveObject
 	public var __removedChildren:Vector<DisplayObject>;
 	public var __tabChildren:Bool;
 
+	private var this_displayObjectContainer:DisplayObjectContainer;
+
 	public function new(displayObjectContainer:DisplayObjectContainer)
 	{
+		this_displayObjectContainer = displayObjectContainer;
+
 		super(displayObjectContainer);
 
 		__type = DISPLAY_OBJECT_CONTAINER;
@@ -70,55 +75,55 @@ class _DisplayObjectContainer extends _InteractiveObject
 
 		if (child.parent == this_displayObject)
 		{
-			this._.__addChild(child);
+			DisplayObjectLinkedList.__addChild(this_displayObjectContainer, child);
 		}
 		else
 		{
-			this._.__reparent(child);
-			this._.__addChild(child);
+			DisplayObjectLinkedList.__reparent(this_displayObjectContainer, child);
+			DisplayObjectLinkedList.__addChild(this_displayObjectContainer, child);
 
 			var addedToStage = (stage != null && child.stage == null);
 
 			if (addedToStage)
 			{
-				child._.__setStageReferences(stage);
+				(child._ : _DisplayObject).__setStageReferences(stage);
 			}
 
-			child._.__setTransformDirty(true);
-			child._.__setParentRenderDirty();
-			child._.__setRenderDirty();
+				(child._ : _DisplayObject).__setTransformDirty(true);
+			(child._ : _DisplayObject).__setParentRenderDirty();
+			(child._ : _DisplayObject).__setRenderDirty();
 			__localBoundsDirty = true;
 			__setRenderDirty();
 
 			#if !openfl_disable_event_pooling
-			var event = Event._.__pool.get();
-			event.type = Event.ADDED;
+			var event = _Event.__pool.get();
+			(event._ : _Event).type = Event.ADDED;
 			#else
 			var event = new Event(Event.ADDED);
 			#end
-			event.bubbles = true;
+			(event._ : _Event).bubbles = true;
 
-			event.target = child;
+			(event._ : _Event).target = child;
 
-			child._.__dispatchWithCapture(event);
+			(child._ : _DisplayObject).__dispatchWithCapture(event);
 
 			#if !openfl_disable_event_pooling
-			Event._.__pool.release(event);
+			_Event.__pool.release(event);
 			#end
 
 			if (addedToStage)
 			{
 				#if openfl_pool_events
-				event = Event._.__pool.get(Event.ADDED_TO_STAGE);
+				event = _Event.__pool.get(Event.ADDED_TO_STAGE);
 				#else
 				event = new Event(Event.ADDED_TO_STAGE, false, false);
 				#end
 
-				child._.__dispatchWithCapture(event);
-				child._.__dispatchChildren(event);
+				(child._ : _DisplayObject).__dispatchWithCapture(event);
+				(child._ : _DisplayObject).__dispatchChildren(event);
 
 				#if openfl_pool_events
-				Event._.__pool.release(event);
+				_Event.__pool.release(event);
 				#end
 			}
 		}
@@ -159,37 +164,37 @@ class _DisplayObjectContainer extends _InteractiveObject
 			{
 				if (__firstChild != child)
 				{
-					this._.__unshiftChild(child);
+					DisplayObjectLinkedList.__unshiftChild(this_displayObjectContainer, child);
 					__setRenderDirty();
 				}
 			}
 			else
 			{
-				this._.__swapChildren(child, getChildAt(index));
+				DisplayObjectLinkedList.__swapChildren(this_displayObjectContainer, child, getChildAt(index));
 				__setRenderDirty();
 			}
 		}
 		else
 		{
-			this._.__reparent(child);
-			this._.__insertChildAt(child, index);
+			DisplayObjectLinkedList.__reparent(this_displayObjectContainer, child);
+			DisplayObjectLinkedList.__insertChildAt(this_displayObjectContainer, child, index);
 			__setRenderDirty();
 
 			var addedToStage = (stage != null && child.stage == null);
 
 			if (addedToStage)
 			{
-				child._.__setStageReferences(stage);
+				(child._ : _DisplayObject).__setStageReferences(stage);
 			}
 
-			child._.__setTransformDirty(true);
-			child._.__setParentRenderDirty();
-			child._.__setRenderDirty();
+				(child._ : _DisplayObject).__setTransformDirty(true);
+			(child._ : _DisplayObject).__setParentRenderDirty();
+			(child._ : _DisplayObject).__setRenderDirty();
 			__localBoundsDirty = true;
 			__setRenderDirty();
 
 			#if !openfl_disable_event_pooling
-			var event = Event._.__pool.get();
+			var event = _Event.__pool.get();
 			event.type = Event.ADDED;
 			#else
 			var event = new Event(Event.ADDED);
@@ -198,25 +203,25 @@ class _DisplayObjectContainer extends _InteractiveObject
 
 			event.target = child;
 
-			child._.__dispatchWithCapture(event);
+			(child._ : _DisplayObject).__dispatchWithCapture(event);
 
 			#if !openfl_disable_event_pooling
-			Event._.__pool.release(event);
+			_Event.__pool.release(event);
 			#end
 
 			if (addedToStage)
 			{
 				#if openfl_pool_events
-				event = Event._.__pool.get(Event.ADDED_TO_STAGE);
+				event = _Event.__pool.get(Event.ADDED_TO_STAGE);
 				#else
 				event = new Event(Event.ADDED_TO_STAGE, false, false);
 				#end
 
-				child._.__dispatchWithCapture(event);
-				child._.__dispatchChildren(event);
+				(child._ : _DisplayObject).__dispatchWithCapture(event);
+				(child._ : _DisplayObject).__dispatchChildren(event);
 
 				#if openfl_pool_events
-				Event._.__pool.release(event);
+				_Event.__pool.release(event);
 				#end
 			}
 		}
@@ -251,7 +256,7 @@ class _DisplayObjectContainer extends _InteractiveObject
 		{
 			for (i in 0...index)
 			{
-				child = child._.__nextSibling;
+				child = (child._ : _DisplayObject).__nextSibling;
 			}
 		}
 
@@ -267,7 +272,7 @@ class _DisplayObjectContainer extends _InteractiveObject
 			{
 				return child;
 			}
-			child = child._.__nextSibling;
+			child = (child._ : _DisplayObject).__nextSibling;
 		}
 		return null;
 	}
@@ -280,7 +285,7 @@ class _DisplayObjectContainer extends _InteractiveObject
 			for (i in 0...numChildren)
 			{
 				if (current == child) return i;
-				current = current._.__nextSibling;
+				current = (current._ : _DisplayObject).__nextSibling;
 			}
 		}
 		return -1;
@@ -289,7 +294,7 @@ class _DisplayObjectContainer extends _InteractiveObject
 	public function getObjectsUnderPoint(point:Point):Array<DisplayObject>
 	{
 		var stack = new Array<DisplayObject>();
-		__hitTest(point.x, point.y, false, stack, false, this);
+		__hitTest(point.x, point.y, false, stack, false, this_displayObjectContainer);
 		stack.reverse();
 		return stack;
 	}
@@ -298,14 +303,14 @@ class _DisplayObjectContainer extends _InteractiveObject
 	{
 		if (child != null && child.parent == this_displayObject)
 		{
-			child._.__setTransformDirty();
-			child._.__setParentRenderDirty();
-			child._.__setRenderDirty();
+			(child._ : _DisplayObject).__setTransformDirty();
+			(child._ : _DisplayObject).__setParentRenderDirty();
+			(child._ : _DisplayObject).__setRenderDirty();
 			__localBoundsDirty = true;
 			__setRenderDirty();
 
 			var event = new Event(Event.REMOVED, true);
-			child._.__dispatchWithCapture(event);
+			(child._ : _DisplayObject).__dispatchWithCapture(event);
 
 			if (stage != null)
 			{
@@ -315,16 +320,16 @@ class _DisplayObjectContainer extends _InteractiveObject
 				}
 
 				var event = new Event(Event.REMOVED_FROM_STAGE, false, false);
-				child._.__dispatchWithCapture(event);
-				child._.__dispatchChildren(event);
-				child._.__setStageReferences(null);
+				(child._ : _DisplayObject).__dispatchWithCapture(event);
+				(child._ : _DisplayObject).__dispatchChildren(event);
+				(child._ : _DisplayObject).__setStageReferences(null);
 			}
 
-			this._.__removeChild(child);
+			DisplayObjectLinkedList.__removeChild(this_displayObjectContainer, child);
 
 			__removedChildren.push(child);
-			child._.__setTransformDirty(true);
-			child._.__setParentRenderDirty();
+			(child._ : _DisplayObject).__setTransformDirty(true);
+			(child._ : _DisplayObject).__setParentRenderDirty();
 		}
 
 		return child;
@@ -343,7 +348,7 @@ class _DisplayObjectContainer extends _InteractiveObject
 					{
 						return removeChild(child);
 					}
-					child = child._.__nextSibling;
+					child = (child._ : _DisplayObject).__nextSibling;
 				}
 			}
 		}
@@ -377,7 +382,7 @@ class _DisplayObjectContainer extends _InteractiveObject
 		{
 			for (i in 0...beginIndex)
 			{
-				child = child._.__nextSibling;
+				child = (child._ : _DisplayObject).__nextSibling;
 			}
 		}
 
@@ -386,7 +391,7 @@ class _DisplayObjectContainer extends _InteractiveObject
 
 		while (numRemovals >= 0)
 		{
-			next = child._.__nextSibling;
+			next = (child._ : _DisplayObject).__nextSibling;
 			removeChild(child);
 			child = next;
 			numRemovals--;
@@ -402,7 +407,7 @@ class _DisplayObjectContainer extends _InteractiveObject
 			{
 				return child;
 			}
-			child = child._.__nextSibling;
+			child = (child._ : _DisplayObject).__nextSibling;
 		}
 
 		return null;
@@ -417,22 +422,22 @@ class _DisplayObjectContainer extends _InteractiveObject
 			#end
 			if (index == 0)
 			{
-				this._.__unshiftChild(child);
+				DisplayObjectLinkedList.__unshiftChild(this_displayObjectContainer, child);
 			}
 			else if (index >= numChildren - 1)
 			{
-				this._.__addChild(child);
+				DisplayObjectLinkedList.__addChild(this_displayObjectContainer, child);
 			}
 			else
 			{
-				this._.__insertChildAt(child, index);
+				DisplayObjectLinkedList.__insertChildAt(this_displayObjectContainer, child, index);
 			}
 			__setRenderDirty();
 			#if openfl_validate_children
 			__children = copy;
 			__children.remove(child);
 			__children.insert(index, child);
-			this._.__validateChildren("setChildIndex");
+			DisplayObjectLinkedList.__validateChildren(this_displayObjectContainer, "setChildIndex");
 			#end
 		}
 	}
@@ -446,7 +451,7 @@ class _DisplayObjectContainer extends _InteractiveObject
 	{
 		if (child1.parent == this_displayObject && child2.parent == this_displayObject && child1 != child2)
 		{
-			this._.__swapChildren(child1, child2);
+			DisplayObjectLinkedList.__swapChildren(this_displayObjectContainer, child1, child2);
 			__setRenderDirty();
 		}
 	}
@@ -470,11 +475,11 @@ class _DisplayObjectContainer extends _InteractiveObject
 					{
 						child2 = current;
 					}
-					current = current._.__nextSibling;
+					current = (current._ : _DisplayObject).__nextSibling;
 				}
 			}
 
-			this._.__swapChildren(child1, child2);
+			DisplayObjectLinkedList.__swapChildren(this_displayObjectContainer, child1, child2);
 			__setRenderDirty();
 		}
 	}
@@ -485,7 +490,7 @@ class _DisplayObjectContainer extends _InteractiveObject
 		{
 			if (orphan.stage == null)
 			{
-				orphan._.__cleanup();
+				(orphan._ : _DisplayObject).__cleanup();
 			}
 		}
 
@@ -494,7 +499,7 @@ class _DisplayObjectContainer extends _InteractiveObject
 
 	public override function __getBounds(rect:Rectangle, matrix:Matrix):Void
 	{
-		super._.__getBounds(rect, matrix);
+		super.__getBounds(rect, matrix);
 
 		if (numChildren == 0) return;
 
@@ -503,12 +508,12 @@ class _DisplayObjectContainer extends _InteractiveObject
 		var child = __firstChild;
 		while (child != null)
 		{
-			if (child._.__scaleX != 0 && child._.__scaleY != 0)
+			if ((child._ : _DisplayObject).__scaleX != 0 && (child._ : _DisplayObject).__scaleY != 0)
 			{
-				DisplayObject._.__calculateAbsoluteTransform(child._.__transform, matrix, childWorldTransform);
-				child._.__getBounds(rect, childWorldTransform);
+				_DisplayObject.__calculateAbsoluteTransform((child._ : _DisplayObject).__transform, matrix, childWorldTransform);
+				(child._ : _DisplayObject).__getBounds(rect, childWorldTransform);
 			}
-			child = child._.__nextSibling;
+			child = (child._ : _DisplayObject).__nextSibling;
 		}
 
 		_Matrix.__pool.release(childWorldTransform);
@@ -516,7 +521,7 @@ class _DisplayObjectContainer extends _InteractiveObject
 
 	public override function __getFilterBounds(rect:Rectangle, matrix:Matrix):Void
 	{
-		super._.__getFilterBounds(rect, matrix);
+		super.__getFilterBounds(rect, matrix);
 		if (__scrollRect != null) return;
 
 		if (numChildren == 0) return;
@@ -526,12 +531,13 @@ class _DisplayObjectContainer extends _InteractiveObject
 		var child = __firstChild;
 		while (child != null)
 		{
-			if (child._.__scaleX != 0 && child._.__scaleY != 0 && !child._.__isMask)
+			if ((child._ : _DisplayObject).__scaleX != 0
+				&& (child._ : _DisplayObject).__scaleY != 0 && !(child._ : _DisplayObject).__isMask)
 			{
-				DisplayObject._.__calculateAbsoluteTransform(child._.__transform, matrix, childWorldTransform);
-				child._.__getFilterBounds(rect, childWorldTransform);
+				_DisplayObject.__calculateAbsoluteTransform((child._ : _DisplayObject).__transform, matrix, childWorldTransform);
+				(child._ : _DisplayObject).__getFilterBounds(rect, childWorldTransform);
 			}
-			child = child._.__nextSibling;
+			child = (child._ : _DisplayObject).__nextSibling;
 		}
 
 		_Matrix.__pool.release(childWorldTransform);
@@ -541,12 +547,12 @@ class _DisplayObjectContainer extends _InteractiveObject
 	{
 		if (__scrollRect != null)
 		{
-			super._.__getRenderBounds(rect, matrix);
+			super.__getRenderBounds(rect, matrix);
 			return;
 		}
 		else
 		{
-			super._.__getBounds(rect, matrix);
+			super.__getBounds(rect, matrix);
 		}
 
 		if (numChildren == 0) return;
@@ -556,12 +562,13 @@ class _DisplayObjectContainer extends _InteractiveObject
 		var child = __firstChild;
 		while (child != null)
 		{
-			if (child._.__scaleX != 0 && child._.__scaleY != 0 && !child._.__isMask)
+			if ((child._ : _DisplayObject).__scaleX != 0
+				&& (child._ : _DisplayObject).__scaleY != 0 && !(child._ : _DisplayObject).__isMask)
 			{
-				DisplayObject._.__calculateAbsoluteTransform(child._.__transform, matrix, childWorldTransform);
-				child._.__getRenderBounds(rect, childWorldTransform);
+				_DisplayObject.__calculateAbsoluteTransform((child._ : _DisplayObject).__transform, matrix, childWorldTransform);
+				(child._ : _DisplayObject).__getRenderBounds(rect, childWorldTransform);
 			}
-			child = child._.__nextSibling;
+			child = (child._ : _DisplayObject).__nextSibling;
 		}
 
 		_Matrix.__pool.release(childWorldTransform);
@@ -594,7 +601,7 @@ class _DisplayObjectContainer extends _InteractiveObject
 			{
 				while (child != null)
 				{
-					if (child._.__hitTest(x, y, shapeFlag, null, true, cast child))
+					if ((child._ : _DisplayObject).__hitTest(x, y, shapeFlag, null, true, cast child))
 					{
 						if (stack != null)
 						{
@@ -603,7 +610,7 @@ class _DisplayObjectContainer extends _InteractiveObject
 
 						return true;
 					}
-					child = child._.__previousSibling;
+					child = (child._ : _DisplayObject).__previousSibling;
 				}
 			}
 			else if (stack != null)
@@ -615,11 +622,11 @@ class _DisplayObjectContainer extends _InteractiveObject
 
 				while (child != null)
 				{
-					interactive = child._.__getInteractive(null);
+					interactive = (child._ : _DisplayObject).__getInteractive(null);
 
 					if (interactive || (mouseEnabled && !hitTest))
 					{
-						if (child._.__hitTest(x, y, shapeFlag, stack, true, cast child))
+						if ((child._ : _DisplayObject).__hitTest(x, y, shapeFlag, stack, true, cast child))
 						{
 							hitTest = true;
 
@@ -629,7 +636,7 @@ class _DisplayObjectContainer extends _InteractiveObject
 							}
 						}
 					}
-					child = child._.__previousSibling;
+					child = (child._ : _DisplayObject).__previousSibling;
 				}
 
 				if (hitTest)
@@ -645,12 +652,12 @@ class _DisplayObjectContainer extends _InteractiveObject
 
 			while (child != null)
 			{
-				if (child._.__hitTest(x, y, shapeFlag, stack, false, cast child))
+				if ((child._ : _DisplayObject).__hitTest(x, y, shapeFlag, stack, false, cast child))
 				{
 					hitTest = true;
 					if (stack == null) break;
 				}
-				child = child._.__previousSibling;
+				child = (child._ : _DisplayObject).__previousSibling;
 			}
 
 			return hitTest;
@@ -687,7 +694,7 @@ class _DisplayObjectContainer extends _InteractiveObject
 	// 		{
 	// 			if (interactiveOnly && stackRef != null)
 	// 			{
-	// 				interactive = child._.__getInteractive(null);
+	// 				interactive = (child._ : _DisplayObject).__getInteractive(null);
 	// 				if (!interactive && !mouseEnabled && hitTest)
 	// 				{
 	// 					children.skip(child);
@@ -699,13 +706,13 @@ class _DisplayObjectContainer extends _InteractiveObject
 	// 					hitObject:DisplayObject):Bool
 	// 			{
 	// 				var hitTest = false;
-	// 				if (child._.__graphics != null)
+	// 				if ((child._ : _DisplayObject).__graphics != null)
 	// 				{
-	// 					if (!hitObject._.__visible || child._.__isMask || (child.mask != null && !child.mask._.__hitTestMask(x, y)))
+	// 					if (!hitObject._.__visible || (child._ : _DisplayObject).__isMask || (child.mask != null && !child.mask._.__hitTestMask(x, y)))
 	// 					{
 	// 						hitTest = false;
 	// 					}
-	// 					else if (child._.__graphics._.__hitTest(x, y, shapeFlag, child._.__getRenderTransform()))
+	// 					else if ((child._ : _DisplayObject).__graphics._.__hitTest(x, y, shapeFlag, (child._ : _DisplayObject).__getRenderTransform()))
 	// 					{
 	// 						if (stack != null && !interactiveOnly)
 	// 						{
@@ -716,7 +723,7 @@ class _DisplayObjectContainer extends _InteractiveObject
 	// 				}
 	// 				return hitTest;
 	// 			}
-	// 			var childHit = switch (child._.__type)
+	// 			var childHit = switch ((child._ : _DisplayObject).__type)
 	// 			{
 	// 				case BITMAP:
 	// 					var bitmap:Bitmap = cast child;
@@ -725,7 +732,7 @@ class _DisplayObjectContainer extends _InteractiveObject
 	// 					var simpleButton:SimpleButton = cast child;
 	// 					inline simpleButton._.__hitTest(x, y, shapeFlag, stackRef, interactiveOnly, cast child);
 	// 				case DISPLAY_OBJECT_CONTAINER, MOVIE_CLIP:
-	// 					// inline super._.__hitTest(x, y, shapeFlag, stackRef, interactiveOnly, cast child);
+	// 					// inline super.__hitTest(x, y, shapeFlag, stackRef, interactiveOnly, cast child);
 	// 					super_hitTest(child, x, y, shapeFlag, stackRef, interactiveOnly, cast child);
 	// 				case TEXTFIELD:
 	// 					var textField:TextField = cast child;
@@ -768,11 +775,11 @@ class _DisplayObjectContainer extends _InteractiveObject
 
 	public override function __hitTestMask(x:Float, y:Float):Bool
 	{
-		// if (super._.__hitTestMask(x, y))
+		// if (super.__hitTestMask(x, y))
 		// {
 		// 	return true;
 		// }
-		if (__graphics != null && __graphics._.__hitTest(x, y, true, __getRenderTransform()))
+		if (__graphics != null && (__graphics._ : _Graphics).__hitTest(x, y, true, __getRenderTransform()))
 		{
 			return true;
 		}
@@ -781,7 +788,7 @@ class _DisplayObjectContainer extends _InteractiveObject
 		{
 			for (child in __childIterator())
 			{
-				if (switch (child._.__type)
+				if (switch ((child._ : _DisplayObject).__type)
 					{
 						case BITMAP:
 							var bitmap:Bitmap = cast child;
@@ -796,10 +803,12 @@ class _DisplayObjectContainer extends _InteractiveObject
 							var video:Video = cast child;
 							#if haxe4 inline #end video._.__hitTestMask(x, y);
 						case DISPLAY_OBJECT_CONTAINER,
-							MOVIE_CLIP: // inline super._.__hitTestMask(x, y) || (child._.__graphics != null && child._.__graphics._.__hitTest(x, y, true, child._.__getRenderTransform()));
-							(__graphics != null && __graphics._.__hitTest(x, y, true, __getRenderTransform()))
-							|| (child._.__graphics != null && child._.__graphics._.__hitTest(x, y, true, child._.__getRenderTransform()));
-						default: super._.__hitTestMask(x, y);
+							MOVIE_CLIP: // inline super.__hitTestMask(x, y) || ((child._ : _DisplayObject).__graphics != null && (child._ : _DisplayObject).__graphics._.__hitTest(x, y, true, (child._ : _DisplayObject).__getRenderTransform()));
+							(__graphics != null && (__graphics._ : _Graphics).__hitTest(x, y, true, __getRenderTransform()))
+							|| ((child._ : _DisplayObject).__graphics != null
+								&& ((child._ : _DisplayObject).__graphics._ : _Graphics).__hitTest(x, y, true,
+									(child._ : _DisplayObject).__getRenderTransform()));
+						default: super.__hitTestMask(x, y);
 					})
 				{
 					return true;
@@ -812,20 +821,20 @@ class _DisplayObjectContainer extends _InteractiveObject
 
 	public override function __readGraphicsData(graphicsData:Vector<IGraphicsData>, recurse:Bool):Void
 	{
-		// super._.__readGraphicsData(graphicsData, recurse);
+		// super.__readGraphicsData(graphicsData, recurse);
 		if (__graphics != null)
 		{
-			__graphics._.__readGraphicsData(graphicsData);
+			(__graphics._ : _Graphics).__readGraphicsData(graphicsData);
 		}
 
 		if (recurse && numChildren > 0)
 		{
 			for (child in __childIterator())
 			{
-				// inline super._.__readGraphicsData(graphicsData, recurse);
-				if (child._.__graphics != null)
+				// inline super.__readGraphicsData(graphicsData, recurse);
+				if ((child._ : _DisplayObject).__graphics != null)
 				{
-					child._.__graphics._.__readGraphicsData(graphicsData);
+					((child._ : _DisplayObject).__graphics._ : _Graphics).__readGraphicsData(graphicsData);
 				}
 			}
 		}
@@ -833,22 +842,22 @@ class _DisplayObjectContainer extends _InteractiveObject
 
 	public override function __setTransformDirty(force:Bool = false):Void
 	{
-		// inline super._.__setTransformDirty(force);
+		// inline super.__setTransformDirty(force);
 		__transformDirty = true;
 
 		if (numChildren > 0 && (!__childTransformDirty || force))
 		{
 			for (child in __childIterator())
 			{
-				if (child._.__type == SIMPLE_BUTTON)
+				if ((child._ : _DisplayObject).__type == SIMPLE_BUTTON)
 				{
 					var simpleButton:SimpleButton = cast child;
 					#if haxe4 inline #end simpleButton._.__setTransformDirty(force);
 				}
 				else
 				{
-					// inline super._.__setTransformDirty(force);
-					child._.__transformDirty = true;
+					// inline super.__setTransformDirty(force);
+					(child._ : _DisplayObject).__transformDirty = true;
 				}
 			}
 
@@ -862,7 +871,7 @@ class _DisplayObjectContainer extends _InteractiveObject
 		{
 			for (child in __childIterator())
 			{
-				if (child._.__type == MOVIE_CLIP)
+				if ((child._ : _DisplayObject).__type == MOVIE_CLIP)
 				{
 					var movieClip:MovieClip = cast child;
 					movieClip.stop();
@@ -873,7 +882,7 @@ class _DisplayObjectContainer extends _InteractiveObject
 
 	public override function __tabTest(stack:Array<InteractiveObject>):Void
 	{
-		// inline super._.__tabTest(stack);
+		// inline super.__tabTest(stack);
 		if (tabEnabled)
 		{
 			stack.push(this);
@@ -885,7 +894,7 @@ class _DisplayObjectContainer extends _InteractiveObject
 			var children = __childIterator();
 			for (child in children)
 			{
-				switch (child._.__type)
+				switch ((child._ : _DisplayObject).__type)
 				{
 					case MOVIE_CLIP:
 						var movieClip:MovieClip = cast child;
@@ -934,12 +943,12 @@ class _DisplayObjectContainer extends _InteractiveObject
 		{
 			for (child in __childIterator())
 			{
-				var transformDirty = child._.__transformDirty;
+				var transformDirty = (child._ : _DisplayObject).__transformDirty;
 
 				// TODO: Flatten masks
-				child._.__updateSingle(transformOnly, updateChildren);
+				(child._ : _DisplayObject).__updateSingle(transformOnly, updateChildren);
 
-				switch (child._.__type)
+				switch ((child._ : _DisplayObject).__type)
 				{
 					case SIMPLE_BUTTON:
 						// TODO: Flatten this into the allChildren() call?
@@ -968,7 +977,7 @@ class _DisplayObjectContainer extends _InteractiveObject
 						// Ensure children are marked as dirty again
 						// as we no longer know if they all are dirty
 						// since at least one has been updated
-						child._.__childTransformDirty = false;
+						(child._ : _DisplayObject).__childTransformDirty = false;
 
 					default:
 				}

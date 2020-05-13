@@ -1396,7 +1396,7 @@ class NetStream extends EventDispatcher
 	**/
 	public function close():Void
 	{
-		_.close();
+		(_ : _NetStream).close();
 	}
 
 	/**
@@ -1410,7 +1410,7 @@ class NetStream extends EventDispatcher
 	**/
 	public function dispose():Void
 	{
-		_.dispose();
+		(_ : _NetStream).dispose();
 	}
 
 	#if false
@@ -1476,7 +1476,7 @@ class NetStream extends EventDispatcher
 	**/
 	public function pause():Void
 	{
-		_.pause();
+		(_ : _NetStream).pause();
 	}
 
 	/**
@@ -1557,7 +1557,7 @@ class NetStream extends EventDispatcher
 	**/
 	public function play(url:#if (openfl_html5 && !openfl_doc_gen) Dynamic #else String #end, p1 = null, p2 = null, p3 = null, p4 = null, p5 = null):Void
 	{
-		_.play(url, p1, p2, p3, p4, p5);
+		(_ : _NetStream).play(url, p1, p2, p3, p4, p5);
 	}
 
 	#if false
@@ -1809,7 +1809,7 @@ class NetStream extends EventDispatcher
 	**/
 	public function resume():Void
 	{
-		_.resume();
+		(_ : _NetStream).resume();
 	}
 
 	/**
@@ -1889,7 +1889,7 @@ class NetStream extends EventDispatcher
 	**/
 	public function seek(time:Float):Void
 	{
-		_.seek(time);
+		(_ : _NetStream).seek(time);
 	}
 
 	#if false
@@ -1990,109 +1990,109 @@ class NetStream extends EventDispatcher
 	**/
 	public function togglePause():Void
 	{
-		_.togglePause();
+		(_ : _NetStream).togglePause();
 	}
 
 	// Get & Set Methods
 
 	@:noCompletion private function get_audioCodec():Int
 	{
-		return _.audioCodec;
+		return (_ : _NetStream).audioCodec;
 	}
 
 	@:noCompletion private function get_bufferLength():Float
 	{
-		return _.bufferLength;
+		return (_ : _NetStream).bufferLength;
 	}
 
 	@:noCompletion private function get_bufferTime():Float
 	{
-		return _.bufferTime;
+		return (_ : _NetStream).bufferTime;
 	}
 
 	@:noCompletion private function set_bufferTime(value:Float):Float
 	{
-		return _.bufferTime = value;
+		return (_ : _NetStream).bufferTime = value;
 	}
 
 	@:noCompletion private function get_bytesLoaded():Int
 	{
-		return _.bytesLoaded;
+		return (_ : _NetStream).bytesLoaded;
 	}
 
 	@:noCompletion private function get_bytesTotal():Int
 	{
-		return _.bytesTotal;
+		return (_ : _NetStream).bytesTotal;
 	}
 
 	@:noCompletion private function get_checkPolicyFile():Bool
 	{
-		return _.checkPolicyFile;
+		return (_ : _NetStream).checkPolicyFile;
 	}
 
 	@:noCompletion private function set_checkPolicyFile(value:Bool):Bool
 	{
-		return _.checkPolicyFile = value;
+		return (_ : _NetStream).checkPolicyFile = value;
 	}
 
 	@:noCompletion private function get_client():Dynamic
 	{
-		return _.client;
+		return (_ : _NetStream).client;
 	}
 
 	@:noCompletion private function set_client(value:Dynamic):Dynamic
 	{
-		return _.client = value;
+		return (_ : _NetStream).client = value;
 	}
 
 	@:noCompletion private function get_currentFPS():Float
 	{
-		return _.currentFPS;
+		return (_ : _NetStream).currentFPS;
 	}
 
 	@:noCompletion private function get_decodedFrames():Int
 	{
-		return _.decodedFrames;
+		return (_ : _NetStream).decodedFrames;
 	}
 
 	@:noCompletion private function get_liveDelay():Float
 	{
-		return _.liveDelay;
+		return (_ : _NetStream).liveDelay;
 	}
 
 	@:noCompletion private function get_objectEncoding():ObjectEncoding
 	{
-		return _.objectEncoding;
+		return (_ : _NetStream).objectEncoding;
 	}
 
 	@:noCompletion private function get_soundTransform():SoundTransform
 	{
-		return _.soundTransform;
+		return (_ : _NetStream).soundTransform;
 	}
 
 	@:noCompletion private function set_soundTransform(value:SoundTransform):SoundTransform
 	{
-		return _.soundTransform = value;
+		return (_ : _NetStream).soundTransform = value;
 	}
 
 	@:noCompletion private function get_speed():Float
 	{
-		return _.speed;
+		return (_ : _NetStream).speed;
 	}
 
 	@:noCompletion private function set_speed(value:Float):Float
 	{
-		return _.speed = value;
+		return (_ : _NetStream).speed = value;
 	}
 
 	@:noCompletion private function get_time():Float
 	{
-		return _.time;
+		return (_ : _NetStream).time;
 	}
 
 	@:noCompletion private function get_videoCode():Int
 	{
-		return _.videoCode;
+		return (_ : _NetStream).videoCode;
 	}
 }
 #else

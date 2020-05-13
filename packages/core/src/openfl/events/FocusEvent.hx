@@ -172,39 +172,39 @@ class FocusEvent extends Event
 
 	public override function clone():FocusEvent
 	{
-		return cast _.clone();
+		return cast(_ : _FocusEvent).clone();
 	}
 
 	// Get & Set Methods
 
 	@:noCompletion private function get_keyCode():Int
 	{
-		return _.keyCode;
+		return (_ : _FocusEvent).keyCode;
 	}
 
 	@:noCompletion private function set_keyCode(value:Int):Int
 	{
-		return _.keyCode = value;
+		return (_ : _FocusEvent).keyCode = value;
 	}
 
 	@:noCompletion private function get_relatedObject():InteractiveObject
 	{
-		return _.keyCode;
+		return (_ : _FocusEvent).keyCode;
 	}
 
 	@:noCompletion private function set_relatedObject(value:InteractiveObject):InteractiveObject
 	{
-		return _.relatedObject = value;
+		return (_ : _FocusEvent).relatedObject = value;
 	}
 
 	@:noCompletion private function get_shiftKey():Bool
 	{
-		return _.keyCode;
+		return (_ : _FocusEvent).keyCode;
 	}
 
 	@:noCompletion private function set_shiftKey(value:Bool):Bool
 	{
-		return _.shiftKey = value;
+		return (_ : _FocusEvent).shiftKey = value;
 	}
 }
 #else

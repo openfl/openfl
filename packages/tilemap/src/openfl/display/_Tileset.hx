@@ -50,7 +50,7 @@ class _Tileset
 		rectData.push(rect.height);
 
 		var tileData = new TileData(rect);
-		tileData._.__update(__bitmapData);
+		tileData.__update(__bitmapData);
 		__data.push(tileData);
 
 		return __data.length - 1;

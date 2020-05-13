@@ -71,7 +71,7 @@ class IOErrorEvent extends ErrorEvent
 
 	public override function clone():IOErrorEvent
 	{
-		return cast _.clone();
+		return cast(_ : _IOErrorEvent).clone();
 	}
 }
 #else

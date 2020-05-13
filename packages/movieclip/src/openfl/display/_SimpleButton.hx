@@ -227,16 +227,16 @@ class _SimpleButton extends _InteractiveObject
 		{
 			if (__hitTestState != downState && __hitTestState != upState && __hitTestState != overState)
 			{
-				__hitTestState.__renderParent = null;
-				__hitTestState.__setTransformDirty();
+				(__hitTestState._ : _DisplayObject).__renderParent = null;
+				(__hitTestState._ : _DisplayObject).__setTransformDirty();
 			}
 		}
 
 		if (hitTestState != null)
 		{
-			hitTestState.__renderParent = this;
-			hitTestState.__setTransformDirty();
-			hitTestState.__setRenderDirty();
+			(__hitTestState._ : _DisplayObject).__renderParent = this_displayObject;
+			(__hitTestState._ : _DisplayObject).__setTransformDirty();
+			(__hitTestState._ : _DisplayObject).__setRenderDirty();
 		}
 
 		return __hitTestState = hitTestState;
@@ -292,8 +292,8 @@ class _SimpleButton extends _InteractiveObject
 	{
 		if (__currentState != null && __currentState != hitTestState)
 		{
-			__currentState.__renderParent = null;
-			__currentState.__setTransformDirty();
+			(__currentState._ : _DisplayObject).__renderParent = null;
+			(__currentState._ : _DisplayObject).__setTransformDirty();
 		}
 
 		if (value != null && value.parent != null)
@@ -317,7 +317,7 @@ class _SimpleButton extends _InteractiveObject
 			{
 				if (__currentState != null)
 				{
-					__currentState.__setStageReferences(null);
+					(__currentState._ : _DisplayObject).__setStageReferences(null);
 					__previousStates.push(__currentState);
 				}
 
@@ -332,9 +332,9 @@ class _SimpleButton extends _InteractiveObject
 
 			if (value != null)
 			{
-				value.__renderParent = this;
-				value.__setTransformDirty();
-				value.__setRenderDirty();
+				(value._ : _DisplayObject).__renderParent = this_displayObject;
+				(value._ : _DisplayObject).__setTransformDirty();
+				(value._ : _DisplayObject).__setRenderDirty();
 			}
 
 			__localBoundsDirty = true;

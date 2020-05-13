@@ -140,7 +140,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	{
 		if (_ == null)
 		{
-			_ = new _MovieClip();
+			_ = new _MovieClip(this);
 		}
 
 		super();
@@ -148,7 +148,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 
 	public function addFrameScript(index:Int, method:Void->Void):Void
 	{
-		_.addFrameScript(index, method);
+		(_ : _MovieClip).addFrameScript(index, method);
 	}
 
 	/**
@@ -161,7 +161,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	**/
 	public function attachTimeline(timeline:Timeline):Void
 	{
-		_.attachTimeline(timeline);
+		(_ : _MovieClip).attachTimeline(timeline);
 	}
 
 	/**
@@ -191,7 +191,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	**/
 	public function gotoAndPlay(frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end, scene:String = null):Void
 	{
-		_.gotoAndPlay(frame, scene);
+		(_ : _MovieClip).gotoAndPlay(frame, scene);
 	}
 
 	/**
@@ -213,7 +213,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	**/
 	public function gotoAndStop(frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end, scene:String = null):Void
 	{
-		_.gotoAndStop(frame, scene);
+		(_ : _MovieClip).gotoAndStop(frame, scene);
 	}
 
 	/**
@@ -223,7 +223,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	**/
 	public function nextFrame():Void
 	{
-		_.nextFrame();
+		(_ : _MovieClip).nextFrame();
 	}
 
 	/**
@@ -232,7 +232,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	**/
 	public function nextScene():Void
 	{
-		_.nextScene();
+		(_ : _MovieClip).nextScene();
 	}
 
 	/**
@@ -241,7 +241,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	**/
 	public function play():Void
 	{
-		_.play();
+		(_ : _MovieClip).play();
 	}
 
 	/**
@@ -251,7 +251,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	**/
 	public function prevFrame():Void
 	{
-		_.prevFrame();
+		(_ : _MovieClip).prevFrame();
 	}
 
 	/**
@@ -260,7 +260,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	**/
 	public function prevScene():Void
 	{
-		_.prevScene();
+		(_ : _MovieClip).prevScene();
 	}
 
 	/**
@@ -269,64 +269,64 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	**/
 	public function stop():Void
 	{
-		_.stop();
+		(_ : _MovieClip).stop();
 	}
 
 	// Get & Set Methods
 
 	@:noCompletion private function get_currentFrame():Int
 	{
-		return _.currentFrame;
+		return (_ : _MovieClip).currentFrame;
 	}
 
 	@:noCompletion private function get_currentFrameLabel():String
 	{
-		return _.currentFrameLabel;
+		return (_ : _MovieClip).currentFrameLabel;
 	}
 
 	@:noCompletion private function get_currentLabel():String
 	{
-		return _.currentLabel;
+		return (_ : _MovieClip).currentLabel;
 	}
 
 	@:noCompletion private function get_currentLabels():Array<FrameLabel>
 	{
-		return _.currentLabels;
+		return (_ : _MovieClip).currentLabels;
 	}
 
 	@:noCompletion private function get_currentScene():Scene
 	{
-		return _.currentScene;
+		return (_ : _MovieClip).currentScene;
 	}
 
 	@:noCompletion private function get_enabled():Bool
 	{
-		return _.enabled;
+		return (_ : _MovieClip).enabled;
 	}
 
 	@:noCompletion private function set_enabled(value:Bool):Bool
 	{
-		return _.enabled = value;
+		return (_ : _MovieClip).enabled = value;
 	}
 
 	@:noCompletion private function get_framesLoaded():Int
 	{
-		return _.framesLoaded;
+		return (_ : _MovieClip).framesLoaded;
 	}
 
 	@:noCompletion private function get_isPlaying():Bool
 	{
-		return _.isPlaying;
+		return (_ : _MovieClip).isPlaying;
 	}
 
 	@:noCompletion private function get_scenes():Array<Scene>
 	{
-		return _.scenes;
+		return (_ : _MovieClip).scenes;
 	}
 
 	@:noCompletion private function get_totalFrames():Int
 	{
-		return _.totalFrames;
+		return (_ : _MovieClip).totalFrames;
 	}
 }
 #else

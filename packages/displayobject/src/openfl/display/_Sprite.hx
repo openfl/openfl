@@ -143,7 +143,7 @@ class _Sprite extends _DisplayObjectContainer
 	{
 		if (__graphics == null)
 		{
-			__graphics = new Graphics(this);
+			__graphics = new Graphics(this_displayObject);
 		}
 
 		return __graphics;

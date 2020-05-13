@@ -1,6 +1,7 @@
 package openfl._internal.utils;
 
 import openfl.display.DisplayObject;
+import openfl.display._DisplayObject;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -30,7 +31,7 @@ class DisplayObjectIterator
 
 		if (entry != null)
 		{
-			current = childrenOnly ? entry.__firstChild : entry;
+			current = childrenOnly ? (entry._ : _DisplayObject).__firstChild : entry;
 		}
 		else
 		{
@@ -41,13 +42,13 @@ class DisplayObjectIterator
 	public function next():DisplayObject
 	{
 		var _current = current;
-		if (current.__firstChild != null)
+		if ((current._ : _DisplayObject).__firstChild != null)
 		{
-			current = current.__firstChild;
+			current = (current._ : _DisplayObject).__firstChild;
 		}
-		else if (current.__nextSibling != null)
+		else if ((current._ : _DisplayObject).__nextSibling != null)
 		{
-			current = current.__nextSibling;
+			current = (current._ : _DisplayObject).__nextSibling;
 		}
 		else
 		{
@@ -56,16 +57,16 @@ class DisplayObjectIterator
 				if (current.parent == null || current.parent == entry)
 				{
 					current = null;
-					DisplayObject.__childIterators.release(this);
+					_DisplayObject.__childIterators.release(this);
 					return _current;
 				}
 				current = current.parent;
 			}
-			while (current.__nextSibling == null);
-			current = current.__nextSibling;
+			while ((current._ : _DisplayObject).__nextSibling == null);
+			current = (current._ : _DisplayObject).__nextSibling;
 			if (current == null)
 			{
-				DisplayObject.__childIterators.release(this);
+				_DisplayObject.__childIterators.release(this);
 			}
 		}
 		return _current;
@@ -73,16 +74,16 @@ class DisplayObjectIterator
 
 	public function skip(current:DisplayObject):Void
 	{
-		if (current.__firstChild == null)
+		if ((current._ : _DisplayObject).__firstChild == null)
 		{
 			return;
 		}
 
-		if (current.__firstChild == this.current)
+		if ((current._ : _DisplayObject).__firstChild == this.current)
 		{
-			if (current.__nextSibling != null)
+			if ((current._ : _DisplayObject).__nextSibling != null)
 			{
-				this.current = current.__nextSibling;
+				this.current = (current._ : _DisplayObject).__nextSibling;
 			}
 			else
 			{
@@ -95,8 +96,8 @@ class DisplayObjectIterator
 					}
 					current = current.parent;
 				}
-				while (current.__nextSibling == null);
-				this.current = current.__nextSibling;
+				while ((current._ : _DisplayObject).__nextSibling == null);
+				this.current = (current._ : _DisplayObject).__nextSibling;
 			}
 		}
 	}

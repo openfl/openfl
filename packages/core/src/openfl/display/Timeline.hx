@@ -77,31 +77,31 @@ class Timeline
 
 	@:noCompletion private function get_frameRate():Null<Float>
 	{
-		return _.frameRate;
+		return (_ : _Timeline).frameRate;
 	}
 
-	@:noCompletion private function get_frameRate(value:Null<Float>):Null<Float>
+	@:noCompletion private function set_frameRate(value:Null<Float>):Null<Float>
 	{
-		return _.frameRate = value;
+		return (_ : _Timeline).frameRate = value;
 	}
 
 	@:noCompletion private function get_scenes():Array<Scene>
 	{
-		return _.scenes;
+		return (_ : _Timeline).scenes;
 	}
 
-	@:noCompletion private function get_scenes(value:Array<Scene>):Array<Scene>
+	@:noCompletion private function set_scenes(value:Array<Scene>):Array<Scene>
 	{
-		return _.scenes = value;
+		return (_ : _Timeline).scenes = value;
 	}
 
 	@:noCompletion private function get_scripts():Array<FrameScript>
 	{
-		return _.scripts;
+		return (_ : _Timeline).scripts;
 	}
 
-	@:noCompletion private function get_scripts(value:Array<FrameScript>):Array<FrameScript>
+	@:noCompletion private function set_scripts(value:Array<FrameScript>):Array<FrameScript>
 	{
-		return _.scripts = value;
+		return (_ : _Timeline).scripts = value;
 	}
 }

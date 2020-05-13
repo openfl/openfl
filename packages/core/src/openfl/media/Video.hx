@@ -159,6 +159,8 @@ class Video extends DisplayObject
 		{
 			_ = new _Video(width, height);
 		}
+
+		super();
 	}
 
 	/**
@@ -195,7 +197,7 @@ class Video extends DisplayObject
 	**/
 	public function attachNetStream(netStream:NetStream):Void
 	{
-		_.attachNetStream(netStream);
+		(_ : _Video).attachNetStream(netStream);
 	}
 
 	/**
@@ -207,39 +209,39 @@ class Video extends DisplayObject
 	**/
 	public function clear():Void
 	{
-		_.clear();
+		(_ : _Video).clear();
 	}
 
 	// Get & Set Methods
 
 	@:noCompletion private function get_deblocking():Int
 	{
-		return _.deblocking;
+		return (_ : _Video).deblocking;
 	}
 
 	@:noCompletion private function set_deblocking(value:Int):Int
 	{
-		return _.deblocking = value;
+		return (_ : _Video).deblocking = value;
 	}
 
 	@:noCompletion private function get_smoothing():Bool
 	{
-		return _.smoothing;
+		return (_ : _Video).smoothing;
 	}
 
 	@:noCompletion private function set_smoothing(value:Bool):Bool
 	{
-		return _.smoothing = value;
+		return (_ : _Video).smoothing = value;
 	}
 
 	@:noCompletion private function get_videoHeight():Int
 	{
-		return _.videoHeight;
+		return (_ : _Video).videoHeight;
 	}
 
 	@:noCompletion private function get_videoWidth():Int
 	{
-		return _.videoWidth;
+		return (_ : _Video).videoWidth;
 	}
 }
 #else

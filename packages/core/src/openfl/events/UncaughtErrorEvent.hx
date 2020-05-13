@@ -182,14 +182,14 @@ class UncaughtErrorEvent extends ErrorEvent
 
 	public override function clone():UncaughtErrorEvent
 	{
-		return cast _.clone();
+		return cast(_ : _UncaughtErrorEvent).clone();
 	}
 
 	// Get & Set Methods
 
 	@:noCompletion private function get_error():Dynamic
 	{
-		return _.error;
+		return (_ : _UncaughtErrorEvent).error;
 	}
 }
 #else

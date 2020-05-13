@@ -68,7 +68,7 @@ class _Context3D extends _EventDispatcher
 	public static var glTextureMaxAnisotropy:Int = -1;
 	public static var supportsVideoTexture(default, null):Bool = #if openfl_html5 true #else false #end;
 
-	public static var driverInfo:String;
+	private static var _driverInfo:String;
 
 	public var backBufferHeight(default, null):Int = 0;
 	public var backBufferWidth(default, null):Int = 0;
@@ -215,17 +215,17 @@ class _Context3D extends _EventDispatcher
 			}
 		}
 
-		if (driverInfo == null)
+		if (_driverInfo == null)
 		{
 			var vendor = gl.getParameter(GL.VENDOR);
 			var version = gl.getParameter(GL.VERSION);
 			var renderer = gl.getParameter(GL.RENDERER);
 			var glslVersion = gl.getParameter(GL.SHADING_LANGUAGE_VERSION);
 
-			driverInfo = "OpenGL Vendor=" + vendor + " Version=" + version + " Renderer=" + renderer + " GLSL=" + glslVersion;
+			_driverInfo = "OpenGL Vendor=" + vendor + " Version=" + version + " Renderer=" + renderer + " GLSL=" + glslVersion;
 		}
 
-		driverInfo = driverInfo;
+		driverInfo = _driverInfo;
 		#end
 
 		__bitmapDataPool = new BitmapDataPool(30, this);

@@ -22,7 +22,7 @@ import openfl.geom.Matrix;
 		array. Valid values are between 0 and 1. If the value is less than 0,
 		0 is used. If the value is greater than 1, 1 is used.
 	**/
-	public var alphas:Array<Float>;
+	public var alphas(get, set):Array<Float>;
 
 	/**
 		An array of RGB hexadecimal color values to use in the gradient. For
@@ -30,7 +30,7 @@ import openfl.geom.Matrix;
 		up to 15 colors. For each color, specify a corresponding value in the
 		alphas and ratios properties.
 	**/
-	public var colors:Array<Int>;
+	public var colors(get, set):Array<Int>;
 
 	/**
 		A number that controls the location of the focal point of the
@@ -43,7 +43,7 @@ import openfl.geom.Matrix;
 
 		![radial gradient with focalPointRatio set to 0.75](/images/radial_sketch.jpg)
 	**/
-	public var focalPointRatio:Float;
+	public var focalPointRatio(get, set):Float;
 
 	/**
 		A value from the InterpolationMethod class that specifies which value
@@ -58,14 +58,14 @@ import openfl.geom.Matrix;
 		| --- | --- |
 		| ![linear gradient with InterpolationMethod.LINEAR_RGB](/images/beginGradientFill_interp_linearrgb.jpg) | ![linear gradient with InterpolationMethod.RGB](/images/beginGradientFill_interp_rgb.jpg) |
 	**/
-	public var interpolationMethod:InterpolationMethod;
+	public var interpolationMethod(get, set):InterpolationMethod;
 
 	/**
 		A transformation matrix as defined by the Matrix class. The
 		openfl.geom.Matrix class includes a `createGradientBox()` method to set
 		up the matrix for use with the `beginGradientFill()` method.
 	**/
-	public var matrix:Matrix;
+	public var matrix(get, set):Matrix;
 
 	/**
 		An array of color distribution ratios. Valid values are between 0 and
@@ -91,7 +91,7 @@ import openfl.geom.Matrix;
 		The values in the array must increase sequentially; for example, `[0,
 		63, 127, 190, 255]`.
 	**/
-	public var ratios:Array<Int>;
+	public var ratios(get, set):Array<Int>;
 
 	/**
 		A value from the SpreadMethod class that specifies which spread method
@@ -131,16 +131,15 @@ import openfl.geom.Matrix;
 
 		![linear gradient with SpreadMethod.REPEAT](/images/beginGradientFill_spread_repeat.jpg)
 	**/
-	public var spreadMethod:SpreadMethod;
+	public var spreadMethod(get, set):SpreadMethod;
 
 	/**
 		A value from the GradientType class that specifies which gradient type
 		to use. Values are `GradientType.LINEAR` or `GradientType.RADIAL`.
 	**/
-	public var type:GradientType;
+	public var type(get, set):GradientType;
 
-	@:noCompletion private var __graphicsDataType(default, null):GraphicsDataType;
-	@:noCompletion private var __graphicsFillType(default, null):GraphicsFillType;
+	@:allow(openfl) @:noCompletion private var _:Any;
 
 	/**
 		Creates a new GraphicsGradientFill object.
@@ -177,31 +176,89 @@ import openfl.geom.Matrix;
 	public function new(type:GradientType = null, colors:Array<Int> = null, alphas:Array<Float> = null, ratios:Array<Int> = null, matrix:Matrix = null,
 			spreadMethod:SpreadMethod = null, interpolationMethod:InterpolationMethod = null, focalPointRatio:Float = 0)
 	{
-		if (type == null)
-		{
-			type = GradientType.LINEAR;
-		}
+		_ = new _GraphicsGradientFill(type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
+	}
 
-		if (spreadMethod == null)
-		{
-			spreadMethod = SpreadMethod.PAD;
-		}
+	// Get & Set Methods
 
-		if (interpolationMethod == null)
-		{
-			interpolationMethod = InterpolationMethod.RGB;
-		}
+	@:noCompletion private function get_alphas():Array<Float>
+	{
+		return (_ : _GraphicsGradientFill).alphas;
+	}
 
-		this.type = type;
-		this.colors = colors;
-		this.alphas = alphas;
-		this.ratios = ratios;
-		this.matrix = matrix;
-		this.spreadMethod = spreadMethod;
-		this.interpolationMethod = interpolationMethod;
-		this.focalPointRatio = focalPointRatio;
-		this.__graphicsDataType = GRADIENT;
-		this.__graphicsFillType = GRADIENT_FILL;
+	@:noCompletion private function set_alphas(value:Array<Float>):Array<Float>
+	{
+		return (_ : _GraphicsGradientFill).alphas = value;
+	}
+
+	@:noCompletion private function get_colors():Array<Int>
+	{
+		return (_ : _GraphicsGradientFill).colors;
+	}
+
+	@:noCompletion private function set_colors(value:Array<Int>):Array<Int>
+	{
+		return (_ : _GraphicsGradientFill).colors = value;
+	}
+
+	@:noCompletion private function get_focalPointRatio():Float
+	{
+		return (_ : _GraphicsGradientFill).focalPointRatio;
+	}
+
+	@:noCompletion private function set_focalPointRatio(value:Float):Float
+	{
+		return (_ : _GraphicsGradientFill).focalPointRatio = value;
+	}
+
+	@:noCompletion private function get_interpolationMethod():InterpolationMethod
+	{
+		return (_ : _GraphicsGradientFill).interpolationMethod;
+	}
+
+	@:noCompletion private function set_interpolationMethod(value:InterpolationMethod):InterpolationMethod
+	{
+		return (_ : _GraphicsGradientFill).interpolationMethod = value;
+	}
+
+	@:noCompletion private function get_matrix():Matrix
+	{
+		return (_ : _GraphicsGradientFill).matrix;
+	}
+
+	@:noCompletion private function set_matrix(value:Matrix):Matrix
+	{
+		return (_ : _GraphicsGradientFill).matrix = value;
+	}
+
+	@:noCompletion private function get_ratios():Array<Int>
+	{
+		return (_ : _GraphicsGradientFill).ratios;
+	}
+
+	@:noCompletion private function set_ratios(value:Array<Int>):Array<Int>
+	{
+		return (_ : _GraphicsGradientFill).ratios = value;
+	}
+
+	@:noCompletion private function get_spreadMethod():SpreadMethod
+	{
+		return (_ : _GraphicsGradientFill).spreadMethod;
+	}
+
+	@:noCompletion private function set_spreadMethod(value:SpreadMethod):SpreadMethod
+	{
+		return (_ : _GraphicsGradientFill).spreadMethod = value;
+	}
+
+	@:noCompletion private function get_type():GradientType
+	{
+		return (_ : _GraphicsGradientFill).type;
+	}
+
+	@:noCompletion private function set_type(value:GradientType):GradientType
+	{
+		return (_ : _GraphicsGradientFill).type = value;
 	}
 }
 #else

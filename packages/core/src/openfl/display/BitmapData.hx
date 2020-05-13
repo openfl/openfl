@@ -28,8 +28,8 @@ import openfl._internal.backend.lime_standalone.Canvas2DRenderContext;
 import openfl._internal.backend.lime_standalone.Image;
 #end
 #if openfl_gl
-import openfl.display._internal.Context3DBitmapData;
-import openfl.display._Context3DRenderer;
+// import openfl.display._internal.Context3DBitmapData;
+// import openfl.display._Context3DRenderer;
 #end
 #if openfl_html5
 import js.html.CanvasElement;
@@ -110,7 +110,7 @@ class BitmapData implements IBitmapDrawable
 
 	@:noCompletion private inline function get_image():Image
 	{
-		return _.limeImage;
+		return (_ : _BitmapData).limeImage;
 	}
 
 	/**
@@ -210,7 +210,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function applyFilter(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, filter:BitmapFilter):Void
 	{
-		_.applyFilter(sourceBitmapData, sourceRect, destPoint, filter);
+		(_ : _BitmapData).applyFilter(sourceBitmapData, sourceRect, destPoint, filter);
 	}
 
 	/**
@@ -219,7 +219,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function clone():BitmapData
 	{
-		return _.clone();
+		return (_ : _BitmapData).clone();
 	}
 
 	/**
@@ -231,7 +231,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function colorTransform(rect:Rectangle, colorTransform:ColorTransform):Void
 	{
-		_.colorTransform(rect, colorTransform);
+		(_ : _BitmapData).colorTransform(rect, colorTransform);
 	}
 
 	/**
@@ -247,7 +247,7 @@ class BitmapData implements IBitmapDrawable
 	@SuppressWarnings("checkstyle:Dynamic")
 	public function compare(otherBitmapData:BitmapData):Dynamic
 	{
-		return _.compare(otherBitmapData);
+		return (_ : _BitmapData).compare(otherBitmapData);
 	}
 
 	/**
@@ -295,7 +295,7 @@ class BitmapData implements IBitmapDrawable
 	public function copyChannel(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, sourceChannel:BitmapDataChannel,
 			destChannel:BitmapDataChannel):Void
 	{
-		_.copyChannel(sourceBitmapData, sourceRect, destPoint, sourceChannel, destChannel);
+		(_ : _BitmapData).copyChannel(sourceBitmapData, sourceRect, destPoint, sourceChannel, destChannel);
 	}
 
 	/**
@@ -340,7 +340,7 @@ class BitmapData implements IBitmapDrawable
 	public function copyPixels(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, alphaBitmapData:BitmapData = null, alphaPoint:Point = null,
 			mergeAlpha:Bool = false):Void
 	{
-		_.copyPixels(sourceBitmapData, sourceRect, destPoint, alphaBitmapData, alphaPoint, mergeAlpha);
+		(_ : _BitmapData).copyPixels(sourceBitmapData, sourceRect, destPoint, alphaBitmapData, alphaPoint, mergeAlpha);
 	}
 
 	// @:noCompletion @:dox(hide) @:require(flash11_4) public function copyPixelsToByteArray (rect:Rectangle, data:ByteArray):Void;
@@ -366,7 +366,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function dispose():Void
 	{
-		_.dispose();
+		(_ : _BitmapData).dispose();
 	}
 
 	/**
@@ -383,7 +383,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	@:beta public function disposeImage():Void
 	{
-		_.disposeImage();
+		(_ : _BitmapData).disposeImage();
 	}
 
 	/**
@@ -463,7 +463,7 @@ class BitmapData implements IBitmapDrawable
 	public function draw(source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null,
 			clipRect:Rectangle = null, smoothing:Bool = false):Void
 	{
-		_.draw(source, matrix, colorTransform, blendMode, clipRect, smoothing);
+		(_ : _BitmapData).draw(source, matrix, colorTransform, blendMode, clipRect, smoothing);
 	}
 
 	/**
@@ -558,7 +558,7 @@ class BitmapData implements IBitmapDrawable
 	public function drawWithQuality(source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null,
 			clipRect:Rectangle = null, smoothing:Bool = false, quality:StageQuality = null):Void
 	{
-		_.drawWithQuality(source, matrix, colorTransform, blendMode, clipRect, smoothing, quality);
+		(_ : _BitmapData).drawWithQuality(source, matrix, colorTransform, blendMode, clipRect, smoothing, quality);
 	}
 
 	/**
@@ -585,7 +585,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function encode(rect:Rectangle, compressor:Object, byteArray:ByteArray = null):ByteArray
 	{
-		return _.encode(rect, compressor, byteArray);
+		return (_ : _BitmapData).encode(rect, compressor, byteArray);
 	}
 
 	/**
@@ -599,7 +599,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function fillRect(rect:Rectangle, color:Int):Void
 	{
-		return _.fillRect(rect, color);
+		return (_ : _BitmapData).fillRect(rect, color);
 	}
 
 	/**
@@ -615,7 +615,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function floodFill(x:Int, y:Int, color:Int):Void
 	{
-		_.floodFill(x, y, color);
+		(_ : _BitmapData).floodFill(x, y, color);
 	}
 
 	#if (!openfl_doc_gen || (!openfl_html5 && !flash_doc_gen))
@@ -755,7 +755,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function generateFilterRect(sourceRect:Rectangle, filter:BitmapFilter):Rectangle
 	{
-		return _.generateFilterRect(sourceRect, filter);
+		return (_ : _BitmapData).generateFilterRect(sourceRect, filter);
 	}
 
 	/**
@@ -768,7 +768,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	@:dox(hide) public function getIndexBuffer(context:Context3D, scale9Grid:Rectangle = null):IndexBuffer3D
 	{
-		return _.getIndexBuffer(context, scale9Grid);
+		return (_ : _BitmapData).getIndexBuffer(context, scale9Grid);
 	}
 
 	/**
@@ -781,7 +781,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	@:dox(hide) public function getVertexBuffer(context:Context3D, scale9Grid:Rectangle = null, targetObject:DisplayObject = null):VertexBuffer3D
 	{
-		return _.getVertexBuffer(context, scale9Grid, targetObject);
+		return (_ : _BitmapData).getVertexBuffer(context, scale9Grid, targetObject);
 	}
 
 	/**
@@ -820,7 +820,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function getColorBoundsRect(mask:Int, color:Int, findColor:Bool = true):Rectangle
 	{
-		return _.getColorBoundsRect(mask, color, findColor);
+		return (_ : _BitmapData).getColorBoundsRect(mask, color, findColor);
 	}
 
 	/**
@@ -848,7 +848,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function getPixel(x:Int, y:Int):Int
 	{
-		return _.getPixel(x, y);
+		return (_ : _BitmapData).getPixel(x, y);
 	}
 
 	/**
@@ -875,7 +875,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function getPixel32(x:Int, y:Int):Int
 	{
-		return _.getPixel32(x, y);
+		return (_ : _BitmapData).getPixel32(x, y);
 	}
 
 	/**
@@ -889,7 +889,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function getPixels(rect:Rectangle):ByteArray
 	{
-		return _.getPixels(rect);
+		return (_ : _BitmapData).getPixels(rect);
 	}
 
 	#if openfl_cairo
@@ -903,7 +903,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	@:dox(hide) public function getSurface():CairoImageSurface
 	{
-		return _.getSurface();
+		return (_ : _BitmapData).getSurface();
 	}
 	#end
 
@@ -917,7 +917,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	@:dox(hide) public function getTexture(context:Context3D):TextureBase
 	{
-		return _.getTexture(context);
+		return (_ : _BitmapData).getTexture(context);
 	}
 
 	/**
@@ -930,7 +930,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function getVector(rect:Rectangle):Vector<UInt>
 	{
-		return _.getVector(rect);
+		return (_ : _BitmapData).getVector(rect);
 	}
 
 	/**
@@ -944,7 +944,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function histogram(hRect:Rectangle = null):Array<Array<Int>>
 	{
-		return _.histogram(hRect);
+		return (_ : _BitmapData).histogram(hRect);
 	}
 
 	/**
@@ -981,7 +981,7 @@ class BitmapData implements IBitmapDrawable
 	public function hitTest(firstPoint:Point, firstAlphaThreshold:Int, secondObject:Object, secondBitmapDataPoint:Point = null,
 			secondAlphaThreshold:Int = 1):Bool
 	{
-		return _.hitTest(firstPoint, firstAlphaThreshold, secondObject, secondBitmapDataPoint, secondAlphaThreshold);
+		return (_ : _BitmapData).hitTest(firstPoint, firstAlphaThreshold, secondObject, secondBitmapDataPoint, secondAlphaThreshold);
 	}
 
 	/**
@@ -1041,7 +1041,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function lock():Void
 	{
-		_.lock();
+		(_ : _BitmapData).lock();
 	}
 
 	/**
@@ -1084,7 +1084,7 @@ class BitmapData implements IBitmapDrawable
 	public function merge(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, redMultiplier:UInt, greenMultiplier:UInt, blueMultiplier:UInt,
 			alphaMultiplier:UInt):Void
 	{
-		_.merge(sourceBitmapData, sourceRect, destPoint, redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier);
+		(_ : _BitmapData).merge(sourceBitmapData, sourceRect, destPoint, redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier);
 	}
 
 	/**
@@ -1117,7 +1117,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function noise(randomSeed:Int, low:Int = 0, high:Int = 255, channelOptions:Int = 7, grayScale:Bool = false):Void
 	{
-		_.noise(randomSeed, low, high, channelOptions, grayScale);
+		(_ : _BitmapData).noise(randomSeed, low, high, channelOptions, grayScale);
 	}
 
 	/**
@@ -1163,7 +1163,7 @@ class BitmapData implements IBitmapDrawable
 	public function paletteMap(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, redArray:Array<Int> = null, greenArray:Array<Int> = null,
 			blueArray:Array<Int> = null, alphaArray:Array<Int> = null):Void
 	{
-		_.paletteMap(sourceBitmapData, sourceRect, destPoint, redArray, greenArray, blueArray, alphaArray);
+		(_ : _BitmapData).paletteMap(sourceBitmapData, sourceRect, destPoint, redArray, greenArray, blueArray, alphaArray);
 	}
 
 	/**
@@ -1235,7 +1235,7 @@ class BitmapData implements IBitmapDrawable
 	public function perlinNoise(baseX:Float, baseY:Float, numOctaves:UInt, randomSeed:Int, stitch:Bool, fractalNoise:Bool, channelOptions:UInt = 7,
 			grayScale:Bool = false, offsets:Array<Point> = null):Void
 	{
-		_.perlinNoise(baseX, baseY, numOctaves, randomSeed, stitch, fractalNoise, channelOptions, grayScale, offsets);
+		(_ : _BitmapData).perlinNoise(baseX, baseY, numOctaves, randomSeed, stitch, fractalNoise, channelOptions, grayScale, offsets);
 	}
 
 	// @:noCompletion @:dox(hide) public function pixelDissolve (sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, randomSeed:Int = 0, numPixels:Int = 0, fillColor:UInt = 0):Int;
@@ -1249,7 +1249,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function scroll(x:Int, y:Int):Void
 	{
-		_.scroll(x, y);
+		(_ : _BitmapData).scroll(x, y);
 	}
 
 	/**
@@ -1271,7 +1271,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function setPixel(x:Int, y:Int, color:Int):Void
 	{
-		_.setPixel(x, y, color);
+		(_ : _BitmapData).setPixel(x, y, color);
 	}
 
 	/**
@@ -1307,7 +1307,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function setPixel32(x:Int, y:Int, color:Int):Void
 	{
-		return _.setPixel32(x, y, color);
+		return (_ : _BitmapData).setPixel32(x, y, color);
 	}
 
 	/**
@@ -1331,7 +1331,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function setPixels(rect:Rectangle, byteArray:ByteArray):Void
 	{
-		_.setPixels(rect, byteArray);
+		(_ : _BitmapData).setPixels(rect, byteArray);
 	}
 
 	/**
@@ -1345,7 +1345,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function setVector(rect:Rectangle, inputVector:Vector<UInt>):Void
 	{
-		_.setVector(rect, inputVector);
+		(_ : _BitmapData).setVector(rect, inputVector);
 	}
 
 	/**
@@ -1399,7 +1399,7 @@ class BitmapData implements IBitmapDrawable
 	public function threshold(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, operation:String, threshold:Int, color:Int = 0x00000000,
 			mask:Int = 0xFFFFFFFF, copySource:Bool = false):Int
 	{
-		return _.threshold(sourceBitmapData, sourceRect, destPoint, operation, threshold, color, mask, copySource);
+		return (_ : _BitmapData).threshold(sourceBitmapData, sourceRect, destPoint, operation, threshold, color, mask, copySource);
 	}
 
 	/**
@@ -1416,41 +1416,41 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function unlock(changeRect:Rectangle = null):Void
 	{
-		_.unlock(changeRect);
+		(_ : _BitmapData).unlock(changeRect);
 	}
 
 	// Get & Set Methods
 
 	@:noCompletion private function get_height():Int
 	{
-		return _.height;
+		return (_ : _BitmapData).height;
 	}
 
 	#if lime
 	@:noCompletion private function get_limeImage():Image
 	{
-		return _.limeImage;
+		return (_ : _BitmapData).limeImage;
 	}
 	#end
 
 	@:noCompletion private function get_readable():Bool
 	{
-		return _.readable;
+		return (_ : _BitmapData).readable;
 	}
 
 	@:noCompletion private function get_rect():Rectangle
 	{
-		return _.rect;
+		return (_ : _BitmapData).rect;
 	}
 
 	@:noCompletion private function get_transparent():Bool
 	{
-		return _.transparent;
+		return (_ : _BitmapData).transparent;
 	}
 
 	@:noCompletion private function get_width():Int
 	{
-		return _.width;
+		return (_ : _BitmapData).width;
 	}
 }
 #else

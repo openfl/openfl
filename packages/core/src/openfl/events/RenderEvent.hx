@@ -111,25 +111,22 @@ import openfl.geom.Matrix;
 	/**
 		Whether the current render should allow smoothing.
 	**/
-	public var allowSmoothing:Bool;
+	public var allowSmoothing(get, set):Bool;
 
 	/**
 		The concatenated color transform for the display object being rendered.
 	**/
-	public var objectColorTransform:ColorTransform;
+	public var objectColorTransform(get, set):ColorTransform;
 
 	/**
 		The concatenated matrix for the display object being rendered.
 	**/
-	public var objectMatrix:Matrix;
+	public var objectMatrix(get, set):Matrix;
 
 	/**
 		The display object renderer being used for this render.
 	**/
-	public var renderer(default, null):DisplayObjectRenderer;
-
-	@:noCompletion private static var __pool:ObjectPool<RenderEvent> = new ObjectPool<RenderEvent>(function() return new RenderEvent(null),
-	function(event) event.__init());
+	public var renderer(get, never):DisplayObjectRenderer;
 
 	/**
 		Creates an Event object that contains information about render events.
@@ -152,37 +149,60 @@ import openfl.geom.Matrix;
 	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false, objectMatrix:Matrix = null, objectColorTransform:ColorTransform = null,
 			allowSmoothing:Bool = true):Void
 	{
-		super(type, bubbles, cancelable);
+		if (_ == null)
+		{
+			_ = new _RenderEvent(type, bubbles, cancelable, objectMatrix, objectColorTransform, allowSmoothing);
+		}
 
-		this.objectMatrix = objectMatrix;
-		this.objectColorTransform = objectColorTransform;
-		this.allowSmoothing = allowSmoothing;
+		super(type, bubbles, cancelable);
 	}
 
 	public override function clone():RenderEvent
 	{
-		var event = new RenderEvent(type, bubbles, cancelable, objectMatrix.clone(), #if flash null #else objectColorTransform.__clone() #end, allowSmoothing);
-		#if !flash
-		event.target = target;
-		event.currentTarget = currentTarget;
-		event.eventPhase = eventPhase;
-		#end
-		return event;
+		return (_ : _RenderEvent).clone();
 	}
 
 	#if !flash
 	public override function toString():String
 	{
-		return __formatToString("RenderEvent", ["type", "bubbles", "cancelable"]);
+		return (_ : _RenderEvent).toString();
 	}
 	#end
 
-	@:noCompletion private override function __init():Void
+	// Get & Set Methods
+
+	@:noCompletion private function get_allowSmoothing():Bool
 	{
-		super.__init();
-		objectMatrix = null;
-		objectColorTransform = null;
-		allowSmoothing = false;
-		renderer = null;
+		return (_ : _RenderEvent).allowSmoothing;
+	}
+
+	@:noCompletion private function set_allowSmoothing(value:Bool):Bool
+	{
+		return (_ : _RenderEvent).allowSmoothing = value;
+	}
+
+	@:noCompletion private function get_objectColorTransform():ColorTransform
+	{
+		return (_ : _RenderEvent).objectColorTransform;
+	}
+
+	@:noCompletion private function set_objectColorTransform(value:ColorTransform):ColorTransform
+	{
+		return (_ : _RenderEvent).objectColorTransform = value;
+	}
+
+	@:noCompletion private function get_objectMatrix():Matrix
+	{
+		return (_ : _RenderEvent).objectMatrix;
+	}
+
+	@:noCompletion private function set_objectMatrix(value:Matrix):Matrix
+	{
+		return (_ : _RenderEvent).objectMatrix = value;
+	}
+
+	@:noCompletion private function get_renderer():DisplayObjectRenderer
+	{
+		return (_ : _RenderEvent).renderer;
 	}
 }

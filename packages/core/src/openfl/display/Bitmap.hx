@@ -69,8 +69,6 @@ class Bitmap extends DisplayObject
 	**/
 	public var smoothing(get, set):Bool;
 
-	@:allow(openfl) @:noCompletion private var _:Dynamic;
-
 	/**
 		Initializes a Bitmap object to refer to the specified BitmapData object.
 
@@ -92,32 +90,32 @@ class Bitmap extends DisplayObject
 
 	@:noCompletion private function get_bitmapData():BitmapData
 	{
-		return _.bitmapData;
+		return (_ : _Bitmap).bitmapData;
 	}
 
 	@:noCompletion private function set_bitmapData(value:BitmapData):BitmapData
 	{
-		return _.bitmapData = value;
+		return (_ : _Bitmap).bitmapData = value;
 	}
 
 	@:noCompletion private function get_pixelSnapping():PixelSnapping
 	{
-		return _.pixelSnapping;
+		return (_ : _Bitmap).pixelSnapping;
 	}
 
 	@:noCompletion private function set_pixelSnapping(value:PixelSnapping):PixelSnapping
 	{
-		return _.pixelSnapping = value;
+		return (_ : _Bitmap).pixelSnapping = value;
 	}
 
 	@:noCompletion private function get_smoothing():Bool
 	{
-		return _.smoothing;
+		return (_ : _Bitmap).smoothing;
 	}
 
 	@:noCompletion private function set_smoothing(value:Bool):Bool
 	{
-		return _.smoothing = value;
+		return (_ : _Bitmap).smoothing = value;
 	}
 }
 #else

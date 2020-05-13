@@ -1,7 +1,9 @@
 package openfl.net;
 
 import haxe.Timer;
+import openfl.display._DisplayObject;
 import openfl.events.EventDispatcher;
+import openfl.events._EventDispatcher;
 import openfl.events.NetStatusEvent;
 import openfl.media.SoundMixer;
 import openfl.media.SoundTransform;

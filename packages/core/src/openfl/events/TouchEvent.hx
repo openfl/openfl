@@ -460,7 +460,7 @@ class TouchEvent extends Event
 
 	public override function clone():TouchEvent
 	{
-		return cast _.clone();
+		return (_ : _TouchEvent).clone();
 	}
 
 	/**
@@ -470,169 +470,169 @@ class TouchEvent extends Event
 	**/
 	public function updateAfterEvent():Void
 	{
-		(cast _ : _TouchEvent).updateAfterEvent();
+		(_ : _TouchEvent).updateAfterEvent();
 	}
 
 	// Get & Set Methods
 
 	@:noCompletion private function get_altKey():Bool
 	{
-		return (cast _ : _TouchEvent).altKey;
+		return (_ : _TouchEvent).altKey;
 	}
 
 	@:noCompletion private function set_altKey(value:Bool):Bool
 	{
-		return (cast _ : _TouchEvent).altKey = value;
+		return (_ : _TouchEvent).altKey = value;
 	}
 
 	@:noCompletion private function get_commandKey():Bool
 	{
-		return (cast _ : _TouchEvent).commandKey;
+		return (_ : _TouchEvent).commandKey;
 	}
 
 	@:noCompletion private function set_commandKey(value:Bool):Bool
 	{
-		return (cast _ : _TouchEvent).commandKey = value;
+		return (_ : _TouchEvent).commandKey = value;
 	}
 
 	@:noCompletion private function get_controlKey():Bool
 	{
-		return (cast _ : _TouchEvent).controlKey;
+		return (_ : _TouchEvent).controlKey;
 	}
 
 	@:noCompletion private function set_controlKey(value:Bool):Bool
 	{
-		return (cast _ : _TouchEvent).controlKey = value;
+		return (_ : _TouchEvent).controlKey = value;
 	}
 
 	@:noCompletion private function get_ctrlKey():Bool
 	{
-		return (cast _ : _TouchEvent).ctrlKey;
+		return (_ : _TouchEvent).ctrlKey;
 	}
 
 	@:noCompletion private function set_ctrlKey(value:Bool):Bool
 	{
-		return (cast _ : _TouchEvent).ctrlKey = value;
+		return (_ : _TouchEvent).ctrlKey = value;
 	}
 
 	@:noCompletion private function get_delta():Int
 	{
-		return (cast _ : _TouchEvent).delta;
+		return (_ : _TouchEvent).delta;
 	}
 
 	@:noCompletion private function set_delta(value:Int):Int
 	{
-		return (cast _ : _TouchEvent).delta = value;
+		return (_ : _TouchEvent).delta = value;
 	}
 
 	@:noCompletion private function get_isPrimaryTouchPoint():Bool
 	{
-		return (cast _ : _TouchEvent).isPrimaryTouchPoint;
+		return (_ : _TouchEvent).isPrimaryTouchPoint;
 	}
 
 	@:noCompletion private function set_isPrimaryTouchPoint(value:Bool):Bool
 	{
-		return (cast _ : _TouchEvent).isPrimaryTouchPoint = value;
+		return (_ : _TouchEvent).isPrimaryTouchPoint = value;
 	}
 
 	@:noCompletion private function get_localX():Float
 	{
-		return (cast _ : _TouchEvent).localX;
+		return (_ : _TouchEvent).localX;
 	}
 
 	@:noCompletion private function set_localX(value:Float):Float
 	{
-		return (cast _ : _TouchEvent).localX = value;
+		return (_ : _TouchEvent).localX = value;
 	}
 
 	@:noCompletion private function get_localY():Float
 	{
-		return (cast _ : _TouchEvent).localY;
+		return (_ : _TouchEvent).localY;
 	}
 
 	@:noCompletion private function set_localY(value:Float):Float
 	{
-		return (cast _ : _TouchEvent).localY = value;
+		return (_ : _TouchEvent).localY = value;
 	}
 
 	@:noCompletion private function get_pressure():Float
 	{
-		return (cast _ : _TouchEvent).pressure;
+		return (_ : _TouchEvent).pressure;
 	}
 
 	@:noCompletion private function set_pressure(value:Float):Float
 	{
-		return (cast _ : _TouchEvent).pressure = value;
+		return (_ : _TouchEvent).pressure = value;
 	}
 
 	@:noCompletion private function get_relatedObject():InteractiveObject
 	{
-		return (cast _ : _TouchEvent).relatedObject;
+		return (_ : _TouchEvent).relatedObject;
 	}
 
 	@:noCompletion private function set_relatedObject(value:InteractiveObject):InteractiveObject
 	{
-		return (cast _ : _TouchEvent).relatedObject = value;
+		return (_ : _TouchEvent).relatedObject = value;
 	}
 
 	@:noCompletion private function get_shiftKey():Bool
 	{
-		return (cast _ : _TouchEvent).shiftKey;
+		return (_ : _TouchEvent).shiftKey;
 	}
 
 	@:noCompletion private function set_shiftKey(value:Bool):Bool
 	{
-		return (cast _ : _TouchEvent).shiftKey = value;
+		return (_ : _TouchEvent).shiftKey = value;
 	}
 
 	@:noCompletion private function get_sizeX():Float
 	{
-		return (cast _ : _TouchEvent).sizeX;
+		return (_ : _TouchEvent).sizeX;
 	}
 
 	@:noCompletion private function set_sizeX(value:Float):Float
 	{
-		return (cast _ : _TouchEvent).sizeX = value;
+		return (_ : _TouchEvent).sizeX = value;
 	}
 
 	@:noCompletion private function get_sizeY():Float
 	{
-		return (cast _ : _TouchEvent).sizeY;
+		return (_ : _TouchEvent).sizeY;
 	}
 
 	@:noCompletion private function set_sizeY(value:Float):Float
 	{
-		return (cast _ : _TouchEvent).sizeY = value;
+		return (_ : _TouchEvent).sizeY = value;
 	}
 
 	@:noCompletion private function get_stageX():Float
 	{
-		return (cast _ : _TouchEvent).stageX;
+		return (_ : _TouchEvent).stageX;
 	}
 
 	@:noCompletion private function set_stageX(value:Float):Float
 	{
-		return (cast _ : _TouchEvent).stageX = value;
+		return (_ : _TouchEvent).stageX = value;
 	}
 
 	@:noCompletion private function get_stageY():Float
 	{
-		return (cast _ : _TouchEvent).stageY;
+		return (_ : _TouchEvent).stageY;
 	}
 
 	@:noCompletion private function set_stageY(value:Float):Float
 	{
-		return (cast _ : _TouchEvent).stageY = value;
+		return (_ : _TouchEvent).stageY = value;
 	}
 
 	@:noCompletion private function get_touchPointID():Int
 	{
-		return (cast _ : _TouchEvent).touchPointID;
+		return (_ : _TouchEvent).touchPointID;
 	}
 
 	@:noCompletion private function set_touchPointID(value:Int):Int
 	{
-		return (cast _ : _TouchEvent).touchPointID = value;
+		return (_ : _TouchEvent).touchPointID = value;
 	}
 }
 #else

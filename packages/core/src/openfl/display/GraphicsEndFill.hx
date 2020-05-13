@@ -17,8 +17,7 @@ import openfl._internal.renderer.GraphicsFillType;
 #end
 @:final class GraphicsEndFill implements IGraphicsData implements IGraphicsFill
 {
-	@:noCompletion private var __graphicsDataType(default, null):GraphicsDataType;
-	@:noCompletion private var __graphicsFillType(default, null):GraphicsFillType;
+	@:allow(openfl) @:noCompletion private var _:Any;
 
 	/**
 		Creates an object to use with the `Graphics.drawGraphicsData()`
@@ -26,8 +25,7 @@ import openfl._internal.renderer.GraphicsFillType;
 	**/
 	public function new()
 	{
-		this.__graphicsDataType = END;
-		this.__graphicsFillType = END_FILL;
+		_ = new _GraphicsEndFill();
 	}
 }
 #else

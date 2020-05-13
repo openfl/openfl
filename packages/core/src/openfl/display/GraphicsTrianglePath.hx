@@ -25,7 +25,7 @@ import openfl.Vector;
 		current view.
 		Can be set to any value defined by the TriangleCulling class.
 	**/
-	public var culling:TriangleCulling;
+	public var culling(get, set):TriangleCulling;
 
 	/**
 		A Vector of integers or indexes, where every three indexes define a
@@ -35,7 +35,7 @@ import openfl.Vector;
 		vertices Vector. For example `indexes[1]` refers to (`vertices[2]`,
 		`vertices[3]`).
 	**/
-	public var indices:Vector<Int>;
+	public var indices(get, set):Vector<Int>;
 
 	/**
 		A Vector of normalized coordinates used to apply texture mapping. Each
@@ -54,15 +54,15 @@ import openfl.Vector;
 		rendering engine correctly apply perspective when mapping textures in
 		3D.
 	**/
-	public var uvtData:Vector<Float>;
+	public var uvtData(get, set):Vector<Float>;
 
 	/**
 		A Vector of Numbers where each pair of numbers is treated as a point
 		(an x, y pair).
 	**/
-	public var vertices:Vector<Float>;
+	public var vertices(get, set):Vector<Float>;
 
-	@:noCompletion private var __graphicsDataType(default, null):GraphicsDataType;
+	@:allow(openfl) @:noCompletion private var _:Any;
 
 	/**
 		Creates a new GraphicsTrianglePath object.
@@ -79,11 +79,49 @@ import openfl.Vector;
 	**/
 	public function new(vertices:Vector<Float> = null, indices:Vector<Int> = null, uvtData:Vector<Float> = null, culling:TriangleCulling = NONE)
 	{
-		this.vertices = vertices;
-		this.indices = indices;
-		this.uvtData = uvtData;
-		this.culling = culling;
-		__graphicsDataType = TRIANGLE_PATH;
+		_ = new _GraphicsTrianglePath(vertices, indices, uvtData, culling);
+	}
+
+	// Get & Set Methods
+
+	@:noCompletion private function get_culling():TriangleCulling
+	{
+		return (_ : _GraphicsTrianglePath).culling;
+	}
+
+	@:noCompletion private function set_culling(value:TriangleCulling):TriangleCulling
+	{
+		return (_ : _GraphicsTrianglePath).culling = value;
+	}
+
+	@:noCompletion private function get_indices():Vector<Int>
+	{
+		return (_ : _GraphicsTrianglePath).indices;
+	}
+
+	@:noCompletion private function set_indices(value:Vector<Int>):Vector<Int>
+	{
+		return (_ : _GraphicsTrianglePath).indices = value;
+	}
+
+	@:noCompletion private function get_uvtData():Vector<Float>
+	{
+		return (_ : _GraphicsTrianglePath).uvtData;
+	}
+
+	@:noCompletion private function set_uvtData(value:Vector<Float>):Vector<Float>
+	{
+		return (_ : _GraphicsTrianglePath).uvtData = value;
+	}
+
+	@:noCompletion private function get_vertices():Vector<Float>
+	{
+		return (_ : _GraphicsTrianglePath).vertices;
+	}
+
+	@:noCompletion private function set_vertices(value:Vector<Float>):Vector<Float>
+	{
+		return (_ : _GraphicsTrianglePath).vertices = value;
 	}
 }
 #else

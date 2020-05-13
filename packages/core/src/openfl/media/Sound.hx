@@ -261,7 +261,7 @@ class Sound extends EventDispatcher
 	**/
 	public function close():Void
 	{
-		_.close();
+		(_ : _Sound).close();
 	}
 
 	#if false
@@ -341,7 +341,7 @@ class Sound extends EventDispatcher
 		requires permission from a website through a URL policy file.
 		* You cannot connect to commonly reserved ports. For a complete list
 		of blocked ports, see "Restricting Networking APIs" in the _ActionScript
-		3.0 Developer's Guide_.
+		3.0 Developer's Guide(_ : _Sound).
 		* You can prevent a SWF file from using this method by setting the
 		`allowNetworking` parameter of the `object` and
 		`embed` tags in the HTML page that contains the SWF
@@ -392,11 +392,11 @@ class Sound extends EventDispatcher
 		@throws SecurityError You cannot connect to commonly reserved ports. For a
 							  complete list of blocked ports, see "Restricting
 							  Networking APIs" in the _ActionScript 3.0
-							  Developer's Guide_.
+							  Developer's Guide(_ : _Sound).
 	**/
 	public function load(stream:URLRequest, context:SoundLoaderContext = null):Void
 	{
-		_.load(stream, context);
+		(_ : _Sound).load(stream, context);
 	}
 
 	/**
@@ -410,7 +410,7 @@ class Sound extends EventDispatcher
 	**/
 	public function loadCompressedDataFromByteArray(bytes:ByteArray, bytesLength:Int):Void
 	{
-		_.loadCompressedDataFromByteArray(bytes, bytesLength);
+		(_ : _Sound).loadCompressedDataFromByteArray(bytes, bytesLength);
 	}
 
 	/**
@@ -465,7 +465,7 @@ class Sound extends EventDispatcher
 	**/
 	public function loadPCMFromByteArray(bytes:ByteArray, samples:Int, format:String = "float", stereo:Bool = true, sampleRate:Float = 44100):Void
 	{
-		_.loadPCMFromByteArray(bytes, samples, format, stereo, sampleRate);
+		(_ : _Sound).loadPCMFromByteArray(bytes, samples, format, stereo, sampleRate);
 	}
 
 	/**
@@ -488,39 +488,39 @@ class Sound extends EventDispatcher
 	**/
 	public function play(startTime:Float = 0.0, loops:Int = 0, sndTransform:SoundTransform = null):SoundChannel
 	{
-		return _.play(startTime, loops, sndTransform);
+		return (_ : _Sound).play(startTime, loops, sndTransform);
 	}
 
 	// Get & Set Methods
 
 	@:noCompletion private function get_bytesLoaded():Int
 	{
-		return _.bytesLoaded;
+		return (_ : _Sound).bytesLoaded;
 	}
 
 	@:noCompletion private function get_bytesTotal():Int
 	{
-		return _.bytesTotal;
+		return (_ : _Sound).bytesTotal;
 	}
 
 	@:noCompletion private function get_id3():ID3Info
 	{
-		return _.id3;
+		return (_ : _Sound).id3;
 	}
 
 	@:noCompletion private function get_isBuffering():Bool
 	{
-		return _.isBuffering;
+		return (_ : _Sound).isBuffering;
 	}
 
 	@:noCompletion private function get_length():Int
 	{
-		return _.length;
+		return (_ : _Sound).length;
 	}
 
 	@:noCompletion private function get_url():String
 	{
-		return _.url;
+		return (_ : _Sound).url;
 	}
 }
 #else

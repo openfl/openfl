@@ -175,89 +175,89 @@ class KeyboardEvent extends Event
 
 	public override function clone():KeyboardEvent
 	{
-		return _.clone();
+		return (_ : _KeyboardEvent).clone();
 	}
 
 	// Get & Set Methods
 
 	@:noCompletion private function get_altKey():Bool
 	{
-		return _.altKey;
+		return (_ : _KeyboardEvent).altKey;
 	}
 
 	@:noCompletion private function set_altKey(value:Bool):Bool
 	{
-		return _.altKey = value;
+		return (_ : _KeyboardEvent).altKey = value;
 	}
 
 	@:noCompletion private function get_charCode():Int
 	{
-		return _.charCode;
+		return (_ : _KeyboardEvent).charCode;
 	}
 
 	@:noCompletion private function set_charCode(value:Int):Int
 	{
-		return _.charCode = value;
+		return (_ : _KeyboardEvent).charCode = value;
 	}
 
 	@:noCompletion private function get_commandKey():Bool
 	{
-		return _.commandKey;
+		return (_ : _KeyboardEvent).commandKey;
 	}
 
 	@:noCompletion private function set_commandKey(value:Bool):Bool
 	{
-		return _.commandKey = value;
+		return (_ : _KeyboardEvent).commandKey = value;
 	}
 
 	@:noCompletion private function get_controlKey():Bool
 	{
-		return _.controlKey;
+		return (_ : _KeyboardEvent).controlKey;
 	}
 
 	@:noCompletion private function set_controlKey(value:Bool):Bool
 	{
-		return _.controlKey = value;
+		return (_ : _KeyboardEvent).controlKey = value;
 	}
 
 	@:noCompletion private function get_ctrlKey():Bool
 	{
-		return _.ctrlKey;
+		return (_ : _KeyboardEvent).ctrlKey;
 	}
 
 	@:noCompletion private function set_ctrlKey(value:Bool):Bool
 	{
-		return _.ctrlKey = value;
+		return (_ : _KeyboardEvent).ctrlKey = value;
 	}
 
 	@:noCompletion private function get_keyCode():Int
 	{
-		return _.keyCode;
+		return (_ : _KeyboardEvent).keyCode;
 	}
 
 	@:noCompletion private function set_keyCode(value:Int):Int
 	{
-		return _.keyCode = value;
+		return (_ : _KeyboardEvent).keyCode = value;
 	}
 
 	@:noCompletion private function get_keyLocation():KeyLocation
 	{
-		return _.keyLocation;
+		return (_ : _KeyboardEvent).keyLocation;
 	}
 
 	@:noCompletion private function set_keyLocation(value:KeyLocation):KeyLocation
 	{
-		return _.keyLocation = value;
+		return (_ : _KeyboardEvent).keyLocation = value;
 	}
 
 	@:noCompletion private function get_shiftKey():Bool
 	{
-		return _.shiftKey;
+		return (_ : _KeyboardEvent).shiftKey;
 	}
 
 	@:noCompletion private function set_shiftKey(value:Bool):Bool
 	{
-		return _.shiftKey = value;
+		return (_ : _KeyboardEvent).shiftKey = value;
 	}
 }
 #else

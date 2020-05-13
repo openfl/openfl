@@ -5,7 +5,7 @@ import openfl._internal.renderer.GraphicsFillType;
 
 interface IGraphicsFill
 {
-	@:noCompletion private var __graphicsFillType(default, null):GraphicsFillType;
+	@:allow(openfl) @:noCompletion private var _:Any;
 }
 #else
 typedef IGraphicsFill = flash.display.IGraphicsFill;

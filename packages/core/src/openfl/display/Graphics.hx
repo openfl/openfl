@@ -1,7 +1,7 @@
 package openfl.display;
 
 #if !flash
-import openfl.display._internal.Context3DBuffer;
+// import openfl.display._internal.Context3DBuffer;
 import openfl._internal.renderer.DisplayObjectRenderData;
 import openfl._internal.renderer.DrawCommandBuffer;
 import openfl._internal.renderer.DrawCommandReader;
@@ -23,7 +23,8 @@ import js.html.CanvasRenderingContext2D;
 import openfl.display._internal.CanvasGraphics;
 #else
 import lime.graphics.cairo.Cairo;
-import openfl.display._internal.CairoGraphics;
+
+// import openfl.display._internal.CairoGraphics;
 #end
 
 /**

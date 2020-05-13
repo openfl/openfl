@@ -136,26 +136,27 @@ class _EventDispatcher
 	{
 		if (__eventMap == null || event == null) return true;
 
+		var _event:_Event = cast event._;
 		var type = event.type;
 
 		var list = __eventMap.get(type);
 		if (list == null) return true;
 
-		if (event.target == null)
+		if (_event.target == null)
 		{
 			if (__targetDispatcher != null)
 			{
-				event.target = __targetDispatcher;
+				_event.target = __targetDispatcher;
 			}
 			else
 			{
-				event.target = this;
+				_event.target = this;
 			}
 		}
 
-		event.currentTarget = this;
+		_event.currentTarget = this;
 
-		var capture = (event.eventPhase == EventPhase.CAPTURING_PHASE);
+		var capture = (_event.eventPhase == EventPhase.CAPTURING_PHASE);
 
 		var iterators = __iterators.get(type);
 		var iterator = iterators[0];
@@ -177,7 +178,7 @@ class _EventDispatcher
 				// listener.callback (event.clone ());
 				listener.callback(event);
 
-				if (event._.__isCanceledNow)
+				if (_event.__isCanceledNow)
 				{
 					break;
 				}
@@ -195,7 +196,7 @@ class _EventDispatcher
 			iterator.reset(list);
 		}
 
-		return !event.isDefaultPrevented();
+		return !_event.isDefaultPrevented();
 	}
 
 	public function __removeAllListeners():Void

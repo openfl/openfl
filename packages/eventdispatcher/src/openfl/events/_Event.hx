@@ -16,7 +16,10 @@ class _Event
 	public var target:#if (haxe_ver >= "3.4.2") Any #else IEventDispatcher #end;
 	public var type:String;
 
-	public static var __pool:ObjectPool<Event> = new ObjectPool<Event>(function() return new Event(null), function(event) event._.__init());
+	public static var __pool:ObjectPool<Event> = new ObjectPool<Event>(function() return new Event(null), function(event)
+	{
+		(event._ : _Event).__init();
+	});
 
 	public var __isCanceled:Bool;
 	public var __isCanceledNow:Bool;

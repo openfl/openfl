@@ -42,7 +42,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function uploadFromBitmapData(source:BitmapData):Void
 	{
-		_.uploadFromBitmapData(source);
+		(_ : _RectangleTexture).uploadFromBitmapData(source);
 	}
 
 	/**
@@ -63,7 +63,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function uploadFromByteArray(data:ByteArray, byteArrayOffset:UInt):Void
 	{
-		_.uploadFromByteArray(data, byteArrayOffset);
+		(_ : _RectangleTexture).uploadFromByteArray(data, byteArrayOffset);
 	}
 
 	/**
@@ -75,7 +75,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function uploadFromTypedArray(data:ArrayBufferView):Void
 	{
-		_.uploadFromTypedArray(data);
+		(_ : _RectangleTexture).uploadFromTypedArray(data);
 	}
 }
 #else

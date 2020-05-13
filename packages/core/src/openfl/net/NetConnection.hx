@@ -529,7 +529,7 @@ class NetConnection extends EventDispatcher
 	**/
 	public function connect(command:String, p1 = null, p2 = null, p3 = null, p4 = null, p5 = null):Void
 	{
-		_.connect(command, p1, p2, p3, p4, p5);
+		(_ : _NetConnection).connect(command, p1, p2, p3, p4, p5);
 	}
 }
 #else

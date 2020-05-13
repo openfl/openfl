@@ -1,6 +1,7 @@
 package openfl.geom;
 
 import openfl.display.DisplayObject;
+import openfl.display._DisplayObject;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -37,7 +38,7 @@ class _Transform
 	{
 		if (__displayObject != null)
 		{
-			var transform = __displayObject._.__transform;
+			var transform = (__displayObject._ : _DisplayObject).__transform;
 			if (transform.a == a && transform.b == b && transform.c == c && transform.d == d && transform.tx == tx && transform.ty == ty)
 			{
 				return;
@@ -64,17 +65,17 @@ class _Transform
 				scaleY = Math.sqrt(c * c + d * d);
 			}
 
-			__displayObject._.__scaleX = scaleX;
-			__displayObject._.__scaleY = scaleY;
+				(__displayObject._ : _DisplayObject).__scaleX = scaleX;
+			(__displayObject._ : _DisplayObject).__scaleY = scaleY;
 
 			var rotation = (180 / Math.PI) * Math.atan2(d, c) - 90;
 
-			if (rotation != __displayObject._.__rotation)
+			if (rotation != (__displayObject._ : _DisplayObject).__rotation)
 			{
-				__displayObject._.__rotation = rotation;
+				(__displayObject._ : _DisplayObject).__rotation = rotation;
 				var radians = rotation * (Math.PI / 180);
-				__displayObject._.__rotationSine = Math.sin(radians);
-				__displayObject._.__rotationCosine = Math.cos(radians);
+				(__displayObject._ : _DisplayObject).__rotationSine = Math.sin(radians);
+				(__displayObject._ : _DisplayObject).__rotationCosine = Math.cos(radians);
 			}
 
 			transform.a = a;
@@ -84,8 +85,8 @@ class _Transform
 			transform.tx = tx;
 			transform.ty = ty;
 
-			__displayObject._.__setTransformDirty();
-			__displayObject._.__setParentRenderDirty();
+			(__displayObject._ : _DisplayObject).__setTransformDirty();
+			(__displayObject._ : _DisplayObject).__setParentRenderDirty();
 		}
 	}
 
@@ -107,7 +108,7 @@ class _Transform
 				__displayObject.alpha = value.alphaMultiplier;
 			}
 
-			__displayObject._.__setRenderDirty();
+				(__displayObject._ : _DisplayObject).__setRenderDirty();
 		}
 
 		return __colorTransform;
@@ -117,7 +118,7 @@ class _Transform
 	{
 		if (__hasMatrix)
 		{
-			return __displayObject._.__getWorldTransform().clone();
+			return (__displayObject._ : _DisplayObject).__getWorldTransform().clone();
 		}
 
 		return null;
@@ -127,7 +128,7 @@ class _Transform
 	{
 		if (__hasMatrix)
 		{
-			return __displayObject._.__transform.clone();
+			return (__displayObject._ : _DisplayObject).__transform.clone();
 		}
 
 		return null;
@@ -156,7 +157,7 @@ class _Transform
 	{
 		if (__hasMatrix3D)
 		{
-			var matrix = __displayObject._.__transform;
+			var matrix = (__displayObject._ : _DisplayObject).__transform;
 			return new Matrix3D(new Vector<Float>([
 				matrix.a, matrix.b, 0.0, 0.0, matrix.c, matrix.d, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, matrix.tx, matrix.ty, 0.0, 1.0
 			]));

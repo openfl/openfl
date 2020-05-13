@@ -706,7 +706,7 @@ class Event
 	**/
 	public var type(get, never):String;
 
-	@:allow(openfl) @:noCompletion private var _:_Event;
+	@:allow(openfl) @:noCompletion private var _:Any;
 
 	/**
 		Creates an Event object to pass as a parameter to event listeners.
@@ -752,7 +752,7 @@ class Event
 	**/
 	public function clone():Event
 	{
-		return _.clone();
+		return (_ : _Event).clone();
 	}
 
 	/**
@@ -781,7 +781,7 @@ class Event
 	**/
 	public function formatToString(className:String, p1:String = null, p2:String = null, p3:String = null, p4:String = null, p5:String = null):String
 	{
-		return _.formatToString(className, p1, p2, p3, p4, p5);
+		return (_ : _Event).formatToString(className, p1, p2, p3, p4, p5);
 	}
 
 	/**
@@ -794,7 +794,7 @@ class Event
 	**/
 	public function isDefaultPrevented():Bool
 	{
-		return _.isDefaultPrevented();
+		return (_ : _Event).isDefaultPrevented();
 	}
 
 	/**
@@ -805,7 +805,7 @@ class Event
 	**/
 	public function preventDefault():Void
 	{
-		_.preventDefault();
+		(_ : _Event).preventDefault();
 	}
 
 	/**
@@ -821,7 +821,7 @@ class Event
 	**/
 	public function stopImmediatePropagation():Void
 	{
-		_.stopImmediatePropagation();
+		(_ : _Event).stopImmediatePropagation();
 	}
 
 	/**
@@ -839,7 +839,7 @@ class Event
 	**/
 	public function stopPropagation():Void
 	{
-		_.stopPropagation();
+		(_ : _Event).stopPropagation();
 	}
 
 	/**
@@ -853,39 +853,39 @@ class Event
 	**/
 	public function toString():String
 	{
-		return _.toString();
+		return (_ : _Event).toString();
 	}
 
 	// Get & Set Methods
 
 	@:noCompletion private function get_bubbles():Bool
 	{
-		return _.bubbles;
+		return (_ : _Event).bubbles;
 	}
 
 	@:noCompletion private function get_cancelable():Bool
 	{
-		return _.cancelable;
+		return (_ : _Event).cancelable;
 	}
 
 	@:noCompletion private function get_currentTarget():#if (haxe_ver >= "3.4.2") Any #else IEventDispatcher #end
 	{
-		return _.currentTarget;
+		return (_ : _Event).currentTarget;
 	}
 
 	@:noCompletion private function get_eventPhase():EventPhase
 	{
-		return _.eventPhase;
+		return (_ : _Event).eventPhase;
 	}
 
 	@:noCompletion private function get_target():#if (haxe_ver >= "3.4.2") Any #else IEventDispatcher #end
 	{
-		return _.target;
+		return (_ : _Event).target;
 	}
 
 	@:noCompletion private function get_type():String
 	{
-		return _.type;
+		return (_ : _Event).type;
 	}
 }
 #else

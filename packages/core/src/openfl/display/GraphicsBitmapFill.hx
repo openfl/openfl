@@ -21,7 +21,7 @@ import openfl.geom.Matrix;
 	/**
 		A transparent or opaque bitmap image.
 	**/
-	public var bitmapData:BitmapData;
+	public var bitmapData(get, set):BitmapData;
 
 	/**
 		A matrix object (of the openfl.geom.Matrix class) that defines
@@ -33,7 +33,7 @@ import openfl.geom.Matrix;
 		matrix.rotate(Math.PI / 4);
 		```
 	**/
-	public var matrix:Matrix;
+	public var matrix(get, set):Matrix;
 
 	/**
 		Specifies whether to repeat the bitmap image in a tiled pattern.
@@ -57,7 +57,7 @@ import openfl.geom.Matrix;
 
 		![60 by 60 pixel image with no repeating](/images/movieClip_beginBitmapFill_repeat_3.jpg)
 	**/
-	public var repeat:Bool;
+	public var repeat(get, set):Bool;
 
 	/**
 		Specifies whether to apply a smoothing algorithm to the bitmap image.
@@ -66,10 +66,9 @@ import openfl.geom.Matrix;
 		bitmap images are rendered by using a bilinear algorithm. Rendering by
 		using the nearest neighbor algorithm is usually faster.
 	**/
-	public var smooth:Bool;
+	public var smooth(get, set):Bool;
 
-	@:noCompletion private var __graphicsDataType(default, null):GraphicsDataType;
-	@:noCompletion private var __graphicsFillType(default, null):GraphicsFillType;
+	@:allow(openfl) @:noCompletion private var _:Any;
 
 	/**
 		Creates a new GraphicsBitmapFill object.
@@ -92,13 +91,49 @@ import openfl.geom.Matrix;
 	**/
 	public function new(bitmapData:BitmapData = null, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false)
 	{
-		this.bitmapData = bitmapData;
-		this.matrix = matrix;
-		this.repeat = repeat;
-		this.smooth = smooth;
+		_ = new _GraphicsBitmapFill(bitmapData, matrix, repeat, smooth);
+	}
 
-		this.__graphicsDataType = BITMAP;
-		this.__graphicsFillType = BITMAP_FILL;
+	// Get & Set Methods
+
+	@:noCompletion private function get_bitmapData():BitmapData
+	{
+		return (_ : _GraphicsBitmapFill).bitmapData;
+	}
+
+	@:noCompletion private function set_bitmapData(value:BitmapData):BitmapData
+	{
+		return (_ : _GraphicsBitmapFill).bitmapData = value;
+	}
+
+	@:noCompletion private function get_matrix():Matrix
+	{
+		return (_ : _GraphicsBitmapFill).matrix;
+	}
+
+	@:noCompletion private function set_matrix(value:Matrix):Matrix
+	{
+		return (_ : _GraphicsBitmapFill).matrix = value;
+	}
+
+	@:noCompletion private function get_repeat():Bool
+	{
+		return (_ : _GraphicsBitmapFill).repeat;
+	}
+
+	@:noCompletion private function set_repeat(value:Bool):Bool
+	{
+		return (_ : _GraphicsBitmapFill).repeat = value;
+	}
+
+	@:noCompletion private function get_smooth():Bool
+	{
+		return (_ : _GraphicsBitmapFill).smooth;
+	}
+
+	@:noCompletion private function set_smooth(value:Bool):Bool
+	{
+		return (_ : _GraphicsBitmapFill).smooth = value;
 	}
 }
 #else

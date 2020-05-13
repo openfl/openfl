@@ -1327,6 +1327,11 @@ import openfl.utils.ByteArray;
 		return (_ : _Context3D).profile;
 	}
 
+	@:noCompletion private static function get_supportsVideoTexture():Bool
+	{
+		return _Context3D.supportsVideoTexture;
+	}
+
 	@:noCompletion private function get_totalGPUMemory():Int
 	{
 		return (_ : _Context3D).totalGPUMemory;

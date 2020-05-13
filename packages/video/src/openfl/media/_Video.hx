@@ -1,6 +1,7 @@
 package openfl.media;
 
 import openfl.display.DisplayObject;
+import openfl.display._DisplayObject;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom._Point;
