@@ -25,6 +25,6 @@ class _NetConnection extends _EventDispatcher
 			throw "Error: Can only connect in \"HTTP streaming\" mode";
 		}
 
-		this.dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, true, {code: NetConnection.CONNECT_SUCCESS}));
+		this.dispatchEvent(new NetStatusEvent(NetStatusEvent.NET_STATUS, false, true, {code: _NetConnection.CONNECT_SUCCESS}));
 	}
 }

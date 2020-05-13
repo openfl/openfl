@@ -9,6 +9,7 @@ import openfl._internal.renderer.ShaderBuffer;
 import lime.utils.Float32Array;
 import openfl._internal.utils.Log;
 import openfl.display3D.Context3D;
+import openfl.display3D._Context3D;
 import openfl.display.BitmapData;
 import openfl.display.Shader;
 import openfl.display.ShaderData;
@@ -146,10 +147,10 @@ class _Shader
 			parameter._.disableGL(context);
 		}
 
-		context._.bindGLArrayBuffer(null);
+			(context._ : _Context3D).bindGLArrayBuffer(null);
 
 		#if lime
-		if (context._.limeContext.type == OPENGL)
+		if ((context._ : _Context3D).limeContext.type == OPENGL)
 		{
 			gl.disable(gl.TEXTURE_2D);
 		}
@@ -177,7 +178,7 @@ class _Shader
 		}
 
 		#if lime
-		if (context._.limeContext.type == OPENGL && textureCount > 0)
+		if ((context._ : _Context3D).limeContext.type == OPENGL && textureCount > 0)
 		{
 			gl.enable(gl.TEXTURE_2D);
 		}
@@ -189,7 +190,7 @@ class _Shader
 		if (context3D != null)
 		{
 			this.context = context3D;
-			gl = context._.gl;
+			gl = (context._ : _Context3D).gl;
 		}
 
 		if (parent._.__data == null)
@@ -240,9 +241,9 @@ class _Shader
 
 			var id = vertex + fragment;
 
-			if (context._.__programs.exists(id))
+			if ((context._ : _Context3D).__programs.exists(id))
 			{
-				parent.program = context._.__programs.get(id);
+				parent.program = (context._ : _Context3D).__programs.get(id);
 			}
 			else
 			{
@@ -252,7 +253,7 @@ class _Shader
 				// program.uploadSources (vertex, fragment);
 				parent.program._.glProgram = createGLProgram(vertex, fragment);
 
-				context._.__programs.set(id, parent.program);
+				(context._ : _Context3D).__programs.set(id, parent.program);
 			}
 
 			if (parent.program != null)
@@ -542,14 +543,14 @@ class _Shader
 
 			// Log.verbose ("bind param data buffer (length: " + shaderBuffer.paramData.length + ") (" + shaderBuffer.paramCount + ")");
 
-			context._.bindGLArrayBuffer(shaderBuffer.paramDataBuffer);
+			(context._ : _Context3D).bindGLArrayBuffer(shaderBuffer.paramDataBuffer);
 			gl.bufferData(GL.ARRAY_BUFFER, shaderBuffer.paramData, GL.DYNAMIC_DRAW);
 		}
 		else
 		{
 			// Log.verbose ("bind buffer null");
 
-			context._.bindGLArrayBuffer(null);
+			(context._ : _Context3D).bindGLArrayBuffer(null);
 		}
 
 		var boolIndex = 0;

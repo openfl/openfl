@@ -90,7 +90,7 @@ class _Mouse
 
 		var limeCursor:LimeMouseCursor = null;
 
-		switch (value)
+		switch (value : String)
 		{
 			case MouseCursor.ARROW:
 				limeCursor = ARROW;
@@ -100,21 +100,21 @@ class _Mouse
 				limeCursor = MOVE;
 			case MouseCursor.IBEAM:
 				limeCursor = TEXT;
-			case MouseCursor._.__CROSSHAIR:
+			case _MouseCursor.__CROSSHAIR:
 				limeCursor = CROSSHAIR;
-			case MouseCursor._.__CUSTOM:
+			case _MouseCursor.__CUSTOM:
 				limeCursor = CUSTOM;
-			case MouseCursor._.__RESIZE_NESW:
+			case _MouseCursor.__RESIZE_NESW:
 				limeCursor = RESIZE_NESW;
-			case MouseCursor._.__RESIZE_NS:
+			case _MouseCursor.__RESIZE_NS:
 				limeCursor = RESIZE_NS;
-			case MouseCursor._.__RESIZE_NWSE:
+			case _MouseCursor.__RESIZE_NWSE:
 				limeCursor = RESIZE_NWSE;
-			case MouseCursor._.__RESIZE_WE:
+			case _MouseCursor.__RESIZE_WE:
 				limeCursor = RESIZE_WE;
-			case MouseCursor._.__WAIT:
+			case _MouseCursor.__WAIT:
 				limeCursor = WAIT;
-			case MouseCursor._.__WAIT_ARROW:
+			case _MouseCursor.__WAIT_ARROW:
 				limeCursor = WAIT_ARROW;
 			default:
 		}

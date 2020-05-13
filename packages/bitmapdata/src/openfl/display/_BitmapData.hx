@@ -258,8 +258,8 @@ class _BitmapData
 		if (!readable || sourceBitmapData == null || !sourceBitmapData.readable) return;
 		// TODO: Ways to optimize this?
 
-		var needSecondBitmapData = filter._.__needSecondBitmapData;
-		var needCopyOfOriginal = filter._.__preserveObject;
+		var needSecondBitmapData = (filter._ : _BitmapFilter).__needSecondBitmapData;
+		var needCopyOfOriginal = (filter._ : _BitmapFilter).__preserveObject;
 
 		var bitmapData2 = null;
 		var bitmapData3 = null;
@@ -270,7 +270,7 @@ class _BitmapData
 		}
 		else
 		{
-			bitmapData2 = parent;
+			bitmapData2 = this_displayObject;
 		}
 
 		if (needCopyOfOriginal)
@@ -278,14 +278,14 @@ class _BitmapData
 			bitmapData3 = new BitmapData(width, height, true, 0);
 		}
 
-		if (filter._.__preserveObject)
+		if ((filter._ : _BitmapFilter).__preserveObject)
 		{
-			bitmapData3.copyPixels(parent, rect, destPoint);
+			bitmapData3.copyPixels(this_displayObject, rect, destPoint);
 		}
 
-		var lastBitmap = filter._.__applyFilter(bitmapData2, parent, sourceRect, destPoint);
+		var lastBitmap = (filter._ : _BitmapFilter).__applyFilter(bitmapData2, this_displayObject, sourceRect, destPoint);
 
-		if (filter._.__preserveObject)
+		if ((filter._ : _BitmapFilter).__preserveObject)
 		{
 			lastBitmap.draw(bitmapData3, null, null);
 		}
@@ -499,7 +499,7 @@ class _BitmapData
 			rect.copyFrom(sourceBitmapData.rect);
 			rect._.__contract(sourceRect.x, sourceRect.y, sourceRect.width, sourceRect.height);
 
-			var copy = BitmapData._.__pool.get(Std.int(rect.width), Std.int(rect.height));
+			var copy = _BitmapData.__pool.get(Std.int(rect.width), Std.int(rect.height));
 
 			ImageCanvasUtil.convertToCanvas(copy.limeImage);
 			ImageCanvasUtil.convertToCanvas(sourceBitmapData.limeImage);
@@ -511,8 +511,8 @@ class _BitmapData
 				rect.y += alphaPoint.y;
 			}
 
-			copy.limeImage.buffer._.__srcContext.globalCompositeOperation = "source-over";
-			copy.limeImage.buffer._.__srcContext.drawImage(alphaBitmapData.limeImage.buffer.src, Std.int(rect.x + sourceBitmapData.limeImage.offsetX),
+			copy.limeImage.buffer.__srcContext.globalCompositeOperation = "source-over";
+			copy.limeImage.buffer.__srcContext.drawImage(alphaBitmapData.limeImage.buffer.src, Std.int(rect.x + sourceBitmapData.limeImage.offsetX),
 				Std.int(rect.y + sourceBitmapData.limeImage.offsetY), Std.int(rect.width), Std.int(rect.height), Std.int(point.x + limeImage.offsetX),
 				Std.int(point.y + limeImage.offsetY), Std.int(rect.width), Std.int(rect.height));
 
@@ -522,15 +522,15 @@ class _BitmapData
 				rect.y -= alphaPoint.y;
 			}
 
-			copy.limeImage.buffer._.__srcContext.globalCompositeOperation = "source-in";
-			copy.limeImage.buffer._.__srcContext.drawImage(sourceBitmapData.limeImage.buffer.src, Std.int(rect.x + sourceBitmapData.limeImage.offsetX),
+			copy.limeImage.buffer.__srcContext.globalCompositeOperation = "source-in";
+			copy.limeImage.buffer.__srcContext.drawImage(sourceBitmapData.limeImage.buffer.src, Std.int(rect.x + sourceBitmapData.limeImage.offsetX),
 				Std.int(rect.y + sourceBitmapData.limeImage.offsetY), Std.int(rect.width), Std.int(rect.height), Std.int(point.x + limeImage.offsetX),
 				Std.int(point.y + limeImage.offsetY), Std.int(rect.width), Std.int(rect.height));
 
 			// TODO: Render directly for mergeAlpha=false?
-			limeImage.copyPixels(copy.limeImage, copy.rect._.__toLimeRectangle(), destPoint.__toLimeVector2(), null, null, mergeAlpha);
+			limeImage.copyPixels(copy.limeImage, copy.rect._.__toLimeRectangle(), destPoint._.__toLimeVector2(), null, null, mergeAlpha);
 
-			BitmapData._.__pool.release(copy);
+			_BitmapData.__pool.release(copy);
 			_Rectangle.__pool.release(rect);
 			_Point.__pool.release(point);
 			return;
@@ -598,7 +598,7 @@ class _BitmapData
 			BitmapData._.__hardwareRenderer._.__worldAlpha = 1 / source._.__worldAlpha;
 			BitmapData._.__hardwareRenderer._.__worldColorTransform = _colorTransform;
 
-			BitmapData._.__hardwareRenderer._.__drawBitmapData(parent, source, clipRect);
+			BitmapData._.__hardwareRenderer._.__drawBitmapData(this_displayObject, source, clipRect);
 		}
 		else
 		{
@@ -650,7 +650,7 @@ class _BitmapData
 			// renderer._.__worldAlpha = 1 / source._.__worldAlpha;
 			// renderer._.__worldColorTransform = _colorTransform;
 
-			// renderer._.__drawBitmapData(parent, source, clipRect);
+			// renderer._.__drawBitmapData(this_displayObject, source, clipRect);
 			#end
 		}
 		_Matrix.__pool.release(transform);
@@ -676,7 +676,7 @@ class _BitmapData
 			matrix.ty = Math.round(-rect.y);
 
 			var bitmapData = new BitmapData(Math.ceil(rect.width), Math.ceil(rect.height), true, 0);
-			bitmapData.draw(parent, matrix);
+			bitmapData.draw(this_displayObject, matrix);
 
 			image = bitmapData.limeImage;
 
@@ -707,7 +707,7 @@ class _BitmapData
 
 		if (!readable && __renderData.texture != null && BitmapData._.__hardwareRenderer != null)
 		{
-			BitmapData._.__hardwareRenderer._.__fillRect(parent, rect, color);
+			BitmapData._.__hardwareRenderer._.__fillRect(this_displayObject, rect, color);
 		}
 		else if (readable)
 		{
@@ -981,7 +981,7 @@ class _BitmapData
 		if (!readable) return false;
 		if (Std.is(secondObject, Bitmap))
 		{
-			secondObject = cast(secondObject, Bitmap)._.__bitmapData;
+			secondObject = (cast(secondObject, Bitmap)._ : _Bitmap).__bitmapData;
 		}
 
 		if (Std.is(secondObject, Point))
@@ -1135,7 +1135,7 @@ class _BitmapData
 			alphaMultiplier:UInt):Void
 	{
 		if (!readable || sourceBitmapData == null || !sourceBitmapData.readable || sourceRect == null || destPoint == null) return;
-		limeImage.merge(sourceBitmapData.limeImage, sourceRect._.__toLimeRectangle(), destPoint.__toLimeVector2(), redMultiplier, greenMultiplier,
+		limeImage.merge(sourceBitmapData.limeImage, sourceRect._.__toLimeRectangle(), destPoint._.__toLimeVector2(), redMultiplier, greenMultiplier,
 			blueMultiplier, alphaMultiplier);
 	}
 
@@ -1231,7 +1231,7 @@ class _BitmapData
 	{
 		if (!readable) return;
 		var noise = new PerlinNoise(randomSeed, numOctaves, channelOptions, grayScale, 0.5, stitch, 0.15);
-		noise.fill(parent, baseX, baseY, 0);
+		noise.fill(this_displayObject, baseX, baseY, 0);
 	}
 
 	public function scroll(x:Int, y:Int):Void
@@ -1290,7 +1290,7 @@ class _BitmapData
 			return 0;
 		}
 
-		return limeImage.threshold(sourceBitmapData.limeImage, sourceRect._.__toLimeRectangle(), destPoint.__toLimeVector2(), operation, threshold, color,
+		return limeImage.threshold(sourceBitmapData.limeImage, sourceRect._.__toLimeRectangle(), destPoint._.__toLimeVector2(), operation, threshold, color,
 			mask, copySource, ARGB32);
 	}
 
@@ -1440,7 +1440,7 @@ class _BitmapData
 		return Image.loadFromBase64(base64, type).then(function(image)
 		{
 			__fromImage(image);
-			return Future.withValue(parent);
+			return Future.withValue(this_displayObject);
 		});
 	}
 
@@ -1455,7 +1455,7 @@ class _BitmapData
 				__applyAlpha(rawAlpha);
 			}
 
-			return Future.withValue(parent);
+			return Future.withValue(this_displayObject);
 		});
 	}
 
@@ -1464,7 +1464,7 @@ class _BitmapData
 		return Image.loadFromFile(path).then(function(image)
 		{
 			__fromImage(image);
-			return Future.withValue(parent);
+			return Future.withValue(this_displayObject);
 		});
 	}
 
@@ -1480,8 +1480,8 @@ class _BitmapData
 
 	public function __resize(width:Int, height:Int):Void
 	{
-		width = width;
-		height = height;
+		this.width = width;
+		this.height = height;
 		rect.width = width;
 		rect.height = height;
 

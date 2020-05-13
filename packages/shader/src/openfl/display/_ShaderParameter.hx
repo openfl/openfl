@@ -4,6 +4,7 @@ package openfl.display;
 import lime.graphics.opengl.GL;
 import lime.utils.Float32Array;
 import openfl.display3D.Context3D;
+import openfl.display3D._Context3D;
 import openfl.display.ShaderParameter;
 
 #if !openfl_debug
@@ -36,7 +37,7 @@ class _ShaderParameter<T> /*implements Dynamic*/
 
 	public function disableGL(context:Context3D):Void
 	{
-		var gl = context._.gl;
+		var gl = (context._ : _Context3D).gl;
 
 		if (!isUniform)
 		{
@@ -49,7 +50,7 @@ class _ShaderParameter<T> /*implements Dynamic*/
 
 	public function updateGL(context:Context3D, overrideValue:Array<T> = null):Void
 	{
-		var gl = context._.gl;
+		var gl = (context._ : _Context3D).gl;
 
 		var value = overrideValue != null ? overrideValue : parent.value;
 
@@ -281,7 +282,7 @@ class _ShaderParameter<T> /*implements Dynamic*/
 
 	public function updateGLFromBuffer(context:Context3D, buffer:Float32Array, position:Int, length:Int, bufferOffset:Int):Void
 	{
-		var gl = context._.gl;
+		var gl = (context._ : _Context3D).gl;
 
 		if (isUniform)
 		{

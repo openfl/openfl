@@ -12,6 +12,12 @@ import lime.math.Vector2;
 @:noCompletion
 class _Point
 {
+	public static var __pool:ObjectPool<Point> = new ObjectPool(function() return new Point(), function(point)
+	{
+		point.x = 0;
+		point.y = 0;
+	});
+
 	public var length(get, never):Float;
 	public var x:Float;
 	public var y:Float;

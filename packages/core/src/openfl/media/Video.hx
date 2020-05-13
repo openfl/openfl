@@ -157,7 +157,7 @@ class Video extends DisplayObject
 	{
 		if (_ == null)
 		{
-			_ = new _Video(width, height);
+			_ = new _Video(this, width, height);
 		}
 
 		super();

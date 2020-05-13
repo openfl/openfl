@@ -1,6 +1,7 @@
 package openfl.ui;
 
 import openfl.events.EventDispatcher;
+import openfl.events._EventDispatcher;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

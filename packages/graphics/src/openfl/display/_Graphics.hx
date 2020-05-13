@@ -166,7 +166,7 @@ import lime.graphics.cairo.Cairo;
 			__dirty = true;
 			__transformDirty = true;
 			__bounds = null;
-			__owner._.__localBoundsDirty = true;
+			(__owner._ : _DisplayObject).__localBoundsDirty = true;
 		}
 
 		__visible = false;
@@ -830,7 +830,7 @@ import lime.graphics.cairo.Cairo;
 		if (__bounds == null)
 		{
 			__bounds = new Rectangle(x, y, 0, 0);
-			__owner._._.__localBoundsDirty = true;
+			(__owner._ : _DisplayObject).__localBoundsDirty = true;
 			__transformDirty = true;
 		}
 		else
@@ -839,7 +839,7 @@ import lime.graphics.cairo.Cairo;
 			{
 				__bounds.width += __bounds.x - x;
 				__bounds.x = x;
-				__owner._.__localBoundsDirty = true;
+				(__owner._ : _DisplayObject).__localBoundsDirty = true;
 				__transformDirty = true;
 			}
 
@@ -847,19 +847,19 @@ import lime.graphics.cairo.Cairo;
 			{
 				__bounds.height += __bounds.y - y;
 				__bounds.y = y;
-				__owner._.__localBoundsDirty = true;
+				(__owner._ : _DisplayObject).__localBoundsDirty = true;
 				__transformDirty = true;
 			}
 
 			if (x > __bounds.x + __bounds.width)
 			{
-				__owner._.__localBoundsDirty = true;
+				(__owner._ : _DisplayObject).__localBoundsDirty = true;
 				__bounds.width = x - __bounds.x;
 			}
 
 			if (y > __bounds.y + __bounds.height)
 			{
-				__owner._.__localBoundsDirty = true;
+				(__owner._ : _DisplayObject).__localBoundsDirty = true;
 				__bounds.height = y - __bounds.y;
 			}
 		}
@@ -1106,7 +1106,7 @@ import lime.graphics.cairo.Cairo;
 	{
 		if (value && __owner != null)
 		{
-			@:privateAccess __owner._.__setRenderDirty();
+			@:privateAccess (__owner._ : _DisplayObject).__setRenderDirty();
 		}
 
 		if (value)

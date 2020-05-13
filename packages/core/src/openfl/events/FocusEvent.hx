@@ -189,7 +189,7 @@ class FocusEvent extends Event
 
 	@:noCompletion private function get_relatedObject():InteractiveObject
 	{
-		return (_ : _FocusEvent).keyCode;
+		return (_ : _FocusEvent).relatedObject;
 	}
 
 	@:noCompletion private function set_relatedObject(value:InteractiveObject):InteractiveObject
@@ -199,7 +199,7 @@ class FocusEvent extends Event
 
 	@:noCompletion private function get_shiftKey():Bool
 	{
-		return (_ : _FocusEvent).keyCode;
+		return (_ : _FocusEvent).shiftKey;
 	}
 
 	@:noCompletion private function set_shiftKey(value:Bool):Bool

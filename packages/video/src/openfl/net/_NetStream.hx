@@ -83,15 +83,15 @@ class _NetStream extends _EventDispatcher
 
 		video.pause();
 		video.src = "";
-		parent.time = 0;
+		time = 0;
 		#end
 	}
 
 	public function dispatchStatus(code:String):Void
 	{
 		var event = new NetStatusEvent(NetStatusEvent.NET_STATUS, false, false, {code: code});
-		parent._.__connection.dispatchEvent(event);
-		parent.dispatchEvent(event);
+		__connection.dispatchEvent(event);
+		dispatchEvent(event);
 	}
 
 	public function dispose():Void
@@ -114,7 +114,7 @@ class _NetStream extends _EventDispatcher
 		#if openfl_html5
 		if (video == null) return;
 
-		video.volume = SoundMixer.soundTransform.volume * parent._.__soundTransform.volume;
+		video.volume = SoundMixer.soundTransform.volume * _.__soundTransform.volume;
 
 		if (Std.is(url, String))
 		{
@@ -131,13 +131,14 @@ class _NetStream extends _EventDispatcher
 
 	public function playStatus(code:String):Void
 	{
+		#if openfl_html5
 		if (video == null) return;
 
-		if (parent.client != null)
+		if (client != null)
 		{
 			try
 			{
-				var handler = parent.client.onPlayStatus;
+				var handler = client.onPlayStatus;
 				handler({
 					code: code,
 					duration: video.duration,
@@ -148,6 +149,7 @@ class _NetStream extends _EventDispatcher
 			}
 			catch (e:Dynamic) {}
 		}
+		#end
 	}
 
 	public function resume():Void
@@ -231,13 +233,14 @@ class _NetStream extends _EventDispatcher
 
 	public function video_onLoadMetaData(event:Dynamic):Void
 	{
+		#if openfl_html5
 		if (video == null) return;
 
-		if (parent.client != null)
+		if (client != null)
 		{
 			try
 			{
-				var handler = parent.client.onMetaData;
+				var handler = client.onMetaData;
 				handler({
 					width: video.videoWidth,
 					height: video.videoHeight,
@@ -246,6 +249,7 @@ class _NetStream extends _EventDispatcher
 			}
 			catch (e:Dynamic) {}
 		}
+		#end
 	}
 
 	public function video_onLoadStart(event:Dynamic):Void
@@ -279,9 +283,11 @@ class _NetStream extends _EventDispatcher
 
 	public function video_onTimeUpdate(event:Dynamic):Void
 	{
+		#if openfl_html5
 		if (video == null) return;
 
-		parent.time = video.currentTime;
+		time = video.currentTime;
+		#end
 
 		playStatus("NetStream.Play.timeupdate");
 	}
@@ -308,7 +314,7 @@ class _NetStream extends _EventDispatcher
 			#if openfl_html5
 			if (video != null)
 			{
-				video.volume = SoundMixer.soundTransform.volume * parent._.__soundTransform.volume;
+				video.volume = SoundMixer.soundTransform.volume * _.__soundTransform.volume;
 			}
 			#end
 		}

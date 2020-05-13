@@ -31,9 +31,9 @@ class _Video extends _DisplayObject
 	public var __stream:NetStream;
 	public var __width:Float;
 
-	public function new(width:Int = 320, height:Int = 240):Void
+	public function new(video:Video, width:Int = 320, height:Int = 240):Void
 	{
-		super();
+		super(video);
 
 		__type = VIDEO;
 
@@ -75,7 +75,7 @@ class _Video extends _DisplayObject
 	public override function __hitTest(x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool
 	{
 		if (!hitObject.visible || __isMask) return false;
-		if (mask != null && !mask._.__hitTestMask(x, y)) return false;
+		if (mask != null && !(mask._ : _DisplayObject).__hitTestMask(x, y)) return false;
 
 		__getRenderTransform();
 

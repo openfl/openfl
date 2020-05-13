@@ -526,11 +526,11 @@ class _Stage extends _DisplayObjectContainer
 
 		if (__renderer != null)
 		{
-			__renderer._.__allowSmoothing = (quality != LOW);
-			__renderer._.__worldTransform = __displayMatrix;
-			__renderer._.__stage = parent;
+			(__renderer._ : _DisplayObjectRenderer).__allowSmoothing = (quality != LOW);
+			(__renderer._ : _DisplayObjectRenderer).__worldTransform = __displayMatrix;
+			(__renderer._ : _DisplayObjectRenderer).__stage = parent;
 
-			__renderer._.__resize(windowWidth, windowHeight);
+			(__renderer._ : _DisplayObjectRenderer).__resize(windowWidth, windowHeight);
 
 			if (BitmapData._.__hardwareRenderer != null)
 			{
@@ -1720,7 +1720,7 @@ class _Stage extends _DisplayObjectContainer
 		__renderable = true;
 		if (__renderer != null)
 		{
-			__renderer._.__enterFrame(this, __deltaTime);
+			(__renderer._ : _DisplayObjectRenderer).__enterFrame(this, __deltaTime);
 		}
 		__deltaTime = 0;
 
@@ -1783,10 +1783,10 @@ class _Stage extends _DisplayObjectContainer
 			{
 				if (context3D == null)
 				{
-					__renderer._.__clear();
+					(__renderer._ : _DisplayObjectRenderer).__clear();
 				}
 
-				__renderer._.__render(this);
+					(__renderer._ : _DisplayObjectRenderer).__render(this);
 			}
 			else if (context3D == null)
 			{
@@ -1801,9 +1801,9 @@ class _Stage extends _DisplayObjectContainer
 				}
 				else
 				{
-					if (!__renderer._.__cleared)
+					if (!(__renderer._ : _DisplayObjectRenderer).__cleared)
 					{
-						__renderer._.__clear();
+						(__renderer._ : _DisplayObjectRenderer).__clear();
 					}
 
 					context3D._.__present = false;
@@ -1813,7 +1813,7 @@ class _Stage extends _DisplayObjectContainer
 				context3D._.__bitmapDataPool.cleanup();
 			}
 
-			__renderer._.__cleared = false;
+				(__renderer._ : _DisplayObjectRenderer).__cleared = false;
 
 			// TODO: Run once for multi-stage application
 			BitmapData._.__pool.cleanup();
@@ -1833,8 +1833,8 @@ class _Stage extends _DisplayObjectContainer
 		var cacheWidth = stageWidth;
 		var cacheHeight = stageHeight;
 
-		var windowWidth = return Std.int(limeWindow.width * limeWindow.scale);
-		var windowHeight = return Std.int(limeWindow.height * limeWindow.scale);
+		var windowWidth = Std.int(limeWindow.width * limeWindow.scale);
+		var windowHeight = Std.int(limeWindow.height * limeWindow.scale);
 
 		#if openfl_html5
 		__logicalWidth = windowWidth;
@@ -1894,7 +1894,7 @@ class _Stage extends _DisplayObjectContainer
 
 		if (__renderer != null)
 		{
-			__renderer._.__resize(windowWidth, windowHeight);
+			(__renderer._ : _DisplayObjectRenderer).__resize(windowWidth, windowHeight);
 		}
 
 		if (stageWidth != cacheWidth || stageHeight != cacheHeight)
@@ -2458,7 +2458,7 @@ class _Stage extends _DisplayObjectContainer
 	public function window_onRender(context:RenderContext):Void
 	{
 		#if (openfl_cairo && !display)
-		if (__renderer != null && __renderer._.__type == CAIRO)
+		if (__renderer != null && (__renderer._ : _DisplayObjectRenderer).__type == CAIRO)
 		{
 			// var renderer:CairoRenderer = cast __renderer;
 			// renderer.cairo = context.cairo;
@@ -2742,7 +2742,7 @@ class _Stage extends _DisplayObjectContainer
 
 		if (__renderer != null)
 		{
-			__renderer._.__allowSmoothing = (quality != LOW);
+			(__renderer._ : _DisplayObjectRenderer).__allowSmoothing = (quality != LOW);
 		}
 
 		return value;

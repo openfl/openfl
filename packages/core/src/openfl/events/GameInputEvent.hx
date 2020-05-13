@@ -45,14 +45,14 @@ import openfl.ui.GameInputDevice;
 
 	public override function clone():GameInputEvent
 	{
-		return _.clone();
+		return (_ : _GameInputEvent).clone();
 	}
 
 	// Get & Set Methods
 
-	@:noCompletion private static function get_device():GameInputDevice
+	@:noCompletion private function get_device():GameInputDevice
 	{
-		return _.device;
+		return (_ : _GameInputEvent).device;
 	}
 }
 #else

@@ -45,21 +45,19 @@ import openfl.display.Shader;
 #end
 class ConvolutionFilter extends BitmapFilter
 {
-	@:noCompletion private static var __convolutionShader:ConvolutionShader = new ConvolutionShader();
-
 	/**
 		The alpha transparency value of the substitute color. Valid values are
 		0 to 1.0. The default is 0. For example, .25 sets a transparency value
 		of 25%.
 	**/
-	public var alpha:Float;
+	public var alpha(get, set):Float;
 
 	/**
 		The amount of bias to add to the result of the matrix transformation.
 		The bias increases the color value of each channel, so that dark
 		colors appear brighter. The default value is 0.
 	**/
-	public var bias:Float;
+	public var bias(get, set):Float;
 
 	/**
 		Indicates whether the image should be clamped. For pixels off the
@@ -69,13 +67,13 @@ class ConvolutionFilter extends BitmapFilter
 		`false` indicates that another color should be used, as specified in
 		the `color` and `alpha` properties. The default is `true`.
 	**/
-	public var clamp:Bool;
+	public var clamp(get, set):Bool;
 
 	/**
 		The hexadecimal color to substitute for pixels that are off the source
 		image. It is an RGB value with no alpha component. The default is 0.
 	**/
-	public var color:Int;
+	public var color(get, set):Int;
 
 	/**
 		The divisor used during matrix transformation. The default value is 1.
@@ -83,7 +81,7 @@ class ConvolutionFilter extends BitmapFilter
 		overall color intensity of the result. A value of 0 is ignored and the
 		default is used instead.
 	**/
-	public var divisor:Float;
+	public var divisor(get, set):Float;
 
 	/**
 		An array of values used for matrix transformation. The number of items
@@ -147,13 +145,13 @@ class ConvolutionFilter extends BitmapFilter
 		The _x_ dimension of the matrix (the number of columns in the matrix).
 		The default value is 0.
 	**/
-	public var matrixX:Int;
+	public var matrixX(get, set):Int;
 
 	/**
 		The _y_ dimension of the matrix (the number of rows in the matrix).
 		The default value is 0.
 	**/
-	public var matrixY:Int;
+	public var matrixY(get, set):Int;
 
 	/**
 		Indicates if the alpha channel is preserved without the filter effect
@@ -163,18 +161,7 @@ class ConvolutionFilter extends BitmapFilter
 		value of `true` indicates that the convolution applies only to the
 		color channels. The default value is `true`.
 	**/
-	public var preserveAlpha:Bool;
-
-	@:noCompletion private var __matrix:Array<Float>;
-
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperties(ConvolutionFilter.prototype, {
-			"matrix": {get: untyped __js__("function () { return this.get_matrix (); }"), set: untyped __js__("function (v) { return this.set_matrix (v); }")},
-		});
-	}
-	#end
+	public var preserveAlpha(get, set):Bool;
 
 	/**
 		Initializes a ConvolutionFilter instance with the specified
@@ -212,146 +199,105 @@ class ConvolutionFilter extends BitmapFilter
 	public function new(matrixX:Int = 0, matrixY:Int = 0, matrix:Array<Float> = null, divisor:Float = 1.0, bias:Float = 0.0, preserveAlpha:Bool = true,
 			clamp:Bool = true, color:Int = 0, alpha:Float = 0.0)
 	{
+		_ = new _ConvolutionFilter(matrixX, matrixY, matrix, divisor, bias, preserveAlpha, clamp, color, alpha);
+
 		super();
-
-		this.matrixX = matrixX;
-		this.matrixY = matrixY;
-		__matrix = matrix;
-		this.divisor = divisor;
-		this.bias = bias;
-		this.preserveAlpha = preserveAlpha;
-		this.clamp = clamp;
-		this.color = color;
-		this.alpha = alpha;
-
-		__numShaderPasses = 1;
 	}
 
-	public override function clone():BitmapFilter
+	public override function clone():ConvolutionFilter
 	{
-		return new ConvolutionFilter(matrixX, matrixY, __matrix, divisor, bias, preserveAlpha, clamp, color, alpha);
-	}
-
-	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int, sourceBitmapData:BitmapData):Shader
-	{
-		#if (!macro && openfl_gl)
-		__convolutionShader.uConvoMatrix.value = matrix;
-		__convolutionShader.uDivisor.value[0] = divisor;
-		__convolutionShader.uBias.value[0] = bias;
-		__convolutionShader.uPreserveAlpha.value[0] = preserveAlpha;
-		#end
-
-		return __convolutionShader;
+		return (_ : _ConvolutionFilter).clone();
 	}
 
 	// Get & Set Methods
+	@:noCompletion private function get_alpha():Float
+	{
+		return (_ : _ConvolutionFilter).alpha;
+	}
+
+	@:noCompletion private function set_alpha(value:Float):Float
+	{
+		return (_ : _ConvolutionFilter).alpha = value;
+	}
+
+	@:noCompletion private function get_bias():Float
+	{
+		return (_ : _ConvolutionFilter).bias;
+	}
+
+	@:noCompletion private function set_bias(value:Float):Float
+	{
+		return (_ : _ConvolutionFilter).bias = value;
+	}
+
+	@:noCompletion private function get_clamp():Bool
+	{
+		return (_ : _ConvolutionFilter).clamp;
+	}
+
+	@:noCompletion private function set_clamp(value:Bool):Bool
+	{
+		return (_ : _ConvolutionFilter).clamp = value;
+	}
+
+	@:noCompletion private function get_color():Int
+	{
+		return (_ : _ConvolutionFilter).color;
+	}
+
+	@:noCompletion private function set_color(value:Int):Int
+	{
+		return (_ : _ConvolutionFilter).color = value;
+	}
+
+	@:noCompletion private function get_divisor():Float
+	{
+		return (_ : _ConvolutionFilter).divisor;
+	}
+
+	@:noCompletion private function set_divisor(value:Float):Float
+	{
+		return (_ : _ConvolutionFilter).divisor = value;
+	}
+
 	@:noCompletion private function get_matrix():Array<Float>
 	{
-		return __matrix;
+		return (_ : _ConvolutionFilter).matrix;
 	}
 
 	@:noCompletion private function set_matrix(v:Array<Float>):Array<Float>
 	{
-		if (v == null)
-		{
-			v = [0, 0, 0, 0, 1, 0, 0, 0, 0];
-		}
-
-		if (v.length != 9)
-		{
-			throw "Only a 3x3 matrix is supported";
-		}
-
-		return __matrix = v;
+		return (_ : _ConvolutionFilter).matrix = value;
 	}
-}
 
-#if !openfl_debug
-@:fileXml('tags="haxe,release"')
-@:noDebug
-#end
-private class ConvolutionShader extends BitmapFilterShader
-{
-	@:glFragmentSource("varying vec2 vBlurCoords[9];
-
-		uniform sampler2D openfl_Texture;
-
-		uniform float uBias;
-		uniform mat3 uConvoMatrix;
-		uniform float uDivisor;
-		uniform bool uPreserveAlpha;
-
-		void main(void) {
-
-			vec4 tc = texture2D (openfl_Texture, vBlurCoords[4]);
-			vec4 c = vec4 (0.0);
-
-			c += texture2D (openfl_Texture, vBlurCoords[0]) * uConvoMatrix[0][0];
-			c += texture2D (openfl_Texture, vBlurCoords[1]) * uConvoMatrix[0][1];
-			c += texture2D (openfl_Texture, vBlurCoords[2]) * uConvoMatrix[0][2];
-
-			c += texture2D (openfl_Texture, vBlurCoords[3]) * uConvoMatrix[1][0];
-			c += tc * uConvoMatrix[1][1];
-			c += texture2D (openfl_Texture, vBlurCoords[5]) * uConvoMatrix[1][2];
-
-			c += texture2D (openfl_Texture, vBlurCoords[6]) * uConvoMatrix[2][0];
-			c += texture2D (openfl_Texture, vBlurCoords[7]) * uConvoMatrix[2][1];
-			c += texture2D (openfl_Texture, vBlurCoords[8]) * uConvoMatrix[2][2];
-
-			if (uDivisor > 0.0) {
-
-				c /= vec4 (uDivisor, uDivisor, uDivisor, uDivisor);
-
-			}
-
-			c += vec4 (uBias, uBias, uBias, uBias);
-
-			if (uPreserveAlpha) {
-
-				c.a = tc.a;
-
-			}
-
-			gl_FragColor = c;
-
-		}")
-	@:glVertexSource("attribute vec4 openfl_Position;
-		attribute vec2 openfl_TextureCoord;
-
-		varying vec2 vBlurCoords[9];
-
-		uniform mat4 openfl_Matrix;
-		uniform vec2 openfl_TextureSize;
-
-		void main(void) {
-
-			vec2 r = vec2 (1.0, 1.0) / openfl_TextureSize;
-			vec2 t = openfl_TextureCoord;
-
-			vBlurCoords[0] = t + r * vec2 (-1.0, -1.0);
-			vBlurCoords[1] = t + r * vec2 (0.0, -1.0);
-			vBlurCoords[2] = t + r * vec2 (1.0, -1.0);
-
-			vBlurCoords[3] = t + r * vec2 (-1.0, 0.0);
-			vBlurCoords[4] = t;
-			vBlurCoords[5] = t + r * vec2 (1.0, 0.0);
-
-			vBlurCoords[6] = t + r * vec2 (-1.0, 1.0);
-			vBlurCoords[7] = t + r * vec2 (0.0, 1.0);
-			vBlurCoords[8] = t + r * vec2 (1.0, 1.0);
-
-			gl_Position = openfl_Matrix * openfl_Position;
-
-		}")
-	public function new()
+	@:noCompletion private function get_matrixX():Int
 	{
-		super();
+		return (_ : _ConvolutionFilter).matrixX;
+	}
 
-		#if (!macro && openfl_gl)
-		uDivisor.value = [1];
-		uBias.value = [0];
-		uPreserveAlpha.value = [true];
-		#end
+	@:noCompletion private function set_matrixX(value:Int):Int
+	{
+		return (_ : _ConvolutionFilter).matrixX = value;
+	}
+
+	@:noCompletion private function get_matrixY():Int
+	{
+		return (_ : _ConvolutionFilter).matrixY;
+	}
+
+	@:noCompletion private function set_matrixY(value:Int):Int
+	{
+		return (_ : _ConvolutionFilter).matrixY = value;
+	}
+
+	@:noCompletion private function get_preserveAlpha():Bool
+	{
+		return (_ : _ConvolutionFilter).preserveAlpha;
+	}
+
+	@:noCompletion private function set_preserveAlpha(value:Bool):Bool
+	{
+		return (_ : _ConvolutionFilter).preserveAlpha = value;
 	}
 }
 #else

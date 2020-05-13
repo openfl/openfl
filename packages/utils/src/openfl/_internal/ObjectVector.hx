@@ -43,9 +43,9 @@ class ObjectVector<T> implements IVector<T>
 		{
 			var other:ObjectVector<Dynamic> = cast a;
 
-			if (other._.__array.length > 0)
+			if (other.__array.length > 0)
 			{
-				return new ObjectVector(0, false, __array.concat(cast other._.__array));
+				return new ObjectVector(0, false, __array.concat(cast other.__array));
 			}
 			else
 			{

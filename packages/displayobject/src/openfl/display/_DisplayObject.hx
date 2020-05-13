@@ -15,6 +15,7 @@ import openfl.events.MouseEvent;
 import openfl.events.RenderEvent;
 import openfl.events.TouchEvent;
 import openfl.filters.BitmapFilter;
+import openfl.filters._BitmapFilter;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom._Matrix;
@@ -452,7 +453,7 @@ class _DisplayObject extends _EventDispatcher
 				_event.target = this_displayObject;
 			}
 
-			(parent._:_DisplayObject).__dispatchEvent(event);
+			((parent._ : _DisplayObject):_DisplayObject).__dispatchEvent(event);
 		}
 
 		return result;
@@ -472,7 +473,7 @@ class _DisplayObject extends _EventDispatcher
 
 			if (parent == stage)
 			{
-				(parent._:_DisplayObject).__dispatch(event);
+				((parent._ : _DisplayObject):_DisplayObject).__dispatch(event);
 			}
 			else
 			{
@@ -524,11 +525,11 @@ class _DisplayObject extends _EventDispatcher
 
 			for (filter in __filters)
 			{
-				extension._.__expand(-filter._.__leftExtension,
-					-filter._.__topExtension, filter._.__leftExtension
-					+ filter._.__rightExtension,
-					filter._.__topExtension
-					+ filter._.__bottomExtension);
+				extension._.__expand(-(filter._ : _BitmapFilter).__leftExtension,
+					-(filter._ : _BitmapFilter).__topExtension, (filter._ : _BitmapFilter).__leftExtension
+					+ (filter._ : _BitmapFilter).__rightExtension,
+					(filter._ : _BitmapFilter).__topExtension
+					+ (filter._ : _BitmapFilter).__bottomExtension);
 			}
 
 			rect.width += extension.width;
@@ -601,7 +602,7 @@ class _DisplayObject extends _EventDispatcher
 			var renderParent = __renderParent != null ? __renderParent : parent;
 			if (__isMask && renderParent == null) renderParent = __maskTarget;
 
-			if (parent == null || (!parent._.__transformDirty && !renderParent._.__transformDirty))
+			if (parent == null || (!(parent._ : _DisplayObject).__transformDirty && !(renderParent._ : _DisplayObject).__transformDirty))
 			{
 				__update(true, false);
 			}
@@ -610,7 +611,7 @@ class _DisplayObject extends _EventDispatcher
 				var list = [];
 				var current = this_displayObject;
 
-				while (current != stage && current._.__transformDirty)
+				while (current != stage && (current._ : _DisplayObject).__transformDirty)
 				{
 					list.push(current);
 					current = current.parent;
@@ -622,7 +623,7 @@ class _DisplayObject extends _EventDispatcher
 				while (--i >= 0)
 				{
 					current = list[i];
-					current._.__update(true, false);
+					(current._ : _DisplayObject).__update(true, false);
 				}
 			}
 		}
@@ -687,13 +688,13 @@ class _DisplayObject extends _EventDispatcher
 	public function __setParentRenderDirty():Void
 	{
 		var renderParent = __renderParent != null ? __renderParent : parent;
-		if (renderParent != null && !(renderParent._:_DisplayObject).__renderDirty)
+		if (renderParent != null && !((renderParent._ : _DisplayObject):_DisplayObject).__renderDirty)
 		{
 			// TODO: Use separate method? Based on transform, not render change
-			(renderParent._:_DisplayObject).__localBoundsDirty = true;
+			((renderParent._ : _DisplayObject):_DisplayObject).__localBoundsDirty = true;
 
-			(renderParent._:_DisplayObject).__renderDirty = true;
-			(renderParent._:_DisplayObject).__setParentRenderDirty();
+			((renderParent._ : _DisplayObject):_DisplayObject).__renderDirty = true;
+			((renderParent._ : _DisplayObject):_DisplayObject).__setParentRenderDirty();
 		}
 	}
 
@@ -748,7 +749,7 @@ class _DisplayObject extends _EventDispatcher
 	{
 		var renderParent = __renderParent != null ? __renderParent : parent;
 		if (__isMask && renderParent == null) renderParent = __maskTarget;
-		__renderable = (__visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent._.__isMask));
+		__renderable = (__visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !(renderParent._ : _DisplayObject).__isMask));
 
 		#if openfl_validate_update
 		if (!__transformDirty)
@@ -756,7 +757,7 @@ class _DisplayObject extends _EventDispatcher
 			if (parent != null)
 			{
 				var mat = new Matrix();
-				__calculateAbsoluteTransform(__transform, parent._.__worldTransform, mat);
+				__calculateAbsoluteTransform(__transform, (parent._ : _DisplayObject).__worldTransform, mat);
 				if (!__worldTransform.equals(mat))
 				{
 					trace("[" + Type.getClassName(Type.getClass(this_displayObject)) + "] worldTransform cache miss detected");
@@ -777,7 +778,7 @@ class _DisplayObject extends _EventDispatcher
 			if (renderParent != null)
 			{
 				var mat = new Matrix();
-				__calculateAbsoluteTransform(__transform, renderParent._.__renderTransform, mat);
+				__calculateAbsoluteTransform(__transform, (renderParent._ : _DisplayObject).__renderTransform, mat);
 				if (Std.is(this_displayObject, openfl.text.TextField))
 				{
 					mat._.__translateTransformed(@:privateAccess cast(this_displayObject, openfl.text.TextField)._.__offsetX, @:privateAccess cast(this_displayObject, openfl.text.TextField)
@@ -823,7 +824,7 @@ class _DisplayObject extends _EventDispatcher
 
 			if (parent != null)
 			{
-				__calculateAbsoluteTransform(__transform, parent._.__worldTransform, __worldTransform);
+				__calculateAbsoluteTransform(__transform, (parent._ : _DisplayObject).__worldTransform, __worldTransform);
 			}
 			else
 			{
@@ -832,7 +833,7 @@ class _DisplayObject extends _EventDispatcher
 
 			if (renderParent != null)
 			{
-				__calculateAbsoluteTransform(__transform, renderParent._.__renderTransform, __renderTransform);
+				__calculateAbsoluteTransform(__transform, (renderParent._ : _DisplayObject).__renderTransform, __renderTransform);
 			}
 			else
 			{
@@ -851,7 +852,7 @@ class _DisplayObject extends _EventDispatcher
 		{
 			if (__supportDOM)
 			{
-				__renderTransformChanged = !__renderTransform.equals(__renderTransformCache);
+				__renderTransformChanged = !__renderTransform._.equals(__renderTransformCache);
 
 				if (__renderTransformCache == null)
 				{
@@ -867,33 +868,33 @@ class _DisplayObject extends _EventDispatcher
 			{
 				if (__supportDOM)
 				{
-					var worldVisible = (renderParent._.__worldVisible && __visible);
+					var worldVisible = ((renderParent._ : _DisplayObject).__worldVisible && __visible);
 					__worldVisibleChanged = (__worldVisible != worldVisible);
 					__worldVisible = worldVisible;
 
-					var worldAlpha = alpha * renderParent._.__worldAlpha;
+					var worldAlpha = alpha * (renderParent._ : _DisplayObject).__worldAlpha;
 					__worldAlphaChanged = (__worldAlpha != worldAlpha);
 					__worldAlpha = worldAlpha;
 				}
 				else
 				{
-					__worldAlpha = alpha * renderParent._.__worldAlpha;
+					__worldAlpha = alpha * (renderParent._ : _DisplayObject).__worldAlpha;
 				}
 
 				if (__objectTransform != null)
 				{
 					__worldColorTransform._.__copyFrom(__objectTransform.colorTransform);
-					__worldColorTransform._.__combine(renderParent._.__worldColorTransform);
+					__worldColorTransform._.__combine((renderParent._ : _DisplayObject).__worldColorTransform);
 				}
 				else
 				{
-					__worldColorTransform._.__copyFrom(renderParent._.__worldColorTransform);
+					__worldColorTransform._.__copyFrom((renderParent._ : _DisplayObject).__worldColorTransform);
 				}
 
 				if (__blendMode == null || __blendMode == NORMAL)
 				{
 					// TODO: Handle multiple blend modes better
-					__worldBlendMode = renderParent._.__worldBlendMode;
+					__worldBlendMode = (renderParent._ : _DisplayObject).__worldBlendMode;
 				}
 				else
 				{
@@ -902,7 +903,7 @@ class _DisplayObject extends _EventDispatcher
 
 				if (__shader == null)
 				{
-					__worldShader = renderParent._.__shader;
+					__worldShader = (renderParent._ : _DisplayObject).__shader;
 				}
 				else
 				{
@@ -911,7 +912,7 @@ class _DisplayObject extends _EventDispatcher
 
 				if (__scale9Grid == null)
 				{
-					__worldScale9Grid = renderParent._.__scale9Grid;
+					__worldScale9Grid = (renderParent._ : _DisplayObject).__scale9Grid;
 				}
 				else
 				{
@@ -948,7 +949,7 @@ class _DisplayObject extends _EventDispatcher
 		// TODO: Flatten
 		if (updateChildren && mask != null)
 		{
-			mask._.__update(transformOnly, true);
+			(mask._:_DisplayObject).__update(transformOnly, true);
 		}
 	}
 
@@ -1071,7 +1072,7 @@ class _DisplayObject extends _EventDispatcher
 	{
 		if (stage != null)
 		{
-			return Lib.current._.__loaderInfo;
+			return (Lib.current._ : _DisplayObject).__loaderInfo;
 		}
 
 		return null;

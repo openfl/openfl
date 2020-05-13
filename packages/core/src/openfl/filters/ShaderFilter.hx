@@ -56,7 +56,7 @@ import openfl.display.Shader;
 class ShaderFilter extends BitmapFilter
 {
 	@:dox(hide) @:noCompletion @:beta @SuppressWarnings("checkstyle:FieldDocComment")
-	public var blendMode:BlendMode;
+	public var blendMode(get, set):BlendMode;
 
 	/**
 		The growth in pixels on the bottom side of the target object.
@@ -68,7 +68,7 @@ class ShaderFilter extends BitmapFilter
 
 		@default 0
 	**/
-	public var bottomExtension:Int;
+	public var bottomExtension(get, set):Int;
 
 	/**
 		The growth in pixels on the left side of the target object.
@@ -80,7 +80,7 @@ class ShaderFilter extends BitmapFilter
 
 		@default 0
 	**/
-	public var leftExtension:Int;
+	public var leftExtension(get, set):Int;
 
 	/**
 		The growth in pixels on the right side of the target object.
@@ -92,7 +92,7 @@ class ShaderFilter extends BitmapFilter
 
 		@default 0
 	**/
-	public var rightExtension:Int;
+	public var rightExtension(get, set):Int;
 
 	/**
 		The shader to use for this filter.
@@ -115,7 +115,7 @@ class ShaderFilter extends BitmapFilter
 		the display object's `filters` property in order to apply filter
 		changes.
 	**/
-	public var shader:Shader;
+	public var shader(get, set):Shader;
 
 	/**
 		The growth in pixels on the top side of the target object.
@@ -127,7 +127,7 @@ class ShaderFilter extends BitmapFilter
 
 		@default 0
 	**/
-	public var topExtension:Int;
+	public var topExtension(get, set):Int;
 
 	/**
 		Creates a new shader filter.
@@ -138,32 +138,81 @@ class ShaderFilter extends BitmapFilter
 	**/
 	public function new(shader:Shader)
 	{
+		_ = new _ShaderFilter(shader);
+
 		super();
-
-		this.shader = shader;
-
-		__numShaderPasses = 1;
 	}
 
-	public override function clone():BitmapFilter
+	public override function clone():ShaderFilter
 	{
-		var filter = new ShaderFilter(shader);
-		filter.bottomExtension = bottomExtension;
-		filter.leftExtension = leftExtension;
-		filter.rightExtension = rightExtension;
-		filter.topExtension = topExtension;
-		return filter;
+		return (_ : _ShaderFilter).clone();
 	}
 
 	public function invalidate():Void
 	{
-		__renderDirty = true;
+		(_ : _ShaderFilter).invalidate();
 	}
 
-	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int, sourceBitmapData:BitmapData):Shader
+	// Get & Set Methods
+
+	@:noCompletion private function get_blendMode():BlendMode
 	{
-		__shaderBlendMode = blendMode;
-		return shader;
+		return (_ : _ShaderFilter).blendMode;
+	}
+
+	@:noCompletion private function set_blendMode(value:BlendMode):BlendMode
+	{
+		return (_ : _ShaderFilter).blendMode = value;
+	}
+
+	@:noCompletion private function get_bottomExtension():Int
+	{
+		return (_ : _ShaderFilter).bottomExtension;
+	}
+
+	@:noCompletion private function set_bottomExtension(value:Int):Int
+	{
+		return (_ : _ShaderFilter).bottomExtension = value;
+	}
+
+	@:noCompletion private function get_leftExtension():Int
+	{
+		return (_ : _ShaderFilter).leftExtension;
+	}
+
+	@:noCompletion private function set_leftExtension(value:Int):Int
+	{
+		return (_ : _ShaderFilter).leftExtension = value;
+	}
+
+	@:noCompletion private function get_rightExtension():Int
+	{
+		return (_ : _ShaderFilter).rightExtension;
+	}
+
+	@:noCompletion private function set_rightExtension(value:Int):Int
+	{
+		return (_ : _ShaderFilter).rightExtension = value;
+	}
+
+	@:noCompletion private function get_shader():Shader
+	{
+		return (_ : _ShaderFilter).shader;
+	}
+
+	@:noCompletion private function set_shader(value:Shader):Shader
+	{
+		return (_ : _ShaderFilter).shader = value;
+	}
+
+	@:noCompletion private function get_topExtension():Int
+	{
+		return (_ : _ShaderFilter).topExtension;
+	}
+
+	@:noCompletion private function set_topExtension(value:Int):Int
+	{
+		return (_ : _ShaderFilter).topExtension = value;
 	}
 }
 #else

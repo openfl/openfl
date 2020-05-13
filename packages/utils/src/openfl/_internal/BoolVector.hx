@@ -34,9 +34,9 @@ class BoolVector implements IVector<Bool>
 		{
 			var other:BoolVector = cast a;
 
-			if (other._.__array.length > 0)
+			if (other.__array.length > 0)
 			{
-				return new BoolVector(0, false, __array.concat(other._.__array));
+				return new BoolVector(0, false, __array.concat(other.__array));
 			}
 			else
 			{

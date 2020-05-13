@@ -122,10 +122,7 @@ class NetStatusEvent extends Event
 		If you consistently see errors regarding the buffer, try changing the
 		buffer using the `NetStream.bufferTime` property.
 	**/
-	public var info:Dynamic;
-
-	@:noCompletion private static var __pool:ObjectPool<NetStatusEvent> = new ObjectPool<NetStatusEvent>(function() return new NetStatusEvent(null),
-	function(event) event.__init());
+	public var info(get, set):Dynamic;
 
 	/**
 		Creates an Event object that contains information about `netStatus`
@@ -148,29 +145,29 @@ class NetStatusEvent extends Event
 	**/
 	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false, info:Dynamic = null):Void
 	{
-		this.info = info;
+		if (_ == null)
+		{
+			_ = new _NetStatusEvent(type, bubbles, cancelable, info);
+		}
 
 		super(type, bubbles, cancelable);
 	}
 
 	public override function clone():NetStatusEvent
 	{
-		var event = new NetStatusEvent(type, bubbles, cancelable, info);
-		event.target = target;
-		event.currentTarget = currentTarget;
-		event.eventPhase = eventPhase;
-		return event;
+		return (_ : _NetStatusEvent).clone();
 	}
 
-	public override function toString():String
+	// Get & Set Methods
+
+	@:noCompletion private function get_info():Dynamic
 	{
-		return __formatToString("NetStatusEvent", ["type", "bubbles", "cancelable", "info"]);
+		return (_ : _NetStatusEvent).info;
 	}
 
-	@:noCompletion private override function __init():Void
+	@:noCompletion private function set_info(value:Dynamic):Dynamic
 	{
-		super.__init();
-		info = null;
+		return (_ : _NetStatusEvent).info = value;
 	}
 }
 #else

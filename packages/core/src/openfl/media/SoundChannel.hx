@@ -66,39 +66,39 @@ import openfl.events.EventDispatcher;
 	**/
 	public function stop():Void
 	{
-		_.stop();
+		(_ : _SoundChannel).stop();
 	}
 
 	// Get & Set Methods
 
 	@:noCompletion private function get_leftPeak():Float
 	{
-		return _.leftPeak;
+		return (_ : _SoundChannel).leftPeak;
 	}
 
 	@:noCompletion private function get_position():Float
 	{
-		return _.position;
+		return (_ : _SoundChannel).position;
 	}
 
 	@:noCompletion private function set_position(value:Float):Float
 	{
-		return _.position = value;
+		return (_ : _SoundChannel).position = value;
 	}
 
 	@:noCompletion private function get_rightPeak():Float
 	{
-		return _.rightPeak;
+		return (_ : _SoundChannel).rightPeak;
 	}
 
 	@:noCompletion private function get_soundTransform():SoundTransform
 	{
-		return _.soundTransform;
+		return (_ : _SoundChannel).soundTransform;
 	}
 
 	@:noCompletion private function set_soundTransform(value:SoundTransform):SoundTransform
 	{
-		return _.soundTransform = value;
+		return (_ : _SoundChannel).soundTransform = value;
 	}
 }
 #else

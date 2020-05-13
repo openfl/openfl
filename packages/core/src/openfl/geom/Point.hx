@@ -103,7 +103,7 @@ class Point
 	**/
 	public static function distance(pt1:Point, pt2:Point):Float
 	{
-		return (_ : _Point).distance(pt1, pt2);
+		return _Point.distance(pt1, pt2);
 	}
 
 	/**
@@ -140,7 +140,7 @@ class Point
 	**/
 	public static function interpolate(pt1:Point, pt2:Point, f:Float):Point
 	{
-		return (_ : _Point).interpolate(pt1, pt2, f);
+		return _Point.interpolate(pt1, pt2, f);
 	}
 
 	/**
@@ -181,7 +181,7 @@ class Point
 	**/
 	public static function polar(len:Float, angle:Float):Point
 	{
-		return (_ : _Point).polar(len, angle);
+		return _Point.polar(len, angle);
 	}
 
 	/**

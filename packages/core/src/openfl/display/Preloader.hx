@@ -40,7 +40,7 @@ class Preloader
 		ready = true;
 
 		#if !flash
-		Lib.current.loaderInfo.__complete();
+		(Lib.current.loaderInfo._ : _LoaderInfo).__complete();
 		#end
 
 		if (display != null)
@@ -66,7 +66,7 @@ class Preloader
 	@:noCompletion private function update(loaded:Int, total:Int):Void
 	{
 		#if !flash
-		Lib.current.loaderInfo.__update(loaded, total);
+		(Lib.current.loaderInfo._ : _LoaderInfo).__update(loaded, total);
 		#end
 
 		if (display != null)

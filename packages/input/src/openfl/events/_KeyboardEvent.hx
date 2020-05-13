@@ -19,8 +19,10 @@ class _KeyboardEvent extends _Event
 	public var keyLocation:KeyLocation;
 	public var shiftKey:Bool;
 
-	public static var __pool:ObjectPool<KeyboardEvent> = new ObjectPool<KeyboardEvent>(function() return new KeyboardEvent(null),
-		function(event) event._.__init());
+	public static var __pool:ObjectPool<KeyboardEvent> = new ObjectPool<KeyboardEvent>(function() return new KeyboardEvent(null), function(event)
+	{
+		(event._ : _KeyboardEvent).__init();
+	});
 
 	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false, charCodeValue:Int = 0, keyCodeValue:Int = 0,
 			keyLocationValue:KeyLocation = null, ctrlKeyValue:Bool = false, altKeyValue:Bool = false, shiftKeyValue:Bool = false,
@@ -46,9 +48,9 @@ class _KeyboardEvent extends _Event
 		var event = new KeyboardEvent(type, bubbles, cancelable, charCode, keyCode, keyLocation, ctrlKey, altKey, shiftKey
 			#if !openfl_doc_gen, controlKey, commandKey #end);
 
-		event.target = target;
-		event.currentTarget = currentTarget;
-		event.eventPhase = eventPhase;
+		(event._ : _Event).target = target;
+		(event._ : _Event).currentTarget = currentTarget;
+		(event._ : _Event).eventPhase = eventPhase;
 		return event;
 	}
 
@@ -69,7 +71,7 @@ class _KeyboardEvent extends _Event
 
 	public override function __init():Void
 	{
-		super._.__init();
+		super.__init();
 		charCode = 0;
 		keyCode = 0;
 		keyLocation = STANDARD;

@@ -23,6 +23,8 @@ import openfl._internal.backend.lime_standalone.BytePointer;
 #end
 import openfl._internal.renderer.SamplerState;
 import openfl.utils.ByteArray;
+import openfl._internal.renderer.SamplerState;
+import openfl.utils.ByteArray;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -59,6 +61,11 @@ class _Program3D
 
 	public function new(context3D:Context3D, format:Context3DProgramFormat)
 	{
+		__context = context3D;
+		__format = format;
+
+		__samplerStates = new Array<SamplerState>();
+
 		__context = context3D;
 		__format = format;
 
@@ -244,12 +251,12 @@ class _Program3D
 		}
 	}
 
-	private function __getSamplerState(sampler:Int):SamplerState
+	public function __getSamplerState(sampler:Int):SamplerState
 	{
 		return __samplerStates[sampler];
 	}
 
-	private function __markDirty(isVertex:Bool, index:Int, count:Int):Void
+	public function __markDirty(isVertex:Bool, index:Int, count:Int):Void
 	{
 		if (__format != AGAL) return;
 
@@ -263,7 +270,7 @@ class _Program3D
 		}
 	}
 
-	private function __setSamplerState(sampler:Int, state:SamplerState):Void
+	public function __setSamplerState(sampler:Int, state:SamplerState):Void
 	{
 		__samplerStates[sampler] = state;
 	}

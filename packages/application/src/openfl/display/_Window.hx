@@ -38,14 +38,14 @@ class _Window
 		{
 			try
 			{
-				parent.stage.loaderInfo.parameters = attributes.parameters;
+				(parent.stage.loaderInfo._ : _LoaderInfo).parameters = attributes.parameters;
 			}
 			catch (e:Dynamic) {}
 		}
 
 		if (Reflect.hasField(attributes, "resizable") && !attributes.resizable)
 		{
-			parent.stage._.__setLogicalSize(attributes.width, attributes.height);
+			(parent.stage._ : _Stage).__setLogicalSize(attributes.width, attributes.height);
 		}
 
 		parent.application.addModule(parent.stage);

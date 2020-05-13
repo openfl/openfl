@@ -1117,7 +1117,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function setSamplerStateAt(sampler:Int, wrap:Context3DWrapMode, filter:Context3DTextureFilter, mipfilter:Context3DMipFilter):Void
 	{
-		(_ : _Context3D).setSamplerStateAt(sampler, wrap, filter, mipFilter);
+		(_ : _Context3D).setSamplerStateAt(sampler, wrap, filter, mipfilter);
 	}
 
 	/**

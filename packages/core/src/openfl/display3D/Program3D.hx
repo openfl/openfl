@@ -38,18 +38,9 @@ import openfl.utils.ByteArray;
 {
 	@:allow(openfl) @:noCompletion private var _:_Program3D;
 
-	@:noCompletion private var __context:Context3D;
-	@:noCompletion private var __format:Context3DProgramFormat;
-	@:noCompletion private var __samplerStates:Array<SamplerState>;
-
 	@:allow(openfl) @:noCompletion private function new(context3D:Context3D, format:Context3DProgramFormat)
 	{
-		__context = context3D;
-		__format = format;
-
-		__samplerStates = new Array<SamplerState>();
-
-		_ = new _Program3D(this);
+		_ = new _Program3D(context3D, format);
 	}
 
 	/**
@@ -71,27 +62,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function getAttributeIndex(name:String):Int
 	{
-		switch (__format)
-		{
-			case AGAL:
-				// TODO: Validate that it exists in the current program
-				if (StringTools.startsWith(name, "va"))
-				{
-					return Std.parseInt(name.substring(2));
-				}
-				else
-				{
-					return -1;
-				}
-
-			#if openfl_gl
-			case GLSL:
-				return _.getGLSLAttributeIndex(name);
-			#end
-
-			default:
-				return -1;
-		}
+		return _.getAttributeIndex(name);
 	}
 
 	/**
@@ -104,31 +75,7 @@ import openfl.utils.ByteArray;
 	**/
 	public function getConstantIndex(name:String):Int
 	{
-		switch (__format)
-		{
-			case AGAL:
-				// TODO: Validate that it exists in the current program
-				if (StringTools.startsWith(name, "vc"))
-				{
-					return Std.parseInt(name.substring(2));
-				}
-				else if (StringTools.startsWith(name, "fc"))
-				{
-					return Std.parseInt(name.substring(2));
-				}
-				else
-				{
-					return -1;
-				}
-
-			#if openfl_gl
-			case GLSL:
-				return _.getGLSLConstantIndex(name);
-			#end
-
-			default:
-				return -1;
-		}
+		return _.getConstantIndex(name);
 	}
 
 	/**
@@ -343,21 +290,6 @@ import openfl.utils.ByteArray;
 	public function uploadSources(vertexSource:String, fragmentSource:String):Void
 	{
 		_.uploadSources(vertexSource, fragmentSource);
-	}
-
-	@:noCompletion private function __getSamplerState(sampler:Int):SamplerState
-	{
-		return __samplerStates[sampler];
-	}
-
-	@:noCompletion private function __markDirty(isVertex:Bool, index:Int, count:Int):Void
-	{
-		_.markDirty(isVertex, index, count);
-	}
-
-	private function __setSamplerState(sampler:Int, state:SamplerState):Void
-	{
-		__samplerStates[sampler] = state;
 	}
 }
 #else

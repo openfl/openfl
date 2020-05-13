@@ -34,9 +34,9 @@ class IntVector implements IVector<Int>
 		{
 			var other:IntVector = cast a;
 
-			if (other._.__array.length > 0)
+			if (other.__array.length > 0)
 			{
-				return new IntVector(0, false, __array.concat(other._.__array));
+				return new IntVector(0, false, __array.concat(other.__array));
 			}
 			else
 			{

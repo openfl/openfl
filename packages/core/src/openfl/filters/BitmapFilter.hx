@@ -24,7 +24,7 @@ import openfl.geom.Rectangle;
 #end
 class BitmapFilter
 {
-	@:allow(openfl) @:noCompletion private var _:_BitmapFilter;
+	@:allow(openfl) @:noCompletion private var _:Any;
 
 	public function new()
 	{
@@ -42,7 +42,7 @@ class BitmapFilter
 	**/
 	public function clone():BitmapFilter
 	{
-		return _.clone();
+		return (_ : _BitmapFilter).clone();
 	}
 }
 #else

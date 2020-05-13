@@ -94,7 +94,7 @@ import openfl.utils.ByteArray;
 		return _.enabled;
 	}
 
-	@:noCompletion private function get_enabled(value:Bool):Bool
+	@:noCompletion private function set_enabled(value:Bool):Bool
 	{
 		return _.enabled = value;
 	}

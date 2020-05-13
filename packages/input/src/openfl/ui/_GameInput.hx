@@ -2,6 +2,7 @@ package openfl.ui;
 
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
+import openfl.events._EventDispatcher;
 import openfl.events.EventType;
 import openfl.events.GameInputEvent;
 

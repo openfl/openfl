@@ -12,6 +12,7 @@ import openfl.display3D.Context3D;
 import openfl.display3D.Context3DMipFilter;
 import openfl.display.BitmapData;
 import openfl.errors.Error;
+import openfl.events._EventDispatcher;
 import openfl._internal.utils.Log;
 #if lime
 import lime._internal.graphics.ImageCanvasUtil;
@@ -35,7 +36,6 @@ class _TextureBase extends _EventDispatcher
 	public static var glTextureInternalFormat:Int;
 
 	public var alphaTexture:TextureBase;
-	public var baseParent:TextureBase;
 	// public var compressedMemoryUsage:Int;
 	// public var context:Context3D;
 	public var contextBackend:_Context3D;
@@ -71,14 +71,13 @@ class _TextureBase extends _EventDispatcher
 		__optimizeForRenderToTexture = optimizeForRenderToTexture;
 		__streamingLevels = streamingLevels;
 
-		baseParent = parent;
 		contextBackend = __context._;
 		gl = contextBackend.gl;
 		// textureTarget = target;
 
 		glTextureID = gl.createTexture();
 
-		if (Context3D._.__supportsBGRA == null)
+		if (_Context3D.__supportsBGRA == null)
 		{
 			glTextureInternalFormat = GL.RGBA;
 
@@ -91,7 +90,7 @@ class _TextureBase extends _EventDispatcher
 
 			if (bgraExtension != null)
 			{
-				Context3D._.__supportsBGRA = true;
+				_Context3D.__supportsBGRA = true;
 				glTextureFormat = bgraExtension.BGRA_EXT;
 
 				#if (lime && !ios && !tvos)
@@ -103,7 +102,7 @@ class _TextureBase extends _EventDispatcher
 			}
 			else
 			{
-				Context3D._.__supportsBGRA = false;
+				_Context3D.__supportsBGRA = false;
 				glTextureFormat = GL.RGBA;
 			}
 

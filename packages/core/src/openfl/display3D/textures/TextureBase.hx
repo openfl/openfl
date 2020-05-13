@@ -32,7 +32,7 @@ class TextureBase extends EventDispatcher
 	**/
 	public function dispose():Void
 	{
-		_.dispose();
+		(_ : _TextureBase).dispose();
 	}
 }
 #else

@@ -25,6 +25,7 @@ import openfl.ui.MouseCursor;
 #if lime
 import lime.app.Application;
 import lime.app.IModule;
+import lime.ui.Window as LimeWindow;
 #end
 #if openfl_html5
 import js.html.Element;
@@ -780,9 +781,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	#if lime
 	@:noCompletion @:dox(hide) @SuppressWarnings("checkstyle:FieldDocComment")
 	@:deprecated("Stage.window is deprecated. Use Stage.limeWindow instead.")
-	public var window(get, never):Window;
+	public var window(get, never):LimeWindow;
 
-	@:noCompletion private inline function get_window():Window
+	@:noCompletion private inline function get_window():LimeWindow
 	{
 		return (_ : _Stage).limeWindow;
 	}

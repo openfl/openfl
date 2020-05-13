@@ -29,8 +29,8 @@ class _Application
 
 		#if (!flash && !macro)
 		if (Lib.current == null) Lib.current = new MovieClip();
-		Lib.current._.__loaderInfo = LoaderInfo.create(null);
-		Lib.current._.__loaderInfo.content = Lib.current;
+		(Lib.current._ : _DisplayObject).__loaderInfo = _LoaderInfo.create(null);
+		((Lib.current._ : _DisplayObject).__loaderInfo._ : _LoaderInfo).content = Lib.current;
 		#end
 	}
 

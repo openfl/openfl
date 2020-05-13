@@ -40,12 +40,14 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 	#if lime
 	@:from private static function fromLimeCursor(cursor:LimeMouseCursor):MouseCursor
 	{
-		return _Mouse.fromLimeCursor(cursor);
+		var cursor:_MouseCursor = cursor;
+		return cast cursor;
 	}
 
 	@:to private function toLimeCursor():LimeMouseCursor
 	{
-		return (this : _Mouse).toLimeCursor();
+		var cursor:_MouseCursor = cast this;
+		return cursor;
 	}
 	#end
 }

@@ -5,6 +5,7 @@ import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
 import openfl.display3D.Context3DWrapMode;
 import openfl.display3D.Context3D;
+import openfl.display3D._Context3D;
 import openfl.display.BitmapData;
 import openfl.display.ShaderInput;
 
@@ -30,14 +31,14 @@ class _ShaderInput<T> /*implements Dynamic*/
 
 	public function disableGL(context:Context3D, id:Int):Void
 	{
-		var gl = context._.gl;
+		var gl = (context._ : _Context3D).gl;
 		context.setTextureAt(id, null);
 	}
 
 	public function updateGL(context:Context3D, id:Int, overrideInput:T = null, overrideFilter:Context3DTextureFilter = null,
 			overrideMipFilter:Context3DMipFilter = null, overrideWrap:Context3DWrapMode = null):Void
 	{
-		var gl = context._.gl;
+		var gl = (context._ : _Context3D).gl;
 		var input = overrideInput != null ? overrideInput : parent.input;
 		var filter = overrideFilter != null ? overrideFilter : parent.filter;
 		var mipFilter = overrideMipFilter != null ? overrideMipFilter : parent.mipFilter;

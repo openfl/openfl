@@ -48,27 +48,27 @@ class GameInputControl extends EventDispatcher
 
 	@:noCompletion private function get_device():GameInputDevice
 	{
-		return _.device;
+		return (_ : _GameInputControl).device;
 	}
 
 	@:noCompletion private function get_id():String
 	{
-		return _.id;
+		return (_ : _GameInputControl).id;
 	}
 
 	@:noCompletion private function get_maxValue():Float
 	{
-		return _.maxValue;
+		return (_ : _GameInputControl).maxValue;
 	}
 
 	@:noCompletion private function get_minValue():Float
 	{
-		return _.minValue;
+		return (_ : _GameInputControl).minValue;
 	}
 
 	@:noCompletion private function get_value():Float
 	{
-		return _.value;
+		return (_ : _GameInputControl).value;
 	}
 }
 #else

@@ -112,8 +112,8 @@ class _TextField extends _InteractiveObject
 
 		__caretIndex = -1;
 		__displayAsPassword = false;
-		__graphics = new Graphics(this);
-		__textEngine = new TextEngine(this);
+		__graphics = new Graphics(this_displayObject);
+		__textEngine = new TextEngine(cast this_displayObject);
 		__layoutDirty = true;
 		__offsetX = 0;
 		__offsetY = 0;
@@ -131,10 +131,8 @@ class _TextField extends _InteractiveObject
 			__defaultTextFormat.kerning = false;
 		}
 
-		__textFormat = __defaultTextFormat.clone();
+		__textFormat = __defaultTextFormat._.clone();
 		__textEngine.textFormatRanges.push(new TextFormatRange(__textFormat, 0, 0));
-
-		_ = new _TextField(this);
 
 		addEventListener(MouseEvent.MOUSE_DOWN, this_onMouseDown);
 		addEventListener(FocusEvent.FOCUS_IN, this_onFocusIn);
@@ -1123,7 +1121,7 @@ class _TextField extends _InteractiveObject
 			__selectionIndex = __caretIndex;
 		}
 
-		var enableInput = #if openfl_html5 (DisplayObject._.__supportDOM ? __renderedOnCanvasWhileOnDOM : true) #else true #end;
+		var enableInput = #if openfl_html5 (_DisplayObject.__supportDOM ? __renderedOnCanvasWhileOnDOM : true) #else true #end;
 
 		if (enableInput)
 		{
@@ -1149,7 +1147,7 @@ class _TextField extends _InteractiveObject
 
 	public function __stopTextInput():Void
 	{
-		var disableInput = #if openfl_html5 (DisplayObject._.__supportDOM ? __renderedOnCanvasWhileOnDOM : true) #else true #end;
+		var disableInput = #if openfl_html5 (_DisplayObject.__supportDOM ? __renderedOnCanvasWhileOnDOM : true) #else true #end;
 
 		if (disableInput)
 		{
@@ -1285,7 +1283,7 @@ class _TextField extends _InteractiveObject
 	public function __updateText(value:String):Void
 	{
 		#if openfl_html5
-		if (DisplayObject._.__supportDOM && __renderedOnCanvasWhileOnDOM)
+		if (_DisplayObject.__supportDOM && __renderedOnCanvasWhileOnDOM)
 		{
 			__forceCachedBitmapUpdate = __text != value;
 		}
@@ -1301,7 +1299,7 @@ class _TextField extends _InteractiveObject
 			__selectionIndex = __caretIndex = __text.length;
 		}
 
-		if (!__displayAsPassword #if openfl_html5 || (DisplayObject._.__supportDOM && !__renderedOnCanvasWhileOnDOM) #end)
+		if (!__displayAsPassword #if openfl_html5 || (_DisplayObject.__supportDOM && !__renderedOnCanvasWhileOnDOM) #end)
 		{
 			__textEngine.text = __text;
 		}
@@ -1547,7 +1545,7 @@ class _TextField extends _InteractiveObject
 		value = HTMLParser.parse(value, __textFormat, __textEngine.textFormatRanges);
 
 		#if openfl_html5
-		if (DisplayObject._.__supportDOM)
+		if (_DisplayObject.__supportDOM)
 		{
 			if (__textEngine.textFormatRanges.length > 1)
 			{
@@ -1963,7 +1961,7 @@ class _TextField extends _InteractiveObject
 				var setDirty = true;
 
 				#if openfl_html5
-				if (DisplayObject._.__supportDOM)
+				if (_DisplayObject.__supportDOM)
 				{
 					if (__renderedOnCanvasWhileOnDOM)
 					{
@@ -1989,7 +1987,7 @@ class _TextField extends _InteractiveObject
 		stage.removeEventListener(MouseEvent.MOUSE_MOVE, stage_onMouseMove);
 		stage.removeEventListener(MouseEvent.MOUSE_UP, stage_onMouseUp);
 
-		if (stage.focus == this)
+		if (stage.focus == this_displayObject)
 		{
 			__getWorldTransform();
 			__updateLayout();
@@ -2012,7 +2010,7 @@ class _TextField extends _InteractiveObject
 				__startCursorTimer();
 
 				#if openfl_html5
-				if (DisplayObject._.__supportDOM && __renderedOnCanvasWhileOnDOM)
+				if (_DisplayObject.__supportDOM && __renderedOnCanvasWhileOnDOM)
 				{
 					__forceCachedBitmapUpdate = true;
 				}
@@ -2313,7 +2311,7 @@ class _TextField extends _InteractiveObject
 		__caretIndex = __getPosition(mouseX + scrollH, mouseY);
 		__selectionIndex = __caretIndex;
 
-		if (!DisplayObject._.__supportDOM)
+		if (!_DisplayObject.__supportDOM)
 		{
 			__dirty = true;
 			__setRenderDirty();
@@ -2361,7 +2359,7 @@ class _TextField extends _InteractiveObject
 
 					var setDirty:Bool = true;
 					#if openfl_html5
-					if (DisplayObject._.__supportDOM)
+					if (_DisplayObject.__supportDOM)
 					{
 						if (__renderedOnCanvasWhileOnDOM)
 						{

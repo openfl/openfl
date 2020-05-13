@@ -5,7 +5,7 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 #end
 
 @:noCompletion
-@:enum abstract _MouseCursor(String) from String to String
+@:enum abstract _MouseCursor(MouseCursor) from MouseCursor to MouseCursor from String to String
 {
 	public var __CROSSHAIR = "crosshair";
 	public var __CUSTOM = "custom";
@@ -18,7 +18,7 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 	public var __WAIT_ARROW = "waitarrow";
 
 	#if lime
-	@:from public static function fromLimeCursor(cursor:LimeMouseCursor):MouseCursor
+	@:from public static function fromLimeCursor(cursor:LimeMouseCursor):_MouseCursor
 	{
 		return switch (cursor)
 		{
@@ -27,35 +27,35 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 			case LimeMouseCursor.POINTER: MouseCursor.BUTTON;
 			case LimeMouseCursor.MOVE: MouseCursor.HAND;
 			case LimeMouseCursor.TEXT: MouseCursor.IBEAM;
-			case LimeMouseCursor.CROSSHAIR: _MouseCursor._.__CROSSHAIR;
-			case LimeMouseCursor.RESIZE_NESW: _MouseCursor._.__RESIZE_NESW;
-			case LimeMouseCursor.RESIZE_NS: _MouseCursor._.__RESIZE_NS;
-			case LimeMouseCursor.RESIZE_NWSE: _MouseCursor._.__RESIZE_NWSE;
-			case LimeMouseCursor.RESIZE_WE: _MouseCursor._.__RESIZE_WE;
-			case LimeMouseCursor.WAIT: _MouseCursor._.__WAIT;
-			case LimeMouseCursor.WAIT_ARROW: _MouseCursor._.__WAIT_ARROW;
-			case LimeMouseCursor.CUSTOM: _MouseCursor._.__CUSTOM;
+			case LimeMouseCursor.CROSSHAIR: _MouseCursor.__CROSSHAIR;
+			case LimeMouseCursor.RESIZE_NESW: cast _MouseCursor.__RESIZE_NESW;
+			case LimeMouseCursor.RESIZE_NS: cast _MouseCursor.__RESIZE_NS;
+			case LimeMouseCursor.RESIZE_NWSE: cast _MouseCursor.__RESIZE_NWSE;
+			case LimeMouseCursor.RESIZE_WE: cast _MouseCursor.__RESIZE_WE;
+			case LimeMouseCursor.WAIT: cast _MouseCursor.__WAIT;
+			case LimeMouseCursor.WAIT_ARROW: cast _MouseCursor.__WAIT_ARROW;
+			case LimeMouseCursor.CUSTOM: cast _MouseCursor.__CUSTOM;
 			default: MouseCursor.AUTO;
 		}
 	}
 
 	@:to public function toLimeCursor():LimeMouseCursor
 	{
-		return switch (this)
+		return switch (this : String)
 		{
 			case MouseCursor.ARROW: LimeMouseCursor.ARROW;
 			case MouseCursor.AUTO: LimeMouseCursor.DEFAULT;
 			case MouseCursor.BUTTON: LimeMouseCursor.POINTER;
 			case MouseCursor.HAND: LimeMouseCursor.MOVE;
 			case MouseCursor.IBEAM: LimeMouseCursor.TEXT;
-			case _MouseCursor._.__CROSSHAIR: LimeMouseCursor.CROSSHAIR;
-			case _MouseCursor._.__RESIZE_NESW: LimeMouseCursor.RESIZE_NESW;
-			case _MouseCursor._.__RESIZE_NS: LimeMouseCursor.RESIZE_NS;
-			case _MouseCursor._.__RESIZE_NWSE: LimeMouseCursor.RESIZE_NWSE;
-			case _MouseCursor._.__RESIZE_WE: LimeMouseCursor.RESIZE_WE;
-			case _MouseCursor._.__WAIT: LimeMouseCursor.WAIT;
-			case _MouseCursor._.__WAIT_ARROW: LimeMouseCursor.WAIT_ARROW;
-			case _MouseCursor._.__CUSTOM: LimeMouseCursor.CUSTOM;
+			case _MouseCursor.__CROSSHAIR: LimeMouseCursor.CROSSHAIR;
+			case _MouseCursor.__RESIZE_NESW: LimeMouseCursor.RESIZE_NESW;
+			case _MouseCursor.__RESIZE_NS: LimeMouseCursor.RESIZE_NS;
+			case _MouseCursor.__RESIZE_NWSE: LimeMouseCursor.RESIZE_NWSE;
+			case _MouseCursor.__RESIZE_WE: LimeMouseCursor.RESIZE_WE;
+			case _MouseCursor.__WAIT: LimeMouseCursor.WAIT;
+			case _MouseCursor.__WAIT_ARROW: LimeMouseCursor.WAIT_ARROW;
+			case _MouseCursor.__CUSTOM: LimeMouseCursor.CUSTOM;
 			default: LimeMouseCursor.DEFAULT;
 		}
 	}
