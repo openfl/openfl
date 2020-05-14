@@ -67,6 +67,7 @@ class TextEngine
 	public var maxScrollV(get, null):Int;
 	public var multiline:Bool;
 	public var numLines(default, null):Int;
+	public var paragraphs(default, null):Vector<TextParagraph>;
 	public var restrict(default, set):UTF8String;
 	public var scrollH:Int;
 	@:isVar public var scrollV(get, set):Int;
@@ -129,6 +130,7 @@ class TextEngine
 		scrollV = 1;
 		wordWrap = false;
 
+		paragraphs = new Vector();
 		lineAscents = new Vector();
 		lineBreaks = new Vector();
 		lineDescents = new Vector();
@@ -749,7 +751,7 @@ class TextEngine
 
 		// line metrics
 		var leading = 0;
-		var ascent = 0.0, maxAscent = 0.0;
+		var ascent = 0.0;
 		var descent = 0.0;
 
 		// paragraph metrics
@@ -762,7 +764,7 @@ class TextEngine
 		var tabStops = null; // TODO: maybe there's a better init value (not sure what this actually is)
 
 		var layoutGroup:TextLayoutGroup = null, positions = null;
-		var widthValue = 0.0, heightValue = 0, maxHeightValue = 0;
+		var widthValue = 0.0, heightValue = 0;
 		var previousSpaceIndex = -2; // -1 equals not found, -2 saves extra comparison in `breakIndex == previousSpaceIndex`
 		var previousBreakIndex = -1;
 		var spaceIndex = text.indexOf(" ");
@@ -772,6 +774,13 @@ class TextEngine
 		var offsetY = 2.0;
 		var textIndex = 0;
 		var lineIndex = 0;
+		
+		paragraphs.length = 0;
+		var paragraph = new TextParagraph(0);
+		paragraphs.push(paragraph);
+		var currentLine = new TextLine();
+		paragraph.addLine(currentLine);
+		
 
 		#if !js
 		inline
@@ -951,59 +960,16 @@ class TextEngine
 				ascent = currentFormat.size;
 				descent = currentFormat.size * 0.185;
 			}
-
+			
 			leading = currentFormat.leading;
-
+			
 			heightValue = Math.ceil(ascent + descent + leading);
-
-			if (heightValue > maxHeightValue)
-			{
-				maxHeightValue = heightValue;
-			}
-
-			if (ascent > maxAscent)
-			{
-				maxAscent = ascent;
-			}
 		}
 
 		#if !js inline #end function setParagraphMetrics():Void
 
 		{
-			if (currentFormat.align != null)
-			{
-				align = currentFormat.align;
-			}
-
-			if (currentFormat.blockIndent != null)
-			{
-				// TODO
-			}
-
-			if (currentFormat.bullet != null)
-			{
-				// TODO
-			}
-
-			if (currentFormat.indent != null)
-			{
-				// TODO
-			}
-
-			if (currentFormat.leftMargin != null)
-			{
-				leftMargin = currentFormat.leftMargin;
-			}
-
-			if (currentFormat.rightMargin != null)
-			{
-				rightMargin = currentFormat.rightMargin;
-			}
-
-			if (currentFormat.tabStops != null)
-			{
-				// TODO
-			}
+			paragraph.setParagraphFormat(currentFormat);
 		}
 
 		#if !js inline #end function nextFormatRange():Bool
@@ -1086,6 +1052,7 @@ class TextEngine
 			{
 				// don't worry about placing multiple formats if a space or break happens first
 
+				// can these two lines be deleted entirely? textIndex vs startIndex here vs sfp
 				positions = getPositions(text, textIndex, endIndex);
 				widthValue = getPositionsWidth(positions);
 
@@ -1100,6 +1067,8 @@ class TextEngine
 				layoutGroup.offsetY = offsetY;
 				layoutGroup.width = widthValue;
 				layoutGroup.height = heightValue;
+				
+				paragraph.addLayoutGroup(layoutGroup);
 
 				offsetX += widthValue;
 
@@ -1134,6 +1103,8 @@ class TextEngine
 						layoutGroup.offsetY = offsetY;
 						layoutGroup.width = widthValue;
 						layoutGroup.height = heightValue;
+						
+						paragraph.addLayoutGroup(layoutGroup);
 
 						offsetX += widthValue;
 
@@ -1155,35 +1126,6 @@ class TextEngine
 			}
 
 			textIndex = endIndex;
-		}
-
-		#if !js inline #end function alignBaseline():Void
-
-		{
-			// aligns the baselines of all characters in a single line
-
-			setLineMetrics();
-
-			var i = layoutGroups.length;
-
-			while (--i > -1)
-			{
-				var lg = layoutGroups[i];
-
-				if (lg.lineIndex < lineIndex) break;
-				if (lg.lineIndex > lineIndex) continue;
-
-				lg.ascent = maxAscent;
-				lg.height = maxHeightValue;
-			}
-
-			offsetY += maxHeightValue;
-
-			maxAscent = 0.0;
-			maxHeightValue = 0;
-
-			++lineIndex;
-			offsetX = 2;
 		}
 
 		#if !js inline #end function breakLongWords(endIndex:Int):Void
@@ -1264,7 +1206,8 @@ class TextEngine
 
 				placeIndex = textIndex + i - bufferCount;
 				placeFormattedText(placeIndex);
-				alignBaseline();
+				offsetX = 2;
+				// alignBaseline();
 
 				setFormattedPositions(placeIndex, endIndex);
 
@@ -1300,7 +1243,7 @@ class TextEngine
 			if ((breakIndex > -1) && (spaceIndex == -1 || breakIndex < spaceIndex))
 			{
 				// if a line break is the next thing that needs to be dealt with
-				// TODO: when is this condition ever false?
+				// TODO: when is this condition ever false? maybe space followed by break?
 				if (textIndex <= breakIndex)
 				{
 					setFormattedPositions(textIndex, breakIndex);
@@ -1326,18 +1269,28 @@ class TextEngine
 					setLineMetrics();
 				}
 
-				alignBaseline();
-
+				offsetX = 2;
+				
 				textIndex = breakIndex + 1;
 				previousBreakIndex = breakIndex;
 				breakIndex = getLineBreakIndex(textIndex);
 
+				paragraph = new TextParagraph(textIndex);
+				paragraphs.push(paragraph);
+				currentLine.endIndex = textIndex;
+				currentLine = new TextLine();
+				paragraph.addLine(currentLine);
+				lineIndex++;
+				
+				setLineMetrics();
 				setParagraphMetrics();
 			}
 			else if (spaceIndex > -1)
 			{
+				// TODO: spaces should not be considered if wordWrap is false. Would default to case #1 or #3 instead
 				// if a space is the next thing that needs to be dealt with
 
+				// TODO: when deoes this occur?
 				if (layoutGroup != null && layoutGroup.startIndex != layoutGroup.endIndex)
 				{
 					layoutGroup = null;
@@ -1452,7 +1405,11 @@ class TextEngine
 
 						if (textIndex == previousSpaceIndex + 1)
 						{
-							alignBaseline();
+							offsetX = 2;
+							currentLine.endIndex = textIndex;
+							currentLine = new TextLine();
+							paragraph.lines.push(currentLine);
+							lineIndex++;
 						}
 
 						offsetX = 2;
@@ -1569,14 +1526,13 @@ class TextEngine
 
 					setFormattedPositions(textIndex, text.length);
 					placeText(text.length);
-
-					alignBaseline();
+					offsetX = 2;
 				}
 
 				textIndex++;
 			}
 		}
-
+		
 		// if final char is a line break, create an empty layoutGroup for it
 		if (previousBreakIndex == textIndex - 2 && previousBreakIndex > -1)
 		{
@@ -1591,6 +1547,15 @@ class TextEngine
 			layoutGroup.offsetY = offsetY;
 			layoutGroup.width = 0;
 			layoutGroup.height = heightValue;
+			
+			paragraph.addLayoutGroup(layoutGroup);
+		}
+		
+		var prevY = 0.0;
+		for (para in paragraphs)
+		{
+			para.finalize(prevY);
+			prevY += para.height;
 		}
 
 		#if openfl_trace_text_layout_groups
