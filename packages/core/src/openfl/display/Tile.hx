@@ -193,7 +193,7 @@ class Tile
 	{
 		if (_ == null)
 		{
-			_ = new _Tile(id, x, y, scaleX, scaleY, rotation, originX, originY);
+			_ = new _Tile(this, id, x, y, scaleX, scaleY, rotation, originX, originY);
 		}
 	}
 
@@ -337,6 +337,11 @@ class Tile
 	@:keep @:noCompletion private function set_originY(value:Float):Float
 	{
 		return (_ : _Tile).originY = value;
+	}
+
+	@:noCompletion private function get_parent():TileContainer
+	{
+		return (_ : _Tile).parent;
 	}
 
 	@:noCompletion private function get_rect():Rectangle

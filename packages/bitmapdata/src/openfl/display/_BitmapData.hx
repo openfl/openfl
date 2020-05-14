@@ -5,6 +5,7 @@ import lime.graphics.cairo.Cairo;
 import openfl._internal.utils.PerlinNoise;
 import lime.utils.UInt8Array;
 import openfl.display3D.textures.TextureBase;
+import openfl.display3D.textures._TextureBase;
 import openfl.display3D.Context3D;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
@@ -15,6 +16,7 @@ import openfl.display.JPEGEncoderOptions;
 import openfl.display.PNGEncoderOptions;
 import openfl.display.StageQuality;
 import openfl.filters.BitmapFilter;
+import openfl.filters._BitmapFilter;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom._Matrix;
@@ -170,8 +172,12 @@ class _BitmapData
 	public var __worldColorTransform:ColorTransform;
 	public var __worldTransform:Matrix;
 
-	public function new(width:Int, height:Int, transparent:Bool = true, fillColor:UInt = 0xFFFFFFFF)
+	private var bitmapData:BitmapData;
+
+	public function new(bitmapData:BitmapData, width:Int, height:Int, transparent:Bool = true, fillColor:UInt = 0xFFFFFFFF)
 	{
+		this.bitmapData = bitmapData;
+
 		this.transparent = transparent;
 
 		#if (neko || openfl_html5)
@@ -270,7 +276,7 @@ class _BitmapData
 		}
 		else
 		{
-			bitmapData2 = this_displayObject;
+			bitmapData2 = this.bitmapData;
 		}
 
 		if (needCopyOfOriginal)
@@ -280,10 +286,10 @@ class _BitmapData
 
 		if ((filter._ : _BitmapFilter).__preserveObject)
 		{
-			bitmapData3.copyPixels(this_displayObject, rect, destPoint);
+			bitmapData3.copyPixels(this.bitmapData, rect, destPoint);
 		}
 
-		var lastBitmap = (filter._ : _BitmapFilter).__applyFilter(bitmapData2, this_displayObject, sourceRect, destPoint);
+		var lastBitmap = (filter._ : _BitmapFilter).__applyFilter(bitmapData2, this.bitmapData, sourceRect, destPoint);
 
 		if ((filter._ : _BitmapFilter).__preserveObject)
 		{
@@ -312,25 +318,25 @@ class _BitmapData
 		{
 			bitmapData = new BitmapData(0, 0, transparent, 0);
 
-			bitmapData.width = width;
-			bitmapData.height = height;
-			bitmapData._.__renderData.textureWidth = __renderData.textureWidth;
-			bitmapData._.__renderData.textureHeight = __renderData.textureHeight;
+			(bitmapData._ : _BitmapData).width = width;
+			(bitmapData._ : _BitmapData).height = height;
+			(bitmapData._ : _BitmapData).__renderData.textureWidth = __renderData.textureWidth;
+			(bitmapData._ : _BitmapData).__renderData.textureHeight = __renderData.textureHeight;
 			bitmapData.rect.copyFrom(rect);
 
-			bitmapData._.__renderData.framebuffer = __renderData.framebuffer;
-			bitmapData._.__renderData.framebufferContext = __renderData.framebufferContext;
-			bitmapData._.__renderData.texture = __renderData.texture;
-			bitmapData._.__renderData.textureContext = __renderData.textureContext;
-			bitmapData._.__isValid = true;
+			(bitmapData._ : _BitmapData).__renderData.framebuffer = __renderData.framebuffer;
+			(bitmapData._ : _BitmapData).__renderData.framebufferContext = __renderData.framebufferContext;
+			(bitmapData._ : _BitmapData).__renderData.texture = __renderData.texture;
+			(bitmapData._ : _BitmapData).__renderData.textureContext = __renderData.textureContext;
+			(bitmapData._ : _BitmapData).__isValid = true;
 		}
 		else
 		{
 			bitmapData = BitmapData.fromImage(limeImage.clone(), transparent);
 		}
 
-		bitmapData._.__worldTransform.copyFrom(__worldTransform);
-		bitmapData._.__renderTransform.copyFrom(__renderTransform);
+			(bitmapData._ : _BitmapData).__worldTransform.copyFrom(__worldTransform);
+		(bitmapData._ : _BitmapData).__renderTransform.copyFrom(__renderTransform);
 
 		return bitmapData;
 	}
@@ -344,7 +350,7 @@ class _BitmapData
 	@SuppressWarnings("checkstyle:Dynamic")
 	public function compare(otherBitmapData:BitmapData):Dynamic
 	{
-		if (otherBitmapData == this)
+		if (otherBitmapData == this.bitmapData)
 		{
 			return 0;
 		}
@@ -483,7 +489,7 @@ class _BitmapData
 			default: return;
 		}
 
-		limeImage.copyChannel(sourceBitmapData.limeImage, sourceRect._.__toLimeRectangle(), destPoint.__toLimeVector2(), sourceChannel, destChannel);
+		limeImage.copyChannel(sourceBitmapData.limeImage, sourceRect._.__toLimeRectangle(), destPoint._.__toLimeVector2(), sourceChannel, destChannel);
 	}
 
 	public function copyPixels(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, alphaBitmapData:BitmapData = null, alphaPoint:Point = null,
@@ -538,12 +544,12 @@ class _BitmapData
 
 		if (alphaPoint != null)
 		{
-			BitmapData._.__tempVector.x = alphaPoint.x;
-			BitmapData._.__tempVector.y = alphaPoint.y;
+			_BitmapData.__tempVector.x = alphaPoint.x;
+			_BitmapData.__tempVector.y = alphaPoint.y;
 		}
 
-		limeImage.copyPixels(sourceBitmapData.limeImage, sourceRect._.__toLimeRectangle(), destPoint.__toLimeVector2(),
-			alphaBitmapData != null ? alphaBitmapData.limeImage : null, alphaPoint != null ? BitmapData._.__tempVector : null, mergeAlpha);
+		limeImage.copyPixels(sourceBitmapData.limeImage, sourceRect._.__toLimeRectangle(), destPoint._.__toLimeVector2(),
+			alphaBitmapData != null ? alphaBitmapData.limeImage : null, alphaPoint != null ? _BitmapData.__tempVector : null, mergeAlpha);
 	}
 
 	public function dispose():Void
@@ -566,94 +572,94 @@ class _BitmapData
 	public function draw(source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null,
 			clipRect:Rectangle = null, smoothing:Bool = false):Void
 	{
-		if (source == null) return;
+		// if (source == null) return;
 
-		source._.__update(false, true);
+		// source._.__update(false, true);
 
-		var transform = _Matrix.__pool.get();
+		// var transform = _Matrix.__pool.get();
 
-		transform.copyFrom(source._.__renderTransform);
-		transform.invert();
+		// transform.copyFrom(source._.__renderTransform);
+		// transform.invert();
 
-		if (matrix != null)
-		{
-			transform.concat(matrix);
-		}
+		// if (matrix != null)
+		// {
+		// 	transform.concat(matrix);
+		// }
 
-		var _colorTransform = new ColorTransform();
-		_colorTransform._.__copyFrom(source._.__worldColorTransform);
-		_colorTransform._.__invert();
+		// var _colorTransform = new ColorTransform();
+		// _colorTransform._.__copyFrom(source._.__worldColorTransform);
+		// _colorTransform._.__invert();
 
-		if (!readable && BitmapData._.__hardwareRenderer != null && getTexture(BitmapData._.__hardwareRenderer.context3D) != null)
-		{
-			if (colorTransform != null)
-			{
-				_colorTransform._.__combine(colorTransform);
-			}
+		// if (!readable && _BitmapData.__hardwareRenderer != null && getTexture(_BitmapData.__hardwareRenderer.context3D) != null)
+		// {
+		// 	if (colorTransform != null)
+		// 	{
+		// 		_colorTransform._.__combine(colorTransform);
+		// 	}
 
-			BitmapData._.__hardwareRenderer._.__allowSmoothing = smoothing;
-			BitmapData._.__hardwareRenderer._.__overrideBlendMode = blendMode;
+		// 	_BitmapData.__hardwareRenderer._.__allowSmoothing = smoothing;
+		// 	_BitmapData.__hardwareRenderer._.__overrideBlendMode = blendMode;
 
-			BitmapData._.__hardwareRenderer._.__worldTransform = matrix;
-			BitmapData._.__hardwareRenderer._.__worldAlpha = 1 / source._.__worldAlpha;
-			BitmapData._.__hardwareRenderer._.__worldColorTransform = _colorTransform;
+		// 	_BitmapData.__hardwareRenderer._.__worldTransform = matrix;
+		// 	_BitmapData.__hardwareRenderer._.__worldAlpha = 1 / source._.__worldAlpha;
+		// 	_BitmapData.__hardwareRenderer._.__worldColorTransform = _colorTransform;
 
-			BitmapData._.__hardwareRenderer._.__drawBitmapData(this_displayObject, source, clipRect);
-		}
-		else
-		{
-			#if (openfl_html5 || openfl_cairo)
-			if (colorTransform != null)
-			{
-				var bounds = _Rectangle.__pool.get();
-				var boundsMatrix = _Matrix.__pool.get();
+		// 	_BitmapData.__hardwareRenderer._.__drawBitmapData(this.bitmapData, source, clipRect);
+		// }
+		// else
+		// {
+		// 	#if (openfl_html5 || openfl_cairo)
+		// 	if (colorTransform != null)
+		// 	{
+		// 		var bounds = _Rectangle.__pool.get();
+		// 		var boundsMatrix = _Matrix.__pool.get();
 
-				source._.__getBounds(bounds, boundsMatrix);
+		// 		source._.__getBounds(bounds, boundsMatrix);
 
-				var width:Int = Math.ceil(bounds.width);
-				var height:Int = Math.ceil(bounds.height);
+		// 		var width:Int = Math.ceil(bounds.width);
+		// 		var height:Int = Math.ceil(bounds.height);
 
-				boundsMatrix.tx = -bounds.x;
-				boundsMatrix.ty = -bounds.y;
+		// 		boundsMatrix.tx = -bounds.x;
+		// 		boundsMatrix.ty = -bounds.y;
 
-				var copy = new BitmapData(width, height, true, 0);
-				copy.draw(source, boundsMatrix);
+		// 		var copy = new BitmapData(width, height, true, 0);
+		// 		copy.draw(source, boundsMatrix);
 
-				copy.colorTransform(copy.rect, colorTransform);
-				copy._.__renderTransform.identity();
-				copy._.__renderTransform.tx = bounds.x;
-				copy._.__renderTransform.ty = bounds.y;
-				copy._.__renderTransform.concat(source._.__renderTransform);
-				copy._.__worldAlpha = source._.__worldAlpha;
-				copy._.__worldColorTransform._.__copyFrom(source._.__worldColorTransform);
-				source = copy;
+		// 		copy.colorTransform(copy.rect, colorTransform);
+		// 		(copy._ : _BitmapData).__renderTransform.identity();
+		// 		(copy._ : _BitmapData).__renderTransform.tx = bounds.x;
+		// 		(copy._ : _BitmapData).__renderTransform.ty = bounds.y;
+		// 		(copy._ : _BitmapData).__renderTransform.concat(source._.__renderTransform);
+		// 		(copy._ : _BitmapData).__worldAlpha = source._.__worldAlpha;
+		// 		(copy._ : _BitmapData).__worldColorTransform._.__copyFrom(source._.__worldColorTransform);
+		// 		source = copy;
 
-				_Rectangle.__pool.release(bounds);
-				_Matrix.__pool.release(boundsMatrix);
-			}
+		// 		_Rectangle.__pool.release(bounds);
+		// 		_Matrix.__pool.release(boundsMatrix);
+		// 	}
 
-			// #if openfl_html5
-			// if (BitmapData._.__softwareRenderer == null) BitmapData._.__softwareRenderer = new CanvasRenderer(null);
-			// ImageCanvasUtil.convertToCanvas(limeImage);
-			// var renderer:CanvasRenderer = cast BitmapData._.__softwareRenderer;
-			// renderer.context = limeImage.buffer._.__srcContext;
-			// #elseif openfl_cairo
-			// if (BitmapData._.__softwareRenderer == null) BitmapData._.__softwareRenderer = new CairoRenderer(null);
-			// var renderer:CairoRenderer = cast BitmapData._.__softwareRenderer;
-			// renderer.cairo = new Cairo(getSurface());
-			// #end
+		// 	// #if openfl_html5
+		// 	// if (_BitmapData.__softwareRenderer == null) _BitmapData.__softwareRenderer = new CanvasRenderer(null);
+		// 	// ImageCanvasUtil.convertToCanvas(limeImage);
+		// 	// var renderer:CanvasRenderer = cast _BitmapData.__softwareRenderer;
+		// 	// renderer.context = limeImage.buffer._.__srcContext;
+		// 	// #elseif openfl_cairo
+		// 	// if (_BitmapData.__softwareRenderer == null) _BitmapData.__softwareRenderer = new CairoRenderer(null);
+		// 	// var renderer:CairoRenderer = cast _BitmapData.__softwareRenderer;
+		// 	// renderer.cairo = new Cairo(getSurface());
+		// 	// #end
 
-			// renderer._.__allowSmoothing = smoothing;
-			// renderer._.__overrideBlendMode = blendMode;
+		// 	// renderer._.__allowSmoothing = smoothing;
+		// 	// renderer._.__overrideBlendMode = blendMode;
 
-			// renderer._.__worldTransform = matrix;
-			// renderer._.__worldAlpha = 1 / source._.__worldAlpha;
-			// renderer._.__worldColorTransform = _colorTransform;
+		// 	// renderer._.__worldTransform = matrix;
+		// 	// renderer._.__worldAlpha = 1 / source._.__worldAlpha;
+		// 	// renderer._.__worldColorTransform = _colorTransform;
 
-			// renderer._.__drawBitmapData(this_displayObject, source, clipRect);
-			#end
-		}
-		_Matrix.__pool.release(transform);
+		// 	// renderer._.__drawBitmapData(this.bitmapData, source, clipRect);
+		// 	#end
+		// }
+		// _Matrix.__pool.release(transform);
 	}
 
 	public function drawWithQuality(source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null,
@@ -676,7 +682,7 @@ class _BitmapData
 			matrix.ty = Math.round(-rect.y);
 
 			var bitmapData = new BitmapData(Math.ceil(rect.width), Math.ceil(rect.height), true, 0);
-			bitmapData.draw(this_displayObject, matrix);
+			bitmapData.draw(this.bitmapData, matrix);
 
 			image = bitmapData.limeImage;
 
@@ -705,9 +711,9 @@ class _BitmapData
 			color = 0;
 		}
 
-		if (!readable && __renderData.texture != null && BitmapData._.__hardwareRenderer != null)
+		if (!readable && __renderData.texture != null && _BitmapData.__hardwareRenderer != null)
 		{
-			BitmapData._.__hardwareRenderer._.__fillRect(this_displayObject, rect, color);
+			_BitmapData.__hardwareRenderer._.__fillRect(this.bitmapData, rect, color);
 		}
 		else if (readable)
 		{
@@ -729,7 +735,7 @@ class _BitmapData
 		return null;
 		#else
 		var bitmapData = new BitmapData(0, 0, true, 0);
-		bitmapData._.__fromBase64(base64, type);
+		(bitmapData._ : _BitmapData).__fromBase64(base64, type);
 		return bitmapData;
 		#end
 	}
@@ -743,7 +749,7 @@ class _BitmapData
 		return null;
 		#else
 		var bitmapData = new BitmapData(0, 0, true, 0);
-		bitmapData._.__fromBytes(bytes, rawAlpha);
+		(bitmapData._ : _BitmapData).__fromBytes(bytes, rawAlpha);
 		return bitmapData;
 		#end
 	}
@@ -755,7 +761,7 @@ class _BitmapData
 		if (canvas == null) return null;
 
 		var bitmapData = new BitmapData(0, 0, transparent, 0);
-		bitmapData._.__fromImage(Image.fromCanvas(canvas));
+		(bitmapData._ : _BitmapData).__fromImage(Image.fromCanvas(canvas));
 		bitmapData.limeImage.transparent = transparent;
 		return bitmapData;
 	}
@@ -769,7 +775,7 @@ class _BitmapData
 		return null;
 		#else
 		var bitmapData = new BitmapData(0, 0, true, 0);
-		bitmapData._.__fromFile(path);
+		(bitmapData._ : _BitmapData).__fromFile(path);
 		return bitmapData.limeImage != null ? bitmapData : null;
 		#end
 	}
@@ -781,7 +787,7 @@ class _BitmapData
 		if (image == null || image.buffer == null) return null;
 
 		var bitmapData = new BitmapData(0, 0, transparent, 0);
-		bitmapData._.__fromImage(image);
+		(bitmapData._ : _BitmapData).__fromImage(image);
 		bitmapData.limeImage.transparent = transparent;
 		return bitmapData.limeImage != null ? bitmapData : null;
 	}
@@ -790,11 +796,11 @@ class _BitmapData
 	public static function fromTexture(texture:TextureBase):BitmapData
 	{
 		if (texture == null) return null;
-		var bitmapData = new BitmapData(texture._.__width, texture._.__height, true, 0);
-		bitmapData.readable = false;
-		bitmapData._.__renderData.texture = texture;
-		bitmapData._.__renderData.textureContext = texture._.__context;
-		bitmapData.limeImage = null;
+		var bitmapData = new BitmapData((texture._ : _TextureBase).__width, (texture._ : _TextureBase).__height, true, 0);
+		(bitmapData._ : _BitmapData).readable = false;
+		(bitmapData._ : _BitmapData).__renderData.texture = texture;
+		(bitmapData._ : _BitmapData).__renderData.textureContext = (texture._ : _TextureBase).__context;
+		(bitmapData._ : _BitmapData).limeImage = null;
 		return bitmapData;
 	}
 
@@ -928,7 +934,7 @@ class _BitmapData
 			}
 			#end
 
-			@:privateAccess __renderData.texture._.__base.uploadFromImage(textureImage);
+			(__renderData.texture._ : _TextureBase).uploadFromImage(textureImage);
 
 			__renderData.textureVersion = limeImage.version;
 
@@ -1114,7 +1120,7 @@ class _BitmapData
 
 			if (rawAlpha != null)
 			{
-				bitmapData._.__applyAlpha(rawAlpha);
+				(bitmapData._ : _BitmapData).__applyAlpha(rawAlpha);
 			}
 
 			return Future.withValue(bitmapData);
@@ -1231,7 +1237,7 @@ class _BitmapData
 	{
 		if (!readable) return;
 		var noise = new PerlinNoise(randomSeed, numOctaves, channelOptions, grayScale, 0.5, stitch, 0.15);
-		noise.fill(this_displayObject, baseX, baseY, 0);
+		noise.fill(this.bitmapData, baseX, baseY, 0);
 	}
 
 	public function scroll(x:Int, y:Int):Void
@@ -1440,7 +1446,7 @@ class _BitmapData
 		return Image.loadFromBase64(base64, type).then(function(image)
 		{
 			__fromImage(image);
-			return Future.withValue(this_displayObject);
+			return Future.withValue(this.bitmapData);
 		});
 	}
 
@@ -1455,7 +1461,7 @@ class _BitmapData
 				__applyAlpha(rawAlpha);
 			}
 
-			return Future.withValue(this_displayObject);
+			return Future.withValue(this.bitmapData);
 		});
 	}
 
@@ -1464,7 +1470,7 @@ class _BitmapData
 		return Image.loadFromFile(path).then(function(image)
 		{
 			__fromImage(image);
-			return Future.withValue(this_displayObject);
+			return Future.withValue(this.bitmapData);
 		});
 	}
 

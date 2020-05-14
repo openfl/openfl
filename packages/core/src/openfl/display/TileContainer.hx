@@ -24,7 +24,7 @@ class TileContainer extends Tile implements ITileContainer
 	{
 		if (_ == null)
 		{
-			_ = new _TileContainer(x, y, scaleX, scaleY, rotation, originX, originY);
+			_ = new _TileContainer(this, x, y, scaleX, scaleY, rotation, originX, originY);
 		}
 
 		super(-1, x, y, scaleX, scaleY, rotation, originX, originY);

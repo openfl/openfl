@@ -16,11 +16,14 @@ class _NetStatusEvent extends _Event
 		(event._ : _NetStatusEvent).__init();
 	});
 
-	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false, info:Dynamic = null):Void
+	private var netStatusEvent:NetStatusEvent;
+
+	public function new(netStatusEvent:NetStatusEvent, type:String, bubbles:Bool = false, cancelable:Bool = false, info:Dynamic = null):Void
 	{
+		this.netStatusEvent = netStatusEvent;
 		this.info = info;
 
-		super(type, bubbles, cancelable);
+		super(netStatusEvent, type, bubbles, cancelable);
 	}
 
 	public override function clone():NetStatusEvent

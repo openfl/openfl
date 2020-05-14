@@ -25,7 +25,7 @@ import openfl._internal.renderer.GraphicsFillType;
 	**/
 	public function new()
 	{
-		_ = new _GraphicsEndFill();
+		_ = new _GraphicsEndFill(this);
 	}
 }
 #else

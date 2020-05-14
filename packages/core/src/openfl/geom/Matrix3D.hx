@@ -92,7 +92,7 @@ class Matrix3D
 	{
 		if (_ == null)
 		{
-			_ = new _Matrix3D(v);
+			_ = new _Matrix3D(this, v);
 		}
 	}
 

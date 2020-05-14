@@ -138,7 +138,7 @@ class ShaderFilter extends BitmapFilter
 	**/
 	public function new(shader:Shader)
 	{
-		_ = new _ShaderFilter(shader);
+		_ = new _ShaderFilter(this, shader);
 
 		super();
 	}

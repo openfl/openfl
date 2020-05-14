@@ -144,7 +144,7 @@ class ColorTransform
 	{
 		if (_ == null)
 		{
-			_ = new _ColorTransform(redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier, redOffset, greenOffset, blueOffset, alphaOffset);
+			_ = new _ColorTransform(this, redMultiplier, greenMultiplier, blueMultiplier, alphaMultiplier, redOffset, greenOffset, blueOffset, alphaOffset);
 		}
 	}
 

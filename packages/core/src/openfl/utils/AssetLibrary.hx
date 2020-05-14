@@ -22,7 +22,7 @@ class AssetLibrary #if lime extends LimeAssetLibrary #end
 	{
 		if (_ != null)
 		{
-			_ = new _AssetLibrary();
+			_ = new _AssetLibrary(this);
 		}
 
 		#if lime

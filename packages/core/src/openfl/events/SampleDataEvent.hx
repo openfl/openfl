@@ -120,7 +120,7 @@ class SampleDataEvent extends Event
 	{
 		if (_ == null)
 		{
-			_ = new _SampleDataEvent(type, bubbles, cancelable);
+			_ = new _SampleDataEvent(this, type, bubbles, cancelable);
 		}
 
 		super(type, bubbles, cancelable);

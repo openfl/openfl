@@ -24,8 +24,12 @@ class _Transform
 	public var __hasMatrix:Bool;
 	public var __hasMatrix3D:Bool;
 
-	public function new(displayObject:DisplayObject)
+	private var transform:Transform;
+
+	public function new(transform:Transform, displayObject:DisplayObject)
 	{
+		this.transform = transform;
+
 		__colorTransform = new ColorTransform();
 		concatenatedColorTransform = new ColorTransform();
 		pixelBounds = new Rectangle();

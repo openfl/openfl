@@ -49,7 +49,7 @@ class Tileset
 	{
 		if (_ != null)
 		{
-			_ = new _Tileset(bitmapData, rects);
+			_ = new _Tileset(this, bitmapData, rects);
 		}
 	}
 
@@ -125,6 +125,16 @@ class Tileset
 	@:noCompletion private function set_bitmapData(value:BitmapData):BitmapData
 	{
 		return _.bitmapData = value;
+	}
+
+	@:noCompletion private function get_rectData():Vector<Float>
+	{
+		return _.rectData;
+	}
+
+	@:noCompletion private function set_rectData(value:Vector<Float>):Vector<Float>
+	{
+		return _.rectData = value;
 	}
 
 	@:noCompletion private function get_numRects():Int

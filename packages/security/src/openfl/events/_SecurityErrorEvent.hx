@@ -10,19 +10,23 @@ import openfl._internal.utils.ObjectPool;
 class _SecurityErrorEvent extends _ErrorEvent
 {
 	public static var __pool:ObjectPool<SecurityErrorEvent> = new ObjectPool<SecurityErrorEvent>(function() return new SecurityErrorEvent(null),
-		function(event) event._.__init());
+		function(event)(event._:_Event).__init());
 
-	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false, text:String = "", id:Int = 0)
+	private var securityErrorEvent:SecurityErrorEvent;
+
+	public function new(securityErrorEvent:SecurityErrorEvent, type:String, bubbles:Bool = false, cancelable:Bool = false, text:String = "", id:Int = 0)
 	{
-		super(type, bubbles, cancelable, text, id);
+		this.securityErrorEvent = securityErrorEvent;
+
+		super(securityErrorEvent, type, bubbles, cancelable, text, id);
 	}
 
 	public override function clone():SecurityErrorEvent
 	{
 		var event = new SecurityErrorEvent(type, bubbles, cancelable, text, errorID);
-		event.target = target;
-		event.currentTarget = currentTarget;
-		event.eventPhase = eventPhase;
+		(event._ : _Event).target = target;
+		(event._ : _Event).currentTarget = currentTarget;
+		(event._ : _Event).eventPhase = eventPhase;
 		return event;
 	}
 

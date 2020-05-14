@@ -138,7 +138,7 @@ class Matrix
 	{
 		if (_ == null)
 		{
-			_ = new _Matrix(a, b, c, d, tx, ty);
+			_ = new _Matrix(this, a, b, c, d, tx, ty);
 		}
 	}
 
@@ -346,7 +346,7 @@ class Matrix
 	**/
 	public function invert():Matrix
 	{
-		_.invert();
+		return _.invert();
 	}
 
 	/**

@@ -63,7 +63,7 @@ class IOErrorEvent extends ErrorEvent
 	{
 		if (_ == null)
 		{
-			_ = new _IOErrorEvent(type, bubbles, cancelable, text, id);
+			_ = new _IOErrorEvent(this, type, bubbles, cancelable, text, id);
 		}
 
 		super(type, bubbles, cancelable, text, id);

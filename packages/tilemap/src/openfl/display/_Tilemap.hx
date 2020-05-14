@@ -6,10 +6,10 @@ import openfl.geom.Matrix;
 import openfl.geom._Matrix;
 import openfl.geom.Rectangle;
 import openfl.geom._Rectangle;
-#if !flash
-import openfl.display._internal.Context3DBuffer;
-#end
 
+#if !flash
+// import openfl.display._internal.Context3DBuffer;
+#end
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -38,9 +38,13 @@ class _Tilemap extends #if !flash _DisplayObject #else Bitmap #end
 	public var __width:Int;
 	#end
 
-	public function new(width:Int, height:Int, tileset:Tileset = null, smoothing:Bool = true)
+	private var tilemap:Tilemap;
+
+	public function new(tilemap:Tilemap, width:Int, height:Int, tileset:Tileset = null, smoothing:Bool = true)
 	{
-		super();
+		this.tilemap = tilemap;
+
+		super(tilemap);
 
 		__tileset = tileset;
 		this.smoothing = smoothing;
@@ -58,7 +62,7 @@ class _Tilemap extends #if !flash _DisplayObject #else Bitmap #end
 		#else
 		bitmapData = new BitmapData(width, height, true, 0);
 		this.smoothing = smoothing;
-		FlashRenderer.register(this);
+		FlashRenderer.register(tilemap);
 		#end
 	}
 
@@ -119,12 +123,12 @@ class _Tilemap extends #if !flash _DisplayObject #else Bitmap #end
 
 	public function setTiles(group:TileContainer):Void
 	{
-		for (tile in __group._.__tiles)
+		for (tile in (__group._ : _TileContainer).__tiles)
 		{
 			removeTile(tile);
 		}
 
-		for (tile in group._.__tiles)
+		for (tile in (group._ : _TileContainer).__tiles)
 		{
 			addTile(tile);
 		}
@@ -162,7 +166,7 @@ class _Tilemap extends #if !flash _DisplayObject #else Bitmap #end
 	public override function __hitTest(x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool
 	{
 		if (!hitObject.visible || __isMask) return false;
-		if (mask != null && !mask._.__hitTestMask(x, y)) return false;
+		if (mask != null && !(mask._ : _DisplayObject).__hitTestMask(x, y)) return false;
 
 		__getRenderTransform();
 
@@ -185,7 +189,7 @@ class _Tilemap extends #if !flash _DisplayObject #else Bitmap #end
 
 	public function __renderFlash():Void
 	{
-		FlashTilemap.render(this);
+		// FlashTilemap.render(tilemap);
 	}
 
 	// Get & Set Methods
@@ -217,7 +221,7 @@ class _Tilemap extends #if !flash _DisplayObject #else Bitmap #end
 
 	private function get_numTiles():Int
 	{
-		return __group._.__length;
+		return (__group._ : _TileContainer).__length;
 	}
 
 	private function get_tileset():Tileset
@@ -231,7 +235,7 @@ class _Tilemap extends #if !flash _DisplayObject #else Bitmap #end
 		{
 			__tileset = value;
 			__group.tileset = value;
-			__group._.__dirty = true;
+			(__group._ : _TileContainer).__dirty = true;
 
 			#if !flash
 			__setRenderDirty();

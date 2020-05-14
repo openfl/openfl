@@ -59,7 +59,7 @@ class TimerEvent extends Event
 	{
 		if (_ == null)
 		{
-			_ = new _TimerEvent(type, bubbles, cancelable);
+			_ = new _TimerEvent(this, type, bubbles, cancelable);
 		}
 
 		super(type, bubbles, cancelable);

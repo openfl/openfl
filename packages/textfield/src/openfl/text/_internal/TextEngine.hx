@@ -181,15 +181,16 @@ class TextEngine
 		#if openfl_html5
 		return _Font.__fontByName.get(name);
 		#elseif lime_cffi
-		for (registeredFont in Font._.__registeredFonts)
+		for (registeredFont in _Font.__registeredFonts)
 		{
 			if (registeredFont == null) continue;
 
 			if (registeredFont.fontName == name
-				|| (registeredFont._.__fontPath != null
-					&& (registeredFont._.__fontPath == name || registeredFont._.__fontPathWithoutDirectory == name)))
+				|| (@:privateAccess registeredFont.limeFont.__fontPath != null
+					&& (@:privateAccess registeredFont.limeFont.__fontPath == name
+						|| @:privateAccess registeredFont.limeFont.__fontPathWithoutDirectory == name)))
 			{
-				if (registeredFont._.__initialize())
+				if ((registeredFont._ : _Font).__initialize())
 				{
 					return registeredFont;
 				}
@@ -204,7 +205,7 @@ class TextEngine
 
 		if (font != null)
 		{
-			Font._.__registeredFonts.push(font);
+			_Font.__registeredFonts.push(font);
 			return font;
 		}
 		#end
@@ -651,7 +652,7 @@ class TextEngine
 
 		if (textHeight == 0 && textField != null && textField.type == INPUT)
 		{
-			var currentFormat = textField._.__textFormat;
+			var currentFormat = (textField._ : _TextField).__textFormat;
 			var ascent, descent, leading, heightValue;
 
 			var font = getFontInstance(currentFormat);
@@ -756,7 +757,7 @@ class TextEngine
 		var formatRange:TextFormatRange = null;
 		var font = null;
 
-		var currentFormat = _TextField.__defaultTextFormat.clone();
+		var currentFormat = _TextField.__defaultTextFormat._.clone();
 
 		// line metrics
 		var leading = 0; // TODO: is maxLeading needed, just like with ascent? In case multiple formats in the same line have different leading values
@@ -970,11 +971,11 @@ class TextEngine
 				ascent = currentFormat.size * currentFormat._.__ascent;
 				descent = currentFormat.size * currentFormat._.__descent;
 			}
-			else if (#if (lime || openfl_html5) font != null && font.unitsPerEM != 0 #else false #end)
+			else if (#if (lime || openfl_html5) font != null && font.limeFont.unitsPerEM != 0 #else false #end)
 			{
 				#if (lime || openfl_html5)
-				ascent = (font.ascender / font.unitsPerEM) * currentFormat.size;
-				descent = Math.abs((font.descender / font.unitsPerEM) * currentFormat.size);
+				ascent = (font.limeFont.ascender / font.limeFont.unitsPerEM) * currentFormat.size;
+				descent = Math.abs((font.limeFont.descender / font.limeFont.unitsPerEM) * currentFormat.size);
 				#end
 			}
 			else

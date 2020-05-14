@@ -135,7 +135,7 @@ import openfl._internal.backend.lime_standalone.ImageDataUtil;
 	**/
 	public function new(blurX:Float = 4, blurY:Float = 4, quality:Int = 1)
 	{
-		_ = new _BlurFilter(blurX, blurY, quality);
+		_ = new _BlurFilter(this, blurX, blurY, quality);
 
 		super();
 	}

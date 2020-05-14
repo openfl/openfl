@@ -22,9 +22,13 @@ class _XMLSocket extends _EventDispatcher
 	#end
 	public var __socket:Socket;
 
-	public function new(host:String = null, port:Int = 80)
+	private var xmlSocket:XMLSocket;
+
+	public function new(xmlSocket:XMLSocket, host:String = null, port:Int = 80)
 	{
-		super();
+		this.xmlSocket = xmlSocket;
+
+		super(xmlSocket);
 
 		#if !js
 		__inputBuffer = new ByteArray();

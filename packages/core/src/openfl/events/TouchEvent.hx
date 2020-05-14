@@ -451,8 +451,8 @@ class TouchEvent extends Event
 	{
 		if (_ == null)
 		{
-			_ = new _TouchEvent(type, bubbles, cancelable, touchPointID, isPrimaryTouchPoint, localX, localY, sizeX, sizeY, pressure, relatedObject, ctrlKey,
-				altKey, shiftKey, commandKey, controlKey, timestamp, touchIntent, samples, isTouchPointCanceled);
+			_ = new _TouchEvent(this, type, bubbles, cancelable, touchPointID, isPrimaryTouchPoint, localX, localY, sizeX, sizeY, pressure, relatedObject,
+				ctrlKey, altKey, shiftKey, commandKey, controlKey, timestamp, touchIntent, samples, isTouchPointCanceled);
 		}
 
 		super(type, bubbles, cancelable);

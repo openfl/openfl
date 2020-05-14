@@ -174,7 +174,7 @@ class Rectangle
 	{
 		if (_ == null)
 		{
-			_ = new _Rectangle(x, y, width, height);
+			_ = new _Rectangle(this, x, y, width, height);
 		}
 	}
 

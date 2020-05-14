@@ -7,8 +7,12 @@ package openfl.events;
 @:noCompletion
 class _UncaughtErrorEvents extends _EventDispatcher
 {
-	public function new()
+	private var uncaughtErrorEvents:UncaughtErrorEvents;
+
+	public function new(uncaughtErrorEvents:UncaughtErrorEvents)
 	{
-		super();
+		this.uncaughtErrorEvents = uncaughtErrorEvents;
+
+		super(uncaughtErrorEvents);
 	}
 }

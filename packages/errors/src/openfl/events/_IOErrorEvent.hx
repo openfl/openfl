@@ -9,20 +9,26 @@ import openfl._internal.utils.ObjectPool;
 @:noCompletion
 class _IOErrorEvent extends _ErrorEvent
 {
-	private static var __pool:ObjectPool<IOErrorEvent> = new ObjectPool<IOErrorEvent>(function() return new IOErrorEvent(null),
-		function(event) event.__init());
-
-	public function new(type:String, bubbles:Bool = true, cancelable:Bool = false, text:String = "", id:Int = 0)
+	private static var __pool:ObjectPool<IOErrorEvent> = new ObjectPool<IOErrorEvent>(function() return new IOErrorEvent(null), function(event)
 	{
-		super(type, bubbles, cancelable, text, id);
+		(event._ : _Event).__init();
+	});
+
+	private var ioErrorEvent:IOErrorEvent;
+
+	public function new(ioErrorEvent:IOErrorEvent, type:String, bubbles:Bool = true, cancelable:Bool = false, text:String = "", id:Int = 0)
+	{
+		this.ioErrorEvent = ioErrorEvent;
+
+		super(ioErrorEvent, type, bubbles, cancelable, text, id);
 	}
 
 	public override function clone():IOErrorEvent
 	{
 		var event = new IOErrorEvent(type, bubbles, cancelable, text, errorID);
-		event.target = target;
-		event.currentTarget = currentTarget;
-		event.eventPhase = eventPhase;
+		(event._ : _Event).target = target;
+		(event._ : _Event).currentTarget = currentTarget;
+		(event._ : _Event).eventPhase = eventPhase;
 		return event;
 	}
 

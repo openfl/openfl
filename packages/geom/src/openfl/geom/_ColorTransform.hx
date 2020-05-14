@@ -26,9 +26,13 @@ class _ColorTransform
 	public var redMultiplier:Float;
 	public var redOffset:Float;
 
-	public function new(redMultiplier:Float = 1, greenMultiplier:Float = 1, blueMultiplier:Float = 1, alphaMultiplier:Float = 1, redOffset:Float = 0,
-			greenOffset:Float = 0, blueOffset:Float = 0, alphaOffset:Float = 0):Void
+	private var colorTransform:ColorTransform;
+
+	public function new(colorTransform:ColorTransform, redMultiplier:Float = 1, greenMultiplier:Float = 1, blueMultiplier:Float = 1,
+			alphaMultiplier:Float = 1, redOffset:Float = 0, greenOffset:Float = 0, blueOffset:Float = 0, alphaOffset:Float = 0):Void
 	{
+		this.colorTransform = colorTransform;
+
 		this.redMultiplier = redMultiplier;
 		this.greenMultiplier = greenMultiplier;
 		this.blueMultiplier = blueMultiplier;

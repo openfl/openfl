@@ -384,7 +384,7 @@ class LoaderInfo extends EventDispatcher
 	{
 		if (_ == null)
 		{
-			_ = new _LoaderInfo();
+			_ = new _LoaderInfo(this);
 		}
 
 		super();
@@ -395,92 +395,92 @@ class LoaderInfo extends EventDispatcher
 
 	@:noCompletion private function get_applicationDomain():ApplicationDomain
 	{
-		return _.applicationDomain;
+		return (_ : _LoaderInfo).applicationDomain;
 	}
 
 	@:noCompletion private function get_bytes():ByteArray
 	{
-		return _.bytes;
+		return (_ : _LoaderInfo).bytes;
 	}
 
 	@:noCompletion private function get_bytesLoaded():Int
 	{
-		return _.bytesLoaded;
+		return (_ : _LoaderInfo).bytesLoaded;
 	}
 
 	@:noCompletion private function get_bytesTotal():Int
 	{
-		return _.bytesTotal;
+		return (_ : _LoaderInfo).bytesTotal;
 	}
 
 	@:noCompletion private function get_childAllowsParent():Bool
 	{
-		return _.childAllowsParent;
+		return (_ : _LoaderInfo).childAllowsParent;
 	}
 
 	@:noCompletion private function get_content():DisplayObject
 	{
-		return _.content;
+		return (_ : _LoaderInfo).content;
 	}
 
 	@:noCompletion private function get_contentType():String
 	{
-		return _.contentType;
+		return (_ : _LoaderInfo).contentType;
 	}
 
 	@:noCompletion private function get_frameRate():Float
 	{
-		return _.frameRate;
+		return (_ : _LoaderInfo).frameRate;
 	}
 
 	@:noCompletion private function get_height():Int
 	{
-		return _.height;
+		return (_ : _LoaderInfo).height;
 	}
 
 	@:noCompletion private function get_loader():Loader
 	{
-		return _.loader;
+		return (_ : _LoaderInfo).loader;
 	}
 
 	@:noCompletion private function get_loaderURL():String
 	{
-		return _.loaderURL;
+		return (_ : _LoaderInfo).loaderURL;
 	}
 
 	@:noCompletion private function get_parameters():Dynamic<String>
 	{
-		return _.parameters;
+		return (_ : _LoaderInfo).parameters;
 	}
 
 	@:noCompletion private function get_parentAllowsChild():Bool
 	{
-		return _.parentAllowsChild;
+		return (_ : _LoaderInfo).parentAllowsChild;
 	}
 
 	@:noCompletion private function get_sameDomain():Bool
 	{
-		return _.sameDomain;
+		return (_ : _LoaderInfo).sameDomain;
 	}
 
 	@:noCompletion private function get_sharedEvents():EventDispatcher
 	{
-		return _.sharedEvents;
+		return (_ : _LoaderInfo).sharedEvents;
 	}
 
 	@:noCompletion private function get_uncaughtErrorEvents():UncaughtErrorEvents
 	{
-		return _.uncaughtErrorEvents;
+		return (_ : _LoaderInfo).uncaughtErrorEvents;
 	}
 
 	@:noCompletion private function get_url():String
 	{
-		return _.url;
+		return (_ : _LoaderInfo).url;
 	}
 
 	@:noCompletion private function get_width():Int
 	{
-		return _.width;
+		return (_ : _LoaderInfo).width;
 	}
 }
 #else

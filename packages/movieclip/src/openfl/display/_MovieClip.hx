@@ -30,8 +30,12 @@ class _MovieClip extends _Sprite
 	public var __scene:Scene;
 	public var __timeline:Timeline;
 
+	private var movieClip:MovieClip;
+
 	public function new(movieClip:MovieClip)
 	{
+		this.movieClip = movieClip;
+
 		super(movieClip);
 
 		__enabled = true;
@@ -59,7 +63,7 @@ class _MovieClip extends _Sprite
 		__timeline = timeline;
 		if (timeline != null)
 		{
-			timeline._.__attachMovieClip(this);
+			timeline._.__attachMovieClip(this.movieClip);
 			play();
 		}
 	}
@@ -137,14 +141,14 @@ class _MovieClip extends _Sprite
 
 	public override function __stopAllMovieClips():Void
 	{
-		super._.__stopAllMovieClips();
+		super.__stopAllMovieClips();
 		stop();
 	}
 
 	public override function __tabTest(stack:Array<InteractiveObject>):Void
 	{
 		if (!__enabled) return;
-		super._.__tabTest(stack);
+		super.__tabTest(stack);
 	}
 
 	// Event Handlers
@@ -174,7 +178,7 @@ class _MovieClip extends _Sprite
 			return;
 		}
 
-		if (event.target == this && __enabled && __hasOver)
+		if (event.target == this.movieClip && __enabled && __hasOver)
 		{
 			gotoAndStop("_over");
 		}

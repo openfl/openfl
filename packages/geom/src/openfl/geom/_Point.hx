@@ -1,9 +1,9 @@
 package openfl.geom;
 
-import openfl._internal.utils.ObjectPool;
 #if lime
 import lime.math.Vector2;
 #end
+import openfl._internal.utils.ObjectPool;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -12,7 +12,10 @@ import lime.math.Vector2;
 @:noCompletion
 class _Point
 {
-	public static var __pool:ObjectPool<Point> = new ObjectPool(function() return new Point(), function(point)
+	#if lime
+	private static var __limeVector2:Vector2;
+	#end
+	public static var __pool:ObjectPool<Point> = new ObjectPool<Point>(function() return new Point(), function(point)
 	{
 		point.x = 0;
 		point.y = 0;
@@ -22,8 +25,12 @@ class _Point
 	public var x:Float;
 	public var y:Float;
 
-	public function new(x:Float = 0, y:Float = 0)
+	private var point:Point;
+
+	public function new(point:Point, x:Float = 0, y:Float = 0)
 	{
+		this.point = point;
+
 		this.x = x;
 		this.y = y;
 	}

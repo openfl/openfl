@@ -53,10 +53,14 @@ class _DropShadowFilter extends _BitmapFilter
 	private var __strength:Float;
 	private var __verticalPasses:Int;
 
-	public function new(distance:Float = 4, angle:Float = 45, color:Int = 0, alpha:Float = 1, blurX:Float = 4, blurY:Float = 4, strength:Float = 1,
-			quality:Int = 1, inner:Bool = false, knockout:Bool = false, hideObject:Bool = false)
+	private var dropShadowFilter:DropShadowFilter;
+
+	public function new(dropShadowFilter:DropShadowFilter, distance:Float = 4, angle:Float = 45, color:Int = 0, alpha:Float = 1, blurX:Float = 4,
+			blurY:Float = 4, strength:Float = 1, quality:Int = 1, inner:Bool = false, knockout:Bool = false, hideObject:Bool = false)
 	{
-		super();
+		this.dropShadowFilter = dropShadowFilter;
+
+		super(dropShadowFilter);
 
 		__offsetX = 0;
 		__offsetY = 0;

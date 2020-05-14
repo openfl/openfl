@@ -13,9 +13,13 @@ class _NetConnection extends _EventDispatcher
 {
 	public static inline var CONNECT_SUCCESS:String = "NetConnection.Connect.Success";
 
-	public function new()
+	private var netConnection:NetConnection;
+
+	public function new(netConnection:NetConnection)
 	{
-		super();
+		this.netConnection = netConnection;
+
+		super(netConnection);
 	}
 
 	public function connect(command:String, p1 = null, p2 = null, p3 = null, p4 = null, p5 = null):Void

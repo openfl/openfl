@@ -1,6 +1,5 @@
 package openfl.net;
 
-#if lime
 import haxe.io.Bytes;
 import lime.net.HTTPRequest;
 import lime.net.HTTPRequestHeader;
@@ -13,20 +12,38 @@ import openfl.net.URLLoader;
 import openfl.net.URLRequest;
 import openfl.net.URLRequestHeader;
 import openfl.utils.ByteArray;
+import openfl.events.EventDispatcher;
+import openfl.events._EventDispatcher;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
 @:noCompletion
-class _URLLoader
+class _URLLoader extends _EventDispatcher
 {
+	public var bytesLoaded:Int;
+	public var bytesTotal:Int;
+	public var data:Dynamic;
+	public var dataFormat:URLLoaderDataFormat;
 	public var httpRequest:#if (display || macro || doc_gen) Dynamic #else _IHTTPRequest #end; // TODO: Better (non-private) solution
-	public var parent:URLLoader;
 
-	public function new(parent:URLLoader)
+	private var urlLoader:URLLoader;
+
+	public function new(urlLoader:URLLoader, request:URLRequest = null)
 	{
-		this.parent = parent;
+		this.urlLoader = urlLoader;
+
+		super(urlLoader);
+
+		bytesLoaded = 0;
+		bytesTotal = 0;
+		dataFormat = URLLoaderDataFormat.TEXT;
+
+		if (request != null)
+		{
+			load(request);
+		}
 	}
 
 	public function close():Void
@@ -56,13 +73,13 @@ class _URLLoader
 		#end
 
 		event.responseHeaders = headers;
-		parent.dispatchEvent(event);
+		urlLoader.dispatchEvent(event);
 	}
 
 	public function load(request:URLRequest):Void
 	{
 		#if !macro
-		if (parent.dataFormat == BINARY)
+		if (urlLoader.dataFormat == BINARY)
 		{
 			var httpRequest = new HTTPRequest<ByteArray>();
 			prepareRequest(httpRequest, request);
@@ -73,10 +90,10 @@ class _URLLoader
 				.onComplete(function(data:ByteArray):Void
 				{
 					dispatchStatus();
-					parent.data = data;
+					urlLoader.data = data;
 
 					var event = new Event(Event.COMPLETE);
-					parent.dispatchEvent(event);
+					urlLoader.dispatchEvent(event);
 				});
 		}
 		else
@@ -90,10 +107,10 @@ class _URLLoader
 				.onComplete(function(data:String):Void
 				{
 					dispatchStatus();
-					parent.data = data;
+					urlLoader.data = data;
 
 					var event = new Event(Event.COMPLETE);
-					parent.dispatchEvent(event);
+					urlLoader.dispatchEvent(event);
 				});
 		}
 		#end
@@ -149,7 +166,8 @@ class _URLLoader
 	}
 
 	// Event Handlers
-	@:noCompletion public function httpRequest_onError(error:Dynamic):Void
+
+	public function httpRequest_onError(error:Dynamic):Void
 	{
 		dispatchStatus();
 
@@ -157,22 +175,21 @@ class _URLLoader
 		{
 			var event = new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR);
 			event.text = Std.string(error);
-			parent.dispatchEvent(event);
+			urlLoader.dispatchEvent(event);
 		}
 		else
 		{
 			var event = new IOErrorEvent(IOErrorEvent.IO_ERROR);
 			event.text = Std.string(error);
-			parent.dispatchEvent(event);
+			urlLoader.dispatchEvent(event);
 		}
 	}
 
-	@:noCompletion public function httpRequest_onProgress(bytesLoaded:Int, bytesTotal:Int):Void
+	public function httpRequest_onProgress(bytesLoaded:Int, bytesTotal:Int):Void
 	{
 		var event = new ProgressEvent(ProgressEvent.PROGRESS);
 		event.bytesLoaded = bytesLoaded;
 		event.bytesTotal = bytesTotal;
-		parent.dispatchEvent(event);
+		urlLoader.dispatchEvent(event);
 	}
 }
-#end

@@ -9,14 +9,18 @@ import openfl._internal.utils.ObjectPool;
 @:noCompletion
 class _UncaughtErrorEvent extends _ErrorEvent
 {
+	public static var __pool:ObjectPool<UncaughtErrorEvent> = new ObjectPool<UncaughtErrorEvent>(function() return new UncaughtErrorEvent(null),
+		function(event)(event._:_Event).__init());
+
 	public var error:Dynamic;
 
-	public static var __pool:ObjectPool<UncaughtErrorEvent> = new ObjectPool<UncaughtErrorEvent>(function() return new UncaughtErrorEvent(null),
-		function(event) event._.__init());
+	private var uncaughtErrorEvent:UncaughtErrorEvent;
 
-	public function new(type:String, bubbles:Bool = true, cancelable:Bool = true, error:Dynamic = null)
+	public function new(uncaughtErrorEvent:UncaughtErrorEvent, type:String, bubbles:Bool = true, cancelable:Bool = true, error:Dynamic = null)
 	{
-		super(type, bubbles, cancelable);
+		this.uncaughtErrorEvent = uncaughtErrorEvent;
+
+		super(uncaughtErrorEvent, type, bubbles, cancelable);
 
 		this.error = error;
 	}
@@ -24,9 +28,9 @@ class _UncaughtErrorEvent extends _ErrorEvent
 	public override function clone():UncaughtErrorEvent
 	{
 		var event = new UncaughtErrorEvent(type, bubbles, cancelable, error);
-		event.target = target;
-		event.currentTarget = currentTarget;
-		event.eventPhase = eventPhase;
+		(event._ : _Event).target = target;
+		(event._ : _Event).currentTarget = currentTarget;
+		(event._ : _Event).eventPhase = eventPhase;
 		return event;
 	}
 
@@ -37,7 +41,7 @@ class _UncaughtErrorEvent extends _ErrorEvent
 
 	public override function __init():Void
 	{
-		super._.__init();
+		super.__init();
 		error = null;
 	}
 }

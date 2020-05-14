@@ -13,17 +13,24 @@ import openfl.geom.Matrix;
 @:noCompletion
 @:beta class _RenderEvent extends _Event
 {
+	public static var __pool:ObjectPool<RenderEvent> = new ObjectPool<RenderEvent>(function() return new RenderEvent(null), function(event)
+	{
+		(event._ : _Event).__init();
+	});
+
 	public var allowSmoothing:Bool;
 	public var objectColorTransform:ColorTransform;
 	public var objectMatrix:Matrix;
 	public var renderer(default, null):DisplayObjectRenderer;
 
-	public static var __pool:ObjectPool<RenderEvent> = new ObjectPool<RenderEvent>(function() return new RenderEvent(null), function(event) event.__init());
+	private var renderEvent:RenderEvent;
 
-	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false, objectMatrix:Matrix = null, objectColorTransform:ColorTransform = null,
-			allowSmoothing:Bool = true):Void
+	public function new(renderEvent:RenderEvent, type:String, bubbles:Bool = false, cancelable:Bool = false, objectMatrix:Matrix = null,
+			objectColorTransform:ColorTransform = null, allowSmoothing:Bool = true):Void
 	{
-		super(type, bubbles, cancelable);
+		this.renderEvent = renderEvent;
+
+		super(renderEvent, type, bubbles, cancelable);
 
 		this.objectMatrix = objectMatrix;
 		this.objectColorTransform = objectColorTransform;
@@ -32,11 +39,12 @@ import openfl.geom.Matrix;
 
 	public override function clone():RenderEvent
 	{
-		var event = new RenderEvent(type, bubbles, cancelable, objectMatrix.clone(), #if flash null #else objectColorTransform.__clone() #end, allowSmoothing);
+		var event = new RenderEvent(type, bubbles, cancelable, objectMatrix.clone(), #if flash null #else objectColorTransform._.__clone() #end,
+			allowSmoothing);
 		#if !flash
-		event.target = target;
-		event.currentTarget = currentTarget;
-		event.eventPhase = eventPhase;
+		(event._ : _Event).target = target;
+		(event._ : _Event).currentTarget = currentTarget;
+		(event._ : _Event).eventPhase = eventPhase;
 		#end
 		return event;
 	}

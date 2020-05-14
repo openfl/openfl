@@ -50,7 +50,7 @@ class UncaughtErrorEvents extends EventDispatcher
 	{
 		if (_ == null)
 		{
-			_ = new _UncaughtErrorEvents();
+			_ = new _UncaughtErrorEvents(this);
 		}
 
 		super();

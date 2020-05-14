@@ -16,11 +16,11 @@ import openfl._internal.Lib;
 @:noCompletion
 class _Window
 {
-	public var parent:Window;
+	private var window:Window;
 
 	public function new(window:Window, application:Application, attributes:WindowAttributes)
 	{
-		parent = window;
+		this.window = window;
 
 		#if (!flash && !macro)
 		// #if commonjs
@@ -32,25 +32,25 @@ class _Window
 		// }
 		// else
 		// #end
-		parent.stage = new Stage(parent, Reflect.hasField(attributes.context, "background") ? attributes.context.background : 0xFFFFFF);
+		window.stage = new Stage(window, Reflect.hasField(attributes.context, "background") ? attributes.context.background : 0xFFFFFF);
 
 		if (Reflect.hasField(attributes, "parameters"))
 		{
 			try
 			{
-				(parent.stage.loaderInfo._ : _LoaderInfo).parameters = attributes.parameters;
+				(window.stage.loaderInfo._ : _LoaderInfo).parameters = attributes.parameters;
 			}
 			catch (e:Dynamic) {}
 		}
 
 		if (Reflect.hasField(attributes, "resizable") && !attributes.resizable)
 		{
-			(parent.stage._ : _Stage).__setLogicalSize(attributes.width, attributes.height);
+			(window.stage._ : _Stage).__setLogicalSize(attributes.width, attributes.height);
 		}
 
-		parent.application.addModule(parent.stage);
+		window.application.addModule(window.stage);
 		#else
-		parent.stage = Lib.current.stage;
+		window.stage = Lib.current.stage;
 		#end
 	}
 }

@@ -7,11 +7,15 @@ import openfl._internal.renderer.SamplerState;
 import openfl.display3D.textures.CubeTexture;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.display3D.textures.TextureBase;
+import openfl.display3D.textures._TextureBase;
 import openfl.display3D.textures.Texture;
 import openfl.display3D.textures.VideoTexture;
+import openfl.display._DisplayObjectRenderer;
 import openfl.display.BitmapData;
 import openfl.display.Stage;
+import openfl.display._Stage;
 import openfl.display.Stage3D;
+import openfl.display._Stage3D;
 import openfl.errors.Error;
 import openfl.events.EventDispatcher;
 import openfl.geom.Matrix3D;
@@ -109,11 +113,11 @@ class _Context3D extends _EventDispatcher
 	public var __state:Context3DState;
 	public var __vertexConstants:Float32Array;
 
-	private var this_context3D:Context3D;
+	private var context3D:Context3D;
 
 	public function new(context3D:Context3D, stage:Stage, contextState:Context3DState = null, stage3D:Stage3D = null)
 	{
-		this_context3D = context3D;
+		this.context3D = context3D;
 
 		super(context3D);
 
@@ -228,7 +232,7 @@ class _Context3D extends _EventDispatcher
 		driverInfo = _driverInfo;
 		#end
 
-		__bitmapDataPool = new BitmapDataPool(30, this);
+		__bitmapDataPool = new BitmapDataPool(30, context3D);
 
 		__quadIndexBufferElements = Math.floor(0xFFFF / 4);
 		__quadIndexBufferCount = __quadIndexBufferElements * 6;
@@ -272,7 +276,10 @@ class _Context3D extends _EventDispatcher
 		{
 			if (__state.renderToTexture == null)
 			{
-				if (__stage.context3D == this_context3D && !__stage._.__renderer._.__cleared) __stage._.__renderer._.__cleared = true;
+				if (__stage.context3D == this.context3D && !((__stage._ : _Stage).__renderer._ : _DisplayObjectRenderer).__cleared)
+				{
+					((__stage._ : _Stage).__renderer._ : _DisplayObjectRenderer).__cleared = true;
+				}
 				__cleared = true;
 			}
 
@@ -349,22 +356,22 @@ class _Context3D extends _EventDispatcher
 				__backBufferTexture = createRectangleTexture(width, height, BGRA, true);
 				__frontBufferTexture = createRectangleTexture(width, height, BGRA, true);
 
-				if (__stage3D._.__renderData.vertexBuffer == null)
+				if ((__stage3D._ : _Stage3D).__renderData.vertexBuffer == null)
 				{
-					__stage3D._.__renderData.vertexBuffer = createVertexBuffer(4, 5);
+					(__stage3D._ : _Stage3D).__renderData.vertexBuffer = createVertexBuffer(4, 5);
 				}
 
 				var vertexData = new Vector<Float>([width, height, 0, 1, 1, 0, height, 0, 0, 1, width, 0, 0, 1, 0, 0, 0, 0, 0, 0.0]);
 
-				__stage3D._.__renderData.vertexBuffer.uploadFromVector(vertexData, 0, 20);
+				(__stage3D._ : _Stage3D).__renderData.vertexBuffer.uploadFromVector(vertexData, 0, 20);
 
-				if (__stage3D._.__renderData.indexBuffer == null)
+				if ((__stage3D._ : _Stage3D).__renderData.indexBuffer == null)
 				{
-					__stage3D._.__renderData.indexBuffer = createIndexBuffer(6);
+					(__stage3D._ : _Stage3D).__renderData.indexBuffer = createIndexBuffer(6);
 
 					var indexData = new Vector<UInt>([0, 1, 2, 2, 1, 3]);
 
-					__stage3D._.__renderData.indexBuffer.uploadFromVector(indexData, 0, 6);
+					(__stage3D._ : _Stage3D).__renderData.indexBuffer.uploadFromVector(indexData, 0, 6);
 				}
 			}
 
@@ -376,46 +383,46 @@ class _Context3D extends _EventDispatcher
 			__backBufferWantsBestResolution = wantsBestResolution;
 			__backBufferWantsBestResolutionOnBrowserZoom = wantsBestResolutionOnBrowserZoom;
 
-			__state.__primaryGLFramebuffer = __backBufferTexture._.__base.getGLFramebuffer(enableDepthAndStencil, antiAlias, 0);
-			__frontBufferTexture._.__base.getGLFramebuffer(enableDepthAndStencil, antiAlias, 0);
+			__state.__primaryGLFramebuffer = (__backBufferTexture._ : _TextureBase).getGLFramebuffer(enableDepthAndStencil, antiAlias, 0);
+			(__frontBufferTexture._ : _TextureBase).getGLFramebuffer(enableDepthAndStencil, antiAlias, 0);
 		}
 	}
 
 	public function createCubeTexture(size:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool, streamingLevels:Int = 0):CubeTexture
 	{
-		return new CubeTexture(this_context3D, size, format, optimizeForRenderToTexture, streamingLevels);
+		return new CubeTexture(this.context3D, size, format, optimizeForRenderToTexture, streamingLevels);
 	}
 
 	public function createIndexBuffer(numIndices:Int, bufferUsage:Context3DBufferUsage = STATIC_DRAW):IndexBuffer3D
 	{
-		return new IndexBuffer3D(this_context3D, numIndices, bufferUsage);
+		return new IndexBuffer3D(this.context3D, numIndices, bufferUsage);
 	}
 
 	public function createProgram(format:Context3DProgramFormat = AGAL):Program3D
 	{
-		return new Program3D(this_context3D, format);
+		return new Program3D(this.context3D, format);
 	}
 
 	public function createRectangleTexture(width:Int, height:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool):RectangleTexture
 	{
-		return new RectangleTexture(this_context3D, width, height, format, optimizeForRenderToTexture);
+		return new RectangleTexture(this.context3D, width, height, format, optimizeForRenderToTexture);
 	}
 
 	public function createTexture(width:Int, height:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool, streamingLevels:Int = 0):Texture
 	{
-		return new Texture(this_context3D, width, height, format, optimizeForRenderToTexture, streamingLevels);
+		return new Texture(this.context3D, width, height, format, optimizeForRenderToTexture, streamingLevels);
 	}
 
 	public function createVertexBuffer(numVertices:Int, data32PerVertex:Int, bufferUsage:Context3DBufferUsage = STATIC_DRAW):VertexBuffer3D
 	{
-		return new VertexBuffer3D(this_context3D, numVertices, data32PerVertex, bufferUsage);
+		return new VertexBuffer3D(this.context3D, numVertices, data32PerVertex, bufferUsage);
 	}
 
 	public function createVideoTexture():VideoTexture
 	{
 		if (supportsVideoTexture)
 		{
-			return new VideoTexture(this_context3D);
+			return new VideoTexture(this.context3D);
 		}
 		else
 		{
@@ -433,9 +440,9 @@ class _Context3D extends _EventDispatcher
 
 		if (__stage3D != null)
 		{
-			__stage3D._.__renderData.indexBuffer = null;
-			__stage3D._.__renderData.vertexBuffer = null;
-			__stage3D._.context3D = null;
+			(__stage3D._ : _Stage3D).__renderData.indexBuffer = null;
+			(__stage3D._ : _Stage3D).__renderData.vertexBuffer = null;
+			(__stage3D._ : _Stage3D).context3D = null;
 			__stage3D = null;
 		}
 
@@ -462,7 +469,7 @@ class _Context3D extends _EventDispatcher
 		var sourceRect = srcRect != null ? srcRect._.__toLimeRectangle() : new LimeRectangle(0, 0, backBufferWidth, backBufferHeight);
 		var destVector = destPoint != null ? destPoint._.__toLimeVector2() : new Vector2();
 
-		if (__stage.context3D == this_context3D)
+		if (__stage.context3D == this.context3D)
 		{
 			if (__stage.limeWindow != null)
 			{
@@ -486,7 +493,7 @@ class _Context3D extends _EventDispatcher
 			// TODO: Read less pixels if srcRect is smaller
 
 			var data = new UInt8Array(backBufferWidth * backBufferHeight * 4);
-			gl.readPixels(0, 0, backBufferWidth, backBufferHeight, __backBufferTexture._.glFormat, GL.UNSIGNED_BYTE, data);
+			gl.readPixels(0, 0, backBufferWidth, backBufferHeight, (__backBufferTexture._ : _TextureBase).glFormat, GL.UNSIGNED_BYTE, data);
 
 			var image = new Image(new ImageBuffer(data, backBufferWidth, backBufferHeight, 32, BGRA32));
 			destination.limeImage.copyPixels(image, sourceRect, destVector);
@@ -506,9 +513,9 @@ class _Context3D extends _EventDispatcher
 		if (__state.renderToTexture == null)
 		{
 			// TODO: Make sure state is correct for this?
-			if (__stage.context3D == this_context3D && !__stage._.__renderer._.__cleared)
+			if (__stage.context3D == this.context3D && !((__stage._ : _Stage).__renderer._ : _DisplayObjectRenderer).__cleared)
 			{
-				__stage._.__renderer._.__clear();
+				((__stage._ : _Stage).__renderer._ : _DisplayObjectRenderer).__clear();
 			}
 			else if (!__cleared)
 			{
@@ -548,7 +555,8 @@ class _Context3D extends _EventDispatcher
 			__backBufferTexture = __frontBufferTexture;
 			__frontBufferTexture = cacheBuffer;
 
-			__state.__primaryGLFramebuffer = __backBufferTexture._.getGLFramebuffer(__state.backBufferEnableDepthAndStencil, __backBufferAntiAlias, 0);
+			__state.__primaryGLFramebuffer = (__backBufferTexture._ : _TextureBase).getGLFramebuffer(__state.backBufferEnableDepthAndStencil,
+				__backBufferAntiAlias, 0);
 			__cleared = false;
 		}
 
@@ -890,11 +898,8 @@ class _Context3D extends _EventDispatcher
 		var context = stage3D.context3D;
 
 		if (context != null
-			&& context != this_context3D
-			&& context._.__frontBufferTexture != null
-			&& stage3D.visible
-			&& backBufferHeight > 0
-			&& backBufferWidth > 0)
+			&& context != this.context3D
+			&& (context._ : _Context3D).__frontBufferTexture != null && stage3D.visible && backBufferHeight > 0 && backBufferWidth > 0)
 		{
 			// if (!stage.renderer.cleared) stage.renderer.clear ();
 
@@ -920,11 +925,11 @@ class _Context3D extends _EventDispatcher
 			setStencilReferenceValue(0, 0, 0);
 			setScissorRectangle(null);
 
-			setTextureAt(0, context._.__frontBufferTexture);
-			setVertexBufferAt(0, stage3D._.__renderData.vertexBuffer, 0, Context3DVertexBufferFormat.FLOAT_3);
-			setVertexBufferAt(1, stage3D._.__renderData.vertexBuffer, 3, Context3DVertexBufferFormat.FLOAT_2);
-			setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, stage3D._.__renderTransform, true);
-			drawTriangles(stage3D._.__renderData.indexBuffer);
+			setTextureAt(0, (context._ : _Context3D).__frontBufferTexture);
+			setVertexBufferAt(0, (stage3D._ : _Stage3D).__renderData.vertexBuffer, 0, Context3DVertexBufferFormat.FLOAT_3);
+			setVertexBufferAt(1, (stage3D._ : _Stage3D).__renderData.vertexBuffer, 3, Context3DVertexBufferFormat.FLOAT_2);
+			setProgramConstantsFromMatrix(Context3DProgramType.VERTEX, 0, (stage3D._ : _Stage3D).__renderTransform, true);
+			drawTriangles((stage3D._ : _Stage3D).__renderData.indexBuffer);
 
 			__present = true;
 		}
@@ -987,9 +992,9 @@ class _Context3D extends _EventDispatcher
 		if (__state.renderToTexture == null)
 		{
 			// TODO: Make sure state is correct for this?
-			if (__stage.context3D == this_context3D && !__stage._.__renderer._.__cleared)
+			if (__stage.context3D == this.context3D && !((__stage._ : _Stage).__renderer._ : _DisplayObjectRenderer).__cleared)
 			{
-				__stage._.__renderer._.__clear();
+				((__stage._ : _Stage).__renderer._ : _DisplayObjectRenderer).__clear();
 			}
 			else if (!__cleared)
 			{
@@ -1142,8 +1147,8 @@ class _Context3D extends _EventDispatcher
 			if (#if openfl_disable_context_cache true #else __contextState.renderToTexture != __state.renderToTexture
 				|| __contextState.renderToTextureSurfaceSelector != __state.renderToTextureSurfaceSelector #end)
 			{
-				var framebuffer = __state.renderToTexture._.__base.getGLFramebuffer(__state.renderToTextureDepthStencil, __state.renderToTextureAntiAlias,
-					__state.renderToTextureSurfaceSelector);
+				var framebuffer = (__state.renderToTexture._ : _TextureBase).getGLFramebuffer(__state.renderToTextureDepthStencil,
+					__state.renderToTextureAntiAlias, __state.renderToTextureSurfaceSelector);
 				bindGLFramebuffer(framebuffer);
 
 				__contextState.renderToTexture = __state.renderToTexture;
@@ -1178,7 +1183,7 @@ class _Context3D extends _EventDispatcher
 			setGLDepthTest(__state.backBufferEnableDepthAndStencil);
 			setGLStencilTest(__state.backBufferEnableDepthAndStencil);
 
-			setGLFrontFace(__stage.context3D != this_context3D);
+			setGLFrontFace(__stage.context3D != this.context3D);
 		}
 	}
 
@@ -1221,7 +1226,7 @@ class _Context3D extends _EventDispatcher
 
 		if (program != null && program._.__format == AGAL)
 		{
-			positionScale[1] = (__stage.context3D == this_context3D && __state.renderToTexture == null) ? 1.0 : -1.0;
+			positionScale[1] = (__stage.context3D == this.context3D && __state.renderToTexture == null) ? 1.0 : -1.0;
 			program._.setPositionScale(positionScale);
 		}
 	}
@@ -1320,13 +1325,13 @@ class _Context3D extends _EventDispatcher
 				// if (#if openfl_disable_context_cache true #else texture != __contextState.textures[i] #end) {
 
 				// TODO: Cleaner approach?
-				if (texture._.__base.glTextureTarget == GL.TEXTURE_2D)
+				if ((texture._ : _TextureBase).glTextureTarget == GL.TEXTURE_2D)
 				{
-					bindGLTexture2D(texture._.__base.getTexture());
+					bindGLTexture2D((texture._ : _TextureBase).getTexture());
 				}
 				else
 				{
-					bindGLTextureCubeMap(texture._.__base.getTexture());
+					bindGLTextureCubeMap((texture._ : _TextureBase).getTexture());
 				}
 
 				#if (desktop && !html5)
@@ -1338,7 +1343,7 @@ class _Context3D extends _EventDispatcher
 
 				// }
 
-				texture._.__base.setSamplerState(samplerState);
+				(texture._ : _TextureBase).setSamplerState(samplerState);
 			}
 			else
 			{
@@ -1349,19 +1354,19 @@ class _Context3D extends _EventDispatcher
 			{
 				gl.activeTexture(GL.TEXTURE0 + sampler + 4);
 
-				if (texture != null && texture._.__base.alphaTexture != null)
+				if (texture != null && (texture._ : _TextureBase).alphaTexture != null)
 				{
-					if (texture._.__base.alphaTexture._.__base.glTextureTarget == GL.TEXTURE_2D)
+					if (((texture._ : _TextureBase).alphaTexture._ : _TextureBase).glTextureTarget == GL.TEXTURE_2D)
 					{
-						bindGLTexture2D(texture._.__base.alphaTexture._.__base.getTexture());
+						bindGLTexture2D(((texture._ : _TextureBase).alphaTexture._ : _TextureBase).getTexture());
 					}
 					else
 					{
-						bindGLTextureCubeMap(texture._.__base.alphaTexture._.__base.getTexture());
+						bindGLTextureCubeMap(((texture._ : _TextureBase).alphaTexture._ : _TextureBase).getTexture());
 					}
 
-					texture._.__base.alphaTexture._.__base.setSamplerState(samplerState);
-					gl.uniform1i(__state.program._.agalAlphaSamplerEnabled[sampler].location, 1);
+						((texture._ : _TextureBase).alphaTexture._ : _TextureBase).setSamplerState(samplerState);
+					gl.uniform1i((__state.program._ : _Program3D).agalAlphaSamplerEnabled[sampler].location, 1);
 
 					#if (desktop && !html5)
 					// TODO: Cache?
@@ -1371,9 +1376,9 @@ class _Context3D extends _EventDispatcher
 				else
 				{
 					bindGLTexture2D(null);
-					if (__state.program._.agalAlphaSamplerEnabled[sampler] != null)
+					if ((__state.program._ : _Program3D).agalAlphaSamplerEnabled[sampler] != null)
 					{
-						gl.uniform1i(__state.program._.agalAlphaSamplerEnabled[sampler].location, 0);
+						gl.uniform1i((__state.program._ : _Program3D).agalAlphaSamplerEnabled[sampler].location, 0);
 					}
 				}
 			}
@@ -1389,7 +1394,7 @@ class _Context3D extends _EventDispatcher
 
 		if (__state.renderToTexture == null)
 		{
-			if (__stage.context3D == this_context3D)
+			if (__stage.context3D == this.context3D)
 			{
 				var x = __stage3D == null ? 0 : Std.int(__stage3D.x);
 				var y = Std.int((__stage.limeWindow.height * __stage.limeWindow.scale) - backBufferHeight - (__stage3D == null ? 0 : __stage3D.y));
@@ -1402,7 +1407,7 @@ class _Context3D extends _EventDispatcher
 		}
 		else
 		{
-			gl.viewport(0, 0, __state.renderToTexture._.__width, __state.renderToTexture._.__height);
+			gl.viewport(0, 0, (__state.renderToTexture._ : _TextureBase).__width, (__state.renderToTexture._ : _TextureBase).__height);
 		}
 		#end
 	}

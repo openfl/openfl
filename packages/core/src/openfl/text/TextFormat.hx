@@ -256,7 +256,7 @@ class TextFormat
 	{
 		if (_ == null)
 		{
-			_ = new _TextFormat(font, size, color, bold, italic, underline, url, target, align, leftMargin, rightMargin, indent, leading);
+			_ = new _TextFormat(this, font, size, color, bold, italic, underline, url, target, align, leftMargin, rightMargin, indent, leading);
 		}
 	}
 

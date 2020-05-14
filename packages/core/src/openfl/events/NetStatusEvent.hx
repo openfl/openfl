@@ -147,7 +147,7 @@ class NetStatusEvent extends Event
 	{
 		if (_ == null)
 		{
-			_ = new _NetStatusEvent(type, bubbles, cancelable, info);
+			_ = new _NetStatusEvent(this, type, bubbles, cancelable, info);
 		}
 
 		super(type, bubbles, cancelable);

@@ -30,10 +30,13 @@ class _BlurFilter extends _BitmapFilter
 	private var __horizontalPasses:Int;
 	private var __quality:Int;
 	private var __verticalPasses:Int;
+	private var blurFilter:BlurFilter;
 
-	public function new(blurX:Float = 4, blurY:Float = 4, quality:Int = 1)
+	public function new(blurFilter:BlurFilter, blurX:Float = 4, blurY:Float = 4, quality:Int = 1)
 	{
-		super();
+		this.blurFilter = blurFilter;
+
+		super(blurFilter);
 
 		this.blurX = blurX;
 		this.blurY = blurY;

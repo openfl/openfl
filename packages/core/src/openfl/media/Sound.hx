@@ -513,7 +513,7 @@ class Sound extends EventDispatcher
 		return (_ : _Sound).isBuffering;
 	}
 
-	@:noCompletion private function get_length():Int
+	@:noCompletion private function get_length():Float
 	{
 		return (_ : _Sound).length;
 	}

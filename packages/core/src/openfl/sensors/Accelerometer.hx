@@ -80,7 +80,7 @@ class Accelerometer extends EventDispatcher
 	{
 		if (_ == null)
 		{
-			_ = new _Accelerometer();
+			_ = new _Accelerometer(this);
 		}
 
 		super();

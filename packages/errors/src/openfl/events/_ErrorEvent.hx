@@ -9,22 +9,29 @@ import openfl._internal.utils.ObjectPool;
 @:noCompletion
 class _ErrorEvent extends _TextEvent
 {
+	private static var __pool:ObjectPool<ErrorEvent> = new ObjectPool<ErrorEvent>(function() return new ErrorEvent(null), function(event)
+	{
+		(event._ : _Event).__init();
+	});
+
 	public var errorID(default, null):Int;
 
-	private static var __pool:ObjectPool<ErrorEvent> = new ObjectPool<ErrorEvent>(function() return new ErrorEvent(null), function(event) event.__init());
+	private var errorEvent:ErrorEvent;
 
-	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false, text:String = "", id:Int = 0):Void
+	public function new(errorEvent:ErrorEvent, type:String, bubbles:Bool = false, cancelable:Bool = false, text:String = "", id:Int = 0):Void
 	{
-		super(type, bubbles, cancelable, text);
+		this.errorEvent = errorEvent;
+
+		super(errorEvent, type, bubbles, cancelable, text);
 		errorID = id;
 	}
 
 	public override function clone():ErrorEvent
 	{
 		var event = new ErrorEvent(type, bubbles, cancelable, text, errorID);
-		event.target = target;
-		event.currentTarget = currentTarget;
-		event.eventPhase = eventPhase;
+		(event._ : _Event).target = target;
+		(event._ : _Event).currentTarget = currentTarget;
+		(event._ : _Event).eventPhase = eventPhase;
 		return event;
 	}
 
@@ -33,7 +40,7 @@ class _ErrorEvent extends _TextEvent
 		return __formatToString("ErrorEvent", ["type", "bubbles", "cancelable", "text", "errorID"]);
 	}
 
-	private override function __init():Void
+	public override function __init():Void
 	{
 		super.__init();
 		errorID = 0;

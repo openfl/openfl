@@ -29,8 +29,12 @@ class _Bitmap extends _DisplayObject
 	#end
 	public var __imageVersion:Int;
 
+	private var bitmap:Bitmap;
+
 	public function new(bitmap:Bitmap, bitmapData:BitmapData = null, pixelSnapping:PixelSnapping = null, smoothing:Bool = false)
 	{
+		this.bitmap = bitmap;
+
 		super(bitmap);
 
 		__type = BITMAP;
@@ -65,7 +69,7 @@ class _Bitmap extends _DisplayObject
 	public override function __hitTest(x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool
 	{
 		if (!hitObject.visible || __isMask || __bitmapData == null) return false;
-		if (mask != null && !mask._.__hitTestMask(x, y)) return false;
+		if (mask != null && !(mask._ : _DisplayObject).__hitTestMask(x, y)) return false;
 
 		__getRenderTransform();
 

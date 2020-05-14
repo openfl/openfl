@@ -84,7 +84,7 @@ class ProgressEvent extends Event
 	{
 		if (_ == null)
 		{
-			_ = new _ProgressEvent(type, bubbles, cancelable, bytesLoaded, bytesTotal);
+			_ = new _ProgressEvent(this, type, bubbles, cancelable, bytesLoaded, bytesTotal);
 		}
 
 		super(type, bubbles, cancelable);

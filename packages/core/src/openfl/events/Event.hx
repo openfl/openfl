@@ -723,7 +723,7 @@ class Event
 	{
 		if (_ == null)
 		{
-			_ = new _Event(type, bubbles, cancelable);
+			_ = new _Event(this, type, bubbles, cancelable);
 		}
 	}
 

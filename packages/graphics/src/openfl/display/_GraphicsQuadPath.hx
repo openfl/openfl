@@ -20,8 +20,12 @@ class _GraphicsQuadPath implements _IGraphicsData
 	public var __graphicsDataType(default, null):GraphicsDataType;
 	#end
 
-	public function new(rects:Vector<Float> = null, indices:Vector<Int> = null, transforms:Vector<Float> = null)
+	private var graphicsQuadPath:GraphicsQuadPath;
+
+	public function new(graphicsQuadPath:GraphicsQuadPath, rects:Vector<Float> = null, indices:Vector<Int> = null, transforms:Vector<Float> = null)
 	{
+		this.graphicsQuadPath = graphicsQuadPath;
+
 		this.rects = rects;
 		this.indices = indices;
 		this.transforms = transforms;

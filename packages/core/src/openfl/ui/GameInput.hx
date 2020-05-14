@@ -74,7 +74,7 @@ import openfl.events.GameInputEvent;
 	{
 		if (_ == null)
 		{
-			_ = new _GameInput();
+			_ = new _GameInput(this);
 		}
 
 		super();

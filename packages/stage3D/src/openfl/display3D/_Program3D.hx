@@ -59,19 +59,23 @@ class _Program3D
 	public var __format:Context3DProgramFormat;
 	public var __samplerStates:Array<SamplerState>;
 
-	public function new(context3D:Context3D, format:Context3DProgramFormat)
+	private var program3D:Program3D;
+
+	public function new(program3D:Program3D, context3D:Context3D, format:Context3DProgramFormat)
 	{
-		__context = context3D;
-		__format = format;
-
-		__samplerStates = new Array<SamplerState>();
+		this.program3D = program3D;
 
 		__context = context3D;
 		__format = format;
 
 		__samplerStates = new Array<SamplerState>();
 
-		gl = __context._.gl;
+		__context = context3D;
+		__format = format;
+
+		__samplerStates = new Array<SamplerState>();
+
+		gl = (__context._ : _Context3D).gl;
 
 		switch (__format)
 		{
@@ -171,8 +175,8 @@ class _Program3D
 		// var samplerStates = new Vector<SamplerState> (Context3D.MAX_SAMPLERS);
 		var samplerStates = new Array<SamplerState>();
 
-		var glslVertex = AGALConverter.convertToGLSL(parent, vertexProgram, null);
-		var glslFragment = AGALConverter.convertToGLSL(parent, fragmentProgram, samplerStates);
+		var glslVertex = AGALConverter.convertToGLSL(this.program3D, vertexProgram, null);
+		var glslFragment = AGALConverter.convertToGLSL(this.program3D, fragmentProgram, samplerStates);
 
 		if (Log.level == LogLevel.VERBOSE)
 		{
@@ -336,13 +340,13 @@ class _Program3D
 			else if (StringTools.startsWith(uniform.name, "vc"))
 			{
 				uniform.regIndex = Std.parseInt(uniform.name.substring(2));
-				uniform.regData = __context._.__vertexConstants;
+				uniform.regData = (__context._ : _Context3D).__vertexConstants;
 				vertexUniforms.add(uniform);
 			}
 			else if (StringTools.startsWith(uniform.name, "fc"))
 			{
 				uniform.regIndex = Std.parseInt(uniform.name.substring(2));
-				uniform.regData = __context._.__fragmentConstants;
+				uniform.regData = (__context._ : _Context3D).__fragmentConstants;
 				fragmentUniforms.add(uniform);
 			}
 			else if (StringTools.startsWith(uniform.name, "sampler") && uniform.name.indexOf("alpha") == -1)
@@ -428,9 +432,9 @@ class _Program3D
 
 			// }
 
-			// // __context._.__bindGLArrayBuffer (null);
+			// // (__context._ : _Context3D).__bindGLArrayBuffer (null);
 
-			// if (__context._.__context.type == OPENGL) {
+			// if ((__context._ : _Context3D).__context.type == OPENGL) {
 
 			// 	gl.disable (gl.TEXTURE_2D);
 
@@ -482,7 +486,7 @@ class _Program3D
 
 			// }
 
-			// if (__context._.__context.type == OPENGL && textureCount > 0) {
+			// if ((__context._ : _Context3D).__context.type == OPENGL && textureCount > 0) {
 
 			// 	gl.enable (gl.TEXTURE_2D);
 
@@ -717,10 +721,10 @@ class _Program3D
 	{
 		this.context = context;
 		#if (lime && !openfl_html5)
-		gl = context._.limeContext.gles2;
+		gl = (context._ : _Context3D).limeContext.gles2;
 		regDataPointer = new BytePointer();
 		#else
-		gl = context._.gl;
+		gl = (context._ : _Context3D).gl;
 		#end
 
 		isDirty = true;

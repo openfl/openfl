@@ -63,7 +63,7 @@ class SecurityErrorEvent extends ErrorEvent
 	{
 		if (_ == null)
 		{
-			_ = new _SecurityErrorEvent(type, bubbles, cancelable, text, id);
+			_ = new _SecurityErrorEvent(this, type, bubbles, cancelable, text, id);
 		}
 
 		super(type, bubbles, cancelable, text, id);
@@ -71,7 +71,7 @@ class SecurityErrorEvent extends ErrorEvent
 
 	public override function clone():SecurityErrorEvent
 	{
-		return _.clone();
+		return (_ : _SecurityErrorEvent).clone();
 	}
 }
 #else

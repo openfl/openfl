@@ -12,6 +12,11 @@ import openfl.utils.ByteArray;
 @:noCompletion
 class _TouchEvent extends _Event
 {
+	public static var __pool:ObjectPool<TouchEvent> = new ObjectPool<TouchEvent>(function() return new TouchEvent(null), function(event)
+	{
+		(event._ : _TouchEvent).__init();
+	});
+
 	public var altKey:Bool;
 	public var commandKey:Bool;
 	public var controlKey:Bool;
@@ -29,14 +34,16 @@ class _TouchEvent extends _Event
 	public var stageY:Float;
 	public var touchPointID:Int;
 
-	public static var __pool:ObjectPool<TouchEvent> = new ObjectPool<TouchEvent>(function() return new TouchEvent(null), function(event) event._.__init());
+	private var touchEvent:TouchEvent;
 
-	public function new(type:String, bubbles:Bool = true, cancelable:Bool = false, touchPointID:Int = 0, isPrimaryTouchPoint:Bool = false, localX:Float = 0,
-			localY:Float = 0, sizeX:Float = 0, sizeY:Float = 0, pressure:Float = 0, relatedObject:InteractiveObject = null, ctrlKey:Bool = false,
-			altKey:Bool = false, shiftKey:Bool = false, commandKey:Bool = false, controlKey:Bool = false, timestamp:Float = 0, touchIntent:String = null,
-			samples:ByteArray = null, isTouchPointCanceled:Bool = false)
+	public function new(touchEvent:TouchEvent, type:String, bubbles:Bool = true, cancelable:Bool = false, touchPointID:Int = 0,
+			isPrimaryTouchPoint:Bool = false, localX:Float = 0, localY:Float = 0, sizeX:Float = 0, sizeY:Float = 0, pressure:Float = 0,
+			relatedObject:InteractiveObject = null, ctrlKey:Bool = false, altKey:Bool = false, shiftKey:Bool = false, commandKey:Bool = false,
+			controlKey:Bool = false, timestamp:Float = 0, touchIntent:String = null, samples:ByteArray = null, isTouchPointCanceled:Bool = false)
 	{
-		super(type, bubbles, cancelable);
+		this.touchEvent = touchEvent;
+
+		super(touchEvent, type, bubbles, cancelable);
 
 		this.touchPointID = touchPointID;
 		this.isPrimaryTouchPoint = isPrimaryTouchPoint;
@@ -60,9 +67,9 @@ class _TouchEvent extends _Event
 	{
 		var event = new TouchEvent(type, bubbles, cancelable, touchPointID, isPrimaryTouchPoint, localX, localY, sizeX, sizeY, pressure, relatedObject,
 			ctrlKey, altKey, shiftKey, commandKey, controlKey);
-		event._.target = target;
-		event._.currentTarget = currentTarget;
-		event._.eventPhase = eventPhase;
+		(event._ : _TouchEvent).target = target;
+		(event._ : _TouchEvent).currentTarget = currentTarget;
+		(event._ : _TouchEvent).eventPhase = eventPhase;
 		return event;
 	}
 
@@ -80,16 +87,16 @@ class _TouchEvent extends _Event
 			target:InteractiveObject):TouchEvent
 	{
 		var evt = new TouchEvent(type, true, false, 0, true, local.x, local.y, 1, 1, 1);
-		evt._.stageX = stageX;
-		evt._.stageY = stageY;
-		evt._.target = target;
+		(evt._ : _TouchEvent).stageX = stageX;
+		(evt._ : _TouchEvent).stageY = stageY;
+		(evt._ : _TouchEvent).target = target;
 
 		return evt;
 	}
 
 	public override function __init():Void
 	{
-		super._.__init();
+		super.__init();
 		touchPointID = 0;
 		isPrimaryTouchPoint = false;
 		localX = 0;

@@ -45,9 +45,13 @@ class _FileReference extends _EventDispatcher
 	public var inputControl:InputElement;
 	#end
 
-	public function new()
+	private var fileReference:FileReference;
+
+	public function new(fileReference:FileReference)
 	{
-		super();
+		this.fileReference = fileReference;
+
+		super(fileReference);
 
 		#if openfl_html5
 		inputControl = cast Browser.document.createElement("input");

@@ -33,7 +33,7 @@ class AssetCache implements IAssetCache
 	{
 		if (_ == null)
 		{
-			_ = new _AssetCache();
+			_ = new _AssetCache(this);
 		}
 	}
 

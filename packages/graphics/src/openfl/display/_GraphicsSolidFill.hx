@@ -16,8 +16,12 @@ class _GraphicsSolidFill implements _IGraphicsData implements _IGraphicsFill
 	public var __graphicsDataType(default, null):GraphicsDataType;
 	public var __graphicsFillType(default, null):GraphicsFillType;
 
-	public function new(color:UInt = 0, alpha:Float = 1)
+	private var graphicsSolidFill:GraphicsSolidFill;
+
+	public function new(graphicsSolidFill:GraphicsSolidFill, color:UInt = 0, alpha:Float = 1)
 	{
+		this.graphicsSolidFill = graphicsSolidFill;
+
 		this.alpha = alpha;
 		this.color = color;
 		this.__graphicsDataType = SOLID;

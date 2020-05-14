@@ -24,11 +24,14 @@ class _ConvolutionFilter extends _BitmapFilter
 	public var preserveAlpha:Bool;
 
 	private var __matrix:Array<Float>;
+	private var convolutionFilter:ConvolutionFilter;
 
-	public function new(matrixX:Int = 0, matrixY:Int = 0, matrix:Array<Float> = null, divisor:Float = 1.0, bias:Float = 0.0, preserveAlpha:Bool = true,
-			clamp:Bool = true, color:Int = 0, alpha:Float = 0.0)
+	public function new(convolutionFilter:ConvolutionFilter, matrixX:Int = 0, matrixY:Int = 0, matrix:Array<Float> = null, divisor:Float = 1.0,
+			bias:Float = 0.0, preserveAlpha:Bool = true, clamp:Bool = true, color:Int = 0, alpha:Float = 0.0)
 	{
-		super();
+		this.convolutionFilter = convolutionFilter;
+
+		super(convolutionFilter);
 
 		this.matrixX = matrixX;
 		this.matrixY = matrixY;

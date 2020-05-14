@@ -28,8 +28,12 @@ class _Timeline
 	public var __timeElapsed:Int;
 	public var __totalFrames:Int;
 
-	public function new()
+	private var timeline:Timeline;
+
+	public function new(timeline:Timeline)
 	{
+		this.timeline = timeline;
+
 		__framesLoaded = 1;
 		__totalFrames = 1;
 		__currentLabels = [];

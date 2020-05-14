@@ -22,8 +22,12 @@ class _Tileset
 	public var __bitmapData:BitmapData;
 	public var __data:Array<TileData>;
 
-	public function new(bitmapData:BitmapData, rects:Array<Rectangle> = null)
+	private var tileset:Tileset;
+
+	public function new(tileset:Tileset, bitmapData:BitmapData, rects:Array<Rectangle> = null)
 	{
+		this.tileset = tileset;
+
 		// TODO: Add support for adding uniform tile rectangles (margin, spacing, width, height)
 
 		__bitmapData = bitmapData;
@@ -127,7 +131,7 @@ class _Tileset
 
 		for (data in __data)
 		{
-			data._.__update(__bitmapData);
+			data.__update(__bitmapData);
 		}
 
 		return value;

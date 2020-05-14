@@ -10,14 +10,18 @@ import openfl.ui.GameInputDevice;
 @:noCompletion
 class _GameInputEvent extends _Event
 {
+	public static var __pool:ObjectPool<GameInputEvent> = new ObjectPool<GameInputEvent>(function() return new GameInputEvent(null),
+		function(event)(event._:_Event).__init());
+
 	public var device:GameInputDevice;
 
-	public static var __pool:ObjectPool<GameInputEvent> = new ObjectPool<GameInputEvent>(function() return new GameInputEvent(null),
-		function(event) event._.__init());
+	private var gameInputEvent:GameInputEvent;
 
-	public function new(type:String, bubbles:Bool = true, cancelable:Bool = false, device:GameInputDevice = null)
+	public function new(gameInputEvent:GameInputEvent, type:String, bubbles:Bool = true, cancelable:Bool = false, device:GameInputDevice = null)
 	{
-		super(type, bubbles, cancelable);
+		this.gameInputEvent = gameInputEvent;
+
+		super(gameInputEvent, type, bubbles, cancelable);
 
 		this.device = device;
 	}
@@ -25,9 +29,9 @@ class _GameInputEvent extends _Event
 	public override function clone():GameInputEvent
 	{
 		var event = new GameInputEvent(type, bubbles, cancelable, device);
-		event.target = target;
-		event.currentTarget = currentTarget;
-		event.eventPhase = eventPhase;
+		(event._ : _Event).target = target;
+		(event._ : _Event).currentTarget = currentTarget;
+		(event._ : _Event).eventPhase = eventPhase;
 		return event;
 	}
 
@@ -38,7 +42,7 @@ class _GameInputEvent extends _Event
 
 	public override function __init():Void
 	{
-		super._.__init();
+		super.__init();
 		device = null;
 	}
 }

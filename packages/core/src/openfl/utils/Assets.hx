@@ -291,4 +291,16 @@ class Assets
 	{
 		_Assets.unloadLibrary(name);
 	}
+
+	// Get & Set Methods
+
+	@:noCompletion private static function get_cache():IAssetCache
+	{
+		return _Assets.cache;
+	}
+
+	@:noCompletion private static function set_cache(value:IAssetCache):IAssetCache
+	{
+		return _Assets.cache = value;
+	}
 }

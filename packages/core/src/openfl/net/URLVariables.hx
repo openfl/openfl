@@ -26,7 +26,7 @@ abstract URLVariables(Dynamic) from Dynamic to Dynamic
 	**/
 	public function new(source:String = null)
 	{
-		this = new _URLVariables(source);
+		this = new _URLVariables(this, source);
 	}
 
 	/**

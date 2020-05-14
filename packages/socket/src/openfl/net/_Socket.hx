@@ -42,12 +42,16 @@ class _Socket extends _EventDispatcher
 	public var input:ByteArray;
 	public var output:ByteArray;
 	public var parent:Socket;
-	public var socket:SysSocket;
+	public var sysSocket:SysSocket;
 	public var timestamp:Float;
 
-	public function new(host:String = null, port:Int = 0)
+	private var socket:Socket;
+
+	public function new(socket:Socket, host:String = null, port:Int = 0)
 	{
-		super();
+		this.socket = socket;
+
+		super(socket);
 
 		buffer = Bytes.alloc(4096);
 
@@ -64,11 +68,11 @@ class _Socket extends _EventDispatcher
 	{
 		try
 		{
-			socket.close();
+			sysSocket.close();
 		}
 		catch (e:Dynamic) {}
 
-		socket = null;
+		sysSocket = null;
 		connected = false;
 		Lib.current.removeEventListener(Event.ENTER_FRAME, this_onEnterFrame);
 	}
@@ -76,7 +80,7 @@ class _Socket extends _EventDispatcher
 	public function close():Void
 	{
 		__checkValid();
-		if (socket != null)
+		if (sysSocket != null)
 		{
 			cleanSocket();
 		}
@@ -86,10 +90,10 @@ class _Socket extends _EventDispatcher
 	{
 		if (port < 0 || port > 65535)
 		{
-			throw new SecurityError("Invalid socket port number specified.");
+			throw new SecurityError("Invalid sysSocket port number specified.");
 		}
 
-		if (socket != null)
+		if (sysSocket != null)
 		{
 			close();
 		}
@@ -114,13 +118,13 @@ class _Socket extends _EventDispatcher
 		input = new ByteArray();
 		input.endian = _endian;
 
-		socket = new SysSocket();
+		sysSocket = new SysSocket();
 
 		try
 		{
-			socket.setBlocking(false);
-			socket.connect(h, port);
-			socket.setFastSend(true);
+			sysSocket.setBlocking(false);
+			sysSocket.connect(h, port);
+			sysSocket.setFastSend(true);
 		}
 		catch (e:Dynamic) {}
 
@@ -134,13 +138,13 @@ class _Socket extends _EventDispatcher
 		{
 			try
 			{
-				socket.output.writeBytes(output, 0, output.length);
+				sysSocket.output.writeBytes(output, 0, output.length);
 				output = new ByteArray();
 				output.endian = _endian;
 			}
 			catch (e:Dynamic)
 			{
-				throw new IOError("Operation attempted on invalid socket.");
+				throw new IOError("Operation attempted on invalid sysSocket.");
 			}
 		}
 	}
@@ -320,23 +324,23 @@ class _Socket extends _EventDispatcher
 	{
 		if (!connected)
 		{
-			throw new IOError("Operation attempted on invalid socket.");
+			throw new IOError("Operation attempted on invalid sysSocket.");
 		}
 	}
 
 	// Event Handlers
 
-	public function socket_onClose(_):Void
+	public function sysSocket_onClose(_):Void
 	{
 		dispatchEvent(new Event(Event.CLOSE));
 	}
 
-	public function socket_onError(e):Void
+	public function sysSocket_onError(e):Void
 	{
 		dispatchEvent(new Event(IOErrorEvent.IO_ERROR));
 	}
 
-	public function socket_onOpen(_):Void
+	public function sysSocket_onOpen(_):Void
 	{
 		connected = true;
 		dispatchEvent(new Event(Event.CONNECT));
@@ -349,9 +353,9 @@ class _Socket extends _EventDispatcher
 
 		if (!connected)
 		{
-			var r = SysSocket.select(null, [socket], null, 0);
+			var r = SysSocket.select(null, [sysSocket], null, 0);
 
-			if (r.write[0] == socket)
+			if (r.write[0] == sysSocket)
 			{
 				doConnect = true;
 			}
@@ -372,7 +376,7 @@ class _Socket extends _EventDispatcher
 
 				do
 				{
-					l = socket.input.readBytes(buffer, 0, buffer.length);
+					l = sysSocket.input.readBytes(buffer, 0, buffer.length);
 
 					if (l > 0)
 					{
@@ -433,7 +437,7 @@ class _Socket extends _EventDispatcher
 			dispatchEvent(new ProgressEvent(ProgressEvent.SOCKET_DATA, false, false, newData.length, 0));
 		}
 
-		if (socket != null)
+		if (sysSocket != null)
 		{
 			try
 			{

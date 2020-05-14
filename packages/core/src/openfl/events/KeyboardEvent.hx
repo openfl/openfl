@@ -166,7 +166,7 @@ class KeyboardEvent extends Event
 	{
 		if (_ == null)
 		{
-			_ = new _KeyboardEvent(type, bubbles, cancelable, charCodeValue, keyCodeValue, keyLocationValue, ctrlKeyValue, altKeyValue, shiftKeyValue,
+			_ = new _KeyboardEvent(this, type, bubbles, cancelable, charCodeValue, keyCodeValue, keyLocationValue, ctrlKeyValue, altKeyValue, shiftKeyValue,
 				controlKeyValue, commandKeyValue);
 		}
 

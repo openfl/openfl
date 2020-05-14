@@ -79,7 +79,7 @@ import openfl.Vector;
 	**/
 	public function new(vertices:Vector<Float> = null, indices:Vector<Int> = null, uvtData:Vector<Float> = null, culling:TriangleCulling = NONE)
 	{
-		_ = new _GraphicsTrianglePath(vertices, indices, uvtData, culling);
+		_ = new _GraphicsTrianglePath(this, vertices, indices, uvtData, culling);
 	}
 
 	// Get & Set Methods

@@ -38,7 +38,7 @@ class _VideoTextureEvent extends _Event
 
 	public override function __init():Void
 	{
-		super._.__init();
+		super.__init();
 		status = null;
 		colorSpace = null;
 	}

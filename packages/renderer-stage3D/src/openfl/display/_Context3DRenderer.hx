@@ -225,9 +225,9 @@ class _Context3DRenderer extends _DisplayObjectRenderer
 
 		if (__childRendererPool == null)
 		{
-			__childRendererPool = new ObjectPool<_Context3DRenderer>(function()
+			__childRendererPool = new ObjectPool<Context3DRenderer>(function()
 			{
-				var renderer = new _Context3DRenderer(context3D, null);
+				var renderer = new Context3DRenderer(context3D, null);
 				renderer.__worldTransform = new Matrix();
 				renderer.__worldColorTransform = new ColorTransform();
 				return renderer;

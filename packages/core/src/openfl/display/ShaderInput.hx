@@ -62,27 +62,27 @@ import openfl.display3D.Context3DWrapMode;
 		be accounted for when the input data is a ByteArray or Vector.<Number>
 		instance.
 	**/
-	public var channels(default, null):Int;
+	public var channels(get, never):Int;
 
 	/**
 		The texture filter to use when binding this shader input.
 
 		This property is not available when targeting Flash.
 	**/
-	public var filter:Context3DTextureFilter;
+	public var filter(get, set):Context3DTextureFilter;
 
 	/**
 		The height of the shader input. This property is only used when the
 		input data is a ByteArray or Vector.<Number> instance. When the input
 		is a BitmapData instance the height is automatically determined.
 	**/
-	public var height:Int;
+	public var height(get, set):Int;
 
 	/**
 		The zero-based index of the input in the shader, indicating the order
 		of the input definitions in the shader.
 	**/
-	@SuppressWarnings("checkstyle:Dynamic") public var index(default, null):Dynamic;
+	@SuppressWarnings("checkstyle:Dynamic") public var index(get, never):Dynamic;
 
 	/**
 		The input data that is used when the shader executes. This property
@@ -103,32 +103,32 @@ import openfl.display3D.Context3DWrapMode;
 		length of the Vector must be equal to `width` times `height` times
 		`channels`.
 	**/
-	public var input:T;
+	public var input(get, set):T;
 
 	/**
 		The mip filter to use when binding this shader input.
 
 		This property is not available when targeting Flash.
 	**/
-	public var mipFilter:Context3DMipFilter;
+	public var mipFilter(get, set):Context3DMipFilter;
 
-	@:noCompletion @:dox(hide) @SuppressWarnings("checkstyle:FieldDocComment") public var name:String;
+	@:noCompletion @:dox(hide) @SuppressWarnings("checkstyle:FieldDocComment") public var name(get, set):String;
 
 	/**
 		The width of the shader input. This property is only used when the
 		input data is a ByteArray or Vector.<Number> instance. When the input
 		is a BitmapData instance the width is automatically determined.
 	**/
-	public var width:Int;
+	public var width(get, set):Int;
 
 	/**
 		The wrap mode to use when binding this shader input.
 
 		This property is not available when targeting Flash.
 	**/
-	public var wrap:Context3DWrapMode;
+	public var wrap(get, set):Context3DWrapMode;
 
-	@:allow(openfl) @:noCompletion private var _:Dynamic;
+	@:allow(openfl) @:noCompletion private var _:_ShaderInput<T>;
 
 	/**
 		Creates a ShaderInput instance. Developer code does not call the
@@ -137,15 +137,89 @@ import openfl.display3D.Context3DWrapMode;
 	**/
 	public function new()
 	{
-		channels = 0;
-		filter = NEAREST;
-		height = 0;
-		index = 0;
-		mipFilter = MIPNONE;
-		width = 0;
-		wrap = CLAMP;
-
 		_ = new _ShaderInput<T>(this);
+	}
+
+	// Get & Set Methods
+
+	@:noCompletion private function get_channels():Int
+	{
+		return _.channels;
+	}
+
+	@:noCompletion private function get_filter():Context3DTextureFilter
+	{
+		return _.filter;
+	}
+
+	@:noCompletion private function set_filter(value:Context3DTextureFilter):Context3DTextureFilter
+	{
+		return _.filter = value;
+	}
+
+	@:noCompletion private function get_height():Int
+	{
+		return _.height;
+	}
+
+	@:noCompletion private function set_height(value:Int):Int
+	{
+		return _.height = value;
+	}
+
+	@:noCompletion private function get_index():Dynamic
+	{
+		return _.index;
+	}
+
+	@:noCompletion private function get_input():T
+	{
+		return _.input;
+	}
+
+	@:noCompletion private function set_input(value:T):T
+	{
+		return _.input = value;
+	}
+
+	@:noCompletion private function get_mipFilter():Context3DMipFilter
+	{
+		return _.mipFilter;
+	}
+
+	@:noCompletion private function set_mipFilter(value:Context3DMipFilter):Context3DMipFilter
+	{
+		return _.mipFilter = value;
+	}
+
+	@:noCompletion private function get_name():String
+	{
+		return _.name;
+	}
+
+	@:noCompletion private function set_name(value:String):String
+	{
+		return _.name = value;
+	}
+
+	@:noCompletion private function get_width():Int
+	{
+		return _.width;
+	}
+
+	@:noCompletion private function set_width(value:Int):Int
+	{
+		return _.width = value;
+	}
+
+	@:noCompletion private function get_wrap():Context3DWrapMode
+	{
+		return _.wrap;
+	}
+
+	@:noCompletion private function set_wrap(value:Context3DWrapMode):Context3DWrapMode
+	{
+		return _.wrap = value;
 	}
 }
 #else

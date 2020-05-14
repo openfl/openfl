@@ -46,10 +46,14 @@ class _GlowFilter extends _BitmapFilter
 	private var __strength:Float;
 	private var __verticalPasses:Int;
 
-	public function new(color:Int = 0xFF0000, alpha:Float = 1, blurX:Float = 6, blurY:Float = 6, strength:Float = 2, quality:Int = 1, inner:Bool = false,
-			knockout:Bool = false)
+	private var glowFilter:GlowFilter;
+
+	public function new(glowFilter:GlowFilter, color:Int = 0xFF0000, alpha:Float = 1, blurX:Float = 6, blurY:Float = 6, strength:Float = 2, quality:Int = 1,
+			inner:Bool = false, knockout:Bool = false)
 	{
-		super();
+		this.glowFilter = glowFilter;
+
+		super(glowFilter);
 
 		__color = color;
 		__alpha = alpha;

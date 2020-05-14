@@ -45,7 +45,7 @@ class Timeline
 	{
 		if (_ == null)
 		{
-			_ = new _Timeline();
+			_ = new _Timeline(this);
 		}
 	}
 

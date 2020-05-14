@@ -9,5 +9,10 @@ class _SecurityDomain
 {
 	public static var currentDomain = new SecurityDomain();
 
-	public function new() {}
+	private var securityDomain:SecurityDomain;
+
+	public function new(securityDomain:SecurityDomain)
+	{
+		this.securityDomain = securityDomain;
+	}
 }

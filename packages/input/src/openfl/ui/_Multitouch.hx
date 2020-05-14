@@ -24,6 +24,7 @@ class _Multitouch
 	}
 
 	// Getters & Setters
+
 	public static function get_supportsTouchEvents():Bool
 	{
 		#if openfl_html5

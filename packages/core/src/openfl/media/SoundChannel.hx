@@ -56,7 +56,7 @@ import openfl.events.EventDispatcher;
 
 	@:allow(openfl) @:noCompletion private function new(sound:Sound = null, startTime:Float = 0, loops:Int = 0, soundTransform:SoundTransform = null):Void
 	{
-		_ = new _SoundChannel(sound, startTime, loops, soundTransform);
+		_ = new _SoundChannel(this, sound, startTime, loops, soundTransform);
 
 		super(this);
 	}

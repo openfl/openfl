@@ -19,7 +19,7 @@ class AssetManifest #if lime extends LimeAssetManifest #end
 		super();
 		#end
 
-		_ = new _AssetManifest();
+		_ = new _AssetManifest(this);
 	}
 
 	public function addBitmapData(path:String, id:String = null):Void

@@ -29,9 +29,13 @@ class _Accelerometer extends _EventDispatcher
 	public var __muted:Bool;
 	public var __timer:Timer;
 
-	public function new()
+	private var accelerometer:Accelerometer;
+
+	public function new(accelerometer:Accelerometer)
 	{
-		super();
+		this.accelerometer = accelerometer;
+
+		super(accelerometer);
 
 		initialize();
 

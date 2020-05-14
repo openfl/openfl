@@ -13,8 +13,12 @@ class _Matrix3D
 	public var position(get, set):Vector3D;
 	public var rawData:Vector<Float>;
 
-	public function new(v:Vector<Float> = null)
+	private var matrix3D:Matrix3D;
+
+	public function new(matrix3D:Matrix3D, v:Vector<Float> = null)
 	{
+		this.matrix3D = matrix3D;
+
 		if (v != null && v.length == 16)
 		{
 			rawData = v.concat();

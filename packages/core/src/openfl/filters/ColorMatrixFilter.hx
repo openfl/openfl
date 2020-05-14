@@ -121,7 +121,7 @@ import openfl._internal.backend.lime_standalone.RGBA;
 	**/
 	public function new(matrix:Array<Float> = null)
 	{
-		_ = new _ColorMatrixFilter(matrix);
+		_ = new _ColorMatrixFilter(this, matrix);
 
 		super();
 	}

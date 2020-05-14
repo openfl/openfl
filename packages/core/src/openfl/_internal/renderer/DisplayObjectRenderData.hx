@@ -10,6 +10,7 @@ import openfl.display3D.VertexBuffer3D;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObjectRenderer;
+import openfl.display._DisplayObject;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
@@ -108,7 +109,7 @@ class DisplayObjectRenderData
 	{
 		if (cacheBitmap != null)
 		{
-			cacheBitmap.__cleanup();
+			(cacheBitmap._ : _DisplayObject).__cleanup();
 			cacheBitmap = null;
 		}
 

@@ -103,7 +103,7 @@ class URLStream extends EventDispatcher implements IDataInput
 	{
 		if (_ == null)
 		{
-			_ = new _URLStream();
+			_ = new _URLStream(this);
 		}
 
 		super();

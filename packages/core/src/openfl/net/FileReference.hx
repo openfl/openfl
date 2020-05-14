@@ -446,7 +446,7 @@ class FileReference extends EventDispatcher
 	{
 		if (_ == null)
 		{
-			_ = new _FileReference();
+			_ = new _FileReference(this);
 		}
 
 		super();

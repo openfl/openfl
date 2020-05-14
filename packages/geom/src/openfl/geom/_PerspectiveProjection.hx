@@ -16,8 +16,12 @@ class _PerspectiveProjection
 	public var __fieldOfView:Float;
 	public var matrix3D:Matrix3D;
 
-	public function new()
+	private var perspectiveProjection:PerspectiveProjection;
+
+	public function new(perspectiveProjection:PerspectiveProjection)
 	{
+		this.perspectiveProjection = perspectiveProjection;
+
 		__fieldOfView = 0;
 		this.focalLength = 0;
 

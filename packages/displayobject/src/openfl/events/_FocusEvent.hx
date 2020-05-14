@@ -14,12 +14,19 @@ class _FocusEvent extends _Event
 	public var relatedObject:InteractiveObject;
 	public var shiftKey:Bool;
 
-	private static var __pool:ObjectPool<FocusEvent> = new ObjectPool<FocusEvent>(function() return new FocusEvent(null), function(event) event.__init());
-
-	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false, relatedObject:InteractiveObject = null, shiftKey:Bool = false,
-			keyCode:Int = 0)
+	private static var __pool:ObjectPool<FocusEvent> = new ObjectPool<FocusEvent>(function() return new FocusEvent(null), function(event)
 	{
-		super(type, bubbles, cancelable);
+		(event._ : _Event).__init();
+	});
+
+	private var focusEvent:FocusEvent;
+
+	public function new(focusEvent:FocusEvent, type:String, bubbles:Bool = false, cancelable:Bool = false, relatedObject:InteractiveObject = null,
+			shiftKey:Bool = false, keyCode:Int = 0)
+	{
+		this.focusEvent = focusEvent;
+
+		super(focusEvent, type, bubbles, cancelable);
 
 		this.keyCode = keyCode;
 		this.shiftKey = shiftKey;
@@ -29,9 +36,9 @@ class _FocusEvent extends _Event
 	public override function clone():FocusEvent
 	{
 		var event = new FocusEvent(type, bubbles, cancelable, relatedObject, shiftKey, keyCode);
-		event.target = target;
-		event.currentTarget = currentTarget;
-		event.eventPhase = eventPhase;
+		(event._ : _Event).target = target;
+		(event._ : _Event).currentTarget = currentTarget;
+		(event._ : _Event).eventPhase = eventPhase;
 		return event;
 	}
 
@@ -40,7 +47,7 @@ class _FocusEvent extends _Event
 		return __formatToString("FocusEvent", ["type", "bubbles", "cancelable", "relatedObject", "shiftKey", "keyCode"]);
 	}
 
-	private override function __init():Void
+	public override function __init():Void
 	{
 		super.__init();
 		keyCode = 0;

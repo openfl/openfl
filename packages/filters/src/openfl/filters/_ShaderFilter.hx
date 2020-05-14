@@ -19,9 +19,13 @@ class _ShaderFilter extends _BitmapFilter
 	public var shader:Shader;
 	public var topExtension:Int;
 
-	public function new(shader:Shader)
+	private var shaderFilter:ShaderFilter;
+
+	public function new(shaderFilter:ShaderFilter, shader:Shader)
 	{
-		super();
+		this.shaderFilter = shaderFilter;
+
+		super(shaderFilter);
 
 		this.shader = shader;
 

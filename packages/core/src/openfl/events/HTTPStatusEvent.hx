@@ -70,19 +70,19 @@ class HTTPStatusEvent extends Event
 	/**
 		Indicates whether the request was redirected.
 	**/
-	public var redirected:Bool;
+	public var redirected(get, set):Bool;
 
 	/**
 		The response headers that the response returned, as an array of
 		URLRequestHeader objects.
 	**/
-	public var responseHeaders:Array<URLRequestHeader>;
+	public var responseHeaders(get, set):Array<URLRequestHeader>;
 
 	/**
 		The URL that the response was returned from. In the case of redirects,
 		this will be different from the request URL.
 	**/
-	public var responseURL:String;
+	public var responseURL(get, set):String;
 
 	/**
 		The HTTP status code returned by the server. For example, a value of 404
@@ -99,10 +99,7 @@ class HTTPStatusEvent extends Event
 		not pass HTTP status codes to the player: Netscape, Mozilla, Safari,
 		Opera, and Internet Explorer for the Macintosh.
 	**/
-	public var status(default, null):Int;
-
-	@:noCompletion private static var __pool:ObjectPool<HTTPStatusEvent> = new ObjectPool<HTTPStatusEvent>(function() return new HTTPStatusEvent(null),
-	function(event) event.__init());
+	public var status(get, never):Int;
 
 	/**
 		Creates an Event object that contains specific information about HTTP
@@ -124,31 +121,54 @@ class HTTPStatusEvent extends Event
 	**/
 	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false, status:Int = 0, redirected:Bool = false):Void
 	{
-		this.status = status;
-		this.redirected = redirected;
+		if (_ == null)
+		{
+			_ = new _HTTPStatusEvent(this, type, bubbles, cancelable, status, redirected);
+		}
 
 		super(type, bubbles, cancelable);
 	}
 
 	public override function clone():HTTPStatusEvent
 	{
-		var event = new HTTPStatusEvent(type, bubbles, cancelable, status, redirected);
-		event.target = target;
-		event.currentTarget = currentTarget;
-		event.eventPhase = eventPhase;
-		return event;
+		return (_ : _HTTPStatusEvent).clone();
 	}
 
-	public override function toString():String
+	// Get & Set Methods
+
+	@:noCompletion private function get_redirected():Bool
 	{
-		return __formatToString("HTTPStatusEvent", ["type", "bubbles", "cancelable", "status", "redirected"]);
+		return (_ : _HTTPStatusEvent).redirected;
 	}
 
-	@:noCompletion private override function __init():Void
+	@:noCompletion private function set_redirected(value:Bool):Bool
 	{
-		super.__init();
-		status = 0;
-		redirected = false;
+		return (_ : _HTTPStatusEvent).redirected = value;
+	}
+
+	@:noCompletion private function get_responseHeaders():Array<URLRequestHeader>
+	{
+		return (_ : _HTTPStatusEvent).responseHeaders;
+	}
+
+	@:noCompletion private function set_responseHeaders(value:Array<URLRequestHeader>):Array<URLRequestHeader>
+	{
+		return (_ : _HTTPStatusEvent).responseHeaders = value;
+	}
+
+	@:noCompletion private function get_responseURL():String
+	{
+		return (_ : _HTTPStatusEvent).responseURL;
+	}
+
+	@:noCompletion private function set_responseURL(value:String):String
+	{
+		return (_ : _HTTPStatusEvent).responseURL = value;
+	}
+
+	@:noCompletion private function get_status():Int
+	{
+		return (_ : _HTTPStatusEvent).status;
 	}
 }
 #else

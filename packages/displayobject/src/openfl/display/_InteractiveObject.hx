@@ -22,8 +22,12 @@ class _InteractiveObject extends _DisplayObject
 	public var __tabEnabled:Null<Bool>;
 	public var __tabIndex:Int;
 
+	private var interactiveObject:InteractiveObject;
+
 	public function new(interactiveObject:InteractiveObject)
 	{
+		this.interactiveObject = interactiveObject;
+
 		super(interactiveObject);
 
 		doubleClickEnabled = false;
@@ -48,11 +52,11 @@ class _InteractiveObject extends _DisplayObject
 	{
 		if (stack != null)
 		{
-			stack.push(this);
+			stack.push(this.interactiveObject);
 
 			if (parent != null)
 			{
-				parent._.__getInteractive(stack);
+				(parent._ : _DisplayObject).__getInteractive(stack);
 			}
 		}
 
@@ -63,14 +67,14 @@ class _InteractiveObject extends _DisplayObject
 	// 		hitObject:DisplayObject):Bool
 	// {
 	// 	if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled)) return false;
-	// 	return inline super._.__hitTest(x, y, shapeFlag, stack, interactiveOnly, hitObject);
+	// 	return inline super.__hitTest(x, y, shapeFlag, stack, interactiveOnly, hitObject);
 	// }
 
 	public function __tabTest(stack:Array<InteractiveObject>):Void
 	{
 		if (tabEnabled)
 		{
-			stack.push(this);
+			stack.push(this.interactiveObject);
 		}
 	}
 

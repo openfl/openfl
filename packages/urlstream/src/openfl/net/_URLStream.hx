@@ -24,8 +24,12 @@ class _URLStream extends _EventDispatcher
 	public var __data:ByteArray;
 	public var __loader:URLLoader;
 
-	public function new()
+	private var urlStream:URLStream;
+
+	public function new(urlStream:URLStream)
 	{
+		this.urlStream = urlStream;
+
 		super();
 
 		// TODO: Operate more like socket?

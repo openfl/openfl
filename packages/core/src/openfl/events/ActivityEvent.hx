@@ -34,10 +34,7 @@ class ActivityEvent extends Event
 		Indicates whether the device is activating (`true`) or deactivating
 		(`false`).
 	**/
-	public var activating:Bool;
-
-	@:noCompletion private static var __pool:ObjectPool<ActivityEvent> = new ObjectPool<ActivityEvent>(function() return new ActivityEvent(null),
-	function(event) event.__init());
+	public var activating(get, set):Bool;
 
 	/**
 		Creates an event object that contains information about activity
@@ -61,29 +58,29 @@ class ActivityEvent extends Event
 	**/
 	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false, activating:Bool = false)
 	{
-		super(type, bubbles, cancelable);
+		if (_ == null)
+		{
+			_ = new _ActivityEvent(this, type, bubbles, cancelable, activating);
+		}
 
-		this.activating = activating;
+		super(type, bubbles, cancelable);
 	}
 
 	public override function clone():ActivityEvent
 	{
-		var event = new ActivityEvent(type, bubbles, cancelable, activating);
-		event.target = target;
-		event.currentTarget = currentTarget;
-		event.eventPhase = eventPhase;
-		return event;
+		return (_ : _ActivityEvent).clone();
 	}
 
-	public override function toString():String
+	// Get & Set Methods
+
+	@:noCompletion private function get_activating():Bool
 	{
-		return __formatToString("ActivityEvent", ["type", "bubbles", "cancelable", "activating"]);
+		return (_ : _ActivityEvent).activating;
 	}
 
-	@:noCompletion private override function __init():Void
+	@:noCompletion private function set_activating(value:Bool):Bool
 	{
-		super.__init();
-		activating = false;
+		return (_ : _ActivityEvent).activating = value;
 	}
 }
 #else

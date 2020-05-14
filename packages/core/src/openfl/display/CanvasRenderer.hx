@@ -34,7 +34,7 @@ class CanvasRenderer extends DisplayObjectRenderer
 	{
 		if (_ == null)
 		{
-			_ = new _CanvasRenderer(context);
+			_ = new _CanvasRenderer(this, context);
 		}
 
 		super();

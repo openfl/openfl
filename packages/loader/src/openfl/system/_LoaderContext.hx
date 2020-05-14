@@ -13,8 +13,13 @@ class _LoaderContext
 	public var checkPolicyFile:Bool;
 	public var securityDomain:SecurityDomain;
 
-	public function new(checkPolicyFile:Bool = false, applicationDomain:ApplicationDomain = null, securityDomain:SecurityDomain = null):Void
+	private var loaderContext:LoaderContext;
+
+	public function new(loaderContext:LoaderContext, checkPolicyFile:Bool = false, applicationDomain:ApplicationDomain = null,
+			securityDomain:SecurityDomain = null):Void
 	{
+		this.loaderContext = loaderContext;
+
 		this.checkPolicyFile = checkPolicyFile;
 		this.securityDomain = securityDomain;
 		this.applicationDomain = applicationDomain;

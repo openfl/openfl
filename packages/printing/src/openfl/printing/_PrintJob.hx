@@ -32,7 +32,12 @@ class _PrintJob
 	public var __bitmapData:Array<BitmapData>;
 	public var __started:Bool;
 
-	public function new() {}
+	private var printJob:PrintJob;
+
+	public function new(printJob:PrintJob)
+	{
+		this.printJob = printJob;
+	}
 
 	public function addPage(sprite:Sprite, printArea:Rectangle = null, options:PrintJobOptions = null, frameNum:Int = 0):Void
 	{

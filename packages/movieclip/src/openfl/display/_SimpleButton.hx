@@ -1,6 +1,7 @@
 package openfl.display;
 
 import openfl.geom.Matrix;
+import openfl.geom._Matrix;
 import openfl.geom.Rectangle;
 import openfl.events.MouseEvent;
 import openfl.media.SoundTransform;
@@ -34,9 +35,14 @@ class _SimpleButton extends _InteractiveObject
 	public var __soundTransform:SoundTransform;
 	public var __upState:DisplayObject;
 
-	public function new(upState:DisplayObject = null, overState:DisplayObject = null, downState:DisplayObject = null, hitTestState:DisplayObject = null)
+	private var simpleButton:SimpleButton;
+
+	public function new(simpleButton:SimpleButton, upState:DisplayObject = null, overState:DisplayObject = null, downState:DisplayObject = null,
+			hitTestState:DisplayObject = null)
 	{
-		super();
+		this.simpleButton = simpleButton;
+
+		super(simpleButton);
 
 		__type = SIMPLE_BUTTON;
 
@@ -62,24 +68,24 @@ class _SimpleButton extends _InteractiveObject
 			var method = __constructor;
 			__constructor = null;
 
-			method(this);
+			method(this.simpleButton);
 		}
 	}
 
-	private override function __getBounds(rect:Rectangle, matrix:Matrix):Void
+	public override function __getBounds(rect:Rectangle, matrix:Matrix):Void
 	{
 		super.__getBounds(rect, matrix);
 
 		var childWorldTransform = _Matrix.__pool.get();
 
-		DisplayObject.__calculateAbsoluteTransform(__currentState.__transform, matrix, childWorldTransform);
+		_DisplayObject.__calculateAbsoluteTransform((__currentState._ : _DisplayObject).__transform, matrix, childWorldTransform);
 
-		__currentState.__getBounds(rect, childWorldTransform);
+		(__currentState._ : _DisplayObject).__getBounds(rect, childWorldTransform);
 
 		_Matrix.__pool.release(childWorldTransform);
 	}
 
-	private override function __getRenderBounds(rect:Rectangle, matrix:Matrix):Void
+	public override function __getRenderBounds(rect:Rectangle, matrix:Matrix):Void
 	{
 		if (__scrollRect != null)
 		{
@@ -93,25 +99,25 @@ class _SimpleButton extends _InteractiveObject
 
 		var childWorldTransform = _Matrix.__pool.get();
 
-		DisplayObject.__calculateAbsoluteTransform(__currentState.__transform, matrix, childWorldTransform);
+		_DisplayObject.__calculateAbsoluteTransform((__currentState._ : _DisplayObject).__transform, matrix, childWorldTransform);
 
-		__currentState.__getRenderBounds(rect, childWorldTransform);
+		(__currentState._ : _DisplayObject).__getRenderBounds(rect, childWorldTransform);
 
 		_Matrix.__pool.release(childWorldTransform);
 	}
 
-	private override function __getCursor():MouseCursor
+	public override function __getCursor():MouseCursor
 	{
 		return (useHandCursor && !__ignoreEvent && enabled) ? BUTTON : null;
 	}
 
-	private override function __hitTest(x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool
+	public override function __hitTest(x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool
 	{
 		var hitTest = false;
 
 		if (hitTestState != null)
 		{
-			if (hitTestState.__hitTest(x, y, shapeFlag, stack, interactiveOnly, hitObject))
+			if ((hitTestState._ : _DisplayObject).__hitTest(x, y, shapeFlag, stack, interactiveOnly, hitObject))
 			{
 				if (stack != null)
 				{
@@ -130,11 +136,14 @@ class _SimpleButton extends _InteractiveObject
 		}
 		else if (__currentState != null)
 		{
-			if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled) || (mask != null && !mask.__hitTestMask(x, y)))
+			if (!hitObject.visible
+				|| __isMask
+				|| (interactiveOnly && !mouseEnabled)
+				|| (mask != null && !(mask._ : _DisplayObject).__hitTestMask(x, y)))
 			{
 				hitTest = false;
 			}
-			else if (__currentState.__hitTest(x, y, shapeFlag, stack, interactiveOnly, hitObject))
+			else if ((__currentState._ : _DisplayObject).__hitTest(x, y, shapeFlag, stack, interactiveOnly, hitObject))
 			{
 				hitTest = interactiveOnly;
 			}
@@ -154,11 +163,11 @@ class _SimpleButton extends _InteractiveObject
 		return hitTest;
 	}
 
-	private override function __hitTestMask(x:Float, y:Float):Bool
+	public override function __hitTestMask(x:Float, y:Float):Bool
 	{
 		var hitTest = false;
 
-		if (__currentState.__hitTestMask(x, y))
+		if ((__currentState._ : _DisplayObject).__hitTestMask(x, y))
 		{
 			hitTest = true;
 		}
@@ -166,23 +175,23 @@ class _SimpleButton extends _InteractiveObject
 		return hitTest;
 	}
 
-	private override function __setTransformDirty(force:Bool = false):Void
+	public override function __setTransformDirty(force:Bool = false):Void
 	{
 		// inline super.__setTransformDirty(force);
 		__transformDirty = true;
 
 		if (__currentState != null)
 		{
-			__currentState.__setTransformDirty(force);
+			(__currentState._ : _DisplayObject).__setTransformDirty(force);
 		}
 
 		if (hitTestState != null && hitTestState != __currentState)
 		{
-			hitTestState.__setTransformDirty(force);
+			(hitTestState._ : _DisplayObject).__setTransformDirty(force);
 		}
 	}
 
-	private override function __update(transformOnly:Bool, updateChildren:Bool):Void
+	public override function __update(transformOnly:Bool, updateChildren:Bool):Void
 	{
 		__updateSingle(transformOnly, updateChildren);
 
@@ -190,12 +199,12 @@ class _SimpleButton extends _InteractiveObject
 		{
 			if (__currentState != null)
 			{
-				__currentState.__update(transformOnly, true);
+				(__currentState._ : _DisplayObject).__update(transformOnly, true);
 			}
 
 			if (hitTestState != null && hitTestState != __currentState)
 			{
-				hitTestState.__update(transformOnly, true);
+				(hitTestState._ : _DisplayObject).__update(transformOnly, true);
 			}
 		}
 	}
@@ -234,7 +243,7 @@ class _SimpleButton extends _InteractiveObject
 
 		if (hitTestState != null)
 		{
-			(__hitTestState._ : _DisplayObject).__renderParent = this_displayObject;
+			(__hitTestState._ : _DisplayObject).__renderParent = this.simpleButton;
 			(__hitTestState._ : _DisplayObject).__setTransformDirty();
 			(__hitTestState._ : _DisplayObject).__setRenderDirty();
 		}
@@ -303,7 +312,7 @@ class _SimpleButton extends _InteractiveObject
 
 		// #if (openfl_html5 && dom)
 		#if openfl_html5
-		if (DisplayObject.__supportDOM && __previousStates == null)
+		if (_DisplayObject.__supportDOM && __previousStates == null)
 		{
 			__previousStates = new Vector<DisplayObject>();
 		}
@@ -313,7 +322,7 @@ class _SimpleButton extends _InteractiveObject
 		{
 			// #if (openfl_html5 && dom)
 			#if openfl_html5
-			if (DisplayObject.__supportDOM)
+			if (_DisplayObject.__supportDOM)
 			{
 				if (__currentState != null)
 				{
@@ -332,7 +341,7 @@ class _SimpleButton extends _InteractiveObject
 
 			if (value != null)
 			{
-				(value._ : _DisplayObject).__renderParent = this_displayObject;
+				(value._ : _DisplayObject).__renderParent = this.simpleButton;
 				(value._ : _DisplayObject).__setTransformDirty();
 				(value._ : _DisplayObject).__setRenderDirty();
 			}

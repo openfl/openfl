@@ -155,7 +155,7 @@ class ApplicationMain
 		catch (e:Dynamic)
 		{
 			#if !display
-			stage.__handleError (e);
+			(stage._ : openfl.display._Stage).__handleError (e);
 			#end
 		}
 		#end

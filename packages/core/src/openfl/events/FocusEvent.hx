@@ -164,7 +164,7 @@ class FocusEvent extends Event
 	{
 		if (_ == null)
 		{
-			_ = new _FocusEvent(type, bubbles, cancelable, relatedObject, shiftKey, keyCode);
+			_ = new _FocusEvent(this, type, bubbles, cancelable, relatedObject, shiftKey, keyCode);
 		}
 
 		super(type, bubbles, cancelable);

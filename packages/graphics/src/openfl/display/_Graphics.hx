@@ -63,8 +63,12 @@ import lime.graphics.cairo.Cairo;
 	public var __glStack:Array<openfl._internal.renderer.opengl.utils.GLStack> = [];
 	#end
 
-	public function new(owner:DisplayObject)
+	private var graphics:Graphics;
+
+	public function new(graphics:Graphics, owner:DisplayObject)
 	{
+		this.graphics = graphics;
+
 		__owner = owner;
 
 		__commands = new DrawCommandBuffer();
@@ -795,10 +799,10 @@ import lime.graphics.cairo.Cairo;
 	{
 		if (__bounds == null) return;
 
-		var bounds = _Rectangle._.__pool.get();
+		var bounds = _Rectangle.__pool.get();
 		__bounds._.__transform(bounds, matrix);
 		rect._.__expand(bounds.x, bounds.y, bounds.width, bounds.height);
-		_Rectangle._.__pool.release(bounds);
+		_Rectangle.__pool.release(bounds);
 	}
 
 	public function __hitTest(x:Float, y:Float, shapeFlag:Bool, matrix:Matrix):Bool

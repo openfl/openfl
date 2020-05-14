@@ -19,8 +19,12 @@ class _GraphicsBitmapFill implements _IGraphicsData implements _IGraphicsFill
 	public var __graphicsDataType(default, null):GraphicsDataType;
 	public var __graphicsFillType(default, null):GraphicsFillType;
 
-	public function new(bitmapData:BitmapData = null, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false)
+	private var graphicsBitmapFill:GraphicsBitmapFill;
+
+	public function new(graphicsBitmapFill:GraphicsBitmapFill, bitmapData:BitmapData = null, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false)
 	{
+		this.graphicsBitmapFill = graphicsBitmapFill;
+
 		this.bitmapData = bitmapData;
 		this.matrix = matrix;
 		this.repeat = repeat;

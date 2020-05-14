@@ -11,6 +11,7 @@ import openfl.display3D.textures.TextureBase;
 import openfl.display3D.Context3D;
 import openfl.display3D.Context3DMipFilter;
 import openfl.display.BitmapData;
+import openfl.display._BitmapData;
 import openfl.errors.Error;
 import openfl.events._EventDispatcher;
 import openfl._internal.utils.Log;
@@ -51,17 +52,20 @@ class _TextureBase extends _EventDispatcher
 	// public var outputTextureMemoryUsage:Bool = false;
 	public var samplerState:SamplerState;
 
-	private var __base:_TextureBase;
-	private var __context:Context3D;
-	private var __format:Context3DTextureFormat;
-	private var __height:Int;
-	private var __optimizeForRenderToTexture:Bool;
-	private var __streamingLevels:Int;
-	private var __width:Int;
+	public var __context:Context3D;
+	public var __format:Context3DTextureFormat;
+	public var __height:Int;
+	public var __optimizeForRenderToTexture:Bool;
+	public var __streamingLevels:Int;
+	public var __width:Int;
 
-	private function new(textureBase:TextureBase, context:Context3D, width:Int, height:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool,
+	private var textureBase:TextureBase;
+
+	public function new(textureBase:TextureBase, context:Context3D, width:Int, height:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool,
 			streamingLevels:Int)
 	{
+		this.textureBase = textureBase;
+
 		super(textureBase);
 
 		__context = context;
@@ -253,10 +257,10 @@ class _TextureBase extends _EventDispatcher
 		#if lime
 		var image = bitmapData.limeImage;
 		#elseif openfl_html5
-		var image = @:privateAccess bitmapData._.image;
+		var image = @:privateAccess (bitmapData._ : _BitmapData).image;
 		#end
 
-		if (!bitmapData._.__isValid || image == null)
+		if (!(bitmapData._ : _BitmapData).__isValid || image == null)
 		{
 			return null;
 		}

@@ -276,7 +276,7 @@ class SharedObject extends EventDispatcher
 	{
 		if (_ == null)
 		{
-			_ = new _SharedObject();
+			_ = new _SharedObject(this);
 		}
 
 		super();

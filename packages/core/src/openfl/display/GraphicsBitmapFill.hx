@@ -91,7 +91,7 @@ import openfl.geom.Matrix;
 	**/
 	public function new(bitmapData:BitmapData = null, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false)
 	{
-		_ = new _GraphicsBitmapFill(bitmapData, matrix, repeat, smooth);
+		_ = new _GraphicsBitmapFill(this, bitmapData, matrix, repeat, smooth);
 	}
 
 	// Get & Set Methods

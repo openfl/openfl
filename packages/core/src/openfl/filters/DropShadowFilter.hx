@@ -192,7 +192,7 @@ import openfl._internal.backend.lime_standalone.ImageDataUtil;
 	public function new(distance:Float = 4, angle:Float = 45, color:Int = 0, alpha:Float = 1, blurX:Float = 4, blurY:Float = 4, strength:Float = 1,
 			quality:Int = 1, inner:Bool = false, knockout:Bool = false, hideObject:Bool = false)
 	{
-		_ = new _DropShadowFilter(distance, angle, color, alpha, blurX, blurY, strength, quality, inner, knockout, hideObject);
+		_ = new _DropShadowFilter(this, distance, angle, color, alpha, blurX, blurY, strength, quality, inner, knockout, hideObject);
 
 		super();
 	}

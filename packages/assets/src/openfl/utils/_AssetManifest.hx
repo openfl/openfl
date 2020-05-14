@@ -16,7 +16,12 @@ class _AssetManifest
 	public var assets:Array<Dynamic>;
 	#end
 
-	public function new() {}
+	private var assetManifest:AssetManifest;
+
+	public function new(assetManifest:AssetManifest)
+	{
+		this.assetManifest = assetManifest;
+	}
 
 	public function addBitmapData(path:String, id:String = null):Void
 	{

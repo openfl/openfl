@@ -4,10 +4,12 @@ import haxe.Int64;
 import lime.graphics.opengl.GL;
 import openfl._internal.renderer.SamplerState;
 import openfl._internal.utils.Log;
+import openfl.display3D._Context3D;
 import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
 import openfl.display3D.Context3DWrapMode;
 import openfl.display3D.Program3D;
+import openfl.display3D._Program3D;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
 import openfl.utils.Endian;
@@ -479,7 +481,7 @@ class AGALConverter
 
 		if (limitedProfile == null)
 		{
-			var gl = program._.__context._.gl;
+			var gl = ((program._ : _Program3D).__context._ : _Context3D).gl;
 			var version:String = gl.getParameter(GL.VERSION);
 			limitedProfile = (version.indexOf("OpenGL ES") > -1 || version.indexOf("WebGL") > -1);
 		}

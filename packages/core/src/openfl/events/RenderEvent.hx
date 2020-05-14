@@ -151,7 +151,7 @@ import openfl.geom.Matrix;
 	{
 		if (_ == null)
 		{
-			_ = new _RenderEvent(type, bubbles, cancelable, objectMatrix, objectColorTransform, allowSmoothing);
+			_ = new _RenderEvent(this, type, bubbles, cancelable, objectMatrix, objectColorTransform, allowSmoothing);
 		}
 
 		super(type, bubbles, cancelable);

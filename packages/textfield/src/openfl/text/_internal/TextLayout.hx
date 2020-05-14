@@ -100,7 +100,7 @@ class TextLayout
 		positions = [];
 
 		#if (lime && lime_cffi && !macro)
-		if (text != null && text != "" && font != null && font.src != null)
+		if (text != null && text != "" && font != null && font.limeFont.src != null)
 		{
 			if (__buffer == null)
 			{
@@ -112,8 +112,8 @@ class TextLayout
 			{
 				__font = font;
 				// 	hb_font_destroy ((hb_font_t*)mHBFont);
-				@:privateAccess font._.__setSize(size);
-				__hbFont = new HBFTFont(font);
+				@:privateAccess font._.limeFont.__setSize(size);
+				__hbFont = new HBFTFont(font.limeFont);
 
 				if (autoHint)
 				{
@@ -122,7 +122,7 @@ class TextLayout
 			}
 			else
 			{
-				@:privateAccess font._.__setSize(size);
+				@:privateAccess font._.limeFont.__setSize(size);
 			}
 
 			if (__hbBuffer == null)

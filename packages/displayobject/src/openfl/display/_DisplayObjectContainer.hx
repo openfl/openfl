@@ -11,7 +11,9 @@ import openfl.geom.Point;
 import openfl.geom._Point;
 import openfl.geom.Rectangle;
 import openfl.text.TextField;
+import openfl.text._TextField;
 import openfl.media.Video;
+import openfl.media._Video;
 import openfl.Vector;
 
 using openfl._internal.utils.DisplayObjectLinkedList;
@@ -39,11 +41,11 @@ class _DisplayObjectContainer extends _InteractiveObject
 	public var __removedChildren:Vector<DisplayObject>;
 	public var __tabChildren:Bool;
 
-	private var this_displayObjectContainer:DisplayObjectContainer;
+	private var displayObjectContainer:DisplayObjectContainer;
 
 	public function new(displayObjectContainer:DisplayObjectContainer)
 	{
-		this_displayObjectContainer = displayObjectContainer;
+		this.displayObjectContainer = displayObjectContainer;
 
 		super(displayObjectContainer);
 
@@ -73,14 +75,14 @@ class _DisplayObjectContainer extends _InteractiveObject
 		}
 		#end
 
-		if (child.parent == this_displayObject)
+		if (child.parent == this.displayObjectContainer)
 		{
-			DisplayObjectLinkedList.__addChild(this_displayObjectContainer, child);
+			DisplayObjectLinkedList.__addChild(this.displayObjectContainer, child);
 		}
 		else
 		{
-			DisplayObjectLinkedList.__reparent(this_displayObjectContainer, child);
-			DisplayObjectLinkedList.__addChild(this_displayObjectContainer, child);
+			DisplayObjectLinkedList.__reparent(this.displayObjectContainer, child);
+			DisplayObjectLinkedList.__addChild(this.displayObjectContainer, child);
 
 			var addedToStage = (stage != null && child.stage == null);
 
@@ -158,26 +160,26 @@ class _DisplayObjectContainer extends _InteractiveObject
 			throw "Invalid index position " + index;
 		}
 
-		if (child.parent == this_displayObject)
+		if (child.parent == this.displayObjectContainer)
 		{
 			if (index == 0)
 			{
 				if (__firstChild != child)
 				{
-					DisplayObjectLinkedList.__unshiftChild(this_displayObjectContainer, child);
+					DisplayObjectLinkedList.__unshiftChild(this.displayObjectContainer, child);
 					__setRenderDirty();
 				}
 			}
 			else
 			{
-				DisplayObjectLinkedList.__swapChildren(this_displayObjectContainer, child, getChildAt(index));
+				DisplayObjectLinkedList.__swapChildren(this.displayObjectContainer, child, getChildAt(index));
 				__setRenderDirty();
 			}
 		}
 		else
 		{
-			DisplayObjectLinkedList.__reparent(this_displayObjectContainer, child);
-			DisplayObjectLinkedList.__insertChildAt(this_displayObjectContainer, child, index);
+			DisplayObjectLinkedList.__reparent(this.displayObjectContainer, child);
+			DisplayObjectLinkedList.__insertChildAt(this.displayObjectContainer, child, index);
 			__setRenderDirty();
 
 			var addedToStage = (stage != null && child.stage == null);
@@ -195,13 +197,13 @@ class _DisplayObjectContainer extends _InteractiveObject
 
 			#if !openfl_disable_event_pooling
 			var event = _Event.__pool.get();
-			event.type = Event.ADDED;
+			(event._ : _Event).type = Event.ADDED;
 			#else
 			var event = new Event(Event.ADDED);
 			#end
-			event.bubbles = true;
+			(event._ : _Event).bubbles = true;
 
-			event.target = child;
+			(event._ : _Event).target = child;
 
 			(child._ : _DisplayObject).__dispatchWithCapture(event);
 
@@ -236,12 +238,12 @@ class _DisplayObjectContainer extends _InteractiveObject
 
 	public function contains(child:DisplayObject):Bool
 	{
-		while (child != this_displayObject && child != null)
+		while (child != this.displayObjectContainer && child != null)
 		{
 			child = child.parent;
 		}
 
-		return child == this_displayObject;
+		return child == this.displayObjectContainer;
 	}
 
 	public function getChildAt(index:Int):DisplayObject
@@ -294,14 +296,14 @@ class _DisplayObjectContainer extends _InteractiveObject
 	public function getObjectsUnderPoint(point:Point):Array<DisplayObject>
 	{
 		var stack = new Array<DisplayObject>();
-		__hitTest(point.x, point.y, false, stack, false, this_displayObjectContainer);
+		__hitTest(point.x, point.y, false, stack, false, this.displayObjectContainer);
 		stack.reverse();
 		return stack;
 	}
 
 	public function removeChild(child:DisplayObject):DisplayObject
 	{
-		if (child != null && child.parent == this_displayObject)
+		if (child != null && child.parent == this.displayObjectContainer)
 		{
 			(child._ : _DisplayObject).__setTransformDirty();
 			(child._ : _DisplayObject).__setParentRenderDirty();
@@ -325,7 +327,7 @@ class _DisplayObjectContainer extends _InteractiveObject
 				(child._ : _DisplayObject).__setStageReferences(null);
 			}
 
-			DisplayObjectLinkedList.__removeChild(this_displayObjectContainer, child);
+			DisplayObjectLinkedList.__removeChild(this.displayObjectContainer, child);
 
 			__removedChildren.push(child);
 			(child._ : _DisplayObject).__setTransformDirty(true);
@@ -415,29 +417,29 @@ class _DisplayObjectContainer extends _InteractiveObject
 
 	public function setChildIndex(child:DisplayObject, index:Int):Void
 	{
-		if (index >= 0 && index <= numChildren && numChildren > 1 && child.parent == this_displayObject)
+		if (index >= 0 && index <= numChildren && numChildren > 1 && child.parent == this.displayObjectContainer)
 		{
 			#if openfl_validate_children
 			var copy = __children.copy();
 			#end
 			if (index == 0)
 			{
-				DisplayObjectLinkedList.__unshiftChild(this_displayObjectContainer, child);
+				DisplayObjectLinkedList.__unshiftChild(this.displayObjectContainer, child);
 			}
 			else if (index >= numChildren - 1)
 			{
-				DisplayObjectLinkedList.__addChild(this_displayObjectContainer, child);
+				DisplayObjectLinkedList.__addChild(this.displayObjectContainer, child);
 			}
 			else
 			{
-				DisplayObjectLinkedList.__insertChildAt(this_displayObjectContainer, child, index);
+				DisplayObjectLinkedList.__insertChildAt(this.displayObjectContainer, child, index);
 			}
 			__setRenderDirty();
 			#if openfl_validate_children
 			__children = copy;
 			__children.remove(child);
 			__children.insert(index, child);
-			DisplayObjectLinkedList.__validateChildren(this_displayObjectContainer, "setChildIndex");
+			DisplayObjectLinkedList.__validateChildren(this.displayObjectContainer, "setChildIndex");
 			#end
 		}
 	}
@@ -449,9 +451,9 @@ class _DisplayObjectContainer extends _InteractiveObject
 
 	public function swapChildren(child1:DisplayObject, child2:DisplayObject):Void
 	{
-		if (child1.parent == this_displayObject && child2.parent == this_displayObject && child1 != child2)
+		if (child1.parent == this.displayObjectContainer && child2.parent == this.displayObjectContainer && child1 != child2)
 		{
-			DisplayObjectLinkedList.__swapChildren(this_displayObjectContainer, child1, child2);
+			DisplayObjectLinkedList.__swapChildren(this.displayObjectContainer, child1, child2);
 			__setRenderDirty();
 		}
 	}
@@ -479,7 +481,7 @@ class _DisplayObjectContainer extends _InteractiveObject
 				}
 			}
 
-			DisplayObjectLinkedList.__swapChildren(this_displayObjectContainer, child1, child2);
+			DisplayObjectLinkedList.__swapChildren(this.displayObjectContainer, child1, child2);
 			__setRenderDirty();
 		}
 	}
@@ -577,7 +579,7 @@ class _DisplayObjectContainer extends _InteractiveObject
 	public override function __hitTest(x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool, hitObject:DisplayObject):Bool
 	{
 		if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled && !mouseChildren)) return false;
-		if (mask != null && !mask._.__hitTestMask(x, y)) return false;
+		if (mask != null && !(mask._ : _DisplayObject).__hitTestMask(x, y)) return false;
 
 		if (__scrollRect != null)
 		{
@@ -670,7 +672,7 @@ class _DisplayObjectContainer extends _InteractiveObject
 	// 		hitObject:DisplayObject):Bool
 	// {
 	// 	if (!hitObject.visible || __isMask || (interactiveOnly && !mouseEnabled && !mouseChildren)) return false;
-	// 	if (mask != null && !mask._.__hitTestMask(x, y)) return false;
+	// 	if (mask != null && !(mask._ : _DisplayObject).__hitTestMask(x, y)) return false;
 	// 	if (__scrollRect != null)
 	// 	{
 	// 		var point = _Point.__pool.get();
@@ -708,7 +710,7 @@ class _DisplayObjectContainer extends _InteractiveObject
 	// 				var hitTest = false;
 	// 				if ((child._ : _DisplayObject).__graphics != null)
 	// 				{
-	// 					if (!hitObject._.__visible || (child._ : _DisplayObject).__isMask || (child.mask != null && !child.mask._.__hitTestMask(x, y)))
+	// 					if (!hitObject._.__visible || (child._ : _DisplayObject).__isMask || (child.mask != null && !child.(mask._ : _DisplayObject).__hitTestMask(x, y)))
 	// 					{
 	// 						hitTest = false;
 	// 					}
@@ -727,22 +729,22 @@ class _DisplayObjectContainer extends _InteractiveObject
 	// 			{
 	// 				case BITMAP:
 	// 					var bitmap:Bitmap = cast child;
-	// 					inline bitmap._.__hitTest(x, y, shapeFlag, stackRef, interactiveOnly, cast child);
+	// 					inline (bitmap._ : _Bitmap).__hitTest(x, y, shapeFlag, stackRef, interactiveOnly, cast child);
 	// 				case SIMPLE_BUTTON:
 	// 					var simpleButton:SimpleButton = cast child;
-	// 					inline simpleButton._.__hitTest(x, y, shapeFlag, stackRef, interactiveOnly, cast child);
+	// 					inline (simpleButton._ : _SimpleButton).__hitTest(x, y, shapeFlag, stackRef, interactiveOnly, cast child);
 	// 				case DISPLAY_OBJECT_CONTAINER, MOVIE_CLIP:
 	// 					// inline super.__hitTest(x, y, shapeFlag, stackRef, interactiveOnly, cast child);
 	// 					super_hitTest(child, x, y, shapeFlag, stackRef, interactiveOnly, cast child);
 	// 				case TEXTFIELD:
 	// 					var textField:TextField = cast child;
-	// 					inline textField._.__hitTest(x, y, shapeFlag, stackRef, interactiveOnly, cast child);
+	// 					inline (textField._ : _TextField).__hitTest(x, y, shapeFlag, stackRef, interactiveOnly, cast child);
 	// 				case TILEMAP:
 	// 					var tilemap:Tilemap = cast child;
 	// 					inline tilemap._.__hitTest(x, y, shapeFlag, stackRef, interactiveOnly, cast child);
 	// 				case VIDEO:
 	// 					var video:Video = cast child;
-	// 					inline video._.__hitTest(x, y, shapeFlag, stackRef, interactiveOnly, cast child);
+	// 					inline (video._ : _Video).__hitTest(x, y, shapeFlag, stackRef, interactiveOnly, cast child);
 	// 				default: false;
 	// 			}
 	// 			if (childHit)
@@ -792,16 +794,16 @@ class _DisplayObjectContainer extends _InteractiveObject
 					{
 						case BITMAP:
 							var bitmap:Bitmap = cast child;
-							#if haxe4 inline #end bitmap._.__hitTestMask(x, y);
+							#if haxe4 inline #end (bitmap._ : _Bitmap).__hitTestMask(x, y);
 						case SIMPLE_BUTTON:
 							var simpleButton:SimpleButton = cast child;
-							#if haxe4 inline #end simpleButton._.__hitTestMask(x, y);
+							#if haxe4 inline #end (simpleButton._ : _SimpleButton).__hitTestMask(x, y);
 						case TEXTFIELD:
 							var textField:TextField = cast child;
-							#if haxe4 inline #end textField._.__hitTestMask(x, y);
+							#if haxe4 inline #end (textField._ : _TextField).__hitTestMask(x, y);
 						case VIDEO:
 							var video:Video = cast child;
-							#if haxe4 inline #end video._.__hitTestMask(x, y);
+							#if haxe4 inline #end (video._ : _Video).__hitTestMask(x, y);
 						case DISPLAY_OBJECT_CONTAINER,
 							MOVIE_CLIP: // inline super.__hitTestMask(x, y) || ((child._ : _DisplayObject).__graphics != null && (child._ : _DisplayObject).__graphics._.__hitTest(x, y, true, (child._ : _DisplayObject).__getRenderTransform()));
 							(__graphics != null && (__graphics._ : _Graphics).__hitTest(x, y, true, __getRenderTransform()))
@@ -852,7 +854,7 @@ class _DisplayObjectContainer extends _InteractiveObject
 				if ((child._ : _DisplayObject).__type == SIMPLE_BUTTON)
 				{
 					var simpleButton:SimpleButton = cast child;
-					#if haxe4 inline #end simpleButton._.__setTransformDirty(force);
+					#if haxe4 inline #end (simpleButton._ : _SimpleButton).__setTransformDirty(force);
 				}
 				else
 				{
@@ -885,7 +887,7 @@ class _DisplayObjectContainer extends _InteractiveObject
 		// inline super.__tabTest(stack);
 		if (tabEnabled)
 		{
-			stack.push(this);
+			stack.push(this.displayObjectContainer);
 		}
 		if (!tabChildren) return;
 
@@ -955,14 +957,14 @@ class _DisplayObjectContainer extends _InteractiveObject
 						if (updateChildren)
 						{
 							var button:SimpleButton = cast child;
-							if (button._.__currentState != null)
+							if ((button._ : _SimpleButton).__currentState != null)
 							{
-								button._.__currentState._.__update(transformOnly, true);
+								((button._ : _SimpleButton).__currentState._ : _DisplayObject).__update(transformOnly, true);
 							}
 
-							if (button.hitTestState != null && button.hitTestState != button._.__currentState)
+							if (button.hitTestState != null && button.hitTestState != (button._ : _SimpleButton).__currentState)
 							{
-								button.hitTestState._.__update(transformOnly, true);
+								(button.hitTestState._ : _DisplayObject).__update(transformOnly, true);
 							}
 						}
 
@@ -970,7 +972,8 @@ class _DisplayObjectContainer extends _InteractiveObject
 						if (transformDirty)
 						{
 							var textField:TextField = cast child;
-							textField._.__renderTransform._.__translateTransformed(textField._.__offsetX, textField._.__offsetY);
+							(textField._ : _TextField).__renderTransform._.__translateTransformed((textField._ : _TextField).__offsetX,
+								(textField._ : _TextField).__offsetY);
 						}
 
 					case DISPLAY_OBJECT_CONTAINER, MOVIE_CLIP:

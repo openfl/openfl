@@ -7,6 +7,7 @@ import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.media.Sound;
 import openfl.text.Font;
+import openfl.text._Font;
 #if lime
 import lime.utils.AssetLibrary as LimeAssetLibrary;
 import lime.utils.Assets as LimeAssets;
@@ -404,7 +405,7 @@ class _Assets
 				var font = limeFont.src;
 				#else
 				var font = new Font();
-				font._.__fromLimeFont(limeFont);
+				(font._ : _Font).__fromLimeFont(limeFont);
 				#end
 
 				if (useCache && cache.enabled)

@@ -499,7 +499,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	/**
 		The associated Lime Window instance for this Stage.
 	**/
-	public var limeWindow(get, never):Window;
+	public var limeWindow(get, never):LimeWindow;
 	#end
 
 	// @:noCompletion @:dox(hide) @:require(flash11_2) public var mouseLock:Bool;
@@ -852,9 +852,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		if (_ == null)
 		{
 			#if (commonjs || (openfl_html5 && !lime))
-			_ = new _Stage(width, height, color, documentClass, windowAttributes);
+			_ = new _Stage(this, width, height, color, documentClass, windowAttributes);
 			#else
-			_ = new _Stage(window, color);
+			_ = new _Stage(this, window, color);
 			#end
 		}
 
@@ -1006,7 +1006,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		return (_ : _Stage).limeApplication;
 	}
 
-	@:noCompletion private function get_limeWindow():Window
+	@:noCompletion private function get_limeWindow():LimeWindow
 	{
 		return (_ : _Stage).limeWindow;
 	}

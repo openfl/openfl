@@ -29,10 +29,14 @@ class _TextFormat
 	public var __ascent:Null<Float>;
 	public var __descent:Null<Float>;
 
-	public function new(font:String = null, size:Null<Int> = null, color:Null<Int> = null, bold:Null<Bool> = null, italic:Null<Bool> = null,
-			underline:Null<Bool> = null, url:String = null, target:String = null, align:TextFormatAlign = null, leftMargin:Null<Int> = null,
-			rightMargin:Null<Int> = null, indent:Null<Int> = null, leading:Null<Int> = null)
+	private var textFormat:TextFormat;
+
+	public function new(textFormat:TextFormat, font:String = null, size:Null<Int> = null, color:Null<Int> = null, bold:Null<Bool> = null,
+			italic:Null<Bool> = null, underline:Null<Bool> = null, url:String = null, target:String = null, align:TextFormatAlign = null,
+			leftMargin:Null<Int> = null, rightMargin:Null<Int> = null, indent:Null<Int> = null, leading:Null<Int> = null)
 	{
+		this.textFormat = textFormat;
+
 		this.font = font;
 		this.size = size;
 		this.color = color;

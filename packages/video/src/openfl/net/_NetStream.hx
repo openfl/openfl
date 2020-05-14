@@ -45,9 +45,13 @@ class _NetStream extends _EventDispatcher
 	public var __connection:NetConnection;
 	public var __soundTransform:SoundTransform;
 
-	public function new(connection:NetConnection, peerID:String = null):Void
+	private var netStream:NetStream;
+
+	public function new(netStream:NetStream, connection:NetConnection, peerID:String = null):Void
 	{
-		super();
+		this.netStream = netStream;
+
+		super(netStream);
 
 		__connection = connection;
 		__soundTransform = new SoundTransform();

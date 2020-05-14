@@ -15,6 +15,7 @@ import lime.ui.Window;
 import openfl._internal.utils.Log;
 import openfl._internal.utils.TouchData;
 import openfl.display3D.Context3D;
+import openfl.display3D._Context3D;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObject;
 import openfl.display.Stage;
@@ -22,14 +23,17 @@ import openfl.display.StageDisplayState;
 import openfl.display.Window in OpenFLWindow;
 import openfl.errors.IllegalOperationError;
 import openfl.events.Event;
+import openfl.events._Event;
 import openfl.events.EventDispatcher;
 import openfl.events.EventPhase;
 import openfl.events.FocusEvent;
 import openfl.events.FullScreenEvent;
 import openfl.events.KeyboardEvent;
 import openfl.events.MouseEvent;
+import openfl.events._MouseEvent;
 import openfl.events.TextEvent;
 import openfl.events.TouchEvent;
+import openfl.events._TouchEvent;
 import openfl.events.UncaughtErrorEvent;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
@@ -37,11 +41,14 @@ import openfl.geom._Point;
 import openfl.geom.Rectangle;
 import openfl.geom.Transform;
 import openfl.ui.GameInput;
+import openfl.ui._GameInput;
 import openfl.ui.GameInputControl;
+import openfl.ui._GameInputControl;
 import openfl.ui.GameInputDevice;
 import openfl.ui.Keyboard;
 import openfl.ui.KeyLocation;
 import openfl.ui.Mouse;
+import openfl.ui._Mouse;
 import openfl.ui.MouseCursor;
 import openfl.Lib;
 #if openfl_html5
@@ -150,14 +157,17 @@ class _Stage extends _DisplayObjectContainer
 	public var __wasDirty:Bool;
 	public var __wasFullscreen:Bool;
 
-	public function new(#if (commonjs || (openfl_html5 && !lime)) width:Dynamic = 0, height:Dynamic = 0, color:Null<Int> = null,
-		documentClass:Class<Dynamic> = null, windowAttributes:Dynamic = null #elseif lime window:Window, color:Null<Int> = null #end)
+	public function new(stage:Stage,
+			#if (commonjs || (openfl_html5 && !lime)) width:Dynamic = 0, height:Dynamic = 0, color:Null<Int> = null, documentClass:Class<Dynamic> = null,
+		windowAttributes:Dynamic = null #elseif lime window:Window, color:Null<Int> = null #end)
 	{
+		this.stage = stage;
+
 		#if hxtelemetry
-		Telemetry._.__initialize();
+		_Telemetry.__initialize();
 		#end
 
-		super();
+		super(stage);
 
 		this.name = null;
 
@@ -180,10 +190,8 @@ class _Stage extends _DisplayObjectContainer
 		stage3Ds = new Vector();
 		for (i in 0...#if mobile 2 #else 4 #end)
 		{
-			stage3Ds.push(new Stage3D(this));
+			stage3Ds.push(new Stage3D(this.stage));
 		}
-
-		this.stage = this;
 
 		align = StageAlign.TOP_LEFT;
 		allowsFullScreen = true;
@@ -203,10 +211,7 @@ class _Stage extends _DisplayObjectContainer
 
 		limeApplication = window.application;
 		limeWindow = window;
-		color = color;
-
-		// TODO: Workaround need to set reference here
-		_ = cast this;
+		this.color = color;
 
 		__contentsScaleFactor = window.scale;
 		__wasFullscreen = window.fullscreen;
@@ -491,7 +496,7 @@ class _Stage extends _DisplayObjectContainer
 			case OPENGL, OPENGLES, WEBGL:
 				#if openfl_gl
 				#if (!disable_cffi && (!html5 || !canvas))
-				context3D = new Context3D(parent);
+				context3D = new Context3D(this.stage);
 				context3D.configureBackBuffer(windowWidth, windowHeight, 0, true, true, true);
 				context3D.present();
 				// if (BitmapData._.__hardwareRenderer == null)
@@ -528,15 +533,15 @@ class _Stage extends _DisplayObjectContainer
 		{
 			(__renderer._ : _DisplayObjectRenderer).__allowSmoothing = (quality != LOW);
 			(__renderer._ : _DisplayObjectRenderer).__worldTransform = __displayMatrix;
-			(__renderer._ : _DisplayObjectRenderer).__stage = parent;
+			(__renderer._ : _DisplayObjectRenderer).__stage = this.stage;
 
 			(__renderer._ : _DisplayObjectRenderer).__resize(windowWidth, windowHeight);
 
-			if (BitmapData._.__hardwareRenderer != null)
+			if (_BitmapData.__hardwareRenderer != null)
 			{
-				BitmapData._.__hardwareRenderer._.__stage = parent;
-				BitmapData._.__hardwareRenderer._.__worldTransform = __displayMatrix.clone();
-				BitmapData._.__hardwareRenderer._.__resize(windowWidth, windowHeight);
+				_BitmapData.__hardwareRenderer._.__stage = this.stage;
+				_BitmapData.__hardwareRenderer._.__worldTransform = __displayMatrix.clone();
+				_BitmapData.__hardwareRenderer._.__resize(windowWidth, windowHeight);
 			}
 		}
 		#end
@@ -682,7 +687,7 @@ class _Stage extends _DisplayObjectContainer
 		{
 			var device = new GameInputDevice(gamepad.guid, gamepad.name);
 			gameInputDevices.set(gamepad, device);
-			GameInput._.__addInputDevice(device);
+			_GameInput.__addInputDevice(device);
 		}
 
 		return gameInputDevices.get(gamepad);
@@ -749,21 +754,21 @@ class _Stage extends _DisplayObjectContainer
 	@SuppressWarnings("checkstyle:Dynamic")
 	public function __broadcastEvent(event:Event):Void
 	{
-		if (DisplayObject._.__broadcastEvents.exists(event.type))
+		if (_DisplayObject.__broadcastEvents.exists(event.type))
 		{
-			var dispatchers = DisplayObject._.__broadcastEvents.get(event.type);
+			var dispatchers = _DisplayObject.__broadcastEvents.get(event.type);
 
 			for (dispatcher in dispatchers)
 			{
 				// TODO: Way to resolve dispatching occurring if object not on stage
 				// and there are multiple stage objects running in HTML5?
 
-				if (dispatcher.stage == this || dispatcher.stage == null)
+				if (dispatcher.stage == this.stage || dispatcher.stage == null)
 				{
 					#if !openfl_disable_handle_error
 					try
 					{
-						dispatcher._.__dispatch(event);
+						(dispatcher._ : _DisplayObject).__dispatch(event);
 					}
 					catch (e:Dynamic)
 					{
@@ -785,7 +790,7 @@ class _Stage extends _DisplayObjectContainer
 		{
 		#end
 
-			return super._.__dispatchEvent(event);
+			return super.__dispatchEvent(event);
 
 		#if !openfl_disable_handle_error
 		}
@@ -819,44 +824,44 @@ class _Stage extends _DisplayObjectContainer
 
 			if (length == 0)
 			{
-				event.eventPhase = EventPhase.AT_TARGET;
+				(event._ : _Event).eventPhase = EventPhase.AT_TARGET;
 				target = cast event.target;
-				target._.__dispatch(event);
+				(target._ : _InteractiveObject).__dispatch(event);
 			}
 			else
 			{
-				event.eventPhase = EventPhase.CAPTURING_PHASE;
-				event.target = stack[stack.length - 1];
+				(event._ : _Event).eventPhase = EventPhase.CAPTURING_PHASE;
+				(event._ : _Event).target = stack[stack.length - 1];
 
 				for (i in 0...length - 1)
 				{
-					stack[i]._.__dispatch(event);
+					(stack[i]._ : _DisplayObject).__dispatch(event);
 
-					if (event._.__isCanceled)
+					if ((event._ : _Event).__isCanceled)
 					{
 						return;
 					}
 				}
 
-				event.eventPhase = EventPhase.AT_TARGET;
+					(event._ : _Event).eventPhase = EventPhase.AT_TARGET;
 				target = cast event.target;
-				target._.__dispatch(event);
+				(target._ : _InteractiveObject).__dispatch(event);
 
-				if (event._.__isCanceled)
+				if ((event._ : _Event).__isCanceled)
 				{
 					return;
 				}
 
 				if (event.bubbles)
 				{
-					event.eventPhase = EventPhase.BUBBLING_PHASE;
+					(event._ : _Event).eventPhase = EventPhase.BUBBLING_PHASE;
 					var i = length - 2;
 
 					while (i >= 0)
 					{
-						stack[i]._.__dispatch(event);
+						(stack[i]._ : _DisplayObject).__dispatch(event);
 
-						if (event._.__isCanceled)
+						if ((event._ : _Event).__isCanceled)
 						{
 							return;
 						}
@@ -881,7 +886,7 @@ class _Stage extends _DisplayObjectContainer
 		#if !openfl_disable_handle_error
 		try
 		{
-			return target._.__dispatchEvent(event);
+			return (target._ : _InteractiveObject).__dispatchEvent(event);
 		}
 		catch (e:Dynamic)
 		{
@@ -889,7 +894,7 @@ class _Stage extends _DisplayObjectContainer
 			return false;
 		}
 		#else
-		return target._.__dispatchEvent(event);
+		return (target._ : _InteractiveObject).__dispatchEvent(event);
 		#end
 	}
 
@@ -933,7 +938,7 @@ class _Stage extends _DisplayObjectContainer
 	{
 		if (stack != null)
 		{
-			stack.push(this);
+			stack.push(this.stage);
 		}
 
 		return true;
@@ -956,11 +961,11 @@ class _Stage extends _DisplayObjectContainer
 
 		try
 		{
-			Lib.current._.__loaderInfo.uncaughtErrorEvents.dispatchEvent(event);
+			(Lib.current._ : _DisplayObject).__loaderInfo.uncaughtErrorEvents.dispatchEvent(event);
 		}
 		catch (e:Dynamic) {}
 
-		if (!event._.__preventDefault)
+		if (!(event._ : _Event).__preventDefault)
 		{
 			#if mobile
 			Log.println(CallStack.toString(CallStack.exceptionStack()));
@@ -1007,12 +1012,12 @@ class _Stage extends _DisplayObjectContainer
 	{
 		__dispatchPendingMouseEvent();
 
-		MouseEvent._.__altKey = event.altKey;
+		_MouseEvent.__altKey = event.altKey;
 		#if !openfl_doc_gen
-		MouseEvent._.__commandKey = event.commandKey;
+		_MouseEvent.__commandKey = event.commandKey;
 		#end
-		MouseEvent._.__ctrlKey = event.ctrlKey;
-		MouseEvent._.__shiftKey = event.shiftKey;
+		_MouseEvent.__ctrlKey = event.ctrlKey;
+		_MouseEvent.__shiftKey = event.shiftKey;
 
 		var preventDefault = false;
 		var stack = new Array<DisplayObject>();
@@ -1023,7 +1028,7 @@ class _Stage extends _DisplayObjectContainer
 		}
 		else
 		{
-			__focus._.__getInteractive(stack);
+			(__focus._ : _DisplayObject).__getInteractive(stack);
 		}
 
 		if (stack.length > 0)
@@ -1033,7 +1038,7 @@ class _Stage extends _DisplayObjectContainer
 			stack.reverse();
 			__dispatchStack(event, stack);
 
-			if (event._.__preventDefault)
+			if ((event._ : _Event).__preventDefault)
 			{
 				preventDefault = true;
 			}
@@ -1128,7 +1133,7 @@ class _Stage extends _DisplayObjectContainer
 
 						stack = [];
 
-						focus._.__getInteractive(stack);
+						(focus._ : _DisplayObject).__getInteractive(stack);
 						stack.reverse();
 
 						__dispatchStack(focusEvent, stack);
@@ -1164,24 +1169,24 @@ class _Stage extends _DisplayObjectContainer
 		var stack = [];
 		var target:InteractiveObject = null;
 
-		if (__hitTest(__mouseX, __mouseY, true, stack, true, this))
+		if (__hitTest(__mouseX, __mouseY, true, stack, true, this.stage))
 		{
 			target = cast stack[stack.length - 1];
 		}
 		else
 		{
-			target = this;
-			stack = [this];
+			target = this.stage;
+			stack = [this.stage];
 		}
 
-		if (target == null) target = this;
+		if (target == null) target = this.stage;
 
 		var clickType = null;
 
 		switch (type)
 		{
 			case MouseEvent.MOUSE_DOWN:
-				if (target._.__allowMouseFocus())
+				if ((target._ : _InteractiveObject).__allowMouseFocus())
 				{
 					if (focus != null)
 					{
@@ -1205,7 +1210,7 @@ class _Stage extends _DisplayObjectContainer
 				}
 
 				__mouseDownLeft = target;
-				MouseEvent._.__buttonDown = true;
+				_MouseEvent.__buttonDown = true;
 
 			case MouseEvent.MIDDLE_MOUSE_DOWN:
 				__mouseDownMiddle = target;
@@ -1216,7 +1221,7 @@ class _Stage extends _DisplayObjectContainer
 			case MouseEvent.MOUSE_UP:
 				if (__mouseDownLeft != null)
 				{
-					MouseEvent._.__buttonDown = false;
+					_MouseEvent.__buttonDown = false;
 
 					if (__mouseDownLeft == target)
 					{
@@ -1227,15 +1232,15 @@ class _Stage extends _DisplayObjectContainer
 						var event:MouseEvent = null;
 
 						#if openfl_pool_events
-						event = MouseEvent._.__pool.get(MouseEvent.RELEASE_OUTSIDE, __mouseX, __mouseY, new Point(__mouseX, __mouseY), this);
+						event = _MouseEvent.__pool.get(MouseEvent.RELEASE_OUTSIDE, __mouseX, __mouseY, new Point(__mouseX, __mouseY), this.stage);
 						#else
-						event = MouseEvent._.__create(MouseEvent.RELEASE_OUTSIDE, 1, __mouseX, __mouseY, new Point(__mouseX, __mouseY), this);
+						event = _MouseEvent.__create(MouseEvent.RELEASE_OUTSIDE, 1, __mouseX, __mouseY, new Point(__mouseX, __mouseY), this.stage);
 						#end
 
 						__mouseDownLeft.dispatchEvent(event);
 
 						#if openfl_pool_events
-						MouseEvent._.__pool.release(event);
+						_MouseEvent.__pool.release(event);
 						#end
 					}
 
@@ -1265,29 +1270,30 @@ class _Stage extends _DisplayObjectContainer
 		var event:MouseEvent = null;
 
 		#if openfl_pool_events
-		event = MouseEvent._.__pool.get(type, __mouseX, __mouseY, target._.__globalToLocal(targetPoint, localPoint), target);
+		event = _MouseEvent.__pool.get(type, __mouseX, __mouseY, (target._ : _InteractiveObject).__globalToLocal(targetPoint, localPoint), target);
 		#else
-		event = MouseEvent._.__create(type, button, __mouseX, __mouseY, target._.__globalToLocal(targetPoint, localPoint), target);
+		event = _MouseEvent.__create(type, button, __mouseX, __mouseY, (target._ : _InteractiveObject).__globalToLocal(targetPoint, localPoint), target);
 		#end
 
 		__dispatchStack(event, stack);
 
 		#if openfl_pool_events
-		MouseEvent._.__pool.release(event);
+		_MouseEvent.__pool.release(event);
 		#end
 
 		if (clickType != null)
 		{
 			#if openfl_pool_events
-			event = MouseEvent._.__pool.get(clickType, __mouseX, __mouseY, target._.__globalToLocal(targetPoint, localPoint), target);
+			event = _MouseEvent.__pool.get(clickType, __mouseX, __mouseY, (target._ : _InteractiveObject).__globalToLocal(targetPoint, localPoint), target);
 			#else
-			event = MouseEvent._.__create(clickType, button, __mouseX, __mouseY, target._.__globalToLocal(targetPoint, localPoint), target);
+			event = _MouseEvent.__create(clickType, button, __mouseX, __mouseY, (target._ : _InteractiveObject).__globalToLocal(targetPoint, localPoint),
+				target);
 			#end
 
 			__dispatchStack(event, stack);
 
 			#if openfl_pool_events
-			MouseEvent._.__pool.release(event);
+			_MouseEvent.__pool.release(event);
 			#end
 
 			if (type == MouseEvent.MOUSE_UP && cast(target, openfl.display.InteractiveObject).doubleClickEnabled)
@@ -1296,16 +1302,17 @@ class _Stage extends _DisplayObjectContainer
 				if (currentTime - __lastClickTime < 500)
 				{
 					#if openfl_pool_events
-					event = MouseEvent._.__pool.get(MouseEvent.DOUBLE_CLICK, __mouseX, __mouseY, target._.__globalToLocal(targetPoint, localPoint), target);
+					event = _MouseEvent.__pool.get(MouseEvent.DOUBLE_CLICK, __mouseX, __mouseY,
+						(target._ : _InteractiveObject).__globalToLocal(targetPoint, localPoint), target);
 					#else
-					event = MouseEvent._.__create(MouseEvent.DOUBLE_CLICK, button, __mouseX, __mouseY, target._.__globalToLocal(targetPoint, localPoint),
-						target);
+					event = _MouseEvent.__create(MouseEvent.DOUBLE_CLICK, button, __mouseX, __mouseY,
+						(target._ : _InteractiveObject).__globalToLocal(targetPoint, localPoint), target);
 					#end
 
 					__dispatchStack(event, stack);
 
 					#if openfl_pool_events
-					MouseEvent._.__pool.release(event);
+					_MouseEvent.__pool.release(event);
 					#end
 
 					__lastClickTime = 0;
@@ -1317,30 +1324,30 @@ class _Stage extends _DisplayObjectContainer
 			}
 		}
 
-		if (Mouse._.__cursor == MouseCursor.AUTO && !Mouse._.__hidden)
+		if (_Mouse.__cursor == MouseCursor.AUTO && !_Mouse.__hidden)
 		{
 			var cursor = null;
 
 			if (__mouseDownLeft != null)
 			{
-				cursor = __mouseDownLeft._.__getCursor();
+				cursor = (__mouseDownLeft._ : _DisplayObject).__getCursor();
 			}
 			else
 			{
 				for (target in stack)
 				{
-					cursor = target._.__getCursor();
+					cursor = (target._ : _InteractiveObject).__getCursor();
 
 					if (cursor != null)
 					{
-						Mouse._.__setStageCursor(this, cursor);
+						_Mouse.__setStageCursor(this.stage, cursor);
 					}
 				}
 			}
 
 			if (cursor == null)
 			{
-				Mouse._.__setStageCursor(this, ARROW);
+				_Mouse.__setStageCursor(this.stage, ARROW);
 			}
 		}
 
@@ -1351,17 +1358,17 @@ class _Stage extends _DisplayObjectContainer
 			if (__mouseOverTarget != null)
 			{
 				#if openfl_pool_events
-				event = MouseEvent._.__pool.get(MouseEvent.MOUSE_OUT, __mouseX, __mouseY, __mouseOverTarget._.__globalToLocal(targetPoint, localPoint),
-					cast __mouseOverTarget);
+				event = _MouseEvent.__pool.get(MouseEvent.MOUSE_OUT, __mouseX, __mouseY,
+					(__mouseOverTarget._ : _DisplayObject).__globalToLocal(targetPoint, localPoint), cast __mouseOverTarget);
 				#else
-				event = MouseEvent._.__create(MouseEvent.MOUSE_OUT, button, __mouseX, __mouseY, __mouseOverTarget._.__globalToLocal(targetPoint, localPoint),
-					cast __mouseOverTarget);
+				event = _MouseEvent.__create(MouseEvent.MOUSE_OUT, button, __mouseX, __mouseY,
+					(__mouseOverTarget._ : _DisplayObject).__globalToLocal(targetPoint, localPoint), cast __mouseOverTarget);
 				#end
 
 				__dispatchStack(event, __mouseOutStack);
 
 				#if openfl_pool_events
-				MouseEvent._.__pool.release(event);
+				_MouseEvent.__pool.release(event);
 				#end
 			}
 		}
@@ -1375,18 +1382,18 @@ class _Stage extends _DisplayObjectContainer
 				__rollOutStack.remove(item);
 
 				#if openfl_pool_events
-				event = MouseEvent._.__pool.get(MouseEvent.ROLL_OUT, __mouseX, __mouseY, __mouseOverTarget._.__globalToLocal(targetPoint, localPoint),
-					cast __mouseOverTarget);
+				event = _MouseEvent.__pool.get(MouseEvent.ROLL_OUT, __mouseX, __mouseY,
+					(__mouseOverTarget._ : _DisplayObject).__globalToLocal(targetPoint, localPoint), cast __mouseOverTarget);
 				#else
-				event = MouseEvent._.__create(MouseEvent.ROLL_OUT, button, __mouseX, __mouseY, __mouseOverTarget._.__globalToLocal(targetPoint, localPoint),
-					cast __mouseOverTarget);
+				event = _MouseEvent.__create(MouseEvent.ROLL_OUT, button, __mouseX, __mouseY,
+					(__mouseOverTarget._ : _DisplayObject).__globalToLocal(targetPoint, localPoint), cast __mouseOverTarget);
 				#end
-				event.bubbles = false;
+				(event._ : _Event).bubbles = false;
 
 				__dispatchTarget(item, event);
 
 				#if openfl_pool_events
-				MouseEvent._.__pool.release(event);
+				_MouseEvent.__pool.release(event);
 				#end
 			}
 			else
@@ -1402,18 +1409,18 @@ class _Stage extends _DisplayObjectContainer
 				if (item.hasEventListener(MouseEvent.ROLL_OVER))
 				{
 					#if openfl_pool_events
-					event = MouseEvent._.__pool.get(MouseEvent.ROLL_OVER, __mouseX, __mouseY, __mouseOverTarget._.__globalToLocal(targetPoint, localPoint),
-						cast item);
+					event = _MouseEvent.__pool.get(MouseEvent.ROLL_OVER, __mouseX, __mouseY,
+						(__mouseOverTarget._ : _DisplayObject).__globalToLocal(targetPoint, localPoint), cast item);
 					#else
-					event = MouseEvent._.__create(MouseEvent.ROLL_OVER, button, __mouseX, __mouseY,
-						__mouseOverTarget._.__globalToLocal(targetPoint, localPoint), cast item);
+					event = _MouseEvent.__create(MouseEvent.ROLL_OVER, button, __mouseX, __mouseY,
+						(__mouseOverTarget._ : _DisplayObject).__globalToLocal(targetPoint, localPoint), cast item);
 					#end
-					event.bubbles = false;
+					(event._ : _Event).bubbles = false;
 
 					__dispatchTarget(item, event);
 
 					#if openfl_pool_events
-					MouseEvent._.__pool.release(event);
+					_MouseEvent.__pool.release(event);
 					#end
 				}
 
@@ -1429,16 +1436,17 @@ class _Stage extends _DisplayObjectContainer
 			if (target != null)
 			{
 				#if openfl_pool_events
-				event = MouseEvent._.__pool.get(MouseEvent.MOUSE_OVER, __mouseX, __mouseY, target._.__globalToLocal(targetPoint, localPoint), cast target);
+				event = _MouseEvent.__pool.get(MouseEvent.MOUSE_OVER, __mouseX, __mouseY,
+					(target._ : _InteractiveObject).__globalToLocal(targetPoint, localPoint), cast target);
 				#else
-				event = MouseEvent._.__create(MouseEvent.MOUSE_OVER, button, __mouseX, __mouseY, target._.__globalToLocal(targetPoint, localPoint),
-					cast target);
+				event = _MouseEvent.__create(MouseEvent.MOUSE_OVER, button, __mouseX, __mouseY,
+					(target._ : _InteractiveObject).__globalToLocal(targetPoint, localPoint), cast target);
 				#end
 
 				__dispatchStack(event, stack);
 
 				#if openfl_pool_events
-				MouseEvent._.__pool.release(event);
+				_MouseEvent.__pool.release(event);
 				#end
 			}
 
@@ -1462,7 +1470,7 @@ class _Stage extends _DisplayObjectContainer
 
 				var stack = [];
 
-				if (__hitTest(__mouseX, __mouseY, true, stack, true, this))
+				if (__hitTest(__mouseX, __mouseY, true, stack, true, this.stage))
 				{
 					dropTarget = stack[stack.length - 1];
 				}
@@ -1470,12 +1478,12 @@ class _Stage extends _DisplayObjectContainer
 				__dragObject.mouseEnabled = cacheMouseEnabled;
 				__dragObject.mouseChildren = cacheMouseChildren;
 			}
-			else if (__mouseOverTarget != this)
+			else if (__mouseOverTarget != this.stage)
 			{
 				dropTarget = __mouseOverTarget;
 			}
 
-			__dragObject.dropTarget = dropTarget;
+				(__dragObject._ : _Sprite).dropTarget = dropTarget;
 		}
 
 		_Point.__pool.release(targetPoint);
@@ -1492,24 +1500,25 @@ class _Stage extends _DisplayObjectContainer
 		var stack = [];
 		var target:InteractiveObject = null;
 
-		if (__hitTest(__mouseX, __mouseY, true, stack, true, this))
+		if (__hitTest(__mouseX, __mouseY, true, stack, true, this.stage))
 		{
 			target = cast stack[stack.length - 1];
 		}
 		else
 		{
-			target = this;
-			stack = [this];
+			target = this.stage;
+			stack = [this.stage];
 		}
 
-		if (target == null) target = this;
+		if (target == null) target = this.stage;
 		var targetPoint = _Point.__pool.get();
 		targetPoint.setTo(x, y);
 		__displayMatrix._.__transformInversePoint(targetPoint);
 		var delta = Std.int(deltaY);
 
-		var event = MouseEvent._.__create(MouseEvent.MOUSE_WHEEL, 0, __mouseX, __mouseY, target._.__globalToLocal(targetPoint, targetPoint), target, delta);
-		event.cancelable = true;
+		var event = _MouseEvent.__create(MouseEvent.MOUSE_WHEEL, 0, __mouseX, __mouseY,
+			(target._ : _InteractiveObject).__globalToLocal(targetPoint, targetPoint), target, delta);
+		(event._ : _Event).cancelable = true;
 		__dispatchStack(event, stack);
 
 		_Point.__pool.release(targetPoint);
@@ -1529,17 +1538,17 @@ class _Stage extends _DisplayObjectContainer
 		var stack = [];
 		var target:InteractiveObject = null;
 
-		if (__hitTest(touchX, touchY, false, stack, true, this))
+		if (__hitTest(touchX, touchY, false, stack, true, this.stage))
 		{
 			target = cast stack[stack.length - 1];
 		}
 		else
 		{
-			target = this;
-			stack = [this];
+			target = this.stage;
+			stack = [this.stage];
 		}
 
-		if (target == null) target = this;
+		if (target == null) target = this.stage;
 
 		var touchData:TouchData = null;
 
@@ -1549,7 +1558,7 @@ class _Stage extends _DisplayObjectContainer
 		}
 		else
 		{
-			touchData = TouchData._.__pool.get();
+			touchData = TouchData.__pool.get();
 			touchData.reset();
 			__touchData.set(id, touchData);
 		}
@@ -1575,7 +1584,8 @@ class _Stage extends _DisplayObjectContainer
 		}
 
 		var localPoint = _Point.__pool.get();
-		var touchEvent = TouchEvent._.__create(type, null, touchX, touchY, target._.__globalToLocal(targetPoint, localPoint), cast target);
+		var touchEvent = _TouchEvent.__create(type, null, touchX, touchY, (target._ : _InteractiveObject).__globalToLocal(targetPoint, localPoint),
+			cast target);
 		touchEvent.touchPointID = id;
 		touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 		touchEvent.pressure = pressure;
@@ -1584,7 +1594,8 @@ class _Stage extends _DisplayObjectContainer
 
 		if (touchType != null)
 		{
-			touchEvent = TouchEvent._.__create(touchType, null, touchX, touchY, target._.__globalToLocal(targetPoint, localPoint), cast target);
+			touchEvent = _TouchEvent.__create(touchType, null, touchX, touchY, (target._ : _InteractiveObject).__globalToLocal(targetPoint, localPoint),
+				cast target);
 			touchEvent.touchPointID = id;
 			touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 			touchEvent.pressure = pressure;
@@ -1596,8 +1607,8 @@ class _Stage extends _DisplayObjectContainer
 
 		if (target != touchOverTarget && touchOverTarget != null)
 		{
-			touchEvent = TouchEvent._.__create(TouchEvent.TOUCH_OUT, null, touchX, touchY, touchOverTarget._.__globalToLocal(targetPoint, localPoint),
-				cast touchOverTarget);
+			touchEvent = _TouchEvent.__create(TouchEvent.TOUCH_OUT, null, touchX, touchY,
+				(touchOverTarget._ : _DisplayObject).__globalToLocal(targetPoint, localPoint), cast touchOverTarget);
 			touchEvent.touchPointID = id;
 			touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
 			touchEvent.pressure = pressure;
@@ -1614,11 +1625,11 @@ class _Stage extends _DisplayObjectContainer
 			{
 				touchOutStack.remove(item);
 
-				touchEvent = TouchEvent._.__create(TouchEvent.TOUCH_ROLL_OUT, null, touchX, touchY,
-					touchOverTarget._.__globalToLocal(targetPoint, localPoint), cast touchOverTarget);
+				touchEvent = _TouchEvent.__create(TouchEvent.TOUCH_ROLL_OUT, null, touchX, touchY,
+					(touchOverTarget._ : _DisplayObject).__globalToLocal(targetPoint, localPoint), cast touchOverTarget);
 				touchEvent.touchPointID = id;
 				touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
-				touchEvent.bubbles = false;
+				(touchEvent._ : _Event).bubbles = false;
 				touchEvent.pressure = pressure;
 
 				__dispatchTarget(item, touchEvent);
@@ -1635,11 +1646,11 @@ class _Stage extends _DisplayObjectContainer
 			{
 				if (item.hasEventListener(TouchEvent.TOUCH_ROLL_OVER))
 				{
-					touchEvent = TouchEvent._.__create(TouchEvent.TOUCH_ROLL_OVER, null, touchX, touchY,
-						touchOverTarget._.__globalToLocal(targetPoint, localPoint), cast item);
+					touchEvent = _TouchEvent.__create(TouchEvent.TOUCH_ROLL_OVER, null, touchX, touchY,
+						(touchOverTarget._ : _DisplayObject).__globalToLocal(targetPoint, localPoint), cast item);
 					touchEvent.touchPointID = id;
 					touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
-					touchEvent.bubbles = false;
+					(touchEvent._ : _Event).bubbles = false;
 					touchEvent.pressure = pressure;
 
 					__dispatchTarget(item, touchEvent);
@@ -1656,11 +1667,11 @@ class _Stage extends _DisplayObjectContainer
 		{
 			if (target != null)
 			{
-				touchEvent = TouchEvent._.__create(TouchEvent.TOUCH_OVER, null, touchX, touchY, target._.__globalToLocal(targetPoint, localPoint),
-					cast target);
+				touchEvent = _TouchEvent.__create(TouchEvent.TOUCH_OVER, null, touchX, touchY,
+					(target._ : _InteractiveObject).__globalToLocal(targetPoint, localPoint), cast target);
 				touchEvent.touchPointID = id;
 				touchEvent.isPrimaryTouchPoint = isPrimaryTouchPoint;
-				touchEvent.bubbles = true;
+				(touchEvent._ : _Event).bubbles = true;
 				touchEvent.pressure = pressure;
 
 				__dispatchTarget(target, touchEvent);
@@ -1676,7 +1687,7 @@ class _Stage extends _DisplayObjectContainer
 		{
 			__touchData.remove(id);
 			touchData.reset();
-			TouchData._.__pool.release(touchData);
+			TouchData.__pool.release(touchData);
 		}
 	}
 
@@ -1720,7 +1731,7 @@ class _Stage extends _DisplayObjectContainer
 		__renderable = true;
 		if (__renderer != null)
 		{
-			(__renderer._ : _DisplayObjectRenderer).__enterFrame(this, __deltaTime);
+			(__renderer._ : _DisplayObjectRenderer).__enterFrame(this.stage, __deltaTime);
 		}
 		__deltaTime = 0;
 
@@ -1749,7 +1760,7 @@ class _Stage extends _DisplayObjectContainer
 		Telemetry._.__startTiming(TelemetryCommandName.RENDER);
 		#end
 
-		if (DisplayObject._.__supportDOM)
+		if (_DisplayObject.__supportDOM)
 		{
 			if (shouldUpdate || __wasDirty)
 			{
@@ -1771,11 +1782,11 @@ class _Stage extends _DisplayObjectContainer
 			{
 				for (stage3D in stage3Ds)
 				{
-					context3D._.__renderStage3D(stage3D);
+					(context3D._ : _Context3D).__renderStage3D(stage3D);
 				}
 
 				#if !openfl_disable_display_render
-				if (context3D._.__present) shouldRender = true;
+				if ((context3D._ : _Context3D).__present) shouldRender = true;
 				#end
 			}
 
@@ -1786,7 +1797,7 @@ class _Stage extends _DisplayObjectContainer
 					(__renderer._ : _DisplayObjectRenderer).__clear();
 				}
 
-					(__renderer._ : _DisplayObjectRenderer).__render(this);
+					(__renderer._ : _DisplayObjectRenderer).__render(this.stage);
 			}
 			else if (context3D == null)
 			{
@@ -1795,7 +1806,7 @@ class _Stage extends _DisplayObjectContainer
 
 			if (context3D != null)
 			{
-				if (!context3D._.__present)
+				if (!(context3D._ : _Context3D).__present)
 				{
 					limeWindow.onRender.cancel();
 				}
@@ -1806,17 +1817,17 @@ class _Stage extends _DisplayObjectContainer
 						(__renderer._ : _DisplayObjectRenderer).__clear();
 					}
 
-					context3D._.__present = false;
-					context3D._.__cleared = false;
+						(context3D._ : _Context3D).__present = false;
+					(context3D._ : _Context3D).__cleared = false;
 				}
 
-				context3D._.__bitmapDataPool.cleanup();
+					(context3D._ : _Context3D).__bitmapDataPool.cleanup();
 			}
 
 				(__renderer._ : _DisplayObjectRenderer).__cleared = false;
 
 			// TODO: Run once for multi-stage application
-			BitmapData._.__pool.cleanup();
+			_BitmapData.__pool.cleanup();
 		}
 		#end
 
@@ -1889,7 +1900,7 @@ class _Stage extends _DisplayObjectContainer
 
 		for (stage3D in stage3Ds)
 		{
-			stage3D._.__resize(windowWidth, windowHeight);
+			(stage3D._ : _Stage3D).__resize(windowWidth, windowHeight);
 		}
 
 		if (__renderer != null)
@@ -2054,7 +2065,7 @@ class _Stage extends _DisplayObjectContainer
 			}
 
 			var control = device._.__axis.get(axis);
-			control.value = value;
+			(control._ : _GameInputControl).value = value;
 			control.dispatchEvent(new Event(Event.CHANGE));
 		}
 	}
@@ -2074,7 +2085,7 @@ class _Stage extends _DisplayObjectContainer
 			}
 
 			var control = device._.__button.get(button);
-			control.value = 1;
+			(control._ : _GameInputControl).value = 1;
 			control.dispatchEvent(new Event(Event.CHANGE));
 		}
 	}
@@ -2094,7 +2105,7 @@ class _Stage extends _DisplayObjectContainer
 			}
 
 			var control = device._.__button.get(button);
-			control.value = 0;
+			(control._ : _GameInputControl).value = 0;
 			control.dispatchEvent(new Event(Event.CHANGE));
 		}
 	}
@@ -2122,7 +2133,7 @@ class _Stage extends _DisplayObjectContainer
 			{
 				var device = gameInputDevices.get(gamepad);
 				gameInputDevices.remove(gamepad);
-				GameInput._.__removeInputDevice(device);
+				_GameInput.__removeInputDevice(device);
 			}
 		}
 	}
@@ -2285,10 +2296,10 @@ class _Stage extends _DisplayObjectContainer
 		focus = null;
 		__cacheFocus = currentFocus;
 
-		MouseEvent._.__altKey = false;
-		MouseEvent._.__commandKey = false;
-		MouseEvent._.__ctrlKey = false;
-		MouseEvent._.__shiftKey = false;
+		_MouseEvent.__altKey = false;
+		_MouseEvent.__commandKey = false;
+		_MouseEvent.__ctrlKey = false;
+		_MouseEvent.__shiftKey = false;
 	}
 
 	public function window_onFullscreen(window:Window):Void
@@ -2341,7 +2352,7 @@ class _Stage extends _DisplayObjectContainer
 
 	public function window_onLeave(window:Window):Void
 	{
-		if (limeWindow == null || limeWindow != window || MouseEvent._.__buttonDown) return;
+		if (limeWindow == null || limeWindow != window || _MouseEvent.__buttonDown) return;
 
 		__dispatchPendingMouseEvent();
 
@@ -2475,7 +2486,7 @@ class _Stage extends _DisplayObjectContainer
 
 		for (stage3D in stage3Ds)
 		{
-			stage3D._.__lostContext();
+			(stage3D._ : _Stage3D).__lostContext();
 		}
 	}
 
@@ -2485,7 +2496,7 @@ class _Stage extends _DisplayObjectContainer
 
 		for (stage3D in stage3Ds)
 		{
-			stage3D._.__restoreContext();
+			(stage3D._ : _Stage3D).__restoreContext();
 		}
 	}
 
@@ -2541,7 +2552,7 @@ class _Stage extends _DisplayObjectContainer
 		}
 		else
 		{
-			__focus._.__getInteractive(stack);
+			(__focus._ : _DisplayObject).__getInteractive(stack);
 		}
 
 		var event = new TextEvent(TextEvent.TEXT_INPUT, true, true, text);
@@ -2645,7 +2656,7 @@ class _Stage extends _DisplayObjectContainer
 			{
 				var event = new FocusEvent(FocusEvent.FOCUS_OUT, true, false, value, false, 0);
 				var stack = new Array<DisplayObject>();
-				oldFocus._.__getInteractive(stack);
+				(oldFocus._ : _DisplayObject).__getInteractive(stack);
 				stack.reverse();
 				__dispatchStack(event, stack);
 			}
@@ -2654,7 +2665,7 @@ class _Stage extends _DisplayObjectContainer
 			{
 				var event = new FocusEvent(FocusEvent.FOCUS_IN, true, false, oldFocus, false, 0);
 				var stack = new Array<DisplayObject>();
-				value._.__getInteractive(stack);
+				(value._ : _DisplayObject).__getInteractive(stack);
 				stack.reverse();
 				__dispatchStack(event, stack);
 			}

@@ -321,7 +321,7 @@ class NetConnection extends EventDispatcher
 	{
 		if (_ == null)
 		{
-			_ = new _NetConnection();
+			_ = new _NetConnection(this);
 		}
 
 		super();

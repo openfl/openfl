@@ -60,8 +60,13 @@ class _Tile
 	public var __tempRectangle = new Rectangle();
 	#end
 
-	public function new(id:Int = 0, x:Float = 0, y:Float = 0, scaleX:Float = 1, scaleY:Float = 1, rotation:Float = 0, originX:Float = 0, originY:Float = 0)
+	private var tile:Tile;
+
+	public function new(tile:Tile, id:Int = 0, x:Float = 0, y:Float = 0, scaleX:Float = 1, scaleY:Float = 1, rotation:Float = 0, originX:Float = 0,
+			originY:Float = 0)
 	{
+		this.tile = tile;
+
 		__id = id;
 
 		__matrix = new Matrix();
@@ -83,25 +88,25 @@ class _Tile
 	public function clone():Tile
 	{
 		var tile = new Tile(__id);
-		tile._.__alpha = __alpha;
-		tile._.__blendMode = __blendMode;
-		tile._.__originX = __originX;
-		tile._.__originY = __originY;
+		(tile._ : _Tile).__alpha = __alpha;
+		(tile._ : _Tile).__blendMode = __blendMode;
+		(tile._ : _Tile).__originX = __originX;
+		(tile._ : _Tile).__originY = __originY;
 
-		if (__rect != null) tile._.__rect = __rect.clone();
+		if (__rect != null) (tile._ : _Tile).__rect = __rect.clone();
 
 		tile.matrix = __matrix.clone();
-		tile._.__shader = __shader;
+		(tile._ : _Tile).__shader = __shader;
 		tile.tileset = __tileset;
 
 		if (__colorTransform != null)
 		{
 			#if flash
-			tile._.__colorTransform = new ColorTransform(__colorTransform.redMultiplier, __colorTransform.greenMultiplier, __colorTransform.blueMultiplier,
-				__colorTransform.alphaMultiplier, __colorTransform.redOffset, __colorTransform.greenOffset, __colorTransform.blueOffset,
-				__colorTransform.alphaOffset);
+			(tile._ : _Tile).__colorTransform = new ColorTransform(__colorTransform.redMultiplier, __colorTransform.greenMultiplier,
+				__colorTransform.blueMultiplier, __colorTransform.alphaMultiplier, __colorTransform.redOffset, __colorTransform.greenOffset,
+				__colorTransform.blueOffset, __colorTransform.alphaOffset);
 			#else
-			tile._.__colorTransform = __colorTransform._.__clone();
+			(tile._ : _Tile).__colorTransform = __colorTransform._.__clone();
 			#end
 		}
 
@@ -117,12 +122,12 @@ class _Tile
 		// Copied from DisplayObject. Create the translation matrix.
 		var matrix = #if flash __tempMatrix #else _Matrix.__pool.get() #end;
 
-		if (targetCoordinateSpace != null && targetCoordinateSpace != this)
+		if (targetCoordinateSpace != null && targetCoordinateSpace != this.tile)
 		{
 			matrix.copyFrom(__getWorldTransform()); // ? Is this correct?
 			var targetMatrix = #if flash new Matrix() #else _Matrix.__pool.get() #end;
 
-			targetMatrix.copyFrom(targetCoordinateSpace._.__getWorldTransform());
+			targetMatrix.copyFrom((targetCoordinateSpace._ : _Tile).__getWorldTransform());
 			targetMatrix.invert();
 
 			matrix.concat(targetMatrix);
@@ -191,8 +196,8 @@ class _Tile
 	{
 		if (obj != null && obj.parent != null && parent != null)
 		{
-			var currentBounds = getBounds(this);
-			var targetBounds = obj.getBounds(this);
+			var currentBounds = getBounds(this.tile);
+			var targetBounds = obj.getBounds(this.tile);
 			return currentBounds.intersects(targetBounds);
 		}
 
@@ -210,7 +215,7 @@ class _Tile
 		{
 			if (parent != null)
 			{
-				var parentTileset:Tileset = parent._.__findTileset();
+				var parentTileset:Tileset = (parent._ : _Tile).__findTileset();
 				if (parentTileset == null)
 				{
 					result.setTo(0, 0, 0, 0);
@@ -248,7 +253,7 @@ class _Tile
 		if (tileset != null) return tileset;
 		if (Std.is(parent, Tilemap)) return parent.tileset;
 		if (parent == null) return null;
-		return parent._.__findTileset();
+		return (parent._ : _Tile).__findTileset();
 	}
 
 	public function __getWorldTransform():Matrix
@@ -257,7 +262,7 @@ class _Tile
 
 		if (parent != null)
 		{
-			retval.concat(parent._.__getWorldTransform());
+			retval.concat((parent._ : _Tile).__getWorldTransform());
 		}
 
 		return retval;
@@ -272,7 +277,7 @@ class _Tile
 
 			if (parent != null)
 			{
-				parent._.__setRenderDirty();
+				(parent._ : _Tile).__setRenderDirty();
 			}
 		}
 		#end

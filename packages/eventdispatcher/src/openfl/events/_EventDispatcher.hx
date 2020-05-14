@@ -12,8 +12,12 @@ class _EventDispatcher
 	public var __iterators:Map<String, Array<DispatchIterator>>;
 	public var __targetDispatcher:IEventDispatcher;
 
-	public function new(target:IEventDispatcher = null):Void
+	private var eventDispatcher:EventDispatcher;
+
+	public function new(eventDispatcher:EventDispatcher, target:IEventDispatcher = null):Void
 	{
+		this.eventDispatcher = eventDispatcher;
+
 		if (target != null)
 		{
 			__targetDispatcher = target;
@@ -67,11 +71,11 @@ class _EventDispatcher
 	{
 		if (__targetDispatcher != null)
 		{
-			event.target = __targetDispatcher;
+			(event._ : _Event).target = __targetDispatcher;
 		}
 		else
 		{
-			event.target = this;
+			(event._ : _Event).target = this.eventDispatcher;
 		}
 
 		return __dispatchEvent(event);
@@ -122,7 +126,7 @@ class _EventDispatcher
 
 	public function toString():String
 	{
-		var full = Type.getClassName(Type.getClass(this));
+		var full = Type.getClassName(Type.getClass(this.eventDispatcher));
 		var short = full.split(".").pop();
 		return "[object " + short + "]";
 	}
@@ -150,11 +154,11 @@ class _EventDispatcher
 			}
 			else
 			{
-				_event.target = this;
+				_event.target = this.eventDispatcher;
 			}
 		}
 
-		_event.currentTarget = this;
+		_event.currentTarget = this.eventDispatcher;
 
 		var capture = (_event.eventPhase == EventPhase.CAPTURING_PHASE);
 

@@ -70,7 +70,7 @@ class ErrorEvent extends TextEvent
 	{
 		if (_ == null)
 		{
-			_ = new _ErrorEvent(type, bubbles, cancelable, text, id);
+			_ = new _ErrorEvent(this, type, bubbles, cancelable, text, id);
 		}
 
 		super(type, bubbles, cancelable, text);
@@ -78,14 +78,14 @@ class ErrorEvent extends TextEvent
 
 	public override function clone():ErrorEvent
 	{
-		return cast _.clone();
+		return (_ : _ErrorEvent).clone();
 	}
 
 	// Get & Set Methods
 
 	@:noCompletion private function get_errorID():Int
 	{
-		return _.errorID;
+		return (_ : _ErrorEvent).errorID;
 	}
 }
 #else

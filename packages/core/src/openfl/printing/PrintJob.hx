@@ -169,7 +169,7 @@ class PrintJob
 	{
 		if (_ == null)
 		{
-			_ = new _PrintJob();
+			_ = new _PrintJob(this);
 		}
 	}
 

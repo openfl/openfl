@@ -12,9 +12,13 @@ class _TimerEvent extends _Event
 {
 	public static var __pool:ObjectPool<TimerEvent> = new ObjectPool<TimerEvent>(function() return new TimerEvent(null), function(event) event._.__init());
 
-	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false):Void
+	private var timerEvent:TimerEvent;
+
+	public function new(timerEvent:TimerEvent, type:String, bubbles:Bool = false, cancelable:Bool = false):Void
 	{
-		super(type, bubbles, cancelable);
+		this.timerEvent = timerEvent;
+
+		super(timerEvent, type, bubbles, cancelable);
 	}
 
 	public override function clone():TimerEvent

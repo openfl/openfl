@@ -622,7 +622,7 @@ class MouseEvent extends Event
 	{
 		if (_ == null)
 		{
-			_ = new _MouseEvent(type, bubbles, cancelable, localX, localY, relatedObject, ctrlKey, altKey, shiftKey, buttonDown, delta, commandKey,
+			_ = new _MouseEvent(this, type, bubbles, cancelable, localX, localY, relatedObject, ctrlKey, altKey, shiftKey, buttonDown, delta, commandKey,
 				clickCount);
 		}
 

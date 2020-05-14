@@ -17,8 +17,12 @@ class _GraphicsShaderFill implements _IGraphicsData implements _IGraphicsFill
 	public var __graphicsDataType(default, null):GraphicsDataType;
 	public var __graphicsFillType(default, null):GraphicsFillType;
 
-	public function new(shader:Shader, matrix:Matrix = null)
+	private var graphicsShaderFill:GraphicsShaderFill;
+
+	public function new(graphicsShaderFill:GraphicsShaderFill, shader:Shader, matrix:Matrix = null)
 	{
+		this.graphicsShaderFill = graphicsShaderFill;
+
 		this.shader = shader;
 		this.matrix = matrix;
 

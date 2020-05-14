@@ -135,7 +135,7 @@ class XMLSocket extends EventDispatcher
 	{
 		if (_ == null)
 		{
-			_ = new _XMLSocket(host, port);
+			_ = new _XMLSocket(this, host, port);
 		}
 
 		super();

@@ -74,7 +74,7 @@ class FileReferenceList extends EventDispatcher
 	{
 		if (_ == null)
 		{
-			_ = new _FileReferenceList();
+			_ = new _FileReferenceList(this);
 		}
 
 		super();
@@ -128,14 +128,14 @@ class FileReferenceList extends EventDispatcher
 	**/
 	public function browse(typeFilter:Array<FileFilter> = null):Bool
 	{
-		return _.browse(typeFilter);
+		return (_ : _FileReferenceList).browse(typeFilter);
 	}
 
 	// Get & Set Methods
 
 	@:noCompletion private function get_fileList():Array<FileReference>
 	{
-		return _.fileList;
+		return (_ : _FileReferenceList).fileList;
 	}
 }
 #else

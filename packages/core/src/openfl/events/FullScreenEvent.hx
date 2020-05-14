@@ -50,16 +50,13 @@ class FullScreenEvent extends ActivityEvent
 		Indicates whether the Stage object is in full-screen mode (`true`) or
 		not (`false`).
 	**/
-	public var fullScreen:Bool;
+	public var fullScreen(get, set):Bool;
 
 	/**
 		Indicates whether the Stage object is in full-screen interactive mode (`true`) or
 		not (`false`).
 	**/
-	public var interactive:Bool;
-
-	@:noCompletion private static var __pool:ObjectPool<FullScreenEvent> = new ObjectPool<FullScreenEvent>(function() return new FullScreenEvent(null),
-	function(event) event.__init());
+	public var interactive(get, set):Bool;
 
 	/**
 		Creates an event object that contains information about `fullScreen`
@@ -83,33 +80,39 @@ class FullScreenEvent extends ActivityEvent
 	**/
 	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false, fullScreen:Bool = false, interactive:Bool = false)
 	{
-		// TODO: What is the "activating" value supposed to be?
+		if (_ == null)
+		{
+			_ = new _FullScreenEvent(this, type, bubbles, cancelable, fullScreen, interactive);
+		}
 
 		super(type, bubbles, cancelable);
-
-		this.fullScreen = fullScreen;
-		this.interactive = interactive;
 	}
 
 	public override function clone():FullScreenEvent
 	{
-		var event = new FullScreenEvent(type, bubbles, cancelable, fullScreen, interactive);
-		event.target = target;
-		event.currentTarget = currentTarget;
-		event.eventPhase = eventPhase;
-		return event;
+		return (_ : _FullScreenEvent).clone();
 	}
 
-	public override function toString():String
+	// Get & Set Methods
+
+	@:noCompletion private function get_fullScreen():Bool
 	{
-		return __formatToString("FullscreenEvent", ["type", "bubbles", "cancelable", "fullscreen", "interactive"]);
+		return (_ : _FullScreenEvent).fullScreen;
 	}
 
-	@:noCompletion private override function __init():Void
+	@:noCompletion private function set_fullScreen(value:Bool):Bool
 	{
-		super.__init();
-		fullScreen = false;
-		interactive = false;
+		return (_ : _FullScreenEvent).fullScreen = value;
+	}
+
+	@:noCompletion private function get_interactive():Bool
+	{
+		return (_ : _FullScreenEvent).interactive;
+	}
+
+	@:noCompletion private function set_interactive(value:Bool):Bool
+	{
+		return (_ : _FullScreenEvent).interactive = value;
 	}
 }
 #else

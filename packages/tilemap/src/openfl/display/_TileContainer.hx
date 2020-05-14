@@ -23,9 +23,14 @@ class _TileContainer extends _Tile
 
 	public var __tiles:Array<Tile>;
 
-	public function new(x:Float = 0, y:Float = 0, scaleX:Float = 1, scaleY:Float = 1, rotation:Float = 0, originX:Float = 0, originY:Float = 0)
+	private var tileContainer:TileContainer;
+
+	public function new(tileContainer:TileContainer, x:Float = 0, y:Float = 0, scaleX:Float = 1, scaleY:Float = 1, rotation:Float = 0, originX:Float = 0,
+			originY:Float = 0)
 	{
-		super(-1, x, y, scaleX, scaleY, rotation, originX, originY);
+		this.tileContainer = tileContainer;
+
+		super(tileContainer, -1, x, y, scaleX, scaleY, rotation, originX, originY);
 
 		__tiles = new Array();
 		__length = 0;
@@ -35,14 +40,14 @@ class _TileContainer extends _Tile
 	{
 		if (tile == null) return null;
 
-		if (tile.parent == this)
+		if (tile.parent == this.tileContainer)
 		{
 			__tiles.remove(tile);
 			__length--;
 		}
 
 		__tiles[numTiles] = tile;
-		tile.parent = this;
+		(tile._ : _Tile).parent = this.tileContainer;
 		__length++;
 
 		__setRenderDirty();
@@ -54,14 +59,14 @@ class _TileContainer extends _Tile
 	{
 		if (tile == null) return null;
 
-		if (tile.parent == this)
+		if (tile.parent == this.tileContainer)
 		{
 			__tiles.remove(tile);
 			__length--;
 		}
 
 		__tiles.insert(index, tile);
-		tile.parent = this;
+		(tile._ : _Tile).parent = this.tileContainer;
 		__length++;
 
 		__setRenderDirty();
@@ -136,9 +141,9 @@ class _TileContainer extends _Tile
 
 	public function removeTile(tile:Tile):Tile
 	{
-		if (tile != null && tile.parent == this)
+		if (tile != null && tile.parent == this.tileContainer)
 		{
-			tile.parent = null;
+			(tile._ : _Tile).parent = null;
 			__tiles.remove(tile);
 			__length--;
 			__setRenderDirty();
@@ -165,7 +170,7 @@ class _TileContainer extends _Tile
 		var removed = __tiles.splice(beginIndex, endIndex - beginIndex + 1);
 		for (tile in removed)
 		{
-			tile.parent = null;
+			(tile._ : _Tile).parent = null;
 		}
 		__length = __tiles.length;
 
@@ -174,7 +179,7 @@ class _TileContainer extends _Tile
 
 	public function setTileIndex(tile:Tile, index:Int):Void
 	{
-		if (index >= 0 && index <= numTiles && tile.parent == this)
+		if (index >= 0 && index <= numTiles && tile.parent == this.tileContainer)
 		{
 			__tiles.remove(tile);
 			__tiles.insert(index, tile);
@@ -190,7 +195,7 @@ class _TileContainer extends _Tile
 
 	public function swapTiles(tile1:Tile, tile2:Tile):Void
 	{
-		if (tile1.parent == this && tile2.parent == this)
+		if (tile1.parent == this.tileContainer && tile2.parent == this.tileContainer)
 		{
 			var index1 = __tiles.indexOf(tile1);
 			var index2 = __tiles.indexOf(tile2);
@@ -227,7 +232,7 @@ class _TileContainer extends _Tile
 		for (tile in __tiles)
 		{
 			// TODO: Generate less Rectangle objects? Could be done with __getBounds but need a initial rectangle and the stack of transformations
-			rect = tile.getBounds(this);
+			rect = tile.getBounds(this.tileContainer);
 
 			#if flash
 			result = result.union(rect);
@@ -254,7 +259,7 @@ class _TileContainer extends _Tile
 		for (tile in __tiles)
 		{
 			// TODO: Generate less Rectangle objects? Could be done with __getBounds but need a initial rectangle and the stack of transformations
-			rect = tile.getBounds(this);
+			rect = tile.getBounds(this.tileContainer);
 
 			#if flash
 			result = result.union(rect);
@@ -283,7 +288,7 @@ class _TileContainer extends _Tile
 		for (tile in __tiles)
 		{
 			// TODO: Generate less Rectangle objects? Could be done with __getBounds but need a initial rectangle and the stack of transformations
-			rect = tile.getBounds(this);
+			rect = tile.getBounds(this.tileContainer);
 
 			#if flash
 			result = result.union(rect);
@@ -310,7 +315,7 @@ class _TileContainer extends _Tile
 		for (tile in __tiles)
 		{
 			// TODO: Generate less Rectangle objects? Could be done with __getBounds but need a initial rectangle and the stack of transformations
-			rect = tile.getBounds(this);
+			rect = tile.getBounds(this.tileContainer);
 
 			#if flash
 			result = result.union(rect);

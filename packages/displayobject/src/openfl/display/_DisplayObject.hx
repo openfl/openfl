@@ -152,11 +152,11 @@ class _DisplayObject extends _EventDispatcher
 	public var __worldVisibleChanged:Bool;
 	public var __worldZ:Int;
 
-	private var this_displayObject:DisplayObject;
+	private var displayObject:DisplayObject;
 
 	public function new(displayObject:DisplayObject)
 	{
-		this_displayObject = displayObject;
+		this.displayObject = displayObject;
 
 		super(displayObject);
 
@@ -190,7 +190,7 @@ class _DisplayObject extends _EventDispatcher
 		{
 			this.stage = __initStage;
 			__initStage = null;
-			this.stage.addChild(this_displayObject);
+			this.stage.addChild(this.displayObject);
 		}
 	}
 
@@ -207,9 +207,9 @@ class _DisplayObject extends _EventDispatcher
 
 				var dispatchers = __broadcastEvents.get(type);
 
-				if (dispatchers.indexOf(this_displayObject) == -1)
+				if (dispatchers.indexOf(this.displayObject) == -1)
 				{
-					dispatchers.push(this_displayObject);
+					dispatchers.push(this.displayObject);
 				}
 
 			case RenderEvent.CLEAR_DOM, RenderEvent.RENDER_CAIRO, RenderEvent.RENDER_CANVAS, RenderEvent.RENDER_DOM, RenderEvent.RENDER_OPENGL:
@@ -242,7 +242,7 @@ class _DisplayObject extends _EventDispatcher
 			touchEvent.stageY = __getRenderTransform()._.__transformY(touchEvent.localX, touchEvent.localY);
 		}
 
-		event.target = this_displayObject;
+		(event._ : _Event).target = this.displayObject;
 
 		return __dispatchWithCapture(event);
 	}
@@ -251,7 +251,7 @@ class _DisplayObject extends _EventDispatcher
 	{
 		var matrix = _Matrix.__pool.get();
 
-		if (targetCoordinateSpace != null && targetCoordinateSpace != this_displayObject)
+		if (targetCoordinateSpace != null && targetCoordinateSpace != this.displayObject)
 		{
 			matrix.copyFrom(__getWorldTransform());
 
@@ -292,8 +292,8 @@ class _DisplayObject extends _EventDispatcher
 	{
 		if (obj != null && obj.parent != null && parent != null)
 		{
-			var currentBounds = getBounds(this_displayObject);
-			var targetBounds = obj.getBounds(this_displayObject);
+			var currentBounds = getBounds(this.displayObject);
+			var targetBounds = obj.getBounds(this.displayObject);
 
 			return currentBounds.intersects(targetBounds);
 		}
@@ -305,7 +305,7 @@ class _DisplayObject extends _EventDispatcher
 	{
 		if (stage != null)
 		{
-			return __hitTest(x, y, shapeFlag, null, false, this_displayObject);
+			return __hitTest(x, y, shapeFlag, null, false, this.displayObject);
 		}
 		else
 		{
@@ -334,7 +334,7 @@ class _DisplayObject extends _EventDispatcher
 				{
 					if (__broadcastEvents.exists(type))
 					{
-						__broadcastEvents.get(type).remove(this_displayObject);
+						__broadcastEvents.get(type).remove(this.displayObject);
 					}
 				}
 
@@ -355,7 +355,7 @@ class _DisplayObject extends _EventDispatcher
 	public function __childIterator(childrenOnly:Bool = true):DisplayObjectIterator
 	{
 		var iterator = __childIterators.get();
-		iterator.init(this_displayObject, childrenOnly);
+		iterator.init(this.displayObject, childrenOnly);
 		return iterator;
 	}
 
@@ -415,7 +415,7 @@ class _DisplayObject extends _EventDispatcher
 			switch (__type)
 			{
 				case DISPLAY_OBJECT_CONTAINER, MOVIE_CLIP:
-					var displayObjectContainer:DisplayObjectContainer = cast this_displayObject;
+					var displayObjectContainer:DisplayObjectContainer = cast this.displayObject;
 					if (displayObjectContainer.numChildren > 0)
 					{
 						for (child in __childIterator())
@@ -435,7 +435,7 @@ class _DisplayObject extends _EventDispatcher
 
 	public override function __dispatchEvent(event:Event):Bool
 	{
-		var parent = event.bubbles ? this_displayObject.parent : null;
+		var parent = event.bubbles ? this.parent : null;
 		var result = super.__dispatchEvent(event);
 		var _event:_Event = cast event._;
 
@@ -444,13 +444,13 @@ class _DisplayObject extends _EventDispatcher
 			return true;
 		}
 
-		if (parent != null && parent != this_displayObject)
+		if (parent != null && parent != this.displayObject)
 		{
 			_event.eventPhase = EventPhase.BUBBLING_PHASE;
 
 			if (_event.target == null)
 			{
-				_event.target = this_displayObject;
+				_event.target = this.displayObject;
 			}
 
 			((parent._ : _DisplayObject):_DisplayObject).__dispatchEvent(event);
@@ -464,7 +464,7 @@ class _DisplayObject extends _EventDispatcher
 		var _event:_Event = cast event._;
 		if (_event.target == null)
 		{
-			_event.target = this_displayObject;
+			_event.target = this.displayObject;
 		}
 
 		if (parent != null)
@@ -609,7 +609,7 @@ class _DisplayObject extends _EventDispatcher
 			else
 			{
 				var list = [];
-				var current = this_displayObject;
+				var current = this.displayObject;
 
 				while (current != stage && (current._ : _DisplayObject).__transformDirty)
 				{
@@ -654,7 +654,7 @@ class _DisplayObject extends _EventDispatcher
 
 		if (__graphics != null)
 		{
-			if (!hitObject._.__visible || __isMask || (mask != null && !mask._.__hitTestMask(x, y)))
+			if (!(hitObject._ : _DisplayObject).__visible || __isMask || (mask != null && !(mask._ : _DisplayObject).__hitTestMask(x, y)))
 			{
 				hitTest = false;
 			}
@@ -709,7 +709,7 @@ class _DisplayObject extends _EventDispatcher
 
 	public function __setStageReferences(stage:Stage):Void
 	{
-		(this_displayObject._:_DisplayObject).stage = stage;
+		this.stage = stage;
 
 		if (__firstChild != null)
 		{
@@ -760,7 +760,7 @@ class _DisplayObject extends _EventDispatcher
 				__calculateAbsoluteTransform(__transform, (parent._ : _DisplayObject).__worldTransform, mat);
 				if (!__worldTransform.equals(mat))
 				{
-					trace("[" + Type.getClassName(Type.getClass(this_displayObject)) + "] worldTransform cache miss detected");
+					trace("[" + Type.getClassName(Type.getClass(this.displayObject)) + "] worldTransform cache miss detected");
 					trace(__worldTransform);
 					trace(mat);
 				}
@@ -769,7 +769,7 @@ class _DisplayObject extends _EventDispatcher
 			{
 				if (!__worldTransform.equals(__transform))
 				{
-					trace("[" + Type.getClassName(Type.getClass(this_displayObject)) + "] worldTransform cache miss detected");
+					trace("[" + Type.getClassName(Type.getClass(this.displayObject)) + "] worldTransform cache miss detected");
 					trace(__worldTransform);
 					trace(__transform);
 				}
@@ -779,14 +779,13 @@ class _DisplayObject extends _EventDispatcher
 			{
 				var mat = new Matrix();
 				__calculateAbsoluteTransform(__transform, (renderParent._ : _DisplayObject).__renderTransform, mat);
-				if (Std.is(this_displayObject, openfl.text.TextField))
+				if (__type == TEXTFIELD)
 				{
-					mat._.__translateTransformed(@:privateAccess cast(this_displayObject, openfl.text.TextField)._.__offsetX, @:privateAccess cast(this_displayObject, openfl.text.TextField)
-						._.__offsetY);
+					mat._.__translateTransformed((this.displayObject._ : _TextField).__offsetX, (this.displayObject._ : _TextField).__offsetY);
 				}
 				if (!__renderTransform.equals(mat))
 				{
-					trace("[" + Type.getClassName(Type.getClass(this_displayObject)) + "] renderTransform cache miss detected");
+					trace("[" + Type.getClassName(Type.getClass(this.displayObject)) + "] renderTransform cache miss detected");
 					trace(__renderTransform);
 					trace(mat);
 				}
@@ -795,14 +794,13 @@ class _DisplayObject extends _EventDispatcher
 			{
 				var mat = new Matrix();
 				mat.copyFrom(__transform);
-				if (Std.is(this_displayObject, openfl.text.TextField))
+				if (Std.is(this.displayObject, openfl.text.TextField))
 				{
-					mat._.__translateTransformed(@:privateAccess cast(this_displayObject, openfl.text.TextField)._.__offsetX, @:privateAccess cast(this_displayObject, openfl.text.TextField)
-						._.__offsetY);
+					mat._.__translateTransformed((this.displayObject._ : _TextField).__offsetX, (this.displayObject._ : _TextField).__offsetY);
 				}
 				if (!__renderTransform.equals(mat))
 				{
-					trace("[" + Type.getClassName(Type.getClass(this_displayObject)) + "] renderTransform cache miss detected");
+					trace("[" + Type.getClassName(Type.getClass(this.displayObject)) + "] renderTransform cache miss detected");
 					trace(__renderTransform);
 					trace(mat);
 				}
@@ -1099,23 +1097,23 @@ class _DisplayObject extends _EventDispatcher
 
 		if (__mask != null)
 		{
-			__mask._.__isMask = false;
-			__mask._.__maskTarget = null;
-			__mask._.__setTransformDirty(true);
-			__mask._.__setParentRenderDirty();
-			__mask._.__setRenderDirty();
+			(__mask._ : _DisplayObject).__isMask = false;
+			(__mask._ : _DisplayObject).__maskTarget = null;
+			(__mask._ : _DisplayObject).__setTransformDirty(true);
+			(__mask._ : _DisplayObject).__setParentRenderDirty();
+			(__mask._ : _DisplayObject).__setRenderDirty();
 		}
 
 		if (value != null)
 		{
-			if (!value._.__isMask)
+			if (!(value._ : _DisplayObject).__isMask)
 			{
-				value._.__setParentRenderDirty();
+				(value._ : _DisplayObject).__setParentRenderDirty();
 			}
 
-			value._.__isMask = true;
-			value._.__maskTarget = this_displayObject;
-			value._.__setTransformDirty(true);
+			(value._ : _DisplayObject).__isMask = true;
+			(value._ : _DisplayObject).__maskTarget = this.displayObject;
+			(value._ : _DisplayObject).__setTransformDirty(true);
 		}
 
 		// TODO: Handle in renderer
@@ -1129,16 +1127,16 @@ class _DisplayObject extends _EventDispatcher
 
 	private function get_mouseX():Float
 	{
-		var mouseX = (stage != null ? stage._.__mouseX : Lib.current.stage._.__mouseX);
-		var mouseY = (stage != null ? stage._.__mouseY : Lib.current.stage._.__mouseY);
+		var mouseX = (stage != null ? (stage._ : _Stage).__mouseX : (Lib.current.stage._ : _Stage).__mouseX);
+		var mouseY = (stage != null ? (stage._ : _Stage).__mouseY : (Lib.current.stage._ : _Stage).__mouseY);
 
 		return __getRenderTransform()._.__transformInverseX(mouseX, mouseY);
 	}
 
 	private function get_mouseY():Float
 	{
-		var mouseX = (stage != null ? stage._.__mouseX : Lib.current.stage._.__mouseX);
-		var mouseY = (stage != null ? stage._.__mouseY : Lib.current.stage._.__mouseY);
+		var mouseX = (stage != null ? (stage._ : _Stage).__mouseX : (Lib.current.stage._ : _Stage).__mouseX);
+		var mouseY = (stage != null ? (stage._ : _Stage).__mouseY : (Lib.current.stage._ : _Stage).__mouseY);
 
 		return __getRenderTransform()._.__transformInverseY(mouseX, mouseY);
 	}
@@ -1356,7 +1354,7 @@ class _DisplayObject extends _EventDispatcher
 	{
 		if (__objectTransform == null)
 		{
-			__objectTransform = new Transform(this_displayObject);
+			__objectTransform = new Transform(this.displayObject);
 		}
 
 		return __objectTransform;
@@ -1371,7 +1369,7 @@ class _DisplayObject extends _EventDispatcher
 
 		if (__objectTransform == null)
 		{
-			__objectTransform = new Transform(this_displayObject);
+			__objectTransform = new Transform(this.displayObject);
 		}
 
 		__objectTransform.matrix = value.matrix;

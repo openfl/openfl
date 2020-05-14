@@ -40,7 +40,7 @@ import openfl.utils.ByteArray;
 
 	@:allow(openfl) @:noCompletion private function new(context3D:Context3D, format:Context3DProgramFormat)
 	{
-		_ = new _Program3D(context3D, format);
+		_ = new _Program3D(this, context3D, format);
 	}
 
 	/**

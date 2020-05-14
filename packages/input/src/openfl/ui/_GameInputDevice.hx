@@ -22,8 +22,12 @@ class _GameInputDevice
 	public var __button:Map<Int, GameInputControl> = new Map();
 	public var __controls:Array<GameInputControl> = new Array();
 
-	public function new(id:String, name:String)
+	private var gameInputDevice:GameInputDevice;
+
+	public function new(gameInputDevice:GameInputDevice, id:String, name:String)
 	{
+		this.gameInputDevice = gameInputDevice;
+
 		this.id = id;
 		this.name = name;
 
@@ -31,14 +35,14 @@ class _GameInputDevice
 
 		for (i in 0...6)
 		{
-			control = new GameInputControl(this, "AXIS_" + i, -1, 1);
+			control = new GameInputControl(this.gameInputDevice, "AXIS_" + i, -1, 1);
 			__axis.set(i, control);
 			__controls.push(control);
 		}
 
 		for (i in 0...15)
 		{
-			control = new GameInputControl(this, "BUTTON_" + i, 0, 1);
+			control = new GameInputControl(this.gameInputDevice, "BUTTON_" + i, 0, 1);
 			__button.set(i, control);
 			__controls.push(control);
 		}

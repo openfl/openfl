@@ -9,15 +9,21 @@ import openfl._internal.utils.ObjectPool;
 @:noCompletion
 class _ProgressEvent extends _Event
 {
+	private static var __pool:ObjectPool<ProgressEvent> = new ObjectPool<ProgressEvent>(function() return new ProgressEvent(null), function(event)
+	{
+		(event._ : _Event).__init();
+	});
+
 	public var bytesLoaded:Float;
 	public var bytesTotal:Float;
 
-	private static var __pool:ObjectPool<ProgressEvent> = new ObjectPool<ProgressEvent>(function() return new ProgressEvent(null),
-		function(event) event.__init());
+	private var progressEvent:ProgressEvent;
 
-	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false, bytesLoaded:Float = 0, bytesTotal:Float = 0)
+	public function new(progressEvent:ProgressEvent, type:String, bubbles:Bool = false, cancelable:Bool = false, bytesLoaded:Float = 0, bytesTotal:Float = 0)
 	{
-		super(type, bubbles, cancelable);
+		this.progressEvent = progressEvent;
+
+		super(progressEvent, type, bubbles, cancelable);
 
 		this.bytesLoaded = bytesLoaded;
 		this.bytesTotal = bytesTotal;
@@ -26,9 +32,9 @@ class _ProgressEvent extends _Event
 	public override function clone():ProgressEvent
 	{
 		var event = new ProgressEvent(type, bubbles, cancelable, bytesLoaded, bytesTotal);
-		event.target = target;
-		event.currentTarget = currentTarget;
-		event.eventPhase = eventPhase;
+		(event._ : _Event).target = target;
+		(event._ : _Event).currentTarget = currentTarget;
+		(event._ : _Event).eventPhase = eventPhase;
 		return event;
 	}
 
@@ -37,7 +43,7 @@ class _ProgressEvent extends _Event
 		return __formatToString("ProgressEvent", ["type", "bubbles", "cancelable", "bytesLoaded", "bytesTotal"]);
 	}
 
-	private override function __init():Void
+	public override function __init():Void
 	{
 		super.__init();
 		bytesLoaded = 0;

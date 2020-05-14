@@ -1163,7 +1163,7 @@ class InteractiveObject extends DisplayObject
 		multiple objects.
 
 		The custom tab ordering that the `tabIndex` property defines is
-		_flat_. This means that no attention is paid to the hierarchical
+		_flat(_ : _InteractiveObject). This means that no attention is paid to the hierarchical
 		relationships of objects in the SWF file. All objects in the SWF file
 		with `tabIndex` properties are placed in the tab order, and the tab
 		order is determined by the order of the `tabIndex` values.
@@ -1237,72 +1237,72 @@ class InteractiveObject extends DisplayObject
 
 	@:noCompletion private function get_doubleClickEnabled():Bool
 	{
-		return _.doubleClickEnabled;
+		return (_ : _InteractiveObject).doubleClickEnabled;
 	}
 
 	@:noCompletion private function set_doubleClickEnabled(value:Bool):Bool
 	{
-		return _.doubleClickEnabled = value;
+		return (_ : _InteractiveObject).doubleClickEnabled = value;
 	}
 
 	@:noCompletion private function get_focusRect():Null<Bool>
 	{
-		return _.focusRect;
+		return (_ : _InteractiveObject).focusRect;
 	}
 
 	@:noCompletion private function set_focusRect(value:Null<Bool>):Null<Bool>
 	{
-		return _.focusRect = value;
+		return (_ : _InteractiveObject).focusRect = value;
 	}
 
 	@:noCompletion private function get_mouseEnabled():Bool
 	{
-		return _.mouseEnabled;
+		return (_ : _InteractiveObject).mouseEnabled;
 	}
 
 	@:noCompletion private function set_mouseEnabled(value:Bool):Bool
 	{
-		return _.mouseEnabled = value;
+		return (_ : _InteractiveObject).mouseEnabled = value;
 	}
 
 	@:noCompletion private function get_needsSoftKeyboard():Bool
 	{
-		return _.needsSoftKeyboard;
+		return (_ : _InteractiveObject).needsSoftKeyboard;
 	}
 
 	@:noCompletion private function set_needsSoftKeyboard(value:Bool):Bool
 	{
-		return _.needsSoftKeyboard = value;
+		return (_ : _InteractiveObject).needsSoftKeyboard = value;
 	}
 
 	@:noCompletion private function get_softKeyboardInputAreaOfInterest():Rectangle
 	{
-		return _.softKeyboardInputAreaOfInterest;
+		return (_ : _InteractiveObject).softKeyboardInputAreaOfInterest;
 	}
 
 	@:noCompletion private function set_softKeyboardInputAreaOfInterest(value:Rectangle):Rectangle
 	{
-		return _.softKeyboardInputAreaOfInterest = value;
+		return (_ : _InteractiveObject).softKeyboardInputAreaOfInterest = value;
 	}
 
 	@:noCompletion private function get_tabEnabled():Bool
 	{
-		return _.tabEnabled;
+		return (_ : _InteractiveObject).tabEnabled;
 	}
 
 	@:noCompletion private function set_tabEnabled(value:Bool):Bool
 	{
-		return _.tabEnabled = value;
+		return (_ : _InteractiveObject).tabEnabled = value;
 	}
 
 	@:noCompletion private function get_tabIndex():Int
 	{
-		return _.tabIndex;
+		return (_ : _InteractiveObject).tabIndex;
 	}
 
 	@:noCompletion private function set_tabIndex(value:Int):Int
 	{
-		return _.tabIndex = value;
+		return (_ : _InteractiveObject).tabIndex = value;
 	}
 }
 #else

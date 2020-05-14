@@ -29,16 +29,17 @@ import openfl.utils.ByteArray;
 class _CubeTexture extends _TextureBase
 {
 	public var framebufferSurface:Int;
-	public var parent:CubeTexture;
 	public var uploadedSides:Int;
 
 	private var __size:Int;
+	private var cubeTexture:CubeTexture;
 
-	public function new(parent:CubeTexture)
+	public function new(cubeTexture:CubeTexture, context:Context3D, size:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool,
+			streamingLevels:Int)
 	{
-		super(parent);
+		super(cubeTexture, context, size, size, format, optimizeForRenderToTexture, streamingLevels);
 
-		this.parent = parent;
+		this.cubeTexture = cubeTexture;
 
 		glTextureTarget = GL.TEXTURE_CUBE_MAP;
 		uploadedSides = 0;
@@ -66,7 +67,7 @@ class _CubeTexture extends _TextureBase
 				event = new Event(Event.TEXTURE_READY);
 				#end
 
-				parent.dispatchEvent(event);
+				cubeTexture.dispatchEvent(event);
 
 				#if openfl_pool_events
 				Event.pool.release(event);
@@ -79,7 +80,7 @@ class _CubeTexture extends _TextureBase
 	{
 		#if (lime || openfl_html5)
 		if (source == null) return;
-		var size = parent._.__size >> miplevel;
+		var size = __size >> miplevel;
 		if (size == 0) return;
 
 		var image = getImage(source);
@@ -90,7 +91,7 @@ class _CubeTexture extends _TextureBase
 		#if openfl_html5
 		if (miplevel == 0 && image.buffer != null && image.buffer.data == null && image.buffer.src != null)
 		{
-			var size = parent._.__size >> miplevel;
+			var size = __size >> miplevel;
 			if (size == 0) return;
 
 			var target = sideToTarget(side);
@@ -124,7 +125,7 @@ class _CubeTexture extends _TextureBase
 	{
 		if (data == null) return;
 
-		var size = parent._.__size >> miplevel;
+		var size = __size >> miplevel;
 		if (size == 0) return;
 
 		var target = sideToTarget(side);
@@ -151,13 +152,13 @@ class _CubeTexture extends _TextureBase
 			contextBackend.bindGLFramebuffer(glFramebuffer);
 			gl.framebufferTexture2D(GL.FRAMEBUFFER, GL.COLOR_ATTACHMENT0, GL.TEXTURE_CUBE_MAP_POSITIVE_X + surfaceSelector, glTextureID, 0);
 
-			if (parent._.__context.enableErrorChecking)
+			if (__context.enableErrorChecking)
 			{
 				var code = gl.checkFramebufferStatus(GL.FRAMEBUFFER);
 
 				if (code != GL.FRAMEBUFFER_COMPLETE)
 				{
-					Log.error('Error: Context3D.setRenderToTexture status:${code} size:${parent._.__size}');
+					Log.error('Error: Context3D.setRenderToTexture status:${code} size:${__size}');
 				}
 			}
 		}
@@ -217,7 +218,7 @@ class _CubeTexture extends _TextureBase
 	public function _uploadCompressedTextureFromByteArray(data:ByteArray, byteArrayOffset:UInt):Void
 	{
 		var reader = new ATFReader(data, byteArrayOffset);
-		var alpha = reader.readHeader(parent._.__size, parent._.__size, true);
+		var alpha = reader.readHeader(__size, __size, true);
 
 		contextBackend.bindGLTextureCubeMap(glTextureID);
 
@@ -241,13 +242,12 @@ class _CubeTexture extends _TextureBase
 				gl.compressedTexImage2D(target, level, glInternalFormat, width, height, 0,
 					new UInt8Array(#if js @:privateAccess bytes.b.buffer #else bytes #end, 0, size));
 
-				var alphaTexture = new CubeTexture(parent._.__context, parent._.__size, Context3DTextureFormat.COMPRESSED,
-					parent._.__optimizeForRenderToTexture, parent._.__streamingLevels);
-				alphaTexture._.glFormat = format;
-				alphaTexture._.glInternalFormat = format;
+				var alphaTexture = new CubeTexture(__context, __size, Context3DTextureFormat.COMPRESSED, __optimizeForRenderToTexture, __streamingLevels);
+				(alphaTexture._ : _TextureBase).glFormat = format;
+				(alphaTexture._ : _TextureBase).glInternalFormat = format;
 
-				contextBackend.bindGLTextureCubeMap(alphaTexture._.glTextureID);
-				gl.compressedTexImage2D(target, level, alphaTexture._.glInternalFormat, width, height, 0,
+				contextBackend.bindGLTextureCubeMap((alphaTexture._ : _TextureBase).glTextureID);
+				gl.compressedTexImage2D(target, level, (alphaTexture._ : _TextureBase).glInternalFormat, width, height, 0,
 					new UInt8Array(#if js @:privateAccess bytes.b.buffer #else bytes #end, size, size));
 
 				this.alphaTexture = alphaTexture;
@@ -263,8 +263,8 @@ class _CubeTexture extends _TextureBase
 		{
 			for (side in 0...6)
 			{
-				var data = new UInt8Array(parent._.__size * parent._.__size * 4);
-				gl.texImage2D(sideToTarget(side), 0, glInternalFormat, parent._.__size, parent._.__size, 0, glFormat, GL.UNSIGNED_BYTE, data);
+				var data = new UInt8Array(__size * __size * 4);
+				gl.texImage2D(sideToTarget(side), 0, glInternalFormat, __size, __size, 0, glFormat, GL.UNSIGNED_BYTE, data);
 			}
 		}
 

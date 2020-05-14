@@ -64,7 +64,7 @@ import openfl.geom.Matrix;
 	**/
 	public function new(shader:Shader, matrix:Matrix = null)
 	{
-		_ = new _GraphicsShaderFill(shader, matrix);
+		_ = new _GraphicsShaderFill(this, shader, matrix);
 	}
 
 	// Get & Set Methods

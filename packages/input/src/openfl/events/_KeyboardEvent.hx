@@ -10,6 +10,11 @@ import openfl.ui.KeyLocation;
 @:noCompletion
 class _KeyboardEvent extends _Event
 {
+	public static var __pool:ObjectPool<KeyboardEvent> = new ObjectPool<KeyboardEvent>(function() return new KeyboardEvent(null), function(event)
+	{
+		(event._ : _KeyboardEvent).__init();
+	});
+
 	public var altKey:Bool;
 	public var charCode:Int;
 	public var commandKey:Bool;
@@ -19,16 +24,15 @@ class _KeyboardEvent extends _Event
 	public var keyLocation:KeyLocation;
 	public var shiftKey:Bool;
 
-	public static var __pool:ObjectPool<KeyboardEvent> = new ObjectPool<KeyboardEvent>(function() return new KeyboardEvent(null), function(event)
-	{
-		(event._ : _KeyboardEvent).__init();
-	});
+	private var keyboardEvent:KeyboardEvent;
 
-	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false, charCodeValue:Int = 0, keyCodeValue:Int = 0,
+	public function new(keyboardEvent:KeyboardEvent, type:String, bubbles:Bool = false, cancelable:Bool = false, charCodeValue:Int = 0, keyCodeValue:Int = 0,
 			keyLocationValue:KeyLocation = null, ctrlKeyValue:Bool = false, altKeyValue:Bool = false, shiftKeyValue:Bool = false,
 			controlKeyValue:Bool = false, commandKeyValue:Bool = false)
 	{
-		super(type, bubbles, cancelable);
+		this.keyboardEvent = keyboardEvent;
+
+		super(keyboardEvent, type, bubbles, cancelable);
 
 		charCode = charCodeValue;
 		keyCode = keyCodeValue;

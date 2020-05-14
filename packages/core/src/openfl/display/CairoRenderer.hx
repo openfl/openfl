@@ -29,7 +29,7 @@ class CairoRenderer extends DisplayObjectRenderer
 	{
 		if (_ == null)
 		{
-			_ = new _CairoRenderer(cairo);
+			_ = new _CairoRenderer(this, cairo);
 		}
 
 		super();

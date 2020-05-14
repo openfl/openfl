@@ -21,7 +21,12 @@ class _AssetLibrary
 	public var __proxy:LimeAssetLibrary;
 	#end
 
-	public function new() {}
+	private var assetLibrary:AssetLibrary;
+
+	public function new(assetLibrary:AssetLibrary)
+	{
+		this.assetLibrary = assetLibrary;
+	}
 
 	public static function fromBundle(bundle:AssetBundle):AssetLibrary
 	{

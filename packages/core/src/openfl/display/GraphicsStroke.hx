@@ -214,7 +214,7 @@ import openfl._internal.renderer.GraphicsDataType;
 	public function new(thickness:Null<Float> = null, pixelHinting:Bool = false, scaleMode:LineScaleMode = LineScaleMode.NORMAL,
 			caps:CapsStyle = CapsStyle.NONE, joints:JointStyle = JointStyle.ROUND, miterLimit:Float = 3, fill:IGraphicsFill = null)
 	{
-		_ = new _GraphicsStroke(thickness, pixelHinting, scaleMode, caps, joints, miterLimit, fill);
+		_ = new _GraphicsStroke(this, thickness, pixelHinting, scaleMode, caps, joints, miterLimit, fill);
 	}
 
 	// Get & Set Methods

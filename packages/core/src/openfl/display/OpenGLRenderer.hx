@@ -32,7 +32,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	{
 		if (_ == null)
 		{
-			_ = new _OpenGLRenderer(context, defaultRenderTarget);
+			_ = new _OpenGLRenderer(this, context, defaultRenderTarget);
 		}
 
 		super();

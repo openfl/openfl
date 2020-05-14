@@ -9,6 +9,11 @@ import openfl._internal.utils.ObjectPool;
 @:noCompletion
 class _Event
 {
+	public static var __pool:ObjectPool<Event> = new ObjectPool<Event>(function() return new Event(null), function(event)
+	{
+		(event._ : _Event).__init();
+	});
+
 	public var bubbles:Bool;
 	public var cancelable:Bool;
 	public var currentTarget:#if (haxe_ver >= "3.4.2") Any #else IEventDispatcher #end;
@@ -16,17 +21,16 @@ class _Event
 	public var target:#if (haxe_ver >= "3.4.2") Any #else IEventDispatcher #end;
 	public var type:String;
 
-	public static var __pool:ObjectPool<Event> = new ObjectPool<Event>(function() return new Event(null), function(event)
-	{
-		(event._ : _Event).__init();
-	});
-
 	public var __isCanceled:Bool;
 	public var __isCanceledNow:Bool;
 	public var __preventDefault:Bool;
 
-	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false)
+	private var event:Event;
+
+	public function new(event:Event, type:String, bubbles:Bool = false, cancelable:Bool = false)
 	{
+		this.event = event;
+
 		this.type = type;
 		this.bubbles = bubbles;
 		this.cancelable = cancelable;
@@ -36,9 +40,9 @@ class _Event
 	public function clone():Event
 	{
 		var event = new Event(type, bubbles, cancelable);
-		event._.eventPhase = eventPhase;
-		event._.target = target;
-		event._.currentTarget = currentTarget;
+		(event._ : _Event).eventPhase = eventPhase;
+		(event._ : _Event).target = target;
+		(event._ : _Event).currentTarget = currentTarget;
 		return event;
 	}
 

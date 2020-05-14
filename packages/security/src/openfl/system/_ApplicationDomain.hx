@@ -11,8 +11,12 @@ class _ApplicationDomain
 
 	public var parentDomain:ApplicationDomain;
 
-	public function new(parentDomain:ApplicationDomain = null)
+	private var applicationDomain:ApplicationDomain;
+
+	public function new(applicationDomain:ApplicationDomain, parentDomain:ApplicationDomain = null)
 	{
+		this.applicationDomain = applicationDomain;
+
 		if (parentDomain != null)
 		{
 			this.parentDomain = parentDomain;

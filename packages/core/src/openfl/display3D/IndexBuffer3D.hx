@@ -24,19 +24,11 @@ import openfl.Vector;
 #end
 @:final class IndexBuffer3D
 {
-	@:allow(openfl) @:noCompletion private var _:Dynamic;
-
-	@:noCompletion private var __bufferUsage:Context3DBufferUsage;
-	@:noCompletion private var __context:Context3D;
-	@:noCompletion private var __numIndices:Int;
+	@:allow(openfl) @:noCompletion private var _:_IndexBuffer3D;
 
 	@:allow(openfl) @:noCompletion private function new(context3D:Context3D, numIndices:Int, bufferUsage:Context3DBufferUsage)
 	{
-		__context = context3D;
-		__numIndices = numIndices;
-		__bufferUsage = bufferUsage;
-
-		_ = new _IndexBuffer3D(this);
+		_ = new _IndexBuffer3D(this, context3D, numIndices, bufferUsage);
 	}
 
 	/**

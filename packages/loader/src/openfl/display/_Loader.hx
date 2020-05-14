@@ -3,6 +3,7 @@ package openfl.display;
 import haxe.io.Path;
 import openfl.errors.Error;
 import openfl.events.Event;
+import openfl.events._Event;
 import openfl.events.IOErrorEvent;
 import openfl.events.ProgressEvent;
 import openfl.events.UncaughtErrorEvents;
@@ -36,8 +37,12 @@ class _Loader extends _DisplayObjectContainer
 	public var __path:String;
 	public var __unloaded:Bool;
 
+	private var loader:Loader;
+
 	public function new(loader:Loader)
 	{
+		this.loader = loader;
+
 		super(loader);
 
 		contentLoaderInfo = _LoaderInfo.create(loader);
@@ -66,8 +71,8 @@ class _Loader extends _DisplayObjectContainer
 	{
 		unload();
 
-		contentLoaderInfo._.loaderURL = Lib.current.loaderInfo.url;
-		contentLoaderInfo._.url = request.url;
+		(contentLoaderInfo._ : _LoaderInfo).loaderURL = Lib.current.loaderInfo.url;
+		(contentLoaderInfo._ : _LoaderInfo).url = request.url;
 		__unloaded = false;
 
 		if (request.contentType == null || request.contentType == "")
@@ -106,21 +111,21 @@ class _Loader extends _DisplayObjectContainer
 				extension = __path.substring(extIndex + 1);
 			}
 
-			contentLoaderInfo._.contentType = switch (extension)
-			{
-				case "json": "application/json";
-				case "swf": "application/x-shockwave-flash";
-				case "jpg", "jpeg": "image/jpeg";
-				case "png": "image/png";
-				case "gif": "image/gif";
-				case "js": "application/javascript";
-				default:
-					"application/x-www-form-urlencoded"; /*throw "Unrecognized file " + request.url;*/
-			}
+				(contentLoaderInfo._ : _LoaderInfo).contentType = switch (extension)
+				{
+					case "json": "application/json";
+					case "swf": "application/x-shockwave-flash";
+					case "jpg", "jpeg": "image/jpeg";
+					case "png": "image/png";
+					case "gif": "image/gif";
+					case "js": "application/javascript";
+					default:
+						"application/x-www-form-urlencoded"; /*throw "Unrecognized file " + request.url;*/
+				}
 		}
 		else
 		{
-			contentLoaderInfo._.contentType = request.contentType;
+			(contentLoaderInfo._ : _LoaderInfo).contentType = request.contentType;
 		}
 
 		#if openfl_html5
@@ -179,7 +184,7 @@ class _Loader extends _DisplayObjectContainer
 	{
 		if (!__unloaded)
 		{
-			if (content != null && content.parent._ == this)
+			if (content != null && content.parent == this.loader)
 			{
 				super.removeChild(content);
 			}
@@ -191,13 +196,13 @@ class _Loader extends _DisplayObjectContainer
 			}
 
 			content = null;
-			contentLoaderInfo._.url = null;
-			contentLoaderInfo._.contentType = null;
-			contentLoaderInfo._.content = null;
-			contentLoaderInfo._.bytesLoaded = 0;
-			contentLoaderInfo._.bytesTotal = 0;
-			contentLoaderInfo._.width = 0;
-			contentLoaderInfo._.height = 0;
+			(contentLoaderInfo._ : _LoaderInfo).url = null;
+			(contentLoaderInfo._ : _LoaderInfo).contentType = null;
+			(contentLoaderInfo._ : _LoaderInfo).content = null;
+			(contentLoaderInfo._ : _LoaderInfo).bytesLoaded = 0;
+			(contentLoaderInfo._ : _LoaderInfo).bytesTotal = 0;
+			(contentLoaderInfo._ : _LoaderInfo).width = 0;
+			(contentLoaderInfo._ : _LoaderInfo).height = 0;
 			__unloaded = true;
 
 			contentLoaderInfo.dispatchEvent(new Event(Event.UNLOAD));
@@ -208,12 +213,12 @@ class _Loader extends _DisplayObjectContainer
 	{
 		if (content != null)
 		{
-			content._.__stopAllMovieClips();
+			(content._ : _DisplayObject).__stopAllMovieClips();
 		}
 
 		for (i in 0...numChildren)
 		{
-			getChildAt(i)._.__stopAllMovieClips();
+			(getChildAt(i)._ : _DisplayObject).__stopAllMovieClips();
 		}
 
 		unload();
@@ -239,9 +244,9 @@ class _Loader extends _DisplayObjectContainer
 	{
 		this.content = content;
 
-		contentLoaderInfo._.content = content;
-		contentLoaderInfo._.width = width;
-		contentLoaderInfo._.height = height;
+		(contentLoaderInfo._ : _LoaderInfo).content = content;
+		(contentLoaderInfo._ : _LoaderInfo).width = width;
+		(contentLoaderInfo._ : _LoaderInfo).height = height;
 
 		if (content != null)
 		{
@@ -347,7 +352,7 @@ class _Loader extends _DisplayObjectContainer
 		}
 		else
 		{
-			contentLoaderInfo._.bytes = loader.data;
+			(contentLoaderInfo._ : _LoaderInfo).bytes = loader.data;
 			BitmapData.loadFromBytes(loader.data).onComplete(BitmapData_onLoad).onError(BitmapData_onError);
 		}
 	}
@@ -356,13 +361,13 @@ class _Loader extends _DisplayObjectContainer
 	{
 		// TODO: Dispatch HTTPStatusEvent
 
-		event._.target = contentLoaderInfo;
+		(event._ : _Event).target = contentLoaderInfo;
 		contentLoaderInfo.dispatchEvent(event);
 	}
 
 	public function loader_onProgress(event:ProgressEvent):Void
 	{
-		event._.target = contentLoaderInfo;
+		(event._ : _Event).target = contentLoaderInfo;
 		contentLoaderInfo.dispatchEvent(event);
 	}
 }

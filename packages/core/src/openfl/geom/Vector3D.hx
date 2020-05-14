@@ -118,7 +118,7 @@ class Vector3D
 	{
 		if (_ == null)
 		{
-			_ = new _Vector3D(x, y, z, w);
+			_ = new _Vector3D(this, x, y, z, w);
 		}
 	}
 

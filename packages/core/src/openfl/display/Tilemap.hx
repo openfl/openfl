@@ -92,7 +92,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	{
 		if (_ == null)
 		{
-			_ = new _Tilemap(width, height, tileset, smoothing);
+			_ = new _Tilemap(this, width, height, tileset, smoothing);
 		}
 
 		super();
@@ -332,6 +332,18 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	{
 		return (_ : _Tilemap).numTiles;
 	}
+
+	#if !flash
+	@:noCompletion private function get_smoothing():Bool
+	{
+		return (_ : _Tilemap).smoothing;
+	}
+
+	@:noCompletion private function set_smoothing(value:Bool):Bool
+	{
+		return (_ : _Tilemap).smoothing = value;
+	}
+	#end
 
 	@:noCompletion private function get_tileAlphaEnabled():Bool
 	{

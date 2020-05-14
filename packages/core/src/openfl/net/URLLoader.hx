@@ -84,7 +84,7 @@ class URLLoader extends EventDispatcher
 		Indicates the number of bytes that have been loaded thus far during the
 		load operation.
 	**/
-	public var bytesLoaded:Int;
+	public var bytesLoaded(get, set):Int;
 
 	/**
 		Indicates the total number of bytes in the downloaded data. This property
@@ -92,7 +92,7 @@ class URLLoader extends EventDispatcher
 		the operation is complete. Also, a missing Content-Length header will
 		result in bytesTotal being indeterminate.
 	**/
-	public var bytesTotal:Int;
+	public var bytesTotal(get, set):Int;
 
 	/**
 		The data received from the load operation. This property is populated only
@@ -111,7 +111,7 @@ class URLLoader extends EventDispatcher
 		`URLLoaderDataFormat.VARIABLES`, the received data is a
 		URLVariables object containing the URL-encoded variables.
 	**/
-	public var data:Dynamic;
+	public var data(get, set):Dynamic;
 
 	/**
 		Controls whether the downloaded data is received as text
@@ -133,7 +133,7 @@ class URLLoader extends EventDispatcher
 
 		@default URLLoaderDataFormat.TEXT
 	**/
-	public var dataFormat:URLLoaderDataFormat;
+	public var dataFormat(get, set):URLLoaderDataFormat;
 
 	/**
 		Creates a URLLoader object.
@@ -145,18 +145,12 @@ class URLLoader extends EventDispatcher
 	**/
 	public function new(request:URLRequest = null)
 	{
-		super();
-
-		bytesLoaded = 0;
-		bytesTotal = 0;
-		dataFormat = URLLoaderDataFormat.TEXT;
-
-		_ = new _URLLoader(this);
-
-		if (request != null)
+		if (_ == null)
 		{
-			load(request);
+			_ = new _URLLoader(this, request);
 		}
+
+		super();
 	}
 
 	/**
@@ -269,7 +263,49 @@ class URLLoader extends EventDispatcher
 	**/
 	public function load(request:URLRequest):Void
 	{
-		_.load(request);
+		(_ : _URLLoader).load(request);
+	}
+
+	// Get & Set Methods
+
+	@:noCompletion private function get_bytesLoaded():Int
+	{
+		return (_ : _URLLoader).bytesLoaded;
+	}
+
+	@:noCompletion private function set_bytesLoaded(value:Int):Int
+	{
+		return (_ : _URLLoader).bytesLoaded = value;
+	}
+
+	@:noCompletion private function get_bytesTotal():Int
+	{
+		return (_ : _URLLoader).bytesTotal;
+	}
+
+	@:noCompletion private function set_bytesTotal(value:Int):Int
+	{
+		return (_ : _URLLoader).bytesTotal = value;
+	}
+
+	@:noCompletion private function get_data():Dynamic
+	{
+		return (_ : _URLLoader).data;
+	}
+
+	@:noCompletion private function set_data(value:Dynamic):Dynamic
+	{
+		return (_ : _URLLoader).data = value;
+	}
+
+	@:noCompletion private function get_dataFormat():URLLoaderDataFormat
+	{
+		return (_ : _URLLoader).dataFormat;
+	}
+
+	@:noCompletion private function set_dataFormat(value:URLLoaderDataFormat):URLLoaderDataFormat
+	{
+		return (_ : _URLLoader).dataFormat = value;
 	}
 }
 #else

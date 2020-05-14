@@ -39,11 +39,15 @@ class _SharedObject extends _EventDispatcher
 	public var localPath:String;
 	public var name:String;
 
-	public function new()
-	{
-		super();
+	private var sharedObject:SharedObject;
 
-		client = this;
+	public function new(sharedObject:SharedObject)
+	{
+		this.sharedObject = sharedObject;
+
+		super(sharedObject);
+
+		client = sharedObject;
 		objectEncoding = defaultObjectEncoding;
 	}
 

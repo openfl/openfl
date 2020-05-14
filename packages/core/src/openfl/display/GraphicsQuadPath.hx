@@ -61,7 +61,7 @@ import openfl.Vector;
 	**/
 	public function new(rects:Vector<Float> = null, indices:Vector<Int> = null, transforms:Vector<Float> = null)
 	{
-		_ = new _GraphicsQuadPath(rects, indices, transforms);
+		_ = new _GraphicsQuadPath(this, rects, indices, transforms);
 	}
 
 	// Get & Set Methods

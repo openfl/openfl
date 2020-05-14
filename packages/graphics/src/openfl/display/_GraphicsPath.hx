@@ -19,8 +19,13 @@ class _GraphicsPath implements _IGraphicsData
 
 	public var __graphicsDataType(default, null):GraphicsDataType;
 
-	public function new(commands:Vector<Int> = null, data:Vector<Float> = null, winding:GraphicsPathWinding = GraphicsPathWinding.EVEN_ODD)
+	private var graphicsPath:GraphicsPath;
+
+	public function new(graphicsPath:GraphicsPath, commands:Vector<Int> = null, data:Vector<Float> = null,
+			winding:GraphicsPathWinding = GraphicsPathWinding.EVEN_ODD)
 	{
+		this.graphicsPath = graphicsPath;
+
 		this.commands = commands;
 		this.data = data;
 		this.winding = winding;

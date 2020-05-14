@@ -17,9 +17,13 @@ class _SampleDataEvent extends _Event
 	public static var __pool:ObjectPool<SampleDataEvent> = new ObjectPool<SampleDataEvent>(function() return new SampleDataEvent(null),
 		function(event) event._.__init());
 
-	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false)
+	private var sampleDataEvent:SampleDataEvent;
+
+	public function new(sampleDataEvent:SampleDataEvent, type:String, bubbles:Bool = false, cancelable:Bool = false)
 	{
-		super(type, bubbles, cancelable);
+		this.sampleDataEvent = sampleDataEvent;
+
+		super(sampleDataEvent, type, bubbles, cancelable);
 
 		data = new ByteArray();
 		data.endian = Endian.LITTLE_ENDIAN;
@@ -42,7 +46,7 @@ class _SampleDataEvent extends _Event
 
 	public override function __init():Void
 	{
-		super._.__init();
+		super.__init();
 		data = new ByteArray();
 		data.endian = Endian.LITTLE_ENDIAN;
 		position = 0.0;

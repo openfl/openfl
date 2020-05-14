@@ -43,7 +43,7 @@ import openfl._internal.renderer.GraphicsFillType;
 	**/
 	public function new(color:UInt = 0, alpha:Float = 1)
 	{
-		_ = new _GraphicsSolidFill(color, alpha);
+		_ = new _GraphicsSolidFill(this, color, alpha);
 	}
 
 	// Get & Set Methods

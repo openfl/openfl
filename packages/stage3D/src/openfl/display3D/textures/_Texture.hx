@@ -28,22 +28,23 @@ class _Texture extends _TextureBase
 {
 	public static var lowMemoryMode:Bool = false;
 
-	public var parent:Texture;
+	private var texture:Texture;
 
-	public function new(parent:Texture)
+	public function new(texture:Texture, context:Context3D, width:Int, height:Int, format:Context3DTextureFormat, optimizeForRenderToTexture:Bool,
+			streamingLevels:Int)
 	{
-		this.parent = parent;
+		this.texture = texture;
 
-		super(parent);
+		super(texture, context, width, height, format, optimizeForRenderToTexture, streamingLevels);
 
 		gl = contextBackend.gl;
 		glTextureTarget = GL.TEXTURE_2D;
 
 		contextBackend.bindGLTexture2D(glTextureID);
-		gl.texImage2D(glTextureTarget, 0, glInternalFormat, parent._.__width, parent._.__height, 0, glFormat, GL.UNSIGNED_BYTE, null);
+		gl.texImage2D(glTextureTarget, 0, glInternalFormat, __width, __height, 0, glFormat, GL.UNSIGNED_BYTE, null);
 		contextBackend.bindGLTexture2D(null);
 
-		if (parent._.__optimizeForRenderToTexture) getGLFramebuffer(true, 0, 0);
+		if (__optimizeForRenderToTexture) getGLFramebuffer(true, 0, 0);
 	}
 
 	public function uploadCompressedTextureFromByteArray(data:ByteArray, byteArrayOffset:UInt, async:Bool = false):Void
@@ -66,7 +67,7 @@ class _Texture extends _TextureBase
 				event = new Event(Event.TEXTURE_READY);
 				#end
 
-				parent.dispatchEvent(event);
+				texture.dispatchEvent(event);
 
 				#if openfl_pool_events
 				Event.pool.release(event);
@@ -90,8 +91,8 @@ class _Texture extends _TextureBase
 
 		if (source == null) return;
 
-		var width = parent._.__width >> miplevel;
-		var height = parent._.__height >> miplevel;
+		var width = __width >> miplevel;
+		var height = __height >> miplevel;
 
 		if (width == 0 && height == 0) return;
 
@@ -113,8 +114,8 @@ class _Texture extends _TextureBase
 		#if openfl_html5
 		if (miplevel == 0 && image.buffer != null && image.buffer.data == null && image.buffer.src != null)
 		{
-			var width = parent._.__width >> miplevel;
-			var height = parent._.__height >> miplevel;
+			var width = __width >> miplevel;
+			var height = __height >> miplevel;
 
 			if (width == 0 && height == 0) return;
 
@@ -150,8 +151,8 @@ class _Texture extends _TextureBase
 	{
 		if (data == null) return;
 
-		var width = parent._.__width >> miplevel;
-		var height = parent._.__height >> miplevel;
+		var width = __width >> miplevel;
+		var height = __height >> miplevel;
 
 		if (width == 0 && height == 0) return;
 
@@ -201,7 +202,7 @@ class _Texture extends _TextureBase
 	public function _uploadCompressedTextureFromByteArray(data:ByteArray, byteArrayOffset:UInt):Void
 	{
 		var reader = new ATFReader(data, byteArrayOffset);
-		var alpha = reader.readHeader(parent._.__width, parent._.__height, false);
+		var alpha = reader.readHeader(__width, __height, false);
 
 		contextBackend.bindGLTexture2D(glTextureID);
 
@@ -223,14 +224,14 @@ class _Texture extends _TextureBase
 				gl.compressedTexImage2D(glTextureTarget, level, glInternalFormat, width, height, 0,
 					new UInt8Array(#if js @:privateAccess bytes.b.buffer #else bytes #end, 0, size));
 
-				var alphaTexture = new Texture(parent._.__context, parent._.__width, parent._.__height, Context3DTextureFormat.COMPRESSED,
-					parent._.__optimizeForRenderToTexture, parent._.__streamingLevels);
-				alphaTexture._.glFormat = format;
-				alphaTexture._.glInternalFormat = format;
+				var alphaTexture = new Texture(__context, __width, __height, Context3DTextureFormat.COMPRESSED, __optimizeForRenderToTexture,
+					__streamingLevels);
+				(alphaTexture._ : _TextureBase).glFormat = format;
+				(alphaTexture._ : _TextureBase).glInternalFormat = format;
 
-				contextBackend.bindGLTexture2D(alphaTexture._.glTextureID);
-				gl.compressedTexImage2D(alphaTexture._.glTextureTarget, level, alphaTexture._.glInternalFormat, width, height, 0,
-					new UInt8Array(#if js @:privateAccess bytes.b.buffer #else bytes #end, size, size));
+				contextBackend.bindGLTexture2D((alphaTexture._ : _TextureBase).glTextureID);
+				gl.compressedTexImage2D((alphaTexture._ : _TextureBase).glTextureTarget, level, (alphaTexture._ : _TextureBase).glInternalFormat, width,
+					height, 0, new UInt8Array(#if js @:privateAccess bytes.b.buffer #else bytes #end, size, size));
 
 				this.alphaTexture = alphaTexture;
 			}
@@ -243,8 +244,8 @@ class _Texture extends _TextureBase
 
 		if (!hasTexture)
 		{
-			var data = new UInt8Array(parent._.__width * parent._.__height * 4);
-			gl.texImage2D(glTextureTarget, 0, glInternalFormat, parent._.__width, parent._.__height, 0, glFormat, GL.UNSIGNED_BYTE, data);
+			var data = new UInt8Array(__width * __height * 4);
+			gl.texImage2D(glTextureTarget, 0, glInternalFormat, __width, __height, 0, glFormat, GL.UNSIGNED_BYTE, data);
 		}
 
 		contextBackend.bindGLTexture2D(null);

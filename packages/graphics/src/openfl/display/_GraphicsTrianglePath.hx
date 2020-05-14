@@ -17,8 +17,13 @@ class _GraphicsTrianglePath implements _IGraphicsData
 
 	public var __graphicsDataType(default, null):GraphicsDataType;
 
-	public function new(vertices:Vector<Float> = null, indices:Vector<Int> = null, uvtData:Vector<Float> = null, culling:TriangleCulling = NONE)
+	private var graphicsTrianglePath:GraphicsTrianglePath;
+
+	public function new(graphicsTrianglePath:GraphicsTrianglePath, vertices:Vector<Float> = null, indices:Vector<Int> = null, uvtData:Vector<Float> = null,
+			culling:TriangleCulling = NONE)
 	{
+		this.graphicsTrianglePath = graphicsTrianglePath;
+
 		this.vertices = vertices;
 		this.indices = indices;
 		this.uvtData = uvtData;

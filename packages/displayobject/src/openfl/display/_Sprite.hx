@@ -24,8 +24,12 @@ class _Sprite extends _DisplayObjectContainer
 
 	public var __buttonMode:Bool;
 
+	private var sprite:Sprite;
+
 	public function new(sprite:Sprite)
 	{
+		this.sprite = sprite;
+
 		super(sprite);
 
 		__buttonMode = false;
@@ -36,7 +40,7 @@ class _Sprite extends _DisplayObjectContainer
 	{
 		if (stage != null)
 		{
-			stage._.__startDrag(this, lockCenter, bounds);
+			(stage._ : _Stage).__startDrag(this.sprite, lockCenter, bounds);
 		}
 	}
 
@@ -44,7 +48,7 @@ class _Sprite extends _DisplayObjectContainer
 	{
 		if (stage != null)
 		{
-			stage._.__stopDrag(this);
+			(stage._ : _Stage).__stopDrag(this.sprite);
 		}
 	}
 
@@ -57,7 +61,8 @@ class _Sprite extends _DisplayObjectContainer
 	{
 		if (interactiveOnly && !mouseEnabled && !mouseChildren) return false;
 		if (!hitObject.visible || __isMask) return __hitTestHitArea(x, y, shapeFlag, stack, interactiveOnly, hitObject);
-		if (mask != null && !mask._.__hitTestMask(x, y)) return __hitTestHitArea(x, y, shapeFlag, stack, interactiveOnly, hitObject);
+		if (mask != null
+			&& !(mask._ : _DisplayObject).__hitTestMask(x, y)) return __hitTestHitArea(x, y, shapeFlag, stack, interactiveOnly, hitObject);
 
 		if (__scrollRect != null)
 		{
@@ -74,7 +79,7 @@ class _Sprite extends _DisplayObjectContainer
 			_Point.__pool.release(point);
 		}
 
-		if (super._.__hitTest(x, y, shapeFlag, stack, interactiveOnly, hitObject))
+		if (super.__hitTest(x, y, shapeFlag, stack, interactiveOnly, hitObject))
 		{
 			return (stack == null || interactiveOnly);
 		}
@@ -98,7 +103,7 @@ class _Sprite extends _DisplayObjectContainer
 			if (!hitArea.mouseEnabled)
 			{
 				hitArea.mouseEnabled = true;
-				var hitTest = hitArea._.__hitTest(x, y, shapeFlag, null, true, hitObject);
+				var hitTest = (hitArea._ : _DisplayObject).__hitTest(x, y, shapeFlag, null, true, hitObject);
 				hitArea.mouseEnabled = false;
 
 				if (stack != null && hitTest)
@@ -115,7 +120,7 @@ class _Sprite extends _DisplayObjectContainer
 
 	public override function __hitTestMask(x:Float, y:Float):Bool
 	{
-		if (super._.__hitTestMask(x, y))
+		if (super.__hitTestMask(x, y))
 		{
 			return true;
 		}
@@ -143,7 +148,7 @@ class _Sprite extends _DisplayObjectContainer
 	{
 		if (__graphics == null)
 		{
-			__graphics = new Graphics(this_displayObject);
+			__graphics = new Graphics(this.sprite);
 		}
 
 		return __graphics;

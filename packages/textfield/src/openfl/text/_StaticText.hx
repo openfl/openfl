@@ -13,10 +13,14 @@ class _StaticText extends _DisplayObject
 {
 	public var text:String;
 
+	private var staticText:StaticText;
+
 	public function new(staticText:StaticText)
 	{
+		this.staticText = staticText;
+
 		super(staticText);
 
-		__graphics = new Graphics(parent);
+		__graphics = new Graphics(staticText);
 	}
 }

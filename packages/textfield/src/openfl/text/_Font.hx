@@ -25,18 +25,19 @@ class _Font
 	public var fontName(get, set):String;
 	public var fontStyle:FontStyle;
 	public var fontType:FontType;
+	public var limeFont:LimeFont;
 
 	public static var __fontByName:Map<String, Font> = new Map();
 	public static var __registeredFonts:Array<Font> = new Array();
 
 	private var __initialized:Bool;
-	private var this_font:Font;
+	private var font:Font;
 
 	public function new(font:Font)
 	{
-		this_font = font;
+		this.font = font;
 		#if lime
-		font.limeFont = new LimeFont();
+		limeFont = new LimeFont();
 		#end
 	}
 
@@ -49,11 +50,11 @@ class _Font
 	{
 		var font = new Font();
 		#if lime
-		font.limeFont.__fromBytes(bytes);
+		font._.limeFont.__fromBytes(bytes);
 		#end
 
 		#if lime_cffi
-		return (font.limeFont.src != null) ? font : null;
+		return (font._.limeFont.src != null) ? font : null;
 		#else
 		return font;
 		#end
@@ -63,11 +64,11 @@ class _Font
 	{
 		var font = new Font();
 		#if lime
-		font._.__fromFile(path);
+		font.limeFont.__fromFile(path);
 		#end
 
 		#if lime_cffi
-		return (font.src != null) ? font : null;
+		return (font.limeFont.src != null) ? font : null;
 		#else
 		return font;
 		#end
@@ -155,17 +156,15 @@ class _Font
 	}
 
 	#if lime
-	private function __fromLimeFont(font:LimeFont):Void
+	public function __fromLimeFont(font:LimeFont):Void
 	{
-		this_font.__copyFrom(font);
+		this.font.limeFont.__copyFrom(font);
 	}
 	#end
 
-	private function __initialize():Bool
+	public function __initialize():Bool
 	{
 		#if native
-		var limeFont = this_font.limeFont;
-
 		if (!__initialized)
 		{
 			if (limeFont.src != null)
@@ -280,7 +279,7 @@ class _Font
 	private inline function get_fontName():String
 	{
 		#if lime
-		return name;
+		return limeFont.name;
 		#else
 		return null;
 		#end
@@ -289,7 +288,7 @@ class _Font
 	private inline function set_fontName(value:String):String
 	{
 		#if lime
-		return name = value;
+		return limeFont.name = value;
 		#else
 		return value;
 		#end

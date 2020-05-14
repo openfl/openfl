@@ -3,6 +3,7 @@ package openfl.display;
 import haxe.Timer;
 import openfl._internal.renderer.DisplayObjectRenderData;
 import openfl.display3D.Context3D;
+import openfl.display3D._Context3D;
 import openfl.display3D.Context3DProfile;
 import openfl.display3D.Context3DRenderMode;
 import openfl.events.ErrorEvent;
@@ -57,9 +58,13 @@ class _Stage3D extends _EventDispatcher
 	public var __renderContext:RenderContext;
 	#end
 
-	public function new(stage:Stage)
+	private var stage3D:Stage3D;
+
+	public function new(stage3D:Stage3D, stage:Stage)
 	{
-		super();
+		this.stage3D = stage3D;
+
+		super(stage3D);
 
 		__stage = stage;
 
@@ -111,7 +116,7 @@ class _Stage3D extends _EventDispatcher
 			#if openfl_share_context
 			context3D = __stage.context3D;
 			#else
-			context3D = new Context3D(__stage, __stage.context3D._.__contextState, this);
+			context3D = new Context3D(__stage, (__stage.context3D._ : _Context3D).__contextState, stage3D);
 			#end
 			__dispatchCreate();
 		}

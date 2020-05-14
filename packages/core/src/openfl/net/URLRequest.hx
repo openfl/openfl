@@ -351,7 +351,7 @@ import haxe.macro.Compiler;
 	{
 		if (_ == null)
 		{
-			_ = new _URLRequest(url);
+			_ = new _URLRequest(this, url);
 		}
 	}
 

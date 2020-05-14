@@ -79,7 +79,7 @@ class TextEvent extends Event
 	{
 		if (_ == null)
 		{
-			_ = new _TextEvent(type, bubbles, cancelable, text);
+			_ = new _TextEvent(this, type, bubbles, cancelable, text);
 		}
 
 		super(type, bubbles, cancelable);
@@ -87,19 +87,19 @@ class TextEvent extends Event
 
 	public override function clone():TextEvent
 	{
-		return _.clone();
+		return (_ : _TextEvent).clone();
 	}
 
 	// Get & Set Methods
 
 	@:noCompletion private function get_text():String
 	{
-		return _.text;
+		return (_ : _TextEvent).text;
 	}
 
 	@:noCompletion private function set_text(value:String):String
 	{
-		return _.text = value;
+		return (_ : _TextEvent).text = value;
 	}
 }
 #else

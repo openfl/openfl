@@ -19,9 +19,14 @@ class _GraphicsStroke implements _IGraphicsData /*implements IGraphicsStroke*/
 
 	public var __graphicsDataType(default, null):GraphicsDataType;
 
-	public function new(thickness:Null<Float> = null, pixelHinting:Bool = false, scaleMode:LineScaleMode = LineScaleMode.NORMAL,
-			caps:CapsStyle = CapsStyle.NONE, joints:JointStyle = JointStyle.ROUND, miterLimit:Float = 3, fill:IGraphicsFill = null)
+	private var graphicsStroke:GraphicsStroke;
+
+	public function new(graphicsStroke:GraphicsStroke, thickness:Null<Float> = null, pixelHinting:Bool = false,
+			scaleMode:LineScaleMode = LineScaleMode.NORMAL, caps:CapsStyle = CapsStyle.NONE, joints:JointStyle = JointStyle.ROUND, miterLimit:Float = 3,
+			fill:IGraphicsFill = null)
 	{
+		this.graphicsStroke = graphicsStroke;
+
 		if (thickness == null) thickness = Math.NaN;
 
 		this.caps = caps;

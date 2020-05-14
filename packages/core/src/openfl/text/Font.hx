@@ -47,6 +47,31 @@ class Font
 
 	#if lime
 	public var limeFont(get, never):LimeFont;
+
+	// TODO: Remove
+	@:noCompletion public var name(get, set):String;
+
+	@:noCompletion private function get_name():String
+	{
+		return _.limeFont.name;
+	}
+
+	@:noCompletion private function set_name(value:String):String
+	{
+		return @:privateAccess _.limeFont.name = value;
+	}
+
+	@:noCompletion private var __fontPath(get, set):String;
+
+	@:noCompletion private function get___fontPath():String
+	{
+		return @:privateAccess _.limeFont.__fontPath;
+	}
+
+	@:noCompletion private function set___fontPath(value:String):String
+	{
+		return @:privateAccess _.limeFont.__fontPath = value;
+	}
 	#end
 
 	@:allow(openfl) @:noCompletion private var _:_Font;
@@ -55,7 +80,7 @@ class Font
 	{
 		if (_ == null)
 		{
-			_ = new _Font();
+			_ = new _Font(this);
 		}
 	}
 
@@ -178,18 +203,25 @@ class Font
 
 	@:noCompletion private inline function get_fontName():String
 	{
-		return _.fontName;
+		return (_ : _Font).fontName;
 	}
 
 	@:noCompletion private inline function get_fontStyle():FontStyle
 	{
-		return _.fontStyle;
+		return (_ : _Font).fontStyle;
 	}
 
 	@:noCompletion private inline function get_fontType():FontType
 	{
-		return _.fontType;
+		return (_ : _Font).fontType;
 	}
+
+	#if lime
+	@:noCompletion private inline function get_limeFont():LimeFont
+	{
+		return (_ : _Font).limeFont;
+	}
+	#end
 }
 #else
 typedef Font = flash.text.Font;

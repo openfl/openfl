@@ -57,7 +57,7 @@ class Point
 	{
 		if (_ == null)
 		{
-			_ = new _Point(x, y);
+			_ = new _Point(this, x, y);
 		}
 	}
 

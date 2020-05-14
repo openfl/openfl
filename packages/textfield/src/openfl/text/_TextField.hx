@@ -104,16 +104,20 @@ class _TextField extends _InteractiveObject
 	public var __forceCachedBitmapUpdate:Bool = false;
 	#end
 
+	private var textField:TextField;
+
 	public function new(textField:TextField)
 	{
+		this.textField = textField;
+
 		super(textField);
 
 		__type = TEXTFIELD;
 
 		__caretIndex = -1;
 		__displayAsPassword = false;
-		__graphics = new Graphics(this_displayObject);
-		__textEngine = new TextEngine(cast this_displayObject);
+		__graphics = new Graphics(textField);
+		__textEngine = new TextEngine(textField);
 		__layoutDirty = true;
 		__offsetX = 0;
 		__offsetY = 0;
@@ -1428,7 +1432,7 @@ class _TextField extends _InteractiveObject
 
 	private function get_defaultTextFormat():TextFormat
 	{
-		return __textFormat.clone();
+		return __textFormat._.clone();
 	}
 
 	private function set_defaultTextFormat(value:TextFormat):TextFormat
@@ -1727,7 +1731,7 @@ class _TextField extends _InteractiveObject
 	{
 		if (value != __textEngine.selectable && type == INPUT)
 		{
-			if (stage != null && stage.focus == this)
+			if (stage != null && stage.focus == this.textField)
 			{
 				__startTextInput();
 			}
@@ -1854,14 +1858,14 @@ class _TextField extends _InteractiveObject
 				addEventListener(Event.ADDED_TO_STAGE, this_onAddedToStage);
 
 				this_onFocusIn(null);
-				__textEngine._.__useIntAdvances = true;
+				__textEngine.__useIntAdvances = true;
 			}
 			else
 			{
 				removeEventListener(Event.ADDED_TO_STAGE, this_onAddedToStage);
 
 				__stopTextInput();
-				__textEngine._.__useIntAdvances = null;
+				__textEngine.__useIntAdvances = null;
 			}
 
 			__dirty = true;
@@ -1987,7 +1991,7 @@ class _TextField extends _InteractiveObject
 		stage.removeEventListener(MouseEvent.MOUSE_MOVE, stage_onMouseMove);
 		stage.removeEventListener(MouseEvent.MOUSE_UP, stage_onMouseUp);
 
-		if (stage.focus == this_displayObject)
+		if (stage.focus == this.textField)
 		{
 			__getWorldTransform();
 			__updateLayout();
@@ -2026,7 +2030,7 @@ class _TextField extends _InteractiveObject
 
 	public function this_onFocusIn(event:FocusEvent):Void
 	{
-		if (type == INPUT && stage != null && stage.focus == this)
+		if (type == INPUT && stage != null && stage.focus == this.textField)
 		{
 			__startTextInput();
 		}
@@ -2380,9 +2384,9 @@ class _TextField extends _InteractiveObject
 
 	public function window_onTextInput(value:String):Void
 	{
-		parent._.__replaceSelectedText(value, true);
+		__replaceSelectedText(value, true);
 
 		// TODO: Dispatch change if at max chars?
-		parent.dispatchEvent(new Event(Event.CHANGE, true));
+		dispatchEvent(new Event(Event.CHANGE, true));
 	}
 }

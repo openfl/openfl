@@ -174,7 +174,7 @@ class UncaughtErrorEvent extends ErrorEvent
 	{
 		if (_ == null)
 		{
-			_ = new _UncaughtErrorEvent(type, bubbles, cancelable, error);
+			_ = new _UncaughtErrorEvent(this, type, bubbles, cancelable, error);
 		}
 
 		super(type, bubbles, cancelable);

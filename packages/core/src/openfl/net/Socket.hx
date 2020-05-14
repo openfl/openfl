@@ -214,7 +214,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	{
 		if (_ == null)
 		{
-			_ = new _Socket(host, port);
+			_ = new _Socket(this, host, port);
 		}
 
 		super();

@@ -37,7 +37,7 @@ import openfl.ui.GameInputDevice;
 	{
 		if (_ == null)
 		{
-			_ = new _GameInputEvent(type, bubbles, cancelable, device);
+			_ = new _GameInputEvent(this, type, bubbles, cancelable, device);
 		}
 
 		super(type, bubbles, cancelable);

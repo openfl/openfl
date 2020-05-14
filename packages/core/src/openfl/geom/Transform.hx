@@ -137,7 +137,7 @@ class Transform
 	{
 		if (_ == null)
 		{
-			_ = new _Transform();
+			_ = new _Transform(this, displayObject);
 		}
 	}
 

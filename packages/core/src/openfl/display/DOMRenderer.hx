@@ -37,7 +37,7 @@ class DOMRenderer extends DisplayObjectRenderer
 	{
 		if (_ == null)
 		{
-			_ = new _DOMRenderer(element);
+			_ = new _DOMRenderer(this, element);
 		}
 
 		super();

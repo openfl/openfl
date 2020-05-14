@@ -20,11 +20,11 @@ class _Clipboard
 
 	public var formats(get, never):Array<ClipboardFormats>;
 
-	public var parent:Clipboard;
+	private var clipboard:Clipboard;
 
-	public function new(parent:Clipboard)
+	public function new(clipboard:Clipboard)
 	{
-		this.parent = parent;
+		this.clipboard = clipboard;
 	}
 
 	public function clear():Void

@@ -21,11 +21,15 @@ class _GameInput extends _EventDispatcher
 	public static var __deviceList:Array<GameInputDevice> = new Array();
 	public static var __instances:Array<GameInput> = [];
 
-	public function new()
-	{
-		super();
+	private var gameInput:GameInput;
 
-		__instances.push(this);
+	public function new(gameInput:GameInput)
+	{
+		this.gameInput = gameInput;
+
+		super(gameInput);
+
+		__instances.push(gameInput);
 	}
 
 	public override function addEventListener<T>(type:EventType<T>, listener:T->Void, useCapture:Bool = false, priority:Int = 0,

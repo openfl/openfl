@@ -40,8 +40,12 @@ class _Sound extends _EventDispatcher
 
 	public var buffer:AudioBuffer;
 
+	private var sound:Sound;
+
 	public function new(sound:Sound, stream:URLRequest = null, context:SoundLoaderContext = null)
 	{
+		this.sound = sound;
+
 		super(sound);
 
 		bytesLoaded = 0;
@@ -68,7 +72,7 @@ class _Sound extends _EventDispatcher
 	@:dox(hide) public static function fromAudioBuffer(buffer:AudioBuffer):Sound
 	{
 		var sound = new Sound();
-		sound._.buffer = buffer;
+		(sound._ : _Sound).buffer = buffer;
 		return sound;
 	}
 	#end
@@ -191,12 +195,27 @@ class _Sound extends _EventDispatcher
 	{
 		if (buffer == null) return null;
 
-		if (SoundMixer._.__soundChannels.length >= SoundMixer.MAX_ACTIVE_CHANNELS)
+		if (_SoundMixer.__soundChannels.length >= _SoundMixer.MAX_ACTIVE_CHANNELS)
 		{
 			return null;
 		}
 
-		return new SoundChannel(parent, startTime, loops, sndTransform);
+		return new SoundChannel(this.sound, startTime, loops, sndTransform);
+	}
+
+	// Event Handlers
+
+	private function AudioBuffer_onURLLoad(buffer:AudioBuffer):Void
+	{
+		if (buffer == null)
+		{
+			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+		}
+		else
+		{
+			this.buffer = buffer;
+			dispatchEvent(new Event(Event.COMPLETE));
+		}
 	}
 
 	// Get & Set Methods
@@ -218,9 +237,9 @@ class _Sound extends _EventDispatcher
 				var samples = (buffer.data.length * 8) / (buffer.channels * buffer.bitsPerSample);
 				return Std.int(samples / buffer.sampleRate * 1000);
 			}
-			else if (buffer._.__srcVorbisFile != null)
+			else if (@:privateAccess buffer.__srcVorbisFile != null)
 			{
-				var samples = Int64.toInt(buffer._.__srcVorbisFile.pcmTotal());
+				var samples = Int64.toInt(@:privateAccess buffer.__srcVorbisFile.pcmTotal());
 				return Std.int(samples / buffer.sampleRate * 1000);
 			}
 			else

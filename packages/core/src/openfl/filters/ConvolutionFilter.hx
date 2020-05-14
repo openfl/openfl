@@ -199,7 +199,7 @@ class ConvolutionFilter extends BitmapFilter
 	public function new(matrixX:Int = 0, matrixY:Int = 0, matrix:Array<Float> = null, divisor:Float = 1.0, bias:Float = 0.0, preserveAlpha:Bool = true,
 			clamp:Bool = true, color:Int = 0, alpha:Float = 0.0)
 	{
-		_ = new _ConvolutionFilter(matrixX, matrixY, matrix, divisor, bias, preserveAlpha, clamp, color, alpha);
+		_ = new _ConvolutionFilter(this, matrixX, matrixY, matrix, divisor, bias, preserveAlpha, clamp, color, alpha);
 
 		super();
 	}

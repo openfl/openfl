@@ -25,9 +25,13 @@ class _SoundChannel extends _EventDispatcher
 
 	private var __soundTransform:SoundTransform;
 
-	public function new(sound:Sound = null, startTime:Float = 0, loops:Int = 0, soundTransform:SoundTransform = null):Void
+	private var soundChannel:SoundChannel;
+
+	public function new(soundChannel:SoundChannel, sound:Sound = null, startTime:Float = 0, loops:Int = 0, soundTransform:SoundTransform = null):Void
 	{
-		super(this);
+		this.soundChannel = soundChannel;
+
+		super(soundChannel);
 
 		leftPeak = 1;
 		rightPeak = 1;
@@ -43,15 +47,15 @@ class _SoundChannel extends _EventDispatcher
 
 		if (sound != null)
 		{
-			SoundMixer.__registerSoundChannel(this);
-			var pan = SoundMixer._.__soundTransform.pan + __soundTransform.pan;
+			_SoundMixer.__registerSoundChannel(soundChannel);
+			var pan = _SoundMixer.__soundTransform.pan + __soundTransform.pan;
 
 			if (pan > 1) pan = 1;
 			if (pan < -1) pan = -1;
 
-			var volume = SoundMixer._.__soundTransform.volume * __soundTransform.volume;
+			var volume = _SoundMixer.__soundTransform.volume * __soundTransform.volume;
 
-			source = new AudioSource(@:privateAccess sound._.buffer);
+			source = new AudioSource(@:privateAccess (sound._ : _Sound).buffer);
 			source.offset = Std.int(startTime);
 			if (loops > 1) source.loops = loops - 1;
 
@@ -69,7 +73,7 @@ class _SoundChannel extends _EventDispatcher
 
 	public function stop():Void
 	{
-		_SoundMixer.__unregisterSoundChannel(this);
+		_SoundMixer.__unregisterSoundChannel(soundChannel);
 
 		if (source != null)
 		{
@@ -91,7 +95,7 @@ class _SoundChannel extends _EventDispatcher
 
 	private function __onComplete():Void
 	{
-		_SoundMixer.__unregisterSoundChannel(this);
+		_SoundMixer.__unregisterSoundChannel(soundChannel);
 
 		__dispose();
 		dispatchEvent(new Event(Event.SOUND_COMPLETE));

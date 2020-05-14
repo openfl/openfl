@@ -34,11 +34,11 @@ class GameInputControl extends EventDispatcher
 	**/
 	public var value(get, never):Float;
 
-	@:noCompletion private function new(device:GameInputDevice, id:String, minValue:Float, maxValue:Float, value:Float = 0)
+	@:allow(openfl) @:noCompletion private function new(device:GameInputDevice, id:String, minValue:Float, maxValue:Float, value:Float = 0)
 	{
 		if (_ == null)
 		{
-			_ = new _GameInputControl(device, id, minValue, maxValue, value);
+			_ = new _GameInputControl(this, device, id, minValue, maxValue, value);
 		}
 
 		super();

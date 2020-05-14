@@ -95,16 +95,16 @@ package openfl.display;
 	/**
 		The zero-based index of the parameter.
 	**/
-	@SuppressWarnings("checkstyle:Dynamic") public var index(default, null):Dynamic;
+	@SuppressWarnings("checkstyle:Dynamic") public var index(get, never):Dynamic;
 
-	@:noCompletion @:dox(hide) @SuppressWarnings("checkstyle:FieldDocComment") public var name(default, set):String;
+	@:noCompletion @:dox(hide) @SuppressWarnings("checkstyle:FieldDocComment") public var name(get, set):String;
 
 	/**
 		The data type of the parameter as defined in the shader. The set of
 		possible values for the `type` property is defined by the constants in
 		the ShaderParameterType class.
 	**/
-	public var type(default, null):ShaderParameterType;
+	public var type(get, never):ShaderParameterType;
 
 	/**
 		The value or values that are passed in as the parameter value to the
@@ -148,22 +148,45 @@ package openfl.display;
 		* `myMatrix[1][0]`: .3
 		* `myMatrix[1][1]`: .4
 	**/
-	public var value:Array<T>;
+	public var value(get, set):Array<T>;
 
-	@:allow(openfl) @:noCompletion private var _:Dynamic;
+	@:allow(openfl) @:noCompletion private var _:_ShaderParameter<T>;
 
 	public function new()
 	{
-		index = 0;
-
 		_ = new _ShaderParameter<T>(this);
 	}
 
 	// Get & Set Methods
+
+	@:noCompletion private function get_index():Dynamic
+	{
+		return _.index;
+	}
+
+	@:noCompletion private function get_name():String
+	{
+		return _.name;
+	}
+
 	@:noCompletion private function set_name(value:String):String
 	{
-		_.setName(value);
-		return this.name = value;
+		return _.name = value;
+	}
+
+	@:noCompletion private function get_type():ShaderParameterType
+	{
+		return _.type;
+	}
+
+	@:noCompletion private function get_value():Array<T>
+	{
+		return _.value;
+	}
+
+	@:noCompletion private function set_value(value:Array<T>):Array<T>
+	{
+		return _.value = value;
 	}
 }
 #else

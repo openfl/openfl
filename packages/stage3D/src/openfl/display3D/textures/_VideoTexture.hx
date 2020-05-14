@@ -27,16 +27,17 @@ class _VideoTexture extends _TextureBase
 {
 	public var cacheTime:Float;
 	public var netStream:NetStream;
-	public var parent:VideoTexture;
 	#if openfl_html5
 	public var videoElement:VideoElement;
 	#end
 
-	public function new(parent:VideoTexture)
-	{
-		super(parent);
+	private var videoTexture:VideoTexture;
 
-		this.parent = parent;
+	public function new(videoTexture:VideoTexture, context:Context3D)
+	{
+		this.videoTexture = videoTexture;
+
+		super(videoTexture, context, 0, 0, null, false, 0);
 
 		glTextureTarget = GL.TEXTURE_2D;
 	}
@@ -121,22 +122,22 @@ class _VideoTexture extends _TextureBase
 	public function textureReady():Void
 	{
 		#if openfl_html5
-		parent.videoWidth = videoElement.videoWidth;
-		parent.videoHeight = videoElement.videoHeight;
+		videoTexture.videoWidth = videoElement.videoWidth;
+		videoTexture.videoHeight = videoElement.videoHeight;
 		#end
 
 		var event:Event = null;
 
 		#if openfl_pool_events
-		event = Event._.__pool.get(Event.TEXTURE_READY);
+		event = _Event.__pool.get(Event.TEXTURE_READY);
 		#else
 		event = new Event(Event.TEXTURE_READY);
 		#end
 
-		parent.dispatchEvent(event);
+		videoTexture.dispatchEvent(event);
 
 		#if openfl_pool_events
-		Event._.__pool.release(event);
+		_Event.__pool.release(event);
 		#end
 	}
 }

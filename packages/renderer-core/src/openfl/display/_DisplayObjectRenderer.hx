@@ -29,8 +29,12 @@ class _DisplayObjectRenderer extends _EventDispatcher
 	public var __worldColorTransform:ColorTransform;
 	public var __worldTransform:Matrix;
 
+	private var displayObjectRenderer:DisplayObjectRenderer;
+
 	public function new(displayObjectRenderer:DisplayObjectRenderer)
 	{
+		this.displayObjectRenderer = displayObjectRenderer;
+
 		super(displayObjectRenderer);
 
 		__allowSmoothing = true;
@@ -49,33 +53,33 @@ class _DisplayObjectRenderer extends _EventDispatcher
 			{
 				case BITMAP:
 					var bitmap:Bitmap = cast child;
-					if (bitmap._.__bitmapData != null
-						&& bitmap._.__bitmapData.readable
-						&& bitmap._.__bitmapData.__getVersion() != bitmap._.__imageVersion)
+					if ((bitmap._ : _Bitmap).__bitmapData != null
+						&& (bitmap._ : _Bitmap).__bitmapData.readable
+							&& ((bitmap._ : _Bitmap).__bitmapData._ : _BitmapData).__getVersion() != (bitmap._ : _Bitmap).__imageVersion)
 					{
-						bitmap._.__setRenderDirty();
+						(bitmap._ : _Bitmap).__setRenderDirty();
 					}
 
 				case MOVIE_CLIP:
 					var movieClip:MovieClip = cast child;
-					if (movieClip._.__timeline != null)
+					if ((movieClip._ : _MovieClip).__timeline != null)
 					{
-						movieClip._.__timeline.__enterFrame(deltaTime);
+						((movieClip._ : _MovieClip).__timeline._ : _Timeline).__enterFrame(deltaTime);
 					}
 
 				case TILEMAP:
 					var tilemap:Tilemap = cast child;
-					if (tilemap._.__group.__dirty)
+					if (((tilemap._ : _Tilemap).__group._ : _TileContainer).__dirty)
 					{
-						tilemap._.__setRenderDirty();
+						(tilemap._ : _Tilemap).__setRenderDirty();
 					}
 
 				case VIDEO:
 					var video:Video = cast child;
 					#if openfl_html5
-					if (video._.__renderable && video._.__stream != null)
+					if ((video._ : _Video).__renderable && (video._ : _Video).__stream != null)
 					{
-						video._.__setRenderDirty();
+						(video._ : _Video).__setRenderDirty();
 					}
 					#end
 

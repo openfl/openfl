@@ -1181,7 +1181,7 @@ class NetStream extends EventDispatcher
 	{
 		if (_ == null)
 		{
-			_ = new _NetStream(connection, peerID);
+			_ = new _NetStream(this, connection, peerID);
 		}
 
 		super();

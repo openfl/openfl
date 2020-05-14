@@ -30,7 +30,7 @@ class BitmapFilter
 	{
 		if (_ == null)
 		{
-			_ = new _BitmapFilter();
+			_ = new _BitmapFilter(this);
 		}
 	}
 

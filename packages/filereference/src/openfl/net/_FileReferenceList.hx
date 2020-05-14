@@ -21,9 +21,13 @@ class _FileReferenceList extends _EventDispatcher
 {
 	public var fileList:Array<FileReference>;
 
-	public function new()
+	private var fileReferenceList:FileReferenceList;
+
+	public function new(fileReferenceList:FileReferenceList)
 	{
-		super();
+		this.fileReferenceList = fileReferenceList;
+
+		super(fileReferenceList);
 
 		__backend = new FileReferenceListBackend(this);
 	}

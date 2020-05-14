@@ -82,7 +82,7 @@ class PerspectiveProjection
 	{
 		if (_ == null)
 		{
-			_ = new _PerspectiveProjection();
+			_ = new _PerspectiveProjection(this);
 		}
 	}
 

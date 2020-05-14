@@ -43,9 +43,9 @@ import openfl.utils.ByteArray;
 
 	@:allow(openfl) @:noCompletion private var _:_GameInputDevice;
 
-	@:noCompletion private function new(id:String, name:String)
+	@:allow(openfl) @:noCompletion private function new(id:String, name:String)
 	{
-		_ = new _GameInputDevice(id, name);
+		_ = new _GameInputDevice(this, id, name);
 	}
 
 	/**

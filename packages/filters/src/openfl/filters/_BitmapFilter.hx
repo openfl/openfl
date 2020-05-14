@@ -25,8 +25,12 @@ class _BitmapFilter
 	public var __smooth:Bool;
 	public var __topExtension:Int;
 
-	public function new()
+	private var bitmapFilter:BitmapFilter;
+
+	public function new(bitmapFilter:BitmapFilter)
 	{
+		this.bitmapFilter = bitmapFilter;
+
 		__bottomExtension = 0;
 		__leftExtension = 0;
 		__needSecondBitmapData = true;

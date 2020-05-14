@@ -1,6 +1,5 @@
 package openfl.display3D;
 
-#if openfl_gl
 import lime.graphics.opengl.GLBuffer;
 import lime.graphics.opengl.GL;
 import lime.graphics.WebGLRenderContext;
@@ -10,16 +9,14 @@ import openfl.display3D.Context3DBufferUsage;
 import openfl.display3D.IndexBuffer3D;
 import openfl.utils.ByteArray;
 import openfl.Vector;
+import lime.utils.ArrayBufferView;
+import openfl.utils.ByteArray;
+import openfl.Vector;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.display3D.Context3D)
-@:access(openfl.display3D._Context3D)
-@:access(openfl.display3D.IndexBuffer3D)
-@:access(openfl.display3D._IndexBuffer3D)
-@:access(openfl.display.Stage)
 @:noCompletion
 class _IndexBuffer3D
 {
@@ -27,17 +24,26 @@ class _IndexBuffer3D
 	public var glBufferID:GLBuffer;
 	public var glUsage:Int;
 	public var memoryUsage:Int;
-	public var parent:IndexBuffer3D;
 	public var tempUInt16Array:UInt16Array;
 
-	public function new(parent:IndexBuffer3D)
-	{
-		this.parent = parent;
+	public var __bufferUsage:Context3DBufferUsage;
+	public var __context:Context3D;
+	public var __numIndices:Int;
 
-		gl = parent._.__context._.gl;
+	private var indexBuffer3D:IndexBuffer3D;
+
+	public function new(indexBuffer3D:IndexBuffer3D, context3D:Context3D, numIndices:Int, bufferUsage:Context3DBufferUsage)
+	{
+		this.indexBuffer3D = indexBuffer3D;
+
+		__context = context3D;
+		__numIndices = numIndices;
+		__bufferUsage = bufferUsage;
+
+		gl = (__context._ : _Context3D).gl;
 		glBufferID = gl.createBuffer();
 
-		glUsage = (parent._.__bufferUsage == Context3DBufferUsage.DYNAMIC_DRAW) ? GL.DYNAMIC_DRAW : GL.STATIC_DRAW;
+		glUsage = (__bufferUsage == Context3DBufferUsage.DYNAMIC_DRAW) ? GL.DYNAMIC_DRAW : GL.STATIC_DRAW;
 	}
 
 	public function dispose():Void
@@ -54,7 +60,7 @@ class _IndexBuffer3D
 	public function uploadFromTypedArray(data:ArrayBufferView, byteLength:Int = -1):Void
 	{
 		if (data == null) return;
-		parent._.__context._.bindGLElementArrayBuffer(glBufferID);
+		(__context._ : _Context3D).bindGLElementArrayBuffer(glBufferID);
 		gl.bufferData(GL.ELEMENT_ARRAY_BUFFER, data, glUsage);
 	}
 
@@ -85,4 +91,3 @@ class _IndexBuffer3D
 		uploadFromTypedArray(tempUInt16Array);
 	}
 }
-#end

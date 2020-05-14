@@ -91,7 +91,7 @@ class Timer extends EventDispatcher
 	{
 		if (_ == null)
 		{
-			_ = new _Timer(delay, repeatCount);
+			_ = new _Timer(this, delay, repeatCount);
 		}
 	}
 

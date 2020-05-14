@@ -425,7 +425,7 @@ class LoaderContext
 	{
 		if (_ == null)
 		{
-			_ = new _LoaderContext(checkPolicyFile, applicationDomain, securityDomain);
+			_ = new _LoaderContext(this, checkPolicyFile, applicationDomain, securityDomain);
 		}
 	}
 

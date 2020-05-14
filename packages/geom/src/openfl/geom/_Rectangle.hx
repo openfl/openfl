@@ -29,8 +29,12 @@ class _Rectangle
 	public var x:Float;
 	public var y:Float;
 
-	public function new(x:Float = 0, y:Float = 0, width:Float = 0, height:Float = 0):Void
+	private var rectangle:Rectangle;
+
+	public function new(rectangle:Rectangle, x:Float = 0, y:Float = 0, width:Float = 0, height:Float = 0):Void
 	{
+		this.rectangle = rectangle;
+
 		this.x = x;
 		this.y = y;
 		this.width = width;
@@ -74,7 +78,7 @@ class _Rectangle
 
 	public function equals(toCompare:Rectangle):Bool
 	{
-		if (toCompare == this) return true;
+		if (toCompare == this.rectangle) return true;
 		else
 			return toCompare != null && x == toCompare.x && y == toCompare.y && width == toCompare.width && height == toCompare.height;
 	}

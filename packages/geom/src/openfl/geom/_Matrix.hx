@@ -30,8 +30,12 @@ class _Matrix
 	public var __array:Float32Array;
 	#end
 
-	public function new(a:Float = 1, b:Float = 0, c:Float = 0, d:Float = 1, tx:Float = 0, ty:Float = 0)
+	private var matrix:Matrix;
+
+	public function new(matrix:Matrix, a:Float = 1, b:Float = 0, c:Float = 0, d:Float = 1, tx:Float = 0, ty:Float = 0)
 	{
+		this.matrix = matrix;
+
 		this.a = a;
 		this.b = b;
 		this.c = c;
@@ -266,7 +270,7 @@ class _Matrix
 
 		// __cleanValues ();
 
-		return this;
+		return this.matrix;
 	}
 
 	public function rotate(theta:Float):Void

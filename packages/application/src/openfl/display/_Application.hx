@@ -16,15 +16,15 @@ import openfl._internal.Lib;
 @:noCompletion
 class _Application
 {
-	public var parent:Application;
+	private var application:Application;
 
 	public function new(application:Application)
 	{
-		parent = application;
+		this.application = application;
 
 		if (Lib.limeApplication == null)
 		{
-			Lib.limeApplication = parent;
+			Lib.limeApplication = application;
 		}
 
 		#if (!flash && !macro)
@@ -36,47 +36,47 @@ class _Application
 
 	public function createWindow(attributes:WindowAttributes):Window
 	{
-		var window = new Window(parent, attributes);
+		var window = new Window(application, attributes);
 
-		parent._.__windows.push(window);
-		parent._.__windowByID.set(window.id, window);
+		this.application.__windows.push(window);
+		this.application.__windowByID.set(window.id, window);
 
-		window.onClose.add(parent._.__onWindowClose.bind(window), false, -10000);
+		window.onClose.add(this.application.__onWindowClose.bind(window), false, -10000);
 
-		if (parent._.__window == null)
+		if (this.application.__window == null)
 		{
-			parent._.__window = window;
+			this.application.__window = window;
 
-			window.onActivate.add(parent.onWindowActivate);
-			window.onRenderContextLost.add(parent.onRenderContextLost);
-			window.onRenderContextRestored.add(parent.onRenderContextRestored);
-			window.onDeactivate.add(parent.onWindowDeactivate);
-			window.onDropFile.add(parent.onWindowDropFile);
-			window.onEnter.add(parent.onWindowEnter);
-			window.onExpose.add(parent.onWindowExpose);
-			window.onFocusIn.add(parent.onWindowFocusIn);
-			window.onFocusOut.add(parent.onWindowFocusOut);
-			window.onFullscreen.add(parent.onWindowFullscreen);
-			window.onKeyDown.add(parent.onKeyDown);
-			window.onKeyUp.add(parent.onKeyUp);
-			window.onLeave.add(parent.onWindowLeave);
-			window.onMinimize.add(parent.onWindowMinimize);
-			window.onMouseDown.add(parent.onMouseDown);
-			window.onMouseMove.add(parent.onMouseMove);
-			window.onMouseMoveRelative.add(parent.onMouseMoveRelative);
-			window.onMouseUp.add(parent.onMouseUp);
-			window.onMouseWheel.add(parent.onMouseWheel);
-			window.onMove.add(parent.onWindowMove);
-			window.onRender.add(parent.render);
-			window.onResize.add(parent.onWindowResize);
-			window.onRestore.add(parent.onWindowRestore);
-			window.onTextEdit.add(parent.onTextEdit);
-			window.onTextInput.add(parent.onTextInput);
+			window.onActivate.add(application.onWindowActivate);
+			window.onRenderContextLost.add(application.onRenderContextLost);
+			window.onRenderContextRestored.add(application.onRenderContextRestored);
+			window.onDeactivate.add(application.onWindowDeactivate);
+			window.onDropFile.add(application.onWindowDropFile);
+			window.onEnter.add(application.onWindowEnter);
+			window.onExpose.add(application.onWindowExpose);
+			window.onFocusIn.add(application.onWindowFocusIn);
+			window.onFocusOut.add(application.onWindowFocusOut);
+			window.onFullscreen.add(application.onWindowFullscreen);
+			window.onKeyDown.add(application.onKeyDown);
+			window.onKeyUp.add(application.onKeyUp);
+			window.onLeave.add(application.onWindowLeave);
+			window.onMinimize.add(application.onWindowMinimize);
+			window.onMouseDown.add(application.onMouseDown);
+			window.onMouseMove.add(application.onMouseMove);
+			window.onMouseMoveRelative.add(application.onMouseMoveRelative);
+			window.onMouseUp.add(application.onMouseUp);
+			window.onMouseWheel.add(application.onMouseWheel);
+			window.onMove.add(application.onWindowMove);
+			window.onRender.add(application.render);
+			window.onResize.add(application.onWindowResize);
+			window.onRestore.add(application.onWindowRestore);
+			window.onTextEdit.add(application.onTextEdit);
+			window.onTextInput.add(application.onTextInput);
 
-			parent.onWindowCreate();
+			application.onWindowCreate();
 		}
 
-		parent.onCreateWindow.dispatch(window);
+		application.onCreateWindow.dispatch(window);
 
 		return window;
 	}

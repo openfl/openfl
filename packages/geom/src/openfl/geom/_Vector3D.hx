@@ -18,8 +18,12 @@ class _Vector3D
 	public var y:Float;
 	public var z:Float;
 
-	public function new(x:Float = 0, y:Float = 0, z:Float = 0, w:Float = 0)
+	private var vector3D:Vector3D;
+
+	public function new(vector3D:Vector3D, x:Float = 0, y:Float = 0, z:Float = 0, w:Float = 0)
 	{
+		this.vector3D = vector3D;
+
 		this.w = w;
 		this.x = x;
 		this.y = y;

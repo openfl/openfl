@@ -16,9 +16,13 @@ class _GameInputControl extends _EventDispatcher
 	public var minValue:Float;
 	public var value:Float;
 
-	public function new(device:GameInputDevice, id:String, minValue:Float, maxValue:Float, value:Float = 0)
+	private var gameInputControl:GameInputControl;
+
+	public function new(gameInputControl:GameInputControl, device:GameInputDevice, id:String, minValue:Float, maxValue:Float, value:Float = 0)
 	{
-		super();
+		this.gameInputControl = gameInputControl;
+
+		super(gameInputControl);
 
 		this.device = device;
 		this.id = id;

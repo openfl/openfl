@@ -54,7 +54,7 @@ import openfl.Vector;
 	**/
 	public function new(commands:Vector<Int> = null, data:Vector<Float> = null, winding:GraphicsPathWinding = GraphicsPathWinding.EVEN_ODD)
 	{
-		_ = new _GraphicsPath(commands, data, winding);
+		_ = new _GraphicsPath(this, commands, data, winding);
 	}
 
 	/**

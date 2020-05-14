@@ -73,7 +73,7 @@ package openfl.system;
 	**/
 	public function new(parentDomain:ApplicationDomain = null)
 	{
-		_ = new _ApplicationDomain(parentDomain);
+		_ = new _ApplicationDomain(this, parentDomain);
 	}
 
 	/**

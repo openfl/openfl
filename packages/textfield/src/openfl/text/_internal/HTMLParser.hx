@@ -73,7 +73,7 @@ class HTMLParser
 				segments[i] = segment;
 			}
 
-			var formatStack = [textFormat.clone()];
+			var formatStack = [textFormat._.clone()];
 			var tagStack = [];
 			var sub:String;
 			var noLineBreak = false;
@@ -100,7 +100,7 @@ class HTMLParser
 
 					tagStack.pop();
 					formatStack.pop();
-					format = formatStack[formatStack.length - 1].clone();
+					format = formatStack[formatStack.length - 1]._.clone();
 
 					if (tagName.toLowerCase() == "p" && textFormatRanges.length > 0)
 					{
@@ -119,7 +119,7 @@ class HTMLParser
 				}
 				else
 				{
-					format = formatStack[formatStack.length - 1].clone();
+					format = formatStack[formatStack.length - 1]._.clone();
 
 					if (tagEndIndex > -1)
 					{

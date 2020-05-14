@@ -161,7 +161,7 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public var width(get, never):Int;
 
-	@:allow(openfl) @:noCompletion private var _:Dynamic;
+	@:allow(openfl) @:noCompletion private var _:Any;
 
 	/**
 		Creates a BitmapData object with a specified width and height. If you specify a value for

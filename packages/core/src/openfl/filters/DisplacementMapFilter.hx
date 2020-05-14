@@ -181,7 +181,7 @@ import openfl._internal.backend.lime_standalone.ImageDataUtil;
 	public function new(mapBitmap:BitmapData = null, mapPoint:Point = null, componentX:Int = 0, componentY:Int = 0, scaleX:Float = 0.0, scaleY:Float = 0.0,
 			mode:DisplacementMapFilterMode = WRAP, color:Int = 0, alpha:Float = 0.0)
 	{
-		_ = new _DisplacementMapFilter(mapBitmap, mapPoint, componentX, componentY, scaleX, scaleY, mode, color, alpha);
+		_ = new _DisplacementMapFilter(this, mapBitmap, mapPoint, componentX, componentY, scaleX, scaleY, mode, color, alpha);
 
 		super();
 	}

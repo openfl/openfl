@@ -19,8 +19,12 @@ class _URLRequest
 	public var url:String;
 	public var userAgent:String;
 
-	public function new(url:String = null)
+	private var urlRequest:URLRequest;
+
+	public function new(urlRequest:URLRequest, url:String = null)
 	{
+		this.urlRequest = urlRequest;
+
 		if (url != null)
 		{
 			this.url = url;

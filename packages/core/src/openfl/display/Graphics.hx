@@ -53,7 +53,7 @@ import lime.graphics.cairo.Cairo;
 	{
 		if (_ == null)
 		{
-			_ = new _Graphics(owner);
+			_ = new _Graphics(this, owner);
 		}
 	}
 

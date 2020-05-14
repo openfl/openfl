@@ -1,7 +1,7 @@
 package openfl.profiler;
 
 #if ((cpp || neko) && hxtelemetry && !macro)
-import hxtelemetry.HxTelemetry;
+import hxhxTelemetry.HxTelemetry;
 #end
 import openfl._internal.Lib;
 
@@ -17,7 +17,7 @@ class _Telemetry
 	public static var spanMarker = 0.0;
 
 	#if ((cpp || neko) && hxtelemetry && !macro)
-	public static var telemetry:HxTelemetry;
+	public static var hxTelemetry:HxTelemetry;
 	#end
 
 	public static function registerCommandHandler(commandName:String, handler:Dynamic):Bool
@@ -37,14 +37,14 @@ class _Telemetry
 	public static inline function __advanceFrame():Void
 	{
 		#if ((cpp || neko) && hxtelemetry && !macro)
-		telemetry.advance_frame();
+		hxTelemetry.advance_frame();
 		#end
 	}
 
 	public static inline function __endTiming(name:String):Void
 	{
 		#if ((cpp || neko) && hxtelemetry && !macro)
-		telemetry.end_timing(name);
+		hxTelemetry.end_timing(name);
 		#end
 	}
 
@@ -53,7 +53,7 @@ class _Telemetry
 		#if ((cpp || neko) && hxtelemetry && !macro)
 		var meta = Lib.application.meta;
 
-		var config = new hxtelemetry.HxTelemetry.Config();
+		var config = new hxhxTelemetry.HxTelemetry.Config();
 		config.allocations = (!meta.exists("hxtelemetry-allocations") || meta.get("hxtelemetry-allocations") == "true");
 		config.host = (!meta.exists("hxtelemetry-host") ? "localhost" : meta.get("hxtelemetry-host"));
 		config.app_name = meta.get("name");
@@ -69,21 +69,21 @@ class _Telemetry
 	public static inline function __rewindStack(stack:String):Void
 	{
 		#if ((cpp || neko) && hxtelemetry && !macro)
-		telemetry.rewind_stack(stack);
+		hxTelemetry.rewind_stack(stack);
 		#end
 	}
 
 	public static inline function __startTiming(name:String):Void
 	{
 		#if ((cpp || neko) && hxtelemetry && !macro)
-		telemetry.start_timing(name);
+		hxTelemetry.start_timing(name);
 		#end
 	}
 
 	public static inline function __unwindStack():String
 	{
 		#if ((cpp || neko) && hxtelemetry && !macro)
-		return telemetry.unwind_stack();
+		return hxTelemetry.unwind_stack();
 		#else
 		return "";
 		#end

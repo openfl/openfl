@@ -19,10 +19,14 @@ class Timer extends EventDispatcher
 
 	public var __delay:Float;
 	public var __repeatCount:Int;
-	public var timer:HaxeTimer;
+	public var haxeTimer:HaxeTimer;
 
-	public function new(delay:Float, repeatCount:Int = 0):Void
+	private var timer:Timer;
+
+	public function new(timer:Timer, delay:Float, repeatCount:Int = 0):Void
 	{
+		this.timer = timer;
+
 		if (Math.isNaN(delay) || delay < 0)
 		{
 			throw new Error("The delay specified is negative or not a finite number");
@@ -52,18 +56,18 @@ class Timer extends EventDispatcher
 		if (!running)
 		{
 			running = true;
-			timer = new HaxeTimer(Std.int(__delay));
-			timer.run = timer_onTimer;
+			haxeTimer = new HaxeTimer(Std.int(__delay));
+			haxeTimer.run = haxeTimer_onTimer;
 		}
 	}
 
 	public function stop():Void
 	{
 		running = false;
-		if (timer != null)
+		if (haxeTimer != null)
 		{
-			timer.stop();
-			timer = null;
+			haxeTimer.stop();
+			haxeTimer = null;
 		}
 	}
 
@@ -103,7 +107,7 @@ class Timer extends EventDispatcher
 	}
 
 	// Event Handlers
-	public function timer_onTimer():Void
+	public function haxeTimer_onTimer():Void
 	{
 		currentCount++;
 

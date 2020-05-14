@@ -23,9 +23,14 @@ class _GraphicsGradientFill implements _IGraphicsData implements _IGraphicsFill
 	public var __graphicsDataType(default, null):GraphicsDataType;
 	public var __graphicsFillType(default, null):GraphicsFillType;
 
-	public function new(type:GradientType = null, colors:Array<Int> = null, alphas:Array<Float> = null, ratios:Array<Int> = null, matrix:Matrix = null,
-			spreadMethod:SpreadMethod = null, interpolationMethod:InterpolationMethod = null, focalPointRatio:Float = 0)
+	private var graphicsGradientFill:GraphicsGradientFill;
+
+	public function new(graphicsGradientFill:GraphicsGradientFill, type:GradientType = null, colors:Array<Int> = null, alphas:Array<Float> = null,
+			ratios:Array<Int> = null, matrix:Matrix = null, spreadMethod:SpreadMethod = null, interpolationMethod:InterpolationMethod = null,
+			focalPointRatio:Float = 0)
 	{
+		this.graphicsGradientFill = graphicsGradientFill;
+
 		if (type == null)
 		{
 			type = GradientType.LINEAR;

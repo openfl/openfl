@@ -25,10 +25,13 @@ class _ColorMatrixFilter extends _BitmapFilter
 	public var matrix(get, set):Array<Float>;
 
 	private var __matrix:Array<Float>;
+	private var colorMatrixFilter:ColorMatrixFilter;
 
-	public function new(matrix:Array<Float> = null)
+	public function new(colorMatrixFilter:ColorMatrixFilter, matrix:Array<Float> = null)
 	{
-		super();
+		this.colorMatrixFilter = colorMatrixFilter;
+
+		super(colorMatrixFilter);
 
 		this.matrix = matrix;
 

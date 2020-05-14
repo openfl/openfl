@@ -162,11 +162,11 @@ class Stage3D extends EventDispatcher
 	**/
 	public var y(get, set):Float;
 
-	@:noCompletion private function new(stage:Stage)
+	@:allow(openfl) @:noCompletion private function new(stage:Stage)
 	{
 		if (_ == null)
 		{
-			_ = new _Stage3D(stage);
+			_ = new _Stage3D(this, stage);
 		}
 
 		super();

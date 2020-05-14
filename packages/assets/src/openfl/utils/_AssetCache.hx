@@ -21,8 +21,12 @@ class _AssetCache
 
 	public var __enabled:Bool = true;
 
-	public function new()
+	private var assetCache:AssetCache;
+
+	public function new(assetCache:AssetCache)
 	{
+		this.assetCache = assetCache;
+
 		bitmapData = new Map<String, BitmapData>();
 		font = new Map<String, Font>();
 		sound = new Map<String, Sound>();

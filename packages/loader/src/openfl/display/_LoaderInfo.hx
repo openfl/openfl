@@ -43,9 +43,13 @@ class _LoaderInfo extends _EventDispatcher
 
 	public var __completed:Bool;
 
-	public function new()
+	private var loaderInfo:LoaderInfo;
+
+	public function new(loaderInfo:LoaderInfo)
 	{
-		super();
+		this.loaderInfo = loaderInfo;
+
+		super(loaderInfo);
 
 		applicationDomain = ApplicationDomain.currentDomain;
 		bytesLoaded = 0;
@@ -57,15 +61,15 @@ class _LoaderInfo extends _EventDispatcher
 	public static function create(loader:Loader):LoaderInfo
 	{
 		var loaderInfo = new LoaderInfo();
-		loaderInfo._.uncaughtErrorEvents = new UncaughtErrorEvents();
+		(loaderInfo._ : _LoaderInfo).uncaughtErrorEvents = new UncaughtErrorEvents();
 
 		if (loader != null)
 		{
-			loaderInfo._.loader = loader;
+			(loaderInfo._ : _LoaderInfo).loader = loader;
 		}
 		else
 		{
-			loaderInfo._.url = __rootURL;
+			(loaderInfo._ : _LoaderInfo).url = __rootURL;
 		}
 
 		return loaderInfo;

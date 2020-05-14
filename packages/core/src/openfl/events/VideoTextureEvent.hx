@@ -43,7 +43,7 @@ class VideoTextureEvent extends Event
 	{
 		if (_ == null)
 		{
-			_ = new _VideoTextureEvent(type, bubbles, cancelable, status, colorSpace);
+			_ = new _VideoTextureEvent(this, type, bubbles, cancelable, status, colorSpace);
 		}
 
 		super(type, bubbles, cancelable);

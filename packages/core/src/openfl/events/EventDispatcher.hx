@@ -74,7 +74,7 @@ class EventDispatcher implements IEventDispatcher
 	{
 		if (_ == null)
 		{
-			_ = new _EventDispatcher(target);
+			_ = new _EventDispatcher(this, target);
 		}
 	}
 
@@ -173,7 +173,7 @@ class EventDispatcher implements IEventDispatcher
 	**/
 	public function addEventListener<T>(type:EventType<T>, listener:T->Void, useCapture:Bool = false, priority:Int = 0, useWeakReference:Bool = false):Void
 	{
-		_.addEventListener(type, listener, useCapture, priority, useWeakReference);
+		(_ : _EventDispatcher).addEventListener(type, listener, useCapture, priority, useWeakReference);
 	}
 
 	/**
@@ -193,7 +193,7 @@ class EventDispatcher implements IEventDispatcher
 	**/
 	public function dispatchEvent(event:Event):Bool
 	{
-		return _.dispatchEvent(event);
+		return (_ : _EventDispatcher).dispatchEvent(event);
 	}
 
 	/**
@@ -218,7 +218,7 @@ class EventDispatcher implements IEventDispatcher
 	**/
 	public function hasEventListener(type:String):Bool
 	{
-		return _.hasEventListener(type);
+		return (_ : _EventDispatcher).hasEventListener(type);
 	}
 
 	/**
@@ -238,7 +238,7 @@ class EventDispatcher implements IEventDispatcher
 	**/
 	public function removeEventListener<T>(type:EventType<T>, listener:T->Void, useCapture:Bool = false):Void
 	{
-		_.removeEventListener(type, listener, useCapture);
+		(_ : _EventDispatcher).removeEventListener(type, listener, useCapture);
 	}
 
 	public function toString():String
