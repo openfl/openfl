@@ -52,21 +52,21 @@ class _Mouse
 				limeCursor = MOVE;
 			case MouseCursor.IBEAM:
 				limeCursor = TEXT;
-			case _MouseCursor.__CROSSHAIR:
+			case _MouseCursorExt.__CROSSHAIR:
 				limeCursor = CROSSHAIR;
-			case _MouseCursor.__CUSTOM:
+			case _MouseCursorExt.__CUSTOM:
 				limeCursor = CUSTOM;
-			case _MouseCursor.__RESIZE_NESW:
+			case _MouseCursorExt.__RESIZE_NESW:
 				limeCursor = RESIZE_NESW;
-			case _MouseCursor.__RESIZE_NS:
+			case _MouseCursorExt.__RESIZE_NS:
 				limeCursor = RESIZE_NS;
-			case _MouseCursor.__RESIZE_NWSE:
+			case _MouseCursorExt.__RESIZE_NWSE:
 				limeCursor = RESIZE_NWSE;
-			case _MouseCursor.__RESIZE_WE:
+			case _MouseCursorExt.__RESIZE_WE:
 				limeCursor = RESIZE_WE;
-			case _MouseCursor.__WAIT:
+			case _MouseCursorExt.__WAIT:
 				limeCursor = WAIT;
-			case _MouseCursor.__WAIT_ARROW:
+			case _MouseCursorExt.__WAIT_ARROW:
 				limeCursor = WAIT_ARROW;
 			default:
 		}
@@ -100,21 +100,21 @@ class _Mouse
 				limeCursor = MOVE;
 			case MouseCursor.IBEAM:
 				limeCursor = TEXT;
-			case _MouseCursor.__CROSSHAIR:
+			case _MouseCursorExt.__CROSSHAIR:
 				limeCursor = CROSSHAIR;
-			case _MouseCursor.__CUSTOM:
+			case _MouseCursorExt.__CUSTOM:
 				limeCursor = CUSTOM;
-			case _MouseCursor.__RESIZE_NESW:
+			case _MouseCursorExt.__RESIZE_NESW:
 				limeCursor = RESIZE_NESW;
-			case _MouseCursor.__RESIZE_NS:
+			case _MouseCursorExt.__RESIZE_NS:
 				limeCursor = RESIZE_NS;
-			case _MouseCursor.__RESIZE_NWSE:
+			case _MouseCursorExt.__RESIZE_NWSE:
 				limeCursor = RESIZE_NWSE;
-			case _MouseCursor.__RESIZE_WE:
+			case _MouseCursorExt.__RESIZE_WE:
 				limeCursor = RESIZE_WE;
-			case _MouseCursor.__WAIT:
+			case _MouseCursorExt.__WAIT:
 				limeCursor = WAIT;
-			case _MouseCursor.__WAIT_ARROW:
+			case _MouseCursorExt.__WAIT_ARROW:
 				limeCursor = WAIT_ARROW;
 			default:
 		}
