@@ -1525,29 +1525,13 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function __caretBeginningOfLine():Void
 	{
-		if (__selectionIndex == __caretIndex || __caretIndex < __selectionIndex)
-		{
-			__caretIndex = getLineOffset(getLineIndexOfChar(__caretIndex));
-		}
-		else
-		{
-			__selectionIndex = getLineOffset(getLineIndexOfChar(__selectionIndex));
-		}
+		__caretIndex = getLineOffset(getLineIndexOfChar(__caretIndex));
 	}
 
 	@:noCompletion private function __caretEndOfLine():Void
 	{
-		var lineIndex;
-
-		if (__selectionIndex == __caretIndex)
-		{
-			lineIndex = getLineIndexOfChar(__caretIndex);
-		}
-		else
-		{
-			lineIndex = getLineIndexOfChar(Std.int(Math.max(__caretIndex, __selectionIndex)));
-		}
-
+		var lineIndex = getLineIndexOfChar(__caretIndex);
+		
 		if (lineIndex < __textEngine.numLines - 1)
 		{
 			__caretIndex = getLineOffset(lineIndex + 1) - 1;
@@ -3513,11 +3497,23 @@ class TextField extends InteractiveObject
 
 			case HOME if (selectable):
 				__caretBeginningOfLine();
+				
+				if (!modifier.shiftKey)
+				{
+					__selectionIndex = __caretIndex;
+				}
+				
 				__stopCursorTimer();
 				__startCursorTimer();
 
 			case END if (selectable):
 				__caretEndOfLine();
+				
+				if (!modifier.shiftKey)
+				{
+					__selectionIndex = __caretIndex;
+				}
+				
 				__stopCursorTimer();
 				__startCursorTimer();
 
