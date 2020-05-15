@@ -47,7 +47,7 @@ class Tileset
 	**/
 	public function new(bitmapData:BitmapData, rects:Array<Rectangle> = null)
 	{
-		if (_ != null)
+		if (_ == null)
 		{
 			_ = new _Tileset(this, bitmapData, rects);
 		}

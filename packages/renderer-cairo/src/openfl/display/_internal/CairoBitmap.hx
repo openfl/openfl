@@ -19,27 +19,27 @@ class CairoBitmap
 {
 	public static inline function render(bitmap:Bitmap, renderer:CairoRenderer):Void
 	{
-		if (!bitmap._.__renderable) return;
+		if (!(bitmap._ : _Bitmap).__renderable) return;
 
-		var alpha = renderer._.__getAlpha(bitmap._.__worldAlpha);
-		// var colorTransform = renderer._.__getColorTransform (bitmap._.__worldColorTransform);
-		// var blendMode = renderer._.__getBlendMode (bitmap._.__worldBlendMode);
+		var alpha = (renderer._ : _CairoRenderer).__getAlpha((bitmap._ : _Bitmap).__worldAlpha);
+		// var colorTransform = (renderer._ : _CairoRenderer).__getColorTransform ((bitmap._ : _Bitmap).__worldColorTransform);
+		// var blendMode = (renderer._ : _CairoRenderer).__getBlendMode ((bitmap._ : _Bitmap).__worldBlendMode);
 
-		if (alpha > 0 && bitmap._.__bitmapData != null && bitmap._.__bitmapData._.__isValid)
+		if (alpha > 0 && (bitmap._ : _Bitmap).__bitmapData != null && ((bitmap._ : _Bitmap).__bitmapData._ : _BitmapData).__isValid)
 		{
 			var cairo = renderer.cairo;
 
-			renderer._.__setBlendMode(bitmap._.__worldBlendMode);
-			renderer._.__pushMaskObject(bitmap);
+			(renderer._ : _CairoRenderer).__setBlendMode((bitmap._ : _Bitmap).__worldBlendMode);
+			(renderer._ : _CairoRenderer).__pushMaskObject(bitmap);
 
-			renderer.applyMatrix(bitmap._.__renderTransform, cairo);
+			renderer.applyMatrix((bitmap._ : _Bitmap).__renderTransform, cairo);
 
-			var surface = bitmap._.__bitmapData.getSurface();
+			var surface = (bitmap._ : _Bitmap).__bitmapData.getSurface();
 
 			if (surface != null)
 			{
 				var pattern = CairoPattern.createForSurface(surface);
-				pattern.filter = (renderer._.__allowSmoothing && bitmap.smoothing) ? CairoFilter.GOOD : CairoFilter.NEAREST;
+				pattern.filter = ((renderer._ : _CairoRenderer).__allowSmoothing && bitmap.smoothing) ? CairoFilter.GOOD : CairoFilter.NEAREST;
 
 				cairo.source = pattern;
 
@@ -53,10 +53,10 @@ class CairoBitmap
 				}
 			}
 
-			renderer._.__popMaskObject(bitmap);
+				(renderer._ : _CairoRenderer).__popMaskObject(bitmap);
 
 			// TODO: Find cause of leaking blend modes?
-			renderer._.__setBlendMode(NORMAL);
+			(renderer._ : _CairoRenderer).__setBlendMode(NORMAL);
 		}
 	}
 }

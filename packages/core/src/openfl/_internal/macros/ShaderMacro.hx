@@ -171,22 +171,22 @@ class ShaderMacro
 
 						if (glVertexSource != null)
 						{
-							block.unshift(macro if (__glVertexSource == null)
+							block.unshift(macro if (_.__glVertexSource == null)
 							{
-								__glVertexSource = $v{glVertexSource};
+								_.__glVertexSource = $v{glVertexSource};
 							});
 						}
 
 						if (glFragmentSource != null)
 						{
-							block.unshift(macro if (__glFragmentSource == null)
+							block.unshift(macro if (_.__glFragmentSource == null)
 							{
-								__glFragmentSource = $v{glFragmentSource};
+								_.__glFragmentSource = $v{glFragmentSource};
 							});
 						}
 
-						block.push(Context.parse("__isGenerated = true", pos));
-						block.push(Context.parse("__init()", pos));
+						block.push(Context.parse("_.__isGenerated = true", pos));
+						block.push(Context.parse("_.__init()", pos));
 
 					default:
 				}

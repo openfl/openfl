@@ -15,33 +15,31 @@ class CairoDisplayObject
 {
 	public static function render(displayObject:DisplayObject, renderer:CairoRenderer):Void
 	{
-		if (displayObject.opaqueBackground == null && displayObject._.__graphics == null) return;
-		if (!displayObject._.__renderable) return;
+		if (displayObject.opaqueBackground == null && (displayObject._ : _DisplayObject).__graphics == null) return;
+		if (!(displayObject._ : _DisplayObject).__renderable) return;
 
-		var alpha = renderer._.__getAlpha(displayObject._.__worldAlpha);
+		var alpha = (renderer._ : _CairoRenderer).__getAlpha((displayObject._ : _DisplayObject).__worldAlpha);
 		if (alpha <= 0) return;
 
 		if (displayObject.opaqueBackground != null
-			&& !displayObject._.__renderData.isCacheBitmapRender
-			&& displayObject.width > 0
-			&& displayObject.height > 0)
+			&& !(displayObject._ : _DisplayObject).__renderData.isCacheBitmapRender && displayObject.width > 0 && displayObject.height > 0)
 		{
 			var cairo = renderer.cairo;
 
-			renderer._.__setBlendMode(displayObject._.__worldBlendMode);
-			renderer._.__pushMaskObject(displayObject);
+			(renderer._ : _CairoRenderer).__setBlendMode((displayObject._ : _DisplayObject).__worldBlendMode);
+			(renderer._ : _CairoRenderer).__pushMaskObject(displayObject);
 
-			renderer.applyMatrix(displayObject._.__renderTransform, cairo);
+			renderer.applyMatrix((displayObject._ : _DisplayObject).__renderTransform, cairo);
 
 			var color:ARGB = (displayObject.opaqueBackground : ARGB);
 			cairo.setSourceRGB(color.r / 0xFF, color.g / 0xFF, color.b / 0xFF);
 			cairo.rectangle(0, 0, displayObject.width, displayObject.height);
 			cairo.fill();
 
-			renderer._.__popMaskObject(displayObject);
+			(renderer._ : _CairoRenderer).__popMaskObject(displayObject);
 		}
 
-		if (displayObject._.__graphics != null)
+		if ((displayObject._ : _DisplayObject).__graphics != null)
 		{
 			CairoShape.render(displayObject, renderer);
 		}

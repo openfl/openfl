@@ -321,7 +321,7 @@ class DocumentClass
 
 				var method = macro
 				{
-					current.addChild(this);
+					openfl.display._DisplayObject.initParent = current;
 					super();
 					dispatchEvent(new openfl.events.Event(openfl.events.Event.ADDED_TO_STAGE, false, false));
 				}

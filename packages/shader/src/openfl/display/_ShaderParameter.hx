@@ -13,9 +13,9 @@ import openfl.display.ShaderParameter;
 @:noCompletion
 class _ShaderParameter<T> /*implements Dynamic*/
 {
-	public var index(default, null):Dynamic;
+	public var index:Dynamic;
 	public var name(default, set):String;
-	public var type(default, null):ShaderParameterType;
+	public var type:ShaderParameterType;
 	public var value:Array<T>;
 
 	public var arrayLength:Int;

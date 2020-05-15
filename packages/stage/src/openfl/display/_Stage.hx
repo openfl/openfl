@@ -523,7 +523,7 @@ class _Stage extends _DisplayObjectContainer
 
 			case CAIRO:
 				#if (!openfl_html5 && openfl_cairo)
-				// __renderer = new CairoRenderer(window.context.cairo);
+				__renderer = new CairoRenderer(window.context.cairo);
 				#end
 
 			default:

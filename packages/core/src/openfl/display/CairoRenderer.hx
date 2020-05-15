@@ -25,7 +25,7 @@ class CairoRenderer extends DisplayObjectRenderer
 	**/
 	public var cairo(get, set):#if lime CairoRenderContext #else Dynamic #end;
 
-	@:noCompletion private function new(cairo:#if lime Cairo #else Dynamic #end)
+	@:allow(openfl) @:noCompletion private function new(cairo:#if lime Cairo #else Dynamic #end)
 	{
 		if (_ == null)
 		{
@@ -41,19 +41,19 @@ class CairoRenderer extends DisplayObjectRenderer
 	**/
 	public function applyMatrix(transform:Matrix, cairo:#if lime Cairo #else Dynamic #end = null):Void
 	{
-		_.applyMatrix(transform, cairo);
+		(_ : _CairoRenderer).applyMatrix(transform, cairo);
 	}
 
 	// Get & Set Methods
 
 	@:noCompletion private function get_cairo():#if lime CairoRenderContext #else Dynamic #end
 	{
-		return _.cairo;
+		return (_ : _CairoRenderer).cairo;
 	}
 
 	@:noCompletion private function set_cairo(value:#if lime CairoRenderContext #else Dynamic #end):#if lime CairoRenderContext #else Dynamic #end
 	{
-		return _.cairo = value;
+		return (_ : _CairoRenderer).cairo = value;
 	}
 }
 #else

@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if openfl_gl
 import lime.graphics.opengl.GLProgram;
 import lime.graphics.opengl.GLShader;
 import lime.graphics.opengl.GL;
@@ -17,23 +16,26 @@ import openfl.display.ShaderInput;
 import openfl.display.ShaderParameter;
 import openfl.display.ShaderParameterType;
 import openfl.utils.ByteArray;
+import lime.graphics.opengl.GLProgram;
+import openfl.display3D.Context3D;
+import openfl.display3D.Program3D;
+import openfl.utils.ByteArray;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.display3D.Context3D)
-@:access(openfl.display3D._Context3D)
-@:access(openfl.display3D.Program3D)
-@:access(openfl.display3D._Program3D)
-@:access(openfl.display.ShaderInput)
-@:access(openfl.display._ShaderInput)
-@:access(openfl.display.ShaderParameter)
-@:access(openfl.display._ShaderParameter)
-@:access(openfl.display.Shader)
 @:noCompletion
 class _Shader
 {
+	public var byteCode(null, default):ByteArray;
+	public var data(get, set):ShaderData;
+	public var glFragmentSource(get, set):String;
+	public var glProgram(default, null):GLProgram;
+	public var glVertexSource(get, set):String;
+	public var precisionHint:ShaderPrecision;
+	public var program:Program3D;
+
 	public var context:Context3D;
 	public var gl:WebGLRenderContext;
 	public var inputBitmapData:Array<ShaderInput<BitmapData>>;
@@ -42,11 +44,37 @@ class _Shader
 	public var paramFloat:Array<ShaderParameter<Float>>;
 	public var paramInt:Array<ShaderParameter<Int>>;
 
+	public var __alpha:ShaderParameter<Float>;
+	public var __alphaTexture:ShaderInput<BitmapData>;
+	public var __alphaTextureMatrix:ShaderParameter<Float>;
+	public var __bitmap:ShaderInput<BitmapData>;
+	public var __colorMultiplier:ShaderParameter<Float>;
+	public var __colorOffset:ShaderParameter<Float>;
+	public var __data:ShaderData;
+	public var __hasColorTransform:ShaderParameter<Bool>;
+	public var __isGenerated:Bool;
+	public var __glFragmentSource:String;
+	public var __glSourceDirty:Bool;
+	public var __glVertexSource:String;
+	public var __matrix:ShaderParameter<Float>;
+	public var __position:ShaderParameter<Float>;
+	public var __textureCoord:ShaderParameter<Float>;
+	public var __texture:ShaderInput<BitmapData>;
+	public var __textureSize:ShaderParameter<Float>;
+
 	private var shader:Shader;
 
-	public function new(shader:Shader)
+	public function new(shader:Shader, code:ByteArray = null)
 	{
 		this.shader = shader;
+
+		byteCode = code;
+		precisionHint = FULL;
+
+		__glSourceDirty = true;
+		// numPasses = 1;
+
+		__data = new ShaderData(code);
 	}
 
 	public function clearUseArray():Void
@@ -160,7 +188,7 @@ class _Shader
 
 	public function enable():Void
 	{
-		init();
+		__init();
 
 		if (shader.program != null)
 		{
@@ -186,7 +214,7 @@ class _Shader
 		#end
 	}
 
-	public function init(context3D:Context3D = null):Void
+	public function __init(context3D:Context3D = null):Void
 	{
 		if (context3D != null)
 		{
@@ -227,15 +255,15 @@ class _Shader
 		if (context != null && shader.program == null)
 		{
 			var prefix = "#ifdef GL_ES
-				"
+					"
 				+ (shader.precisionHint == FULL ? "#ifdef GL_FRAGMENT_PRECISION_HIGH
-				precision highp float;
-				#else
-				precision mediump float;
-				#endif" : "precision lowp float;")
+					precision highp float;
+					#else
+					precision mediump float;
+					#endif" : "precision lowp float;")
 				+ "
-				#endif
-				";
+					#endif
+					";
 
 			var vertex = prefix + shader._.__glVertexSource;
 			var fragment = prefix + shader._.__glFragmentSource;
@@ -259,7 +287,7 @@ class _Shader
 
 			if (shader.program != null)
 			{
-				shader.glProgram = shader.program._.glProgram;
+				shader._.glProgram = shader.program._.glProgram;
 
 				for (input in inputBitmapData)
 				{
@@ -473,7 +501,7 @@ class _Shader
 		}
 	}
 
-	public function update():Void
+	public function __update():Void
 	{
 		if (shader.program != null)
 		{
@@ -648,5 +676,51 @@ class _Shader
 			}
 		}
 	}
+
+	// Get & Set Methods
+
+	private function get_data():ShaderData
+	{
+		if (__glSourceDirty || __data == null)
+		{
+			__init();
+		}
+
+		return __data;
+	}
+
+	private function set_data(value:ShaderData):ShaderData
+	{
+		return __data = cast value;
+	}
+
+	private function get_glFragmentSource():String
+	{
+		return __glFragmentSource;
+	}
+
+	private function set_glFragmentSource(value:String):String
+	{
+		if (value != __glFragmentSource)
+		{
+			__glSourceDirty = true;
+		}
+
+		return __glFragmentSource = value;
+	}
+
+	private function get_glVertexSource():String
+	{
+		return __glVertexSource;
+	}
+
+	private function set_glVertexSource(value:String):String
+	{
+		if (value != __glVertexSource)
+		{
+			__glSourceDirty = true;
+		}
+
+		return __glVertexSource = value;
+	}
 }
-#end

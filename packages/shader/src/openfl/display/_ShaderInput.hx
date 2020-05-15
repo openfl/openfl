@@ -18,10 +18,10 @@ import openfl.display3D.Context3DWrapMode;
 @:noCompletion
 class _ShaderInput<T> /*implements Dynamic*/
 {
-	public var channels(default, null):Int;
+	public var channels:Int;
 	public var filter:Context3DTextureFilter;
 	public var height:Int;
-	public var index(default, null):Dynamic;
+	public var index:Dynamic;
 	public var input:T;
 	public var mipFilter:Context3DMipFilter;
 	public var name:String;

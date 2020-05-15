@@ -121,7 +121,7 @@ class ShaderBuffer
 
 		if (shader == null) return;
 
-		shader.__init();
+		shader._.__init();
 
 		inputCount = shader._.inputBitmapData.length;
 		var input:ShaderInput<BitmapData>;

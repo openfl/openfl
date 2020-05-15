@@ -118,6 +118,7 @@ class _Context3D extends _EventDispatcher
 	public function new(context3D:Context3D, stage:Stage, contextState:Context3DState = null, stage3D:Stage3D = null)
 	{
 		this.context3D = context3D;
+		context3D._ = this;
 
 		super(context3D);
 

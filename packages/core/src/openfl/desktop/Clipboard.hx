@@ -107,7 +107,7 @@ class Clipboard
 	**/
 	public var formats(get, never):Array<ClipboardFormats>;
 
-	@:allow(openfl) @:noCompletion private var _:Dynamic;
+	@:allow(openfl) @:noCompletion private var _:_Clipboard;
 
 	@:allow(openfl) @:noCompletion private function new()
 	{

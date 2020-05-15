@@ -13,7 +13,7 @@ import lime.ui.WindowAttributes;
 #end
 class Application extends LimeApplication
 {
-	@:allow(openfl) @:noCompletion private var _:Dynamic;
+	@:allow(openfl) @:noCompletion private var _:_Application;
 
 	public function new()
 	{

@@ -9,11 +9,14 @@ import lime.graphics.cairo.CairoGlyph;
 import lime.graphics.cairo.CairoHintMetrics;
 import lime.graphics.cairo.CairoHintStyle;
 import openfl.text._internal.TextEngine;
+import openfl.display._BitmapData;
 import openfl.display.BitmapData;
 import openfl.display.Graphics;
+import openfl.display._Graphics;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.text.TextField;
+import openfl.text._TextField;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -29,30 +32,30 @@ class CairoTextField
 {
 	public static function render(textField:TextField, renderer:CairoRenderer, transform:Matrix):Void
 	{
-		var textEngine = textField._.__textEngine;
+		var textEngine = (textField._ : _TextField).__textEngine;
 		var bounds = (textEngine.background || textEngine.border) ? textEngine.bounds : textEngine.textBounds;
-		var graphics = textField._.__graphics;
-		var cairo = graphics._.__renderData.cairo;
+		var graphics = (textField._ : _TextField).__graphics;
+		var cairo = (graphics._ : _Graphics).__renderData.cairo;
 
-		if (textField._.__dirty)
+		if ((textField._ : _TextField).__dirty)
 		{
-			textField._.__updateLayout();
+			(textField._ : _TextField).__updateLayout();
 
-			if (graphics._.__bounds == null)
+			if ((graphics._ : _Graphics).__bounds == null)
 			{
-				graphics._.__bounds = new Rectangle();
+				(graphics._ : _Graphics).__bounds = new Rectangle();
 			}
 
-			graphics._.__bounds.copyFrom(bounds);
+				(graphics._ : _Graphics).__bounds.copyFrom(bounds);
 
-			// graphics._.__bounds.x += textField._.__offsetX;
-			// graphics._.__bounds.y += textField._.__offsetY;
+			// (graphics._ : _Graphics).__bounds.x += (textField._ : _TextField).__offsetX;
+			// (graphics._ : _Graphics).__bounds.y += (textField._ : _TextField).__offsetY;
 		}
 
-		graphics._.__update(renderer._.__worldTransform);
+			(graphics._ : _Graphics).__update((renderer._ : _CairoRenderer).__worldTransform);
 
-		var width = graphics._.__width;
-		var height = graphics._.__height;
+		var width = (graphics._ : _Graphics).__width;
+		var height = (graphics._ : _Graphics).__height;
 
 		var renderable = (textEngine.border || textEngine.background || textEngine.text != null);
 		var needsUpscaling = false;
@@ -60,28 +63,30 @@ class CairoTextField
 		if (cairo != null)
 		{
 			// var surface:CairoImageSurface = cast cairo.target;
-			var surface = graphics._.__bitmap.getSurface();
+			var surface = (graphics._ : _Graphics).__bitmap.getSurface();
 
-			if (graphics._.__softwareDirty && (width > surface.width || height > surface.height))
+			if ((graphics._ : _Graphics).__softwareDirty && (width > surface.width || height > surface.height))
 			{
 				needsUpscaling = true;
 			}
 
 			if (!renderable || needsUpscaling)
 			{
-				graphics._.__renderData.cairo = null;
-				graphics._.__bitmap = null;
-				graphics._.__visible = false;
+				(graphics._ : _Graphics).__renderData.cairo = null;
+				(graphics._ : _Graphics).__bitmap = null;
+				(graphics._ : _Graphics).__visible = false;
 				cairo = null;
 			}
 		}
 
 		if (width <= 0
 			|| height <= 0
-			|| (!textField._.__dirty && !graphics._.__softwareDirty && (!graphics._.__visible || graphics._.__bitmap != null))
+			|| (!(textField._ : _TextField).__dirty
+				&& !(graphics._ : _Graphics).__softwareDirty
+					&& (!(graphics._ : _Graphics).__visible || (graphics._ : _Graphics).__bitmap != null))
 			|| !renderable)
 		{
-			textField._.__dirty = false;
+			(textField._ : _TextField).__dirty = false;
 			return;
 		}
 
@@ -90,25 +95,25 @@ class CairoTextField
 			var bitmapWidth = needsUpscaling ? Std.int(width * 1.25) : width;
 			var bitmapHeight = needsUpscaling ? Std.int(height * 1.25) : height;
 
-			if (Graphics.maxTextureWidth != null && bitmapWidth > Graphics.maxTextureWidth)
+			if (_Graphics.maxTextureWidth != null && bitmapWidth > _Graphics.maxTextureWidth)
 			{
-				bitmapWidth = Graphics.maxTextureWidth;
+				bitmapWidth = _Graphics.maxTextureWidth;
 			}
 
-			if (Graphics.maxTextureHeight != null && bitmapHeight > Graphics.maxTextureHeight)
+			if (_Graphics.maxTextureHeight != null && bitmapHeight > _Graphics.maxTextureHeight)
 			{
-				bitmapHeight = Graphics.maxTextureHeight;
+				bitmapHeight = _Graphics.maxTextureHeight;
 			}
 
 			var bitmap = new BitmapData(bitmapWidth, bitmapHeight, true, 0);
 			var surface = bitmap.getSurface();
-			graphics._.__renderData.cairo = new Cairo(surface);
-			graphics._.__visible = true;
-			graphics._.__managed = true;
+			(graphics._ : _Graphics).__renderData.cairo = new Cairo(surface);
+			(graphics._ : _Graphics).__visible = true;
+			(graphics._ : _Graphics).__managed = true;
 
-			graphics._.__bitmap = bitmap;
+			(graphics._ : _Graphics).__bitmap = bitmap;
 
-			cairo = graphics._.__renderData.cairo;
+			cairo = (graphics._ : _Graphics).__renderData.cairo;
 
 			var options = new CairoFontOptions();
 
@@ -137,7 +142,7 @@ class CairoTextField
 			cairo.setOperator(OVER);
 		}
 
-		renderer.applyMatrix(graphics._.__renderTransform, cairo);
+		renderer.applyMatrix((graphics._ : _Graphics).__renderTransform, cairo);
 
 		if (textEngine.border)
 		{
@@ -204,21 +209,21 @@ class CairoTextField
 
 				if (font != null && group.format.size != null)
 				{
-					if (textEngine._.__cairoFont != null)
+					if (textEngine.__cairoFont != null)
 					{
-						if (textEngine._.__font != font)
+						if (textEngine.__font != font)
 						{
-							textEngine._.__cairoFont = null;
+							textEngine.__cairoFont = null;
 						}
 					}
 
-					if (textEngine._.__cairoFont == null)
+					if (textEngine.__cairoFont == null)
 					{
-						textEngine._.__font = font;
-						textEngine._.__cairoFont = CairoFTFontFace.create(font, 0);
+						textEngine.__font = font;
+						textEngine.__cairoFont = CairoFTFontFace.create(font.limeFont, 0);
 					}
 
-					cairo.fontFace = textEngine._.__cairoFont;
+					cairo.fontFace = textEngine.__cairoFont;
 
 					size = Std.int(group.format.size);
 					cairo.setFontSize(size);
@@ -247,17 +252,17 @@ class CairoTextField
 					cairo.showGlyphs(glyphs);
 					#end
 
-					if (textField._.__caretIndex > -1 && textEngine.selectable)
+					if ((textField._ : _TextField).__caretIndex > -1 && textEngine.selectable)
 					{
-						if (textField._.__selectionIndex == textField._.__caretIndex)
+						if ((textField._ : _TextField).__selectionIndex == (textField._ : _TextField).__caretIndex)
 						{
-							if (textField._.__showCursor
-								&& group.startIndex <= textField._.__caretIndex
-								&& group.endIndex >= textField._.__caretIndex)
+							if ((textField._ : _TextField).__showCursor
+								&& group.startIndex <= (textField._ : _TextField).__caretIndex
+									&& group.endIndex >= (textField._ : _TextField).__caretIndex)
 							{
 								advance = 0.0;
 
-								for (i in 0...(textField._.__caretIndex - group.startIndex))
+								for (i in 0...((textField._ : _TextField).__caretIndex - group.startIndex))
 								{
 									if (group.positions.length <= i) break;
 									advance += group.getAdvance(i);
@@ -283,13 +288,17 @@ class CairoTextField
 								cairo.stroke();
 							}
 						}
-						else if ((group.startIndex <= textField._.__caretIndex && group.endIndex >= textField._.__caretIndex)
-							|| (group.startIndex <= textField._.__selectionIndex && group.endIndex >= textField._.__selectionIndex)
-							|| (group.startIndex > textField._.__caretIndex && group.endIndex < textField._.__selectionIndex)
-							|| (group.startIndex > textField._.__selectionIndex && group.endIndex < textField._.__caretIndex))
+						else if ((group.startIndex <= (textField._ : _TextField).__caretIndex
+							&& group.endIndex >= (textField._ : _TextField).__caretIndex)
+							|| (group.startIndex <= (textField._ : _TextField).__selectionIndex
+								&& group.endIndex >= (textField._ : _TextField).__selectionIndex)
+							|| (group.startIndex > (textField._ : _TextField).__caretIndex
+								&& group.endIndex < (textField._:_TextField).__selectionIndex)
+							|| (group.startIndex > (textField._ : _TextField).__selectionIndex
+								&& group.endIndex < (textField._:_TextField).__caretIndex))
 						{
-							var selectionStart = Std.int(Math.min(textField._.__selectionIndex, textField._.__caretIndex));
-							var selectionEnd = Std.int(Math.max(textField._.__selectionIndex, textField._.__caretIndex));
+							var selectionStart = Std.int(Math.min((textField._ : _TextField).__selectionIndex, (textField._ : _TextField).__caretIndex));
+							var selectionEnd = Std.int(Math.max((textField._ : _TextField).__selectionIndex, (textField._ : _TextField).__caretIndex));
 
 							if (group.startIndex > selectionStart)
 							{
@@ -352,7 +361,7 @@ class CairoTextField
 				}
 			}
 		}
-		else if (textField._.__caretIndex > -1 && textEngine.selectable && textField._.__showCursor)
+		else if ((textField._ : _TextField).__caretIndex > -1 && textEngine.selectable && (textField._ : _TextField).__showCursor)
 		{
 			var scrollX = -textField.scrollH;
 			var scrollY = 0.0;
@@ -384,10 +393,10 @@ class CairoTextField
 			cairo.closePath();
 		}
 
-		graphics._.__bitmap._.__setDirty();
-		textField._.__dirty = false;
-		graphics._.__softwareDirty = false;
-		graphics._.__dirty = false;
+			((graphics._ : _Graphics).__bitmap._ : _BitmapData).__setDirty();
+		(textField._ : _TextField).__dirty = false;
+		(graphics._ : _Graphics).__softwareDirty = false;
+		(graphics._ : _Graphics).__dirty = false;
 	}
 }
 #end

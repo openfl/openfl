@@ -117,7 +117,7 @@ class Shader
 	/**
 		The raw shader bytecode for this Shader instance.
 	**/
-	public var byteCode(null, default):ByteArray;
+	public var byteCode(never, set):ByteArray;
 
 	/**
 		Provides access to parameters, input images, and metadata for the
@@ -144,7 +144,7 @@ class Shader
 
 		This property is not available on the Flash target.
 	**/
-	@SuppressWarnings("checkstyle:Dynamic") public var glProgram(default, null):GLProgram;
+	@SuppressWarnings("checkstyle:Dynamic") public var glProgram(get, never):GLProgram;
 
 	/**
 		Get or set the vertex source used when compiling with GLSL.
@@ -192,51 +192,16 @@ class Shader
 		* `reciprocal(x)`
 		* `sqrt(x)`
 	**/
-	public var precisionHint:ShaderPrecision;
+	public var precisionHint(get, set):ShaderPrecision;
 
 	/**
 		The compiled Program3D if available.
 
 		This property is not available on the Flash target.
 	**/
-	public var program:Program3D;
+	public var program(get, set):Program3D;
 
-	@:allow(openfl) @:noCompletion private var _:Dynamic;
-
-	@:noCompletion private var __alpha:ShaderParameter<Float>;
-	@:noCompletion private var __alphaTexture:ShaderInput<BitmapData>;
-	@:noCompletion private var __alphaTextureMatrix:ShaderParameter<Float>;
-	@:noCompletion private var __bitmap:ShaderInput<BitmapData>;
-	@:noCompletion private var __colorMultiplier:ShaderParameter<Float>;
-	@:noCompletion private var __colorOffset:ShaderParameter<Float>;
-	@:noCompletion private var __data:ShaderData;
-	@:noCompletion private var __hasColorTransform:ShaderParameter<Bool>;
-	@:noCompletion private var __isGenerated:Bool;
-	@:noCompletion private var __glFragmentSource:String;
-	@:noCompletion private var __glSourceDirty:Bool;
-	@:noCompletion private var __glVertexSource:String;
-	@:noCompletion private var __matrix:ShaderParameter<Float>;
-	@:noCompletion private var __position:ShaderParameter<Float>;
-	@:noCompletion private var __textureCoord:ShaderParameter<Float>;
-	@:noCompletion private var __texture:ShaderInput<BitmapData>;
-	@:noCompletion private var __textureSize:ShaderParameter<Float>;
-
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperties(Shader.prototype, {
-			"data": {get: untyped __js__("function () { return this.get_data (); }"), set: untyped __js__("function (v) { return this.set_data (v); }")},
-			"glFragmentSource": {
-				get: untyped __js__("function () { return this.get_glFragmentSource (); }"),
-				set: untyped __js__("function (v) { return this.set_glFragmentSource (v); }")
-			},
-			"glVertexSource": {
-				get: untyped __js__("function () { return this.get_glVertexSource (); }"),
-				set: untyped __js__("function (v) { return this.set_glVertexSource (v); }")
-			},
-		});
-	}
-	#end
+	@:allow(openfl) @:noCompletion private var _:_Shader;
 
 	/**
 		Creates a new Shader instance.
@@ -245,71 +210,72 @@ class Shader
 	**/
 	public function new(code:ByteArray = null)
 	{
-		byteCode = code;
-		precisionHint = FULL;
-
-		_ = new _Shader(this);
-
-		__glSourceDirty = true;
-		// numPasses = 1;
-
-		__data = new ShaderData(code);
-	}
-
-	@:noCompletion private function __init(context3D:Context3D = null):Void
-	{
-		_.init(context3D);
-	}
-
-	@:noCompletion private function __update():Void
-	{
-		_.update();
+		if (_ == null)
+		{
+			_ = new _Shader(this, code);
+		}
 	}
 
 	// Get & Set Methods
+
+	@:noCompletion private function set_byteCode(value:ByteArray):ByteArray
+	{
+		return _.byteCode = value;
+	}
+
 	@:noCompletion private function get_data():ShaderData
 	{
-		if (__glSourceDirty || __data == null)
-		{
-			__init();
-		}
-
-		return __data;
+		return _.data;
 	}
 
 	@:noCompletion private function set_data(value:ShaderData):ShaderData
 	{
-		return __data = cast value;
+		return _.data = value;
 	}
 
 	@:noCompletion private function get_glFragmentSource():String
 	{
-		return __glFragmentSource;
+		return _.glFragmentSource;
 	}
 
 	@:noCompletion private function set_glFragmentSource(value:String):String
 	{
-		if (value != __glFragmentSource)
-		{
-			__glSourceDirty = true;
-		}
+		return _.glFragmentSource = value;
+	}
 
-		return __glFragmentSource = value;
+	@:noCompletion private function get_glProgram():GLProgram
+	{
+		return _.glProgram;
 	}
 
 	@:noCompletion private function get_glVertexSource():String
 	{
-		return __glVertexSource;
+		return _.glVertexSource;
 	}
 
 	@:noCompletion private function set_glVertexSource(value:String):String
 	{
-		if (value != __glVertexSource)
-		{
-			__glSourceDirty = true;
-		}
+		return _.glVertexSource = value;
+	}
 
-		return __glVertexSource = value;
+	@:noCompletion private function get_precisionHint():ShaderPrecision
+	{
+		return _.precisionHint;
+	}
+
+	@:noCompletion private function set_precisionHint(value:ShaderPrecision):ShaderPrecision
+	{
+		return _.precisionHint = value;
+	}
+
+	@:noCompletion private function get_program():Program3D
+	{
+		return _.program;
+	}
+
+	@:noCompletion private function set_program(value:Program3D):Program3D
+	{
+		return _.program = value;
 	}
 }
 #else

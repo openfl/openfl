@@ -55,6 +55,7 @@ import js.html.CSSStyleDeclaration;
 @:noCompletion
 class _DisplayObject extends _EventDispatcher
 {
+	public static var initParent:DisplayObjectContainer;
 	public static var __broadcastEvents:Map<String, Array<DisplayObject>> = new Map();
 	public static var __initStage:Stage;
 	public static var __instanceCount:Int = 0;
@@ -186,7 +187,13 @@ class _DisplayObject extends _EventDispatcher
 
 		name = "instance" + (++__instanceCount);
 
-		if (__initStage != null)
+		if (initParent != null)
+		{
+			var parent = initParent;
+			initParent = null;
+			parent.addChild(this.displayObject);
+		}
+		else if (__initStage != null)
 		{
 			this.stage = __initStage;
 			__initStage = null;

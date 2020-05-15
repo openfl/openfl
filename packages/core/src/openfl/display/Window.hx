@@ -14,7 +14,7 @@ import lime.ui.WindowAttributes;
 #end
 class Window extends LimeWindow
 {
-	@:allow(openfl) @:noCompletion private var _:Dynamic;
+	@:allow(openfl) @:noCompletion private var _:_Window;
 
 	@:noCompletion private function new(application:Application, attributes:WindowAttributes)
 	{

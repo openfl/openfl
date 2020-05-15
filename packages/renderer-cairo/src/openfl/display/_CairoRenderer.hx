@@ -6,20 +6,27 @@ import lime.graphics.cairo.Cairo;
 import lime.graphics.cairo.CairoFilter;
 import lime.graphics.cairo.CairoOperator;
 import lime.graphics.cairo.CairoPattern;
+import lime.graphics.CairoRenderContext;
+import openfl.display._internal.*;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
-import openfl.display.CairoRenderer as CairoRendererAPI;
 import openfl.display.DisplayObject;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.IBitmapDrawable;
 import openfl.display.Shape;
 import openfl.display.SimpleButton;
 import openfl.display.Tilemap;
+import openfl.events._Event;
 import openfl.events.RenderEvent;
+import openfl.events._RenderEvent;
+import openfl.filters.BitmapFilter;
+import openfl.filters._BitmapFilter;
 import openfl.media.Video;
 import openfl.text.TextField;
+import openfl.text._TextField;
 import openfl.geom.ColorTransform;
+import openfl.geom._ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom._Matrix;
 import openfl.geom.Point;
@@ -41,7 +48,7 @@ class _CairoRenderer extends _DisplayObjectRenderer
 
 	private var cairoRenderer:CairoRenderer;
 
-	public function new(cairo:Cairo)
+	public function new(cairoRenderer:CairoRenderer, cairo:Cairo)
 	{
 		this.cairoRenderer = cairoRenderer;
 
@@ -129,7 +136,7 @@ class _CairoRenderer extends _DisplayObjectRenderer
 
 		cairo.target.flush();
 
-		bitmapData._.__setDirty();
+		(bitmapData._ : _BitmapData).__setDirty();
 
 		if (clipRect != null)
 		{
@@ -236,14 +243,14 @@ class _CairoRenderer extends _DisplayObjectRenderer
 	{
 		__updateCacheBitmap(bitmap, /*!__worldColorTransform._.__isDefault ()*/ false);
 
-		if (bitmap._.__bitmapData != null && bitmap._.__bitmapData._.__getSurface() != null)
+		if ((bitmap._ : _Bitmap).__bitmapData != null && ((bitmap._ : _Bitmap).__bitmapData._ : _BitmapData).__getSurface() != null)
 		{
-			bitmap._.__imageVersion = bitmap._.__bitmapData._.__getVersion();
+			(bitmap._ : _Bitmap).__imageVersion = ((bitmap._ : _Bitmap).__bitmapData._ : _BitmapData).__getVersion();
 		}
 
-		if (bitmap._.__renderData.cacheBitmap != null && !bitmap._.__renderData.isCacheBitmapRender)
+		if ((bitmap._ : _Bitmap).__renderData.cacheBitmap != null && !(bitmap._ : _Bitmap).__renderData.isCacheBitmapRender)
 		{
-			CairoBitmap.render(bitmap._.__renderData.cacheBitmap, this.cairoRenderer);
+			CairoBitmap.render((bitmap._ : _Bitmap).__renderData.cacheBitmap, this.cairoRenderer);
 		}
 		else
 		{
@@ -256,7 +263,7 @@ class _CairoRenderer extends _DisplayObjectRenderer
 	{
 		if (!bitmapData.readable) return;
 
-		applyMatrix(bitmapData._.__renderTransform, cairo);
+		applyMatrix((bitmapData._ : _BitmapData).__renderTransform, cairo);
 
 		var surface = bitmapData.getSurface();
 
@@ -307,8 +314,8 @@ class _CairoRenderer extends _DisplayObjectRenderer
 				event.allowSmoothing = __allowSmoothing;
 				event.objectMatrix.copyFrom((object._ : _DisplayObject).__renderTransform);
 				event.objectColorTransform._.__copyFrom((object._ : _DisplayObject).__worldColorTransform);
-				event.renderer = this.cairoRenderer;
-				event.type = RenderEvent.RENDER_CAIRO;
+				(event._ : _RenderEvent).renderer = this.cairoRenderer;
+				(event._ : _Event).type = RenderEvent.RENDER_CAIRO;
 
 				__setBlendMode((object._ : _DisplayObject).__worldBlendMode);
 				__pushMaskObject(object);
@@ -411,9 +418,9 @@ class _CairoRenderer extends _DisplayObjectRenderer
 	{
 		__updateCacheBitmap(shape, /*!__worldColorTransform._.__isDefault ()*/ false);
 
-		if (shape._.__renderData.cacheBitmap != null && !shape._.__renderData.isCacheBitmapRender)
+		if ((shape._ : _DisplayObject).__renderData.cacheBitmap != null && !(shape._ : _DisplayObject).__renderData.isCacheBitmapRender)
 		{
-			CairoBitmap.render(shape._.__renderData.cacheBitmap, this.cairoRenderer);
+			CairoBitmap.render((shape._ : _DisplayObject).__renderData.cacheBitmap, this.cairoRenderer);
 		}
 		else
 		{
@@ -588,17 +595,16 @@ class _CairoRenderer extends _DisplayObjectRenderer
 
 			if (!needRender
 				&& (object._ : _DisplayObject).__renderData.cacheBitmapData != null
-					&& (object._ : _DisplayObject).__renderData.cacheBitmapData._.__getSurface() != null
-						&& (object._ : _DisplayObject).__renderData.cacheBitmapData._.__getVersion() < (object._:_DisplayObject)
-							.__renderData.cacheBitmapData._.__renderData.textureVersion)
+					&& ((object._ : _DisplayObject).__renderData.cacheBitmapData._ : _BitmapData).__getSurface() != null
+						&& ((object._ : _DisplayObject).__renderData.cacheBitmapData._ : _BitmapData).__getVersion() < ((object._ : _DisplayObject)
+							.__renderData.cacheBitmapData._ : _BitmapData).__renderData.textureVersion)
 			{
 				needRender = true;
 			}
 
 			// TODO: Handle renderTransform (for scrollRect, displayMatrix changes, etc)
 			var updateTransform = (needRender
-				|| !((object._ : _DisplayObject).__renderData.cacheBitmap._._ : _BitmapData).__worldTransform.equals((object._ : _DisplayObject)
-					.__worldTransform));
+				|| !((object._ : _DisplayObject).__renderData.cacheBitmap._ : _Bitmap).__worldTransform._.equals((object._ : _DisplayObject).__worldTransform));
 
 			(object._ : _DisplayObject).__renderData.cacheBitmapMatrix.copyFrom(bitmapMatrix);
 			(object._ : _DisplayObject).__renderData.cacheBitmapMatrix.tx = 0;
@@ -661,7 +667,7 @@ class _CairoRenderer extends _DisplayObjectRenderer
 						(object._ : _DisplayObject).__renderData.cacheBitmapData = new BitmapData(bitmapWidth, bitmapHeight, true, bitmapColor);
 
 						if ((object._ : _DisplayObject).__renderData.cacheBitmap == null) (object._ : _DisplayObject).__renderData.cacheBitmap = new Bitmap();
-						((object._ : _DisplayObject).__renderData.cacheBitmap._._ : _BitmapData).__bitmapData = (object._ : _DisplayObject)
+						((object._ : _DisplayObject).__renderData.cacheBitmap._ : _Bitmap).__bitmapData = (object._ : _DisplayObject)
 							.__renderData.cacheBitmapData;
 						(object._ : _DisplayObject).__renderData.cacheBitmapRendererSW = null;
 					}
@@ -679,7 +685,7 @@ class _CairoRenderer extends _DisplayObjectRenderer
 				}
 				else
 				{
-					ColorTransform._.__pool.release(colorTransform);
+					_ColorTransform.__pool.release(colorTransform);
 
 					(object._ : _DisplayObject).__renderData.cacheBitmap = null;
 					(object._ : _DisplayObject).__renderData.cacheBitmapData = null;
@@ -701,34 +707,32 @@ class _CairoRenderer extends _DisplayObjectRenderer
 
 			if (updateTransform)
 			{
-				((object._ : _DisplayObject).__renderData.cacheBitmap._._ : _BitmapData).__worldTransform.copyFrom((object._ : _DisplayObject)
-					.__worldTransform);
+				((object._ : _DisplayObject).__renderData.cacheBitmap._ : _Bitmap).__worldTransform.copyFrom((object._ : _DisplayObject).__worldTransform);
 
 				if (bitmapMatrix == (object._ : _DisplayObject).__renderTransform)
 				{
-					((object._ : _DisplayObject).__renderData.cacheBitmap._._ : _BitmapData).__renderTransform.identity();
-					((object._ : _DisplayObject).__renderData.cacheBitmap._._ : _BitmapData).__renderTransform.tx = (object._ : _DisplayObject)
-						.__renderTransform.tx + offsetX;
-					((object._ : _DisplayObject).__renderData.cacheBitmap._._ : _BitmapData).__renderTransform.ty = (object._ : _DisplayObject)
-						.__renderTransform.ty + offsetY;
+					((object._ : _DisplayObject).__renderData.cacheBitmap._ : _Bitmap).__renderTransform.identity();
+					((object._ : _DisplayObject).__renderData.cacheBitmap._ : _Bitmap).__renderTransform.tx = (object._ : _DisplayObject).__renderTransform.tx
+						+ offsetX;
+					((object._ : _DisplayObject).__renderData.cacheBitmap._ : _Bitmap).__renderTransform.ty = (object._ : _DisplayObject).__renderTransform.ty
+						+ offsetY;
 				}
 				else
 				{
-					((object._ : _DisplayObject).__renderData.cacheBitmap._._ : _BitmapData).__renderTransform.copyFrom((object._ : _DisplayObject)
+					((object._ : _DisplayObject).__renderData.cacheBitmap._ : _Bitmap).__renderTransform.copyFrom((object._ : _DisplayObject)
 						.__renderData.cacheBitmapMatrix);
-					((object._ : _DisplayObject).__renderData.cacheBitmap._._ : _BitmapData).__renderTransform.invert();
-					((object._ : _DisplayObject).__renderData.cacheBitmap._._ : _BitmapData).__renderTransform.concat((object._ : _DisplayObject)
-						.__renderTransform);
-					((object._ : _DisplayObject).__renderData.cacheBitmap._._ : _BitmapData).__renderTransform.tx += offsetX;
-					((object._ : _DisplayObject).__renderData.cacheBitmap._._ : _BitmapData).__renderTransform.ty += offsetY;
+					((object._ : _DisplayObject).__renderData.cacheBitmap._ : _Bitmap).__renderTransform.invert();
+					((object._ : _DisplayObject).__renderData.cacheBitmap._ : _Bitmap).__renderTransform.concat((object._ : _DisplayObject).__renderTransform);
+					((object._ : _DisplayObject).__renderData.cacheBitmap._ : _Bitmap).__renderTransform.tx += offsetX;
+					((object._ : _DisplayObject).__renderData.cacheBitmap._ : _Bitmap).__renderTransform.ty += offsetY;
 				}
 			}
 
 				(object._ : _DisplayObject).__renderData.cacheBitmap.smoothing = __allowSmoothing;
-			((object._ : _DisplayObject).__renderData.cacheBitmap._._ : _BitmapData).__renderable = (object._ : _DisplayObject).__renderable;
-			((object._ : _DisplayObject).__renderData.cacheBitmap._._ : _BitmapData).__worldAlpha = (object._ : _DisplayObject).__worldAlpha;
-			((object._ : _DisplayObject).__renderData.cacheBitmap._._ : _BitmapData).__worldBlendMode = (object._ : _DisplayObject).__worldBlendMode;
-			((object._ : _DisplayObject).__renderData.cacheBitmap._._ : _BitmapData).__worldShader = (object._ : _DisplayObject).__worldShader;
+			((object._ : _DisplayObject).__renderData.cacheBitmap._ : _Bitmap).__renderable = (object._ : _DisplayObject).__renderable;
+			((object._ : _DisplayObject).__renderData.cacheBitmap._ : _Bitmap).__worldAlpha = (object._ : _DisplayObject).__worldAlpha;
+			((object._ : _DisplayObject).__renderData.cacheBitmap._ : _Bitmap).__worldBlendMode = (object._ : _DisplayObject).__worldBlendMode;
+			((object._ : _DisplayObject).__renderData.cacheBitmap._ : _Bitmap).__worldShader = (object._ : _DisplayObject).__worldShader;
 			(object._ : _DisplayObject).__renderData.cacheBitmap.mask = (object._ : _DisplayObject).__mask;
 
 			if (needRender)
@@ -736,11 +740,11 @@ class _CairoRenderer extends _DisplayObjectRenderer
 				if ((object._ : _DisplayObject).__renderData.cacheBitmapRendererSW == null
 					|| ((object._ : _DisplayObject).__renderData.cacheBitmapRendererSW._ : _DisplayObjectRenderer).__type != CAIRO)
 				{
-					if ((object._ : _DisplayObject).__renderData.cacheBitmapData._.__getSurface() == null)
+					if (((object._ : _DisplayObject).__renderData.cacheBitmapData._ : _BitmapData).__getSurface() == null)
 					{
 						var color = object.opaqueBackground != null ? (0xFF << 24) | object.opaqueBackground : 0;
 							(object._ : _DisplayObject).__renderData.cacheBitmapData = new BitmapData(bitmapWidth, bitmapHeight, true, color);
-						((object._ : _DisplayObject).__renderData.cacheBitmap._._ : _BitmapData).__bitmapData = (object._ : _DisplayObject)
+						((object._ : _DisplayObject).__renderData.cacheBitmap._ : _Bitmap).__bitmapData = (object._ : _DisplayObject)
 							.__renderData.cacheBitmapData;
 					}
 
@@ -756,7 +760,7 @@ class _CairoRenderer extends _DisplayObjectRenderer
 				((object._ : _DisplayObject).__renderData.cacheBitmapRendererSW._ : _DisplayObjectRenderer).__stage = object.stage;
 
 				((object._ : _DisplayObject).__renderData.cacheBitmapRendererSW._ : _DisplayObjectRenderer).__allowSmoothing = __allowSmoothing;
-				cast((object._ : _DisplayObject).__renderData.cacheBitmapRendererSW, CairoRenderer)._.__setBlendMode(NORMAL);
+				((object._ : _DisplayObject).__renderData.cacheBitmapRendererSW._ : _CairoRenderer).__setBlendMode(NORMAL);
 				((object._ : _DisplayObject).__renderData.cacheBitmapRendererSW._ : _DisplayObjectRenderer).__worldAlpha = 1 / (object._ : _DisplayObject)
 					.__worldAlpha;
 
@@ -800,7 +804,7 @@ class _CairoRenderer extends _DisplayObjectRenderer
 					if (needSecondBitmapData)
 					{
 						if ((object._ : _DisplayObject).__renderData.cacheBitmapData2 == null
-							|| (object._ : _DisplayObject).__renderData.cacheBitmapData2._.__getSurface() == null
+							|| ((object._ : _DisplayObject).__renderData.cacheBitmapData2._ : _BitmapData).__getSurface() == null
 								|| bitmapWidth > (object._ : _DisplayObject).__renderData.cacheBitmapData2.width
 									|| bitmapHeight > (object._ : _DisplayObject).__renderData.cacheBitmapData2.height)
 						{
@@ -821,7 +825,7 @@ class _CairoRenderer extends _DisplayObjectRenderer
 					if (needCopyOfOriginal)
 					{
 						if ((object._ : _DisplayObject).__renderData.cacheBitmapData3 == null
-							|| (object._ : _DisplayObject).__renderData.cacheBitmapData3._.__getSurface() == null
+							|| ((object._ : _DisplayObject).__renderData.cacheBitmapData3._ : _BitmapData).__getSurface() == null
 								|| bitmapWidth > (object._ : _DisplayObject).__renderData.cacheBitmapData3.width
 									|| bitmapHeight > (object._ : _DisplayObject).__renderData.cacheBitmapData3.height)
 						{
@@ -872,13 +876,13 @@ class _CairoRenderer extends _DisplayObjectRenderer
 						cacheBitmap = (object._ : _DisplayObject).__renderData.cacheBitmapData;
 						(object._ : _DisplayObject).__renderData.cacheBitmapData = bitmap;
 						(object._ : _DisplayObject).__renderData.cacheBitmapData2 = cacheBitmap;
-						((object._ : _DisplayObject).__renderData.cacheBitmap._._ : _BitmapData).__bitmapData = (object._ : _DisplayObject)
+						((object._ : _DisplayObject).__renderData.cacheBitmap._ : _Bitmap).__bitmapData = (object._ : _DisplayObject)
 							.__renderData.cacheBitmapData;
 						(object._ : _DisplayObject).__renderData.cacheBitmapRendererSW = null;
 					}
 
-						((object._ : _DisplayObject).__renderData.cacheBitmap._._ : _BitmapData).__imageVersion = (object._ : _DisplayObject)
-							.__renderData.cacheBitmapData._.__renderData.textureVersion;
+						((object._ : _DisplayObject).__renderData.cacheBitmap._ : _Bitmap).__imageVersion = ((object._ : _DisplayObject)
+							.__renderData.cacheBitmapData._ : _BitmapData).__renderData.textureVersion;
 				}
 
 					(object._ : _DisplayObject).__renderData.cacheBitmapColorTransform._.__copyFrom(colorTransform);
@@ -900,7 +904,7 @@ class _CairoRenderer extends _DisplayObjectRenderer
 
 			updated = updateTransform;
 
-			ColorTransform._.__pool.release(colorTransform);
+			_ColorTransform.__pool.release(colorTransform);
 		}
 		else if ((object._ : _DisplayObject).__renderData.cacheBitmap != null)
 		{

@@ -17,6 +17,7 @@ class _EventDispatcher
 	public function new(eventDispatcher:EventDispatcher, target:IEventDispatcher = null):Void
 	{
 		this.eventDispatcher = eventDispatcher;
+		eventDispatcher._ = this;
 
 		if (target != null)
 		{

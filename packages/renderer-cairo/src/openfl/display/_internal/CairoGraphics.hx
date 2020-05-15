@@ -102,8 +102,8 @@ class CairoGraphics
 				point.setTo(1638.4, 0);
 				matrix._.__transformPoint(point);
 
-				var x = matrix.tx + graphics._.__bounds.x;
-				var y = matrix.ty + graphics._.__bounds.y;
+				var x = matrix.tx + (graphics._ : _Graphics).__bounds.x;
+				var y = matrix.ty + (graphics._ : _Graphics).__bounds.y;
 
 				pattern = CairoPattern.createRadial(x, y, 0, x, y, Math.abs((point.x - matrix.tx) / 2));
 
@@ -116,10 +116,10 @@ class CairoGraphics
 				point2.setTo(819.2, 0);
 				matrix._.__transformPoint(point2);
 
-				point.x += graphics._.__bounds.x;
-				point2.x += graphics._.__bounds.x;
-				point.y += graphics._.__bounds.y;
-				point2.y += graphics._.__bounds.y;
+				point.x += (graphics._ : _Graphics).__bounds.x;
+				point2.x += (graphics._ : _Graphics).__bounds.x;
+				point.y += (graphics._ : _Graphics).__bounds.y;
+				point2.y += (graphics._ : _Graphics).__bounds.y;
 
 				pattern = CairoPattern.createLinear(point.x, point.y, point2.x, point2.y);
 		}
@@ -220,9 +220,9 @@ class CairoGraphics
 	public static function hitTest(graphics:Graphics, x:Float, y:Float):Bool
 	{
 		CairoGraphics.graphics = graphics;
-		bounds = graphics._.__bounds;
+		bounds = (graphics._ : _Graphics).__bounds;
 
-		if (graphics._.__commands.length == 0 || bounds == null || bounds.width == 0 || bounds.height == 0 || !bounds.contains(x, y))
+		if ((graphics._ : _Graphics).__commands.length == 0 || bounds == null || bounds.width == 0 || bounds.height == 0 || !bounds.contains(x, y))
 		{
 			return false;
 		}
@@ -233,15 +233,15 @@ class CairoGraphics
 			x -= bounds.x;
 			y -= bounds.y;
 
-			if (graphics._.__renderData.cairo == null)
+			if ((graphics._ : _Graphics).__renderData.cairo == null)
 			{
 				var bitmap = new BitmapData(Math.floor(bounds.width), Math.floor(bounds.height), true, 0);
 				var surface = bitmap.getSurface();
-				graphics._.__renderData.cairo = new Cairo(surface);
-				// graphics._.__bitmap = bitmap;
+				(graphics._ : _Graphics).__renderData.cairo = new Cairo(surface);
+				// (graphics._ : _Graphics).__bitmap = bitmap;
 			}
 
-			cairo = graphics._.__renderData.cairo;
+			cairo = (graphics._ : _Graphics).__renderData.cairo;
 
 			fillCommands.clear();
 			strokeCommands.clear();
@@ -255,9 +255,9 @@ class CairoGraphics
 			cairo.newPath();
 			cairo.fillRule = EVEN_ODD;
 
-			var data = new DrawCommandReader(graphics._.__commands);
+			var data = new DrawCommandReader((graphics._ : _Graphics).__commands);
 
-			for (type in graphics._.__commands.types)
+			for (type in (graphics._ : _Graphics).__commands.types)
 			{
 				switch (type)
 				{
@@ -472,7 +472,7 @@ class CairoGraphics
 	{
 		if (commands.length == 0) return;
 
-		bounds = graphics._.__bounds;
+		bounds = (graphics._ : _Graphics).__bounds;
 
 		var offsetX = bounds.x;
 		var offsetY = bounds.y;
@@ -781,8 +781,8 @@ class CairoGraphics
 					var sourceRect = (bitmapFill != null) ? bitmapFill.rect : null;
 					tempMatrix3.identity();
 
-					var transform = graphics._.__renderTransform;
-					// var roundPixels = renderer._.__roundPixels;
+					var transform = (graphics._ : _Graphics).__renderTransform;
+					// var roundPixels = (renderer._ : _CairoRenderer).__roundPixels;
 					var alpha = CairoGraphics.worldAlpha;
 
 					var ri, ti;
@@ -869,7 +869,7 @@ class CairoGraphics
 					_Rectangle.__pool.release(tileRect);
 					_Matrix.__pool.release(tileTransform);
 
-					cairo.matrix = graphics._.__renderTransform._.__toMatrix3();
+					cairo.matrix = (graphics._ : _Graphics).__renderTransform._.__toMatrix3();
 					fillPattern.extend = cacheExtend;
 
 				case DRAW_TRIANGLES:
@@ -886,7 +886,7 @@ class CairoGraphics
 
 					var width = 0;
 					var height = 0;
-					var currentMatrix = graphics._.__renderTransform._.__toMatrix3();
+					var currentMatrix = (graphics._ : _Graphics).__renderTransform._.__toMatrix3();
 
 					if (!colorFill)
 					{
@@ -985,7 +985,7 @@ class CairoGraphics
 							continue;
 						}
 
-						cairo.matrix = graphics._.__renderTransform._.__toMatrix3();
+						cairo.matrix = (graphics._ : _Graphics).__renderTransform._.__toMatrix3();
 						// cairo.identityMatrix();
 						// cairo.resetClip();
 
@@ -1033,7 +1033,7 @@ class CairoGraphics
 						i += 3;
 					}
 
-					cairo.matrix = graphics._.__renderTransform._.__toMatrix3();
+					cairo.matrix = (graphics._ : _Graphics).__renderTransform._.__toMatrix3();
 
 				case WINDING_EVEN_ODD:
 					data.readWindingEvenOdd();
@@ -1132,51 +1132,52 @@ class CairoGraphics
 	public static function render(graphics:Graphics, renderer:CairoRenderer):Void
 	{
 		CairoGraphics.graphics = graphics;
-		CairoGraphics.allowSmoothing = renderer._.__allowSmoothing;
-		CairoGraphics.worldAlpha = renderer._.__getAlpha(graphics._.__owner._.__worldAlpha);
+		CairoGraphics.allowSmoothing = (renderer._ : _CairoRenderer).__allowSmoothing;
+		CairoGraphics.worldAlpha = (renderer._ : _CairoRenderer).__getAlpha(((graphics._ : _Graphics).__owner._ : _DisplayObject).__worldAlpha);
 
-		graphics._.__update(renderer._.__worldTransform);
+		(graphics._ : _Graphics).__update((renderer._ : _CairoRenderer).__worldTransform);
 
-		if (!graphics._.__softwareDirty || graphics._.__managed) return;
+		if (!(graphics._ : _Graphics).__softwareDirty || (graphics._ : _Graphics).__managed) return;
 
-		bounds = graphics._.__bounds;
+		bounds = (graphics._ : _Graphics).__bounds;
 
-		var width = graphics._.__width;
-		var height = graphics._.__height;
+		var width = (graphics._ : _Graphics).__width;
+		var height = (graphics._ : _Graphics).__height;
 
-		if (!graphics._.__visible || graphics._.__commands.length == 0 || bounds == null || width < 1 || height < 1)
+		if (!(graphics._ : _Graphics).__visible
+			|| (graphics._ : _Graphics).__commands.length == 0 || bounds == null || width < 1 || height < 1)
 		{
-			graphics._.__renderData.cairo = null;
-			graphics._.__bitmap = null;
+			(graphics._ : _Graphics).__renderData.cairo = null;
+			(graphics._ : _Graphics).__bitmap = null;
 		}
 		else
 		{
 			hitTesting = false;
 			var needsUpscaling = false;
 
-			if (graphics._.__renderData.cairo != null)
+			if ((graphics._ : _Graphics).__renderData.cairo != null)
 			{
-				var surface:CairoImageSurface = cast graphics._.__renderData.cairo.target;
+				var surface:CairoImageSurface = cast(graphics._ : _Graphics).__renderData.cairo.target;
 
 				if (width > surface.width || height > surface.height)
 				{
-					graphics._.__renderData.cairo = null;
+					(graphics._ : _Graphics).__renderData.cairo = null;
 					needsUpscaling = true;
 				}
 			}
 
-			if (graphics._.__renderData.cairo == null || graphics._.__bitmap == null)
+			if ((graphics._ : _Graphics).__renderData.cairo == null || (graphics._ : _Graphics).__bitmap == null)
 			{
 				var bitmap = needsUpscaling ? new BitmapData(Std.int(width * 1.25), Std.int(height * 1.25), true, 0) : new BitmapData(width, height, true, 0);
 				var surface = bitmap.getSurface();
-				graphics._.__renderData.cairo = new Cairo(surface);
-				graphics._.__bitmap = bitmap;
+				(graphics._ : _Graphics).__renderData.cairo = new Cairo(surface);
+				(graphics._ : _Graphics).__bitmap = bitmap;
 			}
 
-			cairo = graphics._.__renderData.cairo;
+			cairo = (graphics._ : _Graphics).__renderData.cairo;
 
-			renderer._.__setBlendModeCairo(cairo, NORMAL);
-			renderer.applyMatrix(graphics._.__renderTransform, cairo);
+			(renderer._ : _CairoRenderer).__setBlendModeCairo(cairo, NORMAL);
+			renderer.applyMatrix((graphics._ : _Graphics).__renderTransform, cairo);
 
 			cairo.setOperator(CLEAR);
 			cairo.paint();
@@ -1195,9 +1196,9 @@ class CairoGraphics
 			var initStrokeX = 0.0;
 			var initStrokeY = 0.0;
 
-			var data = new DrawCommandReader(graphics._.__commands);
+			var data = new DrawCommandReader((graphics._ : _Graphics).__commands);
 
-			for (type in graphics._.__commands.types)
+			for (type in (graphics._ : _Graphics).__commands.types)
 			{
 				switch (type)
 				{
@@ -1387,7 +1388,7 @@ class CairoGraphics
 
 					case OVERRIDE_BLEND_MODE:
 						var c = data.readOverrideBlendMode();
-						renderer._.__setBlendModeCairo(cairo, c.blendMode);
+						(renderer._ : _CairoRenderer).__setBlendModeCairo(cairo, c.blendMode);
 
 					case WINDING_EVEN_ODD:
 						data.readWindingEvenOdd();
@@ -1414,16 +1415,16 @@ class CairoGraphics
 
 			data.destroy();
 
-			graphics._.__bitmap._.__setDirty();
+			((graphics._ : _Graphics).__bitmap._ : _BitmapData).__setDirty();
 		}
 
-		graphics._.__softwareDirty = false;
-		graphics._.__dirty = false;
+			(graphics._ : _Graphics).__softwareDirty = false;
+		(graphics._ : _Graphics).__dirty = false;
 	}
 
 	public static function renderMask(graphics:Graphics, renderer:CairoRenderer):Void
 	{
-		if (graphics._.__commands.length != 0)
+		if ((graphics._ : _Graphics).__commands.length != 0)
 		{
 			cairo = renderer.cairo;
 
@@ -1433,11 +1434,11 @@ class CairoGraphics
 			var offsetX = 0;
 			var offsetY = 0;
 
-			var data = new DrawCommandReader(graphics._.__commands);
+			var data = new DrawCommandReader((graphics._ : _Graphics).__commands);
 
 			var x, y, width, height, kappa = .5522848, ox, oy, xe, ye, xm, ym;
 
-			for (type in graphics._.__commands.types)
+			for (type in (graphics._ : _Graphics).__commands.types)
 			{
 				switch (type)
 				{
