@@ -8,6 +8,7 @@ import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.media.Video;
+import openfl.media._Video;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

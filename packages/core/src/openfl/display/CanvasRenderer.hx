@@ -30,7 +30,7 @@ class CanvasRenderer extends DisplayObjectRenderer
 	**/
 	public var pixelRatio(get, never):Float;
 
-	@:noCompletion private function new(context:#if (lime || openfl_html5) Canvas2DRenderContext #else Dynamic #end)
+	@:allow(openfl) @:noCompletion private function new(context:#if (lime || openfl_html5) Canvas2DRenderContext #else Dynamic #end)
 	{
 		if (_ == null)
 		{
@@ -45,7 +45,7 @@ class CanvasRenderer extends DisplayObjectRenderer
 	**/
 	public function applySmoothing(context:#if (lime || openfl_html5) Canvas2DRenderContext #else Dynamic #end, value:Bool):Void
 	{
-		_.applySmoothing(context, value);
+		(_ : _CanvasRenderer).applySmoothing(context, value);
 	}
 
 	/**
@@ -54,23 +54,23 @@ class CanvasRenderer extends DisplayObjectRenderer
 	**/
 	public function setTransform(transform:Matrix, context:#if (lime || openfl_html5) Canvas2DRenderContext #else Dynamic #end = null):Void
 	{
-		_.setTransform(transform, context);
+		(_ : _CanvasRenderer).setTransform(transform, context);
 	}
 
 	// Get & Set Methods
 
 	@:noCompletion private function get_context():#if (lime || openfl_html5) Canvas2DRenderContext #else Dynamic #end
 	{
-		return _.context;
+		return (_ : _CanvasRenderer).context;
 	}
 
 	@:noCompletion private function set_context(value:#if (lime || openfl_html5) Canvas2DRenderContext #else Dynamic #end):#if (lime || openfl_html5) Canvas2DRenderContext #else Dynamic #end
 	{
-		return _.context = value;
+		return (_ : _CanvasRenderer).context = value;
 	}
 
 	@:noCompletion private function get_pixelRatio():Float
 	{
-		return _.pixelRatio;
+		return (_ : _CanvasRenderer).pixelRatio;
 	}
 }

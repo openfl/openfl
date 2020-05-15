@@ -118,7 +118,7 @@ class _NetStream extends _EventDispatcher
 		#if openfl_html5
 		if (video == null) return;
 
-		video.volume = SoundMixer.soundTransform.volume * _.__soundTransform.volume;
+		video.volume = SoundMixer.soundTransform.volume * __soundTransform.volume;
 
 		if (Std.is(url, String))
 		{
@@ -201,7 +201,7 @@ class _NetStream extends _EventDispatcher
 	#if openfl_html5
 	public function __getVideoElement():VideoElement
 	{
-		return _.video;
+		return video;
 	}
 	#end
 
@@ -318,7 +318,7 @@ class _NetStream extends _EventDispatcher
 			#if openfl_html5
 			if (video != null)
 			{
-				video.volume = SoundMixer.soundTransform.volume * _.__soundTransform.volume;
+				video.volume = SoundMixer.soundTransform.volume * __soundTransform.volume;
 			}
 			#end
 		}

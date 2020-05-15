@@ -1,10 +1,12 @@
 package openfl.display._internal;
 
 #if openfl_html5
+import openfl.display._CanvasRenderer;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display.TileContainer;
 import openfl.display.Tilemap;
+import openfl.display._Tilemap;
 import openfl.display.Tileset;
 import openfl.geom.Matrix;
 import openfl.geom._Matrix;
@@ -31,35 +33,36 @@ class CanvasTilemap
 	public static inline function render(tilemap:Tilemap, renderer:CanvasRenderer):Void
 	{
 		#if openfl_html5
-		if (!tilemap._.__renderable || tilemap._.__group._.__tiles.length == 0) return;
+		if (!(tilemap._ : _Tilemap).__renderable || ((tilemap._ : _Tilemap).__group._ : _TileContainer).__tiles.length == 0) return;
 
-		var alpha = renderer._.__getAlpha(tilemap._.__worldAlpha);
+		var alpha = (renderer._ : _CanvasRenderer).__getAlpha((tilemap._ : _Tilemap).__worldAlpha);
 		if (alpha <= 0) return;
 
 		var context = renderer.context;
 
-		renderer._.__setBlendMode(tilemap._.__worldBlendMode);
-		renderer._.__pushMaskObject(tilemap);
+		(renderer._ : _CanvasRenderer).__setBlendMode((tilemap._ : _Tilemap).__worldBlendMode);
+		(renderer._ : _CanvasRenderer).__pushMaskObject(tilemap);
 
 		var rect = _Rectangle.__pool.get();
-		rect.setTo(0, 0, tilemap._.__width, tilemap._.__height);
-		renderer._.__pushMaskRect(rect, tilemap._.__renderTransform);
+		rect.setTo(0, 0, (tilemap._ : _Tilemap).__width, (tilemap._ : _Tilemap).__height);
+		(renderer._ : _CanvasRenderer).__pushMaskRect(rect, (tilemap._ : _Tilemap).__renderTransform);
 
-		if (!renderer._.__allowSmoothing || !tilemap.smoothing)
+		if (!(renderer._ : _CanvasRenderer).__allowSmoothing || !tilemap.smoothing)
 		{
 			context.imageSmoothingEnabled = false;
 		}
 
-		renderTileContainer(tilemap._.__group, renderer, tilemap._.__renderTransform, tilemap._.__tileset, (renderer._.__allowSmoothing && tilemap.smoothing),
-			tilemap.tileAlphaEnabled, alpha, tilemap.tileBlendModeEnabled, tilemap._.__worldBlendMode, null, null, rect);
+		renderTileContainer((tilemap._ : _Tilemap).__group, renderer, (tilemap._ : _Tilemap).__renderTransform, (tilemap._ : _Tilemap).__tileset,
+			((renderer._ : _CanvasRenderer).__allowSmoothing && tilemap.smoothing), tilemap.tileAlphaEnabled, alpha, tilemap.tileBlendModeEnabled,
+			(tilemap._ : _Tilemap).__worldBlendMode, null, null, rect);
 
-		if (!renderer._.__allowSmoothing || !tilemap.smoothing)
+		if (!(renderer._ : _CanvasRenderer).__allowSmoothing || !tilemap.smoothing)
 		{
 			context.imageSmoothingEnabled = true;
 		}
 
-		renderer._.__popMaskRect();
-		renderer._.__popMaskObject(tilemap);
+			(renderer._ : _CanvasRenderer).__popMaskRect();
+		(renderer._ : _CanvasRenderer).__popMaskObject(tilemap);
 
 		_Rectangle.__pool.release(rect);
 		#end
@@ -72,12 +75,12 @@ class CanvasTilemap
 	{
 		#if (lime && openfl_html5)
 		var context = renderer.context;
-		var roundPixels = renderer._.__roundPixels;
+		var roundPixels = (renderer._ : _CanvasRenderer).__roundPixels;
 
 		var tileTransform = _Matrix.__pool.get();
 
-		var tiles = group._.__tiles;
-		var length = group._.__length;
+		var tiles = (group._ : _TileContainer).__tiles;
+		var length = (group._ : _TileContainer).__length;
 
 		var tile,
 			tileset,
@@ -113,10 +116,10 @@ class CanvasTilemap
 
 			if (blendModeEnabled)
 			{
-				blendMode = (tile._.__blendMode != null) ? tile._.__blendMode : defaultBlendMode;
+				blendMode = ((tile._ : _Tile).__blendMode != null) ? (tile._ : _Tile).__blendMode : defaultBlendMode;
 			}
 
-			if (tile._.__length > 0)
+			if ((tile._ : _Tile).__length > 0)
 			{
 				renderTileContainer(cast tile, renderer, tileTransform, tileset, smooth, alphaEnabled, alpha, blendModeEnabled, blendMode, cacheBitmapData,
 					source, rect);
@@ -129,7 +132,7 @@ class CanvasTilemap
 
 				if (id == -1)
 				{
-					tileRect = tile._.__rect;
+					tileRect = (tile._ : _Tile).__rect;
 					if (tileRect == null || tileRect.width <= 0 || tileRect.height <= 0) continue;
 				}
 				else
@@ -146,7 +149,7 @@ class CanvasTilemap
 
 				if (bitmapData != cacheBitmapData)
 				{
-					source = bitmapData._.__getElement();
+					source = (bitmapData._ : _BitmapData).__getElement();
 					cacheBitmapData = bitmapData;
 				}
 
@@ -154,7 +157,7 @@ class CanvasTilemap
 
 				if (blendModeEnabled)
 				{
-					renderer._.__setBlendMode(blendMode);
+					(renderer._ : _CanvasRenderer).__setBlendMode(blendMode);
 				}
 
 				renderer.setTransform(tileTransform, context);

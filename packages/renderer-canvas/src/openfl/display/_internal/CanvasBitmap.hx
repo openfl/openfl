@@ -1,7 +1,9 @@
 package openfl.display._internal;
 
 #if openfl_html5
+import openfl.display._CanvasRenderer;
 import openfl.display.Bitmap;
+import openfl.display._Bitmap;
 #if lime
 import lime._internal.graphics.ImageCanvasUtil;
 #else
@@ -17,30 +19,33 @@ class CanvasBitmap
 	public static inline function render(bitmap:Bitmap, renderer:CanvasRenderer):Void
 	{
 		#if (lime && openfl_html5)
-		if (!bitmap._.__renderable) return;
+		if (!(bitmap._ : _Bitmap).__renderable) return;
 
-		var alpha = renderer._.__getAlpha(bitmap._.__worldAlpha);
+		var alpha = (renderer._ : _CanvasRenderer).__getAlpha((bitmap._ : _Bitmap).__worldAlpha);
 
-		if (alpha > 0 && bitmap._.__bitmapData != null && bitmap._.__bitmapData._.__isValid && bitmap._.__bitmapData.readable)
+		if (alpha > 0
+			&& (bitmap._ : _Bitmap).__bitmapData != null
+				&& ((bitmap._ : _Bitmap).__bitmapData._ : _BitmapData).__isValid && (bitmap._ : _Bitmap).__bitmapData.readable)
 		{
 			var context = renderer.context;
 
-			renderer._.__setBlendMode(bitmap._.__worldBlendMode);
-			renderer._.__pushMaskObject(bitmap, false);
+			(renderer._ : _CanvasRenderer).__setBlendMode((bitmap._ : _Bitmap).__worldBlendMode);
+			(renderer._ : _CanvasRenderer).__pushMaskObject(bitmap, false);
 
 			context.globalAlpha = alpha;
-			var scrollRect = bitmap._.__scrollRect;
+			var scrollRect = (bitmap._ : _Bitmap).__scrollRect;
 
-			renderer.setTransform(bitmap._.__renderTransform, context);
+			renderer.setTransform((bitmap._ : _Bitmap).__renderTransform, context);
 
-			if (!renderer._.__allowSmoothing || !bitmap.smoothing)
+			if (!(renderer._ : _CanvasRenderer).__allowSmoothing || !bitmap.smoothing)
 			{
 				context.imageSmoothingEnabled = false;
 			}
 
 			if (scrollRect == null)
 			{
-				context.drawImage(bitmap._.__bitmapData._.__getElement(), 0, 0, bitmap._.__bitmapData.width, bitmap._.__bitmapData.height);
+				context.drawImage(((bitmap._ : _Bitmap).__bitmapData._ : _BitmapData).__getElement(), 0, 0, (bitmap._ : _Bitmap).__bitmapData.width,
+					(bitmap._ : _Bitmap).__bitmapData.height);
 			}
 			else
 			{
@@ -50,17 +55,18 @@ class CanvasBitmap
 				context.rect(scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height);
 				context.clip();
 
-				context.drawImage(bitmap._.__bitmapData._.__getElement(), 0, 0, bitmap._.__bitmapData.width, bitmap._.__bitmapData.height);
+				context.drawImage(((bitmap._ : _Bitmap).__bitmapData._ : _BitmapData).__getElement(), 0, 0, (bitmap._ : _Bitmap).__bitmapData.width,
+					(bitmap._ : _Bitmap).__bitmapData.height);
 
 				context.restore();
 			}
 
-			if (!renderer._.__allowSmoothing || !bitmap.smoothing)
+			if (!(renderer._ : _CanvasRenderer).__allowSmoothing || !bitmap.smoothing)
 			{
 				context.imageSmoothingEnabled = true;
 			}
 
-			renderer._.__popMaskObject(bitmap, false);
+				(renderer._ : _CanvasRenderer).__popMaskObject(bitmap, false);
 		}
 		#end
 	}

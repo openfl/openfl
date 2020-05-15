@@ -7,6 +7,7 @@ import lime.utils.UInt8Array;
 import openfl.display3D.textures.TextureBase;
 import openfl.display3D.textures._TextureBase;
 import openfl.display3D.Context3D;
+import openfl.display3D._Context3D;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.BitmapDataChannel;
@@ -914,7 +915,7 @@ class _BitmapData
 			var textureImage = limeImage;
 
 			#if openfl_html5
-			if (#if openfl_power_of_two true || #end (!Context3D._.__supportsBGRA && textureImage.format != RGBA32))
+			if (#if openfl_power_of_two true || #end (!_Context3D.__supportsBGRA && textureImage.format != RGBA32))
 			{
 				textureImage = textureImage.clone();
 				textureImage.format = RGBA32;
@@ -1315,7 +1316,7 @@ class _BitmapData
 	{
 		if (limeImage == null) return null;
 		ImageCanvasUtil.convertToCanvas(limeImage, clearData);
-		return limeImage.buffer._.__srcCanvas;
+		return limeImage.buffer.__srcCanvas;
 	}
 	#end
 
@@ -1324,7 +1325,7 @@ class _BitmapData
 	{
 		if (limeImage == null) return null;
 		ImageCanvasUtil.convertToCanvas(limeImage, clearData);
-		return limeImage.buffer._.__srcContext;
+		return limeImage.buffer.__srcContext;
 	}
 	#end
 
@@ -1344,7 +1345,7 @@ class _BitmapData
 	public function __getJSImage():JSImage
 	{
 		if (limeImage == null) return null;
-		return limeImage.buffer._.__srcImage;
+		return limeImage.buffer.__srcImage;
 	}
 	#end
 

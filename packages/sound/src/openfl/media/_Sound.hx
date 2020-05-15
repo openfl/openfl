@@ -92,9 +92,9 @@ class _Sound extends _EventDispatcher
 			#if openfl_html5
 			var defaultLibrary = Assets.getLibrary("default"); // TODO: Improve this
 
-			if (defaultLibrary != null && defaultLibrary.cachedAudioBuffers.exists(url))
+			if (defaultLibrary != null && @:privateAccess defaultLibrary.cachedAudioBuffers.exists(url))
 			{
-				AudioBuffer_onURLLoad(defaultLibrary.cachedAudioBuffers.get(url));
+				AudioBuffer_onURLLoad(@:privateAccess defaultLibrary.cachedAudioBuffers.get(url));
 			}
 			else
 			{

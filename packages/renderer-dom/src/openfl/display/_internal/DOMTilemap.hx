@@ -14,11 +14,11 @@ class DOMTilemap
 	public static function clear(tilemap:Tilemap, renderer:DOMRenderer):Void
 	{
 		#if openfl_html5
-		if (tilemap._.__renderData.canvas != null)
+		if ((tilemap._ : _Tilemap).__renderData.canvas != null)
 		{
-			renderer.element.removeChild(tilemap._.__renderData.canvas);
-			tilemap._.__renderData.canvas = null;
-			tilemap._.__renderData.style = null;
+			renderer.element.removeChild((tilemap._ : _Tilemap).__renderData.canvas);
+			(tilemap._ : _Tilemap).__renderData.canvas = null;
+			(tilemap._ : _Tilemap).__renderData.style = null;
 		}
 		#end
 	}
@@ -28,26 +28,28 @@ class DOMTilemap
 		// TODO: Support GL-based Tilemap?
 
 		#if openfl_html5
-		if (tilemap.stage != null && tilemap._.__worldVisible && tilemap._.__renderable && tilemap._.__group._.__tiles.length > 0)
+		if (tilemap.stage != null
+			&& (tilemap._ : _Tilemap).__worldVisible
+				&& (tilemap._ : _Tilemap).__renderable && ((tilemap._ : _Tilemap).__group._ : _TileContainer).__tiles.length > 0)
 		{
-			if (tilemap._.__renderData.canvas == null)
+			if ((tilemap._ : _Tilemap).__renderData.canvas == null)
 			{
-				tilemap._.__renderData.canvas = cast Browser.document.createElement("canvas");
-				tilemap._.__renderData.context = tilemap._.__renderData.canvas.getContext("2d");
-				renderer._.__initializeElement(tilemap, tilemap._.__renderData.canvas);
+				(tilemap._ : _Tilemap).__renderData.canvas = cast Browser.document.createElement("canvas");
+				(tilemap._ : _Tilemap).__renderData.context = (tilemap._ : _Tilemap).__renderData.canvas.getContext("2d");
+				(renderer._ : _DOMRenderer).__initializeElement(tilemap, (tilemap._ : _Tilemap).__renderData.canvas);
 			}
 
-			tilemap._.__renderData.canvas.width = tilemap._.__width;
-			tilemap._.__renderData.canvas.height = tilemap._.__height;
+				(tilemap._ : _Tilemap).__renderData.canvas.width = (tilemap._ : _Tilemap).__width;
+			(tilemap._ : _Tilemap).__renderData.canvas.height = (tilemap._ : _Tilemap).__height;
 
-			renderer._.__canvasRenderer.context = tilemap._.__renderData.context;
+			(renderer._ : _DOMRenderer).__canvasRenderer.context = (tilemap._ : _Tilemap).__renderData.context;
 
-			CanvasTilemap.render(tilemap, renderer._.__canvasRenderer);
+			CanvasTilemap.render(tilemap, (renderer._ : _DOMRenderer).__canvasRenderer);
 
-			renderer._.__canvasRenderer.context = null;
+			(renderer._ : _DOMRenderer).__canvasRenderer.context = null;
 
-			renderer._.__updateClip(tilemap);
-			renderer._.__applyStyle(tilemap, true, false, true);
+			(renderer._ : _DOMRenderer).__updateClip(tilemap);
+			(renderer._ : _DOMRenderer).__applyStyle(tilemap, true, false, true);
 		}
 		else
 		{

@@ -21,7 +21,7 @@ import openfl.geom.Matrix;
 	public var allowSmoothing:Bool;
 	public var objectColorTransform:ColorTransform;
 	public var objectMatrix:Matrix;
-	public var renderer(default, null):DisplayObjectRenderer;
+	public var renderer:DisplayObjectRenderer;
 
 	private var renderEvent:RenderEvent;
 

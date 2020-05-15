@@ -7,6 +7,7 @@ import lime.graphics.opengl.GL;
 import openfl.display3D.textures.VideoTexture;
 import openfl.events.Event;
 import openfl.net.NetStream;
+import openfl.net._NetStream;
 #if openfl_html5
 import js.html.VideoElement;
 #end
@@ -57,7 +58,7 @@ class _VideoTexture extends _TextureBase
 		#if openfl_html5
 		if (netStream != null)
 		{
-			videoElement = netStream._.__getVideoElement();
+			videoElement = (netStream._ : _NetStream).__getVideoElement();
 			if (videoElement.readyState >= 2)
 			{
 				Timer.delay(function()

@@ -31,7 +31,7 @@ class DOMRenderer extends DisplayObjectRenderer
 	/**
 		The active pixel ratio used during rendering
 	**/
-	public var pixelRatio(get, never):Float = 1;
+	public var pixelRatio(get, never):Float;
 
 	@:noCompletion private function new(element:#if (lime || openfl_html5) DOMRenderContext #else Dynamic #end)
 	{
@@ -50,7 +50,7 @@ class DOMRenderer extends DisplayObjectRenderer
 	**/
 	public function applyStyle(parent:DisplayObject, childElement:#if (openfl_html5 && !display) Element #else Dynamic #end):Void
 	{
-		_.applyStyle(parent, childElement);
+		(_ : _DOMRenderer).applyStyle(parent, childElement);
 	}
 
 	/**
@@ -59,24 +59,24 @@ class DOMRenderer extends DisplayObjectRenderer
 	**/
 	public function clearStyle(childElement:#if (openfl_html5 && !display) Element #else Dynamic #end):Void
 	{
-		_.clearStyle(childElement);
+		(_ : _DOMRenderer).clearStyle(childElement);
 	}
 
 	// Get & Set Methods
 
 	@:noCompletion private function get_element():#if (lime || openfl_html5) DOMRenderContext #else Dynamic #end
 	{
-		return _.element;
+		return (_ : _DOMRenderer).element;
 	}
 
 	@:noCompletion private function set_element(value:#if (lime || openfl_html5) DOMRenderContext #else Dynamic #end):#if (lime || openfl_html5) DOMRenderContext #else Dynamic #end
 	{
-		return _.element = value;
+		return (_ : _DOMRenderer).element = value;
 	}
 
 	@:noCompletion private function get_pixelRatio():Float
 	{
-		return _.pixelRatio;
+		return (_ : _DOMRenderer).pixelRatio;
 	}
 }
 #else

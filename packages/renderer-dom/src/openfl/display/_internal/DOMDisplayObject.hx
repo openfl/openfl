@@ -11,9 +11,9 @@ class DOMDisplayObject
 	public static function clear(displayObject:DisplayObject, renderer:DOMRenderer):Void
 	{
 		#if openfl_html5
-		if (displayObject._.__renderData.cacheBitmap != null)
+		if ((displayObject._ : _DisplayObject).__renderData.cacheBitmap != null)
 		{
-			DOMBitmap.clear(displayObject._.__renderData.cacheBitmap, renderer);
+			DOMBitmap.clear((displayObject._ : _DisplayObject).__renderData.cacheBitmap, renderer);
 		}
 		DOMShape.clear(displayObject, renderer);
 		#end
@@ -22,13 +22,11 @@ class DOMDisplayObject
 	public static inline function render(displayObject:DisplayObject, renderer:DOMRenderer):Void
 	{
 		#if openfl_html5
-		// if (displayObject.opaqueBackground == null && displayObject._.__graphics == null) return;
-		// if (!displayObject._.__renderable || displayObject._.__worldAlpha <= 0) return;
+		// if (displayObject.opaqueBackground == null && (displayObject._ : _DisplayObject).__graphics == null) return;
+		// if (!(displayObject._ : _DisplayObject).__renderable || (displayObject._ : _DisplayObject).__worldAlpha <= 0) return;
 
 		if (displayObject.opaqueBackground != null
-			&& !displayObject._.__renderData.isCacheBitmapRender
-			&& displayObject.width > 0
-			&& displayObject.height > 0)
+			&& !(displayObject._ : _DisplayObject).__renderData.isCacheBitmapRender && displayObject.width > 0 && displayObject.height > 0)
 		{
 			// renderer._.__pushMaskObject (displayObject);
 

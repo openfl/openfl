@@ -49,6 +49,11 @@ class Font
 	public var limeFont(get, never):LimeFont;
 
 	// TODO: Remove
+	@:noCompletion private function __fromLimeFont(font:LimeFont):Void
+	{
+		return (_ : _Font).__fromLimeFont(font);
+	}
+
 	@:noCompletion public var name(get, set):String;
 
 	@:noCompletion private function get_name():String

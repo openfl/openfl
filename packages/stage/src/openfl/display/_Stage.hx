@@ -508,17 +508,17 @@ class _Stage extends _DisplayObjectContainer
 				#end
 
 			case CANVAS:
-				#if openfl_html5
-				// var renderer = new CanvasRenderer(window.context.canvas2D);
-				// renderer.pixelRatio = pixelRatio;
-				// __renderer = renderer;
+				#if (openfl.renderer_canvas && openfl_html5)
+				var renderer = new CanvasRenderer(window.context.canvas2D);
+				(renderer._ : _CanvasRenderer).pixelRatio = pixelRatio;
+				__renderer = renderer;
 				#end
 
 			case DOM:
-				#if openfl_html5
-				// var renderer = new DOMRenderer(window.context.dom);
-				// renderer.pixelRatio = pixelRatio;
-				// __renderer = renderer;
+				#if (openfl.renderer_dom && openfl_html5)
+				var renderer = new DOMRenderer(window.context.dom);
+				(renderer._ : _DOMRenderer).pixelRatio = pixelRatio;
+				__renderer = renderer;
 				#end
 
 			case CAIRO:

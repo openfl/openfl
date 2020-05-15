@@ -1,7 +1,10 @@
 package openfl.display._internal;
 
 #if openfl_html5
+import openfl.display._CanvasRenderer;
 import openfl.media.Video;
+import openfl.media._Video;
+import openfl.net._NetStream;
 
 @:access(openfl.media.Video)
 @:access(openfl.net.NetStream)
@@ -11,24 +14,24 @@ class CanvasVideo
 	public static function render(video:Video, renderer:CanvasRenderer):Void
 	{
 		#if (lime && openfl_html5)
-		if (!video._.__renderable || video._.__stream == null) return;
+		if (!(video._ : _Video).__renderable || (video._ : _Video).__stream == null) return;
 
-		var alpha = renderer._.__getAlpha(video._.__worldAlpha);
+		var alpha = (renderer._ : _CanvasRenderer).__getAlpha((video._ : _Video).__worldAlpha);
 		if (alpha <= 0) return;
 
 		var context = renderer.context;
-		var videoElement = video._.__stream._.__getVideoElement();
+		var videoElement = ((video._ : _Video).__stream._ : _NetStream).__getVideoElement();
 
 		if (videoElement != null)
 		{
-			renderer._.__setBlendMode(video._.__worldBlendMode);
-			renderer._.__pushMaskObject(video);
+			(renderer._ : _CanvasRenderer).__setBlendMode((video._ : _Video).__worldBlendMode);
+			(renderer._ : _CanvasRenderer).__pushMaskObject(video);
 
 			context.globalAlpha = alpha;
-			var scrollRect = video._.__scrollRect;
+			var scrollRect = (video._ : _Video).__scrollRect;
 			var smoothing = video.smoothing;
 
-			renderer.setTransform(video._.__worldTransform, context);
+			renderer.setTransform((video._ : _Video).__worldTransform, context);
 
 			if (!smoothing)
 			{
@@ -50,7 +53,7 @@ class CanvasVideo
 				context.imageSmoothingEnabled = true;
 			}
 
-			renderer._.__popMaskObject(video);
+				(renderer._ : _CanvasRenderer).__popMaskObject(video);
 		}
 		#end
 	}

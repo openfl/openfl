@@ -7,7 +7,7 @@ package openfl.display;
 	`graphics` property, which lets you access methods from the
 	Graphics class.
 
-	The Sprite class also includes a `graphics`property, and it
+	The Sprite class also includes a `graphics` property, and it
 	includes other features not available to the Shape class. For example, a
 	Sprite object is a display object container, whereas a Shape object is not
 	(and cannot contain child display objects). For this reason, Shape objects
@@ -19,7 +19,6 @@ package openfl.display;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.display.Graphics)
 class Shape extends DisplayObject
 {
 	/**
@@ -28,34 +27,24 @@ class Shape extends DisplayObject
 	**/
 	public var graphics(get, never):Graphics;
 
-	#if openfljs
-	@:noCompletion private static function __init__()
-	{
-		untyped Object.defineProperty(Shape.prototype, "graphics", {
-			get: untyped __js__("function () { return this.get_graphics (); }")
-		});
-	}
-	#end
-
 	/**
 		Creates a new Shape object.
 	**/
 	public function new()
 	{
-		super();
+		if (_ == null)
+		{
+			_ = new _Shape(this);
+		}
 
-		__type = SHAPE;
+		super();
 	}
 
 	// Get & Set Methods
+
 	@:noCompletion private function get_graphics():Graphics
 	{
-		if (__graphics == null)
-		{
-			__graphics = new Graphics(this);
-		}
-
-		return __graphics;
+		return (_ : _Shape).graphics;
 	}
 }
 #else

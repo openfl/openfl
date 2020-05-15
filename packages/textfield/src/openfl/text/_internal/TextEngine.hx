@@ -201,7 +201,7 @@ class TextEngine
 		if (name != null && name.indexOf(":/") == -1) name = null;
 		#end
 
-		var font = Font.fromFile(name);
+		var font:Font = Font.fromFile(name);
 
 		if (font != null)
 		{
@@ -272,7 +272,7 @@ class TextEngine
 		__context.font = getFont(format);
 		#end
 
-		var font = getFontInstance(format);
+		var font:Font = getFontInstance(format);
 
 		if (format._.__ascent != null)
 		{
@@ -340,7 +340,7 @@ class TextEngine
 			}
 		}
 
-		var font = italic ? "italic " : "normal ";
+		var font:String = italic ? "italic " : "normal ";
 		font += "normal ";
 		font += bold ? "bold " : "normal ";
 		font += format.size + "px";
@@ -655,7 +655,7 @@ class TextEngine
 			var currentFormat = (textField._ : _TextField).__textFormat;
 			var ascent, descent, leading, heightValue;
 
-			var font = getFontInstance(currentFormat);
+			var font:Font = getFontInstance(currentFormat);
 
 			if (currentFormat._.__ascent != null)
 			{
@@ -755,7 +755,7 @@ class TextEngine
 
 		var rangeIndex = -1;
 		var formatRange:TextFormatRange = null;
-		var font = null;
+		var font:Font = null;
 
 		var currentFormat = _TextField.__defaultTextFormat._.clone();
 

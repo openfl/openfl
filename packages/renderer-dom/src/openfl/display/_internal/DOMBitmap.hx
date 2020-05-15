@@ -15,18 +15,18 @@ class DOMBitmap
 	public static function clear(bitmap:Bitmap, renderer:DOMRenderer):Void
 	{
 		#if openfl_html5
-		if (bitmap._.__image != null)
+		if ((bitmap._ : _Bitmap).__image != null)
 		{
-			renderer.element.removeChild(bitmap._.__image);
-			bitmap._.__image = null;
-			bitmap._.__renderData.style = null;
+			renderer.element.removeChild((bitmap._ : _Bitmap).__image);
+			(bitmap._ : _Bitmap).__image = null;
+			(bitmap._ : _Bitmap).__renderData.style = null;
 		}
 
-		if (bitmap._.__renderData.canvas != null)
+		if ((bitmap._ : _Bitmap).__renderData.canvas != null)
 		{
-			renderer.element.removeChild(bitmap._.__renderData.canvas);
-			bitmap._.__renderData.canvas = null;
-			bitmap._.__renderData.style = null;
+			renderer.element.removeChild((bitmap._ : _Bitmap).__renderData.canvas);
+			(bitmap._ : _Bitmap).__renderData.canvas = null;
+			(bitmap._ : _Bitmap).__renderData.style = null;
 		}
 		#end
 	}
@@ -34,12 +34,15 @@ class DOMBitmap
 	public static inline function render(bitmap:Bitmap, renderer:DOMRenderer):Void
 	{
 		#if openfl_html5
-		if (bitmap.stage != null && bitmap._.__worldVisible && bitmap._.__renderable && bitmap._.__bitmapData != null && bitmap._.__bitmapData._.__isValid
-			&& bitmap._.__bitmapData.readable)
+		if (bitmap.stage != null
+			&& (bitmap._ : _Bitmap).__worldVisible
+				&& (bitmap._ : _Bitmap).__renderable
+					&& (bitmap._ : _Bitmap).__bitmapData != null
+						&& ((bitmap._ : _Bitmap).__bitmapData._ : _BitmapData).__isValid && (bitmap._ : _Bitmap).__bitmapData.readable)
 		{
-			renderer._.__pushMaskObject(bitmap);
+			(renderer._ : _DOMRenderer).__pushMaskObject(bitmap);
 
-			if (bitmap._.__bitmapData._.__getJSImage() != null)
+			if (((bitmap._ : _Bitmap).__bitmapData._ : _BitmapData).__getJSImage() != null)
 			{
 				renderImage(bitmap, renderer);
 			}
@@ -48,7 +51,7 @@ class DOMBitmap
 				renderCanvas(bitmap, renderer);
 			}
 
-			renderer._.__popMaskObject(bitmap);
+				(renderer._ : _DOMRenderer).__popMaskObject(bitmap);
 		}
 		else
 		{
@@ -60,62 +63,62 @@ class DOMBitmap
 	public static function renderCanvas(bitmap:Bitmap, renderer:DOMRenderer):Void
 	{
 		#if (lime && openfl_html5)
-		if (bitmap._.__image != null)
+		if ((bitmap._ : _Bitmap).__image != null)
 		{
-			renderer.element.removeChild(bitmap._.__image);
-			bitmap._.__image = null;
+			renderer.element.removeChild((bitmap._ : _Bitmap).__image);
+			(bitmap._ : _Bitmap).__image = null;
 		}
 
-		if (bitmap._.__renderData.canvas == null)
+		if ((bitmap._ : _Bitmap).__renderData.canvas == null)
 		{
-			bitmap._.__renderData.canvas = cast Browser.document.createElement("canvas");
-			bitmap._.__renderData.context = bitmap._.__renderData.canvas.getContext("2d");
-			bitmap._.__imageVersion = -1;
+			(bitmap._ : _Bitmap).__renderData.canvas = cast Browser.document.createElement("canvas");
+			(bitmap._ : _Bitmap).__renderData.context = (bitmap._ : _Bitmap).__renderData.canvas.getContext("2d");
+			(bitmap._ : _Bitmap).__imageVersion = -1;
 
-			if (!renderer._.__allowSmoothing || !bitmap.smoothing)
+			if (!(renderer._ : _DOMRenderer).__allowSmoothing || !bitmap.smoothing)
 			{
-				bitmap._.__renderData.context.imageSmoothingEnabled = false;
+				(bitmap._ : _Bitmap).__renderData.context.imageSmoothingEnabled = false;
 			}
 
-			renderer._.__initializeElement(bitmap, bitmap._.__renderData.canvas);
+				(renderer._ : _DOMRenderer).__initializeElement(bitmap, (bitmap._ : _Bitmap).__renderData.canvas);
 		}
 
-		if (bitmap._.__imageVersion != bitmap._.__bitmapData._.__getVersion())
+		if ((bitmap._ : _Bitmap).__imageVersion != ((bitmap._ : _Bitmap).__bitmapData._ : _BitmapData).__getVersion())
 		{
 			// Next line is workaround, to fix rendering bug in Chrome 59 (https://vimeo.com/222938554)
-			bitmap._.__renderData.canvas.width = bitmap._.__bitmapData.width + 1;
+			(bitmap._ : _Bitmap).__renderData.canvas.width = (bitmap._ : _Bitmap).__bitmapData.width + 1;
 
-			bitmap._.__renderData.canvas.width = bitmap._.__bitmapData.width;
-			bitmap._.__renderData.canvas.height = bitmap._.__bitmapData.height;
+			(bitmap._ : _Bitmap).__renderData.canvas.width = (bitmap._ : _Bitmap).__bitmapData.width;
+			(bitmap._ : _Bitmap).__renderData.canvas.height = (bitmap._ : _Bitmap).__bitmapData.height;
 
-			bitmap._.__renderData.context.drawImage(bitmap._.__bitmapData._.__getCanvas(), 0, 0);
-			bitmap._.__imageVersion = bitmap._.__bitmapData._.__getVersion();
+			(bitmap._ : _Bitmap).__renderData.context.drawImage(((bitmap._ : _Bitmap).__bitmapData._ : _BitmapData).__getCanvas(), 0, 0);
+			(bitmap._ : _Bitmap).__imageVersion = ((bitmap._ : _Bitmap).__bitmapData._ : _BitmapData).__getVersion();
 		}
 
-		renderer._.__updateClip(bitmap);
-		renderer._.__applyStyle(bitmap, true, true, true);
+			(renderer._ : _DOMRenderer).__updateClip(bitmap);
+		(renderer._ : _DOMRenderer).__applyStyle(bitmap, true, true, true);
 		#end
 	}
 
 	public static function renderImage(bitmap:Bitmap, renderer:DOMRenderer):Void
 	{
 		#if openfl_html5
-		if (bitmap._.__renderData.canvas != null)
+		if ((bitmap._ : _Bitmap).__renderData.canvas != null)
 		{
-			renderer.element.removeChild(bitmap._.__renderData.canvas);
-			bitmap._.__renderData.canvas = null;
+			renderer.element.removeChild((bitmap._ : _Bitmap).__renderData.canvas);
+			(bitmap._ : _Bitmap).__renderData.canvas = null;
 		}
 
-		if (bitmap._.__image == null)
+		if ((bitmap._ : _Bitmap).__image == null)
 		{
-			bitmap._.__image = cast Browser.document.createElement("img");
-			bitmap._.__image.crossOrigin = "Anonymous";
-			bitmap._.__image.src = bitmap._.__bitmapData._.__getJSImage().src;
-			renderer._.__initializeElement(bitmap, bitmap._.__image);
+			(bitmap._ : _Bitmap).__image = cast Browser.document.createElement("img");
+			(bitmap._ : _Bitmap).__image.crossOrigin = "Anonymous";
+			(bitmap._ : _Bitmap).__image.src = ((bitmap._ : _Bitmap).__bitmapData._ : _BitmapData).__getJSImage().src;
+			(renderer._ : _DOMRenderer).__initializeElement(bitmap, (bitmap._ : _Bitmap).__image);
 		}
 
-		renderer._.__updateClip(bitmap);
-		renderer._.__applyStyle(bitmap, true, true, true);
+			(renderer._ : _DOMRenderer).__updateClip(bitmap);
+		(renderer._ : _DOMRenderer).__applyStyle(bitmap, true, true, true);
 		#end
 	}
 }

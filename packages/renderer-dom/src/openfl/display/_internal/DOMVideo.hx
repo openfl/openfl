@@ -2,6 +2,8 @@ package openfl.display._internal;
 
 #if openfl_html5
 import openfl.media.Video;
+import openfl.media._Video;
+import openfl.net._NetStream;
 
 @:access(openfl.media.Video)
 @:access(openfl.net.NetStream)
@@ -11,10 +13,10 @@ class DOMVideo
 	public static function clear(video:Video, renderer:DOMRenderer):Void
 	{
 		#if openfl_html5
-		if (video._.__active)
+		if ((video._ : _Video).__active)
 		{
-			renderer.element.removeChild(video._.__stream._.__getVideoElement());
-			video._.__active = false;
+			renderer.element.removeChild(((video._ : _Video).__stream._ : _NetStream).__getVideoElement());
+			(video._ : _Video).__active = false;
 		}
 		#end
 	}
@@ -22,26 +24,27 @@ class DOMVideo
 	public static function render(video:Video, renderer:DOMRenderer):Void
 	{
 		#if openfl_html5
-		if (video.stage != null && video._.__stream != null && video._.__worldVisible && video._.__renderable)
+		if (video.stage != null
+			&& (video._ : _Video).__stream != null && (video._ : _Video).__worldVisible && (video._ : _Video).__renderable)
 		{
-			var videoElement = video._.__stream._.__getVideoElement();
+			var videoElement = ((video._ : _Video).__stream._ : _NetStream).__getVideoElement();
 
-			if (!video._.__active)
+			if (!(video._ : _Video).__active)
 			{
-				renderer._.__initializeElement(video, videoElement);
-				video._.__active = true;
-				video._.__dirty = true;
+				(renderer._ : _DOMRenderer).__initializeElement(video, videoElement);
+				(video._ : _Video).__active = true;
+				(video._ : _Video).__dirty = true;
 			}
 
-			if (video._.__dirty)
+			if ((video._ : _Video).__dirty)
 			{
-				videoElement.width = Std.int(video._.__width);
-				videoElement.height = Std.int(video._.__height);
-				video._.__dirty = false;
+				videoElement.width = Std.int((video._ : _Video).__width);
+				videoElement.height = Std.int((video._ : _Video).__height);
+				(video._ : _Video).__dirty = false;
 			}
 
-			renderer._.__updateClip(video);
-			renderer._.__applyStyle(video, true, true, true);
+				(renderer._ : _DOMRenderer).__updateClip(video);
+			(renderer._ : _DOMRenderer).__applyStyle(video, true, true, true);
 		}
 		else
 		{

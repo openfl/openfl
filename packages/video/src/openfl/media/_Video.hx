@@ -8,6 +8,7 @@ import openfl.geom._Point;
 import openfl.geom.Rectangle;
 import openfl.geom._Rectangle;
 import openfl.net.NetStream;
+import openfl.net._NetStream;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -51,9 +52,9 @@ class _Video extends _DisplayObject
 		__stream = netStream;
 
 		#if openfl_html5
-		if (__stream != null && !__stream._.__closed)
+		if (__stream != null && !(__stream._ : _NetStream).__closed)
 		{
-			// @:privateAccess __stream._.__getVideoElement().play();
+			// @:privateAccess (__stream._ : _NetStream).__getVideoElement().play();
 			__stream.resume();
 		}
 		#end
@@ -133,7 +134,7 @@ class _Video extends _DisplayObject
 		#if openfl_html5
 		if (__stream != null)
 		{
-			var videoElement = __stream._.__getVideoElement();
+			var videoElement = (__stream._ : _NetStream).__getVideoElement();
 			if (videoElement != null)
 			{
 				return Std.int(videoElement.videoHeight);
@@ -149,7 +150,7 @@ class _Video extends _DisplayObject
 		#if openfl_html5
 		if (__stream != null)
 		{
-			var videoElement = __stream._.__getVideoElement();
+			var videoElement = (__stream._ : _NetStream).__getVideoElement();
 			if (videoElement != null)
 			{
 				return Std.int(videoElement.videoWidth);
