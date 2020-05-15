@@ -9,7 +9,7 @@ import openfl.display.BlendMode;
 import openfl.display.DisplayObject;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.IBitmapDrawable;
-import openfl.display._Shape;
+import openfl.display._DisplayObject;
 import openfl.display.SimpleButton;
 import openfl.display.Tilemap;
 import openfl.events.RenderEvent;
@@ -413,9 +413,10 @@ class _CanvasRenderer extends _DisplayObjectRenderer
 		{
 			__updateCacheBitmap(shape, /*!__worldColorTransform.__isDefault ()*/ false);
 
-			if ((shape._ : _Shape).__renderData.cacheBitmap != null && !(shape._ : _Shape).__renderData.isCacheBitmapRender)
+			if ((shape._ : _DisplayObject).__renderData.cacheBitmap != null
+				&& !(shape._ : _DisplayObject).__renderData.isCacheBitmapRender)
 			{
-				CanvasBitmap.render((shape._ : _Shape).__renderData.cacheBitmap, this.canvasRenderer);
+				CanvasBitmap.render((shape._ : _DisplayObject).__renderData.cacheBitmap, this.canvasRenderer);
 			}
 			else
 			{

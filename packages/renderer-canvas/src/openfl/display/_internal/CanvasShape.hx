@@ -3,7 +3,7 @@ package openfl.display._internal;
 #if openfl_html5
 import openfl.display._CanvasRenderer;
 import openfl.display._Graphics;
-import openfl.display._Shape;
+import openfl.display._DisplayObject;
 import openfl.display.DisplayObject;
 
 @:access(openfl.display.DisplayObject)
@@ -15,12 +15,12 @@ class CanvasShape
 	public static inline function render(shape:DisplayObject, renderer:CanvasRenderer):Void
 	{
 		#if (lime && openfl_html5)
-		if (!(shape._ : _Shape).__renderable) return;
+		if (!(shape._ : _DisplayObject).__renderable) return;
 
-		var alpha = (renderer._ : _CanvasRenderer).__getAlpha((shape._ : _Shape).__worldAlpha);
+		var alpha = (renderer._ : _CanvasRenderer).__getAlpha((shape._ : _DisplayObject).__worldAlpha);
 		if (alpha <= 0) return;
 
-		var graphics = (shape._ : _Shape).__graphics;
+		var graphics = (shape._ : _DisplayObject).__graphics;
 
 		if (graphics != null)
 		{
@@ -34,14 +34,14 @@ class CanvasShape
 			{
 				var transform = (graphics._ : _Graphics).__worldTransform;
 				var context = renderer.context;
-				var scrollRect = (shape._ : _Shape).__scrollRect;
-				var scale9Grid = (shape._ : _Shape).__worldScale9Grid;
+				var scrollRect = (shape._ : _DisplayObject).__scrollRect;
+				var scale9Grid = (shape._ : _DisplayObject).__worldScale9Grid;
 
 				// TODO: Render for scroll rect?
 
 				if (scrollRect == null || (scrollRect.width > 0 && scrollRect.height > 0))
 				{
-					(renderer._ : _CanvasRenderer).__setBlendMode((shape._ : _Shape).__worldBlendMode);
+					(renderer._ : _CanvasRenderer).__setBlendMode((shape._ : _DisplayObject).__worldBlendMode);
 					(renderer._ : _CanvasRenderer).__pushMaskObject(shape);
 
 					context.globalAlpha = alpha;

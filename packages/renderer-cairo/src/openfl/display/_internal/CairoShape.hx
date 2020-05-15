@@ -22,12 +22,12 @@ class CairoShape
 
 	public static function render(shape:DisplayObject, renderer:CairoRenderer):Void
 	{
-		if (!(shape._ : _Shape).__renderable) return;
+		if (!(shape._ : _DisplayObject).__renderable) return;
 
-		var alpha = (renderer._ : _CairoRenderer).__getAlpha((shape._ : _Shape).__worldAlpha);
+		var alpha = (renderer._ : _CairoRenderer).__getAlpha((shape._ : _DisplayObject).__worldAlpha);
 		if (alpha <= 0) return;
 
-		var graphics = (shape._ : _Shape).__graphics;
+		var graphics = (shape._ : _DisplayObject).__graphics;
 
 		if (graphics != null)
 		{
@@ -40,9 +40,9 @@ class CairoShape
 			if (cairo != null && (graphics._ : _Graphics).__visible && width >= 1 && height >= 1)
 			{
 				var transform = (graphics._ : _Graphics).__worldTransform;
-				var scale9Grid = (shape._ : _Shape).__worldScale9Grid;
+				var scale9Grid = (shape._ : _DisplayObject).__worldScale9Grid;
 
-				(renderer._ : _CairoRenderer).__setBlendMode((shape._ : _Shape).__worldBlendMode);
+				(renderer._ : _CairoRenderer).__setBlendMode((shape._ : _DisplayObject).__worldBlendMode);
 				(renderer._ : _CairoRenderer).__pushMaskObject(shape);
 
 				if (scale9Grid != null && transform.b == 0 && transform.c == 0)

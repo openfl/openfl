@@ -775,7 +775,7 @@ class _Stage extends _DisplayObjectContainer
 						__handleError(e);
 					}
 					#else
-					dispatcher._.__dispatch(event);
+					(dispatcher._ : _DisplayObject).__dispatch(event);
 					#end
 				}
 			}

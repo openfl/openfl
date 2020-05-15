@@ -561,12 +561,12 @@ class _DOMRenderer extends _DisplayObjectRenderer
 	{
 		(__canvasRenderer._ : _CanvasRenderer).__updateCacheBitmap(shape, /*!__worldColorTransform._.__isDefault ()*/ false);
 
-		if ((shape._ : _Shape).__renderData.cacheBitmap != null && !(shape._ : _Shape).__renderData.isCacheBitmapRender)
+		if ((shape._ : _DisplayObject).__renderData.cacheBitmap != null && !(shape._ : _DisplayObject).__renderData.isCacheBitmapRender)
 		{
 			__clearShape(shape);
-			((shape._ : _Shape).__renderData.cacheBitmap._ : _Bitmap).stage = shape.stage;
+			((shape._ : _DisplayObject).__renderData.cacheBitmap._ : _Bitmap).stage = shape.stage;
 
-			DOMBitmap.render((shape._ : _Shape).__renderData.cacheBitmap, this.domRenderer);
+			DOMBitmap.render((shape._ : _DisplayObject).__renderData.cacheBitmap, this.domRenderer);
 		}
 		else
 		{
