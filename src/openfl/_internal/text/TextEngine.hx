@@ -1207,7 +1207,7 @@ class TextEngine
 				placeIndex = textIndex + i - bufferCount;
 				placeFormattedText(placeIndex);
 				offsetX = 2;
-				// alignBaseline();
+				lineIndex++;
 
 				setFormattedPositions(placeIndex, endIndex);
 
