@@ -56,10 +56,7 @@ class TextEngine
 	public var gridFitType:GridFitType;
 	public var height:Float;
 	public var layoutGroups:Vector<TextLayoutGroup>;
-	public var lineAscents:Vector<Float>;
 	public var lineBreaks:Vector<Int>;
-	public var lineDescents:Vector<Float>;
-	public var lineLeadings:Vector<Float>;
 	public var lineHeights:Vector<Float>;
 	public var lineWidths:Vector<Float>;
 	public var maxChars:Int;
@@ -131,10 +128,7 @@ class TextEngine
 		wordWrap = false;
 
 		paragraphs = new Vector();
-		lineAscents = new Vector();
 		lineBreaks = new Vector();
-		lineDescents = new Vector();
-		lineLeadings = new Vector();
 		lineHeights = new Vector();
 		lineWidths = new Vector();
 		layoutGroups = new Vector();
@@ -579,134 +573,30 @@ class TextEngine
 
 	private function getLineMeasurements():Void
 	{
-		lineAscents.length = 0;
-		lineDescents.length = 0;
-		lineLeadings.length = 0;
 		lineHeights.length = 0;
 		lineWidths.length = 0;
 
-		var currentLineAscent = 0.0;
-		var currentLineDescent = 0.0;
-		var currentLineLeading:Null<Int> = null;
-		var currentLineHeight = 0.0;
-		var currentLineWidth = 0.0;
-		var currentTextHeight = 0.0;
-
 		textWidth = 0;
 		textHeight = 0;
-		numLines = 1;
+		numLines = 0;
 		maxScrollH = 0;
 
-		for (group in layoutGroups)
+		for (para in paragraphs)
 		{
-			while (group.lineIndex > numLines - 1)
+			for (line in para.lines)
 			{
-				lineAscents.push(currentLineAscent);
-				lineDescents.push(currentLineDescent);
-				lineLeadings.push(currentLineLeading != null ? currentLineLeading : 0);
-				lineHeights.push(currentLineHeight);
-				lineWidths.push(currentLineWidth);
-
-				currentLineAscent = 0;
-				currentLineDescent = 0;
-				currentLineLeading = null;
-				currentLineHeight = 0;
-				currentLineWidth = 0;
-
-				numLines++;
+				lineWidths.push(line.width);
+				lineHeights.push(line.height);
 			}
-
-			currentLineAscent = Math.max(currentLineAscent, group.ascent);
-			currentLineDescent = Math.max(currentLineDescent, group.descent);
-
-			if (currentLineLeading == null)
-			{
-				currentLineLeading = group.leading;
-			}
-			else
-			{
-				currentLineLeading = Std.int(Math.max(currentLineLeading, group.leading));
-			}
-
-			currentLineHeight = Math.max(currentLineHeight, group.height);
-			currentLineWidth = group.offsetX - 2 + group.width;
-
-			if (currentLineWidth > textWidth)
-			{
-				textWidth = currentLineWidth;
-			}
-
-			currentTextHeight = group.offsetY - 2 + group.ascent + group.descent;
-
-			if (currentTextHeight > textHeight)
-			{
-				textHeight = currentTextHeight;
-			}
+			
+			if (para.width > textWidth) textWidth = para.width;
+			textHeight += para.height;
+			numLines += para.lines.length;
 		}
-
-		if (textHeight == 0 && textField != null && textField.type == INPUT)
-		{
-			var currentFormat = textField.__textFormat;
-			var ascent, descent, leading, heightValue;
-
-			var font = getFontInstance(currentFormat);
-
-			if (currentFormat.__ascent != null)
-			{
-				ascent = currentFormat.size * currentFormat.__ascent;
-				descent = currentFormat.size * currentFormat.__descent;
-			}
-			else if (#if lime font != null && font.unitsPerEM != 0 #else false #end)
-			{
-				#if lime
-				ascent = (font.ascender / font.unitsPerEM) * currentFormat.size;
-				descent = Math.abs((font.descender / font.unitsPerEM) * currentFormat.size);
-				#else
-				ascent = currentFormat.size;
-				descent = currentFormat.size * 0.185;
-				#end
-			}
-			else
-			{
-				ascent = currentFormat.size;
-				descent = currentFormat.size * 0.185;
-			}
-
-			leading = currentFormat.leading;
-
-			heightValue = ascent + descent + leading;
-
-			currentLineAscent = ascent;
-			currentLineDescent = descent;
-			currentLineLeading = leading;
-
-			currentTextHeight = ascent + descent;
-			textHeight = currentTextHeight;
-		}
-
-		lineAscents.push(currentLineAscent);
-		lineDescents.push(currentLineDescent);
-		lineLeadings.push(currentLineLeading != null ? currentLineLeading : 0);
-		lineHeights.push(currentLineHeight);
-		lineWidths.push(currentLineWidth);
-
-		if (numLines == 1)
-		{
-			if (currentLineLeading > 0)
-			{
-				textHeight += currentLineLeading;
-			}
-		}
-
-		if (layoutGroups.length > 0)
-		{
-			var group = layoutGroups[layoutGroups.length - 1];
-
-			if (group != null && group.startIndex == group.endIndex)
-			{
-				textHeight -= currentLineHeight;
-			}
-		}
+		
+		// TODO: confirm textWidth
+		// TODO: confirm leading and textHeight for numLines, trailing \n
+		// TODO: test other aligns
 
 		if (autoSize != NONE)
 		{
@@ -780,7 +670,6 @@ class TextEngine
 		paragraphs.push(paragraph);
 		var currentLine = new TextLine();
 		paragraph.addLine(currentLine);
-		
 
 		#if !js
 		inline
@@ -1052,7 +941,8 @@ class TextEngine
 			{
 				// don't worry about placing multiple formats if a space or break happens first
 
-				// can these two lines be deleted entirely? textIndex vs startIndex here vs sfp
+				// TODO: can these two lines be deleted entirely? textIndex vs startIndex here vs sfp
+				// TODO: "abc def\nghi jkl" contains an empty LG when formatted and no LG when plain, is that here or spaces?
 				positions = getPositions(text, textIndex, endIndex);
 				widthValue = getPositionsWidth(positions);
 
@@ -1713,10 +1603,7 @@ class TextEngine
 	{
 		if (text == null /*|| text == ""*/ || textFormatRanges.length == 0)
 		{
-			lineAscents.length = 0;
 			lineBreaks.length = 0;
-			lineDescents.length = 0;
-			lineLeadings.length = 0;
 			lineHeights.length = 0;
 			lineWidths.length = 0;
 			layoutGroups.length = 0;

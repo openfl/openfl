@@ -20,6 +20,7 @@ import openfl._internal.formats.html.HTMLParser;
 import openfl._internal.text.TextEngine;
 import openfl._internal.text.TextFormatRange;
 import openfl._internal.text.TextLayoutGroup;
+import openfl._internal.text.TextLine;
 import openfl._internal.text.UTF8String;
 import openfl._internal.utils.Log;
 import openfl.display.CanvasRenderer;
@@ -932,25 +933,32 @@ class TextField extends InteractiveObject
 			y += __textEngine.lineHeights[i];
 		}
 
-		for (group in __textEngine.layoutGroups)
+		// TODO: will this mess up with UTF buffer 0s?
+		for (para in __textEngine.paragraphs)
 		{
-			if (y >= group.offsetY && y <= group.offsetY + group.height)
+			if (y <= para.offsetY + para.height)
 			{
-				if (x >= group.offsetX && x <= group.offsetX + group.width)
+				for (line in para.lines)
 				{
-					var advance = 0.0;
-
-					for (i in 0...group.positions.length)
+					if (y <= line.offsetY + line.height)
 					{
-						advance += group.getAdvance(i);
-
-						if (x <= group.offsetX + advance)
+						for (lg in line.layoutGroups)
 						{
-							return group.startIndex + i;
+							if (x <= lg.offsetX + lg.width)
+							{
+								var advance = 0.0;
+								for (i in 0...lg.positions.length)
+								{
+									advance += lg.getAdvance(i);
+									
+									if (x <= lg.offsetX + advance)
+									{
+										return lg.startIndex + i;
+									}
+								}
+							}
 						}
 					}
-
-					return group.endIndex;
 				}
 			}
 		}
@@ -973,24 +981,12 @@ class TextField extends InteractiveObject
 	{
 		if (charIndex < 0 || charIndex > text.length) return -1;
 
-		var index = __textEngine.getLineBreakIndex();
-		var startIndex = 0;
-
-		while (index > -1)
+		for (para in __textEngine.paragraphs)
 		{
-			if (index < charIndex)
-			{
-				startIndex = index + 1;
-			}
-			else if (index >= charIndex)
-			{
-				break;
-			}
-
-			index = __textEngine.getLineBreakIndex(index + 1);
+			if (charIndex < para.endIndex) return para.startIndex;
 		}
-
-		return startIndex;
+		
+		return -1;
 	}
 
 	/**
@@ -1035,11 +1031,19 @@ class TextField extends InteractiveObject
 			y += __textEngine.lineHeights[i];
 		}
 
-		for (group in __textEngine.layoutGroups)
+		var index = 0;
+		for (para in __textEngine.paragraphs)
 		{
-			if (y >= group.offsetY && y <= group.offsetY + group.height)
+			if (y <= para.offsetY + para.height)
 			{
-				return group.lineIndex;
+				for (i in 0...para.lines.length)
+				{
+					if (y <= para.lines[i].offsetY + para.lines[i].height) return index + i;
+				}
+			}
+			else
+			{
+				index += para.lines.length;
 			}
 		}
 
@@ -1062,11 +1066,19 @@ class TextField extends InteractiveObject
 
 		__updateLayout();
 
-		for (group in __textEngine.layoutGroups)
+		var index = 0;
+		for (para in __textEngine.paragraphs)
 		{
-			if (group.startIndex <= charIndex && group.endIndex >= charIndex)
+			if (charIndex < para.endIndex)
 			{
-				return group.lineIndex;
+				for (i in 0...para.lines.length)
+				{
+					if (charIndex < para.lines[i].endIndex) return index + i;
+				}
+			}
+			else
+			{
+				index += para.lines.length;
 			}
 		}
 
@@ -1086,24 +1098,21 @@ class TextField extends InteractiveObject
 
 		if (lineIndex < 0 || lineIndex > __textEngine.numLines - 1) return 0;
 
-		var startIndex = -1;
-		var endIndex = -1;
-
-		for (group in __textEngine.layoutGroups)
+		var index = 0;
+		for (para in __textEngine.paragraphs)
 		{
-			if (group.lineIndex == lineIndex)
+			if (lineIndex < index + para.lines.length)
 			{
-				if (startIndex == -1) startIndex = group.startIndex;
+				var line = para.lines[lineIndex - index];
+				return line.endIndex - line.startIndex;
 			}
-			else if (group.lineIndex == lineIndex + 1)
+			else
 			{
-				endIndex = group.startIndex;
-				break;
+				index += para.lines.length;
 			}
 		}
 
-		if (endIndex == -1) endIndex = __text.length;
-		return endIndex - startIndex;
+		return -1;
 	}
 
 	/**
@@ -1117,11 +1126,23 @@ class TextField extends InteractiveObject
 	{
 		__updateLayout();
 
-		var ascender = __textEngine.lineAscents[lineIndex];
-		var descender = __textEngine.lineDescents[lineIndex];
-		var leading = __textEngine.lineLeadings[lineIndex];
-		var lineHeight = __textEngine.lineHeights[lineIndex];
-		var lineWidth = __textEngine.lineWidths[lineIndex];
+		// rangeerror on < 0, >= numLines?
+		
+		var index = 0, line:TextLine = null;
+		for (para in __textEngine.paragraphs)
+		{
+			if (lineIndex >= index + para.lines.length)
+			{
+				index += para.lines.length;
+			}
+			else
+			{
+				line = para.lines[lineIndex - index];
+				break;
+			}
+		}
+		
+		var lineWidth = line.width;
 
 		// TODO: Handle START and END based on language (don't assume LTR)
 
@@ -1132,7 +1153,7 @@ class TextField extends InteractiveObject
 			case CENTER: (__textEngine.width - lineWidth) / 2;
 		}
 
-		return new TextLineMetrics(margin, lineWidth, lineHeight, ascender, descender, leading);
+		return new TextLineMetrics(margin, lineWidth, line.height, line.ascent, line.descent, line.leading);
 	}
 
 	/**
@@ -1150,15 +1171,21 @@ class TextField extends InteractiveObject
 
 		if (lineIndex < 0 || lineIndex > __textEngine.numLines - 1) return -1;
 
-		for (group in __textEngine.layoutGroups)
+		var index = 0;
+		for (para in __textEngine.paragraphs)
 		{
-			if (group.lineIndex == lineIndex)
+			if (lineIndex < index + para.lines.length)
 			{
-				return group.startIndex;
+				var line = para.lines[lineIndex - index];
+				return line.startIndex;
+			}
+			else
+			{
+				index += para.lines.length;
 			}
 		}
 
-		return 0;
+		return -1;
 	}
 
 	/**
@@ -1176,25 +1203,21 @@ class TextField extends InteractiveObject
 
 		if (lineIndex < 0 || lineIndex > __textEngine.numLines - 1) return null;
 
-		var startIndex = -1;
-		var endIndex = -1;
-
-		for (group in __textEngine.layoutGroups)
+		var index = 0;
+		for (para in __textEngine.paragraphs)
 		{
-			if (group.lineIndex == lineIndex)
+			if (lineIndex < index + para.lines.length)
 			{
-				if (startIndex == -1) startIndex = group.startIndex;
+				var line = para.lines[lineIndex - index];
+				return __textEngine.text.substring(line.startIndex, line.endIndex);
 			}
-			else if (group.lineIndex == lineIndex + 1)
+			else
 			{
-				endIndex = group.startIndex;
-				break;
+				index += para.lines.length;
 			}
 		}
 
-		if (endIndex == -1) endIndex = __text.length;
-
-		return __textEngine.text.substring(startIndex, endIndex);
+		return null;
 	}
 
 	/**
@@ -1213,14 +1236,15 @@ class TextField extends InteractiveObject
 	{
 		if (charIndex < 0 || charIndex > text.length) return -1;
 
-		var startIndex = getFirstCharInParagraph(charIndex);
-
-		if (charIndex >= text.length) return text.length - startIndex + 1;
-
-		var endIndex = __textEngine.getLineBreakIndex(charIndex) + 1;
-
-		if (endIndex == 0) endIndex = __text.length;
-		return endIndex - startIndex;
+		for (para in __textEngine.paragraphs)
+		{
+			if (charIndex < para.endIndex)
+			{
+				return para.endIndex - para.startIndex;
+			}
+		}
+		
+		return -1;
 	}
 
 	// function getRawText() : String;
@@ -1260,6 +1284,7 @@ class TextField extends InteractiveObject
 
 		if (beginIndex >= endIndex) return new TextFormat();
 
+		// TODO: use paragraphs?
 		for (group in __textEngine.textFormatRanges)
 		{
 			if ((group.start <= beginIndex && group.end > beginIndex) || (group.start < endIndex && group.end >= endIndex))
@@ -1838,6 +1863,7 @@ class TextField extends InteractiveObject
 
 		__updateLayout();
 
+		// TODO: use paragraphs?
 		for (group in __textEngine.layoutGroups)
 		{
 			if (charIndex >= group.startIndex && charIndex < group.endIndex)
@@ -1871,6 +1897,7 @@ class TextField extends InteractiveObject
 
 		var x:Null<Float> = null, y:Null<Float> = null;
 
+		// TODO: use paragraphs
 		for (group in __textEngine.layoutGroups)
 		{
 			if (charIndex >= group.startIndex && charIndex <= group.endIndex)
@@ -1933,6 +1960,7 @@ class TextField extends InteractiveObject
 		var firstGroup = true;
 		var group, nextGroup;
 
+		// TODO: use paragraphs?
 		for (i in 0...__textEngine.layoutGroups.length)
 		{
 			group = __textEngine.layoutGroups[i];

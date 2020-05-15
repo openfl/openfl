@@ -91,6 +91,7 @@ class TextParagraph
 	{	
 		if (lines.length <= 0) return;
 		
+		width = 0;
 		height = 0;
 		
 		for (line in lines)
@@ -98,6 +99,9 @@ class TextParagraph
 			// do x/offsetX here instead of alg
 			
 			line.finalize(initialY);
+			
+			if (line.width > width) width = line.width;
+			
 			initialY += line.height;
 			height += line.height;
 		}
