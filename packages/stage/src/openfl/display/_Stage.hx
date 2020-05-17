@@ -494,16 +494,16 @@ class _Stage extends _DisplayObjectContainer
 		switch (window.context.type)
 		{
 			case OPENGL, OPENGLES, WEBGL:
-				#if openfl_gl
+				#if (openfl.renderer_stage3D && openfl_gl)
 				#if (!disable_cffi && (!html5 || !canvas))
 				context3D = new Context3D(this.stage);
 				context3D.configureBackBuffer(windowWidth, windowHeight, 0, true, true, true);
 				context3D.present();
-				// if (BitmapData._.__hardwareRenderer == null)
-				// {
-				// 	BitmapData._.__hardwareRenderer = new Context3DRenderer(context3D);
-				// }
-				// __renderer = new Context3DRenderer(context3D);
+				if (_BitmapData.__hardwareRenderer == null)
+				{
+					_BitmapData.__hardwareRenderer = new OpenGLRenderer(context3D);
+				}
+				__renderer = new OpenGLRenderer(context3D);
 				#end
 				#end
 
@@ -522,7 +522,7 @@ class _Stage extends _DisplayObjectContainer
 				#end
 
 			case CAIRO:
-				#if (!openfl_html5 && openfl_cairo)
+				#if (openfl.renderer_cairo && !openfl_html5 && openfl_cairo)
 				__renderer = new CairoRenderer(window.context.cairo);
 				#end
 
@@ -539,9 +539,9 @@ class _Stage extends _DisplayObjectContainer
 
 			if (_BitmapData.__hardwareRenderer != null)
 			{
-				_BitmapData.__hardwareRenderer._.__stage = this.stage;
-				_BitmapData.__hardwareRenderer._.__worldTransform = __displayMatrix.clone();
-				_BitmapData.__hardwareRenderer._.__resize(windowWidth, windowHeight);
+				(_BitmapData.__hardwareRenderer._ : _Context3DRenderer).__stage = this.stage;
+				(_BitmapData.__hardwareRenderer._ : _Context3DRenderer).__worldTransform = __displayMatrix.clone();
+				(_BitmapData.__hardwareRenderer._ : _Context3DRenderer).__resize(windowWidth, windowHeight);
 			}
 		}
 		#end

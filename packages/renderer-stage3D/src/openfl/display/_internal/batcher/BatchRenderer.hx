@@ -10,8 +10,11 @@ import openfl.display.Shader;
 import openfl.display.ShaderInput;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
+import openfl.display3D._Context3D;
+import openfl.display3D._VertexBuffer3D;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
+import openfl.geom._Matrix;
 #if lime
 import lime.graphics.WebGLRenderContext;
 #elseif openfl_html5
@@ -35,7 +38,7 @@ import openfl.display._internal.stats.DrawCallContext;
 class BatchRenderer
 {
 	public var gl:WebGLRenderContext;
-	public var renderer:_Context3DRenderer;
+	public var renderer:OpenGLRenderer;
 
 	public var __batch:Batch;
 	public var __indexBuffer:IndexBuffer3D;
@@ -58,12 +61,12 @@ class BatchRenderer
 		0, 1
 	];
 
-	public function new(renderer:_Context3DRenderer, maxQuads:Int)
+	public function new(renderer:OpenGLRenderer, maxQuads:Int)
 	{
 		this.renderer = renderer;
 		this.gl = renderer.gl;
 
-		var context = renderer.context3D;
+		var context = (renderer._ : _Context3DRenderer).context3D;
 
 		__emptyBitmapData = new BitmapData(1, 1);
 
@@ -189,19 +192,19 @@ class BatchRenderer
 			return;
 		}
 
-		var context = renderer.context3D;
+		var context = (renderer._ : _Context3DRenderer).context3D;
 
 		context.setCulling(NONE);
-		renderer._.__setBlendMode(__batch.blendMode);
+		(renderer._ : _Context3DRenderer).__setBlendMode(__batch.blendMode);
 
-		context._.bindGLArrayBuffer(__vertexBuffer._.glBufferID);
+		(context._ : _Context3D).bindGLArrayBuffer((__vertexBuffer._ : _VertexBuffer3D).glBufferID);
 
 		var subArray = __batch.vertices.subarray(0, __batch.numQuads * Batch.FLOATS_PER_QUAD);
 		gl.bufferSubData(GL.ARRAY_BUFFER, 0, subArray);
 
 		renderer.setShader(__shader);
 
-		renderer.applyMatrix(renderer._.__getMatrix(Matrix._.__identity, AUTO));
+		renderer.applyMatrix((renderer._ : _Context3DRenderer).__getMatrix(_Matrix.__identity, AUTO));
 		renderer.useColorTransformArray();
 		for (i in 0...__batch.numTextures)
 		{

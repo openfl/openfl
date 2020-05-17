@@ -28,7 +28,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	**/
 	public var gl(get, set):WebGLRenderContext;
 
-	@:noCompletion private function new(context:Context3D, defaultRenderTarget:BitmapData = null)
+	@:allow(openfl) @:noCompletion private function new(context:Context3D, defaultRenderTarget:BitmapData = null)
 	{
 		if (_ == null)
 		{
@@ -134,5 +134,17 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	public function useColorTransformArray():Void
 	{
 		(_ : _OpenGLRenderer).useColorTransformArray();
+	}
+
+	// Get & Set Methods
+
+	@:noCompletion private function get_gl():WebGLRenderContext
+	{
+		return (_ : _OpenGLRenderer).gl;
+	}
+
+	@:noCompletion private function set_gl(value:WebGLRenderContext):WebGLRenderContext
+	{
+		return (_ : _OpenGLRenderer).gl = value;
 	}
 }

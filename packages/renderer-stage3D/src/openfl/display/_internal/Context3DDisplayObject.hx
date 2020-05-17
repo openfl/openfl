@@ -23,70 +23,66 @@ import lime.math.ARGB;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DDisplayObject
 {
-	public static inline function render(displayObject:DisplayObject, renderer:_Context3DRenderer):Void
+	public static inline function render(displayObject:DisplayObject, renderer:OpenGLRenderer):Void
 	{
-		if (displayObject.opaqueBackground == null && displayObject._.__graphics == null) return;
-		if (!displayObject._.__renderable || displayObject._.__worldAlpha <= 0) return;
+		if (displayObject.opaqueBackground == null && (displayObject._ : _DisplayObject).__graphics == null) return;
+		if (!(displayObject._ : _DisplayObject).__renderable || (displayObject._ : _DisplayObject).__worldAlpha <= 0) return;
 
 		if (displayObject.opaqueBackground != null
-			&& !displayObject._.__renderData.isCacheBitmapRender
-			&& displayObject.width > 0
-			&& displayObject.height > 0)
+			&& !(displayObject._ : _DisplayObject).__renderData.isCacheBitmapRender && displayObject.width > 0 && displayObject.height > 0)
 		{
 			#if !disable_batcher
-			renderer.batcher.flush();
+			(renderer._ : _Context3DRenderer).batcher.flush();
 			#end
 
-			renderer._.__setBlendMode(displayObject._.__worldBlendMode);
-			renderer._.__pushMaskObject(displayObject);
+			(renderer._ : _Context3DRenderer).__setBlendMode((displayObject._ : _DisplayObject).__worldBlendMode);
+			(renderer._ : _Context3DRenderer).__pushMaskObject(displayObject);
 
-			var context = renderer.context3D;
+			var context = (renderer._ : _Context3DRenderer).context3D;
 
 			var rect = _Rectangle.__pool.get();
 			rect.setTo(0, 0, displayObject.width, displayObject.height);
-			renderer._.__pushMaskRect(rect, displayObject._.__renderTransform);
+			(renderer._ : _Context3DRenderer).__pushMaskRect(rect, (displayObject._ : _DisplayObject).__renderTransform);
 
 			var color:ARGB = (displayObject.opaqueBackground : ARGB);
 			context.clear(color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, 1, 0, 0, Context3DClearMask.COLOR);
 
-			renderer._.__popMaskRect();
-			renderer._.__popMaskObject(displayObject);
+			(renderer._ : _Context3DRenderer).__popMaskRect();
+			(renderer._ : _Context3DRenderer).__popMaskObject(displayObject);
 
 			_Rectangle.__pool.release(rect);
 		}
 
-		if (displayObject._.__graphics != null)
+		if ((displayObject._ : _DisplayObject).__graphics != null)
 		{
 			Context3DShape.render(displayObject, renderer);
 		}
 	}
 
-	public static inline function renderMask(displayObject:DisplayObject, renderer:_Context3DRenderer):Void
+	public static inline function renderMask(displayObject:DisplayObject, renderer:OpenGLRenderer):Void
 	{
-		if (displayObject.opaqueBackground == null && displayObject._.__graphics == null) return;
+		if (displayObject.opaqueBackground == null && (displayObject._ : _DisplayObject).__graphics == null) return;
 
 		if (displayObject.opaqueBackground != null
-			&& !displayObject._.__renderData.isCacheBitmapRender
-			&& displayObject.width > 0
-			&& displayObject.height > 0)
+			&& !(displayObject._ : _DisplayObject).__renderData.isCacheBitmapRender && displayObject.width > 0 && displayObject.height > 0)
 		{
 			// TODO
 
 			// var rect = _Rectangle.__pool.get ();
 			// rect.setTo (0, 0, displayObject.width, displayObject.height);
-			// renderer._.__pushMaskRect (rect, displayObject._.__renderTransform);
+			// (renderer._ : _Context3DRenderer).__pushMaskRect (rect, (displayObject._ : _DisplayObject).__renderTransform);
 
 			// var color:ARGB = (displayObject.opaqueBackground:ARGB);
 			// gl.clearColor (color.r / 0xFF, color.g / 0xFF, color.b / 0xFF, 1);
 			// gl.clear (gl.COLOR_BUFFER_BIT);
 
-			// renderer._.__popMaskRect ();
-			// renderer._.__popMaskObject (displayObject);
+			// (renderer._ : _Context3DRenderer).__popMaskRect ();
+			// (renderer._ : _Context3DRenderer).__popMaskObject (displayObject);
 
 			// _Rectangle.__pool.release (rect);
 		}
 
-		if (displayObject._.__graphics != null)
+		if ((displayObject._ : _DisplayObject).__graphics != null)
 		{
 			Context3DShape.renderMask(displayObject, renderer);
 		}

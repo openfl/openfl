@@ -10,6 +10,7 @@ import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
 import openfl.display._Context3DRenderer;
 import openfl.media.Video;
+import openfl.media._Video;
 #if gl_stats
 import openfl.display._internal.stats.Context3DStats;
 import openfl.display._internal.stats.DrawCallContext;
@@ -37,24 +38,24 @@ class Context3DVideo
 	public static function getIndexBuffer(video:Video, context:Context3D):IndexBuffer3D
 	{
 		#if (lime && openfl_gl)
-		if (video._.__renderData.indexBuffer == null || video._.__renderData.indexBufferContext != context)
+		if ((video._ : _Video).__renderData.indexBuffer == null || (video._ : _Video).__renderData.indexBufferContext != context)
 		{
 			// TODO: Use shared buffer on context
 
-			video._.__renderData.indexBufferData = new UInt16Array(6);
-			video._.__renderData.indexBufferData[0] = 0;
-			video._.__renderData.indexBufferData[1] = 1;
-			video._.__renderData.indexBufferData[2] = 2;
-			video._.__renderData.indexBufferData[3] = 2;
-			video._.__renderData.indexBufferData[4] = 1;
-			video._.__renderData.indexBufferData[5] = 3;
+			(video._ : _Video).__renderData.indexBufferData = new UInt16Array(6);
+			(video._ : _Video).__renderData.indexBufferData[0] = 0;
+			(video._ : _Video).__renderData.indexBufferData[1] = 1;
+			(video._ : _Video).__renderData.indexBufferData[2] = 2;
+			(video._ : _Video).__renderData.indexBufferData[3] = 2;
+			(video._ : _Video).__renderData.indexBufferData[4] = 1;
+			(video._ : _Video).__renderData.indexBufferData[5] = 3;
 
-			video._.__renderData.indexBufferContext = context;
-			video._.__renderData.indexBuffer = context.createIndexBuffer(6);
-			video._.__renderData.indexBuffer.uploadFromTypedArray(video._.__renderData.indexBufferData);
+			(video._ : _Video).__renderData.indexBufferContext = context;
+			(video._ : _Video).__renderData.indexBuffer = context.createIndexBuffer(6);
+			(video._ : _Video).__renderData.indexBuffer.uploadFromTypedArray((video._ : _Video).__renderData.indexBufferData);
 		}
 
-		return video._.__renderData.indexBuffer;
+		return (video._ : _Video).__renderData.indexBuffer;
 		#else
 		return null;
 		#end
@@ -63,29 +64,29 @@ class Context3DVideo
 	public static function getTexture(video:Video, context:Context3D):RectangleTexture
 	{
 		#if openfl_html5
-		if (video._.__stream == null) return null;
+		if ((video._ : _Video).__stream == null) return null;
 
-		var videoElement = video._.__stream._.__getVideoElement();
+		var videoElement = (video._ : _Video).__stream._.__getVideoElement();
 		if (videoElement == null) return null;
 
 		var gl = context._.gl;
 		var internalFormat = GL.RGBA;
 		var format = GL.RGBA;
 
-		if (!video._.__stream._.__closed && videoElement.currentTime != video._.__renderData.textureTime)
+		if (!(video._ : _Video).__stream._.__closed && videoElement.currentTime != (video._ : _Video).__renderData.textureTime)
 		{
-			if (video._.__renderData.texture == null)
+			if ((video._ : _Video).__renderData.texture == null)
 			{
-				video._.__renderData.texture = context.createRectangleTexture(videoElement.videoWidth, videoElement.videoHeight, BGRA, false);
+				(video._ : _Video).__renderData.texture = context.createRectangleTexture(videoElement.videoWidth, videoElement.videoHeight, BGRA, false);
 			}
 
-			context._.bindGLTexture2D(video._.__renderData.texture._.__base.glTextureID);
+			context._.bindGLTexture2D((video._ : _Video).__renderData.texture._.__base.glTextureID);
 			gl.texImage2D(GL.TEXTURE_2D, 0, internalFormat, format, GL.UNSIGNED_BYTE, videoElement);
 
-			video._.__renderData.textureTime = videoElement.currentTime;
+			(video._ : _Video).__renderData.textureTime = videoElement.currentTime;
 		}
 
-		return cast video._.__renderData.texture;
+		return cast(video._ : _Video).__renderData.texture;
 		#else
 		return null;
 		#end
@@ -94,7 +95,7 @@ class Context3DVideo
 	public static function getVertexBuffer(video:Video, context:Context3D):VertexBuffer3D
 	{
 		#if (lime && openfl_gl)
-		if (video._.__renderData.vertexBuffer == null || video._.__renderData.vertexBufferContext != context)
+		if ((video._ : _Video).__renderData.vertexBuffer == null || (video._ : _Video).__renderData.vertexBufferContext != context)
 		{
 			#if openfl_power_of_two
 			var newWidth = 1;
@@ -117,63 +118,63 @@ class Context3DVideo
 			var uvHeight = 1;
 			#end
 
-			video._.__renderData.vertexBufferData = new Float32Array(VERTEX_BUFFER_STRIDE * 4);
+			(video._ : _Video).__renderData.vertexBufferData = new Float32Array(VERTEX_BUFFER_STRIDE * 4);
 
-			video._.__renderData.vertexBufferData[0] = video.width;
-			video._.__renderData.vertexBufferData[1] = video.height;
-			video._.__renderData.vertexBufferData[3] = uvWidth;
-			video._.__renderData.vertexBufferData[4] = uvHeight;
-			video._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE + 1] = video.height;
-			video._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE + 4] = uvHeight;
-			video._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 2] = video.width;
-			video._.__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 2 + 3] = uvWidth;
+			(video._ : _Video).__renderData.vertexBufferData[0] = video.width;
+			(video._ : _Video).__renderData.vertexBufferData[1] = video.height;
+			(video._ : _Video).__renderData.vertexBufferData[3] = uvWidth;
+			(video._ : _Video).__renderData.vertexBufferData[4] = uvHeight;
+			(video._ : _Video).__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE + 1] = video.height;
+			(video._ : _Video).__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE + 4] = uvHeight;
+			(video._ : _Video).__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 2] = video.width;
+			(video._ : _Video).__renderData.vertexBufferData[VERTEX_BUFFER_STRIDE * 2 + 3] = uvWidth;
 
-			video._.__renderData.vertexBufferContext = context;
-			video._.__renderData.vertexBuffer = context.createVertexBuffer(3, VERTEX_BUFFER_STRIDE);
-			video._.__renderData.vertexBuffer.uploadFromTypedArray(video._.__renderData.vertexBufferData);
+			(video._ : _Video).__renderData.vertexBufferContext = context;
+			(video._ : _Video).__renderData.vertexBuffer = context.createVertexBuffer(3, VERTEX_BUFFER_STRIDE);
+			(video._ : _Video).__renderData.vertexBuffer.uploadFromTypedArray((video._ : _Video).__renderData.vertexBufferData);
 		}
 
-		return video._.__renderData.vertexBuffer;
+		return (video._ : _Video).__renderData.vertexBuffer;
 		#else
 		return null;
 		#end
 	}
 
-	public static function render(video:Video, renderer:_Context3DRenderer):Void
+	public static function render(video:Video, renderer:OpenGLRenderer):Void
 	{
 		#if openfl_html5
-		if (!video._.__renderable || video._.__worldAlpha <= 0 || video._.__stream == null) return;
+		if (!(video._ : _Video).__renderable || (video._ : _Video).__worldAlpha <= 0 || (video._ : _Video).__stream == null) return;
 
-		var videoElement = video._.__stream._.__getVideoElement();
+		var videoElement = (video._ : _Video).__stream._.__getVideoElement();
 
 		if (videoElement != null)
 		{
-			var context = renderer.context3D;
+			var context = (renderer._ : _Context3DRenderer).context3D;
 			var gl = context._.gl;
 
 			var texture = getTexture(video, context);
 			if (texture == null) return;
 
-			renderer._.__setBlendMode(video._.__worldBlendMode);
-			renderer._.__pushMaskObject(video);
+			(renderer._ : _Context3DRenderer).__setBlendMode((video._ : _Video).__worldBlendMode);
+			(renderer._ : _Context3DRenderer).__pushMaskObject(video);
 			// renderer.filterManager.pushObject (video);
 
-			var shader = renderer._.__initDisplayShader(cast video._.__worldShader);
+			var shader = (renderer._ : _Context3DRenderer).__initDisplayShader(cast(video._ : _Video).__worldShader);
 			renderer.setShader(shader);
 
 			// TODO: Support ShaderInput<Video>
 			renderer.applyBitmapData(null, true, false);
 			// context._.__bindGLTexture2D (getTexture(video, context));
 			// shader.uImage0.input = bitmap._.__bitmapData;
-			// shader.uImage0.smoothing = renderer._.__allowSmoothing && (bitmap.smoothing || renderer._.__upscaled);
-			renderer.applyMatrix(renderer._.__getMatrix(video._.__renderTransform, AUTO));
-			renderer.applyAlpha(renderer._.__getAlpha(video._.__worldAlpha));
-			renderer.applyColorTransform(video._.__worldColorTransform);
+			// shader.uImage0.smoothing = (renderer._ : _Context3DRenderer).__allowSmoothing && (bitmap.smoothing || (renderer._ : _Context3DRenderer).__upscaled);
+			renderer.applyMatrix((renderer._ : _Context3DRenderer).__getMatrix((video._ : _Video).__renderTransform, AUTO));
+			renderer.applyAlpha((renderer._ : _Context3DRenderer).__getAlpha((video._ : _Video).__worldAlpha));
+			renderer.applyColorTransform((video._ : _Video).__worldColorTransform);
 
 			if (shader._.__textureSize != null)
 			{
-				__textureSizeValue[0] = (video._.__stream != null) ? videoElement.videoWidth : 0;
-				__textureSizeValue[1] = (video._.__stream != null) ? videoElement.videoHeight : 0;
+				__textureSizeValue[0] = ((video._ : _Video).__stream != null) ? videoElement.videoWidth : 0;
+				__textureSizeValue[1] = ((video._ : _Video).__stream != null) ? videoElement.videoHeight : 0;
 				shader._.__textureSize.value = __textureSizeValue;
 			}
 
@@ -204,27 +205,27 @@ class Context3DVideo
 			Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
 			#end
 
-			renderer._.__clearShader();
+			(renderer._ : _Context3DRenderer).__clearShader();
 
 			// renderer.filterManager.popObject (video);
-			renderer._.__popMaskObject(video);
+			(renderer._ : _Context3DRenderer).__popMaskObject(video);
 		}
 		#end
 	}
 
-	public static function renderMask(video:Video, renderer:_Context3DRenderer):Void
+	public static function renderMask(video:Video, renderer:OpenGLRenderer):Void
 	{
 		#if openfl_html5
-		if (video._.__stream == null) return;
+		if ((video._ : _Video).__stream == null) return;
 
-		if (video._.__stream._.__getVideoElement() != null)
+		if ((video._ : _Video).__stream._.__getVideoElement() != null)
 		{
-			var context = renderer.context3D;
+			var context = (renderer._ : _Context3DRenderer).context3D;
 
-			var shader = renderer._.__maskShader;
+			var shader = (renderer._ : _Context3DRenderer).__maskShader;
 			renderer.setShader(shader);
 			renderer.applyBitmapData(Context3DMaskShader.opaqueBitmapData, true);
-			renderer.applyMatrix(renderer._.__getMatrix(video._.__renderTransform, AUTO));
+			renderer.applyMatrix((renderer._ : _Context3DRenderer).__getMatrix((video._ : _Video).__renderTransform, AUTO));
 			renderer.updateShader();
 
 			var vertexBuffer = getVertexBuffer(video, context);
@@ -237,7 +238,7 @@ class Context3DVideo
 			Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
 			#end
 
-			renderer._.__clearShader();
+			(renderer._ : _Context3DRenderer).__clearShader();
 		}
 		#end
 	}

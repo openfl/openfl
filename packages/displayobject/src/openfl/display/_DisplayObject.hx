@@ -53,7 +53,7 @@ import js.html.CSSStyleDeclaration;
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
 @:noCompletion
-class _DisplayObject extends _EventDispatcher
+class _DisplayObject extends _EventDispatcher implements _IBitmapDrawable
 {
 	public static var initParent:DisplayObjectContainer;
 	public static var __broadcastEvents:Map<String, Array<DisplayObject>> = new Map();

@@ -166,8 +166,8 @@
 	<haxelib name="openfl.renderer-canvas" path="../renderer-canvas" unless="openfl.renderer-canvas" />
 	<haxelib name="openfl.renderer-core" path="../renderer-core" unless="openfl.renderer-core" />
 	<haxelib name="openfl.renderer-dom" path="../renderer-dom" unless="openfl.renderer-dom" />
-	<!-- <haxelib name="openfl.renderer-flash" path="../renderer-flash" unless="openfl.renderer-flash" /> -->
-	<!-- <haxelib name="openfl.renderer-stage3D" path="../renderer-stage3D" unless="openfl.renderer-stage3D" /> -->
+	<haxelib name="openfl.renderer-flash" path="../renderer-flash" unless="openfl.renderer-flash" />
+	<haxelib name="openfl.renderer-stage3D" path="../renderer-stage3D" unless="openfl.renderer-stage3D" />
 	<haxelib name="openfl.security" path="../security" unless="openfl.security" />
 	<haxelib name="openfl.sensors" path="../sensors" unless="openfl.sensors" />
 	<haxelib name="openfl.shader" path="../shader" unless="openfl.shader" />

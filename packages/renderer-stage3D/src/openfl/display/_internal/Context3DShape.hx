@@ -23,16 +23,16 @@ import openfl.display._internal.stats.DrawCallContext;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DShape
 {
-	public static function render(shape:DisplayObject, renderer:_Context3DRenderer):Void
+	public static function render(shape:DisplayObject, renderer:OpenGLRenderer):Void
 	{
-		if (!shape._.__renderable || shape._.__worldAlpha <= 0) return;
+		if (!(shape._ : _DisplayObject).__renderable || (shape._ : _DisplayObject).__worldAlpha <= 0) return;
 
-		var graphics = shape._.__graphics;
+		var graphics = (shape._ : _DisplayObject).__graphics;
 
 		if (graphics != null)
 		{
-			renderer._.__setBlendMode(shape._.__worldBlendMode);
-			renderer._.__pushMaskObject(shape);
+			(renderer._ : _Context3DRenderer).__setBlendMode((shape._ : _DisplayObject).__worldBlendMode);
+			(renderer._ : _Context3DRenderer).__pushMaskObject(shape);
 			// renderer.filterManager.pushObject (shape);
 
 			Context3DGraphics.render(graphics, renderer);
@@ -41,19 +41,19 @@ class Context3DShape
 			{
 				#if !disable_batcher
 				var bitmapData = graphics._.__bitmap;
-				var transform = renderer._.__getDisplayTransformTempMatrix(graphics._.__worldTransform, AUTO);
-				var alpha = renderer._.__getAlpha(shape._.__worldAlpha);
-				Context3DBitmapData.pushQuadsToBatcher(bitmapData, renderer.batcher, transform, alpha, shape);
+				var transform = (renderer._ : _Context3DRenderer).__getDisplayTransformTempMatrix(graphics._.__worldTransform, AUTO);
+				var alpha = (renderer._ : _Context3DRenderer).__getAlpha((shape._ : _DisplayObject).__worldAlpha);
+				Context3DBitmapData.pushQuadsToBatcher(bitmapData, (renderer._ : _Context3DRenderer).batcher, transform, alpha, shape);
 				#else
-				var context = renderer.context3D;
-				var scale9Grid = shape._.__worldScale9Grid;
+				var context = (renderer._ : _Context3DRenderer).context3D;
+				var scale9Grid = (shape._ : _DisplayObject).__worldScale9Grid;
 
-				var shader = renderer._.__initDisplayShader(cast shape._.__worldShader);
+				var shader = (renderer._ : _Context3DRenderer).__initDisplayShader(cast(shape._ : _DisplayObject).__worldShader);
 				renderer.setShader(shader);
 				renderer.applyBitmapData(graphics._.__bitmap, true);
-				renderer.applyMatrix(renderer._.__getMatrix(graphics._.__worldTransform, AUTO));
-				renderer.applyAlpha(renderer._.__getAlpha(shape._.__worldAlpha));
-				renderer.applyColorTransform(shape._.__worldColorTransform);
+				renderer.applyMatrix((renderer._ : _Context3DRenderer).__getMatrix(graphics._.__worldTransform, AUTO));
+				renderer.applyAlpha((renderer._ : _Context3DRenderer).__getAlpha((shape._ : _DisplayObject).__worldAlpha));
+				renderer.applyColorTransform((shape._ : _DisplayObject).__worldColorTransform);
 				renderer.updateShader();
 
 				var vertexBuffer = graphics._.__bitmap.getVertexBuffer(context, scale9Grid, shape);
@@ -66,18 +66,18 @@ class Context3DShape
 				Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
 				#end
 
-				renderer._.__clearShader();
+				(renderer._ : _Context3DRenderer).__clearShader();
 				#end
 			}
 
 			// renderer.filterManager.popObject (shape);
-			renderer._.__popMaskObject(shape);
+			(renderer._ : _Context3DRenderer).__popMaskObject(shape);
 		}
 	}
 
-	public static function renderMask(shape:DisplayObject, renderer:_Context3DRenderer):Void
+	public static function renderMask(shape:DisplayObject, renderer:OpenGLRenderer):Void
 	{
-		var graphics = shape._.__graphics;
+		var graphics = (shape._ : _DisplayObject).__graphics;
 
 		if (graphics != null)
 		{
@@ -88,15 +88,15 @@ class Context3DShape
 			if (graphics._.__bitmap != null)
 			{
 				#if !disable_batcher
-				renderer.batcher.flush();
+				(renderer._ : _Context3DRenderer).batcher.flush();
 				#end
 
-				var context = renderer.context3D;
+				var context = (renderer._ : _Context3DRenderer).context3D;
 
-				var shader = renderer._.__maskShader;
+				var shader = (renderer._ : _Context3DRenderer).__maskShader;
 				renderer.setShader(shader);
 				renderer.applyBitmapData(graphics._.__bitmap, true);
-				renderer.applyMatrix(renderer._.__getMatrix(graphics._.__worldTransform, AUTO));
+				renderer.applyMatrix((renderer._ : _Context3DRenderer).__getMatrix(graphics._.__worldTransform, AUTO));
 				renderer.updateShader();
 
 				var vertexBuffer = graphics._.__bitmap.getVertexBuffer(context);
@@ -109,7 +109,7 @@ class Context3DShape
 				Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
 				#end
 
-				renderer._.__clearShader();
+				(renderer._ : _Context3DRenderer).__clearShader();
 			}
 		}
 	}

@@ -124,10 +124,9 @@ import js.html.Image in JSImage;
 @:noDebug
 #end
 @:noCompletion
-class _BitmapData
+class _BitmapData implements _IBitmapDrawable
 {
-	// public static var __hardwareRenderer:#if openfl_gl _Context3DRenderer #else Dynamic #end;
-	public static var __hardwareRenderer:Dynamic;
+	public static var __hardwareRenderer:#if (openfl.renderer_stage3D && openfl_gl) OpenGLRenderer #else Dynamic #end;
 	public static var __pool:BitmapDataPool = new BitmapDataPool();
 	public static var __softwareRenderer:DisplayObjectRenderer;
 	public static var __textureFormat:Int;
@@ -573,94 +572,98 @@ class _BitmapData
 	public function draw(source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null,
 			clipRect:Rectangle = null, smoothing:Bool = false):Void
 	{
-		// if (source == null) return;
+		if (source == null) return;
 
-		// source._.__update(false, true);
+		(source._ : _IBitmapDrawable).__update(false, true);
 
-		// var transform = _Matrix.__pool.get();
+		var transform = _Matrix.__pool.get();
 
-		// transform.copyFrom(source._.__renderTransform);
-		// transform.invert();
+		transform.copyFrom((source._ : _IBitmapDrawable).__renderTransform);
+		transform.invert();
 
-		// if (matrix != null)
-		// {
-		// 	transform.concat(matrix);
-		// }
+		if (matrix != null)
+		{
+			transform.concat(matrix);
+		}
 
-		// var _colorTransform = new ColorTransform();
-		// _colorTransform._.__copyFrom(source._.__worldColorTransform);
-		// _colorTransform._.__invert();
+		var _colorTransform = new ColorTransform();
+		_colorTransform._.__copyFrom((source._ : _IBitmapDrawable).__worldColorTransform);
+		_colorTransform._.__invert();
 
-		// if (!readable && _BitmapData.__hardwareRenderer != null && getTexture(_BitmapData.__hardwareRenderer.context3D) != null)
-		// {
-		// 	if (colorTransform != null)
-		// 	{
-		// 		_colorTransform._.__combine(colorTransform);
-		// 	}
+		#if openfl.renderer_stage3D
+		if (!readable
+			&& _BitmapData.__hardwareRenderer != null
+			&& getTexture((_BitmapData.__hardwareRenderer._ : _Context3DRenderer).context3D) != null)
+		{
+			if (colorTransform != null)
+			{
+				_colorTransform._.__combine(colorTransform);
+			}
 
-		// 	_BitmapData.__hardwareRenderer._.__allowSmoothing = smoothing;
-		// 	_BitmapData.__hardwareRenderer._.__overrideBlendMode = blendMode;
+				(_BitmapData.__hardwareRenderer._ : _Context3DRenderer).__allowSmoothing = smoothing;
+			(_BitmapData.__hardwareRenderer._ : _Context3DRenderer).__overrideBlendMode = blendMode;
 
-		// 	_BitmapData.__hardwareRenderer._.__worldTransform = matrix;
-		// 	_BitmapData.__hardwareRenderer._.__worldAlpha = 1 / source._.__worldAlpha;
-		// 	_BitmapData.__hardwareRenderer._.__worldColorTransform = _colorTransform;
+			(_BitmapData.__hardwareRenderer._ : _Context3DRenderer).__worldTransform = matrix;
+			(_BitmapData.__hardwareRenderer._ : _Context3DRenderer).__worldAlpha = 1 / (source._ : _IBitmapDrawable).__worldAlpha;
+			(_BitmapData.__hardwareRenderer._ : _Context3DRenderer).__worldColorTransform = _colorTransform;
 
-		// 	_BitmapData.__hardwareRenderer._.__drawBitmapData(this.bitmapData, source, clipRect);
-		// }
-		// else
-		// {
-		// 	#if (openfl_html5 || openfl_cairo)
-		// 	if (colorTransform != null)
-		// 	{
-		// 		var bounds = _Rectangle.__pool.get();
-		// 		var boundsMatrix = _Matrix.__pool.get();
+			(_BitmapData.__hardwareRenderer._ : _Context3DRenderer).__drawBitmapData(this.bitmapData, source, clipRect);
+		}
+		else
+		#end
+		{
+			#if ((openfl.renderer_canvas && openfl_html5) || (openfl.renderer_cairo && openfl_cairo))
+			if (colorTransform != null)
+			{
+				var bounds = _Rectangle.__pool.get();
+				var boundsMatrix = _Matrix.__pool.get();
 
-		// 		source._.__getBounds(bounds, boundsMatrix);
+				(source._ : _IBitmapDrawable).__getBounds(bounds, boundsMatrix);
 
-		// 		var width:Int = Math.ceil(bounds.width);
-		// 		var height:Int = Math.ceil(bounds.height);
+				var width:Int = Math.ceil(bounds.width);
+				var height:Int = Math.ceil(bounds.height);
 
-		// 		boundsMatrix.tx = -bounds.x;
-		// 		boundsMatrix.ty = -bounds.y;
+				boundsMatrix.tx = -bounds.x;
+				boundsMatrix.ty = -bounds.y;
 
-		// 		var copy = new BitmapData(width, height, true, 0);
-		// 		copy.draw(source, boundsMatrix);
+				var copy = new BitmapData(width, height, true, 0);
+				copy.draw(source, boundsMatrix);
 
-		// 		copy.colorTransform(copy.rect, colorTransform);
-		// 		(copy._ : _BitmapData).__renderTransform.identity();
-		// 		(copy._ : _BitmapData).__renderTransform.tx = bounds.x;
-		// 		(copy._ : _BitmapData).__renderTransform.ty = bounds.y;
-		// 		(copy._ : _BitmapData).__renderTransform.concat(source._.__renderTransform);
-		// 		(copy._ : _BitmapData).__worldAlpha = source._.__worldAlpha;
-		// 		(copy._ : _BitmapData).__worldColorTransform._.__copyFrom(source._.__worldColorTransform);
-		// 		source = copy;
+				copy.colorTransform(copy.rect, colorTransform);
+				(copy._ : _BitmapData).__renderTransform.identity();
+				(copy._ : _BitmapData).__renderTransform.tx = bounds.x;
+				(copy._ : _BitmapData).__renderTransform.ty = bounds.y;
+				(copy._ : _BitmapData).__renderTransform.concat((source._ : _IBitmapDrawable).__renderTransform);
+				(copy._ : _BitmapData).__worldAlpha = (source._ : _IBitmapDrawable).__worldAlpha;
+				(copy._ : _BitmapData).__worldColorTransform._.__copyFrom((source._ : _IBitmapDrawable).__worldColorTransform);
+				source = copy;
 
-		// 		_Rectangle.__pool.release(bounds);
-		// 		_Matrix.__pool.release(boundsMatrix);
-		// 	}
+				_Rectangle.__pool.release(bounds);
+				_Matrix.__pool.release(boundsMatrix);
+			}
 
-		// 	// #if openfl_html5
-		// 	// if (_BitmapData.__softwareRenderer == null) _BitmapData.__softwareRenderer = new CanvasRenderer(null);
-		// 	// ImageCanvasUtil.convertToCanvas(limeImage);
-		// 	// var renderer:CanvasRenderer = cast _BitmapData.__softwareRenderer;
-		// 	// renderer.context = limeImage.buffer._.__srcContext;
-		// 	// #elseif openfl_cairo
-		// 	// if (_BitmapData.__softwareRenderer == null) _BitmapData.__softwareRenderer = new CairoRenderer(null);
-		// 	// var renderer:CairoRenderer = cast _BitmapData.__softwareRenderer;
-		// 	// renderer.cairo = new Cairo(getSurface());
-		// 	// #end
+			#if (openfl.renderer_canvas && openfl_html5)
+			if (_BitmapData.__softwareRenderer == null) _BitmapData.__softwareRenderer = new CanvasRenderer(null);
+			ImageCanvasUtil.convertToCanvas(limeImage);
+			var renderer:CanvasRenderer = cast _BitmapData.__softwareRenderer;
+			renderer.context = limeImage.buffer._.__srcContext;
+			#elseif (openfl.renderer_cairo && openfl_cairo)
+			if (_BitmapData.__softwareRenderer == null) _BitmapData.__softwareRenderer = new CairoRenderer(null);
+			var renderer:CairoRenderer = cast _BitmapData.__softwareRenderer;
+			renderer.cairo = new Cairo(getSurface());
+			#end
 
-		// 	// renderer._.__allowSmoothing = smoothing;
-		// 	// renderer._.__overrideBlendMode = blendMode;
+			(renderer._ : _DisplayObjectRenderer).__allowSmoothing = smoothing;
+			(renderer._ : _DisplayObjectRenderer).__overrideBlendMode = blendMode;
 
-		// 	// renderer._.__worldTransform = matrix;
-		// 	// renderer._.__worldAlpha = 1 / source._.__worldAlpha;
-		// 	// renderer._.__worldColorTransform = _colorTransform;
+			(renderer._ : _DisplayObjectRenderer).__worldTransform = matrix;
+			(renderer._ : _DisplayObjectRenderer).__worldAlpha = 1 / (source._ : _IBitmapDrawable).__worldAlpha;
+			(renderer._ : _DisplayObjectRenderer).__worldColorTransform = _colorTransform;
 
-		// 	// renderer._.__drawBitmapData(this.bitmapData, source, clipRect);
-		// 	#end
-		// }
-		// _Matrix.__pool.release(transform);
+			(renderer._ : _DisplayObjectRenderer).__drawBitmapData(this.bitmapData, source, clipRect);
+			#end
+		}
+		_Matrix.__pool.release(transform);
 	}
 
 	public function drawWithQuality(source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null,
@@ -714,7 +717,7 @@ class _BitmapData
 
 		if (!readable && __renderData.texture != null && _BitmapData.__hardwareRenderer != null)
 		{
-			_BitmapData.__hardwareRenderer._.__fillRect(this.bitmapData, rect, color);
+			(_BitmapData.__hardwareRenderer._ : _Context3DRenderer).__fillRect(this.bitmapData, rect, color);
 		}
 		else if (readable)
 		{

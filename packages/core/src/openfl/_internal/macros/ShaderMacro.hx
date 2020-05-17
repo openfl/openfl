@@ -171,7 +171,7 @@ class ShaderMacro
 
 						if (glVertexSource != null)
 						{
-							block.unshift(macro if (_.__glVertexSource == null)
+							block.push(macro if (_.__glVertexSource == null)
 							{
 								_.__glVertexSource = $v{glVertexSource};
 							});
@@ -179,7 +179,7 @@ class ShaderMacro
 
 						if (glFragmentSource != null)
 						{
-							block.unshift(macro if (_.__glFragmentSource == null)
+							block.push(macro if (_.__glFragmentSource == null)
 							{
 								_.__glFragmentSource = $v{glFragmentSource};
 							});
