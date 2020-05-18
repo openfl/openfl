@@ -308,7 +308,7 @@ class CanvasTextField
 
 					if (textField.__caretIndex > -1 && textEngine.selectable && textField.__showCursor)
 					{
-						var scrollX = -textField.scrollH;
+						var scrollX = (textField.__textFormat.align == CENTER) ? textEngine.width / 2 : ((textField.__textFormat.align == RIGHT) ? textEngine.width - 4 : 0);
 						var scrollY = 0.0;
 
 						for (i in 0...textField.scrollV - 1)
