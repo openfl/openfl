@@ -1482,7 +1482,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			if (type == KeyboardEvent.KEY_UP && (keyCode == Keyboard.SPACE || keyCode == Keyboard.ENTER) && Std.is(__focus, Sprite))
 			{
 				var sprite = cast(__focus, Sprite);
-				if (sprite.buttonMode)
+				if (sprite.buttonMode && sprite.focusRect == true)
 				{
 					var localPoint = Point.__pool.get();
 					var targetPoint = Point.__pool.get();
