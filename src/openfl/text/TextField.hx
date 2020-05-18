@@ -1526,6 +1526,12 @@ class TextField extends InteractiveObject
 	@:noCompletion private function __caretBeginningOfLine():Void
 	{
 		__caretIndex = getLineOffset(getLineIndexOfChar(__caretIndex));
+		
+		if (__caretIndex < 0)
+		{
+			__caretIndex = __text.length;
+			__selectionIndex = __caretIndex;
+		}
 	}
 
 	@:noCompletion private function __caretEndOfLine():Void
@@ -1539,6 +1545,12 @@ class TextField extends InteractiveObject
 		else
 		{
 			__caretIndex = __text.length;
+		}
+		
+		if (__caretIndex < 0)
+		{
+			__caretIndex = __text.length;
+			__selectionIndex = __caretIndex;
 		}
 	}
 
@@ -3503,6 +3515,8 @@ class TextField extends InteractiveObject
 					__selectionIndex = __caretIndex;
 				}
 				
+				__updateScrollH();
+				__updateScrollV();
 				__stopCursorTimer();
 				__startCursorTimer();
 
@@ -3514,6 +3528,8 @@ class TextField extends InteractiveObject
 					__selectionIndex = __caretIndex;
 				}
 				
+				__updateScrollH();
+				__updateScrollV();
 				__stopCursorTimer();
 				__startCursorTimer();
 
