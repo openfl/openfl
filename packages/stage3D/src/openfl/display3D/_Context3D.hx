@@ -510,6 +510,8 @@ class _Context3D extends _EventDispatcher
 
 	public function drawTriangles(indexBuffer:IndexBuffer3D, firstIndex:Int = 0, numTriangles:Int = -1):Void
 	{
+		if (indexBuffer == null || numTriangles == 0) return;
+
 		#if !openfl_disable_display_render
 		if (__state.renderToTexture == null)
 		{

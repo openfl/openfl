@@ -103,9 +103,9 @@ class Context3DGraphics
 						var transforms = c.transforms;
 
 						#if cpp
-						var rects:Array<Float> = rects == null ? null : untyped (rects)._.__array;
-						var indices:Array<Int> = indices == null ? null : untyped (indices)._.__array;
-						var transforms:Array<Float> = transforms == null ? null : untyped (transforms)._.__array;
+						var rects:Array<Float> = rects == null ? null : untyped (rects).__array;
+						var indices:Array<Int> = indices == null ? null : untyped (indices).__array;
+						var transforms:Array<Float> = transforms == null ? null : untyped (transforms).__array;
 						#end
 
 						var hasIndices = (indices != null);
@@ -613,9 +613,9 @@ class Context3DGraphics
 								var transforms = c.transforms;
 
 								#if cpp
-								var rects:Array<Float> = rects == null ? null : untyped (rects)._.__array;
-								var indices:Array<Int> = indices == null ? null : untyped (indices)._.__array;
-								var transforms:Array<Float> = transforms == null ? null : untyped (transforms)._.__array;
+								var rects:Array<Float> = rects == null ? null : untyped (rects).__array;
+								var indices:Array<Int> = indices == null ? null : untyped (indices).__array;
+								var transforms:Array<Float> = transforms == null ? null : untyped (transforms).__array;
 								#end
 
 								var hasIndices = (indices != null);
