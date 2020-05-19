@@ -1,30 +1,84 @@
--js ../lib/_gen/_.js
+# TODO: Fully working
+-js ../dist/openfl.js
+# -lib openfl.application
+-cp ../packages/application/src
+# -lib openfl.assets
+-cp ../packages/assets/src
+# -lib openfl.assorted
+-cp ../packages/assorted/src
+# -lib openfl.bitmapdata
+-cp ../packages/bitmapdata/src
+# -lib openfl.displayobject
+-cp ../packages/displayobject/src
+# -lib openfl.draft
+# -cp ../packages/draft/src
+# -lib openfl.errors
+-cp ../packages/errors/src
+# -lib openfl.eventdispatcher
+-cp ../packages/eventdispatcher/src
+# -lib openfl.externalinterface
+-cp ../packages/externalinterface/src
+# -lib openfl.filereference
+-cp ../packages/filereference/src
+# -lib openfl.filters
+-cp ../packages/filters/src
+# -lib openfl.geom
+-cp ../packages/geom/src
+# -lib openfl.graphics
+-cp ../packages/graphics/src
+# -lib openfl.input
+-cp ../packages/input/src
+# -lib openfl.loader
+-cp ../packages/loader/src
+# -lib openfl.movieclip
+-cp ../packages/movieclip/src
+# -lib openfl.printing
+-cp ../packages/printing/src
+# -lib openfl.renderer-cairo
+-cp ../packages/renderer-cairo/src
+# -lib openfl.renderer-canvas
+-cp ../packages/renderer-canvas/src
+# -lib openfl.renderer-core
+-cp ../packages/renderer-core/src
+# -lib openfl.renderer-dom
+-cp ../packages/renderer-dom/src
+# -lib openfl.renderer-flash
+-cp ../packages/renderer-flash/src
+# -lib openfl.renderer-stage3D
+-cp ../packages/renderer-stage3D/src
+# -lib openfl.security
+-cp ../packages/security/src
+# -lib openfl.sensors
+-cp ../packages/sensors/src
+# -lib openfl.shader
+-cp ../packages/shader/src
+# -lib openfl.sharedobject
+-cp ../packages/sharedobject/src
+# -lib openfl.socket
+-cp ../packages/socket/src
+# -lib openfl.sound
+-cp ../packages/sound/src
+# -lib openfl.stage
+-cp ../packages/stage/src
+# -lib openfl.stage3D
+-cp ../packages/stage3D/src
+# -lib openfl.system
+-cp ../packages/system/src
+# -lib openfl.telemetry
+-cp ../packages/telemetry/src
+# -lib openfl.textfield
+-cp ../packages/textfield/src
+# -lib openfl.tilemap
+-cp ../packages/tilemap/src
+# -lib openfl.urlloader
+-cp ../packages/urlloader/src
+# -lib openfl.urlrequest
+-cp ../packages/urlrequest/src
+# -lib openfl.urlstream
+-cp ../packages/urlstream/src
+# -lib openfl.utils
+-cp ../packages/utils/src
+# -lib openfl.video
+-cp ../packages/video/src
 ImportAll
-#-lib lime
--cp ../node_modules/lime/src
--D lime=7.0.0
-# -lib openfl
--cp ../src
-# -lib format
--cp ../node_modules/format
--D format
-#-lib hxgenjs
--cp ../node_modules/hxgenjs/src
--cp ../node_modules/tink_macro/src
--cp ../node_modules/tink_core/src
---macro genjs.Generator.use()
-# -D hxextern
-# -D tsextern
--D openfl-dynamic
--D openfljs
--D lime-bytes-length-getter
--D html5
--D lime-canvas
--D lime-dom
--D lime-howlerjs
--D lime-webgl
--D tools
--D commonjs
--D howlerjs
--D webgl1
---no-inline
+-lib lime
