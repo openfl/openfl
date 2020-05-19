@@ -44,8 +44,49 @@
 
 	<template path="assets/templates" />
 
+	<source path="packages/application/src" />
+	<source path="packages/assets/src" />
+	<source path="packages/assorted/src" />
+	<source path="packages/bitmapdata/src" />
+	<source path="packages/displayobject/src" />
+	<source path="packages/errors/src" />
+	<source path="packages/eventdispatcher/src" />
+	<source path="packages/externalinterface/src" />
+	<source path="packages/filereference/src" />
+	<source path="packages/filters/src" />
+	<source path="packages/geom/src" />
+	<source path="packages/graphics/src" />
+	<source path="packages/input/src" />
+	<source path="packages/loader/src" />
+	<source path="packages/movieclip/src" />
+	<source path="packages/printing/src" />
+	<source path="packages/renderer-cairo/src" />
+	<source path="packages/renderer-canvas/src" />
+	<source path="packages/renderer-core/src" />
+	<source path="packages/renderer-dom/src" />
+	<source path="packages/renderer-flash/src" />
+	<source path="packages/renderer-stage3D/src" />
+	<source path="packages/security/src" />
+	<source path="packages/sensors/src" />
+	<source path="packages/shader/src" />
+	<source path="packages/sharedobject/src" />
+	<source path="packages/socket/src" />
+	<source path="packages/sound/src" />
+	<source path="packages/stage/src" />
+	<source path="packages/stage3D/src" />
+	<source path="packages/system/src" />
+	<source path="packages/telemetry/src" />
+	<source path="packages/textfield/src" />
+	<source path="packages/tilemap/src" />
+	<source path="packages/urlloader/src" />
+	<source path="packages/urlrequest/src" />
+	<source path="packages/urlstream/src" />
+	<source path="packages/utils/src" />
+	<source path="packages/video/src" />
+
 	<source path="externs/flash" if="flash" />
-	<source path="src-draft" if="draft" />
+	<!-- <source path="src-draft" if="draft" /> -->
+	<source path="packages/draft/src" if="draft" />
 
 	<include haxelib="${custom-backend}" if="display custom-backend" />
 	<haxelib name="${custom-backend}" if="custom-backend" unless="display" />
