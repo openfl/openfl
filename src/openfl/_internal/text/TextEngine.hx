@@ -1777,29 +1777,28 @@ class TextEngine
 	private function get_bottomScrollV():Int
 	{
 		// TODO: only update when dirty
-		if (numLines == 1 || lineHeights == null)
+		if (numLines == 1 || lineHeights == null || scrollV == 0 || scrollV > lineHeights.length)
 		{
 			return 1;
 		}
 		else
 		{
 			var tempHeight = 0.0;
-			var ret = lineHeights.length;
-
-			for (i in ret - 1...lineHeights.length)
+			var ret = numLines;
+			var firstVisible = scrollV - 1;
+			
+			for (i in firstVisible...lineHeights.length)
 			{
-				if (tempHeight + lineHeights[i] <= height - 4)
+				if (tempHeight + lineHeights[i] < height - 4)
 				{
 					tempHeight += lineHeights[i];
 				}
 				else
 				{
-					ret = i;
-					break;
+					return (i + 1);
 				}
 			}
-
-			if (ret < 1) return 1;
+			
 			return ret;
 		}
 	}
@@ -1815,12 +1814,9 @@ class TextEngine
 		{
 			var i = numLines - 1, tempHeight = 0.0;
 
-			if (text.charCodeAt(text.length - 1) == '\n'.code) i--; // trailing newlines do not contribute to maxScrollV
-			var j = i;
-
 			while (i >= 0)
 			{
-				if (tempHeight + lineHeights[i] <= height - 4)
+				if (tempHeight + lineHeights[i] < height - 4)
 				{
 					tempHeight += lineHeights[i];
 					i--;
@@ -1829,13 +1825,7 @@ class TextEngine
 					break;
 			}
 
-			if (i == j) i = numLines; // maxScrollV defaults to numLines if the height - 4 is less than the line's height
-			// TODO: check if it's based on the first or last line's height
-			else
-				i += 2;
-
-			if (i < 1) return 1;
-			return i;
+			return (i + 1);
 		}
 	}
 
