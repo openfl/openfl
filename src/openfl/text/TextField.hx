@@ -1441,13 +1441,6 @@ class TextField extends InteractiveObject
 		var max = text.length;
 		var range;
 		
-		// NOTE TO SELF: add tests and put comments there
-		// if endindex == -1 and beginIndex == -1, endindex = max
-		// if beginindex == -1, beginindex = 0
-		// if beginIndex > -1 and endIndex == -1, endIndex = beginIndex + 1
-		// if endindex > max or <= 0 or < beginindex, beginindex < 0 or >= max, rangeerror
-		// if beginindex == endindex, return (?, check inserting at this point)
-		
 		if (beginIndex == -1)
 		{
 			if (endIndex == -1) endIndex = max;
@@ -1462,7 +1455,6 @@ class TextField extends InteractiveObject
 		if (beginIndex == endIndex) return;
 		if (beginIndex < 0 || endIndex <= 0 || endIndex < beginIndex || beginIndex >= max || endIndex > max) throw new RangeError();
 
-		// NOTE TO SELF: add tests
 		// there are 10 cases that have to be handled
 		// the order and logic of cases really matters!!
 		//	beginIndex == 0 && endIndex == max -> replace all format ranges with new one
