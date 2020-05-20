@@ -1084,15 +1084,15 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		});
 		untyped global.Object.defineProperties(ByteArrayData.prototype, {
 			"bytesAvailable": {
-				get: untyped __js__("function () { return this.get_bytesAvailable (); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_bytesAvailable (); }")
 			},
 			"endian": {
-				get: untyped __js__("function () { return this.get_endian (); }"),
-				set: untyped __js__("function (v) { return this.set_endian (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_endian (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_endian (v); }")
 			},
 			"length": {
-				get: untyped __js__("function () { return this.get_length (); }"),
-				set: untyped __js__("function (v) { return this.set_length (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_length (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_length (v); }")
 			},
 		});
 	}

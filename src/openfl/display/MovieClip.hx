@@ -190,20 +190,22 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	@:noCompletion private static function __init__()
 	{
 		__useParentFPS = true;
-		untyped __js__("/// #if (typeof ENV === 'undefined' || (!ENV['swflite-parent-fps'] && !ENV['swf-parent-fps'])) && (typeof swf_parent_fps === 'undefined' || !swf_parent_fps) && (typeof swflite_parent_fps === 'undefined' || !swflite-parent-fps) && (typeof defines === 'undefined' || (!defines['swf-parent-fps'] && !defines['swflite-parent-fps']))");
+		untyped #if haxe4 js.Syntax.code #else __js__ #end ("/// #if (typeof ENV === 'undefined' || (!ENV['swflite-parent-fps'] && !ENV['swf-parent-fps'])) && (typeof swf_parent_fps === 'undefined' || !swf_parent_fps) && (typeof swflite_parent_fps === 'undefined' || !swflite-parent-fps) && (typeof defines === 'undefined' || (!defines['swf-parent-fps'] && !defines['swflite-parent-fps']))");
 		__useParentFPS = false;
-		untyped __js__("/// #endif");
+		untyped #if haxe4 js.Syntax.code #else __js__ #end ("/// #endif");
 
 		untyped Object.defineProperties(MovieClip.prototype, {
-			"currentFrame": {get: untyped __js__("function () { return this.get_currentFrame (); }")},
-			"currentFrameLabel": {get: untyped __js__("function () { return this.get_currentFrameLabel (); }")},
-			"currentLabel": {get: untyped __js__("function () { return this.get_currentLabel (); }")},
-			"currentLabels": {get: untyped __js__("function () { return this.get_currentLabels (); }")},
-			"enabled": {get: untyped __js__("function () { return this.get_enabled (); }"),
-				set: untyped __js__("function (v) { return this.set_enabled (v); }")},
-			"framesLoaded": {get: untyped __js__("function () { return this.get_framesLoaded (); }")},
-			"isPlaying": {get: untyped __js__("function () { return this.get_isPlaying (); }")},
-			"totalFrames": {get: untyped __js__("function () { return this.get_totalFrames (); }")},
+			"currentFrame": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_currentFrame (); }")},
+			"currentFrameLabel": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_currentFrameLabel (); }")},
+			"currentLabel": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_currentLabel (); }")},
+			"currentLabels": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_currentLabels (); }")},
+			"enabled": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_enabled (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_enabled (v); }")
+			},
+			"framesLoaded": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_framesLoaded (); }")},
+			"isPlaying": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_isPlaying (); }")},
+			"totalFrames": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_totalFrames (); }")},
 		});
 	}
 	#end
@@ -642,7 +644,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 
 					__frameScripts.set(frame, script);
 					#elseif js
-					var script = untyped __js__("eval({0})", "(function(){" + frameData.scriptSource + "})");
+					var script = untyped #if haxe4 js.Syntax.code #else __js__ #end ("eval({0})", "(function(){" + frameData.scriptSource + "})");
 					var wrapper = function()
 					{
 						try

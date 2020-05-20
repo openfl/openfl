@@ -28,7 +28,7 @@ class TileContainer extends Tile implements ITileContainer
 	@:noCompletion private static function __init__()
 	{
 		untyped Object.defineProperty(TileContainer.prototype, "numTiles", {
-			get: untyped __js__("function () { return this.get_numTiles (); }")
+			get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_numTiles (); }")
 		});
 	}
 	#end

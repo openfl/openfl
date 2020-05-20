@@ -132,24 +132,24 @@ class SimpleButton extends InteractiveObject
 	{
 		untyped Object.defineProperties(SimpleButton.prototype, {
 			"downState": {
-				get: untyped __js__("function () { return this.get_downState (); }"),
-				set: untyped __js__("function (v) { return this.set_downState (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_downState (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_downState (v); }")
 			},
 			"hitTestState": {
-				get: untyped __js__("function () { return this.get_hitTestState (); }"),
-				set: untyped __js__("function (v) { return this.set_hitTestState (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_hitTestState (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_hitTestState (v); }")
 			},
 			"overState": {
-				get: untyped __js__("function () { return this.get_overState (); }"),
-				set: untyped __js__("function (v) { return this.set_overState (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_overState (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_overState (v); }")
 			},
 			"soundTransform": {
-				get: untyped __js__("function () { return this.get_soundTransform (); }"),
-				set: untyped __js__("function (v) { return this.set_soundTransform (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_soundTransform (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_soundTransform (v); }")
 			},
 			"upState": {
-				get: untyped __js__("function () { return this.get_upState (); }"),
-				set: untyped __js__("function (v) { return this.set_upState (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_upState (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_upState (v); }")
 			},
 		});
 	}

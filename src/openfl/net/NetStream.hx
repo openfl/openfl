@@ -1153,12 +1153,12 @@ class NetStream extends EventDispatcher
 	{
 		untyped Object.defineProperties(NetStream.prototype, {
 			"soundTransform": {
-				get: untyped __js__("function () { return this.get_soundTransform (); }"),
-				set: untyped __js__("function (v) { return this.set_soundTransform (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_soundTransform (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_soundTransform (v); }")
 			},
 			"speed": {
-				get: untyped __js__("function () { return this.get_speed (); }"),
-				set: untyped __js__("function (v) { return this.set_speed (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_speed (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_speed (v); }")
 			},
 		});
 	}

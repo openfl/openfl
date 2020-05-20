@@ -59,7 +59,7 @@ class DOMRenderer extends DisplayObjectRenderer
 		#if (js && html5)
 		DisplayObject.__supportDOM = true;
 
-		var prefix = untyped __js__("(function () {
+		var prefix = untyped #if haxe4 js.Syntax.code #else __js__ #end ("(function () {
 		  var styles = window.getComputedStyle(document.documentElement, ''),
 			pre = (Array.prototype.slice
 			  .call(styles)
