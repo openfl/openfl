@@ -1814,7 +1814,7 @@ class TextEngine
 		{
 			var i = numLines - 1, tempHeight = 0.0;
 
-			while (i >= 0)
+			while (i > 0)
 			{
 				if (tempHeight + lineHeights[i] < height - 4)
 				{
