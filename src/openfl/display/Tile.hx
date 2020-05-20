@@ -214,43 +214,52 @@ class Tile
 	@:noCompletion private static function __init__()
 	{
 		untyped Object.defineProperties(Tile.prototype, {
-			"alpha": {get: untyped __js__("function () { return this.get_alpha (); }"), set: untyped __js__("function (v) { return this.set_alpha (v); }")},
+			"alpha": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_alpha (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_alpha (v); }")},
 			"blendMode": {
-				get: untyped __js__("function () { return this.get_blendMode (); }"),
-				set: untyped __js__("function (v) { return this.set_blendMode (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_blendMode (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_blendMode (v); }")
 			},
 			"colorTransform": {
-				get: untyped __js__("function () { return this.get_colorTransform (); }"),
-				set: untyped __js__("function (v) { return this.set_colorTransform (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_colorTransform (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_colorTransform (v); }")
 			},
-			"id": {get: untyped __js__("function () { return this.get_id (); }"), set: untyped __js__("function (v) { return this.set_id (v); }")},
-			"matrix": {get: untyped __js__("function () { return this.get_matrix (); }"), set: untyped __js__("function (v) { return this.set_matrix (v); }")},
+			"id": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_id (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_id (v); }")},
+			"matrix": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_matrix (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_matrix (v); }")},
 			"originX": {
-				get: untyped __js__("function () { return this.get_originX (); }"),
-				set: untyped __js__("function (v) { return this.set_originX (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_originX (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_originX (v); }")
 			},
 			"originY": {
-				get: untyped __js__("function () { return this.get_originY (); }"),
-				set: untyped __js__("function (v) { return this.set_originY (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_originY (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_originY (v); }")
 			},
-			"rect": {get: untyped __js__("function () { return this.get_rect (); }"), set: untyped __js__("function (v) { return this.set_rect (v); }")},
+			"rect": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_rect (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_rect (v); }")},
 			"rotation": {
-				get: untyped __js__("function () { return this.get_rotation (); }"),
-				set: untyped __js__("function (v) { return this.set_rotation (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_rotation (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_rotation (v); }")
 			},
-			"scaleX": {get: untyped __js__("function () { return this.get_scaleX (); }"), set: untyped __js__("function (v) { return this.set_scaleX (v); }")},
-			"scaleY": {get: untyped __js__("function () { return this.get_scaleY (); }"), set: untyped __js__("function (v) { return this.set_scaleY (v); }")},
-			"shader": {get: untyped __js__("function () { return this.get_shader (); }"), set: untyped __js__("function (v) { return this.set_shader (v); }")},
+			"scaleX": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_scaleX (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_scaleX (v); }")},
+			"scaleY": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_scaleY (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_scaleY (v); }")},
+			"shader": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_shader (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_shader (v); }")},
 			"tileset": {
-				get: untyped __js__("function () { return this.get_tileset (); }"),
-				set: untyped __js__("function (v) { return this.set_tileset (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_tileset (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_tileset (v); }")
 			},
 			"visible": {
-				get: untyped __js__("function () { return this.get_visible (); }"),
-				set: untyped __js__("function (v) { return this.set_visible (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_visible (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_visible (v); }")
 			},
-			"x": {get: untyped __js__("function () { return this.get_x (); }"), set: untyped __js__("function (v) { return this.set_x (v); }")},
-			"y": {get: untyped __js__("function () { return this.get_y (); }"), set: untyped __js__("function (v) { return this.set_y (v); }")},
+			"x": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_x (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_x (v); }")},
+			"y": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_y (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_y (v); }")},
 		});
 	}
 	#end

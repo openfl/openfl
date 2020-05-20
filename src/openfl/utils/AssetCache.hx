@@ -45,8 +45,8 @@ class AssetCache implements IAssetCache
 	@:noCompletion private static function __init__()
 	{
 		untyped global.Object.defineProperty(AssetCache.prototype, "enabled", {
-			get: untyped __js__("function () { return this.get_enabled (); }"),
-			set: untyped __js__("function (v) { return this.set_enabled (v); }")
+			get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_enabled (); }"),
+			set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_enabled (v); }")
 		});
 	}
 	#end

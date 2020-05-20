@@ -48,10 +48,10 @@ class Tileset
 	{
 		untyped Object.defineProperties(Tileset.prototype, {
 			"bitmapData": {
-				get: untyped __js__("function () { return this.get_bitmapData (); }"),
-				set: untyped __js__("function (v) { return this.set_bitmapData (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_bitmapData (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_bitmapData (v); }")
 			},
-			"numRects": {get: untyped __js__("function () { return this.get_numRects (); }")}
+			"numRects": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_numRects (); }")}
 		});
 	}
 	#end

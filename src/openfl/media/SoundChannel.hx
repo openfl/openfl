@@ -69,12 +69,12 @@ import lime.media.AudioSource;
 	{
 		untyped Object.defineProperties(SoundChannel.prototype, {
 			"position": {
-				get: untyped __js__("function () { return this.get_position (); }"),
-				set: untyped __js__("function (v) { return this.set_position (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_position (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_position (v); }")
 			},
 			"soundTransform": {
-				get: untyped __js__("function () { return this.get_soundTransform (); }"),
-				set: untyped __js__("function (v) { return this.set_soundTransform (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_soundTransform (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_soundTransform (v); }")
 			},
 		});
 	}

@@ -1196,12 +1196,12 @@ class InteractiveObject extends DisplayObject
 	{
 		untyped Object.defineProperties(InteractiveObject.prototype, {
 			"tabEnabled": {
-				get: untyped __js__("function () { return this.get_tabEnabled (); }"),
-				set: untyped __js__("function (v) { return this.set_tabEnabled (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_tabEnabled (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_tabEnabled (v); }")
 			},
 			"tabIndex": {
-				get: untyped __js__("function () { return this.get_tabIndex (); }"),
-				set: untyped __js__("function (v) { return this.set_tabIndex (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_tabIndex (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_tabIndex (v); }")
 			},
 		});
 	}
