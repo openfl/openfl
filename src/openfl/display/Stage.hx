@@ -1577,6 +1577,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 									var currentIndex = currentParent.getChildIndex(current);
 									if (currentIndex == -1)
 									{
+										current = currentParent;
 										continue;
 									}
 									var i = currentIndex + nextOffset;
