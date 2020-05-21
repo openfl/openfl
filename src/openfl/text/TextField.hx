@@ -3245,6 +3245,13 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function this_onKeyDown(event:KeyboardEvent):Void
 	{
+		#if html5
+		if (!tabEnabled){
+			if (event.keyCode == 9) event.preventDefault(); 	
+			window_onKeyDown(TAB, KeyModifier.NONE);
+		}
+		#end
+			
 		#if (lime && !openfl_doc_gen)
 		if (selectable && type != INPUT && event.keyCode == Keyboard.C && (event.commandKey || event.ctrlKey))
 		{
@@ -3288,6 +3295,21 @@ class TextField extends InteractiveObject
 	{
 		switch (key)
 		{
+			case TAB:
+				if (!tabEnabled)
+				{
+					var te = new TextEvent(TextEvent.TEXT_INPUT, true, true, "\t");
+
+					dispatchEvent(te);
+
+					if (!te.isDefaultPrevented())
+					{
+						__replaceSelectedText("\t", true);
+
+						dispatchEvent(new Event(Event.CHANGE, true));
+					}
+				}
+				
 			case RETURN, NUMPAD_ENTER:
 				if (__textEngine.multiline)
 				{
