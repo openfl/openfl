@@ -3247,8 +3247,10 @@ class TextField extends InteractiveObject
 	{
 		#if html5
 		if (!tabEnabled){
-			if (event.keyCode == 9) event.preventDefault(); 	
-			window_onKeyDown(TAB, KeyModifier.NONE);
+			if (event.keyCode == 9){
+				event.preventDefault(); 	
+				window_onKeyDown(TAB, KeyModifier.NONE);					
+			}			
 		}
 		#end
 			
