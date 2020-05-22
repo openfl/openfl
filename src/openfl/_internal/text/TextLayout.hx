@@ -165,7 +165,7 @@ class TextLayout
 
 						positions.push(new GlyphPosition(0, new Vector2(0, 0), new Vector2(0, 0)));
 					}
-
+					if(text.charAt(i) == "\t") info.codepoint = 2;
 					positions.push(new GlyphPosition(info.codepoint, new Vector2(position.xAdvance / 64 + letterSpacing, position.yAdvance / 64),
 						new Vector2(position.xOffset / 64, position.yOffset / 64)));
 					lastCluster = info.cluster;
