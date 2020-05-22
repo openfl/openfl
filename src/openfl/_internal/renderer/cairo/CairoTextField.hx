@@ -329,11 +329,15 @@ class CairoTextField
 								cairo.setSourceRGB(1, 1, 1);
 
 								// TODO: draw only once
-
-								cairo.moveTo(scrollX + start.x, group.offsetY + group.ascent + scrollY);
-
-								// TODO: Use `showGlyphs` not `showText`
-								cairo.showText(text.substring(selectionStart, selectionEnd));
+								
+								var selectedGylphs = [];								
+								
+								selectionStart -= group.startIndex;
+								selectionEnd -= group.startIndex;
+								for (i in selectionStart...selectionEnd) selectedGylphs.push(glyphs[i]);
+								cairo.showGlyphs(selectedGylphs);
+								
+								// TODO: Avoid creating glyph array every time.								
 							}
 						}
 					}
