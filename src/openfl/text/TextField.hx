@@ -2395,7 +2395,6 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function __updateScrollH():Void
 	{
-		__layoutDirty = true; // TODO: remove, dirty should be set elsewhere to avoid redundant layouts
 		__updateLayout();
 
 		if (textWidth <= width - 4)
@@ -2470,7 +2469,6 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function __updateScrollV():Void
 	{
-		__layoutDirty = true; // TODO: remove, dirty should be set elsewhere to avoid redundant layouts
 		__updateLayout();
 
 		if (textHeight <= height - 4)

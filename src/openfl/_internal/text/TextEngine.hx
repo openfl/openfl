@@ -1799,7 +1799,7 @@ class TextEngine
 				}
 			}
 
-			if (ret < 1) return 1;
+			if (ret < scrollV) return scrollV;
 			return ret;
 		}
 	}
