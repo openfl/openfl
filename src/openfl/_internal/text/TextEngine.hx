@@ -1784,18 +1784,19 @@ class TextEngine
 		else
 		{
 			var tempHeight = 0.0;
-			var ret = numLines;
+			var ret = scrollV;
 			var firstVisible = scrollV - 1;
 			
 			for (i in firstVisible...lineHeights.length)
 			{
-				if (tempHeight + lineHeights[i] < height - 4)
+				if (tempHeight + lineHeights[i] <= height - 4)
 				{
 					tempHeight += lineHeights[i];
+					ret = i + 1;
 				}
 				else
 				{
-					return (i + 1);
+					break;
 				}
 			}
 			
@@ -1812,20 +1813,20 @@ class TextEngine
 		}
 		else
 		{
-			var i = numLines - 1, tempHeight = 0.0;
+			var ret = numLines, tempHeight = 0.0;
 
-			while (i > 0)
+			for (i in lineHeights.length - 1...0)
 			{
-				if (tempHeight + lineHeights[i] < height - 4)
+				if (tempHeight + lineHeights[i] <= height - 4)
 				{
 					tempHeight += lineHeights[i];
-					i--;
+					ret = i + 1;
 				}
 				else
 					break;
 			}
 
-			return (i + 1);
+			return ret;
 		}
 	}
 
