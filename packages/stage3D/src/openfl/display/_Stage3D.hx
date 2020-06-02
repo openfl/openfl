@@ -1,7 +1,7 @@
 package openfl.display;
 
 import haxe.Timer;
-import openfl._internal.renderer.DisplayObjectRenderData;
+import openfl.display._internal.DisplayObjectRenderData;
 import openfl.display3D.Context3D;
 import openfl.display3D._Context3D;
 import openfl.display3D.Context3DProfile;

@@ -5,7 +5,7 @@ import openfl._internal.backend.gl.GLProgram;
 import openfl._internal.backend.gl.GLShader;
 import openfl._internal.backend.gl.GLUniformLocation;
 import openfl.display3D._internal.agal.AGALConverter;
-import openfl._internal.renderer.SamplerState;
+import openfl.display._internal.SamplerState;
 import openfl._internal.utils.Float32Array;
 import openfl._internal.utils.Log;
 import openfl.display.ShaderParameterType;

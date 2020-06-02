@@ -3,7 +3,7 @@ package openfl.display;
 #if !flash
 import openfl._internal.backend.gl.GLProgram;
 import openfl._internal.backend.gl.GLShader;
-import openfl._internal.renderer.ShaderBuffer;
+import openfl.display._internal.ShaderBuffer;
 import openfl._internal.utils.Float32Array;
 import openfl._internal.utils.Log;
 import openfl.display3D.Context3D;

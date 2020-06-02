@@ -1,4 +1,4 @@
-package openfl._internal.renderer;
+package openfl.display._internal;
 
 import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;

@@ -6,7 +6,7 @@ import openfl._internal.backend.gl.GLRenderbuffer;
 import openfl._internal.formats.swf.SWFLite;
 import openfl._internal.symbols.BitmapSymbol;
 import openfl._internal.utils.Float32Array;
-import openfl._internal.utils.PerlinNoise;
+import openfl.display._internal.PerlinNoise;
 import openfl._internal.utils.UInt16Array;
 import openfl._internal.utils.UInt8Array;
 import openfl.display3D.textures.TextureBase;

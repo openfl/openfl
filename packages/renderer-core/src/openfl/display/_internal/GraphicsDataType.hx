@@ -1,4 +1,4 @@
-package openfl._internal.renderer;
+package openfl.display._internal;
 
 @:dox(hide) @:enum abstract GraphicsDataType(Int)
 {

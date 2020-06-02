@@ -1,4 +1,4 @@
-package openfl._internal.renderer;
+package openfl.display._internal;
 
 import openfl._internal.backend.gl.GLBuffer;
 import openfl._internal.utils.Float32Array;

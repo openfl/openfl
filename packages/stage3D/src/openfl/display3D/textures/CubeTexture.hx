@@ -4,7 +4,7 @@ package openfl.display3D.textures;
 import haxe.Timer;
 import openfl._internal.backend.gl.GLFramebuffer;
 import openfl.display3D._internal.atf.ATFReader;
-import openfl._internal.renderer.SamplerState;
+import openfl.display._internal.SamplerState;
 import openfl._internal.utils.ArrayBufferView;
 import openfl._internal.utils.Log;
 import openfl._internal.utils.UInt8Array;

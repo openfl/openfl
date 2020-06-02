@@ -1,4 +1,4 @@
-package openfl._internal.utils;
+package openfl.display._internal;
 
 /**
 	Title:      Perlin noise

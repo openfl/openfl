@@ -1,7 +1,7 @@
 package openfl.display3D._internal.agal;
 
 import haxe.Int64;
-import openfl._internal.renderer.SamplerState;
+import openfl.display._internal.SamplerState;
 import openfl._internal.utils.Log;
 import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;

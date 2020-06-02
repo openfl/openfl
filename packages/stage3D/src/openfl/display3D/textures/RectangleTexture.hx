@@ -1,7 +1,7 @@
 package openfl.display3D.textures;
 
 #if !flash
-import openfl._internal.renderer.SamplerState;
+import openfl.display._internal.SamplerState;
 import openfl._internal.utils.ArrayBufferView;
 import openfl._internal.utils.UInt8Array;
 import openfl.display.BitmapData;

@@ -5,7 +5,7 @@ import openfl._internal.backend.gl.GLFramebuffer;
 import openfl._internal.backend.gl.GLRenderbuffer;
 import openfl._internal.backend.gl.GLTexture;
 import openfl.display3D._internal.atf.ATFGPUFormat;
-import openfl._internal.renderer.SamplerState;
+import openfl.display._internal.SamplerState;
 import openfl.display.BitmapData;
 import openfl.events.EventDispatcher;
 import openfl.errors.Error;

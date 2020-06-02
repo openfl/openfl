@@ -1,7 +1,7 @@
 package openfl.display;
 
 #if !flash
-import openfl._internal.renderer.GraphicsFillType;
+import openfl.display._internal.GraphicsFillType;
 
 interface IGraphicsFill
 {

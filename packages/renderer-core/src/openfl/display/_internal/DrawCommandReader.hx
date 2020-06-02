@@ -1,4 +1,4 @@
-package openfl._internal.renderer;
+package openfl.display._internal;
 
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
@@ -16,7 +16,8 @@ import openfl.Vector;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:allow(openfl._internal.renderer)
+@:allow(openfl.display._internal)
+@:access(openfl.display._internal)
 @SuppressWarnings("checkstyle:FieldDocComment")
 class DrawCommandReader
 {

@@ -2,7 +2,7 @@ package openfl.display._internal;
 
 import openfl.display._internal.CairoGraphics;
 import openfl.display._internal.CanvasGraphics;
-import openfl._internal.renderer.DrawCommandReader;
+import openfl.display._internal.DrawCommandReader;
 import openfl._internal.utils.Float32Array;
 import openfl._internal.utils.UInt16Array;
 import openfl.display.BitmapData;

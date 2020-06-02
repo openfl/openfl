@@ -1,7 +1,7 @@
 package openfl.display._internal;
 
-import openfl._internal.renderer.DrawCommandBuffer;
-import openfl._internal.renderer.DrawCommandReader;
+import openfl.display._internal.DrawCommandBuffer;
+import openfl.display._internal.DrawCommandReader;
 import openfl.display.BitmapData;
 import openfl.display.CairoRenderer;
 import openfl.display.GradientType;

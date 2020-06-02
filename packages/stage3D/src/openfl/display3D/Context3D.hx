@@ -5,7 +5,7 @@ import openfl._internal.backend.gl.GLBuffer;
 import openfl._internal.backend.gl.GLFramebuffer;
 import openfl._internal.backend.gl.GLTexture;
 import openfl.display3D._internal.Context3DState;
-import openfl._internal.renderer.SamplerState;
+import openfl.display._internal.SamplerState;
 import openfl._internal.utils.Float32Array;
 import openfl._internal.utils.UInt16Array;
 import openfl._internal.utils.UInt8Array;

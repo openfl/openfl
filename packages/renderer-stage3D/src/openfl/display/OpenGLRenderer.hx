@@ -2,7 +2,7 @@ package openfl.display;
 
 #if !flash
 import openfl.display._internal.Context3DMaskShader;
-import openfl._internal.renderer.ShaderBuffer;
+import openfl.display._internal.ShaderBuffer;
 import openfl._internal.utils.ObjectPool;
 import openfl.display3D.Context3DClearMask;
 import openfl.display3D.Context3D;

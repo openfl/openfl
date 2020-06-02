@@ -46,7 +46,6 @@
 
 	<source path="packages/application/src" />
 	<source path="packages/assets/src" />
-	<source path="packages/assorted/src" />
 	<source path="packages/bitmapdata/src" />
 	<source path="packages/displayobject/src" />
 	<source path="packages/errors/src" />
