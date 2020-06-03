@@ -1,187 +1,121 @@
 package;
 
-import massive.munit.Assert;
-#if integration
-import openfl.display.Sprite;
-#end
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 
 class EventTest
 {
-	@Test public function bubbles()
+	public static function __init__()
 	{
-		// TODO: Confirm functionality
-
-		var event = new Event(Event.ACTIVATE);
-		var exists = event.bubbles;
-
-		Assert.isFalse(exists);
-
-		var dispatcher:EventDispatcher = null;
-	}
-
-	@Test public function cancelable()
-	{
-		// TODO: Confirm functionality
-
-		var event = new Event(Event.ACTIVATE);
-		var exists = event.cancelable;
-
-		Assert.isFalse(exists);
-	}
-
-	@Test public function currentTarget()
-	{
-		// TODO: Confirm functionality
-
-		var event = new Event(Event.ACTIVATE);
-		var exists = event.currentTarget;
-
-		Assert.isNull(exists);
-	}
-
-	@Test public function eventPhase()
-	{
-		// TODO: Confirm functionality
-
-		var event = new Event(Event.ACTIVATE);
-		var exists = event.eventPhase;
-
-		Assert.isNotNull(exists);
-	}
-
-	@Test public function target()
-	{
-		// TODO: Confirm functionality
-
-		var event = new Event(Event.ACTIVATE);
-		var exists = event.target;
-
-		Assert.isNull(exists);
-	}
-
-	@Test public function type()
-	{
-		// TODO: Confirm functionality
-
-		var event = new Event(Event.ACTIVATE);
-		var exists = event.type;
-
-		Assert.isNotNull(exists);
-	}
-
-	@Test public function new_()
-	{
-		// TODO: Isolate so integration is not needed
-
-		#if integration
-		// ADDED
-
-		var sprite = new Sprite();
-		var sprite2 = new Sprite();
-
-		var called = false;
-		var called2 = false;
-
-		var listener = function(e:Event)
+		Mocha.describe("Haxe | Event", function()
 		{
-			called = true;
+			Mocha.it("bubbles", function()
+			{
+				// TODO: Confirm functionality
 
-			Assert.areSame(cast e.target, sprite);
-			Assert.areSame(cast e.currentTarget, sprite);
-		}
+				var event = new Event(Event.ACTIVATE);
+				var exists = event.bubbles;
 
-		var listener2 = function(e:Event)
-		{
-			called2 = true;
+				Assert.assert(!exists);
+			});
 
-			Assert.areSame(cast e.target, sprite);
-			Assert.areSame(cast e.currentTarget, sprite2);
-		}
+			Mocha.it("cancelable", function()
+			{
+				// TODO: Confirm functionality
 
-		sprite.addEventListener(Event.ADDED, listener);
-		sprite2.addEventListener(Event.ADDED, listener2);
-		sprite2.addChild(sprite);
+				var event = new Event(Event.ACTIVATE);
+				var exists = event.cancelable;
 
-		Assert.isTrue(called);
-		Assert.isTrue(called2);
+				Assert.assert(!exists);
+			});
 
-		sprite.removeEventListener(Event.ADDED, listener);
-		sprite2.removeEventListener(Event.ADDED, listener2);
+			Mocha.it("currentTarget", function()
+			{
+				// TODO: Confirm functionality
 
-		// ADDED_TO_STAGE
+				var event = new Event(Event.ACTIVATE);
+				var exists = event.currentTarget;
 
-		called = false;
-		called2 = false;
+				Assert.equal(exists, null);
+			});
 
-		var listener = function(e:Event)
-		{
-			called = true;
+			Mocha.it("eventPhase", function()
+			{
+				// TODO: Confirm functionality
 
-			Assert.areSame(cast e.target, sprite);
-			Assert.areSame(cast e.currentTarget, sprite);
-		}
+				var event = new Event(Event.ACTIVATE);
+				var exists = event.eventPhase;
 
-		var listener2 = function(e:Event)
-		{
-			called2 = true;
+				Assert.notEqual(exists, null);
+			});
 
-			Assert.areSame(cast e.target, sprite2);
-			Assert.areSame(cast e.currentTarget, sprite2);
-		}
+			Mocha.it("target", function()
+			{
+				// TODO: Confirm functionality
 
-		sprite.addEventListener(Event.ADDED_TO_STAGE, listener);
-		sprite2.addEventListener(Event.ADDED_TO_STAGE, listener2);
-		Lib.current.stage.addChild(sprite2);
+				var event = new Event(Event.ACTIVATE);
+				var exists = event.target;
 
-		Assert.isTrue(called);
-		Assert.isTrue(called2);
-		#end
+				Assert.equal(exists, null);
+			});
+
+			Mocha.it("type", function()
+			{
+				// TODO: Confirm functionality
+
+				var event = new Event(Event.ACTIVATE);
+				var exists = event.type;
+
+				Assert.notEqual(exists, null);
+			});
+
+			Mocha.it("new", function() {});
+
+			Mocha.it("clone", function()
+			{
+				// TODO: Confirm functionality
+
+				var event = new Event(Event.ACTIVATE);
+				var exists = event.clone;
+
+				Assert.notEqual(exists, null);
+			});
+
+			Mocha.it("isDefaultPrevented", function()
+			{
+				// TODO: Confirm functionality
+
+				var event = new Event(Event.ACTIVATE);
+				var exists = event.isDefaultPrevented;
+
+				Assert.notEqual(exists, null);
+			});
+
+			Mocha.it("stopImmediatePropagation", function()
+			{
+				// TODO: Confirm functionality
+
+				var event = new Event(Event.ACTIVATE);
+				var exists = event.stopImmediatePropagation;
+
+				Assert.notEqual(exists, null);
+			});
+
+			Mocha.it("stopPropagation", function()
+			{
+				// TODO: Confirm functionality
+
+				var event = new Event(Event.ACTIVATE);
+				var exists = event.stopPropagation;
+
+				Assert.notEqual(exists, null);
+			});
+
+			/*public function toString", function () {
+
+
+
+			}*/
+		});
 	}
-
-	@Test public function clone()
-	{
-		// TODO: Confirm functionality
-
-		var event = new Event(Event.ACTIVATE);
-		var exists = event.clone;
-
-		Assert.isNotNull(exists);
-	}
-
-	@Test public function isDefaultPrevented()
-	{
-		// TODO: Confirm functionality
-
-		var event = new Event(Event.ACTIVATE);
-		var exists = event.isDefaultPrevented;
-
-		Assert.isNotNull(exists);
-	}
-
-	@Test public function stopImmediatePropagation()
-	{
-		// TODO: Confirm functionality
-
-		var event = new Event(Event.ACTIVATE);
-		var exists = event.stopImmediatePropagation;
-
-		Assert.isNotNull(exists);
-	}
-
-	@Test public function stopPropagation()
-	{
-		// TODO: Confirm functionality
-
-		var event = new Event(Event.ACTIVATE);
-		var exists = event.stopPropagation;
-
-		Assert.isNotNull(exists);
-	}
-	/*public function toString () {
-
-
-
-	}*/
 }

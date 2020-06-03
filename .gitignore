@@ -36,3 +36,8 @@ npm-debug.log
 *.tgz
 bin/tools.js
 *.bak
+packages/*/lib
+**/ExampleTest.hx
+**/TestMain.hx
+**/TestSuite.hx
+**/test/index.js

@@ -1,15 +1,20 @@
 package;
 
-import massive.munit.Assert;
 import openfl.events.EventPhase;
 
 class EventPhaseTest
 {
-	@Test public function test()
+	public static function __init__()
 	{
-		switch (EventPhase.CAPTURING_PHASE)
+		Mocha.describe("Haxe | EventPhase", function()
 		{
-			case EventPhase.CAPTURING_PHASE, EventPhase.AT_TARGET, EventPhase.BUBBLING_PHASE:
-		}
+			Mocha.it("test", function()
+			{
+				switch (EventPhase.CAPTURING_PHASE)
+				{
+					case EventPhase.CAPTURING_PHASE, EventPhase.AT_TARGET, EventPhase.BUBBLING_PHASE:
+				}
+			});
+		});
 	}
 }

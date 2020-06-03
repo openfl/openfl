@@ -1,0 +1,7 @@
+{
+	"name": "@openfl/eventdispatcher",
+	"private": true,
+	"scripts":{
+		"test": "cd test && haxe index.hxml && mocha-chrome index.html"
+	}
+}

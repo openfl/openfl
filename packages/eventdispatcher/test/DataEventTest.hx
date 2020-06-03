@@ -1,26 +1,31 @@
 package;
 
-import massive.munit.Assert;
 import openfl.events.DataEvent;
 
 class DataEventTest
 {
-	@Test public function data()
+	public static function __init__()
 	{
-		// TODO: Confirm functionality
+		Mocha.describe("Haxe | DataEvent", function()
+		{
+			Mocha.it("data", function()
+			{
+				// TODO: Confirm functionality
 
-		var dataEvent = new DataEvent(DataEvent.DATA);
-		var exists = dataEvent.data;
+				var dataEvent = new DataEvent(DataEvent.DATA);
+				var exists = dataEvent.data;
 
-		Assert.isNotNull(exists);
-	}
+				Assert.notEqual(exists, null);
+			});
 
-	@Test public function new_()
-	{
-		// TODO: Confirm functionality
+			Mocha.it("new", function()
+			{
+				// TODO: Confirm functionality
 
-		var dataEvent = new DataEvent(DataEvent.DATA);
+				var dataEvent = new DataEvent(DataEvent.DATA);
 
-		Assert.isNotNull(dataEvent);
+				Assert.notEqual(dataEvent, null);
+			});
+		});
 	}
 }

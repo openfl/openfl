@@ -1,0 +1,9 @@
+-js index.js
+-cp ../src
+-cp ../../mocha/src
+
+DataEventTest
+EventDispatcherTest
+EventPhaseTest
+EventTest
+TextEventTest
