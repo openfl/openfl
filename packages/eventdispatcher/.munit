@@ -1,0 +1,6 @@
+version=2.3.4
+src=test
+bin=lib/munit
+report=lib/munit/report
+hxml=munit.hxml
+classPaths=src

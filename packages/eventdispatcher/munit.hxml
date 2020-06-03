@@ -1,0 +1,5 @@
+-neko lib/munit/test.n
+-main TestMain
+-cp src
+-cp test
+-lib munit
