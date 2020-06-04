@@ -4,8 +4,7 @@
 		"@openfl/eventdispatcher": "0.0.0"
 	},
 	"scripts":{
-		"prepare": "node ../../scripts/haxelib-bootstrap.js",
-		"test": "haxe test.hxml && mocha-chrome test/index.html"
+		"test": "node ../../scripts/prepare-test.js && cd lib && haxe test.hxml && mocha-chrome test.html"
 	},
 	"private": true,
 	"version": "0.0.0",
