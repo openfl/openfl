@@ -1,0 +1,7 @@
+-js test/index.js
+-cp src
+-cp test
+-lib openfl.mocha
+-lib openfl.application
+
+ExternalInterfaceTest

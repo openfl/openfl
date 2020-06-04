@@ -41,3 +41,4 @@ packages/*/lib
 **/TestMain.hx
 **/TestSuite.hx
 **/test/index.js
+**/.haxelib

@@ -1,4 +1,6 @@
-package openfl.external;
+package;
+
+import openfl.external.ExternalInterface;
 
 class ExternalInterfaceTest
 {

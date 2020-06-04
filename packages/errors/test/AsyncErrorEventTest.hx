@@ -1,29 +1,25 @@
-package openfl.events;
+package;
+
+import openfl.events.AsyncErrorEvent;
+import Mocha.*;
 
 class AsyncErrorEventTest
 {
-	public static function __init__()
-	{
-		Mocha.describe("Haxe | AsyncErrorEvent", function()
+	static function __init__()
+		describe("Haxe | AsyncErrorEvent", () ->
 		{
-			Mocha.it("error", function()
+			it("error", () ->
 			{
 				// TODO: Confirm functionality
-
 				var asyncErrorEvent = new AsyncErrorEvent(AsyncErrorEvent.ASYNC_ERROR);
 				var exists = asyncErrorEvent.error;
-
 				Assert.equal(exists, null);
 			});
-
-			Mocha.it("new", function()
+			it("new", () ->
 			{
 				// TODO: Confirm functionality
-
 				var asyncErrorEvent = new AsyncErrorEvent(AsyncErrorEvent.ASYNC_ERROR);
-
 				Assert.notEqual(asyncErrorEvent, null);
 			});
 		});
-	}
 }

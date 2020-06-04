@@ -1,7 +1,7 @@
 {
-	"name": "@openfl/eventdispatcher",
+	"name": "@openfl/errors",
 	"dependencies": {
-
+		"@openfl/eventdispatcher": "0.0.0"
 	},
 	"scripts":{
 		"prepare": "node ../../scripts/haxelib-bootstrap.js",

@@ -1,4 +1,6 @@
-package openfl.events;
+package;
+
+import openfl.events.ErrorEvent;
 
 class ErrorEventTest
 {

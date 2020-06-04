@@ -1,4 +1,6 @@
-package openfl.errors;
+package;
+
+import openfl.errors.EOFError;
 
 class EOFErrorTest
 {

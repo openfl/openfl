@@ -1,6 +1,7 @@
--js index.js
--cp ../src
--cp ../../mocha/src
+-js test/index.js
+-cp src
+-cp test
+-lib openfl.mocha
 
 DataEventTest
 EventDispatcherTest

@@ -1,7 +1,8 @@
 package openfl.events;
 
 #if !flash
-import openfl._internal.utils.ObjectPool;
+// import openfl._internal.utils.ObjectPool;
+import openfl.events.TextEvent;
 
 /**
 	An object dispatches an ErrorEvent object when an error causes an
@@ -48,8 +49,8 @@ class ErrorEvent extends TextEvent
 	**/
 	public var errorID(default, null):Int;
 
-	@:noCompletion private static var __pool:ObjectPool<ErrorEvent> = new ObjectPool<ErrorEvent>(function() return new ErrorEvent(null),
-	function(event) event.__init());
+	// @:noCompletion private static var __pool:ObjectPool<ErrorEvent> = new ObjectPool<ErrorEvent>(function() return new ErrorEvent(null),
+	// function(event) event.__init());
 
 	/**
 		Creates an Event object that contains information about error events.

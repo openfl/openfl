@@ -2,7 +2,8 @@ package openfl.events;
 
 #if !flash
 import haxe.io.Error;
-import openfl._internal.utils.ObjectPool;
+
+// import openfl._internal.utils.ObjectPool;
 
 /**
 	An object dispatches an AsyncErrorEvent when an exception is thrown from
@@ -37,8 +38,8 @@ class AsyncErrorEvent extends ErrorEvent
 	**/
 	public var error:Error;
 
-	@:noCompletion private static var __pool:ObjectPool<AsyncErrorEvent> = new ObjectPool<AsyncErrorEvent>(function() return new AsyncErrorEvent(null),
-	function(event) event.__init());
+	// @:noCompletion private static var __pool:ObjectPool<AsyncErrorEvent> = new ObjectPool<AsyncErrorEvent>(function() return new AsyncErrorEvent(null),
+	// function(event) event.__init());
 
 	/**
 		Creates an AsyncErrorEvent object that contains information about
