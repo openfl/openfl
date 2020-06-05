@@ -4,8 +4,7 @@ on: [push]
 
 jobs:
 
-  unit:
-    name: "Unit Tests"
+  build:
     runs-on: ubuntu-16.04
 
     steps:
@@ -28,7 +27,7 @@ jobs:
 
     - name: Run Tests
       run: |
-        lerna run test
+        npx lerna run test
 
     - name: Notify Discord (success)
       uses: appleboy/discord-action@master
