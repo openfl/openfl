@@ -5,6 +5,11 @@ class StageTest
 {
 	public static function __init__()
 	{
+		Mocha.before(function()
+		{
+			var stage = new Stage(550, 400);
+		});
+
 		Mocha.describe("Haxe | Stage", function()
 		{
 			Mocha.it("align", function()
