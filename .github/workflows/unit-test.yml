@@ -27,7 +27,7 @@ jobs:
 
     - name: Run Tests
       run: |
-        npx lerna run test
+        npm test
 
     - name: Notify Discord (success)
       uses: appleboy/discord-action@master
