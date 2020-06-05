@@ -1,3 +1,4 @@
+import openfl.display.Loader;
 import openfl.display.LoaderInfo;
 
 class LoaderInfoTest

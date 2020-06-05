@@ -1,9 +1,15 @@
+import openfl.display.Stage;
 import openfl.system.Capabilities;
 
 class CapabilitiesTest
 {
 	public static function __init__()
 	{
+		Mocha.before(function()
+		{
+			var stage = new Stage(550, 400);
+		});
+
 		Mocha.describe("Haxe | Capabilities", function()
 		{
 			Mocha.it("language", function()
