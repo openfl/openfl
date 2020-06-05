@@ -1,8 +1,5 @@
 {
 	"name": "@openfl/mocha",
 	"version": "0.0.0",
-	"private": true,
-	"scripts":{
-		"test": "cd test && haxe index.hxml && mocha-chrome index.html"
-	}
+	"private": true
 }

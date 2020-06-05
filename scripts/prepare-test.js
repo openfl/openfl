@@ -13,7 +13,7 @@ if (fs.existsSync(testPath))
 {
 	tests = fs.readdirSync(testPath).filter((value) => {
 		return fs.lstatSync(path.resolve(testPath, value)).isFile();
-	})
+	});
 }
 
 if (tests.length > 0)
