@@ -1,7 +1,6 @@
 package openfl.events;
 
-import openfl._internal.utils.ObjectPool;
-
+// import openfl._internal.utils.ObjectPool;
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -12,8 +11,8 @@ class _VideoTextureEvent extends _Event
 	@:isVar public var colorSpace:String;
 	@:isVar public var status:String;
 
-	public static var __pool:ObjectPool<VideoTextureEvent> = new ObjectPool<VideoTextureEvent>(function() return new VideoTextureEvent(null),
-		function(event) event._.__init());
+	// public static var __pool:ObjectPool<VideoTextureEvent> = new ObjectPool<VideoTextureEvent>(function() return new VideoTextureEvent(null),
+	// 	function(event) event._.__init());
 
 	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false, status:String = null, colorSpace:String = null)
 	{

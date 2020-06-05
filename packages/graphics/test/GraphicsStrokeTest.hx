@@ -1,5 +1,4 @@
-package openfl.display;
-
+import openfl.display.GraphicsSolidFill;
 import openfl.display.GraphicsStroke;
 
 class GraphicsStrokeTest

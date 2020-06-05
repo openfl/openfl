@@ -1,4 +1,4 @@
-package openfl.geom;
+import openfl.geom.Utils3D;
 
 class Utils3DTest
 {

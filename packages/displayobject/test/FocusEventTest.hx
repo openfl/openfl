@@ -1,7 +1,7 @@
-package openfl.events;
-
 import openfl.display.Sprite;
+import openfl.events.EventPhase;
 import openfl.events.FocusEvent;
+import openfl.Lib;
 
 class FocusEventTest
 {

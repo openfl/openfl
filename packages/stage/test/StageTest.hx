@@ -1,5 +1,4 @@
-package openfl.display;
-
+import openfl.display.Stage;
 import openfl.Lib;
 
 class StageTest

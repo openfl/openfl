@@ -1,6 +1,5 @@
-package openfl.display;
-
 import openfl.display.InteractiveObject;
+import openfl.display.Sprite;
 import openfl.geom.Rectangle;
 
 class InteractiveObjectTest

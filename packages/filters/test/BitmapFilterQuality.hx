@@ -1,4 +1,4 @@
-package openfl.filters;
+import openfl.filters.BitmapFilterQuality;
 
 class BitmapFilterQualityTest
 {

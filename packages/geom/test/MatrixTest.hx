@@ -1,4 +1,4 @@
-package openfl.geom;
+import openfl.geom.Matrix;
 
 class MatrixTest
 {

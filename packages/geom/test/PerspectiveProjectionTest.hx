@@ -1,9 +1,15 @@
-package openfl.geom;
+import openfl.display.Stage;
+import openfl.geom.PerspectiveProjection;
 
 class PerspectiveProjectionTest
 {
 	public static function __init__()
 	{
+		Mocha.before(function()
+		{
+			var stage = new Stage(550, 400);
+		});
+
 		Mocha.describe("Haxe | PerspectiveProjection", function()
 		{
 			Mocha.it("fieldOfView", function()

@@ -1,8 +1,8 @@
-package openfl.display;
-
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.GradientType;
+import openfl.display.Graphics;
+import openfl.display.Shape;
 import openfl.display.Sprite;
 import openfl.geom.Matrix;
 

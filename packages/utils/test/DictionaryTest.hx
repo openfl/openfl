@@ -1,5 +1,3 @@
-package openfl.utils;
-
 import openfl.utils.Dictionary;
 
 class DictionaryTest

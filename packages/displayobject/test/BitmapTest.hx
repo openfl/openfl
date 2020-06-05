@@ -1,4 +1,6 @@
-package openfl.display;
+import openfl.display.Bitmap;
+import openfl.display.BitmapData;
+import openfl.display.PixelSnapping;
 
 class BitmapTest
 {

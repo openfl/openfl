@@ -1,4 +1,5 @@
-package openfl.filters;
+import openfl.filters.BitmapFilter;
+import openfl.filters.BlurFilter;
 
 class BitmapFilterTest
 {

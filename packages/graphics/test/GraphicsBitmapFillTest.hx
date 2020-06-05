@@ -1,5 +1,3 @@
-package openfl.display;
-
 import openfl.display.BitmapData;
 import openfl.display.GraphicsBitmapFill;
 import openfl.geom.Matrix;

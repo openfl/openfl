@@ -1,5 +1,3 @@
-package openfl.utils;
-
 import haxe.Int64;
 // import lime.system.System;
 import openfl.net.ObjectEncoding;

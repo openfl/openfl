@@ -1,5 +1,3 @@
-package openfl.display;
-
 import openfl.display.Shader;
 import openfl.display.ShaderPrecision;
 import openfl.utils.ByteArray;

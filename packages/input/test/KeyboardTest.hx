@@ -1,4 +1,4 @@
-package openfl.ui;
+import openfl.ui.Keyboard;
 
 class KeyboardTest
 {

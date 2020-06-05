@@ -1,7 +1,7 @@
 package openfl.events;
 
 #if !flash
-import openfl._internal.utils.ObjectPool;
+// import openfl._internal.utils.ObjectPool;
 
 /**
 	A Camera or Microphone object dispatches an ActivityEvent object whenever
@@ -36,8 +36,8 @@ class ActivityEvent extends Event
 	**/
 	public var activating:Bool;
 
-	@:noCompletion private static var __pool:ObjectPool<ActivityEvent> = new ObjectPool<ActivityEvent>(function() return new ActivityEvent(null),
-	function(event) event.__init());
+	// @:noCompletion private static var __pool:ObjectPool<ActivityEvent> = new ObjectPool<ActivityEvent>(function() return new ActivityEvent(null),
+	// function(event) event.__init());
 
 	/**
 		Creates an event object that contains information about activity

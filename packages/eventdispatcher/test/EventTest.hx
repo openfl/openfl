@@ -1,5 +1,3 @@
-package;
-
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 

@@ -1,4 +1,4 @@
-package openfl.geom;
+import openfl.geom.ColorTransform;
 
 class ColorTransformTest
 {

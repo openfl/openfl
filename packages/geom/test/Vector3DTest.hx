@@ -1,4 +1,4 @@
-package openfl.geom;
+import openfl.geom.Vector3D;
 
 class Vector3DTest
 {

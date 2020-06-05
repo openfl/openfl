@@ -1,5 +1,3 @@
-package openfl.display;
-
 import openfl.display.GraphicsGradientFill;
 import openfl.geom.Matrix;
 

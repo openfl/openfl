@@ -1,5 +1,3 @@
-package;
-
 import openfl.events.DataEvent;
 
 class DataEventTest

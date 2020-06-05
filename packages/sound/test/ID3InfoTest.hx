@@ -1,4 +1,5 @@
-package openfl.media;
+import openfl.media.ID3Info;
+import openfl.media.Sound;
 
 class ID3InfoTest
 {

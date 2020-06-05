@@ -1,4 +1,4 @@
-package openfl.net;
+import openfl.net.URLRequestHeader;
 
 class URLRequestHeaderTest
 {

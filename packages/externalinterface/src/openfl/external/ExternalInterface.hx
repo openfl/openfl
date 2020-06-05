@@ -301,7 +301,7 @@ import openfl._internal.Lib;
 	private static function get_objectID():String
 	{
 		#if (js && html5)
-		if (Lib.application.window.element != null)
+		if (Lib.application != null && Lib.application.window != null && Lib.application.window.element != null)
 		{
 			return Lib.application.window.element.id;
 		}

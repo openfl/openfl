@@ -1,5 +1,3 @@
-package openfl.display3D;
-
 import openfl.display3D.Context3DRenderMode;
 
 class Context3DRenderModeTest

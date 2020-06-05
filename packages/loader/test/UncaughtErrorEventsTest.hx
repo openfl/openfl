@@ -1,4 +1,4 @@
-package openfl.events;
+import openfl.events.UncaughtErrorEvents;
 
 class UncaughtErrorEventsTest
 {

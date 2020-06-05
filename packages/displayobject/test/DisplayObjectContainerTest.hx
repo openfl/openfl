@@ -1,498 +1,458 @@
-package openfl.display;
-
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.DisplayObject;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.Sprite;
-import openfl.errors.RangeError;
+import openfl.events.Event;
 import openfl.geom.Point;
+import openfl.Lib;
 
 class DisplayObjectContainerTest
 {
-	@Test public function addChild()
+	public static function __init__()
 	{
-		var sprite = new Sprite();
-		var sprite2 = new Sprite();
-
-		sprite.addChild(sprite2);
-
-		Assert.areEqual(1, sprite.numChildren);
-		Assert.areSame(sprite2, cast sprite.getChildAt(0));
-
-		var sprite3 = new Sprite();
-
-		sprite.addChild(sprite3);
-
-		Assert.areEqual(2, sprite.numChildren);
-		Assert.areEqual(0, sprite.getChildIndex(sprite2));
-		Assert.areEqual(1, sprite.getChildIndex(sprite3));
-
-		sprite.addChild(sprite2);
-
-		Assert.areEqual(0, sprite.getChildIndex(sprite3));
-		Assert.areEqual(1, sprite.getChildIndex(sprite2));
-
-		sprite2.addChild(sprite3);
-
-		Assert.areSame(sprite3.parent, sprite2);
-	}
-
-	@Test public function addChildAt()
-	{
-		var sprite = new Sprite();
-		var sprite2 = new Sprite();
-
-		sprite.addChildAt(sprite2, 0);
-
-		Assert.areEqual(1, sprite.numChildren);
-		Assert.areSame(sprite2, cast sprite.getChildAt(0));
-
-		var sprite3 = new Sprite();
-
-		sprite.addChildAt(sprite3, 1);
-
-		Assert.areEqual(2, sprite.numChildren);
-		Assert.areEqual(0, sprite.getChildIndex(sprite2));
-		Assert.areEqual(1, sprite.getChildIndex(sprite3));
-
-		sprite.addChildAt(sprite2, 0);
-
-		Assert.areEqual(0, sprite.getChildIndex(sprite2));
-		Assert.areEqual(1, sprite.getChildIndex(sprite3));
-
-		sprite.addChildAt(sprite2, 1);
-
-		Assert.areEqual(0, sprite.getChildIndex(sprite3));
-		Assert.areEqual(1, sprite.getChildIndex(sprite2));
-	}
-
-	@Test public function areInaccessibleObjectsUnderPoint()
-	{
-		var sprite = new Sprite();
-		Assert.isFalse(sprite.areInaccessibleObjectsUnderPoint(new Point()));
-		Assert.isFalse(sprite.areInaccessibleObjectsUnderPoint(new Point(100.0, 100.0)));
-	}
-
-	@Test public function contains()
-	{
-		var sprite = new Sprite();
-		var sprite2 = new Sprite();
-
-		Assert.isTrue(sprite.contains(sprite));
-		Assert.isFalse(sprite.contains(sprite2));
-
-		sprite.addChild(sprite2);
-
-		Assert.isTrue(sprite.contains(sprite2));
-
-		var sprite3 = new Sprite();
-		var sprite4 = new Sprite();
-
-		sprite3.addChild(sprite4);
-		sprite.addChild(sprite3);
-
-		Assert.isTrue(sprite.contains(sprite3));
-		Assert.isTrue(sprite.contains(sprite4));
-		Assert.isFalse(sprite3.contains(sprite));
-		Assert.isFalse(sprite4.contains(sprite));
-
-		sprite.removeChild(sprite3);
-		sprite.removeChild(sprite2);
-
-		Assert.isFalse(sprite.contains(sprite2));
-		Assert.isFalse(sprite.contains(sprite3));
-		Assert.isFalse(sprite.contains(sprite4));
-	}
-
-	@Test public function getChildAt()
-	{
-		var sprite = new Sprite();
-		var sprite2 = new Sprite();
-
-		sprite.addChild(sprite2);
-
-		Assert.areSame(sprite2, cast sprite.getChildAt(0));
-
-		var sprite3 = new Sprite();
-		sprite.addChild(sprite3);
-
-		Assert.areSame(sprite3, cast sprite.getChildAt(1));
-
-		sprite2.addChild(sprite3);
-
-		Assert.areSame(sprite3, cast sprite2.getChildAt(0));
-
-		try
+		Mocha.describe("Haxe | DisplayObjectContainer", function()
 		{
-			sprite.getChildAt(2);
-			Assert.fail("");
-		}
-		catch (e:Dynamic) {}
-	}
+			Mocha.it("mouseChildren", function()
+			{
+				// TODO: Confirm functionality
 
-	@Test public function getChildByName()
-	{
-		var sprite = new Sprite();
-		var sprite2 = new Sprite();
-		var sprite3 = new Sprite();
+				var sprite = new Sprite();
+				var exists = sprite.mouseChildren;
 
-		sprite2.name = "a";
-		sprite3.name = "a";
+				Assert.notEqual(exists, null);
+			});
 
-		sprite.addChild(sprite2);
-		sprite.addChild(sprite3);
+			Mocha.it("numChildren", function()
+			{
+				var sprites = [];
 
-		Assert.isNull(sprite.getChildByName("b"));
-		Assert.areSame(sprite2, cast sprite.getChildByName("a"));
+				for (i in 0...4)
+				{
+					sprites.push(new Sprite());
+				}
 
-		sprite3.name = "b";
+				Assert.equal(sprites[0].numChildren, 0);
 
-		Assert.areSame(sprite3, cast sprite.getChildByName("b"));
-	}
+				for (i in 1...4)
+				{
+					sprites[0].addChild(sprites[i]);
+					Assert.equal(sprites[0].numChildren, i);
+				}
 
-	@Test public function getChildIndex()
-	{
-		var sprite = new Sprite();
-		var sprite2 = new Sprite();
-		var sprite3 = new Sprite();
+				for (i in 1...4)
+				{
+					sprites[0].removeChild(sprites[i]);
+					Assert.equal(sprites[0].numChildren, 3 - i);
+				}
+			});
 
-		sprite.addChild(sprite2);
-		sprite.addChild(sprite3);
+			Mocha.it("tabChildren", function()
+			{
+				// TODO: Confirm functionality
 
-		Assert.areEqual(0, sprite.getChildIndex(sprite2));
-		Assert.areEqual(1, sprite.getChildIndex(sprite3));
+				var sprite = new Sprite();
+				var exists = sprite.tabChildren;
 
-		try
-		{
-			sprite2.getChildIndex(sprite3);
-			Assert.fail("");
-		}
-		catch (e:Dynamic) {}
-	}
+				// Assert.notEqual (exists, null);
+			});
 
-	@Test public function getObjectsUnderPoint()
-	{
-		#if (cpp || neko) // TODO: works but sometimes suffers from a race condition when run immediately
+			Mocha.it("addChild", function()
+			{
+				var sprite = new Sprite();
+				var sprite2 = new Sprite();
 
-		var sprite = new Sprite();
+				sprite.addChild(sprite2);
 
-		var sprite2 = new Sprite();
-		sprite2.graphics.beginFill(0xFF0000);
-		sprite2.graphics.drawRect(0, 0, 100, 100);
-		sprite.addChild(sprite2);
+				Assert.equal(sprite.numChildren, 1);
+				Assert.equal(sprite.getChildAt(0), sprite2);
 
-		Assert.areEqual(sprite2, sprite.getObjectsUnderPoint(new Point(10, 10))[0]);
-		Assert.areEqual(0, sprite.getObjectsUnderPoint(new Point()).length);
+				var sprite3 = new Sprite();
 
-		sprite.removeChild(sprite2);
+				sprite.addChild(sprite3);
 
-		Assert.areEqual(0, sprite.getObjectsUnderPoint(new Point()).length);
-		#end
-	}
+				Assert.equal(sprite.numChildren, 2);
+				Assert.equal(sprite.getChildIndex(sprite2), 0);
+				Assert.equal(sprite.getChildIndex(sprite3), 1);
 
-	@Test public function removeChild()
-	{
-		var sprite = new Sprite();
-		var sprite2 = new Sprite();
-		var sprite3 = new Sprite();
+				sprite.addChild(sprite2);
 
-		sprite.addChild(sprite2);
-		sprite.addChild(sprite3);
-		sprite.removeChild(sprite2);
-		sprite.removeChild(sprite3);
+				Assert.equal(sprite.getChildIndex(sprite3), 0);
+				Assert.equal(sprite.getChildIndex(sprite2), 1);
 
-		Assert.areEqual(0, sprite.numChildren);
+				sprite2.addChild(sprite3);
 
-		try
-		{
-			sprite.removeChild(sprite2);
-			Assert.fail("");
-		}
-		catch (e:Dynamic) {}
-	}
+				Assert.equal(sprite3.parent, sprite2);
+			});
 
-	@Test public function removeChildAt()
-	{
-		var sprite = new Sprite();
-		var sprite2 = new Sprite();
-		var sprite3 = new Sprite();
+			Mocha.it("addChildAt", function()
+			{
+				var sprite = new Sprite();
+				var sprite2 = new Sprite();
 
-		sprite.addChild(sprite2);
-		sprite.addChild(sprite3);
-		sprite.removeChildAt(0);
-		sprite.removeChildAt(0);
+				sprite.addChildAt(sprite2, 0);
 
-		Assert.areEqual(0, sprite.numChildren);
+				Assert.equal(sprite.numChildren, 1);
+				Assert.equal(sprite.getChildAt(0), sprite2);
 
-		try
-		{
-			sprite.removeChildAt(0);
-			Assert.fail("");
-		}
-		catch (e:Dynamic) {}
-	}
+				var sprite3 = new Sprite();
 
-	@Test public function removeChildrenDefaults()
-	{
-		var container = new Sprite();
+				sprite.addChildAt(sprite3, 1);
 
-		var sprite = new Sprite();
-		var sprite2 = new Sprite();
-		var sprite3 = new Sprite();
+				Assert.equal(sprite.numChildren, 2);
+				Assert.equal(sprite.getChildIndex(sprite2), 0);
+				Assert.equal(sprite.getChildIndex(sprite3), 1);
 
-		container.addChild(sprite);
-		container.addChild(sprite2);
-		container.addChild(sprite3);
+				sprite.addChildAt(sprite2, 0);
 
-		container.removeChildren();
+				Assert.equal(sprite.getChildIndex(sprite2), 0);
+				Assert.equal(sprite.getChildIndex(sprite3), 1);
 
-		Assert.areEqual(0, container.numChildren);
-	}
+				sprite.addChildAt(sprite2, 1);
 
-	@Test public function removeChildren()
-	{
-		var container = new Sprite();
+				Assert.equal(sprite.getChildIndex(sprite3), 0);
+				Assert.equal(sprite.getChildIndex(sprite2), 1);
+			});
 
-		var sprite = new Sprite();
-		var sprite2 = new Sprite();
-		var sprite3 = new Sprite();
+			Mocha.it("areInaccessibleObjectsUnderPoint", function()
+			{
+				// TODO: Confirm functionality
 
-		container.addChild(sprite);
-		container.addChild(sprite2);
-		container.addChild(sprite3);
+				var sprite = new Sprite();
+				var exists = sprite.areInaccessibleObjectsUnderPoint;
 
-		// remove first
-		container.removeChildren(0, 0);
+				Assert.notEqual(exists, null);
+			});
 
-		Assert.areEqual(2, container.numChildren);
-		Assert.areEqual(sprite2, container.getChildAt(0));
-		Assert.areEqual(sprite3, container.getChildAt(1));
+			Mocha.it("contains", function()
+			{
+				var sprite = new Sprite();
+				var sprite2 = new Sprite();
 
-		// remove last
-		container.removeChildren(1, 1);
+				Assert.assert(sprite.contains(sprite));
+				Assert.assert(!sprite.contains(sprite2));
 
-		Assert.areEqual(1, container.numChildren);
-		Assert.areEqual(sprite2, container.getChildAt(0));
+				sprite.addChild(sprite2);
 
-		container.removeChildren(0);
+				Assert.assert(sprite.contains(sprite2));
 
-		Assert.areEqual(0, container.numChildren);
-	}
+				var sprite3 = new Sprite();
+				var sprite4 = new Sprite();
 
-	@Test public function removeChildrenRangeError()
-	{
-		var container = new Sprite();
+				sprite3.addChild(sprite4);
+				sprite.addChild(sprite3);
 
-		var sprite = new Sprite();
-		var sprite2 = new Sprite();
-		var sprite3 = new Sprite();
+				Assert.assert(sprite.contains(sprite3));
+				Assert.assert(sprite.contains(sprite4));
+				Assert.assert(!sprite3.contains(sprite));
+				Assert.assert(!sprite4.contains(sprite));
 
-		container.addChild(sprite);
-		container.addChild(sprite2);
-		container.addChild(sprite3);
+				sprite.removeChild(sprite3);
+				sprite.removeChild(sprite2);
 
-		Assert.throws(RangeError, function():Void
-		{
-			container.removeChildren(0, 100);
+				Assert.assert(!sprite.contains(sprite2));
+				Assert.assert(!sprite.contains(sprite3));
+				Assert.assert(!sprite.contains(sprite4));
+			});
+
+			Mocha.it("dispatchEvent", function()
+			{
+				// Bubbling
+
+				var sprite = new Sprite();
+				var sprite2 = new Sprite();
+				var correctOrder = true;
+
+				var spriteEvent = false;
+				var sprite2Event = false;
+
+				var listener = function(_)
+				{
+					spriteEvent = true;
+					correctOrder = true;
+				}
+
+				var listener2 = function(_)
+				{
+					sprite2Event = true;
+					correctOrder = false;
+				}
+
+				sprite.addEventListener("event", listener);
+				sprite2.addEventListener("event", listener2);
+				sprite.addChild(sprite2);
+				sprite2.dispatchEvent(new Event("event"));
+
+				Assert.assert(!spriteEvent);
+				Assert.assert(sprite2Event);
+
+				sprite2Event = false;
+
+				sprite2.dispatchEvent(new Event("event", true));
+
+				Assert.assert(spriteEvent);
+				Assert.assert(sprite2Event);
+				Assert.assert(correctOrder);
+
+				// Capture event bubbling
+
+				#if flash // todo
+				var sprite = new Sprite();
+				var sprite2 = new Sprite();
+
+				var spriteEvent = false;
+				var sprite2Event = false;
+
+				var listener = function(_)
+				{
+					spriteEvent = true;
+					correctOrder = true;
+				}
+
+				var listener2 = function(_)
+				{
+					sprite2Event = true;
+					correctOrder = false;
+				}
+
+				sprite.addEventListener("event", listener, true);
+				sprite2.addEventListener("event", listener2, true);
+				sprite.addChild(sprite2);
+				sprite2.dispatchEvent(new Event("event"));
+
+				Assert.assert(spriteEvent);
+				Assert.assert(!sprite2Event);
+
+				sprite2Event = false;
+
+				sprite2.dispatchEvent(new Event("event", true));
+
+				Assert.assert(spriteEvent);
+				Assert.assert(!sprite2Event);
+				Assert.assert(correctOrder);
+				#end
+			});
+
+			Mocha.it("getChildAt", function()
+			{
+				var sprite = new Sprite();
+				var sprite2 = new Sprite();
+
+				sprite.addChild(sprite2);
+
+				Assert.equal(sprite.getChildAt(0), sprite2);
+
+				var sprite3 = new Sprite();
+				sprite.addChild(sprite3);
+
+				Assert.equal(sprite.getChildAt(1), sprite3);
+
+				sprite2.addChild(sprite3);
+
+				Assert.equal(sprite2.getChildAt(0), sprite3);
+
+				try
+				{
+					sprite.getChildAt(2);
+					Assert.ok(false);
+				}
+				catch (e:Dynamic) {}
+			});
+
+			Mocha.it("getChildByName", function()
+			{
+				var sprite = new Sprite();
+				var sprite2 = new Sprite();
+				var sprite3 = new Sprite();
+
+				sprite2.name = "a";
+				sprite3.name = "a";
+
+				sprite.addChild(sprite2);
+				sprite.addChild(sprite3);
+
+				Assert.equal(sprite.getChildByName("b"), null);
+				Assert.equal(sprite.getChildByName("a"), sprite2);
+
+				sprite3.name = "b";
+
+				Assert.equal(sprite.getChildByName("b"), sprite3);
+			});
+
+			Mocha.it("getChildIndex", function()
+			{
+				var sprite = new Sprite();
+				var sprite2 = new Sprite();
+				var sprite3 = new Sprite();
+
+				sprite.addChild(sprite2);
+				sprite.addChild(sprite3);
+
+				Assert.equal(sprite.getChildIndex(sprite2), 0);
+				Assert.equal(sprite.getChildIndex(sprite3), 1);
+
+				try
+				{
+					sprite2.getChildIndex(sprite3);
+					Assert.ok(false);
+				}
+				catch (e:Dynamic) {}
+			});
+
+			Mocha.it("getObjectsUnderPoint", function()
+			{
+				// #if (cpp || neko) // TODO: works but sometimes suffers from a race condition when run immediately
+
+				var sprite = new Sprite();
+
+				var sprite2 = new Sprite();
+				sprite2.graphics.beginFill(0xFF0000);
+				sprite2.graphics.drawRect(0, 0, 100, 100);
+				sprite.addChild(sprite2);
+
+				Assert.equal(sprite.getObjectsUnderPoint(new Point(10, 10))[0], sprite2);
+				Assert.equal(sprite.getObjectsUnderPoint(new Point()).length, 0);
+
+				sprite.removeChild(sprite2);
+
+				Assert.equal(sprite.getObjectsUnderPoint(new Point()).length, 0);
+
+				// #end
+			});
+
+			Mocha.it("removeChild", function()
+			{
+				var sprite = new Sprite();
+				var sprite2 = new Sprite();
+				var sprite3 = new Sprite();
+
+				sprite.addChild(sprite2);
+				sprite.addChild(sprite3);
+				sprite.removeChild(sprite2);
+				sprite.removeChild(sprite3);
+
+				Assert.equal(sprite.numChildren, 0);
+
+				try
+				{
+					sprite.removeChild(sprite2);
+					Assert.ok(false);
+				}
+				catch (e:Dynamic) {}
+			});
+
+			Mocha.it("removeChildAt", function()
+			{
+				var sprite = new Sprite();
+				var sprite2 = new Sprite();
+				var sprite3 = new Sprite();
+
+				sprite.addChild(sprite2);
+				sprite.addChild(sprite3);
+				sprite.removeChildAt(0);
+				sprite.removeChildAt(0);
+
+				Assert.equal(sprite.numChildren, 0);
+
+				try
+				{
+					sprite.removeChildAt(0);
+					Assert.ok(false);
+				}
+				catch (e:Dynamic) {}
+			});
+
+			Mocha.it("removeChildren", function()
+			{
+				// TODO: Confirm functionality
+
+				var sprite = new Sprite();
+				var exists = sprite.removeChildren;
+
+				Assert.notEqual(exists, null);
+			});
+
+			Mocha.it("setChildIndex", function()
+			{
+				var sprite = new Sprite();
+				var sprite2 = new Sprite();
+				var sprite3 = new Sprite();
+
+				sprite.addChild(sprite2);
+				sprite.addChild(sprite3);
+
+				sprite.setChildIndex(sprite3, 0);
+
+				Assert.equal(sprite.getChildIndex(sprite3), 0);
+
+				sprite.setChildIndex(sprite2, 0);
+
+				Assert.equal(sprite.getChildIndex(sprite2), 0);
+
+				try
+				{
+					sprite.removeChild(sprite2);
+					sprite.setChildIndex(sprite2, 0);
+					Assert.ok(false);
+				}
+				catch (e:Dynamic) {}
+			});
+
+			Mocha.it("stopAllMovieClips", function()
+			{
+				// TODO: Confirm functionality
+
+				var sprite = new Sprite();
+				var exists = sprite.stopAllMovieClips;
+
+				Assert.notEqual(exists, null);
+			});
+
+			Mocha.it("swapChildren", function()
+			{
+				var sprite = new Sprite();
+				var sprite2 = new Sprite();
+				var sprite3 = new Sprite();
+
+				sprite.addChild(sprite2);
+				sprite.addChild(sprite3);
+
+				sprite.swapChildren(sprite2, sprite3);
+
+				Assert.equal(sprite.getChildIndex(sprite3), 0);
+				Assert.equal(sprite.getChildIndex(sprite2), 1);
+
+				try
+				{
+					sprite.removeChild(sprite2);
+					sprite.swapChildren(sprite2, sprite3);
+					Assert.ok(false);
+				}
+				catch (e:Dynamic) {}
+			});
+
+			Mocha.it("swapChildrenAt", function()
+			{
+				var sprite = new Sprite();
+				var sprite2 = new Sprite();
+				var sprite3 = new Sprite();
+
+				sprite.addChild(sprite2);
+				sprite.addChild(sprite3);
+
+				sprite.swapChildrenAt(0, 1);
+
+				Assert.equal(sprite.getChildIndex(sprite3), 0);
+				Assert.equal(sprite.getChildIndex(sprite2), 1);
+
+				try
+				{
+					sprite.removeChild(sprite2);
+					sprite.swapChildrenAt(0, 1);
+					Assert.ok(false);
+				}
+				catch (e:Dynamic) {}
+			});
 		});
-	}
-
-	@Test public function setChildIndex()
-	{
-		var sprite = new Sprite();
-		var sprite2 = new Sprite();
-		var sprite3 = new Sprite();
-
-		sprite.addChild(sprite2);
-		sprite.addChild(sprite3);
-
-		sprite.setChildIndex(sprite3, 0);
-
-		Assert.areEqual(0, sprite.getChildIndex(sprite3));
-
-		sprite.setChildIndex(sprite2, 0);
-
-		Assert.areEqual(0, sprite.getChildIndex(sprite2));
-
-		try
-		{
-			sprite.removeChild(sprite2);
-			sprite.setChildIndex(sprite2, 0);
-			Assert.fail("");
-		}
-		catch (e:Dynamic) {}
-	}
-
-	@Test public function stopAllMovieClips()
-	{
-		// TODO: Confirm functionality
-
-		var sprite = new Sprite();
-		var exists = sprite.stopAllMovieClips;
-
-		Assert.isNotNull(exists);
-	}
-
-	@Test public function swapChildren()
-	{
-		var sprite = new Sprite();
-		var sprite2 = new Sprite();
-		var sprite3 = new Sprite();
-
-		sprite.addChild(sprite2);
-		sprite.addChild(sprite3);
-
-		sprite.swapChildren(sprite2, sprite3);
-
-		Assert.areEqual(0, sprite.getChildIndex(sprite3));
-		Assert.areEqual(1, sprite.getChildIndex(sprite2));
-
-		try
-		{
-			sprite.removeChild(sprite2);
-			sprite.swapChildren(sprite2, sprite3);
-			Assert.fail("");
-		}
-		catch (e:Dynamic) {}
-	}
-
-	@Test public function swapChildrenAt()
-	{
-		var sprite = new Sprite();
-		var sprite2 = new Sprite();
-		var sprite3 = new Sprite();
-
-		sprite.addChild(sprite2);
-		sprite.addChild(sprite3);
-
-		sprite.swapChildrenAt(0, 1);
-
-		Assert.areEqual(0, sprite.getChildIndex(sprite3));
-		Assert.areEqual(1, sprite.getChildIndex(sprite2));
-
-		try
-		{
-			sprite.removeChild(sprite2);
-			sprite.swapChildrenAt(0, 1);
-			Assert.fail("");
-		}
-		catch (e:Dynamic) {}
-	}
-
-	// Properties
-	@Test public function mouseChildren()
-	{
-		var sprite = new Sprite();
-		Assert.isTrue(sprite.mouseChildren);
-		sprite.mouseChildren = false;
-		Assert.isFalse(sprite.mouseChildren);
-	}
-
-	@Test public function numChildren()
-	{
-		var sprites = [];
-
-		for (i in 0...4)
-		{
-			sprites.push(new Sprite());
-		}
-
-		Assert.areEqual(0, sprites[0].numChildren);
-
-		for (i in 1...4)
-		{
-			sprites[0].addChild(sprites[i]);
-			Assert.areEqual(i, sprites[0].numChildren);
-		}
-
-		for (i in 1...4)
-		{
-			sprites[0].removeChild(sprites[i]);
-			Assert.areEqual(3 - i, sprites[0].numChildren);
-		}
-	}
-
-	@Test public function tabChildren()
-	{
-		var sprite = new Sprite();
-		Assert.isTrue(sprite.tabChildren);
-		sprite.tabChildren = false;
-		Assert.isFalse(sprite.tabChildren);
-	}
-
-	@Test public function dispatchEvent()
-	{
-		// Bubbling
-
-		var sprite = new Sprite();
-		var sprite2 = new Sprite();
-
-		var spriteEvent = false;
-		var sprite2Event = false;
-
-		var listener = function(_)
-		{
-			spriteEvent = true;
-			correctOrder = true;
-		}
-
-		var listener2 = function(_)
-		{
-			sprite2Event = true;
-			correctOrder = false;
-		}
-
-		sprite.addEventListener("event", listener);
-		sprite2.addEventListener("event", listener2);
-		sprite.addChild(sprite2);
-		sprite2.dispatchEvent(new Event("event"));
-
-		Assert.isFalse(spriteEvent);
-		Assert.isTrue(sprite2Event);
-
-		sprite2Event = false;
-
-		sprite2.dispatchEvent(new Event("event", true));
-
-		Assert.isTrue(spriteEvent);
-		Assert.isTrue(sprite2Event);
-		Assert.isTrue(correctOrder);
-
-		// Capture event bubbling
-
-		var sprite = new Sprite();
-		var sprite2 = new Sprite();
-
-		var spriteEvent = false;
-		var sprite2Event = false;
-
-		var listener = function(_)
-		{
-			spriteEvent = true;
-			correctOrder = true;
-		}
-
-		var listener2 = function(_)
-		{
-			sprite2Event = true;
-			correctOrder = false;
-		}
-
-		sprite.addEventListener("event", listener, true);
-		sprite2.addEventListener("event", listener2, true);
-		sprite.addChild(sprite2);
-		sprite2.dispatchEvent(new Event("event"));
-
-		Assert.isTrue(spriteEvent);
-		Assert.isFalse(sprite2Event);
-
-		sprite2Event = false;
-
-		sprite2.dispatchEvent(new Event("event", true));
-
-		Assert.isTrue(spriteEvent);
-		Assert.isFalse(sprite2Event);
-		Assert.isTrue(correctOrder);
 	}
 }

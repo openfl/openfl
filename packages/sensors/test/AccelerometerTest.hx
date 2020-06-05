@@ -1,4 +1,4 @@
-package openfl.sensors;
+import openfl.sensors.Accelerometer;
 
 class AccelerometerTest
 {

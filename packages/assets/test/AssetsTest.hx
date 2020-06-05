@@ -1,6 +1,5 @@
-package openfl;
-
 import openfl.display.BitmapData;
+import openfl.utils.Assets;
 
 class AssetsTest
 {
@@ -38,12 +37,12 @@ class AssetsTest
 				var preload = new BitmapData(1, 1, false, 0);
 				MacroPreloadTest.preload = preload.image;
 				Assert.equal(1, new MacroPreloadTest(0, 0).width);
-			}
+			});
 			#end
 		});
 	}
 }
 
 #if html5
-@:bitmap("openfl/1x1.png") class MacroPreloadTest extends BitmapData {}
+@:bitmap("assets/1x1.png") class MacroPreloadTest extends BitmapData {}
 #end

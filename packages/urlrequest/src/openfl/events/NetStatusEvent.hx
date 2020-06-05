@@ -1,7 +1,7 @@
 package openfl.events;
 
 #if !flash
-import openfl._internal.utils.ObjectPool;
+// import openfl._internal.utils.ObjectPool;
 
 /**
 	A NetConnection, NetStream, or SharedObject object dispatches
@@ -124,8 +124,8 @@ class NetStatusEvent extends Event
 	**/
 	public var info:Dynamic;
 
-	@:noCompletion private static var __pool:ObjectPool<NetStatusEvent> = new ObjectPool<NetStatusEvent>(function() return new NetStatusEvent(null),
-	function(event) event.__init());
+	// @:noCompletion private static var __pool:ObjectPool<NetStatusEvent> = new ObjectPool<NetStatusEvent>(function() return new NetStatusEvent(null),
+	// function(event) event.__init());
 
 	/**
 		Creates an Event object that contains information about `netStatus`

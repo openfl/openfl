@@ -1,6 +1,6 @@
-package openfl.text;
-
 import openfl.display.BitmapData;
+import openfl.text.TextField;
+import openfl.text.TextFieldAutoSize;
 
 class TextFieldTest
 {

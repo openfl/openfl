@@ -1,4 +1,4 @@
-package openfl.system;
+import openfl.system.SecurityDomain;
 
 class SecurityDomainTest
 {

@@ -1,5 +1,3 @@
-package openfl.display;
-
 import openfl.display.Stage3D;
 import openfl.display3D.Context3D;
 

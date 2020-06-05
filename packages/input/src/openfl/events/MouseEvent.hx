@@ -1,7 +1,7 @@
 package openfl.events;
 
 #if !flash
-import openfl._internal.utils.ObjectPool;
+// import openfl._internal.utils.ObjectPool;
 import openfl.display.InteractiveObject;
 import openfl.geom.Point;
 
@@ -571,8 +571,8 @@ class MouseEvent extends Event
 	@:noCompletion private static var __buttonDown:Bool;
 	@:noCompletion private static var __commandKey:Bool;
 	@:noCompletion private static var __ctrlKey:Bool;
-	@:noCompletion private static var __pool:ObjectPool<MouseEvent> = new ObjectPool<MouseEvent>(function() return new MouseEvent(null),
-	function(event) event.__init());
+	// @:noCompletion private static var __pool:ObjectPool<MouseEvent> = new ObjectPool<MouseEvent>(function() return new MouseEvent(null),
+	// function(event) event.__init());
 	@:noCompletion private static var __shiftKey:Bool;
 
 	/**

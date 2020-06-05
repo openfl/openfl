@@ -1,4 +1,4 @@
-package openfl.geom;
+import openfl.geom.Point;
 
 class PointTest
 {

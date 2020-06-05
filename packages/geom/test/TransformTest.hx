@@ -1,6 +1,5 @@
-package openfl.geom;
-
 import openfl.display.Sprite;
+import openfl.geom.Rectangle;
 
 class TransformTest
 {

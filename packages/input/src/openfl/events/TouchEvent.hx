@@ -1,7 +1,7 @@
 package openfl.events;
 
 #if !flash
-import openfl._internal.utils.ObjectPool;
+// import openfl._internal.utils.ObjectPool;
 import openfl.display.InteractiveObject;
 import openfl.geom.Point;
 import openfl.utils.ByteArray;
@@ -408,8 +408,8 @@ class TouchEvent extends Event
 	**/
 	public var touchPointID:Int;
 
-	@:noCompletion private static var __pool:ObjectPool<TouchEvent> = new ObjectPool<TouchEvent>(function() return new TouchEvent(null),
-	function(event) event.__init());
+	// @:noCompletion private static var __pool:ObjectPool<TouchEvent> = new ObjectPool<TouchEvent>(function() return new TouchEvent(null),
+	// function(event) event.__init());
 
 	/**
 		Creates an Event object that contains information about touch events.

@@ -1,6 +1,5 @@
-package openfl.events;
-
 import openfl.display.Sprite;
+import openfl.events.TouchEvent;
 
 class TouchEventTest
 {

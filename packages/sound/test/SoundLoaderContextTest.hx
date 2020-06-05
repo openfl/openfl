@@ -1,4 +1,4 @@
-package openfl.media;
+import openfl.media.SoundLoaderContext;
 
 class SoundLoaderContextTest
 {

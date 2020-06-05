@@ -1,5 +1,3 @@
-package openfl.desktop;
-
 import openfl.desktop.Clipboard;
 
 class ClipboardTest

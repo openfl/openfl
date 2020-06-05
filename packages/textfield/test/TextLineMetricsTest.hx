@@ -1,4 +1,4 @@
-package openfl.text;
+import openfl.text.TextLineMetrics;
 
 class TextLineMetricsTest
 {

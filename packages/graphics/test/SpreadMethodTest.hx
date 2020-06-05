@@ -1,4 +1,4 @@
-package openfl.display;
+import openfl.display.SpreadMethod;
 
 class SpreadMethodTest
 {

@@ -1,4 +1,4 @@
-package openfl.ui;
+import openfl.ui.MultitouchInputMode;
 
 class MultitouchInputModeTest
 {

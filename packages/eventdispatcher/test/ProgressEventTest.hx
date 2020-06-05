@@ -1,5 +1,3 @@
-package;
-
 import openfl.events.ProgressEvent;
 
 class ProgressEventTest

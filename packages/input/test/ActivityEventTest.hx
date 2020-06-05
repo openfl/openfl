@@ -1,4 +1,4 @@
-package openfl.events;
+import openfl.events.ActivityEvent;
 
 class ActivityEventTest
 {

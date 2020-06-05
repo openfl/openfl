@@ -1,10 +1,10 @@
 {
 	"name": "@openfl/urlrequest",
 	"dependencies": {
-
+		"@openfl/eventdispatcher": "0.0.0"
 	},
 	"scripts":{
-		"test": "node ../../scripts/prepare-test.js && cd lib && haxe test.hxml && mocha-chrome test.html"
+		"test": "node ../../scripts/run-test.js"
 	},
 	"private": true,
 	"version": "0.0.0",

@@ -1,4 +1,4 @@
-package openfl.utils;
+import openfl.utils.Endian;
 
 class EndianTest
 {

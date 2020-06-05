@@ -1,5 +1,7 @@
-package openfl.display;
-
+import openfl.display.Bitmap;
+import openfl.display.BitmapData;
+import openfl.display.BitmapDataChannel;
+import openfl.display.Sprite;
 import openfl.filters.GlowFilter;
 import openfl.geom.ColorTransform;
 import openfl.geom.Point;

@@ -1,7 +1,5 @@
-package openfl.display3D;
-
-import openfl.display.Stage3DTest;
 import openfl.display3D.VertexBuffer3D;
+import Stage3DTest;
 
 class VertexBuffer3DTest
 {

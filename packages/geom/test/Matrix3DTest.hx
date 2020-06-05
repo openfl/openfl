@@ -1,7 +1,7 @@
-package openfl.geom;
-
-import openfl.Vector;
+import openfl.geom.Matrix3D;
+import openfl.geom.Orientation3D;
 import openfl.geom.Vector3D;
+import openfl.Vector;
 
 class Matrix3DTest
 {

@@ -1,4 +1,4 @@
-package openfl.events;
+import openfl.events.NetStatusEvent;
 
 class NetStatusEventTest
 {

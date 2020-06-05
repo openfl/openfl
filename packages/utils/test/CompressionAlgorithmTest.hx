@@ -1,4 +1,4 @@
-package openfl.utils;
+import openfl.utils.CompressionAlgorithm;
 
 class CompressionAlgorithmTest
 {

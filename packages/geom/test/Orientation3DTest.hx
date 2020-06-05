@@ -1,4 +1,4 @@
-package openfl.geom;
+import openfl.geom.Orientation3D;
 
 class Orientation3DTest
 {

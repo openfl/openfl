@@ -1,4 +1,4 @@
-package openfl;
+import openfl.Lib;
 
 class LibTest
 {

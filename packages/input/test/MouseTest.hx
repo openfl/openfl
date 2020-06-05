@@ -1,4 +1,4 @@
-package openfl.ui;
+import openfl.ui.Mouse;
 
 class MouseTest
 {

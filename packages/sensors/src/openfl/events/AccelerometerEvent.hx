@@ -1,7 +1,7 @@
 package openfl.events;
 
 #if !flash
-import openfl._internal.utils.ObjectPool;
+// import openfl._internal.utils.ObjectPool;
 
 /**
 	The Accelerometer class dispatches AccelerometerEvent objects when
@@ -63,8 +63,8 @@ class AccelerometerEvent extends Event
 	**/
 	public var timestamp:Float;
 
-	@:noCompletion private static var __pool:ObjectPool<AccelerometerEvent> = new ObjectPool<AccelerometerEvent>(function() return
-		new AccelerometerEvent(null), function(event) event.__init());
+	// @:noCompletion private static var __pool:ObjectPool<AccelerometerEvent> = new ObjectPool<AccelerometerEvent>(function() return
+	// 	new AccelerometerEvent(null), function(event) event.__init());
 
 	/**
 		Creates an AccelerometerEvent object that contains information about

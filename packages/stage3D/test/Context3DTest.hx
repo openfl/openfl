@@ -1,7 +1,5 @@
-package openfl.display3D;
-
-import openfl.display.Stage3DTest;
 import openfl.display3D.Context3D;
+import Stage3DTest;
 
 class Context3DTest
 {

@@ -1,9 +1,8 @@
-package openfl.filters;
-
 // import format.pbj.Data;
 // import format.pbj.Writer;
 // import haxe.io.BytesOutput;
 import openfl.display.Shader;
+import openfl.filters.ShaderFilter;
 
 class ShaderFilterTest
 {

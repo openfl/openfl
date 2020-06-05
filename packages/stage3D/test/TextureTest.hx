@@ -1,7 +1,5 @@
-package openfl.display3D.textures;
-
-import openfl.display.Stage3DTest;
 import openfl.display3D.textures.Texture;
+import Stage3DTest;
 
 class TextureTest
 {

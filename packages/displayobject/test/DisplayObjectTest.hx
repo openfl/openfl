@@ -1,8 +1,8 @@
-package openfl.display;
-
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
+import openfl.display.DisplayObject;
 import openfl.display.Sprite;
+import openfl.display.Stage;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.Lib;
@@ -11,6 +11,11 @@ class DisplayObjectTest
 {
 	public static function __init__()
 	{
+		Mocha.before(function()
+		{
+			var stage = new Stage(550, 400);
+		});
+
 		Mocha.describe("Haxe | DisplayObject", function()
 		{
 			Mocha.it("alpha", function()

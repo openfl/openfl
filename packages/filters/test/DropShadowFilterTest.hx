@@ -1,4 +1,4 @@
-package openfl.filters;
+import openfl.filters.DropShadowFilter;
 
 class DropShadowFilterTest
 {

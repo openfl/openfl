@@ -1,6 +1,5 @@
-package openfl;
-
 import openfl.errors.Error;
+import openfl.Vector;
 
 class VectorTest
 {

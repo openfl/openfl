@@ -1,4 +1,5 @@
-package openfl.geom;
+import openfl.geom.Point;
+import openfl.geom.Rectangle;
 
 class RectangleTest
 {

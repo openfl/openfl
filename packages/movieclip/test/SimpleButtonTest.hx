@@ -1,6 +1,5 @@
-package openfl.display;
-
 import openfl.display.SimpleButton;
+import openfl.display.Sprite;
 
 class SimpleButtonTest
 {

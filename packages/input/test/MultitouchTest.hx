@@ -1,4 +1,4 @@
-package openfl.ui;
+import openfl.ui.Multitouch;
 
 class MultitouchTest
 {
