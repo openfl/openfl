@@ -4,7 +4,7 @@ class URLRequestTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | URLRequest", function()
+		Mocha.describe("URLRequest", function()
 		{
 			Mocha.it("contentType", function()
 			{

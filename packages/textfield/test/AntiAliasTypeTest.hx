@@ -4,7 +4,7 @@ class AntiAliasTypeTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | AntiAliasType", function()
+		Mocha.describe("AntiAliasType", function()
 		{
 			Mocha.it("test", function()
 			{

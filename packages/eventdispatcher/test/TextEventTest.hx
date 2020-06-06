@@ -4,7 +4,7 @@ class TextEventTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | TextEvent", function()
+		Mocha.describe("TextEvent", function()
 		{
 			Mocha.it("text", function()
 			{

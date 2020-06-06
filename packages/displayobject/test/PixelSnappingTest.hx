@@ -4,7 +4,7 @@ class PixelSnappingTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | PixelSnapping", function()
+		Mocha.describe("PixelSnapping", function()
 		{
 			Mocha.it("test", function()
 			{

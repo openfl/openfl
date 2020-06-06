@@ -4,7 +4,7 @@ class Context3DVertexBufferFormatTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Context3DVertexBuffer", function()
+		Mocha.describe("Context3DVertexBuffer", function()
 		{
 			Mocha.it("test", function()
 			{

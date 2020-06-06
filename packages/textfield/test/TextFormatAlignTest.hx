@@ -4,7 +4,7 @@ class TextFormatAlignTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | TextFormatAlign", function()
+		Mocha.describe("TextFormatAlign", function()
 		{
 			Mocha.it("test", function()
 			{

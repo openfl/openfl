@@ -4,7 +4,7 @@ class SpreadMethodTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | SpreadMethod", function()
+		Mocha.describe("SpreadMethod", function()
 		{
 			Mocha.it("test", function()
 			{

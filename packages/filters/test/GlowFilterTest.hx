@@ -4,7 +4,7 @@ class GlowFilterTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | GlowFilter", function()
+		Mocha.describe("GlowFilter", function()
 		{
 			Mocha.it("alpha", function()
 			{

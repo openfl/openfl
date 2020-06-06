@@ -4,7 +4,7 @@ class UncaughtErrorEventTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | UncaughtErrorEvent", function()
+		Mocha.describe("UncaughtErrorEvent", function()
 		{
 			Mocha.it("info", function()
 			{

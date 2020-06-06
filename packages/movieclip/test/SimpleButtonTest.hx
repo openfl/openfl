@@ -5,7 +5,7 @@ class SimpleButtonTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | SimpleButton", function()
+		Mocha.describe("SimpleButton", function()
 		{
 			Mocha.it("downState", function()
 			{

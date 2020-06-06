@@ -5,7 +5,7 @@ class TransformTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Transform", function()
+		Mocha.describe("Transform", function()
 		{
 			Mocha.it("colorTransform", function()
 			{

@@ -4,7 +4,7 @@ class BitmapFilterTypeTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | BitmapFilterType", function()
+		Mocha.describe("BitmapFilterType", function()
 		{
 			Mocha.it("test", function()
 			{

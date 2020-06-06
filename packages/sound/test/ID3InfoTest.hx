@@ -5,7 +5,7 @@ class ID3InfoTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | ID3Info", function()
+		Mocha.describe("ID3Info", function()
 		{
 			Mocha.it("album", function()
 			{

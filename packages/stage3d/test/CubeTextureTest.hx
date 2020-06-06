@@ -5,7 +5,7 @@ class CubeTextureTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | CubeTexture", function()
+		Mocha.describe("CubeTexture", function()
 		{
 			Mocha.it("uploadCompressedTextureFromByteArray", function()
 			{

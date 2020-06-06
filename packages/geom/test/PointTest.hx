@@ -4,7 +4,7 @@ class PointTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Point", function()
+		Mocha.describe("Point", function()
 		{
 			Mocha.it("length", function()
 			{

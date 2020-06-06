@@ -4,7 +4,7 @@ class ProgressEventTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | ProgressEvent", function()
+		Mocha.describe("ProgressEvent", function()
 		{
 			Mocha.it("bytesLoaded", function()
 			{

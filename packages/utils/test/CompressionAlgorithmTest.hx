@@ -4,7 +4,7 @@ class CompressionAlgorithmTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | CompressionAlgorithm", function()
+		Mocha.describe("CompressionAlgorithm", function()
 		{
 			Mocha.it("test", function()
 			{

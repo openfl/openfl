@@ -4,7 +4,7 @@ class Context3DCompareModeTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Context3DCompareMode", function()
+		Mocha.describe("Context3DCompareMode", function()
 		{
 			Mocha.it("test", function()
 			{

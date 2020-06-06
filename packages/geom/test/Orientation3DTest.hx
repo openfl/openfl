@@ -4,7 +4,7 @@ class Orientation3DTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Orientation", function()
+		Mocha.describe("Orientation", function()
 		{
 			Mocha.it("test", function()
 			{

@@ -6,7 +6,7 @@ import Mocha.*;
 class AsyncErrorEventTest
 {
 	static function __init__()
-		describe("Haxe | AsyncErrorEvent", () ->
+		describe("AsyncErrorEvent", () ->
 		{
 			it("error", () ->
 			{

@@ -5,7 +5,7 @@ class VectorTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Vector", function()
+		Mocha.describe("Vector", function()
 		{
 			Mocha.it("length", function()
 			{

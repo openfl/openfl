@@ -4,7 +4,7 @@ class URLLoaderTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | URLLoader", function()
+		Mocha.describe("URLLoader", function()
 		{
 			Mocha.it("bytesLoaded", function()
 			{

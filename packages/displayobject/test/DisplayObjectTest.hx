@@ -16,7 +16,7 @@ class DisplayObjectTest
 			var stage = new Stage(550, 400);
 		});
 
-		Mocha.describe("Haxe | DisplayObject", function()
+		Mocha.describe("DisplayObject", function()
 		{
 			Mocha.it("alpha", function()
 			{

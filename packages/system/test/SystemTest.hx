@@ -4,7 +4,7 @@ class SystemTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | System", function()
+		Mocha.describe("System", function()
 		{
 			Mocha.it("totalMemory", function()
 			{

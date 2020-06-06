@@ -4,7 +4,7 @@ class EndianTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Endian", function()
+		Mocha.describe("Endian", function()
 		{
 			Mocha.it("test", function()
 			{

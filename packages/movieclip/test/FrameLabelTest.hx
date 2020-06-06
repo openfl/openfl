@@ -4,7 +4,7 @@ class FrameLabelTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | FrameLabel", function()
+		Mocha.describe("FrameLabel", function()
 		{
 			Mocha.it("frame", function()
 			{

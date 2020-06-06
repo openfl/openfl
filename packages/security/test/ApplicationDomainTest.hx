@@ -4,7 +4,7 @@ class ApplicationDomainTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | ApplicationDomain", function()
+		Mocha.describe("ApplicationDomain", function()
 		{
 			Mocha.it("parentDomain", function()
 			{

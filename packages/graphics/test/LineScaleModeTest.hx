@@ -4,7 +4,7 @@ class LineScaleModeTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | LineScaleMode", function()
+		Mocha.describe("LineScaleMode", function()
 		{
 			Mocha.it("test", function()
 			{

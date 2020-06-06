@@ -4,7 +4,7 @@ class ShapeTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Shape", function()
+		Mocha.describe("Shape", function()
 		{
 			Mocha.it("graphics", function()
 			{

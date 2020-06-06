@@ -5,7 +5,7 @@ class VertexBuffer3DTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | VertexBuffer3D", function()
+		Mocha.describe("VertexBuffer3D", function()
 		{
 			Mocha.it("dispose", function()
 			{

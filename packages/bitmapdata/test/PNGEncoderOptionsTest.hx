@@ -4,7 +4,7 @@ class PNGEncoderOptionsTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | PNGEncoderOptions", function()
+		Mocha.describe("PNGEncoderOptions", function()
 		{
 			Mocha.it("fastCompression", function()
 			{

@@ -6,7 +6,7 @@ class IOErrorTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | IOError", function()
+		Mocha.describe("IOError", function()
 		{
 			Mocha.it("new", function()
 			{

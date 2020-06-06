@@ -4,7 +4,7 @@ class SpriteTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Sprite", function()
+		Mocha.describe("Sprite", function()
 		{
 			Mocha.it("buttonMode", function()
 			{

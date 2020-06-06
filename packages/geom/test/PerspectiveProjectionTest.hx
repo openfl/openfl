@@ -10,7 +10,7 @@ class PerspectiveProjectionTest
 			var stage = new Stage(550, 400);
 		});
 
-		Mocha.describe("Haxe | PerspectiveProjection", function()
+		Mocha.describe("PerspectiveProjection", function()
 		{
 			Mocha.it("fieldOfView", function()
 			{

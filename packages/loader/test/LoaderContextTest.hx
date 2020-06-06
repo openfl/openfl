@@ -4,7 +4,7 @@ class LoaderContextTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | LoaderContext", function()
+		Mocha.describe("LoaderContext", function()
 		{
 			Mocha.it("allowCodeImport", function()
 			{

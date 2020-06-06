@@ -4,7 +4,7 @@ class StageDisplayStateTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | StageDisplayState", function()
+		Mocha.describe("StageDisplayState", function()
 		{
 			Mocha.it("test", function()
 			{

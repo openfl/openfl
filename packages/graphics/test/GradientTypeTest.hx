@@ -4,7 +4,7 @@ class GradientTypeTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | GradientType", function()
+		Mocha.describe("GradientType", function()
 		{
 			Mocha.it("test", function()
 			{

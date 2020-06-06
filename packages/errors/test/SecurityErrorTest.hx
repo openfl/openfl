@@ -6,7 +6,7 @@ class SecurityErrorTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | SecurityError", function()
+		Mocha.describe("SecurityError", function()
 		{
 			Mocha.it("new", function()
 			{

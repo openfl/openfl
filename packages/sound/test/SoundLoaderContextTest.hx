@@ -4,7 +4,7 @@ class SoundLoaderContextTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | SoundLoaderContext", function()
+		Mocha.describe("SoundLoaderContext", function()
 		{
 			Mocha.it("bufferTime", function() {});
 

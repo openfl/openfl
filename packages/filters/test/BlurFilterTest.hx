@@ -4,7 +4,7 @@ class BlurFilterTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | BlurFilter", function()
+		Mocha.describe("BlurFilter", function()
 		{
 			Mocha.it("blurX", function()
 			{

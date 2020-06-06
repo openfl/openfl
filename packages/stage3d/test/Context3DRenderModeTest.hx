@@ -4,7 +4,7 @@ class Context3DRenderModeTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Context3DRenderMode", function()
+		Mocha.describe("Context3DRenderMode", function()
 		{
 			Mocha.it("test", function()
 			{

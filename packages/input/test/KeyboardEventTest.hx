@@ -4,7 +4,7 @@ class KeyboardEventTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | KeyboardEvent", function()
+		Mocha.describe("KeyboardEvent", function()
 		{
 			Mocha.it("altKey", function()
 			{

@@ -4,7 +4,7 @@ class FullScreenEventTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | FullScreenEvent", function()
+		Mocha.describe("FullScreenEvent", function()
 		{
 			Mocha.it("fullscreen", function()
 			{

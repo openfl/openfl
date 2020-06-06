@@ -4,7 +4,7 @@ class PreloaderTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Preloader", function()
+		Mocha.describe("Preloader", function()
 		{
 			Mocha.it("new", function()
 			{

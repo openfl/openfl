@@ -4,7 +4,7 @@ class GraphicsPathWindingTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | GraphicsPathWinding", function()
+		Mocha.describe("GraphicsPathWinding", function()
 		{
 			Mocha.it("test", function()
 			{

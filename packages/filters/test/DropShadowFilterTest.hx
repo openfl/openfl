@@ -4,7 +4,7 @@ class DropShadowFilterTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | DropShadowFilter", function()
+		Mocha.describe("DropShadowFilter", function()
 		{
 			Mocha.it("alpha", function()
 			{

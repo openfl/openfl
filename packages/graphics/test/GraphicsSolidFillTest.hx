@@ -4,7 +4,7 @@ class GraphicsSolidFillTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | GraphicsSolidFill", function()
+		Mocha.describe("GraphicsSolidFill", function()
 		{
 			Mocha.it("alpha", function()
 			{

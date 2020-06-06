@@ -4,7 +4,7 @@ class ShaderParameterTypeTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | ShaderParameterType", function()
+		Mocha.describe("ShaderParameterType", function()
 		{
 			Mocha.it("test", function()
 			{

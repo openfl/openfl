@@ -4,7 +4,7 @@ class StageScaleModeTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | StageScaleMode", function()
+		Mocha.describe("StageScaleMode", function()
 		{
 			Mocha.it("test", function()
 			{

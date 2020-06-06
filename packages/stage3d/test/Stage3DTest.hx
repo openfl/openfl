@@ -5,7 +5,7 @@ class Stage3DTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Stage3D", function()
+		Mocha.describe("Stage3D", function()
 		{
 			/*
 				Mocha.it ("context3D", function () {

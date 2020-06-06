@@ -4,7 +4,7 @@ class DOMElementTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | DOMElement", function()
+		Mocha.describe("DOMElement", function()
 		{
 			Mocha.it("new", function()
 			{

@@ -4,7 +4,7 @@ class MovieClipTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | MovieClip", function()
+		Mocha.describe("MovieClip", function()
 		{
 			Mocha.it("currentFrame", function()
 			{

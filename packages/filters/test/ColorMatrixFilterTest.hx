@@ -4,7 +4,7 @@ class ColorMatrixFilterTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | ColorMatrixFilter", function()
+		Mocha.describe("ColorMatrixFilter", function()
 		{
 			Mocha.it("matrix", function()
 			{

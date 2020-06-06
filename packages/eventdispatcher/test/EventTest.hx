@@ -5,7 +5,7 @@ class EventTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Event", function()
+		Mocha.describe("Event", function()
 		{
 			Mocha.it("bubbles", function()
 			{

@@ -5,7 +5,7 @@ class IndexBuffer3DTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | IndexBuffer3D", function()
+		Mocha.describe("IndexBuffer3D", function()
 		{
 			Mocha.it("dispose", function()
 			{

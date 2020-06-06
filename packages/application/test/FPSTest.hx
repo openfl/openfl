@@ -4,7 +4,7 @@ class FPSTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | FPS", function()
+		Mocha.describe("FPS", function()
 		{
 			Mocha.it("new", function()
 			{

@@ -10,7 +10,7 @@ class GraphicsTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Graphics", function()
+		Mocha.describe("Graphics", function()
 		{
 			Mocha.it("new", function()
 			{

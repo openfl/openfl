@@ -4,7 +4,7 @@ class AccelerometerTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Accelerometer", function()
+		Mocha.describe("Accelerometer", function()
 		{
 			Mocha.it("muted", function()
 			{

@@ -4,7 +4,7 @@ class ClipboardFormatsTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | ClipboardFormats", function()
+		Mocha.describe("ClipboardFormats", function()
 		{
 			Mocha.it("test", function()
 			{

@@ -4,7 +4,7 @@ class GameInputEventTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | GameInputEvent", function()
+		Mocha.describe("GameInputEvent", function()
 		{
 			Mocha.it("device", function()
 			{

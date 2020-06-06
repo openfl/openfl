@@ -5,7 +5,7 @@ class GraphicsPathTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | GraphicsPath", function()
+		Mocha.describe("GraphicsPath", function()
 		{
 			Mocha.it("commands", function()
 			{

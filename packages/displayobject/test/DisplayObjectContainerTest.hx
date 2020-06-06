@@ -11,7 +11,7 @@ class DisplayObjectContainerTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | DisplayObjectContainer", function()
+		Mocha.describe("DisplayObjectContainer", function()
 		{
 			Mocha.it("mouseChildren", function()
 			{

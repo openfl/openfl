@@ -4,7 +4,7 @@ class Context3DBlendFactorTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Context3DBlendFactor", function()
+		Mocha.describe("Context3DBlendFactor", function()
 		{
 			Mocha.it("test", function()
 			{

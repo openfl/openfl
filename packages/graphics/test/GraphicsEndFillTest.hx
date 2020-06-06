@@ -4,7 +4,7 @@ class GraphicsEndFillTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | GraphicsEndFill", function()
+		Mocha.describe("GraphicsEndFill", function()
 		{
 			Mocha.it("new", function()
 			{

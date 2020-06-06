@@ -13,7 +13,7 @@ class BitmapDataTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | BitmapData", function()
+		Mocha.describe("BitmapData", function()
 		{
 			var hex = function(value:Int):String
 			{

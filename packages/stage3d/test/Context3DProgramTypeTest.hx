@@ -4,7 +4,7 @@ class Context3DProgramTypeTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Context3DProgramType", function()
+		Mocha.describe("Context3DProgramType", function()
 		{
 			Mocha.it("test", function()
 			{

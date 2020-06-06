@@ -4,7 +4,7 @@ class EventPhaseTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | EventPhase", function()
+		Mocha.describe("EventPhase", function()
 		{
 			Mocha.it("test", function()
 			{

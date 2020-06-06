@@ -6,7 +6,7 @@ class BitmapTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Bitmap", function()
+		Mocha.describe("Bitmap", function()
 		{
 			Mocha.it("bitmapData", function()
 			{

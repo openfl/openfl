@@ -4,7 +4,7 @@ class Utils3DTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Utils3D", function()
+		Mocha.describe("Utils3D", function()
 		{
 			Mocha.it("projectVector", function()
 			{

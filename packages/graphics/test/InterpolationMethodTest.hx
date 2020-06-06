@@ -4,7 +4,7 @@ class InterpolationMethodTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | InterpolationMethod", function()
+		Mocha.describe("InterpolationMethod", function()
 		{
 			Mocha.it("test", function()
 			{

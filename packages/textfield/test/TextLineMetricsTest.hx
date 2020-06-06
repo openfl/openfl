@@ -4,7 +4,7 @@ class TextLineMetricsTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | TextLineMetrics", function()
+		Mocha.describe("TextLineMetrics", function()
 		{
 			Mocha.it("ascent", function()
 			{

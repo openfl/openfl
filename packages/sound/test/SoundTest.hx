@@ -4,7 +4,7 @@ class SoundTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Sound", function()
+		Mocha.describe("Sound", function()
 		{
 			Mocha.it("bytesLoaded", function()
 			{

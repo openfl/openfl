@@ -4,7 +4,7 @@ class TilemapTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Tilemap", function()
+		Mocha.describe("Tilemap", function()
 		{
 			Mocha.it("numTiles", function()
 			{

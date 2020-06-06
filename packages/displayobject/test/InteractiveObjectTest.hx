@@ -6,7 +6,7 @@ class InteractiveObjectTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | InteractiveObject", function()
+		Mocha.describe("InteractiveObject", function()
 		{
 			Mocha.it("doubleClickEnabled", function()
 			{

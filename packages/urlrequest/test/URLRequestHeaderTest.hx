@@ -4,7 +4,7 @@ class URLRequestHeaderTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | URLRequestHeader", function()
+		Mocha.describe("URLRequestHeader", function()
 		{
 			Mocha.it("name", function()
 			{

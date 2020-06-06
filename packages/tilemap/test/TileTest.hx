@@ -4,7 +4,7 @@ class TileTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Tile", function()
+		Mocha.describe("Tile", function()
 		{
 			Mocha.it("alpha", function()
 			{

@@ -4,7 +4,7 @@ class TimerTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Timer", function()
+		Mocha.describe("Timer", function()
 		{
 			Mocha.it("currentCount", function()
 			{

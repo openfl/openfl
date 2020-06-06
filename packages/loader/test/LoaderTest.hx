@@ -4,7 +4,7 @@ class LoaderTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | LoaderTest", function()
+		Mocha.describe("LoaderTest", function()
 		{
 			Mocha.it("content", function() {});
 

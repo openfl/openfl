@@ -4,7 +4,7 @@ class HTTPStatusEventTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | HTTPStatusEvent", function()
+		Mocha.describe("HTTPStatusEvent", function()
 		{
 			Mocha.it("responseHeaders", function()
 			{

@@ -4,7 +4,7 @@ class SharedObjectTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | SharedObject", function()
+		Mocha.describe("SharedObject", function()
 		{
 			Mocha.it("data", function()
 			{

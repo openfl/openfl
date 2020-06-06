@@ -4,7 +4,7 @@ class NetStatusEventTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | NetStatusEvent", function()
+		Mocha.describe("NetStatusEvent", function()
 		{
 			Mocha.it("info", function()
 			{

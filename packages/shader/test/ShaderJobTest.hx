@@ -4,7 +4,7 @@ class ShaderJobTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | ShaderJob", function()
+		Mocha.describe("ShaderJob", function()
 		{
 			Mocha.it("height", function()
 			{

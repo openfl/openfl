@@ -4,7 +4,7 @@ class URLVariablesTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | URLVariables", function()
+		Mocha.describe("URLVariables", function()
 		{
 			Mocha.it("new", function()
 			{

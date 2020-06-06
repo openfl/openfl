@@ -5,7 +5,7 @@ class AssetsTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Assets", function()
+		Mocha.describe("Assets", function()
 		{
 			Mocha.it("cachedBitmapData", function() {});
 

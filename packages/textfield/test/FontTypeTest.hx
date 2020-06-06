@@ -4,7 +4,7 @@ class FontTypeTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | FontType", function()
+		Mocha.describe("FontType", function()
 		{
 			Mocha.it("test", function()
 			{

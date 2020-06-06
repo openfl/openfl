@@ -9,7 +9,7 @@ class ByteArrayTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | ByteArray", function()
+		Mocha.describe("ByteArray", function()
 		{
 			Mocha.it("defaultEndian", function()
 			{

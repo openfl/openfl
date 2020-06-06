@@ -5,7 +5,7 @@ class LoaderInfoTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | LoaderInfo", function()
+		Mocha.describe("LoaderInfo", function()
 		{
 			Mocha.it("applicationDomain", function()
 			{

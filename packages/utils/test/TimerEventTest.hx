@@ -4,7 +4,7 @@ class TimerEventTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | TimerEvent", function()
+		Mocha.describe("TimerEvent", function()
 		{
 			Mocha.it("new", function()
 			{

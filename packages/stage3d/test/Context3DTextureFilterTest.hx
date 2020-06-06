@@ -4,7 +4,7 @@ class Context3DTextureFilterTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Context3DTextureFilter", function()
+		Mocha.describe("Context3DTextureFilter", function()
 		{
 			Mocha.it("test", function()
 			{

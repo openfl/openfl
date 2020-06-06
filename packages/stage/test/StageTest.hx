@@ -10,7 +10,7 @@ class StageTest
 			var stage = new Stage(550, 400);
 		});
 
-		Mocha.describe("Haxe | Stage", function()
+		Mocha.describe("Stage", function()
 		{
 			Mocha.it("align", function()
 			{

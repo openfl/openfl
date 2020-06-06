@@ -4,7 +4,7 @@ class ColorTransformTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | ColorTransform", function()
+		Mocha.describe("ColorTransform", function()
 		{
 			Mocha.it("alphaMultiplier", function()
 			{

@@ -4,7 +4,7 @@ class Context3DProfileTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Context3DProfile", function()
+		Mocha.describe("Context3DProfile", function()
 		{
 			Mocha.it("test", function()
 			{

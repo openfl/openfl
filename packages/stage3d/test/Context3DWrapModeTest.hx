@@ -4,7 +4,7 @@ class Context3DWrapModeTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Context3DWrapMode", function()
+		Mocha.describe("Context3DWrapMode", function()
 		{
 			Mocha.it("test", function()
 			{

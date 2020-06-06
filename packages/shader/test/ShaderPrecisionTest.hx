@@ -4,7 +4,7 @@ class ShaderPrecisionTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | ShaderPrecision", function()
+		Mocha.describe("ShaderPrecision", function()
 		{
 			Mocha.it("test", function()
 			{

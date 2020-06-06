@@ -4,7 +4,7 @@ class StageAlignTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | StageAlign", function()
+		Mocha.describe("StageAlign", function()
 		{
 			Mocha.it("test", function()
 			{

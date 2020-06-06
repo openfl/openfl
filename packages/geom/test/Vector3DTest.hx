@@ -4,7 +4,7 @@ class Vector3DTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Vector3D", function()
+		Mocha.describe("Vector3D", function()
 		{
 			Mocha.it("length", function()
 			{

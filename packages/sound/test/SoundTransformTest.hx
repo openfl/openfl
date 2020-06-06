@@ -4,7 +4,7 @@ class SoundTransformTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | SoundTransform", function()
+		Mocha.describe("SoundTransform", function()
 		{
 			Mocha.it("leftToLeft", function()
 			{

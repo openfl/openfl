@@ -5,7 +5,7 @@ class GraphicsStrokeTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | GraphicsStroke", function()
+		Mocha.describe("GraphicsStroke", function()
 		{
 			Mocha.it("caps", function()
 			{

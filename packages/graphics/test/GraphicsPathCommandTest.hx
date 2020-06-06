@@ -4,7 +4,7 @@ class GraphicsPathCommandTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | GraphicsPathCommand", function()
+		Mocha.describe("GraphicsPathCommand", function()
 		{
 			Mocha.it("test", function()
 			{

@@ -4,7 +4,7 @@ class DictionaryTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Dictionary", function()
+		Mocha.describe("Dictionary", function()
 		{
 			var floatDict = new Dictionary<Float, String>(true);
 			var keys:Array<Float> = [

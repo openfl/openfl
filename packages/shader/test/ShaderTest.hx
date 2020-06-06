@@ -6,7 +6,7 @@ class ShaderTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Shader", function()
+		Mocha.describe("Shader", function()
 		{
 			Mocha.it("byteCode", function()
 			{

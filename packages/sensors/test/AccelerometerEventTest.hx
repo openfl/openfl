@@ -4,7 +4,7 @@ class AccelerometerEventTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | AccelerometerEvent", function()
+		Mocha.describe("AccelerometerEvent", function()
 		{
 			Mocha.it("accelerationX", function()
 			{

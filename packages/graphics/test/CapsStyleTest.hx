@@ -4,7 +4,7 @@ class CapsStyleTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | CapsStyle", function()
+		Mocha.describe("CapsStyle", function()
 		{
 			Mocha.it("test", function()
 			{

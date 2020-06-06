@@ -6,7 +6,7 @@ class ExternalInterfaceTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | ExternalInterface", function()
+		Mocha.describe("ExternalInterface", function()
 		{
 			Mocha.it("available", function()
 			{

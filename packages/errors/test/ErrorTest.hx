@@ -6,7 +6,7 @@ class ErrorTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Error", function()
+		Mocha.describe("Error", function()
 		{
 			Mocha.it("errorID", function()
 			{

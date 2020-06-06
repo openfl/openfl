@@ -7,7 +7,7 @@ class FocusEventTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | FocusEvent", function()
+		Mocha.describe("FocusEvent", function()
 		{
 			Mocha.it("keyCode", function()
 			{

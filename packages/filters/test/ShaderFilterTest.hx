@@ -8,7 +8,7 @@ class ShaderFilterTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | ShaderFilter", function()
+		Mocha.describe("ShaderFilter", function()
 		{
 			var _shader:Shader = null;
 

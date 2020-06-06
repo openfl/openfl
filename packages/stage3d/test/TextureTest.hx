@@ -5,7 +5,7 @@ class TextureTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Texture", function()
+		Mocha.describe("Texture", function()
 		{
 			Mocha.it("uploadCompressedTextureFromByteArray", function()
 			{

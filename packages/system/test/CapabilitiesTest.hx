@@ -10,7 +10,7 @@ class CapabilitiesTest
 			var stage = new Stage(550, 400);
 		});
 
-		Mocha.describe("Haxe | Capabilities", function()
+		Mocha.describe("Capabilities", function()
 		{
 			Mocha.it("language", function()
 			{

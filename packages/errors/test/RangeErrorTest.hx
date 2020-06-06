@@ -6,7 +6,7 @@ class RangeErrorTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | RangeError", function()
+		Mocha.describe("RangeError", function()
 		{
 			Mocha.it("new", function()
 			{

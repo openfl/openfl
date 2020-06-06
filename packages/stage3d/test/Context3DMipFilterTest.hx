@@ -4,7 +4,7 @@ class Context3DMipFilterTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Context3DMipFilter", function()
+		Mocha.describe("Context3DMipFilter", function()
 		{
 			Mocha.it("test", function()
 			{

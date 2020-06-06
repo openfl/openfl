@@ -4,7 +4,7 @@ class MultitouchInputModeTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | MultitouchInputMode", function()
+		Mocha.describe("MultitouchInputMode", function()
 		{
 			Mocha.it("test", function()
 			{

@@ -5,7 +5,7 @@ class RectangleTextureTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | RectangleTexture", function()
+		Mocha.describe("RectangleTexture", function()
 		{
 			Mocha.it("uploadFromBitmapData", function()
 			{

@@ -4,7 +4,7 @@ class MouseTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Mouse", function()
+		Mocha.describe("Mouse", function()
 		{
 			Mocha.it("hide", function()
 			{

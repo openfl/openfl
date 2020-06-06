@@ -6,7 +6,7 @@ class ArgumentErrorTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | ArgumentError", function()
+		Mocha.describe("ArgumentError", function()
 		{
 			Mocha.it("new", function()
 			{

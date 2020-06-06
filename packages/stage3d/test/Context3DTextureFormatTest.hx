@@ -4,7 +4,7 @@ class Context3DTextureFormatTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Context3DTextureFormat", function()
+		Mocha.describe("Context3DTextureFormat", function()
 		{
 			Mocha.it("test", function()
 			{

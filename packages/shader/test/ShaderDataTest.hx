@@ -5,7 +5,7 @@ class ShaderDataTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | ShaderData", function()
+		Mocha.describe("ShaderData", function()
 		{
 			Mocha.it("new", function()
 			{

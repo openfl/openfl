@@ -5,7 +5,7 @@ class TouchEventTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | TouchEvent", function()
+		Mocha.describe("TouchEvent", function()
 		{
 			Mocha.it("altKey", function()
 			{

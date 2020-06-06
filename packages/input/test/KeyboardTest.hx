@@ -4,7 +4,7 @@ class KeyboardTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Keyboard", function()
+		Mocha.describe("Keyboard", function()
 		{
 			Mocha.it("test", function()
 			{

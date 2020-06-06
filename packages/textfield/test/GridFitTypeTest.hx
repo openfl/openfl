@@ -4,7 +4,7 @@ class GridFitTypeTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | GridFitType", function()
+		Mocha.describe("GridFitType", function()
 		{
 			Mocha.it("test", function()
 			{

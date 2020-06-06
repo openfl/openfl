@@ -6,7 +6,7 @@ class EOFErrorTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | EOFError", function()
+		Mocha.describe("EOFError", function()
 		{
 			Mocha.it("test", function()
 			{

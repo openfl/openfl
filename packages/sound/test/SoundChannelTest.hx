@@ -4,7 +4,7 @@ class SoundChannelTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | SoundChannel", function()
+		Mocha.describe("SoundChannel", function()
 		{
 			Mocha.it("leftPeak", function() {});
 

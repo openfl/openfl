@@ -6,7 +6,7 @@ class IllegalOperationErrorTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | IllegalOperationError", function()
+		Mocha.describe("IllegalOperationError", function()
 		{
 			Mocha.it("new", function()
 			{

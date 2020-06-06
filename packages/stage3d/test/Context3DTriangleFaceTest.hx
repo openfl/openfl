@@ -4,7 +4,7 @@ class Context3DTriangleFaceTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Context3DTriangleFace", function()
+		Mocha.describe("Context3DTriangleFace", function()
 		{
 			Mocha.it("test", function()
 			{

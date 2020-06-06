@@ -6,7 +6,7 @@ class GraphicsBitmapFillTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | GraphicsBitmapFill", function()
+		Mocha.describe("GraphicsBitmapFill", function()
 		{
 			Mocha.it("bitmapData", function()
 			{

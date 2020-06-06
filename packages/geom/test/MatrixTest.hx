@@ -4,7 +4,7 @@ class MatrixTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Matrix", function()
+		Mocha.describe("Matrix", function()
 		{
 			Mocha.it("a", function()
 			{

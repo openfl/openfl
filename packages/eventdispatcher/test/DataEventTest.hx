@@ -4,7 +4,7 @@ class DataEventTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | DataEvent", function()
+		Mocha.describe("DataEvent", function()
 		{
 			Mocha.it("data", function()
 			{

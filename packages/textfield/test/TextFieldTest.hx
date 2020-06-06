@@ -6,7 +6,7 @@ class TextFieldTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | TextField", function()
+		Mocha.describe("TextField", function()
 		{
 			Mocha.it("autoSize", function()
 			{

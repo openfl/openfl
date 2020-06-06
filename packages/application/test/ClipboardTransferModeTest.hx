@@ -4,7 +4,7 @@ class ClipboardTransferModeTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | ClipboardTransferMode", function()
+		Mocha.describe("ClipboardTransferMode", function()
 		{
 			Mocha.it("test", function()
 			{

@@ -5,7 +5,7 @@ class Context3DTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Context3D", function()
+		Mocha.describe("Context3D", function()
 		{
 			Mocha.it("driverInfo", function()
 			{

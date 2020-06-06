@@ -4,7 +4,7 @@ class ActivityEventTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | ActivityEvent", function()
+		Mocha.describe("ActivityEvent", function()
 		{
 			Mocha.it("activating", function()
 			{

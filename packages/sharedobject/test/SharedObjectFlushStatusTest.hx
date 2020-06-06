@@ -4,7 +4,7 @@ class SharedObjectFlushStatusTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | SharedObjectFlushStatus", function()
+		Mocha.describe("SharedObjectFlushStatus", function()
 		{
 			Mocha.it("test", function()
 			{

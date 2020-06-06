@@ -7,7 +7,7 @@ class Matrix3DTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Matrix3D", function()
+		Mocha.describe("Matrix3D", function()
 		{
 			var nearEquals = function(expected:Float, actual:Float, tolerance:Float = 0.001):Bool
 			{

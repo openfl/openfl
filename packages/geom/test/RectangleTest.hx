@@ -5,7 +5,7 @@ class RectangleTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Rectangle", function()
+		Mocha.describe("Rectangle", function()
 		{
 			Mocha.it("bottom", function()
 			{

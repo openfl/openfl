@@ -6,7 +6,7 @@ class EventDispatcherTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | EventDispatcher", function()
+		Mocha.describe("EventDispatcher", function()
 		{
 			Mocha.it("new", function()
 			{

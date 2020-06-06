@@ -4,7 +4,7 @@ class BlendModeTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | BlendMode", function()
+		Mocha.describe("BlendMode", function()
 		{
 			Mocha.it("test", function()
 			{

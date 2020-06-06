@@ -5,7 +5,7 @@ class MouseEventTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | MouseEvent", function()
+		Mocha.describe("MouseEvent", function()
 		{
 			Mocha.it("altKey", function()
 			{

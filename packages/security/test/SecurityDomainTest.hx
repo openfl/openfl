@@ -4,7 +4,7 @@ class SecurityDomainTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | SecurityDomain", function()
+		Mocha.describe("SecurityDomain", function()
 		{
 			Mocha.it("currentDomain", function()
 			{

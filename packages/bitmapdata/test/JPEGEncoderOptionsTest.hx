@@ -4,7 +4,7 @@ class JPEGEncoderOptionsTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | JPEGEncoderOptions", function()
+		Mocha.describe("JPEGEncoderOptions", function()
 		{
 			Mocha.it("quality", function()
 			{

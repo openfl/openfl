@@ -6,7 +6,7 @@ class ShaderInputTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | ShaderInput", function()
+		Mocha.describe("ShaderInput", function()
 		{
 			Mocha.it("channels", function()
 			{

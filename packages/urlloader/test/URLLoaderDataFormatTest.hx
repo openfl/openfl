@@ -4,7 +4,7 @@ class URLLoaderDataFormatTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | URLLoaderDataFormat", function()
+		Mocha.describe("URLLoaderDataFormat", function()
 		{
 			Mocha.it("test", function()
 			{

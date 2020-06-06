@@ -4,7 +4,7 @@ class Context3DBufferUsageTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Context3DBufferUsage", function()
+		Mocha.describe("Context3DBufferUsage", function()
 		{
 			Mocha.it("test", function()
 			{

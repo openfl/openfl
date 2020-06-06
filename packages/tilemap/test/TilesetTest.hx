@@ -5,7 +5,7 @@ class TilesetTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Tileset", function()
+		Mocha.describe("Tileset", function()
 		{
 			Mocha.it("bitmapData", function()
 			{

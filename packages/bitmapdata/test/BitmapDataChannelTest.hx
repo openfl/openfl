@@ -4,7 +4,7 @@ class BitmapDataChannelTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | BitmapDataChannel", function()
+		Mocha.describe("BitmapDataChannel", function()
 		{
 			Mocha.it("test", function()
 			{

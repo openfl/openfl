@@ -5,7 +5,7 @@ class Program3DTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Program3D", function()
+		Mocha.describe("Program3D", function()
 		{
 			Mocha.it("dispose", function()
 			{

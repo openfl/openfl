@@ -5,7 +5,7 @@ class GraphicsGradientFillTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | GraphicsGradientFill", function()
+		Mocha.describe("GraphicsGradientFill", function()
 		{
 			Mocha.it("alphas", function()
 			{

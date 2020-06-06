@@ -4,7 +4,7 @@ class Context3DClearMaskTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Context3DClearMask", function()
+		Mocha.describe("Context3DClearMask", function()
 		{
 			Mocha.it("test", function()
 			{

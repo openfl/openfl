@@ -4,7 +4,7 @@ class TextFieldTypeTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | TextFieldType", function()
+		Mocha.describe("TextFieldType", function()
 		{
 			Mocha.it("test", function()
 			{

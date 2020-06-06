@@ -4,7 +4,7 @@ class Context3DStencilActionTest
 {
 	public static function __init__()
 	{
-		Mocha.describe("Haxe | Context3DStencilAction", function()
+		Mocha.describe("Context3DStencilAction", function()
 		{
 			Mocha.it("test", function()
 			{
