@@ -6,6 +6,7 @@
 		"@openfl/input": "0.0.0",
 		"@openfl/renderer-cairo": "0.0.0",
 		"@openfl/renderer-dom": "0.0.0",
+		"@openfl/renderer-stage3d": "0.0.0",
 		"@openfl/sound": "0.0.0"
 	},
 	"scripts":{
