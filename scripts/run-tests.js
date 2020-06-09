@@ -27,7 +27,7 @@ function preparePackage()
 	var current = i + 1;
 	var percent = Math.ceil((current / packages.length) * 100);
 
-	var message = "\x1b[36mBuilding test\x1b[0m - " + current + "/" + packages.length + " (" + percent + "%)";
+	var message = "\x1b[36mBuilding test\x1b[0m - " + current + "/" + packages.length + " (" + percent + "%)\r";
 	var messageLength = message.length;
 	if (messageLength < lastMessageLength)
 	{
