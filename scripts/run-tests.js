@@ -46,10 +46,10 @@ function preparePackage()
 		}
 		else
 		{
+			console.log("");
 			runTests();
 		}
     });
 }
 
-console.log("");
 preparePackage();
