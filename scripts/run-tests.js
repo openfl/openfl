@@ -10,11 +10,7 @@ var packages = fs.readdirSync(packagesPath).filter((value) => {
 
 function runTests()
 {
-	var jsFiles = packages.map(value => path.resolve(value, "lib/test.js")).filter(value => fs.existsSync(value));
-	var htmlPath = path.resolve(cwd, "packages/mocha/dist/test-page.marko");
-	console.log(fs.existsSync(htmlPath));
-
-	var exec = childProcess.spawn("mocha-puppeteer", jsFiles.concat([ "--testPagePath", htmlPath ]), { cwd: cwd, shell: true, windowsHide: true });
+	var exec = childProcess.spawn("karma start karma.conf.js", { cwd: cwd, shell: true, windowsHide: true });
 	exec.stdout.on('data', (data) => {
 		console.log(data.toString());
 	});
@@ -26,10 +22,17 @@ function runTests()
 	});
 }
 
+console.log("\x1b[36mBuilding Tests\x1b[0m\n");
+
 var i = 0;
 function preparePackage()
 {
-	console.log("Building tests: " + packages[i]);
+	var current = (i + 1).toString();
+	if (current.length == 1) current = "0" + current;
+	var packageLabel = path.relative(cwd, packages[i]);
+
+	console.log("\x1b[36m[" + current + "/" + packages.length + "]\x1b[0m " + packageLabel);
+
 	var fork = childProcess.fork(path.resolve(__dirname, "prepare-test.js"), { cwd: packages[i] });
 	fork.on('error', function (err) {
 		console.log(err);
@@ -48,5 +51,5 @@ function preparePackage()
     });
 }
 
-// preparePackage();
-runTests();
+console.log("");
+preparePackage();
