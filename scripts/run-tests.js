@@ -1,6 +1,7 @@
 var fs = require("fs");
 var path = require("path");
 var childProcess = require("child_process");
+var readline = require('readline');
 
 var cwd = process.cwd();
 var packagesPath = path.resolve(cwd, "packages");
@@ -37,7 +38,7 @@ function preparePackage()
 	}
 	lastMessageLength = messageLength;
 
-	process.stdout.cursorTo(0);
+	readline.cursorTo(process.stdout, 0);
 	process.stdout.write(message);
 
 	var fork = childProcess.fork(path.resolve(__dirname, "prepare-test.js"), { cwd: packages[i] });
