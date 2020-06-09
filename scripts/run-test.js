@@ -19,12 +19,8 @@ if (fs.existsSync(testPath))
 		if (fs.existsSync(path.resolve(libPath, "test.js")))
 		{
 			var exec = childProcess.spawn("node_modules\\.bin\\karma start karma.conf.js --package=" + packageName, { cwd: rootPath, shell: true, windowsHide: true });
-			exec.stdout.on('data', (data) => {
-				console.log(data.toString());
-			});
-			exec.stderr.on('data', (data) => {
-				console.log(data.toString());
-			});
+			exec.stdout.pipe(process.stdout);
+			exec.stderr.pipe(process.stderr);
 			exec.on('exit', (code) => {
 				process.exit(code);
 			});

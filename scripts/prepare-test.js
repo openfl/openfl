@@ -85,3 +85,5 @@ if (tests.length > 0)
 		process.exit(code);
 	});
 }
+
+process.exit(0);
