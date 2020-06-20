@@ -104,7 +104,7 @@ class DisplayObjectContainer extends InteractiveObject
 
 			if (addedToStage)
 			{
-				this.__setStageReference(stage);
+				child.__setStageReference(stage);
 			}
 
 			child.__setTransformDirty();
