@@ -1,0 +1,20 @@
+{
+	"name": "@openfl/displayobject",
+	"dependencies": {
+		"@openfl/eventdispatcher": "0.0.0",
+		"@openfl/filters": "0.0.0",
+		"@openfl/input": "0.0.0",
+		"@openfl/renderer-cairo": "0.0.0",
+		"@openfl/renderer-dom": "0.0.0",
+		"@openfl/renderer-stage3d": "0.0.0",
+		"@openfl/sound": "0.0.0"
+	},
+	"scripts":{
+		"test": "node ../../scripts/run-test.js"
+	},
+	"private": true,
+	"version": "0.0.0",
+	"devDependencies": {
+		"@openfl/mocha": "0.0.0"
+	}
+}

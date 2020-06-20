@@ -1,0 +1,15 @@
+{
+	"name": "@openfl/renderer-stage3d",
+	"dependencies": {
+		"@openfl/renderer-core": "0.0.0",
+		"@openfl/stage3d": "0.0.0"
+	},
+	"scripts":{
+		"test": "node ../../scripts/run-test.js"
+	},
+	"private": true,
+	"version": "0.0.0",
+	"devDependencies": {
+		"@openfl/mocha": "0.0.0"
+	}
+}

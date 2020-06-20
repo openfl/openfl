@@ -1,0 +1,18 @@
+{
+	"name": "@openfl/sharedobject",
+	"dependencies": {
+		"@openfl/application": "0.0.0",
+		"@openfl/errors": "0.0.0",
+		"@openfl/eventdispatcher": "0.0.0",
+		"@openfl/urlrequest": "0.0.0",
+		"@openfl/utils": "0.0.0"
+	},
+	"scripts":{
+		"test": "node ../../scripts/run-test.js"
+	},
+	"private": true,
+	"version": "0.0.0",
+	"devDependencies": {
+		"@openfl/mocha": "0.0.0"
+	}
+}
