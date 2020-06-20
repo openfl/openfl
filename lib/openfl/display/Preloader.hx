@@ -3,6 +3,10 @@ package openfl.display;
 // import lime.app.Preloader in LimePreloader;
 import openfl.display.Sprite;
 
+/**
+	The Preloader class is a Lime Preloader instance that uses an OpenFL
+	display object to display loading progress.
+**/
 @:jsRequire("openfl/display/Preloader", "default")
 extern class Preloader /*extends LimePreloader*/
 {

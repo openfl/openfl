@@ -9,29 +9,10 @@ import openfl.events.EventDispatcher;
 #end
 class GameInputControl extends EventDispatcher
 {
-	/**
-		Returns the GameInputDevice object that contains this control.
-	**/
 	public var device(default, null):GameInputDevice;
-
-	/**
-		Returns the id of this control.
-	**/
 	public var id(default, null):String;
-
-	/**
-		Returns the maximum value for this control.
-	**/
 	public var maxValue(default, null):Float;
-
-	/**
-		Returns the minimum value for this control.
-	**/
 	public var minValue(default, null):Float;
-
-	/**
-		Returns the value for this control.
-	**/
 	public var value(default, null):Float;
 
 	@:noCompletion private function new(device:GameInputDevice, id:String, minValue:Float, maxValue:Float, value:Float = 0)
