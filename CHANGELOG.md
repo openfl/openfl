@@ -1,3 +1,11 @@
+8.9.7 (06/20/2020)
+------------------
+
+* Updated to allow Lime 7.9.*
+* Fixed compiler error using Haxe 4.1 and HTML5
+* Fixed compiler warnings using Haxe 4.1 and HTML5
+
+
 8.9.6 (01/27/2020)
 ------------------
 
