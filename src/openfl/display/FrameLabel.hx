@@ -31,10 +31,10 @@ import openfl.events.EventDispatcher;
 	@:noCompletion private static function __init__()
 	{
 		untyped Object.defineProperty(FrameLabel.prototype, "frame", {
-			get: untyped __js__("function () { return this.get_frame (); }")
+			get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_frame (); }")
 		});
 		untyped Object.defineProperty(FrameLabel.prototype, "name", {
-			get: untyped __js__("function () { return this.get_name (); }")
+			get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_name (); }")
 		});
 	}
 	#end

@@ -236,8 +236,8 @@ class Sound extends EventDispatcher
 	@:noCompletion private static function __init__()
 	{
 		untyped Object.defineProperties(Sound.prototype, {
-			"id3": {get: untyped __js__("function () { return this.get_id3 (); }")},
-			"length": {get: untyped __js__("function () { return this.get_length (); }")},
+			"id3": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_id3 (); }")},
+			"length": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_length (); }")},
 		});
 	}
 	#end

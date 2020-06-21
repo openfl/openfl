@@ -189,8 +189,8 @@ class Video extends DisplayObject
 	@:noCompletion private static function __init__()
 	{
 		untyped Object.defineProperties(Video.prototype, {
-			"videoHeight": {get: untyped __js__("function () { return this.get_videoHeight (); }")},
-			"videoWidth": {get: untyped __js__("function () { return this.get_videoWidth (); }")},
+			"videoHeight": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_videoHeight (); }")},
+			"videoWidth": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_videoWidth (); }")},
 		});
 	}
 	#end

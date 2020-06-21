@@ -296,7 +296,7 @@ class SharedObject extends EventDispatcher
 	@:noCompletion private static function __init__()
 	{
 		untyped global.Object.defineProperty(SharedObject.prototype, "size", {
-			get: untyped __js__("function () { return this.get_size (); }")
+			get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_size (); }")
 		});
 	}
 	#end

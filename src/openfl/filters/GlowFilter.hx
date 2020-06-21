@@ -148,17 +148,28 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 	@:noCompletion private static function __init__()
 	{
 		untyped Object.defineProperties(GlowFilter.prototype, {
-			"alpha": {get: untyped __js__("function () { return this.get_alpha (); }"), set: untyped __js__("function (v) { return this.set_alpha (v); }")},
-			"blurX": {get: untyped __js__("function () { return this.get_blurX (); }"), set: untyped __js__("function (v) { return this.set_blurX (v); }")},
-			"blurY": {get: untyped __js__("function () { return this.get_blurY (); }"), set: untyped __js__("function (v) { return this.set_blurY (v); }")},
-			"color": {get: untyped __js__("function () { return this.get_color (); }"), set: untyped __js__("function (v) { return this.set_color (v); }")},
-			"inner": {get: untyped __js__("function () { return this.get_inner (); }"), set: untyped __js__("function (v) { return this.set_inner (v); }")},
-			"knockout": {get: untyped __js__("function () { return this.get_knockout (); }"),
-				set: untyped __js__("function (v) { return this.set_knockout (v); }")},
-			"quality": {get: untyped __js__("function () { return this.get_quality (); }"),
-				set: untyped __js__("function (v) { return this.set_quality (v); }")},
-			"strength": {get: untyped __js__("function () { return this.get_strength (); }"),
-				set: untyped __js__("function (v) { return this.set_strength (v); }")},
+			"alpha": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_alpha (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_alpha (v); }")},
+			"blurX": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_blurX (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_blurX (v); }")},
+			"blurY": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_blurY (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_blurY (v); }")},
+			"color": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_color (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_color (v); }")},
+			"inner": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_inner (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_inner (v); }")},
+			"knockout": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_knockout (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_knockout (v); }")
+			},
+			"quality": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_quality (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_quality (v); }")
+			},
+			"strength": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_strength (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_strength (v); }")
+			},
 		});
 	}
 	#end
@@ -386,13 +397,13 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 private class GlowShader extends BitmapFilterShader
 {
 	@:glFragmentSource("uniform sampler2D openfl_Texture;
-		
+
 		uniform vec4 uColor;
-		
+
 		varying vec2 vBlurCoords[7];
-		
+
 		void main(void) {
-			
+
 			float a = 0.0;
 			a += texture2D(openfl_Texture, vBlurCoords[0]).a * 0.00443;
 			a += texture2D(openfl_Texture, vBlurCoords[1]).a * 0.05399;
@@ -402,23 +413,23 @@ private class GlowShader extends BitmapFilterShader
 			a += texture2D(openfl_Texture, vBlurCoords[5]).a * 0.05399;
 			a += texture2D(openfl_Texture, vBlurCoords[6]).a * 0.00443;
 			a *= uColor.a;
-			
+
 			gl_FragColor = vec4(uColor.rgb * a, a);
-			
+
 		}")
 	@:glVertexSource("attribute vec4 openfl_Position;
 		attribute vec2 openfl_TextureCoord;
-		
+
 		uniform mat4 openfl_Matrix;
 		uniform vec2 openfl_TextureSize;
-		
+
 		uniform vec2 uRadius;
 		varying vec2 vBlurCoords[7];
-		
+
 		void main(void) {
-			
+
 			gl_Position = openfl_Matrix * openfl_Position;
-			
+
 			vec2 r = uRadius / openfl_TextureSize;
 			vBlurCoords[0] = openfl_TextureCoord - r * 1.0;
 			vBlurCoords[1] = openfl_TextureCoord - r * 0.75;
@@ -427,7 +438,7 @@ private class GlowShader extends BitmapFilterShader
 			vBlurCoords[4] = openfl_TextureCoord + r * 0.5;
 			vBlurCoords[5] = openfl_TextureCoord + r * 0.75;
 			vBlurCoords[6] = openfl_TextureCoord + r * 1.0;
-			
+
 		}")
 	public function new()
 	{

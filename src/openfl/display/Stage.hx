@@ -907,37 +907,37 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	{
 		untyped Object.defineProperties(Stage.prototype, {
 			"color": {
-				get: untyped __js__("function () { return this.get_color (); }"),
-				set: untyped __js__("function (v) { return this.set_color (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_color (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_color (v); }")
 			},
 			"contentsScaleFactor": {
-				get: untyped __js__("function () { return this.get_contentsScaleFactor (); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_contentsScaleFactor (); }")
 			},
 			"displayState": {
-				get: untyped __js__("function () { return this.get_displayState (); }"),
-				set: untyped __js__("function (v) { return this.set_displayState (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_displayState (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_displayState (v); }")
 			},
 			"focus": {
-				get: untyped __js__("function () { return this.get_focus (); }"),
-				set: untyped __js__("function (v) { return this.set_focus (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_focus (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_focus (v); }")
 			},
 			"frameRate": {
-				get: untyped __js__("function () { return this.get_frameRate (); }"),
-				set: untyped __js__("function (v) { return this.set_frameRate (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_frameRate (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_frameRate (v); }")
 			},
 			"fullScreenHeight": {
-				get: untyped __js__("function () { return this.get_fullScreenHeight (); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_fullScreenHeight (); }")
 			},
 			"fullScreenWidth": {
-				get: untyped __js__("function () { return this.get_fullScreenWidth (); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_fullScreenWidth (); }")
 			},
 			"quality": {
-				get: untyped __js__("function () { return this.get_quality (); }"),
-				set: untyped __js__("function (v) { return this.set_quality (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_quality (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_quality (v); }")
 			},
 			"scaleMode": {
-				get: untyped __js__("function () { return this.get_scaleMode (); }"),
-				set: untyped __js__("function (v) { return this.set_scaleMode (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_scaleMode (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_scaleMode (v); }")
 			},
 		});
 	}
@@ -990,7 +990,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		#if mac
 		__macKeyboard = true;
 		#elseif (js && html5)
-		__macKeyboard = untyped __js__("/AppleWebKit/.test (navigator.userAgent) && /Mobile\\/\\w+/.test (navigator.userAgent) || /Mac/.test (navigator.platform)");
+		__macKeyboard = untyped #if haxe4 js.Syntax.code #else __js__ #end ("/AppleWebKit/.test (navigator.userAgent) && /Mobile\\/\\w+/.test (navigator.userAgent) || /Mac/.test (navigator.platform)");
 		#end
 
 		__clearBeforeRender = true;
@@ -1430,17 +1430,17 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				#end
 				if (exc != null && Reflect.hasField(exc, "stack") && exc.stack != null && exc.stack != "")
 				{
-					untyped __js__("console.log")(exc.stack);
+					untyped #if haxe4 js.Syntax.code #else __js__ #end ("console.log")(exc.stack);
 					e.stack = exc.stack;
 				}
 				else
 				{
 					var msg = CallStack.toString(CallStack.callStack());
-					untyped __js__("console.log")(msg);
+					untyped #if haxe4 js.Syntax.code #else __js__ #end ("console.log")(msg);
 				}
 			}
 			catch (e2:Dynamic) {}
-			untyped __js__("throw e");
+			untyped #if haxe4 js.Syntax.code #else __js__ #end ("throw e");
 			#elseif cs
 			throw e;
 			// cs.Lib.rethrow (e);

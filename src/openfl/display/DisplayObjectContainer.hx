@@ -97,7 +97,7 @@ class DisplayObjectContainer extends InteractiveObject
 	@:noCompletion private static function __init__()
 	{
 		untyped Object.defineProperty(DisplayObjectContainer.prototype, "numChildren", {
-			get: untyped __js__("function () { return this.get_numChildren (); }")
+			get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_numChildren (); }")
 		});
 	}
 	#end

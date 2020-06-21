@@ -127,7 +127,7 @@ class Clipboard
 			}
 		});
 		untyped global.Object.defineProperty(Clipboard.prototype, "formats", {
-			get: untyped __js__("function () { return this.get_formats (); }")
+			get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_formats (); }")
 		});
 	}
 	#end

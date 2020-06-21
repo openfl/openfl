@@ -56,7 +56,7 @@ import lime.ui.Gamepad;
 	@:noCompletion private static function __init__()
 	{
 		untyped Object.defineProperties(GameInputDevice.prototype, {
-			"numControls": {get: untyped __js__("function () { return this.get_numControls (); }")},
+			"numControls": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_numControls (); }")},
 		});
 	}
 	#end

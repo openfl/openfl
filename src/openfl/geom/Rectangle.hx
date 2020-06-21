@@ -60,7 +60,7 @@ class Rectangle
 	@:noCompletion private static var __limeRectangle:LimeRectangle;
 	#end
 	@:noCompletion private static var __pool:ObjectPool<Rectangle> = new ObjectPool<Rectangle>(function() return new Rectangle(),
-	function(r) r.setTo(0, 0, 0, 0));
+		function(r) r.setTo(0, 0, 0, 0));
 
 	/**
 		The sum of the `y` and `height` properties.
@@ -168,18 +168,23 @@ class Rectangle
 	@:noCompletion private static function __init__()
 	{
 		untyped Object.defineProperties(Rectangle.prototype, {
-			"bottom": {get: untyped __js__("function () { return this.get_bottom (); }"), set: untyped __js__("function (v) { return this.set_bottom (v); }")},
+			"bottom": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_bottom (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_bottom (v); }")},
 			"bottomRight": {
-				get: untyped __js__("function () { return this.get_bottomRight (); }"),
-				set: untyped __js__("function (v) { return this.set_bottomRight (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_bottomRight (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_bottomRight (v); }")
 			},
-			"left": {get: untyped __js__("function () { return this.get_left (); }"), set: untyped __js__("function (v) { return this.set_left (v); }")},
-			"right": {get: untyped __js__("function () { return this.get_right (); }"), set: untyped __js__("function (v) { return this.set_right (v); }")},
-			"size": {get: untyped __js__("function () { return this.get_size (); }"), set: untyped __js__("function (v) { return this.set_size (v); }")},
-			"top": {get: untyped __js__("function () { return this.get_top (); }"), set: untyped __js__("function (v) { return this.set_top (v); }")},
+			"left": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_left (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_left (v); }")},
+			"right": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_right (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_right (v); }")},
+			"size": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_size (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_size (v); }")},
+			"top": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_top (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_top (v); }")},
 			"topLeft": {
-				get: untyped __js__("function () { return this.get_topLeft (); }"),
-				set: untyped __js__("function (v) { return this.set_topLeft (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_topLeft (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_topLeft (v); }")
 			},
 		});
 	}
