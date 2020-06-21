@@ -1,0 +1,15 @@
+{
+	"name": "@openfl/utils",
+	"dependencies": {
+		"@openfl/errors": "0.0.0",
+		"@openfl/movieclip": "0.0.0"
+	},
+	"scripts":{
+		"test": "node ../../scripts/run-test.js"
+	},
+	"private": true,
+	"version": "0.0.0",
+	"devDependencies": {
+		"@openfl/mocha": "0.0.0"
+	}
+}

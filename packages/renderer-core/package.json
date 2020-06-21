@@ -1,0 +1,16 @@
+{
+	"name": "@openfl/renderer-core",
+	"dependencies": {
+		"@openfl/displayobject": "0.0.0",
+		"@openfl/geom": "0.0.0",
+		"@openfl/graphics": "0.0.0"
+	},
+	"scripts":{
+		"test": "node ../../scripts/run-test.js"
+	},
+	"private": true,
+	"version": "0.0.0",
+	"devDependencies": {
+		"@openfl/mocha": "0.0.0"
+	}
+}
