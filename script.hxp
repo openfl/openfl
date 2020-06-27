@@ -39,42 +39,76 @@ class Script extends hxp.Script
 
 	private function test():Void
 	{
-		var targets = [
-			"npm", "npm-es5", "npm-es6", "npm-haxe", "npm-typescript", "haxelib", "flash", "html5", "neko", "cpp", "hl", "windows", "mac", "linux", "air", "web",
-			"electron"
-		];
-
-		if (commandArgs.length > 0)
+		if (command == "test-functional")
 		{
-			var target = commandArgs[0];
+			var targets = [
+				"haxelib", "flash", "html5", "neko", "cpp", "hl", "hashlink", "windows", "mac", "linux", "air", "web", "electron"
+			];
 
-			if (targets.indexOf(target) == -1)
+			if (commandArgs.length > 0)
 			{
-				Log.error("Unknown target type \"" + target + "\"");
-			}
+				var target = commandArgs[0];
 
-			if (target == "npm")
-			{
-				testNPM();
-			}
-			else if (StringTools.startsWith(target, "npm-"))
-			{
-				testNPM(target.substr(4));
-			}
-			else if (target == "haxelib")
-			{
-				testHaxelib();
+				if (targets.indexOf(target) == -1)
+				{
+					Log.error("Unknown target type \"" + target + "\"");
+				}
+
+				if (target == "haxelib")
+				{
+					testHaxelib();
+				}
+				else
+				{
+					testHaxelib(target);
+				}
 			}
 			else
 			{
-				testHaxelib(target);
+				testHaxelib();
 			}
 		}
 		else
 		{
-			testHaxelib();
-			if (command == "test" || command == "test-unit") testNPM();
+			System.runCommand("", "npm", ["run", "test", "-s"]);
 		}
+
+		// var targets = [
+		// 	"npm", "npm-es5", "npm-es6", "npm-haxe", "npm-typescript", "haxelib", "flash", "html5", "neko", "cpp", "hl", "windows", "mac", "linux", "air", "web",
+		// 	"electron"
+		// ];
+
+		// if (commandArgs.length > 0)
+		// {
+		// 	var target = commandArgs[0];
+
+		// 	if (targets.indexOf(target) == -1)
+		// 	{
+		// 		Log.error("Unknown target type \"" + target + "\"");
+		// 	}
+
+		// 	if (target == "npm")
+		// 	{
+		// 		testNPM();
+		// 	}
+		// 	else if (StringTools.startsWith(target, "npm-"))
+		// 	{
+		// 		testNPM(target.substr(4));
+		// 	}
+		// 	else if (target == "haxelib")
+		// 	{
+		// 		testHaxelib();
+		// 	}
+		// 	else
+		// 	{
+		// 		testHaxelib(target);
+		// 	}
+		// }
+		// else
+		// {
+		// 	testHaxelib();
+		// 	if (command == "test" || command == "test-unit") testNPM();
+		// }
 	}
 
 	private function testHaxelib(target:String = null):Void
