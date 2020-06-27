@@ -1,42 +1,42 @@
 package openfl.display;
 
 #if (display || !flash)
-@:jsRequire("openfl/display/MovieClip", "default")
 /**
- * The MovieClip class inherits from the following classes: Sprite,
- * DisplayObjectContainer, InteractiveObject, DisplayObject, and
- * EventDispatcher.
- *
- * Unlike the Sprite object, a MovieClip object has a timeline.
- *
- * In Flash Professional, the methods for the MovieClip class provide the
- * same functionality as actions that target movie clips. Some additional
- * methods do not have equivalent actions in the Actions toolbox in the
- * Actions panel in the Flash authoring tool.
- *
- * Children instances placed on the Stage in Flash Professional cannot be
- * accessed by code from within the constructor of a parent instance since
- * they have not been created at that point in code execution. Before
- * accessing the child, the parent must instead either create the child
- * instance by code or delay access to a callback function that listens for
- * the child to dispatch its `Event.ADDED_TO_STAGE` event.
- *
- * If you modify any of the following properties of a MovieClip object that
- * contains a motion tween, the playhead is stopped in that MovieClip object:
- * `alpha`, `blendMode`, `filters`,
- * `height`, `opaqueBackground`, `rotation`,
- * `scaleX`, `scaleY`, `scale9Grid`,
- * `scrollRect`, `transform`, `visible`,
- * `width`, `x`, or `y`. However, it does not
- * stop the playhead in any child MovieClip objects of that MovieClip
- * object.
- *
- * **Note:**Flash Lite 4 supports the MovieClip.opaqueBackground
- * property only if FEATURE_BITMAPCACHE is defined. The default configuration
- * of Flash Lite 4 does not define FEATURE_BITMAPCACHE. To enable the
- * MovieClip.opaqueBackground property for a suitable device, define
- * FEATURE_BITMAPCACHE in your project.
- */
+	The MovieClip class inherits from the following classes: Sprite,
+	DisplayObjectContainer, InteractiveObject, DisplayObject, and
+	EventDispatcher.
+
+	Unlike the Sprite object, a MovieClip object has a timeline.
+
+	In Flash Professional, the methods for the MovieClip class provide the
+	same functionality as actions that target movie clips. Some additional
+	methods do not have equivalent actions in the Actions toolbox in the
+	Actions panel in the Flash authoring tool.
+
+	Children instances placed on the Stage in Flash Professional cannot be
+	accessed by code from within the constructor of a parent instance since
+	they have not been created at that point in code execution. Before
+	accessing the child, the parent must instead either create the child
+	instance by code or delay access to a callback function that listens for
+	the child to dispatch its `Event.ADDED_TO_STAGE` event.
+
+	If you modify any of the following properties of a MovieClip object that
+	contains a motion tween, the playhead is stopped in that MovieClip object:
+	`alpha`, `blendMode`, `filters`,
+	`height`, `opaqueBackground`, `rotation`,
+	`scaleX`, `scaleY`, `scale9Grid`,
+	`scrollRect`, `transform`, `visible`,
+	`width`, `x`, or `y`. However, it does not
+	stop the playhead in any child MovieClip objects of that MovieClip
+	object.
+
+	**Note:**Flash Lite 4 supports the MovieClip.opaqueBackground
+	property only if FEATURE_BITMAPCACHE is defined. The default configuration
+	of Flash Lite 4 does not define FEATURE_BITMAPCACHE. To enable the
+	MovieClip.opaqueBackground property for a suitable device, define
+	FEATURE_BITMAPCACHE in your project.
+**/
+@:jsRequire("openfl/display/MovieClip", "default")
 extern class MovieClip extends Sprite implements Dynamic
 {
 	/**
@@ -78,6 +78,14 @@ extern class MovieClip extends Sprite implements Dynamic
 	@:noCompletion private function get_currentLabels():Array<FrameLabel>;
 
 	/**
+		The current scene in which the playhead is located in the timeline of
+		the MovieClip instance.
+	**/
+	public var currentScene(get, never):Scene;
+
+	@:noCompletion private function get_currentScene():Scene;
+
+	/**
 	 * A Boolean value that indicates whether a movie clip is enabled. The
 	 * default value of `enabled` is `true`. If
 	 * `enabled` is set to `false`, the movie clip's Over,
@@ -109,11 +117,21 @@ extern class MovieClip extends Sprite implements Dynamic
 	public var framesLoaded(get, never):Int;
 
 	@:noCompletion private function get_framesLoaded():Int;
+
+	/**
+		A Boolean value that indicates whether a movie clip is curently playing.
+	**/
 	public var isPlaying(get, never):Bool;
+
 	@:noCompletion private function get_isPlaying():Bool;
-	#if flash
-	@:noCompletion @:dox(hide) public var scenes(default, null):Array<flash.display.Scene>;
-	#end
+
+	/**
+		An array of Scene objects, each listing the name, the number of frames, and
+		the frame labels for a scene in the MovieClip instance.
+	**/
+	public var scenes(get, never):Array<Scene>;
+
+	@:noCompletion private function get_scenes():Scene;
 
 	/**
 	 * The total number of frames in the MovieClip instance.
@@ -125,6 +143,7 @@ extern class MovieClip extends Sprite implements Dynamic
 	public var totalFrames(get, never):Int;
 
 	@:noCompletion private function get_totalFrames():Int;
+
 	#if flash
 	@:noCompletion @:dox(hide) public var trackAsMenu:Bool;
 	#end
@@ -137,6 +156,24 @@ extern class MovieClip extends Sprite implements Dynamic
 	public function new();
 
 	public function addFrameScript(index:Int, method:Void->Void):Void;
+
+	/**
+		Attaches a Timeline object to the current movie clip.
+
+		A movie clip with a timeline will support additional movie clip features
+		such as `play()`, `gotoAndPlay()`, `stop()` and `prevFrame()`.
+
+		@param	timeline	The Timeline to attach to this MovieClip
+	**/
+	public function attachTimeline(timeline:Timeline):Void;
+
+	/**
+		Creates a new MovieClip instance from a Timeline.
+
+		@param	timeline	A Timeline instance
+		@returns	A MovieClip attached to the Timeline
+	**/
+	public static function fromTimeline(timeline:Timeline):MovieClip;
 
 	/**
 	 * Starts playing the SWF file at the specified frame. This happens after all
@@ -180,9 +217,11 @@ extern class MovieClip extends Sprite implements Dynamic
 	 */
 	public function nextFrame():Void;
 
-	#if flash
-	@:noCompletion @:dox(hide) public function nextScene():Void;
-	#end
+	/**
+		Moves the playhead to the next scene of the MovieClip instance. This happens
+		after all remaining actions in the frame have finished executing.
+	**/
+	public function nextScene():Void;
 
 	/**
 	 * Moves the playhead in the timeline of the movie clip.
@@ -197,9 +236,11 @@ extern class MovieClip extends Sprite implements Dynamic
 	 */
 	public function prevFrame():Void;
 
-	#if flash
-	@:noCompletion @:dox(hide) public function prevScene():Void;
-	#end
+	/**
+		Moves the playhead to the previous scene of the MovieClip instance. This
+		happens after all remaining actions in the frame have finished executing.
+	**/
+	public function prevScene():Void;
 
 	/**
 	 * Stops the playhead in the movie clip.
