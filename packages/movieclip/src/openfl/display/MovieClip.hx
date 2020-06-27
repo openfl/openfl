@@ -37,17 +37,17 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	@:noCompletion private static function __init__()
 	{
 		untyped Object.defineProperties(MovieClip.prototype, {
-			"currentFrame": {get: untyped __js__("function () { return this.get_currentFrame (); }")},
-			"currentFrameLabel": {get: untyped __js__("function () { return this.get_currentFrameLabel (); }")},
-			"currentLabel": {get: untyped __js__("function () { return this.get_currentLabel (); }")},
-			"currentLabels": {get: untyped __js__("function () { return this.get_currentLabels (); }")},
+			"currentFrame": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_currentFrame (); }")},
+			"currentFrameLabel": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_currentFrameLabel (); }")},
+			"currentLabel": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_currentLabel (); }")},
+			"currentLabels": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_currentLabels (); }")},
 			"enabled": {
-				get: untyped __js__("function () { return this.get_enabled (); }"),
-				set: untyped __js__("function (v) { return this.set_enabled (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_enabled (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_enabled (v); }")
 			},
-			"framesLoaded": {get: untyped __js__("function () { return this.get_framesLoaded (); }")},
-			"isPlaying": {get: untyped __js__("function () { return this.get_isPlaying (); }")},
-			"totalFrames": {get: untyped __js__("function () { return this.get_totalFrames (); }")},
+			"framesLoaded": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_framesLoaded (); }")},
+			"isPlaying": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_isPlaying (); }")},
+			"totalFrames": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_totalFrames (); }")},
 		});
 	}
 	#end
@@ -154,6 +154,19 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		if (__timeline != null)
 		{
 			__timeline.__stop();
+		}
+	}
+
+	@:noCompletion private override function __enterFrame(deltaTime:Int):Void
+	{
+		if (__timeline != null)
+		{
+			__timeline.__enterFrame(deltaTime);
+		}
+
+		for (child in __children)
+		{
+			child.__enterFrame(deltaTime);
 		}
 	}
 
