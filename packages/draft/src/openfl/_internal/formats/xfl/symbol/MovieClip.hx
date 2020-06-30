@@ -132,11 +132,11 @@ class MovieClip extends openfl._internal.formats.xfl.display.MovieClip
 
 	private function getFrame(frame:Dynamic):Int
 	{
-		if (Std.is(frame, Int))
+		if ((frame is Int))
 		{
 			return cast frame;
 		}
-		else if (Std.is(frame, String))
+		else if ((frame is String))
 		{
 			for (label in currentLabels)
 			{

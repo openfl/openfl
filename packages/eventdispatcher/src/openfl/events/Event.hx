@@ -134,7 +134,7 @@ class Event
 		{
 			arg = Reflect.field(this, param);
 
-			if (Std.is(arg, String))
+			if ((arg is String))
 			{
 				output += ' $param="$arg"';
 			}

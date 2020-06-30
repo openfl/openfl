@@ -361,7 +361,7 @@ class URLLoader extends EventDispatcher
 					__httpRequest.formData.set(field, Reflect.field(request.data, field));
 				}
 			}
-			else if (Std.is(request.data, Bytes))
+			else if ((request.data is Bytes))
 			{
 				__httpRequest.data = request.data;
 			}

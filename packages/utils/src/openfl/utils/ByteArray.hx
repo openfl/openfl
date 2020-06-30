@@ -313,7 +313,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		#if display
 		return null;
 		#else
-		if (Std.is(bytes, ByteArrayData))
+		if ((bytes is ByteArrayData))
 		{
 			return cast bytes;
 		}

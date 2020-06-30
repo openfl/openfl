@@ -259,11 +259,11 @@ class Timeline
 
 	@:noCompletion private function __resolveFrameReference(frame:#if (haxe_ver >= "3.4.2") Any #else Dynamic #end):Int
 	{
-		if (Std.is(frame, Int))
+		if ((frame is Int))
 		{
 			return cast frame;
 		}
-		else if (Std.is(frame, String))
+		else if ((frame is String))
 		{
 			var label:String = cast frame;
 

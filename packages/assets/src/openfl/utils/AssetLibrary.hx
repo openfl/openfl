@@ -66,7 +66,7 @@ class AssetLibrary #if lime extends LimeAssetLibrary #end
 
 		if (library != null)
 		{
-			if (Std.is(library, AssetLibrary))
+			if ((library is AssetLibrary))
 			{
 				return cast library;
 			}

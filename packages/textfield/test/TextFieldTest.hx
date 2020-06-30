@@ -158,7 +158,7 @@ class TextFieldTest
 				bitmapData2.draw(textField2);
 				bitmapData3.draw(textField3);
 
-				Assert.assert(Std.is(bitmapData2.compare(bitmapData), BitmapData));
+				Assert.assert((bitmapData2.compare(bitmapData) is BitmapData));
 				Assert.equal(bitmapData2.compare(bitmapData3), 0);
 			});
 

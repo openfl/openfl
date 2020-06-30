@@ -1479,7 +1479,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			var keyCode = Keyboard.__convertKeyCode(keyCode);
 			var charCode = Keyboard.__getCharCode(keyCode, modifier.shiftKey);
 
-			if (type == KeyboardEvent.KEY_UP && (keyCode == Keyboard.SPACE || keyCode == Keyboard.ENTER) && Std.is(__focus, Sprite))
+			if (type == KeyboardEvent.KEY_UP && (keyCode == Keyboard.SPACE || keyCode == Keyboard.ENTER) && (__focus is Sprite))
 			{
 				var sprite = cast(__focus, Sprite);
 				if (sprite.buttonMode && sprite.focusRect == true)
@@ -1584,7 +1584,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 									while (modifier.shiftKey ? (i >= 0) : (i < currentParent.numChildren))
 									{
 										var sibling = currentParent.getChildAt(i);
-										if (Std.is(sibling, InteractiveObject))
+										if ((sibling is InteractiveObject))
 										{
 											var interactiveSibling = cast(sibling, InteractiveObject);
 											index = tabStack.indexOf(interactiveSibling);

@@ -144,7 +144,7 @@ class Assets
 
 		if (limeLibrary != null)
 		{
-			if (Std.is(limeLibrary, AssetLibrary))
+			if ((limeLibrary is AssetLibrary))
 			{
 				var library:AssetLibrary = cast limeLibrary;
 
@@ -432,7 +432,7 @@ class Assets
 
 			if (library != null)
 			{
-				if (Std.is(library, AssetLibrary))
+				if ((library is AssetLibrary))
 				{
 					_library = cast library;
 				}
@@ -505,7 +505,7 @@ class Assets
 
 		if (limeLibrary != null)
 		{
-			if (Std.is(limeLibrary, AssetLibrary))
+			if ((limeLibrary is AssetLibrary))
 			{
 				var library:AssetLibrary = cast limeLibrary;
 
