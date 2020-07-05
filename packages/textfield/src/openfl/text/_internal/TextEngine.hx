@@ -1319,14 +1319,14 @@ class TextEngine
 					layoutGroup = null;
 				}
 
+				alignBaseline();
+				
 				// TODO: is this necessary or already handled by placeText above?
 				if (formatRange.end == breakIndex)
 				{
 					nextFormatRange();
 					setLineMetrics();
 				}
-
-				alignBaseline();
 
 				textIndex = breakIndex + 1;
 				previousBreakIndex = breakIndex;
