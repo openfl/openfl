@@ -2371,51 +2371,88 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function __updateScrollH():Void
 	{
-		if (!multiline && type == INPUT)
+		__updateLayout();
+
+		if (textWidth <= width - 4)
 		{
-			__layoutDirty = true;
-			__updateLayout();
-
-			var offsetX = __textEngine.textWidth - __textEngine.width + 4;
-
-			if (offsetX > 0)
+			scrollH = 0;
+			return;
+		}
+		
+		var tempScrollH = scrollH;
+		
+		// margins are ignored here
+		
+		if (__caretIndex == 0 || getLineOffset(getLineIndexOfChar(__caretIndex)) == __caretIndex)
+		{
+			// first index in a line is always at 0 scrollH
+			tempScrollH = 0;
+		}
+		else
+		{
+			var caret = Rectangle.__pool.get();
+			var written = false;
+			
+			if (__caretIndex < __text.length)
 			{
-				// TODO: Handle __selectionIndex on drag select?
-				// TODO: Update scrollH by one character width at a time when able
-
-				if (__caretIndex >= text.length)
-				{
-					scrollH = Math.ceil(offsetX);
-				}
-				else
-				{
-					var caret = Rectangle.__pool.get();
-					__getCharBoundaries(__caretIndex, caret);
-
-					if (caret.x < scrollH)
-					{
-						scrollH = Math.floor(caret.x - 2);
-					}
-					else if (caret.x > scrollH + __textEngine.width)
-					{
-						scrollH = Math.ceil(caret.x - __textEngine.width - 2);
-					}
-
-					Rectangle.__pool.release(caret);
-				}
+				written = __getCharBoundaries(__caretIndex, caret);
 			}
-			else
+			if (!written) 
 			{
-				scrollH = 0;
+				// \n and \r don't have character boundaries, as well as when caretIndex == text.length
+				// written doesn't need to be checked again, covered earlier
+				__getCharBoundaries(__caretIndex - 1, caret);
+				caret.x += caret.width; // shift rectangle to where the caret is
+			}
+			
+			while (caret.x < tempScrollH && tempScrollH > 0)
+			{
+				tempScrollH -= 24;
+			}
+			while (caret.x > tempScrollH + width - 4)
+			{
+				tempScrollH += 24;
+			}
+			
+			Rectangle.__pool.release(caret);
+		}
+		
+		if (tempScrollH > 0 && type != INPUT)
+		{
+			// input text leaves some room after scrolling to the last character in a line. dynamic text does not
+			var lineLength = getLineLength(getLineIndexOfChar(__caretIndex));
+			if (scrollH + width - 4 > lineLength)
+			{
+				scrollH = Math.ceil(lineLength - width + 4);
 			}
 		}
+		
+		if (tempScrollH < 0)
+		{
+			scrollH = 0;
+		}
+		else if (tempScrollH > maxScrollH)
+		{
+			scrollH = maxScrollH;
+		}
+		else
+		{
+			scrollH = tempScrollH;
+		}
+		
+		// TODO: Handle drag select
 	}
 
 	@:noCompletion private function __updateScrollV():Void
 	{
-		__layoutDirty = true;
 		__updateLayout();
 
+		if (textHeight <= height - 4)
+		{
+			scrollV = 1;
+			return;
+		}
+		
 		var lineIndex = getLineIndexOfChar(__caretIndex);
 
 		if (lineIndex == -1 && __caretIndex > 0)
