@@ -1530,6 +1530,8 @@ class TextEngine
 							if (breakIndex == endIndex) endIndex++;
 
 							textIndex = endIndex;
+							
+							if (endIndex == text.length) alignBaseline();
 						}
 					}
 
