@@ -1039,6 +1039,11 @@ class TextEngine
 			}
 			else
 			{
+				positions = getPositions(text, startIndex, endIndex);
+				widthValue = getPositionsWidth(positions);
+			}
+			else
+			{
 				var tempIndex = startIndex;
 				var tempRangeEnd = formatRange.end;
 				var countRanges = 0;
