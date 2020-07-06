@@ -2135,11 +2135,6 @@ class TextField extends InteractiveObject
 
 		__replaceText(startIndex, endIndex, value, restrict);
 
-		var i = startIndex + cast(value, UTF8String).length;
-		if (i > __text.length) i = __text.length;
-
-		setSelection(i, i);
-
 		// TODO: Solution where this is not run twice (run inside replaceText above)
 		__updateScrollH();
 	}
@@ -2259,8 +2254,9 @@ class TextField extends InteractiveObject
 			i++;
 		}
 
-		__updateScrollV();
-		__updateScrollH();
+		setSelection(beginIndex + newText.length, beginIndex + newText.length);
+
+		__updateScrollH(); // TODO: add to setSelection
 
 		__dirty = true;
 		__layoutDirty = true;
