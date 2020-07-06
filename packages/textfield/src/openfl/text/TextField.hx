@@ -883,8 +883,7 @@ class TextField extends InteractiveObject
 
 		__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __text.length;
 
-		__updateScrollV();
-		__updateScrollH();
+		setSelection(__text.length, __text.length);
 	}
 
 	// function copyRichText() : String;
@@ -1391,6 +1390,7 @@ class TextField extends InteractiveObject
 		__caretIndex = endIndex;
 
 		__updateScrollV();
+		__updateScrollH();
 
 		__stopCursorTimer();
 		__startCursorTimer();
@@ -2134,9 +2134,6 @@ class TextField extends InteractiveObject
 		if (startIndex < 0) startIndex = 0;
 
 		__replaceText(startIndex, endIndex, value, restrict);
-
-		// TODO: Solution where this is not run twice (run inside replaceText above)
-		__updateScrollH();
 	}
 
 	@:noCompletion private function __replaceText(beginIndex:Int, endIndex:Int, newText:String, restrict:Bool):Void
@@ -2255,8 +2252,6 @@ class TextField extends InteractiveObject
 		}
 
 		setSelection(beginIndex + newText.length, beginIndex + newText.length);
-
-		__updateScrollH(); // TODO: add to setSelection
 
 		__dirty = true;
 		__layoutDirty = true;
@@ -2788,7 +2783,7 @@ class TextField extends InteractiveObject
 		#else
 		__updateText(value);
 		#end
-		__updateScrollV();
+		setSelection(length, length);
 
 		return value;
 	}
@@ -3017,7 +3012,7 @@ class TextField extends InteractiveObject
 		__isHTML = false;
 
 		__updateText(value);
-		__updateScrollV();
+		setSelection(utfValue.length, utfValue.length);
 
 		return value;
 	}
@@ -3434,7 +3429,6 @@ class TextField extends InteractiveObject
 					__selectionIndex = __caretIndex;
 				}
 
-				__updateScrollH(); // TODO: move into setSelection
 				setSelection(__selectionIndex, __caretIndex);
 
 			case RIGHT if (selectable):
@@ -3452,7 +3446,6 @@ class TextField extends InteractiveObject
 					__selectionIndex = __caretIndex;
 				}
 
-				__updateScrollH();
 				setSelection(__selectionIndex, __caretIndex);
 
 			case DOWN if (selectable):
@@ -3470,7 +3463,6 @@ class TextField extends InteractiveObject
 					__selectionIndex = __caretIndex;
 				}
 				
-				// __updateScrollH();
 				setSelection(__selectionIndex, __caretIndex);
 
 			case UP if (selectable):
@@ -3488,7 +3480,6 @@ class TextField extends InteractiveObject
 					__selectionIndex = __caretIndex;
 				}
 				
-				// __updateScrollH();
 				setSelection(__selectionIndex, __caretIndex);
 
 			case HOME if (selectable):
