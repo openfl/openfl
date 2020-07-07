@@ -169,9 +169,9 @@
 
 	</section>
 
-	<library handler="openfl" type="swf" />
-	<library handler="openfl" type="swflite" />
-	<library handler="openfl" type="swf_lite" />
+	<library handler="swf" type="swf" />
+	<library handler="swf" type="swflite" />
+	<library handler="swf" type="swf_lite" />
 
 	<section if="setup">
 
