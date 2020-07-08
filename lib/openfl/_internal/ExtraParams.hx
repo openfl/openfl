@@ -1,4 +1,4 @@
-package openfl._internal.macros;
+package openfl._internal;
 
 #if macro
 import haxe.macro.Compiler;
