@@ -599,7 +599,7 @@ class Context3DGraphics
 								}
 								else
 								{
-									shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(null);
+									shader = maskRender ? renderer.__maskShader : renderer.__triangleShader;
 									renderer.setShader(shader);
 									renderer.applyMatrix(uMatrix);
 									renderer.applyBitmapData(bitmap, smooth, repeat);
@@ -722,7 +722,7 @@ class Context3DGraphics
 							}
 							else
 							{
-								shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(null);
+								shader = maskRender ? renderer.__maskShader : renderer.__triangleShader;
 								renderer.setShader(shader);
 								renderer.applyMatrix(uMatrix);
 								renderer.applyBitmapData(bitmap, smooth, repeat);
