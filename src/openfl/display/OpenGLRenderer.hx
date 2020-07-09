@@ -78,6 +78,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __gl:#if lime WebGLRenderContext #else Dynamic #end;
 	@:noCompletion private var __height:Int;
 	@:noCompletion private var __maskShader:Context3DMaskShader;
+	@:noCompletion private var __triangleShader:GraphicsTriangleShader;
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __matrix:#if lime Matrix4 #else Dynamic #end;
 	@:noCompletion private var __maskObjects:Array<DisplayObject>;
 	@:noCompletion private var __numClipRects:Int;
@@ -158,6 +159,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 		__scrollRectMasks = new ObjectPool<Shape>(function() return new Shape());
 		__maskShader = new Context3DMaskShader();
+		__triangleShader = new GraphicsTriangleShader();
 	}
 
 	/**
