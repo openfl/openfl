@@ -32,7 +32,7 @@ import openfl._internal.renderer.context3D.stats.DrawCallContext;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DGraphics
 {
-	private static var blankBitmapData = new BitmapData(1, 1, false, 0);
+	private static var blankBitmapData = new BitmapData(1, 1, false, 0xFFFFFF);
 	private static var maskRender:Bool;
 	private static var tempColorTransform = new ColorTransform(1, 1, 1, 1, 0, 0, 0, 0);
 
@@ -599,7 +599,7 @@ class Context3DGraphics
 								}
 								else
 								{
-									shader = maskRender ? renderer.__maskShader : renderer.__triangleShader;
+									shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(null);
 									renderer.setShader(shader);
 									renderer.applyMatrix(uMatrix);
 									renderer.applyBitmapData(bitmap, smooth, repeat);
@@ -649,9 +649,9 @@ class Context3DGraphics
 
 								#if lime
 								var color:ARGB = (fill : ARGB);
-								tempColorTransform.redOffset = color.r;
-								tempColorTransform.greenOffset = color.g;
-								tempColorTransform.blueOffset = color.b;
+								tempColorTransform.redMultiplier = color.r / 0xFF;
+								tempColorTransform.greenMultiplier = color.g / 0xFF;
+								tempColorTransform.blueMultiplier = color.b / 0xFF;
 								#end
 								tempColorTransform.__combine(graphics.__owner.__worldColorTransform);
 
@@ -722,7 +722,7 @@ class Context3DGraphics
 							}
 							else
 							{
-								shader = maskRender ? renderer.__maskShader : renderer.__triangleShader;
+								shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(null);
 								renderer.setShader(shader);
 								renderer.applyMatrix(uMatrix);
 								renderer.applyBitmapData(bitmap, smooth, repeat);
