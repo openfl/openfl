@@ -190,6 +190,7 @@ import js.html.CSSStyleDeclaration;
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
+@:access(openfl.geom.Transform)
 class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (openfl_dynamic && haxe_ver < "4.0.0") implements Dynamic<DisplayObject> #end
 {
 	@:noCompletion private static var __broadcastEvents:Map<String, Array<DisplayObject>> = new Map();
@@ -3010,7 +3011,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		}
 
 		__setTransformDirty();
-		__objectTransform.matrix = value.matrix;
+
+		if(value.__hasMatrix)
+		{
+			__objectTransform.__copyMatrix(value.__displayObject.__transform);
+		}
 
 		if (!__objectTransform.colorTransform.__equals(value.colorTransform, true)
 			|| (!cacheAsBitmap && __objectTransform.colorTransform.alphaMultiplier != value.colorTransform.alphaMultiplier))

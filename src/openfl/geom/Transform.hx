@@ -251,6 +251,19 @@ class Transform
 		return value;
 	}
 
+	@:noCompletion private function __copyMatrix(value:Matrix):Void
+	{
+		if (value != null)
+		{
+			__setTransform(value.a, value.b, value.c, value.d, value.tx, value.ty);
+			__hasMatrix = true;
+		}
+		else
+		{
+			__hasMatrix = false;
+		}
+	}
+
 	@:noCompletion private function get_matrix3D():Matrix3D
 	{
 		if (__hasMatrix3D)
