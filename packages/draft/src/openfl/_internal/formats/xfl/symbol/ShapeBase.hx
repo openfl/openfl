@@ -110,7 +110,7 @@ class ShapeBase extends openfl.display.Shape
 		});
 		for (fillStyle in domShape.fills)
 		{
-			if (Std.is(fillStyle.data, SolidColor))
+			if ((fillStyle.data is SolidColor))
 			{
 				var color = fillStyle.data.color;
 				var alpha = fillStyle.data.alpha;
@@ -119,7 +119,7 @@ class ShapeBase extends openfl.display.Shape
 					g.beginFill(color, alpha);
 				});
 			}
-			else if (Std.is(fillStyle.data, LinearGradient))
+			else if ((fillStyle.data is LinearGradient))
 			{
 				var data:LinearGradient = cast fillStyle.data;
 				var colors:Array<UInt> = [];
@@ -136,7 +136,7 @@ class ShapeBase extends openfl.display.Shape
 					g.beginGradientFill(GradientType.LINEAR, colors, alphas, ratios, data.matrix);
 				});
 			}
-			else if (Std.is(fillStyle.data, RadialGradient))
+			else if ((fillStyle.data is RadialGradient))
 			{
 				#if !html5
 				var data:RadialGradient = cast fillStyle.data;
@@ -155,7 +155,7 @@ class ShapeBase extends openfl.display.Shape
 				});
 				#end
 			}
-			else if (Std.is(fillStyle.data, Bitmap))
+			else if ((fillStyle.data is Bitmap))
 			{
 				var bitmapData = XFLAssets.getInstance().getXFLBitmapDataAssetByPath(fillStyle.data.bitmapPath);
 				var matrix = fillStyle.data.matrix;
@@ -177,9 +177,9 @@ class ShapeBase extends openfl.display.Shape
 		});
 		for (strokeStyle in domShape.strokes)
 		{
-			if (Std.is(strokeStyle.data, SolidStroke))
+			if ((strokeStyle.data is SolidStroke))
 			{
-				if (Std.is(strokeStyle.data.fill, SolidColor))
+				if ((strokeStyle.data.fill is SolidColor))
 				{
 					var weight = strokeStyle.data.weight;
 					var color = strokeStyle.data.fill.color;

@@ -214,8 +214,10 @@ class Tile
 	@:noCompletion private static function __init__()
 	{
 		untyped Object.defineProperties(Tile.prototype, {
-			"alpha": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_alpha (); }"),
-				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_alpha (v); }")},
+			"alpha": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_alpha (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_alpha (v); }")
+			},
 			"blendMode": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_blendMode (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_blendMode (v); }")
@@ -224,10 +226,14 @@ class Tile
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_colorTransform (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_colorTransform (v); }")
 			},
-			"id": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_id (); }"),
-				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_id (v); }")},
-			"matrix": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_matrix (); }"),
-				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_matrix (v); }")},
+			"id": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_id (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_id (v); }")
+			},
+			"matrix": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_matrix (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_matrix (v); }")
+			},
 			"originX": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_originX (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_originX (v); }")
@@ -236,18 +242,26 @@ class Tile
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_originY (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_originY (v); }")
 			},
-			"rect": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_rect (); }"),
-				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_rect (v); }")},
+			"rect": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_rect (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_rect (v); }")
+			},
 			"rotation": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_rotation (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_rotation (v); }")
 			},
-			"scaleX": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_scaleX (); }"),
-				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_scaleX (v); }")},
-			"scaleY": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_scaleY (); }"),
-				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_scaleY (v); }")},
-			"shader": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_shader (); }"),
-				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_shader (v); }")},
+			"scaleX": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_scaleX (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_scaleX (v); }")
+			},
+			"scaleY": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_scaleY (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_scaleY (v); }")
+			},
+			"shader": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_shader (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_shader (v); }")
+			},
 			"tileset": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_tileset (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_tileset (v); }")
@@ -256,10 +270,14 @@ class Tile
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_visible (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_visible (v); }")
 			},
-			"x": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_x (); }"),
-				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_x (v); }")},
-			"y": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_y (); }"),
-				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_y (v); }")},
+			"x": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_x (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_x (v); }")
+			},
+			"y": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_y (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_y (v); }")
+			},
 		});
 	}
 	#end
@@ -480,7 +498,7 @@ class Tile
 		// TODO: Avoid Std.is
 
 		if (tileset != null) return tileset;
-		if (Std.is(parent, Tilemap)) return parent.tileset;
+		if ((parent is Tilemap)) return parent.tileset;
 		if (parent == null) return null;
 		return parent.__findTileset();
 	}

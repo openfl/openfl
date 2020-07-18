@@ -314,7 +314,7 @@ class Loader extends DisplayObjectContainer
 				return;
 			}
 
-			if (Std.is(library, AssetLibrary))
+			if ((library is AssetLibrary))
 			{
 				library.load().onComplete(function(_)
 				{

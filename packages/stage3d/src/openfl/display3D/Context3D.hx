@@ -2399,19 +2399,19 @@ import lime.math.Vector2;
 			var width = 0, height = 0;
 
 			// TODO: Avoid use of Std.is
-			if (Std.is(__state.renderToTexture, Texture))
+			if ((__state.renderToTexture is Texture))
 			{
 				var texture2D:Texture = cast __state.renderToTexture;
 				width = texture2D.__width;
 				height = texture2D.__height;
 			}
-			else if (Std.is(__state.renderToTexture, RectangleTexture))
+			else if ((__state.renderToTexture is RectangleTexture))
 			{
 				var rectTexture:RectangleTexture = cast __state.renderToTexture;
 				width = rectTexture.__width;
 				height = rectTexture.__height;
 			}
-			else if (Std.is(__state.renderToTexture, CubeTexture))
+			else if ((__state.renderToTexture is CubeTexture))
 			{
 				var cubeTexture:CubeTexture = cast __state.renderToTexture;
 				width = cubeTexture.__size;

@@ -17,11 +17,11 @@ class XFLTween
 		{
 			return value;
 		}
-		else if (Std.is(value, String))
+		else if ((value is String))
 		{
 			return value;
 		}
-		else if (Std.is(value, Array))
+		else if ((value is Array))
 		{
 			var result:Array<Dynamic> = cast(value, Array<Dynamic>).copy();
 			for (i in 0...result.length)
@@ -78,13 +78,13 @@ class XFLTween
 		tween.object = object;
 		tween.delay = Reflect.hasField(tween, "delay") ? tween.delay : 0.0;
 		tween.duration = duration;
-		if (Std.is(object, DisplayObject) == true)
+		if ((object is DisplayObject) == true)
 		{
 			tween.initFunc = toInitDisplayObject;
 			tween.disposeFunc = toDisposeDisplayObject;
 			tween.handleFunc = tweenToImplDisplayObject;
 		}
-		else if (Std.is(object, SoundChannel) == true)
+		else if ((object is SoundChannel) == true)
 		{
 			tween.initFunc = toInitSoundChannel;
 			tween.disposeFunc = toDisposeSoundChannel;
@@ -392,7 +392,7 @@ class XFLTween
 
 	public static function killChildTweensOf(object:Dynamic):Void
 	{
-		if (Std.is(object, DisplayObjectContainer))
+		if ((object is DisplayObjectContainer))
 		{
 			var displayObjectContainer:DisplayObjectContainer = cast(object, DisplayObjectContainer);
 			for (i in 0...displayObjectContainer.numChildren)

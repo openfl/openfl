@@ -27,7 +27,7 @@ class RectangleTest
 				var rect = new Rectangle(0, 0, 100, 100);
 
 				Assert.notEqual(rect.bottomRight, null);
-				Assert.assert(Std.is(rect.bottomRight, openfl.geom.Point));
+				Assert.assert((rect.bottomRight is openfl.geom.Point));
 
 				Assert.equal(rect.bottomRight.x, 100);
 				Assert.equal(rect.bottomRight.y, 100);
@@ -93,7 +93,7 @@ class RectangleTest
 				var rect = new Rectangle(0, 0, 100, 100);
 
 				Assert.notEqual(rect.size, null);
-				Assert.assert(Std.is(rect.size, openfl.geom.Point));
+				Assert.assert((rect.size is openfl.geom.Point));
 
 				Assert.equal(rect.size.x, 100);
 				Assert.equal(rect.size.y, 100);
@@ -129,7 +129,7 @@ class RectangleTest
 				var rect = new Rectangle(0, 0, 100, 100);
 
 				Assert.notEqual(rect.topLeft, null);
-				Assert.assert(Std.is(rect.topLeft, openfl.geom.Point));
+				Assert.assert((rect.topLeft is openfl.geom.Point));
 
 				Assert.equal(rect.topLeft.x, 0);
 				Assert.equal(rect.topLeft.y, 0);

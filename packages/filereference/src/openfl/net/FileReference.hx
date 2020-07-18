@@ -168,7 +168,7 @@ class FileReference extends EventDispatcher
 		if (data == null) return;
 
 		#if desktop
-		if (Std.is(data, ByteArrayData))
+		if ((data is ByteArrayData))
 		{
 			__data = data;
 		}
@@ -183,7 +183,7 @@ class FileReference extends EventDispatcher
 		saveFileDialog.onSelect.add(saveFileDialog_onSelect);
 		saveFileDialog.browse(SAVE, defaultFileName != null ? Path.extension(defaultFileName) : null, defaultFileName);
 		#elseif (js && html5)
-		if (Std.is(data, ByteArrayData))
+		if ((data is ByteArrayData))
 		{
 			__data = data;
 		}
@@ -271,7 +271,7 @@ class FileReference extends EventDispatcher
 	@:noCompletion private function urlLoader_onComplete(event:Event):Void
 	{
 		#if desktop
-		if (Std.is(__urlLoader.data, ByteArrayData))
+		if ((__urlLoader.data is ByteArrayData))
 		{
 			__data = __urlLoader.data;
 		}

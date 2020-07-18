@@ -88,7 +88,7 @@ extern class UncaughtErrorEvent extends ErrorEvent
 		| `text` | Text error message. |
 	**/
 	public static inline var UNCAUGHT_ERROR = "uncaughtError";
-	
+
 	/**
 		The error object associated with the uncaught error. Typically, this
 		object's data type is one of the following:
@@ -120,9 +120,9 @@ extern class UncaughtErrorEvent extends ErrorEvent
 		```haxe
 		function uncaughtErrorHandler(event:UncaughtErrorEvent):Void {
 			var message:String;
-			if (Std.is(event.error, Error)) {
+			if ((event.error is Error)) {
 				message = cast(event.error, Error).message;
-			} else if (Std.is(event.error, ErrorEvent)) {
+			} else if ((event.error is ErrorEvent)) {
 				message = cast(event.error, ErrorEvent).text;
 			} else {
 				message = Std.string(event.error);
@@ -150,7 +150,7 @@ extern class UncaughtErrorEvent extends ErrorEvent
 		all runtime versions.
 	**/
 	public var error(default, null):Dynamic;
-	
+
 	/**
 		Creates an UncaughtErrorEvent object that contains information about
 		an `uncaughtError` event.

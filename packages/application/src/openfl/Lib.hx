@@ -56,7 +56,7 @@ import js.Browser;
 		#if flash
 		return flash.Lib.as(v, c);
 		#else
-		return Std.is(v, c) ? v : null;
+		return #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (v, c) ? v : null;
 		#end
 	}
 
@@ -120,12 +120,12 @@ import js.Browser;
 	public static function getQualifiedClassName(value:Dynamic):String
 	{
 		if (value == null) return null;
-		var ref = Std.is(value, Class) ? value : Type.getClass(value);
+		var ref = (value is Class) ? value : Type.getClass(value);
 		if (ref == null)
 		{
-			if (Std.is(value, Bool) || value == Bool) return "Bool";
-			else if (Std.is(value, Int) || value == Int) return "Int";
-			else if (Std.is(value, Float) || value == Float) return "Float";
+			if ((value is Bool) || value == Bool) return "Bool";
+			else if ((value is Int) || value == Int) return "Int";
+			else if ((value is Float) || value == Float) return "Float";
 			// TODO: Array? Map?
 			else
 				return null;
@@ -136,7 +136,7 @@ import js.Browser;
 	public static function getQualifiedSuperclassName(value:Dynamic):String
 	{
 		if (value == null) return null;
-		var ref = Std.is(value, Class) ? value : Type.getClass(value);
+		var ref = (value is Class) ? value : Type.getClass(value);
 		if (ref == null) return null;
 		var parentRef = Type.getSuperClass(ref);
 		if (parentRef == null) return null;

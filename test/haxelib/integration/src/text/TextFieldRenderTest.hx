@@ -89,7 +89,7 @@ class TextFieldRenderTest
 		bitmapData2.draw(textField2);
 		bitmapData3.draw(textField3);
 
-		Assert.isTrue(Std.is(bitmapData2.compare(bitmapData), BitmapData));
+		Assert.isTrue((bitmapData2.compare(bitmapData) is BitmapData));
 		Assert.areEqual(0, bitmapData2.compare(bitmapData3));
 	}
 

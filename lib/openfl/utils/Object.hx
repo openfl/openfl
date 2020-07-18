@@ -34,7 +34,9 @@ package openfl.utils;
 
 	public inline function propertyIsEnumerable(name:String):Bool
 	{
-		return (this != null && Reflect.hasField(this, name) && Std.is(Reflect.field(this, name), Iterable_));
+		return (this != null
+			&& Reflect.hasField(this, name)
+			&& #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (Reflect.field(this, name), Iterable_));
 	}
 
 	public inline function toLocaleString():String

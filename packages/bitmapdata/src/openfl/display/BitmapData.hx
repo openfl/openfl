@@ -674,12 +674,12 @@ class BitmapData implements IBitmapDrawable
 			Matrix.__pool.release(matrix);
 		}
 
-		if (Std.is(compressor, PNGEncoderOptions))
+		if ((compressor is PNGEncoderOptions))
 		{
 			byteArray.writeBytes(ByteArray.fromBytes(image.encode(PNG)));
 			return byteArray;
 		}
-		else if (Std.is(compressor, JPEGEncoderOptions))
+		else if ((compressor is JPEGEncoderOptions))
 		{
 			byteArray.writeBytes(ByteArray.fromBytes(image.encode(JPEG, cast(compressor, JPEGEncoderOptions).quality)));
 			return byteArray;
@@ -1579,13 +1579,13 @@ class BitmapData implements IBitmapDrawable
 		if (!readable) return false;
 
 		// #if !openfljs
-		if (Std.is(secondObject, Bitmap))
+		if ((secondObject is Bitmap))
 		{
 			secondObject = cast(secondObject, Bitmap).__bitmapData;
 		}
 		// #end
 
-		if (Std.is(secondObject, Point))
+		if ((secondObject is Point))
 		{
 			var secondPoint:Point = cast secondObject;
 
@@ -1602,7 +1602,7 @@ class BitmapData implements IBitmapDrawable
 				}
 			}
 		}
-		else if (Std.is(secondObject, BitmapData))
+		else if ((secondObject is BitmapData))
 		{
 			var secondBitmapData:BitmapData = cast secondObject;
 			var x, y;
@@ -1668,7 +1668,7 @@ class BitmapData implements IBitmapDrawable
 
 			Rectangle.__pool.release(hitRect);
 		}
-		else if (Std.is(secondObject, Rectangle))
+		else if ((secondObject is Rectangle))
 		{
 			var secondRectangle = Rectangle.__pool.get();
 			secondRectangle.copyFrom(cast secondObject);

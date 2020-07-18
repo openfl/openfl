@@ -1620,7 +1620,7 @@ class NetStream extends EventDispatcher
 		if (__video == null) return;
 
 		__video.volume = SoundMixer.__soundTransform.volume * __soundTransform.volume;
-		if (Std.is(url, String))
+		if ((url is String))
 		{
 			__video.src = url;
 		}
