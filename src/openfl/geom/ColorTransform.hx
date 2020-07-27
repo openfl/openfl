@@ -296,6 +296,14 @@ class ColorTransform
 		}
 	}
 
+	@:noCompletion private function __offsetActive(ignoreAlphaOffset:Bool):Bool
+		{
+			if ( ignoreAlphaOffset ){
+				return (redOffset != 0 || greenOffset != 0 || blueOffset != 0);
+			}
+			return (redOffset != 0 || greenOffset != 0 || blueOffset != 0 || alphaOffset != 0);
+		}
+
 	@:noCompletion private function __setArrays(colorMultipliers:Array<Float>, colorOffsets:Array<Float>):Void
 	{
 		colorMultipliers[0] = redMultiplier;
