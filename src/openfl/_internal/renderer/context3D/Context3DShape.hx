@@ -40,8 +40,8 @@ class Context3DShape
 			{
 				var context = renderer.__context3D;
 				var scale9Grid = shape.__worldScale9Grid;
-
-				var shader = renderer.__initDisplayShader(cast shape.__worldShader);
+				
+				var shader = renderer.__initDisplayShader(shape.__worldColorTransform.__offsetActive(true) ? cast shape.__worldShader : renderer.__defaultDisplayShaderFast);
 				renderer.setShader(shader);
 				renderer.applyBitmapData(graphics.__bitmap, true);
 				renderer.applyMatrix(renderer.__getMatrix(graphics.__worldTransform, AUTO));

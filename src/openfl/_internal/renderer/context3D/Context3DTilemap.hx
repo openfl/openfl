@@ -47,6 +47,7 @@ class Context3DTilemap
 	private static var numTiles:Int;
 	private static var vertexBufferData:Float32Array;
 	private static var vertexDataPosition:Int;
+	private static var colorOffsetActive:Bool;
 
 	public static function buildBuffer(tilemap:Tilemap, renderer:OpenGLRenderer):Void
 	{
@@ -100,6 +101,8 @@ class Context3DTilemap
 
 		var alphaPosition = 4;
 		var ctPosition = alphaEnabled ? 5 : 4;
+
+		colorOffsetActive = false;
 
 		for (tile in tiles)
 		{
@@ -239,6 +242,7 @@ class Context3DTilemap
 				{
 					if (colorTransform != null)
 					{
+						if (!colorOffsetActive && colorTransform.__offsetActive (true)) colorOffsetActive = true;
 						for (i in 0...4)
 						{
 							vertexBufferData[vertexOffset + (dataPerVertex * i) + ctPosition] = colorTransform.redMultiplier;
@@ -281,7 +285,11 @@ class Context3DTilemap
 	{
 		if (currentShader == null)
 		{
-			currentShader = renderer.__defaultDisplayShader;
+			if ( tilemap.__worldColorTransform.__offsetActive(true) || colorOffsetActive ){
+				currentShader = renderer.__defaultDisplayShader;
+			} else {
+				currentShader = renderer.__defaultDisplayShaderFast;
+			}
 		}
 
 		if (bufferPosition > lastFlushedPosition && currentBitmapData != null && currentShader != null)
