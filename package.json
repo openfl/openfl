@@ -92,7 +92,7 @@
     "hxgenjs": "kevinresol/hxgenjs",
     "hxnodejs": "haxefoundation/hxnodejs",
     "hxp": "openfl/hxp",
-    "jpeg-js": "^0.3.4",
+    "jpeg-js": "^0.4.1",
     "karma": "^5.0.9",
     "karma-chai": "^0.1.0",
     "karma-chrome-launcher": "^3.1.0",
