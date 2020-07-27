@@ -599,7 +599,8 @@ class Context3DGraphics
 								}
 								else
 								{
-									shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(null);
+									shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(
+										graphics.__owner.__worldColorTransform.__offsetActive(true) ? null : renderer.__defaultGraphicsShaderFast);
 									renderer.setShader(shader);
 									renderer.applyMatrix(uMatrix);
 									renderer.applyBitmapData(bitmap, smooth, repeat);
@@ -647,13 +648,14 @@ class Context3DGraphics
 								var width = c.width;
 								var height = c.height;
 
-								#if lime
 								var color:ARGB = (fill : ARGB);
-								tempColorTransform.redMultiplier = color.r / 0xFF;
-								tempColorTransform.greenMultiplier = color.g / 0xFF;
-								tempColorTransform.blueMultiplier = color.b / 0xFF;
-								#end
-								tempColorTransform.__combine(graphics.__owner.__worldColorTransform);
+								var worldCT = graphics.__owner.__worldColorTransform;
+
+								tempColorTransform.__identity();
+								tempColorTransform.redMultiplier = clamp ((color.r / 0xFF * worldCT.redMultiplier + worldCT.redOffset / 0xFF), 0, 1);
+								tempColorTransform.greenMultiplier = clamp ((color.g / 0xFF * worldCT.greenMultiplier + worldCT.greenOffset / 0xFF), 0, 1);
+								tempColorTransform.blueMultiplier = clamp ((color.b / 0xFF * worldCT.blueMultiplier + worldCT.blueOffset / 0xFF), 0, 1);
+								
 
 								matrix.identity();
 								matrix.scale(width, height);
@@ -661,13 +663,11 @@ class Context3DGraphics
 								matrix.ty = y;
 								matrix.concat(graphics.__owner.__renderTransform);
 
-								var shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(null);
+								var shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(renderer.__defaultGraphicsShaderFast);
 								renderer.setShader(shader);
 								renderer.applyMatrix(renderer.__getMatrix(matrix, AUTO));
 								renderer.applyBitmapData(blankBitmapData, true, repeat);
-								#if lime
 								renderer.applyAlpha((color.a / 0xFF) * graphics.__owner.__worldAlpha);
-								#end
 								renderer.applyColorTransform(tempColorTransform);
 								renderer.updateShader();
 
@@ -722,7 +722,8 @@ class Context3DGraphics
 							}
 							else
 							{
-								shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(null);
+								shader = maskRender ? renderer.__maskShader : renderer.__initGraphicsShader(
+									graphics.__owner.__worldColorTransform.__offsetActive(true) ? null : renderer.__defaultGraphicsShaderFast);
 								renderer.setShader(shader);
 								renderer.applyMatrix(uMatrix);
 								renderer.applyBitmapData(bitmap, smooth, repeat);
@@ -893,5 +894,11 @@ class Context3DGraphics
 		{
 			hasUVTData ? graphics.__vertexBufferDataUVT = newBuffer : graphics.__vertexBufferData = newBuffer;
 		}
+	}
+
+	private static function clamp ( value : Float, min : Float, max : Float) : Float {
+		if ( value < min ) return min;
+		if ( value > max ) return max;
+		return value;
 	}
 }
