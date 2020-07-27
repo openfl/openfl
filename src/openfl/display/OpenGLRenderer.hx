@@ -69,7 +69,9 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	@:noCompletion private var __currentShader:Shader;
 	@:noCompletion private var __currentShaderBuffer:ShaderBuffer;
 	@:noCompletion private var __defaultDisplayShader:DisplayObjectShader;
+	@:noCompletion private var __defaultDisplayShaderFast:DisplayObjectShaderFast;
 	@:noCompletion private var __defaultGraphicsShader:GraphicsShader;
+	@:noCompletion private var __defaultGraphicsShaderFast:GraphicsShaderFast;
 	@:noCompletion private var __defaultRenderTarget:BitmapData;
 	@:noCompletion private var __defaultShader:Shader;
 	@:noCompletion private var __displayHeight:Int;
@@ -151,7 +153,9 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		__tempRect = new Rectangle();
 
 		__defaultDisplayShader = new DisplayObjectShader();
+		__defaultDisplayShaderFast = new DisplayObjectShaderFast();
 		__defaultGraphicsShader = new GraphicsShader();
+		__defaultGraphicsShaderFast = new GraphicsShaderFast();
 		__defaultShader = __defaultDisplayShader;
 
 		__initShader(__defaultShader);
