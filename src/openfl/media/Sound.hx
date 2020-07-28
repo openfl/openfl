@@ -646,11 +646,7 @@ class Sound extends EventDispatcher
 		if (loops > 1) source.loops = loops - 1;
 
 		source.gain = volume;
-
-		var position = source.position;
-		position.x = pan;
-		position.z = -1 * Math.sqrt(1 - Math.pow(pan, 2));
-		source.position = position;
+		if(pan != 0) source.pan = pan;
 
 		return new SoundChannel(source, sndTransform);
 		#else
