@@ -13,9 +13,6 @@ import openfl.display._internal.Context3DDisplayObject;
 import openfl.display._internal.Context3DTextField;
 import openfl.display._internal.DOMBitmap;
 import openfl.display._internal.DOMTextField;
-import openfl._internal.formats.swf.SWFLite;
-import openfl._internal.symbols.DynamicTextSymbol;
-import openfl._internal.symbols.FontSymbol;
 import openfl._internal.formats.html.HTMLParser;
 import openfl.text._internal.TextEngine;
 import openfl.text._internal.TextFormatRange;
@@ -700,7 +697,6 @@ class TextField extends InteractiveObject
 	@:noCompletion private var __offsetY:Float;
 	@:noCompletion private var __selectionIndex:Int;
 	@:noCompletion private var __showCursor:Bool;
-	@:noCompletion private var __symbol:DynamicTextSymbol;
 	@:noCompletion private var __text:UTF8String;
 	@:noCompletion private var __htmlText:UTF8String;
 	@:noCompletion private var __textEngine:TextEngine;
@@ -732,8 +728,10 @@ class TextField extends InteractiveObject
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_backgroundColor (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_backgroundColor (v); }")
 			},
-			"border": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_border (); }"),
-				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_border (v); }")},
+			"border": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_border (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_border (v); }")
+			},
 			"borderColor": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_borderColor (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_borderColor (v); }")
@@ -797,16 +795,20 @@ class TextField extends InteractiveObject
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_sharpness (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_sharpness (v); }")
 			},
-			"text": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_text (); }"),
-				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_text (v); }")},
+			"text": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_text (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_text (v); }")
+			},
 			"textColor": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_textColor (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_textColor (v); }")
 			},
 			"textHeight": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_textHeight (); }")},
 			"textWidth": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_textWidth (); }")},
-			"type": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_type (); }"),
-				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_type (v); }")},
+			"type": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_type (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_type (v); }")
+			},
 			"wordWrap": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_wordWrap (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_wordWrap (v); }")
@@ -1686,127 +1688,6 @@ class TextField extends InteractiveObject
 			}
 		}
 		#end
-	}
-
-	@:noCompletion private function __fromSymbol(swf:SWFLite, symbol:DynamicTextSymbol):Void
-	{
-		__symbol = symbol;
-
-		width = symbol.width;
-		height = symbol.height;
-
-		__offsetX = symbol.x;
-		__offsetY = symbol.y;
-
-		multiline = symbol.multiline;
-		wordWrap = symbol.wordWrap;
-		displayAsPassword = symbol.password;
-
-		if (symbol.border)
-		{
-			border = true;
-			background = true;
-		}
-
-		selectable = symbol.selectable;
-
-		if (symbol.input)
-		{
-			type = INPUT;
-		}
-
-		var format = new TextFormat();
-		if (symbol.color != null) format.color = (symbol.color & 0x00FFFFFF);
-		format.size = Math.round(symbol.fontHeight / 20);
-
-		var font:FontSymbol = cast swf.symbols.get(symbol.fontID);
-
-		if (font != null)
-		{
-			// TODO: Bold and italic are handled in the font already
-			// Setting this can cause "extra" bold in HTML5
-
-			// format.bold = font.bold;
-			// format.italic = font.italic;
-			// format.leading = Std.int (font.leading / 20 + (format.size * 0.2) #if flash + 2 #end);
-			// embedFonts = true;
-
-			format.__ascent = ((font.ascent / 20) / 1024);
-			format.__descent = ((font.descent / 20) / 1024);
-		}
-
-		format.font = symbol.fontName;
-
-		var found = false;
-
-		switch (format.font)
-		{
-			case "_sans", "_serif", "_typewriter", "", null:
-				found = true;
-
-			default:
-				for (font in Font.enumerateFonts())
-				{
-					if (font.fontName == format.font)
-					{
-						found = true;
-						break;
-					}
-				}
-		}
-
-		if (!found)
-		{
-			var alpha = ~/[^a-zA-Z]+/g;
-
-			for (font in Font.enumerateFonts())
-			{
-				if (alpha.replace(font.fontName, "").substr(0, symbol.fontName.length) == symbol.fontName)
-				{
-					format.font = font.fontName;
-					found = true;
-					break;
-				}
-			}
-		}
-
-		if (found)
-		{
-			embedFonts = true;
-		}
-		else if (!__missingFontWarning.exists(format.font))
-		{
-			__missingFontWarning[format.font] = true;
-			Log.warn("Could not find required font \"" + format.font + "\", it has not been embedded");
-		}
-
-		if (symbol.align != null)
-		{
-			if (symbol.align == "center") format.align = TextFormatAlign.CENTER;
-			else if (symbol.align == "right") format.align = TextFormatAlign.RIGHT;
-			else if (symbol.align == "justify") format.align = TextFormatAlign.JUSTIFY;
-
-			format.leftMargin = Std.int(symbol.leftMargin / 20);
-			format.rightMargin = Std.int(symbol.rightMargin / 20);
-			format.indent = Std.int(symbol.indent / 20);
-			format.leading = Std.int(symbol.leading / 20);
-		}
-
-		defaultTextFormat = format;
-
-		if (symbol.text != null)
-		{
-			if (symbol.html)
-			{
-				htmlText = symbol.text;
-			}
-			else
-			{
-				text = symbol.text;
-			}
-		}
-
-		// autoSize = (tag.autoSize) ? TextFieldAutoSize.LEFT : TextFieldAutoSize.NONE;
 	}
 
 	@:noCompletion private inline function __getAdvance(position):Float
@@ -3232,7 +3113,7 @@ class TextField extends InteractiveObject
 
 		// TODO: Better system
 
-		if (event.relatedObject == null || !Std.is(event.relatedObject, TextField))
+		if (event.relatedObject == null || !(event.relatedObject is TextField))
 		{
 			__stopTextInput();
 		}

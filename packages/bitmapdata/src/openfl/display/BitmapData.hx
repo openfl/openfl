@@ -3,8 +3,6 @@ package openfl.display;
 #if !flash
 import openfl._internal.backend.gl.GLFramebuffer;
 import openfl._internal.backend.gl.GLRenderbuffer;
-import openfl._internal.formats.swf.SWFLite;
-import openfl._internal.symbols.BitmapSymbol;
 import openfl._internal.utils.Float32Array;
 import openfl.display._internal.PerlinNoise;
 import openfl._internal.utils.UInt16Array;
@@ -104,7 +102,6 @@ class BitmapData implements IBitmapDrawable
 	@:noCompletion private var __scrollRect:Rectangle;
 	@:noCompletion private var __stencilBuffer:GLRenderbuffer;
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __surface:#if lime CairoSurface #else Dynamic #end;
-	@:noCompletion private var __symbol:BitmapSymbol;
 	@:noCompletion private var __texture:TextureBase;
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __textureContext:#if lime RenderContext #else Dynamic #end;
 	@:noCompletion private var __textureHeight:Int;
@@ -677,12 +674,12 @@ class BitmapData implements IBitmapDrawable
 			Matrix.__pool.release(matrix);
 		}
 
-		if (Std.is(compressor, PNGEncoderOptions))
+		if ((compressor is PNGEncoderOptions))
 		{
 			byteArray.writeBytes(ByteArray.fromBytes(image.encode(PNG)));
 			return byteArray;
 		}
-		else if (Std.is(compressor, JPEGEncoderOptions))
+		else if ((compressor is JPEGEncoderOptions))
 		{
 			byteArray.writeBytes(ByteArray.fromBytes(image.encode(JPEG, cast(compressor, JPEGEncoderOptions).quality)));
 			return byteArray;
@@ -1582,13 +1579,13 @@ class BitmapData implements IBitmapDrawable
 		if (!readable) return false;
 
 		// #if !openfljs
-		if (Std.is(secondObject, Bitmap))
+		if ((secondObject is Bitmap))
 		{
 			secondObject = cast(secondObject, Bitmap).__bitmapData;
 		}
 		// #end
 
-		if (Std.is(secondObject, Point))
+		if ((secondObject is Point))
 		{
 			var secondPoint:Point = cast secondObject;
 
@@ -1605,7 +1602,7 @@ class BitmapData implements IBitmapDrawable
 				}
 			}
 		}
-		else if (Std.is(secondObject, BitmapData))
+		else if ((secondObject is BitmapData))
 		{
 			var secondBitmapData:BitmapData = cast secondObject;
 			var x, y;
@@ -1671,7 +1668,7 @@ class BitmapData implements IBitmapDrawable
 
 			Rectangle.__pool.release(hitRect);
 		}
-		else if (Std.is(secondObject, Rectangle))
+		else if ((secondObject is Rectangle))
 		{
 			var secondRectangle = Rectangle.__pool.get();
 			secondRectangle.copyFrom(cast secondObject);
@@ -2115,61 +2112,6 @@ class BitmapData implements IBitmapDrawable
 			readable = true;
 			__isValid = true;
 		}
-		#end
-	}
-
-	@:noCompletion private function __fromSymbol(swf:SWFLite, symbol:BitmapSymbol):Void
-	{
-		__symbol = symbol;
-
-		// TODO: Cache alpha image?
-
-		#if lime
-		#if (js && html5)
-		Image.loadFromFile(symbol.path).onComplete(function(image)
-		{
-			if (symbol.alpha != null)
-			{
-				Image.loadFromFile(symbol.alpha).onComplete(function(alpha)
-				{
-					if (image != null && alpha != null)
-					{
-						image.copyChannel(alpha, alpha.rect, new Vector2(), ImageChannel.RED, ImageChannel.ALPHA);
-						image.buffer.premultiplied = true;
-
-						#if !sys
-						image.premultiplied = false;
-						#end
-					}
-
-					__fromImage(image);
-				});
-			}
-			else
-			{
-				__fromImage(image);
-			}
-		});
-		#else
-		var image = Image.fromFile(symbol.path);
-
-		if (symbol.alpha != null)
-		{
-			var alpha = Image.fromFile(symbol.alpha);
-
-			if (image != null && alpha != null)
-			{
-				image.copyChannel(alpha, alpha.rect, new Vector2(), ImageChannel.RED, ImageChannel.ALPHA);
-				image.buffer.premultiplied = true;
-
-				#if !sys
-				image.premultiplied = false;
-				#end
-			}
-		}
-
-		__fromImage(image);
-		#end
 		#end
 	}
 

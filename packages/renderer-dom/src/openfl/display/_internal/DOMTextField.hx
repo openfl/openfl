@@ -4,6 +4,7 @@ import openfl.text._internal.TextEngine;
 import openfl.display.DOMRenderer;
 import openfl.text.TextField;
 import openfl.text.TextFormatAlign;
+import openfl.events.TextEvent;
 #if (js && html5)
 import js.html.Element;
 import js.Browser;
@@ -101,6 +102,8 @@ class DOMTextField
 								}
 
 								textField.__dirty = false;
+								
+								textField.dispatchEvent(new TextEvent(TextEvent.TEXT_INPUT, false, false, textField.htmlText));
 							}
 						}, true);
 					}

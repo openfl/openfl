@@ -33,7 +33,7 @@ class FlashGraphics
 		{
 			for (data in graphicsData)
 			{
-				if (Std.is(data, GraphicsQuadPath))
+				if ((data is GraphicsQuadPath))
 				{
 					hasQuadPath = true;
 					break;
@@ -54,28 +54,28 @@ class FlashGraphics
 
 			for (data in graphicsData)
 			{
-				if (Std.is(data, GraphicsSolidFill))
+				if ((data is GraphicsSolidFill))
 				{
 					fill = cast data;
 					graphics.beginFill(fill.color, fill.alpha);
 				}
-				else if (Std.is(data, GraphicsBitmapFill))
+				else if ((data is GraphicsBitmapFill))
 				{
 					bitmapFill = cast data;
 					graphics.beginBitmapFill(bitmapFill.bitmapData, bitmapFill.matrix, bitmapFill.repeat, bitmapFill.smooth);
 				}
-				else if (Std.is(data, GraphicsGradientFill))
+				else if ((data is GraphicsGradientFill))
 				{
 					gradientFill = cast data;
 					graphics.beginGradientFill(gradientFill.type, cast gradientFill.colors, cast gradientFill.alphas, cast gradientFill.ratios,
 						gradientFill.matrix, gradientFill.spreadMethod, gradientFill.interpolationMethod, gradientFill.focalPointRatio);
 				}
-				else if (Std.is(data, GraphicsShaderFill))
+				else if ((data is GraphicsShaderFill))
 				{
 					shaderFill = cast data;
 					graphics.beginShaderFill(shaderFill.shader, shaderFill.matrix);
 				}
-				else if (Std.is(data, GraphicsStroke))
+				else if ((data is GraphicsStroke))
 				{
 					stroke = cast data;
 
@@ -88,26 +88,26 @@ class FlashGraphics
 							thickness = null;
 						}
 
-						if (Std.is(stroke.fill, GraphicsSolidFill))
+						if ((stroke.fill is GraphicsSolidFill))
 						{
 							fill = cast stroke.fill;
 							graphics.lineStyle(thickness, fill.color, fill.alpha, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints,
 								stroke.miterLimit);
 						}
-						else if (Std.is(stroke.fill, GraphicsBitmapFill))
+						else if ((stroke.fill is GraphicsBitmapFill))
 						{
 							bitmapFill = cast stroke.fill;
 							graphics.lineStyle(thickness, 0, 1, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
 							graphics.lineBitmapStyle(bitmapFill.bitmapData, bitmapFill.matrix, bitmapFill.repeat, bitmapFill.smooth);
 						}
-						else if (Std.is(stroke.fill, GraphicsGradientFill))
+						else if ((stroke.fill is GraphicsGradientFill))
 						{
 							gradientFill = cast stroke.fill;
 							graphics.lineStyle(thickness, 0, 1, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
 							graphics.lineGradientStyle(gradientFill.type, cast gradientFill.colors, cast gradientFill.alphas, cast gradientFill.ratios,
 								gradientFill.matrix, gradientFill.spreadMethod, gradientFill.interpolationMethod, gradientFill.focalPointRatio);
 						}
-						else if (Std.is(stroke.fill, GraphicsShaderFill))
+						else if ((stroke.fill is GraphicsShaderFill))
 						{
 							shaderFill = cast stroke.fill;
 							graphics.lineStyle(thickness, 0, 1, stroke.pixelHinting, stroke.scaleMode, stroke.caps, stroke.joints, stroke.miterLimit);
@@ -119,21 +119,21 @@ class FlashGraphics
 						graphics.lineStyle();
 					}
 				}
-				else if (Std.is(data, GraphicsPath))
+				else if ((data is GraphicsPath))
 				{
 					path = cast data;
 					graphics.drawPath(path.commands, path.data, path.winding);
 				}
-				else if (Std.is(data, GraphicsTrianglePath))
+				else if ((data is GraphicsTrianglePath))
 				{
 					trianglePath = cast data;
 					graphics.drawTriangles(trianglePath.vertices, trianglePath.indices, trianglePath.uvtData, trianglePath.culling);
 				}
-				else if (Std.is(data, GraphicsEndFill))
+				else if ((data is GraphicsEndFill))
 				{
 					graphics.endFill();
 				}
-				else if (Std.is(data, GraphicsQuadPath))
+				else if ((data is GraphicsQuadPath))
 				{
 					quadPath = cast data;
 					graphics.drawQuads(quadPath.rects, quadPath.indices, quadPath.transforms);

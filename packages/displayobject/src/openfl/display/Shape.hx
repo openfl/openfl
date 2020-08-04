@@ -14,7 +14,7 @@ class Shape extends DisplayObject
 	@:noCompletion private static function __init__()
 	{
 		untyped Object.defineProperty(Shape.prototype, "graphics", {
-			get: untyped __js__("function () { return this.get_graphics (); }")
+			get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_graphics (); }")
 		});
 	}
 	#end

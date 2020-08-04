@@ -464,7 +464,7 @@ class Symbols
 				component.transform.matrix = matrix;
 			}
 		}
-		if (Std.is(component, DisplayObjectContainer) == true)
+		if ((component is DisplayObjectContainer) == true)
 		{
 			var container:DisplayObjectContainer = cast(component, DisplayObjectContainer);
 			var containerWidth:Float = container.width;
@@ -475,13 +475,13 @@ class Symbols
 			container.scaleY = 1.0;
 			var parametersAreBlocked:Bool = false;
 			var children:Array<DisplayObject> = null;
-			if (Std.is(component, XFLSprite) == true)
+			if ((component is XFLSprite) == true)
 			{
 				var xflSprite:XFLSprite = cast(component, XFLSprite);
 				children = xflSprite.children;
 				parametersAreBlocked = xflSprite.xflSymbolArguments.parametersAreLocked;
 			}
-			else if (Std.is(component, XFLMovieClip) == true)
+			else if ((component is XFLMovieClip) == true)
 			{
 				var xflMovieClip:XFLMovieClip = cast(component, XFLMovieClip);
 				children = xflMovieClip.children;
@@ -505,7 +505,7 @@ class Symbols
 					child.height = child.height * containerScaleY;
 				}
 			}
-			if (Std.is(component, UIComponent) == true)
+			if ((component is UIComponent) == true)
 			{
 				cast(component, UIComponent).setSize(containerWidth * containerScaleX, containerHeight * containerScaleY);
 			}

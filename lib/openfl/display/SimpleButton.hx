@@ -3,8 +3,6 @@ package openfl.display;
 #if (display || !flash)
 import openfl.media.SoundTransform;
 
-@:jsRequire("openfl/display/SimpleButton", "default")
-
 /**
  * The SimpleButton class lets you control all instances of button symbols in
  * a SWF file.
@@ -21,6 +19,7 @@ import openfl.media.SoundTransform;
  *
  * The SimpleButton class inherits from the InteractiveObject class.
  */
+@:jsRequire("openfl/display/SimpleButton", "default")
 extern class SimpleButton extends InteractiveObject
 {
 	/**

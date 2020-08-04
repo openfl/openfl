@@ -83,7 +83,7 @@ class Shared
 			}
 			for (i in 0...container.numChildren) {
 				var child = container.getChildAt (0);
-				if (Std.is(child, MovieClip)) {
+				if ((child is MovieClip)) {
 					untyped child.stop ();
 				}
 				container.removeChildAt(0);
@@ -120,7 +120,7 @@ class Shared
 				var frameAnonymousObjectId:Int = 0;
 				for (element in frame.elements)
 				{
-					if (Std.is(element, DOMSymbolInstance))
+					if ((element is DOMSymbolInstance))
 					{
 						var symbol:DisplayObject = element.name != null ? container.getChildByName(element.name) : null;
 						if (symbol != null)
@@ -137,7 +137,7 @@ class Shared
 							maskDisplayObjects[layer.index].push(symbol);
 						}
 					}
-					else if (Std.is(element, DOMBitmapInstance))
+					else if ((element is DOMBitmapInstance))
 					{
 						var bitmap:Bitmap = Symbols.createBitmap(xfl, cast element);
 						if (bitmap != null)
@@ -149,7 +149,7 @@ class Shared
 							maskDisplayObjects[layer.index].push(bitmap);
 						}
 					}
-					else if (Std.is(element, DOMComponentInstance))
+					else if ((element is DOMComponentInstance))
 					{
 						var name:String = cast(element, DOMComponentInstance).name;
 						var component:DisplayObject = name != null ? container.getChildByName(name) : null;
@@ -168,7 +168,7 @@ class Shared
 							maskDisplayObjects[layer.index].push(component);
 						}
 					}
-					else if (Std.is(element, DOMShape))
+					else if ((element is DOMShape))
 					{
 						var shape:Shape = Symbols.createShape(xfl, cast element);
 						shape.name = "xfl_anonymous_" + currentLayer + "_" + frame.index + "_" + (frameAnonymousObjectId++);
@@ -177,7 +177,7 @@ class Shared
 						children.push(shape);
 						maskDisplayObjects[layer.index].push(shape);
 					}
-					else if (Std.is(element, DOMRectangle))
+					else if ((element is DOMRectangle))
 					{
 						var rectangle:Rectangle = Symbols.createRectangle(xfl, cast element);
 						rectangle.name = "xfl_anonymous_" + currentLayer + "_" + frame.index + "_" + (frameAnonymousObjectId++);
@@ -186,7 +186,7 @@ class Shared
 						children.push(rectangle);
 						maskDisplayObjects[layer.index].push(rectangle);
 					}
-					else if (Std.is(element, DOMDynamicText))
+					else if ((element is DOMDynamicText))
 					{
 						var text:DisplayObject = element.name != null ? container.getChildByName(element.name) : null;
 						if (text != null)
@@ -203,7 +203,7 @@ class Shared
 							maskDisplayObjects[layer.index].push(text);
 						}
 					}
-					else if (Std.is(element, DOMStaticText))
+					else if ((element is DOMStaticText))
 					{
 						var text:DisplayObject = Symbols.createStaticText(cast element);
 						if (text != null)
@@ -259,7 +259,7 @@ class Shared
 				var frameAnonymousObjectId:Int = 0;
 				for (element in frame.elements)
 				{
-					if (Std.is(element, DOMSymbolInstance))
+					if ((element is DOMSymbolInstance))
 					{
 						var symbol:DisplayObject = element.name != null ? container.getChildByName(element.name) : null;
 						if (symbol != null)
@@ -284,7 +284,7 @@ class Shared
 							children.push(symbol);
 						}
 					}
-					else if (Std.is(element, DOMBitmapInstance))
+					else if ((element is DOMBitmapInstance))
 					{
 						var bitmap:Bitmap = Symbols.createBitmap(xfl, cast element);
 						if (bitmap != null)
@@ -304,7 +304,7 @@ class Shared
 							children.push(bitmap);
 						}
 					}
-					else if (Std.is(element, DOMComponentInstance))
+					else if ((element is DOMComponentInstance))
 					{
 						var name:String = cast(element, DOMComponentInstance).name;
 						var component:DisplayObject = name != null ? container.getChildByName(name) : null;
@@ -331,7 +331,7 @@ class Shared
 							children.push(component);
 						}
 					}
-					else if (Std.is(element, DOMShape))
+					else if ((element is DOMShape))
 					{
 						var shape:Shape = Symbols.createShape(xfl, cast element);
 						if (containerMask == false && layer.parentLayerIndex != -1 && maskDisplayObjects[layer.parentLayerIndex] != null)
@@ -346,7 +346,7 @@ class Shared
 						container.addChild(shape);
 						children.push(shape);
 					}
-					else if (Std.is(element, DOMRectangle))
+					else if ((element is DOMRectangle))
 					{
 						var rectangle:Rectangle = Symbols.createRectangle(xfl, cast element);
 						if (containerMask == false && layer.parentLayerIndex != -1 && maskDisplayObjects[layer.parentLayerIndex] != null)
@@ -361,7 +361,7 @@ class Shared
 						container.addChild(rectangle);
 						children.push(rectangle);
 					}
-					else if (Std.is(element, DOMDynamicText))
+					else if ((element is DOMDynamicText))
 					{
 						var text:DisplayObject = element.name != null ? container.getChildByName(element.name) : null;
 						if (text != null)
@@ -386,7 +386,7 @@ class Shared
 							children.push(text);
 						}
 					}
-					else if (Std.is(element, DOMStaticText))
+					else if ((element is DOMStaticText))
 					{
 						var text = Symbols.createStaticText(cast element);
 						if (text != null)
@@ -437,7 +437,7 @@ class Shared
 				{
 					for (element in frame.elements)
 					{
-						if (Std.is(element, DOMSymbolInstance))
+						if ((element is DOMSymbolInstance))
 						{
 							var movieClip:DisplayObject = element.name != null ? container.getChildByName(element.name) : null;
 							if (movieClip != null)
@@ -451,7 +451,7 @@ class Shared
 								processedObjects.push(movieClip);
 							}
 						}
-						else if (Std.is(element, DOMBitmapInstance))
+						else if ((element is DOMBitmapInstance))
 						{
 							var bitmap:DisplayObject = container.getChildByName("xfl_anonymous_" + currentLayer + "_" + frame.index + "_"
 								+ (frameAnonymousObjectId++));
@@ -466,7 +466,7 @@ class Shared
 								processedObjects.push(bitmap);
 							}
 						}
-						else if (Std.is(element, DOMComponentInstance))
+						else if ((element is DOMComponentInstance))
 						{
 							var component:DisplayObject = element.name != null ? container.getChildByName(element.name) : null;
 							if (component != null)
@@ -480,7 +480,7 @@ class Shared
 								processedObjects.push(component);
 							}
 						}
-						else if (Std.is(element, DOMShape))
+						else if ((element is DOMShape))
 						{
 							var shape:DisplayObject = container.getChildByName("xfl_anonymous_" + currentLayer + "_" + frame.index + "_"
 								+ (frameAnonymousObjectId++));
@@ -495,7 +495,7 @@ class Shared
 								processedObjects.push(shape);
 							}
 						}
-						else if (Std.is(element, DOMRectangle))
+						else if ((element is DOMRectangle))
 						{
 							var rectangle:DisplayObject = container.getChildByName("xfl_anonymous_" + currentLayer + "_" + frame.index + "_"
 								+ (frameAnonymousObjectId++));
@@ -510,7 +510,7 @@ class Shared
 								processedObjects.push(rectangle);
 							}
 						}
-						else if (Std.is(element, DOMDynamicText))
+						else if ((element is DOMDynamicText))
 						{
 							var text:DisplayObject = element.name != null ? container.getChildByName(element.name) : null;
 							if (text != null)
@@ -524,7 +524,7 @@ class Shared
 								processedObjects.push(text);
 							}
 						}
-						else if (Std.is(element, DOMStaticText))
+						else if ((element is DOMStaticText))
 						{
 							var text:DisplayObject = container.getChildByName("xfl_anonymous_" + currentLayer + "_" + frame.index + "_"
 								+ (frameAnonymousObjectId++));
@@ -571,7 +571,7 @@ class Shared
 				{
 					for (element in frame.elements)
 					{
-						if (Std.is(element, DOMSymbolInstance))
+						if ((element is DOMSymbolInstance))
 						{
 							var movieClip:DisplayObject = container.getChildByName(cast(element, DOMSymbolInstance).name);
 							if (movieClip != null)
@@ -579,7 +579,7 @@ class Shared
 								movieClip.visible = invisibleObjects == null || invisibleObjects.indexOf(movieClip) == -1;
 							}
 						}
-						else if (Std.is(element, DOMBitmapInstance))
+						else if ((element is DOMBitmapInstance))
 						{
 							var bitmap:DisplayObject = container.getChildByName("xfl_anonymous_" + currentLayer + "_" + frame.index + "_"
 								+ (frameAnonymousObjectId++));
@@ -588,7 +588,7 @@ class Shared
 								bitmap.visible = invisibleObjects == null || invisibleObjects.indexOf(bitmap) == -1;
 							}
 						}
-						else if (Std.is(element, DOMComponentInstance))
+						else if ((element is DOMComponentInstance))
 						{
 							var component:DisplayObject = container.getChildByName(cast(element, DOMComponentInstance).name);
 							if (component != null)
@@ -596,7 +596,7 @@ class Shared
 								component.visible = invisibleObjects == null || invisibleObjects.indexOf(component) == -1;
 							}
 						}
-						else if (Std.is(element, DOMShape))
+						else if ((element is DOMShape))
 						{
 							var shape:DisplayObject = container.getChildByName("xfl_anonymous_" + currentLayer + "_" + frame.index + "_"
 								+ (frameAnonymousObjectId++));
@@ -605,7 +605,7 @@ class Shared
 								shape.visible = invisibleObjects == null || invisibleObjects.indexOf(shape) == -1;
 							}
 						}
-						else if (Std.is(element, DOMRectangle))
+						else if ((element is DOMRectangle))
 						{
 							var rectangle:DisplayObject = container.getChildByName("xfl_anonymous_" + currentLayer + "_" + frame.index + "_"
 								+ (frameAnonymousObjectId++));
@@ -614,7 +614,7 @@ class Shared
 								rectangle.visible = invisibleObjects == null || invisibleObjects.indexOf(rectangle) == -1;
 							}
 						}
-						else if (Std.is(element, DOMDynamicText))
+						else if ((element is DOMDynamicText))
 						{
 							var text:DisplayObject = container.getChildByName(cast(element, DOMDynamicText).name);
 							if (text != null)
@@ -622,7 +622,7 @@ class Shared
 								text.visible = invisibleObjects == null || invisibleObjects.indexOf(text) == -1;
 							}
 						}
-						else if (Std.is(element, DOMStaticText))
+						else if ((element is DOMStaticText))
 						{
 							var text:DisplayObject = container.getChildByName("xfl_anonymous_" + currentLayer + "_" + frame.index + "_"
 								+ (frameAnonymousObjectId++));
@@ -647,11 +647,11 @@ class Shared
 		while (parent.numChildren > 0)
 		{
 			var child:DisplayObject = parent.getChildAt(0);
-			if (Std.is(child, MovieClip))
+			if ((child is MovieClip))
 			{
 				cast(child, MovieClip).stop();
 			}
-			else if (Std.is(child, XFLMovieClip))
+			else if ((child is XFLMovieClip))
 			{
 				cast(child, XFLMovieClip).stop();
 			}

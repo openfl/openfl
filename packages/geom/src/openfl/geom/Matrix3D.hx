@@ -18,12 +18,12 @@ class Matrix3D
 	{
 		untyped Object.defineProperties(Matrix3D.prototype, {
 			"determinant": {
-				get: untyped __js__("function () { return this.get_determinant (); }"),
-				set: untyped __js__("function (v) { return this.set_determinant (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_determinant (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_determinant (v); }")
 			},
 			"position": {
-				get: untyped __js__("function () { return this.get_position (); }"),
-				set: untyped __js__("function (v) { return this.set_position (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_position (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_position (v); }")
 			},
 		});
 	}

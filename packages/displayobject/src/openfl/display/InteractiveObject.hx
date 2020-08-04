@@ -13,7 +13,6 @@ class InteractiveObject extends DisplayObject
 {
 	// @:noCompletion @:dox(hide) public var accessibilityImplementation:openfl.accessibility.AccessibilityImplementation;
 	// @:noCompletion @:dox(hide) public var contextMenu:openfl.ui.ContextMenu;
-
 	public var doubleClickEnabled:Bool;
 	public var focusRect:Null<Bool>;
 	public var mouseEnabled:Bool;
@@ -30,12 +29,12 @@ class InteractiveObject extends DisplayObject
 	{
 		untyped Object.defineProperties(InteractiveObject.prototype, {
 			"tabEnabled": {
-				get: untyped __js__("function () { return this.get_tabEnabled (); }"),
-				set: untyped __js__("function (v) { return this.set_tabEnabled (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_tabEnabled (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_tabEnabled (v); }")
 			},
 			"tabIndex": {
-				get: untyped __js__("function () { return this.get_tabIndex (); }"),
-				set: untyped __js__("function (v) { return this.set_tabIndex (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_tabIndex (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_tabIndex (v); }")
 			},
 		});
 	}

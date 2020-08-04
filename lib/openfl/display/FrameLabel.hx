@@ -3,13 +3,24 @@ package openfl.display;
 #if (display || !flash)
 import openfl.events.EventDispatcher;
 
+/**
+	The FrameLabel object contains properties that specify a frame number and
+	the corresponding label name. The Scene class includes a `labels`
+	property, which is an array of FrameLabel objects for the scene.
+**/
 @:jsRequire("openfl/display/FrameLabel", "default")
 @:final extern class FrameLabel extends EventDispatcher
 {
-	public var frame(get, never):Int;
-	@:noCompletion private function get_frame():Int;
-	public var name(get, never):String;
-	@:noCompletion private function get_name():String;
+	/**
+		The frame number containing the label.
+	**/
+	public var frame(default, never):Int;
+
+	/**
+		The name of the label.
+	**/
+	public var name(default, never):String;
+
 	public function new(name:String, frame:Int):Void;
 }
 #else

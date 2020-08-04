@@ -314,7 +314,7 @@ class Loader extends DisplayObjectContainer
 				return;
 			}
 
-			if (Std.is(library, AssetLibrary))
+			if ((library is AssetLibrary))
 			{
 				library.load().onComplete(function(_)
 				{
@@ -348,7 +348,7 @@ class Loader extends DisplayObjectContainer
 			// script.innerHTML = loader.data;
 			// Browser.document.head.appendChild (script);
 
-			untyped __js__("eval")("(function () {" + loader.data + "})()");
+			untyped #if haxe4 js.Syntax.code #else __js__ #end ("eval")("(function () {" + loader.data + "})()");
 			#end
 
 			contentLoaderInfo.dispatchEvent(new Event(Event.COMPLETE));

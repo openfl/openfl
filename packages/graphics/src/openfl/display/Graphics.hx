@@ -1089,11 +1089,11 @@ import js.html.CanvasRenderingContext2D;
 		var tx = x * parentTransform.a + y * parentTransform.c + parentTransform.tx;
 		var ty = x * parentTransform.b + y * parentTransform.d + parentTransform.ty;
 
-		// Floor the world position for crisp graphics rendering
-		__worldTransform.tx = Math.ffloor(tx);
-		__worldTransform.ty = Math.ffloor(ty);
+		// round the world position for crisp graphics rendering
+		__worldTransform.tx = Math.fround(tx);
+		__worldTransform.ty = Math.fround(ty);
 
-		// Offset the rendering with the subpixel offset removed by Math.floor above
+		// Offset the rendering with the subpixel offset removed by Math.round above
 		__renderTransform.tx = __worldTransform.__transformInverseX(tx, ty);
 		__renderTransform.ty = __worldTransform.__transformInverseY(tx, ty);
 

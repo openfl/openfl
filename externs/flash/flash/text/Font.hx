@@ -21,7 +21,7 @@ extern class Font extends LimeFont
 	{
 		try
 		{
-			if (Std.is(font, Class))
+			if ((font is Class))
 			{
 				__registerFont(cast font);
 			}
