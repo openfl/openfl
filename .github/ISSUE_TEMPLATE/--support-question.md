@@ -2,7 +2,7 @@
 name: "❔ Support question"
 about: Ask a question or express a concern
 title: ''
-labels: "\U0001F914 Type: Question, \U0001F5C3️ Status: Review Needed"
+labels: "\U0001F5C3️ Status: Review Needed, \U0001F914 Type: Question"
 assignees: ''
 
 ---

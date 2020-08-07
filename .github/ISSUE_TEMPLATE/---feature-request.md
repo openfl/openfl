@@ -2,7 +2,7 @@
 name: "\U0001F381 Feature request"
 about: Suggest an idea for this project
 title: ''
-labels: "\U0001F60E Type: Enhancement, \U0001F5C3️ Status: Review Needed"
+labels: "\U0001F5C3️ Status: Review Needed, \U0001F60E Type: Enhancement"
 assignees: ''
 
 ---
