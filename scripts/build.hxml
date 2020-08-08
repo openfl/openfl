@@ -11,7 +11,7 @@
 # -lib openfl.displayobject
 -cp ../packages/displayobject/src
 # -lib openfl.draft
-# -cp ../packages/draft/src
+ -cp ../packages/draft/src
 # -lib openfl.errors
 -cp ../packages/errors/src
 # -lib openfl.eventdispatcher
