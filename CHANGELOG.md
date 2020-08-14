@@ -1,3 +1,38 @@
+9.0.0 (08/14/2020)
+------------------
+
+* Added the new MovieClip `Timeline` API for powering custom MovieClip frames and behaviors
+* Added `shaderFilter.invalidate()` to force redraw of a filter if necessary
+* Migrated OpenFL sources to a new package structure for better collaboration
+* Migrated SWF support to an external library (using the new `Timeline` API)
+* Improved `sprite.addChild` to reduce recursion and improve performance
+* Improved the OpenGL implementation of glow, blur and drop shadow shaders
+* Improved the behavior of `VideoTexture` upload and `TEXTURE_READY` events
+* Improved double-click behavior on `TextField` to select a whole word
+* Improved cancel behavior for `FocusEvent.KEY_FOCUS_CHANGE`
+* Improved `sprite.buttonMode`+`focusRect` to dispatch `MouseEvent.CLICK` on space/up/enter
+* Improved the automatic tab focus order for display objects
+* Improved support for tab focus order on HTML5
+* Fixed event dispatch from `NetStream` objects
+* Fixed `touchEvent.isPrimaryTouchPoint` behavior for touch end, tap and cancel
+* Fixed TextField rendering on Haxe 4 to use UTF-16 on platforms that need it
+* Fixed support for AGAL highp precision
+* Fixed additional drawn line in some `Graphics` commands
+* Fixed _sans, _serif and _typewriter fonts for macOS Catalina
+* Fixed the pixel rounding behavior for `Graphics` to be consistent with other objects
+* Fixed setting `scrollV`/`scrollH` on `TextField` before dispatching `Event.SCROLL`
+* Fixed `Std.is()` deprecation warnings using Haxe 4.2
+* Fixed dispatch of `TextEvent.TEXT_INPUT` on DOM `TextField`
+
+
+8.9.7 (06/20/2020)
+------------------
+
+* Updated to allow Lime 7.9.*
+* Fixed compiler error using Haxe 4.1 and HTML5
+* Fixed compiler warnings using Haxe 4.1 and HTML5
+
+
 8.9.6 (01/27/2020)
 ------------------
 
