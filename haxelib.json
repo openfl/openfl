@@ -4,8 +4,8 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "8.9.6",
-	"releasenote": "Reverted TextField, filter and renderer changes made between 8.9.2 through 8.9.5, stability improvements",
+	"version": "9.0.0",
+	"releasenote": "Added Timeline API, new internal structure, migrated SWF support to external SWF library",
 	"contributors": [ "singmajesty" ],
 	"classPath": "lib"
 }
