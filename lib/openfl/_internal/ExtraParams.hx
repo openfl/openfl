@@ -84,13 +84,12 @@ class ExtraParams
 
 	public static function includeExterns():Void
 	{
-		var childPath = Context.resolvePath("openfl/_internal/symbols");
+		var childPath = Context.resolvePath("openfl/external");
 
 		var parts = StringTools.replace(childPath, "\\", "/").split("/");
-		parts.pop(); // _internal
-		parts.pop(); // openfl
-		parts.pop(); // src
-		parts.pop(); // root
+		parts.pop();
+		parts.pop();
+		parts.pop();
 
 		var externsPath = parts.join("/") + "/externs";
 
