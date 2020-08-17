@@ -64,7 +64,7 @@
 	<source path="packages/renderer-core/src" />
 	<source path="packages/renderer-dom/src" />
 	<source path="packages/renderer-flash/src" />
-	<source path="packages/renderer-stage3D/src" />
+	<source path="packages/renderer-stage3d/src" />
 	<source path="packages/security/src" />
 	<source path="packages/sensors/src" />
 	<source path="packages/shader/src" />
@@ -72,7 +72,7 @@
 	<source path="packages/socket/src" />
 	<source path="packages/sound/src" />
 	<source path="packages/stage/src" />
-	<source path="packages/stage3D/src" />
+	<source path="packages/stage3d/src" />
 	<source path="packages/system/src" />
 	<source path="packages/telemetry/src" />
 	<source path="packages/textfield/src" />

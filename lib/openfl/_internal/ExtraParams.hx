@@ -48,9 +48,9 @@ class ExtraParams
 						"/packages/errors/src", "/packages/eventdispatcher/src", "/packages/externalinterface/src", "/packages/filereference/src",
 						"/packages/filters/src", "/packages/geom/src", "/packages/graphics/src", "/packages/input/src", "/packages/loader/src",
 						"/packages/movieclip/src", "/packages/printing/src", "/packages/renderer-cairo/src", "/packages/renderer-canvas/src",
-						"/packages/renderer-core/src", "/packages/renderer-dom/src", "/packages/renderer-flash/src", "/packages/renderer-stage3D/src",
+						"/packages/renderer-core/src", "/packages/renderer-dom/src", "/packages/renderer-flash/src", "/packages/renderer-stage3d/src",
 						"/packages/security/src", "/packages/sensors/src", "/packages/shader/src", "/packages/sharedobject/src", "/packages/socket/src",
-						"/packages/sound/src", "/packages/stage/src", "/packages/stage3D/src", "/packages/system/src", "/packages/telemetry/src",
+						"/packages/sound/src", "/packages/stage/src", "/packages/stage3d/src", "/packages/system/src", "/packages/telemetry/src",
 						"/packages/textfield/src", "/packages/tilemap/src", "/packages/urlloader/src", "/packages/urlrequest/src", "/packages/urlstream/src",
 						"/packages/utils/src", "/packages/video/src"
 					];
