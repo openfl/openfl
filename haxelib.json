@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "9.0.0",
+	"version": "9.0.1",
 	"releasenote": "Added Timeline API, new internal structure, migrated SWF support to external SWF library",
 	"contributors": [ "singmajesty" ],
 	"classPath": "lib"
