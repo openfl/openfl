@@ -1,7 +1,7 @@
 9.0.1 (08/17/2020)
 ------------------
 
-* Fixed issue with Haxelib submission
+* Fixed paths for internal packages for case-sensitivity
 
 
 9.0.0 (08/14/2020)
