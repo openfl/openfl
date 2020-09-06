@@ -32,7 +32,7 @@ class CanvasShape
 				var transform = graphics.__worldTransform;
 				var context = renderer.context;
 				var scrollRect = shape.__scrollRect;
-				var scale9Grid = shape.__worldScale9Grid;
+				var scale9Grid = shape.__scale9Grid;
 
 				// TODO: Render for scroll rect?
 

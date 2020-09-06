@@ -171,7 +171,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private var __worldClipChanged:Bool;
 	@:noCompletion private var __worldColorTransform:ColorTransform;
 	@:noCompletion private var __worldShader:Shader;
-	@:noCompletion private var __worldScale9Grid:Rectangle;
 	@:noCompletion private var __worldTransform:Matrix;
 	@:noCompletion private var __worldVisible:Bool;
 	@:noCompletion private var __worldVisibleChanged:Bool;
@@ -1065,15 +1064,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				{
 					__worldShader = __shader;
 				}
-
-				if (__scale9Grid == null)
-				{
-					__worldScale9Grid = renderParent.__scale9Grid;
-				}
-				else
-				{
-					__worldScale9Grid = __scale9Grid;
-				}
 			}
 			else
 			{
@@ -1098,7 +1088,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 				__worldBlendMode = __blendMode;
 				__worldShader = __shader;
-				__worldScale9Grid = __scale9Grid;
 			}
 
 			// if (updateChildren && __renderDirty) {
