@@ -1556,7 +1556,7 @@ class TextField extends InteractiveObject
 					range.start = endIndex;
 					break;
 				}
-				else if (range.start < beginIndex && range.end >= endIndex)
+				else if (range.start < beginIndex && range.end <= endIndex)
 				{
 					// set format range is within the second part of the range
 					newRange = new TextFormatRange(range.format.clone(), beginIndex, endIndex);
@@ -1567,8 +1567,9 @@ class TextField extends InteractiveObject
 				}
 				else
 				{
-					// should never happen...
+					// should never happen, throw an error
 					index++;
+					Log.warn("You found a bug in OpenFL's text code! Please save a copy of your project and contact Joshua Granick (@singmajesty) so we can fix this.");
 				}
 			}
 		}
