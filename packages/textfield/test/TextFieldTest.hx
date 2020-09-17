@@ -510,6 +510,57 @@ class TextFieldTest
 				var exists = textField.setTextFormat;
 
 				Assert.notEqual(exists, null);
+				
+				// test out of bounds
+				textField.text = "testing setTextFormat";
+				
+				var format = new openfl.text.TextFormat();
+				
+				// add tests for weird -1 cases that don't actually error
+				Assert.doesNotThrow(() -> { textField.setTextFormat(format, -1, -1); }, openfl.errors.RangeError);
+				Assert.doesNotThrow(() -> { textField.setTextFormat(format, 3, -1); }, openfl.errors.RangeError);
+				Assert.throws(() -> { textField.setTextFormat(format, -2, 5); }, openfl.errors.RangeError);
+				Assert.throws(() -> { textField.setTextFormat(format, -1, 0); }, openfl.errors.RangeError);
+				Assert.throws(() -> { textField.setTextFormat(format, 2, 1); }, openfl.errors.RangeError);
+				// Assert.throws(() -> { textField.setTextFormat(format, 21, 21); }, openfl.errors.RangeError); // confirm
+				Assert.throws(() -> { textField.setTextFormat(format, 21, 23); }, openfl.errors.RangeError);
+				Assert.throws(() -> { textField.setTextFormat(format, 1, 25); }, openfl.errors.RangeError);
+				
+				// for each case, including begin==end, compare format ranges with known values
+				// don't go into textengine, use gettextformat and textlinemetrics to see what's going on
+				
+				textField.setTextFormat(new TextFormat(12), -1, -1); // baseline
+				textField.setTextFormat(new TextFormat(16), 0, 5); // test overwrite beginning
+				textField.setTextFormat(new TextFormat(16), 10, 12);
+				textField.setTextFormat(new TextFormat(16), 15, 21);
+				textField.setTextFormat(new TextFormat(20), 3, 18);
+				textField.setTextFormat(new TextFormat(18), 9, 13);
+				Assert.equal(textField.getTextFormat(1, 2).size, 16);
+				Assert.equal(textField.getTextFormat(4, 5).size, 20);
+				Assert.equal(textField.getTextFormat(15, 16).size, 20);
+				Assert.equal(textField.getTextFormat(11, 12).size, 18);
+				Assert.equal(textField.getTextFormat(20, 21).size, 16);
+				textField.setTextFormat(new TextFormat(14), -1, -1); // test overwriting entire range
+				Assert.equal(textField.getTextFormat(11, 12).size, 14);
+				
+				textField.text = "test test test test\ntest test";
+				textField.width = 180;
+				textField.height = 300;
+				textField.wordWrap = true;
+				
+				var lmargin = 50;
+				var rmargin = 50;
+				var indent = 25;
+				var bindent = 25;
+				var format = new TextFormat(null, null, null, null, null, null, null, null, null, lmargin, 0, indent);
+				format.blockIndent = bindent;
+				textField.setTextFormat(format, -1, -1);
+				format = new TextFormat(null, null, null, null, null, null, null, null, RIGHT, 0, rmargin);
+				textField.setTextFormat(format, 19, textField.text.length);
+				Assert.equal(textField.getCharBoundaries(0).x, lmargin + indent + bindent + 2); // test leftMargin, indent, blockIndent
+				Assert.equal(textField.getCharBoundaries(10).x, lmargin + bindent + 2); // test indent doesn't affect subsequent lines
+				var charb = textField.getCharBoundaries(textField.text.length - 1);
+				Assert.equal(charb.x + charb.width, textField.width - 2 - rmargin); // test rightMargin
 			});
 		});
 	}
