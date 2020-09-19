@@ -725,7 +725,7 @@ class TextEngine
 
 		if (textWidth > width - 4)
 		{
-			maxScrollH = Std.int(textWidth - width + 4);
+			maxScrollH = Std.int(textWidth - width + 4); // TODO: incorrect
 		}
 		else
 		{
