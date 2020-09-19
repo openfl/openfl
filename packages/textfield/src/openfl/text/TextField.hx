@@ -3013,7 +3013,7 @@ class TextField extends InteractiveObject
 		__isHTML = false;
 
 		__updateText(value);
-		setSelection(utfValue.length, utfValue.length);
+		setSelection(0, 0);
 
 		return value;
 	}
