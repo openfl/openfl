@@ -2162,7 +2162,6 @@ class TextField extends InteractiveObject
 		}
 
 		__updateText(__text.substring(0, beginIndex) + newText + __text.substring(endIndex));
-		if (endIndex > __text.length) endIndex = __text.length;
 
 		var offset = newText.length - (endIndex - beginIndex);
 
@@ -2172,86 +2171,81 @@ class TextField extends InteractiveObject
 		while (i < __textEngine.textFormatRanges.length)
 		{
 			range = __textEngine.textFormatRanges[i];
-
+			
 			if (beginIndex == endIndex)
 			{
 				if (range.end < beginIndex)
 				{
 					// do nothing, range is completely before insertion point
 				}
-				else if (range.start > endIndex)
+				else if (range.start >= beginIndex)
 				{
 					// shift range, range is after insertion point
 					range.start += offset;
 					range.end += offset;
 				}
-				else
+				else if (range.start < beginIndex && range.end >= endIndex)
 				{
-					if (range.start < range.end && range.end == beginIndex && i < __textEngine.textFormatRanges.length - 1)
-					{
-						// do nothing, insertion point is between two ranges, so it belongs to the next range
-						// unless there are no more ranges after this one (inserting at the end of the text)
-					}
-					else
-					{
-						// add to range, insertion point is within range
-						range.end += offset;
-					}
+					// shift end, range overlaps insertion point
+					// insertions use the format to the left of the insertion point, when beginIndex == endIndex
+					range.end += offset;
 				}
 			}
 			else
 			{
-				if (range.end < beginIndex)
+				if (range.end <= beginIndex)
 				{
 					// do nothing, range is before selection
 				}
-				else if (range.start >= endIndex)
+				else if (range.start > endIndex)
 				{
-					// shift range, range is completely after selection
+					// shift start and end, range is after selection
 					range.start += offset;
+					range.end += offset;
+				}
+				else if (range.start <= beginIndex && range.end > endIndex)
+				{
+					// shift end, range overlaps and extends after selection
 					range.end += offset;
 				}
 				else if (range.start >= beginIndex && range.end <= endIndex)
 				{
-					// delete range, range is encompassed by selection
-					if (__textEngine.textFormatRanges.length > 1)
-
-					{
-						__textEngine.textFormatRanges.splice(i, 1);
-					}
-					else
-					{
-						// don't delete if it's the last range though, just modify properties
-						range.start = 0;
-						range.end = newText.length;
-					}
+					// delete, range is encompassed by selection
+					__textEngine.textFormatRanges.splice(i--, 1);
 				}
-				else if (range.start <= beginIndex)
+				else if (range.end > endIndex && range.start > beginIndex && range.start <= endIndex)
 				{
-					if (range.end < endIndex)
-					{
-						// modify range, range ends before the selection ends
-						range.end = beginIndex;
-					}
-					else
-					{
-						// modify range, range ends where or after the selection ends
-						range.end += offset;
-					}
-				}
-				else
-				{
-					// modify range, selection begins before the range
-					// for deletion: entire range shifts leftward
-					// for addition: added text gains the format of endIndex
+					// set start and shift end, beginning of range overlaps selection
+					// replacements use the format to the right of the selection, when beginIndex != endIndex
 					range.start = beginIndex;
 					range.end += offset;
+				}
+				else if (range.start < beginIndex && range.end > beginIndex && range.end <= endIndex)
+				{
+					// set end, end of range overlaps selection
+					range.end = beginIndex;
 				}
 			}
 
 			i++;
 		}
 
+		if (__textEngine.textFormatRanges.length == 0)
+		{
+			// add DTF, all format ranges were deleted
+			__textEngine.textFormatRanges.push(new TextFormatRange(defaultTextFormat, 0, newText.length));
+		}
+		else if (beginIndex == endIndex && __textEngine.textFormatRanges[0].start > 0)
+		{
+			// prefix DTF, text was inserted without a format
+			__textEngine.textFormatRanges.unshift(new TextFormatRange(defaultTextFormat, 0, __textEngine.textFormatRanges[0].start));
+		}
+		else if (beginIndex != endIndex && __textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end < __text.length + offset)
+		{
+			// append DTF, text was replaced without a format
+			__textEngine.textFormatRanges.push(new TextFormatRange(defaultTextFormat, __textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end, __text.length + offset));
+		}
+		
 		setSelection(beginIndex + newText.length, beginIndex + newText.length);
 
 		__dirty = true;
