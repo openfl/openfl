@@ -1460,7 +1460,7 @@ class TextField extends InteractiveObject
 		if (beginIndex == endIndex) return;
 		if (beginIndex < 0 || endIndex <= 0 || endIndex < beginIndex || beginIndex >= max || endIndex > max) throw new RangeError();
 
-		// there are 10 cases that have to be handled
+		// there are 11 cases that have to be handled
 		// the order and logic of cases really matters!!
 		//	beginIndex == 0 && endIndex == max -> replace all format ranges with new one
 		//	existing range.end < beginIndex -> continue
@@ -1470,7 +1470,9 @@ class TextField extends InteractiveObject
 		//		range.start == beginIndex -> existing.start = endIndex, insert new before existing
 		//		range.end == endIndex -> existing.end = beginIndex, insert new after existing
 		//		else -> split existing into two (existing.end = beginIndex; newExisting.start = endIndex), insert new in between
-		//	existing range completely encompasses beginIndex...endIndex -> delete existing
+		//	existing range completely encompasses beginIndex...endIndex
+		// 		if they start with the same index -> overwrite
+		// 		else -> delete existing
 		//	existing range encompasses beginIndex but not endIndex -> existing.start = endIndex
 		//	existing range encompasses endIndex but not beginIndex -> existing.end = beginIndex, insert new
 		
@@ -1548,7 +1550,18 @@ class TextField extends InteractiveObject
 				else if (range.start >= beginIndex && range.end <= endIndex)
 				{
 					// set format range completely encompasses this existing range
-					__textEngine.textFormatRanges.removeAt(index);
+					if (range.start == beginIndex)
+					{
+						// deleted range would disappear and not be replaced in this case
+						__textEngine.textFormatRanges[index].format.__merge(format);
+						__textEngine.textFormatRanges[index].start = beginIndex;
+						__textEngine.textFormatRanges[index].end = endIndex;
+					}
+					else
+					{
+						// delete range
+						__textEngine.textFormatRanges.removeAt(index);
+					}
 				}
 				else if (range.start > beginIndex && range.end > beginIndex)
 				{
@@ -1572,8 +1585,9 @@ class TextField extends InteractiveObject
 					Log.warn("You found a bug in OpenFL's text code! Please save a copy of your project and contact Joshua Granick (@singmajesty) so we can fix this.");
 				}
 			}
-			
+			/*
 			// robust catchers for myriad edge cases
+			// TODO: should this be here? it would force getLayoutGroups() to never soft fail and report there's a text bug
 			if (__textEngine.textFormatRanges.length == 0)
 			{
 				newRange = new TextFormatRange(defaultTextFormat.clone(), 0, endIndex);
@@ -1592,6 +1606,7 @@ class TextField extends InteractiveObject
 				newRange.format.__merge(format);
 				__textEngine.textFormatRanges.unshift(newRange);
 			}
+			*/
 		}
 
 		__dirty = true;
