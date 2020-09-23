@@ -1572,6 +1572,26 @@ class TextField extends InteractiveObject
 					Log.warn("You found a bug in OpenFL's text code! Please save a copy of your project and contact Joshua Granick (@singmajesty) so we can fix this.");
 				}
 			}
+			
+			// robust catchers for myriad edge cases
+			if (__textEngine.textFormatRanges.length == 0)
+			{
+				newRange = new TextFormatRange(defaultTextFormat.clone(), 0, endIndex);
+				newRange.format.__merge(format);
+				__textEngine.textFormatRanges.push(newRange);
+			}
+			else if (__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end < __text.length)
+			{
+				newRange = new TextFormatRange(defaultTextFormat.clone(), __textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end, __text.length);
+				newRange.format.__merge(format);
+				__textEngine.textFormatRanges.push(newRange);
+			}
+			else if (__textEngine.textFormatRanges[0].start > 0)
+			{
+				newRange = new TextFormatRange(defaultTextFormat.clone(), 0, __textEngine.textFormatRanges[0].start);
+				newRange.format.__merge(format);
+				__textEngine.textFormatRanges.unshift(newRange);
+			}
 		}
 
 		__dirty = true;
@@ -2229,7 +2249,8 @@ class TextField extends InteractiveObject
 
 			i++;
 		}
-
+		
+		// robust catchers for myriad edge cases
 		if (__textEngine.textFormatRanges.length == 0)
 		{
 			// add DTF, all format ranges were deleted
@@ -2240,10 +2261,10 @@ class TextField extends InteractiveObject
 			// prefix DTF, text was inserted without a format
 			__textEngine.textFormatRanges.unshift(new TextFormatRange(defaultTextFormat, 0, __textEngine.textFormatRanges[0].start));
 		}
-		else if (beginIndex != endIndex && __textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end < __text.length + offset)
+		else if (beginIndex != endIndex && __textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end < __text.length)
 		{
 			// append DTF, text was replaced without a format
-			__textEngine.textFormatRanges.push(new TextFormatRange(defaultTextFormat, __textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end, __text.length + offset));
+			__textEngine.textFormatRanges.push(new TextFormatRange(defaultTextFormat, __textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end, __text.length));
 		}
 		
 		setSelection(beginIndex + newText.length, beginIndex + newText.length);
