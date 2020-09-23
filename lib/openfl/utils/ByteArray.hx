@@ -188,8 +188,10 @@ extern class ByteArray implements IDataOutput implements IDataInput /*implements
 	public function deflate():Void;
 
 	public static function fromBytes(bytes:Bytes):ByteArray;
+	#if js
 	public static function fromArrayBuffer(buffer:ArrayBuffer):ByteArray;
-
+	#end
+	
 	/**
 	 * Decompresses the byte array using the deflate compression algorithm. The
 	 * byte array must have been compressed using the same algorithm.
