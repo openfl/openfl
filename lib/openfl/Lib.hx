@@ -1,5 +1,7 @@
 package openfl;
 
+import haxe.Constraints;
+
 // import openfl.display.Application;
 import openfl.display.MovieClip;
 import openfl.net.URLRequest;
