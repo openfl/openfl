@@ -1479,8 +1479,6 @@ class TextField extends InteractiveObject
 		if (beginIndex == 0 && endIndex == max)
 		{
 			// set text format for the whole textfield
-			__textFormat.__merge(format);
-
 			__textEngine.textFormatRanges.length = 1;
 			
 			range = __textEngine.textFormatRanges[0];
@@ -1511,6 +1509,7 @@ class TextField extends InteractiveObject
 					if (range.start == beginIndex && range.end == endIndex)
 					{
 						// set format range matches an existing range exactly
+						range.format = range.format.clone();
 						range.format.__merge(format);
 						break;
 					}
@@ -1553,9 +1552,9 @@ class TextField extends InteractiveObject
 					if (range.start == beginIndex)
 					{
 						// deleted range would disappear and not be replaced in this case
-						__textEngine.textFormatRanges[index].format.__merge(format);
-						__textEngine.textFormatRanges[index].start = beginIndex;
-						__textEngine.textFormatRanges[index].end = endIndex;
+						range.format = range.format.clone();
+						range.format.__merge(format);
+						range.end = endIndex;
 					}
 					else
 					{
@@ -2209,7 +2208,19 @@ class TextField extends InteractiveObject
 			
 			if (beginIndex == endIndex)
 			{
-				if (range.end < beginIndex)
+				if (range.start == range.end)
+				{
+					// this should only ever be true if there is no text (start == end == 0)
+					if (range.start != 0)
+					{
+						Log.warn("You found a bug in OpenFL's text code! Please save a copy of your project and contact Joshua Granick (@singmajesty) so we can fix this.");
+					}
+					else
+					{
+						range.end += offset;
+					}
+				}
+				else if (range.end < beginIndex)
 				{
 					// do nothing, range is completely before insertion point
 				}
@@ -2269,17 +2280,17 @@ class TextField extends InteractiveObject
 		if (__textEngine.textFormatRanges.length == 0)
 		{
 			// add DTF, all format ranges were deleted
-			__textEngine.textFormatRanges.push(new TextFormatRange(defaultTextFormat, 0, newText.length));
+			__textEngine.textFormatRanges.push(new TextFormatRange(defaultTextFormat.clone(), 0, newText.length));
 		}
 		else if (beginIndex == endIndex && __textEngine.textFormatRanges[0].start > 0)
 		{
 			// prefix DTF, text was inserted without a format
-			__textEngine.textFormatRanges.unshift(new TextFormatRange(defaultTextFormat, 0, __textEngine.textFormatRanges[0].start));
+			__textEngine.textFormatRanges.unshift(new TextFormatRange(defaultTextFormat.clone(), 0, __textEngine.textFormatRanges[0].start));
 		}
 		else if (beginIndex != endIndex && __textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end < __text.length)
 		{
 			// append DTF, text was replaced without a format
-			__textEngine.textFormatRanges.push(new TextFormatRange(defaultTextFormat, __textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end, __text.length));
+			__textEngine.textFormatRanges.push(new TextFormatRange(defaultTextFormat.clone(), __textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end, __text.length));
 		}
 		
 		setSelection(beginIndex + newText.length, beginIndex + newText.length);
