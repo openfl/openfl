@@ -39,7 +39,7 @@ class Context3DShape
 			if (graphics.__bitmap != null && graphics.__visible)
 			{
 				var context = renderer.__context3D;
-				var scale9Grid = shape.__worldScale9Grid;
+				var scale9Grid = shape.__scale9Grid;
 
 				var shader = renderer.__initDisplayShader(cast shape.__worldShader);
 				renderer.setShader(shader);

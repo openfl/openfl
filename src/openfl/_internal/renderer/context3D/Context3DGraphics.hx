@@ -373,7 +373,7 @@ class Context3DGraphics
 		return true;
 		#end
 
-		if (graphics.__owner.__worldScale9Grid != null)
+		if (graphics.__owner.__scale9Grid != null)
 		{
 			return false;
 		}

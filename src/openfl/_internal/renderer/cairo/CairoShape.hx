@@ -1,19 +1,23 @@
 package openfl._internal.renderer.cairo;
 
+import lime.graphics.cairo.CairoExtend;
 import lime.graphics.cairo.CairoFilter;
 import lime.graphics.cairo.CairoPattern;
 import lime.math.Matrix3;
 import openfl.display.CairoRenderer;
 import openfl.display.DisplayObject;
 import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@:access(openfl._internal.renderer.cairo.CairoGraphics)
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
 @:access(openfl.geom.Matrix)
+@:access(openfl.geom.Rectangle)
 @SuppressWarnings("checkstyle:FieldDocComment")
 class CairoShape
 {
@@ -33,28 +37,40 @@ class CairoShape
 		{
 			CairoGraphics.render(graphics, renderer);
 
-			var width = graphics.__width;
-			var height = graphics.__height;
 			var cairo = renderer.cairo;
 
-			if (cairo != null && graphics.__visible && width >= 1 && height >= 1)
+			if (cairo != null && graphics.__visible && graphics.__width >= 1 && graphics.__height >= 1)
 			{
-				var transform = graphics.__worldTransform;
-				var scale9Grid = shape.__worldScale9Grid;
+				var localTransform = shape.__transform;
+				var scale9Grid = shape.__scale9Grid;
 
 				renderer.__setBlendMode(shape.__worldBlendMode);
 				renderer.__pushMaskObject(shape);
 
-				if (scale9Grid != null && transform.b == 0 && transform.c == 0)
+				if (scale9Grid != null && localTransform.b == 0 && localTransform.c == 0)
 				{
+					var sourceTransform = graphics.__renderTransform;
+					var transform = graphics.__worldTransform;
+
+					var tempMatrix3 = CairoGraphics.tempMatrix3;
+					tempMatrix3.identity();
+
+					var tileRect = Rectangle.__pool.get();
+					var tileTransform = Matrix.__pool.get();
+
+					var fillPattern = CairoPattern.createForSurface(graphics.__cairo.target);
+					fillPattern.filter = (CairoGraphics.allowSmoothing) ? CairoFilter.GOOD : CairoFilter.NEAREST;
+					fillPattern.extend = CairoExtend.NONE;
+
 					var bounds = graphics.__bounds;
 
-					var renderTransform = Matrix.__pool.get();
+					var scaleX = sourceTransform.a;
+					var scaleY = sourceTransform.d;
+					var renderScaleX = scaleX / localTransform.a;
+					var renderScaleY = scaleY / localTransform.d;
 
-					var scaleX = graphics.__renderTransform.a;
-					var scaleY = graphics.__renderTransform.d;
-					var renderScaleX = transform.a;
-					var renderScaleY = transform.d;
+					var width = bounds.width * localTransform.a;
+					var height = bounds.height * localTransform.d;
 
 					var left = Math.round(scale9Grid.x * scaleX);
 					var top = Math.round(scale9Grid.y * scaleY);
@@ -70,29 +86,32 @@ class CairoShape
 					var renderCenterWidth = Math.round(width * renderScaleX) - renderLeft - renderRight;
 					var renderCenterHeight = Math.round(height * renderScaleY) - renderTop - renderBottom;
 
-					var pattern = CairoPattern.createForSurface(graphics.__cairo.target);
-					// TODO: Allow smoothing, even though it shows seams?
-					pattern.filter = CairoFilter.NEAREST;
-					// pattern.filter = renderer.__allowSmoothing ? CairoFilter.GOOD : CairoFilter.NEAREST;
-
 					function drawImage(sx:Float, sy:Float, sWidth:Float, sHeight:Float, dx:Float, dy:Float, dWidth:Float, dHeight:Float):Void
 					{
-						renderTransform.a = (dWidth / sWidth);
-						renderTransform.d = (dHeight / sHeight);
-						renderTransform.tx = transform.tx + dx;
-						renderTransform.ty = transform.ty + dy;
+						tileRect.setTo(sx, sy, sWidth, sHeight);
 
-						renderer.applyMatrix(renderTransform, cairo);
+						tileTransform.setTo(dWidth / sWidth, 0, 0, dHeight / sHeight, dx, dy);
+						tileTransform.concat(transform);
 
-						sourceTransform.tx = sx;
-						sourceTransform.ty = sy;
-						pattern.matrix = sourceTransform;
-						cairo.source = pattern;
+						// if (roundPixels) {
+
+						// 	tileTransform.tx = Math.round (tileTransform.tx);
+						// 	tileTransform.ty = Math.round (tileTransform.ty);
+
+						// }
+
+						// cairo.matrix = tileTransform.__toMatrix3();
+						renderer.applyMatrix(tileTransform, cairo);
+
+						tempMatrix3.tx = tileRect.x;
+						tempMatrix3.ty = tileRect.y;
+						fillPattern.matrix = tempMatrix3;
+						cairo.source = fillPattern;
 
 						cairo.save();
 
 						cairo.newPath();
-						cairo.rectangle(0, 0, sWidth, sHeight);
+						cairo.rectangle(0, 0, tileRect.width, tileRect.height);
 						cairo.clip();
 
 						if (alpha == 1)
@@ -139,22 +158,8 @@ class CairoShape
 						drawImage(left + centerWidth, 0, right, height, renderLeft + renderCenterWidth, 0, renderRight, renderHeight);
 					}
 
-					Matrix.__pool.release(renderTransform);
-				}
-				else
-				{
-					renderer.applyMatrix(transform, cairo);
-
-					cairo.setSourceSurface(graphics.__cairo.target, 0, 0);
-
-					if (alpha >= 1)
-					{
-						cairo.paint();
-					}
-					else
-					{
-						cairo.paintWithAlpha(alpha);
-					}
+					Rectangle.__pool.release(tileRect);
+					Matrix.__pool.release(tileTransform);
 				}
 
 				renderer.__popMaskObject(shape);

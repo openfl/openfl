@@ -508,34 +508,47 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 				}
 			}
 
-			var child;
-			var i = currentInstances.length;
-			var length = __children.length;
-
-			while (i < length)
+			// TODO: How to tell if shapes are for a scale9Grid clip?
+			if (__symbol.scale9Grid != null)
 			{
-				child = __children[i];
-
-				// TODO: Faster method of determining if this was automatically added?
-
-				for (instance in __activeInstances)
+				graphics.clear();
+				if (currentInstances.length > 0)
 				{
-					if (instance.displayObject == child)
-					{
-						// set MovieClips back to initial state (autoplay)
-						if (Std.is(child, MovieClip))
-						{
-							var movie:MovieClip = cast child;
-							movie.gotoAndPlay(1);
-						}
-
-						removeChild(child);
-						i--;
-						length--;
-					}
+					var shape:Shape = cast currentInstances[0].displayObject;
+					graphics.copyFrom(shape.graphics);
 				}
+			}
+			else
+			{
+				var child;
+				var i = currentInstances.length;
+				var length = __children.length;
 
-				i++;
+				while (i < length)
+				{
+					child = __children[i];
+
+					// TODO: Faster method of determining if this was automatically added?
+
+					for (instance in __activeInstances)
+					{
+						if (instance.displayObject == child)
+						{
+							// set MovieClips back to initial state (autoplay)
+							if (Std.is(child, MovieClip))
+							{
+								var movie:MovieClip = cast child;
+								movie.gotoAndPlay(1);
+							}
+
+							removeChild(child);
+							i--;
+							length--;
+						}
+					}
+
+					i++;
+				}
 			}
 
 			__lastFrameUpdate = __currentFrame;
@@ -796,6 +809,8 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 				**/
 			}
 		}
+
+		scale9Grid = __symbol.scale9Grid;
 
 		if (__totalFrames > 1)
 		{

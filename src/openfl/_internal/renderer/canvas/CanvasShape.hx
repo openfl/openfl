@@ -2,10 +2,13 @@ package openfl._internal.renderer.canvas;
 
 import openfl.display.CanvasRenderer;
 import openfl.display.DisplayObject;
+import openfl.geom.Matrix;
+import openfl.geom.Rectangle;
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
 @:access(openfl.geom.Matrix)
+@:access(openfl.geom.Rectangle)
 @SuppressWarnings("checkstyle:FieldDocComment")
 class CanvasShape
 {
@@ -23,107 +26,111 @@ class CanvasShape
 		{
 			CanvasGraphics.render(graphics, renderer);
 
-			var width = graphics.__width;
-			var height = graphics.__height;
 			var canvas = graphics.__canvas;
+			var context = renderer.context;
 
-			if (canvas != null && graphics.__visible && width >= 1 && height >= 1)
+			if (canvas != null && graphics.__visible && graphics.__width >= 1 && graphics.__height >= 1)
 			{
-				var transform = graphics.__worldTransform;
-				var context = renderer.context;
-				var scrollRect = shape.__scrollRect;
-				var scale9Grid = shape.__worldScale9Grid;
+				var localTransform = shape.__transform;
+				var scale9Grid = shape.__scale9Grid;
 
-				// TODO: Render for scroll rect?
+				renderer.__setBlendMode(shape.__worldBlendMode);
+				renderer.__pushMaskObject(shape);
 
-				if (scrollRect == null || (scrollRect.width > 0 && scrollRect.height > 0))
+				if (scale9Grid != null && localTransform.b == 0 && localTransform.c == 0)
 				{
-					renderer.__setBlendMode(shape.__worldBlendMode);
-					renderer.__pushMaskObject(shape);
+					var sourceTransform = graphics.__renderTransform;
+					var transform = graphics.__worldTransform;
+
+					var tileRect = Rectangle.__pool.get();
+					var tileTransform = Matrix.__pool.get();
 
 					context.globalAlpha = alpha;
 
-					if (scale9Grid != null && transform.b == 0 && transform.c == 0)
+					var bounds = graphics.__bounds;
+
+					var scaleX = sourceTransform.a;
+					var scaleY = sourceTransform.d;
+					var renderScaleX = scaleX / localTransform.a;
+					var renderScaleY = scaleY / localTransform.d;
+
+					var width = bounds.width * localTransform.a;
+					var height = bounds.height * localTransform.d;
+
+					var left = Math.round(scale9Grid.x * scaleX);
+					var top = Math.round(scale9Grid.y * scaleY);
+					var right = Math.round((bounds.right - scale9Grid.right) * scaleX);
+					var bottom = Math.round((bounds.bottom - scale9Grid.bottom) * scaleY);
+					var centerWidth = Math.round(scale9Grid.width * scaleX);
+					var centerHeight = Math.round(scale9Grid.height * scaleY);
+
+					var renderLeft = Math.round(scale9Grid.x * renderScaleX);
+					var renderTop = Math.round(scale9Grid.y * renderScaleY);
+					var renderRight = Math.round((bounds.right - scale9Grid.right) * renderScaleX);
+					var renderBottom = Math.round((bounds.bottom - scale9Grid.bottom) * renderScaleY);
+					var renderCenterWidth = Math.round(width * renderScaleX) - renderLeft - renderRight;
+					var renderCenterHeight = Math.round(height * renderScaleY) - renderTop - renderBottom;
+
+					function drawImage(sx:Float, sy:Float, sWidth:Float, sHeight:Float, dx:Float, dy:Float, dWidth:Float, dHeight:Float):Void
 					{
-						context.setTransform(1, 0, 0, 1, transform.tx, transform.ty);
+						tileRect.setTo(sx, sy, sWidth, sHeight);
 
-						var bounds = graphics.__bounds;
+						tileTransform.setTo(dWidth / sWidth, 0, 0, dHeight / sHeight, dx, dy);
+						tileTransform.concat(transform);
 
-						var scaleX = graphics.__renderTransform.a;
-						var scaleY = graphics.__renderTransform.d;
-						var renderScaleX = transform.a;
-						var renderScaleY = transform.d;
+						// if (roundPixels) {
 
-						var left = Math.max(1, Math.round(scale9Grid.x * scaleX));
-						var top = Math.round(scale9Grid.y * scaleY);
-						var right = Math.max(1, Math.round((bounds.right - scale9Grid.right) * scaleX));
-						var bottom = Math.round((bounds.bottom - scale9Grid.bottom) * scaleY);
-						var centerWidth = Math.round(scale9Grid.width * scaleX);
-						var centerHeight = Math.round(scale9Grid.height * scaleY);
+						// 	tileTransform.tx = Math.round (tileTransform.tx);
+						// 	tileTransform.ty = Math.round (tileTransform.ty);
 
-						var renderLeft = Math.round(scale9Grid.x * renderScaleX);
-						var renderTop = Math.round(scale9Grid.y * renderScaleY);
-						var renderRight = Math.round((bounds.right - scale9Grid.right) * renderScaleX);
-						var renderBottom = Math.round((bounds.bottom - scale9Grid.bottom) * renderScaleY);
-						var renderCenterWidth = Math.round(width * renderScaleX) - renderLeft - renderRight;
-						var renderCenterHeight = Math.round(height * renderScaleY) - renderTop - renderBottom;
+						// }
 
-						// TODO: Allow smoothing, even though it shows seams?
-						renderer.applySmoothing(context, false);
+						context.setTransform(tileTransform.a, tileTransform.b, tileTransform.c, tileTransform.d, tileTransform.tx, tileTransform.ty);
 
-						if (centerWidth != 0 && centerHeight != 0)
-						{
-							context.drawImage(canvas, 0, 0, left, top, 0, 0, renderLeft, renderTop);
-							context.drawImage(canvas, left, 0, centerWidth, top, renderLeft, 0, renderCenterWidth, renderTop);
-							context.drawImage(canvas, left + centerWidth, 0, right, top, renderLeft + renderCenterWidth, 0, renderRight, renderTop);
-
-							context.drawImage(canvas, 0, top, left, centerHeight, 0, renderTop, renderLeft, renderCenterHeight);
-							context.drawImage(canvas, left, top, centerWidth, centerHeight, renderLeft, renderTop, renderCenterWidth, renderCenterHeight);
-							context.drawImage(canvas, left + centerWidth, top, right, centerHeight, renderLeft + renderCenterWidth, renderTop, renderRight,
-								renderCenterHeight);
-
-							context.drawImage(canvas, 0, top + centerHeight, left, bottom, 0, renderTop + renderCenterHeight, renderLeft, renderBottom);
-							context.drawImage(canvas, left, top + centerHeight, centerWidth, bottom, renderLeft, renderTop + renderCenterHeight,
-								renderCenterWidth, renderBottom);
-							context.drawImage(canvas, left
-								+ centerWidth, top
-								+ centerHeight, right, bottom, renderLeft
-								+ renderCenterWidth,
-								renderTop
-								+ renderCenterHeight, renderRight, renderBottom);
-						}
-						else if (centerWidth == 0 && centerHeight != 0)
-						{
-							var renderWidth = renderLeft + renderCenterWidth + renderRight;
-
-							context.drawImage(canvas, 0, 0, width, top, 0, 0, renderWidth, renderTop);
-							context.drawImage(canvas, 0, top, width, centerHeight, 0, renderTop, renderWidth, renderCenterHeight);
-							context.drawImage(canvas, 0, top + centerHeight, width, bottom, 0, renderTop + renderCenterHeight, renderWidth, renderBottom);
-						}
-						else if (centerHeight == 0 && centerWidth != 0)
-						{
-							var renderHeight = renderTop + renderCenterHeight + renderBottom;
-
-							context.drawImage(canvas, 0, 0, left, height, 0, 0, renderLeft, renderHeight);
-							context.drawImage(canvas, left, 0, centerWidth, height, renderLeft, 0, renderCenterWidth, renderHeight);
-							context.drawImage(canvas, left + centerWidth, 0, right, height, renderLeft + renderCenterWidth, 0, renderRight, renderHeight);
-						}
-					}
-					else
-					{
-						renderer.setTransform(transform, context);
-
-						if (renderer.__isDOM)
-						{
-							var reverseScale = 1 / renderer.pixelRatio;
-							context.scale(reverseScale, reverseScale);
-						}
-
-						context.drawImage(canvas, 0, 0, width, height);
+						context.drawImage(canvas, tileRect.x, tileRect.y, tileRect.width, tileRect.height, 0, 0, tileRect.width, tileRect.height);
 					}
 
-					renderer.__popMaskObject(shape);
+					context.save(); // TODO: Restore transform without save/restore
+
+					if (centerWidth != 0 && centerHeight != 0)
+					{
+						drawImage(0, 0, left, top, 0, 0, renderLeft, renderTop);
+						drawImage(left, 0, centerWidth, top, renderLeft, 0, renderCenterWidth, renderTop);
+						drawImage(left + centerWidth, 0, right, top, renderLeft + renderCenterWidth, 0, renderRight, renderTop);
+
+						drawImage(0, top, left, centerHeight, 0, renderTop, renderLeft, renderCenterHeight);
+						drawImage(left, top, centerWidth, centerHeight, renderLeft, renderTop, renderCenterWidth, renderCenterHeight);
+						drawImage(left + centerWidth, top, right, centerHeight, renderLeft + renderCenterWidth, renderTop, renderRight, renderCenterHeight);
+
+						drawImage(0, top + centerHeight, left, bottom, 0, renderTop + renderCenterHeight, renderLeft, renderBottom);
+						drawImage(left, top + centerHeight, centerWidth, bottom, renderLeft, renderTop + renderCenterHeight, renderCenterWidth, renderBottom);
+						drawImage(left + centerWidth, top + centerHeight, right, bottom, renderLeft + renderCenterWidth, renderTop + renderCenterHeight,
+							renderRight, renderBottom);
+					}
+					else if (centerWidth == 0 && centerHeight != 0)
+					{
+						var renderWidth = renderLeft + renderCenterWidth + renderRight;
+
+						drawImage(0, 0, width, top, 0, 0, renderWidth, renderTop);
+						drawImage(0, top, width, centerHeight, 0, renderTop, renderWidth, renderCenterHeight);
+						drawImage(0, top + centerHeight, width, bottom, 0, renderTop + renderCenterHeight, renderWidth, renderBottom);
+					}
+					else if (centerHeight == 0 && centerWidth != 0)
+					{
+						var renderHeight = renderTop + renderCenterHeight + renderBottom;
+
+						drawImage(0, 0, left, height, 0, 0, renderLeft, renderHeight);
+						drawImage(left, 0, centerWidth, height, renderLeft, 0, renderCenterWidth, renderHeight);
+						drawImage(left + centerWidth, 0, right, height, renderLeft + renderCenterWidth, 0, renderRight, renderHeight);
+					}
+
+					Rectangle.__pool.release(tileRect);
+					Matrix.__pool.release(tileTransform);
+
+					context.restore();
 				}
+
+				renderer.__popMaskObject(shape);
 			}
 		}
 		#end
