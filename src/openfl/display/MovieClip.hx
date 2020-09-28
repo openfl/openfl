@@ -487,10 +487,6 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 					{
 						addChildAt(targetChild, i);
 					}
-					else if (i > 0)
-					{
-						addChildAt(targetChild, i - 1);
-					}
 				}
 				else
 				{
@@ -519,9 +515,9 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 			if (__symbol.scale9Grid != null)
 			{
 				graphics.clear();
-				if (currentInstances.length > 0)
+				for (instance in currentInstances)
 				{
-					var shape:Shape = cast currentInstances[0].displayObject;
+					var shape:Shape = cast instance.displayObject;
 					graphics.copyFrom(shape.graphics);
 				}
 			}
