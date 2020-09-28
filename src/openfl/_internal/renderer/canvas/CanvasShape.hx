@@ -40,6 +40,11 @@ class CanvasShape
 
 				context.globalAlpha = alpha;
 
+				if (!renderer.__allowSmoothing)
+				{
+					context.imageSmoothingEnabled = false;
+				}
+
 				if (scale9Grid != null && localTransform.b == 0 && localTransform.c == 0)
 				{
 					var sourceTransform = graphics.__renderTransform;
@@ -143,6 +148,11 @@ class CanvasShape
 					var height = graphics.__height;
 
 					context.drawImage(canvas, 0, 0, width, height);
+				}
+
+				if (!renderer.__allowSmoothing)
+				{
+					context.imageSmoothingEnabled = true;
 				}
 
 				renderer.__popMaskObject(shape);
