@@ -32,20 +32,20 @@ class CanvasShape
 			if (canvas != null && graphics.__visible && graphics.__width >= 1 && graphics.__height >= 1)
 			{
 				var localTransform = shape.__transform;
+				var transform = graphics.__worldTransform;
 				var scale9Grid = shape.__scale9Grid;
 
 				renderer.__setBlendMode(shape.__worldBlendMode);
 				renderer.__pushMaskObject(shape);
 
+				context.globalAlpha = alpha;
+
 				if (scale9Grid != null && localTransform.b == 0 && localTransform.c == 0)
 				{
 					var sourceTransform = graphics.__renderTransform;
-					var transform = graphics.__worldTransform;
 
 					var tileRect = Rectangle.__pool.get();
 					var tileTransform = Matrix.__pool.get();
-
-					context.globalAlpha = alpha;
 
 					var bounds = graphics.__bounds;
 
@@ -85,7 +85,7 @@ class CanvasShape
 
 						// }
 
-						context.setTransform(tileTransform.a, tileTransform.b, tileTransform.c, tileTransform.d, tileTransform.tx, tileTransform.ty);
+						renderer.setTransform(tileTransform, context);
 
 						context.drawImage(canvas, tileRect.x, tileRect.y, tileRect.width, tileRect.height, 0, 0, tileRect.width, tileRect.height);
 					}
@@ -128,6 +128,21 @@ class CanvasShape
 					Matrix.__pool.release(tileTransform);
 
 					context.restore();
+				}
+				else
+				{
+					renderer.setTransform(transform, context);
+
+					if (renderer.__isDOM)
+					{
+						var reverseScale = 1 / renderer.pixelRatio;
+						context.scale(reverseScale, reverseScale);
+					}
+
+					var width = graphics.__width;
+					var height = graphics.__height;
+
+					context.drawImage(canvas, 0, 0, width, height);
 				}
 
 				renderer.__popMaskObject(shape);

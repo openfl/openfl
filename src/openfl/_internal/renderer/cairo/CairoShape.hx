@@ -42,6 +42,7 @@ class CairoShape
 			if (cairo != null && graphics.__visible && graphics.__width >= 1 && graphics.__height >= 1)
 			{
 				var localTransform = shape.__transform;
+				var transform = graphics.__worldTransform;
 				var scale9Grid = shape.__scale9Grid;
 
 				renderer.__setBlendMode(shape.__worldBlendMode);
@@ -50,7 +51,6 @@ class CairoShape
 				if (scale9Grid != null && localTransform.b == 0 && localTransform.c == 0)
 				{
 					var sourceTransform = graphics.__renderTransform;
-					var transform = graphics.__worldTransform;
 
 					var tempMatrix3 = CairoGraphics.tempMatrix3;
 					tempMatrix3.identity();
@@ -160,6 +160,21 @@ class CairoShape
 
 					Rectangle.__pool.release(tileRect);
 					Matrix.__pool.release(tileTransform);
+				}
+				else
+				{
+					renderer.applyMatrix(transform, cairo);
+
+					cairo.setSourceSurface(graphics.__cairo.target, 0, 0);
+
+					if (alpha >= 1)
+					{
+						cairo.paint();
+					}
+					else
+					{
+						cairo.paintWithAlpha(alpha);
+					}
 				}
 
 				renderer.__popMaskObject(shape);
