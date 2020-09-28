@@ -43,3 +43,32 @@ We consider our HTML5 and native platforms to be "first-class citizens" in OpenF
 There are other supported platforms as well (such as AIR, Flash and Neko) which we regularly test, but may lack certain features or have reduced performance. For example, we have added OpenGL-specific features that are not available on Flash. This is okay. Other platforms are not officially supported, but are used by OpenFL developers and we can partner to help integrate important code changes.
 
 As we continue to achieve synergy among our target platforms, we believe that the best contributions will continue to lead towards eliminating issues, improving performance, increasing our testing or the quality of the API documentation, and will move farther from broad feature changes.
+
+
+Contributor Guidelines
+----------------------
+
+Below are some general guidelines we ask contributors to keep in mind in order to make contributing as smooth as possible:
+
+ * Create a new branch off of the develop branch for all new work. This helps to isolate the work and prevent unintended errors from finding their way into develop or master… essentially the *Feature Branch workflow*.
+
+ * When creating a new branch, please consider the following naming conventions:
+  > - feature/dash-separated-feature-name
+  > - bugfix/dash-separated-description
+  > - misc/dash-separated-description
+
+ * Use Dox-friendly comments on all public properties and methods.
+
+ * If new commits are made to develop branch that you require during your work, switch to develop branch, pull those changes, and then do an interactive rebase of your working branch onto develop. This will help to keep (often unrelated) merges from polluting your feature/bugfix branch.
+
+ * If there is not a test which already covers the work you are doing and that work has good potential to break something, write a test if you can.
+
+ * Use labels/tags where appropriate and useful.
+
+ * When finished, do an interactive rebase onto develop and resolve any conflicts. Then submit a Pull Request. Be descriptive and include any issue numbers resolved by your PR.
+
+ * Assign a reviewer for your PR if you happen to know another contributor who would be particularly suitable to review your contribution.
+
+ * Once your PR is merged, please look for any outstanding issue reports which may be related and follow up to see if the issue is resolved.
+
+ * At each official release, all merged PR branches which were included in the release should be purged, keeping the repo tidy. If your bugfix/feature branch was not removed, please notify the team.
