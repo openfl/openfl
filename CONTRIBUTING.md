@@ -53,13 +53,26 @@ Below are some general guidelines we ask contributors to keep in mind in order t
  * Create a new branch off of the develop branch for all new work. This helps to isolate the work and prevent unintended errors from finding their way into develop or master… essentially the *Feature Branch workflow*.
 
  * When creating a new branch, please consider the following naming conventions:
-  > - feature/dash-separated-feature-name
-  > - bugfix/dash-separated-description
-  > - misc/dash-separated-description
+    + feature/dash-separated-feature-name
+    + bugfix/dash-separated-description
+    + misc/dash-separated-description
 
  * Use Dox-friendly comments on all public properties and methods.
 
- * If new commits are made to develop branch that you require during your work, switch to develop branch, pull those changes, and then do an interactive rebase of your working branch onto develop. This will help to keep (often unrelated) merges from polluting your feature/bugfix branch.
+ * If new commits are made to develop branch that you require during your work, switch to develop branch, pull those changes, and then do an interactive rebase of your working branch onto develop. This will help to keep (often unrelated) merges from polluting your feature/bugfix branch. For example:
+
+    > git checkout develop
+    >
+    > git pull
+    >
+    > git checkout \<your-feature-branch>
+    >
+    > git rebase -i develop
+
+    If there are any conflict, resolve and add them, then continue the rebase:
+    > git add \<file1> \<file2> ...
+    >
+    > git rebase --continue
 
  * If there is not a test which already covers the work you are doing and that work has good potential to break something, write a test if you can.
 
