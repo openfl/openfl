@@ -1031,11 +1031,10 @@ class TextEngine
 
 		{
 			// sets the positions of the text from start to end, including format changes if there are any
-
-			if (endIndex <= formatRange.end)
+			if (startIndex >= endIndex)
 			{
-				positions = getPositions(text, startIndex, endIndex);
-				widthValue = getPositionsWidth(positions);
+				positions = [];
+				widthValue = 0;
 			}
 			else if (endIndex <= formatRange.end)
 			{
