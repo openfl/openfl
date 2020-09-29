@@ -1037,7 +1037,7 @@ class TextEngine
 				positions = getPositions(text, startIndex, endIndex);
 				widthValue = getPositionsWidth(positions);
 			}
-			else
+			else if (endIndex <= formatRange.end)
 			{
 				positions = getPositions(text, startIndex, endIndex);
 				widthValue = getPositionsWidth(positions);
