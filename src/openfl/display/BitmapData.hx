@@ -1187,7 +1187,7 @@ class BitmapData implements IBitmapDrawable
 	/**
 		Creates a new BitmapData instance from Base64-encoded data synchronously. This means
 		that the BitmapData will be returned immediately (if supported).
-		
+
 		HTML5 and Flash do not support creating BitmapData synchronously, so these targets
 		always return `null`. Other targets will return `null` if decoding was unsuccessful.
 
@@ -1366,13 +1366,43 @@ class BitmapData implements IBitmapDrawable
 		@param	context	A Stage3D context
 		@returns	An IndexBuffer3D object for use with rendering
 	**/
-	@:dox(hide) public function getIndexBuffer(context:Context3D, scale9Grid:Rectangle = null):IndexBuffer3D
+	@:dox(hide) public function getIndexBuffer(context:Context3D):IndexBuffer3D
+	{
+		var gl = context.gl;
+
+		if (__indexBuffer == null || __indexBufferContext != context.__context || __indexBufferGrid != null)
+		{
+			// TODO: Use shared buffer on context
+			// TODO: Support for UVs other than scale-9 grid?
+
+			#if lime
+			__indexBufferContext = context.__context;
+			__indexBuffer = null;
+			__indexBufferGrid = null;
+
+			__indexBufferData = new UInt16Array(6);
+			__indexBufferData[0] = 0;
+			__indexBufferData[1] = 1;
+			__indexBufferData[2] = 2;
+			__indexBufferData[3] = 2;
+			__indexBufferData[4] = 1;
+			__indexBufferData[5] = 3;
+			__indexBuffer = context.createIndexBuffer(6);
+
+			__indexBuffer.uploadFromTypedArray(__indexBufferData);
+			#end
+		}
+
+		return __indexBuffer;
+	}
+
+	private function getIndexBufferScale9(context:Context3D, scale9Grid:Rectangle):IndexBuffer3D
 	{
 		var gl = context.gl;
 
 		if (__indexBuffer == null
 			|| __indexBufferContext != context.__context
-			|| (scale9Grid != null && __indexBufferGrid == null)
+			|| __indexBufferGrid == null
 			|| (__indexBufferGrid != null && !__indexBufferGrid.equals(scale9Grid)))
 		{
 			// TODO: Use shared buffer on context
@@ -1382,187 +1412,169 @@ class BitmapData implements IBitmapDrawable
 			__indexBufferContext = context.__context;
 			__indexBuffer = null;
 
-			if (scale9Grid != null)
+			if (__indexBufferGrid == null) __indexBufferGrid = new Rectangle();
+			__indexBufferGrid.copyFrom(scale9Grid);
+
+			var centerWidth = scale9Grid.width;
+			var centerHeight = scale9Grid.height;
+
+			if (centerWidth != 0 && centerHeight != 0)
 			{
-				if (__indexBufferGrid == null) __indexBufferGrid = new Rectangle();
-				__indexBufferGrid.copyFrom(scale9Grid);
+				__indexBufferData = new UInt16Array(54);
 
-				var centerX = scale9Grid.width;
-				var centerY = scale9Grid.height;
-				if (centerX != 0 && centerY != 0)
-				{
-					__indexBufferData = new UInt16Array(54);
+				// 3 ——— 2 ——— 5 ——— 7
+				// |  /  |  /  |  /  |
+				// 1 ——— 0 ——— 4 ——— 6
+				// |  /  |  /  |  /  |
+				// 9 ——— 8 —— 10 —— 11
+				// |  /  |  /  |  /  |
+				// 13 — 12 —— 14 —— 15
 
-					// 3 ——— 2 ——— 5 ——— 7
-					// |  /  |  /  |  /  |
-					// 1 ——— 0 ——— 4 ——— 6
-					// |  /  |  /  |  /  |
-					// 9 ——— 8 —— 10 —— 11
-					// |  /  |  /  |  /  |
-					// 13 — 12 —— 14 —— 15
-
-					// top left
-					__indexBufferData[0] = 0;
-					__indexBufferData[1] = 1;
-					__indexBufferData[2] = 2;
-					__indexBufferData[3] = 2;
-					__indexBufferData[4] = 1;
-					__indexBufferData[5] = 3;
-
-					// top center
-					__indexBufferData[6] = 4;
-					__indexBufferData[7] = 0;
-					__indexBufferData[8] = 5;
-					__indexBufferData[9] = 5;
-					__indexBufferData[10] = 0;
-					__indexBufferData[11] = 2;
-
-					// top right
-					__indexBufferData[12] = 6;
-					__indexBufferData[13] = 4;
-					__indexBufferData[14] = 7;
-					__indexBufferData[15] = 7;
-					__indexBufferData[16] = 4;
-					__indexBufferData[17] = 5;
-
-					// middle left
-					__indexBufferData[18] = 8;
-					__indexBufferData[19] = 9;
-					__indexBufferData[20] = 0;
-					__indexBufferData[21] = 0;
-					__indexBufferData[22] = 9;
-					__indexBufferData[23] = 1;
-
-					// middle center
-					__indexBufferData[24] = 10;
-					__indexBufferData[25] = 8;
-					__indexBufferData[26] = 4;
-					__indexBufferData[27] = 4;
-					__indexBufferData[28] = 8;
-					__indexBufferData[29] = 0;
-
-					// middle right
-					__indexBufferData[30] = 11;
-					__indexBufferData[31] = 10;
-					__indexBufferData[32] = 6;
-					__indexBufferData[33] = 6;
-					__indexBufferData[34] = 10;
-					__indexBufferData[35] = 4;
-
-					// bottom left
-					__indexBufferData[36] = 12;
-					__indexBufferData[37] = 13;
-					__indexBufferData[38] = 8;
-					__indexBufferData[39] = 8;
-					__indexBufferData[40] = 13;
-					__indexBufferData[41] = 9;
-
-					// bottom center
-					__indexBufferData[42] = 14;
-					__indexBufferData[43] = 12;
-					__indexBufferData[44] = 10;
-					__indexBufferData[45] = 10;
-					__indexBufferData[46] = 12;
-					__indexBufferData[47] = 8;
-
-					// bottom center
-					__indexBufferData[48] = 15;
-					__indexBufferData[49] = 14;
-					__indexBufferData[50] = 11;
-					__indexBufferData[51] = 11;
-					__indexBufferData[52] = 14;
-					__indexBufferData[53] = 10;
-
-					__indexBuffer = context.createIndexBuffer(54);
-				}
-				else if (centerX == 0 && centerY != 0)
-				{
-					__indexBufferData = new UInt16Array(18);
-
-					// 3 ——— 2
-					// |  /  |
-					// 1 ——— 0
-					// |  /  |
-					// 5 ——— 4
-					// |  /  |
-					// 7 ——— 6
-
-					// top
-					__indexBufferData[0] = 0;
-					__indexBufferData[1] = 1;
-					__indexBufferData[2] = 2;
-					__indexBufferData[3] = 2;
-					__indexBufferData[4] = 1;
-					__indexBufferData[5] = 3;
-
-					// middle
-					__indexBufferData[6] = 4;
-					__indexBufferData[7] = 5;
-					__indexBufferData[8] = 0;
-					__indexBufferData[9] = 0;
-					__indexBufferData[10] = 5;
-					__indexBufferData[11] = 1;
-
-					// bottom
-					__indexBufferData[12] = 6;
-					__indexBufferData[13] = 7;
-					__indexBufferData[14] = 4;
-					__indexBufferData[15] = 4;
-					__indexBufferData[16] = 7;
-					__indexBufferData[17] = 5;
-
-					__indexBuffer = context.createIndexBuffer(18);
-				}
-				else if (centerX != 0 && centerY == 0)
-				{
-					__indexBufferData = new UInt16Array(18);
-
-					// 3 ——— 2 ——— 5 ——— 7
-					// |  /  |  /  |  /  |
-					// 1 ——— 0 ——— 4 ——— 6
-
-					// left
-					__indexBufferData[0] = 0;
-					__indexBufferData[1] = 1;
-					__indexBufferData[2] = 2;
-					__indexBufferData[3] = 2;
-					__indexBufferData[4] = 1;
-					__indexBufferData[5] = 3;
-
-					// center
-					__indexBufferData[6] = 4;
-					__indexBufferData[7] = 0;
-					__indexBufferData[8] = 5;
-					__indexBufferData[9] = 5;
-					__indexBufferData[10] = 0;
-					__indexBufferData[11] = 2;
-
-					// right
-					__indexBufferData[12] = 6;
-					__indexBufferData[13] = 4;
-					__indexBufferData[14] = 7;
-					__indexBufferData[15] = 7;
-					__indexBufferData[16] = 4;
-					__indexBufferData[17] = 5;
-
-					__indexBuffer = context.createIndexBuffer(18);
-				}
-			}
-			else
-			{
-				__indexBufferGrid = null;
-			}
-
-			if (__indexBuffer == null)
-			{
-				__indexBufferData = new UInt16Array(6);
+				// top left
 				__indexBufferData[0] = 0;
 				__indexBufferData[1] = 1;
 				__indexBufferData[2] = 2;
 				__indexBufferData[3] = 2;
 				__indexBufferData[4] = 1;
 				__indexBufferData[5] = 3;
-				__indexBuffer = context.createIndexBuffer(6);
+
+				// top center
+				__indexBufferData[6] = 4;
+				__indexBufferData[7] = 0;
+				__indexBufferData[8] = 5;
+				__indexBufferData[9] = 5;
+				__indexBufferData[10] = 0;
+				__indexBufferData[11] = 2;
+
+				// top right
+				__indexBufferData[12] = 6;
+				__indexBufferData[13] = 4;
+				__indexBufferData[14] = 7;
+				__indexBufferData[15] = 7;
+				__indexBufferData[16] = 4;
+				__indexBufferData[17] = 5;
+
+				// middle left
+				__indexBufferData[18] = 8;
+				__indexBufferData[19] = 9;
+				__indexBufferData[20] = 0;
+				__indexBufferData[21] = 0;
+				__indexBufferData[22] = 9;
+				__indexBufferData[23] = 1;
+
+				// middle center
+				__indexBufferData[24] = 10;
+				__indexBufferData[25] = 8;
+				__indexBufferData[26] = 4;
+				__indexBufferData[27] = 4;
+				__indexBufferData[28] = 8;
+				__indexBufferData[29] = 0;
+
+				// middle right
+				__indexBufferData[30] = 11;
+				__indexBufferData[31] = 10;
+				__indexBufferData[32] = 6;
+				__indexBufferData[33] = 6;
+				__indexBufferData[34] = 10;
+				__indexBufferData[35] = 4;
+
+				// bottom left
+				__indexBufferData[36] = 12;
+				__indexBufferData[37] = 13;
+				__indexBufferData[38] = 8;
+				__indexBufferData[39] = 8;
+				__indexBufferData[40] = 13;
+				__indexBufferData[41] = 9;
+
+				// bottom center
+				__indexBufferData[42] = 14;
+				__indexBufferData[43] = 12;
+				__indexBufferData[44] = 10;
+				__indexBufferData[45] = 10;
+				__indexBufferData[46] = 12;
+				__indexBufferData[47] = 8;
+
+				// bottom center
+				__indexBufferData[48] = 15;
+				__indexBufferData[49] = 14;
+				__indexBufferData[50] = 11;
+				__indexBufferData[51] = 11;
+				__indexBufferData[52] = 14;
+				__indexBufferData[53] = 10;
+
+				__indexBuffer = context.createIndexBuffer(54);
+			}
+			else if (centerWidth == 0 && centerHeight != 0)
+			{
+				__indexBufferData = new UInt16Array(18);
+
+				// 3 ——— 2
+				// |  /  |
+				// 1 ——— 0
+				// |  /  |
+				// 5 ——— 4
+				// |  /  |
+				// 7 ——— 6
+
+				// top
+				__indexBufferData[0] = 0;
+				__indexBufferData[1] = 1;
+				__indexBufferData[2] = 2;
+				__indexBufferData[3] = 2;
+				__indexBufferData[4] = 1;
+				__indexBufferData[5] = 3;
+
+				// middle
+				__indexBufferData[6] = 4;
+				__indexBufferData[7] = 5;
+				__indexBufferData[8] = 0;
+				__indexBufferData[9] = 0;
+				__indexBufferData[10] = 5;
+				__indexBufferData[11] = 1;
+
+				// bottom
+				__indexBufferData[12] = 6;
+				__indexBufferData[13] = 7;
+				__indexBufferData[14] = 4;
+				__indexBufferData[15] = 4;
+				__indexBufferData[16] = 7;
+				__indexBufferData[17] = 5;
+
+				__indexBuffer = context.createIndexBuffer(18);
+			}
+			else if (centerWidth != 0 && centerHeight == 0)
+			{
+				__indexBufferData = new UInt16Array(18);
+
+				// 3 ——— 2 ——— 5 ——— 7
+				// |  /  |  /  |  /  |
+				// 1 ——— 0 ——— 4 ——— 6
+
+				// left
+				__indexBufferData[0] = 0;
+				__indexBufferData[1] = 1;
+				__indexBufferData[2] = 2;
+				__indexBufferData[3] = 2;
+				__indexBufferData[4] = 1;
+				__indexBufferData[5] = 3;
+
+				// center
+				__indexBufferData[6] = 4;
+				__indexBufferData[7] = 0;
+				__indexBufferData[8] = 5;
+				__indexBufferData[9] = 5;
+				__indexBufferData[10] = 0;
+				__indexBufferData[11] = 2;
+
+				// right
+				__indexBufferData[12] = 6;
+				__indexBufferData[13] = 4;
+				__indexBufferData[14] = 7;
+				__indexBufferData[15] = 7;
+				__indexBufferData[16] = 4;
+				__indexBufferData[17] = 5;
+
+				__indexBuffer = context.createIndexBuffer(18);
 			}
 
 			__indexBuffer.uploadFromTypedArray(__indexBufferData);
@@ -1584,18 +1596,7 @@ class BitmapData implements IBitmapDrawable
 	{
 		var gl = context.gl;
 
-		// TODO: Support for UVs other than scale-9 grid?
-		// TODO: Better way of handling object transform?
-
-		if (__vertexBuffer == null
-			|| __vertexBufferContext != context.__context
-			|| (scale9Grid != null && __vertexBufferGrid == null)
-			|| (__vertexBufferGrid != null && !__vertexBufferGrid.equals(scale9Grid))
-			|| (targetObject != null
-				&& (__vertexBufferWidth != targetObject.width
-					|| __vertexBufferHeight != targetObject.height
-					|| __vertexBufferScaleX != targetObject.scaleX
-					|| __vertexBufferScaleY != targetObject.scaleY)))
+		if (__vertexBuffer == null || __vertexBufferContext != context.__context || __vertexBufferGrid != null)
 		{
 			#if openfl_power_of_two
 			var newWidth = 1;
@@ -1625,374 +1626,295 @@ class BitmapData implements IBitmapDrawable
 			var uvHeight = 1;
 			#end
 
-			// __vertexBufferData = new Float32Array ([
-			//
-			// width, height, 0, uvWidth, uvHeight, alpha, (color transform, color offset...)
-			// 0, height, 0, 0, uvHeight, alpha, (color transform, color offset...)
-			// width, 0, 0, uvWidth, 0, alpha, (color transform, color offset...)
-			// 0, 0, 0, 0, 0, alpha, (color transform, color offset...)
-			//
-			//
-			// ]);
+			#if lime
+			__vertexBufferContext = context.__context;
+			__vertexBuffer = null;
+			__vertexBufferGrid = null;
 
-			// [ colorTransform.redMultiplier, 0, 0, 0, 0, colorTransform.greenMultiplier, 0, 0, 0, 0, colorTransform.blueMultiplier, 0, 0, 0, 0, colorTransform.alphaMultiplier ];
-			// [ colorTransform.redOffset / 255, colorTransform.greenOffset / 255, colorTransform.blueOffset / 255, colorTransform.alphaOffset / 255 ]
+			__vertexBufferData = new Float32Array(VERTEX_BUFFER_STRIDE * 4);
+
+			__vertexBufferData[0] = width;
+			__vertexBufferData[1] = height;
+			__vertexBufferData[3] = uvWidth;
+			__vertexBufferData[4] = uvHeight;
+			__vertexBufferData[VERTEX_BUFFER_STRIDE + 1] = height;
+			__vertexBufferData[VERTEX_BUFFER_STRIDE + 4] = uvHeight;
+			__vertexBufferData[VERTEX_BUFFER_STRIDE * 2] = width;
+			__vertexBufferData[VERTEX_BUFFER_STRIDE * 2 + 3] = uvWidth;
+
+			__vertexBuffer = context.createVertexBuffer(3, VERTEX_BUFFER_STRIDE);
+
+			__vertexBuffer.uploadFromTypedArray(__vertexBufferData);
+			#end
+		}
+
+		return __vertexBuffer;
+	}
+
+	private function getVertexBufferScale9(context:Context3D, scale9Grid:Rectangle, shape:DisplayObject):VertexBuffer3D
+	{
+		var gl = context.gl;
+		var localTransform = shape.__transform;
+		var graphics = shape.__graphics;
+		var bounds = graphics.__bounds;
+
+		if (__vertexBuffer == null
+			|| __vertexBufferContext != context.__context
+			|| __vertexBufferGrid == null
+			|| (__vertexBufferGrid != null && !__vertexBufferGrid.equals(scale9Grid))
+			|| (__vertexBufferWidth != bounds.width
+				|| __vertexBufferHeight != bounds.height
+				|| __vertexBufferScaleX != localTransform.a
+				|| __vertexBufferScaleY != localTransform.d))
+		{
+			#if openfl_power_of_two
+			var newWidth = 1;
+			var newHeight = 1;
+
+			while (newWidth < width)
+			{
+				newWidth <<= 1;
+			}
+
+			while (newHeight < height)
+			{
+				newHeight <<= 1;
+			}
+
+			__uvRect = new Rectangle(0, 0, newWidth, newHeight);
+
+			var uvWidth = width / newWidth;
+			var uvHeight = height / newHeight;
+
+			__textureWidth = newWidth;
+			__textureHeight = newHeight;
+			#else
+			__uvRect = new Rectangle(0, 0, width, height);
+
+			var uvWidth = 1;
+			var uvHeight = 1;
+			#end
 
 			#if lime
 			__vertexBufferContext = context.__context;
 			__vertexBuffer = null;
 
-			if (targetObject != null)
+			__vertexBufferWidth = bounds.width;
+			__vertexBufferHeight = bounds.height;
+			__vertexBufferScaleX = localTransform.a;
+			__vertexBufferScaleY = localTransform.d;
+
+			if (__vertexBufferGrid == null) __vertexBufferGrid = new Rectangle();
+			__vertexBufferGrid.copyFrom(scale9Grid);
+
+			var sourceTransform = graphics.__renderTransform;
+
+			var scaleX = sourceTransform.a;
+			var scaleY = sourceTransform.d;
+			var renderScaleX = scaleX / localTransform.a;
+			var renderScaleY = scaleY / localTransform.d;
+
+			var width = bounds.width * localTransform.a;
+			var height = bounds.height * localTransform.d;
+
+			var left = Math.round(scale9Grid.x * scaleX);
+			var top = Math.round(scale9Grid.y * scaleY);
+			var right = Math.round((bounds.right - scale9Grid.right) * scaleX);
+			var bottom = Math.round((bounds.bottom - scale9Grid.bottom) * scaleY);
+			var centerWidth = Math.round(scale9Grid.width * scaleX);
+			var centerHeight = Math.round(scale9Grid.height * scaleY);
+
+			var uvLeft = left / width;
+			var uvTop = top / height;
+			var uvCenterWidth = centerWidth / width;
+			var uvCenterHeight = centerHeight / height;
+			// var uvRight = right / width;
+			// var uvBottom = bottom / height;
+
+			var renderLeft = Math.round(scale9Grid.x * renderScaleX);
+			var renderTop = Math.round(scale9Grid.y * renderScaleY);
+			var renderRight = Math.round((bounds.right - scale9Grid.right) * renderScaleX);
+			var renderBottom = Math.round((bounds.bottom - scale9Grid.bottom) * renderScaleY);
+			var renderCenterWidth = Math.round(width * renderScaleX) - renderLeft - renderRight;
+			var renderCenterHeight = Math.round(height * renderScaleY) - renderTop - renderBottom;
+
+			if (centerWidth != 0 && centerHeight != 0)
 			{
-				__vertexBufferWidth = targetObject.width;
-				__vertexBufferHeight = targetObject.height;
-				__vertexBufferScaleX = targetObject.scaleX;
-				__vertexBufferScaleY = targetObject.scaleY;
+				__vertexBufferData = new Float32Array(VERTEX_BUFFER_STRIDE * 16);
+
+				// 3 ——— 2 ——— 5 ——— 7
+				// |  /  |  /  |  /  |
+				// 1 ——— 0 ——— 4 ——— 6
+				// |  /  |  /  |  /  |
+				// 9 ——— 8 —— 10 —— 11
+				// |  /  |  /  |  /  |
+				// 13 — 12 —— 14 —— 15
+
+				// top left <0-1-2> <2-1-3>
+				__vertexBufferData[0] = renderLeft;
+				__vertexBufferData[1] = renderTop;
+				__vertexBufferData[3] = uvWidth * uvLeft;
+				__vertexBufferData[4] = uvHeight * uvTop;
+
+				__vertexBufferData[VERTEX_BUFFER_STRIDE + 1] = renderTop;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE + 4] = uvHeight * uvTop;
+
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 2] = renderLeft;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 2 + 3] = uvWidth * uvLeft;
+
+				// top center <4-0-5> <5-0-2>
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 4] = renderLeft + renderCenterWidth;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 1] = renderTop;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 3] = uvWidth * (uvLeft + uvCenterWidth);
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 4] = uvHeight * uvTop;
+
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 5] = renderLeft + renderCenterWidth;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 5 + 3] = uvWidth * (uvLeft + uvCenterWidth);
+
+				// top right <6-4-7> <7-4-5>
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 6] = width;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 1] = renderTop;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 3] = uvWidth;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 4] = uvHeight * uvTop;
+
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 7] = width;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 7 + 3] = uvWidth;
+
+				// middle left <8-9-0> <0-9-1>
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 8] = renderLeft;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 8 + 1] = renderTop + renderCenterHeight;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 8 + 3] = uvWidth * uvLeft;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 8 + 4] = uvHeight * (uvTop + uvCenterHeight);
+
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 9 + 1] = renderTop + renderCenterHeight;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 9 + 4] = uvHeight * (uvTop + uvCenterHeight);
+
+				// middle center <10-8-4> <4-8-0>
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 10] = renderLeft + renderCenterWidth;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 10 + 1] = renderTop + renderCenterHeight;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 10 + 3] = uvWidth * (uvLeft + uvCenterWidth);
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 10 + 4] = uvHeight * (uvTop + uvCenterHeight);
+
+				// middle right <11-10-6> <6-10-4>
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 11] = width;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 11 + 1] = renderTop + renderCenterHeight;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 11 + 3] = uvWidth;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 11 + 4] = uvHeight * (uvTop + uvCenterHeight);
+
+				// bottom left <12-13-8> <8-13-9>
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 12] = renderLeft;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 12 + 1] = height;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 12 + 3] = uvWidth * uvLeft;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 12 + 4] = uvHeight;
+
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 13 + 1] = height;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 13 + 4] = uvHeight;
+
+				// bottom center <14-12-10> <10-12-8>
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 14] = renderLeft + renderCenterWidth;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 14 + 1] = height;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 14 + 3] = uvWidth * (uvLeft + uvCenterWidth);
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 14 + 4] = uvHeight;
+
+				// bottom right <15-14-11> <11-14-10>
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 15] = width;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 15 + 1] = height;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 15 + 3] = uvWidth;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 15 + 4] = uvHeight;
+
+				__vertexBuffer = context.createVertexBuffer(16, VERTEX_BUFFER_STRIDE);
 			}
-
-			if (scale9Grid != null && targetObject != null)
+			else if (centerWidth == 0 && centerHeight != 0)
 			{
-				if (__vertexBufferGrid == null) __vertexBufferGrid = new Rectangle();
-				__vertexBufferGrid.copyFrom(scale9Grid);
+				__vertexBufferData = new Float32Array(VERTEX_BUFFER_STRIDE * 8);
 
-				__vertexBufferWidth = targetObject.width;
-				__vertexBufferHeight = targetObject.height;
-				__vertexBufferScaleX = targetObject.scaleX;
-				__vertexBufferScaleY = targetObject.scaleY;
+				var renderWidth = renderLeft + renderCenterWidth + renderRight;
 
-				var centerX = scale9Grid.width;
-				var centerY = scale9Grid.height;
-				if (centerX != 0 && centerY != 0)
-				{
-					__vertexBufferData = new Float32Array(VERTEX_BUFFER_STRIDE * 16);
+				// 3 ——— 2
+				// |  /  |
+				// 1 ——— 0
+				// |  /  |
+				// 5 ——— 4
+				// |  /  |
+				// 7 ——— 6
 
-					var left = scale9Grid.x;
-					var top = scale9Grid.y;
-					var right = width - centerX - left;
-					var bottom = height - centerY - top;
-
-					var uvLeft = left / width;
-					var uvTop = top / height;
-					var uvCenterX = centerX / width;
-					var uvCenterY = centerY / height;
-					var uvRight = right / width;
-					var uvBottom = bottom / height;
-
-					var renderedLeft = left / targetObject.scaleX;
-					var renderedTop = top / targetObject.scaleY;
-					var renderedRight = right / targetObject.scaleX;
-					var renderedBottom = bottom / targetObject.scaleY;
-					var renderedCenterX = (targetObject.width / targetObject.scaleX) - renderedLeft - renderedRight;
-					var renderedCenterY = (targetObject.height / targetObject.scaleY) - renderedTop - renderedBottom;
-
-					// 3 ——— 2 ——— 5 ——— 7
-					// |  /  |  /  |  /  |
-					// 1 ——— 0 ——— 4 ——— 6
-					// |  /  |  /  |  /  |
-					// 9 ——— 8 —— 10 —— 11
-					// |  /  |  /  |  /  |
-					// 13 — 12 —— 14 —— 15
-
-					// top left <0-1-2> <2-1-3>
-					__vertexBufferData[0] = renderedLeft;
-					__vertexBufferData[1] = renderedTop;
-					__vertexBufferData[3] = uvWidth * uvLeft;
-					__vertexBufferData[4] = uvHeight * uvTop;
-
-					__vertexBufferData[VERTEX_BUFFER_STRIDE + 1] = renderedTop;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE + 4] = uvHeight * uvTop;
-
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 2] = renderedLeft;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 2 + 3] = uvWidth * uvLeft;
-
-					// top center <4-0-5> <5-0-2>
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 4] = renderedLeft + renderedCenterX;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 1] = renderedTop;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 3] = uvWidth * (uvLeft + uvCenterX);
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 4] = uvHeight * uvTop;
-
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 5] = renderedLeft + renderedCenterX;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 5 + 3] = uvWidth * (uvLeft + uvCenterX);
-
-					// top right <6-4-7> <7-4-5>
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 6] = width;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 1] = renderedTop;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 3] = uvWidth;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 4] = uvHeight * uvTop;
-
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 7] = width;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 7 + 3] = uvWidth;
-
-					// middle left <8-9-0> <0-9-1>
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 8] = renderedLeft;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 8 + 1] = renderedTop + renderedCenterY;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 8 + 3] = uvWidth * uvLeft;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 8 + 4] = uvHeight * (uvTop + uvCenterY);
-
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 9 + 1] = renderedTop + renderedCenterY;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 9 + 4] = uvHeight * (uvTop + uvCenterY);
-
-					// middle center <10-8-4> <4-8-0>
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 10] = renderedLeft + renderedCenterX;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 10 + 1] = renderedTop + renderedCenterY;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 10 + 3] = uvWidth * (uvLeft + uvCenterX);
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 10 + 4] = uvHeight * (uvTop + uvCenterY);
-
-					// middle right <11-10-6> <6-10-4>
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 11] = width;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 11 + 1] = renderedTop + renderedCenterY;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 11 + 3] = uvWidth;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 11 + 4] = uvHeight * (uvTop + uvCenterY);
-
-					// bottom left <12-13-8> <8-13-9>
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 12] = renderedLeft;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 12 + 1] = height;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 12 + 3] = uvWidth * uvLeft;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 12 + 4] = uvHeight;
-
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 13 + 1] = height;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 13 + 4] = uvHeight;
-
-					// bottom center <14-12-10> <10-12-8>
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 14] = renderedLeft + renderedCenterX;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 14 + 1] = height;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 14 + 3] = uvWidth * (uvLeft + uvCenterX);
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 14 + 4] = uvHeight;
-
-					// bottom right <15-14-11> <11-14-10>
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 15] = width;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 15 + 1] = height;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 15 + 3] = uvWidth;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 15 + 4] = uvHeight;
-
-					__vertexBuffer = context.createVertexBuffer(16, VERTEX_BUFFER_STRIDE);
-				}
-				else if (centerX == 0 && centerY != 0)
-				{
-					__vertexBufferData = new Float32Array(VERTEX_BUFFER_STRIDE * 8);
-
-					var top = scale9Grid.y;
-					var bottom = height - centerY - top;
-
-					var uvTop = top / height;
-					var uvCenterY = centerY / height;
-					var uvBottom = bottom / height;
-
-					var renderedTop = top / targetObject.scaleY;
-					var renderedBottom = bottom / targetObject.scaleY;
-					var renderedCenterY = (targetObject.height / targetObject.scaleY) - renderedTop - renderedBottom;
-
-					var renderedWidth = targetObject.width / targetObject.scaleX;
-
-					// 3 ——— 2
-					// |  /  |
-					// 1 ——— 0
-					// |  /  |
-					// 5 ——— 4
-					// |  /  |
-					// 7 ——— 6
-
-					// top <0-1-2> <2-1-3>
-					__vertexBufferData[0] = renderedWidth;
-					__vertexBufferData[1] = renderedTop;
-					__vertexBufferData[3] = uvWidth;
-					__vertexBufferData[4] = uvHeight * uvTop;
-
-					__vertexBufferData[VERTEX_BUFFER_STRIDE + 1] = renderedTop;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE + 4] = uvHeight * uvTop;
-
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 2] = renderedWidth;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 2 + 3] = uvWidth;
-
-					// middle <4-5-0> <0-5-1>
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 4] = renderedWidth;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 1] = renderedTop + renderedCenterY;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 3] = uvWidth;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 4] = uvHeight * (uvTop + uvCenterY);
-
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 5 + 1] = renderedTop + renderedCenterY;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 5 + 4] = uvHeight * (uvTop + uvCenterY);
-
-					// bottom <6-7-4> <4-7-5>
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 6] = renderedWidth;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 1] = height;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 3] = uvWidth;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 4] = uvHeight;
-
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 7 + 1] = height;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 7 + 4] = uvHeight;
-
-					__vertexBuffer = context.createVertexBuffer(8, VERTEX_BUFFER_STRIDE);
-				}
-				else if (centerY == 0 && centerX != 0)
-				{
-					__vertexBufferData = new Float32Array(VERTEX_BUFFER_STRIDE * 8);
-
-					var left = scale9Grid.x;
-					var right = width - centerX - left;
-
-					var uvLeft = left / width;
-					var uvCenterX = centerX / width;
-					var uvRight = right / width;
-
-					var renderedLeft = left / targetObject.scaleX;
-					var renderedRight = right / targetObject.scaleX;
-					var renderedCenterX = (targetObject.width / targetObject.scaleX) - renderedLeft - renderedRight;
-
-					var renderedHeight = targetObject.height / targetObject.scaleY;
-
-					// 3 ——— 2 ——— 5 ——— 7
-					// |  /  |  /  |  /  |
-					// 1 ——— 0 ——— 4 ——— 6
-
-					// top left <0-1-2> <2-1-3>
-					__vertexBufferData[0] = renderedLeft;
-					__vertexBufferData[1] = renderedHeight;
-					__vertexBufferData[3] = uvWidth * uvLeft;
-					__vertexBufferData[4] = uvHeight;
-
-					__vertexBufferData[VERTEX_BUFFER_STRIDE + 1] = renderedHeight;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE + 4] = uvHeight;
-
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 2] = renderedLeft;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 2 + 3] = uvWidth * uvLeft;
-
-					// top center <4-0-5> <5-0-2>
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 4] = renderedLeft + renderedCenterX;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 1] = renderedHeight;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 3] = uvWidth * (uvLeft + uvCenterX);
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 4] = uvHeight;
-
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 5] = renderedLeft + renderedCenterX;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 5 + 3] = uvWidth * (uvLeft + uvCenterX);
-
-					// top right <6-4-7> <7-4-5>
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 6] = width;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 1] = renderedHeight;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 3] = uvWidth;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 4] = uvHeight;
-
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 7] = width;
-					__vertexBufferData[VERTEX_BUFFER_STRIDE * 7 + 3] = uvWidth;
-
-					__vertexBuffer = context.createVertexBuffer(8, VERTEX_BUFFER_STRIDE);
-				}
-			}
-			else
-			{
-				__vertexBufferGrid = null;
-			}
-
-			if (__vertexBuffer == null)
-			{
-				__vertexBufferData = new Float32Array(VERTEX_BUFFER_STRIDE * 4);
-
-				__vertexBufferData[0] = width;
-				__vertexBufferData[1] = height;
+				// top <0-1-2> <2-1-3>
+				__vertexBufferData[0] = renderWidth;
+				__vertexBufferData[1] = renderTop;
 				__vertexBufferData[3] = uvWidth;
-				__vertexBufferData[4] = uvHeight;
-				__vertexBufferData[VERTEX_BUFFER_STRIDE + 1] = height;
-				__vertexBufferData[VERTEX_BUFFER_STRIDE + 4] = uvHeight;
-				__vertexBufferData[VERTEX_BUFFER_STRIDE * 2] = width;
+				__vertexBufferData[4] = uvHeight * uvTop;
+
+				__vertexBufferData[VERTEX_BUFFER_STRIDE + 1] = renderTop;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE + 4] = uvHeight * uvTop;
+
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 2] = renderWidth;
 				__vertexBufferData[VERTEX_BUFFER_STRIDE * 2 + 3] = uvWidth;
 
-				__vertexBuffer = context.createVertexBuffer(3, VERTEX_BUFFER_STRIDE);
+				// middle <4-5-0> <0-5-1>
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 4] = renderWidth;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 1] = renderTop + renderCenterHeight;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 3] = uvWidth;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 4] = uvHeight * (uvTop + uvCenterHeight);
+
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 5 + 1] = renderTop + renderCenterHeight;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 5 + 4] = uvHeight * (uvTop + uvCenterHeight);
+
+				// bottom <6-7-4> <4-7-5>
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 6] = renderWidth;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 1] = height;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 3] = uvWidth;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 4] = uvHeight;
+
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 7 + 1] = height;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 7 + 4] = uvHeight;
+
+				__vertexBuffer = context.createVertexBuffer(8, VERTEX_BUFFER_STRIDE);
 			}
+			else if (centerHeight == 0 && centerWidth != 0)
+			{
+				__vertexBufferData = new Float32Array(VERTEX_BUFFER_STRIDE * 8);
 
-			// for (i in 0...4) {
+				var renderHeight = renderTop + renderCenterHeight + renderBottom;
 
-			// 	__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 5] = alpha;
+				// 3 ——— 2 ——— 5 ——— 7
+				// |  /  |  /  |  /  |
+				// 1 ——— 0 ——— 4 ——— 6
 
-			// 	if (colorTransform != null) {
+				// top left <0-1-2> <2-1-3>
+				__vertexBufferData[0] = renderLeft;
+				__vertexBufferData[1] = renderHeight;
+				__vertexBufferData[3] = uvWidth * uvLeft;
+				__vertexBufferData[4] = uvHeight;
 
-			// 		__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 6] = colorTransform.redMultiplier;
-			// 		__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 7] = colorTransform.greenMultiplier;
-			// 		__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 8] = colorTransform.blueMultiplier;
-			// 		__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 9] = colorTransform.alphaMultiplier;
-			// 		__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 10] = colorTransform.redOffset / 255;
-			// 		__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 11] = colorTransform.greenOffset / 255;
-			// 		__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 12] = colorTransform.blueOffset / 255;
-			// 		__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 13] = colorTransform.alphaOffset / 255;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE + 1] = renderHeight;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE + 4] = uvHeight;
 
-			// 	}
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 2] = renderLeft;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 2 + 3] = uvWidth * uvLeft;
 
-			// }
+				// top center <4-0-5> <5-0-2>
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 4] = renderLeft + renderCenterWidth;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 1] = renderHeight;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 3] = uvWidth * (uvLeft + uvCenterWidth);
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 4 + 4] = uvHeight;
 
-			// __vertexBufferAlpha = alpha;
-			// __vertexBufferColorTransform = colorTransform != null ? colorTransform.__clone () : null;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 5] = renderLeft + renderCenterWidth;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 5 + 3] = uvWidth * (uvLeft + uvCenterWidth);
+
+				// top right <6-4-7> <7-4-5>
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 6] = width;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 1] = renderHeight;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 3] = uvWidth;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 6 + 4] = uvHeight;
+
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 7] = width;
+				__vertexBufferData[VERTEX_BUFFER_STRIDE * 7 + 3] = uvWidth;
+
+				__vertexBuffer = context.createVertexBuffer(8, VERTEX_BUFFER_STRIDE);
+			}
 
 			__vertexBuffer.uploadFromTypedArray(__vertexBufferData);
 			#end
-		}
-		else
-		{
-			// var dirty = false;
-
-			// if (__vertexBufferAlpha != alpha) {
-
-			// 	dirty = true;
-
-			// 	for (i in 0...4) {
-
-			// 		__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 5] = alpha;
-
-			// 	}
-
-			// 	__vertexBufferAlpha = alpha;
-
-			// }
-
-			// if ((__vertexBufferColorTransform == null && colorTransform != null) || (__vertexBufferColorTransform != null && !__vertexBufferColorTransform.__equals (colorTransform))) {
-
-			// 	dirty = true;
-
-			// 	if (colorTransform != null) {
-
-			// 		if (__vertexBufferColorTransform == null) {
-			// 			__vertexBufferColorTransform = colorTransform.__clone ();
-			// 		} else {
-			// 			__vertexBufferColorTransform.__copyFrom (colorTransform);
-			// 		}
-
-			// 		for (i in 0...4) {
-
-			// 			__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 6] = colorTransform.redMultiplier;
-			// 			__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 11] = colorTransform.greenMultiplier;
-			// 			__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 16] = colorTransform.blueMultiplier;
-			// 			__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 21] = colorTransform.alphaMultiplier;
-			// 			__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 22] = colorTransform.redOffset / 255;
-			// 			__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 23] = colorTransform.greenOffset / 255;
-			// 			__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 24] = colorTransform.blueOffset / 255;
-			// 			__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 25] = colorTransform.alphaOffset / 255;
-
-			// 		}
-
-			// 	} else {
-
-			// 		for (i in 0...4) {
-
-			// 			__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 6] = 1;
-			// 			__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 11] = 1;
-			// 			__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 16] = 1;
-			// 			__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 21] = 1;
-			// 			__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 22] = 0;
-			// 			__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 23] = 0;
-			// 			__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 24] = 0;
-			// 			__vertexBufferData[VERTEX_BUFFER_STRIDE * i + 25] = 0;
-
-			// 		}
-
-			// 	}
-
-			// }
-
-			// context.__bindGLArrayBuffer (__vertexBuffer);
-
-			// if (dirty) {
-
-			// 	gl.bufferData (gl.ARRAY_BUFFER, __vertexBufferData.byteLength, __vertexBufferData, gl.STATIC_DRAW);
-
-			// }
 		}
 
 		return __vertexBuffer;
