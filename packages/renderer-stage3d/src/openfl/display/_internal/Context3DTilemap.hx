@@ -50,7 +50,13 @@ class Context3DTilemap
 
 	public static function buildBuffer(tilemap:Tilemap, renderer:OpenGLRenderer):Void
 	{
-		if (!tilemap.__renderable || tilemap.__group.__tiles.length == 0 || tilemap.__worldAlpha <= 0) return;
+		if (!tilemap.__renderable || tilemap.__group.__tiles.length == 0 || tilemap.__worldAlpha <= 0)
+		{
+			// TODO: Use dirty to perform sparse update of buffers?
+			// This is required here because `openfl.display.Tilemap` sets dirty on enter_frame
+			tilemap.__group.__dirty = false;
+			return;
+		}
 
 		numTiles = 0;
 		vertexBufferData = (tilemap.__buffer != null) ? tilemap.__buffer.vertexBufferData : null;
@@ -84,20 +90,23 @@ class Context3DTilemap
 		var tiles = group.__tiles;
 		var length = group.__length;
 
-		function getLength(_group:TileContainer):Int{
+		function getLength(_group:TileContainer):Int
+		{
 			var _tiles = _group.__tiles;
 			var totalLength = 0;
-			for (tile in _tiles){				
-				if (tile.__length > 0) totalLength+= getLength(cast tile);
-				else totalLength++;
+			for (tile in _tiles)
+			{
+				if (tile.__length > 0) totalLength += getLength(cast tile);
+				else
+					totalLength++;
 			}
 			return totalLength;
 		}
 
 		if (isTopLevel) resizeBuffer(tilemap, numTiles + getLength(group));
 
-		//Todo: Merge recursive length lookup with for tiles loop to avoid iterating over tiles twice
-		//resizeBuffer(tilemap, numTiles + length);
+		// Todo: Merge recursive length lookup with for tiles loop to avoid iterating over tiles twice
+		// resizeBuffer(tilemap, numTiles + length);
 
 		var tile,
 			tileset,
