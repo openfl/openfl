@@ -119,11 +119,23 @@ class CanvasGraphics
 		switch (type)
 		{
 			case RADIAL:
-				point = Point.__pool.get();
-				point.setTo(1638.4, 0);
-				matrix.__transformPoint(point);
+				var angle = Math.atan2(matrix.b, matrix.a);
+				var cos = Math.cos(angle);
+				var width = (matrix.a / cos) * 1638.4;
+				var height = (matrix.d / cos) * 1638.4;
+				if (width == 0 && height == 0) {
+					width = height = 819.2;
+				}
+				var radius = Math.max(width, height);
+				focalPointRatio = focalPointRatio > 0 ? Math.min(focalPointRatio, 1) : Math.max(focalPointRatio, -1);
+				var centerX = width * cos * focalPointRatio;
+				var centerY = height * Math.sin(angle) * focalPointRatio;
+				gradientFill = context.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius);
 
-				gradientFill = context.createRadialGradient(matrix.tx, matrix.ty, 0, matrix.tx, matrix.ty, Math.abs((point.x - matrix.tx) / 2));
+				pendingMatrix = matrix;
+				inversePendingMatrix = matrix.clone();
+				inversePendingMatrix.invert();
+				releaseMatrix = false;
 
 			case LINEAR:
 				point = Point.__pool.get();
