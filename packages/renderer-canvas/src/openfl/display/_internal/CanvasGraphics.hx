@@ -119,18 +119,11 @@ class CanvasGraphics
 		switch (type)
 		{
 			case RADIAL:
-				var angle = Math.atan2(matrix.b, matrix.a);
-				var cos = Math.cos(angle);
-				var width = (matrix.a / cos) * 1638.4;
-				var height = (matrix.d / cos) * 1638.4;
-				if (width == 0 && height == 0) {
-					width = height = 819.2;
-				}
-				var radius = Math.max(width, height);
-				focalPointRatio = focalPointRatio > 0 ? Math.min(focalPointRatio, 1) : Math.max(focalPointRatio, -1);
-				var centerX = width * cos * focalPointRatio;
-				var centerY = height * Math.sin(angle) * focalPointRatio;
-				gradientFill = context.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius);
+				var radius = 819.2;
+				focalPointRatio = focalPointRatio > 1.0 ? 1.0
+					: focalPointRatio < -1.0 ? -1.0
+					: focalPointRatio;
+				gradientFill = context.createRadialGradient(radius * focalPointRatio, 0, 0, 0, 0, radius);
 
 				pendingMatrix = matrix;
 				inversePendingMatrix = matrix.clone();
