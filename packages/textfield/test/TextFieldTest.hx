@@ -120,6 +120,12 @@ class TextFieldTest
 				textField.text = "";
 
 				Assert.equal(textField.bottomScrollV, 1);
+				
+				textField.height = 40;
+				textField.text = "Test\nTest\nTest\nTest\nTest";
+				textField.scrollV = 3;
+				
+				Assert.equal(textField.bottomScrollV, 4);
 			});
 
 			Mocha.it("defaultTextFormat", function()
@@ -190,6 +196,10 @@ class TextFieldTest
 				var exists = textField.htmlText;
 
 				Assert.notEqual(exists, null);
+				
+				textField.htmlText = "<b>text</b>";
+				
+				Assert.equal(textField.caretIndex, 4);
 			});
 
 			Mocha.it("maxChars", function()
@@ -208,12 +218,16 @@ class TextFieldTest
 				textField.text = "Hello";
 
 				Assert.equal(textField.maxScrollH, 0);
+				
+				text.scrollH = text.maxScrollH + 24;
+				Assert.equal(textField.scrollH, textField.maxScrollH);
 			});
 
 			Mocha.it("maxScrollV", function()
 			{
 				var textField = new TextField();
-
+				textField.height = 20;
+				
 				Assert.equal(textField.maxScrollV, 1);
 
 				textField.text = "Hello";
@@ -222,37 +236,11 @@ class TextFieldTest
 
 				textField.text = "Hello\nWorld\n";
 
-				Assert.equal(textField.maxScrollV, 1);
-
-				textField.multiline = true;
-
-				Assert.equal(textField.maxScrollV, 1);
+				Assert.equal(textField.maxScrollV, 3);
 
 				textField.text = "Hello\n\nWorld\n\nHello\n\nWorld\n\n";
-
-				#if !flash // sometimes 3, not 2?
-
-				// #if !html5
-				// //Assert.equal (2, textField.maxScrollV);
-				// Assert.assert (textField.maxScrollV == 2 || textField.maxScrollV == 3);
-				// #end
-
-				textField.height = 10;
-
-				#if flash
-				// should we replicate not updating until text is changed?
-				Assert.equal(textField.maxScrollV, 2);
-				#end
-				#end
-
-				textField.text = textField.text;
-
-				// #if (!flash && !html5) // sometimes 10, not 9?
-
-				// //Assert.equal (9, textField.maxScrollV);
-				// Assert.assert (textField.maxScrollV == 9 || textField.maxScrollV == 10);
-
-				// #end
+				
+				Assert.equal(textField.maxScrollV, 9);
 			});
 
 			Mocha.it("multiline", function()
@@ -275,6 +263,10 @@ class TextFieldTest
 				textField.text = "Hello\nWorld";
 
 				Assert.equal(textField.numLines, 2);
+
+				textField.text = "Hello\nWorld\n\n";
+
+				Assert.equal(textField.numLines, 4);
 
 				textField.text = "";
 
@@ -304,7 +296,6 @@ class TextFieldTest
 
 				textField.text = "Hello\nWorld";
 				textField.height = 20;
-				textField.multiline = true;
 
 				#if flash
 				textField.text = textField.text;
@@ -382,6 +373,10 @@ class TextFieldTest
 				var exists = textField.text;
 
 				Assert.notEqual(exists, null);
+				
+				textField.text = "Test\nText";
+				
+				Assert.equal(textField.caretIndex, 0);
 			});
 
 			Mocha.it("textColor", function()
@@ -450,6 +445,10 @@ class TextFieldTest
 				var exists = textField.appendText;
 
 				Assert.notEqual(exists, null);
+				
+				textField.appendText("test");
+				
+				Assert.equal(textField.caretIndex, 4);
 			});
 
 			Mocha.it("getLineMetrics", function()
@@ -510,6 +509,66 @@ class TextFieldTest
 				var exists = textField.setTextFormat;
 
 				Assert.notEqual(exists, null);
+				
+				// test out of bounds
+				textField.text = "testing setTextFormat";
+				
+				var format = new openfl.text.TextFormat();
+				
+				// add tests for weird -1 cases that don't actually error
+				Assert.doesNotThrow(() -> { textField.setTextFormat(format, -1, -1); }, openfl.errors.RangeError);
+				Assert.doesNotThrow(() -> { textField.setTextFormat(format, 3, -1); }, openfl.errors.RangeError);
+				Assert.throws(() -> { textField.setTextFormat(format, -2, 5); }, openfl.errors.RangeError);
+				Assert.throws(() -> { textField.setTextFormat(format, -1, 0); }, openfl.errors.RangeError);
+				Assert.throws(() -> { textField.setTextFormat(format, 2, 1); }, openfl.errors.RangeError);
+				// Assert.throws(() -> { textField.setTextFormat(format, 21, 21); }, openfl.errors.RangeError); // confirm
+				Assert.throws(() -> { textField.setTextFormat(format, 21, 23); }, openfl.errors.RangeError);
+				Assert.throws(() -> { textField.setTextFormat(format, 1, 25); }, openfl.errors.RangeError);
+				
+				// for each case, including begin==end, compare format ranges with known values
+				// don't go into textengine, use gettextformat and getCharBoundaries to see what's going on
+				
+				textField.setTextFormat(new TextFormat(12), -1, -1); // baseline
+				textField.setTextFormat(new TextFormat(16), 0, 5); // test overwrite beginning
+				textField.setTextFormat(new TextFormat(16), 10, 12);
+				textField.setTextFormat(new TextFormat(16), 15, 21);
+				textField.setTextFormat(new TextFormat(20), 3, 18);
+				textField.setTextFormat(new TextFormat(18), 9, 13);
+				Assert.equal(textField.getTextFormat(1, 2).size, 16);
+				Assert.equal(textField.getTextFormat(4, 5).size, 20);
+				Assert.equal(textField.getTextFormat(15, 16).size, 20);
+				Assert.equal(textField.getTextFormat(11, 12).size, 18);
+				Assert.equal(textField.getTextFormat(20, 21).size, 16);
+				textField.setTextFormat(new TextFormat(14), -1, -1); // test overwriting entire range
+				Assert.equal(textField.getTextFormat(11, 12).size, 14);
+				
+				textField.setTextFormat(new TextFormat(12), -1, -1);
+				textField.setTextFormat(new TextFormat(14), 0, 3);
+				textField.setTextFormat(new TextFormat(16), 0, 4); // test overwriting existing ranges
+				Assert.equal(textField.getTextFormat(7, 8).size, 12); // the failure is too janky to fully capture
+				
+				textField.setTextFormat(textField.defaultTextFormat, -1, -1);
+				textField.setTextFormat(new TextFormat(14), -1, -1);
+				Assert.equal(textField.defaultTextFormat.size, 12); // defaultTextFormat should not be overwritten by setTextFormat
+				
+				textField.text = "test test test test\ntest test";
+				textField.width = 180;
+				textField.height = 300;
+				textField.wordWrap = true;
+				
+				var lmargin = 50;
+				var rmargin = 50;
+				var indent = 25;
+				var bindent = 25;
+				var format = new TextFormat(null, null, null, null, null, null, null, null, null, lmargin, 0, indent);
+				format.blockIndent = bindent;
+				textField.setTextFormat(format, -1, -1);
+				format = new TextFormat(null, null, null, null, null, null, null, null, RIGHT, 0, rmargin);
+				textField.setTextFormat(format, 19, textField.text.length);
+				Assert.equal(textField.getCharBoundaries(0).x, lmargin + indent + bindent + 2); // test leftMargin, indent, blockIndent
+				Assert.equal(textField.getCharBoundaries(10).x, lmargin + bindent + 2); // test indent doesn't affect subsequent lines
+				var charb = textField.getCharBoundaries(textField.text.length - 1);
+				Assert.equal(charb.x + charb.width, textField.width - 2 - rmargin); // test rightMargin
 			});
 		});
 	}
