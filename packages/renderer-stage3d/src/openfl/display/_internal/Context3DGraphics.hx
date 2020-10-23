@@ -793,6 +793,7 @@ class Context3DGraphics
 							fill = null;
 							shaderBuffer = null;
 							data.skip(type);
+							context.setCulling(NONE);
 
 						case MOVE_TO:
 							var c = data.readMoveTo();
