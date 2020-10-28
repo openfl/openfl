@@ -1,6 +1,6 @@
 package openfl.utils;
 
-@:forward() abstract Object(ObjectType) from ObjectType
+@:forward() abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 {
 	public inline function new()
 	{
