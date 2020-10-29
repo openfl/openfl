@@ -113,6 +113,7 @@ class CanvasGraphics
 		if (matrix == null)
 		{
 			matrix = Matrix.__pool.get();
+			matrix.identity();
 			releaseMatrix = true;
 		}
 
@@ -125,21 +126,16 @@ class CanvasGraphics
 					: focalPointRatio;
 				gradientFill = context.createRadialGradient(radius * focalPointRatio, 0, 0, 0, 0, radius);
 
-				pendingMatrix = matrix;
+				pendingMatrix = matrix.clone();
 				inversePendingMatrix = matrix.clone();
 				inversePendingMatrix.invert();
-				releaseMatrix = false;
 
 			case LINEAR:
-				point = Point.__pool.get();
-				point.setTo(-819.2, 0);
-				matrix.__transformPoint(point);
+				gradientFill = context.createLinearGradient(-819.2, 0, 819.2, 0);
 
-				point2 = Point.__pool.get();
-				point2.setTo(819.2, 0);
-				matrix.__transformPoint(point2);
-
-				gradientFill = context.createLinearGradient(point.x, point.y, point2.x, point2.y);
+				pendingMatrix = matrix.clone();
+				inversePendingMatrix = matrix.clone();
+				inversePendingMatrix.invert();
 		}
 
 		var rgb, alpha, r, g, b, ratio;
