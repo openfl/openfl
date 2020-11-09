@@ -1,5 +1,5 @@
 # TODO: Fully working
--js ../dist/openfl.js
+-js ../lib/_gen/_.js
 # -lib openfl.application
 -cp ../packages/application/src
 # -lib openfl.assets

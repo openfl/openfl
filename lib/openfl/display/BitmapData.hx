@@ -5,6 +5,9 @@ package openfl.display;
 import openfl.utils.Future;
 // import lime.graphics.Image;
 import openfl.display3D.textures.TextureBase;
+import openfl.display3D.Context3D;
+import openfl.display3D.IndexBuffer3D;
+import openfl.display3D.VertexBuffer3D;
 import openfl.filters.BitmapFilter;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
@@ -14,6 +17,9 @@ import openfl.utils.ByteArray;
 import openfl.utils.Object;
 // #if (js && html5)
 import js.html.CanvasElement;
+#if lime
+import lime.graphics.cairo.CairoImageSurface;
+#end
 
 // #end
 typedef Image = Dynamic;
@@ -490,7 +496,7 @@ extern class BitmapData implements IBitmapDrawable
 	**/
 	public function drawWithQuality(source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, ?blendMode:BlendMode,
 		clipRect:Rectangle = null, smoothing:Bool = false, ?quality:StageQuality):Void;
-	
+
 	/**
 		Compresses this BitmapData object using the selected compressor algorithm and
 		returns a new ByteArray object. Optionally, writes the resulting data to the
@@ -568,7 +574,9 @@ extern class BitmapData implements IBitmapDrawable
 		@returns	A new BitmapData if successful, or `null` if unsuccessful
 	**/
 	public static function fromBytes(bytes:ByteArray, rawAlpha:ByteArray = null):BitmapData;
+
 	// #if (js && html5)
+
 	/**
 		Creates a new BitmapData from an HTML5 canvas element immediately.
 
@@ -580,6 +588,7 @@ extern class BitmapData implements IBitmapDrawable
 		@returns	A new BitmapData if successful, or `null` if unsuccessful
 	**/
 	public static function fromCanvas(canvas:CanvasElement, transparent:Bool = true):BitmapData;
+
 	// #end
 
 	/**
@@ -607,8 +616,9 @@ extern class BitmapData implements IBitmapDrawable
 		`null`, otherwise `null` will be returned
 	**/
 	public static function fromImage(image:Image, transparent:Bool = true):BitmapData;
+
 	// #if !flash
-	
+
 	/**
 		**BETA**
 
@@ -758,7 +768,6 @@ extern class BitmapData implements IBitmapDrawable
 	**/
 	public function getPixels(rect:Rectangle):ByteArray;
 
-	
 	/**
 		**BETA**
 
@@ -789,7 +798,7 @@ extern class BitmapData implements IBitmapDrawable
 		@throws TypeError The rect is null.
 	**/
 	public function getVector(rect:Rectangle):Vector<UInt>;
-	
+
 	/**
 		**BETA**
 
@@ -844,7 +853,7 @@ extern class BitmapData implements IBitmapDrawable
 	**/
 	public function hitTest(firstPoint:Point, firstAlphaThreshold:UInt, secondObject:Object, secondBitmapDataPoint:Point = null,
 		secondAlphaThreshold:UInt = 1):Bool;
-		
+
 	/**
 		Creates a new BitmapData from Base64-encoded data asynchronously. The data
 		and (if successful) decoding the data into an image occur in the background.
@@ -856,7 +865,7 @@ extern class BitmapData implements IBitmapDrawable
 		@returns	A Future BitmapData
 	**/
 	public static function loadFromBase64(base64:String, type:String):Future<BitmapData>;
-	
+
 	/**
 		Creates a new BitmapData from haxe.io.Bytes or openfl.utils.ByteArray data
 		asynchronously. The data and image decoding will occur in the background.
@@ -871,7 +880,7 @@ extern class BitmapData implements IBitmapDrawable
 		@returns	A Future BitmapData
 	**/
 	public static function loadFromBytes(bytes:ByteArray, rawAlpha:ByteArray = null):Future<BitmapData>;
-	
+
 	/**
 		Creates a new BitmapData from a file path or web address asynchronously. The file
 		load and image decoding will occur in the background.

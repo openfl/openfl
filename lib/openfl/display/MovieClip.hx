@@ -131,7 +131,7 @@ extern class MovieClip extends Sprite implements Dynamic
 	**/
 	public var scenes(get, never):Array<Scene>;
 
-	@:noCompletion private function get_scenes():Scene;
+	@:noCompletion private function get_scenes():Array<Scene>;
 
 	/**
 	 * The total number of frames in the MovieClip instance.

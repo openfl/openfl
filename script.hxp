@@ -42,7 +42,7 @@ class Script extends hxp.Script
 		if (command == "test-functional")
 		{
 			var targets = [
-				"haxelib", "flash", "html5", "neko", "cpp", "hl", "hashlink", "windows", "mac", "linux", "air", "web", "electron"
+				"haxelib", "flash", "html5", "neko", "cpp", "hl", "hashlink", "windows", "mac", "linux", "air", "web", "electron", "extern"
 			];
 
 			if (commandArgs.length > 0)
@@ -167,13 +167,23 @@ class Script extends hxp.Script
 			}
 
 			if (target == "air" || target == null) runOpenFLCommand(dir, ["test", "air"]);
+			if (target == "extern") runOpenFLCommand(dir, ["test", "html5", "-Dextern"]);
 		}
 
 		if (command == "test" || command == "test-functional")
 		{
 			var dir = Path.combine(Sys.getCwd(), "test/haxelib/functional");
+			var args = [ "test" ];
 
-			var args = ["test", target == null ? "neko" : target];
+			if (target == "extern")
+			{
+				args.push("html5");
+				args.push("-Dopenfl-html5-extern");
+			}
+			else
+			{
+				args.push(target == null ? "neko" : target);
+			}
 
 			for (flag in flags.keys())
 			{
