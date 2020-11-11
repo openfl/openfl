@@ -829,6 +829,7 @@ class TextField extends InteractiveObject
 	{
 		super();
 
+		__drawableType = TEXT_FIELD;
 		__caretIndex = -1;
 		__displayAsPassword = false;
 		__graphics = new Graphics(this);
@@ -1445,18 +1446,17 @@ class TextField extends InteractiveObject
 	{
 		var max = text.length;
 		var range;
-		
+
 		if (beginIndex == -1)
 		{
 			if (endIndex == -1) endIndex = max;
 			beginIndex = 0;
 		}
-		
 		else if (endIndex == -1)
 		{
 			endIndex = beginIndex + 1;
 		}
-		
+
 		if (beginIndex == endIndex) return;
 		if (beginIndex < 0 || endIndex <= 0 || endIndex < beginIndex || beginIndex >= max || endIndex > max) throw new RangeError();
 
@@ -1465,7 +1465,7 @@ class TextField extends InteractiveObject
 		//	beginIndex == 0 && endIndex == max -> replace all format ranges with new one
 		//	existing range.end < beginIndex -> continue
 		//	existing range.start >= endIndex -> done
-		//	existing range encompassed by beginIndex...endIndex -> 
+		//	existing range encompassed by beginIndex...endIndex ->
 		//		existing range == new range -> merge new format into existing
 		//		range.start == beginIndex -> existing.start = endIndex, insert new before existing
 		//		range.end == endIndex -> existing.end = beginIndex, insert new after existing
@@ -1475,14 +1475,15 @@ class TextField extends InteractiveObject
 		// 		else -> delete existing
 		//	existing range encompasses beginIndex but not endIndex -> existing.start = endIndex
 		//	existing range encompasses endIndex but not beginIndex -> existing.end = beginIndex, insert new
-		
+
 		if (beginIndex == 0 && endIndex == max)
 		{
 			// set text format for the whole textfield
 			__textEngine.textFormatRanges.length = 1;
-			
+
 			range = __textEngine.textFormatRanges[0];
-			range.start = 0; range.end = max;
+			range.start = 0;
+			range.end = max;
 			range.format.__merge(format);
 		}
 		else
@@ -1528,7 +1529,7 @@ class TextField extends InteractiveObject
 						newRange = new TextFormatRange(range.format.clone(), beginIndex, endIndex);
 						newRange.format.__merge(format);
 						__textEngine.textFormatRanges.insertAt(index + 1, newRange);
-						
+
 						range.end = beginIndex;
 						break;
 					}
@@ -1538,10 +1539,10 @@ class TextField extends InteractiveObject
 						newRange = new TextFormatRange(range.format.clone(), beginIndex, endIndex);
 						newRange.format.__merge(format);
 						__textEngine.textFormatRanges.insertAt(index + 1, newRange);
-						
+
 						newRange = new TextFormatRange(range.format.clone(), endIndex, range.end);
 						__textEngine.textFormatRanges.insertAt(index + 2, newRange);
-						
+
 						range.end = beginIndex;
 						break;
 					}
@@ -1585,27 +1586,27 @@ class TextField extends InteractiveObject
 				}
 			}
 			/*
-			// robust catchers for myriad edge cases
-			// TODO: should this be here? it would force getLayoutGroups() to never soft fail and report there's a text bug
-			if (__textEngine.textFormatRanges.length == 0)
-			{
-				newRange = new TextFormatRange(defaultTextFormat.clone(), 0, endIndex);
-				newRange.format.__merge(format);
-				__textEngine.textFormatRanges.push(newRange);
-			}
-			else if (__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end < __text.length)
-			{
-				newRange = new TextFormatRange(defaultTextFormat.clone(), __textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end, __text.length);
-				newRange.format.__merge(format);
-				__textEngine.textFormatRanges.push(newRange);
-			}
-			else if (__textEngine.textFormatRanges[0].start > 0)
-			{
-				newRange = new TextFormatRange(defaultTextFormat.clone(), 0, __textEngine.textFormatRanges[0].start);
-				newRange.format.__merge(format);
-				__textEngine.textFormatRanges.unshift(newRange);
-			}
-			*/
+				// robust catchers for myriad edge cases
+				// TODO: should this be here? it would force getLayoutGroups() to never soft fail and report there's a text bug
+				if (__textEngine.textFormatRanges.length == 0)
+				{
+					newRange = new TextFormatRange(defaultTextFormat.clone(), 0, endIndex);
+					newRange.format.__merge(format);
+					__textEngine.textFormatRanges.push(newRange);
+				}
+				else if (__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end < __text.length)
+				{
+					newRange = new TextFormatRange(defaultTextFormat.clone(), __textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end, __text.length);
+					newRange.format.__merge(format);
+					__textEngine.textFormatRanges.push(newRange);
+				}
+				else if (__textEngine.textFormatRanges[0].start > 0)
+				{
+					newRange = new TextFormatRange(defaultTextFormat.clone(), 0, __textEngine.textFormatRanges[0].start);
+					newRange.format.__merge(format);
+					__textEngine.textFormatRanges.unshift(newRange);
+				}
+			 */
 		}
 
 		__dirty = true;
@@ -1626,7 +1627,7 @@ class TextField extends InteractiveObject
 	@:noCompletion private function __caretBeginningOfNextLine():Void
 	{
 		var lineIndex = getLineIndexOfChar(__caretIndex);
-		
+
 		if (lineIndex < __textEngine.numLines - 1)
 		{
 			__caretIndex = getLineOffset(lineIndex + 1);
@@ -1640,11 +1641,11 @@ class TextField extends InteractiveObject
 	@:noCompletion private function __caretBeginningOfPreviousLine():Void
 	{
 		var lineIndex = getLineIndexOfChar(__caretIndex);
-		
+
 		if (lineIndex > 0)
 		{
 			var index = getLineOffset(getLineIndexOfChar(__caretIndex));
-			
+
 			if (__caretIndex == index)
 			{
 				__caretIndex = getLineOffset(lineIndex - 1);
@@ -2005,25 +2006,6 @@ class TextField extends InteractiveObject
 		return false;
 	}
 
-	@:noCompletion private override function __renderCairo(renderer:CairoRenderer):Void
-	{
-		#if lime_cairo
-		__updateCacheBitmap(renderer, __dirty);
-
-		if (__cacheBitmap != null && !__isCacheBitmapRender)
-		{
-			CairoBitmap.render(__cacheBitmap, renderer);
-		}
-		else
-		{
-			CairoTextField.render(this, renderer, __worldTransform);
-			CairoDisplayObject.render(this, renderer);
-		}
-
-		__renderEvent(renderer);
-		#end
-	}
-
 	@:noCompletion private override function __renderCanvas(renderer:CanvasRenderer):Void
 	{
 		#if (js && html5)
@@ -2205,7 +2187,7 @@ class TextField extends InteractiveObject
 		while (i < __textEngine.textFormatRanges.length)
 		{
 			range = __textEngine.textFormatRanges[i];
-			
+
 			if (beginIndex == endIndex)
 			{
 				if (range.start == range.end)
@@ -2275,7 +2257,7 @@ class TextField extends InteractiveObject
 
 			i++;
 		}
-		
+
 		// robust catchers for myriad edge cases
 		if (__textEngine.textFormatRanges.length == 0)
 		{
@@ -2290,9 +2272,10 @@ class TextField extends InteractiveObject
 		else if (beginIndex != endIndex && __textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end < __text.length)
 		{
 			// append DTF, text was replaced without a format
-			__textEngine.textFormatRanges.push(new TextFormatRange(defaultTextFormat.clone(), __textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end, __text.length));
+			__textEngine.textFormatRanges.push(new TextFormatRange(defaultTextFormat.clone(),
+				__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end, __text.length));
 		}
-		
+
 		setSelection(beginIndex + newText.length, beginIndex + newText.length);
 
 		__dirty = true;
@@ -2415,11 +2398,11 @@ class TextField extends InteractiveObject
 			scrollH = 0;
 			return;
 		}
-		
+
 		var tempScrollH = scrollH;
-		
+
 		// margins are ignored here
-		
+
 		if (__caretIndex == 0 || getLineOffset(getLineIndexOfChar(__caretIndex)) == __caretIndex)
 		{
 			// first index in a line is always at 0 scrollH
@@ -2429,19 +2412,19 @@ class TextField extends InteractiveObject
 		{
 			var caret = Rectangle.__pool.get();
 			var written = false;
-			
+
 			if (__caretIndex < __text.length)
 			{
 				written = __getCharBoundaries(__caretIndex, caret);
 			}
-			if (!written) 
+			if (!written)
 			{
 				// \n and \r don't have character boundaries, as well as when caretIndex == text.length
 				// written doesn't need to be checked again, covered earlier
 				__getCharBoundaries(__caretIndex - 1, caret);
 				caret.x += caret.width; // shift rectangle to where the caret is
 			}
-			
+
 			while (caret.x < tempScrollH && tempScrollH > 0)
 			{
 				tempScrollH -= 24;
@@ -2450,10 +2433,10 @@ class TextField extends InteractiveObject
 			{
 				tempScrollH += 24;
 			}
-			
+
 			Rectangle.__pool.release(caret);
 		}
-		
+
 		if (tempScrollH > 0 && type != INPUT)
 		{
 			// input text leaves some room after scrolling to the last character in a line. dynamic text does not
@@ -2463,7 +2446,7 @@ class TextField extends InteractiveObject
 				scrollH = Math.ceil(lineLength - width + 4);
 			}
 		}
-		
+
 		if (tempScrollH < 0)
 		{
 			scrollH = 0;
@@ -2476,7 +2459,7 @@ class TextField extends InteractiveObject
 		{
 			scrollH = tempScrollH;
 		}
-		
+
 		// TODO: Handle drag select
 	}
 
@@ -2489,7 +2472,7 @@ class TextField extends InteractiveObject
 			scrollV = 1;
 			return;
 		}
-		
+
 		var lineIndex = getLineIndexOfChar(__caretIndex);
 
 		if (lineIndex == -1 && __caretIndex > 0)
@@ -3499,12 +3482,12 @@ class TextField extends InteractiveObject
 				{
 					__caretNextLine();
 				}
-				
+
 				if (!modifier.shiftKey)
 				{
 					__selectionIndex = __caretIndex;
 				}
-				
+
 				setSelection(__selectionIndex, __caretIndex);
 
 			case UP if (selectable):
@@ -3516,12 +3499,12 @@ class TextField extends InteractiveObject
 				{
 					__caretPreviousLine();
 				}
-				
+
 				if (!modifier.shiftKey)
 				{
 					__selectionIndex = __caretIndex;
 				}
-				
+
 				setSelection(__selectionIndex, __caretIndex);
 
 			case HOME if (selectable):
@@ -3533,12 +3516,12 @@ class TextField extends InteractiveObject
 				{
 					__caretBeginningOfLine();
 				}
-				
+
 				if (!modifier.shiftKey)
 				{
 					__selectionIndex = __caretIndex;
 				}
-				
+
 				setSelection(__selectionIndex, __caretIndex);
 
 			case END if (selectable):
@@ -3550,12 +3533,12 @@ class TextField extends InteractiveObject
 				{
 					__caretEndOfLine();
 				}
-				
+
 				if (!modifier.shiftKey)
 				{
 					__selectionIndex = __caretIndex;
 				}
-				
+
 				setSelection(__selectionIndex, __caretIndex);
 
 			case C:

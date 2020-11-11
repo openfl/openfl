@@ -69,8 +69,7 @@ class SimpleButton extends InteractiveObject
 	{
 		super();
 
-		// __type = SIMPLE_BUTTON;
-
+		__drawableType = SIMPLE_BUTTON;
 		enabled = true;
 		trackAsMenu = false;
 		useHandCursor = true;
@@ -196,22 +195,6 @@ class SimpleButton extends InteractiveObject
 		}
 
 		return hitTest;
-	}
-
-	@:noCompletion private override function __renderCairo(renderer:CairoRenderer):Void
-	{
-		if (!__renderable || __worldAlpha <= 0 || __currentState == null) return;
-
-		renderer.__pushMaskObject(this);
-		__currentState.__renderCairo(renderer);
-		renderer.__popMaskObject(this);
-
-		__renderEvent(renderer);
-	}
-
-	@:noCompletion private override function __renderCairoMask(renderer:CairoRenderer):Void
-	{
-		__currentState.__renderCairoMask(renderer);
 	}
 
 	@:noCompletion private override function __renderCanvas(renderer:CanvasRenderer):Void

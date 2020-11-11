@@ -1,6 +1,7 @@
 package openfl.display;
 
 #if !flash
+import openfl.display._internal.IBitmapDrawableType;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
@@ -8,6 +9,7 @@ import openfl.geom.Rectangle;
 interface IBitmapDrawable
 {
 	@:noCompletion private var __blendMode:BlendMode;
+	@:noCompletion private var __drawableType:IBitmapDrawableType;
 	@:noCompletion private var __isMask:Bool;
 	@:noCompletion private var __renderable:Bool;
 	@:noCompletion private var __renderTransform:Matrix;
@@ -16,8 +18,6 @@ interface IBitmapDrawable
 	@:noCompletion private var __worldColorTransform:ColorTransform;
 	@:noCompletion private var __worldTransform:Matrix;
 	@:noCompletion private function __getBounds(rect:Rectangle, matrix:Matrix):Void;
-	@:noCompletion private function __renderCairo(renderer:CairoRenderer):Void;
-	@:noCompletion private function __renderCairoMask(renderer:CairoRenderer):Void;
 	@:noCompletion private function __renderCanvas(renderer:CanvasRenderer):Void;
 	@:noCompletion private function __renderCanvasMask(renderer:CanvasRenderer):Void;
 	@:noCompletion private function __renderDOM(renderer:DOMRenderer):Void;

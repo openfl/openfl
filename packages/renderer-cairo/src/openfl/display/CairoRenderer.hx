@@ -1,6 +1,15 @@
 package openfl.display;
 
 #if !flash
+import openfl.display._internal.CairoBitmap;
+import openfl.display._internal.CairoBitmapData;
+import openfl.display._internal.CairoDisplayObject;
+import openfl.display._internal.CairoDisplayObjectContainer;
+import openfl.display._internal.CairoGraphics;
+import openfl.display._internal.CairoShape;
+import openfl.display._internal.CairoSimpleButton;
+import openfl.display._internal.CairoTextField;
+import openfl.display._internal.CairoTilemap;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 #if lime
@@ -136,7 +145,7 @@ class CairoRenderer extends DisplayObjectRenderer
 		applyMatrix(mask.__renderTransform, cairo);
 
 		cairo.newPath();
-		mask.__renderCairoMask(this);
+		__renderDrawableMask(mask);
 		cairo.clip();
 	}
 
@@ -168,7 +177,59 @@ class CairoRenderer extends DisplayObjectRenderer
 	{
 		if (cairo == null) return;
 
-		object.__renderCairo(this);
+		__renderDrawable(object);
+	}
+
+	@:noCompletion private function __renderDrawable(object:IBitmapDrawable):Void
+	{
+		if (object == null) return;
+
+		switch (object.__drawableType)
+		{
+			case BITMAP_DATA:
+				CairoBitmapData.renderDrawable(cast object, this);
+			case STAGE, SPRITE:
+				CairoDisplayObjectContainer.renderDrawable(cast object, this);
+			case BITMAP:
+				CairoBitmap.renderDrawable(cast object, this);
+			case SHAPE:
+				CairoShape.renderDrawable(cast object, this);
+			case SIMPLE_BUTTON:
+				CairoSimpleButton.renderDrawable(cast object, this);
+			case TEXT_FIELD:
+				CairoTextField.renderDrawable(cast object, this);
+			case VIDEO:
+			// TODO
+			case TILEMAP:
+				CairoTilemap.renderDrawable(cast object, this);
+			default:
+		}
+	}
+
+	@:noCompletion private function __renderDrawableMask(object:IBitmapDrawable):Void
+	{
+		if (object == null) return;
+
+		switch (object.__drawableType)
+		{
+			case BITMAP_DATA:
+				CairoBitmapData.renderDrawableMask(cast object, this);
+			case STAGE, SPRITE:
+				CairoDisplayObjectContainer.renderDrawableMask(cast object, this);
+			case BITMAP:
+				CairoBitmap.renderDrawableMask(cast object, this);
+			case SHAPE:
+				CairoShape.renderDrawableMask(cast object, this);
+			case SIMPLE_BUTTON:
+				CairoSimpleButton.renderDrawableMask(cast object, this);
+			case TEXT_FIELD:
+				CairoTextField.renderDrawableMask(cast object, this);
+			case VIDEO:
+			// TODO
+			case TILEMAP:
+				CairoTilemap.renderDrawableMask(cast object, this);
+			default:
+		}
 	}
 
 	@:noCompletion private override function __setBlendMode(value:BlendMode):Void

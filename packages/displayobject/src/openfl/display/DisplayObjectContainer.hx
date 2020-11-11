@@ -562,58 +562,6 @@ class DisplayObjectContainer extends InteractiveObject
 		}
 	}
 
-	@:noCompletion private override function __renderCairo(renderer:CairoRenderer):Void
-	{
-		#if lime_cairo
-		__cleanupRemovedChildren();
-
-		if (!__renderable || __worldAlpha <= 0) return;
-
-		super.__renderCairo(renderer);
-
-		if (__cacheBitmap != null && !__isCacheBitmapRender) return;
-
-		renderer.__pushMaskObject(this);
-
-		if (renderer.__stage != null)
-		{
-			for (child in __children)
-			{
-				child.__renderCairo(renderer);
-				child.__renderDirty = false;
-			}
-
-			__renderDirty = false;
-		}
-		else
-		{
-			for (child in __children)
-			{
-				child.__renderCairo(renderer);
-			}
-		}
-
-		renderer.__popMaskObject(this);
-		#end
-	}
-
-	@:noCompletion private override function __renderCairoMask(renderer:CairoRenderer):Void
-	{
-		#if lime_cairo
-		__cleanupRemovedChildren();
-
-		if (__graphics != null)
-		{
-			CairoGraphics.renderMask(__graphics, renderer);
-		}
-
-		for (child in __children)
-		{
-			child.__renderCairoMask(renderer);
-		}
-		#end
-	}
-
 	@:noCompletion private override function __renderCanvas(renderer:CanvasRenderer):Void
 	{
 		__cleanupRemovedChildren();

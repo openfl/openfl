@@ -162,4 +162,14 @@ class CairoShape
 		}
 		#end
 	}
+
+	public static inline function renderDrawable(shape:Shape, renderer:CairoRenderer):Void
+	{
+		CairoDisplayObject.renderDrawable(shape, renderer);
+	}
+
+	public static inline function renderDrawableMask(shape:Shape, renderer:CairoRenderer):Void
+	{
+		CairoDisplayObject.renderDrawableMask(shape, renderer);
+	}
 }
