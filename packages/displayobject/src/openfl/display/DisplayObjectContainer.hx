@@ -410,7 +410,12 @@ class DisplayObjectContainer extends InteractiveObject
 
 			DisplayObject.__calculateAbsoluteTransform(child.__transform, matrix, childWorldTransform);
 
-			child.__getFilterBounds(rect, childWorldTransform);
+			var childRect = Rectangle.__pool.get();
+			
+			child.__getFilterBounds(childRect, childWorldTransform);
+			rect.__expand(childRect.x, childRect.y, childRect.width, childRect.height);
+			
+			Rectangle.__pool.release(childRect);
 		}
 
 		Matrix.__pool.release(childWorldTransform);
