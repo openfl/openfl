@@ -24,6 +24,29 @@ class Context3DTextField
 		textField.__graphics.__hardwareDirty = false;
 	}
 
+	public static function renderDrawable(textField:TextField, renderer:OpenGLRenderer):Void
+	{
+		textField.__updateCacheBitmap(renderer, false);
+
+		if (textField.__cacheBitmap != null && !textField.__isCacheBitmapRender)
+		{
+			Context3DBitmap.render(textField.__cacheBitmap, renderer);
+		}
+		else
+		{
+			Context3DTextField.render(textField, renderer);
+			Context3DDisplayObject.render(textField, renderer);
+		}
+
+		textField.__renderEvent(renderer);
+	}
+
+	public static function renderDrawableMask(textField:TextField, renderer:OpenGLRenderer):Void
+	{
+		Context3DTextField.renderMask(textField, renderer);
+		Context3DDisplayObject.renderDrawableMask(textField, renderer);
+	}
+
 	public static function renderMask(textField:TextField, renderer:OpenGLRenderer):Void
 	{
 		#if (js && html5)

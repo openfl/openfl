@@ -484,39 +484,6 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	}
 
 	#if !flash
-	@:noCompletion private override function __renderGL(renderer:OpenGLRenderer):Void
-	{
-		__updateCacheBitmap(renderer, false);
-
-		if (__cacheBitmap != null && !__isCacheBitmapRender)
-		{
-			Context3DBitmap.render(__cacheBitmap, renderer);
-		}
-		else
-		{
-			Context3DDisplayObject.render(this, renderer);
-			Context3DTilemap.render(this, renderer);
-		}
-
-		__renderEvent(renderer);
-	}
-
-	@:noCompletion private override function __renderGLMask(renderer:OpenGLRenderer):Void
-	{
-		// __updateCacheBitmap (renderer, false);
-
-		// if (__cacheBitmap != null && !__isCacheBitmapRender) {
-
-		// 	Context3DBitmap.renderMask (__cacheBitmap, renderer);
-
-		// } else {
-
-		Context3DDisplayObject.renderMask(this, renderer);
-		Context3DTilemap.renderMask(this, renderer);
-
-		// }
-	}
-
 	@:noCompletion private override function __shouldCacheHardware(value:Null<Bool>):Null<Bool>
 	{
 		return true;

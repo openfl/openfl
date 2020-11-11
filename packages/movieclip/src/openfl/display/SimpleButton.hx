@@ -249,24 +249,6 @@ class SimpleButton extends InteractiveObject
 		#end
 	}
 
-	@:noCompletion private override function __renderGL(renderer:OpenGLRenderer):Void
-	{
-		if (!__renderable || __worldAlpha <= 0 || __currentState == null) return;
-
-		renderer.__pushMaskObject(this);
-		__currentState.__renderGL(renderer);
-		renderer.__popMaskObject(this);
-
-		__renderEvent(renderer);
-	}
-
-	@:noCompletion private override function __renderGLMask(renderer:OpenGLRenderer):Void
-	{
-		if (__currentState == null) return;
-
-		__currentState.__renderGLMask(renderer);
-	}
-
 	@:noCompletion private override function __setStageReference(stage:Stage):Void
 	{
 		super.__setStageReference(stage);

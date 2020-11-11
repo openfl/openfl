@@ -437,6 +437,39 @@ class Context3DTilemap
 		Rectangle.__pool.release(rect);
 	}
 
+	public static function renderDrawable(tilemap:Tilemap, renderer:OpenGLRenderer):Void
+	{
+		tilemap.__updateCacheBitmap(renderer, false);
+
+		if (tilemap.__cacheBitmap != null && !tilemap.__isCacheBitmapRender)
+		{
+			Context3DBitmap.render(tilemap.__cacheBitmap, renderer);
+		}
+		else
+		{
+			Context3DDisplayObject.render(tilemap, renderer);
+			Context3DTilemap.render(tilemap, renderer);
+		}
+
+		tilemap.__renderEvent(renderer);
+	}
+
+	public static function renderDrawableMask(tilemap:Tilemap, renderer:OpenGLRenderer):Void
+	{
+		// tilemap.__updateCacheBitmap (renderer, false);
+
+		// if (tilemap.__cacheBitmap != null && !tilemap.__isCacheBitmapRender) {
+
+		// 	Context3DBitmap.renderMask (tilemap.__cacheBitmap, renderer);
+
+		// } else {
+
+		Context3DDisplayObject.renderMask(tilemap, renderer);
+		Context3DTilemap.renderMask(tilemap, renderer);
+
+		// }
+	}
+
 	private static function renderTileContainer(tilemap:Tilemap, renderer:OpenGLRenderer, group:TileContainer, defaultShader:Shader, defaultTileset:Tileset,
 			worldAlpha:Float, blendModeEnabled:Bool, defaultBlendMode:BlendMode, cacheBitmapData:BitmapData):Void
 	{

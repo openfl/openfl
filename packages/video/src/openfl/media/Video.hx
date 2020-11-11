@@ -444,17 +444,6 @@ class Video extends DisplayObject
 		__renderEvent(renderer);
 	}
 
-	@:noCompletion private override function __renderGL(renderer:OpenGLRenderer):Void
-	{
-		Context3DVideo.render(this, renderer);
-		__renderEvent(renderer);
-	}
-
-	@:noCompletion private override function __renderGLMask(renderer:OpenGLRenderer):Void
-	{
-		Context3DVideo.renderMask(this, renderer);
-	}
-
 	// Get & Set Methods
 	@:noCompletion private override function get_height():Float
 	{

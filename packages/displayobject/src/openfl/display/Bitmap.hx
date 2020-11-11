@@ -184,33 +184,6 @@ class Bitmap extends DisplayObject
 		DOMBitmap.clear(this, renderer);
 	}
 
-	@:noCompletion private override function __renderGL(renderer:OpenGLRenderer):Void
-	{
-		__updateCacheBitmap(renderer, false);
-
-		if (__bitmapData != null && __bitmapData.image != null)
-		{
-			__imageVersion = __bitmapData.image.version;
-		}
-
-		if (__cacheBitmap != null && !__isCacheBitmapRender)
-		{
-			Context3DBitmap.render(__cacheBitmap, renderer);
-		}
-		else
-		{
-			Context3DDisplayObject.render(this, renderer);
-			Context3DBitmap.render(this, renderer);
-		}
-
-		__renderEvent(renderer);
-	}
-
-	@:noCompletion private override function __renderGLMask(renderer:OpenGLRenderer):Void
-	{
-		Context3DBitmap.renderMask(this, renderer);
-	}
-
 	@:noCompletion private override function __updateCacheBitmap(renderer:DisplayObjectRenderer, force:Bool):Bool
 	{
 		// TODO: Handle filters without an intermediate draw

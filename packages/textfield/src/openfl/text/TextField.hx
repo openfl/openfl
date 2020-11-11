@@ -2107,29 +2107,6 @@ class TextField extends InteractiveObject
 		DOMTextField.clear(this, renderer);
 	}
 
-	@:noCompletion private override function __renderGL(renderer:OpenGLRenderer):Void
-	{
-		__updateCacheBitmap(renderer, false);
-
-		if (__cacheBitmap != null && !__isCacheBitmapRender)
-		{
-			Context3DBitmap.render(__cacheBitmap, renderer);
-		}
-		else
-		{
-			Context3DTextField.render(this, renderer);
-			Context3DDisplayObject.render(this, renderer);
-		}
-
-		__renderEvent(renderer);
-	}
-
-	@:noCompletion private override function __renderGLMask(renderer:OpenGLRenderer):Void
-	{
-		Context3DTextField.renderMask(this, renderer);
-		super.__renderGLMask(renderer);
-	}
-
 	@:noCompletion private function __replaceSelectedText(value:String, restrict:Bool = true):Void
 	{
 		if (value == null) value = "";
