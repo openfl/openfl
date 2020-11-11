@@ -165,7 +165,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	**/
 	public function applyAlpha(alpha:Float):Void
 	{
-		__alphaValue[0] = alpha;
+		__alphaValue[0] = alpha * __worldAlpha;
 
 		if (__currentShaderBuffer != null)
 		{
