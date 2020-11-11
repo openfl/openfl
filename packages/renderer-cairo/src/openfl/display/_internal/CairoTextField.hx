@@ -330,14 +330,15 @@ class CairoTextField
 
 								// TODO: draw only once
 
-								var selectedGylphs = [];								
+								var selectedGylphs = [];
 
 								selectionStart -= group.startIndex;
 								selectionEnd -= group.startIndex;
-								for (i in selectionStart...selectionEnd) selectedGylphs.push(glyphs[i]);
+								for (i in selectionStart...selectionEnd)
+									selectedGylphs.push(glyphs[i]);
 								cairo.showGlyphs(selectedGylphs);
 
-								// TODO: Avoid creating glyph array every time.	
+								// TODO: Avoid creating glyph array every time.
 							}
 						}
 					}
@@ -390,4 +391,25 @@ class CairoTextField
 		graphics.__dirty = false;
 		#end
 	}
+
+	public static inline function renderDrawable(textField:TextField, renderer:CairoRenderer):Void
+	{
+		#if lime_cairo
+		textField.__updateCacheBitmap(renderer, textField.__dirty);
+
+		if (textField.__cacheBitmap != null && !textField.__isCacheBitmapRender)
+		{
+			CairoBitmap.render(textField.__cacheBitmap, renderer);
+		}
+		else
+		{
+			CairoTextField.render(textField, renderer, textField.__worldTransform);
+			CairoDisplayObject.render(textField, renderer);
+		}
+
+		textField.__renderEvent(renderer);
+		#end
+	}
+
+	public static inline function renderDrawableMask(tilemap:Tilemap, renderer:CairoRenderer):Void {}
 }

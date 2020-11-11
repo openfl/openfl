@@ -43,6 +43,7 @@ class Sprite extends DisplayObjectContainer
 	{
 		super();
 
+		__drawableType = SPRITE;
 		__buttonMode = false;
 		useHandCursor = true;
 	}

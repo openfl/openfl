@@ -168,4 +168,25 @@ class CairoTilemap
 		Matrix.__pool.release(tileTransform);
 		#end
 	}
+
+	public static inline function renderDrawable(tilemap:Tilemap, renderer:CairoRenderer):Void
+	{
+		#if lime_cairo
+		tilemap.__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
+
+		if (tilemap.__cacheBitmap != null && !tilemap.__isCacheBitmapRender)
+		{
+			CairoBitmap.render(tilemap.__cacheBitmap, renderer);
+		}
+		else
+		{
+			CairoDisplayObject.render(tilemap, renderer);
+			CairoTilemap.render(tilemap, renderer);
+		}
+
+		tilemap.__renderEvent(renderer);
+		#end
+	}
+
+	public static inline function renderDrawableMask(tilemap:Tilemap, renderer:CairoRenderer):Void {}
 }

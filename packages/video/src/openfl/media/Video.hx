@@ -213,6 +213,7 @@ class Video extends DisplayObject
 	{
 		super();
 
+		__drawableType = VIDEO;
 		__width = width;
 		__height = height;
 

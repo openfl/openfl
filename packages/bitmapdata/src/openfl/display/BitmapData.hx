@@ -4,6 +4,7 @@ package openfl.display;
 import openfl._internal.backend.gl.GLFramebuffer;
 import openfl._internal.backend.gl.GLRenderbuffer;
 import openfl._internal.utils.Float32Array;
+import openfl.display._internal.IBitmapDrawableType;
 import openfl.display._internal.PerlinNoise;
 import openfl._internal.utils.UInt16Array;
 import openfl._internal.utils.UInt8Array;
@@ -86,6 +87,7 @@ class BitmapData implements IBitmapDrawable
 	public var width(default, null):Int;
 
 	@:noCompletion private var __blendMode:BlendMode;
+	@:noCompletion private var __drawableType:IBitmapDrawableType;
 	// @:noCompletion private var __vertexBufferColorTransform:ColorTransform;
 	// @:noCompletion private var __vertexBufferAlpha:Float;
 	@:noCompletion private var __framebuffer:GLFramebuffer;
@@ -123,6 +125,8 @@ class BitmapData implements IBitmapDrawable
 
 	public function new(width:Int, height:Int, transparent:Bool = true, fillColor:UInt = 0xFFFFFFFF)
 	{
+		__drawableType = BITMAP_DATA;
+
 		this.transparent = transparent;
 
 		#if (neko || (js && html5))
@@ -2194,38 +2198,6 @@ class BitmapData implements IBitmapDrawable
 		return cast Future.withValue(this);
 		#end
 	}
-
-	@:noCompletion private function __renderCairo(renderer:CairoRenderer):Void
-	{
-		#if lime_cairo
-		if (!readable) return;
-
-		var cairo = renderer.cairo;
-
-		renderer.applyMatrix(__renderTransform, cairo);
-
-		var surface = getSurface();
-
-		if (surface != null)
-		{
-			var pattern = CairoPattern.createForSurface(surface);
-
-			if (!renderer.__allowSmoothing || cairo.antialias == NONE)
-			{
-				pattern.filter = CairoFilter.NEAREST;
-			}
-			else
-			{
-				pattern.filter = CairoFilter.GOOD;
-			}
-
-			cairo.source = pattern;
-			cairo.paint();
-		}
-		#end
-	}
-
-	@:noCompletion private function __renderCairoMask(renderer:CairoRenderer):Void {}
 
 	@:noCompletion private function __renderCanvas(renderer:CanvasRenderer):Void
 	{

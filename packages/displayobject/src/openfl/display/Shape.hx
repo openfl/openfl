@@ -22,6 +22,8 @@ class Shape extends DisplayObject
 	public function new()
 	{
 		super();
+
+		__drawableType = SHAPE;
 	}
 
 	// Get & Set Methods

@@ -50,4 +50,32 @@ class CairoDisplayObject
 		}
 		#end
 	}
+
+	public static inline function renderDrawable(displayObject:DisplayObject, renderer:CairoRenderer):Void
+	{
+		#if lime_cairo
+		displayObject.__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
+
+		if (displayObject.__cacheBitmap != null && !displayObject.__isCacheBitmapRender)
+		{
+			CairoBitmap.render(displayObject.__cacheBitmap, renderer);
+		}
+		else
+		{
+			CairoDisplayObject.render(displayObject, renderer);
+		}
+
+		displayObject.__renderEvent(renderer);
+		#end
+	}
+
+	public static inline function renderDrawableMask(displayObject:DisplayObject, renderer:CairoRenderer):Void
+	{
+		#if lime_cairo
+		if (displayObject.__graphics != null)
+		{
+			CairoGraphics.renderMask(displayObject.__graphics, renderer);
+		}
+		#end
+	}
 }

@@ -50,6 +50,7 @@ class Bitmap extends DisplayObject
 	{
 		super();
 
+		__drawableType = BITMAP;
 		__bitmapData = bitmapData;
 		this.pixelSnapping = pixelSnapping;
 		this.smoothing = smoothing;
@@ -129,35 +130,6 @@ class Bitmap extends DisplayObject
 		}
 
 		return false;
-	}
-
-	@:noCompletion private override function __renderCairo(renderer:CairoRenderer):Void
-	{
-		#if lime_cairo
-		__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
-
-		if (__bitmapData != null && __bitmapData.image != null)
-		{
-			__imageVersion = __bitmapData.image.version;
-		}
-
-		if (__cacheBitmap != null && !__isCacheBitmapRender)
-		{
-			CairoBitmap.render(__cacheBitmap, renderer);
-		}
-		else
-		{
-			CairoDisplayObject.render(this, renderer);
-			CairoBitmap.render(this, renderer);
-		}
-
-		__renderEvent(renderer);
-		#end
-	}
-
-	@:noCompletion private override function __renderCairoMask(renderer:CairoRenderer):Void
-	{
-		renderer.cairo.rectangle(0, 0, width, height);
 	}
 
 	@:noCompletion private override function __renderCanvas(renderer:CanvasRenderer):Void

@@ -129,6 +129,7 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	{
 		super();
 
+		__drawableType = TILEMAP;
 		__tileset = tileset;
 		this.smoothing = smoothing;
 
@@ -434,25 +435,6 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	#end
 
 	#if !flash
-	@:noCompletion private override function __renderCairo(renderer:CairoRenderer):Void
-	{
-		#if lime_cairo
-		__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
-
-		if (__cacheBitmap != null && !__isCacheBitmapRender)
-		{
-			CairoBitmap.render(__cacheBitmap, renderer);
-		}
-		else
-		{
-			CairoDisplayObject.render(this, renderer);
-			CairoTilemap.render(this, renderer);
-		}
-
-		__renderEvent(renderer);
-		#end
-	}
-
 	@:noCompletion private override function __renderCanvas(renderer:CanvasRenderer):Void
 	{
 		__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);

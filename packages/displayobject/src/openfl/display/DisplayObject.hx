@@ -13,6 +13,7 @@ import openfl.display._internal.Context3DBitmap;
 import openfl.display._internal.Context3DDisplayObject;
 import openfl.display._internal.Context3DGraphics;
 import openfl.display._internal.Context3DShape;
+import openfl.display._internal.IBitmapDrawableType;
 import openfl._internal.utils.ObjectPool;
 import openfl._internal.Lib;
 import openfl.errors.TypeError;
@@ -136,6 +137,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private var __children:Array<DisplayObject>;
 	@:noCompletion private var __customRenderClear:Bool;
 	@:noCompletion private var __customRenderEvent:RenderEvent;
+	@:noCompletion private var __drawableType:IBitmapDrawableType;
 	@:noCompletion private var __filters:Array<BitmapFilter>;
 	@:noCompletion private var __graphics:Graphics;
 	@:noCompletion private var __interactive:Bool;
@@ -772,34 +774,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		{
 			__graphics.__readGraphicsData(graphicsData);
 		}
-	}
-
-	@:noCompletion private function __renderCairo(renderer:CairoRenderer):Void
-	{
-		#if lime_cairo
-		__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
-
-		if (__cacheBitmap != null && !__isCacheBitmapRender)
-		{
-			CairoBitmap.render(__cacheBitmap, renderer);
-		}
-		else
-		{
-			CairoDisplayObject.render(this, renderer);
-		}
-
-		__renderEvent(renderer);
-		#end
-	}
-
-	@:noCompletion private function __renderCairoMask(renderer:CairoRenderer):Void
-	{
-		#if lime_cairo
-		if (__graphics != null)
-		{
-			CairoGraphics.renderMask(__graphics, renderer);
-		}
-		#end
 	}
 
 	@:noCompletion private function __renderCanvas(renderer:CanvasRenderer):Void

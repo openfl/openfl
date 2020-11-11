@@ -62,4 +62,36 @@ class CairoBitmap
 		}
 		#end
 	}
+
+	public static inline function renderDrawable(bitmap:Bitmap, renderer:CairoRenderer):Void
+	{
+		#if lime_cairo
+		bitmap.__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
+
+		var __bitmapData = bitmap.__bitmapData;
+		var __cacheBitmap = bitmap.__cacheBitmap;
+
+		if (__bitmapData != null && __bitmapData.image != null)
+		{
+			bitmap.__imageVersion = __bitmapData.image.version;
+		}
+
+		if (__cacheBitmap != null && !bitmap.__isCacheBitmapRender)
+		{
+			CairoBitmap.render(__cacheBitmap, renderer);
+		}
+		else
+		{
+			CairoDisplayObject.render(bitmap, renderer);
+			CairoBitmap.render(bitmap, renderer);
+		}
+
+		bitmap.__renderEvent(renderer);
+		#end
+	}
+
+	public static inline function renderDrawableMask(bitmap:Bitmap, renderer:CairoRenderer):Void
+	{
+		renderer.cairo.rectangle(0, 0, bitmap.width, bitmap.height);
+	}
 }
