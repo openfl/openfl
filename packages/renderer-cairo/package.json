@@ -1,7 +1,11 @@
 {
 	"name": "@openfl/renderer-cairo",
 	"dependencies": {
-		"@openfl/renderer-core": "0.0.0"
+		"@openfl/renderer-core": "0.0.0",
+		"@openfl/bitmapdata": "0.0.0",
+		"@openfl/displayobject": "0.0.0",
+		"@openfl/textfield": "0.0.0",
+		"@openfl/tilemap": "0.0.0"
 	},
 	"scripts":{
 		"test": "node ../../scripts/run-test.js"
