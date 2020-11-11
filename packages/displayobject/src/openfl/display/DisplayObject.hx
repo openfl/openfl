@@ -884,31 +884,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		#end
 	}
 
-	@:noCompletion private function __renderGL(renderer:OpenGLRenderer):Void
-	{
-		__updateCacheBitmap(renderer, false);
-
-		if (__cacheBitmap != null && !__isCacheBitmapRender)
-		{
-			Context3DBitmap.render(__cacheBitmap, renderer);
-		}
-		else
-		{
-			Context3DDisplayObject.render(this, renderer);
-		}
-
-		__renderEvent(renderer);
-	}
-
-	@:noCompletion private function __renderGLMask(renderer:OpenGLRenderer):Void
-	{
-		if (__graphics != null)
-		{
-			// Context3DGraphics.renderMask (__graphics, renderer);
-			Context3DShape.renderMask(this, renderer);
-		}
-	}
-
 	@:noCompletion private function __setParentRenderDirty():Void
 	{
 		var renderParent = __renderParent != null ? __renderParent : parent;

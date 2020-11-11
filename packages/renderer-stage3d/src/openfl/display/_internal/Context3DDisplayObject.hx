@@ -55,6 +55,31 @@ class Context3DDisplayObject
 		}
 	}
 
+	public static function renderDrawable(displayObject:DisplayObject, renderer:OpenGLRenderer):Void
+	{
+		displayObject.__updateCacheBitmap(renderer, false);
+
+		if (displayObject.__cacheBitmap != null && !displayObject.__isCacheBitmapRender)
+		{
+			Context3DBitmap.render(displayObject.__cacheBitmap, renderer);
+		}
+		else
+		{
+			Context3DDisplayObject.render(displayObject, renderer);
+		}
+
+		displayObject.__renderEvent(renderer);
+	}
+
+	public static function renderDrawableMask(displayObject:DisplayObject, renderer:OpenGLRenderer):Void
+	{
+		if (displayObject.__graphics != null)
+		{
+			// Context3DGraphics.renderMask (displayObject.__graphics, renderer);
+			Context3DShape.renderMask(displayObject, renderer);
+		}
+	}
+
 	public static inline function renderMask(displayObject:DisplayObject, renderer:OpenGLRenderer):Void
 	{
 		if (displayObject.opaqueBackground == null && displayObject.__graphics == null) return;

@@ -1,7 +1,16 @@
 package openfl.display;
 
 #if !flash
+import openfl.display._internal.Context3DBitmap;
+import openfl.display._internal.Context3DBitmapData;
+import openfl.display._internal.Context3DDisplayObject;
+import openfl.display._internal.Context3DDisplayObjectContainer;
+import openfl.display._internal.Context3DGraphics;
 import openfl.display._internal.Context3DMaskShader;
+import openfl.display._internal.Context3DSimpleButton;
+import openfl.display._internal.Context3DTextField;
+import openfl.display._internal.Context3DTilemap;
+import openfl.display._internal.Context3DVideo;
 import openfl.display._internal.ShaderBuffer;
 import openfl._internal.utils.ObjectPool;
 import openfl.display3D.Context3DClearMask;
@@ -596,7 +605,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 			__context3D.setStencilReferenceValue(__stencilReference, 0xFF, 0xFF);
 			__context3D.setColorMask(false, false, false, false);
 
-			mask.__renderGLMask(this);
+			__renderDrawableMask(mask);
 			__stencilReference--;
 
 			__context3D.setStencilActions(FRONT_AND_BACK, EQUAL, KEEP, KEEP, KEEP);
@@ -661,7 +670,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		__context3D.setStencilReferenceValue(__stencilReference, 0xFF, 0xFF);
 		__context3D.setColorMask(false, false, false, false);
 
-		mask.__renderGLMask(this);
+		__renderDrawableMask(mask);
 		__maskObjects.push(mask);
 		__stencilReference++;
 
@@ -752,7 +761,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 			__upscaled = (__worldTransform.a != 1 || __worldTransform.d != 1);
 
-			object.__renderGL(this);
+			__renderDrawable(object);
 
 			// TODO: Handle this in Context3D as a viewport?
 
@@ -820,13 +829,65 @@ class OpenGLRenderer extends DisplayObjectRenderer
 			object.__mask = null;
 			object.__scrollRect = null;
 
-			object.__renderGL(this);
+			__renderDrawable(object);
 
 			object.__mask = cacheMask;
 			object.__scrollRect = cacheScrollRect;
 		}
 
 		__context3D.present();
+	}
+
+	@:noCompletion private function __renderDrawable(object:IBitmapDrawable):Void
+	{
+		if (object == null) return;
+
+		switch (object.__drawableType)
+		{
+			case BITMAP_DATA:
+				Context3DBitmapData.renderDrawable(cast object, this);
+			case STAGE, SPRITE:
+				Context3DDisplayObjectContainer.renderDrawable(cast object, this);
+			case BITMAP:
+				Context3DBitmap.renderDrawable(cast object, this);
+			case SHAPE:
+				Context3DDisplayObject.renderDrawable(cast object, this);
+			case SIMPLE_BUTTON:
+				Context3DSimpleButton.renderDrawable(cast object, this);
+			case TEXT_FIELD:
+				Context3DTextField.renderDrawable(cast object, this);
+			case VIDEO:
+				Context3DVideo.renderDrawable(cast object, this);
+			case TILEMAP:
+				Context3DTilemap.renderDrawable(cast object, this);
+			default:
+		}
+	}
+
+	@:noCompletion private function __renderDrawableMask(object:IBitmapDrawable):Void
+	{
+		if (object == null) return;
+
+		switch (object.__drawableType)
+		{
+			case BITMAP_DATA:
+				Context3DBitmapData.renderDrawableMask(cast object, this);
+			case STAGE, SPRITE:
+				Context3DDisplayObjectContainer.renderDrawableMask(cast object, this);
+			case BITMAP:
+				Context3DBitmap.renderDrawableMask(cast object, this);
+			case SHAPE:
+				Context3DDisplayObject.renderDrawableMask(cast object, this);
+			case SIMPLE_BUTTON:
+				Context3DSimpleButton.renderDrawableMask(cast object, this);
+			case TEXT_FIELD:
+				Context3DTextField.renderDrawableMask(cast object, this);
+			case VIDEO:
+				Context3DVideo.renderDrawableMask(cast object, this);
+			case TILEMAP:
+				Context3DTilemap.renderDrawableMask(cast object, this);
+			default:
+		}
 	}
 
 	@:noCompletion private function __renderFilterPass(source:BitmapData, shader:Shader, smooth:Bool, clear:Bool = true):Void

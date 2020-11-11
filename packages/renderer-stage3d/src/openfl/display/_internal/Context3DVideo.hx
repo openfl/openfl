@@ -92,6 +92,17 @@ class Context3DVideo
 		#end
 	}
 
+	public static function renderDrawable(video:Video, renderer:OpenGLRenderer):Void
+	{
+		Context3DVideo.render(video, renderer);
+		video.__renderEvent(renderer);
+	}
+
+	public static function renderDrawableMask(video:Video, renderer:OpenGLRenderer):Void
+	{
+		Context3DVideo.renderMask(video, renderer);
+	}
+
 	public static function renderMask(video:Video, renderer:OpenGLRenderer):Void
 	{
 		#if (js && html5)
