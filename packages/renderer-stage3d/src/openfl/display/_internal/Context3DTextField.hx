@@ -38,7 +38,7 @@ class Context3DTextField
 			Context3DDisplayObject.render(textField, renderer);
 		}
 
-		textField.__renderEvent(renderer);
+		renderer.__renderEvent(textField);
 	}
 
 	public static function renderDrawableMask(textField:TextField, renderer:OpenGLRenderer):Void

@@ -1,14 +1,6 @@
 package openfl.display;
 
 #if !flash
-import openfl.display._internal.CairoBitmap;
-import openfl.display._internal.CairoDisplayObject;
-import openfl.display._internal.CanvasBitmap;
-import openfl.display._internal.CanvasDisplayObject;
-import openfl.display._internal.Context3DBitmap;
-import openfl.display._internal.Context3DDisplayObject;
-import openfl.display._internal.DOMBitmap;
-import openfl.display._internal.DOMDisplayObject;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 #if (js && html5)

@@ -77,7 +77,7 @@ class Context3DBitmap
 			Context3DBitmap.render(bitmap, renderer);
 		}
 
-		bitmap.__renderEvent(renderer);
+		renderer.__renderEvent(bitmap);
 	}
 
 	public static function renderDrawableMask(bitmap:Bitmap, renderer:OpenGLRenderer):Void

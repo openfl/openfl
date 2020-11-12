@@ -1,9 +1,6 @@
 package openfl.display;
 
 #if !flash
-import openfl.display._internal.CairoGraphics;
-import openfl.display._internal.CanvasGraphics;
-import openfl.display._internal.Context3DShape;
 import openfl.errors.ArgumentError;
 import openfl.errors.RangeError;
 import openfl.errors.TypeError;
@@ -589,24 +586,6 @@ class DisplayObjectContainer extends InteractiveObject
 				}
 			}
 		}
-	}
-
-	@:noCompletion private override function __shouldCacheHardware(value:Null<Bool>):Null<Bool>
-	{
-		if (value == true) return true;
-		value = super.__shouldCacheHardware(value);
-		if (value == true) return true;
-
-		if (__children != null)
-		{
-			for (child in __children)
-			{
-				value = child.__shouldCacheHardware(value);
-				if (value == true) return true;
-			}
-		}
-
-		return value;
 	}
 
 	@:noCompletion private override function __stopAllMovieClips():Void

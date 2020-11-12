@@ -51,7 +51,7 @@ class DOMVideo
 	public static function renderDrawable(video:Video, renderer:DOMRenderer):Void
 	{
 		DOMVideo.render(video, renderer);
-		video.__renderEvent(renderer);
+		renderer.__renderEvent(video);
 	}
 
 	public static function renderDrawableClear(video:Video, renderer:DOMRenderer):Void

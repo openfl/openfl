@@ -1,9 +1,12 @@
 package openfl.display;
 
 #if !flash
+import openfl.display._internal.Context3DGraphics;
 import openfl.display.Bitmap;
+import openfl.display.DisplayObject;
 import openfl.display.Tilemap;
 import openfl.events.EventDispatcher;
+import openfl.events.RenderEvent;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
@@ -20,6 +23,7 @@ import lime.graphics.RenderContextType;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@:access(openfl.display._internal.Context3DGraphics)
 @:access(lime.graphics.ImageBuffer)
 @:access(openfl.display.Bitmap)
 @:access(openfl.display.BitmapData)
@@ -27,6 +31,7 @@ import lime.graphics.RenderContextType;
 @:access(openfl.display.Graphics)
 @:access(openfl.display.Tilemap)
 @:access(openfl.display3D.Context3D)
+@:access(openfl.events.RenderEvent)
 @:access(openfl.filters.BitmapFilter)
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Rectangle)
@@ -94,9 +99,112 @@ class DisplayObjectRenderer extends EventDispatcher
 
 	@:noCompletion private function __render(object:IBitmapDrawable):Void {}
 
+	@:noCompletion private function __renderEvent(displayObject:DisplayObject):Void
+	{
+		var renderer = this;
+		#if lime
+		if (displayObject.__customRenderEvent != null && displayObject.__renderable)
+		{
+			displayObject.__customRenderEvent.allowSmoothing = renderer.__allowSmoothing;
+			displayObject.__customRenderEvent.objectMatrix.copyFrom(displayObject.__renderTransform);
+			displayObject.__customRenderEvent.objectColorTransform.__copyFrom(displayObject.__worldColorTransform);
+			displayObject.__customRenderEvent.renderer = renderer;
+
+			switch (renderer.__type)
+			{
+				case OPENGL:
+					if (!renderer.__cleared) renderer.__clear();
+
+					var renderer:OpenGLRenderer = cast renderer;
+					renderer.setShader(displayObject.__worldShader);
+					renderer.__context3D.__flushGL();
+
+					displayObject.__customRenderEvent.type = RenderEvent.RENDER_OPENGL;
+
+				case CAIRO:
+					displayObject.__customRenderEvent.type = RenderEvent.RENDER_CAIRO;
+
+				case DOM:
+					if (displayObject.stage != null && displayObject.__worldVisible)
+					{
+						displayObject.__customRenderEvent.type = RenderEvent.RENDER_DOM;
+					}
+					else
+					{
+						displayObject.__customRenderEvent.type = RenderEvent.CLEAR_DOM;
+					}
+
+				case CANVAS:
+					displayObject.__customRenderEvent.type = RenderEvent.RENDER_CANVAS;
+
+				default:
+					return;
+			}
+
+			renderer.__setBlendMode(displayObject.__worldBlendMode);
+			renderer.__pushMaskObject(displayObject);
+
+			displayObject.dispatchEvent(displayObject.__customRenderEvent);
+
+			renderer.__popMaskObject(displayObject);
+
+			if (renderer.__type == OPENGL)
+			{
+				var renderer:OpenGLRenderer = cast renderer;
+				renderer.setViewport();
+			}
+		}
+		#end
+	}
+
 	@:noCompletion private function __resize(width:Int, height:Int):Void {}
 
 	@:noCompletion private function __setBlendMode(value:BlendMode):Void {}
+
+	@:noCompletion private function __shouldCacheHardware(displayObject:DisplayObject, value:Null<Bool>):Null<Bool>
+	{
+		if (displayObject == null) return null;
+
+		switch (displayObject.__drawableType)
+		{
+			case SPRITE, STAGE:
+				if (value == true) return true;
+				value = __shouldCacheHardware_DisplayObject(displayObject, value);
+				if (value == true) return true;
+
+				if (displayObject.__children != null)
+				{
+					for (child in displayObject.__children)
+					{
+						value = __shouldCacheHardware_DisplayObject(child, value);
+						if (value == true) return true;
+					}
+				}
+
+				return value;
+
+			case TEXT_FIELD:
+				return value == true ? true : false;
+
+			case TILEMAP:
+				return true;
+
+			default:
+				return __shouldCacheHardware_DisplayObject(displayObject, value);
+		}
+	}
+
+	@:noCompletion private function __shouldCacheHardware_DisplayObject(displayObject:DisplayObject, value:Null<Bool>):Null<Bool>
+	{
+		if (value == true || displayObject.__filters != null) return true;
+
+		if (value == false || (displayObject.__graphics != null && !Context3DGraphics.isCompatible(displayObject.__graphics)))
+		{
+			return false;
+		}
+
+		return null;
+	}
 
 	@:noCompletion private function __updateCacheBitmap(displayObject:DisplayObject, force:Bool):Bool
 	{
@@ -155,7 +263,7 @@ class DisplayObjectRenderer extends EventDispatcher
 				#if !openfl_force_gl_cacheasbitmap
 				if (renderType == OPENGL)
 				{
-					if (#if !openfl_disable_gl_cacheasbitmap displayObject.__shouldCacheHardware(null) == false #else true #end)
+					if (#if !openfl_disable_gl_cacheasbitmap __shouldCacheHardware(displayObject, null) == false #else true #end)
 					{
 						#if (js && html5)
 						renderType = CANVAS;

@@ -184,7 +184,7 @@ class CairoTilemap
 			CairoTilemap.render(tilemap, renderer);
 		}
 
-		tilemap.__renderEvent(renderer);
+		renderer.__renderEvent(tilemap);
 		#end
 	}
 

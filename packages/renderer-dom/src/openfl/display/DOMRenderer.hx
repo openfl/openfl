@@ -329,6 +329,31 @@ class DOMRenderer extends DisplayObjectRenderer
 				DOMVideo.renderDrawable(cast object, this);
 			case TILEMAP:
 				DOMTilemap.renderDrawable(cast object, this);
+			case DOM_ELEMENT:
+				#if (js && html5)
+				var domElement:DOMElement = cast object;
+				if (domElement.stage != null && domElement.__worldVisible && domElement.__renderable)
+				{
+					if (!domElement.__active)
+					{
+						__initializeElement(domElement, domElement.__element);
+						domElement.__active = true;
+					}
+
+					__updateClip(domElement);
+					__applyStyle(domElement, true, true, true);
+				}
+				else
+				{
+					if (domElement.__active)
+					{
+						element.removeChild(domElement.__element);
+						domElement.__active = false;
+					}
+				}
+
+				DOMDisplayObject.renderDrawable(domElement, this);
+				#end
 			default:
 		}
 	}

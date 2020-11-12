@@ -57,7 +57,7 @@ class DOMDisplayObject
 			DOMDisplayObject.render(displayObject, renderer);
 		}
 
-		displayObject.__renderEvent(renderer);
+		renderer.__renderEvent(displayObject);
 	}
 
 	public static function renderDrawableClear(displayObject:DisplayObject, renderer:DOMRenderer):Void

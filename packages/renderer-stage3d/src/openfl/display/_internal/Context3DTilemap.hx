@@ -451,7 +451,7 @@ class Context3DTilemap
 			Context3DTilemap.render(tilemap, renderer);
 		}
 
-		tilemap.__renderEvent(renderer);
+		renderer.__renderEvent(tilemap);
 	}
 
 	public static function renderDrawableMask(tilemap:Tilemap, renderer:OpenGLRenderer):Void

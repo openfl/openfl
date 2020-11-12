@@ -86,7 +86,7 @@ class CairoBitmap
 			CairoBitmap.render(bitmap, renderer);
 		}
 
-		bitmap.__renderEvent(renderer);
+		renderer.__renderEvent(bitmap);
 		#end
 	}
 

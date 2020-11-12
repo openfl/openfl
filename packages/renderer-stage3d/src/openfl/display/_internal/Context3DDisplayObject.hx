@@ -68,7 +68,7 @@ class Context3DDisplayObject
 			Context3DDisplayObject.render(displayObject, renderer);
 		}
 
-		displayObject.__renderEvent(renderer);
+		renderer.__renderEvent(displayObject);
 	}
 
 	public static function renderDrawableMask(displayObject:DisplayObject, renderer:OpenGLRenderer):Void

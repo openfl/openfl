@@ -1,18 +1,6 @@
 package openfl.display;
 
 #if !flash
-import openfl.display._internal.CairoBitmap;
-import openfl.display._internal.CairoDisplayObject;
-import openfl.display._internal.CairoGraphics;
-import openfl.display._internal.CanvasBitmap;
-import openfl.display._internal.CanvasDisplayObject;
-import openfl.display._internal.CanvasGraphics;
-import openfl.display._internal.DOMBitmap;
-import openfl.display._internal.DOMDisplayObject;
-import openfl.display._internal.Context3DBitmap;
-import openfl.display._internal.Context3DDisplayObject;
-import openfl.display._internal.Context3DGraphics;
-import openfl.display._internal.Context3DShape;
 import openfl.display._internal.IBitmapDrawableType;
 import openfl._internal.utils.ObjectPool;
 import openfl._internal.Lib;
@@ -775,63 +763,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		}
 	}
 
-	@:noCompletion private function __renderEvent(renderer:DisplayObjectRenderer):Void
-	{
-		#if lime
-		if (__customRenderEvent != null && __renderable)
-		{
-			__customRenderEvent.allowSmoothing = renderer.__allowSmoothing;
-			__customRenderEvent.objectMatrix.copyFrom(__renderTransform);
-			__customRenderEvent.objectColorTransform.__copyFrom(__worldColorTransform);
-			__customRenderEvent.renderer = renderer;
-
-			switch (renderer.__type)
-			{
-				case OPENGL:
-					if (!renderer.__cleared) renderer.__clear();
-
-					var renderer:OpenGLRenderer = cast renderer;
-					renderer.setShader(__worldShader);
-					renderer.__context3D.__flushGL();
-
-					__customRenderEvent.type = RenderEvent.RENDER_OPENGL;
-
-				case CAIRO:
-					__customRenderEvent.type = RenderEvent.RENDER_CAIRO;
-
-				case DOM:
-					if (stage != null && __worldVisible)
-					{
-						__customRenderEvent.type = RenderEvent.RENDER_DOM;
-					}
-					else
-					{
-						__customRenderEvent.type = RenderEvent.CLEAR_DOM;
-					}
-
-				case CANVAS:
-					__customRenderEvent.type = RenderEvent.RENDER_CANVAS;
-
-				default:
-					return;
-			}
-
-			renderer.__setBlendMode(__worldBlendMode);
-			renderer.__pushMaskObject(this);
-
-			dispatchEvent(__customRenderEvent);
-
-			renderer.__popMaskObject(this);
-
-			if (renderer.__type == OPENGL)
-			{
-				var renderer:OpenGLRenderer = cast renderer;
-				renderer.setViewport();
-			}
-		}
-		#end
-	}
-
 	@:noCompletion private function __setParentRenderDirty():Void
 	{
 		var renderParent = __renderParent != null ? __renderParent : parent;
@@ -870,18 +801,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	@:noCompletion private function __setWorldTransformInvalid():Void
 	{
 		__worldTransformInvalid = true;
-	}
-
-	@:noCompletion private function __shouldCacheHardware(value:Null<Bool>):Null<Bool>
-	{
-		if (value == true || __filters != null) return true;
-
-		if (value == false || (__graphics != null && !Context3DGraphics.isCompatible(__graphics)))
-		{
-			return false;
-		}
-
-		return null;
 	}
 
 	@:noCompletion private function __stopAllMovieClips():Void {}

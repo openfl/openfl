@@ -81,7 +81,7 @@ class DOMTilemap
 			DOMTilemap.render(tilemap, renderer);
 		}
 
-		tilemap.__renderEvent(renderer);
+		renderer.__renderEvent(tilemap);
 	}
 
 	public static function renderDrawableClear(tilemap:Tilemap, renderer:DOMRenderer):Void
