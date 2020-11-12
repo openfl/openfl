@@ -110,7 +110,7 @@ class DOMBitmap
 
 	public static function renderDrawable(bitmap:Bitmap, renderer:DOMRenderer):Void
 	{
-		bitmap.__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
+		renderer.__updateCacheBitmap(bitmap, /*!__worldColorTransform.__isDefault ()*/ false);
 
 		if (bitmap.__cacheBitmap != null && !bitmap.__isCacheBitmapRender)
 		{

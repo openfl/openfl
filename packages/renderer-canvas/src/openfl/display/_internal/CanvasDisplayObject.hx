@@ -50,7 +50,7 @@ class CanvasDisplayObject
 	{
 		if (displayObject.mask == null || (displayObject.mask.width > 0 && displayObject.mask.height > 0))
 		{
-			displayObject.__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
+			renderer.__updateCacheBitmap(displayObject, /*!__worldColorTransform.__isDefault ()*/ false);
 
 			if (displayObject.__cacheBitmap != null && !displayObject.__isCacheBitmapRender)
 			{

@@ -395,7 +395,7 @@ class CairoTextField
 	public static inline function renderDrawable(textField:TextField, renderer:CairoRenderer):Void
 	{
 		#if lime_cairo
-		textField.__updateCacheBitmap(renderer, textField.__dirty);
+		renderer.__updateCacheBitmap(textField, textField.__dirty);
 
 		if (textField.__cacheBitmap != null && !textField.__isCacheBitmapRender)
 		{

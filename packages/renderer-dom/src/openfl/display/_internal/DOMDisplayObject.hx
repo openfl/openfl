@@ -43,7 +43,7 @@ class DOMDisplayObject
 
 	public static function renderDrawable(displayObject:DisplayObject, renderer:DOMRenderer):Void
 	{
-		displayObject.__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
+		renderer.__updateCacheBitmap(displayObject, /*!__worldColorTransform.__isDefault ()*/ false);
 
 		if (displayObject.__cacheBitmap != null && !displayObject.__isCacheBitmapRender)
 		{

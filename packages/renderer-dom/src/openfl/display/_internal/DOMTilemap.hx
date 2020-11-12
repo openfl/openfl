@@ -66,7 +66,7 @@ class DOMTilemap
 
 	public static function renderDrawable(tilemap:Tilemap, renderer:DOMRenderer):Void
 	{
-		tilemap.__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
+		renderer.__updateCacheBitmap(tilemap, /*!__worldColorTransform.__isDefault ()*/ false);
 
 		if (tilemap.__cacheBitmap != null && !tilemap.__isCacheBitmapRender)
 		{

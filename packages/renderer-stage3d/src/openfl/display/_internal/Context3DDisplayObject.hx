@@ -57,7 +57,7 @@ class Context3DDisplayObject
 
 	public static function renderDrawable(displayObject:DisplayObject, renderer:OpenGLRenderer):Void
 	{
-		displayObject.__updateCacheBitmap(renderer, false);
+		renderer.__updateCacheBitmap(displayObject, false);
 
 		if (displayObject.__cacheBitmap != null && !displayObject.__isCacheBitmapRender)
 		{

@@ -66,7 +66,7 @@ class CairoBitmap
 	public static inline function renderDrawable(bitmap:Bitmap, renderer:CairoRenderer):Void
 	{
 		#if lime_cairo
-		bitmap.__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
+		renderer.__updateCacheBitmap(bitmap, /*!__worldColorTransform.__isDefault ()*/ false);
 
 		var __bitmapData = bitmap.__bitmapData;
 		var __cacheBitmap = bitmap.__cacheBitmap;
