@@ -346,7 +346,7 @@ class DOMTextField
 	{
 		#if (js && html5)
 		textField.__domRender = true;
-		textField.__updateCacheBitmap(renderer, textField.__forceCachedBitmapUpdate || /*!__worldColorTransform.__isDefault ()*/ false);
+		renderer.__updateCacheBitmap(textField, textField.__forceCachedBitmapUpdate || /*!__worldColorTransform.__isDefault ()*/ false);
 		textField.__forceCachedBitmapUpdate = false;
 		textField.__domRender = false;
 

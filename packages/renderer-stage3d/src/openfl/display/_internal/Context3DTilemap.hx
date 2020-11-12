@@ -439,7 +439,7 @@ class Context3DTilemap
 
 	public static function renderDrawable(tilemap:Tilemap, renderer:OpenGLRenderer):Void
 	{
-		tilemap.__updateCacheBitmap(renderer, false);
+		renderer.__updateCacheBitmap(tilemap, false);
 
 		if (tilemap.__cacheBitmap != null && !tilemap.__isCacheBitmapRender)
 		{
@@ -456,7 +456,7 @@ class Context3DTilemap
 
 	public static function renderDrawableMask(tilemap:Tilemap, renderer:OpenGLRenderer):Void
 	{
-		// tilemap.__updateCacheBitmap (renderer, false);
+		// renderer.__updateCacheBitmap(tilemap, false);
 
 		// if (tilemap.__cacheBitmap != null && !tilemap.__isCacheBitmapRender) {
 

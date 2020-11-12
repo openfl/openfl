@@ -58,7 +58,7 @@ class CanvasBitmap
 
 	public static function renderDrawable(bitmap:Bitmap, renderer:CanvasRenderer):Void
 	{
-		bitmap.__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
+		renderer.__updateCacheBitmap(bitmap, /*!__worldColorTransform.__isDefault ()*/ false);
 
 		if (bitmap.__bitmapData != null && bitmap.__bitmapData.image != null)
 		{

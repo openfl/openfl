@@ -364,7 +364,7 @@ class CanvasTextField
 
 		if (textField.mask == null || (textField.mask.width > 0 && textField.mask.height > 0))
 		{
-			textField.__updateCacheBitmap(renderer, textField.__dirty);
+			renderer.__updateCacheBitmap(textField, textField.__dirty);
 
 			if (textField.__cacheBitmap != null && !textField.__isCacheBitmapRender)
 			{

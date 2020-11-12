@@ -26,7 +26,7 @@ class Context3DTextField
 
 	public static function renderDrawable(textField:TextField, renderer:OpenGLRenderer):Void
 	{
-		textField.__updateCacheBitmap(renderer, false);
+		renderer.__updateCacheBitmap(textField, false);
 
 		if (textField.__cacheBitmap != null && !textField.__isCacheBitmapRender)
 		{

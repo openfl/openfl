@@ -54,7 +54,7 @@ class CairoDisplayObject
 	public static inline function renderDrawable(displayObject:DisplayObject, renderer:CairoRenderer):Void
 	{
 		#if lime_cairo
-		displayObject.__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
+		renderer.__updateCacheBitmap(displayObject, /*!__worldColorTransform.__isDefault ()*/ false);
 
 		if (displayObject.__cacheBitmap != null && !displayObject.__isCacheBitmapRender)
 		{

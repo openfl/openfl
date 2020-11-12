@@ -60,7 +60,7 @@ class Context3DBitmap
 
 	public static function renderDrawable(bitmap:Bitmap, renderer:OpenGLRenderer):Void
 	{
-		bitmap.__updateCacheBitmap(renderer, false);
+		renderer.__updateCacheBitmap(bitmap, false);
 
 		if (bitmap.__bitmapData != null && bitmap.__bitmapData.image != null)
 		{
