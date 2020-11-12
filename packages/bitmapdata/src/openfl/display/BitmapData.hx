@@ -2199,8 +2199,6 @@ class BitmapData implements IBitmapDrawable
 		#end
 	}
 
-	@:noCompletion private function __renderDOM(renderer:DOMRenderer):Void {}
-
 	@:noCompletion private function __resize(width:Int, height:Int):Void
 	{
 		this.width = width;

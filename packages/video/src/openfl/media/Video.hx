@@ -432,12 +432,6 @@ class Video extends DisplayObject
 		return hit;
 	}
 
-	@:noCompletion private override function __renderDOM(renderer:DOMRenderer):Void
-	{
-		DOMVideo.render(this, renderer);
-		__renderEvent(renderer);
-	}
-
 	// Get & Set Methods
 	@:noCompletion private override function get_height():Float
 	{

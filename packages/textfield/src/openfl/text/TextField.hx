@@ -2006,48 +2006,6 @@ class TextField extends InteractiveObject
 		return false;
 	}
 
-	@:noCompletion private override function __renderDOM(renderer:DOMRenderer):Void
-	{
-		#if (js && html5)
-		__domRender = true;
-		__updateCacheBitmap(renderer, __forceCachedBitmapUpdate || /*!__worldColorTransform.__isDefault ()*/ false);
-		__forceCachedBitmapUpdate = false;
-		__domRender = false;
-
-		if (__cacheBitmap != null && !__isCacheBitmapRender)
-		{
-			__renderDOMClear(renderer);
-			__cacheBitmap.stage = stage;
-
-			DOMBitmap.render(__cacheBitmap, renderer);
-		}
-		else
-		{
-			if (__renderedOnCanvasWhileOnDOM)
-			{
-				__renderedOnCanvasWhileOnDOM = false;
-
-				if (__isHTML && __rawHtmlText != null)
-				{
-					__updateText(__rawHtmlText);
-					__dirty = true;
-					__layoutDirty = true;
-					__setRenderDirty();
-				}
-			}
-
-			DOMTextField.render(this, renderer);
-		}
-
-		__renderEvent(renderer);
-		#end
-	}
-
-	@:noCompletion private override function __renderDOMClear(renderer:DOMRenderer):Void
-	{
-		DOMTextField.clear(this, renderer);
-	}
-
 	@:noCompletion private function __replaceSelectedText(value:String, restrict:Bool = true):Void
 	{
 		if (value == null) value = "";

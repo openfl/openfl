@@ -197,34 +197,6 @@ class SimpleButton extends InteractiveObject
 		return hitTest;
 	}
 
-	@:noCompletion private override function __renderDOM(renderer:DOMRenderer):Void
-	{
-		#if !neko
-		renderer.__pushMaskObject(this);
-
-		for (previousState in __previousStates)
-		{
-			previousState.__renderDOM(renderer);
-		}
-
-		__previousStates.length = 0;
-
-		if (__currentState != null)
-		{
-			if (__currentState.stage != stage)
-			{
-				__currentState.__setStageReference(stage);
-			}
-
-			__currentState.__renderDOM(renderer);
-		}
-
-		renderer.__popMaskObject(this);
-
-		__renderEvent(renderer);
-		#end
-	}
-
 	@:noCompletion private override function __setStageReference(stage:Stage):Void
 	{
 		super.__setStageReference(stage);

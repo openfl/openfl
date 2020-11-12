@@ -10,6 +10,7 @@ import js.html.Element;
 import js.Browser;
 #end
 
+@:access(openfl.display.DisplayObject)
 @:access(openfl.text._internal.TextEngine)
 @:access(openfl.text.TextField)
 @SuppressWarnings("checkstyle:FieldDocComment")
@@ -24,6 +25,11 @@ class DOMTextField
 	public static function clear(textField:TextField, renderer:DOMRenderer):Void
 	{
 		#if (js && html5)
+		if (textField.__cacheBitmap != null)
+		{
+			DOMBitmap.clear(textField.__cacheBitmap, renderer);
+		}
+
 		if (textField.__div != null)
 		{
 			renderer.element.removeChild(textField.__div);
@@ -102,7 +108,7 @@ class DOMTextField
 								}
 
 								textField.__dirty = false;
-								
+
 								textField.dispatchEvent(new TextEvent(TextEvent.TEXT_INPUT, false, false, textField.htmlText));
 							}
 						}, true);
@@ -334,6 +340,48 @@ class DOMTextField
 			clear(textField, renderer);
 		}
 		#end
+	}
+
+	public static function renderDrawable(textField:TextField, renderer:DOMRenderer):Void
+	{
+		#if (js && html5)
+		textField.__domRender = true;
+		textField.__updateCacheBitmap(renderer, textField.__forceCachedBitmapUpdate || /*!__worldColorTransform.__isDefault ()*/ false);
+		textField.__forceCachedBitmapUpdate = false;
+		textField.__domRender = false;
+
+		if (textField.__cacheBitmap != null && !textField.__isCacheBitmapRender)
+		{
+			renderer.__renderDrawableClear(textField);
+			textField.__cacheBitmap.stage = textField.stage;
+
+			DOMBitmap.render(textField.__cacheBitmap, renderer);
+		}
+		else
+		{
+			if (textField.__renderedOnCanvasWhileOnDOM)
+			{
+				textField.__renderedOnCanvasWhileOnDOM = false;
+
+				if (textField.__isHTML && textField.__rawHtmlText != null)
+				{
+					textField.__updateText(textField.__rawHtmlText);
+					textField.__dirty = true;
+					textField.__layoutDirty = true;
+					textField.__setRenderDirty();
+				}
+			}
+
+			DOMTextField.render(textField, renderer);
+		}
+
+		textField.__renderEvent(renderer);
+		#end
+	}
+
+	public static function renderDrawableClear(textField:TextField, renderer:DOMRenderer):Void
+	{
+		DOMTextField.clear(textField, renderer);
 	}
 
 	private static function __getAttributeMatch(regex:EReg):String

@@ -7,6 +7,7 @@ import openfl.display.Tilemap;
 import js.Browser;
 #end
 
+@:access(openfl.display.DisplayObject)
 @:access(openfl.display.TileContainer)
 @:access(openfl.display.Tilemap)
 @:access(openfl.geom.Matrix)
@@ -16,6 +17,11 @@ class DOMTilemap
 	public static function clear(tilemap:Tilemap, renderer:DOMRenderer):Void
 	{
 		#if (js && html5)
+		if (tilemap.__cacheBitmap != null)
+		{
+			DOMBitmap.clear(tilemap.__cacheBitmap, renderer);
+		}
+
 		if (tilemap.__canvas != null)
 		{
 			renderer.element.removeChild(tilemap.__canvas);
@@ -56,5 +62,30 @@ class DOMTilemap
 			clear(tilemap, renderer);
 		}
 		#end
+	}
+
+	public static function renderDrawable(tilemap:Tilemap, renderer:DOMRenderer):Void
+	{
+		tilemap.__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
+
+		if (tilemap.__cacheBitmap != null && !tilemap.__isCacheBitmapRender)
+		{
+			renderer.__renderDrawableClear(tilemap);
+			tilemap.__cacheBitmap.stage = tilemap.stage;
+
+			DOMBitmap.render(tilemap.__cacheBitmap, renderer);
+		}
+		else
+		{
+			DOMDisplayObject.render(tilemap, renderer);
+			DOMTilemap.render(tilemap, renderer);
+		}
+
+		tilemap.__renderEvent(renderer);
+	}
+
+	public static function renderDrawableClear(tilemap:Tilemap, renderer:DOMRenderer):Void
+	{
+		DOMTilemap.clear(tilemap, renderer);
 	}
 }

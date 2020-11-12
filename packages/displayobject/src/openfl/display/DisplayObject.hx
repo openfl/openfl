@@ -776,30 +776,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		}
 	}
 
-	@:noCompletion private function __renderDOM(renderer:DOMRenderer):Void
-	{
-		__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
-
-		if (__cacheBitmap != null && !__isCacheBitmapRender)
-		{
-			__renderDOMClear(renderer);
-			__cacheBitmap.stage = stage;
-
-			DOMBitmap.render(__cacheBitmap, renderer);
-		}
-		else
-		{
-			DOMDisplayObject.render(this, renderer);
-		}
-
-		__renderEvent(renderer);
-	}
-
-	@:noCompletion private function __renderDOMClear(renderer:DOMRenderer):Void
-	{
-		DOMDisplayObject.clear(this, renderer);
-	}
-
 	@:noCompletion private function __renderEvent(renderer:DisplayObjectRenderer):Void
 	{
 		#if lime
@@ -1574,7 +1550,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		{
 			if (renderer.__type == DOM)
 			{
-				__cacheBitmap.__renderDOMClear(cast renderer);
+				var domRenderer:DOMRenderer = cast renderer;
+				domRenderer.__renderDrawableClear(__cacheBitmap);
 			}
 
 			__cacheBitmap = null;
