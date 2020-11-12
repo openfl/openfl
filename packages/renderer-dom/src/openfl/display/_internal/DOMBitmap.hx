@@ -19,6 +19,11 @@ class DOMBitmap
 	public static function clear(bitmap:Bitmap, renderer:DOMRenderer):Void
 	{
 		#if (js && html5)
+		if (bitmap.__cacheBitmap != null)
+		{
+			DOMBitmap.clear(bitmap.__cacheBitmap, renderer);
+		}
+
 		if (bitmap.__image != null)
 		{
 			renderer.element.removeChild(bitmap.__image);
@@ -101,6 +106,31 @@ class DOMBitmap
 		renderer.__updateClip(bitmap);
 		renderer.__applyStyle(bitmap, true, true, true);
 		#end
+	}
+
+	public static function renderDrawable(bitmap:Bitmap, renderer:DOMRenderer):Void
+	{
+		bitmap.__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
+
+		if (bitmap.__cacheBitmap != null && !bitmap.__isCacheBitmapRender)
+		{
+			renderer.__renderDrawableClear(bitmap);
+			bitmap.__cacheBitmap.stage = bitmap.stage;
+
+			DOMBitmap.render(bitmap.__cacheBitmap, renderer);
+		}
+		else
+		{
+			DOMDisplayObject.render(bitmap, renderer);
+			DOMBitmap.render(bitmap, renderer);
+		}
+
+		bitmap.__renderEvent(renderer);
+	}
+
+	public static function renderDrawableClear(bitmap:Bitmap, renderer:DOMRenderer):Void
+	{
+		DOMBitmap.clear(bitmap, renderer);
 	}
 
 	private static function renderImage(bitmap:Bitmap, renderer:DOMRenderer):Void

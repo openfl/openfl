@@ -47,4 +47,15 @@ class DOMVideo
 		}
 		#end
 	}
+
+	public static function renderDrawable(video:Video, renderer:DOMRenderer):Void
+	{
+		DOMVideo.render(video, renderer);
+		video.__renderEvent(renderer);
+	}
+
+	public static function renderDrawableClear(video:Video, renderer:DOMRenderer):Void
+	{
+		DOMDisplayObject.renderDrawableClear(video, renderer);
+	}
 }

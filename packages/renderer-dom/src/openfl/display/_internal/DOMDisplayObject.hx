@@ -40,4 +40,28 @@ class DOMDisplayObject
 		DOMShape.render(displayObject, renderer);
 		#end
 	}
+
+	public static function renderDrawable(displayObject:DisplayObject, renderer:DOMRenderer):Void
+	{
+		displayObject.__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
+
+		if (displayObject.__cacheBitmap != null && !displayObject.__isCacheBitmapRender)
+		{
+			renderer.__renderDrawableClear(displayObject);
+			displayObject.__cacheBitmap.stage = displayObject.stage;
+
+			DOMBitmap.render(displayObject.__cacheBitmap, renderer);
+		}
+		else
+		{
+			DOMDisplayObject.render(displayObject, renderer);
+		}
+
+		displayObject.__renderEvent(renderer);
+	}
+
+	public static function renderDrawableClear(displayObject:DisplayObject, renderer:DOMRenderer):Void
+	{
+		DOMDisplayObject.clear(displayObject, renderer);
+	}
 }
