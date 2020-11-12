@@ -132,33 +132,6 @@ class Bitmap extends DisplayObject
 		return false;
 	}
 
-	@:noCompletion private override function __renderCanvas(renderer:CanvasRenderer):Void
-	{
-		__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
-
-		if (__bitmapData != null && __bitmapData.image != null)
-		{
-			__imageVersion = __bitmapData.image.version;
-		}
-
-		if (__cacheBitmap != null && !__isCacheBitmapRender)
-		{
-			CanvasBitmap.render(__cacheBitmap, renderer);
-		}
-		else
-		{
-			CanvasDisplayObject.render(this, renderer);
-			CanvasBitmap.render(this, renderer);
-		}
-
-		__renderEvent(renderer);
-	}
-
-	@:noCompletion private override function __renderCanvasMask(renderer:CanvasRenderer):Void
-	{
-		renderer.context.rect(0, 0, width, height);
-	}
-
 	@:noCompletion private override function __renderDOM(renderer:DOMRenderer):Void
 	{
 		__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);

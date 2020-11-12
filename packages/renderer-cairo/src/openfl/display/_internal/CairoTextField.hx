@@ -411,5 +411,8 @@ class CairoTextField
 		#end
 	}
 
-	public static inline function renderDrawableMask(tilemap:Tilemap, renderer:CairoRenderer):Void {}
+	public static inline function renderDrawableMask(textField:TextField, renderer:CairoRenderer):Void
+	{
+		CairoDisplayObject.renderDrawableMask(textField, renderer);
+	}
 }

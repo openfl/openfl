@@ -55,4 +55,31 @@ class CanvasBitmap
 		}
 		#end
 	}
+
+	public static function renderDrawable(bitmap:Bitmap, renderer:CanvasRenderer):Void
+	{
+		bitmap.__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
+
+		if (bitmap.__bitmapData != null && bitmap.__bitmapData.image != null)
+		{
+			bitmap.__imageVersion = bitmap.__bitmapData.image.version;
+		}
+
+		if (bitmap.__cacheBitmap != null && !bitmap.__isCacheBitmapRender)
+		{
+			CanvasBitmap.render(bitmap.__cacheBitmap, renderer);
+		}
+		else
+		{
+			CanvasDisplayObject.render(bitmap, renderer);
+			CanvasBitmap.render(bitmap, renderer);
+		}
+
+		bitmap.__renderEvent(renderer);
+	}
+
+	public static function renderDrawableMask(bitmap:Bitmap, renderer:CanvasRenderer):Void
+	{
+		renderer.context.rect(0, 0, bitmap.width, bitmap.height);
+	}
 }

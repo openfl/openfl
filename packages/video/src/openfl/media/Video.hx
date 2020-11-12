@@ -432,12 +432,6 @@ class Video extends DisplayObject
 		return hit;
 	}
 
-	@:noCompletion private override function __renderCanvas(renderer:CanvasRenderer):Void
-	{
-		CanvasVideo.render(this, renderer);
-		__renderEvent(renderer);
-	}
-
 	@:noCompletion private override function __renderDOM(renderer:DOMRenderer):Void
 	{
 		DOMVideo.render(this, renderer);

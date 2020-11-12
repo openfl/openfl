@@ -562,56 +562,6 @@ class DisplayObjectContainer extends InteractiveObject
 		}
 	}
 
-	@:noCompletion private override function __renderCanvas(renderer:CanvasRenderer):Void
-	{
-		__cleanupRemovedChildren();
-
-		if (!__renderable || __worldAlpha <= 0 || (mask != null && (mask.width <= 0 || mask.height <= 0))) return;
-
-		#if !neko
-		super.__renderCanvas(renderer);
-
-		if (__cacheBitmap != null && !__isCacheBitmapRender) return;
-
-		renderer.__pushMaskObject(this);
-
-		if (renderer.__stage != null)
-		{
-			for (child in __children)
-			{
-				child.__renderCanvas(renderer);
-				child.__renderDirty = false;
-			}
-
-			__renderDirty = false;
-		}
-		else
-		{
-			for (child in __children)
-			{
-				child.__renderCanvas(renderer);
-			}
-		}
-
-		renderer.__popMaskObject(this);
-		#end
-	}
-
-	@:noCompletion private override function __renderCanvasMask(renderer:CanvasRenderer):Void
-	{
-		__cleanupRemovedChildren();
-
-		if (__graphics != null)
-		{
-			CanvasGraphics.renderMask(__graphics, renderer);
-		}
-
-		for (child in __children)
-		{
-			child.__renderCanvasMask(renderer);
-		}
-	}
-
 	@:noCompletion private override function __renderDOM(renderer:DOMRenderer):Void
 	{
 		for (orphan in __removedChildren)

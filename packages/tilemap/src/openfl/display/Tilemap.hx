@@ -435,23 +435,6 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	#end
 
 	#if !flash
-	@:noCompletion private override function __renderCanvas(renderer:CanvasRenderer):Void
-	{
-		__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
-
-		if (__cacheBitmap != null && !__isCacheBitmapRender)
-		{
-			CanvasBitmap.render(__cacheBitmap, renderer);
-		}
-		else
-		{
-			CanvasDisplayObject.render(this, renderer);
-			CanvasTilemap.render(this, renderer);
-		}
-
-		__renderEvent(renderer);
-	}
-
 	@:noCompletion private override function __renderDOM(renderer:DOMRenderer):Void
 	{
 		__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
