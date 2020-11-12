@@ -28,9 +28,7 @@ import openfl.Vector;
 #if lime
 import lime._internal.graphics.ImageCanvasUtil; // TODO
 import lime.app.Application;
-import lime.graphics.cairo.CairoFilter;
 import lime.graphics.cairo.CairoImageSurface;
-import lime.graphics.cairo.CairoPattern;
 import lime.graphics.cairo.CairoSurface;
 import lime.graphics.cairo.Cairo;
 import lime.graphics.Image;
