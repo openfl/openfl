@@ -125,7 +125,7 @@ class DOMBitmap
 			DOMBitmap.render(bitmap, renderer);
 		}
 
-		bitmap.__renderEvent(renderer);
+		renderer.__renderEvent(bitmap);
 	}
 
 	public static function renderDrawableClear(bitmap:Bitmap, renderer:DOMRenderer):Void

@@ -95,7 +95,7 @@ class Context3DVideo
 	public static function renderDrawable(video:Video, renderer:OpenGLRenderer):Void
 	{
 		Context3DVideo.render(video, renderer);
-		video.__renderEvent(renderer);
+		renderer.__renderEvent(video);
 	}
 
 	public static function renderDrawableMask(video:Video, renderer:OpenGLRenderer):Void

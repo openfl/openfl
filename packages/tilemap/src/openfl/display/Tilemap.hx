@@ -5,19 +5,7 @@ import openfl.display._internal.FlashTilemap;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 #if !flash
-import openfl.display._internal.CairoBitmap;
-import openfl.display._internal.CairoDisplayObject;
-import openfl.display._internal.CairoTilemap;
-import openfl.display._internal.CanvasBitmap;
-import openfl.display._internal.CanvasDisplayObject;
-import openfl.display._internal.CanvasTilemap;
 import openfl.display._internal.Context3DBuffer;
-import openfl.display._internal.DOMBitmap;
-import openfl.display._internal.DOMDisplayObject;
-import openfl.display._internal.DOMTilemap;
-import openfl.display._internal.Context3DBitmap;
-import openfl.display._internal.Context3DDisplayObject;
-import openfl.display._internal.Context3DTilemap;
 #end
 
 /**
@@ -438,13 +426,6 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	{
 		FlashTilemap.render(this);
 	}
-
-	#if !flash
-	@:noCompletion private override function __shouldCacheHardware(value:Null<Bool>):Null<Bool>
-	{
-		return true;
-	}
-	#end
 
 	// Get & Set Methods
 	#if !flash

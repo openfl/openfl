@@ -2,9 +2,6 @@ package openfl.media;
 
 #if !flash
 import openfl._internal.backend.gl.GLBuffer;
-import openfl.display._internal.CanvasVideo;
-import openfl.display._internal.DOMVideo;
-import openfl.display._internal.Context3DVideo;
 import openfl._internal.utils.Float32Array;
 import openfl._internal.utils.UInt16Array;
 import openfl.display3D.textures.RectangleTexture;

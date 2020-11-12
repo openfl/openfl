@@ -2,17 +2,6 @@ package openfl.text;
 
 #if !flash
 import haxe.Timer;
-import openfl.display._internal.CairoBitmap;
-import openfl.display._internal.CairoDisplayObject;
-import openfl.display._internal.CairoTextField;
-import openfl.display._internal.CanvasBitmap;
-import openfl.display._internal.CanvasDisplayObject;
-import openfl.display._internal.CanvasTextField;
-import openfl.display._internal.Context3DBitmap;
-import openfl.display._internal.Context3DDisplayObject;
-import openfl.display._internal.Context3DTextField;
-import openfl.display._internal.DOMBitmap;
-import openfl.display._internal.DOMTextField;
 import openfl._internal.formats.html.HTMLParser;
 import openfl.text._internal.TextEngine;
 import openfl.text._internal.TextFormatRange;
@@ -2157,11 +2146,6 @@ class TextField extends InteractiveObject
 		__dirty = true;
 		__layoutDirty = true;
 		__setRenderDirty();
-	}
-
-	@:noCompletion private override function __shouldCacheHardware(value:Null<Bool>):Null<Bool>
-	{
-		return value == true ? true : false;
 	}
 
 	@:noCompletion private function __startCursorTimer():Void

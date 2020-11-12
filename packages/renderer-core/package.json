@@ -3,7 +3,8 @@
 	"dependencies": {
 		"@openfl/displayobject": "0.0.0",
 		"@openfl/geom": "0.0.0",
-		"@openfl/graphics": "0.0.0"
+		"@openfl/graphics": "0.0.0",
+		"@openfl/renderer-stage3d": "0.0.0"
 	},
 	"scripts":{
 		"test": "node ../../scripts/run-test.js"

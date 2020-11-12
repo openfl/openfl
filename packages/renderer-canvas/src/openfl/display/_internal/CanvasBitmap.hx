@@ -75,7 +75,7 @@ class CanvasBitmap
 			CanvasBitmap.render(bitmap, renderer);
 		}
 
-		bitmap.__renderEvent(renderer);
+		renderer.__renderEvent(bitmap);
 	}
 
 	public static function renderDrawableMask(bitmap:Bitmap, renderer:CanvasRenderer):Void

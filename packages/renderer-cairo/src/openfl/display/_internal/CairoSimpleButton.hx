@@ -15,7 +15,7 @@ class CairoSimpleButton
 		renderer.__renderDrawable(simpleButton.__currentState);
 		renderer.__popMaskObject(simpleButton);
 
-		simpleButton.__renderEvent(renderer);
+		renderer.__renderEvent(simpleButton);
 	}
 
 	public static inline function renderDrawableMask(simpleButton:SimpleButton, renderer:CairoRenderer):Void

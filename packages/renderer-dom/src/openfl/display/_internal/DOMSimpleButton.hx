@@ -28,7 +28,7 @@ class DOMSimpleButton
 
 		renderer.__popMaskObject(simpleButton);
 
-		simpleButton.__renderEvent(renderer);
+		renderer.__renderEvent(simpleButton);
 		#end
 	}
 

@@ -12,7 +12,7 @@ class CanvasSimpleButton
 		renderer.__renderDrawable(simpleButton.__currentState);
 		renderer.__popMaskObject(simpleButton);
 
-		simpleButton.__renderEvent(renderer);
+		renderer.__renderEvent(simpleButton);
 		#end
 	}
 

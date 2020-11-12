@@ -375,7 +375,7 @@ class DOMTextField
 			DOMTextField.render(textField, renderer);
 		}
 
-		textField.__renderEvent(renderer);
+		renderer.__renderEvent(textField);
 		#end
 	}
 

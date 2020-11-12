@@ -65,7 +65,7 @@ class CairoDisplayObject
 			CairoDisplayObject.render(displayObject, renderer);
 		}
 
-		displayObject.__renderEvent(renderer);
+		renderer.__renderEvent(displayObject);
 		#end
 	}
 

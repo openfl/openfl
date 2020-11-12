@@ -181,7 +181,7 @@ class CanvasTilemap
 			CanvasTilemap.render(tilemap, renderer);
 		}
 
-		tilemap.__renderEvent(renderer);
+		renderer.__renderEvent(tilemap);
 	}
 
 	public static function renderDrawableMask(tilemap:Tilemap, renderer:CanvasRenderer):Void {}

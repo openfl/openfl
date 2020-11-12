@@ -15,36 +15,10 @@ class DOMElement extends #if flash Sprite #else DisplayObject #end
 	{
 		super();
 
+		#if !flash
+		__drawableType = DOM_ELEMENT;
+		#end
 		__element = element;
 	}
-
-	#if !flash
-	@:noCompletion private override function __renderDOM(renderer:DOMRenderer):Void
-	{
-		#if (js && html5)
-		if (stage != null && __worldVisible && __renderable)
-		{
-			if (!__active)
-			{
-				renderer.__initializeElement(this, __element);
-				__active = true;
-			}
-
-			renderer.__updateClip(this);
-			renderer.__applyStyle(this, true, true, true);
-		}
-		else
-		{
-			if (__active)
-			{
-				renderer.element.removeChild(__element);
-				__active = false;
-			}
-		}
-
-		super.__renderDOM(renderer);
-		#end
-	}
-	#end
 }
 #end

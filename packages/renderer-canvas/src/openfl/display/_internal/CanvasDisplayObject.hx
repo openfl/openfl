@@ -62,7 +62,7 @@ class CanvasDisplayObject
 			}
 		}
 
-		displayObject.__renderEvent(renderer);
+		renderer.__renderEvent(displayObject);
 	}
 
 	public static function renderDrawableMask(displayObject:DisplayObject, renderer:CanvasRenderer):Void
