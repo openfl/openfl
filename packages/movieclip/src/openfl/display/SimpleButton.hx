@@ -197,30 +197,6 @@ class SimpleButton extends InteractiveObject
 		return hitTest;
 	}
 
-	@:noCompletion private override function __renderCanvas(renderer:CanvasRenderer):Void
-	{
-		if (!__renderable || __worldAlpha <= 0 || __currentState == null) return;
-
-		#if !neko
-		renderer.__pushMaskObject(this);
-		__currentState.__renderCanvas(renderer);
-		renderer.__popMaskObject(this);
-
-		__renderEvent(renderer);
-		#end
-	}
-
-	@:noCompletion private override function __renderCanvasMask(renderer:CanvasRenderer):Void
-	{
-		// var bounds = Rectangle.__pool.get ();
-		// __getLocalBounds (bounds);
-
-		// renderer.context.rect (bounds.x, bounds.y, bounds.width, bounds.height);
-
-		// Rectangle.__pool.release (bounds);
-		__currentState.__renderCanvasMask(renderer);
-	}
-
 	@:noCompletion private override function __renderDOM(renderer:DOMRenderer):Void
 	{
 		#if !neko

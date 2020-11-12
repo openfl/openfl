@@ -166,4 +166,23 @@ class CanvasTilemap
 		Matrix.__pool.release(tileTransform);
 		#end
 	}
+
+	public static function renderDrawable(tilemap:Tilemap, renderer:CanvasRenderer):Void
+	{
+		tilemap.__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
+
+		if (tilemap.__cacheBitmap != null && !tilemap.__isCacheBitmapRender)
+		{
+			CanvasBitmap.render(tilemap.__cacheBitmap, renderer);
+		}
+		else
+		{
+			CanvasDisplayObject.render(tilemap, renderer);
+			CanvasTilemap.render(tilemap, renderer);
+		}
+
+		tilemap.__renderEvent(renderer);
+	}
+
+	public static function renderDrawableMask(tilemap:Tilemap, renderer:CanvasRenderer):Void {}
 }

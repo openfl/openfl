@@ -776,33 +776,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		}
 	}
 
-	@:noCompletion private function __renderCanvas(renderer:CanvasRenderer):Void
-	{
-		if (mask == null || (mask.width > 0 && mask.height > 0))
-		{
-			__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);
-
-			if (__cacheBitmap != null && !__isCacheBitmapRender)
-			{
-				CanvasBitmap.render(__cacheBitmap, renderer);
-			}
-			else
-			{
-				CanvasDisplayObject.render(this, renderer);
-			}
-		}
-
-		__renderEvent(renderer);
-	}
-
-	@:noCompletion private function __renderCanvasMask(renderer:CanvasRenderer):Void
-	{
-		if (__graphics != null)
-		{
-			CanvasGraphics.renderMask(__graphics, renderer);
-		}
-	}
-
 	@:noCompletion private function __renderDOM(renderer:DOMRenderer):Void
 	{
 		__updateCacheBitmap(renderer, /*!__worldColorTransform.__isDefault ()*/ false);

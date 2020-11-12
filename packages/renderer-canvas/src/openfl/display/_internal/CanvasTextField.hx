@@ -1,5 +1,6 @@
 package openfl.display._internal;
 
+import openfl._internal.formats.html.HTMLParser;
 import openfl.text._internal.TextEngine;
 import openfl.display.BitmapData;
 import openfl.display.CanvasRenderer;
@@ -7,6 +8,7 @@ import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
+import openfl.text.TextFieldType;
 #if (js && html5)
 import js.html.CanvasRenderingContext2D;
 import js.Browser;
@@ -334,5 +336,69 @@ class CanvasTextField
 			}
 		}
 		#end
+	}
+
+	public static function renderDrawable(textField:TextField, renderer:CanvasRenderer):Void
+	{
+		#if (js && html5)
+		// TODO: Better DOM workaround on cacheAsBitmap
+
+		if (renderer.__isDOM && !textField.__renderedOnCanvasWhileOnDOM)
+		{
+			textField.__renderedOnCanvasWhileOnDOM = true;
+
+			if (textField.type == TextFieldType.INPUT)
+			{
+				textField.replaceText(0, textField.__text.length, textField.__text);
+			}
+
+			if (textField.__isHTML)
+			{
+				textField.__updateText(HTMLParser.parse(textField.__text, textField.__textFormat, textField.__textEngine.textFormatRanges));
+			}
+
+			textField.__dirty = true;
+			textField.__layoutDirty = true;
+			textField.__setRenderDirty();
+		}
+
+		if (textField.mask == null || (textField.mask.width > 0 && textField.mask.height > 0))
+		{
+			textField.__updateCacheBitmap(renderer, textField.__dirty);
+
+			if (textField.__cacheBitmap != null && !textField.__isCacheBitmapRender)
+			{
+				CanvasBitmap.render(textField.__cacheBitmap, renderer);
+			}
+			else
+			{
+				CanvasTextField.render(textField, renderer, textField.__worldTransform);
+
+				var smoothingEnabled = false;
+
+				if (textField.__textEngine.antiAliasType == ADVANCED && textField.__textEngine.gridFitType == PIXEL)
+				{
+					smoothingEnabled = renderer.context.imageSmoothingEnabled;
+
+					if (smoothingEnabled)
+					{
+						renderer.context.imageSmoothingEnabled = false;
+					}
+				}
+
+				CanvasDisplayObject.render(textField, renderer);
+
+				if (smoothingEnabled)
+				{
+					renderer.context.imageSmoothingEnabled = true;
+				}
+			}
+		}
+		#end
+	}
+
+	public static function renderDrawableMask(textField:TextField, renderer:CanvasRenderer):Void
+	{
+		CanvasDisplayObject.renderDrawableMask(textField, renderer);
 	}
 }

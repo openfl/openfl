@@ -1,6 +1,14 @@
 package openfl.display;
 
 #if !flash
+import openfl.display._internal.CanvasBitmap;
+import openfl.display._internal.CanvasBitmapData;
+import openfl.display._internal.CanvasDisplayObject;
+import openfl.display._internal.CanvasDisplayObjectContainer;
+import openfl.display._internal.CanvasSimpleButton;
+import openfl.display._internal.CanvasTextField;
+import openfl.display._internal.CanvasTilemap;
+import openfl.display._internal.CanvasVideo;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 #if lime
@@ -146,7 +154,7 @@ class CanvasRenderer extends DisplayObjectRenderer
 		setTransform(mask.__renderTransform, context);
 
 		context.beginPath();
-		mask.__renderCanvasMask(this);
+		__renderDrawableMask(mask);
 		context.closePath();
 
 		context.clip();
@@ -178,7 +186,59 @@ class CanvasRenderer extends DisplayObjectRenderer
 
 	@:noCompletion private override function __render(object:IBitmapDrawable):Void
 	{
-		object.__renderCanvas(this);
+		__renderDrawable(object);
+	}
+
+	@:noCompletion private function __renderDrawable(object:IBitmapDrawable):Void
+	{
+		if (object == null) return;
+
+		switch (object.__drawableType)
+		{
+			case BITMAP_DATA:
+				CanvasBitmapData.renderDrawable(cast object, this);
+			case STAGE, SPRITE:
+				CanvasDisplayObjectContainer.renderDrawable(cast object, this);
+			case BITMAP:
+				CanvasBitmap.renderDrawable(cast object, this);
+			case SHAPE:
+				CanvasDisplayObject.renderDrawable(cast object, this);
+			case SIMPLE_BUTTON:
+				CanvasSimpleButton.renderDrawable(cast object, this);
+			case TEXT_FIELD:
+				CanvasTextField.renderDrawable(cast object, this);
+			case VIDEO:
+				CanvasVideo.renderDrawable(cast object, this);
+			case TILEMAP:
+				CanvasTilemap.renderDrawable(cast object, this);
+			default:
+		}
+	}
+
+	@:noCompletion private function __renderDrawableMask(object:IBitmapDrawable):Void
+	{
+		if (object == null) return;
+
+		switch (object.__drawableType)
+		{
+			case BITMAP_DATA:
+				CanvasBitmapData.renderDrawableMask(cast object, this);
+			case STAGE, SPRITE:
+				CanvasDisplayObjectContainer.renderDrawableMask(cast object, this);
+			case BITMAP:
+				CanvasBitmap.renderDrawableMask(cast object, this);
+			case SHAPE:
+				CanvasDisplayObject.renderDrawableMask(cast object, this);
+			case SIMPLE_BUTTON:
+				CanvasSimpleButton.renderDrawableMask(cast object, this);
+			case TEXT_FIELD:
+				CanvasTextField.renderDrawableMask(cast object, this);
+			case VIDEO:
+				CanvasVideo.renderDrawableMask(cast object, this);
+			case TILEMAP:
+				CanvasTilemap.renderDrawableMask(cast object, this);
+			default:
+		}
 	}
 
 	@:noCompletion private override function __setBlendMode(value:BlendMode):Void

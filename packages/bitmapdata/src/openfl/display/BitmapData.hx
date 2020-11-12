@@ -2199,27 +2199,6 @@ class BitmapData implements IBitmapDrawable
 		#end
 	}
 
-	@:noCompletion private function __renderCanvas(renderer:CanvasRenderer):Void
-	{
-		#if (js && html5)
-		if (!readable) return;
-
-		if (image.type == DATA)
-		{
-			ImageCanvasUtil.convertToCanvas(image);
-		}
-
-		var context = renderer.context;
-		context.globalAlpha = 1;
-
-		renderer.setTransform(__renderTransform, context);
-
-		context.drawImage(image.src, 0, 0, image.width, image.height);
-		#end
-	}
-
-	@:noCompletion private function __renderCanvasMask(renderer:CanvasRenderer):Void {}
-
 	@:noCompletion private function __renderDOM(renderer:DOMRenderer):Void {}
 
 	@:noCompletion private function __resize(width:Int, height:Int):Void

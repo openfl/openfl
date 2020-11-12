@@ -53,4 +53,12 @@ class CanvasVideo
 		}
 		#end
 	}
+
+	public static function renderDrawable(video:Video, renderer:CanvasRenderer):Void
+	{
+		CanvasVideo.render(video, renderer);
+		video.__renderEvent(renderer);
+	}
+
+	public static function renderDrawableMask(video:Video, renderer:CanvasRenderer):Void {}
 }

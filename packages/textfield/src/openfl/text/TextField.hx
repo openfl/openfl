@@ -2006,65 +2006,6 @@ class TextField extends InteractiveObject
 		return false;
 	}
 
-	@:noCompletion private override function __renderCanvas(renderer:CanvasRenderer):Void
-	{
-		#if (js && html5)
-		// TODO: Better DOM workaround on cacheAsBitmap
-
-		if (renderer.__isDOM && !__renderedOnCanvasWhileOnDOM)
-		{
-			__renderedOnCanvasWhileOnDOM = true;
-
-			if (type == TextFieldType.INPUT)
-			{
-				replaceText(0, __text.length, __text);
-			}
-
-			if (__isHTML)
-			{
-				__updateText(HTMLParser.parse(__text, __textFormat, __textEngine.textFormatRanges));
-			}
-
-			__dirty = true;
-			__layoutDirty = true;
-			__setRenderDirty();
-		}
-
-		if (mask == null || (mask.width > 0 && mask.height > 0))
-		{
-			__updateCacheBitmap(renderer, __dirty);
-
-			if (__cacheBitmap != null && !__isCacheBitmapRender)
-			{
-				CanvasBitmap.render(__cacheBitmap, renderer);
-			}
-			else
-			{
-				CanvasTextField.render(this, renderer, __worldTransform);
-
-				var smoothingEnabled = false;
-
-				if (__textEngine.antiAliasType == ADVANCED && __textEngine.gridFitType == PIXEL)
-				{
-					smoothingEnabled = renderer.context.imageSmoothingEnabled;
-
-					if (smoothingEnabled)
-					{
-						renderer.context.imageSmoothingEnabled = false;
-					}
-				}
-
-				CanvasDisplayObject.render(this, renderer);
-
-				if (smoothingEnabled)
-				{
-					renderer.context.imageSmoothingEnabled = true;
-				}
-			}
-		}
-		#end
-	}
-
 	@:noCompletion private override function __renderDOM(renderer:DOMRenderer):Void
 	{
 		#if (js && html5)
