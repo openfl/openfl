@@ -1789,8 +1789,8 @@ class TextEngine
 		}
 		else
 		{
-			var tempHeight = 0.0;
 			var ret = lineHeights.length;
+			var tempHeight = (lineLeadings.length == ret) ? -lineLeadings[ret - 1] : 0.0;
 
 			for (i in scrollV - 1...lineHeights.length)
 			{
