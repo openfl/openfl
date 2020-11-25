@@ -1790,6 +1790,7 @@ class TextEngine
 		else
 		{
 			var ret = lineHeights.length;
+			// TODO: update for loop with leading checks, remove below line. Leading of lineIndex == bottomScroll is ignored
 			var tempHeight = (lineLeadings.length == ret) ? -lineLeadings[ret - 1] : 0.0;
 
 			for (i in scrollV - 1...lineHeights.length)
@@ -1821,6 +1822,7 @@ class TextEngine
 		{
 			var i = numLines - 1, tempHeight = 0.0;
 			var j = i;
+			// TODO: update while loop with leading checks. Leading of lineIndex == bottomScroll is ignored
 
 			while (i >= 0)
 			{
