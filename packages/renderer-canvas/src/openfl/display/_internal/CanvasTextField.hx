@@ -31,7 +31,7 @@ class CanvasTextField
 	{
 		#if (js && html5)
 		var textEngine = textField.__textEngine;
-		var bounds = (textEngine.background || textEngine.border) ? textEngine.bounds : textEngine.textBounds;
+		var bounds = textEngine.bounds;
 		var graphics = textField.__graphics;
 
 		if (textField.__dirty)
