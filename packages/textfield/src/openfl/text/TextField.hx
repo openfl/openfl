@@ -1426,7 +1426,7 @@ class TextField extends InteractiveObject
 		@throws RangeError The `beginIndex` or `endIndex`
 						   specified is out of range.
 	**/
-	public function setTextFormat(format:TextFormat, beginIndex:Int = 0, endIndex:Int = 0):Void
+	public function setTextFormat(format:TextFormat, beginIndex:Int = -1, endIndex:Int = -1):Void
 	{
 		var max = text.length;
 		var range;
