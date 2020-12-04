@@ -32,7 +32,7 @@ class CairoTextField
 	{
 		#if lime_cairo
 		var textEngine = textField.__textEngine;
-		var bounds = (textEngine.background || textEngine.border) ? textEngine.bounds : textEngine.textBounds;
+		var bounds = textEngine.bounds;
 		var graphics = textField.__graphics;
 		var cairo = graphics.__cairo;
 
