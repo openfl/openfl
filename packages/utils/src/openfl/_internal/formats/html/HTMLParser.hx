@@ -30,9 +30,6 @@ class HTMLParser
 	public static function parse(value:String, textFormat:TextFormat, textFormatRanges:Vector<TextFormatRange>):String
 	{
 		value = __regexBreakTag.replace(value, "\n");
-		value = __regexEntities[0].replace(value, "\"");
-		value = __regexEntities[1].replace(value, "'");
-		value = __regexEntities[2].replace(value, "&");
 		value = __regexEntities[5].replace(value, " ");
 
 		// crude solution
@@ -41,15 +38,12 @@ class HTMLParser
 
 		if (segments.length == 1)
 		{
-			value = __regexHTMLTag.replace(value, "");
+			value = StringTools.htmlUnescape (__regexHTMLTag.replace(value, ""));
 
 			if (textFormatRanges.length > 1)
 			{
 				textFormatRanges.splice(1, textFormatRanges.length - 1);
 			}
-
-			value = __regexEntities[3].replace(value, "<");
-			value = __regexEntities[4].replace(value, ">");
 
 			var range = textFormatRanges[0];
 			range.format = textFormat;
@@ -64,14 +58,6 @@ class HTMLParser
 
 			value = "";
 			var segment;
-
-			for (i in 0...segments.length)
-			{
-				segment = segments[i];
-				segment = __regexEntities[3].replace(segment, "<");
-				segment = __regexEntities[4].replace(segment, ">");
-				segments[i] = segment;
-			}
 
 			var formatStack = [textFormat.clone()];
 			var tagStack = [];
@@ -110,7 +96,7 @@ class HTMLParser
 
 					if (start < segment.length)
 					{
-						sub = segment.substr(start);
+						sub = StringTools.htmlUnescape (segment.substr(start));
 						textFormatRanges.push(new TextFormatRange(format, value.length, value.length + sub.length));
 						value += sub;
 						noLineBreak = false;
@@ -223,7 +209,7 @@ class HTMLParser
 
 						if (start < segment.length)
 						{
-							sub = segment.substring(start);
+							sub = StringTools.htmlUnescape (segment.substring(start));
 							textFormatRanges.push(new TextFormatRange(format, value.length, value.length + sub.length));
 							value += sub;
 							noLineBreak = false;
@@ -231,8 +217,9 @@ class HTMLParser
 					}
 					else
 					{
-						textFormatRanges.push(new TextFormatRange(format, value.length, value.length + segment.length));
-						value += segment;
+						sub = StringTools.htmlUnescape (segment);
+						textFormatRanges.push(new TextFormatRange(format, value.length, value.length + sub.length));
+						value += sub;
 						noLineBreak = false;
 					}
 				}
