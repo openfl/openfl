@@ -1371,14 +1371,16 @@ class TextField extends InteractiveObject
 	**/
 	public function setSelection(beginIndex:Int, endIndex:Int):Void
 	{
-		__selectionIndex = beginIndex;
-		__caretIndex = endIndex;
-
 		__updateScrollV();
 		__updateScrollH();
+		
+		__selectionIndex = beginIndex;
+		__caretIndex = endIndex;		
 
-		__stopCursorTimer();
-		__startCursorTimer();
+		if(stage!=null && stage.focus == this){
+			__stopCursorTimer();
+			__startCursorTimer();
+		}
 	}
 
 	/**
