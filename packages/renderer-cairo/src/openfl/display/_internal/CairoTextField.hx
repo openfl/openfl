@@ -32,10 +32,12 @@ class CairoTextField
 	{
 		#if lime_cairo
 		var textEngine = textField.__textEngine;
-		var bounds = (textEngine.background || textEngine.border) ? textEngine.bounds : textEngine.textBounds;
+		var useTextBounds = !(textEngine.background || textEngine.border);
+		var bounds = useTextBounds ? textEngine.textBounds : textEngine.bounds;
 		var graphics = textField.__graphics;
 		var cairo = graphics.__cairo;
-
+		var cursorOffsetX = 0.0;
+		
 		if (textField.__dirty)
 		{
 			textField.__updateLayout();
@@ -45,14 +47,14 @@ class CairoTextField
 				graphics.__bounds = new Rectangle();
 			}
 			
-			//Seems a bit janky. There might be a better way of handling this!
+			//Seems a bit janky. There might be a better way of handling this!			
 			if (textField.text.length == 0)
 			{
 				var boundsWidth = textEngine.bounds.width - 4;
 				var align = textField.defaultTextFormat.align;
-				var cursorOffsetX = (align == LEFT) ? 0 : (align == RIGHT) ? boundsWidth : boundsWidth / 2;
+				cursorOffsetX = (align == LEFT) ? 0 : (align == RIGHT) ? boundsWidth : boundsWidth / 2;
 
-				bounds.x = cursorOffsetX;
+				if(useTextBounds) bounds.x = cursorOffsetX;
 			}
 				
 			graphics.__bounds.copyFrom(bounds);
@@ -371,7 +373,7 @@ class CairoTextField
 		}
 		else if (textField.__caretIndex > -1 && textEngine.selectable && textField.__showCursor)
 		{
-			var scrollX = -textField.scrollH;
+			var scrollX = -textField.scrollH + (useTextBounds ? 0 : cursorOffsetX);
 			var scrollY = 0.0;
 
 			for (i in 0...textField.scrollV - 1)
