@@ -31,8 +31,10 @@ class CanvasTextField
 	{
 		#if (js && html5)
 		var textEngine = textField.__textEngine;
-		var bounds = (textEngine.background || textEngine.border) ? textEngine.bounds : textEngine.textBounds;
+		var useTextBounds = !(textEngine.background || textEngine.border);
+		var bounds = useTextBounds ? textEngine.textBounds : textEngine.bounds;
 		var graphics = textField.__graphics;
+		var cursorOffsetX = 0.0;
 
 		if (textField.__dirty)
 		{
@@ -48,7 +50,7 @@ class CanvasTextField
 			{
 				var boundsWidth = textEngine.bounds.width - 4;
 				var align = textField.defaultTextFormat.align;
-				var cursorOffsetX = (align == LEFT) ? 0 : (align == RIGHT) ? boundsWidth : boundsWidth / 2;
+				cursorOffsetX = (align == LEFT) ? 0 : (align == RIGHT) ? boundsWidth : boundsWidth / 2;
 
 				bounds.x = cursorOffsetX;
 			}
@@ -320,7 +322,7 @@ class CanvasTextField
 
 					if (textField.__caretIndex > -1 && textEngine.selectable && textField.__showCursor)
 					{
-						var scrollX = -textField.scrollH;
+						var scrollX = -textField.scrollH + (useTextBounds ? 0 : cursorOffsetX);
 						var scrollY = 0.0;
 
 						for (i in 0...textField.scrollV - 1)
