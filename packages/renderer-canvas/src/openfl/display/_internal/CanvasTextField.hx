@@ -42,6 +42,16 @@ class CanvasTextField
 			{
 				graphics.__bounds = new Rectangle();
 			}
+			
+			//Seems a bit janky. There might be a better way of handling this!
+			if (textField.text.length == 0)
+			{
+				var boundsWidth = textEngine.bounds.width - 4;
+				var align = textField.defaultTextFormat.align;
+				var cursorOffsetX = (align == LEFT) ? 0 : (align == RIGHT) ? boundsWidth : boundsWidth / 2;
+
+				bounds.x = cursorOffsetX;
+			}
 
 			graphics.__bounds.copyFrom(bounds);
 		}
