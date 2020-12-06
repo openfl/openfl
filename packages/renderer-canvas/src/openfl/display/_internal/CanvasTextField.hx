@@ -52,7 +52,7 @@ class CanvasTextField
 				var align = textField.defaultTextFormat.align;
 				cursorOffsetX = (align == LEFT) ? 0 : (align == RIGHT) ? boundsWidth : boundsWidth / 2;
 
-				bounds.x = cursorOffsetX;
+				if(useTextBounds) bounds.x = cursorOffsetX;
 			}
 
 			graphics.__bounds.copyFrom(bounds);
