@@ -73,6 +73,7 @@ class CairoTextField
 				}
 				if (useTextBounds)
 				{
+					bounds = textEngine.bounds;
 					bounds.x = cursorOffsetX;
 				}
 			}
