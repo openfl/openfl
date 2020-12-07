@@ -685,6 +685,7 @@ class TextField extends InteractiveObject
 	@:noCompletion private var __htmlText:UTF8String;
 	@:noCompletion private var __textEngine:TextEngine;
 	@:noCompletion private var __textFormat:TextFormat;
+	@:noCompletion private var __mouseDragVCounter:Int = 0;
 	#if (js && html5)
 	@:noCompletion private var __div:DivElement;
 	@:noCompletion private var __renderedOnCanvasWhileOnDOM:Bool = false;
@@ -2344,7 +2345,34 @@ class TextField extends InteractiveObject
 			scrollV = scrollV;
 		}
 	}
-
+			
+	 @:noCompletion private function __updateMouseDrag():Void{
+			if (mouseX > this.width - 1)
+			{
+				scrollH += Std.int(Math.max(Math.min((mouseX - this.width) * .1, 10),  1));
+			}
+			else if (mouseX < 1) 		
+			{				
+				scrollH -= Std.int(Math.max(Math.min(mouseX * -.1, 10), 1));		
+			}
+			
+			__mouseScrollVCounter++;
+			
+			if (__mouseScrollVCounter > stage.frameRate / 10)
+			{
+				if (mouseY > this.height - 2)
+				{
+					scrollV += Std.int(Math.max(Math.min((mouseY - this.height) * .03, 5), 1));
+				}
+				else if (mouseY < 2) 		
+				{				
+					scrollV -= Std.int(Math.max(Math.min(mouseY * -.03, 5), 1));		
+				}
+				__mouseScrollVCounter = 0;
+			}
+			stage_onMouseMove(null);
+	}
+			
 	@:noCompletion private function __updateText(value:String):Void
 	{
 		#if (js && html5)
@@ -3043,7 +3071,8 @@ class TextField extends InteractiveObject
 	@:noCompletion private function stage_onMouseUp(event:MouseEvent):Void
 	{
 		if (stage == null) return;
-
+		
+		stage.addEventListener(Event.ENTER_FRAME, this_onEnterFrame);
 		stage.removeEventListener(MouseEvent.MOUSE_MOVE, stage_onMouseMove);
 		stage.removeEventListener(MouseEvent.MOUSE_UP, stage_onMouseUp);
 
@@ -3078,7 +3107,12 @@ class TextField extends InteractiveObject
 			}
 		}
 	}
-
+	
+	@:noCompletion private function this_onEnterFrame(e:Event):Void{
+		__updateMouseDrag();
+		//can we use the render loop instead?
+	}
+		
 	@:noCompletion private function this_onAddedToStage(event:Event):Void
 	{
 		this_onFocusIn(null);
@@ -3139,7 +3173,8 @@ class TextField extends InteractiveObject
 	@:noCompletion private function this_onMouseDown(event:MouseEvent):Void
 	{
 		if (!selectable && type != INPUT) return;
-
+		
+		
 		__updateLayout();
 
 		__caretIndex = __getPosition(mouseX + scrollH, mouseY);
@@ -3150,7 +3185,8 @@ class TextField extends InteractiveObject
 			__dirty = true;
 			__setRenderDirty();
 		}
-
+		
+		stage.addEventListener(Event.ENTER_FRAME, this_onEnterFrame);
 		stage.addEventListener(MouseEvent.MOUSE_MOVE, stage_onMouseMove);
 		stage.addEventListener(MouseEvent.MOUSE_UP, stage_onMouseUp);
 	}
