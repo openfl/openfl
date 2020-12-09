@@ -864,6 +864,7 @@ class TextField extends InteractiveObject
 		__layoutDirty = true;
 		__setRenderDirty();
 
+		__textEngine.placementIndex = __text.length;
 		__updateText(__text + text);
 
 		__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __text.length;
@@ -2039,6 +2040,7 @@ class TextField extends InteractiveObject
 			}
 		}
 
+		__textEngine.placementIndex = 0; // TODO: temporary, should be beginIndex
 		__updateText(__text.substring(0, beginIndex) + newText + __text.substring(endIndex));
 
 		var offset = newText.length - (endIndex - beginIndex);
@@ -2607,6 +2609,7 @@ class TextField extends InteractiveObject
 		}
 
 		__isHTML = true;
+		__textEngine.placementIndex = 0;
 
 		#if (js && html5)
 		__rawHtmlText = value;
@@ -2871,6 +2874,7 @@ class TextField extends InteractiveObject
 		range.end = utfValue.length;
 
 		__isHTML = false;
+		__textEngine.placementIndex = 0;
 
 		__updateText(value);
 		setSelection(0, 0);

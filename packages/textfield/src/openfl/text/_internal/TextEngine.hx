@@ -67,6 +67,7 @@ class TextEngine
 	public var maxScrollV(get, null):Int;
 	public var multiline:Bool;
 	public var numLines(default, null):Int;
+	public var placementIndex:Int;
 	public var restrict(default, set):UTF8String;
 	public var scrollH:Int;
 	@:isVar public var scrollV(get, set):Int;
@@ -124,6 +125,7 @@ class TextEngine
 		maxChars = 0;
 		multiline = false;
 		numLines = 1;
+		placementIndex = 0;
 		sharpness = 0;
 		scrollH = 0;
 		scrollV = 1;
@@ -737,7 +739,7 @@ class TextEngine
 
 	private function getLayoutGroups():Void
 	{
-		layoutGroups.length = 0;
+		if (placementIndex <= 0) layoutGroups.length = 0;
 
 		if (text == null || text == "") return;
 
@@ -767,8 +769,8 @@ class TextEngine
 		var widthValue = 0.0, heightValue = 0, maxHeightValue = 0;
 		var previousSpaceIndex = -2; // -1 equals not found, -2 saves extra comparison in `breakIndex == previousSpaceIndex`
 		var previousBreakIndex = -1;
-		var spaceIndex = text.indexOf(" ");
-		var breakIndex = getLineBreakIndex();
+		var spaceIndex = text.indexOf(" ", placementIndex);
+		var breakIndex = getLineBreakIndex(placementIndex);
 
 		var offsetX = 0.0;
 		var offsetY = 0.0;
@@ -1279,6 +1281,22 @@ class TextEngine
 			}
 
 			placeFormattedText(endIndex);
+		}
+		
+		if (placementIndex > 0) {
+			// TODO: confirm all
+			rangeIndex = textFormatRanges.length - 2;
+			textIndex = placementIndex;
+			
+			layoutGroup = layoutGroups[layoutGroups.length - 1];
+			offsetX = layoutGroup.offsetX + layoutGroup.width - GUTTER;
+			offsetY = layoutGroup.offsetY - GUTTER;
+			lineIndex = layoutGroup.lineIndex;
+			maxAscent = layoutGroup.ascent;
+			maxHeightValue = Std.int(layoutGroup.height);
+			// leading = layoutGroup.leading; // TODO: if maxLeading is necessary
+			
+			// TODO: more?
 		}
 
 		nextFormatRange();
