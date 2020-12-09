@@ -1577,15 +1577,15 @@ class TextEngine
 		// if final char is a line break, create an empty layoutGroup for it
 		if (previousBreakIndex == textIndex - 2 && previousBreakIndex > -1)
 		{
-			nextLayoutGroup(textIndex, textIndex);
+			nextLayoutGroup(textIndex - 1, textIndex - 1);
 
 			layoutGroup.positions = [];
 			layoutGroup.ascent = ascent;
 			layoutGroup.descent = descent;
 			layoutGroup.leading = leading;
-			layoutGroup.lineIndex = lineIndex;
+			layoutGroup.lineIndex = lineIndex - 1; // undo final alignBaseline
 			layoutGroup.offsetX = getBaseX(); // TODO: double check it doesn't default to GUTTER or something
-			layoutGroup.offsetY = offsetY + GUTTER;
+			layoutGroup.offsetY = offsetY + GUTTER - heightValue; // undo final alignBaseline
 			layoutGroup.width = 0;
 			layoutGroup.height = heightValue;
 		}
