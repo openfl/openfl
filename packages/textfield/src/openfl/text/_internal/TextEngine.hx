@@ -1319,27 +1319,6 @@ class TextEngine
 				else layoutGroup = lg;
 			}
 			
-			if (placementIndex < layoutGroups[layoutGroups.length - 1].endIndex)
-			{
-				// if we need to interrupt the existing layout groups
-				//trace(layoutGroups.length);
-				//trace(layoutGroup.startIndex, layoutGroup.endIndex);
-				layoutGroups.length = layoutGroups.indexOf(layoutGroup) + 1;
-				
-				var gp;
-				while (layoutGroup.endIndex > placementIndex)
-				{
-					gp = layoutGroup.positions.pop();
-					if (#if (js && html5) gp #else gp.advance.x #end > 0.0) layoutGroup.endIndex--;
-				}
-				//trace(layoutGroups.length);
-				//trace(layoutGroup.startIndex, layoutGroup.endIndex);
-				
-				layoutGroup.width = getPositionsWidth(layoutGroup.positions);
-			}
-			
-			// TODO: need abl or something here in case a larger height/ascent format was deleted
-			
 			for (lineBreak in lineBreaks)
 			{
 				if (lineBreak < placementIndex) previousBreakIndex = placementIndex;
@@ -1353,7 +1332,25 @@ class TextEngine
 				space = text.indexOf(" ", space + 1);
 			}
 			
+			if (previousSpaceIndex + 1 > previousBreakIndex) placementIndex = previousSpaceIndex + 1;
 			textIndex = placementIndex;
+			
+			if (placementIndex < layoutGroups[layoutGroups.length - 1].endIndex)
+			{
+				// if we need to interrupt the existing layout groups
+				layoutGroups.length = layoutGroups.indexOf(layoutGroup) + 1;
+				
+				var gp;
+				while (layoutGroup.endIndex > placementIndex)
+				{
+					gp = layoutGroup.positions.pop();
+					if (#if (js && html5) gp #else gp.advance.x #end > 0.0) layoutGroup.endIndex--;
+				}
+				
+				layoutGroup.width = getPositionsWidth(layoutGroup.positions);
+			}
+			
+			// TODO: need abl or something here in case a larger height/ascent format was deleted
 			
 			for (i in 0...textFormatRanges.length)
 			{
@@ -1593,8 +1590,6 @@ class TextEngine
 							offsetX += widthValue;
 
 							textIndex = endIndex;
-							
-							trace("K");
 						}
 						else if (layoutGroup == null || align == JUSTIFY)
 						{
