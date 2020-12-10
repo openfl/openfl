@@ -32,7 +32,7 @@ class CairoTextField
 	{
 		#if lime_cairo
 		var textEngine = textField.__textEngine;
-		//textVounds maximizes rendering efficiency by clipping the rectangle to a minimal size containing only the text. Measurements 
+		//textBounds maximizes rendering efficiency by clipping the rectangle to a minimal size containing only the text. Measurements 
 		//will always be smaller than bounds.
 		var useTextBounds = !(textEngine.background || textEngine.border);
 		var bounds = useTextBounds ? textEngine.textBounds : textEngine.bounds;
