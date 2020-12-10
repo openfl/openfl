@@ -566,15 +566,38 @@ class TextEngine
 			return text.substring(index > 0 ? lineBreaks[index - 1] : 0, lineBreaks[index]);
 		}
 	}
+	
+	public function getLineBreaks():Void
+	{
+		lineBreaks.length = 0;
+		
+		var index = -1;
+		
+		var cr = -1, lf = -1;
+		while (index < text.length)
+		{
+			cr = text.indexOf("\n", index + 1);
+			lf = text.indexOf("\r", index + 1);
+			
+			index = 
+				if (cr == -1) lf;
+				else if (lf == -1) cr;
+				else if (cr < lf) cr;
+				else lf;
+				
+			if (index > -1) lineBreaks.push(index);
+			else break;
+		}
+	}
 
 	public function getLineBreakIndex(startIndex:Int = 0):Int
 	{
-		var cr = text.indexOf("\n", startIndex);
-		var lf = text.indexOf("\r", startIndex);
-
-		if (cr == -1) return lf;
-		if (lf == -1) return cr;
-		return cr < lf ? cr : lf;
+		for (lineBreak in lineBreaks)
+		{
+			if (lineBreak >= startIndex) return lineBreak;
+		}
+		
+		return -1;
 	}
 
 	private function getLineMeasurements():Void
@@ -769,7 +792,7 @@ class TextEngine
 		var widthValue = 0.0, heightValue = 0, maxHeightValue = 0;
 		var previousSpaceIndex = -2; // -1 equals not found, -2 saves extra comparison in `breakIndex == previousSpaceIndex`
 		var previousBreakIndex = -1;
-		var spaceIndex = text.indexOf(" ", placementIndex);
+		var spaceIndex = text.indexOf(" ", placementIndex); // TODO: get space index vector? Include hyphens?
 		var breakIndex = getLineBreakIndex(placementIndex);
 
 		var offsetX = 0.0;
@@ -985,23 +1008,26 @@ class TextEngine
 			}
 		}
 
-		#if !js inline #end function setParagraphMetrics():Void
+		#if !js inline #end function setParagraphMetrics(format:TextFormat = null):Void
 
 		{
+			// TODO: I don't think this works when resuming layout? not the highest prio
 			firstLineOfParagraph = true;
 
-			align = currentFormat.align != null ? currentFormat.align : LEFT;
-			blockIndent = currentFormat.blockIndent != null ? currentFormat.blockIndent : 0;
-			indent = currentFormat.indent != null ? currentFormat.indent : 0;
-			leftMargin = currentFormat.leftMargin != null ? currentFormat.leftMargin : 0;
-			rightMargin = currentFormat.rightMargin != null ? currentFormat.rightMargin : 0;
+			if (format == null) format = currentFormat;
+			
+			align = format.align != null ? format.align : LEFT;
+			blockIndent = format.blockIndent != null ? format.blockIndent : 0;
+			indent = format.indent != null ? format.indent : 0;
+			leftMargin = format.leftMargin != null ? format.leftMargin : 0;
+			rightMargin = format.rightMargin != null ? format.rightMargin : 0;
 
-			if (currentFormat.bullet != null)
+			if (format.bullet != null)
 			{
 				// TODO
 			}
 
-			if (currentFormat.tabStops != null)
+			if (format.tabStops != null)
 			{
 				// TODO, may not actually belong in paragraph metrics
 			}
@@ -1284,11 +1310,59 @@ class TextEngine
 		}
 		
 		if (placementIndex > 0) {
-			// TODO: confirm all
-			rangeIndex = textFormatRanges.length - 2;
+			// all of this is typically less expensive than re-laying out text before placementIndex
+			
+			for (lg in layoutGroups)
+			{
+				if (lg.startIndex > placementIndex) break;
+				else layoutGroup = lg;
+			}
+			
+			if (placementIndex < text.length)
+			{
+				// if we need to interrupt the existing layout groups
+				layoutGroups.length = layoutGroups.indexOf(layoutGroup);
+				
+				var gp;
+				while (layoutGroup.endIndex > placementIndex)
+				{
+					gp = layoutGroup.positions.pop();
+					if (#if (js && html5) gp #else gp.advance.x #end > 0.0) layoutGroup.endIndex--;
+				}
+			}
+			
+			layoutGroup.width = getPositionsWidth(layoutGroup.positions);
+			// TODO: need abl or something here in case a larger height/ascent format was deleted
+			
+			for (lineBreak in lineBreaks)
+			{
+				if (lineBreak < placementIndex) previousBreakIndex = placementIndex;
+				else break;
+			}
+			
+			var space = text.indexOf(" ");
+			while (space < placementIndex && space > -1)
+			{
+				previousSpaceIndex = space;
+				space = text.indexOf(" ", space + 1);
+			}
+			
 			textIndex = placementIndex;
 			
-			layoutGroup = layoutGroups[layoutGroups.length - 1];
+			for (i in 0...textFormatRanges.length)
+			{
+				if (textFormatRanges[i].start < placementIndex) rangeIndex = i - 1;
+				else break;
+			}
+			
+			// the format at previousBreakIndex will inform the paragraph metrics we should start with
+			var format = null;
+			for (fr in textFormatRanges)
+			{
+				if (fr.start > previousBreakIndex) break;
+				else format = fr.format;
+			}
+			
 			offsetX = layoutGroup.offsetX + layoutGroup.width - GUTTER;
 			offsetY = layoutGroup.offsetY - GUTTER;
 			lineIndex = layoutGroup.lineIndex;
@@ -1297,11 +1371,18 @@ class TextEngine
 			// leading = layoutGroup.leading; // TODO: if maxLeading is necessary
 			
 			// TODO: more?
+			
+			nextFormatRange();
+			
+			setParagraphMetrics(format);
+			setLineMetrics();
 		}
-
-		nextFormatRange();
-		setParagraphMetrics();
-		setLineMetrics();
+		
+		else {
+			nextFormatRange();
+			setParagraphMetrics();
+			setLineMetrics();
+		}
 
 		var wrap;
 		var maxLoops = text.length +
@@ -1351,6 +1432,9 @@ class TextEngine
 			{
 				// if a space is the next thing that needs to be dealt with
 
+				// TODO: trailing spaces are represented in getCharBoundaries, although they don't contribute to word wrapping
+				// leave as many that can fit on the line and in positions, then ...
+				// TODO: allow LGs to combine if coming immediately from placementIndex bit
 				if (layoutGroup != null && layoutGroup.startIndex != layoutGroup.endIndex)
 				{
 					layoutGroup = null;
@@ -1503,10 +1587,13 @@ class TextEngine
 							offsetX += widthValue;
 
 							textIndex = endIndex;
+							
+							trace("K");
 						}
 						else if (layoutGroup == null || align == JUSTIFY)
 						{
 							placeText(endIndex);
+							if (endIndex == text.length) alignBaseline();
 						}
 						else
 						{
@@ -1590,20 +1677,22 @@ class TextEngine
 
 				textIndex++;
 			}
+			
+			// if (endIndex == text.length) alignBaseline(); // TODO: this might replace several calls inside the while loop
 		}
 
 		// if final char is a line break, create an empty layoutGroup for it
 		if (previousBreakIndex == textIndex - 2 && previousBreakIndex > -1)
 		{
-			nextLayoutGroup(textIndex, textIndex);
+			nextLayoutGroup(textIndex - 1, textIndex - 1);
 
 			layoutGroup.positions = [];
 			layoutGroup.ascent = ascent;
 			layoutGroup.descent = descent;
 			layoutGroup.leading = leading;
-			layoutGroup.lineIndex = lineIndex;
+			layoutGroup.lineIndex = lineIndex - 1; // undo alignBaseline
 			layoutGroup.offsetX = getBaseX(); // TODO: double check it doesn't default to GUTTER or something
-			layoutGroup.offsetY = offsetY + GUTTER;
+			layoutGroup.offsetY = offsetY + GUTTER - heightValue; // undo alignBaseline
 			layoutGroup.width = 0;
 			layoutGroup.height = heightValue;
 		}
@@ -1780,6 +1869,7 @@ class TextEngine
 		}
 		else
 		{
+			getLineBreaks();
 			getLayoutGroups();
 			getLineMeasurements();
 			setTextAlignment();
