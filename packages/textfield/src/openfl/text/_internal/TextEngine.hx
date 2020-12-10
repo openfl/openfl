@@ -1489,6 +1489,7 @@ class TextEngine
 						else if (layoutGroup == null || align == JUSTIFY)
 						{
 							placeText(endIndex);
+							if (endIndex == text.length) alignBaseline();
 						}
 						else
 						{
