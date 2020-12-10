@@ -1,0 +1,7 @@
+-neko build/neko/bin/TestMain.n
+-main TestMain
+-cp ../../../src
+-cp src
+-lib munit
+-D openfl-unit-testing
+--times

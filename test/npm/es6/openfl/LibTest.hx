@@ -1,1 +1,0 @@
-describe("TypeScript | Lib", function() {});

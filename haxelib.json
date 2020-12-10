@@ -7,5 +7,5 @@
 	"version": "9.0.2",
 	"releasenote": "Minor fix",
 	"contributors": [ "singmajesty" ],
-	"classPath": "lib"
+	"classPath": "src"
 }
