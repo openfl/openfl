@@ -2031,7 +2031,7 @@ class TextField extends InteractiveObject
 			}
 		}
 
-		__textEngine.placementIndex = 0; // TODO: temporary, should be beginIndex
+		__textEngine.placementIndex = beginIndex;
 		__updateText(__text.substring(0, beginIndex) + newText + __text.substring(endIndex));
 
 		var offset = newText.length - (endIndex - beginIndex);

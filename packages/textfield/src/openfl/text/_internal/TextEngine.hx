@@ -1310,7 +1310,8 @@ class TextEngine
 		}
 		
 		if (placementIndex > 0) {
-			// all of this is typically less expensive than re-laying out text before placementIndex
+			// all of this is typically less expensive than re-laying out the text before placementIndex
+			// TODO: better way of getting the state of layout at any index (is this paragraph/line change?)
 			
 			for (lg in layoutGroups)
 			{
@@ -1318,10 +1319,12 @@ class TextEngine
 				else layoutGroup = lg;
 			}
 			
-			if (placementIndex < text.length)
+			if (placementIndex < layoutGroups[layoutGroups.length - 1].endIndex)
 			{
 				// if we need to interrupt the existing layout groups
-				layoutGroups.length = layoutGroups.indexOf(layoutGroup);
+				//trace(layoutGroups.length);
+				//trace(layoutGroup.startIndex, layoutGroup.endIndex);
+				layoutGroups.length = layoutGroups.indexOf(layoutGroup) + 1;
 				
 				var gp;
 				while (layoutGroup.endIndex > placementIndex)
@@ -1329,9 +1332,12 @@ class TextEngine
 					gp = layoutGroup.positions.pop();
 					if (#if (js && html5) gp #else gp.advance.x #end > 0.0) layoutGroup.endIndex--;
 				}
+				//trace(layoutGroups.length);
+				//trace(layoutGroup.startIndex, layoutGroup.endIndex);
+				
+				layoutGroup.width = getPositionsWidth(layoutGroup.positions);
 			}
 			
-			layoutGroup.width = getPositionsWidth(layoutGroup.positions);
 			// TODO: need abl or something here in case a larger height/ascent format was deleted
 			
 			for (lineBreak in lineBreaks)
