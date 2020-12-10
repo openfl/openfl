@@ -2356,9 +2356,9 @@ class TextField extends InteractiveObject
 				scrollH -= Std.int(Math.max(Math.min(mouseX * -.1, 10), 1));		
 			}
 			
-			__mouseScrollVCounter++;
+			__mouseDragVCounter++;
 			
-			if (__mouseScrollVCounter > stage.frameRate / 10)
+			if (__mouseDragVCounter > stage.frameRate / 10)
 			{
 				if (mouseY > this.height - 2)
 				{
@@ -2368,7 +2368,7 @@ class TextField extends InteractiveObject
 				{				
 					scrollV -= Std.int(Math.max(Math.min(mouseY * -.03, 5), 1));		
 				}
-				__mouseScrollVCounter = 0;
+				__mouseDragVCounter = 0;
 			}
 			stage_onMouseMove(null);
 	}
