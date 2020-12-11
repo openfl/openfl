@@ -4,7 +4,7 @@ package openfl.display3D;
 import lime.graphics.opengl.GLProgram;
 import lime.graphics.opengl.GLShader;
 import lime.graphics.opengl.GLUniformLocation;
-import openfl.display3D._internal.agal.AGALConverter;
+import openfl.display3D._internal.AGALConverter;
 import openfl.display._internal.SamplerState;
 import lime.utils.Float32Array;
 import openfl.utils._internal.Log;

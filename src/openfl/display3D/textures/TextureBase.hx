@@ -4,7 +4,7 @@ package openfl.display3D.textures;
 import lime.graphics.opengl.GLFramebuffer;
 import lime.graphics.opengl.GLRenderbuffer;
 import lime.graphics.opengl.GLTexture;
-import openfl.display3D._internal.atf.ATFGPUFormat;
+import openfl.display3D._internal.ATFGPUFormat;
 import openfl.display._internal.SamplerState;
 import openfl.display.BitmapData;
 import openfl.events.EventDispatcher;

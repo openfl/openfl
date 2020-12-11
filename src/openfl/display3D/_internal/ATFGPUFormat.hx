@@ -1,4 +1,4 @@
-package openfl.display3D._internal.atf;
+package openfl.display3D._internal;
 
 @:enum abstract ATFGPUFormat(Int) from Int to Int
 {

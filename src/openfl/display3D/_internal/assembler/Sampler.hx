@@ -1,4 +1,4 @@
-package openfl.display3D._internal.agal.assembler;
+package openfl.display3D._internal.assembler;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

@@ -1,4 +1,4 @@
-package openfl.display3D._internal.atf;
+package openfl.display3D._internal;
 
 import haxe.io.Bytes;
 import openfl.utils._internal.Log;

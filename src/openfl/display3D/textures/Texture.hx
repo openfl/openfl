@@ -5,7 +5,7 @@ import haxe.io.Bytes;
 import haxe.Timer;
 import lime.utils.ArrayBufferView;
 import lime.utils.UInt8Array;
-import openfl.display3D._internal.atf.ATFReader;
+import openfl.display3D._internal.ATFReader;
 import openfl.display._internal.SamplerState;
 import openfl.display.BitmapData;
 import openfl.events.Event;

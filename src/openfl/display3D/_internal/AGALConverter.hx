@@ -1,4 +1,4 @@
-package openfl.display3D._internal.agal;
+package openfl.display3D._internal;
 
 import haxe.Int64;
 import openfl.display._internal.SamplerState;

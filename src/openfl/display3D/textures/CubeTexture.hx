@@ -3,7 +3,7 @@ package openfl.display3D.textures;
 #if !flash
 import haxe.Timer;
 import lime.graphics.opengl.GLFramebuffer;
-import openfl.display3D._internal.atf.ATFReader;
+import openfl.display3D._internal.ATFReader;
 import openfl.display._internal.SamplerState;
 import lime.utils.ArrayBufferView;
 import openfl.utils._internal.Log;

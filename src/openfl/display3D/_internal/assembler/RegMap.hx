@@ -1,4 +1,4 @@
-package openfl.display3D._internal.agal.assembler;
+package openfl.display3D._internal.assembler;
 
 import haxe.ds.StringMap;
 
