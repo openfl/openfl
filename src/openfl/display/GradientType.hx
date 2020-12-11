@@ -1,10 +1,24 @@
 package openfl.display;
 
 #if !flash
+
 #if !openfljs
+/**
+	The GradientType class provides values for the `type` parameter
+	in the `beginGradientFill()` and
+	`lineGradientStyle()` methods of the openfl.display.Graphics
+	class.
+**/
 @:enum abstract GradientType(Null<Int>)
 {
+	/**
+		Value used to specify a linear gradient fill.
+	**/
 	public var LINEAR = 0;
+
+	/**
+		Value used to specify a radial gradient fill.
+	**/
 	public var RADIAL = 1;
 
 	@:noCompletion private inline static function fromInt(value:Null<Int>):GradientType

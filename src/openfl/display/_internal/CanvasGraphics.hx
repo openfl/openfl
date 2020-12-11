@@ -121,9 +121,7 @@ class CanvasGraphics
 		{
 			case RADIAL:
 				var radius = 819.2;
-				focalPointRatio = focalPointRatio > 1.0 ? 1.0
-					: focalPointRatio < -1.0 ? -1.0
-					: focalPointRatio;
+				focalPointRatio = focalPointRatio > 1.0 ? 1.0 : focalPointRatio < -1.0 ? -1.0 : focalPointRatio;
 				gradientFill = context.createRadialGradient(radius * focalPointRatio, 0, 0, 0, 0, radius);
 
 				pendingMatrix = matrix.clone();

@@ -13,12 +13,36 @@ import lime.ui.Gamepad;
 @:access(openfl.ui.GameInputControl)
 @:final class GameInputDevice
 {
+	/**
+		Specifies the maximum size for the buffer used to cache sampled control values.
+		If `startCachingSamples` returns samples that require more memory than you specify,
+		it throws a memory error.
+	**/
 	public static inline var MAX_BUFFER_SIZE:Int = 32000;
 
+	/**
+		Enables or disables this device.
+	**/
 	public var enabled:Bool;
+
+	/**
+		Returns the ID of this device.
+	**/
 	public var id(default, null):String;
+
+	/**
+		Returns the name of this device.
+	**/
 	public var name(default, null):String;
+
+	/**
+		Returns the number of controls on this device.
+	**/
 	public var numControls(get, never):Int;
+
+	/**
+		Specifies the rate (in milliseconds) at which to retrieve control values.
+	**/
 	public var sampleInterval:Int;
 
 	@:noCompletion private var __axis:Map<Int, GameInputControl> = new Map();
@@ -59,11 +83,22 @@ import lime.ui.Gamepad;
 		}
 	}
 
+	/**
+		Writes cached sample values to the ByteArray.
+		@param	data
+		@param	append
+		@return
+	**/
 	public function getCachedSamples(data:ByteArray, append:Bool = false):Int
 	{
 		return 0;
 	}
 
+	/**
+		Retrieves a specific control from a device.
+		@param	i
+		@return
+	**/
 	public function getControlAt(i:Int):GameInputControl
 	{
 		if (i >= 0 && i < __controls.length)
@@ -74,8 +109,16 @@ import lime.ui.Gamepad;
 		return null;
 	}
 
+	/**
+		Requests this device to start keeping a cache of sampled values.
+		@param	numSamples
+		@param	controls
+	**/
 	public function startCachingSamples(numSamples:Int, controls:Vector<String>):Void {}
 
+	/**
+		Stops sample caching.
+	**/
 	public function stopCachingSamples():Void {}
 
 	// Get & Set Methods

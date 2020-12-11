@@ -1,11 +1,28 @@
 package openfl.desktop;
 
 #if !flash
+
 #if !openfljs
+/**
+	The ClipboardFormats class defines constants for the names of the standard
+	data formats used with the Clipboard class. Flash Player 10 only supports
+	TEXT_FORMAT, RICH_TEXT_FORMAT, and HTML_FORMAT.
+**/
 @:enum abstract ClipboardFormats(Null<Int>)
 {
+	/**
+		HTML data.
+	**/
 	public var HTML_FORMAT = 0;
+
+	/**
+		Rich Text Format data.
+	**/
 	public var RICH_TEXT_FORMAT = 1;
+
+	/**
+		String data.
+	**/
 	public var TEXT_FORMAT = 2;
 
 	@:from private static function fromString(value:String):ClipboardFormats

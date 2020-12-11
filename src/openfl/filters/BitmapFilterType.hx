@@ -1,11 +1,27 @@
 package openfl.filters;
 
 #if !flash
+
 #if !openfljs
+/**
+	The BitmapFilterType class contains values to set the type of a
+	BitmapFilter.
+**/
 @:enum abstract BitmapFilterType(Null<Int>)
 {
+	/**
+		Defines the setting that applies a filter to the entire area of an object.
+	**/
 	public var FULL = 0;
+
+	/**
+		Defines the setting that applies a filter to the inner area of an object.
+	**/
 	public var INNER = 1;
+
+	/**
+		Defines the setting that applies a filter to the outer area of an object.
+	**/
 	public var OUTER = 2;
 
 	@:from private static function fromString(value:String):BitmapFilterType

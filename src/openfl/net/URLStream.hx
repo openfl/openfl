@@ -109,8 +109,10 @@ class URLStream extends EventDispatcher implements IDataInput
 		untyped Object.defineProperties(URLStream.prototype, {
 			"bytesAvailable": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_bytesAvailable (); }")},
 			"connected": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_connected (); }")},
-			"endian": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_endian (); }"),
-				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_endian (v); }")},
+			"endian": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_endian (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_endian (v); }")
+			},
 		});
 	}
 	#end

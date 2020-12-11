@@ -4,6 +4,10 @@ import openfl.events.Event;
 import openfl.events.ProgressEvent;
 import openfl.Lib;
 
+/**
+	The Preloader class is a Lime Preloader instance that uses an OpenFL
+	display object to display loading progress.
+**/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -13,7 +17,7 @@ import openfl.Lib;
 class Preloader
 {
 	@SuppressWarnings("checkstyle:Dynamic")
-	public var onComplete:#if lime lime.app.Event < Void -> Void >= new lime.app.Event<Void->Void>() #else Dynamic #end;
+	public var onComplete:#if lime lime.app.Event<Void->Void> = new lime.app.Event<Void->Void>() #else Dynamic #end;
 
 	@:noCompletion private var complete:Bool;
 	@:noCompletion private var display:Sprite;
