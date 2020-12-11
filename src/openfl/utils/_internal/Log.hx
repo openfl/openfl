@@ -1,4 +1,4 @@
-package openfl._internal.utils;
+package openfl.utils._internal;
 
 #if !lime
 import haxe.PosInfos;

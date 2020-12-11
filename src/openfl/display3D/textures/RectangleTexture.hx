@@ -2,12 +2,12 @@ package openfl.display3D.textures;
 
 #if !flash
 import openfl.display._internal.SamplerState;
-import openfl._internal.utils.ArrayBufferView;
-import openfl._internal.utils.UInt8Array;
 import openfl.display.BitmapData;
 import openfl.utils.ByteArray;
 #if lime
 import lime.graphics.Image;
+import lime.utils.ArrayBufferView;
+import lime.utils.UInt8Array;
 #end
 
 /**

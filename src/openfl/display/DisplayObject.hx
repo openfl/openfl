@@ -2,8 +2,8 @@ package openfl.display;
 
 #if !flash
 import openfl.display._internal.IBitmapDrawableType;
-import openfl._internal.utils.ObjectPool;
-import openfl._internal.Lib;
+import openfl.utils._internal.ObjectPool;
+import openfl.utils._internal.Lib;
 import openfl.errors.TypeError;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;

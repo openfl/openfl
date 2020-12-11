@@ -203,7 +203,7 @@ class FileReference extends EventDispatcher
 	#if !openfl_strict
 	public function upload(request:URLRequest, uploadDataFieldName:String = "Filedata", testUpload:Bool = false):Void
 	{
-		openfl._internal.Lib.notImplemented();
+		openfl.utils._internal.Lib.notImplemented();
 	}
 	#end
 

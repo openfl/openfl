@@ -1,7 +1,7 @@
 package openfl.geom;
 
 #if !flash
-import openfl._internal.utils.ObjectPool;
+import lime.utils.ObjectPool;
 #if lime
 import lime.math.Vector2;
 #end

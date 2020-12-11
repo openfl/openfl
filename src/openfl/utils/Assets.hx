@@ -1,6 +1,6 @@
 package openfl.utils;
 
-import openfl._internal.utils.Log;
+import openfl.utils._internal.Log;
 import openfl.display.BitmapData;
 import openfl.display.MovieClip;
 import openfl.events.Event;

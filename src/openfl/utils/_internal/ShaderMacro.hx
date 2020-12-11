@@ -1,4 +1,4 @@
-package openfl._internal.macros;
+package openfl.utils._internal;
 
 #if macro
 import haxe.macro.Context;
@@ -310,7 +310,7 @@ class ShaderMacro
 					{name: ":keep", pos: pos},
 					{name: ":dox", params: [macro hide], pos: pos},
 					{name: ":noCompletion", pos: pos},
-					{name: ":allow", params: [macro openfl._internal], pos: pos}
+					{name: ":allow", params: [macro openfl.display._internal], pos: pos}
 				];
 			}
 			else

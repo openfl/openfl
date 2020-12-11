@@ -1,4 +1,4 @@
-package openfl._internal.utils;
+package openfl.utils._internal;
 
 import openfl.display.DisplayObject;
 import openfl.display.InteractiveObject;

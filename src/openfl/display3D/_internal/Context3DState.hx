@@ -1,9 +1,9 @@
 package openfl.display3D._internal;
 
-import openfl._internal.backend.gl.GLBuffer;
-import openfl._internal.backend.gl.GLFramebuffer;
-import openfl._internal.backend.gl.GLRenderbuffer;
-import openfl._internal.backend.gl.GLTexture;
+import lime.graphics.opengl.GLBuffer;
+import lime.graphics.opengl.GLFramebuffer;
+import lime.graphics.opengl.GLRenderbuffer;
+import lime.graphics.opengl.GLTexture;
 import openfl.display._internal.SamplerState;
 import openfl.display3D.textures.TextureBase;
 import openfl.display3D.Context3DBlendFactor;

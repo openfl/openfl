@@ -210,7 +210,7 @@ import cpp.vm.Gc;
 	**/
 	public static function pause():Void
 	{
-		openfl._internal.Lib.notImplemented();
+		openfl.utils._internal.Lib.notImplemented();
 	}
 	#end
 
@@ -226,7 +226,7 @@ import cpp.vm.Gc;
 	**/
 	public static function resume():Void
 	{
-		openfl._internal.Lib.notImplemented();
+		openfl.utils._internal.Lib.notImplemented();
 	}
 	#end
 

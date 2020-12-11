@@ -1,19 +1,17 @@
-package openfl._internal;
-
-import haxe.Constraints.Function;
+package openfl.utils._internal;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-class FunctionVector implements IVector<Function>
+class IntVector implements IVector<Int>
 {
 	public var fixed:Bool;
 	public var length(get, set):Int;
 
-	public var __array:Array<Function>;
+	public var __array:Array<Int>;
 
-	public function new(length:Int = 0, fixed:Bool = false, array:Array<Function> = null):Void
+	public function new(length:Int = 0, fixed:Bool = false, array:Array<Int> = null):Void
 	{
 		if (array == null) array = new Array();
 		__array = array;
@@ -26,54 +24,47 @@ class FunctionVector implements IVector<Function>
 		this.fixed = fixed;
 	}
 
-	public function concat(a:IVector<Function> = null):IVector<Function>
+	public function concat(a:IVector<Int> = null):IVector<Int>
 	{
 		if (a == null)
 		{
-			return new FunctionVector(0, false, __array.copy());
+			return new IntVector(0, false, __array.copy());
 		}
 		else
 		{
-			var other:FunctionVector = cast a;
+			var other:IntVector = cast a;
 
 			if (other.__array.length > 0)
 			{
-				return new FunctionVector(0, false, __array.concat(other.__array));
+				return new IntVector(0, false, __array.concat(other.__array));
 			}
 			else
 			{
-				return new FunctionVector(0, false, __array.copy());
+				return new IntVector(0, false, __array.copy());
 			}
 		}
 	}
 
-	public function copy():IVector<Function>
+	public function copy():IVector<Int>
 	{
-		return new FunctionVector(0, fixed, __array.copy());
+		return new IntVector(0, fixed, __array.copy());
 	}
 
-	public function filter(callback:Function->Bool):IVector<Function>
+	public function filter(callback:Int->Bool):IVector<Int>
 	{
-		return new FunctionVector(0, fixed, __array.filter(callback));
+		return new IntVector(0, fixed, __array.filter(callback));
 	}
 
-	public function get(index:Int):Function
+	public function get(index:Int):Int
 	{
-		if (index >= __array.length)
-		{
-			return null;
-		}
-		else
-		{
-			return __array[index];
-		}
+		return __array[index];
 	}
 
-	public function indexOf(x:Function, from:Int = 0):Int
+	public function indexOf(x:Int, from:Int = 0):Int
 	{
 		for (i in from...__array.length)
 		{
-			if (Reflect.compareMethods(__array[i], x))
+			if (__array[i] == x)
 			{
 				return i;
 			}
@@ -82,7 +73,7 @@ class FunctionVector implements IVector<Function>
 		return -1;
 	}
 
-	public function insertAt(index:Int, element:Function):Void
+	public function insertAt(index:Int, element:Int):Void
 	{
 		if (!fixed || index < __array.length)
 		{
@@ -90,7 +81,7 @@ class FunctionVector implements IVector<Function>
 		}
 	}
 
-	public function iterator():Iterator<Function>
+	public function iterator():Iterator<Int>
 	{
 		return cast __array.iterator();
 	}
@@ -100,20 +91,20 @@ class FunctionVector implements IVector<Function>
 		return __array.join(sep);
 	}
 
-	public function lastIndexOf(x:Function, from:Null<Int> = null):Int
+	public function lastIndexOf(x:Int, from:Null<Int> = null):Int
 	{
 		var i = (from == null || from >= __array.length) ? __array.length - 1 : from;
 
 		while (i >= 0)
 		{
-			if (Reflect.compareMethods(__array[i], x)) return i;
+			if (__array[i] == x) return i;
 			i--;
 		}
 
 		return -1;
 	}
 
-	public function pop():Function
+	public function pop():Null<Int>
 	{
 		if (!fixed)
 		{
@@ -125,7 +116,7 @@ class FunctionVector implements IVector<Function>
 		}
 	}
 
-	public function push(x:Function):Int
+	public function push(x:Int):Int
 	{
 		if (!fixed)
 		{
@@ -137,23 +128,23 @@ class FunctionVector implements IVector<Function>
 		}
 	}
 
-	public function removeAt(index:Int):Function
+	public function removeAt(index:Int):Int
 	{
 		if (!fixed || index < __array.length)
 		{
 			return __array.splice(index, 1)[0];
 		}
 
-		return null;
+		return 0;
 	}
 
-	public function reverse():IVector<Function>
+	public function reverse():IVector<Int>
 	{
 		__array.reverse();
 		return this;
 	}
 
-	public function set(index:Int, value:Function):Function
+	public function set(index:Int, value:Int):Int
 	{
 		if (!fixed || index < __array.length)
 		{
@@ -165,7 +156,7 @@ class FunctionVector implements IVector<Function>
 		}
 	}
 
-	public function shift():Function
+	public function shift():Null<Int>
 	{
 		if (!fixed)
 		{
@@ -177,20 +168,20 @@ class FunctionVector implements IVector<Function>
 		}
 	}
 
-	public function slice(startIndex:Int = 0, endIndex:Null<Int> = null):IVector<Function>
+	public function slice(startIndex:Int = 0, endIndex:Null<Int> = null):IVector<Int>
 	{
 		if (endIndex == null) endIndex = 16777215;
-		return new FunctionVector(0, false, __array.slice(startIndex, endIndex));
+		return new IntVector(0, false, __array.slice(startIndex, endIndex));
 	}
 
-	public function sort(f:Function->Function->Int):Void
+	public function sort(f:Int->Int->Int):Void
 	{
 		__array.sort(f);
 	}
 
-	public function splice(pos:Int, len:Int):IVector<Function>
+	public function splice(pos:Int, len:Int):IVector<Int>
 	{
-		return new FunctionVector(0, false, __array.splice(pos, len));
+		return new IntVector(0, false, __array.splice(pos, len));
 	}
 
 	@:keep public function toJSON():Dynamic
@@ -203,7 +194,7 @@ class FunctionVector implements IVector<Function>
 		return __array != null ? __array.toString() : null;
 	}
 
-	public function unshift(x:Function):Void
+	public function unshift(x:Int):Void
 	{
 		if (!fixed)
 		{
@@ -231,7 +222,7 @@ class FunctionVector implements IVector<Function>
 			{
 				for (i in currentLength...value)
 				{
-					__array[i] = null;
+					__array[i] = 0;
 				}
 			}
 			else

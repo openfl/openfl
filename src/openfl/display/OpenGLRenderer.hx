@@ -12,7 +12,7 @@ import openfl.display._internal.Context3DTextField;
 import openfl.display._internal.Context3DTilemap;
 import openfl.display._internal.Context3DVideo;
 import openfl.display._internal.ShaderBuffer;
-import openfl._internal.utils.ObjectPool;
+import openfl.utils._internal.ObjectPool;
 import openfl.display3D.Context3DClearMask;
 import openfl.display3D.Context3D;
 import openfl.geom.ColorTransform;
@@ -35,7 +35,7 @@ import lime.math.Matrix4;
 @:noDebug
 #end
 @:access(lime.graphics.GLRenderContext)
-@:access(openfl._internal.renderer.ShaderBuffer)
+@:access(openfl.display._internal.ShaderBuffer)
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.DisplayObject)

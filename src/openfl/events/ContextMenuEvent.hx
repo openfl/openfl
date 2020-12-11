@@ -1,7 +1,7 @@
 package openfl.events;
 
 #if !flash
-// import openfl._internal.utils.ObjectPool;
+// import openfl.utils._internal.ObjectPool;
 import openfl.display.InteractiveObject;
 
 #if !openfl_debug
@@ -18,7 +18,6 @@ class ContextMenuEvent extends Event
 	#if false
 	// @:noCompletion @:dox(hide) @:require(flash10) public var isMouseTargetInaccessible:Bool;
 	#end
-
 	public var mouseTarget:InteractiveObject;
 
 	// @:noCompletion private static var __pool:ObjectPool<ContextMenuEvent> = new ObjectPool<ContextMenuEvent>(function() return new ContextMenuEvent(null),

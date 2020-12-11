@@ -1,4 +1,4 @@
-package openfl._internal.utils;
+package openfl.utils._internal;
 
 import haxe.macro.Context;
 import haxe.macro.Expr;

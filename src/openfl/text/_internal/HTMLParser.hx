@@ -1,7 +1,6 @@
-package openfl._internal.formats.html;
+package openfl.text._internal;
 
-import openfl.text._internal.TextFormatRange;
-import openfl._internal.utils.Log;
+import openfl.utils._internal.Log;
 import openfl.text.TextFormat;
 import openfl.Vector;
 
@@ -38,7 +37,7 @@ class HTMLParser
 
 		if (segments.length == 1)
 		{
-			value = StringTools.htmlUnescape (__regexHTMLTag.replace(value, ""));
+			value = StringTools.htmlUnescape(__regexHTMLTag.replace(value, ""));
 
 			if (textFormatRanges.length > 1)
 			{
@@ -96,7 +95,7 @@ class HTMLParser
 
 					if (start < segment.length)
 					{
-						sub = StringTools.htmlUnescape (segment.substr(start));
+						sub = StringTools.htmlUnescape(segment.substr(start));
 						textFormatRanges.push(new TextFormatRange(format, value.length, value.length + sub.length));
 						value += sub;
 						noLineBreak = false;
@@ -209,7 +208,7 @@ class HTMLParser
 
 						if (start < segment.length)
 						{
-							sub = StringTools.htmlUnescape (segment.substring(start));
+							sub = StringTools.htmlUnescape(segment.substring(start));
 							textFormatRanges.push(new TextFormatRange(format, value.length, value.length + sub.length));
 							value += sub;
 							noLineBreak = false;
@@ -217,7 +216,7 @@ class HTMLParser
 					}
 					else
 					{
-						sub = StringTools.htmlUnescape (segment);
+						sub = StringTools.htmlUnescape(segment);
 						textFormatRanges.push(new TextFormatRange(format, value.length, value.length + sub.length));
 						value += sub;
 						noLineBreak = false;

@@ -1,6 +1,6 @@
 package openfl.events;
 
-// import openfl._internal.utils.ObjectPool;
+// import openfl.utils._internal.ObjectPool;
 import openfl.display.DisplayObjectRenderer;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;

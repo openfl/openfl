@@ -16,7 +16,7 @@ import openfl.Vector;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:allow(openfl._internal.renderer.DrawCommandReader)
+@:allow(openfl.display._internal.DrawCommandReader)
 @SuppressWarnings("checkstyle:FieldDocComment")
 class DrawCommandBuffer
 {

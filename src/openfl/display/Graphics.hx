@@ -7,9 +7,6 @@ import openfl.display._internal.Context3DBuffer;
 import openfl.display._internal.DrawCommandBuffer;
 import openfl.display._internal.DrawCommandReader;
 import openfl.display._internal.ShaderBuffer;
-import openfl._internal.utils.Float32Array;
-import openfl._internal.utils.ObjectPool;
-import openfl._internal.utils.UInt16Array;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
 import openfl.errors.ArgumentError;
@@ -18,6 +15,9 @@ import openfl.geom.Rectangle;
 import openfl.Vector;
 #if lime
 import lime.graphics.cairo.Cairo;
+import lime.utils.Float32Array;
+import lime.utils.ObjectPool;
+import lime.utils.UInt16Array;
 #end
 #if (js && html5)
 import js.html.CanvasElement;

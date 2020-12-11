@@ -2,12 +2,12 @@ package openfl.text;
 
 #if !flash
 import haxe.Timer;
-import openfl._internal.formats.html.HTMLParser;
+import openfl.text._internal.HTMLParser;
 import openfl.text._internal.TextEngine;
 import openfl.text._internal.TextFormatRange;
 import openfl.text._internal.TextLayoutGroup;
 import openfl.text._internal.UTF8String;
-import openfl._internal.utils.Log;
+import openfl.utils._internal.Log;
 import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.display.InteractiveObject;
@@ -1376,7 +1376,7 @@ class TextField extends InteractiveObject
 
 		__updateScrollV();
 		__updateScrollH();
-		if(stage!=null && stage.focus == this)
+		if (stage != null && stage.focus == this)
 		{
 			__stopCursorTimer();
 			__startCursorTimer();

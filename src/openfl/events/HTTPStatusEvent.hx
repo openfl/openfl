@@ -1,7 +1,7 @@
 package openfl.events;
 
 #if !flash
-// import openfl._internal.utils.ObjectPool;
+// import openfl.utils._internal.ObjectPool;
 import openfl.net.URLRequestHeader;
 
 /**

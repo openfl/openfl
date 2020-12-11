@@ -1,4 +1,4 @@
-package openfl._internal.macros;
+package openfl.utils._internal;
 
 #if macro
 import haxe.crypto.BaseCode;

@@ -1,6 +1,6 @@
 package openfl.display;
 
-import openfl._internal.Lib;
+import openfl.utils._internal.Lib;
 #if lime
 import lime.app.Application;
 import lime.ui.Window as LimeWindow;

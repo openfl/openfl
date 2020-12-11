@@ -3,7 +3,7 @@ package openfl.events;
 #if !flash
 import haxe.io.Error;
 
-// import openfl._internal.utils.ObjectPool;
+// import openfl.utils._internal.ObjectPool;
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug

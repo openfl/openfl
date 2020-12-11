@@ -1,7 +1,7 @@
-package openfl._internal;
+package openfl.utils._internal;
 
 import haxe.PosInfos;
-import openfl._internal.utils.Log;
+import openfl.utils._internal.Log;
 #if !openfl_unit_testing
 import openfl.display.Application;
 import openfl.display.MovieClip;

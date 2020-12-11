@@ -1,8 +1,7 @@
 package openfl.text._internal;
 
 import haxe.Timer;
-import openfl._internal.backend.gl.GLTexture;
-import openfl._internal.utils.Log;
+import openfl.utils._internal.Log;
 import openfl.Vector;
 import openfl.geom.Rectangle;
 import openfl.text.AntiAliasType;
@@ -15,6 +14,7 @@ import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
 #if lime
 import lime.graphics.cairo.CairoFontFace;
+import lime.graphics.opengl.GLTexture;
 import lime.system.System;
 #end
 #if (js && html5)
@@ -760,7 +760,7 @@ class TextEngine
 		var leftMargin = 0;
 		var rightMargin = 0;
 		var firstLineOfParagraph = true;
-		
+
 		var tabStops = null; // TODO: maybe there's a better init value (not sure what this actually is)
 
 		var layoutGroup:TextLayoutGroup = null, positions = null;
@@ -1315,7 +1315,7 @@ class TextEngine
 				}
 
 				alignBaseline();
-				
+
 				// TODO: is this necessary or already handled by placeText above?
 				if (formatRange.end == breakIndex)
 				{
@@ -1526,7 +1526,7 @@ class TextEngine
 							if (breakIndex == endIndex) endIndex++;
 
 							textIndex = endIndex;
-							
+
 							if (endIndex == text.length) alignBaseline();
 						}
 					}

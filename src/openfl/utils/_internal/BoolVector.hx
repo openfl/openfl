@@ -1,29 +1,20 @@
-package openfl._internal;
+package openfl.utils._internal;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-class FloatVector implements IVector<Float>
+class BoolVector implements IVector<Bool>
 {
 	public var fixed:Bool;
 	public var length(get, set):Int;
 
-	public var __array:Array<Float>;
+	public var __array:Array<Bool>;
 
-	public function new(length:Int = 0, fixed:Bool = false, array:Array<Dynamic> = null, forceCopy:Bool = false):Void
+	public function new(length:Int = 0, fixed:Bool = false, array:Array<Bool> = null):Void
 	{
-		if (forceCopy)
-		{
-			__array = new Array();
-			if (array != null) for (i in 0...array.length)
-				__array[i] = array[i];
-		}
-		else
-		{
-			if (array == null) array = new Array<Float>();
-			__array = cast array;
-		}
+		if (array == null) array = new Array();
+		__array = array;
 
 		if (length > 0)
 		{
@@ -33,43 +24,50 @@ class FloatVector implements IVector<Float>
 		this.fixed = fixed;
 	}
 
-	public function concat(a:IVector<Float> = null):IVector<Float>
+	public function concat(a:IVector<Bool> = null):IVector<Bool>
 	{
 		if (a == null)
 		{
-			return new FloatVector(0, false, __array.copy());
+			return new BoolVector(0, false, __array.copy());
 		}
 		else
 		{
-			var other:FloatVector = cast a;
+			var other:BoolVector = cast a;
 
 			if (other.__array.length > 0)
 			{
-				return new FloatVector(0, false, __array.concat(other.__array));
+				return new BoolVector(0, false, __array.concat(other.__array));
 			}
 			else
 			{
-				return new FloatVector(0, false, __array.copy());
+				return new BoolVector(0, false, __array.copy());
 			}
 		}
 	}
 
-	public function copy():IVector<Float>
+	public function copy():IVector<Bool>
 	{
-		return new FloatVector(0, fixed, __array.copy());
+		return new BoolVector(0, fixed, __array.copy());
 	}
 
-	public function filter(callback:Float->Bool):IVector<Float>
+	public function filter(callback:Bool->Bool):IVector<Bool>
 	{
-		return new FloatVector(0, fixed, __array.filter(callback));
+		return new BoolVector(0, fixed, __array.filter(callback));
 	}
 
-	public function get(index:Int):Float
+	public function get(index:Int):Bool
 	{
-		return __array[index];
+		if (index >= __array.length)
+		{
+			return false;
+		}
+		else
+		{
+			return __array[index];
+		}
 	}
 
-	public function indexOf(x:Float, from:Int = 0):Int
+	public function indexOf(x:Bool, from:Int = 0):Int
 	{
 		for (i in from...__array.length)
 		{
@@ -82,7 +80,7 @@ class FloatVector implements IVector<Float>
 		return -1;
 	}
 
-	public function insertAt(index:Int, element:Float):Void
+	public function insertAt(index:Int, element:Bool):Void
 	{
 		if (!fixed || index < __array.length)
 		{
@@ -90,7 +88,7 @@ class FloatVector implements IVector<Float>
 		}
 	}
 
-	public function iterator():Iterator<Float>
+	public function iterator():Iterator<Bool>
 	{
 		return cast __array.iterator();
 	}
@@ -100,7 +98,7 @@ class FloatVector implements IVector<Float>
 		return __array.join(sep);
 	}
 
-	public function lastIndexOf(x:Float, from:Null<Int> = null):Int
+	public function lastIndexOf(x:Bool, from:Null<Int> = null):Int
 	{
 		var i = (from == null || from >= __array.length) ? __array.length - 1 : from;
 
@@ -113,7 +111,7 @@ class FloatVector implements IVector<Float>
 		return -1;
 	}
 
-	public function pop():Null<Float>
+	public function pop():Null<Bool>
 	{
 		if (!fixed)
 		{
@@ -125,7 +123,7 @@ class FloatVector implements IVector<Float>
 		}
 	}
 
-	public function push(x:Float):Int
+	public function push(x:Bool):Int
 	{
 		if (!fixed)
 		{
@@ -137,23 +135,23 @@ class FloatVector implements IVector<Float>
 		}
 	}
 
-	public function removeAt(index:Int):Float
+	public function removeAt(index:Int):Bool
 	{
 		if (!fixed || index < __array.length)
 		{
 			return __array.splice(index, 1)[0];
 		}
 
-		return 0;
+		return false;
 	}
 
-	public function reverse():IVector<Float>
+	public function reverse():IVector<Bool>
 	{
 		__array.reverse();
 		return this;
 	}
 
-	public function set(index:Int, value:Float):Float
+	public function set(index:Int, value:Bool):Bool
 	{
 		if (!fixed || index < __array.length)
 		{
@@ -165,7 +163,7 @@ class FloatVector implements IVector<Float>
 		}
 	}
 
-	public function shift():Null<Float>
+	public function shift():Null<Bool>
 	{
 		if (!fixed)
 		{
@@ -177,20 +175,20 @@ class FloatVector implements IVector<Float>
 		}
 	}
 
-	public function slice(startIndex:Int = 0, endIndex:Null<Int> = null):IVector<Float>
+	public function slice(startIndex:Int = 0, endIndex:Null<Int> = null):IVector<Bool>
 	{
 		if (endIndex == null) endIndex = 16777215;
-		return new FloatVector(0, false, __array.slice(startIndex, endIndex));
+		return new BoolVector(0, false, __array.slice(startIndex, endIndex));
 	}
 
-	public function sort(f:Float->Float->Int):Void
+	public function sort(f:Bool->Bool->Int):Void
 	{
 		__array.sort(f);
 	}
 
-	public function splice(pos:Int, len:Int):IVector<Float>
+	public function splice(pos:Int, len:Int):IVector<Bool>
 	{
-		return new FloatVector(0, false, __array.splice(pos, len));
+		return new BoolVector(0, false, __array.splice(pos, len));
 	}
 
 	@:keep public function toJSON():Dynamic
@@ -203,7 +201,7 @@ class FloatVector implements IVector<Float>
 		return __array != null ? __array.toString() : null;
 	}
 
-	public function unshift(x:Float):Void
+	public function unshift(x:Bool):Void
 	{
 		if (!fixed)
 		{
@@ -219,17 +217,10 @@ class FloatVector implements IVector<Float>
 
 	private function set_length(value:Int):Int
 	{
-		if (value != __array.length && !fixed)
+		if (!fixed)
 		{
 			#if cpp
-			if (value > __array.length)
-			{
-				cpp.NativeArray.setSize(__array, value);
-			}
-			else
-			{
-				__array.splice(value, __array.length);
-			}
+			cpp.NativeArray.setSize(__array, value);
 			#else
 			var currentLength = __array.length;
 			if (value < 0) value = 0;
@@ -238,7 +229,7 @@ class FloatVector implements IVector<Float>
 			{
 				for (i in currentLength...value)
 				{
-					__array[i] = 0;
+					__array[i] = false;
 				}
 			}
 			else

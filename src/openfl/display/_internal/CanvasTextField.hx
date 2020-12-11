@@ -1,6 +1,6 @@
 package openfl.display._internal;
 
-import openfl._internal.formats.html.HTMLParser;
+import openfl.text._internal.HTMLParser;
 import openfl.text._internal.TextEngine;
 import openfl.display.BitmapData;
 import openfl.display.CanvasRenderer;
@@ -261,7 +261,8 @@ class CanvasTextField
 
 									// TODO: fill only once
 
-									context.fillText(text.substring(selectionStart, selectionEnd), scrollX + start.x - bounds.x, group.offsetY + group.ascent + scrollY);
+									context.fillText(text.substring(selectionStart, selectionEnd), scrollX + start.x - bounds.x,
+										group.offsetY + group.ascent + scrollY);
 								}
 							}
 						}

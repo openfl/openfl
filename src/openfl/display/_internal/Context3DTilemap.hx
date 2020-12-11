@@ -1,6 +1,6 @@
 package openfl.display._internal;
 
-import openfl._internal.utils.Float32Array;
+import lime.utils.Float32Array;
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display.OpenGLRenderer;

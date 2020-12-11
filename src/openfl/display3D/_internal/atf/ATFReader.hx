@@ -1,7 +1,7 @@
 package openfl.display3D._internal.atf;
 
 import haxe.io.Bytes;
-import openfl._internal.utils.Log;
+import openfl.utils._internal.Log;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
 

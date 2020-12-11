@@ -1,13 +1,8 @@
 package openfl.display;
 
 #if !flash
-import openfl._internal.backend.gl.GLFramebuffer;
-import openfl._internal.backend.gl.GLRenderbuffer;
-import openfl._internal.utils.Float32Array;
 import openfl.display._internal.IBitmapDrawableType;
 import openfl.display._internal.PerlinNoise;
-import openfl._internal.utils.UInt16Array;
-import openfl._internal.utils.UInt8Array;
 import openfl.display3D.textures.TextureBase;
 import openfl.display3D.Context3DClearMask;
 import openfl.display3D.Context3D;
@@ -31,12 +26,17 @@ import lime.app.Application;
 import lime.graphics.cairo.CairoImageSurface;
 import lime.graphics.cairo.CairoSurface;
 import lime.graphics.cairo.Cairo;
+import lime.graphics.opengl.GLFramebuffer;
+import lime.graphics.opengl.GLRenderbuffer;
 import lime.graphics.Image;
 import lime.graphics.ImageChannel;
 import lime.graphics.ImageBuffer;
 import lime.graphics.RenderContext;
 import lime.math.ARGB;
 import lime.math.Vector2;
+import lime.utils.Float32Array;
+import lime.utils.UInt8Array;
+import lime.utils.UInt16Array;
 #end
 #if (js && html5)
 import js.html.CanvasElement;
@@ -65,7 +65,7 @@ import openfl.display._internal.stats.DrawCallContext;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:autoBuild(openfl._internal.macros.AssetsMacro.embedBitmap())
+@:autoBuild(openfl.utils._internal.AssetsMacro.embedBitmap())
 class BitmapData implements IBitmapDrawable
 {
 	@:noCompletion private static inline var VERTEX_BUFFER_STRIDE:Int = 14;

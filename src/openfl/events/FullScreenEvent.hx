@@ -1,7 +1,7 @@
 package openfl.events;
 
 #if !flash
-// import openfl._internal.utils.ObjectPool;
+// import openfl.utils._internal.ObjectPool;
 
 /**
 	The Stage object dispatches a FullScreenEvent object whenever the Stage

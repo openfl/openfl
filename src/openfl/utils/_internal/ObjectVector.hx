@@ -1,20 +1,29 @@
-package openfl._internal;
+package openfl.utils._internal;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-class IntVector implements IVector<Int>
+class ObjectVector<T> implements IVector<T>
 {
 	public var fixed:Bool;
 	public var length(get, set):Int;
 
-	public var __array:Array<Int>;
+	public var __array:Array<T>;
 
-	public function new(length:Int = 0, fixed:Bool = false, array:Array<Int> = null):Void
+	public function new(length:Int = 0, fixed:Bool = false, array:Array<Dynamic> = null, forceCopy:Bool = false):Void
 	{
-		if (array == null) array = new Array();
-		__array = array;
+		if (forceCopy)
+		{
+			__array = new Array();
+			if (array != null) for (i in 0...array.length)
+				__array[i] = array[i];
+		}
+		else
+		{
+			if (array == null) array = cast new Array<T>();
+			__array = cast array;
+		}
 
 		if (length > 0)
 		{
@@ -24,43 +33,43 @@ class IntVector implements IVector<Int>
 		this.fixed = fixed;
 	}
 
-	public function concat(a:IVector<Int> = null):IVector<Int>
+	public function concat(a:IVector<T> = null):IVector<T>
 	{
 		if (a == null)
 		{
-			return new IntVector(0, false, __array.copy());
+			return new ObjectVector(0, false, __array.copy());
 		}
 		else
 		{
-			var other:IntVector = cast a;
+			var other:ObjectVector<Dynamic> = cast a;
 
 			if (other.__array.length > 0)
 			{
-				return new IntVector(0, false, __array.concat(other.__array));
+				return new ObjectVector(0, false, __array.concat(cast other.__array));
 			}
 			else
 			{
-				return new IntVector(0, false, __array.copy());
+				return new ObjectVector(0, false, __array.copy());
 			}
 		}
 	}
 
-	public function copy():IVector<Int>
+	public function copy():IVector<T>
 	{
-		return new IntVector(0, fixed, __array.copy());
+		return new ObjectVector(0, fixed, __array.copy());
 	}
 
-	public function filter(callback:Int->Bool):IVector<Int>
+	public function filter(callback:T->Bool):IVector<T>
 	{
-		return new IntVector(0, fixed, __array.filter(callback));
+		return new ObjectVector(0, fixed, __array.filter(callback));
 	}
 
-	public function get(index:Int):Int
+	public function get(index:Int):T
 	{
 		return __array[index];
 	}
 
-	public function indexOf(x:Int, from:Int = 0):Int
+	public function indexOf(x:T, from:Int = 0):Int
 	{
 		for (i in from...__array.length)
 		{
@@ -73,7 +82,7 @@ class IntVector implements IVector<Int>
 		return -1;
 	}
 
-	public function insertAt(index:Int, element:Int):Void
+	public function insertAt(index:Int, element:T):Void
 	{
 		if (!fixed || index < __array.length)
 		{
@@ -81,7 +90,7 @@ class IntVector implements IVector<Int>
 		}
 	}
 
-	public function iterator():Iterator<Int>
+	public function iterator():Iterator<T>
 	{
 		return cast __array.iterator();
 	}
@@ -91,7 +100,7 @@ class IntVector implements IVector<Int>
 		return __array.join(sep);
 	}
 
-	public function lastIndexOf(x:Int, from:Null<Int> = null):Int
+	public function lastIndexOf(x:T, from:Null<Int> = null):Int
 	{
 		var i = (from == null || from >= __array.length) ? __array.length - 1 : from;
 
@@ -104,7 +113,7 @@ class IntVector implements IVector<Int>
 		return -1;
 	}
 
-	public function pop():Null<Int>
+	public function pop():T
 	{
 		if (!fixed)
 		{
@@ -116,7 +125,7 @@ class IntVector implements IVector<Int>
 		}
 	}
 
-	public function push(x:Int):Int
+	public function push(x:T):Int
 	{
 		if (!fixed)
 		{
@@ -128,23 +137,23 @@ class IntVector implements IVector<Int>
 		}
 	}
 
-	public function removeAt(index:Int):Int
+	public function removeAt(index:Int):T
 	{
 		if (!fixed || index < __array.length)
 		{
 			return __array.splice(index, 1)[0];
 		}
 
-		return 0;
+		return null;
 	}
 
-	public function reverse():IVector<Int>
+	public function reverse():IVector<T>
 	{
 		__array.reverse();
 		return this;
 	}
 
-	public function set(index:Int, value:Int):Int
+	public function set(index:Int, value:T):T
 	{
 		if (!fixed || index < __array.length)
 		{
@@ -156,7 +165,7 @@ class IntVector implements IVector<Int>
 		}
 	}
 
-	public function shift():Null<Int>
+	public function shift():T
 	{
 		if (!fixed)
 		{
@@ -168,20 +177,20 @@ class IntVector implements IVector<Int>
 		}
 	}
 
-	public function slice(startIndex:Int = 0, endIndex:Null<Int> = null):IVector<Int>
+	public function slice(startIndex:Int = 0, endIndex:Null<Int> = null):IVector<T>
 	{
 		if (endIndex == null) endIndex = 16777215;
-		return new IntVector(0, false, __array.slice(startIndex, endIndex));
+		return new ObjectVector(0, false, __array.slice(startIndex, endIndex));
 	}
 
-	public function sort(f:Int->Int->Int):Void
+	public function sort(f:T->T->Int):Void
 	{
 		__array.sort(f);
 	}
 
-	public function splice(pos:Int, len:Int):IVector<Int>
+	public function splice(pos:Int, len:Int):IVector<T>
 	{
-		return new IntVector(0, false, __array.splice(pos, len));
+		return new ObjectVector(0, false, __array.splice(pos, len));
 	}
 
 	@:keep public function toJSON():Dynamic
@@ -194,7 +203,7 @@ class IntVector implements IVector<Int>
 		return __array != null ? __array.toString() : null;
 	}
 
-	public function unshift(x:Int):Void
+	public function unshift(x:T):Void
 	{
 		if (!fixed)
 		{
@@ -222,7 +231,7 @@ class IntVector implements IVector<Int>
 			{
 				for (i in currentLength...value)
 				{
-					__array[i] = 0;
+					__array.push(null);
 				}
 			}
 			else

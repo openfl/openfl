@@ -36,7 +36,7 @@ import lime.graphics.RenderContextType;
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Rectangle)
 @:access(openfl.text.TextField)
-@:allow(openfl._internal.renderer)
+@:allow(openfl.display._internal)
 @:allow(openfl.display)
 @:allow(openfl.text)
 class DisplayObjectRenderer extends EventDispatcher

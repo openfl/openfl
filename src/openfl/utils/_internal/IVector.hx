@@ -1,4 +1,4 @@
-package openfl._internal;
+package openfl.utils._internal;
 
 interface IVector<T>
 {

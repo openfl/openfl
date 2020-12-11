@@ -1,7 +1,7 @@
 package openfl.external;
 
 #if !flash
-import openfl._internal.Lib;
+import openfl.utils._internal.Lib;
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

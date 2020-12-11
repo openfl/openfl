@@ -4,7 +4,7 @@ package openfl.profiler;
 #if ((cpp || neko) && hxtelemetry && !macro)
 import hxtelemetry.HxTelemetry;
 #end
-import openfl._internal.Lib;
+import openfl.utils._internal.Lib;
 
 /**
 	The Telemetry class lets an application profile ActionScript code and register handlers

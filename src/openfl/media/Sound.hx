@@ -9,7 +9,7 @@ import openfl.net.URLRequest;
 import openfl.utils.ByteArray;
 import openfl.utils.Future;
 #if lime
-import openfl._internal.utils.UInt8Array;
+import lime.utils.UInt8Array;
 import lime.media.AudioBuffer;
 import lime.media.AudioSource;
 #end
@@ -82,7 +82,7 @@ import lime.media.AudioSource;
 @:access(lime.utils.AssetLibrary)
 @:access(openfl.media.SoundMixer)
 @:access(openfl.media.SoundChannel.new)
-@:autoBuild(openfl._internal.macros.AssetsMacro.embedSound())
+@:autoBuild(openfl.utils._internal.AssetsMacro.embedSound())
 class Sound extends EventDispatcher
 {
 	/**

@@ -1,6 +1,6 @@
 package openfl.events;
 
-// import openfl._internal.utils.ObjectPool;
+// import openfl.utils._internal.ObjectPool;
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug

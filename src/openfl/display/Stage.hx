@@ -3,8 +3,8 @@ package openfl.display;
 #if !flash
 import haxe.CallStack;
 import haxe.ds.ArraySort;
-import openfl._internal.utils.Log;
-import openfl._internal.utils.TouchData;
+import openfl.utils._internal.Log;
+import openfl.utils._internal.TouchData;
 import openfl.display3D.Context3D;
 import openfl.display.Application as OpenFLApplication;
 import openfl.errors.IllegalOperationError;
