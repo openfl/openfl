@@ -343,7 +343,11 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		}
 
 		__mouseIsDown = true;
-		stage.addEventListener(MouseEvent.MOUSE_UP, __onMouseUp, true);
+
+		if (stage != null)
+		{
+			stage.addEventListener(MouseEvent.MOUSE_UP, __onMouseUp, true);
+		}
 	}
 
 	@:noCompletion private function __onMouseUp(event:MouseEvent):Void
