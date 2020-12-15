@@ -1,10 +1,10 @@
 package openfl.display;
 
 #if !flash
-import lime.graphics.opengl.GLProgram;
-import lime.graphics.opengl.GLShader;
+import openfl.display3D._internal.GLProgram;
+import openfl.display3D._internal.GLShader;
 import openfl.display._internal.ShaderBuffer;
-import lime.utils.Float32Array;
+import openfl.utils._internal.Float32Array;
 import openfl.utils._internal.Log;
 import openfl.display3D.Context3D;
 import openfl.display3D.Program3D;

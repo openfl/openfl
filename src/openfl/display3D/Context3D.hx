@@ -2,6 +2,9 @@ package openfl.display3D;
 
 #if !flash
 import openfl.display3D._internal.Context3DState;
+import openfl.display3D._internal.GLBuffer;
+import openfl.display3D._internal.GLFramebuffer;
+import openfl.display3D._internal.GLTexture;
 import openfl.display._internal.SamplerState;
 import openfl.display3D.textures.CubeTexture;
 import openfl.display3D.textures.RectangleTexture;
@@ -17,21 +20,18 @@ import openfl.events.EventDispatcher;
 import openfl.geom.Matrix3D;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import openfl.utils._internal.Float32Array;
+import openfl.utils._internal.UInt16Array;
+import openfl.utils._internal.UInt8Array;
 import openfl.utils.AGALMiniAssembler;
 import openfl.utils.ByteArray;
 #if lime
-import lime.graphics.opengl.GLBuffer;
-import lime.graphics.opengl.GLFramebuffer;
-import lime.graphics.opengl.GLTexture;
 import lime.graphics.Image;
 import lime.graphics.ImageBuffer;
 import lime.graphics.RenderContext;
 import lime.graphics.WebGLRenderContext;
 import lime.math.Rectangle as LimeRectangle;
 import lime.math.Vector2;
-import lime.utils.Float32Array;
-import lime.utils.UInt16Array;
-import lime.utils.UInt8Array;
 #end
 
 /**

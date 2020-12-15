@@ -3,6 +3,8 @@ package openfl.display;
 #if !flash
 import openfl.display._internal.IBitmapDrawableType;
 import openfl.display._internal.PerlinNoise;
+import openfl.display3D._internal.GLFramebuffer;
+import openfl.display3D._internal.GLRenderbuffer;
 import openfl.display3D.textures.TextureBase;
 import openfl.display3D.Context3DClearMask;
 import openfl.display3D.Context3D;
@@ -14,6 +16,9 @@ import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import openfl.utils._internal.Float32Array;
+import openfl.utils._internal.UInt8Array;
+import openfl.utils._internal.UInt16Array;
 import openfl.utils.ByteArray;
 import openfl.utils.Endian;
 import openfl.utils.Future;
@@ -26,17 +31,12 @@ import lime.app.Application;
 import lime.graphics.cairo.CairoImageSurface;
 import lime.graphics.cairo.CairoSurface;
 import lime.graphics.cairo.Cairo;
-import lime.graphics.opengl.GLFramebuffer;
-import lime.graphics.opengl.GLRenderbuffer;
 import lime.graphics.Image;
 import lime.graphics.ImageChannel;
 import lime.graphics.ImageBuffer;
 import lime.graphics.RenderContext;
 import lime.math.ARGB;
 import lime.math.Vector2;
-import lime.utils.Float32Array;
-import lime.utils.UInt8Array;
-import lime.utils.UInt16Array;
 #end
 #if (js && html5)
 import js.html.CanvasElement;

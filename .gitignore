@@ -19,6 +19,7 @@ tests/unit/test/*/TestSuite.hx
 tests/unit/test/*/*/ExampleTest.hx
 tests/unit/test/*/*/TestMain.hx
 tests/unit/test/*/*/TestSuite.hx
+tests/**/bin
 dist
 docs
 docs-api

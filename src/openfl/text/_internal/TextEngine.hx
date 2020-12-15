@@ -1,6 +1,7 @@
 package openfl.text._internal;
 
 import haxe.Timer;
+import openfl.display3D._internal.GLTexture;
 import openfl.utils._internal.Log;
 import openfl.Vector;
 import openfl.geom.Rectangle;
@@ -14,7 +15,6 @@ import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
 #if lime
 import lime.graphics.cairo.CairoFontFace;
-import lime.graphics.opengl.GLTexture;
 import lime.system.System;
 #end
 #if (js && html5)

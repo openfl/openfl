@@ -1,7 +1,7 @@
 package openfl.geom;
 
 #if !flash
-import lime.utils.ObjectPool;
+import openfl.utils._internal.ObjectPool;
 #if lime
 import lime.math.Rectangle as LimeRectangle;
 #end

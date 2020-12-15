@@ -1,9 +1,9 @@
 package openfl.display3D.textures;
 
 #if !flash
-import lime.graphics.opengl.GLFramebuffer;
-import lime.graphics.opengl.GLRenderbuffer;
-import lime.graphics.opengl.GLTexture;
+import openfl.display3D._internal.GLFramebuffer;
+import openfl.display3D._internal.GLRenderbuffer;
+import openfl.display3D._internal.GLTexture;
 import openfl.display3D._internal.ATFGPUFormat;
 import openfl.display._internal.SamplerState;
 import openfl.display.BitmapData;

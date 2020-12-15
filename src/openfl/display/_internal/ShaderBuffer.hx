@@ -1,7 +1,7 @@
 package openfl.display._internal;
 
-import lime.graphics.opengl.GLBuffer;
-import lime.utils.Float32Array;
+import openfl.display3D._internal.GLBuffer;
+import openfl.utils._internal.Float32Array;
 import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
 import openfl.display3D.Context3DWrapMode;

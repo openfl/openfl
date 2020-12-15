@@ -1,11 +1,13 @@
 package openfl.display._internal;
 
-import lime.graphics.cairo.CairoFilter;
-import lime.graphics.cairo.CairoPattern;
-import lime.math.Matrix3;
 import openfl.display.CairoRenderer;
 import openfl.display.DisplayObject;
 import openfl.geom.Matrix;
+#if lime
+import lime.graphics.cairo.CairoFilter;
+import lime.graphics.cairo.CairoPattern;
+import lime.math.Matrix3;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -17,7 +19,9 @@ import openfl.geom.Matrix;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class CairoShape
 {
+	#if lime_cairo
 	private static var sourceTransform:Matrix3 = new Matrix3();
+	#end
 
 	public static function render(shape:DisplayObject, renderer:CairoRenderer):Void
 	{

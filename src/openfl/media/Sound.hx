@@ -9,7 +9,7 @@ import openfl.net.URLRequest;
 import openfl.utils.ByteArray;
 import openfl.utils.Future;
 #if lime
-import lime.utils.UInt8Array;
+import openfl.utils._internal.UInt8Array;
 import lime.media.AudioBuffer;
 import lime.media.AudioSource;
 #end
