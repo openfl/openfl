@@ -1377,19 +1377,19 @@ class TextField extends InteractiveObject
 		__updateScrollV();
 		__updateScrollH();
 		
-		#if dom 
-		if(stage!=null && stage.focus == this && __renderedOnCanvasWhileOnDOM)
-		{
-			__stopCursorTimer();
-			__startCursorTimer();
-		}
-		#else
 		if(stage!=null && stage.focus == this)
 		{
+			#if dom
+			if (__renderedOnCanvasWhileOnDOM)
+			{
+				__stopCursorTimer();
+				__startCursorTimer();
+			}
+			#else
 			__stopCursorTimer();
 			__startCursorTimer();
+			#end				
 		}
-		#end
 	}
 
 	/**
