@@ -1,7 +1,7 @@
 package flash.display3D;
 
 #if flash
-import lime.utils.ArrayBufferView;
+import openfl.utils._internal.ArrayBufferView;
 import openfl.utils.ByteArray;
 import openfl.Vector;
 

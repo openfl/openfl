@@ -1,24 +1,21 @@
 package openfl.media;
 
 #if !flash
+import openfl.display3D._internal.GLBuffer;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.display3D.Context3D;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
-import openfl.display.CanvasRenderer;
 import openfl.display.DisplayObject;
-import openfl.display.DOMRenderer;
-import openfl.display.OpenGLRenderer;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.net.NetStream;
+import openfl.utils._internal.Float32Array;
+import openfl.utils._internal.UInt16Array;
 #if lime
-import lime.graphics.opengl.GLBuffer;
 import lime.graphics.RenderContext;
-import lime.utils.Float32Array;
-import lime.utils.UInt16Array;
 #end
 
 /**
@@ -166,19 +163,19 @@ class Video extends DisplayObject
 	@:noCompletion private var __buffer:GLBuffer;
 	@:noCompletion private var __bufferAlpha:Float;
 	@:noCompletion private var __bufferColorTransform:ColorTransform;
-	@:noCompletion private var __bufferContext:RenderContext;
+	@:noCompletion private var __bufferContext:#if lime RenderContext #else Dynamic #end;
 	@:noCompletion private var __bufferData:Float32Array;
 	@:noCompletion private var __dirty:Bool;
 	@:noCompletion private var __height:Float;
 	@:noCompletion private var __indexBuffer:IndexBuffer3D;
-	@:noCompletion private var __indexBufferContext:RenderContext;
+	@:noCompletion private var __indexBufferContext:#if lime RenderContext #else Dynamic #end;
 	@:noCompletion private var __indexBufferData:UInt16Array;
 	@:noCompletion private var __stream:NetStream;
 	@:noCompletion private var __texture:RectangleTexture;
 	@:noCompletion private var __textureTime:Float;
 	@:noCompletion private var __uvRect:Rectangle;
 	@:noCompletion private var __vertexBuffer:VertexBuffer3D;
-	@:noCompletion private var __vertexBufferContext:RenderContext;
+	@:noCompletion private var __vertexBufferContext:#if lime RenderContext #else Dynamic #end;
 	@:noCompletion private var __vertexBufferData:Float32Array;
 	@:noCompletion private var __width:Float;
 
@@ -296,6 +293,7 @@ class Video extends DisplayObject
 
 	@:noCompletion private function __getIndexBuffer(context:Context3D):IndexBuffer3D
 	{
+		#if (lime || js)
 		var gl = context.gl;
 
 		if (__indexBuffer == null || __indexBufferContext != context.__context)
@@ -314,6 +312,7 @@ class Video extends DisplayObject
 			__indexBuffer = context.createIndexBuffer(6);
 			__indexBuffer.uploadFromTypedArray(__indexBufferData);
 		}
+		#end
 
 		return __indexBuffer;
 	}
@@ -348,6 +347,7 @@ class Video extends DisplayObject
 
 	@:noCompletion private function __getVertexBuffer(context:Context3D):VertexBuffer3D
 	{
+		#if (lime || js)
 		var gl = context.gl;
 
 		if (__vertexBuffer == null || __vertexBufferContext != context.__context)
@@ -388,6 +388,7 @@ class Video extends DisplayObject
 			__vertexBuffer = context.createVertexBuffer(3, VERTEX_BUFFER_STRIDE);
 			__vertexBuffer.uploadFromTypedArray(__vertexBufferData);
 		}
+		#end
 
 		return __vertexBuffer;
 	}

@@ -1,7 +1,7 @@
 package openfl.display._internal;
 
-import lime.utils.Float32Array;
-import lime.utils.UInt16Array;
+import openfl.utils._internal.Float32Array;
+import openfl.utils._internal.UInt16Array;
 import openfl.display3D.Context3D;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;

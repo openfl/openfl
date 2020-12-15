@@ -3,7 +3,7 @@ package openfl.geom;
 #if !flash
 import openfl.utils._internal.ObjectPool;
 #if lime
-import lime.utils.Float32Array;
+import openfl.utils._internal.Float32Array;
 import lime.math.Matrix3;
 #end
 

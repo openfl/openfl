@@ -12,12 +12,12 @@ import openfl.display3D.VertexBuffer3D;
 import openfl.errors.ArgumentError;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+import openfl.utils._internal.Float32Array;
+import openfl.utils._internal.UInt16Array;
+import openfl.utils._internal.ObjectPool;
 import openfl.Vector;
 #if lime
 import lime.graphics.cairo.Cairo;
-import lime.utils.Float32Array;
-import lime.utils.ObjectPool;
-import lime.utils.UInt16Array;
 #end
 #if (js && html5)
 import js.html.CanvasElement;
