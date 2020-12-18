@@ -19,11 +19,27 @@ class Build extends Script
 			}
 		}
 
-		var i = 0;
-		for (test in tests)
+		if (StringTools.startsWith(command, "test-"))
 		{
-			Log.println('\nRUNNING TEST GROUP: $test (${++i}/${tests.length})\n');
-			System.runCommand(test, "hxp");
+			var testName = command.substr("test-".length).toLowerCase();
+			var index = tests.indexOf(testName);
+			if (index > -1)
+			{
+				System.runCommand(tests[index], "hxp");
+			}
+			else
+			{
+				Log.error("Cannot find test group \"" + testName + "\"");
+			}
+		}
+		else
+		{
+			var i = 0;
+			for (test in tests)
+			{
+				Log.println('\nRUNNING TEST GROUP: $test (${++i}/${tests.length})\n');
+				System.runCommand(test, "hxp");
+			}
 		}
 	}
 }

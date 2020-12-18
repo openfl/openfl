@@ -14,14 +14,19 @@ class Script extends hxp.Script
 		if (command == "integration-test") command = "test";
 		if (command == "functional-test") command = "test-functional";
 
-		switch (command)
+		if (StringTools.startsWith(command, "test"))
 		{
-			case "test", "test-unit", "test-integration", "test-functional":
-				test();
-			case "docs":
-				docs();
-			default:
-				Log.error("Unknown command: \"" + command + "\"");
+			test();
+		}
+		else
+		{
+			switch (command)
+			{
+				case "docs":
+					docs();
+				default:
+					Log.error("Unknown command: \"" + command + "\"");
+			}
 		}
 	}
 
@@ -68,9 +73,13 @@ class Script extends hxp.Script
 				testHaxelib();
 			}
 		}
-		else
+		else if (command == "test")
 		{
 			System.runCommand("tests", "hxp");
+		}
+		else
+		{
+			System.runCommand("tests", "hxp", [command]);
 		}
 	}
 
