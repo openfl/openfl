@@ -75,11 +75,11 @@ class Script extends hxp.Script
 		}
 		else if (command == "test")
 		{
-			System.runCommand("tests", "hxp");
+			System.runCommand("tests", "hxp", Log.verbose ? ["-verbose"] : null);
 		}
 		else
 		{
-			System.runCommand("tests", "hxp", [command]);
+			System.runCommand("tests", "hxp", Log.verbose ? [command, "-verbose"] : [command]);
 		}
 	}
 

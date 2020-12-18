@@ -13,6 +13,8 @@ class Build extends Script
 		hxml.lib("utest");
 		hxml.lib("lime");
 		hxml.define("openfl-unit-testing");
+		// hxml.define("integration");
+		// TODO
 		hxml.neko = "bin/Test.n";
 		hxml.build();
 

@@ -16,19 +16,14 @@ class Build extends Script
 		hxml.neko = "bin/Test.n";
 		hxml.build();
 
-		var limePath = Haxelib.getPath(new Haxelib("lime"));
-		var is64 = (System.hostArchitecture == X64);
-
-		switch (System.hostPlatform)
+		var platformName = switch (System.hostPlatform)
 		{
-			case WINDOWS:
-				System.copyFile(Path.combine(limePath, "ndll/Windows" + (is64 ? "64" : "") + "/lime.ndll"), "bin/lime.ndll");
-			case MAC:
-				System.copyFile(Path.combine(limePath, "ndll/Mac/lime.ndll"), "bin/lime.ndll");
-			default:
-				System.copyFile(Path.combine(limePath, "ndll/Linux" + (is64 ? "64" : "") + "/lime.ndll"), "bin/lime.ndll");
+			case WINDOWS: "Windows" + (System.hostArchitecture == X64 ? "64" : "");
+			case MAC: "Mac";
+			default: "Linux" + (System.hostArchitecture == X64 ? "64" : "");
 		}
 
+		System.copyFile(NDLL.getLibraryPath(new NDLL("lime", new Haxelib("lime")), platformName), "bin/lime.ndll");
 		System.runCommand("bin", "neko", ["Test.n"]);
 	}
 }
