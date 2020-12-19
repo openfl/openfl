@@ -1,4 +1,4 @@
-[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE.md) [![Haxelib Version](https://img.shields.io/github/tag/openfl/openfl.svg?style=flat&label=haxelib)](https://lib.haxe.org/p/openfl) [![Build Status](https://img.shields.io/github/workflow/status/openfl/openfl/Unit%20Tests/develop)](https://github.com/openfl/openfl/actions)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE.md) [![Haxelib Version](https://img.shields.io/github/tag/openfl/openfl.svg?style=flat&label=haxelib&color=orange)](https://lib.haxe.org/p/openfl) [![Build Status](https://img.shields.io/github/workflow/status/openfl/openfl/Unit%20Tests/develop)](https://github.com/openfl/openfl/actions) [![Discord Server](https://img.shields.io/discord/415681294446493696.svg?color=7289da)](https://discordapp.com/invite/tDgq8EE)
 
 
 <br />
