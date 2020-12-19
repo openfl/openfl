@@ -8,9 +8,12 @@ class Build extends Script
 	{
 		super();
 
+		// TODO: Headless run?
+
 		if (command == "default")
 		{
-			command = "test";
+			// command = "test";
+			command = "build";
 		}
 
 		if (commandArgs.length == 0)

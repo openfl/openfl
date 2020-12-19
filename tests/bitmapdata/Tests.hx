@@ -10,6 +10,7 @@ class Tests
 		runner.addCase(new BitmapDataTest());
 		runner.addCase(new JPEGEncoderOptionsTest());
 		runner.addCase(new PNGEncoderOptionsTest());
+		runner.addCase(new BitmapDataFileIOTest());
 		Report.create(runner);
 		runner.run();
 	}

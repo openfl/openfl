@@ -14,6 +14,7 @@ class Tests
 		runner.addCase(new TimerEventTest());
 		runner.addCase(new TimerTest());
 		runner.addCase(new VectorTest());
+		runner.addCase(new TimerAsyncTest());
 		Report.create(runner);
 		runner.run();
 	}

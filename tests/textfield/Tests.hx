@@ -17,6 +17,7 @@ class Tests
 		runner.addCase(new TextFormatAlignTest());
 		runner.addCase(new TextFormatTest());
 		runner.addCase(new TextLineMetricsTest());
+		// runner.addCase(new TextFieldRenderTest());
 		Report.create(runner);
 		runner.run();
 	}

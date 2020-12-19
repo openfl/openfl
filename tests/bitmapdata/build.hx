@@ -13,8 +13,11 @@ class Build extends Script
 		hxml.lib("utest");
 		hxml.lib("lime");
 		hxml.define("openfl-unit-testing");
+		hxml.define("integration");
 		hxml.neko = "bin/Test.n";
 		hxml.build();
+
+		System.recursiveCopy("assets", "bin");
 
 		var platformName = switch (System.hostPlatform)
 		{
