@@ -1,4 +1,4 @@
-[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE.md) [![Haxelib Version](https://img.shields.io/github/tag/openfl/openfl.svg?style=flat&label=haxelib)](http://lib.haxe.org/p/openfl) [![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fopenfl%2Fopenfl%2Fbadge%3Fref%3Ddevelop&style=flat)](https://actions-badge.atrox.dev/openfl/openfl/goto?ref=develop)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE.md) [![Haxelib Version](https://img.shields.io/github/tag/openfl/openfl.svg?style=flat&label=haxelib)](https://lib.haxe.org/p/openfl) [![Build Status](https://img.shields.io/github/workflow/status/openfl/openfl/Unit%20Tests/develop)](https://github.com/openfl/openfl/actions)
 
 
 <br />
