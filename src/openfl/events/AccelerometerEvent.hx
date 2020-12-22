@@ -1,7 +1,7 @@
 package openfl.events;
 
 #if !flash
-// import openfl.utils._internal.ObjectPool;
+// import openfl.utils.ObjectPool;
 
 /**
 	The Accelerometer class dispatches AccelerometerEvent objects when

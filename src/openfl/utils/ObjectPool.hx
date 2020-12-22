@@ -1,4 +1,4 @@
-package openfl.utils._internal;
+package openfl.utils;
 
 #if !lime
 import haxe.ds.ObjectMap;

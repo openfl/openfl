@@ -1,7 +1,7 @@
 package openfl.events;
 
 #if !flash
-// import openfl.utils._internal.ObjectPool;
+// import openfl.utils.ObjectPool;
 import openfl.display.InteractiveObject;
 import openfl.geom.Point;
 import openfl.utils.ByteArray;

@@ -1,7 +1,7 @@
 package openfl.events;
 
 #if !flash
-// import openfl.utils._internal.ObjectPool;
+// import openfl.utils.ObjectPool;
 
 /**
 	A Timer object dispatches a TimerEvent objects whenever the Timer object

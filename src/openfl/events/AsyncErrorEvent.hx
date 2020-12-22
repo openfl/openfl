@@ -3,7 +3,7 @@ package openfl.events;
 #if !flash
 import haxe.io.Error;
 
-// import openfl.utils._internal.ObjectPool;
+// import openfl.utils.ObjectPool;
 
 /**
 	An object dispatches an AsyncErrorEvent when an exception is thrown from

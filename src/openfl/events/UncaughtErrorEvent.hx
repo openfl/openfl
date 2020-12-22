@@ -1,7 +1,7 @@
 package openfl.events;
 
 #if !flash
-// import openfl.utils._internal.ObjectPool;
+// import openfl.utils.ObjectPool;
 
 /**
 	An UncaughtErrorEvent object is dispatched by an instance of the

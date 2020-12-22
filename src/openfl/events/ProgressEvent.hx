@@ -1,7 +1,7 @@
 package openfl.events;
 
 #if !flash
-// import openfl.utils._internal.ObjectPool;
+// import openfl.utils.ObjectPool;
 
 /**
 	A ProgressEvent object is dispatched when a load operation has begun or a

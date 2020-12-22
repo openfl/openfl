@@ -12,7 +12,7 @@ import openfl.display._internal.Context3DTextField;
 import openfl.display._internal.Context3DTilemap;
 import openfl.display._internal.Context3DVideo;
 import openfl.display._internal.ShaderBuffer;
-import openfl.utils._internal.ObjectPool;
+import openfl.utils.ObjectPool;
 import openfl.display3D.Context3DClearMask;
 import openfl.display3D.Context3D;
 import openfl.geom.ColorTransform;
