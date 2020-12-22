@@ -32,10 +32,14 @@ class CairoTextField
 	{
 		#if lime_cairo
 		var textEngine = textField.__textEngine;
-		var bounds = (textEngine.background || textEngine.border) ? textEngine.bounds : textEngine.textBounds;
+		//textBounds maximizes rendering efficiency by clipping the rectangle to a minimal size containing only the text. Measurements 
+		//will always be smaller than bounds.
+		var useTextBounds = !(textEngine.background || textEngine.border);
+		var bounds = useTextBounds ? textEngine.textBounds : textEngine.bounds;
 		var graphics = textField.__graphics;
 		var cairo = graphics.__cairo;
-
+		var cursorOffsetX = 0.0;
+		
 		if (textField.__dirty)
 		{
 			textField.__updateLayout();
@@ -44,7 +48,40 @@ class CairoTextField
 			{
 				graphics.__bounds = new Rectangle();
 			}
-
+			//There might be a better way of handling this!			
+			if (textField.text.length == 0)
+			{
+				var boundsWidth = textEngine.bounds.width - 4;
+				var align = textField.defaultTextFormat.align;
+				cursorOffsetX = (align == LEFT) ? 0 : (align == RIGHT) ? boundsWidth : boundsWidth / 2;
+				switch(align){
+					case LEFT :
+						cursorOffsetX += textField.defaultTextFormat.leftMargin;
+						cursorOffsetX += textField.defaultTextFormat.indent;
+						cursorOffsetX += textField.defaultTextFormat.blockIndent;
+					case RIGHT:
+						cursorOffsetX -= textField.defaultTextFormat.rightMargin;
+					case CENTER:
+						cursorOffsetX += (textField.defaultTextFormat.leftMargin / 2);
+						cursorOffsetX -= (textField.defaultTextFormat.rightMargin / 2);
+						cursorOffsetX += textField.defaultTextFormat.indent;
+						cursorOffsetX += textField.defaultTextFormat.blockIndent;
+					case START:
+						//not supported?
+					case JUSTIFY:
+						cursorOffsetX += textField.defaultTextFormat.leftMargin;
+						cursorOffsetX += textField.defaultTextFormat.indent;
+						cursorOffsetX += textField.defaultTextFormat.blockIndent;
+					case END:
+						//not supported in Textfield yet?
+				}
+				if (useTextBounds)
+				{
+					bounds.y = textEngine.bounds.y;
+					bounds.x = cursorOffsetX;
+				}
+			}
+				
 			graphics.__bounds.copyFrom(bounds);
 
 			// graphics.__bounds.x += textField.__offsetX;
@@ -361,7 +398,7 @@ class CairoTextField
 		}
 		else if (textField.__caretIndex > -1 && textEngine.selectable && textField.__showCursor)
 		{
-			var scrollX = -textField.scrollH;
+			var scrollX = -textField.scrollH + (useTextBounds ? 0 : cursorOffsetX);
 			var scrollY = 0.0;
 
 			for (i in 0...textField.scrollV - 1)
