@@ -203,7 +203,7 @@ class Loader extends DisplayObjectContainer
 		__unloaded = true;
 	}
 
-	#if (openfl >= "9.1.0")
+	#if (openfl >= "9.2.0")
 	#error "Need to move addChild and sundry to private __addChild internally"
 	public override function addChild(child:DisplayObject):DisplayObject
 	{
@@ -789,7 +789,7 @@ class Loader extends DisplayObjectContainer
 					contentLoaderInfo.dispatchEvent(new Event(Event.COMPLETE));
 				}).onError(function(e)
 				{
-						__dispatchError(e);
+					__dispatchError(e);
 				});
 			}
 		}
