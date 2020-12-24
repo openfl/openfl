@@ -868,7 +868,7 @@ class TextField extends InteractiveObject
 
 		__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __text.length;
 
-		setSelection(__text.length, __text.length);
+		__selectionIndex = __caretIndex = __text.length;
 	}
 
 	// function copyRichText() : String;
@@ -1376,6 +1376,7 @@ class TextField extends InteractiveObject
 
 		__updateScrollV();
 		__updateScrollH();
+		
 		if (stage != null && stage.focus == this)
 		{
 			__stopCursorTimer();
@@ -2138,7 +2139,7 @@ class TextField extends InteractiveObject
 				__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end, __text.length));
 		}
 
-		setSelection(beginIndex + newText.length, beginIndex + newText.length);
+		__selectionIndex = __caretIndex = beginIndex + newText.length;
 
 		__dirty = true;
 		__layoutDirty = true;
@@ -2222,6 +2223,8 @@ class TextField extends InteractiveObject
 			}
 
 			__layoutDirty = false;
+			
+			setSelection(__selectionIndex, __caretIndex);
 		}
 	}
 
@@ -2644,7 +2647,7 @@ class TextField extends InteractiveObject
 		#else
 		__updateText(value);
 		#end
-		setSelection(length, length);
+		__selectionIndex = __caretIndex = length;
 
 		return value;
 	}
@@ -2873,7 +2876,7 @@ class TextField extends InteractiveObject
 		__isHTML = false;
 
 		__updateText(value);
-		setSelection(0, 0);
+		__selectionIndex = __caretIndex = 0;
 
 		return value;
 	}
