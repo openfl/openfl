@@ -748,12 +748,12 @@ class TextEngine
 		var currentFormat = TextField.__defaultTextFormat.clone();
 
 		// line metrics
-		var leading = 0; // TODO: is maxLeading needed, just like with ascent? In case multiple formats in the same line have different leading values
+		var leading = 0; // the leading of the 0th character in a line is what's used for the whole line
 		var ascent = 0.0, maxAscent = 0.0;
 		var descent = 0.0;
 
 		// paragraph metrics
-		var align:TextFormatAlign = LEFT;
+		var align:TextFormatAlign = LEFT; // the metrics of the 0th character in a paragraph are used for the whole paragraph
 		var blockIndent = 0;
 		var bullet = false;
 		var indent = 0;
