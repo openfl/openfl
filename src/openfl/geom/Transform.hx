@@ -199,19 +199,15 @@ class Transform
 
 	@:noCompletion private function set_colorTransform(value:ColorTransform):ColorTransform
 	{
-		if (!__colorTransform.__equals(value, false))
+		if (value != null)
 		{
 			__colorTransform.__copyFrom(value);
 
-			if (value != null)
-			{
-				__displayObject.alpha = value.alphaMultiplier;
-			}
-
+			__displayObject.alpha = value.alphaMultiplier;
 			__displayObject.__setRenderDirty();
 		}
 
-		return __colorTransform;
+		return value;
 	}
 
 	@:noCompletion private function get_concatenatedMatrix():Matrix
