@@ -1,6 +1,7 @@
 package openfl.text._internal;
 
 import haxe.Timer;
+import haxe.ds.StringMap;
 import openfl.display3D._internal.GLTexture;
 import openfl.utils._internal.Log;
 import openfl.Vector;
@@ -93,6 +94,7 @@ class TextEngine
 	@:noCompletion private var __textFormat:TextFormat;
 	@:noCompletion private var __textLayout:TextLayout;
 	@:noCompletion private var __texture:GLTexture;
+	@:noCompletion private var __wordCache:StringMap<Array<#if (js && html5) Float #else GlyphPosition #end>> = new StringMap();
 	// @:noCompletion private var __tileData:Map<Tilesheet, Array<Float>>;
 	// @:noCompletion private var __tileDataLength:Map<Tilesheet, Int>;
 	// @:noCompletion private var __tilesheets:Map<Tilesheet, Bool>;
@@ -789,55 +791,67 @@ class TextEngine
 			{
 				letterSpacing = formatRange.format.letterSpacing;
 			}
-
+			
+			var word:String = textField.text.substring(startIndex, endIndex);
+			
 			#if (js && html5)
 			if (__useIntAdvances == null)
 			{
 				__useIntAdvances = ~/Trident\/7.0/.match(Browser.navigator.userAgent); // IE
 			}
-
+			
+			//Todo: Smarter cache using reference count based system used statically for all fields
 			if (__useIntAdvances)
 			{
 				// slower, but more accurate if browser returns Int measurements
-
-				var previousWidth = 0.0;
-				var width;
-
-				for (i in startIndex...endIndex)
+				if (!__wordCache.exists(word))
 				{
-					width = __context.measureText(text.substring(startIndex, i + 1)).width;
-					// if (i > 0) width += letterSpacing;
+					var previousWidth = 0.0;
+					var width;
+				
+					for (i in startIndex...endIndex)
+					{
+						width = __context.measureText(text.substring(startIndex, i + 1)).width;
+						// if (i > 0) width += letterSpacing;
 
-					positions.push(width - previousWidth);
+						positions.push(width - previousWidth);
 
-					previousWidth = width;
+						previousWidth = width;
+					}
+					__wordCache.set(word, positions);
+					return positions;
 				}
+				return __wordCache.get(word);
 			}
 			else
 			{
-				for (i in startIndex...endIndex)
+				if (!__wordCache.exists(word))
 				{
-					var advance;
-
-					if (i < text.length - 1)
+					for (i in startIndex...endIndex)
 					{
-						// Advance can be less for certain letter combinations, e.g. 'Yo' vs. 'Do'
-						var nextWidth = __context.measureText(text.charAt(i + 1)).width;
-						var twoWidths = __context.measureText(text.substr(i, 2)).width;
-						advance = twoWidths - nextWidth;
-					}
-					else
-					{
-						advance = __context.measureText(text.charAt(i)).width;
-					}
+						var advance;
 
-					// if (i > 0) advance += letterSpacing;
+						if (i < text.length - 1)
+						{
+							// Advance can be less for certain letter combinations, e.g. 'Yo' vs. 'Do'
+							var nextWidth = __context.measureText(text.charAt(i + 1)).width;
+							var twoWidths = __context.measureText(text.substr(i, 2)).width;
+							advance = twoWidths - nextWidth;
+						}
+						else
+						{
+							advance = __context.measureText(text.charAt(i)).width;
+						}
 
-					positions.push(advance);
+						// if (i > 0) advance += letterSpacing;
+
+						positions.push(advance);
+					}
+					__wordCache.set(word, positions);
+					return positions;
 				}
-			}
-
-			return positions;
+				return __wordCache.get(word);
+			}			
 			#else
 			if (__textLayout == null)
 			{
@@ -861,6 +875,13 @@ class TextEngine
 			// __textLayout.script = ARABIC;
 
 			__textLayout.text = text.substring(startIndex, endIndex);
+			
+			if (__wordCache.exists(word)){
+				return __wordCache.get(word);
+			}
+			
+			__wordCache.set(word, __textLayout.positions);
+			
 			return __textLayout.positions;
 			#end
 		}
