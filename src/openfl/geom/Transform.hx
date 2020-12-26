@@ -207,7 +207,7 @@ class Transform
 			__displayObject.__setRenderDirty();
 		}
 
-		return value;
+		return __colorTransform;
 	}
 
 	@:noCompletion private function get_concatenatedMatrix():Matrix
