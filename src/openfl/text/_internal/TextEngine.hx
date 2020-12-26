@@ -84,6 +84,7 @@ class TextEngine
 
 	private var textField:TextField;
 	@:noCompletion private var __cursorTimer:Timer;
+	@:noCompletion private var __formatCache:StringMap<StringMap<Array<#if (js && html5) Float #else GlyphPosition #end>>> = new StringMap();
 	@:noCompletion private var __hasFocus:Bool;
 	@:noCompletion private var __isKeyDown:Bool;
 	@:noCompletion private var __measuredHeight:Int;
@@ -94,7 +95,6 @@ class TextEngine
 	@:noCompletion private var __textFormat:TextFormat;
 	@:noCompletion private var __textLayout:TextLayout;
 	@:noCompletion private var __texture:GLTexture;
-	@:noCompletion private var __wordCache:StringMap<Array<#if (js && html5) Float #else GlyphPosition #end>> = new StringMap();
 	// @:noCompletion private var __tileData:Map<Tilesheet, Array<Float>>;
 	// @:noCompletion private var __tileDataLength:Map<Tilesheet, Int>;
 	// @:noCompletion private var __tilesheets:Map<Tilesheet, Bool>;
@@ -792,19 +792,31 @@ class TextEngine
 				letterSpacing = formatRange.format.letterSpacing;
 			}
 			
-			var word:String = textField.text.substring(startIndex, endIndex);
+			//Todo: Smarter cache using reference count based system used statically for all TextEngines
+			var wordCache:StringMap < Array < #if (js && html5) Float #else GlyphPosition #end >> = null;
+			var cacheKey:String = formatRange.format.__cacheKey;			
+			if (__formatCache.exists(cacheKey)){
+				wordCache = __formatCache.get(cacheKey);				
+			} 
+			else 
+			{
+				wordCache = new StringMap();
+				__formatCache.set(cacheKey, wordCache);				
+			}
+			
 			
 			#if (js && html5)
+			var word:String = textField.text.substring(startIndex, endIndex);
+			
 			if (__useIntAdvances == null)
 			{
 				__useIntAdvances = ~/Trident\/7.0/.match(Browser.navigator.userAgent); // IE
 			}
 			
-			//Todo: Smarter cache using reference count based system used statically for all fields
 			if (__useIntAdvances)
 			{
 				// slower, but more accurate if browser returns Int measurements
-				if (!__wordCache.exists(word))
+				if (!wordCache.exists(word))
 				{
 					var previousWidth = 0.0;
 					var width;
@@ -818,14 +830,14 @@ class TextEngine
 
 						previousWidth = width;
 					}
-					__wordCache.set(word, positions);
+					wordCache.set(word, positions);
 					return positions;
 				}
-				return __wordCache.get(word);
+				return wordCache.get(word);
 			}
 			else
 			{
-				if (!__wordCache.exists(word))
+				if (!wordCache.exists(word))
 				{
 					for (i in startIndex...endIndex)
 					{
@@ -847,10 +859,10 @@ class TextEngine
 
 						positions.push(advance);
 					}
-					__wordCache.set(word, positions);
+					wordCache.set(word, positions);
 					return positions;
 				}
-				return __wordCache.get(word);
+				return wordCache.get(word);
 			}			
 			#else
 			if (__textLayout == null)
@@ -876,11 +888,11 @@ class TextEngine
 
 			__textLayout.text = text.substring(startIndex, endIndex);
 			
-			if (__wordCache.exists(word)){
-				return __wordCache.get(word);
+			if (wordCache.exists(__textLayout.text)){
+				return wordCache.get(__textLayout.text);
 			}
 			
-			__wordCache.set(word, __textLayout.positions);
+			wordCache.set(__textLayout.text, __textLayout.positions);
 			
 			return __textLayout.positions;
 			#end
