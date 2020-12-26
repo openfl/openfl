@@ -962,24 +962,15 @@ class TextField extends InteractiveObject
 	{
 		if (charIndex < 0 || charIndex > text.length) return -1;
 
-		var index = __textEngine.getLineBreakIndex();
-		var startIndex = 0;
-
-		while (index > -1)
+		for (i in 0...__textEngine.lineBreaks.length)
 		{
-			if (index < charIndex)
+			if (charIndex <= __textEngine.lineBreaks[i])
 			{
-				startIndex = index + 1;
+				return i == 0 ? 0 : __textEngine.lineBreaks[i - 1] + 1;
 			}
-			else if (index >= charIndex)
-			{
-				break;
-			}
-
-			index = __textEngine.getLineBreakIndex(index + 1);
 		}
 
-		return startIndex;
+		return __textEngine.lineBreaks[__textEngine.lineBreaks.length - 1] + 1;
 	}
 
 	/**

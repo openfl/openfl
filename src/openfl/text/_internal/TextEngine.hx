@@ -564,15 +564,38 @@ class TextEngine
 			return text.substring(index > 0 ? lineBreaks[index - 1] : 0, lineBreaks[index]);
 		}
 	}
+	
+	public function getLineBreaks():Void
+	{
+		lineBreaks.length = 0;
+		
+		var index = -1;
+		
+		var cr = -1, lf = -1;
+		while (index < text.length)
+		{
+			cr = text.indexOf("\n", index + 1);
+			lf = text.indexOf("\r", index + 1);
+			
+			index = 
+				if (cr == -1) lf;
+				else if (lf == -1) cr;
+				else if (cr < lf) cr;
+				else lf;
+				
+			if (index > -1) lineBreaks.push(index);
+			else break;
+		}
+	}
 
 	public function getLineBreakIndex(startIndex:Int = 0):Int
 	{
-		var cr = text.indexOf("\n", startIndex);
-		var lf = text.indexOf("\r", startIndex);
-
-		if (cr == -1) return lf;
-		if (lf == -1) return cr;
-		return cr < lf ? cr : lf;
+		for (lineBreak in lineBreaks)
+		{
+			if (lineBreak >= startIndex) return lineBreak;
+		}
+		
+		return -1;
 	}
 
 	private function getLineMeasurements():Void
@@ -1763,6 +1786,7 @@ class TextEngine
 		}
 		else
 		{
+			getLineBreaks();
 			getLayoutGroups();
 			getLineMeasurements();
 			setTextAlignment();
