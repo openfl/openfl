@@ -10,6 +10,7 @@ import utest.Test;
 class TimerAsyncTest extends Test
 {
 	// #if test_timer
+	@:timeout(600)
 	public function test_timerFinished(async:Async)
 	{
 		// TODO: Lower MS values make this test fails completely
@@ -24,6 +25,7 @@ class TimerAsyncTest extends Test
 		}, 150);
 	}
 
+	@:timeout(1000)
 	public function test_timerRunning(async:Async)
 	{
 		var timer = new Timer(100, 5);
@@ -37,6 +39,7 @@ class TimerAsyncTest extends Test
 		}, 250);
 	}
 
+	@:timeout(1000)
 	public function test_repeatCountDuringTimer(async:Async)
 	{
 		var timer = new Timer(100, 5);
