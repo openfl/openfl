@@ -23,10 +23,11 @@ jobs:
 
     - name: Install dependencies
       run: |
-        haxelib install lime > /dev/null
-        haxelib install utest > /dev/null
-        haxelib install hxp > /dev/null
+        haxelib install lime
+        haxelib install utest
+        haxelib install hxp
         haxelib run hxp --install-hxp-alias
+        haxelib run lime setup -alias
 
     - name: Install "openfl" command alias
       run: |
