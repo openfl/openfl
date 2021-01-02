@@ -39,35 +39,19 @@ jobs:
       run: |
         hxp unit-test neko
 
-  npm:
-    runs-on: ubuntu-16.04
-
-    steps:
-    - uses: actions/checkout@v1
+    - name: Notify Discord (success)
+      uses: appleboy/discord-action@master
       with:
-        submodules: true
+        webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
+        webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+        color: "#00C07F"
+        message: "https://github.com/openfl/openfl/actions\nUnit tests succeeded."
 
-    - name: Setup environment
-      run: |
-        sudo apt-get install -y --no-install-recommends wget
-        wget --no-check-certificate -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add -
-        sudo h -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google-chrome.list'
-        sudo add-apt-repository ppa:haxe/releases -y
-        sudo apt-get update
-        sudo apt-get install google-chrome-stable haxe npm -y
-        mkdir $GITHUB_WORKSPACE/.haxelib
-        haxelib setup $GITHUB_WORKSPACE/.haxelib
-        haxelib dev openfl $GITHUB_WORKSPACE
-
-    - name: Install dependencies
-      run: |
-        sudo npm install
-        
-    - name: Build openfl.js
-      run: |
-        npm run build
-
-    - name: Run unit tests
-      run: |
-        npm run test
-
+    - name: Notify Discord (failure)
+      uses: appleboy/discord-action@master
+      if: failure()
+      with:
+        webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
+        webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
+        color: "#FF6562"
+        message: "https://github.com/openfl/openfl/actions\nUnit tests failed."
