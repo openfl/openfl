@@ -7,7 +7,9 @@ import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.IOErrorEvent;
 import openfl.events.ProgressEvent;
+import openfl.events.SecurityErrorEvent;
 import openfl.utils.ByteArray;
+import openfl._internal.utils.UploadPostHelper;
 #if lime
 import lime.ui.FileDialog;
 import lime.utils.Bytes;
@@ -902,11 +904,16 @@ class FileReference extends EventDispatcher
 	**/
 	public function load():Void
 	{
+		__load(openFileDialog_onComplete);
+	}
+
+	private function __load(callback:Dynamic):Void
+	{
 		#if sys
 		if (__path != null)
 		{
 			data = Bytes.fromFile(__path);
-			openFileDialog_onComplete();
+			callback();
 		}
 		#elseif (js && html5)
 		var file = __inputControl.files[0];
@@ -914,7 +921,7 @@ class FileReference extends EventDispatcher
 		reader.onload = function(evt)
 		{
 			data = ByteArray.fromArrayBuffer(cast evt.target.result);
-			openFileDialog_onComplete();
+			callback();
 		}
 		reader.readAsArrayBuffer(file);
 		#end
@@ -1283,7 +1290,22 @@ class FileReference extends EventDispatcher
 	**/
 	public function upload(request:URLRequest, uploadDataFieldName:String = "Filedata", testUpload:Bool = false):Void
 	{
-		openfl.utils._internal.Lib.notImplemented();
+		__load(function():Void {
+			var urlRequest:URLRequest = new URLRequest();
+			urlRequest.idleTimeout = request.idleTimeout;
+			urlRequest.url = request.url;
+			urlRequest.contentType = 'multipart/form-data; boundary=' + UploadPostHelper.getBoundary();
+			urlRequest.method = URLRequestMethod.POST;
+			urlRequest.data = UploadPostHelper.getPostData(name, data, uploadDataFieldName, request.data);
+			urlRequest.requestHeaders.push( new URLRequestHeader( 'Cache-Control', 'no-cache' ) );
+
+			__urlLoader = new URLLoader();
+			__urlLoader.addEventListener(Event.COMPLETE, urlLoader_onUploadComplete);
+			__urlLoader.addEventListener(IOErrorEvent.IO_ERROR, urlLoader_onIOError);
+			__urlLoader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, urlLoader_onSecurityError);
+			__urlLoader.addEventListener(ProgressEvent.PROGRESS, urlLoader_onProgress);
+			__urlLoader.load(urlRequest);
+		});
 	}
 	#end
 
@@ -1374,6 +1396,11 @@ class FileReference extends EventDispatcher
 	}
 
 	@:noCompletion private function urlLoader_onIOError(event:IOErrorEvent):Void
+	{
+		dispatchEvent(event);
+	}
+
+	@:noCompletion private function urlLoader_onSecurityError(event:SecurityErrorEvent):Void
 	{
 		dispatchEvent(event);
 	}
