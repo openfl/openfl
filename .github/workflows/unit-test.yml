@@ -12,13 +12,28 @@ jobs:
       with:
         submodules: true
 
+    - name: Setup environment
+      run: |
+        sudo add-apt-repository ppa:haxe/releases -y
+        sudo apt-get update
+        sudo apt-get install haxe -y
+        mkdir $GITHUB_WORKSPACE/.haxelib
+        haxelib setup $GITHUB_WORKSPACE/.haxelib
+        haxelib dev openfl $GITHUB_WORKSPACE
+
     - name: Install dependencies
       run: |
-        npm install
+        haxelib install utest > /dev/null
+        haxelib install hxp > /dev/null
+        haxelib run hxp --install-hxp-alias
 
-    - name: Run Tests
+    - name: Install "openfl" command alias
       run: |
-        npm test
+        haxelib run openfl setup -alias -y
+
+    - name: Run unit tests
+      run: |
+        hxp unit-test neko
 
     - name: Notify Discord (success)
       uses: appleboy/discord-action@master
@@ -27,7 +42,7 @@ jobs:
         webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
         webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
         color: "#00C07F"
-        message: "https://github.com/openfl/openfl/actions\nNPM unit tests succeeded."
+        message: "https://github.com/openfl/openfl/actions\nUnit tests succeeded."
 
     - name: Notify Discord (failure)
       uses: appleboy/discord-action@master
@@ -36,5 +51,4 @@ jobs:
         webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
         webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
         color: "#FF6562"
-        message: "https://github.com/openfl/openfl/actions\nNPM unit tests failed."
-
+        message: "https://github.com/openfl/openfl/actions\nUnit tests failed."
