@@ -23,9 +23,9 @@ jobs:
 
     - name: Install dependencies
       run: |
-        haxelib install lime > /dev/null
-        haxelib install utest > /dev/null
-        haxelib install hxp > /dev/null
+        haxelib install lime --quiet
+        haxelib install utest --quiet
+        haxelib install hxp --quiet
         haxelib run hxp --install-hxp-alias
         haxelib run lime setup -alias
 
