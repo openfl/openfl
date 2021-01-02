@@ -21,6 +21,6 @@ class Build extends Script
 			commandArgs.push("neko");
 		}
 
-		System.runCommand("", "lime", [command].concat(commandArgs));
+		System.runCommand("", "haxelib", ["run", "lime", command].concat(commandArgs));
 	}
 }

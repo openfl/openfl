@@ -27,8 +27,6 @@ jobs:
         haxelib install utest --quiet
         haxelib install hxp --quiet
         haxelib run hxp --install-hxp-alias
-        haxelib run lime setup -alias -y
-        lime || alias lime="haxelib run lime"
 
     - name: Install "openfl" command alias
       run: |
