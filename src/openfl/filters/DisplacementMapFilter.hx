@@ -121,13 +121,13 @@ import lime.math.Vector4;
 	/**
 		The mode for the filter. Possible values are DisplacementMapFilterMode
 		constants:
-		* `DisplacementMapFilterMode.WRAP` — Wraps the displacement value to
+		* `DisplacementMapFilterMode.WRAP` � Wraps the displacement value to
 		the other side of the source image.
-		* `DisplacementMapFilterMode.CLAMP` — Clamps the displacement value
+		* `DisplacementMapFilterMode.CLAMP` � Clamps the displacement value
 		to the edge of the source image.
-		* `DisplacementMapFilterMode.IGNORE` — If the displacement value is
+		* `DisplacementMapFilterMode.IGNORE` � If the displacement value is
 		out of range, ignores the displacement and uses the source pixel.
-		* `DisplacementMapFilterMode.COLOR` — If the displacement value is
+		* `DisplacementMapFilterMode.COLOR` � If the displacement value is
 		outside the image, substitutes the values in the `color` and `alpha`
 		properties.
 

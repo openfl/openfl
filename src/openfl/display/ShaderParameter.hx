@@ -1,7 +1,7 @@
 package openfl.display;
 
 #if !flash
-import openfl._internal.utils.Float32Array;
+import openfl.utils._internal.Float32Array;
 import openfl.display3D.Context3D;
 
 /**

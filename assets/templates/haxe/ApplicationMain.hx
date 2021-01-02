@@ -116,7 +116,7 @@ class ApplicationMain
 			@:privateAccess preloader.start();
 		});
 
-		preloader.onComplete.add(start.bind(cast(app.window, openfl.display.Window).stage));
+		preloader.onComplete.add(start.bind((cast app.window:openfl.display.Window).stage));
 
 		for (library in ManifestResources.preloadLibraries)
 		{
@@ -190,7 +190,7 @@ class ApplicationMain
 					{
 						var current = stage.getChildAt (0);
 
-						if (current == null || !Std.is(current, openfl.display.DisplayObjectContainer))
+						if (current == null || !(current is openfl.display.DisplayObjectContainer))
 						{
 							current = new openfl.display.MovieClip();
 							stage.addChild(current);

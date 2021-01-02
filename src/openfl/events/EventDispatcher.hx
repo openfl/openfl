@@ -8,8 +8,8 @@ package openfl.events;
 	class allows any object on the display list to be an event target and as
 	such, to use the methods of the IEventDispatcher interface.
 
-	Event targets are an important part of the Flash<sup>®</sup> Player and
-	Adobe<sup>®</sup> AIR<sup>®</sup> event model. The event target serves as
+	Event targets are an important part of the Flash<sup>�</sup> Player and
+	Adobe<sup>�</sup> AIR<sup>�</sup> event model. The event target serves as
 	the focal point for how events flow through the display list hierarchy.
 	When an event such as a mouse click or a keypress occurs, Flash Player or
 	the AIR application dispatches an event object into the event flow from the
@@ -550,7 +550,8 @@ private class Listener
 	public function match(callback:Dynamic->Void, useCapture:Bool):Bool
 	{
 		#if hl // https://github.com/HaxeFoundation/hashlink/issues/301
-		return ((Reflect.compareMethods(this.callback, callback) || Reflect.compare(this.callback, callback) == 0) && this.useCapture == useCapture);
+		return ((Reflect.compareMethods(this.callback, callback) || Reflect.compare(this.callback, callback) == 0)
+			&& this.useCapture == useCapture);
 		#else
 		return (Reflect.compareMethods(this.callback, callback) && this.useCapture == useCapture);
 		#end

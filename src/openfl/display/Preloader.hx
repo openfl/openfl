@@ -17,7 +17,7 @@ import openfl.Lib;
 class Preloader
 {
 	@SuppressWarnings("checkstyle:Dynamic")
-	public var onComplete:#if lime lime.app.Event < Void -> Void >= new lime.app.Event<Void->Void>() #else Dynamic #end;
+	public var onComplete:#if lime lime.app.Event<Void->Void> = new lime.app.Event<Void->Void>() #else Dynamic #end;
 
 	@:noCompletion private var complete:Bool;
 	@:noCompletion private var display:Sprite;
@@ -109,8 +109,8 @@ class Preloader
 @:dox(hide) class DefaultPreloader extends Sprite
 {
 	@:noCompletion private var endAnimation:Int;
-	@:noCompletion private var outline:Sprite;
-	@:noCompletion private var progress:Sprite;
+	@:noCompletion private var outline:Shape;
+	@:noCompletion private var progress:Shape;
 	@:noCompletion private var startAnimation:Int;
 
 	public function new()
@@ -136,7 +136,7 @@ class Preloader
 
 		var padding = 2;
 
-		outline = new Sprite();
+		outline = new Shape();
 		outline.graphics.beginFill(color, 0.07);
 		outline.graphics.drawRect(0, 0, width, height);
 		outline.x = x;
@@ -144,7 +144,7 @@ class Preloader
 		outline.alpha = 0;
 		addChild(outline);
 
-		progress = new Sprite();
+		progress = new Shape();
 		progress.graphics.beginFill(color, 0.35);
 		progress.graphics.drawRect(0, 0, width - padding * 2, height - padding * 2);
 		progress.x = x + padding;
@@ -262,8 +262,7 @@ class Preloader
 		if (percent < 0) percent = 0;
 		if (percent > 1) percent = 1;
 
-		outline.alpha = percent;
-		progress.alpha = percent;
+		outline.alpha = progress.alpha = percent;
 	}
 
 	@:noCompletion private function this_onProgress(event:ProgressEvent):Void

@@ -1,14 +1,11 @@
 package openfl.display3D;
 
 #if !flash
-import openfl._internal.backend.gl.GLBuffer;
-import openfl._internal.backend.gl.GLFramebuffer;
-import openfl._internal.backend.gl.GLTexture;
-import openfl._internal.renderer.context3D.Context3DState;
-import openfl._internal.renderer.SamplerState;
-import openfl._internal.utils.Float32Array;
-import openfl._internal.utils.UInt16Array;
-import openfl._internal.utils.UInt8Array;
+import openfl.display3D._internal.Context3DState;
+import openfl.display3D._internal.GLBuffer;
+import openfl.display3D._internal.GLFramebuffer;
+import openfl.display3D._internal.GLTexture;
+import openfl.display._internal.SamplerState;
 import openfl.display3D.textures.CubeTexture;
 import openfl.display3D.textures.RectangleTexture;
 import openfl.display3D.textures.TextureBase;
@@ -23,6 +20,9 @@ import openfl.events.EventDispatcher;
 import openfl.geom.Matrix3D;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import openfl.utils._internal.Float32Array;
+import openfl.utils._internal.UInt16Array;
+import openfl.utils._internal.UInt8Array;
 import openfl.utils.AGALMiniAssembler;
 import openfl.utils.ByteArray;
 #if lime
@@ -127,7 +127,7 @@ import lime.math.Vector2;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl._internal.renderer.context3D.Context3DState)
+@:access(openfl.display3D._internal.Context3DState)
 @:access(openfl.display3D.textures.CubeTexture)
 @:access(openfl.display3D.textures.RectangleTexture)
 @:access(openfl.display3D.textures.TextureBase)
@@ -2399,19 +2399,19 @@ import lime.math.Vector2;
 			var width = 0, height = 0;
 
 			// TODO: Avoid use of Std.is
-			if (Std.is(__state.renderToTexture, Texture))
+			if ((__state.renderToTexture is Texture))
 			{
 				var texture2D:Texture = cast __state.renderToTexture;
 				width = texture2D.__width;
 				height = texture2D.__height;
 			}
-			else if (Std.is(__state.renderToTexture, RectangleTexture))
+			else if ((__state.renderToTexture is RectangleTexture))
 			{
 				var rectTexture:RectangleTexture = cast __state.renderToTexture;
 				width = rectTexture.__width;
 				height = rectTexture.__height;
 			}
-			else if (Std.is(__state.renderToTexture, CubeTexture))
+			else if ((__state.renderToTexture is CubeTexture))
 			{
 				var cubeTexture:CubeTexture = cast __state.renderToTexture;
 				width = cubeTexture.__size;

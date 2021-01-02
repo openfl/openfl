@@ -67,7 +67,7 @@ import js.Browser;
 
 	The FileReference and FileReferenceList classes also do not provide
 	methods for authentication. With servers that require authentication, you
-	can download files with the Flash<sup>஼/sup> Player browser plug-in, but
+	can download files with the Flash<sup>?/sup> Player browser plug-in, but
 	uploading (on all players) and downloading (on the stand-alone or external
 	player) fails. Listen for FileReference events to determine whether
 	operations complete successfully and to handle errors.
@@ -220,8 +220,8 @@ import js.Browser;
 							  Valid protocols are HTTP and HTTPS.
 
 							  **Important:** Only applications running in a
-							  browser נthat is, using the browser plug-in
-							  or ActiveX control נand content running in
+							  browser ?that is, using the browser plug-in
+							  or ActiveX control ?and content running in
 							  Adobe AIR can provide a dialog box to prompt the
 							  user to enter a user name and password for
 							  authentication, and then only for downloads. For
@@ -442,9 +442,9 @@ class FileReference extends EventDispatcher
 		object was not populated, a call to get the value of this property
 		returns `null`.
 
-		For Windows, Linux, and Mac OS X, the file extension נthe portion
+		For Windows, Linux, and Mac OS X, the file extension ?the portion
 		of the `name` property that follows the last occurrence of the dot (.)
-		character נidentifies the file type.
+		character ?identifies the file type.
 
 		@throws IllegalOperationError If the `FileReference.browse()`,
 									  `FileReferenceList.browse()`, or
@@ -661,8 +661,8 @@ class FileReference extends EventDispatcher
 		3.0 Developer's Guide_.
 
 		**Note**: If your server requires user authentication, only SWF files
-		running in a browser נthat is, using the browser plug-in or ActiveX
-		control נcan provide a dialog box to prompt the user for a user
+		running in a browser ?that is, using the browser plug-in or ActiveX
+		control ?can provide a dialog box to prompt the user for a user
 		name and password for authentication, and only for downloads. For
 		uploads using the plug-in or ActiveX control, or for uploads and
 		downloads using the stand-alone or external player, the file transfer
@@ -1036,7 +1036,7 @@ class FileReference extends EventDispatcher
 		if (data == null) return;
 
 		#if desktop
-		if (Std.is(data, ByteArrayData))
+		if ((data is ByteArrayData))
 		{
 			__data = data;
 		}
@@ -1051,7 +1051,7 @@ class FileReference extends EventDispatcher
 		saveFileDialog.onSelect.add(saveFileDialog_onSelect);
 		saveFileDialog.browse(SAVE, defaultFileName != null ? Path.extension(defaultFileName) : null, defaultFileName);
 		#elseif (js && html5)
-		if (Std.is(data, ByteArrayData))
+		if ((data is ByteArrayData))
 		{
 			__data = data;
 		}
@@ -1126,8 +1126,8 @@ class FileReference extends EventDispatcher
 		`POST` operations.
 
 		**Note**: If your server requires user authentication, only SWF files
-		running in a browser נthat is, using the browser plug-in or ActiveX
-		control נcan provide a dialog box to prompt the user for a username
+		running in a browser ?that is, using the browser plug-in or ActiveX
+		control ?can provide a dialog box to prompt the user for a username
 		and password for authentication, and only for downloads. For uploads
 		using the plug-in or ActiveX control, or for uploads and downloads
 		using the stand-alone or external player, the file transfer fails.
@@ -1373,7 +1373,7 @@ class FileReference extends EventDispatcher
 	@:noCompletion private function urlLoader_onComplete(event:Event):Void
 	{
 		#if desktop
-		if (Std.is(__urlLoader.data, ByteArrayData))
+		if ((__urlLoader.data is ByteArrayData))
 		{
 			__data = __urlLoader.data;
 		}

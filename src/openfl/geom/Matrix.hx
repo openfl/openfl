@@ -1,9 +1,9 @@
 package openfl.geom;
 
 #if !flash
-import openfl._internal.utils.ObjectPool;
+import openfl.utils.ObjectPool;
 #if lime
-import openfl._internal.utils.Float32Array;
+import openfl.utils._internal.Float32Array;
 import lime.math.Matrix3;
 #end
 

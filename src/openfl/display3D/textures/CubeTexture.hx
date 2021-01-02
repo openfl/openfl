@@ -2,12 +2,12 @@ package openfl.display3D.textures;
 
 #if !flash
 import haxe.Timer;
-import openfl._internal.backend.gl.GLFramebuffer;
-import openfl._internal.formats.atf.ATFReader;
-import openfl._internal.renderer.SamplerState;
-import openfl._internal.utils.ArrayBufferView;
-import openfl._internal.utils.Log;
-import openfl._internal.utils.UInt8Array;
+import openfl.display3D._internal.GLFramebuffer;
+import openfl.display3D._internal.ATFReader;
+import openfl.display._internal.SamplerState;
+import openfl.utils._internal.ArrayBufferView;
+import openfl.utils._internal.Log;
+import openfl.utils._internal.UInt8Array;
 import openfl.display.BitmapData;
 import openfl.errors.IllegalOperationError;
 import openfl.events.Event;

@@ -5,8 +5,8 @@ import openfl.events.Event;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
 #if gl_stats
-import openfl._internal.renderer.context3D.stats.Context3DStats;
-import openfl._internal.renderer.context3D.stats.DrawCallContext;
+import openfl.display._internal.stats.Context3DStats;
+import openfl.display._internal.stats.DrawCallContext;
 #end
 #if flash
 import openfl.Lib;

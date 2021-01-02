@@ -1,7 +1,7 @@
 package openfl.events;
 
 #if !flash
-import openfl._internal.utils.ObjectPool;
+// import openfl.utils.ObjectPool;
 import openfl.display.InteractiveObject;
 import openfl.geom.Point;
 import openfl.utils.ByteArray;
@@ -314,8 +314,7 @@ class TouchEvent extends Event
 	**/
 	public var ctrlKey:Bool;
 
-	@SuppressWarnings("checkstyle:FieldDocComment")
-	@:noCompletion @:dox(hide) public var delta:Int;
+	@SuppressWarnings("checkstyle:FieldDocComment") @:noCompletion @:dox(hide) public var delta:Int;
 
 	/**
 		Indicates whether the first point of contact is mapped to mouse events.
@@ -408,8 +407,8 @@ class TouchEvent extends Event
 	**/
 	public var touchPointID:Int;
 
-	@:noCompletion private static var __pool:ObjectPool<TouchEvent> = new ObjectPool<TouchEvent>(function() return new TouchEvent(null),
-	function(event) event.__init());
+	// @:noCompletion private static var __pool:ObjectPool<TouchEvent> = new ObjectPool<TouchEvent>(function() return new TouchEvent(null),
+	// function(event) event.__init());
 
 	/**
 		Creates an Event object that contains information about touch events.

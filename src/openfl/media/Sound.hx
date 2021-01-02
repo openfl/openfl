@@ -9,7 +9,7 @@ import openfl.net.URLRequest;
 import openfl.utils.ByteArray;
 import openfl.utils.Future;
 #if lime
-import openfl._internal.utils.UInt8Array;
+import openfl.utils._internal.UInt8Array;
 import lime.media.AudioBuffer;
 import lime.media.AudioSource;
 #end
@@ -82,7 +82,7 @@ import lime.media.AudioSource;
 @:access(lime.utils.AssetLibrary)
 @:access(openfl.media.SoundMixer)
 @:access(openfl.media.SoundChannel.new)
-@:autoBuild(openfl._internal.macros.AssetsMacro.embedSound())
+@:autoBuild(openfl.utils._internal.AssetsMacro.embedSound())
 class Sound extends EventDispatcher
 {
 	/**
@@ -236,8 +236,8 @@ class Sound extends EventDispatcher
 	@:noCompletion private static function __init__()
 	{
 		untyped Object.defineProperties(Sound.prototype, {
-			"id3": {get: untyped __js__("function () { return this.get_id3 (); }")},
-			"length": {get: untyped __js__("function () { return this.get_length (); }")},
+			"id3": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_id3 (); }")},
+			"length": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_length (); }")},
 		});
 	}
 	#end

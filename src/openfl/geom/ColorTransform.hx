@@ -1,9 +1,9 @@
 package openfl.geom;
 
 #if !flash
-import openfl._internal.utils.ObjectPool;
+import openfl.utils.ObjectPool;
 #if lime
-import openfl._internal.utils.Float32Array;
+import openfl.utils._internal.Float32Array;
 import lime.math.ColorMatrix;
 #end
 
@@ -57,7 +57,7 @@ class ColorTransform
 	@:noCompletion private static var __limeColorMatrix:Float32Array;
 	#end
 	@:noCompletion private static var __pool:ObjectPool<ColorTransform> = new ObjectPool<ColorTransform>(function() return new ColorTransform(),
-	function(ct) ct.__identity());
+		function(ct) ct.__identity());
 
 	/**
 		A decimal value that is multiplied with the alpha transparency channel
@@ -132,8 +132,8 @@ class ColorTransform
 	@:noCompletion private static function __init__()
 	{
 		untyped Object.defineProperty(ColorTransform.prototype, "color", {
-			get: untyped __js__("function () { return this.get_color (); }"),
-			set: untyped __js__("function (v) { return this.set_color (v); }")
+			get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_color (); }"),
+			set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_color (v); }")
 		});
 	}
 	#end

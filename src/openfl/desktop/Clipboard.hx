@@ -127,7 +127,7 @@ class Clipboard
 			}
 		});
 		untyped global.Object.defineProperty(Clipboard.prototype, "formats", {
-			get: untyped __js__("function () { return this.get_formats (); }")
+			get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_formats (); }")
 		});
 	}
 	#end
@@ -457,7 +457,7 @@ class Clipboard
 		use a handler function to provide the data for a file dragged from an
 		AIR application to the file system, the operating system calls the
 		data handler function as soon as the drag gesture leaves the AIR
-		application�typically resulting in an undesireable pause as the file
+		application?typically resulting in an undesireable pause as the file
 		data is downloaded or created. You can use a URLFilePromise for this
 		purpose instead.
 
@@ -506,7 +506,7 @@ class Clipboard
 	@SuppressWarnings("checkstyle:Dynamic")
 	public function setDataHandler(format:ClipboardFormats, handler:Void->Dynamic, serializable:Bool = true):Bool
 	{
-		openfl._internal.Lib.notImplemented();
+		openfl.utils._internal.Lib.notImplemented();
 		return false;
 	}
 	#end

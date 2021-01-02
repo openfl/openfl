@@ -1,7 +1,7 @@
 package openfl.events;
 
 #if !flash
-import openfl._internal.utils.ObjectPool;
+// import openfl.utils.ObjectPool;
 import openfl.display.InteractiveObject;
 
 /**
@@ -138,8 +138,8 @@ class FocusEvent extends Event
 	**/
 	public var shiftKey:Bool;
 
-	@:noCompletion private static var __pool:ObjectPool<FocusEvent> = new ObjectPool<FocusEvent>(function() return new FocusEvent(null),
-	function(event) event.__init());
+	// @:noCompletion private static var __pool:ObjectPool<FocusEvent> = new ObjectPool<FocusEvent>(function() return new FocusEvent(null),
+	// function(event) event.__init());
 
 	/**
 		Creates an Event object with specific information relevant to focus

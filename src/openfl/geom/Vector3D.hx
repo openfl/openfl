@@ -128,8 +128,8 @@ class Vector3D
 		});
 
 		untyped Object.defineProperties(Vector3D.prototype, {
-			"length": {get: untyped __js__("function () { return this.get_length (); }")},
-			"lengthSquared": {get: untyped __js__("function () { return this.get_lengthSquared (); }")},
+			"length": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_length (); }")},
+			"lengthSquared": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_lengthSquared (); }")},
 		});
 	}
 	#end

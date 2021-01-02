@@ -1,7 +1,7 @@
 package openfl.events;
 
 #if !flash
-import openfl._internal.utils.ObjectPool;
+// import openfl.utils.ObjectPool;
 
 /**
 	The Event class is used as the base class for the creation of Event
@@ -708,8 +708,7 @@ class Event
 	**/
 	public var type(default, null):String;
 
-	@:noCompletion private static var __pool:ObjectPool<Event> = new ObjectPool<Event>(function() return new Event(null), function(event) event.__init());
-
+	// @:noCompletion private static var __pool:ObjectPool<Event> = new ObjectPool<Event>(function() return new Event(null), function(event) event.__init());
 	@:noCompletion private var __isCanceled:Bool;
 	@:noCompletion private var __isCanceledNow:Bool;
 	@:noCompletion private var __preventDefault:Bool;
@@ -888,7 +887,7 @@ class Event
 		{
 			arg = Reflect.field(this, param);
 
-			if (Std.is(arg, String))
+			if ((arg is String))
 			{
 				output += ' $param="$arg"';
 			}

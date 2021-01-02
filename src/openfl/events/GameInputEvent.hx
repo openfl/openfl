@@ -1,7 +1,7 @@
 package openfl.events;
 
 #if !flash
-import openfl._internal.utils.ObjectPool;
+// import openfl.utils.ObjectPool;
 import openfl.ui.GameInputDevice;
 
 /**
@@ -33,8 +33,8 @@ import openfl.ui.GameInputDevice;
 	**/
 	public var device(default, null):GameInputDevice;
 
-	@:noCompletion private static var __pool:ObjectPool<GameInputEvent> = new ObjectPool<GameInputEvent>(function() return new GameInputEvent(null),
-	function(event) event.__init());
+	// @:noCompletion private static var __pool:ObjectPool<GameInputEvent> = new ObjectPool<GameInputEvent>(function() return new GameInputEvent(null),
+	// function(event) event.__init());
 
 	public function new(type:String, bubbles:Bool = true, cancelable:Bool = false, device:GameInputDevice = null)
 	{

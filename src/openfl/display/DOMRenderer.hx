@@ -1,6 +1,14 @@
 package openfl.display;
 
 #if !flash
+import openfl.display._internal.DOMBitmap;
+// import openfl.display._internal.DOMBitmapData;
+import openfl.display._internal.DOMDisplayObject;
+import openfl.display._internal.DOMDisplayObjectContainer;
+import openfl.display._internal.DOMSimpleButton;
+import openfl.display._internal.DOMTextField;
+import openfl.display._internal.DOMTilemap;
+import openfl.display._internal.DOMVideo;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 #if lime
@@ -25,7 +33,7 @@ import js.html.Element;
 @:access(openfl.display.Stage3D)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
-@:allow(openfl._internal.renderer.dom)
+@:allow(openfl.display._internal)
 @:allow(openfl.display)
 class DOMRenderer extends DisplayObjectRenderer
 {
@@ -59,7 +67,7 @@ class DOMRenderer extends DisplayObjectRenderer
 		#if (js && html5)
 		DisplayObject.__supportDOM = true;
 
-		var prefix = untyped __js__("(function () {
+		var prefix = untyped #if haxe4 js.Syntax.code #else __js__ #end ("(function () {
 		  var styles = window.getComputedStyle(document.documentElement, ''),
 			pre = (Array.prototype.slice
 			  .call(styles)
@@ -296,7 +304,84 @@ class DOMRenderer extends DisplayObjectRenderer
 		}
 
 		__z = 1;
-		object.__renderDOM(this);
+		__renderDrawable(object);
+	}
+
+	@:noCompletion private function __renderDrawable(object:IBitmapDrawable):Void
+	{
+		if (object == null) return;
+
+		switch (object.__drawableType)
+		{
+			case BITMAP_DATA:
+			// DOMBitmapData.renderDrawable(cast object, this);
+			case STAGE, SPRITE:
+				DOMDisplayObjectContainer.renderDrawable(cast object, this);
+			case BITMAP:
+				DOMBitmap.renderDrawable(cast object, this);
+			case SHAPE:
+				DOMDisplayObject.renderDrawable(cast object, this);
+			case SIMPLE_BUTTON:
+				DOMSimpleButton.renderDrawable(cast object, this);
+			case TEXT_FIELD:
+				DOMTextField.renderDrawable(cast object, this);
+			case VIDEO:
+				DOMVideo.renderDrawable(cast object, this);
+			case TILEMAP:
+				DOMTilemap.renderDrawable(cast object, this);
+			case DOM_ELEMENT:
+				#if (js && html5)
+				var domElement:DOMElement = cast object;
+				if (domElement.stage != null && domElement.__worldVisible && domElement.__renderable)
+				{
+					if (!domElement.__active)
+					{
+						__initializeElement(domElement, domElement.__element);
+						domElement.__active = true;
+					}
+
+					__updateClip(domElement);
+					__applyStyle(domElement, true, true, true);
+				}
+				else
+				{
+					if (domElement.__active)
+					{
+						element.removeChild(domElement.__element);
+						domElement.__active = false;
+					}
+				}
+
+				DOMDisplayObject.renderDrawable(domElement, this);
+				#end
+			default:
+		}
+	}
+
+	@:noCompletion private function __renderDrawableClear(object:IBitmapDrawable):Void
+	{
+		if (object == null) return;
+
+		switch (object.__drawableType)
+		{
+			case BITMAP_DATA:
+			// DOMBitmapData.renderDrawableClear(cast object, this);
+			case STAGE, SPRITE:
+				DOMDisplayObjectContainer.renderDrawableClear(cast object, this);
+			case BITMAP:
+				DOMBitmap.renderDrawableClear(cast object, this);
+			case SHAPE:
+				DOMDisplayObject.renderDrawableClear(cast object, this);
+			case SIMPLE_BUTTON:
+				DOMSimpleButton.renderDrawableClear(cast object, this);
+			case TEXT_FIELD:
+				DOMTextField.renderDrawableClear(cast object, this);
+			case VIDEO:
+				DOMVideo.renderDrawableClear(cast object, this);
+			case TILEMAP:
+				DOMTilemap.renderDrawableClear(cast object, this);
+			default:
+		}
 	}
 
 	@:noCompletion private override function __setBlendMode(value:BlendMode):Void

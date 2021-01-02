@@ -127,10 +127,10 @@ class Sprite extends DisplayObjectContainer
 	{
 		untyped Object.defineProperties(Sprite.prototype, {
 			"buttonMode": {
-				get: untyped __js__("function () { return this.get_buttonMode (); }"),
-				set: untyped __js__("function (v) { return this.set_buttonMode (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_buttonMode (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_buttonMode (v); }")
 			},
-			"graphics": {get: untyped __js__("function () { return this.get_graphics (); }")},
+			"graphics": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_graphics (); }")},
 		});
 	}
 	#end
@@ -145,6 +145,7 @@ class Sprite extends DisplayObjectContainer
 	{
 		super();
 
+		__drawableType = SPRITE;
 		__buttonMode = false;
 		useHandCursor = true;
 	}

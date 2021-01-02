@@ -1,15 +1,15 @@
 package openfl.display3D.textures;
 
 #if !flash
-import openfl._internal.backend.gl.GLFramebuffer;
-import openfl._internal.backend.gl.GLRenderbuffer;
-import openfl._internal.backend.gl.GLTexture;
-import openfl._internal.formats.atf.ATFGPUFormat;
-import openfl._internal.renderer.SamplerState;
+import openfl.display3D._internal.GLFramebuffer;
+import openfl.display3D._internal.GLRenderbuffer;
+import openfl.display3D._internal.GLTexture;
+import openfl.display3D._internal.ATFGPUFormat;
+import openfl.display._internal.SamplerState;
 import openfl.display.BitmapData;
 import openfl.events.EventDispatcher;
 import openfl.errors.Error;
-import openfl._internal.utils.Log;
+import openfl.utils._internal.Log;
 #if lime
 import lime._internal.graphics.ImageCanvasUtil;
 import lime.graphics.Image;
@@ -26,7 +26,7 @@ import lime.graphics.RenderContext;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl._internal.renderer.SamplerState)
+@:access(openfl.display._internal.SamplerState)
 @:access(openfl.display3D.Context3D)
 @:access(openfl.display.BitmapData)
 @:access(openfl.display.Stage)

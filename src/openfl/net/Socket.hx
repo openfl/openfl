@@ -8,7 +8,7 @@ import haxe.io.Error;
 import haxe.Serializer;
 import haxe.Timer;
 import haxe.Unserializer;
-import openfl._internal.Lib;
+import openfl.utils._internal.Lib;
 import openfl.errors.IOError;
 import openfl.errors.SecurityError;
 import openfl.events.Event;
@@ -192,10 +192,13 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	@:noCompletion private static function __init__()
 	{
 		untyped Object.defineProperties(Socket.prototype, {
-			"bytesAvailable": {get: untyped __js__("function () { return this.get_bytesAvailable (); }")},
-			"bytesPending": {get: untyped __js__("function () { return this.get_bytesPending (); }")},
-			"connected": {get: untyped __js__("function () { return this.get_connected (); }")},
-			"endian": {get: untyped __js__("function () { return this.get_endian (); }"), set: untyped __js__("function (v) { return this.set_endian (v); }")},
+			"bytesAvailable": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_bytesAvailable (); }")},
+			"bytesPending": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_bytesPending (); }")},
+			"connected": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_connected (); }")},
+			"endian": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_endian (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_endian (v); }")
+			},
 		});
 	}
 	#end
@@ -1008,7 +1011,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 			__input.clear();
 		}
 
-		if (Std.is(msg.data, String))
+		if ((msg.data is String))
 		{
 			__input.position = __input.length;
 			var cachePosition = __input.position;

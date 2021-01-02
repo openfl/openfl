@@ -296,7 +296,7 @@ class SharedObject extends EventDispatcher
 	@:noCompletion private static function __init__()
 	{
 		untyped global.Object.defineProperty(SharedObject.prototype, "size", {
-			get: untyped __js__("function () { return this.get_size (); }")
+			get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_size (); }")
 		});
 	}
 	#end
@@ -389,7 +389,7 @@ class SharedObject extends EventDispatcher
 	**/
 	public function connect(myConnection:NetConnection, params:String = null):Void
 	{
-		openfl._internal.Lib.notImplemented();
+		openfl.utils._internal.Lib.notImplemented();
 	}
 	#end
 
@@ -805,7 +805,7 @@ class SharedObject extends EventDispatcher
 	**/
 	public static function getRemote(name:String, remotePath:String = null, persistence:Dynamic = false, secure:Bool = false):SharedObject
 	{
-		openfl._internal.Lib.notImplemented();
+		openfl.utils._internal.Lib.notImplemented();
 
 		return null;
 	}
@@ -821,7 +821,7 @@ class SharedObject extends EventDispatcher
 	**/
 	public function send(args:Array<Dynamic>):Void
 	{
-		openfl._internal.Lib.notImplemented();
+		openfl.utils._internal.Lib.notImplemented();
 	}
 	#end
 

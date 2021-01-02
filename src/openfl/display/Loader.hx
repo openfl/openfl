@@ -203,7 +203,7 @@ class Loader extends DisplayObjectContainer
 		__unloaded = true;
 	}
 
-	#if (openfl >= "9.0.0")
+	#if (openfl >= "9.2.0")
 	#error "Need to move addChild and sundry to private __addChild internally"
 	public override function addChild(child:DisplayObject):DisplayObject
 	{
@@ -226,7 +226,7 @@ class Loader extends DisplayObjectContainer
 	**/
 	public function close():Void
 	{
-		openfl._internal.Lib.notImplemented();
+		openfl.utils._internal.Lib.notImplemented();
 	}
 	#end
 
@@ -565,7 +565,7 @@ class Loader extends DisplayObjectContainer
 		BitmapData.loadFromBytes(buffer).onComplete(BitmapData_onLoad).onError(BitmapData_onError);
 	}
 
-	#if (openfl >= "9.0.0")
+	#if (openfl >= "9.1.0")
 	public override function removeChild(child:DisplayObject):DisplayObject
 	{
 		throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
@@ -771,7 +771,7 @@ class Loader extends DisplayObjectContainer
 				return;
 			}
 
-			if (Std.is(library, AssetLibrary))
+			if ((library is AssetLibrary))
 			{
 				library.load().onComplete(function(_)
 				{
@@ -805,7 +805,7 @@ class Loader extends DisplayObjectContainer
 			// script.innerHTML = loader.data;
 			// Browser.document.head.appendChild (script);
 
-			untyped __js__("eval")("(function () {" + loader.data + "})()");
+			untyped #if haxe4 js.Syntax.code #else __js__ #end ("eval")("(function () {" + loader.data + "})()");
 			#end
 
 			contentLoaderInfo.dispatchEvent(new Event(Event.COMPLETE));

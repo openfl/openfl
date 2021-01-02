@@ -1,14 +1,10 @@
 package openfl.display;
 
 #if !flash
-import openfl._internal.backend.gl.GLFramebuffer;
-import openfl._internal.backend.gl.GLRenderbuffer;
-import openfl._internal.formats.swf.SWFLite;
-import openfl._internal.symbols.BitmapSymbol;
-import openfl._internal.utils.Float32Array;
-import openfl._internal.utils.PerlinNoise;
-import openfl._internal.utils.UInt16Array;
-import openfl._internal.utils.UInt8Array;
+import openfl.display._internal.IBitmapDrawableType;
+import openfl.display._internal.PerlinNoise;
+import openfl.display3D._internal.GLFramebuffer;
+import openfl.display3D._internal.GLRenderbuffer;
 import openfl.display3D.textures.TextureBase;
 import openfl.display3D.Context3DClearMask;
 import openfl.display3D.Context3D;
@@ -20,6 +16,9 @@ import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import openfl.utils._internal.Float32Array;
+import openfl.utils._internal.UInt8Array;
+import openfl.utils._internal.UInt16Array;
 import openfl.utils.ByteArray;
 import openfl.utils.Endian;
 import openfl.utils.Future;
@@ -29,9 +28,7 @@ import openfl.Vector;
 #if lime
 import lime._internal.graphics.ImageCanvasUtil; // TODO
 import lime.app.Application;
-import lime.graphics.cairo.CairoFilter;
 import lime.graphics.cairo.CairoImageSurface;
-import lime.graphics.cairo.CairoPattern;
 import lime.graphics.cairo.CairoSurface;
 import lime.graphics.cairo.Cairo;
 import lime.graphics.Image;
@@ -45,8 +42,8 @@ import lime.math.Vector2;
 import js.html.CanvasElement;
 #end
 #if gl_stats
-import openfl._internal.renderer.context3D.stats.Context3DStats;
-import openfl._internal.renderer.context3D.stats.DrawCallContext;
+import openfl.display._internal.stats.Context3DStats;
+import openfl.display._internal.stats.DrawCallContext;
 #end
 
 /**
@@ -123,7 +120,7 @@ import openfl._internal.renderer.context3D.stats.DrawCallContext;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:autoBuild(openfl._internal.macros.AssetsMacro.embedBitmap())
+@:autoBuild(openfl.utils._internal.AssetsMacro.embedBitmap())
 class BitmapData implements IBitmapDrawable
 {
 	@:noCompletion private static inline var VERTEX_BUFFER_STRIDE:Int = 14;
@@ -188,6 +185,7 @@ class BitmapData implements IBitmapDrawable
 	public var width(default, null):Int;
 
 	@:noCompletion private var __blendMode:BlendMode;
+	@:noCompletion private var __drawableType:IBitmapDrawableType;
 	// @:noCompletion private var __vertexBufferColorTransform:ColorTransform;
 	// @:noCompletion private var __vertexBufferAlpha:Float;
 	@:noCompletion private var __framebuffer:GLFramebuffer;
@@ -204,7 +202,6 @@ class BitmapData implements IBitmapDrawable
 	@:noCompletion private var __scrollRect:Rectangle;
 	@:noCompletion private var __stencilBuffer:GLRenderbuffer;
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __surface:#if lime CairoSurface #else Dynamic #end;
-	@:noCompletion private var __symbol:BitmapSymbol;
 	@:noCompletion private var __texture:TextureBase;
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __textureContext:#if lime RenderContext #else Dynamic #end;
 	@:noCompletion private var __textureHeight:Int;
@@ -241,6 +238,8 @@ class BitmapData implements IBitmapDrawable
 	**/
 	public function new(width:Int, height:Int, transparent:Bool = true, fillColor:UInt = 0xFFFFFFFF)
 	{
+		__drawableType = BITMAP_DATA;
+
 		this.transparent = transparent;
 
 		#if (neko || (js && html5))
@@ -1135,12 +1134,12 @@ class BitmapData implements IBitmapDrawable
 			Matrix.__pool.release(matrix);
 		}
 
-		if (Std.is(compressor, PNGEncoderOptions))
+		if ((compressor is PNGEncoderOptions))
 		{
 			byteArray.writeBytes(ByteArray.fromBytes(image.encode(PNG)));
 			return byteArray;
 		}
-		else if (Std.is(compressor, JPEGEncoderOptions))
+		else if ((compressor is JPEGEncoderOptions))
 		{
 			byteArray.writeBytes(ByteArray.fromBytes(image.encode(JPEG, cast(compressor, JPEGEncoderOptions).quality)));
 			return byteArray;
@@ -1187,7 +1186,7 @@ class BitmapData implements IBitmapDrawable
 	/**
 		Creates a new BitmapData instance from Base64-encoded data synchronously. This means
 		that the BitmapData will be returned immediately (if supported).
-		
+
 		HTML5 and Flash do not support creating BitmapData synchronously, so these targets
 		always return `null`. Other targets will return `null` if decoding was unsuccessful.
 
@@ -2323,13 +2322,13 @@ class BitmapData implements IBitmapDrawable
 		if (!readable) return false;
 
 		// #if !openfljs
-		if (Std.is(secondObject, Bitmap))
+		if ((secondObject is Bitmap))
 		{
 			secondObject = cast(secondObject, Bitmap).__bitmapData;
 		}
 		// #end
 
-		if (Std.is(secondObject, Point))
+		if ((secondObject is Point))
 		{
 			var secondPoint:Point = cast secondObject;
 
@@ -2346,7 +2345,7 @@ class BitmapData implements IBitmapDrawable
 				}
 			}
 		}
-		else if (Std.is(secondObject, BitmapData))
+		else if ((secondObject is BitmapData))
 		{
 			var secondBitmapData:BitmapData = cast secondObject;
 			var x, y;
@@ -2412,7 +2411,7 @@ class BitmapData implements IBitmapDrawable
 
 			Rectangle.__pool.release(hitRect);
 		}
-		else if (Std.is(secondObject, Rectangle))
+		else if ((secondObject is Rectangle))
 		{
 			var secondRectangle = Rectangle.__pool.get();
 			secondRectangle.copyFrom(cast secondObject);
@@ -3213,61 +3212,6 @@ class BitmapData implements IBitmapDrawable
 		#end
 	}
 
-	@:noCompletion private function __fromSymbol(swf:SWFLite, symbol:BitmapSymbol):Void
-	{
-		__symbol = symbol;
-
-		// TODO: Cache alpha image?
-
-		#if lime
-		#if (js && html5)
-		Image.loadFromFile(symbol.path).onComplete(function(image)
-		{
-			if (symbol.alpha != null)
-			{
-				Image.loadFromFile(symbol.alpha).onComplete(function(alpha)
-				{
-					if (image != null && alpha != null)
-					{
-						image.copyChannel(alpha, alpha.rect, new Vector2(), ImageChannel.RED, ImageChannel.ALPHA);
-						image.buffer.premultiplied = true;
-
-						#if !sys
-						image.premultiplied = false;
-						#end
-					}
-
-					__fromImage(image);
-				});
-			}
-			else
-			{
-				__fromImage(image);
-			}
-		});
-		#else
-		var image = Image.fromFile(symbol.path);
-
-		if (symbol.alpha != null)
-		{
-			var alpha = Image.fromFile(symbol.alpha);
-
-			if (image != null && alpha != null)
-			{
-				image.copyChannel(alpha, alpha.rect, new Vector2(), ImageChannel.RED, ImageChannel.ALPHA);
-				image.buffer.premultiplied = true;
-
-				#if !sys
-				image.premultiplied = false;
-				#end
-			}
-		}
-
-		__fromImage(image);
-		#end
-		#end
-	}
-
 	@:noCompletion private function __getBounds(rect:Rectangle, matrix:Matrix):Void
 	{
 		var bounds = Rectangle.__pool.get();
@@ -3346,115 +3290,6 @@ class BitmapData implements IBitmapDrawable
 		#else
 		return cast Future.withValue(this);
 		#end
-	}
-
-	@:noCompletion private function __renderCairo(renderer:CairoRenderer):Void
-	{
-		#if lime_cairo
-		if (!readable) return;
-
-		var cairo = renderer.cairo;
-
-		renderer.applyMatrix(__renderTransform, cairo);
-
-		var surface = getSurface();
-
-		if (surface != null)
-		{
-			var pattern = CairoPattern.createForSurface(surface);
-
-			if (!renderer.__allowSmoothing || cairo.antialias == NONE)
-			{
-				pattern.filter = CairoFilter.NEAREST;
-			}
-			else
-			{
-				pattern.filter = CairoFilter.GOOD;
-			}
-
-			cairo.source = pattern;
-			cairo.paint();
-		}
-		#end
-	}
-
-	@:noCompletion private function __renderCairoMask(renderer:CairoRenderer):Void {}
-
-	@:noCompletion private function __renderCanvas(renderer:CanvasRenderer):Void
-	{
-		#if (js && html5)
-		if (!readable) return;
-
-		if (image.type == DATA)
-		{
-			ImageCanvasUtil.convertToCanvas(image);
-		}
-
-		var context = renderer.context;
-		context.globalAlpha = 1;
-
-		renderer.setTransform(__renderTransform, context);
-
-		context.drawImage(image.src, 0, 0, image.width, image.height);
-		#end
-	}
-
-	@:noCompletion private function __renderCanvasMask(renderer:CanvasRenderer):Void {}
-
-	@:noCompletion private function __renderDOM(renderer:DOMRenderer):Void {}
-
-	@:noCompletion private function __renderGL(renderer:OpenGLRenderer):Void
-	{
-		var context = renderer.__context3D;
-		var gl = context.gl;
-
-		renderer.__setBlendMode(NORMAL);
-
-		var shader = renderer.__defaultDisplayShader;
-		renderer.setShader(shader);
-		renderer.applyBitmapData(this, renderer.__upscaled);
-		renderer.applyMatrix(renderer.__getMatrix(__worldTransform, AUTO));
-		renderer.applyAlpha(__worldAlpha);
-		renderer.applyColorTransform(__worldColorTransform);
-		renderer.updateShader();
-
-		// alpha == 1, __worldColorTransform
-
-		var vertexBuffer = getVertexBuffer(context);
-		if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, vertexBuffer, 0, FLOAT_3);
-		if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
-		var indexBuffer = getIndexBuffer(context);
-		context.drawTriangles(indexBuffer);
-
-		#if gl_stats
-		Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
-		#end
-
-		renderer.__clearShader();
-	}
-
-	@:noCompletion private function __renderGLMask(renderer:OpenGLRenderer):Void
-	{
-		var context = renderer.__context3D;
-		var gl = context.gl;
-
-		var shader = renderer.__maskShader;
-		renderer.setShader(shader);
-		renderer.applyBitmapData(this, renderer.__upscaled);
-		renderer.applyMatrix(renderer.__getMatrix(__worldTransform, AUTO));
-		renderer.updateShader();
-
-		var vertexBuffer = getVertexBuffer(context);
-		if (shader.__position != null) context.setVertexBufferAt(shader.__position.index, vertexBuffer, 0, FLOAT_3);
-		if (shader.__textureCoord != null) context.setVertexBufferAt(shader.__textureCoord.index, vertexBuffer, 3, FLOAT_2);
-		var indexBuffer = getIndexBuffer(context);
-		context.drawTriangles(indexBuffer);
-
-		#if gl_stats
-		Context3DStats.incrementDrawCall(DrawCallContext.STAGE);
-		#end
-
-		renderer.__clearShader();
 	}
 
 	@:noCompletion private function __resize(width:Int, height:Int):Void

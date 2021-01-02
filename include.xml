@@ -35,7 +35,7 @@
 
 	</section>
 
-	<section if="${lime < 7.6.0} || ${lime >= 7.8.0}" unless="setup || create || disable-version-check">
+	<section if="${lime < 7.6.0} || ${lime >= 7.9.0}" unless="setup || create || disable-version-check">
 
 		<log warn="Lime version ${lime} may not be compatible with OpenFL ${openfl} (expected version ${expect-lime-version})" />
 		<log info='Use &lt;lime version="" /&gt; before &lt;haxelib name="openfl" /&gt; to include a specific version' />
@@ -44,8 +44,12 @@
 
 	<template path="assets/templates" />
 
-	<source path="externs/flash" if="flash" />
-	<source path="src-draft" if="draft" />
+	<dependency path="dist/openfl.min.js" if="html5 openfl-html5-extern" unless="debug" embed="true" />
+	<dependency path="dist/openfl.js" if="html5 openfl-html5-extern debug" embed="true" />
+
+	<source path="lib/flash-externs/src" if="flash" />
+	<!-- <source path="src-draft" if="draft" /> -->
+	<source path="lib/draft-api/src" if="draft" />
 
 	<include haxelib="${custom-backend}" if="display custom-backend" />
 	<haxelib name="${custom-backend}" if="custom-backend" unless="display" />
@@ -129,9 +133,9 @@
 
 	</section>
 
-	<library handler="openfl" type="swf" />
-	<library handler="openfl" type="swflite" />
-	<library handler="openfl" type="swf_lite" />
+	<library handler="swf" type="swf" />
+	<library handler="swf" type="swflite" />
+	<library handler="swf" type="swf_lite" />
 
 	<section if="setup">
 

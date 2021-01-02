@@ -1,7 +1,7 @@
 package openfl.events;
 
 #if !flash
-import openfl._internal.utils.ObjectPool;
+// import openfl.utils.ObjectPool;
 
 /**
 	A Timer object dispatches a TimerEvent objects whenever the Timer object
@@ -40,8 +40,8 @@ class TimerEvent extends Event
 	**/
 	public static inline var TIMER_COMPLETE:EventType<TimerEvent> = "timerComplete";
 
-	@:noCompletion private static var __pool:ObjectPool<TimerEvent> = new ObjectPool<TimerEvent>(function() return new TimerEvent(null),
-	function(event) event.__init());
+	// @:noCompletion private static var __pool:ObjectPool<TimerEvent> = new ObjectPool<TimerEvent>(function() return new TimerEvent(null),
+	// 	function(event) event.__init());
 
 	/**
 		Creates an Event object with specific information relevant to

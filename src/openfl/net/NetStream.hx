@@ -1153,12 +1153,12 @@ class NetStream extends EventDispatcher
 	{
 		untyped Object.defineProperties(NetStream.prototype, {
 			"soundTransform": {
-				get: untyped __js__("function () { return this.get_soundTransform (); }"),
-				set: untyped __js__("function (v) { return this.set_soundTransform (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_soundTransform (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_soundTransform (v); }")
 			},
 			"speed": {
-				get: untyped __js__("function () { return this.get_speed (); }"),
-				set: untyped __js__("function (v) { return this.set_speed (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_speed (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_speed (v); }")
 			},
 		});
 	}
@@ -1620,7 +1620,7 @@ class NetStream extends EventDispatcher
 		if (__video == null) return;
 
 		__video.volume = SoundMixer.__soundTransform.volume * __soundTransform.volume;
-		if (Std.is(url, String))
+		if ((url is String))
 		{
 			__video.src = url;
 		}

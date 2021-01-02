@@ -1,12 +1,12 @@
 package openfl.external;
 
 #if !flash
-import openfl._internal.Lib;
+import openfl.utils._internal.Lib;
 
 /**
 	The ExternalInterface class is an application programming interface that
 	enables straightforward communication between ActionScript and the SWF
-	container– for example, an HTML page with JavaScript or a desktop
+	container� for example, an HTML page with JavaScript or a desktop
 	application that uses Flash Player to display a SWF file.
 
 	Using the ExternalInterface class, you can call an ActionScript function
@@ -20,7 +20,7 @@ import openfl._internal.Lib;
 	and operating system:
 
 	The ExternalInterface class requires the user's web browser to support
-	either ActiveX<sup>®</sup> or the NPRuntime API that is exposed by some
+	either ActiveX<sup>�</sup> or the NPRuntime API that is exposed by some
 	browsers for plug-in scripting. Even if a browser and operating system
 	combination are not listed above, they should support the ExternalInterface
 	class if they support the NPRuntime API. See
@@ -209,10 +209,10 @@ import openfl._internal.Lib;
 							container. Using a non-alphanumeric function name
 							causes a runtime error(error 2155). You can use a
 							`try..catch` block to handle the error.
-		@return The response received from the container. If the call failed–
+		@return The response received from the container. If the call failed�
 				for example, if there is no such function in the container, the
 				interface is not available, a recursion occurred(with a Netscape
-				or Opera browser), or there is a security issue–
+				or Opera browser), or there is a security issue�
 				`null` is returned and an error is thrown.
 		@throws Error         The container does not support outgoing calls.
 							  Outgoing calls are supported only in Internet
@@ -301,7 +301,7 @@ import openfl._internal.Lib;
 	private static function get_objectID():String
 	{
 		#if (js && html5)
-		if (Lib.application.window.element != null)
+		if (Lib.application != null && Lib.application.window != null && Lib.application.window.element != null)
 		{
 			return Lib.application.window.element.id;
 		}

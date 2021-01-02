@@ -1,7 +1,7 @@
 package openfl.events;
 
 #if !flash
-import openfl._internal.utils.ObjectPool;
+// import openfl.utils.ObjectPool;
 import openfl.net.URLRequestHeader;
 
 /**
@@ -101,8 +101,8 @@ class HTTPStatusEvent extends Event
 	**/
 	public var status(default, null):Int;
 
-	@:noCompletion private static var __pool:ObjectPool<HTTPStatusEvent> = new ObjectPool<HTTPStatusEvent>(function() return new HTTPStatusEvent(null),
-	function(event) event.__init());
+	// @:noCompletion private static var __pool:ObjectPool<HTTPStatusEvent> = new ObjectPool<HTTPStatusEvent>(function() return new HTTPStatusEvent(null),
+	// function(event) event.__init());
 
 	/**
 		Creates an Event object that contains specific information about HTTP

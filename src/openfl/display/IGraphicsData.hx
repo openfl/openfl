@@ -1,7 +1,7 @@
 package openfl.display;
 
 #if !flash
-import openfl._internal.renderer.GraphicsDataType;
+import openfl.display._internal.GraphicsDataType;
 
 interface IGraphicsData
 {

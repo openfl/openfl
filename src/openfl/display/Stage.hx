@@ -3,8 +3,8 @@ package openfl.display;
 #if !flash
 import haxe.CallStack;
 import haxe.ds.ArraySort;
-import openfl._internal.utils.Log;
-import openfl._internal.utils.TouchData;
+import openfl.utils._internal.Log;
+import openfl.utils._internal.TouchData;
 import openfl.display3D.Context3D;
 import openfl.display.Application as OpenFLApplication;
 import openfl.errors.IllegalOperationError;
@@ -45,7 +45,7 @@ import lime.ui.Window;
 import openfl.profiler.Telemetry;
 #end
 #if gl_stats
-import openfl._internal.renderer.context3D.stats.Context3DStats;
+import openfl.display._internal.stats.Context3DStats;
 #end
 #if (js && html5)
 import js.html.Element;
@@ -907,37 +907,37 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	{
 		untyped Object.defineProperties(Stage.prototype, {
 			"color": {
-				get: untyped __js__("function () { return this.get_color (); }"),
-				set: untyped __js__("function (v) { return this.set_color (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_color (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_color (v); }")
 			},
 			"contentsScaleFactor": {
-				get: untyped __js__("function () { return this.get_contentsScaleFactor (); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_contentsScaleFactor (); }")
 			},
 			"displayState": {
-				get: untyped __js__("function () { return this.get_displayState (); }"),
-				set: untyped __js__("function (v) { return this.set_displayState (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_displayState (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_displayState (v); }")
 			},
 			"focus": {
-				get: untyped __js__("function () { return this.get_focus (); }"),
-				set: untyped __js__("function (v) { return this.set_focus (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_focus (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_focus (v); }")
 			},
 			"frameRate": {
-				get: untyped __js__("function () { return this.get_frameRate (); }"),
-				set: untyped __js__("function (v) { return this.set_frameRate (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_frameRate (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_frameRate (v); }")
 			},
 			"fullScreenHeight": {
-				get: untyped __js__("function () { return this.get_fullScreenHeight (); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_fullScreenHeight (); }")
 			},
 			"fullScreenWidth": {
-				get: untyped __js__("function () { return this.get_fullScreenWidth (); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_fullScreenWidth (); }")
 			},
 			"quality": {
-				get: untyped __js__("function () { return this.get_quality (); }"),
-				set: untyped __js__("function (v) { return this.set_quality (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_quality (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_quality (v); }")
 			},
 			"scaleMode": {
-				get: untyped __js__("function () { return this.get_scaleMode (); }"),
-				set: untyped __js__("function (v) { return this.set_scaleMode (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_scaleMode (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_scaleMode (v); }")
 			},
 		});
 	}
@@ -952,6 +952,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		super();
 
+		__drawableType = STAGE;
 		this.name = null;
 
 		__color = 0xFFFFFFFF;
@@ -990,7 +991,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		#if mac
 		__macKeyboard = true;
 		#elseif (js && html5)
-		__macKeyboard = untyped __js__("/AppleWebKit/.test (navigator.userAgent) && /Mobile\\/\\w+/.test (navigator.userAgent) || /Mac/.test (navigator.platform)");
+		__macKeyboard = untyped #if haxe4 js.Syntax.code #else __js__ #end ("/AppleWebKit/.test (navigator.userAgent) && /Mobile\\/\\w+/.test (navigator.userAgent) || /Mac/.test (navigator.platform)");
 		#end
 
 		__clearBeforeRender = true;
@@ -1411,10 +1412,10 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		if (!event.__preventDefault)
 		{
-			#if mobile
+			// #if mobile
 			Log.println(CallStack.toString(CallStack.exceptionStack()));
 			Log.println(Std.string(e));
-			#end
+			// #end
 
 			#if (cpp && !cppia)
 			untyped __cpp__("throw e");
@@ -1423,20 +1424,24 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			#elseif js
 			try
 			{
+				#if (haxe >= "4.1.0")
+				var exc = e;
+				#else
 				var exc = @:privateAccess haxe.CallStack.lastException;
+				#end
 				if (exc != null && Reflect.hasField(exc, "stack") && exc.stack != null && exc.stack != "")
 				{
-					untyped __js__("console.log")(exc.stack);
+					untyped #if haxe4 js.Syntax.code #else __js__ #end ("console.log")(exc.stack);
 					e.stack = exc.stack;
 				}
 				else
 				{
 					var msg = CallStack.toString(CallStack.callStack());
-					untyped __js__("console.log")(msg);
+					untyped #if haxe4 js.Syntax.code #else __js__ #end ("console.log")(msg);
 				}
 			}
 			catch (e2:Dynamic) {}
-			untyped __js__("throw e");
+			untyped #if haxe4 js.Syntax.code #else __js__ #end ("throw e");
 			#elseif cs
 			throw e;
 			// cs.Lib.rethrow (e);
@@ -1474,6 +1479,33 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			var keyLocation = Keyboard.__getKeyLocation(keyCode);
 			var keyCode = Keyboard.__convertKeyCode(keyCode);
 			var charCode = Keyboard.__getCharCode(keyCode, modifier.shiftKey);
+
+			if (type == KeyboardEvent.KEY_UP && (keyCode == Keyboard.SPACE || keyCode == Keyboard.ENTER) && (__focus is Sprite))
+			{
+				var sprite = cast(__focus, Sprite);
+				if (sprite.buttonMode && sprite.focusRect == true)
+				{
+					var localPoint = Point.__pool.get();
+					var targetPoint = Point.__pool.get();
+					targetPoint.x = __mouseX;
+					targetPoint.y = __mouseY;
+
+					#if openfl_pool_events
+					var clickEvent = MouseEvent.__pool.get(MouseEvent.CLICK, __mouseX, __mouseY, sprite.__globalToLocal(targetPoint, localPoint), sprite);
+					#else
+					var clickEvent = MouseEvent.__create(MouseEvent.CLICK, 0, __mouseX, __mouseY, sprite.__globalToLocal(targetPoint, localPoint), sprite);
+					#end
+
+					__dispatchStack(clickEvent, stack);
+
+					#if openfl_pool_events
+					MouseEvent.__pool.release(clickEvent);
+					#end
+
+					Point.__pool.release(targetPoint);
+					Point.__pool.release(localPoint);
+				}
+			}
 
 			// Flash Player events are not cancelable, should we make only some events (like APP_CONTROL_BACK) cancelable?
 
@@ -1514,15 +1546,10 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 							return a.tabIndex - b.tabIndex;
 						});
 
-						if (tabStack[tabStack.length - 1].tabIndex == -1)
+						if (tabStack[tabStack.length - 1].tabIndex != -1)
 						{
-							// all tabIndices are equal to -1
-							if (focus != null) nextIndex = 0;
-							else
-								nextIndex = __currentTabOrderIndex;
-						}
-						else
-						{
+							// if some tabIndices aren't equal to -1, remove all
+							// of the ones that are
 							var i = 0;
 							while (i < tabStack.length)
 							{
@@ -1534,19 +1561,58 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 								i++;
 							}
+						}
 
-							if (focus != null)
+						if (focus != null)
+						{
+							var current = focus;
+							var index = tabStack.indexOf(current);
+							while (index == -1 && current != null)
 							{
-								var index = tabStack.indexOf(focus);
-
-								if (index < 0) nextIndex = 0;
-								else
-									nextIndex = index + nextOffset;
+								// if the current focus is not in the tab stack,
+								// try to find the nearest object in the display
+								// list that is in the stack
+								var currentParent = current.parent;
+								if (currentParent != null && currentParent.tabChildren)
+								{
+									var currentIndex = currentParent.getChildIndex(current);
+									if (currentIndex == -1)
+									{
+										current = currentParent;
+										continue;
+									}
+									var i = currentIndex + nextOffset;
+									while (modifier.shiftKey ? (i >= 0) : (i < currentParent.numChildren))
+									{
+										var sibling = currentParent.getChildAt(i);
+										if ((sibling is InteractiveObject))
+										{
+											var interactiveSibling = cast(sibling, InteractiveObject);
+											index = tabStack.indexOf(interactiveSibling);
+											if (index != -1)
+											{
+												nextOffset = 0;
+												break;
+											}
+										}
+										i += nextOffset;
+									}
+								}
+								else if (modifier.shiftKey)
+								{
+									index = tabStack.indexOf(currentParent);
+									if (index != -1) nextOffset = 0;
+								}
+								current = currentParent;
 							}
+
+							if (index < 0) nextIndex = 0;
 							else
-							{
-								nextIndex = __currentTabOrderIndex;
-							}
+								nextIndex = index + nextOffset;
+						}
+						else
+						{
+							nextIndex = __currentTabOrderIndex;
 						}
 					}
 					else if (tabStack.length == 1)
@@ -1556,6 +1622,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 						if (focus == nextObject) nextObject = null;
 					}
 
+					var cancelTab = nextIndex >= 0 && nextIndex < tabStack.length;
 					if (tabStack.length == 1 || tabStack.length == 0 && focus != null)
 					{
 						nextIndex = 0;
@@ -1590,12 +1657,23 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 						stack.reverse();
 
 						__dispatchStack(focusEvent, stack);
+
+						if (focusEvent.isDefaultPrevented())
+						{
+							window.onKeyDown.cancel();
+						}
 					}
 
 					if (focusEvent == null || !focusEvent.isDefaultPrevented())
 					{
 						__currentTabOrderIndex = nextIndex;
 						if (nextObject != null) focus = nextObject;
+						if (cancelTab)
+						{
+							// ensure that the html5 target does not lose focus
+							// to the browser every time that tab is pressed
+							window.onKeyDown.cancel();
+						}
 
 						// TODO: handle border around focus
 					}
@@ -2503,11 +2581,10 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				__rollOutStack.remove(item);
 
 				#if openfl_pool_events
-				event = MouseEvent.__pool.get(MouseEvent.ROLL_OUT, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
-					cast __mouseOverTarget);
+				event = MouseEvent.__pool.get(MouseEvent.ROLL_OUT, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint), cast item);
 				#else
 				event = MouseEvent.__create(MouseEvent.ROLL_OUT, button, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
-					cast __mouseOverTarget);
+					cast item);
 				#end
 				event.bubbles = false;
 
@@ -2637,8 +2714,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		var event = MouseEvent.__create(MouseEvent.MOUSE_WHEEL, 0, __mouseX, __mouseY, target.__globalToLocal(targetPoint, targetPoint), target, delta);
 		event.cancelable = true;
 		__dispatchStack(event, stack);
-		if (event.isDefaultPrevented())
-			window.onMouseWheel.cancel();
+		if (event.isDefaultPrevented()) window.onMouseWheel.cancel();
 
 		Point.__pool.release(targetPoint);
 	}

@@ -1,14 +1,11 @@
 package openfl.display3D.textures;
 
 #if !flash
-import openfl._internal.renderer.SamplerState;
-import openfl._internal.utils.ArrayBufferView;
-import openfl._internal.utils.UInt8Array;
+import openfl.display._internal.SamplerState;
 import openfl.display.BitmapData;
+import openfl.utils._internal.ArrayBufferView;
+import openfl.utils._internal.UInt8Array;
 import openfl.utils.ByteArray;
-#if lime
-import lime.graphics.Image;
-#end
 
 /**
 	The Rectangle Texture class represents a 2-dimensional texture uploaded to a rendering

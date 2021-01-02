@@ -3,22 +3,14 @@ package openfl;
 import haxe.Constraints.Function;
 import haxe.PosInfos;
 import haxe.Timer;
-import openfl._internal.utils.Log;
-import openfl._internal.Lib as InternalLib;
+import openfl.utils._internal.Log;
+import openfl.utils._internal.Lib as InternalLib;
 import openfl.display.Application;
 import openfl.display.MovieClip;
 import openfl.net.URLLoader;
 import openfl.net.URLRequest;
 #if lime
 import lime.system.System;
-#end
-#if swf
-// Workaround to keep SWFLibrary/SWFLiteLibrary types available
-#if flash
-import openfl._internal.formats.swf.SWFLibrary;
-#else
-import openfl._internal.formats.swf.SWFLiteLibrary;
-#end
 #end
 #if (js && html5)
 import js.Browser;
@@ -64,7 +56,7 @@ import js.Browser;
 		#if flash
 		return flash.Lib.as(v, c);
 		#else
-		return Std.is(v, c) ? v : null;
+		return #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (v, c) ? v : null;
 		#end
 	}
 
@@ -158,12 +150,12 @@ import js.Browser;
 	public static function getQualifiedClassName(value:Dynamic):String
 	{
 		if (value == null) return null;
-		var ref = Std.is(value, Class) ? value : Type.getClass(value);
+		var ref = (value is Class) ? value : Type.getClass(value);
 		if (ref == null)
 		{
-			if (Std.is(value, Bool) || value == Bool) return "Bool";
-			else if (Std.is(value, Int) || value == Int) return "Int";
-			else if (Std.is(value, Float) || value == Float) return "Float";
+			if ((value is Bool) || value == Bool) return "Bool";
+			else if ((value is Int) || value == Int) return "Int";
+			else if ((value is Float) || value == Float) return "Float";
 			// TODO: Array? Map?
 			else
 				return null;
@@ -198,7 +190,7 @@ import js.Browser;
 	public static function getQualifiedSuperclassName(value:Dynamic):String
 	{
 		if (value == null) return null;
-		var ref = Std.is(value, Class) ? value : Type.getClass(value);
+		var ref = (value is Class) ? value : Type.getClass(value);
 		if (ref == null) return null;
 		var parentRef = Type.getSuperClass(ref);
 		if (parentRef == null) return null;
