@@ -8,8 +8,8 @@ import openfl.events.EventDispatcher;
 import openfl.events.IOErrorEvent;
 import openfl.events.ProgressEvent;
 import openfl.events.SecurityErrorEvent;
+import openfl.net._internal.UploadPostHelper;
 import openfl.utils.ByteArray;
-import openfl._internal.utils.UploadPostHelper;
 #if lime
 import lime.ui.FileDialog;
 import lime.utils.Bytes;
@@ -1290,14 +1290,15 @@ class FileReference extends EventDispatcher
 	**/
 	public function upload(request:URLRequest, uploadDataFieldName:String = "Filedata", testUpload:Bool = false):Void
 	{
-		__load(function():Void {
+		__load(function():Void
+		{
 			var urlRequest:URLRequest = new URLRequest();
 			urlRequest.idleTimeout = request.idleTimeout;
 			urlRequest.url = request.url;
 			urlRequest.contentType = 'multipart/form-data; boundary=' + UploadPostHelper.getBoundary();
 			urlRequest.method = URLRequestMethod.POST;
 			urlRequest.data = UploadPostHelper.getPostData(name, data, uploadDataFieldName, request.data);
-			urlRequest.requestHeaders.push( new URLRequestHeader( 'Cache-Control', 'no-cache' ) );
+			urlRequest.requestHeaders.push(new URLRequestHeader('Cache-Control', 'no-cache'));
 
 			__urlLoader = new URLLoader();
 			__urlLoader.addEventListener(Event.COMPLETE, urlLoader_onUploadComplete);
