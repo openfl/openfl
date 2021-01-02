@@ -35,6 +35,7 @@ import lime.graphics.RenderContextType;
 @:access(openfl.filters.BitmapFilter)
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Rectangle)
+@:access(openfl.geom.Transform)
 @:access(openfl.text.TextField)
 @:allow(openfl.display._internal)
 @:allow(openfl.display)
@@ -735,7 +736,7 @@ class DisplayObjectRenderer extends EventDispatcher
 							if (filter.__preserveObject)
 							{
 								lastBitmap.draw(bitmap3, null,
-									displayObject.__objectTransform != null ? displayObject.__objectTransform.colorTransform : null);
+									displayObject.__objectTransform != null ? displayObject.__objectTransform.__colorTransform : null);
 							}
 							filter.__renderDirty = false;
 

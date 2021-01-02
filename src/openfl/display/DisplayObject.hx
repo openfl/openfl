@@ -178,6 +178,7 @@ import js.html.CSSStyleDeclaration;
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
+@:access(openfl.geom.Transform)
 class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (openfl_dynamic && haxe_ver < "4.0.0") implements Dynamic<DisplayObject> #end
 {
 	@:noCompletion private static var __broadcastEvents:Map<String, Array<DisplayObject>> = new Map();
@@ -1748,7 +1749,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 				if (__objectTransform != null)
 				{
-					__worldColorTransform.__copyFrom(__objectTransform.colorTransform);
+					__worldColorTransform.__copyFrom(__objectTransform.__colorTransform);
 					__worldColorTransform.__combine(renderParent.__worldColorTransform);
 				}
 				else
@@ -1798,7 +1799,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 				if (__objectTransform != null)
 				{
-					__worldColorTransform.__copyFrom(__objectTransform.colorTransform);
+					__worldColorTransform.__copyFrom(__objectTransform.__colorTransform);
 				}
 				else
 				{
@@ -2264,10 +2265,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		__setTransformDirty();
 		__objectTransform.matrix = value.matrix;
 
-		if (!__objectTransform.colorTransform.__equals(value.colorTransform, true)
-			|| (!cacheAsBitmap && __objectTransform.colorTransform.alphaMultiplier != value.colorTransform.alphaMultiplier))
+		if (!__objectTransform.__colorTransform.__equals(value.__colorTransform, true)
+			|| (!cacheAsBitmap && __objectTransform.__colorTransform.alphaMultiplier != value.__colorTransform.alphaMultiplier))
 		{
-			__objectTransform.colorTransform.__copyFrom(value.colorTransform);
+			__objectTransform.__colorTransform.__copyFrom(value.colorTransform);
 			__setRenderDirty();
 		}
 

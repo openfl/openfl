@@ -194,11 +194,12 @@ class Transform
 	// Get & Set Methods
 	@:noCompletion private function get_colorTransform():ColorTransform
 	{
-		return __colorTransform;
+		return __colorTransform.__clone();
 	}
 
 	@:noCompletion private function set_colorTransform(value:ColorTransform):ColorTransform
 	{
+		// TODO: Move this to DisplayObject?
 		if (!__colorTransform.__equals(value, false))
 		{
 			__colorTransform.__copyFrom(value);
