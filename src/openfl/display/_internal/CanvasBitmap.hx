@@ -43,7 +43,8 @@ class CanvasBitmap
 			}
 			else
 			{
-				context.drawImage(bitmap.__bitmapData.image.src, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height);
+				context.drawImage(bitmap.__bitmapData.image.src, scrollRect.x, scrollRect.y, scrollRect.width, scrollRect.height, scrollRect.x, scrollRect.y,
+					scrollRect.width, scrollRect.height);
 			}
 
 			if (!renderer.__allowSmoothing || !bitmap.smoothing)
