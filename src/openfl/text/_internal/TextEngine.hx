@@ -1611,7 +1611,7 @@ class TextEngine
 			layoutGroup.offsetX = getBaseX(); // TODO: double check it doesn't default to GUTTER or something
 			layoutGroup.offsetY = offsetY + GUTTER;
 			layoutGroup.width = 0;
-			layoutGroup.height = heightValue;
+			layoutGroup.height = type == "input" ? heightValue : 0;
 		}
 
 		#if openfl_trace_text_layout_groups
