@@ -36,6 +36,7 @@ jobs:
       run: |
         hxp test
 
+
     - name: Notify Discord (success)
       uses: appleboy/discord-action@master
       if: github.event_name == 'push' || github.repository == github.event.pull_request.head.repo.full_name
@@ -43,7 +44,7 @@ jobs:
         webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
         webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
         color: "#00C07F"
-        message: "https://github.com/openfl/openfl/actions\nUnit tests succeeded."
+        message: "https://github.com/openfl/openfl/actions/runs/${{ github.run_id }}\nUnit tests succeeded"
 
     - name: Notify Discord (failure)
       uses: appleboy/discord-action@master
@@ -52,4 +53,4 @@ jobs:
         webhook_id: ${{ secrets.DISCORD_WEBHOOK_ID }}
         webhook_token: ${{ secrets.DISCORD_WEBHOOK_TOKEN }}
         color: "#FF6562"
-        message: "https://github.com/openfl/openfl/actions\nUnit tests failed."
+        message: "https://github.com/openfl/openfl/actions/runs/${{ github.run_id }}\nUnit tests failed"
