@@ -1607,9 +1607,9 @@ class TextEngine
 			layoutGroup.ascent = ascent;
 			layoutGroup.descent = descent;
 			layoutGroup.leading = leading;
-			layoutGroup.lineIndex = lineIndex - 1; // undo final alignBaseline
+			layoutGroup.lineIndex = lineIndex;
 			layoutGroup.offsetX = getBaseX(); // TODO: double check it doesn't default to GUTTER or something
-			layoutGroup.offsetY = offsetY + GUTTER - heightValue; // undo final alignBaseline
+			layoutGroup.offsetY = offsetY + GUTTER;
 			layoutGroup.width = 0;
 			layoutGroup.height = heightValue;
 		}
