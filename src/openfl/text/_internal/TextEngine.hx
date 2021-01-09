@@ -574,8 +574,8 @@ class TextEngine
 		var cr = -1, lf = -1;
 		while (index < text.length)
 		{
-			cr = text.indexOf("\n", index + 1);
-			lf = text.indexOf("\r", index + 1);
+			lf = text.indexOf("\n", index + 1);
+			cr = text.indexOf("\r", index + 1);
 			
 			index = 
 				if (cr == -1) lf;

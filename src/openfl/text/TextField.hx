@@ -961,7 +961,8 @@ class TextField extends InteractiveObject
 	public function getFirstCharInParagraph(charIndex:Int):Int
 	{
 		if (charIndex < 0 || charIndex > text.length) return -1;
-
+		if (__textEngine.lineBreaks.length == 0) return 0;
+		
 		for (i in 0...__textEngine.lineBreaks.length)
 		{
 			if (charIndex <= __textEngine.lineBreaks[i])
