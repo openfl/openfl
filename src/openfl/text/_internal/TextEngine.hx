@@ -791,7 +791,8 @@ class TextEngine
 		var previousSpaceIndex = -2; // -1 equals not found, -2 saves extra comparison in `breakIndex == previousSpaceIndex`
 		var previousBreakIndex = -1;
 		var spaceIndex = text.indexOf(" ");
-		var breakIndex = getLineBreakIndex();
+		var breakCount = 0;
+		var breakIndex = breakCount < lineBreaks.length ? lineBreaks[breakCount] : -1;
 
 		var offsetX = 0.0;
 		var offsetY = 0.0;
@@ -1348,7 +1349,8 @@ class TextEngine
 
 				textIndex = breakIndex + 1;
 				previousBreakIndex = breakIndex;
-				breakIndex = getLineBreakIndex(textIndex);
+				breakCount++;
+				breakIndex = breakCount < lineBreaks.length ? lineBreaks[breakCount] : -1;
 
 				setParagraphMetrics();
 			}
