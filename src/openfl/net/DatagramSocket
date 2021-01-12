@@ -98,7 +98,6 @@ class DatagramSocket extends EventDispatcher
 		__isReceiving = false;
 		__udpSocket.setBlocking(false);
 		__buffer = new ByteArray();
-		__udpSocket.setFastSend(true);
 	}
 
 	/**
