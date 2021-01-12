@@ -1475,11 +1475,11 @@ import js.html.CanvasRenderingContext2D;
 		{
 			if (joints == JointStyle.MITER)
 			{
-				if (thickness > __strokePadding) __strokePadding = thickness;
+				if (thickness > __strokePadding) __strokePadding = Math.ceil(thickness);
 			}
 			else
 			{
-				if (thickness / 2 > __strokePadding) __strokePadding = thickness / 2;
+				if (thickness / 2 > __strokePadding) __strokePadding = Math.ceil(thickness / 2);
 			}
 		}
 
