@@ -106,6 +106,9 @@ class DatagramSocket extends EventDispatcher
 		
 		The bind() method executes synchronously. The bind operation completes before the next line of code is executed.
 		
+		Once a DatagramSocket is bound, it should be closed with the close() method before disposal to avoid subsequent
+		receiving of messages.
+		
 		@param localPort The number of the port to bind to on the local computer. If localPort, is set to 0 (the default), 
 		the next available system port is bound. Permission to connect to a port number below 1024 is subject to the system 
 		security policy. On Mac and Linux systems, for example, the application must be running with root privileges to 
