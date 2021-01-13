@@ -246,18 +246,18 @@ class DatagramSocket extends EventDispatcher
 		been specified using the connect() method.
 		@param port The port number on the remote machine. A value greater than 0 and less than 65536 is required if the
 		port has not already been specified using the connect() method.
-		@throw ArgumentError If the socket is not connected and address is not a well-formed IP address.
-		@throw RangeError This error occurs when port is less than 1 or greater than 65535. 
-		@throw IOError This error occurs:
+		@throws ArgumentError If the socket is not connected and address is not a well-formed IP address.
+		@throws RangeError This error occurs when port is less than 1 or greater than 65535. 
+		@throws IOError This error occurs:
 
 		If bind() has not been called, and when default binding to the destination address family is not possible.
 		On some operating systems, an IOError is thrown if the connect() method is called when an ICMP "destination 
 		unreachable" message has already been received from the target host. (Thus, the error is thrown on the second 
 		failed attempt to send data, not the first.) Other operating systems, such as Windows, disregard these ICMP messages, 
 		so no error is thrown.
-		@throw RangeError If offset is greater than the length of the ByteArray specified in bytes or if the amount of data 
+		@throws RangeError If offset is greater than the length of the ByteArray specified in bytes or if the amount of data 
 		specified to be written by offset plus length exceeds the data available. 
-		@throw IllegalOperationError If the address or port parameters are specified when the socket has already been connected. 
+		@throws IllegalOperationError If the address or port parameters are specified when the socket has already been connected. 
 	**/
 		
 	public function send(bytes:ByteArray, offset:UInt = 0, length:UInt = 0, address:String = null, port:Int = 0):Void
@@ -307,39 +307,29 @@ class DatagramSocket extends EventDispatcher
 	}
 
 	@:noCompletion private function __onFrameUpdate(e:Event):Void
-	{
-		try
+	{		
+		while (__isReceiving)
 		{
-			var bytesReady:Int = 0;
-			var address:Address = new Address();
-			while (__isReceiving)
+			try
 			{
-				try
-				{
-					bytesReady += __udpSocket.readFrom(__iBytes, bytesReady, 1024, address);
-				}
-				catch (e:Error)
-				{
-					if (bytesReady > 0)
-					{
-						__buffer.writeBytes(__iBytes, 0, bytesReady);
-						__buffer.position = 0;
-						dispatchEvent(new DatagramSocketDataEvent(DatagramSocketDataEvent.DATA, false, false,
-									  address.getHost().toString(), address.port, __udpSocket.host().host.toString(), __udpSocket.host().port,
-									  __buffer));
-					}
-					break;
-				}
-				catch (e:Dynamic)
-				{
-					//do nothing
-				}
+				//Todo: Avoid new object creation
+				var address:Address = new Address();				
+				var bytesReady = __udpSocket.readFrom(__iBytes, 0, __iBytes.length, address);
+				__buffer.writeBytes(__iBytes, 0, bytesReady);
+				__buffer.position = 0;
+				dispatchEvent(new DatagramSocketDataEvent(DatagramSocketDataEvent.DATA, false, false,
+				address.getHost().toString(), address.port, __udpSocket.host().host.toString(), __udpSocket.host().port,
+				__buffer));
 			}
-		}
-		catch (e:Dynamic)
-		{
-			//no data
-		}
+			catch (e:Error)
+			{
+				break;					
+			}
+			catch (e:Dynamic)
+			{
+				//do nothing
+			}
+		}			
 	}
 	
 	@:noCompletion private function get_connected():Bool
