@@ -320,6 +320,7 @@ class DatagramSocket extends EventDispatcher
 				dispatchEvent(new DatagramSocketDataEvent(DatagramSocketDataEvent.DATA, false, false,
 				address.getHost().toString(), address.port, __udpSocket.host().host.toString(), __udpSocket.host().port,
 				__buffer));
+				__buffer.clear();
 			}
 			catch (e:Error)
 			{
