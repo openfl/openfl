@@ -138,7 +138,6 @@ class DatagramSocket extends EventDispatcher
 		{
 			__udpSocket.bind(new Host(localAddress), localPort);
 			bound = true;
-			Lib.current.addEventListener(Event.ENTER_FRAME, __onFrameUpdate);
 		}
 		catch (e:Dynamic)
 		{
@@ -303,6 +302,22 @@ class DatagramSocket extends EventDispatcher
 		catch (e:Dynamic)
 		{
 			throw new IOError("Operation attempted on invalid socket.");
+		}
+	}
+	
+	override public function addEventListener(type:String, listener:Dynamic->Void, useCapture:Bool = false, priority:Int = 0, useWeakReference:Bool = false):Void 
+	{
+		super.addEventListener(type, listener, useCapture, priority, useWeakReference);
+		if (type == DatagramSocketDataEvent.DATA){
+			Lib.current.addEventListener(Event.ENTER_FRAME, __onFrameUpdate);
+		}
+	}
+	
+	override public function removeEventListener(type:String, listener:Dynamic->Void, useCapture:Bool = false):Void 
+	{
+		super.removeEventListener(type, listener, useCapture);
+		if (type == DatagramSocketDataEvent.DATA){
+			Lib.current.removeEventListener(Event.ENTER_FRAME, __onFrameUpdate);
 		}
 	}
 
