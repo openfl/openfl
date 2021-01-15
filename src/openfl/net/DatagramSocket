@@ -271,12 +271,13 @@ class DatagramSocket extends EventDispatcher
 			throw new RangeError("The supplied index is out of bounds.");
 		}
 		try{
+			if (length == 0)
+			{
+				length = bytes.length;
+			}
 			if (address == null)
 			{
-				if (length == 0)
-				{
-					length = bytes.length;
-				}
+				
 				if (connected)
 				{
 					__udpSocket.output.writeBytes(cast bytes, offset, length);
