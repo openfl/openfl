@@ -625,16 +625,16 @@ class TextField extends InteractiveObject
 	**/
 	public var textWidth(get, never):Float;
 
-	/**
-		The thickness of the glyph edges in this text field. This property
-		applies only when `openfl.text.AntiAliasType` is set to
-		`openfl.text.AntiAliasType.ADVANCED`.
-		The range for `thickness` is a number from -200 to 200. If you attempt
-		to set `thickness` to a value outside that range, the property is set
-		to the nearest value in the range (either -200 or 200).
+	
+		//The thickness of the glyph edges in this text field. This property
+		//applies only when `openfl.text.AntiAliasType` is set to
+		//`openfl.text.AntiAliasType.ADVANCED`.
+		//The range for `thickness` is a number from -200 to 200. If you attempt
+		//to set `thickness` to a value outside that range, the property is set
+		//to the nearest value in the range (either -200 or 200).
 
-		@default 0
-	**/
+		//@default 0
+	
 	// var thickness : Float;
 
 	/**
