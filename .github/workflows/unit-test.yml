@@ -36,7 +36,7 @@ jobs:
       run: |
         hxp test
 
- notify:
+  notify:
     runs-on: ubuntu-16.04
     needs: [build]
     if: always()
