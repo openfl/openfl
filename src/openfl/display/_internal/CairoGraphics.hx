@@ -1059,7 +1059,8 @@ class CairoGraphics
 			{
 				if (hasFill && closeGap)
 				{
-					if (positionX != startX && positionY != startY) {
+					if (positionX != startX && positionY != startY)
+					{
                         cairo.lineTo(startX - offsetX, startY - offsetY);
                     }
 					closePath(true);
