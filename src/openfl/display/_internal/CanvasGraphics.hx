@@ -1096,7 +1096,8 @@ class CanvasGraphics
 			{
 				if (hasFill && closeGap)
 				{
-					if (positionX != startX && positionY != startY) {
+					if (positionX != startX && positionY != startY)
+					{
                         context.lineTo(startX - offsetX, startY - offsetY);
                     }
 					closePath(true);
