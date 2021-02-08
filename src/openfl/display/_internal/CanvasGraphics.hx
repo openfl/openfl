@@ -1094,13 +1094,15 @@ class CanvasGraphics
 		{
 			if (stroke && hasStroke)
 			{
-				if (hasFill && closeGap)
+				if (hasFill)
 				{
-					if (positionX != startX && positionY != startY)
+					if (positionX != startX || positionY != startY)
 					{
-                        context.lineTo(startX - offsetX, startY - offsetY);
+						context.lineTo(startX - offsetX, startY - offsetY);
+						closeGap = true;
                     }
-					closePath(true);
+					
+					if (closeGap) closePath(true);
 				}
 				else if (closeGap && positionX == startX && positionY == startY)
 				{
