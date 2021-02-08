@@ -1018,7 +1018,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			var resizable = (width == 0 && width == 0);
 
 			#if (js && html5)
-			element = Browser.document.createElement("div");
+			if (windowAttributes.element != null) element = Browser.document.createElement("div");
 
 			if (resizable)
 			{
