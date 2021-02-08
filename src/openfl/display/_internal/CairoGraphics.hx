@@ -1057,13 +1057,15 @@ class CairoGraphics
 		{
 			if (stroke && hasStroke)
 			{
-				if (hasFill && closeGap)
+				if (hasFill)
 				{
-					if (positionX != startX && positionY != startY)
+					if (positionX != startX || positionY != startY)
 					{
-                        cairo.lineTo(startX - offsetX, startY - offsetY);
+						cairo.lineTo(startX - offsetX, startY - offsetY);
+						closeGap = true;
                     }
-					closePath(true);
+					
+					if (closeGap) closePath(true);
 				}
 				else if (closeGap && positionX == startX && positionY == startY)
 				{
