@@ -211,6 +211,7 @@ class TextFormat
 
 	@:noCompletion private var __ascent:Null<Float>;
 	@:noCompletion private var __descent:Null<Float>;
+	@:noCompletion private var __cacheKey:String;
 
 	/**
 		Creates a TextFormat object with the specified properties. You can then
@@ -252,8 +253,8 @@ class TextFormat
 						   space between lines.
 	**/
 	public function new(font:String = null, size:Null<Int> = null, color:Null<Int> = null, bold:Null<Bool> = null, italic:Null<Bool> = null,
-			underline:Null<Bool> = null, url:String = null, target:String = null, align:TextFormatAlign = null, leftMargin:Null<Int> = null,
-			rightMargin:Null<Int> = null, indent:Null<Int> = null, leading:Null<Int> = null)
+						underline:Null<Bool> = null, url:String = null, target:String = null, align:TextFormatAlign = null, leftMargin:Null<Int> = null,
+						rightMargin:Null<Int> = null, indent:Null<Int> = null, leading:Null<Int> = null)
 	{
 		this.font = font;
 		this.size = size;
@@ -290,6 +291,8 @@ class TextFormat
 		newFormat.__ascent = __ascent;
 		newFormat.__descent = __descent;
 
+		newFormat.__cacheKey = __toCacheKey();
+
 		return newFormat;
 	}
 
@@ -316,6 +319,13 @@ class TextFormat
 
 		if (format.__ascent != null) __ascent = format.__ascent;
 		if (format.__descent != null) __descent = format.__descent;
+
+		__toCacheKey();
+	}
+
+	@:noCompletion private function __toCacheKey():String
+	{
+		return __cacheKey = '$font$size$bold$italic';
 	}
 }
 #else
