@@ -86,11 +86,21 @@ class DOMTextField
 			{
 				if (textEngine.text != "" || textEngine.background || textEngine.border || textEngine.type == INPUT)
 				{
+					var input = textEngine.type == INPUT;
 					if (textField.__div == null)
 					{
-						textField.__div = cast Browser.document.createElement("div");
+					        if (input)
+						{
+							textField.__div = cast Browser.document.createElement(textField.wordWrap ? "textarea" : "input");
+							textField.__div.setAttribute("type", textField.__displayAsPassword ? "password" : "text");
+						}
+						else
+						{
+							textField.__div = cast Browser.document.createElement("div");
+						}
 						renderer.__initializeElement(textField, textField.__div);
 						textField.__style.setProperty("outline", "none", null);
+						textField.__style.setProperty("resize", "none", null);
 
 						textField.__div.addEventListener("input", function(event)
 						{
@@ -98,9 +108,9 @@ class DOMTextField
 
 							// TODO: Set caret index, and replace only selection
 
-							if (textField.htmlText != textField.__div.innerHTML)
+							if (textField.htmlText != untyped textField.__div.value)
 							{
-								textField.htmlText = textField.__div.innerHTML;
+								textField.htmlText = untyped textField.__div.value;
 
 								if (textField.__displayAsPassword)
 								{
@@ -155,6 +165,7 @@ class DOMTextField
 					else
 					{
 						style.removeProperty("background-color");
+						if (input) textField.__style.setProperty("background", "transparent", null);
 					}
 
 					var w = textEngine.width;
@@ -277,7 +288,8 @@ class DOMTextField
 					textField.__textFormat.size = unscaledSize;
 					textField.__textFormat.leading = unscaledLeading;
 
-					style.setProperty("top", "3px", null);
+					// If you use password, you don't need top.
+					if (!input) style.setProperty("top", "3px", null);
 
 					if (textEngine.border)
 					{
@@ -288,8 +300,13 @@ class DOMTextField
 					}
 					else if (style.border != "")
 					{
-						style.removeProperty("border");
+						if (input) textField.__style.setProperty("border", "none", null);
+						else
+							style.removeProperty("border");
 						textField.__renderTransformChanged = true;
+					}
+					else {
+						if (input) textField.__style.setProperty("border", "none", null);
 					}
 
 					style.setProperty("color", "#" + StringTools.hex(textField.__textFormat.color & 0xFFFFFF, 6), null);
