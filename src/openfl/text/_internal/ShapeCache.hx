@@ -33,78 +33,77 @@ class ShapeCache
 	}
 
 	public function cache(formatRange:TextFormatRange, getPositions:#if (js && html5) ()->, wordKey:String = null #else TextLayout #end):Dynamic
-			{
-				var formatKey:String = formatRange.format.__cacheKey;
-			#if (!js && !html5)
-				var wordKey:String = getPositions.text;
-			#end
-				if (wordKey.length > 15)
+	{
+		var formatKey:String = formatRange.format.__cacheKey;
+		#if (!js && !html5)
+		var wordKey:String = getPositions.text;
+		#end
+		if (wordKey.length > 15)
 		{
 			return __cacheLongWord(wordKey, formatKey, getPositions);
-			}
-			else
-			{
-				return __cacheShortWord(wordKey, formatKey, getPositions);
-			}
-
+		}
+		else {
+			return __cacheShortWord(wordKey, formatKey, getPositions);
+		}
+		
 	}
 
 	private function __cacheShortWord(wordKey:String, formatKey:String, getPositions:#if (js && html5) ()->):Array<Float #else TextLayout):Array<GlyphPosition #end>
+	{
+		if (__shortWordMap.exists(formatKey))
+		{
+			var formatMap = __shortWordMap.get(formatKey);
+			if (formatMap.exists(wordKey))
 			{
-				if (__shortWordMap.exists(formatKey))
-			{
-				var formatMap = __shortWordMap.get(formatKey);
-				if (formatMap.exists(wordKey))
-				{
-					return formatMap.get(wordKey);
-				}
-				else
-				{
-					formatMap.set(wordKey, #if (js && html5) getPositions() #else getPositions.positions #end);
-				}
+				return formatMap.get(wordKey);
 			}
 			else
 			{
-				var formatMap = new StringMap();
 				formatMap.set(wordKey, #if (js && html5) getPositions() #else getPositions.positions #end);
-				__shortWordMap.set(formatKey, formatMap);
 			}
-	return #if (js && html5) getPositions() #else cast getPositions.positions #end;
+		}
+		else
+		{
+			var formatMap = new StringMap();
+			formatMap.set(wordKey, #if (js && html5) getPositions() #else getPositions.positions #end);
+			__shortWordMap.set(formatKey, formatMap);
+		}
+		return #if (js && html5) getPositions() #else cast getPositions.positions #end;
 	}
-
+	
 	private function __cacheLongWord(wordKey:String, formatKey:String, getPositions:#if (js && html5) ()->):Array<Float #else TextLayout):Array<GlyphPosition #end>
+	{
+		var hash = hashFunction(wordKey);
+		if (__longWordMap.exists(formatKey))
+		{
+			var formatMap = __longWordMap.get(formatKey);
+			if (formatMap.exists(hash))
 			{
-				var hash = hashFunction(wordKey);
-			if (__longWordMap.exists(formatKey))
-			{
-				var formatMap = __longWordMap.get(formatKey);
-				if (formatMap.exists(hash))
+				var measurement = formatMap.get(hash);
+				if (measurement.exists(wordKey))
 				{
-					var measurement = formatMap.get(hash);
-					if (measurement.exists(wordKey))
-					{
-						return measurement.get(wordKey);
-					}
-					else
-					{
-						measurement.set(wordKey, #if (js && html5) getPositions() #else getPositions.positions #end);
-					}
+					return measurement.get(wordKey);
 				}
 				else
 				{
-					var measurement = new CacheMeasurement(wordKey, #if (js && html5) getPositions() #else getPositions.positions #end);
-					formatMap.set(hash, measurement);
+					measurement.set(wordKey, #if (js && html5) getPositions() #else getPositions.positions #end);
 				}
 			}
 			else
 			{
-				var formatMap = new IntMap();
 				var measurement = new CacheMeasurement(wordKey, #if (js && html5) getPositions() #else getPositions.positions #end);
-				measurement.hash = hash;
 				formatMap.set(hash, measurement);
-				__longWordMap.set(formatKey, formatMap);
 			}
-	return #if (js && html5) getPositions() #else getPositions.positions #end;
 		}
-
+		else
+		{
+			var formatMap = new IntMap();
+			var measurement = new CacheMeasurement(wordKey, #if (js && html5) getPositions() #else getPositions.positions #end);
+			measurement.hash = hash;
+			formatMap.set(hash, measurement);
+			__longWordMap.set(formatKey, formatMap);
+		}
+		return #if (js && html5) getPositions() #else getPositions.positions #end;
 	}
+
+}
