@@ -88,7 +88,12 @@ class DOMTextField
 				{
 					if (textField.__div == null)
 					{
-						textField.__div = cast Browser.document.createElement("div");
+					    if(textField.__displayAsPassword){
+							textField.__div = cast Browser.document.createElement("input");
+							textField.__div.setAttribute("type", "password");
+						}else{
+							textField.__div = cast Browser.document.createElement("div");
+						}
 						renderer.__initializeElement(textField, textField.__div);
 						textField.__style.setProperty("outline", "none", null);
 
@@ -155,6 +160,8 @@ class DOMTextField
 					else
 					{
 						style.removeProperty("background-color");
+						if(textField.__displayAsPassword)
+							textField.__style.setProperty("background", "transparent", null);
 					}
 
 					var w = textEngine.width;
@@ -277,7 +284,9 @@ class DOMTextField
 					textField.__textFormat.size = unscaledSize;
 					textField.__textFormat.leading = unscaledLeading;
 
-					style.setProperty("top", "3px", null);
+					// If you use password, you don't need top.
+					if(!textField.__displayAsPassword)
+						style.setProperty("top", "3px", null);
 
 					if (textEngine.border)
 					{
@@ -288,8 +297,15 @@ class DOMTextField
 					}
 					else if (style.border != "")
 					{
-						style.removeProperty("border");
+						if(textField.__displayAsPassword)
+							textField.__style.setProperty("border", "none", null);
+						else
+							style.removeProperty("border");
 						textField.__renderTransformChanged = true;
+					}
+					else {
+						if(textField.__displayAsPassword)
+							textField.__style.setProperty("border", "none", null);
 					}
 
 					style.setProperty("color", "#" + StringTools.hex(textField.__textFormat.color & 0xFFFFFF, 6), null);
