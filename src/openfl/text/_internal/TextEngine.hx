@@ -808,7 +808,7 @@ class TextEngine
 		{
 			// TODO: optimize
 
-			var positions = [];
+			
 			var letterSpacing = 0.0;
 
 			if (formatRange.format.letterSpacing != null)
@@ -819,6 +819,8 @@ class TextEngine
 			#if (js && html5)
 			function html5Positions():Array<Float>
 			{			
+				var positions = [];
+				
 				if (__useIntAdvances == null)
 				{
 					__useIntAdvances = ~/Trident\/7.0/.match(Browser.navigator.userAgent); // IE
