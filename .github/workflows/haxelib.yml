@@ -1,0 +1,40 @@
+name: Haxelib
+on: [push, pull_request]
+
+jobs:
+
+  package-haxelib:
+    runs-on: macos-10.15
+    steps:
+
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+
+      - uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: 4.2.0
+
+      - name: Set HAXEPATH
+        run: |
+          echo "HAXEPATH=$HAXE_STD_PATH/.." >> $GITHUB_ENV
+
+      - name: Install Haxe dependencies
+        run: |
+          haxelib install hxp --quiet
+
+      - name: Rebuild OpenFL run.n
+        working-directory: scripts
+        run: |
+          haxe run.hxml
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: openfl-haxelib
+          path: |
+            ./
+            !tests/
+            !haxe-*-*/
+            !neko-*-*/
+            !.git/
+          if-no-files-found: error
