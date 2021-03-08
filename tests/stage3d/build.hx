@@ -21,7 +21,7 @@ class Build extends Script
 		var platformName = switch (System.hostPlatform)
 		{
 			case WINDOWS: "Windows" + (System.hostArchitecture == X64 ? "64" : "");
-			case MAC: "Mac";
+			case MAC: "Mac" + (System.hostArchitecture == X64 ? "64" : "");
 			default: "Linux" + (System.hostArchitecture == X64 ? "64" : "");
 		}
 
