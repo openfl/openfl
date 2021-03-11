@@ -13,7 +13,7 @@ jobs:
 
       - uses: krdlab/setup-haxe@v1
         with:
-          haxe-version: 4.1.5
+          haxe-version: 4.2.1
 
       - name: Set HAXEPATH
         run: |
@@ -48,7 +48,7 @@ jobs:
 
       - uses: krdlab/setup-haxe@v1
         with:
-          haxe-version: 4.1.5
+          haxe-version: 4.2.1
 
       - name: Set HAXEPATH
         run: |
@@ -84,7 +84,7 @@ jobs:
 
       - uses: krdlab/setup-haxe@v1
         with:
-          haxe-version: 4.1.5
+          haxe-version: 4.2.1
 
       - name: Set HAXEPATH
         run: |
