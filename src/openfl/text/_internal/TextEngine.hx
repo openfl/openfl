@@ -566,27 +566,24 @@ class TextEngine
 			return text.substring(index > 0 ? lineBreaks[index - 1] : 0, lineBreaks[index]);
 		}
 	}
-	
+
 	public function getLineBreaks():Void
 	{
 		lineBreaks.length = 0;
-		
+
 		var index = -1;
-		
+
 		var cr = -1, lf = -1;
 		while (index < text.length)
 		{
 			lf = text.indexOf("\n", index + 1);
 			cr = text.indexOf("\r", index + 1);
-			
-			index = 
-				if (cr == -1) lf;
-				else if (lf == -1) cr;
-				else if (cr < lf) cr;
-				else lf;
-				
+
+			index = if (cr == -1) lf; else if (lf == -1) cr; else if (cr < lf) cr; else lf;
+
 			if (index > -1) lineBreaks.push(index);
-			else break;
+			else
+				break;
 		}
 	}
 
@@ -596,7 +593,7 @@ class TextEngine
 		{
 			if (lineBreak >= startIndex) return lineBreak;
 		}
-		
+
 		return -1;
 	}
 
@@ -808,7 +805,6 @@ class TextEngine
 		{
 			// TODO: optimize
 
-			
 			var letterSpacing = 0.0;
 
 			if (formatRange.format.letterSpacing != null)
@@ -818,9 +814,9 @@ class TextEngine
 
 			#if (js && html5)
 			function html5Positions():Array<Float>
-			{			
+			{
 				var positions = [];
-				
+
 				if (__useIntAdvances == null)
 				{
 					__useIntAdvances = ~/Trident\/7.0/.match(Browser.navigator.userAgent); // IE

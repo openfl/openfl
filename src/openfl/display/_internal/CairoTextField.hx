@@ -32,14 +32,14 @@ class CairoTextField
 	{
 		#if lime_cairo
 		var textEngine = textField.__textEngine;
-		//textBounds maximizes rendering efficiency by clipping the rectangle to a minimal size containing only the text. Measurements 
-		//will always be smaller than bounds.
+		// textBounds maximizes rendering efficiency by clipping the rectangle to a minimal size containing only the text. Measurements
+		// will always be smaller than bounds.
 		var useTextBounds = !(textEngine.background || textEngine.border);
 		var bounds = useTextBounds ? textEngine.textBounds : textEngine.bounds;
 		var graphics = textField.__graphics;
 		var cairo = graphics.__cairo;
 		var cursorOffsetX = 0.0;
-		
+
 		if (textField.__dirty)
 		{
 			textField.__updateLayout();
@@ -48,14 +48,15 @@ class CairoTextField
 			{
 				graphics.__bounds = new Rectangle();
 			}
-			//There might be a better way of handling this!			
+			// There might be a better way of handling this!
 			if (textField.text.length == 0)
 			{
 				var boundsWidth = textEngine.bounds.width - 4;
 				var align = textField.defaultTextFormat.align;
 				cursorOffsetX = (align == LEFT) ? 0 : (align == RIGHT) ? boundsWidth : boundsWidth / 2;
-				switch(align){
-					case LEFT :
+				switch (align)
+				{
+					case LEFT:
 						cursorOffsetX += textField.defaultTextFormat.leftMargin;
 						cursorOffsetX += textField.defaultTextFormat.indent;
 						cursorOffsetX += textField.defaultTextFormat.blockIndent;
@@ -67,13 +68,13 @@ class CairoTextField
 						cursorOffsetX += textField.defaultTextFormat.indent;
 						cursorOffsetX += textField.defaultTextFormat.blockIndent;
 					case START:
-						//not supported?
+					// not supported?
 					case JUSTIFY:
 						cursorOffsetX += textField.defaultTextFormat.leftMargin;
 						cursorOffsetX += textField.defaultTextFormat.indent;
 						cursorOffsetX += textField.defaultTextFormat.blockIndent;
 					case END:
-						//not supported in Textfield yet?
+						// not supported in Textfield yet?
 				}
 				if (useTextBounds)
 				{
@@ -81,7 +82,7 @@ class CairoTextField
 					bounds.x = cursorOffsetX;
 				}
 			}
-				
+
 			graphics.__bounds.copyFrom(bounds);
 
 			// graphics.__bounds.x += textField.__offsetX;

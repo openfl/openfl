@@ -31,8 +31,8 @@ class CanvasTextField
 	{
 		#if (js && html5)
 		var textEngine = textField.__textEngine;
-		//textBounds maximizes rendering efficiency by clipping the rectangle to a minimal size containing only the text. Measurements 
-		//will always be smaller than bounds.
+		// textBounds maximizes rendering efficiency by clipping the rectangle to a minimal size containing only the text. Measurements
+		// will always be smaller than bounds.
 		var useTextBounds = !(textEngine.background || textEngine.border);
 		var bounds = useTextBounds ? textEngine.textBounds : textEngine.bounds;
 		var graphics = textField.__graphics;
@@ -46,18 +46,18 @@ class CanvasTextField
 			{
 				graphics.__bounds = new Rectangle();
 			}
-			
-			//There might be a better way of handling this!			
+
+			// There might be a better way of handling this!
 			if (textField.text.length == 0)
-			{				
+			{
 				var boundsWidth = textEngine.bounds.width - 4;
 				var align = textField.defaultTextFormat.align;
-				
+
 				cursorOffsetX = (align == LEFT) ? 0 : (align == RIGHT) ? boundsWidth : boundsWidth / 2;
-				
-				switch(align)
+
+				switch (align)
 				{
-					case LEFT :
+					case LEFT:
 						cursorOffsetX += textField.defaultTextFormat.leftMargin;
 						cursorOffsetX += textField.defaultTextFormat.indent;
 						cursorOffsetX += textField.defaultTextFormat.blockIndent;
@@ -66,18 +66,18 @@ class CanvasTextField
 					case CENTER:
 						cursorOffsetX += (textField.defaultTextFormat.leftMargin / 2);
 						cursorOffsetX -= (textField.defaultTextFormat.rightMargin / 2);
-						cursorOffsetX += textField.defaultTextFormat.indent/ 2;
-						cursorOffsetX += textField.defaultTextFormat.blockIndent/ 2;
+						cursorOffsetX += textField.defaultTextFormat.indent / 2;
+						cursorOffsetX += textField.defaultTextFormat.blockIndent / 2;
 					case START:
-						//not supported?
+					// not supported?
 					case JUSTIFY:
 						cursorOffsetX += textField.defaultTextFormat.leftMargin;
 						cursorOffsetX += textField.defaultTextFormat.indent;
 						cursorOffsetX += textField.defaultTextFormat.blockIndent;
 					case END:
-						//not supported in Textfield yet?
+						// not supported in Textfield yet?
 				}
-				
+
 				if (useTextBounds)
 				{
 					bounds.y = textEngine.bounds.y;

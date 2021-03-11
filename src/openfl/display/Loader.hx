@@ -789,7 +789,7 @@ class Loader extends DisplayObjectContainer
 					contentLoaderInfo.dispatchEvent(new Event(Event.COMPLETE));
 				}).onError(function(e)
 				{
-					__dispatchError(e);
+						__dispatchError(e);
 				});
 			}
 		}
