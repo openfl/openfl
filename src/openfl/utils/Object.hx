@@ -55,6 +55,31 @@ package openfl.utils;
 		return this;
 	}
 
+	@:op([])
+	private inline function __arrayRead(name:String):Dynamic
+	{
+		return __fieldRead(name);
+	}
+
+	@:op([])
+	private inline function __arrayWrite(name:String, value:Dynamic):Dynamic
+	{
+		return __fieldWrite(name, value);
+	}
+
+	@:op(a.b)
+	private inline function __fieldRead(name:String):Dynamic
+	{
+		return Reflect.getProperty(this, name);
+	}
+
+	@:op(a.b)
+	private inline function __fieldWrite(name:String, value:Dynamic):Dynamic
+	{
+		Reflect.setProperty(this, name, value);
+		return value;
+	}
+
 	@SuppressWarnings("checkstyle:FieldDocComment")
 	@:arrayAccess @:noCompletion @:dox(hide) public inline function __get(key:String):Dynamic
 	{
