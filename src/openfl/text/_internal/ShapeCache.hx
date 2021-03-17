@@ -32,7 +32,7 @@ class ShapeCache
 		return hash;
 	}
 
-	public function cache(formatRange:TextFormatRange, getPositions:#if (js && html5) ()->Array<Float>, wordKey:String = null):Array<Float> #else TextLayout):Array<GlyphPosition>#end
+	public function cache(formatRange:TextFormatRange, getPositions:#if (js && html5) Void -> Array<Float>, wordKey:String = null):Array<Float> #else TextLayout):Array<GlyphPosition>#end
 	{
 		var formatKey:String = formatRange.format.__cacheKey;
 		#if (!js && !html5)
@@ -49,7 +49,7 @@ class ShapeCache
 		
 	}
 
-	private function __cacheShortWord(wordKey:String, formatKey:String, getPositions:#if (js && html5) ()->Array<Float>):Array<Float> #else TextLayout):Array<GlyphPosition> #end
+	private function __cacheShortWord(wordKey:String, formatKey:String, getPositions:#if (js && html5) Void -> Array<Float>):Array<Float> #else TextLayout):Array<GlyphPosition> #end
 	{
 		if (__shortWordMap.exists(formatKey))
 		{
@@ -72,7 +72,7 @@ class ShapeCache
 		return #if (js && html5) getPositions() #else cast getPositions.positions #end;
 	}
 	
-	private function __cacheLongWord(wordKey:String, formatKey:String, getPositions:#if (js && html5) ()-> Array<Float>):Array<Float> #else TextLayout):Array<GlyphPosition> #end
+	private function __cacheLongWord(wordKey:String, formatKey:String, getPositions:#if (js && html5) Void -> Array<Float>):Array<Float> #else TextLayout):Array<GlyphPosition> #end
 	{
 		var hash = hashFunction(wordKey);
 		if (__longWordMap.exists(formatKey))
