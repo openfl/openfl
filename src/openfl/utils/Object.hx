@@ -61,11 +61,13 @@ package openfl.utils;
 		return __get(name);
 	}
 
+	#if haxe4
 	@:op(a.b)
 	private inline function __fieldWrite(name:String, value:Dynamic):Dynamic
 	{
 		return __set(name, value);
 	}
+	#end
 
 	@SuppressWarnings("checkstyle:FieldDocComment")
 	@:arrayAccess @:noCompletion @:dox(hide) public inline function __get(key:String):Dynamic
