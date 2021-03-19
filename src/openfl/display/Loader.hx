@@ -197,7 +197,7 @@ class Loader extends DisplayObjectContainer
 	public function new()
 	{
 		super();
-		
+
 		// Perhaps there should be a LOADER drawable type to make this clearer.
 		__drawableType = SPRITE;
 		contentLoaderInfo = LoaderInfo.create(this);
@@ -205,8 +205,6 @@ class Loader extends DisplayObjectContainer
 		__unloaded = true;
 	}
 
-	#if (openfl >= "9.2.0")
-	#error "Need to move addChild and sundry to private __addChild internally"
 	public override function addChild(child:DisplayObject):DisplayObject
 	{
 		throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
@@ -218,7 +216,6 @@ class Loader extends DisplayObjectContainer
 		throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
 		return null;
 	}
-	#end
 
 	#if !openfl_strict
 	/**
@@ -567,11 +564,19 @@ class Loader extends DisplayObjectContainer
 		BitmapData.loadFromBytes(buffer).onComplete(BitmapData_onLoad).onError(BitmapData_onError);
 	}
 
-	#if (openfl >= "9.1.0")
 	public override function removeChild(child:DisplayObject):DisplayObject
 	{
-		throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
-		return null;
+		// TODO: Allow `displayObjectContainer.addChild(loader.content)` without
+		// the following work-around
+		if (child == content)
+		{
+			return super.removeChild(content);
+		}
+		else
+		{
+			throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
+			return null;
+		}
 	}
 
 	public override function removeChildAt(index:Int):DisplayObject
@@ -584,7 +589,6 @@ class Loader extends DisplayObjectContainer
 	{
 		throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
 	}
-	#end
 
 	/**
 		Removes a child of this Loader object that was loaded by using the
