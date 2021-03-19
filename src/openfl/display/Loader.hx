@@ -197,7 +197,8 @@ class Loader extends DisplayObjectContainer
 	public function new()
 	{
 		super();
-
+		
+		__drawableType = SPRITE;
 		contentLoaderInfo = LoaderInfo.create(this);
 		uncaughtErrorEvents = contentLoaderInfo.uncaughtErrorEvents;
 		__unloaded = true;
