@@ -198,6 +198,7 @@ class Loader extends DisplayObjectContainer
 	{
 		super();
 		
+		// Perhaps there should be a LOADER drawable type to make this clearer.
 		__drawableType = SPRITE;
 		contentLoaderInfo = LoaderInfo.create(this);
 		uncaughtErrorEvents = contentLoaderInfo.uncaughtErrorEvents;
