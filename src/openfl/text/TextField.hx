@@ -3465,8 +3465,7 @@ class TextField extends InteractiveObject
 			case A if (selectable):
 				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end)
 				{
-					__caretIndex = __text.length;
-					__selectionIndex = 0;
+				    	setSelection(0, __text.length);
 				}
 
 			default:
