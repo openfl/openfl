@@ -5,7 +5,7 @@
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
 	"version": "9.1.0",
-	"releasenote": "",
+	"releasenote": "TextField improvements, new socket classes, more fixes and improvements",
 	"contributors": [ "singmajesty" ],
 	"classPath": "src"
 }
