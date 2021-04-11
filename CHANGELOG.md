@@ -1,3 +1,27 @@
+9.1.0 (04/10/2021)
+------------------
+
+* Updated for Haxe 4.2
+* Added `openfl.net.ServerSocket` for TCP sockets on native platforms
+* Added `openfl.net.DatagramSocket` for UDP sockets on native platforms
+* Added `openfl.utils.ObjectPool`
+* Added shape caching to improve `TextField` rendering performance
+* Migrated OpenFL sources to a simpler package structure for better tooling compatibility
+* Improved `Loader` to prevent use of `addChild`/`removeChild` methods
+* Improved dynamic field access on `openfl.utils.Object` references
+* Improved handling of new lines and line breaks in `TextField`
+* Improved handling of layout calculations in `TextField`
+* Improved the rendering of selected text in `TextField`
+* Improved the performance when using nested `TileContainer` instances with `Tilemap`
+* Fixed an issue where `graphics.lineStyle` could cause an additoinal draw
+* Fixed a rounding issue that could clip `graphics` rendering by one pixel
+* Fixed `sprite.transform.colorTransform` to return a new `ColorTransform` object
+* Fixed issues rendering some `bitmap.scrollRect` objects on the HTML5 canvas renderer
+* Fixed issues rendering some gradient fills on HTML5 canvas renderer
+* Fixed an incorrect reference when dispatching some `MouseEvent.ROLL_OUT` events
+* Fixed renderer remaining active on `Tilemap` that includes no tiles
+
+
 9.0.2 (08/17/2020)
 ------------------
 
