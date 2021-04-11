@@ -227,8 +227,7 @@ class Assets
 
 	public static function getMusic(id:String, useCache:Bool = true):Sound
 	{
-
-		#if lime_vorbis
+		#if (lime_vorbis && lime > "7.9.0")
 		var path = getPath(id);
 		var vorbisFile = VorbisFile.fromFile(path);
 		var buffer = AudioBuffer.fromVorbisFile(vorbisFile);
