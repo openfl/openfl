@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension>
 
-	<log warn="OpenFL expects Haxe 3.4.3 or greater, but version ${haxe} is being used" if="${${haxe} < 3.4.3}" />
+	<log warn="OpenFL expects Haxe 3.4.3 or greater, but version ${haxe} is being used" if="${${haxe} < 3.4.3}" unless="display" />
 
 	<set name="expect-lime-version" value="7.7.0+" />
 
@@ -35,7 +35,7 @@
 
 	</section>
 
-	<section if="${lime < 7.6.0} || ${lime >= 8.0.0}" unless="setup || create || disable-version-check">
+	<section if="${lime < 7.6.0} || ${lime >= 8.0.0}" unless="setup || create || disable-version-check || display">
 
 		<log warn="Lime version ${lime} may not be compatible with OpenFL ${openfl} (expected version ${expect-lime-version})" />
 		<log info='Use &lt;lime version="" /&gt; before &lt;haxelib name="openfl" /&gt; to include a specific version' />
