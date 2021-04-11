@@ -2138,7 +2138,8 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function __startCursorTimer():Void
 	{
-		if(type == INPUT){
+		if (type == INPUT)
+		{
 			__cursorTimer = Timer.delay(__startCursorTimer, 600);
 			__showCursor = !__showCursor;
 			__dirty = true;
@@ -3465,7 +3466,7 @@ class TextField extends InteractiveObject
 			case A if (selectable):
 				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end)
 				{
-				    	setSelection(0, __text.length);
+					setSelection(0, __text.length);
 				}
 
 			default:

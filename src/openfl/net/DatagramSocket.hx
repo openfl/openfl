@@ -408,9 +408,8 @@ class DatagramSocket extends EventDispatcher
 	}
 	#end
 }
-
 #else
-#if 
-air typedef DatagramSocket = flash.net.DatagramSocket; 
+#if air
+typedef DatagramSocket = flash.net.DatagramSocket;
 #end
 #end

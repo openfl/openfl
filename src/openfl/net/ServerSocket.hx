@@ -55,7 +55,7 @@ import sys.net.Socket;
 @:noDebug
 #end
 @:access(openfl.net.Socket)
-class ServerSocket extends EventDispatcher 
+class ServerSocket extends EventDispatcher
 {
 	/**
 		Indicates whether the socket is bound to a local address and port.
@@ -86,12 +86,12 @@ class ServerSocket extends EventDispatcher
 	@:noCompletion private var __closed:Bool;
 
 	/**
-			Creates a ServerSocket object.
+		Creates a ServerSocket object.
 
-			@throws  SecurityError This error occurs ff the calling content is running outside the AIR
-					application security sandbox.
+		@throws  SecurityError This error occurs ff the calling content is running outside the AIR
+				application security sandbox.
 	**/
-	public function new() 
+	public function new()
 	{
 		super();
 
@@ -128,22 +128,23 @@ class ServerSocket extends EventDispatcher
 							  this ServerSocket object is already bound. (Call close() before binding to a different socket.)
 							  when localAddress is not a valid local address.
 	**/
-	public function bind(localPort:Int = 0, localAddress:String = "0.0.0.0"):Void 
+	public function bind(localPort:Int = 0, localAddress:String = "0.0.0.0"):Void
 	{
-		if (localPort > 65535 || localPort < 0) 
+		if (localPort > 65535 || localPort < 0)
 		{
 			throw new RangeError("Invalid socket port number specified.");
 		}
-		try 
+		try
 		{
 			this.localAddress = localAddress;
 			this.localPort = localPort;
 			var host:Host = new Host(localAddress);
 			__serverSocket.bind(host, localPort);
 			bound = true;
-		} catch (e:Dynamic) 
+		}
+		catch (e:Dynamic)
 		{
-			switch (e) 
+			switch (e)
 			{
 				case "Bind failed":
 					throw new IOError("Operation attempted on invalid socket.");
@@ -160,12 +161,13 @@ class ServerSocket extends EventDispatcher
 
 		@throws Error This error occurs if the socket could not be closed, or the socket was not open.
 	**/
-	public function close():Void 
+	public function close():Void
 	{
-		try 
+		try
 		{
 			__serverSocket.close();
-		} catch (e:Dynamic) 
+		}
+		catch (e:Dynamic)
 		{
 			throw new OFLError("Operation attempted on invalid socket.");
 		}
@@ -198,13 +200,13 @@ class ServerSocket extends EventDispatcher
 							This error also occurs if the call to listen() fails for any
 							other reason.
 	**/
-	public function listen(backlog:Int = 0):Void 
+	public function listen(backlog:Int = 0):Void
 	{
-		if (__closed) 
+		if (__closed)
 		{
 			throw new IOError("Operation attempted on invalid socket.");
 		}
-		if (backlog < 0) 
+		if (backlog < 0)
 		{
 			throw new RangeError("The supplied index is out of bounds.");
 		}
@@ -212,7 +214,7 @@ class ServerSocket extends EventDispatcher
 		listening = true;
 	}
 
-	@:noCompletion private function __fromSocket(socket:sys.net.Socket):OFLSocket 
+	@:noCompletion private function __fromSocket(socket:sys.net.Socket):OFLSocket
 	{
 		socket.setFastSend(true);
 		socket.setBlocking(false);
@@ -236,50 +238,52 @@ class ServerSocket extends EventDispatcher
 		return oflSocket;
 	}
 
-	@:noCompletion private function this_onEnterFrame(e:Event):Void 
+	@:noCompletion private function this_onEnterFrame(e:Event):Void
 	{
 		var sysSocket = null;
 
-		try 
+		try
 		{
 			sysSocket = __serverSocket.accept();
-		} catch (e:Error) 
+		}
+		catch (e:Error)
 		{
 			close();
 			dispatchEvent(new Event(Event.CLOSE));
-		} catch (e:Dynamic) 
+		}
+		catch (e:Dynamic)
 		{
 			// Do nothing.
 		}
 
-		if (sysSocket != null) 
+		if (sysSocket != null)
 		{
 			dispatchEvent(new ServerSocketConnectEvent(ServerSocketConnectEvent.CONNECT, false, false, __fromSocket(sysSocket)));
 		}
 	}
 
 	override public function addEventListener(type:String, listener:Dynamic->Void, useCapture:Bool = false, priority:Int = 0,
-			useWeakReference:Bool = false):Void 
-			{
+			useWeakReference:Bool = false):Void
+	{
 		super.addEventListener(type, listener, useCapture, priority, useWeakReference);
 
-		if (type == Event.CONNECT) 
+		if (type == Event.CONNECT)
 		{
 			Lib.current.addEventListener(Event.ENTER_FRAME, this_onEnterFrame);
 		}
 	}
 
-	override public function removeEventListener(type:String, listener:Dynamic->Void, useCapture:Bool = false):Void 
+	override public function removeEventListener(type:String, listener:Dynamic->Void, useCapture:Bool = false):Void
 	{
 		super.removeEventListener(type, listener, useCapture);
 
-		if (type == Event.CONNECT) 
+		if (type == Event.CONNECT)
 		{
 			Lib.current.removeEventListener(Event.ENTER_FRAME, this_onEnterFrame);
 		}
 	}
 
-	private function get_isSupported():Bool 
+	private function get_isSupported():Bool
 	{
 		#if html5
 		return false;
