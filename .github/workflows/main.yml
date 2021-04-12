@@ -110,7 +110,7 @@ jobs:
   notify:
     runs-on: ubuntu-16.04
     needs: [package-haxelib, docs, unit-test]
-    if: always()
+    if: ${{ github.event_name != 'pull_request' }}
     steps:
       - name: Notify Discord
         uses: nobrayner/discord-webhook@v1
