@@ -656,7 +656,7 @@ class TextEngine
 				textWidth = currentLineWidth;
 			}
 
-			currentTextHeight = group.offsetY - 2 + group.ascent + group.descent;
+			currentTextHeight = Math.ceil(group.offsetY - 2 + group.ascent + group.descent);
 
 			if (currentTextHeight > textHeight)
 			{
@@ -694,13 +694,13 @@ class TextEngine
 
 			leading = currentFormat.leading;
 
-			heightValue = ascent + descent + leading;
+			heightValue = Math.ceil(ascent + descent + leading);
 
 			currentLineAscent = ascent;
 			currentLineDescent = descent;
 			currentLineLeading = leading;
 
-			currentTextHeight = ascent + descent;
+			currentTextHeight = Math.ceil(ascent + descent);
 			textHeight = currentTextHeight;
 		}
 
