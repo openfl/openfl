@@ -2733,16 +2733,6 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function set_multiline(value:Bool):Bool
 	{
-		if (value != __textEngine.multiline)
-		{
-			__dirty = true;
-			__layoutDirty = true;
-			__updateText(__text);
-			// __updateScrollV();
-			__updateScrollH();
-			__setRenderDirty();
-		}
-
 		return __textEngine.multiline = value;
 	}
 
