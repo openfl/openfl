@@ -1,7 +1,7 @@
 package openfl.events;
 
 #if !flash
-import openfl._internal.utils.ObjectPool;
+// import openfl.utils.ObjectPool;
 
 /**
 	An object dispatches a TextEvent object when a user enters text in a text
@@ -55,8 +55,8 @@ class TextEvent extends Event
 	**/
 	public var text:String;
 
-	@:noCompletion private static var __pool:ObjectPool<TextEvent> = new ObjectPool<TextEvent>(function() return new TextEvent(null),
-	function(event) event.__init());
+	// @:noCompletion private static var __pool:ObjectPool<TextEvent> = new ObjectPool<TextEvent>(function() return new TextEvent(null),
+	// function(event) event.__init());
 
 	/**
 		Creates an Event object that contains information about text events. Event

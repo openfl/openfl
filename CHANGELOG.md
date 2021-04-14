@@ -1,3 +1,95 @@
+9.1.0 (04/10/2021)
+------------------
+
+* Updated for Haxe 4.2
+* Added `openfl.net.ServerSocket` for TCP sockets on native platforms
+* Added `openfl.net.DatagramSocket` for UDP sockets on native platforms
+* Added `openfl.utils.ObjectPool`
+* Added shape caching to improve `TextField` rendering performance
+* Migrated OpenFL sources to a simpler package structure for better tooling compatibility
+* Improved `Loader` to prevent use of `addChild`/`removeChild` methods
+* Improved dynamic field access on `openfl.utils.Object` references
+* Improved handling of new lines and line breaks in `TextField`
+* Improved handling of layout calculations in `TextField`
+* Improved the rendering of selected text in `TextField`
+* Improved the performance when using nested `TileContainer` instances with `Tilemap`
+* Fixed an issue where `graphics.lineStyle` could cause an additoinal draw
+* Fixed a rounding issue that could clip `graphics` rendering by one pixel
+* Fixed `sprite.transform.colorTransform` to return a new `ColorTransform` object
+* Fixed issues rendering some `bitmap.scrollRect` objects on the HTML5 canvas renderer
+* Fixed issues rendering some gradient fills on HTML5 canvas renderer
+* Fixed an incorrect reference when dispatching some `MouseEvent.ROLL_OUT` events
+* Fixed renderer remaining active on `Tilemap` that includes no tiles
+
+
+9.0.2 (08/17/2020)
+------------------
+
+* Fixed a regression when targeting Flash
+
+
+9.0.1 (08/17/2020)
+------------------
+
+* Fixed paths for internal packages for case-sensitivity
+
+
+9.0.0 (08/14/2020)
+------------------
+
+* Added the new MovieClip `Timeline` API for powering custom MovieClip frames and behaviors
+* Added `shaderFilter.invalidate()` to force redraw of a filter if necessary
+* Migrated OpenFL sources to a new package structure for better collaboration
+* Migrated SWF support to an external library (using the new `Timeline` API)
+* Improved `sprite.addChild` to reduce recursion and improve performance
+* Improved the OpenGL implementation of glow, blur and drop shadow shaders
+* Improved the behavior of `VideoTexture` upload and `TEXTURE_READY` events
+* Improved double-click behavior on `TextField` to select a whole word
+* Improved cancel behavior for `FocusEvent.KEY_FOCUS_CHANGE`
+* Improved `sprite.buttonMode`+`focusRect` to dispatch `MouseEvent.CLICK` on space/up/enter
+* Improved the automatic tab focus order for display objects
+* Improved support for tab focus order on HTML5
+* Fixed event dispatch from `NetStream` objects
+* Fixed `touchEvent.isPrimaryTouchPoint` behavior for touch end, tap and cancel
+* Fixed TextField rendering on Haxe 4 to use UTF-16 on platforms that need it
+* Fixed support for AGAL highp precision
+* Fixed additional drawn line in some `Graphics` commands
+* Fixed _sans, _serif and _typewriter fonts for macOS Catalina
+* Fixed the pixel rounding behavior for `Graphics` to be consistent with other objects
+* Fixed setting `scrollV`/`scrollH` on `TextField` before dispatching `Event.SCROLL`
+* Fixed `Std.is()` deprecation warnings using Haxe 4.2
+* Fixed dispatch of `TextEvent.TEXT_INPUT` on DOM `TextField`
+
+
+8.9.7 (06/20/2020)
+------------------
+
+* Updated to allow Lime 7.9.*
+* Fixed compiler error using Haxe 4.1 and HTML5
+* Fixed compiler warnings using Haxe 4.1 and HTML5
+
+
+8.9.6 (01/27/2020)
+------------------
+
+* Update to allow Lime 7.7.*
+* Reverted `TextField`, filter and renderer changes made in 8.9.2 through 8.9.5
+* Suspended these improvements until the next major release
+* Forced NPM versions of the library to use WebGL 1
+* Improved SWFLite libraries to use a UUID and have a more reliable root value
+* Improved the behavior of `textField.mouseWheelEnabled`
+* Improved the behavior of `context3D.totalGPUMemory`
+* Improved `NetStream` to allow HTML5 MediaStream instead of a URL
+* Fixed an issue where `MovieClip` would behave like a button when `buttonMode` was disabled
+* Fixed a possible crash issue with multi-line text selection
+* Fixed `textField.setTextFormat` when the `TextFormat` object has null values
+* Fixed some missing methods in `openfl.utils.AssetManifest` for parity with Lime
+* Fixed `soundTransform.volume` when playing HTML5 video
+* Fixed support for `event.preventDefault` on `MOUSE_WHEEL` events
+* Fixed texture flush for AGAL shaders that do not have an alpha texture
+* Fixed key modifier values for mouse events when coming back to the window
+
+
 8.9.5 (09/11/2019)
 ------------------
 

@@ -8,9 +8,8 @@ import openfl.display.Shader;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 #if lime
-import lime._internal.graphics.ImageDataUtil;
-#elseif openfl_html5
-import openfl._internal.backend.lime_standalone.ImageDataUtil;
+import lime._internal.graphics.ImageDataUtil; // TODO
+
 #end
 
 /**
@@ -122,11 +121,17 @@ import openfl._internal.backend.lime_standalone.ImageDataUtil;
 	@:noCompletion private static function __init__()
 	{
 		untyped Object.defineProperties(BlurFilter.prototype, {
-			"blurX": {get: untyped __js__("function () { return this.get_blurX (); }"), set: untyped __js__("function (v) { return this.set_blurX (v); }")},
-			"blurY": {get: untyped __js__("function () { return this.get_blurY (); }"), set: untyped __js__("function (v) { return this.set_blurY (v); }")},
+			"blurX": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_blurX (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_blurX (v); }")
+			},
+			"blurY": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_blurY (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_blurY (v); }")
+			},
 			"quality": {
-				get: untyped __js__("function () { return this.get_quality (); }"),
-				set: untyped __js__("function (v) { return this.set_quality (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_quality (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_quality (v); }")
 			},
 		});
 	}
@@ -178,13 +183,13 @@ import openfl._internal.backend.lime_standalone.ImageDataUtil;
 	@:noCompletion private override function __applyFilter(bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle,
 			destPoint:Point):BitmapData
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		var time = Timer.stamp();
-		var finalImage = ImageDataUtil.gaussianBlur(bitmapData.limeImage, sourceBitmapData.limeImage, sourceRect.__toLimeRectangle(),
-			destPoint.__toLimeVector2(), __blurX, __blurY, __quality);
+		var finalImage = ImageDataUtil.gaussianBlur(bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle(), destPoint.__toLimeVector2(),
+			__blurX, __blurY, __quality);
 		var elapsed = Timer.stamp() - time;
 		// trace("blurX: " + __blurX + " blurY: " + __blurY + " quality: " + __quality + " elapsed: " + elapsed * 1000 + "ms");
-		if (finalImage == bitmapData.limeImage) return bitmapData;
+		if (finalImage == bitmapData.image) return bitmapData;
 		#end
 		return sourceBitmapData;
 	}
@@ -314,14 +319,14 @@ private class BlurShader extends BitmapFilterShader
 	{
 		super();
 
-		#if (!macro && openfl_gl)
+		#if !macro
 		uRadius.value = [0, 0];
 		#end
 	}
 
 	@:noCompletion private override function __update():Void
 	{
-		#if (!macro && openfl_gl)
+		#if !macro
 		uTextureSize.value = [__texture.input.width, __texture.input.height];
 		#end
 

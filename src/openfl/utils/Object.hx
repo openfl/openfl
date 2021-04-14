@@ -1,6 +1,6 @@
 package openfl.utils;
 
-@:forward() abstract Object(ObjectType) from ObjectType
+@:forward() abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 {
 	public inline function new()
 	{
@@ -35,7 +35,9 @@ package openfl.utils;
 
 	public inline function propertyIsEnumerable(name:String):Bool
 	{
-		return (this != null && Reflect.hasField(this, name) && Std.is(Reflect.field(this, name), Iterable_));
+		return (this != null
+			&& Reflect.hasField(this, name)
+			&& #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (Reflect.field(this, name), Iterable_));
 	}
 
 	public inline function toLocaleString():String
@@ -53,16 +55,30 @@ package openfl.utils;
 		return this;
 	}
 
+	@:op(a.b)
+	private inline function __fieldRead(name:String):Dynamic
+	{
+		return __get(name);
+	}
+
+	#if haxe4
+	@:op(a.b)
+	private inline function __fieldWrite(name:String, value:Dynamic):Dynamic
+	{
+		return __set(name, value);
+	}
+	#end
+
 	@SuppressWarnings("checkstyle:FieldDocComment")
 	@:arrayAccess @:noCompletion @:dox(hide) public inline function __get(key:String):Dynamic
 	{
-		return Reflect.field(this, key);
+		return Reflect.getProperty(this, key);
 	}
 
 	@SuppressWarnings("checkstyle:FieldDocComment")
 	@:arrayAccess @:noCompletion @:dox(hide) public inline function __set(key:String, value:Dynamic):Dynamic
 	{
-		Reflect.setField(this, key, value);
+		Reflect.setProperty(this, key, value);
 		return value;
 	}
 }

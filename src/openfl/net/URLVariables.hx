@@ -85,7 +85,7 @@ abstract URLVariables(Dynamic) from Dynamic to Dynamic
 		for (f in fields)
 		{
 			var value:Dynamic = Reflect.field(this, f);
-			if (f.indexOf("[]") > -1 && Std.is(value, Array))
+			if (f.indexOf("[]") > -1 && (value is Array))
 			{
 				var arrayValue:String = Lambda.map(value, function(v:String)
 				{

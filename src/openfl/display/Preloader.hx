@@ -1,6 +1,5 @@
 package openfl.display;
 
-#if lime
 import openfl.events.Event;
 import openfl.events.ProgressEvent;
 import openfl.Lib;
@@ -18,7 +17,7 @@ import openfl.Lib;
 class Preloader
 {
 	@SuppressWarnings("checkstyle:Dynamic")
-	public var onComplete:lime.app.Event<Void->Void> = new lime.app.Event<Void->Void>();
+	public var onComplete:#if lime lime.app.Event<Void->Void> = new lime.app.Event<Void->Void>() #else Dynamic #end;
 
 	@:noCompletion private var complete:Bool;
 	@:noCompletion private var display:Sprite;
@@ -55,11 +54,13 @@ class Preloader
 		}
 		else
 		{
+			#if lime
 			if (!complete)
 			{
 				complete = true;
 				onComplete.dispatch();
 			}
+			#end
 		}
 	}
 
@@ -93,11 +94,13 @@ class Preloader
 
 		if (ready)
 		{
+			#if lime
 			if (!complete)
 			{
 				complete = true;
 				onComplete.dispatch();
 			}
+			#end
 		}
 	}
 }
@@ -106,8 +109,8 @@ class Preloader
 @:dox(hide) class DefaultPreloader extends Sprite
 {
 	@:noCompletion private var endAnimation:Int;
-	@:noCompletion private var outline:Sprite;
-	@:noCompletion private var progress:Sprite;
+	@:noCompletion private var outline:Shape;
+	@:noCompletion private var progress:Shape;
 	@:noCompletion private var startAnimation:Int;
 
 	public function new()
@@ -133,7 +136,7 @@ class Preloader
 
 		var padding = 2;
 
-		outline = new Sprite();
+		outline = new Shape();
 		outline.graphics.beginFill(color, 0.07);
 		outline.graphics.drawRect(0, 0, width, height);
 		outline.x = x;
@@ -141,7 +144,7 @@ class Preloader
 		outline.alpha = 0;
 		addChild(outline);
 
-		progress = new Sprite();
+		progress = new Shape();
 		progress.graphics.beginFill(color, 0.35);
 		progress.graphics.drawRect(0, 0, width - padding * 2, height - padding * 2);
 		progress.x = x + padding;
@@ -158,7 +161,7 @@ class Preloader
 
 	public function getBackgroundColor():Int
 	{
-		var attributes = Lib.current.stage.limeWindow.context.attributes;
+		var attributes = Lib.current.stage.window.context.attributes;
 
 		if (Reflect.hasField(attributes, "background") && attributes.background != null)
 		{
@@ -172,7 +175,7 @@ class Preloader
 
 	public function getHeight():Float
 	{
-		var height = Lib.current.stage.limeWindow.height;
+		var height = Lib.current.stage.window.height;
 
 		if (height > 0)
 		{
@@ -186,7 +189,7 @@ class Preloader
 
 	public function getWidth():Float
 	{
-		var width = Lib.current.stage.limeWindow.width;
+		var width = Lib.current.stage.window.width;
 
 		if (width > 0)
 		{
@@ -259,8 +262,7 @@ class Preloader
 		if (percent < 0) percent = 0;
 		if (percent > 1) percent = 1;
 
-		outline.alpha = percent;
-		progress.alpha = percent;
+		outline.alpha = progress.alpha = percent;
 	}
 
 	@:noCompletion private function this_onProgress(event:ProgressEvent):Void
@@ -268,4 +270,3 @@ class Preloader
 		onUpdate(Std.int(event.bytesLoaded), Std.int(event.bytesTotal));
 	}
 }
-#end

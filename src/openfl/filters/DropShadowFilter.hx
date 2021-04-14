@@ -8,9 +8,8 @@ import openfl.geom.ColorTransform;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 #if lime
-import lime._internal.graphics.ImageDataUtil;
-#else
-import openfl._internal.backend.lime_standalone.ImageDataUtil;
+import lime._internal.graphics.ImageDataUtil; // TODO
+
 #end
 
 /**
@@ -172,31 +171,49 @@ import openfl._internal.backend.lime_standalone.ImageDataUtil;
 	@:noCompletion private static function __init__()
 	{
 		untyped Object.defineProperties(DropShadowFilter.prototype, {
-			"alpha": {get: untyped __js__("function () { return this.get_alpha (); }"), set: untyped __js__("function (v) { return this.set_alpha (v); }")},
-			"angle": {get: untyped __js__("function () { return this.get_angle (); }"), set: untyped __js__("function (v) { return this.set_angle (v); }")},
-			"blurX": {get: untyped __js__("function () { return this.get_blurX (); }"), set: untyped __js__("function (v) { return this.set_blurX (v); }")},
-			"blurY": {get: untyped __js__("function () { return this.get_blurY (); }"), set: untyped __js__("function (v) { return this.set_blurY (v); }")},
-			"color": {get: untyped __js__("function () { return this.get_color (); }"), set: untyped __js__("function (v) { return this.set_color (v); }")},
+			"alpha": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_alpha (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_alpha (v); }")
+			},
+			"angle": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_angle (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_angle (v); }")
+			},
+			"blurX": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_blurX (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_blurX (v); }")
+			},
+			"blurY": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_blurY (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_blurY (v); }")
+			},
+			"color": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_color (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_color (v); }")
+			},
 			"distance": {
-				get: untyped __js__("function () { return this.get_distance (); }"),
-				set: untyped __js__("function (v) { return this.set_distance (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_distance (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_distance (v); }")
 			},
 			"hideObject": {
-				get: untyped __js__("function () { return this.get_hideObject (); }"),
-				set: untyped __js__("function (v) { return this.set_hideObject (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_hideObject (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_hideObject (v); }")
 			},
-			"inner": {get: untyped __js__("function () { return this.get_inner (); }"), set: untyped __js__("function (v) { return this.set_inner (v); }")},
+			"inner": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_inner (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_inner (v); }")
+			},
 			"knockout": {
-				get: untyped __js__("function () { return this.get_knockout (); }"),
-				set: untyped __js__("function (v) { return this.set_knockout (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_knockout (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_knockout (v); }")
 			},
 			"quality": {
-				get: untyped __js__("function () { return this.get_quality (); }"),
-				set: untyped __js__("function (v) { return this.set_quality (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_quality (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_quality (v); }")
 			},
 			"strength": {
-				get: untyped __js__("function () { return this.get_strength (); }"),
-				set: untyped __js__("function (v) { return this.set_strength (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_strength (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_strength (v); }")
 			},
 		});
 	}
@@ -276,27 +293,27 @@ import openfl._internal.backend.lime_standalone.ImageDataUtil;
 	@:noCompletion private override function __applyFilter(bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle,
 			destPoint:Point):BitmapData
 	{
-		#if (lime || openfl_html5)
 		// TODO: Support knockout, inner
 
+		#if lime
 		var r = (__color >> 16) & 0xFF;
 		var g = (__color >> 8) & 0xFF;
 		var b = __color & 0xFF;
 
 		var point = new Point(destPoint.x + __offsetX, destPoint.y + __offsetY);
 
-		var finalImage = ImageDataUtil.gaussianBlur(bitmapData.limeImage, sourceBitmapData.limeImage, sourceRect.__toLimeRectangle(), point.__toLimeVector2(),
+		var finalImage = ImageDataUtil.gaussianBlur(bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle(), point.__toLimeVector2(),
 			__blurX, __blurY, __quality, __strength);
 		finalImage.colorTransform(finalImage.rect, new ColorTransform(0, 0, 0, __alpha, r, g, b, 0).__toLimeColorMatrix());
 
-		if (finalImage == bitmapData.limeImage) return bitmapData;
+		if (finalImage == bitmapData.image) return bitmapData;
 		#end
 		return sourceBitmapData;
 	}
 
 	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int, sourceBitmapData:BitmapData):Shader
 	{
-		#if (!macro && openfl_gl)
+		#if !macro
 		// Drop shadow is glow with an offset
 		if (__inner && pass == 0)
 		{
@@ -386,8 +403,8 @@ import openfl._internal.backend.lime_standalone.ImageDataUtil;
 
 	@:noCompletion private function __calculateNumShaderPasses():Void
 	{
-		__horizontalPasses = Math.round(__blurX * (__quality / 4)) + 1;
-		__verticalPasses = Math.round(__blurY * (__quality / 4)) + 1;
+		__horizontalPasses = (__blurX <= 0) ? 0 : Math.round(__blurX * (__quality / 4)) + 1;
+		__verticalPasses = (__blurY <= 0) ? 0 : Math.round(__blurY * (__quality / 4)) + 1;
 		__numShaderPasses = __horizontalPasses + __verticalPasses + (__inner ? 2 : 1);
 	}
 
@@ -567,7 +584,7 @@ private class HideShader extends BitmapFilterShader
 	public function new()
 	{
 		super();
-		#if (!macro && openfl_gl)
+		#if !macro
 		offset.value = [0, 0];
 		#end
 	}

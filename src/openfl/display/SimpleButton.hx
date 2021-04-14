@@ -127,24 +127,24 @@ class SimpleButton extends InteractiveObject
 	{
 		untyped Object.defineProperties(SimpleButton.prototype, {
 			"downState": {
-				get: untyped __js__("function () { return this.get_downState (); }"),
-				set: untyped __js__("function (v) { return this.set_downState (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_downState (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_downState (v); }")
 			},
 			"hitTestState": {
-				get: untyped __js__("function () { return this.get_hitTestState (); }"),
-				set: untyped __js__("function (v) { return this.set_hitTestState (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_hitTestState (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_hitTestState (v); }")
 			},
 			"overState": {
-				get: untyped __js__("function () { return this.get_overState (); }"),
-				set: untyped __js__("function (v) { return this.set_overState (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_overState (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_overState (v); }")
 			},
 			"soundTransform": {
-				get: untyped __js__("function () { return this.get_soundTransform (); }"),
-				set: untyped __js__("function (v) { return this.set_soundTransform (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_soundTransform (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_soundTransform (v); }")
 			},
 			"upState": {
-				get: untyped __js__("function () { return this.get_upState (); }"),
-				set: untyped __js__("function (v) { return this.set_upState (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_upState (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_upState (v); }")
 			},
 		});
 	}
@@ -164,8 +164,7 @@ class SimpleButton extends InteractiveObject
 	{
 		super();
 
-		__type = SIMPLE_BUTTON;
-
+		__drawableType = SIMPLE_BUTTON;
 		enabled = true;
 		trackAsMenu = false;
 		useHandCursor = true;
@@ -293,25 +292,39 @@ class SimpleButton extends InteractiveObject
 		return hitTest;
 	}
 
-	@:noCompletion private override function __setTransformDirty(force:Bool = false):Void
+	@:noCompletion private override function __setStageReference(stage:Stage):Void
 	{
-		// inline super.__setTransformDirty(force);
-		__transformDirty = true;
+		super.__setStageReference(stage);
 
 		if (__currentState != null)
 		{
-			__currentState.__setTransformDirty(force);
+			__currentState.__setStageReference(stage);
 		}
 
 		if (hitTestState != null && hitTestState != __currentState)
 		{
-			hitTestState.__setTransformDirty(force);
+			hitTestState.__setStageReference(stage);
+		}
+	}
+
+	@:noCompletion private override function __setTransformDirty():Void
+	{
+		super.__setTransformDirty();
+
+		if (__currentState != null)
+		{
+			__currentState.__setTransformDirty();
+		}
+
+		if (hitTestState != null && hitTestState != __currentState)
+		{
+			hitTestState.__setTransformDirty();
 		}
 	}
 
 	@:noCompletion private override function __update(transformOnly:Bool, updateChildren:Bool):Void
 	{
-		__updateSingle(transformOnly, updateChildren);
+		super.__update(transformOnly, updateChildren);
 
 		if (updateChildren)
 		{
@@ -324,6 +337,21 @@ class SimpleButton extends InteractiveObject
 			{
 				hitTestState.__update(transformOnly, true);
 			}
+		}
+	}
+
+	@:noCompletion private override function __updateTransforms(overrideTransform:Matrix = null):Void
+	{
+		super.__updateTransforms(overrideTransform);
+
+		if (__currentState != null)
+		{
+			__currentState.__updateTransforms();
+		}
+
+		if (hitTestState != null && hitTestState != __currentState)
+		{
+			hitTestState.__updateTransforms();
 		}
 	}
 
@@ -355,14 +383,12 @@ class SimpleButton extends InteractiveObject
 			if (__hitTestState != downState && __hitTestState != upState && __hitTestState != overState)
 			{
 				__hitTestState.__renderParent = null;
-				__hitTestState.__setTransformDirty();
 			}
 		}
 
 		if (hitTestState != null)
 		{
 			hitTestState.__renderParent = this;
-			hitTestState.__setTransformDirty();
 			hitTestState.__setRenderDirty();
 		}
 
@@ -420,7 +446,6 @@ class SimpleButton extends InteractiveObject
 		if (__currentState != null && __currentState != hitTestState)
 		{
 			__currentState.__renderParent = null;
-			__currentState.__setTransformDirty();
 		}
 
 		if (value != null && value.parent != null)
@@ -428,8 +453,8 @@ class SimpleButton extends InteractiveObject
 			value.parent.removeChild(value);
 		}
 
-		// #if (openfl_html5 && dom)
-		#if openfl_html5
+		// #if (js && html5 && dom)
+		#if (js && html5)
 		if (DisplayObject.__supportDOM && __previousStates == null)
 		{
 			__previousStates = new Vector<DisplayObject>();
@@ -438,13 +463,13 @@ class SimpleButton extends InteractiveObject
 
 		if (value != __currentState)
 		{
-			// #if (openfl_html5 && dom)
-			#if openfl_html5
+			// #if (js && html5 && dom)
+			#if (js && html5)
 			if (DisplayObject.__supportDOM)
 			{
 				if (__currentState != null)
 				{
-					__currentState.__setStageReferences(null);
+					__currentState.__setStageReference(null);
 					__previousStates.push(__currentState);
 				}
 
@@ -460,11 +485,9 @@ class SimpleButton extends InteractiveObject
 			if (value != null)
 			{
 				value.__renderParent = this;
-				value.__setTransformDirty();
 				value.__setRenderDirty();
 			}
 
-			__localBoundsDirty = true;
 			__setRenderDirty();
 		}
 

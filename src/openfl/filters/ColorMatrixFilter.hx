@@ -7,11 +7,8 @@ import openfl.display.Shader;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 #if lime
-import lime._internal.graphics.ImageCanvasUtil;
+import lime._internal.graphics.ImageCanvasUtil; // TODO
 import lime.math.RGBA;
-#elseif openfl_html5
-import openfl._internal.backend.lime_standalone.ImageCanvasUtil;
-import openfl._internal.backend.lime_standalone.RGBA;
 #end
 
 /**
@@ -107,8 +104,8 @@ import openfl._internal.backend.lime_standalone.RGBA;
 		```
 
 		**Faster version**. Available only with SSE/AltiVec
-		accelerator-enabled processors, such as Intel<sup>®</sup>
-		Pentium<sup>®</sup> 3 and later and Apple<sup>®</sup> G4 and later.
+		accelerator-enabled processors, such as Intel<sup>�</sup>
+		Pentium<sup>�</sup> 3 and later and Apple<sup>�</sup> G4 and later.
 		The accelerator is used when the multiplier terms are in the range
 		-15.99 to 15.99 and the adder terms a[4], a[9], a[14], and a[19] are
 		in the range -8000 to 8000.
@@ -123,7 +120,10 @@ import openfl._internal.backend.lime_standalone.RGBA;
 	@:noCompletion private static function __init__()
 	{
 		untyped Object.defineProperties(ColorMatrixFilter.prototype, {
-			"matrix": {get: untyped __js__("function () { return this.get_matrix (); }"), set: untyped __js__("function (v) { return this.set_matrix (v); }")},
+			"matrix": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_matrix (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_matrix (v); }")
+			},
 		});
 	}
 	#end
@@ -150,11 +150,11 @@ import openfl._internal.backend.lime_standalone.RGBA;
 	@:noCompletion private override function __applyFilter(destBitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle,
 			destPoint:Point):BitmapData
 	{
-		#if (lime || openfl_html5)
-		var sourceImage = sourceBitmapData.limeImage;
-		var image = destBitmapData.limeImage;
+		#if lime
+		var sourceImage = sourceBitmapData.image;
+		var image = destBitmapData.image;
 
-		#if openfl_html5
+		#if (js && html5)
 		ImageCanvasUtil.convertToData(sourceImage);
 		ImageCanvasUtil.convertToData(image);
 		#end
@@ -212,7 +212,7 @@ import openfl._internal.backend.lime_standalone.RGBA;
 			}
 		}
 
-		destBitmapData.limeImage.dirty = true;
+		destBitmapData.image.dirty = true;
 		#end
 		return destBitmapData;
 	}
@@ -275,7 +275,7 @@ private class ColorMatrixShader extends BitmapFilterShader
 	{
 		super();
 
-		#if (!macro && openfl_gl)
+		#if !macro
 		uMultipliers.value = [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1];
 		uOffsets.value = [0, 0, 0, 0];
 		#end
@@ -283,7 +283,7 @@ private class ColorMatrixShader extends BitmapFilterShader
 
 	public function init(matrix:Array<Float>):Void
 	{
-		#if (!macro && openfl_gl)
+		#if !macro
 		var multipliers = uMultipliers.value;
 		var offsets = uOffsets.value;
 

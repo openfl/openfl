@@ -171,7 +171,10 @@ class ConvolutionFilter extends BitmapFilter
 	@:noCompletion private static function __init__()
 	{
 		untyped Object.defineProperties(ConvolutionFilter.prototype, {
-			"matrix": {get: untyped __js__("function () { return this.get_matrix (); }"), set: untyped __js__("function (v) { return this.set_matrix (v); }")},
+			"matrix": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_matrix (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_matrix (v); }")
+			},
 		});
 	}
 	#end
@@ -234,7 +237,7 @@ class ConvolutionFilter extends BitmapFilter
 
 	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int, sourceBitmapData:BitmapData):Shader
 	{
-		#if (!macro && openfl_gl)
+		#if !macro
 		__convolutionShader.uConvoMatrix.value = matrix;
 		__convolutionShader.uDivisor.value[0] = divisor;
 		__convolutionShader.uBias.value[0] = bias;
@@ -347,7 +350,7 @@ private class ConvolutionShader extends BitmapFilterShader
 	{
 		super();
 
-		#if (!macro && openfl_gl)
+		#if !macro
 		uDivisor.value = [1];
 		uBias.value = [0];
 		uPreserveAlpha.value = [true];

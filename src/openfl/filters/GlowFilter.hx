@@ -8,9 +8,8 @@ import openfl.geom.ColorTransform;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 #if lime
-import lime._internal.graphics.ImageDataUtil;
-#else
-import openfl._internal.backend.lime_standalone.ImageDataUtil;
+import lime._internal.graphics.ImageDataUtil; // TODO
+
 #end
 
 /**
@@ -154,22 +153,37 @@ import openfl._internal.backend.lime_standalone.ImageDataUtil;
 	@:noCompletion private static function __init__()
 	{
 		untyped Object.defineProperties(GlowFilter.prototype, {
-			"alpha": {get: untyped __js__("function () { return this.get_alpha (); }"), set: untyped __js__("function (v) { return this.set_alpha (v); }")},
-			"blurX": {get: untyped __js__("function () { return this.get_blurX (); }"), set: untyped __js__("function (v) { return this.set_blurX (v); }")},
-			"blurY": {get: untyped __js__("function () { return this.get_blurY (); }"), set: untyped __js__("function (v) { return this.set_blurY (v); }")},
-			"color": {get: untyped __js__("function () { return this.get_color (); }"), set: untyped __js__("function (v) { return this.set_color (v); }")},
-			"inner": {get: untyped __js__("function () { return this.get_inner (); }"), set: untyped __js__("function (v) { return this.set_inner (v); }")},
+			"alpha": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_alpha (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_alpha (v); }")
+			},
+			"blurX": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_blurX (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_blurX (v); }")
+			},
+			"blurY": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_blurY (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_blurY (v); }")
+			},
+			"color": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_color (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_color (v); }")
+			},
+			"inner": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_inner (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_inner (v); }")
+			},
 			"knockout": {
-				get: untyped __js__("function () { return this.get_knockout (); }"),
-				set: untyped __js__("function (v) { return this.set_knockout (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_knockout (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_knockout (v); }")
 			},
 			"quality": {
-				get: untyped __js__("function () { return this.get_quality (); }"),
-				set: untyped __js__("function (v) { return this.set_quality (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_quality (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_quality (v); }")
 			},
 			"strength": {
-				get: untyped __js__("function () { return this.get_strength (); }"),
-				set: untyped __js__("function (v) { return this.set_strength (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_strength (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_strength (v); }")
 			},
 		});
 	}
@@ -243,34 +257,25 @@ import openfl._internal.backend.lime_standalone.ImageDataUtil;
 	@:noCompletion private override function __applyFilter(bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle,
 			destPoint:Point):BitmapData
 	{
-		#if (lime || openfl_html5)
 		// TODO: Support knockout, inner
 
+		#if lime
 		var r = (__color >> 16) & 0xFF;
 		var g = (__color >> 8) & 0xFF;
 		var b = __color & 0xFF;
 
-		if (__inner || __knockout)
-		{
-			sourceBitmapData.limeImage.colorTransform(sourceBitmapData.limeImage.rect, new ColorTransform(1, 1, 1, 0, 0, 0, 0, -255).__toLimeColorMatrix());
-			sourceBitmapData.limeImage.dirty = true;
-			sourceBitmapData.limeImage.version++;
-			bitmapData = sourceBitmapData.clone();
-			return bitmapData;
-		}
-
-		var finalImage = ImageDataUtil.gaussianBlur(bitmapData.limeImage, sourceBitmapData.limeImage, sourceRect.__toLimeRectangle(),
-			destPoint.__toLimeVector2(), __blurX, __blurY, __quality, __strength);
+		var finalImage = ImageDataUtil.gaussianBlur(bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle(), destPoint.__toLimeVector2(),
+			__blurX, __blurY, __quality, __strength);
 		finalImage.colorTransform(finalImage.rect, new ColorTransform(0, 0, 0, __alpha, r, g, b, 0).__toLimeColorMatrix());
 
-		if (finalImage == bitmapData.limeImage) return bitmapData;
+		if (finalImage == bitmapData.image) return bitmapData;
 		#end
 		return sourceBitmapData;
 	}
 
 	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int, sourceBitmapData:BitmapData):Shader
 	{
-		#if (!macro && openfl_gl)
+		#if !macro
 		// First pass of inner glow is invert alpha
 		if (__inner && pass == 0)
 		{
@@ -564,7 +569,7 @@ private class BlurAlphaShader extends BitmapFilterShader
 	public function new()
 	{
 		super();
-		#if (!macro && openfl_gl)
+		#if !macro
 		uRadius.value = [0, 0];
 		uColor.value = [0, 0, 0, 0];
 		uStrength.value = [1];
@@ -605,7 +610,7 @@ private class CombineShader extends BitmapFilterShader
 	public function new()
 	{
 		super();
-		#if (!macro && openfl_gl)
+		#if !macro
 		offset.value = [0, 0];
 		#end
 	}
@@ -644,7 +649,7 @@ private class InnerCombineShader extends BitmapFilterShader
 	public function new()
 	{
 		super();
-		#if (!macro && openfl_gl)
+		#if !macro
 		offset.value = [0, 0];
 		#end
 	}
@@ -683,7 +688,7 @@ private class CombineKnockoutShader extends BitmapFilterShader
 	public function new()
 	{
 		super();
-		#if (!macro && openfl_gl)
+		#if !macro
 		offset.value = [0, 0];
 		#end
 	}
@@ -722,7 +727,7 @@ private class InnerCombineKnockoutShader extends BitmapFilterShader
 	public function new()
 	{
 		super();
-		#if (!macro && openfl_gl)
+		#if !macro
 		offset.value = [0, 0];
 		#end
 	}

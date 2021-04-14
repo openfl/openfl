@@ -1,6 +1,6 @@
 package openfl.utils;
 
-import openfl._internal.utils.Log;
+import openfl.utils._internal.Log;
 import openfl.display.BitmapData;
 import openfl.display.MovieClip;
 import openfl.events.Event;
@@ -8,8 +8,13 @@ import openfl.events.EventDispatcher;
 import openfl.media.Sound;
 import openfl.text.Font;
 #if lime
+import lime.app.Promise;
 import lime.utils.AssetLibrary as LimeAssetLibrary;
 import lime.utils.Assets as LimeAssets;
+#end
+#if lime_vorbis
+import lime.media.AudioBuffer;
+import lime.media.vorbis.VorbisFile;
 #end
 
 /**
@@ -191,7 +196,7 @@ class Assets
 
 		if (limeLibrary != null)
 		{
-			if (Std.is(limeLibrary, AssetLibrary))
+			if ((limeLibrary is AssetLibrary))
 			{
 				var library:AssetLibrary = cast limeLibrary;
 
@@ -222,9 +227,16 @@ class Assets
 
 	public static function getMusic(id:String, useCache:Bool = true):Sound
 	{
+		#if (lime_vorbis && lime > "7.9.0")
+		var path = getPath(id);
+		// TODO: What if it is a WAV or non-Vorbis file?
+		var vorbisFile = VorbisFile.fromFile(path);
+		var buffer = AudioBuffer.fromVorbisFile(vorbisFile);
+		return Sound.fromAudioBuffer(buffer);
+		#else
 		// TODO: Streaming sound
-
 		return getSound(id, useCache);
+		#end
 	}
 
 	/**
@@ -368,7 +380,7 @@ class Assets
 			return false;
 		}
 		#else
-		return (bitmapData != null && #if !lime_hybrid bitmapData.limeImage != null #else bitmapData.__handle != null #end);
+		return (bitmapData != null && #if !lime_hybrid bitmapData.image != null #else bitmapData.__handle != null #end);
 		#end
 		#else
 		return true;
@@ -535,7 +547,7 @@ class Assets
 
 			if (library != null)
 			{
-				if (Std.is(library, AssetLibrary))
+				if ((library is AssetLibrary))
 				{
 					_library = cast library;
 				}
@@ -622,7 +634,7 @@ class Assets
 
 		if (limeLibrary != null)
 		{
-			if (Std.is(limeLibrary, AssetLibrary))
+			if ((limeLibrary is AssetLibrary))
 			{
 				var library:AssetLibrary = cast limeLibrary;
 
@@ -746,19 +758,6 @@ class Assets
 
 	public static function unloadLibrary(name:String):Void
 	{
-		if (name == null || name == "")
-		{
-			name = "default";
-			// TODO: Do we cache with the default prefix?
-			cache.clear(":");
-		}
-
-		var library = getLibrary(name);
-		if (library != null)
-		{
-			cache.clear(name + ":");
-		}
-
 		#if lime
 		LimeAssets.unloadLibrary(name);
 		#end

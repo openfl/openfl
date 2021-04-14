@@ -2,6 +2,9 @@ package openfl.ui;
 
 #if !flash
 import openfl.utils.ByteArray;
+#if lime
+import lime.ui.Gamepad;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -45,12 +48,15 @@ import openfl.utils.ByteArray;
 	@:noCompletion private var __axis:Map<Int, GameInputControl> = new Map();
 	@:noCompletion private var __button:Map<Int, GameInputControl> = new Map();
 	@:noCompletion private var __controls:Array<GameInputControl> = new Array();
+	#if lime
+	@:noCompletion private var __gamepad:Gamepad;
+	#end
 
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
 		untyped Object.defineProperties(GameInputDevice.prototype, {
-			"numControls": {get: untyped __js__("function () { return this.get_numControls (); }")},
+			"numControls": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_numControls (); }")},
 		});
 	}
 	#end

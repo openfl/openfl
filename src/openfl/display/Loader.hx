@@ -20,8 +20,6 @@ import lime.utils.AssetLibrary as LimeAssetLibrary;
 import lime.utils.AssetManifest;
 #end
 
-using openfl._internal.utils.DisplayObjectLinkedList;
-
 /**
 	The Loader class is used to load SWF files or image (JPG, PNG, or GIF)
 	files. Use the `load()` method to initiate loading. The loaded
@@ -200,6 +198,8 @@ class Loader extends DisplayObjectContainer
 	{
 		super();
 
+		// Perhaps there should be a LOADER drawable type to make this clearer.
+		__drawableType = SPRITE;
 		contentLoaderInfo = LoaderInfo.create(this);
 		uncaughtErrorEvents = contentLoaderInfo.uncaughtErrorEvents;
 		__unloaded = true;
@@ -225,7 +225,7 @@ class Loader extends DisplayObjectContainer
 	**/
 	public function close():Void
 	{
-		openfl._internal.Lib.notImplemented();
+		openfl.utils._internal.Lib.notImplemented();
 	}
 	#end
 
@@ -445,7 +445,7 @@ class Loader extends DisplayObjectContainer
 			contentLoaderInfo.contentType = request.contentType;
 		}
 
-		#if openfl_html5
+		#if (js && html5)
 		if (contentLoaderInfo.contentType.indexOf("image/") > -1
 			&& request.method == URLRequestMethod.GET
 			&& (request.requestHeaders == null || request.requestHeaders.length == 0)
@@ -564,11 +564,20 @@ class Loader extends DisplayObjectContainer
 		BitmapData.loadFromBytes(buffer).onComplete(BitmapData_onLoad).onError(BitmapData_onError);
 	}
 
-	// public override function removeChild(child:DisplayObject):DisplayObject
-	// {
-	// 	throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
-	// 	return null;
-	// }
+	public override function removeChild(child:DisplayObject):DisplayObject
+	{
+		// TODO: Allow `displayObjectContainer.addChild(loader.content)` without
+		// the following work-around
+		if (child == content)
+		{
+			return super.removeChild(content);
+		}
+		else
+		{
+			throw new Error("Error #2069: The Loader class does not implement this method.", 2069);
+			return null;
+		}
+	}
 
 	public override function removeChildAt(index:Int):DisplayObject
 	{
@@ -706,7 +715,7 @@ class Loader extends DisplayObjectContainer
 
 		if (content != null)
 		{
-			super.addChild(content);
+			super.addChildAt(content, 0);
 		}
 	}
 
@@ -768,7 +777,7 @@ class Loader extends DisplayObjectContainer
 				return;
 			}
 
-			if (Std.is(library, AssetLibrary))
+			if ((library is AssetLibrary))
 			{
 				library.load().onComplete(function(_)
 				{
@@ -786,7 +795,7 @@ class Loader extends DisplayObjectContainer
 					contentLoaderInfo.dispatchEvent(new Event(Event.COMPLETE));
 				}).onError(function(e)
 				{
-					__dispatchError(e);
+						__dispatchError(e);
 				});
 			}
 		}
@@ -797,12 +806,12 @@ class Loader extends DisplayObjectContainer
 		{
 			__setContent(new Sprite(), 0, 0);
 
-			#if openfl_html5
+			#if (js && html5)
 			// var script:ScriptElement = cast Browser.document.createElement ("script");
 			// script.innerHTML = loader.data;
 			// Browser.document.head.appendChild (script);
 
-			untyped __js__("eval")("(function () {" + loader.data + "})()");
+			untyped #if haxe4 js.Syntax.code #else __js__ #end ("eval")("(function () {" + loader.data + "})()");
 			#end
 
 			contentLoaderInfo.dispatchEvent(new Event(Event.COMPLETE));

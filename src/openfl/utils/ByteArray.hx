@@ -10,16 +10,14 @@ import haxe.io.FPHelper;
 import haxe.Json;
 import haxe.Serializer;
 import haxe.Unserializer;
-import openfl._internal.bindings.typedarray.ArrayBuffer;
 import openfl.errors.EOFError;
 import openfl.net.ObjectEncoding;
 #if lime
 import lime.system.System;
+import lime.utils.ArrayBuffer;
 import lime.utils.BytePointer;
 import lime.utils.Bytes as LimeBytes;
 import lime.utils.DataPointer;
-#elseif openfl_html5
-import openfl._internal.backend.lime_standalone.LimeBytes;
 #end
 #if format
 import format.amf.Reader as AMFReader;
@@ -68,6 +66,7 @@ import format.amf3.Writer as AMF3Writer;
 #if !openfl_doc_gen
 @:forward(endian, objectEncoding)
 #end
+@:transitive
 abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 {
 	/**
@@ -279,7 +278,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		this.deflate();
 	}
 
-	#if (lime || js)
+	#if lime
 	/**
 		Converts an ArrayBuffer into a ByteArray.
 
@@ -315,7 +314,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		#if display
 		return null;
 		#else
-		if (Std.is(bytes, ByteArrayData))
+		if ((bytes is ByteArrayData))
 		{
 			return cast bytes;
 		}
@@ -343,7 +342,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		#if display
 		return null;
 		#elseif flash
-		return cast bytesData;
+		return bytesData;
 		#else
 		return ByteArrayData.fromBytes(Bytes.ofData(bytesData));
 		#end
@@ -364,7 +363,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	**/
 	public static function fromFile(path:String):ByteArray
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		return LimeBytes.fromFile(path);
 		#else
 		return null;
@@ -432,7 +431,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	**/
 	public static function loadFromBytes(bytes:Bytes):Future<ByteArray>
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		return LimeBytes.loadFromBytes(bytes).then(function(limeBytes:LimeBytes)
 		{
 			var byteArray:ByteArray = limeBytes;
@@ -454,7 +453,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	**/
 	public static function loadFromFile(path:String):Future<ByteArray>
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		return LimeBytes.loadFromFile(path).then(function(limeBytes:LimeBytes)
 		{
 			var byteArray:ByteArray = limeBytes;
@@ -680,6 +679,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		return value;
 	}
 
+	#if lime
 	/**
 		Converts a ByteArray into an ArrayBuffer.
 
@@ -698,6 +698,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		return (byteArray : ByteArrayData);
 		#end
 	}
+	#end
 
 	#if lime
 	@:to @:noCompletion private static function toBytePointer(byteArray:ByteArray):BytePointer
@@ -737,7 +738,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		#if display
 		return null;
 		#elseif flash
-		return cast byteArray;
+		return byteArray;
 		#else
 		return (byteArray : ByteArrayData).getData();
 		#end
@@ -747,7 +748,13 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	#if lime
 	@:to @:noCompletion private static function toLimeBytes(byteArray:ByteArray):LimeBytes
 	{
-		return fromBytes(byteArray);
+		#if display
+		return null;
+		#elseif flash
+		return Bytes.ofData(byteArray);
+		#else
+		return (byteArray : ByteArrayData);
+		#end
 	}
 	#end
 
@@ -1084,15 +1091,15 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		});
 		untyped global.Object.defineProperties(ByteArrayData.prototype, {
 			"bytesAvailable": {
-				get: untyped __js__("function () { return this.get_bytesAvailable (); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_bytesAvailable (); }")
 			},
 			"endian": {
-				get: untyped __js__("function () { return this.get_endian (); }"),
-				set: untyped __js__("function (v) { return this.set_endian (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_endian (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_endian (v); }")
 			},
 			"length": {
-				get: untyped __js__("function () { return this.get_length (); }"),
-				set: untyped __js__("function (v) { return this.set_length (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_length (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_length (v); }")
 			},
 		});
 	}
@@ -1132,7 +1139,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function compress(algorithm:CompressionAlgorithm = ZLIB):Void
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		#if js
 		if (__length > #if lime_bytes_length_getter l #else length #end)
 		{
@@ -1254,7 +1261,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 			(bytes : ByteArrayData).__resize(offset + length);
 		}
 
-			(bytes : ByteArrayData).blit(offset, this, position, length);
+		(bytes : ByteArrayData).blit(offset, this, position, length);
 		position += length;
 	}
 
@@ -1527,7 +1534,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function uncompress(algorithm:CompressionAlgorithm = ZLIB):Void
 	{
-		#if (lime || openfl_html5)
+		#if lime
 		#if js
 		if (__length > #if lime_bytes_length_getter l #else length #end)
 		{

@@ -12,9 +12,6 @@ import lime._internal.graphics.ImageCanvasUtil;
 import lime._internal.graphics.ImageDataUtil;
 import lime.math.Vector2;
 import lime.math.Vector4;
-#elseif openfl_html5
-import openfl._internal.backend.lime_standalone.ImageCanvasUtil;
-import openfl._internal.backend.lime_standalone.ImageDataUtil;
 #end
 
 /**
@@ -124,13 +121,13 @@ import openfl._internal.backend.lime_standalone.ImageDataUtil;
 	/**
 		The mode for the filter. Possible values are DisplacementMapFilterMode
 		constants:
-		* `DisplacementMapFilterMode.WRAP` — Wraps the displacement value to
+		* `DisplacementMapFilterMode.WRAP` � Wraps the displacement value to
 		the other side of the source image.
-		* `DisplacementMapFilterMode.CLAMP` — Clamps the displacement value
+		* `DisplacementMapFilterMode.CLAMP` � Clamps the displacement value
 		to the edge of the source image.
-		* `DisplacementMapFilterMode.IGNORE` — If the displacement value is
+		* `DisplacementMapFilterMode.IGNORE` � If the displacement value is
 		out of range, ignores the displacement and uses the source pixel.
-		* `DisplacementMapFilterMode.COLOR` — If the displacement value is
+		* `DisplacementMapFilterMode.COLOR` � If the displacement value is
 		outside the image, substitutes the values in the `color` and `alpha`
 		properties.
 
@@ -222,27 +219,29 @@ import openfl._internal.backend.lime_standalone.ImageDataUtil;
 	@:noCompletion private override function __applyFilter(bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle,
 			destPoint:Point):BitmapData
 	{
+		#if lime
 		__updateMapMatrix();
 
-		#if openfl_html5
-		ImageCanvasUtil.convertToData(bitmapData.limeImage);
-		ImageCanvasUtil.convertToData(sourceBitmapData.limeImage);
-		ImageCanvasUtil.convertToData(__mapBitmap.limeImage);
+		#if (js && html5)
+		ImageCanvasUtil.convertToData(bitmapData.image);
+		ImageCanvasUtil.convertToData(sourceBitmapData.image);
+		ImageCanvasUtil.convertToData(__mapBitmap.image);
 		#end
 
-		ImageDataUtil.displaceMap(bitmapData.limeImage, sourceBitmapData.limeImage, __mapBitmap.limeImage,
+		ImageDataUtil.displaceMap(bitmapData.image, sourceBitmapData.image, __mapBitmap.image,
 
 			new Vector2(__mapPoint.x / __mapBitmap.width, __mapPoint.y / __mapBitmap.height),
 
 			new Vector4(__matrixData[0], __matrixData[4], __matrixData[8], __matrixData[12]),
 			new Vector4(__matrixData[1], __matrixData[5], __matrixData[9], __matrixData[13]), __smooth);
+		#end
 
 		return bitmapData;
 	}
 
 	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int, sourceBitmapData:BitmapData):Shader
 	{
-		#if (!macro && openfl_gl)
+		#if !macro
 		// TODO: mapX/mapY/mapU/mapV + offsets
 
 		__updateMapMatrix();

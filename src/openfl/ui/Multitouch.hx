@@ -130,8 +130,8 @@ import openfl.Vector;
 	// Getters & Setters
 	@:noCompletion private static function get_supportsTouchEvents():Bool
 	{
-		#if openfl_html5
-		if (untyped __js__("('ontouchstart' in document.documentElement) || (window.DocumentTouch && document instanceof DocumentTouch)"))
+		#if (js && html5)
+		if (untyped #if haxe4 js.Syntax.code #else __js__ #end ("('ontouchstart' in document.documentElement) || (window.DocumentTouch && document instanceof DocumentTouch)"))
 		{
 			return true;
 		}

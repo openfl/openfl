@@ -76,10 +76,6 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	**/
 	public var currentLabels(get, never):Array<FrameLabel>;
 
-	/**
-		The current scene in which the playhead is located in the timeline of
-		the MovieClip instance.
-	**/
 	public var currentScene(get, never):Scene;
 
 	/**
@@ -113,15 +109,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	**/
 	public var framesLoaded(get, never):Int;
 
-	/**
-		A Boolean value that indicates whether a movie clip is curently playing.
-	**/
 	public var isPlaying(get, never):Bool;
-
-	/**
-		An array of Scene objects, each listing the name, the number of frames, and
-		the frame labels for a scene in the MovieClip instance.
-	**/
 	public var scenes(get, never):Array<Scene>;
 
 	/**
@@ -133,9 +121,9 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	**/
 	public var totalFrames(get, never):Int;
 
+	// @:noCompletion @:dox(hide) public var trackAsMenu:Bool;
 	@:noCompletion private static var __constructor:MovieClip->Void;
 
-	// @:noCompletion @:dox(hide) public var trackAsMenu:Bool;
 	@:noCompletion private var __enabled:Bool;
 	@:noCompletion private var __hasDown:Bool;
 	@:noCompletion private var __hasOver:Bool;
@@ -148,17 +136,17 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	@:noCompletion private static function __init__()
 	{
 		untyped Object.defineProperties(MovieClip.prototype, {
-			"currentFrame": {get: untyped __js__("function () { return this.get_currentFrame (); }")},
-			"currentFrameLabel": {get: untyped __js__("function () { return this.get_currentFrameLabel (); }")},
-			"currentLabel": {get: untyped __js__("function () { return this.get_currentLabel (); }")},
-			"currentLabels": {get: untyped __js__("function () { return this.get_currentLabels (); }")},
+			"currentFrame": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_currentFrame (); }")},
+			"currentFrameLabel": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_currentFrameLabel (); }")},
+			"currentLabel": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_currentLabel (); }")},
+			"currentLabels": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_currentLabels (); }")},
 			"enabled": {
-				get: untyped __js__("function () { return this.get_enabled (); }"),
-				set: untyped __js__("function (v) { return this.set_enabled (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_enabled (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_enabled (v); }")
 			},
-			"framesLoaded": {get: untyped __js__("function () { return this.get_framesLoaded (); }")},
-			"isPlaying": {get: untyped __js__("function () { return this.get_isPlaying (); }")},
-			"totalFrames": {get: untyped __js__("function () { return this.get_totalFrames (); }")},
+			"framesLoaded": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_framesLoaded (); }")},
+			"isPlaying": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_isPlaying (); }")},
+			"totalFrames": {get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_totalFrames (); }")},
 		});
 	}
 	#end
@@ -173,7 +161,7 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		super();
 
 		__enabled = true;
-		__type = MOVIE_CLIP;
+		// __type = MOVIE_CLIP;
 
 		if (__constructor != null)
 		{
@@ -192,14 +180,6 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		}
 	}
 
-	/**
-		Attaches a Timeline object to the current movie clip.
-
-		A movie clip with a timeline will support additional movie clip features
-		such as `play()`, `gotoAndPlay()`, `stop()` and `prevFrame()`.
-
-		@param	timeline	The Timeline to attach to this MovieClip
-	**/
 	public function attachTimeline(timeline:Timeline):Void
 	{
 		__timeline = timeline;
@@ -210,12 +190,6 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		}
 	}
 
-	/**
-		Creates a new MovieClip instance from a Timeline.
-
-		@param	timeline	A Timeline instance
-		@returns	A MovieClip attached to the Timeline
-	**/
 	public static function fromTimeline(timeline:Timeline):MovieClip
 	{
 		var movieClip = new MovieClip();
@@ -283,10 +257,6 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		}
 	}
 
-	/**
-		Moves the playhead to the next scene of the MovieClip instance. This happens
-		after all remaining actions in the frame have finished executing.
-	**/
 	public function nextScene():Void
 	{
 		if (__timeline != null)
@@ -297,7 +267,6 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 
 	/**
 		Moves the playhead in the timeline of the movie clip.
-
 	**/
 	public function play():Void
 	{
@@ -320,10 +289,6 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		}
 	}
 
-	/**
-		Moves the playhead to the previous scene of the MovieClip instance. This
-		happens after all remaining actions in the frame have finished executing.
-	**/
 	public function prevScene():Void
 	{
 		if (__timeline != null)
@@ -341,6 +306,19 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		if (__timeline != null)
 		{
 			__timeline.__stop();
+		}
+	}
+
+	@:noCompletion private override function __enterFrame(deltaTime:Int):Void
+	{
+		if (__timeline != null)
+		{
+			__timeline.__enterFrame(deltaTime);
+		}
+
+		for (child in __children)
+		{
+			child.__enterFrame(deltaTime);
 		}
 	}
 
@@ -365,7 +343,11 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		}
 
 		__mouseIsDown = true;
-		stage.addEventListener(MouseEvent.MOUSE_UP, __onMouseUp, true);
+
+		if (stage != null)
+		{
+			stage.addEventListener(MouseEvent.MOUSE_UP, __onMouseUp, true);
+		}
 	}
 
 	@:noCompletion private function __onMouseUp(event:MouseEvent):Void

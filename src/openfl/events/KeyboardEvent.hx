@@ -1,7 +1,7 @@
 package openfl.events;
 
 #if !flash
-import openfl._internal.utils.ObjectPool;
+// import openfl.utils.ObjectPool;
 import openfl.ui.KeyLocation;
 
 /**
@@ -82,7 +82,7 @@ class KeyboardEvent extends Event
 	**/
 	public var charCode:Int;
 
-	#if (!flash_doc_gen || air_doc_gen)
+	#if (!openfl_doc_gen || !flash_doc_gen || air_doc_gen)
 	/**
 		Indicates whether the Command key is active (`true`) or inactive
 		(`false`). Supported for Mac OS only. On Mac OS, the `commandKey`
@@ -131,8 +131,8 @@ class KeyboardEvent extends Event
 	**/
 	public var shiftKey:Bool;
 
-	@:noCompletion private static var __pool:ObjectPool<KeyboardEvent> = new ObjectPool<KeyboardEvent>(function() return new KeyboardEvent(null),
-	function(event) event.__init());
+	// @:noCompletion private static var __pool:ObjectPool<KeyboardEvent> = new ObjectPool<KeyboardEvent>(function() return new KeyboardEvent(null),
+	// function(event) event.__init());
 
 	/**
 		Creates an Event object that contains specific information about keyboard

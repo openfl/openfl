@@ -1,7 +1,7 @@
 package openfl.events;
 
 #if !flash
-import openfl._internal.utils.ObjectPool;
+// import openfl.utils.ObjectPool;
 
 /**
 	An object dispatches a DataEvent object when raw data has completed
@@ -51,8 +51,8 @@ class DataEvent extends TextEvent
 	**/
 	public var data:String;
 
-	@:noCompletion private static var __pool:ObjectPool<DataEvent> = new ObjectPool<DataEvent>(function() return new DataEvent(null),
-	function(event) event.__init());
+	// @:noCompletion private static var __pool:ObjectPool<DataEvent> = new ObjectPool<DataEvent>(function() return new DataEvent(null),
+	// function(event) event.__init());
 
 	/**
 		Creates an event object that contains information about data events.

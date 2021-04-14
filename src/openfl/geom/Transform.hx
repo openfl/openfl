@@ -141,17 +141,20 @@ class Transform
 	{
 		untyped Object.defineProperties(Transform.prototype, {
 			"colorTransform": {
-				get: untyped __js__("function () { return this.get_colorTransform (); }"),
-				set: untyped __js__("function (v) { return this.set_colorTransform (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_colorTransform (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_colorTransform (v); }")
 			},
 			"concatenatedMatrix": {
-				get: untyped __js__("function () { return this.get_concatenatedMatrix (); }"),
-				set: untyped __js__("function (v) { return this.set_concatenatedMatrix (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_concatenatedMatrix (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_concatenatedMatrix (v); }")
 			},
-			"matrix": {get: untyped __js__("function () { return this.get_matrix (); }"), set: untyped __js__("function (v) { return this.set_matrix (v); }")},
+			"matrix": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_matrix (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_matrix (v); }")
+			},
 			"matrix3D": {
-				get: untyped __js__("function () { return this.get_matrix3D (); }"),
-				set: untyped __js__("function (v) { return this.set_matrix3D (v); }")
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_matrix3D (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_matrix3D (v); }")
 			},
 		});
 	}
@@ -191,11 +194,12 @@ class Transform
 	// Get & Set Methods
 	@:noCompletion private function get_colorTransform():ColorTransform
 	{
-		return __colorTransform;
+		return __colorTransform.__clone();
 	}
 
 	@:noCompletion private function set_colorTransform(value:ColorTransform):ColorTransform
 	{
+		// TODO: Move this to DisplayObject?
 		if (!__colorTransform.__equals(value, false))
 		{
 			__colorTransform.__copyFrom(value);
@@ -331,7 +335,6 @@ class Transform
 			transform.ty = ty;
 
 			__displayObject.__setTransformDirty();
-			__displayObject.__setParentRenderDirty();
 		}
 	}
 }

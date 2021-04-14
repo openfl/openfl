@@ -1,7 +1,7 @@
 package openfl.events;
 
 #if !flash
-import openfl._internal.utils.ObjectPool;
+// import openfl.utils.ObjectPool;
 
 /**
 	A ProgressEvent object is dispatched when a load operation has begun or a
@@ -64,8 +64,8 @@ class ProgressEvent extends Event
 	**/
 	public var bytesTotal:Float;
 
-	@:noCompletion private static var __pool:ObjectPool<ProgressEvent> = new ObjectPool<ProgressEvent>(function() return new ProgressEvent(null),
-	function(event) event.__init());
+	// @:noCompletion private static var __pool:ObjectPool<ProgressEvent> = new ObjectPool<ProgressEvent>(function() return new ProgressEvent(null),
+	// function(event) event.__init());
 
 	/**
 		Creates an Event object that contains information about progress events.

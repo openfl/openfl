@@ -1,6 +1,9 @@
 package openfl.display3D.textures;
 
 #if !flash
+import haxe.Timer;
+import openfl.display3D._internal.GLTexture;
+import openfl.events.Event;
 import openfl.net.NetStream;
 
 /**
@@ -51,14 +54,14 @@ import openfl.net.NetStream;
 	**/
 	public var videoWidth(default, null):Int;
 
-	@:noCompletion private var __backend:VideoTextureBackend;
+	@:noCompletion private var __cacheTime:Float;
+	@:noCompletion private var __netStream:NetStream;
 
 	@:noCompletion private function new(context:Context3D)
 	{
-		super(context, 0, 0, null, false, 0);
+		super(context);
 
-		__backend = new VideoTextureBackend(this);
-		__baseBackend = __backend;
+		__textureTarget = __context.gl.TEXTURE_2D;
 	}
 
 	#if false
@@ -87,15 +90,100 @@ import openfl.net.NetStream;
 	**/
 	public function attachNetStream(netStream:NetStream):Void
 	{
-		__backend.attachNetStream(netStream);
+		#if (js && html5)
+		if (__netStream != null)
+		{
+			__netStream.__video.removeEventListener("canplay", __onCanPlay, false);
+		}
+		#end
+
+		__cacheTime = -1;
+		__netStream = netStream;
+
+		if (__netStream != null)
+		{
+			#if (js && html5)
+			if (__netStream.__video.readyState >= 2)
+			{
+				Timer.delay(function()
+				{
+					__textureReady();
+				}, 0);
+			}
+			else
+			{
+				__netStream.__video.addEventListener("canplay", __onCanPlay, false);
+			}
+			#end
+		}
+	}
+
+	public override function dispose():Void
+	{
+		#if openfl_html5
+		if (__netStream != null && __netStream.__video != null)
+		{
+			__netStream.__video.removeEventListener("timeupdate", __onTimeUpdate);
+		}
+		#end
+
+		super.dispose();
+	}
+
+	#if (js && html5)
+	@:noCompletion private function __onCanPlay(_):Void
+	{
+		__netStream.__video.addEventListener("timeupdate", __onTimeUpdate);
+		__textureReady();
+	}
+
+	@:noCompletion private function __onTimeUpdate(_):Void
+	{
+		if (__netStream != null && __netStream.__video.currentTime != __cacheTime && __netStream.__video.readyState >= 2)
+		{
+			__textureReady();
+		}
+	}
+	#end
+
+	@:noCompletion private override function __getTexture():GLTexture
+	{
+		#if (js && html5)
+		if (__netStream.__video.currentTime != __cacheTime && __netStream.__video.readyState >= 2)
+		{
+			var gl = __context.gl;
+
+			__context.__bindGLTexture2D(__textureID);
+			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, __netStream.__video);
+			__cacheTime = __netStream.__video.currentTime;
+		}
+		#end
+
+		return __textureID;
+	}
+
+	@:noCompletion private function __textureReady():Void
+	{
+		#if (js && html5)
+		videoWidth = __netStream.__video.videoWidth;
+		videoHeight = __netStream.__video.videoHeight;
+		#end
+
+		var event:Event = null;
+
+		#if openfl_pool_events
+		event = Event.__pool.get(Event.TEXTURE_READY);
+		#else
+		event = new Event(Event.TEXTURE_READY);
+		#end
+
+		dispatchEvent(event);
+
+		#if openfl_pool_events
+		Event.__pool.release(event);
+		#end
 	}
 }
-
-#if openfl_gl
-private typedef VideoTextureBackend = openfl._internal.backend.opengl.OpenGLVideoTextureBackend;
-#else
-private typedef VideoTextureBackend = openfl._internal.backend.dummy.DummyVideoTextureBackend;
-#end
 #else
 typedef VideoTexture = flash.display3D.textures.VideoTexture;
 #end

@@ -3,7 +3,7 @@ package openfl.display3D;
 #if !flash
 #if !openfljs
 #if cs
-import openfl._internal.utils.NullUtils;
+import openfl.utils._internal.NullUtils;
 #end
 
 /**

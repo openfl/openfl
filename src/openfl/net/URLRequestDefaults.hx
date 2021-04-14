@@ -96,7 +96,7 @@ class URLRequestDefaults
 	public static var userAgent:String;
 
 	// public static function setLoginCredentialsForHost (hostname:String, user:String, password:String):Dynamic {
-	// 	openfl._internal.Lib.notImplemented ();
+	// 	openfl.utils._internal.Lib.notImplemented ();
 	// 	return null;
 	// }
 }

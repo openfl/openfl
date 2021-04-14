@@ -3,7 +3,7 @@ package openfl.display;
 #if !flash
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
-#if openfl_html5
+#if (js && html5)
 import js.html.ImageElement;
 #end
 
@@ -80,18 +80,18 @@ class Bitmap extends DisplayObject
 	**/
 	public var smoothing:Bool;
 
-	@:noCompletion private var __bitmapData:BitmapData;
-	#if openfl_html5
+	#if (js && html5)
 	@:noCompletion private var __image:ImageElement;
 	#end
+	@:noCompletion private var __bitmapData:BitmapData;
 	@:noCompletion private var __imageVersion:Int;
 
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
 		untyped Object.defineProperty(Bitmap.prototype, "bitmapData", {
-			get: untyped __js__("function () { return this.get_bitmapData (); }"),
-			set: untyped __js__("function (v) { return this.set_bitmapData (v); }")
+			get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_bitmapData (); }"),
+			set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_bitmapData (v); }")
 		});
 	}
 	#end
@@ -110,8 +110,7 @@ class Bitmap extends DisplayObject
 	{
 		super();
 
-		__type = BITMAP;
-
+		__drawableType = BITMAP;
 		__bitmapData = bitmapData;
 		this.pixelSnapping = pixelSnapping;
 		this.smoothing = smoothing;
@@ -119,6 +118,14 @@ class Bitmap extends DisplayObject
 		if (pixelSnapping == null)
 		{
 			this.pixelSnapping = PixelSnapping.AUTO;
+		}
+	}
+
+	@:noCompletion private override function __enterFrame(deltaTime:Int):Void
+	{
+		if (__bitmapData != null && __bitmapData.image != null && __bitmapData.image.version != __imageVersion)
+		{
+			__setRenderDirty();
 		}
 	}
 
@@ -196,7 +203,6 @@ class Bitmap extends DisplayObject
 		__bitmapData = value;
 		smoothing = false;
 
-		__localBoundsDirty = true;
 		__setRenderDirty();
 
 		if (__filters != null)

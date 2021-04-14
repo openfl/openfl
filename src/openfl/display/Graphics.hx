@@ -1,27 +1,27 @@
 package openfl.display;
 
 #if !flash
-import openfl._internal.renderer.context3D.Context3DBuffer;
-import openfl._internal.renderer.DisplayObjectRenderData;
-import openfl._internal.renderer.DrawCommandBuffer;
-import openfl._internal.renderer.DrawCommandReader;
-import openfl._internal.renderer.ShaderBuffer;
-import openfl._internal.bindings.typedarray.Float32Array;
-import openfl._internal.utils.ObjectPool;
-import openfl._internal.bindings.typedarray.UInt16Array;
+import openfl.display._internal.CairoGraphics;
+import openfl.display._internal.CanvasGraphics;
+import openfl.display._internal.Context3DBuffer;
+import openfl.display._internal.DrawCommandBuffer;
+import openfl.display._internal.DrawCommandReader;
+import openfl.display._internal.ShaderBuffer;
 import openfl.display3D.IndexBuffer3D;
 import openfl.display3D.VertexBuffer3D;
 import openfl.errors.ArgumentError;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
+import openfl.utils._internal.Float32Array;
+import openfl.utils._internal.UInt16Array;
+import openfl.utils.ObjectPool;
 import openfl.Vector;
-#if openfl_html5
+#if lime
+import lime.graphics.cairo.Cairo;
+#end
+#if (js && html5)
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
-import openfl._internal.renderer.canvas.CanvasGraphics;
-#else
-import openfl._internal.bindings.cairo.Cairo;
-import openfl._internal.renderer.cairo.CairoGraphics;
 #end
 
 /**
@@ -54,7 +54,6 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 	@:noCompletion private static var maxTextureHeight:Null<Int> = null;
 	@:noCompletion private static var maxTextureWidth:Null<Int> = null;
 
-	@:noCompletion private var __bitmap:BitmapData;
 	@:noCompletion private var __bounds:Rectangle;
 	@:noCompletion private var __commands:DrawCommandBuffer;
 	@:noCompletion private var __dirty(default, set):Bool = true;
@@ -63,23 +62,34 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 	@:noCompletion private var __managed:Bool;
 	@:noCompletion private var __positionX:Float;
 	@:noCompletion private var __positionY:Float;
-	@:noCompletion private var __renderData:DisplayObjectRenderData;
+	@:noCompletion private var __quadBuffer:Context3DBuffer;
 	@:noCompletion private var __renderTransform:Matrix;
 	@:noCompletion private var __shaderBufferPool:ObjectPool<ShaderBuffer>;
 	@:noCompletion private var __softwareDirty:Bool;
 	@:noCompletion private var __strokePadding:Float;
 	@:noCompletion private var __transformDirty:Bool;
+	@:noCompletion private var __triangleIndexBuffer:IndexBuffer3D;
+	@:noCompletion private var __triangleIndexBufferCount:Int;
+	@:noCompletion private var __triangleIndexBufferData:UInt16Array;
 	@:noCompletion private var __usedShaderBuffers:List<ShaderBuffer>;
+	@:noCompletion private var __vertexBuffer:VertexBuffer3D;
+	@:noCompletion private var __vertexBufferCount:Int;
+	@:noCompletion private var __vertexBufferCountUVT:Int;
+	@:noCompletion private var __vertexBufferData:Float32Array;
+	@:noCompletion private var __vertexBufferDataUVT:Float32Array;
+	@:noCompletion private var __vertexBufferUVT:VertexBuffer3D;
 	@:noCompletion private var __visible:Bool;
 	// private var __cachedTexture:RenderTexture;
 	@:noCompletion private var __owner:DisplayObject;
 	@:noCompletion private var __width:Int;
 	@:noCompletion private var __worldTransform:Matrix;
-
-	#if draft
-	@:noCompletion private var __drawPaths:Array<openfl._internal.renderer.opengl.utils.DrawPath>;
-	@:noCompletion private var __glStack:Array<openfl._internal.renderer.opengl.utils.GLStack> = [];
+	#if (js && html5)
+	@:noCompletion private var __canvas:CanvasElement;
+	@:noCompletion private var __context:#if lime CanvasRenderingContext2D #else Dynamic #end;
+	#else
+	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __cairo:#if lime Cairo #else Dynamic #end;
 	#end
+	@:noCompletion private var __bitmap:BitmapData;
 
 	@:noCompletion private function new(owner:DisplayObject)
 	{
@@ -95,10 +105,9 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 		__width = 0;
 		__height = 0;
 
-		__renderData = new DisplayObjectRenderData();
 		__shaderBufferPool = new ObjectPool<ShaderBuffer>(function() return new ShaderBuffer());
 
-		#if openfl_html5
+		#if (js && html5)
 		moveTo(0, 0);
 		#end
 	}
@@ -368,11 +377,13 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 	{
 		if (shader != null)
 		{
+			#if lime
 			var shaderBuffer = __shaderBufferPool.get();
 			__usedShaderBuffers.add(shaderBuffer);
 			shaderBuffer.update(cast shader);
 
 			__commands.beginShaderFill(shaderBuffer);
+			#end
 		}
 	}
 
@@ -383,10 +394,12 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 	**/
 	public function clear():Void
 	{
+		#if lime
 		for (shaderBuffer in __usedShaderBuffers)
 		{
 			__shaderBufferPool.release(shaderBuffer);
 		}
+		#end
 
 		__usedShaderBuffers.clear();
 		__commands.clear();
@@ -397,14 +410,13 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 			__dirty = true;
 			__transformDirty = true;
 			__bounds = null;
-			__owner.__localBoundsDirty = true;
 		}
 
 		__visible = false;
 		__positionX = 0;
 		__positionY = 0;
 
-		#if openfl_html5
+		#if (js && html5)
 		moveTo(0, 0);
 		#end
 	}
@@ -419,7 +431,6 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 	public function copyFrom(sourceGraphics:Graphics):Void
 	{
 		__bounds = sourceGraphics.__bounds != null ? sourceGraphics.__bounds.clone() : null;
-		__owner.__localBoundsDirty = true;
 		__commands = sourceGraphics.__commands.copy();
 		__dirty = true;
 		__strokePadding = sourceGraphics.__strokePadding;
@@ -609,21 +620,6 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 		__dirty = true;
 	}
 
-	/**
-		Draws a circle. Set the line style, fill, or both before you call the
-		`drawCircle()` method, by calling the `linestyle()`,
-		`lineGradientStyle()`, `beginFill()`,
-		`beginGradientFill()`, or `beginBitmapFill()`
-		method.
-
-		@param x      The _x_ location of the center of the circle relative
-					  to the registration point of the parent display object(in
-					  pixels).
-		@param y      The _y_ location of the center of the circle relative
-					  to the registration point of the parent display object(in
-					  pixels).
-		@param radius The radius of the circle(in pixels).
-	**/
 	public function drawCircle(x:Float, y:Float, radius:Float):Void
 	{
 		if (radius <= 0) return;
@@ -1479,11 +1475,11 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 		{
 			if (joints == JointStyle.MITER)
 			{
-				if (thickness > __strokePadding) __strokePadding = thickness;
+				if (thickness > __strokePadding) __strokePadding = Math.ceil(thickness);
 			}
 			else
 			{
-				if (thickness / 2 > __strokePadding) __strokePadding = thickness / 2;
+				if (thickness / 2 > __strokePadding) __strokePadding = Math.ceil(thickness / 2);
 			}
 		}
 
@@ -1614,13 +1610,15 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 		return graphicsData;
 	}
 
-	@:noCompletion private function __calculateBezierCubicPoint(t:Float, p1:Float, p2:Float, p3:Float, p4:Float):Float
+	@:noCompletion
+	private #if !js inline #end function __calculateBezierCubicPoint(t:Float, p1:Float, p2:Float, p3:Float, p4:Float):Float
 	{
 		var iT = 1 - t;
 		return p1 * (iT * iT * iT) + 3 * p2 * t * (iT * iT) + 3 * p3 * iT * (t * t) + p4 * (t * t * t);
 	}
 
-	@:noCompletion private function __calculateBezierQuadPoint(t:Float, p1:Float, p2:Float, p3:Float):Float
+	@:noCompletion
+	private #if !js inline #end function __calculateBezierQuadPoint(t:Float, p1:Float, p2:Float, p3:Float):Float
 	{
 		var iT = 1 - t;
 		return iT * iT * p1 + 2 * iT * t * p2 + t * t * p3;
@@ -1628,8 +1626,8 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 
 	@:noCompletion private function __cleanup():Void
 	{
-		#if openfl_html5
-		if (__bounds != null && __renderData.canvas != null)
+		#if (js && html5)
+		if (__bounds != null && __canvas != null)
 		{
 			__dirty = true;
 			__transformDirty = true;
@@ -1643,7 +1641,13 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 		#end
 
 		__bitmap = null;
-		__renderData.dispose();
+
+		#if (js && html5)
+		__canvas = null;
+		__context = null;
+		#else
+		__cairo = null;
+		#end
 	}
 
 	@:noCompletion private function __getBounds(rect:Rectangle, matrix:Matrix):Void
@@ -1667,9 +1671,9 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 		{
 			if (shapeFlag)
 			{
-				#if openfl_html5
+				#if (js && html5)
 				return CanvasGraphics.hitTest(this, px, py);
-				#elseif openfl_cairo
+				#elseif (lime_cffi)
 				return CairoGraphics.hitTest(this, px, py);
 				#end
 			}
@@ -1685,38 +1689,32 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 		if (__bounds == null)
 		{
 			__bounds = new Rectangle(x, y, 0, 0);
-			__owner.__localBoundsDirty = true;
+			__transformDirty = true;
+			return;
+		}
+
+		if (x < __bounds.x)
+		{
+			__bounds.width += __bounds.x - x;
+			__bounds.x = x;
 			__transformDirty = true;
 		}
-		else
+
+		if (y < __bounds.y)
 		{
-			if (x < __bounds.x)
-			{
-				__bounds.width += __bounds.x - x;
-				__bounds.x = x;
-				__owner.__localBoundsDirty = true;
-				__transformDirty = true;
-			}
+			__bounds.height += __bounds.y - y;
+			__bounds.y = y;
+			__transformDirty = true;
+		}
 
-			if (y < __bounds.y)
-			{
-				__bounds.height += __bounds.y - y;
-				__bounds.y = y;
-				__owner.__localBoundsDirty = true;
-				__transformDirty = true;
-			}
+		if (x > __bounds.x + __bounds.width)
+		{
+			__bounds.width = x - __bounds.x;
+		}
 
-			if (x > __bounds.x + __bounds.width)
-			{
-				__owner.__localBoundsDirty = true;
-				__bounds.width = x - __bounds.x;
-			}
-
-			if (y > __bounds.y + __bounds.height)
-			{
-				__owner.__localBoundsDirty = true;
-				__bounds.height = y - __bounds.y;
-			}
+		if (y > __bounds.y + __bounds.height)
+		{
+			__bounds.height = y - __bounds.y;
 		}
 	}
 
@@ -1927,11 +1925,11 @@ import openfl._internal.renderer.cairo.CairoGraphics;
 		var tx = x * parentTransform.a + y * parentTransform.c + parentTransform.tx;
 		var ty = x * parentTransform.b + y * parentTransform.d + parentTransform.ty;
 
-		// Floor the world position for crisp graphics rendering
-		__worldTransform.tx = Math.ffloor(tx);
-		__worldTransform.ty = Math.ffloor(ty);
+		// round the world position for crisp graphics rendering
+		__worldTransform.tx = Math.fround(tx);
+		__worldTransform.ty = Math.fround(ty);
 
-		// Offset the rendering with the subpixel offset removed by Math.floor above
+		// Offset the rendering with the subpixel offset removed by Math.round above
 		__renderTransform.tx = __worldTransform.__transformInverseX(tx, ty);
 		__renderTransform.ty = __worldTransform.__transformInverseY(tx, ty);
 

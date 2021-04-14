@@ -27,7 +27,7 @@
 
 package openfl.utils;
 
-import openfl._internal.utils.Log;
+import openfl.utils._internal.Log;
 import openfl.display3D.Context3D;
 import openfl.display3D.Program3D;
 import openfl.Lib;

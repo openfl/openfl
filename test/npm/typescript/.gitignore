@@ -1,5 +1,0 @@
-**/*.js
-!webpack.config.js
-mocha.js
-mocha.css
-entry.js

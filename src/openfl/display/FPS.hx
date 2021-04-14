@@ -5,8 +5,8 @@ import openfl.events.Event;
 import openfl.text.TextField;
 import openfl.text.TextFormat;
 #if gl_stats
-import openfl._internal.renderer.context3D.stats.Context3DStats;
-import openfl._internal.renderer.context3D.stats.DrawCallContext;
+import openfl.display._internal.stats.Context3DStats;
+import openfl.display._internal.stats.DrawCallContext;
 #end
 #if flash
 import openfl.Lib;
@@ -48,19 +48,18 @@ class FPS extends TextField
 		currentTime = 0;
 		times = [];
 
-		// #if flash
+		#if flash
 		addEventListener(Event.ENTER_FRAME, function(e)
 		{
 			var time = Lib.getTimer();
 			__enterFrame(time - currentTime);
 		});
-		// #end
+		#end
 	}
 
 	// Event Handlers
-
 	@:noCompletion
-	private /*#if !flash override #end*/ function __enterFrame(deltaTime:Float):Void
+	private #if !flash override #end function __enterFrame(deltaTime:Float):Void
 	{
 		currentTime += deltaTime;
 		times.push(currentTime);

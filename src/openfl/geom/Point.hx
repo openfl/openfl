@@ -1,7 +1,7 @@
 package openfl.geom;
 
 #if !flash
-import openfl._internal.utils.ObjectPool;
+import openfl.utils.ObjectPool;
 #if lime
 import lime.math.Vector2;
 #end
@@ -58,7 +58,7 @@ class Point
 	@:noCompletion private static function __init__()
 	{
 		untyped Object.defineProperty(Point.prototype, "length", {
-			get: untyped __js__("function () { return this.get_length (); }")
+			get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_length (); }")
 		});
 	}
 	#end
