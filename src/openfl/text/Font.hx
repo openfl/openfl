@@ -79,14 +79,14 @@ class Font #if lime extends LimeFont #end
 		#if native
 		if(enumerateDeviceFonts)
 		{
-			var _deviceFonts = [];
+			var _allFonts = __registeredFonts.copy();
 			var files = sys.FileSystem.readDirectory(lime.system.System.fontsDirectory);
 			for(file in files)
 			{
 				if(file.toLowerCase().indexOf('.ttf') != -1)
-					_deviceFonts.push(fromFile(lime.system.System.fontsDirectory + file));
+					_allFonts.push(fromFile(lime.system.System.fontsDirectory + file));
 			}
-			return _deviceFonts;
+			return _allFonts;
 		}
 		#end
 		return __registeredFonts;
