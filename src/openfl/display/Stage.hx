@@ -2536,7 +2536,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				{
 					cursor = target.__getCursor();
 
-					if (cursor != null)
+					if (cursor != null && window != null)
 					{
 						window.cursor = cursor;
 						break;
@@ -2544,7 +2544,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				}
 			}
 
-			if (cursor == null)
+			if (cursor == null && window != null)
 			{
 				window.cursor = ARROW;
 			}
