@@ -76,6 +76,19 @@ class Font #if lime extends LimeFont #end
 	**/
 	public static function enumerateFonts(enumerateDeviceFonts:Bool = false):Array<Font>
 	{
+		#if native
+		if(enumerateDeviceFonts)
+		{
+			var _deviceFonts = [];
+			var files = sys.FileSystem.readDirectory(lime.system.System.fontsDirectory);
+			for(file in files)
+			{
+				if(file.toLowerCase().indexOf('.ttf') != -1)
+					_deviceFonts.push(fromFile(lime.system.System.fontsDirectory + file));
+			}
+			return _deviceFonts;
+		}
+		#end
 		return __registeredFonts;
 	}
 
