@@ -22,5 +22,5 @@
         [ "-main", "TestMain", "-cp", "src", "-cp", "test/haxelib/unit/src", "-lib", "munit", "-D", "openfl-unit-testing" ]
     ],
     "haxe.enableServerView": true,
-    "lime.projectFile": "test/haxelib/functional/project.xml"
+    "lime.projectFile": "tests/functional/project.xml"
 }
