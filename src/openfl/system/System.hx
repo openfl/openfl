@@ -259,6 +259,8 @@ import cpp.vm.Gc;
 		return Gc.stats().heap;
 		#elseif cpp
 		return untyped __global__.__hxcpp_gc_used_bytes();
+		#elseif hl
+		return Std.int(hl.Gc.stats().currentMemory);
 		#elseif (js && html5)
 		return
 			untyped #if haxe4 js.Syntax.code #else __js__ #end ("(window.performance && window.performance.memory) ? window.performance.memory.usedJSHeapSize : 0");
