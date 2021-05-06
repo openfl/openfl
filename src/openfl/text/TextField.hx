@@ -1591,11 +1591,6 @@ class TextField extends InteractiveObject
 		__setRenderDirty();
 	}
 
-	@:noCompletion private override function __allowMouseFocus():Bool
-	{
-		return __textEngine.type == INPUT || tabEnabled || selectable;
-	}
-
 	@:noCompletion private function __caretBeginningOfLine():Void
 	{
 		__caretIndex = getLineOffset(getLineIndexOfChar(__caretIndex));
