@@ -2387,27 +2387,36 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		switch (type)
 		{
 			case MouseEvent.MOUSE_DOWN:
-				if (target.__allowMouseFocus())
+				if (focus != null)
 				{
-					if (focus != null)
+					if (focus != target)
 					{
 						var focusEvent = new FocusEvent(FocusEvent.MOUSE_FOCUS_CHANGE, true, true, target, false, 0);
-
-						__dispatchStack(focusEvent, stack);
+						focus.dispatchEvent(focusEvent);
 
 						if (!focusEvent.isDefaultPrevented())
 						{
-							focus = target;
+							if (target.__allowMouseFocus())
+							{
+								focus = target;
+							}
+							else
+							{
+								focus = null;
+							}
 						}
-					}
-					else
-					{
-						focus = target;
 					}
 				}
 				else
 				{
-					focus = null;
+					if (target.__allowMouseFocus())
+					{
+						focus = target;
+					}
+					else
+					{
+						focus = null;
+					}
 				}
 
 				__mouseDownLeft = target;
