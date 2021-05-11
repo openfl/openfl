@@ -1255,7 +1255,7 @@ class InteractiveObject extends DisplayObject
 
 	@:noCompletion private function __allowMouseFocus():Bool
 	{
-		return mouseEnabled;
+		return mouseEnabled && tabEnabled;
 	}
 
 	@:noCompletion private override function __getInteractive(stack:Array<DisplayObject>):Bool

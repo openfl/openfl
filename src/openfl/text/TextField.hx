@@ -1591,6 +1591,13 @@ class TextField extends InteractiveObject
 		__setRenderDirty();
 	}
 
+	@:noCompletion private override function __allowMouseFocus():Bool
+	{
+		// mouse focus is still allowed when tabEnabled is false
+		// which is different from other interactive objects
+		return mouseEnabled;
+	}
+
 	@:noCompletion private function __caretBeginningOfLine():Void
 	{
 		__caretIndex = getLineOffset(getLineIndexOfChar(__caretIndex));
