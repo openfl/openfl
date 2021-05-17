@@ -3,10 +3,6 @@ package openfl.events;
 import openfl.events.Event;
 import openfl.filesystem.File;
 
-/**
- * ...
- * @author Christopher Speciale
- */
 class FileListEvent extends Event 
 {
 	public static inline var DIRECTORY_LISTING:String = "directoryListing";

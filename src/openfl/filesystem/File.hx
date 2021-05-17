@@ -1,18 +1,20 @@
 package openfl.filesystem;
+import openfl.errors.IllegalOperationError;
 
-#if (!air && desktop && windows)
+#if (!air && desktop)
 
-import openfl.errors.Error;
-import openfl.events.FileListEvent;
-import openfl.errors.ArgumentError;
 import haxe.io.Path;
-import openfl.net.FileFilter;
 import lime.system.BackgroundWorker;
 import lime.system.System;
 import lime.ui.FileDialog;
+import openfl.errors.ArgumentError;
+import openfl.errors.Error;
 import openfl.events.Event;
+import openfl.net.FileFilter;
+import openfl.events.FileListEvent;
 import openfl.net.FileReference;
 import sys.FileSystem;
+
 typedef HaxeFile = sys.io.File;
 /**
 	A File object represents a path to a file or directory. This can be an existing file
@@ -373,12 +375,20 @@ class File extends FileReference
 	public static var userDirectory(get, never):File;
 
 	@:noCompletion private static var __driveLetters:Array<String> =
+	#if windows
 		["A:\\", "B:\\", "C:\\", "D:\\", "E:\\", "F:\\", "G:\\",
 		 "H:\\", "I:\\", "J:\\", "K:\\", "L:\\", "M:\\", "N:\\",
 		 "O:\\", "P:\\", "Q:\\", "R:\\", "S:\\", "T:\\", "U:\\",
 		 "V:\\", "W:\\", "X:\\", "Y:\\", "Z:\\"];
+	#else
+		["A:/", "B:/", "C:/", "D:/", "E:/", "F:/", "G:/",
+		 "H:/", "I:/", "J:/", "K:/", "L:/", "M:/", "N:/",
+		 "O:/", "P:/", "Q:/", "R:/", "S:/", "T:/", "U:/",
+		 "V:/", "W:/", "X:/", "Y:/", "Z:/"];
+	#end
 	@:noCompletion private var __fileDialog:FileDialog;
 	@:noCompletion private var __fileWorker:BackgroundWorker;
+	@:noCompletion private var __sep:String = #if windows "\\" #else "/" #end;
 
 	/**
 		The constructor function for the File class.
@@ -421,7 +431,7 @@ class File extends FileReference
 
 		if (name.length == 0)
 		{
-			var dirs:Array<String> = Path.directory(__path).split("\\");
+			var dirs:Array<String> = Path.directory(__path).split(__sep);
 			name = dirs[dirs.length - 1];
 		}
 	}
@@ -482,9 +492,14 @@ class File extends FileReference
 	**/
 	public function browseForDirectory(title:String):Void
 	{
+		if (__fileDialog != null)
+		{
+			throw new IllegalOperationError("File Dialog is already open.");
+		}
 		__fileDialog = new FileDialog();
 		__fileDialog.onSelect.add(__dispatchSelect, true);
 		__fileDialog.browse(OPEN_DIRECTORY, null, __path, title);
+		__fileDialog.onCancel.add(__dispatchCancel);
 	}
 
 	/**
@@ -537,10 +552,16 @@ class File extends FileReference
 	**/
 	public function browseForOpen(title:String, typeFilter:Array<FileFilter> = null)
 	{
+		if (__fileDialog != null)
+		{
+			throw new IllegalOperationError("File Dialog is already open.");
+		}
+		
 		__fileDialog = new FileDialog();
 		__fileDialog.onSelect.add(__dispatchSelect, true);
-		__fileDialog.browse(OPEN, null, __path, title);
-	}
+		__fileDialog.browse(OPEN, __getFilterTypes(typeFilter), __path, title);
+		__fileDialog.onCancel.add(__dispatchCancel);
+	}	
 
 	/**
 		Displays the Open File dialog box, in which the user can select one or more files to open.
@@ -591,9 +612,15 @@ class File extends FileReference
 	**/
 	public function browseForOpenMultiple(title:String, typeFilter:Array<FileFilter> = null):Void
 	{
+		if (__fileDialog != null)
+		{
+			throw new IllegalOperationError("File Dialog is already open.");
+		}
+		
 		__fileDialog = new FileDialog();
 		__fileDialog.onSelectMultiple.add(__dispatchSelectMultiple, true);
-		__fileDialog.browse(OPEN_MULTIPLE, null, __path, title);
+		__fileDialog.browse(OPEN_MULTIPLE, __getFilterTypes(typeFilter), __path, title);
+		__fileDialog.onCancel.add(__dispatchCancel);
 	}
 
 	/**
@@ -648,6 +675,11 @@ class File extends FileReference
 	**/
 	public function browseForSave(title:String):Void
 	{
+		if (__fileDialog != null)
+		{
+			throw new IllegalOperationError("File Dialog is already open.");
+		}
+		
 		__fileDialog = new FileDialog();
 		__fileDialog.onSave.add(__dispatchSelect, true);
 		__fileDialog.browse(SAVE, null, __path, title);
@@ -686,13 +718,13 @@ class File extends FileReference
 	**/
 	public function canonicalize():Void
 	{
-		var segs:Array<String> = __path.split("\\");
+		var segs:Array<String> = __path.split(__sep);
 
-		var cPath:String = __driveLetters[__driveLetters.indexOf(segs[0].toUpperCase() + "\\")];
+		var cPath:String = __driveLetters[__driveLetters.indexOf(segs[0].toUpperCase() + __sep)];
 
 		for (i in 1...segs.length)
 		{
-			cPath += __canonicalize(cPath, segs[i]) + "\\";
+			cPath += __canonicalize(cPath, segs[i]) + __sep;
 		}
 
 		__path = Path.removeTrailingSlashes(cPath);
@@ -783,8 +815,15 @@ class File extends FileReference
 	**/
 	public function copyTo(newLocation:FileReference, overwrite:Bool = false):Void
 	{
+		if (!overwrite && FileSystem.exists(newLocation.__path))
+		{		
+			throw new Error("Overwrite is false");
+		}
 		var newPath:String = newLocation.__path;
-
+		/* 
+		 * What if we had an additional argument, duplicate for copy and move that would
+		 * work like this below: 
+		 * 
 		if (!overwrite && FileSystem.exists(newPath))
 		{
 			var ext:String = Path.extension(newPath);
@@ -802,9 +841,9 @@ class File extends FileReference
 				newPath = newPathWithoutExt + '($i)$ext';
 				i++;
 			}
-		}
+		}*/
 
-		HaxeFile.copy(nativePath, newPath);
+		HaxeFile.copy(__path, newPath);
 		//TODO: Error handing
 	}
 
@@ -1217,7 +1256,7 @@ class File extends FileReference
 
 		for (k in 0...relatives.length)
 		{
-			relativePath += relatives[k] + (k != relatives.length - 1 || refPath.length == 1  ? "/" : "");
+			relativePath += relatives[k] + (k != relatives.length - 1 || refPath.length == 1  ? __sep : "");
 		}
 
 		return relativePath == "" && ref.__path != __path ? null : relativePath;
@@ -1271,7 +1310,7 @@ class File extends FileReference
 	**/
 	public function moveTo(newLocation:FileReference, overwrite:Bool = false):Void
 	{
-		if (!overwrite)
+		if (!overwrite && FileSystem.exists(newLocation.__path))
 		{
 			throw new Error("Overwrite is set to false");
 		}
@@ -1384,7 +1423,7 @@ class File extends FileReference
 	**/
 	public function resolvePath(path:String):File
 	{
-		return new File('$__path\\$path');
+		return new File('$__path$__sep$path');
 	}
 
 	/**
@@ -1499,7 +1538,14 @@ class File extends FileReference
 
 		return seg;
 	}
-
+	
+	@:noCompletion private function __dispatchCancel():Void{
+		if (__fileDialog != null){
+			__fileDialog = null;
+		}
+		this.dispatchEvent(new Event(Event.CANCEL));
+	}
+	
 	@:noCompletion private function __dispatchSelect(?filepath:String):Void
 	{
 		if (__fileDialog != null)
@@ -1507,7 +1553,7 @@ class File extends FileReference
 			__fileDialog = null;
 		}
 
-		__path = filepath;
+		nativePath = filepath;
 
 		this.dispatchEvent(new Event(Event.SELECT));
 	}
@@ -1558,13 +1604,31 @@ class File extends FileReference
 
 		for (dir in dirs)
 		{
-			path += '$dir\\';
+			path += '$dir$__sep';
 		}
 
 		return Path.removeTrailingSlashes(path);
 
 	}
+	
+	@:noCompletion private function __getFilterTypes(typeFilter:Array<FileFilter>):String
+	{
+		var filter:String = null;
 
+		if (typeFilter != null)
+		{
+			var filters = [];
+
+			for (type in typeFilter)
+			{
+				filters.push(StringTools.replace(StringTools.replace(type.extension, "*.", ""), ";", ","));
+			}
+
+			filter = filters.join(";");
+		}
+		return filter;
+	}
+	
 	@:noCompletion private static function __getTempPath(dir:Bool):String
 	{
 		var path = "";
@@ -1647,7 +1711,7 @@ class File extends FileReference
 		type = "." + Path.extension(path);
 		name = Path.withoutDirectory(path);
 
-		return __path = path.indexOf("/") > 0 ? __formatPath(path) : path;
+		return __path = path.indexOf(#if windows"/" #else "\\" #end) > 0 ? __formatPath(path) : path;
 	}
 
 	@:noCompletion private function get_exists():Bool
@@ -1671,8 +1735,8 @@ class File extends FileReference
 		//TODO:Can we optimize this?
 		var path:String = Path.removeTrailingSlashes(__path);
 
-		var lastIndex:Int = path.lastIndexOf("\\");
-		if (lastIndex == path.indexOf("\\"))
+		var lastIndex:Int = path.lastIndexOf(__sep);
+		if (lastIndex == path.indexOf(__sep))
 		{
 			lastIndex += 1;
 		}
@@ -1682,6 +1746,6 @@ class File extends FileReference
 }
 #else
 #if air
-	typedef File = flash.filesystem.File
+	typedef File = flash.filesystem.File;
 #end
 #end
