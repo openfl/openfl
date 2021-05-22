@@ -68,6 +68,7 @@ import sys.io.FileSeek;
 		
 @:access(openfl.utils.ByteArray)
 @:access(openfl.utils.ByteArrayData)
+@:access(openfl.filesystem.File)
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -353,7 +354,9 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 								__output.writeBytes(__buffer, bytesLoaded, maxBytes);
 								bytesLoaded +=  maxBytes;
-
+								
+								__file.__fileStatsDirty = true;								
+								
 								dispatchEvent(new OutputProgressEvent(OutputProgressEvent.OUTPUT_PROGRESS, false, false, __buffer.length - bytesLoaded, __buffer.length));
 							}
 							catch (e:Dynamic)
@@ -361,7 +364,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 								dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR, false, false, "Index is out of bounds."));
 							}
 						}
-
+						
 						isWriting = false;
 					}
 				}
@@ -795,30 +798,31 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 	{
 		__checkIfOpen();
 		
-			var fileMode:FileMode = __fileMode;
+		var fileMode:FileMode = __fileMode;
 
-			var isAsync:Bool = __isAsync;
+		var isAsync:Bool = __isAsync;
 
-			var fileBytes:ByteArray = ByteArray.fromBytes(File.HaxeFile.getBytes(__file.nativePath));
+		var fileBytes:ByteArray = ByteArray.fromBytes(File.HaxeFile.getBytes(__file.nativePath));
 
-			var truncatedBytes:ByteArray = new ByteArray(position);
-			truncatedBytes.writeBytes(fileBytes, 0, truncatedBytes.length);
-			close();
+		var truncatedBytes:ByteArray = new ByteArray(position);
+		truncatedBytes.writeBytes(fileBytes, 0, truncatedBytes.length);
+		close();
 
-			File.HaxeFile.saveBytes(__file.nativePath, truncatedBytes);
-			var pos:Int = truncatedBytes.length;
-			fileBytes = null;
+		File.HaxeFile.saveBytes(__file.nativePath, truncatedBytes);
+		var pos:Int = truncatedBytes.length;
+		fileBytes = null;
 
-			if (isAsync)
-			{
-				openAsync(__file, fileMode);
-			}
-			else
-			{
-				open(__file, fileMode);
-			}
-			position = pos;
-		
+		if (isAsync)
+		{
+			openAsync(__file, fileMode);
+		}
+		else
+		{
+			open(__file, fileMode);
+		}
+		position = pos;
+			
+		__file.__fileStatsDirty = true;		
 	}
 	
 	/**
@@ -842,11 +846,12 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		{
 			__buffer.writeBoolean(value);
 			isWriting = true;
-
+			
 			return;
 		}
-
+				
 		__output.writeByte(value ? 1 : 0);
+		__file.__fileStatsDirty = true;
 		__positionDirty = true;
 	}
 	
@@ -872,8 +877,9 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 			return;
 		}
-
+				
 		__output.writeByte(value);
+		__file.__fileStatsDirty = true;
 		__positionDirty = true;
 	}
 	
@@ -915,7 +921,8 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		}
 
 		__output.writeBytes(bytes, offset, length);
-
+		
+		__file.__fileStatsDirty = true;
 		__positionDirty = true;
 	}
 	
@@ -941,8 +948,9 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 			return;
 		}
-
+				
 		__output.writeDouble(value);
+		__file.__fileStatsDirty = true;
 		__positionDirty = true;
 	}
 	
@@ -968,8 +976,9 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 			return;
 		}
-
+				
 		__output.writeFloat(value);
+		__file.__fileStatsDirty = true;
 		__positionDirty = true;
 	}
 	
@@ -995,8 +1004,9 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 			return;
 		}
-
+				
 		__output.writeInt32(value);
+		__file.__fileStatsDirty = true;
 		__positionDirty = true;
 	}
 	
@@ -1025,8 +1035,9 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 			return;
 		}
-
+		
 		writeUTFBytes(value);
+		__file.__fileStatsDirty = true;
 		__positionDirty = true;
 	}
 	
@@ -1053,8 +1064,9 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 			return;
 		}
-
+				
 		__writeObject(object);
+		__file.__fileStatsDirty = true;
 		__positionDirty = true;
 	}
 	
@@ -1080,8 +1092,9 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 			return;
 		}
-
+		
 		__output.writeInt16(value);
+		__file.__fileStatsDirty = true;	
 		__positionDirty = true;
 	}
 	
@@ -1107,8 +1120,9 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 			return;
 		}
-
+		
 		__output.writeInt32(value);
+		__file.__fileStatsDirty = true;
 		__positionDirty = true;
 	}
 	
@@ -1136,9 +1150,10 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 			return;
 		}
-
+		
 		__output.writeInt16(value.length);
 		__output.writeString(value);
+		__file.__fileStatsDirty = true;
 		__positionDirty = true;
 	}
 	
@@ -1167,10 +1182,11 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		}
 
 		__output.writeString(value);
+		__file.__fileStatsDirty = true;
 		__positionDirty = true;
 	}
 	
-	private function __checkIfOpen():Void
+	@:noCompletion private function __checkIfOpen():Void
 	{
 		if (!__isOpen)
 		{
@@ -1178,7 +1194,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		}
 	}
 
-	private function __checkIfReadable():Void
+	@:noCompletion private function __checkIfReadable():Void
 	{
 		__checkIfOpen();
 
@@ -1188,7 +1204,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		}
 	}
 
-	private function __checkIfWritable():Void
+	@:noCompletion private function __checkIfWritable():Void
 	{
 		__checkIfOpen();
 
@@ -1198,7 +1214,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		}
 	}
 
-	private function __getStreamBytesAvailable():Int
+	@:noCompletion private function __getStreamBytesAvailable():Int
 	{
 		if (__isWrite)
 		{
@@ -1230,7 +1246,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		return length - pos;
 	}
 	
-	private function __openFile():Void
+	@:noCompletion private function __openFile():Void
 	{
 		if (__isOpen)
 		{
@@ -1295,7 +1311,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		}
 	}
 
-	private function __writeObject(object:Dynamic):Void
+	@:noCompletion private function __writeObject(object:Dynamic):Void
 	{
 		switch (objectEncoding)
 		{
@@ -1330,7 +1346,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		}
 	}
 
-	private function get_endian():Endian
+	@:noCompletion private function get_endian():Endian
 	{
 		if (__isWrite)
 		{
@@ -1340,7 +1356,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		return __input.bigEndian ? BIG_ENDIAN : LITTLE_ENDIAN;
 	}
 
-	private function set_endian(value:Endian):Endian
+	@:noCompletion private function set_endian(value:Endian):Endian
 	{
 		if (__isWrite)
 		{
@@ -1352,7 +1368,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		return value;
 	}
 
-	private function get_bytesAvailable():Int
+	@:noCompletion private function get_bytesAvailable():Int
 	{
 		if (!__isAsync && __isOpen)
 		{
@@ -1367,9 +1383,8 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		return 0;
 	}
 
-	private function get_position():UInt
+	@:noCompletion private function get_position():UInt
 	{
-
 		if (__positionDirty)
 		{
 			if (!__isAsync)
@@ -1390,17 +1405,24 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		return position;
 	}
 
-	private function set_position(value:UInt):UInt
+	@:noCompletion private function set_position(value:UInt):UInt
 	{
 		if (__isOpen)
 		{
-			if (__isWrite)
+			if (!__isAsync)
 			{
-				__output.seek(value, FileSeek.SeekBegin);
-			}
-			else
+				if (__isWrite)
+				{
+					__output.seek(value, FileSeek.SeekBegin);
+				}
+				else
+				{
+					__input.seek(value, FileSeek.SeekBegin);
+				}
+			} 
+			else 
 			{
-				__input.seek(value, FileSeek.SeekBegin);
+				__buffer.position = value;
 			}
 		}
 

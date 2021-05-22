@@ -1,5 +1,7 @@
 package openfl.filesystem;
+import openfl.errors.IOError;
 import openfl.errors.IllegalOperationError;
+import sys.FileStat;
 
 #if (!air && desktop)
 
@@ -389,6 +391,7 @@ class File extends FileReference
 	@:noCompletion private var __fileDialog:FileDialog;
 	@:noCompletion private var __fileWorker:BackgroundWorker;
 	@:noCompletion private var __sep:String = #if windows "\\" #else "/" #end;
+	@:noCompletion private var __fileStatsDirty:Bool = false;
 
 	/**
 		The constructor function for the File class.
@@ -817,7 +820,7 @@ class File extends FileReference
 	{
 		if (!overwrite && FileSystem.exists(newLocation.__path))
 		{		
-			throw new Error("Overwrite is false");
+			throw new Error("Overwrite is false.");
 		}
 		var newPath:String = newLocation.__path;
 		/* 
@@ -842,8 +845,17 @@ class File extends FileReference
 				i++;
 			}
 		}*/
-
-		HaxeFile.copy(__path, newPath);
+		try{
+			var path:String = Path.directory(newPath);
+			if (!FileSystem.exists(path)){
+				FileSystem.createDirectory(path);
+			}
+			HaxeFile.copy(__path, newPath);
+		} 
+		catch (e:Dynamic)
+		{
+			throw new Error("File or directory does not exist.", 3003);
+		}		
 		//TODO: Error handing
 	}
 
@@ -1084,7 +1096,7 @@ class File extends FileReference
 
 		for (directory in directories)
 		{
-			files.push(new File(__path + directory));
+			files.push(new File(__path + __sep + directory));
 		}
 
 		return files;
@@ -1423,7 +1435,8 @@ class File extends FileReference
 	**/
 	public function resolvePath(path:String):File
 	{
-		return new File('$__path$__sep$path');
+		var directoryPath:String = Path.removeTrailingSlashes(__path);
+		return new File('$directoryPath$__sep$path');
 	}
 
 	/**
@@ -1521,7 +1534,6 @@ class File extends FileReference
 	@:noCompletion private function __canonicalize(cpath:String, seg:String):String
 	{
 		seg = seg.toLowerCase();
-		trace(cpath, seg);
 		var items:Array<String> = FileSystem.readDirectory(Path.directory(cpath));
 		if (items == null)
 		{
@@ -1661,41 +1673,93 @@ class File extends FileReference
 
 		return path + ".tmp";
 	}
+	
+	@:noCompletion private function __updateFileStats(?path:String):Void{
+		if (path == null)
+		{
+			path = __path;
+		}
+		
+		var fileInfo = FileSystem.stat(path);
+		creationDate = fileInfo.ctime;
+		modificationDate = fileInfo.mtime;
+		size = fileInfo.size;
+		type = "." + Path.extension(path);
+		name = Path.withoutDirectory(path);
+	}	
 
 	@:noCompletion private static function get_applicationDirectory():File
 	{
-		return new File(System.applicationDirectory);
+		return new File(Path.removeTrailingSlashes(System.applicationDirectory));
 	}
 
 	@:noCompletion private static function get_applicationStorageDirectory():File
 	{
-		return new File(System.applicationStorageDirectory);
+		return new File(Path.removeTrailingSlashes(System.applicationStorageDirectory));
 	}
 
 	@:noCompletion private static function get_documentsDirectory():File
 	{
-		return new File(System.documentsDirectory);
+		return new File(Path.removeTrailingSlashes(System.documentsDirectory));
 	}
 
 	@:noCompletion private static function get_desktopDirectory():File
 	{
-		return new File(System.desktopDirectory);
+		return new File(Path.removeTrailingSlashes(System.desktopDirectory));
 	}
 
 	@:noCompletion private static function get_userDirectory():File
 	{
-		return new File(System.userDirectory);
+		return new File(Path.removeTrailingSlashes(System.userDirectory));
 	}
 
+	@:noCompletion override private function get_creationDate():Date
+	{
+		if (__fileStatsDirty){
+			__updateFileStats();
+		}
+		return creationDate;
+	}
+	
+	@:noCompletion override private function get_modificationDate():Date{
+		if (__fileStatsDirty){
+			__updateFileStats();
+		}
+		return modificationDate;
+	}
+	
+	@:noCompletion override private function get_name():String{
+		if (__fileStatsDirty){
+			__updateFileStats();
+		}
+		return name;
+	}	
+	
+	@:noCompletion override private function get_size():Int
+	{
+		if (__fileStatsDirty){
+			__updateFileStats();
+		}
+		return size;
+	}
+	
+	@:noCompletion override private function get_type():String
+	{
+		if (__fileStatsDirty){
+			__updateFileStats();
+		}
+		return type;
+	}
+	
 	@:noCompletion private function get_nativePath():String
 	{
 		return __path;
-	}
+	}	
 
 	@:noCompletion private function set_nativePath(path:String):String
 	{
 
-		if (path.charAt(path.length - 1) == ":" || FileSystem.isDirectory(path))
+		if (path.charAt(path.length - 1) == ":" /*|| FileSystem.isDirectory(path)*/)
 		{
 			path = Path.addTrailingSlash(path);
 		}

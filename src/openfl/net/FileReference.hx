@@ -325,7 +325,7 @@ class FileReference extends EventDispatcher
 									  unsuccessful. In this case, the value of
 									  the `creationDate` property is `null`.
 	**/
-	public var creationDate(default, null):Date;
+	public var creationDate(get, null):Date;	
 
 	/**
 		The Macintosh creator type of the file, which is only used in Mac OS
@@ -345,7 +345,7 @@ class FileReference extends EventDispatcher
 									  the `creator` property is `null`.
 	**/
 	public var creator(default, null):String;
-
+	
 	/**
 		The ByteArray object representing the data from the loaded file after
 		a successful call to the `load()` method.
@@ -385,7 +385,7 @@ class FileReference extends EventDispatcher
 									  the `modificationDate` property is
 									  `null`.
 	**/
-	public var modificationDate(default, null):Date;
+	public var modificationDate(get, null):Date;	
 
 	/**
 		The name of the file on the local disk. If the FileReference object
@@ -406,8 +406,8 @@ class FileReference extends EventDispatcher
 									  sequence or an earlier call was
 									  unsuccessful.
 	**/
-	public var name(default, null):String;
-
+	public var name(get, null):String;
+	
 	/**
 		The size of the file on the local disk in bytes. If `size` is 0, an
 		exception is thrown.
@@ -430,8 +430,8 @@ class FileReference extends EventDispatcher
 									  sequence or an earlier call was
 									  unsuccessful.
 	**/
-	public var size(default, null):Int;
-
+	public var size(get, null):Int;
+	
 	/**
 		The file type.
 		In Windows or Linux, this property is the file extension. On the
@@ -454,8 +454,8 @@ class FileReference extends EventDispatcher
 									  unsuccessful. In this case, the value of
 									  the `type` property is `null`.
 	**/
-	public var type(default, null):String;
-
+	public var type(get, null):String;
+	
 	@:noCompletion private var __data:ByteArray;
 	@:noCompletion private var __path:String;
 	@:noCompletion private var __urlLoader:URLLoader;
@@ -1381,6 +1381,28 @@ class FileReference extends EventDispatcher
 	@:noCompletion private function urlLoader_onProgress(event:ProgressEvent):Void
 	{
 		dispatchEvent(event);
+	}
+	
+	@:noCompletion private function get_creationDate():Date{
+		return creationDate;
+	}
+	
+	@:noCompletion private function get_modificationDate():Date{
+		return modificationDate;
+	}
+	
+	@:noCompletion private function get_name():String{
+		return name;
+	}
+	
+	@:noCompletion private function get_size():Int
+	{
+		return size;
+	}
+	
+	@:noCompletion private function get_type():String
+	{
+		return type;
 	}
 }
 #else
