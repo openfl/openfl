@@ -2333,12 +2333,12 @@ class TextField extends InteractiveObject
 				else
 					break;
 			}
-
-			scrollV = i + 2;
+			scrollV = i + 1;
 		}
 		else
 		{
 			// TODO: can this be avoided? this doesn't need to hit the setter each time, just a couple times
+			
 			scrollV = scrollV;
 		}
 	}
@@ -2793,14 +2793,14 @@ class TextField extends InteractiveObject
 	{
 		__updateLayout();
 
-		if (value > 0 && value != __textEngine.scrollV)
+		if (value > 0 && value != __textEngine.scrollV || __textEngine.scrollV == 0)
 		{
 			__dirty = true;
 			__setRenderDirty();
 			__textEngine.scrollV = value;
 			dispatchEvent(new Event(Event.SCROLL));
 		}
-
+		
 		return __textEngine.scrollV;
 	}
 
@@ -3253,7 +3253,7 @@ class TextField extends InteractiveObject
 					if (!te.isDefaultPrevented())
 					{
 						__replaceSelectedText("\n", true);
-
+						
 						dispatchEvent(new Event(Event.CHANGE, true));
 					}
 				}

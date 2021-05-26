@@ -722,7 +722,7 @@ class TextEngine
 		{
 			var group = layoutGroups[layoutGroups.length - 1];
 
-			if (group != null && group.startIndex == group.endIndex)
+			if (group != null && group.startIndex == group.endIndex && textField.caretIndex != group.startIndex)
 			{
 				textHeight -= currentLineHeight;
 			}
@@ -1814,8 +1814,8 @@ class TextEngine
 			var ret = lineHeights.length;
 			// TODO: update for loop with leading checks, remove below line. Leading of lineIndex == bottomScroll is ignored
 			var tempHeight = (lineLeadings.length == ret) ? -lineLeadings[ret - 1] : 0.0;
-
-			for (i in scrollV - 1...lineHeights.length)
+			
+			for (i in (scrollV > 0 ? scrollV : 1) - 1...lineHeights.length)
 			{
 				if (tempHeight + lineHeights[i] <= height - 4)
 				{
@@ -1829,6 +1829,11 @@ class TextEngine
 			}
 
 			if (ret < scrollV) return scrollV;
+			
+			if (ret < lineHeights.length)
+			{
+				ret++;
+			}
 			return ret;
 		}
 	}
@@ -1860,7 +1865,7 @@ class TextEngine
 			if (i == j) i = numLines; // maxScrollV defaults to numLines if the height - 4 is less than the line's height
 			// TODO: check if it's based on the first or last line's height
 			else
-				i += 2;
+				i += 1;
 
 			if (i < 1) return 1;
 			return i;
@@ -1891,9 +1896,11 @@ class TextEngine
 	private function get_scrollV():Int
 	{
 		if (numLines == 1 || lineHeights == null) return 1;
-
+		
 		var max = maxScrollV;
-		if (scrollV > max) return max;
+		
+		if (scrollV > max) return max - 1;
+		
 		return scrollV;
 	}
 
