@@ -61,6 +61,13 @@ class Context3DTilemap
 		numTiles = 0;
 		vertexBufferData = (tilemap.__buffer != null) ? tilemap.__buffer.vertexBufferData : null;
 		vertexDataPosition = 0;
+		
+		if(vertexBufferData != null && vertexBufferData.length > 0 && !tilemap.__group.__dirty)
+		{
+		 	// Use Old vertexBufferData.
+			numTiles = 1;
+			return;
+		}
 
 		var rect = Rectangle.__pool.get();
 		var matrix = Matrix.__pool.get();
@@ -78,6 +85,9 @@ class Context3DTilemap
 		Rectangle.__pool.release(rect);
 		Matrix.__pool.release(matrix);
 		Matrix.__pool.release(parentTransform);
+		
+		// Is it possible to not need it?
+		tilemap.__group.__dirty = false;
 	}
 
 	private static function buildBufferTileContainer(tilemap:Tilemap, group:TileContainer, renderer:OpenGLRenderer, parentTransform:Matrix,
