@@ -2370,7 +2370,7 @@ class TextField extends InteractiveObject
 		{
 			if (mouseY > this.height - 2)
 			{
-				scrollV += Std.int(Math.max(Math.min((mouseY - this.height) * .03, 5), 1));
+				scrollV = Std.int(Math.min(scrollV + Math.max(Math.min((mouseY - this.height) * .03, 5), 1), maxScrollV));
 			}
 			else if (mouseY < 2)
 			{
@@ -3195,7 +3195,7 @@ class TextField extends InteractiveObject
 	{
 		if (mouseWheelEnabled)
 		{
-			scrollV -= event.delta;
+			scrollV = Std.int(Math.min(scrollV - event.delta, maxScrollV));
 		}
 	}
 
