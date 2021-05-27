@@ -1737,15 +1737,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 					var worldVisible = (renderParent.__worldVisible && __visible);
 					__worldVisibleChanged = (__worldVisible != worldVisible);
 					__worldVisible = worldVisible;
-
-					var worldAlpha = alpha * renderParent.__worldAlpha;
-					__worldAlphaChanged = (__worldAlpha != worldAlpha);
-					__worldAlpha = worldAlpha;
 				}
-				else
-				{
-					__worldAlpha = alpha * renderParent.__worldAlpha;
-				}
+				var worldAlpha = alpha * renderParent.__worldAlpha;
+				__worldAlphaChanged = (__worldAlpha != worldAlpha);
+				__worldAlpha = worldAlpha;
 
 				if (__objectTransform != null)
 				{
@@ -1793,9 +1788,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				{
 					__worldVisibleChanged = (__worldVisible != __visible);
 					__worldVisible = __visible;
-
-					__worldAlphaChanged = (__worldAlpha != alpha);
 				}
+				__worldAlphaChanged = (__worldAlpha != alpha);
 
 				if (__objectTransform != null)
 				{

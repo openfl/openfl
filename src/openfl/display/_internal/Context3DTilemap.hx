@@ -62,6 +62,13 @@ class Context3DTilemap
 		vertexBufferData = (tilemap.__buffer != null) ? tilemap.__buffer.vertexBufferData : null;
 		vertexDataPosition = 0;
 
+		if (vertexBufferData != null && vertexBufferData.length > 0 && !tilemap.__renderDirty && !tilemap.__group.__dirty && !tilemap.__worldAlphaChanged)
+		{
+			// Use Old vertexBufferData.
+			numTiles = 1;
+			return;
+		}
+
 		var rect = Rectangle.__pool.get();
 		var matrix = Matrix.__pool.get();
 		var parentTransform = Matrix.__pool.get();
