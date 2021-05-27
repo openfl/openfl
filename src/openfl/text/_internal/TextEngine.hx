@@ -650,7 +650,7 @@ class TextEngine
 
 			currentLineHeight = Math.max(currentLineHeight, group.height);
 			currentLineWidth = group.offsetX - 2 + group.width;
-
+			
 			if (currentLineWidth > textWidth)
 			{
 				textWidth = currentLineWidth;
@@ -1321,7 +1321,7 @@ class TextEngine
 		while (textIndex < maxLoops)
 		{
 			if ((breakIndex > -1) && (spaceIndex == -1 || breakIndex < spaceIndex))
-			{
+			{				
 				// if a line break is the next thing that needs to be dealt with
 				// TODO: when is this condition ever false?
 				if (textIndex <= breakIndex)
@@ -1427,8 +1427,7 @@ class TextEngine
 							if (positions.length > 0 && endIndex == spaceIndex + 1)
 							{
 								// if last letter is a space, avoid word wrap if possible
-								// TODO: Handle multiple spaces
-
+								// TODO: Handle multiple spaces								
 								var lastPosition = positions[positions.length - 1];
 								var spaceWidth = #if (js && html5) lastPosition #else lastPosition.advance.x #end;
 
@@ -1500,8 +1499,8 @@ class TextEngine
 						wrap = false;
 					}
 					else
-					{
-						if (layoutGroup != null && textIndex == spaceIndex)
+					{						
+						if (layoutGroup != null && textIndex == spaceIndex && previousSpaceIndex != spaceIndex - 1)
 						{
 							// TODO: does this case ever happen?
 							if (align != JUSTIFY)
@@ -1509,8 +1508,7 @@ class TextEngine
 								layoutGroup.endIndex = spaceIndex;
 								layoutGroup.positions = layoutGroup.positions.concat(positions);
 								layoutGroup.width += widthValue;
-							}
-
+							}  
 							offsetX += widthValue;
 
 							textIndex = endIndex;
@@ -1521,7 +1519,7 @@ class TextEngine
 							if (endIndex == text.length) alignBaseline();
 						}
 						else
-						{
+						{							
 							var tempRangeEnd = endIndex < formatRange.end ? endIndex : formatRange.end;
 
 							if (tempRangeEnd < endIndex)
@@ -1593,7 +1591,6 @@ class TextEngine
 				if (textIndex < text.length)
 				{
 					// if there are no line breaks or spaces to deal with next, place all remaining text
-
 					setFormattedPositions(textIndex, text.length);
 					placeText(text.length);
 
