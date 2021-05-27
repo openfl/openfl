@@ -2300,7 +2300,7 @@ class TextField extends InteractiveObject
 	@:noCompletion private function __updateScrollV():Void
 	{
 		__updateLayout();
-
+		
 		if (textHeight <= height - 4)
 		{
 			scrollV = 1;
@@ -2324,6 +2324,16 @@ class TextField extends InteractiveObject
 			var i = lineIndex, tempHeight = 0.0;
 
 			while (i >= 0)
+			{				
+				tempHeight += __textEngine.lineHeights[i];
+				
+				if (tempHeight > height - 4){
+					i += (tempHeight - height < 0 ? 1 : 2);
+					break;					
+				}
+				i--;
+			}
+		/*	while (i >= 0)
 			{
 				if (tempHeight + __textEngine.lineHeights[i] <= height - 4)
 				{
@@ -2332,8 +2342,8 @@ class TextField extends InteractiveObject
 				}
 				else
 					break;
-			}
-			scrollV = i + 1;
+			}*/
+			scrollV = i;
 		}
 		else
 		{

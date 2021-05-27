@@ -1807,7 +1807,7 @@ class TextEngine
 		// TODO: only update when dirty
 		if (numLines == 1 || lineHeights == null)
 		{
-			return 1;
+			return 1;	
 		}
 		else
 		{
@@ -1817,29 +1817,41 @@ class TextEngine
 			
 			for (i in (scrollV > 0 ? scrollV : 1) - 1...lineHeights.length)
 			{
-				if (tempHeight + lineHeights[i] <= height - 4)
+				var lineHeight = lineHeights[i];
+				
+				tempHeight += lineHeight;
+				
+				if (tempHeight > height - 4)
 				{
+					ret = i + (tempHeight - height >= 0 ? 0 : 1);					
+					break;
+				}
+				
+				/*if (tempHeight + lineHeights[i] <= height - 4)
+				{
+					
 					tempHeight += lineHeights[i];
 				}
 				else
 				{
 					ret = i;
 					break;
-				}
+				}*/
 			}
 
 			if (ret < scrollV) return scrollV;
 			
-			if (ret < lineHeights.length)
-			{
-				ret++;
-			}
+			//if (ret < lineHeights.length)
+			//{
+				//ret++;
+			//}
 			return ret;
 		}
 	}
 
 	private function get_maxScrollV():Int
 	{
+	
 		// TODO: only update when dirty
 		if (numLines == 1 || lineHeights == null)
 		{
@@ -1847,13 +1859,22 @@ class TextEngine
 		}
 		else
 		{
-			var i = numLines - 1, tempHeight = 0.0;
+			var i = numLines-1, tempHeight = 0.0;
 			var j = i;
 			// TODO: update while loop with leading checks. Leading of lineIndex == bottomScroll is ignored
 
 			while (i >= 0)
-			{
-				if (tempHeight + lineHeights[i] <= height - 4)
+			{				
+				tempHeight += lineHeights[i];
+				
+				if (tempHeight > height - 4){
+					i += (tempHeight - height < 0 ? 1 : 2);
+					break;
+					
+				}
+				i--;
+			}
+				/*if (tempHeight + lineHeights[i] <= height - 4)
 				{
 					tempHeight += lineHeights[i];
 					i--;
@@ -1861,12 +1882,12 @@ class TextEngine
 				else
 					break;
 			}
+			}*/
 
-			if (i == j) i = numLines; // maxScrollV defaults to numLines if the height - 4 is less than the line's height
+			//if (i == j) i = numLines; // maxScrollV defaults to numLines if the height - 4 is less than the line's height
 			// TODO: check if it's based on the first or last line's height
-			else
-				i += 1;
-
+			//else
+			//	i += 1;
 			if (i < 1) return 1;
 			return i;
 		}
