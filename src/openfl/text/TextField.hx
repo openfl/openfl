@@ -2680,7 +2680,7 @@ class TextField extends InteractiveObject
 		#else
 		__updateText(value);
 		#end
-		__selectionIndex = __caretIndex = length;
+		__selectionIndex = __caretIndex = 0;
 
 		return value;
 	}
