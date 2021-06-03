@@ -1678,13 +1678,14 @@ class File extends FileReference
 		if (path == null)
 		{
 			path = __path;
-		}
+		}	
 		
 		var fileInfo = FileSystem.stat(path);
 		creationDate = fileInfo.ctime;
 		modificationDate = fileInfo.mtime;
 		size = fileInfo.size;
-		type = "." + Path.extension(path);
+		type = Path.extension(path);
+		extension = "." + type;
 		name = Path.withoutDirectory(path);
 	}	
 
@@ -1768,12 +1769,7 @@ class File extends FileReference
 			throw new ArgumentError("One of the parameters is invalid.");
 		}
 
-		var fileInfo = FileSystem.stat(path);
-		creationDate = fileInfo.ctime;
-		modificationDate = fileInfo.mtime;
-		size = fileInfo.size;
-		type = "." + Path.extension(path);
-		name = Path.withoutDirectory(path);
+		__updateFileStats(path);
 
 		return __path = path.indexOf(#if windows"/" #else "\\" #end) > 0 ? __formatPath(path) : path;
 	}
