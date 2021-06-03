@@ -455,6 +455,22 @@ class FileReference extends EventDispatcher
 									  the `type` property is `null`.
 	**/
 	public var type(get, null):String;
+
+	/**
+		The filename extension.
+
+		A file's extension is the part of the name following (and not including)
+		the final dot ("."). If there is no dot in the filename, the extension
+		is `null`.
+
+		Note: You should use the `extension` property to determine a file's
+		type; do not use the `creator` or `type` properties. You should consider
+		the `creator` and `type` properties to be considered deprecated. They
+		apply to older versions of Mac OS.
+
+		@throws IllegalOperationError If the reference is not initialized
+	**/
+	public var extension(get, never):String;
 	
 	@:noCompletion private var __data:ByteArray;
 	@:noCompletion private var __path:String;
@@ -1403,6 +1419,15 @@ class FileReference extends EventDispatcher
 	@:noCompletion private function get_type():String
 	{
 		return type;
+	}
+
+	@:noCompletion private function get_extension():String
+	{
+		if (name == null || name.indexOf(".") == -1)
+		{
+			return null;
+		}
+		return Path.extension(name);
 	}
 }
 #else
