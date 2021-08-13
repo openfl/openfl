@@ -813,6 +813,7 @@ class TextField extends InteractiveObject
 
 		__drawableType = TEXT_FIELD;
 		__caretIndex = -1;
+		__selectionIndex = -1;
 		__displayAsPassword = false;
 		__graphics = new Graphics(this);
 		__textEngine = new TextEngine(this);
