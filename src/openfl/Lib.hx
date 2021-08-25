@@ -565,6 +565,30 @@ import js.Browser;
 		haxe.Log.trace(arg);
 	}
 
+	public static function isXMLName(name:String):Bool
+	{
+		if (name == null)
+		{
+			return false;
+		}
+		// can't start with invalid characters
+		if (!~/^[a-zA-Z_]/.match(name))
+		{
+			return false;
+		}
+		// can't start with the string "xml" (case insensitive)
+		if (~/^[xX][mM][lL]/.match(name))
+		{
+			return false;
+		}
+		// can't contain invalid characters
+		if (!~/^[a-zA-Z0-9_\-\.]+$/.match(name))
+		{
+			return false;
+		}
+		return true;
+	}
+
 	// Get & Set Methods
 	@:noCompletion private static function get_application():Application
 	{
