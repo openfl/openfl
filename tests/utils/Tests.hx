@@ -11,6 +11,8 @@ class Tests
 		runner.addCase(new DictionaryTest());
 		runner.addCase(new EndianTest());
 		runner.addCase(new MemoryTest());
+		runner.addCase(new NamespaceTest());
+		runner.addCase(new QNameTest());
 		runner.addCase(new TimerEventTest());
 		runner.addCase(new TimerTest());
 		runner.addCase(new VectorTest());
