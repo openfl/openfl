@@ -3,6 +3,8 @@ package openfl;
 import haxe.Constraints.Function;
 import haxe.PosInfos;
 import haxe.Timer;
+import openfl.errors.Error;
+import openfl.errors.TypeError;
 import openfl.utils._internal.Log;
 import openfl.utils._internal.Lib as InternalLib;
 import openfl.display.Application;
@@ -27,6 +29,7 @@ import js.Browser;
 	@:noCompletion private static var __lastTimerID:UInt = 0;
 	@:noCompletion private static var __sentWarnings:Map<String, Bool> = new Map();
 	@:noCompletion private static var __timers:Map<UInt, Timer> = new Map();
+	@:noCompletion private static var __registeredClassAliases:Map<String, Class<Dynamic>> = [];
 	#if 0
 	private static var __unusedImports:Array<Class<Dynamic>> = [SWFLibrary, SWFLiteLibrary];
 	#end
@@ -587,6 +590,54 @@ import js.Browser;
 			return false;
 		}
 		return true;
+	}
+
+	/**
+		Looks up a class that previously had an alias registered through a call
+		to the `registerClassAlias()` method.
+		
+		This method does not interact with `getDefinitionByName()` method.
+	**/
+	public static function getClassByAlias(aliasName:String):Class<Dynamic> {
+		#if flash
+		return untyped __global__["flash.net.getClassByAlias"](aliasName);
+		#else
+		if (!__registeredClassAliases.exists(aliasName)) {
+			throw new Error('Class $aliasName could not be found.');
+		}
+		return __registeredClassAliases.get(aliasName);
+		#end
+	}
+
+	/**
+		Preserves the class (type) of an object when the object is encoded in
+		Action Message Format (AMF). When you encode an object into AMF, this
+		function saves the alias for its class, so that you can recover the
+		class when decoding the object. If the encoding context did not register
+		an alias for an object's class, the object is encoded as an anonymous
+		object. Similarly, if the decoding context does not have the same alias
+		registered, an anonymous object is created for the decoded data.
+     
+     	LocalConnection, ByteArray, SharedObject, NetConnection and NetStream
+		are all examples of classes that encode objects in AMF.
+     
+    	The encoding and decoding contexts do not need to use the same class for
+		an alias; they can intentionally change classes, provided that the
+		destination class contains all of the members that the source class
+		serializes.
+	**/
+	public static function registerClassAlias(aliasName:String, classObject:Class<Dynamic>):Void {
+		#if flash
+		untyped __global__["flash.net.registerClassAlias"](aliasName, classObject);
+		#else
+		if(classObject == null) {
+			throw new TypeError("Parameter classObject must be non-null");
+		}
+		if(aliasName == null) {
+			throw new TypeError("Parameter aliasName must be non-null");
+		}
+		__registeredClassAliases.set(aliasName, classObject);
+		#end
 	}
 
 	// Get & Set Methods
