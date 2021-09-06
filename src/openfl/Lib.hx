@@ -568,8 +568,15 @@ import js.Browser;
 		haxe.Log.trace(arg);
 	}
 
+	/**
+		Determines whether the specified string is a valid name for an XML
+		element or attribute.
+	**/
 	public static function isXMLName(name:String):Bool
 	{
+		#if flash
+		return untyped __global__["isXMLName"](name);
+		#else
 		if (name == null)
 		{
 			return false;
@@ -590,6 +597,7 @@ import js.Browser;
 			return false;
 		}
 		return true;
+		#end
 	}
 
 	/**
