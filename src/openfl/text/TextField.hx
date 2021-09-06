@@ -262,7 +262,7 @@ class TextField extends InteractiveObject
 		Set the `condenseWhite` property before setting the `htmlText`
 		property.
 	**/
-	// var condenseWhite : Bool;
+	public var condenseWhite:Bool = false;
 
 	/**
 		Specifies the format applied to newly inserted text, such as text entered
@@ -2644,6 +2644,11 @@ class TextField extends InteractiveObject
 		}
 
 		__isHTML = true;
+
+		if (condenseWhite)
+		{
+			value = ~/\s+/g.replace(value, " ");
+		}
 
 		#if (js && html5)
 		__rawHtmlText = value;
