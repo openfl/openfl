@@ -77,7 +77,7 @@ class QName
 	{
 		if (namespace == null && name == null)
 		{
-			__uri = null;
+			__uri = "";
 			__localName = "";
 		}
 		else if (namespace != null && name == null)
@@ -100,9 +100,13 @@ class QName
 			{
 				__uri = cast(namespace, Namespace).uri;
 			}
-			else
+			else if (namespace != null)
 			{
 				__uri = Std.string(namespace);
+			}
+			else
+			{
+				__uri = null;
 			}
 			if ((name is QName))
 			{

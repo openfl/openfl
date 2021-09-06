@@ -111,14 +111,17 @@ class Namespace
 		}
 		else
 		{
-			var prefixString = Std.string(prefixValue);
-			if (Lib.isXMLName(prefixString))
+			if (prefixValue == null)
 			{
-				__prefix = prefixString;
+				__prefix = null;
 			}
 			else
 			{
-				__prefix = null;
+				__prefix = Std.string(prefixValue);
+				if (__prefix.length > 0 && !Lib.isXMLName(__prefix))
+				{
+					__prefix = null;
+				}
 			}
 			if ((uriValue is QName))
 			{
