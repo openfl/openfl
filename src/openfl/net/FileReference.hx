@@ -470,7 +470,7 @@ class FileReference extends EventDispatcher
 
 		@throws IllegalOperationError If the reference is not initialized
 	**/
-	public var extension(get, never):String;
+	public var extension(get, null):String;
 	
 	@:noCompletion private var __data:ByteArray;
 	@:noCompletion private var __path:String;
@@ -1423,11 +1423,7 @@ class FileReference extends EventDispatcher
 
 	@:noCompletion private function get_extension():String
 	{
-		if (name == null || name.indexOf(".") == -1)
-		{
-			return null;
-		}
-		return Path.extension(name);
+		return extension;
 	}
 }
 #else
