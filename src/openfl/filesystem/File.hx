@@ -1684,8 +1684,8 @@ class File extends FileReference
 		creationDate = fileInfo.ctime;
 		modificationDate = fileInfo.mtime;
 		size = fileInfo.size;
-		type = Path.extension(path);
-		extension = "." + type;
+		extension = Path.extension(path);
+		type = extension;
 		name = Path.withoutDirectory(path);
 	}	
 
