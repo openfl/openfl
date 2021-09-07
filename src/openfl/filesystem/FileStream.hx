@@ -1,8 +1,6 @@
 package openfl.filesystem;
 
-
-#if (!air && desktop)
-
+#if (!flash && sys)
 import haxe.Json;
 import haxe.Serializer;
 import haxe.Timer;

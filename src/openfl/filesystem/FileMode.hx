@@ -1,6 +1,6 @@
 package openfl.filesystem;
 
-#if !flash
+#if (!flash && sys)
 @:enum
 abstract FileMode(String) from String to String
 {

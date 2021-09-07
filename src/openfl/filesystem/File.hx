@@ -1,14 +1,11 @@
 package openfl.filesystem;
-import openfl.errors.IOError;
-import openfl.errors.IllegalOperationError;
-import sys.FileStat;
 
-#if (!air && desktop)
-
+#if (!flash && sys)
 import haxe.io.Path;
 import lime.system.BackgroundWorker;
 import lime.system.System;
 import lime.ui.FileDialog;
+import openfl.errors.IllegalOperationError;
 import openfl.errors.ArgumentError;
 import openfl.errors.Error;
 import openfl.events.Event;

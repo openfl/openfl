@@ -1,5 +1,5 @@
 package openfl.events;
-#if !air
+#if (!flash && sys)
 import openfl.events.Event;
 import openfl.filesystem.File;
 
@@ -24,5 +24,7 @@ class FileListEvent extends Event
 	
 }
 #else
+#if air
 typedef FileListEvent = flash.events.FileListEvent
+#end
 #end
