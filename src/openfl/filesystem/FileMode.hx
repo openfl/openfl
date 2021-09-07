@@ -1,6 +1,6 @@
 package openfl.filesystem;
 
-
+#if !flash
 @:enum
 abstract FileMode(String) from String to String
 {
@@ -26,3 +26,8 @@ abstract FileMode(String) from String to String
 	**/
 	var WRITE:String = "write";
 }
+#else
+#if air
+typedef FileMode = flash.filesystem.FileMode;
+#end
+#end
