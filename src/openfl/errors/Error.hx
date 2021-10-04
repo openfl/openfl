@@ -17,7 +17,7 @@ import haxe.CallStack;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-class Error #if (openfl_dynamic && haxe_ver < "4.0.0") implements Dynamic #end
+class Error #if (haxe_ver >= "4.1.0") extends haxe.Exception #elseif (openfl_dynamic && haxe_ver < "4.0.0") implements Dynamic #end
 {
 	@:noCompletion private static inline var DEFAULT_TO_STRING:String = "Error";
 
@@ -35,7 +35,9 @@ class Error #if (openfl_dynamic && haxe_ver < "4.0.0") implements Dynamic #end
 		this property is "Error". You can specify a message property when you create an
 		Error object by passing the error string to the Error constructor function.
 	**/
+	#if (haxe_ver < "4.1.0")
 	public var message:String;
+	#end
 
 	/**
 		Contains the name of the Error object. By default, the value of this property is
@@ -52,7 +54,12 @@ class Error #if (openfl_dynamic && haxe_ver < "4.0.0") implements Dynamic #end
 	**/
 	public function new(message:String = "", id:Int = 0)
 	{
+		#if (haxe_ver >= "4.1.0")
+		super(message);
+		#else
 		this.message = message;
+		#end
+
 		this.errorID = id;
 		name = "Error";
 	}
@@ -104,7 +111,7 @@ class Error #if (openfl_dynamic && haxe_ver < "4.0.0") implements Dynamic #end
 
 		@returns	The error message.
 	**/
-	public function toString():String
+	public #if (haxe_ver >= "4.1.0") override #end function toString():String
 	{
 		if (message != null)
 		{
