@@ -2301,7 +2301,7 @@ class TextField extends InteractiveObject
 	@:noCompletion private function __updateScrollV():Void
 	{
 		__updateLayout();
-		
+
 		if (textHeight <= height - 4)
 		{
 			scrollV = 1;
@@ -2325,31 +2325,32 @@ class TextField extends InteractiveObject
 			var i = lineIndex, tempHeight = 0.0;
 
 			while (i >= 0)
-			{				
+			{
 				tempHeight += __textEngine.lineHeights[i];
-				
-				if (tempHeight > height - 4){
+
+				if (tempHeight > height - 4)
+				{
 					i += (tempHeight - height < 0 ? 1 : 2);
-					break;					
+					break;
 				}
 				i--;
 			}
-		/*	while (i >= 0)
-			{
-				if (tempHeight + __textEngine.lineHeights[i] <= height - 4)
+			/*	while (i >= 0)
 				{
-					tempHeight += __textEngine.lineHeights[i];
-					i--;
-				}
-				else
-					break;
+					if (tempHeight + __textEngine.lineHeights[i] <= height - 4)
+					{
+						tempHeight += __textEngine.lineHeights[i];
+						i--;
+					}
+					else
+						break;
 			}*/
 			scrollV = i;
 		}
 		else
 		{
 			// TODO: can this be avoided? this doesn't need to hit the setter each time, just a couple times
-			
+
 			scrollV = scrollV;
 		}
 	}
@@ -2816,7 +2817,7 @@ class TextField extends InteractiveObject
 			__textEngine.scrollV = value;
 			dispatchEvent(new Event(Event.SCROLL));
 		}
-		
+
 		return __textEngine.scrollV;
 	}
 
@@ -3269,7 +3270,7 @@ class TextField extends InteractiveObject
 					if (!te.isDefaultPrevented())
 					{
 						__replaceSelectedText("\n", true);
-						
+
 						dispatchEvent(new Event(Event.CHANGE, true));
 					}
 				}

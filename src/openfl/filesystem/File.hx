@@ -15,6 +15,7 @@ import openfl.net.FileReference;
 import sys.FileSystem;
 
 typedef HaxeFile = sys.io.File;
+
 /**
 	A File object represents a path to a file or directory. This can be an existing file
 	or directory, or it can be one that does not yet exist; for instance, it can represent
@@ -32,12 +33,12 @@ typedef HaxeFile = sys.io.File;
 	The File class includes static properties that let you reference commonly used directory
 	locations. These static properties include:
 
-    * File.applicationStorageDirectory—a storage directory unique to each installed	application
-    * File.applicationDirectory—the read-only directory where the application is installed
+	* File.applicationStorageDirectory—a storage directory unique to each installed	application
+	* File.applicationDirectory—the read-only directory where the application is installed
 	(along with any installed assets)
-    * File.desktopDirectory—the user's desktop directory
-    * File.documentsDirectory—the user's documents directory
-    * File.userDirectory—the user directory
+	* File.desktopDirectory—the user's desktop directory
+	* File.documentsDirectory—the user's documents directory
+	* File.userDirectory—the user directory
 
 	These properties have meaningful values on different operating systems. For example,
 	Mac OS, Linux, and Windows each have different native paths to the user's desktop directory.
@@ -144,8 +145,8 @@ class File extends FileReference
 	**/
 	public static var applicationStorageDirectory(get, never):File;
 
-	//public static var cacheDirectory(get, never):File;
-	//TODO
+	// public static var cacheDirectory(get, never):File;
+	// TODO
 
 	/**
 		The user's desktop directory.
@@ -200,8 +201,8 @@ class File extends FileReference
 	**/
 	public static var documentsDirectory(get, never):File;
 
-	//public var downloaded:Bool;
-	//TODO
+	// public var downloaded:Bool;
+	// TODO
 
 	/**
 		Indicates whether the referenced file or directory exists.  The value is true if the File object points
@@ -221,8 +222,8 @@ class File extends FileReference
 	**/
 	public var exists(get, never):Bool;
 
-	//public var icon:Icon;
-	//TODO
+	// public var icon:Icon;
+	// TODO
 
 	/**
 		Indicates whether the reference is to a directory.  The value is true if the File object points to a directory; false otherwise.
@@ -263,14 +264,12 @@ class File extends FileReference
 	**/
 	public var isHidden(get, never):Bool;
 
-	//public var isPackage:Bool;
-	//TODO
-
-	//public var isSymbolicLink:Bool;
-	//TODO
-
-	//public static var lineEnding:String;
-	//TODO: platform specific
+	// public var isPackage:Bool;
+	// TODO
+	// public var isSymbolicLink:Bool;
+	// TODO
+	// public static var lineEnding:String;
+	// TODO: platform specific
 
 	/**
 		The full path in the host operating system representation. On Mac OS and Linux, the forward
@@ -328,23 +327,18 @@ class File extends FileReference
 	**/
 	public var parent(get, never):File;
 
-	//public static var permissionStatus:String;
-	//TODO
-
-	//public var preventBackup:Bool;
-	//TODO
-
-	//public static var seperator:String;
-	//TODO: patform specific
-
-	//public var spaceAvailable:Float;
-	//TODO
-
-	//public static var systemCharset:String;
-	//TODO: platorm specific code?
-
-	//public var url:String;
-	//TODO
+	// public static var permissionStatus:String;
+	// TODO
+	// public var preventBackup:Bool;
+	// TODO
+	// public static var seperator:String;
+	// TODO: patform specific
+	// public var spaceAvailable:Float;
+	// TODO
+	// public static var systemCharset:String;
+	// TODO: platorm specific code?
+	// public var url:String;
+	// TODO
 
 	/**
 		The user's directory.
@@ -374,17 +368,18 @@ class File extends FileReference
 	public static var userDirectory(get, never):File;
 
 	@:noCompletion private static var __driveLetters:Array<String> =
-	#if windows
-		["A:\\", "B:\\", "C:\\", "D:\\", "E:\\", "F:\\", "G:\\",
-		 "H:\\", "I:\\", "J:\\", "K:\\", "L:\\", "M:\\", "N:\\",
-		 "O:\\", "P:\\", "Q:\\", "R:\\", "S:\\", "T:\\", "U:\\",
-		 "V:\\", "W:\\", "X:\\", "Y:\\", "Z:\\"];
-	#else
-		["A:/", "B:/", "C:/", "D:/", "E:/", "F:/", "G:/",
-		 "H:/", "I:/", "J:/", "K:/", "L:/", "M:/", "N:/",
-		 "O:/", "P:/", "Q:/", "R:/", "S:/", "T:/", "U:/",
-		 "V:/", "W:/", "X:/", "Y:/", "Z:/"];
-	#end
+		#if windows
+		[
+			"A:\\", "B:\\", "C:\\", "D:\\", "E:\\", "F:\\", "G:\\", "H:\\", "I:\\", "J:\\", "K:\\", "L:\\", "M:\\", "N:\\", "O:\\", "P:\\", "Q:\\", "R:\\",
+			"S:\\", "T:\\", "U:\\", "V:\\", "W:\\", "X:\\", "Y:\\", "Z:\\"
+		];
+		#else
+		[
+			"A:/", "B:/", "C:/", "D:/", "E:/", "F:/", "G:/", "H:/", "I:/", "J:/", "K:/", "L:/", "M:/", "N:/", "O:/", "P:/", "Q:/", "R:/", "S:/", "T:/", "U:/",
+			"V:/", "W:/", "X:/", "Y:/", "Z:/"
+		];
+		#end
+
 	@:noCompletion private var __fileDialog:FileDialog;
 	@:noCompletion private var __fileWorker:BackgroundWorker;
 	@:noCompletion private var __sep:String = #if windows "\\" #else "/" #end;
@@ -556,12 +551,12 @@ class File extends FileReference
 		{
 			throw new IllegalOperationError("File Dialog is already open.");
 		}
-		
+
 		__fileDialog = new FileDialog();
 		__fileDialog.onSelect.add(__dispatchSelect, true);
 		__fileDialog.browse(OPEN, __getFilterTypes(typeFilter), __path, title);
 		__fileDialog.onCancel.add(__dispatchCancel);
-	}	
+	}
 
 	/**
 		Displays the Open File dialog box, in which the user can select one or more files to open.
@@ -616,7 +611,7 @@ class File extends FileReference
 		{
 			throw new IllegalOperationError("File Dialog is already open.");
 		}
-		
+
 		__fileDialog = new FileDialog();
 		__fileDialog.onSelectMultiple.add(__dispatchSelectMultiple, true);
 		__fileDialog.browse(OPEN_MULTIPLE, __getFilterTypes(typeFilter), __path, title);
@@ -679,7 +674,7 @@ class File extends FileReference
 		{
 			throw new IllegalOperationError("File Dialog is already open.");
 		}
-		
+
 		__fileDialog = new FileDialog();
 		__fileDialog.onSave.add(__dispatchSelect, true);
 		__fileDialog.browse(SAVE, null, __path, title);
@@ -738,7 +733,6 @@ class File extends FileReference
 	**/
 	public function clone():File
 	{
-
 		var fileClass:Class<File> = File;
 
 		var fileClone:Dynamic = Type.createEmptyInstance(fileClass);
@@ -750,10 +744,7 @@ class File extends FileReference
 			{
 				Reflect.setProperty(fileClone, field, Reflect.getProperty(this, field));
 			}
-			catch (e:Dynamic)
-			{
-
-			}
+			catch (e:Dynamic) {}
 		}
 		return fileClone;
 	}
@@ -816,44 +807,47 @@ class File extends FileReference
 	public function copyTo(newLocation:FileReference, overwrite:Bool = false):Void
 	{
 		if (!overwrite && FileSystem.exists(newLocation.__path))
-		{		
+		{
 			throw new Error("Overwrite is false.");
 		}
 		var newPath:String = newLocation.__path;
 		/* 
-		 * What if we had an additional argument, duplicate for copy and move that would
-		 * work like this below: 
-		 * 
-		if (!overwrite && FileSystem.exists(newPath))
-		{
-			var ext:String = Path.extension(newPath);
-
-			if (ext.length > 0)
+			* What if we had an additional argument, duplicate for copy and move that would
+			* work like this below: 
+			* 
+			if (!overwrite && FileSystem.exists(newPath))
 			{
-				ext = '.$ext';
-			}
+				var ext:String = Path.extension(newPath);
 
-			var newPathWithoutExt:String = Path.withoutExtension(newPath);
-			var i:Int = 2;
+				if (ext.length > 0)
+				{
+					ext = '.$ext';
+				}
 
-			while (FileSystem.exists(newPath))
-			{
-				newPath = newPathWithoutExt + '($i)$ext';
-				i++;
-			}
+				var newPathWithoutExt:String = Path.withoutExtension(newPath);
+				var i:Int = 2;
+
+				while (FileSystem.exists(newPath))
+				{
+					newPath = newPathWithoutExt + '($i)$ext';
+					i++;
+				}
 		}*/
-		try{
+
+		try
+		{
 			var path:String = Path.directory(newPath);
-			if (!FileSystem.exists(path)){
+			if (!FileSystem.exists(path))
+			{
 				FileSystem.createDirectory(path);
 			}
 			HaxeFile.copy(__path, newPath);
-		} 
+		}
 		catch (e:Dynamic)
 		{
 			throw new Error("File or directory does not exist.", 3003);
-		}		
-		//TODO: Error handing
+		}
+		// TODO: Error handing
 	}
 
 	/**
@@ -1172,7 +1166,7 @@ class File extends FileReference
 	**/
 	public function getRelativePath(ref:FileReference, useDotDot:Bool = false):String
 	{
-		//TODO: better string path and dot-dot parsing?
+		// TODO: better string path and dot-dot parsing?
 
 		function breakPath(path:String):Array<String>
 		{
@@ -1265,7 +1259,7 @@ class File extends FileReference
 
 		for (k in 0...relatives.length)
 		{
-			relativePath += relatives[k] + (k != relatives.length - 1 || refPath.length == 1  ? __sep : "");
+			relativePath += relatives[k] + (k != relatives.length - 1 || refPath.length == 1 ? __sep : "");
 		}
 
 		return relativePath == "" && ref.__path != __path ? null : relativePath;
@@ -1325,53 +1319,52 @@ class File extends FileReference
 		}
 		HaxeFile.copy(nativePath, newLocation.__path);
 		FileSystem.deleteFile(__path);
-
 	}
 
 	/**
-		Begins moving the file or directory at the location specified by this File object to
-		the location specified by the newLocation parameter.
+			Begins moving the file or directory at the location specified by this File object to
+			the location specified by the newLocation parameter.
 
-		To rename a file, set the destination parameter to point to a path that is in the file's directory, but
-		with a different filename.
+			To rename a file, set the destination parameter to point to a path that is in the file's directory, but
+			with a different filename.
 
-		The move process creates any required parent directories (if possible).
+			The move process creates any required parent directories (if possible).
 
-		@param newLocation The target location for the move. This object specifies the path to the
-		resulting (moved) file or directory, not the path to the containing directory.
-		@param overwrite If false, the move fails if the target file already exists. If true, the
-		operation overwrites any existing file or directory of the same name.
-		@event complete Dispatched when the file or directory has been successfully moved.
-		@event ioError The source does not exist; or the destination exists and overwrite is false; or
-		the source could not be moved to the target; or the source and destination refer to the same file
-		or folder and overwrite is set to true. On Windows, you cannot move a file that is open or a directory
-		that contains a file that is open.
-		@throws SecurityError The application does not have the necessary permissions to move the file.
+			@param newLocation The target location for the move. This object specifies the path to the
+			resulting (moved) file or directory, not the path to the containing directory.
+			@param overwrite If false, the move fails if the target file already exists. If true, the
+			operation overwrites any existing file or directory of the same name.
+			@event complete Dispatched when the file or directory has been successfully moved.
+			@event ioError The source does not exist; or the destination exists and overwrite is false; or
+			the source could not be moved to the target; or the source and destination refer to the same file
+			or folder and overwrite is set to true. On Windows, you cannot move a file that is open or a directory
+			that contains a file that is open.
+			@throws SecurityError The application does not have the necessary permissions to move the file.
 
-		The following code shows how to use the moveToAsync() method to rename a file. The original filename
-		is test1.txt and the resulting name is test2.txt. Since both the source and destination File object
-		point to the same directory (the Apollo Test subdirectory of the user's documents directory), the
-		moveToAsync() method renames the file, rather than moving it to a new directory. Before running this
-		code, create a test1.txt file in the Apollo Test subdirectory of the documents directory on your
-		computer. When you set overwrite parameter to true, the operation overwrites any existing test2.txt file.
+			The following code shows how to use the moveToAsync() method to rename a file. The original filename
+			is test1.txt and the resulting name is test2.txt. Since both the source and destination File object
+			point to the same directory (the Apollo Test subdirectory of the user's documents directory), the
+			moveToAsync() method renames the file, rather than moving it to a new directory. Before running this
+			code, create a test1.txt file in the Apollo Test subdirectory of the documents directory on your
+			computer. When you set overwrite parameter to true, the operation overwrites any existing test2.txt file.
 
-		```hx
-		import openfl.filesystem.File;
-		import openfl.events.Event;
+			```hx
+			import openfl.filesystem.File;
+			import openfl.events.Event;
 
-		var sourceFile:File = File.documentsDirectory;
-		sourceFile = sourceFile.resolvePath("Apollo Test/test1.txt");
-		var destination:File = File.documentsDirectory;
-		destination = destination.resolvePath("Apollo Test/test2.txt");
+			var sourceFile:File = File.documentsDirectory;
+			sourceFile = sourceFile.resolvePath("Apollo Test/test1.txt");
+			var destination:File = File.documentsDirectory;
+			destination = destination.resolvePath("Apollo Test/test2.txt");
 
-		sourceFile.moveToAsync(destination, true);
-		sourceFile.addEventListener(Event.COMPLETE, fileMoveCompleteHandler);
+			sourceFile.moveToAsync(destination, true);
+			sourceFile.addEventListener(Event.COMPLETE, fileMoveCompleteHandler);
 
-		function fileMoveCompleteHandler(event:Event):void
-		{
-			trace("Done.")
-		}
-	```
+			function fileMoveCompleteHandler(event:Event):void
+			{
+				trace("Done.")
+			}
+		```
 	**/
 	public function moveToAsync(newLocation:FileReference, overwrite:Bool = false):Void
 	{
@@ -1547,14 +1540,16 @@ class File extends FileReference
 
 		return seg;
 	}
-	
-	@:noCompletion private function __dispatchCancel():Void{
-		if (__fileDialog != null){
+
+	@:noCompletion private function __dispatchCancel():Void
+	{
+		if (__fileDialog != null)
+		{
 			__fileDialog = null;
 		}
 		this.dispatchEvent(new Event(Event.CANCEL));
 	}
-	
+
 	@:noCompletion private function __dispatchSelect(?filepath:String):Void
 	{
 		if (__fileDialog != null)
@@ -1586,7 +1581,6 @@ class File extends FileReference
 
 	@:noCompletion private function __formatPath(path:String):String
 	{
-
 		var dirs:Array<String> = [];
 		var lastBreak:Int = 0;
 
@@ -1617,9 +1611,8 @@ class File extends FileReference
 		}
 
 		return Path.removeTrailingSlashes(path);
-
 	}
-	
+
 	@:noCompletion private function __getFilterTypes(typeFilter:Array<FileFilter>):String
 	{
 		var filter:String = null;
@@ -1637,7 +1630,7 @@ class File extends FileReference
 		}
 		return filter;
 	}
-	
+
 	@:noCompletion private static function __getTempPath(dir:Bool):String
 	{
 		var path = "";
@@ -1670,13 +1663,14 @@ class File extends FileReference
 
 		return path + ".tmp";
 	}
-	
-	@:noCompletion private function __updateFileStats(?path:String):Void{
+
+	@:noCompletion private function __updateFileStats(?path:String):Void
+	{
 		if (path == null)
 		{
 			path = __path;
-		}	
-		
+		}
+
 		var fileInfo = FileSystem.stat(path);
 		creationDate = fileInfo.ctime;
 		modificationDate = fileInfo.mtime;
@@ -1684,7 +1678,7 @@ class File extends FileReference
 		extension = Path.extension(path);
 		type = extension;
 		name = Path.withoutDirectory(path);
-	}	
+	}
 
 	@:noCompletion private static function get_applicationDirectory():File
 	{
@@ -1713,50 +1707,56 @@ class File extends FileReference
 
 	@:noCompletion override private function get_creationDate():Date
 	{
-		if (__fileStatsDirty){
+		if (__fileStatsDirty)
+		{
 			__updateFileStats();
 		}
 		return creationDate;
 	}
-	
-	@:noCompletion override private function get_modificationDate():Date{
-		if (__fileStatsDirty){
+
+	@:noCompletion override private function get_modificationDate():Date
+	{
+		if (__fileStatsDirty)
+		{
 			__updateFileStats();
 		}
 		return modificationDate;
 	}
-	
-	@:noCompletion override private function get_name():String{
-		if (__fileStatsDirty){
+
+	@:noCompletion override private function get_name():String
+	{
+		if (__fileStatsDirty)
+		{
 			__updateFileStats();
 		}
 		return name;
-	}	
-	
+	}
+
 	@:noCompletion override private function get_size():Int
 	{
-		if (__fileStatsDirty){
+		if (__fileStatsDirty)
+		{
 			__updateFileStats();
 		}
 		return size;
 	}
-	
+
 	@:noCompletion override private function get_type():String
 	{
-		if (__fileStatsDirty){
+		if (__fileStatsDirty)
+		{
 			__updateFileStats();
 		}
 		return type;
 	}
-	
+
 	@:noCompletion private function get_nativePath():String
 	{
 		return __path;
-	}	
+	}
 
 	@:noCompletion private function set_nativePath(path:String):String
 	{
-
 		if (path.charAt(path.length - 1) == ":" /*|| FileSystem.isDirectory(path)*/)
 		{
 			path = Path.addTrailingSlash(path);
@@ -1768,7 +1768,7 @@ class File extends FileReference
 
 		__updateFileStats(path);
 
-		return __path = path.indexOf(#if windows"/" #else "\\" #end) > 0 ? __formatPath(path) : path;
+		return __path = path.indexOf(#if windows "/" #else "\\" #end) > 0 ? __formatPath(path) : path;
 	}
 
 	@:noCompletion private function get_exists():Bool
@@ -1779,7 +1779,7 @@ class File extends FileReference
 	@:noCompletion private function get_isHidden():Bool
 	{
 		return false;
-		//TODO: operating system dependent?
+		// TODO: operating system dependent?
 	}
 
 	@:noCompletion private function get_isDirectory():Bool
@@ -1789,7 +1789,7 @@ class File extends FileReference
 
 	@:noCompletion private function get_parent():File
 	{
-		//TODO:Can we optimize this?
+		// TODO:Can we optimize this?
 		var path:String = Path.removeTrailingSlashes(__path);
 
 		var lastIndex:Int = path.lastIndexOf(__sep);
@@ -1797,12 +1797,11 @@ class File extends FileReference
 		{
 			lastIndex += 1;
 		}
-		return lastIndex != -1 ? new File(__path.substring(0, (lastIndex - path.length) + path.length )) : null;
+		return lastIndex != -1 ? new File(__path.substring(0, (lastIndex - path.length) + path.length)) : null;
 	}
-
 }
 #else
 #if air
-	typedef File = flash.filesystem.File;
+typedef File = flash.filesystem.File;
 #end
 #end

@@ -650,7 +650,7 @@ class TextEngine
 
 			currentLineHeight = Math.max(currentLineHeight, group.height);
 			currentLineWidth = group.offsetX - 2 + group.width;
-			
+
 			if (currentLineWidth > textWidth)
 			{
 				textWidth = currentLineWidth;
@@ -1321,7 +1321,7 @@ class TextEngine
 		while (textIndex < maxLoops)
 		{
 			if ((breakIndex > -1) && (spaceIndex == -1 || breakIndex < spaceIndex))
-			{				
+			{
 				// if a line break is the next thing that needs to be dealt with
 				// TODO: when is this condition ever false?
 				if (textIndex <= breakIndex)
@@ -1427,7 +1427,7 @@ class TextEngine
 							if (positions.length > 0 && endIndex == spaceIndex + 1)
 							{
 								// if last letter is a space, avoid word wrap if possible
-								// TODO: Handle multiple spaces								
+								// TODO: Handle multiple spaces
 								var lastPosition = positions[positions.length - 1];
 								var spaceWidth = #if (js && html5) lastPosition #else lastPosition.advance.x #end;
 
@@ -1499,7 +1499,7 @@ class TextEngine
 						wrap = false;
 					}
 					else
-					{						
+					{
 						if (layoutGroup != null && textIndex == spaceIndex && previousSpaceIndex != spaceIndex - 1)
 						{
 							// TODO: does this case ever happen?
@@ -1508,7 +1508,7 @@ class TextEngine
 								layoutGroup.endIndex = spaceIndex;
 								layoutGroup.positions = layoutGroup.positions.concat(positions);
 								layoutGroup.width += widthValue;
-							}  
+							}
 							offsetX += widthValue;
 
 							textIndex = endIndex;
@@ -1519,7 +1519,7 @@ class TextEngine
 							if (endIndex == text.length) alignBaseline();
 						}
 						else
-						{							
+						{
 							var tempRangeEnd = endIndex < formatRange.end ? endIndex : formatRange.end;
 
 							if (tempRangeEnd < endIndex)
@@ -1804,51 +1804,50 @@ class TextEngine
 		// TODO: only update when dirty
 		if (numLines == 1 || lineHeights == null)
 		{
-			return 1;	
+			return 1;
 		}
 		else
 		{
 			var ret = lineHeights.length;
 			// TODO: update for loop with leading checks, remove below line. Leading of lineIndex == bottomScroll is ignored
 			var tempHeight = (lineLeadings.length == ret) ? -lineLeadings[ret - 1] : 0.0;
-			
+
 			for (i in (scrollV > 0 ? scrollV : 1) - 1...lineHeights.length)
 			{
 				var lineHeight = lineHeights[i];
-				
+
 				tempHeight += lineHeight;
-				
+
 				if (tempHeight > height - 4)
 				{
-					ret = i + (tempHeight - height >= 0 ? 0 : 1);					
+					ret = i + (tempHeight - height >= 0 ? 0 : 1);
 					break;
 				}
-				
+
 				/*if (tempHeight + lineHeights[i] <= height - 4)
-				{
-					
-					tempHeight += lineHeights[i];
-				}
-				else
-				{
-					ret = i;
-					break;
+					{
+						
+						tempHeight += lineHeights[i];
+					}
+					else
+					{
+						ret = i;
+						break;
 				}*/
 			}
 
 			if (ret < scrollV) return scrollV;
-			
-			//if (ret < lineHeights.length)
-			//{
-				//ret++;
-			//}
+
+			// if (ret < lineHeights.length)
+			// {
+			// ret++;
+			// }
 			return ret;
 		}
 	}
 
 	private function get_maxScrollV():Int
 	{
-	
 		// TODO: only update when dirty
 		if (numLines == 1 || lineHeights == null)
 		{
@@ -1856,34 +1855,34 @@ class TextEngine
 		}
 		else
 		{
-			var i = numLines-1, tempHeight = 0.0;
+			var i = numLines - 1, tempHeight = 0.0;
 			var j = i;
 			// TODO: update while loop with leading checks. Leading of lineIndex == bottomScroll is ignored
 
 			while (i >= 0)
-			{				
+			{
 				tempHeight += lineHeights[i];
-				
-				if (tempHeight > height - 4){
+
+				if (tempHeight > height - 4)
+				{
 					i += (tempHeight - height < 0 ? 1 : 2);
 					break;
-					
 				}
 				i--;
 			}
-				/*if (tempHeight + lineHeights[i] <= height - 4)
-				{
-					tempHeight += lineHeights[i];
-					i--;
+			/*if (tempHeight + lineHeights[i] <= height - 4)
+					{
+						tempHeight += lineHeights[i];
+						i--;
+					}
+					else
+						break;
 				}
-				else
-					break;
-			}
 			}*/
 
-			//if (i == j) i = numLines; // maxScrollV defaults to numLines if the height - 4 is less than the line's height
+			// if (i == j) i = numLines; // maxScrollV defaults to numLines if the height - 4 is less than the line's height
 			// TODO: check if it's based on the first or last line's height
-			//else
+			// else
 			//	i += 1;
 			if (i < 1) return 1;
 			return i;
@@ -1914,11 +1913,11 @@ class TextEngine
 	private function get_scrollV():Int
 	{
 		if (numLines == 1 || lineHeights == null) return 1;
-		
+
 		var max = maxScrollV;
-		
+
 		if (scrollV > max) return max - 1;
-		
+
 		return scrollV;
 	}
 

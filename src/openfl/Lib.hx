@@ -603,14 +603,16 @@ import js.Browser;
 	/**
 		Looks up a class that previously had an alias registered through a call
 		to the `registerClassAlias()` method.
-		
+
 		This method does not interact with `getDefinitionByName()` method.
 	**/
-	public static function getClassByAlias(aliasName:String):Class<Dynamic> {
+	public static function getClassByAlias(aliasName:String):Class<Dynamic>
+	{
 		#if flash
 		return untyped __global__["flash.net.getClassByAlias"](aliasName);
 		#else
-		if (!__registeredClassAliases.exists(aliasName)) {
+		if (!__registeredClassAliases.exists(aliasName))
+		{
 			throw new Error('Class $aliasName could not be found.');
 		}
 		return __registeredClassAliases.get(aliasName);
@@ -625,23 +627,26 @@ import js.Browser;
 		an alias for an object's class, the object is encoded as an anonymous
 		object. Similarly, if the decoding context does not have the same alias
 		registered, an anonymous object is created for the decoded data.
-     
-     	LocalConnection, ByteArray, SharedObject, NetConnection and NetStream
+			 
+			 	LocalConnection, ByteArray, SharedObject, NetConnection and NetStream
 		are all examples of classes that encode objects in AMF.
-     
-    	The encoding and decoding contexts do not need to use the same class for
+			 
+		The encoding and decoding contexts do not need to use the same class for
 		an alias; they can intentionally change classes, provided that the
 		destination class contains all of the members that the source class
 		serializes.
 	**/
-	public static function registerClassAlias(aliasName:String, classObject:Class<Dynamic>):Void {
+	public static function registerClassAlias(aliasName:String, classObject:Class<Dynamic>):Void
+	{
 		#if flash
 		untyped __global__["flash.net.registerClassAlias"](aliasName, classObject);
 		#else
-		if(classObject == null) {
+		if (classObject == null)
+		{
 			throw new TypeError("Parameter classObject must be non-null");
 		}
-		if(aliasName == null) {
+		if (aliasName == null)
+		{
 			throw new TypeError("Parameter aliasName must be non-null");
 		}
 		__registeredClassAliases.set(aliasName, classObject);

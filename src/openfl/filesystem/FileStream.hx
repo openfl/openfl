@@ -27,14 +27,13 @@ import openfl.utils.Object;
 import sys.io.FileInput;
 import sys.io.FileOutput;
 import sys.io.FileSeek;
-
 #if format
-	import format.amf.Reader as AMFReader;
-	import format.amf.Writer as AMFWriter;
-	import format.amf.Tools as AMFTools;
-	import format.amf3.Reader as AMF3Reader;
-	import format.amf3.Writer as AMF3Writer;
-	import format.amf3.Tools as AMF3Tools;
+import format.amf.Reader as AMFReader;
+import format.amf.Writer as AMFWriter;
+import format.amf.Tools as AMFTools;
+import format.amf3.Reader as AMF3Reader;
+import format.amf3.Writer as AMF3Writer;
+import format.amf3.Tools as AMF3Tools;
 #end
 
 /**
@@ -63,7 +62,6 @@ import sys.io.FileSeek;
 	application can simply wait until all of the data is available by registering for the complete 
 	event and processing the entire data set when the complete event is dispatched. 	
 **/
-		
 @:access(openfl.utils.ByteArray)
 @:access(openfl.utils.ByteArrayData)
 @:access(openfl.filesystem.File)
@@ -79,13 +77,13 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		it with one of the read methods. 
 	**/
 	public var bytesAvailable(get, never):Int;
-	
+
 	/**
 		The byte order for the data, either the BIG_ENDIAN or LITTLE_ENDIAN constant from the Endian 
 		class. 
 	**/
 	public var endian(get, set):Endian;
-	
+
 	/**
 		Specifies whether the HXSF, JSON, AMF3 or AMF0 format is used when writing or reading binary 
 		data by using the readObject() or writeObject() method.
@@ -93,10 +91,10 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		The value is a constant from the ObjectEncoding class. By default, on non-AIR platforms, the 
 		HXSF format is used. For AIR the default format is AMF3. If you would like to use AMF and AMF3
 		on non-AIR platforms, you must also include the format dependency in your project from haxelib.
-		
+
 	**/
 	public var objectEncoding:ObjectEncoding;
-	
+
 	/**
 		The current position in the file.
 
@@ -117,7 +115,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		or wait for a progress event and check the bytesAvailable property before using a read method.
 	**/
 	@:isVar public var position(get, set):UInt;
-	
+
 	/**
 		The minimum amount of data to read from disk when reading files asynchronously.
 
@@ -138,7 +136,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		read method.
 	**/
 	public var readAhead:Float = Math.POSITIVE_INFINITY;
-	
+
 	/**
 		The isWriting property returns a bool used to identify the write state of asynchronous Update, 
 		Append, or Write streams. If isWrite is true, data is actively being written from the buffer.
@@ -165,43 +163,43 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		super();
 		__isOpen = false;
 		isWriting = false;
-		
+
 		objectEncoding = HXSF;
 		position = 0;
 	}
+
 	/**
-	 Closes the FileStream object.
+		 Closes the FileStream object.
 
-	You cannot read or write any data after you call the close() method. If the file was
-	opened asynchronously (the FileStream object used the openAsync() method to open the 
-	file), calling the close() method causes the object to dispatch the close event.
+		You cannot read or write any data after you call the close() method. If the file was
+		opened asynchronously (the FileStream object used the openAsync() method to open the 
+		file), calling the close() method causes the object to dispatch the close event.
 
-	Closing the application automatically closes all files associated with FileStream 
-	objects in the application. However, it is best to register for a closed event on 
-	all FileStream objects opened asynchronously that have pending data to write, before 
-	closing the application (to ensure that data is written).
+		Closing the application automatically closes all files associated with FileStream 
+		objects in the application. However, it is best to register for a closed event on 
+		all FileStream objects opened asynchronously that have pending data to write, before 
+		closing the application (to ensure that data is written).
 
-	You can reuse the FileStream object by calling the open() or the openAsync() method. 
-	This closes any file associated with the FileStream object, but the object does not 
-	dispatch the close event.
+		You can reuse the FileStream object by calling the open() or the openAsync() method. 
+		This closes any file associated with the FileStream object, but the object does not 
+		dispatch the close event.
 
-	For a FileStream object opened asynchronously (by using the openAsync() method), even 
-	if you call the close() event for a FileStream object and delete properties and variables 
-	that reference the object, the FileStream object is not garbage collected as long as 
-	there are pending operations and event handlers are registered for their completion. In 
-	particular, an otherwise unreferenced FileStream object persists as long as any of the 
-	following are still possible:
+		For a FileStream object opened asynchronously (by using the openAsync() method), even 
+		if you call the close() event for a FileStream object and delete properties and variables 
+		that reference the object, the FileStream object is not garbage collected as long as 
+		there are pending operations and event handlers are registered for their completion. In 
+		particular, an otherwise unreferenced FileStream object persists as long as any of the 
+		following are still possible:
 
-    For file reading operations, the end of the file has not been reached (and the complete 
-	event has not been dispatched).
-    Output data is still available to written, and output-related events (such as the 
-	outputProgress event or the ioError event) have registered event listeners. 
-	
-	@event close    			The file, which was opened asynchronously, is closed. 
+		For file reading operations, the end of the file has not been reached (and the complete 
+		event has not been dispatched).
+		Output data is still available to written, and output-related events (such as the 
+		outputProgress event or the ioError event) have registered event listeners. 
+
+		@event close    			The file, which was opened asynchronously, is closed. 
 	**/
 	public function close():Void
 	{
-		
 		__isOpen = false;
 		__isAsync = false;
 		__buffer = null;
@@ -219,16 +217,16 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		position = 0;
 		__positionDirty = false;
-		
+
 		if (__isAsync)
 		{
 			__fileStreamWorker.cancel();
 			__fileStreamWorker = null;
-			
+
 			dispatchEvent(new Event(Event.CLOSE));
-		}		
-	}	
-	
+		}
+	}
+
 	/** 
 		 Opens the FileStream object synchronously, pointing to the file specified by the 
 		 file parameter.
@@ -259,6 +257,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		__openFile();
 	}
+
 	/**
 		Opens the FileStream object asynchronously, pointing to the file specified by the file 
 		parameter.
@@ -275,7 +274,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		Once you are done performing operations on the file, call the close() method of the FileStream
 		object. Some operating systems limit the number of concurrently open files.
-		
+
 		@param 		file The File object specifying the file to open. 
 		@param 		 A string from the FileMode class that defines the capabilities of the 
 		FileStream, such as the ability to read from or write to the file.  
@@ -288,7 +287,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		with the fileMode parameter set to FileMode.READ or FileMode.UPDATE.) 
 		@throws 	SecurityError The file location is in the application directory, and the 
 		fileMode parameter is set to "append", "update", or "write" mode. 
-	*/
+	 */
 	public function openAsync(file:File, fileMode:FileMode):Void
 	{
 		__isAsync = true;
@@ -334,7 +333,8 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 				__fileStreamWorker = null;
 			});
 		}
-		else {
+		else
+		{
 			__buffer = new ByteArray();
 			__fileStreamWorker.doWork.add(function(m:Dynamic)
 			{
@@ -351,18 +351,19 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 								var maxBytes:Int = Std.int(Math.min(__pageSize, __buffer.length - bytesLoaded));
 
 								__output.writeBytes(__buffer, bytesLoaded, maxBytes);
-								bytesLoaded +=  maxBytes;
-								
-								__file.__fileStatsDirty = true;								
-								
-								dispatchEvent(new OutputProgressEvent(OutputProgressEvent.OUTPUT_PROGRESS, false, false, __buffer.length - bytesLoaded, __buffer.length));
+								bytesLoaded += maxBytes;
+
+								__file.__fileStatsDirty = true;
+
+								dispatchEvent(new OutputProgressEvent(OutputProgressEvent.OUTPUT_PROGRESS, false, false, __buffer.length - bytesLoaded,
+									__buffer.length));
 							}
 							catch (e:Dynamic)
 							{
 								dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR, false, false, "Index is out of bounds."));
 							}
 						}
-						
+
 						isWriting = false;
 					}
 				}
@@ -395,7 +396,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		}
 		return __input.readByte() == 1;
 	}
-	
+
 	/**
 	 * Reads a signed byte from the file stream, byte stream, or byte array. 
 	 * 
@@ -420,7 +421,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		return __input.readByte();
 	}
-	
+
 	/**
 	 * Reads the number of data bytes, specified by the length parameter, from the file stream, byte 
 	 * stream, or byte array. The bytes are read into the ByteArray objected specified by the bytes 
@@ -453,7 +454,6 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 			__input.seek(0, FileSeek.SeekEnd);
 			length = __input.tell();
 			__input.seek(position, FileSeek.SeekBegin);
-
 		}
 
 		var hxBytes = Bytes.alloc(length - offset);
@@ -464,7 +464,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		__positionDirty = true;
 	}
-	
+
 	/**
 	 * Reads an IEEE 754 double-precision floating point number from the file stream, byte stream, or 
 	 * byte array. 
@@ -490,7 +490,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		return __input.readDouble();
 	}
-	
+
 	/**
 	 * Reads an IEEE 754 single-precision floating point number from the file stream, byte stream, or byte array. 
 	 * 
@@ -515,7 +515,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		return __input.readFloat();
 	}
-	
+
 	/**
 	 * Reads a signed 32-bit integer from the file stream, byte stream, or byte array. 
 	 * 
@@ -540,7 +540,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		return __input.readInt32();
 	}
-	
+
 	/**
 	 * Reads a multibyte string of specified length from the file stream, byte stream, or byte array using 
 	 * the specified character set. 
@@ -569,7 +569,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		return readUTFBytes(length);
 	}
-	
+
 	/**
 	 * Reads an object from the file stream, byte stream, or byte array, encoded in AMF serialized format. 
 	 * 
@@ -594,7 +594,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		switch (objectEncoding)
 		{
-				#if format
+			#if format
 			case AMF0:
 				var bytes:Bytes = Bytes.alloc(bytesAvailable);
 				__input.readBytes(bytes, 0, bytesAvailable);
@@ -606,7 +606,6 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 				return data;
 
 			case AMF3:
-
 				var bytes:Bytes = Bytes.alloc(bytesAvailable);
 				__input.readBytes(bytes, 0, bytesAvailable);
 
@@ -615,7 +614,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 				var data = ByteArrayData.unwrapAMF3Value(reader.read());
 				__positionDirty = true;
 				return data;
-				#end
+			#end
 
 			case HXSF:
 				var data = readUTF();
@@ -632,7 +631,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		__positionDirty = true;
 		return {};
 	}
-	
+
 	/**
 	 * Reads a signed 16-bit integer from the file stream, byte stream, or byte array. 
 	 * 
@@ -657,7 +656,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		return __input.readInt16();
 	}
-	
+
 	/**
 	 * Reads an unsigned byte from the file stream, byte stream, or byte array. 
 	 * 
@@ -682,7 +681,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		return ByteArray.fromBytes(__input.read(1)).readUnsignedByte();
 	}
-	
+
 	/**
 	 * Reads an unsigned 32-bit integer from the file stream, byte stream, or byte array.
 	 * 
@@ -707,7 +706,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		return __input.readInt32();
 	}
-	
+
 	/**
 	 * Reads an unsigned 16-bit integer from the file stream, byte stream, or byte array. 
 	 * 
@@ -731,20 +730,20 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		return __input.readUInt16();
 	}
-	
-	/**
-	 *  Reads a UTF-8 string from the file stream, byte stream, or byte array. The string is assumed to be 
-	 * prefixed with an unsigned short indicating the length in bytes.
 
-		This method is similar to the readUTF() method in the Java® IDataInput interface.
-	 * @return A UTF-8 string produced by the byte representation of characters.
-	 * @event 		ioError The file cannot be read or the file is not open. This event is dispatched only
-	 * for files opened for asynchronous operations (by using the openAsync() method). 
-	 * @throws 		IOError The file has not been opened; the file has been opened, but it was not opened
-	 * with read capabilities; or for a file that has been opened for synchronous operations (by using 
-	 * the open() method), the file cannot be read (for example, because the file is missing). 
-	 * @throws 		EOFError The position specfied for reading data exceeds the number of bytes available 
-	 * (specified by the bytesAvailable property). 
+	/**
+		*  Reads a UTF-8 string from the file stream, byte stream, or byte array. The string is assumed to be 
+		* prefixed with an unsigned short indicating the length in bytes.
+
+				This method is similar to the readUTF() method in the Java® IDataInput interface.
+		* @return A UTF-8 string produced by the byte representation of characters.
+		* @event 		ioError The file cannot be read or the file is not open. This event is dispatched only
+		* for files opened for asynchronous operations (by using the openAsync() method). 
+		* @throws 		IOError The file has not been opened; the file has been opened, but it was not opened
+		* with read capabilities; or for a file that has been opened for synchronous operations (by using 
+		* the open() method), the file cannot be read (for example, because the file is missing). 
+		* @throws 		EOFError The position specfied for reading data exceeds the number of bytes available 
+		* (specified by the bytesAvailable property). 
 	 */
 	public function readUTF():String
 	{
@@ -759,7 +758,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		var length:Int = __input.readUInt16();
 		return __input.readString(length);
 	}
-	
+
 	/**
 	 * Reads a sequence of UTF-8 bytes from the byte stream or byte array and returns a string. 
 	 * @param		length The number of bytes to read. 
@@ -784,7 +783,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		return __input.readString(length);
 	}
-	
+
 	/**
 	 * Truncates the file at the position specified by the position property of the FileStream object.
 	 *	
@@ -795,7 +794,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 	public function truncate():Void
 	{
 		__checkIfOpen();
-		
+
 		var fileMode:FileMode = __fileMode;
 
 		var isAsync:Bool = __isAsync;
@@ -819,10 +818,10 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 			open(__file, fileMode);
 		}
 		position = pos;
-			
-		__file.__fileStatsDirty = true;		
+
+		__file.__fileStatsDirty = true;
 	}
-	
+
 	/**
 	 * Writes a Boolean value. A single byte is written according to the value parameter, either 
 	 * 1 if true or 0 if false. 
@@ -844,15 +843,15 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		{
 			__buffer.writeBoolean(value);
 			isWriting = true;
-			
+
 			return;
 		}
-				
+
 		__output.writeByte(value ? 1 : 0);
 		__file.__fileStatsDirty = true;
 		__positionDirty = true;
 	}
-	
+
 	/**
 	 * Writes a byte. The low 8 bits of the parameter are used; the high 24 bits are ignored. 
 	 * 
@@ -875,12 +874,12 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 			return;
 		}
-				
+
 		__output.writeByte(value);
 		__file.__fileStatsDirty = true;
 		__positionDirty = true;
 	}
-	
+
 	/**
 	 *  Writes a sequence of bytes from the specified byte array, bytes, starting at the byte specified
 	 * by offset (using a zero-based index) with a length specified by length, into the file stream, 
@@ -919,11 +918,11 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		}
 
 		__output.writeBytes(bytes, offset, length);
-		
+
 		__file.__fileStatsDirty = true;
 		__positionDirty = true;
 	}
-	
+
 	/**
 	 * Writes an IEEE 754 double-precision (64-bit) floating point number. 
 	 * 
@@ -946,12 +945,12 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 			return;
 		}
-				
+
 		__output.writeDouble(value);
 		__file.__fileStatsDirty = true;
 		__positionDirty = true;
 	}
-	
+
 	/**
 	 * Writes an IEEE 754 single-precision (32-bit) floating point number.
 	 * 
@@ -974,12 +973,12 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 			return;
 		}
-				
+
 		__output.writeFloat(value);
 		__file.__fileStatsDirty = true;
 		__positionDirty = true;
 	}
-	
+
 	/**
 	 * Writes a 32-bit signed integer. 
 	 * 
@@ -1002,12 +1001,12 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 			return;
 		}
-				
+
 		__output.writeInt32(value);
 		__file.__fileStatsDirty = true;
 		__positionDirty = true;
 	}
-	
+
 	/**
 	 * Writes a multibyte string to the file stream, byte stream, or byte array, using the specified 
 	 * character set. 
@@ -1033,12 +1032,12 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 			return;
 		}
-		
+
 		writeUTFBytes(value);
 		__file.__fileStatsDirty = true;
 		__positionDirty = true;
 	}
-	
+
 	/**
 	 * Writes an object to the file stream, byte stream, or byte array, in AMF, HXSF, or JSON serialized
 	 * format. The format library from haxelib is required to enable AMF on non-AIR targets.
@@ -1062,12 +1061,12 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 			return;
 		}
-				
+
 		__writeObject(object);
 		__file.__fileStatsDirty = true;
 		__positionDirty = true;
 	}
-	
+
 	/**
 	 * Writes a 16-bit integer. The low 16 bits of the parameter are used; the high 16 bits are ignored. 
 	 * 
@@ -1090,12 +1089,12 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 			return;
 		}
-		
+
 		__output.writeInt16(value);
-		__file.__fileStatsDirty = true;	
+		__file.__fileStatsDirty = true;
 		__positionDirty = true;
 	}
-	
+
 	/**
 	 * Writes a 32-bit unsigned integer. 
 	 * 
@@ -1118,12 +1117,12 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 			return;
 		}
-		
+
 		__output.writeInt32(value);
 		__file.__fileStatsDirty = true;
 		__positionDirty = true;
 	}
-	
+
 	/**
 	 * Writes a UTF-8 string to the file stream, byte stream, or byte array. The length of 
 	 * the UTF-8 string in bytes is written first, as a 16-bit integer, followed by the bytes 
@@ -1136,7 +1135,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 	 * @throws 		The file has not been opened; the file has been opened, but it was not opened 
 	 * with write capabilities; or for a file that has been opened for synchronous operations (by 
 	 * using the open() method), the file cannot be written (for example, because the file is missing). 
-	 */ 	 
+	 */
 	public function writeUTF(value:String):Void
 	{
 		__checkIfWritable();
@@ -1148,13 +1147,13 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 			return;
 		}
-		
+
 		__output.writeInt16(value.length);
 		__output.writeString(value);
 		__file.__fileStatsDirty = true;
 		__positionDirty = true;
 	}
-	
+
 	/**
 	 * Writes a UTF-8 string. Similar to writeUTF(), but does not prefix the string with a 16-bit length 
 	 * integer. 
@@ -1183,7 +1182,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		__file.__fileStatsDirty = true;
 		__positionDirty = true;
 	}
-	
+
 	@:noCompletion private function __checkIfOpen():Void
 	{
 		if (!__isOpen)
@@ -1216,7 +1215,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 	{
 		if (__isWrite)
 		{
-			var pos: Int = position;
+			var pos:Int = position;
 
 			if (__isAsync)
 			{
@@ -1230,7 +1229,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 			return length - pos;
 		}
 
-		var pos: Int = position;
+		var pos:Int = position;
 
 		if (__isAsync)
 		{
@@ -1243,7 +1242,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		return length - pos;
 	}
-	
+
 	@:noCompletion private function __openFile():Void
 	{
 		if (__isOpen)
@@ -1252,7 +1251,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		}
 
 		__isOpen = true;
-		
+
 		switch (__fileMode)
 		{
 			case READ:
@@ -1313,7 +1312,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 	{
 		switch (objectEncoding)
 		{
-				#if format
+			#if format
 			case AMF0:
 				var value = AMFTools.encode(object);
 				var output:BytesOutput = new BytesOutput();
@@ -1329,7 +1328,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 				writer.write(value);
 				var bytes:Bytes = output.getBytes();
 				__output.writeBytes(bytes, 0, bytes.length);
-				#end
+			#end
 
 			case HXSF:
 				var value = Serializer.run(object);
@@ -1397,7 +1396,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 			}
 			if (__fileMode == READ)
 			{
-				return  position = __buffer.position;
+				return position = __buffer.position;
 			}
 		}
 		return position;
@@ -1417,8 +1416,8 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 				{
 					__input.seek(value, FileSeek.SeekBegin);
 				}
-			} 
-			else 
+			}
+			else
 			{
 				__buffer.position = value;
 			}
@@ -1426,11 +1425,9 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		return position = value;
 	}
-
 }
-
 #else
 #if air
-	typedef FileStream = flash.filesystem.FileStream;
+typedef FileStream = flash.filesystem.FileStream;
 #end
 #end
