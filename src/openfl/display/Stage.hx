@@ -18,6 +18,7 @@ import openfl.events.MouseEvent;
 import openfl.events.TextEvent;
 import openfl.events.TouchEvent;
 import openfl.events.UncaughtErrorEvent;
+import openfl.events.UncaughtErrorEvents;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -180,6 +181,7 @@ typedef Element = Dynamic;
 @:access(openfl.display.Sprite)
 @:access(openfl.display.Stage3D)
 @:access(openfl.events.Event)
+@:access(openfl.events.UncaughtErrorEvents)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Point)
 @:access(openfl.ui.GameInput)
@@ -896,6 +898,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	@:noCompletion private var __stack:Array<DisplayObject>;
 	@:noCompletion private var __touchData:Map<Int, TouchData>;
 	@:noCompletion private var __transparent:Bool;
+	@:noCompletion private var __uncaughtErrorEvents:UncaughtErrorEvents;
 	@:noCompletion private var __wasDirty:Bool;
 	@:noCompletion private var __wasFullscreen:Bool;
 	#if lime
@@ -1076,6 +1079,12 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		this.color = color;
 		#end
 
+		// TODO: Do not rely on Lib.current
+		__uncaughtErrorEvents = Lib.current.__loaderInfo.uncaughtErrorEvents;
+		trace(Lib.current);
+		trace(Lib.current.__loaderInfo);
+		trace(Lib.current.__loaderInfo.uncaughtErrorEvents);
+
 		__contentsScaleFactor = window.scale;
 		__wasFullscreen = window.fullscreen;
 
@@ -1153,18 +1162,21 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 				if (dispatcher.stage == this || dispatcher.stage == null)
 				{
-					#if !openfl_disable_handle_error
-					try
+					if (__uncaughtErrorEvents.__enabled)
+					{
+						try
+						{
+							dispatcher.__dispatch(event);
+						}
+						catch (e:Dynamic)
+						{
+							__handleError(e);
+						}
+					}
+					else
 					{
 						dispatcher.__dispatch(event);
 					}
-					catch (e:Dynamic)
-					{
-						__handleError(e);
-					}
-					#else
-					dispatcher.__dispatch(event);
-					#end
 				}
 			}
 		}
@@ -1230,21 +1242,24 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	@SuppressWarnings(["checkstyle:Dynamic", "checkstyle:LeftCurly"])
 	@:noCompletion private override function __dispatchEvent(event:Event):Bool
 	{
-		#if !openfl_disable_handle_error
-		try
+		var result:Bool;
+		if (__uncaughtErrorEvents.__enabled)
 		{
-		#end
-
-			return super.__dispatchEvent(event);
-
-		#if !openfl_disable_handle_error
+			try
+			{
+				result = super.__dispatchEvent(event);
+			}
+			catch (e:Dynamic)
+			{
+				__handleError(e);
+				result = false;
+			}
 		}
-		catch (e:Dynamic)
+		else
 		{
-			__handleError(e);
-			return false;
+			result = super.__dispatchEvent(event);
 		}
-		#end
+		return result;
 	}
 
 	@:noCompletion private function __dispatchPendingMouseEvent():Void
@@ -1259,11 +1274,70 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	@SuppressWarnings(["checkstyle:Dynamic", "checkstyle:LeftCurly"])
 	@:noCompletion private function __dispatchStack(event:Event, stack:Array<DisplayObject>):Void
 	{
-		#if !openfl_disable_handle_error
-		try
+		// TODO: Prevent repetition
+		if (__uncaughtErrorEvents.__enabled)
 		{
-		#end
+			try
+			{
+				var target:DisplayObject;
+				var length = stack.length;
 
+				if (length == 0)
+				{
+					event.eventPhase = EventPhase.AT_TARGET;
+					target = cast event.target;
+					target.__dispatch(event);
+				}
+				else
+				{
+					event.eventPhase = EventPhase.CAPTURING_PHASE;
+					event.target = stack[stack.length - 1];
+
+					for (i in 0...length - 1)
+					{
+						stack[i].__dispatch(event);
+
+						if (event.__isCanceled)
+						{
+							return;
+						}
+					}
+
+					event.eventPhase = EventPhase.AT_TARGET;
+					target = cast event.target;
+					target.__dispatch(event);
+
+					if (event.__isCanceled)
+					{
+						return;
+					}
+
+					if (event.bubbles)
+					{
+						event.eventPhase = EventPhase.BUBBLING_PHASE;
+						var i = length - 2;
+
+						while (i >= 0)
+						{
+							stack[i].__dispatch(event);
+
+							if (event.__isCanceled)
+							{
+								return;
+							}
+
+							i--;
+						}
+					}
+				}
+			}
+			catch (e:Dynamic)
+			{
+				__handleError(e);
+			}
+		}
+		else
+		{
 			var target:DisplayObject;
 			var length = stack.length;
 
@@ -1315,32 +1389,28 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					}
 				}
 			}
-
-		#if !openfl_disable_handle_error
 		}
-		catch (e:Dynamic)
-		{
-			__handleError(e);
-		}
-		#end
 	}
 
 	@SuppressWarnings("checkstyle:Dynamic")
 	@:noCompletion private function __dispatchTarget(target:EventDispatcher, event:Event):Bool
 	{
-		#if !openfl_disable_handle_error
-		try
+		if (__uncaughtErrorEvents.__enabled)
+		{
+			try
+			{
+				return target.__dispatchEvent(event);
+			}
+			catch (e:Dynamic)
+			{
+				__handleError(e);
+				return false;
+			}
+		}
+		else
 		{
 			return target.__dispatchEvent(event);
 		}
-		catch (e:Dynamic)
-		{
-			__handleError(e);
-			return false;
-		}
-		#else
-		return target.__dispatchEvent(event);
-		#end
 	}
 
 	@:noCompletion private function __drag(mouse:Point):Void
@@ -1722,66 +1792,78 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 	@:noCompletion private function __onLimeGamepadAxisMove(gamepad:Gamepad, axis:GamepadAxis, value:Float):Void
 	{
-		#if !openfl_disable_handle_error
-		try
+		if (__uncaughtErrorEvents.__enabled)
+		{
+			try
+			{
+				GameInput.__onGamepadAxisMove(gamepad, axis, value);
+			}
+			catch (e:Dynamic)
+			{
+				__handleError(e);
+			}
+		}
+		else
 		{
 			GameInput.__onGamepadAxisMove(gamepad, axis, value);
 		}
-		catch (e:Dynamic)
-		{
-			__handleError(e);
-		}
-		#else
-		GameInput.__onGamepadAxisMove(gamepad, axis, value);
-		#end
 	}
 
 	@:noCompletion private function __onLimeGamepadButtonDown(gamepad:Gamepad, button:GamepadButton):Void
 	{
-		#if !openfl_disable_handle_error
-		try
+		if (__uncaughtErrorEvents.__enabled)
+		{
+			try
+			{
+				GameInput.__onGamepadButtonDown(gamepad, button);
+			}
+			catch (e:Dynamic)
+			{
+				__handleError(e);
+			}
+		}
+		else
 		{
 			GameInput.__onGamepadButtonDown(gamepad, button);
 		}
-		catch (e:Dynamic)
-		{
-			__handleError(e);
-		}
-		#else
-		GameInput.__onGamepadButtonDown(gamepad, button);
-		#end
 	}
 
 	@:noCompletion private function __onLimeGamepadButtonUp(gamepad:Gamepad, button:GamepadButton):Void
 	{
-		#if !openfl_disable_handle_error
-		try
+		if (__uncaughtErrorEvents.__enabled)
+		{
+			try
+			{
+				GameInput.__onGamepadButtonUp(gamepad, button);
+			}
+			catch (e:Dynamic)
+			{
+				__handleError(e);
+			}
+		}
+		else
 		{
 			GameInput.__onGamepadButtonUp(gamepad, button);
 		}
-		catch (e:Dynamic)
-		{
-			__handleError(e);
-		}
-		#else
-		GameInput.__onGamepadButtonUp(gamepad, button);
-		#end
 	}
 
 	@:noCompletion private function __onLimeGamepadConnect(gamepad:Gamepad):Void
 	{
-		#if !openfl_disable_handle_error
-		try
+		if (__uncaughtErrorEvents.__enabled)
+		{
+			try
+			{
+				GameInput.__onGamepadConnect(gamepad);
+			}
+			catch (e:Dynamic)
+			{
+				__handleError(e);
+			}
+		}
+		else
 		{
 			GameInput.__onGamepadConnect(gamepad);
 		}
-		catch (e:Dynamic)
-		{
-			__handleError(e);
-		}
-		#else
-		GameInput.__onGamepadConnect(gamepad);
-		#end
 
 		gamepad.onAxisMove.add(__onLimeGamepadAxisMove.bind(gamepad));
 		gamepad.onButtonDown.add(__onLimeGamepadButtonDown.bind(gamepad));
@@ -1791,18 +1873,21 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 	@:noCompletion private function __onLimeGamepadDisconnect(gamepad:Gamepad):Void
 	{
-		#if !openfl_disable_handle_error
-		try
+		if (__uncaughtErrorEvents.__enabled)
+		{
+			try
+			{
+				GameInput.__onGamepadDisconnect(gamepad);
+			}
+			catch (e:Dynamic)
+			{
+				__handleError(e);
+			}
+		}
+		else
 		{
 			GameInput.__onGamepadDisconnect(gamepad);
 		}
-		catch (e:Dynamic)
-		{
-			__handleError(e);
-		}
-		#else
-		GameInput.__onGamepadDisconnect(gamepad);
-		#end
 	}
 
 	@:noCompletion private function __onLimeKeyDown(window:Window, keyCode:KeyCode, modifier:KeyModifier):Void

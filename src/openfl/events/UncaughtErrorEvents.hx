@@ -60,10 +60,12 @@ class UncaughtErrorEvents extends EventDispatcher
 	{
 		super.addEventListener(type, listener, useCapture, priority, useWeakReference);
 
+		#if !openfl_disable_handle_error
 		if (__eventMap.exists(UncaughtErrorEvent.UNCAUGHT_ERROR))
 		{
 			__enabled = true;
 		}
+		#end
 	}
 
 	public override function removeEventListener<T>(type:EventType<T>, listener:T->Void, useCapture:Bool = false):Void
