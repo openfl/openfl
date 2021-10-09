@@ -140,7 +140,7 @@ class TextLayout
 			__hbBuffer.script = script.toHBScript();
 			__hbBuffer.language = new HBLanguage(language);
 			__hbBuffer.clusterLevel = HBBufferClusterLevel.CHARACTERS;
-			#if (neko || mac)
+			#if (neko)
 			// other targets still uses dummy positions to make UTF8 work
 			// TODO: confirm
 			__hbBuffer.addUTF8(text, 0, -1);
