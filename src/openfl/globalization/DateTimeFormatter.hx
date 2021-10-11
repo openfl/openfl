@@ -367,6 +367,20 @@ import js.lib.intl.DateTimeFormat;
 	public function new(requestedLocaleIDName:String, dateStyle:DateTimeStyle = LONG, timeStyle:DateTimeStyle = LONG)
 	{
 		this.requestedLocaleIDName = requestedLocaleIDName;
+		if (this.requestedLocaleIDName != null)
+		{
+			// A Unicode CLDR locale identifier can be converted to a valid
+			// BCP47 language tag (which is also a Unicode BCP 47 locale
+			// identifier) by performing the following transformation.
+			// 1. Replace the "_" separators with "-"
+			// 2. Replace the special language identifier "root" with the BCP 47
+			//    primary language tag "und"
+			// 3. Add an initial "und" primary language subtag if the first
+			//    subtag is a script.
+			// Source: https://unicode.org/reports/tr35/#Unicode_Locale_Identifier_CLDR_to_BCP_47
+			this._requestedLocaleIDNameBcp47 = ~/_/g.replace(this.requestedLocaleIDName, "-");
+			this._requestedLocaleIDNameBcp47 = ~/^root/.replace(this._requestedLocaleIDNameBcp47, "und");
+		}
 
 		this.setDateTimeStyles(dateStyle, timeStyle);
 		this.actualLocaleIDName = this.intlDateTimeFormat.resolvedOptions().locale;
@@ -406,6 +420,9 @@ import js.lib.intl.DateTimeFormat;
 
 	public var actualLocaleIDName(default, null):String;
 	public var requestedLocaleIDName(default, null):String;
+
+	private var _requestedLocaleIDNameBcp47:String;
+
 	public var lastOperationStatus(default, null):LastOperationStatus;
 
 	public function format(date:Date):String
@@ -472,40 +489,42 @@ import js.lib.intl.DateTimeFormat;
 				case Era(length): // G
 					getDateFormatPart("era", switch (length)
 					{
-						case 5: (new DateTimeFormat(this.requestedLocaleIDName, cast {era: "narrow", timeZone: timeZone})).formatToParts(date);
-						case 4: (new DateTimeFormat(this.requestedLocaleIDName, cast {era: "long", timeZone: timeZone})).formatToParts(date);
-						default: (new DateTimeFormat(this.requestedLocaleIDName, cast {era: "short", timeZone: timeZone})).formatToParts(date);
+						case 5: (new DateTimeFormat(this._requestedLocaleIDNameBcp47, cast {era: "narrow", timeZone: timeZone})).formatToParts(date);
+						case 4: (new DateTimeFormat(this._requestedLocaleIDNameBcp47, cast {era: "long", timeZone: timeZone})).formatToParts(date);
+						default: (new DateTimeFormat(this._requestedLocaleIDNameBcp47, cast {era: "short", timeZone: timeZone})).formatToParts(date);
 					});
 				case Year(length): // y
 					switch (length)
 					{
-						case 1: (new DateTimeFormat(this.requestedLocaleIDName, cast {year: "numeric", timeZone: timeZone})).formatToParts(date)[0].value;
-						case 2: (new DateTimeFormat(this.requestedLocaleIDName, cast {year: "2-digit", timeZone: timeZone})).formatToParts(date)[0].value;
-						default: StringTools.lpad((new DateTimeFormat(this.requestedLocaleIDName,
-								cast {year: "numeric", timeZone: timeZone})).formatToParts(date)[0].value, "0",
-								Std.int(Math.min(4, length)));
+						case 1: (new DateTimeFormat(this._requestedLocaleIDNameBcp47,
+								cast {year: "numeric", timeZone: timeZone})).formatToParts(date)[0].value;
+						case 2: (new DateTimeFormat(this._requestedLocaleIDNameBcp47,
+								cast {year: "2-digit", timeZone: timeZone})).formatToParts(date)[0].value;
+						default: StringTools.lpad((new DateTimeFormat(this._requestedLocaleIDNameBcp47,
+								cast {year: "numeric", timeZone: timeZone})).formatToParts(date)[0].value,
+								"0", Std.int(Math.min(4, length)));
 					}
 				case Month(length): // M
 					getDateFormatPart("month", switch (length)
 					{
-						case 1: (new DateTimeFormat(this.requestedLocaleIDName, cast {month: "numeric", timeZone: timeZone})).formatToParts(date);
-						case 2: (new DateTimeFormat(this.requestedLocaleIDName, cast {month: "2-digit", timeZone: timeZone})).formatToParts(date);
-						case 3: (new DateTimeFormat(this.requestedLocaleIDName, cast {month: "short", timeZone: timeZone})).formatToParts(date);
-						case 4: (new DateTimeFormat(this.requestedLocaleIDName, cast {month: "long", timeZone: timeZone})).formatToParts(date);
-						default: (new DateTimeFormat(this.requestedLocaleIDName, cast {month: "narrow", timeZone: timeZone})).formatToParts(date);
+						case 1: (new DateTimeFormat(this._requestedLocaleIDNameBcp47, cast {month: "numeric", timeZone: timeZone})).formatToParts(date);
+						case 2: (new DateTimeFormat(this._requestedLocaleIDNameBcp47, cast {month: "2-digit", timeZone: timeZone})).formatToParts(date);
+						case 3: (new DateTimeFormat(this._requestedLocaleIDNameBcp47, cast {month: "short", timeZone: timeZone})).formatToParts(date);
+						case 4: (new DateTimeFormat(this._requestedLocaleIDNameBcp47, cast {month: "long", timeZone: timeZone})).formatToParts(date);
+						default: (new DateTimeFormat(this._requestedLocaleIDNameBcp47, cast {month: "narrow", timeZone: timeZone})).formatToParts(date);
 					});
 				case Date(length): // d
 					getDateFormatPart("day", switch (length)
 					{
-						case 1: (new DateTimeFormat(this.requestedLocaleIDName, cast {day: "numeric", timeZone: timeZone})).formatToParts(date);
-						default: (new DateTimeFormat(this.requestedLocaleIDName, cast {day: "2-digit", timeZone: timeZone})).formatToParts(date);
+						case 1: (new DateTimeFormat(this._requestedLocaleIDNameBcp47, cast {day: "numeric", timeZone: timeZone})).formatToParts(date);
+						default: (new DateTimeFormat(this._requestedLocaleIDNameBcp47, cast {day: "2-digit", timeZone: timeZone})).formatToParts(date);
 					});
 				case Weekday(length): // E
 					getDateFormatPart("weekday", switch (length)
 					{
-						case 5: (new DateTimeFormat(this.requestedLocaleIDName, cast {weekday: "narrow", timeZone: timeZone})).formatToParts(date);
-						case 4: (new DateTimeFormat(this.requestedLocaleIDName, cast {weekday: "long", timeZone: timeZone})).formatToParts(date);
-						default: (new DateTimeFormat(this.requestedLocaleIDName, cast {weekday: "short", timeZone: timeZone})).formatToParts(date);
+						case 5: (new DateTimeFormat(this._requestedLocaleIDNameBcp47, cast {weekday: "narrow", timeZone: timeZone})).formatToParts(date);
+						case 4: (new DateTimeFormat(this._requestedLocaleIDNameBcp47, cast {weekday: "long", timeZone: timeZone})).formatToParts(date);
+						default: (new DateTimeFormat(this._requestedLocaleIDNameBcp47, cast {weekday: "short", timeZone: timeZone})).formatToParts(date);
 					});
 				case Quarter(_): // Q
 					""; // not supported by Intl.DateTimeFormat
@@ -518,7 +537,7 @@ import js.lib.intl.DateTimeFormat;
 				case WeekOfMonth: // W
 					""; // not supported by Intl.DateTimeFormat
 				case AMPM: // a
-					getDateFormatPart("dayPeriod", (new DateTimeFormat(this.requestedLocaleIDName, cast {
+					getDateFormatPart("dayPeriod", (new DateTimeFormat(this._requestedLocaleIDNameBcp47, cast {
 						hour: "numeric",
 						hour12: true,
 						dayPeriod: "short",
@@ -528,53 +547,61 @@ import js.lib.intl.DateTimeFormat;
 					getDateFormatPart("hour", switch (length)
 					{
 						case 1:
-							(new DateTimeFormat(this.requestedLocaleIDName, cast {hour: "numeric", hourCycle: "h11", timeZone: timeZone})).formatToParts(date);
+							(new DateTimeFormat(this._requestedLocaleIDNameBcp47,
+								cast {hour: "numeric", hourCycle: "h11", timeZone: timeZone})).formatToParts(date);
 						default:
-							(new DateTimeFormat(this.requestedLocaleIDName, cast {hour: "2-digit", hourCycle: "h11", timeZone: timeZone})).formatToParts(date);
+							(new DateTimeFormat(this._requestedLocaleIDNameBcp47,
+								cast {hour: "2-digit", hourCycle: "h11", timeZone: timeZone})).formatToParts(date);
 					});
 				case Hour12(length): // h
 					getDateFormatPart("hour", switch (length)
 					{
 						case 1:
-							(new DateTimeFormat(this.requestedLocaleIDName, cast {hour: "numeric", hourCycle: "h12", timeZone: timeZone})).formatToParts(date);
+							(new DateTimeFormat(this._requestedLocaleIDNameBcp47,
+								cast {hour: "numeric", hourCycle: "h12", timeZone: timeZone})).formatToParts(date);
 						default:
-							(new DateTimeFormat(this.requestedLocaleIDName, cast {hour: "2-digit", hourCycle: "h12", timeZone: timeZone})).formatToParts(date);
+							(new DateTimeFormat(this._requestedLocaleIDNameBcp47,
+								cast {hour: "2-digit", hourCycle: "h12", timeZone: timeZone})).formatToParts(date);
 					});
 				case Hour23(length): // H
 					getDateFormatPart("hour", switch (length)
 					{
 						case 1:
-							(new DateTimeFormat(this.requestedLocaleIDName, cast {hour: "numeric", hourCycle: "h23", timeZone: timeZone})).formatToParts(date);
+							(new DateTimeFormat(this._requestedLocaleIDNameBcp47,
+								cast {hour: "numeric", hourCycle: "h23", timeZone: timeZone})).formatToParts(date);
 						default:
-							(new DateTimeFormat(this.requestedLocaleIDName, cast {hour: "2-digit", hourCycle: "h23", timeZone: timeZone})).formatToParts(date);
+							(new DateTimeFormat(this._requestedLocaleIDNameBcp47,
+								cast {hour: "2-digit", hourCycle: "h23", timeZone: timeZone})).formatToParts(date);
 					});
 				case Hour24(length): // k
 					getDateFormatPart("hour", switch (length)
 					{
 						case 1:
-							(new DateTimeFormat(this.requestedLocaleIDName, cast {hour: "numeric", hourCycle: "h24", timeZone: timeZone})).formatToParts(date);
+							(new DateTimeFormat(this._requestedLocaleIDNameBcp47,
+								cast {hour: "numeric", hourCycle: "h24", timeZone: timeZone})).formatToParts(date);
 						default:
-							(new DateTimeFormat(this.requestedLocaleIDName, cast {hour: "2-digit", hourCycle: "h24", timeZone: timeZone})).formatToParts(date);
+							(new DateTimeFormat(this._requestedLocaleIDNameBcp47,
+								cast {hour: "2-digit", hourCycle: "h24", timeZone: timeZone})).formatToParts(date);
 					});
 				case Minute(length): // m
 					getDateFormatPart("minute", switch (length)
 					{
-						case 1: (new DateTimeFormat(this.requestedLocaleIDName, cast {minute: "numeric", timeZone: timeZone})).formatToParts(date);
-						default: (new DateTimeFormat(this.requestedLocaleIDName, cast {minute: "2-digit", timeZone: timeZone})).formatToParts(date);
+						case 1: (new DateTimeFormat(this._requestedLocaleIDNameBcp47, cast {minute: "numeric", timeZone: timeZone})).formatToParts(date);
+						default: (new DateTimeFormat(this._requestedLocaleIDNameBcp47, cast {minute: "2-digit", timeZone: timeZone})).formatToParts(date);
 					});
 				case Second(length): // s
 					getDateFormatPart("second", switch (length)
 					{
-						case 1: (new DateTimeFormat(this.requestedLocaleIDName, cast {second: "numeric", timeZone: timeZone})).formatToParts(date);
-						default: (new DateTimeFormat(this.requestedLocaleIDName, cast {second: "2-digit", timeZone: timeZone})).formatToParts(date);
+						case 1: (new DateTimeFormat(this._requestedLocaleIDNameBcp47, cast {second: "numeric", timeZone: timeZone})).formatToParts(date);
+						default: (new DateTimeFormat(this._requestedLocaleIDNameBcp47, cast {second: "2-digit", timeZone: timeZone})).formatToParts(date);
 					});
 				case Millisecond(length): // S
 					""; // not supported by Intl.DateTimeFormat
 				case TimeZoneDST(length): // z
 					getDateFormatPart("timeZoneName", switch (length)
 					{
-						case 4: (new DateTimeFormat(this.requestedLocaleIDName, cast {timeZoneName: "long", timeZone: timeZone})).formatToParts(date);
-						default: (new DateTimeFormat(this.requestedLocaleIDName, cast {timeZoneName: "short", timeZone: timeZone})).formatToParts(date);
+						case 4: (new DateTimeFormat(this._requestedLocaleIDNameBcp47, cast {timeZoneName: "long", timeZone: timeZone})).formatToParts(date);
+						default: (new DateTimeFormat(this._requestedLocaleIDNameBcp47, cast {timeZoneName: "short", timeZone: timeZone})).formatToParts(date);
 					});
 				case TimeZoneOffset(length): // Z
 					""; // not supported by Intl.DateTimeFormat
@@ -679,9 +706,9 @@ import js.lib.intl.DateTimeFormat;
 		}
 		try
 		{
-			this.intlDateTimeFormat = new DateTimeFormat(this.requestedLocaleIDName, cast options);
+			this.intlDateTimeFormat = new DateTimeFormat(this._requestedLocaleIDNameBcp47, cast options);
 			options.timeZone = "UTC";
-			this.intlDateTimeFormatUTC = new DateTimeFormat(this.requestedLocaleIDName, cast options);
+			this.intlDateTimeFormatUTC = new DateTimeFormat(this._requestedLocaleIDNameBcp47, cast options);
 			this.lastOperationStatus = NO_ERROR;
 		}
 		catch (e:Dynamic)
