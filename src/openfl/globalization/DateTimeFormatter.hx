@@ -68,7 +68,7 @@ import js.lib.intl.DateTimeFormat;
 
 	public function format(date:Date):String
 	{
-		if (this.dateTimePattern != null)
+		if (this.dateStyle == CUSTOM || this.timeStyle == CUSTOM)
 		{
 			var result = this.formatPattern(date, false);
 			this.lastOperationStatus = NO_ERROR;
@@ -290,7 +290,23 @@ import js.lib.intl.DateTimeFormat;
 	{
 		this.dateStyle = dateStyle;
 		this.timeStyle = timeStyle;
-		this.dateTimePattern = null;
+		this.dateTimePattern = switch (dateStyle)
+		{
+			case NONE: "";
+			case MEDIUM: "MMMM d, yyyy";
+			case SHORT: "M/d/yyyy";
+			default: "EEEE, MMMM d, yyyy";
+		}
+		if (dateStyle != NONE && timeStyle != NONE)
+		{
+			this.dateTimePattern += " ";
+		}
+		this.dateTimePattern += switch (timeStyle)
+		{
+			case NONE: "";
+			case SHORT: "h:mm a";
+			default: "h:mm:ss a";
+		}
 		this.lastOperationStatus = NO_ERROR;
 	}
 
@@ -428,7 +444,7 @@ import js.lib.intl.DateTimeFormat;
 	public function format(date:Date):String
 	{
 		var jsDate = js.lib.Date.fromHaxeDate(date);
-		if (this.dateTimePattern != null)
+		if (this.dateStyle == CUSTOM || this.timeStyle == CUSTOM)
 		{
 			var result = this.formatPatternJS(jsDate, false);
 			this.lastOperationStatus = NO_ERROR;
@@ -709,6 +725,7 @@ import js.lib.intl.DateTimeFormat;
 			this.intlDateTimeFormat = new DateTimeFormat(this._requestedLocaleIDNameBcp47, cast options);
 			options.timeZone = "UTC";
 			this.intlDateTimeFormatUTC = new DateTimeFormat(this._requestedLocaleIDNameBcp47, cast options);
+			this.resolveDateTimePattern();
 			this.lastOperationStatus = NO_ERROR;
 		}
 		catch (e:Dynamic)
@@ -773,6 +790,31 @@ import js.lib.intl.DateTimeFormat;
 			this.lastOperationStatus = PATTERN_SYNTAX_ERROR;
 			return;
 		}
+	}
+
+	private function resolveDateTimePattern():Void
+	{
+		var pattern = "";
+		var parts = this.intlDateTimeFormat.formatToParts(js.lib.Date.fromHaxeDate(new Date(2021, 9, 12, 0, 0, 0)));
+		for (part in parts)
+		{
+			pattern += switch (part.type)
+			{
+				case Month: "M";
+				case Day: "d";
+				case Year: "y";
+				case Hour: "h";
+				case Minute: "m";
+				case Second: "s";
+				case DayPeriod: "a";
+				case Era: "G";
+				case TimeZoneName: "z";
+				case Weekday: "E";
+				case Literal: part.value;
+				default: "";
+			}
+		}
+		this.dateTimePattern = pattern;
 	}
 }
 #end
