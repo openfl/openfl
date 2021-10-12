@@ -681,6 +681,7 @@ import js.lib.intl.DateTimeFormat;
 			var weekdayStyle = switch (nameStyle)
 			{
 				case FULL: "long";
+				case SHORT_ABBREVIATION: "narrow";
 				default: "short";
 			}
 			var intlDateTimeFormat = new DateTimeFormat(this.actualLocaleIDName, cast {weekday: weekdayStyle});
