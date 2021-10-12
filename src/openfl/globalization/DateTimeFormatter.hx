@@ -288,6 +288,11 @@ import js.lib.intl.DateTimeFormat;
 
 	public function setDateTimeStyles(dateStyle:DateTimeStyle = LONG, timeStyle:DateTimeStyle = LONG):Void
 	{
+		if (dateStyle == CUSTOM || timeStyle == CUSTOM)
+		{
+			this.lastOperationStatus = ILLEGAL_ARGUMENT_ERROR;
+			return;
+		}
 		this.dateStyle = dateStyle;
 		this.timeStyle = timeStyle;
 		this.dateTimePattern = switch (dateStyle)
@@ -698,6 +703,11 @@ import js.lib.intl.DateTimeFormat;
 
 	public function setDateTimeStyles(dateStyle:DateTimeStyle = LONG, timeStyle:DateTimeStyle = LONG):Void
 	{
+		if (dateStyle == CUSTOM || timeStyle == CUSTOM)
+		{
+			this.lastOperationStatus = ILLEGAL_ARGUMENT_ERROR;
+			return;
+		}
 		this.dateStyle = dateStyle;
 		this.timeStyle = timeStyle;
 		this.dateTimePattern = null;
