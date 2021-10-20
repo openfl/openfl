@@ -1081,9 +1081,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		// TODO: Do not rely on Lib.current
 		__uncaughtErrorEvents = Lib.current.__loaderInfo.uncaughtErrorEvents;
-		trace(Lib.current);
-		trace(Lib.current.__loaderInfo);
-		trace(Lib.current.__loaderInfo.uncaughtErrorEvents);
 
 		__contentsScaleFactor = window.scale;
 		__wasFullscreen = window.fullscreen;
