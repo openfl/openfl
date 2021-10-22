@@ -865,6 +865,11 @@ class TextEngine
 
 				return positions;
 			}
+			//TODO: Smarter caching for justify
+			if (currentFormat.align == JUSTIFY){
+				return html5Positions();
+			}
+			
 			return __shapeCache.cache(formatRange, html5Positions, text.substring(startIndex, endIndex));
 			#else
 			if (__textLayout == null)
@@ -889,6 +894,12 @@ class TextEngine
 			// __textLayout.script = ARABIC;
 
 			__textLayout.text = text.substring(startIndex, endIndex);
+			
+			//TODO:Smarter caching for justify
+			if (currentFormat.align == JUSTIFY){
+				return __textLayout.positions;
+			}
+			
 			return __shapeCache.cache(formatRange, __textLayout);
 			#end
 		}
