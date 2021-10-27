@@ -44,6 +44,7 @@ import openfl.events.MouseEvent;
 #end
 @:access(openfl.display.Timeline)
 @:access(openfl.geom.ColorTransform)
+@:autoBuild(openfl.utils._internal.AssetsMacro.initBinding())
 class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implements Dynamic<DisplayObject> #end
 {
 	/**

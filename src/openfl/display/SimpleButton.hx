@@ -31,6 +31,7 @@ import openfl.Vector;
 @:access(openfl.display.MovieClip)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
+@:autoBuild(openfl.utils._internal.AssetsMacro.initBinding())
 class SimpleButton extends InteractiveObject
 {
 	/**

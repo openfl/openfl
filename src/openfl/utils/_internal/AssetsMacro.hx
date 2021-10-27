@@ -362,5 +362,44 @@ class AssetsMacro
 
 		return fields;
 	}
+
+	macro public static function initBinding():Array<Field>
+	{
+		var classType = Context.getLocalClass().get();
+		var metaData = classType.meta.get();
+
+		for (meta in metaData)
+		{
+			if (meta.name == ":bind")
+			{
+				var fields = Context.getBuildFields();
+				for (field in fields)
+				{
+					if (field.name == "new")
+					{
+						var className = (classType.pack.length > 0 ? classType.pack.join(".") + "." : "") + classType.name;
+
+						var exprs:Array<Expr> = [];
+						exprs.push(macro openfl.utils.Assets.initBinding($v{className}, this));
+
+						switch (field.kind)
+						{
+							case FFun(f):
+								exprs.push(f.expr);
+								field.kind = FFun({
+									args: f.args,
+									expr: macro $b{exprs},
+									params: f.params,
+									ret: f.ret
+								});
+							default:
+						}
+						return fields;
+					}
+				}
+			}
+		}
+		return null;
+	}
 }
 #end
