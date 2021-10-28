@@ -373,6 +373,8 @@ class AssetsMacro
 			if (meta.name == ":bind")
 			{
 				var fields = Context.getBuildFields();
+				var position = Context.currentPos();
+
 				for (field in fields)
 				{
 					if (field.name == "new")
@@ -382,13 +384,16 @@ class AssetsMacro
 						var exprs:Array<Expr> = [];
 						exprs.push(macro openfl.utils.Assets.initBinding($v{className}, this));
 
+						var expr = macro $b{exprs};
+						expr.pos = position;
+
 						switch (field.kind)
 						{
 							case FFun(f):
 								exprs.push(f.expr);
 								field.kind = FFun({
 									args: f.args,
-									expr: macro $a{exprs},
+									expr: expr,
 									params: f.params,
 									ret: f.ret
 								});
