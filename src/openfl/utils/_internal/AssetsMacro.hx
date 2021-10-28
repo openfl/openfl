@@ -388,7 +388,7 @@ class AssetsMacro
 								exprs.push(f.expr);
 								field.kind = FFun({
 									args: f.args,
-									expr: macro $b{exprs},
+									expr: macro $a{exprs},
 									params: f.params,
 									ret: f.ret
 								});

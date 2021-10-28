@@ -337,14 +337,20 @@ class Assets
 		@param  instance		The current class instance to be bound (default is null)
 		@return		Whether asset binding was successful
 	**/
-	public static function initBinding(className:String, instance:Dynamic = null):Bool
+	public static function initBinding(className:String, instance:Dynamic = null):Void
 	{
 		if (libraryBindings.exists(className))
 		{
 			var library = libraryBindings.get(className);
-			return library.bind(className, instance);
+			if (!library.bind(className, instance))
+			{
+				Log.error("Cannot bind class name \"" + className + "\"");
+			}
 		}
-		return false;
+		else
+		{
+			Log.warn("There is no registered asset library for binding \"" + className + "\"");
+		}
 	}
 
 	/**
