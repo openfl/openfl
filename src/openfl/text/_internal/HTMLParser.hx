@@ -1,6 +1,7 @@
 package openfl.text._internal;
 
 import openfl.utils._internal.Log;
+import openfl.text.StyleSheet;
 import openfl.text.TextFormat;
 import openfl.Vector;
 
@@ -8,12 +9,14 @@ import openfl.Vector;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@:access(openfl.text.StyleSheet)
 @SuppressWarnings("checkstyle:FieldDocComment")
 class HTMLParser
 {
 	private static var __regexAlign:EReg = ~/align\s?=\s?("([^"]+)"|'([^']+)')/i;
 	private static var __regexBreakTag:EReg = ~/<br\s*\/?>/gi;
 	private static var __regexBlockIndent:EReg = ~/blockindent\s?=\s?("([^"]+)"|'([^']+)')/i;
+	private static var __regexClass:EReg = ~/class\s?=\s?("([^"]+)"|'([^']+)')/i;
 	private static var __regexColor:EReg = ~/color\s?=\s?("#([^"]+)"|'#([^']+)')/i;
 	private static var __regexEntities:Array<EReg> = [~/&quot;/g, ~/&apos;/g, ~/&amp;/g, ~/&lt;/g, ~/&gt;/g, ~/&nbsp;/g];
 	private static var __regexFace:EReg = ~/face\s?=\s?("([^"]+)"|'([^']+)')/i;
@@ -26,7 +29,7 @@ class HTMLParser
 	private static var __regexSize:EReg = ~/size\s?=\s?("([^"]+)"|'([^']+)')/i;
 	private static var __regexTabStops:EReg = ~/tabstops\s?=\s?("([^"]+)"|'([^']+)')/i;
 
-	public static function parse(value:String, textFormat:TextFormat, textFormatRanges:Vector<TextFormatRange>):String
+	public static function parse(value:String, styleSheet:StyleSheet, textFormat:TextFormat, textFormatRanges:Vector<TextFormatRange>):String
 	{
 		value = __regexBreakTag.replace(value, "\n");
 		value = __regexEntities[5].replace(value, " ");
@@ -110,6 +113,17 @@ class HTMLParser
 						switch (tagName.toLowerCase())
 						{
 							case "a":
+								if (styleSheet != null)
+								{
+									styleSheet.__applyStyle("a", format);
+
+									if (__regexClass.match(segment))
+									{
+										styleSheet.__applyStyle("." + __getAttributeMatch(__regexClass), format);
+										styleSheet.__applyStyle("a." + __getAttributeMatch(__regexClass), format);
+									}
+								}
+
 								if (__regexHref.match(segment))
 								{
 									format.url = __getAttributeMatch(__regexHref);
@@ -121,10 +135,33 @@ class HTMLParser
 									value += "\n";
 								}
 
+								if (styleSheet != null)
+								{
+									styleSheet.__applyStyle("p", format);
+
+									if (__regexClass.match(segment))
+									{
+										styleSheet.__applyStyle("." + __getAttributeMatch(__regexClass), format);
+										styleSheet.__applyStyle("p." + __getAttributeMatch(__regexClass), format);
+									}
+								}
+
 								if (__regexAlign.match(segment))
 								{
 									var align = __getAttributeMatch(__regexAlign).toLowerCase();
 									format.align = align;
+								}
+
+							case "span":
+								if (styleSheet != null)
+								{
+									styleSheet.__applyStyle("span", format);
+
+									if (__regexClass.match(segment))
+									{
+										styleSheet.__applyStyle("." + __getAttributeMatch(__regexClass), format);
+										styleSheet.__applyStyle("span." + __getAttributeMatch(__regexClass), format);
+									}
 								}
 
 							case "font":

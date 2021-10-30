@@ -363,9 +363,9 @@ class DOMTextField
 			{
 				textField.__renderedOnCanvasWhileOnDOM = false;
 
-				if (textField.__isHTML && textField.__rawHtmlText != null)
+				if (textField.__isHTML && textField.__htmlText != null)
 				{
-					textField.__updateText(textField.__rawHtmlText);
+					textField.__updateText(textField.__htmlText);
 					textField.__dirty = true;
 					textField.__layoutDirty = true;
 					textField.__setRenderDirty();
