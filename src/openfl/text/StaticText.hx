@@ -49,4 +49,5 @@ class StaticText extends DisplayObject
 }
 #else
 typedef StaticText = flash.text.StaticText;
+typedef StaticText2 = flash.text.StaticText.StaticText2;
 #end

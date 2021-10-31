@@ -545,4 +545,5 @@ class SimpleButton extends InteractiveObject
 }
 #else
 typedef SimpleButton = flash.display.SimpleButton;
+typedef SimpleButton2 = flash.display.SimpleButton.SimpleButton2;
 #end

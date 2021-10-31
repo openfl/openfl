@@ -566,4 +566,5 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 }
 #else
 typedef MovieClip = flash.display.MovieClip;
+typedef MovieClip2 = flash.display.MovieClip.MovieClip2;
 #end
