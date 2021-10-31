@@ -88,6 +88,7 @@ import openfl.text.TextLineMetrics;
 **/
 @:access(openfl.display.DisplayObject)
 @:transitive
+@:forward
 abstract DisplayListAccess<T:DisplayObject>(T) from T to DisplayObject to EventDispatcher
 {
 	/**
