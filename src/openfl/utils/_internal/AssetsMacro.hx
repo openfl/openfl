@@ -379,7 +379,26 @@ class AssetsMacro
 				{
 					if (field.name == "new")
 					{
-						var className = (classType.pack.length > 0 ? classType.pack.join(".") + "." : "") + classType.name;
+						var className = null;
+
+						for (meta in metaData)
+						{
+							if (meta.name == ":native" && meta.params.length > 0)
+							{
+								switch (meta.params[0].expr)
+								{
+									case EConst(CString(nativePath)):
+										className = nativePath;
+									default:
+								}
+								break;
+							}
+						}
+
+						if (className == null)
+						{
+							className = (classType.pack.length > 0 ? classType.pack.join(".") + "." : "") + classType.name;
+						}
 
 						var exprs:Array<Expr> = [];
 						exprs.push(macro openfl.utils.Assets.initBinding($v{className}, this));
@@ -402,8 +421,11 @@ class AssetsMacro
 						return fields;
 					}
 				}
+
+				break;
 			}
 		}
+
 		return null;
 	}
 }
