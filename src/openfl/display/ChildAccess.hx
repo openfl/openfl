@@ -29,43 +29,33 @@ import openfl.text.TextLineMetrics;
 
 	For example, consider the following hierarchy:
 
-	   sprite1 -> sprite2 -> sprite3 -> textField
+	   movieClip -> sprite -> sprite2 -> textField
 
 	You can use ChildAccess to more easily reference TextField:
 
 	```haxe
-	var sprite1:ChildAccess<Sprite> = sprite1;
-	sprite1.sprite2.sprite3.textField.text = "Hello World";
-	// or
-	sprite1.children.sprite2.sprite3.textField.text = "Hello World";
+	var movieClip:ChildAccess<MovieClip> = movieClip;
+	movieClip.sprite.sprite2.textField.text = "Hello World";
 	```
 
-	Instead of:
+	Without ChildAccess, it can be more difficult to access nested objects:
 
 	```haxe
-	var sprite2:Sprite = cast sprite1.getChildByName("sprite2");
-	var sprite3:Sprite = cast sprite2.getChildByName("sprite3");
-	var textField:TextField = cast sprite3.getChildByName("textField");
+	var sprite:Sprite = cast movieClip.getChildByName("sprite");
+	var sprite2:Sprite = cast sprite.getChildByName("sprite2");
+	var textField:TextField = cast sprite2.getChildByName("textField");
 	textField.text = "Hello World";
 	```
 
-	ChildAccess mirrors all of the properties of each OpenFL Display Object, though a TypeError
-	will be thrown if these fields do not match the type of the object you have referenced.
+	ChildAccess provides most of the benefits of dynamic references, while
+	still remaining strongly typed for properties.
 
-	If the object is not a DisplayObjectContiainer, then dynamic fields will return `null`.
-
-	ChildAccess also includes a `resolve()` method as well as an `as()` method. You can use `resolve()`
-	if the child DisplayObject's name conflicts with the name of a property:
+	You can use array access to reach child instances as well. This is useful if the child object
+	has the name of a DisplayObject property, or if it uses special characters:
 
 	```haxe
-	var access:ChildAccess = movieClip;
-	access.child1.child2.resolve("text").htmlText = "Hello World";
-	```
-
-	You can use `as()` in addition to other techniques for casting a reference to specified type:
-
-	```haxe
-	access.child1.child2.as(MovieClip);
+	var movieClip:ChildAccess<MovieClip> = movieClip;
+	movieClip.sprite["sprite2"].x = 100;
 	```
 **/
 @:access(openfl.display.DisplayObject)
@@ -142,11 +132,6 @@ abstract ChildAccess<T:DisplayObject>(T) from T to DisplayObject to EventDispatc
 		Accesses the `caretIndex` property (for TextField instances only).
 	**/
 	public var caretIndex(get, never):Int;
-
-	/**
-		Accesses the `children` property (for DisplayObjectContainer instances only).
-	**/
-	public var children(get, never):ChildAccess<DisplayObjectContainer>;
 
 	/**
 		Accesses the `condenseWhite` property (for TextField instances only).
@@ -634,18 +619,6 @@ abstract ChildAccess<T:DisplayObject>(T) from T to DisplayObject to EventDispatc
 	}
 
 	/**
-		Casts the current reference to a specified Class (if compatible), or
-		returns `null` if the reference is not a compatible type.
-		@param type A Class type
-		@return A new reference, or `null` if not compatible
-	**/
-	public function as<T>(type:Class<T>):T
-	{
-		if (this == null || !Std.isOfType(this, type)) return null;
-		return cast this;
-	}
-
-	/**
 		Accesses the `attachNetStream` method (for Video instances only).
 	**/
 	public function attachNetStream(netStream:NetStream):Void
@@ -658,7 +631,11 @@ abstract ChildAccess<T:DisplayObject>(T) from T to DisplayObject to EventDispatc
 	**/
 	public function attachTimeline(timeline:Timeline):Void
 	{
+		#if flash
+		cast(this, openfl.display.MovieClip.MovieClip2).attachTimeline(timeline);
+		#else
 		cast(this, MovieClip).attachTimeline(timeline);
+		#end
 	}
 
 	/**
@@ -1046,14 +1023,23 @@ abstract ChildAccess<T:DisplayObject>(T) from T to DisplayObject to EventDispatc
 	**/
 	@:op(a.b)
 	@:arrayAccess
-	public function resolve(childName:String):ChildAccess<DisplayObject>
+	private function __resolve(childName:String):ChildAccess<DisplayObject>
 	{
+		#if flash
+		if (this != null && Std.isOfType(this, DisplayObjectContainer))
+		{
+			var container:DisplayObjectContainer = cast this;
+			return container.getChildByName(childName);
+		}
+		return null;
+		#else
 		if (this == null || this.__children == null) return null;
 		for (child in this.__children)
 		{
 			if (child.name == childName) return child;
 		}
 		return null;
+		#end
 	}
 
 	/**
@@ -1405,11 +1391,6 @@ abstract ChildAccess<T:DisplayObject>(T) from T to DisplayObject to EventDispatc
 	private inline function get_caretIndex():Int
 	{
 		return cast(this, TextField).caretIndex;
-	}
-
-	private inline function get_children():ChildAccess<DisplayObjectContainer>
-	{
-		return cast(this, DisplayObjectContainer).children;
 	}
 
 	private inline function get_condenseWhite():Bool
