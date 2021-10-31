@@ -44,7 +44,7 @@ import openfl.text.TextFormat;
 import openfl.text.TextLineMetrics;
 
 /**
-	The DisplayObjectAccess abstract simplifies access to nested DisplayObjects. Although
+	The DisplayListAccess abstract simplifies access to nested DisplayObjects. Although
 	performance may be somewhat slower than using direct references, this is especially
 	useful when setting up a UI or performing non-intensive tasks.
 
@@ -52,10 +52,10 @@ import openfl.text.TextLineMetrics;
 
 	   sprite1 -> sprite2 -> sprite3 -> textField
 
-	You can use DisplayObjectAccess to more easily reference TextField:
+	You can use DisplayListAccess to more easily reference TextField:
 
 	```haxe
-	(sprite1:DisplayObjectAccess).sprite2.sprite3.textField.text = "Hello World";
+	(sprite1:DisplayListAccess).sprite2.sprite3.textField.text = "Hello World";
 	```
 
 	Instead of:
@@ -67,16 +67,16 @@ import openfl.text.TextLineMetrics;
 	textField.text = "Hello World";
 	```
 
-	DisplayObjectAccess mirrors all of the properties of each OpenFL Display Object, though a TypeError
+	DisplayListAccess mirrors all of the properties of each OpenFL Display Object, though a TypeError
 	will be thrown if these fields do not match the type of the object you have referenced.
 
 	If the object is not a DisplayObjectContiainer, then dynamic fields will return `null`.
 
-	DisplayObjectAccess also includes a `resolve()` method as well as an `as()` method. You can use `resolve()`
+	DisplayListAccess also includes a `resolve()` method as well as an `as()` method. You can use `resolve()`
 	if the child DisplayObject's name conflicts with a property name:
 
 	```haxe
-	var access:DisplayObjectAccess = movieClip;
+	var access:DisplayListAccess = movieClip;
 	access.child1.child2.resolve("text").htmlText = "Hello World";
 	```
 
@@ -88,7 +88,7 @@ import openfl.text.TextLineMetrics;
 **/
 @:access(openfl.display.DisplayObject)
 @:transitive
-abstract DisplayObjectAccess(DisplayObject) from DisplayObject to DisplayObject to EventDispatcher
+abstract DisplayListAccess<T:DisplayObject>(T) from T to DisplayObject to EventDispatcher
 {
 	/**
 		Accesses the `alpha` property.
@@ -566,9 +566,9 @@ abstract DisplayObjectAccess(DisplayObject) from DisplayObject to DisplayObject 
 	public var y(get, set):Float;
 
 	/**
-		Creates a new DisplayObjectAccess abstract.
+		Creates a new DisplayListAccess abstract.
 	**/
-	public inline function new(displayObject:DisplayObject)
+	public inline function new(displayObject:T)
 	{
 		this = displayObject;
 	}
@@ -1058,7 +1058,7 @@ abstract DisplayObjectAccess(DisplayObject) from DisplayObject to DisplayObject 
 	**/
 	@:op(a.b)
 	@:arrayAccess
-	public function resolve(childName:String):DisplayObjectAccess
+	public function resolve(childName:String):DisplayListAccess<DisplayObject>
 	{
 		if (this == null || this.__children == null) return null;
 		for (child in this.__children)
@@ -1197,7 +1197,7 @@ abstract DisplayObjectAccess(DisplayObject) from DisplayObject to DisplayObject 
 		return this.willTrigger(type);
 	}
 
-	@:to private static inline function __toBitmap(value:DisplayObjectAccess):Bitmap
+	@:to private static inline function __toBitmap(value:DisplayListAccess<DisplayObject>):Bitmap
 	{
 		if (value != null && !Std.isOfType(value, Bitmap))
 		{
@@ -1207,7 +1207,7 @@ abstract DisplayObjectAccess(DisplayObject) from DisplayObject to DisplayObject 
 		return cast value;
 	}
 
-	@:to private static inline function __toDisplayObjectContainer(value:DisplayObjectAccess):DisplayObjectContainer
+	@:to private static inline function __toDisplayObjectContainer(value:DisplayListAccess<DisplayObject>):DisplayObjectContainer
 	{
 		if (value != null && !Std.isOfType(value, DisplayObjectContainer))
 		{
@@ -1217,7 +1217,7 @@ abstract DisplayObjectAccess(DisplayObject) from DisplayObject to DisplayObject 
 		return cast value;
 	}
 
-	@:to private static inline function __toMovieClip(value:DisplayObjectAccess):MovieClip
+	@:to private static inline function __toMovieClip(value:DisplayListAccess<DisplayObject>):MovieClip
 	{
 		if (value != null && !Std.isOfType(value, MovieClip))
 		{
@@ -1227,7 +1227,7 @@ abstract DisplayObjectAccess(DisplayObject) from DisplayObject to DisplayObject 
 		return cast value;
 	}
 
-	@:to private static inline function __toShape(value:DisplayObjectAccess):Shape
+	@:to private static inline function __toShape(value:DisplayListAccess<DisplayObject>):Shape
 	{
 		if (value != null && !Std.isOfType(value, Shape))
 		{
@@ -1237,7 +1237,7 @@ abstract DisplayObjectAccess(DisplayObject) from DisplayObject to DisplayObject 
 		return cast value;
 	}
 
-	@:to private static inline function __toSprite(value:DisplayObjectAccess):Sprite
+	@:to private static inline function __toSprite(value:DisplayListAccess<DisplayObject>):Sprite
 	{
 		if (value != null && !Std.isOfType(value, Sprite))
 		{
@@ -1247,7 +1247,7 @@ abstract DisplayObjectAccess(DisplayObject) from DisplayObject to DisplayObject 
 		return cast value;
 	}
 
-	@:to private static inline function __toTextField(value:DisplayObjectAccess):TextField
+	@:to private static inline function __toTextField(value:DisplayListAccess<DisplayObject>):TextField
 	{
 		if (value != null && !Std.isOfType(value, TextField))
 		{
@@ -1257,7 +1257,7 @@ abstract DisplayObjectAccess(DisplayObject) from DisplayObject to DisplayObject 
 		return cast value;
 	}
 
-	@:to private static inline function __toStaticText(value:DisplayObjectAccess):StaticText
+	@:to private static inline function __toStaticText(value:DisplayListAccess<DisplayObject>):StaticText
 	{
 		if (value != null && !Std.isOfType(value, StaticText))
 		{
@@ -1267,7 +1267,7 @@ abstract DisplayObjectAccess(DisplayObject) from DisplayObject to DisplayObject 
 		return cast value;
 	}
 
-	@:to private static inline function __toTilemap(value:DisplayObjectAccess):Tilemap
+	@:to private static inline function __toTilemap(value:DisplayListAccess<DisplayObject>):Tilemap
 	{
 		if (value != null && !Std.isOfType(value, Tilemap))
 		{
@@ -1277,7 +1277,7 @@ abstract DisplayObjectAccess(DisplayObject) from DisplayObject to DisplayObject 
 		return cast value;
 	}
 
-	@:to private static inline function __toVideo(value:DisplayObjectAccess):Video
+	@:to private static inline function __toVideo(value:DisplayListAccess<DisplayObject>):Video
 	{
 		if (value != null && !Std.isOfType(value, Video))
 		{
