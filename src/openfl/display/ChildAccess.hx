@@ -61,7 +61,7 @@ import openfl.text.TextLineMetrics;
 @:access(openfl.display.DisplayObject)
 @:transitive
 @:forward
-abstract ChildAccess<T:DisplayObject>(T) from T to DisplayObject to EventDispatcher
+abstract ChildAccess<T:DisplayObject>(T) from T to T
 {
 	/**
 		Accesses the `alpha` property.
@@ -1171,27 +1171,7 @@ abstract ChildAccess<T:DisplayObject>(T) from T to DisplayObject to EventDispatc
 		return this.willTrigger(type);
 	}
 
-	@:to private static inline function __toBitmap(value:ChildAccess<DisplayObject>):Bitmap
-	{
-		if (value != null && !Std.isOfType(value, Bitmap))
-		{
-			throw new TypeError("Cannot cast object reference to Bitmap");
-		}
-
-		return cast value;
-	}
-
-	@:to private static inline function __toDisplayObjectContainer(value:ChildAccess<DisplayObject>):DisplayObjectContainer
-	{
-		if (value != null && !Std.isOfType(value, DisplayObjectContainer))
-		{
-			throw new TypeError("Cannot cast object reference to DisplayObjectContainer");
-		}
-
-		return cast value;
-	}
-
-	@:to private static inline function __toMovieClip(value:ChildAccess<DisplayObject>):MovieClip
+	@:to private static inline function __toMovieClip(value:ChildAccess<Dynamic>):MovieClip
 	{
 		if (value != null && !Std.isOfType(value, MovieClip))
 		{
@@ -1201,47 +1181,7 @@ abstract ChildAccess<T:DisplayObject>(T) from T to DisplayObject to EventDispatc
 		return cast value;
 	}
 
-	@:to private static inline function __toShape(value:ChildAccess<DisplayObject>):Shape
-	{
-		if (value != null && !Std.isOfType(value, Shape))
-		{
-			throw new TypeError("Cannot cast object reference to Shape");
-		}
-
-		return cast value;
-	}
-
-	@:to private static inline function __toSprite(value:ChildAccess<DisplayObject>):Sprite
-	{
-		if (value != null && !Std.isOfType(value, Sprite))
-		{
-			throw new TypeError("Cannot cast object reference to Sprite");
-		}
-
-		return cast value;
-	}
-
-	@:to private static inline function __toTextField(value:ChildAccess<DisplayObject>):TextField
-	{
-		if (value != null && !Std.isOfType(value, TextField))
-		{
-			throw new TypeError("Cannot cast object reference to TextField");
-		}
-
-		return cast value;
-	}
-
-	@:to private static inline function __toStaticText(value:ChildAccess<DisplayObject>):StaticText
-	{
-		if (value != null && !Std.isOfType(value, StaticText))
-		{
-			throw new TypeError("Cannot cast object reference to StaticText");
-		}
-
-		return cast value;
-	}
-
-	@:to private static inline function __toTilemap(value:ChildAccess<DisplayObject>):Tilemap
+	@:to private static inline function __toTilemap(value:ChildAccess<Dynamic>):Tilemap
 	{
 		if (value != null && !Std.isOfType(value, Tilemap))
 		{
@@ -1251,11 +1191,71 @@ abstract ChildAccess<T:DisplayObject>(T) from T to DisplayObject to EventDispatc
 		return cast value;
 	}
 
-	@:to private static inline function __toVideo(value:ChildAccess<DisplayObject>):Video
+	@:to private static inline function __toVideo(value:ChildAccess<Dynamic>):Video
 	{
 		if (value != null && !Std.isOfType(value, Video))
 		{
 			throw new TypeError("Cannot cast object reference to Video");
+		}
+
+		return cast value;
+	}
+
+	@:to private static inline function __toTextField(value:ChildAccess<Dynamic>):TextField
+	{
+		if (value != null && !Std.isOfType(value, TextField))
+		{
+			throw new TypeError("Cannot cast object reference to TextField");
+		}
+
+		return cast value;
+	}
+
+	@:to private static inline function __toStaticText(value:ChildAccess<Dynamic>):StaticText
+	{
+		if (value != null && !Std.isOfType(value, StaticText))
+		{
+			throw new TypeError("Cannot cast object reference to StaticText");
+		}
+
+		return cast value;
+	}
+
+	@:to private static inline function __toShape(value:ChildAccess<Dynamic>):Shape
+	{
+		if (value != null && !Std.isOfType(value, Shape))
+		{
+			throw new TypeError("Cannot cast object reference to Shape");
+		}
+
+		return cast value;
+	}
+
+	@:to private static inline function __toSprite(value:ChildAccess<Dynamic>):Sprite
+	{
+		if (value != null && !Std.isOfType(value, Sprite))
+		{
+			throw new TypeError("Cannot cast object reference to Sprite");
+		}
+
+		return cast value;
+	}
+
+	@:to private static inline function __toBitmap(value:ChildAccess<Dynamic>):Bitmap
+	{
+		if (value != null && !Std.isOfType(value, Bitmap))
+		{
+			throw new TypeError("Cannot cast object reference to Bitmap");
+		}
+
+		return cast value;
+	}
+
+	@:to private static inline function __toDisplayObjectContainer(value:ChildAccess<Dynamic>):DisplayObjectContainer
+	{
+		if (value != null && !Std.isOfType(value, DisplayObjectContainer))
+		{
+			throw new TypeError("Cannot cast object reference to DisplayObjectContainer");
 		}
 
 		return cast value;
