@@ -1,26 +1,5 @@
-package openfl.utils;
+package openfl.display;
 
-import openfl.display.Bitmap;
-import openfl.display.BitmapData;
-import openfl.display.BlendMode;
-import openfl.display.DisplayObject;
-import openfl.display.DisplayObjectContainer;
-import openfl.display.FrameLabel;
-import openfl.display.Graphics;
-import openfl.display.InteractiveObject;
-import openfl.display.LoaderInfo;
-import openfl.display.MovieClip;
-import openfl.display.PixelSnapping;
-import openfl.display.Scene;
-import openfl.display.Shader;
-import openfl.display.Shape;
-import openfl.display.Sprite;
-import openfl.display.Stage;
-import openfl.display.Tile;
-import openfl.display.TileContainer;
-import openfl.display.Tilemap;
-import openfl.display.Tileset;
-import openfl.display.Timeline;
 import openfl.errors.TypeError;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
@@ -44,7 +23,7 @@ import openfl.text.TextFormat;
 import openfl.text.TextLineMetrics;
 
 /**
-	The DisplayListAccess abstract simplifies access to nested DisplayObjects. Although
+	The ChildAccess abstract simplifies access to nested DisplayObjects. Although
 	performance may be somewhat slower than using direct references, this is especially
 	useful when setting up a UI or performing non-intensive tasks.
 
@@ -52,10 +31,13 @@ import openfl.text.TextLineMetrics;
 
 	   sprite1 -> sprite2 -> sprite3 -> textField
 
-	You can use DisplayListAccess to more easily reference TextField:
+	You can use ChildAccess to more easily reference TextField:
 
 	```haxe
-	(sprite1:DisplayListAccess).sprite2.sprite3.textField.text = "Hello World";
+	var sprite1:ChildAccess<Sprite> = sprite1;
+	sprite1.sprite2.sprite3.textField.text = "Hello World";
+	// or
+	sprite1.children.sprite2.sprite3.textField.text = "Hello World";
 	```
 
 	Instead of:
@@ -67,16 +49,16 @@ import openfl.text.TextLineMetrics;
 	textField.text = "Hello World";
 	```
 
-	DisplayListAccess mirrors all of the properties of each OpenFL Display Object, though a TypeError
+	ChildAccess mirrors all of the properties of each OpenFL Display Object, though a TypeError
 	will be thrown if these fields do not match the type of the object you have referenced.
 
 	If the object is not a DisplayObjectContiainer, then dynamic fields will return `null`.
 
-	DisplayListAccess also includes a `resolve()` method as well as an `as()` method. You can use `resolve()`
-	if the child DisplayObject's name conflicts with a property name:
+	ChildAccess also includes a `resolve()` method as well as an `as()` method. You can use `resolve()`
+	if the child DisplayObject's name conflicts with the name of a property:
 
 	```haxe
-	var access:DisplayListAccess = movieClip;
+	var access:ChildAccess = movieClip;
 	access.child1.child2.resolve("text").htmlText = "Hello World";
 	```
 
@@ -89,7 +71,7 @@ import openfl.text.TextLineMetrics;
 @:access(openfl.display.DisplayObject)
 @:transitive
 @:forward
-abstract DisplayListAccess<T:DisplayObject>(T) from T to DisplayObject to EventDispatcher
+abstract ChildAccess<T:DisplayObject>(T) from T to DisplayObject to EventDispatcher
 {
 	/**
 		Accesses the `alpha` property.
@@ -160,6 +142,11 @@ abstract DisplayListAccess<T:DisplayObject>(T) from T to DisplayObject to EventD
 		Accesses the `caretIndex` property (for TextField instances only).
 	**/
 	public var caretIndex(get, never):Int;
+
+	/**
+		Accesses the `children` property (for DisplayObjectContainer instances only).
+	**/
+	public var children(get, never):ChildAccess<DisplayObjectContainer>;
 
 	/**
 		Accesses the `condenseWhite` property (for TextField instances only).
@@ -567,7 +554,7 @@ abstract DisplayListAccess<T:DisplayObject>(T) from T to DisplayObject to EventD
 	public var y(get, set):Float;
 
 	/**
-		Creates a new DisplayListAccess abstract.
+		Creates a new ChildAccess abstract.
 	**/
 	public inline function new(displayObject:T)
 	{
@@ -1059,7 +1046,7 @@ abstract DisplayListAccess<T:DisplayObject>(T) from T to DisplayObject to EventD
 	**/
 	@:op(a.b)
 	@:arrayAccess
-	public function resolve(childName:String):DisplayListAccess<DisplayObject>
+	public function resolve(childName:String):ChildAccess<DisplayObject>
 	{
 		if (this == null || this.__children == null) return null;
 		for (child in this.__children)
@@ -1198,7 +1185,7 @@ abstract DisplayListAccess<T:DisplayObject>(T) from T to DisplayObject to EventD
 		return this.willTrigger(type);
 	}
 
-	@:to private static inline function __toBitmap(value:DisplayListAccess<DisplayObject>):Bitmap
+	@:to private static inline function __toBitmap(value:ChildAccess<DisplayObject>):Bitmap
 	{
 		if (value != null && !Std.isOfType(value, Bitmap))
 		{
@@ -1208,7 +1195,7 @@ abstract DisplayListAccess<T:DisplayObject>(T) from T to DisplayObject to EventD
 		return cast value;
 	}
 
-	@:to private static inline function __toDisplayObjectContainer(value:DisplayListAccess<DisplayObject>):DisplayObjectContainer
+	@:to private static inline function __toDisplayObjectContainer(value:ChildAccess<DisplayObject>):DisplayObjectContainer
 	{
 		if (value != null && !Std.isOfType(value, DisplayObjectContainer))
 		{
@@ -1218,7 +1205,7 @@ abstract DisplayListAccess<T:DisplayObject>(T) from T to DisplayObject to EventD
 		return cast value;
 	}
 
-	@:to private static inline function __toMovieClip(value:DisplayListAccess<DisplayObject>):MovieClip
+	@:to private static inline function __toMovieClip(value:ChildAccess<DisplayObject>):MovieClip
 	{
 		if (value != null && !Std.isOfType(value, MovieClip))
 		{
@@ -1228,7 +1215,7 @@ abstract DisplayListAccess<T:DisplayObject>(T) from T to DisplayObject to EventD
 		return cast value;
 	}
 
-	@:to private static inline function __toShape(value:DisplayListAccess<DisplayObject>):Shape
+	@:to private static inline function __toShape(value:ChildAccess<DisplayObject>):Shape
 	{
 		if (value != null && !Std.isOfType(value, Shape))
 		{
@@ -1238,7 +1225,7 @@ abstract DisplayListAccess<T:DisplayObject>(T) from T to DisplayObject to EventD
 		return cast value;
 	}
 
-	@:to private static inline function __toSprite(value:DisplayListAccess<DisplayObject>):Sprite
+	@:to private static inline function __toSprite(value:ChildAccess<DisplayObject>):Sprite
 	{
 		if (value != null && !Std.isOfType(value, Sprite))
 		{
@@ -1248,7 +1235,7 @@ abstract DisplayListAccess<T:DisplayObject>(T) from T to DisplayObject to EventD
 		return cast value;
 	}
 
-	@:to private static inline function __toTextField(value:DisplayListAccess<DisplayObject>):TextField
+	@:to private static inline function __toTextField(value:ChildAccess<DisplayObject>):TextField
 	{
 		if (value != null && !Std.isOfType(value, TextField))
 		{
@@ -1258,7 +1245,7 @@ abstract DisplayListAccess<T:DisplayObject>(T) from T to DisplayObject to EventD
 		return cast value;
 	}
 
-	@:to private static inline function __toStaticText(value:DisplayListAccess<DisplayObject>):StaticText
+	@:to private static inline function __toStaticText(value:ChildAccess<DisplayObject>):StaticText
 	{
 		if (value != null && !Std.isOfType(value, StaticText))
 		{
@@ -1268,7 +1255,7 @@ abstract DisplayListAccess<T:DisplayObject>(T) from T to DisplayObject to EventD
 		return cast value;
 	}
 
-	@:to private static inline function __toTilemap(value:DisplayListAccess<DisplayObject>):Tilemap
+	@:to private static inline function __toTilemap(value:ChildAccess<DisplayObject>):Tilemap
 	{
 		if (value != null && !Std.isOfType(value, Tilemap))
 		{
@@ -1278,7 +1265,7 @@ abstract DisplayListAccess<T:DisplayObject>(T) from T to DisplayObject to EventD
 		return cast value;
 	}
 
-	@:to private static inline function __toVideo(value:DisplayListAccess<DisplayObject>):Video
+	@:to private static inline function __toVideo(value:ChildAccess<DisplayObject>):Video
 	{
 		if (value != null && !Std.isOfType(value, Video))
 		{
@@ -1418,6 +1405,11 @@ abstract DisplayListAccess<T:DisplayObject>(T) from T to DisplayObject to EventD
 	private inline function get_caretIndex():Int
 	{
 		return cast(this, TextField).caretIndex;
+	}
+
+	private inline function get_children():ChildAccess<DisplayObjectContainer>
+	{
+		return cast(this, DisplayObjectContainer).children;
 	}
 
 	private inline function get_condenseWhite():Bool

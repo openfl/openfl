@@ -44,6 +44,11 @@ import openfl.Vector;
 class DisplayObjectContainer extends InteractiveObject
 {
 	/**
+		Provides dynamic access to the children of this DisplayObjectContainer.
+	**/
+	public var children(get, never):ChildAccess<DisplayObjectContainer>;
+
+	/**
 		Determines whether or not the children of the object are mouse, or user
 		input device, enabled. If an object is enabled, a user can interact with
 		it by using a mouse or user input device. The default is
@@ -973,6 +978,12 @@ class DisplayObjectContainer extends InteractiveObject
 	}
 
 	// Get & Set Methods
+
+	@:noCompletion private function get_children():ChildAccess<DisplayObjectContainer>
+	{
+		return this;
+	}
+
 	@:noCompletion private function get_numChildren():Int
 	{
 		return __children.length;
