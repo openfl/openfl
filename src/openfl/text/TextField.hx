@@ -2881,6 +2881,7 @@ class TextField extends InteractiveObject
 		if (__styleSheet != null && value == null)
 		{
 			// TODO: Bake stylesheet into htmlText property
+			// TODO: Actually, does this already happen?
 		}
 		else if (value != null)
 		{
@@ -2893,6 +2894,9 @@ class TextField extends InteractiveObject
 				__setRenderDirty();
 				set_htmlText(__htmlText);
 			}
+
+			// TODO: Does the type change, or is the type value ignored?
+			type = DYNAMIC;
 		}
 		return __styleSheet = value;
 	}
@@ -2909,6 +2913,11 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function set_text(value:String):String
 	{
+		if (__styleSheet != null)
+		{
+			return set_htmlText(value);
+		}
+
 		if (__isHTML || __text != value)
 		{
 			__dirty = true;
@@ -2979,6 +2988,13 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function set_type(value:TextFieldType):TextFieldType
 	{
+		if (__styleSheet != null)
+		{
+			// TODO: Is this the behavior of Flash Player, or is type simply
+			// ignored when the StyleSheet is present? (seems likely?)
+			value = DYNAMIC;
+		}
+
 		if (value != __textEngine.type)
 		{
 			if (value == TextFieldType.INPUT)
