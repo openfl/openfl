@@ -349,7 +349,7 @@ class Assets
 		}
 		else
 		{
-			Log.warn("There is no registered asset library for binding \"" + className + "\"");
+			Log.warn("No asset is registered as \"" + className + "\"");
 		}
 	}
 
