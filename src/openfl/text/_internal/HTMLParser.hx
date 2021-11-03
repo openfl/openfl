@@ -75,12 +75,12 @@ class HTMLParser
 				var start = tagEndIndex + 1;
 				var spaceIndex = segment.indexOf(" ");
 				var tagName = segment.substring(isClosingTag ? 1 : 0, spaceIndex > -1
-					&& spaceIndex < tagEndIndex ? spaceIndex : tagEndIndex);
+					&& spaceIndex < tagEndIndex ? spaceIndex : tagEndIndex).toLowerCase();
 				var format:TextFormat;
 
 				if (isClosingTag)
 				{
-					if (tagStack.length == 0 || tagName.toLowerCase() != tagStack[tagStack.length - 1].toLowerCase())
+					if (tagStack.length == 0 || tagName != tagStack[tagStack.length - 1])
 					{
 						Log.info("Invalid HTML, unexpected closing tag ignored: " + tagName);
 						continue;
@@ -90,7 +90,7 @@ class HTMLParser
 					formatStack.pop();
 					format = formatStack[formatStack.length - 1].clone();
 
-					if (tagName.toLowerCase() == "p" && textFormatRanges.length > 0)
+					if (tagName == "p" && textFormatRanges.length > 0)
 					{
 						value += "\n";
 						noLineBreak = true;
@@ -110,20 +110,20 @@ class HTMLParser
 
 					if (tagEndIndex > -1)
 					{
-						switch (tagName.toLowerCase())
+						if (styleSheet != null)
+						{
+							styleSheet.__applyStyle(tagName, format);
+
+							if (__regexClass.match(segment))
+							{
+								styleSheet.__applyStyle("." + __getAttributeMatch(__regexClass), format);
+								styleSheet.__applyStyle(tagName + "." + __getAttributeMatch(__regexClass), format);
+							}
+						}
+
+						switch (tagName)
 						{
 							case "a":
-								if (styleSheet != null)
-								{
-									styleSheet.__applyStyle("a", format);
-
-									if (__regexClass.match(segment))
-									{
-										styleSheet.__applyStyle("." + __getAttributeMatch(__regexClass), format);
-										styleSheet.__applyStyle("a." + __getAttributeMatch(__regexClass), format);
-									}
-								}
-
 								if (__regexHref.match(segment))
 								{
 									format.url = __getAttributeMatch(__regexHref);
@@ -135,33 +135,10 @@ class HTMLParser
 									value += "\n";
 								}
 
-								if (styleSheet != null)
-								{
-									styleSheet.__applyStyle("p", format);
-
-									if (__regexClass.match(segment))
-									{
-										styleSheet.__applyStyle("." + __getAttributeMatch(__regexClass), format);
-										styleSheet.__applyStyle("p." + __getAttributeMatch(__regexClass), format);
-									}
-								}
-
 								if (__regexAlign.match(segment))
 								{
 									var align = __getAttributeMatch(__regexAlign).toLowerCase();
 									format.align = align;
-								}
-
-							case "span":
-								if (styleSheet != null)
-								{
-									styleSheet.__applyStyle("span", format);
-
-									if (__regexClass.match(segment))
-									{
-										styleSheet.__applyStyle("." + __getAttributeMatch(__regexClass), format);
-										styleSheet.__applyStyle("span." + __getAttributeMatch(__regexClass), format);
-									}
 								}
 
 							case "font":
