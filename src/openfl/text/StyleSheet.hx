@@ -228,10 +228,11 @@ class StyleSheet extends EventDispatcher /*implements Dynamic*/
 	{
 		if (styleObject != null)
 		{
+			var hex = ~/[0-9A-Fa-f]+/;
 			var numeric = ~/[0-9]+/;
-			if (styleObject.hasOwnProperty("color") && numeric.match(styleObject.color))
+			if (styleObject.hasOwnProperty("color") && hex.match(styleObject.color))
 			{
-				textFormat.color = Std.parseInt("0x" + numeric.matched(0));
+				textFormat.color = Std.parseInt("0x" + hex.matched(0));
 			}
 			// if (formatObject.hasOwnProperty("display"))
 			// {
