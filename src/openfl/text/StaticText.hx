@@ -44,6 +44,7 @@ class StaticText extends DisplayObject
 	{
 		super();
 
+		__drawableType = SHAPE;
 		__graphics = new Graphics(this);
 	}
 }
