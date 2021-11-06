@@ -163,8 +163,21 @@ class Timeline
 			__frameScripts = new Map();
 			for (script in scripts)
 			{
-				// TODO: Merge multiple scripts from the same frame together
-				__frameScripts.set(script.frame, script.script);
+				if (__frameScripts.exists(script.frame))
+				{
+					// TODO: Does this merging code work?
+					var existing = __frameScripts.get(script.frame);
+					var append = script.script;
+					__frameScripts.set(script.frame, function(clip:MovieClip)
+					{
+						existing(clip);
+						append(clip);
+					});
+				}
+				else
+				{
+					__frameScripts.set(script.frame, script.script);
+				}
 			}
 		}
 
