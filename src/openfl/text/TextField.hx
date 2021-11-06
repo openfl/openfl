@@ -2655,7 +2655,7 @@ class TextField extends InteractiveObject
 		__htmlText = value;
 		// TODO: Do not run the following if __htmlText is unchanged?
 
-		value = HTMLParser.parse(value, __styleSheet, __textFormat, __textEngine.textFormatRanges);
+		value = HTMLParser.parse(value, multiline, __styleSheet, __textFormat, __textEngine.textFormatRanges);
 
 		#if (js && html5)
 		if (DisplayObject.__supportDOM)
