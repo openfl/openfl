@@ -136,6 +136,7 @@
 	<library handler="swf" type="swf" />
 	<library handler="swf" type="swflite" />
 	<library handler="swf" type="swf_lite" />
+	<library handler="swf" type="swc" />
 
 	<section if="setup">
 
