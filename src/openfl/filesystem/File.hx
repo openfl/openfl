@@ -716,8 +716,15 @@ class File extends FileReference
 		var segs:Array<String> = __path.split(__sep);
 
 		var cPath:String = __driveLetters[__driveLetters.indexOf(segs[0].toUpperCase() + __sep)];
+		var start:Int = 1;
+		if (cPath == null)
+		{
+			// fall back to unix paths
+			cPath = __sep + segs[1] + __sep;
+			start = 2;
+		}
 
-		for (i in 1...segs.length)
+		for (i in start...segs.length)
 		{
 			cPath += __canonicalize(cPath, segs[i]) + __sep;
 		}
