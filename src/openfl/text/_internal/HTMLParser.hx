@@ -138,6 +138,9 @@ class HTMLParser
 						switch (tagName)
 						{
 							case "a":
+								// TODO: support hover, visited, active (requires partnership with renderer)
+								styleSheet.__applyStyle("a:link", format);
+
 								if (__regexHref.match(segment))
 								{
 									format.url = __getAttributeMatch(__regexHref);
