@@ -9,6 +9,7 @@ import haxe.macro.Expr;
 @:access(lime.app.Application)
 @:access(lime.system.System)
 @:access(openfl.display.Stage)
+@:access(openfl.events.UncaughtErrorEvents)
 @:dox(hide)
 class ApplicationMain
 {
@@ -142,7 +143,28 @@ class ApplicationMain
 		#if flash
 		ApplicationMain.getEntryPoint();
 		#else
-		try {
+		if (stage.__uncaughtErrorEvents.__enabled)
+		{
+			try
+			{
+				ApplicationMain.getEntryPoint();
+
+				stage.dispatchEvent(new openfl.events.Event(openfl.events.Event.RESIZE, false, false));
+
+				if (stage.window.fullscreen)
+				{
+					stage.dispatchEvent(new openfl.events.FullScreenEvent(openfl.events.FullScreenEvent.FULL_SCREEN, false, false, true, true));
+				}
+			}
+			catch (e:Dynamic)
+			{
+				#if !display
+				stage.__handleError(e);
+				#end
+			}
+		}
+		else
+		{
 			ApplicationMain.getEntryPoint();
 
 			stage.dispatchEvent(new openfl.events.Event(openfl.events.Event.RESIZE, false, false));
@@ -151,12 +173,6 @@ class ApplicationMain
 			{
 				stage.dispatchEvent(new openfl.events.FullScreenEvent(openfl.events.FullScreenEvent.FULL_SCREEN, false, false, true, true));
 			}
-		}
-		catch (e:Dynamic)
-		{
-			#if !display
-			stage.__handleError (e);
-			#end
 		}
 		#end
 	}
