@@ -565,7 +565,7 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 	/**
 		Accesses the `addEventListener` method.
 	**/
-	public function addEventListener<T>(type:EventType<T>, listener:T->Void, useCapture:Bool = false, priority:Int = 0, useWeakReference:Bool = false):Void
+	public function addEventListener<T2>(type:EventType<T2>, listener:T2->Void, useCapture:Bool = false, priority:Int = 0, useWeakReference:Bool = false):Void
 	{
 		this.addEventListener(type, listener, useCapture, priority);
 	}
@@ -960,7 +960,7 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 	/**
 		Accesses the `removeEventListener` method.
 	**/
-	public function removeEventListener<T>(type:EventType<T>, listener:T->Void, useCapture:Bool = false):Void
+	public function removeEventListener<T2>(type:EventType<T2>, listener:T2->Void, useCapture:Bool = false):Void
 	{
 		this.removeEventListener(type, listener, useCapture);
 	}
