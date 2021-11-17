@@ -1,48 +1,43 @@
 package openfl.utils;
 #if cpp
-import haxe.ds.WeakMap;
+	import haxe.ds.WeakMap;
 #elseif js
-typedef JSWeakRef = js.lib.WeakRef;
+	typedef JSWeakRef = js.lib.WeakRef<Dynamic>;
 #end
-/**
- * ...
- * @author Christopher Speciale
- */
-class WeakRef
+
+abstract WeakRef(#if cpp WeakMap #elseif js JSWeakRef #end)
 {
-	#if cpp
-	private var weakMap: WeakMap<Dynamic, Int>; 
-	#elseif js
-	private var weakRef: JSWeakRef;
-	#end
+
 	public var object(get, set):Dynamic;
-	
-	private function set_object(value:Dynamic):Dynamic{
+
+	inline function set_object(value:Dynamic):Dynamic
+	{
 		#if cpp
-		weakMap.set(value, 0);
+		this.set(value, 0);
 		#elseif js
-		weakRef = new JSWeakRef(value);
+		this = new JSWeakRef(value);
 		#end
 		return value;
 	}
-	
-	private function get_object():Dynamic{
+
+	inline function get_object():Dynamic
+	{
 		#if cpp
-		var iterator = weakMap.keys();
-		if (iterator.hasNext()) return iterator.next();		
+		var iterator = this.keys();
+		if (iterator.hasNext()) return iterator.next();
 		return null;
 		#elseif js
-		return weakRef.deref();
+		return this.deref();
 		#end
 	}
 
-	public function new(?object:Dynamic)
+	inline public function new(?object:Dynamic)
 	{
 		#if cpp
-		weakMap = new WeakMap();
-		if (object != null) weakMap.set(object, 0);	
+		this = new WeakMap();
+		if (object != null) this.set(object, 0);
 		#elseif js
-		if (object != null) weakRef = new JSWeakRef(object);
+		this = new JSWeakRef(object);
 		#end
 	}
 
