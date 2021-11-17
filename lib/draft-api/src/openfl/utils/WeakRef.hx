@@ -5,7 +5,7 @@ package openfl.utils;
 	typedef JSWeakRef = js.lib.WeakRef<Dynamic>;
 #end
 
-abstract WeakRef(#if cpp WeakMap #elseif js JSWeakRef #end)
+abstract WeakRef(#if cpp WeakMap<Dynamic, Int> #elseif js JSWeakRef #end)
 {
 
 	public var object(get, set):Dynamic;
