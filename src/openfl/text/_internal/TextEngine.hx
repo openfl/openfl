@@ -269,6 +269,7 @@ class TextEngine
 		{
 			__defaultFonts = new Map();
 
+			#if lime_cffi
 			var systemFontDirectory = System.fontsDirectory;
 
 			function processFontList(list:Array<String>):Font
@@ -364,6 +365,7 @@ class TextEngine
 			__defaultFonts.set("_sans", new DefaultFontSet(findFont("Noto Sans Regular")));
 			__defaultFonts.set("_serif", new DefaultFontSet(findFont("Noto Serif Regular")));
 			__defaultFonts.set("_typewriter", new DefaultFontSet(findFont("Noto Mono")));
+			#end
 			#end
 		}
 
