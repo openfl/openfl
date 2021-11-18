@@ -1267,7 +1267,9 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 				}
 			case WRITE:
 				try
-				{
+				{	
+					var dirPath:String = Path.directory(__file.nativePath);
+					if (!FileSystem.exists(dirPath)) FileSystem.createDirectory(dirPath);
 					__output = File.HaxeFile.write(__file.nativePath, true);
 					__isWrite = true;
 				}
