@@ -31,7 +31,9 @@ class ApplicationMain
 	{
 		var app = new openfl.display.Application();
 
+		#if !disable_preloader_assets
 		ManifestResources.init(config);
+		#end
 
 		app.meta["build"] = "::meta.buildNumber::";
 		app.meta["company"] = "::meta.company::";
@@ -119,6 +121,7 @@ class ApplicationMain
 
 		preloader.onComplete.add(start.bind((cast app.window:openfl.display.Window).stage));
 
+		#if !disable_preloader_assets
 		for (library in ManifestResources.preloadLibraries)
 		{
 			app.preloader.addLibrary(library);
@@ -128,6 +131,7 @@ class ApplicationMain
 		{
 			app.preloader.addLibraryName(name);
 		}
+		#end
 
 		app.preloader.load();
 
