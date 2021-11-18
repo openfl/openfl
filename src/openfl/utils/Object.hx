@@ -1,5 +1,7 @@
 package openfl.utils;
 
+import openfl.display.DisplayObjectContainer;
+
 @:forward() abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 {
 	public inline function new()
@@ -45,6 +47,34 @@ package openfl.utils;
 		return Std.string(this);
 	}
 
+	@:to private function toFloat():Float
+	{
+		if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (this, Float))
+		{
+			return cast this;
+		}
+		else
+		{
+			return Math.NaN;
+		}
+	}
+
+	@:to private function toBool():Bool
+	{
+		if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (this, Bool))
+		{
+			return cast this;
+		}
+		else if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (this, Float))
+		{
+			return this != 0;
+		}
+		else
+		{
+			return this != null;
+		}
+	}
+
 	@:to public inline function toString():String
 	{
 		return Std.string(this);
@@ -56,22 +86,32 @@ package openfl.utils;
 	}
 
 	@:op(a.b)
-	private inline function __fieldRead(name:String):Dynamic
+	private inline function __fieldRead(name:String):Object
 	{
 		return __get(name);
 	}
 
 	#if haxe4
 	@:op(a.b)
-	private inline function __fieldWrite(name:String, value:Dynamic):Dynamic
+	private inline function __fieldWrite(name:String, value:Dynamic):Object
 	{
 		return __set(name, value);
 	}
 	#end
 
 	@SuppressWarnings("checkstyle:FieldDocComment")
-	@:arrayAccess @:noCompletion @:dox(hide) public inline function __get(key:String):Dynamic
+	@:arrayAccess @:noCompletion @:dox(hide) public /*inline*/ function __get(key:String):Object
 	{
+		if (Reflect.hasField(this, key))
+		{
+			return Reflect.field(this, key);
+		}
+		else if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (this, DisplayObjectContainer))
+		{
+			var container:DisplayObjectContainer = cast this;
+			var child = container.getChildByName(key);
+			if (child != null) return child;
+		}
 		return Reflect.getProperty(this, key);
 	}
 
@@ -80,6 +120,20 @@ package openfl.utils;
 	{
 		Reflect.setProperty(this, key, value);
 		return value;
+	}
+
+	@SuppressWarnings("checkstyle:FieldDocComment")
+	@:arrayAccess @:noCompletion @:dox(hide) public inline function __getArray(index:Int):Dynamic
+	{
+		var arr = cast(this, Array<Dynamic>);
+		return arr[index];
+	}
+
+	@SuppressWarnings("checkstyle:FieldDocComment")
+	@:arrayAccess @:noCompletion @:dox(hide) public inline function __setArray(index:Int, value:Dynamic):Dynamic
+	{
+		var arr = cast(this, Array<Dynamic>);
+		return arr[index] = value;
 	}
 }
 
