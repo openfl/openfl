@@ -33,9 +33,30 @@ abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 	@SuppressWarnings("checkstyle:FieldDocComment")
 	@:noCompletion @:dox(hide) public function iterator():Iterator<String>
 	{
-		var fields = Reflect.fields(this);
-		if (fields == null) fields = [];
-		return fields.iterator();
+		if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (this, Array))
+		{
+			var arr:Array<Dynamic> = cast this;
+			return arr.iterator();
+		}
+		else
+		{
+			var fields = Reflect.fields(this);
+			if (fields == null) fields = [];
+			if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (this, DisplayObjectContainer))
+			{
+				var container:DisplayObjectContainer = cast this;
+				for (i in 0...container.numChildren)
+				{
+					var child = container.getChildAt(i);
+					var name = child.name;
+					if (name != null && fields.indexOf(name) == -1)
+					{
+						fields.push(name);
+					}
+				}
+			}
+			return fields.iterator();
+		}
 	}
 
 	public inline function propertyIsEnumerable(name:String):Bool
