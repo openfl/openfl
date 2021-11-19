@@ -4,6 +4,7 @@ import haxe.Constraints.Function;
 import openfl.display.DisplayObjectContainer;
 
 @:transitive
+@:callable
 abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 {
 	public inline function new()
@@ -60,55 +61,63 @@ abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 	}
 
 	@:op(a.b)
-	private inline function __fieldRead(name:String):ObjectValue
+	private inline function __fieldRead(name:String):Object
 	{
 		return __get(name);
 	}
 
 	#if haxe4
 	@:op(a.b)
-	private inline function __fieldWrite(name:String, value:ObjectValue):ObjectValue
+	private inline function __fieldWrite(name:String, value:Object):Object
 	{
 		return __set(name, value);
 	}
 	#end
 
 	@SuppressWarnings("checkstyle:FieldDocComment")
-	@:arrayAccess @:noCompletion @:dox(hide) public inline function __get(key:String):ObjectValue
+	@:arrayAccess @:noCompletion @:dox(hide) public /*inline*/ function __get(key:String):Object
 	{
-		var _this:ObjectValue = this;
-		return _this[key];
+		if (Reflect.hasField(this, key))
+		{
+			return Reflect.field(this, key);
+		}
+		else if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (this, DisplayObjectContainer))
+		{
+			var container:DisplayObjectContainer = cast this;
+			var child = container.getChildByName(key);
+			if (child != null) return child;
+		}
+		return Reflect.getProperty(this, key);
 	}
 
 	@SuppressWarnings("checkstyle:FieldDocComment")
-	@:arrayAccess @:noCompletion @:dox(hide) public inline function __set(key:String, value:ObjectValue):ObjectValue
+	@:arrayAccess @:noCompletion @:dox(hide) public inline function __set(key:String, value:Object):Object
 	{
-		var _this:ObjectValue = this;
-		return _this[key] = value;
+		trace(this);
+		trace(key);
+		trace(value);
+		Reflect.setProperty(this, key, value);
+		trace(Reflect.getProperty(this, key));
+		return value;
 	}
 
 	@SuppressWarnings("checkstyle:FieldDocComment")
-	@:arrayAccess @:noCompletion @:dox(hide) public inline function __getArray(index:Int):ObjectValue
+	@:arrayAccess @:noCompletion @:dox(hide) public inline function __getArray(index:Int):Object
 	{
 		var arr = cast(this, Array<Dynamic>);
 		return arr[index];
 	}
 
 	@SuppressWarnings("checkstyle:FieldDocComment")
-	@:arrayAccess @:noCompletion @:dox(hide) public inline function __setArray(index:Int, value:ObjectValue):ObjectValue
+	@:arrayAccess @:noCompletion @:dox(hide) public inline function __setArray(index:Int, value:Object):Object
 	{
 		var arr = cast(this, Array<Dynamic>);
 		return arr[index] = value;
 	}
-}
 
-@SuppressWarnings("checkstyle:FieldDocComment")
-@:transitive
-@:callable private abstract ObjectValue(Dynamic) from Dynamic to Dynamic
-{
 	@:to private function toFunction():Function
 	{
-		return this;
+		return cast this;
 	}
 
 	@:to private function toFloat():Float
@@ -144,449 +153,510 @@ abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 		}
 	}
 
-	@:op(a.b)
-	@:arrayAccess
-	@:noCompletion @:dox(hide) public /*inline*/ function __get(key:String):ObjectValue
+	#if haxe4
+	@:op(-A) private inline function __negate():Dynamic
 	{
-		if (Reflect.hasField(this, key))
-		{
-			return Reflect.field(this, key);
-		}
-		else if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (this, DisplayObjectContainer))
-		{
-			var container:DisplayObjectContainer = cast this;
-			var child = container.getChildByName(key);
-			if (child != null) return child;
-		}
-		return Reflect.getProperty(this, key);
-	}
-
-	@:op(a.b)
-	@:arrayAccess
-	@:noCompletion @:dox(hide) public inline function __set(key:String, value:ObjectValue):ObjectValue
-	{
-		Reflect.setProperty(this, key, value);
-		return value;
-	}
-
-	@:arrayAccess @:noCompletion @:dox(hide) public inline function __getArray(index:Int):ObjectValue
-	{
-		var arr = cast(this, Array<Dynamic>);
-		return arr[index];
-	}
-
-	@:op(-A) private inline function negate():ObjectValue
-	{
-		var float:Float = this;
+		var float:Float = cast this;
 		return -float;
 	}
 
-	@:op(++A) private inline function preIncrement():ObjectValue
+	@:op(++A) private inline function __preIncrement():Dynamic
 	{
-		var float:Float = this;
+		var float:Float = cast this;
 		return ++float;
 	}
 
-	@:op(A++) private inline function postIncrement():ObjectValue
+	@:op(A++) private inline function __postIncrement():Dynamic
 	{
-		var float:Float = this;
+		var float:Float = cast this;
 		return float++;
 	}
 
-	@:op(--A) private inline function preDecrement():ObjectValue
+	@:op(--A) private inline function __preDecrement():Dynamic
 	{
-		var float:Float = this;
+		var float:Float = cast this;
 		return --float;
 	}
 
-	@:op(A--) private inline function postDecrement():ObjectValue
+	@:op(A--) private inline function __postDecrement():Dynamic
 	{
-		var float:Float = this;
+		var float:Float = cast this;
 		return float--;
 	}
 
-	@:op(A + B) private static inline function add(a:ObjectValue, b:ObjectValue):ObjectValue
+	@:op(A + B) private static inline function __add(a:Object, b:Object):Dynamic
 	{
-		var floatA:Float = a;
-		var floatB:Float = b;
-		return floatA + floatB;
+		if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (a, String)
+			|| #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (b, String))
+		{
+			return Std.string(a) + Std.string(b);
+		}
+		else
+		{
+			var floatA:Float = cast a;
+			var floatB:Float = cast b;
+			return floatA + floatB;
+		}
 	}
 
-	@:op(A + B) @:commutative private static inline function addInt(a:ObjectValue, b:Int):ObjectValue
+	@:op(A + B) @:commutative private static inline function __addString(a:Object, b:String):String
 	{
-		var floatA:Float = a;
+		var stringA:String = Std.string(a);
+		return stringA + b;
+	}
+
+	@:op(A + B) @:commutative private static inline function __addInt(a:Object, b:Int):Dynamic
+	{
+		var floatA:Float = cast a;
 		return floatA + b;
 	}
 
-	@:op(A + B) @:commutative private static function addFloat(a:ObjectValue, b:Float):Float
+	@:op(A + B) @:commutative private static function __addFloat(a:Object, b:Float):Float
 	{
-		var floatA:Float = a;
+		var floatA:Float = cast a;
 		return floatA + b;
 	}
 
-	@:op(A - B) private static inline function sub(a:ObjectValue, b:ObjectValue):ObjectValue
+	@:op(A - B) private static inline function __sub(a:Object, b:Object):Dynamic
 	{
-		var floatA:Float = a;
-		var floatB:Float = b;
+		var floatA:Float = cast a;
+		var floatB:Float = cast b;
 		return floatA - floatB;
 	}
 
-	@:op(A - B) private static inline function subInt(a:ObjectValue, b:Int):ObjectValue
+	@:op(A - B) private static inline function __subInt(a:Object, b:Int):Dynamic
 	{
-		var floatA:Float = a;
+		var floatA:Float = cast a;
 		return floatA - b;
 	}
 
-	@:op(A - B) private static inline function intSub(a:Int, b:ObjectValue):ObjectValue
+	@:op(A - B) private static inline function __intSub(a:Int, b:Object):Dynamic
 	{
-		var floatB:Float = b;
+		var floatB:Float = cast b;
 		return a - floatB;
 	}
 
-	@:op(A - B) private static function subFloat(a:ObjectValue, b:Float):Float
+	@:op(A - B) private static function __subFloat(a:Object, b:Float):Float
 	{
-		var floatA:Float = a;
+		var floatA:Float = cast a;
 		return floatA - b;
 	}
 
-	@:op(A - B) private static function floatSub(a:Float, b:ObjectValue):Float
+	@:op(A - B) private static function __floatSub(a:Float, b:Object):Float
 	{
-		var floatB:Float = b;
+		var floatB:Float = cast b;
 		return a - floatB;
 	}
 
-	@:op(A * B) private static function mul(a:ObjectValue, b:ObjectValue):ObjectValue
+	@:op(A * B) private static function __mul(a:Object, b:Object):Dynamic
 	{
-		var floatA:Float = a;
-		var floatB:Float = b;
+		var floatA:Float = cast a;
+		var floatB:Float = cast b;
 		return floatA * floatB;
 	}
 
-	@:op(A * B) @:commutative private static inline function mulInt(a:ObjectValue, b:Int):ObjectValue
+	@:op(A * B) @:commutative private static inline function __mulInt(a:Object, b:Int):Dynamic
 	{
-		var floatA:Float = a;
+		var floatA:Float = cast a;
 		return floatA * b;
 	}
 
-	@:op(A * B) @:commutative private static function mulFloat(a:ObjectValue, b:Float):Float
+	@:op(A * B) @:commutative private static function __mulFloat(a:Object, b:Float):Float
 	{
-		var floatA:Float = a;
+		var floatA:Float = cast a;
 		return floatA * b;
 	}
 
-	@:op(A / B) private static function div(a:ObjectValue, b:ObjectValue):Float
+	@:op(A / B) private static function __div(a:Object, b:Object):Float
 	{
-		var floatA:Float = a;
-		var floatB:Float = b;
+		var floatA:Float = cast a;
+		var floatB:Float = cast b;
 		return floatA / floatB;
 	}
 
-	@:op(A / B) private static function divInt(a:ObjectValue, b:Int):Float
+	@:op(A / B) private static function __divInt(a:Object, b:Int):Float
 	{
-		var floatA:Float = a;
+		var floatA:Float = cast a;
 		return floatA / b;
 	}
 
-	@:op(A / B) private static function intDiv(a:Int, b:ObjectValue):Float
+	@:op(A / B) private static function __intDiv(a:Int, b:Object):Float
 	{
-		var floatB:Float = b;
+		var floatB:Float = cast b;
 		return a / floatB;
 	}
 
-	@:op(A / B) private static function divFloat(a:ObjectValue, b:Float):Float
+	@:op(A / B) private static function __divFloat(a:Object, b:Float):Float
 	{
-		var floatA:Float = a;
+		var floatA:Float = cast a;
 		return floatA / b;
 	}
 
-	@:op(A / B) private static function floatDiv(a:Float, b:ObjectValue):Float
+	@:op(A / B) private static function __floatDiv(a:Float, b:Object):Float
 	{
-		var floatB:Float = b;
+		var floatB:Float = cast b;
 		return a / floatB;
 	}
 
-	@:op(A % B) private static function mod(a:ObjectValue, b:ObjectValue):ObjectValue
+	@:op(A % B) private static function __mod(a:Object, b:Object):Float
 	{
-		var floatA:Float = a;
-		var floatB:Float = b;
+		var floatA:Float = cast a;
+		var floatB:Float = cast b;
 		return floatA % floatB;
 	}
 
-	@:op(A % B) private static function modInt(a:ObjectValue, b:Int):ObjectValue
+	@:op(A % B) private static function __modInt(a:Object, b:Int):Float
 	{
-		var floatA:Float = a;
+		var floatA:Float = cast a;
 		return floatA % b;
 	}
 
-	@:op(A % B) private static function intMod(a:Int, b:ObjectValue):ObjectValue
+	@:op(A % B) private static function __intMod(a:Int, b:Object):Float
 	{
-		var floatB:Float = b;
+		var floatB:Float = cast b;
 		return a % floatB;
 	}
 
-	@:op(A % B) private static function modFloat(a:ObjectValue, b:Float):Float
+	@:op(A % B) private static function __modFloat(a:Object, b:Float):Float
 	{
-		var floatA:Float = a;
+		var floatA:Float = cast a;
 		return floatA % b;
 	}
 
-	@:op(A % B) private static function floatMod(a:Float, b:ObjectValue):Float
+	@:op(A % B) private static function __floatMod(a:Float, b:Object):Float
 	{
-		var floatB:Float = b;
+		var floatB:Float = cast b;
 		return a % floatB;
 	}
 
-	@:op(A == B) private static function eq(a:ObjectValue, b:ObjectValue):Bool
+	@:op(A == B) private static function __eq(a:Object, b:Object):Bool
 	{
 		var dynamicA:Dynamic = a;
 		var dynamicB:Dynamic = b;
 		return dynamicA == dynamicB;
 	}
 
-	@:op(A == B) @:commutative private static function eqDynamic(a:ObjectValue, b:Dynamic):Bool
+	@:op(A == B) @:commutative private static function __eqDynamic(a:Object, b:Dynamic):Bool
 	{
 		var dynamicA:Dynamic = a;
 		return dynamicA == b;
 	}
 
-	@:op(A != B) private static function neq(a:ObjectValue, b:ObjectValue):Bool
+	@:op(A != B) private static function __neq(a:Object, b:Object):Bool
 	{
 		var dynamicA:Dynamic = a;
 		var dynamicB:Dynamic = b;
 		return dynamicA != dynamicB;
 	}
 
-	@:op(A != B) @:commutative private static function neqDynamic(a:ObjectValue, b:Dynamic):Bool
+	@:op(A != B) @:commutative private static function __neqDynamic(a:Object, b:Dynamic):Bool
 	{
 		var dynamicA:Dynamic = a;
 		return dynamicA != b;
 	}
 
-	@:op(A < B) private static function lt(a:ObjectValue, b:ObjectValue):Bool
+	@:op(A < B) private static function __lt(a:Object, b:Object):Bool
 	{
-		var floatA:Float = a;
-		var floatB:Float = b;
+		var floatA:Float = cast a;
+		var floatB:Float = cast b;
 		return floatA < floatB;
 	}
 
-	@:op(A < B) private static function ltInt(a:ObjectValue, b:Int):Bool
+	@:op(A < B) private static function __ltInt(a:Object, b:Int):Bool
 	{
-		var floatA:Float = a;
+		var floatA:Float = cast a;
 		return floatA < b;
 	}
 
-	@:op(A < B) private static function intLt(a:Int, b:ObjectValue):Bool
+	@:op(A < B) private static function __intLt(a:Int, b:Object):Bool
 	{
-		var floatB:Float = b;
+		var floatB:Float = cast b;
 		return a < floatB;
 	}
 
-	@:op(A < B) private static function ltFloat(a:ObjectValue, b:Float):Bool
+	@:op(A < B) private static function __ltFloat(a:Object, b:Float):Bool
 	{
-		var floatA:Float = a;
+		var floatA:Float = cast a;
 		return floatA < b;
 	}
 
-	@:op(A < B) private static function floatLt(a:Float, b:ObjectValue):Bool
+	@:op(A < B) private static function __floatLt(a:Float, b:Object):Bool
 	{
-		var floatB:Float = b;
+		var floatB:Float = cast b;
 		return a < floatB;
 	}
 
-	@:op(A <= B) private static function lte(a:ObjectValue, b:ObjectValue):Bool
+	@:op(A <= B) private static function __lte(a:Object, b:Object):Bool
 	{
-		var floatA:Float = a;
-		var floatB:Float = b;
+		var floatA:Float = cast a;
+		var floatB:Float = cast b;
 		return floatA <= floatB;
 	}
 
-	@:op(A <= B) private static function lteInt(a:ObjectValue, b:Int):Bool
+	@:op(A <= B) private static function __lteInt(a:Object, b:Int):Bool
 	{
-		var floatB:Float = b;
+		var floatB:Float = cast b;
 		return a <= floatB;
 	}
 
-	@:op(A <= B) private static function intLte(a:Int, b:ObjectValue):Bool
+	@:op(A <= B) private static function __intLte(a:Int, b:Object):Bool
 	{
-		var floatA:Float = a;
+		var floatA:Float = cast a;
 		return floatA <= b;
 	}
 
-	@:op(A <= B) private static function lteFloat(a:ObjectValue, b:Float):Bool
+	@:op(A <= B) private static function __lteFloat(a:Object, b:Float):Bool
 	{
-		var floatB:Float = b;
+		var floatB:Float = cast b;
 		return a <= floatB;
 	}
 
-	@:op(A <= B) private static function floatLte(a:Float, b:ObjectValue):Bool
+	@:op(A <= B) private static function __floatLte(a:Float, b:Object):Bool
 	{
-		var floatA:Float = a;
+		var floatA:Float = cast a;
 		return floatA <= b;
 	}
 
-	@:op(A > B) private static function gt(a:ObjectValue, b:ObjectValue):Bool
+	@:op(A > B) private static function __gt(a:Object, b:Object):Bool
 	{
-		var floatA:Float = a;
-		var floatB:Float = b;
+		var floatA:Float = cast a;
+		var floatB:Float = cast b;
 		return floatA > floatB;
 	}
 
-	@:op(A > B) private static function gtInt(a:ObjectValue, b:Int):Bool
+	@:op(A > B) private static function __gtInt(a:Object, b:Int):Bool
 	{
-		var floatB:Float = b;
+		var floatB:Float = cast b;
 		return a > floatB;
 	}
 
-	@:op(A > B) private static function intGt(a:Int, b:ObjectValue):Bool
+	@:op(A > B) private static function __intGt(a:Int, b:Object):Bool
 	{
-		var floatB:Float = b;
+		var floatB:Float = cast b;
 		return a > floatB;
 	}
 
-	@:op(A > B) private static function gtFloat(a:ObjectValue, b:Float):Bool
+	@:op(A > B) private static function __gtFloat(a:Object, b:Float):Bool
 	{
-		var floatB:Float = b;
+		var floatB:Float = cast b;
 		return a > floatB;
 	}
 
-	@:op(A > B) private static function floatGt(a:Float, b:ObjectValue):Bool
+	@:op(A > B) private static function __floatGt(a:Float, b:Object):Bool
 	{
-		var floatB:Float = b;
+		var floatB:Float = cast b;
 		return a > floatB;
 	}
 
-	@:op(A >= B) private static function gte(a:ObjectValue, b:ObjectValue):Bool
+	@:op(A >= B) private static function __gte(a:Object, b:Object):Bool
 	{
-		var floatA:Float = a;
-		var floatB:Float = b;
+		var floatA:Float = cast a;
+		var floatB:Float = cast b;
 		return floatA >= floatB;
 	}
 
-	@:op(A >= B) private static function gteInt(a:ObjectValue, b:Int):Bool
+	@:op(A >= B) private static function __gteInt(a:Object, b:Int):Bool
 	{
-		var floatB:Float = b;
+		var floatB:Float = cast b;
 		return a >= floatB;
 	}
 
-	@:op(A >= B) private static function intGte(a:Int, b:ObjectValue):Bool
+	@:op(A >= B) private static function __intGte(a:Int, b:Object):Bool
 	{
-		var floatB:Float = b;
+		var floatB:Float = cast b;
 		return a >= floatB;
 	}
 
-	@:op(A >= B) private static function gteFloat(a:ObjectValue, b:Float):Bool
+	@:op(A >= B) private static function __gteFloat(a:Object, b:Float):Bool
 	{
-		var floatB:Float = b;
+		var floatB:Float = cast b;
 		return a >= floatB;
 	}
 
-	@:op(A >= B) private static function floatGte(a:Float, b:ObjectValue):Bool
+	@:op(A >= B) private static function __floatGte(a:Float, b:Object):Bool
 	{
-		var floatB:Float = b;
+		var floatB:Float = cast b;
 		return a >= floatB;
 	}
 
-	@:op(~A) private function complement():ObjectValue
+	@:op(A -= B) private static function __intMe(a:Int, b:Object):Dynamic
+	{
+		if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (b, Int))
+		{
+			var intB:Int = cast b;
+			return a -= intB;
+		}
+		else
+		{
+			var floatA:Float = cast a;
+			var floatB:Float = cast b;
+			return floatA -= floatB;
+		}
+	}
+
+	@:op(A -= B) private static function __meFloat(a:Object, b:Float):Float
+	{
+		var floatB:Float = cast b;
+		return a -= floatB;
+	}
+
+	@:op(A -= B) private static function __meInt(a:Object, b:Int):Dynamic
+	{
+		var floatA:Float = cast a;
+		return floatA -= b;
+	}
+
+	@:op(A -= B) private static function __floatMe(a:Float, b:Object):Float
+	{
+		var floatB:Float = cast b;
+		return a -= floatB;
+	}
+
+	@:op(A += B) private static function __stringPe(a:String, b:Object):String
+	{
+		return a + Std.string(b);
+	}
+
+	@:op(A += B) private static function __peString(b:Object, a:String):String
+	{
+		return Std.string(a) + b;
+	}
+
+	@:op(A += B) private static function __intPe(a:Int, b:Object):Dynamic
+	{
+		if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (b, Int))
+		{
+			var intB:Int = cast b;
+			return a += intB;
+		}
+		else
+		{
+			var floatA:Float = cast a;
+			var floatB:Float = cast b;
+			return floatA += floatB;
+		}
+	}
+
+	@:op(A += B) private static function __peFloat(a:Object, b:Float):Float
+	{
+		var floatA:Float = cast a;
+		return floatA += b;
+	}
+
+	@:op(A -= B) private static function __peInt(a:Object, b:Int):Dynamic
+	{
+		var floatA:Float = cast a;
+		return floatA += b;
+	}
+
+	@:op(A += B) private static function __floatPe(a:Float, b:Object):Float
+	{
+		var floatB:Float = cast b;
+		return a += floatB;
+	}
+
+	@:op(~A) private function __complement():Int
 	{
 		var int:Int = this;
 		return ~int;
 	}
 
-	@:op(A & B) private static function and(a:ObjectValue, b:ObjectValue):ObjectValue
+	@:op(A & B) private static function __and(a:Object, b:Object):Int
 	{
-		var intA:Int = a;
-		var intB:Int = b;
+		var intA:Int = cast a;
+		var intB:Int = cast b;
 		return intA & intB;
 	}
 
-	@:op(A & B) @:commutative private static function andInt(a:ObjectValue, b:Int):ObjectValue
+	@:op(A & B) @:commutative private static function __andInt(a:Object, b:Int):Int
 	{
-		var intA:Int = a;
+		var intA:Int = cast a;
 		return intA & b;
 	}
 
-	@:op(A | B) private static function or(a:ObjectValue, b:ObjectValue):ObjectValue
+	@:op(A | B) private static function __or(a:Object, b:Object):Int
 	{
-		var intA:Int = a;
-		var intB:Int = b;
+		var intA:Int = cast a;
+		var intB:Int = cast b;
 		return intA | intB;
 	}
 
-	@:op(A | B) @:commutative private static function orInt(a:ObjectValue, b:Int):ObjectValue
+	@:op(A | B) @:commutative private static function __orInt(a:Object, b:Int):Int
 	{
-		var intA:Int = a;
+		var intA:Int = cast a;
 		return intA | b;
 	}
 
-	@:op(A ^ B) private static function xor(a:ObjectValue, b:ObjectValue):ObjectValue
+	@:op(A ^ B) private static function __xor(a:Object, b:Object):Int
 	{
-		var intA:Int = a;
-		var intB:Int = b;
+		var intA:Int = cast a;
+		var intB:Int = cast b;
 		return intA ^ intB;
 	}
 
-	@:op(A ^ B) @:commutative private static function xorInt(a:ObjectValue, b:Int):ObjectValue
+	@:op(A ^ B) @:commutative private static function __xorInt(a:Object, b:Int):Int
 	{
-		var intA:Int = a;
+		var intA:Int = cast a;
 		return intA ^ b;
 	}
 
-	@:op(A >> B) private static function shr(a:ObjectValue, b:ObjectValue):ObjectValue
+	@:op(A >> B) private static function __shr(a:Object, b:Object):Int
 	{
-		var intA:Int = a;
-		var intB:Int = b;
+		var intA:Int = cast a;
+		var intB:Int = cast b;
 		return intA >> intB;
 	}
 
-	@:op(A >> B) private static function shrInt(a:ObjectValue, b:Int):ObjectValue
+	@:op(A >> B) private static function __shrInt(a:Object, b:Int):Int
 	{
-		var intA:Int = a;
+		var intA:Int = cast a;
 		return intA >> b;
 	}
 
-	@:op(A >> B) private static function intShr(a:Int, b:ObjectValue):ObjectValue
+	@:op(A >> B) private static function __intShr(a:Int, b:Object):Int
 	{
-		var intB:Int = b;
+		var intB:Int = cast b;
 		return a >> intB;
 	}
 
-	@:op(A >>> B) private static function ushr(a:ObjectValue, b:ObjectValue):ObjectValue
+	@:op(A >>> B) private static function __ushr(a:Object, b:Object):Int
 	{
-		var intA:Int = a;
-		var intB:Int = b;
+		var intA:Int = cast a;
+		var intB:Int = cast b;
 		return intA >>> intB;
 	}
 
-	@:op(A >>> B) private static function ushrInt(a:ObjectValue, b:Int):ObjectValue
+	@:op(A >>> B) private static function __ushrInt(a:Object, b:Int):Int
 	{
-		var intA:Int = a;
+		var intA:Int = cast a;
 		return intA >>> b;
 	}
 
-	@:op(A >>> B) private static function intUshr(a:Int, b:ObjectValue):ObjectValue
+	@:op(A >>> B) private static function __intUshr(a:Int, b:Object):Int
 	{
-		var intB:Int = b;
+		var intB:Int = cast b;
 		return a >>> intB;
 	}
 
-	@:op(A << B) private static function shl(a:ObjectValue, b:ObjectValue):ObjectValue
+	@:op(A << B) private static function __shl(a:Object, b:Object):Int
 	{
-		var intA:Int = a;
-		var intB:Int = b;
+		var intA:Int = cast a;
+		var intB:Int = cast b;
 		return intA << intB;
 	}
 
-	@:op(A << B) private static function shlInt(a:ObjectValue, b:Int):ObjectValue
+	@:op(A << B) private static function __shlInt(a:Object, b:Int):Int
 	{
-		var intA:Int = a;
+		var intA:Int = cast a;
 		return intA << b;
 	}
 
-	@:op(A << B) private static function intShl(a:Int, b:ObjectValue):ObjectValue
+	@:op(A << B) private static function __intShl(a:Int, b:Object):Int
 	{
-		var intB:Int = b;
+		var intB:Int = cast b;
 		return a << intB;
 	}
+	#end
 }
 
 #if (!cs || haxe_ver > "3.3.0")
