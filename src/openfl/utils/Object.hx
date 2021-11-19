@@ -93,11 +93,7 @@ abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 	@SuppressWarnings("checkstyle:FieldDocComment")
 	@:arrayAccess @:noCompletion @:dox(hide) public inline function __set(key:String, value:Object):Object
 	{
-		trace(this);
-		trace(key);
-		trace(value);
 		Reflect.setProperty(this, key, value);
-		trace(Reflect.getProperty(this, key));
 		return value;
 	}
 
@@ -496,8 +492,8 @@ abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 
 	@:op(A -= B) private static function __meFloat(a:Object, b:Float):Float
 	{
-		var floatB:Float = cast b;
-		return a -= floatB;
+		var floatA:Float = cast a;
+		return floatA -= b;
 	}
 
 	@:op(A -= B) private static function __meInt(a:Object, b:Int):Dynamic
