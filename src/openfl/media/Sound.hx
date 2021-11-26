@@ -17,8 +17,7 @@ import openfl.events.SampleDataEvent;
 import lime.media.openal.ALBuffer;
 import lime.media.openal.ALSource;
 import lime.media.AudioManager;
-import lime.media.ALAudioContext;
-import lime.media.ALCAudioContext;
+import lime.media.OpenALAudioContext;
 import openfl.events.SampleDataEvent;
 import lime.utils.ArrayBufferView;
 import lime.utils.Int16Array;
@@ -259,8 +258,7 @@ class Sound extends EventDispatcher
 	#if lime_openal
 	public var sampleRate(get, never):Int;
 
-	private var __ALCAudioContext:ALCAudioContext = null;
-	private var __ALAudioContext:ALAudioContext = null;
+	private var __ALAudioContext:OpenALAudioContext = null;
 	private var __sampleData:SampleDataEvent;
 	private var __source:ALSource;
 	private var __outputBuffer:ByteArray;
@@ -319,10 +317,10 @@ class Sound extends EventDispatcher
 		#if (js && html5)
 		if (stream == null)
 		{
-			switch (AudioManager.context)
+			switch (AudioManager.context.type)
 			{
-				case WEB(context):
-					__audioContext = context;
+				case WEB:
+					__audioContext = AudioManager.context.web;
 				default:
 			}
 		}
@@ -330,11 +328,10 @@ class Sound extends EventDispatcher
 		#if lime_openal
 		if (stream == null)
 		{
-			switch (AudioManager.context)
+			switch (AudioManager.context.type)
 			{
-				case OPENAL(alc, al):
-					__ALCAudioContext = alc;
-					__ALAudioContext = al;
+				case OPENAL:
+					__ALAudioContext = AudioManager.context.openal;
 				default:
 			}
 		}
@@ -682,7 +679,7 @@ class Sound extends EventDispatcher
 	public function play(startTime:Float = 0.0, loops:Int = 0, sndTransform:SoundTransform = null):SoundChannel
 	{
 		#if lime
-		if (__buffer == null || SoundMixer.__soundChannels.length >= SoundMixer.MAX_ACTIVE_CHANNELS)
+		if (SoundMixer.__soundChannels.length >= SoundMixer.MAX_ACTIVE_CHANNELS)
 		{
 			return null;
 		}
@@ -725,7 +722,7 @@ class Sound extends EventDispatcher
 		}
 		#end
 		#if lime_openal
-		if (__ALCAudioContext != null && __buffer == null)
+		if (__ALAudioContext != null && __buffer == null)
 		{
 			__listenerRemoved = false;
 			__sampleData = new SampleDataEvent(SampleDataEvent.SAMPLE_DATA);
@@ -829,7 +826,6 @@ class Sound extends EventDispatcher
 			__ALAudioContext.deleteSource(__source);
 			__ALAudioContext.deleteBuffers(__buffers);
 			__ALAudioContext = null;
-			__ALCAudioContext = null;
 			__emptyBuffers = null;
 			__source = null;
 			__buffer = null;
