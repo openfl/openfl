@@ -397,7 +397,8 @@ class CanvasTextField
 
 			if (textField.__isHTML)
 			{
-				textField.__updateText(HTMLParser.parse(textField.__text, textField.__textFormat, textField.__textEngine.textFormatRanges));
+				textField.__updateText(HTMLParser.parse(textField.__text, textField.multiline, textField.__styleSheet, textField.__textFormat,
+					textField.__textEngine.textFormatRanges));
 			}
 
 			textField.__dirty = true;

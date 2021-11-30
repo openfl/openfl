@@ -582,7 +582,7 @@ class TextField extends InteractiveObject
 		original `TextField.htmlText` contents without the formatting, save
 		the value in a variable before removing the style sheet.
 	**/
-	// var styleSheet : StyleSheet;
+	public var styleSheet(get, set):StyleSheet;
 
 	/**
 		A string that is the current text in the text field. Lines are separated
@@ -679,6 +679,7 @@ class TextField extends InteractiveObject
 	@:noCompletion private var __offsetY:Float;
 	@:noCompletion private var __selectionIndex:Int;
 	@:noCompletion private var __showCursor:Bool;
+	@:noCompletion private var __styleSheet:StyleSheet;
 	@:noCompletion private var __text:UTF8String;
 	@:noCompletion private var __htmlText:UTF8String;
 	@:noCompletion private var __textEngine:TextEngine;
@@ -686,7 +687,6 @@ class TextField extends InteractiveObject
 	#if (js && html5)
 	@:noCompletion private var __div:DivElement;
 	@:noCompletion private var __renderedOnCanvasWhileOnDOM:Bool = false;
-	@:noCompletion private var __rawHtmlText:String;
 	@:noCompletion private var __forceCachedBitmapUpdate:Bool = false;
 	#end
 
@@ -2628,11 +2628,11 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function get_htmlText():String
 	{
-		#if (js && html5)
-		return __isHTML ? __rawHtmlText : __text;
-		#else
-		return __text;
-		#end
+		// #if (js && html5)
+		return __isHTML ? __htmlText : __text;
+		// #else
+		// return __text;
+		// #end
 	}
 
 	@:noCompletion private function set_htmlText(value:String):String
@@ -2646,20 +2646,22 @@ class TextField extends InteractiveObject
 
 		__isHTML = true;
 
+		// TODO: Should this run before or after setting raw __htmlText?
 		if (condenseWhite)
 		{
 			value = ~/\s+/g.replace(value, " ");
 		}
 
-		#if (js && html5)
-		__rawHtmlText = value;
-		#end
+		__htmlText = value;
+		// TODO: Do not run the following if __htmlText is unchanged?
 
-		value = HTMLParser.parse(value, __textFormat, __textEngine.textFormatRanges);
+		value = HTMLParser.parse(value, multiline, __styleSheet, __textFormat, __textEngine.textFormatRanges);
 
 		#if (js && html5)
 		if (DisplayObject.__supportDOM)
 		{
+			// TODO: Why is this parsing text format ranges, only to ignore them?
+			// Should this skip the parser entirely?
 			if (__textEngine.textFormatRanges.length > 1)
 			{
 				__textEngine.textFormatRanges.splice(1, __textEngine.textFormatRanges.length - 1);
@@ -2676,8 +2678,8 @@ class TextField extends InteractiveObject
 			}
 			else
 			{
-				range.end = __rawHtmlText.length;
-				__updateText(__rawHtmlText);
+				range.end = __htmlText.length;
+				__updateText(__htmlText);
 			}
 		}
 		else
@@ -2869,6 +2871,36 @@ class TextField extends InteractiveObject
 		return __textEngine.sharpness = value;
 	}
 
+	@:noCompletion private function get_styleSheet():StyleSheet
+	{
+		return __styleSheet;
+	}
+
+	@:noCompletion private function set_styleSheet(value:StyleSheet):StyleSheet
+	{
+		if (__styleSheet != null && value == null)
+		{
+			// TODO: Bake stylesheet into htmlText property
+			// TODO: Actually, does this already happen?
+		}
+		else if (value != null)
+		{
+			// TODO: Cleaner approach?
+			// TODO: Support for display and a:link, a:hover (etc) in renderer
+			if (__isHTML && value != __styleSheet)
+			{
+				__dirty = true;
+				__layoutDirty = true;
+				__setRenderDirty();
+				set_htmlText(__htmlText);
+			}
+
+			// TODO: Does the type change, or is the type value ignored?
+			type = DYNAMIC;
+		}
+		return __styleSheet = value;
+	}
+
 	@:noCompletion private override function get_tabEnabled():Bool
 	{
 		return (__tabEnabled == null ? __textEngine.type == INPUT : __tabEnabled);
@@ -2881,6 +2913,11 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function set_text(value:String):String
 	{
+		if (__styleSheet != null)
+		{
+			return set_htmlText(value);
+		}
+
 		if (__isHTML || __text != value)
 		{
 			__dirty = true;
@@ -2951,6 +2988,13 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function set_type(value:TextFieldType):TextFieldType
 	{
+		if (__styleSheet != null)
+		{
+			// TODO: Is this the behavior of Flash Player, or is type simply
+			// ignored when the StyleSheet is present? (seems likely?)
+			value = DYNAMIC;
+		}
+
 		if (value != __textEngine.type)
 		{
 			if (value == TextFieldType.INPUT)

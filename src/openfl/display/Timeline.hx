@@ -2,14 +2,50 @@ package openfl.display;
 
 import openfl.errors.ArgumentError;
 
+/**
+	Provides support for MovieClip animations (or a single frame Sprite) when
+	this class is overridden.
+
+	For example, the OpenFL SWF library provides a Timeline generated from SWF
+	assets. However, any editor that may provide UI or display elements could
+	be used to generate assets for OpenFL timelines.
+
+	To implement a custom Timeline, please override this class. Each Timeline
+	can set their original animation frame rate, and can also provide Scenes or
+	FrameScripts. OpenFL will automatically execute FrameScripts and request frame
+	updates.
+
+	There are currently three internal methods which should not be called by the user,
+	which can be overridden to implement a new type of Timeline:
+
+	   attachMovieClip();
+	   enterFrame();
+	   initializeSprite();
+**/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
 class Timeline
 {
+	/**
+		The original frame rate for this Timeline.
+	**/
 	public var frameRate:Null<Float>;
+
+	/**
+		An Array of Scenes contained within this Timeline.
+
+		Scenes are assumed to occur in order, so if the first Scene
+		contains 10 frames, then the beginning of the second Scene will
+		be treated as frame 11 when setting FrameScripts or implementing
+		enterFrame().
+	**/
 	public var scenes:Array<Scene>;
+
+	/**
+		An optional array of frame scripts to be executed.
+	**/
 	public var scripts:Array<FrameScript>;
 
 	@:noCompletion private var __currentFrame:Int;
@@ -39,9 +75,41 @@ class Timeline
 		__lastFrameUpdate = -1;
 	}
 
+	/**
+		OpenFL will call this method automatically.
+
+		If you are making your own Timeline type, please override this method
+		and implement the first frame initialization for a MovieClip.
+
+		OpenFL will expect to use one Timeline instance per MovieClip.
+
+		Please initialize the first frame in this method. Afterward enterFrame()
+		will be called automatically when it is time to enter a different frame.
+	**/
 	@:noCompletion public function attachMovieClip(movieClip:MovieClip):Void {}
 
+	/**
+		OpenFL will call this method automatically for MovieClips with
+		attached timelines.
+
+		Please update your attached MovieClip instance to the requested frame
+		when this method is called.
+	**/
 	@:noCompletion public function enterFrame(frame:Int):Void {}
+
+	/**
+		OpenFL will call this method automatically.
+
+		If you are making your own Timeline type, please override this method
+		and implement the initialization of a Sprite.
+
+		Sprites do not use frame scripts, or enter multiple frames. In other
+		words, they will be similar to the first frame of a MovieClip.
+
+		enterFrame() will not be called, and this Timeline object might be
+		re-used again.
+	**/
+	@:noCompletion public function initializeSprite(sprite:Sprite):Void {}
 
 	@:noCompletion private function __addFrameScript(index:Int, method:Void->Void):Void
 	{
@@ -95,8 +163,21 @@ class Timeline
 			__frameScripts = new Map();
 			for (script in scripts)
 			{
-				// TODO: Merge multiple scripts from the same frame together
-				__frameScripts.set(script.frame, script.script);
+				if (__frameScripts.exists(script.frame))
+				{
+					// TODO: Does this merging code work?
+					var existing = __frameScripts.get(script.frame);
+					var append = script.script;
+					__frameScripts.set(script.frame, function(clip:MovieClip)
+					{
+						existing(clip);
+						append(clip);
+					});
+				}
+				else
+				{
+					__frameScripts.set(script.frame, script.script);
+				}
 			}
 		}
 

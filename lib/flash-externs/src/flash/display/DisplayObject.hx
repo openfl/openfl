@@ -60,6 +60,15 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable
 	@:require(flash10) public var scaleZ:Float;
 	#end
 	public var scrollRect:Rectangle;
+	public var shader(get, set):Shader;
+	@:noCompletion private inline function get_shader():Shader
+	{
+		return null;
+	}
+	@:noCompletion private inline function set_shader(value:Shader):Shader
+	{
+		return null;
+	}
 	public var stage(default, never):Stage;
 	public var transform:Transform;
 	public var visible:Bool;
@@ -77,6 +86,14 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable
 	#end
 	public function hitTestObject(obj:DisplayObject):Bool;
 	public function hitTestPoint(x:Float, y:Float, shapeFlag:Bool = false):Bool;
+	public inline function invalidate():Void
+	{
+		if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(this, Stage))
+		{
+			var method = Reflect.field(this, "invalidate");
+			Reflect.callMethod(method, method, []);
+		}
+	}
 	public function localToGlobal(point:Point):Point;
 	#if flash
 	@:require(flash10) public function local3DToGlobal(point3d:Vector3D):Point;

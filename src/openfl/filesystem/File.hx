@@ -716,8 +716,15 @@ class File extends FileReference
 		var segs:Array<String> = __path.split(__sep);
 
 		var cPath:String = __driveLetters[__driveLetters.indexOf(segs[0].toUpperCase() + __sep)];
+		var start:Int = 1;
+		if (cPath == null)
+		{
+			// fall back to unix paths
+			cPath = __sep + segs[1] + __sep;
+			start = 2;
+		}
 
-		for (i in 1...segs.length)
+		for (i in start...segs.length)
 		{
 			cPath += __canonicalize(cPath, segs[i]) + __sep;
 		}
@@ -811,10 +818,10 @@ class File extends FileReference
 			throw new Error("Overwrite is false.");
 		}
 		var newPath:String = newLocation.__path;
-		/* 
+		/*
 			* What if we had an additional argument, duplicate for copy and move that would
-			* work like this below: 
-			* 
+			* work like this below:
+			*
 			if (!overwrite && FileSystem.exists(newPath))
 			{
 				var ext:String = Path.extension(newPath);
@@ -1671,10 +1678,19 @@ class File extends FileReference
 			path = __path;
 		}
 
-		var fileInfo = FileSystem.stat(path);
-		creationDate = fileInfo.ctime;
-		modificationDate = fileInfo.mtime;
-		size = fileInfo.size;
+		if (FileSystem.exists(path))
+		{
+			var fileInfo = FileSystem.stat(path);
+			creationDate = fileInfo.ctime;
+			modificationDate = fileInfo.mtime;
+			size = fileInfo.size;
+		}
+		else
+		{
+			creationDate = null;
+			modificationDate = null;
+			size = 0;
+		}
 		extension = Path.extension(path);
 		type = extension;
 		name = Path.withoutDirectory(path);

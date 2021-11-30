@@ -44,9 +44,11 @@ class StaticText extends DisplayObject
 	{
 		super();
 
+		__drawableType = SHAPE;
 		__graphics = new Graphics(this);
 	}
 }
 #else
 typedef StaticText = flash.text.StaticText;
+typedef StaticText2 = flash.text.StaticText.StaticText2;
 #end
