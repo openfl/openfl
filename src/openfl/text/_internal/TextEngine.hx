@@ -83,6 +83,9 @@ class TextEngine
 	public var type:TextFieldType;
 	public var width:Float;
 	public var wordWrap:Bool;
+	public var rTL:Bool;
+	public var script:TextLayout.TextScript = null;
+	public var language:String = null;
 
 	private var textField:TextField;
 	@:noCompletion private var __cursorTimer:Timer;
@@ -838,9 +841,10 @@ class TextEngine
 			__textLayout.letterSpacing = letterSpacing;
 			__textLayout.autoHint = (antiAliasType != ADVANCED || sharpness < 400);
 
-			// __textLayout.direction = RIGHT_TO_LEFT;
-			// __textLayout.script = ARABIC;
+			if (rTL) __textLayout.direction = RIGHT_TO_LEFT;
 
+			if (script != null) __textLayout.script = cast script;
+			if (language != null) __textLayout.language = language;
 			__textLayout.text = text.substring(startIndex, endIndex);
 
 			// TODO:Smarter caching for justify
@@ -891,8 +895,9 @@ class TextEngine
 				__textLayout.size = formatRange.format.size;
 			}
 
-			// __textLayout.direction = RIGHT_TO_LEFT;
-			// __textLayout.script = ARABIC;
+			if (rTL) __textLayout.direction = RIGHT_TO_LEFT;
+			if (script != null) __textLayout.script = cast script;
+			if (language != null) __textLayout.language = language;
 
 			__textLayout.text = text;
 
@@ -908,14 +913,20 @@ class TextEngine
 		#if !js inline #end function getBaseX():Float
 
 		{
-			// TODO: swap margins in RTL
+			if (rTL)
+			{
+				return width - (GUTTER + rightMargin + blockIndent + (firstLineOfParagraph ? indent : 0));
+			}
 			return GUTTER + leftMargin + blockIndent + (firstLineOfParagraph ? indent : 0);
 		}
 
 		#if !js inline #end function getWrapWidth():Float
 
 		{
-			// TODO: swap margins in RTL
+			if (rTL)
+			{
+				return getBaseX() - leftMargin - GUTTER;
+			}
 			return width - GUTTER - rightMargin - getBaseX();
 		}
 
@@ -1083,7 +1094,15 @@ class TextEngine
 				nextLayoutGroup(textIndex, endIndex);
 
 				layoutGroup.positions = positions;
-				layoutGroup.offsetX = offsetX + getBaseX();
+
+				if (!rTL)
+				{
+					layoutGroup.offsetX = offsetX + getBaseX();
+				}
+				else
+				{
+					layoutGroup.offsetX = getBaseX() - offsetX;
+				}
 				layoutGroup.ascent = ascent;
 				layoutGroup.descent = descent;
 				layoutGroup.leading = leading;
@@ -1092,7 +1111,14 @@ class TextEngine
 				layoutGroup.width = widthValue;
 				layoutGroup.height = heightValue;
 
-				offsetX += widthValue;
+				if (rTL)
+				{
+					offsetX -= widthValue;
+				}
+				else
+				{
+					offsetX += widthValue;
+				}
 
 				if (endIndex == formatRange.end)
 				{
@@ -1126,7 +1152,15 @@ class TextEngine
 						layoutGroup.width = widthValue;
 						layoutGroup.height = heightValue;
 
-						offsetX += widthValue;
+						if (rTL)
+						{
+							layoutGroup.offsetX -= widthValue;
+							offsetX -= widthValue;
+						}
+						else
+						{
+							offsetX += widthValue;
+						}
 
 						textIndex = tempRangeEnd;
 					}
@@ -1468,8 +1502,16 @@ class TextEngine
 								layoutGroup.endIndex = spaceIndex;
 								layoutGroup.positions = layoutGroup.positions.concat(positions);
 								layoutGroup.width += widthValue;
+							}  
+
+							if (rTL)
+							{
+								offsetX -= widthValue;
 							}
-							offsetX += widthValue;
+							else
+							{
+								offsetX += widthValue;
+							}
 
 							textIndex = endIndex;
 						}
@@ -1489,10 +1531,24 @@ class TextEngine
 							}
 
 							layoutGroup.endIndex = tempRangeEnd;
-							layoutGroup.positions = layoutGroup.positions.concat(positions);
+							if (rTL)
+							{
+								layoutGroup.positions = positions.concat(layoutGroup.positions);
+							}
+							else
+							{
+								layoutGroup.positions = layoutGroup.positions.concat(positions);
+							}
 							layoutGroup.width += widthValue;
 
-							offsetX += widthValue;
+							if (rTL)
+							{
+								offsetX -= widthValue;
+							}
+							else
+							{
+								offsetX += widthValue;
+							}
 
 							if (tempRangeEnd == formatRange.end)
 							{
@@ -1696,6 +1752,7 @@ class TextEngine
 
 					default:
 						offsetX = 0;
+						if (rTL) group.offsetX -= group.width;
 				}
 			}
 
