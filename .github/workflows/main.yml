@@ -110,7 +110,7 @@ jobs:
   notify:
     runs-on: ubuntu-18.04
     needs: [package-haxelib, docs, unit-test]
-    if: ${{ github.event_name != 'pull_request' }}
+    if: ${{ github.repository == 'openfl/openfl' && github.event_name != 'pull_request' }}
     steps:
       - name: Notify Discord
         uses: nobrayner/discord-webhook@v1
