@@ -165,6 +165,8 @@ abstract Vector<T>(IVector<T>)
 		@param	fixed	Whether the Vector's length is fixed (`true`) or can be changed
 		(`false`). This value can also be set using the fixed property.
 	**/
+		
+	
 	#if !flash
 	public function new(length:Null<Int> = 0, fixed:Null<Bool> = false, array:Array<T> = null):Void;
 	#else
@@ -471,9 +473,21 @@ abstract Vector<T>(IVector<T>)
 		@throws	RangeError	If the startIndex and deleteCount arguments specify an index to be deleted that's outside the Vector's bounds.
 		@throws	RangeError	If this method is called while fixed is true and the splice() operation changes the length of the Vector.
 	**/
-	public inline function splice(startIndex:Int, deleteCount:Int):Vector<T>
+	public inline function splice(startIndex:Int, deleteCount:Int, #if (haxe_ver >= 4.2) ...items #end):Vector<T>
 	{
+		#if (haxe_ver >= 4.2)
+		this.splice(startIndex, deleteCount);
+		@:privateAccess this.__spliceIndex = startIndex;
+		
+		for (item in items){
+			this.insertAt(@:privateAccess this.__spliceIndex, cast item);
+			@:privateAccess this.__spliceIndex++;
+		}
+		return cast this;
+		#else
 		return cast this.splice(startIndex, deleteCount);
+		#end
+		
 	}
 
 	/**
@@ -633,8 +647,11 @@ abstract Vector<T>(IVector<T>)
 {
 	public var fixed:Bool;
 	public var length(get, set):Int;
-
+	
 	@:noCompletion private var __array:Array<Bool>;
+	#if (haxe_ver >= 4.2)
+	@:noCompletion private var __spliceIndex:Int;
+	#end
 
 	public function new(length:Int = 0, fixed:Bool = false, array:Array<Bool> = null):Void
 	{
@@ -883,7 +900,9 @@ abstract Vector<T>(IVector<T>)
 	public var length(get, set):Int;
 
 	@:noCompletion private var __array:Array<Float>;
-
+	#if (haxe_ver >= 4.2)
+	@:noCompletion private var __spliceIndex:Int;
+	#end
 	@SuppressWarnings("checkstyle:Dynamic")
 	public function new(length:Int = 0, fixed:Bool = false, array:Array<Dynamic> = null, forceCopy:Bool = false):Void
 	{
@@ -1142,7 +1161,9 @@ abstract Vector<T>(IVector<T>)
 	public var length(get, set):Int;
 
 	@:noCompletion private var __array:Array<Function>;
-
+	#if (haxe_ver >= 4.2)
+	@:noCompletion private var __spliceIndex:Int;
+	#end
 	public function new(length:Int = 0, fixed:Bool = false, array:Array<Function> = null):Void
 	{
 		if (array == null) array = new Array();
@@ -1391,7 +1412,9 @@ abstract Vector<T>(IVector<T>)
 	public var length(get, set):Int;
 
 	@:noCompletion private var __array:Array<Int>;
-
+	#if (haxe_ver >= 4.2)
+	@:noCompletion private var __spliceIndex:Int;
+	#end
 	public function new(length:Int = 0, fixed:Bool = false, array:Array<Int> = null):Void
 	{
 		if (array == null) array = new Array();
@@ -1632,7 +1655,9 @@ abstract Vector<T>(IVector<T>)
 	public var length(get, set):Int;
 
 	@:noCompletion private var __array:Array<T>;
-
+	#if (haxe_ver >= 4.2)
+	@:noCompletion private var __spliceIndex:Int;
+	#end
 	@SuppressWarnings("checkstyle:Dynamic")
 	public function new(length:Int = 0, fixed:Bool = false, array:Array<Dynamic> = null, forceCopy:Bool = false):Void
 	{
@@ -1879,6 +1904,9 @@ abstract Vector<T>(IVector<T>)
 {
 	public var fixed:Bool;
 	public var length(get, set):Int;
+	#if (haxe_ver >= 4.2)
+	@:noCompletion private var __spliceIndex:Int;
+	#end
 	public function concat(vec:IVector<T> = null):IVector<T>;
 	public function copy():IVector<T>;
 	public function filter(callback:T->Bool):IVector<T>;
@@ -2126,6 +2154,10 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 	public var fixed:Bool;
 	public var length(get, set):Int;
 
+	#if (haxe_ver >= 4.2)
+	@:noCompletion private var __spliceIndex:Int;
+	#end
+	
 	@:noCompletion private static function __init__()
 	{
 		untyped #if haxe4 js.Syntax.code #else __js__ #end ("var prefix = (typeof openfl_VectorData !== 'undefined');
