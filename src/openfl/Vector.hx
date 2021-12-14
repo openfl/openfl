@@ -475,15 +475,14 @@ abstract Vector<T>(IVector<T>)
 	**/
 	public inline function splice(startIndex:Int, deleteCount:Int#if (haxe_ver >= 4.2), ...items #end):Vector<T>
 	{
-		#if (haxe_ver >= 4.2)
-		this.splice(startIndex, deleteCount);
+		#if (haxe_ver >= 4.2)		
 		@:privateAccess this.__spliceIndex = startIndex;
 		
 		for (item in items){
 			this.insertAt(@:privateAccess this.__spliceIndex, cast item);
 			@:privateAccess this.__spliceIndex++;
 		}
-		return cast this;
+		return cast this.splice(@:privateAccess this.__spliceIndex, deleteCount);
 		#else
 		return cast this.splice(startIndex, deleteCount);
 		#end
