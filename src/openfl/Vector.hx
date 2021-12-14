@@ -473,7 +473,7 @@ abstract Vector<T>(IVector<T>)
 		@throws	RangeError	If the startIndex and deleteCount arguments specify an index to be deleted that's outside the Vector's bounds.
 		@throws	RangeError	If this method is called while fixed is true and the splice() operation changes the length of the Vector.
 	**/
-	public inline function splice(startIndex:Int, deleteCount:Int, #if (haxe_ver >= 4.2) ...items #end):Vector<T>
+	public inline function splice(startIndex:Int, deleteCount:Int#if (haxe_ver >= 4.2), ...items #end):Vector<T>
 	{
 		#if (haxe_ver >= 4.2)
 		this.splice(startIndex, deleteCount);
