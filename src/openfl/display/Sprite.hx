@@ -27,7 +27,9 @@ import openfl.ui.MouseCursor;
 @:access(openfl.display.Stage)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Point)
+#if !macro
 @:autoBuild(openfl.utils._internal.AssetsMacro.initBinding())
+#end
 class Sprite extends DisplayObjectContainer
 {
 	@:noCompletion private static var __constructor:Sprite->Void;
