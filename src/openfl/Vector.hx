@@ -226,14 +226,18 @@ abstract Vector<T>(IVector<T>)
 		The callback function should return a Boolean value.
 	 	
 		@param	thisObject The object that the identifer this in the callback function 
-		refers to when the function is called. 
+		refers to when the function is called. ***Ignored on targets other than neko and
+		js. 
 		@return A Boolean value of true if the specified function returns true when called 
 		on all items in the Vector; otherwise, false. 
 	 */
 	public inline function every(callback:Function, ?thisObject:Dynamic ):Bool{
 		for (i in 0...this.length){
-			if (!callback(cast this.get(i), i, cast this)) break;
 			@:privateAccess this.__tempIndex = i;
+			
+			if (thisObject != null){
+				if(Reflect.callMethod(thisObject, callback, [cast this.get(i), i, cast this]) == false) break;
+			} else if (callback(cast this.get(i), i, cast this) == false) break;			
 		}
 		return (@:privateAccess this.__tempIndex == this.length - 1);
 	}
@@ -451,14 +455,18 @@ abstract Vector<T>(IVector<T>)
 	 
 		The callback function should return a Boolean value.
 		@param	thisObject The object that the identifer this in the callback function refers 
-		to when the function is called. 
+		to when the function is called. ***Ignored on targets other than neko and js.
 		@return 	A Boolean value of true if any items in the Vector return true for the specified 
 		function; otherwise, false. 
 	 */
 	public inline function some(callback:Function, ?thisObject:Dynamic ):Bool{
 		for (i in 0...this.length){
-			if (callback(cast this.get(i), i, cast this)) break;
 			@:privateAccess this.__tempIndex = i;
+			
+			if (thisObject != null){
+				if(Reflect.callMethod(thisObject, callback, [cast this.get(i), i, cast this]) == true) break;
+			} else if (callback(cast this.get(i), i, cast this)) break;			
+			
 			if (i == this.length - 1) @:privateAccess this.__tempIndex++;
 		}
 		return (@:privateAccess this.__tempIndex < this.length - 1);
