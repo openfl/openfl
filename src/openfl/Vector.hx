@@ -715,9 +715,7 @@ abstract Vector<T>(IVector<T>)
 	public var length(get, set):Int;
 	
 	@:noCompletion private var __array:Array<Bool>;
-	#if (haxe_ver >= 4.2)
 	@:noCompletion private var __tempIndex:Int;
-	#end
 
 	public function new(length:Int = 0, fixed:Bool = false, array:Array<Bool> = null):Void
 	{
@@ -966,9 +964,8 @@ abstract Vector<T>(IVector<T>)
 	public var length(get, set):Int;
 
 	@:noCompletion private var __array:Array<Float>;
-	#if (haxe_ver >= 4.2)
 	@:noCompletion private var __tempIndex:Int;
-	#end
+
 	@SuppressWarnings("checkstyle:Dynamic")
 	public function new(length:Int = 0, fixed:Bool = false, array:Array<Dynamic> = null, forceCopy:Bool = false):Void
 	{
@@ -1227,9 +1224,8 @@ abstract Vector<T>(IVector<T>)
 	public var length(get, set):Int;
 
 	@:noCompletion private var __array:Array<Function>;
-	#if (haxe_ver >= 4.2)
 	@:noCompletion private var __tempIndex:Int;
-	#end
+	
 	public function new(length:Int = 0, fixed:Bool = false, array:Array<Function> = null):Void
 	{
 		if (array == null) array = new Array();
@@ -1478,9 +1474,8 @@ abstract Vector<T>(IVector<T>)
 	public var length(get, set):Int;
 
 	@:noCompletion private var __array:Array<Int>;
-	#if (haxe_ver >= 4.2)
 	@:noCompletion private var __tempIndex:Int;
-	#end
+
 	public function new(length:Int = 0, fixed:Bool = false, array:Array<Int> = null):Void
 	{
 		if (array == null) array = new Array();
@@ -1721,9 +1716,8 @@ abstract Vector<T>(IVector<T>)
 	public var length(get, set):Int;
 
 	@:noCompletion private var __array:Array<T>;
-	#if (haxe_ver >= 4.2)
 	@:noCompletion private var __tempIndex:Int;
-	#end
+
 	@SuppressWarnings("checkstyle:Dynamic")
 	public function new(length:Int = 0, fixed:Bool = false, array:Array<Dynamic> = null, forceCopy:Bool = false):Void
 	{
@@ -1969,10 +1963,8 @@ abstract Vector<T>(IVector<T>)
 @:noCompletion @:dox(hide) private interface IVector<T>
 {
 	public var fixed:Bool;
-	public var length(get, set):Int;
-	#if (haxe_ver >= 4.2)
-	@:noCompletion private var __tempIndex:Int;
-	#end
+	public var length(get, set):Int;	
+
 	public function concat(vec:IVector<T> = null):IVector<T>;
 	public function copy():IVector<T>;
 	public function filter(callback:T->Bool):IVector<T>;
@@ -1993,6 +1985,8 @@ abstract Vector<T>(IVector<T>)
 	public function splice(pos:Int, len:Int):IVector<T>;
 	public function toString():String;
 	public function unshift(value:T):Void;
+	
+	@:noCompletion private var __tempIndex:Int;
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
@@ -2220,9 +2214,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 	public var fixed:Bool;
 	public var length(get, set):Int;
 
-	#if (haxe_ver >= 4.2)
 	@:noCompletion private var __tempIndex:Int;
-	#end
 	
 	@:noCompletion private static function __init__()
 	{
