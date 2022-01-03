@@ -3066,7 +3066,8 @@ class TextField extends InteractiveObject
 	@:noCompletion private override function set_x(value:Float):Float
 	{
 		if (value != __transform.tx + __offsetX) __setTransformDirty();
-		return __transform.tx = value - __offsetX;
+		__transform.tx = value - __offsetX;
+		return value;
 	}
 
 	@:noCompletion private override function get_y():Float
@@ -3077,7 +3078,8 @@ class TextField extends InteractiveObject
 	@:noCompletion private override function set_y(value:Float):Float
 	{
 		if (value != __transform.ty + __offsetY) __setTransformDirty();
-		return __transform.ty = value - __offsetY;
+		__transform.ty = value - __offsetY;
+		return value;
 	}
 
 	// Event Handlers
