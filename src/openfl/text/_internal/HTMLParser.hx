@@ -139,7 +139,10 @@ class HTMLParser
 						{
 							case "a":
 								// TODO: support hover, visited, active (requires partnership with renderer)
-								styleSheet.__applyStyle("a:link", format);
+								if (styleSheet != null)
+								{
+									styleSheet.__applyStyle("a:link", format);
+								}
 
 								if (__regexHref.match(segment))
 								{
