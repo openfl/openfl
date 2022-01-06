@@ -17,14 +17,17 @@ abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 		return (this != null && Reflect.hasField(this, name));
 	}
 
-	public inline function isPrototypeOf(theClass:Class<Dynamic>):Bool
+	public function isPrototypeOf(theClass:Class<Dynamic>):Bool
 	{
-		var c = Type.getClass(this);
-
-		while (c != null)
+		if (this != null)
 		{
-			if (c == theClass) return true;
-			c = Type.getSuperClass(c);
+			var c = Type.getClass(this);
+
+			while (c != null)
+			{
+				if (c == theClass) return true;
+				c = Type.getSuperClass(c);
+			}
 		}
 
 		return false;
@@ -68,12 +71,12 @@ abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 
 	public inline function toLocaleString():String
 	{
-		return Std.string(this);
+		return (this == null ? null : Std.string(this));
 	}
 
 	@:to public inline function toString():String
 	{
-		return Std.string(this);
+		return (this == null ? null : Std.string(this));
 	}
 
 	public inline function valueOf():Object
@@ -98,6 +101,8 @@ abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 	@SuppressWarnings("checkstyle:FieldDocComment")
 	@:arrayAccess @:noCompletion @:dox(hide) public /*inline*/ function __get(key:String):Object
 	{
+		if (this == null || key == null) return null;
+
 		if (Reflect.hasField(this, key))
 		{
 			return Reflect.field(this, key);
@@ -114,20 +119,26 @@ abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 	@SuppressWarnings("checkstyle:FieldDocComment")
 	@:arrayAccess @:noCompletion @:dox(hide) public inline function __set(key:String, value:Object):Object
 	{
-		Reflect.setProperty(this, key, value);
+		if (this != null)
+		{
+			Reflect.setProperty(this, key, value);
+		}
+
 		return value;
 	}
 
 	@SuppressWarnings("checkstyle:FieldDocComment")
-	@:arrayAccess @:noCompletion @:dox(hide) public inline function __getArray(index:Int):Object
+	@:arrayAccess @:noCompletion @:dox(hide) public function __getArray(index:Int):Object
 	{
+		if (this == null) return null;
 		var arr = cast(this, Array<Dynamic>);
 		return arr[index];
 	}
 
 	@SuppressWarnings("checkstyle:FieldDocComment")
-	@:arrayAccess @:noCompletion @:dox(hide) public inline function __setArray(index:Int, value:Object):Object
+	@:arrayAccess @:noCompletion @:dox(hide) public function __setArray(index:Int, value:Object):Object
 	{
+		if (this == null) return value;
 		var arr = cast(this, Array<Dynamic>);
 		return arr[index] = value;
 	}
