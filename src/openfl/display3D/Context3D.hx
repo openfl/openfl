@@ -1869,6 +1869,8 @@ import lime.math.Vector2;
 	**/
 	public function setVertexBufferAt(index:Int, buffer:VertexBuffer3D, bufferOffset:Int = 0, format:Context3DVertexBufferFormat = FLOAT_4):Void
 	{
+		if (index < 0) return;
+
 		if (buffer == null)
 		{
 			gl.disableVertexAttribArray(index);
