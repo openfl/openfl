@@ -9,6 +9,7 @@ import haxe.io.BytesInput;
 import haxe.io.BytesOutput;
 import haxe.io.Encoding;
 import haxe.io.Bytes;
+import haxe.io.Path;
 import lime.system.BackgroundWorker;
 import openfl.errors.Error;
 import openfl.events.Event;
@@ -24,6 +25,7 @@ import openfl.utils.Endian;
 import openfl.utils.IDataInput;
 import openfl.utils.IDataOutput;
 import openfl.utils.Object;
+import sys.FileSystem;
 import sys.io.FileInput;
 import sys.io.FileOutput;
 import sys.io.FileSeek;
@@ -1267,7 +1269,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 				}
 			case WRITE:
 				try
-				{	
+				{
 					var dirPath:String = Path.directory(__file.nativePath);
 					if (!FileSystem.exists(dirPath)) FileSystem.createDirectory(dirPath);
 					__output = File.HaxeFile.write(__file.nativePath, true);
