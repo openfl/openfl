@@ -1717,7 +1717,7 @@ class TextField extends InteractiveObject
 				{
 					if (StringTools.startsWith(url, "event:"))
 					{
-						dispatchEvent(new TextEvent(TextEvent.LINK, false, false, url.substr(6)));
+						dispatchEvent(new TextEvent(TextEvent.LINK, true, false, url.substr(6)));
 					}
 					else
 					{
