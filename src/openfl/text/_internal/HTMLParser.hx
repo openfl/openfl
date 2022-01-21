@@ -191,6 +191,12 @@ class HTMLParser
 								{
 									value += "\n";
 								}
+								var bullet = "• ";
+								// temporarily disable underline for the bullet
+								var bulletFormat = format.clone();
+								bulletFormat.underline = false;
+								textFormatRanges.push(new TextFormatRange(bulletFormat, value.length, value.length + bullet.length));
+								value += bullet;
 
 							case "font":
 								if (__regexFace.match(segment))
