@@ -126,7 +126,7 @@ class HTMLParser
 					formatStack.pop();
 					format = formatStack[formatStack.length - 1].clone();
 
-					if (tagName == "p" && textFormatRanges.length > 0)
+					if ((tagName == "p" || tagName == "li") && textFormatRanges.length > 0)
 					{
 						if (multiline)
 						{
@@ -184,6 +184,12 @@ class HTMLParser
 								{
 									var align = __getAttributeMatch(__regexAlign).toLowerCase();
 									format.align = align;
+								}
+
+							case "li":
+								if (textFormatRanges.length > 0 && !noLineBreak)
+								{
+									value += "\n";
 								}
 
 							case "font":
