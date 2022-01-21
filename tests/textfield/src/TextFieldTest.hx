@@ -541,4 +541,18 @@ class TextFieldTest extends Test
 		var check = textField.getTextFormat(0, 4);
 		Assert.equals(0xFF0000, check.color);
 	}
+
+	public function test_setDecimalEntityCode()
+	{
+		var textField = new TextField();
+		textField.htmlText = "&#38;";
+		Assert.equals("&", textField.text);
+	}
+
+	public function test_setHexEntityCode()
+	{
+		var textField = new TextField();
+		textField.htmlText = "&#x27;";
+		Assert.equals("'", textField.text);
+	}
 }
