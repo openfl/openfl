@@ -315,7 +315,7 @@ class CanvasTextField
 							context.strokeStyle = color;
 							context.lineWidth = 1;
 							var x = group.offsetX + scrollX - bounds.x;
-							var y = Math.floor(group.offsetY + scrollY + group.ascent - bounds.y) + 0.5;
+							var y = Math.ceil(group.offsetY + scrollY + group.ascent - bounds.y) + 0.5;
 							context.moveTo(x, y);
 							context.lineTo(x + group.width, y);
 							context.stroke();
