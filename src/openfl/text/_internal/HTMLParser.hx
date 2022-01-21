@@ -19,6 +19,7 @@ class HTMLParser
 	private static var __regexClass:EReg = ~/class\s?=\s?("([^"]+)"|'([^']+)')/i;
 	private static var __regexColor:EReg = ~/color\s?=\s?("#([^"]+)"|'#([^']+)')/i;
 	private static var __regexEntities:Array<EReg> = [~/&quot;/g, ~/&apos;/g, ~/&amp;/g, ~/&lt;/g, ~/&gt;/g, ~/&nbsp;/g];
+	private static var __regexCharEntity:EReg = ~/&#(?:([0-9]+)|(x[0-9a-fA-F]+));/g;
 	private static var __regexFace:EReg = ~/face\s?=\s?("([^"]+)"|'([^']+)')/i;
 	private static var __regexHTMLTag:EReg = ~/<.*?>/g;
 	private static var __regexHref:EReg = ~/href\s?=\s?("([^"]+)"|'([^']+)')/i;
@@ -41,6 +42,30 @@ class HTMLParser
 		}
 
 		value = __regexEntities[5].replace(value, " ");
+
+		value = __regexCharEntity.map(value, function(ereg)
+		{
+			var decimalStr = ereg.matched(1);
+			var hexStr = ereg.matched(2);
+			if (decimalStr != null)
+			{
+				var decimal = Std.parseInt(decimalStr);
+				if (decimal != null)
+				{
+					return String.fromCharCode(decimal);
+				}
+			}
+			if (hexStr != null)
+			{
+				var hex = Std.parseInt("0" + hexStr);
+				if (hex != null)
+				{
+					return String.fromCharCode(hex);
+				}
+			}
+			// if parsing fails, return the original string
+			return ereg.matched(0);
+		});
 
 		// crude solution
 
