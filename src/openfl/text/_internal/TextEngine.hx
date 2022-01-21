@@ -307,8 +307,11 @@ class TextEngine
 				systemFontDirectory + "/CoreAddition/Helvetica.ttf",
 				"/System/Library/Fonts/Supplemental/Arial.ttf"
 			]);
+			var sansBold = findFont("/System/Library/Fonts/Supplemental/Arial Bold.ttf");
+			var sansItalic = findFont("/System/Library/Fonts/Supplemental/Arial Italic.ttf");
+			var sansBoldItalic = findFont("/System/Library/Fonts/Supplemental/Arial Bold Italic.ttf");
 
-			__defaultFonts.set("_sans", new DefaultFontSet(sans));
+			__defaultFonts.set("_sans", new DefaultFontSet(sans, sansBold, sansItalic, sansBoldItalic));
 
 			var serif = processFontList([
 				systemFontDirectory + "/Georgia.ttf", systemFontDirectory + "/Times.ttf", systemFontDirectory + "/Times New Roman.ttf",
@@ -317,8 +320,11 @@ class TextEngine
 				systemFontDirectory + "/CoreAddition/Georgia.ttf", systemFontDirectory + "/CoreAddition/Times.ttf",
 				systemFontDirectory + "/CoreAddition/Times New Roman.ttf", "/System/Library/Fonts/Supplemental/Times New Roman.ttf"
 			]);
+			var serifBold = findFont("/System/Library/Fonts/Supplemental/Times New Roman Bold.ttf");
+			var serifItalic = findFont("/System/Library/Fonts/Supplemental/Times New Roman Italic.ttf");
+			var serifBoldItalic = findFont("/System/Library/Fonts/Supplemental/Times New Roman Bold Italic.ttf");
 
-			__defaultFonts.set("_serif", new DefaultFontSet(serif));
+			__defaultFonts.set("_serif", new DefaultFontSet(serif, serifBold, serifItalic, serifBoldItalic));
 
 			var typewriter = processFontList([
 				systemFontDirectory + "/Courier New.ttf",
@@ -331,8 +337,11 @@ class TextEngine
 				systemFontDirectory + "/CoreAddition/Courier.ttf",
 				"/System/Library/Fonts/Supplemental/Courier New.ttf"
 			]);
+			var typewriterBold = findFont("/System/Library/Fonts/Supplemental/Courier New Bold.ttf");
+			var typewriterItalic = findFont("/System/Library/Fonts/Supplemental/Courier New Italic.ttf");
+			var typewriterBoldItalic = findFont("/System/Library/Fonts/Supplemental/Courier New Bold Italic.ttf");
 
-			__defaultFonts.set("_typewriter", new DefaultFontSet(typewriter));
+			__defaultFonts.set("_typewriter", new DefaultFontSet(typewriter, typewriterBold, typewriterItalic, typewriterBoldItalic));
 			#elseif linux
 			__defaultFonts.set("_sans",
 				new DefaultFontSet(processFontList([new Process("fc-match", ["sans", "-f%{file}"]).stdout.readLine()]),
