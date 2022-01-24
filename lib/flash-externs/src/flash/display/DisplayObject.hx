@@ -88,7 +88,7 @@ extern class DisplayObject extends EventDispatcher implements IBitmapDrawable
 	public function hitTestPoint(x:Float, y:Float, shapeFlag:Bool = false):Bool;
 	public inline function invalidate():Void
 	{
-		if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(this, Stage))
+		if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (this, Stage))
 		{
 			var method = Reflect.field(this, "invalidate");
 			Reflect.callMethod(method, method, []);

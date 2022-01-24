@@ -83,7 +83,7 @@ abstract XMLList(Access) from Access from Dynamic to Dynamic
 				case CData:
 					var str = Std.string(this);
 					trace(str);
-					str = str.substring("<![CDATA[".length, str.length -"]]>".length);
+					str = str.substring("<![CDATA[".length, str.length - "]]>".length);
 					trace(str);
 					return str;
 				default:

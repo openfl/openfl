@@ -101,13 +101,16 @@ abstract URLVariables(Dynamic) from Dynamic to Dynamic
 
 		return result.join("&");
 	}
-	
+
 	@SuppressWarnings("checkstyle:FieldDocComment")
-	@:arrayAccess private inline function __get(key:String):Dynamic{
+	@:arrayAccess private inline function __get(key:String):Dynamic
+	{
 		return Reflect.field(this, key);
 	}
+
 	@SuppressWarnings("checkstyle:FieldDocComment")
-	@:arrayAccess private inline function __set(key:String, value:String):Void{
+	@:arrayAccess private inline function __set(key:String, value:String):Void
+	{
 		Reflect.setField(this, key, value);
 	}
 }

@@ -651,7 +651,7 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 	**/
 	public function contains(child:Dynamic):Bool
 	{
-		if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(this, Tilemap))
+		if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (this, Tilemap))
 		{
 			return cast(this, Tilemap).contains(child);
 		}
@@ -1026,7 +1026,7 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 	private function __resolve(childName:String):ChildAccess<DisplayObject>
 	{
 		#if flash
-		if (this != null && #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(this, DisplayObjectContainer))
+		if (this != null && #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (this, DisplayObjectContainer))
 		{
 			var container:DisplayObjectContainer = cast this;
 			return container.getChildByName(childName);
@@ -1173,7 +1173,7 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 
 	@:to private static inline function __toMovieClip(value:ChildAccess<Dynamic>):MovieClip
 	{
-		if (value != null && !#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(value, MovieClip))
+		if (value != null && !#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (value, MovieClip))
 		{
 			throw new TypeError("Cannot cast object reference to MovieClip");
 		}
@@ -1183,7 +1183,7 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 
 	@:to private static inline function __toTilemap(value:ChildAccess<Dynamic>):Tilemap
 	{
-		if (value != null && !#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(value, Tilemap))
+		if (value != null && !#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (value, Tilemap))
 		{
 			throw new TypeError("Cannot cast object reference to Tilemap");
 		}
@@ -1193,7 +1193,7 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 
 	@:to private static inline function __toVideo(value:ChildAccess<Dynamic>):Video
 	{
-		if (value != null && !#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(value, Video))
+		if (value != null && !#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (value, Video))
 		{
 			throw new TypeError("Cannot cast object reference to Video");
 		}
@@ -1203,7 +1203,7 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 
 	@:to private static inline function __toTextField(value:ChildAccess<Dynamic>):TextField
 	{
-		if (value != null && !#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(value, TextField))
+		if (value != null && !#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (value, TextField))
 		{
 			throw new TypeError("Cannot cast object reference to TextField");
 		}
@@ -1213,7 +1213,7 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 
 	@:to private static inline function __toStaticText(value:ChildAccess<Dynamic>):StaticText
 	{
-		if (value != null && !#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(value, StaticText))
+		if (value != null && !#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (value, StaticText))
 		{
 			throw new TypeError("Cannot cast object reference to StaticText");
 		}
@@ -1223,7 +1223,7 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 
 	@:to private static inline function __toShape(value:ChildAccess<Dynamic>):Shape
 	{
-		if (value != null && !#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(value, Shape))
+		if (value != null && !#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (value, Shape))
 		{
 			throw new TypeError("Cannot cast object reference to Shape");
 		}
@@ -1233,7 +1233,7 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 
 	@:to private static inline function __toSprite(value:ChildAccess<Dynamic>):Sprite
 	{
-		if (value != null && !#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(value, Sprite))
+		if (value != null && !#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (value, Sprite))
 		{
 			throw new TypeError("Cannot cast object reference to Sprite");
 		}
@@ -1243,7 +1243,7 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 
 	@:to private static inline function __toBitmap(value:ChildAccess<Dynamic>):Bitmap
 	{
-		if (value != null && !#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(value, Bitmap))
+		if (value != null && !#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (value, Bitmap))
 		{
 			throw new TypeError("Cannot cast object reference to Bitmap");
 		}
@@ -1253,7 +1253,7 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 
 	@:to private static inline function __toDisplayObjectContainer(value:ChildAccess<Dynamic>):DisplayObjectContainer
 	{
-		if (value != null && !#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(value, DisplayObjectContainer))
+		if (value != null && !#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (value, DisplayObjectContainer))
 		{
 			throw new TypeError("Cannot cast object reference to DisplayObjectContainer");
 		}
@@ -1520,7 +1520,7 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 
 	private inline function get_graphics():Graphics
 	{
-		if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(this, Sprite))
+		if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (this, Sprite))
 		{
 			return cast(this, Sprite).graphics;
 		}
@@ -1857,7 +1857,7 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 
 	private inline function get_smoothing():Bool
 	{
-		if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(this, Bitmap))
+		if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (this, Bitmap))
 		{
 			return cast(this, Bitmap).smoothing;
 		}
@@ -1869,7 +1869,7 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 
 	private inline function set_smoothing(value:Bool):Bool
 	{
-		if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(this, Bitmap))
+		if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (this, Bitmap))
 		{
 			return cast(this, Bitmap).smoothing = value;
 		}
@@ -1936,7 +1936,7 @@ abstract ChildAccess<T:DisplayObject>(T) from T to T
 
 	private inline function get_text():UTF8String
 	{
-		if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end(this, TextField))
+		if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (this, TextField))
 		{
 			return cast(this, TextField).text;
 		}

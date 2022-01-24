@@ -1,13 +1,13 @@
 package openfl.utils;
+
 #if cpp
-	import haxe.ds.WeakMap;
+import haxe.ds.WeakMap;
 #elseif js
-	typedef JSWeakRef = js.lib.WeakRef<Dynamic>;
+typedef JSWeakRef = js.lib.WeakRef<Dynamic>;
 #end
 
 abstract WeakRef(#if cpp WeakMap<Dynamic, Int> #elseif js JSWeakRef #end)
 {
-
 	public var object(get, set):Dynamic;
 
 	inline function set_object(value:Dynamic):Dynamic
@@ -40,5 +40,4 @@ abstract WeakRef(#if cpp WeakMap<Dynamic, Int> #elseif js JSWeakRef #end)
 		this = new JSWeakRef(object);
 		#end
 	}
-
 }
