@@ -5,7 +5,7 @@ package openfl.globalization;
 {
 	public static inline var DEFAULT:String = "i-default";
 
-	@:noCompletion private static inline var RTL_LANGUAGES = [
+	@:noCompletion private static var RTL_LANGUAGES = [
 		"ae", // Avestan
 		"ar", // Arabic
 		"arc", // Aramaic
