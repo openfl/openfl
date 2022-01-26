@@ -10,15 +10,15 @@ import js.lib.intl.DateTimeFormat;
 #if !html5
 @:final class DateTimeFormatter
 {
-	private static final WEEKDAY_NAMES_EN = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-	private static final MONTH_NAMES_EN = [
+	private static var WEEKDAY_NAMES_EN = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+	private static var MONTH_NAMES_EN = [
 		"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
 	];
-	private static final MERIDIEM_AM = "AM";
-	private static final MERIDIEM_PM = "PM";
-	private static final ERA_AD_LONG = "Anno Domini";
-	private static final ERA_AD_SHORT = "AD";
-	private static final ERA_AD_NARROW = "A";
+	private static inline var MERIDIEM_AM = "AM";
+	private static inline var MERIDIEM_PM = "PM";
+	private static inline var ERA_AD_LONG = "Anno Domini";
+	private static inline var ERA_AD_SHORT = "AD";
+	private static inline var ERA_AD_NARROW = "A";
 
 	public static function getAvailableLocaleIDNames():Vector<String>
 	{
