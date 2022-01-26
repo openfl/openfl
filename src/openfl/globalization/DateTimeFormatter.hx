@@ -267,7 +267,10 @@ import js.lib.intl.DateTimeFormat;
 			this.lastOperationStatus = NO_ERROR;
 			return result;
 		}
-		var result = new Vector(MONTH_NAMES_EN.length, true, MONTH_NAMES_EN.map(monthName -> monthName.substr(0, 3)));
+		var result = new Vector(MONTH_NAMES_EN.length, true, MONTH_NAMES_EN.map(function(monthName:String):String
+		{
+			return monthName.substr(0, 3);
+		}));
 		this.lastOperationStatus = NO_ERROR;
 		return result;
 	}
@@ -281,7 +284,10 @@ import js.lib.intl.DateTimeFormat;
 			return result;
 		}
 		var abbrLength = nameStyle == SHORT_ABBREVIATION ? 2 : 3;
-		var result = new Vector(WEEKDAY_NAMES_EN.length, true, WEEKDAY_NAMES_EN.map(monthName -> monthName.substr(0, abbrLength)));
+		var result = new Vector(WEEKDAY_NAMES_EN.length, true, WEEKDAY_NAMES_EN.map(function(weekdayName:String):String
+		{
+			return weekdayName.substr(0, abbrLength);
+		}));
 		this.lastOperationStatus = NO_ERROR;
 		return result;
 	}
