@@ -75,7 +75,12 @@ class NamespaceTest extends Test
 
 	public function test_constructorTwoArgsToString()
 	{
-		var obj = {toString: () -> "abc"};
+		var obj = {
+			toString: function():String
+			{
+				return "abc";
+			}
+		};
 		var ns = new Namespace(obj, "def");
 		Assert.equals("abc", ns.prefix);
 		Assert.equals("def", ns.uri);
