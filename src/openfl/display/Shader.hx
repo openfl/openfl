@@ -119,7 +119,7 @@ import openfl.utils.ByteArray;
 @:access(openfl.display.ShaderParameter)
 // #if (!display && !macro)
 #if !macro
-@:autoBuild(openfl.utils._internal.ShaderMacro.build())
+@:autoBuild(openfl.utils._internal.Shader.build())
 #end
 class Shader
 {
