@@ -87,36 +87,135 @@ class AssetCache implements IAssetCache
 		}
 		else
 		{
-			var keys = bitmapData.keys();
-
-			for (key in keys)
+			for (key in getBitmapKeys(prefix))
 			{
-				if (StringTools.startsWith(key, prefix))
-				{
-					removeBitmapData(key);
-				}
+				removeBitmapData(key);
 			}
 
-			var keys = font.keys();
-
-			for (key in keys)
+			for (key in getFontKeys(prefix))
 			{
-				if (StringTools.startsWith(key, prefix))
-				{
-					removeFont(key);
-				}
+				removeFont(key);
 			}
 
-			var keys = sound.keys();
+			for (key in getSoundKeys(prefix))
+			{
+				removeSound(key);
+			}
+		}
+	}
 
-			for (key in keys)
+	/**
+		Returns the IDs of all assets with an ID that
+		matches an optional prefix.
+
+		For example:
+
+		```haxe
+		Assets.setBitmapData("image1", image1);
+		Assets.setBitmapData("assets/image2", image2);
+
+		Assets.getKeys("assets"); // will return ["assets/image2"]
+		Assets.getKeys("image"); // will return ["image1"]
+		```
+
+		@param	prefix	A ID prefix
+	**/
+	public function getKeys(prefix:String = null):Array<String>
+	{
+		var result = [];
+
+		result = result.concat(getBitmapKeys(prefix));
+		result = result.concat(getFontKeys(prefix));
+		result = result.concat(getSoundKeys(prefix));
+
+		return result;
+	}
+
+	/**
+		Returns the IDs of all BitmapData assets with an ID that
+		matches an optional prefix.
+
+		@param	prefix	A ID prefix
+	**/
+	public function getBitmapKeys(prefix:String):Array<String>
+	{
+		var result = [];
+		if (prefix == null)
+		{
+			for (key in bitmapData.keys())
+			{
+				result.push(key);
+			}
+		}
+		else
+		{
+			for (key in bitmapData.keys())
 			{
 				if (StringTools.startsWith(key, prefix))
 				{
-					removeSound(key);
+					result.push(key);
 				}
 			}
 		}
+		return result;
+	}
+
+	/**
+		Returns the IDs of all Font assets with an ID that
+		matches an optional prefix.
+
+		@param	prefix	A ID prefix
+	**/
+	public function getFontKeys(prefix:String):Array<String>
+	{
+		var result = [];
+		if (prefix == null)
+		{
+			for (key in font.keys())
+			{
+				result.push(key);
+			}
+		}
+		else
+		{
+			for (key in font.keys())
+			{
+				if (StringTools.startsWith(key, prefix))
+				{
+					result.push(key);
+				}
+			}
+		}
+		return result;
+	}
+
+	/**
+		Returns the IDs of all Sound assets with an ID that
+		matches an optional prefix.
+
+		@param	prefix	A ID prefix
+	**/
+	public function getSoundKeys(prefix:String):Array<String>
+	{
+		var result = [];
+		if (prefix == null)
+		{
+			for (key in sound.keys())
+			{
+				result.push(key);
+			}
+		}
+		else
+		{
+			for (key in sound.keys())
+			{
+				if (StringTools.startsWith(key, prefix))
+				{
+					result.push(key);
+				}
+			}
+		}
+		return result;
 	}
 
 	/**
