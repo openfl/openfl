@@ -79,11 +79,22 @@ class AssetCache implements IAssetCache
 	**/
 	public function clear(prefix:String = null):Void
 	{
+		clearBitmapData(prefix);
+		clearFonts(prefix);
+		clearSounds(prefix);
+	}
+
+	/**
+		Clears all cached Bitmap assets, or all assets with an ID that
+		matches an optional prefix.
+
+		@param	prefix	A ID prefix
+	**/
+	public function clearBitmapData(prefix:String = null):Void
+	{
 		if (prefix == null)
 		{
 			bitmapData = new Map<String, BitmapData>();
-			font = new Map<String, Font>();
-			sound = new Map<String, Sound>();
 		}
 		else
 		{
@@ -91,12 +102,44 @@ class AssetCache implements IAssetCache
 			{
 				removeBitmapData(key);
 			}
+		}
+	}
 
+	/**
+		Clears all cached Font assets, or all assets with an ID that
+		matches an optional prefix.
+
+		@param	prefix	A ID prefix
+	**/
+	public function clearFonts(prefix:String = null):Void
+	{
+		if (prefix == null)
+		{
+			font = new Map<String, Font>();
+		}
+		else
+		{
 			for (key in getFontKeys(prefix))
 			{
 				removeFont(key);
 			}
+		}
+	}
 
+	/**
+		Clears all cached Sound assets, or all assets with an ID that
+		matches an optional prefix.
+
+		@param	prefix	A ID prefix
+	**/
+	public function clearSounds(prefix:String = null):Void
+	{
+		if (prefix == null)
+		{
+			sound = new Map<String, Sound>();
+		}
+		else
+		{
 			for (key in getSoundKeys(prefix))
 			{
 				removeSound(key);
@@ -137,7 +180,7 @@ class AssetCache implements IAssetCache
 
 		@param	prefix	A ID prefix
 	**/
-	public function getBitmapKeys(prefix:String):Array<String>
+	public function getBitmapKeys(prefix:String = null):Array<String>
 	{
 		var result = [];
 		if (prefix == null)
@@ -166,7 +209,7 @@ class AssetCache implements IAssetCache
 
 		@param	prefix	A ID prefix
 	**/
-	public function getFontKeys(prefix:String):Array<String>
+	public function getFontKeys(prefix:String = null):Array<String>
 	{
 		var result = [];
 		if (prefix == null)
@@ -195,7 +238,7 @@ class AssetCache implements IAssetCache
 
 		@param	prefix	A ID prefix
 	**/
-	public function getSoundKeys(prefix:String):Array<String>
+	public function getSoundKeys(prefix:String = null):Array<String>
 	{
 		var result = [];
 		if (prefix == null)
