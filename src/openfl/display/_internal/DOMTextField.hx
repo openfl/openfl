@@ -86,6 +86,8 @@ class DOMTextField
 			{
 				if (textEngine.text != "" || textEngine.background || textEngine.border || textEngine.type == INPUT)
 				{
+					textField.__updateLayout();
+
 					if (textField.__div == null)
 					{
 						textField.__div = cast Browser.document.createElement("div");
