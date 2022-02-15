@@ -344,6 +344,7 @@ class Assets
 		if (libraryBindings.exists(className))
 		{
 			var library = libraryBindings.get(className);
+			#if !flash
 			if (instance == null)
 			{
 				Sprite.__constructor = function(instance:Sprite)
@@ -355,6 +356,10 @@ class Assets
 			{
 				instance.__bind(library, className);
 			}
+			#else
+			// TODO: Consolidate behavior
+			library.bind(className);
+			#end
 		}
 		else
 		{
