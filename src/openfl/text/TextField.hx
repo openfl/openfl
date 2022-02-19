@@ -2655,31 +2655,31 @@ class TextField extends InteractiveObject
 		value = HTMLParser.parse(value, multiline, __styleSheet, __textFormat, __textEngine.textFormatRanges);
 
 		#if (js && html5)
-		if (DisplayObject.__supportDOM)
-		{
-			// TODO: Why is this parsing text format ranges, only to ignore them?
-			// Should this skip the parser entirely?
-			if (__textEngine.textFormatRanges.length > 1)
-			{
-				__textEngine.textFormatRanges.splice(1, __textEngine.textFormatRanges.length - 1);
-			}
+		// if (DisplayObject.__supportDOM)
+		// {
+		// 	// TODO: Why is this parsing text format ranges, only to ignore them?
+		// 	// Should this skip the parser entirely?
+		// 	if (__textEngine.textFormatRanges.length > 1)
+		// 	{
+		// 		__textEngine.textFormatRanges.splice(1, __textEngine.textFormatRanges.length - 1);
+		// 	}
 
-			var range = __textEngine.textFormatRanges[0];
-			range.format = __textFormat;
-			range.start = 0;
+		// 	var range = __textEngine.textFormatRanges[0];
+		// 	range.format = __textFormat;
+		// 	range.start = 0;
 
-			if (__renderedOnCanvasWhileOnDOM)
-			{
-				range.end = value.length;
-				__updateText(value);
-			}
-			else
-			{
-				range.end = __htmlText.length;
-				__updateText(__htmlText);
-			}
-		}
-		else
+		// 	if (__renderedOnCanvasWhileOnDOM)
+		// 	{
+		// 		range.end = value.length;
+		// 		__updateText(value);
+		// 	}
+		// 	else
+		// 	{
+		// 		range.end = __htmlText.length;
+		// 		__updateText(__htmlText);
+		// 	}
+		// }
+		// else
 		{
 			__updateText(value);
 		}

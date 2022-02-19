@@ -1,5 +1,6 @@
 package openfl.display._internal;
 
+import openfl.text._internal.HTMLParser;
 import openfl.text._internal.TextEngine;
 import openfl.display.DOMRenderer;
 import openfl.text.TextField;
@@ -214,70 +215,136 @@ class DOMTextField
 
 					untyped textField.__textFormat.size = scaledSize;
 
-					var text = textEngine.text;
+					var text = "";
 					var adjustment:Float = 0;
 
-					if (!textField.__isHTML)
+					if (textField.__isHTML)
 					{
-						text = StringTools.htmlEscape(text);
+						textField.__updateText(HTMLParser.parse(textField.__text, textField.multiline, textField.__styleSheet, textField.__textFormat,
+							textField.__textEngine.textFormatRanges));
 					}
-					else
+
+					var useTextBounds = !(textEngine.background || textEngine.border);
+					var bounds = useTextBounds ? textEngine.textBounds : textEngine.bounds;
+
+					var scrollX = -textField.scrollH;
+					var scrollY = 0.0;
+
+					for (group in textEngine.layoutGroups)
 					{
-						var matchText = text;
-						while (__regexFont.match(matchText))
+						if (group.lineIndex < textField.scrollV - 1) continue;
+						if (group.lineIndex > textEngine.bottomScrollV - 1) break;
+
+						text += "<div style=\"";
+
+						if (group.format.font != null)
 						{
-							var fontText = __regexFont.matched(0);
-							var style = "";
-
-							if (__regexFace.match(fontText))
-							{
-								style += "font-family:'" + __getAttributeMatch(__regexFace) + "';";
-							}
-
-							if (__regexColor.match(fontText))
-							{
-								style += "color:#" + __getAttributeMatch(__regexColor) + ";";
-							}
-
-							if (__regexSize.match(fontText))
-							{
-								var sizeAttr = __getAttributeMatch(__regexSize);
-								var firstChar = sizeAttr.charCodeAt(0);
-								var size:Float;
-								adjustment = Std.parseFloat(sizeAttr) * scale;
-								if (firstChar == "+".code || firstChar == "-".code)
-								{
-									size = scaledSize + adjustment;
-								}
-								else
-								{
-									size = adjustment;
-								}
-
-								style += "font-size:" + size + "px;";
-							}
-
-							text = StringTools.replace(text, fontText, "<span style='" + style + "'>");
-
-							matchText = __regexFont.matchedRight();
+							text += "font: " + TextEngine.getFont(group.format) + "; ";
 						}
 
-						text = __regexCloseFont.replace(text, "</span>");
+						// if (group.format.size != null)
+						// {
+						// 	var size:Float = group.format.size;
+						// 	var adjustment = size * scale;
+						// 	if (size < 0)
+						// 	{
+						// 		size = scaledSize + adjustment;
+						// 	}
+						// 	else
+						// 	{
+						// 		size = adjustment;
+						// 	}
+
+						// 	text += "font-size: " + size + "px; ";
+						// }
+
+						if (group.format.color != null)
+						{
+							text += "color: #" + StringTools.hex(group.format.color & 0xFFFFFF, 6) + "; ";
+						}
+
+						// if (group.format.bold == true)
+						// {
+						// 	text += "font-weight: bold; ";
+						// }
+
+						// if (group.format.italic == true)
+						// {
+						// 	text += "font-style: italic; ";
+						// }
+
+						if (group.format.underline == true)
+						{
+							text += "text-decoration: underline; ";
+						}
+
+						if (group.format.align != null)
+						{
+							switch (group.format.align)
+							{
+								case TextFormatAlign.CENTER:
+									text += "text-align: center; ";
+
+								case TextFormatAlign.RIGHT:
+									text += "text-align: right; ";
+
+								case TextFormatAlign.JUSTIFY:
+									text += "text-align: justify; ";
+
+								default:
+									text += "text-align: left; ";
+							}
+						}
+
+						if (group.format.leftMargin != null)
+						{
+							text += "padding-left: " + (group.format.leftMargin * scale) + "px; ";
+						}
+
+						if (group.format.rightMargin != null)
+						{
+							text += "padding-right: " + (group.format.rightMargin * scale) + "px; ";
+						}
+
+						if (group.format.indent != null)
+						{
+							text += "text-indent: " + (group.format.indent * scale) + "px; ";
+						}
+
+						if (group.format.leading != null)
+						{
+							// TODO: Convert to line-height and line-trim
+							// Going from half-leading on the web to proper leading
+						}
+
+						// var x = group.offsetX + scrollX - bounds.x;
+						// var y = group.offsetY + group.ascent + scrollY - bounds.y;
+						var x = group.offsetX + scrollX;
+						var y = group.offsetY + scrollY;
+
+						text += "left: " + x + "px; top: " + y + "px; vertical-align: top; position: absolute;\">";
+
+						if (group.format.url != null && group.format.url != "")
+						{
+							text += "<a href='" + group.format.url + "' target='" + group.format.target + "'>";
+						}
+
+						if (!textField.__isHTML)
+						{
+							text = StringTools.htmlEscape(textEngine.text.substring(group.startIndex, group.endIndex));
+						}
+						else
+						{
+							text += textEngine.text.substring(group.startIndex, group.endIndex);
+						}
+
+						if (group.format.url != null && group.format.url != "")
+						{
+							text += "</a>";
+						}
+
+						text += "</div>";
 					}
-
-					text = StringTools.replace(text, "<p ", "<p style='margin-top:0; margin-bottom:0;' ");
-
-					var unscaledLeading = textField.__textFormat.leading;
-					textField.__textFormat.leading += Std.int(adjustment);
-
-					textField.__div.innerHTML = new EReg("\r\n", "g").replace(text, "<br>");
-					textField.__div.innerHTML = new EReg("\n", "g").replace(textField.__div.innerHTML, "<br>");
-					textField.__div.innerHTML = new EReg("\r", "g").replace(textField.__div.innerHTML, "<br>");
-
-					style.setProperty("font", TextEngine.getFont(textField.__textFormat), null);
-
-					textField.__textFormat.size = unscaledSize;
-					textField.__textFormat.leading = unscaledLeading;
 
 					style.setProperty("top", "3px", null);
 
@@ -294,22 +361,14 @@ class DOMTextField
 						textField.__renderTransformChanged = true;
 					}
 
-					style.setProperty("color", "#" + StringTools.hex(textField.__textFormat.color & 0xFFFFFF, 6), null);
-
 					style.setProperty("width", w + "px", null);
 					style.setProperty("height", h + "px", null);
 
-					switch (textField.__textFormat.align)
-					{
-						case TextFormatAlign.CENTER:
-							style.setProperty("text-align", "center", null);
+					textField.__div.innerHTML = text;
 
-						case TextFormatAlign.RIGHT:
-							style.setProperty("text-align", "right", null);
-
-						default:
-							style.setProperty("text-align", "left", null);
-					}
+					// textField.__div.innerHTML = new EReg("\r\n", "g").replace(text, "<br>");
+					// textField.__div.innerHTML = new EReg("\n", "g").replace(textField.__div.innerHTML, "<br>");
+					// textField.__div.innerHTML = new EReg("\r", "g").replace(textField.__div.innerHTML, "<br>");
 
 					textField.__dirty = false;
 				}
