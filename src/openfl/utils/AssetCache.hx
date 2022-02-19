@@ -165,7 +165,7 @@ class AssetCache implements IAssetCache
 	**/
 	public function getKeys(prefix:String = null):Array<String>
 	{
-		var result = [];
+		var result:Array<String> = [];
 
 		result = result.concat(getBitmapKeys(prefix));
 		result = result.concat(getFontKeys(prefix));
@@ -182,7 +182,7 @@ class AssetCache implements IAssetCache
 	**/
 	public function getBitmapKeys(prefix:String = null):Array<String>
 	{
-		var result = [];
+		var result:Array<String> = [];
 		if (prefix == null)
 		{
 			for (key in bitmapData.keys())
@@ -211,7 +211,7 @@ class AssetCache implements IAssetCache
 	**/
 	public function getFontKeys(prefix:String = null):Array<String>
 	{
-		var result = [];
+		var result:Array<String> = [];
 		if (prefix == null)
 		{
 			for (key in font.keys())
@@ -240,7 +240,7 @@ class AssetCache implements IAssetCache
 	**/
 	public function getSoundKeys(prefix:String = null):Array<String>
 	{
-		var result = [];
+		var result:Array<String> = [];
 		if (prefix == null)
 		{
 			for (key in sound.keys())
