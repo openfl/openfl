@@ -33,9 +33,18 @@ import openfl.display._internal.stats.DrawCallContext;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Context3DGraphics
 {
-	private static var blankBitmapData = new BitmapData(1, 1, false, 0);
+	private static var blankBitmapData(get, null):BitmapData;
 	private static var maskRender:Bool;
 	private static var tempColorTransform = new ColorTransform(1, 1, 1, 1, 0, 0, 0, 0);
+
+	private static function get_blankBitmapData():BitmapData
+	{
+		if (blankBitmapData == null)
+		{
+			blankBitmapData = new BitmapData(1, 1, false, 0);
+		}
+		return blankBitmapData;
+	}
 
 	private static function buildBuffer(graphics:Graphics, renderer:OpenGLRenderer):Void
 	{

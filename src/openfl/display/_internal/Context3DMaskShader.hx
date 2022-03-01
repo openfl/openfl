@@ -9,7 +9,16 @@ import openfl.display.Shader;
 #end
 class Context3DMaskShader extends Shader
 {
-	public static var opaqueBitmapData:BitmapData = new BitmapData(1, 1, false, 0);
+	public static var opaqueBitmapData(get, null):BitmapData;
+
+	private static function get_opaqueBitmapData():BitmapData
+	{
+		if (opaqueBitmapData == null)
+		{
+			opaqueBitmapData = new BitmapData(1, 1, false, 0);
+		}
+		return opaqueBitmapData;
+	}
 
 	@:glFragmentSource("varying vec2 openfl_TextureCoordv;
 
