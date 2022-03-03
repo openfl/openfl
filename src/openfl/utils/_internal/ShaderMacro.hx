@@ -115,10 +115,10 @@ class ShaderMacro
 			var shaderDataFields = new Array<Field>();
 			var uniqueFields = [];
 
-			processFields(glVertexSource, "attribute", shaderDataFields, pos);
-			processFields(glVertexSource, "uniform", shaderDataFields, pos);
-			processFields(glFragmentSource, "uniform", shaderDataFields, pos);
-
+			processFields(glVertexSource,  "attribute", shaderDataFields, pos);
+			processFields(glVertexSource,  "uniform", shaderDataFields, pos);
+			processFields(glFragmentSource,"uniform", shaderDataFields, pos);
+                        processFields(glFragmentSource,"attribute", shaderDataFields, pos);
 			if (shaderDataFields.length > 0)
 			{
 				var fieldNames = new Map<String, Bool>();
