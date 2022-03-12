@@ -19,10 +19,7 @@ class DOMBitmap
 	public static function clear(bitmap:Bitmap, renderer:DOMRenderer):Void
 	{
 		#if (js && html5)
-		if (bitmap.__cacheBitmap != null)
-		{
-			DOMBitmap.clear(bitmap.__cacheBitmap, renderer);
-		}
+		DOMDisplayObject.clear(bitmap, renderer);
 
 		if (bitmap.__image != null)
 		{

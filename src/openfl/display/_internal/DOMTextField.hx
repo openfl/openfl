@@ -26,10 +26,7 @@ class DOMTextField
 	public static function clear(textField:TextField, renderer:DOMRenderer):Void
 	{
 		#if (js && html5)
-		if (textField.__cacheBitmap != null)
-		{
-			DOMBitmap.clear(textField.__cacheBitmap, renderer);
-		}
+		DOMDisplayObject.clear(textField, renderer);
 
 		if (textField.__div != null)
 		{

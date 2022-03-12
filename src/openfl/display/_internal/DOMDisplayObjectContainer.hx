@@ -18,7 +18,11 @@ class DOMDisplayObjectContainer
 
 		DOMDisplayObject.renderDrawable(displayObjectContainer, renderer);
 
-		if (displayObjectContainer.__cacheBitmap != null && !displayObjectContainer.__isCacheBitmapRender) return;
+		if (displayObjectContainer.__cacheBitmap != null && !displayObjectContainer.__isCacheBitmapRender)
+		{
+			renderDrawableClear(displayObjectContainer, renderer);
+			return;
+		}
 
 		renderer.__pushMaskObject(displayObjectContainer);
 
@@ -59,5 +63,7 @@ class DOMDisplayObjectContainer
 		{
 			renderer.__renderDrawableClear(child);
 		}
+
+		DOMShape.clear(displayObjectContainer, renderer);
 	}
 }

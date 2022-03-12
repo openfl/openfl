@@ -17,10 +17,7 @@ class DOMTilemap
 	public static function clear(tilemap:Tilemap, renderer:DOMRenderer):Void
 	{
 		#if (js && html5)
-		if (tilemap.__cacheBitmap != null)
-		{
-			DOMBitmap.clear(tilemap.__cacheBitmap, renderer);
-		}
+		DOMDisplayObject.clear(tilemap, renderer);
 
 		if (tilemap.__canvas != null)
 		{
