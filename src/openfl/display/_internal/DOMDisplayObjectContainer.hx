@@ -20,7 +20,13 @@ class DOMDisplayObjectContainer
 
 		if (displayObjectContainer.__cacheBitmap != null && !displayObjectContainer.__isCacheBitmapRender)
 		{
-			renderDrawableClear(displayObjectContainer, renderer);
+			for (child in displayObjectContainer.__children)
+			{
+				renderer.__renderDrawableClear(child);
+			}
+
+			DOMShape.clear(displayObjectContainer, renderer);
+			displayObjectContainer.__cacheBitmap.stage = displayObjectContainer.stage;
 			return;
 		}
 
@@ -64,6 +70,6 @@ class DOMDisplayObjectContainer
 			renderer.__renderDrawableClear(child);
 		}
 
-		DOMShape.clear(displayObjectContainer, renderer);
+		DOMDisplayObject.clear(displayObjectContainer, renderer);
 	}
 }
