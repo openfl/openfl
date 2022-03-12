@@ -464,7 +464,8 @@ class TextEngine
 		font += "normal ";
 		font += bold ? "bold " : "normal ";
 		font += format.size + "px";
-		font += "/" + (format.leading + format.size + 3) + "px ";
+		// font += "/" + (format.leading + format.size + 3) + "px ";
+		font += "/" + (format.size + 3) + "px ";
 
 		font += "" + switch (fontName)
 		{

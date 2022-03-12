@@ -163,60 +163,60 @@ class DOMTextField
 					var w = textEngine.width;
 					var h = textEngine.height;
 					var scale:Float = 1;
-					var unscaledSize = textField.__textFormat.size;
-					var scaledSize:Float = unscaledSize;
+					// var unscaledSize = textField.__textFormat.size;
+					// var scaledSize:Float = unscaledSize;
 
-					var t = textField.__renderTransform;
-					if (t.a != 1.0 || t.d != 1.0)
-					{
-						if (t.a == t.d)
-						{
-							scale = t.a;
-							t.a = t.d = 1.0;
-						}
-						else if (t.a > t.d)
-						{
-							scale = t.a;
-							t.d /= t.a;
-							t.a = 1.0;
-						}
-						else
-						{
-							scale = t.d;
-							t.a /= t.d;
-							t.d = 1.0;
-						}
-						scaledSize *= scale;
+					// var t = textField.__renderTransform;
+					// if (t.a != 1.0 || t.d != 1.0)
+					// {
+					// 	if (t.a == t.d)
+					// 	{
+					// 		scale = t.a;
+					// 		t.a = t.d = 1.0;
+					// 	}
+					// 	else if (t.a > t.d)
+					// 	{
+					// 		scale = t.a;
+					// 		t.d /= t.a;
+					// 		t.a = 1.0;
+					// 	}
+					// 	else
+					// 	{
+					// 		scale = t.d;
+					// 		t.a /= t.d;
+					// 		t.d = 1.0;
+					// 	}
+					// 	scaledSize *= scale;
 
-						#if openfl_half_round_font_sizes
-						var roundedFontSize = Math.fceil(scaledFontSize * 2) / 2;
-						if (roundedFontSize > scaledFontSize)
-						{
-							var adjustment = (scaledFontSize / roundedFontSize);
-							if (adjustment < 1 && (1 - adjustment) < 0.1)
-							{
-								t.a = 1;
-								t.d = 1;
-							}
-							else
-							{
-								scale *= adjustment;
-								t.a *= adjustment;
-								t.d *= adjustment;
-							}
-						}
+					// 	#if openfl_half_round_font_sizes
+					// 	var roundedFontSize = Math.fceil(scaledFontSize * 2) / 2;
+					// 	if (roundedFontSize > scaledFontSize)
+					// 	{
+					// 		var adjustment = (scaledFontSize / roundedFontSize);
+					// 		if (adjustment < 1 && (1 - adjustment) < 0.1)
+					// 		{
+					// 			t.a = 1;
+					// 			t.d = 1;
+					// 		}
+					// 		else
+					// 		{
+					// 			scale *= adjustment;
+					// 			t.a *= adjustment;
+					// 			t.d *= adjustment;
+					// 		}
+					// 	}
 
-						scaledSize = roundedFontSize;
-						#end
+					// 	scaledSize = roundedFontSize;
+					// 	#end
 
-						w = Math.ceil(w * scale);
-						h = Math.ceil(h * scale);
-					}
+					// 	w = Math.ceil(w * scale);
+					// 	h = Math.ceil(h * scale);
+					// }
 
-					untyped textField.__textFormat.size = scaledSize;
+					// untyped textField.__textFormat.size = scaledSize;
 
 					var text = "";
-					var adjustment:Float = 0;
+					// var adjustment:Float = 0;
 
 					if (textField.__isHTML)
 					{
