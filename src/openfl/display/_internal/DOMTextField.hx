@@ -336,7 +336,7 @@ class DOMTextField
 
 						if (!textField.__isHTML)
 						{
-							text = StringTools.htmlEscape(textEngine.text.substring(group.startIndex, group.endIndex));
+							text += StringTools.htmlEscape(textEngine.text.substring(group.startIndex, group.endIndex));
 						}
 						else
 						{
