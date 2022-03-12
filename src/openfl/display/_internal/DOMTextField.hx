@@ -326,7 +326,12 @@ class DOMTextField
 
 						if (group.format.url != null && group.format.url != "")
 						{
-							text += "<a href='" + group.format.url + "' target='" + group.format.target + "'>";
+							var anchorStyle = "text-decoration: underline; ";
+							if (group.format.color != null)
+							{
+								anchorStyle += "color: #" + StringTools.hex(group.format.color & 0xFFFFFF, 6) + "; ";
+							}
+							text += "<a style='" + anchorStyle + "' href='" + group.format.url + "' target='" + group.format.target + "'>";
 						}
 
 						if (!textField.__isHTML)
