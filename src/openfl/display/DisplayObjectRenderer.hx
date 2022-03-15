@@ -283,6 +283,13 @@ class DisplayObjectRenderer extends EventDispatcher
 			var updateTransform = (needRender || !displayObject.__cacheBitmap.__worldTransform.equals(displayObject.__worldTransform));
 			var hasFilters = #if !openfl_disable_filters displayObject.__filters != null #else false #end;
 
+			#if !openfl_enable_cacheasbitmap
+			if (renderer.__type == DOM && !hasFilters)
+			{
+				return false;
+			}
+			#end
+
 			if (hasFilters && !needRender)
 			{
 				for (filter in displayObject.__filters)
