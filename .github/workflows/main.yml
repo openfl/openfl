@@ -28,7 +28,6 @@ jobs:
           haxelib install hxp --quiet
           haxelib git lime https://github.com/haxelime/lime --quiet
           haxelib install utest --quiet
-          haxelib install hxp --quiet
 
       - name: Setup environment
         run: |
