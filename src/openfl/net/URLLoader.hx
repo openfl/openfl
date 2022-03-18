@@ -399,6 +399,8 @@ class URLLoader extends EventDispatcher
 	{
 		__dispatchStatus();
 
+		#if !hl
+		// can't compare a string against an integer in HashLink
 		if (error == 403)
 		{
 			var event = new SecurityErrorEvent(SecurityErrorEvent.SECURITY_ERROR);
@@ -406,6 +408,7 @@ class URLLoader extends EventDispatcher
 			dispatchEvent(event);
 		}
 		else
+		#end
 		{
 			var event = new IOErrorEvent(IOErrorEvent.IO_ERROR);
 			event.text = Std.string(error);
