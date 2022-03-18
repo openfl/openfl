@@ -23,7 +23,7 @@ jobs:
 
       - name: Install Haxe dependencies
         run: |
-          haxelib install lime --quiet
+          haxelib git lime https://github.com/haxelime/lime --quiet
           haxelib install utest --quiet
           haxelib install hxp --quiet
 
@@ -94,7 +94,7 @@ jobs:
 
       - name: Install Haxe dependencies
         run: |
-          haxelib install lime --quiet
+          haxelib git lime https://github.com/haxelime/lime --quiet
           haxelib install dox --quiet
           haxelib dev openfl $GITHUB_WORKSPACE
 
