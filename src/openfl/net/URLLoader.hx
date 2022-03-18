@@ -383,7 +383,7 @@ class URLLoader extends EventDispatcher
 
 		__httpRequest.followRedirects = request.followRedirects;
 		__httpRequest.timeout = Std.int(request.idleTimeout);
-		__httpRequest.withCredentials = request.manageCookies;
+		__httpRequest.manageCookies = request.manageCookies;
 
 		// TODO: Better user agent?
 		var userAgent = request.userAgent;
