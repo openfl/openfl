@@ -45,7 +45,7 @@ class CanvasShape
 
 					if (scale9Grid != null && transform.b == 0 && transform.c == 0)
 					{
-						context.setTransform(1, 0, 0, 1, transform.tx, transform.ty);
+						// context.setTransform(1, 0, 0, 1, transform.tx, transform.ty);
 
 						var bounds = graphics.__bounds;
 
