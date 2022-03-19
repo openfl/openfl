@@ -317,7 +317,7 @@ class DOMTextField
 						// var x = group.offsetX + scrollX - bounds.x;
 						// var y = group.offsetY + group.ascent + scrollY - bounds.y;
 						var x = group.offsetX + scrollX;
-						var y = group.offsetY + scrollY;
+						var y = group.offsetY + scrollY + 3;
 
 						text += "left: " + x + "px; top: " + y + "px; vertical-align: top; position: absolute;\">";
 
@@ -333,11 +333,11 @@ class DOMTextField
 
 						if (!textField.__isHTML)
 						{
-							text += StringTools.htmlEscape(textEngine.text.substring(group.startIndex, group.endIndex));
+							text += StringTools.replace(StringTools.htmlEscape(textEngine.text.substring(group.startIndex, group.endIndex)), " ", "&nbsp;");
 						}
 						else
 						{
-							text += textEngine.text.substring(group.startIndex, group.endIndex);
+							text += StringTools.replace(textEngine.text.substring(group.startIndex, group.endIndex), " ", "&nbsp;");
 						}
 
 						if (group.format.url != null && group.format.url != "")
@@ -347,8 +347,6 @@ class DOMTextField
 
 						text += "</div>";
 					}
-
-					style.setProperty("top", "3px", null);
 
 					if (textEngine.border)
 					{
