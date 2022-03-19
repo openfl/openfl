@@ -23,6 +23,7 @@ import sys.io.Process;
 #if (js && html5)
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
+import js.html.Element;
 import js.Browser;
 #end
 
@@ -44,6 +45,7 @@ class TextEngine
 	private static var __defaultFonts:Map<String, DefaultFontSet>;
 	#if (js && html5)
 	private static var __context:CanvasRenderingContext2D;
+	private static var __div:Element;
 	#end
 
 	public var antiAliasType:AntiAliasType;
@@ -148,6 +150,18 @@ class TextEngine
 		{
 			__context = (cast Browser.document.createElement("canvas") : CanvasElement).getContext("2d");
 		}
+
+		#if (js && html5 && openfl_measuretext_div)
+		if (__div == null)
+		{
+			__div = cast Browser.document.createElement("div");
+			__div.style.setProperty("pointer-events", "none", null);
+			__div.style.setProperty("white-space", "nowrap", null);
+			__div.style.position = "absolute";
+			__div.style.top = "110%"; // position off-screen!
+			Browser.document.body.appendChild(__div);
+		}
+		#end
 		#end
 	}
 
@@ -389,7 +403,11 @@ class TextEngine
 		var ascent:Float, descent:Float, leading:Int;
 
 		#if (js && html5)
-		__context.font = getFont(format);
+		var font = getFont(format);
+		__context.font = font;
+		#if openfl_measuretext_div
+		__div.style.setProperty("font", font, null);
+		#end
 		#end
 
 		var font = getFontInstance(format);
@@ -788,7 +806,7 @@ class TextEngine
 
 					for (i in startIndex...endIndex)
 					{
-						width = __context.measureText(text.substring(startIndex, i + 1)).width;
+						width = measureText(text.substring(startIndex, i + 1));
 						// if (i > 0) width += letterSpacing;
 
 						positions.push(width - previousWidth);
@@ -805,8 +823,8 @@ class TextEngine
 						if (i < text.length - 1)
 						{
 							// Advance can be less for certain letter combinations, e.g. 'Yo' vs. 'Do'
-							var nextWidth = __context.measureText(text.charAt(i + 1)).width;
-							var twoWidths = __context.measureText(text.substr(i, 2)).width;
+							var nextWidth = measureText(text.charAt(i + 1));
+							var twoWidths = measureText(text.substr(i, 2));
 							advance = twoWidths - nextWidth;
 						}
 						else
@@ -861,9 +879,7 @@ class TextEngine
 
 			return __shapeCache.cache(formatRange, __textLayout);
 			#end
-		}
-
-		#if !js inline #end function getPositionsWidth(positions:#if (js && html5) Array<Float> #else Array<GlyphPosition> #end):Float
+		} #if !js inline #end function getPositionsWidth(positions:#if (js && html5) Array<Float> #else Array<GlyphPosition> #end):Float
 
 		{
 			var width = 0.0;
@@ -884,7 +900,7 @@ class TextEngine
 
 		{
 			#if (js && html5)
-			return __context.measureText(text).width;
+			return measureText(text);
 			#else
 			if (__textLayout == null)
 			{
@@ -1013,7 +1029,11 @@ class TextEngine
 				currentFormat.__merge(formatRange.format);
 
 				#if (js && html5)
-				__context.font = getFont(currentFormat);
+				var fontString = getFont(currentFormat);
+				__context.font = fontString;
+				#if openfl_measuretext_div
+				__div.style.setProperty("font", fontString, null);
+				#end
 				#end
 
 				font = getFontInstance(currentFormat);
@@ -1592,6 +1612,18 @@ class TextEngine
 		{
 			Log.info('LG ${lg.positions.length - (lg.endIndex - lg.startIndex)},line:${lg.lineIndex},w:${lg.width},h:${lg.height},x:${Std.int(lg.offsetX)},y:${Std.int(lg.offsetY)},"${text.substring(lg.startIndex, lg.endIndex)}",${lg.startIndex},${lg.endIndex}');
 		}
+		#end
+	}
+
+	private function measureText(text:String):Float
+	{
+		#if (js && html5)
+		#if openfl_measuretext_div
+		__div.innerHTML = StringTools.replace(text, " ", "&nbsp;");
+		return __div.clientWidth;
+		#else
+		return __context.measureText(text).width;
+		#end
 		#end
 	}
 
