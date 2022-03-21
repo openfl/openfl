@@ -40,11 +40,6 @@ class CanvasRenderer extends DisplayObjectRenderer
 	@SuppressWarnings("checkstyle:Dynamic")
 	public var context:#if lime Canvas2DRenderContext #else Dynamic #end;
 
-	/**
-		The active pixel ratio used during rendering
-	**/
-	public var pixelRatio(default, null):Float = 1;
-
 	@:noCompletion private var __isDOM:Bool;
 	@:noCompletion private var __tempMatrix:Matrix;
 

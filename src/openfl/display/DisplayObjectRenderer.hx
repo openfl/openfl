@@ -47,6 +47,7 @@ class DisplayObjectRenderer extends EventDispatcher
 	@:noCompletion private var __cleared:Bool;
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __context:#if lime RenderContext #else Dynamic #end;
 	@:noCompletion private var __overrideBlendMode:BlendMode;
+	@:noCompletion private var __pixelRatio:Int;
 	@:noCompletion private var __roundPixels:Bool;
 	@:noCompletion private var __stage:Stage;
 	@:noCompletion private var __tempColorTransform:ColorTransform;
@@ -61,6 +62,7 @@ class DisplayObjectRenderer extends EventDispatcher
 		super();
 
 		__allowSmoothing = true;
+		__pixelRatio = 1;
 		__tempColorTransform = new ColorTransform();
 		__worldAlpha = 1;
 	}
@@ -337,17 +339,23 @@ class DisplayObjectRenderer extends EventDispatcher
 			var filterWidth = 0, filterHeight = 0;
 			var offsetX = 0., offsetY = 0.;
 
+			#if openfl_disable_cacheasbitmap_highdpi
+			var pixelRatio = 1;
+			#else
+			var pixelRatio = __pixelRatio;
+			#end
+
 			if (updateTransform || needRender)
 			{
 				rect = Rectangle.__pool.get();
 
 				displayObject.__getFilterBounds(rect, displayObject.__cacheBitmapMatrix);
 
-				filterWidth = Math.ceil(rect.width);
-				filterHeight = Math.ceil(rect.height);
+				filterWidth = Math.ceil(rect.width) * pixelRatio;
+				filterHeight = Math.ceil(rect.height) * pixelRatio;
 
-				offsetX = rect.x > 0 ? Math.ceil(rect.x) : Math.floor(rect.x);
-				offsetY = rect.y > 0 ? Math.ceil(rect.y) : Math.floor(rect.y);
+				offsetX = rect.x > 0 ? Math.ceil(rect.x) * pixelRatio : Math.floor(rect.x) * pixelRatio;
+				offsetY = rect.y > 0 ? Math.ceil(rect.y) * pixelRatio : Math.floor(rect.y) * pixelRatio;
 
 				if (displayObject.__cacheBitmapData != null)
 				{
@@ -443,6 +451,7 @@ class DisplayObjectRenderer extends EventDispatcher
 				if (bitmapMatrix == displayObject.__renderTransform)
 				{
 					displayObject.__cacheBitmap.__renderTransform.identity();
+					displayObject.__cacheBitmap.__renderTransform.scale(1 / pixelRatio, 1 / pixelRatio);
 					displayObject.__cacheBitmap.__renderTransform.tx = displayObject.__renderTransform.tx + offsetX;
 					displayObject.__cacheBitmap.__renderTransform.ty = displayObject.__renderTransform.ty + offsetY;
 				}
@@ -451,6 +460,7 @@ class DisplayObjectRenderer extends EventDispatcher
 					displayObject.__cacheBitmap.__renderTransform.copyFrom(displayObject.__cacheBitmapMatrix);
 					displayObject.__cacheBitmap.__renderTransform.invert();
 					displayObject.__cacheBitmap.__renderTransform.concat(displayObject.__renderTransform);
+					displayObject.__cacheBitmap.__renderTransform.scale(1 / pixelRatio, 1 / pixelRatio);
 					displayObject.__cacheBitmap.__renderTransform.tx += offsetX;
 					displayObject.__cacheBitmap.__renderTransform.ty += offsetY;
 				}
@@ -509,6 +519,7 @@ class DisplayObjectRenderer extends EventDispatcher
 				displayObject.__cacheBitmapRenderer.__worldTransform.copyFrom(displayObject.__renderTransform);
 				displayObject.__cacheBitmapRenderer.__worldTransform.invert();
 				displayObject.__cacheBitmapRenderer.__worldTransform.concat(displayObject.__cacheBitmapMatrix);
+				displayObject.__cacheBitmapRenderer.__worldTransform.scale(pixelRatio, pixelRatio);
 				displayObject.__cacheBitmapRenderer.__worldTransform.tx -= offsetX;
 				displayObject.__cacheBitmapRenderer.__worldTransform.ty -= offsetY;
 

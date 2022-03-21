@@ -123,7 +123,7 @@ class CanvasTextField
 
 				if (renderer.__isDOM)
 				{
-					var scale = renderer.pixelRatio;
+					var scale = renderer.__pixelRatio;
 
 					graphics.__canvas.width = Std.int(width * scale);
 					graphics.__canvas.height = Std.int(height * scale);

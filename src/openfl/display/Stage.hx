@@ -1182,16 +1182,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	@:noCompletion private function __createRenderer():Void
 	{
 		#if lime
-		#if (js && html5)
-		var pixelRatio = 1;
-
-		if (window.scale > 1)
-		{
-			// TODO: Does this check work?
-			pixelRatio = untyped window.devicePixelRatio || 1;
-		}
-		#end
-
 		var windowWidth = Std.int(window.width * window.scale);
 		var windowHeight = Std.int(window.height * window.scale);
 
@@ -1208,13 +1198,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			case CANVAS:
 				#if (js && html5)
 				__renderer = new CanvasRenderer(window.context.canvas2D);
-				cast(__renderer, CanvasRenderer).pixelRatio = pixelRatio;
 				#end
 
 			case DOM:
 				#if (js && html5)
 				__renderer = new DOMRenderer(window.context.dom);
-				cast(__renderer, DOMRenderer).pixelRatio = pixelRatio;
 				#end
 
 			case CAIRO:
@@ -1228,8 +1216,13 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		if (__renderer != null)
 		{
 			__renderer.__allowSmoothing = (quality != LOW);
+			__renderer.__pixelRatio = Math.round(window.scale);
 			__renderer.__worldTransform = __displayMatrix;
 			__renderer.__stage = this;
+
+			#if (js && html5 && dom)
+			__renderer.__pixelRatio = 2; // untyped window.devicePixelRatio || 1;
+			#end
 
 			__renderer.__resize(windowWidth, windowHeight);
 		}
