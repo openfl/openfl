@@ -92,8 +92,14 @@ class CanvasTextField
 
 		if (textField.__dirty || graphics.__softwareDirty)
 		{
-			var width = graphics.__width;
-			var height = graphics.__height;
+			#if openfl_disable_textfield_hdpi
+			var pixelRatio = 1;
+			#else
+			var pixelRatio = renderer.__pixelRatio;
+			#end
+
+			var width = Math.round(graphics.__width * pixelRatio);
+			var height = Math.round(graphics.__height * pixelRatio);
 
 			if (((textEngine.text == null || textEngine.text == "")
 				&& !textEngine.background
@@ -143,7 +149,13 @@ class CanvasTextField
 					graphics.__canvas.width = width;
 					graphics.__canvas.height = height;
 
-					context.setTransform(transform.a, transform.b, transform.c, transform.d, transform.tx, transform.ty);
+					var matrix = Matrix.__pool.get();
+					matrix.copyFrom(transform);
+					matrix.scale(pixelRatio, pixelRatio);
+
+					context.setTransform(matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx, matrix.ty);
+
+					Matrix.__pool.release(matrix);
 				}
 
 				if (clearRect == null)
