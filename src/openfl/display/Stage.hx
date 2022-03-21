@@ -1216,12 +1216,12 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		if (__renderer != null)
 		{
 			__renderer.__allowSmoothing = (quality != LOW);
-			__renderer.__pixelRatio = Math.round(window.scale);
+			__renderer.__pixelRatio = window.scale;
 			__renderer.__worldTransform = __displayMatrix;
 			__renderer.__stage = this;
 
 			#if (js && html5 && dom)
-			__renderer.__pixelRatio = 2; // untyped window.devicePixelRatio || 1;
+			__renderer.__pixelRatio = Browser.window.devicePixelRatio;
 			#end
 
 			__renderer.__resize(windowWidth, windowHeight);
@@ -3021,8 +3021,15 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		{
 			if (__logicalWidth == 0 || __logicalHeight == 0 || scaleMode == NO_SCALE || windowWidth == 0 || windowHeight == 0)
 			{
+				#if openfl_dpi_aware
 				stageWidth = windowWidth;
 				stageHeight = windowHeight;
+				#else
+				stageWidth = Math.round(windowWidth / window.scale);
+				stageHeight = Math.round(windowHeight / window.scale);
+
+				__displayMatrix.scale(window.scale, window.scale);
+				#end
 
 				__displayRect.setTo(0, 0, stageWidth, stageHeight);
 			}
