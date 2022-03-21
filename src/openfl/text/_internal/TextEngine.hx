@@ -1615,17 +1615,17 @@ class TextEngine
 		#end
 	}
 
+	#if (js && html5)
 	private function measureText(text:String):Float
 	{
-		#if (js && html5)
 		#if openfl_measuretext_div
 		__div.innerHTML = StringTools.replace(text, " ", "&nbsp;");
 		return __div.clientWidth;
 		#else
 		return __context.measureText(text).width;
 		#end
-		#end
 	}
+	#end
 
 	public function restrictText(value:UTF8String):UTF8String
 	{
