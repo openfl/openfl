@@ -47,7 +47,7 @@ class DisplayObjectRenderer extends EventDispatcher
 	@:noCompletion private var __cleared:Bool;
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __context:#if lime RenderContext #else Dynamic #end;
 	@:noCompletion private var __overrideBlendMode:BlendMode;
-	@:noCompletion private var __pixelRatio:Int;
+	@:noCompletion private var __pixelRatio:Float;
 	@:noCompletion private var __roundPixels:Bool;
 	@:noCompletion private var __stage:Stage;
 	@:noCompletion private var __tempColorTransform:ColorTransform;
@@ -339,7 +339,7 @@ class DisplayObjectRenderer extends EventDispatcher
 			var filterWidth = 0, filterHeight = 0;
 			var offsetX = 0., offsetY = 0.;
 
-			#if openfl_disable_cacheasbitmap_highdpi
+			#if openfl_disable_cacheasbitmap_hdpi
 			var pixelRatio = 1;
 			#else
 			var pixelRatio = __pixelRatio;
@@ -351,11 +351,11 @@ class DisplayObjectRenderer extends EventDispatcher
 
 				displayObject.__getFilterBounds(rect, displayObject.__cacheBitmapMatrix);
 
-				filterWidth = Math.ceil(rect.width) * pixelRatio;
-				filterHeight = Math.ceil(rect.height) * pixelRatio;
+				filterWidth = Math.ceil(rect.width * pixelRatio);
+				filterHeight = Math.ceil(rect.height * pixelRatio);
 
-				offsetX = rect.x > 0 ? Math.ceil(rect.x) * pixelRatio : Math.floor(rect.x) * pixelRatio;
-				offsetY = rect.y > 0 ? Math.ceil(rect.y) * pixelRatio : Math.floor(rect.y) * pixelRatio;
+				offsetX = rect.x > 0 ? Math.ceil(rect.x) : Math.floor(rect.x);
+				offsetY = rect.y > 0 ? Math.ceil(rect.y) : Math.floor(rect.y);
 
 				if (displayObject.__cacheBitmapData != null)
 				{
@@ -427,8 +427,8 @@ class DisplayObjectRenderer extends EventDispatcher
 						var textField:TextField = cast displayObject;
 						if (textField.__cacheBitmap != null)
 						{
-							textField.__cacheBitmap.__renderTransform.tx -= textField.__offsetX;
-							textField.__cacheBitmap.__renderTransform.ty -= textField.__offsetY;
+							textField.__cacheBitmap.__renderTransform.tx -= textField.__offsetX * pixelRatio;
+							textField.__cacheBitmap.__renderTransform.ty -= textField.__offsetY * pixelRatio;
 						}
 					}
 
@@ -460,7 +460,8 @@ class DisplayObjectRenderer extends EventDispatcher
 					displayObject.__cacheBitmap.__renderTransform.copyFrom(displayObject.__cacheBitmapMatrix);
 					displayObject.__cacheBitmap.__renderTransform.invert();
 					displayObject.__cacheBitmap.__renderTransform.concat(displayObject.__renderTransform);
-					displayObject.__cacheBitmap.__renderTransform.scale(1 / pixelRatio, 1 / pixelRatio);
+					displayObject.__cacheBitmap.__renderTransform.a *= 1 / pixelRatio;
+					displayObject.__cacheBitmap.__renderTransform.d *= 1 / pixelRatio;
 					displayObject.__cacheBitmap.__renderTransform.tx += offsetX;
 					displayObject.__cacheBitmap.__renderTransform.ty += offsetY;
 				}
@@ -519,9 +520,9 @@ class DisplayObjectRenderer extends EventDispatcher
 				displayObject.__cacheBitmapRenderer.__worldTransform.copyFrom(displayObject.__renderTransform);
 				displayObject.__cacheBitmapRenderer.__worldTransform.invert();
 				displayObject.__cacheBitmapRenderer.__worldTransform.concat(displayObject.__cacheBitmapMatrix);
-				displayObject.__cacheBitmapRenderer.__worldTransform.scale(pixelRatio, pixelRatio);
 				displayObject.__cacheBitmapRenderer.__worldTransform.tx -= offsetX;
 				displayObject.__cacheBitmapRenderer.__worldTransform.ty -= offsetY;
+				displayObject.__cacheBitmapRenderer.__worldTransform.scale(pixelRatio, pixelRatio);
 
 				displayObject.__cacheBitmapRenderer.__worldColorTransform.__copyFrom(colorTransform);
 				displayObject.__cacheBitmapRenderer.__worldColorTransform.__invert();
