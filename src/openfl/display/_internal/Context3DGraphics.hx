@@ -479,6 +479,8 @@ class Context3DGraphics
 
 			// }
 
+			renderer.__softwareRenderer.__pixelRatio = renderer.__pixelRatio;
+
 			var cacheTransform = renderer.__softwareRenderer.__worldTransform;
 			renderer.__softwareRenderer.__worldTransform = Matrix.__identity;
 
