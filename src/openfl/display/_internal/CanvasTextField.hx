@@ -125,38 +125,22 @@ class CanvasTextField
 
 				context = graphics.__context;
 
-				var transform = graphics.__renderTransform;
+				graphics.__canvas.width = width;
+				graphics.__canvas.height = height;
 
 				if (renderer.__isDOM)
 				{
-					var scale = renderer.__pixelRatio;
-
-					graphics.__canvas.width = Std.int(width * scale);
-					graphics.__canvas.height = Std.int(height * scale);
-					graphics.__canvas.style.width = width + "px";
-					graphics.__canvas.style.height = height + "px";
-
-					var matrix = Matrix.__pool.get();
-					matrix.copyFrom(transform);
-					matrix.scale(scale, scale);
-
-					renderer.setTransform(matrix, context);
-
-					Matrix.__pool.release(matrix);
+					graphics.__canvas.style.width = Math.round(width / pixelRatio) + "px";
+					graphics.__canvas.style.height = Math.round(height / pixelRatio) + "px";
 				}
-				else
-				{
-					graphics.__canvas.width = width;
-					graphics.__canvas.height = height;
 
-					var matrix = Matrix.__pool.get();
-					matrix.copyFrom(transform);
-					matrix.scale(pixelRatio, pixelRatio);
+				var matrix = Matrix.__pool.get();
+				matrix.scale(pixelRatio, pixelRatio);
+				matrix.concat(graphics.__renderTransform);
 
-					context.setTransform(matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx, matrix.ty);
+				context.setTransform(matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx, matrix.ty);
 
-					Matrix.__pool.release(matrix);
-				}
+				Matrix.__pool.release(matrix);
 
 				if (clearRect == null)
 				{
@@ -384,6 +368,7 @@ class CanvasTextField
 				}
 
 				graphics.__bitmap = BitmapData.fromCanvas(textField.__graphics.__canvas);
+				graphics.__bitmapScale = pixelRatio;
 				graphics.__visible = true;
 				textField.__dirty = false;
 				graphics.__softwareDirty = false;

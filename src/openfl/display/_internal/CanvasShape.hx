@@ -2,6 +2,7 @@ package openfl.display._internal;
 
 import openfl.display.CanvasRenderer;
 import openfl.display.DisplayObject;
+import openfl.geom.Matrix;
 
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.Graphics)
@@ -49,8 +50,8 @@ class CanvasShape
 
 						var bounds = graphics.__bounds;
 
-						var scaleX = graphics.__renderTransform.a;
-						var scaleY = graphics.__renderTransform.d;
+						var scaleX = graphics.__renderTransform.a / graphics.__bitmapScale;
+						var scaleY = graphics.__renderTransform.d / graphics.__bitmapScale;
 						var renderScaleX = transform.a;
 						var renderScaleY = transform.d;
 
@@ -111,13 +112,13 @@ class CanvasShape
 					}
 					else
 					{
+						var matrix = Matrix.__pool.get();
+						matrix.scale(1 / graphics.__bitmapScale, 1 / graphics.__bitmapScale);
+						matrix.concat(transform);
+
 						renderer.setTransform(transform, context);
 
-						if (renderer.__isDOM)
-						{
-							var reverseScale = 1 / renderer.__pixelRatio;
-							context.scale(reverseScale, reverseScale);
-						}
+						Matrix.__pool.release(matrix);
 
 						context.drawImage(canvas, 0, 0, width, height);
 					}

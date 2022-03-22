@@ -91,8 +91,14 @@ class CairoTextField
 
 		graphics.__update(renderer.__worldTransform);
 
-		var width = graphics.__width;
-		var height = graphics.__height;
+		#if openfl_disable_textfield_hdpi
+		var pixelRatio = 1;
+		#else
+		var pixelRatio = renderer.__pixelRatio;
+		#end
+
+		var width = Math.round(graphics.__width * pixelRatio);
+		var height = Math.round(graphics.__height * pixelRatio);
 
 		var renderable = (textEngine.border || textEngine.background || textEngine.text != null);
 		var needsUpscaling = false;
@@ -147,6 +153,7 @@ class CairoTextField
 			graphics.__managed = true;
 
 			graphics.__bitmap = bitmap;
+			graphics.__bitmapScale = pixelRatio;
 
 			cairo = graphics.__cairo;
 
@@ -177,7 +184,13 @@ class CairoTextField
 			cairo.setOperator(OVER);
 		}
 
-		renderer.applyMatrix(graphics.__renderTransform, cairo);
+		var matrix = Matrix.__pool.get();
+		matrix.copyFrom(graphics.__renderTransform);
+		matrix.scale(pixelRatio, pixelRatio);
+
+		renderer.applyMatrix(matrix, cairo);
+
+		Matrix.__pool.release(matrix);
 
 		if (textEngine.border)
 		{
