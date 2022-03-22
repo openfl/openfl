@@ -480,7 +480,7 @@ class Context3DGraphics
 			// }
 
 			var cacheTransform = renderer.__softwareRenderer.__worldTransform;
-			renderer.__softwareRenderer.__worldTransform = renderer.__worldTransform;
+			renderer.__softwareRenderer.__worldTransform = Matrix.__identity;
 
 			#if (js && html5)
 			CanvasGraphics.render(graphics, cast renderer.__softwareRenderer);
