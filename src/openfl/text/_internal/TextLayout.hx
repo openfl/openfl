@@ -171,7 +171,7 @@ class TextLayout
 					{
 						// TODO: Handle differently?
 
-						positions.push(new GlyphPosition(0, new Vector2(0, 0), new Vector2(0, 0)));
+						// positions.push(new GlyphPosition(0, new Vector2(0, 0), new Vector2(0, 0)));
 					}
 
 					positions.push(new GlyphPosition(info.codepoint, new Vector2(position.xAdvance / 64 + letterSpacing, position.yAdvance / 64),
@@ -481,10 +481,7 @@ class TextLayout
 	#if lime
 	@:to public inline function toHBScript():HBScript
 	{
-		return switch (this)
-		{
-			default: HBScript.COMMON;
-		}
+		return this.charCodeAt(0) << 24 | this.charCodeAt(1) << 16 | this.charCodeAt(2) << 8 | this.charCodeAt(3);
 	}
 	#end
 

@@ -292,7 +292,15 @@ class CairoTextField
 					for (position in group.positions)
 					{
 						if (position == null || position.glyph == 0) continue;
-						glyphs.push(new CairoGlyph(position.glyph, x + position.offset.x + 0.5, y - position.offset.y + 0.5));
+						if (textEngine.rTL)
+						{
+							glyphs.push(new CairoGlyph(position.glyph, x - position.offset.x + 0.5, y - position.offset.y + 0.5));
+						}
+						else
+						{
+							glyphs.push(new CairoGlyph(position.glyph, x + position.offset.x + 0.5, y - position.offset.y + 0.5));
+						}
+
 						x += position.advance.x;
 						y -= position.advance.y;
 					}
@@ -309,11 +317,19 @@ class CairoTextField
 								&& group.endIndex >= textField.__caretIndex)
 							{
 								advance = 0.0;
+								if (textField.rTL) advance = group.width;
 
 								for (i in 0...(textField.__caretIndex - group.startIndex))
 								{
 									if (group.positions.length <= i) break;
-									advance += group.getAdvance(i);
+									if (textField.rTL)
+									{
+										advance -= group.getAdvance(group.positions.length - 1 - i);
+									}
+									else
+									{
+										advance += group.getAdvance(i);
+									}
 								}
 
 								var scrollY = 0.0;
@@ -364,7 +380,8 @@ class CairoTextField
 
 								if (end != null)
 								{
-									end.x += end.width + 2;
+									if (!textField.rTL) end.x += end.width + 2;
+									if (textField.rTL) end.x -= group.getAdvance(0); // group.positions.length - 1);
 								}
 							}
 							else
@@ -386,7 +403,16 @@ class CairoTextField
 								selectionStart -= group.startIndex;
 								selectionEnd -= group.startIndex;
 								for (i in selectionStart...selectionEnd)
-									selectedGylphs.push(glyphs[i]);
+								{
+									if (textEngine.rTL)
+									{
+										selectedGylphs.push(glyphs[glyphs.length - 1 - i]);
+									}
+									else
+									{
+										selectedGylphs.push(glyphs[i]);
+									}
+								}
 								cairo.showGlyphs(selectedGylphs);
 
 								// TODO: Avoid creating glyph array every time.

@@ -7,6 +7,7 @@ import openfl.text._internal.TextEngine;
 import openfl.text._internal.TextFormatRange;
 import openfl.text._internal.TextLayoutGroup;
 import openfl.text._internal.UTF8String;
+import openfl.text._internal.TextLayout;
 import openfl.utils._internal.Log;
 import openfl.display.DisplayObject;
 import openfl.display.Graphics;
@@ -663,6 +664,9 @@ class TextField extends InteractiveObject
 		have word wrap. The default value is `false`.
 	**/
 	public var wordWrap(get, set):Bool;
+	public var rTL(get, set):Null<Bool>;
+	public var script(get, set):TextScript;
+	public var language(get, set):String;
 
 	@:noCompletion private var __bounds:Rectangle;
 	@:noCompletion private var __caretIndex:Int;
@@ -795,6 +799,21 @@ class TextField extends InteractiveObject
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_wordWrap (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_wordWrap (v); }")
 			},
+			"rTL":
+				{
+					get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_rTL (); }"),
+					set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_rTL (v); }")
+				},
+			"script":
+				{
+					get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_script(); }"),
+					set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_script (v); }")
+				},
+			"language":
+				{
+					get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_language (); }"),
+					set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_language (v); }")
+				},
 		});
 	}
 	#end
@@ -817,6 +836,9 @@ class TextField extends InteractiveObject
 		__displayAsPassword = false;
 		__graphics = new Graphics(this);
 		__textEngine = new TextEngine(this);
+		__textEngine.rTL = rTL;
+		__textEngine.language = language;
+		__textEngine.script = script;
 		__layoutDirty = true;
 		__offsetX = 0;
 		__offsetY = 0;
@@ -913,7 +935,9 @@ class TextField extends InteractiveObject
 
 		__updateLayout();
 
-		x += scrollH;
+		if (rTL) x -= scrollH;
+		else
+			x += scrollH;
 
 		for (i in 0...scrollV - 1)
 		{
@@ -1790,14 +1814,20 @@ class TextField extends InteractiveObject
 				try
 				{
 					var x = group.offsetX;
+					if (rTL) x += group.width;
 
 					for (i in 0...(charIndex - group.startIndex))
 					{
-						x += group.getAdvance(i);
+						if (!rTL) x += group.getAdvance(i);
+						else x -= group.getAdvance(group.positions.length - 1 - i);
 					}
 
 					// TODO: Is this actually right for combining characters?
 					var lastPosition = group.getAdvance(charIndex - group.startIndex);
+					if (rTL)
+					{
+						lastPosition = group.offsetX - group.width;
+					}
 
 					rect.setTo(x, group.offsetY, lastPosition, group.ascent + group.descent);
 					return true;
@@ -1866,7 +1896,9 @@ class TextField extends InteractiveObject
 	{
 		__updateLayout();
 
-		x += scrollH;
+		if (rTL) x -= scrollH;
+		else
+			x += scrollH;
 
 		for (i in 0...scrollV - 1)
 		{
@@ -1894,7 +1926,8 @@ class TextField extends InteractiveObject
 			if (firstGroup)
 			{
 				if (y < group.offsetY) y = group.offsetY;
-				if (x < group.offsetX) x = group.offsetX;
+				if (x < group.offsetX && !rTL) x = group.offsetX;
+				if (x > group.offsetX && rTL) x = group.offsetX;
 				firstGroup = false;
 			}
 
@@ -1902,6 +1935,10 @@ class TextField extends InteractiveObject
 			{
 				if ((x >= group.offsetX && x <= group.offsetX + group.width)
 					|| (!precise && (nextGroup == null || nextGroup.lineIndex != group.lineIndex)))
+				{
+					return group;
+				}
+				else if ((rTL && x <= group.offsetX + group.width) || (!precise && (nextGroup == null || nextGroup.lineIndex != group.lineIndex)))
 				{
 					return group;
 				}
@@ -1924,17 +1961,35 @@ class TextField extends InteractiveObject
 
 		for (i in 0...group.positions.length)
 		{
-			advance += group.getAdvance(i);
-
-			if (x <= group.offsetX + advance)
+			if (rTL)
 			{
-				if (x <= group.offsetX + (advance - group.getAdvance(i)) + (group.getAdvance(i) / 2))
+				advance -= group.getAdvance(i);
+				if (x > group.offsetX + group.width + advance + (group.getAdvance(i) / 2))
 				{
-					return group.startIndex + i;
+					var limitX = group.offsetX + group.width + advance;
+					if (x > limitX)
+					{
+						return group.startIndex + i;
+					}
+					else
+					{
+						return group.endIndex;
+					}
 				}
-				else
+			}
+			else
+			{
+				advance += group.getAdvance(i);
+				if (x <= group.offsetX + advance)
 				{
-					return (group.startIndex + i < group.endIndex) ? group.startIndex + i + 1 : group.endIndex;
+					if (x <= group.offsetX + (advance - group.getAdvance(i)) + (group.getAdvance(i) / 2))
+					{
+						return group.startIndex + i;
+					}
+					else
+					{
+						return (group.startIndex + i < group.endIndex) ? group.startIndex + i + 1 : group.endIndex;
+					}
 				}
 			}
 		}
@@ -2259,11 +2314,15 @@ class TextField extends InteractiveObject
 
 			while (caret.x < tempScrollH && tempScrollH > 0)
 			{
-				tempScrollH -= 24;
+				if (rTL) tempScrollH += 24
+				else
+					tempScrollH -= 24;
 			}
 			while (caret.x > tempScrollH + width - 4)
 			{
-				tempScrollH += 24;
+				if (rTL) tempScrollH -= 24
+				else
+					tempScrollH += 24;
 			}
 
 			Rectangle.__pool.release(caret);
@@ -2279,17 +2338,24 @@ class TextField extends InteractiveObject
 			}
 		}
 
-		if (tempScrollH < 0)
+		if (!rTL)
 		{
-			scrollH = 0;
-		}
-		else if (tempScrollH > maxScrollH)
-		{
-			scrollH = maxScrollH;
+			if (tempScrollH < 0)
+			{
+				scrollH = 0;
+			}
+			else if (tempScrollH > maxScrollH)
+			{
+				scrollH = maxScrollH;
+			}
+			else
+			{
+				scrollH = tempScrollH;
+			}
 		}
 		else
 		{
-			scrollH = tempScrollH;
+			// TODO : Handle RTL
 		}
 
 		// TODO: Handle drag select
@@ -2354,13 +2420,25 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function __updateMouseDrag():Void
 	{
-		if (mouseX > this.width - 1)
-		{
-			scrollH += Std.int(Math.max(Math.min((mouseX - this.width) * .1, 10), 1));
+		if (!rTL) {
+			if (mouseX > this.width - 1)
+			{
+				scrollH += Std.int(Math.max(Math.min((mouseX - this.width) * .1, 10), 1));
+			}
+			else if (mouseX < 1)
+			{
+				scrollH -= Std.int(Math.max(Math.min(mouseX * -.1, 10), 1));
+			}
 		}
-		else if (mouseX < 1)
-		{
-			scrollH -= Std.int(Math.max(Math.min(mouseX * -.1, 10), 1));
+		else {
+			if (mouseX < 0)
+			{
+				scrollH += Std.int(Math.max(Math.min((mouseX - this.width) * .1, 10), 1));
+			}
+			else if (mouseX > this.width - 1)
+			{
+				scrollH -= Std.int(Math.max(Math.min(mouseX * -.1, 10), 1));
+			}
 		}
 
 		__mouseScrollVCounter++;
@@ -3055,6 +3133,60 @@ class TextField extends InteractiveObject
 		return __textEngine.wordWrap = value;
 	}
 
+	@:noCompletion private function get_rTL():Bool
+	{
+		return __textEngine.rTL;
+	}
+
+	@:noCompletion private function set_rTL(value:Bool):Bool
+	{
+		if (value != __textEngine.rTL)
+		{
+			__setTransformDirty();
+			__dirty = true;
+			__layoutDirty = true;
+			__setRenderDirty();
+		}
+
+		return __textEngine.rTL = value;
+	}
+
+	@:noCompletion private function get_script():Null<TextScript>
+	{
+		return __textEngine.script;
+	}
+
+	@:noCompletion private function set_script(value:Null<TextScript>):Null<TextScript>
+	{
+		if (value != __textEngine.script)
+		{
+			__setTransformDirty();
+			__dirty = true;
+			__layoutDirty = true;
+			__setRenderDirty();
+		}
+
+		return __textEngine.script = value;
+	}
+
+	@:noCompletion private function get_language():String
+	{
+		return __textEngine.language;
+	}
+
+	@:noCompletion private function set_language(value:String):String
+	{
+		if (value != __textEngine.language)
+		{
+			__setTransformDirty();
+			__dirty = true;
+			__layoutDirty = true;
+			__setRenderDirty();
+		}
+
+		return __textEngine.language = value;
+	}
+
 	@:noCompletion private override function get_x():Float
 	{
 		return __transform.tx + __offsetX;
@@ -3088,7 +3220,7 @@ class TextField extends InteractiveObject
 		{
 			__updateLayout();
 
-			var position = __getPosition(mouseX + scrollH, mouseY);
+			var position = __getPosition(mouseX + (rTL ? -scrollH : scrollH), mouseY);
 
 			if (position != __caretIndex)
 			{
@@ -3129,7 +3261,7 @@ class TextField extends InteractiveObject
 			__getWorldTransform();
 			__updateLayout();
 
-			var upPos:Int = __getPosition(mouseX + scrollH, mouseY);
+			var upPos:Int = __getPosition(mouseX + (rTL ? -scrollH : scrollH), mouseY);
 			var leftPos:Int;
 			var rightPos:Int;
 
@@ -3225,7 +3357,7 @@ class TextField extends InteractiveObject
 
 		__updateLayout();
 
-		__caretIndex = __getPosition(mouseX + scrollH, mouseY);
+		__caretIndex = __getPosition(mouseX + (rTL ? -scrollH : scrollH), mouseY);
 		__selectionIndex = __caretIndex;
 
 		if (!DisplayObject.__supportDOM)
