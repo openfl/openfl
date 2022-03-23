@@ -91,7 +91,7 @@ class CairoTextField
 
 		graphics.__update(renderer.__worldTransform);
 
-		#if openfl_disable_textfield_hdpi
+		#if (openfl_disable_hdpi || openfl_disable_hdpi_textfield)
 		var pixelRatio = 1;
 		#else
 		var pixelRatio = renderer.__pixelRatio;

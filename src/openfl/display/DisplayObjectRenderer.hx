@@ -339,7 +339,7 @@ class DisplayObjectRenderer extends EventDispatcher
 			var filterWidth = 0, filterHeight = 0;
 			var offsetX = 0., offsetY = 0.;
 
-			#if openfl_disable_cacheasbitmap_hdpi
+			#if (openfl_disable_hdpi || openfl_disable_hdpi_cacheasbitmap)
 			var pixelRatio = 1;
 			#else
 			var pixelRatio = __pixelRatio;
