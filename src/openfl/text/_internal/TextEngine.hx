@@ -1544,7 +1544,17 @@ class TextEngine
 
 							textIndex = endIndex;
 
-							if (endIndex == text.length) alignBaseline();
+							if (endIndex == text.length)
+							{
+								alignBaseline();
+
+								if (breakIndex != -1)
+								{
+									previousBreakIndex = breakIndex;
+									breakCount++;
+									breakIndex = breakCount < lineBreaks.length ? lineBreaks[breakCount] : -1;
+								}
+							}
 						}
 					}
 
