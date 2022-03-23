@@ -35,7 +35,6 @@ jobs:
 
       - name: Install "openfl" command alias
         run: |
-          haxelib run lime rebuild tools -nocolor -verbose -nocffi
           haxelib run openfl setup -alias -y
 
       - name: Run tests
