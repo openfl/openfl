@@ -592,8 +592,9 @@ class TextEngine
 		numLines = 1;
 		maxScrollH = 0;
 
-		for (group in layoutGroups)
+		for (i in 0...layoutGroups.length)
 		{
+			var group = layoutGroups[i];
 			while (group.lineIndex > numLines - 1)
 			{
 				lineAscents.push(currentLineAscent);
@@ -609,6 +610,12 @@ class TextEngine
 				currentLineWidth = 0;
 
 				numLines++;
+			}
+
+			if (i == layoutGroups.length - 1 && group.startIndex == group.endIndex && type != INPUT)
+			{
+				// if the final group contains only a new line, skip it (unless type == INPUT)
+				continue;
 			}
 
 			currentLineAscent = Math.max(currentLineAscent, group.ascent);
@@ -639,7 +646,7 @@ class TextEngine
 			}
 		}
 
-		if (textHeight == 0 && textField != null && textField.type == INPUT)
+		if (textHeight == 0 && textField != null && type == INPUT)
 		{
 			var currentFormat = textField.__textFormat;
 			var ascent, descent, leading, heightValue;
@@ -697,8 +704,9 @@ class TextEngine
 		{
 			var group = layoutGroups[layoutGroups.length - 1];
 
-			if (group != null && group.startIndex == group.endIndex && textField.caretIndex != group.startIndex)
+			if (group != null && group.startIndex == group.endIndex && type != INPUT && textField.caretIndex != group.startIndex)
 			{
+				// if the final group contains only a new line, skip it (unless type == INPUT)
 				textHeight -= currentLineHeight;
 			}
 		}
@@ -1614,7 +1622,7 @@ class TextEngine
 			layoutGroup.offsetX = getBaseX(); // TODO: double check it doesn't default to GUTTER or something
 			layoutGroup.offsetY = offsetY + GUTTER;
 			layoutGroup.width = 0;
-			layoutGroup.height = type == "input" ? heightValue : 0;
+			layoutGroup.height = heightValue;
 		}
 
 		#if openfl_trace_text_layout_groups
