@@ -66,7 +66,7 @@ class Window #if lime extends LimeWindow #end
 
 		if (Reflect.hasField(attributes, "resizable") && !attributes.resizable)
 		{
-			stage.scaleMode = SHOW_ALL;
+			stage.scaleMode = StageScaleMode.SHOW_ALL;
 		}
 
 		#if lime
