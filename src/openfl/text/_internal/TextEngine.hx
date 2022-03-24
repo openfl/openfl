@@ -1455,7 +1455,7 @@ class TextEngine
 						var i = layoutGroups.length - 1;
 						var offsetCount = 0;
 
-						while (true)
+						while (i >= 0)
 						{
 							layoutGroup = layoutGroups[i];
 
