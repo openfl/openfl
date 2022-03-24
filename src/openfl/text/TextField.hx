@@ -11,6 +11,7 @@ import openfl.utils._internal.Log;
 import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.display.InteractiveObject;
+import openfl.display.Stage;
 import openfl.errors.RangeError;
 import openfl.events.Event;
 import openfl.events.FocusEvent;
@@ -2354,6 +2355,8 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function __updateMouseDrag():Void
 	{
+		if (stage == null) return;
+
 		if (mouseX > this.width - 1)
 		{
 			scrollH += Std.int(Math.max(Math.min((mouseX - this.width) * .1, 10), 1));
@@ -3118,11 +3121,13 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function stage_onMouseUp(event:MouseEvent):Void
 	{
-		if (stage == null) return;
+		var stage:Stage = cast event.currentTarget;
 
 		stage.removeEventListener(Event.ENTER_FRAME, this_onEnterFrame);
 		stage.removeEventListener(MouseEvent.MOUSE_MOVE, stage_onMouseMove);
 		stage.removeEventListener(MouseEvent.MOUSE_UP, stage_onMouseUp);
+
+		if (this.stage == null) return;
 
 		if (stage.focus == this)
 		{
