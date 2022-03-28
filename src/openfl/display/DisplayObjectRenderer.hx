@@ -88,13 +88,13 @@ class DisplayObjectRenderer extends EventDispatcher
 		}
 	}
 
-	@:noCompletion private function __popMask():Void {}
+	@:noCompletion private function __popMask(maskee:DisplayObject = null):Void {}
 
 	@:noCompletion private function __popMaskObject(object:DisplayObject, handleScrollRect:Bool = true):Void {}
 
 	@:noCompletion private function __popMaskRect():Void {}
 
-	@:noCompletion private function __pushMask(mask:DisplayObject):Void {}
+	@:noCompletion private function __pushMask(mask:DisplayObject, maskee:DisplayObject = null):Void {}
 
 	@:noCompletion private function __pushMaskObject(object:DisplayObject, handleScrollRect:Bool = true):Void {}
 

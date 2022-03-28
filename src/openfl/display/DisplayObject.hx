@@ -889,6 +889,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	**/
 	@:keep public var y(get, set):Float;
 
+	@:keep public var maskInverted:Bool;
+
 	// @:noCompletion @:dox(hide) @:require(flash10) var z:Float;
 	@:noCompletion private var __alpha:Float;
 	@:noCompletion private var __blendMode:BlendMode;
