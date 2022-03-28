@@ -889,6 +889,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	**/
 	@:keep public var y(get, set):Float;
 
+	/**
+		If true, the area of this DisplayObject's mask will be inverted. This
+		is used for "erasing" a portion of the underlying image.
+	**/
 	@:keep public var maskInverted:Bool;
 
 	// @:noCompletion @:dox(hide) @:require(flash10) var z:Float;
@@ -1622,9 +1626,19 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		if (__graphics != null)
 		{
 			if (!hitObject.__visible || __isMask) return false;
-			if (mask != null && !mask.__hitTestMask(x, y)) return false;
 
-			if (__graphics.__hitTest(x, y, shapeFlag, __getRenderTransform()))
+            if (mask != null)
+            {
+                if (__maskInverted && mask.__hitTestMask(x, y)) {
+                    return false;
+                }
+                else if (!mask.__hitTestMask(x, y))
+                {
+                    return false;
+                }
+            }
+
+            if (__graphics.__hitTest(x, y, shapeFlag, __getRenderTransform()))
 			{
 				if (stack != null && !interactiveOnly)
 				{

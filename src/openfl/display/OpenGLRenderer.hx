@@ -601,14 +601,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 		if (__stencilReference > 1)
 		{
-            // if (maskee != null && maskee.maskInverted)
-            // {
-            //     __context3D.setStencilActions(FRONT_AND_BACK, ALWAYS, INCREMENT_SATURATE, INCREMENT_SATURATE, KEEP);
-            // }
-            // else
-            // {
-                __context3D.setStencilActions(FRONT_AND_BACK, EQUAL, DECREMENT_SATURATE, DECREMENT_SATURATE, KEEP);
-            // }
+            __context3D.setStencilActions(FRONT_AND_BACK, EQUAL, DECREMENT_SATURATE, DECREMENT_SATURATE, KEEP);
 			__context3D.setStencilReferenceValue(__stencilReference, 0xFF, 0xFF);
 			__context3D.setColorMask(false, false, false, false);
 
@@ -675,12 +668,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 			__updatedStencil = true;
 		}
 
-        // if (maskee != null && maskee.maskInverted) {
-        //     __context3D.setStencilActions(FRONT_AND_BACK, ALWAYS, DECREMENT_SATURATE, DECREMENT_SATURATE, KEEP);
-        // }
-        // else {
-            __context3D.setStencilActions(FRONT_AND_BACK, EQUAL, INCREMENT_SATURATE, KEEP, KEEP);
-        // }
+        __context3D.setStencilActions(FRONT_AND_BACK, EQUAL, INCREMENT_SATURATE, KEEP, KEEP);
 		__context3D.setStencilReferenceValue(__stencilReference, 0xFF, 0xFF);
 		__context3D.setColorMask(false, false, false, false);
 
