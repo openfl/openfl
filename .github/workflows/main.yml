@@ -26,7 +26,7 @@ jobs:
           haxelib install hxcpp --quiet
           haxelib install format --quiet
           haxelib install hxp --quiet
-          haxelib git lime https://github.com/haxelime/lime --quiet
+          haxelib install lime --quiet
           haxelib install utest --quiet
 
       - name: Setup environment
@@ -99,7 +99,7 @@ jobs:
           haxelib install hxcpp --quiet
           haxelib install format --quiet
           haxelib install hxp --quiet
-          haxelib git lime https://github.com/haxelime/lime --quiet
+          haxelib install lime --quiet
           haxelib install dox --quiet
           haxelib dev openfl $GITHUB_WORKSPACE
 
