@@ -338,12 +338,12 @@ class Shader
 		return shader;
 	}
 
-	@:noCompletion private function __createGLProgram(vertexSource:String, fragmentSource:String):GLProgram
+	@:noCompletion private function __createGLProgram(glVertexSource:String, glFragmentSource:String):GLProgram
 	{
 		var gl = __context.gl;
 
-		var vertexShader = __createGLShader(vertexSource, gl.VERTEX_SHADER);
-		var fragmentShader = __createGLShader(fragmentSource, gl.FRAGMENT_SHADER);
+		var vertexShader = __createGLShader(glVertexSource, gl.VERTEX_SHADER);
+		var fragmentShader = __createGLShader(glFragmentSource, gl.FRAGMENT_SHADER);
 
 		var program = gl.createProgram();
 
