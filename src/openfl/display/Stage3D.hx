@@ -25,7 +25,7 @@ import js.Browser;
 
 /**
 	The Stage class represents the main drawing area.
-	For SWF content running in the browser (in Flash<sup>஼/sup> Player), the
+	For SWF content running in the browser (in Flash<sup>®</sup> Player), the
 	Stage represents the entire area where Flash content is shown. For content
 	running in AIR on desktop operating systems, each NativeWindow object has
 	a corresponding Stage object.
@@ -511,7 +511,22 @@ class Stage3D extends EventDispatcher
 			#end
 
 			__projectionTransform.copyRawDataFrom(new Vector<Float>([
-				2.0 / (width > 0 ? width : 1), 0.0, 0.0, 0.0, 0.0, -2.0 / (height > 0 ? height : 1), 0.0, 0.0, 0.0, 0.0, -2.0 / 2000, 0.0, -1.0, 1.0, 0.0, 1.0
+				2.0 / (width > 0 ? width : 1),
+				0.0,
+				0.0,
+				0.0,
+				0.0,
+				-2.0 / (height > 0 ? height : 1),
+				0.0,
+				0.0,
+				0.0,
+				0.0,
+				-2.0 / 2000,
+				0.0,
+				-1.0,
+				1.0,
+				0.0,
+				1.0
 			]));
 
 			__renderTransform.identity();
