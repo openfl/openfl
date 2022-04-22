@@ -298,7 +298,11 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		__isAsync = true;
 
 		__fileStreamWorker = new BackgroundWorker();
-
+		
+		__fileStreamWorker.onProgress.add(function(e:Event){
+			dispatchEvent(e);
+		});
+		
 		open(file, fileMode);
 
 		if (fileMode == READ)
@@ -326,21 +330,22 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 					}
 					catch (e:Dynamic)
 					{
-						dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR, false, false, "Index is out of bounds."));
+						__fileStreamWorker.sendProgress(new IOErrorEvent(IOErrorEvent.IO_ERROR, false, false, "Index is out of bounds."));
 					}
 
-					dispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS, false, false, bytesLoaded, __file.size));
+					__fileStreamWorker.sendProgress(new ProgressEvent(ProgressEvent.PROGRESS, false, false, bytesLoaded, __file.size));
 				}
 
-				dispatchEvent(new Event(Event.COMPLETE));
+				__fileStreamWorker.sendProgress(new Event(Event.COMPLETE));
 
 				__fileStreamWorker.cancel();
 				__fileStreamWorker = null;
 			});
 		}
 		else
-		{
+		{				
 			__buffer = new ByteArray();
+				
 			__fileStreamWorker.doWork.add(function(m:Dynamic)
 			{
 				var bytesLoaded:Int = 0;				
@@ -363,12 +368,12 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 								__file.__fileStatsDirty = true;
 								__isZeroLength = false;
 								
-								dispatchEvent(new OutputProgressEvent(OutputProgressEvent.OUTPUT_PROGRESS, false, false, __buffer.length - bytesLoaded,
+								__fileStreamWorker.sendProgress(new OutputProgressEvent(OutputProgressEvent.OUTPUT_PROGRESS, false, false, __buffer.length - bytesLoaded,
 									__buffer.length));
 							}
 							catch (e:Dynamic)
 							{
-								dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR, false, false, "Index is out of bounds."));
+								__fileStreamWorker.sendProgress(new IOErrorEvent(IOErrorEvent.IO_ERROR, false, false, "Index is out of bounds."));
 							}
 						}
 
