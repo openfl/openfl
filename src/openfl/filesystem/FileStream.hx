@@ -223,9 +223,11 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		position = 0;
 		__positionDirty = false;
 
-		if (__isAsync)
+		if (__fileStreamWorker != null)
 		{
 			__fileStreamWorker.cancel();
+			__fileStreamWorker.doWork.cancel();
+			__fileStreamWorker.onProgress.cancel();
 			__fileStreamWorker = null;
 
 			dispatchEvent(new Event(Event.CLOSE));
@@ -350,9 +352,9 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 			{
 				var bytesLoaded:Int = 0;				
 				
-				while (true)
+				while (__fileStreamWorker != null)
 				{
-					Sys.sleep(.16);
+					Sys.sleep(.001);
 					
 					while (isWriting)
 					{
