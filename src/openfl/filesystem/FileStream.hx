@@ -153,6 +153,9 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 	@:noCompletion private var __isOpen:Bool;
 	@:noCompletion private var __isWrite:Bool;
 	@:noCompletion private var __isAsync:Bool;
+	//TODO:
+	//Find another way to handle the situation where writeBytes has zero length during WRITE async mode.
+	@:noCompletion private var __isZeroLength:Bool = false;
 	@:noCompletion private var __positionDirty:Bool = false;
 	@:noCompletion private var __buffer:ByteArray;
 	@:noCompletion private var __pageSize:Int = 4096000;
@@ -340,13 +343,15 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 			__buffer = new ByteArray();
 			__fileStreamWorker.doWork.add(function(m:Dynamic)
 			{
-				var bytesLoaded:Int = 0;
-
+				var bytesLoaded:Int = 0;				
+				
 				while (true)
 				{
+					Sys.sleep(.16);
+					
 					while (isWriting)
 					{
-						while (__buffer.length > bytesLoaded)
+						while (__buffer.length > bytesLoaded || __isZeroLength)
 						{
 							try
 							{
@@ -356,7 +361,8 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 								bytesLoaded += maxBytes;
 
 								__file.__fileStatsDirty = true;
-
+								__isZeroLength = false;
+								
 								dispatchEvent(new OutputProgressEvent(OutputProgressEvent.OUTPUT_PROGRESS, false, false, __buffer.length - bytesLoaded,
 									__buffer.length));
 							}
@@ -909,6 +915,8 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		if (__isAsync)
 		{
 			__buffer.writeBytes(bytes, offset, length);
+			
+			if(length == 0) __isZeroLength = true;
 			isWriting = true;
 
 			return;
