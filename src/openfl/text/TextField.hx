@@ -2218,7 +2218,7 @@ class TextField extends InteractiveObject
 
 			__layoutDirty = false;
 
-			setSelection(__selectionIndex, __caretIndex);
+			// setSelection(__selectionIndex, __caretIndex);
 		}
 	}
 
