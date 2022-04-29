@@ -3534,6 +3534,7 @@ class TextField extends InteractiveObject
 	@:noCompletion private function window_onTextInput(value:String):Void
 	{
 		__replaceSelectedText(value, true);
+		setSelection(__selectionIndex, __caretIndex);
 
 		// TODO: Dispatch change if at max chars?
 		dispatchEvent(new Event(Event.CHANGE, true));
