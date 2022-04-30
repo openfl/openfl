@@ -80,6 +80,7 @@ class Context3DTilemap
 		Matrix.__pool.release(parentTransform);
 	}
 
+	@:access(openfl.display.BitmapData)
 	private static function buildBufferTileContainer(tilemap:Tilemap, group:TileContainer, renderer:OpenGLRenderer, parentTransform:Matrix,
 			defaultTileset:Tileset, alphaEnabled:Bool, worldAlpha:Float, colorTransformEnabled:Bool, defaultColorTransform:ColorTransform,
 			cacheBitmapData:BitmapData, rect:Rectangle, matrix:Matrix, isTopLevel:Bool = true):Void
@@ -123,8 +124,17 @@ class Context3DTilemap
 		var alphaPosition = 4;
 		var ctPosition = alphaEnabled ? 5 : 4;
 
+		var tilemapWidth = tilemap.__width / Math.abs(tilemap.__scaleX);
+		var tilemapHeight = tilemap.__height / Math.abs(tilemap.__scaleY);
+
 		for (tile in tiles)
 		{
+			id = tile.id;
+			tileset = tile.tileset != null ? tile.tileset : defaultTileset;
+			alpha = tile.alpha * worldAlpha;
+			visible = tile.visible;
+			tile.__dirty = false;
+
 			tileTransform.setTo(1, 0, 0, 1, -tile.originX, -tile.originY);
 			tileTransform.concat(tile.matrix);
 			tileTransform.concat(parentTransform);
@@ -135,13 +145,43 @@ class Context3DTilemap
 				tileTransform.ty = Math.round(tileTransform.ty);
 			}
 
-			tileset = tile.tileset != null ? tile.tileset : defaultTileset;
+			if(tile.__length == 0 && !tile.offscreenRendering)
+			{
+				if (id == -1)
+				{
+					tileRect = tile.__rect;
+					if (tileRect == null || tileRect.width <= 0 || tileRect.height <= 0)
+					{
+						tile.__render = false;
+						continue;
+					}
 
-			alpha = tile.alpha * worldAlpha;
-			visible = tile.visible;
-			tile.__dirty = false;
+					tileWidth = tileRect.width;
+					tileHeight = tileRect.height;
+				}else{
+					tileData = tileset.__data[id];
+					if (tileData == null)
+					{
+						tile.__render = false;
+						continue;
+					}
 
-			if (!visible || alpha <= 0) continue;
+					tileWidth = tileData.width;
+					tileHeight = tileData.height;
+				}
+
+				if(tileset.bitmapData.__texture != null && tileTransform.tx + tileWidth < 0 || tileTransform.tx > tilemapWidth || tileTransform.ty + tileHeight < 0 || tileTransform.ty > tilemapHeight)
+				{
+					tile.__render = false;
+					continue;
+				}
+			}
+
+			if (!visible || alpha <= 0)
+			{
+				tile.__render = false;
+				continue;
+			}
 
 			if (colorTransformEnabled)
 			{
@@ -184,17 +224,27 @@ class Context3DTilemap
 			}
 			else
 			{
-				if (tileset == null) continue;
-
-				id = tile.id;
+				if (tileset == null)
+				{
+					tile.__render = false;
+					continue;
+				}
 
 				bitmapData = tileset.__bitmapData;
-				if (bitmapData == null) continue;
+				if (bitmapData == null)
+				{
+					tile.__render = false;
+					continue;
+				}
 
 				if (id == -1)
 				{
 					tileRect = tile.__rect;
-					if (tileRect == null || tileRect.width <= 0 || tileRect.height <= 0) continue;
+					if (tileRect == null || tileRect.width <= 0 || tileRect.height <= 0)
+					{
+						tile.__render = false;
+						continue;
+					}
 
 					uvX = tileRect.x / bitmapData.width;
 					uvY = tileRect.y / bitmapData.height;
@@ -204,7 +254,11 @@ class Context3DTilemap
 				else
 				{
 					tileData = tileset.__data[id];
-					if (tileData == null) continue;
+					if (tileData == null)
+					{
+						tile.__render = false;
+						continue;
+					}
 
 					rect.setTo(tileData.x, tileData.y, tileData.width, tileData.height);
 					tileRect = rect;
@@ -293,6 +347,7 @@ class Context3DTilemap
 
 				vertexDataPosition += dataPerVertex * 4;
 			}
+			tile.__render = true;
 		}
 
 		group.__dirty = false;
@@ -488,6 +543,9 @@ class Context3DTilemap
 
 		for (tile in tiles)
 		{
+			if(tile.__render == false)
+				continue;
+
 			tileset = tile.tileset != null ? tile.tileset : defaultTileset;
 
 			alpha = tile.alpha * worldAlpha;
