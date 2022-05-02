@@ -1227,6 +1227,26 @@ class TextEngine
 			var currentPosition;
 
 			var tempWidth = getPositionsWidth(remainingPositions);
+			i = remainingPositions.length - 1;
+			while (i >= 0)
+			{
+				// strip away the combined width of whitespace at the end of the
+				// line. the whitespace's width should not be included in the
+				// width of the preceding word when determining if that word is
+				// too long to fit on the line.
+				var currentCharCode = text.charCodeAt(textIndex + i);
+				if (currentCharCode != 32 && currentCharCode != 9)
+				{
+					break;
+				}
+				var position = remainingPositions[i];
+				#if (js && html5)
+				tempWidth -= position;
+				#else
+				tempWidth -= position.advance.x;
+				#end
+				i--;
+			}
 
 			while (remainingPositions.length > 0 && offsetX + tempWidth > getWrapWidth())
 			{
