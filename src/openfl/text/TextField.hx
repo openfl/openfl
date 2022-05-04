@@ -2402,9 +2402,15 @@ class TextField extends InteractiveObject
 		__textEngine.text = value;
 		__text = __textEngine.text;
 
+		// the current selection should be kept, but it should also be adjusted,
+		// if the new text is not long enough
+		if (__text.length < __selectionIndex)
+		{
+			__selectionIndex = __text.length;
+		}
 		if (__text.length < __caretIndex)
 		{
-			__selectionIndex = __caretIndex = __text.length;
+			__caretIndex = __text.length;
 		}
 
 		if (!__displayAsPassword #if (js && html5) || (DisplayObject.__supportDOM && !__renderedOnCanvasWhileOnDOM) #end)
@@ -2694,14 +2700,6 @@ class TextField extends InteractiveObject
 		#else
 		__updateText(value);
 		#end
-		// the current selection should be kept, but it should also be adjusted,
-		// if the new text is not long enough
-		if (__selectionIndex > value.length) {
-			__selectionIndex == value.length;
-		}
-		if (__caretIndex > value.length) {
-			__caretIndex == value.length;
-		}
 
 		return value;
 	}
@@ -2955,14 +2953,6 @@ class TextField extends InteractiveObject
 		__isHTML = false;
 
 		__updateText(value);
-		// the current selection should be kept, but it should also be adjusted,
-		// if the new text is not long enough
-		if (__selectionIndex > value.length) {
-			__selectionIndex == value.length;
-		}
-		if (__caretIndex > value.length) {
-			__caretIndex == value.length;
-		}
 
 		return value;
 	}

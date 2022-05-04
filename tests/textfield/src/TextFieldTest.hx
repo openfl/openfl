@@ -584,4 +584,29 @@ class TextFieldTest extends Test
 		// the final new line is counted for type == INPUT
 		Assert.notEquals(textField2Height1, textField2Height2);
 	}
+
+	public function test_preserveSelectionOnSetText()
+	{
+		var textField = new TextField();
+		textField.text = "hello";
+		textField.setSelection(1, 3);
+		Assert.equals(1, textField.selectionBeginIndex);
+		Assert.equals(3, textField.selectionEndIndex);
+		textField.text = "world";
+		Assert.equals(1, textField.selectionBeginIndex);
+		Assert.equals(3, textField.selectionEndIndex);
+	}
+
+	public function test_preserveSelectionOnSetShorterText()
+	{
+		var textField = new TextField();
+		textField.text = "hello";
+		textField.setSelection(1, 3);
+		Assert.equals(1, textField.selectionBeginIndex);
+		Assert.equals(3, textField.selectionEndIndex);
+		textField.text = "hi";
+		trace(textField.selectionBeginIndex, textField.selectionEndIndex);
+		Assert.equals(1, textField.selectionBeginIndex);
+		Assert.equals(2, textField.selectionEndIndex);
+	}
 }
