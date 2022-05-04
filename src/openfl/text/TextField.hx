@@ -2146,6 +2146,11 @@ class TextField extends InteractiveObject
 			__dirty = true;
 			__setRenderDirty();
 		}
+		else if (selectable)
+		{
+			__dirty = true;
+			__setRenderDirty();
+		}
 	}
 
 	@:noCompletion private function __startTextInput():Void
@@ -3187,6 +3192,10 @@ class TextField extends InteractiveObject
 		if (type == INPUT && stage != null && stage.focus == this)
 		{
 			__startTextInput();
+		}
+		else if (type != INPUT && selectable && stage != null && stage.focus == this)
+		{
+			__startCursorTimer();
 		}
 	}
 
