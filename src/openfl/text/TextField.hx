@@ -2689,7 +2689,12 @@ class TextField extends InteractiveObject
 		#else
 		__updateText(value);
 		#end
-		__selectionIndex = __caretIndex = 0;
+		if (__selectionIndex > value.length) {
+			__selectionIndex == value.length;
+		}
+		if (__caretIndex > value.length) {
+			__caretIndex == value.length;
+		}
 
 		return value;
 	}
@@ -2943,7 +2948,12 @@ class TextField extends InteractiveObject
 		__isHTML = false;
 
 		__updateText(value);
-		__selectionIndex = __caretIndex = 0;
+		if (__selectionIndex > value.length) {
+			__selectionIndex == value.length;
+		}
+		if (__caretIndex > value.length) {
+			__caretIndex == value.length;
+		}
 
 		return value;
 	}
