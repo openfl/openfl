@@ -2694,6 +2694,8 @@ class TextField extends InteractiveObject
 		#else
 		__updateText(value);
 		#end
+		// the current selection should be kept, but it should also be adjusted,
+		// if the new text is not long enough
 		if (__selectionIndex > value.length) {
 			__selectionIndex == value.length;
 		}
@@ -2953,6 +2955,8 @@ class TextField extends InteractiveObject
 		__isHTML = false;
 
 		__updateText(value);
+		// the current selection should be kept, but it should also be adjusted,
+		// if the new text is not long enough
 		if (__selectionIndex > value.length) {
 			__selectionIndex == value.length;
 		}
