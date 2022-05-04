@@ -183,6 +183,7 @@ class StyleSheet extends EventDispatcher /*implements Dynamic*/
 	**/
 	public function setStyle(styleName:String, styleObject:Object):Void
 	{
+		styleName = styleName.toLowerCase();
 		if (styleObject == null)
 		{
 			if (__styles.exists(styleName))
