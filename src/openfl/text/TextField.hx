@@ -2815,7 +2815,7 @@ class TextField extends InteractiveObject
 		if (value > __textEngine.maxScrollV) value = __textEngine.maxScrollV;
 		if (value < 1) value = 1;
 
-		if (value > 0 && value != __textEngine.scrollV || __textEngine.scrollV == 0)
+		if (value != __textEngine.scrollV || __textEngine.scrollV == 0)
 		{
 			__dirty = true;
 			__setRenderDirty();
