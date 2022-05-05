@@ -198,6 +198,10 @@ import js.html.CSSStyleDeclaration;
 @:access(openfl.geom.Transform)
 class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (openfl_dynamic && haxe_ver < "4.0.0") implements Dynamic<DisplayObject> #end
 {
+	#if (queue_experimental_optimization && !dom)
+	@:noCompletion private static var queue:Array<DisplayObject> = [];
+	#end
+
 	@:noCompletion private static var __broadcastEvents:Map<String, Array<DisplayObject>> = new Map();
 	@:noCompletion private static var __initStage:Stage;
 	@:noCompletion private static var __instanceCount:Int = 0;
@@ -1721,6 +1725,23 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		}
 	}
 
+	#if (queue_experimental_optimization && !dom)
+	@:noCompletion private function __updateFlag(add:Bool = true):Void
+	{
+		if (add)
+		{
+			if (DisplayObject.queue.indexOf(this) == -1)
+			{
+				DisplayObject.queue.push(this);
+			}
+		}
+		else
+		{
+			DisplayObject.queue.remove(this);
+		}
+	}
+	#end
+
 	@:noCompletion private inline function __setRenderDirty():Void
 	{
 		if (!__renderDirty)
@@ -1728,6 +1749,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			__renderDirty = true;
 			__setParentRenderDirty();
 		}
+		#if (queue_experimental_optimization && !dom)
+		__updateFlag();
+		#end
 	}
 
 	@:noCompletion private function __setStageReference(stage:Stage):Void
@@ -1744,6 +1768,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			__setWorldTransformInvalid();
 			__setParentRenderDirty();
 		}
+		#if (queue_experimental_optimization && !dom)
+		__updateFlag();
+		#end
 	}
 
 	@:noCompletion private function __setWorldTransformInvalid():Void
@@ -1791,15 +1818,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 					var worldVisible = (renderParent.__worldVisible && __visible);
 					__worldVisibleChanged = (__worldVisible != worldVisible);
 					__worldVisible = worldVisible;
-
-					var worldAlpha = alpha * renderParent.__worldAlpha;
-					__worldAlphaChanged = (__worldAlpha != worldAlpha);
-					__worldAlpha = worldAlpha;
 				}
-				else
-				{
-					__worldAlpha = alpha * renderParent.__worldAlpha;
-				}
+				var worldAlpha = alpha * renderParent.__worldAlpha;
+				__worldAlphaChanged = (__worldAlpha != worldAlpha);
+				__worldAlpha = worldAlpha;
 
 				if (__objectTransform != null)
 				{
@@ -1847,9 +1869,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				{
 					__worldVisibleChanged = (__worldVisible != __visible);
 					__worldVisible = __visible;
-
-					__worldAlphaChanged = (__worldAlpha != alpha);
 				}
+				__worldAlphaChanged = (__worldAlpha != alpha);
 
 				if (__objectTransform != null)
 				{
