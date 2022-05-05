@@ -1955,8 +1955,9 @@ class TextEngine
 		if (numLines == 1 || lineHeights == null) return 1;
 
 		var max = maxScrollV;
-
-		if (scrollV > max) return max - 1;
+		
+		//TODO: Does maxScrollV return the wrong value(+1) in some cases?
+		if (scrollV > max) return max;
 
 		return scrollV;
 	}
@@ -1964,6 +1965,8 @@ class TextEngine
 	private function set_scrollV(value:Int):Int
 	{
 		if (value < 1) value = 1;
+		else if (value > maxScrollV) value = maxScrollV;
+		
 		return scrollV = value;
 	}
 
