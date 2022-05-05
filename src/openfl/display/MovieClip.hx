@@ -76,6 +76,10 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	**/
 	public var currentLabels(get, never):Array<FrameLabel>;
 
+	/**
+		The current scene in which the playhead is located in the timeline of
+		the MovieClip instance.
+	**/
 	public var currentScene(get, never):Scene;
 
 	/**
@@ -109,7 +113,15 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	**/
 	public var framesLoaded(get, never):Int;
 
+	/**
+		A Boolean value that indicates whether a movie clip is curently playing.
+	**/
 	public var isPlaying(get, never):Bool;
+
+	/**
+		An array of Scene objects, each listing the name, the number of frames,
+		and the frame labels for a scene in the MovieClip instance.
+	**/
 	public var scenes(get, never):Array<Scene>;
 
 	/**
@@ -122,8 +134,6 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	public var totalFrames(get, never):Int;
 
 	// @:noCompletion @:dox(hide) public var trackAsMenu:Bool;
-	@:noCompletion private static var __constructor:MovieClip->Void;
-
 	@:noCompletion private var __enabled:Bool;
 	@:noCompletion private var __hasDown:Bool;
 	@:noCompletion private var __hasOver:Bool;
@@ -162,16 +172,20 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 
 		__enabled = true;
 		// __type = MOVIE_CLIP;
-
-		if (__constructor != null)
-		{
-			var method = __constructor;
-			__constructor = null;
-
-			method(this);
-		}
 	}
 
+	/**
+		Adds a new FrameScript to this MovieClip.
+
+		The FrameScript will be executed automatically when the
+		MovieClip enters the specified frame.
+
+		This is only functional if this MovieClip has an attached
+		Timeline.
+
+		@param index A zero-based index referencing a frame
+		@param method A method to be called entering the requested frame.
+	**/
 	public function addFrameScript(index:Int, method:Void->Void):Void
 	{
 		if (__timeline != null)
@@ -180,6 +194,14 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		}
 	}
 
+	/**
+		Attaches a Timeline to this MovieClip.
+
+		MovieClips that contain a Timeline can play(), stop() and can
+		include FrameScripts.
+
+		@param timeline A Timeline object
+	**/
 	public function attachTimeline(timeline:Timeline):Void
 	{
 		__timeline = timeline;
@@ -190,6 +212,12 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 		}
 	}
 
+	/**
+		Creates a new MovieClip based upon a Timeline instance.
+
+		@param timeline A Timeline object
+		@return A new Sprite
+	**/
 	public static function fromTimeline(timeline:Timeline):MovieClip
 	{
 		var movieClip = new MovieClip();
@@ -565,4 +593,5 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 }
 #else
 typedef MovieClip = flash.display.MovieClip;
+typedef MovieClip2 = flash.display.MovieClip.MovieClip2;
 #end

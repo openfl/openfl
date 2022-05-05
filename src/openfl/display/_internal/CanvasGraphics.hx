@@ -1173,7 +1173,7 @@ class CanvasGraphics
 				var transform = graphics.__renderTransform;
 				var canvas = graphics.__canvas;
 
-				var scale = renderer.pixelRatio;
+				var scale = renderer.__pixelRatio;
 				var scaledWidth = Std.int(width * scale);
 				var scaledHeight = Std.int(height * scale);
 

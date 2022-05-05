@@ -1,10 +1,11 @@
 package openfl.events;
+
 import openfl.events.Event;
 
 class OutputProgressEvent extends Event
 {
-
 	public static inline var OUTPUT_PROGRESS:String = "outputProgress";
+
 	public var bytesPending:Float;
 	public var bytesTotal:Float;
 
@@ -19,5 +20,4 @@ class OutputProgressEvent extends Event
 	{
 		return new OutputProgressEvent(type, bubbles, cancelable, bytesPending, bytesTotal);
 	}
-
 }

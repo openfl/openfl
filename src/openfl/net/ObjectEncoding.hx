@@ -45,6 +45,24 @@ package openfl.net;
 @:enum abstract ObjectEncoding(Int) from Int to Int from UInt to UInt
 {
 	/**
+		Allows greater control over the serialization of dynamic properties of
+		dynamic objects. When this property is set to `null`, the default value,
+		dynamic properties are serialized using native code, which writes all
+		dynamic properties excluding those whose value is a function.
+
+		This value is called only for properties of a dynamic object (objects
+		declared within a dynamic class) or for objects declared using the
+		`new` operator.
+
+		You can use this property to exclude properties of dynamic objects from
+		serialization; to write values to properties of dynamic objects; or to
+		create new properties for dynamic objects. To do so, set this property
+		to an object that implements the `IDynamicPropertyWriter` interface. For
+		more information, see the `IDynamicPropertyWriter` interface.
+	**/
+	public static var dynamicPropertyWriter:IDynamicPropertyWriter;
+
+	/**
 		Specifies that objects are serialized using the
 		Action Message Format for ActionScript 1.0 and 2.0.
 	**/

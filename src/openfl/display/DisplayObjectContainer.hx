@@ -973,6 +973,7 @@ class DisplayObjectContainer extends InteractiveObject
 	}
 
 	// Get & Set Methods
+
 	@:noCompletion private function get_numChildren():Int
 	{
 		return __children.length;

@@ -62,9 +62,11 @@ class Window #if lime extends LimeWindow #end
 			catch (e:Dynamic) {}
 		}
 
+		stage.__setLogicalSize(attributes.width, attributes.height);
+
 		if (Reflect.hasField(attributes, "resizable") && !attributes.resizable)
 		{
-			stage.__setLogicalSize(attributes.width, attributes.height);
+			stage.scaleMode = StageScaleMode.SHOW_ALL;
 		}
 
 		#if lime

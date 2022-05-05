@@ -81,10 +81,10 @@ class DateTimeFormatterTest extends Test
 
 	public function test_getMonthNames()
 	{
-		// TODO: Confirm functionality
 		var dateTimeFormatter = new DateTimeFormatter("en-US");
-		var exists = dateTimeFormatter.getMonthNames;
-		Assert.notEquals(exists, null);
+		var monthNames = dateTimeFormatter.getMonthNames();
+		Assert.notNull(monthNames);
+		Assert.equals(12, monthNames.length);
 	}
 
 	public function test_getTimeStyle()
@@ -97,10 +97,10 @@ class DateTimeFormatterTest extends Test
 
 	public function test_getWeekdayNames()
 	{
-		// TODO: Confirm functionality
 		var dateTimeFormatter = new DateTimeFormatter("en-US");
-		var exists = dateTimeFormatter.getWeekdayNames;
-		Assert.notEquals(exists, null);
+		var weekdayNames = dateTimeFormatter.getWeekdayNames();
+		Assert.notNull(weekdayNames);
+		Assert.equals(7, weekdayNames.length);
 	}
 
 	public function test_setDateTimePattern()

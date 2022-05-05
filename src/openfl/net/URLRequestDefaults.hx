@@ -72,7 +72,7 @@ class URLRequestDefaults
 
 		The default value is `true`.
 	**/
-	public static var manageCookies:Bool = false;
+	public static var manageCookies:Bool = true;
 
 	// public static var useCache:Bool;
 

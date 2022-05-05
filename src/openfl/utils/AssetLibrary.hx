@@ -27,6 +27,11 @@ class AssetLibrary #if lime extends LimeAssetLibrary #end
 		#end
 	}
 
+	public function bind(className:String, instance:Dynamic = null):Bool
+	{
+		return false;
+	}
+
 	#if lime
 	public override function exists(id:String, type:String):Bool
 	{
@@ -40,6 +45,33 @@ class AssetLibrary #if lime extends LimeAssetLibrary #end
 		}
 	}
 	#end
+
+	public static function fromBundle(bundle:AssetBundle):AssetLibrary
+	{
+		#if lime
+		var library = LimeAssetLibrary.fromBundle(bundle);
+
+		if (library != null)
+		{
+			if ((library is AssetLibrary))
+			{
+				return cast library;
+			}
+			else
+			{
+				var _library = new AssetLibrary();
+				_library.__proxy = library;
+				return _library;
+			}
+		}
+		else
+		{
+			return null;
+		}
+		#else
+		return null;
+		#end
+	}
 
 	public static function fromBytes(bytes:ByteArray, rootPath:String = null):AssetLibrary
 	{

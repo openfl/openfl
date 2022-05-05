@@ -1,6 +1,7 @@
 package openfl.text._internal;
 
 import openfl.utils._internal.Log;
+import openfl.text.StyleSheet;
 import openfl.text.TextFormat;
 import openfl.Vector;
 
@@ -8,14 +9,17 @@ import openfl.Vector;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@:access(openfl.text.StyleSheet)
 @SuppressWarnings("checkstyle:FieldDocComment")
 class HTMLParser
 {
 	private static var __regexAlign:EReg = ~/align\s?=\s?("([^"]+)"|'([^']+)')/i;
 	private static var __regexBreakTag:EReg = ~/<br\s*\/?>/gi;
 	private static var __regexBlockIndent:EReg = ~/blockindent\s?=\s?("([^"]+)"|'([^']+)')/i;
+	private static var __regexClass:EReg = ~/class\s?=\s?("([^"]+)"|'([^']+)')/i;
 	private static var __regexColor:EReg = ~/color\s?=\s?("#([^"]+)"|'#([^']+)')/i;
 	private static var __regexEntities:Array<EReg> = [~/&quot;/g, ~/&apos;/g, ~/&amp;/g, ~/&lt;/g, ~/&gt;/g, ~/&nbsp;/g];
+	private static var __regexCharEntity:EReg = ~/&#(?:([0-9]+)|(x[0-9a-fA-F]+));/g;
 	private static var __regexFace:EReg = ~/face\s?=\s?("([^"]+)"|'([^']+)')/i;
 	private static var __regexHTMLTag:EReg = ~/<.*?>/g;
 	private static var __regexHref:EReg = ~/href\s?=\s?("([^"]+)"|'([^']+)')/i;
@@ -26,10 +30,42 @@ class HTMLParser
 	private static var __regexSize:EReg = ~/size\s?=\s?("([^"]+)"|'([^']+)')/i;
 	private static var __regexTabStops:EReg = ~/tabstops\s?=\s?("([^"]+)"|'([^']+)')/i;
 
-	public static function parse(value:String, textFormat:TextFormat, textFormatRanges:Vector<TextFormatRange>):String
+	public static function parse(value:String, multiline:Bool, styleSheet:StyleSheet, textFormat:TextFormat, textFormatRanges:Vector<TextFormatRange>):String
 	{
-		value = __regexBreakTag.replace(value, "\n");
+		if (multiline)
+		{
+			value = __regexBreakTag.replace(value, "\n");
+		}
+		else
+		{
+			value = __regexBreakTag.replace(value, "");
+		}
+
 		value = __regexEntities[5].replace(value, " ");
+
+		value = __regexCharEntity.map(value, function(ereg)
+		{
+			var decimalStr = ereg.matched(1);
+			var hexStr = ereg.matched(2);
+			if (decimalStr != null)
+			{
+				var decimal = Std.parseInt(decimalStr);
+				if (decimal != null)
+				{
+					return String.fromCharCode(decimal);
+				}
+			}
+			if (hexStr != null)
+			{
+				var hex = Std.parseInt("0" + hexStr);
+				if (hex != null)
+				{
+					return String.fromCharCode(hex);
+				}
+			}
+			// if parsing fails, return the original string
+			return ereg.matched(0);
+		});
 
 		// crude solution
 
@@ -72,14 +108,17 @@ class HTMLParser
 				var start = tagEndIndex + 1;
 				var spaceIndex = segment.indexOf(" ");
 				var tagName = segment.substring(isClosingTag ? 1 : 0, spaceIndex > -1
-					&& spaceIndex < tagEndIndex ? spaceIndex : tagEndIndex);
+					&& spaceIndex < tagEndIndex ? spaceIndex : tagEndIndex).toLowerCase();
 				var format:TextFormat;
 
 				if (isClosingTag)
 				{
-					if (tagStack.length == 0 || tagName.toLowerCase() != tagStack[tagStack.length - 1].toLowerCase())
+					if (tagStack.length == 0 || tagName != tagStack[tagStack.length - 1])
 					{
-						Log.info("Invalid HTML, unexpected closing tag ignored: " + tagName);
+						// TODO: Flash just stops parsing, and seems to omit any further text
+						// break;
+
+						// Log.info("Invalid HTML, unexpected closing tag ignored: " + tagName);
 						continue;
 					}
 
@@ -87,9 +126,12 @@ class HTMLParser
 					formatStack.pop();
 					format = formatStack[formatStack.length - 1].clone();
 
-					if (tagName.toLowerCase() == "p" && textFormatRanges.length > 0)
+					if ((tagName == "p" || tagName == "li") && textFormatRanges.length > 0)
 					{
-						value += "\n";
+						if (multiline)
+						{
+							value += "\n";
+						}
 						noLineBreak = true;
 					}
 
@@ -107,9 +149,26 @@ class HTMLParser
 
 					if (tagEndIndex > -1)
 					{
-						switch (tagName.toLowerCase())
+						if (styleSheet != null)
+						{
+							styleSheet.__applyStyle(tagName, format);
+
+							if (__regexClass.match(segment))
+							{
+								styleSheet.__applyStyle("." + __getAttributeMatch(__regexClass), format);
+								styleSheet.__applyStyle(tagName + "." + __getAttributeMatch(__regexClass), format);
+							}
+						}
+
+						switch (tagName)
 						{
 							case "a":
+								// TODO: support hover, visited, active (requires partnership with renderer)
+								if (styleSheet != null)
+								{
+									styleSheet.__applyStyle("a:link", format);
+								}
+
 								if (__regexHref.match(segment))
 								{
 									format.url = __getAttributeMatch(__regexHref);
@@ -126,6 +185,18 @@ class HTMLParser
 									var align = __getAttributeMatch(__regexAlign).toLowerCase();
 									format.align = align;
 								}
+
+							case "li":
+								if (textFormatRanges.length > 0 && !noLineBreak)
+								{
+									value += "\n";
+								}
+								var bullet = "• ";
+								// temporarily disable underline for the bullet
+								var bulletFormat = format.clone();
+								bulletFormat.underline = false;
+								textFormatRanges.push(new TextFormatRange(bulletFormat, value.length, value.length + bullet.length));
+								value += bullet;
 
 							case "font":
 								if (__regexFace.match(segment))

@@ -26,6 +26,7 @@ import openfl.utils._internal.UInt8Array;
 import openfl.utils.AGALMiniAssembler;
 import openfl.utils.ByteArray;
 #if lime
+import lime.graphics.opengl.GL;
 import lime.graphics.Image;
 import lime.graphics.ImageBuffer;
 import lime.graphics.RenderContext;
@@ -290,7 +291,11 @@ import lime.math.Vector2;
 		__stage3D = stage3D;
 
 		__context = stage.window.context;
+		#if (js && html5 && dom)
+		gl = GL.context;
+		#else
 		gl = __context.webgl;
+		#end
 
 		if (__contextState == null) __contextState = new Context3DState();
 		__state = new Context3DState();
@@ -1869,6 +1874,8 @@ import lime.math.Vector2;
 	**/
 	public function setVertexBufferAt(index:Int, buffer:VertexBuffer3D, bufferOffset:Int = 0, format:Context3DVertexBufferFormat = FLOAT_4):Void
 	{
+		if (index < 0) return;
+
 		if (buffer == null)
 		{
 			gl.disableVertexAttribArray(index);

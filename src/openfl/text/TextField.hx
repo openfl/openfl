@@ -11,6 +11,7 @@ import openfl.utils._internal.Log;
 import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.display.InteractiveObject;
+import openfl.display.Stage;
 import openfl.errors.RangeError;
 import openfl.events.Event;
 import openfl.events.FocusEvent;
@@ -262,7 +263,7 @@ class TextField extends InteractiveObject
 		Set the `condenseWhite` property before setting the `htmlText`
 		property.
 	**/
-	// var condenseWhite : Bool;
+	public var condenseWhite:Bool = false;
 
 	/**
 		Specifies the format applied to newly inserted text, such as text entered
@@ -582,7 +583,7 @@ class TextField extends InteractiveObject
 		original `TextField.htmlText` contents without the formatting, save
 		the value in a variable before removing the style sheet.
 	**/
-	// var styleSheet : StyleSheet;
+	public var styleSheet(get, set):StyleSheet;
 
 	/**
 		A string that is the current text in the text field. Lines are separated
@@ -679,6 +680,7 @@ class TextField extends InteractiveObject
 	@:noCompletion private var __offsetY:Float;
 	@:noCompletion private var __selectionIndex:Int;
 	@:noCompletion private var __showCursor:Bool;
+	@:noCompletion private var __styleSheet:StyleSheet;
 	@:noCompletion private var __text:UTF8String;
 	@:noCompletion private var __htmlText:UTF8String;
 	@:noCompletion private var __textEngine:TextEngine;
@@ -686,7 +688,6 @@ class TextField extends InteractiveObject
 	#if (js && html5)
 	@:noCompletion private var __div:DivElement;
 	@:noCompletion private var __renderedOnCanvasWhileOnDOM:Bool = false;
-	@:noCompletion private var __rawHtmlText:String;
 	@:noCompletion private var __forceCachedBitmapUpdate:Bool = false;
 	#end
 
@@ -813,6 +814,7 @@ class TextField extends InteractiveObject
 
 		__drawableType = TEXT_FIELD;
 		__caretIndex = -1;
+		__selectionIndex = -1;
 		__displayAsPassword = false;
 		__graphics = new Graphics(this);
 		__textEngine = new TextEngine(this);
@@ -1716,7 +1718,7 @@ class TextField extends InteractiveObject
 				{
 					if (StringTools.startsWith(url, "event:"))
 					{
-						dispatchEvent(new TextEvent(TextEvent.LINK, false, false, url.substr(6)));
+						dispatchEvent(new TextEvent(TextEvent.LINK, true, false, url.substr(6)));
 					}
 					else
 					{
@@ -1768,10 +1770,7 @@ class TextField extends InteractiveObject
 
 		var bounds = Rectangle.__pool.get();
 		bounds.copyFrom(__textEngine.bounds);
-
-		matrix.tx += __offsetX;
-		matrix.ty += __offsetY;
-
+		bounds.offset(__offsetX, __offsetY);
 		bounds.__transform(bounds, matrix);
 
 		rect.__expand(bounds.x, bounds.y, bounds.width, bounds.height);
@@ -2147,6 +2146,11 @@ class TextField extends InteractiveObject
 			__dirty = true;
 			__setRenderDirty();
 		}
+		else if (selectable)
+		{
+			__dirty = true;
+			__setRenderDirty();
+		}
 	}
 
 	@:noCompletion private function __startTextInput():Void
@@ -2325,26 +2329,39 @@ class TextField extends InteractiveObject
 
 			while (i >= 0)
 			{
-				if (tempHeight + __textEngine.lineHeights[i] <= height - 4)
+				tempHeight += __textEngine.lineHeights[i];
+
+				if (tempHeight > height - 4)
 				{
-					tempHeight += __textEngine.lineHeights[i];
-					i--;
-				}
-				else
+					i += (tempHeight - height < 0 ? 1 : 2);
 					break;
+				}
+				i--;
 			}
-			scrollV = i + 1;
+			/*	while (i >= 0)
+				{
+					if (tempHeight + __textEngine.lineHeights[i] <= height - 4)
+					{
+						tempHeight += __textEngine.lineHeights[i];
+						i--;
+					}
+					else
+						break;
+			}*/
+			scrollV = i;
 		}
 		else
 		{
 			// TODO: can this be avoided? this doesn't need to hit the setter each time, just a couple times
-			
+
 			scrollV = scrollV;
 		}
 	}
 
 	@:noCompletion private function __updateMouseDrag():Void
 	{
+		if (stage == null) return;
+
 		if (mouseX > this.width - 1)
 		{
 			scrollH += Std.int(Math.max(Math.min((mouseX - this.width) * .1, 10), 1));
@@ -2360,7 +2377,7 @@ class TextField extends InteractiveObject
 		{
 			if (mouseY > this.height - 2)
 			{
-				scrollV += Std.int(Math.max(Math.min((mouseY - this.height) * .03, 5), 1));
+				scrollV = Std.int(Math.min(scrollV + Math.max(Math.min((mouseY - this.height) * .03, 5), 1), maxScrollV));
 			}
 			else if (mouseY < 2)
 			{
@@ -2385,9 +2402,15 @@ class TextField extends InteractiveObject
 		__textEngine.text = value;
 		__text = __textEngine.text;
 
+		// the current selection should be kept, but it should also be adjusted,
+		// if the new text is not long enough
+		if (__text.length < __selectionIndex)
+		{
+			__selectionIndex = __text.length;
+		}
 		if (__text.length < __caretIndex)
 		{
-			__selectionIndex = __caretIndex = __text.length;
+			__caretIndex = __text.length;
 		}
 
 		if (!__displayAsPassword #if (js && html5) || (DisplayObject.__supportDOM && !__renderedOnCanvasWhileOnDOM) #end)
@@ -2616,11 +2639,11 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function get_htmlText():String
 	{
-		#if (js && html5)
-		return __isHTML ? __rawHtmlText : __text;
-		#else
-		return __text;
-		#end
+		// #if (js && html5)
+		return __isHTML ? __htmlText : __text;
+		// #else
+		// return __text;
+		// #end
 	}
 
 	@:noCompletion private function set_htmlText(value:String):String
@@ -2634,43 +2657,49 @@ class TextField extends InteractiveObject
 
 		__isHTML = true;
 
-		#if (js && html5)
-		__rawHtmlText = value;
-		#end
-
-		value = HTMLParser.parse(value, __textFormat, __textEngine.textFormatRanges);
-
-		#if (js && html5)
-		if (DisplayObject.__supportDOM)
+		// TODO: Should this run before or after setting raw __htmlText?
+		if (condenseWhite)
 		{
-			if (__textEngine.textFormatRanges.length > 1)
-			{
-				__textEngine.textFormatRanges.splice(1, __textEngine.textFormatRanges.length - 1);
-			}
-
-			var range = __textEngine.textFormatRanges[0];
-			range.format = __textFormat;
-			range.start = 0;
-
-			if (__renderedOnCanvasWhileOnDOM)
-			{
-				range.end = value.length;
-				__updateText(value);
-			}
-			else
-			{
-				range.end = __rawHtmlText.length;
-				__updateText(__rawHtmlText);
-			}
+			value = ~/\s+/g.replace(value, " ");
 		}
-		else
+
+		__htmlText = value;
+		// TODO: Do not run the following if __htmlText is unchanged?
+
+		value = HTMLParser.parse(value, multiline, __styleSheet, __textFormat, __textEngine.textFormatRanges);
+
+		#if (js && html5)
+		// if (DisplayObject.__supportDOM)
+		// {
+		// 	// TODO: Why is this parsing text format ranges, only to ignore them?
+		// 	// Should this skip the parser entirely?
+		// 	if (__textEngine.textFormatRanges.length > 1)
+		// 	{
+		// 		__textEngine.textFormatRanges.splice(1, __textEngine.textFormatRanges.length - 1);
+		// 	}
+
+		// 	var range = __textEngine.textFormatRanges[0];
+		// 	range.format = __textFormat;
+		// 	range.start = 0;
+
+		// 	if (__renderedOnCanvasWhileOnDOM)
+		// 	{
+		// 		range.end = value.length;
+		// 		__updateText(value);
+		// 	}
+		// 	else
+		// 	{
+		// 		range.end = __htmlText.length;
+		// 		__updateText(__htmlText);
+		// 	}
+		// }
+		// else
 		{
 			__updateText(value);
 		}
 		#else
 		__updateText(value);
 		#end
-		__selectionIndex = __caretIndex = length;
 
 		return value;
 	}
@@ -2800,7 +2829,7 @@ class TextField extends InteractiveObject
 			__textEngine.scrollV = value;
 			dispatchEvent(new Event(Event.SCROLL));
 		}
-		
+
 		return __textEngine.scrollV;
 	}
 
@@ -2852,6 +2881,36 @@ class TextField extends InteractiveObject
 		return __textEngine.sharpness = value;
 	}
 
+	@:noCompletion private function get_styleSheet():StyleSheet
+	{
+		return __styleSheet;
+	}
+
+	@:noCompletion private function set_styleSheet(value:StyleSheet):StyleSheet
+	{
+		if (__styleSheet != null && value == null)
+		{
+			// TODO: Bake stylesheet into htmlText property
+			// TODO: Actually, does this already happen?
+		}
+		else if (value != null)
+		{
+			// TODO: Cleaner approach?
+			// TODO: Support for display and a:link, a:hover (etc) in renderer
+			if (__isHTML && value != __styleSheet)
+			{
+				__dirty = true;
+				__layoutDirty = true;
+				__setRenderDirty();
+				set_htmlText(__htmlText);
+			}
+
+			// TODO: Does the type change, or is the type value ignored?
+			type = DYNAMIC;
+		}
+		return __styleSheet = value;
+	}
+
 	@:noCompletion private override function get_tabEnabled():Bool
 	{
 		return (__tabEnabled == null ? __textEngine.type == INPUT : __tabEnabled);
@@ -2864,6 +2923,11 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function set_text(value:String):String
 	{
+		if (__styleSheet != null)
+		{
+			return set_htmlText(value);
+		}
+
 		if (__isHTML || __text != value)
 		{
 			__dirty = true;
@@ -2889,7 +2953,6 @@ class TextField extends InteractiveObject
 		__isHTML = false;
 
 		__updateText(value);
-		__selectionIndex = __caretIndex = 0;
 
 		return value;
 	}
@@ -2934,6 +2997,13 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function set_type(value:TextFieldType):TextFieldType
 	{
+		if (__styleSheet != null)
+		{
+			// TODO: Is this the behavior of Flash Player, or is type simply
+			// ignored when the StyleSheet is present? (seems likely?)
+			value = DYNAMIC;
+		}
+
 		if (value != __textEngine.type)
 		{
 			if (value == TextFieldType.INPUT)
@@ -3005,7 +3075,8 @@ class TextField extends InteractiveObject
 	@:noCompletion private override function set_x(value:Float):Float
 	{
 		if (value != __transform.tx + __offsetX) __setTransformDirty();
-		return __transform.tx = value - __offsetX;
+		__transform.tx = value - __offsetX;
+		return value;
 	}
 
 	@:noCompletion private override function get_y():Float
@@ -3016,7 +3087,8 @@ class TextField extends InteractiveObject
 	@:noCompletion private override function set_y(value:Float):Float
 	{
 		if (value != __transform.ty + __offsetY) __setTransformDirty();
-		return __transform.ty = value - __offsetY;
+		__transform.ty = value - __offsetY;
+		return value;
 	}
 
 	// Event Handlers
@@ -3058,11 +3130,13 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function stage_onMouseUp(event:MouseEvent):Void
 	{
-		if (stage == null) return;
+		var stage:Stage = cast event.currentTarget;
 
 		stage.removeEventListener(Event.ENTER_FRAME, this_onEnterFrame);
 		stage.removeEventListener(MouseEvent.MOUSE_MOVE, stage_onMouseMove);
 		stage.removeEventListener(MouseEvent.MOUSE_UP, stage_onMouseUp);
+
+		if (this.stage == null) return;
 
 		if (stage.focus == this)
 		{
@@ -3112,6 +3186,10 @@ class TextField extends InteractiveObject
 		if (type == INPUT && stage != null && stage.focus == this)
 		{
 			__startTextInput();
+		}
+		else if (type != INPUT && selectable && stage != null && stage.focus == this)
+		{
+			__startCursorTimer();
 		}
 	}
 
@@ -3185,7 +3263,7 @@ class TextField extends InteractiveObject
 	{
 		if (mouseWheelEnabled)
 		{
-			scrollV -= event.delta;
+			scrollV = Std.int(Math.min(scrollV - event.delta, maxScrollV));
 		}
 	}
 
@@ -3253,7 +3331,7 @@ class TextField extends InteractiveObject
 					if (!te.isDefaultPrevented())
 					{
 						__replaceSelectedText("\n", true);
-						
+
 						dispatchEvent(new Event(Event.CHANGE, true));
 					}
 				}

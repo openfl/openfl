@@ -4,8 +4,10 @@ on: [push, pull_request]
 jobs:
 
   unit-test:
+    strategy:
+      matrix:
+        haxe-version: [3.4.7, 4.1.5]
     runs-on: macos-10.15
-
     steps:
       - uses: actions/checkout@v1
         with:
@@ -13,7 +15,7 @@ jobs:
 
       - uses: krdlab/setup-haxe@v1
         with:
-          haxe-version: 4.1.5
+          haxe-version: ${{ matrix.haxe-version }}
 
       - name: Set HAXEPATH
         run: |
@@ -21,9 +23,11 @@ jobs:
 
       - name: Install Haxe dependencies
         run: |
+          haxelib install hxcpp --quiet
+          haxelib install format --quiet
+          haxelib install hxp --quiet
           haxelib install lime --quiet
           haxelib install utest --quiet
-          haxelib install hxp --quiet
 
       - name: Setup environment
         run: |
@@ -92,6 +96,9 @@ jobs:
 
       - name: Install Haxe dependencies
         run: |
+          haxelib install hxcpp --quiet
+          haxelib install format --quiet
+          haxelib install hxp --quiet
           haxelib install lime --quiet
           haxelib install dox --quiet
           haxelib dev openfl $GITHUB_WORKSPACE
@@ -108,9 +115,9 @@ jobs:
           if-no-files-found: error
 
   notify:
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-18.04
     needs: [package-haxelib, docs, unit-test]
-    if: ${{ github.event_name != 'pull_request' }}
+    if: ${{ github.repository == 'openfl/openfl' && github.event_name != 'pull_request' }}
     steps:
       - name: Notify Discord
         uses: nobrayner/discord-webhook@v1

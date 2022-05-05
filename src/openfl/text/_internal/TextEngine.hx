@@ -17,9 +17,13 @@ import openfl.text.TextFormatAlign;
 import lime.graphics.cairo.CairoFontFace;
 import lime.system.System;
 #end
+#if sys
+import sys.io.Process;
+#end
 #if (js && html5)
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
+import js.html.Element;
 import js.Browser;
 #end
 
@@ -38,9 +42,10 @@ class TextEngine
 	private static inline var UTF8_ENDLINE:Int = 10;
 	private static inline var UTF8_SPACE:Int = 32;
 	private static inline var UTF8_HYPHEN:Int = 0x2D;
-	private static var __defaultFonts:Map<String, Font> = new Map();
+	private static var __defaultFonts:Map<String, DefaultFontSet>;
 	#if (js && html5)
 	private static var __context:CanvasRenderingContext2D;
+	private static var __div:Element;
 	#end
 
 	public var antiAliasType:AntiAliasType;
@@ -145,6 +150,18 @@ class TextEngine
 		{
 			__context = (cast Browser.document.createElement("canvas") : CanvasElement).getContext("2d");
 		}
+
+		#if (js && html5 && openfl_measuretext_div)
+		if (__div == null)
+		{
+			__div = cast Browser.document.createElement("div");
+			__div.style.setProperty("pointer-events", "none", null);
+			__div.style.setProperty("white-space", "nowrap", null);
+			__div.style.position = "absolute";
+			__div.style.top = "110%"; // position off-screen!
+			Browser.document.body.appendChild(__div);
+		}
+		#end
 		#end
 	}
 
@@ -260,12 +277,137 @@ class TextEngine
 		textBounds.setTo(Math.max(x - 2, 0), Math.max(y - 2, 0), Math.min(textWidth + 4, bounds.width + 4), Math.min(textHeight + 4, bounds.height + 4));
 	}
 
+	private static function getDefaultFont(name:String, bold:Bool, italic:Bool):Font
+	{
+		if (__defaultFonts == null)
+		{
+			__defaultFonts = new Map();
+
+			#if lime_cffi
+			var systemFontDirectory = System.fontsDirectory;
+
+			function processFontList(list:Array<String>):Font
+			{
+				var font = null;
+				for (path in list)
+				{
+					font = findFont(path);
+					if (font != null) break;
+				}
+				return font;
+			}
+
+			#if windows
+			__defaultFonts.set("_sans",
+				new DefaultFontSet(findFont(systemFontDirectory + "/arial.ttf"), findFont(systemFontDirectory + "/arialbd.ttf"),
+					findFont(systemFontDirectory + "/ariali.ttf"), findFont(systemFontDirectory + "/arialbi.ttf")));
+
+			__defaultFonts.set("_serif",
+				new DefaultFontSet(findFont(systemFontDirectory + "/times.ttf"), findFont(systemFontDirectory + "/timesbd.ttf"),
+					findFont(systemFontDirectory + "/timesi.ttf"), findFont(systemFontDirectory + "/timesbi.ttf")));
+
+			__defaultFonts.set("_typewriter",
+				new DefaultFontSet(findFont(systemFontDirectory + "/cour.ttf"), findFont(systemFontDirectory + "/courbd.ttf"),
+					findFont(systemFontDirectory + "/couri.ttf"), findFont(systemFontDirectory + "/courbi.ttf")));
+			#elseif (mac || ios || tvos)
+			var sans = processFontList([
+				systemFontDirectory + "/Arial.ttf",
+				systemFontDirectory + "/Helvetica.ttf",
+				systemFontDirectory + "/Cache/Arial.ttf",
+				systemFontDirectory + "/Cache/Helvetica.ttf",
+				systemFontDirectory + "/Core/Arial.ttf",
+				systemFontDirectory + "/Core/Helvetica.ttf",
+				systemFontDirectory + "/CoreAddition/Arial.ttf",
+				systemFontDirectory + "/CoreAddition/Helvetica.ttf",
+				"/System/Library/Fonts/Supplemental/Arial.ttf"
+			]);
+			var sansBold = findFont("/System/Library/Fonts/Supplemental/Arial Bold.ttf");
+			var sansItalic = findFont("/System/Library/Fonts/Supplemental/Arial Italic.ttf");
+			var sansBoldItalic = findFont("/System/Library/Fonts/Supplemental/Arial Bold Italic.ttf");
+
+			__defaultFonts.set("_sans", new DefaultFontSet(sans, sansBold, sansItalic, sansBoldItalic));
+
+			var serif = processFontList([
+				systemFontDirectory + "/Georgia.ttf", systemFontDirectory + "/Times.ttf", systemFontDirectory + "/Times New Roman.ttf",
+				systemFontDirectory + "/Cache/Georgia.ttf", systemFontDirectory + "/Cache/Times.ttf", systemFontDirectory + "/Cache/Times New Roman.ttf",
+				systemFontDirectory + "/Core/Georgia.ttf", systemFontDirectory + "/Core/Times.ttf", systemFontDirectory + "/Core/Times New Roman.ttf",
+				systemFontDirectory + "/CoreAddition/Georgia.ttf", systemFontDirectory + "/CoreAddition/Times.ttf",
+				systemFontDirectory + "/CoreAddition/Times New Roman.ttf", "/System/Library/Fonts/Supplemental/Times New Roman.ttf"
+			]);
+			var serifBold = findFont("/System/Library/Fonts/Supplemental/Times New Roman Bold.ttf");
+			var serifItalic = findFont("/System/Library/Fonts/Supplemental/Times New Roman Italic.ttf");
+			var serifBoldItalic = findFont("/System/Library/Fonts/Supplemental/Times New Roman Bold Italic.ttf");
+
+			__defaultFonts.set("_serif", new DefaultFontSet(serif, serifBold, serifItalic, serifBoldItalic));
+
+			var typewriter = processFontList([
+				systemFontDirectory + "/Courier New.ttf",
+				systemFontDirectory + "/Courier.ttf",
+				systemFontDirectory + "/Cache/Courier New.ttf",
+				systemFontDirectory + "/Cache/Courier.ttf",
+				systemFontDirectory + "/Core/Courier New.ttf",
+				systemFontDirectory + "/Core/Courier.ttf",
+				systemFontDirectory + "/CoreAddition/Courier New.ttf",
+				systemFontDirectory + "/CoreAddition/Courier.ttf",
+				"/System/Library/Fonts/Supplemental/Courier New.ttf"
+			]);
+			var typewriterBold = findFont("/System/Library/Fonts/Supplemental/Courier New Bold.ttf");
+			var typewriterItalic = findFont("/System/Library/Fonts/Supplemental/Courier New Italic.ttf");
+			var typewriterBoldItalic = findFont("/System/Library/Fonts/Supplemental/Courier New Bold Italic.ttf");
+
+			__defaultFonts.set("_typewriter", new DefaultFontSet(typewriter, typewriterBold, typewriterItalic, typewriterBoldItalic));
+			#elseif linux
+			__defaultFonts.set("_sans",
+				new DefaultFontSet(processFontList([new Process("fc-match", ["sans", "-f%{file}"]).stdout.readLine()]),
+					processFontList([new Process("fc-match", ["sans:weight=bold", "-f%{file}"]).stdout.readLine()]),
+					processFontList([new Process("fc-match", ["sans:slant=italic", "-f%{file}"]).stdout.readLine()]), processFontList([
+						new Process("fc-match", ["sans:weight=bold:slant=italic", "-f%{file}"]).stdout.readLine()
+					])));
+
+			__defaultFonts.set("_serif",
+				new DefaultFontSet(processFontList([new Process("fc-match", ["serif", "-f%{file}"]).stdout.readLine()]),
+					processFontList([new Process("fc-match", ["serif:weight=bold", "-f%{file}"]).stdout.readLine()]),
+					processFontList([new Process("fc-match", ["serif:slant=italic", "-f%{file}"]).stdout.readLine()]), processFontList([
+						new Process("fc-match", ["serif:weight=bold:slant=italic", "-f%{file}"]).stdout.readLine()
+					])));
+
+			__defaultFonts.set("_typewriter",
+				new DefaultFontSet(processFontList([new Process("fc-match", ["mono", "-f%{file}"]).stdout.readLine()]),
+					processFontList([new Process("fc-match", ["mono:weight=bold", "-f%{file}"]).stdout.readLine()]),
+					processFontList([new Process("fc-match", ["mono:slant=italic", "-f%{file}"]).stdout.readLine()]), processFontList([
+						new Process("fc-match", ["mono:weight=bold:slant=italic", "-f%{file}"]).stdout.readLine()
+					])));
+			#elseif android
+			__defaultFonts.set("_sans", new DefaultFontSet(findFont(systemFontDirectory + "/DroidSans.ttf")));
+			__defaultFonts.set("_serif", new DefaultFontSet(processFontList([
+				systemFontDirectory + "/DroidSerif-Regular.ttf",
+				systemFontDirectory + "/NotoSerif-Regular.ttf"
+			])));
+			__defaultFonts.set("_typewriter", new DefaultFontSet(findFont(systemFontDirectory + "/DroidSansMono.ttf")));
+			#else
+			__defaultFonts.set("_sans", new DefaultFontSet(findFont("Noto Sans Regular")));
+			__defaultFonts.set("_serif", new DefaultFontSet(findFont("Noto Serif Regular")));
+			__defaultFonts.set("_typewriter", new DefaultFontSet(findFont("Noto Mono")));
+			#end
+			#end
+		}
+
+		var fontSet = __defaultFonts.get(name);
+		if (fontSet == null) return null;
+
+		return fontSet.getFont(bold, italic);
+	}
+
 	public static function getFormatHeight(format:TextFormat):Float
 	{
 		var ascent:Float, descent:Float, leading:Int;
 
 		#if (js && html5)
-		__context.font = getFont(format);
+		var font = getFont(format);
+		__context.font = font;
+		#if openfl_measuretext_div
+		__div.style.setProperty("font", font, null);
+		#end
 		#end
 
 		var font = getFontInstance(format);
@@ -340,7 +482,8 @@ class TextEngine
 		font += "normal ";
 		font += bold ? "bold " : "normal ";
 		font += format.size + "px";
-		font += "/" + (format.leading + format.size + 3) + "px ";
+		// font += "/" + (format.leading + format.size + 3) + "px ";
+		font += "/" + (format.size + 3) + "px ";
 
 		font += "" + switch (fontName)
 		{
@@ -363,188 +506,20 @@ class TextEngine
 
 		if (format != null && format.font != null)
 		{
-			if (__defaultFonts.exists(format.font))
+			switch (format.font)
 			{
-				return __defaultFonts.get(format.font);
+				case "_sans", "_serif", "_typewriter":
+					instance = getDefaultFont(format.font, format.bold, format.italic);
+					if (instance != null) return instance;
+				default:
 			}
 
 			instance = findFontVariant(format);
 			if (instance != null) return instance;
-
-			var systemFontDirectory = System.fontsDirectory;
-
-			switch (format.font)
-			{
-				case "_sans":
-					#if windows
-					if (format.bold)
-					{
-						if (format.italic)
-						{
-							fontList = [systemFontDirectory + "/arialbi.ttf"];
-						}
-						else
-						{
-							fontList = [systemFontDirectory + "/arialbd.ttf"];
-						}
-					}
-					else
-					{
-						if (format.italic)
-						{
-							fontList = [systemFontDirectory + "/ariali.ttf"];
-						}
-						else
-						{
-							fontList = [systemFontDirectory + "/arial.ttf"];
-						}
-					}
-					#elseif (mac || ios || tvos)
-					fontList = [
-						systemFontDirectory + "/Arial.ttf",
-						systemFontDirectory + "/Helvetica.ttf",
-						systemFontDirectory + "/Cache/Arial.ttf",
-						systemFontDirectory + "/Cache/Helvetica.ttf",
-						systemFontDirectory + "/Core/Arial.ttf",
-						systemFontDirectory + "/Core/Helvetica.ttf",
-						systemFontDirectory + "/CoreAddition/Arial.ttf",
-						systemFontDirectory + "/CoreAddition/Helvetica.ttf",
-						"/System/Library/Fonts/Supplemental/Arial.ttf"
-					];
-					#elseif linux
-					fontList = [new sys.io.Process("fc-match", ["sans", "-f%{file}"]).stdout.readLine()];
-					#elseif android
-					fontList = [systemFontDirectory + "/DroidSans.ttf"];
-					#else
-					fontList = ["Noto Sans Regular"];
-					#end
-
-				case "_serif":
-
-				// pass through
-
-				case "_typewriter":
-					#if windows
-					if (format.bold)
-					{
-						if (format.italic)
-						{
-							fontList = [systemFontDirectory + "/courbi.ttf"];
-						}
-						else
-						{
-							fontList = [systemFontDirectory + "/courbd.ttf"];
-						}
-					}
-					else
-					{
-						if (format.italic)
-						{
-							fontList = [systemFontDirectory + "/couri.ttf"];
-						}
-						else
-						{
-							fontList = [systemFontDirectory + "/cour.ttf"];
-						}
-					}
-					#elseif (mac || ios || tvos)
-					fontList = [
-						systemFontDirectory + "/Courier New.ttf",
-						systemFontDirectory + "/Courier.ttf",
-						systemFontDirectory + "/Cache/Courier New.ttf",
-						systemFontDirectory + "/Cache/Courier.ttf",
-						systemFontDirectory + "/Core/Courier New.ttf",
-						systemFontDirectory + "/Core/Courier.ttf",
-						systemFontDirectory + "/CoreAddition/Courier New.ttf",
-						systemFontDirectory + "/CoreAddition/Courier.ttf",
-						"/System/Library/Fonts/Supplemental/Courier New.ttf"
-					];
-					#elseif linux
-					fontList = [new sys.io.Process("fc-match", ["mono", "-f%{file}"]).stdout.readLine()];
-					#elseif android
-					fontList = [systemFontDirectory + "/DroidSansMono.ttf"];
-					#else
-					fontList = ["Noto Mono"];
-					#end
-
-				default:
-					fontList = [systemFontDirectory + "/" + format.font];
-			}
-
-			if (fontList != null)
-			{
-				for (font in fontList)
-				{
-					instance = findFont(font);
-
-					if (instance != null)
-					{
-						__defaultFonts.set(format.font, instance);
-						return instance;
-					}
-				}
-			}
-
-			instance = findFont("_serif");
-			if (instance != null) return instance;
 		}
 
-		var systemFontDirectory = System.fontsDirectory;
-
-		#if windows
-		if (format.bold)
-		{
-			if (format.italic)
-			{
-				fontList = [systemFontDirectory + "/timesbi.ttf"];
-			}
-			else
-			{
-				fontList = [systemFontDirectory + "/timesbd.ttf"];
-			}
-		}
-		else
-		{
-			if (format.italic)
-			{
-				fontList = [systemFontDirectory + "/timesi.ttf"];
-			}
-			else
-			{
-				fontList = [systemFontDirectory + "/times.ttf"];
-			}
-		}
-		#elseif (mac || ios || tvos)
-		fontList = [
-			systemFontDirectory + "/Georgia.ttf", systemFontDirectory + "/Times.ttf", systemFontDirectory + "/Times New Roman.ttf",
-			systemFontDirectory + "/Cache/Georgia.ttf", systemFontDirectory + "/Cache/Times.ttf", systemFontDirectory + "/Cache/Times New Roman.ttf",
-			systemFontDirectory + "/Core/Georgia.ttf", systemFontDirectory + "/Core/Times.ttf", systemFontDirectory + "/Core/Times New Roman.ttf",
-			systemFontDirectory + "/CoreAddition/Georgia.ttf", systemFontDirectory + "/CoreAddition/Times.ttf",
-			systemFontDirectory + "/CoreAddition/Times New Roman.ttf", "/System/Library/Fonts/Supplemental/Times New Roman.ttf"
-		];
-		#elseif linux
-		fontList = [new sys.io.Process("fc-match", ["serif", "-f%{file}"]).stdout.readLine()];
-		#elseif android
-		fontList = [
-			systemFontDirectory + "/DroidSerif-Regular.ttf",
-			systemFontDirectory + "/NotoSerif-Regular.ttf"
-		];
-		#else
-		fontList = ["Noto Serif Regular"];
-		#end
-
-		for (font in fontList)
-		{
-			instance = findFont(font);
-
-			if (instance != null)
-			{
-				__defaultFonts.set(format.font, instance);
-				return instance;
-			}
-		}
-
-		__defaultFonts.set(format.font, null);
+		instance = getDefaultFont("_serif", format.bold, format.italic);
+		if (instance != null) return instance;
 		#end
 
 		return null;
@@ -617,8 +592,9 @@ class TextEngine
 		numLines = 1;
 		maxScrollH = 0;
 
-		for (group in layoutGroups)
+		for (i in 0...layoutGroups.length)
 		{
+			var group = layoutGroups[i];
 			while (group.lineIndex > numLines - 1)
 			{
 				lineAscents.push(currentLineAscent);
@@ -634,6 +610,12 @@ class TextEngine
 				currentLineWidth = 0;
 
 				numLines++;
+			}
+
+			if (i == layoutGroups.length - 1 && group.startIndex == group.endIndex && type != INPUT)
+			{
+				// if the final group contains only a new line, skip it (unless type == INPUT)
+				continue;
 			}
 
 			currentLineAscent = Math.max(currentLineAscent, group.ascent);
@@ -664,7 +646,7 @@ class TextEngine
 			}
 		}
 
-		if (textHeight == 0 && textField != null && textField.type == INPUT)
+		if (textHeight == 0 && textField != null && type == INPUT)
 		{
 			var currentFormat = textField.__textFormat;
 			var ascent, descent, leading, heightValue;
@@ -722,8 +704,9 @@ class TextEngine
 		{
 			var group = layoutGroups[layoutGroups.length - 1];
 
-			if (group != null && group.startIndex == group.endIndex && textField.caretIndex != group.startIndex)
+			if (group != null && group.startIndex == group.endIndex && type != INPUT && textField.caretIndex != group.startIndex)
 			{
+				// if the final group contains only a new line, skip it (unless type == INPUT)
 				textHeight -= currentLineHeight;
 			}
 		}
@@ -831,7 +814,7 @@ class TextEngine
 
 					for (i in startIndex...endIndex)
 					{
-						width = __context.measureText(text.substring(startIndex, i + 1)).width;
+						width = measureText(text.substring(startIndex, i + 1));
 						// if (i > 0) width += letterSpacing;
 
 						positions.push(width - previousWidth);
@@ -848,8 +831,8 @@ class TextEngine
 						if (i < text.length - 1)
 						{
 							// Advance can be less for certain letter combinations, e.g. 'Yo' vs. 'Do'
-							var nextWidth = __context.measureText(text.charAt(i + 1)).width;
-							var twoWidths = __context.measureText(text.substr(i, 2)).width;
+							var nextWidth = measureText(text.charAt(i + 1));
+							var twoWidths = measureText(text.substr(i, 2));
 							advance = twoWidths - nextWidth;
 						}
 						else
@@ -865,6 +848,12 @@ class TextEngine
 
 				return positions;
 			}
+			// TODO: Smarter caching for justify
+			if (currentFormat.align == JUSTIFY)
+			{
+				return html5Positions();
+			}
+
 			return __shapeCache.cache(formatRange, html5Positions, text.substring(startIndex, endIndex));
 			#else
 			if (__textLayout == null)
@@ -889,11 +878,16 @@ class TextEngine
 			// __textLayout.script = ARABIC;
 
 			__textLayout.text = text.substring(startIndex, endIndex);
+
+			// TODO:Smarter caching for justify
+			if (currentFormat.align == JUSTIFY)
+			{
+				return __textLayout.positions;
+			}
+
 			return __shapeCache.cache(formatRange, __textLayout);
 			#end
-		}
-
-		#if !js inline #end function getPositionsWidth(positions:#if (js && html5) Array<Float> #else Array<GlyphPosition> #end):Float
+		} #if !js inline #end function getPositionsWidth(positions:#if (js && html5) Array<Float> #else Array<GlyphPosition> #end):Float
 
 		{
 			var width = 0.0;
@@ -914,7 +908,7 @@ class TextEngine
 
 		{
 			#if (js && html5)
-			return __context.measureText(text).width;
+			return measureText(text);
 			#else
 			if (__textLayout == null)
 			{
@@ -1043,7 +1037,11 @@ class TextEngine
 				currentFormat.__merge(formatRange.format);
 
 				#if (js && html5)
-				__context.font = getFont(currentFormat);
+				var fontString = getFont(currentFormat);
+				__context.font = fontString;
+				#if openfl_measuretext_div
+				__div.style.setProperty("font", fontString, null);
+				#end
 				#end
 
 				font = getFontInstance(currentFormat);
@@ -1229,6 +1227,26 @@ class TextEngine
 			var currentPosition;
 
 			var tempWidth = getPositionsWidth(remainingPositions);
+			i = remainingPositions.length - 1;
+			while (i >= 0)
+			{
+				// strip away the combined width of whitespace at the end of the
+				// line. the whitespace's width should not be included in the
+				// width of the preceding word when determining if that word is
+				// too long to fit on the line.
+				var currentCharCode = text.charCodeAt(textIndex + i);
+				if (currentCharCode != 32 && currentCharCode != 9)
+				{
+					break;
+				}
+				var position = remainingPositions[i];
+				#if (js && html5)
+				tempWidth -= position;
+				#else
+				tempWidth -= position.advance.x;
+				#end
+				i--;
+			}
 
 			while (remainingPositions.length > 0 && offsetX + tempWidth > getWrapWidth())
 			{
@@ -1428,7 +1446,6 @@ class TextEngine
 							{
 								// if last letter is a space, avoid word wrap if possible
 								// TODO: Handle multiple spaces
-
 								var lastPosition = positions[positions.length - 1];
 								var spaceWidth = #if (js && html5) lastPosition #else lastPosition.advance.x #end;
 
@@ -1458,7 +1475,7 @@ class TextEngine
 						var i = layoutGroups.length - 1;
 						var offsetCount = 0;
 
-						while (true)
+						while (i >= 0)
 						{
 							layoutGroup = layoutGroups[i];
 
@@ -1501,7 +1518,7 @@ class TextEngine
 					}
 					else
 					{
-						if (layoutGroup != null && textIndex == spaceIndex)
+						if (layoutGroup != null && textIndex == spaceIndex && previousSpaceIndex != spaceIndex - 1)
 						{
 							// TODO: does this case ever happen?
 							if (align != JUSTIFY)
@@ -1510,7 +1527,6 @@ class TextEngine
 								layoutGroup.positions = layoutGroup.positions.concat(positions);
 								layoutGroup.width += widthValue;
 							}
-
 							offsetX += widthValue;
 
 							textIndex = endIndex;
@@ -1556,7 +1572,17 @@ class TextEngine
 
 							textIndex = endIndex;
 
-							if (endIndex == text.length) alignBaseline();
+							if (endIndex == text.length)
+							{
+								alignBaseline();
+
+								if (breakIndex != -1)
+								{
+									previousBreakIndex = breakIndex;
+									breakCount++;
+									breakIndex = breakCount < lineBreaks.length ? lineBreaks[breakCount] : -1;
+								}
+							}
 						}
 					}
 
@@ -1593,7 +1619,6 @@ class TextEngine
 				if (textIndex < text.length)
 				{
 					// if there are no line breaks or spaces to deal with next, place all remaining text
-
 					setFormattedPositions(textIndex, text.length);
 					placeText(text.length);
 
@@ -1617,7 +1642,7 @@ class TextEngine
 			layoutGroup.offsetX = getBaseX(); // TODO: double check it doesn't default to GUTTER or something
 			layoutGroup.offsetY = offsetY + GUTTER;
 			layoutGroup.width = 0;
-			layoutGroup.height = type == "input" ? heightValue : 0;
+			layoutGroup.height = heightValue;
 		}
 
 		#if openfl_trace_text_layout_groups
@@ -1627,6 +1652,18 @@ class TextEngine
 		}
 		#end
 	}
+
+	#if (js && html5)
+	private function measureText(text:String):Float
+	{
+		#if openfl_measuretext_div
+		__div.innerHTML = StringTools.replace(text, " ", "&nbsp;");
+		return __div.clientWidth;
+		#else
+		return __context.measureText(text).width;
+		#end
+	}
+	#end
 
 	public function restrictText(value:UTF8String):UTF8String
 	{
@@ -1814,26 +1851,37 @@ class TextEngine
 			var ret = lineHeights.length;
 			// TODO: update for loop with leading checks, remove below line. Leading of lineIndex == bottomScroll is ignored
 			var tempHeight = (lineLeadings.length == ret) ? -lineLeadings[ret - 1] : 0.0;
-			
+
 			for (i in (scrollV > 0 ? scrollV : 1) - 1...lineHeights.length)
 			{
-				if (tempHeight + lineHeights[i] <= height - 4)
+				var lineHeight = lineHeights[i];
+
+				tempHeight += lineHeight;
+
+				if (tempHeight > height - 4)
 				{
-					tempHeight += lineHeights[i];
-				}
-				else
-				{
-					ret = i;
+					ret = i + (tempHeight - height >= 0 ? 0 : 1);
 					break;
 				}
+
+				/*if (tempHeight + lineHeights[i] <= height - 4)
+					{
+
+						tempHeight += lineHeights[i];
+					}
+					else
+					{
+						ret = i;
+						break;
+				}*/
 			}
 
 			if (ret < scrollV) return scrollV;
-			
-			if (ret < lineHeights.length)
-			{
-				ret++;
-			}
+
+			// if (ret < lineHeights.length)
+			// {
+			// ret++;
+			// }
 			return ret;
 		}
 	}
@@ -1853,20 +1901,29 @@ class TextEngine
 
 			while (i >= 0)
 			{
-				if (tempHeight + lineHeights[i] <= height - 4)
+				tempHeight += lineHeights[i];
+
+				if (tempHeight > height - 4)
 				{
-					tempHeight += lineHeights[i];
-					i--;
-				}
-				else
+					i += (tempHeight - height < 0 ? 1 : 2);
 					break;
+				}
+				i--;
 			}
+			/*if (tempHeight + lineHeights[i] <= height - 4)
+					{
+						tempHeight += lineHeights[i];
+						i--;
+					}
+					else
+						break;
+				}
+			}*/
 
-			if (i == j) i = numLines; // maxScrollV defaults to numLines if the height - 4 is less than the line's height
+			// if (i == j) i = numLines; // maxScrollV defaults to numLines if the height - 4 is less than the line's height
 			// TODO: check if it's based on the first or last line's height
-			else
-				i += 1;
-
+			// else
+			//	i += 1;
 			if (i < 1) return 1;
 			return i;
 		}
@@ -1896,11 +1953,11 @@ class TextEngine
 	private function get_scrollV():Int
 	{
 		if (numLines == 1 || lineHeights == null) return 1;
-		
+
 		var max = maxScrollV;
-		
+
 		if (scrollV > max) return max - 1;
-		
+
 		return scrollV;
 	}
 
@@ -1913,5 +1970,38 @@ class TextEngine
 	private function set_text(value:String):String
 	{
 		return text = value;
+	}
+}
+
+private class DefaultFontSet
+{
+	private var bold:Font;
+	private var boldItalic:Font;
+	private var italic:Font;
+	private var normal:Font;
+
+	public function new(normal:Font, bold:Font = null, italic:Font = null, boldItalic:Font = null)
+	{
+		this.normal = normal;
+		this.bold = bold;
+		this.italic = italic;
+		this.boldItalic = boldItalic;
+	}
+
+	public inline function getFont(isBold:Bool, isItalic:Bool):Font
+	{
+		if (isBold && isItalic && boldItalic != null)
+		{
+			return boldItalic;
+		}
+		if (isItalic && italic != null)
+		{
+			return italic;
+		}
+		if (isBold && bold != null)
+		{
+			return bold;
+		}
+		return normal;
 	}
 }

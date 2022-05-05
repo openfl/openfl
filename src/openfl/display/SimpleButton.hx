@@ -31,6 +31,7 @@ import openfl.Vector;
 @:access(openfl.display.MovieClip)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
+@:autoBuild(openfl.utils._internal.AssetsMacro.initBinding())
 class SimpleButton extends InteractiveObject
 {
 	/**
@@ -544,4 +545,5 @@ class SimpleButton extends InteractiveObject
 }
 #else
 typedef SimpleButton = flash.display.SimpleButton;
+typedef SimpleButton2 = flash.display.SimpleButton.SimpleButton2;
 #end

@@ -389,6 +389,7 @@ class Shader
 		{
 			input.__disableGL(__context, textureCount);
 			textureCount++;
+			if (textureCount == gl.MAX_TEXTURE_IMAGE_UNITS) break;
 		}
 
 		for (parameter in __paramBool)
@@ -480,16 +481,17 @@ class Shader
 		{
 			var gl = __context.gl;
 
-			var prefix = "#ifdef GL_ES
-				"
-				+ (precisionHint == FULL ? "#ifdef GL_FRAGMENT_PRECISION_HIGH
-				precision highp float;
-				#else
-				precision mediump float;
-				#endif" : "precision lowp float;")
-				+ "
-				#endif
-				";
+			#if (js && html5)
+			var prefix = (precisionHint == FULL ? "precision mediump float;\n" : "precision lowp float;\n");
+			#else
+			var prefix = "#ifdef GL_ES\n"
+				+ (precisionHint == FULL ? "#ifdef GL_FRAGMENT_PRECISION_HIGH\n"
+					+ "precision highp float;\n"
+					+ "#else\n"
+					+ "precision mediump float;\n"
+					+ "#endif\n" : "precision lowp float;\n")
+				+ "#endif\n\n";
+			#end
 
 			var vertex = prefix + glVertexSource;
 			var fragment = prefix + glFragmentSource;

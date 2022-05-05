@@ -1,6 +1,8 @@
 package openfl.events;
 
 #if !flash
+import openfl.utils.Object;
+
 // import openfl.utils.ObjectPool;
 
 /**
@@ -684,7 +686,7 @@ class Event
 		could be the node containing that button or one of its ancestors that has
 		registered an event listener for that event.
 	**/
-	public var currentTarget(default, null):#if (haxe_ver >= "3.4.2") Any #else IEventDispatcher #end;
+	public var currentTarget(default, null):Object;
 
 	/**
 		The current phase in the event flow. This property can contain the
@@ -701,7 +703,7 @@ class Event
 		a user clicks an OK button, the target node is the display list node
 		containing that button.
 	**/
-	public var target(default, null):#if (haxe_ver >= "3.4.2") Any #else IEventDispatcher #end;
+	public var target(default, null):Object;
 
 	/**
 		The type of event. The type is case-sensitive.

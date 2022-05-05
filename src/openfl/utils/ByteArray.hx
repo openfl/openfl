@@ -1022,7 +1022,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		#elseif lime_bytes_length_getter
 		this.length = value;
 		#else
-		if (value > 0)
+		if (value >= 0)
 		{
 			this.__resize(value);
 			if (value < this.position) this.position = value;
@@ -1840,7 +1840,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	{
 		#if display
 		#else
-		if (value > 0)
+		if (value >= 0)
 		{
 			this.__resize(value);
 			if (value < this.position) this.position = value;

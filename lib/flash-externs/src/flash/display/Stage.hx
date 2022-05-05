@@ -97,7 +97,7 @@ extern class Stage extends DisplayObjectContainer implements IModule
 	#if air
 	public function assignFocus(objectToFocus:InteractiveObject, direction:FocusDirection):Void;
 	#end
-	public function invalidate():Void;
+	// public function invalidate():Void;
 	#if flash
 	public function isFocusInaccessible():Bool;
 	#end
@@ -153,6 +153,13 @@ extern class Stage extends DisplayObjectContainer implements IModule
 	public function onWindowResize(width:Int, height:Int):Void;
 	public function onWindowRestore():Void;
 	public function update(deltaTime:Int):Void;
+
+	#if (mute || mute_sound)
+	private static function __init__():Void
+	{
+		flash.media.SoundMixer.soundTransform = new flash.media.SoundTransform(0);
+	}
+	#end
 }
 #else
 typedef Stage = openfl.display.Stage;

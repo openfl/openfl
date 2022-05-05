@@ -32,8 +32,8 @@ import cpp.vm.Gc;
 	#if false
 	/**
 		The amount of memory (in bytes) that is allocated to
-		Adobe<sup>஼/sup> Flash<sup>஼/sup> Player or Adobe<sup>஼/sup>
-		AIR<sup>஼/sup> and that is not in use. This unused portion of
+		Adobe<sup>®</sup> Flash<sup>®</sup> Player or Adobe<sup>®</sup>
+		AIR<sup>®</sup> and that is not in use. This unused portion of
 		allocated memory (`System.totalMemory`) fluctuates as garbage
 		collection takes place. Use this property to monitor garbage
 		collection.
