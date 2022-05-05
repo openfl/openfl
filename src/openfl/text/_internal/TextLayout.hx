@@ -119,7 +119,7 @@ class TextLayout
 
 				if (autoHint)
 				{
-					__hbFont.loadFlags = FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_LIGHT;
+					__hbFont.loadFlags = FT_LOAD_TARGET_LIGHT;
 				}
 			}
 			else
