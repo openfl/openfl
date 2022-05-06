@@ -981,7 +981,8 @@ class DisplayObjectContainer extends InteractiveObject
 		super.__update(transformOnly, updateChildren);
 
 		#if (queue_experimental_optimization && !dom)
-		updateChildren = true;
+		// Don't!
+		// updateChildren = true;
 		#end
 
 		if (updateChildren)
