@@ -1674,7 +1674,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	#if (queue_experimental_optimization && !dom)
 	@:noCompletion private var _flag:Bool = false;
 
-	@:noCompletion private function __updateFlag(add:Bool = true):Void
+	@:noCompletion inline private function __updateFlag(add:Bool = true):Void
 	{
 		if (add)
 		{
