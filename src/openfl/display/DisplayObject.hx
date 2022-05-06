@@ -1733,6 +1733,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		__renderable = (__visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
 		__updateTransforms();
 
+		#if (queue_experimental_optimization && !dom)
+		__updateFlag(false);
+		#end
+
 		// if (updateChildren && __transformDirty) {
 
 		__transformDirty = false;
