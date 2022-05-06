@@ -1726,17 +1726,21 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 
 	#if (queue_experimental_optimization && !dom)
+	@:noCompletion private var _flag:Bool = false;
+
 	@:noCompletion private function __updateFlag(add:Bool = true):Void
 	{
 		if (add)
 		{
-			if (DisplayObject.queue.indexOf(this) == -1)
+			if (!_flag)
 			{
+				_flag = true;
 				DisplayObject.queue.push(this);
 			}
 		}
 		else
 		{
+			_flag = false;
 			DisplayObject.queue.remove(this);
 		}
 	}
