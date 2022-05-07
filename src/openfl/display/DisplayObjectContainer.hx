@@ -50,6 +50,10 @@ import openfl.Vector;
 @:access(openfl.geom.Rectangle)
 class DisplayObjectContainer extends InteractiveObject
 {
+	#if (queue_experimental_optimization && !dom)
+	public var __updateRequired:Bool = true;
+	#end
+
 	/**
 		Determines whether or not the children of the object are mouse, or user
 		input device, enabled. If an object is enabled, a user can interact with
@@ -979,11 +983,6 @@ class DisplayObjectContainer extends InteractiveObject
 	@:noCompletion private override function __update(transformOnly:Bool, updateChildren:Bool):Void
 	{
 		super.__update(transformOnly, updateChildren);
-
-		#if (queue_experimental_optimization && !dom)
-		// Don't!
-		// updateChildren = true;
-		#end
 
 		if (updateChildren)
 		{

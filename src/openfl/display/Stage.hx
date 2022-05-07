@@ -3439,10 +3439,25 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	#if (queue_experimental_optimization && !dom)
 	@:noCompletion private function __updateQueue(transformOnly:Bool, updateChildren:Bool):Void
 	{
+		var updateFix:Array<DisplayObjectContainer> = [];
 		while (DisplayObject.queue.length != 0)
 		{
 			var displayObject:DisplayObject = DisplayObject.queue[0];
+			var parentDisplayObject:DisplayObjectContainer = cast displayObject.parent;
+			if (parentDisplayObject != null && parentDisplayObject.__updateRequired == true && parentDisplayObject != this)
+			{
+				parentDisplayObject.__update(transformOnly, false);
+				parentDisplayObject.__updateRequired = false;
+				updateFix.push(parentDisplayObject);
+			}
+
 			displayObject.__update(transformOnly, updateChildren);
+			displayObject.__updateFlag(false);
+		}
+
+		for (i in 0...updateFix.length)
+		{
+			updateFix[i].__updateRequired = true;
 		}
 	}
 	#else
