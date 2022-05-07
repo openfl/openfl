@@ -1738,7 +1738,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		__updateTransforms();
 
 		#if (queue_experimental_optimization && !dom)
-		__updateFlag(false);
 		transformOnly = false;
 		#end
 
