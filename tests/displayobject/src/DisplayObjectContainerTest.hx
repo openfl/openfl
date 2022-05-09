@@ -173,9 +173,9 @@ class DisplayObjectContainerTest extends Test
 		// catch (e:Dynamic) {}
 	}
 
+	#if (cpp || neko) // TODO: works but sometimes suffers from a race condition when run immediately
 	public function test_getObjectsUnderPoint()
 	{
-		#if (cpp || neko) // TODO: works but sometimes suffers from a race condition when run immediately
 
 		var sprite = new Sprite();
 
@@ -190,8 +190,8 @@ class DisplayObjectContainerTest extends Test
 		sprite.removeChild(sprite2);
 
 		Assert.equals(0, sprite.getObjectsUnderPoint(new Point()).length);
-		#end
 	}
+	#end
 
 	public function test_removeChild()
 	{
