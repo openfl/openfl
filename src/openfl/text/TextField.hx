@@ -124,6 +124,7 @@ import js.html.DivElement;
 @:access(openfl.text.TextFormat)
 class TextField extends InteractiveObject
 {
+	
 	@:noCompletion private static var __defaultTextFormat:TextFormat;
 	@:noCompletion private static var __missingFontWarning:Map<String, Bool> = new Map();
 
