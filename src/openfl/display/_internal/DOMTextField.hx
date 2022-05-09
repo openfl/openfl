@@ -80,7 +80,7 @@ class DOMTextField
 		#if (js && html5)
 		var textEngine = textField.__textEngine;
 
-		if (textField.stage != null && textField.__worldVisible && textField.__renderable || textEngine.type == INPUT)
+		if (textField.stage != null && textField.__worldVisible && textField.__renderable)
 		{
 			if (textField.__dirty || textField.__renderTransformChanged || textField.__div == null)
 			{
