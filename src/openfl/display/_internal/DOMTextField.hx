@@ -115,11 +115,16 @@ class DOMTextField
 							}
 						});
 
+						var _compositionstart = false;
+
 						function inputEvent(event)
 						{
 							event.preventDefault();
 
-							if (event.isComposing) return;
+							if (_compositionstart)
+							{
+								return;
+							}
 
 							var lastText = textField.text;
 
@@ -147,6 +152,17 @@ class DOMTextField
 						}
 
 						textField.__div.addEventListener("input", inputEvent, true);
+
+						textField.__div.addEventListener("compositionstart", function(event)
+						{
+							_compositionstart = true;
+						});
+
+						textField.__div.addEventListener("compositionend", function(event)
+						{
+							_compositionstart = false;
+							inputEvent(event);
+						});
 					}
 
 					if (!textEngine.wordWrap)
@@ -433,7 +449,11 @@ class DOMTextField
 						{
 							if (textEngine.layoutGroups.length > 0)
 							{
-								selection.setPosition(textField.__div, textField.selectionBeginIndex);
+								try
+								{
+									selection.setPosition(textField.__div, textField.selectionBeginIndex);
+								}
+								catch (_) {}
 								if (textField.selectionBeginIndex == -1 && textField.selectionEndIndex == textField.text.length)
 								{
 									// All Selection
