@@ -3251,6 +3251,10 @@ class TextField extends InteractiveObject
 			__dirty = true;
 			__setRenderDirty();
 		}
+
+		// stage could be null if the TextField was removed from stage in an
+		// earlier listener
+		if (stage == null) return;
 		#if !notextselectscroll
 		// Todo: Add flag and implementation for flash scrolling behavior.
 		stage.addEventListener(Event.ENTER_FRAME, this_onEnterFrame);
