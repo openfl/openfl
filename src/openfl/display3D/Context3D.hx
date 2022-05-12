@@ -579,6 +579,14 @@ import lime.math.Vector2;
 	public function configureBackBuffer(width:Int, height:Int, antiAlias:Int, enableDepthAndStencil:Bool = true, wantsBestResolution:Bool = false,
 			wantsBestResolutionOnBrowserZoom:Bool = false):Void
 	{
+		#if !openfl_dpi_aware
+		if (wantsBestResolution)
+		{
+			width = Std.int(width * __stage.window.scale);
+			height = Std.int(height * __stage.window.scale);
+		}
+		#end
+
 		if (__stage3D == null)
 		{
 			backBufferWidth = width;
@@ -604,7 +612,14 @@ import lime.math.Vector2;
 					__stage3D.__vertexBuffer = createVertexBuffer(4, 5);
 				}
 
-				var vertexData = new Vector<Float>([width, height, 0, 1, 1, 0, height, 0, 0, 1, width, 0, 0, 1, 0, 0, 0, 0, 0, 0.0]);
+				#if openfl_dpi_aware
+				var scaledWidth = width;
+				var scaledHeight = height;
+				#else
+				var scaledWidth = wantsBestResolution ? width : Std.int(width * __stage.window.scale);
+				var scaledHeight = wantsBestResolution ? height : Std.int(height * __stage.window.scale);
+				#end
+				var vertexData = new Vector<Float>([scaledWidth, scaledHeight, 0, 1, 1, 0, scaledHeight, 0, 0, 1, scaledWidth, 0, 0, 1, 0, 0, 0, 0, 0, 0.0]);
 
 				__stage3D.__vertexBuffer.uploadFromVector(vertexData, 0, 20);
 
