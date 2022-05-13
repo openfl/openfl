@@ -474,24 +474,6 @@ class DOMTextField
 						catch (_) {}
 					}
 
-					if (selection.focusNode != null)
-					{
-						var needSetPosition = selection.focusNode.parentElement.parentElement == textField.__div
-							|| selection.focusNode.parentElement == textField.__div
-							|| selection.focusNode == textField.__div;
-						if (needSetPosition)
-						{
-							if (textField.selectionBeginIndex <= 0 && textField.selectionEndIndex == textField.text.length)
-							{
-								selection.selectAllChildren(selection.focusNode);
-							}
-						}
-						else
-						{
-							selection.setPosition(null, 0);
-						}
-					}
-
 					// textField.__div.innerHTML = new EReg("\r\n", "g").replace(text, "<br>");
 					// textField.__div.innerHTML = new EReg("\n", "g").replace(textField.__div.innerHTML, "<br>");
 					// textField.__div.innerHTML = new EReg("\r", "g").replace(textField.__div.innerHTML, "<br>");
