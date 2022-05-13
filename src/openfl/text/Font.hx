@@ -76,7 +76,7 @@ class Font #if lime extends LimeFont #end
 	**/
 	public static function enumerateFonts(enumerateDeviceFonts:Bool = false):Array<Font>
 	{
-		#if native
+		#if (lime && native)
 		if(enumerateDeviceFonts)
 		{
 			var _allFonts = __registeredFonts.copy();
