@@ -167,12 +167,19 @@ class TextEngine
 
 	private function createRestrictRegexp(restrict:String):EReg
 	{
-		var declinedRange = ~/\^(.+)/gu;
+		var declinedRange = ~/\^([^\^]+)/gu;
 		var declined = "";
 
+		var accepting = false;
 		var accepted = declinedRange.map(restrict, function(ereg)
 		{
+			if (accepting)
+			{
+				accepting = !accepting;
+				return ereg.matched(1);
+			}
 			declined += ereg.matched(1);
+			accepting = !accepting;
 			return "";
 		});
 
