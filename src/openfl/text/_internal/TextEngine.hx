@@ -220,6 +220,7 @@ class TextEngine
 		if (font != null)
 		{
 			Font.__registeredFonts.push(font);
+			Font.__fontByName[font.fontName] = font;
 			return font;
 		}
 		#end
@@ -1955,7 +1956,7 @@ class TextEngine
 		if (numLines == 1 || lineHeights == null) return 1;
 
 		var max = maxScrollV;
-		
+
 		//TODO: Does maxScrollV return the wrong value(+1) in some cases?
 		if (scrollV > max) return max;
 
@@ -1966,7 +1967,7 @@ class TextEngine
 	{
 		if (value < 1) value = 1;
 		else if (value > maxScrollV) value = maxScrollV;
-		
+
 		return scrollV = value;
 	}
 
