@@ -180,7 +180,7 @@ class TextEngine
 
 		if (accepted.length > 0)
 		{
-			testRegexpParts.push('[^$restrict]');
+			testRegexpParts.push('[^$accepted]');
 		}
 
 		if (declined.length > 0)
