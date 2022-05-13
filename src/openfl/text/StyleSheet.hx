@@ -88,6 +88,7 @@ class StyleSheet extends EventDispatcher /*implements Dynamic*/
 	**/
 	public function getStyle(styleName:String):Object
 	{
+		styleName = styleName.toLowerCase();
 		if (__styles.exists(styleName))
 		{
 			return __styles.get(styleName);
@@ -120,6 +121,7 @@ class StyleSheet extends EventDispatcher /*implements Dynamic*/
 				var styleName:String = rule.exists("selectors") ? rule.get("selectors") : null;
 				if (styleName != null)
 				{
+					styleName = styleName.toLowerCase();
 					if (!__styles.exists(styleName))
 					{
 						__styles.set(styleName, new Object());
@@ -218,6 +220,7 @@ class StyleSheet extends EventDispatcher /*implements Dynamic*/
 
 	@:noCompletion private function __applyStyle(styleName:String, textFormat:TextFormat):Void
 	{
+		styleName = styleName.toLowerCase();
 		if (__styles.exists(styleName))
 		{
 			var style = __styles.get(styleName);
