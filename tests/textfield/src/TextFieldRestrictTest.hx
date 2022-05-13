@@ -1,14 +1,14 @@
 package;
 
-import openfl.events.TextEvent;
-import openfl.text.TextField;
-import openfl.text.TextFieldType;
+#if !flash
 import openfl.text._internal.TextEngine;
+#end
 import utest.Assert;
 import utest.Test;
 
 class TextFieldRestrictTest extends Test
 {
+	#if !flash
 	public function test_restrictCharacter()
 	{
 		var textEngine = new TextEngine(null);
@@ -170,4 +170,5 @@ class TextFieldRestrictTest extends Test
 		Assert.equals("", textEngine.restrictText("3"));
 		Assert.equals("", textEngine.restrictText("@"));
 	}
+	#end
 }
