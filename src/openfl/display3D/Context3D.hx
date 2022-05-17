@@ -2407,9 +2407,18 @@ import lime.math.Vector2;
 		{
 			if (__stage.context3D == this)
 			{
+				var scaledBackBufferWidth = backBufferWidth;
+				var scaledBackBufferHeight = backBufferHeight;
+				#if !openfl_dpi_aware
+				if (__stage3D == null && !__backBufferWantsBestResolution)
+				{
+					scaledBackBufferWidth = Std.int(backBufferWidth * __stage.window.scale);
+					scaledBackBufferHeight = Std.int(backBufferHeight * __stage.window.scale);
+				}
+				#end
 				var x = __stage3D == null ? 0 : Std.int(__stage3D.x);
-				var y = Std.int((__stage.window.height * __stage.window.scale) - backBufferHeight - (__stage3D == null ? 0 : __stage3D.y));
-				gl.viewport(x, y, backBufferWidth, backBufferHeight);
+				var y = Std.int((__stage.window.height * __stage.window.scale) - scaledBackBufferHeight - (__stage3D == null ? 0 : __stage3D.y));
+				gl.viewport(x, y, scaledBackBufferWidth, scaledBackBufferHeight);
 			}
 			else
 			{
