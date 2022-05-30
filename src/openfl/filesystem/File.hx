@@ -676,7 +676,7 @@ class File extends FileReference
 		}
 
 		__fileDialog = new FileDialog();
-		__fileDialog.onSave.add(__dispatchSelect, true);
+		__fileDialog.onSelect.add(__dispatchSelect, true);
 		__fileDialog.browse(SAVE, null, __path, title);
 	}
 
