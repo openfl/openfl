@@ -269,8 +269,15 @@ class TextEngine
 
 		var x = width, y = width;
 
-		for (group in layoutGroups)
+		var lastIndex = layoutGroups.length - 1;
+		for (i in 0...layoutGroups.length)
 		{
+			var group = layoutGroups[i];
+			if (i == lastIndex && group.startIndex == group.endIndex && type != INPUT)
+			{
+				// if the final group contains only a new line, skip it (unless type == INPUT)
+				continue;
+			}
 			if (group.offsetX < x) x = group.offsetX;
 			if (group.offsetY < y) y = group.offsetY;
 		}
