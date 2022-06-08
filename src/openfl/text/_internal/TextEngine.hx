@@ -600,9 +600,17 @@ class TextEngine
 		numLines = 1;
 		maxScrollH = 0;
 
+		var lastIndex = layoutGroups.length - 1;
 		for (i in 0...layoutGroups.length)
 		{
 			var group = layoutGroups[i];
+
+			if (i == lastIndex && group.startIndex == group.endIndex && type != INPUT)
+			{
+				// if the final group contains only a new line, skip it (unless type == INPUT)
+				continue;
+			}
+
 			while (group.lineIndex > numLines - 1)
 			{
 				lineAscents.push(currentLineAscent);
@@ -618,12 +626,6 @@ class TextEngine
 				currentLineWidth = 0;
 
 				numLines++;
-			}
-
-			if (i == layoutGroups.length - 1 && group.startIndex == group.endIndex && type != INPUT)
-			{
-				// if the final group contains only a new line, skip it (unless type == INPUT)
-				continue;
 			}
 
 			currentLineAscent = Math.max(currentLineAscent, group.ascent);
@@ -705,17 +707,6 @@ class TextEngine
 			if (currentLineLeading > 0)
 			{
 				textHeight += currentLineLeading;
-			}
-		}
-
-		if (layoutGroups.length > 0)
-		{
-			var group = layoutGroups[layoutGroups.length - 1];
-
-			if (group != null && group.startIndex == group.endIndex && type != INPUT && textField.caretIndex != group.startIndex)
-			{
-				// if the final group contains only a new line, skip it (unless type == INPUT)
-				textHeight -= currentLineHeight;
 			}
 		}
 
