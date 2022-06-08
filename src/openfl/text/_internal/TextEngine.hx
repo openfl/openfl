@@ -267,7 +267,7 @@ class TextEngine
 		bounds.width = width + padding;
 		bounds.height = height + padding;
 
-		var x = width, y = width;
+		var x = width, y = height;
 
 		var lastIndex = layoutGroups.length - 1;
 		for (i in 0...layoutGroups.length)
