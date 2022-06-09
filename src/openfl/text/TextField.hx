@@ -1736,6 +1736,23 @@ class TextField extends InteractiveObject
 		#if lime
 		if (stage != null)
 		{
+			#if (lime >= "8.0.0")
+			// ensure that the text field is not hidden by the soft keyboard
+			var bounds = getBounds(stage);
+			var limeRect = new lime.math.Rectangle(bounds.x, bounds.y, bounds.width, bounds.height);
+			#if openfl_dpi_aware
+			var scale = stage.window.scale;
+			if (scale != 1.0)
+			{
+				limeRect.x /= scale;
+				limeRect.y /= scale;
+				limeRect.width /= scale;
+				limeRect.height /= scale;
+			}
+			#end
+			stage.window.setTextInputRect(limeRect);
+			#end
+
 			stage.window.textInputEnabled = true;
 
 			if (!__inputEnabled)
