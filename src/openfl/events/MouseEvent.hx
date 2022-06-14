@@ -1,9 +1,11 @@
 package openfl.events;
 
 #if !flash
-// import openfl.utils.ObjectPool;
 import openfl.display.InteractiveObject;
 import openfl.geom.Point;
+#if openfl_pool_events
+import openfl.utils.ObjectPool;
+#end
 
 /**
 	A MouseEvent object is dispatched into the event flow whenever mouse events
@@ -571,8 +573,10 @@ class MouseEvent extends Event
 	@:noCompletion private static var __buttonDown:Bool;
 	@:noCompletion private static var __commandKey:Bool;
 	@:noCompletion private static var __ctrlKey:Bool;
-	// @:noCompletion private static var __pool:ObjectPool<MouseEvent> = new ObjectPool<MouseEvent>(function() return new MouseEvent(null),
-	// function(event) event.__init());
+	#if openfl_pool_events
+	@:noCompletion private static var __pool:ObjectPool<MouseEvent> = new ObjectPool<MouseEvent>(function() return new MouseEvent(null),
+		function(event) event.__init());
+	#end
 	@:noCompletion private static var __shiftKey:Bool;
 
 	/**
