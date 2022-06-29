@@ -267,7 +267,7 @@ import hl.Gc;
 		return
 			untyped #if haxe4 js.Syntax.code #else __js__ #end ("(window.performance && window.performance.memory) ? window.performance.memory.usedJSHeapSize : 0");
 		#elseif hl
-		return untyped Gc.stats().currentMemory;
+		return Std.int(Gc.stats().currentMemory);
 		#else
 		return 0;
 		#end
