@@ -198,7 +198,7 @@ import hl.Gc;
 		#if (cpp || neko)
 		return Gc.run(true);
 		#elseif hl
-		return Gc.enable(true);
+		return Gc.major();
 		#end
 	}
 
