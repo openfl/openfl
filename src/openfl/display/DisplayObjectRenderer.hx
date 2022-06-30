@@ -524,6 +524,8 @@ class DisplayObjectRenderer extends EventDispatcher
 				displayObject.__cacheBitmapRenderer.__worldTransform.ty -= offsetY;
 				displayObject.__cacheBitmapRenderer.__worldTransform.scale(pixelRatio, pixelRatio);
 
+				displayObject.__cacheBitmapRenderer.__pixelRatio = pixelRatio;
+
 				displayObject.__cacheBitmapRenderer.__worldColorTransform.__copyFrom(colorTransform);
 				displayObject.__cacheBitmapRenderer.__worldColorTransform.__invert();
 
