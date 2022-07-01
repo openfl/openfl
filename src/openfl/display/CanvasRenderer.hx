@@ -14,6 +14,9 @@ import openfl.geom.Rectangle;
 #if lime
 import lime.graphics.Canvas2DRenderContext;
 #end
+#if (js && html5)
+import js.Browser;
+#end
 
 /**
 	**BETA**
@@ -49,6 +52,10 @@ class CanvasRenderer extends DisplayObjectRenderer
 		super();
 
 		this.context = context;
+    
+        #if (js && html5 && !openfl_disable_hdpi)
+        __pixelRatio = Math.floor(Browser.window.devicePixelRatio);
+        #end
 
 		__tempMatrix = new Matrix();
 

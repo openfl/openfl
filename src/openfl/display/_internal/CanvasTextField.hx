@@ -95,7 +95,7 @@ class CanvasTextField
 			#if (openfl_disable_hdpi || openfl_disable_hdpi_textfield)
 			var pixelRatio = 1;
 			#else
-			var pixelRatio = renderer.__pixelRatio;
+			var pixelRatio = (renderer.__pixelRatio > 1) ? (renderer.__pixelRatio * 2) : renderer.__pixelRatio;
 			#end
 
 			var width = Math.round(graphics.__width * pixelRatio);
