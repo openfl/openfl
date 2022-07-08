@@ -81,7 +81,7 @@ class TextFieldRenderTest extends Test
 		#if flash
 		// TODO -- textWidth is still unchanged?
 		Assert.equals(textField.textWidth, textField2.textWidth);
-		Assert.areNotEqual(textField3.textWidth, textField2.textWidth);
+		Assert.notEquals(textField3.textWidth, textField2.textWidth);
 		#end
 
 		var bitmapData = new BitmapData(Math.ceil(textField.width), Math.ceil(textField.height), true);

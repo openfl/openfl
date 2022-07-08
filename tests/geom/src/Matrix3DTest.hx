@@ -453,6 +453,9 @@ class Matrix3DTest extends Test
 		assertMatrix3DnearEquals(new Matrix3D(), matrix3D);
 	}
 
+	#if flash
+	@Ignored
+	#end
 	public function test_interpolateTo()
 	{
 		var m1 = Vector.ofArray([3.0, 2.0, 7.0, 1.0, 5.0, 1.0, 1.1, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 3.2, 1.0]);
@@ -715,6 +718,9 @@ class Matrix3DTest extends Test
 		Assert.equals(expected[14], actual[11]);
 	}
 
+	#if flash
+	@Ignored
+	#end
 	public function test_interpolate()
 	{
 		var m1 = Vector.ofArray([3.0, 2.0, 7.0, 1.0, 5.0, 1.0, 1.1, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 3.2, 1.0]);

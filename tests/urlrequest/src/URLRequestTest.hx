@@ -60,11 +60,14 @@ class URLRequestTest extends Test
 	{
 		// TODO: Confirm functionality
 
-		#if !flash
 		var urlRequest = new URLRequest();
-		var exists = urlRequest.userAgent;
+		var defaultValue = urlRequest.userAgent;
 
-		Assert.isNull(exists);
+		#if flash
+		Assert.notNull(defaultValue);
+		Assert.isTrue(defaultValue.length > 0);
+		#else
+		Assert.isNull(defaultValue);
 		#end
 	}
 
