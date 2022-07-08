@@ -301,7 +301,7 @@ class DisplayObjectTest extends Test
 		filters = sprite.filters;
 
 		Assert.equals(1, filters.length);
-		Assert.is(filters[0], GlowFilter);
+		Assert.isOfType(filters[0], GlowFilter);
 
 		filters = new Array<BitmapFilter>();
 		filters.push(drop_shadow_filter);
@@ -309,7 +309,7 @@ class DisplayObjectTest extends Test
 		sprite.filters = filters;
 
 		Assert.equals(1, filters.length);
-		Assert.is(filters[0], DropShadowFilter);
+		Assert.isOfType(filters[0], DropShadowFilter);
 	}
 
 	public function test_height()
