@@ -33,14 +33,18 @@ jobs:
         run: |
           haxelib dev openfl $GITHUB_WORKSPACE
 
-      - name: Install "openfl" command alias
+      - name: Install "openfl" and "hxp" command aliases
         run: |
           haxelib run openfl setup -alias -y
-
-      - name: Run tests
-        run: |
           haxelib run hxp --install-hxp-alias
-          hxp test
+
+      - name: Run tests on Neko
+        run: |
+          hxp test -Dtarget=neko
+
+      - name: Run tests on HashLink
+        if: ${{ matrix.haxe-version != '3.4.7' }}
+          hxp test -Dtarget=hl
 
   package-haxelib:
     runs-on: macos-10.15
