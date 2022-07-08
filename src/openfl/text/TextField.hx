@@ -2419,16 +2419,32 @@ class TextField extends InteractiveObject
 		__textEngine.text = value;
 		__text = __textEngine.text;
 
-		// setting text or htmlText clears the current selection
-		// but they actually clear it differently
-		if (__isHTML)
+		if (stage != null && stage.focus == this)
 		{
-			__selectionIndex = __caretIndex = __text.length;
+			// when selected, the current selection should be kept, but it
+			// should also be adjusted, if the new text is not long enough
+			if (__text.length < __selectionIndex)
+			{
+				__selectionIndex = __text.length;
+			}
+			if (__text.length < __caretIndex)
+			{
+				__caretIndex = __text.length;
+			}
 		}
 		else
 		{
-			__selectionIndex = 0;
-			__caretIndex = 0;
+			// setting text or htmlText clears the current selection
+			// but they actually clear it differently
+			if (__isHTML)
+			{
+				__selectionIndex = __caretIndex = __text.length;
+			}
+			else
+			{
+				__selectionIndex = 0;
+				__caretIndex = 0;
+			}
 		}
 
 		if (!__displayAsPassword #if (js && html5) || (DisplayObject.__supportDOM && !__renderedOnCanvasWhileOnDOM) #end)
