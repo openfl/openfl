@@ -585,7 +585,7 @@ class TextFieldTest extends Test
 		Assert.notEquals(textField2Height1, textField2Height2);
 	}
 
-	public function test_preserveSelectionOnSetText()
+	public function test_clearSelectionOnSetText()
 	{
 		var textField = new TextField();
 		textField.text = "hello";
@@ -593,20 +593,43 @@ class TextFieldTest extends Test
 		Assert.equals(1, textField.selectionBeginIndex);
 		Assert.equals(3, textField.selectionEndIndex);
 		textField.text = "world";
-		Assert.equals(1, textField.selectionBeginIndex);
-		Assert.equals(3, textField.selectionEndIndex);
+		Assert.equals(0, textField.selectionBeginIndex);
+		Assert.equals(0, textField.selectionEndIndex);
 	}
 
-	public function test_preserveSelectionOnSetShorterText()
+	public function test_clearSelectionOnPlusAssignText()
 	{
 		var textField = new TextField();
 		textField.text = "hello";
 		textField.setSelection(1, 3);
 		Assert.equals(1, textField.selectionBeginIndex);
 		Assert.equals(3, textField.selectionEndIndex);
-		textField.text = "hi";
-		trace(textField.selectionBeginIndex, textField.selectionEndIndex);
+		textField.text += " world";
+		Assert.equals(0, textField.selectionBeginIndex);
+		Assert.equals(0, textField.selectionEndIndex);
+	}
+
+	public function test_preserveSelectionOnAppendText()
+	{
+		var textField = new TextField();
+		textField.text = "hello";
+		textField.setSelection(1, 3);
 		Assert.equals(1, textField.selectionBeginIndex);
-		Assert.equals(2, textField.selectionEndIndex);
+		Assert.equals(3, textField.selectionEndIndex);
+		textField.appendText(" world");
+		Assert.equals(1, textField.selectionBeginIndex);
+		Assert.equals(3, textField.selectionEndIndex);
+	}
+
+	public function test_clearSelectionOnSetHtmlText()
+	{
+		var textField = new TextField();
+		textField.htmlText = "hello";
+		textField.setSelection(1, 3);
+		Assert.equals(1, textField.selectionBeginIndex);
+		Assert.equals(3, textField.selectionEndIndex);
+		textField.htmlText = "world";
+		Assert.equals(5, textField.selectionBeginIndex);
+		Assert.equals(5, textField.selectionEndIndex);
 	}
 }

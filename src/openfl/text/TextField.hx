@@ -864,11 +864,15 @@ class TextField extends InteractiveObject
 		__layoutDirty = true;
 		__setRenderDirty();
 
+		var selectionIndexToRestore = __selectionIndex;
+		var caretIndexToRestore = __caretIndex;
+
 		__updateText(__text + text);
 
 		__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __text.length;
 
-		__selectionIndex = __caretIndex = __text.length;
+		__selectionIndex = selectionIndexToRestore;
+		__caretIndex = caretIndexToRestore;
 	}
 
 	// function copyRichText() : String;
@@ -2419,15 +2423,16 @@ class TextField extends InteractiveObject
 		__textEngine.text = value;
 		__text = __textEngine.text;
 
-		// the current selection should be kept, but it should also be adjusted,
-		// if the new text is not long enough
-		if (__text.length < __selectionIndex)
+		// setting text or htmlText clears the current selection
+		// but they actually clear it differently
+		if (__isHTML)
 		{
-			__selectionIndex = __text.length;
+			__selectionIndex = __caretIndex = __text.length;
 		}
-		if (__text.length < __caretIndex)
+		else
 		{
-			__caretIndex = __text.length;
+			__selectionIndex = 0;
+			__caretIndex = 0;
 		}
 
 		if (!__displayAsPassword #if (js && html5) || (DisplayObject.__supportDOM && !__renderedOnCanvasWhileOnDOM) #end)
