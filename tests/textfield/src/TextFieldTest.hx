@@ -605,11 +605,9 @@ class TextFieldTest extends Test
 		Assert.equals(1, textField.selectionBeginIndex);
 		Assert.equals(3, textField.selectionEndIndex);
 		textField.text += " world";
-		Assert.equals(0, textField.selectionBeginIndex);
-		Assert.equals(0, textField.selectionEndIndex);
 	}
 
-	public function test_preserveSelectionOnAppendText()
+	public function test_clearSelectionOnAppendText()
 	{
 		var textField = new TextField();
 		textField.text = "hello";
@@ -617,8 +615,15 @@ class TextFieldTest extends Test
 		Assert.equals(1, textField.selectionBeginIndex);
 		Assert.equals(3, textField.selectionEndIndex);
 		textField.appendText(" world");
+		#if flash
+		// for some reason, flash keeps the same selection, unless the
+		// TextField receives focus between setSelection() and appendText()
 		Assert.equals(1, textField.selectionBeginIndex);
 		Assert.equals(3, textField.selectionEndIndex);
+		#else
+		Assert.equals(11, textField.selectionBeginIndex);
+		Assert.equals(11, textField.selectionEndIndex);
+		#end
 	}
 
 	public function test_clearSelectionOnSetHtmlText()

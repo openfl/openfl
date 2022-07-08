@@ -864,15 +864,11 @@ class TextField extends InteractiveObject
 		__layoutDirty = true;
 		__setRenderDirty();
 
-		var selectionIndexToRestore = __selectionIndex;
-		var caretIndexToRestore = __caretIndex;
-
 		__updateText(__text + text);
 
 		__textEngine.textFormatRanges[__textEngine.textFormatRanges.length - 1].end = __text.length;
 
-		__selectionIndex = selectionIndexToRestore;
-		__caretIndex = caretIndexToRestore;
+		__selectionIndex = __caretIndex = __text.length;
 	}
 
 	// function copyRichText() : String;
