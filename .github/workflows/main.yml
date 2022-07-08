@@ -44,6 +44,7 @@ jobs:
 
       - name: Run tests on HashLink
         if: ${{ matrix.haxe-version != '3.4.7' }}
+        run: |
           hxp test -Dtarget=hl
 
   package-haxelib:
