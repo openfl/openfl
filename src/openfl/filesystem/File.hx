@@ -493,8 +493,8 @@ class File extends FileReference
 		}
 		__fileDialog = new FileDialog();
 		__fileDialog.onSelect.add(__dispatchSelect, true);
-		__fileDialog.browse(OPEN_DIRECTORY, null, __path, title);
 		__fileDialog.onCancel.add(__dispatchCancel);
+		__fileDialog.browse(OPEN_DIRECTORY, null, __path, title);
 	}
 
 	/**
@@ -554,8 +554,8 @@ class File extends FileReference
 
 		__fileDialog = new FileDialog();
 		__fileDialog.onSelect.add(__dispatchSelect, true);
-		__fileDialog.browse(OPEN, __getFilterTypes(typeFilter), __path, title);
 		__fileDialog.onCancel.add(__dispatchCancel);
+		__fileDialog.browse(OPEN, __getFilterTypes(typeFilter), __path, title);
 	}
 
 	/**
@@ -614,8 +614,8 @@ class File extends FileReference
 
 		__fileDialog = new FileDialog();
 		__fileDialog.onSelectMultiple.add(__dispatchSelectMultiple, true);
-		__fileDialog.browse(OPEN_MULTIPLE, __getFilterTypes(typeFilter), __path, title);
 		__fileDialog.onCancel.add(__dispatchCancel);
+		__fileDialog.browse(OPEN_MULTIPLE, __getFilterTypes(typeFilter), __path, title);
 	}
 
 	/**
