@@ -130,6 +130,16 @@ Follow the directions at [openfl.org](http://www.openfl.org/download).
 Development Builds
 ==================
 
+When there are changes, OpenFL is built nightly. Builds are available for download [here](https://github.com/openfl/openfl/actions?query=branch%3Adevelop+is%3Asuccess).
+
+To install a development build, use the "haxelib local" command:
+
+    haxelib local openfl-haxelib.zip
+
+
+Building from Source
+====================
+
 Clone the OpenFL repository:
 
     git clone https://github.com/openfl/openfl
