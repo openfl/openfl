@@ -449,11 +449,6 @@ class DOMTextField
 						{
 							if (textEngine.layoutGroups.length > 0)
 							{
-								try
-								{
-									selection.setPosition(textField.__div, textField.selectionBeginIndex);
-								}
-								catch (_) {}
 								if (textField.selectionBeginIndex == -1 && textField.selectionEndIndex == textField.text.length)
 								{
 									// All Selection
@@ -468,7 +463,8 @@ class DOMTextField
 							}
 							else
 							{
-								selection.setPosition(textField.__div, textField.selectionBeginIndex);
+								selection.selectAllChildren(textField.__div);
+								selection.collapseToEnd();
 							}
 						}
 						catch (_) {}
