@@ -3452,7 +3452,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			}
 
 			displayObject.__update(transformOnly, updateChildren);
-			displayObject.__updateFlag(false);
+			// displayObject.__updateFlag(false);
+			@:privateAccess displayObject._flag = false;
+			DisplayObject.queue.shift();
 		}
 
 		for (i in 0...updateFix.length)
