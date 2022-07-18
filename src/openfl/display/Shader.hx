@@ -126,7 +126,7 @@ class Shader
 	/**
 		The raw shader bytecode for this Shader instance.
 	**/
-	public var byteCode(null, default):ByteArray;
+	@:noCompletion public var byteCode(null, default):ByteArray;
 
 	/**
 		Provides access to parameters, input images, and metadata for the
@@ -139,28 +139,28 @@ class Shader
 		For information about accessing and manipulating the dynamic
 		properties of the `data` object, see the ShaderData class description.
 	**/
-	public var data(get, set):ShaderData;
+	@:noCompletion public var data(get, set):ShaderData;
 
 	/**
 		Get or set the fragment source used when compiling with GLSL.
 
 		This property is not available on the Flash target.
 	**/
-	public var glFragmentSource(get, set):String;
+	@:noCompletion public var glFragmentSource(get, set):String;
 
 	/**
 		The compiled GLProgram if available.
 
 		This property is not available on the Flash target.
 	**/
-	@SuppressWarnings("checkstyle:Dynamic") public var glProgram(default, null):GLProgram;
+	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion public var glProgram(default, null):GLProgram;
 
 	/**
 		Get or set the vertex source used when compiling with GLSL.
 
 		This property is not available on the Flash target.
 	**/
-	public var glVertexSource(get, set):String;
+	@:noCompletion public var glVertexSource(get, set):String;
 
 	/**
 		The precision of math operations performed by the shader.
@@ -201,14 +201,14 @@ class Shader
 		* `reciprocal(x)`
 		* `sqrt(x)`
 	**/
-	public var precisionHint:ShaderPrecision;
+	@:noCompletion public var precisionHint:ShaderPrecision;
 
 	/**
 		The compiled Program3D if available.
 
 		This property is not available on the Flash target.
 	**/
-	public var program:Program3D;
+	@:noCompletion public var program:Program3D;
 
 	@:noCompletion private var __alpha:ShaderParameter<Float>;
 	@:noCompletion private var __bitmap:ShaderInput<BitmapData>;
