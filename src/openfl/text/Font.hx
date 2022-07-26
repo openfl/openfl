@@ -86,6 +86,23 @@ class Font #if lime extends LimeFont #end
 				if(file.toLowerCase().indexOf('.ttf') != -1)
 					_allFonts.push(fromFile(lime.system.System.fontsDirectory + file));
 			}
+			
+			//Automatically installed fonts are stored per user basis in an alternative location found 
+			//in the local appData path on Windows. In this case, we check if the path exists and add these
+			//device fonts to the array.
+			#if windows
+				var alternateFontsDirectory = '${Sys.getEnv("LocalAppData")}\\Microsoft\\Windows\\Fonts';
+				if (sys.FileSystem.exists(alternateFontsDirectory))
+				{
+					files = sys.FileSystem.readDirectory(alternateFontsDirectory);
+					for (file in files)
+					{
+						if (file.toLowerCase().indexOf('.ttf') != -1)
+							_allFonts.push(fromFile(alternateFontsDirectory + file));
+					}
+				}
+			#end
+				
 			return _allFonts;
 		}
 		#end
