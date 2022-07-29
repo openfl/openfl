@@ -25,8 +25,11 @@ class ShaderMacro
 		var glVertexHeader = "";
 		var glVertexBody = "";
 
-		var glFragmentSource:String = null;
-		var glVertexSource:String = null;
+		var glVersion = 120;
+		var glFragmentSource = null;
+		var glFragmentSourceRaw = "";
+		var glVertexSource = null;
+		var glVertexSourceRaw = "";
 
 		for (field in fields)
 		{
@@ -51,6 +54,9 @@ class ShaderMacro
 
 					case "glVertexBody", ":glVertexBody":
 						glVertexBody = meta.params[0].getValue();
+
+					case "glVersion", ":glVersion":
+						glVersion = meta.params[0].getValue();
 
 					default:
 				}
@@ -79,6 +85,9 @@ class ShaderMacro
 						case "glVertexSource", ":glVertexSource":
 							if (glVertexSource == null) glVertexSource = meta.params[0].getValue();
 
+						case "glVersion", ":glVersion":
+							if (glVersion == null) glVersion = meta.params[0].getValue();
+
 						case "glFragmentHeader", ":glFragmentHeader":
 							glFragmentHeader = meta.params[0].getValue() + "\n" + glFragmentHeader;
 
@@ -103,12 +112,14 @@ class ShaderMacro
 		{
 			if (glFragmentSource != null && glFragmentHeader != null && glFragmentBody != null)
 			{
+				glFragmentSourceRaw = glFragmentSource;
 				glFragmentSource = StringTools.replace(glFragmentSource, "#pragma header", glFragmentHeader);
 				glFragmentSource = StringTools.replace(glFragmentSource, "#pragma body", glFragmentBody);
 			}
 
 			if (glVertexSource != null && glVertexHeader != null && glVertexBody != null)
 			{
+				glVertexSourceRaw = glVertexSource;
 				glVertexSource = StringTools.replace(glVertexSource, "#pragma header", glVertexHeader);
 				glVertexSource = StringTools.replace(glVertexSource, "#pragma body", glVertexBody);
 			}
@@ -170,6 +181,8 @@ class ShaderMacro
 							default: null;
 						}
 
+						block.unshift(Context.parse("__isGenerated = true", pos));
+
 						if (glVertexSource != null)
 						{
 							block.unshift(macro if (__glVertexSource == null)
@@ -186,7 +199,62 @@ class ShaderMacro
 							});
 						}
 
-						block.push(Context.parse("__isGenerated = true", pos));
+						if (glVertexSourceRaw != null)
+						{
+							block.unshift(macro if (__glVertexSourceRaw == null)
+							{
+								__glVertexSourceRaw = $v{glVertexSourceRaw};
+							});
+						}
+
+						if (glFragmentSourceRaw != null)
+						{
+							block.unshift(macro if (__glFragmentSourceRaw == null)
+							{
+								__glFragmentSourceRaw = $v{glFragmentSourceRaw};
+							});
+						}
+
+						if (glVertexBody != null)
+						{
+							block.unshift(macro if (__glVertexBodyRaw == null)
+							{
+								__glVertexBodyRaw = $v{glVertexBody};
+							});
+						}
+
+						if (glFragmentBody != null)
+						{
+							block.unshift(macro if (__glFragmentBodyRaw == null)
+							{
+								__glFragmentBodyRaw = $v{glFragmentBody};
+							});
+						}
+
+						if (glVertexHeader != null)
+						{
+							block.unshift(macro if (__glVertexHeaderRaw == null)
+							{
+								__glVertexHeaderRaw = $v{glVertexHeader};
+							});
+						}
+
+						if (glFragmentHeader != null)
+						{
+							block.unshift(macro if (__glFragmentHeaderRaw == null)
+							{
+								__glFragmentHeaderRaw = $v{glFragmentHeader};
+							});
+						}
+
+						if (glVersion != null)
+						{
+							block.unshift(macro if (__glVersion == 0)
+							{
+								__glVersion = $v{glVersion};
+							});
+						}
+
 						block.push(Context.parse("__initGL ()", pos));
 
 					default:

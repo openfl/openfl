@@ -4,14 +4,14 @@ import openfl.display3D.Context3DWrapMode;
 import openfl.display3D.Context3DMipFilter;
 import openfl.display3D.Context3DTextureFilter;
 #if !flash
-import openfl.display3D._internal.GLProgram;
-import openfl.display3D._internal.GLShader;
 import openfl.display._internal.ShaderBuffer;
-import openfl.utils._internal.Float32Array;
-import openfl.utils._internal.Log;
 import openfl.display3D.Context3D;
 import openfl.display3D.Program3D;
+import openfl.display3D._internal.GLProgram;
+import openfl.display3D._internal.GLShader;
 import openfl.utils.ByteArray;
+import openfl.utils._internal.Float32Array;
+import openfl.utils._internal.Log;
 
 /**
 	// TODO: Document GLSL Shaders
@@ -144,6 +144,28 @@ class Shader
 	public var data(get, set):ShaderData;
 
 	/**
+		Get or set the GLSL version used in the header when compiling with GLSL.
+
+		Defaults to `120`
+	**/
+	public var glVersion(get, set):Int;
+
+	/**
+		The default GLSL vertex header, before being applied to the vertex source.
+	**/
+	public var glFragmentHeaderRaw(get, null):String;
+
+	/**
+		The default GLSL vertex body, before being applied to the vertex source.
+	**/
+	public var glFragmentBodyRaw(get, null):String;
+
+	/**
+		The default GLSL fragment source, before `#pragma` values are replaced.
+	**/
+	public var glFragmentSourceRaw(get, null):String;
+
+	/**
 		Get or set the fragment source used when compiling with GLSL.
 
 		This property is not available on the Flash target.
@@ -156,6 +178,21 @@ class Shader
 		This property is not available on the Flash target.
 	**/
 	@SuppressWarnings("checkstyle:Dynamic") public var glProgram(default, null):GLProgram;
+
+	/**
+		The default GLSL vertex header, before being applied to the vertex source.
+	**/
+	public var glVertexHeaderRaw(get, null):String;
+
+	/**
+		The default GLSL vertex body, before being applied to the vertex source.
+	**/
+	public var glVertexBodyRaw(get, null):String;
+
+	/**
+		The default GLSL vertex source, before `#pragma` values are replaced.
+	**/
+	public var glVertexSourceRaw(get, null):String;
 
 	/**
 		Get or set the vertex source used when compiling with GLSL.
@@ -218,8 +255,15 @@ class Shader
 	@:noCompletion private var __colorOffset:ShaderParameter<Float>;
 	@:noCompletion private var __context:Context3D;
 	@:noCompletion private var __data:ShaderData;
+	@:noCompletion private var __glVersion:Int;
+	@:noCompletion private var __glFragmentHeaderRaw:String;
+	@:noCompletion private var __glFragmentBodyRaw:String;
+	@:noCompletion private var __glFragmentSourceRaw:String;
 	@:noCompletion private var __glFragmentSource:String;
 	@:noCompletion private var __glSourceDirty:Bool;
+	@:noCompletion private var __glVertexHeaderRaw:String;
+	@:noCompletion private var __glVertexBodyRaw:String;
+	@:noCompletion private var __glVertexSourceRaw:String;
 	@:noCompletion private var __glVertexSource:String;
 	@:noCompletion private var __hasColorTransform:ShaderParameter<Bool>;
 	@:noCompletion private var __inputBitmapData:Array<ShaderInput<BitmapData>>;
@@ -242,9 +286,31 @@ class Shader
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_data (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_data (v); }")
 			},
+			"glVersion": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_glVersion (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_glVersion (v); }")
+			},
+			"glFragmentHeaderRaw": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_glFragmentHeaderRaw (); }"),
+			},
+			"glFragmentBodyRaw": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_glFragmentBodyRaw (); }"),
+			},
+			"glFragmentSourceRaw": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_glFragmentSourceRaw (); }"),
+			},
 			"glFragmentSource": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_glFragmentSource (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_glFragmentSource (v); }")
+			},
+			"glVertexHeaderRaw": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_glVertexHeaderRaw (); }"),
+			},
+			"glVertexBodyRaw": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_glVertexBodyRaw (); }"),
+			},
+			"glVertexSourceRaw": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_glVertexSourceRaw (); }"),
 			},
 			"glVertexSource": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_glVertexSource (); }"),
@@ -463,6 +529,23 @@ class Shader
 		}
 	}
 
+	@:noCompletion private function __buildSourcePrefix():String
+	{
+		return "#version "
+			+ __glVersion
+			+ "
+				#ifdef GL_ES
+				"
+			+ (precisionHint == FULL ? "#ifdef GL_FRAGMENT_PRECISION_HIGH
+					precision highp float;
+				#else
+					precision mediump float;
+				#endif" : "precision lowp float;")
+			+ "
+				#endif
+				";
+	}
+
 	@:noCompletion private function __initGL():Void
 	{
 		if (__glSourceDirty || __paramBool == null)
@@ -496,8 +579,8 @@ class Shader
 				+ "#endif\n\n";
 			#end
 
-			var vertex = prefix + glVertexSource;
-			var fragment = prefix + glFragmentSource;
+			var vertex = __buildSourcePrefix() + glVertexSource;
+			var fragment = __buildSourcePrefix() + glFragmentSource;
 
 			var id = vertex + fragment;
 
@@ -573,16 +656,11 @@ class Shader
 
 	@:noCompletion private function __processGLData(source:String, storageType:String):Void
 	{
-		var lastMatch = 0, position, regex, name, type;
+		var position, name, type;
 
-		if (storageType == "uniform")
-		{
-			regex = ~/uniform ([A-Za-z0-9]+) ([A-Za-z0-9_]+)/;
-		}
-		else
-		{
-			regex = ~/attribute ([A-Za-z0-9]+) ([A-Za-z0-9_]+)/;
-		}
+		var regex = (storageType == "uniform") ? ~/uniform ([A-Za-z0-9]+) ([A-Za-z0-9_]+)/ : ~/attribute ([A-Za-z0-9]+) ([A-Za-z0-9_]+)/;
+
+		var lastMatch = 0;
 
 		while (regex.matchSub(source, lastMatch))
 		{
@@ -613,7 +691,7 @@ class Shader
 				}
 
 				Reflect.setField(__data, name, input);
-				if (__isGenerated) Reflect.setField(this, name, input);
+				if (__isGenerated && thisHasField(name)) Reflect.setProperty(this, name, input);
 			}
 			else if (!Reflect.hasField(__data, name) || Reflect.field(__data, name) == null)
 			{
@@ -679,7 +757,7 @@ class Shader
 						}
 
 						Reflect.setField(__data, name, parameter);
-						if (__isGenerated) Reflect.setField(this, name, parameter);
+						if (__isGenerated && thisHasField(name)) Reflect.setProperty(this, name, parameter);
 
 					case INT, INT2, INT3, INT4:
 						var parameter = new ShaderParameter<Int>();
@@ -691,7 +769,7 @@ class Shader
 						parameter.__length = length;
 						__paramInt.push(parameter);
 						Reflect.setField(__data, name, parameter);
-						if (__isGenerated) Reflect.setField(this, name, parameter);
+						if (__isGenerated && thisHasField(name)) Reflect.setProperty(this, name, parameter);
 
 					default:
 						var parameter = new ShaderParameter<Float>();
@@ -722,7 +800,7 @@ class Shader
 						}
 
 						Reflect.setField(__data, name, parameter);
-						if (__isGenerated) Reflect.setField(this, name, parameter);
+						if (__isGenerated && thisHasField(name)) Reflect.setProperty(this, name, parameter);
 				}
 			}
 
@@ -932,9 +1010,29 @@ class Shader
 		return __data = cast value;
 	}
 
+	@:noCompletion private function get_glFragmentHeaderRaw():String
+	{
+		return __glFragmentHeaderRaw;
+	}
+
+	@:noCompletion private function get_glFragmentBodyRaw():String
+	{
+		return __glFragmentBodyRaw;
+	}
+
+	@:noCompletion private function get_glFragmentSourceRaw():String
+	{
+		return __glFragmentSourceRaw;
+	}
+
 	@:noCompletion private function get_glFragmentSource():String
 	{
 		return __glFragmentSource;
+	}
+
+	@:noCompletion private function get_glVersion():Int
+	{
+		return __glVersion;
 	}
 
 	@:noCompletion private function set_glFragmentSource(value:String):String
@@ -945,6 +1043,31 @@ class Shader
 		}
 
 		return __glFragmentSource = value;
+	}
+
+	@:noCompletion private function set_glVersion(value:Int):Int
+	{
+		if (value != __glVersion)
+		{
+			__glSourceDirty = true;
+		}
+
+		return __glVersion = value;
+	}
+
+	@:noCompletion private function get_glVertexHeaderRaw():String
+	{
+		return __glVertexHeaderRaw;
+	}
+
+	@:noCompletion private function get_glVertexBodyRaw():String
+	{
+		return __glVertexBodyRaw;
+	}
+
+	@:noCompletion private function get_glVertexSourceRaw():String
+	{
+		return __glVertexSourceRaw;
 	}
 
 	@:noCompletion private function get_glVertexSource():String
@@ -960,6 +1083,18 @@ class Shader
 		}
 
 		return __glVertexSource = value;
+	}
+
+	private var __fieldList:Array<String> = null;
+
+	private function thisHasField(name:String)
+	{
+		// Reflect.hasField(this, name) is REALLY expensive so we cache the result.
+		if (__fieldList == null)
+		{
+			__fieldList = Reflect.fields(this).concat(Type.getInstanceFields(Type.getClass(this)));
+		}
+		return __fieldList.indexOf(name) != -1;
 	}
 }
 #else
