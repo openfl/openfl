@@ -2079,6 +2079,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	{
 		if (value != __rotation)
 		{
+			while (value > 180) value -= 360;
+            		while (value < -180) value += 360;
+			
 			__rotation = value;
 			var radians = __rotation * (Math.PI / 180);
 			__rotationSine = Math.sin(radians);
