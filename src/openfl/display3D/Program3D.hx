@@ -53,7 +53,8 @@ import lime.utils.BytePointer;
 @:access(openfl.display.ShaderParameter)
 @:access(openfl.display.Stage)
 @:final class Program3D
-{
+{ 
+        public var precisionHint:ShaderPrecision;
 	@:noCompletion private var __agalAlphaSamplerEnabled:Array<Uniform>;
 	@:noCompletion private var __agalAlphaSamplerUniforms:List<Uniform>;
 	@:noCompletion private var __agalFragmentUniformMap:UniformMap;
