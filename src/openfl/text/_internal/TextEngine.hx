@@ -23,6 +23,7 @@ import sys.io.Process;
 #if (js && html5)
 import js.html.CanvasElement;
 import js.html.CanvasRenderingContext2D;
+import js.html.Element;
 import js.Browser;
 #end
 
@@ -44,6 +45,7 @@ class TextEngine
 	private static var __defaultFonts:Map<String, DefaultFontSet>;
 	#if (js && html5)
 	private static var __context:CanvasRenderingContext2D;
+	private static var __div:Element;
 	#end
 
 	public var antiAliasType:AntiAliasType;
@@ -148,17 +150,36 @@ class TextEngine
 		{
 			__context = (cast Browser.document.createElement("canvas") : CanvasElement).getContext("2d");
 		}
+
+		#if (js && html5 && openfl_measuretext_div)
+		if (__div == null)
+		{
+			__div = cast Browser.document.createElement("div");
+			__div.style.setProperty("pointer-events", "none", null);
+			__div.style.setProperty("white-space", "nowrap", null);
+			__div.style.position = "absolute";
+			__div.style.top = "110%"; // position off-screen!
+			Browser.document.body.appendChild(__div);
+		}
+		#end
 		#end
 	}
 
 	private function createRestrictRegexp(restrict:String):EReg
 	{
-		var declinedRange = ~/\^(.-.|.)/gu;
+		var declinedRange = ~/\^([^\^]+)/gu;
 		var declined = "";
 
+		var accepting = false;
 		var accepted = declinedRange.map(restrict, function(ereg)
 		{
+			if (accepting)
+			{
+				accepting = !accepting;
+				return ereg.matched(1);
+			}
 			declined += ereg.matched(1);
+			accepting = !accepting;
 			return "";
 		});
 
@@ -166,7 +187,7 @@ class TextEngine
 
 		if (accepted.length > 0)
 		{
-			testRegexpParts.push('[^$restrict]');
+			testRegexpParts.push('[^$accepted]');
 		}
 
 		if (declined.length > 0)
@@ -206,6 +227,7 @@ class TextEngine
 		if (font != null)
 		{
 			Font.__registeredFonts.push(font);
+			Font.__fontByName[font.fontName] = font;
 			return font;
 		}
 		#end
@@ -245,10 +267,17 @@ class TextEngine
 		bounds.width = width + padding;
 		bounds.height = height + padding;
 
-		var x = width, y = width;
+		var x = width, y = height;
 
-		for (group in layoutGroups)
+		var lastIndex = layoutGroups.length - 1;
+		for (i in 0...layoutGroups.length)
 		{
+			var group = layoutGroups[i];
+			if (i == lastIndex && group.startIndex == group.endIndex && type != INPUT)
+			{
+				// if the final group contains only a new line, skip it (unless type == INPUT)
+				continue;
+			}
 			if (group.offsetX < x) x = group.offsetX;
 			if (group.offsetY < y) y = group.offsetY;
 		}
@@ -389,7 +418,11 @@ class TextEngine
 		var ascent:Float, descent:Float, leading:Int;
 
 		#if (js && html5)
-		__context.font = getFont(format);
+		var font = getFont(format);
+		__context.font = font;
+		#if openfl_measuretext_div
+		__div.style.setProperty("font", font, null);
+		#end
 		#end
 
 		var font = getFontInstance(format);
@@ -464,7 +497,8 @@ class TextEngine
 		font += "normal ";
 		font += bold ? "bold " : "normal ";
 		font += format.size + "px";
-		font += "/" + (format.leading + format.size + 3) + "px ";
+		// font += "/" + (format.leading + format.size + 3) + "px ";
+		font += "/" + (format.size + 3) + "px ";
 
 		font += "" + switch (fontName)
 		{
@@ -573,8 +607,17 @@ class TextEngine
 		numLines = 1;
 		maxScrollH = 0;
 
-		for (group in layoutGroups)
+		var lastIndex = layoutGroups.length - 1;
+		for (i in 0...layoutGroups.length)
 		{
+			var group = layoutGroups[i];
+
+			if (i == lastIndex && group.startIndex == group.endIndex && type != INPUT)
+			{
+				// if the final group contains only a new line, skip it (unless type == INPUT)
+				continue;
+			}
+
 			while (group.lineIndex > numLines - 1)
 			{
 				lineAscents.push(currentLineAscent);
@@ -620,7 +663,7 @@ class TextEngine
 			}
 		}
 
-		if (textHeight == 0 && textField != null && textField.type == INPUT)
+		if (textHeight == 0 && textField != null && type == INPUT)
 		{
 			var currentFormat = textField.__textFormat;
 			var ascent, descent, leading, heightValue;
@@ -671,16 +714,6 @@ class TextEngine
 			if (currentLineLeading > 0)
 			{
 				textHeight += currentLineLeading;
-			}
-		}
-
-		if (layoutGroups.length > 0)
-		{
-			var group = layoutGroups[layoutGroups.length - 1];
-
-			if (group != null && group.startIndex == group.endIndex && textField.caretIndex != group.startIndex)
-			{
-				textHeight -= currentLineHeight;
 			}
 		}
 
@@ -787,7 +820,7 @@ class TextEngine
 
 					for (i in startIndex...endIndex)
 					{
-						width = __context.measureText(text.substring(startIndex, i + 1)).width;
+						width = measureText(text.substring(startIndex, i + 1));
 						// if (i > 0) width += letterSpacing;
 
 						positions.push(width - previousWidth);
@@ -804,8 +837,8 @@ class TextEngine
 						if (i < text.length - 1)
 						{
 							// Advance can be less for certain letter combinations, e.g. 'Yo' vs. 'Do'
-							var nextWidth = __context.measureText(text.charAt(i + 1)).width;
-							var twoWidths = __context.measureText(text.substr(i, 2)).width;
+							var nextWidth = measureText(text.charAt(i + 1));
+							var twoWidths = measureText(text.substr(i, 2));
 							advance = twoWidths - nextWidth;
 						}
 						else
@@ -860,9 +893,7 @@ class TextEngine
 
 			return __shapeCache.cache(formatRange, __textLayout);
 			#end
-		}
-
-		#if !js inline #end function getPositionsWidth(positions:#if (js && html5) Array<Float> #else Array<GlyphPosition> #end):Float
+		} #if !js inline #end function getPositionsWidth(positions:#if (js && html5) Array<Float> #else Array<GlyphPosition> #end):Float
 
 		{
 			var width = 0.0;
@@ -883,7 +914,7 @@ class TextEngine
 
 		{
 			#if (js && html5)
-			return __context.measureText(text).width;
+			return measureText(text);
 			#else
 			if (__textLayout == null)
 			{
@@ -1012,7 +1043,11 @@ class TextEngine
 				currentFormat.__merge(formatRange.format);
 
 				#if (js && html5)
-				__context.font = getFont(currentFormat);
+				var fontString = getFont(currentFormat);
+				__context.font = fontString;
+				#if openfl_measuretext_div
+				__div.style.setProperty("font", fontString, null);
+				#end
 				#end
 
 				font = getFontInstance(currentFormat);
@@ -1198,6 +1233,26 @@ class TextEngine
 			var currentPosition;
 
 			var tempWidth = getPositionsWidth(remainingPositions);
+			i = remainingPositions.length - 1;
+			while (i >= 0)
+			{
+				// strip away the combined width of whitespace at the end of the
+				// line. the whitespace's width should not be included in the
+				// width of the preceding word when determining if that word is
+				// too long to fit on the line.
+				var currentCharCode = text.charCodeAt(textIndex + i);
+				if (currentCharCode != 32 && currentCharCode != 9)
+				{
+					break;
+				}
+				var position = remainingPositions[i];
+				#if (js && html5)
+				tempWidth -= position;
+				#else
+				tempWidth -= position.advance.x;
+				#end
+				i--;
+			}
 
 			while (remainingPositions.length > 0 && offsetX + tempWidth > getWrapWidth())
 			{
@@ -1426,7 +1481,7 @@ class TextEngine
 						var i = layoutGroups.length - 1;
 						var offsetCount = 0;
 
-						while (true)
+						while (i >= 0)
 						{
 							layoutGroup = layoutGroups[i];
 
@@ -1523,7 +1578,17 @@ class TextEngine
 
 							textIndex = endIndex;
 
-							if (endIndex == text.length) alignBaseline();
+							if (endIndex == text.length)
+							{
+								alignBaseline();
+
+								if (breakIndex != -1)
+								{
+									previousBreakIndex = breakIndex;
+									breakCount++;
+									breakIndex = breakCount < lineBreaks.length ? lineBreaks[breakCount] : -1;
+								}
+							}
 						}
 					}
 
@@ -1583,7 +1648,7 @@ class TextEngine
 			layoutGroup.offsetX = getBaseX(); // TODO: double check it doesn't default to GUTTER or something
 			layoutGroup.offsetY = offsetY + GUTTER;
 			layoutGroup.width = 0;
-			layoutGroup.height = type == "input" ? heightValue : 0;
+			layoutGroup.height = heightValue;
 		}
 
 		#if openfl_trace_text_layout_groups
@@ -1593,6 +1658,18 @@ class TextEngine
 		}
 		#end
 	}
+
+	#if (js && html5)
+	private function measureText(text:String):Float
+	{
+		#if openfl_measuretext_div
+		__div.innerHTML = StringTools.replace(text, " ", "&nbsp;");
+		return __div.clientWidth;
+		#else
+		return __context.measureText(text).width;
+		#end
+	}
+	#end
 
 	public function restrictText(value:UTF8String):UTF8String
 	{
@@ -1885,7 +1962,8 @@ class TextEngine
 
 		var max = maxScrollV;
 
-		if (scrollV > max) return max - 1;
+		//TODO: Does maxScrollV return the wrong value(+1) in some cases?
+		if (scrollV > max) return max;
 
 		return scrollV;
 	}
@@ -1893,6 +1971,8 @@ class TextEngine
 	private function set_scrollV(value:Int):Int
 	{
 		if (value < 1) value = 1;
+		else if (value > maxScrollV) value = maxScrollV;
+
 		return scrollV = value;
 	}
 

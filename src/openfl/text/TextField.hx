@@ -11,6 +11,7 @@ import openfl.utils._internal.Log;
 import openfl.display.DisplayObject;
 import openfl.display.Graphics;
 import openfl.display.InteractiveObject;
+import openfl.display.Stage;
 import openfl.errors.RangeError;
 import openfl.events.Event;
 import openfl.events.FocusEvent;
@@ -1735,6 +1736,23 @@ class TextField extends InteractiveObject
 		#if lime
 		if (stage != null)
 		{
+			#if (lime >= "8.0.0")
+			// ensure that the text field is not hidden by the soft keyboard
+			var bounds = getBounds(stage);
+			var limeRect = new lime.math.Rectangle(bounds.x, bounds.y, bounds.width, bounds.height);
+			#if openfl_dpi_aware
+			var scale = stage.window.scale;
+			if (scale != 1.0)
+			{
+				limeRect.x /= scale;
+				limeRect.y /= scale;
+				limeRect.width /= scale;
+				limeRect.height /= scale;
+			}
+			#end
+			stage.window.setTextInputRect(limeRect);
+			#end
+
 			stage.window.textInputEnabled = true;
 
 			if (!__inputEnabled)
@@ -2145,6 +2163,11 @@ class TextField extends InteractiveObject
 			__dirty = true;
 			__setRenderDirty();
 		}
+		else if (selectable)
+		{
+			__dirty = true;
+			__setRenderDirty();
+		}
 	}
 
 	@:noCompletion private function __startTextInput():Void
@@ -2354,6 +2377,8 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function __updateMouseDrag():Void
 	{
+		if (stage == null) return;
+
 		if (mouseX > this.width - 1)
 		{
 			scrollH += Std.int(Math.max(Math.min((mouseX - this.width) * .1, 10), 1));
@@ -2394,9 +2419,32 @@ class TextField extends InteractiveObject
 		__textEngine.text = value;
 		__text = __textEngine.text;
 
-		if (__text.length < __caretIndex)
+		if (stage != null && stage.focus == this)
 		{
-			__selectionIndex = __caretIndex = __text.length;
+			// when selected, the current selection should be kept, but it
+			// should also be adjusted, if the new text is not long enough
+			if (__text.length < __selectionIndex)
+			{
+				__selectionIndex = __text.length;
+			}
+			if (__text.length < __caretIndex)
+			{
+				__caretIndex = __text.length;
+			}
+		}
+		else
+		{
+			// setting text or htmlText clears the current selection
+			// but they actually clear it differently
+			if (__isHTML)
+			{
+				__selectionIndex = __caretIndex = __text.length;
+			}
+			else
+			{
+				__selectionIndex = 0;
+				__caretIndex = 0;
+			}
 		}
 
 		if (!__displayAsPassword #if (js && html5) || (DisplayObject.__supportDOM && !__renderedOnCanvasWhileOnDOM) #end)
@@ -2655,38 +2703,37 @@ class TextField extends InteractiveObject
 		value = HTMLParser.parse(value, multiline, __styleSheet, __textFormat, __textEngine.textFormatRanges);
 
 		#if (js && html5)
-		if (DisplayObject.__supportDOM)
-		{
-			// TODO: Why is this parsing text format ranges, only to ignore them?
-			// Should this skip the parser entirely?
-			if (__textEngine.textFormatRanges.length > 1)
-			{
-				__textEngine.textFormatRanges.splice(1, __textEngine.textFormatRanges.length - 1);
-			}
+		// if (DisplayObject.__supportDOM)
+		// {
+		// 	// TODO: Why is this parsing text format ranges, only to ignore them?
+		// 	// Should this skip the parser entirely?
+		// 	if (__textEngine.textFormatRanges.length > 1)
+		// 	{
+		// 		__textEngine.textFormatRanges.splice(1, __textEngine.textFormatRanges.length - 1);
+		// 	}
 
-			var range = __textEngine.textFormatRanges[0];
-			range.format = __textFormat;
-			range.start = 0;
+		// 	var range = __textEngine.textFormatRanges[0];
+		// 	range.format = __textFormat;
+		// 	range.start = 0;
 
-			if (__renderedOnCanvasWhileOnDOM)
-			{
-				range.end = value.length;
-				__updateText(value);
-			}
-			else
-			{
-				range.end = __htmlText.length;
-				__updateText(__htmlText);
-			}
-		}
-		else
+		// 	if (__renderedOnCanvasWhileOnDOM)
+		// 	{
+		// 		range.end = value.length;
+		// 		__updateText(value);
+		// 	}
+		// 	else
+		// 	{
+		// 		range.end = __htmlText.length;
+		// 		__updateText(__htmlText);
+		// 	}
+		// }
+		// else
 		{
 			__updateText(value);
 		}
 		#else
 		__updateText(value);
 		#end
-		__selectionIndex = __caretIndex = 0;
 
 		return value;
 	}
@@ -2809,7 +2856,7 @@ class TextField extends InteractiveObject
 	{
 		__updateLayout();
 
-		if (value > 0 && value != __textEngine.scrollV || __textEngine.scrollV == 0)
+		if (value != __textEngine.scrollV || __textEngine.scrollV == 0)
 		{
 			__dirty = true;
 			__setRenderDirty();
@@ -2940,7 +2987,6 @@ class TextField extends InteractiveObject
 		__isHTML = false;
 
 		__updateText(value);
-		__selectionIndex = __caretIndex = 0;
 
 		return value;
 	}
@@ -3118,11 +3164,13 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function stage_onMouseUp(event:MouseEvent):Void
 	{
-		if (stage == null) return;
+		var stage:Stage = cast event.currentTarget;
 
 		stage.removeEventListener(Event.ENTER_FRAME, this_onEnterFrame);
 		stage.removeEventListener(MouseEvent.MOUSE_MOVE, stage_onMouseMove);
 		stage.removeEventListener(MouseEvent.MOUSE_UP, stage_onMouseUp);
+
+		if (this.stage == null) return;
 
 		if (stage.focus == this)
 		{
@@ -3172,6 +3220,10 @@ class TextField extends InteractiveObject
 		if (type == INPUT && stage != null && stage.focus == this)
 		{
 			__startTextInput();
+		}
+		else if (type != INPUT && selectable && stage != null && stage.focus == this)
+		{
+			__startCursorTimer();
 		}
 	}
 
@@ -3233,6 +3285,10 @@ class TextField extends InteractiveObject
 			__dirty = true;
 			__setRenderDirty();
 		}
+
+		// stage could be null if the TextField was removed from stage in an
+		// earlier listener
+		if (stage == null) return;
 		#if !notextselectscroll
 		// Todo: Add flag and implementation for flash scrolling behavior.
 		stage.addEventListener(Event.ENTER_FRAME, this_onEnterFrame);

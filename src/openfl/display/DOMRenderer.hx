@@ -43,11 +43,6 @@ class DOMRenderer extends DisplayObjectRenderer
 	@SuppressWarnings("checkstyle:Dynamic")
 	public var element:#if lime DOMRenderContext #else Dynamic #end;
 
-	/**
-		The active pixel ratio used during rendering
-	**/
-	public var pixelRatio(default, null):Float = 1;
-
 	@:noCompletion private var __canvasRenderer:CanvasRenderer;
 	@:noCompletion private var __clipRects:Array<Rectangle>;
 	@:noCompletion private var __currentClipRect:Rectangle;

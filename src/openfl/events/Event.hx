@@ -3,7 +3,9 @@ package openfl.events;
 #if !flash
 import openfl.utils.Object;
 
-// import openfl.utils.ObjectPool;
+#if openfl_pool_events
+import openfl.utils.ObjectPool;
+#end
 
 /**
 	The Event class is used as the base class for the creation of Event
@@ -710,7 +712,10 @@ class Event
 	**/
 	public var type(default, null):String;
 
-	// @:noCompletion private static var __pool:ObjectPool<Event> = new ObjectPool<Event>(function() return new Event(null), function(event) event.__init());
+	#if openfl_pool_events
+	@:noCompletion private static var __pool:ObjectPool<Event> = new ObjectPool<Event>(function() return new Event(null), function(event) event.__init());
+	#end
+
 	@:noCompletion private var __isCanceled:Bool;
 	@:noCompletion private var __isCanceledNow:Bool;
 	@:noCompletion private var __preventDefault:Bool;

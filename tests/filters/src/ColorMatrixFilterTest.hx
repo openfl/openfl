@@ -57,7 +57,7 @@ class ColorMatrixFilterTest extends Test
 		var color = new ColorMatrixFilter(matrix);
 		var color_clone = color.clone();
 
-		Assert.is(color_clone, ColorMatrixFilter);
+		Assert.isOfType(color_clone, ColorMatrixFilter);
 
 		var result = cast(color_clone, ColorMatrixFilter).matrix;
 

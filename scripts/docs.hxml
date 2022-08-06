@@ -133,4 +133,4 @@ ImportAll
 
 --next
 
--cmd haxelib run dox -o ../docs -i xml -in openfl --title "API Reference" -D website "http://www.openfl.org" -D source-path "https://github.com/openfl/openfl/tree/develop/src/" -D logo "/images/logo.png" -D textColor 0x777777 -theme ../assets/docs-theme --toplevel-package openfl
+-cmd haxelib run dox -o ../docs -i xml -in openfl --title "API Reference" -D website "http://www.openfl.org" -D source-path "https://github.com/openfl/openfl/tree/develop/src/" -D textColor 0x777777 -theme ../assets/docs-theme --toplevel-package openfl

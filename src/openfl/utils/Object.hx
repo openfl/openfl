@@ -5,7 +5,9 @@ import openfl.display.DisplayObjectContainer;
 
 @:transitive
 @:callable
-#if !haxe4 @:forward #end
+#if !haxe4
+@:forward
+#end
 abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 {
 	public inline function new()

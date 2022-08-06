@@ -20,7 +20,7 @@ import openfl.utils._internal.Lib;
 	and operating system:
 
 	The ExternalInterface class requires the user's web browser to support
-	either ActiveX<sup>�</sup> or the NPRuntime API that is exposed by some
+	either ActiveX<sup>®</sup> or the NPRuntime API that is exposed by some
 	browsers for plug-in scripting. Even if a browser and operating system
 	combination are not listed above, they should support the ExternalInterface
 	class if they support the NPRuntime API. See

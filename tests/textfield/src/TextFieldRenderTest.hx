@@ -81,7 +81,7 @@ class TextFieldRenderTest extends Test
 		#if flash
 		// TODO -- textWidth is still unchanged?
 		Assert.equals(textField.textWidth, textField2.textWidth);
-		Assert.areNotEqual(textField3.textWidth, textField2.textWidth);
+		Assert.notEquals(textField3.textWidth, textField2.textWidth);
 		#end
 
 		var bitmapData = new BitmapData(Math.ceil(textField.width), Math.ceil(textField.height), true);
@@ -92,7 +92,7 @@ class TextFieldRenderTest extends Test
 		bitmapData2.draw(textField2);
 		bitmapData3.draw(textField3);
 
-		Assert.isTrue(Std.is(bitmapData2.compare(bitmapData), BitmapData));
+		Assert.isOfType(bitmapData2.compare(bitmapData), BitmapData);
 		Assert.equals(0, bitmapData2.compare(bitmapData3));
 	}
 

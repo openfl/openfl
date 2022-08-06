@@ -137,6 +137,9 @@ class MatrixTest extends Test
 		Assert.equals(12.0, dest.ty);
 	}
 
+	#if flash
+	@Ignored
+	#end
 	public function test_copyColumnFrom()
 	{
 		#if !flash // Flash is behaving the same as copyRowFrom?

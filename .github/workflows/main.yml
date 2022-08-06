@@ -23,9 +23,11 @@ jobs:
 
       - name: Install Haxe dependencies
         run: |
+          haxelib install hxcpp --quiet
+          haxelib install format --quiet
+          haxelib install hxp --quiet
           haxelib install lime --quiet
           haxelib install utest --quiet
-          haxelib install hxp --quiet
 
       - name: Setup environment
         run: |
@@ -35,10 +37,14 @@ jobs:
         run: |
           haxelib run openfl setup -alias -y
 
-      - name: Run tests
+      - name: Run tests on Neko
         run: |
-          haxelib run hxp --install-hxp-alias
-          hxp test
+          haxelib run hxp test -Dtarget=neko --install-hxp-alias
+
+      - name: Run tests on HashLink
+        if: ${{ matrix.haxe-version != '3.4.7' }}
+        run: |
+          haxelib run hxp test -Dtarget=hl --install-hxp-alias
 
   package-haxelib:
     runs-on: macos-10.15
@@ -94,6 +100,9 @@ jobs:
 
       - name: Install Haxe dependencies
         run: |
+          haxelib install hxcpp --quiet
+          haxelib install format --quiet
+          haxelib install hxp --quiet
           haxelib install lime --quiet
           haxelib install dox --quiet
           haxelib dev openfl $GITHUB_WORKSPACE

@@ -12,7 +12,7 @@ class Tests
 		runner.addCase(new FPSTest());
 		runner.addCase(new LibTest());
 		runner.addCase(new PreloaderTest());
-		// runner.addCase(new ClipboardRTFTest());
+		runner.addCase(new ClipboardRTFTest());
 		Report.create(runner);
 		runner.run();
 	}

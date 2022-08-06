@@ -125,9 +125,9 @@ class UncaughtErrorEvent extends ErrorEvent
 		```haxe
 		function uncaughtErrorHandler(event:UncaughtErrorEvent):Void {
 			var message:String;
-			if (Std.is(event.error, Error)) {
+			if (Std.isOfType(event.error, Error)) {
 				message = cast(event.error, Error).message;
-			} else if (Std.is(event.error, ErrorEvent)) {
+			} else if (Std.isOfType(event.error, ErrorEvent)) {
 				message = cast(event.error, ErrorEvent).text;
 			} else {
 				message = Std.string(event.error);

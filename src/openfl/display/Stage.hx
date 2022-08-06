@@ -1182,16 +1182,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	@:noCompletion private function __createRenderer():Void
 	{
 		#if lime
-		#if (js && html5)
-		var pixelRatio = 1;
-
-		if (window.scale > 1)
-		{
-			// TODO: Does this check work?
-			pixelRatio = untyped window.devicePixelRatio || 1;
-		}
-		#end
-
 		var windowWidth = Std.int(window.width * window.scale);
 		var windowHeight = Std.int(window.height * window.scale);
 
@@ -1200,7 +1190,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			case OPENGL, OPENGLES, WEBGL:
 				#if (!disable_cffi && (!html5 || !canvas))
 				context3D = new Context3D(this);
+				#if openfl_dpi_aware
 				context3D.configureBackBuffer(windowWidth, windowHeight, 0, true, true, true);
+				#else
+				context3D.configureBackBuffer(stageWidth, stageHeight, 0, true, true, true);
+				#end
 				context3D.present();
 				__renderer = new OpenGLRenderer(context3D);
 				#end
@@ -1208,13 +1202,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			case CANVAS:
 				#if (js && html5)
 				__renderer = new CanvasRenderer(window.context.canvas2D);
-				cast(__renderer, CanvasRenderer).pixelRatio = pixelRatio;
 				#end
 
 			case DOM:
 				#if (js && html5)
 				__renderer = new DOMRenderer(window.context.dom);
-				cast(__renderer, DOMRenderer).pixelRatio = pixelRatio;
 				#end
 
 			case CAIRO:
@@ -1228,8 +1220,13 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		if (__renderer != null)
 		{
 			__renderer.__allowSmoothing = (quality != LOW);
+			__renderer.__pixelRatio = #if openfl_disable_hdpi 1 #else window.scale #end;
 			__renderer.__worldTransform = __displayMatrix;
 			__renderer.__stage = this;
+
+			#if (js && html5 && dom && !openfl_disable_hdpi)
+			__renderer.__pixelRatio = Browser.window.devicePixelRatio;
+			#end
 
 			__renderer.__resize(windowWidth, windowHeight);
 		}
@@ -1558,7 +1555,15 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					targetPoint.y = __mouseY;
 
 					#if openfl_pool_events
-					var clickEvent = MouseEvent.__pool.get(MouseEvent.CLICK, __mouseX, __mouseY, sprite.__globalToLocal(targetPoint, localPoint), sprite);
+
+					var clickEvent = MouseEvent.__pool.get();
+					clickEvent.type = MouseEvent.CLICK;
+					clickEvent.stageX = __mouseX;
+					clickEvent.stageY = __mouseY;
+					var local = sprite.__globalToLocal(targetPoint, localPoint);
+					clickEvent.localX = local.x;
+					clickEvent.localY = local.y;
+					clickEvent.target = sprite;
 					#else
 					var clickEvent = MouseEvent.__create(MouseEvent.CLICK, 0, __mouseX, __mouseY, sprite.__globalToLocal(targetPoint, localPoint), sprite);
 					#end
@@ -1908,7 +1913,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			var event:Event = null;
 
 			#if openfl_pool_events
-			event = Event.__pool.get(Event.DEACTIVATE);
+			event = Event.__pool.get();
+			event.type = Event.DEACTIVATE;
 			#else
 			event = new Event(Event.DEACTIVATE);
 			#end
@@ -2013,17 +2019,20 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		var event = null;
 
 		#if openfl_pool_events
-		event = Event.__pool.get(Event.ENTER_FRAME);
+		event = Event.__pool.get();
+		event.type = Event.ENTER_FRAME;
 
 		__broadcastEvent(event);
 
 		Event.__pool.release(event);
-		event = Event.__pool.get(Event.FRAME_CONSTRUCTED);
+		event = Event.__pool.get();
+		event.type = Event.FRAME_CONSTRUCTED;
 
 		__broadcastEvent(event);
 
 		Event.__pool.release(event);
-		event = Event.__pool.get(Event.EXIT_FRAME);
+		event = Event.__pool.get();
+		event.type = Event.EXIT_FRAME;
 
 		__broadcastEvent(event);
 
@@ -2045,7 +2054,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			__invalidated = false;
 
 			#if openfl_pool_events
-			event = Event.__pool.get(Event.RENDER);
+			event = Event.__pool.get();
+			event.type = Event.RENDER;
 			#else
 			event = new Event(Event.RENDER);
 			#end
@@ -2252,7 +2262,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		var event:Event = null;
 
 		#if openfl_pool_events
-		event = Event.__pool.get(Event.DEACTIVATE);
+		event = Event.__pool.get();
+		event.type = Event.DEACTIVATE;
 		#else
 		event = new Event(Event.DEACTIVATE);
 		#end
@@ -2308,7 +2319,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		var event:Event = null;
 
 		#if openfl_pool_events
-		event = Event.__pool.get(Event.ACTIVATE);
+		event = Event.__pool.get();
+		event.type = Event.ACTIVATE;
 		#else
 		event = new Event(Event.ACTIVATE);
 		#end
@@ -2333,7 +2345,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		var event:Event = null;
 
 		#if openfl_pool_events
-		event = Event.__pool.get(Event.DEACTIVATE);
+		event = Event.__pool.get();
+		event.type = Event.DEACTIVATE;
 		#else
 		event = new Event(Event.DEACTIVATE);
 		#end
@@ -2377,7 +2390,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		var event:Event = null;
 
 		#if openfl_pool_events
-		event = Event.__pool.get(Event.MOUSE_LEAVE);
+		event = Event.__pool.get();
+		event.type = Event.MOUSE_LEAVE;
 		#else
 		event = new Event(Event.MOUSE_LEAVE);
 		#end
@@ -2524,7 +2538,13 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 						var event:MouseEvent = null;
 
 						#if openfl_pool_events
-						event = MouseEvent.__pool.get(MouseEvent.RELEASE_OUTSIDE, __mouseX, __mouseY, new Point(__mouseX, __mouseY), this);
+						event = MouseEvent.__pool.get();
+						event.type = MouseEvent.RELEASE_OUTSIDE;
+						event.stageX = __mouseX;
+						event.stageY = __mouseY;
+						event.localX = __mouseX;
+						event.localY = __mouseY;
+						event.target = this;
 						#else
 						event = MouseEvent.__create(MouseEvent.RELEASE_OUTSIDE, 1, __mouseX, __mouseY, new Point(__mouseX, __mouseY), this);
 						#end
@@ -2562,7 +2582,14 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		var event:MouseEvent = null;
 
 		#if openfl_pool_events
-		event = MouseEvent.__pool.get(type, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), target);
+		event = MouseEvent.__pool.get();
+		event.type = type;
+		event.stageX = __mouseX;
+		event.stageY = __mouseY;
+		var local = target.__globalToLocal(targetPoint, localPoint);
+		event.localX = local.x;
+		event.localY = local.y;
+		event.target = target;
 		#else
 		event = MouseEvent.__create(type, button, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), target);
 		#end
@@ -2576,7 +2603,14 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		if (clickType != null)
 		{
 			#if openfl_pool_events
-			event = MouseEvent.__pool.get(clickType, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), target);
+			event = MouseEvent.__pool.get();
+			event.type = clickType;
+			event.stageX = __mouseX;
+			event.stageY = __mouseY;
+			var local = target.__globalToLocal(targetPoint, localPoint);
+			event.localX = local.x;
+			event.localY = local.y;
+			event.target = target;
 			#else
 			event = MouseEvent.__create(clickType, button, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), target);
 			#end
@@ -2593,7 +2627,14 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				if (currentTime - __lastClickTime < 500)
 				{
 					#if openfl_pool_events
-					event = MouseEvent.__pool.get(MouseEvent.DOUBLE_CLICK, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), target);
+					event = MouseEvent.__pool.get();
+					event.type = MouseEvent.DOUBLE_CLICK;
+					event.stageX = __mouseX;
+					event.stageY = __mouseY;
+					var local = target.__globalToLocal(targetPoint, localPoint);
+					event.localX = local.x;
+					event.localY = local.y;
+					event.target = target;
 					#else
 					event = MouseEvent.__create(MouseEvent.DOUBLE_CLICK, button, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), target);
 					#end
@@ -2648,8 +2689,14 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			if (__mouseOverTarget != null)
 			{
 				#if openfl_pool_events
-				event = MouseEvent.__pool.get(MouseEvent.MOUSE_OUT, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
-					cast __mouseOverTarget);
+				event = MouseEvent.__pool.get();
+				event.type = MouseEvent.MOUSE_OUT;
+				event.stageX = __mouseX;
+				event.stageY = __mouseY;
+				var local = __mouseOverTarget.__globalToLocal(targetPoint, localPoint);
+				event.localX = local.x;
+				event.localY = local.y;
+				event.target = __mouseOverTarget;
 				#else
 				event = MouseEvent.__create(MouseEvent.MOUSE_OUT, button, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
 					cast __mouseOverTarget);
@@ -2658,7 +2705,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				__dispatchStack(event, __mouseOutStack);
 
 				#if openfl_pool_events
-				MouseEvent.__pool.release(event);
+				MouseEvent.__pool.release(cast event);
 				#end
 			}
 		}
@@ -2672,7 +2719,14 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				__rollOutStack.remove(item);
 
 				#if openfl_pool_events
-				event = MouseEvent.__pool.get(MouseEvent.ROLL_OUT, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint), cast item);
+				event = MouseEvent.__pool.get();
+				event.type = MouseEvent.ROLL_OUT;
+				event.stageX = __mouseX;
+				event.stageY = __mouseY;
+				var local = __mouseOverTarget.__globalToLocal(targetPoint, localPoint);
+				event.localX = local.x;
+				event.localY = local.y;
+				event.target = item;
 				#else
 				event = MouseEvent.__create(MouseEvent.ROLL_OUT, button, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
 					cast item);
@@ -2682,7 +2736,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				__dispatchTarget(item, event);
 
 				#if openfl_pool_events
-				MouseEvent.__pool.release(event);
+				MouseEvent.__pool.release(cast event);
 				#end
 			}
 			else
@@ -2698,8 +2752,15 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				if (item.hasEventListener(MouseEvent.ROLL_OVER))
 				{
 					#if openfl_pool_events
-					event = MouseEvent.__pool.get(MouseEvent.ROLL_OVER, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
-						cast item);
+					var mouseEvent = MouseEvent.__pool.get();
+					mouseEvent.type = MouseEvent.ROLL_OVER;
+					mouseEvent.stageX = __mouseX;
+					mouseEvent.stageY = __mouseY;
+					var local = __mouseOverTarget.__globalToLocal(targetPoint, localPoint);
+					mouseEvent.localX = local.x;
+					mouseEvent.localY = local.y;
+					mouseEvent.target = item;
+					event = mouseEvent;
 					#else
 					event = MouseEvent.__create(MouseEvent.ROLL_OVER, button, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
 						cast item);
@@ -2709,7 +2770,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					__dispatchTarget(item, event);
 
 					#if openfl_pool_events
-					MouseEvent.__pool.release(event);
+					MouseEvent.__pool.release(cast event);
 					#end
 				}
 
@@ -2725,7 +2786,15 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			if (target != null)
 			{
 				#if openfl_pool_events
-				event = MouseEvent.__pool.get(MouseEvent.MOUSE_OVER, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), cast target);
+				var mouseEvent = MouseEvent.__pool.get();
+				mouseEvent.type = MouseEvent.MOUSE_OVER;
+				mouseEvent.stageX = __mouseX;
+				mouseEvent.stageY = __mouseY;
+				var local = target.__globalToLocal(targetPoint, localPoint);
+				mouseEvent.localX = local.x;
+				mouseEvent.localY = local.y;
+				mouseEvent.target = target;
+				event = mouseEvent;
 				#else
 				event = MouseEvent.__create(MouseEvent.MOUSE_OVER, button, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), cast target);
 				#end
@@ -2733,7 +2802,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				__dispatchStack(event, stack);
 
 				#if openfl_pool_events
-				MouseEvent.__pool.release(event);
+				MouseEvent.__pool.release(cast event);
 				#end
 			}
 
@@ -3005,15 +3074,14 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		var windowWidth = Std.int(window.width * window.scale);
 		var windowHeight = Std.int(window.height * window.scale);
 
-		#if (js && html5)
-		__logicalWidth = windowWidth;
-		__logicalHeight = windowHeight;
-		#end
-
 		__displayMatrix.identity();
+
+		// Assuming `fullScreenSourceRect` ignores `stageScaleMode`
 
 		if (fullScreenSourceRect != null && window.fullscreen)
 		{
+			// Should stageWidth / stageHeight be changed?
+
 			stageWidth = Std.int(fullScreenSourceRect.width);
 			stageHeight = Std.int(fullScreenSourceRect.height);
 
@@ -3027,33 +3095,83 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		}
 		else
 		{
-			if (__logicalWidth == 0 && __logicalHeight == 0)
+			if (__logicalWidth == 0 || __logicalHeight == 0 || scaleMode == NO_SCALE || windowWidth == 0 || windowHeight == 0)
 			{
+				#if openfl_dpi_aware
 				stageWidth = windowWidth;
 				stageHeight = windowHeight;
+				#else
+				stageWidth = Math.round(windowWidth / window.scale);
+				stageHeight = Math.round(windowHeight / window.scale);
+
+				__displayMatrix.scale(window.scale, window.scale);
+				#end
+
+				__displayRect.setTo(0, 0, stageWidth, stageHeight);
 			}
 			else
 			{
 				stageWidth = __logicalWidth;
 				stageHeight = __logicalHeight;
 
-				var scaleX = windowWidth / stageWidth;
-				var scaleY = windowHeight / stageHeight;
-				var targetScale = Math.min(scaleX, scaleY);
+				switch (scaleMode)
+				{
+					case EXACT_FIT:
+						var displayScaleX = windowWidth / stageWidth;
+						var displayScaleY = windowHeight / stageHeight;
 
-				var offsetX = Math.round((windowWidth - (stageWidth * targetScale)) / 2);
-				var offsetY = Math.round((windowHeight - (stageHeight * targetScale)) / 2);
+						__displayMatrix.scale(displayScaleX, displayScaleY);
+						__displayRect.setTo(0, 0, stageWidth, stageHeight);
 
-				__displayMatrix.scale(targetScale, targetScale);
-				__displayMatrix.translate(offsetX, offsetY);
+					case NO_BORDER:
+						var scaleX = windowWidth / stageWidth;
+						var scaleY = windowHeight / stageHeight;
+
+						var scale = Math.max(scaleX, scaleY);
+
+						var scaledWidth = stageWidth * scale;
+						var scaledHeight = stageHeight * scale;
+
+						var visibleWidth = stageWidth - Math.round((scaledWidth - windowWidth) / scale);
+						var visibleHeight = stageHeight - Math.round((scaledHeight - windowHeight) / scale);
+						var visibleX = Math.round((stageWidth - visibleWidth) / 2);
+						var visibleY = Math.round((stageHeight - visibleHeight) / 2);
+
+						__displayMatrix.translate(-visibleX, -visibleY);
+						__displayMatrix.scale(scale, scale);
+
+						__displayRect.setTo(visibleX, visibleY, visibleWidth, visibleHeight);
+
+					default: // SHOW_ALL
+
+						var scaleX = windowWidth / stageWidth;
+						var scaleY = windowHeight / stageHeight;
+
+						var scale = Math.min(scaleX, scaleY);
+
+						var scaledWidth = stageWidth * scale;
+						var scaledHeight = stageHeight * scale;
+
+						var visibleWidth = stageWidth - Math.round((scaledWidth - windowWidth) / scale);
+						var visibleHeight = stageHeight - Math.round((scaledHeight - windowHeight) / scale);
+						var visibleX = Math.round((stageWidth - visibleWidth) / 2);
+						var visibleY = Math.round((stageHeight - visibleHeight) / 2);
+
+						__displayMatrix.translate(-visibleX, -visibleY);
+						__displayMatrix.scale(scale, scale);
+
+						__displayRect.setTo(visibleX, visibleY, visibleWidth, visibleHeight);
+				}
 			}
-
-			__displayRect.setTo(0, 0, stageWidth, stageHeight);
 		}
 
 		if (context3D != null)
 		{
+			#if openfl_dpi_aware
 			context3D.configureBackBuffer(windowWidth, windowHeight, 0, true, true, true);
+			#else
+			context3D.configureBackBuffer(stageWidth, stageHeight, 0, true, true, true);
+			#end
 		}
 
 		for (stage3D in stage3Ds)
@@ -3066,15 +3184,17 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			__renderer.__resize(windowWidth, windowHeight);
 		}
 
+		__renderDirty = true;
+
 		if (stageWidth != cacheWidth || stageHeight != cacheHeight)
 		{
-			__renderDirty = true;
 			__setTransformDirty();
 
 			var event:Event = null;
 
 			#if openfl_pool_events
-			event = Event.__pool.get(Event.RESIZE);
+			event = Event.__pool.get();
+			event.type = Event.RESIZE;
 			#else
 			event = new Event(Event.RESIZE);
 			#end
@@ -3419,9 +3539,13 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 	@:noCompletion private function set_scaleMode(value:StageScaleMode):StageScaleMode
 	{
-		// TODO
+		if (value != __scaleMode)
+		{
+			__scaleMode = value;
+			__resize();
+		}
 
-		return __scaleMode = value;
+		return value;
 	}
 
 	@:noCompletion private override function set_scaleX(value:Float):Float
