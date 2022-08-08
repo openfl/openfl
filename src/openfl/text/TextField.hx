@@ -3348,12 +3348,18 @@ class TextField extends InteractiveObject
 			} else {
 				__caretIndex = __getPosition(mouseX + scrollH, mouseY);
 				__selectionIndex = __caretIndex;
+				setSelection(__caretIndex, __selectionIndex);
 			}
+
 		}
 		addEventListener(MouseEvent.MOUSE_DOWN, decideDoubleClick);
 
+		if (!__wordSelection) {
+			__caretIndex = __getPosition(mouseX + scrollH, mouseY);
+			__selectionIndex = __caretIndex;
+			setSelection(__caretIndex, __selectionIndex);
+		}
 		__updateLayout();
-
 		//If we start word selection only when the mouse moves, we can't fully select the first word on a double click
 		//and there would be a delay before the first word is selected
 
