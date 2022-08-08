@@ -13,7 +13,7 @@
 * Added `condenseWhite` property to `TextField` for `htmlText` whitespace removal
 * Added `openfl.globalization.DateTimeFormatter` implementation for HTML5 and Flash (defaults to en_US on native platforms)
 * Added `some` and `every` methods to `Vector`
-* Added session cookie management for `URLLoader`
+* Added session cookie management for `URLLoader` on native platforms
 * Added Stage 3D to the DOM renderer on HTML5
 * Added optional text measurement with DIV on HTML5 (use `-Dopenfl-measuretext-div`)
 * Added `fromBundle` static method to `openfl.utils.AssetLibrary`
