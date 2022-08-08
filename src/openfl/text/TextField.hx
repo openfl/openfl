@@ -3192,7 +3192,6 @@ class TextField extends InteractiveObject
 				if (__wordSelection) {
 					__selectionIndex = __getOppositeWordBound(__wordSelectionInitialIndex);
 				}
-				trace("__selectionIndex: " + __selectionIndex, "__caretIndex: " + __caretIndex);
 
 				var setDirty = true;
 
