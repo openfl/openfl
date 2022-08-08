@@ -5,7 +5,7 @@
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
 	"version": "9.2.0",
-	"releasenote": "StyleSheet, stage scaleMode, high DPI, file system, and native process",,
+	"releasenote": "StyleSheet, stage scaleMode, high DPI, file system, and native process",
 	"contributors": [
 		"singmajesty",
 		"bowlerhat",
