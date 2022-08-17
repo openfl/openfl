@@ -68,7 +68,7 @@ class ShaderFilter extends BitmapFilter
 
 		@default 0
 	**/
-	public var bottomExtension:Int;
+	public var bottomExtension(default, set):Int;
 
 	/**
 		The growth in pixels on the left side of the target object.
@@ -80,7 +80,7 @@ class ShaderFilter extends BitmapFilter
 
 		@default 0
 	**/
-	public var leftExtension:Int;
+	public var leftExtension(default, set):Int;
 
 	/**
 		The growth in pixels on the right side of the target object.
@@ -92,7 +92,7 @@ class ShaderFilter extends BitmapFilter
 
 		@default 0
 	**/
-	public var rightExtension:Int;
+	public var rightExtension(default, set):Int;
 
 	/**
 		The shader to use for this filter.
@@ -127,7 +127,7 @@ class ShaderFilter extends BitmapFilter
 
 		@default 0
 	**/
-	public var topExtension:Int;
+	public var topExtension(default, set):Int;
 
 	/**
 		Creates a new shader filter.
@@ -159,6 +159,30 @@ class ShaderFilter extends BitmapFilter
 	public function invalidate():Void
 	{
 		__renderDirty = true;
+	}
+	
+	public function set_topExtension(value:Int):Int
+	{
+		__topExtension = value;
+		return __topExtension;
+	}
+	
+	public function set_bottomExtension(value:Int):Int
+	{
+		__bottomExtension = value;
+		return __bottomExtension;
+	}
+	
+	public function set_leftExtension(value:Int):Int
+	{
+		__leftExtension = value;
+		return __leftExtension;
+	}
+	
+	public function set_rightExtension(value:Int):Int
+	{
+		__rightExtension = value;
+		return __rightExtension;
 	}
 
 	@:noCompletion private override function __initShader(renderer:DisplayObjectRenderer, pass:Int, sourceBitmapData:BitmapData):Shader
