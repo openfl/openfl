@@ -263,9 +263,7 @@ class File extends FileReference
 		}
 		```
 	**/
-	#if windows
 	public var isHidden(get, never):Bool;
-	#end
 
 	// public var isPackage:Bool;
 	// TODO
@@ -1812,7 +1810,11 @@ class File extends FileReference
 
 	@:noCompletion private function get_isHidden():Bool
 	{
+		#if windows
 		return __winGetHiddenAttr();
+		#else
+		return name.charAt(0) == ".";
+		#end
 	}
 
 	@:noCompletion private function get_isDirectory():Bool
