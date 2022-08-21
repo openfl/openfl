@@ -1964,7 +1964,7 @@ class TextField extends InteractiveObject
 	@:noCompletion private function __getPositionByWord(x:Float, y:Float)
 	{
 		var position = __getPosition(x, y);
-		final delimiters = " .,;:!?()[]{}<>/\\|-=+*&^%$#@~`'\"";
+		var delimiters = " .,;:!?()[]{}<>/\\|-=+*&^%$#@~`'\"";
 		var char = __text.charAt(position);
 		if (__wordSelectionInitialIndex <= position) {
 			while (delimiters.indexOf(char) == -1 && position < __text.length)
@@ -1988,7 +1988,7 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function __getOppositeWordBound(charIndex:Int) {
 		var position = charIndex;
-		final delimiters = " .,;:!?()[]{}<>/\\|-=+*&^%$#@~`'\"";
+		var delimiters = " .,;:!?()[]{}<>/\\|-=+*&^%$#@~`'\"";
 		var char = __text.charAt(position);
 
 		if (position <= __caretIndex) {
@@ -3333,7 +3333,7 @@ class TextField extends InteractiveObject
 		if (!selectable && type != INPUT) return;
 
 		//decide wether this click is for selecting text by character or word - single/double click
-		final x = event.stageX, y = event.stageY, time = Timer.stamp();
+		var x = event.stageX, y = event.stageY, time = Timer.stamp();
 		function decideDoubleClick(event:MouseEvent) {
 			__wordSelection = (x == event.stageX && y == event.stageY && Timer.stamp() - time < 0.25);
 			removeEventListener(MouseEvent.MOUSE_DOWN, decideDoubleClick);
