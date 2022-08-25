@@ -15,7 +15,7 @@ import openfl.net.FileReference;
 import sys.FileSystem;
 import sys.io.Process;
 
-typedef HaxeFile = sys.io.File;
+@:noCompletion private typedef HaxeFile = sys.io.File;
 
 /**
 	A File object represents a path to a file or directory. This can be an existing file
