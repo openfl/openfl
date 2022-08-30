@@ -1,4 +1,4 @@
-9.2.0 (??/??/2022)
+9.2.0 (08/30/2022)
 ------------------
 
 * Added `openfl.text.StyleSheet` implementation for `TextField`
