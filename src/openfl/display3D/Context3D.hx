@@ -619,7 +619,9 @@ import lime.math.Vector2;
 				var scaledWidth = wantsBestResolution ? width : Std.int(width * __stage.window.scale);
 				var scaledHeight = wantsBestResolution ? height : Std.int(height * __stage.window.scale);
 				#end
-				var vertexData = new Vector<Float>([scaledWidth, scaledHeight, 0, 1, 1, 0, scaledHeight, 0, 0, 1, scaledWidth, 0, 0, 1, 0, 0, 0, 0, 0, 0.0]);
+				var vertexData = new Vector<Float>([
+					scaledWidth, scaledHeight, 0, 1, 1, 0, scaledHeight, 0, 0, 1, scaledWidth, 0, 0, 1, 0, 0, 0, 0, 0, 0.0
+				]);
 
 				__stage3D.__vertexBuffer.uploadFromVector(vertexData, 0, 20);
 
