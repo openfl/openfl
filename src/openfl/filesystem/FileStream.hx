@@ -9,6 +9,7 @@ import haxe.io.BytesInput;
 import haxe.io.BytesOutput;
 import haxe.io.Encoding;
 import haxe.io.Bytes;
+import haxe.io.Path;
 import lime.system.BackgroundWorker;
 import openfl.errors.Error;
 import openfl.events.Event;
@@ -24,6 +25,7 @@ import openfl.utils.Endian;
 import openfl.utils.IDataInput;
 import openfl.utils.IDataOutput;
 import openfl.utils.Object;
+import sys.FileSystem;
 import sys.io.FileInput;
 import sys.io.FileOutput;
 import sys.io.FileSeek;
@@ -35,6 +37,8 @@ import format.amf3.Reader as AMF3Reader;
 import format.amf3.Writer as AMF3Writer;
 import format.amf3.Tools as AMF3Tools;
 #end
+
+@:noCompletion private typedef HaxeFile = sys.io.File;
 
 /**
 	A FileStream object is used to read and write files. Files can be opened synchronously 
@@ -151,6 +155,9 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 	@:noCompletion private var __isOpen:Bool;
 	@:noCompletion private var __isWrite:Bool;
 	@:noCompletion private var __isAsync:Bool;
+	//TODO:
+	//Find another way to handle the situation where writeBytes has zero length during WRITE async mode.
+	@:noCompletion private var __isZeroLength:Bool = false;
 	@:noCompletion private var __positionDirty:Bool = false;
 	@:noCompletion private var __buffer:ByteArray;
 	@:noCompletion private var __pageSize:Int = 4096000;
@@ -218,9 +225,11 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		position = 0;
 		__positionDirty = false;
 
-		if (__isAsync)
+		if (__fileStreamWorker != null)
 		{
 			__fileStreamWorker.cancel();
+			__fileStreamWorker.doWork.cancel();
+			__fileStreamWorker.onProgress.cancel();
 			__fileStreamWorker = null;
 
 			dispatchEvent(new Event(Event.CLOSE));
@@ -293,7 +302,11 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		__isAsync = true;
 
 		__fileStreamWorker = new BackgroundWorker();
-
+		
+		__fileStreamWorker.onProgress.add(function(e:Event){
+			dispatchEvent(e);
+		});
+		
 		open(file, fileMode);
 
 		if (fileMode == READ)
@@ -321,30 +334,33 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 					}
 					catch (e:Dynamic)
 					{
-						dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR, false, false, "Index is out of bounds."));
+						__fileStreamWorker.sendProgress(new IOErrorEvent(IOErrorEvent.IO_ERROR, false, false, "Index is out of bounds."));
 					}
 
-					dispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS, false, false, bytesLoaded, __file.size));
+					__fileStreamWorker.sendProgress(new ProgressEvent(ProgressEvent.PROGRESS, false, false, bytesLoaded, __file.size));
 				}
 
-				dispatchEvent(new Event(Event.COMPLETE));
+				__fileStreamWorker.sendProgress(new Event(Event.COMPLETE));
 
 				__fileStreamWorker.cancel();
 				__fileStreamWorker = null;
 			});
 		}
 		else
-		{
+		{				
 			__buffer = new ByteArray();
+				
 			__fileStreamWorker.doWork.add(function(m:Dynamic)
 			{
-				var bytesLoaded:Int = 0;
-
-				while (true)
+				var bytesLoaded:Int = 0;				
+				
+				while (__fileStreamWorker != null)
 				{
+					Sys.sleep(.001);
+					
 					while (isWriting)
 					{
-						while (__buffer.length > bytesLoaded)
+						while (__buffer.length > bytesLoaded || __isZeroLength)
 						{
 							try
 							{
@@ -354,13 +370,14 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 								bytesLoaded += maxBytes;
 
 								__file.__fileStatsDirty = true;
-
-								dispatchEvent(new OutputProgressEvent(OutputProgressEvent.OUTPUT_PROGRESS, false, false, __buffer.length - bytesLoaded,
+								__isZeroLength = false;
+								
+								__fileStreamWorker.sendProgress(new OutputProgressEvent(OutputProgressEvent.OUTPUT_PROGRESS, false, false, __buffer.length - bytesLoaded,
 									__buffer.length));
 							}
 							catch (e:Dynamic)
 							{
-								dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR, false, false, "Index is out of bounds."));
+								__fileStreamWorker.sendProgress(new IOErrorEvent(IOErrorEvent.IO_ERROR, false, false, "Index is out of bounds."));
 							}
 						}
 
@@ -799,13 +816,13 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		var isAsync:Bool = __isAsync;
 
-		var fileBytes:ByteArray = ByteArray.fromBytes(File.HaxeFile.getBytes(__file.nativePath));
+		var fileBytes:ByteArray = ByteArray.fromBytes(HaxeFile.getBytes(__file.nativePath));
 
 		var truncatedBytes:ByteArray = new ByteArray(position);
 		truncatedBytes.writeBytes(fileBytes, 0, truncatedBytes.length);
 		close();
 
-		File.HaxeFile.saveBytes(__file.nativePath, truncatedBytes);
+		HaxeFile.saveBytes(__file.nativePath, truncatedBytes);
 		var pos:Int = truncatedBytes.length;
 		fileBytes = null;
 
@@ -907,6 +924,8 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		if (__isAsync)
 		{
 			__buffer.writeBytes(bytes, offset, length);
+			
+			if(length == 0) __isZeroLength = true;
 			isWriting = true;
 
 			return;
@@ -1257,7 +1276,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 			case READ:
 				try
 				{
-					__input = File.HaxeFile.read(__file.nativePath, true);
+					__input = HaxeFile.read(__file.nativePath, true);
 					__input.seek(0, FileSeek.SeekBegin);
 					__isWrite = false;
 				}
@@ -1267,10 +1286,10 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 				}
 			case WRITE:
 				try
-				{	
+				{
 					var dirPath:String = Path.directory(__file.nativePath);
 					if (!FileSystem.exists(dirPath)) FileSystem.createDirectory(dirPath);
-					__output = File.HaxeFile.write(__file.nativePath, true);
+					__output = HaxeFile.write(__file.nativePath, true);
 					__isWrite = true;
 				}
 				catch (e:Dynamic)
@@ -1280,7 +1299,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 			case APPEND:
 				try
 				{
-					__output = File.HaxeFile.append(__file.nativePath, true);
+					__output = HaxeFile.append(__file.nativePath, true);
 					__isWrite = true;
 				}
 				catch (d:Dynamic)
@@ -1290,7 +1309,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 			case UPDATE:
 				try
 				{
-					__output = File.HaxeFile.update(__file.nativePath, true);
+					__output = HaxeFile.update(__file.nativePath, true);
 					__output.seek(0, sys.io.FileSeek.SeekBegin);
 					__isWrite = true;
 				}

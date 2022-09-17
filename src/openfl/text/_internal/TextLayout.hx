@@ -119,7 +119,10 @@ class TextLayout
 
 				if (autoHint)
 				{
-					__hbFont.loadFlags = FT_LOAD_FORCE_AUTOHINT | FT_LOAD_TARGET_LIGHT;
+					//TODO: Investigate FreeType hinting used in HB. The FT_LOAD_FORCE_AUTOHINT 
+					//flag caused glyph spacing inconsistencies on certain fonts. Is it necessary to have
+					//enabled in certain cases?
+					__hbFont.loadFlags = /*FT_LOAD_FORCE_AUTOHINT |*/ FT_LOAD_TARGET_LIGHT;
 				}
 			}
 			else
@@ -140,7 +143,7 @@ class TextLayout
 			__hbBuffer.script = script.toHBScript();
 			__hbBuffer.language = new HBLanguage(language);
 			__hbBuffer.clusterLevel = HBBufferClusterLevel.CHARACTERS;
-			#if (neko || mac)
+			#if (neko)
 			// other targets still uses dummy positions to make UTF8 work
 			// TODO: confirm
 			__hbBuffer.addUTF8(text, 0, -1);

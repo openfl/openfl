@@ -10,15 +10,15 @@ import js.lib.intl.DateTimeFormat;
 #if !html5
 @:final class DateTimeFormatter
 {
-	private static final WEEKDAY_NAMES_EN = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
-	private static final MONTH_NAMES_EN = [
+	private static var WEEKDAY_NAMES_EN = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+	private static var MONTH_NAMES_EN = [
 		"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"
 	];
-	private static final MERIDIEM_AM = "AM";
-	private static final MERIDIEM_PM = "PM";
-	private static final ERA_AD_LONG = "Anno Domini";
-	private static final ERA_AD_SHORT = "AD";
-	private static final ERA_AD_NARROW = "A";
+	private static inline var MERIDIEM_AM = "AM";
+	private static inline var MERIDIEM_PM = "PM";
+	private static inline var ERA_AD_LONG = "Anno Domini";
+	private static inline var ERA_AD_SHORT = "AD";
+	private static inline var ERA_AD_NARROW = "A";
 
 	public static function getAvailableLocaleIDNames():Vector<String>
 	{
@@ -97,10 +97,17 @@ import js.lib.intl.DateTimeFormat;
 		var result = "";
 		if (this.dateStyle != NONE)
 		{
+			#if haxe4
 			var fullYear = utc ? date.getUTCFullYear() : date.getFullYear();
 			var month = utc ? date.getUTCMonth() : date.getMonth();
 			var dateOfMonth = utc ? date.getUTCDate() : date.getDate();
 			var weekday = utc ? date.getUTCDay() : date.getDay();
+			#else
+			var fullYear = date.getFullYear();
+			var month = date.getMonth();
+			var dateOfMonth = date.getDate();
+			var weekday = date.getDay();
+			#end
 			result += switch (this.dateStyle)
 			{
 				case MEDIUM: '${MONTH_NAMES_EN[month]} ${dateOfMonth}, ${fullYear}';
@@ -114,9 +121,15 @@ import js.lib.intl.DateTimeFormat;
 		}
 		if (this.timeStyle != NONE)
 		{
+			#if haxe4
 			var hours = utc ? date.getUTCHours() : date.getHours();
 			var minutes = utc ? date.getUTCMinutes() : date.getMinutes();
 			var seconds = utc ? date.getUTCSeconds() : date.getSeconds();
+			#else
+			var hours = date.getHours();
+			var minutes = date.getMinutes();
+			var seconds = date.getSeconds();
+			#end
 			var meridiem = MERIDIEM_AM;
 			if (hours > 12)
 			{
@@ -136,6 +149,7 @@ import js.lib.intl.DateTimeFormat;
 	{
 		var result = "";
 		var tokens = DateTimeFormatTokenizer.tokenize(this.dateTimePattern);
+		#if haxe4
 		var fullYear = utc ? date.getUTCFullYear() : date.getFullYear();
 		var month = utc ? date.getUTCMonth() : date.getMonth();
 		var dateOfMonth = utc ? date.getUTCDate() : date.getDate();
@@ -143,6 +157,15 @@ import js.lib.intl.DateTimeFormat;
 		var hours = utc ? date.getUTCHours() : date.getHours();
 		var minutes = utc ? date.getUTCMinutes() : date.getMinutes();
 		var seconds = utc ? date.getUTCSeconds() : date.getSeconds();
+		#else
+		var fullYear = date.getFullYear();
+		var month = date.getMonth();
+		var dateOfMonth = date.getDate();
+		var weekday = date.getDay();
+		var hours = date.getHours();
+		var minutes = date.getMinutes();
+		var seconds = date.getSeconds();
+		#end
 
 		for (token in tokens)
 		{
@@ -267,7 +290,10 @@ import js.lib.intl.DateTimeFormat;
 			this.lastOperationStatus = NO_ERROR;
 			return result;
 		}
-		var result = new Vector(MONTH_NAMES_EN.length, true, MONTH_NAMES_EN.map(monthName -> monthName.substr(0, 3)));
+		var result = new Vector(MONTH_NAMES_EN.length, true, MONTH_NAMES_EN.map(function(monthName:String):String
+		{
+			return monthName.substr(0, 3);
+		}));
 		this.lastOperationStatus = NO_ERROR;
 		return result;
 	}
@@ -281,7 +307,10 @@ import js.lib.intl.DateTimeFormat;
 			return result;
 		}
 		var abbrLength = nameStyle == SHORT_ABBREVIATION ? 2 : 3;
-		var result = new Vector(WEEKDAY_NAMES_EN.length, true, WEEKDAY_NAMES_EN.map(monthName -> monthName.substr(0, abbrLength)));
+		var result = new Vector(WEEKDAY_NAMES_EN.length, true, WEEKDAY_NAMES_EN.map(function(weekdayName:String):String
+		{
+			return weekdayName.substr(0, abbrLength);
+		}));
 		this.lastOperationStatus = NO_ERROR;
 		return result;
 	}

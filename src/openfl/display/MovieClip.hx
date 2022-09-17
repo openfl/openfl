@@ -134,7 +134,6 @@ class MovieClip extends Sprite #if (openfl_dynamic && haxe_ver < "4.0.0") implem
 	public var totalFrames(get, never):Int;
 
 	// @:noCompletion @:dox(hide) public var trackAsMenu:Bool;
-
 	@:noCompletion private var __enabled:Bool;
 	@:noCompletion private var __hasDown:Bool;
 	@:noCompletion private var __hasOver:Bool;

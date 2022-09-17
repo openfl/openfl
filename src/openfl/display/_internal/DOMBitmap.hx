@@ -19,10 +19,7 @@ class DOMBitmap
 	public static function clear(bitmap:Bitmap, renderer:DOMRenderer):Void
 	{
 		#if (js && html5)
-		if (bitmap.__cacheBitmap != null)
-		{
-			DOMBitmap.clear(bitmap.__cacheBitmap, renderer);
-		}
+		DOMDisplayObject.clear(bitmap, renderer);
 
 		if (bitmap.__image != null)
 		{
@@ -50,7 +47,15 @@ class DOMBitmap
 
 			if (bitmap.__bitmapData.image.buffer.__srcImage != null)
 			{
-				renderImage(bitmap, renderer);
+				var src = bitmap.__bitmapData.image.buffer.__srcImage.src;
+				if (StringTools.startsWith(src, "data:") || StringTools.startsWith(src, "blob:"))
+				{
+					renderCanvas(bitmap, renderer);
+				}
+				else
+				{
+					renderImage(bitmap, renderer);
+				}
 			}
 			else
 			{

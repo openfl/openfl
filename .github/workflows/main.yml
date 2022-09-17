@@ -4,8 +4,10 @@ on: [push, pull_request]
 jobs:
 
   unit-test:
+    strategy:
+      matrix:
+        haxe-version: [3.4.7, 4.1.5]
     runs-on: macos-10.15
-
     steps:
       - uses: actions/checkout@v1
         with:
@@ -13,7 +15,7 @@ jobs:
 
       - uses: krdlab/setup-haxe@v1
         with:
-          haxe-version: 4.1.5
+          haxe-version: ${{ matrix.haxe-version }}
 
       - name: Set HAXEPATH
         run: |
@@ -21,9 +23,11 @@ jobs:
 
       - name: Install Haxe dependencies
         run: |
+          haxelib install hxcpp --quiet
+          haxelib install format --quiet
+          haxelib install hxp --quiet
           haxelib install lime --quiet
           haxelib install utest --quiet
-          haxelib install hxp --quiet
 
       - name: Setup environment
         run: |
@@ -33,10 +37,14 @@ jobs:
         run: |
           haxelib run openfl setup -alias -y
 
-      - name: Run tests
+      - name: Run tests on Neko
         run: |
-          haxelib run hxp --install-hxp-alias
-          hxp test
+          haxelib run hxp test -Dtarget=neko --install-hxp-alias
+
+      - name: Run tests on HashLink
+        if: ${{ matrix.haxe-version != '3.4.7' }}
+        run: |
+          haxelib run hxp test -Dtarget=hl --install-hxp-alias
 
   package-haxelib:
     runs-on: macos-10.15
@@ -92,7 +100,10 @@ jobs:
 
       - name: Install Haxe dependencies
         run: |
-          haxelib install lime --quiet
+          haxelib install hxcpp --quiet
+          haxelib install format --quiet
+          haxelib install hxp --quiet
+          haxelib install lime 7.9.0 --quiet
           haxelib install dox --quiet
           haxelib dev openfl $GITHUB_WORKSPACE
 
@@ -110,7 +121,7 @@ jobs:
   notify:
     runs-on: ubuntu-18.04
     needs: [package-haxelib, docs, unit-test]
-    if: ${{ github.event_name != 'pull_request' }}
+    if: ${{ github.repository == 'openfl/openfl' && github.event_name != 'pull_request' }}
     steps:
       - name: Notify Discord
         uses: nobrayner/discord-webhook@v1

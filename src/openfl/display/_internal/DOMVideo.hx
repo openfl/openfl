@@ -11,6 +11,8 @@ class DOMVideo
 	public static function clear(video:Video, renderer:DOMRenderer):Void
 	{
 		#if (js && html5)
+		DOMDisplayObject.clear(video, renderer);
+
 		if (video.__active)
 		{
 			renderer.element.removeChild(video.__stream.__video);

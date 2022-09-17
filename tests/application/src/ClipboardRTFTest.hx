@@ -14,7 +14,8 @@ class ClipboardRTFTest extends Test
 	// only within a "paste" event from the user
 	#if (flash && !air)
 	@Ignored
-	#else
+	#elseif hl
+	// TODO: fix test on HashLink
 	@Ignored
 	#end
 	public function test_getData(async:Async)
@@ -37,6 +38,10 @@ class ClipboardRTFTest extends Test
 
 			// TODO
 			// Assert.areEqual (richTextFormatData, clipboard.getData (ClipboardFormats.RICH_TEXT_FORMAT));
+			async.done();
+		}).onError(function(result)
+		{
+			Assert.fail(result);
 			async.done();
 		});
 	}

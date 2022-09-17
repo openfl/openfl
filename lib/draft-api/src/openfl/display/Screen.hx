@@ -7,34 +7,39 @@ import openfl.events.EventDispatcher;
 import openfl.geom.Rectangle;
 
 @:access(openfl.display.ScreenMode)
-class Screen extends EventDispatcher {
+class Screen extends EventDispatcher
+{
 	public static var screens(get, null):Array<Screen>;
 	public static var mainScreen(get, null):Screen;
 
-	private static function get_mainScreen():Screen {
+	private static function get_mainScreen():Screen
+	{
 		return new Screen(Lib.application.window.display);
 	}
 
-	private static function get_screens():Array<Screen> {
+	private static function get_screens():Array<Screen>
+	{
 		var screens:Array<Screen> = [];
 
 		var numDisplays:Int = System.numDisplays;
 
-		for (i in 0...numDisplays) {
+		for (i in 0...numDisplays)
+		{
 			screens.push(new Screen(System.getDisplay(i)));
 		}
 		return screens;
 	}
 
-	public static function getScreensForRectangle(rect:Rectangle):Array<Screen> {
+	public static function getScreensForRectangle(rect:Rectangle):Array<Screen>
+	{
 		var numDisplays:Int = System.numDisplays;
 		var screens:Array<Screen> = [];
 
-		for (i in 0...numDisplays) {
+		for (i in 0...numDisplays)
+		{
 			var display = System.getDisplay(i);
 			var rectB:Rectangle = cast display.bounds;
-			if (rect.intersects(rectB))
-				screens.push(new Screen(display));
+			if (rect.intersects(rectB)) screens.push(new Screen(display));
 		}
 
 		return screens;
@@ -47,33 +52,39 @@ class Screen extends EventDispatcher {
 
 	private var _display:Display;
 
-	private function get_modes():Array<ScreenMode> {
+	private function get_modes():Array<ScreenMode>
+	{
 		var screenModes = [];
 		var displayModes = _display.supportedModes;
 
-		for (displayMode in displayModes) {
+		for (displayMode in displayModes)
+		{
 			screenModes.push(new ScreenMode(displayMode));
 		}
 
 		return screenModes;
 	}
 
-	private function get_visibleBounds():Rectangle {
+	private function get_visibleBounds():Rectangle
+	{
 		var currentMode = _display.currentMode;
 		var rect:Rectangle = new Rectangle(0, 0, currentMode.width, currentMode.height);
 
 		return rect;
 	}
 
-	private function get_mode():ScreenMode {
+	private function get_mode():ScreenMode
+	{
 		return new ScreenMode(_display.currentMode);
 	}
 
-	private function get_bounds():Rectangle {
+	private function get_bounds():Rectangle
+	{
 		return cast _display.bounds;
 	}
 
-	private function new(display:Display) {
+	private function new(display:Display)
+	{
 		super();
 		_display = display;
 	}

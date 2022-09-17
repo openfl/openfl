@@ -36,6 +36,45 @@ class IOErrorEvent extends ErrorEvent
 	**/
 	public static inline var IO_ERROR:EventType<IOErrorEvent> = "ioError";
 
+
+	#if (haxe4 && sys)
+	/**
+		The `standardOutputIoError` event is dispatched when an error occurs
+		while reading data from the `standardOutput` stream of a NativeProcess
+		object.
+
+		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event. |
+		| `errorID` | The reference number associated with the specific error. |
+		| `target` | The object on which the error occurred. |
+		| `text` | Text to be displayed as an error message. |
+	**/
+	public static inline var STANDARD_OUTPUT_IO_ERROR:EventType<IOErrorEvent> = "standardOutputIoError";
+
+	/**
+		The `standardErrorIoError` event is dispatched when an error occurs
+		while reading data from the `standardError` stream of a NativeProcess
+		object.
+
+		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event. |
+		| `errorID` | The reference number associated with the specific error. |
+		| `target` | The object on which the error occurred. |
+		| `text` | Text to be displayed as an error message. |
+	**/
+	public static inline var STANDARD_ERROR_IO_ERROR:EventType<IOErrorEvent> = "standardErrorIoError";
+	#end
+
 	// @:noCompletion @:dox(hide) public static var NETWORK_ERROR:String;
 	// @:noCompletion @:dox(hide) public static var VERIFY_ERROR:String;
 	// @:noCompletion private static var __pool:ObjectPool<IOErrorEvent> = new ObjectPool<IOErrorEvent>(function() return new IOErrorEvent(null),

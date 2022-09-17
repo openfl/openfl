@@ -5,6 +5,9 @@ import openfl.display.DisplayObjectContainer;
 
 @:transitive
 @:callable
+#if !haxe4
+@:forward
+#end
 abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 {
 	public inline function new()
@@ -17,14 +20,17 @@ abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 		return (this != null && Reflect.hasField(this, name));
 	}
 
-	public inline function isPrototypeOf(theClass:Class<Dynamic>):Bool
+	public function isPrototypeOf(theClass:Class<Dynamic>):Bool
 	{
-		var c = Type.getClass(this);
-
-		while (c != null)
+		if (this != null)
 		{
-			if (c == theClass) return true;
-			c = Type.getSuperClass(c);
+			var c = Type.getClass(this);
+
+			while (c != null)
+			{
+				if (c == theClass) return true;
+				c = Type.getSuperClass(c);
+			}
 		}
 
 		return false;
@@ -68,12 +74,12 @@ abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 
 	public inline function toLocaleString():String
 	{
-		return Std.string(this);
+		return (this == null ? null : Std.string(this));
 	}
 
 	@:to public inline function toString():String
 	{
-		return Std.string(this);
+		return (this == null ? null : Std.string(this));
 	}
 
 	public inline function valueOf():Object
@@ -98,6 +104,8 @@ abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 	@SuppressWarnings("checkstyle:FieldDocComment")
 	@:arrayAccess @:noCompletion @:dox(hide) public /*inline*/ function __get(key:String):Object
 	{
+		if (this == null || key == null) return null;
+
 		if (Reflect.hasField(this, key))
 		{
 			return Reflect.field(this, key);
@@ -114,20 +122,26 @@ abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 	@SuppressWarnings("checkstyle:FieldDocComment")
 	@:arrayAccess @:noCompletion @:dox(hide) public inline function __set(key:String, value:Object):Object
 	{
-		Reflect.setProperty(this, key, value);
+		if (this != null)
+		{
+			Reflect.setProperty(this, key, value);
+		}
+
 		return value;
 	}
 
 	@SuppressWarnings("checkstyle:FieldDocComment")
-	@:arrayAccess @:noCompletion @:dox(hide) public inline function __getArray(index:Int):Object
+	@:arrayAccess @:noCompletion @:dox(hide) public function __getArray(index:Int):Object
 	{
+		if (this == null) return null;
 		var arr = cast(this, Array<Dynamic>);
 		return arr[index];
 	}
 
 	@SuppressWarnings("checkstyle:FieldDocComment")
-	@:arrayAccess @:noCompletion @:dox(hide) public inline function __setArray(index:Int, value:Object):Object
+	@:arrayAccess @:noCompletion @:dox(hide) public function __setArray(index:Int, value:Object):Object
 	{
+		if (this == null) return value;
 		var arr = cast(this, Array<Dynamic>);
 		return arr[index] = value;
 	}
@@ -494,82 +508,6 @@ abstract Object(ObjectType) from ObjectType from Dynamic to Dynamic
 	{
 		var floatB:Float = cast b;
 		return a >= floatB;
-	}
-
-	@:op(A -= B) private static function __intMe(a:Int, b:Object):Dynamic
-	{
-		if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (b, Int))
-		{
-			var intB:Int = cast b;
-			return a -= intB;
-		}
-		else
-		{
-			var floatA:Float = cast a;
-			var floatB:Float = cast b;
-			return floatA -= floatB;
-		}
-	}
-
-	@:op(A -= B) private static function __meFloat(a:Object, b:Float):Float
-	{
-		var floatA:Float = cast a;
-		return floatA -= b;
-	}
-
-	@:op(A -= B) private static function __meInt(a:Object, b:Int):Dynamic
-	{
-		var floatA:Float = cast a;
-		return floatA -= b;
-	}
-
-	@:op(A -= B) private static function __floatMe(a:Float, b:Object):Float
-	{
-		var floatB:Float = cast b;
-		return a -= floatB;
-	}
-
-	@:op(A += B) private static function __stringPe(a:String, b:Object):String
-	{
-		return a + Std.string(b);
-	}
-
-	@:op(A += B) private static function __peString(b:Object, a:String):String
-	{
-		return Std.string(a) + b;
-	}
-
-	@:op(A += B) private static function __intPe(a:Int, b:Object):Dynamic
-	{
-		if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (b, Int))
-		{
-			var intB:Int = cast b;
-			return a += intB;
-		}
-		else
-		{
-			var floatA:Float = cast a;
-			var floatB:Float = cast b;
-			return floatA += floatB;
-		}
-	}
-
-	@:op(A += B) private static function __peFloat(a:Object, b:Float):Float
-	{
-		var floatA:Float = cast a;
-		return floatA += b;
-	}
-
-	@:op(A -= B) private static function __peInt(a:Object, b:Int):Dynamic
-	{
-		var floatA:Float = cast a;
-		return floatA += b;
-	}
-
-	@:op(A += B) private static function __floatPe(a:Float, b:Object):Float
-	{
-		var floatB:Float = cast b;
-		return a += floatB;
 	}
 
 	@:op(~A) private function __complement():Int

@@ -276,6 +276,10 @@ class BitmapDataTest extends Test
 		#end
 	}
 
+	#if hl
+	// TODO: fix test on HashLink
+	@Ignored
+	#end
 	public function test_draw()
 	{
 		var bitmapData = new BitmapData(100, 100);
@@ -695,7 +699,7 @@ class BitmapDataTest extends Test
 		getSetPixels(0x00112233, true, true);
 	}
 
-	#if (cpp || neko)
+	#if (cpp || neko || hl)
 	@Ignored
 	#end
 	public function test_testGetAndSetPixelsSemiARGBToARGB()
@@ -718,7 +722,7 @@ class BitmapDataTest extends Test
 		getSetPixels(0x00112233, true, false);
 	}
 
-	#if (cpp || neko)
+	#if (cpp || neko || hl)
 	@Ignored
 	#end
 	public function test_testGetAndSetPixelsSemiARGBToRGB()

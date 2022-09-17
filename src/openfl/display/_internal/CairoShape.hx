@@ -57,8 +57,8 @@ class CairoShape
 
 					var scaleX = graphics.__renderTransform.a;
 					var scaleY = graphics.__renderTransform.d;
-					var renderScaleX = transform.a;
-					var renderScaleY = transform.d;
+					var renderScaleX = transform.a / graphics.__bitmapScale;
+					var renderScaleY = transform.d / graphics.__bitmapScale;
 
 					var left = Math.round(scale9Grid.x * scaleX);
 					var top = Math.round(scale9Grid.y * scaleY);
@@ -147,7 +147,11 @@ class CairoShape
 				}
 				else
 				{
-					renderer.applyMatrix(transform, cairo);
+					var renderTransform = Matrix.__pool.get();
+					renderTransform.scale(1 / graphics.__bitmapScale, 1 / graphics.__bitmapScale);
+					renderTransform.concat(transform);
+
+					renderer.applyMatrix(renderTransform, cairo);
 
 					cairo.setSourceSurface(graphics.__cairo.target, 0, 0);
 
@@ -159,6 +163,8 @@ class CairoShape
 					{
 						cairo.paintWithAlpha(alpha);
 					}
+
+					Matrix.__pool.release(renderTransform);
 				}
 
 				renderer.__popMaskObject(shape);

@@ -44,7 +44,7 @@ package openfl.net;
 	actually displayed in the dialog box; to display the file types for users,
 	you must list the file types in the description string as well as in the
 	extension list. The description string is displayed in the dialog box in
-	Windows and Linux. (It is not used on the Macintosh<sup>?/sup>.) On the
+	Windows and Linux. (It is not used on the Macintosh<sup>®</sup>.) On the
 	Macintosh, if you supply a list of Macintosh file types, that list is used
 	to filter the files. If not, the list of file extensions is used.
 **/

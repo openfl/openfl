@@ -20,7 +20,7 @@ class CSSParser
 	private var cssRegex:EReg = new EReg('([\\s\\S]*?){([\\s\\S]*?)*}', 'ig');
 	private var mediaQueryRegex:String = '((@media [\\s\\S]*?){([\\s\\S]*?}\\s*?)})';
 	private var keyframeRegex:String = "((@.*?keyframes [\\s\\S]*?){([\\s\\S]*?}\\s*?)})";
-	private var combinedCSSRegex:String = "((\\s*?(?:\\/\\*[\\s\\S]*?\\*\\/)?\\s*?@media[\\s\\S]*?){([\\s\\S]*?)}\\s*?})|(([\\s\\S]*?){([\\s\\S]*?)*})";
+	private var combinedCSSRegex:String = "((\\s*?(?:\\/\\*[\\s\\S]*?\\*\\/)?\\s*?@media[\\s\\S]*?){([\\s\\S]*?)}\\s*?})|(([\\s\\S]*?){([\\s\\S]*?)*?})";
 	private var commentRegex:String = "(\\/\\*[\\s\\S]*?\\*\\/)";
 	private var importRegex:EReg = new EReg('@import .*?;', 'ig');
 

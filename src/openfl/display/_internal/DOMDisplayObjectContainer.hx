@@ -18,7 +18,17 @@ class DOMDisplayObjectContainer
 
 		DOMDisplayObject.renderDrawable(displayObjectContainer, renderer);
 
-		if (displayObjectContainer.__cacheBitmap != null && !displayObjectContainer.__isCacheBitmapRender) return;
+		if (displayObjectContainer.__cacheBitmap != null && !displayObjectContainer.__isCacheBitmapRender)
+		{
+			for (child in displayObjectContainer.__children)
+			{
+				renderer.__renderDrawableClear(child);
+			}
+
+			DOMShape.clear(displayObjectContainer, renderer);
+			displayObjectContainer.__cacheBitmap.stage = displayObjectContainer.stage;
+			return;
+		}
 
 		renderer.__pushMaskObject(displayObjectContainer);
 
@@ -59,5 +69,7 @@ class DOMDisplayObjectContainer
 		{
 			renderer.__renderDrawableClear(child);
 		}
+
+		DOMDisplayObject.clear(displayObjectContainer, renderer);
 	}
 }

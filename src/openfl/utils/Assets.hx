@@ -3,6 +3,7 @@ package openfl.utils;
 import openfl.utils._internal.Log;
 import openfl.display.BitmapData;
 import openfl.display.MovieClip;
+import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.media.Sound;
@@ -38,6 +39,7 @@ import lime.media.vorbis.VorbisFile;
 @:noDebug
 #end
 @:access(openfl.display.BitmapData)
+@:access(openfl.display.Sprite)
 @:access(openfl.text.Font)
 @:access(openfl.utils.AssetLibrary)
 class Assets
@@ -342,10 +344,22 @@ class Assets
 		if (libraryBindings.exists(className))
 		{
 			var library = libraryBindings.get(className);
-			if (!library.bind(className, instance))
+			#if !flash
+			if (instance == null)
 			{
-				Log.error("Cannot bind class name \"" + className + "\"");
+				Sprite.__constructor = function(instance:Sprite)
+				{
+					instance.__bind(library, className);
+				}
 			}
+			else
+			{
+				instance.__bind(library, className);
+			}
+			#else
+			// TODO: Consolidate behavior
+			library.bind(className);
+			#end
 		}
 		else
 		{

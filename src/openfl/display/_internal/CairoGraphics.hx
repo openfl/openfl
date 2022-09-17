@@ -236,7 +236,7 @@ class CairoGraphics
 
 			if (graphics.__cairo == null)
 			{
-				var bitmap = new BitmapData(Math.floor(bounds.width), Math.floor(bounds.height), true, 0);
+				var bitmap = new BitmapData(Math.floor(Math.max(1, bounds.width)), Math.floor(Math.max(1, bounds.height)), true, 0);
 				var surface = bitmap.getSurface();
 				graphics.__cairo = new Cairo(surface);
 				// graphics.__bitmap = bitmap;

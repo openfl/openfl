@@ -2,6 +2,7 @@ package;
 
 import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
+import openfl.text.TextFieldType;
 import openfl.text.TextFormat;
 import utest.Assert;
 import utest.Test;
@@ -540,5 +541,100 @@ class TextFieldTest extends Test
 
 		var check = textField.getTextFormat(0, 4);
 		Assert.equals(0xFF0000, check.color);
+	}
+
+	public function test_setDecimalEntityCode()
+	{
+		var textField = new TextField();
+		textField.htmlText = "&#38;";
+		Assert.equals("&", textField.text);
+	}
+
+	public function test_setHexEntityCode()
+	{
+		var textField = new TextField();
+		textField.htmlText = "&#x27;";
+		Assert.equals("'", textField.text);
+	}
+
+	public function test_autoSizeHeightWithFinalNewLine()
+	{
+		var textField = new TextField();
+		textField.autoSize = LEFT;
+		textField.multiline = true;
+		textField.text = "hello";
+		var textFieldHeight1 = textField.height;
+		textField.text = "hello\n";
+		var textFieldHeight2 = textField.height;
+		// the final new line is not counted for type != INPUT
+		Assert.equals(textFieldHeight1, textFieldHeight2);
+		textField.text = "hello\n\n";
+		var textFieldHeight3 = textField.height;
+		// for multiple final new lines, don't count the last one
+		Assert.notEquals(textFieldHeight2, textFieldHeight3);
+
+		var textField2 = new TextField();
+		textField2.autoSize = LEFT;
+		textField2.type = TextFieldType.INPUT;
+		textField2.multiline = true;
+		textField2.text = "hello";
+		var textField2Height1 = textField2.height;
+		textField2.text = "hello\n";
+		var textField2Height2 = textField2.height;
+		// the final new line is counted for type == INPUT
+		Assert.notEquals(textField2Height1, textField2Height2);
+	}
+
+	public function test_clearSelectionOnSetText()
+	{
+		var textField = new TextField();
+		textField.text = "hello";
+		textField.setSelection(1, 3);
+		Assert.equals(1, textField.selectionBeginIndex);
+		Assert.equals(3, textField.selectionEndIndex);
+		textField.text = "world";
+		Assert.equals(0, textField.selectionBeginIndex);
+		Assert.equals(0, textField.selectionEndIndex);
+	}
+
+	public function test_clearSelectionOnPlusAssignText()
+	{
+		var textField = new TextField();
+		textField.text = "hello";
+		textField.setSelection(1, 3);
+		Assert.equals(1, textField.selectionBeginIndex);
+		Assert.equals(3, textField.selectionEndIndex);
+		textField.text += " world";
+	}
+
+	public function test_clearSelectionOnAppendText()
+	{
+		var textField = new TextField();
+		textField.text = "hello";
+		textField.setSelection(1, 3);
+		Assert.equals(1, textField.selectionBeginIndex);
+		Assert.equals(3, textField.selectionEndIndex);
+		textField.appendText(" world");
+		#if flash
+		// for some reason, flash keeps the same selection, unless the
+		// TextField receives focus between setSelection() and appendText()
+		Assert.equals(1, textField.selectionBeginIndex);
+		Assert.equals(3, textField.selectionEndIndex);
+		#else
+		Assert.equals(11, textField.selectionBeginIndex);
+		Assert.equals(11, textField.selectionEndIndex);
+		#end
+	}
+
+	public function test_clearSelectionOnSetHtmlText()
+	{
+		var textField = new TextField();
+		textField.htmlText = "hello";
+		textField.setSelection(1, 3);
+		Assert.equals(1, textField.selectionBeginIndex);
+		Assert.equals(3, textField.selectionEndIndex);
+		textField.htmlText = "world";
+		Assert.equals(5, textField.selectionBeginIndex);
+		Assert.equals(5, textField.selectionEndIndex);
 	}
 }

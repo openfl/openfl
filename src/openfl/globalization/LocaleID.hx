@@ -3,9 +3,9 @@ package openfl.globalization;
 #if !flash
 @:final class LocaleID
 {
-	public static final DEFAULT:String = "i-default";
+	public static inline var DEFAULT:String = "i-default";
 
-	@:noCompletion private static final RTL_LANGUAGES = [
+	@:noCompletion private static var RTL_LANGUAGES = [
 		"ae", // Avestan
 		"ar", // Arabic
 		"arc", // Aramaic

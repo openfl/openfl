@@ -25,7 +25,7 @@ class Build extends Script
 			var index = tests.indexOf(testName);
 			if (index > -1)
 			{
-				System.runCommand(tests[index], "hxp", Log.verbose ? ["-verbose"] : null);
+				System.runCommand(tests[index], "hxp", getArgs());
 			}
 			else
 			{
@@ -38,8 +38,18 @@ class Build extends Script
 			for (test in tests)
 			{
 				Log.println('\nRUNNING TEST GROUP: $test (${++i}/${tests.length})\n');
-				System.runCommand(test, "hxp", Log.verbose ? ["-verbose"] : null);
+				System.runCommand(test, "hxp", getArgs());
 			}
 		}
+	}
+
+	private function getArgs():Array<String>
+	{
+		var args = Log.verbose ? ["-verbose"] : [];
+		if (defines.exists("target"))
+		{
+			args.push('-Dtarget=${defines.get("target")}');
+		}
+		return args;
 	}
 }

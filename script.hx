@@ -75,12 +75,22 @@ class Script extends hxp.Script
 		}
 		else if (command == "test")
 		{
-			System.runCommand("tests", "hxp", Log.verbose ? ["-verbose"] : null);
+			System.runCommand("tests", "hxp", getTestArgs());
 		}
 		else
 		{
-			System.runCommand("tests", "hxp", Log.verbose ? [command, "-verbose"] : [command]);
+			System.runCommand("tests", "hxp", [command].concat(getTestArgs()));
 		}
+	}
+
+	private function getTestArgs():Array<String>
+	{
+		var args = Log.verbose ? ["-verbose"] : [];
+		if (defines.exists("target"))
+		{
+			args.push('-Dtarget=${defines.get("target")}');
+		}
+		return args;
 	}
 
 	private function testHaxelib(target:String = null):Void
