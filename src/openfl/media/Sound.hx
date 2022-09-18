@@ -719,6 +719,7 @@ class Sound extends EventDispatcher
 			__processor = __audioContext.createScriptProcessor(@:privateAccess __sampleData.getBufferSize(), 0, 2);
 			__processor.connect(__audioContext.destination);
 			__processor.onaudioprocess = onSample;
+			__audioContext.resume();
 		}
 		#end
 		#if lime_openal
