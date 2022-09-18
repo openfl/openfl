@@ -209,12 +209,12 @@ class SampleDataEvent extends Event
 	#if (js && html5)
 	private function getBufferSize():Int
 	{
-		var bufferSize:Int = Std.int(data.length / 4 / 2);
+		var bufferSize:Int = Std.int(data.length / 4);
 		if (bufferSize > 0)
 		{
 			if ((bufferSize != 0) && ((bufferSize & (bufferSize - 1)) == 0) && bufferSize >= 2048 && bufferSize <= 8192)
 			{
-				tempBuffer = new haxe.io.Float32Array(bufferSize * 2);
+				tempBuffer = new haxe.io.Float32Array(bufferSize);
 				return bufferSize;
 			}
 			else
@@ -229,15 +229,17 @@ class SampleDataEvent extends Event
 	{
 		data.position = 0;
 		tempBuffer = Float32Array.fromBytes(data);
-
 		leftChannel = event.outputBuffer.getChannelData(0);
 		rightChannel = event.outputBuffer.getChannelData(1);
 		var pos:Int = 0;
-		var bufferLength:Int = Std.int(data.length / 2);
+		var bufferLength:Int = Std.int(tempBuffer.length);
 		for (i in 0...bufferLength)
 		{
 			leftChannel[i] = tempBuffer[pos++];
 			rightChannel[i] = tempBuffer[pos++];
+			// TODO: FIXME: Why are we getting NaNs??
+			if (Math.isNaN(leftChannel[i])) leftChannel[i] = 0.0;
+			if (Math.isNaN(rightChannel[i])) rightChannel[i] = 0.0;
 		}
 	}
 	#end
