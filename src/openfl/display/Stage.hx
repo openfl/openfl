@@ -1260,7 +1260,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	{
 		if (__pendingMouseEvent)
 		{
-			__onMouse(MouseEvent.MOUSE_MOVE, __pendingMouseX, __pendingMouseY, 0, 0);
+			__onMouse(MouseEvent.MOUSE_MOVE, __pendingMouseX, __pendingMouseY, 0);
 			__pendingMouseEvent = false;
 		}
 	}
@@ -1927,7 +1927,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		}
 	}
 
-	@:noCompletion private function __onLimeMouseDown(window:Window, x:Float, y:Float, button:Int, clickCount:Int):Void
+	@:noCompletion private function __onLimeMouseDown(window:Window, x:Float, y:Float, button:Int):Void
 	{
 		if (this.window == null || this.window != window) return;
 
@@ -1940,7 +1940,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			default: MouseEvent.MOUSE_DOWN;
 		}
 
-		__onMouse(type, Std.int(x * window.scale), Std.int(y * window.scale), button, clickCount);
+		__onMouse(type, Std.int(x * window.scale), Std.int(y * window.scale), button);
 
 		if (!showDefaultContextMenu && button == 2)
 		{
@@ -1966,7 +1966,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		// if (this.window == null || this.window != window) return;
 	}
 
-	@:noCompletion private function __onLimeMouseUp(window:Window, x:Float, y:Float, button:Int, clickCount:Int):Void
+	@:noCompletion private function __onLimeMouseUp(window:Window, x:Float, y:Float, button:Int):Void
 	{
 		if (this.window == null || this.window != window) return;
 
@@ -1979,7 +1979,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			default: MouseEvent.MOUSE_UP;
 		}
 
-		__onMouse(type, Std.int(x * window.scale), Std.int(y * window.scale), button, clickCount);
+		__onMouse(type, Std.int(x * window.scale), Std.int(y * window.scale), button);
 
 		if (!showDefaultContextMenu && button == 2)
 		{
@@ -2452,7 +2452,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	}
 	#end
 
-	@:noCompletion private function __onMouse(type:String, x:Float, y:Float, button:Int, clickCount:Int):Void
+	@:noCompletion private function __onMouse(type:String, x:Float, y:Float, button:Int):Void
 	{
 		if (button > 2) return;
 
@@ -2545,9 +2545,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 						event.localX = __mouseX;
 						event.localY = __mouseY;
 						event.target = this;
-						event.clickCount = clickCount;
+						event.clickCount = window.clickCount;
 						#else
-						event = MouseEvent.__create(MouseEvent.RELEASE_OUTSIDE, 1, clickCount, __mouseX, __mouseY, new Point(__mouseX, __mouseY), this);
+						event = MouseEvent.__create(MouseEvent.RELEASE_OUTSIDE, 1, window.clickCount, __mouseX, __mouseY, new Point(__mouseX, __mouseY), this);
 						#end
 
 						__mouseDownLeft.dispatchEvent(event);
@@ -2591,9 +2591,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		event.localX = local.x;
 		event.localY = local.y;
 		event.target = target;
-		event.clickCount = clickCount;
+		event.clickCount = window.clickCount;
 		#else
-		event = MouseEvent.__create(type, button, clickCount, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), target);
+		event = MouseEvent.__create(type, button, window.clickCount, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), target);
 		#end
 
 		__dispatchStack(event, stack);
@@ -2613,9 +2613,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			event.localX = local.x;
 			event.localY = local.y;
 			event.target = target;
-			event.clickCount = clickCount
+			event.clickCount = window.clickCount
 			#else
-			event = MouseEvent.__create(clickType, button, clickCount, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), target);
+			event = MouseEvent.__create(clickType, button, window.clickCount, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), target);
 			#end
 
 			__dispatchStack(event, stack);
@@ -2638,9 +2638,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					event.localX = local.x;
 					event.localY = local.y;
 					event.target = target;
-					event.clickCount = clickCount;
+					event.clickCount = window.clickCount;
 					#else
-					event = MouseEvent.__create(MouseEvent.DOUBLE_CLICK, button, clickCount, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), target);
+					event = MouseEvent.__create(MouseEvent.DOUBLE_CLICK, button, window.clickCount, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), target);
 					#end
 
 					__dispatchStack(event, stack);
@@ -2701,9 +2701,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				event.localX = local.x;
 				event.localY = local.y;
 				event.target = __mouseOverTarget;
-				event.clickCount = clickCount;
+				event.clickCount = window.clickCount;
 				#else
-				event = MouseEvent.__create(MouseEvent.MOUSE_OUT, button, clickCount, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
+				event = MouseEvent.__create(MouseEvent.MOUSE_OUT, button, window.clickCount, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
 					cast __mouseOverTarget);
 				#end
 
@@ -2732,9 +2732,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				event.localX = local.x;
 				event.localY = local.y;
 				event.target = item;
-				event.clickCount = clickCount;
+				event.clickCount = window.clickCount;
 				#else
-				event = MouseEvent.__create(MouseEvent.ROLL_OUT, button, clickCount, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
+				event = MouseEvent.__create(MouseEvent.ROLL_OUT, button, window.clickCount, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
 					cast item);
 				#end
 				event.bubbles = false;
@@ -2767,9 +2767,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					mouseEvent.localY = local.y;
 					mouseEvent.target = item;
 					event = mouseEvent;
-					event.clickCount = clickCount;
+					event.clickCount = window.clickCount;
 					#else
-					event = MouseEvent.__create(MouseEvent.ROLL_OVER, button, clickCount, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
+					event = MouseEvent.__create(MouseEvent.ROLL_OVER, button, window.clickCount, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
 						cast item);
 					#end
 					event.bubbles = false;
@@ -2802,9 +2802,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				mouseEvent.localY = local.y;
 				mouseEvent.target = target;
 				event = mouseEvent;
-				event.clickCount = clickCount;
+				event.clickCount = window.clickCount;
 				#else
-				event = MouseEvent.__create(MouseEvent.MOUSE_OVER, button, clickCount, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), cast target);
+				event = MouseEvent.__create(MouseEvent.MOUSE_OVER, button, window.clickCount, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), cast target);
 				#end
 
 				__dispatchStack(event, stack);
