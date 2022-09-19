@@ -447,7 +447,18 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 			}
 			catch (e:Dynamic)
 			{
-				throw new IOError("Operation attempted on invalid socket.");
+				var throwError = false;
+				switch (e)
+				{
+					case Error.Blocked:
+					case Error.Custom(Error.Blocked):
+					default:
+						throwError = true;
+				}
+				if (throwError)
+				{
+					throw new IOError("Operation attempted on invalid socket.");
+				}
 			}
 		}
 	}
