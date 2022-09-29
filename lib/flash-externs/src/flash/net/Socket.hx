@@ -25,7 +25,7 @@ extern class Socket extends EventDispatcher implements IDataInput implements IDa
 	@:require(flash10) public var timeout:UInt;
 	public function new(host:String = null, port:Int = 0);
 	public function close():Void;
-	public function connect(host:String = null, port:Int = 0):Void;
+	public function connect(host:String, port:Int):Void;
 	public function flush():Void;
 	public function readBoolean():Bool;
 	public function readByte():Int;
