@@ -2344,6 +2344,11 @@ class TextField extends InteractiveObject
 		{
 			var i = lineIndex, tempHeight = 0.0;
 
+			if (i >= __textEngine.lineHeights.length)
+			{
+				i = __textEngine.lineHeights.length - 1;
+			}
+
 			while (i >= 0)
 			{
 				tempHeight += __textEngine.lineHeights[i];
