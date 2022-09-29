@@ -354,6 +354,7 @@ class Assets
 			}
 			else
 			{
+				Sprite.__constructor = null;
 				instance.__bind(library, className);
 			}
 			#else
