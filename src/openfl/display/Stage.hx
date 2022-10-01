@@ -2613,7 +2613,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			event.localX = local.x;
 			event.localY = local.y;
 			event.target = target;
-			event.clickCount = window.clickCount
+			event.clickCount = window.clickCount;
 			#else
 			event = MouseEvent.__create(clickType, button, window.clickCount, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), target);
 			#end
