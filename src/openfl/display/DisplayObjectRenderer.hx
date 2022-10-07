@@ -337,8 +337,8 @@ class DisplayObjectRenderer extends EventDispatcher
 				{
 					if (current.scrollRect != null)
 					{
-						// TODO: do we need to render if scroll rects haven't changed?
-						needRender = true;
+						// TODO: do we need to update transform if scroll rects haven't changed?
+						updateTransform = true;
 						break;
 					}
 					current = current.parent;
