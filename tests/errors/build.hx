@@ -11,6 +11,7 @@ class Build extends Script
 		hxml.cp("src");
 		hxml.cp("../../src");
 		hxml.lib("utest");
+		hxml.lib("lime");
 		hxml.define("openfl-unit-testing");
 
 		var target = defines.get("target");
@@ -18,7 +19,7 @@ class Build extends Script
 		{
 			target = "neko";
 		}
-		switch(target)
+		switch (target)
 		{
 			case "hl":
 				System.removeDirectory("bin/hl");
@@ -36,7 +37,7 @@ class Build extends Script
 
 		hxml.build();
 
-		switch(target)
+		switch (target)
 		{
 			case "hl":
 				System.copyFile(NDLL.getLibraryPath(new NDLL("lime", new Haxelib("lime")), getPlatformDirectoryName()), "bin/hl/lime.hdll");
