@@ -1,9 +1,14 @@
 package openfl.display;
 
 import openfl.utils._internal.Lib;
+import openfl.events.Event;
 #if lime
 import lime.app.Application as LimeApplication;
 import lime.ui.WindowAttributes;
+#end
+#if (!flash && sys)
+import openfl.desktop.NativeApplication;
+import openfl.events.InvokeEvent;
 #end
 
 /**
@@ -91,5 +96,27 @@ class Application #if lime extends LimeApplication #end
 
 		return window;
 	}
+	#end
+
+	#if (lime >= "8.1.0")
+	#if (!flash && sys)
+	@:noCompletion override private function __checkForAllWindowsClosed():Void
+	{
+		if (__windows.length > 0 || !NativeApplication.nativeApplication.autoExit)
+		{
+			return;
+		}
+		var exitingEvent = new Event(Event.EXITING, false, true);
+		var result = NativeApplication.nativeApplication.dispatchEvent(exitingEvent);
+		if (!result)
+		{
+			return;
+		}
+		super.__checkForAllWindowsClosed();
+	}
+	#elseif air
+	// let Adobe AIR handle it natively, instead of Lime's default behavior
+	@:noCompletion override private function __checkForAllWindowsClosed():Void {}
+	#end
 	#end
 }

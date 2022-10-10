@@ -55,6 +55,10 @@ import js.Browser;
 typedef Element = Dynamic;
 #end
 
+#if sys
+import openfl.desktop.NativeApplication;
+#end
+
 /**
 	The Stage class represents the main drawing area.
 
@@ -1555,7 +1559,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					targetPoint.y = __mouseY;
 
 					#if openfl_pool_events
-
 					var clickEvent = MouseEvent.__pool.get();
 					clickEvent.type = MouseEvent.CLICK;
 					clickEvent.stageX = __mouseX;
@@ -2325,6 +2328,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		event = new Event(Event.ACTIVATE);
 		#end
 
+		#if sys
+		NativeApplication.nativeApplication.dispatchEvent(event);
+		#end
 		__broadcastEvent(event);
 
 		#if openfl_pool_events
@@ -2351,6 +2357,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		event = new Event(Event.DEACTIVATE);
 		#end
 
+		#if sys
+		NativeApplication.nativeApplication.dispatchEvent(event);
+		#end
 		__broadcastEvent(event);
 
 		#if openfl_pool_events

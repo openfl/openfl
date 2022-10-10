@@ -2,7 +2,6 @@ package openfl.events;
 
 #if !flash
 import openfl.utils.Object;
-
 #if openfl_pool_events
 import openfl.utils.ObjectPool;
 #end
@@ -315,6 +314,21 @@ class Event
 		| `target` | Any DisplayObject instance with a listener registered for the `enterFrame` event. |
 	**/
 	public static inline var EXIT_FRAME:EventType<Event> = "exitFrame";
+
+	/**
+		The `Event.EXITING` constant defines the value of the `type` property of
+		an `exiting` event object.
+
+		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `true`; canceling this event object stops the exit operation. |
+		| `currentTarget` | The NativeApplication object. |
+		| `target` | The NativeApplication object. |
+	**/
+	public static inline var EXITING:EventType<Event> = "exiting";
 
 	/**
 		The `Event.FRAME_CONSTRUCTED` constant defines the value of the `type`
