@@ -96,6 +96,26 @@ class Application #if lime extends LimeApplication #end
 
 		return window;
 	}
+
+	@:noCompletion override public function exec():Int
+	{
+		#if (!flash && sys)
+		// wait for the first update to dispatch invoke event
+		// to ensure that the document class constructor has completed
+		onUpdate.add(function(delta:Int):Void
+		{
+			if (NativeApplication.nativeApplication.hasEventListener(InvokeEvent.INVOKE))
+			{
+				var args = Sys.args();
+				var cwd = new openfl.filesystem.File(Sys.getCwd());
+				var invokeEvent = new openfl.events.InvokeEvent(InvokeEvent.INVOKE, false, false, cwd, args);
+				NativeApplication.nativeApplication.dispatchEvent(invokeEvent);
+			}
+		}, true);
+		#end
+
+		return super.exec();
+	}
 	#end
 
 	#if (lime >= "8.1.0")
