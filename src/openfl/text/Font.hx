@@ -138,6 +138,8 @@ class Font #if lime extends LimeFont #end
 	**/
 	public static function fromFile(path:String):Font
 	{
+		if (path == null) return null;
+
 		var font = new Font();
 		#if lime
 		font.__fromFile(path);
