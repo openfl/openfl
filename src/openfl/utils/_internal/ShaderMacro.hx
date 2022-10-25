@@ -4,6 +4,7 @@ package openfl.utils._internal;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 import haxe.macro.Type;
+import sys.io.File;
 
 using haxe.macro.ExprTools;
 using haxe.macro.Tools;
@@ -79,6 +80,10 @@ class ShaderMacro
 							value = __processValue(meta, version, true);
 							code.push(macro __assembler.vertexSource = $v{value});
 
+						case ":glVertexSourceFile", "glVertexSourceFile":
+							value = __getFileContent(__processValue(meta, version, true));
+							code.push(macro __assembler.vertexSource = $v{value});
+
 						case ":glFragmentHeader", "glFragmentHeader":
 							value = __processValue(meta, version, false);
 							code.push(macro __assembler.addFragmentHeader($v{value}));
@@ -89,6 +94,10 @@ class ShaderMacro
 
 						case ":glFragmentSource", "glFragmentSource":
 							value = __processValue(meta, version, false);
+							code.push(macro __assembler.fragmentSource = $v{value});
+
+						case ":glFragmentSourceFile", "glFragmentSourceFile":
+							value = __getFileContent(__processValue(meta, version, false));
 							code.push(macro __assembler.fragmentSource = $v{value});
 
 						case ":glExtension", "glExtension":
@@ -199,6 +208,20 @@ class ShaderMacro
 		}
 
 		return defaultValue;
+	}
+
+	private static function __getFileContent(path:String):String
+	{
+		var source = null;
+		try
+		{
+			source = File.getContent(path);
+		}
+		catch (e:Dynamic)
+		{
+			Context.fatalError('Cannot load shader from file: ${e}', Context.currentPos());
+		}
+		return source;
 	}
 
 	private static function __processFields(source:String, storageType:String, fields:Array<Field>, pos:Position):Void
