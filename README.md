@@ -148,10 +148,6 @@ Tell haxelib where your development copy of OpenFL is installed:
 
     haxelib dev openfl openfl
 
-Rebuild the SWF library tools:
-
-    openfl rebuild tools
-
 To return to release builds:
 
     haxelib dev openfl
