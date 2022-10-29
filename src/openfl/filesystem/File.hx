@@ -13,8 +13,9 @@ import openfl.net.FileFilter;
 import openfl.events.FileListEvent;
 import openfl.net.FileReference;
 import sys.FileSystem;
+import sys.io.Process;
 
-typedef HaxeFile = sys.io.File;
+@:noCompletion private typedef HaxeFile = sys.io.File;
 
 /**
 	A File object represents a path to a file or directory. This can be an existing file
@@ -1671,6 +1672,21 @@ class File extends FileReference
 		return path + ".tmp";
 	}
 
+	@:noCompletion private function __winGetHiddenAttr():Bool
+	{
+		// TODO don't use the command line for this.... instead we should add support in Lime to use
+		// the win api.
+		var process:Process = new Process('attrib "$nativePath"');
+		var r:String = process.stdout.readLine();
+
+		process.close();
+
+		var s:String = r.split(nativePath)[0];
+		var flag:Bool = s.indexOf(" H ") > -1;
+
+		return flag;
+	}
+
 	@:noCompletion private function __updateFileStats(?path:String):Void
 	{
 		if (path == null)
@@ -1794,8 +1810,11 @@ class File extends FileReference
 
 	@:noCompletion private function get_isHidden():Bool
 	{
-		return false;
-		// TODO: operating system dependent?
+		#if windows
+		return __winGetHiddenAttr();
+		#else
+		return name.charAt(0) == ".";
+		#end
 	}
 
 	@:noCompletion private function get_isDirectory():Bool

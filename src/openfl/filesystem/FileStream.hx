@@ -38,6 +38,8 @@ import format.amf3.Writer as AMF3Writer;
 import format.amf3.Tools as AMF3Tools;
 #end
 
+@:noCompletion private typedef HaxeFile = sys.io.File;
+
 /**
 	A FileStream object is used to read and write files. Files can be opened synchronously 
 	by calling the open() method or asynchronously by calling the openAsync() method.
@@ -814,13 +816,13 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		var isAsync:Bool = __isAsync;
 
-		var fileBytes:ByteArray = ByteArray.fromBytes(File.HaxeFile.getBytes(__file.nativePath));
+		var fileBytes:ByteArray = ByteArray.fromBytes(HaxeFile.getBytes(__file.nativePath));
 
 		var truncatedBytes:ByteArray = new ByteArray(position);
 		truncatedBytes.writeBytes(fileBytes, 0, truncatedBytes.length);
 		close();
 
-		File.HaxeFile.saveBytes(__file.nativePath, truncatedBytes);
+		HaxeFile.saveBytes(__file.nativePath, truncatedBytes);
 		var pos:Int = truncatedBytes.length;
 		fileBytes = null;
 
@@ -1274,7 +1276,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 			case READ:
 				try
 				{
-					__input = File.HaxeFile.read(__file.nativePath, true);
+					__input = HaxeFile.read(__file.nativePath, true);
 					__input.seek(0, FileSeek.SeekBegin);
 					__isWrite = false;
 				}
@@ -1287,7 +1289,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 				{
 					var dirPath:String = Path.directory(__file.nativePath);
 					if (!FileSystem.exists(dirPath)) FileSystem.createDirectory(dirPath);
-					__output = File.HaxeFile.write(__file.nativePath, true);
+					__output = HaxeFile.write(__file.nativePath, true);
 					__isWrite = true;
 				}
 				catch (e:Dynamic)
@@ -1297,7 +1299,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 			case APPEND:
 				try
 				{
-					__output = File.HaxeFile.append(__file.nativePath, true);
+					__output = HaxeFile.append(__file.nativePath, true);
 					__isWrite = true;
 				}
 				catch (d:Dynamic)
@@ -1307,7 +1309,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 			case UPDATE:
 				try
 				{
-					__output = File.HaxeFile.update(__file.nativePath, true);
+					__output = HaxeFile.update(__file.nativePath, true);
 					__output.seek(0, sys.io.FileSeek.SeekBegin);
 					__isWrite = true;
 				}
