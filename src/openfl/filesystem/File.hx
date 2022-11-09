@@ -1665,19 +1665,19 @@ class File extends FileReference
 			}
 		}
 
-		path = Path.join([path, "ofl" + Math.round(0xFFFFFF * Math.random())]);
+		var tempPath = "";
 
-		while (FileSystem.exists(path))
+		while (FileSystem.exists(tempPath = Path.join([path, "ofl" + Math.round(0xFFFFFF * Math.random())])))
 		{
-			path = Path.join([path, "ofl" + Math.round(0xFFFFFF * Math.random())]);
+			//repeat
 		}
 
 		if (dir)
 		{
-			return Path.addTrailingSlash(path);
+			return Path.addTrailingSlash(tempPath);
 		}
 
-		return path + ".tmp";
+		return tempPath + ".tmp";
 	}
 
 	@:noCompletion private function __winGetHiddenAttr():Bool
