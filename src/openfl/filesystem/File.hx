@@ -332,8 +332,20 @@ class File extends FileReference
 	// TODO
 	// public var preventBackup:Bool;
 	// TODO
-	// public static var seperator:String;
-	// TODO: patform specific
+
+	/**
+		The host operating system's path component separator character.
+
+		On Mac OS and Linux, this is the forward slash (`/`) character. On
+		Windows, it is the backslash (`\`) character.
+
+		Note: When using the backslash character in a String literal, remember
+		to type the character twice (as in `"directory\\file.ext"`). Each pair
+		of backslashes in a String literal represent a single backslash in the
+		String.
+	**/
+	public static var separator(get, never):String;
+
 	// public var spaceAvailable:Float;
 	// TODO
 	// public static var systemCharset:String;
@@ -1762,6 +1774,15 @@ class File extends FileReference
 			__updateFileStats();
 		}
 		return name;
+	}
+
+	@:noCompletion private static function get_separator():String
+	{
+		#if windows
+		return "\\";
+		#else
+		return "/";
+		#end
 	}
 
 	@:noCompletion override private function get_size():Int
