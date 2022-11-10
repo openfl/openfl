@@ -155,6 +155,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 	@:noCompletion private var __isOpen:Bool;
 	@:noCompletion private var __isWrite:Bool;
 	@:noCompletion private var __isAsync:Bool;
+	@:noCompletion private var __pendingClose:Bool;
 	// TODO:
 	// Find another way to handle the situation where writeBytes has zero length during WRITE async mode.
 	@:noCompletion private var __isZeroLength:Bool = false;
@@ -207,13 +208,19 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 	**/
 	public function close():Void
 	{
-		if (!__isOpen)
+		if (!__isOpen || __pendingClose)
 		{
+			return;
+		}
+		if (__isWrite && __isAsync && isWriting)
+		{
+			__pendingClose = true;
 			return;
 		}
 
 		__isOpen = false;
 		__isAsync = false;
+		__pendingClose = false;
 		__buffer = null;
 
 		if (__isWrite)
@@ -230,14 +237,16 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		position = 0;
 		__positionDirty = false;
 
-		if (__fileStreamWorker != null)
+		if (__fileStreamWorker != null && !__fileStreamWorker.completed)
 		{
 			__fileStreamWorker.cancel();
 			__fileStreamWorker.doWork.cancel();
 			__fileStreamWorker.onProgress.cancel();
+			__fileStreamWorker.onComplete.cancel();
 			__fileStreamWorker = null;
-
 			dispatchEvent(new Event(Event.CLOSE));
+			// if the worker has completed, wait to dispatch Event.CLOSE until
+			// after Event.COMPLETE is dispatched
 		}
 	}
 
@@ -313,6 +322,18 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 			dispatchEvent(e);
 		});
 
+		__fileStreamWorker.onComplete.add(function(e:Event)
+		{
+			__fileStreamWorker = null;
+			dispatchEvent(e);
+			if (!__isOpen)
+			{
+				// if close() was called after the worker's sendComplete()
+				// but before onComplete, we still need to dispatch Event.CLOSE
+				dispatchEvent(new Event(Event.CLOSE));
+			}
+		});
+
 		open(file, fileMode);
 
 		if (fileMode == READ)
@@ -340,16 +361,14 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 					}
 					catch (e:Dynamic)
 					{
-						__fileStreamWorker.sendProgress(new IOErrorEvent(IOErrorEvent.IO_ERROR, false, false, "Index is out of bounds."));
+						__fileStreamWorker.sendComplete(new IOErrorEvent(IOErrorEvent.IO_ERROR, false, false, "Index is out of bounds."));
+						return;
 					}
 
 					__fileStreamWorker.sendProgress(new ProgressEvent(ProgressEvent.PROGRESS, false, false, bytesLoaded, __file.size));
 				}
 
-				__fileStreamWorker.sendProgress(new Event(Event.COMPLETE));
-
-				__fileStreamWorker.cancel();
-				__fileStreamWorker = null;
+				__fileStreamWorker.sendComplete(new Event(Event.COMPLETE));
 			});
 		}
 		else
@@ -383,11 +402,17 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 							}
 							catch (e:Dynamic)
 							{
-								__fileStreamWorker.sendProgress(new IOErrorEvent(IOErrorEvent.IO_ERROR, false, false, "Index is out of bounds."));
+								__fileStreamWorker.sendComplete(new IOErrorEvent(IOErrorEvent.IO_ERROR, false, false, "Index is out of bounds."));
+								break;
 							}
 						}
 
 						isWriting = false;
+					}
+					if (__pendingClose)
+					{
+						__pendingClose = false;
+						close();
 					}
 				}
 			});
@@ -1272,6 +1297,16 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 	{
 		if (__isOpen)
 		{
+			if (__fileStreamWorker != null)
+			{
+				// when opening a new file, if an existing file is already open,
+				// we should not dispatch Event.CLOSE
+				__fileStreamWorker.cancel();
+				__fileStreamWorker.doWork.cancel();
+				__fileStreamWorker.onProgress.cancel();
+				__fileStreamWorker.onComplete.cancel();
+				__fileStreamWorker = null;
+			}
 			close();
 		}
 
