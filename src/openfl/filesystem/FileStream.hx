@@ -207,6 +207,11 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 	**/
 	public function close():Void
 	{
+		if (!__isOpen)
+		{
+			return;
+		}
+
 		__isOpen = false;
 		__isAsync = false;
 		__buffer = null;
