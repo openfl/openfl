@@ -29,6 +29,7 @@ import sys.FileSystem;
 import sys.io.FileInput;
 import sys.io.FileOutput;
 import sys.io.FileSeek;
+import sys.thread.Mutex;
 #if format
 import format.amf.Reader as AMFReader;
 import format.amf.Writer as AMFWriter;
@@ -161,6 +162,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 	@:noCompletion private var __isZeroLength:Bool = false;
 	@:noCompletion private var __positionDirty:Bool = false;
 	@:noCompletion private var __buffer:ByteArray;
+	@:noCompletion private var __fileStreamMutex:Mutex;
 	@:noCompletion private var __pageSize:Int = 4096000;
 
 	/**
@@ -171,6 +173,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		super();
 		__isOpen = false;
 		isWriting = false;
+		__pendingClose = false;
 
 		objectEncoding = HXSF;
 		position = 0;
@@ -212,10 +215,17 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		{
 			return;
 		}
-		if (__isWrite && __isAsync && isWriting)
+
+		var async = __isAsync;
+		if (async)
 		{
-			__pendingClose = true;
-			return;
+			__fileStreamMutex.acquire();
+			if (__fileStreamWorker != null && !__fileStreamWorker.canceled)
+			{
+				__pendingClose = true;
+				__fileStreamMutex.release();
+				return;
+			}
 		}
 
 		__isOpen = false;
@@ -234,19 +244,18 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 			__input = null;
 		}
 
+		if (async)
+		{
+			__fileStreamMutex.release();
+		}
+
 		position = 0;
 		__positionDirty = false;
 
-		if (__fileStreamWorker != null && !__fileStreamWorker.completed)
+		if (__fileStreamWorker != null)
 		{
-			__fileStreamWorker.cancel();
-			__fileStreamWorker.doWork.cancel();
-			__fileStreamWorker.onProgress.cancel();
-			__fileStreamWorker.onComplete.cancel();
-			__fileStreamWorker = null;
+			__disposeFileStreamWorker();
 			dispatchEvent(new Event(Event.CLOSE));
-			// if the worker has completed, wait to dispatch Event.CLOSE until
-			// after Event.COMPLETE is dispatched
 		}
 	}
 
@@ -279,6 +288,19 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		__fileMode = fileMode;
 
 		__openFile();
+	}
+
+	@:noCompletion private function __disposeFileStreamWorker():Void
+	{
+		if (__fileStreamWorker == null)
+		{
+			return;
+		}
+		__fileStreamWorker.cancel();
+		__fileStreamWorker.doWork.cancel();
+		__fileStreamWorker.onProgress.cancel();
+		__fileStreamWorker.onComplete.cancel();
+		__fileStreamWorker = null;
 	}
 
 	/**
@@ -315,6 +337,8 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 	{
 		__isAsync = true;
 
+		__fileStreamMutex = new Mutex();
+
 		__fileStreamWorker = new BackgroundWorker();
 
 		__fileStreamWorker.onProgress.add(function(e:Event)
@@ -324,13 +348,17 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		__fileStreamWorker.onComplete.add(function(e:Event)
 		{
-			__fileStreamWorker = null;
-			dispatchEvent(e);
-			if (!__isOpen)
+			// close() checks the canceled property to determine if it should
+			// actually close or wait for the worker to finish
+			__fileStreamWorker.cancel();
+			if (e != null)
 			{
-				// if close() was called after the worker's sendComplete()
-				// but before onComplete, we still need to dispatch Event.CLOSE
-				dispatchEvent(new Event(Event.CLOSE));
+				dispatchEvent(e);
+			}
+			if (__pendingClose)
+			{
+				__pendingClose = false;
+				close();
 			}
 		});
 
@@ -345,27 +373,44 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 				var tempPos:Int = 0;
 				var bytesLoaded:Int = 0;
 
-				while ((inputBytesAvailable = __getStreamBytesAvailable()) > 0 && __buffer.bytesAvailable < readAhead)
+				while ((inputBytesAvailable = __getStreamBytesAvailable()) > 0)
 				{
-					try
+					if (__pendingClose)
 					{
-						var maxBytes:Int = Std.int(Math.min(__pageSize, inputBytesAvailable));
-
-						var chunkBytes:Bytes = Bytes.alloc(maxBytes);
-						tempPos = __buffer.position;
-						__buffer.position = __input.tell();
-						__input.readBytes(chunkBytes, 0, maxBytes);
-						__buffer.writeBytes(ByteArray.fromBytes(chunkBytes), 0, chunkBytes.length);
-						__buffer.position = tempPos;
-						bytesLoaded += maxBytes;
-					}
-					catch (e:Dynamic)
-					{
-						__fileStreamWorker.sendComplete(new IOErrorEvent(IOErrorEvent.IO_ERROR, false, false, "Index is out of bounds."));
+						// close() was called
+						__fileStreamWorker.sendComplete();
 						return;
 					}
 
-					__fileStreamWorker.sendProgress(new ProgressEvent(ProgressEvent.PROGRESS, false, false, bytesLoaded, __file.size));
+					var oldBytesLoaded = bytesLoaded;
+					__fileStreamMutex.acquire();
+					if (__buffer.bytesAvailable < readAhead)
+					{
+						try
+						{
+							var maxBytes:Int = Std.int(Math.min(__pageSize, inputBytesAvailable));
+
+							var chunkBytes:Bytes = Bytes.alloc(maxBytes);
+							tempPos = __buffer.position;
+							__buffer.position = __input.tell();
+							__input.readBytes(chunkBytes, 0, maxBytes);
+							__buffer.writeBytes(ByteArray.fromBytes(chunkBytes), 0, chunkBytes.length);
+							__buffer.position = tempPos;
+							bytesLoaded += maxBytes;
+						}
+						catch (e:Dynamic)
+						{
+							__fileStreamMutex.release();
+							__fileStreamWorker.sendComplete(new IOErrorEvent(IOErrorEvent.IO_ERROR, false, false, "Index is out of bounds."));
+							return;
+						}
+					}
+					__fileStreamMutex.release();
+
+					if (oldBytesLoaded != bytesLoaded)
+					{
+						__fileStreamWorker.sendProgress(new ProgressEvent(ProgressEvent.PROGRESS, false, false, bytesLoaded, __file.size));
+					}
 				}
 
 				__fileStreamWorker.sendComplete(new Event(Event.COMPLETE));
@@ -383,6 +428,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 				{
 					Sys.sleep(.001);
 
+					__fileStreamMutex.acquire();
 					while (isWriting)
 					{
 						while (__buffer.length > bytesLoaded || __isZeroLength)
@@ -409,10 +455,12 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 						isWriting = false;
 					}
+					__fileStreamMutex.release();
 					if (__pendingClose)
 					{
-						__pendingClose = false;
-						close();
+						// close() was called
+						__fileStreamWorker.sendComplete();
+						return;
 					}
 				}
 			});
@@ -440,7 +488,10 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		__positionDirty = true;
 		if (__isAsync)
 		{
-			return __buffer.readBoolean();
+			__fileStreamMutex.acquire();
+			var result = __buffer.readBoolean();
+			__fileStreamMutex.release();
+			return result;
 		}
 		return __input.readByte() == 1;
 	}
@@ -464,7 +515,10 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		if (__isAsync)
 		{
-			return __buffer.readByte();
+			__fileStreamMutex.acquire();
+			var result = __buffer.readByte();
+			__fileStreamMutex.release();
+			return result;
 		}
 
 		return __input.readByte();
@@ -492,7 +546,9 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		if (__isAsync)
 		{
+			__fileStreamMutex.acquire();
 			__buffer.readBytes(bytes, offset, length);
+			__fileStreamMutex.release();
 			__positionDirty = true;
 			return;
 		}
@@ -533,7 +589,10 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		if (__isAsync)
 		{
-			return __buffer.readDouble();
+			__fileStreamMutex.acquire();
+			var result = __buffer.readDouble();
+			__fileStreamMutex.release();
+			return result;
 		}
 
 		return __input.readDouble();
@@ -558,7 +617,10 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		if (__isAsync)
 		{
-			return __buffer.readFloat();
+			__fileStreamMutex.acquire();
+			var result = __buffer.readFloat();
+			__fileStreamMutex.release();
+			return result;
 		}
 
 		return __input.readFloat();
@@ -583,7 +645,10 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		if (__isAsync)
 		{
-			return __buffer.readInt();
+			__fileStreamMutex.acquire();
+			var result = __buffer.readInt();
+			__fileStreamMutex.release();
+			return result;
 		}
 
 		return __input.readInt32();
@@ -612,7 +677,10 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		if (__isAsync)
 		{
-			return __buffer.readMultiByte(length, charSet);
+			__fileStreamMutex.acquire();
+			var result = __buffer.readMultiByte(length, charSet);
+			__fileStreamMutex.release();
+			return result;
 		}
 
 		return readUTFBytes(length);
@@ -637,7 +705,10 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		if (__isAsync)
 		{
 			__positionDirty = true;
-			return __buffer.readObject();
+			__fileStreamMutex.acquire();
+			var result = __buffer.readObject();
+			__fileStreamMutex.release();
+			return result;
 		}
 
 		switch (objectEncoding)
@@ -699,7 +770,10 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		if (__isAsync)
 		{
-			return __buffer.readShort();
+			__fileStreamMutex.acquire();
+			var result = __buffer.readShort();
+			__fileStreamMutex.release();
+			return result;
 		}
 
 		return __input.readInt16();
@@ -724,7 +798,10 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		if (__isAsync)
 		{
-			return __buffer.readUnsignedByte();
+			__fileStreamMutex.acquire();
+			var result = __buffer.readUnsignedByte();
+			__fileStreamMutex.release();
+			return result;
 		}
 
 		return ByteArray.fromBytes(__input.read(1)).readUnsignedByte();
@@ -749,7 +826,10 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		if (__isAsync)
 		{
-			return __buffer.readUnsignedInt();
+			__fileStreamMutex.acquire();
+			var result = __buffer.readUnsignedInt();
+			__fileStreamMutex.release();
+			return result;
 		}
 
 		return __input.readInt32();
@@ -773,7 +853,10 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		if (__isAsync)
 		{
-			return __buffer.readUnsignedShort();
+			__fileStreamMutex.acquire();
+			var result = __buffer.readUnsignedShort();
+			__fileStreamMutex.release();
+			return result;
 		}
 
 		return __input.readUInt16();
@@ -800,7 +883,10 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		if (__isAsync)
 		{
-			return __buffer.readUTF();
+			__fileStreamMutex.acquire();
+			var result = __buffer.readUTF();
+			__fileStreamMutex.release();
+			return result;
 		}
 
 		var length:Int = __input.readUInt16();
@@ -826,7 +912,10 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		if (__isAsync)
 		{
-			return __buffer.readUTFBytes(length);
+			__fileStreamMutex.acquire();
+			var result = __buffer.readUTFBytes(length);
+			__fileStreamMutex.release();
+			return result;
 		}
 
 		return __input.readString(length);
@@ -889,8 +978,10 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		if (__isAsync)
 		{
+			__fileStreamMutex.acquire();
 			__buffer.writeBoolean(value);
 			isWriting = true;
+			__fileStreamMutex.release();
 
 			return;
 		}
@@ -917,8 +1008,10 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		if (__isAsync)
 		{
+			__fileStreamMutex.acquire();
 			__buffer.writeByte(value);
 			isWriting = true;
+			__fileStreamMutex.release();
 
 			return;
 		}
@@ -954,10 +1047,12 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		if (__isAsync)
 		{
+			__fileStreamMutex.acquire();
 			__buffer.writeBytes(bytes, offset, length);
 
 			if (length == 0) __isZeroLength = true;
 			isWriting = true;
+			__fileStreamMutex.release();
 
 			return;
 		}
@@ -990,8 +1085,10 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		if (__isAsync)
 		{
+			__fileStreamMutex.acquire();
 			__buffer.writeDouble(value);
 			isWriting = true;
+			__fileStreamMutex.release();
 
 			return;
 		}
@@ -1018,8 +1115,10 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		if (__isAsync)
 		{
+			__fileStreamMutex.acquire();
 			__buffer.writeFloat(value);
 			isWriting = true;
+			__fileStreamMutex.release();
 
 			return;
 		}
@@ -1046,8 +1145,10 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		if (__isAsync)
 		{
+			__fileStreamMutex.acquire();
 			__buffer.writeInt(value);
 			isWriting = true;
+			__fileStreamMutex.release();
 
 			return;
 		}
@@ -1077,8 +1178,10 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		if (__isAsync)
 		{
+			__fileStreamMutex.acquire();
 			__buffer.writeMultiByte(value, charSet);
 			isWriting = true;
+			__fileStreamMutex.release();
 
 			return;
 		}
@@ -1106,8 +1209,10 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		if (__isAsync)
 		{
+			__fileStreamMutex.acquire();
 			__buffer.writeObject(object);
 			isWriting = true;
+			__fileStreamMutex.release();
 
 			return;
 		}
@@ -1134,8 +1239,10 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		if (__isAsync)
 		{
+			__fileStreamMutex.acquire();
 			__buffer.writeShort(value);
 			isWriting = true;
+			__fileStreamMutex.release();
 
 			return;
 		}
@@ -1162,8 +1269,10 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		if (__isAsync)
 		{
+			__fileStreamMutex.acquire();
 			__buffer.writeUnsignedInt(value);
 			isWriting = true;
+			__fileStreamMutex.release();
 
 			return;
 		}
@@ -1192,8 +1301,10 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		if (__isAsync)
 		{
+			__fileStreamMutex.acquire();
 			__buffer.writeUTF(value);
 			isWriting = true;
+			__fileStreamMutex.release();
 
 			return;
 		}
@@ -1222,8 +1333,10 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		if (__isAsync)
 		{
+			__fileStreamMutex.acquire();
 			__buffer.writeUTFBytes(value);
 			isWriting = true;
+			__fileStreamMutex.release();
 
 			return;
 		}
@@ -1269,12 +1382,18 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 			if (__isAsync)
 			{
+				__fileStreamMutex.acquire();
 				pos = __output.tell();
 			}
 
 			__output.seek(0, FileSeek.SeekEnd);
 			var length = __output.tell();
 			__output.seek(pos, FileSeek.SeekBegin);
+
+			if (__isAsync)
+			{
+				__fileStreamMutex.release();
+			}
 
 			return length - pos;
 		}
@@ -1283,12 +1402,18 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		if (__isAsync)
 		{
+			__fileStreamMutex.acquire();
 			pos = __input.tell();
 		}
 
 		__input.seek(0, FileSeek.SeekEnd);
 		var length = __input.tell();
 		__input.seek(pos, FileSeek.SeekBegin);
+
+		if (__isAsync)
+		{
+			__fileStreamMutex.release();
+		}
 
 		return length - pos;
 	}
@@ -1300,12 +1425,9 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 			if (__fileStreamWorker != null)
 			{
 				// when opening a new file, if an existing file is already open,
-				// we should not dispatch Event.CLOSE
-				__fileStreamWorker.cancel();
-				__fileStreamWorker.doWork.cancel();
-				__fileStreamWorker.onProgress.cancel();
-				__fileStreamWorker.onComplete.cancel();
-				__fileStreamWorker = null;
+				// we should not dispatch Event.CLOSE, so dispose the worker
+				// right away
+				__disposeFileStreamWorker();
 			}
 			close();
 		}
@@ -1429,14 +1551,24 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 	@:noCompletion private function get_bytesAvailable():Int
 	{
-		if (!__isAsync && __isOpen)
+		if (__isOpen)
 		{
-			return __getStreamBytesAvailable();
-		}
+			if (!__isAsync)
+			{
+				return __getStreamBytesAvailable();
+			}
 
-		if (__fileMode == READ)
-		{
-			return __buffer.bytesAvailable;
+			if (__fileMode == READ)
+			{
+				__fileStreamMutex.acquire();
+				var result = 0;
+				if (__buffer != null)
+				{
+					result = __buffer.bytesAvailable;
+				}
+				__fileStreamMutex.release();
+				return result;
+			}
 		}
 
 		return 0;
@@ -1458,7 +1590,10 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 			}
 			if (__fileMode == READ)
 			{
-				return position = __buffer.position;
+				__fileStreamMutex.acquire();
+				position = __buffer.position;
+				__fileStreamMutex.release();
+				return position;
 			}
 		}
 		return position;
@@ -1481,7 +1616,9 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 			}
 			else
 			{
+				__fileStreamMutex.acquire();
 				__buffer.position = value;
+				__fileStreamMutex.release();
 			}
 		}
 
