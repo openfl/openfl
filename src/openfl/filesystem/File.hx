@@ -269,8 +269,16 @@ class File extends FileReference
 	// TODO
 	// public var isSymbolicLink:Bool;
 	// TODO
-	// public static var lineEnding:String;
-	// TODO: platform specific
+
+	/**
+		The line-ending character sequence used by the host operating system.
+
+		On Mac OS and Linux, this is the line-feed character (character code
+		`0x0A` hexadecimal). On Windows, this is the carriage return character
+		(character code `0x0D` hexadecimal) followed by the line-feed character
+		(character code `0x0A` hexadecimal).
+	**/
+	public static var lineEnding(get, never):String;
 
 	/**
 		The full path in the host operating system representation. On Mac OS and Linux, the forward
@@ -1756,6 +1764,15 @@ class File extends FileReference
 			__updateFileStats();
 		}
 		return creationDate;
+	}
+
+	@:noCompletion private static function get_lineEnding():String
+	{
+		#if windows
+		return "\r\n";
+		#else
+		return "\n";
+		#end
 	}
 
 	@:noCompletion override private function get_modificationDate():Date
