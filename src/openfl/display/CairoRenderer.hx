@@ -193,7 +193,7 @@ class CairoRenderer extends DisplayObjectRenderer
 			case BITMAP:
 				CairoBitmap.renderDrawable(cast object, this);
 			case SHAPE:
-				CairoShape.renderDrawable(cast object, this);
+				CairoDisplayObject.renderDrawable(cast object, this);
 			case SIMPLE_BUTTON:
 				CairoSimpleButton.renderDrawable(cast object, this);
 			case TEXT_FIELD:

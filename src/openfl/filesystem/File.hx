@@ -1643,20 +1643,28 @@ class File extends FileReference
 
 	@:noCompletion private function __getFilterTypes(typeFilter:Array<FileFilter>):String
 	{
-		var filter:String = null;
-
+		var filterString:String = null;
+		var filters = [];
+		
 		if (typeFilter != null)
 		{
-			var filters = [];
+			
 
-			for (type in typeFilter)
+			for (filter in typeFilter)
 			{
-				filters.push(StringTools.replace(StringTools.replace(type.extension, "*.", ""), ";", ","));
+				var types:Array<String> = filter.extension.split(";");
+				
+				for (type in types){
+					filters.push(StringTools.replace(type, "*.", ""));
+				}
 			}
 
-			filter = filters.join(";");
+			filterString = filters.join(",");			
 		}
-		return filter;
+
+		//TODO: Multiple types are not yet supported in Lime so instead we return the first index of filters
+		//return filterString;
+		return filters[0];
 	}
 
 	@:noCompletion private static function __getTempPath(dir:Bool):String
@@ -1677,19 +1685,19 @@ class File extends FileReference
 			}
 		}
 
-		path = Path.join([path, "ofl" + Math.round(0xFFFFFF * Math.random())]);
+		var tempPath = "";
 
-		while (FileSystem.exists(path))
+		while (FileSystem.exists(tempPath = Path.join([path, "ofl" + Math.round(0xFFFFFF * Math.random())])))
 		{
-			path = Path.join([path, "ofl" + Math.round(0xFFFFFF * Math.random())]);
+			//repeat
 		}
 
 		if (dir)
 		{
-			return Path.addTrailingSlash(path);
+			return Path.addTrailingSlash(tempPath);
 		}
 
-		return path + ".tmp";
+		return tempPath + ".tmp";
 	}
 
 	@:noCompletion private function __winGetHiddenAttr():Bool

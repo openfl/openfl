@@ -26,17 +26,17 @@ Currently, OpenFL supports the following platforms:
  * Windows
  * macOS
  * Linux
- * WebAssembly
  * Flash
  * AIR
 
 There is also a community effort to bring OpenFL to consoles, OpenFL is running on:
 
+ * Switch
+ * Wii U
  * PlayStation 4
  * PlayStation 3
  * PlayStation Vita
  * Xbox One
- * Wii U
 
 _Additional details on console support will be available in the future._
 
@@ -147,10 +147,6 @@ Clone the OpenFL repository:
 Tell haxelib where your development copy of OpenFL is installed:
 
     haxelib dev openfl openfl
-
-Rebuild the SWF library tools:
-
-    openfl rebuild tools
 
 To return to release builds:
 

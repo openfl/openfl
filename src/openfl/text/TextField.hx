@@ -3045,6 +3045,9 @@ class TextField extends InteractiveObject
 
 		if (value != __textEngine.type)
 		{
+			// set type here instead of in return below because this_onFocusIn()
+			// needs to know the correct type
+			__textEngine.type = value;
 			if (value == TextFieldType.INPUT)
 			{
 				addEventListener(Event.ADDED_TO_STAGE, this_onAddedToStage);
@@ -3065,7 +3068,7 @@ class TextField extends InteractiveObject
 			__setRenderDirty();
 		}
 
-		return __textEngine.type = value;
+		return __textEngine.type;
 	}
 
 	override private function get_width():Float
