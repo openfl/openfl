@@ -1935,17 +1935,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	{
 		if (value != null && value.length > 0)
 		{
-			// TODO: Copy incoming array values
-
-			__filters = value;
-			// __updateFilters = true;
+			var clonedFilters:Array<BitmapFilter> = [];
 			
-			//filters should update immediately the next frame? 
-			//TODO: Do we need to set all of the filters to _renderDirty?
 			for (filter in value){
-				filter.__renderDirty = true;
+				var clonedFilter:BitmapFilter = filter.clone();
+				
+				clonedFilter.__renderDirty = true;
+				clonedFilters.push(clonedFilter);				
 			}
 			
+			__filters = clonedFilters;
+			// __updateFilters = true;
 			__setRenderDirty();
 		}
 		else if (__filters != null)
@@ -1954,7 +1954,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			// __updateFilters = false;
 			__setRenderDirty();
 		}
-
+		
 		return value;
 	}
 
