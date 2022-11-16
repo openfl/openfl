@@ -1939,6 +1939,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 			__filters = value;
 			// __updateFilters = true;
+			
+			//filters should update immediately the next frame? 
+			//TODO: Do we need to set all of the filters to _renderDirty?
+			for (filter in value){
+				filter.__renderDirty = true;
+			}
+			
 			__setRenderDirty();
 		}
 		else if (__filters != null)
