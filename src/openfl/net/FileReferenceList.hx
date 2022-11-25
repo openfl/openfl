@@ -10,6 +10,12 @@ import lime.ui.FileDialog;
 #if sys
 import sys.FileSystem;
 #end
+#if (js && html5)
+import js.html.InputElement;
+import js.Browser;
+#end
+
+@:access(openfl.net.FileReference)
 
 /**
 	The FileReferenceList class provides a means to let users select one or
@@ -72,6 +78,10 @@ class FileReferenceList extends EventDispatcher
 	**/
 	public var fileList(default, null):Array<FileReference>;
 
+	#if (js && html5)
+	@:noCompletion private var __inputControl:InputElement;
+	#end
+
 	/**
 		Creates a new FileReferenceList object. A FileReferenceList object
 		contains nothing until you call the `browse()` method on it and the
@@ -82,6 +92,16 @@ class FileReferenceList extends EventDispatcher
 	public function new()
 	{
 		super();
+		#if (js && html5)
+		__inputControl = cast Browser.document.createElement("input");
+		__inputControl.setAttribute("type", "file");
+		__inputControl.setAttribute("multiple", "multiple");
+		__inputControl.onclick = function(e)
+		{
+			e.cancelBubble = true;
+			e.stopPropagation();
+		}
+		#end
 	}
 
 	/**
@@ -153,6 +173,36 @@ class FileReferenceList extends EventDispatcher
 		fileDialog.onCancel.add(fileDialog_onCancel);
 		fileDialog.onSelectMultiple.add(fileDialog_onSelectMultiple);
 		fileDialog.browse(OPEN_MULTIPLE, filter);
+		return true;
+		#elseif (js && html5)
+		var filter = null;
+		if (typeFilter != null)
+		{
+			var filters = [];
+			for (type in typeFilter)
+			{
+				filters.push(StringTools.replace(StringTools.replace(type.extension, "*.", "."), ";", ","));
+			}
+			filter = filters.join(",");
+		}
+		if (filter != null)
+		{
+			__inputControl.setAttribute("accept", filter);
+		}
+		__inputControl.onchange = function()
+		{
+			fileList = new Array();
+
+			var fileReference;
+			for (file in __inputControl.files) {
+				fileReference = new FileReference();
+				fileReference.set_file(file);
+				fileList.push(fileReference);
+			}
+
+			dispatchEvent(new Event(Event.SELECT));
+		}
+		__inputControl.click();
 		return true;
 		#end
 

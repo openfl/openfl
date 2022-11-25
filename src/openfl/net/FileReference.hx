@@ -20,6 +20,7 @@ import sys.FileSystem;
 import js.html.FileReader;
 import js.html.InputElement;
 import js.Browser;
+import js.html.File;
 #end
 
 /**
@@ -477,6 +478,7 @@ class FileReference extends EventDispatcher
 	@:noCompletion private var __urlLoader:URLLoader;
 	#if (js && html5)
 	@:noCompletion private var __inputControl:InputElement;
+	@:noCompletion private var __file:File;
 	#end
 
 	/**
@@ -605,13 +607,7 @@ class FileReference extends EventDispatcher
 		}
 		__inputControl.onchange = function()
 		{
-			var file = __inputControl.files[0];
-			modificationDate = Date.fromTime(file.lastModified);
-			creationDate = modificationDate;
-			size = file.size;
-			type = "." + Path.extension(file.name);
-			name = Path.withoutDirectory(file.name);
-			__path = file.name;
+			set_file(__inputControl.files[0]);
 			dispatchEvent(new Event(Event.SELECT));
 		}
 		__inputControl.click();
@@ -925,14 +921,13 @@ class FileReference extends EventDispatcher
 			openFileDialog_onComplete();
 		}
 		#elseif (js && html5)
-		var file = __inputControl.files[0];
 		var reader = new FileReader();
 		reader.onload = function(evt)
 		{
 			data = ByteArray.fromArrayBuffer(cast evt.target.result);
 			openFileDialog_onComplete();
 		}
-		reader.readAsArrayBuffer(file);
+		reader.readAsArrayBuffer(__file);
 		#end
 	}
 
@@ -1428,6 +1423,20 @@ class FileReference extends EventDispatcher
 	{
 		return extension;
 	}
+
+	#if (js && html5)
+	@:noCompletion private function set_file(file:File):File
+	{
+		modificationDate = Date.fromTime(file.lastModified);
+		creationDate = modificationDate;
+		size = file.size;
+		type = "." + Path.extension(file.name);
+		name = Path.withoutDirectory(file.name);
+		__path = file.name;
+		__file = file;
+		return file;
+	}
+	#end
 }
 #else
 typedef FileReference = flash.net.FileReference;
