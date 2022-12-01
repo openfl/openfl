@@ -329,6 +329,22 @@ class DisplayObjectRenderer extends EventDispatcher
 				needRender = true;
 			}
 
+			// Ensure that cached bitmap is updated after changes to scrollRect
+			if (!needRender)
+			{
+				var current = displayObject;
+				while (current != null)
+				{
+					if (current.scrollRect != null)
+					{
+						// TODO: do we need to update transform if scroll rects haven't changed?
+						updateTransform = true;
+						break;
+					}
+					current = current.parent;
+				}
+			}
+
 			displayObject.__cacheBitmapMatrix.copyFrom(bitmapMatrix);
 			displayObject.__cacheBitmapMatrix.tx = 0;
 			displayObject.__cacheBitmapMatrix.ty = 0;

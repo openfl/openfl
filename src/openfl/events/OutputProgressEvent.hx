@@ -1,5 +1,6 @@
 package openfl.events;
 
+#if (!flash && sys)
 import openfl.events.Event;
 
 class OutputProgressEvent extends Event
@@ -21,3 +22,8 @@ class OutputProgressEvent extends Event
 		return new OutputProgressEvent(type, bubbles, cancelable, bytesPending, bytesTotal);
 	}
 }
+#else
+#if air
+typedef OutputProgressEvent = flash.events.OutputProgressEvent;
+#end
+#end

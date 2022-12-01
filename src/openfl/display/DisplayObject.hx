@@ -1935,9 +1935,16 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	{
 		if (value != null && value.length > 0)
 		{
-			// TODO: Copy incoming array values
-
-			__filters = value;
+			var clonedFilters:Array<BitmapFilter> = [];
+			
+			for (filter in value){
+				var clonedFilter:BitmapFilter = filter.clone();
+				
+				clonedFilter.__renderDirty = true;
+				clonedFilters.push(clonedFilter);				
+			}
+			
+			__filters = clonedFilters;
 			// __updateFilters = true;
 			__setRenderDirty();
 		}
@@ -1947,7 +1954,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			// __updateFilters = false;
 			__setRenderDirty();
 		}
-
+		
 		return value;
 	}
 

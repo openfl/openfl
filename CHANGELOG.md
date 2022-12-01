@@ -1,3 +1,44 @@
+9.2.0 (08/30/2022)
+------------------
+
+* Added `openfl.text.StyleSheet` implementation for `TextField`
+* Added `scaleMode` implementation to `Stage`
+* Added automatic scaling on HiDPI screens when `window.allow-high-dpi` enabled in project (use `-Dopenfl-disable-hdpi` to restore old behavior)
+* Added `File`, `FileStream`, and `FileMode` in the `openfl.filesystem` package to read and write files on native platforms
+* Added `openfl.desktop.NativeProcess` to run executables on native platforms
+* Added `openfl.display.ChildAccess` abstract to simplify access to nested display objects
+* Added `openfl.net.IDynamicPropertyOutput` and `openfl.net.IDynamicPropertyWriter` interfaces
+* Added `openfl.net.Responder`, `openfl.utils.Namespace`, and `openfl.utils.QName` classes
+* Added `isXMLName`, `registerClassAlias`, and `getClassByAlias` static methods to `openfl.Lib`
+* Added `condenseWhite` property to `TextField` for `htmlText` whitespace removal
+* Added `openfl.globalization.DateTimeFormatter` implementation for HTML5 and Flash (defaults to en_US on native platforms)
+* Added `some` and `every` methods to `Vector`
+* Added session cookie management for `URLLoader` on native platforms
+* Added Stage 3D to the DOM renderer on HTML5
+* Added optional text measurement with DIV on HTML5 (use `-Dopenfl-measuretext-div`)
+* Added `fromBundle` static method to `openfl.utils.AssetLibrary`
+* Improved `TextField` DOM rendering and measurement on HTML5
+* Improved `Font.enumerateFonts` to return device fonts, if specified
+* Improved visibility of focused `TextField` on mobile by specifying its global rectangle
+* Improved `restrict` parsing in `TextField` when it contains multiple `^` characters
+* Improved `<li>` element rendering in `TextField` by adding line breaks and displaying bullets
+* Improved `htmlText` parsing in `TextField` for HTML entity character codes like `&#38;` and `&#x20AC;`
+* Improved positioning of underline in `TextField`
+* Improved `URLVariables` syntax compatibility with Flash by adding `@:arrayAccess`
+* Improved implementation of `openfl.utils.Object`
+* Improved output file size when Lime sets *disable_preloader_assets*
+* Improved `getMusic` method on `Assets` to allow streaming Vorbis files on native platforms
+* Improved FLA library support by allowing `Sprite` to be used as linkage base class
+* Fixed rendering of UTF-8 characters on macOS
+* Fixed the last line in a `TextField` getting cut off sometimes when auto-sized
+* Fixed inconsistent letter spacing in `TextField`
+* Fixed missing bold and italic variants in `TextField` on native platforms
+* Fixed missing `Event.OPEN` dispatch in `Loader` and `URLLoader`
+* Fixed missing bubbling of `TextEvent.LINK`
+* Fixed signature of `splice` method on `Vector`
+* Fixed missing dispatch of `FocusEvent.MOUSE_FOCUS_CHANGE` in some situations
+* Fixed rendering of `openfl.text.StaticText`
+
 9.1.0 (04/10/2021)
 ------------------
 
