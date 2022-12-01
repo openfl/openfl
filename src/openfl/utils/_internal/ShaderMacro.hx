@@ -25,7 +25,10 @@ class ShaderMacro
 		var glVertexHeader = "";
 		var glVertexBody = "";
 
-		var glVersion = 120;
+		// Specify the default glVersion.
+		// We can use compile defines to guess the correct value.
+		var glVersion = #if android "300 es" #else "120" #end;
+
 		var glFragmentSource = null;
 		var glFragmentSourceRaw = "";
 		var glVertexSource = null;

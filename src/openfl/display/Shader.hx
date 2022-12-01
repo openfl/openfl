@@ -148,7 +148,7 @@ class Shader
 
 		Defaults to `120`
 	**/
-	public var glVersion(get, set):Int;
+	public var glVersion(get, set):String;
 
 	/**
 		The default GLSL vertex header, before being applied to the vertex source.
@@ -255,7 +255,7 @@ class Shader
 	@:noCompletion private var __colorOffset:ShaderParameter<Float>;
 	@:noCompletion private var __context:Context3D;
 	@:noCompletion private var __data:ShaderData;
-	@:noCompletion private var __glVersion:Int;
+	@:noCompletion private var __glVersion:String;
 	@:noCompletion private var __glFragmentHeaderRaw:String;
 	@:noCompletion private var __glFragmentBodyRaw:String;
 	@:noCompletion private var __glFragmentSourceRaw:String;
@@ -1030,7 +1030,7 @@ class Shader
 		return __glFragmentSource;
 	}
 
-	@:noCompletion private function get_glVersion():Int
+	@:noCompletion private function get_glVersion():String
 	{
 		return __glVersion;
 	}
@@ -1045,7 +1045,7 @@ class Shader
 		return __glFragmentSource = value;
 	}
 
-	@:noCompletion private function set_glVersion(value:Int):Int
+	@:noCompletion private function set_glVersion(value:String):String
 	{
 		if (value != __glVersion)
 		{
