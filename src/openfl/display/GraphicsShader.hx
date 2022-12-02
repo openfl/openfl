@@ -8,7 +8,6 @@ import openfl.utils.ByteArray;
 #end
 class GraphicsShader extends Shader
 {
-	@:glVersion(120)
 	@:glVertexHeader("attribute float openfl_Alpha;
 		attribute vec4 openfl_ColorMultiplier;
 		attribute vec4 openfl_ColorOffset;
@@ -22,7 +21,7 @@ class GraphicsShader extends Shader
 
 		uniform mat4 openfl_Matrix;
 		uniform bool openfl_HasColorTransform;
-		uniform vec2 openfl_TextureSize;")
+		uniform vec2 openfl_TextureSize;", true)
 	@:glVertexBody("openfl_Alphav = openfl_Alpha;
 		openfl_TextureCoordv = openfl_TextureCoord;
 
@@ -48,7 +47,7 @@ class GraphicsShader extends Shader
 
 		uniform bool openfl_HasColorTransform;
 		uniform vec2 openfl_TextureSize;
-		uniform sampler2D bitmap;")
+		uniform sampler2D bitmap;", true)
 	@:glFragmentBody("vec4 color = texture2D (bitmap, openfl_TextureCoordv);
 
 		if (color.a == 0.0) {
@@ -81,7 +80,7 @@ class GraphicsShader extends Shader
 
 			gl_FragColor = color * openfl_Alphav;
 
-		}")
+		}", true)
 	#if emscripten
 	@:glFragmentSource("#pragma header
 

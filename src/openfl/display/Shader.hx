@@ -146,9 +146,20 @@ class Shader
 	/**
 		Get or set the GLSL version used in the header when compiling with GLSL.
 
-		Defaults to `120`
+		- `120` is required for initialization (i.e. providing a default value for) `uniform` variables
+		@default The default value is determined at compile time.
 	**/
 	public var glVersion(get, set):String;
+
+	/**
+		Provides additional `#extension` directives to insert in the vertex and fragment shaders.
+
+		Example:
+		```
+		@:glExtensions([{name: "OES_standard_derivatives", behavior: "require"}])
+		```
+	**/
+	public var glExtensions(get, set):Array<{name:String, behavior:String}>;
 
 	/**
 		The default GLSL vertex header, before being applied to the vertex source.
@@ -255,6 +266,7 @@ class Shader
 	@:noCompletion private var __colorOffset:ShaderParameter<Float>;
 	@:noCompletion private var __context:Context3D;
 	@:noCompletion private var __data:ShaderData;
+	@:noCompletion private var __glExtensions:Array<{name:String, behavior:String}>;
 	@:noCompletion private var __glVersion:String;
 	@:noCompletion private var __glFragmentHeaderRaw:String;
 	@:noCompletion private var __glFragmentBodyRaw:String;
@@ -285,6 +297,10 @@ class Shader
 			"data": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_data (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_data (v); }")
+			},
+			"glExtensions": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_glExtensions (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_glExtensions (v); }")
 			},
 			"glVersion": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_glVersion (); }"),
@@ -531,8 +547,21 @@ class Shader
 
 	@:noCompletion private function __buildSourcePrefix():String
 	{
+		var extensions = "";
+
+		for (ext in __glExtensions)
+		{
+			extensions += "#extension " + ext.name + " : " + ext.behavior + "\n";
+		}
+
+		// #version must be the first directive and cannot be repeated,
+		// while #extension directives must be before any non-preprocessor tokens.
+
 		return "#version "
 			+ __glVersion
+			+ "
+      "
+			+ extensions
 			+ "
 				#ifdef GL_ES
 				"
@@ -559,6 +588,7 @@ class Shader
 			__paramInt = new Array();
 
 			__processGLData(glVertexSource, "attribute");
+			__processGLData(glVertexSource, "in");
 			__processGLData(glVertexSource, "uniform");
 			__processGLData(glFragmentSource, "uniform");
 		}
@@ -566,18 +596,6 @@ class Shader
 		if (__context != null && program == null)
 		{
 			var gl = __context.gl;
-
-			#if (js && html5)
-			var prefix = (precisionHint == FULL ? "precision mediump float;\n" : "precision lowp float;\n");
-			#else
-			var prefix = "#ifdef GL_ES\n"
-				+ (precisionHint == FULL ? "#ifdef GL_FRAGMENT_PRECISION_HIGH\n"
-					+ "precision highp float;\n"
-					+ "#else\n"
-					+ "precision mediump float;\n"
-					+ "#endif\n" : "precision lowp float;\n")
-				+ "#endif\n\n";
-			#end
 
 			var vertex = __buildSourcePrefix() + glVertexSource;
 			var fragment = __buildSourcePrefix() + glFragmentSource;
@@ -656,9 +674,20 @@ class Shader
 
 	@:noCompletion private function __processGLData(source:String, storageType:String):Void
 	{
-		var position, name, type;
+		var position, name, type, regex;
 
-		var regex = (storageType == "uniform") ? ~/uniform ([A-Za-z0-9]+) ([A-Za-z0-9_]+)/ : ~/attribute ([A-Za-z0-9]+) ([A-Za-z0-9_]+)/;
+		if (storageType == "uniform")
+		{
+			regex = ~/uniform ([A-Za-z0-9]+) ([A-Za-z0-9_]+)/;
+		}
+		else if (storageType == "in")
+		{
+			regex = ~/in ([A-Za-z0-9]+) ([A-Za-z0-9_]+)/;
+		}
+		else
+		{
+			regex = ~/attribute ([A-Za-z0-9]+) ([A-Za-z0-9_]+)/;
+		}
 
 		var lastMatch = 0;
 
@@ -1035,6 +1064,11 @@ class Shader
 		return __glVersion;
 	}
 
+	@:noCompletion private function get_glExtensions():Array<{name:String, behavior:String}>
+	{
+		return __glExtensions;
+	}
+
 	@:noCompletion private function set_glFragmentSource(value:String):String
 	{
 		if (value != __glFragmentSource)
@@ -1053,6 +1087,16 @@ class Shader
 		}
 
 		return __glVersion = value;
+	}
+
+	@:noCompletion private function set_glExtensions(value:Array<{name:String, behavior:String}>):Array<{name:String, behavior:String}>
+	{
+		if (value != __glExtensions)
+		{
+			__glSourceDirty = true;
+		}
+
+		return __glExtensions = value;
 	}
 
 	@:noCompletion private function get_glVertexHeaderRaw():String
