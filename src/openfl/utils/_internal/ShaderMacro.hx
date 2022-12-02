@@ -27,7 +27,8 @@ class ShaderMacro
 
 		var glVersion:String = null;
 
-		var glExtensions = [];
+		var glFragmentExtensions = [];
+		var glVertexExtensions = [];
 
 		var glFragmentSource = null;
 		var glFragmentSourceRaw = "";
@@ -44,7 +45,14 @@ class ShaderMacro
 						glVersion = meta.params[0].getValue();
 
 					case "glExtensions", ":glExtensions":
-						glExtensions = meta.params[0].getValue();
+						glFragmentExtensions = glFragmentExtensions.concat(meta.params[0].getValue());
+						glVertexExtensions = glVertexExtensions.concat(meta.params[0].getValue());
+
+					case "glFragmentExtensions", ":glFragmentExtensions":
+						glFragmentExtensions = glFragmentExtensions.concat(meta.params[0].getValue());
+
+					case "glVertexExtensions", ":glVertexExtensions":
+						glVertexExtensions = glVertexExtensions.concat(meta.params[0].getValue());
 
 					default:
 				}
@@ -146,7 +154,14 @@ class ShaderMacro
 							if (glVersion == null) glVersion = meta.params[0].getValue();
 
 						case "glExtensions", ":glExtensions":
-							if (glExtensions == null) glExtensions = meta.params[0].getValue();
+							glFragmentExtensions = glFragmentExtensions.concat(meta.params[0].getValue());
+							glVertexExtensions = glVertexExtensions.concat(meta.params[0].getValue());
+
+						case "glFragmentExtensions", ":glFragmentExtensions":
+							glFragmentExtensions = glFragmentExtensions.concat(meta.params[0].getValue());
+
+						case "glVertexExtensions", ":glVertexExtensions":
+							glVertexExtensions = glVertexExtensions.concat(meta.params[0].getValue());
 
 						default:
 					}
@@ -241,7 +256,9 @@ class ShaderMacro
 		{
 			glVersion = getDefaultGLVersion();
 		}
-		glExtensions = buildGLSLExtensions(glExtensions, glVersion);
+
+		glVertexExtensions = buildGLSLExtensions(glVertexExtensions, glVersion, false);
+		glFragmentExtensions = buildGLSLExtensions(glFragmentExtensions, glVersion, true);
 
 		if (glVertexSource != null || glFragmentSource != null)
 		{
@@ -383,11 +400,19 @@ class ShaderMacro
 							});
 						}
 
-						if (glExtensions != null)
+						if (glVertexExtensions != null)
 						{
-							block.unshift(macro if (__glExtensions == null)
+							block.unshift(macro if (__glVertexExtensions == null)
 							{
-								__glExtensions = $v{glExtensions};
+								__glVertexExtensions = $v{glVertexExtensions};
+							});
+						}
+
+						if (glFragmentExtensions != null)
+						{
+							block.unshift(macro if (__glFragmentExtensions == null)
+							{
+								__glFragmentExtensions = $v{glFragmentExtensions};
 							});
 						}
 
@@ -582,10 +607,11 @@ class ShaderMacro
 		}
 	}
 
-	private static function buildGLSLExtensions(glExtensions:Array<{name:String, behavior:String}>, glVersion:String):Array<{name:String, behavior:String}>
+	private static function buildGLSLExtensions(glExtensions:Array<{name:String, behavior:String}>, glVersion:String,
+			isFragment:Bool):Array<{name:String, behavior:String}>
 	{
 		if (StringTools.endsWith(glVersion, " compatibility")) return glExtensions;
-		if (StringTools.endsWith(glVersion, " core")) return buildGLSLExtensions(glExtensions, StringTools.replace(glVersion, " core", ""));
+		if (StringTools.endsWith(glVersion, " core")) return buildGLSLExtensions(glExtensions, StringTools.replace(glVersion, " core", ""), isFragment);
 
 		switch (glVersion)
 		{
@@ -606,47 +632,57 @@ class ShaderMacro
 				return glExtensions;
 
 			case "300 es":
-				return glExtensions;
-			case "310 es":
-				return glExtensions;
-			case "320 es":
-				return glExtensions;
-
-			case "330":
 				var hasSeparateShaderObjects = false;
 				for (extension in glExtensions)
 				{
 					if (extension.name == "GL_ARB_separate_shader_objects") hasSeparateShaderObjects = true;
+					if (extension.name == "GL_EXT_separate_shader_objects") hasSeparateShaderObjects = true;
 				}
 
 				#if desktop
 				if (!hasSeparateShaderObjects)
 				{
+					#if linux
+					return glExtensions.concat([{name: "GL_EXT_separate_shader_objects", behavior: "require"}]);
+					#else
 					return glExtensions.concat([{name: "GL_ARB_separate_shader_objects", behavior: "require"}]);
+					#end
 				}
 				#end
 				return glExtensions;
 
+			case "310 es":
+				var result = buildGLSLExtensions(glExtensions, "300 es", isFragment);
+				return result;
+
+			case "320 es":
+				var result = buildGLSLExtensions(glExtensions, "310 es", isFragment);
+				return result;
+
+			case "330":
+				var result = buildGLSLExtensions(glExtensions, "320 es", isFragment);
+				return result;
+
 			case "400":
-				var result = buildGLSLExtensions(glExtensions, "330");
+				var result = buildGLSLExtensions(glExtensions, "330", isFragment);
 				return result;
 			case "410":
-				var result = buildGLSLExtensions(glExtensions, "400");
+				var result = buildGLSLExtensions(glExtensions, "400", isFragment);
 				return result;
 			case "420":
-				var result = buildGLSLExtensions(glExtensions, "410");
+				var result = buildGLSLExtensions(glExtensions, "410", isFragment);
 				return result;
 			case "430":
-				var result = buildGLSLExtensions(glExtensions, "420");
+				var result = buildGLSLExtensions(glExtensions, "420", isFragment);
 				return result;
 			case "440":
-				var result = buildGLSLExtensions(glExtensions, "430");
+				var result = buildGLSLExtensions(glExtensions, "430", isFragment);
 				return result;
 			case "450":
-				var result = buildGLSLExtensions(glExtensions, "440");
+				var result = buildGLSLExtensions(glExtensions, "440", isFragment);
 				return result;
 			case "460":
-				var result = buildGLSLExtensions(glExtensions, "450");
+				var result = buildGLSLExtensions(glExtensions, "450", isFragment);
 				return result;
 		}
 	}
