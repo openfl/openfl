@@ -660,30 +660,22 @@ class ShaderMacro
 				return result;
 
 			case "330":
-				var result = buildGLSLExtensions(glExtensions, "320 es", isFragment);
-				return result;
+				return glExtensions;
 
 			case "400":
-				var result = buildGLSLExtensions(glExtensions, "330", isFragment);
-				return result;
+				return glExtensions;
 			case "410":
-				var result = buildGLSLExtensions(glExtensions, "400", isFragment);
-				return result;
+				return glExtensions;
 			case "420":
-				var result = buildGLSLExtensions(glExtensions, "410", isFragment);
-				return result;
+				return glExtensions;
 			case "430":
-				var result = buildGLSLExtensions(glExtensions, "420", isFragment);
-				return result;
+				return glExtensions;
 			case "440":
-				var result = buildGLSLExtensions(glExtensions, "430", isFragment);
-				return result;
+				return glExtensions;
 			case "450":
-				var result = buildGLSLExtensions(glExtensions, "440", isFragment);
-				return result;
+				return glExtensions;
 			case "460":
-				var result = buildGLSLExtensions(glExtensions, "450", isFragment);
-				return result;
+				return glExtensions;
 		}
 	}
 
