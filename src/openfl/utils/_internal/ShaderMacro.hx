@@ -441,7 +441,7 @@ class ShaderMacro
 	{
 		// Specify the default glVersion.
 		// We can use compile defines to guess the value that prevents crashes in the majority of cases.
-		return #if (android) "100" #elseif (web) "100" #else "100" #end;
+		return #if (android) "100" #elseif (web) "100" #elseif (mac) "120" #else "100" #end;
 	}
 
 	/**
@@ -660,7 +660,8 @@ class ShaderMacro
 				return result;
 
 			case "330":
-				return glExtensions;
+				var result = buildGLSLExtensions(glExtensions, "320 es", isFragment);
+				return result;
 
 			case "400":
 				return glExtensions;
