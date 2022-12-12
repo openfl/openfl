@@ -328,6 +328,59 @@ class SecureSocket extends Socket
 			}
 		}
 
+		if (doConnect)
+		{
+			var secureSocket:SysSecureSocket = cast __socket;
+			var blocked = false;
+			try
+			{
+				secureSocket.handshake();
+				blocked = false;
+			}
+			catch (e:Error)
+			{
+				switch (e)
+				{
+					case Error.Blocked:
+						blocked = true;
+					case Error.Custom(Error.Blocked):
+						blocked = true;
+					default:
+						__serverCertificateStatus = INVALID;
+						__cleanSocket();
+						dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR, true, false, Std.string(e)));
+						return;
+				}
+			}
+			catch (e:Dynamic)
+			{
+				__serverCertificateStatus = INVALID;
+				__cleanSocket();
+				dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR, true, false, Std.string(e)));
+				return;
+			}
+			if (blocked)
+			{
+				// try again next frame. we shouldn't try the handshake
+				// repeatedly in a loop because it can cause rendering to
+				// noticeably hang until the socket is unblocked, especially if
+				// there are multiple sockets connecting at once.
+				return;
+			}
+			__peerCertificate = secureSocket.peerCertificate();
+			if (__peerCertificate != null)
+			{
+				__serverCertificateStatus = TRUSTED;
+			}
+			else
+			{
+				__serverCertificateStatus = INVALID;
+				__cleanSocket();
+				dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR, true, false, "Invalid certificate"));
+				return;
+			}
+		}
+
 		var b = new BytesBuffer();
 		var bLength = 0;
 
@@ -384,55 +437,7 @@ class SecureSocket extends Socket
 		else if (doConnect)
 		{
 			__connected = true;
-			var secureSocket:SysSecureSocket = cast __socket;
-			var blocked = false;
-			// if this loop ends up blocking too long, we'll need to reorganize
-			// this code (and maybe the similar code in Socket) to keep waiting
-			// for additional frames before dispatching Event.CONNECT
-			do
-			{
-				try
-				{
-					secureSocket.handshake();
-					blocked = false;
-				}
-				catch (e:Error)
-				{
-					switch (e)
-					{
-						case Error.Blocked:
-							blocked = true;
-						case Error.Custom(Error.Blocked):
-							blocked = true;
-						default:
-							__serverCertificateStatus = INVALID;
-							__cleanSocket();
-							dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR, true, false, Std.string(e)));
-							return;
-					}
-				}
-				catch (e:Dynamic)
-				{
-					__serverCertificateStatus = INVALID;
-					__cleanSocket();
-					dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR, true, false, Std.string(e)));
-					return;
-				}
-			}
-			while (blocked);
-			__peerCertificate = secureSocket.peerCertificate();
-			if (__peerCertificate != null)
-			{
-				__serverCertificateStatus = TRUSTED;
-				dispatchEvent(new Event(Event.CONNECT));
-			}
-			else
-			{
-				__serverCertificateStatus = INVALID;
-				__cleanSocket();
-				dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR, true, false, "Invalid certificate"));
-				return;
-			}
+			dispatchEvent(new Event(Event.CONNECT));
 		}
 
 		if (bLength > 0)
