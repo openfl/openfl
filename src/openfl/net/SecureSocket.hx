@@ -312,7 +312,6 @@ class SecureSocket extends Socket
 	{
 		#if sys
 		var doConnect = false;
-		var doClose = false;
 
 		if (!connected)
 		{
@@ -321,10 +320,6 @@ class SecureSocket extends Socket
 			if (r.write[0] == __socket)
 			{
 				doConnect = true;
-			}
-			else if (Sys.time() - __timestamp > timeout / 1000)
-			{
-				doClose = true;
 			}
 		}
 
@@ -380,94 +375,8 @@ class SecureSocket extends Socket
 				return;
 			}
 		}
-
-		var b = new BytesBuffer();
-		var bLength = 0;
-
-		if (connected || doConnect)
-		{
-			try
-			{
-				var l:Int;
-
-				do
-				{
-					l = __socket.input.readBytes(__buffer, 0, __buffer.length);
-
-					if (l > 0)
-					{
-						b.addBytes(__buffer, 0, l);
-						bLength += l;
-					}
-				}
-				while (l == __buffer.length);
-			}
-			catch (e:Eof)
-			{
-				// ignore
-			}
-			catch (e:Error)
-			{
-				switch (e)
-				{
-					case Error.Blocked:
-					case Error.Custom(Error.Blocked):
-					default:
-						doClose = true;
-				}
-			}
-			catch (e:Dynamic)
-			{
-				doClose = true;
-			}
-		}
-
-		if (doClose && connected)
-		{
-			__cleanSocket();
-
-			dispatchEvent(new Event(Event.CLOSE));
-		}
-		else if (doClose)
-		{
-			__cleanSocket();
-
-			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR, true, false, "Connection failed"));
-		}
-		else if (doConnect)
-		{
-			__connected = true;
-			dispatchEvent(new Event(Event.CONNECT));
-		}
-
-		if (bLength > 0)
-		{
-			var newData = b.getBytes();
-
-			var rl = __input.length - __input.position;
-			if (rl < 0) rl = 0;
-
-			var newInput = Bytes.alloc(rl + newData.length);
-			if (rl > 0) newInput.blit(0, __input, __input.position, rl);
-			newInput.blit(rl, newData, 0, newData.length);
-			__input = newInput;
-			__input.endian = __endian;
-
-			dispatchEvent(new ProgressEvent(ProgressEvent.SOCKET_DATA, false, false, newData.length, 0));
-		}
-
-		if (__socket != null)
-		{
-			try
-			{
-				flush();
-			}
-			catch (e:IOError)
-			{
-				dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR, true, false, e.message));
-			}
-		}
 		#end
+		super.this_onEnterFrame(event);
 	}
 }
 #else
