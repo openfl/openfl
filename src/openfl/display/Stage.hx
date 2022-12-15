@@ -1022,10 +1022,20 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				Lib.current.__loaderInfo.content = Lib.current;
 			}
 
+			// TODO: Do not rely on Lib.current
+			__uncaughtErrorEvents = Lib.current.__loaderInfo.uncaughtErrorEvents;
+
 			var resizable = (width == 0 && width == 0);
 
 			#if (js && html5)
-			if (windowAttributes.element != null) element = Browser.document.createElement("div");
+			if (windowAttributes.element != null)
+			{
+				element = windowAttributes.element;
+			}
+			else
+			{
+				element = Browser.document.createElement("div");
+			}
 
 			if (resizable)
 			{
@@ -1081,10 +1091,10 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		this.application = window.application;
 		this.window = window;
 		this.color = color;
-		#end
 
 		// TODO: Do not rely on Lib.current
 		__uncaughtErrorEvents = Lib.current.__loaderInfo.uncaughtErrorEvents;
+		#end
 
 		__contentsScaleFactor = window.scale;
 		__wasFullscreen = window.fullscreen;
