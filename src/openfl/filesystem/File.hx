@@ -1826,7 +1826,8 @@ class File extends FileReference
 
 	@:noCompletion private function get_isDirectory():Bool
 	{
-		return FileSystem.isDirectory(__path);
+		// isDirectory throws an exception if the file doesn't exist
+		return FileSystem.exists(__path) && FileSystem.isDirectory(__path);
 	}
 
 	@:noCompletion private function get_parent():File
