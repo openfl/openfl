@@ -1005,7 +1005,6 @@ class File extends FileReference
 		__fileWorker.doWork.add(function(m:Dynamic)
 		{
 			deleteDirectory(deleteDirectoryContents);
-			FileSystem.deleteFile(__path);
 
 			dispatchEvent(new Event(Event.COMPLETE));
 
