@@ -845,12 +845,25 @@ class File extends FileReference
 
 		try
 		{
-			var path:String = Path.directory(newPath);
-			if (!FileSystem.exists(path))
+			if (isDirectory)
 			{
-				FileSystem.createDirectory(path);
+				FileSystem.createDirectory(newPath);
+				var files:Array<File> = getDirectoryListing();
+				for (file in files)
+				{
+					var newFile = new File(Path.join([newPath, file.name]));
+					file.copyTo(newFile);
+				}
 			}
-			HaxeFile.copy(__path, newPath);
+			else
+			{
+				var newDirectory:String = Path.directory(newPath);
+				if (!FileSystem.exists(newDirectory))
+				{
+					FileSystem.createDirectory(newDirectory);
+				}
+				HaxeFile.copy(__path, newPath);
+			}
 		}
 		catch (e:Dynamic)
 		{
@@ -1358,8 +1371,15 @@ class File extends FileReference
 		{
 			throw new Error("Overwrite is set to false");
 		}
-		HaxeFile.copy(nativePath, newLocation.__path);
-		FileSystem.deleteFile(__path);
+		copyTo(newLocation, overwrite);
+		if (isDirectory)
+		{
+			deleteDirectory(true);
+		}
+		else
+		{
+			deleteFile();
+		}
 	}
 
 	/**
@@ -1415,8 +1435,7 @@ class File extends FileReference
 		{
 			try
 			{
-				copyTo(newLocation, overwrite);
-				FileSystem.deleteFile(__path);
+				moveTo(newLocation, overwrite);
 			}
 			catch (e:Dynamic)
 			{
