@@ -442,6 +442,10 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 				#else
 				__socket.output.writeBytes(__output, 0, __output.length);
 				#end
+				if (__output != null)
+				{
+					__output.clear();
+				}
 				__output = new ByteArray();
 				__output.endian = __endian;
 			}
@@ -1001,6 +1005,16 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 		__socket = null;
 		__connected = false;
 		Lib.current.removeEventListener(Event.ENTER_FRAME, this_onEnterFrame);
+		if (__output != null)
+		{
+			__output.clear();
+			__output = null;
+		}
+		if (__input != null)
+		{
+			__input.clear();
+			__input = null;
+		}
 	}
 
 	// Event Handlers
@@ -1142,6 +1156,10 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 			var newInput = Bytes.alloc(rl + newData.length);
 			if (rl > 0) newInput.blit(0, __input, __input.position, rl);
 			newInput.blit(rl, newData, 0, newData.length);
+			if (__input != null)
+			{
+				__input.clear();
+			}
 			__input = newInput;
 			__input.endian = __endian;
 
