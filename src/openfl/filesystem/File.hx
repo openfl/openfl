@@ -9,6 +9,7 @@ import openfl.errors.IllegalOperationError;
 import openfl.errors.ArgumentError;
 import openfl.errors.Error;
 import openfl.events.Event;
+import openfl.events.IOErrorEvent;
 import openfl.net.FileFilter;
 import openfl.events.FileListEvent;
 import openfl.net.FileReference;
@@ -904,7 +905,18 @@ class File extends FileReference
 
 		__fileWorker.doWork.add(function(m:Dynamic)
 		{
-			copyTo(newLocation, overwrite);
+			try
+			{
+				copyTo(newLocation, overwrite);
+			}
+			catch (e:Dynamic)
+			{
+				__fileWorker.cancel();
+				__fileWorker = null;
+
+				__dispatchIoError(e);
+				return;
+			}
 
 			dispatchEvent(new Event(Event.COMPLETE));
 
@@ -1004,7 +1016,18 @@ class File extends FileReference
 
 		__fileWorker.doWork.add(function(m:Dynamic)
 		{
-			deleteDirectory(deleteDirectoryContents);
+			try
+			{
+				deleteDirectory(deleteDirectoryContents);
+			}
+			catch (e:Dynamic)
+			{
+				__fileWorker.cancel();
+				__fileWorker = null;
+
+				__dispatchIoError(e);
+				return;
+			}
 
 			dispatchEvent(new Event(Event.COMPLETE));
 
@@ -1052,7 +1075,18 @@ class File extends FileReference
 
 		__fileWorker.doWork.add(function(m:Dynamic)
 		{
-			deleteFile();
+			try
+			{
+				deleteFile();
+			}
+			catch (e:Dynamic)
+			{
+				__fileWorker.cancel();
+				__fileWorker = null;
+
+				__dispatchIoError(e);
+				return;
+			}
 
 			dispatchEvent(new Event(Event.COMPLETE));
 
@@ -1379,8 +1413,19 @@ class File extends FileReference
 
 		__fileWorker.doWork.add(function(m:Dynamic)
 		{
-			copyTo(newLocation, overwrite);
-			FileSystem.deleteFile(__path);
+			try
+			{
+				copyTo(newLocation, overwrite);
+				FileSystem.deleteFile(__path);
+			}
+			catch (e:Dynamic)
+			{
+				__fileWorker.cancel();
+				__fileWorker = null;
+
+				__dispatchIoError(e);
+				return;
+			}
 
 			dispatchEvent(new Event(Event.COMPLETE));
 
@@ -1584,6 +1629,27 @@ class File extends FileReference
 		}
 
 		this.dispatchEvent(new FileListEvent(FileListEvent.SELECT_MULTIPLE, files));
+	}
+
+	@:noCompletion private function __dispatchIoError(e:Dynamic):Void
+	{
+		if (hasEventListener(IOErrorEvent.IO_ERROR))
+		{
+			if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (e, Error))
+			{
+				var error = (e : Error);
+				dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR, false, false, error.message, error.errorID));
+			}
+			else
+			{
+				dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+			}
+		}
+		else
+		{
+			// if there's no listener, throw it again
+			throw e;
+		}
 	}
 
 	@:noCompletion private function __formatPath(path:String):String
