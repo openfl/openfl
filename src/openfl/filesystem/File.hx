@@ -1625,25 +1625,24 @@ class File extends FileReference
 	{
 		var filterString:String = null;
 		var filters = [];
-		
+
 		if (typeFilter != null)
 		{
-			
-
 			for (filter in typeFilter)
 			{
 				var types:Array<String> = filter.extension.split(";");
-				
-				for (type in types){
+
+				for (type in types)
+				{
 					filters.push(StringTools.replace(type, "*.", ""));
 				}
 			}
 
-			filterString = filters.join(",");			
+			filterString = filters.join(",");
 		}
 
-		//TODO: Multiple types are not yet supported in Lime so instead we return the first index of filters
-		//return filterString;
+		// TODO: Multiple types are not yet supported in Lime so instead we return the first index of filters
+		// return filterString;
 		return filters[0];
 	}
 
@@ -1669,7 +1668,7 @@ class File extends FileReference
 
 		while (FileSystem.exists(tempPath = Path.join([path, "ofl" + Math.round(0xFFFFFF * Math.random())])))
 		{
-			//repeat
+			// repeat
 		}
 
 		if (dir)
