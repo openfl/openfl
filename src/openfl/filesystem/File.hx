@@ -1725,9 +1725,11 @@ class File extends FileReference
 			filterString = filters.join(",");
 		}
 
-		// TODO: Multiple types are not yet supported in Lime so instead we return the first index of filters
-		// return filterString;
+		#if (lime >= "8.0.1")
+		return filterString;
+		#else
 		return filters[0];
+		#end
 	}
 
 	@:noCompletion private static function __getTempPath(dir:Bool):String
