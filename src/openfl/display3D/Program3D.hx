@@ -11,7 +11,8 @@ import openfl.utils._internal.Log;
 import openfl.display.ShaderParameterType;
 import openfl.errors.IllegalOperationError;
 import openfl.utils.ByteArray;
-import openfl.Vector;
+import openfl.Vector; 
+import openfl.display.ShaderPrecision; 
 #if lime
 import lime.graphics.opengl.GL;
 import lime.utils.BytePointer;
@@ -52,7 +53,8 @@ import lime.utils.BytePointer;
 @:access(openfl.display.ShaderParameter)
 @:access(openfl.display.Stage)
 @:final class Program3D
-{
+{ 
+        public var precisionHint:ShaderPrecision;
 	@:noCompletion private var __agalAlphaSamplerEnabled:Array<Uniform>;
 	@:noCompletion private var __agalAlphaSamplerUniforms:List<Uniform>;
 	@:noCompletion private var __agalFragmentUniformMap:UniformMap;
@@ -419,16 +421,16 @@ import lime.utils.BytePointer;
 	{
 		if (__format != GLSL) return;
 
-		// TODO: Precision hint?
-
 		var prefix = "#ifdef GL_ES
-			#ifdef GL_FRAGMENT_PRECISION_HIGH
-			precision highp float;
-			#else
-			precision mediump float;
-			#endif
-			#endif
-			";
+				"
+				+ (precisionHint == FULL ? "#ifdef GL_FRAGMENT_PRECISION_HIGH
+				precision highp float;
+				#else
+				precision mediump float;
+				#endif" : "precision lowp float;")
+				+ "
+				#endif
+				";
 
 		var vertex = prefix + vertexSource;
 		var fragment = prefix + fragmentSource;
