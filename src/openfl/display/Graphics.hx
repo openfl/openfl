@@ -618,6 +618,9 @@ import js.html.CanvasRenderingContext2D;
 		__positionX = anchorX;
 		__positionY = anchorY;
 
+		__inflateBounds(__positionX - __strokePadding, __positionY - __strokePadding);
+		__inflateBounds(__positionX + __strokePadding, __positionY + __strokePadding);
+
 		__commands.curveTo(controlX, controlY, anchorX, anchorY);
 
 		__dirty = true;
