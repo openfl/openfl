@@ -680,7 +680,7 @@ class CanvasGraphics
 					var c = data.readLineGradientStyle();
 					if (stroke && hasStroke)
 					{
-						closePath();
+						closePath(true);
 					}
 
 					context.moveTo(positionX - offsetX, positionY - offsetY);
@@ -694,7 +694,7 @@ class CanvasGraphics
 					var c = data.readLineBitmapStyle();
 					if (stroke && hasStroke)
 					{
-						closePath();
+						closePath(true);
 					}
 
 					context.moveTo(positionX - offsetX, positionY - offsetY);

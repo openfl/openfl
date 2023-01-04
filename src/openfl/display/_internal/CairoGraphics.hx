@@ -668,7 +668,7 @@ class CairoGraphics
 					var c = data.readLineGradientStyle();
 					if (stroke && hasStroke)
 					{
-						closePath();
+						closePath(true);
 					}
 
 					cairo.moveTo(positionX - offsetX, positionY - offsetY);
@@ -681,7 +681,7 @@ class CairoGraphics
 					var c = data.readLineBitmapStyle();
 					if (stroke && hasStroke)
 					{
-						closePath();
+						closePath(true);
 					}
 
 					cairo.moveTo(positionX - offsetX, positionY - offsetY);
