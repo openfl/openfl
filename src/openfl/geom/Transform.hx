@@ -278,7 +278,7 @@ class Transform
 		__hasMatrix = false;
 		__hasMatrix3D = true;
 
-		__setTransform(value.rawData[0], value.rawData[1], value.rawData[5], value.rawData[6], value.rawData[12], value.rawData[13]);
+		__setTransform(value.rawData[0], value.rawData[1], value.rawData[4], value.rawData[5], value.rawData[12], value.rawData[13]);
 
 		return value;
 	}
