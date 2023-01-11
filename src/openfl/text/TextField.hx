@@ -3239,24 +3239,9 @@ class TextField extends InteractiveObject
 	{
 		__stopCursorTimer();
 
-		// TODO: Better system
-
-		if (event.relatedObject == null || !(event.relatedObject is TextField))
-		{
-			__stopTextInput();
-		}
-		else
-		{
-			if (stage != null)
-			{
-				#if lime
-				stage.window.onTextInput.remove(window_onTextInput);
-				stage.window.onKeyDown.remove(window_onKeyDown);
-				#end
-			}
-
-			__inputEnabled = false;
-		}
+		// even if the related object is another TextField, we should stop
+		// text input. this ensures that any incomplete IME input is committed.
+		__stopTextInput();
 
 		if (__selectionIndex != __caretIndex)
 		{
