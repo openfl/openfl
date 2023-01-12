@@ -48,12 +48,18 @@ class CanvasShape
 					{
 						// context.setTransform(1, 0, 0, 1, transform.tx, transform.ty);
 
+						// #if (openfl_disable_hdpi || openfl_disable_hdpi_graphics)
+						// var pixelRatio = 1;
+						// #else
+						var pixelRatio = renderer.__pixelRatio;
+						// #end
+
 						var bounds = graphics.__bounds;
 
 						var scaleX = graphics.__renderTransform.a / graphics.__bitmapScale;
 						var scaleY = graphics.__renderTransform.d / graphics.__bitmapScale;
-						var renderScaleX = transform.a;
-						var renderScaleY = transform.d;
+						var renderScaleX = transform.a * pixelRatio;
+						var renderScaleY = transform.d * pixelRatio;
 
 						var left = Math.max(1, Math.round(scale9Grid.x * scaleX));
 						var top = Math.round(scale9Grid.y * scaleY);

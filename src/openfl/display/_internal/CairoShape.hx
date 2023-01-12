@@ -51,18 +51,24 @@ class CairoShape
 
 				if (scale9Grid != null && transform.b == 0 && transform.c == 0)
 				{
+					// #if (openfl_disable_hdpi || openfl_disable_hdpi_graphics)
+					// var pixelRatio = 1;
+					// #else
+					var pixelRatio = renderer.__pixelRatio;
+					// #end
+
 					var bounds = graphics.__bounds;
 
 					var renderTransform = Matrix.__pool.get();
 
-					var scaleX = graphics.__renderTransform.a;
-					var scaleY = graphics.__renderTransform.d;
-					var renderScaleX = transform.a / graphics.__bitmapScale;
-					var renderScaleY = transform.d / graphics.__bitmapScale;
+					var scaleX = graphics.__renderTransform.a / graphics.__bitmapScale;
+					var scaleY = graphics.__renderTransform.d / graphics.__bitmapScale;
+					var renderScaleX = transform.a * pixelRatio;
+					var renderScaleY = transform.d * pixelRatio;
 
-					var left = Math.round(scale9Grid.x * scaleX);
+					var left = Math.max(1, Math.round(scale9Grid.x * scaleX));
 					var top = Math.round(scale9Grid.y * scaleY);
-					var right = Math.round((bounds.right - scale9Grid.right) * scaleX);
+					var right = Math.max(1, Math.round((bounds.right - scale9Grid.right) * scaleX));
 					var bottom = Math.round((bounds.bottom - scale9Grid.bottom) * scaleY);
 					var centerWidth = Math.round(scale9Grid.width * scaleX);
 					var centerHeight = Math.round(scale9Grid.height * scaleY);
