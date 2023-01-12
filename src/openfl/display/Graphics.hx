@@ -502,9 +502,12 @@ import js.html.CanvasRenderingContext2D;
 			if (w == 0)
 			{
 				var t = -v / u;
-				var ix = __calculateBezierCubicPoint(t, __positionY, controlY1, controlY2, anchorY);
-				__inflateBounds(ix - __strokePadding, __positionY - __strokePadding);
-				__inflateBounds(ix + __strokePadding, __positionY + __strokePadding);
+				if (t > 0 && t < 1)
+				{
+					var ix = __calculateBezierCubicPoint(t, __positionY, controlY1, controlY2, anchorY);
+					__inflateBounds(ix - __strokePadding, __positionY - __strokePadding);
+					__inflateBounds(ix + __strokePadding, __positionY + __strokePadding);
+				}
 			}
 			else
 			{
@@ -536,9 +539,12 @@ import js.html.CanvasRenderingContext2D;
 			if (w == 0)
 			{
 				var t = -v / u;
-				var iy = __calculateBezierCubicPoint(t, __positionY, controlY1, controlY2, anchorY);
-				__inflateBounds(__positionX - __strokePadding, iy - __strokePadding);
-				__inflateBounds(__positionX + __strokePadding, iy + __strokePadding);
+				if (t > 0 && t < 1)
+				{
+					var iy = __calculateBezierCubicPoint(t, __positionY, controlY1, controlY2, anchorY);
+					__inflateBounds(__positionX - __strokePadding, iy - __strokePadding);
+					__inflateBounds(__positionX + __strokePadding, iy + __strokePadding);
+				}
 			}
 			else
 			{
