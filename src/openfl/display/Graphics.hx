@@ -499,17 +499,26 @@ import js.html.CanvasRenderingContext2D;
 			var v = (controlX1 - __positionX);
 			var w = (-__positionX + 3 * controlX1 + anchorX - 3 * controlX2);
 
-			var t1 = (-u + Math.sqrt(u * u - 4 * v * w)) / (2 * w);
-			var t2 = (-u - Math.sqrt(u * u - 4 * v * w)) / (2 * w);
-
-			if (t1 > 0 && t1 < 1)
+			if (w == 0)
 			{
-				ix1 = __calculateBezierCubicPoint(t1, __positionX, controlX1, controlX2, anchorX);
+				var t = -v / u;
+				var ix = __calculateBezierCubicPoint(t, __positionY, controlY1, controlY2, anchorY);
+				__inflateBounds(ix, __positionY);
 			}
-
-			if (t2 > 0 && t2 < 1)
+			else
 			{
-				ix2 = __calculateBezierCubicPoint(t2, __positionX, controlX1, controlX2, anchorX);
+				var t1 = (-u + Math.sqrt(u * u - 4 * v * w)) / (2 * w);
+				var t2 = (-u - Math.sqrt(u * u - 4 * v * w)) / (2 * w);
+
+				if (t1 > 0 && t1 < 1)
+				{
+					ix1 = __calculateBezierCubicPoint(t1, __positionX, controlX1, controlX2, anchorX);
+				}
+
+				if (t2 > 0 && t2 < 1)
+				{
+					ix2 = __calculateBezierCubicPoint(t2, __positionX, controlX1, controlX2, anchorX);
+				}
 			}
 		}
 
@@ -523,17 +532,26 @@ import js.html.CanvasRenderingContext2D;
 			var v = (controlY1 - __positionY);
 			var w = (-__positionY + 3 * controlY1 + anchorY - 3 * controlY2);
 
-			var t1 = (-u + Math.sqrt(u * u - 4 * v * w)) / (2 * w);
-			var t2 = (-u - Math.sqrt(u * u - 4 * v * w)) / (2 * w);
-
-			if (t1 > 0 && t1 < 1)
+			if (w == 0)
 			{
-				iy1 = __calculateBezierCubicPoint(t1, __positionY, controlY1, controlY2, anchorY);
+				var t = -v / u;
+				var iy = __calculateBezierCubicPoint(t, __positionY, controlY1, controlY2, anchorY);
+				__inflateBounds(__positionX, iy);
 			}
-
-			if (t2 > 0 && t2 < 1)
+			else
 			{
-				iy2 = __calculateBezierCubicPoint(t2, __positionY, controlY1, controlY2, anchorY);
+				var t1 = (-u + Math.sqrt(u * u - 4 * v * w)) / (2 * w);
+				var t2 = (-u - Math.sqrt(u * u - 4 * v * w)) / (2 * w);
+
+				if (t1 > 0 && t1 < 1)
+				{
+					iy1 = __calculateBezierCubicPoint(t1, __positionY, controlY1, controlY2, anchorY);
+				}
+
+				if (t2 > 0 && t2 < 1)
+				{
+					iy2 = __calculateBezierCubicPoint(t2, __positionY, controlY1, controlY2, anchorY);
+				}
 			}
 		}
 
