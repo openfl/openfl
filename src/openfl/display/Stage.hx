@@ -877,6 +877,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	@:noCompletion private var __fullScreenSourceRect:Rectangle;
 	@:noCompletion private var __invalidated:Bool;
 	@:noCompletion private var __lastClickTime:Int;
+	@:noCompletion private var __lastClickTarget:InteractiveObject;
 	@:noCompletion private var __logicalWidth:Int;
 	@:noCompletion private var __logicalHeight:Int;
 	@:noCompletion private var __macKeyboard:Bool;
@@ -2630,10 +2631,10 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			MouseEvent.__pool.release(event);
 			#end
 
-			if (type == MouseEvent.MOUSE_UP && cast(target, openfl.display.InteractiveObject).doubleClickEnabled)
+			if (type == MouseEvent.MOUSE_UP && target.doubleClickEnabled)
 			{
 				var currentTime = Lib.getTimer();
-				if (currentTime - __lastClickTime < 500)
+				if (currentTime - __lastClickTime < 500 && target == __lastClickTarget)
 				{
 					#if openfl_pool_events
 					event = MouseEvent.__pool.get();
@@ -2655,9 +2656,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					#end
 
 					__lastClickTime = 0;
+					__lastClickTarget = null;
 				}
 				else
 				{
+					__lastClickTarget = target;
 					__lastClickTime = currentTime;
 				}
 			}
