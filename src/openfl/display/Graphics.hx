@@ -503,7 +503,8 @@ import js.html.CanvasRenderingContext2D;
 			{
 				var t = -v / u;
 				var ix = __calculateBezierCubicPoint(t, __positionY, controlY1, controlY2, anchorY);
-				__inflateBounds(ix, __positionY);
+				__inflateBounds(ix - __strokePadding, __positionY - __strokePadding);
+				__inflateBounds(ix + __strokePadding, __positionY + __strokePadding);
 			}
 			else
 			{
@@ -536,7 +537,8 @@ import js.html.CanvasRenderingContext2D;
 			{
 				var t = -v / u;
 				var iy = __calculateBezierCubicPoint(t, __positionY, controlY1, controlY2, anchorY);
-				__inflateBounds(__positionX, iy);
+				__inflateBounds(__positionX - __strokePadding, iy - __strokePadding);
+				__inflateBounds(__positionX + __strokePadding, iy + __strokePadding);
 			}
 			else
 			{
