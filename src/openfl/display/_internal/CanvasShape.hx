@@ -54,12 +54,20 @@ class CanvasShape
 						var pixelRatio = renderer.__pixelRatio;
 						// #end
 
+						var matrix = Matrix.__pool.get();
+						matrix.scale(pixelRatio / transform.a, pixelRatio / transform.d);
+						matrix.concat(transform);
+
+						renderer.setTransform(matrix, context);
+
+						Matrix.__pool.release(matrix);
+
 						var bounds = graphics.__bounds;
 
 						var scaleX = graphics.__renderTransform.a / graphics.__bitmapScale;
 						var scaleY = graphics.__renderTransform.d / graphics.__bitmapScale;
-						var renderScaleX = transform.a * pixelRatio;
-						var renderScaleY = transform.d * pixelRatio;
+						var renderScaleX = transform.a / pixelRatio;
+						var renderScaleY = transform.d / pixelRatio;
 
 						var left = Math.max(1, Math.round(scale9Grid.x * scaleX));
 						var top = Math.round(scale9Grid.y * scaleY);
@@ -68,10 +76,10 @@ class CanvasShape
 						var centerWidth = Math.round(scale9Grid.width * scaleX);
 						var centerHeight = Math.round(scale9Grid.height * scaleY);
 
-						var renderLeft = Math.round(scale9Grid.x * renderScaleX);
-						var renderTop = Math.round(scale9Grid.y * renderScaleY);
-						var renderRight = Math.round((bounds.right - scale9Grid.right) * renderScaleX);
-						var renderBottom = Math.round((bounds.bottom - scale9Grid.bottom) * renderScaleY);
+						var renderLeft = Math.round(scale9Grid.x * renderScaleX * pixelRatio);
+						var renderTop = Math.round(scale9Grid.y * renderScaleY * pixelRatio);
+						var renderRight = Math.round((bounds.right - scale9Grid.right) * renderScaleX * pixelRatio);
+						var renderBottom = Math.round((bounds.bottom - scale9Grid.bottom) * renderScaleY * pixelRatio);
 						var renderCenterWidth = Math.round(width * renderScaleX) - renderLeft - renderRight;
 						var renderCenterHeight = Math.round(height * renderScaleY) - renderTop - renderBottom;
 
@@ -118,13 +126,13 @@ class CanvasShape
 					}
 					else
 					{
-						var matrix = Matrix.__pool.get();
-						matrix.scale(1 / graphics.__bitmapScale, 1 / graphics.__bitmapScale);
-						matrix.concat(transform);
+						// var matrix = Matrix.__pool.get();
+						// matrix.scale(1 / graphics.__bitmapScale, 1 / graphics.__bitmapScale);
+						// matrix.concat(transform);
 
 						renderer.setTransform(transform, context);
 
-						Matrix.__pool.release(matrix);
+						// Matrix.__pool.release(matrix);
 
 						context.drawImage(canvas, 0, 0, width, height);
 					}

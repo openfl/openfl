@@ -57,14 +57,22 @@ class CairoShape
 					var pixelRatio = renderer.__pixelRatio;
 					// #end
 
+					var matrix = Matrix.__pool.get();
+					matrix.scale(pixelRatio / transform.a, pixelRatio / transform.d);
+					matrix.concat(transform);
+
+					renderer.applyMatrix(matrix, cairo);
+
+					Matrix.__pool.release(matrix);
+
 					var bounds = graphics.__bounds;
 
 					var renderTransform = Matrix.__pool.get();
 
 					var scaleX = graphics.__renderTransform.a / graphics.__bitmapScale;
 					var scaleY = graphics.__renderTransform.d / graphics.__bitmapScale;
-					var renderScaleX = transform.a * pixelRatio;
-					var renderScaleY = transform.d * pixelRatio;
+					var renderScaleX = transform.a / pixelRatio;
+					var renderScaleY = transform.d / pixelRatio;
 
 					var left = Math.max(1, Math.round(scale9Grid.x * scaleX));
 					var top = Math.round(scale9Grid.y * scaleY);
@@ -73,10 +81,10 @@ class CairoShape
 					var centerWidth = Math.round(scale9Grid.width * scaleX);
 					var centerHeight = Math.round(scale9Grid.height * scaleY);
 
-					var renderLeft = Math.round(scale9Grid.x * renderScaleX);
-					var renderTop = Math.round(scale9Grid.y * renderScaleY);
-					var renderRight = Math.round((bounds.right - scale9Grid.right) * renderScaleX);
-					var renderBottom = Math.round((bounds.bottom - scale9Grid.bottom) * renderScaleY);
+					var renderLeft = Math.round(scale9Grid.x * renderScaleX * pixelRatio);
+					var renderTop = Math.round(scale9Grid.y * renderScaleY * pixelRatio);
+					var renderRight = Math.round((bounds.right - scale9Grid.right) * renderScaleX * pixelRatio);
+					var renderBottom = Math.round((bounds.bottom - scale9Grid.bottom) * renderScaleY * pixelRatio);
 					var renderCenterWidth = Math.round(width * renderScaleX) - renderLeft - renderRight;
 					var renderCenterHeight = Math.round(height * renderScaleY) - renderTop - renderBottom;
 
