@@ -484,95 +484,65 @@ import js.html.CanvasRenderingContext2D;
 	**/
 	public function cubicCurveTo(controlX1:Float, controlY1:Float, controlX2:Float, controlY2:Float, anchorX:Float, anchorY:Float):Void
 	{
-		__inflateBounds(__positionX - __strokePadding, __positionY - __strokePadding);
-		__inflateBounds(__positionX + __strokePadding, __positionY + __strokePadding);
-
-		var ix1, iy1, ix2, iy2;
-
-		ix1 = anchorX;
-		ix2 = anchorX;
-
-		if (!(((controlX1 < anchorX && controlX1 > __positionX) || (controlX1 > anchorX && controlX1 < __positionX))
-			&& ((controlX2 < anchorX && controlX2 > __positionX) || (controlX2 > anchorX && controlX2 < __positionX))))
+		function findExtrema(p1:Float, p2:Float, p3:Float, p4:Float):Dynamic
 		{
-			var u = (2 * __positionX - 4 * controlX1 + 2 * controlX2);
-			var v = (controlX1 - __positionX);
-			var w = (-__positionX + 3 * controlX1 + anchorX - 3 * controlX2);
-
-			if (w == 0)
+			var solutions:Array<Float> = [];
+			if (!(((p2 < p4 && p2 > p1) || (p2 > p4 && p2 < p1)) && ((p3 < p4 && p3 > p1) || (p3 > p4 && p3 < p1))))
 			{
-				var t = -v / u;
-				if (t > 0 && t < 1)
+				// The derivative of a cubic Bézier curve is a quadratic Bézier curve.
+				// f(t) = a * t * t + b * t + c = 0
+				var a = -p1 + 3 * p2 + p4 - 3 * p3;
+				var b = 2 * p1 - 4 * p2 + 2 * p3;
+				var c = p2 - p1;
+				// d is a discriminant
+				var d = b * b - 4 * a * c;
+				if (a == 0)
 				{
-					var ix = __calculateBezierCubicPoint(t, __positionY, controlY1, controlY2, anchorY);
-					__inflateBounds(ix - __strokePadding, __positionY - __strokePadding);
-					__inflateBounds(ix + __strokePadding, __positionY + __strokePadding);
+					var t = -c / b;
+					if (t > 0 && t < 1)
+					{
+						solutions.push(__calculateBezierCubicPoint(t, p1, p2, p3, p4));
+					}
+				}
+				else if (d >= 0)
+				{
+					var t1 = (-b + Math.sqrt(d)) / (2 * a);
+					var t2 = (-b - Math.sqrt(d)) / (2 * a);
+					if (t1 > 0 && t1 < 1)
+					{
+						solutions.push(__calculateBezierCubicPoint(t1, p1, p2, p3, p4));
+					}
+					if (t2 > 0 && t2 < 1)
+					{
+						solutions.push(__calculateBezierCubicPoint(t2, p1, p2, p3, p4));
+					}
 				}
 			}
-			else
+			var min = p1;
+			var max = p1;
+			solutions.push(p4);
+			for (val in solutions)
 			{
-				var t1 = (-u + Math.sqrt(u * u - 4 * v * w)) / (2 * w);
-				var t2 = (-u - Math.sqrt(u * u - 4 * v * w)) / (2 * w);
-
-				if (t1 > 0 && t1 < 1)
+				if (val < min)
 				{
-					ix1 = __calculateBezierCubicPoint(t1, __positionX, controlX1, controlX2, anchorX);
+					min = val;
 				}
-
-				if (t2 > 0 && t2 < 1)
+				if (val > max)
 				{
-					ix2 = __calculateBezierCubicPoint(t2, __positionX, controlX1, controlX2, anchorX);
+					max = val;
 				}
 			}
+			return {min: min, max: max};
 		}
 
-		iy1 = anchorY;
-		iy2 = anchorY;
+		var xs = findExtrema(__positionX, controlX1, controlX2, anchorX);
+		var ys = findExtrema(__positionY, controlY1, controlY2, anchorY);
 
-		if (!(((controlY1 < anchorY && controlY1 > __positionY) || (controlY1 > anchorY && controlY1 < __positionY))
-			&& ((controlY2 < anchorY && controlY2 > __positionY) || (controlY2 > anchorY && controlY2 < __positionY))))
-		{
-			var u = (2 * __positionY - 4 * controlY1 + 2 * controlY2);
-			var v = (controlY1 - __positionY);
-			var w = (-__positionY + 3 * controlY1 + anchorY - 3 * controlY2);
-
-			if (w == 0)
-			{
-				var t = -v / u;
-				if (t > 0 && t < 1)
-				{
-					var iy = __calculateBezierCubicPoint(t, __positionY, controlY1, controlY2, anchorY);
-					__inflateBounds(__positionX - __strokePadding, iy - __strokePadding);
-					__inflateBounds(__positionX + __strokePadding, iy + __strokePadding);
-				}
-			}
-			else
-			{
-				var t1 = (-u + Math.sqrt(u * u - 4 * v * w)) / (2 * w);
-				var t2 = (-u - Math.sqrt(u * u - 4 * v * w)) / (2 * w);
-
-				if (t1 > 0 && t1 < 1)
-				{
-					iy1 = __calculateBezierCubicPoint(t1, __positionY, controlY1, controlY2, anchorY);
-				}
-
-				if (t2 > 0 && t2 < 1)
-				{
-					iy2 = __calculateBezierCubicPoint(t2, __positionY, controlY1, controlY2, anchorY);
-				}
-			}
-		}
-
-		__inflateBounds(ix1 - __strokePadding, iy1 - __strokePadding);
-		__inflateBounds(ix1 + __strokePadding, iy1 + __strokePadding);
-		__inflateBounds(ix2 - __strokePadding, iy2 - __strokePadding);
-		__inflateBounds(ix2 + __strokePadding, iy2 + __strokePadding);
+		__inflateBounds(xs.min - __strokePadding, ys.min - __strokePadding);
+		__inflateBounds(xs.max + __strokePadding, ys.max + __strokePadding);
 
 		__positionX = anchorX;
 		__positionY = anchorY;
-
-		__inflateBounds(__positionX - __strokePadding, __positionY - __strokePadding);
-		__inflateBounds(__positionX + __strokePadding, __positionY + __strokePadding);
 
 		__commands.cubicCurveTo(controlX1, controlY1, controlX2, controlY2, anchorX, anchorY);
 
