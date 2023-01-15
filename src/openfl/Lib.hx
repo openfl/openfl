@@ -559,7 +559,7 @@ import js.Browser;
 		__timers[id] = Timer.delay(function()
 		{
 			Reflect.callMethod(closure, closure, args == null ? [] : args);
-			clearTimeout(id);
+			__timers.remove(id);
 		}, delay);
 		return id;
 	}
