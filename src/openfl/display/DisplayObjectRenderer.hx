@@ -367,8 +367,8 @@ class DisplayObjectRenderer extends EventDispatcher
 
 				displayObject.__getFilterBounds(rect, displayObject.__cacheBitmapMatrix);
 
-				filterWidth = Math.ceil(rect.width * pixelRatio);
-				filterHeight = Math.ceil(rect.height * pixelRatio);
+				filterWidth = rect.width > 0 ? Math.ceil((rect.width + 1) * pixelRatio) : 0;
+				filterHeight = rect.height > 0 ? Math.ceil((rect.height + 1) * pixelRatio) : 0;
 
 				offsetX = rect.x > 0 ? Math.ceil(rect.x) : Math.floor(rect.x);
 				offsetY = rect.y > 0 ? Math.ceil(rect.y) : Math.floor(rect.y);
