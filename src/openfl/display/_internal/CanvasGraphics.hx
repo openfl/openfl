@@ -1141,7 +1141,13 @@ class CanvasGraphics
 	public static function render(graphics:Graphics, renderer:CanvasRenderer):Void
 	{
 		#if (js && html5)
-		graphics.__update(renderer.__worldTransform);
+		#if (openfl_disable_hdpi || openfl_disable_hdpi_graphics)
+		var pixelRatio = 1;
+		#else
+		var pixelRatio = renderer.__pixelRatio;
+		#end
+
+		graphics.__update(renderer.__worldTransform, pixelRatio);
 
 		if (graphics.__softwareDirty)
 		{

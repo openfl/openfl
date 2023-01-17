@@ -88,16 +88,16 @@ class CanvasTextField
 			graphics.__bounds.copyFrom(bounds);
 		}
 
-		graphics.__update(renderer.__worldTransform);
+		#if (openfl_disable_hdpi || openfl_disable_hdpi_textfield)
+		var pixelRatio = 1;
+		#else
+		var pixelRatio = renderer.__pixelRatio;
+		#end
+
+		graphics.__update(renderer.__worldTransform, pixelRatio);
 
 		if (textField.__dirty || graphics.__softwareDirty)
 		{
-			#if (openfl_disable_hdpi || openfl_disable_hdpi_textfield)
-			var pixelRatio = 1;
-			#else
-			var pixelRatio = renderer.__pixelRatio;
-			#end
-
 			var width = Math.round(graphics.__width * pixelRatio);
 			var height = Math.round(graphics.__height * pixelRatio);
 

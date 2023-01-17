@@ -51,15 +51,14 @@ class CairoShape
 
 				if (scale9Grid != null && transform.b == 0 && transform.c == 0)
 				{
-					// #if (openfl_disable_hdpi || openfl_disable_hdpi_graphics)
-					// var pixelRatio = 1;
-					// #else
+					#if (openfl_disable_hdpi || openfl_disable_hdpi_graphics)
+					var pixelRatio = 1;
+					#else
 					var pixelRatio = renderer.__pixelRatio;
-					// #end
+					#end
 
 					var matrix = Matrix.__pool.get();
-					matrix.scale(pixelRatio / transform.a, pixelRatio / transform.d);
-					matrix.concat(transform);
+					matrix.translate(transform.tx, transform.ty);
 
 					renderer.applyMatrix(matrix, cairo);
 
@@ -71,8 +70,8 @@ class CairoShape
 
 					var scaleX = graphics.__renderTransform.a / graphics.__bitmapScale;
 					var scaleY = graphics.__renderTransform.d / graphics.__bitmapScale;
-					var renderScaleX = transform.a / pixelRatio;
-					var renderScaleY = transform.d / pixelRatio;
+					var renderScaleX = (scaleX * transform.a);
+					var renderScaleY = (scaleY * transform.d);
 
 					var left = Math.max(1, Math.round(scale9Grid.x * scaleX));
 					var top = Math.round(scale9Grid.y * scaleY);
@@ -81,12 +80,12 @@ class CairoShape
 					var centerWidth = Math.round(scale9Grid.width * scaleX);
 					var centerHeight = Math.round(scale9Grid.height * scaleY);
 
-					var renderLeft = Math.round(scale9Grid.x * renderScaleX * pixelRatio);
-					var renderTop = Math.round(scale9Grid.y * renderScaleY * pixelRatio);
-					var renderRight = Math.round((bounds.right - scale9Grid.right) * renderScaleX * pixelRatio);
-					var renderBottom = Math.round((bounds.bottom - scale9Grid.bottom) * renderScaleY * pixelRatio);
-					var renderCenterWidth = Math.round(width * renderScaleX) - renderLeft - renderRight;
-					var renderCenterHeight = Math.round(height * renderScaleY) - renderTop - renderBottom;
+					var renderLeft = Math.round(left / pixelRatio);
+					var renderTop = Math.round(top / pixelRatio);
+					var renderRight = Math.round(right / pixelRatio);
+					var renderBottom = Math.round(bottom / pixelRatio);
+					var renderCenterWidth = (bounds.width * renderScaleX) - renderLeft - renderRight;
+					var renderCenterHeight = (bounds.height * renderScaleY) - renderTop - renderBottom;
 
 					var pattern = CairoPattern.createForSurface(graphics.__cairo.target);
 					// TODO: Allow smoothing, even though it shows seams?
