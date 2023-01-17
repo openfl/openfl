@@ -248,7 +248,10 @@ class DisplayObjectRenderer extends EventDispatcher
 		if (renderer.__worldColorTransform != null) colorTransform.__combine(renderer.__worldColorTransform);
 		var updated = false;
 
-		if (displayObject.cacheAsBitmap || (renderer.__type != OPENGL && !colorTransform.__isDefault(true)))
+		// TODO: Do not force cacheAsBitmap on OpenGL once Scale-9 is properly supported in Context3DShape
+		if (displayObject.cacheAsBitmap
+			|| (renderer.__type != OPENGL && !colorTransform.__isDefault(true))
+			|| (renderer.__type == OPENGL && displayObject.scale9Grid != null))
 		{
 			var rect = null;
 
