@@ -516,24 +516,24 @@ import js.html.CanvasRenderingContext2D;
 		iy1 = anchorY;
 		iy2 = anchorY;
 
-		if (!(((controlY1 < anchorY && controlY1 > __positionX) || (controlY1 > anchorY && controlY1 < __positionX))
-			&& ((controlY2 < anchorY && controlY2 > __positionX) || (controlY2 > anchorY && controlY2 < __positionX))))
+		if (!(((controlY1 < anchorY && controlY1 > __positionY) || (controlY1 > anchorY && controlY1 < __positionY))
+			&& ((controlY2 < anchorY && controlY2 > __positionY) || (controlY2 > anchorY && controlY2 < __positionY))))
 		{
-			var u = (2 * __positionX - 4 * controlY1 + 2 * controlY2);
-			var v = (controlY1 - __positionX);
-			var w = (-__positionX + 3 * controlY1 + anchorY - 3 * controlY2);
+			var u = (2 * __positionY - 4 * controlY1 + 2 * controlY2);
+			var v = (controlY1 - __positionY);
+			var w = (-__positionY + 3 * controlY1 + anchorY - 3 * controlY2);
 
 			var t1 = (-u + Math.sqrt(u * u - 4 * v * w)) / (2 * w);
 			var t2 = (-u - Math.sqrt(u * u - 4 * v * w)) / (2 * w);
 
 			if (t1 > 0 && t1 < 1)
 			{
-				iy1 = __calculateBezierCubicPoint(t1, __positionX, controlY1, controlY2, anchorY);
+				iy1 = __calculateBezierCubicPoint(t1, __positionY, controlY1, controlY2, anchorY);
 			}
 
 			if (t2 > 0 && t2 < 1)
 			{
-				iy2 = __calculateBezierCubicPoint(t2, __positionX, controlY1, controlY2, anchorY);
+				iy2 = __calculateBezierCubicPoint(t2, __positionY, controlY1, controlY2, anchorY);
 			}
 		}
 
