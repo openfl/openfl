@@ -558,6 +558,7 @@ import js.Browser;
 		var id = ++__lastTimerID;
 		__timers[id] = Timer.delay(function()
 		{
+			__timers.remove(id);
 			Reflect.callMethod(closure, closure, args == null ? [] : args);
 		}, delay);
 		return id;

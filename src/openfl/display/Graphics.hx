@@ -1830,7 +1830,7 @@ import js.html.CanvasRenderingContext2D;
 		}
 	}
 
-	@:noCompletion private function __update(displayMatrix:Matrix):Void
+	@:noCompletion private function __update(displayMatrix:Matrix, pixelRatio:Float):Void
 	{
 		if (__bounds == null || __bounds.width <= 0 || __bounds.height <= 0) return;
 
@@ -1911,10 +1911,22 @@ import js.html.CanvasRenderingContext2D;
 			scaleY = maxTextureHeight / __bounds.height;
 		}
 
-		__renderTransform.a = width / __bounds.width;
-		__renderTransform.d = height / __bounds.height;
-		var inverseA = (1 / __renderTransform.a);
-		var inverseD = (1 / __renderTransform.d);
+		var inverseA, inverseD;
+
+		if (__owner.__worldScale9Grid != null)
+		{
+			__renderTransform.a = pixelRatio;
+			__renderTransform.d = pixelRatio;
+			inverseA = 1 / pixelRatio;
+			inverseD = 1 / pixelRatio;
+		}
+		else
+		{
+			__renderTransform.a = width / __bounds.width;
+			__renderTransform.d = height / __bounds.height;
+			inverseA = (1 / __renderTransform.a);
+			inverseD = (1 / __renderTransform.d);
+		}
 
 		// Inlined & simplified `__worldTransform.concat (parentTransform)` below:
 		__worldTransform.a = inverseA * parentTransform.a;
