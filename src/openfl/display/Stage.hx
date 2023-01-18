@@ -1005,23 +1005,21 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		__mouseOutStack = [];
 		__touchData = new Map<Int, TouchData>();
 
+		if (Lib.current.__loaderInfo == null)
+		{
+			Lib.current.__loaderInfo = LoaderInfo.create(null);
+			Lib.current.__loaderInfo.content = Lib.current;
+		}
+
+		// TODO: Do not rely on Lib.current
+		__uncaughtErrorEvents = Lib.current.__loaderInfo.uncaughtErrorEvents;
+
 		#if commonjs
 		if (windowAttributes == null) windowAttributes = {};
 		var app = null;
 
 		if (!Math.isNaN(width))
 		{
-			// if (Lib.current == null) Lib.current = new MovieClip ();
-
-			if (Lib.current.__loaderInfo == null)
-			{
-				Lib.current.__loaderInfo = LoaderInfo.create(null);
-				Lib.current.__loaderInfo.content = Lib.current;
-			}
-
-			// TODO: Do not rely on Lib.current
-			__uncaughtErrorEvents = Lib.current.__loaderInfo.uncaughtErrorEvents;
-
 			var resizable = (width == 0 && width == 0);
 
 			#if (js && html5)
@@ -1088,9 +1086,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		this.application = window.application;
 		this.window = window;
 		this.color = color;
-
-		// TODO: Do not rely on Lib.current
-		__uncaughtErrorEvents = Lib.current.__loaderInfo.uncaughtErrorEvents;
 		#end
 
 		__contentsScaleFactor = window.scale;
