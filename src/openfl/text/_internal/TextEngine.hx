@@ -975,20 +975,12 @@ class TextEngine
 		#if !js inline #end function getBaseX():Float
 
 		{
-			if (mainDirection() == RIGHT_TO_LEFT)
-			{
-				return width - (GUTTER + rightMargin + blockIndent + (firstLineOfParagraph ? indent : 0));
-			}
 			return GUTTER + leftMargin + blockIndent + (firstLineOfParagraph ? indent : 0);
 		}
 
 		#if !js inline #end function getWrapWidth():Float
 
 		{
-			if (mainDirection() == RIGHT_TO_LEFT)
-			{
-				return getBaseX() - leftMargin - GUTTER;
-			}
 			return width - GUTTER - rightMargin - getBaseX();
 		}
 
@@ -1938,7 +1930,6 @@ class TextEngine
 
 					default:
 						offsetX = 0;
-						if (mainDirection().backward) group.offsetX -= group.width;
 				}
 			}
 
