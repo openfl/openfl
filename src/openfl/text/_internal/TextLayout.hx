@@ -69,8 +69,9 @@ class TextLayout
 	@SuppressWarnings("checkstyle:Dynamic") private var __hbBuffer:#if lime HBBuffer #else Dynamic #end;
 	@SuppressWarnings("checkstyle:Dynamic") private var __hbFont:#if lime HBFTFont #else Dynamic #end;
 
-	public function new(text:String = "", font:Font = null, size:Int = 12, direction:TextDirection = LEFT_TO_RIGHT, script:TextScript = COMMON,
-			language:String = "en")
+	public function new(text:String = "", font:Font = null, size:Int = 12, #if (!hl) direction:TextDirection = INVALID, script:TextScript =  GUESS,
+			language:String = "" #else direction:TextDirection = LEFT_TO_RIGHT, script:TextScript = COMMON,
+			language:String = "en"    #end)
 	{
 		this.text = text;
 		this.font = font;
@@ -153,6 +154,31 @@ class TextLayout
 			__hbBuffer.addUTF16(untyped __cpp__('(uintptr_t){0}', text.wc_str()), text.length, 0, -1);
 			#end
 
+			#if (!hl)
+			if (__script == TextScript.GUESS)
+			{
+				// For now I'm resettin like this, but I think we should keep the original user defined direction
+				// separated from the guessed direction, so we don't have to reset "manually"
+				// We should be able to have a Guess Script and defined direction
+				__hbBuffer.direction = INVALID;
+				__hbBuffer.language = "";
+				__hbBuffer.guessSegmentProperties();
+
+				if (__hbBuffer.script == INVALID)
+				{
+					direction = cast direction.toHBDirection();
+				}
+				else
+				{
+					direction = cast __hbBuffer.direction;
+				}
+
+				// This has to do with a weird bg in Guess mode where the first textLayout repeats itself
+				// instead of "ال صبا صباح"  it writes "ال ال صبا صباح "
+				if (positions.length > 0) return;
+			}
+			#end
+
 			HB.shape(__hbFont, __hbBuffer);
 
 			var _info = __hbBuffer.getGlyphInfo();
@@ -174,11 +200,11 @@ class TextLayout
 					{
 						// TODO: Handle differently?
 
-						positions.push(new GlyphPosition(0, new Vector2(0, 0), new Vector2(0, 0)));
+						// positions.push(new GlyphPosition(0, new Vector2(0, 0), new Vector2(0, 0)));
 					}
 
 					positions.push(new GlyphPosition(info.codepoint, new Vector2(position.xAdvance / 64 + letterSpacing, position.yAdvance / 64),
-						new Vector2(position.xOffset / 64, position.yOffset / 64)));
+						new Vector2(position.xOffset / 64, position.yOffset / 64), direction));
 					lastCluster = info.cluster;
 				}
 			}
@@ -297,6 +323,7 @@ class TextLayout
 	public var forward(get, never):Bool;
 	public var horizontal(get, never):Bool;
 	public var vertical(get, never):Bool;
+	public var invalid(get, never):Bool;
 
 	public inline function reverse():Void
 	{
@@ -347,6 +374,11 @@ class TextLayout
 	@:noCompletion private inline function get_vertical():Bool
 	{
 		return (this & ~1) == 6;
+	}
+
+	@:noCompletion private inline function get_invalid():Bool
+	{
+		return this == 0;
 	}
 }
 
@@ -479,15 +511,13 @@ class TextLayout
 	public var SIDDHAM = "Sidd";
 	public var TIRHUTA = "Tirh";
 	public var WARANG_CITI = "Wara";
+	public var GUESS = "";
 	public var rightToLeft(get, never):Bool;
 
 	#if lime
 	@:to public inline function toHBScript():HBScript
 	{
-		return switch (this)
-		{
-			default: HBScript.COMMON;
-		}
+		return this.charCodeAt(0) << 24 | this.charCodeAt(1) << 16 | this.charCodeAt(2) << 8 | this.charCodeAt(3);
 	}
 	#end
 

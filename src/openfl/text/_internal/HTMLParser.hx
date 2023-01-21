@@ -18,6 +18,7 @@ class HTMLParser
 	private static var __regexBlockIndent:EReg = ~/blockindent\s?=\s?("([^"]+)"|'([^']+)')/i;
 	private static var __regexClass:EReg = ~/class\s?=\s?("([^"]+)"|'([^']+)')/i;
 	private static var __regexColor:EReg = ~/color\s?=\s?("#([^"]+)"|'#([^']+)')/i;
+	private static var __regexDirection:EReg = ~/dir\s?=\s?("([^"]+)"|'([^']+)')/i;
 	private static var __regexEntities:Array<EReg> = [~/&quot;/g, ~/&apos;/g, ~/&amp;/g, ~/&lt;/g, ~/&gt;/g, ~/&nbsp;/g];
 	private static var __regexCharEntity:EReg = ~/&#(?:([0-9]+)|(x[0-9a-fA-F]+));/g;
 	private static var __regexFace:EReg = ~/face\s?=\s?("([^"]+)"|'([^']+)')/i;
@@ -235,6 +236,19 @@ class HTMLParser
 								format.italic = true;
 
 							case "textformat":
+								if (__regexDirection.match(segment))
+								{
+									var direction = __getAttributeMatch(__regexDirection);
+									if (direction == "rtl")
+									{
+										format.textDirection = TextLayout.TextDirection.RIGHT_TO_LEFT;
+									}
+									else
+									{
+										format.textDirection = TextLayout.TextDirection.LEFT_TO_RIGHT;
+									}
+								}
+
 								if (__regexBlockIndent.match(segment))
 								{
 									format.blockIndent = Std.parseInt(__getAttributeMatch(__regexBlockIndent));

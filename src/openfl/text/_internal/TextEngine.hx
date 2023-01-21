@@ -13,6 +13,7 @@ import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFieldType;
 import openfl.text.TextFormat;
 import openfl.text.TextFormatAlign;
+import openfl.text._internal.TextLayout.TextDirection;
 #if lime
 import lime.graphics.cairo.CairoFontFace;
 import lime.system.System;
@@ -85,6 +86,8 @@ class TextEngine
 	public var type:TextFieldType;
 	public var width:Float;
 	public var wordWrap:Bool;
+	public var script:TextLayout.TextScript = null;
+	public var language:String = null;
 
 	private var textField:TextField;
 	@:noCompletion private var __cursorTimer:Timer;
@@ -163,6 +166,17 @@ class TextEngine
 		}
 		#end
 		#end
+	}
+
+	public function mainDirection():TextDirection
+	{
+		if (textField.__textDirection != INVALID)
+		{
+			return textField.textDirection;
+		}
+		if (layoutGroups.length == 0) return LEFT_TO_RIGHT;
+		// We guess that the main direction is the same as the 1st layout group
+		return layoutGroups[0].textDirection();
 	}
 
 	private function createRestrictRegexp(restrict:String):EReg
@@ -649,7 +663,7 @@ class TextEngine
 
 			currentLineHeight = Math.max(currentLineHeight, group.height);
 			currentLineWidth = group.offsetX - 2 + group.width;
-
+			
 			if (currentLineWidth > textWidth)
 			{
 				textWidth = currentLineWidth;
@@ -880,9 +894,21 @@ class TextEngine
 			__textLayout.letterSpacing = letterSpacing;
 			__textLayout.autoHint = (antiAliasType != ADVANCED || sharpness < 400);
 
-			// __textLayout.direction = RIGHT_TO_LEFT;
-			// __textLayout.script = ARABIC;
+			if (textField.__textDirection != INVALID) __textLayout.direction = textField.textDirection;
 
+			if (script != null) __textLayout.script = cast script;
+			if (language != null) __textLayout.language = language;
+
+			if (formatRange.format.textDirection != INVALID)
+			{
+				__textLayout.direction = formatRange.format.textDirection;
+			}
+			else
+			{
+				if (__textLayout.script != GUESS) __textLayout.direction = mainDirection();
+			}
+
+			
 			__textLayout.text = text.substring(startIndex, endIndex);
 
 			// TODO:Smarter caching for justify
@@ -931,8 +957,9 @@ class TextEngine
 				__textLayout.size = formatRange.format.size;
 			}
 
-			// __textLayout.direction = RIGHT_TO_LEFT;
-			// __textLayout.script = ARABIC;
+			if (textField.__textDirection != INVALID) __textLayout.direction = textField.textDirection;
+			if (script != null) __textLayout.script = cast script;
+			if (language != null) __textLayout.language = language;
 
 			__textLayout.text = text;
 
@@ -948,14 +975,20 @@ class TextEngine
 		#if !js inline #end function getBaseX():Float
 
 		{
-			// TODO: swap margins in RTL
+			if (mainDirection() == RIGHT_TO_LEFT)
+			{
+				return width - (GUTTER + rightMargin + blockIndent + (firstLineOfParagraph ? indent : 0));
+			}
 			return GUTTER + leftMargin + blockIndent + (firstLineOfParagraph ? indent : 0);
 		}
 
 		#if !js inline #end function getWrapWidth():Float
 
 		{
-			// TODO: swap margins in RTL
+			if (mainDirection() == RIGHT_TO_LEFT)
+			{
+				return getBaseX() - leftMargin - GUTTER;
+			}
 			return width - GUTTER - rightMargin - getBaseX();
 		}
 
@@ -1127,7 +1160,30 @@ class TextEngine
 				nextLayoutGroup(textIndex, endIndex);
 
 				layoutGroup.positions = positions;
-				layoutGroup.offsetX = offsetX + getBaseX();
+
+				layoutGroup._textDirection = if (!formatRange.format.textDirection.invalid) formatRange.format.textDirection; else if (positions.length > 0)
+					positions[0].textDirection;
+				else
+					mainDirection();
+
+				if (mainDirection().forward)
+				{
+					layoutGroup.offsetX = offsetX + getBaseX();
+				}
+				else if (mainDirection().invalid)
+				{
+					layoutGroup.offsetX = offsetX + getBaseX();
+				}
+				else
+				{
+					layoutGroup.offsetX = getBaseX() - offsetX;
+					if (actualDirection().forward) layoutGroup.offsetX -= widthValue;
+					else if (layoutGroups.length > 1 && layoutGroups[layoutGroups.length - 2].textDirection().forward && layoutGroups[layoutGroups
+						.length - 2].lineIndex == lineIndex)
+					{
+						layoutGroup.offsetX -= widthValue;
+					}
+				}
 				layoutGroup.ascent = ascent;
 				layoutGroup.descent = descent;
 				layoutGroup.leading = leading;
@@ -1161,7 +1217,28 @@ class TextEngine
 						nextLayoutGroup(textIndex, tempRangeEnd);
 
 						layoutGroup.positions = positions;
-						layoutGroup.offsetX = offsetX + getBaseX();
+						layoutGroup._textDirection = if (!formatRange.format.textDirection.invalid) formatRange.format.textDirection; else if (positions
+							.length > 0) positions[0].textDirection;
+						else
+							mainDirection();
+						if (mainDirection().forward)
+						{
+							layoutGroup.offsetX = offsetX + getBaseX();
+						}
+						else if (mainDirection().invalid)
+						{
+							layoutGroup.offsetX = offsetX + getBaseX();
+						}
+						else
+						{
+							layoutGroup.offsetX = getBaseX() - offsetX;
+							if (actualDirection().forward) layoutGroup.offsetX -= widthValue;
+							else if (layoutGroups.length > 1 && layoutGroups[layoutGroups.length - 2].textDirection().forward && layoutGroups[layoutGroups
+								.length - 2].lineIndex == lineIndex)
+							{
+								layoutGroup.offsetX -= widthValue;
+							}
+						}
 						layoutGroup.ascent = ascent;
 						layoutGroup.descent = descent;
 						layoutGroup.leading = leading;
@@ -1345,7 +1422,7 @@ class TextEngine
 		while (textIndex < maxLoops)
 		{
 			if ((breakIndex > -1) && (spaceIndex == -1 || breakIndex < spaceIndex))
-			{
+			{				
 				// if a line break is the next thing that needs to be dealt with
 				// TODO: when is this condition ever false?
 				if (textIndex <= breakIndex)
@@ -1451,7 +1528,7 @@ class TextEngine
 							if (positions.length > 0 && endIndex == spaceIndex + 1)
 							{
 								// if last letter is a space, avoid word wrap if possible
-								// TODO: Handle multiple spaces
+								// TODO: Handle multiple spaces								
 								var lastPosition = positions[positions.length - 1];
 								var spaceWidth = #if (js && html5) lastPosition #else lastPosition.advance.x #end;
 
@@ -1533,6 +1610,7 @@ class TextEngine
 								layoutGroup.positions = layoutGroup.positions.concat(positions);
 								layoutGroup.width += widthValue;
 							}
+
 							offsetX += widthValue;
 
 							textIndex = endIndex;
@@ -1543,7 +1621,7 @@ class TextEngine
 							if (endIndex == text.length) alignBaseline();
 						}
 						else
-						{
+						{							
 							var tempRangeEnd = endIndex < formatRange.end ? endIndex : formatRange.end;
 
 							if (tempRangeEnd < endIndex)
@@ -1553,10 +1631,70 @@ class TextEngine
 							}
 
 							layoutGroup.endIndex = tempRangeEnd;
+							#if !(js && html5)
+							if (mainDirection().backward)
+							{
+								if (mainDirection() != actualDirection())
+								{
+									for (p in 0...positions.length)
+									{
+										var pos:GlyphPosition = cast positions[p];
+										if (pos.textDirection != mainDirection())
+										{
+											layoutGroup.positions = positions.slice(0, p).concat(layoutGroup.positions).concat(positions.slice(p));
+											break;
+										}
+									}
+								}
+								else if (positions.length > 0 && positions[0].textDirection.forward && layoutGroup.positions[0].textDirection.forward)
+								{
+									for (p in 0...layoutGroup.positions.length)
+									{
+										var pos:GlyphPosition = cast layoutGroup.positions[p];
+										if (pos.textDirection == mainDirection())
+										{
+											layoutGroup.positions = layoutGroup.positions.slice(0, p).concat(positions).concat(layoutGroup.positions.slice(p));
+											break;
+										}
+									}
+								}
+								else
+								{
+									layoutGroup.positions = positions.concat(layoutGroup.positions);
+								}
+							}
+							else
+							{
+								if (actualDirection().backward)
+								{
+									layoutGroup.positions = positions.concat(layoutGroup.positions);
+								}
+								else
+								{
+									layoutGroup.positions = layoutGroup.positions.concat(positions);
+								}
+							}
+							#else
 							layoutGroup.positions = layoutGroup.positions.concat(positions);
+							#end
 							layoutGroup.width += widthValue;
 
 							offsetX += widthValue;
+
+							#if !(js && html5)
+							if (mainDirection().backward && layoutGroup.textDirection().forward)
+							{
+								layoutGroup.offsetX -= widthValue;
+							}
+							else if (mainDirection().backward)
+							{
+								if (layoutGroups.length > 1 && layoutGroups[layoutGroups.length - 2].textDirection().forward && layoutGroups[layoutGroups
+									.length - 2].lineIndex == lineIndex)
+								{
+									layoutGroup.offsetX -= widthValue;
+								}
+							}
+							#end
 
 							if (tempRangeEnd == formatRange.end)
 							{
@@ -1654,9 +1792,27 @@ class TextEngine
 		#if openfl_trace_text_layout_groups
 		for (lg in layoutGroups)
 		{
-			Log.info('LG ${lg.positions.length - (lg.endIndex - lg.startIndex)},line:${lg.lineIndex},w:${lg.width},h:${lg.height},x:${Std.int(lg.offsetX)},y:${Std.int(lg.offsetY)},"${text.substring(lg.startIndex, lg.endIndex)}",${lg.startIndex},${lg.endIndex}');
+			Log
+				.info('LG ${lg.positions.length - (lg.endIndex - lg.startIndex)},line:${lg.lineIndex},w:${lg.width},h:${lg.height},x:${Std.int(lg.offsetX)},y:${Std.int(lg.offsetY)},"${text.substring(lg.startIndex, lg.endIndex)}",${lg.startIndex},${lg.endIndex}');
 		}
 		#end
+	}
+
+	private function lastDirection()
+	{
+		for (l in layoutGroups.slice(0, layoutGroups.length - 1).reverse())
+		{
+			if (l.textDirection() == INVALID) continue;
+			return l.textDirection();
+		}
+		return mainDirection();
+	}
+
+	private function actualDirection()
+	{
+		var layoutGroup = layoutGroups[layoutGroups.length - 1];
+		if (layoutGroup.textDirection() == INVALID) return mainDirection();
+		return layoutGroup.textDirection();
 	}
 
 	#if (js && html5)
@@ -1782,6 +1938,7 @@ class TextEngine
 
 					default:
 						offsetX = 0;
+						if (mainDirection().backward) group.offsetX -= group.width;
 				}
 			}
 
@@ -1850,50 +2007,51 @@ class TextEngine
 		// TODO: only update when dirty
 		if (numLines == 1 || lineHeights == null)
 		{
-			return 1;
+			return 1;	
 		}
 		else
 		{
 			var ret = lineHeights.length;
 			// TODO: update for loop with leading checks, remove below line. Leading of lineIndex == bottomScroll is ignored
 			var tempHeight = (lineLeadings.length == ret) ? -lineLeadings[ret - 1] : 0.0;
-
+			
 			for (i in (scrollV > 0 ? scrollV : 1) - 1...lineHeights.length)
 			{
 				var lineHeight = lineHeights[i];
-
+				
 				tempHeight += lineHeight;
-
+				
 				if (tempHeight > height - 4)
 				{
-					ret = i + (tempHeight - height >= 0 ? 0 : 1);
+					ret = i + (tempHeight - height >= 0 ? 0 : 1);					
 					break;
 				}
-
+				
 				/*if (tempHeight + lineHeights[i] <= height - 4)
-					{
-
-						tempHeight += lineHeights[i];
-					}
-					else
-					{
-						ret = i;
-						break;
+				{
+					
+					tempHeight += lineHeights[i];
+				}
+				else
+				{
+					ret = i;
+					break;
 				}*/
 			}
 
 			if (ret < scrollV) return scrollV;
-
-			// if (ret < lineHeights.length)
-			// {
-			// ret++;
-			// }
+			
+			//if (ret < lineHeights.length)
+			//{
+				//ret++;
+			//}
 			return ret;
 		}
 	}
 
 	private function get_maxScrollV():Int
 	{
+	
 		// TODO: only update when dirty
 		if (numLines == 1 || lineHeights == null)
 		{
@@ -1901,34 +2059,34 @@ class TextEngine
 		}
 		else
 		{
-			var i = numLines - 1, tempHeight = 0.0;
+			var i = numLines-1, tempHeight = 0.0;
 			var j = i;
 			// TODO: update while loop with leading checks. Leading of lineIndex == bottomScroll is ignored
 
 			while (i >= 0)
-			{
+			{				
 				tempHeight += lineHeights[i];
-
-				if (tempHeight > height - 4)
-				{
+				
+				if (tempHeight > height - 4){
 					i += (tempHeight - height < 0 ? 1 : 2);
 					break;
+					
 				}
 				i--;
 			}
-			/*if (tempHeight + lineHeights[i] <= height - 4)
-					{
-						tempHeight += lineHeights[i];
-						i--;
-					}
-					else
-						break;
+				/*if (tempHeight + lineHeights[i] <= height - 4)
+				{
+					tempHeight += lineHeights[i];
+					i--;
 				}
+				else
+					break;
+			}
 			}*/
 
-			// if (i == j) i = numLines; // maxScrollV defaults to numLines if the height - 4 is less than the line's height
+			//if (i == j) i = numLines; // maxScrollV defaults to numLines if the height - 4 is less than the line's height
 			// TODO: check if it's based on the first or last line's height
-			// else
+			//else
 			//	i += 1;
 			if (i < 1) return 1;
 			return i;
@@ -1959,7 +2117,7 @@ class TextEngine
 	private function get_scrollV():Int
 	{
 		if (numLines == 1 || lineHeights == null) return 1;
-
+		
 		var max = maxScrollV;
 
 		//TODO: Does maxScrollV return the wrong value(+1) in some cases?

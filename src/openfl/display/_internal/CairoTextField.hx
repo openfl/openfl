@@ -292,7 +292,11 @@ class CairoTextField
 					for (position in group.positions)
 					{
 						if (position == null || position.glyph == 0) continue;
+
+						// TODO should check with  font which has position offset for rtL
+
 						glyphs.push(new CairoGlyph(position.glyph, x + position.offset.x + 0.5, y - position.offset.y + 0.5));
+
 						x += position.advance.x;
 						y -= position.advance.y;
 					}
@@ -304,16 +308,22 @@ class CairoTextField
 					{
 						if (textField.__selectionIndex == textField.__caretIndex)
 						{
-							if (textField.__showCursor
-								&& group.startIndex <= textField.__caretIndex
-								&& group.endIndex >= textField.__caretIndex)
+							if (textField.__showCursor && group.startIndex <= textField.__caretIndex && group.endIndex >= textField.__caretIndex)
 							{
 								advance = 0.0;
+								if (group.textDirection().backward) advance = group.width;
 
 								for (i in 0...(textField.__caretIndex - group.startIndex))
 								{
 									if (group.positions.length <= i) break;
-									advance += group.getAdvance(i);
+									if (group.textDirection().backward)
+									{
+										advance -= group.getAdvance(group.positions.length - 1 - i);
+									}
+									else
+									{
+										advance += group.getAdvance(i);
+									}
 								}
 
 								var scrollY = 0.0;
@@ -364,7 +374,8 @@ class CairoTextField
 
 								if (end != null)
 								{
-									end.x += end.width + 2;
+									if (!group.textDirection().backward) end.x += end.width + 2;
+									if (group.textDirection().backward) end.x -= group.getAdvance(0); // group.positions.length - 1);
 								}
 							}
 							else
@@ -386,7 +397,16 @@ class CairoTextField
 								selectionStart -= group.startIndex;
 								selectionEnd -= group.startIndex;
 								for (i in selectionStart...selectionEnd)
-									selectedGylphs.push(glyphs[i]);
+								{
+									if (group.textDirection().backward)
+									{
+										selectedGylphs.push(glyphs[glyphs.length - 1 - i]);
+									}
+									else
+									{
+										selectedGylphs.push(glyphs[i]);
+									}
+								}
 								cairo.showGlyphs(selectedGylphs);
 
 								// TODO: Avoid creating glyph array every time.
