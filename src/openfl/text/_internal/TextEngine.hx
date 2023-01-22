@@ -975,7 +975,9 @@ class TextEngine
 		#if !js inline #end function getBaseX():Float
 
 		{
-			return GUTTER + leftMargin + blockIndent + (firstLineOfParagraph ? indent : 0);
+			var baseX = GUTTER + leftMargin;
+			if (mainDirection().forward) baseX += blockIndent + (firstLineOfParagraph ? indent : 0);
+			return  baseX;
 		}
 
 		#if !js inline #end function getWrapWidth():Float
@@ -1153,8 +1155,8 @@ class TextEngine
 
 				layoutGroup.positions = positions;
 
-				layoutGroup._textDirection = if (!formatRange.format.textDirection.invalid) formatRange.format.textDirection; else if (positions.length > 0)
-					positions[0].textDirection;
+				layoutGroup._textDirection = if (!formatRange.format.textDirection.invalid) formatRange.format.textDirection; #if !(js && html5) else if (positions.length > 0)
+					positions[0].textDirection; #end
 				else
 					mainDirection();
 
@@ -1209,8 +1211,8 @@ class TextEngine
 						nextLayoutGroup(textIndex, tempRangeEnd);
 
 						layoutGroup.positions = positions;
-						layoutGroup._textDirection = if (!formatRange.format.textDirection.invalid) formatRange.format.textDirection; else if (positions
-							.length > 0) positions[0].textDirection;
+						layoutGroup._textDirection = if (!formatRange.format.textDirection.invalid) formatRange.format.textDirection; #if !(js && html5) else if (positions
+							.length > 0) positions[0].textDirection; #end
 						else
 							mainDirection();
 						if (mainDirection().forward)
