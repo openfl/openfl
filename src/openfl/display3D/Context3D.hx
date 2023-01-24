@@ -1445,7 +1445,7 @@ import lime.math.Vector2;
 			var isVertex = (programType == VERTEX);
 			var dest = isVertex ? __vertexConstants : __fragmentConstants;
 
-			var floatData = Float32Array.fromBytes(data, 0, data.length);
+			var floatData = Float32Array.fromBytes(data, 0);
 			var outOffset = firstRegister * 4;
 			var inOffset = Std.int(byteArrayOffset / 4);
 
