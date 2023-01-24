@@ -1904,6 +1904,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	@:noCompletion @:dox(hide) @:require(flash11_4) public function atomicCompareAndSwapLength(expectedLength:Int, newLength:Int):Int;
 	#end
 
+	public function new(length:Int = 0);
+
 	/**
 		Clears the contents of the byte array and resets the `length`
 		and `position` properties to 0. Calling this method explicitly
