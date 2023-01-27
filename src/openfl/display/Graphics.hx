@@ -1892,8 +1892,18 @@ import js.html.CanvasRenderingContext2D;
 		if (scaleY > 1) scaleY = 1;
 		#end
 
-		var width = __bounds.width * scaleX;
-		var height = __bounds.height * scaleY;
+		var width:Float, height:Float;
+
+		if (__owner.__worldScale9Grid != null)
+		{
+			width = __bounds.width * pixelRatio;
+			height = __bounds.height * pixelRatio;
+		}
+		else
+		{
+			width = __bounds.width * scaleX;
+			height = __bounds.height * scaleY;
+		}
 
 		if (width < 1 || height < 1)
 		{
