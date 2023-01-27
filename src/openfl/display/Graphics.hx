@@ -1839,9 +1839,11 @@ import js.html.CanvasRenderingContext2D;
 		if (__bounds == null || __bounds.width <= 0 || __bounds.height <= 0) return;
 
 		var parentTransform = __owner.__renderTransform;
-		var scaleX = 1.0, scaleY = 1.0;
+		if (parentTransform == null) return;
 
-		if (parentTransform != null)
+		var scaleX = pixelRatio, scaleY = pixelRatio;
+
+		if (__owner.__worldScale9Grid == null)
 		{
 			if (parentTransform.b == 0)
 			{
@@ -1860,50 +1862,36 @@ import js.html.CanvasRenderingContext2D;
 			{
 				scaleY = Math.sqrt(parentTransform.c * parentTransform.c + parentTransform.d * parentTransform.d);
 			}
-		}
-		else
-		{
-			return;
-		}
 
-		if (displayMatrix != null)
-		{
-			if (displayMatrix.b == 0)
+			if (displayMatrix != null)
 			{
-				scaleX *= displayMatrix.a;
-			}
-			else
-			{
-				scaleX *= Math.sqrt(displayMatrix.a * displayMatrix.a + displayMatrix.b * displayMatrix.b);
+				if (displayMatrix.b == 0)
+				{
+					scaleX *= displayMatrix.a;
+				}
+				else
+				{
+					scaleX *= Math.sqrt(displayMatrix.a * displayMatrix.a + displayMatrix.b * displayMatrix.b);
+				}
+
+				if (displayMatrix.c == 0)
+				{
+					scaleY *= displayMatrix.d;
+				}
+				else
+				{
+					scaleY *= Math.sqrt(displayMatrix.c * displayMatrix.c + displayMatrix.d * displayMatrix.d);
+				}
 			}
 
-			if (displayMatrix.c == 0)
-			{
-				scaleY *= displayMatrix.d;
-			}
-			else
-			{
-				scaleY *= Math.sqrt(displayMatrix.c * displayMatrix.c + displayMatrix.d * displayMatrix.d);
-			}
+			#if openfl_disable_graphics_upscaling
+			if (scaleX > 1) scaleX = 1;
+			if (scaleY > 1) scaleY = 1;
+			#end
 		}
 
-		#if openfl_disable_graphics_upscaling
-		if (scaleX > 1) scaleX = 1;
-		if (scaleY > 1) scaleY = 1;
-		#end
-
-		var width:Float, height:Float;
-
-		if (__owner.__worldScale9Grid != null)
-		{
-			width = __bounds.width * pixelRatio;
-			height = __bounds.height * pixelRatio;
-		}
-		else
-		{
-			width = __bounds.width * scaleX;
-			height = __bounds.height * scaleY;
-		}
+		var width = __bounds.width * scaleX;
+		var height = __bounds.height * scaleY;
 
 		if (width < 1 || height < 1)
 		{
