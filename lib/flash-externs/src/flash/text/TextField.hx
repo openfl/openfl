@@ -50,6 +50,9 @@ extern class TextField extends InteractiveObject
 	@:require(flash11) public var textInteractionMode:String;
 	#end
 	public var textWidth(default, never):Float;
+	#if flash
+	public var thickness:Float;
+	#end
 	public var type:TextFieldType;
 	#if flash
 	public var useRichTextClipboard:Bool;

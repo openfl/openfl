@@ -128,6 +128,9 @@ class ShaderMacro
 							glVertexBody += meta.params[0].getValue();
 						}
 
+					case "glVersion", ":glVersion":
+						glVersion = meta.params[0].getValue();
+
 					default:
 				}
 			}
@@ -202,6 +205,9 @@ class ShaderMacro
 									glVertexSource = meta.params[0].getValue();
 								}
 							}
+
+						case "glVersion", ":glVersion":
+							if (glVersion == null) glVersion = meta.params[0].getValue();
 
 						case "glFragmentHeader", ":glFragmentHeader":
 							if (shouldProcess)

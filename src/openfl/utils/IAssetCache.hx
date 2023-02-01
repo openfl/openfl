@@ -35,6 +35,72 @@ interface IAssetCache
 	public function clear(prefix:String = null):Void;
 
 	/**
+		Clears all cached Bitmap assets, or all assets with an ID that
+		matches an optional prefix.
+
+		@param	prefix	A ID prefix
+	**/
+	public function clearBitmapData(prefix:String = null):Void;
+
+	/**
+		Clears all cached Font assets, or all assets with an ID that
+		matches an optional prefix.
+
+		@param	prefix	A ID prefix
+	**/
+	public function clearFonts(prefix:String = null):Void;
+
+	/**
+		Clears all cached Sound assets, or all assets with an ID that
+		matches an optional prefix.
+
+		@param	prefix	A ID prefix
+	**/
+	public function clearSounds(prefix:String = null):Void;
+
+	/**
+		Returns the IDs of all assets with an ID that
+		matches an optional prefix.
+
+		For example:
+
+		```haxe
+		Assets.setBitmapData("image1", image1);
+		Assets.setBitmapData("assets/image2", image2);
+
+		Assets.getKeys("assets"); // will return ["assets/image2"]
+		Assets.getKeys("image"); // will return ["image1"]
+		```
+
+		@param	prefix	A ID prefix
+	**/
+	public function getKeys(prefix:String = null):Array<String>;
+
+	/**
+		Returns the IDs of all BitmapData assets with an ID that
+		matches an optional prefix.
+
+		@param	prefix	A ID prefix
+	**/
+	public function getBitmapKeys(prefix:String = null):Array<String>;
+
+	/**
+		Returns the IDs of all Font assets with an ID that
+		matches an optional prefix.
+
+		@param	prefix	A ID prefix
+	**/
+	public function getFontKeys(prefix:String = null):Array<String>;
+
+	/**
+		Returns the IDs of all Sound assets with an ID that
+		matches an optional prefix.
+
+		@param	prefix	A ID prefix
+	**/
+	public function getSoundKeys(prefix:String = null):Array<String>;
+
+	/**
 		Retrieves a cached BitmapData.
 
 		@param	id	The ID of the cached BitmapData
