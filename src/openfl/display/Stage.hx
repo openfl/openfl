@@ -877,6 +877,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	@:noCompletion private var __fullScreenSourceRect:Rectangle;
 	@:noCompletion private var __invalidated:Bool;
 	@:noCompletion private var __lastClickTime:Int;
+	@:noCompletion private var __lastClickTarget:InteractiveObject;
 	@:noCompletion private var __logicalWidth:Int;
 	@:noCompletion private var __logicalHeight:Int;
 	@:noCompletion private var __macKeyboard:Bool;
@@ -1004,24 +1005,32 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		__mouseOutStack = [];
 		__touchData = new Map<Int, TouchData>();
 
+		if (Lib.current.__loaderInfo == null)
+		{
+			Lib.current.__loaderInfo = LoaderInfo.create(null);
+			Lib.current.__loaderInfo.content = Lib.current;
+		}
+
+		// TODO: Do not rely on Lib.current
+		__uncaughtErrorEvents = Lib.current.__loaderInfo.uncaughtErrorEvents;
+
 		#if commonjs
 		if (windowAttributes == null) windowAttributes = {};
 		var app = null;
 
 		if (!Math.isNaN(width))
 		{
-			// if (Lib.current == null) Lib.current = new MovieClip ();
-
-			if (Lib.current.__loaderInfo == null)
-			{
-				Lib.current.__loaderInfo = LoaderInfo.create(null);
-				Lib.current.__loaderInfo.content = Lib.current;
-			}
-
 			var resizable = (width == 0 && width == 0);
 
 			#if (js && html5)
-			if (windowAttributes.element != null) element = Browser.document.createElement("div");
+			if (windowAttributes.element != null)
+			{
+				element = windowAttributes.element;
+			}
+			else
+			{
+				element = Browser.document.createElement("div");
+			}
 
 			if (resizable)
 			{
@@ -1078,9 +1087,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		this.window = window;
 		this.color = color;
 		#end
-
-		// TODO: Do not rely on Lib.current
-		__uncaughtErrorEvents = Lib.current.__loaderInfo.uncaughtErrorEvents;
 
 		__contentsScaleFactor = window.scale;
 		__wasFullscreen = window.fullscreen;
@@ -1555,7 +1561,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					targetPoint.y = __mouseY;
 
 					#if openfl_pool_events
-
 					var clickEvent = MouseEvent.__pool.get();
 					clickEvent.type = MouseEvent.CLICK;
 					clickEvent.stageX = __mouseX;
@@ -2621,10 +2626,10 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			MouseEvent.__pool.release(event);
 			#end
 
-			if (type == MouseEvent.MOUSE_UP && cast(target, openfl.display.InteractiveObject).doubleClickEnabled)
+			if (type == MouseEvent.MOUSE_UP && target.doubleClickEnabled)
 			{
 				var currentTime = Lib.getTimer();
-				if (currentTime - __lastClickTime < 500)
+				if (currentTime - __lastClickTime < 500 && target == __lastClickTarget)
 				{
 					#if openfl_pool_events
 					event = MouseEvent.__pool.get();
@@ -2646,9 +2651,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					#end
 
 					__lastClickTime = 0;
+					__lastClickTarget = null;
 				}
 				else
 				{
+					__lastClickTarget = target;
 					__lastClickTime = currentTime;
 				}
 			}

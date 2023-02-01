@@ -188,7 +188,7 @@ import cpp.vm.Gc;
 		_For the Flash Player debugger version and AIR applications only._
 		In an AIR application, the `System.gc()` method is only enabled
 		in content running in the AIR Debug Launcher(ADL) or, in an installed
-		applcation, in content in the application security sandbox.
+		application, in content in the application security sandbox.
 
 	**/
 	public static function gc():Void

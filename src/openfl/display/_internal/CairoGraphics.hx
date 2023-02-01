@@ -668,7 +668,7 @@ class CairoGraphics
 					var c = data.readLineGradientStyle();
 					if (stroke && hasStroke)
 					{
-						closePath();
+						closePath(true);
 					}
 
 					cairo.moveTo(positionX - offsetX, positionY - offsetY);
@@ -681,7 +681,7 @@ class CairoGraphics
 					var c = data.readLineBitmapStyle();
 					if (stroke && hasStroke)
 					{
-						closePath();
+						closePath(true);
 					}
 
 					cairo.moveTo(positionX - offsetX, positionY - offsetY);
@@ -1145,7 +1145,13 @@ class CairoGraphics
 		CairoGraphics.allowSmoothing = renderer.__allowSmoothing;
 		CairoGraphics.worldAlpha = renderer.__getAlpha(graphics.__owner.__worldAlpha);
 
-		graphics.__update(renderer.__worldTransform);
+		#if (openfl_disable_hdpi || openfl_disable_hdpi_graphics)
+		var pixelRatio = 1;
+		#else
+		var pixelRatio = renderer.__pixelRatio;
+		#end
+
+		graphics.__update(renderer.__worldTransform, pixelRatio);
 
 		if (!graphics.__softwareDirty || graphics.__managed) return;
 
