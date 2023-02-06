@@ -2962,6 +2962,10 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function set_text(value:String):String
 	{
+#if (js && html5)
+		value += "";		// cast to string (fix for #2535 'TypeError: this.text.indexOf is not a function')
+#end
+
 		if (__styleSheet != null)
 		{
 			return set_htmlText(value);
