@@ -119,7 +119,7 @@ jobs:
           if-no-files-found: error
 
   notify:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     needs: [package-haxelib, docs, unit-test]
     if: ${{ github.repository == 'openfl/openfl' && github.event_name != 'pull_request' }}
     steps:
