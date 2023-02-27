@@ -1,3 +1,20 @@
+9.2.1 (02/21/2023)
+------------------
+
+* Improved shader debug logging on html5 target
+* Fixed `Socket` error handling missing some exceptions
+* Fixed `Context3D` scissor rectangle when scaling for HiDPI screens
+* Fixed ignored user input after changing `TextField.type` to `INPUT` when it already has focus
+* Fixed `TextField` exception when calculating `scrollV`
+* Fixed double constructor in SWF library
+* Fixed rendering of `StaticText` when using `-Dcairo`
+* Fixed `scrollRect` changes not affecting display objects with `cacheAsBitmap` or `filters`
+* Fixed exception in `Font.fromFile` when path is null
+* Fixed generation of temp file path to avoid using one that already exist
+* Fixed null exception in `FileStream` when calling `close()` on already closed stream
+* Fixed `OutputProgressEvent` on flash/air targets
+* Temporarily limited length of `File` dialog filter types to one until Lime allows more than one
+
 9.2.0 (08/30/2022)
 ------------------
 

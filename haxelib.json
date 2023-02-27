@@ -4,8 +4,8 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "9.2.0",
-	"releasenote": "StyleSheet, stage scaleMode, high DPI, file system, and native process",
+	"version": "9.2.1",
+	"releasenote": "Various bug fixes",
 	"contributors": [
 		"singmajesty",
 		"bowlerhat",
