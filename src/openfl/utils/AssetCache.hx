@@ -79,186 +79,44 @@ class AssetCache implements IAssetCache
 	**/
 	public function clear(prefix:String = null):Void
 	{
-		clearBitmapData(prefix);
-		clearFonts(prefix);
-		clearSounds(prefix);
-	}
-
-	/**
-		Clears all cached Bitmap assets, or all assets with an ID that
-		matches an optional prefix.
-
-		@param	prefix	A ID prefix
-	**/
-	public function clearBitmapData(prefix:String = null):Void
-	{
 		if (prefix == null)
 		{
 			bitmapData = new Map<String, BitmapData>();
-		}
-		else
-		{
-			for (key in getBitmapKeys(prefix))
-			{
-				removeBitmapData(key);
-			}
-		}
-	}
-
-	/**
-		Clears all cached Font assets, or all assets with an ID that
-		matches an optional prefix.
-
-		@param	prefix	A ID prefix
-	**/
-	public function clearFonts(prefix:String = null):Void
-	{
-		if (prefix == null)
-		{
 			font = new Map<String, Font>();
-		}
-		else
-		{
-			for (key in getFontKeys(prefix))
-			{
-				removeFont(key);
-			}
-		}
-	}
-
-	/**
-		Clears all cached Sound assets, or all assets with an ID that
-		matches an optional prefix.
-
-		@param	prefix	A ID prefix
-	**/
-	public function clearSounds(prefix:String = null):Void
-	{
-		if (prefix == null)
-		{
 			sound = new Map<String, Sound>();
 		}
 		else
 		{
-			for (key in getSoundKeys(prefix))
-			{
-				removeSound(key);
-			}
-		}
-	}
+			var keys = bitmapData.keys();
 
-	/**
-		Returns the IDs of all assets with an ID that
-		matches an optional prefix.
-
-		For example:
-
-		```haxe
-		Assets.setBitmapData("image1", image1);
-		Assets.setBitmapData("assets/image2", image2);
-
-		Assets.getKeys("assets"); // will return ["assets/image2"]
-		Assets.getKeys("image"); // will return ["image1"]
-		```
-
-		@param	prefix	A ID prefix
-	**/
-	public function getKeys(prefix:String = null):Array<String>
-	{
-		var result:Array<String> = [];
-
-		result = result.concat(getBitmapKeys(prefix));
-		result = result.concat(getFontKeys(prefix));
-		result = result.concat(getSoundKeys(prefix));
-
-		return result;
-	}
-
-	/**
-		Returns the IDs of all BitmapData assets with an ID that
-		matches an optional prefix.
-
-		@param	prefix	A ID prefix
-	**/
-	public function getBitmapKeys(prefix:String = null):Array<String>
-	{
-		var result:Array<String> = [];
-		if (prefix == null)
-		{
-			for (key in bitmapData.keys())
-			{
-				result.push(key);
-			}
-		}
-		else
-		{
-			for (key in bitmapData.keys())
+			for (key in keys)
 			{
 				if (StringTools.startsWith(key, prefix))
 				{
-					result.push(key);
+					removeBitmapData(key);
 				}
 			}
-		}
-		return result;
-	}
 
-	/**
-		Returns the IDs of all Font assets with an ID that
-		matches an optional prefix.
+			var keys = font.keys();
 
-		@param	prefix	A ID prefix
-	**/
-	public function getFontKeys(prefix:String = null):Array<String>
-	{
-		var result:Array<String> = [];
-		if (prefix == null)
-		{
-			for (key in font.keys())
-			{
-				result.push(key);
-			}
-		}
-		else
-		{
-			for (key in font.keys())
+			for (key in keys)
 			{
 				if (StringTools.startsWith(key, prefix))
 				{
-					result.push(key);
+					removeFont(key);
 				}
 			}
-		}
-		return result;
-	}
 
-	/**
-		Returns the IDs of all Sound assets with an ID that
-		matches an optional prefix.
+			var keys = sound.keys();
 
-		@param	prefix	A ID prefix
-	**/
-	public function getSoundKeys(prefix:String = null):Array<String>
-	{
-		var result:Array<String> = [];
-		if (prefix == null)
-		{
-			for (key in sound.keys())
-			{
-				result.push(key);
-			}
-		}
-		else
-		{
-			for (key in sound.keys())
+			for (key in keys)
 			{
 				if (StringTools.startsWith(key, prefix))
 				{
-					result.push(key);
+					removeSound(key);
 				}
 			}
 		}
-		return result;
 	}
 
 	/**
