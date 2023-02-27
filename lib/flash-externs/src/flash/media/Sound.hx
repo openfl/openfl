@@ -23,7 +23,6 @@ extern class Sound extends EventDispatcher
 	#end
 	public var length(default, never):Float;
 	public var url(default, never):String;
-
 	public function new(stream:URLRequest = null, context:SoundLoaderContext = null);
 	public function close():Void;
 	#if flash
