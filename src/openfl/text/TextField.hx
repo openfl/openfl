@@ -3350,6 +3350,9 @@ class TextField extends InteractiveObject
 	#if lime
 	@:noCompletion private function window_onKeyDown(key:KeyCode, modifier:KeyModifier):Void
 	{
+		inline function isModifierPressed()
+			return #if mac modifier.metaKey #elseif js(modifier.metaKey || modifier.ctrlKey) #else (modifier.ctrlKey && !modifier.altKey) #end;
+
 		switch (key)
 		{
 			case RETURN, NUMPAD_ENTER:
@@ -3411,7 +3414,7 @@ class TextField extends InteractiveObject
 				}
 
 			case LEFT if (selectable):
-				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end)
+				if (isModifierPressed())
 				{
 					__caretBeginningOfPreviousLine();
 				}
@@ -3428,7 +3431,7 @@ class TextField extends InteractiveObject
 				setSelection(__selectionIndex, __caretIndex);
 
 			case RIGHT if (selectable):
-				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end)
+				if (isModifierPressed())
 				{
 					__caretBeginningOfNextLine();
 				}
@@ -3445,7 +3448,7 @@ class TextField extends InteractiveObject
 				setSelection(__selectionIndex, __caretIndex);
 
 			case DOWN if (selectable):
-				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end)
+				if (isModifierPressed())
 				{
 					__caretIndex = __text.length;
 				}
@@ -3462,7 +3465,7 @@ class TextField extends InteractiveObject
 				setSelection(__selectionIndex, __caretIndex);
 
 			case UP if (selectable):
-				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end)
+				if (isModifierPressed())
 				{
 					__caretIndex = 0;
 				}
@@ -3479,7 +3482,7 @@ class TextField extends InteractiveObject
 				setSelection(__selectionIndex, __caretIndex);
 
 			case HOME if (selectable):
-				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end)
+				if (isModifierPressed())
 				{
 					__caretIndex = 0;
 				}
@@ -3496,7 +3499,7 @@ class TextField extends InteractiveObject
 				setSelection(__selectionIndex, __caretIndex);
 
 			case END if (selectable):
-				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end)
+				if (isModifierPressed())
 				{
 					__caretIndex = __text.length;
 				}
@@ -3514,7 +3517,7 @@ class TextField extends InteractiveObject
 
 			case C:
 				#if lime
-				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end)
+				if (isModifierPressed())
 				{
 					if (__caretIndex != __selectionIndex)
 					{
@@ -3525,7 +3528,7 @@ class TextField extends InteractiveObject
 
 			case X:
 				#if lime
-				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end)
+				if (isModifierPressed())
 				{
 					if (__caretIndex != __selectionIndex)
 					{
@@ -3540,7 +3543,7 @@ class TextField extends InteractiveObject
 			#if !js
 			case V:
 				#if lime
-				if (#if mac modifier.metaKey #else modifier.ctrlKey #end)
+				if (#if mac modifier.metaKey #else modifier.ctrlKey && !modifier.altKey #end)
 				{
 					if (Clipboard.text != null)
 					{
@@ -3565,7 +3568,7 @@ class TextField extends InteractiveObject
 			#end
 
 			case A if (selectable):
-				if (#if mac modifier.metaKey #elseif js modifier.metaKey || modifier.ctrlKey #else modifier.ctrlKey #end)
+				if (isModifierPressed())
 				{
 					setSelection(0, __text.length);
 				}
