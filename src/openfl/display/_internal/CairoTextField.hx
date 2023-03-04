@@ -354,6 +354,13 @@ class CairoTextField
 								selectionEnd = group.endIndex;
 							}
 
+							// this isn't supposed to happen, but better to
+							// avoid a crash if there's a bug somewhere
+							if (glyphs.length < selectionEnd - selectionStart)
+							{
+								selectionEnd = selectionStart + glyphs.length;
+							}
+
 							var start, end;
 
 							start = textField.getCharBoundaries(selectionStart);
