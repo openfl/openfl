@@ -153,7 +153,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 		connected, or `false` otherwise.
 	**/
 	public var connected(get, never):Bool;
-	#if sys
+	#if (sys && openfl >= "9.3.0")
 	/**
 	 * The IP address this socket is bound to on the local machine.
 	**/
@@ -177,7 +177,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 		Controls the version of AMF used when writing or reading an object.
 	**/
 	public var objectEncoding:ObjectEncoding;
-	#if sys
+	#if (sys && openfl >= "9.3.0")
 	/**
 		The IP address of the remote machine to which this socket is connected.
 		
@@ -1218,7 +1218,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 
 		return __endian;
 	}
-	#if sys
+	#if (sys && openfl >= "9.3.0")
 	@:noCompletion private function get_localAddress():String
 	{
 		return __socket.host().host.host;
