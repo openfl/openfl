@@ -605,6 +605,11 @@ class FileReference extends EventDispatcher
 		}
 		__inputControl.onchange = function()
 		{
+			if (__inputControl.files.length == 0)
+			{
+				dispatchEvent(new Event(Event.CANCEL));
+				return;
+			}
 			var file = __inputControl.files[0];
 			modificationDate = Date.fromTime(file.lastModified);
 			creationDate = modificationDate;
