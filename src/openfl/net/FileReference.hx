@@ -603,6 +603,10 @@ class FileReference extends EventDispatcher
 		{
 			__inputControl.setAttribute("accept", filter);
 		}
+		else
+		{
+			__inputControl.removeAttribute("accept");
+		}
 		__inputControl.onchange = function()
 		{
 			if (__inputControl.files.length == 0)
