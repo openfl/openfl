@@ -1,5 +1,6 @@
 package openfl.display3D;
 
+import openfl.errors.RangeError;
 #if !flash
 import openfl.display3D._internal.Context3DState;
 import openfl.display3D._internal.GLBuffer;
@@ -1431,7 +1432,14 @@ import lime.math.Vector2;
 
 		if (__state.program != null && __state.program.__format == GLSL)
 		{
-			// TODO
+			__flushGLProgram();
+			var buffer = new Float32Array(4);
+			for (i in 0...numRegisters)
+			{
+				data.position = byteArrayOffset+i<<2;
+				for(j in 0...4) buffer[j] = data.readFloat();
+				gl.uniform4fv(cast firstRegister+i, buffer );
+			}
 		}
 		else
 		{
@@ -1585,7 +1593,14 @@ import lime.math.Vector2;
 	{
 		if (numRegisters == 0) return;
 
-		if (__state.program != null && __state.program.__format == GLSL) {}
+		if (__state.program != null && __state.program.__format == GLSL)
+		{
+			__flushGLProgram();
+			var buffer = new Float32Array(4);
+			for (i in 0...4)
+				buffer[i] = data[i];
+			gl.uniform4fv(cast firstRegister, buffer);
+		}
 		else
 		{
 			if (numRegisters == -1)
