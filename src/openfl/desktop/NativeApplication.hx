@@ -1,7 +1,9 @@
 package openfl.desktop;
 
 #if (!flash && sys)
+#if lime
 import lime.system.System;
+#end
 import openfl.display.NativeWindow;
 import openfl.events.EventDispatcher;
 import openfl.utils._internal.Lib;
@@ -272,7 +274,9 @@ class NativeApplication extends EventDispatcher
 	**/
 	public function exit(code:Int = 0):Void
 	{
+		#if lime
 		System.exit(code);
+		#end
 	}
 
 	/**
