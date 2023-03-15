@@ -204,6 +204,17 @@ class Shader
 	public var precisionHint:ShaderPrecision;
 
 	/**
+		The version to compile the shader to, as specified after the #version
+		command in GLSL. Also see:
+		
+		* https://en.wikipedia.org/wiki/OpenGL_Shading_Language
+		* https://www.khronos.org/opengl/wiki/Core_Language_(GLSL)
+
+		Common values might be "100", "300 es" or "400".
+	**/
+	public var glslVersion:String;
+
+	/**
 		The compiled Program3D if available.
 
 		This property is not available on the Flash target.
@@ -261,6 +272,7 @@ class Shader
 	{
 		byteCode = code;
 		precisionHint = FULL;
+		glslVersion = null;
 
 		__glSourceDirty = true;
 		__numPasses = 1;
@@ -473,7 +485,10 @@ class Shader
 			__paramFloat = new Array();
 			__paramInt = new Array();
 
-			__processGLData(glVertexSource, "attribute");
+			var glsl3 = glslVersion != null ?
+				Std.parseInt(glslVersion.split(" ")[0]) >= 300 : false;
+	
+			__processGLData(glVertexSource, glsl3 ? "in" : "attribute");
 			__processGLData(glVertexSource, "uniform");
 			__processGLData(glFragmentSource, "uniform");
 		}
@@ -481,6 +496,8 @@ class Shader
 		if (__context != null && program == null)
 		{
 			var gl = __context.gl;
+
+			var versionPrefix = glslVersion != null ? '#version ${glslVersion}\n' : "";
 
 			#if (js && html5)
 			var prefix = (precisionHint == FULL ? "precision mediump float;\n" : "precision lowp float;\n");
@@ -494,8 +511,8 @@ class Shader
 				+ "#endif\n\n";
 			#end
 
-			var vertex = prefix + glVertexSource;
-			var fragment = prefix + glFragmentSource;
+			var vertex = versionPrefix + prefix + glVertexSource;
+			var fragment = versionPrefix + prefix + glFragmentSource;
 
 			var id = vertex + fragment;
 
@@ -573,14 +590,7 @@ class Shader
 	{
 		var lastMatch = 0, position, regex, name, type;
 
-		if (storageType == "uniform")
-		{
-			regex = ~/uniform ([A-Za-z0-9]+) ([A-Za-z0-9_]+)/;
-		}
-		else
-		{
-			regex = ~/attribute ([A-Za-z0-9]+) ([A-Za-z0-9_]+)/;
-		}
+		regex = new EReg('${storageType} ([A-Za-z0-9]+) ([A-Za-z0-9_]+)', "");
 
 		while (regex.matchSub(source, lastMatch))
 		{
