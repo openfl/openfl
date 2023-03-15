@@ -2266,11 +2266,20 @@ import lime.math.Vector2;
 			var scissorY = Std.int(__state.scissorRectangle.y);
 			var scissorWidth = Std.int(__state.scissorRectangle.width);
 			var scissorHeight = Std.int(__state.scissorRectangle.height);
+			#if !openfl_dpi_aware
+			if (__backBufferWantsBestResolution)
+			{
+				scissorX = Std.int(__state.scissorRectangle.x * __stage.window.scale);
+				scissorY = Std.int(__state.scissorRectangle.y * __stage.window.scale);
+				scissorWidth = Std.int(__state.scissorRectangle.width * __stage.window.scale);
+				scissorHeight = Std.int(__state.scissorRectangle.height * __stage.window.scale);
+			}
+			#end
 
 			if (__state.renderToTexture == null && __stage3D == null)
 			{
 				var contextHeight = Std.int(__stage.window.height * __stage.window.scale);
-				scissorY = contextHeight - Std.int(__state.scissorRectangle.height) - scissorY;
+				scissorY = contextHeight - scissorHeight - scissorY;
 			}
 
 			if (#if openfl_disable_context_cache true #else __contextState.scissorRectangle.x != scissorX
