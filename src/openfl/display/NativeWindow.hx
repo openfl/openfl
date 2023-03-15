@@ -568,6 +568,12 @@ class NativeWindow extends EventDispatcher
 
 	@:noCompletion private function window_onClose():Void
 	{
+		// all child windows are closed when their owner is closed
+		while (__ownedWindows.length > 0)
+		{
+			var childWindow = __ownedWindows.pop();
+			childWindow.close();
+		}
 		__closed = true;
 		__window.onFocusIn.remove(window_onFocusIn);
 		__window.onFocusOut.remove(window_onFocusOut);
