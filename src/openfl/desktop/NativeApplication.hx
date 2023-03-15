@@ -50,7 +50,7 @@ class NativeApplication extends EventDispatcher
 	**/
 	public static var supportsDefaultApplication(get, never):Bool;
 
-	private static function get_supportsDefaultApplication():Bool
+	@:noCompletion private static function get_supportsDefaultApplication():Bool
 	{
 		return false;
 	}
@@ -72,7 +72,7 @@ class NativeApplication extends EventDispatcher
 	**/
 	public static var supportsDockIcon(get, never):Bool;
 
-	private static function get_supportsDockIcon():Bool
+	@:noCompletion private static function get_supportsDockIcon():Bool
 	{
 		return false;
 	}
@@ -92,7 +92,7 @@ class NativeApplication extends EventDispatcher
 	**/
 	public static var supportsMenu(get, never):Bool;
 
-	private static function get_supportsMenu():Bool
+	@:noCompletion private static function get_supportsMenu():Bool
 	{
 		return false;
 	}
@@ -107,7 +107,7 @@ class NativeApplication extends EventDispatcher
 	**/
 	public static var supportsStartAtLogin(get, never):Bool;
 
-	private static function get_supportsStartAtLogin():Bool
+	@:noCompletion private static function get_supportsStartAtLogin():Bool
 	{
 		return false;
 	}
@@ -132,7 +132,7 @@ class NativeApplication extends EventDispatcher
 	**/
 	public static var supportsSystemTrayIcon(get, never):Bool;
 
-	private static function get_supportsSystemTrayIcon():Bool
+	@:noCompletion private static function get_supportsSystemTrayIcon():Bool
 	{
 		return false;
 	}
@@ -149,7 +149,7 @@ class NativeApplication extends EventDispatcher
 	}
 	#end
 
-	private var __activeWindow:NativeWindow;
+	@:noCompletion private var __activeWindow:NativeWindow;
 
 	/**
 		The active application window.
@@ -174,7 +174,7 @@ class NativeApplication extends EventDispatcher
 	**/
 	public var applicationID(get, never):String;
 
-	private function get_applicationID():String
+	@:noCompletion private function get_applicationID():String
 	{
 		return Lib.application.meta.get("packageName");
 	}
@@ -202,12 +202,12 @@ class NativeApplication extends EventDispatcher
 	**/
 	public var isCompiledAOT(get, never):Bool;
 
-	private function get_isCompiledAOT():Bool
+	@:noCompletion private function get_isCompiledAOT():Bool
 	{
 		return false;
 	}
 
-	private var __openedWindows:Array<NativeWindow> = [];
+	@:noCompletion private var __openedWindows:Array<NativeWindow> = [];
 
 	/**
 		An array containing all the open native windows of this application.

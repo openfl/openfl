@@ -21,7 +21,7 @@ import openfl.geom.Rectangle;
 @:access(lime.ui.Window)
 class NativeWindow extends EventDispatcher
 {
-	private static final ERROR_CLOSED = "Cannot perform operation on closed window.";
+	@:noCompletion private static final ERROR_CLOSED = "Cannot perform operation on closed window.";
 
 	/**
 	**/

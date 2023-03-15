@@ -42,7 +42,7 @@ class NativeWindowInitOptions
 	public var type:NativeWindowType = NativeWindowType.NORMAL;
 
 	// used by openfl.display.Application for the initial window
-	private var __window:Window;
+	@:noCompletion private var __window:Window;
 }
 #else
 #if air
