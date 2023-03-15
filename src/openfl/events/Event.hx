@@ -160,6 +160,20 @@ class Event
 	public static inline var CLEAR:EventType<Event> = "clear";
 
 	/**
+		The `Event.CLOSING` constant defines the value of the `type` property of
+		a `closing` event object.
+		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `true`; canceling this event object stops the close operation. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | The object whose connection has been closed. |
+	**/
+	public static inline var CLOSING:EventType<Event> = "closing";
+
+	/**
 		The `Event.CLOSE` constant defines the value of the `type` property of
 		a `close` event object.
 		This event has the following properties:
