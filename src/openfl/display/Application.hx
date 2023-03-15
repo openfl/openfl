@@ -8,6 +8,8 @@ import lime.ui.WindowAttributes;
 #end
 #if (!flash && sys)
 import openfl.desktop.NativeApplication;
+import openfl.display.NativeWindow;
+import openfl.display.NativeWindowInitOptions;
 import openfl.events.InvokeEvent;
 #end
 
@@ -22,6 +24,9 @@ import openfl.events.InvokeEvent;
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.LoaderInfo)
 @:access(openfl.display.Window)
+#if (!flash && sys)
+@:access(openfl.display.NativeWindowInitOptions)
+#end
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Application #if lime extends LimeApplication #end
 {
@@ -90,6 +95,12 @@ class Application #if lime extends LimeApplication #end
 			window.onTextInput.add(onTextInput);
 
 			onWindowCreate();
+
+			#if (!flash && sys)
+			var initOptions = new NativeWindowInitOptions();
+			initOptions.__window = cast __window;
+			new NativeWindow(initOptions);
+			#end
 		}
 
 		onCreateWindow.dispatch(window);

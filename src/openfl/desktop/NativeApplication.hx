@@ -2,8 +2,9 @@ package openfl.desktop;
 
 #if (!flash && sys)
 import lime.system.System;
-import openfl.utils._internal.Lib;
+import openfl.display.NativeWindow;
 import openfl.events.EventDispatcher;
+import openfl.utils._internal.Lib;
 
 /**
 	The NativeApplication class represents this AIR application.
@@ -148,6 +149,24 @@ class NativeApplication extends EventDispatcher
 	}
 	#end
 
+	private var __activeWindow:NativeWindow;
+
+	/**
+		The active application window.
+
+		If the active desktop window does not belong to this application, or
+		there is no active window, `activeWindow` is `null`.
+
+		This property is not supported on platforms that do not support the
+		NativeWindow class.
+	**/
+	public var activeWindow(get, never):NativeWindow;
+
+	@:noCompletion private function get_activeWindow():NativeWindow
+	{
+		return __activeWindow;
+	}
+
 	/**
 		The application ID of this application.
 
@@ -186,6 +205,22 @@ class NativeApplication extends EventDispatcher
 	private function get_isCompiledAOT():Bool
 	{
 		return false;
+	}
+
+	private var __openedWindows:Array<NativeWindow> = [];
+
+	/**
+		An array containing all the open native windows of this application.
+
+		This property is not supported on platforms that do not support the
+		NativeWindow class.
+	**/
+	public var openedWindows(get, never):Array<NativeWindow>;
+
+	@:noCompletion private function get_openedWindows():Array<NativeWindow>
+	{
+		// don't allow the original value to be edited externally
+		return __openedWindows.copy();
 	}
 
 	/**
