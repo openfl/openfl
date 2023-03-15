@@ -2,18 +2,31 @@ package openfl.display;
 
 #if (!flash && sys)
 /**
+	The NativeWindowDisplayState class defines constants for the names of the
+	window display states.
+
+	**Note:** The fullscreen modes are set using the Stage object `displayState`
+	property, not the window `displayState`.
+
+	@see `openfl.display.NativeWindow`
+	@see `openfl.display.NativeWindow.displayState`
+	@see `openfl.display.Stage.displayState`
+	@see `openfl.display.StageDisplayState`
 **/
 @:enum abstract NativeWindowDisplayState(Null<Int>)
 {
 	/**
+		The normal display state.
 	**/
 	public var NORMAL = 0;
 
 	/**
+		The maximized display state.
 	**/
 	public var MAXIMIZED = 1;
 
 	/**
+		The minimized display state.
 	**/
 	public var MINIMIZED = 2;
 
