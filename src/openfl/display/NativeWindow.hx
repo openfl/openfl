@@ -68,7 +68,11 @@ class NativeWindow extends EventDispatcher
 
 	@:noCompletion private static function get_isSupported():Bool
 	{
+		#if (!sys || !desktop)
+		return false;
+		#else
 		return true;
+		#end
 	}
 
 	/**
