@@ -441,6 +441,72 @@ class NativeWindow extends EventDispatcher
 	}
 
 	/**
+		The size and location of this window.
+
+		The dimensions of a window include any system chrome. The dimensions of
+		a window's stage are equal to the dimensions of the window, minus the
+		size of any system chrome. Changing the width and height of the window
+		will change the stage's `stageWidth` and `stageHeight`. The reverse also
+		applies; changing the stage dimensions will change the window size.
+
+		A `resize` event is dispatched whenever the width or height of this
+		window changes. Likewise, a `move` event is dispatched whenever the
+		origin (x,y) of this window changes. On Mac OS and Windows, setting the
+		`bounds` property directly will not dispatch a `moving` or `resizing`
+		event. However, on Linux the NativeWindow does dispatch a `moving` and
+		`resizing` events when you set the `bounds` property.
+
+		Setting the `bounds` property of a window is equivalent to setting its
+		`x`, `y`, `width`, and `height` properties. Likewise, setting any of the
+		individual dimensions is equivalent to setting the `bounds` property.
+		When you set all the dimensions at the same time by using the `bounds`
+		property, fewer events are dispatched.
+
+		The order in which the individual dimensions are set is not guaranteed.
+		On Linux window managers that do not allow windows to extend off the
+		desktop area, a change to an individual property may be blocked even
+		though the net affect of applying all the property changes would have
+		resulted in a legal window.
+
+		If the width or height specified is less than the minimum or greater
+		than the maximum allowed width or height, then the window width or
+		height is set to the closest legal size. The factors that determine the
+		minimum and maximum width and height are the following:
+
+		- The `minSize` and `maxSize` properties of the NativeWindow object
+		- The minimum and maximum operating system limits, which are the values
+		of `NativeWindow.systemMinSize` and `NativeWindow.systemMaxSize`.
+		- The maximum width and height of a window in Adobe AIR, which are each
+		4095 pixels. (In AIR 1.5 and earlier, the maximum width and height of a
+		window is 2880 pixels each.)
+		- The minimum width and height required by any displayed system chrome.
+
+		Pixel values are rounded to the nearest integer when the position or
+		dimensions of a window are changed.
+	**/
+	public var bounds(get, set):Rectangle;
+
+	@:noCompletion private function get_bounds():Rectangle
+	{
+		if (__closed)
+		{
+			throw new Error(ERROR_CLOSED, 3200);
+		}
+		return new Rectangle(__window.x, __window.y, __window.width, __window.height);
+	}
+
+	@:noCompletion private function set_bounds(value:Rectangle):Rectangle
+	{
+		if (__closed)
+		{
+			throw new Error(ERROR_CLOSED, 3200);
+		}
+		__window.move(Std.int(value.x), Std.int(value.y));
+		__window.resize(Std.int(value.width), Std.int(value.height));
+		return new Rectangle(__window.x, __window.y, __window.width, __window.height);
+	}
+
+	/**
 		The window title.
 
 		The title will appear in the system chrome for the window, if displayed,
