@@ -125,10 +125,12 @@ class NativeWindow extends EventDispatcher
 
 	@:noCompletion private var __initOptions:NativeWindowInitOptions;
 	@:noCompletion private var __window:Window;
+	#if (lime < "8.1.0")
 	@:noCompletion private var __opened:Bool = false;
-	@:noCompletion private var __closed:Bool = false;
 	@:noCompletion private var __pendingWidth:Int = 400;
 	@:noCompletion private var __pendingHeight:Int = 228;
+	#end
+	@:noCompletion private var __closed:Bool = false;
 	@:noCompletion private var __previousX:Int;
 	@:noCompletion private var __previousY:Int;
 	@:noCompletion private var __previousWidth:Int;
@@ -161,9 +163,11 @@ class NativeWindow extends EventDispatcher
 		if (__initOptions.__window != null)
 		{
 			__window = __initOptions.__window;
+			#if (lime < "8.1.0")
 			__opened = true;
 			__pendingWidth = __window.width;
 			__pendingHeight = __window.height;
+			#end
 			NativeApplication.nativeApplication.__activeWindow = this;
 		}
 		else
@@ -179,8 +183,8 @@ class NativeWindow extends EventDispatcher
 				fullscreen: false,
 				frameRate: app.window.stage.frameRate,
 				borderless: false,
-				width: 0,
-				height: 0
+				width: #if (lime < "8.1.0") 0 #else 400 #end,
+				height: #if (lime < "8.1.0") 0 #else 228 #end
 			});
 			if (__initOptions.owner != null)
 			{
@@ -189,8 +193,13 @@ class NativeWindow extends EventDispatcher
 		}
 		__previousX = __window.x;
 		__previousY = __window.y;
+		#if (lime < "8.1.0")
 		__previousWidth = __pendingWidth;
 		__previousHeight = __pendingHeight;
+		#else
+		__previousWidth = __window.width;
+		__previousHeight = __window.height;
+		#end
 		__previousDisplayState = NORMAL;
 		__window.stage.nativeWindow = this;
 		NativeApplication.nativeApplication.__openedWindows.push(this);
@@ -345,10 +354,12 @@ class NativeWindow extends EventDispatcher
 		{
 			throw new Error(ERROR_CLOSED, 3200);
 		}
+		#if (lime < "8.1.0")
 		if (!__opened)
 		{
 			return __pendingWidth;
 		}
+		#end
 		return __window.width;
 	}
 
@@ -358,10 +369,12 @@ class NativeWindow extends EventDispatcher
 		{
 			throw new Error(ERROR_CLOSED, 3200);
 		}
+		#if (lime < "8.1.0")
 		if (!__opened)
 		{
 			return __pendingWidth = Std.int(value);
 		}
+		#end
 		return __window.width = Std.int(value);
 	}
 
@@ -402,10 +415,12 @@ class NativeWindow extends EventDispatcher
 		{
 			throw new Error(ERROR_CLOSED, 3200);
 		}
+		#if (lime < "8.1.0")
 		if (!__opened)
 		{
 			return __pendingHeight;
 		}
+		#end
 		return __window.height;
 	}
 
@@ -415,10 +430,12 @@ class NativeWindow extends EventDispatcher
 		{
 			throw new Error(ERROR_CLOSED, 3200);
 		}
+		#if (lime < "8.1.0")
 		if (!__opened)
 		{
 			return __pendingHeight = Std.int(value);
 		}
+		#end
 		return __window.height = Std.int(value);
 	}
 
@@ -475,7 +492,11 @@ class NativeWindow extends EventDispatcher
 		{
 			throw new Error(ERROR_CLOSED, 3200);
 		}
+		#if (lime < "8.1.0")
 		return __opened;
+		#else
+		return __window.visible;
+		#end
 	}
 
 	@:noCompletion private function set_visible(value:Bool):Bool
@@ -484,6 +505,7 @@ class NativeWindow extends EventDispatcher
 		{
 			throw new Error(ERROR_CLOSED, 3200);
 		}
+		#if (lime < "8.1.0")
 		if (!__opened)
 		{
 			__opened = true;
@@ -497,6 +519,9 @@ class NativeWindow extends EventDispatcher
 			throw new IllegalOperationError("Setting NativeWindow visible to false is not supported at this time");
 		}
 		return __opened;
+		#else
+		return __window.visible = value;
+		#end
 	}
 
 	/**
