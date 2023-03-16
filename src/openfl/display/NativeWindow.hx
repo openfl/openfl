@@ -178,6 +178,7 @@ class NativeWindow extends EventDispatcher
 				alwaysOnTop: false,
 				title: "",
 				resizable: __initOptions.resizable,
+				hidden: #if (lime < "8.1.0") false #else true #end,
 				minimized: false,
 				maximized: false,
 				fullscreen: false,
