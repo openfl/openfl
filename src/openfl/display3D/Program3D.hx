@@ -430,8 +430,28 @@ import lime.utils.BytePointer;
 			#endif
 			";
 
-		var vertex = prefix + vertexSource;
-		var fragment = prefix + fragmentSource;
+		//Add prefix after #version directive if one is present
+		var vertex;
+		var fragment;
+		if(vertexSource.indexOf('#version')==0)
+		{
+			var vsFirstNewline = vertexSource.indexOf('\n');
+			vertex = vertexSource.substr(0, vsFirstNewline)+"\n"+prefix+vertexSource.substr(vsFirstNewline);
+		}
+		else
+		{
+			vertex = prefix + vertexSource;
+		}
+
+		if(fragmentSource.indexOf('#version')==0)
+		{
+			var fsFirstNewline = fragmentSource.indexOf('\n');
+			fragment = fragmentSource.substr(0, fsFirstNewline)+"\n"+prefix+fragmentSource.substr(fsFirstNewline);
+		}
+		else
+		{
+			fragment = prefix + fragmentSource;
+		}
 
 		if (vertex == __glVertexSource && fragment == __glFragmentSource) return;
 
