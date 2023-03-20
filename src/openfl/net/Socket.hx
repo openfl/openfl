@@ -370,7 +370,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 							 href="http://www.adobe.com/go/devnet_security_en"
 							 scope="external">Security</a>.
 	**/
-	public function connect(host:String = null, port:Int = 0):Void
+	public function connect(host:String, port:Int):Void
 	{
 		if (__socket != null)
 		{
