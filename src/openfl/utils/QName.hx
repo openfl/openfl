@@ -90,7 +90,7 @@ class QName
 			}
 			else
 			{
-				__uri = null;
+				__uri = "";
 				__localName = Std.string(namespace);
 			}
 		}
