@@ -43,7 +43,7 @@ class Build extends Script
 				hxml.define("fdb");
 			default:
 				trace('Tests not supported: ${target}');
-				cfcgv Sys.exit(1);
+				Sys.exit(1);
 		}
 
 		hxml.build();
