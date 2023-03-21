@@ -40,8 +40,8 @@ class BitmapDataFileIOTest extends Test
 			async.done();
 		}).onError(function(result)
 		{
-			Assert.fail(result);
-			async.done();
+				Assert.fail(result);
+				async.done();
 		});
 	}
 

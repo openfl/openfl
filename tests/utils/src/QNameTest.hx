@@ -46,7 +46,7 @@ class QNameTest extends Test
 	public function test_constructorLocalNameOnly()
 	{
 		var qname = new QName("example");
-		Assert.isNull(qname.uri);
+		Assert.equals("", qname.uri);
 		Assert.equals("example", qname.localName);
 	}
 
@@ -61,7 +61,7 @@ class QNameTest extends Test
 	public function test_constructorOneArgToString()
 	{
 		var qname = new QName(123.4);
-		Assert.isNull(qname.uri);
+		Assert.equals("", qname.uri);
 		Assert.equals("123.4", qname.localName);
 	}
 
