@@ -33,6 +33,7 @@ jobs:
           haxelib install hxp --quiet
           haxelib install lime --quiet
           haxelib install utest --quiet
+          haxelib run lime config AIR_SDK ${{ env.AIR_HOME }}
 
       - name: Setup environment
         run: |
