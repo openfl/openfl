@@ -311,19 +311,7 @@ class SecureSocket extends Socket
 	@:noCompletion override private function this_onEnterFrame(event:Event):Void
 	{
 		#if sys
-		var doConnect = false;
-
 		if (!connected)
-		{
-			var r = SysSocket.select(null, [__socket], null, 0);
-
-			if (r.write[0] == __socket)
-			{
-				doConnect = true;
-			}
-		}
-
-		if (doConnect)
 		{
 			var secureSocket:SysSecureSocket = cast __socket;
 			var blocked = false;
