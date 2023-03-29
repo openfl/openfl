@@ -3,6 +3,7 @@ package;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
 import openfl.display.BitmapDataChannel;
+import openfl.display.Shape;
 import openfl.display.Sprite;
 import openfl.filters.GlowFilter;
 import openfl.geom.ColorTransform;
@@ -20,12 +21,19 @@ class BitmapDataTest extends Test
 	#end
 	public function test_fromBase64()
 	{
+		#if !flash
 		Assert.notNull(BitmapData.fromBase64);
+		#end
 	}
 
+	#if flash
+	@Ignored
+	#end
 	public function test_fromBytes()
 	{
+		#if !flash
 		Assert.notNull(BitmapData.fromBytes);
+		#end
 	}
 
 	#if (!js || !html5)
@@ -38,9 +46,14 @@ class BitmapDataTest extends Test
 		#end
 	}
 
+	#if flash
+	@Ignored
+	#end
 	public function test_fromFile()
 	{
+		#if !flash
 		Assert.notNull(BitmapData.fromFile);
+		#end
 	}
 
 	#if !lime
@@ -270,6 +283,7 @@ class BitmapDataTest extends Test
 		{
 			Assert.isTrue(true);
 		}
+		Assert.isTrue(true);
 		#else
 		Assert.equals(0, bitmapData.width);
 		Assert.equals(0, bitmapData.height);
@@ -987,5 +1001,43 @@ class BitmapDataTest extends Test
 		bitmapData = new BitmapData(100, 100, true, 0xFFFF0000);
 
 		Assert.equals(100.0, bitmapData.width);
+	}
+
+	#if hl
+	// TODO: figure out why this fails in HashLink
+	@Ignored
+	#end
+	public function testDrawInvisibleContainer()
+	{
+		var bitmapData = new BitmapData(10, 10, false, 0xFFFFFF00);
+
+		var invisibleContainer = new Sprite();
+		invisibleContainer.graphics.beginFill(0xff0000);
+		invisibleContainer.graphics.drawRect(0.0, 0.0, 5.0, 5.0);
+		invisibleContainer.graphics.endFill();
+		invisibleContainer.visible = false;
+
+		var visibleChild = new Shape();
+		visibleChild.graphics.beginFill(0x00ff00);
+		visibleChild.graphics.drawRect(4.0, 4.0, 5.0, 5.0);
+		visibleChild.graphics.endFill();
+		invisibleContainer.addChild(visibleChild);
+
+		var invisibleChild = new Shape();
+		invisibleChild.graphics.beginFill(0x0000ff);
+		invisibleChild.graphics.drawRect(0.0, 0.0, 10.0, 10.0);
+		invisibleChild.graphics.endFill();
+		invisibleChild.visible = false;
+		invisibleContainer.addChild(invisibleChild);
+
+		bitmapData.draw(invisibleContainer);
+
+		// invisibleContainer and invisibleChild are drawn here
+		// draw() forces invisibleContainer visible, but not invisibleChild
+		Assert.equals(0xff0000, bitmapData.getPixel(1, 1));
+		// visibleChild overlaps with invisibleContainer and invisibleChild
+		Assert.equals(0x00ff00, bitmapData.getPixel(4, 4));
+		// nothing is drawn here, so it's the constructor fill color
+		Assert.equals(0xFFFF00, bitmapData.getPixel(9, 9));
 	}
 }

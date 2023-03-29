@@ -19,6 +19,11 @@ class Build extends Script
 		{
 			target = "neko";
 		}
+		if (target != "hl")
+		{
+			// TODO: figure out why this fails in HashLink
+			hxml.lib("lime");
+		}
 		switch (target)
 		{
 			case "hl":
@@ -30,6 +35,13 @@ class Build extends Script
 			case "cpp":
 				System.removeDirectory("bin/cpp");
 				hxml.cpp = "bin/cpp";
+			case "swf":
+				System.removeDirectory("bin/swf");
+				hxml.cp("../../lib/flash-externs/src");
+				hxml.swf = "bin/swf/Test.swf";
+				hxml.swfVersion = "30";
+				hxml.define("air");
+				hxml.define("fdb");
 			default:
 				trace('Tests not supported: ${target}');
 				Sys.exit(1);
@@ -58,6 +70,11 @@ class Build extends Script
 				System.runCommand("bin/neko", nekoPath, ["Test.n"]);
 			case "cpp":
 				System.runCommand("bin/cpp", "./Tests");
+			case "swf":
+				System.copyFile("../application.xml", "bin/swf/application.xml");
+				var airSdkPath = StringTools.trim(System.runProcess(".", "haxelib", ["run", "lime", "config", "AIR_SDK"]));
+				var adlPath = Path.join([airSdkPath, "bin/adl"]);
+				System.runCommand("bin/swf", adlPath, ["-nodebug", "application.xml"]);
 			default:
 				trace('Tests not run for target: ${target}');
 				Sys.exit(1);

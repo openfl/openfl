@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<application xmlns="http://ns.adobe.com/air/application/32.0">
+	<id>com.example.OpenFLTests</id>
+	<filename>OpenFLTests</filename>
+	<name>OpenFL Tests</name>
+	<versionNumber>1.0.0</versionNumber>
+	<initialWindow>
+		<content>Test.swf</content>
+		<visible>true</visible>
+	</initialWindow>
+</application>

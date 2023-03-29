@@ -1091,15 +1091,13 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 
 		if (!connected)
 		{
-			var r = SysSocket.select(null, [__socket], null, 0);
-
-			if (r.write[0] == __socket)
-			{
-				doConnect = true;
-			}
-			else if (Sys.time() - __timestamp > timeout / 1000)
+			if (Sys.time() - __timestamp > timeout / 1000)
 			{
 				doClose = true;
+			}
+			else
+			{
+				doConnect = true;
 			}
 		}
 
