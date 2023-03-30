@@ -295,7 +295,15 @@ class SecureSocket extends Socket
 		__input.endian = __endian;
 
 		#if sys
-		__socket = new SysSecureSocket();
+		try
+		{
+			__socket = new SysSecureSocket();
+		}
+		catch (e:Dynamic)
+		{
+			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR, true, false, "Connection failed"));
+			return;
+		}
 		try
 		{
 			__socket.setBlocking(false);
