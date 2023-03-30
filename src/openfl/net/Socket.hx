@@ -1109,7 +1109,11 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 				switch (e)
 				{
 					case Error.Blocked:
-					case Error.Custom(Error.Blocked):
+					case Error.Custom(custom):
+						if (custom != Error.Blocked && custom != "EOF")
+						{
+							doClose = true;
+						}
 					default:
 						doClose = true;
 				}
