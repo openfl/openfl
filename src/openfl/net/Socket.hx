@@ -428,7 +428,15 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 		__socket.onclose = socket_onClose;
 		__socket.onerror = socket_onError;
 		#else
-		__socket = new SysSocket();
+		try
+		{
+			__socket = new SysSocket();
+		}
+		catch (e:Dynamic)
+		{
+			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR, true, false, "Connection failed"));
+			return;
+		}
 
 		try
 		{
