@@ -319,7 +319,35 @@ class SecureSocket extends Socket
 	@:noCompletion override private function this_onEnterFrame(event:Event):Void
 	{
 		#if sys
+		var doConnect = false;
+		var doClose = false;
+
 		if (!connected)
+		{
+			var r = SysSocket.select(null, [__socket], null, 0);
+
+			if (r.write[0] == __socket)
+			{
+				doConnect = true;
+			}
+			else if (Sys.time() - __timestamp > timeout / 1000)
+			{
+				doClose = true;
+			}
+			else
+			{
+				return;
+			}
+		}
+
+		if (doClose)
+		{
+			__cleanSocket();
+
+			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR, true, false, "Connection failed"));
+			return;
+		}
+		else if (doConnect)
 		{
 			var secureSocket:SysSecureSocket = cast __socket;
 			var blocked = false;
