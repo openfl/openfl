@@ -418,6 +418,26 @@ class EventDispatcher implements IEventDispatcher
 				{
 					listener.callback(event);
 				}
+				#elseif cpp
+				if (listener.useWeakReference)
+				{
+					var weakCallback = listener.weakRefCallback.get();
+					if (weakCallback == null)
+					{
+						// a weakly referenced callback was garbage collected
+						var indexToRemove = iterator.index - 1;
+						list.splice(indexToRemove, 1);
+						iterator.remove(listener, indexToRemove);
+					}
+					else
+					{
+						weakCallback(event);
+					}
+				}
+				else
+				{
+					listener.callback(event);
+				}
 				#else
 				// listener.callback (event.clone ());
 				listener.callback(event);
@@ -563,6 +583,8 @@ private class Listener
 	public var weakRefCallback:Dynamic;
 
 	private static var supportsWeakReference:Bool = Reflect.hasField(js.Lib.global, "WeakRef");
+	#elseif cpp
+	public var weakRefCallback:cpp.vm.WeakRef<Dynamic->Void>;
 	#end
 
 	public var priority:Int;
@@ -575,6 +597,15 @@ private class Listener
 		if (useWeakReference && supportsWeakReference)
 		{
 			this.weakRefCallback = #if haxe4 js.Syntax.code #else __js__ #end ("new WeakRef")(callback);
+		}
+		else
+		{
+			this.callback = callback;
+		}
+		#elseif cpp
+		if (useWeakReference)
+		{
+			this.weakRefCallback = new cpp.vm.WeakRef(callback, false);
 		}
 		else
 		{
@@ -595,6 +626,15 @@ private class Listener
 		if (weakRefCallback != null)
 		{
 			resolvedCallback = weakRefCallback.deref();
+			if (resolvedCallback == null)
+			{
+				return false;
+			}
+		}
+		#elseif cpp
+		if (weakRefCallback != null)
+		{
+			resolvedCallback = weakRefCallback.get();
 			if (resolvedCallback == null)
 			{
 				return false;
