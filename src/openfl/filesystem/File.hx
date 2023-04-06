@@ -1772,7 +1772,7 @@ class File extends FileReference
 		var pattern:EReg = ~/%(.+?)%/;
 
 		// Find the first match of the regular expression in the path
-		var match:Bool	 = pattern.match(__path);
+		var match:Bool	 = pattern.match(path);
 
 		if (match)
 		{
@@ -1789,7 +1789,7 @@ class File extends FileReference
 				return path;
 			}
 			// Replace the matched path component with the environment variable value
-			return StringTools.replace(__path, matchedPath, envVarValue);
+			return StringTools.replace(path, matchedPath, envVarValue);
 		}
 		return path;
 	}
@@ -1912,6 +1912,11 @@ class File extends FileReference
 
 	@:noCompletion private function set_nativePath(path:String):String
 	{
+		#if windows
+		if (path.indexOf("%") > -1){
+			path = __replaceWindowsEnvVars(path);
+		}		
+		#end
 		if (path.charAt(path.length - 1) == ":" /*|| FileSystem.isDirectory(path)*/)
 		{
 			path = Path.addTrailingSlash(path);
@@ -1923,11 +1928,6 @@ class File extends FileReference
 
 		__updateFileStats(path);
 
-		#if windows
-		if (path.indexOf("%") > -1){
-			path = __replaceWindowsEnvVars(path);
-		}		
-		#end
 		return __path = path.indexOf(#if windows "/" #else "\\" #end) > 0 ? __formatPath(path) : path;
 	}
 
