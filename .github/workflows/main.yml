@@ -17,6 +17,11 @@ jobs:
         with:
           haxe-version: ${{ matrix.haxe-version }}
 
+      - uses: joshtynjala/setup-adobe-air-action@v2
+        with:
+          air-version: "33.1"
+          accept-license: true
+
       - name: Set HAXEPATH
         run: |
           echo "HAXEPATH=$HAXE_STD_PATH/.." >> $GITHUB_ENV
@@ -28,6 +33,7 @@ jobs:
           haxelib install hxp --quiet
           haxelib install lime --quiet
           haxelib install utest --quiet
+          haxelib run lime config AIR_SDK ${{ env.AIR_HOME }}
 
       - name: Setup environment
         run: |
@@ -45,6 +51,11 @@ jobs:
         if: ${{ matrix.haxe-version != '3.4.7' }}
         run: |
           haxelib run hxp test -Dtarget=hl --install-hxp-alias
+
+      - name: Run tests on Adobe AIR
+        if: ${{ matrix.haxe-version != '3.4.7' }}
+        run: |
+          haxelib run hxp test -Dtarget=swf --install-hxp-alias
 
   package-haxelib:
     runs-on: macos-10.15
@@ -103,7 +114,7 @@ jobs:
           haxelib install hxcpp --quiet
           haxelib install format --quiet
           haxelib install hxp --quiet
-          haxelib install lime 7.9.0 --quiet
+          haxelib install lime --quiet
           haxelib install dox --quiet
           haxelib dev openfl $GITHUB_WORKSPACE
 

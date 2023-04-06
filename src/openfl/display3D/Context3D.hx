@@ -2279,7 +2279,7 @@ import lime.math.Vector2;
 			if (__state.renderToTexture == null && __stage3D == null)
 			{
 				var contextHeight = Std.int(__stage.window.height * __stage.window.scale);
-				scissorY = contextHeight - Std.int(__state.scissorRectangle.height) - scissorY;
+				scissorY = contextHeight - scissorHeight - scissorY;
 			}
 
 			if (#if openfl_disable_context_cache true #else __contextState.scissorRectangle.x != scissorX
