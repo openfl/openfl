@@ -7,156 +7,177 @@ import openfl.utils.ByteArray;
 
 extern class NetStream extends EventDispatcher
 {
-	#if flash
 	@:require(flash10) public static var CONNECT_TO_FMS(default, never):String;
-	#end
-	#if flash
 	@:require(flash10) public static var DIRECT_CONNECTIONS(default, never):String;
-	#end
+
+	#if (haxe_ver < 4.3)
 	public var audioCodec(default, never):Int;
-	#if flash
 	@:require(flash10_1) public var audioReliable:Bool;
-	#end
-	#if flash
 	@:require(flash10_1) public var audioSampleAccess:Bool;
-	#end
-	#if flash
 	@:require(flash10_1) public var backBufferLength(default, never):Float;
-	#end
-	#if flash
 	@:require(flash10_1) public var backBufferTime:Float;
-	#end
 	public var bufferLength(default, never):Float;
 	public var bufferTime:Float;
-	#if flash
 	@:require(flash10_1) public var bufferTimeMax:Float;
-	#end
 	public var bytesLoaded(default, never):UInt;
 	public var bytesTotal(default, never):UInt;
 	public var checkPolicyFile:Bool;
 	public var client:Dynamic;
 	public var currentFPS(default, never):Float;
-	#if flash
 	@:require(flash10_1) public var dataReliable:Bool;
-	#end
 	public var decodedFrames(default, never):UInt;
-	#if flash
 	@:require(flash10) public var farID(default, never):String;
-	#end
-	#if flash
 	@:require(flash10) public var farNonce(default, never):String;
-	#end
-	#if flash
 	@:require(flash10_1) public var inBufferSeek:Bool;
-	#end
-	#if flash
 	@:require(flash10) public var info(default, never):flash.net.NetStreamInfo;
-	#end
 	public var liveDelay(default, never):Float;
-	#if flash
 	@:require(flash10) public var maxPauseBufferTime:Float;
-	#end
-	#if flash
 	@:require(flash10_1) public var multicastAvailabilitySendToAll:Bool;
-	#end
-	#if flash
 	@:require(flash10_1) public var multicastAvailabilityUpdatePeriod:Float;
-	#end
-	#if flash
 	@:require(flash10_1) public var multicastFetchPeriod:Float;
-	#end
-	#if flash
 	@:require(flash10_1) public var multicastInfo(default, never):flash.net.NetStreamMulticastInfo;
-	#end
-	#if flash
 	@:require(flash10_1) public var multicastPushNeighborLimit:Float;
-	#end
-	#if flash
 	@:require(flash10_1) public var multicastRelayMarginDuration:Float;
-	#end
-	#if flash
 	@:require(flash10_1) public var multicastWindowDuration:Float;
-	#end
-	#if flash
 	@:require(flash10) public var nearNonce(default, never):String;
-	#end
 	public var objectEncoding(default, never):ObjectEncoding;
-	#if flash
-	@:require(flash10) public var peerStreams(default, never):Array<Dynamic>;
-	#end
+	@:require(flash10) public var peerStreams(default, never):Array<NetStream>;
 	public var soundTransform:SoundTransform;
-	// public var speed (get, set):Float;
 	public var time(default, never):Float;
-	#if flash
 	@:require(flash11) public var useHardwareDecoder:Bool;
-	#end
-	#if flash
 	@:require(flash11_3) public var useJitterBuffer:Bool;
-	#end
 	public var videoCodec(default, never):UInt;
-	#if flash
 	@:require(flash10_1) public var videoReliable:Bool;
-	#end
-	#if flash
 	@:require(flash10_1) public var videoSampleAccess:Bool;
-	#end
-	#if flash
 	@:require(flash11) public var videoStreamSettings:flash.media.VideoStreamSettings;
+	#else
+	@:flash.property var audioCodec(get, never):UInt;
+	@:flash.property @:require(flash10_1) var audioReliable(get, set):Bool;
+	@:flash.property @:require(flash10_1) var audioSampleAccess(get, set):Bool;
+	@:flash.property @:require(flash10_1) var backBufferLength(get, never):Float;
+	@:flash.property @:require(flash10_1) var backBufferTime(get, set):Float;
+	@:flash.property var bufferLength(get, never):Float;
+	@:flash.property var bufferTime(get, set):Float;
+	@:flash.property @:require(flash10_1) var bufferTimeMax(get, set):Float;
+	@:flash.property var bytesLoaded(get, never):UInt;
+	@:flash.property var bytesTotal(get, never):UInt;
+	@:flash.property var checkPolicyFile(get, set):Bool;
+	@:flash.property var client(get, set):Dynamic;
+	@:flash.property var currentFPS(get, never):Float;
+	@:flash.property @:require(flash10_1) var dataReliable(get, set):Bool;
+	@:flash.property var decodedFrames(get, never):UInt;
+	@:flash.property @:require(flash10) var farID(get, never):String;
+	@:flash.property @:require(flash10) var farNonce(get, never):String;
+	@:flash.property @:require(flash10_1) var inBufferSeek(get, set):Bool;
+	@:flash.property @:require(flash10) var info(get, never):flash.net.NetStreamInfo;
+	@:flash.property var liveDelay(get, never):Float;
+	@:flash.property @:require(flash10) var maxPauseBufferTime(get, set):Float;
+	@:flash.property @:require(flash10_1) var multicastAvailabilitySendToAll(get, set):Bool;
+	@:flash.property @:require(flash10_1) var multicastAvailabilityUpdatePeriod(get, set):Float;
+	@:flash.property @:require(flash10_1) var multicastFetchPeriod(get, set):Float;
+	@:flash.property @:require(flash10_1) var multicastInfo(get, never):NetStreamMulticastInfo;
+	@:flash.property @:require(flash10_1) var multicastPushNeighborLimit(get, set):Float;
+	@:flash.property @:require(flash10_1) var multicastRelayMarginDuration(get, set):Float;
+	@:flash.property @:require(flash10_1) var multicastWindowDuration(get, set):Float;
+	@:flash.property @:require(flash10) var nearNonce(get, never):String;
+	@:flash.property var objectEncoding(get, never):ObjectEncoding;
+	@:flash.property @:require(flash10) var peerStreams(get, never):Array<NetStream>;
+	@:flash.property var soundTransform(get, set):SoundTransform;
+	@:flash.property var time(get, never):Float;
+	@:flash.property @:require(flash11) var useHardwareDecoder(get, set):Bool;
+	@:flash.property @:require(flash11_3) var useJitterBuffer(get, set):Bool;
+	@:flash.property var videoCodec(get, never):UInt;
+	@:flash.property @:require(flash10_1) var videoReliable(get, set):Bool;
+	@:flash.property @:require(flash10_1) var videoSampleAccess(get, set):Bool;
+	@:flash.property @:require(flash11) var videoStreamSettings(get, set):flash.media.VideoStreamSettings;
 	#end
+
 	public function new(connection:NetConnection, ?peerID:String);
-	#if flash
 	@:require(flash10_1) public function appendBytes(bytes:ByteArray):Void;
-	#end
-	#if flash
 	@:require(flash10_1) public function appendBytesAction(netStreamAppendBytesAction:String):Void;
-	#end
-	#if flash
 	@:require(flash10_1) public function attach(connection:NetConnection):Void;
-	#end
-	#if flash
 	public function attachAudio(microphone:flash.media.Microphone):Void;
-	#end
-	#if flash
 	public function attachCamera(theCamera:flash.media.Camera, snapshotMilliseconds:Int = -1):Void;
-	#end
 	public function close():Void;
-	#if flash
-	@:require(flash11_2)
-	#end
-	public function dispose():Void;
-	#if flash
+	@:require(flash11_2) public function dispose():Void;
 	@:require(flash10) public function onPeerConnect(subscriber:NetStream):Bool;
-	#end
 	public function pause():Void;
 	public function play(?p1:Dynamic, ?p2:Dynamic, ?p3:Dynamic, ?p4:Dynamic, ?p5:Dynamic):Void;
-	#if flash
 	@:require(flash10) public function play2(param:flash.net.NetStreamPlayOptions):Void;
-	#end
-	#if flash
 	public function publish(?name:String, ?type:String):Void;
-	#end
-	#if flash
 	public function receiveAudio(flag:Bool):Void;
-	#end
-	#if flash
 	public function receiveVideo(flag:Bool):Void;
-	#end
-	#if flash
 	public function receiveVideoFPS(FPS:Float):Void;
-	#end
-	// public function requestVideoStatus ():Void;
-	#if flash
 	public static function resetDRMVouchers():Void;
-	#end
 	public function resume():Void;
 	public function seek(offset:Float):Void;
-	#if flash
 	public function send(handlerName:String, ?p1:Dynamic, ?p2:Dynamic, ?p3:Dynamic, ?p4:Dynamic, ?p5:Dynamic):Void;
-	#end
-	#if flash
 	@:require(flash10_1) public function step(frames:Int):Void;
-	#end
 	public function togglePause():Void;
+
+	#if (haxe_ver >= 4.3)
+	private function get_audioCodec():UInt;
+	private function get_audioReliable():Bool;
+	private function get_audioSampleAccess():Bool;
+	private function get_backBufferLength():Float;
+	private function get_backBufferTime():Float;
+	private function get_bufferLength():Float;
+	private function get_bufferTime():Float;
+	private function get_bufferTimeMax():Float;
+	private function get_bytesLoaded():UInt;
+	private function get_bytesTotal():UInt;
+	private function get_checkPolicyFile():Bool;
+	private function get_client():Dynamic;
+	private function get_currentFPS():Float;
+	private function get_dataReliable():Bool;
+	private function get_decodedFrames():UInt;
+	private function get_farID():String;
+	private function get_farNonce():String;
+	private function get_inBufferSeek():Bool;
+	private function get_info():NetStreamInfo;
+	private function get_liveDelay():Float;
+	private function get_maxPauseBufferTime():Float;
+	private function get_multicastAvailabilitySendToAll():Bool;
+	private function get_multicastAvailabilityUpdatePeriod():Float;
+	private function get_multicastFetchPeriod():Float;
+	private function get_multicastInfo():NetStreamMulticastInfo;
+	private function get_multicastPushNeighborLimit():Float;
+	private function get_multicastRelayMarginDuration():Float;
+	private function get_multicastWindowDuration():Float;
+	private function get_nearNonce():String;
+	private function get_objectEncoding():ObjectEncoding;
+	private function get_peerStreams():Array<NetStream>;
+	private function get_soundTransform():SoundTransform;
+	private function get_time():Float;
+	private function get_useHardwareDecoder():Bool;
+	private function get_useJitterBuffer():Bool;
+	private function get_videoCodec():UInt;
+	private function get_videoReliable():Bool;
+	private function get_videoSampleAccess():Bool;
+	private function get_videoStreamSettings():flash.media.VideoStreamSettings;
+	private function set_audioReliable(value:Bool):Bool;
+	private function set_audioSampleAccess(value:Bool):Bool;
+	private function set_backBufferTime(value:Float):Float;
+	private function set_bufferTime(value:Float):Float;
+	private function set_bufferTimeMax(value:Float):Float;
+	private function set_checkPolicyFile(value:Bool):Bool;
+	private function set_client(value:Dynamic):Dynamic;
+	private function set_dataReliable(value:Bool):Bool;
+	private function set_inBufferSeek(value:Bool):Bool;
+	private function set_maxPauseBufferTime(value:Float):Float;
+	private function set_multicastAvailabilitySendToAll(value:Bool):Bool;
+	private function set_multicastAvailabilityUpdatePeriod(value:Float):Float;
+	private function set_multicastFetchPeriod(value:Float):Float;
+	private function set_multicastPushNeighborLimit(value:Float):Float;
+	private function set_multicastRelayMarginDuration(value:Float):Float;
+	private function set_multicastWindowDuration(value:Float):Float;
+	private function set_soundTransform(value:SoundTransform):SoundTransform;
+	private function set_useHardwareDecoder(value:Bool):Bool;
+	private function set_useJitterBuffer(value:Bool):Bool;
+	private function set_videoReliable(value:Bool):Bool;
+	private function set_videoSampleAccess(value:Bool):Bool;
+	private function set_videoStreamSettings(value:flash.media.VideoStreamSettings):flash.media.VideoStreamSettings;
+	#end
 }
 #else
 typedef NetStream = openfl.net.NetStream;

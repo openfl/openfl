@@ -9,6 +9,8 @@ import openfl.utils.Object;
 extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 {
 	@:noCompletion public static var __constructor:MovieClip->Void;
+
+	#if (haxe_ver < 4.3)
 	public var currentFrame(default, never):Int;
 	@:require(flash10) public var currentFrameLabel(default, never):String;
 	public var currentLabel(default, never):String;
@@ -19,9 +21,21 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 	@:require(flash11) public var isPlaying(default, never):Bool;
 	public var scenes(default, never):Array<flash.display.Scene>;
 	public var totalFrames(default, never):Int;
-	#if flash
 	public var trackAsMenu:Bool;
+	#else
+	@:flash.property var currentFrame(get, never):Int;
+	@:flash.property @:require(flash10) var currentFrameLabel(get, never):String;
+	@:flash.property var currentLabel(get, never):String;
+	@:flash.property var currentLabels(get, never):Array<FrameLabel>;
+	@:flash.property var currentScene(get, never):Scene;
+	@:flash.property var enabled(get, set):Bool;
+	@:flash.property var framesLoaded(get, never):Int;
+	@:flash.property @:require(flash11) var isPlaying(get, never):Bool;
+	@:flash.property var scenes(get, never):Array<Scene>;
+	@:flash.property var totalFrames(get, never):Int;
+	@:flash.property var trackAsMenu(get, set):Bool;
 	#end
+
 	public function new();
 	public function addFrameScript(index:Int, method:Void->Void):Void;
 	public static inline function fromTimeline(timeline:Timeline):MovieClip
@@ -38,6 +52,22 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 	public function prevFrame():Void;
 	public function prevScene():Void;
 	public function stop():Void;
+
+	#if (haxe_ver >= 4.3)
+	private function get_currentFrame():Int;
+	private function get_currentFrameLabel():String;
+	private function get_currentLabel():String;
+	private function get_currentLabels():Array<FrameLabel>;
+	private function get_currentScene():Scene;
+	private function get_enabled():Bool;
+	private function get_framesLoaded():Int;
+	private function get_isPlaying():Bool;
+	private function get_scenes():Array<Scene>;
+	private function get_totalFrames():Int;
+	private function get_trackAsMenu():Bool;
+	private function set_enabled(value:Bool):Bool;
+	private function set_trackAsMenu(value:Bool):Bool;
+	#end
 }
 
 @:access(openfl.display.Timeline)
@@ -199,7 +229,7 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 	}
 
 	// Getters & Setters
-	@:setter(buttonMode) @:noCompletion private function set_buttonMode(value:Bool):Void
+	@:noCompletion #if (haxe_ver >= 4.3) override #else @:setter(buttonMode) #end private function set_buttonMode(value:Bool):#if (haxe_ver >= 4.3) Bool #else Void #end
 	{
 		if (this.buttonMode != value)
 		{
@@ -237,11 +267,18 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 				removeEventListener(MouseEvent.MOUSE_DOWN, __onMouseDown);
 			}
 
+			#if (haxe_ver >= 4.3)
+			return super.buttonMode = value;
+			#else
 			this.buttonMode = value;
+			#end
 		}
+		#if (haxe_ver >= 4.3)
+		return this.buttonMode;
+		#end
 	}
 
-	@:getter(currentFrame) @:noCompletion private function get_currentFrame():Int
+	@:noCompletion #if (haxe_ver >= 4.3) override #else @:getter(currentFrame) #end private function get_currentFrame():Int
 	{
 		if (__timeline != null)
 		{
@@ -253,7 +290,7 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 		}
 	}
 
-	@:getter(currentFrameLabel) @:noCompletion private function get_currentFrameLabel():String
+	@:noCompletion #if (haxe_ver >= 4.3) override #else @:getter(currentFrameLabel) #end private function get_currentFrameLabel():String
 	{
 		if (__timeline != null)
 		{
@@ -265,7 +302,7 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 		}
 	}
 
-	@:getter(currentLabel) @:noCompletion private function get_currentLabel():String
+	@:noCompletion #if (haxe_ver >= 4.3) override #else @:getter(currentLabel) #end private function get_currentLabel():String
 	{
 		if (__timeline != null)
 		{
@@ -277,7 +314,7 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 		}
 	}
 
-	@:getter(currentLabels) @:noCompletion private function get_currentLabels():Array<FrameLabel>
+	@:noCompletion #if (haxe_ver >= 4.3) override #else @:getter(currentLabels) #end private function get_currentLabels():Array<FrameLabel>
 	{
 		if (__timeline != null)
 		{
@@ -289,7 +326,7 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 		}
 	}
 
-	@:getter(currentScene) @:noCompletion private function get_currentScene():Scene
+	@:noCompletion #if (haxe_ver >= 4.3) override #else @:getter(currentScene) #end private function get_currentScene():Scene
 	{
 		if (__timeline != null)
 		{
@@ -297,11 +334,15 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 		}
 		else
 		{
+			#if (haxe_ver >= 4.3)
+			return super.currentScene;
+			#else
 			return this.currentScene;
+			#end
 		}
 	}
 
-	@:getter(framesLoaded) @:noCompletion private function get_framesLoaded():Int
+	@:noCompletion #if (haxe_ver >= 4.3) override #else @:getter(framesLoaded) #end private function get_framesLoaded():Int
 	{
 		if (__timeline != null)
 		{
@@ -313,7 +354,7 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 		}
 	}
 
-	@:getter(isPlaying) @:noCompletion private function get_isPlaying():Bool
+	@:noCompletion #if (haxe_ver >= 4.3) override #else @:getter(isPlaying) #end private function get_isPlaying():Bool
 	{
 		if (__timeline != null)
 		{
@@ -325,7 +366,7 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 		}
 	}
 
-	@:getter(scenes) @:noCompletion private function get_scenes():Array<Scene>
+	@:noCompletion #if (haxe_ver >= 4.3) override #else @:getter(scenes) #end private function get_scenes():Array<Scene>
 	{
 		if (__timeline != null)
 		{
@@ -337,7 +378,7 @@ extern class MovieClip extends Sprite #if openfl_dynamic implements Dynamic #end
 		}
 	}
 
-	@:getter(totalFrames) @:noCompletion private function get_totalFrames():Int
+	@:noCompletion #if (haxe_ver >= 4.3) override #else @:getter(totalFrames) #end private function get_totalFrames():Int
 	{
 		if (__timeline != null)
 		{

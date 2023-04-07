@@ -5,20 +5,14 @@ import openfl.events.EventType;
 
 extern class IOErrorEvent extends ErrorEvent
 {
-	#if flash
 	public static var DISK_ERROR(default, never):EventType<IOErrorEvent>;
-	#end
 	public static var IO_ERROR(default, never):EventType<IOErrorEvent>;
-	#if flash
 	public static var NETWORK_ERROR(default, never):EventType<IOErrorEvent>;
-	#end
+	public static var VERIFY_ERROR(default, never):EventType<IOErrorEvent>;
 	#if air
 	public static var STANDARD_ERROR_IO_ERROR(default, never):EventType<IOErrorEvent>;
 	public static var STANDARD_INPUT_IO_ERROR(default, never):EventType<IOErrorEvent>;
 	public static var STANDARD_OUTPUT_IO_ERROR(default, never):EventType<IOErrorEvent>;
-	#end
-	#if flash
-	public static var VERIFY_ERROR(default, never):EventType<IOErrorEvent>;
 	#end
 	public function new(type:String, bubbles:Bool = true, cancelable:Bool = false, text:String = "", id:Int = 0);
 	public override function clone():IOErrorEvent;

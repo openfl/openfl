@@ -9,20 +9,33 @@ import openfl.utils.IDataOutput;
 
 extern class Socket extends EventDispatcher implements IDataInput implements IDataOutput
 {
+	#if (haxe_ver < 4.3)
 	public var bytesAvailable(default, never):UInt;
 	@:require(flash11) public var bytesPending(default, never):UInt;
 	public var connected(default, never):Bool;
 	public var endian:Endian;
+	public var objectEncoding:ObjectEncoding;
+	@:require(flash10) public var timeout:UInt;
 	#if air
 	public var localAddress(default, never):String;
 	public var localPort(default, never):Int;
-	#end
-	public var objectEncoding:ObjectEncoding;
-	#if air
 	public var remoteAddress(default, never):String;
 	public var remotePort(default, never):Int;
 	#end
-	@:require(flash10) public var timeout:UInt;
+	#else
+	@:flash.property var bytesAvailable(get, never):UInt;
+	@:flash.property @:require(flash11) var bytesPending(get, never):UInt;
+	@:flash.property var connected(get, never):Bool;
+	@:flash.property var endian(get, set):Endian;
+	@:flash.property var objectEncoding(get, set):ObjectEncoding;
+	@:flash.property @:require(flash10) var timeout(get, set):UInt;
+	#if air
+	@:flash.property var localAddress(get, never):String;
+	@:flash.property var localPort(get, never):Int;
+	@:flash.property var remoteAddress(get, never):String;
+	@:flash.property var remotePort(get, never):Int;
+	#end
+	#end
 	public function new(host:String = null, port:Int = 0);
 	public function close():Void;
 	public function connect(host:String = null, port:Int = 0):Void;
@@ -34,9 +47,7 @@ extern class Socket extends EventDispatcher implements IDataInput implements IDa
 	public function readFloat():Float;
 	public function readInt():Int;
 	public function readMultiByte(length:Int, charSet:String):String;
-	#if flash
 	public function readObject():Dynamic;
-	#end
 	public function readShort():Int;
 	public function readUnsignedByte():Int;
 	public function readUnsignedInt():Int;
@@ -50,13 +61,29 @@ extern class Socket extends EventDispatcher implements IDataInput implements IDa
 	public function writeFloat(value:Float):Void;
 	public function writeInt(value:Int):Void;
 	public function writeMultiByte(value:String, charSet:String):Void;
-	#if flash
 	public function writeObject(object:Dynamic):Void;
-	#end
 	public function writeShort(value:Int):Void;
 	public function writeUnsignedInt(value:Int):Void;
 	public function writeUTF(value:String):Void;
 	public function writeUTFBytes(value:String):Void;
+
+	#if (haxe_ver >= 4.3)
+	private function get_bytesAvailable():UInt;
+	private function get_bytesPending():UInt;
+	private function get_connected():Bool;
+	private function get_endian():Endian;
+	private function get_objectEncoding():ObjectEncoding;
+	private function get_timeout():UInt;
+	#if air
+	private function get_localAddress():String;
+	private function get_localPort():Int;
+	private function get_remoteAddress():String;
+	private function get_remotePort():Int;
+	#end
+	private function set_endian(value:Endian):Endian;
+	private function set_objectEncoding(value:ObjectEncoding):ObjectEncoding;
+	private function set_timeout(value:UInt):UInt;
+	#end
 }
 #else
 typedef Socket = openfl.net.Socket;

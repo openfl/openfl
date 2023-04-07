@@ -252,7 +252,7 @@ class NativeProcess extends EventDispatcher
 		var vectorArgs = info.arguments;
 		if (vectorArgs != null)
 		{
-			for(i in 0...vectorArgs.length)
+			for (i in 0...vectorArgs.length)
 			{
 				args.push(vectorArgs[i]);
 			}
@@ -330,7 +330,8 @@ class NativeProcess extends EventDispatcher
 		}
 		Lib.current.addEventListener(Event.ENTER_FRAME, onEnterFrame);
 
-		function stdoutProgress(bytes:Bytes, length:Int):Void {
+		function stdoutProgress(bytes:Bytes, length:Int):Void
+		{
 			standardOutputMutex.acquire();
 			var newStandardOutput = new ByteArray();
 			newStandardOutput.writeBytes(__standardOutput.input, __standardOutput.input.position);
@@ -341,7 +342,8 @@ class NativeProcess extends EventDispatcher
 			standardOutputMutex.release();
 		}
 
-		function stderrProgress(bytes:Bytes, length:Int):Void {
+		function stderrProgress(bytes:Bytes, length:Int):Void
+		{
 			standardErrorMutex.acquire();
 			var newStandardError = new ByteArray();
 			newStandardError.writeBytes(__standardError.input, __standardError.input.position);
@@ -481,9 +483,7 @@ class NativeProcess extends EventDispatcher
 
 private class InboundPipe implements IDataInput
 {
-	public function new()
-	{
-	}
+	public function new() {}
 
 	public var mutex:Mutex;
 
@@ -701,9 +701,7 @@ private class InboundPipe implements IDataInput
 
 private class OutboundPipe implements IDataOutput
 {
-	public function new()
-	{
-	}
+	public function new() {}
 
 	public var output:Output;
 

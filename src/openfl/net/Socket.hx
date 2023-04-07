@@ -198,7 +198,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 			"endian": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_endian (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_endian (v); }")
-			},
+			}
 		});
 	}
 	#end
