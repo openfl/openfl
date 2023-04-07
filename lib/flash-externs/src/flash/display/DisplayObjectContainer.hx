@@ -5,12 +5,18 @@ import openfl.geom.Point;
 
 extern class DisplayObjectContainer extends InteractiveObject
 {
+	#if (haxe_ver < 4.3)
 	public var mouseChildren:Bool;
 	public var numChildren(default, never):Int;
 	public var tabChildren:Bool;
-	#if flash
 	public var textSnapshot(default, never):flash.text.TextSnapshot;
+	#else
+	@:flash.property var mouseChildren(get, set):Bool;
+	@:flash.property var numChildren(get, never):Int;
+	@:flash.property var tabChildren(get, set):Bool;
+	@:flash.property var textSnapshot(get, never):flash.text.TextSnapshot;
 	#end
+
 	private function new();
 	public function addChild(child:DisplayObject):DisplayObject;
 	public function addChildAt(child:DisplayObject, index:Int):DisplayObject;
@@ -27,6 +33,15 @@ extern class DisplayObjectContainer extends InteractiveObject
 	@:require(flash11_8) public function stopAllMovieClips():Void;
 	public function swapChildren(child1:DisplayObject, child2:DisplayObject):Void;
 	public function swapChildrenAt(index1:Int, index2:Int):Void;
+
+	#if (haxe_ver >= 4.3)
+	private function get_mouseChildren():Bool;
+	private function get_numChildren():Int;
+	private function get_tabChildren():Bool;
+	private function get_textSnapshot():flash.text.TextSnapshot;
+	private function set_mouseChildren(value:Bool):Bool;
+	private function set_tabChildren(value:Bool):Bool;
+	#end
 }
 #else
 typedef DisplayObjectContainer = openfl.display.DisplayObjectContainer;

@@ -1873,34 +1873,65 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	#else
 	public static var defaultEndian:Endian;
 	#end
+
+	#if flash
+	#if (haxe_ver < 4.3)
 	public static var defaultObjectEncoding:ObjectEncoding;
-	#if flash
 	public var bytesAvailable(default, never):UInt;
-	#else
-	public var bytesAvailable(get, never):UInt;
-	private inline function get_bytesAvailable():UInt
-	{
-		return 0;
-	}
-	#end
-	#if flash
 	public var endian:Endian;
-	#else
-	public var endian(get, set):Endian;
-	@:noCompletion private function get_endian():Endian;
-	@:noCompletion private function set_endian(value:Endian):Endian;
-	#end
 	public var length:UInt;
 	public var objectEncoding:ObjectEncoding;
 	public var position:UInt;
-	#if flash
-	@:noCompletion @:dox(hide) @:require(flash11_4) public var shareable:Bool;
+	@:require(flash11_4) public var shareable:Bool;
+	#else
+	@:flash.property static var defaultObjectEncoding(get, set):ObjectEncoding;
+	@:flash.property var bytesAvailable(get, never):UInt;
+	@:flash.property var endian(get, set):Endian;
+	@:flash.property var length(get, set):UInt;
+	@:flash.property var objectEncoding(get, set):ObjectEncoding;
+	@:flash.property var position(get, set):UInt;
+	@:flash.property @:require(flash11_4) var shareable(get, set):Bool;
+	private static function get_defaultObjectEncoding():ObjectEncoding;
+	private function get_bytesAvailable():UInt;
+	private function get_endian():Endian;
+	private function get_length():UInt;
+	private function get_objectEncoding():ObjectEncoding;
+	private function get_position():UInt;
+	private function get_shareable():Bool;
+	private static function set_defaultObjectEncoding(value:ObjectEncoding):ObjectEncoding;
+	private function set_endian(value:Endian):Endian;
+	private function set_length(value:UInt):UInt;
+	private function set_objectEncoding(value:ObjectEncoding):ObjectEncoding;
+	private function set_position(value:UInt):UInt;
+	private function set_shareable(value:Bool):Bool;
 	#end
+	#else
+	static var defaultObjectEncoding(get, set):ObjectEncoding;
+	var bytesAvailable(get, never):UInt;
+	var endian(get, set):Endian;
+	var length(get, set):UInt;
+	var objectEncoding:ObjectEncoding;
+	var position(get, set):UInt;
+	@:require(flash11_4) var shareable(get, set):Bool;
+	private static function get_defaultObjectEncoding():ObjectEncoding;
+	private function get_bytesAvailable():UInt;
+	private function get_endian():Endian;
+	private function get_length():UInt;
+	private function get_objectEncoding():ObjectEncoding;
+	private function get_position():UInt;
+	private function get_shareable():Bool;
+	private static function set_defaultObjectEncoding(value:ObjectEncoding):ObjectEncoding;
+	private function set_endian(value:Endian):Endian;
+	private function set_length(value:UInt):UInt;
+	private function set_objectEncoding(value:ObjectEncoding):ObjectEncoding;
+	private function set_position(value:UInt):UInt;
+	private function set_shareable(value:Bool):Bool;
+	#end
+
 	public function new();
+
 	#if flash
 	@:noCompletion @:dox(hide) @:require(flash11_4) public function atomicCompareAndSwapIntAt(byteIndex:Int, expectedValue:Int, newValue:Int):Int;
-	#end
-	#if flash
 	@:noCompletion @:dox(hide) @:require(flash11_4) public function atomicCompareAndSwapLength(expectedLength:Int, newLength:Int):Int;
 	#end
 

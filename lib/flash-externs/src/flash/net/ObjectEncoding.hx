@@ -7,11 +7,7 @@ package flash.net;
 	public var AMF3 = 3;
 	public var HXSF = 10;
 	public var JSON = 12;
-	// #if flash
 	public var DEFAULT = 3;
-	// #else
-	// public var DEFAULT = 10;
-	// #end
 }
 #else
 typedef ObjectEncoding = openfl.net.ObjectEncoding;

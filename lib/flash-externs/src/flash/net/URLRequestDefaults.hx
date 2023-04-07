@@ -6,11 +6,11 @@ extern class URLRequestDefaults
 	#if air
 	public static var authenticate:Bool;
 	public static var cacheResponse:Bool;
-	#end
-	#if (air || !flash)
 	public static var followRedirects:Bool;
 	public static var idleTimeout:Float;
 	public static var manageCookies:Bool;
+	public static var useCache:Bool;
+	public static var userAgent:String;
 	#else
 	public static var followRedirects(get, set):Bool;
 	private inline static function get_followRedirects():Bool
@@ -39,13 +39,6 @@ extern class URLRequestDefaults
 	{
 		return value;
 	}
-	#end
-	#if air
-	public static var useCache:Bool;
-	#end
-	#if (air || !flash)
-	public static var userAgent:String;
-	#else
 	public static var userAgent(get, set):String;
 	private inline static function get_userAgent():String
 	{
@@ -56,6 +49,7 @@ extern class URLRequestDefaults
 		return value;
 	}
 	#end
+
 	#if air
 	public static function setLoginCredentialsForHost(hostname:String, user:String, password:String):Dynamic;
 	#end

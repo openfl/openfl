@@ -39,9 +39,7 @@ extern class BitmapData implements IBitmapDrawable
 		destChannel:BitmapDataChannel):Void;
 	public function copyPixels(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, alphaBitmapData:BitmapData = null, alphaPoint:Point = null,
 		mergeAlpha:Bool = false):Void;
-	#if flash
 	@:require(flash11_4) public function copyPixelsToByteArray(rect:Rectangle, data:ByteArray):Void;
-	#end
 	public function dispose():Void;
 	public inline function disposeImage():Void {}
 	public function draw(source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null,
@@ -65,11 +63,7 @@ extern class BitmapData implements IBitmapDrawable
 	}
 	public static inline function fromImage(image:Image, transparent:Bool = true):BitmapData
 	{
-		#if flash
 		return image.src;
-		#else
-		return null;
-		#end
 	}
 	public static inline function fromTexture(texture:TextureBase):BitmapData
 	{
@@ -148,10 +142,8 @@ extern class BitmapData implements IBitmapDrawable
 		blueArray:Array<Int> = null, alphaArray:Array<Int> = null):Void;
 	public function perlinNoise(baseX:Float, baseY:Float, numOctaves:UInt, randomSeed:Int, stitch:Bool, fractalNoise:Bool, channelOptions:UInt = 7,
 		grayScale:Bool = false, offsets:Array<Point> = null):Void;
-	#if flash
 	public function pixelDissolve(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, randomSeed:Int = 0, numPixels:Int = 0,
 		fillColor:UInt = 0):Int;
-	#end
 	public function scroll(x:Int, y:Int):Void;
 	public function setPixel(x:Int, y:Int, color:UInt):Void;
 	public function setPixel32(x:Int, y:Int, color:UInt):Void;
