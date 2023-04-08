@@ -26,6 +26,7 @@ class TextLayoutGroup
 	#end
 	public var startIndex:Int;
 	public var width:Float;
+	public var _textDirection:TextLayout.TextDirection;
 
 	public function new(format:TextFormat, startIndex:Int, endIndex:Int)
 	{
@@ -40,6 +41,21 @@ class TextLayoutGroup
 		return positions[index];
 		#else
 		return (index >= 0 && index < positions.length) ? positions[index].advance.x : 0;
+		#end
+	}
+
+	public function textDirection():TextLayout.TextDirection
+	{
+		#if (js && html5)
+		return LEFT_TO_RIGHT;
+		#else
+		// We consider that a a textLayoutGroup has only one direction
+		if (positions.length >= 1)
+		{
+			return _textDirection;
+		}
+
+		return LEFT_TO_RIGHT;
 		#end
 	}
 }

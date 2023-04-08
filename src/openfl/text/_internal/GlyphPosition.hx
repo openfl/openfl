@@ -15,12 +15,14 @@ class GlyphPosition
 	public var advance:#if lime Vector2 #else Dynamic #end;
 	public var glyph:#if lime Glyph #else Dynamic #end;
 	public var offset:#if lime Vector2 #else Dynamic #end;
+	public var textDirection:#if lime TextLayout.TextDirection #else Dynamic #end;
 
 	public function new(glyph:#if lime Glyph #else Dynamic #end, advance:#if lime Vector2 #else Dynamic #end,
-			offset:#if lime Vector2 #else Dynamic #end = null)
+			offset:#if lime Vector2 #else Dynamic #end = null, textDirection:#if lime TextLayout.TextDirection #else Dynamic #end)
 	{
 		this.glyph = glyph;
 		this.advance = advance;
+		this.textDirection = textDirection;
 
 		if (offset != null)
 		{
