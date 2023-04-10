@@ -152,11 +152,20 @@ class Application #if lime extends LimeApplication #end
 			return;
 		}
 		#end
+		super.__checkForAllWindowsClosed();
+	}
+
+	@:noCompletion override private function __onModuleExit(code:Int):Void
+	{
+		if (onExit.canceled)
+		{
+			return;
+		}
 		if (Lib.application == this)
 		{
 			Lib.application = null;
 		}
-		super.__checkForAllWindowsClosed();
+		super.__onModuleExit(code);
 	}
 	#end
 }
