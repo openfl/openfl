@@ -76,4 +76,22 @@ class Window #if lime extends LimeWindow #end
 		stage = Lib.current.stage;
 		#end
 	}
+
+	override public function close():Void
+	{
+		super.close();
+		if (onClose.canceled)
+		{
+			return;
+		}
+		if (stage == null)
+		{
+			// already closed
+			return;
+		}
+		#if (!flash && lime)
+		application.removeModule(stage);
+		#end
+		stage = null;
+	}
 }
