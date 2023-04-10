@@ -152,7 +152,10 @@ class Application #if lime extends LimeApplication #end
 			return;
 		}
 		#end
-		Lib.application = null;
+		if (Lib.application == this)
+		{
+			Lib.application = null;
+		}
 		super.__checkForAllWindowsClosed();
 	}
 	#end
