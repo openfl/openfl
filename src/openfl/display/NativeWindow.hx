@@ -12,6 +12,9 @@ import openfl.events.EventDispatcher;
 import openfl.events.NativeWindowBoundsEvent;
 import openfl.events.NativeWindowDisplayStateEvent;
 import openfl.geom.Rectangle;
+#if (lime >= "8.1.0")
+import openfl.geom.Point;
+#end
 
 /**
 	The NativeWindow class provides an interface for creating and controlling
@@ -800,6 +803,105 @@ class NativeWindow extends EventDispatcher
 		}
 		return false;
 	}
+
+	#if (lime >= "8.1.0")
+	/**
+		The minimum size for this window.
+
+		The size limit is specified as the coordinates of a Point object. The
+		point `x` property corresponds to the window width, the `y` property to
+		the window height.
+
+		Setting `minSize`, will change the window bounds if the current bounds
+		are smaller than the new minimum size.
+
+		The `minSize` restriction is enforced for window resizing operations
+		invoked both through ActionScript code and through the operating system.
+
+		Note: The width and height of any displayed system chrome may make it
+		impossible to set a window as small as the specified minimum size.
+
+		@see `NativeWindow.maxSize`
+		@see `NativeWindow.width`
+		@see `NativeWindow.height`
+	**/
+	public var minSize(get, set):Point;
+
+	@:noCompletion private function get_minSize():Point
+	{
+		if (__closed)
+		{
+			throw new Error(ERROR_CLOSED, 3200);
+		}
+		return new Point(__window.minWidth, __window.minHeight);
+	}
+
+	@:noCompletion private function set_minSize(value:Point):Point
+	{
+		if (__closed)
+		{
+			throw new Error(ERROR_CLOSED, 3200);
+		}
+		__window.setMinSize(Std.int(value.x), Std.int(value.y));
+		return value;
+	}
+	#end
+
+	#if (lime >= "8.1.0")
+	/**
+		The maximum size for this window.
+
+		The size limit is specified as the coordinates of a Point object. The
+		point `x` property corresponds to the window width, the `y` property to
+		the window height.
+
+		The `maxSize` restriction is enforced for window resizing operation
+		invoked both through Haxe code and through the operating system.
+
+		Setting `maxSize` will change the window bounds if the current bounds
+		are larger than the new maximum size.
+
+		If the width or height specified is greater than the maximum allowed
+		width or height, then the window width is set to the closest legal size.
+		The factors that determine the minimum and maximum width and height are
+		the following:
+
+		- The maximum operating system limit, which is the value
+		`NativeWindow.systemMaxSize`.
+		- The maximum width and height of a window in Adobe AIR, which is 4095
+		pixels for each. (In AIR 1.5 and earlier, the maximum width and height
+		of a window is 2880 pixels each.)
+
+		Note: On some operating systems, such as Mac OS X, maximizing a window
+		will only enlarge the window to the `maxSize` value even if the
+		maximized window will be smaller than the operating system screen. The
+		window will still be in the maximized display state.
+
+		@see `NativeWindow.maxSize`
+		@see `NativeWindow.width`
+		@see `NativeWindow.height`
+	**/
+	public var maxSize(get, set):Point;
+
+	@:noCompletion private function get_maxSize():Point
+	{
+		if (__closed)
+		{
+			throw new Error(ERROR_CLOSED, 3200);
+		}
+		return new Point(__window.maxWidth, __window.maxHeight);
+	}
+
+	@:noCompletion private function set_maxSize(value:Point):Point
+	{
+		if (__closed)
+		{
+			throw new Error(ERROR_CLOSED, 3200);
+		}
+		__window.setMaxSize(Std.int(value.x), Std.int(value.y));
+		return value;
+	}
+	#end
 
 	/**
 		Activates this window.
