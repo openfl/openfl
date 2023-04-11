@@ -3178,7 +3178,7 @@ class TextField extends InteractiveObject
 		stage.removeEventListener(MouseEvent.MOUSE_MOVE, stage_onMouseMove);
 		stage.removeEventListener(MouseEvent.MOUSE_UP, stage_onMouseUp);
 
-		if (this.stage == null) return;
+		if (this.stage != stage) return;
 
 		if (stage.focus == this)
 		{
