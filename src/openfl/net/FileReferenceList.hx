@@ -1,14 +1,14 @@
 package openfl.net;
 
-#if !flash
+#if (desktop && !flash)
 import haxe.io.Path;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 #if lime
-import lime.ui.FileDialog;
+	import lime.ui.FileDialog;
 #end
 #if sys
-import sys.FileSystem;
+	import sys.FileSystem;
 #end
 
 /**
@@ -189,6 +189,92 @@ class FileReferenceList extends EventDispatcher
 
 		dispatchEvent(new Event(Event.SELECT));
 	}
+}
+#elseif js
+import openfl.utils.ByteArray;
+import openfl.events.MouseEvent;
+import openfl.net.FileFilter;
+import openfl.net.FileReference;
+import openfl.events.EventDispatcher;
+import openfl.events.Event;
+import js.lib.DataView;
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+@:access(openfl.net.FileReference)
+class FileReferenceList extends EventDispatcher
+{
+
+	public var fileList(default, null):Array<FileReference>;
+
+	private var fileInput:Dynamic;
+	public function new()
+	{
+		super();
+		fileList = new Array<FileReference>();
+	}
+
+	public function browse(typeFilter:Array<FileFilter> = null):Bool
+	{
+		fileInput = js.Browser.document.createElement("input");
+		fileInput.type = "file";
+		fileInput.multiple = true;
+		if (typeFilter != null)
+		{
+			var accept:String = "";
+			for (i in 0...typeFilter.length)
+			{
+				if (i > 0)
+				{
+					accept += ",";
+				}
+				accept += typeFilter[i].extension;
+			}
+			fileInput.accept = accept;
+		}
+		fileInput.addEventListener("change", fileInput_onChange);
+		fileInput.click();
+		return true;
+	}
+
+	private function fileInput_onChange(event:Dynamic):Void
+	{
+		var files = event.target.files;
+		for (i in 0...files.length)
+		{
+			var file = files[i];
+			var fileReference = new FileReference();
+			fileReference.__path = file.name;
+			fileReference.name = file.name;
+			fileReference.size = file.size;
+			fileReference.type = file.type;
+			// Set creationDate and modificationDate properties
+			var lastModifiedTime = file.lastModifiedDate.getTime();
+			fileReference.creationDate = Date.fromTime(lastModifiedTime);
+			fileReference.modificationDate = Date.fromTime(lastModifiedTime);
+
+			var reader = new js.html.FileReader();
+			reader.addEventListener("load", function(readerEvent)
+			{
+				var byteArray = new ByteArray();
+				var dataView = new DataView(readerEvent.target.result);
+				for (i in 0...dataView.byteLength)
+				{
+					byteArray.writeByte(dataView.getUint8(i));
+				}
+				fileReference.data = byteArray;
+				fileList.push(fileReference);
+				if (fileList.length == files.length)
+				{
+					dispatchEvent(new Event(Event.SELECT));
+				}
+			});
+			reader.readAsArrayBuffer(cast file);
+		}
+	}
+
 }
 #else
 typedef FileReferenceList = flash.net.FileReferenceList;
