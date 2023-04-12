@@ -565,6 +565,7 @@ class FileReference extends EventDispatcher
 	**/
 	public function browse(typeFilter:Array<FileFilter> = null):Bool
 	{
+		data = null;
 		__data = null;
 		__path = null;
 
@@ -934,14 +935,21 @@ class FileReference extends EventDispatcher
 			openFileDialog_onComplete();
 		}
 		#elseif (js && html5)
-		var file = __inputControl.files[0];
-		var reader = new FileReader();
-		reader.onload = function(evt)
+		if (data == null)
 		{
-			data = ByteArray.fromArrayBuffer(cast evt.target.result);
+			var file = __inputControl.files[0];
+			var reader = new FileReader();
+			reader.onload = function(evt)
+			{
+				data = ByteArray.fromArrayBuffer(cast evt.target.result);
+				openFileDialog_onComplete();
+			}
+			reader.readAsArrayBuffer(file);
+		}
+		else
+		{
 			openFileDialog_onComplete();
 		}
-		reader.readAsArrayBuffer(file);
 		#end
 	}
 

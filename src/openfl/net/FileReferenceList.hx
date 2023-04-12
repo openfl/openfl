@@ -218,9 +218,13 @@ class FileReferenceList extends EventDispatcher
 
 	public function browse(typeFilter:Array<FileFilter> = null):Bool
 	{
-		fileInput = js.Browser.document.createElement("input");
-		fileInput.type = "file";
-		fileInput.multiple = true;
+		if (fileInput == null)
+		{
+			fileInput = js.Browser.document.createElement("input");
+			fileInput.type = "file";
+			fileInput.multiple = true;
+		}
+
 		if (typeFilter != null)
 		{
 			var accept:String = "";
@@ -234,6 +238,9 @@ class FileReferenceList extends EventDispatcher
 			}
 			fileInput.accept = accept;
 		}
+
+		fileList = new Array<FileReference>();
+
 		fileInput.addEventListener("change", fileInput_onChange);
 		fileInput.click();
 		return true;
