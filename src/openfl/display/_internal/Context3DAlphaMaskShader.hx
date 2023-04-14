@@ -7,7 +7,7 @@ import openfl.display.Shader;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-class Context3DMaskShader extends Shader
+class Context3DAlphaMaskShader extends Shader
 {
 	public static var opaqueBitmapData:BitmapData = new BitmapData(1, 1, false, 0);
 
