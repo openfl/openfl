@@ -32,7 +32,7 @@ class QName
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
-		untyped Object.defineProperties(QName.prototype, {
+		untyped global.Object.defineProperties(QName.prototype, {
 			"uri": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_uri (); }")
 			},
