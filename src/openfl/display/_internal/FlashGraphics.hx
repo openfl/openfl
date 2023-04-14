@@ -1,5 +1,6 @@
 package openfl.display._internal;
 
+#if flash
 import openfl.display.BitmapData;
 import openfl.display.Graphics;
 import openfl.display.GraphicsBitmapFill;
@@ -282,3 +283,4 @@ class FlashGraphics
 		}
 	}
 }
+#end
