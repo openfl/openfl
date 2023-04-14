@@ -104,7 +104,7 @@ package openfl.globalization;
 	public var USING_DEFAULT_WARNING = "usingDefaultWarning";
 	public var USING_FALLBACK_WARNING = "usingFallbackWarning";
 
-	@:noCompletion private inline static function fromInt(value:Null<Int>):DateTimeNameContext
+	@:noCompletion private inline static function fromInt(value:Null<Int>):LastOperationStatus
 	{
 		return switch (value)
 		{

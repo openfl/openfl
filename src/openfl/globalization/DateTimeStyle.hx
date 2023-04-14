@@ -56,7 +56,7 @@ package openfl.globalization;
 	public var NONE = "none";
 	public var SHORT = "short";
 
-	@:noCompletion private inline static function fromInt(value:Null<Int>):DateTimeNameContext
+	@:noCompletion private inline static function fromInt(value:Null<Int>):DateTimeStyle
 	{
 		return switch (value)
 		{

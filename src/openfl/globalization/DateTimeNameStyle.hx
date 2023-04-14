@@ -48,7 +48,7 @@ package openfl.globalization;
 	public var LONG_ABBREVIATION = "longAbbreviation";
 	public var SHORT_ABBREVIATION = "shortAbbreviation";
 
-	@:noCompletion private inline static function fromInt(value:Null<Int>):DateTimeNameContext
+	@:noCompletion private inline static function fromInt(value:Null<Int>):DateTimeNameStyle
 	{
 		return switch (value)
 		{
