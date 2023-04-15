@@ -79,25 +79,25 @@ class AssetsMacro
 				{
 					name: "width",
 					opt: false,
-					type: macro:Int,
+					type: macro :Int,
 					value: null
 				},
 				{
 					name: "height",
 					opt: false,
-					type: macro:Int,
+					type: macro :Int,
 					value: null
 				},
 				{
 					name: "transparent",
 					opt: true,
-					type: macro:Bool,
+					type: macro :Bool,
 					value: macro true
 				},
 				{
 					name: "fillRGBA",
 					opt: true,
-					type: macro:Int,
+					type: macro :Int,
 					value: macro 0xFFFFFFFF
 				}
 			];
@@ -106,11 +106,11 @@ class AssetsMacro
 			args.push({
 				name: "onload",
 				opt: true,
-				type: macro:Dynamic,
+				type: macro :Dynamic,
 				value: null
 			});
 			fields.push({
-				kind: FVar(macro:lime.graphics.Image, null),
+				kind: FVar(macro :lime.graphics.Image, null),
 				name: "preload",
 				doc: null,
 				meta: [],
@@ -178,7 +178,7 @@ class AssetsMacro
 
 								var fieldValue = {pos: position, expr: EConst(CString(resourceType))};
 								fields.push({
-									kind: FVar(macro:String, fieldValue),
+									kind: FVar(macro :String, fieldValue),
 									name: "resourceType",
 									access: [APrivate, AStatic],
 									pos: position
@@ -194,7 +194,7 @@ class AssetsMacro
 
 							var fieldValue = {pos: position, expr: EConst(CString(resourceName))};
 							fields.push({
-								kind: FVar(macro:String, fieldValue),
+								kind: FVar(macro :String, fieldValue),
 								name: "resourceName",
 								access: [APrivate, AStatic],
 								pos: position
@@ -228,7 +228,7 @@ class AssetsMacro
 				{
 					name: "size",
 					opt: true,
-					type: macro:Int,
+					type: macro :Int,
 					value: macro 0
 				}
 			];
@@ -294,7 +294,7 @@ class AssetsMacro
 
 			var fieldValue = {pos: position, expr: EConst(CString(resourceName))};
 			fields.push({
-				kind: FVar(macro:String, fieldValue),
+				kind: FVar(macro :String, fieldValue),
 				name: "resourceName",
 				access: [APublic, AStatic],
 				pos: position
@@ -336,13 +336,13 @@ class AssetsMacro
 				{
 					name: "stream",
 					opt: true,
-					type: macro:openfl.net.URLRequest,
+					type: macro :openfl.net.URLRequest,
 					value: null
 				},
 				{
 					name: "context",
 					opt: true,
-					type: macro:openfl.media.SoundLoaderContext,
+					type: macro :openfl.media.SoundLoaderContext,
 					value: null
 				}
 			];

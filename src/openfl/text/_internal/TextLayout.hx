@@ -51,7 +51,7 @@ class TextLayout
 	public var autoHint:Bool;
 	public var direction(get, set):TextDirection;
 	public var font(default, set):Font;
-	@SuppressWarnings("checkstyle:Dynamic") public var glyphs(get, null):Array<#if lime Glyph #else Dynamic #end>;
+	@SuppressWarnings("checkstyle:Dynamic") public var glyphs(get, null):Array< #if lime Glyph #else Dynamic #end>;
 	public var language(get, set):String;
 	public var letterSpacing:Float = 0;
 	@:isVar public var positions(get, null):Array<GlyphPosition>;
@@ -119,9 +119,9 @@ class TextLayout
 
 				if (autoHint)
 				{
-					//TODO: Investigate FreeType hinting used in HB. The FT_LOAD_FORCE_AUTOHINT 
-					//flag caused glyph spacing inconsistencies on certain fonts. Is it necessary to have
-					//enabled in certain cases?
+					// TODO: Investigate FreeType hinting used in HB. The FT_LOAD_FORCE_AUTOHINT
+					// flag caused glyph spacing inconsistencies on certain fonts. Is it necessary to have
+					// enabled in certain cases?
 					__hbFont.loadFlags = /*FT_LOAD_FORCE_AUTOHINT |*/ FT_LOAD_TARGET_LIGHT;
 				}
 			}
@@ -224,7 +224,7 @@ class TextLayout
 
 	@:noCompletion
 	@SuppressWarnings("checkstyle:Dynamic")
-	private function get_glyphs():Array<#if lime Glyph #else Dynamic #end>
+	private function get_glyphs():Array< #if lime Glyph #else Dynamic #end>
 	{
 		var glyphs = [];
 
@@ -351,7 +351,7 @@ class TextLayout
 }
 
 @SuppressWarnings("checkstyle:FieldDocComment")
-@:enum abstract TextScript(String) to(String)
+@:enum abstract TextScript(String) to (String)
 {
 	public var COMMON = "Zyyy";
 	public var INHERITED = "Zinh";

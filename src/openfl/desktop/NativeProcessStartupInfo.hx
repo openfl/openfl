@@ -22,9 +22,7 @@ class NativeProcessStartupInfo
 	/**
 		Constructs an empty NativeProcessStartupInfo object.
 	**/
-	public function new()
-	{
-	}
+	public function new() {}
 
 	/**
 		The command line arguments that will be passed to the process on
