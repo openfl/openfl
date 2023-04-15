@@ -209,13 +209,14 @@ class ServerSocket extends EventDispatcher
 		if (backlog < 0)
 		{
 			throw new RangeError("The supplied index is out of bounds.");
-		} else if (backlog == 0)
+		}
+		else if (backlog == 0)
 		{
-			//Setting haxe tcp backlog to 0 doesn't seem to force the maximum limit as it does in 
-			//AIR so instead we set it to maximum integer which should clamp it to the maximum limit.
+			// Setting haxe tcp backlog to 0 doesn't seem to force the maximum limit as it does in
+			// AIR so instead we set it to maximum integer which should clamp it to the maximum limit.
 			backlog = 0x7FFFFFFF;
 		}
-		
+
 		__serverSocket.listen(backlog);
 		listening = true;
 	}

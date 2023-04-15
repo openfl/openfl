@@ -343,11 +343,19 @@ class TextEngine
 			__defaultFonts.set("_sans", new DefaultFontSet(sans, sansBold, sansItalic, sansBoldItalic));
 
 			var serif = processFontList([
-				systemFontDirectory + "/Georgia.ttf", systemFontDirectory + "/Times.ttf", systemFontDirectory + "/Times New Roman.ttf",
-				systemFontDirectory + "/Cache/Georgia.ttf", systemFontDirectory + "/Cache/Times.ttf", systemFontDirectory + "/Cache/Times New Roman.ttf",
-				systemFontDirectory + "/Core/Georgia.ttf", systemFontDirectory + "/Core/Times.ttf", systemFontDirectory + "/Core/Times New Roman.ttf",
-				systemFontDirectory + "/CoreAddition/Georgia.ttf", systemFontDirectory + "/CoreAddition/Times.ttf",
-				systemFontDirectory + "/CoreAddition/Times New Roman.ttf", "/System/Library/Fonts/Supplemental/Times New Roman.ttf"
+				systemFontDirectory + "/Georgia.ttf",
+				systemFontDirectory + "/Times.ttf",
+				systemFontDirectory + "/Times New Roman.ttf",
+				systemFontDirectory + "/Cache/Georgia.ttf",
+				systemFontDirectory + "/Cache/Times.ttf",
+				systemFontDirectory + "/Cache/Times New Roman.ttf",
+				systemFontDirectory + "/Core/Georgia.ttf",
+				systemFontDirectory + "/Core/Times.ttf",
+				systemFontDirectory + "/Core/Times New Roman.ttf",
+				systemFontDirectory + "/CoreAddition/Georgia.ttf",
+				systemFontDirectory + "/CoreAddition/Times.ttf",
+				systemFontDirectory + "/CoreAddition/Times New Roman.ttf",
+				"/System/Library/Fonts/Supplemental/Times New Roman.ttf"
 			]);
 			var serifBold = findFont("/System/Library/Fonts/Supplemental/Times New Roman Bold.ttf");
 			var serifItalic = findFont("/System/Library/Fonts/Supplemental/Times New Roman Italic.ttf");
@@ -790,7 +798,7 @@ class TextEngine
 		#if !js
 		inline
 		#end
-		function getPositions(text:UTF8String, startIndex:Int, endIndex:Int):Array<#if (js && html5) Float #else GlyphPosition #end>
+		function getPositions(text:UTF8String, startIndex:Int, endIndex:Int):Array< #if (js && html5) Float #else GlyphPosition #end>
 		{
 			// TODO: optimize
 
@@ -1962,7 +1970,7 @@ class TextEngine
 
 		var max = maxScrollV;
 
-		//TODO: Does maxScrollV return the wrong value(+1) in some cases?
+		// TODO: Does maxScrollV return the wrong value(+1) in some cases?
 		if (scrollV > max) return max;
 
 		return scrollV;

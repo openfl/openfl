@@ -71,12 +71,7 @@ class NativeProcessExitEvent extends Event
 
 	public override function toString():String
 	{
-		return __formatToString("NativeProcessExitEvent", [
-			"type",
-			"bubbles",
-			"cancelable",
-			"exitCode"
-		]);
+		return __formatToString("NativeProcessExitEvent", ["type", "bubbles", "cancelable", "exitCode"]);
 	}
 
 	@:noCompletion private override function __init():Void
