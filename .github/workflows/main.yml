@@ -188,6 +188,7 @@ jobs:
       - name: Install Haxe dependencies
         run: |
           haxelib install lime --quiet
+          haxelib install actuate --quiet
           haxelib git openfl-samples https://github.com/openfl/openfl-samples --quiet
 
       - uses: actions/download-artifact@v3
@@ -214,9 +215,95 @@ jobs:
           lime build BunnyMark flash -release -verbose -nocolor
           lime build PiratePig flash -release -verbose -nocolor
 
+  neko-samples:
+    needs: package-haxelib
+    runs-on: ubuntu-20.04
+    steps:
+
+      - uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: 4.1.5
+
+      - name: Set HAXEPATH
+        run: |
+          echo "HAXEPATH=$HAXE_STD_PATH/.." >> $GITHUB_ENV
+
+      - name: Install Haxe dependencies
+        run: |
+          haxelib install lime --quiet
+          haxelib install actuate --quiet
+          haxelib git openfl-samples https://github.com/openfl/openfl-samples --quiet
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: openfl-haxelib
+          path: openfl-haxelib
+
+      - name: Prepare openfl
+        run: |
+          haxelib dev openfl openfl-haxelib
+          haxelib run openfl setup -alias -y
+
+      - name: Create OpenFL samples
+        run: |
+          openfl create DisplayingABitmap -verbose -nocolor
+          openfl create PlayingSound -verbose -nocolor
+          openfl create BunnyMark -verbose -nocolor
+          openfl create PiratePig -verbose -nocolor
+
+      - name: Build OpenFL samples
+        run: |
+          lime build DisplayingABitmap neko -release -verbose -nocolor
+          lime build PlayingSound neko -release -verbose -nocolor
+          lime build BunnyMark neko -release -verbose -nocolor
+          lime build PiratePig neko -release -verbose -nocolor
+
+  hashlink-samples:
+    needs: package-haxelib
+    runs-on: ubuntu-20.04
+    steps:
+
+      - uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: 4.1.5
+
+      - name: Set HAXEPATH
+        run: |
+          echo "HAXEPATH=$HAXE_STD_PATH/.." >> $GITHUB_ENV
+
+      - name: Install Haxe dependencies
+        run: |
+          haxelib install lime --quiet
+          haxelib install actuate --quiet
+          haxelib git openfl-samples https://github.com/openfl/openfl-samples --quiet
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: openfl-haxelib
+          path: openfl-haxelib
+
+      - name: Prepare openfl
+        run: |
+          haxelib dev openfl openfl-haxelib
+          haxelib run openfl setup -alias -y
+
+      - name: Create OpenFL samples
+        run: |
+          openfl create DisplayingABitmap -verbose -nocolor
+          openfl create PlayingSound -verbose -nocolor
+          openfl create BunnyMark -verbose -nocolor
+          openfl create PiratePig -verbose -nocolor
+
+      - name: Build OpenFL samples
+        run: |
+          lime build DisplayingABitmap hl -release -verbose -nocolor
+          lime build PlayingSound hl -release -verbose -nocolor
+          lime build BunnyMark hl -release -verbose -nocolor
+          lime build PiratePig hl -release -verbose -nocolor
+
   notify:
     runs-on: ubuntu-latest
-    needs: [package-haxelib, docs, unit-test, html5-samples, flash-samples]
+    needs: [package-haxelib, docs, unit-test, html5-samples, flash-samples, neko-samples, hashlink-samples]
     if: ${{ github.repository == 'openfl/openfl' && github.event_name != 'pull_request' }}
     steps:
       - name: Notify Discord
