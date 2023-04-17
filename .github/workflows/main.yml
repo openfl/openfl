@@ -146,6 +146,7 @@ jobs:
         run: |
           haxelib install lime --quiet
           haxelib install actuate --quiet
+          haxelib install genes --quiet
           haxelib git openfl-samples https://github.com/openfl/openfl-samples --quiet
 
       - uses: actions/download-artifact@v3
@@ -171,6 +172,13 @@ jobs:
           lime build PlayingSound html5 -release -verbose -nocolor
           lime build BunnyMark html5 -release -verbose -nocolor
           lime build PiratePig html5 -release -verbose -nocolor
+
+      - name: Build OpenFL samples with Genes
+        run: |
+          lime build DisplayingABitmap html5 -clean -release -verbose -nocolor --haxelib=genes
+          lime build PlayingSound html5 -clean -release -verbose -nocolor --haxelib=genes
+          lime build BunnyMark html5 -clean  -release -verbose -nocolor --haxelib=genes
+          lime build PiratePig html5 -clean -release -verbose -nocolor --haxelib=genes
 
   flash-samples:
     needs: package-haxelib
