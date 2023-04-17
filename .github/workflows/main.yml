@@ -145,6 +145,7 @@ jobs:
       - name: Install Haxe dependencies
         run: |
           haxelib install lime --quiet
+          haxelib install actuate --quiet
           haxelib git openfl-samples https://github.com/openfl/openfl-samples --quiet
 
       - uses: actions/download-artifact@v3
