@@ -159,10 +159,10 @@ jobs:
 
       - name: Create OpenFL samples
         run: |
-          lime create DisplayingABitmap -verbose -nocolor
-          lime create PlayingSound -verbose -nocolor
-          lime create BunnyMark -verbose -nocolor
-          lime create PiratePig -verbose -nocolor
+          openfl create DisplayingABitmap -verbose -nocolor
+          openfl create PlayingSound -verbose -nocolor
+          openfl create BunnyMark -verbose -nocolor
+          openfl create PiratePig -verbose -nocolor
 
       - name: Build OpenFL samples
         run: |
@@ -201,10 +201,10 @@ jobs:
 
       - name: Create OpenFL samples
         run: |
-          lime create DisplayingABitmap -verbose -nocolor
-          lime create PlayingSound -verbose -nocolor
-          lime create BunnyMark -verbose -nocolor
-          lime create PiratePig -verbose -nocolor
+          openfl create DisplayingABitmap -verbose -nocolor
+          openfl create PlayingSound -verbose -nocolor
+          openfl create BunnyMark -verbose -nocolor
+          openfl create PiratePig -verbose -nocolor
 
       - name: Build OpenFL samples
         run: |
