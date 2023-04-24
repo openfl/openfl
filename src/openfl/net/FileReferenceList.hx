@@ -1,14 +1,15 @@
 package openfl.net;
 
-#if (desktop && !flash)
+#if !flash
+#if desktop
 import haxe.io.Path;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 #if lime
-	import lime.ui.FileDialog;
+import lime.ui.FileDialog;
 #end
 #if sys
-	import sys.FileSystem;
+import sys.FileSystem;
 #end
 
 /**
@@ -206,10 +207,10 @@ import js.lib.DataView;
 @:access(openfl.net.FileReference)
 class FileReferenceList extends EventDispatcher
 {
-
 	public var fileList(default, null):Array<FileReference>;
 
 	private var fileInput:Dynamic;
+
 	public function new()
 	{
 		super();
@@ -274,8 +275,8 @@ class FileReferenceList extends EventDispatcher
 			reader.readAsArrayBuffer(cast file);
 		}
 	}
-
 }
+#end
 #else
 typedef FileReferenceList = flash.net.FileReferenceList;
 #end
