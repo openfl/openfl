@@ -252,9 +252,9 @@ class FileReferenceList extends EventDispatcher
 			fileReference.size = file.size;
 			fileReference.type = file.type;
 			// Set creationDate and modificationDate properties
-			var lastModifiedTime = file.lastModifiedDate.getTime();
-			fileReference.creationDate = Date.fromTime(lastModifiedTime);
-			fileReference.modificationDate = Date.fromTime(lastModifiedTime);
+			var lastModified = Date.fromTime(file.lastModified);
+			fileReference.creationDate = lastModified;
+			fileReference.modificationDate = lastModified;
 
 			var reader = new js.html.FileReader();
 			reader.addEventListener("load", function(readerEvent)
