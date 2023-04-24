@@ -1112,7 +1112,19 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 		var b = new BytesBuffer();
 		var bLength = 0;
 
-		if (connected || doConnect)
+		if (doConnect)
+		{
+			try
+			{
+				__socket.peer();
+			}
+			catch (e:Dynamic)
+			{
+				// not connected yet
+				return;
+			}
+		}
+		else if (connected)
 		{
 			try
 			{
