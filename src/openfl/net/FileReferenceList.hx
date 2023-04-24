@@ -242,7 +242,7 @@ class FileReferenceList extends EventDispatcher
 
 	private function fileInput_onChange(event:Dynamic):Void
 	{
-		var files = event.target.files;
+		var files:Array<Dynamic> = event.target.files;
 		for (i in 0...files.length)
 		{
 			var file = files[i];
