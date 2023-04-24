@@ -2550,12 +2550,17 @@ abstract Vector<T>(VectorData<T>)
 		if (array != null)
 		{
 			this = VectorData.ofArray(array);
-
-			// if (length != null) this.length = length;
-			// if (fixed != null) this.fixed = fixed;
 		}
 		else
 		{
+			if (length == null)
+			{
+				length = 0;
+			}
+			if (fixed == null)
+			{
+				fixed = false;
+			}
 			this = new VectorData<T>(length, fixed);
 		}
 	}
