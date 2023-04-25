@@ -1116,11 +1116,16 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 		{
 			try
 			{
-				__socket.peer();
+				var peer = __socket.peer();
+				if (peer == null)
+				{
+					// not connected yet (hxcpp and hl)
+					return;
+				}
 			}
 			catch (e:Dynamic)
 			{
-				// not connected yet
+				// not connected yet (neko)
 				return;
 			}
 		}

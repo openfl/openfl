@@ -203,31 +203,31 @@ abstract Vector<T>(IVector<T>)
 	}
 
 	/**
-		Executes a test function on each item in the Vector until an item is reached 
+		Executes a test function on each item in the Vector until an item is reached
 		that returns false for the specified function. You use this method to determine
-		whether all items in a Vector meet a criterion, such as having values less than 
+		whether all items in a Vector meet a criterion, such as having values less than
 		a particular number.
-			 
-		For this method, the second parameter, thisObject, must be null if the first 
-		parameter, callback, is a method closure. That is the most common way of using 
+
+		For this method, the second parameter, thisObject, must be null if the first
+		parameter, callback, is a method closure. That is the most common way of using
 		this method.
-			 
-		@param	callback The function to run on each item in the Vector. This function 
-		is invoked with three arguments: the current item from the Vector, the index of 
+
+		@param	callback The function to run on each item in the Vector. This function
+		is invoked with three arguments: the current item from the Vector, the index of
 		the item, and the Vector object:
-			 
-			 	```hx 
+
+			 	```hx
 			 	function callback(item:T, index:Int, vector:Vector<T>):Bool {
-			 		// your code here		
+			 		// your code here
 		}
 		```
 		The callback function should return a Boolean value.
-			 	
-		@param	thisObject The object that the identifer this in the callback function 
+
+		@param	thisObject The object that the identifer this in the callback function
 		refers to when the function is called. ***Ignored on targets other than neko and
-		js. 
-		@return A Boolean value of true if the specified function returns true when called 
-		on all items in the Vector; otherwise, false. 
+		js.
+		@return A Boolean value of true if the specified function returns true when called
+		on all items in the Vector; otherwise, false.
 	 */
 	public inline function every(callback:Function, ?thisObject:Dynamic):Bool
 	{
@@ -446,20 +446,20 @@ abstract Vector<T>(IVector<T>)
 	}
 
 	/**
-			  
-		@param	callback  The function to run on each item in the Vector. This function is 
+
+		@param	callback  The function to run on each item in the Vector. This function is
 		invoked with three arguments: the current item from the Vector, the index of the item,
 		and the Vector object:
-			 
+
 		```hx
 		function callback(item:T, index:Int, vector:Vector<T>):Bool
 		```
-			 
+
 		The callback function should return a Boolean value.
-		@param	thisObject The object that the identifer this in the callback function refers 
+		@param	thisObject The object that the identifer this in the callback function refers
 		to when the function is called. ***Ignored on targets other than neko and js.
-		@return 	A Boolean value of true if any items in the Vector return true for the specified 
-		function; otherwise, false. 
+		@return 	A Boolean value of true if any items in the Vector return true for the specified
+		function; otherwise, false.
 	 */
 	public inline function some(callback:Function, ?thisObject:Dynamic):Bool
 	{
@@ -2550,12 +2550,17 @@ abstract Vector<T>(VectorData<T>)
 		if (array != null)
 		{
 			this = VectorData.ofArray(array);
-
-			// if (length != null) this.length = length;
-			// if (fixed != null) this.fixed = fixed;
 		}
 		else
 		{
+			if (length == null)
+			{
+				length = 0;
+			}
+			if (fixed == null)
+			{
+				fixed = false;
+			}
 			this = new VectorData<T>(length, fixed);
 		}
 	}
