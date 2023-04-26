@@ -56,7 +56,7 @@ import openfl.display.Shader;
 class ShaderFilter extends BitmapFilter
 {
 	@:dox(hide) @:noCompletion @:beta @SuppressWarnings("checkstyle:FieldDocComment")
-	public var blendMode:BlendMode;
+	public var blendMode:BlendMode = NORMAL;
 
 	/**
 		The growth in pixels on the bottom side of the target object.
@@ -141,8 +141,6 @@ class ShaderFilter extends BitmapFilter
 		super();
 
 		this.shader = shader;
-
-		this.blendMode = NORMAL;
 
 		__numShaderPasses = 1;
 	}
