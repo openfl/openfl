@@ -546,65 +546,27 @@ class ShaderMacro
 		if (StringTools.endsWith(glVersion, " compatibility")) return "";
 		if (StringTools.endsWith(glVersion, " core")) return buildGLSLHeaders(StringTools.replace(glVersion, " core", ""));
 
-		switch (glVersion)
+		return switch (glVersion)
 		{
-			default:
-				return "";
+			#if desktop
+			case "300 es": "layout (location = 0) out vec4 fragColor;\n";
+			#else
+			case "300 es": "out vec4 fragColor;\n";
+			#end
 
-			case "100":
-				return "";
-			case "110":
-				return "";
-			case "120":
-				return "";
-			case "130":
-				return "";
-			case "140":
-				return "";
-			case "150":
-				return "";
+			case "310 es": buildGLSLHeaders("300 es");
+			case "320 es": buildGLSLHeaders("310 es");
+			case "330": buildGLSLHeaders("320 es");
+			case "400": buildGLSLHeaders("330");
+			case "410": buildGLSLHeaders("400");
+			case "420": buildGLSLHeaders("410");
+			case "430": buildGLSLHeaders("420");
+			case "440": buildGLSLHeaders("430");
+			case "450": buildGLSLHeaders("440");
+			case "460": buildGLSLHeaders("450");
 
-			case "300 es":
-				#if desktop
-				var result = "layout (location = 0) out vec4 fragColor;\n";
-				#else
-				var result = "out vec4 fragColor;\n";
-				// var result = "";
-				#end
-				return result;
-			case "310 es":
-				var result = buildGLSLHeaders("300 es");
-				return result;
-			case "320 es":
-				var result = buildGLSLHeaders("310 es");
-				return result;
-
-			case "330":
-				var result = buildGLSLHeaders("320 es");
-				return result;
-
-			case "400":
-				var result = buildGLSLHeaders("330");
-				return result;
-			case "410":
-				var result = buildGLSLHeaders("400");
-				return result;
-			case "420":
-				var result = buildGLSLHeaders("410");
-				return result;
-			case "430":
-				var result = buildGLSLHeaders("420");
-				return result;
-			case "440":
-				var result = buildGLSLHeaders("430");
-				return result;
-			case "450":
-				var result = buildGLSLHeaders("440");
-				return result;
-			case "460":
-				var result = buildGLSLHeaders("450");
-				return result;
-		}
+			default: "";
+		};
 	}
 
 	private static function buildGLSLExtensions(glExtensions:Array<{name:String, behavior:String}>, glVersion:String,
