@@ -1,7 +1,8 @@
 package flash.net;
 
 #if flash
-@:enum abstract ObjectEncoding(Int) from Int to Int from UInt to UInt
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract ObjectEncoding(Int) from Int to Int from UInt to UInt
+
 {
 	public var AMF0 = 0;
 	public var AMF3 = 3;

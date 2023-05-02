@@ -1,7 +1,8 @@
 package flash.filters;
 
 #if flash
-@:enum abstract BitmapFilterType(String) from String to String
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract BitmapFilterType(String) from String to String
+
 {
 	public var FULL = "full";
 	public var INNER = "inner";

@@ -3,7 +3,8 @@ package flash.ui;
 #if flash
 import lime.ui.MouseCursor in LimeMouseCursor;
 
-@:enum abstract MouseCursor(String) from String to String
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract MouseCursor(String) from String to String
+
 {
 	public var ARROW = "arrow";
 	public var AUTO = "auto";

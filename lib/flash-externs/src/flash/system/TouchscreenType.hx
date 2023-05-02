@@ -1,7 +1,8 @@
 package flash.system;
 
 #if flash
-@:enum abstract TouchscreenType(String) from String to String
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract TouchscreenType(String) from String to String
+
 {
 	public var FINGER = "finger";
 	public var NONE = "none";
