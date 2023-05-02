@@ -9,7 +9,8 @@ package openfl.display;
 	`lineGradientStyle()` methods of the openfl.display.Graphics
 	class.
 **/
-@:enum abstract GradientType(Null<Int>)
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract GradientType(Null<Int>)
+
 {
 	/**
 		Value used to specify a linear gradient fill.
@@ -53,7 +54,8 @@ package openfl.display;
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-@:enum abstract GradientType(String) from String to String
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract GradientType(String) from String to String
+
 {
 	public var LINEAR = "linear";
 	public var RADIAL = "radial";

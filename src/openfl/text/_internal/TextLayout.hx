@@ -286,7 +286,8 @@ class TextLayout
 }
 
 @SuppressWarnings("checkstyle:FieldDocComment")
-@:enum abstract TextDirection(Int) to Int
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract TextDirection(Int) to Int
+
 {
 	public var INVALID = 0;
 	public var LEFT_TO_RIGHT = 4;
@@ -351,7 +352,8 @@ class TextLayout
 }
 
 @SuppressWarnings("checkstyle:FieldDocComment")
-@:enum abstract TextScript(String) to (String)
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract TextScript(String) to (String)
+
 {
 	public var COMMON = "Zyyy";
 	public var INHERITED = "Zinh";
