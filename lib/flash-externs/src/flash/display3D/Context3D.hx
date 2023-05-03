@@ -11,6 +11,7 @@ import openfl.display3D.Context3DProgramFormat;
 import openfl.events.EventDispatcher;
 import openfl.geom.Matrix3D;
 import openfl.geom.Rectangle;
+import openfl.geom.Point;
 import openfl.utils.ByteArray;
 import openfl.Vector;
 
@@ -54,7 +55,7 @@ import openfl.Vector;
 	public function createVertexBuffer(numVertices:Int, data32PerVertex:Int, ?bufferUsage:Context3DBufferUsage):VertexBuffer3D;
 	@:require(flash15) public function createVideoTexture():VideoTexture;
 	public function dispose(recreate:Bool = true):Void;
-	public function drawToBitmapData(destination:BitmapData):Void;
+	public function drawToBitmapData(destination:BitmapData, srcRect:Rectangle = null, destPoint:Point = null):Void;
 	public function drawTriangles(indexBuffer:IndexBuffer3D, firstIndex:Int = 0, numTriangles:Int = -1):Void;
 	public function present():Void;
 	public function setBlendFactors(sourceFactor:Context3DBlendFactor, destinationFactor:Context3DBlendFactor):Void;

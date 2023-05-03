@@ -9,7 +9,8 @@ import openfl.utils._internal.NullUtils;
 /**
 	Defines the values to use for sampler filter mode.
 **/
-@:enum abstract Context3DTextureFilter(Null<Int>)
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DTextureFilter(Null<Int>)
+
 {
 	/**
 		Use anisotropic filter with radio 16 when upsampling textures
@@ -86,7 +87,8 @@ import openfl.utils._internal.NullUtils;
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-@:enum abstract Context3DTextureFilter(String) from String to String
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DTextureFilter(String) from String to String
+
 {
 	public var ANISOTROPIC16X = "anisotropic16x";
 	public var ANISOTROPIC2X = "anisotropic2x";

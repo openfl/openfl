@@ -11,7 +11,8 @@ package openfl.display;
 	The following example shows the same gradient fill using various spread
 	methods:
 **/
-@:enum abstract SpreadMethod(Null<Int>)
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract SpreadMethod(Null<Int>)
+
 {
 	/**
 		Specifies that the gradient use the _pad_ spread method.
@@ -62,7 +63,8 @@ package openfl.display;
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-@:enum abstract SpreadMethod(String) from String to String
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract SpreadMethod(String) from String to String
+
 {
 	public var PAD = "pad";
 	public var REFLECT = "reflect";

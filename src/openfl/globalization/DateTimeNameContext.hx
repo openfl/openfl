@@ -2,7 +2,8 @@ package openfl.globalization;
 
 #if !flash
 #if !openfljs
-@:enum abstract DateTimeNameContext(Null<Int>)
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract DateTimeNameContext(Null<Int>)
+
 {
 	public var FORMAT = 0;
 	public var STANDALONE = 1;
@@ -39,7 +40,8 @@ package openfl.globalization;
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-@:enum abstract DateTimeNameContext(String) from String to String
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract DateTimeNameContext(String) from String to String
+
 {
 	public var FORMAT = "format";
 	public var STANDALONE = "standalone";

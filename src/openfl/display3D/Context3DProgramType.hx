@@ -10,7 +10,8 @@ import openfl.utils._internal.NullUtils;
 	Defines the values to use for specifying whether a shader program is a fragment
 	or a vertex program.
 **/
-@:enum abstract Context3DProgramType(Null<Int>)
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DProgramType(Null<Int>)
+
 {
 	/**
 		A fragment (or pixel) program.
@@ -58,7 +59,8 @@ import openfl.utils._internal.NullUtils;
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-@:enum abstract Context3DProgramType(String) from String to String
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DProgramType(String) from String to String
+
 {
 	public var FRAGMENT = "fragment";
 	public var VERTEX = "vertex";
