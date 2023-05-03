@@ -2160,8 +2160,10 @@ class TextField extends InteractiveObject
 		{
 			__cursorTimer = Timer.delay(__startCursorTimer, 600);
 			__showCursor = !__showCursor;
+			#if !dom
 			__dirty = true;
 			__setRenderDirty();
+			#end
 		}
 		else if (selectable)
 		{
@@ -2184,6 +2186,11 @@ class TextField extends InteractiveObject
 		{
 			__enableInput();
 		}
+
+		#if dom
+		__dirty = true;
+		__setRenderDirty();
+		#end
 	}
 
 	@:noCompletion private function __stopCursorTimer():Void
@@ -2197,8 +2204,10 @@ class TextField extends InteractiveObject
 		if (__showCursor)
 		{
 			__showCursor = false;
+			#if !dom
 			__dirty = true;
 			__setRenderDirty();
+			#end
 		}
 	}
 
@@ -3246,8 +3255,10 @@ class TextField extends InteractiveObject
 		if (__selectionIndex != __caretIndex)
 		{
 			__selectionIndex = __caretIndex;
+			#if !dom
 			__dirty = true;
 			__setRenderDirty();
+			#end
 		}
 	}
 
