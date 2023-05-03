@@ -4,7 +4,6 @@ package openfl.filesystem;
 import haxe.io.Path;
 import lime.system.BackgroundWorker;
 import lime.system.System;
-import lime.ui.FileDialog;
 import openfl.errors.IllegalOperationError;
 import openfl.errors.ArgumentError;
 import openfl.errors.Error;
@@ -15,6 +14,9 @@ import openfl.events.FileListEvent;
 import openfl.net.FileReference;
 import sys.FileSystem;
 import sys.io.Process;
+#if (lime && !macro)
+import lime.ui.FileDialog;
+#end
 
 @:noCompletion private typedef HaxeFile = sys.io.File;
 
@@ -402,7 +404,7 @@ class File extends FileReference
 		];
 		#end
 
-	@:noCompletion private var __fileDialog:FileDialog;
+	@:noCompletion private var __fileDialog:#if (lime && !macro) FileDialog #else Dynamic #end;
 	@:noCompletion private var __fileWorker:BackgroundWorker;
 	@:noCompletion private var __sep:String = #if windows "\\" #else "/" #end;
 	@:noCompletion private var __fileStatsDirty:Bool = false;
@@ -513,10 +515,12 @@ class File extends FileReference
 		{
 			throw new IllegalOperationError("File Dialog is already open.");
 		}
+		#if (lime && !macro)
 		__fileDialog = new FileDialog();
 		__fileDialog.onSelect.add(__dispatchSelect, true);
 		__fileDialog.onCancel.add(__dispatchCancel);
 		__fileDialog.browse(OPEN_DIRECTORY, null, __path, title);
+		#end
 	}
 
 	/**
@@ -573,11 +577,12 @@ class File extends FileReference
 		{
 			throw new IllegalOperationError("File Dialog is already open.");
 		}
-
+		#if (lime && !macro)
 		__fileDialog = new FileDialog();
 		__fileDialog.onSelect.add(__dispatchSelect, true);
 		__fileDialog.onCancel.add(__dispatchCancel);
 		__fileDialog.browse(OPEN, __getFilterTypes(typeFilter), __path, title);
+		#end
 	}
 
 	/**
@@ -633,11 +638,12 @@ class File extends FileReference
 		{
 			throw new IllegalOperationError("File Dialog is already open.");
 		}
-
+		#if (lime && !macro)
 		__fileDialog = new FileDialog();
 		__fileDialog.onSelectMultiple.add(__dispatchSelectMultiple, true);
 		__fileDialog.onCancel.add(__dispatchCancel);
 		__fileDialog.browse(OPEN_MULTIPLE, __getFilterTypes(typeFilter), __path, title);
+		#end
 	}
 
 	/**
@@ -696,10 +702,11 @@ class File extends FileReference
 		{
 			throw new IllegalOperationError("File Dialog is already open.");
 		}
-
+		#if (lime && !macro)
 		__fileDialog = new FileDialog();
 		__fileDialog.onSelect.add(__dispatchSelect, true);
 		__fileDialog.browse(SAVE, null, __path, title);
+		#end
 	}
 
 	/**

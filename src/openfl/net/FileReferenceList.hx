@@ -150,11 +150,13 @@ class FileReferenceList extends EventDispatcher
 
 		fileList = new Array();
 
+		#if (lime && !macro)
 		var fileDialog = new FileDialog();
 		fileDialog.onCancel.add(fileDialog_onCancel);
 		fileDialog.onSelectMultiple.add(fileDialog_onSelectMultiple);
 		fileDialog.browse(OPEN_MULTIPLE, filter);
 		return true;
+		#end
 		#end
 
 		return false;

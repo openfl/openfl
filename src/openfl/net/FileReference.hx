@@ -9,8 +9,10 @@ import openfl.events.IOErrorEvent;
 import openfl.events.ProgressEvent;
 import openfl.utils.ByteArray;
 #if lime
-import lime.ui.FileDialog;
 import lime.utils.Bytes;
+#end
+#if (lime && !macro)
+import lime.ui.FileDialog;
 #end
 #if sys
 import sys.io.File;
@@ -583,11 +585,13 @@ class FileReference extends EventDispatcher
 			filter = filters.join(";");
 		}
 
+		#if (lime && !macro)
 		var openFileDialog = new FileDialog();
 		openFileDialog.onCancel.add(openFileDialog_onCancel);
 		openFileDialog.onSelect.add(openFileDialog_onSelect);
 		openFileDialog.browse(OPEN, filter);
 		return true;
+		#end
 		#elseif (js && html5)
 		var filter = null;
 		if (typeFilter != null)
@@ -840,10 +844,12 @@ class FileReference extends EventDispatcher
 		__urlLoader.addEventListener(ProgressEvent.PROGRESS, urlLoader_onProgress);
 		__urlLoader.load(request);
 
+		#if (lime && !macro)
 		var saveFileDialog = new FileDialog();
 		saveFileDialog.onCancel.add(saveFileDialog_onCancel);
 		saveFileDialog.onSelect.add(saveFileDialog_onSelect);
 		saveFileDialog.browse(SAVE, defaultFileName != null ? Path.extension(defaultFileName) : null, defaultFileName);
+		#end
 	}
 
 	/**
@@ -1064,10 +1070,12 @@ class FileReference extends EventDispatcher
 			__data.writeUTFBytes(Std.string(data));
 		}
 
+		#if (lime && !macro)
 		var saveFileDialog = new FileDialog();
 		saveFileDialog.onCancel.add(saveFileDialog_onCancel);
 		saveFileDialog.onSelect.add(saveFileDialog_onSelect);
 		saveFileDialog.browse(SAVE, defaultFileName != null ? Path.extension(defaultFileName) : null, defaultFileName);
+		#end
 		#elseif (js && html5)
 		if ((data is ByteArrayData))
 		{
@@ -1079,10 +1087,12 @@ class FileReference extends EventDispatcher
 			__data.writeUTFBytes(Std.string(data));
 		}
 
+		#if (lime && !macro)
 		var saveFileDialog = new FileDialog();
 		saveFileDialog.onCancel.add(saveFileDialog_onCancel);
 		saveFileDialog.onSave.add(saveFileDialog_onSave);
 		saveFileDialog.save(__data, defaultFileName != null ? Path.extension(defaultFileName) : null, defaultFileName);
+		#end
 		#end
 	}
 
