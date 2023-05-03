@@ -753,6 +753,9 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		__context3D.setScissorRectangle(null);
 
 		__blendMode = null;
+		if (__defaultRenderTarget == null) {
+			OpenGLRenderer.__currentBlendMode.remove(__context3D);
+		}
 		__setBlendMode(NORMAL);
 
 		if (__defaultRenderTarget == null)
