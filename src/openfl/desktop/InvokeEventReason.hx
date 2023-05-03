@@ -5,7 +5,8 @@ package openfl.desktop;
 #if !openfljs
 /**
 **/
-@:enum abstract InvokeEventReason(Null<Int>)
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract InvokeEventReason(Null<Int>)
+
 {
 	/**
 	**/
@@ -49,7 +50,8 @@ package openfl.desktop;
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-@:enum abstract InvokeEventReason(String) from String to String
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract InvokeEventReason(String) from String to String
+
 {
 	public var LOGIN = "login";
 	public var NOTIFICATION = "notification";

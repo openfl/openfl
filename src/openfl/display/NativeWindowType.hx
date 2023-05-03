@@ -11,7 +11,8 @@ package openfl.display;
 	@see `openfl.display.NativeWindow`
 	@see `openfl.display.NativeWindowInitOptions`
 **/
-@:enum abstract NativeWindowType(Null<Int>)
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract NativeWindowType(Null<Int>)
+
 {
 	/**
 		A minimal window. Lightweight windows cannot have system chrome and do
