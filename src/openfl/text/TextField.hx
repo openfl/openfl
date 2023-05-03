@@ -1369,9 +1369,13 @@ class TextField extends InteractiveObject
 		__updateScrollV();
 		__updateScrollH();
 
-		if (__inputEnabled && stage != null && stage.focus == this)
+		if (stage != null && stage.focus == this)
 		{
 			__stopCursorTimer();
+			// we should call __startCursorTimer() even if type != INPUT or
+			// __inputEnabled is false. if a TextField is selectable, but not
+			// currently accepting input, __startCursorTimer() marks it dirty
+			// to show selection
 			__startCursorTimer();
 		}
 	}
@@ -2162,8 +2166,11 @@ class TextField extends InteractiveObject
 	{
 		if (type == INPUT)
 		{
-			__cursorTimer = Timer.delay(__startCursorTimer, 600);
-			__showCursor = !__showCursor;
+			if (__inputEnabled)
+			{
+				__cursorTimer = Timer.delay(__startCursorTimer, 600);
+				__showCursor = !__showCursor;
+			}
 			__dirty = true;
 			__setRenderDirty();
 		}
