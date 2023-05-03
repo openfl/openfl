@@ -1369,7 +1369,7 @@ class TextField extends InteractiveObject
 		__updateScrollV();
 		__updateScrollH();
 
-		if (stage != null && stage.focus == this)
+		if (__inputEnabled && stage != null && stage.focus == this)
 		{
 			__stopCursorTimer();
 			__startCursorTimer();
