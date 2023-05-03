@@ -1766,6 +1766,10 @@ class TextField extends InteractiveObject
 				}
 
 				__inputEnabled = true;
+				// stopping the timer shouldn't be strictly necessary, but it
+				// doesn't hurt if there's a bug where a timer was started
+				// after focus in, but before __inputEnabled is set to true
+				__stopCursorTimer();
 				__startCursorTimer();
 			}
 		}
