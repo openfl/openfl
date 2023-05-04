@@ -753,7 +753,8 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		__context3D.setScissorRectangle(null);
 
 		__blendMode = null;
-		if (__defaultRenderTarget == null) {
+		if (__defaultRenderTarget == null)
+		{
 			OpenGLRenderer.__currentBlendMode.remove(__context3D);
 		}
 		__setBlendMode(NORMAL);
@@ -1011,7 +1012,8 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	@:noCompletion private override function __setBlendMode(value:BlendMode):Void
 	{
 		if (__overrideBlendMode != null) value = __overrideBlendMode;
-		if (OpenGLRenderer.__currentBlendMode.get(__context3D) == value) {
+		if (OpenGLRenderer.__currentBlendMode.get(__context3D) == value)
+		{
 			__blendMode = value;
 			return;
 		}
