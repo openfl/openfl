@@ -127,6 +127,7 @@ class TextField extends InteractiveObject
 	@:noCompletion private static var __defaultTextFormat:TextFormat;
 	@:noCompletion private static var __missingFontWarning:Map<String, Bool> = new Map();
 
+	#if false
 	/**
 		When set to `true` and the text field is not in focus, Flash Player
 		highlights the selection in the text field in gray. When set to
@@ -136,7 +137,7 @@ class TextField extends InteractiveObject
 		@default false
 	**/
 	// var alwaysShowSelection : Bool;
-	0;
+	#end
 
 	/**
 		The type of anti-aliasing used for this text field. Use
@@ -612,6 +613,7 @@ class TextField extends InteractiveObject
 	**/
 	public var textHeight(get, never):Float;
 
+	#if false
 	/**
 		The interaction mode property, Default value is
 		TextInteractionMode.NORMAL. On mobile platforms, the normal mode
@@ -621,6 +623,7 @@ class TextField extends InteractiveObject
 		scrollable as well as selection mode.
 	**/
 	// @:require(flash11) var textInteractionMode(default,never) : TextInteractionMode;
+	#end
 
 	/**
 		The width of the text in pixels.
@@ -648,6 +651,7 @@ class TextField extends InteractiveObject
 	**/
 	public var type(get, set):TextFieldType;
 
+	#if false
 	/**
 		Specifies whether to copy and paste the text formatting along with the
 		text. When set to `true`, Flash Player copies and pastes formatting
@@ -657,7 +661,7 @@ class TextField extends InteractiveObject
 		The default value is `false`.
 	**/
 	// var useRichTextClipboard : Bool;
-	0;
+	#end
 
 	/**
 		A Boolean value that indicates whether the text field has word wrap. If
@@ -976,6 +980,7 @@ class TextField extends InteractiveObject
 		return __textEngine.lineBreaks[__textEngine.lineBreaks.length - 1] + 1;
 	}
 
+	#if false
 	/**
 		Returns a DisplayObject reference for the given `id`, for an image or
 		SWF file that has been added to an HTML-formatted text field by using
@@ -996,6 +1001,7 @@ class TextField extends InteractiveObject
 				matching `id` exists, the method returns `null`.
 	**/
 	// function getImageReference(id : String) : openfl.display.DisplayObject;
+	#end
 
 	/**
 		Returns the zero-based index value of the line at the point specified by
@@ -1279,6 +1285,7 @@ class TextField extends InteractiveObject
 		return format;
 	}
 
+	#if false
 	/**
 		Returns true if an embedded font is available with the specified
 		`fontName` and `fontStyle` where `Font.fontType` is
@@ -1307,6 +1314,7 @@ class TextField extends InteractiveObject
 							  `openfl.text.FontStyle`.
 	**/
 	// @:require(flash10) static function isFontCompatible(fontName : String, fontStyle : String) : Bool;
+	#end
 
 	/**
 		Replaces the current selection with the contents of the `value`
