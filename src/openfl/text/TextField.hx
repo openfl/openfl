@@ -136,6 +136,7 @@ class TextField extends InteractiveObject
 		@default false
 	**/
 	// var alwaysShowSelection : Bool;
+	0;
 
 	/**
 		The type of anti-aliasing used for this text field. Use
@@ -656,6 +657,7 @@ class TextField extends InteractiveObject
 		The default value is `false`.
 	**/
 	// var useRichTextClipboard : Bool;
+	0;
 
 	/**
 		A Boolean value that indicates whether the text field has word wrap. If
