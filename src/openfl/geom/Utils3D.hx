@@ -13,6 +13,7 @@ import openfl.Vector;
 #end
 class Utils3D
 {
+	#if false
 	/**
 		Interpolates the orientation of an object toward a position. The `pointTowards()`
 		method combines the functionality of the `Matrix3D.pointAt()` and
@@ -47,6 +48,7 @@ class Utils3D
 		the Matrix3D property of the display object to the returned Matrix3D object.
 	**/
 	// static function pointTowards(percent : Float, mat : Matrix3D, pos : Vector3D, ?at : Vector3D, ?up : Vector3D) : Matrix3D;
+	#end
 
 	/**
 		Using a projection Matrix3D object, projects a Vector3D object from one space

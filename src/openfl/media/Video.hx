@@ -217,6 +217,7 @@ class Video extends DisplayObject
 		deblocking = 0;
 	}
 
+	#if false
 	/**
 		Specifies a video stream from a camera to be displayed within the
 		boundaries of the Video object in the application.
@@ -232,6 +233,7 @@ class Video extends DisplayObject
 					  the connection to the Video object, pass `null`.
 	**/
 	// function attachCamera(camera : Camera) : Void;
+	#end
 
 	/**
 		Specifies a video stream to be displayed within the boundaries of the
