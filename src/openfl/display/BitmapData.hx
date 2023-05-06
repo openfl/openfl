@@ -3160,9 +3160,9 @@ class BitmapData implements IBitmapDrawable
 					y = Math.floor(rect.y / context.__stage.window.scale);
 					width = (rect.width > 0 ? Math.ceil(rect.right / context.__stage.window.scale) - x : 0);
 					height = (rect.height > 0 ? Math.ceil(rect.bottom / context.__stage.window.scale) - y : 0);
-					__fillRectRectangle.setTo(x, y, width, height);
 				}
 				#end
+				__fillRectRectangle.setTo(x, y, width, height);
 				context.setScissorRectangle(__fillRectRectangle);
 			}
 
