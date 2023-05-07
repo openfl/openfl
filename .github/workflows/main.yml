@@ -7,7 +7,7 @@ jobs:
     strategy:
       matrix:
         haxe-version: [3.4.7, 4.0.5, 4.1.5, 4.2.5, 4.3.1]
-    runs-on: macos-10.15
+    runs-on: macos-11
     steps:
       - uses: actions/checkout@v3
         with:
@@ -58,7 +58,7 @@ jobs:
           haxelib run hxp test -Dtarget=swf --install-hxp-alias
 
   package-haxelib:
-    runs-on: macos-10.15
+    runs-on: macos-11
     steps:
 
       - uses: actions/checkout@v3
@@ -94,7 +94,7 @@ jobs:
           if-no-files-found: error
 
   docs:
-    runs-on: macos-10.15
+    runs-on: macos-11
     steps:
 
       - uses: actions/checkout@v3
