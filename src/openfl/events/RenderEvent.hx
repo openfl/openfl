@@ -175,7 +175,6 @@ import openfl.geom.Matrix;
 	{
 		return __formatToString("RenderEvent", ["type", "bubbles", "cancelable"]);
 	}
-	#end
 
 	@:noCompletion private override function __init():Void
 	{
@@ -185,4 +184,5 @@ import openfl.geom.Matrix;
 		allowSmoothing = false;
 		renderer = null;
 	}
+	#end
 }
