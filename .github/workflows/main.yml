@@ -164,6 +164,7 @@ jobs:
       - name: Create OpenFL samples
         run: |
           openfl create DisplayingABitmap -verbose -nocolor
+          openfl create SimpleTilemap -verbose -nocolor
           openfl create PlayingSound -verbose -nocolor
           openfl create BunnyMark -verbose -nocolor
           openfl create PiratePig -verbose -nocolor
@@ -171,6 +172,7 @@ jobs:
       - name: Build OpenFL samples
         run: |
           lime build DisplayingABitmap neko -release -verbose -nocolor
+          lime build SimpleTilemap neko -release -verbose -nocolor
           lime build PlayingSound neko -release -verbose -nocolor
           lime build BunnyMark neko -release -verbose -nocolor
           lime build PiratePig neko -release -verbose -nocolor
@@ -208,6 +210,7 @@ jobs:
       - name: Create OpenFL samples
         run: |
           openfl create DisplayingABitmap -verbose -nocolor
+          openfl create SimpleTilemap -verbose -nocolor
           openfl create PlayingSound -verbose -nocolor
           openfl create BunnyMark -verbose -nocolor
           openfl create PiratePig -verbose -nocolor
@@ -215,6 +218,7 @@ jobs:
       - name: Build OpenFL samples
         run: |
           lime build DisplayingABitmap html5 -release -verbose -nocolor
+          lime build SimpleTilemap html5 -release -verbose -nocolor
           lime build PlayingSound html5 -release -verbose -nocolor
           lime build BunnyMark html5 -release -verbose -nocolor
           lime build PiratePig html5 -release -verbose -nocolor
@@ -222,6 +226,7 @@ jobs:
       - name: Build OpenFL samples with Genes
         run: |
           lime build DisplayingABitmap html5 -clean -release -verbose -nocolor --haxelib=genes
+          lime build SimpleTilemap html5 -clean -release -verbose -nocolor --haxelib=genes
           lime build PlayingSound html5 -clean -release -verbose -nocolor --haxelib=genes
           lime build BunnyMark html5 -clean  -release -verbose -nocolor --haxelib=genes
           lime build PiratePig html5 -clean -release -verbose -nocolor --haxelib=genes
@@ -258,6 +263,7 @@ jobs:
       - name: Create OpenFL samples
         run: |
           openfl create DisplayingABitmap -verbose -nocolor
+          openfl create SimpleTilemap -verbose -nocolor
           openfl create PlayingSound -verbose -nocolor
           openfl create BunnyMark -verbose -nocolor
           openfl create PiratePig -verbose -nocolor
@@ -265,6 +271,7 @@ jobs:
       - name: Build OpenFL samples
         run: |
           lime build DisplayingABitmap flash -release -verbose -nocolor
+          lime build SimpleTilemap flash -release -verbose -nocolor
           lime build PlayingSound flash -release -verbose -nocolor
           lime build BunnyMark flash -release -verbose -nocolor
           lime build PiratePig flash -release -verbose -nocolor
@@ -301,6 +308,7 @@ jobs:
       - name: Create OpenFL samples
         run: |
           openfl create DisplayingABitmap -verbose -nocolor
+          openfl create SimpleTilemap -verbose -nocolor
           openfl create PlayingSound -verbose -nocolor
           openfl create BunnyMark -verbose -nocolor
           openfl create PiratePig -verbose -nocolor
@@ -308,6 +316,7 @@ jobs:
       - name: Build OpenFL samples
         run: |
           lime build DisplayingABitmap hl -release -verbose -nocolor
+          lime build SimpleTilemap hl -release -verbose -nocolor
           lime build PlayingSound hl -release -verbose -nocolor
           lime build BunnyMark hl -release -verbose -nocolor
           lime build PiratePig hl -release -verbose -nocolor
