@@ -53,7 +53,6 @@ jobs:
           haxelib run hxp test -Dtarget=hl -Duse-lime-tools
 
       - name: Run tests on Adobe AIR
-        if: ${{ matrix.haxe-version != '3.4.7' }}
         run: |
           haxelib run hxp test -Dtarget=air -Duse-lime-tools
 
