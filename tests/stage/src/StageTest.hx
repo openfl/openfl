@@ -232,6 +232,9 @@ class StageTest extends Test
 		#end
 	}
 
+	#if (flash && !haxe4)
+	@Ignored
+	#end
 	#if !integration
 	@Ignored
 	#end
@@ -241,9 +244,11 @@ class StageTest extends Test
 		// TODO: Isolate so integration is not needed
 
 		#if integration
+		#if (!flash || haxe4)
 		var exists = Lib.current.stage.invalidate;
 
 		Assert.notNull(exists);
+		#end
 		#end
 	}
 }
