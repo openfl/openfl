@@ -3,6 +3,42 @@ on: [push, pull_request]
 
 jobs:
 
+  unit-test-neko-haxe3:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: 3.4.7
+
+      - name: Set HAXEPATH
+        run: |
+          echo "HAXEPATH=$HAXE_STD_PATH/.." >> $GITHUB_ENV
+
+      - name: Install Haxe dependencies
+        run: |
+          haxelib install hxcpp --quiet
+          haxelib install format --quiet
+          haxelib install hxp --quiet
+          haxelib install lime --quiet
+          haxelib install utest --quiet
+
+      - name: Setup environment
+        run: |
+          haxelib dev openfl $GITHUB_WORKSPACE
+
+      - name: Install command aliases
+        run: |
+          haxelib run lime setup -alias -y
+          haxelib run openfl setup -alias -y
+
+      - name: Run tests on Neko
+        run: |
+          haxelib run hxp test -Dtarget=neko --install-hxp-alias
+
   unit-test-neko:
     strategy:
       matrix:
@@ -39,7 +75,6 @@ jobs:
           haxelib run openfl setup -alias -y
 
       - name: Run tests on Neko
-        if: ${{ matrix.haxe-version != '3.4.7' }}
         run: |
           haxelib run hxp test -Dtarget=neko -Duse-lime-tools --install-hxp-alias
 
@@ -79,14 +114,13 @@ jobs:
           haxelib run openfl setup -alias -y
 
       - name: Run tests on HashLink
-        if: ${{ matrix.haxe-version != '3.4.7' }}
         run: |
           haxelib run hxp test -Dtarget=hl -Duse-lime-tools --install-hxp-alias
 
   unit-test-air:
     strategy:
       matrix:
-        haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.1]
+        haxe-version: [3.4.7, 4.0.5, 4.1.5, 4.2.5, 4.3.1]
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
@@ -398,7 +432,7 @@ jobs:
 
   notify:
     runs-on: ubuntu-latest
-    needs: [package-haxelib, docs, unit-test-neko, unit-test-hashlink, unit-test-air, html5-samples, flash-samples, neko-samples, hashlink-samples]
+    needs: [package-haxelib, docs, unit-test-neko-haxe3, unit-test-neko, unit-test-hashlink, unit-test-air, html5-samples, flash-samples, neko-samples, hashlink-samples]
     if: ${{ github.repository == 'openfl/openfl' && github.event_name != 'pull_request' }}
     steps:
       - name: Notify Discord
