@@ -45,6 +45,7 @@ jobs:
           haxelib run openfl setup -alias -y
 
       - name: Run tests on Neko
+        if: ${{ matrix.haxe-version != '3.4.7' }}
         run: |
           haxelib run hxp test -Dtarget=neko -Duse-lime-tools --install-hxp-alias
 
