@@ -39,8 +39,9 @@ jobs:
         run: |
           haxelib dev openfl $GITHUB_WORKSPACE
 
-      - name: Install "openfl" command alias
+      - name: Install command aliases
         run: |
+          haxelib run lime setup -alias -y
           haxelib run openfl setup -alias -y
 
       - name: Run tests on Neko
@@ -158,6 +159,7 @@ jobs:
       - name: Prepare openfl
         run: |
           haxelib dev openfl openfl-haxelib
+          haxelib run lime setup -alias -y
           haxelib run openfl setup -alias -y
 
       - name: Create OpenFL samples
@@ -204,6 +206,7 @@ jobs:
       - name: Prepare openfl
         run: |
           haxelib dev openfl openfl-haxelib
+          haxelib run lime setup -alias -y
           haxelib run openfl setup -alias -y
 
       - name: Create OpenFL samples
@@ -257,6 +260,7 @@ jobs:
       - name: Prepare openfl
         run: |
           haxelib dev openfl openfl-haxelib
+          haxelib run lime setup -alias -y
           haxelib run openfl setup -alias -y
 
       - name: Create OpenFL samples
@@ -302,6 +306,7 @@ jobs:
       - name: Prepare openfl
         run: |
           haxelib dev openfl openfl-haxelib
+          haxelib run lime setup -alias -y
           haxelib run openfl setup -alias -y
 
       - name: Create OpenFL samples
