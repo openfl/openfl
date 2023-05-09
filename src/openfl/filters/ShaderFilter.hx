@@ -161,47 +161,47 @@ class ShaderFilter extends BitmapFilter
 		__renderDirty = true;
 	}
 
-	public function set_topExtension(value:Int):Int
+	private function get_topExtension():Int
+	{
+		return __topExtension;
+	}
+
+	private function set_topExtension(value:Int):Int
 	{
 		__topExtension = value;
 		return __topExtension;
 	}
 
-	public function get_topExtension():Int
+	private function get_bottomExtension():Int
 	{
-		return __topExtension;
+		return __bottomExtension;
 	}
 
-	public function set_bottomExtension(value:Int):Int
+	private function set_bottomExtension(value:Int):Int
 	{
 		__bottomExtension = value;
 		return __bottomExtension;
 	}
 
-	public function get_bottomExtension():Int
+	private function get_leftExtension():Int
 	{
-		return __bottomExtension;
+		return __leftExtension;
 	}
 
-	public function set_leftExtension(value:Int):Int
+	private function set_leftExtension(value:Int):Int
 	{
 		__leftExtension = value;
 		return __leftExtension;
 	}
 
-	public function get_leftExtension():Int
+	private function get_rightExtension():Int
 	{
-		return __leftExtension;
-	}
-
-	public function set_rightExtension(value:Int):Int
-	{
-		__rightExtension = value;
 		return __rightExtension;
 	}
 
-	public function get_rightExtension():Int
+	private function set_rightExtension(value:Int):Int
 	{
+		__rightExtension = value;
 		return __rightExtension;
 	}
 
