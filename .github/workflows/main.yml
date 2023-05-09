@@ -46,16 +46,16 @@ jobs:
 
       - name: Run tests on Neko
         run: |
-          haxelib run hxp test -Dtarget=neko -Duse-lime-tools=1 --install-hxp-alias
+          haxelib run hxp test -Dtarget=neko -Duse-lime-tools
 
       - name: Run tests on HashLink
         if: ${{ matrix.haxe-version != '3.4.7' }}
         run: |
-          haxelib run hxp test -Dtarget=hl -Duse-lime-tools=1 --install-hxp-alias
+          haxelib run hxp test -Dtarget=hl -Duse-lime-tools
 
       - name: Run tests on Adobe AIR
         run: |
-          haxelib run hxp test -Dtarget=air -Duse-lime-tools=1 --install-hxp-alias
+          haxelib run hxp test -Dtarget=air -Duse-lime-tools
 
   package-haxelib:
     runs-on: macos-11
