@@ -290,10 +290,6 @@ class BitmapDataTest extends Test
 		#end
 	}
 
-	#if hl
-	// TODO: fix test on HashLink
-	@Ignored
-	#end
 	public function test_draw()
 	{
 		var bitmapData = new BitmapData(100, 100);
@@ -1003,10 +999,6 @@ class BitmapDataTest extends Test
 		Assert.equals(100.0, bitmapData.width);
 	}
 
-	#if hl
-	// TODO: figure out why this fails in HashLink
-	@Ignored
-	#end
 	public function testDrawInvisibleContainer()
 	{
 		var bitmapData = new BitmapData(10, 10, false, 0xFFFFFF00);

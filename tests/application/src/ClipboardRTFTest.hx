@@ -6,6 +6,9 @@ import openfl.utils.ByteArray;
 import utest.Assert;
 import utest.Async;
 import utest.Test;
+#if air
+import flash.filesystem.File;
+#end
 
 // TODO: Requires a running Application to work
 class ClipboardRTFTest extends Test
@@ -14,13 +17,16 @@ class ClipboardRTFTest extends Test
 	// only within a "paste" event from the user
 	#if (flash && !air)
 	@Ignored
-	#elseif hl
-	// TODO: fix test on HashLink
-	@Ignored
 	#end
 	public function test_getData(async:Async)
 	{
-		ByteArray.loadFromFile("hello.rtf").onComplete(function(richTextFormatData)
+		#if air
+		var fileURL = new File(File.applicationDirectory.nativePath).resolvePath("../../../assets/hello.rtf").url;
+		#else
+		var fileURL = "hello.rtf";
+		#end
+
+		ByteArray.loadFromFile(fileURL).onComplete(function(richTextFormatData)
 		{
 			var textFormatData = 'Text Format Data';
 			var clipboard = Clipboard.generalClipboard;
@@ -41,8 +47,8 @@ class ClipboardRTFTest extends Test
 			async.done();
 		}).onError(function(result)
 		{
-			Assert.fail(result);
-			async.done();
+				Assert.fail(result);
+				async.done();
 		});
 	}
 }

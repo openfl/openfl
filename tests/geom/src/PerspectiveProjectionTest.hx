@@ -34,8 +34,8 @@ class PerspectiveProjectionTest extends Test
 		Assert.equals(500 / 2, projection.projectionCenter.x);
 		Assert.equals(500 / 2, projection.projectionCenter.y);
 		#else
-		Assert.equals(Lib.current.stage.stageWidth / 2, projection.projectionCenter.x);
-		Assert.equals(Lib.current.stage.stageHeight / 2, projection.projectionCenter.y);
+		Assert.equals(openfl.Lib.current.stage.stageWidth / 2, projection.projectionCenter.x);
+		Assert.equals(openfl.Lib.current.stage.stageHeight / 2, projection.projectionCenter.y);
 		#end
 		#end
 	}
@@ -103,8 +103,8 @@ class PerspectiveProjectionTest extends Test
 		Assert.equals(500 / 2, projection.projectionCenter.x);
 		Assert.equals(500 / 2, projection.projectionCenter.y);
 		#else
-		Assert.equals(Lib.current.stage.stageWidth / 2, projection.projectionCenter.x);
-		Assert.equals(Lib.current.stage.stageHeight / 2, projection.projectionCenter.y);
+		Assert.equals(openfl.Lib.current.stage.stageWidth / 2, projection.projectionCenter.x);
+		Assert.equals(openfl.Lib.current.stage.stageHeight / 2, projection.projectionCenter.y);
 		#end
 		#end
 	}
