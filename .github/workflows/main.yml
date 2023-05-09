@@ -6,7 +6,7 @@ jobs:
   unit-test:
     strategy:
       matrix:
-        haxe-version: [3.4.7, 4.0.5, 4.1.5, 4.2.5, 4.3.1]
+        haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.1]
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
