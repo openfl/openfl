@@ -90,6 +90,10 @@ class Script extends hxp.Script
 		{
 			args.push('-Dtarget=${defines.get("target")}');
 		}
+		if (defines.exists("use-lime-tools"))
+		{
+			args.push('-Duse-lime-tools');
+		}
 		return args;
 	}
 
