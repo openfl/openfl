@@ -398,7 +398,7 @@ jobs:
 
   notify:
     runs-on: ubuntu-latest
-    needs: [package-haxelib, docs, unit-test, html5-samples, flash-samples, neko-samples, hashlink-samples]
+    needs: [package-haxelib, docs, unit-test-neko, unit-test-hashlink, unit-test-air, html5-samples, flash-samples, neko-samples, hashlink-samples]
     if: ${{ github.repository == 'openfl/openfl' && github.event_name != 'pull_request' }}
     steps:
       - name: Notify Discord
