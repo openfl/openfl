@@ -24,13 +24,7 @@ class ClipboardRTFTest extends Test
 	#end
 	public function test_getData(async:Async)
 	{
-		#if air
-		var fileURL = new File(File.applicationDirectory.nativePath).resolvePath("../../../assets/hello.rtf").url;
-		#else
-		var fileURL = "hello.rtf";
-		#end
-
-		ByteArray.loadFromFile(fileURL).onComplete(function(richTextFormatData)
+		ByteArray.loadFromFile("hello.rtf").onComplete(function(richTextFormatData)
 		{
 			var textFormatData = 'Text Format Data';
 			var clipboard = Clipboard.generalClipboard;
