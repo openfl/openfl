@@ -43,7 +43,6 @@ class PermissionEvent extends Event
 	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false, status:PermissionStatus = DENIED):Void
 	{
 		this.status = status;
-		this.redirected = redirected;
 
 		super(type, bubbles, cancelable);
 	}
