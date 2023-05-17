@@ -5,7 +5,7 @@ import openfl.events.Event;
 
 class OutputProgressEvent extends Event
 {
-	public static inline var OUTPUT_PROGRESS:String = "outputProgress";
+	public static inline var OUTPUT_PROGRESS:EventType<OutputProgressEvent> = "outputProgress";
 
 	public var bytesPending:Float;
 	public var bytesTotal:Float;
