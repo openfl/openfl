@@ -21,6 +21,18 @@ class OutputProgressEvent extends Event
 	{
 		return new OutputProgressEvent(type, bubbles, cancelable, bytesPending, bytesTotal);
 	}
+	
+	public override function toString():String
+	{
+		return __formatToString("OutputProgressEvent", ["type", "bubbles", "cancelable", "bytesPending", "bytesTotal"]);
+	}
+
+	@:noCompletion private override function __init():Void
+	{
+		super.__init();
+		bytesPending = Math.NaN;
+		bytesTotal = Math.NaN;
+	}
 }
 #else
 #if air
