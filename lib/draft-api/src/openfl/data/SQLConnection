@@ -1,0 +1,183 @@
+package openfl.data;
+import openfl.utils.Object;
+import openfl.errors.ArgumentError;
+import openfl.errors.IOError;
+import openfl.events.EventDispatcher;
+import openfl.utils.ByteArray;
+import openfl.filesystem.File;
+import sys.db.Connection;
+import sys.db.ResultSet;
+import sys.db.Sqlite;
+
+/**
+ * ...
+ * @author Christopher Speciale
+ */
+class SQLConnection extends EventDispatcher
+{
+	public static inline var isSupported:Bool =
+		#if sys
+		true;
+		#end
+
+	public var autoCompact(get, null):Bool;
+	//public var cacheSize(get, set):UInt;
+	//public var columnNameStyle(get, set):String;
+	public var connected(get, null):Bool;
+	//public var inTransaction(get, null):Bool;
+	//public var lastInsertRowID(get, null):Float;
+	public var pageSize(get, null):UInt;
+	//public var totalChanges(get, null):Float;
+
+	private var __totalChanges:Float = 0;
+	private var __lasInsertRowID:Float = 0;
+
+	private var __connection:Connection;
+	private var __openMode:SQLMode;
+
+	public function new()
+	{
+		super();
+	}
+
+	public function close():Void
+	{
+		__connection.close();
+	}
+
+	public function commit():Void
+	{
+		__connection.commit();
+	}
+
+	public function open(reference:Object = null, openMode:SQLMode = CREATE, autoCompact:Bool = false, pageSize:Int = 1024, encryptionKey:ByteArray = null):Void
+	{
+		if (reference == null || reference == ":memory:")
+		{
+			__openMode = CREATE;
+			reference = ":memory:";
+			__createConnection(reference);
+		}
+		else {
+			var file:File;
+			__openMode = openMode;
+
+			if (Std.isOfType(reference, String))
+			{
+				try
+				{
+					file = new File(reference);
+				}
+				catch (e:Dynamic)
+				{
+					throw new ArgumentError(e);
+				}
+			}
+			else if (Std.isOfType(reference, File))
+			{
+				file = reference;
+			}
+			else {
+				throw new ArgumentError("The reference argument is neither a String to a path or a File Object.");
+			}
+
+			switch (openMode)
+			{
+				case CREATE:
+					__createConnection(file.nativePath);
+				case READ, UPDATE:
+					if (file.exists)
+					{
+						__createConnection(file.nativePath);
+					}
+					else
+					{
+						throw new ArgumentError("Database does not exist.");
+					}
+			}
+		}
+
+		if (__openMode == CREATE)
+		{
+			__connection.request('PRAGMA page_size = $pageSize;');
+			
+			if (autoCompact)
+			{
+				__connection.request("PRAGMA auto_vacuum = 2;");
+			}
+		}
+	}
+
+	private function __createConnection(path:String):Void
+	{
+		try{
+			__connection = Sqlite.open(path);
+		}
+		catch (e:Dynamic)
+		{
+			throw new IOError(e);
+		}
+	}
+
+	private function get_autoCompact():Bool
+	{
+		var result:ResultSet = __connection.request("PRAGMA auto_vacuum;");
+
+		if (result.hasNext())
+		{
+			var autoVacuum:Int = result.next().auto_vacuum;
+
+			if (autoVacuum == 0)
+			{
+				return false;
+			}
+			else if (autoVacuum == 1)
+			{
+				return true;
+			}
+			else if (autoVacuum == 2)
+			{
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private function get_pageSize():UInt
+	{
+		var result:ResultSet = __connection.request("PRAGMA page_size;");
+
+		if (result.hasNext())
+		{
+			var pageSize:UInt = result.next().page_size;
+
+			return pageSize;
+		}
+
+		return 0;
+	}
+	
+	private function get_connected():Bool{
+		if (__connection == null){
+			return false;
+		}
+		
+		try{
+			__connection.request("SELECT 1;");
+			return true;
+		} catch (e:Dynamic){
+			return false;
+		}
+		
+		return false;
+	}
+
+}
+
+enum abstract SQLMode(String) from String to SQLMode
+{
+	var CREATE:String = "create";
+	var READ:String = "read";
+	var UPDATE:String = "update";
+}
