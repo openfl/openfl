@@ -232,7 +232,7 @@ class StageTest extends Test
 		#end
 	}
 
-	#if !integration
+	#if (flash || !integration)
 	@Ignored
 	#end
 	public function test_invalidate()
@@ -240,7 +240,7 @@ class StageTest extends Test
 		// TODO: Confirm functionality
 		// TODO: Isolate so integration is not needed
 
-		#if integration
+		#if (integration && !flash)
 		var exists = Lib.current.stage.invalidate;
 
 		Assert.notNull(exists);

@@ -863,7 +863,7 @@ private class OutboundPipe implements IDataOutput
 		}
 	}
 }
-#else
+#elseif flash
 #if air
 typedef NativeProcess = flash.desktop.NativeProcess;
 #end

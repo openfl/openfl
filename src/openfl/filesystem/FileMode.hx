@@ -1,8 +1,8 @@
 package openfl.filesystem;
 
 #if (!flash && sys)
-@:enum
-abstract FileMode(String) from String to String
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract FileMode(String) from String to String
+
 {
 	/**
 		Used for a file to be opened in write mode, with all written data appended to the end of the file.
@@ -11,18 +11,18 @@ abstract FileMode(String) from String to String
 	var APPEND:String = "append";
 
 	/**
-		Used for a file to be opened in read-only mode. The file must exist (missing files are not created). 
+		Used for a file to be opened in read-only mode. The file must exist (missing files are not created).
 	**/
 	var READ:String = "read";
 
 	/**
-		Used for a file to be opened in read/write mode. Upon opening, any nonexistent file is created. 
+		Used for a file to be opened in read/write mode. Upon opening, any nonexistent file is created.
 	**/
 	var UPDATE:String = "update";
 
 	/**
-		Used for a file to be opened in write-only mode. Upon opening, any nonexistent file is created, and 
-		any existing file is truncated (its data is deleted). 
+		Used for a file to be opened in write-only mode. Upon opening, any nonexistent file is created, and
+		any existing file is truncated (its data is deleted).
 	**/
 	var WRITE:String = "write";
 }

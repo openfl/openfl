@@ -3,11 +3,126 @@ on: [push, pull_request]
 
 jobs:
 
-  unit-test:
+  unit-test-neko-haxe3:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: 3.4.7
+
+      - name: Set HAXEPATH
+        run: |
+          echo "HAXEPATH=$HAXE_STD_PATH/.." >> $GITHUB_ENV
+
+      - name: Install Haxe dependencies
+        run: |
+          haxelib install hxcpp --quiet
+          haxelib install format --quiet
+          haxelib install hxp --quiet
+          haxelib install lime --quiet
+          haxelib install utest --quiet
+
+      - name: Setup environment
+        run: |
+          haxelib dev openfl $GITHUB_WORKSPACE
+
+      - name: Install command aliases
+        run: |
+          haxelib run lime setup -alias -y
+          haxelib run openfl setup -alias -y
+
+      - name: Run tests on Neko
+        run: |
+          haxelib run hxp test -Dtarget=neko --install-hxp-alias
+
+  unit-test-neko:
     strategy:
       matrix:
-        haxe-version: [3.4.7, 4.0.5, 4.1.5, 4.2.5, 4.3.1]
+        haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.1]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: ${{ matrix.haxe-version }}
+
+      - name: Set HAXEPATH
+        run: |
+          echo "HAXEPATH=$HAXE_STD_PATH/.." >> $GITHUB_ENV
+
+      - name: Install Haxe dependencies
+        run: |
+          haxelib install hxcpp --quiet
+          haxelib install format --quiet
+          haxelib install hxp --quiet
+          haxelib install lime --quiet
+          haxelib install utest --quiet
+
+      - name: Setup environment
+        run: |
+          haxelib dev openfl $GITHUB_WORKSPACE
+
+      - name: Install command aliases
+        run: |
+          haxelib run lime setup -alias -y
+          haxelib run openfl setup -alias -y
+
+      - name: Run tests on Neko
+        run: |
+          haxelib run hxp test -Dtarget=neko -Duse-lime-tools --install-hxp-alias
+
+  unit-test-hashlink:
+    strategy:
+      matrix:
+        haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.1]
     runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: ${{ matrix.haxe-version }}
+
+      - name: Set HAXEPATH
+        run: |
+          echo "HAXEPATH=$HAXE_STD_PATH/.." >> $GITHUB_ENV
+
+      - name: Install Haxe dependencies
+        run: |
+          haxelib install hxcpp --quiet
+          haxelib install format --quiet
+          haxelib install hxp --quiet
+          haxelib install lime --quiet
+          haxelib install utest --quiet
+
+      - name: Setup environment
+        run: |
+          haxelib dev openfl $GITHUB_WORKSPACE
+
+      - name: Install command aliases
+        run: |
+          haxelib run lime setup -alias -y
+          haxelib run openfl setup -alias -y
+
+      - name: Run tests on HashLink
+        run: |
+          haxelib run hxp test -Dtarget=hl -Duse-lime-tools --install-hxp-alias
+
+  unit-test-air:
+    strategy:
+      matrix:
+        # until Lime 8.0.2 is release, we can't test Haxe 4.3.1 with AIR
+        haxe-version: [3.4.7, 4.0.5, 4.1.5, 4.2.5]
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v3
         with:
@@ -24,7 +139,7 @@ jobs:
 
       - name: Set HAXEPATH
         run: |
-          echo "HAXEPATH=$HAXE_STD_PATH/.." >> $GITHUB_ENV
+          echo "HAXEPATH=$Env:HAXE_STD_PATH\.." >> $Env:GITHUB_ENV
 
       - name: Install Haxe dependencies
         run: |
@@ -37,25 +152,16 @@ jobs:
 
       - name: Setup environment
         run: |
-          haxelib dev openfl $GITHUB_WORKSPACE
+          haxelib dev openfl $Env:GITHUB_WORKSPACE
 
-      - name: Install "openfl" command alias
+      - name: Install command aliases
         run: |
+          haxelib run lime setup -alias -y
           haxelib run openfl setup -alias -y
 
-      - name: Run tests on Neko
-        run: |
-          haxelib run hxp test -Dtarget=neko --install-hxp-alias
-
-      - name: Run tests on HashLink
-        if: ${{ matrix.haxe-version != '3.4.7' }}
-        run: |
-          haxelib run hxp test -Dtarget=hl --install-hxp-alias
-
       - name: Run tests on Adobe AIR
-        if: ${{ matrix.haxe-version != '3.4.7' }}
         run: |
-          haxelib run hxp test -Dtarget=swf --install-hxp-alias
+          haxelib run hxp test -Dtarget=air -Duse-lime-tools --install-hxp-alias
 
   package-haxelib:
     runs-on: macos-latest
@@ -159,11 +265,13 @@ jobs:
       - name: Prepare openfl
         run: |
           haxelib dev openfl openfl-haxelib
+          haxelib run lime setup -alias -y
           haxelib run openfl setup -alias -y
 
       - name: Create OpenFL samples
         run: |
           openfl create DisplayingABitmap -verbose -nocolor
+          openfl create SimpleTilemap -verbose -nocolor
           openfl create PlayingSound -verbose -nocolor
           openfl create BunnyMark -verbose -nocolor
           openfl create PiratePig -verbose -nocolor
@@ -171,6 +279,7 @@ jobs:
       - name: Build OpenFL samples
         run: |
           lime build DisplayingABitmap neko -release -verbose -nocolor
+          lime build SimpleTilemap neko -release -verbose -nocolor
           lime build PlayingSound neko -release -verbose -nocolor
           lime build BunnyMark neko -release -verbose -nocolor
           lime build PiratePig neko -release -verbose -nocolor
@@ -203,11 +312,13 @@ jobs:
       - name: Prepare openfl
         run: |
           haxelib dev openfl openfl-haxelib
+          haxelib run lime setup -alias -y
           haxelib run openfl setup -alias -y
 
       - name: Create OpenFL samples
         run: |
           openfl create DisplayingABitmap -verbose -nocolor
+          openfl create SimpleTilemap -verbose -nocolor
           openfl create PlayingSound -verbose -nocolor
           openfl create BunnyMark -verbose -nocolor
           openfl create PiratePig -verbose -nocolor
@@ -215,6 +326,7 @@ jobs:
       - name: Build OpenFL samples
         run: |
           lime build DisplayingABitmap html5 -release -verbose -nocolor
+          lime build SimpleTilemap html5 -release -verbose -nocolor
           lime build PlayingSound html5 -release -verbose -nocolor
           lime build BunnyMark html5 -release -verbose -nocolor
           lime build PiratePig html5 -release -verbose -nocolor
@@ -222,6 +334,7 @@ jobs:
       - name: Build OpenFL samples with Genes
         run: |
           lime build DisplayingABitmap html5 -clean -release -verbose -nocolor --haxelib=genes
+          lime build SimpleTilemap html5 -clean -release -verbose -nocolor --haxelib=genes
           lime build PlayingSound html5 -clean -release -verbose -nocolor --haxelib=genes
           lime build BunnyMark html5 -clean  -release -verbose -nocolor --haxelib=genes
           lime build PiratePig html5 -clean -release -verbose -nocolor --haxelib=genes
@@ -253,11 +366,13 @@ jobs:
       - name: Prepare openfl
         run: |
           haxelib dev openfl openfl-haxelib
+          haxelib run lime setup -alias -y
           haxelib run openfl setup -alias -y
 
       - name: Create OpenFL samples
         run: |
           openfl create DisplayingABitmap -verbose -nocolor
+          openfl create SimpleTilemap -verbose -nocolor
           openfl create PlayingSound -verbose -nocolor
           openfl create BunnyMark -verbose -nocolor
           openfl create PiratePig -verbose -nocolor
@@ -265,6 +380,7 @@ jobs:
       - name: Build OpenFL samples
         run: |
           lime build DisplayingABitmap flash -release -verbose -nocolor
+          lime build SimpleTilemap flash -release -verbose -nocolor
           lime build PlayingSound flash -release -verbose -nocolor
           lime build BunnyMark flash -release -verbose -nocolor
           lime build PiratePig flash -release -verbose -nocolor
@@ -296,11 +412,13 @@ jobs:
       - name: Prepare openfl
         run: |
           haxelib dev openfl openfl-haxelib
+          haxelib run lime setup -alias -y
           haxelib run openfl setup -alias -y
 
       - name: Create OpenFL samples
         run: |
           openfl create DisplayingABitmap -verbose -nocolor
+          openfl create SimpleTilemap -verbose -nocolor
           openfl create PlayingSound -verbose -nocolor
           openfl create BunnyMark -verbose -nocolor
           openfl create PiratePig -verbose -nocolor
@@ -308,13 +426,14 @@ jobs:
       - name: Build OpenFL samples
         run: |
           lime build DisplayingABitmap hl -release -verbose -nocolor
+          lime build SimpleTilemap hl -release -verbose -nocolor
           lime build PlayingSound hl -release -verbose -nocolor
           lime build BunnyMark hl -release -verbose -nocolor
           lime build PiratePig hl -release -verbose -nocolor
 
   notify:
     runs-on: ubuntu-latest
-    needs: [package-haxelib, docs, unit-test, html5-samples, flash-samples, neko-samples, hashlink-samples]
+    needs: [package-haxelib, docs, unit-test-neko-haxe3, unit-test-neko, unit-test-hashlink, unit-test-air, html5-samples, flash-samples, neko-samples, hashlink-samples]
     if: ${{ github.repository == 'openfl/openfl' && github.event_name != 'pull_request' }}
     steps:
       - name: Notify Discord

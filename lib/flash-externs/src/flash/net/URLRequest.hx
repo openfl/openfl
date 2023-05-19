@@ -69,8 +69,8 @@ package flash.net;
 	@:flash.property public var followRedirects(get, set):Bool;
 	@:flash.property public var idleTimeout(get, set):Float;
 	@:flash.property public var manageCookies(get, set):Bool;
-	@:flash.property public var useCaches(get, set):Bool;
-	@:flash.property public var userAgents(get, set):String;
+	@:flash.property public var useCache(get, set):Bool;
+	@:flash.property public var userAgent(get, set):String;
 	#else
 	@:flash.property public var followRedirects(get, set):Bool;
 	@:noCompletion private inline function get_followRedirects():Bool

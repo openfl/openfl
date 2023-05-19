@@ -1,6 +1,6 @@
 package openfl.filesystem;
 
-#if (!flash && sys)
+#if (haxe4 && sys && !flash)
 import haxe.Json;
 import haxe.Serializer;
 import haxe.Timer;
@@ -1625,7 +1625,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 		return position = value;
 	}
 }
-#else
+#elseif flash
 #if air
 typedef FileStream = flash.filesystem.FileStream;
 #end

@@ -9,6 +9,8 @@ import lime.system.System as LimeSystem;
 import neko.vm.Gc;
 #elseif cpp
 import cpp.vm.Gc;
+#elseif hl
+import hl.Gc;
 #end
 
 /**
@@ -195,6 +197,8 @@ import cpp.vm.Gc;
 	{
 		#if (cpp || neko)
 		return Gc.run(true);
+		#elseif hl
+		return Gc.major();
 		#end
 	}
 
@@ -262,6 +266,8 @@ import cpp.vm.Gc;
 		#elseif (js && html5)
 		return
 			untyped #if haxe4 js.Syntax.code #else __js__ #end ("(window.performance && window.performance.memory) ? window.performance.memory.usedJSHeapSize : 0");
+		#elseif hl
+		return Std.int(Gc.stats().currentMemory);
 		#else
 		return 0;
 		#end

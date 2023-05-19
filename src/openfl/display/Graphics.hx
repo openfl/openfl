@@ -1242,6 +1242,7 @@ import js.html.CanvasRenderingContext2D;
 		__commands.lineGradientStyle(type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
 	}
 
+	#if false
 	/**
 		Specifies a shader to use for the line stroke when drawing lines.
 
@@ -1258,6 +1259,7 @@ import js.html.CanvasRenderingContext2D;
 		Calls to the `clear()` method set the line style back to undefined.
 	**/
 	// @:require(flash10) public function lineShaderStyle (shader:Shader, ?matrix:Matrix):Void;
+	#end
 
 	/**
 		Specifies a line style used for subsequent calls to Graphics methods such
