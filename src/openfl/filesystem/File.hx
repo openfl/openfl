@@ -4,6 +4,7 @@ package openfl.filesystem;
 import haxe.io.Path;
 import lime.system.BackgroundWorker;
 import lime.system.System;
+import openfl.desktop.Icon;
 import openfl.errors.IllegalOperationError;
 import openfl.errors.ArgumentError;
 import openfl.errors.Error;
@@ -226,8 +227,13 @@ class File extends FileReference
 	**/
 	public var exists(get, never):Bool;
 
-	// public var icon:Icon;
-	// TODO
+	/**
+		An Icon object containing the icons defined for the file. An Icon object
+		is an array of BitmapData objects corresponding to the various icon
+		states. On Linux, the Icon object contains no icons. On Android, the
+		`icon` property is `null`.
+	**/
+	public var icon(default, never):Icon = null;
 
 	/**
 		Indicates whether the reference is to a directory.  The value is true if the File object points to a directory; false otherwise.
