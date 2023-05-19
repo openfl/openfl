@@ -1239,6 +1239,25 @@ import js.html.CanvasRenderingContext2D;
 	public function lineGradientStyle(type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null,
 			spreadMethod:SpreadMethod = SpreadMethod.PAD, interpolationMethod:InterpolationMethod = InterpolationMethod.RGB, focalPointRatio:Float = 0):Void
 	{
+		if (alphas == null)
+		{
+			alphas = [];
+
+			for (i in 0...colors.length)
+			{
+				alphas.push(1);
+			}
+		}
+
+		if (ratios == null)
+		{
+			ratios = [];
+
+			for (i in 0...colors.length)
+			{
+				ratios.push(Math.ceil((i / colors.length) * 255));
+			}
+		}
 		__commands.lineGradientStyle(type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
 	}
 
