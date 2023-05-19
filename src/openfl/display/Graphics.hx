@@ -306,7 +306,7 @@ import js.html.CanvasRenderingContext2D;
 
 			for (i in 0...colors.length)
 			{
-				ratios.push(Math.ceil((i / colors.length) * 255));
+				ratios.push(Math.ceil((i / (colors.length - 1)) * 255));
 			}
 		}
 
@@ -1255,7 +1255,7 @@ import js.html.CanvasRenderingContext2D;
 
 			for (i in 0...colors.length)
 			{
-				ratios.push(Math.ceil((i / colors.length) * 255));
+				ratios.push(Math.ceil((i / (colors.length - 1)) * 255));
 			}
 		}
 		__commands.lineGradientStyle(type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
