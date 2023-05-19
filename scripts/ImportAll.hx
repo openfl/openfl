@@ -3,6 +3,8 @@ package;
 import openfl.desktop.Clipboard;
 import openfl.desktop.ClipboardFormats;
 import openfl.desktop.ClipboardTransferMode;
+import openfl.desktop.Icon;
+import openfl.desktop.InteractiveIcon;
 import openfl.desktop.InvokeEventReason;
 import openfl.desktop.NativeApplication;
 import openfl.desktop.NativeProcess;
