@@ -197,6 +197,29 @@ class NativeApplication extends EventDispatcher
 	public var autoExit:Bool = true;
 
 	/**
+		The application icon.
+
+		Use `NativeApplication.supportsDockIcon` and
+		`NativeApplication.supportsSystemTrayIcon` to determine the icon class.
+		The type will be one of the subclasses of InteractiveIcon. On macOS,
+		`NativeApplication.icon` is an object of type DockIcon. On Windows,
+		`NativeApplication.icon` is an object of type SystemTrayIcon. When an
+		application icon is not supported, `NativeApplication.supportsDockIcon`
+		and `NativeApplication.supportsSystemTrayIcon` are both `false` and the
+		`icon` property is `null`.
+
+		The `icon` object is automatically created, but it is not initialized
+		with image data. On some operating systems, such as macOS, a default
+		image is supplied. On others, such as Windows, the icon is not displayed
+		unless image data is assigned to it. To assign an icon image, set the
+		`icon.bitmaps` property with an array containing at least one BitmapData
+		object. If more than one BitmapData object is included in the array,
+		then the operating system chooses the image that is closest in size to
+		the icon's display dimensions, scaling the image if necessary.
+	**/
+	public var icon(default, never):InteractiveIcon = null;
+
+	/**
 		In Adobe AIR, when targeting iOS, this property indicates if the
 		application was compiled AOT or if code is using the slower interpreter
 		without JIT. On all other platforms and operating systems, this
