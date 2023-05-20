@@ -65,7 +65,7 @@ import js.Browser;
 
 	The FileReference and FileReferenceList classes also do not provide
 	methods for authentication. With servers that require authentication, you
-	can download files with the Flash<sup>?/sup> Player browser plug-in, but
+	can download files with the Flash<sup>®</sup> Player browser plug-in, but
 	uploading (on all players) and downloading (on the stand-alone or external
 	player) fails. Listen for FileReference events to determine whether
 	operations complete successfully and to handle errors.
@@ -603,8 +603,17 @@ class FileReference extends EventDispatcher
 		{
 			__inputControl.setAttribute("accept", filter);
 		}
+		else
+		{
+			__inputControl.removeAttribute("accept");
+		}
 		__inputControl.onchange = function()
 		{
+			if (__inputControl.files.length == 0)
+			{
+				dispatchEvent(new Event(Event.CANCEL));
+				return;
+			}
 			var file = __inputControl.files[0];
 			modificationDate = Date.fromTime(file.lastModified);
 			creationDate = modificationDate;

@@ -323,16 +323,17 @@ class Shader
 		gl.shaderSource(shader, source);
 		gl.compileShader(shader);
 		var shaderInfoLog = gl.getShaderInfoLog(shader);
+		var hasInfoLog = shaderInfoLog != null && StringTools.trim(shaderInfoLog) != "";
 		var compileStatus = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
 
-		if (shaderInfoLog != null || compileStatus == 0)
+		if (hasInfoLog || compileStatus == 0)
 		{
 			var message = (compileStatus == 0) ? "Error" : "Info";
 			message += (type == gl.VERTEX_SHADER) ? " compiling vertex shader" : " compiling fragment shader";
 			message += "\n" + shaderInfoLog;
 			message += "\n" + source;
 			if (compileStatus == 0) Log.error(message);
-			else if (shaderInfoLog != null) Log.debug(message);
+			else if (hasInfoLog) Log.debug(message);
 		}
 
 		return shader;

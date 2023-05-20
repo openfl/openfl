@@ -579,6 +579,14 @@ import lime.math.Vector2;
 	public function configureBackBuffer(width:Int, height:Int, antiAlias:Int, enableDepthAndStencil:Bool = true, wantsBestResolution:Bool = false,
 			wantsBestResolutionOnBrowserZoom:Bool = false):Void
 	{
+		#if !openfl_dpi_aware
+		if (wantsBestResolution)
+		{
+			width = Std.int(width * __stage.window.scale);
+			height = Std.int(height * __stage.window.scale);
+		}
+		#end
+
 		if (__stage3D == null)
 		{
 			backBufferWidth = width;
@@ -604,7 +612,16 @@ import lime.math.Vector2;
 					__stage3D.__vertexBuffer = createVertexBuffer(4, 5);
 				}
 
-				var vertexData = new Vector<Float>([width, height, 0, 1, 1, 0, height, 0, 0, 1, width, 0, 0, 1, 0, 0, 0, 0, 0, 0.0]);
+				#if openfl_dpi_aware
+				var scaledWidth = width;
+				var scaledHeight = height;
+				#else
+				var scaledWidth = wantsBestResolution ? width : Std.int(width * __stage.window.scale);
+				var scaledHeight = wantsBestResolution ? height : Std.int(height * __stage.window.scale);
+				#end
+				var vertexData = new Vector<Float>([
+					scaledWidth, scaledHeight, 0, 1, 1, 0, scaledHeight, 0, 0, 1, scaledWidth, 0, 0, 1, 0, 0, 0, 0, 0, 0.0
+				]);
 
 				__stage3D.__vertexBuffer.uploadFromVector(vertexData, 0, 20);
 
@@ -1428,7 +1445,7 @@ import lime.math.Vector2;
 			var isVertex = (programType == VERTEX);
 			var dest = isVertex ? __vertexConstants : __fragmentConstants;
 
-			var floatData = Float32Array.fromBytes(data, 0, data.length);
+			var floatData = Float32Array.fromBytes(data, 0);
 			var outOffset = firstRegister * 4;
 			var inOffset = Std.int(byteArrayOffset / 4);
 
@@ -2249,11 +2266,20 @@ import lime.math.Vector2;
 			var scissorY = Std.int(__state.scissorRectangle.y);
 			var scissorWidth = Std.int(__state.scissorRectangle.width);
 			var scissorHeight = Std.int(__state.scissorRectangle.height);
+			#if !openfl_dpi_aware
+			if (__backBufferWantsBestResolution)
+			{
+				scissorX = Std.int(__state.scissorRectangle.x * __stage.window.scale);
+				scissorY = Std.int(__state.scissorRectangle.y * __stage.window.scale);
+				scissorWidth = Std.int(__state.scissorRectangle.width * __stage.window.scale);
+				scissorHeight = Std.int(__state.scissorRectangle.height * __stage.window.scale);
+			}
+			#end
 
 			if (__state.renderToTexture == null && __stage3D == null)
 			{
 				var contextHeight = Std.int(__stage.window.height * __stage.window.scale);
-				scissorY = contextHeight - Std.int(__state.scissorRectangle.height) - scissorY;
+				scissorY = contextHeight - scissorHeight - scissorY;
 			}
 
 			if (#if openfl_disable_context_cache true #else __contextState.scissorRectangle.x != scissorX
@@ -2392,9 +2418,18 @@ import lime.math.Vector2;
 		{
 			if (__stage.context3D == this)
 			{
+				var scaledBackBufferWidth = backBufferWidth;
+				var scaledBackBufferHeight = backBufferHeight;
+				#if !openfl_dpi_aware
+				if (__stage3D == null && !__backBufferWantsBestResolution)
+				{
+					scaledBackBufferWidth = Std.int(backBufferWidth * __stage.window.scale);
+					scaledBackBufferHeight = Std.int(backBufferHeight * __stage.window.scale);
+				}
+				#end
 				var x = __stage3D == null ? 0 : Std.int(__stage3D.x);
-				var y = Std.int((__stage.window.height * __stage.window.scale) - backBufferHeight - (__stage3D == null ? 0 : __stage3D.y));
-				gl.viewport(x, y, backBufferWidth, backBufferHeight);
+				var y = Std.int((__stage.window.height * __stage.window.scale) - scaledBackBufferHeight - (__stage3D == null ? 0 : __stage3D.y));
+				gl.viewport(x, y, scaledBackBufferWidth, scaledBackBufferHeight);
 			}
 			else
 			{

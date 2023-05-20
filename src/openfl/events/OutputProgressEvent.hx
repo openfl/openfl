@@ -1,10 +1,11 @@
 package openfl.events;
 
+#if (!flash && sys)
 import openfl.events.Event;
 
 class OutputProgressEvent extends Event
 {
-	public static inline var OUTPUT_PROGRESS:String = "outputProgress";
+	public static inline var OUTPUT_PROGRESS:EventType<OutputProgressEvent> = "outputProgress";
 
 	public var bytesPending:Float;
 	public var bytesTotal:Float;
@@ -20,4 +21,21 @@ class OutputProgressEvent extends Event
 	{
 		return new OutputProgressEvent(type, bubbles, cancelable, bytesPending, bytesTotal);
 	}
+	
+	public override function toString():String
+	{
+		return __formatToString("OutputProgressEvent", ["type", "bubbles", "cancelable", "bytesPending", "bytesTotal"]);
+	}
+
+	@:noCompletion private override function __init():Void
+	{
+		super.__init();
+		bytesPending = Math.NaN;
+		bytesTotal = Math.NaN;
+	}
 }
+#else
+#if air
+typedef OutputProgressEvent = flash.events.OutputProgressEvent;
+#end
+#end

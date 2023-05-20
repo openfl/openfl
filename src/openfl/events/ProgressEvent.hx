@@ -50,6 +50,40 @@ class ProgressEvent extends Event
 	**/
 	public static inline var SOCKET_DATA:EventType<ProgressEvent> = "socketData";
 
+	#if (haxe4 && sys)
+	/**
+		Defines the value of the `type` property of a `standardOutputData` event
+		object.
+		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event. |
+		| `bytesLoaded` | The number of bytes of output data buffered by the NativeProcessObject.standardOutput due to this event. |
+		| `bytesTotal` | 0; this property is not used by `standardOutputData` event objects. |
+		| `target` | The NativeProcess object reporting output data. |
+	**/
+	public static inline var STANDARD_OUTPUT_DATA:EventType<ProgressEvent> = "standardOutputData";
+
+	/**
+		Defines the value of the `type` property of a `standardErrorData` event
+		object.
+		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `false`; there is no default behavior to cancel. |
+		| `currentTarget` | The object that is actively processing the Event. |
+		| `bytesLoaded` | The number of bytes of output data buffered by the NativeProcessObject.standardError due to this event. |
+		| `bytesTotal` | 0; this property is not used by `standardErrorData` event objects. |
+		| `target` | The NativeProcess object reporting output data. |
+	**/
+	public static inline var STANDARD_ERROR_DATA:EventType<ProgressEvent> = "standardErrorData";
+	#end
+
 	/**
 		The number of items or bytes loaded when the listener processes the event.
 	**/

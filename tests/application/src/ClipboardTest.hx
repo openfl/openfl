@@ -24,7 +24,7 @@ class ClipboardTest extends Test
 		Assert.isNull(clipboard.getData(ClipboardFormats.TEXT_FORMAT));
 	}
 
-	#if (flash && !air)
+	#if flash
 	@Ignored
 	#end
 	public function test_clearData()
@@ -40,6 +40,7 @@ class ClipboardTest extends Test
 		#if (flash || !integration)
 		Assert.isNull(clipboard.getData(ClipboardFormats.HTML_FORMAT));
 		Assert.equals('Test Data', clipboard.getData(ClipboardFormats.TEXT_FORMAT));
+		// for some reason, calling clearData crashes on AIR
 		clipboard.clearData(ClipboardFormats.TEXT_FORMAT);
 		Assert.isNull(clipboard.getData(ClipboardFormats.TEXT_FORMAT));
 		#else

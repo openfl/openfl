@@ -1,0 +1,6 @@
+body .navbar .brand:first-of-type {
+	background: url(./images/logo.png) center left no-repeat;
+	background-size: 227px 70px;
+	padding-left: 240px;
+	margin: 0.5em 0;
+}

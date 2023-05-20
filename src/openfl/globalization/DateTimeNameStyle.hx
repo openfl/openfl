@@ -2,7 +2,8 @@ package openfl.globalization;
 
 #if !flash
 #if !openfljs
-@:enum abstract DateTimeNameStyle(Null<Int>)
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract DateTimeNameStyle(Null<Int>)
+
 {
 	public var FULL = 0;
 	public var LONG_ABBREVIATION = 1;
@@ -42,13 +43,14 @@ package openfl.globalization;
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-@:enum abstract DateTimeNameStyle(String) from String to String
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract DateTimeNameStyle(String) from String to String
+
 {
 	public var FULL = "full";
 	public var LONG_ABBREVIATION = "longAbbreviation";
 	public var SHORT_ABBREVIATION = "shortAbbreviation";
 
-	@:noCompletion private inline static function fromInt(value:Null<Int>):DateTimeNameContext
+	@:noCompletion private inline static function fromInt(value:Null<Int>):DateTimeNameStyle
 	{
 		return switch (value)
 		{

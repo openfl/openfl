@@ -27,7 +27,7 @@ class RectangleTest extends Test
 		var rect = new Rectangle(0, 0, 100, 100);
 
 		Assert.notNull(rect.bottomRight);
-		Assert.is(rect.bottomRight, openfl.geom.Point);
+		Assert.isOfType(rect.bottomRight, openfl.geom.Point);
 
 		Assert.equals(100, rect.bottomRight.x);
 		Assert.equals(100, rect.bottomRight.y);
@@ -93,7 +93,7 @@ class RectangleTest extends Test
 		var rect = new Rectangle(0, 0, 100, 100);
 
 		Assert.notNull(rect.size);
-		Assert.is(rect.size, openfl.geom.Point);
+		Assert.isOfType(rect.size, openfl.geom.Point);
 
 		Assert.equals(100, rect.size.x);
 		Assert.equals(100, rect.size.y);
@@ -129,7 +129,7 @@ class RectangleTest extends Test
 		var rect = new Rectangle(0, 0, 100, 100);
 
 		Assert.notNull(rect.topLeft);
-		Assert.is(rect.topLeft, openfl.geom.Point);
+		Assert.isOfType(rect.topLeft, openfl.geom.Point);
 
 		Assert.equals(0, rect.topLeft.x);
 		Assert.equals(0, rect.topLeft.y);

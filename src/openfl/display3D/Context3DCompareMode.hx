@@ -10,7 +10,8 @@ import openfl.utils._internal.NullUtils;
 	Defines the values to use for specifying 3D buffer comparisons in the
 	`setDepthTest()` and `setStencilAction()` methods of a Context3D instance.
 **/
-@:enum abstract Context3DCompareMode(Null<Int>)
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DCompareMode(Null<Int>)
+
 {
 	/**
 		The comparison always evaluates as true.
@@ -100,7 +101,8 @@ import openfl.utils._internal.NullUtils;
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-@:enum abstract Context3DCompareMode(String) from String to String
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DCompareMode(String) from String to String
+
 {
 	public var ALWAYS = "always";
 	public var EQUAL = "equal";

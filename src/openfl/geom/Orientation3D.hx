@@ -10,7 +10,8 @@ package openfl.geom;
 	The `decompose` and `recompose` methods of the Matrix3D object take one of these
 	enumerated types to identify the rotational components of the Matrix.
 **/
-@:enum abstract Orientation3D(Null<Int>)
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract Orientation3D(Null<Int>)
+
 {
 	/**
 		The axis angle orientation uses a combination of an axis and an angle to determine
@@ -81,7 +82,8 @@ package openfl.geom;
 	}
 }
 #else
-@:enum abstract Orientation3D(String) from String to String
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract Orientation3D(String) from String to String
+
 {
 	/**
 		The axis angle orientation uses a combination of an

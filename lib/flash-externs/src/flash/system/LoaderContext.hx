@@ -5,21 +5,26 @@ import openfl.display.DisplayObjectContainer;
 
 extern class LoaderContext
 {
-	@:require(flash10_1) public var allowCodeImport:Bool;
+	#if (haxe_ver < 4.3)
 	@:require(flash10_1) public var allowLoadBytesCodeExecution:Bool;
+	#else
+	@:flash.property @:require(flash10_1) var allowLoadBytesCodeExecution(get, set):Bool;
+	#end
+
+	@:require(flash10_1) public var allowCodeImport:Bool;
 	public var applicationDomain:ApplicationDomain;
 	public var checkPolicyFile:Bool;
-	#if flash
 	@:require(flash11) public var imageDecodingPolicy:flash.system.ImageDecodingPolicy;
-	#end
-	#if flash
 	@:require(flash11) public var parameters:Dynamic;
-	#end
-	#if flash
 	@:require(flash11) public var requestedContentParent:DisplayObjectContainer;
-	#end
 	public var securityDomain:SecurityDomain;
+
 	public function new(checkPolicyFile:Bool = false, applicationDomain:ApplicationDomain = null, securityDomain:SecurityDomain = null):Void;
+
+	#if (haxe_ver >= 4.3)
+	private function get_allowLoadBytesCodeExecution():Bool;
+	private function set_allowLoadBytesCodeExecution(value:Bool):Bool;
+	#end
 }
 #else
 typedef LoaderContext = openfl.system.LoaderContext;

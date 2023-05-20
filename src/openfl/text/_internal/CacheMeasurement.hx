@@ -10,7 +10,7 @@ import haxe.ds.IntMap;
 class CacheMeasurement
 {
 	private var __collisions:Array<String>;
-	private var __wordMap:IntMap<#if (js && html5) Array<Float> #else Array<GlyphPosition> #end>;
+	private var __wordMap:IntMap< #if (js && html5) Array<Float> #else Array<GlyphPosition> #end>;
 
 	public var hash:Int;
 

@@ -7,7 +7,8 @@ package openfl.display;
 	The StageScaleMode class provides values for the
 	`Stage.scaleMode` property.
 **/
-@:enum abstract StageScaleMode(Null<Int>)
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract StageScaleMode(Null<Int>)
+
 {
 	/**
 		Specifies that the entire application be visible in the specified area without
@@ -62,7 +63,8 @@ package openfl.display;
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-@:enum abstract StageScaleMode(String) from String to String
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract StageScaleMode(String) from String to String
+
 {
 	public var EXACT_FIT = "exactFit";
 	public var NO_BORDER = "noBorder";

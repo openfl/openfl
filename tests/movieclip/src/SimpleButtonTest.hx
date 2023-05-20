@@ -66,7 +66,7 @@ class SimpleButtonTest extends Test
 		Assert.isNull(button.hitTestState);
 		#else
 		Assert.notNull(button.hitTestState);
-		Assert.is(button.hitTestState, DisplayObject);
+		Assert.isOfType(button.hitTestState, DisplayObject);
 		#end
 
 		button.hitTestState = hit;
@@ -136,7 +136,7 @@ class SimpleButtonTest extends Test
 		Assert.isNull(button.upState);
 		#else
 		Assert.notNull(button.upState);
-		Assert.is(button.upState, DisplayObject);
+		Assert.isOfType(button.upState, DisplayObject);
 		#end
 
 		button.upState = up;

@@ -167,12 +167,19 @@ class TextEngine
 
 	private function createRestrictRegexp(restrict:String):EReg
 	{
-		var declinedRange = ~/\^(.-.|.)/gu;
+		var declinedRange = ~/\^([^\^]+)/gu;
 		var declined = "";
 
+		var accepting = false;
 		var accepted = declinedRange.map(restrict, function(ereg)
 		{
+			if (accepting)
+			{
+				accepting = !accepting;
+				return ereg.matched(1);
+			}
 			declined += ereg.matched(1);
+			accepting = !accepting;
 			return "";
 		});
 
@@ -180,7 +187,7 @@ class TextEngine
 
 		if (accepted.length > 0)
 		{
-			testRegexpParts.push('[^$restrict]');
+			testRegexpParts.push('[^$accepted]');
 		}
 
 		if (declined.length > 0)
@@ -220,6 +227,7 @@ class TextEngine
 		if (font != null)
 		{
 			Font.__registeredFonts.push(font);
+			Font.__fontByName[font.fontName] = font;
 			return font;
 		}
 		#end
@@ -259,10 +267,17 @@ class TextEngine
 		bounds.width = width + padding;
 		bounds.height = height + padding;
 
-		var x = width, y = width;
+		var x = width, y = height;
 
-		for (group in layoutGroups)
+		var lastIndex = layoutGroups.length - 1;
+		for (i in 0...layoutGroups.length)
 		{
+			var group = layoutGroups[i];
+			if (i == lastIndex && group.startIndex == group.endIndex && type != INPUT)
+			{
+				// if the final group contains only a new line, skip it (unless type == INPUT)
+				continue;
+			}
 			if (group.offsetX < x) x = group.offsetX;
 			if (group.offsetY < y) y = group.offsetY;
 		}
@@ -328,11 +343,19 @@ class TextEngine
 			__defaultFonts.set("_sans", new DefaultFontSet(sans, sansBold, sansItalic, sansBoldItalic));
 
 			var serif = processFontList([
-				systemFontDirectory + "/Georgia.ttf", systemFontDirectory + "/Times.ttf", systemFontDirectory + "/Times New Roman.ttf",
-				systemFontDirectory + "/Cache/Georgia.ttf", systemFontDirectory + "/Cache/Times.ttf", systemFontDirectory + "/Cache/Times New Roman.ttf",
-				systemFontDirectory + "/Core/Georgia.ttf", systemFontDirectory + "/Core/Times.ttf", systemFontDirectory + "/Core/Times New Roman.ttf",
-				systemFontDirectory + "/CoreAddition/Georgia.ttf", systemFontDirectory + "/CoreAddition/Times.ttf",
-				systemFontDirectory + "/CoreAddition/Times New Roman.ttf", "/System/Library/Fonts/Supplemental/Times New Roman.ttf"
+				systemFontDirectory + "/Georgia.ttf",
+				systemFontDirectory + "/Times.ttf",
+				systemFontDirectory + "/Times New Roman.ttf",
+				systemFontDirectory + "/Cache/Georgia.ttf",
+				systemFontDirectory + "/Cache/Times.ttf",
+				systemFontDirectory + "/Cache/Times New Roman.ttf",
+				systemFontDirectory + "/Core/Georgia.ttf",
+				systemFontDirectory + "/Core/Times.ttf",
+				systemFontDirectory + "/Core/Times New Roman.ttf",
+				systemFontDirectory + "/CoreAddition/Georgia.ttf",
+				systemFontDirectory + "/CoreAddition/Times.ttf",
+				systemFontDirectory + "/CoreAddition/Times New Roman.ttf",
+				"/System/Library/Fonts/Supplemental/Times New Roman.ttf"
 			]);
 			var serifBold = findFont("/System/Library/Fonts/Supplemental/Times New Roman Bold.ttf");
 			var serifItalic = findFont("/System/Library/Fonts/Supplemental/Times New Roman Italic.ttf");
@@ -592,9 +615,17 @@ class TextEngine
 		numLines = 1;
 		maxScrollH = 0;
 
+		var lastIndex = layoutGroups.length - 1;
 		for (i in 0...layoutGroups.length)
 		{
 			var group = layoutGroups[i];
+
+			if (i == lastIndex && group.startIndex == group.endIndex && type != INPUT)
+			{
+				// if the final group contains only a new line, skip it (unless type == INPUT)
+				continue;
+			}
+
 			while (group.lineIndex > numLines - 1)
 			{
 				lineAscents.push(currentLineAscent);
@@ -610,12 +641,6 @@ class TextEngine
 				currentLineWidth = 0;
 
 				numLines++;
-			}
-
-			if (i == layoutGroups.length - 1 && group.startIndex == group.endIndex && type != INPUT)
-			{
-				// if the final group contains only a new line, skip it (unless type == INPUT)
-				continue;
 			}
 
 			currentLineAscent = Math.max(currentLineAscent, group.ascent);
@@ -700,17 +725,6 @@ class TextEngine
 			}
 		}
 
-		if (layoutGroups.length > 0)
-		{
-			var group = layoutGroups[layoutGroups.length - 1];
-
-			if (group != null && group.startIndex == group.endIndex && type != INPUT && textField.caretIndex != group.startIndex)
-			{
-				// if the final group contains only a new line, skip it (unless type == INPUT)
-				textHeight -= currentLineHeight;
-			}
-		}
-
 		if (autoSize != NONE)
 		{
 			switch (autoSize)
@@ -784,7 +798,7 @@ class TextEngine
 		#if !js
 		inline
 		#end
-		function getPositions(text:UTF8String, startIndex:Int, endIndex:Int):Array<#if (js && html5) Float #else GlyphPosition #end>
+		function getPositions(text:UTF8String, startIndex:Int, endIndex:Int):Array< #if (js && html5) Float #else GlyphPosition #end>
 		{
 			// TODO: optimize
 
@@ -1227,6 +1241,26 @@ class TextEngine
 			var currentPosition;
 
 			var tempWidth = getPositionsWidth(remainingPositions);
+			i = remainingPositions.length - 1;
+			while (i >= 0)
+			{
+				// strip away the combined width of whitespace at the end of the
+				// line. the whitespace's width should not be included in the
+				// width of the preceding word when determining if that word is
+				// too long to fit on the line.
+				var currentCharCode = text.charCodeAt(textIndex + i);
+				if (currentCharCode != 32 && currentCharCode != 9)
+				{
+					break;
+				}
+				var position = remainingPositions[i];
+				#if (js && html5)
+				tempWidth -= position;
+				#else
+				tempWidth -= position.advance.x;
+				#end
+				i--;
+			}
 
 			while (remainingPositions.length > 0 && offsetX + tempWidth > getWrapWidth())
 			{
@@ -1936,7 +1970,8 @@ class TextEngine
 
 		var max = maxScrollV;
 
-		if (scrollV > max) return max - 1;
+		// TODO: Does maxScrollV return the wrong value(+1) in some cases?
+		if (scrollV > max) return max;
 
 		return scrollV;
 	}
@@ -1944,6 +1979,8 @@ class TextEngine
 	private function set_scrollV(value:Int):Int
 	{
 		if (value < 1) value = 1;
+		else if (value > maxScrollV) value = maxScrollV;
+
 		return scrollV = value;
 	}
 

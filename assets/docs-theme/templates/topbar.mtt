@@ -1,21 +1,34 @@
 <style>
 ::raw "
-a, code .type {
+a,
+code a,
+code .type,
+.dark-theme a,
+.dark-theme code a,
+.dark-theme code .type {
 	color: #24afc4;
 }
 table {
 	margin-bottom: 20px;
 }
 .navbar .brand {
-	display: inline-block;
+	display: inline-flex;
+	align-items: center;
 	float: none;
 	text-shadow: 0 0 0 transparent;
+	min-height: 70px;
 }
-.nav-list>.active>a.treeLink, .nav-list>.active>a.treeLink:hover, .nav-list>.active>a.treeLink:focus {
+.nav-list>.active>a.treeLink,
+.nav-list>.active>a.treeLink:hover,
+.nav-list>.active>a.treeLink:focus,
+.dark-theme .nav-list>.active>a.treeLink,
+.dark-theme .nav-list>.active>a.treeLink:hover,
+.dark-theme .nav-list>.active>a.treeLink:focus {
 	background: #24afc4;
 	color: #ffffff;
 	text-shadow: 0 0 0 transparent;
 }
+
 .navbar .container {
 	width: 940px ;
 }
@@ -45,6 +58,7 @@ table {
 			<div class="container">
 				<a ::cond api.isDefined("logo"):: ::attr href if(api.isDefined("website")) api.getValue("website") else api.config.rootPath:: class="brand"><img alt="" ::attr src api.getValue("logo"):: /></a>
 				<a ::attr href api.config.rootPath:: class="brand" style="color:$$getHexValue(::textColor::)">::if api.config.pageTitle!=null::::api.config.pageTitle::::else::API Documentation::end::</a>
+				<a href="#" id="theme-toggle" style="color:$$getHexValue(::textColor::)" onclick="toggleTheme()" title="Toggle Dark Mode"><i class="fa fa-moon-o"></i></a>
 			</div>
 		</div>
 	</div>

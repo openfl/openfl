@@ -9,7 +9,8 @@ import openfl.utils._internal.NullUtils;
 /**
 	Defines the values to use for sampler wrap mode
 **/
-@:enum abstract Context3DWrapMode(Null<Int>)
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DWrapMode(Null<Int>)
+
 {
 	/**
 		Clamp texture coordinates outside the 0..1 range.
@@ -75,7 +76,8 @@ import openfl.utils._internal.NullUtils;
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-@:enum abstract Context3DWrapMode(String) from String to String
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract Context3DWrapMode(String) from String to String
+
 {
 	public var CLAMP = "clamp";
 	public var CLAMP_U_REPEAT_V = "clamp_u_repeat_v";

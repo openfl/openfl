@@ -577,7 +577,9 @@ import js.lib.intl.DateTimeFormat;
 					getDateFormatPart("dayPeriod", (new DateTimeFormat(this._normalizedRequestedLocaleIDName, cast {
 						hour: "numeric",
 						hour12: true,
-						dayPeriod: "short",
+						// for AM/PM, specify hour12 only. don't set a value for
+						// dayPeriod. otherwise, you'll get stuff like
+						// "at night" or "in the afternoon"
 						timeZone: timeZone
 					})).formatToParts(date));
 				case Hour11(length): // K

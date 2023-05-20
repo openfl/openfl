@@ -42,7 +42,8 @@ package openfl.net;
 	`objectEncoding` property description explains the behavior more
 	thoroughly.
 **/
-@:enum abstract ObjectEncoding(Int) from Int to Int from UInt to UInt
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract ObjectEncoding(Int) from Int to Int from UInt to UInt
+
 {
 	/**
 		Allows greater control over the serialization of dynamic properties of

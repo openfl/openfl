@@ -9,12 +9,14 @@ import openfl.errors.IllegalOperationError;
 import openfl.errors.ArgumentError;
 import openfl.errors.Error;
 import openfl.events.Event;
+import openfl.events.IOErrorEvent;
 import openfl.net.FileFilter;
 import openfl.events.FileListEvent;
 import openfl.net.FileReference;
 import sys.FileSystem;
+import sys.io.Process;
 
-typedef HaxeFile = sys.io.File;
+@:noCompletion private typedef HaxeFile = sys.io.File;
 
 /**
 	A File object represents a path to a file or directory. This can be an existing file
@@ -493,8 +495,8 @@ class File extends FileReference
 		}
 		__fileDialog = new FileDialog();
 		__fileDialog.onSelect.add(__dispatchSelect, true);
-		__fileDialog.browse(OPEN_DIRECTORY, null, __path, title);
 		__fileDialog.onCancel.add(__dispatchCancel);
+		__fileDialog.browse(OPEN_DIRECTORY, null, __path, title);
 	}
 
 	/**
@@ -554,8 +556,8 @@ class File extends FileReference
 
 		__fileDialog = new FileDialog();
 		__fileDialog.onSelect.add(__dispatchSelect, true);
-		__fileDialog.browse(OPEN, __getFilterTypes(typeFilter), __path, title);
 		__fileDialog.onCancel.add(__dispatchCancel);
+		__fileDialog.browse(OPEN, __getFilterTypes(typeFilter), __path, title);
 	}
 
 	/**
@@ -614,8 +616,8 @@ class File extends FileReference
 
 		__fileDialog = new FileDialog();
 		__fileDialog.onSelectMultiple.add(__dispatchSelectMultiple, true);
-		__fileDialog.browse(OPEN_MULTIPLE, __getFilterTypes(typeFilter), __path, title);
 		__fileDialog.onCancel.add(__dispatchCancel);
+		__fileDialog.browse(OPEN_MULTIPLE, __getFilterTypes(typeFilter), __path, title);
 	}
 
 	/**
@@ -676,7 +678,7 @@ class File extends FileReference
 		}
 
 		__fileDialog = new FileDialog();
-		__fileDialog.onSave.add(__dispatchSelect, true);
+		__fileDialog.onSelect.add(__dispatchSelect, true);
 		__fileDialog.browse(SAVE, null, __path, title);
 	}
 
@@ -843,12 +845,25 @@ class File extends FileReference
 
 		try
 		{
-			var path:String = Path.directory(newPath);
-			if (!FileSystem.exists(path))
+			if (isDirectory)
 			{
-				FileSystem.createDirectory(path);
+				FileSystem.createDirectory(newPath);
+				var files:Array<File> = getDirectoryListing();
+				for (file in files)
+				{
+					var newFile = new File(Path.join([newPath, file.name]));
+					file.copyTo(newFile);
+				}
 			}
-			HaxeFile.copy(__path, newPath);
+			else
+			{
+				var newDirectory:String = Path.directory(newPath);
+				if (!FileSystem.exists(newDirectory))
+				{
+					FileSystem.createDirectory(newDirectory);
+				}
+				HaxeFile.copy(__path, newPath);
+			}
 		}
 		catch (e:Dynamic)
 		{
@@ -903,7 +918,18 @@ class File extends FileReference
 
 		__fileWorker.doWork.add(function(m:Dynamic)
 		{
-			copyTo(newLocation, overwrite);
+			try
+			{
+				copyTo(newLocation, overwrite);
+			}
+			catch (e:Dynamic)
+			{
+				__fileWorker.cancel();
+				__fileWorker = null;
+
+				__dispatchIoError(e);
+				return;
+			}
 
 			dispatchEvent(new Event(Event.COMPLETE));
 
@@ -1003,8 +1029,18 @@ class File extends FileReference
 
 		__fileWorker.doWork.add(function(m:Dynamic)
 		{
-			deleteDirectory(deleteDirectoryContents);
-			FileSystem.deleteFile(__path);
+			try
+			{
+				deleteDirectory(deleteDirectoryContents);
+			}
+			catch (e:Dynamic)
+			{
+				__fileWorker.cancel();
+				__fileWorker = null;
+
+				__dispatchIoError(e);
+				return;
+			}
 
 			dispatchEvent(new Event(Event.COMPLETE));
 
@@ -1052,7 +1088,18 @@ class File extends FileReference
 
 		__fileWorker.doWork.add(function(m:Dynamic)
 		{
-			deleteFile();
+			try
+			{
+				deleteFile();
+			}
+			catch (e:Dynamic)
+			{
+				__fileWorker.cancel();
+				__fileWorker = null;
+
+				__dispatchIoError(e);
+				return;
+			}
 
 			dispatchEvent(new Event(Event.COMPLETE));
 
@@ -1324,8 +1371,15 @@ class File extends FileReference
 		{
 			throw new Error("Overwrite is set to false");
 		}
-		HaxeFile.copy(nativePath, newLocation.__path);
-		FileSystem.deleteFile(__path);
+		copyTo(newLocation, overwrite);
+		if (isDirectory)
+		{
+			deleteDirectory(true);
+		}
+		else
+		{
+			deleteFile();
+		}
 	}
 
 	/**
@@ -1379,8 +1433,18 @@ class File extends FileReference
 
 		__fileWorker.doWork.add(function(m:Dynamic)
 		{
-			copyTo(newLocation, overwrite);
-			FileSystem.deleteFile(__path);
+			try
+			{
+				moveTo(newLocation, overwrite);
+			}
+			catch (e:Dynamic)
+			{
+				__fileWorker.cancel();
+				__fileWorker = null;
+
+				__dispatchIoError(e);
+				return;
+			}
 
 			dispatchEvent(new Event(Event.COMPLETE));
 
@@ -1586,6 +1650,27 @@ class File extends FileReference
 		this.dispatchEvent(new FileListEvent(FileListEvent.SELECT_MULTIPLE, files));
 	}
 
+	@:noCompletion private function __dispatchIoError(e:Dynamic):Void
+	{
+		if (hasEventListener(IOErrorEvent.IO_ERROR))
+		{
+			if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (e, Error))
+			{
+				var error = (e : Error);
+				dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR, false, false, error.message, error.errorID));
+			}
+			else
+			{
+				dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+			}
+		}
+		else
+		{
+			// if there's no listener, throw it again
+			throw e;
+		}
+	}
+
 	@:noCompletion private function __formatPath(path:String):String
 	{
 		var dirs:Array<String> = [];
@@ -1622,20 +1707,29 @@ class File extends FileReference
 
 	@:noCompletion private function __getFilterTypes(typeFilter:Array<FileFilter>):String
 	{
-		var filter:String = null;
+		var filterString:String = null;
+		var filters = [];
 
 		if (typeFilter != null)
 		{
-			var filters = [];
-
-			for (type in typeFilter)
+			for (filter in typeFilter)
 			{
-				filters.push(StringTools.replace(StringTools.replace(type.extension, "*.", ""), ";", ","));
+				var types:Array<String> = filter.extension.split(";");
+
+				for (type in types)
+				{
+					filters.push(StringTools.replace(type, "*.", ""));
+				}
 			}
 
-			filter = filters.join(";");
+			filterString = filters.join(",");
 		}
-		return filter;
+
+		#if (lime >= "8.0.1")
+		return filterString;
+		#else
+		return filters[0];
+		#end
 	}
 
 	@:noCompletion private static function __getTempPath(dir:Bool):String
@@ -1656,19 +1750,65 @@ class File extends FileReference
 			}
 		}
 
-		path = Path.join([path, "ofl" + Math.round(0xFFFFFF * Math.random())]);
+		var tempPath = "";
 
-		while (FileSystem.exists(path))
+		while (FileSystem.exists(tempPath = Path.join([path, "ofl" + Math.round(0xFFFFFF * Math.random())])))
 		{
-			path = Path.join([path, "ofl" + Math.round(0xFFFFFF * Math.random())]);
+			// repeat
 		}
 
 		if (dir)
 		{
-			return Path.addTrailingSlash(path);
+			return Path.addTrailingSlash(tempPath);
 		}
 
-		return path + ".tmp";
+		return tempPath + ".tmp";
+	}
+
+	#if windows
+	@:noCompletion private function __replaceWindowsEnvVars(path:String):String
+	{
+		// Define the regular expression to match the path component to be replaced
+		var pattern:EReg = ~/%(.+?)%/;
+
+		// Find the first match of the regular expression in the path
+		var match:Bool = pattern.match(path);
+
+		if (match)
+		{
+			// Extract the matched path component
+			var matchedPath:String = pattern.matched(0);
+
+			// Get the environment variable name by removing the first and last characters ("%")
+			var envVar:String = matchedPath.substring(1, matchedPath.length - 1);
+
+			// Get the value of the environment variable
+			var envVarValue:Null<String> = Sys.getEnv(envVar);
+
+			if (envVarValue == null)
+			{
+				return path;
+			}
+			// Replace the matched path component with the environment variable value
+			return StringTools.replace(path, matchedPath, envVarValue);
+		}
+		return path;
+	}
+	#end
+
+	@:noCompletion private function __winGetHiddenAttr():Bool
+	{
+		// TODO don't use the command line for this.... instead we should add support in Lime to use
+		// the win api.
+		var process:Process = new Process('attrib "$nativePath"');
+		var r:String = process.stdout.readLine();
+
+		process.close();
+
+		var s:String = r.split(nativePath)[0];
+		var flag:Bool = s.indexOf(" H ") > -1;
+
+		return flag;
 	}
 
 	@:noCompletion private function __updateFileStats(?path:String):Void
@@ -1773,6 +1913,12 @@ class File extends FileReference
 
 	@:noCompletion private function set_nativePath(path:String):String
 	{
+		#if windows
+		if (path.indexOf("%") > -1)
+		{
+			path = __replaceWindowsEnvVars(path);
+		}
+		#end
 		if (path.charAt(path.length - 1) == ":" /*|| FileSystem.isDirectory(path)*/)
 		{
 			path = Path.addTrailingSlash(path);
@@ -1794,13 +1940,17 @@ class File extends FileReference
 
 	@:noCompletion private function get_isHidden():Bool
 	{
-		return false;
-		// TODO: operating system dependent?
+		#if windows
+		return __winGetHiddenAttr();
+		#else
+		return name.charAt(0) == ".";
+		#end
 	}
 
 	@:noCompletion private function get_isDirectory():Bool
 	{
-		return FileSystem.isDirectory(__path);
+		// isDirectory throws an exception if the file doesn't exist
+		return FileSystem.exists(__path) && FileSystem.isDirectory(__path);
 	}
 
 	@:noCompletion private function get_parent():File

@@ -9,7 +9,8 @@ package openfl.ui;
 	values set the type of touch events the Flash runtime dispatches when the
 	user interacts with a touch-enabled device.
 **/
-@:enum abstract MultitouchInputMode(Null<Int>)
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract MultitouchInputMode(Null<Int>)
+
 {
 	/**
 		Specifies that TransformGestureEvent, PressAndTapGestureEvent, and
@@ -55,7 +56,8 @@ package openfl.ui;
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-@:enum abstract MultitouchInputMode(String) from String to String
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract MultitouchInputMode(String) from String to String
+
 {
 	public var GESTURE = "gesture";
 	public var NONE = "none";

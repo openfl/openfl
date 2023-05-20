@@ -6,6 +6,9 @@ import openfl.utils.ByteArray;
 import utest.Assert;
 import utest.Async;
 import utest.Test;
+#if air
+import flash.filesystem.File;
+#end
 
 // TODO: Requires a running Application to work
 class ClipboardRTFTest extends Test
@@ -14,7 +17,9 @@ class ClipboardRTFTest extends Test
 	// only within a "paste" event from the user
 	#if (flash && !air)
 	@Ignored
-	#else
+	#end
+	#if (flash && !haxe4)
+	// ByteArray type coercion fails with Haxe 3.4.7
 	@Ignored
 	#end
 	public function test_getData(async:Async)
@@ -38,6 +43,10 @@ class ClipboardRTFTest extends Test
 			// TODO
 			// Assert.areEqual (richTextFormatData, clipboard.getData (ClipboardFormats.RICH_TEXT_FORMAT));
 			async.done();
+		}).onError(function(result)
+		{
+				Assert.fail(result);
+				async.done();
 		});
 	}
 }

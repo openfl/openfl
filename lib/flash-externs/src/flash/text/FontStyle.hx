@@ -1,7 +1,8 @@
 package flash.text;
 
 #if flash
-@:enum abstract FontStyle(String) from String to String
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract FontStyle(String) from String to String
+
 {
 	public var BOLD = "bold";
 	public var BOLD_ITALIC = "boldItalic";

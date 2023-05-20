@@ -104,8 +104,8 @@ import lime.math.RGBA;
 		```
 
 		**Faster version**. Available only with SSE/AltiVec
-		accelerator-enabled processors, such as Intel<sup>�</sup>
-		Pentium<sup>�</sup> 3 and later and Apple<sup>�</sup> G4 and later.
+		accelerator-enabled processors, such as Intel<sup>®</sup>
+		Pentium<sup>®</sup> 3 and later and Apple<sup>®</sup> G4 and later.
 		The accelerator is used when the multiplier terms are in the range
 		-15.99 to 15.99 and the adder terms a[4], a[9], a[14], and a[19] are
 		in the range -8000 to 8000.

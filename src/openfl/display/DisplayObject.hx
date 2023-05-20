@@ -1935,9 +1935,17 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	{
 		if (value != null && value.length > 0)
 		{
-			// TODO: Copy incoming array values
+			var clonedFilters:Array<BitmapFilter> = [];
 
-			__filters = value;
+			for (filter in value)
+			{
+				var clonedFilter:BitmapFilter = filter.clone();
+
+				clonedFilter.__renderDirty = true;
+				clonedFilters.push(clonedFilter);
+			}
+
+			__filters = clonedFilters;
 			// __updateFilters = true;
 			__setRenderDirty();
 		}

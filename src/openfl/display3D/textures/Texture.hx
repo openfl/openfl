@@ -99,7 +99,8 @@ import openfl.utils.ByteArray;
 				var event:Event = null;
 
 				#if openfl_pool_events
-				event = Event.__pool.get(Event.TEXTURE_READY);
+				event = Event.__pool.get();
+				event.type = Event.TEXTURE_READY;
 				#else
 				event = new Event(Event.TEXTURE_READY);
 				#end
