@@ -9,6 +9,7 @@ import openfl.desktop.InvokeEventReason;
 import openfl.desktop.NativeApplication;
 import openfl.desktop.NativeProcess;
 import openfl.desktop.NativeProcessStartupInfo;
+import openfl.desktop.NotificationType;
 #if !openfljs
 import openfl.display.Application;
 import openfl.display.AVM1Movie;
