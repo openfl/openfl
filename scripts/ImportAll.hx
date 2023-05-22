@@ -13,6 +13,7 @@ import openfl.desktop.NativeProcessStartupInfo;
 import openfl.desktop.NotificationType;
 import openfl.desktop.SystemIdleMode;
 import openfl.desktop.SystemTrayIcon;
+import openfl.desktop.Updater;
 #if !openfljs
 import openfl.display.Application;
 import openfl.display.AVM1Movie;
