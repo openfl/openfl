@@ -2,6 +2,13 @@ package openfl.events;
 
 #if (!flash && sys)
 /**
+	The SystemTrayIcon object dispatches events of type ScreenMouseEvent in
+	response to mouse interaction.
+
+	The ScreenMouseEvent object extends the MouseEvent class to provide two
+	additional properties, `screenX` and `screenY`, that report the mouse
+	coordinates in relation to the primary desktop screen rather than an
+	application window or stage.
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
