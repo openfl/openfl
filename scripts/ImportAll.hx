@@ -231,6 +231,8 @@ import openfl.printing.PrintJobOptions;
 import openfl.printing.PrintJobOrientation;
 import openfl.profiler.Telemetry;
 import openfl.sensors.Accelerometer;
+import openfl.sensors.DeviceRotation;
+import openfl.sensors.Geolocation;
 import openfl.system.ApplicationDomain;
 import openfl.system.Capabilities;
 import openfl.system.LoaderContext;
