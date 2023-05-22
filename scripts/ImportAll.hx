@@ -3,6 +3,7 @@ package;
 import openfl.desktop.Clipboard;
 import openfl.desktop.ClipboardFormats;
 import openfl.desktop.ClipboardTransferMode;
+import openfl.desktop.DockIcon;
 import openfl.desktop.Icon;
 import openfl.desktop.InteractiveIcon;
 import openfl.desktop.InvokeEventReason;
@@ -10,6 +11,7 @@ import openfl.desktop.NativeApplication;
 import openfl.desktop.NativeProcess;
 import openfl.desktop.NativeProcessStartupInfo;
 import openfl.desktop.NotificationType;
+import openfl.desktop.SystemTrayIcon;
 #if !openfljs
 import openfl.display.Application;
 import openfl.display.AVM1Movie;
