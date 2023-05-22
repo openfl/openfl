@@ -11,6 +11,7 @@ import openfl.desktop.NativeApplication;
 import openfl.desktop.NativeProcess;
 import openfl.desktop.NativeProcessStartupInfo;
 import openfl.desktop.NotificationType;
+import openfl.desktop.SystemIdleMode;
 import openfl.desktop.SystemTrayIcon;
 #if !openfljs
 import openfl.display.Application;
