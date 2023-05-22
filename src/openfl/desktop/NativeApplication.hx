@@ -255,11 +255,13 @@ class NativeApplication extends EventDispatcher
 		You can test for support at run time using the
 		`NativeApplication.supportsStartAtLogin` property.
 
-		OpenFL support: Not currently supported, except when targeting AIR.
+		_OpenFL target support:_ Not currently supported, except when targeting AIR.
 
 		_Adobe AIR profile support:_ This feature is supported on all desktop
 		operating systems, but is not supported on mobile devices or AIR for
-		TV devices.
+		TV devices. See
+		[AIR Profile Support](http://help.adobe.com/en_US/air/build/WS144092a96ffef7cc16ddeea2126bb46b82f-8000.html)
+		for more information regarding API support across multiple profiles.
 
 		The `startAtLogin` property reflects the status of the
 		operating-system-defined mechanism for designating that an application
@@ -309,11 +311,13 @@ class NativeApplication extends EventDispatcher
 		You can test for support at run time using the
 		`NativeApplication.supportsDefaultApplication` property.
 
-		OpenFL support: Not currently supported, except when targeting AIR.
+		_OpenFL target support:_ Not currently supported, except when targeting AIR.
 
 		_Adobe AIR profile support:_ This feature is supported on all desktop
 		operating systems, but is not supported on mobile devices or AIR for TV
-		devices.
+		devices. See
+		[AIR Profile Support](http://help.adobe.com/en_US/air/build/WS144092a96ffef7cc16ddeea2126bb46b82f-8000.html)
+		for more information regarding API support across multiple profiles.
 	**/
 	public function isSetAsDefaultApplication(extension:String):Bool
 	{

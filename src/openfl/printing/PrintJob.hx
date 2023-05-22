@@ -22,16 +22,16 @@ import js.Browser;
 	print an unscaled document with proportions that map to the proportions of
 	the content. This capability is especially useful for rendering and
 	printing dynamic content, such as database content and dynamic text.
+
 	**Mobile Browser Support:** This class is not supported in mobile
 	browsers.
 
-	_AIR profile support:_ This feature is supported on all desktop operating
+	_Adobe AIR profile support:_ This feature is supported on all desktop operating
 	systems, but it is not supported on mobile devices or AIR for TV devices.
 	You can test for support at run time using the `PrintJob.isSupported`
-	property. See <a
-	href="http://help.adobe.com/en_US/air/build/WS144092a96ffef7cc16ddeea2126bb46b82f-8000.html">
-	AIR Profile Support</a> for more information regarding API support across
-	multiple profiles.
+	property. See
+	[AIR Profile Support](https://help.adobe.com/en_US/air/build/WS144092a96ffef7cc16ddeea2126bb46b82f-8000.html)
+	for more information regarding API support across multiple profiles.
 
 	Use the `PrintJob()` constructor to create a print job.
 

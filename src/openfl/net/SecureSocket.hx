@@ -27,8 +27,17 @@ import sys.ssl.Socket as SysSecureSocket;
 	The SecureSocket class enables code to make socket connections using the
 	Secure Sockets Layer (SSL) and Transport Layer Security (TLS) protocols.
 
-	This feature is not supported on all platforms. You can test for support at
-	run time using the `SecureSocket.isSupported` property.
+	You can test for support at run time using the `SecureSocket.isSupported`
+	property.
+
+	_OpenFL target support:_ This feature is not supported on all platforms.
+
+	_Adobe AIR profile support:_ This feature is supported on all desktop
+	operating systems, but is not supported on all AIR for TV devices. On mobile
+	devices, it is supported on Android and also supported on iOS starting from
+	AIR 20. See
+	[AIR Profile Support](https://help.adobe.com/en_US/air/build/WS144092a96ffef7cc16ddeea2126bb46b82f-8000.html)
+	for more information regarding API support across multiple profiles.
 
 	The SSL/TLS protocols provide a mechanism to handle both aspects of a secure
 	socket connection:

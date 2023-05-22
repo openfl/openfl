@@ -337,10 +337,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		`true`. The application uses this matrix as a transformation matrix that is applied when rendering the
 		bitmap version of the display object.
 
-		_AIR profile support:_ This feature is supported on mobile devices, but it is not supported on desktop
+		_Adobe AIR profile support:_ This feature is supported on mobile devices, but it is not supported on desktop
 		operating systems. It also has limited support on AIR for TV devices. Specifically, on AIR for TV devices,
-		supported transformations include scaling and translation, but not rotation and skewing. See AIR Profile
-		Support for more information regarding API support across multiple profiles.
+		supported transformations include scaling and translation, but not rotation and skewing. See
+		[AIR Profile Support](http://help.adobe.com/en_US/air/build/WS144092a96ffef7cc16ddeea2126bb46b82f-8000.html)
+		for more information regarding API support across multiple profiles.
 
 		With `cacheAsBitmapMatrix` set, the application retains a cached bitmap image across various 2D
 		transformations, including translation, rotation, and scaling. If the application uses hardware acceleration,

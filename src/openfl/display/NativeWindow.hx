@@ -20,10 +20,18 @@ import openfl.geom.Point;
 	The NativeWindow class provides an interface for creating and controlling
 	native desktop windows.
 
+	You can test for support at run time on desktop devices using the
+	`NativeWindow.isSupported` property.
+
+	_OpenFL target support:_ This feature is supported on all desktop operating
+	systems, but is not support on mobile operating systems, including iOS and
+	Android.
+
 	_Adobe AIR profile support:_ This feature is supported on all desktop
 	operating systems, but is not supported on mobile devices or AIR for TV
-	devices. You can test for support at run time on desktop devices using the
-	`NativeWindow.isSupported` property.
+	devices. See
+	[AIR Profile Support](http://help.adobe.com/en_US/air/build/WS144092a96ffef7cc16ddeea2126bb46b82f-8000.html)
+	for more information regarding API support across multiple profiles.
 
 	A reference to the NativeWindow instance is returned by the window
 	constructor. A reference to a NativeWindow instance can also be accessed
