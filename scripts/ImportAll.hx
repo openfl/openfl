@@ -153,6 +153,7 @@ import openfl.events.PermissionEvent;
 import openfl.events.ProgressEvent;
 import openfl.events.RenderEvent;
 import openfl.events.SampleDataEvent;
+import openfl.events.ScreenMouseEvent;
 import openfl.events.SecurityErrorEvent;
 import openfl.events.ServerSocketConnectEvent;
 import openfl.events.TextEvent;
