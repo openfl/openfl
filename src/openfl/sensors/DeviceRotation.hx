@@ -1,8 +1,8 @@
 package openfl.sensors;
 
+#if (!flash && sys)
 import openfl.errors.IllegalOperationError;
 
-#if (!flash && sys)
 /**
 	The DeviceRotation class dispatches events based on activity detected by the
 	device's accelerometer, gyroscope sensors. This data represents the device's
@@ -47,7 +47,7 @@ class DeviceRotation
 		(`true`) or allowed access (`false`). When this value changes, a
 		`status` event is dispatched.
 	**/
-	public var muted(default, never):Bool;
+	public var muted(default, never):Bool = false;
 
 	/**
 		Creates a new DeviceRotation instance.
