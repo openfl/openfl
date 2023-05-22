@@ -254,6 +254,8 @@ import openfl.text.GridFitType;
 import openfl.text.ReturnKeyLabel;
 import openfl.text.SoftKeyboardType;
 import openfl.text.StageTextClearButtonMode;
+import openfl.text.StageText;
+import openfl.text.StageTextInitOptions;
 import openfl.text.StaticText;
 import openfl.text.StyleSheet;
 import openfl.text.TextField;
