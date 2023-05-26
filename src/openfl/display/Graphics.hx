@@ -1958,6 +1958,10 @@ import js.html.CanvasRenderingContext2D;
 		var tx = x * parentTransform.a + y * parentTransform.c + parentTransform.tx;
 		var ty = x * parentTransform.b + y * parentTransform.d + parentTransform.ty;
 
+		#if openfl_disable_graphics_pixel_snapping
+		__worldTransform.tx = tx;
+		__worldTransform.ty = ty;
+		#else
 		// round the world position for crisp graphics rendering
 		__worldTransform.tx = Math.fround(tx);
 		__worldTransform.ty = Math.fround(ty);
@@ -1965,6 +1969,7 @@ import js.html.CanvasRenderingContext2D;
 		// Offset the rendering with the subpixel offset removed by Math.round above
 		__renderTransform.tx = __worldTransform.__transformInverseX(tx, ty);
 		__renderTransform.ty = __worldTransform.__transformInverseY(tx, ty);
+		#end
 
 		// Calculate the size to contain the graphics and an extra subpixel
 		// We used to add tx and ty from __renderTransform instead of 1.0
