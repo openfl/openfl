@@ -1963,8 +1963,21 @@ import js.html.CanvasRenderingContext2D;
 		__worldTransform.ty = ty;
 		#else
 		// round the world position for crisp graphics rendering
-		__worldTransform.tx = Math.fround(tx);
-		__worldTransform.ty = Math.fround(ty);
+		if (pixelRatio > 1.0)
+		{
+			// on HiDPI screens, we can round to the nearest device pixel
+			// instead of the nearest stage pixel because device pixels have
+			// more precision.
+			// rendering will still be crisp, and animations will be smoother.
+			var nativePixelSize = 1 / pixelRatio;
+			__worldTransform.tx = Math.fround(tx / nativePixelSize) * nativePixelSize;
+			__worldTransform.ty = Math.fround(ty / nativePixelSize) * nativePixelSize;
+		}
+		else
+		{
+			__worldTransform.tx = Math.fround(tx);
+			__worldTransform.ty = Math.fround(ty);
+		}
 
 		// Offset the rendering with the subpixel offset removed by Math.round above
 		__renderTransform.tx = __worldTransform.__transformInverseX(tx, ty);
