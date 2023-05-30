@@ -1,3 +1,37 @@
+9.2.2 (05/31/2023)
+------------------
+
+* Updated flash target externs for Haxe 4.3 compatibility
+* Resolve new `@:enum abstract` warnings for Haxe 4.3 by replacing with `enum abstract`, if current Haxe version supports it
+* Fixed `TextField` keyboard shortcut support to account for AltGr key
+* Fixed double timer in `TextField` that would cause caret to keep blinking on focus out
+* Fixed exception in `TextField` rendered by Cairo when the text contains ligatures
+* Fixed `null` exception in `FileReference.browse()` when no files are selected on html5 target
+* Fixed incorrect `accept` attribute on html5 input element if type filter is used once, but not second time
+* Fixed `Context3D` scissor rectangle (again), with better fix for both classic display list and Stage 3D
+* Fixed text for AM and PM returned by `DateTimeFormatter` on html5 target
+* Fixed default locale on html5 for `DateTimeFormatter` and `LocaleID`
+* Fixed drawing display object with `visible == false` to `BitmapData`, which should have made it temporarily visible
+* Fixed default fallback `QName.uri` value to match flash target
+* Fixed bounds calculation of `Graphics.cubicCurveTo()`
+* Fixed "Select error 22" exception when creating many `Socket` objects at once
+* Fixed uncaught exception when creating a `Socket`
+* Fixed invalid `null` value passed to `Vector` constructor on flash target
+* Fixed possible incorrect detection of current stage on `TextField` mouse up
+* Fixed `Transform.matrix3D` setter vertical scale value
+* Fixed default `blendMode` used by `ShaderFilter`
+* Fixed setting `topExtension`, `rightExtension`, `bottomExtension`, and `leftExtension` in `ShaderFilter`
+* Fixed compilation of `RenderEvent` for flash target
+* Fixed issue where setting `width` and `height` of `Video` was sometimes ignored
+* Fixed missing `System.totalMemory` and `System.gc()` on HashLink
+* Fixed `Graphics.lineGradientStyle()` to allow `null` values for `alphas` and `ratios` parameters, similar to `beginGradientFill()`
+* Fixed default fallback value for `ratios` parameter in `Graphics.lineGradientStyle()` and `beginGradientFill()`
+* Fixed `Graphics` (and text) jitter on HiDPI screens when using hardware acceleration by snapping to nearest device pixel instead of nearest stage pixel
+* Added missing parameters to `Context3D.drawToBitmapData()` in flash target externs
+* Added new `openfl_disable_graphics_pixel_snapping` define to optionally disable pixel snapping on `Graphics` tx/ty transformation
+* Translate environment variables that appear in `File` path on Windows
+* When using flash target with Haxe 4.3, Lime 8.0.2 is required
+
 9.2.1 (02/21/2023)
 ------------------
 
