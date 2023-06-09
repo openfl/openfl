@@ -166,6 +166,14 @@ import js.html.CanvasRenderingContext2D;
 	**/
 	public function beginBitmapFill(bitmap:BitmapData, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false):Void
 	{
+		if (!bitmap.readable)
+		{
+			// begin bitmap fill doesn't work with a hardware-only bitmap
+			// to avoid exceptions, delegate to beginFill()
+			beginFill(0, 1.0);
+			return;
+		}
+
 		__commands.beginBitmapFill(bitmap, matrix != null ? matrix.clone() : null, repeat, smooth);
 
 		__visible = true;
