@@ -840,7 +840,7 @@ class FileReference extends EventDispatcher
 
 		__urlLoader = new URLLoader();
 		__urlLoader.dataFormat = BINARY;
-		__urlLoader.addEventListener(Event.COMPLETE, urlLoader_onComplete);
+		__urlLoader.addEventListener(Event.COMPLETE, urlLoader_download_onComplete);
 		__urlLoader.addEventListener(IOErrorEvent.IO_ERROR, urlLoader_onIOError);
 		__urlLoader.addEventListener(ProgressEvent.PROGRESS, urlLoader_onProgress);
 		__urlLoader.load(request);
@@ -1097,7 +1097,7 @@ class FileReference extends EventDispatcher
 		#end
 	}
 
-	#if !openfl_strict
+	#if (sys || !openfl_strict)
 	/**
 		Starts the upload of the file to a remote server. Although Flash
 		Player has no restriction on the size of files you can upload or
@@ -1319,7 +1319,59 @@ class FileReference extends EventDispatcher
 	**/
 	public function upload(request:URLRequest, uploadDataFieldName:String = "Filedata", testUpload:Bool = false):Void
 	{
+		#if sys
+		if (__path == null || !FileSystem.exists(__path))
+		{
+			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+			return;
+		}
+
+		var fileBytes:ByteArray = null;
+		try
+		{
+			fileBytes = sys.io.File.getBytes(__path);
+		}
+		catch (e:Dynamic)
+		{
+			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+			return;
+		}
+
+		var boundary = "----------KM7GI3GI3ae0GI3ae0cH2KM7Ef1cH2";
+		var requestData = new ByteArray();
+		requestData.writeUTFBytes("--" + boundary + "\r\n");
+		requestData.writeUTFBytes("Content-Disposition: form-data; name=\"Filename\"\r\n\r\n");
+		requestData.writeUTFBytes(name);
+		requestData.writeUTFBytes("\r\n");
+		requestData.writeUTFBytes("--" + boundary + "\r\n");
+		requestData.writeUTFBytes("Content-Disposition: form-data; name=\"" + uploadDataFieldName + "\"; ");
+		requestData.writeUTFBytes("filename=\"" + name + "\"\r\n");
+		requestData.writeUTFBytes("Content-Type: application/octet-stream\r\n\r\n");
+		requestData.writeBytes(fileBytes);
+		requestData.writeUTFBytes("\r\n");
+		requestData.writeUTFBytes("--" + boundary + "\r\n");
+		requestData.writeUTFBytes("Content-Disposition: form-data; name=\"Upload\"\r\n\r\n");
+		requestData.writeUTFBytes("Submit Query");
+		requestData.writeUTFBytes("\r\n");
+		requestData.writeUTFBytes("--" + boundary + "--\r\n");
+		request.data = requestData;
+
+		request.method = URLRequestMethod.POST;
+		request.contentType = "multipart/form-data; boundary=" + boundary;
+		request.requestHeaders = [
+			new URLRequestHeader("Accept", "text/*"),
+			new URLRequestHeader("Cache-Control", "no-cache")
+		];
+
+		var urlLoader = new URLLoader();
+		urlLoader.dataFormat = BINARY;
+		urlLoader.addEventListener(Event.COMPLETE, urlLoader_upload_onComplete);
+		urlLoader.addEventListener(ProgressEvent.PROGRESS, urlLoader_onProgress);
+		urlLoader.addEventListener(IOErrorEvent.IO_ERROR, urlLoader_onIOError);
+		urlLoader.load(request);
+		#else
 		openfl.utils._internal.Lib.notImplemented();
+		#end
 	}
 	#end
 
@@ -1384,7 +1436,7 @@ class FileReference extends EventDispatcher
 		dispatchEvent(new Event(Event.SELECT));
 	}
 
-	@:noCompletion private function urlLoader_onComplete(event:Event):Void
+	@:noCompletion private function urlLoader_download_onComplete(event:Event):Void
 	{
 		#if desktop
 		if ((__urlLoader.data is ByteArrayData))
@@ -1406,6 +1458,11 @@ class FileReference extends EventDispatcher
 		}
 		#end
 
+		dispatchEvent(event);
+	}
+
+	@:noCompletion private function urlLoader_upload_onComplete(event:Event):Void
+	{
 		dispatchEvent(event);
 	}
 
