@@ -1336,9 +1336,35 @@ class FileReference extends EventDispatcher
 			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
 			return;
 		}
-
+		var hasUrlVars = Type.typeof(request.data) == Type.ValueType.TObject;
+		if (hasUrlVars && request.method == URLRequestMethod.GET)
+		{
+			var getVariables = "";
+			var fields = Reflect.fields(request.data);
+			var startsWith = (request.url.lastIndexOf("?") == -1) ? "?" : "&";
+			for (field in fields)
+			{
+				var value = Reflect.field(request.data, field);
+				getVariables += (getVariables.length == 0) ? startsWith : "&";
+				getVariables += field + "=" + value;
+			}
+			request.url += getVariables;
+		}
 		var boundary = "----------KM7GI3GI3ae0GI3ae0cH2KM7Ef1cH2";
+
 		var requestData = new ByteArray();
+		if (hasUrlVars && request.method == URLRequestMethod.POST)
+		{
+			var fields = Reflect.fields(request.data);
+			for (field in fields)
+			{
+				var value = Reflect.field(request.data, field);
+				requestData.writeUTFBytes("--" + boundary + "\r\n");
+				requestData.writeUTFBytes("Content-Disposition: form-data; name=\"" + field + "\"\r\n\r\n");
+				requestData.writeUTFBytes(Std.string(value));
+				requestData.writeUTFBytes("\r\n");
+			}
+		}
 		requestData.writeUTFBytes("--" + boundary + "\r\n");
 		requestData.writeUTFBytes("Content-Disposition: form-data; name=\"Filename\"\r\n\r\n");
 		requestData.writeUTFBytes(name);
