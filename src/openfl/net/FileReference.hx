@@ -839,6 +839,7 @@ class FileReference extends EventDispatcher
 		__path = null;
 
 		__urlLoader = new URLLoader();
+		__urlLoader.dataFormat = BINARY;
 		__urlLoader.addEventListener(Event.COMPLETE, urlLoader_onComplete);
 		__urlLoader.addEventListener(IOErrorEvent.IO_ERROR, urlLoader_onIOError);
 		__urlLoader.addEventListener(ProgressEvent.PROGRESS, urlLoader_onProgress);

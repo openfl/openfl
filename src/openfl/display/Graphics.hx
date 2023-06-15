@@ -166,6 +166,14 @@ import js.html.CanvasRenderingContext2D;
 	**/
 	public function beginBitmapFill(bitmap:BitmapData, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false):Void
 	{
+		if (!bitmap.readable)
+		{
+			// begin bitmap fill doesn't work with a hardware-only bitmap
+			// to avoid exceptions, delegate to beginFill()
+			beginFill(0, 1.0);
+			return;
+		}
+
 		__commands.beginBitmapFill(bitmap, matrix != null ? matrix.clone() : null, repeat, smooth);
 
 		__visible = true;
@@ -1958,13 +1966,31 @@ import js.html.CanvasRenderingContext2D;
 		var tx = x * parentTransform.a + y * parentTransform.c + parentTransform.tx;
 		var ty = x * parentTransform.b + y * parentTransform.d + parentTransform.ty;
 
+		#if openfl_disable_graphics_pixel_snapping
+		__worldTransform.tx = tx;
+		__worldTransform.ty = ty;
+		#else
 		// round the world position for crisp graphics rendering
-		__worldTransform.tx = Math.fround(tx);
-		__worldTransform.ty = Math.fround(ty);
+		if (pixelRatio > 1.0)
+		{
+			// on HiDPI screens, we can round to the nearest device pixel
+			// instead of the nearest stage pixel because device pixels have
+			// more precision.
+			// rendering will still be crisp, and animations will be smoother.
+			var nativePixelSize = 1 / pixelRatio;
+			__worldTransform.tx = Math.fround(tx / nativePixelSize) * nativePixelSize;
+			__worldTransform.ty = Math.fround(ty / nativePixelSize) * nativePixelSize;
+		}
+		else
+		{
+			__worldTransform.tx = Math.fround(tx);
+			__worldTransform.ty = Math.fround(ty);
+		}
 
 		// Offset the rendering with the subpixel offset removed by Math.round above
 		__renderTransform.tx = __worldTransform.__transformInverseX(tx, ty);
 		__renderTransform.ty = __worldTransform.__transformInverseY(tx, ty);
+		#end
 
 		// Calculate the size to contain the graphics and an extra subpixel
 		// We used to add tx and ty from __renderTransform instead of 1.0
