@@ -297,6 +297,7 @@ class URLLoader extends EventDispatcher
 				.onError(httpRequest_onError)
 				.onComplete(function(data:ByteArray):Void
 				{
+					__dispatchResponseStatus();
 					__dispatchStatus();
 					this.data = data;
 
@@ -314,6 +315,7 @@ class URLLoader extends EventDispatcher
 				.onError(httpRequest_onError)
 				.onComplete(function(data:String):Void
 				{
+					__dispatchResponseStatus();
 					__dispatchStatus();
 					this.data = data;
 
@@ -324,13 +326,12 @@ class URLLoader extends EventDispatcher
 		#end
 	}
 
-	@:noCompletion private function __dispatchStatus():Void
+	@:noCompletion private function __dispatchResponseStatus():Void
 	{
-		var event = new HTTPStatusEvent(HTTPStatusEvent.HTTP_STATUS, false, false, __httpRequest.responseStatus);
-		event.responseURL = __httpRequest.uri;
+		var responseStatusEvent = new HTTPStatusEvent(HTTPStatusEvent.HTTP_RESPONSE_STATUS, false, false, __httpRequest.responseStatus);
+		responseStatusEvent.responseURL = __httpRequest.uri;
 
 		var headers = new Array<URLRequestHeader>();
-
 		#if (lime && !display && !macro && !doc_gen)
 		if (__httpRequest.enableResponseHeaders && __httpRequest.responseHeaders != null)
 		{
@@ -340,9 +341,14 @@ class URLLoader extends EventDispatcher
 			}
 		}
 		#end
+		responseStatusEvent.responseHeaders = headers;
+		dispatchEvent(responseStatusEvent);
+	}
 
-		event.responseHeaders = headers;
-		dispatchEvent(event);
+	@:noCompletion private function __dispatchStatus():Void
+	{
+		var statusEvent = new HTTPStatusEvent(HTTPStatusEvent.HTTP_STATUS, false, false, __httpRequest.responseStatus);
+		dispatchEvent(statusEvent);
 	}
 
 	@:noCompletion private function __prepareRequest(httpRequest:#if (!lime || display || macro || doc_gen) Dynamic #else _IHTTPRequest #end,
@@ -402,6 +408,7 @@ class URLLoader extends EventDispatcher
 	// Event Handlers
 	@:noCompletion private function httpRequest_onError(error:Dynamic):Void
 	{
+		__dispatchResponseStatus();
 		__dispatchStatus();
 
 		#if !hl
