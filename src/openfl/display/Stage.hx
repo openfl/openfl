@@ -1584,6 +1584,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 					__dispatchStack(clickEvent, stack);
 
+					if (clickEvent.__updateAfterEventFlag)
+					{
+						__renderAfterEvent();
+					}
+
 					#if openfl_pool_events
 					MouseEvent.__pool.release(clickEvent);
 					#end
@@ -2671,6 +2676,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 			__dispatchStack(event, stack);
 
+			if (event.__updateAfterEventFlag)
+			{
+				__renderAfterEvent();
+			}
+
 			#if openfl_pool_events
 			MouseEvent.__pool.release(event);
 			#end
@@ -2694,6 +2704,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					#end
 
 					__dispatchStack(event, stack);
+
+					if (event.__updateAfterEventFlag)
+					{
+						__renderAfterEvent();
+					}
 
 					#if openfl_pool_events
 					MouseEvent.__pool.release(event);
@@ -2760,6 +2775,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 				__dispatchStack(event, __mouseOutStack);
 
+				if (event.__updateAfterEventFlag)
+				{
+					__renderAfterEvent();
+				}
+
 				#if openfl_pool_events
 				MouseEvent.__pool.release(cast event);
 				#end
@@ -2790,6 +2810,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				event.bubbles = false;
 
 				__dispatchTarget(item, event);
+
+				if (event.__updateAfterEventFlag)
+				{
+					__renderAfterEvent();
+				}
 
 				#if openfl_pool_events
 				MouseEvent.__pool.release(cast event);
@@ -2856,6 +2881,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				#end
 
 				__dispatchStack(event, stack);
+
+				if (event.__updateAfterEventFlag)
+				{
+					__renderAfterEvent();
+				}
 
 				#if openfl_pool_events
 				MouseEvent.__pool.release(cast event);
@@ -2931,6 +2961,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		event.cancelable = true;
 		__dispatchStack(event, stack);
 		if (event.isDefaultPrevented()) window.onMouseWheel.cancel();
+
+		if (event.__updateAfterEventFlag)
+		{
+			__renderAfterEvent();
+		}
 
 		Point.__pool.release(targetPoint);
 	}
