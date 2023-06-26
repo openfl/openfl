@@ -2,7 +2,6 @@ package openfl.filesystem;
 
 #if (!flash && sys)
 import haxe.io.Path;
-import lime.system.BackgroundWorker;
 import lime.system.System;
 import openfl.desktop.Icon;
 import openfl.errors.IllegalOperationError;
@@ -17,6 +16,11 @@ import sys.FileSystem;
 import sys.io.Process;
 #if (lime && !macro)
 import lime.ui.FileDialog;
+#end
+#if (lime >= "8.2.0")
+import lime.system.ThreadPool;
+#else
+import lime.system.BackgroundWorker;
 #end
 
 @:noCompletion private typedef HaxeFile = sys.io.File;
@@ -411,7 +415,7 @@ class File extends FileReference
 		#end
 
 	@:noCompletion private var __fileDialog:#if (lime && !macro) FileDialog #else Dynamic #end;
-	@:noCompletion private var __fileWorker:BackgroundWorker;
+	@:noCompletion private var __fileWorker:#if (lime >= "8.2.0") ThreadPool #else BackgroundWorker #end;
 	@:noCompletion private var __sep:String = #if windows "\\" #else "/" #end;
 	@:noCompletion private var __fileStatsDirty:Bool = false;
 
@@ -947,7 +951,7 @@ class File extends FileReference
 	**/
 	public function copyToAsync(newLocation:FileReference, overwrite:Bool = false):Void
 	{
-		__fileWorker = new BackgroundWorker();
+		__fileWorker = #if (lime >= "8.2.0") new ThreadPool() #else new BackgroundWorker() #end;
 
 		__fileWorker.doWork.add(function(m:Dynamic)
 		{
@@ -1058,7 +1062,7 @@ class File extends FileReference
 	**/
 	public function deleteDirectoryAsync(deleteDirectoryContents:Bool = false):Void
 	{
-		__fileWorker = new BackgroundWorker();
+		__fileWorker = #if (lime >= "8.2.0") new ThreadPool() #else new BackgroundWorker() #end;
 
 		__fileWorker.doWork.add(function(m:Dynamic)
 		{
@@ -1117,7 +1121,7 @@ class File extends FileReference
 	**/
 	public function deleteFileAsync():Void
 	{
-		__fileWorker = new BackgroundWorker();
+		__fileWorker = #if (lime >= "8.2.0") new ThreadPool() #else new BackgroundWorker() #end;
 
 		__fileWorker.doWork.add(function(m:Dynamic)
 		{
@@ -1215,7 +1219,7 @@ class File extends FileReference
 			throw new Error("Not a directory.", 3007);
 		}
 
-		__fileWorker = new BackgroundWorker();
+		__fileWorker = #if (lime >= "8.2.0") new ThreadPool() #else new BackgroundWorker() #end;
 		__fileWorker.doWork.add(function(m:Dynamic)
 		{
 			var directories:Array<String> = FileSystem.readDirectory(__path);
@@ -1462,7 +1466,7 @@ class File extends FileReference
 	**/
 	public function moveToAsync(newLocation:FileReference, overwrite:Bool = false):Void
 	{
-		__fileWorker = new BackgroundWorker();
+		__fileWorker = #if (lime >= "8.2.0") new ThreadPool() #else new BackgroundWorker() #end;
 
 		__fileWorker.doWork.add(function(m:Dynamic)
 		{

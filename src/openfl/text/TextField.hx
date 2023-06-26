@@ -1575,7 +1575,7 @@ class TextField extends InteractiveObject
 				{
 					// should never happen, throw an error
 					index++;
-					Log.warn("You found a bug in OpenFL's text code! Please save a copy of your project and contact Joshua Granick (@singmajesty) so we can fix this.");
+					Log.warn("You found a bug in OpenFL's text code! Please save a copy of your project and create an issue on GitHub so we can fix this.");
 				}
 			}
 			/*
@@ -2084,7 +2084,7 @@ class TextField extends InteractiveObject
 					// this should only ever be true if there is no text (start == end == 0)
 					if (range.start != 0)
 					{
-						Log.warn("You found a bug in OpenFL's text code! Please save a copy of your project and contact Joshua Granick (@singmajesty) so we can fix this.");
+						Log.warn("You found a bug in OpenFL's text code! Please save a copy of your project and create an issue on GitHub so we can fix this.");
 					}
 					else
 					{

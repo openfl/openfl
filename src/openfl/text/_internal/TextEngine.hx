@@ -1101,7 +1101,7 @@ class TextEngine
 					{
 						if (!nextFormatRange())
 						{
-							Log.warn("You found a bug in OpenFL's text code! Please save a copy of your project and contact Joshua Granick (@singmajesty) so we can fix this.");
+							Log.warn("You found a bug in OpenFL's text code! Please save a copy of your project and create an issue on GitHub so we can fix this.");
 							break;
 						}
 
@@ -1189,7 +1189,7 @@ class TextEngine
 
 					if (!nextFormatRange())
 					{
-						Log.warn("You found a bug in OpenFL's text code! Please save a copy of your project and contact Joshua Granick (@singmajesty) so we can fix this.");
+						Log.warn("You found a bug in OpenFL's text code! Please save a copy of your project and create an issue on GitHub so we can fix this.");
 						break;
 					}
 
