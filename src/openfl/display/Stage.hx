@@ -3039,6 +3039,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		__dispatchStack(touchEvent, stack);
 
+		if (touchEvent.__updateAfterEventFlag)
+		{
+			__renderAfterEvent();
+		}
+
 		if (touchType != null)
 		{
 			touchEvent = TouchEvent.__create(touchType, null, touchX, touchY, target.__globalToLocal(targetPoint, localPoint), cast target);
@@ -3047,6 +3052,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			touchEvent.pressure = touch.pressure;
 
 			__dispatchStack(touchEvent, stack);
+
+			if (touchEvent.__updateAfterEventFlag)
+			{
+				__renderAfterEvent();
+			}
 		}
 
 		var touchOverTarget = touchData.touchOverTarget;
@@ -3060,6 +3070,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			touchEvent.pressure = touch.pressure;
 
 			__dispatchTarget(touchOverTarget, touchEvent);
+
+			if (touchEvent.__updateAfterEventFlag)
+			{
+				__renderAfterEvent();
+			}
 		}
 
 		var touchOutStack = touchData.rollOutStack;
@@ -3079,6 +3094,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				touchEvent.pressure = touch.pressure;
 
 				__dispatchTarget(item, touchEvent);
+
+				if (touchEvent.__updateAfterEventFlag)
+				{
+					__renderAfterEvent();
+				}
 			}
 			else
 			{
@@ -3100,6 +3120,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					touchEvent.pressure = touch.pressure;
 
 					__dispatchTarget(item, touchEvent);
+
+					if (touchEvent.__updateAfterEventFlag)
+					{
+						__renderAfterEvent();
+					}
 				}
 
 				if (item.hasEventListener(TouchEvent.TOUCH_ROLL_OUT))
@@ -3120,6 +3145,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				touchEvent.pressure = touch.pressure;
 
 				__dispatchTarget(target, touchEvent);
+
+				if (touchEvent.__updateAfterEventFlag)
+				{
+					__renderAfterEvent();
+				}
 			}
 
 			touchData.touchOverTarget = target;
