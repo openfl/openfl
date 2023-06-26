@@ -187,6 +187,7 @@ typedef Element = Dynamic;
 @:access(openfl.ui.GameInput)
 @:access(openfl.ui.Keyboard)
 @:access(openfl.ui.Mouse)
+@:access(lime.ui.Window)
 class Stage extends DisplayObjectContainer #if lime implements IModule #end
 {
 	/**
@@ -2016,49 +2017,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		}
 	}
 
-	@:noCompletion private function __onLimeRender(context:RenderContext):Void
+	@:noCompletion private function __render(context:RenderContext):Bool
 	{
-		if (__rendering) return;
-		__rendering = true;
+		var cancelled = false;
 
-		#if hxtelemetry
-		Telemetry.__advanceFrame();
-		#end
-
-		#if gl_stats
-		Context3DStats.resetDrawCalls();
-		#end
-
-		var event = null;
-
-		#if openfl_pool_events
-		event = Event.__pool.get();
-		event.type = Event.ENTER_FRAME;
-
-		__broadcastEvent(event);
-
-		Event.__pool.release(event);
-		event = Event.__pool.get();
-		event.type = Event.FRAME_CONSTRUCTED;
-
-		__broadcastEvent(event);
-
-		Event.__pool.release(event);
-		event = Event.__pool.get();
-		event.type = Event.EXIT_FRAME;
-
-		__broadcastEvent(event);
-
-		Event.__pool.release(event);
-		#else
-		__broadcastEvent(new Event(Event.ENTER_FRAME));
-		__broadcastEvent(new Event(Event.FRAME_CONSTRUCTED));
-		__broadcastEvent(new Event(Event.EXIT_FRAME));
-		#end
-
-		__renderable = true;
-		__enterFrame(__deltaTime);
-		__deltaTime = 0;
+		var event:Event = null;
 
 		var shouldRender = #if !openfl_disable_display_render (__renderer != null #if !openfl_always_render && (__renderDirty || __forceRender) #end) #else false #end;
 
@@ -2120,14 +2083,14 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			}
 			else if (context3D == null)
 			{
-				window.onRender.cancel();
+				cancelled = true;
 			}
 
 			if (context3D != null)
 			{
 				if (!context3D.__present)
 				{
-					window.onRender.cancel();
+					cancelled = true;
 				}
 				else
 				{
@@ -2149,6 +2112,59 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		Telemetry.__endTiming(TelemetryCommandName.RENDER);
 		Telemetry.__rewindStack(stack);
 		#end
+
+		return cancelled;
+	}
+
+	@:noCompletion private function __onLimeRender(context:RenderContext):Void
+	{
+		if (__rendering) return;
+		__rendering = true;
+
+		#if hxtelemetry
+		Telemetry.__advanceFrame();
+		#end
+
+		#if gl_stats
+		Context3DStats.resetDrawCalls();
+		#end
+
+		var event:Event = null;
+
+		#if openfl_pool_events
+		event = Event.__pool.get();
+		event.type = Event.ENTER_FRAME;
+
+		__broadcastEvent(event);
+
+		Event.__pool.release(event);
+		event = Event.__pool.get();
+		event.type = Event.FRAME_CONSTRUCTED;
+
+		__broadcastEvent(event);
+
+		Event.__pool.release(event);
+		event = Event.__pool.get();
+		event.type = Event.EXIT_FRAME;
+
+		__broadcastEvent(event);
+
+		Event.__pool.release(event);
+		#else
+		__broadcastEvent(new Event(Event.ENTER_FRAME));
+		__broadcastEvent(new Event(Event.FRAME_CONSTRUCTED));
+		__broadcastEvent(new Event(Event.EXIT_FRAME));
+		#end
+
+		__renderable = true;
+		__enterFrame(__deltaTime);
+		__deltaTime = 0;
+
+		var cancelled = __render(context);
+		if (cancelled)
+		{
+			window.onRender.cancel();
+		}
 
 		__rendering = false;
 	}
@@ -2608,6 +2624,21 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		#end
 
 		__dispatchStack(event, stack);
+
+		if (event.__updateAfterEventFlag)
+		{
+			#if (cpp || hl || neko)
+			// TODO: should Lime have a public API to force rendering?
+			window.__backend.render();
+			#end
+			var cancelled = __render(window.context);
+			#if (cpp || hl || neko)
+			if (!cancelled)
+			{
+				window.__backend.contextFlip();
+			}
+			#end
+		}
 
 		#if openfl_pool_events
 		MouseEvent.__pool.release(event);

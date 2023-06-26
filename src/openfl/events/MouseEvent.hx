@@ -586,6 +586,8 @@ class MouseEvent extends Event
 	#end
 	@:noCompletion private static var __shiftKey:Bool;
 
+	@:noCompletion private var __updateAfterEventFlag:Bool;
+
 	/**
 		Creates an Event object that contains information about mouse events.
 		Event objects are passed as parameters to event listeners.
@@ -657,6 +659,8 @@ class MouseEvent extends Event
 		isRelatedObjectInaccessible = false;
 		stageX = Math.NaN;
 		stageY = Math.NaN;
+
+		__updateAfterEventFlag = false;
 	}
 
 	public override function clone():MouseEvent
@@ -677,11 +681,17 @@ class MouseEvent extends Event
 	}
 
 	/**
-		Instructs Flash Player or Adobe AIR to render after processing of this
-		event completes, if the display list has been modified.
+		Instructs OpenFL to render after processing of this event completes, if
+		the display list has been modified.
 
+		On all targets except Flash/AIR, requires
+		`openfl_always_dispatch_mouse_events` to be defined because OpenFL will
+		throttle mouse events to the frame rate.
 	**/
-	public function updateAfterEvent():Void {}
+	public function updateAfterEvent():Void
+	{
+		__updateAfterEventFlag = true;
+	}
 
 	@:noCompletion private static function __create(type:String, button:Int, stageX:Float, stageY:Float, local:Point, target:InteractiveObject,
 			delta:Int = 0):MouseEvent
@@ -714,6 +724,8 @@ class MouseEvent extends Event
 		isRelatedObjectInaccessible = false;
 		stageX = Math.NaN;
 		stageY = Math.NaN;
+
+		__updateAfterEventFlag = false;
 	}
 }
 #else
