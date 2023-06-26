@@ -3,8 +3,10 @@ package openfl.net;
 #if !flash
 import haxe.io.Path;
 import haxe.Timer;
+import openfl.events.DataEvent;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
+import openfl.events.HTTPStatusEvent;
 import openfl.events.IOErrorEvent;
 import openfl.events.ProgressEvent;
 import openfl.utils.ByteArray;
@@ -1391,7 +1393,10 @@ class FileReference extends EventDispatcher
 
 		var urlLoader = new URLLoader();
 		urlLoader.dataFormat = BINARY;
+		urlLoader.addEventListener(Event.OPEN, urlLoader_onOpen);
 		urlLoader.addEventListener(Event.COMPLETE, urlLoader_upload_onComplete);
+		urlLoader.addEventListener(HTTPStatusEvent.HTTP_RESPONSE_STATUS, urlLoader_upload_onHttpResponseStatus);
+		urlLoader.addEventListener(HTTPStatusEvent.HTTP_STATUS, urlLoader_upload_onHttpStatus);
 		urlLoader.addEventListener(ProgressEvent.PROGRESS, urlLoader_onProgress);
 		urlLoader.addEventListener(IOErrorEvent.IO_ERROR, urlLoader_onIOError);
 		urlLoader.load(request);
@@ -1487,9 +1492,30 @@ class FileReference extends EventDispatcher
 		dispatchEvent(event);
 	}
 
-	@:noCompletion private function urlLoader_upload_onComplete(event:Event):Void
+	@:noCompletion private function urlLoader_upload_onHttpResponseStatus(event:HTTPStatusEvent):Void
 	{
 		dispatchEvent(event);
+	}
+
+	@:noCompletion private function urlLoader_upload_onHttpStatus(event:HTTPStatusEvent):Void
+	{
+		if (event.status == 200)
+		{
+			// httpStatus is not dispatched if upload is successful
+			// instead complete is dispatched
+			dispatchEvent(new Event(Event.COMPLETE));
+		}
+		else if (event.status != 0)
+		{
+			// dispatched only for errors
+			dispatchEvent(event);
+		}
+	}
+
+	@:noCompletion private function urlLoader_upload_onComplete(event:Event):Void
+	{
+		var urlLoader:URLLoader = cast event.currentTarget;
+		dispatchEvent(new DataEvent(DataEvent.UPLOAD_COMPLETE_DATA, false, false, urlLoader.data));
 	}
 
 	@:noCompletion private function urlLoader_onIOError(event:IOErrorEvent):Void
@@ -1498,6 +1524,11 @@ class FileReference extends EventDispatcher
 	}
 
 	@:noCompletion private function urlLoader_onProgress(event:ProgressEvent):Void
+	{
+		dispatchEvent(event);
+	}
+
+	@:noCompletion private function urlLoader_onOpen(event:Event):Void
 	{
 		dispatchEvent(event);
 	}
