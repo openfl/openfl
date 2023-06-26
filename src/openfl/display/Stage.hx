@@ -2850,6 +2850,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 					__dispatchTarget(item, event);
 
+					if (event.__updateAfterEventFlag)
+					{
+						__renderAfterEvent();
+					}
+
 					#if openfl_pool_events
 					MouseEvent.__pool.release(cast event);
 					#end
