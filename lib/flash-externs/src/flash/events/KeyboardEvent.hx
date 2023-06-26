@@ -82,6 +82,8 @@ extern class KeyboardEvent extends Event
 		commandKeyValue:Bool = false);
 	public override function clone():KeyboardEvent;
 
+	public function updateAfterEvent():Void;
+
 	#if (haxe_ver >= 4.3)
 	private function get_altKey():Bool;
 	private function get_charCode():UInt;

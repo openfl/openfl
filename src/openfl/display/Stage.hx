@@ -1767,6 +1767,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 				// TODO: handle arrow keys changing the focus
 			}
+
+			if (event.__updateAfterEventFlag)
+			{
+				__renderAfterEvent();
+			}
 		}
 	}
 	#end
@@ -2015,6 +2020,21 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		{
 			__onMouseWheel(Std.int(deltaX), Std.int(deltaY), deltaMode);
 		}
+	}
+
+	@:noCompletion private function __renderAfterEvent():Void
+	{
+		#if (cpp || hl || neko)
+		// TODO: should Lime have a public API to force rendering?
+		window.__backend.render();
+		#end
+		var cancelled = __render(window.context);
+		#if (cpp || hl || neko)
+		if (!cancelled)
+		{
+			window.__backend.contextFlip();
+		}
+		#end
 	}
 
 	@:noCompletion private function __render(context:RenderContext):Bool
@@ -2627,17 +2647,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		if (event.__updateAfterEventFlag)
 		{
-			#if (cpp || hl || neko)
-			// TODO: should Lime have a public API to force rendering?
-			window.__backend.render();
-			#end
-			var cancelled = __render(window.context);
-			#if (cpp || hl || neko)
-			if (!cancelled)
-			{
-				window.__backend.contextFlip();
-			}
-			#end
+			__renderAfterEvent();
 		}
 
 		#if openfl_pool_events
