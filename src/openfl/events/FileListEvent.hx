@@ -6,8 +6,8 @@ import openfl.filesystem.File;
 
 class FileListEvent extends Event
 {
-	public static inline var DIRECTORY_LISTING:String = "directoryListing";
-	public static inline var SELECT_MULTIPLE:String = "selectMultiple";
+	public static inline var DIRECTORY_LISTING:EventType<FileListEvent> = "directoryListing";
+	public static inline var SELECT_MULTIPLE:EventType<FileListEvent> = "selectMultiple";
 
 	public var files:Array<File>;
 
