@@ -919,7 +919,16 @@ class File extends FileReference
 	public function copyToAsync(newLocation:FileReference, overwrite:Bool = false):Void
 	{
 		__fileWorker = #if (lime >= "8.2.0") new ThreadPool() #else new BackgroundWorker() #end;
-
+		__fileWorker.onError.add(function(e:Dynamic):Void
+		{
+			__fileWorker = null;
+			throw e;
+		});
+		__fileWorker.onComplete.add(function(event:Event):Void
+		{
+			__fileWorker = null;
+			dispatchEvent(event);
+		});
 		__fileWorker.doWork.add(function(m:Dynamic)
 		{
 			try
@@ -928,17 +937,20 @@ class File extends FileReference
 			}
 			catch (e:Dynamic)
 			{
-				__fileWorker.cancel();
-				__fileWorker = null;
-
-				__dispatchIoError(e);
+				var ioErrorEvent = __createIoErrorEvent(e);
+				if (ioErrorEvent != null)
+				{
+					__fileWorker.sendComplete(ioErrorEvent);
+				}
+				else
+				{
+					__fileWorker.sendError(e);
+				}
 				return;
 			}
-
-			dispatchEvent(new Event(Event.COMPLETE));
-
-			__fileWorker.cancel();
-			__fileWorker = null;
+			// don't dispatch events directly from doWork because the listeners
+			// will be called in the wrong thread
+			__fileWorker.sendComplete(new Event(Event.COMPLETE));
 		});
 
 		__fileWorker.run();
@@ -1030,7 +1042,16 @@ class File extends FileReference
 	public function deleteDirectoryAsync(deleteDirectoryContents:Bool = false):Void
 	{
 		__fileWorker = #if (lime >= "8.2.0") new ThreadPool() #else new BackgroundWorker() #end;
-
+		__fileWorker.onError.add(function(e:Dynamic):Void
+		{
+			__fileWorker = null;
+			throw e;
+		});
+		__fileWorker.onComplete.add(function(event:Event):Void
+		{
+			__fileWorker = null;
+			dispatchEvent(event);
+		});
 		__fileWorker.doWork.add(function(m:Dynamic)
 		{
 			try
@@ -1039,17 +1060,20 @@ class File extends FileReference
 			}
 			catch (e:Dynamic)
 			{
-				__fileWorker.cancel();
-				__fileWorker = null;
-
-				__dispatchIoError(e);
+				var ioErrorEvent = __createIoErrorEvent(e);
+				if (ioErrorEvent != null)
+				{
+					__fileWorker.sendComplete(ioErrorEvent);
+				}
+				else
+				{
+					__fileWorker.sendError(e);
+				}
 				return;
 			}
-
-			dispatchEvent(new Event(Event.COMPLETE));
-
-			__fileWorker.cancel();
-			__fileWorker = null;
+			// don't dispatch events directly from doWork because the listeners
+			// will be called in the wrong thread
+			__fileWorker.sendComplete(new Event(Event.COMPLETE));
 		});
 
 		__fileWorker.run();
@@ -1089,7 +1113,16 @@ class File extends FileReference
 	public function deleteFileAsync():Void
 	{
 		__fileWorker = #if (lime >= "8.2.0") new ThreadPool() #else new BackgroundWorker() #end;
-
+		__fileWorker.onError.add(function(e:Dynamic):Void
+		{
+			__fileWorker = null;
+			throw e;
+		});
+		__fileWorker.onComplete.add(function(event:Event):Void
+		{
+			__fileWorker = null;
+			dispatchEvent(event);
+		});
 		__fileWorker.doWork.add(function(m:Dynamic)
 		{
 			try
@@ -1098,17 +1131,20 @@ class File extends FileReference
 			}
 			catch (e:Dynamic)
 			{
-				__fileWorker.cancel();
-				__fileWorker = null;
-
-				__dispatchIoError(e);
+				var ioErrorEvent = __createIoErrorEvent(e);
+				if (ioErrorEvent != null)
+				{
+					__fileWorker.sendComplete(ioErrorEvent);
+				}
+				else
+				{
+					__fileWorker.sendError(e);
+				}
 				return;
 			}
-
-			dispatchEvent(new Event(Event.COMPLETE));
-
-			__fileWorker.cancel();
-			__fileWorker = null;
+			// don't dispatch events directly from doWork because the listeners
+			// will be called in the wrong thread
+			__fileWorker.sendComplete(new Event(Event.COMPLETE));
 		});
 
 		__fileWorker.run();
@@ -1187,20 +1223,44 @@ class File extends FileReference
 		}
 
 		__fileWorker = #if (lime >= "8.2.0") new ThreadPool() #else new BackgroundWorker() #end;
+		__fileWorker.onError.add(function(e:Dynamic):Void
+		{
+			__fileWorker = null;
+			throw e;
+		});
+		__fileWorker.onComplete.add(function(event:FileListEvent):Void
+		{
+			__fileWorker = null;
+			dispatchEvent(event);
+		});
 		__fileWorker.doWork.add(function(m:Dynamic)
 		{
-			var directories:Array<String> = FileSystem.readDirectory(__path);
+			var directories:Array<String> = null;
+			try
+			{
+				directories = FileSystem.readDirectory(__path);
+			}
+			catch (e:Dynamic)
+			{
+				var ioErrorEvent = __createIoErrorEvent(e);
+				if (ioErrorEvent != null)
+				{
+					__fileWorker.sendComplete(ioErrorEvent);
+				}
+				else
+				{
+					__fileWorker.sendError(e);
+				}
+				return;
+			}
 			var files:Array<File> = [];
-
 			for (directory in directories)
 			{
 				files.push(new File(__path + directory));
 			}
-
-			dispatchEvent(new FileListEvent(FileListEvent.DIRECTORY_LISTING, files));
-
-			__fileWorker.cancel();
-			__fileWorker = null;
+			// don't dispatch events directly from doWork because the listeners
+			// will be called in the wrong thread
+			__fileWorker.sendComplete(new FileListEvent(FileListEvent.DIRECTORY_LISTING, files));
 		});
 
 		__fileWorker.run();
@@ -1434,7 +1494,16 @@ class File extends FileReference
 	public function moveToAsync(newLocation:FileReference, overwrite:Bool = false):Void
 	{
 		__fileWorker = #if (lime >= "8.2.0") new ThreadPool() #else new BackgroundWorker() #end;
-
+		__fileWorker.onError.add(function(e:Dynamic):Void
+		{
+			__fileWorker = null;
+			throw e;
+		});
+		__fileWorker.onComplete.add(function(event:Event):Void
+		{
+			__fileWorker = null;
+			dispatchEvent(event);
+		});
 		__fileWorker.doWork.add(function(m:Dynamic)
 		{
 			try
@@ -1443,17 +1512,20 @@ class File extends FileReference
 			}
 			catch (e:Dynamic)
 			{
-				__fileWorker.cancel();
-				__fileWorker = null;
-
-				__dispatchIoError(e);
+				var ioErrorEvent = __createIoErrorEvent(e);
+				if (ioErrorEvent != null)
+				{
+					__fileWorker.sendComplete(ioErrorEvent);
+				}
+				else
+				{
+					__fileWorker.sendError(e);
+				}
 				return;
 			}
-
-			dispatchEvent(new Event(Event.COMPLETE));
-
-			__fileWorker.cancel();
-			__fileWorker = null;
+			// don't dispatch events directly from doWork because the listeners
+			// will be called in the wrong thread
+			__fileWorker.sendComplete(new Event(Event.COMPLETE));
 		});
 
 		__fileWorker.run();
@@ -1654,25 +1726,21 @@ class File extends FileReference
 		this.dispatchEvent(new FileListEvent(FileListEvent.SELECT_MULTIPLE, files));
 	}
 
-	@:noCompletion private function __dispatchIoError(e:Dynamic):Void
+	@:noCompletion private function __createIoErrorEvent(e:Dynamic):IOErrorEvent
 	{
 		if (hasEventListener(IOErrorEvent.IO_ERROR))
 		{
 			if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (e, Error))
 			{
 				var error = (e : Error);
-				dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR, false, false, error.message, error.errorID));
+				return new IOErrorEvent(IOErrorEvent.IO_ERROR, false, false, error.message, error.errorID);
 			}
 			else
 			{
-				dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+				return new IOErrorEvent(IOErrorEvent.IO_ERROR);
 			}
 		}
-		else
-		{
-			// if there's no listener, throw it again
-			throw e;
-		}
+		return null;
 	}
 
 	@:noCompletion private function __formatPath(path:String):String
