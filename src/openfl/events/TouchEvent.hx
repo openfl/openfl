@@ -496,10 +496,6 @@ class TouchEvent extends Event
 	/**
 		Instructs OpenFL to render after processing of this event completes, if
 		the display list has been modified.
-
-		On all targets except Flash/AIR, requires
-		`openfl_always_dispatch_mouse_events` to be defined because OpenFL will
-		throttle touch events to the frame rate.
 	**/
 	public function updateAfterEvent():Void
 	{
