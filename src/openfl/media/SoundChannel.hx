@@ -187,12 +187,11 @@ import lime.media.AudioSource;
 			{
 				#if lime
 				__source.gain = volume;
-
-				var position = __source.position;
-				position.x = pan;
-				position.z = -1 * Math.sqrt(1 - Math.pow(pan, 2));
-				__source.position = position;
-
+				if(pan != 0 || __source.pan != null)
+				{
+					__source.pan = pan;
+				}
+				
 				return value;
 				#end
 			}
