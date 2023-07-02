@@ -73,6 +73,7 @@ Plugins have been written for many [code editors](http://haxe.org/documentation/
  * [HaxeDevelop](http://haxedevelop.org/)
  * [Sublime Text](http://www.sublimetext.com) (with [plugin](https://github.com/clemos/haxe-sublime-bundle))
  * [IntelliJ IDEA](http://www.jetbrains.com/idea/) (with [plugin](http://plugins.jetbrains.com/plugin/6873?pr=))
+ * [Moonshine IDE](https://moonshine-ide.com/)
 
 
 Easy Deployment
