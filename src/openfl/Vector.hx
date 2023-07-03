@@ -22,31 +22,31 @@ import haxe.Constraints.Function;
 	don't have this same restriction.
 
 	The Vector's base type is specified using postfix type parameter syntax. Type
-	parameter syntax is a sequence consisting of a dot (`.`), left angle bracket (`<`),
-	class name, then a right angle bracket (`>`), as shown in this example:
+	parameter syntax consists of left angle bracket (`<`),class name, then a right angle
+	bracket (`>`), as shown in this example:
 
 	In the first line of the example, the variable `v` is declared as a
-	Vector.<String> instance. In other words, it represents a Vector (an array) that
+	Vector<String> instance. In other words, it represents a Vector (an array) that
 	can only hold String instances and from which only String instances can be
 	retrieved. The second line constructs an instance of the same Vector type (that is,
 	a Vector whose elements are all String objects) and assigns it to `v`.
 
-	```as3
-	var v:Vector.<String>;
-	v = new Vector.<String>();
+	```haxe
+	var v:Vector<String>;
+	v = new Vector<String>();
 	```
 
-	A variable declared with the Vector.<T> data type can only store a Vector instance
+	A variable declared with the Vector<T> data type can only store a Vector instance
 	that is constructed with the same base type T. For example, a Vector that's
-	constructed by calling `new Vector.<String>()` can't be assigned to a variable that's
-	declared with the Vector.<int> data type. The base types must match exactly. For
+	constructed by calling `new Vector<String>()` can't be assigned to a variable that's
+	declared with the Vector<Int> data type. The base types must match exactly. For
 	example, the following code doesn't compile because the object's base type isn't
 	the same as the variable's declared base type (even though Sprite is a subclass of
 	DisplayObject):
 
 	```haxe
 	// This code doesn't compile even though Sprite is a DisplayObject subclass
-	var v:Vector.<DisplayObject> = new Vector.<Sprite>();
+	var v:Vector<DisplayObject> = new Vector<Sprite>();
 	```
 
 	To convert a Vector with base type T to a Vector of a superclass of T, use the
@@ -118,13 +118,12 @@ abstract Vector<T>(IVector<T>)
 	/**
 		Creates a Vector with the specified base type.
 
-		When calling the `Vector.<T>()` constructor, specify the base type using
-		type parameter syntax. Type parameter syntax is a sequence consisting of a
-		dot (`.`), left angle bracket (`<`), class name, then a right angle bracket (`>`),
-		as shown in this example:
+		When calling the `Vector<T>()` constructor, specify the base type using
+		type parameter syntax. Type parameter syntax consists of a left angle bracket
+		(`<`), class name, then a right angle bracket (`>`), as shown in this example:
 
-		```as3
-		var v:Vector.<String> = new Vector.<String>();
+		```haxe
+		var v:Vector<String> = new Vector<String>();
 		```
 
 		To create a Vector instance from an Array or another Vector (such as one with a
@@ -133,10 +132,10 @@ abstract Vector<T>(IVector<T>)
 		To create a pre-populated Vector instance, use the following syntax instead of
 		using the parameters specified below:
 
-		```as3
-		// var v:Vector.<T> = new <T>[E0, ..., En-1 ,];
+		```haxe
+		// var v:Vector<T> = Vector.ofArray([E0, ..., En-1 ,]);
 		// For example:
-		var v:Vector.<int> = new <int>[0,1,2,];
+		var v:Vector<Int> = Vector.ofArray([0,1,2,]);
 		```
 
 		The following information applies to this syntax:
@@ -145,7 +144,7 @@ abstract Vector<T>(IVector<T>)
 		and Flex 4 and later.
 		* The trailing comma is optional.
 		* Empty items in the array are not supported; a statement such as
-		`var v:Vector.<int> = new <int>[0,,2,]` throws a compiler error.
+		`var v:Vector<Int> = Vector.ofArray([0,,2,])` throws a compiler error.
 		* You can't specify a default length for the Vector instance. Instead, the length
 		is the same as the number of elements in the initialization list.
 		* You can't specify whether the Vector instance has a fixed length. Instead, use
@@ -153,8 +152,8 @@ abstract Vector<T>(IVector<T>)
 		* Data loss or errors can occur if items passed as values don't match the
 		specified type. For example:
 
-		```as3
-		var v:Vector.<int> = new <int>[4.2]; // compiler error when running in strict mode
+		```haxe
+		var v:Vector<Int> = Vector.ofArray([4.2]); // compiler error when running in strict mode
 		trace(v[0]); //returns 4 when not running in strict mode
 		```
 
@@ -488,7 +487,7 @@ abstract Vector<T>(IVector<T>)
 		* a function that takes two arguments of the base type (T) of the Vector and
 		returns a Number:
 
-			```as3
+			```haxe
 			function compare(x:T, y:T):Number {}
 			```
 
@@ -533,7 +532,7 @@ abstract Vector<T>(IVector<T>)
 		**Note:** To override this method in a subclass of Vector, use ...args for the
 		parameters, as this example shows:
 
-		```as3
+		```haxe
 		public override function splice(...args) {
 		// your statements here
 		}
@@ -2016,7 +2015,7 @@ abstract Vector<T>(VectorData<T>) from VectorData<T>
 	public inline function concat(?a:Vector<T>):Vector<T>
 	{
 		// Duplicating behavior of VectorData in abstract, to allow
-		// for Vector.<T> with ActionScript target -- it preserves
+		// for Vector<T> with ActionScript target -- it preserves
 		// the correct behavior for Haxe libraries, even if only
 		// a bare Array object is passed in
 
