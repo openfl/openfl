@@ -3277,7 +3277,7 @@ class TextField extends InteractiveObject
 		#if (lime && !openfl_doc_gen)
 		if (selectable && type != INPUT && event.keyCode == Keyboard.C && (event.commandKey || event.ctrlKey))
 		{
-			if (__caretIndex != __selectionIndex)
+			if (__caretIndex != __selectionIndex && !displayAsPassword)
 			{
 				Clipboard.text = __text.substring(__caretIndex, __selectionIndex);
 			}
@@ -3540,7 +3540,7 @@ class TextField extends InteractiveObject
 				#if lime
 				if (isModifierPressed())
 				{
-					if (__caretIndex != __selectionIndex)
+					if (__caretIndex != __selectionIndex && !displayAsPassword)
 					{
 						Clipboard.text = __text.substring(__caretIndex, __selectionIndex);
 					}
@@ -3551,7 +3551,7 @@ class TextField extends InteractiveObject
 				#if lime
 				if (isModifierPressed())
 				{
-					if (__caretIndex != __selectionIndex)
+					if (__caretIndex != __selectionIndex && !displayAsPassword)
 					{
 						Clipboard.text = __text.substring(__caretIndex, __selectionIndex);
 
