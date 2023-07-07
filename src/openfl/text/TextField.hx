@@ -2265,11 +2265,45 @@ class TextField extends InteractiveObject
 		}
 	}
 
+	@:noCompletion private function __updateMouseDrag():Void
+	{
+		if (stage == null) return;
+		
+		var bounds:Rectangle = this.getBounds(this);
+		
+		if (mouseX > bounds.width - 1)
+		{
+			scrollH += Std.int(Math.max(Math.min((mouseX - bounds.width) * .1, 10), 1));
+		}
+		else if (mouseX < 1)
+		{
+			scrollH -= Std.int(Math.max(Math.min(mouseX * -.1, 10), 1));
+		}
+
+		__mouseScrollVCounter++;
+
+		if (__mouseScrollVCounter > stage.frameRate / 10)
+		{
+			if (mouseY > bounds.height - 2)
+			{
+				scrollV = Std.int(Math.min(scrollV + Math.max(Math.min((mouseY - bounds.height) * .03, 5), 1), maxScrollV));
+			}
+			else if (mouseY < 2)
+			{
+				scrollV -= Std.int(Math.max(Math.min(mouseY * -.03, 5), 1));
+			}
+			__mouseScrollVCounter = 0;
+		}
+		stage_onMouseMove(null);
+	}
+
 	@:noCompletion private function __updateScrollH():Void
 	{
 		__updateLayout();
-
-		if (textWidth <= width - 4)
+		
+		var bounds:Rectangle = this.getBounds(this);
+		
+		if (textWidth <= bounds.width - 4)
 		{
 			scrollH = 0;
 			return;
@@ -2305,7 +2339,7 @@ class TextField extends InteractiveObject
 			{
 				tempScrollH -= 24;
 			}
-			while (caret.x > tempScrollH + width - 4)
+			while (caret.x > tempScrollH + bounds.width - 4)
 			{
 				tempScrollH += 24;
 			}
@@ -2317,9 +2351,9 @@ class TextField extends InteractiveObject
 		{
 			// input text leaves some room after scrolling to the last character in a line. dynamic text does not
 			var lineLength = getLineLength(getLineIndexOfChar(__caretIndex));
-			if (scrollH + width - 4 > lineLength)
+			if (scrollH + bounds.width - 4 > lineLength)
 			{
-				scrollH = Math.ceil(lineLength - width + 4);
+				scrollH = Math.ceil(lineLength - bounds.width + 4);
 			}
 		}
 
@@ -2335,10 +2369,8 @@ class TextField extends InteractiveObject
 		{
 			scrollH = tempScrollH;
 		}
-
-		// TODO: Handle drag select
 	}
-
+			
 	@:noCompletion private function __updateScrollV():Void
 	{
 		__updateLayout();
@@ -2399,38 +2431,6 @@ class TextField extends InteractiveObject
 
 			scrollV = scrollV;
 		}
-	}
-
-	@:noCompletion private function __updateMouseDrag():Void
-	{
-		if (stage == null) return;
-		
-		var bounds:Rectangle = this.getBounds(this);
-		
-		if (mouseX > bounds.width - 1)
-		{
-			scrollH += Std.int(Math.max(Math.min((mouseX - bounds.width) * .1, 10), 1));
-		}
-		else if (mouseX < 1)
-		{
-			scrollH -= Std.int(Math.max(Math.min(mouseX * -.1, 10), 1));
-		}
-
-		__mouseScrollVCounter++;
-
-		if (__mouseScrollVCounter > stage.frameRate / 10)
-		{
-			if (mouseY > bounds.height - 2)
-			{
-				scrollV = Std.int(Math.min(scrollV + Math.max(Math.min((mouseY - bounds.height) * .03, 5), 1), maxScrollV));
-			}
-			else if (mouseY < 2)
-			{
-				scrollV -= Std.int(Math.max(Math.min(mouseY * -.03, 5), 1));
-			}
-			__mouseScrollVCounter = 0;
-		}
-		stage_onMouseMove(null);
 	}
 
 	@:noCompletion private function __updateText(value:String):Void
