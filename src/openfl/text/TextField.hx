@@ -2404,10 +2404,12 @@ class TextField extends InteractiveObject
 	@:noCompletion private function __updateMouseDrag():Void
 	{
 		if (stage == null) return;
-
-		if (mouseX > this.width - 1)
+		
+		var bounds:Rectangle = this.getBounds(this);
+		
+		if (mouseX > bounds.width - 1)
 		{
-			scrollH += Std.int(Math.max(Math.min((mouseX - this.width) * .1, 10), 1));
+			scrollH += Std.int(Math.max(Math.min((mouseX - bounds.width) * .1, 10), 1));
 		}
 		else if (mouseX < 1)
 		{
@@ -2418,9 +2420,9 @@ class TextField extends InteractiveObject
 
 		if (__mouseScrollVCounter > stage.frameRate / 10)
 		{
-			if (mouseY > this.height - 2)
+			if (mouseY > bounds.height - 2)
 			{
-				scrollV = Std.int(Math.min(scrollV + Math.max(Math.min((mouseY - this.height) * .03, 5), 1), maxScrollV));
+				scrollV = Std.int(Math.min(scrollV + Math.max(Math.min((mouseY - bounds.height) * .03, 5), 1), maxScrollV));
 			}
 			else if (mouseY < 2)
 			{
