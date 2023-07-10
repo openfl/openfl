@@ -13,6 +13,7 @@ import openfl.display.Graphics;
 import openfl.display.InteractiveObject;
 import openfl.display.Stage;
 import openfl.errors.RangeError;
+import openfl.errors.TypeError;
 import openfl.events.Event;
 import openfl.events.FocusEvent;
 import openfl.events.KeyboardEvent;
