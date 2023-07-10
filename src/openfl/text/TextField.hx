@@ -2710,6 +2710,11 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function set_htmlText(value:String):String
 	{
+		if(value == null)
+		{
+			throw new TypeError("Error #2007: Parameter text must be non-null.");
+		}
+		
 		if (!__isHTML || __text != value)
 		{
 			__dirty = true;
@@ -2985,6 +2990,11 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function set_text(value:String):String
 	{
+		if(value == null)
+		{
+			throw new TypeError("Error #2007: Parameter text must be non-null.");
+		}
+		
 		if (__styleSheet != null)
 		{
 			return set_htmlText(value);
