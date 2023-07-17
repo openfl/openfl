@@ -12,7 +12,7 @@ extern class FileReference extends EventDispatcher
 	@:require(flash10) public var data(default, never):ByteArray;
 	public var modificationDate(default, never):Date;
 	public var name(default, never):String;
-	public var size(default, never):Int;
+	public var size(default, never):Float;
 	public var type(default, never):String;
 	#if air
 	public static var permissionStatus(default, never):String;

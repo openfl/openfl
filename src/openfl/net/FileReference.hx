@@ -415,10 +415,11 @@ class FileReference extends EventDispatcher
 	/**
 		The size of the file on the local disk in bytes. If `size` is 0, an
 		exception is thrown.
+
 		_Note:_ In the initial version of ActionScript 3.0, the `size`
-		property was defined as a uint object, which supported files with
-		sizes up to about 4 GB. It is now implemented as a Number object to
-		support larger files.
+		property was defined as a `uint` object, which supported files with
+		sizes up to about 4 GB. It was later implemented as a `Number` object to
+		support larger files. In OpenFL, it is `Float` to match `Number`.
 
 		@throws IOError               If the file cannot be opened or read, or
 									  if a similar error is encountered in
@@ -434,7 +435,7 @@ class FileReference extends EventDispatcher
 									  sequence or an earlier call was
 									  unsuccessful.
 	**/
-	public var size(get, null):Int;
+	public var size(get, null):Float;
 
 	/**
 		The file type.
@@ -1549,7 +1550,7 @@ class FileReference extends EventDispatcher
 		return name;
 	}
 
-	@:noCompletion private function get_size():Int
+	@:noCompletion private function get_size():Float
 	{
 		return size;
 	}

@@ -370,7 +370,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		if (fileMode == READ)
 		{
-			__buffer = new ByteArray(file.size);
+			__buffer = new ByteArray(Std.int(file.size));
 			__fileStreamWorker.doWork.add(function(m:Dynamic)
 			{
 				var inputBytesAvailable:Int = 0;
