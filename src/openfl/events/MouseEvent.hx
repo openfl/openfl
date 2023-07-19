@@ -675,10 +675,10 @@ class MouseEvent extends Event
 	**/
 	public function updateAfterEvent():Void {}
 
-	@:noCompletion private static function __create(type:String, button:Int, stageX:Float, stageY:Float, local:Point, target:InteractiveObject,
+	@:noCompletion private static function __create(type:String, button:Int, clickCount:Int, stageX:Float, stageY:Float, local:Point, target:InteractiveObject,
 			delta:Int = 0):MouseEvent
 	{
-		var event = new MouseEvent(type, true, false, local.x, local.y, null, __ctrlKey, __altKey, __shiftKey, __buttonDown, delta, __commandKey);
+		var event = new MouseEvent(type, true, false, local.x, local.y, null, __ctrlKey, __altKey, __shiftKey, __buttonDown, delta, __commandKey, clickCount);
 		event.stageX = stageX;
 		event.stageY = stageY;
 		event.target = target;
