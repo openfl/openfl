@@ -185,10 +185,10 @@ class ColorTransform
 	**/
 	public function concat(second:ColorTransform):Void
 	{
-		redOffset = redOffset * redMultiplier + second.redOffset;
-		greenOffset = greenOffset * greenMultiplier + second.greenOffset;
-		blueOffset = blueOffset * blueMultiplier + second.blueOffset;
-		alphaOffset = alphaOffset * alphaMultiplier + second.alphaOffset;
+		redOffset = redOffset * second.redMultiplier + second.redOffset;
+		greenOffset = greenOffset * second.greenMultiplier + second.greenOffset;
+		blueOffset = blueOffset * second.blueMultiplier + second.blueOffset;
+		alphaOffset = alphaOffset * second.alphaMultiplier + second.alphaOffset;
 
 		redMultiplier *= second.redMultiplier;
 		greenMultiplier *= second.greenMultiplier;

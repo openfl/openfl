@@ -132,7 +132,7 @@ class ColorTransformTest extends Test
 		Assert.equals(1.0, base.alphaMultiplier);
 	}
 
-	public function test_concat()
+	public function test_concat1()
 	{
 		var base = new ColorTransform(0.1, 0.55, 0.4, 0.89123, -255, 5, 255, 123);
 		var second = new ColorTransform(0.321, 0.33, 0.1, 0.123123, 200, -10, -100, 3);
@@ -149,5 +149,25 @@ class ColorTransformTest extends Test
 		Assert.equals(0.55 * 0.33, base.greenMultiplier);
 		Assert.equals(0.4 * 0.1, base.blueMultiplier);
 		Assert.equals(0.89123 * 0.123123, base.alphaMultiplier);
+	}
+
+	public function test_concat2()
+	{
+		// second should completely override base
+		var base = new ColorTransform(0.5, 0.5, 0.5, 1, 0x80, 0, 0x80, 0);
+		var second = new ColorTransform(0, 0, 0, 1, 0x62, 0x7D, 0xB0, 0);
+
+		base.concat(second);
+
+
+		Assert.equals(second.redOffset, base.redOffset);
+		Assert.equals(second.greenOffset, base.greenOffset);
+		Assert.equals(second.blueOffset, base.blueOffset);
+		Assert.equals(second.alphaOffset, base.alphaOffset);
+
+		Assert.equals(second.redMultiplier, base.redMultiplier);
+		Assert.equals(second.greenMultiplier, base.greenMultiplier);
+		Assert.equals(second.blueMultiplier, base.blueMultiplier);
+		Assert.equals(second.alphaMultiplier, base.alphaMultiplier);
 	}
 }
