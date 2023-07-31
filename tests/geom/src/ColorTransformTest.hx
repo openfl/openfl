@@ -139,10 +139,11 @@ class ColorTransformTest extends Test
 
 		base.concat(second);
 
-		Assert.equals(-235, base.redOffset);
-		Assert.equals(-0.5, base.greenOffset);
-		Assert.equals(215, base.blueOffset);
-		Assert.equals(125.67369, base.alphaOffset);
+
+		Assert.equals(174.5, base.redOffset);
+		Assert.equals(-7.25, base.greenOffset);
+		Assert.equals(2, base.blueOffset);
+		Assert.equals(112.6213, base.alphaOffset);
 
 		Assert.equals(0.1 * 0.321, base.redMultiplier);
 		Assert.equals(0.55 * 0.33, base.greenMultiplier);
