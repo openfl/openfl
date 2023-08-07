@@ -262,7 +262,7 @@ import hl.Gc;
 		#if neko
 		return Gc.stats().heap;
 		#elseif cpp
-		return untyped __global__.__hxcpp_gc_used_bytes();
+		return Gc.memInfo64(Gc.MEM_INFO_USAGE);
 		#elseif (js && html5)
 		return
 			untyped #if haxe4 js.Syntax.code #else __js__ #end ("(window.performance && window.performance.memory) ? window.performance.memory.usedJSHeapSize : 0");
