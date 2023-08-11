@@ -404,6 +404,8 @@ class URLLoader extends EventDispatcher
 	{
 		__dispatchStatus();
 
+		var httpRequest:HTTPRequest<Dynamic> = cast __httpRequest;
+		data = cast httpRequest.responseData;
 		#if !hl
 		// can't compare a string against an integer in HashLink
 		if (error == 403)
