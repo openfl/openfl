@@ -404,6 +404,7 @@ class URLLoader extends EventDispatcher
 	{
 		__dispatchStatus();
 
+		#if (lime && !doc_gen)
 		// some targets won't allow us to cast to HTTPRequest<Dynamic>
 		if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (__httpRequest, _HTTPRequest_Bytes))
 		{
@@ -415,6 +416,7 @@ class URLLoader extends EventDispatcher
 			var stringRequest:_HTTPRequest_String<String> = cast __httpRequest;
 			data = stringRequest.responseData;
 		}
+		#end
 		#if !hl
 		// can't compare a string against an integer in HashLink
 		if (error == 403)
