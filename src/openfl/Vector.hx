@@ -2691,7 +2691,7 @@ abstract Vector<T>(VectorData<T>)
 	{
 		if (a == null) return null;
 
-		var vec = new Vector<T>();
+		var vec = new VectorData<T>();
 		for (i in 0...a.length)
 		{
 			vec[i] = a[i];
