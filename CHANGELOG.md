@@ -1,3 +1,18 @@
+9.3.0 (??/??/2023)
+------------------
+
+* Replaced `String` with `EventType` in `FileListEvent` for better compiler checks
+* Fixed missing `Event.OPEN` dispatch from `FileReference` when downloading file
+* Fixed corrupted binary files downloaded with `FileReference`
+* Fixed exception when using hardware-only texture with `beginBitmapFill()` by drawing black rectangle instead
+* Fixed `BackgroundWorker` deprecation warning when using `File` and `FileStream` after `ThreadPool` is introduced in Lime
+* Fixed events being dispatched from wrong thread when using asynchronous `File` APIs
+* Fixed cut and copy not being blocked by `TextField` when `displayAsPassword` is true
+* Fixed scrolling by dragging in `TextField` when scaled by using `getBounds()`
+* Fixed empty `data` value on `URLLoader` when dispatching `IOErrorEvent.IO_ERROR` and server returned a response
+* Fixed `Vector.ofArray()` on flash/air targets
+* Added `openfl_hack_fix_chrome_text` define to workaround a bug in Chrome that garbles text
+
 9.2.2 (05/31/2023)
 ------------------
 
