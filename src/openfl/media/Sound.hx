@@ -315,7 +315,7 @@ class Sound extends EventDispatcher
 			load(stream, context);
 		}
 		#if (js && html5)
-		if (stream == null)
+		if (stream == null && AudioManager.context != null)
 		{
 			switch (AudioManager.context.type)
 			{
@@ -326,7 +326,7 @@ class Sound extends EventDispatcher
 		}
 		#end
 		#if lime_openal
-		if (stream == null)
+		if (stream == null && AudioManager.context != null)
 		{
 			switch (AudioManager.context.type)
 			{
