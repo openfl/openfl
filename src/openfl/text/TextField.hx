@@ -2268,9 +2268,9 @@ class TextField extends InteractiveObject
 	@:noCompletion private function __updateMouseDrag():Void
 	{
 		if (stage == null) return;
-		
+
 		var bounds:Rectangle = this.getBounds(this);
-		
+
 		if (mouseX > bounds.width - 1)
 		{
 			scrollH += Std.int(Math.max(Math.min((mouseX - bounds.width) * .1, 10), 1));
@@ -2300,9 +2300,9 @@ class TextField extends InteractiveObject
 	@:noCompletion private function __updateScrollH():Void
 	{
 		__updateLayout();
-		
+
 		var bounds:Rectangle = this.getBounds(this);
-		
+
 		if (textWidth <= bounds.width - 4)
 		{
 			scrollH = 0;
@@ -2370,7 +2370,7 @@ class TextField extends InteractiveObject
 			scrollH = tempScrollH;
 		}
 	}
-			
+
 	@:noCompletion private function __updateScrollV():Void
 	{
 		__updateLayout();

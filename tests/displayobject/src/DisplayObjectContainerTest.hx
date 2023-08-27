@@ -176,7 +176,6 @@ class DisplayObjectContainerTest extends Test
 	#if (cpp || neko) // TODO: works but sometimes suffers from a race condition when run immediately
 	public function test_getObjectsUnderPoint()
 	{
-
 		var sprite = new Sprite();
 
 		var sprite2 = new Sprite();
