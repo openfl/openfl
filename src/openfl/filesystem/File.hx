@@ -371,8 +371,7 @@ class File extends FileReference
 	// TODO
 	// public static var systemCharset:String;
 	// TODO: platorm specific code?
-	// public var url:String;
-	// TODO
+	public var url(get, never):String;
 
 	/**
 		The user's directory.
@@ -2036,24 +2035,44 @@ class File extends FileReference
 
 	@:noCompletion private function set_nativePath(path:String):String
 	{
-		#if windows
-		if (path.indexOf("%") > -1)
+		if (path != null)
 		{
-			path = __replaceWindowsEnvVars(path);
-		}
-		#end
-		if (path.charAt(path.length - 1) == ":" /*|| FileSystem.isDirectory(path)*/)
-		{
-			path = Path.addTrailingSlash(path);
-		}
-		if (Path.directory(path).length == 0)
-		{
-			throw new ArgumentError("One of the parameters is invalid.");
+			if (StringTools.startsWith(path, "app-storage:"))
+			{
+				path = StringTools.replace(path, "app-storage:", File.applicationStorageDirectory.nativePath);
+			}
+
+			#if windows
+			if (path.indexOf("%") > -1)
+			{
+				path = __replaceWindowsEnvVars(path);
+			}
+			#end
+
+			if (path.charAt(path.length - 1) == ":" /*|| FileSystem.isDirectory(path)*/)
+			{
+				path = Path.addTrailingSlash(path);
+			}
+
+			if (Path.directory(path).length == 0)
+			{
+				throw new ArgumentError("One of the parameters is invalid.");
+			}
+
+			__updateFileStats(path);
+
+			if (path.indexOf(#if windows "/" #else "\\" #end) > 0)
+			{
+				path = __formatPath(path);
+			}
 		}
 
-		__updateFileStats(path);
+		return __path = path;
+	}
 
-		return __path = path.indexOf(#if windows "/" #else "\\" #end) > 0 ? __formatPath(path) : path;
+	@:noCompletion private function get_url():String
+	{
+		return "file:///" + nativePath;
 	}
 
 	@:noCompletion private function get_exists():Bool
