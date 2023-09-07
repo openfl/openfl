@@ -224,7 +224,10 @@ class CanvasGraphics
 							}
 
 							pendingMatrix = new Matrix();
-							inversePendingMatrix = matrix.clone();
+							pendingMatrix.tx = matrix.tx - dimensions.width / 2;
+							pendingMatrix.ty = matrix.ty - dimensions.height / 2;
+
+							inversePendingMatrix = pendingMatrix.clone();
 							inversePendingMatrix.invert();
 
 							var path:Path2D = cast new Path2D();
