@@ -185,6 +185,9 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 	{
 		#if lime
 		var time = Timer.stamp();
+		if (destPoint == null)
+			destPoint = new Point();
+
 		var finalImage = ImageDataUtil.gaussianBlur(bitmapData.image, sourceBitmapData.image, sourceRect.__toLimeRectangle(), destPoint.__toLimeVector2(),
 			__blurX, __blurY, __quality);
 		var elapsed = Timer.stamp() - time;
