@@ -869,7 +869,7 @@ class TextEngine
 			}
 			
 			#if skip_measurement_cache
-			return return html5Positions();
+			return html5Positions();
 			#else
 			return __shapeCache.cache(formatRange, html5Positions, text.substring(startIndex, endIndex));
 			#end
