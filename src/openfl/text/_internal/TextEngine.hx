@@ -867,8 +867,13 @@ class TextEngine
 			{
 				return html5Positions();
 			}
-
+			
+			#if skip_measurement_cache
+			return return html5Positions();
+			#else
 			return __shapeCache.cache(formatRange, html5Positions, text.substring(startIndex, endIndex));
+			#end
+				
 			#else
 			if (__textLayout == null)
 			{
@@ -898,8 +903,13 @@ class TextEngine
 			{
 				return __textLayout.positions;
 			}
-
+			
+			#if skip_measurement_cache
+			return __textLayout.positions;
+			#else
 			return __shapeCache.cache(formatRange, __textLayout);
+			#end
+				
 			#end
 		} #if !js inline #end function getPositionsWidth(positions:#if (js && html5) Array<Float> #else Array<GlyphPosition> #end):Float
 
