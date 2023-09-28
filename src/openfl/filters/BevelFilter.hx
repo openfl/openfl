@@ -135,6 +135,9 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 		this.strength = strength;
 		this.knockout = knockout;
 		this.type = type;
+	
+		__updateSize();
+	
 		__needSecondBitmapData = true;
 		__preserveObject = true;
 		__renderDirty = true;
@@ -204,8 +207,7 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 		{
 			__blurX = value;
 			__renderDirty = true;
-			__leftExtension = (value > 0 ? Math.ceil(value) : 0);
-			__rightExtension = __leftExtension;
+			__updateSize();
 		}
 		return value;
 	}
@@ -221,6 +223,7 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 		{
 			__distance = value;
 			__updateTransform();
+			__updateSize();
 			__renderDirty = true;
 		}
 		return value;
@@ -237,6 +240,7 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 		{
 			__angle = value;
 			__updateTransform();
+			__updateSize();
 			__renderDirty = true;
 		}
 		return value;
@@ -325,8 +329,7 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 		{
 			__blurY = value;
 			__renderDirty = true;
-			__topExtension = (value > 0 ? Math.ceil(value) : 0);
-			__bottomExtension = __topExtension;
+			__updateSize();
 		}
 		return value;
 	}
@@ -434,6 +437,17 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 			__bevelShader.uShadowColor.value[1] = (g / 255) * __shadowAlpha;
 			__bevelShader.uShadowColor.value[2] = (b / 255) * __shadowAlpha;
 			__bevelShader.uShadowColor.value[3] = __shadowAlpha;
+	}
+
+	@:noCompletion private function __updateSize():Void
+	{
+		var offsetX:Int = __type!="inner" ? Math.ceil(__distance * Math.cos(__angle * Math.PI / 180)) : 0;
+		var offsetY:Int = __type!="inner" ? Math.ceil(__distance * Math.sin(__angle * Math.PI / 180)) : 0;
+		__topExtension = Math.ceil((offsetY < 0 ? -offsetY : 0) + __blurY);
+		__bottomExtension = Math.ceil((offsetY > 0 ? offsetY : 0) + __blurY);
+		__leftExtension = Math.ceil((offsetX < 0 ? -offsetX : 0) + __blurX);
+		__rightExtension = Math.ceil((offsetX > 0 ? offsetX : 0) + __blurX);
+
 	}
 }
 
