@@ -1,7 +1,7 @@
 package openfl.text._internal;
 
 import haxe.io.Bytes;
-#if (lime && !doc_gen)
+#if lime
 import lime.math.Vector2;
 import lime.text.harfbuzz.HBBuffer;
 import lime.text.harfbuzz.HBBufferClusterLevel;
@@ -51,7 +51,7 @@ class TextLayout
 	public var autoHint:Bool;
 	public var direction(get, set):TextDirection;
 	public var font(default, set):Font;
-	@SuppressWarnings("checkstyle:Dynamic") public var glyphs(get, null):Array< #if (lime && !doc_gen) Glyph #else Dynamic #end>;
+	@SuppressWarnings("checkstyle:Dynamic") public var glyphs(get, null):Array< #if lime Glyph #else Dynamic #end>;
 	public var language(get, set):String;
 	public var letterSpacing:Float = 0;
 	@:isVar public var positions(get, null):Array<GlyphPosition>;
@@ -66,8 +66,8 @@ class TextLayout
 	private var __language:String;
 	private var __script:TextScript;
 	private var __font:Font;
-	@SuppressWarnings("checkstyle:Dynamic") private var __hbBuffer:#if (lime && !doc_gen) HBBuffer #else Dynamic #end;
-	@SuppressWarnings("checkstyle:Dynamic") private var __hbFont:#if (lime && !doc_gen) HBFTFont #else Dynamic #end;
+	@SuppressWarnings("checkstyle:Dynamic") private var __hbBuffer:#if lime HBBuffer #else Dynamic #end;
+	@SuppressWarnings("checkstyle:Dynamic") private var __hbFont:#if lime HBFTFont #else Dynamic #end;
 
 	public function new(text:String = "", font:Font = null, size:Int = 12, direction:TextDirection = LEFT_TO_RIGHT, script:TextScript = COMMON,
 			language:String = "en")
@@ -89,7 +89,7 @@ class TextLayout
 	{
 		if (language.length != 4) return;
 
-		#if (lime && !doc_gen)
+		#if lime
 		__hbBuffer = new HBBuffer();
 		__hbBuffer.direction = direction.toHBDirection();
 		__hbBuffer.script = script.toHBScript();
@@ -101,7 +101,7 @@ class TextLayout
 	{
 		positions = [];
 
-		#if (lime && lime_cffi && !macro && !doc_gen)
+		#if (lime && lime_cffi && !macro)
 		if (text != null && text != "" && font != null && font.src != null)
 		{
 			if (__buffer == null)
@@ -224,7 +224,7 @@ class TextLayout
 
 	@:noCompletion
 	@SuppressWarnings("checkstyle:Dynamic")
-	private function get_glyphs():Array< #if (lime && !doc_gen) Glyph #else Dynamic #end>
+	private function get_glyphs():Array< #if lime Glyph #else Dynamic #end>
 	{
 		var glyphs = [];
 
@@ -316,7 +316,7 @@ class TextLayout
 		}
 	}
 
-	#if (lime && !doc_gen)
+	#if lime
 	@:to public inline function toHBDirection():HBDirection
 	{
 		return switch (this)
@@ -483,7 +483,7 @@ class TextLayout
 	public var WARANG_CITI = "Wara";
 	public var rightToLeft(get, never):Bool;
 
-	#if (lime && !doc_gen)
+	#if lime
 	@:to public inline function toHBScript():HBScript
 	{
 		return switch (this)
