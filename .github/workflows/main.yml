@@ -287,7 +287,7 @@ jobs:
 
   html5-samples:
     needs: package-haxelib
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
 
       - uses: krdlab/setup-haxe@v1
