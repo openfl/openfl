@@ -296,7 +296,7 @@ jobs:
 
       - name: Set HAXEPATH
         run: |
-          echo "HAXEPATH=$HAXE_STD_PATH/.." >> $GITHUB_ENV
+          echo "HAXEPATH=$Env:HAXE_STD_PATH\.." >> $Env:GITHUB_ENV
 
       - name: Install Haxe dependencies
         run: |
