@@ -94,7 +94,7 @@ jobs:
 
       - name: Set HAXEPATH
         run: |
-          echo "HAXEPATH=$HAXE_STD_PATH/.." >> $GITHUB_ENV
+          echo "HAXEPATH=$Env:HAXE_STD_PATH\.." >> $Env:GITHUB_ENV
 
       - name: Install Haxe dependencies
         run: |
@@ -286,7 +286,7 @@ jobs:
 
   html5-samples:
     needs: package-haxelib
-    runs-on: macos-11
+    runs-on: ubuntu-latest
     steps:
 
       - uses: krdlab/setup-haxe@v1
@@ -341,7 +341,7 @@ jobs:
 
   flash-samples:
     needs: package-haxelib
-    runs-on: macos-11
+    runs-on: ubuntu-latest
     steps:
 
       - uses: krdlab/setup-haxe@v1
