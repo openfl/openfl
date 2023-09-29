@@ -3,20 +3,20 @@
 # -xml xml/Flash.xml
 # -swf obj/docs
 # -swf-version 17.0
-# -D display
+# -D display=usage
 # -D doc_gen
-# ImportAll
+# --macro include("openfl")
 # -lib lime
 # -lib openfl
 # --no-output
 
 -xml xml/Flash.xml
 -cpp obj/docs
--D display
+-D display=usage
 -D flash_doc_gen
 -D openfl_doc_gen
 -D doc_gen
-ImportAll
+--macro include("openfl")
 -lib lime
 -lib openfl
 --no-output
@@ -25,12 +25,12 @@ ImportAll
 
 -xml xml/AIR.xml
 -cpp obj/docs
--D display
+-D display=usage
 -D air_doc_gen
 -D flash_doc_gen
 -D openfl_doc_gen
 -D doc_gen
-ImportAll
+--macro include("openfl")
 -lib lime
 -lib openfl
 --no-output
@@ -39,12 +39,12 @@ ImportAll
 
 -xml xml/Windows.xml
 -cpp obj/docs
--D display
+-D display=usage
 -D native
 -D windows
 -D openfl_doc_gen
 -D doc_gen
-ImportAll
+--macro include("openfl")
 -lib lime
 -lib openfl
 --no-output
@@ -53,12 +53,12 @@ ImportAll
 
 -xml xml/macOS.xml
 -cpp obj/docs
--D display
+-D display=usage
 -D native
 -D mac
 -D openfl_doc_gen
 -D doc_gen
-ImportAll
+--macro include("openfl")
 -lib lime
 -lib openfl
 --no-output
@@ -67,12 +67,12 @@ ImportAll
 
 -xml xml/Linux.xml
 -cpp obj/docs
--D display
+-D display=usage
 -D native
 -D linux
 -D openfl_doc_gen
 -D doc_gen
-ImportAll
+--macro include("openfl")
 -lib lime
 -lib openfl
 --no-output
@@ -81,11 +81,11 @@ ImportAll
 
 -xml xml/Neko.xml
 -neko obj/docs
--D display
+-D display=usage
 -D native
 -D openfl_doc_gen
 -D doc_gen
-ImportAll
+--macro include("openfl")
 -lib lime
 -lib openfl
 --no-output
@@ -94,12 +94,12 @@ ImportAll
 
 -xml xml/iOS.xml
 -cpp obj/docs
--D display
+-D display=usage
 -D native
 -D ios
 -D openfl_doc_gen
 -D doc_gen
-ImportAll
+--macro include("openfl")
 -lib lime
 -lib openfl
 --no-output
@@ -108,12 +108,12 @@ ImportAll
 
 -xml xml/Android.xml
 -cpp obj/docs
--D display
+-D display=usage
 -D native
 -D android
 -D openfl_doc_gen
 -D doc_gen
-ImportAll
+--macro include("openfl")
 -lib lime
 -lib openfl
 --no-output
@@ -122,11 +122,11 @@ ImportAll
 
 -xml xml/HTML5.xml
 -js obj/docs
--D display
+-D display=usage
 -D html5
 -D openfl_doc_gen
 -D doc_gen
-ImportAll
+--macro include("openfl")
 -lib lime
 -lib openfl
 --no-output
