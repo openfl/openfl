@@ -106,7 +106,7 @@ jobs:
 
       - name: Setup environment
         run: |
-          haxelib dev openfl $GITHUB_WORKSPACE
+          haxelib dev openfl $Env:GITHUB_WORKSPACE
 
       - name: Install command aliases
         run: |
