@@ -718,7 +718,8 @@ class Sound extends EventDispatcher
 			__processor = __audioContext.createScriptProcessor(@:privateAccess __sampleData.getBufferSize(), 0, 2);
 			__processor.connect(__audioContext.destination);
 			__processor.onaudioprocess = onSample;
-			#if (haxe_ver >= 4.2)
+			// doc_gen doesn't recognize resume() until Lime 8.1.0
+			#if (haxe_ver >= 4.2 && !doc_gen)
 			__audioContext.resume();
 			#else
 			Reflect.callMethod(__audioContext, Reflect.field(__audioContext, "resume"), []);
