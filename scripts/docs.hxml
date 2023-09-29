@@ -16,6 +16,7 @@
 -D flash_doc_gen
 -D openfl_doc_gen
 -D doc_gen
+-D nocffi
 --macro include("openfl")
 -lib lime
 -lib openfl
@@ -30,6 +31,7 @@
 -D flash_doc_gen
 -D openfl_doc_gen
 -D doc_gen
+-D nocffi
 --macro include("openfl")
 -lib lime
 -lib openfl
@@ -44,6 +46,7 @@
 -D windows
 -D openfl_doc_gen
 -D doc_gen
+-D nocffi
 --macro include("openfl")
 -lib lime
 -lib openfl
@@ -58,6 +61,7 @@
 -D mac
 -D openfl_doc_gen
 -D doc_gen
+-D nocffi
 --macro include("openfl")
 -lib lime
 -lib openfl
@@ -72,6 +76,7 @@
 -D linux
 -D openfl_doc_gen
 -D doc_gen
+-D nocffi
 --macro include("openfl")
 -lib lime
 -lib openfl
@@ -85,6 +90,7 @@
 -D native
 -D openfl_doc_gen
 -D doc_gen
+-D nocffi
 --macro include("openfl")
 -lib lime
 -lib openfl
@@ -99,6 +105,7 @@
 -D ios
 -D openfl_doc_gen
 -D doc_gen
+-D nocffi
 --macro include("openfl")
 -lib lime
 -lib openfl
@@ -113,6 +120,7 @@
 -D android
 -D openfl_doc_gen
 -D doc_gen
+-D nocffi
 --macro include("openfl")
 -lib lime
 -lib openfl
