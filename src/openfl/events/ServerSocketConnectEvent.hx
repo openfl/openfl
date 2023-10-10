@@ -13,7 +13,7 @@ import openfl.net.Socket;
 **/
 class ServerSocketConnectEvent extends Event
 {
-	public static inline var CONNECT:String = "connect";
+	public static inline var CONNECT:EventType<ServerSocketConnectEvent> = "connect";
 
 	public var socket:Socket;
 

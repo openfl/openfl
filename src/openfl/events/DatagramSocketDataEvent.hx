@@ -14,7 +14,7 @@ class DatagramSocketDataEvent extends Event
 	/**
 		Defines the value of the type property of a data event object.
 	**/
-	public static inline var DATA:String = "data";
+	public static inline var DATA:EventType<DatagramSocketDataEvent> = "data";
 
 	/**
 		The datagram packet data.
