@@ -1,5 +1,6 @@
 package openfl.events;
 
+#if !flash
 import openfl.utils.ByteArray;
 
 /**
@@ -92,3 +93,6 @@ class DatagramSocketDataEvent extends Event
 			'[DatagramSocketDataEvent type=$type bubbles=$bubbles cancelable=$cancelable srcAddress=$srcAddress srcPort=$srcPort dstAddress=$dstAddress dstPort=$dstPort data=$data]';
 	}
 }
+#else
+typedef DatagramSocketDataEvent = flash.events.DatagramSocketDataEvent;
+#end
