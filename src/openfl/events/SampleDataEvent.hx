@@ -135,8 +135,8 @@ class SampleDataEvent extends Event
 	**/
 	#if (js && html5)
 	private var tempBuffer:Float32Array;
-	private var leftChannel:js.lib.Float32Array;
-	private var rightChannel:js.lib.Float32Array;
+	private var leftChannel:#if haxe4 js.lib.Float32Array #else js.html.Float32Array #end;
+	private var rightChannel:#if haxe4 js.lib.Float32Array #else js.html.Float32Array #end;
 	#end
 	#if lime_openal
 	private var leftChannel:Int;
