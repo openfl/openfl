@@ -158,6 +158,8 @@ class SampleDataEvent extends Event
 		event.target = target;
 		event.currentTarget = currentTarget;
 		event.eventPhase = eventPhase;
+		event.data = data;
+		event.position = position;
 		return event;
 	}
 
