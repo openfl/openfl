@@ -1,4 +1,4 @@
-9.3.0 (??/??/2023)
+9.3.0 (10/16/2023)
 ------------------
 
 * Added `SampleDataEvent.SAMPLE_DATA` to `Sound` class

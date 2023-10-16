@@ -5,7 +5,7 @@
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
 	"version": "9.3.0",
-	"releasenote": "Various bug fixes",
+	"releasenote": "NativeWindow, NativeApplication, SecureSocket, SampleDataEvent.SAMPLE_DATA, FileReference.upload(), and more",
 	"contributors": [
 		"singmajesty",
 		"bowlerhat",
