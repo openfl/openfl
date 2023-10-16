@@ -601,7 +601,7 @@ private class Listener
 		#if (js && html5)
 		if (useWeakReference && supportsWeakReference)
 		{
-			this.weakRefCallback = #if haxe4 js.Syntax.code #else __js__ #end ("new WeakRef")(callback);
+			this.weakRefCallback = untyped #if haxe4 js.Syntax.code #else __js__ #end ("new WeakRef")(callback);
 		}
 		else
 		{
