@@ -104,19 +104,22 @@ class SampleDataEvent extends Event
 	**/
 	public static inline var SAMPLE_DATA:EventType<SampleDataEvent> = "sampleData";
 
+	// using @:keep on data/position vars because Haxe removes them with
+	// dce full on some targets (at least cpp and hl), but doesn't remove the
+	// code in the constructor that sets them
+
 	/**
 		The data in the audio stream.
 	**/
-	public var data:ByteArray;
+	@:keep public var data:ByteArray;
 
 	/**
 		The position of the data in the audio stream.
 	**/
-	public var position:Float;
+	@:keep public var position:Float;
 
 	// @:noCompletion private static var __pool:ObjectPool<SampleDataEvent> = new ObjectPool<SampleDataEvent>(function() return new SampleDataEvent(null),
 	// function(event) event.__init());
-
 	/**
 		Creates an event object that contains information about audio data
 		events. Event objects are passed as parameters to event listeners.
