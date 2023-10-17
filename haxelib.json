@@ -4,7 +4,7 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "9.3.0",
+	"version": "9.3.1",
 	"releasenote": "NativeWindow, NativeApplication, SecureSocket, SampleDataEvent.SAMPLE_DATA, FileReference.upload(), and more",
 	"contributors": [
 		"singmajesty",

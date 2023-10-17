@@ -1,3 +1,8 @@
+9.3.1 (10/17/2023)
+------------------
+
+* Compatibility fixes for Haxe 3 and Haxe 4.0.x and the npm release
+
 9.3.0 (10/16/2023)
 ------------------
 
