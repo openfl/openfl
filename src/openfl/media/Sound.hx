@@ -867,7 +867,7 @@ class Sound extends EventDispatcher
 			#else
 			if (__buffer.data != null)
 			{
-				var samples = (__buffer.data.length * 8) / (__buffer.channels * __buffer.bitsPerSample);
+				var samples = (__buffer.data.length * 8.0) / (__buffer.channels * __buffer.bitsPerSample);
 				return Std.int(samples / __buffer.sampleRate * 1000);
 			}
 			else if (__buffer.__srcVorbisFile != null)
