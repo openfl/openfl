@@ -132,7 +132,10 @@ class Bitmap extends DisplayObject
 	@:noCompletion private override function __getBounds(rect:Rectangle, matrix:Matrix):Void
 	{
 		var bounds = Rectangle.__pool.get();
-		if (__bitmapData != null)
+		if (scrollRect != null){
+			bounds.setTo(0, 0, scrollRect.width, scrollRect.height);
+		}
+		else if (__bitmapData != null)
 		{
 			bounds.setTo(0, 0, __bitmapData.width, __bitmapData.height);
 		}
