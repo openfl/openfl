@@ -222,7 +222,11 @@ class Bitmap extends DisplayObject
 	{
 		if (__bitmapData != null)
 		{
-			scaleY = value / __bitmapData.height; // get_height();
+			if (scrollRect != null) {
+				scaleY = value / scrollRect.height;
+			} else {
+				scaleY = value / __bitmapData.height; // get_height();
+			}
 		}
 		else
 		{
@@ -235,7 +239,11 @@ class Bitmap extends DisplayObject
 	{
 		if (__bitmapData != null)
 		{
-			scaleX = value / __bitmapData.width; // get_width();
+			if (scrollRect != null) {
+				scaleX = value / scrollRect.width;
+			} else {
+				scaleX = value / __bitmapData.width; // get_width();
+			}
 		}
 		else
 		{
