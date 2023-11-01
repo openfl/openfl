@@ -193,7 +193,17 @@ import lime.utils.Int16Array;
 			__sampleDataEvent = new SampleDataEvent(SampleDataEvent.SAMPLE_DATA);
 			__sound.dispatchEvent(__sampleDataEvent);
 			var bufferSize = __sampleDataEvent.getBufferSize();
-			if (bufferSize > 0)
+			if (bufferSize == 0)
+			{
+				// ensure that listeners can be added to the SoundChannel
+				// before dispatching this event
+				openfl.Lib.setTimeout(function():Void
+				{
+					stop();
+					dispatchEvent(new Event(Event.SOUND_COMPLETE));
+				}, 1);
+			}
+			else
 			{
 				__processor = webAudioContext.createScriptProcessor(bufferSize, 0, 2);
 				__processor.connect(webAudioContext.destination);
@@ -213,7 +223,17 @@ import lime.utils.Int16Array;
 			__sampleDataEvent = new SampleDataEvent(SampleDataEvent.SAMPLE_DATA);
 			__sound.dispatchEvent(__sampleDataEvent);
 			var bufferSize = __sampleDataEvent.getBufferSize();
-			if (bufferSize > 0)
+			if (bufferSize == 0)
+			{
+				// ensure that listeners can be added to the SoundChannel
+				// before dispatching this event
+				openfl.Lib.setTimeout(function():Void
+				{
+					stop();
+					dispatchEvent(new Event(Event.SOUND_COMPLETE));
+				}, 1);
+			}
+			else
 			{
 				bufferSize = 0;
 				__alSource = alAudioContext.createSource();
