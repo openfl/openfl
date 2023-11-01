@@ -61,7 +61,7 @@ import lime.media.AudioSource;
 	@:noCompletion private var __isValid:Bool;
 	@:noCompletion private var __soundTransform:SoundTransform;
 	#if lime
-	@:noCompletion private var __source:AudioSource;
+	@:noCompletion private var __audioSource:AudioSource;
 	#end
 
 	#if openfljs
@@ -80,7 +80,7 @@ import lime.media.AudioSource;
 	}
 	#end
 
-	@:noCompletion private function new(source:#if lime AudioSource #else Dynamic #end = null, soundTransform:SoundTransform = null):Void
+	@:noCompletion private function new(audioSource:#if lime AudioSource #else Dynamic #end = null, soundTransform:SoundTransform = null):Void
 	{
 		super(this);
 
@@ -96,7 +96,7 @@ import lime.media.AudioSource;
 			__soundTransform = new SoundTransform();
 		}
 
-		__initSource(source);
+		__initAudioSource(audioSource);
 
 		SoundMixer.__registerSoundChannel(this);
 	}
@@ -111,7 +111,7 @@ import lime.media.AudioSource;
 		if (!__isValid) return;
 
 		#if lime
-		__source.stop();
+		__audioSource.stop();
 		#end
 		__dispose();
 	}
@@ -121,9 +121,9 @@ import lime.media.AudioSource;
 		if (!__isValid) return;
 
 		#if lime
-		__source.onComplete.remove(source_onComplete);
-		__source.dispose();
-		__source = null;
+		__audioSource.onComplete.remove(audioSource_onComplete);
+		__audioSource.dispose();
+		__audioSource = null;
 		#end
 		__isValid = false;
 	}
@@ -133,19 +133,19 @@ import lime.media.AudioSource;
 		this.soundTransform = soundTransform;
 	}
 
-	@:noCompletion private function __initSource(source:#if lime AudioSource #else Dynamic #end):Void
+	@:noCompletion private function __initAudioSource(audioSource:#if lime AudioSource #else Dynamic #end):Void
 	{
 		#if lime
-		__source = source;
-		if (__source == null)
+		__audioSource = audioSource;
+		if (__audioSource == null)
 		{
 			return;
 		}
 
-		__source.onComplete.add(source_onComplete);
+		__audioSource.onComplete.add(audioSource_onComplete);
 		__isValid = true;
 
-		__source.play();
+		__audioSource.play();
 		#end
 	}
 
@@ -155,7 +155,7 @@ import lime.media.AudioSource;
 		if (!__isValid) return 0;
 
 		#if lime
-		return __source.currentTime + __source.offset;
+		return __audioSource.currentTime + __audioSource.offset;
 		#else
 		return 0;
 		#end
@@ -166,7 +166,7 @@ import lime.media.AudioSource;
 		if (!__isValid) return 0;
 
 		#if lime
-		__source.currentTime = Std.int(value) - __source.offset;
+		__audioSource.currentTime = Std.int(value) - __audioSource.offset;
 		#end
 		return value;
 	}
@@ -193,12 +193,12 @@ import lime.media.AudioSource;
 			if (__isValid)
 			{
 				#if lime
-				__source.gain = volume;
+				__audioSource.gain = volume;
 
-				var position = __source.position;
+				var position = __audioSource.position;
 				position.x = pan;
 				position.z = -1 * Math.sqrt(1 - Math.pow(pan, 2));
-				__source.position = position;
+				__audioSource.position = position;
 
 				return value;
 				#end
@@ -209,7 +209,7 @@ import lime.media.AudioSource;
 	}
 
 	// Event Handlers
-	@:noCompletion private function source_onComplete():Void
+	@:noCompletion private function audioSource_onComplete():Void
 	{
 		SoundMixer.__unregisterSoundChannel(this);
 

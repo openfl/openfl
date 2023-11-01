@@ -95,8 +95,9 @@ import lime.media.AudioSource;
 #end
 @:access(lime.media.AudioBuffer)
 @:access(lime.utils.AssetLibrary)
+@:access(openfl.events.SampleDataEvent)
 @:access(openfl.media.SoundMixer)
-@:access(openfl.media.SoundChannel.new)
+@:access(openfl.media.SoundChannel)
 @:autoBuild(openfl.utils._internal.AssetsMacro.embedSound())
 class Sound extends EventDispatcher
 {
@@ -244,32 +245,31 @@ class Sound extends EventDispatcher
 	public var url(default, null):String;
 
 	@:noCompletion private var __urlLoading:Bool = false;
+	@:noCompletion private var __sampleDataEvent:SampleDataEvent;
 
 	#if lime
 	@:noCompletion private var __pendingSoundChannel:SoundChannel;
-	@:noCompletion private var __pendingSource:AudioSource;
+	@:noCompletion private var __pendingAudioSource:AudioSource;
 	@:noCompletion private var __buffer:AudioBuffer;
 	#end
 
 	#if (js && html5)
 	public var sampleRate(get, never):Int;
 
-	private var __audioContext:WebAudioContext = null;
+	private var __webAudioContext:WebAudioContext = null;
 	private var __processor:js.html.audio.ScriptProcessorNode;
-	private var __sampleData:SampleDataEvent;
 	private var __firstRun:Bool = true;
 	#end
 
 	#if lime_openal
 	public var sampleRate(get, never):Int;
 
-	private var __ALAudioContext:OpenALAudioContext = null;
-	private var __sampleData:SampleDataEvent;
-	private var __source:ALSource;
+	private var __alAudioContext:OpenALAudioContext = null;
+	private var __alSource:ALSource;
 	private var __outputBuffer:ByteArray;
 	private var __bufferView:ArrayBufferView;
 	private var __buffers:Array<ALBuffer>;
-	private var __numberOFBuffers:Int = 3;
+	private var __numberOfBuffers:Int = 3;
 	private var __listenerRemoved:Bool = false;
 	private var __emptyBuffers:Array<ALBuffer>;
 	#end
@@ -325,7 +325,7 @@ class Sound extends EventDispatcher
 			switch (AudioManager.context.type)
 			{
 				case WEB:
-					__audioContext = AudioManager.context.web;
+					__webAudioContext = AudioManager.context.web;
 				default:
 			}
 		}
@@ -336,7 +336,7 @@ class Sound extends EventDispatcher
 			switch (AudioManager.context.type)
 			{
 				case OPENAL:
-					__ALAudioContext = AudioManager.context.openal;
+					__alAudioContext = AudioManager.context.openal;
 				default:
 			}
 		}
@@ -711,82 +711,82 @@ class Sound extends EventDispatcher
 
 		var volume = SoundMixer.__soundTransform.volume * sndTransform.volume;
 
-		var source = new AudioSource(__buffer);
-		source.offset = Std.int(startTime);
-		if (loops > 1) source.loops = loops - 1;
+		var audioSource = new AudioSource(__buffer);
+		audioSource.offset = Std.int(startTime);
+		if (loops > 1) audioSource.loops = loops - 1;
 
-		source.gain = volume;
+		audioSource.gain = volume;
 
-		var position = source.position;
+		var position = audioSource.position;
 		position.x = pan;
 		position.z = -1 * Math.sqrt(1 - Math.pow(pan, 2));
-		source.position = position;
+		audioSource.position = position;
 		#if (js && html5)
-		if (__audioContext != null && __buffer == null && !__urlLoading)
+		if (__webAudioContext != null && __buffer == null && !__urlLoading)
 		{
-			__sampleData = new SampleDataEvent(SampleDataEvent.SAMPLE_DATA);
-			dispatchEvent(__sampleData);
-			var bufferSize = @:privateAccess __sampleData.getBufferSize();
+			__sampleDataEvent = new SampleDataEvent(SampleDataEvent.SAMPLE_DATA);
+			dispatchEvent(__sampleDataEvent);
+			var bufferSize = __sampleDataEvent.getBufferSize();
 			if (bufferSize > 0)
 			{
-				__processor = __audioContext.createScriptProcessor(bufferSize, 0, 2);
-				__processor.connect(__audioContext.destination);
+				__processor = __webAudioContext.createScriptProcessor(bufferSize, 0, 2);
+				__processor.connect(__webAudioContext.destination);
 				__processor.onaudioprocess = onSample;
 				#if (haxe_ver >= 4.2)
-				__audioContext.resume();
+				__webAudioContext.resume();
 				#else
-				Reflect.callMethod(__audioContext, Reflect.field(__audioContext, "resume"), []);
+				Reflect.callMethod(__webAudioContext, Reflect.field(__webAudioContext, "resume"), []);
 				#end
 			}
 		}
 		#end
 		#if lime_openal
-		if (__ALAudioContext != null && __buffer == null && !__urlLoading)
+		if (__alAudioContext != null && __buffer == null && !__urlLoading)
 		{
 			__listenerRemoved = false;
-			__sampleData = new SampleDataEvent(SampleDataEvent.SAMPLE_DATA);
-			dispatchEvent(__sampleData);
-			var bufferSize = @:privateAccess __sampleData.getBufferSize();
+			__sampleDataEvent = new SampleDataEvent(SampleDataEvent.SAMPLE_DATA);
+			dispatchEvent(__sampleDataEvent);
+			var bufferSize = __sampleDataEvent.getBufferSize();
 			if (bufferSize > 0)
 			{
 				bufferSize = 0;
-				__source = __ALAudioContext.createSource();
-				__ALAudioContext.sourcef(__source, __ALAudioContext.GAIN, 1);
-				__ALAudioContext.source3f(__source, __ALAudioContext.POSITION, 0, 0, 0);
-				__ALAudioContext.sourcef(__source, __ALAudioContext.PITCH, 1.0);
+				__alSource = __alAudioContext.createSource();
+				__alAudioContext.sourcef(__alSource, __alAudioContext.GAIN, 1);
+				__alAudioContext.source3f(__alSource, __alAudioContext.POSITION, 0, 0, 0);
+				__alAudioContext.sourcef(__alSource, __alAudioContext.PITCH, 1.0);
 
-				__buffers = __ALAudioContext.genBuffers(__numberOFBuffers);
+				__buffers = __alAudioContext.genBuffers(__numberOfBuffers);
 				__outputBuffer = new ByteArray();
 				__bufferView = new lime.utils.Int16Array(__outputBuffer);
 
-				for (a in 0...__numberOFBuffers)
+				for (a in 0...__numberOfBuffers)
 				{
 					if (bufferSize == 0)
 					{
-						bufferSize = @:privateAccess __sampleData.getBufferSize();
-						@:privateAccess __sampleData.getSamples(__outputBuffer);
-						__ALAudioContext.bufferData(__buffers[a], __ALAudioContext.FORMAT_STEREO16, __bufferView, bufferSize * 4, 44100);
+						bufferSize = __sampleDataEvent.getBufferSize();
+						__sampleDataEvent.getSamples(__outputBuffer);
+						__alAudioContext.bufferData(__buffers[a], __alAudioContext.FORMAT_STEREO16, __bufferView, bufferSize * 4, 44100);
 					}
 					else
 					{
-						dispatchEvent(__sampleData);
-						@:privateAccess __sampleData.getSamples(__outputBuffer);
-						__ALAudioContext.bufferData(__buffers[a], __ALAudioContext.FORMAT_STEREO16, __bufferView, bufferSize * 4, 44100);
+						dispatchEvent(__sampleDataEvent);
+						__sampleDataEvent.getSamples(__outputBuffer);
+						__alAudioContext.bufferData(__buffers[a], __alAudioContext.FORMAT_STEREO16, __bufferView, bufferSize * 4, 44100);
 					}
 				}
 
-				__ALAudioContext.sourceQueueBuffers(__source, __numberOFBuffers, __buffers);
+				__alAudioContext.sourceQueueBuffers(__alSource, __numberOfBuffers, __buffers);
 
-				__ALAudioContext.sourcePlay(__source);
+				__alAudioContext.sourcePlay(__alSource);
 				lime.app.Application.current.onUpdate.add(watchBuffers);
 			}
 		}
 		#end
 
-		var soundChannel = new SoundChannel(__urlLoading ? null : source, sndTransform);
+		var soundChannel = new SoundChannel(__urlLoading ? null : audioSource, sndTransform);
 		if (__urlLoading)
 		{
-			__pendingSource = source;
+			__pendingAudioSource = audioSource;
 			__pendingSoundChannel = soundChannel;
 		}
 		return soundChannel;
@@ -804,9 +804,9 @@ class Sound extends EventDispatcher
 		}
 		else
 		{
-			dispatchEvent(__sampleData);
+			dispatchEvent(__sampleDataEvent);
 		}
-		@:privateAccess __sampleData.getSamples(event);
+		__sampleDataEvent.getSamples(event);
 	}
 
 	override public function removeEventListener(type:String, listener:Dynamic->Void, useCapture:Bool = false):Void
@@ -822,41 +822,40 @@ class Sound extends EventDispatcher
 
 	private function get_sampleRate():Int
 	{
-		return Std.int(__audioContext.sampleRate);
+		return Std.int(__webAudioContext.sampleRate);
 	}
 	#end
 
 	#if lime_openal
 	private function watchBuffers(i:Int):Void
 	{
-		var bufferState = __ALAudioContext.getSourcei(__source, __ALAudioContext.BUFFERS_PROCESSED);
+		var bufferState = __alAudioContext.getSourcei(__alSource, __alAudioContext.BUFFERS_PROCESSED);
 
 		if (bufferState > 0)
 		{
-			__emptyBuffers = __ALAudioContext.sourceUnqueueBuffers(__source, bufferState);
+			__emptyBuffers = __alAudioContext.sourceUnqueueBuffers(__alSource, bufferState);
 			for (a in 0...__emptyBuffers.length)
 			{
-				dispatchEvent(__sampleData);
-				@:privateAccess __sampleData.getSamples(__outputBuffer);
-				__ALAudioContext.bufferData(__emptyBuffers[a], __ALAudioContext.FORMAT_STEREO16, __bufferView,
-					@:privateAccess __sampleData.getBufferSize() * 4, 44100);
-				__ALAudioContext.sourceQueueBuffer(__source, __emptyBuffers[a]);
+				dispatchEvent(__sampleDataEvent);
+				__sampleDataEvent.getSamples(__outputBuffer);
+				__alAudioContext.bufferData(__emptyBuffers[a], __alAudioContext.FORMAT_STEREO16, __bufferView, __sampleDataEvent.getBufferSize() * 4, 44100);
+				__alAudioContext.sourceQueueBuffer(__alSource, __emptyBuffers[a]);
 			}
 
-			if (__ALAudioContext.getSourcei(__source, __ALAudioContext.SOURCE_STATE) != __ALAudioContext.PLAYING)
+			if (__alAudioContext.getSourcei(__alSource, __alAudioContext.SOURCE_STATE) != __alAudioContext.PLAYING)
 			{
-				__ALAudioContext.sourcePlay(__source);
+				__alAudioContext.sourcePlay(__alSource);
 			}
 		}
 		if (__listenerRemoved)
 		{
 			lime.app.Application.current.onUpdate.remove(watchBuffers);
-			__ALAudioContext.sourceStop((__source));
-			__ALAudioContext.deleteSource(__source);
-			__ALAudioContext.deleteBuffers(__buffers);
-			__ALAudioContext = null;
+			__alAudioContext.sourceStop(__alSource);
+			__alAudioContext.deleteSource(__alSource);
+			__alAudioContext.deleteBuffers(__buffers);
+			__alAudioContext = null;
 			__emptyBuffers = null;
-			__source = null;
+			__alSource = null;
 			__buffer = null;
 		}
 	}
@@ -869,7 +868,7 @@ class Sound extends EventDispatcher
 	override public function removeEventListener(type:String, listener:Dynamic->Void, useCapture:Bool = false):Void
 	{
 		super.removeEventListener(type, listener, useCapture);
-		if (type == SampleDataEvent.SAMPLE_DATA && __ALAudioContext != null)
+		if (type == SampleDataEvent.SAMPLE_DATA && __alAudioContext != null)
 		{
 			__listenerRemoved = true;
 		}
@@ -926,15 +925,15 @@ class Sound extends EventDispatcher
 			dispatchEvent(new Event(Event.COMPLETE));
 			if (__pendingSoundChannel != null)
 			{
-				__pendingSource.buffer = __buffer;
+				__pendingAudioSource.buffer = __buffer;
 				// ideally, Lime would call init() when setting buffer,
 				// similar to how it does in the AudioSource constructor
-				@:privateAccess __pendingSource.init();
-				@:privateAccess __pendingSoundChannel.__initSource(__pendingSource);
+				@:privateAccess __pendingAudioSource.init();
+				__pendingSoundChannel.__initAudioSource(__pendingAudioSource);
 			}
 		}
 		__pendingSoundChannel = null;
-		__pendingSource = null;
+		__pendingAudioSource = null;
 	}
 	#end
 }
