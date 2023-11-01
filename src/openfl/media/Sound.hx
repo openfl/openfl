@@ -711,16 +711,16 @@ class Sound extends EventDispatcher
 			__pendingAudioSource = audioSource;
 			__pendingSoundChannel = soundChannel;
 		}
-		else
+		else if (__buffer == null)
 		{
 			#if (js && html5)
-			if (__webAudioContext != null && __buffer == null)
+			if (__webAudioContext != null)
 			{
 				soundChannel.__startSampleData();
 			}
 			#end
 			#if lime_openal
-			if (__alAudioContext != null && __buffer == null)
+			if (__alAudioContext != null)
 			{
 				soundChannel.__startSampleData();
 			}
