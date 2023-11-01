@@ -726,14 +726,18 @@ class Sound extends EventDispatcher
 		{
 			__sampleData = new SampleDataEvent(SampleDataEvent.SAMPLE_DATA);
 			dispatchEvent(__sampleData);
-			__processor = __audioContext.createScriptProcessor(@:privateAccess __sampleData.getBufferSize(), 0, 2);
-			__processor.connect(__audioContext.destination);
-			__processor.onaudioprocess = onSample;
-			#if (haxe_ver >= 4.2)
-			__audioContext.resume();
-			#else
-			Reflect.callMethod(__audioContext, Reflect.field(__audioContext, "resume"), []);
-			#end
+			var bufferSize = @:privateAccess __sampleData.getBufferSize();
+			if (bufferSize > 0)
+			{
+				__processor = __audioContext.createScriptProcessor(bufferSize, 0, 2);
+				__processor.connect(__audioContext.destination);
+				__processor.onaudioprocess = onSample;
+				#if (haxe_ver >= 4.2)
+				__audioContext.resume();
+				#else
+				Reflect.callMethod(__audioContext, Reflect.field(__audioContext, "resume"), []);
+				#end
+			}
 		}
 		#end
 		#if lime_openal
@@ -742,36 +746,40 @@ class Sound extends EventDispatcher
 			__listenerRemoved = false;
 			__sampleData = new SampleDataEvent(SampleDataEvent.SAMPLE_DATA);
 			dispatchEvent(__sampleData);
-			var bufferSize:Int = 0;
-			__source = __ALAudioContext.createSource();
-			__ALAudioContext.sourcef(__source, __ALAudioContext.GAIN, 1);
-			__ALAudioContext.source3f(__source, __ALAudioContext.POSITION, 0, 0, 0);
-			__ALAudioContext.sourcef(__source, __ALAudioContext.PITCH, 1.0);
-
-			__buffers = __ALAudioContext.genBuffers(__numberOFBuffers);
-			__outputBuffer = new ByteArray();
-			__bufferView = new lime.utils.Int16Array(__outputBuffer);
-
-			for (a in 0...__numberOFBuffers)
+			var bufferSize = @:privateAccess __sampleData.getBufferSize();
+			if (bufferSize > 0)
 			{
-				if (bufferSize == 0)
+				bufferSize = 0;
+				__source = __ALAudioContext.createSource();
+				__ALAudioContext.sourcef(__source, __ALAudioContext.GAIN, 1);
+				__ALAudioContext.source3f(__source, __ALAudioContext.POSITION, 0, 0, 0);
+				__ALAudioContext.sourcef(__source, __ALAudioContext.PITCH, 1.0);
+
+				__buffers = __ALAudioContext.genBuffers(__numberOFBuffers);
+				__outputBuffer = new ByteArray();
+				__bufferView = new lime.utils.Int16Array(__outputBuffer);
+
+				for (a in 0...__numberOFBuffers)
 				{
-					bufferSize = @:privateAccess __sampleData.getBufferSize();
-					@:privateAccess __sampleData.getSamples(__outputBuffer);
-					__ALAudioContext.bufferData(__buffers[a], __ALAudioContext.FORMAT_STEREO16, __bufferView, bufferSize * 4, 44100);
+					if (bufferSize == 0)
+					{
+						bufferSize = @:privateAccess __sampleData.getBufferSize();
+						@:privateAccess __sampleData.getSamples(__outputBuffer);
+						__ALAudioContext.bufferData(__buffers[a], __ALAudioContext.FORMAT_STEREO16, __bufferView, bufferSize * 4, 44100);
+					}
+					else
+					{
+						dispatchEvent(__sampleData);
+						@:privateAccess __sampleData.getSamples(__outputBuffer);
+						__ALAudioContext.bufferData(__buffers[a], __ALAudioContext.FORMAT_STEREO16, __bufferView, bufferSize * 4, 44100);
+					}
 				}
-				else
-				{
-					dispatchEvent(__sampleData);
-					@:privateAccess __sampleData.getSamples(__outputBuffer);
-					__ALAudioContext.bufferData(__buffers[a], __ALAudioContext.FORMAT_STEREO16, __bufferView, bufferSize * 4, 44100);
-				}
+
+				__ALAudioContext.sourceQueueBuffers(__source, __numberOFBuffers, __buffers);
+
+				__ALAudioContext.sourcePlay(__source);
+				lime.app.Application.current.onUpdate.add(watchBuffers);
 			}
-
-			__ALAudioContext.sourceQueueBuffers(__source, __numberOFBuffers, __buffers);
-
-			__ALAudioContext.sourcePlay(__source);
-			lime.app.Application.current.onUpdate.add(watchBuffers);
 		}
 		#end
 
