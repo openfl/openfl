@@ -270,7 +270,6 @@ class Sound extends EventDispatcher
 	private var __bufferView:ArrayBufferView;
 	private var __buffers:Array<ALBuffer>;
 	private var __numberOfBuffers:Int = 3;
-	private var __listenerRemoved:Bool = false;
 	private var __emptyBuffers:Array<ALBuffer>;
 	#end
 
@@ -743,7 +742,6 @@ class Sound extends EventDispatcher
 		#if lime_openal
 		if (__alAudioContext != null && __buffer == null && !__urlLoading)
 		{
-			__listenerRemoved = false;
 			__sampleDataEvent = new SampleDataEvent(SampleDataEvent.SAMPLE_DATA);
 			dispatchEvent(__sampleDataEvent);
 			var bufferSize = __sampleDataEvent.getBufferSize();
@@ -798,25 +796,30 @@ class Sound extends EventDispatcher
 	#if (js && html5)
 	private function onSample(event:js.html.audio.AudioProcessingEvent):Void
 	{
+		var hasSampleData = false;
 		if (__firstRun)
 		{
+			hasSampleData = true;
 			__firstRun = false;
 		}
 		else
 		{
+			__sampleDataEvent.data.length = 0;
 			dispatchEvent(__sampleDataEvent);
+			hasSampleData = __sampleDataEvent.data.length > 0;
 		}
-		__sampleDataEvent.getSamples(event);
-	}
-
-	override public function removeEventListener(type:String, listener:Dynamic->Void, useCapture:Bool = false):Void
-	{
-		super.removeEventListener(type, listener, useCapture);
-		if (type == SampleDataEvent.SAMPLE_DATA && __processor != null)
+		if (hasSampleData)
 		{
-			__processor.disconnect();
-			__processor.onaudioprocess = null;
-			__processor = null;
+			__sampleDataEvent.getSamples(event);
+		}
+		else
+		{
+			if (__processor != null)
+			{
+				__processor.disconnect();
+				__processor.onaudioprocess = null;
+				__processor = null;
+			}
 		}
 	}
 
@@ -831,23 +834,33 @@ class Sound extends EventDispatcher
 	{
 		var bufferState = __alAudioContext.getSourcei(__alSource, __alAudioContext.BUFFERS_PROCESSED);
 
+		var hasSampleData = true;
 		if (bufferState > 0)
 		{
 			__emptyBuffers = __alAudioContext.sourceUnqueueBuffers(__alSource, bufferState);
 			for (a in 0...__emptyBuffers.length)
 			{
+				__sampleDataEvent.data.length = 0;
 				dispatchEvent(__sampleDataEvent);
-				__sampleDataEvent.getSamples(__outputBuffer);
-				__alAudioContext.bufferData(__emptyBuffers[a], __alAudioContext.FORMAT_STEREO16, __bufferView, __sampleDataEvent.getBufferSize() * 4, 44100);
-				__alAudioContext.sourceQueueBuffer(__alSource, __emptyBuffers[a]);
+				if (__sampleDataEvent.data.length == 0)
+				{
+					hasSampleData = false;
+				}
+				else
+				{
+					__sampleDataEvent.getSamples(__outputBuffer);
+					__alAudioContext.bufferData(__emptyBuffers[a], __alAudioContext.FORMAT_STEREO16, __bufferView, __sampleDataEvent.getBufferSize() * 4,
+						44100);
+					__alAudioContext.sourceQueueBuffer(__alSource, __emptyBuffers[a]);
+				}
 			}
 
-			if (__alAudioContext.getSourcei(__alSource, __alAudioContext.SOURCE_STATE) != __alAudioContext.PLAYING)
+			if (hasSampleData && __alAudioContext.getSourcei(__alSource, __alAudioContext.SOURCE_STATE) != __alAudioContext.PLAYING)
 			{
 				__alAudioContext.sourcePlay(__alSource);
 			}
 		}
-		if (__listenerRemoved)
+		if (!hasSampleData)
 		{
 			lime.app.Application.current.onUpdate.remove(watchBuffers);
 			__alAudioContext.sourceStop(__alSource);
@@ -863,15 +876,6 @@ class Sound extends EventDispatcher
 	private function get_sampleRate():Int
 	{
 		return 44100;
-	}
-
-	override public function removeEventListener(type:String, listener:Dynamic->Void, useCapture:Bool = false):Void
-	{
-		super.removeEventListener(type, listener, useCapture);
-		if (type == SampleDataEvent.SAMPLE_DATA && __alAudioContext != null)
-		{
-			__listenerRemoved = true;
-		}
 	}
 	#end
 
