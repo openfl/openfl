@@ -91,7 +91,7 @@ import lime.utils.Int16Array;
 	private var __alSource:ALSource;
 	private var __outputBuffer:ByteArray;
 	private var __bufferView:ArrayBufferView;
-	private var __buffers:Array<ALBuffer>;
+	private var __alBuffers:Array<ALBuffer>;
 	private var __numberOfBuffers:Int = 3;
 	private var __emptyBuffers:Array<ALBuffer>;
 	#end
@@ -143,6 +143,28 @@ import lime.utils.Int16Array;
 		SoundMixer.__unregisterSoundChannel(this);
 
 		if (!__isValid) return;
+
+		#if (js && html5)
+		if (__processor != null)
+		{
+			__processor.disconnect();
+			__processor.onaudioprocess = null;
+			__processor = null;
+		}
+		#end
+
+		#if lime_openal
+		if (__alSource != null)
+		{
+			lime.app.Application.current.onUpdate.remove(watchBuffers);
+			var alAudioContext = __sound.__alAudioContext;
+			alAudioContext.sourceStop(__alSource);
+			alAudioContext.deleteSource(__alSource);
+			alAudioContext.deleteBuffers(__alBuffers);
+			__emptyBuffers = null;
+			__alSource = null;
+		}
+		#end
 
 		#if lime
 		__audioSource.stop();
@@ -199,7 +221,7 @@ import lime.utils.Int16Array;
 				alAudioContext.source3f(__alSource, alAudioContext.POSITION, 0, 0, 0);
 				alAudioContext.sourcef(__alSource, alAudioContext.PITCH, 1.0);
 
-				__buffers = alAudioContext.genBuffers(__numberOfBuffers);
+				__alBuffers = alAudioContext.genBuffers(__numberOfBuffers);
 				__outputBuffer = new ByteArray();
 				__bufferView = new lime.utils.Int16Array(__outputBuffer);
 
@@ -209,17 +231,17 @@ import lime.utils.Int16Array;
 					{
 						bufferSize = __sampleDataEvent.getBufferSize();
 						__sampleDataEvent.getSamples(__outputBuffer);
-						alAudioContext.bufferData(__buffers[a], alAudioContext.FORMAT_STEREO16, __bufferView, bufferSize * 4, 44100);
+						alAudioContext.bufferData(__alBuffers[a], alAudioContext.FORMAT_STEREO16, __bufferView, bufferSize * 4, 44100);
 					}
 					else
 					{
 						__sound.dispatchEvent(__sampleDataEvent);
 						__sampleDataEvent.getSamples(__outputBuffer);
-						alAudioContext.bufferData(__buffers[a], alAudioContext.FORMAT_STEREO16, __bufferView, bufferSize * 4, 44100);
+						alAudioContext.bufferData(__alBuffers[a], alAudioContext.FORMAT_STEREO16, __bufferView, bufferSize * 4, 44100);
 					}
 				}
 
-				alAudioContext.sourceQueueBuffers(__alSource, __numberOfBuffers, __buffers);
+				alAudioContext.sourceQueueBuffers(__alSource, __numberOfBuffers, __alBuffers);
 
 				alAudioContext.sourcePlay(__alSource);
 				lime.app.Application.current.onUpdate.add(watchBuffers);
@@ -338,12 +360,7 @@ import lime.utils.Int16Array;
 		}
 		else
 		{
-			if (__processor != null)
-			{
-				__processor.disconnect();
-				__processor.onaudioprocess = null;
-				__processor = null;
-			}
+			stop();
 		}
 	}
 	#end
@@ -385,12 +402,7 @@ import lime.utils.Int16Array;
 		}
 		if (!hasSampleData)
 		{
-			lime.app.Application.current.onUpdate.remove(watchBuffers);
-			alAudioContext.sourceStop(__alSource);
-			alAudioContext.deleteSource(__alSource);
-			alAudioContext.deleteBuffers(__buffers);
-			__emptyBuffers = null;
-			__alSource = null;
+			stop();
 		}
 	}
 	#end
