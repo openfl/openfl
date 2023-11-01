@@ -243,6 +243,8 @@ class Sound extends EventDispatcher
 	**/
 	public var url(default, null):String;
 
+	private var __urlLoading:Bool = false;
+
 	#if lime
 	@:noCompletion private var __buffer:AudioBuffer;
 	#end
@@ -501,6 +503,7 @@ class Sound extends EventDispatcher
 	public function load(stream:URLRequest, context:SoundLoaderContext = null):Void
 	{
 		url = stream.url;
+		__urlLoading = true;
 
 		#if lime
 		#if (js && html5)
@@ -717,7 +720,7 @@ class Sound extends EventDispatcher
 		position.z = -1 * Math.sqrt(1 - Math.pow(pan, 2));
 		source.position = position;
 		#if (js && html5)
-		if (__audioContext != null && __buffer == null)
+		if (__audioContext != null && __buffer == null && !__urlLoading)
 		{
 			__sampleData = new SampleDataEvent(SampleDataEvent.SAMPLE_DATA);
 			dispatchEvent(__sampleData);
@@ -732,7 +735,7 @@ class Sound extends EventDispatcher
 		}
 		#end
 		#if lime_openal
-		if (__ALAudioContext != null && __buffer == null)
+		if (__ALAudioContext != null && __buffer == null && !__urlLoading)
 		{
 			__listenerRemoved = false;
 			__sampleData = new SampleDataEvent(SampleDataEvent.SAMPLE_DATA);
@@ -896,6 +899,7 @@ class Sound extends EventDispatcher
 	#if lime
 	@:noCompletion private function AudioBuffer_onURLLoad(buffer:AudioBuffer):Void
 	{
+		__urlLoading = false;
 		if (buffer == null)
 		{
 			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
