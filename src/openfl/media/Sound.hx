@@ -243,9 +243,11 @@ class Sound extends EventDispatcher
 	**/
 	public var url(default, null):String;
 
-	private var __urlLoading:Bool = false;
+	@:noCompletion private var __urlLoading:Bool = false;
 
 	#if lime
+	@:noCompletion private var __pendingSoundChannel:SoundChannel;
+	@:noCompletion private var __pendingSource:AudioSource;
 	@:noCompletion private var __buffer:AudioBuffer;
 	#end
 
@@ -773,7 +775,13 @@ class Sound extends EventDispatcher
 		}
 		#end
 
-		return new SoundChannel(source, sndTransform);
+		var soundChannel = new SoundChannel(__urlLoading ? null : source, sndTransform);
+		if (__urlLoading)
+		{
+			__pendingSource = source;
+			__pendingSoundChannel = soundChannel;
+		}
+		return soundChannel;
 		#else
 		return null;
 		#end
@@ -908,7 +916,17 @@ class Sound extends EventDispatcher
 		{
 			__buffer = buffer;
 			dispatchEvent(new Event(Event.COMPLETE));
+			if (__pendingSoundChannel != null)
+			{
+				__pendingSource.buffer = __buffer;
+				// ideally, Lime would call init() when setting buffer,
+				// similar to how it does in the AudioSource constructor
+				@:privateAccess __pendingSource.init();
+				@:privateAccess __pendingSoundChannel.__initSource(__pendingSource);
+			}
 		}
+		__pendingSoundChannel = null;
+		__pendingSource = null;
 	}
 	#end
 }
