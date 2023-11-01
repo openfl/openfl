@@ -2,6 +2,7 @@ package openfl.media;
 
 #if !flash
 import haxe.Int64;
+import openfl.errors.IOError;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.IOErrorEvent;
@@ -413,7 +414,12 @@ class Sound extends EventDispatcher
 	public static function fromFile(path:String):Sound
 	{
 		#if lime
-		return fromAudioBuffer(AudioBuffer.fromFile(path));
+		var buffer = AudioBuffer.fromFile(path);
+		if (buffer == null)
+		{
+			throw new IOError("Error loading sound from file: " + path);
+		}
+		return fromAudioBuffer(buffer);
 		#else
 		return null;
 		#end
