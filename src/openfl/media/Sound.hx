@@ -13,6 +13,8 @@ import openfl.utils.Future;
 import lime.media.AudioManager;
 import lime.media.WebAudioContext;
 import openfl.events.SampleDataEvent;
+import js.html.audio.AudioProcessingEvent;
+import js.html.audio.ScriptProcessorNode;
 #end
 #if lime_openal
 import lime.media.openal.ALBuffer;
@@ -257,7 +259,7 @@ class Sound extends EventDispatcher
 	public var sampleRate(get, never):Int;
 
 	private var __webAudioContext:WebAudioContext = null;
-	private var __processor:js.html.audio.ScriptProcessorNode;
+	private var __processor:ScriptProcessorNode;
 	private var __firstRun:Bool = true;
 	#end
 
@@ -794,7 +796,7 @@ class Sound extends EventDispatcher
 	}
 
 	#if (js && html5)
-	private function onSample(event:js.html.audio.AudioProcessingEvent):Void
+	private function onSample(event:AudioProcessingEvent):Void
 	{
 		var hasSampleData = false;
 		if (__firstRun)
