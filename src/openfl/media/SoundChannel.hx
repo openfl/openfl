@@ -6,6 +6,19 @@ import openfl.events.EventDispatcher;
 #if lime
 import lime.media.AudioSource;
 #end
+#if (js && html5)
+import openfl.events.SampleDataEvent;
+import js.html.audio.AudioProcessingEvent;
+import js.html.audio.ScriptProcessorNode;
+#end
+#if lime_openal
+import openfl.events.SampleDataEvent;
+import openfl.utils.ByteArray;
+import lime.media.openal.ALBuffer;
+import lime.media.openal.ALSource;
+import lime.utils.ArrayBufferView;
+import lime.utils.Int16Array;
+#end
 
 /**
 	The SoundChannel class controls a sound in an application. Every sound is
@@ -21,6 +34,8 @@ import lime.media.AudioSource;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@:access(openfl.events.SampleDataEvent)
+@:access(openfl.media.Sound)
 @:access(openfl.media.SoundMixer)
 @:final @:keep class SoundChannel extends EventDispatcher
 {
@@ -58,10 +73,27 @@ import lime.media.AudioSource;
 	**/
 	public var soundTransform(get, set):SoundTransform;
 
+	@:noCompletion private var __sound:Sound;
 	@:noCompletion private var __isValid:Bool;
 	@:noCompletion private var __soundTransform:SoundTransform;
 	#if lime
 	@:noCompletion private var __audioSource:AudioSource;
+	#end
+
+	#if (js && html5)
+	private var __sampleDataEvent:SampleDataEvent;
+	private var __processor:ScriptProcessorNode;
+	private var __firstRun:Bool = true;
+	#end
+
+	#if lime_openal
+	private var __sampleDataEvent:SampleDataEvent;
+	private var __alSource:ALSource;
+	private var __outputBuffer:ByteArray;
+	private var __bufferView:ArrayBufferView;
+	private var __buffers:Array<ALBuffer>;
+	private var __numberOfBuffers:Int = 3;
+	private var __emptyBuffers:Array<ALBuffer>;
 	#end
 
 	#if openfljs
@@ -80,9 +112,11 @@ import lime.media.AudioSource;
 	}
 	#end
 
-	@:noCompletion private function new(audioSource:#if lime AudioSource #else Dynamic #end = null, soundTransform:SoundTransform = null):Void
+	@:noCompletion private function new(sound:Sound, audioSource:#if lime AudioSource #else Dynamic #end = null, soundTransform:SoundTransform = null):Void
 	{
 		super(this);
+
+		__sound = sound;
 
 		leftPeak = 1;
 		rightPeak = 1;
@@ -126,6 +160,72 @@ import lime.media.AudioSource;
 		__audioSource = null;
 		#end
 		__isValid = false;
+	}
+
+	@:noCompletion private function __startSampleData():Void
+	{
+		#if (js && html5)
+		var webAudioContext = __sound.__webAudioContext;
+		if (webAudioContext != null)
+		{
+			__sampleDataEvent = new SampleDataEvent(SampleDataEvent.SAMPLE_DATA);
+			__sound.dispatchEvent(__sampleDataEvent);
+			var bufferSize = __sampleDataEvent.getBufferSize();
+			if (bufferSize > 0)
+			{
+				__processor = webAudioContext.createScriptProcessor(bufferSize, 0, 2);
+				__processor.connect(webAudioContext.destination);
+				__processor.onaudioprocess = onSample;
+				#if (haxe_ver >= 4.2)
+				webAudioContext.resume();
+				#else
+				Reflect.callMethod(webAudioContext, Reflect.field(webAudioContext, "resume"), []);
+				#end
+			}
+		}
+		#end
+		#if lime_openal
+		var alAudioContext = __sound.__alAudioContext;
+		if (alAudioContext != null)
+		{
+			__sampleDataEvent = new SampleDataEvent(SampleDataEvent.SAMPLE_DATA);
+			__sound.dispatchEvent(__sampleDataEvent);
+			var bufferSize = __sampleDataEvent.getBufferSize();
+			if (bufferSize > 0)
+			{
+				bufferSize = 0;
+				__alSource = alAudioContext.createSource();
+				alAudioContext.sourcef(__alSource, alAudioContext.GAIN, 1);
+				alAudioContext.source3f(__alSource, alAudioContext.POSITION, 0, 0, 0);
+				alAudioContext.sourcef(__alSource, alAudioContext.PITCH, 1.0);
+
+				__buffers = alAudioContext.genBuffers(__numberOfBuffers);
+				__outputBuffer = new ByteArray();
+				__bufferView = new lime.utils.Int16Array(__outputBuffer);
+
+				for (a in 0...__numberOfBuffers)
+				{
+					if (bufferSize == 0)
+					{
+						bufferSize = __sampleDataEvent.getBufferSize();
+						__sampleDataEvent.getSamples(__outputBuffer);
+						alAudioContext.bufferData(__buffers[a], alAudioContext.FORMAT_STEREO16, __bufferView, bufferSize * 4, 44100);
+					}
+					else
+					{
+						__sound.dispatchEvent(__sampleDataEvent);
+						__sampleDataEvent.getSamples(__outputBuffer);
+						alAudioContext.bufferData(__buffers[a], alAudioContext.FORMAT_STEREO16, __bufferView, bufferSize * 4, 44100);
+					}
+				}
+
+				alAudioContext.sourceQueueBuffers(__alSource, __numberOfBuffers, __buffers);
+
+				alAudioContext.sourcePlay(__alSource);
+				lime.app.Application.current.onUpdate.add(watchBuffers);
+			}
+		}
+		#end
 	}
 
 	@:noCompletion private function __updateTransform():Void
@@ -216,6 +316,84 @@ import lime.media.AudioSource;
 		__dispose();
 		dispatchEvent(new Event(Event.SOUND_COMPLETE));
 	}
+
+	#if (js && html5)
+	private function onSample(event:AudioProcessingEvent):Void
+	{
+		var hasSampleData = false;
+		if (__firstRun)
+		{
+			hasSampleData = true;
+			__firstRun = false;
+		}
+		else
+		{
+			__sampleDataEvent.data.length = 0;
+			__sound.dispatchEvent(__sampleDataEvent);
+			hasSampleData = __sampleDataEvent.data.length > 0;
+		}
+		if (hasSampleData)
+		{
+			__sampleDataEvent.getSamples(event);
+		}
+		else
+		{
+			if (__processor != null)
+			{
+				__processor.disconnect();
+				__processor.onaudioprocess = null;
+				__processor = null;
+			}
+		}
+	}
+	#end
+
+	#if lime_openal
+	private function watchBuffers(i:Int):Void
+	{
+		var alAudioContext = __sound.__alAudioContext;
+		var hasSampleData = true;
+
+		if (alAudioContext != null)
+		{
+			var bufferState = alAudioContext.getSourcei(__alSource, alAudioContext.BUFFERS_PROCESSED);
+			if (bufferState > 0)
+			{
+				__emptyBuffers = alAudioContext.sourceUnqueueBuffers(__alSource, bufferState);
+				for (a in 0...__emptyBuffers.length)
+				{
+					__sampleDataEvent.data.length = 0;
+					__sound.dispatchEvent(__sampleDataEvent);
+					if (__sampleDataEvent.data.length == 0)
+					{
+						hasSampleData = false;
+					}
+					else
+					{
+						__sampleDataEvent.getSamples(__outputBuffer);
+						alAudioContext.bufferData(__emptyBuffers[a], alAudioContext.FORMAT_STEREO16, __bufferView, __sampleDataEvent.getBufferSize() * 4,
+							44100);
+						alAudioContext.sourceQueueBuffer(__alSource, __emptyBuffers[a]);
+					}
+				}
+
+				if (hasSampleData && alAudioContext.getSourcei(__alSource, alAudioContext.SOURCE_STATE) != alAudioContext.PLAYING)
+				{
+					alAudioContext.sourcePlay(__alSource);
+				}
+			}
+		}
+		if (!hasSampleData)
+		{
+			lime.app.Application.current.onUpdate.remove(watchBuffers);
+			alAudioContext.sourceStop(__alSource);
+			alAudioContext.deleteSource(__alSource);
+			alAudioContext.deleteBuffers(__buffers);
+			__emptyBuffers = null;
+			__alSource = null;
+		}
+	}
+	#end
 }
 #else
 typedef SoundChannel = flash.media.SoundChannel;
