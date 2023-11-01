@@ -361,6 +361,7 @@ import lime.utils.Int16Array;
 		else
 		{
 			stop();
+			dispatchEvent(new Event(Event.SOUND_COMPLETE));
 		}
 	}
 	#end
@@ -403,6 +404,7 @@ import lime.utils.Int16Array;
 		if (!hasSampleData)
 		{
 			stop();
+			dispatchEvent(new Event(Event.SOUND_COMPLETE));
 		}
 	}
 	#end
