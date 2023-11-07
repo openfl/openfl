@@ -268,7 +268,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10) public var colorCorrection:openfl.display.ColorCorrection;
 	#end
-
 	#if false
 	/**
 		Specifies whether the Flash runtime is running on an operating system
@@ -1767,6 +1766,27 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 						}
 
 						// TODO: handle border around focus
+					}
+				}
+				else if (type == KeyboardEvent.KEY_DOWN && focus != null)
+				{
+					var ctrlKey = (__macKeyboard ? (modifier.ctrlKey || modifier.metaKey) : modifier.ctrlKey);
+					if (ctrlKey && !modifier.altKey && !modifier.shiftKey)
+					{
+						switch (keyCode)
+						{
+							case Keyboard.C:
+								// flash docs say that bubbles and cancelable
+								// are false, but they're actually true
+								var copyEvent = new Event(Event.COPY, true, true);
+								focus.dispatchEvent(copyEvent);
+							case Keyboard.X:
+								var cutEvent = new Event(Event.CUT, true, true);
+								focus.dispatchEvent(cutEvent);
+							case Keyboard.V:
+								var pasteEvent = new Event(Event.PASTE, true, true);
+								focus.dispatchEvent(pasteEvent);
+						}
 					}
 				}
 
