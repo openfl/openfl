@@ -1789,6 +1789,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 							case Keyboard.V:
 								var pasteEvent = new Event(Event.PASTE, true, true);
 								focus.dispatchEvent(pasteEvent);
+							case Keyboard.A:
+								var selectAllEvent = new Event(Event.SELECT_ALL, true, true);
+								focus.dispatchEvent(selectAllEvent);
 						}
 					}
 				}
