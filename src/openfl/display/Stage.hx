@@ -23,6 +23,7 @@ import openfl.geom.Matrix;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.geom.Transform;
+import openfl.text.TextField;
 import openfl.ui.GameInput;
 import openfl.ui.Keyboard;
 import openfl.ui.Mouse;
@@ -1768,7 +1769,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 						// TODO: handle border around focus
 					}
 				}
-				else if (type == KeyboardEvent.KEY_DOWN && focus != null)
+				else if (type == KeyboardEvent.KEY_DOWN
+					&& focus != null
+					&& !#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (focus, TextField))
 				{
 					var ctrlKey = (__macKeyboard ? (modifier.ctrlKey || modifier.metaKey) : modifier.ctrlKey);
 					if (ctrlKey && !modifier.altKey && !modifier.shiftKey)
