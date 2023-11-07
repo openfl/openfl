@@ -11,7 +11,6 @@ import lime.ui.FileDialog;
 #if sys
 import sys.FileSystem;
 #end
-
 /**
 	The FileReferenceList class provides a means to let users select one or
 	more files for uploading. A FileReferenceList object represents a group of
@@ -200,7 +199,11 @@ import openfl.net.FileFilter;
 import openfl.net.FileReference;
 import openfl.events.EventDispatcher;
 import openfl.events.Event;
+#if haxe4
 import js.lib.DataView;
+#else
+import js.html.DataView;
+#end
 
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -245,6 +248,11 @@ class FileReferenceList extends EventDispatcher
 	private function fileInput_onChange(event:Dynamic):Void
 	{
 		var files = (event.target : js.html.InputElement).files;
+		if (files.length == 0)
+		{
+			dispatchEvent(new Event(Event.CANCEL));
+			return;
+		}
 		for (i in 0...files.length)
 		{
 			var file = files[i];

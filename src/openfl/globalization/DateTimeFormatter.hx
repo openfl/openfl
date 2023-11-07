@@ -2,12 +2,12 @@ package openfl.globalization;
 
 import haxe.EnumTools.EnumValueTools;
 import openfl.Vector;
-#if html5
+#if (js && html5 && haxe4)
 import js.lib.intl.DateTimeFormat;
 #end
 
 #if !flash
-#if !html5
+#if !(js && html5)
 @:final class DateTimeFormatter
 {
 	private static var WEEKDAY_NAMES_EN = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -405,7 +405,7 @@ import js.lib.intl.DateTimeFormat;
 		}
 	}
 }
-#else
+#elseif haxe4
 @:final class DateTimeFormatter
 {
 	public static function getAvailableLocaleIDNames():Vector<String>

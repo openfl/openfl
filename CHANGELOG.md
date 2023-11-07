@@ -1,4 +1,9 @@
-9.3.0 (??/??/2023)
+9.3.1 (10/17/2023)
+------------------
+
+* Compatibility fixes for Haxe 3 and Haxe 4.0.x and the npm release
+
+9.3.0 (10/16/2023)
 ------------------
 
 * Added `SampleDataEvent.SAMPLE_DATA` to `Sound` class
@@ -15,7 +20,8 @@
 * Added support for referencing environment variables, like `%PROGRAMFILES%` in `File` path values on Windows
 * Added various enum, event, and error types to improve parity with types available in Adobe AIR
 * Added basic implementation of `flash.text.StageText` that falls back to `TextField`, similar to AIR desktop
-* Replaced `String` with `EventType` in `FileListEvent` for better compile-time checks
+* Replaced `String` with `EventType` in `FileListEvent`, `DatagramSocketEvent`, and `ServerSocketConnectEvent` for better compile-time checks
+* Fixed Flash/AIR compatibility for `DatagramSocketEvent`, and `ServerSocketConnectEvent` classes
 * Fixed wrong type on `size` for `FileReference` and `File` to make it `Float` instead of `Int` (Some code may need to use `Std.int()` after this change)
 * Fixed missing `controlKey` property on `MouseEvent`
 * Fixed missing `Event.OPEN` dispatch from `download()` on `FileReference`
@@ -39,7 +45,10 @@
 * Fixed `FlashGraphics` being included in other targets under some circumstances by adding `#if flash` conditional
 * Fixed `openfl.globalization`, `Namespace`, and `QName` issues in npm version
 * Fixed incorrect condition that caused issues in `ShapeCache`
+* Fixed `Socket` incorrectly dispatching `Event.CONNECT` for unconnected sockets on Windows
+* Fixed wrong caps/joints in line style returned by `readGraphicsData()`
 * Added `openfl_hack_fix_chrome_text` define to workaround a bug in Chrome that garbles text
+* Added `openfl_disable_text_measurement_cache` define to allow the `TextField` shape measurement cache to be optionally disabled
 
 9.2.2 (05/31/2023)
 ------------------

@@ -104,19 +104,22 @@ class SampleDataEvent extends Event
 	**/
 	public static inline var SAMPLE_DATA:EventType<SampleDataEvent> = "sampleData";
 
+	// using @:keep on data/position vars because Haxe removes them with
+	// dce full on some targets (at least cpp and hl), but doesn't remove the
+	// code in the constructor that sets them
+
 	/**
 		The data in the audio stream.
 	**/
-	public var data:ByteArray;
+	@:keep public var data:ByteArray;
 
 	/**
 		The position of the data in the audio stream.
 	**/
-	public var position:Float;
+	@:keep public var position:Float;
 
 	// @:noCompletion private static var __pool:ObjectPool<SampleDataEvent> = new ObjectPool<SampleDataEvent>(function() return new SampleDataEvent(null),
 	// function(event) event.__init());
-
 	/**
 		Creates an event object that contains information about audio data
 		events. Event objects are passed as parameters to event listeners.
@@ -132,8 +135,8 @@ class SampleDataEvent extends Event
 	**/
 	#if (js && html5)
 	private var tempBuffer:Float32Array;
-	private var leftChannel:js.lib.Float32Array;
-	private var rightChannel:js.lib.Float32Array;
+	private var leftChannel:#if haxe4 js.lib.Float32Array #else js.html.Float32Array #end;
+	private var rightChannel:#if haxe4 js.lib.Float32Array #else js.html.Float32Array #end;
 	#end
 	#if lime_openal
 	private var leftChannel:Int;
@@ -155,6 +158,8 @@ class SampleDataEvent extends Event
 		event.target = target;
 		event.currentTarget = currentTarget;
 		event.eventPhase = eventPhase;
+		event.data = data;
+		event.position = position;
 		return event;
 	}
 
@@ -175,13 +180,16 @@ class SampleDataEvent extends Event
 	private function getBufferSize():Int
 	{
 		var bufferSize:Int = Std.int(data.length / 4 / 2);
-		if (bufferSize >= 2048 && bufferSize <= 8192)
+		if (bufferSize > 0)
 		{
-			return bufferSize;
-		}
-		else
-		{
-			throw new Error("To be consistent with flash the listener function registered to SampleDataEvent has to provide between 2048 and 8192 samples.");
+			if (bufferSize >= 2048 && bufferSize <= 8192)
+			{
+				return bufferSize;
+			}
+			else
+			{
+				throw new Error("To be consistent with flash the listener function registered to SampleDataEvent has to provide between 2048 and 8192 samples.");
+			}
 		}
 		return bufferSize;
 	}

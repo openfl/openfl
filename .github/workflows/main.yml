@@ -82,6 +82,7 @@ jobs:
     strategy:
       matrix:
         haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.1]
+    # AL init fails on both windows and ubuntu
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
@@ -164,7 +165,7 @@ jobs:
           haxelib run hxp test -Dtarget=air -Duse-lime-tools --install-hxp-alias
 
   package-haxelib:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
 
       - uses: actions/checkout@v3
@@ -200,7 +201,7 @@ jobs:
           if-no-files-found: error
 
   docs:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
 
       - uses: actions/checkout@v3
@@ -286,7 +287,7 @@ jobs:
 
   html5-samples:
     needs: package-haxelib
-    runs-on: macos-11
+    runs-on: windows-latest
     steps:
 
       - uses: krdlab/setup-haxe@v1
@@ -295,7 +296,7 @@ jobs:
 
       - name: Set HAXEPATH
         run: |
-          echo "HAXEPATH=$HAXE_STD_PATH/.." >> $GITHUB_ENV
+          echo "HAXEPATH=$Env:HAXE_STD_PATH\.." >> $Env:GITHUB_ENV
 
       - name: Install Haxe dependencies
         run: |
@@ -341,7 +342,7 @@ jobs:
 
   flash-samples:
     needs: package-haxelib
-    runs-on: macos-11
+    runs-on: ubuntu-latest
     steps:
 
       - uses: krdlab/setup-haxe@v1

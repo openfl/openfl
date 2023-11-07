@@ -920,6 +920,7 @@ class BitmapData implements IBitmapDrawable
 
 			var renderer = new OpenGLRenderer(Lib.current.stage.context3D, this);
 			renderer.__allowSmoothing = smoothing;
+			renderer.__pixelRatio = #if openfl_disable_hdpi 1 #else Lib.current.stage.window.scale #end;
 			renderer.__overrideBlendMode = blendMode;
 
 			renderer.__worldTransform = transform;
