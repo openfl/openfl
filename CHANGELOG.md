@@ -1,3 +1,18 @@
+
+9.3.2 (11/08/2023)
+------------------
+
+* Fixed playback of very long sounds by changing arithmetic to avoid integer overflow
+* Fixed exception when calling `draw()` on `BitmapData` when `readable` is `false`
+* Fixed `Sound` not playing when calling `play()` immediately after `load()`, but before `Event.COMPLETE`
+* Fixed `Sound` incorrectly throwing exception about valid `SampleDataEvent` range when listener generates zero samples
+* Fixed `Sound` incorrectly throwing exception about valid `SampleDataEvent` range when `play()` is called between `load()` and `Event.COMPLETE`
+* Fixed `Sound` incorrectly continuing to dispatch `SampleDataEvent.SAMPLE_DATA` after a previous dispatch generated zero samples
+* Fixed `SoundChannel` ignoring `stop()` when generating audio with `SampleDataEvent.SAMPLE_DATA`
+* Fixed `SoundChannel` failing to dispatch `Event.SOUND_COMPLETE` when `SampleDataEvent.SAMPLE_DATA` listener generates zero samples or is stopped
+* Fixed `FileReferenceList` not dispatching `Event.CANCEL` when zero files are selected on html5 target, to better match `FileReference`
+* Improved error message when calling `Sound.fromFile()` when file cannot be loaded
+
 9.3.1 (10/17/2023)
 ------------------
 
