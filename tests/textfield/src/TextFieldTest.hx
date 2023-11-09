@@ -1,5 +1,6 @@
 package;
 
+import openfl.events.Event;
 import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFieldType;
@@ -303,6 +304,50 @@ class TextFieldTest extends Test
 		Assert.equals(0, textField.scrollH);
 	}
 
+	public function test_setScrollHNegative()
+	{
+		var textField = new TextField();
+
+		textField.text = "Hi";
+
+		Assert.equals(0, textField.scrollH);
+		Assert.equals(0, textField.maxScrollH);
+
+		var scrolled = false;
+		textField.addEventListener(Event.SCROLL, function(event:Event):Void
+		{
+			scrolled = true;
+		});
+
+		textField.scrollH = -1;
+
+		Assert.isFalse(scrolled);
+		Assert.equals(0, textField.scrollH);
+		Assert.equals(0, textField.maxScrollH);
+	}
+
+	public function test_setScrollHHigherThanMaxScrollH()
+	{
+		var textField = new TextField();
+
+		textField.text = "Hi";
+
+		Assert.equals(0, textField.scrollH);
+		Assert.equals(0, textField.maxScrollH);
+
+		var scrolled = false;
+		textField.addEventListener(Event.SCROLL, function(event:Event):Void
+		{
+			scrolled = true;
+		});
+
+		textField.scrollH = 1;
+
+		Assert.isFalse(scrolled);
+		Assert.equals(0, textField.scrollH);
+		Assert.equals(0, textField.maxScrollH);
+	}
+
 	public function test_scrollV()
 	{
 		var textField = new TextField();
@@ -326,6 +371,50 @@ class TextFieldTest extends Test
 		textField2.text = "World";
 
 		textField.scrollV = 2;
+	}
+
+	public function test_setScrollVNegative()
+	{
+		var textField = new TextField();
+
+		textField.text = "Hello";
+
+		Assert.equals(1, textField.scrollV);
+		Assert.equals(1, textField.maxScrollV);
+
+		var scrolled = false;
+		textField.addEventListener(Event.SCROLL, function(event:Event):Void
+		{
+			scrolled = true;
+		});
+
+		textField.scrollV = -1;
+
+		Assert.isFalse(scrolled);
+		Assert.equals(1, textField.scrollV);
+		Assert.equals(1, textField.maxScrollV);
+	}
+
+	public function test_setScrollVHigherThanMaxScrollV()
+	{
+		var textField = new TextField();
+
+		textField.text = "Hello";
+
+		Assert.equals(1, textField.scrollV);
+		Assert.equals(1, textField.maxScrollV);
+
+		var scrolled = false;
+		textField.addEventListener(Event.SCROLL, function(event:Event):Void
+		{
+			scrolled = true;
+		});
+
+		textField.scrollV = 2;
+
+		Assert.isFalse(scrolled);
+		Assert.equals(1, textField.scrollV);
+		Assert.equals(1, textField.maxScrollV);
 	}
 
 	public function test_selectable()
