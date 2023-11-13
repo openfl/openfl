@@ -1101,7 +1101,6 @@ class FileReference extends EventDispatcher
 		#end
 	}
 
-	#if (sys || !openfl_strict)
 	/**
 		Starts the upload of the file to a remote server. Although Flash
 		Player has no restriction on the size of files you can upload or
@@ -1329,7 +1328,6 @@ class FileReference extends EventDispatcher
 			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
 			return;
 		}
-
 		var fileBytes:ByteArray = null;
 		try
 		{
@@ -1340,6 +1338,23 @@ class FileReference extends EventDispatcher
 			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
 			return;
 		}
+		__uploadFileBytes(request, uploadDataFieldName, fileBytes);
+		#elseif (js && html5)
+		var file = __inputControl.files[0];
+		var reader = new FileReader();
+		reader.onload = function(evt)
+		{
+			var fileBytes = ByteArray.fromArrayBuffer(cast evt.target.result);
+			__uploadFileBytes(request, uploadDataFieldName, fileBytes);
+		}
+		reader.readAsArrayBuffer(file);
+		#else
+		openfl.utils._internal.Lib.notImplemented();
+		#end
+	}
+
+	private function __uploadFileBytes(request:URLRequest, uploadDataFieldName:String, fileBytes:ByteArray):Void
+	{
 		var hasUrlVars = Type.typeof(request.data) == Type.ValueType.TObject;
 		if (hasUrlVars && request.method == URLRequestMethod.GET)
 		{
@@ -1402,11 +1417,7 @@ class FileReference extends EventDispatcher
 		urlLoader.addEventListener(ProgressEvent.PROGRESS, urlLoader_onProgress);
 		urlLoader.addEventListener(IOErrorEvent.IO_ERROR, urlLoader_onIOError);
 		urlLoader.load(request);
-		#else
-		openfl.utils._internal.Lib.notImplemented();
-		#end
 	}
-	#end
 
 	// Event Handlers
 	@:noCompletion private function openFileDialog_onCancel():Void
