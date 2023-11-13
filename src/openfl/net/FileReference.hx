@@ -952,6 +952,10 @@ class FileReference extends EventDispatcher
 			data = ByteArray.fromArrayBuffer(cast evt.target.result);
 			openFileDialog_onComplete();
 		}
+		reader.onerror = function(evt)
+		{
+			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+		}
 		reader.readAsArrayBuffer(file);
 		#end
 	}
@@ -1347,7 +1351,10 @@ class FileReference extends EventDispatcher
 			var fileBytes = ByteArray.fromArrayBuffer(cast evt.target.result);
 			__uploadFileBytes(request, uploadDataFieldName, fileBytes);
 		}
-		reader.readAsArrayBuffer(file);
+		reader.onerror = function(evt)
+		{
+			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+		}
 		#else
 		openfl.utils._internal.Lib.notImplemented();
 		#end
