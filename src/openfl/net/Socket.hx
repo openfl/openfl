@@ -1133,13 +1133,27 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 				if (peer == null)
 				{
 					// not connected yet (hxcpp and hl)
-					return;
+					if (Sys.time() - __timestamp > timeout / 1000)
+					{
+						doClose = true;
+					}
+					else
+					{
+						return;
+					}
 				}
 			}
 			catch (e:Dynamic)
 			{
 				// not connected yet (neko)
-				return;
+				if (Sys.time() - __timestamp > timeout / 1000)
+				{
+					doClose = true;
+				}
+				else
+				{
+					return;
+				}
 			}
 		}
 		else if (connected)
