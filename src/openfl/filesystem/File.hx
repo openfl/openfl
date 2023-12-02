@@ -2037,7 +2037,12 @@ class File extends FileReference
 	{
 		if (path != null)
 		{
-			if (StringTools.startsWith(path, "app-storage:"))
+			if (StringTools.startsWith(path, "app:"))
+			{
+				// TODO: Prevent writing
+				path = StringTools.replace(path, "app:", File.applicationDirectory.nativePath);
+			}
+			else if (StringTools.startsWith(path, "app-storage:"))
 			{
 				path = StringTools.replace(path, "app-storage:", File.applicationStorageDirectory.nativePath);
 			}
