@@ -1204,8 +1204,11 @@ class BitmapData implements IBitmapDrawable
 
 	#if (!openfl_doc_gen || (!js && !html5 && !flash_doc_gen))
 	/**
-		Creates a new BitmapData instance from Base64-encoded data synchronously. This means
-		that the BitmapData will be returned immediately (if supported).
+		Creates a new BitmapData instance from Base64-encoded data
+		synchronously. This means that the BitmapData will be returned
+		immediately (if supported). The bytes must be of a supported bitmap file
+		format, such as PNG or JPG. To use raw ARGB pixel data, call
+		`setPixels` or `setVector` instead.
 
 		HTML5 and Flash do not support creating BitmapData synchronously, so these targets
 		always return `null`. Other targets will return `null` if decoding was unsuccessful.
@@ -1228,9 +1231,11 @@ class BitmapData implements IBitmapDrawable
 
 	#if (!openfl_doc_gen || (!js && !html5 && !flash_doc_gen))
 	/**
-		Creates a new BitmapData from bytes (a haxe.io.Bytes or openfl.utils.ByteArray)
-		synchronously. This means that the BitmapData will be returned immediately (if
-		supported).
+		Creates a new BitmapData from bytes (a `haxe.io.Bytes` or
+		`openfl.utils.ByteArray`) synchronously. This means that the BitmapData
+		will be returned immediately (if supported). The bytes must be of a
+		supported bitmap file format, such as PNG or JPG. To use raw ARGB pixel
+		data, call `setPixels` or `setVector` instead.
 
 		HTML5 and Flash do not support creating BitmapData synchronously, so these targets
 		always return `null`. Other targets will return `null` if decoding was unsuccessful.
