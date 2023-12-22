@@ -126,12 +126,19 @@ import lime.ui.Gamepad;
 	{
 		return __controls.length;
 	}
-	
+
+	#if lime
+	@:noCompletion private function set_gamepad(gamepad:Gamepad):Void
+	{
+		__gamepad = gamepad;
+	}
+	#end
+
 	// Rumble
-	public function rumble(duration:Int, largeStrength:Double, smallStrength:Double):Void
+	public function rumble(duration:Int, largeStrength:Float, smallStrength:Float):Void
 	{
 		#if lime
-		__gamepad.rumble(duration, largeStrength, smallStrength);
+		if (__gamepad != null) __gamepad.rumble(duration, largeStrength, smallStrength);
 		#end
 	}
 }
