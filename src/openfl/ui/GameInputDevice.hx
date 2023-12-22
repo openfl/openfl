@@ -126,6 +126,14 @@ import lime.ui.Gamepad;
 	{
 		return __controls.length;
 	}
+	
+	// Rumble
+	public function rumble(duration:Int, largeStrength:Double, smallStrength:Double):Void
+	{
+		#if lime
+		__gamepad.rumble(duration, largeStrength, smallStrength);
+		#end
+	}
 }
 #else
 typedef GameInputDevice = flash.ui.GameInputDevice;
