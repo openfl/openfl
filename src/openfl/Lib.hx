@@ -130,6 +130,7 @@ import js.Browser;
 	public static function getDefinitionByName(name:String):Class<Dynamic>
 	{
 		if (name == null) return null;
+		name = StringTools.replace(name, "::", ".");
 		#if flash
 		if (StringTools.startsWith(name, "openfl."))
 		{
