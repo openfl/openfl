@@ -116,6 +116,7 @@ import openfl.display._internal.stats.DrawCallContext;
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Point)
 @:access(openfl.geom.Rectangle)
+@:access(openfl.display.IEncoderOptions)
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
 @:noDebug
@@ -1132,7 +1133,7 @@ class BitmapData implements IBitmapDrawable
 		@param	byteArray	The output ByteArray to hold the encoded image.
 		@return	A ByteArray containing the encoded image.
 	**/
-	public function encode(rect:Rectangle, compressor:Object, byteArray:ByteArray = null):ByteArray
+	public function encode(rect:Rectangle, compressor:#if flash Dynamic #else IEncoderOptions #end, byteArray:ByteArray = null):ByteArray
 	{
 		#if lime
 		if (!readable || rect == null) return byteArray = null;
@@ -1154,16 +1155,8 @@ class BitmapData implements IBitmapDrawable
 			Matrix.__pool.release(matrix);
 		}
 
-		if ((compressor is PNGEncoderOptions))
-		{
-			byteArray.writeBytes(ByteArray.fromBytes(image.encode(PNG)));
-			return byteArray;
-		}
-		else if ((compressor is JPEGEncoderOptions))
-		{
-			byteArray.writeBytes(ByteArray.fromBytes(image.encode(JPEG, cast(compressor, JPEGEncoderOptions).quality)));
-			return byteArray;
-		}
+		if(compressor != null)
+			return compressor.encode(image, byteArray);
 		#end
 
 		return byteArray = null;
