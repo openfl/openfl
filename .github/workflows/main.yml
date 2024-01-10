@@ -28,7 +28,7 @@ jobs:
 
       - name: Setup environment
         run: |
-          haxelib dev openfl $GITHUB_WORKSPACE
+          haxelib dev openfl ${{ github.workspace }}
 
       - name: Install command aliases
         run: |
@@ -67,7 +67,7 @@ jobs:
 
       - name: Setup environment
         run: |
-          haxelib dev openfl $GITHUB_WORKSPACE
+          haxelib dev openfl ${{ github.workspace }}
 
       - name: Install command aliases
         run: |
@@ -107,7 +107,7 @@ jobs:
 
       - name: Setup environment
         run: |
-          haxelib dev openfl $GITHUB_WORKSPACE
+          haxelib dev openfl ${{ github.workspace }}
 
       - name: Install command aliases
         run: |
@@ -153,7 +153,7 @@ jobs:
 
       - name: Setup environment
         run: |
-          haxelib dev openfl $Env:GITHUB_WORKSPACE
+          haxelib dev openfl ${{ github.workspace }}
 
       - name: Install command aliases
         run: |
@@ -223,7 +223,7 @@ jobs:
           haxelib install hxp --quiet
           haxelib install lime --quiet
           haxelib install dox --quiet
-          haxelib dev openfl $GITHUB_WORKSPACE
+          haxelib dev openfl ${{ github.workspace }}
 
       - name: Build docs
         working-directory: scripts
