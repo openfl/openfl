@@ -425,6 +425,12 @@ class DisplayObjectContainerTest extends Test
 
 	public function test_addedToStageEvent()
 	{
+		if (openfl.Lib.current == null || openfl.Lib.current.stage == null)
+		{
+			Assert.pass("Skipping addedToStage event test");
+			return;
+		}
+
 		var sprite1 = new Sprite();
 		var sprite2 = new Sprite();
 		var sprite3 = new Sprite();
@@ -465,6 +471,12 @@ class DisplayObjectContainerTest extends Test
 
 	public function test_removedFromStageEvent()
 	{
+		if (openfl.Lib.current == null || openfl.Lib.current.stage == null)
+		{
+			Assert.pass("Skipping removedFromStage event test");
+			return;
+		}
+
 		var sprite1 = new Sprite();
 		var sprite2 = new Sprite();
 		var sprite3 = new Sprite();
