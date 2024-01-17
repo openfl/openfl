@@ -424,6 +424,27 @@ import js.Browser;
 		#end
 	}
 
+	/**
+		Encodes a string into a valid URI component. Converts a substring of a
+		URI into a string in which all characters are encoded as UTF-8 escape
+		sequences unless a character belongs to a very small group of basic
+		characters.
+	**/
+	public static function encodeURIComponent(value:String):String
+	{
+		return StringTools.urlEncode(value);
+	}
+
+	/**
+		Decodes an encoded URI component into a string. Returns a string in
+		which all characters previously escaped by the `encodeURIComponent`
+		function are restored to their uncoded representation.
+	**/
+	public static function decodeURIComponent(value:String):String
+	{
+		return StringTools.urlDecode(value);
+	}
+
 	public static function notImplemented(?posInfo:PosInfos):Void
 	{
 		var api = posInfo.className + "." + posInfo.methodName;
