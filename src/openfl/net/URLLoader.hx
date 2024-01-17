@@ -317,7 +317,15 @@ class URLLoader extends EventDispatcher
 				{
 					__dispatchResponseStatus();
 					__dispatchStatus();
-					this.data = data;
+
+					if (dataFormat == VARIABLES)
+					{
+						this.data = new URLVariables(data);
+					}
+					else
+					{
+						this.data = data;
+					}
 
 					var event = new Event(Event.COMPLETE);
 					dispatchEvent(event);
