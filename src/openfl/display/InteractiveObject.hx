@@ -1041,6 +1041,10 @@ import openfl.geom.Rectangle;
 
 								  **Note:** See the Multitouch class for
 								  environment compatibility information.
+
+	@see [Display programming](https://books.openfl.org/openfl-developers-guide/display-programming/)
+	@see [Basics of display programming](https://books.openfl.org/openfl-developers-guide/display-programming/basics-of-display-programming.html)
+	@see [Core display classes](https://books.openfl.org/openfl-developers-guide/display-programming/core-display-classes.html)
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

@@ -82,6 +82,13 @@ import lime.media.AudioSource;
 	@event progress   Dispatched when data is received as a load operation
 					  progresses.
 	@event sampleData Dispatched when the runtime requests new audio data.
+
+	@see [Working with sound](https://books.openfl.org/openfl-developers-guide/working-with-sound/)
+	@see [Playing sounds](https://books.openfl.org/openfl-developers-guide/working-with-sound/playing-sounds.html)
+	@see [Loading external sound files](https://books.openfl.org/openfl-developers-guide/working-with-sound/loading-external-sound-files.html)
+	@see [Working with sound assets](https://books.openfl.org/openfl-developers-guide/working-with-sound/working-with-sound-assets.html)
+	@see [Controlling sound volume and panning](https://books.openfl.org/openfl-developers-guide/working-with-sound/controlling-sound-volume-and-panning.html)
+	@see [Working with dynamically generated audio](https://books.openfl.org/openfl-developers-guide/working-with-sound/working-with-dynamically-generated-audio.html)
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -484,6 +491,8 @@ class Sound extends EventDispatcher
 							  complete list of blocked ports, see "Restricting
 							  Networking APIs" in the _ActionScript 3.0
 							  Developer's Guide_.
+
+		@see [Loading external sound files](https://books.openfl.org/openfl-developers-guide/working-with-sound/loading-external-sound-files.html)
 	**/
 	public function load(stream:URLRequest, context:SoundLoaderContext = null):Void
 	{
@@ -669,6 +678,8 @@ class Sound extends EventDispatcher
 				method returns `null` if you have no sound card or if
 				you run out of available sound channels. The maximum number of
 				sound channels available at once is 32.
+
+		@see [Playing sounds](https://books.openfl.org/openfl-developers-guide/working-with-sound/playing-sounds.html)
 	**/
 	public function play(startTime:Float = 0.0, loops:Int = 0, sndTransform:SoundTransform = null):SoundChannel
 	{

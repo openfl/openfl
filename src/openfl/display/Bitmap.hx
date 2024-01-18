@@ -38,6 +38,19 @@ import js.html.ImageElement;
 	class, so it cannot dispatch mouse events. However, you can use the
 	`addEventListener()` method of the display object container that
 	contains the Bitmap object.
+
+	@see [Working with bitmaps](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/)
+	@see [The Bitmap and BitmapData classes](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/the-bitmap-and-bitmapdata-classes.html)
+	@see [Manipulating pixels](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/manipulating-pixels.html)
+	@see [Copying bitmap data](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/copying-bitmap-data.html)
+	@see [Compressing bitmap data](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/compressing-bitmap-data.html)
+	@see [Making textures with noise functions](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/making-textures-with-noise-functions.html)
+	@see [Scrolling bitmaps](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/scrolling-bitmaps.html)
+	@see [Display programming](https://books.openfl.org/openfl-developers-guide/display-programming/)
+	@see [Basics of display programming](https://books.openfl.org/openfl-developers-guide/display-programming/basics-of-display-programming.html)
+	@see [Core display classes](https://books.openfl.org/openfl-developers-guide/display-programming/core-display-classes.html)
+	@see [Choosing a display object subclass](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/choosing-a-displayobject-subclass.html)
+	@see `openfl.display.BitmapData`
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

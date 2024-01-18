@@ -20,6 +20,12 @@ import openfl.utils.AssetLibrary;
 	to the functionality of the MovieClip class, which retains all the
 	functionality of previous ActionScript releases to provide backward
 	compatibility.
+
+	@see [Display programming](https://books.openfl.org/openfl-developers-guide/display-programming/)
+	@see [Basics of display programming](https://books.openfl.org/openfl-developers-guide/display-programming/basics-of-display-programming.html)
+	@see [Core display classes](https://books.openfl.org/openfl-developers-guide/display-programming/core-display-classes.html)
+	@see [Working with display objects](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/)
+	@see [Choosing a display object subclass](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/choosing-a-displayobject-subclass.html)
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

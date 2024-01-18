@@ -1,13 +1,14 @@
 package openfl.display;
 
 #if !flash
-
 #if !openfljs
 /**
 	The GradientType class provides values for the `type` parameter
 	in the `beginGradientFill()` and
 	`lineGradientStyle()` methods of the openfl.display.Graphics
 	class.
+
+	@see [Creating gradient lines and fills](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/creating-gradient-lines-and-fills.html)
 **/
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract GradientType(Null<Int>)
 

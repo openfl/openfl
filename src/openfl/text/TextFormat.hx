@@ -46,6 +46,9 @@ package openfl.text;
 
 	The default formatting for each property is also described in each
 	property description.
+
+	@see [Formatting text](https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/formatting-text.html)
+	@see `openfl.text.TextField`
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

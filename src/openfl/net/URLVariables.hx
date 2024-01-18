@@ -6,6 +6,10 @@ package openfl.net;
 	application and a server. Use URLVariables objects with methods of the
 	URLLoader class, with the `data` property of the URLRequest
 	class, and with openfl.net package functions.
+
+	@see [Loading external data](https://books.openfl.org/openfl-developers-guide/http-communications/loading-external-data.html)
+	@see `openfl.net.URLRequest`
+	@see `openfl.net.URLLoader`
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

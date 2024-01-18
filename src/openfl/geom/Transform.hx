@@ -70,6 +70,8 @@ class Transform
 		colors in the display object.
 
 		@throws TypeError The colorTransform is null when being set
+
+		@see [Adjusting display object colors](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/adjusting-displayobject-colors.html)
 	**/
 	public var colorTransform(get, set):ColorTransform;
 
@@ -106,6 +108,8 @@ class Transform
 		`null`.
 
 		@throws TypeError The matrix is null when being set
+
+		@see [Using Matrix objects](https://books.openfl.org/openfl-developers-guide/working-with-geometry/using-matrix-objects.html)
 	**/
 	public var matrix(get, set):Matrix;
 

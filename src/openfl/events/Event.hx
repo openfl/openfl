@@ -45,6 +45,12 @@ import openfl.utils.ObjectPool;
 	operations: [Order of Operations in ActionScript](http://web.archive.org/web/20171009141202/http://www.senocular.com:80/flash/tutorials/orderofoperations/).
 	* A blog entry by Matt Przybylski on creating custom events:
 	[AS3: Custom Events](http://evolve.reintroducing.com/2007/10/23/as3/as3-custom-events/).
+
+	@see [Basics of handling events](https://books.openfl.org/openfl-developers-guide/handling-events/basics-of-handling-events.html)
+	@see [The event flow](https://books.openfl.org/openfl-developers-guide/handling-events/the-event-flow.html)
+	@see [Event objects](https://books.openfl.org/openfl-developers-guide/handling-events/event-objects.html)
+	@see [Event listeners](https://books.openfl.org/openfl-developers-guide/handling-events/event-listeners.html)
+	@see [Handling events for display objects](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/handling-events-for-display-objects.html)
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

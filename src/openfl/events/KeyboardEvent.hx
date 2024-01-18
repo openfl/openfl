@@ -15,6 +15,9 @@ import openfl.ui.KeyLocation;
 
 	To listen globally for key events, listen on the Stage for the capture
 	and target or bubble phase.
+
+	@see [Capturing keyboard input](https://books.openfl.org/openfl-developers-guide/keyboard-input/capturing-keyboard-input.html)
+	@see `openfl.ui.Keyboard`
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

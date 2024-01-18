@@ -11,6 +11,9 @@ import lime.ui.KeyCode;
 	the Keyboard class without using a constructor. The properties of the
 	Keyboard class are constants representing the keys that are most commonly
 	used to control games.
+
+	@see [Capturing keyboard input](https://books.openfl.org/openfl-developers-guide/keyboard-input/capturing-keyboard-input.html)
+	@see `openfl.events.KeyboardEvent`
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

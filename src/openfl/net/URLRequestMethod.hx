@@ -5,6 +5,10 @@ package openfl.net;
 	The URLRequestMethod class provides values that specify whether the
 	URLRequest object should use the `POST` method or the
 	`GET` method when sending data to a server.
+
+	@see [Loading external data](https://books.openfl.org/openfl-developers-guide/http-communications/loading-external-data.html)
+	@see `openfl.net.URLRequest`
+	@see `openfl.net.URLLoader`
 **/
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract URLRequestMethod(String) from String to String
 

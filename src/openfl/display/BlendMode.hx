@@ -1,7 +1,6 @@
 package openfl.display;
 
 #if !flash
-
 #if !openfljs
 /**
 	A class that provides constant values for visual blend mode effects. These
@@ -11,6 +10,10 @@ package openfl.display;
 	openfl.display.DisplayObject class.
 	*  The `blendMode` parameter of the `draw()`
 	method of the openfl.display.BitmapData class
+
+	@see [Applying blending modes](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/applying-blending-modes.html)
+	@see `flash.display.DisplayObject.blendMode`
+	@see `flash.display.BitmapData.draw()`
 **/
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract BlendMode(Null<Int>)
 

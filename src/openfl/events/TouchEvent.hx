@@ -31,6 +31,9 @@ import openfl.utils.ByteArray;
 	notification of a touch event, use
 	`EventDispatcher.addEventListener()` on the ancestor node with
 	the type parameter set to the specific touch event you want to detect.
+
+	@see [Touch, multitouch, and gesture input](https://books.openfl.org/openfl-developers-guide/touch-multitouch-and-gesture-input/)
+	@see [Touch event handling](https://books.openfl.org/openfl-developers-guide/touch-multitouch-and-gesture-input/touch-event-handling.html)
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

@@ -20,6 +20,10 @@ package openfl.display;
 	* The `openfl.filters.DisplacementMapFilter.componentX` and
 	`openfl.filters.DisplacementMapFilter.componentY` properties
 
+	@see `flash.display.BitmapData.copyChannel()`
+	@see `flash.display.BitmapData.noise()`
+	@see `flash.filters.DisplacementMapFilter.componentX`
+	@see `flash.filters.DisplacementMapFilter.componentY`
 **/
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract BitmapDataChannel(Int) from Int to Int from UInt to UInt
 

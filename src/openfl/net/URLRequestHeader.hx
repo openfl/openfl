@@ -67,6 +67,10 @@ package openfl.net;
 	Due to browser limitations, custom HTTP request headers are only
 	supported for `POST` requests, not for `GET`
 	requests.
+
+	@see [Loading external data](https://books.openfl.org/openfl-developers-guide/http-communications/loading-external-data.html)
+	@see `openfl.net.URLRequest`
+	@see `openfl.net.URLLoader`
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

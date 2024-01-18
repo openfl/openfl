@@ -18,6 +18,8 @@ import openfl.utils.ObjectPool;
 	of a mouse event, use `EventDispatcher.addEventListener()` on
 	the ancestor node with the `type` parameter set to the specific
 	mouse event you want to detect.
+
+	@see [Capturing mouse input](https://books.openfl.org/openfl-developers-guide/mouse-input/capturing-mouse-input.html)
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -696,8 +698,7 @@ class MouseEvent extends Event
 	@:noCompletion private static function __create(type:String, button:Int, stageX:Float, stageY:Float, local:Point, target:InteractiveObject,
 			delta:Int = 0):MouseEvent
 	{
-		var event = new MouseEvent(type, true, false, local.x, local.y, null, __ctrlKey, __altKey, __shiftKey, __buttonDown, delta, __commandKey,
-			__controlKey);
+		var event = new MouseEvent(type, true, false, local.x, local.y, null, __ctrlKey, __altKey, __shiftKey, __buttonDown, delta, __commandKey, __controlKey);
 		event.stageX = stageX;
 		event.stageY = stageY;
 		event.target = target;

@@ -24,6 +24,9 @@ import openfl.display.Graphics;
 		}
 	}
 	```
+
+	@see [Working with static text](https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/working-with-static-text.html)
+	@see `openfl.text.TextField`
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

@@ -19,6 +19,10 @@ package openfl.net;
 	Only Adobe® AIR® content running in the application security sandbox can use the
 	URLRequestDefaults class. Other content will result in a SecurityError being thrown
 	when accessing the members or properties of this class.
+
+	@see [Loading external data](https://books.openfl.org/openfl-developers-guide/http-communications/loading-external-data.html)
+	@see `openfl.net.URLRequest`
+	@see `openfl.net.URLLoader`
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

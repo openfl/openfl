@@ -27,6 +27,9 @@ import lime.math.Vector2;
 
 	You can use the `new Point()` constructor to create a Point
 	object.
+
+	@see [Working with geometry](https://books.openfl.org/openfl-developers-guide/working-with-geometry/)
+	@see [Using Point objects](https://books.openfl.org/openfl-developers-guide/working-with-geometry/using-point-objects.html)
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

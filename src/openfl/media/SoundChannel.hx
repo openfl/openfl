@@ -29,6 +29,9 @@ import lime.utils.Int16Array;
 	object to the channel.
 
 	@event soundComplete Dispatched when a sound has finished playing.
+
+	@see [Playing sounds](https://books.openfl.org/openfl-developers-guide/working-with-sound/playing-sounds.html)
+	@see `openfl.media.Sound`
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -137,6 +140,8 @@ import lime.utils.Int16Array;
 
 	/**
 		Stops the sound playing in the channel.
+
+		@see [Playing sounds](https://books.openfl.org/openfl-developers-guide/working-with-sound/playing-sounds.html)
 	**/
 	public function stop():Void
 	{

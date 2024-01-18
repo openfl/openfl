@@ -42,6 +42,12 @@ package openfl.events;
 					  a listener registered for this event. For more
 					  information about broadcast events, see the DisplayObject
 					  class.
+
+	@see [Basics of handling events](https://books.openfl.org/openfl-developers-guide/handling-events/basics-of-handling-events.html)
+	@see [The event flow](https://books.openfl.org/openfl-developers-guide/handling-events/the-event-flow.html)
+	@see [Event objects](https://books.openfl.org/openfl-developers-guide/handling-events/event-objects.html)
+	@see [Event listeners](https://books.openfl.org/openfl-developers-guide/handling-events/event-listeners.html)
+	@see [Handling events for display objects](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/handling-events-for-display-objects.html)
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

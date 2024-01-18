@@ -25,6 +25,8 @@ package openfl.system;
 	loaded image? If so, see the `checkPolicyFile` property. If you want to
 	apply deblocking when loading an image, use the JPEGLoaderContext class
 	instead of the LoaderContext class.
+
+	@see `openfl.display.Loader`
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -270,7 +272,6 @@ class LoaderContext
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash11) public var imageDecodingPolicy:openfl.system.ImageDecodingPolicy;
 	#end
-
 	#if false
 	/**
 		An Object containing the parameters to pass to the LoaderInfo object
@@ -319,7 +320,6 @@ class LoaderContext
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash11) public var parameters:Dynamic;
 	#end
-
 	#if false
 	/**
 		The parent to which the Loader will attempt to add the loaded content.

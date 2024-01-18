@@ -16,6 +16,8 @@ import openfl.Vector;
 	The optional `indices` parameter allows the use of either repeated
 	rectangle geometry, or allows the use of a subset of a broader rectangle
 	data Vector, such as Tileset `rectData`.
+
+	@see [Using graphics data classes](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/advanced-use-of-the-drawing-api/using-graphics-data-classes.html)
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

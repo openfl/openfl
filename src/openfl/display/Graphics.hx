@@ -37,6 +37,14 @@ import js.html.CanvasRenderingContext2D;
 	you call `new Graphics()`, an exception is thrown.
 
 	The Graphics class is final; it cannot be subclassed.
+
+	@see [Basics of the drawing API](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/basics-of-the-drawing-api.html)
+	@see [Drawing lines and curves](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/drawing-lines-and-curves.html)
+	@see [Drawing shapes using built-in methods](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/drawing-shapes-using-built-in-methods.html)
+	@see [Creating gradient lines and fills](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/creating-gradient-lines-and-fills.html)
+	@see [Using the Math class with drawing methods](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/using-the-math-class-with-drawing-methods.html)
+	@see [Understanding the Graphics class](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/understanding-the-graphics-class.html)
+	@see [Advanced use of the drawing API](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/advanced-use-of-the-drawing-api/)
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -292,6 +300,8 @@ import js.html.CanvasRenderingContext2D;
 		![radial gradient with focalPointRatio set to 0.75](/images/radial_sketch.jpg)
 
 		@throws ArgumentError If the `type` parameter is not valid.
+
+		@see [Creating gradient lines and fills](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/creating-gradient-lines-and-fills.html)
 	**/
 	public function beginGradientFill(type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null,
 			spreadMethod:SpreadMethod = SpreadMethod.PAD, interpolationMethod:InterpolationMethod = InterpolationMethod.RGB, focalPointRatio:Float = 0):Void
@@ -489,6 +499,8 @@ import js.html.CanvasRenderingContext2D;
 		the registration point of the parent display object.
 		@param	anchorY	Specifies the vertical position of the anchor point relative to
 		the registration point of the parent display object.
+
+		@see [Drawing lines and curves](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/drawing-lines-and-curves.html)
 	**/
 	public function cubicCurveTo(controlX1:Float, controlY1:Float, controlX2:Float, controlY2:Float, anchorX:Float, anchorY:Float):Void
 	{
@@ -537,6 +549,8 @@ import js.html.CanvasRenderingContext2D;
 		@param anchorY  A number that specifies the vertical position of the next
 						anchor point relative to the registration point of the
 						parent display object.
+
+		@see [Drawing lines and curves](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/drawing-lines-and-curves.html)
 	**/
 	public function curveTo(controlX:Float, controlY:Float, anchorX:Float, anchorY:Float):Void
 	{
@@ -579,6 +593,10 @@ import js.html.CanvasRenderingContext2D;
 		__dirty = true;
 	}
 
+	/**
+
+		@see [Drawing shapes using built-in methods](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/drawing-shapes-using-built-in-methods.html)
+	**/
 	public function drawCircle(x:Float, y:Float, radius:Float):Void
 	{
 		if (radius <= 0) return;
@@ -606,6 +624,8 @@ import js.html.CanvasRenderingContext2D;
 					  display object(in pixels).
 		@param width  The width of the ellipse(in pixels).
 		@param height The height of the ellipse(in pixels).
+
+		@see [Drawing shapes using built-in methods](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/drawing-shapes-using-built-in-methods.html)
 	**/
 	public function drawEllipse(x:Float, y:Float, width:Float, height:Float):Void
 	{
@@ -761,6 +781,8 @@ import js.html.CanvasRenderingContext2D;
 		numbers represents a coordinate location.
 		@param	winding	Specifies the winding rule using a value defined in the
 		GraphicsPathWinding class.
+
+		@see [Drawing paths](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/advanced-use-of-the-drawing-api/drawing-paths.html)
 	**/
 	public function drawPath(commands:Vector<Int>, data:Vector<Float>, winding:GraphicsPathWinding = GraphicsPathWinding.EVEN_ODD):Void
 	{
@@ -941,6 +963,8 @@ import js.html.CanvasRenderingContext2D;
 		@throws ArgumentError If the `width` or `height`
 							  parameters are not a number
 							 (`Number.NaN`).
+
+		@see [Drawing shapes using built-in methods](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/drawing-shapes-using-built-in-methods.html)
 	**/
 	public function drawRect(x:Float, y:Float, width:Float, height:Float):Void
 	{
@@ -982,6 +1006,8 @@ import js.html.CanvasRenderingContext2D;
 							  `ellipseWidth` or
 							  `ellipseHeight` parameters are not a
 							  number(`Number.NaN`).
+
+		@see [Drawing shapes using built-in methods](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/drawing-shapes-using-built-in-methods.html)
 	**/
 	public function drawRoundRect(x:Float, y:Float, width:Float, height:Float, ellipseWidth:Float, ellipseHeight:Null<Float> = null):Void
 	{
@@ -1065,6 +1091,8 @@ import js.html.CanvasRenderingContext2D;
 					   of triangles that cannot be seen in the current view. This
 					   parameter can be set to any value defined by the
 					   TriangleCulling class.
+
+		@see [About using drawTriangles()](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/advanced-use-of-the-drawing-api/about-using-drawtriangles.html)
 	**/
 	public function drawTriangles(vertices:Vector<Float>, indices:Vector<Int> = null, uvtData:Vector<Float> = null,
 			culling:TriangleCulling = TriangleCulling.NONE):Void
@@ -1243,6 +1271,8 @@ import js.html.CanvasRenderingContext2D;
 		`focalPointRatio` of -0.75:
 
 		![radial gradient with focalPointRatio set to 0.75](/images/radial_sketch.jpg)
+
+		@see [Creating gradient lines and fills](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/creating-gradient-lines-and-fills.html)
 	**/
 	public function lineGradientStyle(type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null,
 			spreadMethod:SpreadMethod = SpreadMethod.PAD, interpolationMethod:InterpolationMethod = InterpolationMethod.RGB, focalPointRatio:Float = 0):Void
@@ -1493,6 +1523,8 @@ import js.html.CanvasRenderingContext2D;
 				 registration point of the parent display object(in pixels).
 		@param y A number that indicates the vertical position relative to the
 				 registration point of the parent display object(in pixels).
+
+		@see [Drawing lines and curves](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/drawing-lines-and-curves.html)
 	**/
 	public function lineTo(x:Float, y:Float):Void
 	{

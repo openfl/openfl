@@ -84,6 +84,10 @@ import lime.net.HTTPRequestHeader;
 							  `URLLoader.load()` attempts to load a
 							  SWZ file and the certificate is invalid or the
 							  digest string does not match the component.
+
+	@see [Loading external data](https://books.openfl.org/openfl-developers-guide/http-communications/loading-external-data.html)
+	@see `openfl.net.URLRequest`
+	@see `openfl.net.URLStream`
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -280,6 +284,8 @@ class URLLoader extends EventDispatcher
 								  Adobe platform component), but the certificate
 								  is invalid or the digest does not match the
 								  component.
+
+		@see [Loading external data](https://books.openfl.org/openfl-developers-guide/http-communications/loading-external-data.html)
 	**/
 	public function load(request:URLRequest):Void
 	{

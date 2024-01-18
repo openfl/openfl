@@ -59,6 +59,10 @@ import openfl.utils.Endian;
 	@event securityError      Dispatched if a call to `URLStream.load()`
 							  attempts to load data from a server outside the
 							  security sandbox.
+
+	@see [Loading external data](https://books.openfl.org/openfl-developers-guide/http-communications/loading-external-data.html)
+	@see `openfl.net.URLRequest`
+	@see `openfl.net.URLStream`
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -265,6 +269,8 @@ class URLStream extends EventDispatcher implements IDataInput
 								  from a server outside the caller's security
 								  sandbox. This may be worked around using a
 								  policy file on the server.
+
+		@see [Loading external data](https://books.openfl.org/openfl-developers-guide/http-communications/loading-external-data.html)
 	**/
 	public function load(request:URLRequest):Void
 	{

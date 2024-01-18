@@ -49,6 +49,9 @@ import lime.math.Rectangle as LimeRectangle;
 	**Note:** The Rectangle class does not define a rectangular Shape
 	display object. To draw a rectangular Shape object onscreen, use the
 	`drawRect()` method of the Graphics class.
+
+	@see [Working with geometry](https://books.openfl.org/openfl-developers-guide/working-with-geometry/)
+	@see [Using Rectangle objects](https://books.openfl.org/openfl-developers-guide/working-with-geometry/using-rectangle-objects.html)
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

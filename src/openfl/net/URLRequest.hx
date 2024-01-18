@@ -39,6 +39,11 @@ import haxe.macro.Compiler;
 
 	For more information related to security, see the Flash Player Developer
 	Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
+
+	@see [Loading external data](https://books.openfl.org/openfl-developers-guide/http-communications/loading-external-data.html)
+	@see `openfl.net.URLLoader`
+	@see `openfl.net.URLStream`
+	@see `openfl.net.FileReference`
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

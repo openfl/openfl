@@ -111,6 +111,14 @@ import js.html.DivElement;
 									 Android, one can toggle from NORMAL mode
 									 to SELECTION mode using context menu
 									 options
+
+	@see [Using the TextField class](https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/)
+	@see [Displaying text](https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/displaying-text.html)
+	@see [Selecting and manipulating text](https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/selecting-and-manipulating-text.html)
+	@see [Capturing text input](https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/capturing-text-input.html)
+	@see [Restricting text input](https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/restricting-text-input.html)
+	@see [Formatting text](https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/formatting-text.html)
+	@see [Advanced text rendering](https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/advanced-text-rendering.html)
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -295,6 +303,8 @@ class TextField extends InteractiveObject
 
 		@throws Error This method cannot be used on a text field with a style
 					  sheet.
+
+		@see [Formatting text](https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/formatting-text.html)
 	**/
 	public var defaultTextFormat(get, set):TextFormat;
 
@@ -324,6 +334,8 @@ class TextField extends InteractiveObject
 		not displayed.
 
 		@default false
+
+		@see [Advanced text rendering](https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/advanced-text-rendering.html)
 	**/
 	public var embedFonts(get, set):Bool;
 
@@ -482,6 +494,8 @@ class TextField extends InteractiveObject
 		`my_txt.restrict = "\u0020-\u007E";`
 
 		@default null
+
+		@see [Restricting text input](https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/restricting-text-input.html)
 	**/
 	public var restrict(get, set):UTF8String;
 
@@ -536,6 +550,8 @@ class TextField extends InteractiveObject
 		text field is a dynamic text field instead of an input text field.
 
 		@default true
+
+		@see [Selecting and manipulating text](https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/selecting-and-manipulating-text.html)
 	**/
 	public var selectable(get, set):Bool;
 
@@ -546,6 +562,8 @@ class TextField extends InteractiveObject
 		selection. For example, the first character is 0, the second character is
 		1, and so on. If no text is selected, this property is the value of
 		`caretIndex`.
+
+		@see [Selecting and manipulating text](https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/selecting-and-manipulating-text.html)
 	**/
 	public var selectionBeginIndex(get, never):Int;
 
@@ -554,6 +572,8 @@ class TextField extends InteractiveObject
 		selection. For example, the first character is 0, the second character is
 		1, and so on. If no text is selected, this property is the value of
 		`caretIndex`.
+
+		@see [Selecting and manipulating text](https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/selecting-and-manipulating-text.html)
 	**/
 	public var selectionEndIndex(get, never):Int;
 
@@ -584,6 +604,8 @@ class TextField extends InteractiveObject
 		formatting previously applied by the style sheet. To preserve the
 		original `TextField.htmlText` contents without the formatting, save
 		the value in a variable before removing the style sheet.
+
+		@see [Formatting text](https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/formatting-text.html)
 	**/
 	public var styleSheet(get, set):StyleSheet;
 
@@ -594,6 +616,8 @@ class TextField extends InteractiveObject
 
 		To get the text in HTML form, use the `htmlText`
 		property.
+
+		@see [Displaying text](https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/displaying-text.html)
 	**/
 	public var text(get, set):UTF8String;
 
@@ -648,6 +672,8 @@ class TextField extends InteractiveObject
 		@default dynamic
 		@throws ArgumentError The `type` specified is not a member of
 							  openfl.text.TextFieldType.
+
+		@see [Capturing text input](https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/capturing-text-input.html)
 	**/
 	public var type(get, set):TextFieldType;
 
@@ -1370,6 +1396,8 @@ class TextField extends InteractiveObject
 						  second character is 1, and so on).
 		@param endIndex   The zero-based index value of the last character in the
 						  selection.
+
+		@see [Selecting and manipulating text](https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/selecting-and-manipulating-text.html)
 	**/
 	public function setSelection(beginIndex:Int, endIndex:Int):Void
 	{
@@ -1434,6 +1462,8 @@ class TextField extends InteractiveObject
 						   sheet.
 		@throws RangeError The `beginIndex` or `endIndex`
 						   specified is out of range.
+
+		@see [Formatting text](https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/formatting-text.html)
 	**/
 	public function setTextFormat(format:TextFormat, beginIndex:Int = -1, endIndex:Int = -1):Void
 	{

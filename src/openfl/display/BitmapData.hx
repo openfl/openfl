@@ -100,6 +100,17 @@ import openfl.display._internal.stats.DrawCallContext;
 	exceed 16,777,215 pixels. (So, if a BitmapData object is 8,191 pixels wide,
 	it can only be 2,048 pixels high.) In Flash Player 9 and earlier, the limitation
 	is 2,880 pixels in height and 2,880 in width.
+
+	@see [Working with bitmaps](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/)
+	@see [The Bitmap and BitmapData classes](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/the-bitmap-and-bitmapdata-classes.html)
+	@see [Manipulating pixels](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/manipulating-pixels.html)
+	@see [Copying bitmap data](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/copying-bitmap-data.html)
+	@see [Compressing bitmap data](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/compressing-bitmap-data.html)
+	@see [Making textures with noise functions](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/making-textures-with-noise-functions.html)
+	@see [Scrolling bitmaps](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/scrolling-bitmaps.html)
+	@see `openfl.display.Bitmap.bitmapData`
+	@see `openfl.display.Graphics.beginBitmapFill()`
+	@see `openfl.display.Graphics.lineBitmapStyle()`
 **/
 @:access(lime.graphics.opengl.GL)
 @:access(lime.graphics.Image)
@@ -626,6 +637,8 @@ class BitmapData implements IBitmapDrawable
 								`BitmapDataChannel.GREEN`,
 								`BitmapDataChannel.ALPHA`).
 		@throws TypeError The sourceBitmapData, sourceRect or destPoint are null.
+
+		@see [Copying bitmap data](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/copying-bitmap-data.html)
 	**/
 	public function copyChannel(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, sourceChannel:BitmapDataChannel,
 			destChannel:BitmapDataChannel):Void
@@ -693,6 +706,8 @@ class BitmapData implements IBitmapDrawable
 								`true`. To copy pixels with no alpha
 								channel, set the value to `false`.
 		@throws TypeError The sourceBitmapData, sourceRect, destPoint are null.
+
+		@see [Copying bitmap data](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/copying-bitmap-data.html)
 	**/
 	public function copyPixels(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, alphaBitmapData:BitmapData = null, alphaPoint:Point = null,
 			mergeAlpha:Bool = false):Void
@@ -862,6 +877,8 @@ class BitmapData implements IBitmapDrawable
 							  `Security.allowDomain()` method. This
 							  restriction does not apply to AIR content in the
 							  application security sandbox.
+
+		@see [Copying bitmap data](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/copying-bitmap-data.html)
 	**/
 	public function draw(source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null,
 			clipRect:Rectangle = null, smoothing:Bool = false):Void
@@ -1103,6 +1120,8 @@ class BitmapData implements IBitmapDrawable
 		`Security.allowDomain()` method. This restriction does not apply to AIR content
 		in the application security sandbox.
 		@throws	ArgumentError	The source is `null` or not a valid IBitmapDrawable object.
+
+		@see [Copying bitmap data](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/copying-bitmap-data.html)
 	**/
 	public function drawWithQuality(source:IBitmapDrawable, matrix:Matrix = null, colorTransform:ColorTransform = null, blendMode:BlendMode = null,
 			clipRect:Rectangle = null, smoothing:Bool = false, quality:StageQuality = null):Void
@@ -1131,6 +1150,8 @@ class BitmapData implements IBitmapDrawable
 		flash.display.JPEGXREncoderOptions.
 		@param	byteArray	The output ByteArray to hold the encoded image.
 		@return	A ByteArray containing the encoded image.
+
+		@see [Compressing bitmap data](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/compressing-bitmap-data.html)
 	**/
 	public function encode(rect:Rectangle, compressor:Object, byteArray:ByteArray = null):ByteArray
 	{
@@ -2095,6 +2116,8 @@ class BitmapData implements IBitmapDrawable
 		@return A number that represents an RGB pixel value. If the(_x_,
 				_y_) coordinates are outside the bounds of the image, the
 				method returns 0.
+
+		@see [Manipulating pixels](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/manipulating-pixels.html)
 	**/
 	public function getPixel(x:Int, y:Int):Int
 	{
@@ -2127,6 +2150,8 @@ class BitmapData implements IBitmapDrawable
 		@return A number representing an ARGB pixel value. If the(_x_,
 				_y_) coordinates are outside the bounds of the image, 0 is
 				returned.
+
+		@see [Manipulating pixels](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/manipulating-pixels.html)
 	**/
 	public function getPixel32(x:Int, y:Int):Int
 	{
@@ -2625,6 +2650,8 @@ class BitmapData implements IBitmapDrawable
 							  color channels to the same value. The alpha channel
 							  selection is not affected by setting this parameter
 							  to `true`.
+
+		@see [Making textures with noise functions](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/making-textures-with-noise-functions.html)
 	**/
 	public function noise(randomSeed:Int, low:Int = 0, high:Int = 255, channelOptions:Int = 7, grayScale:Bool = false):Void
 	{
@@ -2819,6 +2846,8 @@ class BitmapData implements IBitmapDrawable
 							  red, green, and blue color channels to identical
 							  values. The alpha channel value is not affected if
 							  this value is set to `true`.
+
+		@see [Making textures with noise functions](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/making-textures-with-noise-functions.html)
 	**/
 	public function perlinNoise(baseX:Float, baseY:Float, numOctaves:UInt, randomSeed:Int, stitch:Bool, fractalNoise:Bool, channelOptions:UInt = 7,
 			grayScale:Bool = false, offsets:Array<Point> = null):Void
@@ -2836,6 +2865,8 @@ class BitmapData implements IBitmapDrawable
 
 		@param x The amount by which to scroll horizontally.
 		@param y The amount by which to scroll vertically.
+
+		@see [Scrolling bitmaps](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/scrolling-bitmaps.html)
 	**/
 	public function scroll(x:Int, y:Int):Void
 	{
@@ -2859,6 +2890,8 @@ class BitmapData implements IBitmapDrawable
 		@param x     The _x_ position of the pixel whose value changes.
 		@param y     The _y_ position of the pixel whose value changes.
 		@param color The resulting RGB color for the pixel.
+
+		@see [Manipulating pixels](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/manipulating-pixels.html)
 	**/
 	public function setPixel(x:Int, y:Int, color:Int):Void
 	{
@@ -2898,6 +2931,8 @@ class BitmapData implements IBitmapDrawable
 		@param color The resulting ARGB color for the pixel. If the bitmap is
 					 opaque(not transparent), the alpha transparency portion of
 					 this color value is ignored.
+
+		@see [Manipulating pixels](https://books.openfl.org/openfl-developers-guide/working-with-bitmaps/manipulating-pixels.html)
 	**/
 	public function setPixel32(x:Int, y:Int, color:Int):Void
 	{

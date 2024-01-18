@@ -30,6 +30,13 @@ import openfl.Vector;
 
 	For more information, see the "Display Programming" chapter of the
 	_ActionScript 3.0 Developer's Guide_.
+
+	@see [Adding display objects to the display list](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/adding-display-objects-to-the-display-list.html)
+	@see [Traversing the display list](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/traversing-the-display-list.html)
+	@see [Working with display object containers](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/working-with-display-object-containers.html)
+	@see [Display programming](https://books.openfl.org/openfl-developers-guide/display-programming/)
+	@see [Basics of display programming](https://books.openfl.org/openfl-developers-guide/display-programming/basics-of-display-programming.html)
+	@see [Core display classes](https://books.openfl.org/openfl-developers-guide/display-programming/core-display-classes.html)
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -149,6 +156,8 @@ class DisplayObjectContainer extends InteractiveObject
 							  of the child being added.
 		@event added Dispatched when a display object is added to the display
 					 list.
+
+		@see [Adding display objects to the display list](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/adding-display-objects-to-the-display-list.html)
 	**/
 	public function addChild(child:DisplayObject):DisplayObject
 	{
@@ -185,6 +194,8 @@ class DisplayObjectContainer extends InteractiveObject
 							  child list.
 		@event added Dispatched when a display object is added to the display
 					 list.
+
+		@see [Adding display objects to the display list](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/adding-display-objects-to-the-display-list.html)
 	**/
 	public function addChildAt(child:DisplayObject, index:Int):DisplayObject
 	{
@@ -335,6 +346,8 @@ class DisplayObjectContainer extends InteractiveObject
 							  which you do not have access. You can avoid this
 							  situation by having the child movie call
 							  `Security.allowDomain()`.
+
+		@see [Traversing the display list](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/traversing-the-display-list.html)
 	**/
 	public function getChildAt(index:Int):DisplayObject
 	{
@@ -363,6 +376,9 @@ class DisplayObjectContainer extends InteractiveObject
 							  which you do not have access. You can avoid this
 							  situation by having the child movie call the
 							  `Security.allowDomain()` method.
+
+		@see [Traversing the display list](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/traversing-the-display-list.html)
+		@see `openfl.display.DisplayObject.name`
 	**/
 	public function getChildByName(name:String):DisplayObject
 	{

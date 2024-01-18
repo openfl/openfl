@@ -79,6 +79,8 @@ import lime.utils.AssetManifest;
 	mask for the Loader object, to prevent the loaded content(which is a child
 	of the Loader object) from drawing to portions of the Stage outside of that
 	mask, as shown in the following code:
+
+	@see [Loading display content dynamically](https://books.openfl.org/openfl-developers-guide/display-programming/loading-display-content-dynamically/)
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

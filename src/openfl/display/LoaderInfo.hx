@@ -104,6 +104,8 @@ import js.Browser;
 					  method of the Loader object, or when a second load is
 					  performed by the same Loader object and the original
 					  content is removed prior to the load beginning.
+
+	@see `openfl.display.Loader`
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
