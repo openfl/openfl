@@ -29,10 +29,10 @@ import lime.system.Clipboard as LimeClipboard;
 	ClipboardFormats class.
 
 	When a transfer to or from the operating system occurs, the standard
-	formats are automatically translated between ActionScript data types and
+	formats are automatically translated between Haxe data types and
 	the native operating system clipboard types.
 
-	You can use application-defined formats to add ActionScript objects to a
+	You can use application-defined formats to add Haxe objects to a
 	Clipboard object. If an object is serializable, both a reference and a
 	clone of the object can be made available. Object references are valid
 	only within the originating application.

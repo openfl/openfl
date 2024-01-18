@@ -32,7 +32,7 @@ package openfl.media;
 		The `SoundMixer.bufferTime` property only affects the buffer time for
 		embedded streaming sounds in a SWF and is independent of dynamically
 		created Sound objects (that is, Sound objects created in
-		ActionScript). The value of `SoundMixer.bufferTime` cannot override or
+		Haxe code). The value of `SoundMixer.bufferTime` cannot override or
 		set the default of the buffer time specified in the SoundLoaderContext
 		object that is passed to the `Sound.load()` method.
 	**/

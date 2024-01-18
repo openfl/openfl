@@ -146,8 +146,8 @@ import js.Browser;
 		Returns the fully qualified class name of an object.
 
 		@param	value	The object for which a fully qualified class name is desired. Any
-		ActionScript value may be passed to this method including all available
-		ActionScript types, object instances, primitive types such as uint, and class
+		Haxe value may be passed to this method including all available
+		Haxe types, object instances, primitive types such as Int, and class
 		objects.
 		@returns	String	A string containing the fully qualified class name.
 	**/
@@ -294,7 +294,7 @@ import js.Browser;
 
 		In Flash Player, and in non-application sandboxes in Adobe AIR, you cannot connect to
 		commonly reserved ports. For a complete list of blocked ports, see "Restricting
-		Networking APIs" in the ActionScript 3.0 Developer's Guide.
+		Networking APIs" in the _OpenFL Developer's Guide_.
 
 		In Flash Player 10 and later running in a browser, using this method programmatically
 		to open a pop-up window may not be successful. Various browsers (and browser
@@ -382,7 +382,7 @@ import js.Browser;
 		* You cannot navigate a window with a nondefault name from within a SWF file that
 		is in the local-with-filesystem sandbox.
 		* You cannot connect to commonly reserved ports. For a complete list of blocked
-		ports, see "Restricting Networking APIs" in the ActionScript 3.0 Developer's Guide.
+		ports, see "Restricting Networking APIs" in the _OpenFL Developer's Guide_.
 		@throws	Error	If the method is not called in response to a user action, such as a
 		 mouse event or keypress event. This requirement only applies to content in Flash
 		 Player and to non-application sandbox content in Adobe AIR.
@@ -480,7 +480,7 @@ import js.Browser;
 		To examine the server response, use the `URLLoader.load()` method instead.
 
 		You cannot connect to commonly reserved ports. For a complete list of blocked
-		ports, see "Restricting Networking APIs" in the ActionScript 3.0 Developer's Guide.
+		ports, see "Restricting Networking APIs" in the _OpenFL Developer's Guide_.
 
 		You can prevent a SWF file from using this method by setting the `allowNetworking`
 		parameter of the the object and embed tags in the HTML page that contains the SWF
@@ -510,7 +510,7 @@ import js.Browser;
 		local-with-networking or trusted.
 		@throws	SecurityError	You cannot connect to commonly reserved ports. For a
 		complete list of blocked ports, see "Restricting Networking APIs" in the
-		ActionScript 3.0 Developer's Guide.
+		_OpenFL Developer's Guide_.
 	**/
 	public static function sendToURL(request:URLRequest):Void
 	{

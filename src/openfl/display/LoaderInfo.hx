@@ -134,7 +134,7 @@ class LoaderInfo extends EventDispatcher
 		override a loaded class definition with a newer definition.
 
 		For usage examples of application domains, see the "Client System
-		Environment" chapter in the _ActionScript 3.0 Developer's Guide_.
+		Environment" chapter in the _OpenFL Developer's Guide_.
 
 		@throws SecurityError This security sandbox of the caller is not allowed
 							  to access this ApplicationDomain.

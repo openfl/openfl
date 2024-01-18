@@ -5,8 +5,8 @@ import haxe.CallStack;
 
 /**
 	The Error class contains information about an error that occurred in a script. In
-	developing ActionScript 3.0 applications, when you run your compiled code in the
-	debugger version of a Flash runtime, a dialog box displays exceptions of type Error,
+	developing OpenFL applications, when you run your compiled code in a
+	debugger, a message displays exceptions of type Error,
 	or of a subclass, to help you troubleshoot the code. You create an Error object by
 	using the Error constructor function. Typically, you throw a new Error object from
 	within a `try` code block that is caught by a `catch` code block.
@@ -104,7 +104,6 @@ class Error #if (haxe_ver >= "4.1.0") extends haxe.Exception #elseif (openfl_dyn
 	}
 
 	// @:noCompletion @:dox(hide) public static function throwError (type:Class<Dynamic>, index:UInt, ?p1:Dynamic, ?p2:Dynamic, ?p3:Dynamic, ?p4:Dynamic, ?p5:Dynamic):Dynamic;
-
 	/**
 		Returns the string "Error" by default or the value contained in the `Error.message`
 		property, if defined.

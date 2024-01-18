@@ -540,8 +540,8 @@ class Security
 		explicitly.
 
 		You cannot connect to commonly reserved ports. For a complete list of
-		blocked ports, see "Restricting Networking APIs" in the _ActionScript
-		3.0 Developer's Guide_.
+		blocked ports, see "Restricting Networking APIs" in the _OpenFL
+		Developer's Guide_.
 
 		Using the `xmlsocket` protocol along with a specific port number lets
 		you retrieve policy files directly from an XMLSocket server, as shown

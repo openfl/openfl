@@ -45,8 +45,8 @@ import lime.media.AudioSource;
 	To control sounds that are embedded in a SWF file, use the properties in
 	the SoundMixer class.
 
-	**Note**: The ActionScript 3.0 Sound API differs from ActionScript
-	2.0. In ActionScript 3.0, you cannot take sound objects and arrange them in
+	**Note**: The OpenFL Sound API differs from ActionScript
+	2.0. In OpenFL, you cannot take sound objects and arrange them in
 	a hierarchy to control their properties.
 
 	When you use this class, consider the following security model:
@@ -125,8 +125,8 @@ class Sound extends EventDispatcher
 		provides access to these tags through the format `my_sound.id3.COMM`,
 		`my_sound.id3.TIME`, and so on. The first table describes tags that
 		can be accessed either through the ID3 2.0 property name or the
-		ActionScript property name. The second table describes ID3 tags that
-		are supported but do not have predefined properties in ActionScript.
+		Haxe property name. The second table describes ID3 tags that
+		are supported but do not have predefined properties in Haxe.
 
 		| ID3 2.0 tag | Corresponding Sound class property |
 		| --- | --- |
@@ -438,8 +438,8 @@ class Sound extends EventDispatcher
 		* Access from the local-trusted or local-with-networking sandbox
 		requires permission from a website through a URL policy file.
 		* You cannot connect to commonly reserved ports. For a complete list
-		of blocked ports, see "Restricting Networking APIs" in the _ActionScript
-		3.0 Developer's Guide_.
+		of blocked ports, see "Restricting Networking APIs" in the _OpenFL
+		Developer's Guide_.
 		* You can prevent a SWF file from using this method by setting the
 		`allowNetworking` parameter of the `object` and
 		`embed` tags in the HTML page that contains the SWF
@@ -489,7 +489,7 @@ class Sound extends EventDispatcher
 							  this file as local-with-networking or trusted.
 		@throws SecurityError You cannot connect to commonly reserved ports. For a
 							  complete list of blocked ports, see "Restricting
-							  Networking APIs" in the _ActionScript 3.0
+							  Networking APIs" in the _OpenFL
 							  Developer's Guide_.
 
 		@see [Loading external sound files](https://books.openfl.org/openfl-developers-guide/working-with-sound/loading-external-sound-files.html)

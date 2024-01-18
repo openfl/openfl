@@ -156,7 +156,7 @@ class LoaderContext
 		using `ApplicationDomain.currentDomain.parentDomain`.
 
 		For more information, see the "ApplicationDomain class" section of the
-		"Client System Environment" chapter of the _ActionScript 3.0
+		"Client System Environment" chapter of the _OpenFL
 		Developer's Guide_.
 	**/
 	public var applicationDomain:ApplicationDomain;
@@ -398,8 +398,8 @@ class LoaderContext
 		Content in the AIR application security sandbox cannot load content
 		from other sandboxes into its SecurityDomain.
 
-		For more information, see the "Security" chapter in the _ActionScript
-		3.0 Developer's Guide_.
+		For more information, see the "Security" chapter in the _Haxe
+		Developer's Guide_.
 	**/
 	public var securityDomain:SecurityDomain;
 

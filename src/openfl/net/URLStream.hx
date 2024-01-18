@@ -163,7 +163,7 @@ class URLStream extends EventDispatcher implements IDataInput
 
 		In Flash Player, you cannot connect to commonly reserved ports. For a
 		complete list of blocked ports, see "Restricting Networking APIs" in
-		the _ActionScript 3.0 Developer's Guide_.
+		the _OpenFL Developer's Guide_.
 
 		In Flash Player, you can prevent a SWF file from using this method by
 		setting the `allowNetworking` parameter of the the `object` and
@@ -247,7 +247,7 @@ class URLStream extends EventDispatcher implements IDataInput
 		@throws SecurityError You are trying to connect to a commonly reserved
 							  port. For a complete list of blocked ports, see
 							  "Restricting Networking APIs" in the
-							  _ActionScript 3.0 Developer's Guide_.
+							  _OpenFL Developer's Guide_.
 		@event complete           Dispatched after data has loaded
 								  successfully. If there is a
 								  `httpResponseStatus` event listener, the
@@ -288,7 +288,7 @@ class URLStream extends EventDispatcher implements IDataInput
 		@throws EOFError There is insufficient data available to read. If a
 						 local SWF file triggers a security warning, Flash
 						 Player prevents the URLStream data from being
-						 available to ActionScript. When this happens, the
+						 available to Haxe code. When this happens, the
 						 `bytesAvailable` property returns 0 even if data has
 						 been received, and any of the read methods throws an
 						 EOFError exception.
@@ -308,7 +308,7 @@ class URLStream extends EventDispatcher implements IDataInput
 		@throws EOFError There is insufficient data available to read. If a
 						 local SWF file triggers a security warning, Flash
 						 Player prevents the URLStream data from being
-						 available to ActionScript. When this happens, the
+						 available to Haxe code. When this happens, the
 						 `bytesAvailable` property returns 0 even if data has
 						 been received, and any of the read methods throws an
 						 EOFError exception.
@@ -333,7 +333,7 @@ class URLStream extends EventDispatcher implements IDataInput
 		@throws EOFError There is insufficient data available to read. If a
 						 local SWF file triggers a security warning, Flash
 						 Player prevents the URLStream data from being
-						 available to ActionScript. When this happens, the
+						 available to Haxe code. When this happens, the
 						 `bytesAvailable` property returns 0 even if data has
 						 been received, and any of the read methods throws an
 						 EOFError exception.
@@ -354,7 +354,7 @@ class URLStream extends EventDispatcher implements IDataInput
 		@throws EOFError There is insufficient data available to read. If a
 						 local SWF file triggers a security warning, Flash
 						 Player prevents the URLStream data from being
-						 available to ActionScript. When this happens, the
+						 available to Haxe code. When this happens, the
 						 `bytesAvailable` property returns 0 even if data has
 						 been received, and any of the read methods throws an
 						 EOFError exception.
@@ -375,7 +375,7 @@ class URLStream extends EventDispatcher implements IDataInput
 		@throws EOFError There is insufficient data available to read. If a
 						 local SWF file triggers a security warning, Flash
 						 Player prevents the URLStream data from being
-						 available to ActionScript. When this happens, the
+						 available to Haxe code. When this happens, the
 						 `bytesAvailable` property returns 0 even if data has
 						 been received, and any of the read methods throws an
 						 EOFError exception.
@@ -395,7 +395,7 @@ class URLStream extends EventDispatcher implements IDataInput
 		@throws EOFError There is insufficient data available to read. If a
 						 local SWF file triggers a security warning, Flash
 						 Player prevents the URLStream data from being
-						 available to ActionScript. When this happens, the
+						 available to Haxe code. When this happens, the
 						 `bytesAvailable` property returns 0 even if data has
 						 been received, and any of the read methods throws an
 						 EOFError exception.
@@ -431,7 +431,7 @@ class URLStream extends EventDispatcher implements IDataInput
 		@throws EOFError There is insufficient data available to read. If a
 						 local SWF file triggers a security warning, Flash
 						 Player prevents the URLStream data from being
-						 available to ActionScript. When this happens, the
+						 available to Haxe code. When this happens, the
 						 `bytesAvailable` property returns 0 even if data has
 						 been received, and any of the read methods throws an
 						 EOFError exception.
@@ -449,7 +449,7 @@ class URLStream extends EventDispatcher implements IDataInput
 		@throws EOFError There is insufficient data available to read. If a
 						 local SWF file triggers a security warning, Flash
 						 Player prevents the URLStream data from being
-						 available to ActionScript. When this happens, the
+						 available to Haxe code. When this happens, the
 						 `bytesAvailable` property returns 0 even if data has
 						 been received, and any of the read methods throws an
 						 EOFError exception.
@@ -469,7 +469,7 @@ class URLStream extends EventDispatcher implements IDataInput
 		@throws EOFError There is insufficient data available to read. If a
 						 local SWF file triggers a security warning, Flash
 						 Player prevents the URLStream data from being
-						 available to ActionScript. When this happens, the
+						 available to Haxe code. When this happens, the
 						 `bytesAvailable` property returns 0 even if data has
 						 been received, and any of the read methods throws an
 						 EOFError exception.
@@ -489,7 +489,7 @@ class URLStream extends EventDispatcher implements IDataInput
 		@throws EOFError There is insufficient data available to read. If a
 						 local SWF file triggers a security warning, Flash
 						 Player prevents the URLStream data from being
-						 available to ActionScript. When this happens, the
+						 available to Haxe code. When this happens, the
 						 `bytesAvailable` property returns 0 even if data has
 						 been received, and any of the read methods throws an
 						 EOFError exception.
@@ -509,7 +509,7 @@ class URLStream extends EventDispatcher implements IDataInput
 		@throws EOFError There is insufficient data available to read. If a
 						 local SWF file triggers a security warning, Flash
 						 Player prevents the URLStream data from being
-						 available to ActionScript. When this happens, the
+						 available to Haxe code. When this happens, the
 						 `bytesAvailable` property returns 0 even if data has
 						 been received, and any of the read methods throws an
 						 EOFError exception.
@@ -529,7 +529,7 @@ class URLStream extends EventDispatcher implements IDataInput
 		@throws EOFError There is insufficient data available to read. If a
 						 local SWF file triggers a security warning, Flash
 						 Player prevents the URLStream data from being
-						 available to ActionScript. When this happens, the
+						 available to Haxe code. When this happens, the
 						 `bytesAvailable` property returns 0 even if data has
 						 been received, and any of the read methods throws an
 						 EOFError exception.
@@ -549,7 +549,7 @@ class URLStream extends EventDispatcher implements IDataInput
 		@throws EOFError There is insufficient data available to read. If a
 						 local SWF file triggers a security warning, Flash
 						 Player prevents the URLStream data from being
-						 available to ActionScript. When this happens, the
+						 available to Haxe code. When this happens, the
 						 `bytesAvailable` property returns 0 even if data has
 						 been received, and any of the read methods throws an
 						 EOFError exception.

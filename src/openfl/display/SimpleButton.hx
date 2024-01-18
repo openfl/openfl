@@ -17,10 +17,10 @@ import openfl.Vector;
 	Explorer and in the Insert Target Path dialog box in the Actions panel.
 	After you create an instance of a button in Flash Professional, you can use
 	the methods and properties of the SimpleButton class to manipulate buttons
-	with ActionScript.
+	with Haxe.
 
-	In ActionScript 3.0, you use the `new SimpleButton()`
-	constructor to create a SimpleButton instance.
+	In Haxe, you use the `new SimpleButton()` constructor to create a
+	SimpleButton instance.
 
 	The SimpleButton class inherits from the InteractiveObject class.
 **/

@@ -16,7 +16,8 @@ import openfl.utils.AssetLibrary;
 	require timelines. For example, Sprite would be a logical base class for
 	user interface(UI) components that typically do not use the timeline.
 
-	The Sprite class is new in ActionScript 3.0. It provides an alternative
+	The Sprite class is new in OpenFL (compared to ActionScript 2.0). It
+	provides an alternative
 	to the functionality of the MovieClip class, which retains all the
 	functionality of previous ActionScript releases to provide backward
 	compatibility.

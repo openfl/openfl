@@ -20,7 +20,7 @@ import openfl.utils.ObjectPool;
 	location of the click event and whether any keys were pressed during the
 	click event. You can pass such additional information to event listeners by
 	extending the Event class, which is what the MouseEvent class does.
-	ActionScript 3.0 API defines several Event subclasses for common events
+	The OpenFL API defines several Event subclasses for common events
 	that require additional information. Events associated with each of the
 	Event subclasses are described in the documentation for each class.
 
@@ -807,7 +807,7 @@ class Event
 
 	/**
 		A utility function for implementing the `toString()` method in custom
-		ActionScript 3.0 Event classes. Overriding the `toString()` method is
+		OpenFL Event classes. Overriding the `toString()` method is
 		recommended, but not required.
 
 		```haxe

@@ -37,8 +37,7 @@ import lime.utils.AssetManifest;
 	child array.
 
 	**Note:** The ActionScript 2.0 MovieClipLoader and LoadVars classes
-	are not used in ActionScript 3.0. The Loader and URLLoader classes replace
-	them.
+	are not used in OpenFL. The Loader and URLLoader classes replace them.
 
 	When you use the Loader class, consider the Flash Player and Adobe AIR
 	security model:
@@ -53,7 +52,7 @@ import lime.utils.AssetManifest;
 	`System.allowInsecureDomain()` method in the loaded content
 	file.
 	* If the loaded content is an AVM1 SWF file(written using ActionScript
-	1.0 or 2.0), it cannot be cross-scripted by an AVM2 SWF file(written using
+	1.0 or 2.0), it cannot be cross-scripted by an AVM2 SWF file (written using
 	ActionScript 3.0). However, you can communicate between the two SWF files
 	by using the LocalConnection class.
 	* If the loaded content is an image, its data cannot be accessed by a
@@ -64,7 +63,7 @@ import lime.utils.AssetManifest;
 	clips in the local-with-networking sandbox, and the reverse is also
 	prevented.
 	* You cannot connect to commonly reserved ports. For a complete list of
-	blocked ports, see "Restricting Networking APIs" in the _ActionScript 3.0
+	blocked ports, see "Restricting Networking APIs" in the _OpenFL
 	Developer's Guide_.
 
 	However, in AIR, content in the `application` security
@@ -335,7 +334,7 @@ class Loader extends DisplayObjectContainer
 		@throws SecurityError         You cannot connect to commonly reserved
 									  ports. For a complete list of blocked ports,
 									  see "Restricting Networking APIs" in the
-									  _ActionScript 3.0 Developer's Guide_.
+									  _OpenFL Developer's Guide_.
 		@throws SecurityError         If the `applicationDomain` or
 									  `securityDomain` properties of
 									  the `context` parameter are from
@@ -528,7 +527,7 @@ class Loader extends DisplayObjectContainer
 		@throws SecurityError         You cannot connect to commonly reserved
 									  ports. For a complete list of blocked ports,
 									  see "Restricting Networking APIs" in the
-									  _ActionScript 3.0 Developer's Guide_.
+									  _OpenFL Developer's Guide_.
 		@event asyncError    Dispatched by the `contentLoaderInfo`
 							 object if the
 							 `LoaderContext.requestedContentParent`

@@ -96,7 +96,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 		When an object is written to or read from binary data, the
 		`objectEncoding` value is used to determine whether the
-		Haxe, JavaScript, ActionScript 3.0, ActionScript 2.0 or ActionScript 1.0
+		Haxe Serialization Format, JSON, AMF0, or AMF3
 		format should be used. The value is a constant from the ObjectEncoding
 		class.
 	**/
@@ -137,8 +137,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	#if openfl_doc_gen
 	/**
-		* Used to determine whether the ActionScript 3.0, ActionScript 2.0, or
-		* ActionScript 1.0 format should be used when writing to, or reading from, a
+		* Used to determine whether the Haxe Serialization Format, JSON, AMF0,
+		* or AMF3 format should be used when writing to, or reading from, a
 		* ByteArray instance. The value is a constant from the ObjectEncoding class.
 
 		* On the Flash and AIR targets, support for Action Message Format (AMF) object

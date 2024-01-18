@@ -824,7 +824,7 @@ class NativeWindow extends EventDispatcher
 		are smaller than the new minimum size.
 
 		The `minSize` restriction is enforced for window resizing operations
-		invoked both through ActionScript code and through the operating system.
+		invoked both through Haxe code and through the operating system.
 
 		Note: The width and height of any displayed system chrome may make it
 		impossible to set a window as small as the specified minimum size.

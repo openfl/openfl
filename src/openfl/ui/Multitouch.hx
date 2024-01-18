@@ -35,7 +35,7 @@ import openfl.Vector;
 	interaction, and to manage the support of touch interaction if the current
 	environment supports touch input.
 
-	You cannot create a Multitouch object directly from ActionScript code.
+	You cannot create a Multitouch object directly from Haxe code.
 	If you call `new Multitouch()`, an exception is thrown.
 
 	**Note:** The Multitouch feature is not supported for SWF files

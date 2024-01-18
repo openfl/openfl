@@ -687,8 +687,8 @@ class FileReference extends EventDispatcher
 		HTTPS.
 
 		You cannot connect to commonly reserved ports. For a complete list of
-		blocked ports, see "Restricting Networking APIs" in the _ActionScript
-		3.0 Developer's Guide_.
+		blocked ports, see "Restricting Networking APIs" in the _OpenFL
+		Developer's Guide_.
 
 		**Note**: If your server requires user authentication, only SWF files
 		running in a browser ?that is, using the browser plug-in or ActiveX
@@ -809,7 +809,7 @@ class FileReference extends EventDispatcher
 		@throws SecurityError         You cannot connect to commonly reserved
 									  ports. For a complete list of blocked
 									  ports, see "Restricting Networking APIs"
-									  in the _ActionScript 3.0 Developer's
+									  in the _OpenFL Developer's
 									  Guide_.
 		@event cancel        Dispatched when the user dismisses the dialog
 							 box.
@@ -1143,8 +1143,8 @@ class FileReference extends EventDispatcher
 		* The binary contents of the file
 
 		You cannot connect to commonly reserved ports. For a complete list of
-		blocked ports, see "Restricting Networking APIs" in the _ActionScript
-		3.0 Developer's Guide_.
+		blocked ports, see "Restricting Networking APIs" in the _OpenFL
+		Developer's Guide_.
 
 		For a sample `POST` request, see the description of the
 		`uploadDataFieldName` parameter. You can send `POST` or `GET`
@@ -1293,7 +1293,7 @@ class FileReference extends EventDispatcher
 		@throws SecurityError         You cannot connect to commonly reserved
 									  ports. For a complete list of blocked
 									  ports, see "Restricting Networking APIs"
-									  in the _ActionScript 3.0 Developer's
+									  in the _OpenFL Developer's
 									  Guide_.
 		@event complete           Dispatched when the file upload operation
 								  completes successfully.

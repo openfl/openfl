@@ -33,7 +33,7 @@ import js.html.CanvasRenderingContext2D;
 	`drawRoundRect()`, `drawCircle()`, and
 	`drawEllipse()`.
 
-	You cannot create a Graphics object directly from ActionScript code. If
+	You cannot create a Graphics object directly from Haxe code. If
 	you call `new Graphics()`, an exception is thrown.
 
 	The Graphics class is final; it cannot be subclassed.

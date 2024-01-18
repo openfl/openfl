@@ -72,11 +72,11 @@ import js.html.CSSStyleDeclaration;
 	MovieClip, TextField, and Button classes(such as `_alpha`,
 	`_height`, `_name`, `_width`,
 	`_x`, `_y`, and others) have equivalents in the
-	ActionScript 3.0 DisplayObject class that are renamed so that they no
+	OpenFL DisplayObject class that are renamed so that they no
 	longer begin with the underscore(_) character.
 
 	For more information, see the "Display Programming" chapter of the
-	_ActionScript 3.0 Developer's Guide_.
+	_OpenFL Developer's Guide_.
 
 	@event added            Dispatched when a display object is added to the
 							display list. The following methods trigger this
@@ -415,13 +415,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		classes that define specific filters you can use.
 
 		Filters can be applied in Flash Professional at design time, or at run
-		time by using ActionScript code. To apply a filter by using ActionScript,
+		time by using Haxe code. To apply a filter by using Haxe,
 		you must make a temporary copy of the entire `filters` array,
 		modify the temporary array, then assign the value of the temporary array
 		back to the `filters` array. You cannot directly add a new
 		filter object to the `filters` array.
 
-		To add a filter by using ActionScript, perform the following steps
+		To add a filter by using Haxe, perform the following steps
 		(assume that the target display object is named
 		`myDisplayObject`):
 
@@ -504,7 +504,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		Returns a LoaderInfo object containing information about loading the file
 		to which this display object belongs. The `loaderInfo` property
 		is defined only for the root display object of a SWF file or for a loaded
-		Bitmap(not for a Bitmap that is drawn with ActionScript). To find the
+		Bitmap (not for a Bitmap that is drawn with Haxe). To find the
 		`loaderInfo` object associated with the SWF file that contains
 		a display object named `myDisplayObject`, use
 		`myDisplayObject.root.loaderInfo`.

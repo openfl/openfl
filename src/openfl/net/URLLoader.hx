@@ -211,8 +211,8 @@ class URLLoader extends EventDispatcher
 		data.
 
 		You cannot connect to commonly reserved ports. For a complete list of
-		blocked ports, see "Restricting Networking APIs" in the _ActionScript
-		3.0 Developer's Guide_.
+		blocked ports, see "Restricting Networking APIs" in the _OpenFL
+		Developer's Guide_.
 
 		 In Flash Player 10 and later, if you use a multipart Content-Type(for
 		example "multipart/form-data") that contains an upload(indicated by a
@@ -257,8 +257,8 @@ class URLLoader extends EventDispatcher
 							  this file as local-with-networking or trusted.
 		@throws SecurityError You are trying to connect to a commonly reserved
 							  port. For a complete list of blocked ports, see
-							  "Restricting Networking APIs" in the _ActionScript
-							  3.0 Developer's Guide_.
+							  "Restricting Networking APIs" in the _OpenFL
+							  Developer's Guide_.
 		@throws TypeError     The value of the request parameter or the
 							  `URLRequest.url` property of the
 							  URLRequest object passed are `null`.

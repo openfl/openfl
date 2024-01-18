@@ -90,7 +90,7 @@ import js.Browser;
 	@event fullScreen             Dispatched when the Stage object enters, or
 								  leaves, full-screen mode. A change in
 								  full-screen mode can be initiated through
-								  ActionScript, or the user invoking a
+								  Haxe code, or the user invoking a
 								  keyboard shortcut, or if the current focus
 								  leaves the full-screen window.
 	@event mouseLeave             Dispatched by the Stage object when the

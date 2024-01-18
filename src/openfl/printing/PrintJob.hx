@@ -40,8 +40,8 @@ import js.Browser;
 	orientation, and you can configure your document to dynamically format
 	Flash content that is appropriate for the printer settings.
 
-	**Note:** ActionScript 3.0 does not restrict a PrintJob object to a single
-	frame (as did previous versions of ActionScript). However, since the
+	**Note:** OpenFL does not restrict a PrintJob object to a single
+	frame (as did previous versions of ActionScript 2.0). However, since the
 	operating system displays print status information to the user after the
 	user has clicked the OK button in the Print dialog box, you should call
 	`PrintJob.addPage()` and `PrintJob.send()` as soon as possible to send
@@ -274,7 +274,7 @@ class PrintJob
 						 `frameNumber`, pass `null` for `options`.
 		@param frameNum  An optional number that lets you specify which frame
 						 of a MovieClip object to print. Passing a `frameNum`
-						 does not invoke ActionScript on that frame. If you
+						 does not invoke Haxe code on that frame. If you
 						 omit this parameter and the `sprite` parameter is a
 						 MovieClip object, the current frame in `sprite` is
 						 printed.

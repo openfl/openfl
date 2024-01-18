@@ -105,7 +105,7 @@ class ColorTransform
 		When you pass a value for this property, use the format
 		0x_RRGGBB_. _RR_, _GG_, and _BB_ each consist of two
 		hexadecimal digits that specify the offset of each color component. The 0x
-		tells the ActionScript compiler that the number is a hexadecimal
+		tells the Haxe compiler that the number is a hexadecimal
 		value.
 	**/
 	public var color(get, set):Int;

@@ -127,7 +127,7 @@ typedef Element = Dynamic;
 	@event fullScreen             Dispatched when the Stage object enters, or
 								  leaves, full-screen mode. A change in
 								  full-screen mode can be initiated through
-								  ActionScript, or the user invoking a keyboard
+								  Haxe code, or the user invoking a keyboard
 								  shortcut, or if the current focus leaves the
 								  full-screen window.
 	@event mouseLeave             Dispatched by the Stage object when the
@@ -200,7 +200,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		avoid this, the Stage owner can grant permission to the domain of the
 		calling object by calling the `Security.allowDomain()` method
 		or the `Security.alowInsecureDomain()` method. For more
-		information, see the "Security" chapter in the _ActionScript 3.0
+		information, see the "Security" chapter in the _OpenFL
 		Developer's Guide_.
 	**/
 	public var align:StageAlign;
@@ -386,7 +386,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 							  `Security.allowDomain()` method or the
 							  `Security.allowInsecureDomain()` method.
 							  For more information, see the "Security" chapter in
-							  the _ActionScript 3.0 Developer's Guide_.
+							  the _OpenFL Developer's Guide_.
 							  Trying to set the `displayState` property
 							  while the settings dialog is displayed, without a
 							  user response, or if the `param` or
@@ -438,7 +438,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 							  `Security.allowDomain()` method or the
 							  `Security.allowInsecureDomain()` method.
 							  For more information, see the "Security" chapter in
-							  the _ActionScript 3.0 Developer's Guide_.
+							  the _OpenFL Developer's Guide_.
 	**/
 	public var frameRate(get, set):Float;
 
@@ -460,19 +460,19 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	public var fullScreenHeight(get, never):UInt;
 
 	/**
-		Sets the Flash runtime to scale a specific region of the stage to
-		full-screen mode. If available, the Flash runtime scales in hardware,
+		Sets OpenFL to scale a specific region of the stage to
+		full-screen mode. If available, the OpenFL scales in hardware,
 		which uses the graphics and video card on a user's computer, and
 		generally displays content more quickly than software scaling.
 		When this property is set to a valid rectangle and the `displayState`
-		property is set to full-screen mode, the Flash runtime scales the
-		specified area. The actual Stage size in pixels within ActionScript
-		does not change. The Flash runtime enforces a minimum limit for the
+		property is set to full-screen mode, OpenFL scales the
+		specified area. The actual Stage size in pixels within Haxe
+		does not change. OpenFL enforces a minimum limit for the
 		size of the rectangle to accommodate the standard "Press Esc to exit
 		full-screen mode" message. This limit is usually around 260 by 30
-		pixels but can vary on platform and Flash runtime version.
+		pixels but can vary on platform and OpenFL version.
 
-		This property can only be set when the Flash runtime is not in
+		This property can only be set when the OpenFL is not in
 		full-screen mode. To use this property correctly, set this property
 		first, then set the `displayState` property to full-screen mode, as
 		shown in the code examples.
@@ -570,7 +570,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 							  method or the
 							  `Security.allowInsecureDomain()` method.
 							  For more information, see the "Security" chapter in
-							  the _ActionScript 3.0 Developer's Guide_.
+							  the _OpenFL Developer's Guide_.
 	**/
 	public var quality(get, set):StageQuality;
 
@@ -604,7 +604,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 							  `Security.allowDomain()` method or the
 							  `Security.allowInsecureDomain()` method.
 							  For more information, see the "Security" chapter in
-							  the _ActionScript 3.0 Developer's Guide_.
+							  the _OpenFL Developer's Guide_.
 	**/
 	public var scaleMode(get, set):StageScaleMode;
 
@@ -625,7 +625,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 							  `Security.allowDomain()` method or the
 							  `Security.allowInsecureDomain()` method. For
 							  more information, see the "Security" chapter in
-							  the _ActionScript 3.0 Developer's Guide_.
+							  the _OpenFL Developer's Guide_.
 	**/
 	public var showDefaultContextMenu:Bool;
 
@@ -672,7 +672,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 							  `Security.allowDomain()` method or the
 							  `Security.allowInsecureDomain()` method.
 							  For more information, see the "Security" chapter in
-							  the _ActionScript 3.0 Developer's Guide_.
+							  the _OpenFL Developer's Guide_.
 	**/
 	public var stageFocusRect:Bool;
 
@@ -715,7 +715,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 							  `Security.allowDomain()` method or the
 							  `Security.allowInsecureDomain()` method.
 							  For more information, see the "Security" chapter in
-							  the _ActionScript 3.0 Developer's Guide_.
+							  the _OpenFL Developer's Guide_.
 	**/
 	public var stageHeight(default, null):Int;
 
@@ -787,7 +787,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 							  `Security.allowDomain()` method or the
 							  `Security.allowInsecureDomain()` method.
 							  For more information, see the "Security" chapter in
-							  the _ActionScript 3.0 Developer's Guide_.
+							  the _OpenFL Developer's Guide_.
 	**/
 	public var stageWidth(default, null):Int;
 
@@ -848,7 +848,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		version, and set the `DisplayGPUBlendsetting` in your mm.cfg file.
 
 		**Note:** This property is always `false` when referenced from
-		ActionScript that runs before the runtime performs its first rendering
+		Haxe code that runs before the runtime performs its first rendering
 		pass. For example, if you examine `wmodeGPU` from a script in Frame 1
 		of Adobe Flash Professional, and your SWF file is the first SWF file
 		loaded in a new instance of the runtime, then the `wmodeGPU` value is

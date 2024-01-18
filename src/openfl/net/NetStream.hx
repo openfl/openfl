@@ -524,7 +524,6 @@ class NetStream extends EventDispatcher
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10) public static var CONNECT_TO_FMS:String;
 	#end
-
 	#if false
 	/**
 		Creates a peer-to-peer publisher connection. Pass this string for the
@@ -551,7 +550,6 @@ class NetStream extends EventDispatcher
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public var audioReliable:Bool;
 	#end
-
 	#if false
 	/**
 		For RTMFP connections, specifies whether peer-to-peer subscribers on
@@ -561,7 +559,6 @@ class NetStream extends EventDispatcher
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public var audioSampleAccess:Bool;
 	#end
-
 	#if false
 	/**
 		The number of seconds of previously displayed data that currently
@@ -578,7 +575,6 @@ class NetStream extends EventDispatcher
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public var backBufferLength (default, null):Float;
 	#end
-
 	#if false
 	/**
 		Specifies how much previously displayed data Flash Player tries to
@@ -784,7 +780,7 @@ class NetStream extends EventDispatcher
 		the URL that matters in security decisions.
 
 		For more information on policy files, see "Website controls (policy
-		files)" in the _ActionScript 3.0 Developer's Guide_ and the Flash
+		files)" in the _OpenFL Developer's Guide_ and the Flash
 		Player Developer Center Topic: <a
 		href="http://www.adobe.com/go/devnet_security_en"
 		scope="external">Security</a>.
@@ -885,7 +881,6 @@ class NetStream extends EventDispatcher
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10) public var farID (default, null):String;
 	#end
-
 	#if false
 	/**
 		For RTMFP and RTMPE connections, a value chosen substantially by the
@@ -894,7 +889,6 @@ class NetStream extends EventDispatcher
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10) public var farNonce (default, null):String;
 	#end
-
 	#if false
 	/**
 		Specifies whether displayed data is cached for smart seeking (`TRUE`),
@@ -926,7 +920,6 @@ class NetStream extends EventDispatcher
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public var inBufferSeek:Bool;
 	#end
-
 	#if false
 	/**
 		Returns a NetStreamInfo object whose properties contain statistics
@@ -960,7 +953,6 @@ class NetStream extends EventDispatcher
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10) public var maxPauseBufferTime:Float;
 	#end
-
 	#if false
 	/**
 		For RTMFP connections, specifies whether peer-to-peer multicast
@@ -973,7 +965,6 @@ class NetStream extends EventDispatcher
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public var multicastAvailabilitySendToAll:Bool;
 	#end
-
 	#if false
 	/**
 		For RTMFP connections, specifies the interval in seconds between
@@ -987,7 +978,6 @@ class NetStream extends EventDispatcher
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public var multicastAvailabilityUpdatePeriod:Float;
 	#end
-
 	#if false
 	/**
 		For RTMFP connections, specifies the time in seconds between when the
@@ -1005,7 +995,6 @@ class NetStream extends EventDispatcher
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public var multicastFetchPeriod:Float;
 	#end
-
 	#if false
 	/**
 		For RTMFP connections, returns a NetStreamMulticastInfo object whose
@@ -1014,7 +1003,6 @@ class NetStream extends EventDispatcher
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public var multicastInfo (default, null):openfl.net.NetStreamMulticastInfo;
 	#end
-
 	#if false
 	/**
 		For RTMFP connections, specifies the maximum number of peers to which
@@ -1022,7 +1010,6 @@ class NetStream extends EventDispatcher
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public var multicastPushNeighborLimit:Float;
 	#end
-
 	#if false
 	/**
 		For RTMFP connections, specifies the duration in seconds that
@@ -1032,7 +1019,6 @@ class NetStream extends EventDispatcher
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public var multicastRelayMarginDuration:Float;
 	#end
-
 	#if false
 	/**
 		For RTMFP connections, specifies the duration in seconds of the
@@ -1044,7 +1030,6 @@ class NetStream extends EventDispatcher
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public var multicastWindowDuration:Float;
 	#end
-
 	#if false
 	/**
 		For RTMFP and RTMPE connections, a value chosen substantially by this
@@ -1129,7 +1114,6 @@ class NetStream extends EventDispatcher
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public var videoReliable:Bool;
 	#end
-
 	#if false
 	/**
 		For RTMFP connections, specifies whether peer-to-peer subscribers on
@@ -1271,7 +1255,6 @@ class NetStream extends EventDispatcher
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public function appendBytes (bytes:ByteArray):Void;
 	#end
-
 	#if false
 	/**
 		Indicates a timescale discontinuity, flushes the FIFO, and tells the
@@ -1289,7 +1272,6 @@ class NetStream extends EventDispatcher
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public function appendBytesAction (netStreamAppendBytesAction:String):Void;
 	#end
-
 	#if false
 	/**
 		Attaches a stream to a new NetConnection object. Call this method to
@@ -1318,7 +1300,6 @@ class NetStream extends EventDispatcher
 	**/
 	// @:noCompletion@:dox(hide) @:require(flash10_1) public function attach(connection:NetConnection):Void;
 	#end
-
 	#if false
 	/**
 		Attaches an audio stream to a NetStream object from a Microphone
@@ -1355,7 +1336,6 @@ class NetStream extends EventDispatcher
 	**/
 	// @:noCompletion @:dox(hide) public function attachAudio (microphone:openfl.media.Microphone):Void;
 	#end
-
 	#if false
 	/**
 		Starts capturing video from a camera, or stops capturing if
@@ -1682,7 +1662,6 @@ class NetStream extends EventDispatcher
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10) public function play2 (param:openfl.net.NetStreamPlayOptions):Void;
 	#end
-
 	#if false
 	/**
 		Sends streaming audio, video, and data messages from a client to Flash
@@ -1792,7 +1771,6 @@ class NetStream extends EventDispatcher
 	**/
 	// @:noCompletion @:dox(hide) public function publish (?name:String, ?type:String):Void;
 	#end
-
 	#if false
 	/**
 		Specifies whether incoming audio plays on the stream. This method is
@@ -1811,7 +1789,6 @@ class NetStream extends EventDispatcher
 	**/
 	// @:noCompletion @:dox(hide) public function receiveAudio (flag:Bool):Void;
 	#end
-
 	#if false
 	/**
 		Specifies whether incoming video plays on the stream. This method is
@@ -1830,7 +1807,6 @@ class NetStream extends EventDispatcher
 	**/
 	// @:noCompletion @:dox(hide) public function receiveVideo (flag:Bool):Void;
 	#end
-
 	#if false
 	/**
 		Specifies the frame rate for incoming video. This method is available
@@ -1859,7 +1835,6 @@ class NetStream extends EventDispatcher
 	**/
 	// @:noCompletion @:dox(hide) public function receiveVideoFPS (FPS:Float):Void;
 	#end
-
 	#if false
 	/**
 		Deletes all locally cached digital rights management (DRM) voucher
@@ -2068,7 +2043,6 @@ class NetStream extends EventDispatcher
 	**/
 	// @:noCompletion @:dox(hide) public function send (handlerName:String, ?p1:Dynamic, ?p2:Dynamic, ?p3:Dynamic, ?p4:Dynamic, ?p5:Dynamic):Void;
 	#end
-
 	#if false
 	/**
 		Steps forward or back the specified number of frames, relative to the

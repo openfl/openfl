@@ -29,7 +29,7 @@ import openfl.Vector;
 	`ArgumentError` exception.
 
 	For more information, see the "Display Programming" chapter of the
-	_ActionScript 3.0 Developer's Guide_.
+	_OpenFL Developer's Guide_.
 
 	@see [Adding display objects to the display list](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/adding-display-objects-to-the-display-list.html)
 	@see [Traversing the display list](https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/traversing-the-display-list.html)

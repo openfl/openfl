@@ -281,7 +281,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 							 server whose policy file doesn't grant the
 							 calling host access to the specified port. For
 							 more information on policy files, see "Website
-							 controls (policy files)" in the _ActionScript 3.0
+							 controls (policy files)" in the _OpenFL
 							 Developer's Guide_ and the Flash Player Developer
 							 Center Topic: <a
 							 href="http://www.adobe.com/go/devnet_security_en"
@@ -364,7 +364,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 							 server whose policy file doesn't grant the
 							 calling host access to the specified port. For
 							 more information on policy files, see "Website
-							 controls (policy files)" in the _ActionScript 3.0
+							 controls (policy files)" in the _OpenFL
 							 Developer's Guide_ and the Flash Player Developer
 							 Center Topic: <a
 							 href="http://www.adobe.com/go/devnet_security_en"
