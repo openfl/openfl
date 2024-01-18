@@ -138,7 +138,7 @@ class CanvasTilemap
 				}
 
 				bitmapData = tileset.__bitmapData;
-				if (bitmapData == null) continue;
+				if (bitmapData == null || bitmapData.image == null) continue;
 
 				if (bitmapData != cacheBitmapData)
 				{

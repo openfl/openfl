@@ -99,7 +99,7 @@ abstract URLVariables(Dynamic) from Dynamic to Dynamic
 			}
 			else
 			{
-				result.push(StringTools.urlEncode(f) + "=" + StringTools.urlEncode(value));
+				result.push(StringTools.urlEncode(f) + "=" + StringTools.urlEncode(Std.string(value)));
 			}
 		}
 

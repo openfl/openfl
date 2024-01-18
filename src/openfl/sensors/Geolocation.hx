@@ -153,6 +153,6 @@ class Geolocation
 }
 #else
 #if air
-typedef Geolocation = flash.desktop.Geolocation;
+typedef Geolocation = flash.sensors.Geolocation;
 #end
 #end

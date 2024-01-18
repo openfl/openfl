@@ -71,6 +71,6 @@ class DeviceRotation
 }
 #else
 #if air
-typedef DeviceRotation = flash.desktop.DeviceRotation;
+typedef DeviceRotation = flash.sensors.DeviceRotation;
 #end
 #end
