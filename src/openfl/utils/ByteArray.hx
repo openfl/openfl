@@ -61,7 +61,7 @@ import format.amf3.Writer as AMF3Writer;
 	* Supporting new binary file formats.
 
 	@see [Working with byte arrays](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/)
-	@see [Reading a writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
+	@see [Reading and writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
 **/
 @:access(haxe.io.Bytes)
 @:access(openfl.utils.ByteArrayData)
@@ -476,7 +476,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 				`false` otherwise.
 		@throws EOFError There is not sufficient data available to read.
 
-		@see [Reading a writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
+		@see [Reading and writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
 	**/
 	public inline function readBoolean():Bool
 	{
@@ -491,7 +491,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		@return An integer between -128 and 127.
 		@throws EOFError There is not sufficient data available to read.
 
-		@see [Reading a writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
+		@see [Reading and writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
 	**/
 	public inline function readByte():Int
 	{
@@ -514,7 +514,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		@throws RangeError The value of the supplied offset and length, combined,
 						   is greater than the maximum for a uint.
 
-		@see [Reading a writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
+		@see [Reading and writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
 	**/
 	public inline function readBytes(bytes:ByteArray, offset:UInt = 0, length:UInt = 0):Void
 	{
@@ -528,7 +528,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		@return A double-precision(64-bit) floating-point number.
 		@throws EOFError There is not sufficient data available to read.
 
-		@see [Reading a writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
+		@see [Reading and writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
 	**/
 	public inline function readDouble():Float
 	{
@@ -542,7 +542,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		@return A single-precision(32-bit) floating-point number.
 		@throws EOFError There is not sufficient data available to read.
 
-		@see [Reading a writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
+		@see [Reading and writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
 	**/
 	public inline function readFloat():Float
 	{
@@ -557,7 +557,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		@return A 32-bit signed integer between -2147483648 and 2147483647.
 		@throws EOFError There is not sufficient data available to read.
 
-		@see [Reading a writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
+		@see [Reading and writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
 	**/
 	public inline function readInt():Int
 	{
@@ -589,7 +589,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		@return UTF-8 encoded string.
 		@throws EOFError There is not sufficient data available to read.
 
-		@see [Reading a writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
+		@see [Reading and writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
 	**/
 	public inline function readMultiByte(length:UInt, charSet:String):String
 	{
@@ -602,7 +602,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		@return The deserialized object.
 		@throws EOFError There is not sufficient data available to read.
 
-		@see [Reading a writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
+		@see [Reading and writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
 	**/
 	public inline function readObject():Dynamic
 	{
@@ -617,7 +617,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		@return A 16-bit signed integer between -32768 and 32767.
 		@throws EOFError There is not sufficient data available to read.
 
-		@see [Reading a writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
+		@see [Reading and writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
 	**/
 	public inline function readShort():Int
 	{
@@ -631,7 +631,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		@return UTF-8 encoded string.
 		@throws EOFError There is not sufficient data available to read.
 
-		@see [Reading a writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
+		@see [Reading and writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
 	**/
 	public inline function readUTF():String
 	{
@@ -646,7 +646,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		@return A string composed of the UTF-8 bytes of the specified length.
 		@throws EOFError There is not sufficient data available to read.
 
-		@see [Reading a writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
+		@see [Reading and writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
 	**/
 	public inline function readUTFBytes(length:UInt):String
 	{
@@ -661,7 +661,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		@return A 32-bit unsigned integer between 0 and 255.
 		@throws EOFError There is not sufficient data available to read.
 
-		@see [Reading a writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
+		@see [Reading and writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
 	**/
 	public inline function readUnsignedByte():UInt
 	{
@@ -676,7 +676,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		@return A 32-bit unsigned integer between 0 and 4294967295.
 		@throws EOFError There is not sufficient data available to read.
 
-		@see [Reading a writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
+		@see [Reading and writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
 	**/
 	public inline function readUnsignedInt():UInt
 	{
@@ -691,7 +691,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		@return A 16-bit unsigned integer between 0 and 65535.
 		@throws EOFError There is not sufficient data available to read.
 
-		@see [Reading a writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
+		@see [Reading and writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
 	**/
 	public inline function readUnsignedShort():UInt
 	{
@@ -849,7 +849,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 					 parameter is `true`, the method writes a 1; if
 					 `false`, the method writes a 0.
 
-					 @see [Reading a writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
+					 @see [Reading and writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
 	**/
 	public inline function writeBoolean(value:Bool):Void
 	{
@@ -865,7 +865,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		@param value A 32-bit integer. The low 8 bits are written to the byte
 					 stream.
 
-		@see [Reading a writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
+		@see [Reading and writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
 	**/
 	public inline function writeByte(value:Int):Void
 	{
@@ -891,7 +891,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		@param length An unsigned integer indicating how far into the buffer to
 					  write.
 
-		@see [Reading a writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
+		@see [Reading and writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
 	**/
 	public inline function writeBytes(bytes:ByteArray, offset:UInt = 0, length:UInt = 0):Void
 	{
@@ -904,7 +904,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 		@param value A double-precision(64-bit) floating-point number.
 
-		@see [Reading a writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
+		@see [Reading and writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
 	**/
 	public inline function writeDouble(value:Float):Void
 	{
@@ -917,7 +917,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 		@param value A single-precision(32-bit) floating-point number.
 
-		@see [Reading a writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
+		@see [Reading and writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
 	**/
 	public inline function writeFloat(value:Float):Void
 	{
@@ -929,7 +929,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 		@param value An integer to write to the byte stream.
 
-		@see [Reading a writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
+		@see [Reading and writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
 	**/
 	public inline function writeInt(value:Int):Void
 	{
@@ -948,7 +948,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 					   href="../../charset-codes.html">Supported Character
 					   Sets</a>.
 
-		@see [Reading a writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
+		@see [Reading and writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
 	**/
 	public inline function writeMultiByte(value:String, charSet:String):Void
 	{
@@ -960,7 +960,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 		@param object The object to serialize.
 
-		@see [Reading a writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
+		@see [Reading and writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
 	**/
 	public inline function writeObject(object:Dynamic):Void
 	{
@@ -974,7 +974,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		@param value 32-bit integer, whose low 16 bits are written to the byte
 					 stream.
 
-		@see [Reading a writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
+		@see [Reading and writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
 	**/
 	public inline function writeShort(value:Int):Void
 	{
@@ -989,7 +989,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		@param value The string value to be written.
 		@throws RangeError If the length is larger than 65535.
 
-		@see [Reading a writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
+		@see [Reading and writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
 	**/
 	public inline function writeUTF(value:String):Void
 	{
@@ -1003,7 +1003,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 		@param value The string value to be written.
 
-		@see [Reading a writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
+		@see [Reading and writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
 	**/
 	public inline function writeUTFBytes(value:String):Void
 	{
@@ -1015,7 +1015,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 		@param value An unsigned integer to write to the byte stream.
 
-		@see [Reading a writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
+		@see [Reading and writing a byte array](https://books.openfl.org/openfl-developers-guide/working-with-byte-arrays/reading-and-writing-a-byte-array.html)
 	**/
 	public inline function writeUnsignedInt(value:UInt):Void
 	{
