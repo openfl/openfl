@@ -35,14 +35,14 @@ class FlashTilemap
 		bitmapData.lock();
 		bitmapData.fillRect(bitmapData.rect, 0);
 
-		renderTileContainer(tilemap.__group, bitmapData, new Matrix(), tilemap.__tileset, tilemap.smoothing, tilemap.tileAlphaEnabled, 1,
+		renderTileContainer(tilemap, tilemap.__group, bitmapData, new Matrix(), tilemap.__tileset, tilemap.smoothing, tilemap.tileAlphaEnabled, 1,
 			tilemap.tileColorTransformEnabled, null, tilemap.tileBlendModeEnabled, NORMAL, null);
 
 		bitmapData.unlock();
 		#end
 	}
 
-	private static function renderTileContainer(group:TileContainer, bitmapData:BitmapData, parentTransform:Matrix, defaultTileset:Tileset, smooth:Bool,
+	private static function renderTileContainer(tilemap:Tilemap, group:TileContainer, bitmapData:BitmapData, parentTransform:Matrix, defaultTileset:Tileset, smooth:Bool,
 			alphaEnabled:Bool, worldAlpha:Float, colorTransformEnabled:Bool, defaultColorTransform:ColorTransform, blendModeEnabled:Bool,
 			defaultBlendMode:BlendMode, cacheBitmapData:BitmapData):Void
 	{
@@ -63,14 +63,52 @@ class FlashTilemap
 			tileRect,
 			sourceBitmapData,
 			cacheAlpha;
+		var tileWidth, tileHeight;
+
+		var tilemapWidth = tilemap.width / Math.abs(tilemap.scaleX);
+		var tilemapHeight = tilemap.height / Math.abs(tilemap.scaleY);
 
 		for (i in 0...length)
 		{
 			tile = tiles[i];
 
+			id = tile.id;
+			tileset = tile.tileset != null ? tile.tileset : defaultTileset;
+			alpha = tile.alpha * worldAlpha;
+			visible = tile.visible;
+
 			tileTransform.setTo(1, 0, 0, 1, -tile.originX, -tile.originY);
 			tileTransform.concat(tile.matrix);
 			tileTransform.concat(parentTransform);
+
+			if(tile.__length == 0 && !tile.offscreenRendering)
+			{
+				if (id == -1)
+				{
+					tileRect = tile.__rect;
+					if (tileRect == null || tileRect.width <= 0 || tileRect.height <= 0)
+					{
+						continue;
+					}
+
+					tileWidth = tileRect.width;
+					tileHeight = tileRect.height;
+				}else{
+					tileData = tileset.__data[id];
+					if (tileData == null)
+					{
+						continue;
+					}
+
+					tileWidth = tileData.width;
+					tileHeight = tileData.height;
+				}
+
+				if(tileTransform.tx + tileWidth < 0 || tileTransform.tx > tilemapWidth || tileTransform.ty + tileHeight < 0 || tileTransform.ty > tilemapHeight)
+				{
+					continue;
+				}
+			}
 
 			// if (roundPixels) {
 
@@ -79,10 +117,6 @@ class FlashTilemap
 
 			// }
 
-			tileset = tile.tileset != null ? tile.tileset : defaultTileset;
-
-			alpha = tile.alpha * worldAlpha;
-			visible = tile.visible;
 			if (!visible || alpha <= 0) continue;
 
 			if (blendModeEnabled)
@@ -121,14 +155,12 @@ class FlashTilemap
 
 			if (tile.__length > 0)
 			{
-				renderTileContainer(cast tile, bitmapData, tileTransform, tileset, smooth, alphaEnabled, alpha, colorTransformEnabled, colorTransform,
+				renderTileContainer(tilemap, cast tile, bitmapData, tileTransform, tileset, smooth, alphaEnabled, alpha, colorTransformEnabled, colorTransform,
 					blendModeEnabled, blendMode, cacheBitmapData);
 			}
 			else
 			{
 				if (tileset == null) continue;
-
-				id = tile.id;
 
 				if (id == -1)
 				{
