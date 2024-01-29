@@ -644,7 +644,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10) public var rotationX:Float;
 	#end
-
 	#if false
 	/**
 		Indicates the y-axis rotation of the DisplayObject instance, in degrees, from its original orientation
@@ -654,7 +653,6 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10) public var rotationY:Float;
 	#end
-
 	#if false
 	/**
 		Indicates the z-axis rotation of the DisplayObject instance, in degrees, from its original orientation
@@ -780,7 +778,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		property of the `scrollRect` Rectangle object. You can scroll
 		an object up and down by setting the `y` property of the
 		`scrollRect` Rectangle object. If the display object is rotated
-		90� and you scroll it left and right, the display object actually scrolls
+		90° and you scroll it left and right, the display object actually scrolls
 		up and down.
 	**/
 	public var scrollRect(get, set):Rectangle;
@@ -871,9 +869,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		to the local coordinates of the parent DisplayObjectContainer. If the
 		object is inside a DisplayObjectContainer that has transformations, it is
 		in the local coordinate system of the enclosing DisplayObjectContainer.
-		Thus, for a DisplayObjectContainer rotated 90� counterclockwise, the
+		Thus, for a DisplayObjectContainer rotated 90° counterclockwise, the
 		DisplayObjectContainer's children inherit a coordinate system that is
-		rotated 90� counterclockwise. The object's coordinates refer to the
+		rotated 90° counterclockwise. The object's coordinates refer to the
 		registration point position.
 	**/
 	@:keep public var x(get, set):Float;
@@ -883,9 +881,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		to the local coordinates of the parent DisplayObjectContainer. If the
 		object is inside a DisplayObjectContainer that has transformations, it is
 		in the local coordinate system of the enclosing DisplayObjectContainer.
-		Thus, for a DisplayObjectContainer rotated 90� counterclockwise, the
+		Thus, for a DisplayObjectContainer rotated 90° counterclockwise, the
 		DisplayObjectContainer's children inherit a coordinate system that is
-		rotated 90� counterclockwise. The object's coordinates refer to the
+		rotated 90° counterclockwise. The object's coordinates refer to the
 		registration point position.
 	**/
 	@:keep public var y(get, set):Float;
