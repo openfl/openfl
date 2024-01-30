@@ -1066,8 +1066,8 @@ class File extends FileReference
 		@param deleteDirectoryContents Specifies whether or not to delete a directory that contains files or
 		subdirectories. When false, if the directory contains files or directories, a call to this method throws
 		an exception.
-		@events complete Dispatched when the directory has been deleted successfully.
-		@events ioError The directory does not exist or could not be deleted. On Windows, you cannot delete a
+		@event complete Dispatched when the directory has been deleted successfully.
+		@event ioError The directory does not exist or could not be deleted. On Windows, you cannot delete a
 		directory that contains a file that is open.
 		@throws SecurityError The application does not have the necessary permissions to delete the directory.
 
@@ -1138,8 +1138,8 @@ class File extends FileReference
 	/**
 		Deletes the file asynchronously.
 
-		@events complete Dispatched when the directory has been deleted successfully.
-		@events ioError The directory does not exist or could not be deleted. On Windows, you cannot delete a
+		@event complete Dispatched when the directory has been deleted successfully.
+		@event ioError The directory does not exist or could not be deleted. On Windows, you cannot delete a
 		directory that contains a file that is open.
 		@throws SecurityError The application does not have the necessary permissions to delete the directory.
 	**/
@@ -1224,9 +1224,9 @@ class File extends FileReference
 		Asynchronously retrieves an array of File objects corresponding to the contents of the
 		directory represented by this File object.
 
-		@events ioError You do not have adequate permissions to read this directory, or the directory does
+		@event ioError You do not have adequate permissions to read this directory, or the directory does
 		not exist.
-		@events directoryListing The directory contents have been enumerated successfully. The contents
+		@event directoryListing The directory contents have been enumerated successfully. The contents
 		event includes a files property, which is the resulting array of File objects.
 
 		The following code shows how to use the getDirectoryListingAsync() method to enumerate the contents
