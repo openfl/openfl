@@ -286,7 +286,7 @@ class Security
 		child SWF file into a parent SWF, you can access the
 		`contentLoaderInfo` property of the Loader object for the parent SWF:
 
-		```as3
+		```haxe
 		Security.allowDomain(loader.contentLoaderInfo.url)
 		```
 
@@ -489,7 +489,7 @@ class Security
 		With `Security.loadPolicyFile()`, Flash Player or AIR can load policy
 		files from arbitrary locations, as shown in the following example:
 
-		```as3
+		```haxe
 		Security.loadPolicyFile("http://www.example.com/sub/dir/pf.xml");
 		```
 
