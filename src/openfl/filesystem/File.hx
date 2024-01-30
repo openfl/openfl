@@ -1289,7 +1289,7 @@ class File extends FileReference
 			var files:Array<File> = [];
 			for (directory in directories)
 			{
-				files.push(new File(__path + directory));
+				files.push(new File(__path + __sep + directory));
 			}
 			// don't dispatch events directly from doWork because the listeners
 			// will be called in the wrong thread
