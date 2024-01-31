@@ -2124,6 +2124,8 @@ class File extends FileReference
 
 	@:noCompletion private function get_url():String
 	{
+		// TODO: url encode the native path to avoid invalid URL characters
+		// TODO: use app: and app-storage: protocols instead of file:, when path is relative to those directories
 		return "file:///" + nativePath;
 	}
 
