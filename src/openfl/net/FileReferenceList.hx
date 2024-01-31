@@ -47,6 +47,9 @@ import sys.FileSystem;
 				  operation (for example, by clicking Save), the
 				  `FileReferenceList` object is populated with FileReference
 				  objects that represent the files that the user selects.
+
+	@see [Using the FileReferenceList class](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/using-the-filereference-class.html#filereferencelist-class)
+	@see `openfl.net.FileReference`
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')

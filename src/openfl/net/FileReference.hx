@@ -304,6 +304,10 @@ import js.Browser;
 							  server after a successful upload. This event is
 							  not dispatched if data is not returned from the
 							  server.
+
+	@see [Using the FileReference class](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/using-the-filereference-class.html)
+	@see `openfl.net.FileReferenceList`
+	@see `openfl.filesystem.File`
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -835,6 +839,8 @@ class FileReference extends EventDispatcher
 							 security error.
 		@event select        Dispatched when the user selects a file for
 							 download from the dialog box.
+
+		@see [Downloading files from a server](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/using-the-filereference-class.html#downloading-files-from-a-server)
 	**/
 	public function download(request:URLRequest, defaultFileName:String = null):Void
 	{
@@ -935,6 +941,9 @@ class FileReference extends EventDispatcher
 		@event open     Dispatched when an load operation starts.
 		@event progress Dispatched periodically during the file load
 						operation.
+
+		@see [Loading data from files](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/using-the-filereference-class.html#loading-data-from-files)
+		@see [Using the load() and save() methods](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/using-the-load-and-save-methods.html)
 	**/
 	public function load():Void
 	{
@@ -1060,6 +1069,9 @@ class FileReference extends EventDispatcher
 						operation.
 		@event select   Dispatched when the user selects a file for download
 						from the dialog box.
+
+		@see [Saving data to local files](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/using-the-filereference-class.html#saving-data-to-local-files)
+		@see [Using the load() and save() methods](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/using-the-load-and-save-methods.html)
 	**/
 	public function save(data:Dynamic, defaultFileName:String = null):Void
 	{
@@ -1323,6 +1335,8 @@ class FileReference extends EventDispatcher
 								  security violation.
 		@event uploadCompleteData Dispatched when data has been received from
 								  the server after a successful file upload.
+
+		@see [Uploading files to a server](https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/using-the-filereference-class.html#uploading-files-to-a-server)
 	**/
 	public function upload(request:URLRequest, uploadDataFieldName:String = "Filedata", testUpload:Bool = false):Void
 	{
