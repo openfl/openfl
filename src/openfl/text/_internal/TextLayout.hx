@@ -1,5 +1,6 @@
 package openfl.text._internal;
 
+#if !flash
 import haxe.io.Bytes;
 #if lime
 import lime.math.Vector2;
@@ -505,3 +506,4 @@ class TextLayout
 		}
 	}
 }
+#end

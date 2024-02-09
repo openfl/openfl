@@ -1,5 +1,6 @@
 package openfl.display._internal;
 
+#if !flash
 import openfl.display.Bitmap;
 import openfl.display.CairoRenderer;
 #if lime
@@ -95,3 +96,4 @@ class CairoBitmap
 		renderer.cairo.rectangle(0, 0, bitmap.width, bitmap.height);
 	}
 }
+#end

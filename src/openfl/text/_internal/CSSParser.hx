@@ -1,5 +1,6 @@
 package openfl.text._internal;
 
+#if !flash
 import haxe.Json;
 import haxe.ds.StringMap;
 
@@ -652,3 +653,4 @@ class CSSParser
 		return map;
 	}
 }*/
+#end

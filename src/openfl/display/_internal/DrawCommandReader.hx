@@ -1,5 +1,6 @@
 package openfl.display._internal;
 
+#if !flash
 import openfl.display.BitmapData;
 import openfl.display.BlendMode;
 import openfl.display.CapsStyle;
@@ -1030,3 +1031,4 @@ abstract WindingNonZeroView(DrawCommandReader)
 		this = d;
 	}
 }
+#end

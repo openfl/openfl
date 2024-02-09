@@ -1,5 +1,6 @@
 package openfl.display._internal;
 
+#if !flash
 import openfl.display3D._internal.GLBuffer;
 import openfl.utils._internal.Float32Array;
 import openfl.display3D.Context3DMipFilter;
@@ -256,3 +257,4 @@ class ShaderBuffer
 		#end
 	}
 }
+#end
