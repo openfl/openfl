@@ -385,7 +385,7 @@ import sys.io.Process;
 
 		The server string is `PT`.
 	**/
-	public static var playerType(default, null) = #if web "PlugIn" #else "StandAlone" #end;
+	public static var playerType(default, null) = #if web "PlugIn" #elseif sys "Desktop" #else "StandAlone" #end;
 
 	/**
 		Specifies the screen color. This property can have the value
