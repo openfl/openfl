@@ -23,7 +23,8 @@ import sys.net.Socket;
 	property.
 
 	_OpenFL target support:_ This feature is supported on all desktop operating
-	systems, on iOS, and on Android. This feature is not supported on html5.
+	systems, on iOS, and on Android. This feature is not supported on the html5
+	target or other non-sys targets.
 
 	_Adobe AIR profile support:_ This feature is supported on all desktop
 	operating systems, on iOS (starting with AIR 3.8), and on Android (starting
@@ -50,7 +51,7 @@ import sys.net.Socket;
 	serious network failure occurs). Any data sent over the connection is broken into transmittable
 	packets and reassembled on the other end. All packets are guaranteed to arrive (within reason) —
 	any lost packets are retransmitted. In general, the TCP protocol manages the available network
-	bandwidth better than the UDP protocol. Most AIR applications that require socket communications
+	bandwidth better than the UDP protocol. Most OpenFL applications that require socket communications
 	should use the ServerSocket and Socket classes rather than the DatagramSocket class.
 
 	The ServerSocket class can only be used in targets that support TCP.
@@ -96,8 +97,8 @@ class ServerSocket extends EventDispatcher
 	/**
 		Creates a ServerSocket object.
 
-		@throws  SecurityError This error occurs ff the calling content is running outside the AIR
-				application security sandbox.
+		@throws  SecurityError This error occurs if the calling content is
+				running outside the AIR application security sandbox.
 	**/
 	public function new()
 	{

@@ -1,5 +1,6 @@
 package openfl.display3D._internal;
 
+#if !flash
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract ATFGPUFormat(Int) from Int to Int
 
 {
@@ -8,3 +9,4 @@ package openfl.display3D._internal;
 	public var ETC1 = 2;
 	public var ETC2 = 3;
 }
+#end

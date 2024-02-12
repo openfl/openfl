@@ -24,7 +24,8 @@ import sys.net.UdpSocket;
 	property.
 
 	_OpenFL target support:_ This feature is supported on all desktop operating
-	systems, on iOS, and on Android.
+	systems, on iOS, and on Android. This feature is not supported on the html5
+	target or other non-sys targets.
 
 	_Adobe AIR profile support:_ his feature is supported on all desktop
 	operating systems, on iOS (starting with AIR 3.8), and on Android (starting

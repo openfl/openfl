@@ -1,5 +1,6 @@
 package openfl.display3D._internal;
 
+#if !flash
 import haxe.Int64;
 import openfl.display._internal.SamplerState;
 import openfl.utils._internal.Log;
@@ -1043,3 +1044,4 @@ private class SourceRegister
 		return str;
 	}
 }
+#end

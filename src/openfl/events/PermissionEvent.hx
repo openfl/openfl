@@ -68,5 +68,7 @@ class PermissionEvent extends Event
 	}
 }
 #else
+#if air
 typedef PermissionEvent = flash.events.PermissionEvent;
+#end
 #end

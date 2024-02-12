@@ -216,7 +216,7 @@ abstract Vector<T>(IVector<T>)
 		is invoked with three arguments: the current item from the Vector, the index of
 		the item, and the Vector object:
 
-			 	```hx
+			 	```haxe
 			 	function callback(item:T, index:Int, vector:Vector<T>):Bool {
 			 		// your code here
 		}
@@ -451,7 +451,7 @@ abstract Vector<T>(IVector<T>)
 		invoked with three arguments: the current item from the Vector, the index of the item,
 		and the Vector object:
 
-		```hx
+		```haxe
 		function callback(item:T, index:Int, vector:Vector<T>):Bool
 		```
 

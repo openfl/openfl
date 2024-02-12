@@ -43,7 +43,7 @@ import openfl.geom.Rectangle;
 								  `click` event still occurs.
 	@event contextMenu            Dispatched when a user gesture triggers the
 								  context menu associated with this interactive
-								  object in an AIR application.
+								  object in an OpenFL application.
 	@event copy                   Dispatched when the user activates the
 								  platform-specific accelerator key combination
 								  for a copy operation or selects 'Copy' from

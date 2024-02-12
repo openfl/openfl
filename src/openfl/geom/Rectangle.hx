@@ -337,7 +337,7 @@ class Rectangle
 				  Rectangle object. The following equation is used to
 				  calculate the new width and position of the rectangle:
 
-				  ```as3
+				  ```haxe
 				  x -= dx;
 				  width += 2 * dx;
 				  ```
@@ -345,7 +345,7 @@ class Rectangle
 				  Rectangle. The following equation is used to calculate the
 				  new height and position of the rectangle:
 
-				  ```
+				  ```haxe
 				  y -= dy;
 				  height += 2 * dy;
 				  ```

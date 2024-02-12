@@ -457,7 +457,7 @@ class Clipboard
 		use a handler function to provide the data for a file dragged from an
 		AIR application to the file system, the operating system calls the
 		data handler function as soon as the drag gesture leaves the AIR
-		application?typically resulting in an undesireable pause as the file
+		application — typically resulting in an undesireable pause as the file
 		data is downloaded or created. You can use a URLFilePromise for this
 		purpose instead.
 

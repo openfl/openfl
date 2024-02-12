@@ -92,9 +92,9 @@ class Security
 		later, set `Security.exactSettings` to `false` before calling
 		`SharedObject.getLocal()`.
 
-		@throws SecurityError A Flash Player or AIR application already used
-							  the value of `exactSettings` at least once in a
-							  decision about player settings.
+		@throws SecurityError An OpenFL application already used the value of
+							  `exactSettings` at least once in a decision about
+							  player settings.
 	**/
 	public static var exactSettings:Bool;
 
@@ -144,6 +144,7 @@ class Security
 	/**
 		Lets SWF files in the identified domains access objects and variables
 		in the SWF file that contains the `allowDomain()` call.
+
 		_Note:_ Calling this method from code in the AIR application sandbox
 		throws a SecurityError exception. Content outside of the application
 		security domain cannot directly cross-script content in the
@@ -286,7 +287,7 @@ class Security
 		child SWF file into a parent SWF, you can access the
 		`contentLoaderInfo` property of the Loader object for the parent SWF:
 
-		```as3
+		```haxe
 		Security.allowDomain(loader.contentLoaderInfo.url)
 		```
 
@@ -489,7 +490,7 @@ class Security
 		With `Security.loadPolicyFile()`, Flash Player or AIR can load policy
 		files from arbitrary locations, as shown in the following example:
 
-		```as3
+		```haxe
 		Security.loadPolicyFile("http://www.example.com/sub/dir/pf.xml");
 		```
 

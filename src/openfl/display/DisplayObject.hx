@@ -823,7 +823,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		property of the `scrollRect` Rectangle object. You can scroll
 		an object up and down by setting the `y` property of the
 		`scrollRect` Rectangle object. If the display object is rotated
-		90� and you scroll it left and right, the display object actually scrolls
+		90° and you scroll it left and right, the display object actually scrolls
 		up and down.
 
 		@see [Panning and scrolling display objects](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/panning-and-scrolling-display-objects.html)
@@ -920,9 +920,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		to the local coordinates of the parent DisplayObjectContainer. If the
 		object is inside a DisplayObjectContainer that has transformations, it is
 		in the local coordinate system of the enclosing DisplayObjectContainer.
-		Thus, for a DisplayObjectContainer rotated 90� counterclockwise, the
+		Thus, for a DisplayObjectContainer rotated 90° counterclockwise, the
 		DisplayObjectContainer's children inherit a coordinate system that is
-		rotated 90� counterclockwise. The object's coordinates refer to the
+		rotated 90° counterclockwise. The object's coordinates refer to the
 		registration point position.
 
 		@see [Changing position](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/changing-position.html)
@@ -934,9 +934,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		to the local coordinates of the parent DisplayObjectContainer. If the
 		object is inside a DisplayObjectContainer that has transformations, it is
 		in the local coordinate system of the enclosing DisplayObjectContainer.
-		Thus, for a DisplayObjectContainer rotated 90� counterclockwise, the
+		Thus, for a DisplayObjectContainer rotated 90° counterclockwise, the
 		DisplayObjectContainer's children inherit a coordinate system that is
-		rotated 90� counterclockwise. The object's coordinates refer to the
+		rotated 90° counterclockwise. The object's coordinates refer to the
 		registration point position.
 
 		@see [Changing position](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/changing-position.html)
