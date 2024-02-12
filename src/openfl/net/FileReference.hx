@@ -1450,7 +1450,7 @@ class FileReference extends EventDispatcher
 
 	@:noCompletion private function saveFileDialog_onSelect(path:String):Void
 	{
-		#if desktop
+		#if (desktop && sys)
 		name = Path.withoutDirectory(path);
 
 		if (__data != null)
@@ -1471,7 +1471,7 @@ class FileReference extends EventDispatcher
 
 	@:noCompletion private function urlLoader_download_onComplete(event:Event):Void
 	{
-		#if desktop
+		#if (desktop && sys)
 		if ((__urlLoader.data is ByteArrayData))
 		{
 			__data = __urlLoader.data;
