@@ -42,7 +42,6 @@ import hl.Gc;
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10_1) public static var freeMemory (default, null):Float;
 	#end
-
 	#if false
 	/**
 		The currently installed system IME. To register for imeComposition
@@ -50,7 +49,6 @@ import hl.Gc;
 	**/
 	// @:noCompletion @:dox(hide) public static var ime (default, null):openfl.system.IME;
 	#end
-
 	#if false
 	/**
 		The entire amount of memory (in bytes) used by an application. This is
@@ -69,8 +67,8 @@ import hl.Gc;
 		The amount of memory(in bytes) currently in use that has been directly
 		allocated by Flash Player or AIR.
 
-		This property does not return _all_ memory used by an Adobe AIR
-		application or by the application(such as a browser) containing Flash
+		This property does not return _all_ memory used by an OpenFL
+		application or by the application (such as a browser) containing Flash
 		Player content. The browser or operating system may consume other memory.
 		The `System.privateMemory` property reflects _all_ memory
 		used by an application.
@@ -87,13 +85,13 @@ import hl.Gc;
 	/**
 		A Boolean value that determines which code page to use to interpret
 		external text files. When the property is set to `false`,
-		external text files are interpretted as Unicode.(These files must be
+		external text files are interpretted as Unicode. (These files must be
 		encoded as Unicode when you save them.) When the property is set to
 		`true`, external text files are interpretted using the
 		traditional code page of the operating system running the application. The
 		default value of `useCodePage` is `false`.
 
-		Text that you load as an external file(using
+		Text that you load as an external file (using
 		`Loader.load()`, the URLLoader class or URLStream) must have
 		been saved as Unicode in order for the application to recognize it as
 		Unicode. To encode external files as Unicode, save the files in an
@@ -171,8 +169,9 @@ import hl.Gc;
 
 		_For the standalone Flash Player debugger version only._
 
-		AIR applications should call the `NativeApplication.exit()`
-		method to exit the application.
+		OpenFL applications on desktop operating systems should call the
+		`NativeApplication.exit()` method to exit the application. It is not
+		recommended to manually exit an application on mobile operating systems.
 
 		@param code A value to pass to the operating system. Typically, if the
 					process exits normally, the value is 0.
@@ -187,11 +186,16 @@ import hl.Gc;
 	/**
 		Forces the garbage collection process.
 
-		_For the Flash Player debugger version and AIR applications only._
-		In an AIR application, the `System.gc()` method is only enabled
-		in content running in the AIR Debug Launcher(ADL) or, in an installed
-		application, in content in the application security sandbox.
+		_OpenFL target support:_ This feature is supported on all desktop
+		operating systems, on iOS, and on Android. This feature is not supported
+		on the html5 target.
 
+		For Adobe Flash Player, the `System.gc()` method is only enabled in
+		the debugger version of the runtime.
+
+		In an AIR application, the `System.gc()` method is only enabled
+		in content running in the AIR Debug Launcher (ADL) or, in an installed
+		application, in content in the application security sandbox.
 	**/
 	public static function gc():Void
 	{
@@ -242,9 +246,9 @@ import hl.Gc;
 		This method is provided for SWF content running in Flash Player 9. It
 		allows only adding String content to the Clipboard.
 
-		Flash Player 10 content and content in the application security sandbox
-		in an AIR application can call the `Clipboard.setData()`
-		method.
+		Flash Player 10 content, content in the application security sandbox
+		in an AIR application, and Haxe "sys" targets can call the
+		`Clipboard.setData()` method.
 
 		@param string A plain-text string of characters to put on the system
 					  Clipboard, replacing its current contents(if any).

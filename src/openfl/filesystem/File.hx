@@ -70,7 +70,7 @@ import lime.system.BackgroundWorker;
 	```
 
 	The application storage directory is particularly useful. It gives an application-specific
-	storage directory for the AIR application. It is defined by the File.applicationStorageDirectory
+	storage directory for the OpenFL application. It is defined by the File.applicationStorageDirectory
 	property.
 
 	@see [Related: FileStream](https://api.openfl.org/openfl/filesystem/FileStream.html)

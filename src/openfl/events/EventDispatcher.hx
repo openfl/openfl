@@ -8,13 +8,12 @@ package openfl.events;
 	class allows any object on the display list to be an event target and as
 	such, to use the methods of the IEventDispatcher interface.
 
-	Event targets are an important part of the Flash<sup>®</sup> Player and
-	Adobe<sup>®</sup> AIR<sup>®</sup> event model. The event target serves as
-	the focal point for how events flow through the display list hierarchy.
-	When an event such as a mouse click or a keypress occurs, Flash Player or
-	the AIR application dispatches an event object into the event flow from the
-	root of the display list. The event object then makes its way through the
-	display list until it reaches the event target, at which point it begins
+	Event targets are an important part of the OpenFL event model. The event
+	target serves as the focal point for how events flow through the display
+	list hierarchy. When an event such as a mouse click or a keypress occurs,
+	the OpenFL application dispatches an event object into the event flow fro
+	the root of the display list. The event object then makes its way through
+	the display list until it reaches the event target, at which point it begins
 	its return trip through the display list. This round-trip journey to the
 	event target is conceptually divided into three phases: the capture phase
 	comprises the journey from the root to the last node before the event
@@ -29,14 +28,14 @@ package openfl.events;
 	EventDispatcher member, and write simple hooks to route calls into the
 	aggregated EventDispatcher.
 
-	@event activate   [broadcast event] Dispatched when the Flash Player or AIR
-					  application gains operating system focus and becomes
+	@event activate   [broadcast event] Dispatched when the OpenFL application
+					  gains operating system focus and becomes
 					  active. This event is a broadcast event, which means that
 					  it is dispatched by all EventDispatcher objects with a
 					  listener registered for this event. For more information
 					  about broadcast events, see the DisplayObject class.
-	@event deactivate [broadcast event] Dispatched when the Flash Player or AIR
-					  application operating loses system focus and is becoming
+	@event deactivate [broadcast event] Dispatched when the OpenFL application
+					  loses operating system focus and is becoming
 					  inactive. This event is a broadcast event, which means
 					  that it is dispatched by all EventDispatcher objects with
 					  a listener registered for this event. For more

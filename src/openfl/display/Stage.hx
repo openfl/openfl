@@ -268,7 +268,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10) public var colorCorrection:openfl.display.ColorCorrection;
 	#end
-
 	#if false
 	/**
 		Specifies whether the Flash runtime is running on an operating system
@@ -312,14 +311,13 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		A value from the StageDisplayState class that specifies which display
 		state to use. The following are valid values:
 
-		* `StageDisplayState.FULL_SCREEN` Sets AIR application or
-		Flash runtime to expand the stage over the user's entire screen, with
-		keyboard input disabled.
-		* `StageDisplayState.FULL_SCREEN_INTERACTIVE` Sets the AIR
+		* `StageDisplayState.FULL_SCREEN` Sets the OpenFL application to expand
+		the stage over the user's entire screen, with keyboard input disabled.
+		* `StageDisplayState.FULL_SCREEN_INTERACTIVE` Sets the OpenFL
 		application to expand the stage over the user's entire screen, with
-		keyboard input allowed.(Not available for content running in Flash
-		Player.)
-		* `StageDisplayState.NORMAL` Sets the Flash runtime back to
+		keyboard input allowed. (Not available for content running in Adobe
+		Flash Player.)
+		* `StageDisplayState.NORMAL` Sets the OpenFL application back to
 		the standard stage display mode.
 
 

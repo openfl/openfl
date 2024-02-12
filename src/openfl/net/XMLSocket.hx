@@ -9,19 +9,19 @@ import openfl.events.ProgressEvent;
 import openfl.utils.ByteArray;
 
 /**
-	The XMLSocket class implements client sockets that let the Flash Player or
-	AIR application communicate with a server computer identified by an IP
-	address or domain name. The XMLSocket class is useful for client-server
-	applications that require low latency, such as real-time chat systems. A
-	traditional HTTP-based chat solution frequently polls the server and
-	downloads new messages using an HTTP request. In contrast, an XMLSocket
-	chat solution maintains an open connection to the server, which lets the
-	server immediately send incoming messages without a request from the
-	client. To use the XMLSocket class, the server computer must run a daemon
-	that understands the protocol used by the XMLSocket class. The protocol is
-	described in the following list:
-	* XML messages are sent over a full-duplex TCP/IP stream socket
-	connection.
+	The XMLSocket class implements client sockets that let the OpenFL
+	application communicate with a server computer identified by an IP address
+	or domain name. The XMLSocket class is useful for client-server applications
+	that require low latency, such as real-time chat systems. A traditional
+	HTTP-based chat solution frequently polls the server and downloads new
+	messages using an HTTP request. In contrast, an XMLSocket chat solution
+	maintains an open connection to the server, which lets the server
+	immediately send incoming messages without a request from the client. To use
+	the XMLSocket class, the server computer must run a daemon that understands
+	the protocol used by the XMLSocket class. The protocol is described in the
+	following list:
+
+	* XML messages are sent over a full-duplex TCP/IP stream socket connection.
 	* Each XML message is a complete XML document, terminated by a zero (0)
 	byte.
 	* An unlimited number of XML messages can be sent and received over a

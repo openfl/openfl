@@ -44,6 +44,10 @@ import sys.net.Socket as SysSocket;
 
 	A socket transmits and receives data asynchronously.
 
+	_OpenFL target support:_ This feature is supported on all desktop operating
+	systems, on iOS, and on Android. On the html5 target, it uses web sockets
+	instead of raw unix-style sockets.
+
 	On some operating systems, flush() is called automatically between
 	execution frames, but on other operating systems, such as Windows, the
 	data is never sent unless you call `flush()` explicitly. To ensure your

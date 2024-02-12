@@ -9,7 +9,7 @@ import openfl.events.EventDispatcher;
 import openfl.utils._internal.Lib;
 
 /**
-	The NativeApplication class represents this AIR application.
+	The NativeApplication class represents this OpenFL application.
 
 	The NativeApplication class provides application information,
 	application-wide functions, and dispatches application-level events.
@@ -42,6 +42,8 @@ class NativeApplication extends EventDispatcher
 		`removeAsDefaultApplication()`, and `isSetAsDefaultApplication()` are
 		supported on the current platform.
 
+		_OpenFL target support:_ Not currently supported, except when targeting AIR.
+
 		If `true`, then the above methods will work as documented. If `false`,
 		then `setAsDefaultApplication()` and `removeDefaultApplication()` do
 		nothing and `isSetAsDefaultApplication()` returns `false`.
@@ -58,8 +60,10 @@ class NativeApplication extends EventDispatcher
 	}
 
 	/**
-		Indicates whether AIR supports dock-style application icons on the
+		Indicates whether OpenFL supports dock-style application icons on the
 		current operating system.
+
+		_OpenFL target support:_ Not currently supported, except when targeting AIR.
 
 		If `true`, the `NativeApplication.icon` property is of type `DockIcon`.
 
@@ -83,6 +87,8 @@ class NativeApplication extends EventDispatcher
 		Specifies whether the current operating system supports a global
 		application menu bar.
 
+		_OpenFL target support:_ Not currently supported, except when targeting AIR.
+
 		When `true`, the `NativeApplication.menu` property can be used to
 		define (or access) a native application menu.
 
@@ -102,6 +108,8 @@ class NativeApplication extends EventDispatcher
 	/**
 		Indicates whether `startAtLogin` is supported on the current platform.
 
+		_OpenFL target support:_ Not currently supported, except when targeting AIR.
+
 		If `true`, then `startAtLogin` works as documented. If `false`, then
 		`startAtLogin` has no effect.
 
@@ -115,8 +123,10 @@ class NativeApplication extends EventDispatcher
 	}
 
 	/**
-		Specifies whether AIR supports system tray icons on the current
+		Specifies whether OpenFL supports system tray icons on the current
 		operating system.
+
+		_OpenFL target support:_ Not currently supported, except when targeting AIR.
 
 		If true, the `NativeApplication.icon` property is of type
 		`SystemTrayIcon`.
@@ -198,6 +208,8 @@ class NativeApplication extends EventDispatcher
 
 	/**
 		The application icon.
+
+		_OpenFL target support:_ Not currently supported, except when targeting AIR.
 
 		Use `NativeApplication.supportsDockIcon` and
 		`NativeApplication.supportsSystemTrayIcon` to determine the icon class.
@@ -328,6 +340,8 @@ class NativeApplication extends EventDispatcher
 		Removes this application as the default for opening files with the
 		specified extension.
 
+		_OpenFL target support:_ Not currently supported, except when targeting AIR.
+
 		**Note:** This method can only be used with file types listed in the
 		fileTypes statement in the application descriptor.
 	**/
@@ -336,6 +350,8 @@ class NativeApplication extends EventDispatcher
 	/**
 		Sets this application as the default application for opening files with
 		the specified extension.
+
+		_OpenFL target support:_ Not currently supported, except when targeting AIR.
 
 		**Note:** This method can only be used with file types declared in the
 		fileTypes statement in the application descriptor.

@@ -7,7 +7,7 @@ package openfl.net;
 	`requestHeaders` property of the URLRequest class.
 
 	In Adobe<sup>®</sup> AIR<sup>®</sup>, content in the application
-	security sandbox(such as content installed with the AIR application) can
+	security sandbox (such as content installed with the AIR application) can
 	use any request headers, without error. However, for content running in
 	Adobe AIR that is in a different security sandbox, or for content running
 	in Flash<sup>®</sup> Player, using following request headers cause a

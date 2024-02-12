@@ -287,19 +287,17 @@ import js.Browser;
 							  AIR runtime, the `select` event acts slightly
 							  differently depending on what method invokes it.
 							  When the `select` event is dispatched after a
-							  `browse()` call, Flash Player or the AIR
-							  application can read all the FileReference
-							  object's properties, because the file selected
-							  by the user is on the local file system. When
-							  the `select` event occurs after a `download()`
-							  call, Flash Player or the AIR application can
-							  read only the `name` property, because the file
-							  hasn't yet been downloaded to the local file
-							  system at the moment the `select` event is
-							  dispatched. When the file is downloaded and the
-							  `complete` event dispatched, Flash Player or the
-							  AIR application can read all other properties of
-							  the FileReference object.
+							  `browse()` call, the OpenFL application can read
+							  all the FileReference object's properties, because
+							  the file selected by the user is on the local file
+							  system. When the `select` event occurs after a
+							  `download()` call, the OpenFL application can read
+							  only the `name` property, because the file hasn't
+							  yet been downloaded to the local file system at the
+							  moment the `select` event is dispatched. When the
+							  file is downloaded and the `complete` even
+							  dispatched, the OpenFL application can read all
+							  other properties of the FileReference object.
 	@event uploadCompleteData Dispatched after data is received from the
 							  server after a successful upload. This event is
 							  not dispatched if data is not returned from the

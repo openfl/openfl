@@ -24,7 +24,7 @@ import openfl.geom.Point;
 	`NativeWindow.isSupported` property.
 
 	_OpenFL target support:_ This feature is supported on all desktop operating
-	systems, but is not support on mobile operating systems, including iOS and
+	systems, but is not supported on mobile operating systems, including iOS and
 	Android.
 
 	_Adobe AIR profile support:_ This feature is supported on all desktop
