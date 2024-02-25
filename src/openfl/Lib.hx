@@ -526,7 +526,18 @@ import js.Browser;
 		__timers[id] = timer;
 		timer.run = function()
 		{
+			#if flash
 			Reflect.callMethod(closure, closure, args == null ? [] : args);
+			#else
+			try
+			{
+				Reflect.callMethod(closure, closure, args == null ? [] : args);
+			}
+			catch (e:Dynamic)
+			{
+				@:privateAccess Lib.current.stage.__handleError(e);
+			}
+			#end
 		};
 		return id;
 	}
@@ -559,7 +570,18 @@ import js.Browser;
 		__timers[id] = Timer.delay(function()
 		{
 			__timers.remove(id);
+			#if flash
 			Reflect.callMethod(closure, closure, args == null ? [] : args);
+			#else
+			try
+			{
+				Reflect.callMethod(closure, closure, args == null ? [] : args);
+			}
+			catch (e)
+			{
+				@:privateAccess Lib.current.stage.__handleError(e);
+			}
+			#end
 		}, delay);
 		return id;
 	}
