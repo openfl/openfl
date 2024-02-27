@@ -1070,6 +1070,9 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	public var position:Int;
 
 	@:noCompletion private var __endian:Endian;
+	/**
+		The number of bytes allocated. May be ~50% larger than `length`.
+	**/
 	@:noCompletion private var __length:Int;
 
 	#if lime_bytes_length_getter
