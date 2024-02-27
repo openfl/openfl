@@ -419,7 +419,7 @@ class EventDispatcher implements IEventDispatcher
                         {
 							weakCallback(event);
 						}
-						catch (e)
+						catch (e:Dynamic)
 						{
 							if(!(event is UncaughtErrorEvent))
 								@:privateAccess Lib.current.stage.__handleError(e);
@@ -432,7 +432,7 @@ class EventDispatcher implements IEventDispatcher
                     {
 						listener.callback(event);
 					}
-					catch (e)
+					catch (e:Dynamic)
 					{
 						if(!(event is UncaughtErrorEvent))
 							@:privateAccess Lib.current.stage.__handleError(e);
@@ -443,7 +443,7 @@ class EventDispatcher implements IEventDispatcher
 				{
 					listener.callback(event);
 				}
-				catch (e)
+				catch (e:Dynamic)
 				{
 					if(!(event is UncaughtErrorEvent))
 						@:privateAccess Lib.current.stage.__handleError(e);
