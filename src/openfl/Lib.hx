@@ -577,7 +577,7 @@ import js.Browser;
 			{
 				Reflect.callMethod(closure, closure, args == null ? [] : args);
 			}
-			catch (e)
+			catch (e:Dynamic)
 			{
 				@:privateAccess Lib.current.stage.__handleError(e);
 			}
