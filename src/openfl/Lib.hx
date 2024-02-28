@@ -233,6 +233,47 @@ import js.Browser;
 		#end
 	}
 
+	/**
+		Produces an `Xml` object that describes the Haxe object named as the
+		parameter of the method. This method implements the programming concept
+		of reflection for OpenFL.
+
+		_OpenFL target support:_ Not currently supported, except when targeting AIR.
+
+		If the `value` parameter is an instance of a type, the returned `Xml`
+		object includes all the instance properties of that type, but does not
+		include any static properties. You can check for this condition when you
+		parse the `Xml` object by examining the value of the `<type>` tag's
+		`isStatic` attribute, which is `false` when the `value` parameter is an
+		instance of a type.
+
+		To obtain the static properties of a type, pass the type itself for the
+		`value` parameter. The returned `Xml` object includes not only the
+		type's static properties, but also all of its instance properties. The
+		instance properties are nested inside a tag named `<factory>` to
+		distinguish them from the static properties. In this case, the
+		`isStatic` attribute of the `<type>` tag is true.
+
+		Note: If you need only to traverse an object's inheritance hierarchy and
+		do not need the other information provided by `describeType()`, use the
+		`getQualifiedClassName()` and `getQualifiedSuperclassName()` functions
+		instead.
+	**/
+	public static function describeType(value:Dynamic):Xml
+	{
+		#if lime
+		#if flash
+		return Xml.parse(flash.Lib.describeType(value).toString());
+		#else
+		notImplemented();
+		return null;
+		#end
+		#else
+		notImplemented();
+		return null;
+		#end
+	}
+
 	public static function getURL(request:URLRequest, target:String = null):Void
 	{
 		navigateToURL(request, target);
