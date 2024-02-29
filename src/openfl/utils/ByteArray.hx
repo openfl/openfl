@@ -1008,7 +1008,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		#if display
 		return 0;
 		#else
-		return this == null ? 0 : this.length;
+		return this == null ? 0 : this.__length;
 		#end
 	}
 
@@ -1016,7 +1016,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	{
 		#if display
 		#elseif flash
-		this.length = value;
+		this.__length = value;
 		#else
 		if (value >= 0)
 		{
@@ -1155,9 +1155,9 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	{
 		#if lime
 		#if js
-		if (__allocated > length)
+		if (__allocated > __length)
 		{
-			var cacheLength = length;
+			var cacheLength = __length;
 			__length = __allocated;
 			var data = Bytes.alloc(cacheLength);
 			data.blit(0, this, 0, cacheLength);
@@ -1180,7 +1180,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 			__setData(bytes);
 
 			__length = __allocated;
-			position = length;
+			position = __length;
 		}
 		#end
 	}
@@ -1223,7 +1223,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function readBoolean():Bool
 	{
-		if (position < length)
+		if (position < __length)
 		{
 			return (get(position++) != 0);
 		}
@@ -1250,14 +1250,14 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function readBytes(bytes:ByteArray, offset:Int = 0, length:Int = 0):Void
 	{
-		if (length == 0) length = this.length - position;
+		if (length == 0) length = __length - position;
 
-		if (position + length > this.length)
+		if (position + length > __length)
 		{
 			throw new EOFError();
 		}
 
-		if ((bytes : ByteArrayData).length < offset + length)
+		if ((bytes : ByteArrayData).__length < offset + length)
 		{
 			(bytes : ByteArrayData).__resize(offset + length);
 		}
@@ -1270,7 +1270,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	{
 		if (endian == LITTLE_ENDIAN)
 		{
-			if (position + 8 > length)
+			if (position + 8 > __length)
 			{
 				throw new EOFError();
 				return 0;
@@ -1292,7 +1292,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	{
 		if (endian == LITTLE_ENDIAN)
 		{
-			if (position + 4 > length)
+			if (position + 4 > __length)
 			{
 				throw new EOFError();
 				return 0;
@@ -1472,7 +1472,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function readUnsignedByte():Int
 	{
-		if (position < length)
+		if (position < __length)
 		{
 			return get(position++);
 		}
@@ -1523,7 +1523,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function readUTFBytes(length:Int):String
 	{
-		if (position + length > this.length)
+		if (position + length > __length)
 		{
 			throw new EOFError();
 		}
@@ -1537,9 +1537,9 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	{
 		#if lime
 		#if js
-		if (__allocated > length)
+		if (__allocated > __length)
 		{
-			var cacheLength = length;
+			var cacheLength = __length;
 			__length = __allocated;
 			var data = Bytes.alloc(cacheLength);
 			data.blit(0, this, 0, cacheLength);
@@ -1731,7 +1731,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 			if (__allocated > 0)
 			{
-				var cacheLength = length;
+				var cacheLength = __length;
 				__length = __allocated;
 				bytes.blit(0, this, 0, __allocated);
 				__length = cacheLength;
@@ -1740,7 +1740,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 			__setData(bytes);
 		}
 
-		if (length < size)
+		if (__length < size)
 		{
 			__length = size;
 		}
@@ -1751,7 +1751,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		#if eval
 		// TODO: Not quite correct, but this will probably
 		// not be called while in a macro
-		var count = bytes.length < length ? bytes.length : length;
+		var count = bytes.length < __length ? bytes.length : __length;
 		for (i in 0...count)
 			set(i, bytes.get(i));
 		#else
@@ -1768,7 +1768,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	// Get & Set Methods
 	@:noCompletion private inline function get_bytesAvailable():Int
 	{
-		return length - position;
+		return __length - position;
 	}
 
 	@:noCompletion private inline static function get_defaultEndian():Endian
