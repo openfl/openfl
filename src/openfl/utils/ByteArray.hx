@@ -1007,8 +1007,10 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	{
 		#if display
 		return 0;
-		#else
+		#elseif openfljs
 		return this == null ? 0 : this.__length;
+		#else
+		return this == null ? 0 : this.length;
 		#end
 	}
 
@@ -1016,7 +1018,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	{
 		#if display
 		#elseif flash
-		this.__length = value;
+		this.length = value;
 		#else
 		if (value >= 0)
 		{
@@ -1024,7 +1026,11 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 			if (value < this.position) this.position = value;
 		}
 
+		#if openfljs
 		this.__length = value;
+		#else
+		this.length = value;
+		#end
 		#end
 
 		return value;
