@@ -1103,17 +1103,17 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 				set: ByteArrayData.prototype.set_endian
 			},
 			"length": {
-				get: ByteArrayData.prototype.get_length,
-				set: ByteArrayData.prototype.set_length
+				get: ByteArrayData.prototype.openfljs_get_length,
+				set: ByteArrayData.prototype.openfljs_set_length
 			}
 		});
 	}
-	private function get_length():Int
+	private function openfljs_get_length():Int
 	{
 		return __length;
 	}
 
-	private function set_length(value:Int):Int
+	private function openfljs_set_length(value:Int):Int
 	{
 		return (this : ByteArray).length = value;
 	}
