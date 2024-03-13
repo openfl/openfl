@@ -1,4 +1,4 @@
-9.3.3 (??/??/2024)
+9.3.3 (03/13/2024)
 ------------------
 
 * Disabled `useWeakReference` support for `addEventListener()` on cpp target due to incompatibilities (but it is still enabled on html5 target)
@@ -7,6 +7,7 @@
 * Fixed socket connect timeout being ignored in some situations
 * Fixed `DeviceRotation` and `Geolocation` classes not found when targeting AIR
 * Fixed crash when using compressed texture with `Tilemap`
+* Fixed crash when highlighting text with ligatures
 * Fixed exception on URL encoding when non-string value passed to `URLVariables`
 * Fixed missing separator between directory and file in result of `File.getDirectoryListingAsync()`
 * Fixed certain classes being exposed to flash target, when they should be available in the air target only
