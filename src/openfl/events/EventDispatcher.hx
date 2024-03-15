@@ -415,15 +415,39 @@ class EventDispatcher implements IEventDispatcher
 					}
 					else
 					{
-						weakCallback(event);
+						try
+                        {
+							weakCallback(event);
+						}
+						catch (e:Dynamic)
+						{
+							if(!(event is UncaughtErrorEvent))
+								@:privateAccess Lib.current.stage.__handleError(e);
+						}
 					}
 				}
 				else
 				{
-					listener.callback(event);
+					try
+                    {
+						listener.callback(event);
+					}
+					catch (e:Dynamic)
+					{
+						if(!(event is UncaughtErrorEvent))
+							@:privateAccess Lib.current.stage.__handleError(e);
+					}
 				}
 				#else
-				listener.callback(event);
+				try
+				{
+					listener.callback(event);
+				}
+				catch (e:Dynamic)
+				{
+					if(!(event is UncaughtErrorEvent))
+						@:privateAccess Lib.current.stage.__handleError(e);
+				}
 				#end
 
 				if (event.__isCanceledNow)
