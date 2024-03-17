@@ -1,6 +1,10 @@
 package openfl.display;
 
 #if !flash
+#if lime
+import openfl.utils.ByteArray;
+import lime.graphics.Image;
+#end
 /**
 	The JPEGEncoderOptions class defines a compression algorithm for the
 	`openfl.display.BitmapData.encode()` method.
@@ -9,7 +13,7 @@ package openfl.display;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:final class JPEGEncoderOptions
+@:final class JPEGEncoderOptions implements IEncoderOptions
 {
 	/**
 		A value between 1 and 100, where 1 means the lowest quality and 100 means the
@@ -27,6 +31,14 @@ package openfl.display;
 	{
 		this.quality = quality;
 	}
+
+	#if lime
+	@:noCompletion @:keep private function encode(image:#if lime Image #else Dynamic #end, byteArray:ByteArray):ByteArray
+	{
+		byteArray.writeBytes(ByteArray.fromBytes(image.encode(JPEG, quality)));
+		return byteArray;
+	}
+	#end
 }
 #else
 typedef JPEGEncoderOptions = flash.display.JPEGEncoderOptions;
