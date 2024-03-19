@@ -153,3 +153,37 @@ To return to release builds:
     haxelib dev openfl
 
 You may also need a development build of Lime installed.
+
+
+**To use OpenGL core profile on macOS with Haxe and OpenFL:**
+
+1. **Install Haxe and OpenFL**:
+   Install Haxe from https://haxe.org/download/. Then, install OpenFL via Haxe CLI:
+        
+        haxelib install openfl
+        haxelib run openfl setup
+
+
+2. **Create an OpenFL Project**:
+   
+       openfl create project MyOpenGLProject
+       cd MyOpenGLProject
+
+
+4. **OpenGL Access**:
+Use `lime.graphics.opengl.*` for lower-level OpenGL control, crucial for core profile features.
+
+5. **Configuring Core Profile on macOS**:
+macOS requires Cocoa API interaction for OpenGL core profile contexts. You may need custom native code interfacing with `NSOpenGLContext` or a library that handles this.
+
+6. **Community Resources**:
+- **Forums**: [OpenFL Community Forums](https://community.openfl.org)
+- **Discord**: [Haxe Discord Server](https://discord.gg/tDgq8EE)
+
+6. **Seek Examples and Libraries**:
+Explore the Haxe/OpenFL ecosystem for existing solutions.
+
+Note: Modifying OpenFL/Lime for a specific OpenGL context on macOS can be complex. Community forums and Discord are great for advice and shared experiences.
+
+
+
