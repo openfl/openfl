@@ -1,7 +1,6 @@
 package openfl.system;
 
-#if (!flash && sys)
-
+#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
 #if !openfljs
 /**
 	The ImageDecodingPolicy class provides values for `imageDecodingPolicy` in

@@ -1,6 +1,6 @@
 package openfl.net.dns;
 
-#if (!flash && sys)
+#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
 import openfl.events.EventDispatcher;
 import openfl.errors.IllegalOperationError;
 

@@ -1,6 +1,6 @@
 package openfl.sensors;
 
-#if (!flash && sys)
+#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
 import openfl.errors.IllegalOperationError;
 
 /**

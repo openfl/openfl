@@ -1,6 +1,6 @@
 package openfl.desktop;
 
-#if (haxe4 && sys && !flash)
+#if (haxe4 && !flash && sys && (!flash_doc_gen || air_doc_gen))
 import haxe.Json;
 import haxe.Serializer;
 import haxe.io.Bytes;

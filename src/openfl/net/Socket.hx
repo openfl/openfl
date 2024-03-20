@@ -158,7 +158,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	**/
 	public var connected(get, never):Bool;
 
-	#if sys
+	#if (sys && (!flash_doc_gen || air_doc_gen))
 	/**
 	 * The IP address this socket is bound to on the local machine.
 	**/
@@ -184,7 +184,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	**/
 	public var objectEncoding:ObjectEncoding;
 
-	#if sys
+	#if (sys && (!flash_doc_gen || air_doc_gen))
 	/**
 		The IP address of the remote machine to which this socket is connected.
 

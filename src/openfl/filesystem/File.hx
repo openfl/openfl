@@ -1,6 +1,6 @@
 package openfl.filesystem;
 
-#if (!flash && sys)
+#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
 import haxe.io.Path;
 import lime.system.System;
 import openfl.desktop.Icon;

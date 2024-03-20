@@ -1,6 +1,6 @@
 package openfl.desktop;
 
-#if (!flash && sys)
+#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
 #if lime
 import lime.system.System;
 #end

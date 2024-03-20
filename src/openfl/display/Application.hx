@@ -6,10 +6,10 @@ import openfl.events.Event;
 import lime.app.Application as LimeApplication;
 import lime.ui.WindowAttributes;
 #end
-#if (sys || air)
+#if ((sys || air) && (!flash_doc_gen || air_doc_gen))
 import openfl.desktop.NativeApplication;
 #end
-#if (!flash && sys)
+#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
 import openfl.display.NativeWindow;
 import openfl.display.NativeWindowInitOptions;
 import openfl.events.InvokeEvent;
@@ -26,7 +26,7 @@ import openfl.events.InvokeEvent;
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.LoaderInfo)
 @:access(openfl.display.Window)
-#if (!flash && sys)
+#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
 @:access(openfl.display.NativeWindowInitOptions)
 #end
 @SuppressWarnings("checkstyle:FieldDocComment")
@@ -98,7 +98,7 @@ class Application #if lime extends LimeApplication #end
 
 			onWindowCreate();
 
-			#if (!flash && sys)
+			#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
 			var initOptions = new NativeWindowInitOptions();
 			initOptions.__window = cast __window;
 			new NativeWindow(initOptions);
@@ -112,7 +112,7 @@ class Application #if lime extends LimeApplication #end
 
 	@:noCompletion override public function exec():Int
 	{
-		#if (!flash && sys)
+		#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
 		// wait for the first update to dispatch invoke event
 		// to ensure that the document class constructor has completed
 		onUpdate.add(function(delta:Int):Void
@@ -138,13 +138,13 @@ class Application #if lime extends LimeApplication #end
 		{
 			return;
 		}
-		#if (sys || air)
+		#if ((sys || air) && (!flash_doc_gen || air_doc_gen))
 		if (!NativeApplication.nativeApplication.autoExit)
 		{
 			return;
 		}
 		#end
-		#if (!flash && sys)
+		#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
 		var exitingEvent = new Event(Event.EXITING, false, true);
 		var result = NativeApplication.nativeApplication.dispatchEvent(exitingEvent);
 		if (!result)

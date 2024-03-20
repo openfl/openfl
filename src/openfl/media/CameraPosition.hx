@@ -1,7 +1,6 @@
 package openfl.media;
 
-#if (!flash && sys)
-
+#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
 #if !openfljs
 /**
 	The CameraPosition class defines constants for the `position` property of

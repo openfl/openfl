@@ -1,6 +1,6 @@
 package openfl.filesystem;
 
-#if (!flash && sys)
+#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
 /**
 	The FileMode enum defines string constants used in the `fileMode` parameter
 	of the `open()` and `openAsync()` methods of the FileStream class. The

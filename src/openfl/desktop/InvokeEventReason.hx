@@ -1,7 +1,6 @@
 package openfl.desktop;
 
-#if (sys && !flash)
-
+#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
 #if !openfljs
 /**
 	The InvokeEventReason class enumerates values returned by the `reason`

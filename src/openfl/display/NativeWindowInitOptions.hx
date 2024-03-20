@@ -1,6 +1,6 @@
 package openfl.display;
 
-#if (!flash && sys)
+#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
 /**
 	The NativeWindowInitOptions class defines the initialization options used
 	to construct a new NativeWindow instance.

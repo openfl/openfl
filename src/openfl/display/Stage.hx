@@ -795,7 +795,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	**/
 	public var window(default, null):Window;
 
-	#if sys
+	#if (sys && (!flash_doc_gen || air_doc_gen))
 	/**
 
 	**/

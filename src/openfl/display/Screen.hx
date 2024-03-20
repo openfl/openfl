@@ -4,7 +4,7 @@ import openfl.events.EventDispatcher;
 import lime.system.System;
 import openfl.geom.Rectangle;
 
-#if (!flash && sys)
+#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
 /**
 	The Screen class provides information about the display screens available to
 	this application.
