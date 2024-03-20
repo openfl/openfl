@@ -113,6 +113,20 @@
 
 --next
 
+-xml xml/HashLink.xml
+-hl obj/docs
+-D display=usage
+-D native
+-D openfl_doc_gen
+-D doc_gen
+-D nocffi
+--macro include("openfl")
+-lib lime
+-lib openfl
+--no-output
+
+--next
+
 -xml xml/Android.xml
 -cpp obj/docs
 -D display=usage
