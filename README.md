@@ -10,7 +10,7 @@ Introduction
 
 The OpenFL project is an open-source answer to the needs of game and application developers everywhere, looking for a fast, simple approach to delivering creative masterpieces without relying on a specific implementation, such as a browser plugin.
 
-Using the innovative [Haxe](http://haxe.org/) programming language, OpenFL supports wildly different platforms using one codebase. Transitioning from one target type to another is simple, and keeps the strengths of the target environment. OpenFL builds to native C++, Neko or Flash bytecode, or JavaScript, enabling maximum compatibility and runtime performance.
+Using the innovative [Haxe](https://haxe.org/) programming language, OpenFL supports wildly different platforms using one codebase. Transitioning from one target type to another is simple, and keeps the strengths of the target environment. OpenFL builds to native C++, Neko or Flash bytecode, or JavaScript, enabling maximum compatibility and runtime performance.
 
 OpenFL depends on [Lime](https://github.com/openfl/lime), which has easy-to-use command-line tools, and provides backend support.
 
@@ -42,7 +42,7 @@ _Additional details on console support will be available in the future._
 
 OpenFL is also being used in additional environments:
 
- * [TiVo](http://www.tivo.com) boxes
+ * [TiVo](https://www.tivo.com) boxes
  * Raspberry Pi
  * Node.js
 
@@ -50,7 +50,7 @@ OpenFL is also being used in additional environments:
 Libraries
 =========
 
-OpenFL is compatible with [many libraries](http://lib.haxe.org/all), ported from ActionScript or written originally in Haxe, including:
+OpenFL is compatible with [many libraries](https://lib.haxe.org/all), ported from ActionScript or written originally in Haxe, including:
 
  * [Starling](https://github.com/openfl/starling)
  * [Away3D](https://github.com/openfl/away3d)
@@ -61,13 +61,13 @@ OpenFL is compatible with [many libraries](http://lib.haxe.org/all), ported from
  * [HaxeFlixel](https://github.com/haxeflixel/flixel)
  * [HaxePunk](https://github.com/HaxePunk/HaxePunk)
 
-OpenFL also powers other platforms, such as [Stencyl](http://www.stencyl.com/).
+OpenFL also powers other platforms, such as [Stencyl](https://www.stencyl.com/).
 
 
 Code Editors
 ============
 
-Plugins have been written for many [code editors](http://haxe.org/documentation/introduction/editors-and-ides.html), but the most popular editors used for Haxe and OpenFL development are:
+Plugins have been written for many [code editors](https://haxe.org/documentation/introduction/editors-and-ides.html), but the most popular editors used for Haxe and OpenFL development are:
 
  * [Visual Studio Code](https://code.visualstudio.com/) (with [plugin](https://marketplace.visualstudio.com/items?itemName=openfl.lime-vscode-extension))
  * [HaxeDevelop](https://github.com/HaxeFoundation/haxedevelop.org) ([development builds](https://flashdevelop.org/downloads/builds/))
@@ -124,7 +124,7 @@ OpenFL is free, open-source software under the [MIT license](LICENSE.md).
 Installing OpenFL
 =================
 
-Follow the directions at [openfl.org](http://www.openfl.org/download).
+Follow the directions at [openfl.org](https://www.openfl.org/download).
 
 
 Development Builds
