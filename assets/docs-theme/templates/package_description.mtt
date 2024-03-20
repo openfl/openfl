@@ -1,36 +1,78 @@
-<h1>::api.currentPageName:: <small ::cond api.isDefined("version") && full == ""::>version ::api.getValue('version')::</small></h1>
-<p ::cond api.isDefined("description")::>::api.getValue("description")::</p>
-
-<!-- 
 ::if full == ""::
-	<h1>Haxe API documentation <small ::cond api.isDefined("version")::>version ::api.getValue('version')::</small></h1>
-	<p>Haxe is an open source toolkit based on a modern, high level, strictly typed programming language, a cross-compiler, a complete cross-platform standard library and ways to access each platform's native capabilities.</p> 
-	<h3>Getting Started With Haxe</h3>
+	<h1>OpenFL API documentation <small ::cond api.isDefined("version")::>version ::api.getValue('version')::</small></h1>
+	<p>OpenFL is a library for creative expression on the web, desktop, mobile, and game consoles — inspired by the Adobe Flash APIs. Publish to native C++, JS and WebGL, or run-times like HashLink and AIR — using one seamless toolset.</p>
+	<h3>Getting Started With OpenFL</h3>
 	<ul>
-		<li>Take a look at our <a href="http://haxe.org/documentation/introduction/">introduction</a></li>
-		<li>Read through the <a href="http://haxe.org/manual/">Haxe Manual</a></li>
-		<li>Look at these <a href="http://haxe.org/use-cases/">use cases for Haxe</a></li>
-		<li>Find and install <a href="http://lib.haxe.org/t/all/">popular Haxe libraries</a></li>
-		<li>Learn by example with the <a href="http://code.haxe.org">Haxe Code Cookbook</a></li>
+		<li>Read through the <a href="https://books.openfl.org/openfl-developers-guide/" target="_blank">OpenFL Developer's Guide</a></li>
+		<li>Learn from some <a href="https://www.openfl.org/learn/haxelib/tutorials/" target="_blank">OpenFL tutorials</a></li>
+		<li>Try running the <a href="https://github.com/openfl/openfl-samples" target="_blank">OpenFL sample projects</a></li>
 	</ul>
 	<hr/>
-	<h3>Top Level</h3>
-::elseif full.split(".").length==1::
-	<h1>Haxe/::full:: API documentation</h1>
-	<p>To get started with the Haxe ::full:: target:</p>
-	<ul>
-		<li>Read through the <a href="http://haxe.org/manual/">Haxe Manual</a></li>
-		<li ::cond full=="js"::>Read the <a href="http://haxe.org/manual/target-javascript.html">Haxe/JavaScript target details</a></li>
-		<li ::cond full=="flash"::>Read the <a href="http://haxe.org/manual/target-flash.html">Haxe/Flash target details</a></li>
-		<li ::cond full=="php"::>Read the <a href="http://haxe.org/manual/target-php.html">Haxe/PHP target details</a></li>
-		<li ::cond full=="cpp"::>Read the <a href="http://haxe.org/manual/target-cpp.html">Haxe/C++ target details</a></li>
-		<li ::cond full=="neko"::>Read the <a href="http://nekovm.org/doc">Neko documentation</a></li>
-		<li>Find and install <a href="http://lib.haxe.org/t/::full::/">popular Haxe/::full:: libraries</a></li>
-		<li>Learn by example with the <a href="http://code.haxe.org">Haxe Code Cookbook</a></li>
-	</ul>
-	<hr/>
-	<h1><small class="directive">package</small> ::full::</h1>
+	<h3>::api.currentPageName:: <small ::cond api.isDefined("version") && full == ""::>version ::api.getValue('version')::</small></h3>
+	<p ::cond api.isDefined("description")::>::api.getValue("description")::</p>
 ::else::
-	<h1><small class="directive">package</small> ::full::</h1>
+	<h1>::api.currentPageName:: <small ::cond api.isDefined("version") && full == ""::>version ::api.getValue('version')::</small></h1>
+	<p ::cond api.isDefined("description")::>::api.getValue("description")::</p>
+	::if full == "openfl.display"::
+	<p>Here are some selections from the <a href="https://books.openfl.org/openfl-developers-guide/" target="_blank">OpenFL Developer's Guide</a> to help you get started with the ::api.currentPageName:: package:</p>
+	<ul>
+		<li><a href="https://books.openfl.org/openfl-developers-guide/display-programming/" target="_blank">Display programming</a></li>
+		<li><a href="https://books.openfl.org/openfl-developers-guide/display-programming/basics-of-display-programming.html" target="_blank">Basics of display programming</a></li>
+		<li><a href="https://books.openfl.org/openfl-developers-guide/display-programming/core-display-classes.html" target="_blank">Core display classes</a></li>
+		<li><a href="https://books.openfl.org/openfl-developers-guide/display-programming/working-with-display-objects/adding-display-objects-to-the-display-list.html" target="_blank">Adding display objects to the display list</a></li>
+	</ul>
+	::elseif full == "openfl.errors"::
+	<p>Here are some selections from the <a href="https://haxe.org/manual/" target="_blank">Haxe Manual</a> to help you get started with the ::api.currentPageName:: package:</p>
+	<ul>
+		<li><a href="https://haxe.org/manual/expression-try-catch.html" target="_blank">Haxe try/catch expressions</a></li>
+		<li><a href="https://haxe.org/manual/expression-throw.html" target="_blank">Haxe throw expressions</a></li>
+	</ul>
+	::elseif full == "openfl.events"::
+	<p>Here are some selections from the <a href="https://books.openfl.org/openfl-developers-guide/" target="_blank">OpenFL Developer's Guide</a> to help you get started with the ::api.currentPageName:: package:</p>
+	<ul>
+		<li><a href="https://books.openfl.org/openfl-developers-guide/handling-events/" target="_blank">Handling events</a></li>
+		<li><a href="https://books.openfl.org/openfl-developers-guide/handling-events/basics-of-handling-events.html" target="_blank">Basics of handling events</a></li>
+		<li><a href="https://books.openfl.org/openfl-developers-guide/handling-events/the-event-flow.html" target="_blank">The event flow</a></li>
+		<li><a href="https://books.openfl.org/openfl-developers-guide/handling-events/event-objects.html" target="_blank">Event objects</a></li>
+		<li><a href="https://books.openfl.org/openfl-developers-guide/handling-events/event-listeners.html" target="_blank">Event listeners</a></li>
+	</ul>
+	::elseif full == "openfl.filesystem"::
+	<p>Here are some selections from the <a href="https://books.openfl.org/openfl-developers-guide/" target="_blank">OpenFL Developer's Guide</a> to help you get started with the ::api.currentPageName:: package:</p>
+	<ul>
+		<li><a href="https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/" target="_blank">Working with the file system</a></li>
+		<li><a href="https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/using-the-native-file-system-api.html" target="_blank">Using the native file system API</a></li>
+		<li><a href="https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/native-file-system-basics.html" target="_blank">Native file system basics</a></li>
+		<li><a href="https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/workflow-for-reading-and-writing-files.html" target="_blank">Workflow for reading and writing files</a></li>
+	</ul>
+	::elseif full == "openfl.geom"::
+	<p>Here are some selections from the <a href="https://books.openfl.org/openfl-developers-guide/" target="_blank">OpenFL Developer's Guide</a> to help you get started with the ::api.currentPageName:: package:</p>
+	<ul>
+		<li><a href="https://books.openfl.org/openfl-developers-guide/working-with-geometry/" target="_blank">Working with geometry</a></li>
+		<li><a href="https://books.openfl.org/openfl-developers-guide/working-with-geometry/basics-of-geometry.html" target="_blank">Basics of geometry</a></li>
+	</ul>
+	::elseif full == "openfl.media"::
+	<p>Here are some selections from the <a href="https://books.openfl.org/openfl-developers-guide/" target="_blank">OpenFL Developer's Guide</a> to help you get started with the ::api.currentPageName:: package:</p>
+	<ul>
+		<li><a href="https://books.openfl.org/openfl-developers-guide/working-with-sound/" target="_blank">Working with sound</a></li>
+		<li><a href="https://books.openfl.org/openfl-developers-guide/working-with-sound/playing-sounds.html" target="_blank">Playing sounds</a></li>
+		<li><a href="https://books.openfl.org/openfl-developers-guide/working-with-sound/working-with-sound-assets.html" target="_blank">Working with sound assets</a></li>
+		<li><a href="https://books.openfl.org/openfl-developers-guide/working-with-sound/loading-external-sound-files.html" target="_blank">Loading external sound files</a></li>
+	</ul>
+	::elseif full == "openfl.net"::
+	<p>Here are some selections from the <a href="https://books.openfl.org/openfl-developers-guide/" target="_blank">OpenFL Developer's Guide</a> to help you get started with the ::api.currentPageName:: package:</p>
+	<ul>
+		<li><a href="https://books.openfl.org/openfl-developers-guide/http-communications/" target="_blank">HTTP communications</a></li>
+		<li><a href="https://books.openfl.org/openfl-developers-guide/http-communications/loading-external-data.html" target="_blank">Loading external data</a></li>
+		<li><a href="https://books.openfl.org/openfl-developers-guide/working-with-the-file-system/using-the-filereference-class.html">Using the FileReference class</a></li>
+	</ul>
+	::elseif full == "openfl.text"::
+	<p>Here are some selections from the <a href="https://books.openfl.org/openfl-developers-guide/" target="_blank">OpenFL Developer's Guide</a> to help you get started with the ::api.currentPageName:: package:</p>
+	<ul>
+		<li><a href="https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/" target="_blank">Using the TextField class</a></li>
+		<li><a href="https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/displaying-text.html" target="_blank">Displaying text</a></li>
+		<li><a href="https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/capturing-text-input.html" target="_blank">Capturing text input</a></li>
+		<li><a href="https://books.openfl.org/openfl-developers-guide/using-the-textfield-class/formatting-text.html" target="_blank">Formatting text</a></li>
+	</ul>
+	::end::
+
 ::end::
--->

@@ -57,7 +57,7 @@ table {
 		<div class="navbar-inner" style="background:$$getHexValue(::themeColor::); border-bottom:1px solid rgba(0,0,0,.09)">
 			<div class="container">
 				<a ::cond api.isDefined("logo"):: ::attr href if(api.isDefined("website")) api.getValue("website") else api.config.rootPath:: class="brand"><img alt="" ::attr src api.getValue("logo"):: /></a>
-				<a ::attr href api.config.rootPath:: class="brand" style="color:$$getHexValue(::textColor::)">::if api.config.pageTitle!=null::::api.config.pageTitle::::else::API Documentation::end::</a>
+				<a ::attr href api.config.rootPath:: class="brand" style="color:$$getHexValue(::textColor::)">API Reference</a>
 				<a href="#" id="theme-toggle" style="color:$$getHexValue(::textColor::)" onclick="toggleTheme()" title="Toggle Dark Mode"><i class="fa fa-moon-o"></i></a>
 			</div>
 		</div>
