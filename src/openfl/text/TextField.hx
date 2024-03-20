@@ -671,6 +671,8 @@ class TextField extends InteractiveObject
 	**/
 	public var wordWrap(get, set):Bool;
 
+	@:noCompletion private var __wordSelection:Bool;
+	@:noCompletion private var __wordSelectionInitialIndex:Int;
 	@:noCompletion private var __bounds:Rectangle;
 	@:noCompletion private var __caretIndex:Int;
 	@:noCompletion private var __cursorTimer:Timer;
@@ -818,6 +820,7 @@ class TextField extends InteractiveObject
 	{
 		super();
 
+		__wordSelection = false;
 		__drawableType = TEXT_FIELD;
 		__caretIndex = -1;
 		__selectionIndex = -1;
@@ -849,8 +852,6 @@ class TextField extends InteractiveObject
 		addEventListener(FocusEvent.FOCUS_OUT, this_onFocusOut);
 		addEventListener(KeyboardEvent.KEY_DOWN, this_onKeyDown);
 		addEventListener(MouseEvent.MOUSE_WHEEL, this_onMouseWheel);
-
-		addEventListener(MouseEvent.DOUBLE_CLICK, this_onDoubleClick);
 	}
 
 	/**
@@ -1976,6 +1977,55 @@ class TextField extends InteractiveObject
 		}
 
 		return group.endIndex;
+	}
+
+	@:noCompletion private function __getPositionByWord(x:Float, y:Float)
+	{
+		var position = __getPosition(x, y);
+		var delimiters = " .,;:!?()[]{}<>/\\|-=+*&^%$#@~`'\"";
+		var char = __text.charAt(position);
+		if (__wordSelectionInitialIndex <= position) {
+			while (delimiters.indexOf(char) == -1 && position < __text.length)
+			{
+				position++;
+				char = __text.charAt(position);
+			}
+		}
+		else {
+			while (delimiters.indexOf(char) == -1 && position > 0)
+			{
+				position--;
+				char = __text.charAt(position);
+			}
+			//we dont want to include the delimiter
+			if (position == 0) return position;
+			position++;
+		}
+		return position;
+	}
+
+	@:noCompletion private function __getOppositeWordBound(charIndex:Int) {
+		var position = charIndex;
+		var delimiters = " .,;:!?()[]{}<>/\\|-=+*&^%$#@~`'\"";
+		var char = __text.charAt(position);
+
+		if (position <= __caretIndex) {
+			while (delimiters.indexOf(char) == -1 && position > 0)
+				{
+					position--;
+					char = __text.charAt(position);
+				}
+				if (position == 0) return position;
+			position++;
+		}
+		else {
+			while (delimiters.indexOf(char) == -1 && position < __text.length)
+			{
+				position++;
+				char = __text.charAt(position);
+			}
+		}
+		return position;
 	}
 
 	@:noCompletion private override function __hitTest(x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool,
@@ -3168,11 +3218,14 @@ class TextField extends InteractiveObject
 		{
 			__updateLayout();
 
-			var position = __getPosition(mouseX + scrollH, mouseY);
+			var position = if (__wordSelection) __getPositionByWord(mouseX + scrollH, mouseY) else __getPosition(mouseX + scrollH, mouseY);
 
 			if (position != __caretIndex)
 			{
 				__caretIndex = position;
+				if (__wordSelection) {
+					__selectionIndex = __getOppositeWordBound(__wordSelectionInitialIndex);
+				}
 
 				var setDirty = true;
 
@@ -3218,8 +3271,12 @@ class TextField extends InteractiveObject
 			leftPos = Std.int(Math.min(__selectionIndex, upPos));
 			rightPos = Std.int(Math.max(__selectionIndex, upPos));
 
-			__selectionIndex = leftPos;
-			__caretIndex = rightPos;
+			if (!__wordSelection)
+			{
+				__selectionIndex = leftPos;
+				__caretIndex = rightPos;
+			}
+			__wordSelection = false;
 
 			if (__inputEnabled)
 			{
@@ -3294,10 +3351,35 @@ class TextField extends InteractiveObject
 	{
 		if (!selectable && type != INPUT) return;
 
-		__updateLayout();
+		//decide wether this click is for selecting text by character or word - single/double click
+		var x = event.stageX, y = event.stageY, time = Timer.stamp();
+		function decideDoubleClick(event:MouseEvent) {
+			__wordSelection = (x == event.stageX && y == event.stageY && Timer.stamp() - time < 0.25);
+			removeEventListener(MouseEvent.MOUSE_DOWN, decideDoubleClick);
 
-		__caretIndex = __getPosition(mouseX + scrollH, mouseY);
-		__selectionIndex = __caretIndex;
+			if (__wordSelection) {
+				var prevCaretIndex = __caretIndex;
+				__caretIndex = __getPositionByWord(x + scrollH, y);
+				__selectionIndex = __getOppositeWordBound(prevCaretIndex);
+				__wordSelectionInitialIndex = prevCaretIndex;
+				setSelection(__caretIndex, __selectionIndex);
+			} else {
+				__caretIndex = __getPosition(mouseX + scrollH, mouseY);
+				__selectionIndex = __caretIndex;
+				setSelection(__caretIndex, __selectionIndex);
+			}
+
+		}
+		addEventListener(MouseEvent.MOUSE_DOWN, decideDoubleClick);
+
+		if (!__wordSelection) {
+			__caretIndex = __getPosition(mouseX + scrollH, mouseY);
+			__selectionIndex = __caretIndex;
+			setSelection(__caretIndex, __selectionIndex);
+		}
+		__updateLayout();
+		//If we start word selection only when the mouse moves, we can't fully select the first word on a double click
+		//and there would be a delay before the first word is selected
 
 		if (!DisplayObject.__supportDOM)
 		{
