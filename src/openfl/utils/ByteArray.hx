@@ -1726,10 +1726,19 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 				writeBytes(output.getBytes());
 
 			case AMF3:
-				var value = AMF3Tools.encode(object);
 				var output = new BytesOutput();
 				var writer = new AMF3Writer(output);
-				writer.write(value);
+				
+				if (object is ByteArrayData)
+				{
+					writer.write(ABytes(object));
+				}
+				else
+				{
+					var value = AMF3Tools.encode(object);
+					writer.write(value);
+				}
+
 				writeBytes(output.getBytes());
 			#end
 
