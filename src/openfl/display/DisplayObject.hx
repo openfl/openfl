@@ -181,6 +181,10 @@ import js.html.CSSStyleDeclaration;
 @:access(openfl.geom.Transform)
 class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (openfl_dynamic && haxe_ver < "4.0.0") implements Dynamic<DisplayObject> #end
 {
+	#if (queue_experimental_optimization && !dom)
+	@:noCompletion private static var queue:Array<DisplayObject> = [];
+	#end
+
 	@:noCompletion private static var __broadcastEvents:Map<String, Array<DisplayObject>> = new Map();
 	@:noCompletion private static var __initStage:Stage;
 	@:noCompletion private static var __instanceCount:Int = 0;
@@ -1666,6 +1670,27 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		}
 	}
 
+	#if (queue_experimental_optimization && !dom)
+	@:noCompletion private var _flag:Bool = false;
+
+	@:noCompletion inline private function __updateFlag(add:Bool = true):Void
+	{
+		if (add)
+		{
+			if (!_flag)
+			{
+				_flag = true;
+				DisplayObject.queue.push(this);
+			}
+		}
+		else
+		{
+			_flag = false;
+			DisplayObject.queue.remove(this);
+		}
+	}
+	#end
+
 	@:noCompletion private inline function __setRenderDirty():Void
 	{
 		if (!__renderDirty)
@@ -1673,6 +1698,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			__renderDirty = true;
 			__setParentRenderDirty();
 		}
+		#if (queue_experimental_optimization && !dom)
+		__updateFlag();
+		#end
 	}
 
 	@:noCompletion private function __setStageReference(stage:Stage):Void
@@ -1689,6 +1717,9 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			__setWorldTransformInvalid();
 			__setParentRenderDirty();
 		}
+		#if (queue_experimental_optimization && !dom)
+		__updateFlag();
+		#end
 	}
 
 	@:noCompletion private function __setWorldTransformInvalid():Void
@@ -1704,6 +1735,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		if (__isMask && renderParent == null) renderParent = __maskTarget;
 		__renderable = (__visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
 		__updateTransforms();
+
+		#if (queue_experimental_optimization && !dom)
+		transformOnly = false;
+		#end
 
 		// if (updateChildren && __transformDirty) {
 
@@ -1736,15 +1771,10 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 					var worldVisible = (renderParent.__worldVisible && __visible);
 					__worldVisibleChanged = (__worldVisible != worldVisible);
 					__worldVisible = worldVisible;
-
-					var worldAlpha = alpha * renderParent.__worldAlpha;
-					__worldAlphaChanged = (__worldAlpha != worldAlpha);
-					__worldAlpha = worldAlpha;
 				}
-				else
-				{
-					__worldAlpha = alpha * renderParent.__worldAlpha;
-				}
+				var worldAlpha = alpha * renderParent.__worldAlpha;
+				__worldAlphaChanged = (__worldAlpha != worldAlpha);
+				__worldAlpha = worldAlpha;
 
 				if (__objectTransform != null)
 				{
@@ -1792,9 +1822,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 				{
 					__worldVisibleChanged = (__worldVisible != __visible);
 					__worldVisible = __visible;
-
-					__worldAlphaChanged = (__worldAlpha != alpha);
 				}
+				__worldAlphaChanged = (__worldAlpha != alpha);
 
 				if (__objectTransform != null)
 				{

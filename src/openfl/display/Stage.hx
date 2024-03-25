@@ -2071,7 +2071,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		Telemetry.__startTiming(TelemetryCommandName.RENDER);
 		#end
 
+		#if (queue_experimental_optimization && !dom)
+		__updateQueue(false, true);
+		#else
 		__update(false, true);
+		#end
 
 		#if lime
 		if (__renderer != null)
@@ -3405,6 +3409,33 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		#end
 	}
 
+	#if (queue_experimental_optimization && !dom)
+	@:noCompletion private function __updateQueue(transformOnly:Bool, updateChildren:Bool):Void
+	{
+		var updateFix:Array<DisplayObjectContainer> = [];
+		while (DisplayObject.queue.length != 0)
+		{
+			var displayObject:DisplayObject = DisplayObject.queue[0];
+			var parentDisplayObject:DisplayObjectContainer = cast displayObject.parent;
+			if (parentDisplayObject != null && parentDisplayObject.__updateRequired == true && parentDisplayObject != this)
+			{
+				parentDisplayObject.__update(transformOnly, false);
+				parentDisplayObject.__updateRequired = false;
+				updateFix.push(parentDisplayObject);
+			}
+
+			displayObject.__update(transformOnly, updateChildren);
+			// displayObject.__updateFlag(false);
+			@:privateAccess displayObject._flag = false;
+			DisplayObject.queue.shift();
+		}
+
+		for (i in 0...updateFix.length)
+		{
+			updateFix[i].__updateRequired = true;
+		}
+	}
+	#else
 	@:noCompletion private override function __update(transformOnly:Bool, updateChildren:Bool):Void
 	{
 		if (transformOnly)
@@ -3459,6 +3490,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			**/
 		}
 	}
+	#end
 
 	// Get & Set Methods
 	@:noCompletion private function get_color():Null<Int>
