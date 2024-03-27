@@ -115,7 +115,7 @@ class CairoRenderer extends DisplayObjectRenderer
 		}
 	}
 
-	@:noCompletion private override function __popMask():Void
+	@:noCompletion private override function __popMask(maskee:DisplayObject = null):Void
 	{
 		cairo.restore();
 	}
@@ -138,7 +138,7 @@ class CairoRenderer extends DisplayObjectRenderer
 		cairo.restore();
 	}
 
-	@:noCompletion private override function __pushMask(mask:DisplayObject):Void
+	@:noCompletion private override function __pushMask(mask:DisplayObject, maskee:DisplayObject = null):Void
 	{
 		cairo.save();
 
