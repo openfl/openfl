@@ -2098,7 +2098,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		Telemetry.__startTiming(TelemetryCommandName.RENDER);
 		#end
 
-		#if (queue_experimental_optimization && !dom)
+		#if (openfl_enable_experimental_update_queue && !dom)
 		__updateQueue(false, true);
 		#else
 		__update(false, true);
@@ -3436,14 +3436,15 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		#end
 	}
 
-	#if (queue_experimental_optimization && !dom)
+	#if (openfl_enable_experimental_update_queue && !dom)
 	@:noCompletion private function __updateQueue(transformOnly:Bool, updateChildren:Bool):Void
 	{
 		var updateFix:Array<DisplayObjectContainer> = [];
-		while (DisplayObject.queue.length != 0)
+		var updateQueue = DisplayObject.updateQueue;
+		while (updateQueue.length != 0)
 		{
-			var displayObject:DisplayObject = DisplayObject.queue[0];
-			var parentDisplayObject:DisplayObjectContainer = cast displayObject.parent;
+			var displayObject = updateQueue.shift();
+			var parentDisplayObject = displayObject.parent;
 			if (parentDisplayObject != null && parentDisplayObject.__updateRequired == true && parentDisplayObject != this)
 			{
 				parentDisplayObject.__update(transformOnly, false);
@@ -3452,9 +3453,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			}
 
 			displayObject.__update(transformOnly, updateChildren);
-			// displayObject.__updateFlag(false);
-			@:privateAccess displayObject._flag = false;
-			DisplayObject.queue.shift();
+			displayObject._updateQueueFlag = false;
 		}
 
 		for (i in 0...updateFix.length)

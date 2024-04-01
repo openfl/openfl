@@ -50,7 +50,7 @@ import openfl.Vector;
 @:access(openfl.geom.Rectangle)
 class DisplayObjectContainer extends InteractiveObject
 {
-	#if (queue_experimental_optimization && !dom)
+	#if (openfl_enable_experimental_update_queue && !dom)
 	public var __updateRequired:Bool = true;
 	#end
 

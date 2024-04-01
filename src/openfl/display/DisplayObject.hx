@@ -198,8 +198,8 @@ import js.html.CSSStyleDeclaration;
 @:access(openfl.geom.Transform)
 class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (openfl_dynamic && haxe_ver < "4.0.0") implements Dynamic<DisplayObject> #end
 {
-	#if (queue_experimental_optimization && !dom)
-	@:noCompletion private static var queue:Array<DisplayObject> = [];
+	#if (openfl_enable_experimental_update_queue && !dom)
+	@:noCompletion private static var updateQueue:Array<DisplayObject> = [];
 	#end
 
 	@:noCompletion private static var __broadcastEvents:Map<String, Array<DisplayObject>> = new Map();
@@ -1725,23 +1725,23 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		}
 	}
 
-	#if (queue_experimental_optimization && !dom)
-	@:noCompletion private var _flag:Bool = false;
+	#if (openfl_enable_experimental_update_queue && !dom)
+	@:noCompletion private var _updateQueueFlag:Bool = false;
 
-	@:noCompletion inline private function __updateFlag(add:Bool = true):Void
+	@:noCompletion inline private function __setUpdateQueueFlag(add:Bool = true):Void
 	{
 		if (add)
 		{
-			if (!_flag)
+			if (!_updateQueueFlag)
 			{
-				_flag = true;
-				DisplayObject.queue.push(this);
+				_updateQueueFlag = true;
+				updateQueue.push(this);
 			}
 		}
 		else
 		{
-			_flag = false;
-			DisplayObject.queue.remove(this);
+			_updateQueueFlag = false;
+			updateQueue.remove(this);
 		}
 	}
 	#end
@@ -1753,8 +1753,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			__renderDirty = true;
 			__setParentRenderDirty();
 		}
-		#if (queue_experimental_optimization && !dom)
-		__updateFlag();
+		#if (openfl_enable_experimental_update_queue && !dom)
+		__setUpdateQueueFlag();
 		#end
 	}
 
@@ -1772,8 +1772,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 			__setWorldTransformInvalid();
 			__setParentRenderDirty();
 		}
-		#if (queue_experimental_optimization && !dom)
-		__updateFlag();
+		#if (openfl_enable_experimental_update_queue && !dom)
+		__setUpdateQueueFlag();
 		#end
 	}
 
@@ -1791,7 +1791,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		__renderable = (__visible && __scaleX != 0 && __scaleY != 0 && !__isMask && (renderParent == null || !renderParent.__isMask));
 		__updateTransforms();
 
-		#if (queue_experimental_optimization && !dom)
+		#if (openfl_enable_experimental_update_queue && !dom)
 		transformOnly = false;
 		#end
 
@@ -2171,15 +2171,15 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		if (value != __rotation)
 		{
 			value = value % 360.0;
-			if (value > 180.0) 
+			if (value > 180.0)
 			{
 				value -= 360.0;
 			}
-			else if (value < -180.0) 
+			else if (value < -180.0)
 			{
 				value += 360.0;
 			}
-			
+
 			__rotation = value;
 			var radians = __rotation * (Math.PI / 180);
 			__rotationSine = Math.sin(radians);
