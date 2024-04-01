@@ -2,12 +2,21 @@ package openfl.media;
 
 #if !flash
 import haxe.Int64;
+import openfl.errors.IOError;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.IOErrorEvent;
 import openfl.net.URLRequest;
 import openfl.utils.ByteArray;
 import openfl.utils.Future;
+#if (js && html5)
+import lime.media.AudioManager;
+import lime.media.WebAudioContext;
+#end
+#if lime_openal
+import lime.media.AudioManager;
+import lime.media.OpenALAudioContext;
+#end
 #if lime
 import openfl.utils._internal.UInt8Array;
 import lime.media.AudioBuffer;
@@ -81,7 +90,7 @@ import lime.media.AudioSource;
 @:access(lime.media.AudioBuffer)
 @:access(lime.utils.AssetLibrary)
 @:access(openfl.media.SoundMixer)
-@:access(openfl.media.SoundChannel.new)
+@:access(openfl.media.SoundChannel)
 @:autoBuild(openfl.utils._internal.AssetsMacro.embedSound())
 class Sound extends EventDispatcher
 {
@@ -228,8 +237,24 @@ class Sound extends EventDispatcher
 	**/
 	public var url(default, null):String;
 
+	@:noCompletion private var __urlLoading:Bool = false;
+
 	#if lime
+	@:noCompletion private var __pendingSoundChannel:SoundChannel;
+	@:noCompletion private var __pendingAudioSource:AudioSource;
 	@:noCompletion private var __buffer:AudioBuffer;
+	#end
+
+	#if (js && html5)
+	public var sampleRate(get, never):Int;
+
+	private var __webAudioContext:WebAudioContext = null;
+	#end
+
+	#if lime_openal
+	public var sampleRate(get, never):Int;
+
+	private var __alAudioContext:OpenALAudioContext = null;
 	#end
 
 	#if openfljs
@@ -277,6 +302,28 @@ class Sound extends EventDispatcher
 		{
 			load(stream, context);
 		}
+		#if (js && html5)
+		if (stream == null && AudioManager.context != null)
+		{
+			switch (AudioManager.context.type)
+			{
+				case WEB:
+					__webAudioContext = AudioManager.context.web;
+				default:
+			}
+		}
+		#end
+		#if lime_openal
+		if (stream == null && AudioManager.context != null)
+		{
+			switch (AudioManager.context.type)
+			{
+				case OPENAL:
+					__alAudioContext = AudioManager.context.openal;
+				default:
+			}
+		}
+		#end
 	}
 
 	/**
@@ -354,7 +401,12 @@ class Sound extends EventDispatcher
 	public static function fromFile(path:String):Sound
 	{
 		#if lime
-		return fromAudioBuffer(AudioBuffer.fromFile(path));
+		var buffer = AudioBuffer.fromFile(path);
+		if (buffer == null)
+		{
+			throw new IOError("Error loading sound from file: " + path);
+		}
+		return fromAudioBuffer(buffer);
 		#else
 		return null;
 		#end
@@ -436,6 +488,7 @@ class Sound extends EventDispatcher
 	public function load(stream:URLRequest, context:SoundLoaderContext = null):Void
 	{
 		url = stream.url;
+		__urlLoading = true;
 
 		#if lime
 		#if (js && html5)
@@ -620,7 +673,7 @@ class Sound extends EventDispatcher
 	public function play(startTime:Float = 0.0, loops:Int = 0, sndTransform:SoundTransform = null):SoundChannel
 	{
 		#if lime
-		if (__buffer == null || SoundMixer.__soundChannels.length >= SoundMixer.MAX_ACTIVE_CHANNELS)
+		if (SoundMixer.__soundChannels.length >= SoundMixer.MAX_ACTIVE_CHANNELS)
 		{
 			return null;
 		}
@@ -641,22 +694,57 @@ class Sound extends EventDispatcher
 
 		var volume = SoundMixer.__soundTransform.volume * sndTransform.volume;
 
-		var source = new AudioSource(__buffer);
-		source.offset = Std.int(startTime);
-		if (loops > 1) source.loops = loops - 1;
+		var audioSource = new AudioSource(__buffer);
+		audioSource.offset = Std.int(startTime);
+		if (loops > 1) audioSource.loops = loops - 1;
 
-		source.gain = volume;
+		audioSource.gain = volume;
 
-		var position = source.position;
+		var position = audioSource.position;
 		position.x = pan;
 		position.z = -1 * Math.sqrt(1 - Math.pow(pan, 2));
-		source.position = position;
+		audioSource.position = position;
 
-		return new SoundChannel(source, sndTransform);
+		var soundChannel = new SoundChannel(this, __urlLoading ? null : audioSource, sndTransform);
+		if (__urlLoading)
+		{
+			__pendingAudioSource = audioSource;
+			__pendingSoundChannel = soundChannel;
+		}
+		else if (__buffer == null)
+		{
+			#if (js && html5)
+			if (__webAudioContext != null)
+			{
+				soundChannel.__startSampleData();
+			}
+			#end
+			#if lime_openal
+			if (__alAudioContext != null)
+			{
+				soundChannel.__startSampleData();
+			}
+			#end
+		}
+		return soundChannel;
 		#else
 		return null;
 		#end
 	}
+
+	#if (js && html5)
+	private function get_sampleRate():Int
+	{
+		return Std.int(__webAudioContext.sampleRate);
+	}
+	#end
+
+	#if lime_openal
+	private function get_sampleRate():Int
+	{
+		return 44100;
+	}
+	#end
 
 	// Get & Set Methods
 	@:noCompletion private function get_id3():ID3Info
@@ -674,7 +762,7 @@ class Sound extends EventDispatcher
 			#else
 			if (__buffer.data != null)
 			{
-				var samples = (__buffer.data.length * 8) / (__buffer.channels * __buffer.bitsPerSample);
+				var samples = (__buffer.data.length * 8.0) / (__buffer.channels * __buffer.bitsPerSample);
 				return Std.int(samples / __buffer.sampleRate * 1000);
 			}
 			else if (__buffer.__srcVorbisFile != null)
@@ -697,6 +785,7 @@ class Sound extends EventDispatcher
 	#if lime
 	@:noCompletion private function AudioBuffer_onURLLoad(buffer:AudioBuffer):Void
 	{
+		__urlLoading = false;
 		if (buffer == null)
 		{
 			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
@@ -705,7 +794,17 @@ class Sound extends EventDispatcher
 		{
 			__buffer = buffer;
 			dispatchEvent(new Event(Event.COMPLETE));
+			if (__pendingSoundChannel != null)
+			{
+				__pendingAudioSource.buffer = __buffer;
+				// ideally, Lime would call init() when setting buffer,
+				// similar to how it does in the AudioSource constructor
+				@:privateAccess __pendingAudioSource.init();
+				__pendingSoundChannel.__initAudioSource(__pendingAudioSource);
+			}
 		}
+		__pendingSoundChannel = null;
+		__pendingAudioSource = null;
 	}
 	#end
 }

@@ -1,4 +1,4 @@
-[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE.md) [![Haxelib Version](https://img.shields.io/github/tag/openfl/openfl.svg?style=flat&label=haxelib&color=df7900)](https://lib.haxe.org/p/openfl) [![Build Status](https://img.shields.io/github/workflow/status/openfl/openfl/CI/develop)](https://github.com/openfl/openfl/actions) [![Community](https://img.shields.io/discourse/posts?color=24afc4&server=https%3A%2F%2Fcommunity.openfl.org&label=community)](https://community.openfl.org) [![Discord Server](https://img.shields.io/discord/415681294446493696.svg?color=7289da)](https://discordapp.com/invite/tDgq8EE)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](LICENSE.md) [![Haxelib Version](https://img.shields.io/github/tag/openfl/openfl.svg?style=flat&label=haxelib&color=df7900)](https://lib.haxe.org/p/openfl) [![Build Status](https://img.shields.io/github/actions/workflow/status/openfl/openfl/main.yml?branch=develop)](https://github.com/openfl/openfl/actions) [![Community](https://img.shields.io/discourse/posts?color=24afc4&server=https%3A%2F%2Fcommunity.openfl.org&label=community)](https://community.openfl.org) [![Discord Server](https://img.shields.io/discord/415681294446493696.svg?color=7289da)](https://discordapp.com/invite/tDgq8EE)
 
 
 <br />
@@ -26,17 +26,17 @@ Currently, OpenFL supports the following platforms:
  * Windows
  * macOS
  * Linux
- * WebAssembly
  * Flash
  * AIR
 
 There is also a community effort to bring OpenFL to consoles, OpenFL is running on:
 
+ * Switch
+ * Wii U
  * PlayStation 4
  * PlayStation 3
  * PlayStation Vita
  * Xbox One
- * Wii U
 
 _Additional details on console support will be available in the future._
 
@@ -70,10 +70,10 @@ Code Editors
 Plugins have been written for many [code editors](http://haxe.org/documentation/introduction/editors-and-ides.html), but the most popular editors used for Haxe and OpenFL development are:
 
  * [Visual Studio Code](https://code.visualstudio.com/) (with [plugin](https://marketplace.visualstudio.com/items?itemName=openfl.lime-vscode-extension))
- * [HaxeDevelop](http://haxedevelop.org/)
- * [Sublime Text](http://www.sublimetext.com) (with [plugin](https://github.com/clemos/haxe-sublime-bundle))
- * [IntelliJ IDEA](http://www.jetbrains.com/idea/) (with [plugin](http://plugins.jetbrains.com/plugin/6873?pr=))
-
+ * [HaxeDevelop](https://github.com/HaxeFoundation/haxedevelop.org) ([development builds](https://flashdevelop.org/downloads/builds/))
+ * [Sublime Text](https://www.sublimetext.com) (with [plugin](https://github.com/clemos/haxe-sublime-bundle))
+ * [IntelliJ IDEA](https://www.jetbrains.com/idea/) (with [plugin](https://plugins.jetbrains.com/plugin/6873-haxe-toolkit-support))
+ * [Moonshine IDE](https://moonshine-ide.com/)
 
 Easy Deployment
 ===============
@@ -147,10 +147,6 @@ Clone the OpenFL repository:
 Tell haxelib where your development copy of OpenFL is installed:
 
     haxelib dev openfl openfl
-
-Rebuild the SWF library tools:
-
-    openfl rebuild tools
 
 To return to release builds:
 

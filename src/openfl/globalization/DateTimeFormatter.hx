@@ -2,12 +2,12 @@ package openfl.globalization;
 
 import haxe.EnumTools.EnumValueTools;
 import openfl.Vector;
-#if html5
+#if (js && html5 && haxe4)
 import js.lib.intl.DateTimeFormat;
 #end
 
 #if !flash
-#if !html5
+#if !(js && html5)
 @:final class DateTimeFormatter
 {
 	private static var WEEKDAY_NAMES_EN = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -405,7 +405,7 @@ import js.lib.intl.DateTimeFormat;
 		}
 	}
 }
-#else
+#elseif haxe4
 @:final class DateTimeFormatter
 {
 	public static function getAvailableLocaleIDNames():Vector<String>
@@ -577,7 +577,9 @@ import js.lib.intl.DateTimeFormat;
 					getDateFormatPart("dayPeriod", (new DateTimeFormat(this._normalizedRequestedLocaleIDName, cast {
 						hour: "numeric",
 						hour12: true,
-						dayPeriod: "short",
+						// for AM/PM, specify hour12 only. don't set a value for
+						// dayPeriod. otherwise, you'll get stuff like
+						// "at night" or "in the afternoon"
 						timeZone: timeZone
 					})).formatToParts(date));
 				case Hour11(length): // K

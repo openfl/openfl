@@ -6,6 +6,7 @@ import openfl.display.DisplayObject;
 import openfl.display.DisplayObjectContainer;
 import openfl.display.Sprite;
 import openfl.errors.RangeError;
+import openfl.events.Event;
 import openfl.geom.Point;
 import utest.Assert;
 import utest.Test;
@@ -176,7 +177,6 @@ class DisplayObjectContainerTest extends Test
 	#if (cpp || neko) // TODO: works but sometimes suffers from a race condition when run immediately
 	public function test_getObjectsUnderPoint()
 	{
-
 		var sprite = new Sprite();
 
 		var sprite2 = new Sprite();
@@ -421,5 +421,99 @@ class DisplayObjectContainerTest extends Test
 		Assert.isTrue(sprite.tabChildren);
 		sprite.tabChildren = false;
 		Assert.isFalse(sprite.tabChildren);
+	}
+
+	public function test_addedToStageEvent()
+	{
+		if (openfl.Lib.current == null || openfl.Lib.current.stage == null)
+		{
+			Assert.pass("Skipping addedToStage event test");
+			return;
+		}
+
+		var sprite1 = new Sprite();
+		var sprite2 = new Sprite();
+		var sprite3 = new Sprite();
+		var sprite4 = new Sprite();
+
+		openfl.Lib.current.addChild(sprite1);
+		openfl.Lib.current.addChild(sprite2);
+
+		var addedToStageCount = 0;
+		sprite3.addEventListener(Event.ADDED_TO_STAGE, function(event:Event):Void
+		{
+			addedToStageCount++;
+		});
+
+		Assert.equals(0, addedToStageCount);
+
+		sprite1.addChild(sprite3);
+		Assert.equals(1, addedToStageCount);
+
+		sprite1.removeChild(sprite3);
+		Assert.equals(1, addedToStageCount);
+
+		sprite1.addChild(sprite3);
+		Assert.equals(2, addedToStageCount);
+
+		sprite2.addChild(sprite3);
+		Assert.equals(3, addedToStageCount);
+
+		sprite2.addChild(sprite4);
+		// when sprite3.parent == sprite2, adding it again to sprite2 does not
+		// dispatch events. it is more like calling setChildIndex()
+		sprite2.addChild(sprite3);
+		Assert.equals(3, addedToStageCount);
+
+		openfl.Lib.current.removeChild(sprite1);
+		openfl.Lib.current.removeChild(sprite2);
+	}
+
+	public function test_removedFromStageEvent()
+	{
+		if (openfl.Lib.current == null || openfl.Lib.current.stage == null)
+		{
+			Assert.pass("Skipping removedFromStage event test");
+			return;
+		}
+
+		var sprite1 = new Sprite();
+		var sprite2 = new Sprite();
+		var sprite3 = new Sprite();
+		var sprite4 = new Sprite();
+
+		openfl.Lib.current.addChild(sprite1);
+		openfl.Lib.current.addChild(sprite2);
+
+		var removedFromStageCount = 0;
+		sprite3.addEventListener(Event.REMOVED_FROM_STAGE, function(event:Event):Void
+		{
+			removedFromStageCount++;
+		});
+
+		Assert.equals(0, removedFromStageCount);
+
+		sprite1.addChild(sprite3);
+		Assert.equals(0, removedFromStageCount);
+
+		sprite1.removeChild(sprite3);
+		Assert.equals(1, removedFromStageCount);
+
+		sprite1.addChild(sprite3);
+		Assert.equals(1, removedFromStageCount);
+
+		// when sprite3.parent sprite1, adding it to sprite2 without manually
+		// removing it from sprite1 will automatically remove it from sprite1
+		sprite2.addChild(sprite3);
+		Assert.equals(2, removedFromStageCount);
+
+		sprite2.addChild(sprite4);
+		// when sprite3.parent == sprite2, adding it again to sprite2 does not
+		// dispatch events. it is more like calling setChildIndex()
+		sprite2.addChild(sprite3);
+		Assert.equals(2, removedFromStageCount);
+
+		openfl.Lib.current.removeChild(sprite1);
+		openfl.Lib.current.removeChild(sprite2);
 	}
 }

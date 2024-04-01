@@ -131,6 +131,8 @@ class KeyboardEvent extends Event
 	**/
 	public var shiftKey:Bool;
 
+	@:noCompletion private var __updateAfterEventFlag:Bool;
+
 	// @:noCompletion private static var __pool:ObjectPool<KeyboardEvent> = new ObjectPool<KeyboardEvent>(function() return new KeyboardEvent(null),
 	// function(event) event.__init());
 
@@ -180,6 +182,8 @@ class KeyboardEvent extends Event
 		controlKey = controlKeyValue;
 		commandKey = commandKeyValue;
 		#end
+
+		__updateAfterEventFlag = false;
 	}
 
 	public override function clone():KeyboardEvent
@@ -208,6 +212,15 @@ class KeyboardEvent extends Event
 		]);
 	}
 
+	/**
+		Instructs OpenFL to render after processing of this event completes, if
+		the display list has been modified.
+	**/
+	public function updateAfterEvent():Void
+	{
+		__updateAfterEventFlag = true;
+	}
+
 	@:noCompletion private override function __init():Void
 	{
 		super.__init();
@@ -222,6 +235,8 @@ class KeyboardEvent extends Event
 		controlKey = false;
 		commandKey = false;
 		#end
+
+		__updateAfterEventFlag = false;
 	}
 }
 #else

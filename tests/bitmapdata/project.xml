@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	<app main="Tests"/>
+	<source path="src"/>
+	<haxelib name="utest"/>
+	<haxelib name="openfl" path="../.."/>
+	<assets path="assets" rename="."/>
+	<define name="integration"/>
+</project>

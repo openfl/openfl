@@ -9,7 +9,8 @@ package openfl.display;
 	of the data types available in Flash Player for parameters in the Pixel
 	Bender shader language.
 **/
-@:enum abstract ShaderParameterType(Null<Int>)
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract ShaderParameterType(Null<Int>)
+
 {
 	/**
 		Indicates that the shader parameter is defined as a `bool` value,
@@ -236,7 +237,8 @@ package openfl.display;
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-@:enum abstract ShaderParameterType(String) from String to String
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract ShaderParameterType(String) from String to String
+
 {
 	public var BOOL = "bool";
 	public var BOOL2 = "bool2";

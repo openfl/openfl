@@ -165,6 +165,8 @@ class Video extends DisplayObject
 	@:noCompletion private var __bufferColorTransform:ColorTransform;
 	@:noCompletion private var __bufferContext:#if lime RenderContext #else Dynamic #end;
 	@:noCompletion private var __bufferData:Float32Array;
+	@:noCompletion private var __currentWidth:Float;
+	@:noCompletion private var __currentHeight:Float;
 	@:noCompletion private var __dirty:Bool;
 	@:noCompletion private var __height:Float;
 	@:noCompletion private var __indexBuffer:IndexBuffer3D;
@@ -217,6 +219,7 @@ class Video extends DisplayObject
 		deblocking = 0;
 	}
 
+	#if false
 	/**
 		Specifies a video stream from a camera to be displayed within the
 		boundaries of the Video object in the application.
@@ -232,6 +235,7 @@ class Video extends DisplayObject
 					  the connection to the Video object, pass `null`.
 	**/
 	// function attachCamera(camera : Camera) : Void;
+	#end
 
 	/**
 		Specifies a video stream to be displayed within the boundaries of the
@@ -350,8 +354,13 @@ class Video extends DisplayObject
 		#if (lime || js)
 		var gl = context.gl;
 
-		if (__vertexBuffer == null || __vertexBufferContext != context.__context)
+		if (__vertexBuffer == null
+			|| __vertexBufferContext != context.__context
+			|| __currentWidth != width
+			|| __currentHeight != height)
 		{
+			__currentWidth = width;
+			__currentHeight = height;
 			#if openfl_power_of_two
 			var newWidth = 1;
 			var newHeight = 1;

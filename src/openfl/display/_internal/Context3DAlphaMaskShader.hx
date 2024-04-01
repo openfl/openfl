@@ -1,5 +1,6 @@
 package openfl.display._internal;
 
+#if !flash
 import openfl.display.BitmapData;
 import openfl.display.Shader;
 
@@ -7,7 +8,7 @@ import openfl.display.Shader;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-class Context3DMaskShader extends Shader
+class Context3DAlphaMaskShader extends Shader
 {
 	public static var opaqueBitmapData:BitmapData = new BitmapData(1, 1, false, 0);
 
@@ -48,3 +49,4 @@ class Context3DMaskShader extends Shader
 		super();
 	}
 }
+#end

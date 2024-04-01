@@ -76,7 +76,7 @@ class HTTPStatusEvent extends Event
 		The response headers that the response returned, as an array of
 		URLRequestHeader objects.
 	**/
-	public var responseHeaders:Array<URLRequestHeader>;
+	public var responseHeaders:Array<URLRequestHeader> = [];
 
 	/**
 		The URL that the response was returned from. In the case of redirects,

@@ -2,7 +2,8 @@ package openfl.globalization;
 
 #if !flash
 #if !openfljs
-@:enum abstract DateTimeStyle(Null<Int>)
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract DateTimeStyle(Null<Int>)
+
 {
 	public var CUSTOM = 0;
 	public var LONG = 1;
@@ -48,7 +49,8 @@ package openfl.globalization;
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-@:enum abstract DateTimeStyle(String) from String to String
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract DateTimeStyle(String) from String to String
+
 {
 	public var CUSTOM = "custom";
 	public var LONG = "long";
@@ -56,7 +58,7 @@ package openfl.globalization;
 	public var NONE = "none";
 	public var SHORT = "short";
 
-	@:noCompletion private inline static function fromInt(value:Null<Int>):DateTimeNameContext
+	@:noCompletion private inline static function fromInt(value:Null<Int>):DateTimeStyle
 	{
 		return switch (value)
 		{

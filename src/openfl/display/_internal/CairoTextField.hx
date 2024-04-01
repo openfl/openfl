@@ -1,5 +1,6 @@
 package openfl.display._internal;
 
+#if !flash
 import openfl.text._internal.TextEngine;
 import openfl.display.BitmapData;
 import openfl.display.CairoRenderer;
@@ -89,13 +90,13 @@ class CairoTextField
 			// graphics.__bounds.y += textField.__offsetY;
 		}
 
-		graphics.__update(renderer.__worldTransform);
-
 		#if (openfl_disable_hdpi || openfl_disable_hdpi_textfield)
 		var pixelRatio = 1;
 		#else
 		var pixelRatio = renderer.__pixelRatio;
 		#end
+
+		graphics.__update(renderer.__worldTransform, pixelRatio);
 
 		var width = Math.round(graphics.__width * pixelRatio);
 		var height = Math.round(graphics.__height * pixelRatio);
@@ -385,6 +386,11 @@ class CairoTextField
 
 								selectionStart -= group.startIndex;
 								selectionEnd -= group.startIndex;
+								if (selectionEnd > glyphs.length)
+								{
+									selectionEnd = glyphs.length;
+								}
+
 								for (i in selectionStart...selectionEnd)
 									selectedGylphs.push(glyphs[i]);
 								cairo.showGlyphs(selectedGylphs);
@@ -400,8 +406,9 @@ class CairoTextField
 
 						cairo.newPath();
 						cairo.lineWidth = 1;
+						var descent = Math.floor(group.ascent * 0.185);
 						var x = group.offsetX + scrollX - bounds.x;
-						var y = Math.ceil(group.offsetY + scrollY + group.ascent - bounds.y) + 0.5;
+						var y = Math.ceil(group.offsetY + scrollY + group.ascent - bounds.y) + descent + 0.5;
 						cairo.moveTo(x, y);
 						cairo.lineTo(x + group.width, y);
 						cairo.stroke();
@@ -467,3 +474,4 @@ class CairoTextField
 		CairoDisplayObject.renderDrawableMask(textField, renderer);
 	}
 }
+#end

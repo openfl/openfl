@@ -166,6 +166,14 @@ import js.html.CanvasRenderingContext2D;
 	**/
 	public function beginBitmapFill(bitmap:BitmapData, matrix:Matrix = null, repeat:Bool = true, smooth:Bool = false):Void
 	{
+		if (!bitmap.readable)
+		{
+			// begin bitmap fill doesn't work with a hardware-only bitmap
+			// to avoid exceptions, delegate to beginFill()
+			beginFill(0, 1.0);
+			return;
+		}
+
 		__commands.beginBitmapFill(bitmap, matrix != null ? matrix.clone() : null, repeat, smooth);
 
 		__visible = true;
@@ -306,7 +314,7 @@ import js.html.CanvasRenderingContext2D;
 
 			for (i in 0...colors.length)
 			{
-				ratios.push(Math.ceil((i / colors.length) * 255));
+				ratios.push(Math.ceil((i / (colors.length - 1)) * 255));
 			}
 		}
 
@@ -484,69 +492,14 @@ import js.html.CanvasRenderingContext2D;
 	**/
 	public function cubicCurveTo(controlX1:Float, controlY1:Float, controlX2:Float, controlY2:Float, anchorX:Float, anchorY:Float):Void
 	{
-		__inflateBounds(__positionX - __strokePadding, __positionY - __strokePadding);
-		__inflateBounds(__positionX + __strokePadding, __positionY + __strokePadding);
+		var xs = __findExtrema(__positionX, controlX1, controlX2, anchorX);
+		var ys = __findExtrema(__positionY, controlY1, controlY2, anchorY);
 
-		var ix1, iy1, ix2, iy2;
-
-		ix1 = anchorX;
-		ix2 = anchorX;
-
-		if (!(((controlX1 < anchorX && controlX1 > __positionX) || (controlX1 > anchorX && controlX1 < __positionX))
-			&& ((controlX2 < anchorX && controlX2 > __positionX) || (controlX2 > anchorX && controlX2 < __positionX))))
-		{
-			var u = (2 * __positionX - 4 * controlX1 + 2 * controlX2);
-			var v = (controlX1 - __positionX);
-			var w = (-__positionX + 3 * controlX1 + anchorX - 3 * controlX2);
-
-			var t1 = (-u + Math.sqrt(u * u - 4 * v * w)) / (2 * w);
-			var t2 = (-u - Math.sqrt(u * u - 4 * v * w)) / (2 * w);
-
-			if (t1 > 0 && t1 < 1)
-			{
-				ix1 = __calculateBezierCubicPoint(t1, __positionX, controlX1, controlX2, anchorX);
-			}
-
-			if (t2 > 0 && t2 < 1)
-			{
-				ix2 = __calculateBezierCubicPoint(t2, __positionX, controlX1, controlX2, anchorX);
-			}
-		}
-
-		iy1 = anchorY;
-		iy2 = anchorY;
-
-		if (!(((controlY1 < anchorY && controlY1 > __positionX) || (controlY1 > anchorY && controlY1 < __positionX))
-			&& ((controlY2 < anchorY && controlY2 > __positionX) || (controlY2 > anchorY && controlY2 < __positionX))))
-		{
-			var u = (2 * __positionX - 4 * controlY1 + 2 * controlY2);
-			var v = (controlY1 - __positionX);
-			var w = (-__positionX + 3 * controlY1 + anchorY - 3 * controlY2);
-
-			var t1 = (-u + Math.sqrt(u * u - 4 * v * w)) / (2 * w);
-			var t2 = (-u - Math.sqrt(u * u - 4 * v * w)) / (2 * w);
-
-			if (t1 > 0 && t1 < 1)
-			{
-				iy1 = __calculateBezierCubicPoint(t1, __positionX, controlY1, controlY2, anchorY);
-			}
-
-			if (t2 > 0 && t2 < 1)
-			{
-				iy2 = __calculateBezierCubicPoint(t2, __positionX, controlY1, controlY2, anchorY);
-			}
-		}
-
-		__inflateBounds(ix1 - __strokePadding, iy1 - __strokePadding);
-		__inflateBounds(ix1 + __strokePadding, iy1 + __strokePadding);
-		__inflateBounds(ix2 - __strokePadding, iy2 - __strokePadding);
-		__inflateBounds(ix2 + __strokePadding, iy2 + __strokePadding);
+		__inflateBounds(xs.min - __strokePadding, ys.min - __strokePadding);
+		__inflateBounds(xs.max + __strokePadding, ys.max + __strokePadding);
 
 		__positionX = anchorX;
 		__positionY = anchorY;
-
-		__inflateBounds(__positionX - __strokePadding, __positionY - __strokePadding);
-		__inflateBounds(__positionX + __strokePadding, __positionY + __strokePadding);
 
 		__commands.cubicCurveTo(controlX1, controlY1, controlX2, controlY2, anchorX, anchorY);
 
@@ -617,6 +570,9 @@ import js.html.CanvasRenderingContext2D;
 
 		__positionX = anchorX;
 		__positionY = anchorY;
+
+		__inflateBounds(__positionX - __strokePadding, __positionY - __strokePadding);
+		__inflateBounds(__positionX + __strokePadding, __positionY + __strokePadding);
 
 		__commands.curveTo(controlX, controlY, anchorX, anchorY);
 
@@ -1291,9 +1247,29 @@ import js.html.CanvasRenderingContext2D;
 	public function lineGradientStyle(type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null,
 			spreadMethod:SpreadMethod = SpreadMethod.PAD, interpolationMethod:InterpolationMethod = InterpolationMethod.RGB, focalPointRatio:Float = 0):Void
 	{
+		if (alphas == null)
+		{
+			alphas = [];
+
+			for (i in 0...colors.length)
+			{
+				alphas.push(1);
+			}
+		}
+
+		if (ratios == null)
+		{
+			ratios = [];
+
+			for (i in 0...colors.length)
+			{
+				ratios.push(Math.ceil((i / (colors.length - 1)) * 255));
+			}
+		}
 		__commands.lineGradientStyle(type, colors, alphas, ratios, matrix, spreadMethod, interpolationMethod, focalPointRatio);
 	}
 
+	#if false
 	/**
 		Specifies a shader to use for the line stroke when drawing lines.
 
@@ -1310,6 +1286,7 @@ import js.html.CanvasRenderingContext2D;
 		Calls to the `clear()` method set the line style back to undefined.
 	**/
 	// @:require(flash10) public function lineShaderStyle (shader:Shader, ?matrix:Matrix):Void;
+	#end
 
 	/**
 		Specifies a line style used for subsequent calls to Graphics methods such
@@ -1474,6 +1451,16 @@ import js.html.CanvasRenderingContext2D;
 	public function lineStyle(thickness:Null<Float> = null, color:Int = 0, alpha:Float = 1, pixelHinting:Bool = false,
 			scaleMode:LineScaleMode = LineScaleMode.NORMAL, caps:CapsStyle = null, joints:JointStyle = null, miterLimit:Float = 3):Void
 	{
+		if (caps == null)
+		{
+			caps = CapsStyle.ROUND;
+		}
+
+		if (joints == null)
+		{
+			joints = JointStyle.ROUND;
+		}
+
 		if (thickness != null)
 		{
 			if (joints == JointStyle.MITER)
@@ -1687,6 +1674,57 @@ import js.html.CanvasRenderingContext2D;
 		return false;
 	}
 
+	@:noCompletion private function __findExtrema(p1:Float, p2:Float, p3:Float, p4:Float):{min:Float, max:Float}
+	{
+		var solutions:Array<Float> = [];
+		if (!(((p2 < p4 && p2 > p1) || (p2 > p4 && p2 < p1)) && ((p3 < p4 && p3 > p1) || (p3 > p4 && p3 < p1))))
+		{
+			// The derivative of a cubic Bézier curve is a quadratic Bézier curve.
+			// f(t) = a * t * t + b * t + c = 0
+			var a = -p1 + 3 * p2 + p4 - 3 * p3;
+			var b = 2 * p1 - 4 * p2 + 2 * p3;
+			var c = p2 - p1;
+			// d is a discriminant
+			var d = b * b - 4 * a * c;
+			if (a == 0)
+			{
+				var t = -c / b;
+				if (t > 0 && t < 1)
+				{
+					solutions.push(__calculateBezierCubicPoint(t, p1, p2, p3, p4));
+				}
+			}
+			else if (d >= 0)
+			{
+				var t1 = (-b + Math.sqrt(d)) / (2 * a);
+				var t2 = (-b - Math.sqrt(d)) / (2 * a);
+				if (t1 > 0 && t1 < 1)
+				{
+					solutions.push(__calculateBezierCubicPoint(t1, p1, p2, p3, p4));
+				}
+				if (t2 > 0 && t2 < 1)
+				{
+					solutions.push(__calculateBezierCubicPoint(t2, p1, p2, p3, p4));
+				}
+			}
+		}
+		var min = p1;
+		var max = p1;
+		solutions.push(p4);
+		for (val in solutions)
+		{
+			if (val < min)
+			{
+				min = val;
+			}
+			if (val > max)
+			{
+				max = val;
+			}
+		}
+		return {min: min, max: max};
+	}
+
 	@:noCompletion private function __inflateBounds(x:Float, y:Float):Void
 	{
 		if (__bounds == null)
@@ -1831,14 +1869,16 @@ import js.html.CanvasRenderingContext2D;
 		}
 	}
 
-	@:noCompletion private function __update(displayMatrix:Matrix):Void
+	@:noCompletion private function __update(displayMatrix:Matrix, pixelRatio:Float):Void
 	{
 		if (__bounds == null || __bounds.width <= 0 || __bounds.height <= 0) return;
 
 		var parentTransform = __owner.__renderTransform;
-		var scaleX = 1.0, scaleY = 1.0;
+		if (parentTransform == null) return;
 
-		if (parentTransform != null)
+		var scaleX = pixelRatio, scaleY = pixelRatio;
+
+		if (__owner.__worldScale9Grid == null)
 		{
 			if (parentTransform.b == 0)
 			{
@@ -1857,37 +1897,33 @@ import js.html.CanvasRenderingContext2D;
 			{
 				scaleY = Math.sqrt(parentTransform.c * parentTransform.c + parentTransform.d * parentTransform.d);
 			}
-		}
-		else
-		{
-			return;
-		}
 
-		if (displayMatrix != null)
-		{
-			if (displayMatrix.b == 0)
+			if (displayMatrix != null)
 			{
-				scaleX *= displayMatrix.a;
-			}
-			else
-			{
-				scaleX *= Math.sqrt(displayMatrix.a * displayMatrix.a + displayMatrix.b * displayMatrix.b);
+				if (displayMatrix.b == 0)
+				{
+					scaleX *= displayMatrix.a;
+				}
+				else
+				{
+					scaleX *= Math.sqrt(displayMatrix.a * displayMatrix.a + displayMatrix.b * displayMatrix.b);
+				}
+
+				if (displayMatrix.c == 0)
+				{
+					scaleY *= displayMatrix.d;
+				}
+				else
+				{
+					scaleY *= Math.sqrt(displayMatrix.c * displayMatrix.c + displayMatrix.d * displayMatrix.d);
+				}
 			}
 
-			if (displayMatrix.c == 0)
-			{
-				scaleY *= displayMatrix.d;
-			}
-			else
-			{
-				scaleY *= Math.sqrt(displayMatrix.c * displayMatrix.c + displayMatrix.d * displayMatrix.d);
-			}
+			#if openfl_disable_graphics_upscaling
+			if (scaleX > 1) scaleX = 1;
+			if (scaleY > 1) scaleY = 1;
+			#end
 		}
-
-		#if openfl_disable_graphics_upscaling
-		if (scaleX > 1) scaleX = 1;
-		if (scaleY > 1) scaleY = 1;
-		#end
 
 		var width = __bounds.width * scaleX;
 		var height = __bounds.height * scaleY;
@@ -1912,10 +1948,22 @@ import js.html.CanvasRenderingContext2D;
 			scaleY = maxTextureHeight / __bounds.height;
 		}
 
-		__renderTransform.a = width / __bounds.width;
-		__renderTransform.d = height / __bounds.height;
-		var inverseA = (1 / __renderTransform.a);
-		var inverseD = (1 / __renderTransform.d);
+		var inverseA, inverseD;
+
+		if (__owner.__worldScale9Grid != null)
+		{
+			__renderTransform.a = pixelRatio;
+			__renderTransform.d = pixelRatio;
+			inverseA = 1 / pixelRatio;
+			inverseD = 1 / pixelRatio;
+		}
+		else
+		{
+			__renderTransform.a = width / __bounds.width;
+			__renderTransform.d = height / __bounds.height;
+			inverseA = (1 / __renderTransform.a);
+			inverseD = (1 / __renderTransform.d);
+		}
 
 		// Inlined & simplified `__worldTransform.concat (parentTransform)` below:
 		__worldTransform.a = inverseA * parentTransform.a;
@@ -1928,13 +1976,31 @@ import js.html.CanvasRenderingContext2D;
 		var tx = x * parentTransform.a + y * parentTransform.c + parentTransform.tx;
 		var ty = x * parentTransform.b + y * parentTransform.d + parentTransform.ty;
 
+		#if openfl_disable_graphics_pixel_snapping
+		__worldTransform.tx = tx;
+		__worldTransform.ty = ty;
+		#else
 		// round the world position for crisp graphics rendering
-		__worldTransform.tx = Math.fround(tx);
-		__worldTransform.ty = Math.fround(ty);
+		if (pixelRatio > 1.0)
+		{
+			// on HiDPI screens, we can round to the nearest device pixel
+			// instead of the nearest stage pixel because device pixels have
+			// more precision.
+			// rendering will still be crisp, and animations will be smoother.
+			var nativePixelSize = 1 / pixelRatio;
+			__worldTransform.tx = Math.fround(tx / nativePixelSize) * nativePixelSize;
+			__worldTransform.ty = Math.fround(ty / nativePixelSize) * nativePixelSize;
+		}
+		else
+		{
+			__worldTransform.tx = Math.fround(tx);
+			__worldTransform.ty = Math.fround(ty);
+		}
 
 		// Offset the rendering with the subpixel offset removed by Math.round above
 		__renderTransform.tx = __worldTransform.__transformInverseX(tx, ty);
 		__renderTransform.ty = __worldTransform.__transformInverseY(tx, ty);
+		#end
 
 		// Calculate the size to contain the graphics and an extra subpixel
 		// We used to add tx and ty from __renderTransform instead of 1.0

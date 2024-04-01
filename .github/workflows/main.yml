@@ -3,13 +3,49 @@ on: [push, pull_request]
 
 jobs:
 
-  unit-test:
+  unit-test-neko-haxe3:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: 3.4.7
+
+      - name: Set HAXEPATH
+        run: |
+          echo "HAXEPATH=$HAXE_STD_PATH/.." >> $GITHUB_ENV
+
+      - name: Install Haxe dependencies
+        run: |
+          haxelib install hxcpp --quiet
+          haxelib install format --quiet
+          haxelib install hxp --quiet
+          haxelib install lime --quiet
+          haxelib install utest --quiet
+
+      - name: Setup environment
+        run: |
+          haxelib dev openfl ${{ github.workspace }}
+
+      - name: Install command aliases
+        run: |
+          haxelib run lime setup -alias -y
+          haxelib run openfl setup -alias -y
+
+      - name: Run tests on Neko
+        run: |
+          haxelib run hxp test -Dtarget=neko --install-hxp-alias
+
+  unit-test-neko:
     strategy:
       matrix:
-        haxe-version: [3.4.7, 4.1.5]
-    runs-on: macos-10.15
+        haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.1]
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v3
         with:
           submodules: true
 
@@ -31,26 +67,108 @@ jobs:
 
       - name: Setup environment
         run: |
-          haxelib dev openfl $GITHUB_WORKSPACE
+          haxelib dev openfl ${{ github.workspace }}
 
-      - name: Install "openfl" command alias
+      - name: Install command aliases
         run: |
+          haxelib run lime setup -alias -y
           haxelib run openfl setup -alias -y
 
       - name: Run tests on Neko
         run: |
-          haxelib run hxp test -Dtarget=neko --install-hxp-alias
+          haxelib run hxp test -Dtarget=neko -Duse-lime-tools --install-hxp-alias
+
+  unit-test-hashlink:
+    strategy:
+      matrix:
+        haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.1]
+    # AL init fails on both windows and ubuntu
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: ${{ matrix.haxe-version }}
+
+      - name: Set HAXEPATH
+        run: |
+          echo "HAXEPATH=$HAXE_STD_PATH/.." >> $GITHUB_ENV
+
+      - name: Install Haxe dependencies
+        run: |
+          haxelib install hxcpp --quiet
+          haxelib install format --quiet
+          haxelib install hxp --quiet
+          haxelib install lime --quiet
+          haxelib install utest --quiet
+
+      - name: Setup environment
+        run: |
+          haxelib dev openfl ${{ github.workspace }}
+
+      - name: Install command aliases
+        run: |
+          haxelib run lime setup -alias -y
+          haxelib run openfl setup -alias -y
 
       - name: Run tests on HashLink
-        if: ${{ matrix.haxe-version != '3.4.7' }}
         run: |
-          haxelib run hxp test -Dtarget=hl --install-hxp-alias
+          haxelib run hxp test -Dtarget=hl -Duse-lime-tools --install-hxp-alias
+
+  unit-test-air:
+    strategy:
+      matrix:
+        # until Lime 8.0.3 is release, we can't test Haxe 3.4.7 with AIR
+        haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.1]
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: ${{ matrix.haxe-version }}
+
+      - uses: joshtynjala/setup-adobe-air-action@v2
+        with:
+          air-version: "33.1"
+          accept-license: true
+
+      - name: Set HAXEPATH
+        run: |
+          echo "HAXEPATH=$Env:HAXE_STD_PATH\.." >> $Env:GITHUB_ENV
+
+      - name: Install Haxe dependencies
+        run: |
+          haxelib install hxcpp --quiet
+          haxelib install format --quiet
+          haxelib install hxp --quiet
+          haxelib install lime --quiet
+          haxelib install utest --quiet
+          haxelib run lime config AIR_SDK ${{ env.AIR_HOME }}
+
+      - name: Setup environment
+        run: |
+          haxelib dev openfl ${{ github.workspace }}
+
+      - name: Install command aliases
+        run: |
+          haxelib run lime setup -alias -y
+          haxelib run openfl setup -alias -y
+
+      - name: Run tests on Adobe AIR
+        run: |
+          haxelib run hxp test -Dtarget=air -Duse-lime-tools --install-hxp-alias
 
   package-haxelib:
-    runs-on: macos-10.15
+    runs-on: ubuntu-latest
     steps:
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: true
 
@@ -71,7 +189,7 @@ jobs:
         run: |
           haxe run.hxml
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: openfl-haxelib
           path: |
@@ -83,10 +201,10 @@ jobs:
           if-no-files-found: error
 
   docs:
-    runs-on: macos-10.15
+    runs-on: ubuntu-latest
     steps:
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           submodules: true
 
@@ -103,24 +221,220 @@ jobs:
           haxelib install hxcpp --quiet
           haxelib install format --quiet
           haxelib install hxp --quiet
-          haxelib install lime 7.9.0 --quiet
+          haxelib install lime --quiet
           haxelib install dox --quiet
-          haxelib dev openfl $GITHUB_WORKSPACE
+          haxelib dev openfl ${{ github.workspace }}
 
       - name: Build docs
         working-directory: scripts
         run: |
           haxe docs.hxml
 
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           name: openfl-docs
           path: docs
           if-no-files-found: error
 
+  neko-samples:
+    needs: package-haxelib
+    strategy:
+      matrix:
+        haxe-version: [3.4.7, 4.0.5, 4.1.5, 4.2.5, 4.3.1]
+    runs-on: ubuntu-20.04
+    steps:
+
+      - uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: ${{ matrix.haxe-version }}
+
+      - name: Set HAXEPATH
+        run: |
+          echo "HAXEPATH=$HAXE_STD_PATH/.." >> $GITHUB_ENV
+
+      - name: Install Haxe dependencies
+        run: |
+          haxelib install lime --quiet
+          haxelib install actuate --quiet
+          haxelib git openfl-samples https://github.com/openfl/openfl-samples --quiet
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: openfl-haxelib
+          path: openfl-haxelib
+
+      - name: Prepare openfl
+        run: |
+          haxelib dev openfl openfl-haxelib
+          haxelib run lime setup -alias -y
+          haxelib run openfl setup -alias -y
+
+      - name: Create OpenFL samples
+        run: |
+          openfl create DisplayingABitmap -verbose -nocolor
+          openfl create SimpleTilemap -verbose -nocolor
+          openfl create PlayingSound -verbose -nocolor
+          openfl create BunnyMark -verbose -nocolor
+          openfl create PiratePig -verbose -nocolor
+
+      - name: Build OpenFL samples
+        run: |
+          lime build DisplayingABitmap neko -release -verbose -nocolor
+          lime build SimpleTilemap neko -release -verbose -nocolor
+          lime build PlayingSound neko -release -verbose -nocolor
+          lime build BunnyMark neko -release -verbose -nocolor
+          lime build PiratePig neko -release -verbose -nocolor
+
+  html5-samples:
+    needs: package-haxelib
+    runs-on: windows-latest
+    steps:
+
+      - uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: 4.1.5
+
+      - name: Set HAXEPATH
+        run: |
+          echo "HAXEPATH=$Env:HAXE_STD_PATH\.." >> $Env:GITHUB_ENV
+
+      - name: Install Haxe dependencies
+        run: |
+          haxelib install lime --quiet
+          haxelib install actuate --quiet
+          haxelib install genes --quiet
+          haxelib git openfl-samples https://github.com/openfl/openfl-samples --quiet
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: openfl-haxelib
+          path: openfl-haxelib
+
+      - name: Prepare openfl
+        run: |
+          haxelib dev openfl openfl-haxelib
+          haxelib run lime setup -alias -y
+          haxelib run openfl setup -alias -y
+
+      - name: Create OpenFL samples
+        run: |
+          openfl create DisplayingABitmap -verbose -nocolor
+          openfl create SimpleTilemap -verbose -nocolor
+          openfl create PlayingSound -verbose -nocolor
+          openfl create BunnyMark -verbose -nocolor
+          openfl create PiratePig -verbose -nocolor
+
+      - name: Build OpenFL samples
+        run: |
+          lime build DisplayingABitmap html5 -release -verbose -nocolor
+          lime build SimpleTilemap html5 -release -verbose -nocolor
+          lime build PlayingSound html5 -release -verbose -nocolor
+          lime build BunnyMark html5 -release -verbose -nocolor
+          lime build PiratePig html5 -release -verbose -nocolor
+
+      - name: Build OpenFL samples with Genes
+        run: |
+          lime build DisplayingABitmap html5 -clean -release -verbose -nocolor --haxelib=genes
+          lime build SimpleTilemap html5 -clean -release -verbose -nocolor --haxelib=genes
+          lime build PlayingSound html5 -clean -release -verbose -nocolor --haxelib=genes
+          lime build BunnyMark html5 -clean  -release -verbose -nocolor --haxelib=genes
+          lime build PiratePig html5 -clean -release -verbose -nocolor --haxelib=genes
+
+  flash-samples:
+    needs: package-haxelib
+    runs-on: ubuntu-latest
+    steps:
+
+      - uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: 4.2.5
+
+      - name: Set HAXEPATH
+        run: |
+          echo "HAXEPATH=$HAXE_STD_PATH/.." >> $GITHUB_ENV
+
+      - name: Install Haxe dependencies
+        run: |
+          haxelib install lime --quiet
+          haxelib install actuate --quiet
+          haxelib git openfl-samples https://github.com/openfl/openfl-samples --quiet
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: openfl-haxelib
+          path: openfl-haxelib
+
+      - name: Prepare openfl
+        run: |
+          haxelib dev openfl openfl-haxelib
+          haxelib run lime setup -alias -y
+          haxelib run openfl setup -alias -y
+
+      - name: Create OpenFL samples
+        run: |
+          openfl create DisplayingABitmap -verbose -nocolor
+          openfl create SimpleTilemap -verbose -nocolor
+          openfl create PlayingSound -verbose -nocolor
+          openfl create BunnyMark -verbose -nocolor
+          openfl create PiratePig -verbose -nocolor
+
+      - name: Build OpenFL samples
+        run: |
+          lime build DisplayingABitmap flash -release -verbose -nocolor
+          lime build SimpleTilemap flash -release -verbose -nocolor
+          lime build PlayingSound flash -release -verbose -nocolor
+          lime build BunnyMark flash -release -verbose -nocolor
+          lime build PiratePig flash -release -verbose -nocolor
+
+  hashlink-samples:
+    needs: package-haxelib
+    runs-on: ubuntu-20.04
+    steps:
+
+      - uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: 4.2.5
+
+      - name: Set HAXEPATH
+        run: |
+          echo "HAXEPATH=$HAXE_STD_PATH/.." >> $GITHUB_ENV
+
+      - name: Install Haxe dependencies
+        run: |
+          haxelib install lime --quiet
+          haxelib install actuate --quiet
+          haxelib git openfl-samples https://github.com/openfl/openfl-samples --quiet
+
+      - uses: actions/download-artifact@v3
+        with:
+          name: openfl-haxelib
+          path: openfl-haxelib
+
+      - name: Prepare openfl
+        run: |
+          haxelib dev openfl openfl-haxelib
+          haxelib run lime setup -alias -y
+          haxelib run openfl setup -alias -y
+
+      - name: Create OpenFL samples
+        run: |
+          openfl create DisplayingABitmap -verbose -nocolor
+          openfl create SimpleTilemap -verbose -nocolor
+          openfl create PlayingSound -verbose -nocolor
+          openfl create BunnyMark -verbose -nocolor
+          openfl create PiratePig -verbose -nocolor
+
+      - name: Build OpenFL samples
+        run: |
+          lime build DisplayingABitmap hl -release -verbose -nocolor
+          lime build SimpleTilemap hl -release -verbose -nocolor
+          lime build PlayingSound hl -release -verbose -nocolor
+          lime build BunnyMark hl -release -verbose -nocolor
+          lime build PiratePig hl -release -verbose -nocolor
+
   notify:
-    runs-on: ubuntu-18.04
-    needs: [package-haxelib, docs, unit-test]
+    runs-on: ubuntu-latest
+    needs: [package-haxelib, docs, unit-test-neko-haxe3, unit-test-neko, unit-test-hashlink, unit-test-air, html5-samples, flash-samples, neko-samples, hashlink-samples]
     if: ${{ github.repository == 'openfl/openfl' && github.event_name != 'pull_request' }}
     steps:
       - name: Notify Discord

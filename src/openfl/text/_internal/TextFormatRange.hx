@@ -1,5 +1,6 @@
 package openfl.text._internal;
 
+#if !flash
 import openfl.text.TextFormat;
 
 #if !openfl_debug
@@ -19,3 +20,4 @@ class TextFormatRange
 		this.end = end;
 	}
 }
+#end

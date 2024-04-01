@@ -1,5 +1,6 @@
 package openfl.display3D._internal;
 
+#if !flash
 import haxe.Int64;
 import openfl.display._internal.SamplerState;
 import openfl.utils._internal.Log;
@@ -20,7 +21,7 @@ import lime.graphics.opengl.GL;
 @SuppressWarnings("checkstyle:FieldDocComment")
 class AGALConverter
 {
-	private static var limitedProfile:Null<Bool>#if !desktop = true #end;
+	private static var limitedProfile:Null<Bool> #if !desktop = true #end;
 
 	public static function prefixFromType(regType:RegisterType, programType:ProgramType):String
 	{
@@ -818,7 +819,8 @@ private class RegisterMapEntry
 	public function new() {}
 }
 
-@:enum abstract RegisterType(Int)
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract RegisterType(Int)
+
 {
 	public var ATTRIBUTE = 0;
 	public var CONSTANT = 1;
@@ -1042,3 +1044,4 @@ private class SourceRegister
 		return str;
 	}
 }
+#end

@@ -1,9 +1,18 @@
 package openfl.display;
 
 import openfl.utils._internal.Lib;
+import openfl.events.Event;
 #if lime
 import lime.app.Application as LimeApplication;
 import lime.ui.WindowAttributes;
+#end
+#if (sys || air)
+import openfl.desktop.NativeApplication;
+#end
+#if (!flash && sys)
+import openfl.display.NativeWindow;
+import openfl.display.NativeWindowInitOptions;
+import openfl.events.InvokeEvent;
 #end
 
 /**
@@ -17,6 +26,9 @@ import lime.ui.WindowAttributes;
 @:access(openfl.display.DisplayObject)
 @:access(openfl.display.LoaderInfo)
 @:access(openfl.display.Window)
+#if (!flash && sys)
+@:access(openfl.display.NativeWindowInitOptions)
+#end
 @SuppressWarnings("checkstyle:FieldDocComment")
 class Application #if lime extends LimeApplication #end
 {
@@ -85,11 +97,75 @@ class Application #if lime extends LimeApplication #end
 			window.onTextInput.add(onTextInput);
 
 			onWindowCreate();
+
+			#if (!flash && sys)
+			var initOptions = new NativeWindowInitOptions();
+			initOptions.__window = cast __window;
+			new NativeWindow(initOptions);
+			#end
 		}
 
 		onCreateWindow.dispatch(window);
 
 		return window;
+	}
+
+	@:noCompletion override public function exec():Int
+	{
+		#if (!flash && sys)
+		// wait for the first update to dispatch invoke event
+		// to ensure that the document class constructor has completed
+		onUpdate.add(function(delta:Int):Void
+		{
+			if (NativeApplication.nativeApplication.hasEventListener(InvokeEvent.INVOKE))
+			{
+				var args = Sys.args();
+				var cwd = new openfl.filesystem.File(Sys.getCwd());
+				var invokeEvent = new openfl.events.InvokeEvent(InvokeEvent.INVOKE, false, false, cwd, args);
+				NativeApplication.nativeApplication.dispatchEvent(invokeEvent);
+			}
+		}, true);
+		#end
+
+		return super.exec();
+	}
+	#end
+
+	#if (lime >= "8.1.0")
+	@:noCompletion override private function __checkForAllWindowsClosed():Void
+	{
+		if (__windows.length > 0)
+		{
+			return;
+		}
+		#if (sys || air)
+		if (!NativeApplication.nativeApplication.autoExit)
+		{
+			return;
+		}
+		#end
+		#if (!flash && sys)
+		var exitingEvent = new Event(Event.EXITING, false, true);
+		var result = NativeApplication.nativeApplication.dispatchEvent(exitingEvent);
+		if (!result)
+		{
+			return;
+		}
+		#end
+		super.__checkForAllWindowsClosed();
+	}
+
+	@:noCompletion override private function __onModuleExit(code:Int):Void
+	{
+		if (onExit.canceled)
+		{
+			return;
+		}
+		if (Lib.application == this)
+		{
+			Lib.application = null;
+		}
+		super.__onModuleExit(code);
 	}
 	#end
 }

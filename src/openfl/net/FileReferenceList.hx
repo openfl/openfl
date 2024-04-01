@@ -1,6 +1,7 @@
 package openfl.net;
 
 #if !flash
+#if desktop
 import haxe.io.Path;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
@@ -10,7 +11,6 @@ import lime.ui.FileDialog;
 #if sys
 import sys.FileSystem;
 #end
-
 /**
 	The FileReferenceList class provides a means to let users select one or
 	more files for uploading. A FileReferenceList object represents a group of
@@ -149,11 +149,13 @@ class FileReferenceList extends EventDispatcher
 
 		fileList = new Array();
 
+		#if (lime && !macro)
 		var fileDialog = new FileDialog();
 		fileDialog.onCancel.add(fileDialog_onCancel);
 		fileDialog.onSelectMultiple.add(fileDialog_onSelectMultiple);
 		fileDialog.browse(OPEN_MULTIPLE, filter);
 		return true;
+		#end
 		#end
 
 		return false;
@@ -190,6 +192,101 @@ class FileReferenceList extends EventDispatcher
 		dispatchEvent(new Event(Event.SELECT));
 	}
 }
+#elseif js
+import openfl.utils.ByteArray;
+import openfl.events.MouseEvent;
+import openfl.net.FileFilter;
+import openfl.net.FileReference;
+import openfl.events.EventDispatcher;
+import openfl.events.Event;
+#if haxe4
+import js.lib.DataView;
+#else
+import js.html.DataView;
+#end
+
+#if !openfl_debug
+@:fileXml('tags="haxe,release"')
+@:noDebug
+#end
+@:access(openfl.net.FileReference)
+class FileReferenceList extends EventDispatcher
+{
+	public var fileList(default, null):Array<FileReference>;
+
+	private var fileInput:Dynamic;
+
+	public function new()
+	{
+		super();
+		fileList = new Array<FileReference>();
+	}
+
+	public function browse(typeFilter:Array<FileFilter> = null):Bool
+	{
+		fileInput = js.Browser.document.createElement("input");
+		fileInput.type = "file";
+		fileInput.multiple = true;
+		if (typeFilter != null)
+		{
+			var accept:String = "";
+			for (i in 0...typeFilter.length)
+			{
+				if (i > 0)
+				{
+					accept += ",";
+				}
+				accept += typeFilter[i].extension;
+			}
+			fileInput.accept = accept;
+		}
+		fileInput.addEventListener("change", fileInput_onChange);
+		fileInput.click();
+		return true;
+	}
+
+	private function fileInput_onChange(event:Dynamic):Void
+	{
+		var files = (event.target : js.html.InputElement).files;
+		if (files.length == 0)
+		{
+			dispatchEvent(new Event(Event.CANCEL));
+			return;
+		}
+		for (i in 0...files.length)
+		{
+			var file = files[i];
+			var fileReference = new FileReference();
+			fileReference.__path = file.name;
+			fileReference.name = file.name;
+			fileReference.size = file.size;
+			fileReference.type = file.type;
+			// Set creationDate and modificationDate properties
+			var lastModified = Date.fromTime(file.lastModified);
+			fileReference.creationDate = lastModified;
+			fileReference.modificationDate = lastModified;
+
+			var reader = new js.html.FileReader();
+			reader.addEventListener("load", function(readerEvent)
+			{
+				var byteArray = new ByteArray();
+				var dataView = new DataView(readerEvent.target.result);
+				for (i in 0...dataView.byteLength)
+				{
+					byteArray.writeByte(dataView.getUint8(i));
+				}
+				fileReference.data = byteArray;
+				fileList.push(fileReference);
+				if (fileList.length == files.length)
+				{
+					dispatchEvent(new Event(Event.SELECT));
+				}
+			});
+			reader.readAsArrayBuffer(cast file);
+		}
+	}
+}
+#end
 #else
 typedef FileReferenceList = flash.net.FileReferenceList;
 #end

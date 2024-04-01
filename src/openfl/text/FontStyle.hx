@@ -6,7 +6,8 @@ package openfl.text;
 /**
 	The FontStyle class provides values for the TextRenderer class.
 **/
-@:enum abstract FontStyle(Null<Int>)
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract FontStyle(Null<Int>)
+
 {
 	/**
 		Defines the bold style of a font for the `fontStyle` parameter
@@ -62,7 +63,8 @@ package openfl.text;
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-@:enum abstract FontStyle(String) from String to String
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract FontStyle(String) from String to String
+
 {
 	public var BOLD = "bold";
 	public var BOLD_ITALIC = "boldItalic";

@@ -1,5 +1,6 @@
 package openfl.events;
 
+#if !flash
 import openfl.events.Event;
 import openfl.net.Socket;
 
@@ -13,7 +14,7 @@ import openfl.net.Socket;
 **/
 class ServerSocketConnectEvent extends Event
 {
-	public static inline var CONNECT:String = "connect";
+	public static inline var CONNECT:EventType<ServerSocketConnectEvent> = "connect";
 
 	public var socket:Socket;
 
@@ -54,3 +55,8 @@ class ServerSocketConnectEvent extends Event
 		return '[ServerSocketConnectEvent type=$type bubbles=$type cancelable=$cancelable socket=$socket]';
 	}
 }
+#else
+#if air
+typedef ServerSocketConnectEvent = flash.events.ServerSocketConnectEvent;
+#end
+#end

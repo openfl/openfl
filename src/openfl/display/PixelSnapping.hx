@@ -8,7 +8,8 @@ package openfl.display;
 	the pixel snapping options by using the `pixelSnapping` property
 	of a Bitmap object.
 **/
-@:enum abstract PixelSnapping(Null<Int>)
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract PixelSnapping(Null<Int>)
+
 {
 	/**
 		A constant value used in the `pixelSnapping` property of a
@@ -58,7 +59,8 @@ package openfl.display;
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-@:enum abstract PixelSnapping(String) from String to String
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract PixelSnapping(String) from String to String
+
 {
 	public var ALWAYS = "always";
 	public var AUTO = "auto";

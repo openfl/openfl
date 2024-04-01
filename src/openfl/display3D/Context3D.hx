@@ -1445,7 +1445,7 @@ import lime.math.Vector2;
 			var isVertex = (programType == VERTEX);
 			var dest = isVertex ? __vertexConstants : __fragmentConstants;
 
-			var floatData = Float32Array.fromBytes(data, 0, data.length);
+			var floatData = Float32Array.fromBytes(data, 0);
 			var outOffset = firstRegister * 4;
 			var inOffset = Std.int(byteArrayOffset / 4);
 
@@ -2279,7 +2279,7 @@ import lime.math.Vector2;
 			if (__state.renderToTexture == null && __stage3D == null)
 			{
 				var contextHeight = Std.int(__stage.window.height * __stage.window.scale);
-				scissorY = contextHeight - Std.int(__state.scissorRectangle.height) - scissorY;
+				scissorY = contextHeight - scissorHeight - scissorY;
 			}
 
 			if (#if openfl_disable_context_cache true #else __contextState.scissorRectangle.x != scissorX

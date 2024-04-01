@@ -3,6 +3,18 @@ package flash.ui;
 #if flash
 @:final extern class Keyboard
 {
+	#if (haxe_ver < 4.3)
+	public static var capsLock(default, never):Bool;
+	public static var numLock(default, never):Bool;
+	@:require(flash10_1) public static var hasVirtualKeyboard(default, never):Bool;
+	@:require(flash10_1) public static var physicalKeyboardType(default, never):KeyboardType;
+	#else
+	@:flash.property static var capsLock(get, never):Bool;
+	@:flash.property static var numLock(get, never):Bool;
+	@:flash.property @:require(flash10_1) static var hasVirtualKeyboard(get, never):Bool;
+	@:flash.property @:require(flash10_1) static var physicalKeyboardType(get, never):KeyboardType;
+	#end
+
 	public static inline var NUMBER_0 = 48;
 	public static inline var NUMBER_1 = 49;
 	public static inline var NUMBER_2 = 50;
@@ -104,20 +116,11 @@ package flash.ui;
 	public static inline var BACKSLASH = 220;
 	public static inline var RIGHTBRACKET = 221;
 	public static inline var QUOTE = 222;
-	#if flash
 	public static inline var NEXT = 0x0100000E;
 	public static inline var BACK = 0x01000016;
 	public static inline var SEARCH = 0x0100001F;
 	public static inline var MENU = 0x01000012;
-	#end
-	public static var capsLock(default, never):Bool;
-	public static var numLock(default, never):Bool;
-	#if flash
-	@:require(flash10_1) public static var hasVirtualKeyboard(default, never):Bool;
-	@:require(flash10_1) public static var physicalKeyboardType(default, never):KeyboardType;
-	#end
-	public static function isAccessible():Bool;
-	#if flash
+
 	@:require(flash10_2) private static var AUDIO(default, never):UInt;
 	@:require(flash10_2) private static var BLUE(default, never):UInt;
 	@:require(flash10_2) private static var CHANNEL_DOWN(default, never):UInt;
@@ -288,6 +291,14 @@ package flash.ui;
 	@:require(flash10_2) private static var SUBTITLE(default, never):UInt;
 	@:require(flash10_2) private static var VOD(default, never):UInt;
 	@:require(flash10_2) private static var YELLOW(default, never):UInt;
+
+	public static function isAccessible():Bool;
+
+	#if (haxe_ver >= 4.3)
+	private static function get_capsLock():Bool;
+	private static function get_hasVirtualKeyboard():Bool;
+	private static function get_numLock():Bool;
+	private static function get_physicalKeyboardType():KeyboardType;
 	#end
 }
 #else

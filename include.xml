@@ -35,7 +35,14 @@
 
 	</section>
 
-	<section if="${lime < 7.6.0} || ${lime >= 8.1.0}" unless="setup || create || disable-version-check || display">
+	<section if="${haxe_ver >= 4.3} ${lime < 8.0.2} flash" unless="setup || create || disable-version-check || display">
+
+		<!-- Haxe 4.3 made Flash externs more strict -->
+		<log error="Lime version ${lime} is not compatible with OpenFL ${openfl} when targeting flash or air with Haxe 4.3+ (expected Lime version 8.0.2+)" />
+
+	</section>
+
+	<section if="${lime < 7.6.0} || ${lime >= 8.2.0}" unless="setup || create || disable-version-check || display">
 
 		<log warn="Lime version ${lime} may not be compatible with OpenFL ${openfl} (expected version ${expect-lime-version})" />
 		<log info='Use &lt;lime version="" /&gt; before &lt;haxelib name="openfl" /&gt; to include a specific version' />

@@ -3,15 +3,24 @@ package flash.geom;
 #if flash
 extern class Vector3D
 {
+	#if (haxe_ver < 4.3)
 	public static var X_AXIS(default, never):Vector3D;
 	public static var Y_AXIS(default, never):Vector3D;
 	public static var Z_AXIS(default, never):Vector3D;
 	public var length(default, never):Float;
 	public var lengthSquared(default, never):Float;
+	#else
+	static final X_AXIS:Vector3D;
+	static final Y_AXIS:Vector3D;
+	static final Z_AXIS:Vector3D;
+	@:flash.property var length(get, never):Float;
+	@:flash.property var lengthSquared(get, never):Float;
+	#end
 	public var w:Float;
 	public var x:Float;
 	public var y:Float;
 	public var z:Float;
+
 	public function new(x:Float = 0, y:Float = 0, z:Float = 0, w:Float = 0);
 	public function add(a:Vector3D):Vector3D;
 	public static function angleBetween(a:Vector3D, b:Vector3D):Float;
@@ -31,6 +40,11 @@ extern class Vector3D
 	@:require(flash11) public function setTo(xa:Float, ya:Float, za:Float):Void;
 	public function subtract(a:Vector3D):Vector3D;
 	public function toString():String;
+
+	#if (haxe_ver >= 4.3)
+	private function get_length():Float;
+	private function get_lengthSquared():Float;
+	#end
 }
 #else
 typedef Vector3D = openfl.geom.Vector3D;

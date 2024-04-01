@@ -407,6 +407,8 @@ class TouchEvent extends Event
 	**/
 	public var touchPointID:Int;
 
+	@:noCompletion private var __updateAfterEventFlag:Bool;
+
 	// @:noCompletion private static var __pool:ObjectPool<TouchEvent> = new ObjectPool<TouchEvent>(function() return new TouchEvent(null),
 	// function(event) event.__init());
 
@@ -469,6 +471,8 @@ class TouchEvent extends Event
 
 		stageX = Math.NaN;
 		stageY = Math.NaN;
+
+		__updateAfterEventFlag = false;
 	}
 
 	public override function clone():TouchEvent
@@ -490,11 +494,13 @@ class TouchEvent extends Event
 	}
 
 	/**
-		Instructs Flash Player or Adobe AIR to render after processing of this
-		event completes, if the display list has been modified.
-
+		Instructs OpenFL to render after processing of this event completes, if
+		the display list has been modified.
 	**/
-	public function updateAfterEvent():Void {}
+	public function updateAfterEvent():Void
+	{
+		__updateAfterEventFlag = true;
+	}
 
 	@:noCompletion private static function __create(type:String, /*event:lime.ui.TouchEvent,*/ touch:Dynamic /*js.html.Touch*/, stageX:Float, stageY:Float,
 			local:Point, target:InteractiveObject):TouchEvent
@@ -526,6 +532,8 @@ class TouchEvent extends Event
 
 		stageX = Math.NaN;
 		stageY = Math.NaN;
+
+		__updateAfterEventFlag = false;
 	}
 }
 #else
