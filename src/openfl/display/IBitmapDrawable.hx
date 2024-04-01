@@ -6,6 +6,15 @@ import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 
+/**
+	The IBitmapDrawable interface is implemented by objects that can be passed
+	as the source parameter of the `draw()` method of the BitmapData class.
+	These objects are of type BitmapData or DisplayObject.
+
+	@see `openfl.display.BitmapData.draw()`
+	@see `openfl.display.BitmapData`
+	@see `openfl.display.DisplayObject`
+**/
 interface IBitmapDrawable
 {
 	@:noCompletion private var __blendMode:BlendMode;

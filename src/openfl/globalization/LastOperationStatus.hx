@@ -1,26 +1,118 @@
 package openfl.globalization;
 
 #if !flash
+/**
+	The LastOperationStatus class enumerates constant values that represent the
+	status of the most recent globalization service operation. These values can
+	be retrieved through the read-only property `lastOperationStatus` available
+	in most globalization classes.
+**/
 #if !openfljs
 #if (haxe_ver >= 4.0) enum #else @:enum #end abstract LastOperationStatus(Null<Int>)
 
 {
+	/**
+		Indicates that given buffer is not enough to hold the result.
+	**/
 	public var BUFFER_OVERFLOW_ERROR = 0;
+
+	/**
+		Indicates that the return error code is not known. Any non-static method
+		or read/write properties can return this error when the operation is not
+		successful and the return error code is not known.
+	**/
 	public var ERROR_CODE_UNKNOWN = 1;
+
+	/**
+		Indicates that an argument passed to a method was illegal.
+	**/
 	public var ILLEGAL_ARGUMENT_ERROR = 2;
+
+	/**
+		Indicates that an iterator went out of range or an invalid parameter was specified for month, day, or time.
+	**/
 	public var INDEX_OUT_OF_BOUNDS_ERROR = 3;
+
+	/**
+		Indicates that a given attribute value is out of the expected range.
+	**/
 	public var INVALID_ATTR_VALUE = 4;
+
+	/**
+		Indicates that invalid Unicode value was found.
+	**/
 	public var INVALID_CHAR_FOUND = 5;
+
+	/**
+		Indicates that memory allocation has failed.
+	**/
 	public var MEMORY_ALLOCATION_ERROR = 6;
+
+	/**
+		Indicates that the last operation succeeded without any errors. This
+		status can be returned by all constructors, non-static methods, static
+		methods and read/write properties.
+	**/
 	public var NO_ERROR = 7;
+
+	/**
+		Indicates that an operation resulted a value that exceeds a specified
+		numeric type.
+	**/
 	public var NUMBER_OVERFLOW_ERROR = 8;
+
+	/**
+		Indicates that the parsing of a number failed. This status can be
+		returned by parsing methods of the formatter classes, such as
+		`CurrencyFormatter.parse()` and `NumberFormatter.parseNumber()`. For
+		example, if the value "12abc34" is passed as the parameter to the
+		`CurrencyFormatter.parse()` method, the method returns "NaN" and sets
+		the `lastOperationStatus` value to `LastOperationStatus.PARSE_ERROR`.
+	**/
 	public var PARSE_ERROR = 9;
+
+	/**
+		Indicates that the pattern for formatting a number, date, or time is
+		invalid. This status is set when the user's operating system does not
+		support the given pattern.
+	**/
 	public var PATTERN_SYNTAX_ERROR = 10;
+
+	/**
+		Indicates that an underlying platform API failed for an operation.
+	**/
 	public var PLATFORM_API_FAILED = 11;
+
+	/**
+		Indicates that a truncated Unicode character value was found.
+	**/
 	public var TRUNCATED_CHAR_FOUND = 12;
+
+	/**
+		Indicates that an unexpected token was detected in a Locale ID string.
+	**/
 	public var UNEXPECTED_TOKEN = 13;
+
+	/**
+		Indicates that the requested operation or option is not supported. This
+		status can be returned by methods like
+		`DateTimeFormatter.setDateTimePattern()` and when retrieving properties
+		like `Collator.ignoreCase`.
+	**/
 	public var UNSUPPORTED_ERROR = 14;
+
+	/**
+		Indicates that an operating system default value was used during the
+		most recent operation. Class constructors can return this status.
+	**/
 	public var USING_DEFAULT_WARNING = 15;
+
+	/**
+		Indicates that a fallback value was set during the most recent
+		operation. This status can be returned by constructors and methods like
+		`DateTimeFormatter.setDateTimeStyles()`, and when retrieving properties
+		like `CurrencyFormatter.groupingPattern`.
+	**/
 	public var USING_FALLBACK_WARNING = 16;
 
 	@:noCompletion private inline static function fromInt(value:Null<Int>):LastOperationStatus
