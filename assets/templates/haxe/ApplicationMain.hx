@@ -19,7 +19,7 @@ class ApplicationMain
 		lime.system.System.__registerEntryPoint("::APP_FILE::", create);
 
 		#if (js && html5)
-		#if (munit || utest)
+		#if (munit)
 		lime.system.System.embed("::APP_FILE::", null, ::WIN_WIDTH::, ::WIN_HEIGHT::);
 		#end
 		#else
