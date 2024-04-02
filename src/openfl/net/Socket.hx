@@ -1180,7 +1180,8 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 			}
 			catch (e:Eof)
 			{
-				// ignore
+				//We used to ignore this, but I'm not sure why. There may be an edge case where this causes the socket to prematurely close or become unusable.
+				doClose = true;
 			}
 			catch (e:Error)
 			{
