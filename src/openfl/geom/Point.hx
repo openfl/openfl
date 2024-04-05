@@ -92,6 +92,24 @@ class Point
 	}
 
 	/**
+		Adds the coordinates of another point to the coordinates of this point
+		and sets them on the specified output point (or a new point, if null).
+
+		@param v The point to be added.
+		@param output An optional point to be used for the result of the operation.
+		@return The new point (or the object passed in as the output parameter, if not null).
+	**/
+	public function addToOutput(v:Point, output:Point):Point
+	{
+		if (output != null)
+		{
+			output.setTo(v.x + x, v.y + y);
+			return output;
+		}
+		return new Point(v.x + x, v.y + y);
+	}
+
+	/**
 		Creates a copy of this Point object.
 
 		@return The new Point object.
@@ -165,6 +183,37 @@ class Point
 	}
 
 	/**
+		Determines a point between two specified points, and sets them on the
+		specified output point (or a new point, if null). The parameter
+		`f` determines where the new interpolated point is located
+		relative to the two end points specified by parameters `pt1`
+		and `pt2`. The closer the value of the parameter `f`
+		is to `1.0`, the closer the interpolated point is to the first
+		point(parameter `pt1`). The closer the value of the parameter
+		`f` is to 0, the closer the interpolated point is to the second
+		point(parameter `pt2`).
+
+		@param pt1 The first point.
+		@param pt2 The second point.
+		@param f   The level of interpolation between the two points. Indicates
+				   where the new point will be, along the line between
+				   `pt1` and `pt2`. If `f`=1,
+				   `pt1` is returned; if `f`=0,
+				   `pt2` is returned.
+		@param output An optional point to be used for the result of the operation.
+		@return The new, interpolated point (or the object passed in as the output parameter, if not null).
+	**/
+	public static function interpolateToOutput(pt1:Point, pt2:Point, f:Float, output:Point):Point
+	{
+		if (output != null)
+		{
+			output.setTo(pt2.x + f * (pt1.x - pt2.x), pt2.y + f * (pt1.y - pt2.y));
+			return output;
+		}
+		return new Point(pt2.x + f * (pt1.x - pt2.x), pt2.y + f * (pt1.y - pt2.y));
+	}
+
+	/**
 		Scales the line segment between(0,0) and the current point to a set
 		length.
 
@@ -216,6 +265,26 @@ class Point
 	}
 
 	/**
+		Converts a pair of polar coordinates to a Cartesian point coordinate,
+		and sets them on the specified output point (or a new point, if
+		null).
+
+		@param len   The length coordinate of the polar pair.
+		@param angle The angle, in radians, of the polar pair.
+		@param output An optional point to be used for the result of the operation.
+		@return The Cartesian point (or the object passed in as the output parameter, if not null).
+	**/
+	public static function polarToOutput(len:Float, angle:Float, output:Point):Point
+	{
+		if (output != null)
+		{
+			output.setTo(len * Math.cos(angle), len * Math.sin(angle));
+			return output;
+		}
+		return new Point(len * Math.cos(angle), len * Math.sin(angle));
+	}
+
+	/**
 		Sets the members of Point to the specified values
 
 		@param	xa	the values to set the point to.
@@ -236,6 +305,25 @@ class Point
 	**/
 	public function subtract(v:Point):Point
 	{
+		return new Point(x - v.x, y - v.y);
+	}
+
+	/**
+		Subtracts the coordinates of another point from the coordinates of this
+		point, and sets them on the specified output point (or a new point, if
+		null).
+
+		@param v The point to be subtracted.
+		@param output An optional point to be used for the result of the operation.
+		@return The new point (or the object passed in as the output parameter, if not null).
+	**/
+	public function subtractToOutput(v:Point, output:Point):Point
+	{
+		if (output != null)
+		{
+			output.setTo(x - v.x, y - v.y);
+			return output;
+		}
 		return new Point(x - v.x, y - v.y);
 	}
 
