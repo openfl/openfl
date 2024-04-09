@@ -1481,11 +1481,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	{
 		var event = new UncaughtErrorEvent(UncaughtErrorEvent.UNCAUGHT_ERROR, true, true, e);
 
-		try
-		{
-			Lib.current.__loaderInfo.uncaughtErrorEvents.dispatchEvent(event);
-		}
-		catch (e:Dynamic) {}
+		Lib.current.__loaderInfo.uncaughtErrorEvents.dispatchEvent(event);
 
 		if (!event.__preventDefault)
 		{

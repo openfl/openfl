@@ -52,7 +52,9 @@ package openfl.events;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
+@:access(openfl.display.Stage)
 @:access(openfl.events.Event)
+@:access(openfl.events.UncaughtErrorEvents)
 class EventDispatcher implements IEventDispatcher
 {
 	@:noCompletion private var __eventMap:Map<String, Array<Listener>>;
@@ -408,74 +410,117 @@ class EventDispatcher implements IEventDispatcher
 
 			if (listener.useCapture == capture)
 			{
-				#if (js && html5)
-				if (listener.useWeakReference && listener.weakRefCallback != null)
+			#if (js && html5)
+			if (listener.useWeakReference && listener.weakRefCallback != null)
+			{
+				var weakCallback = listener.weakRefCallback.deref();
+				if (weakCallback == null)
 				{
-					var weakCallback = listener.weakRefCallback.deref();
-					if (weakCallback == null)
-					{
-						// a weakly referenced callback was garbage collected
-						var indexToRemove = iterator.index - 1;
-						list.splice(indexToRemove, 1);
-						iterator.remove(listener, indexToRemove);
-					}
-					else
+					// a weakly referenced callback was garbage collected
+					var indexToRemove = iterator.index - 1;
+					list.splice(indexToRemove, 1);
+					iterator.remove(listener, indexToRemove);
+				}
+				else if (Lib.current != null && Lib.current.stage != null && Lib.current.stage.__uncaughtErrorEvents.__enabled)
+				{
+					try
 					{
 						weakCallback(event);
+					}
+					catch (e:Dynamic)
+					{
+						if (!(event is UncaughtErrorEvent))
+						{
+							Lib.current.stage.__handleError(e);
+						}
 					}
 				}
 				else
 				{
-					listener.callback(event);
-				}
-				#else
-				listener.callback(event);
-				#end
-
-				if (event.__isCanceledNow)
-				{
-					break;
+					weakCallback(event);
 				}
 			}
-		}
-
-		iterator.stop();
-
-		if (iterator != iterators[0])
-		{
-			iterators.remove(iterator);
-		}
-		else
-		{
-			iterator.reset(list);
-		}
-
-		return !event.isDefaultPrevented();
-	}
-
-	@:noCompletion private function __removeAllListeners():Void
-	{
-		__eventMap = null;
-		__iterators = null;
-	}
-
-	@:noCompletion private function __addListenerByPriority(list:Array<Listener>, listener:Listener):Void
-	{
-		var numElements:Int = list.length;
-		var addAtPosition:Int = numElements;
-
-		for (i in 0...numElements)
-		{
-			if (list[i].priority < listener.priority)
+			else if (Lib.current != null && Lib.current.stage != null && Lib.current.stage.__uncaughtErrorEvents.__enabled) try
 			{
-				addAtPosition = i;
+				listener.callback(event);
+			}
+			catch (e:Dynamic)
+			{
+				if (!(event is UncaughtErrorEvent))
+				{
+					Lib.current.stage.__handleError(e);
+				}
+			}
+			}
+			else
+			{
+				listener.callback(event);
+			}
+			#else
+			if (Lib.current != null && Lib.current.stage != null && Lib.current.stage.__uncaughtErrorEvents.__enabled)
+			{
+				try
+				{
+					listener.callback(event);
+				}
+				catch (e:Dynamic)
+				{
+					if (!(event is UncaughtErrorEvent))
+					{
+						Lib.current.stage.__handleError(e);
+					}
+				}
+			}
+			else
+			{
+				listener.callback(event);
+			}
+			#end
 
+			if (event.__isCanceledNow)
+			{
 				break;
 			}
 		}
-
-		list.insert(addAtPosition, listener);
 	}
+
+	iterator.stop();
+
+	if (iterator != iterators[0])
+	{
+		iterators.remove(iterator);
+	}
+	else
+	{
+		iterator.reset(list);
+	}
+
+	return !event.isDefaultPrevented();
+}
+
+@:noCompletion private function __removeAllListeners():Void
+{
+	__eventMap = null;
+	__iterators = null;
+}
+
+@:noCompletion private function __addListenerByPriority(list:Array<Listener>, listener:Listener):Void
+{
+	var numElements:Int = list.length;
+	var addAtPosition:Int = numElements;
+
+	for (i in 0...numElements)
+	{
+		if (list[i].priority < listener.priority)
+		{
+			addAtPosition = i;
+
+			break;
+		}
+	}
+
+	list.insert(addAtPosition, listener);
+}
 }
 
 #if !openfl_debug
@@ -485,79 +530,79 @@ class EventDispatcher implements IEventDispatcher
 @SuppressWarnings("checkstyle:FieldDocComment")
 @:dox(hide) private class DispatchIterator
 {
-	public var active:Bool;
-	public var index(default, null):Int;
+public var active:Bool;
+public var index(default, null):Int;
 
-	@:noCompletion private var isCopy:Bool;
-	@:noCompletion private var list:Array<Listener>;
+@:noCompletion private var isCopy:Bool;
+@:noCompletion private var list:Array<Listener>;
 
-	public function new(list:Array<Listener>)
+public function new(list:Array<Listener>)
+{
+	active = false;
+	reset(list);
+}
+
+public function copy():Void
+{
+	if (!isCopy)
 	{
-		active = false;
-		reset(list);
+		list = list.copy();
+		isCopy = true;
 	}
+}
 
-	public function copy():Void
+public function hasNext():Bool
+{
+	return index < list.length;
+}
+
+public function next():Listener
+{
+	return list[index++];
+}
+
+public function remove(listener:Listener, listIndex:Int):Void
+{
+	if (active)
 	{
 		if (!isCopy)
 		{
-			list = list.copy();
-			isCopy = true;
+			if (listIndex < index)
+			{
+				index--;
+			}
 		}
-	}
-
-	public function hasNext():Bool
-	{
-		return index < list.length;
-	}
-
-	public function next():Listener
-	{
-		return list[index++];
-	}
-
-	public function remove(listener:Listener, listIndex:Int):Void
-	{
-		if (active)
+		else
 		{
-			if (!isCopy)
+			for (i in index...list.length)
 			{
-				if (listIndex < index)
+				if (list[i] == listener)
 				{
-					index--;
-				}
-			}
-			else
-			{
-				for (i in index...list.length)
-				{
-					if (list[i] == listener)
-					{
-						list.splice(i, 1);
-						break;
-					}
+					list.splice(i, 1);
+					break;
 				}
 			}
 		}
 	}
+}
 
-	public function reset(list:Array<Listener>):Void
-	{
-		this.list = list;
+public function reset(list:Array<Listener>):Void
+{
+	this.list = list;
 
-		isCopy = false;
-		index = 0;
-	}
+	isCopy = false;
+	index = 0;
+}
 
-	public function start():Void
-	{
-		active = true;
-	}
+public function start():Void
+{
+	active = true;
+}
 
-	public function stop():Void
-	{
-		active = false;
-	}
+public function stop():Void
+{
+	active = false;
+}
 }
 
 #if !openfl_debug
@@ -567,60 +612,60 @@ class EventDispatcher implements IEventDispatcher
 @SuppressWarnings("checkstyle:FieldDocComment")
 private class Listener
 {
-	public var callback:Dynamic->Void;
+public var callback:Dynamic->Void;
+#if (js && html5)
+public var weakRefCallback:Dynamic;
+
+private static var supportsWeakReference:Bool = Reflect.hasField(js.Lib.global, "WeakRef");
+#end
+
+public var priority:Int;
+public var useCapture:Bool;
+public var useWeakReference:Bool;
+
+public function new(callback:Dynamic->Void, useCapture:Bool, priority:Int, useWeakReference:Bool)
+{
 	#if (js && html5)
-	public var weakRefCallback:Dynamic;
-
-	private static var supportsWeakReference:Bool = Reflect.hasField(js.Lib.global, "WeakRef");
-	#end
-
-	public var priority:Int;
-	public var useCapture:Bool;
-	public var useWeakReference:Bool;
-
-	public function new(callback:Dynamic->Void, useCapture:Bool, priority:Int, useWeakReference:Bool)
+	if (useWeakReference && supportsWeakReference)
 	{
-		#if (js && html5)
-		if (useWeakReference && supportsWeakReference)
-		{
-			#if haxe4
-			this.weakRefCallback = untyped js.Syntax.code("new WeakRef({0})", callback);
-			#else
-			this.weakRefCallback = untyped __js__("new WeakRef")(callback);
-			#end
-		}
-		else
-		{
-			this.callback = callback;
-		}
+		#if haxe4
+		this.weakRefCallback = untyped js.Syntax.code("new WeakRef({0})", callback);
 		#else
+		this.weakRefCallback = untyped __js__("new WeakRef")(callback);
+		#end
+	}
+	else
+	{
 		this.callback = callback;
-		#end
-		this.useCapture = useCapture;
-		this.priority = priority;
-		this.useWeakReference = useWeakReference;
 	}
+	#else
+	this.callback = callback;
+	#end
+	this.useCapture = useCapture;
+	this.priority = priority;
+	this.useWeakReference = useWeakReference;
+}
 
-	public function match(callback:Dynamic->Void, useCapture:Bool):Bool
+public function match(callback:Dynamic->Void, useCapture:Bool):Bool
+{
+	var resolvedCallback = this.callback;
+	#if (js && html5)
+	if (weakRefCallback != null)
 	{
-		var resolvedCallback = this.callback;
-		#if (js && html5)
-		if (weakRefCallback != null)
+		resolvedCallback = weakRefCallback.deref();
+		if (resolvedCallback == null)
 		{
-			resolvedCallback = weakRefCallback.deref();
-			if (resolvedCallback == null)
-			{
-				return false;
-			}
+			return false;
 		}
-		#end
-		#if hl // https://github.com/HaxeFoundation/hashlink/issues/301
-		return ((Reflect.compareMethods(resolvedCallback, callback) || Reflect.compare(resolvedCallback, callback) == 0)
-			&& this.useCapture == useCapture);
-		#else
-		return (Reflect.compareMethods(resolvedCallback, callback) && this.useCapture == useCapture);
-		#end
 	}
+	#end
+	#if hl // https://github.com/HaxeFoundation/hashlink/issues/301
+	return ((Reflect.compareMethods(resolvedCallback, callback) || Reflect.compare(resolvedCallback, callback) == 0)
+		&& this.useCapture == useCapture);
+	#else
+	return (Reflect.compareMethods(resolvedCallback, callback) && this.useCapture == useCapture);
+	#end
+}
 }
 #else
 typedef EventDispatcher = flash.events.EventDispatcher;

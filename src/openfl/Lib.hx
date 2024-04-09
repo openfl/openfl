@@ -22,7 +22,9 @@ import js.Browser;
 @:fileXml('tags="haxe,release"')
 @:noDebug
 #end
-@:access(openfl.display.Stage) class Lib
+@:access(openfl.display.Stage)
+@:access(openfl.events.UncaughtErrorEvents)
+class Lib
 {
 	public static var application(get, never):Application;
 	public static var current(get, never):MovieClip;
@@ -589,7 +591,25 @@ import js.Browser;
 		__timers[id] = timer;
 		timer.run = function()
 		{
+			#if flash
 			Reflect.callMethod(closure, closure, args == null ? [] : args);
+			#else
+			if (Lib.current != null && Lib.current.stage != null && Lib.current.stage.__uncaughtErrorEvents.__enabled)
+			{
+				try
+				{
+					Reflect.callMethod(closure, closure, args == null ? [] : args);
+				}
+				catch (e:Dynamic)
+				{
+					Lib.current.stage.__handleError(e);
+				}
+			}
+			else
+			{
+				Reflect.callMethod(closure, closure, args == null ? [] : args);
+			}
+			#end
 		};
 		return id;
 	}
@@ -622,7 +642,25 @@ import js.Browser;
 		__timers[id] = Timer.delay(function()
 		{
 			__timers.remove(id);
+			#if flash
 			Reflect.callMethod(closure, closure, args == null ? [] : args);
+			#else
+			if (Lib.current != null && Lib.current.stage != null && Lib.current.stage.__uncaughtErrorEvents.__enabled)
+			{
+				try
+				{
+					Reflect.callMethod(closure, closure, args == null ? [] : args);
+				}
+				catch (e:Dynamic)
+				{
+					Lib.current.stage.__handleError(e);
+				}
+			}
+			else
+			{
+				Reflect.callMethod(closure, closure, args == null ? [] : args);
+			}
+			#end
 		}, delay);
 		return id;
 	}
