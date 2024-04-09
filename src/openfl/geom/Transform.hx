@@ -194,6 +194,7 @@ class Transform
 				space.
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash10) public function getRelativeMatrix3D (relativeTo:DisplayObject):Matrix3D;
+	// @:noCompletion @:dox(hide) @:require(flash10) public function getRelativeMatrix3DToOutput (relativeTo:DisplayObject, output:Matrix3D):Matrix3D;
 	#end
 	// Get & Set Methods
 	@:noCompletion private function get_colorTransform():ColorTransform
