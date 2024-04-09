@@ -48,6 +48,7 @@ class Utils3D
 		the Matrix3D property of the display object to the returned Matrix3D object.
 	**/
 	// static function pointTowards(percent : Float, mat : Matrix3D, pos : Vector3D, ?at : Vector3D, ?up : Vector3D) : Matrix3D;
+	// static function pointTowardsToOutput(percent : Float, mat : Matrix3D, pos : Vector3D, ?at : Vector3D, ?up : Vector3D, ?output : Matrix3D) : Matrix3D;
 	#end
 
 	/**
@@ -84,6 +85,47 @@ class Utils3D
 		l_oProj.y /= w;
 
 		return l_oProj;
+	}
+
+	/**
+		Using a projection Matrix3D object, projects a Vector3D object from one space
+		coordinate to another. The `projectVector()` method is like the
+		`Matrix3D.transformVector()` method except that the `projectVector()` method
+		divides the x, y, and z elements of the original Vector3D object by the
+		projection depth value. The depth value is the distance from the eye to the
+		Vector3D object in view or eye space. The default value for this distance is the
+		value of the z element.
+
+		@param	m	A projection Matrix3D object that implements the projection
+		transformation. If a display object has a PerspectiveProjection object, you can
+		use the `perspectiveProjection.toMatrix()` method to produce a projection Matrix3D
+		object that applies to the children of the display object. For more advance
+		projections, use the `matrix3D.rawData` property to create a custom projection
+		matrix. There is no built-in Matrix3D method for creating a projection Matrix3D
+		object.
+		@param	v	The Vector3D object that is projected to a new space coordinate.
+		@param output An optional Vector3D object that will be used for the
+					  output rather than creating a new Vector3D object
+		@returns	A new Vector3D with a transformed space coordinate.
+	**/
+	public static function projectVectorToOutput(m:Matrix3D, v:Vector3D, output:Vector3D):Vector3D
+	{
+		var n = m.rawData;
+		if (output == null)
+		{
+			output = new Vector3D();
+		}
+
+		output.x = v.x * n[0] + v.y * n[4] + v.z * n[8] + n[12];
+		output.y = v.x * n[1] + v.y * n[5] + v.z * n[9] + n[13];
+		output.z = v.x * n[2] + v.y * n[6] + v.z * n[10] + n[14];
+		var w:Float = v.x * n[3] + v.y * n[7] + v.z * n[11] + n[15];
+
+		output.z /= w;
+		output.x /= w;
+		output.y /= w;
+
+		return output;
 	}
 
 	/**
