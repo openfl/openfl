@@ -756,6 +756,174 @@ class Matrix3D
 	}
 
 	/**
+		Returns the transformation matrix's translation, rotation, and scale settings as
+		a Vector of three Vector3D objects. The first Vector3D object holds the
+		translation elements. The second Vector3D object holds the rotation elements.
+		The third Vector3D object holds the scale elements.
+
+		Some Matrix3D methods, such as the `interpolateTo()` method, automatically
+		decompose and recompose the matrix to perform their transformation.
+
+		To modify the matrix's transformation with an absolute parent frame of reference,
+		retrieve the settings with the `decompose()` method and make the appropriate
+		changes. You can then set the Matrix3D object to the modified transformation
+		using the `recompose()` method.
+
+		The `decompose()` method's parameter specifies the orientation style that is
+		meant to be used for the transformation. The default orientation is `eulerAngles`,
+		which defines the orientation with three separate angles of rotation for each
+		axis. The rotations occur consecutively and do not change the axis of each other.
+		The display object's axis rotation properties perform Euler Angles orientation
+		style transformation. The other orientation style options are `axisAngle` and
+		`quaternion`. The Axis Angle orientation uses a combination of an axis and an
+		angle to determine the orientation. The axis around which the object is rotated
+		is a unit vector that represents a direction. The angle represents the magnitude
+		of the rotation about the vector. The direction also determines where a display
+		object is facing and the angle determines which way is up. The `appendRotation()`
+		and `prependRotation()` methods use the Axis Angle orientation. The `quaternion`
+		orientation uses complex numbers and the fourth element of a vector. The three
+		axes of rotation (x,y,z) and an angle of rotation (w) represent the orientation.
+		The `interpolate()` method uses quaternion.
+
+		@param	orientationStyle	An optional parameter that determines the orientation
+		style used for the matrix transformation. The three types of orientation style
+		are `eulerAngles` (constant `EULER_ANGLES`), `axisAngle` (constant `AXIS_ANGLE`),
+		and `quaternion` (constant `QUATERNION`). For additional information on the
+		different orientation style, see the geom.Orientation3D class.
+		@param output An optional vector of three Vector3D objects to be used and returned to avoid the runtime creating new objects.
+		@returns	A Vector of three Vector3D objects, each holding the translation,
+		rotation, and scale settings, respectively.
+	**/
+	public function decomposeToOutput(orientationStyle:Orientation3D = EULER_ANGLES, ?output:Vector<Vector3D>):Vector<Vector3D>
+	{
+		if (output == null)
+		{
+			output = new Vector<Vector3D>();
+		}
+		var m = clone();
+		var mr = m.rawData.copy();
+
+		var pos = output[0];
+		if (pos == null)
+		{
+			pos = new Vector3D(mr[12], mr[13], mr[14]);
+		}
+		else
+		{
+			pos.setTo(mr[12], mr[13], mr[14]);
+		}
+		mr[12] = 0;
+		mr[13] = 0;
+		mr[14] = 0;
+
+		var scale = output[1];
+		if (scale == null)
+		{
+			scale = new Vector3D();
+		}
+
+		scale.x = Math.sqrt(mr[0] * mr[0] + mr[1] * mr[1] + mr[2] * mr[2]);
+		scale.y = Math.sqrt(mr[4] * mr[4] + mr[5] * mr[5] + mr[6] * mr[6]);
+		scale.z = Math.sqrt(mr[8] * mr[8] + mr[9] * mr[9] + mr[10] * mr[10]);
+
+		if (mr[0] * (mr[5] * mr[10] - mr[6] * mr[9]) - mr[1] * (mr[4] * mr[10] - mr[6] * mr[8]) + mr[2] * (mr[4] * mr[9] - mr[5] * mr[8]) < 0)
+		{
+			scale.z = -scale.z;
+		}
+
+		mr[0] /= scale.x;
+		mr[1] /= scale.x;
+		mr[2] /= scale.x;
+		mr[4] /= scale.y;
+		mr[5] /= scale.y;
+		mr[6] /= scale.y;
+		mr[8] /= scale.z;
+		mr[9] /= scale.z;
+		mr[10] /= scale.z;
+
+		var rot = output[2];
+		if (rot == null)
+		{
+			rot = new Vector3D();
+		}
+
+		switch (orientationStyle)
+		{
+			case Orientation3D.AXIS_ANGLE:
+				rot.w = Math.acos((mr[0] + mr[5] + mr[10] - 1) / 2);
+
+				var len = Math.sqrt((mr[6] - mr[9]) * (mr[6] - mr[9]) + (mr[8] - mr[2]) * (mr[8] - mr[2]) + (mr[1] - mr[4]) * (mr[1] - mr[4]));
+
+				if (len != 0)
+				{
+					rot.x = (mr[6] - mr[9]) / len;
+					rot.y = (mr[8] - mr[2]) / len;
+					rot.z = (mr[1] - mr[4]) / len;
+				}
+				else
+				{
+					rot.x = rot.y = rot.z = 0;
+				}
+
+			case Orientation3D.QUATERNION:
+				var tr = mr[0] + mr[5] + mr[10];
+
+				if (tr > 0)
+				{
+					rot.w = Math.sqrt(1 + tr) / 2;
+
+					rot.x = (mr[6] - mr[9]) / (4 * rot.w);
+					rot.y = (mr[8] - mr[2]) / (4 * rot.w);
+					rot.z = (mr[1] - mr[4]) / (4 * rot.w);
+				}
+				else if ((mr[0] > mr[5]) && (mr[0] > mr[10]))
+				{
+					rot.x = Math.sqrt(1 + mr[0] - mr[5] - mr[10]) / 2;
+
+					rot.w = (mr[6] - mr[9]) / (4 * rot.x);
+					rot.y = (mr[1] + mr[4]) / (4 * rot.x);
+					rot.z = (mr[8] + mr[2]) / (4 * rot.x);
+				}
+				else if (mr[5] > mr[10])
+				{
+					rot.y = Math.sqrt(1 + mr[5] - mr[0] - mr[10]) / 2;
+
+					rot.x = (mr[1] + mr[4]) / (4 * rot.y);
+					rot.w = (mr[8] - mr[2]) / (4 * rot.y);
+					rot.z = (mr[6] + mr[9]) / (4 * rot.y);
+				}
+				else
+				{
+					rot.z = Math.sqrt(1 + mr[10] - mr[0] - mr[5]) / 2;
+
+					rot.x = (mr[8] + mr[2]) / (4 * rot.z);
+					rot.y = (mr[6] + mr[9]) / (4 * rot.z);
+					rot.w = (mr[1] - mr[4]) / (4 * rot.z);
+				}
+
+			case Orientation3D.EULER_ANGLES:
+				rot.y = Math.asin(-mr[2]);
+
+				if (mr[2] != 1 && mr[2] != -1)
+				{
+					rot.x = Math.atan2(mr[6], mr[10]);
+					rot.z = Math.atan2(mr[1], mr[0]);
+				}
+				else
+				{
+					rot.z = 0;
+					rot.x = Math.atan2(mr[4], mr[5]);
+				}
+		}
+
+		output[0] = pos;
+		output[1] = rot;
+		output[2] = scale;
+
+		return output;
+	}
+
+	/**
 		Uses the transformation matrix without its translation elements to transform a
 		Vector3D object from one space coordinate to another. The returned Vector3D
 		object holds the new coordinates after the rotation and scaling transformations
@@ -784,6 +952,47 @@ class Matrix3D
 	{
 		var x:Float = v.x, y:Float = v.y, z:Float = v.z;
 
+		return new Vector3D((x * rawData[0] + y * rawData[4] + z * rawData[8]), (x * rawData[1] + y * rawData[5] + z * rawData[9]),
+			(x * rawData[2] + y * rawData[6] + z * rawData[10]), (x * rawData[3] + y * rawData[7] + z * rawData[11]));
+	}
+
+	/**
+		Uses the transformation matrix without its translation elements to transform a
+		Vector3D object from one space coordinate to another. The returned Vector3D
+		object holds the new coordinates after the rotation and scaling transformations
+		have been applied. If the `deltaTransformVector()` method applies a matrix that
+		only contains a translation transformation, the returned Vector3D is the same as
+		the original Vector3D object.
+
+		You can use the `deltaTransformVector()` method to have a display object in one
+		coordinate space respond to the rotation transformation of a second display
+		object. The object does not copy the rotation; it only changes its position to
+		reflect the changes in the rotation. For example, to use the display.Graphics
+		API for drawing a rotating 3D display object, you must map the object's rotating
+		coordinates to a 2D point. First, retrieve the object's 3D coordinates after each
+		rotation, using the `deltaTransformVector()` method. Next, apply the display
+		object's `local3DToGlobal()` method to translate the 3D coordinates to 2D points.
+		You can then use the 2D points to draw the rotating 3D object.
+
+		**Note:** This method automatically sets the `w` component of the passed Vector3D
+		to 0.0.
+
+		@param	v	A Vector3D object holding the coordinates that are going to be
+		transformed.
+		@param output An optional Vector3D object to be used and returned to avoid the runtime creating a new object.
+		@returns	Vector3D	A Vector3D object with the transformed coordinates.
+	**/
+	public function deltaTransformVectorToOutput(v:Vector3D, output:Vector3D):Vector3D
+	{
+		var x:Float = v.x, y:Float = v.y, z:Float = v.z;
+
+		if (output != null)
+		{
+			output.setTo((x * rawData[0] + y * rawData[4] + z * rawData[8]), (x * rawData[1] + y * rawData[5] + z * rawData[9]),
+				(x * rawData[2] + y * rawData[6] + z * rawData[10]));
+			output.w = (x * rawData[3] + y * rawData[7] + z * rawData[11]);
+			return output;
+		}
 		return new Vector3D((x * rawData[0] + y * rawData[4] + z * rawData[8]), (x * rawData[1] + y * rawData[5] + z * rawData[9]),
 			(x * rawData[2] + y * rawData[6] + z * rawData[10]), (x * rawData[3] + y * rawData[7] + z * rawData[11]));
 	}
@@ -851,6 +1060,55 @@ class Matrix3D
 		}
 
 		return m;
+	}
+
+	/**
+		Interpolates the translation, rotation, and scale transformation of one matrix
+		toward those of the target matrix.
+
+		The `interpolate()` method avoids some of the unwanted results that can occur
+		when using methods such as the display object's axis rotation properties. The
+		`interpolate()` method invalidates the cached value of the rotation property of
+		the display object and converts the orientation elements of the display object's
+		matrix to a quaternion before interpolation. This method guarantees the shortest,
+		most efficient path for the rotation. It also produces a smooth, gimbal-lock-free
+		rotation. A gimbal lock can occur when using Euler Angles, where each axis is
+		handled independently. During the rotation around two or more axes, the axes can
+		become aligned, leading to unexpected results. Quaternion rotation avoids the
+		gimbal lock.
+
+		Consecutive calls to the `interpolate()` method can produce the effect of a
+		display object starting quickly and then slowly approaching another display
+		object. For example, if you set the `thisMat` parameter to the returned Matrix3D
+		object, the `toMat` parameter to the target display object's associated Matrix3D
+		object, and the `percent` parameter to 0.1, the display object moves ten percent
+		toward the target object. On subsequent calls or in subsequent frames, the object
+		moves ten percent of the remaining 90 percent, then ten percent of the remaining
+		distance, and continues until it reaches the target.
+
+		@param	thisMat	The Matrix3D object that is to be interpolated.
+		@param	toMat	The target Matrix3D object.
+		@param	percent	A value between 0 and 1 that determines the percent the
+		`thisMat` Matrix3D object is interpolated toward the target Matrix3D object.
+		@param output An optional Matrix3D object to be used and returned to avoid the runtime creating a new object.
+		@returns	A Matrix3D object with elements that place the values of the matrix
+		between the original matrix and the target matrix. When the returned matrix is
+		applied to the this display object, the object moves the specified percent closer
+		to the target object.
+	**/
+	public static function interpolateToOutput(thisMat:Matrix3D, toMat:Matrix3D, percent:Float, output:Matrix3D):Matrix3D
+	{
+		if (output == null)
+		{
+			output = new Matrix3D();
+		}
+
+		for (i in 0...16)
+		{
+			output.rawData[i] = thisMat.rawData[i] + (toMat.rawData[i] - thisMat.rawData[i]) * percent;
+		}
+
+		return output;
 	}
 
 	/**
@@ -1548,6 +1806,43 @@ class Matrix3D
 		var y = v.y;
 		var z = v.z;
 
+		return new Vector3D((x * rawData[0] + y * rawData[4] + z * rawData[8] + rawData[12]),
+			(x * rawData[1] + y * rawData[5] + z * rawData[9] + rawData[13]), (x * rawData[2] + y * rawData[6] + z * rawData[10] + rawData[14]),
+			(x * rawData[3] + y * rawData[7] + z * rawData[11] + rawData[15]));
+	}
+
+	/**
+		Uses the transformation matrix to transform a Vector3D object from one space
+		coordinate to another. The returned Vector3D object holds the new coordinates
+		after the transformation. All the matrix transformations including translation
+		are applied to the Vector3D object.
+
+		If the result of the `transformVector()` method was applied to the position of a
+		display object, only the display object's position changes. The display object's
+		rotation and scale elements remain the same.
+
+		**Note:** This method automatically sets the w component of the passed Vector3D
+		to 1.0.
+
+		@param	v	A Vector3D object holding the coordinates that are going to be
+		transformed.
+		@param output An optional Vector3D object to be used and returned to
+					  avoid the runtime creating a new object.
+		@returns	A Vector3D object with the transformed coordinates.
+	**/
+	public function transformVectorToOutput(v:Vector3D, output:Vector3D):Vector3D
+	{
+		var x = v.x;
+		var y = v.y;
+		var z = v.z;
+
+		if (output != null)
+		{
+			output.setTo((x * rawData[0] + y * rawData[4] + z * rawData[8] + rawData[12]), (x * rawData[1] + y * rawData[5] + z * rawData[9] + rawData[13]),
+				(x * rawData[2] + y * rawData[6] + z * rawData[10] + rawData[14]));
+			output.w = (x * rawData[3] + y * rawData[7] + z * rawData[11] + rawData[15]);
+			return output;
+		}
 		return new Vector3D((x * rawData[0] + y * rawData[4] + z * rawData[8] + rawData[12]),
 			(x * rawData[1] + y * rawData[5] + z * rawData[9] + rawData[13]), (x * rawData[2] + y * rawData[6] + z * rawData[10] + rawData[14]),
 			(x * rawData[3] + y * rawData[7] + z * rawData[11] + rawData[15]));
