@@ -1,3 +1,19 @@
+9.3.3 (03/13/2024)
+------------------
+
+* Disabled `useWeakReference` support for `addEventListener()` on cpp target due to incompatibilities (but it is still enabled on html5 target)
+* Fixed possibility of setting `scrollH` and `scrollV` outside of allowed range
+* Fixed vector graphics rendering incorrectly when `scale9Grid` is set, and added `openfl_force_gl_cacheasbitmap_for_scale9grid` define to re-enable the old behavior
+* Fixed socket connect timeout being ignored in some situations
+* Fixed `DeviceRotation` and `Geolocation` classes not found when targeting AIR
+* Fixed crash when using compressed texture with `Tilemap`
+* Fixed crash when highlighting text with ligatures
+* Fixed exception on URL encoding when non-string value passed to `URLVariables`
+* Fixed missing separator between directory and file in result of `File.getDirectoryListingAsync()`
+* Fixed certain classes being exposed to flash target, when they should be available in the air target only
+* Fixed `--macro include("openfl")` when targeting flash or air
+* Fixed compilation of `FileReference` on non-sys desktop targets
+* Fixed `ByteArray` incompatibility with `haxe.io.Bytes`
 
 9.3.2 (11/08/2023)
 ------------------
