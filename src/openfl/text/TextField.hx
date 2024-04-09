@@ -2713,9 +2713,7 @@ class TextField extends InteractiveObject
 	{
 		if(value == null)
 		{
-			var error = new TypeError("Error #2007: Parameter text must be non-null.");
-			error.errorID = 2007;
-			throw error;
+			throw new TypeError("Error #2007: Parameter text must be non-null.", 2007);
 		}
 		
 		if (!__isHTML || __text != value)
@@ -2995,9 +2993,7 @@ class TextField extends InteractiveObject
 	{
 		if(value == null)
 		{
-			var error = new TypeError("Error #2007: Parameter text must be non-null.");
-			error.errorID = 2007;
-			throw error;
+			throw new TypeError("Error #2007: Parameter text must be non-null.", 2007);
 		}
 		
 		if (__styleSheet != null)
