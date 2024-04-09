@@ -175,6 +175,36 @@ class Vector3D
 	}
 
 	/**
+		Adds the value of the x, y, and z elements of the current Vector3D object to the
+		values of the x, y, and z elements of another Vector3D object. The `add()` method
+		does not change the current Vector3D object. Instead, it returns a new Vector3D
+		object with the new values.
+
+		The result of adding two vectors together is a resultant vector. One way to
+		visualize the result is by drawing a vector from the origin or tail of the first
+		vector to the end or head of the second vector. The resultant vector is the
+		distance between the origin point of the first vector and the end point of the
+		second vector.
+
+		![Resultant Vector3D](/images/resultantVector3D.jpg)
+
+		@param	a	A Vector3D object to be added to the current Vector3D object.
+		@param output An optional Vector3D object to be used as the output
+					  value, avoiding the creation of a new object
+		@returns	A Vector3D object that is the result of adding the current Vector3D
+		object to another Vector3D object.
+	**/
+	public function addToOutput(a:Vector3D, output:Vector3D):Vector3D
+	{
+		if (output != null)
+		{
+			output.setTo(this.x + a.x, this.y + a.y, this.z + a.z);
+			return output;
+		}
+		return new Vector3D(this.x + a.x, this.y + a.y, this.z + a.z);
+	}
+
+	/**
 		Returns the angle in radians between two vectors. The returned angle is the
 		smallest radian the first Vector3D object rotates until it aligns with the
 		second Vector3D object.
@@ -253,6 +283,35 @@ class Vector3D
 	**/
 	public function crossProduct(a:Vector3D):Vector3D
 	{
+		return new Vector3D(y * a.z - z * a.y, z * a.x - x * a.z, x * a.y - y * a.x, 1);
+	}
+
+	/**
+		Returns a new Vector3D object that is perpendicular (at a right angle) to the
+		current Vector3D and another Vector3D object. If the returned Vector3D object's
+		coordinates are (0,0,0), then the two Vector3D objects are parallel to each other.
+
+		![Cross Product](/images/crossproduct.jpg)
+
+		You can use the normalized cross product of two vertices of a polygon surface with
+		the normalized vector of the camera or eye viewpoint to get a dot product. The
+		value of the dot product can identify whether a surface of a three-dimensional
+		object is hidden from the viewpoint.
+
+		@param	a	A second Vector3D object.
+		@param output An optional Vector3D object to be used as the output
+					  value, avoiding the creation of a new object
+		@returns	A new Vector3D object that is perpendicular to the current Vector3D
+		object and the Vector3D object specified as the parameter.
+	**/
+	public function crossProductToOutput(a:Vector3D, output:Vector3D):Vector3D
+	{
+		if (output != null)
+		{
+			output.setTo(y * a.z - z * a.y, z * a.x - x * a.z, x * a.y - y * a.x);
+			output.w = 1;
+			return output;
+		}
 		return new Vector3D(y * a.z - z * a.y, z * a.x - x * a.z, x * a.y - y * a.x, 1);
 	}
 
@@ -468,6 +527,28 @@ class Vector3D
 	**/
 	public function subtract(a:Vector3D):Vector3D
 	{
+		return new Vector3D(x - a.x, y - a.y, z - a.z);
+	}
+
+	/**
+		Subtracts the value of the x, y, and z elements of the current Vector3D object
+		from the values of the x, y, and z elements of another Vector3D object. The
+		`subtract()` method does not change the current Vector3D object. Instead, this
+		method returns a new Vector3D object with the new values.
+
+		@param	a	The Vector3D object to be subtracted from the current Vector3D object.
+		@param output An optional Vector3D object to be used as the output
+					  value, avoiding the creation of a new object
+		@returns	A new Vector3D object that is the difference between the current
+		Vector3D and the specified Vector3D object.
+	**/
+	public function subtractToOutput(a:Vector3D, output:Vector3D):Vector3D
+	{
+		if (output != null)
+		{
+			output.setTo(x - a.x, y - a.y, z - a.z);
+			return output;
+		}
 		return new Vector3D(x - a.x, y - a.y, z - a.z);
 	}
 
