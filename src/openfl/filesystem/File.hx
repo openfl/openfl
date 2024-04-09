@@ -224,6 +224,11 @@ class File extends FileReference
 	**/
 	public static var documentsDirectory(get, never):File;
 
+	/**
+		The application's working directory.
+	**/
+	public static var workingDirectory(get, never):File;
+
 	// public var downloaded:Bool;
 	// TODO
 
@@ -2010,6 +2015,11 @@ class File extends FileReference
 	@:noCompletion private static function get_userDirectory():File
 	{
 		return new File(Path.removeTrailingSlashes(System.userDirectory));
+	}
+
+	@:noCompletion private static function get_workingDirectory():File
+	{
+		return new File(Path.removeTrailingSlashes(Sys.getCwd()));
 	}
 
 	@:noCompletion override private function get_creationDate():Date
