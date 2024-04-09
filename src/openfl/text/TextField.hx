@@ -118,6 +118,7 @@ import js.html.DivElement;
 @:noDebug
 #end
 @:access(openfl.display.Graphics)
+@:access(openfl.errors.Error)
 @:access(openfl.geom.ColorTransform)
 @:access(openfl.geom.Matrix)
 @:access(openfl.geom.Rectangle)
@@ -2713,7 +2714,9 @@ class TextField extends InteractiveObject
 	{
 		if(value == null)
 		{
-			throw new TypeError("Error #2007: Parameter text must be non-null.", 2007);
+			var error = new TypeError("Error #2007: Parameter text must be non-null.");
+			error.errorID = 2007;
+			throw error;
 		}
 		
 		if (!__isHTML || __text != value)
@@ -2993,7 +2996,9 @@ class TextField extends InteractiveObject
 	{
 		if(value == null)
 		{
-			throw new TypeError("Error #2007: Parameter text must be non-null.", 2007);
+			var error = new TypeError("Error #2007: Parameter text must be non-null.");
+			error.errorID = 2007;
+			throw error;
 		}
 		
 		if (__styleSheet != null)
