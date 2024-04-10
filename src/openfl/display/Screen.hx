@@ -116,7 +116,8 @@ class Screen extends EventDispatcher
 
 	@:noCompletion private function get_visibleBounds():Rectangle
 	{
-		var currentMode = _display.currentMode;
+		var display = System.getDisplay(__displayIndex);
+		var currentMode = display.currentMode;
 		var rect:Rectangle = new Rectangle(0, 0, currentMode.width, currentMode.height);
 
 		return rect;
