@@ -125,7 +125,8 @@ class Screen extends EventDispatcher
 
 	@:noCompletion private function get_mode():ScreenMode
 	{
-		return new ScreenMode(_display.currentMode);
+		var display = System.getDisplay(__displayIndex);
+		return new ScreenMode(display.currentMode);
 	}
 	
 	@:noCompletion private function get_bounds():Rectangle
