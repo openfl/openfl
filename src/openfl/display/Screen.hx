@@ -1,10 +1,9 @@
 package openfl.display;
-
+#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
 import openfl.events.EventDispatcher;
 import lime.system.System;
 import openfl.geom.Rectangle;
 
-#if (!flash && sys && (!flash_doc_gen || air_doc_gen))
 /**
 	The Screen class provides information about the display screens available to
 	this application.
@@ -27,16 +26,9 @@ import openfl.geom.Rectangle;
 	You cannot instantiate the Screen class directly. Calls to the
 	`new Screen()` constructor throw an ArgumentError exception.
 **/
+@:access(openfl.display.ScreenMode)
 class Screen extends EventDispatcher
 {
-	private function new(index:Int)
-	{
-		super();
-		__displayIndex = index;
-	}
-
-	@:noCompletion private var __displayIndex:Int;
-
 	/**
 		The bounds of this screen.
 
@@ -46,42 +38,48 @@ class Screen extends EventDispatcher
 		the desktop bounds, not the screen's visible bounds.
 	**/
 	public var bounds(get, never):Rectangle;
-
-	@:noCompletion private function get_bounds():Rectangle
-	{
-		var display = System.getDisplay(__displayIndex);
-		var displayBounds = display.bounds;
-		return new Rectangle(displayBounds.x, displayBounds.y, displayBounds.width, displayBounds.height);
-	}
-
+	
 	/**
 		The array of the currently available screens.
 
 		Modifying the returned array has no effect on the available screens.
 	**/
 	public static var screens(get, never):Array<Screen>;
-
-	@:noCompletion private static function get_screens():Array<Screen>
-	{
-		var result:Array<Screen> = [];
-		for (i in 0...System.numDisplays)
-		{
-			var screen = new Screen(i);
-			result.push(screen);
-		}
-		return result;
-	}
-
+	
 	/**
 		The primary display.
 	**/
 	public static var mainScreen(get, never):Screen;
 
-	@:noCompletion private static function get_mainScreen():Screen
-	{
-		return new Screen(0);
-	}
+	/**
+		The current screen mode of the Screen object.
+	**/	
+	public var mode(get, null):ScreenMode;
+	
+	/**
+		The array of ScreenMode objects of the Screen object.
+	**/
+	public var modes(get, null):Array<ScreenMode>;
+	
+	/**
+		The bounds of the area on this screen in which windows can be visible.
 
+		The visibleBounds of a screen excludes the task bar (and other docked desk bars) on Windows, 
+		and excludes the menu bar and, depending on system settings, the dock on Mac OS X. On some Linux 
+		configurations, it is not possible to determine the visible bounds. 
+		
+		In these cases, the visibleBounds property returns the same value as the screenBounds property.
+	**/
+	public var visibleBounds(get, null):Rectangle;	
+	
+	@:noCompletion private var __displayIndex:Int;
+	
+	private function new(index:Int)
+	{
+		super();
+		__displayIndex = index;
+	}	
+	
 	/**
 		Returns the (possibly empty) set of screens that intersect the provided
 		rectangle.
@@ -89,6 +87,7 @@ class Screen extends EventDispatcher
 	public static function getScreensForRectangle(rect:Rectangle):Array<Screen>
 	{
 		var result:Array<Screen> = [];
+		
 		for (i in 0...System.numDisplays)
 		{
 			var screen = new Screen(i);
@@ -97,7 +96,61 @@ class Screen extends EventDispatcher
 				result.push(screen);
 			}
 		}
+		
 		return result;
+	}
+
+	@:noCompletion private function get_modes():Array<ScreenMode>
+	{
+		var screenModes = [];
+		var displayModes = _display.supportedModes;
+
+		for (displayMode in displayModes)
+		{
+			screenModes.push(new ScreenMode(displayMode));
+		}
+
+		return screenModes;
+	}
+
+	@:noCompletion private function get_visibleBounds():Rectangle
+	{
+		var currentMode = _display.currentMode;
+		var rect:Rectangle = new Rectangle(0, 0, currentMode.width, currentMode.height);
+
+		return rect;
+	}
+
+	@:noCompletion private function get_mode():ScreenMode
+	{
+		return new ScreenMode(_display.currentMode);
+	}
+	
+	@:noCompletion private function get_bounds():Rectangle
+	{
+		var display = System.getDisplay(__displayIndex);
+		var displayBounds = display.bounds;
+		
+		return new Rectangle(displayBounds.x, displayBounds.y, displayBounds.width, displayBounds.height);
+	}
+
+	@:noCompletion private static function get_screens():Array<Screen>
+	{
+		var result:Array<Screen> = [];
+		
+		for (i in 0...System.numDisplays)
+		{
+			var screen = new Screen(i);
+			result.push(screen);
+		}
+		
+		return result;
+	}
+
+	
+	@:noCompletion private static function get_mainScreen():Screen
+	{
+		return new Screen(0);
 	}
 }
 #else
