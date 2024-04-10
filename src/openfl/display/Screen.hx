@@ -102,8 +102,9 @@ class Screen extends EventDispatcher
 
 	@:noCompletion private function get_modes():Array<ScreenMode>
 	{
+		var display = System.getDisplay(__displayIndex);
 		var screenModes = [];
-		var displayModes = _display.supportedModes;
+		var displayModes = display.supportedModes;
 
 		for (displayMode in displayModes)
 		{
