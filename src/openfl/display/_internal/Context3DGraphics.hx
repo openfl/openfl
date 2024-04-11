@@ -1,5 +1,6 @@
 package openfl.display._internal;
 
+#if !flash
 import openfl.display._internal.CairoGraphics;
 import openfl.display._internal.CanvasGraphics;
 import openfl.display._internal.DrawCommandReader;
@@ -505,7 +506,14 @@ class Context3DGraphics
 		else
 		{
 			graphics.__bitmap = null;
-			graphics.__update(renderer.__worldTransform);
+
+			#if (openfl_disable_hdpi || openfl_disable_hdpi_graphics)
+			var pixelRatio = 1;
+			#else
+			var pixelRatio = renderer.__pixelRatio;
+			#end
+
+			graphics.__update(renderer.__worldTransform, pixelRatio);
 
 			var bounds = graphics.__bounds;
 
@@ -909,3 +917,4 @@ class Context3DGraphics
 		}
 	}
 }
+#end

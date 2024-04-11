@@ -1,7 +1,8 @@
 package flash.display;
 
 #if flash
-@:enum abstract JointStyle(String) from String to String
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract JointStyle(String) from String to String
+
 {
 	public var MITER = "miter";
 	public var ROUND = "round";

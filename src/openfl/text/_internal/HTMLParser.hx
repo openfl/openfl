@@ -1,5 +1,6 @@
 package openfl.text._internal;
 
+#if !flash
 import openfl.utils._internal.Log;
 import openfl.text.StyleSheet;
 import openfl.text.TextFormat;
@@ -309,3 +310,4 @@ class HTMLParser
 		return regex.matched(2) != null ? regex.matched(2) : regex.matched(3);
 	}
 }
+#end

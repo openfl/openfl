@@ -1,7 +1,8 @@
 package flash.display;
 
 #if flash
-@:enum abstract StageQuality(String) from String to String
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract StageQuality(String) from String to String
+
 {
 	public var BEST = "best";
 	public var HIGH = "high";

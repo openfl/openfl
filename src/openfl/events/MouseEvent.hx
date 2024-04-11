@@ -469,10 +469,16 @@ class MouseEvent extends Event
 	/**
 		Indicates whether the command key is activated (Mac only.)
 
-		The value of property `commandKey` will have the same value as property `ctrlKey`
-		on the Mac. Always `false` on Windows or Linux.
+		The value of property `commandKey` will have the same value as property
+		`ctrlKey` on the Mac. Always `false` on Windows or Linux.
 	**/
 	public var commandKey:Bool;
+
+	/**
+		Indicates whether the Control key is activated on Mac and whether the
+		Ctrl key is activated on Windows or Linux.
+	**/
+	public var controlKey:Bool;
 
 	/**
 		Indicates whether or not the mouse down event is part of a multi-click sequence.
@@ -572,12 +578,15 @@ class MouseEvent extends Event
 	@:noCompletion private static var __altKey:Bool;
 	@:noCompletion private static var __buttonDown:Bool;
 	@:noCompletion private static var __commandKey:Bool;
+	@:noCompletion private static var __controlKey:Bool;
 	@:noCompletion private static var __ctrlKey:Bool;
 	#if openfl_pool_events
 	@:noCompletion private static var __pool:ObjectPool<MouseEvent> = new ObjectPool<MouseEvent>(function() return new MouseEvent(null),
 		function(event) event.__init());
 	#end
 	@:noCompletion private static var __shiftKey:Bool;
+
+	@:noCompletion private var __updateAfterEventFlag:Bool;
 
 	/**
 		Creates an Event object that contains information about mouse events.
@@ -630,7 +639,7 @@ class MouseEvent extends Event
 	**/
 	public function new(type:String, bubbles:Bool = true, cancelable:Bool = false, localX:Float = 0, localY:Float = 0, relatedObject:InteractiveObject = null,
 			ctrlKey:Bool = false, altKey:Bool = false, shiftKey:Bool = false, buttonDown:Bool = false, delta:Int = 0, commandKey:Bool = false,
-			clickCount:Int = 0)
+			controlKey:Bool = false, clickCount:Int = 0)
 	{
 		super(type, bubbles, cancelable);
 
@@ -644,17 +653,20 @@ class MouseEvent extends Event
 		this.localY = localY;
 		this.buttonDown = buttonDown;
 		this.commandKey = commandKey;
+		this.controlKey = controlKey;
 		this.clickCount = clickCount;
 
 		isRelatedObjectInaccessible = false;
 		stageX = Math.NaN;
 		stageY = Math.NaN;
+
+		__updateAfterEventFlag = false;
 	}
 
 	public override function clone():MouseEvent
 	{
 		var event = new MouseEvent(type, bubbles, cancelable, localX, localY, relatedObject, ctrlKey, altKey, shiftKey, buttonDown, delta, commandKey,
-			clickCount);
+			controlKey, clickCount);
 		event.target = target;
 		event.currentTarget = currentTarget;
 		event.eventPhase = eventPhase;
@@ -669,16 +681,23 @@ class MouseEvent extends Event
 	}
 
 	/**
-		Instructs Flash Player or Adobe AIR to render after processing of this
-		event completes, if the display list has been modified.
+		Instructs OpenFL to render after processing of this event completes, if
+		the display list has been modified.
 
+		On all targets except Flash/AIR, requires
+		`openfl_always_dispatch_mouse_events` to be defined because OpenFL will
+		throttle mouse events to the frame rate.
 	**/
-	public function updateAfterEvent():Void {}
+	public function updateAfterEvent():Void
+	{
+		__updateAfterEventFlag = true;
+	}
 
-	@:noCompletion private static function __create(type:String, button:Int, stageX:Float, stageY:Float, local:Point, target:InteractiveObject,
+	@:noCompletion private static function __create(type:String, button:Int, clickCount:Int, stageX:Float, stageY:Float, local:Point, target:InteractiveObject,
 			delta:Int = 0):MouseEvent
 	{
-		var event = new MouseEvent(type, true, false, local.x, local.y, null, __ctrlKey, __altKey, __shiftKey, __buttonDown, delta, __commandKey);
+		var event = new MouseEvent(type, true, false, local.x, local.y, null, __ctrlKey, __altKey, __shiftKey, __buttonDown, delta, __commandKey,
+			__controlKey, clickCount);
 		event.stageX = stageX;
 		event.stageY = stageY;
 		event.target = target;
@@ -699,11 +718,14 @@ class MouseEvent extends Event
 		localY = 0;
 		buttonDown = false;
 		commandKey = false;
+		controlKey = false;
 		clickCount = 0;
 
 		isRelatedObjectInaccessible = false;
 		stageX = Math.NaN;
 		stageY = Math.NaN;
+
+		__updateAfterEventFlag = false;
 	}
 }
 #else

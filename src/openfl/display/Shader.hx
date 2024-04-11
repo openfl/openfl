@@ -102,12 +102,11 @@ import openfl.utils.ByteArray;
 	**Mobile Browser Support:** This feature is not supported in mobile
 	browsers.
 
-	_AIR profile support:_ This feature is supported on all desktop operating
+	_Adobe AIR profile support:_ This feature is supported on all desktop operating
 	systems, but it is not supported on all mobile devices. It is not
-	supported on AIR for TV devices. See <a
-	href="http://help.adobe.com/en_US/air/build/WS144092a96ffef7cc16ddeea2126bb46b82f-8000.html">
-	AIR Profile Support</a> for more information regarding API support across
-	multiple profiles.
+	supported on AIR for TV devices. See
+	[AIR Profile Support](https://help.adobe.com/en_US/air/build/WS144092a96ffef7cc16ddeea2126bb46b82f-8000.html)
+	for more information regarding API support across multiple profiles.
 **/
 #if !openfl_debug
 @:fileXml('tags="haxe,release"')
@@ -323,16 +322,17 @@ class Shader
 		gl.shaderSource(shader, source);
 		gl.compileShader(shader);
 		var shaderInfoLog = gl.getShaderInfoLog(shader);
+		var hasInfoLog = shaderInfoLog != null && StringTools.trim(shaderInfoLog) != "";
 		var compileStatus = gl.getShaderParameter(shader, gl.COMPILE_STATUS);
 
-		if (shaderInfoLog != null || compileStatus == 0)
+		if (hasInfoLog || compileStatus == 0)
 		{
 			var message = (compileStatus == 0) ? "Error" : "Info";
 			message += (type == gl.VERTEX_SHADER) ? " compiling vertex shader" : " compiling fragment shader";
 			message += "\n" + shaderInfoLog;
 			message += "\n" + source;
 			if (compileStatus == 0) Log.error(message);
-			else if (shaderInfoLog != null) Log.debug(message);
+			else if (hasInfoLog) Log.debug(message);
 		}
 
 		return shader;

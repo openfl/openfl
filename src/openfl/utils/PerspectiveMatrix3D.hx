@@ -108,16 +108,44 @@ class PerspectiveMatrix3D extends Matrix3D
 	public function orthoOffCenterLH(left:Float, right:Float, bottom:Float, top:Float, zNear:Float, zFar:Float):Void
 	{
 		this.copyRawDataFrom(Vector.ofArray([
-			2.0 / (right - left), 0.0, 0.0, 0.0, 0.0, 2.0 * zNear / (top - bottom), 0.0, 0.0, -1.0 - 2.0 * left / (right - left),
-			1.0 + 2.0 * top / (bottom - top), 1.0 / (zFar - zNear), 0.0, 0.0, 0.0, zNear / (zNear - zFar), 1.0
+			2.0 / (right - left),
+			0.0,
+			0.0,
+			0.0,
+			0.0,
+			2.0 * zNear / (top - bottom),
+			0.0,
+			0.0,
+			-1.0 - 2.0 * left / (right - left),
+			1.0 + 2.0 * top / (bottom - top),
+			1.0 / (zFar - zNear),
+			0.0,
+			0.0,
+			0.0,
+			zNear / (zNear - zFar),
+			1.0
 		]));
 	}
 
 	public function orthoOffCenterRH(left:Float, right:Float, bottom:Float, top:Float, zNear:Float, zFar:Float):Void
 	{
 		this.copyRawDataFrom(Vector.ofArray([
-			2.0 / (right - left), 0.0, 0.0, 0.0, 0.0, 2.0 * zNear / (top - bottom), 0.0, 0.0, -1.0 - 2.0 * left / (right - left),
-			1.0 + 2.0 * top / (bottom - top), 1.0 / (zNear - zFar), 0.0, 0.0, 0.0, zNear / (zNear - zFar), 1.0
+			2.0 / (right - left),
+			0.0,
+			0.0,
+			0.0,
+			0.0,
+			2.0 * zNear / (top - bottom),
+			0.0,
+			0.0,
+			-1.0 - 2.0 * left / (right - left),
+			1.0 + 2.0 * top / (bottom - top),
+			1.0 / (zNear - zFar),
+			0.0,
+			0.0,
+			0.0,
+			zNear / (zNear - zFar),
+			1.0
 		]));
 	}
 
@@ -134,7 +162,22 @@ class PerspectiveMatrix3D extends Matrix3D
 		var xScale = yScale / aspectRatio;
 
 		this.copyRawDataFrom(Vector.ofArray([
-			xScale, 0.0, 0.0, 0.0, 0.0, yScale, 0.0, 0.0, 0.0, 0.0, zFar / (zFar - zNear), 1.0, 0.0, 0.0, (zNear * zFar) / (zNear - zFar), 0.0
+			xScale,
+			0.0,
+			0.0,
+			0.0,
+			0.0,
+			yScale,
+			0.0,
+			0.0,
+			0.0,
+			0.0,
+			zFar / (zFar - zNear),
+			1.0,
+			0.0,
+			0.0,
+			(zNear * zFar) / (zNear - zFar),
+			0.0
 		]));
 	}
 
@@ -144,39 +187,110 @@ class PerspectiveMatrix3D extends Matrix3D
 		var xScale = yScale / aspectRatio;
 
 		this.copyRawDataFrom(Vector.ofArray([
-			xScale, 0.0, 0.0, 0.0, 0.0, yScale, 0.0, 0.0, 0.0, 0.0, zFar / (zNear - zFar), -1.0, 0.0, 0.0, (zNear * zFar) / (zNear - zFar), 0.0
+			xScale,
+			0.0,
+			0.0,
+			0.0,
+			0.0,
+			yScale,
+			0.0,
+			0.0,
+			0.0,
+			0.0,
+			zFar / (zNear - zFar),
+			-1.0,
+			0.0,
+			0.0,
+			(zNear * zFar) / (zNear - zFar),
+			0.0
 		]));
 	}
 
 	public function perspectiveOffCenterLH(left:Float, right:Float, bottom:Float, top:Float, zNear:Float, zFar:Float):Void
 	{
 		this.copyRawDataFrom(Vector.ofArray([
-			2.0 * zNear / (right - left), 0.0, 0.0, 0.0, 0.0, -2.0 * zNear / (bottom - top), 0.0, 0.0, -1.0 - 2.0 * left / (right - left),
-			1.0 + 2.0 * top / (bottom - top), -zFar / (zNear - zFar), 1.0, 0.0, 0.0, (zNear * zFar) / (zNear - zFar), 0.0
+			2.0 * zNear / (right - left),
+			0.0,
+			0.0,
+			0.0,
+			0.0,
+			-2.0 * zNear / (bottom - top),
+			0.0,
+			0.0,
+			-1.0 - 2.0 * left / (right - left),
+			1.0 + 2.0 * top / (bottom - top),
+			-zFar / (zNear - zFar),
+			1.0,
+			0.0,
+			0.0,
+			(zNear * zFar) / (zNear - zFar),
+			0.0
 		]));
 	}
 
 	public function perspectiveLH(width:Float, height:Float, zNear:Float, zFar:Float):Void
 	{
 		this.copyRawDataFrom(Vector.ofArray([
-			2.0 * zNear / width, 0.0, 0.0, 0.0, 0.0, 2.0 * zNear / height, 0.0, 0.0, 0.0, 0.0, zFar / (zFar - zNear), 1.0, 0.0, 0.0,
-			zNear * zFar / (zNear - zFar), 0.0
+			2.0 * zNear / width,
+			0.0,
+			0.0,
+			0.0,
+			0.0,
+			2.0 * zNear / height,
+			0.0,
+			0.0,
+			0.0,
+			0.0,
+			zFar / (zFar - zNear),
+			1.0,
+			0.0,
+			0.0,
+			zNear * zFar / (zNear - zFar),
+			0.0
 		]));
 	}
 
 	public function perspectiveOffCenterRH(left:Float, right:Float, bottom:Float, top:Float, zNear:Float, zFar:Float):Void
 	{
 		this.copyRawDataFrom(Vector.ofArray([
-			2.0 * zNear / (right - left), 0.0, 0.0, 0.0, 0.0, -2.0 * zNear / (bottom - top), 0.0, 0.0, 1.0 + 2.0 * left / (right - left),
-			-1.0 - 2.0 * top / (bottom - top), zFar / (zNear - zFar), -1.0, 0.0, 0.0, (zNear * zFar) / (zNear - zFar), 0.0
+			2.0 * zNear / (right - left),
+			0.0,
+			0.0,
+			0.0,
+			0.0,
+			-2.0 * zNear / (bottom - top),
+			0.0,
+			0.0,
+			1.0 + 2.0 * left / (right - left),
+			-1.0 - 2.0 * top / (bottom - top),
+			zFar / (zNear - zFar),
+			-1.0,
+			0.0,
+			0.0,
+			(zNear * zFar) / (zNear - zFar),
+			0.0
 		]));
 	}
 
 	public function perspectiveRH(width:Float, height:Float, zNear:Float, zFar:Float):Void
 	{
 		this.copyRawDataFrom(Vector.ofArray([
-			2.0 * zNear / width, 0.0, 0.0, 0.0, 0.0, 2.0 * zNear / height, 0.0, 0.0, 0.0, 0.0, zFar / (zNear - zFar), -1.0, 0.0, 0.0,
-			zNear * zFar / (zNear - zFar), 0.0
+			2.0 * zNear / width,
+			0.0,
+			0.0,
+			0.0,
+			0.0,
+			2.0 * zNear / height,
+			0.0,
+			0.0,
+			0.0,
+			0.0,
+			zFar / (zNear - zFar),
+			-1.0,
+			0.0,
+			0.0,
+			zNear * zFar / (zNear - zFar),
+			0.0
 		]));
 	}
 

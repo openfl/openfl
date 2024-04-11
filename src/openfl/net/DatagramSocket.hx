@@ -18,10 +18,20 @@ import sys.net.UdpSocket;
 #end
 
 /**
-	* The DatagramSocket class enables code to send and receive Universal Datagram Protocol (UDP) packets.
-	*
-	This feature is supported on all desktop operating systems, on iOS, and on Android. You can test for support at run time
-	using the DatagramSocket.isSupported property.
+	The DatagramSocket class enables code to send and receive Universal Datagram Protocol (UDP) packets.
+
+	You can test for support at run time using the `DatagramSocket.isSupported`
+	property.
+
+	_OpenFL target support:_ This feature is supported on all desktop operating
+	systems, on iOS, and on Android. This feature is not supported on the html5
+	target or other non-sys targets.
+
+	_Adobe AIR profile support:_ his feature is supported on all desktop
+	operating systems, on iOS (starting with AIR 3.8), and on Android (starting
+	with AIR 3.8). This feature is not supported on AIR for TV devices. See
+	[AIR Profile Support](https://help.adobe.com/en_US/air/build/WS144092a96ffef7cc16ddeea2126bb46b82f-8000.html)
+	for more information regarding API support across multiple profiles.
 
 	Datagram packets are individually transmitted between the source and destination. Packets can arrive in a different order
 	than they were sent. Packets lost in transmission are not retransmitted, or even detected.

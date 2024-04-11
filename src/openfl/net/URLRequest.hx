@@ -19,18 +19,16 @@ import haxe.macro.Compiler;
 	from sources that are also at www.adobe.com. To load data from a different
 	domain, place a URL policy file on the server hosting the data.
 
-	 However, in Adobe AIR, content in the application security sandbox
+	However, in Adobe AIR, content in the application security sandbox
 	(content installed with the AIR application) is not restricted by these
 	security limitations. For content running in Adobe AIR, files in the
 	application security sandbox can access URLs using any of the following URL
 	schemes:
 
-
 	* `http` and `https`
 	* `file`
 	* `app-storage`
 	* `app`
-
 
 	Content running in Adobe AIR that is not in the application security
 	sandbox observes the same restrictions as content running in the browser

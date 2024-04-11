@@ -1,5 +1,6 @@
 package openfl.text._internal;
 
+#if !flash
 import openfl.text.TextFormat;
 
 #if !openfl_debug
@@ -43,3 +44,4 @@ class TextLayoutGroup
 		#end
 	}
 }
+#end

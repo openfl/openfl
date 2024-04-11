@@ -1,5 +1,6 @@
 package openfl.text._internal;
 
+#if !flash
 import haxe.Timer;
 import openfl.display3D._internal.GLTexture;
 import openfl.utils._internal.Log;
@@ -94,7 +95,9 @@ class TextEngine
 	@:noCompletion private var __measuredWidth:Int;
 	@:noCompletion private var __restrictRegexp:EReg;
 	@:noCompletion private var __selectionStart:Int;
+	#if !openfl_disable_text_measurement_cache
 	@:noCompletion private var __shapeCache:ShapeCache;
+	#end
 	@:noCompletion private var __showCursor:Bool;
 	@:noCompletion private var __textFormat:TextFormat;
 	@:noCompletion private var __textLayout:TextLayout;
@@ -109,7 +112,9 @@ class TextEngine
 
 	public function new(textField:TextField)
 	{
+		#if !openfl_disable_text_measurement_cache
 		__shapeCache = new ShapeCache();
+		#end
 		this.textField = textField;
 
 		width = 100;
@@ -343,11 +348,19 @@ class TextEngine
 			__defaultFonts.set("_sans", new DefaultFontSet(sans, sansBold, sansItalic, sansBoldItalic));
 
 			var serif = processFontList([
-				systemFontDirectory + "/Georgia.ttf", systemFontDirectory + "/Times.ttf", systemFontDirectory + "/Times New Roman.ttf",
-				systemFontDirectory + "/Cache/Georgia.ttf", systemFontDirectory + "/Cache/Times.ttf", systemFontDirectory + "/Cache/Times New Roman.ttf",
-				systemFontDirectory + "/Core/Georgia.ttf", systemFontDirectory + "/Core/Times.ttf", systemFontDirectory + "/Core/Times New Roman.ttf",
-				systemFontDirectory + "/CoreAddition/Georgia.ttf", systemFontDirectory + "/CoreAddition/Times.ttf",
-				systemFontDirectory + "/CoreAddition/Times New Roman.ttf", "/System/Library/Fonts/Supplemental/Times New Roman.ttf"
+				systemFontDirectory + "/Georgia.ttf",
+				systemFontDirectory + "/Times.ttf",
+				systemFontDirectory + "/Times New Roman.ttf",
+				systemFontDirectory + "/Cache/Georgia.ttf",
+				systemFontDirectory + "/Cache/Times.ttf",
+				systemFontDirectory + "/Cache/Times New Roman.ttf",
+				systemFontDirectory + "/Core/Georgia.ttf",
+				systemFontDirectory + "/Core/Times.ttf",
+				systemFontDirectory + "/Core/Times New Roman.ttf",
+				systemFontDirectory + "/CoreAddition/Georgia.ttf",
+				systemFontDirectory + "/CoreAddition/Times.ttf",
+				systemFontDirectory + "/CoreAddition/Times New Roman.ttf",
+				"/System/Library/Fonts/Supplemental/Times New Roman.ttf"
 			]);
 			var serifBold = findFont("/System/Library/Fonts/Supplemental/Times New Roman Bold.ttf");
 			var serifItalic = findFont("/System/Library/Fonts/Supplemental/Times New Roman Italic.ttf");
@@ -790,7 +803,7 @@ class TextEngine
 		#if !js
 		inline
 		#end
-		function getPositions(text:UTF8String, startIndex:Int, endIndex:Int):Array<#if (js && html5) Float #else GlyphPosition #end>
+		function getPositions(text:UTF8String, startIndex:Int, endIndex:Int):Array< #if (js && html5) Float #else GlyphPosition #end>
 		{
 			// TODO: optimize
 
@@ -860,7 +873,11 @@ class TextEngine
 				return html5Positions();
 			}
 
+			#if openfl_disable_text_measurement_cache
+			return html5Positions();
+			#else
 			return __shapeCache.cache(formatRange, html5Positions, text.substring(startIndex, endIndex));
+			#end
 			#else
 			if (__textLayout == null)
 			{
@@ -891,7 +908,11 @@ class TextEngine
 				return __textLayout.positions;
 			}
 
+			#if openfl_disable_text_measurement_cache
+			return __textLayout.positions;
+			#else
 			return __shapeCache.cache(formatRange, __textLayout);
+			#end
 			#end
 		} #if !js inline #end function getPositionsWidth(positions:#if (js && html5) Array<Float> #else Array<GlyphPosition> #end):Float
 
@@ -1093,7 +1114,7 @@ class TextEngine
 					{
 						if (!nextFormatRange())
 						{
-							Log.warn("You found a bug in OpenFL's text code! Please save a copy of your project and contact Joshua Granick (@singmajesty) so we can fix this.");
+							Log.warn("You found a bug in OpenFL's text code! Please save a copy of your project and create an issue on GitHub so we can fix this.");
 							break;
 						}
 
@@ -1181,7 +1202,7 @@ class TextEngine
 
 					if (!nextFormatRange())
 					{
-						Log.warn("You found a bug in OpenFL's text code! Please save a copy of your project and contact Joshua Granick (@singmajesty) so we can fix this.");
+						Log.warn("You found a bug in OpenFL's text code! Please save a copy of your project and create an issue on GitHub so we can fix this.");
 						break;
 					}
 
@@ -1962,7 +1983,7 @@ class TextEngine
 
 		var max = maxScrollV;
 
-		//TODO: Does maxScrollV return the wrong value(+1) in some cases?
+		// TODO: Does maxScrollV return the wrong value(+1) in some cases?
 		if (scrollV > max) return max;
 
 		return scrollV;
@@ -2014,3 +2035,4 @@ private class DefaultFontSet
 		return normal;
 	}
 }
+#end

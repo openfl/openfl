@@ -32,6 +32,10 @@ class ByteArrayTest extends Test
 
 		byteArray.compress();
 
+		// TODO: at least one assert is required
+		// remove this if other asserts are enabled in the future
+		Assert.pass();
+
 		#if (!flash && integration)
 		// byteArray.position = 0;
 		// for (i in 0...byteArray.length) {

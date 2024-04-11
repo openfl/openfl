@@ -4,8 +4,12 @@
 	"license": "MIT",
 	"tags": [],
 	"description": "The \"Open Flash Library\" for fast 2D development",
-	"version": "9.2.0",
-	"releasenote": "",
-	"contributors": [ "singmajesty" ],
+	"version": "9.3.3",
+	"releasenote": "Various bug fixes",
+	"contributors": [
+		"singmajesty",
+		"bowlerhat",
+		"Dimensionscape"
+	],
 	"classPath": "src"
 }

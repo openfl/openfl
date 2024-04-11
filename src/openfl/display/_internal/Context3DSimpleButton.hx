@@ -1,5 +1,6 @@
 package openfl.display._internal;
 
+#if !flash
 #if !openfl_debug
 @:fileXml(' tags="haxe,release" ')
 @:noDebug
@@ -25,3 +26,4 @@ class Context3DSimpleButton
 		renderer.__renderDrawableMask(simpleButton.__currentState);
 	}
 }
+#end

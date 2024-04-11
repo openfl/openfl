@@ -2,7 +2,6 @@ package openfl.events;
 
 #if !flash
 import openfl.utils.Object;
-
 #if openfl_pool_events
 import openfl.utils.ObjectPool;
 #end
@@ -161,6 +160,20 @@ class Event
 	public static inline var CLEAR:EventType<Event> = "clear";
 
 	/**
+		The `Event.CLOSING` constant defines the value of the `type` property of
+		a `closing` event object.
+		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `true`; canceling this event object stops the close operation. |
+		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
+		| `target` | The object whose connection has been closed. |
+	**/
+	public static inline var CLOSING:EventType<Event> = "closing";
+
+	/**
 		The `Event.CLOSE` constant defines the value of the `type` property of
 		a `close` event object.
 		This event has the following properties:
@@ -315,6 +328,21 @@ class Event
 		| `target` | Any DisplayObject instance with a listener registered for the `enterFrame` event. |
 	**/
 	public static inline var EXIT_FRAME:EventType<Event> = "exitFrame";
+
+	/**
+		The `Event.EXITING` constant defines the value of the `type` property of
+		an `exiting` event object.
+
+		This event has the following properties:
+
+		| Property | Value |
+		| --- | --- |
+		| `bubbles` | `false` |
+		| `cancelable` | `true`; canceling this event object stops the exit operation. |
+		| `currentTarget` | The NativeApplication object. |
+		| `target` | The NativeApplication object. |
+	**/
+	public static inline var EXITING:EventType<Event> = "exiting";
 
 	/**
 		The `Event.FRAME_CONSTRUCTED` constant defines the value of the `type`

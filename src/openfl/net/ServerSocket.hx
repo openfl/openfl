@@ -16,12 +16,21 @@ import sys.net.Host;
 import sys.net.Socket;
 
 /**
-	The ServerSocket class allows code to act as a server for Transport Control Protocol (TCP)
-	connections.
+	The ServerSocket class allows code to act as a server for Transport Control
+	Protocol (TCP) Connections.
 
-	This feature is supported on all desktop operating systems, on iOS, and on Android.
-	This feature is not supported on html5. You can test for support at run time using the
-	ServerSocket.isSupported property.
+	You can test for support at run time using the `ServerSocket.isSupported`
+	property.
+
+	_OpenFL target support:_ This feature is supported on all desktop operating
+	systems, on iOS, and on Android. This feature is not supported on the html5
+	target or other non-sys targets.
+
+	_Adobe AIR profile support:_ This feature is supported on all desktop
+	operating systems, on iOS (starting with AIR 3.8), and on Android (starting
+	with AIR 3.8). This feature is not supported on AIR for TV devices. See
+	[AIR Profile Support](http://help.adobe.com/en_US/air/build/WS144092a96ffef7cc16ddeea2126bb46b82f-8000.html)
+	for more information regarding API support across multiple profiles.
 
 	A TCP server listens for incoming connections from remote clients. When a client attempts
 	to connect, the ServerSocket dispatches a connect event. The ServerSocketConnectEvent object
@@ -42,7 +51,7 @@ import sys.net.Socket;
 	serious network failure occurs). Any data sent over the connection is broken into transmittable
 	packets and reassembled on the other end. All packets are guaranteed to arrive (within reason) —
 	any lost packets are retransmitted. In general, the TCP protocol manages the available network
-	bandwidth better than the UDP protocol. Most AIR applications that require socket communications
+	bandwidth better than the UDP protocol. Most OpenFL applications that require socket communications
 	should use the ServerSocket and Socket classes rather than the DatagramSocket class.
 
 	The ServerSocket class can only be used in targets that support TCP.
@@ -88,8 +97,8 @@ class ServerSocket extends EventDispatcher
 	/**
 		Creates a ServerSocket object.
 
-		@throws  SecurityError This error occurs ff the calling content is running outside the AIR
-				application security sandbox.
+		@throws  SecurityError This error occurs if the calling content is
+				running outside the AIR application security sandbox.
 	**/
 	public function new()
 	{
@@ -210,6 +219,13 @@ class ServerSocket extends EventDispatcher
 		{
 			throw new RangeError("The supplied index is out of bounds.");
 		}
+		else if (backlog == 0)
+		{
+			// Setting haxe tcp backlog to 0 doesn't seem to force the maximum limit as it does in
+			// AIR so instead we set it to maximum integer which should clamp it to the maximum limit.
+			backlog = 0x7FFFFFFF;
+		}
+
 		__serverSocket.listen(backlog);
 		listening = true;
 	}

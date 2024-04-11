@@ -7,7 +7,8 @@ package openfl.text;
 	The TextFieldAutoSize class is an enumeration of constant values used in
 	setting the `autoSize` property of the TextField class.
 **/
-@:enum abstract TextFieldAutoSize(Null<Int>)
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract TextFieldAutoSize(Null<Int>)
+
 {
 	/**
 		Specifies that the text is to be treated as center-justified text. Any
@@ -61,7 +62,8 @@ package openfl.text;
 }
 #else
 @SuppressWarnings("checkstyle:FieldDocComment")
-@:enum abstract TextFieldAutoSize(String) from String to String
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract TextFieldAutoSize(String) from String to String
+
 {
 	public var CENTER = "center";
 	public var LEFT = "left";

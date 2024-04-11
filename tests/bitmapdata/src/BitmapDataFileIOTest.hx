@@ -11,9 +11,6 @@ class BitmapDataFileIOTest extends Test
 	// ByteArray.loadFromFile and BitmapData.fromBase64 don't exist on flash target
 	#if flash
 	@Ignored
-	#elseif hl
-	// TODO: fix test on HashLink
-	@Ignored
 	#end
 	public function test_BitmapData_fromBase64(async:Async)
 	{
@@ -40,8 +37,8 @@ class BitmapDataFileIOTest extends Test
 			async.done();
 		}).onError(function(result)
 		{
-			Assert.fail(result);
-			async.done();
+				Assert.fail(result);
+				async.done();
 		});
 	}
 

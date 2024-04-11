@@ -9,7 +9,8 @@ import lime.ui.MouseCursor as LimeMouseCursor;
 	The MouseCursor class is an enumeration of constant values used in setting
 	the `cursor` property of the Mouse class.
 **/
-@:enum abstract MouseCursor(String) from String to String
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract MouseCursor(String) from String to String
+
 {
 	/**
 		Used to specify that the arrow cursor should be used.

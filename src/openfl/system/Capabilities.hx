@@ -260,8 +260,8 @@ import sys.io.Process;
 		| Turkish | `tr` |
 
 		_Note:_ The value of `Capabilities.language` property is limited to
-		the possible values on this list. Because of this limitation, Adobe
-		AIR applications should use the first element in the
+		the possible values on this list. Because of this limitation, OpenFL
+		applications should use the first element in the
 		`Capabilities.languages` array to determine the primary user interface
 		language for the system.
 
@@ -292,12 +292,12 @@ import sys.io.Process;
 	public static var localFileReadDisable(default, null) = #if web true #else false #end;
 
 	/**
-		Specifies the manufacturer of the running version of Flash Player or the
-		AIR runtime, in the format `"Adobe`
-		`_OSName_"`. The value for `_OSName_`
-		could be `"Windows"`, `"Macintosh"`,
-		`"Linux"`, or another operating system name. The server string
-		is `M`.
+		Specifies the manufacturer of the running version of OpenFL, in the
+		format "_ManufacturerName_ _OSName_". The value for `_ManufacturerName_`
+		is typically "OpenFL". When targeting Adobe Flash Player or AIR, the
+		value for `_ManufacturerName_` is "Adobe". The value for `_OSName_`
+		could be `"Windows"`, `"Macintosh"`, `"Linux"`, or another operating
+		system name. The server string is `M`.
 
 		Do _not_ use `Capabilities.manufacturer` to determine a
 		capability based on the operating system if a more specific capability
@@ -374,12 +374,12 @@ import sys.io.Process;
 
 		* `"ActiveX"` for the Flash Player ActiveX control used by
 		Microsoft Internet Explorer
-		* `"Desktop"` for the Adobe AIR runtime(except for SWF
+		* `"Desktop"` for the Adobe AIR runtime (except for SWF
 		content loaded by an HTML page, which has
 		`Capabilities.playerType` set to `"PlugIn"`)
 		* `"External"` for the external Flash Player<ph
 		outputclass="flashonly"> or in test mode
-		* `"PlugIn"` for the Flash Player browser plug-in(and for
+		* `"PlugIn"` for the Flash Player browser plug-in (and for
 		SWF content loaded by an HTML page in an AIR application)
 		* `"StandAlone"` for the stand-alone Flash Player
 
@@ -403,26 +403,24 @@ import sys.io.Process;
 
 	/**
 		Specifies the maximum horizontal resolution of the screen. The server
-		string is `R`(which returns both the width and height of the
-		screen). This property does not update with a user's screen resolution and
-		instead only indicates the resolution at the time Flash Player or an Adobe
-		AIR application started. Also, the value only specifies the primary
-		screen.
+		string is `R` (which returns both the width and height of the screen).
+		This property does not update with a user's screen resolution and
+		instead only indicates the resolution at the time the OpenFL application
+		started. Also, the value only specifies the primary screen.
 	**/
 	public static var screenResolutionX(get, never):Float;
 
 	/**
-		Specifies the maximum vertical resolution of the screen. The server string
-		is `R`(which returns both the width and height of the screen).
-		This property does not update with a user's screen resolution and instead
-		only indicates the resolution at the time Flash Player or an Adobe AIR
-		application started. Also, the value only specifies the primary screen.
+		Specifies the maximum vertical resolution of the screen. The server
+		string is `R` (which returns both the width and height of the screen).
+		This property does not update with a user's screen resolution and
+		instead only indicates the resolution at the time the OpenFL application
+		started. Also, the value only specifies the primary screen.
 	**/
 	public static var screenResolutionY(get, never):Float;
 
 	/**
 		A URL-encoded string that specifies values for each Capabilities property.
-
 
 		The following example shows a URL-encoded string:
 		`A=t&SA=t&SV=t&EV=t&MP3=t&AE=t&VE=t&ACC=f&PR=t&SP=t&
@@ -538,11 +536,15 @@ import sys.io.Process;
 	#end
 
 	/**
-		Specifies whether the system supports multichannel audio of a specific type. The
-		class flash.media.AudioDecoder enumerates the possible types.
+		Specifies whether the system supports multichannel audio of a specific
+		type. The class flash.media.AudioDecoder enumerates the possible types.
 
-		_AIR profile support:_ Multichannel audio is supported only on AIR for TV devices.
-		On all other devices, this method always returns `false`. See AIR Profile Support
+		_OpenFL target support:_ Not supported, except when targeting AIR.
+
+		_Adobe AIR profile support:_ Multichannel audio is supported only on AIR
+		for TV devices. On all other devices, this method always returns
+		`false`. See
+		[AIR Profile Support](http://help.adobe.com/en_US/air/build/WS144092a96ffef7cc16ddeea2126bb46b82f-8000.html)
 		for more information regarding API support across multiple profiles.
 
 		**Note:** When using one of the DTS audio codecs, scenarios exist in which

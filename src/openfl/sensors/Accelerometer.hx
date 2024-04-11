@@ -30,11 +30,15 @@ import lime.system.SensorType;
 	`Accelerometer.isSupported` is `true` at runtime,
 	then Accelerometer support currently exists.
 
-	_AIR profile support:_ This feature is supported only on mobile
+	_OpenFL target support:_ This feature is supported on mobile targets,
+	including iOS and Android, and on the html5 target in browsers that
+	support the devicemotion event. This feature is not supported on desktop
+	targets.
+
+	_Adobe AIR profile support:_ This feature is supported only on mobile
 	devices. It is not supported on desktop or AIR for TV devices. See
 	[AIR Profile Support](http://help.adobe.com/en_US/air/build/WS144092a96ffef7cc16ddeea2126bb46b82f-8000.html)
-	for more information regarding API support across
-	multiple profiles.
+	for more information regarding API support across multiple profiles.
 
 	@event status Dispatched when an accelerometer changes its status.
 

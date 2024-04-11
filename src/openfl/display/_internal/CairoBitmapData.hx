@@ -1,5 +1,6 @@
 package openfl.display._internal;
 
+#if !flash
 #if lime
 import lime.graphics.cairo.CairoFilter;
 import lime.graphics.cairo.CairoPattern;
@@ -44,3 +45,4 @@ class CairoBitmapData
 
 	public static inline function renderDrawableMask(tilemap:Tilemap, renderer:CairoRenderer):Void {}
 }
+#end

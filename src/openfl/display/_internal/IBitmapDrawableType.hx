@@ -1,6 +1,7 @@
 package openfl.display._internal;
 
-@:enum abstract IBitmapDrawableType(Int) from Int to Int
+#if (haxe_ver >= 4.0) enum #else @:enum #end abstract IBitmapDrawableType(Int) from Int to Int
+
 {
 	public var BITMAP_DATA = 0;
 	public var DISPLAY_OBJECT = 1;

@@ -35,7 +35,11 @@ package openfl.globalization;
 		}
 		if (requestedLocaleIDName == DEFAULT)
 		{
-			#if lime
+			#if html5
+			// Lime's Locale.currentLocale uses navigator.language, which may
+			// not be the right choice when using JS Intl types
+			requestedLocaleIDName = untyped Intl.DateTimeFormat().resolvedOptions().locale;
+			#elseif lime
 			requestedLocaleIDName = lime.system.Locale.currentLocale;
 			#else
 			requestedLocaleIDName = openfl.system.Capabilities.language;

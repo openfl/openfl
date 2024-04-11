@@ -8,20 +8,14 @@ extern class Event
 	public static var ACTIVATE(default, never):String;
 	public static var ADDED(default, never):String;
 	public static var ADDED_TO_STAGE(default, never):String;
-	#if flash
 	@:require(flash15) public static var BROWSER_ZOOM_CHANGE(default, never):String;
-	#end
 	public static var CANCEL(default, never):String;
 	public static var CHANGE(default, never):String;
-	#if flash
 	public static var CHANNEL_MESSAGE(default, never):String;
-	#end
-	#if flash
 	public static var CHANNEL_STATE(default, never):String;
-	#end
 	@:require(flash10) public static var CLEAR(default, never):String;
 	public static var CLOSE(default, never):String;
-	#if (flash && air)
+	#if air
 	public static var CLOSING(default, never):String;
 	#end
 	public static var COMPLETE(default, never):String;
@@ -73,33 +67,36 @@ extern class Event
 	public static var STANDARD_INPUT_CLOSE(default, never):String;
 	public static var STANDARD_OUTPUT_CLOSE(default, never):String;
 	#end
-	#if flash
 	@:require(flash11_3) public static var SUSPEND(default, never):String;
-	#end
 	public static var TAB_CHILDREN_CHANGE(default, never):String;
 	public static var TAB_ENABLED_CHANGE(default, never):String;
 	public static var TAB_INDEX_CHANGE(default, never):String;
 	@:require(flash11_3) public static var TEXTURE_READY(default, never):String;
-	#if flash
 	@:require(flash11) public static var TEXT_INTERACTION_MODE_CHANGE(default, never):String;
-	#end
 	public static var UNLOAD(default, never):String;
 	#if air
 	public static var USER_IDLE(default, never):String;
 	public static var USER_PRESENT(default, never):String;
 	#end
-	#if flash
 	public static var VIDEO_FRAME(default, never):String;
-	#end
-	#if flash
 	public static var WORKER_STATE(default, never):String;
-	#end
+
+	#if (haxe_ver < 4.3)
 	public var bubbles(default, never):Bool;
 	public var cancelable(default, never):Bool;
 	public var currentTarget(default, never):Object;
 	public var eventPhase(default, never):EventPhase;
 	public var target(default, never):Object;
 	public var type(default, never):String;
+	#else
+	@:flash.property var bubbles(get, never):Bool;
+	@:flash.property var cancelable(get, never):Bool;
+	@:flash.property var currentTarget(get, never):Object;
+	@:flash.property var eventPhase(get, never):EventPhase;
+	@:flash.property var target(get, never):Object;
+	@:flash.property var type(get, never):String;
+	#end
+
 	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false);
 	public function clone():Event;
 	public function formatToString(className:String, ?p1:Dynamic, ?p2:Dynamic, ?p3:Dynamic, ?p4:Dynamic, ?p5:Dynamic):String;
@@ -108,6 +105,15 @@ extern class Event
 	public function stopImmediatePropagation():Void;
 	public function stopPropagation():Void;
 	public function toString():String;
+
+	#if (haxe_ver >= 4.3)
+	private function get_bubbles():Bool;
+	private function get_cancelable():Bool;
+	private function get_currentTarget():Object;
+	private function get_eventPhase():EventPhase;
+	private function get_target():Object;
+	private function get_type():String;
+	#end
 }
 #else
 typedef Event = openfl.events.Event;

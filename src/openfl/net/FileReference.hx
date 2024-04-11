@@ -3,14 +3,18 @@ package openfl.net;
 #if !flash
 import haxe.io.Path;
 import haxe.Timer;
+import openfl.events.DataEvent;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
+import openfl.events.HTTPStatusEvent;
 import openfl.events.IOErrorEvent;
 import openfl.events.ProgressEvent;
 import openfl.utils.ByteArray;
 #if lime
-import lime.ui.FileDialog;
 import lime.utils.Bytes;
+#end
+#if (lime && !macro)
+import lime.ui.FileDialog;
 #end
 #if sys
 import sys.io.File;
@@ -283,19 +287,17 @@ import js.Browser;
 							  AIR runtime, the `select` event acts slightly
 							  differently depending on what method invokes it.
 							  When the `select` event is dispatched after a
-							  `browse()` call, Flash Player or the AIR
-							  application can read all the FileReference
-							  object's properties, because the file selected
-							  by the user is on the local file system. When
-							  the `select` event occurs after a `download()`
-							  call, Flash Player or the AIR application can
-							  read only the `name` property, because the file
-							  hasn't yet been downloaded to the local file
-							  system at the moment the `select` event is
-							  dispatched. When the file is downloaded and the
-							  `complete` event dispatched, Flash Player or the
-							  AIR application can read all other properties of
-							  the FileReference object.
+							  `browse()` call, the OpenFL application can read
+							  all the FileReference object's properties, because
+							  the file selected by the user is on the local file
+							  system. When the `select` event occurs after a
+							  `download()` call, the OpenFL application can read
+							  only the `name` property, because the file hasn't
+							  yet been downloaded to the local file system at the
+							  moment the `select` event is dispatched. When the
+							  file is downloaded and the `complete` even
+							  dispatched, the OpenFL application can read all
+							  other properties of the FileReference object.
 	@event uploadCompleteData Dispatched after data is received from the
 							  server after a successful upload. This event is
 							  not dispatched if data is not returned from the
@@ -411,10 +413,11 @@ class FileReference extends EventDispatcher
 	/**
 		The size of the file on the local disk in bytes. If `size` is 0, an
 		exception is thrown.
+
 		_Note:_ In the initial version of ActionScript 3.0, the `size`
-		property was defined as a uint object, which supported files with
-		sizes up to about 4 GB. It is now implemented as a Number object to
-		support larger files.
+		property was defined as a `uint` object, which supported files with
+		sizes up to about 4 GB. It was later implemented as a `Number` object to
+		support larger files. In OpenFL, it is `Float` to match `Number`.
 
 		@throws IOError               If the file cannot be opened or read, or
 									  if a similar error is encountered in
@@ -430,7 +433,7 @@ class FileReference extends EventDispatcher
 									  sequence or an earlier call was
 									  unsuccessful.
 	**/
-	public var size(get, null):Int;
+	public var size(get, null):Float;
 
 	/**
 		The file type.
@@ -583,11 +586,13 @@ class FileReference extends EventDispatcher
 			filter = filters.join(";");
 		}
 
+		#if (lime && !macro)
 		var openFileDialog = new FileDialog();
 		openFileDialog.onCancel.add(openFileDialog_onCancel);
 		openFileDialog.onSelect.add(openFileDialog_onSelect);
 		openFileDialog.browse(OPEN, filter);
 		return true;
+		#end
 		#elseif (js && html5)
 		var filter = null;
 		if (typeFilter != null)
@@ -603,8 +608,17 @@ class FileReference extends EventDispatcher
 		{
 			__inputControl.setAttribute("accept", filter);
 		}
+		else
+		{
+			__inputControl.removeAttribute("accept");
+		}
 		__inputControl.onchange = function()
 		{
+			if (__inputControl.files.length == 0)
+			{
+				dispatchEvent(new Event(Event.CANCEL));
+				return;
+			}
 			var file = __inputControl.files[0];
 			modificationDate = Date.fromTime(file.lastModified);
 			creationDate = modificationDate;
@@ -826,15 +840,19 @@ class FileReference extends EventDispatcher
 		__path = null;
 
 		__urlLoader = new URLLoader();
-		__urlLoader.addEventListener(Event.COMPLETE, urlLoader_onComplete);
+		__urlLoader.dataFormat = BINARY;
+		__urlLoader.addEventListener(Event.OPEN, urlLoader_onOpen);
+		__urlLoader.addEventListener(Event.COMPLETE, urlLoader_download_onComplete);
 		__urlLoader.addEventListener(IOErrorEvent.IO_ERROR, urlLoader_onIOError);
 		__urlLoader.addEventListener(ProgressEvent.PROGRESS, urlLoader_onProgress);
 		__urlLoader.load(request);
 
+		#if (lime && !macro)
 		var saveFileDialog = new FileDialog();
 		saveFileDialog.onCancel.add(saveFileDialog_onCancel);
 		saveFileDialog.onSelect.add(saveFileDialog_onSelect);
 		saveFileDialog.browse(SAVE, defaultFileName != null ? Path.extension(defaultFileName) : null, defaultFileName);
+		#end
 	}
 
 	/**
@@ -1055,10 +1073,12 @@ class FileReference extends EventDispatcher
 			__data.writeUTFBytes(Std.string(data));
 		}
 
+		#if (lime && !macro)
 		var saveFileDialog = new FileDialog();
 		saveFileDialog.onCancel.add(saveFileDialog_onCancel);
 		saveFileDialog.onSelect.add(saveFileDialog_onSelect);
 		saveFileDialog.browse(SAVE, defaultFileName != null ? Path.extension(defaultFileName) : null, defaultFileName);
+		#end
 		#elseif (js && html5)
 		if ((data is ByteArrayData))
 		{
@@ -1070,14 +1090,16 @@ class FileReference extends EventDispatcher
 			__data.writeUTFBytes(Std.string(data));
 		}
 
+		#if (lime && !macro)
 		var saveFileDialog = new FileDialog();
 		saveFileDialog.onCancel.add(saveFileDialog_onCancel);
 		saveFileDialog.onSave.add(saveFileDialog_onSave);
 		saveFileDialog.save(__data, defaultFileName != null ? Path.extension(defaultFileName) : null, defaultFileName);
 		#end
+		#end
 	}
 
-	#if !openfl_strict
+	#if (sys || !openfl_strict)
 	/**
 		Starts the upload of the file to a remote server. Although Flash
 		Player has no restriction on the size of files you can upload or
@@ -1299,7 +1321,88 @@ class FileReference extends EventDispatcher
 	**/
 	public function upload(request:URLRequest, uploadDataFieldName:String = "Filedata", testUpload:Bool = false):Void
 	{
+		#if sys
+		if (__path == null || !FileSystem.exists(__path))
+		{
+			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+			return;
+		}
+
+		var fileBytes:ByteArray = null;
+		try
+		{
+			fileBytes = sys.io.File.getBytes(__path);
+		}
+		catch (e:Dynamic)
+		{
+			dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
+			return;
+		}
+		var hasUrlVars = Type.typeof(request.data) == Type.ValueType.TObject;
+		if (hasUrlVars && request.method == URLRequestMethod.GET)
+		{
+			var getVariables = "";
+			var fields = Reflect.fields(request.data);
+			var startsWith = (request.url.lastIndexOf("?") == -1) ? "?" : "&";
+			for (field in fields)
+			{
+				var value = Reflect.field(request.data, field);
+				getVariables += (getVariables.length == 0) ? startsWith : "&";
+				getVariables += field + "=" + value;
+			}
+			request.url += getVariables;
+		}
+		var boundary = "----------KM7GI3GI3ae0GI3ae0cH2KM7Ef1cH2";
+
+		var requestData = new ByteArray();
+		if (hasUrlVars && request.method == URLRequestMethod.POST)
+		{
+			var fields = Reflect.fields(request.data);
+			for (field in fields)
+			{
+				var value = Reflect.field(request.data, field);
+				requestData.writeUTFBytes("--" + boundary + "\r\n");
+				requestData.writeUTFBytes("Content-Disposition: form-data; name=\"" + field + "\"\r\n\r\n");
+				requestData.writeUTFBytes(Std.string(value));
+				requestData.writeUTFBytes("\r\n");
+			}
+		}
+		requestData.writeUTFBytes("--" + boundary + "\r\n");
+		requestData.writeUTFBytes("Content-Disposition: form-data; name=\"Filename\"\r\n\r\n");
+		requestData.writeUTFBytes(name);
+		requestData.writeUTFBytes("\r\n");
+		requestData.writeUTFBytes("--" + boundary + "\r\n");
+		requestData.writeUTFBytes("Content-Disposition: form-data; name=\"" + uploadDataFieldName + "\"; ");
+		requestData.writeUTFBytes("filename=\"" + name + "\"\r\n");
+		requestData.writeUTFBytes("Content-Type: application/octet-stream\r\n\r\n");
+		requestData.writeBytes(fileBytes);
+		requestData.writeUTFBytes("\r\n");
+		requestData.writeUTFBytes("--" + boundary + "\r\n");
+		requestData.writeUTFBytes("Content-Disposition: form-data; name=\"Upload\"\r\n\r\n");
+		requestData.writeUTFBytes("Submit Query");
+		requestData.writeUTFBytes("\r\n");
+		requestData.writeUTFBytes("--" + boundary + "--\r\n");
+		request.data = requestData;
+
+		request.method = URLRequestMethod.POST;
+		request.contentType = "multipart/form-data; boundary=" + boundary;
+		request.requestHeaders = [
+			new URLRequestHeader("Accept", "text/*"),
+			new URLRequestHeader("Cache-Control", "no-cache")
+		];
+
+		var urlLoader = new URLLoader();
+		urlLoader.dataFormat = BINARY;
+		urlLoader.addEventListener(Event.OPEN, urlLoader_onOpen);
+		urlLoader.addEventListener(Event.COMPLETE, urlLoader_upload_onComplete);
+		urlLoader.addEventListener(HTTPStatusEvent.HTTP_RESPONSE_STATUS, urlLoader_upload_onHttpResponseStatus);
+		urlLoader.addEventListener(HTTPStatusEvent.HTTP_STATUS, urlLoader_upload_onHttpStatus);
+		urlLoader.addEventListener(ProgressEvent.PROGRESS, urlLoader_onProgress);
+		urlLoader.addEventListener(IOErrorEvent.IO_ERROR, urlLoader_onIOError);
+		urlLoader.load(request);
+		#else
 		openfl.utils._internal.Lib.notImplemented();
+		#end
 	}
 	#end
 
@@ -1345,7 +1448,7 @@ class FileReference extends EventDispatcher
 
 	@:noCompletion private function saveFileDialog_onSelect(path:String):Void
 	{
-		#if desktop
+		#if (desktop && sys)
 		name = Path.withoutDirectory(path);
 
 		if (__data != null)
@@ -1364,9 +1467,9 @@ class FileReference extends EventDispatcher
 		dispatchEvent(new Event(Event.SELECT));
 	}
 
-	@:noCompletion private function urlLoader_onComplete(event:Event):Void
+	@:noCompletion private function urlLoader_download_onComplete(event:Event):Void
 	{
-		#if desktop
+		#if (desktop && sys)
 		if ((__urlLoader.data is ByteArrayData))
 		{
 			__data = __urlLoader.data;
@@ -1389,12 +1492,43 @@ class FileReference extends EventDispatcher
 		dispatchEvent(event);
 	}
 
+	@:noCompletion private function urlLoader_upload_onHttpResponseStatus(event:HTTPStatusEvent):Void
+	{
+		dispatchEvent(event);
+	}
+
+	@:noCompletion private function urlLoader_upload_onHttpStatus(event:HTTPStatusEvent):Void
+	{
+		if (event.status == 200)
+		{
+			// httpStatus is not dispatched if upload is successful
+			// instead complete is dispatched
+			dispatchEvent(new Event(Event.COMPLETE));
+		}
+		else if (event.status != 0)
+		{
+			// dispatched only for errors
+			dispatchEvent(event);
+		}
+	}
+
+	@:noCompletion private function urlLoader_upload_onComplete(event:Event):Void
+	{
+		var urlLoader:URLLoader = cast event.currentTarget;
+		dispatchEvent(new DataEvent(DataEvent.UPLOAD_COMPLETE_DATA, false, false, urlLoader.data));
+	}
+
 	@:noCompletion private function urlLoader_onIOError(event:IOErrorEvent):Void
 	{
 		dispatchEvent(event);
 	}
 
 	@:noCompletion private function urlLoader_onProgress(event:ProgressEvent):Void
+	{
+		dispatchEvent(event);
+	}
+
+	@:noCompletion private function urlLoader_onOpen(event:Event):Void
 	{
 		dispatchEvent(event);
 	}
@@ -1414,7 +1548,7 @@ class FileReference extends EventDispatcher
 		return name;
 	}
 
-	@:noCompletion private function get_size():Int
+	@:noCompletion private function get_size():Float
 	{
 		return size;
 	}

@@ -1,5 +1,6 @@
 package openfl.display3D._internal;
 
+#if !flash
 import haxe.io.Bytes;
 import openfl.utils._internal.Log;
 import openfl.errors.IllegalOperationError;
@@ -160,3 +161,4 @@ class ATFReader
 		return value;
 	}
 }
+#end
