@@ -3351,32 +3351,26 @@ class TextField extends InteractiveObject
 	{
 		if (!selectable && type != INPUT) return;
 
-		//decide wether this click is for selecting text by character or word - single/double click
-		var x = event.stageX, y = event.stageY, time = Timer.stamp();
-		function decideDoubleClick(event:MouseEvent) {
-			__wordSelection = (x == event.stageX && y == event.stageY && Timer.stamp() - time < 0.25);
-			removeEventListener(MouseEvent.MOUSE_DOWN, decideDoubleClick);
+		//decide wether this click is for selecting text by character, word or paragraph - single/double/triple click
+		__wordSelection = event.clickCount == 2;
+		//__paragraphSelection = event.clickCount == 3;
 
-			if (__wordSelection) {
-				var prevCaretIndex = __caretIndex;
-				__caretIndex = __getPositionByWord(x + scrollH, y);
-				__selectionIndex = __getOppositeWordBound(prevCaretIndex);
-				__wordSelectionInitialIndex = prevCaretIndex;
-				setSelection(__caretIndex, __selectionIndex);
-			} else {
-				__caretIndex = __getPosition(mouseX + scrollH, mouseY);
-				__selectionIndex = __caretIndex;
-				setSelection(__caretIndex, __selectionIndex);
-			}
+		//if (__paragraphSelection) {
 
-		}
-		addEventListener(MouseEvent.MOUSE_DOWN, decideDoubleClick);
-
-		if (!__wordSelection) {
+		//} else
+		if (__wordSelection) {
+			var prevCaretIndex = __caretIndex;
+			__caretIndex = __getPositionByWord(event.stageX + scrollH, event.stageY);
+			__selectionIndex = __getOppositeWordBound(prevCaretIndex);
+			__wordSelectionInitialIndex = prevCaretIndex;
+			setSelection(__caretIndex, __selectionIndex);
+		} else {
 			__caretIndex = __getPosition(mouseX + scrollH, mouseY);
 			__selectionIndex = __caretIndex;
 			setSelection(__caretIndex, __selectionIndex);
 		}
+		trace(event.clickCount);
+
 		__updateLayout();
 		//If we start word selection only when the mouse moves, we can't fully select the first word on a double click
 		//and there would be a delay before the first word is selected
@@ -3406,60 +3400,11 @@ class TextField extends InteractiveObject
 		}
 	}
 
-	@:noCompletion private function this_onDoubleClick(event:MouseEvent):Void
-	{
-		if (selectable)
-		{
-			__updateLayout();
-
-			var delimiters:Array<String> = ['\n', '.', '!', '?', ',', ' ', ';', ':', '(', ')', '-', '_', '/'];
-
-			var txtStr:String = __text;
-			var leftPos:Int = -1;
-			var rightPos:Int = txtStr.length;
-			var pos:Int = 0;
-			var startPos:Int = Std.int(Math.max(__caretIndex, 1));
-			if (txtStr.length > 0 && __caretIndex >= 0 && rightPos >= __caretIndex)
-			{
-				for (c in delimiters)
-				{
-					pos = txtStr.lastIndexOf(c, startPos - 1);
-					if (pos > leftPos) leftPos = pos + 1;
-
-					pos = txtStr.indexOf(c, startPos);
-					if (pos < rightPos && pos != -1) rightPos = pos;
-				}
-
-				if (leftPos != rightPos)
-				{
-					setSelection(leftPos, rightPos);
-
-					var setDirty:Bool = true;
-					#if openfl_html5
-					if (DisplayObject.__supportDOM)
-					{
-						if (__renderedOnCanvasWhileOnDOM)
-						{
-							__forceCachedBitmapUpdate = true;
-						}
-						setDirty = false;
-					}
-					#end
-					if (setDirty)
-					{
-						__dirty = true;
-						__setRenderDirty();
-					}
-				}
-			}
-		}
-	}
-
 	#if lime
 	@:noCompletion private function window_onKeyDown(key:KeyCode, modifier:KeyModifier):Void
 	{
 		inline function isModifierPressed()
-			return #if mac modifier.metaKey #elseif js(modifier.metaKey || modifier.ctrlKey) #else (modifier.ctrlKey && !modifier.altKey) #end;
+			return #if mac modifier.metaKey #elseif js (modifier.metaKey || modifier.ctrlKey) #else (modifier.ctrlKey && !modifier.altKey) #end;
 
 		switch (key)
 		{
