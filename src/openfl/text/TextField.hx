@@ -1985,14 +1985,16 @@ class TextField extends InteractiveObject
 		var position = __getPosition(x, y);
 		var delimiters = if (line) "\n" else " .,;:!?()[]{}<>/\\|-=+*&^%$#@~`'\"";
 		var char = __text.charAt(position);
-		if (__specialSelectionInitialIndex <= position) {
+		if (__specialSelectionInitialIndex <= position)
+		{
 			while (delimiters.indexOf(char) == -1 && position < __text.length)
 			{
 				position++;
 				char = __text.charAt(position);
 			}
 		}
-		else {
+		else
+		{
 			while (delimiters.indexOf(char) == -1 && position > 0)
 			{
 				position--;
@@ -2002,15 +2004,18 @@ class TextField extends InteractiveObject
 			if (position == 0) return position;
 			position++;
 		}
+
 		return position;
 	}
 
-	@:noCompletion private function __getOppositeIdentifierBound(charIndex:Int, line:Bool) {
+	@:noCompletion private function __getOppositeIdentifierBound(charIndex:Int, line:Bool):Int
+	{
 		var position = charIndex;
 		var delimiters = if (line) "\n" else " .,;:!?()[]{}<>/\\|-=+*&^%$#@~`'\"";
 		var char = __text.charAt(position);
 
-		if (position <= __caretIndex) {
+		if (position <= __caretIndex)
+		{
 			while (delimiters.indexOf(char) == -1 && position > 0)
 				{
 					position--;
@@ -2019,13 +2024,15 @@ class TextField extends InteractiveObject
 				if (position == 0) return position;
 			position++;
 		}
-		else {
+		else
+		{
 			while (delimiters.indexOf(char) == -1 && position < __text.length)
 			{
 				position++;
 				char = __text.charAt(position);
 			}
 		}
+
 		return position;
 	}
 
@@ -3224,7 +3231,8 @@ class TextField extends InteractiveObject
 			if (position != __caretIndex)
 			{
 				__caretIndex = position;
-				if (__wordSelection || __lineSelection) {
+				if (__wordSelection || __lineSelection)
+				{
 					// on __wordSelection, __lineSelection is false, and vice versa, so the following behaves correctly:
 					__selectionIndex = __getOppositeIdentifierBound(__specialSelectionInitialIndex, __lineSelection);
 				}
@@ -3355,20 +3363,23 @@ class TextField extends InteractiveObject
 		__lineSelection = event.clickCount == 3;
 		__wordSelection = event.clickCount == 2;
 
-		if (__lineSelection) {
+		if (__lineSelection)
+		{
 			var prevCaretIndex = __caretIndex;
 			__caretIndex = __getPositionByIdentifier(event.stageX + scrollH, event.stageY, true);
 			__selectionIndex = __getOppositeIdentifierBound(prevCaretIndex, true);
 			setSelection(__caretIndex, __selectionIndex);
 		}
-		else if (__wordSelection) {
+		else if (__wordSelection)
+		{
 			var prevCaretIndex = __caretIndex;
 			__caretIndex = __getPositionByIdentifier(event.stageX + scrollH, event.stageY, false);
 			__selectionIndex = __getOppositeIdentifierBound(prevCaretIndex, false);
 			__specialSelectionInitialIndex = prevCaretIndex;
 			setSelection(__caretIndex, __selectionIndex);
 		}
-		else {
+		else
+		{
 			__caretIndex = __getPosition(mouseX + scrollH, mouseY);
 			__selectionIndex = __caretIndex;
 			setSelection(__caretIndex, __selectionIndex);
