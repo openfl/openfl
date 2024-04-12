@@ -834,8 +834,6 @@ class TextField extends InteractiveObject
 		__mouseWheelEnabled = true;
 		__text = "";
 
-		doubleClickEnabled = true;
-
 		if (__defaultTextFormat == null)
 		{
 			__defaultTextFormat = new TextFormat("Times New Roman", 12, 0x000000, false, false, false, "", "", TextFormatAlign.LEFT, 0, 0, 0, 0);
