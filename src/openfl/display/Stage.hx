@@ -946,6 +946,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	#end
 	#if desktop
 	@:noCompletion private var __mouseLock:Bool;
+	@:noCompletion private var movementMouseX:Float;
+	@:noCompletion private var movementMouseY:Float;
 	#end
 
 	#if openfljs
@@ -2069,7 +2071,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 	@:noCompletion private function __onLimeMouseMoveRelative(window:Window, x:Float, y:Float):Void
 	{
-		// if (this.window == null || this.window != window) return;
+		if (this.window == null || this.window != window) return;
+		#if desktop
+		movementMouseX = x;
+		movementMouseY = y;
+		#end
 	}
 
 	@:noCompletion private function __onLimeMouseUp(window:Window, x:Float, y:Float, button:Int):Void
@@ -2586,6 +2592,13 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		}, 500);
 		#end
 
+		#if desktop
+		if (__mouseLock && !window.fullscreen && window.mouseLock) // User just existed fullscreen
+		{
+			window.mouseLock = false; // The resize is expected to be temporary, don't set __mouseLock.
+		}
+		#end
+
 		if (__wasFullscreen && !window.fullscreen)
 		{
 			__wasFullscreen = false;
@@ -2615,10 +2628,6 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		targetPoint.setTo(x, y);
 		__displayMatrix.__transformInversePoint(targetPoint);
 
-		#if desktop
-		var movementMouseX = targetPoint.x - __mouseX;
-		var movementMouseY = targetPoint.y - __mouseY;
-		#end
 		__mouseX = targetPoint.x;
 		__mouseY = targetPoint.y;
 
