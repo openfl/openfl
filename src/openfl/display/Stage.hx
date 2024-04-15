@@ -4052,7 +4052,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	#if desktop
 	@:noCompletion private function get_mouseLock():Bool
 	{
-		return __mouseLock;
+		return window.mouseLock;
 	}
 
 	@:noCompletion private function set_mouseLock(value:Bool):Bool
