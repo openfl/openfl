@@ -525,19 +525,30 @@ class MouseEvent extends Event
 	public var isRelatedObjectInaccessible:Bool;
 
 	/**
-		The horizontal coordinate at which the event occurred relative to the
-		containing sprite.
+		The horizontal coordinate at which the event occurred
+		relative to the containing sprite. When mouse locking
+		is enabled, this is set to `0`.
 	**/
 	public var localX:Float;
 
 	/**
-		The vertical coordinate at which the event occurred relative to the
-		containing sprite.
+		The vertical coordinate at which the event occurred
+		relative to the containing sprite. When mouse locking
+		is enabled, this is set to `0`.
 	**/
 	public var localY:Float;
 
-	// @:noCompletion @:dox(hide) @:require(flash11_2) public var movementX:Float;
-	// @:noCompletion @:dox(hide) @:require(flash11_2) public var movementY:Float;
+	/**
+		When mouse locking is enabled, the change in mouse position in the
+		horizontal coordinate since the last mouse event.
+	**/
+	public var movementX:Float;
+
+	/**
+		When mouse locking is enabled, the change in mouse position in the
+		vertical coordinate since the last mouse event.
+	**/
+	public var movementY:Float;
 
 	/**
 		A reference to a display list object that is related to the event. For
@@ -564,14 +575,14 @@ class MouseEvent extends Event
 	/**
 		The horizontal coordinate at which the event occurred in global Stage
 		coordinates. This property is calculated when the `localX`
-		property is set.
+		property is set. When mouse locking is enabled, this is set to `0`.
 	**/
 	public var stageX:Float;
 
 	/**
 		The vertical coordinate at which the event occurred in global Stage
 		coordinates. This property is calculated when the `localY`
-		property is set.
+		property is set. When mouse locking is enabled, this is set to `0`.
 	**/
 	public var stageY:Float;
 
@@ -613,9 +624,17 @@ class MouseEvent extends Event
 							 the bubbling phase of the event flow.
 		@param cancelable    Determines whether the Event object can be canceled.
 		@param localX        The horizontal coordinate at which the event occurred
-							 relative to the containing sprite.
+							 relative to the containing sprite. When mouse locking is
+							 enabled, this is set to `0`.
 		@param localY        The vertical coordinate at which the event occurred
-							 relative to the containing sprite.
+							 relative to the containing sprite. When mouse locking is
+							 enabled, this is set to `0`.
+		@param movementX	 When mouse locking is enabled, The change in mouse position
+							 in the horizontal coordinate. When mouse locking is disabled,
+							 this is set to `0`.
+		@param movementY	 When mouse locking is enabled, The change in mouse position
+							 in the vertical coordinate. When mouse locking is disabled,
+							 this is set to `0`.
 		@param relatedObject The complementary InteractiveObject instance that is
 							 affected by the event. For example, when a
 							 `mouseOut` event occurs,
@@ -637,9 +656,9 @@ class MouseEvent extends Event
 							 values. This parameter is used only for the
 							 `MouseEvent.mouseWheel` event.
 	**/
-	public function new(type:String, bubbles:Bool = true, cancelable:Bool = false, localX:Float = 0, localY:Float = 0, relatedObject:InteractiveObject = null,
-			ctrlKey:Bool = false, altKey:Bool = false, shiftKey:Bool = false, buttonDown:Bool = false, delta:Int = 0, commandKey:Bool = false,
-			controlKey:Bool = false, clickCount:Int = 0)
+	public function new(type:String, bubbles:Bool = true, cancelable:Bool = false, localX:Float = 0, localY:Float = 0, movementX:Float = 0, movementY:Float = 0,
+						relatedObject:InteractiveObject = null, ctrlKey:Bool = false, altKey:Bool = false, shiftKey:Bool = false, buttonDown:Bool = false,
+						delta:Int = 0, commandKey:Bool = false, controlKey:Bool = false, clickCount:Int = 0)
 	{
 		super(type, bubbles, cancelable);
 
@@ -651,6 +670,8 @@ class MouseEvent extends Event
 		this.delta = delta;
 		this.localX = localX;
 		this.localY = localY;
+		this.movementX = movementX;
+		this.movementY = movementY;
 		this.buttonDown = buttonDown;
 		this.commandKey = commandKey;
 		this.controlKey = controlKey;
@@ -665,7 +686,7 @@ class MouseEvent extends Event
 
 	public override function clone():MouseEvent
 	{
-		var event = new MouseEvent(type, bubbles, cancelable, localX, localY, relatedObject, ctrlKey, altKey, shiftKey, buttonDown, delta, commandKey,
+		var event = new MouseEvent(type, bubbles, cancelable, localX, localY, movementX, movementY, relatedObject, ctrlKey, altKey, shiftKey, buttonDown, delta, commandKey,
 			controlKey, clickCount);
 		event.target = target;
 		event.currentTarget = currentTarget;
@@ -676,7 +697,7 @@ class MouseEvent extends Event
 	public override function toString():String
 	{
 		return __formatToString("MouseEvent", [
-			"type", "bubbles", "cancelable", "localX", "localY", "relatedObject", "ctrlKey", "altKey", "shiftKey", "buttonDown", "delta"
+			"type", "bubbles", "cancelable", "localX", "localY", "movementX", "movementY", "relatedObject", "ctrlKey", "altKey", "shiftKey", "buttonDown", "delta"
 		]);
 	}
 
@@ -693,10 +714,10 @@ class MouseEvent extends Event
 		__updateAfterEventFlag = true;
 	}
 
-	@:noCompletion private static function __create(type:String, button:Int, clickCount:Int, stageX:Float, stageY:Float, local:Point, target:InteractiveObject,
+	@:noCompletion private static function __create(type:String, button:Int, clickCount:Int, stageX:Float, stageY:Float, local:Point, movementX:Float, movementY:Float, target:InteractiveObject,
 			delta:Int = 0):MouseEvent
 	{
-		var event = new MouseEvent(type, true, false, local.x, local.y, null, __ctrlKey, __altKey, __shiftKey, __buttonDown, delta, __commandKey,
+		var event = new MouseEvent(type, true, false, local.x, local.y, movementX, movementY, null, __ctrlKey, __altKey, __shiftKey, __buttonDown, delta, __commandKey,
 			__controlKey, clickCount);
 		event.stageX = stageX;
 		event.stageY = stageY;
@@ -716,6 +737,8 @@ class MouseEvent extends Event
 		delta = 0;
 		localX = 0;
 		localY = 0;
+		movementX = 0;
+		movementY = 0;
 		buttonDown = false;
 		commandKey = false;
 		controlKey = false;
