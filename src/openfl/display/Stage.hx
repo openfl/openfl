@@ -513,7 +513,40 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	**/
 	public var fullScreenWidth(get, never):UInt;
 
-	// @:noCompletion @:dox(hide) @:require(flash11_2) public var mouseLock:Bool;
+	#if desktop
+	/**
+		Set to true to enable mouse locking. Enabling mouse locking turns off
+		the cursor, and allows mouse movement with no bounds. You can only
+		enable mouse locking in full-screen mode for desktop applications.
+		Setting it on applications not in full-screen mode, or for applications
+		on mobile devices, throws an exception.
+
+		Mouse locking is disabled automatically and the mouse cursor is made
+		visible again when:
+
+		 - The user exits full-screen mode by using the Esc key (all platforms),
+		   Control-W (Windows), Command-W (Mac), or Alt-F4 (Windows).
+		 - The application window loses focus.
+		 - Any settings UI is visible, including all privacy dialog boxes.
+		 - A native dialog box is shown, such as a file upload dialog box.
+
+		When exiting full screen mode, this property is automatically set to `false`.
+
+		Events associated with mouse movement, such as the `MOUSE_MOVE` event, use the
+		`MouseEvent` class to represent the event object. When mouse locking is disabled,
+		use the `MouseEvent.localX` and `MouseEvent.localY` properties to determine the
+		location of the mouse. When mouse locking is enabled, use the `MouseEvent.movementX`
+		and `MouseEvent.movementY` properties to determine the location of the mouse.
+		The `movementX` and `movementY` properties contain changes in the position of
+		the mouse since the last event, instead of absolute coordinates of the mouse location.
+
+		**Note:** When the application is in full-screen mode, mouse event listeners
+		attached to display objects other than the Stage are not dispatched.
+		Therefore, to receive mouse deltas and any other mouse events when `mouseLock`
+		is `true`, attach the mouse event listeners to the Stage object.
+	**/
+	public var mouseLock(get, set):Bool;
+	#end
 
 	/**
 		A value from the StageQuality class that specifies which rendering quality
@@ -911,6 +944,9 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	#if lime
 	@:noCompletion private var __primaryTouch:Touch;
 	#end
+	#if desktop
+	@:noCompletion private var __mouseLock:Bool;
+	#end
 
 	#if openfljs
 	@:noCompletion private static function __init__()
@@ -948,7 +984,13 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			"scaleMode": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_scaleMode (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_scaleMode (v); }")
-			},
+			}
+			#if (desktop),
+			"mouseLock": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_mouseLock (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_mouseLock (v); }")
+			}
+			#end
 		});
 	}
 	#end
@@ -1092,6 +1134,10 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		this.application = window.application;
 		this.window = window;
 		this.color = color;
+		#end
+
+		#if desktop
+		__mouseLock = window.mouseLock;
 		#end
 
 		__contentsScaleFactor = window.scale;
@@ -2304,6 +2350,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 	@:noCompletion private function __onLimeWindowClose(window:Window):Void
 	{
+		#if desktop
+		__mouseLock = false;
+		window.mouseLock = false;
+		#end
+
 		if (this.window == window)
 		{
 			this.window = null;
@@ -2386,6 +2437,13 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		#if !desktop
 		focus = __cacheFocus;
 		#end
+
+		#if desktop
+		if (__mouseLock)
+		{
+			window.mouseLock = true;
+		}
+		#end
 	}
 
 	@:noCompletion private function __onLimeWindowFocusOut(window:Window):Void
@@ -2407,6 +2465,13 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		#if openfl_pool_events
 		Event.__pool.release(event);
+		#end
+
+		#if desktop
+		if (__mouseLock)
+		{
+			window.mouseLock = false;
+		}
 		#end
 
 		var currentFocus = focus;
@@ -3640,6 +3705,22 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	{
 		return this.height;
 	}
+
+	#if desktop
+	@:noCompletion private function get_mouseLock():Bool
+	{
+		return __mouseLock;
+	}
+
+	@:noCompletion private function set_mouseLock(value:Bool):Bool
+	{
+		if (value && !window.fullscreen)
+		{
+			throw new IllegalOperationError("Property can not be set in non full screen mode.");
+		}
+		return __mouseLock = window.mouseLock = value;
+	}
+	#end
 
 	@:noCompletion private override function get_mouseX():Float
 	{
