@@ -39,11 +39,13 @@ class MouseEvent extends Event
 		| `controlKey` | `true` if the Ctrl or Control key is active; `false` if it is inactive. |
 		| `ctrlKey` | `true` on Windows or Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
 		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
-		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
-		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
+		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. When mouse locking is enabled, this is set to `0`. |
+		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. When mouse locking is enabled, this is set to `0`. |
+		| `movementX` | When mouse locking is enabled, the change in mouse position in the horizontal coordinate since the last mouse event. |
+		| `movementY` | When mouse locking is enabled, the change in mouse position in the vertical coordinate since the last mouse event. |
 		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
-		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
-		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
+		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. When mouse locking is enabled, this is set to `0`. |
+		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. When mouse locking is enabled, this is set to `0`. |
 		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
 	public static inline var CLICK:EventType<MouseEvent> = "click";
@@ -64,12 +66,14 @@ class MouseEvent extends Event
 		| `controlKey` | `true` if the Ctrl or Control key is active; `false` if it is inactive. |
 		| `ctrlKey` | `true` on Windows or Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
 		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
-		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
-		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
+		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. When mouse locking is enabled, this is set to `0`. |
+		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. When mouse locking is enabled, this is set to `0`. |
+		| `movementX` | When mouse locking is enabled, the change in mouse position in the horizontal coordinate since the last mouse event. |
+		| `movementY` | When mouse locking is enabled, the change in mouse position in the vertical coordinate since the last mouse event. |
 		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
 		| `clickCount` | Count of the number of mouse clicks to indicate whether the event is part of a multi-click sequence. |
-		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
-		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
+		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. When mouse locking is enabled, this is set to `0`. |
+		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. When mouse locking is enabled, this is set to `0`. |
 		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
 	// @:noCompletion @:dox(hide) @:require(flash11_2) public static var CONTEXT_MENU:String;
@@ -91,11 +95,13 @@ class MouseEvent extends Event
 		| `controlKey` | `true` if the Ctrl or Control key is active; `false` if it is inactive. |
 		| `ctrlKey` | `true` on Windows or Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
 		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
-		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
-		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
+		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. When mouse locking is enabled, this is set to `0`. |
+		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. When mouse locking is enabled, this is set to `0`. |
+		| `movementX` | When mouse locking is enabled, the change in mouse position in the horizontal coordinate since the last mouse event. |
+		| `movementY` | When mouse locking is enabled, the change in mouse position in the vertical coordinate since the last mouse event. |
 		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
-		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
-		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
+		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. When mouse locking is enabled, this is set to `0`. |
+		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. When mouse locking is enabled, this is set to `0`. |
 		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
 	public static inline var DOUBLE_CLICK:EventType<MouseEvent> = "doubleClick";
@@ -115,11 +121,13 @@ class MouseEvent extends Event
 		| `controlKey` | `true` if the Ctrl or Control key is active; `false` if it is inactive. |
 		| `ctrlKey` | `true` on Windows or Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
 		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
-		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
-		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
+		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. When mouse locking is enabled, this is set to `0`. |
+		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. When mouse locking is enabled, this is set to `0`. |
+		| `movementX` | When mouse locking is enabled, the change in mouse position in the horizontal coordinate since the last mouse event. |
+		| `movementY` | When mouse locking is enabled, the change in mouse position in the vertical coordinate since the last mouse event. |
 		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
-		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
-		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
+		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. When mouse locking is enabled, this is set to `0`. |
+		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. When mouse locking is enabled, this is set to `0`. |
 		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
 	public static inline var MIDDLE_CLICK:EventType<MouseEvent> = "middleClick";
@@ -139,12 +147,14 @@ class MouseEvent extends Event
 		| `controlKey` | `true` if the Ctrl or Control key is active; `false` if it is inactive. |
 		| `ctrlKey` | `true` on Windows or Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
 		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
-		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
-		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
+		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. When mouse locking is enabled, this is set to `0`. |
+		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. When mouse locking is enabled, this is set to `0`. |
+		| `movementX` | When mouse locking is enabled, the change in mouse position in the horizontal coordinate since the last mouse event. |
+		| `movementY` | When mouse locking is enabled, the change in mouse position in the vertical coordinate since the last mouse event. |
 		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
 		| `clickCount` | Count of the number of mouse clicks to indicate whether the event is part of a multi-click sequence. |
-		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
-		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
+		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. When mouse locking is enabled, this is set to `0`. |
+		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. When mouse locking is enabled, this is set to `0`. |
 		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
 	public static inline var MIDDLE_MOUSE_DOWN:EventType<MouseEvent> = "middleMouseDown";
@@ -164,12 +174,14 @@ class MouseEvent extends Event
 		| `controlKey` | `true` if the Ctrl or Control key is active; `false` if it is inactive. |
 		| `ctrlKey` | `true` on Windows or Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
 		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
-		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
-		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
+		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. When mouse locking is enabled, this is set to `0`. |
+		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. When mouse locking is enabled, this is set to `0`. |
+		| `movementX` | When mouse locking is enabled, the change in mouse position in the horizontal coordinate since the last mouse event. |
+		| `movementY` | When mouse locking is enabled, the change in mouse position in the vertical coordinate since the last mouse event. |
 		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
 		| `clickCount` | Count of the number of mouse clicks to indicate whether the event is part of a multi-click sequence. |
-		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
-		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
+		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. When mouse locking is enabled, this is set to `0`. |
+		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. When mouse locking is enabled, this is set to `0`. |
 		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
 	public static inline var MIDDLE_MOUSE_UP:EventType<MouseEvent> = "middleMouseUp";
@@ -189,12 +201,14 @@ class MouseEvent extends Event
 		| `controlKey` | `true` if the Ctrl or Control key is active; `false` if it is inactive. |
 		| `ctrlKey` | `true` on Windows and Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
 		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
-		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
-		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
+		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. When mouse locking is enabled, this is set to `0`. |
+		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. When mouse locking is enabled, this is set to `0`. |
+		| `movementX` | When mouse locking is enabled, the change in mouse position in the horizontal coordinate since the last mouse event. |
+		| `movementY` | When mouse locking is enabled, the change in mouse position in the vertical coordinate since the last mouse event. |
 		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
 		| `clickCount` | Count of the number of mouse clicks to indicate whether the event is part of a multi-click sequence. |
-		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
-		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
+		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. When mouse locking is enabled, this is set to `0`. |
+		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. When mouse locking is enabled, this is set to `0`. |
 		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
 	public static inline var MOUSE_DOWN:EventType<MouseEvent> = "mouseDown";
@@ -214,11 +228,13 @@ class MouseEvent extends Event
 		| `controlKey` | `true` if the Ctrl or Control key is active; `false` if it is inactive. |
 		| `ctrlKey` | `true` on Windows or Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
 		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
-		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
-		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
+		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. When mouse locking is enabled, this is set to `0`. |
+		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. When mouse locking is enabled, this is set to `0`. |
+		| `movementX` | When mouse locking is enabled, the change in mouse position in the horizontal coordinate since the last mouse event. |
+		| `movementY` | When mouse locking is enabled, the change in mouse position in the vertical coordinate since the last mouse event. |
 		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
-		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
-		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
+		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. When mouse locking is enabled, this is set to `0`. |
+		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. When mouse locking is enabled, this is set to `0`. |
 		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
 	public static inline var MOUSE_MOVE:EventType<MouseEvent> = "mouseMove";
@@ -239,11 +255,13 @@ class MouseEvent extends Event
 		| `ctrlKey` | `true` on Windows or Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
 		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
 		| `relatedObject` | The display list object to which the pointing device now points. |
-		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
-		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
+		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. When mouse locking is enabled, this is set to `0`. |
+		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. When mouse locking is enabled, this is set to `0`. |
+		| `movementX` | When mouse locking is enabled, the change in mouse position in the horizontal coordinate since the last mouse event. |
+		| `movementY` | When mouse locking is enabled, the change in mouse position in the vertical coordinate since the last mouse event. |
 		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
-		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
-		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
+		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. When mouse locking is enabled, this is set to `0`. |
+		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. When mouse locking is enabled, this is set to `0`. |
 		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
 	public static inline var MOUSE_OUT:EventType<MouseEvent> = "mouseOut";
@@ -264,11 +282,13 @@ class MouseEvent extends Event
 		| `ctrlKey` | `true` on Windows or Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
 		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
 		| `relatedObject` | The display list object to which the pointing device was pointing. |
-		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
-		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
+		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. When mouse locking is enabled, this is set to `0`. |
+		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. When mouse locking is enabled, this is set to `0`. |
+		| `movementX` | When mouse locking is enabled, the change in mouse position in the horizontal coordinate since the last mouse event. |
+		| `movementY` | When mouse locking is enabled, the change in mouse position in the vertical coordinate since the last mouse event. |
 		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
-		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
-		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
+		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. When mouse locking is enabled, this is set to `0`. |
+		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. When mouse locking is enabled, this is set to `0`. |
 		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
 	public static inline var MOUSE_OVER:EventType<MouseEvent> = "mouseOver";
@@ -287,12 +307,14 @@ class MouseEvent extends Event
 		| `controlKey` | `true` if the Ctrl or Control key is active; `false` if it is inactive. |
 		| `ctrlKey` | `true` on Windows or Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
 		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
-		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
-		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
+		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. When mouse locking is enabled, this is set to `0`. |
+		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. When mouse locking is enabled, this is set to `0`. |
+		| `movementX` | When mouse locking is enabled, the change in mouse position in the horizontal coordinate since the last mouse event. |
+		| `movementY` | When mouse locking is enabled, the change in mouse position in the vertical coordinate since the last mouse event. |
 		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
 		| `clickCount` | Count of the number of mouse clicks to indicate whether the event is part of a multi-click sequence. |
-		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
-		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
+		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. When mouse locking is enabled, this is set to `0`. |
+		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. When mouse locking is enabled, this is set to `0`. |
 		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
 	public static inline var MOUSE_UP:EventType<MouseEvent> = "mouseUp";
@@ -313,11 +335,13 @@ class MouseEvent extends Event
 		| `ctrlKey` | `true` on Windows or Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
 		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
 		| `delta` | The number of lines that that each notch on the mouse wheel represents. |
-		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
-		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
+		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. When mouse locking is enabled, this is set to `0`. |
+		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. When mouse locking is enabled, this is set to `0`. |
+		| `movementX` | When mouse locking is enabled, the change in mouse position in the horizontal coordinate since the last mouse event. |
+		| `movementY` | When mouse locking is enabled, the change in mouse position in the vertical coordinate since the last mouse event. |
 		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
-		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
-		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
+		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. When mouse locking is enabled, this is set to `0`. |
+		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. When mouse locking is enabled, this is set to `0`. |
 		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
 	public static inline var MOUSE_WHEEL:EventType<MouseEvent> = "mouseWheel";
@@ -345,11 +369,13 @@ class MouseEvent extends Event
 		| `controlKey` | `true` if the Ctrl or Control key is active; `false` if it is inactive. |
 		| `ctrlKey` | `true` on Windows or Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
 		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
-		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
-		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
+		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. When mouse locking is enabled, this is set to `0`. |
+		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. When mouse locking is enabled, this is set to `0`. |
+		| `movementX` | When mouse locking is enabled, the change in mouse position in the horizontal coordinate since the last mouse event. |
+		| `movementY` | When mouse locking is enabled, the change in mouse position in the vertical coordinate since the last mouse event. |
 		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
-		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
-		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
+		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. When mouse locking is enabled, this is set to `0`. |
+		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. When mouse locking is enabled, this is set to `0`. |
 		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
 	public static inline var RIGHT_CLICK:EventType<MouseEvent> = "rightClick";
@@ -369,12 +395,14 @@ class MouseEvent extends Event
 		| `controlKey` | `true` if the Ctrl or Control key is active; `false` if it is inactive. |
 		| `ctrlKey` | `true` on Windows or Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
 		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
-		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
-		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
+		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. When mouse locking is enabled, this is set to `0`. |
+		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. When mouse locking is enabled, this is set to `0`. |
+		| `movementX` | When mouse locking is enabled, the change in mouse position in the horizontal coordinate since the last mouse event. |
+		| `movementY` | When mouse locking is enabled, the change in mouse position in the vertical coordinate since the last mouse event. |
 		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
 		| `clickCount` | Count of the number of mouse clicks to indicate whether the event is part of a multi-click sequence. |
-		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
-		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
+		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. When mouse locking is enabled, this is set to `0`. |
+		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. When mouse locking is enabled, this is set to `0`. |
 		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
 	public static inline var RIGHT_MOUSE_DOWN:EventType<MouseEvent> = "rightMouseDown";
@@ -394,12 +422,14 @@ class MouseEvent extends Event
 		| `controlKey` | `true` if the Ctrl or Control key is active; `false` if it is inactive. |
 		| `ctrlKey` | `true` on Windows or Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
 		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
-		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
-		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
+		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. When mouse locking is enabled, this is set to `0`. |
+		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. When mouse locking is enabled, this is set to `0`. |
+		| `movementX` | When mouse locking is enabled, the change in mouse position in the horizontal coordinate since the last mouse event. |
+		| `movementY` | When mouse locking is enabled, the change in mouse position in the vertical coordinate since the last mouse event. |
 		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
 		| `clickCount` | Count of the number of mouse clicks to indicate whether the event is part of a multi-click sequence. |
-		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
-		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
+		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. When mouse locking is enabled, this is set to `0`. |
+		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. When mouse locking is enabled, this is set to `0`. |
 		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
 	public static inline var RIGHT_MOUSE_UP:EventType<MouseEvent> = "rightMouseUp";
@@ -419,11 +449,13 @@ class MouseEvent extends Event
 		| `ctrlKey` | `true` on Windows or Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
 		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
 		| `relatedObject` | The display list object to which the pointing device now points. |
-		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
-		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
+		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. When mouse locking is enabled, this is set to `0`. |
+		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. When mouse locking is enabled, this is set to `0`. |
+		| `movementX` | When mouse locking is enabled, the change in mouse position in the horizontal coordinate since the last mouse event. |
+		| `movementY` | When mouse locking is enabled, the change in mouse position in the vertical coordinate since the last mouse event. |
 		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
-		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
-		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
+		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. When mouse locking is enabled, this is set to `0`. |
+		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. When mouse locking is enabled, this is set to `0`. |
 		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
 	public static inline var ROLL_OUT:EventType<MouseEvent> = "rollOut";
@@ -444,11 +476,13 @@ class MouseEvent extends Event
 		| `ctrlKey` | `true` on Windows or Linux if the Ctrl key is active. `true` on Mac if either the Ctrl key or the Command key is active. Otherwise, `false`. |
 		| `currentTarget` | The object that is actively processing the Event object with an event listener. |
 		| `relatedObject` | The display list object to which the pointing device was pointing. |
-		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. |
-		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. |
+		| `localX` | The horizontal coordinate at which the event occurred relative to the containing sprite. When mouse locking is enabled, this is set to `0`. |
+		| `localY` | The vertical coordinate at which the event occurred relative to the containing sprite. When mouse locking is enabled, this is set to `0`. |
+		| `movementX` | When mouse locking is enabled, the change in mouse position in the horizontal coordinate since the last mouse event. |
+		| `movementY` | When mouse locking is enabled, the change in mouse position in the vertical coordinate since the last mouse event. |
 		| `shiftKey` | `true` if the Shift key is active; `false` if it is inactive. |
-		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. |
-		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. |
+		| `stageX` | The horizontal coordinate at which the event occurred in global stage coordinates. When mouse locking is enabled, this is set to `0`. |
+		| `stageY` | The vertical coordinate at which the event occurred in global stage coordinates. When mouse locking is enabled, this is set to `0`. |
 		| `target` | The InteractiveObject instance under the pointing device. The `target` is not always the object in the display list that registered the event listener. Use the `currentTarget` property to access the object in the display list that is currently processing the event. |
 	**/
 	public static inline var ROLL_OVER:EventType<MouseEvent> = "rollOver";
