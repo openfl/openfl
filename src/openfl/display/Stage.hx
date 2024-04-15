@@ -1619,7 +1619,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					var clickEvent = MouseEvent.__pool.get();
 					clickEvent.type = MouseEvent.CLICK;
 					#if desktop
-					if (__mouseLock)
+					if (window.mouseLock)
 					{
 						clickEvent.stageX = 0;
 						clickEvent.stageY = 0;
@@ -1653,7 +1653,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					#else
 					var clickEvent:MouseEvent;
 					#if desktop
-					if (__mouseLock)
+					if (window.mouseLock)
 					{
 						clickEvent = MouseEvent.__create(MouseEvent.CLICK, 0, 0, 0, 0, new Point(0, 0), 0, 0, sprite);
 					}
@@ -2534,6 +2534,13 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		__resize();
 
+		#if desktop
+		if (__mouseLock) // Was fullscreen before with mouse locking enabled.
+		{
+			window.mouseLock = true;
+		}
+		#end
+
 		if (!__wasFullscreen)
 		{
 			__wasFullscreen = true;
@@ -2741,7 +2748,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 						event.clickCount = 0;
 						#else
 						#if desktop
-						if (mouseLock)
+						if (__mouseLock)
 						{
 							event = MouseEvent.__create(MouseEvent.RELEASE_OUTSIDE, 1, 0, 0, 0, new Point(0, 0), movementMouseX, movementMouseY, this);
 						}
@@ -2794,7 +2801,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		event = MouseEvent.__pool.get();
 		event.type = type;
 		#if desktop
-		if (__mouseLock)
+		if (window.mouseLock)
 		{
 			event.stageX = 0;
 			event.stageY = 0;
@@ -2826,7 +2833,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		event.clickCount = clickCount;
 		#else
 		#if desktop
-		if (__mouseLock)
+		if (window.mouseLock)
 		{
 			event = MouseEvent.__create(type, button, clickCount, 0, 0, new Point(0, 0), movementMouseX, movementMouseY, target);
 		}
@@ -2856,7 +2863,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			event = MouseEvent.__pool.get();
 			event.type = clickType;
 			#if desktop
-			if (__mouseLock)
+			if (window.mouseLock)
 			{
 				event.stageX = 0;
 				event.stageY = 0;
@@ -2888,7 +2895,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			event.clickCount = 0;
 			#else
 			#if desktop
-			if (__mouseLock)
+			if (window.mouseLock)
 			{
 				event = MouseEvent.__create(clickType, button, 0, 0, 0, new Point(0, 0), movementMouseX, movementMouseY, target);
 			}
@@ -2921,7 +2928,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					event = MouseEvent.__pool.get();
 					event.type = MouseEvent.DOUBLE_CLICK;
 					#if desktop
-					if (__mouseLock)
+					if (window.mouseLock)
 					{
 						event.stageX = 0;
 						event.stageY = 0;
@@ -2953,7 +2960,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					event.clickCount = 0;
 					#else
 					#if desktop
-					if (__mouseLock)
+					if (window.mouseLock)
 					{
 						event = MouseEvent.__create(MouseEvent.DOUBLE_CLICK, button, 0, 0, 0, new Point(0, 0), movementMouseX, movementMouseY, target);
 					}
@@ -3026,7 +3033,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				event = MouseEvent.__pool.get();
 				event.type = MouseEvent.MOUSE_OUT;
 				#if desktop
-				if (__mouseLock)
+				if (window.mouseLock)
 				{
 					event.stageX = 0;
 					event.stageY = 0;
@@ -3058,7 +3065,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				event.clickCount = 0;
 				#else
 				#if desktop
-				if (__mouseLock)
+				if (window.mouseLock)
 				{
 					event = MouseEvent.__create(MouseEvent.MOUSE_OUT, button, 0, 0, 0, new Point(0, 0), movementMouseX, movementMouseY, cast __mouseOverTarget);
 				}
@@ -3096,7 +3103,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				event = MouseEvent.__pool.get();
 				event.type = MouseEvent.ROLL_OUT;
 				#if desktop
-				if (__mouseLock)
+				if (window.mouseLock)
 				{
 					event.stageX = 0;
 					event.stageY = 0;
@@ -3128,7 +3135,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				event.clickCount = 0;
 				#else
 				#if desktop
-				if (__mouseLock)
+				if (window.mouseLock)
 				{
 					event = MouseEvent.__create(MouseEvent.ROLL_OUT, button, 0, 0, 0, new Point(0, 0), movementMouseX, movementMouseY, cast item);
 				}
@@ -3169,7 +3176,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					var mouseEvent = MouseEvent.__pool.get();
 					mouseEvent.type = MouseEvent.ROLL_OVER;
 					#if desktop
-					if (__mouseLock)
+					if (window.mouseLock)
 					{
 						event.stageX = 0;
 						event.stageY = 0;
@@ -3202,7 +3209,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					event.clickCount = 0;
 					#else
 					#if desktop
-					if (__mouseLock)
+					if (window.mouseLock)
 					{
 						event = MouseEvent.__create(MouseEvent.ROLL_OVER, button, 0, 0, 0, new Point(0, 0), movementMouseX, movementMouseY, cast item);
 					}
@@ -3243,7 +3250,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				var mouseEvent = MouseEvent.__pool.get();
 				mouseEvent.type = MouseEvent.MOUSE_OVER;
 				#if desktop
-				if (__mouseLock)
+				if (window.mouseLock)
 				{
 					event.stageX = 0;
 					event.stageY = 0;
@@ -3276,7 +3283,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				event.clickCount = 0;
 				#else
 				#if desktop
-				if (__mouseLock)
+				if (window.mouseLock)
 				{
 					event = MouseEvent.__create(MouseEvent.MOUSE_OVER, button, 0, 0, 0, new Point(0, 0), movementMouseX, movementMouseY,  cast target);
 				}
@@ -3368,7 +3375,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		var event:MouseEvent;
 		#if desktop
-		if (__mouseLock)
+		if (window.mouseLock)
 		{
 			event = MouseEvent.__create(MouseEvent.MOUSE_WHEEL, 0, 0, 0, 0, new Point(0, 0), 0, 0, target, delta);
 		}
