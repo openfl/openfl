@@ -140,6 +140,18 @@ class TextureBase extends EventDispatcher
 
 		// __memoryUsage = 0;
 		// __compressedMemoryUsage = 0;
+
+		#if cpp
+		cpp.vm.Gc.setFinalizer(this, cpp.Function.fromStaticFunction(onFinalize));
+		#end
+	}
+
+	@:void public static function onFinalize(textureBase : TextureBase) : Void
+	{
+		if(textureBase != null)
+		{
+			textureBase.dispose();
+		}
 	}
 
 	/**
