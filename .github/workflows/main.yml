@@ -6,7 +6,7 @@ jobs:
   unit-test-neko-haxe3:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
 
@@ -45,7 +45,7 @@ jobs:
         haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.1]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
 
@@ -86,7 +86,7 @@ jobs:
     # macos-14 is arm64, which setup-haxe doesn't support yet
     runs-on: macos-13
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
 
@@ -126,7 +126,7 @@ jobs:
         haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.1]
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
 
@@ -169,7 +169,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
 
@@ -190,7 +190,7 @@ jobs:
         run: |
           haxe run.hxml
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: openfl-haxelib
           path: |
@@ -205,7 +205,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: true
 
@@ -231,7 +231,7 @@ jobs:
         run: |
           haxe docs.hxml
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: openfl-docs
           path: docs
@@ -259,7 +259,7 @@ jobs:
           haxelib install actuate --quiet
           haxelib git openfl-samples https://github.com/openfl/openfl-samples --quiet
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: openfl-haxelib
           path: openfl-haxelib
@@ -306,7 +306,7 @@ jobs:
           haxelib install genes --quiet
           haxelib git openfl-samples https://github.com/openfl/openfl-samples --quiet
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: openfl-haxelib
           path: openfl-haxelib
@@ -360,7 +360,7 @@ jobs:
           haxelib install actuate --quiet
           haxelib git openfl-samples https://github.com/openfl/openfl-samples --quiet
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: openfl-haxelib
           path: openfl-haxelib
@@ -406,7 +406,7 @@ jobs:
           haxelib install actuate --quiet
           haxelib git openfl-samples https://github.com/openfl/openfl-samples --quiet
 
-      - uses: actions/download-artifact@v3
+      - uses: actions/download-artifact@v4
         with:
           name: openfl-haxelib
           path: openfl-haxelib
