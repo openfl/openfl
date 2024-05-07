@@ -123,7 +123,7 @@ class TextFormat
 
 	/**
 		A Boolean value that indicates whether kerning is enabled
-		(`true`) or disabled(`false`). Kerning adjusts the
+		(`true`) or disabled (`false`). Kerning adjusts the
 		pixels between certain character pairs to improve readability, and should
 		be used only when necessary, such as with headings in large fonts. Kerning
 		is supported for embedded fonts only.
@@ -193,7 +193,7 @@ class TextFormat
 
 	/**
 		Indicates whether the text that uses this text format is underlined
-		(`true`) or not(`false`). This underlining is
+		(`true`) or not (`false`). This underlining is
 		similar to that produced by the `<U>` tag, but the latter is
 		not true underlining, because it does not skip descenders correctly. The
 		default value is `null`, which indicates that underlining is

@@ -542,13 +542,13 @@ import lime.ui.KeyCode;
 	public static inline var QUOTE:Int = 222;
 
 	/**
-		Specifies whether the Caps Lock key is activated(`true`) or
-		not(`false`).
+		Specifies whether the Caps Lock key is activated (`true`) or
+		not (`false`).
 	**/
 	public static var capsLock(default, null):Bool;
 
 	/**
-		Specifies whether the Num Lock key is activated(`true`) or not
+		Specifies whether the Num Lock key is activated (`true`) or not
 		(`false`).
 	**/
 	public static var numLock(default, null):Bool;

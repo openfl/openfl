@@ -154,7 +154,7 @@ import js.html.CSSStyleDeclaration;
 							by all display objects with a listener registered
 							for this event.
 
-							**Note: **This event is not dispatched if the
+							**Note:** This event is not dispatched if the
 							display is not rendering. This is the case when the
 							content is either minimized or obscured.
 

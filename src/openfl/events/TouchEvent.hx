@@ -290,7 +290,7 @@ class TouchEvent extends Event
 	public static inline var TOUCH_TAP:EventType<TouchEvent> = "touchTap";
 
 	/**
-		Indicates whether the Alt key is active(`true`) or inactive
+		Indicates whether the Alt key is active (`true`) or inactive
 		(`false`). Supported for Windows and Linux operating systems
 		only.
 	**/
@@ -312,7 +312,7 @@ class TouchEvent extends Event
 
 	/**
 		On Windows or Linux, indicates whether the Ctrl key is active
-		(`true`) or inactive(`false`). On Macintosh,
+		(`true`) or inactive (`false`). On Macintosh,
 		indicates whether either the Control key or the Command key is activated.
 	**/
 	public var ctrlKey:Bool;
@@ -374,7 +374,7 @@ class TouchEvent extends Event
 	public var relatedObject:InteractiveObject;
 
 	/**
-		Indicates whether the Shift key is active(`true`) or inactive
+		Indicates whether the Shift key is active (`true`) or inactive
 		(`false`).
 	**/
 	public var shiftKey:Bool;

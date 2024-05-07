@@ -68,7 +68,7 @@ class KeyboardEvent extends Event
 	public static inline var KEY_UP:EventType<KeyboardEvent> = "keyUp";
 
 	/**
-		Indicates whether the Alt key is active(`true`) or inactive
+		Indicates whether the Alt key is active (`true`) or inactive
 		(`false`) on Windows; indicates whether the Option key is
 		active on Mac OS.
 	**/
@@ -80,7 +80,7 @@ class KeyboardEvent extends Event
 		press Shift+3, `charCode` is # on a Japanese keyboard, just as
 		it is on an English keyboard.
 
-		**Note: **When an input method editor(IME) is running,
+		**Note:** When an input method editor (IME) is running,
 		`charCode` does not report accurate character codes.
 	**/
 	public var charCode:Int;
@@ -103,7 +103,7 @@ class KeyboardEvent extends Event
 
 	/**
 		On Windows and Linux, indicates whether the Ctrl key is active
-		(`true`) or inactive(`false`); On Mac OS, indicates
+		(`true`) or inactive (`false`); On Mac OS, indicates
 		whether either the Ctrl key or the Command key is active.
 	**/
 	public var ctrlKey:Bool;
@@ -111,7 +111,7 @@ class KeyboardEvent extends Event
 	/**
 		The key code value of the key pressed or released.
 
-		**Note: **When an input method editor(IME) is running,
+		**Note:** When an input method editor (IME) is running,
 		`keyCode` does not report accurate key codes.
 	**/
 	public var keyCode:Int;
@@ -129,8 +129,8 @@ class KeyboardEvent extends Event
 	public var keyLocation:KeyLocation;
 
 	/**
-		Indicates whether the Shift key modifier is active(`true`) or
-		inactive(`false`).
+		Indicates whether the Shift key modifier is active (`true`) or
+		inactive (`false`).
 	**/
 	public var shiftKey:Bool;
 

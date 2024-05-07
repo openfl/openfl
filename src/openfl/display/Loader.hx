@@ -670,7 +670,7 @@ class Loader extends DisplayObjectContainer
 		* Movie clips are stopped.
 
 		@param gc Provides a hint to the garbage collector to run on the child SWF
-				  objects(`true`) or not(`false`). If you
+				  objects (`true`) or not (`false`). If you
 				  are unloading many objects asynchronously, setting the
 				  `gc` paramter to `false` might improve
 				  application performance. However, if the parameter is set to

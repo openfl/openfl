@@ -875,7 +875,7 @@ class Event
 		`stopPropagation()` method doesn't take effect until all the
 		event listeners in the current node finish processing.
 
-		**Note: ** This method does not cancel the behavior associated with
+		**Note:** This method does not cancel the behavior associated with
 		this event; see `preventDefault()` for that functionality.
 
 	**/
@@ -888,13 +888,13 @@ class Event
 	/**
 		Prevents processing of any event listeners in nodes subsequent to the
 		current node in the event flow. This method does not affect any event
-		listeners in the current node(`currentTarget`). In contrast,
+		listeners in the current node (`currentTarget`). In contrast,
 		the `stopImmediatePropagation()` method prevents processing of
 		event listeners in both the current node and subsequent nodes. Additional
 		calls to this method have no effect. This method can be called in any
 		phase of the event flow.
 
-		**Note: ** This method does not cancel the behavior associated with
+		**Note:** This method does not cancel the behavior associated with
 		this event; see `preventDefault()` for that functionality.
 
 	**/

@@ -83,7 +83,7 @@ class Accelerometer extends EventDispatcher
 
 	/**
 		Specifies whether the user has denied access to the accelerometer
-		(`true`) or allowed access(`false`). When this
+		(`true`) or allowed access (`false`). When this
 		value changes, a `status` event is dispatched.
 	**/
 	public var muted(get, set):Bool;

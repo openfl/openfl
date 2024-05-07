@@ -456,15 +456,15 @@ class MouseEvent extends Event
 	public static inline var ROLL_OVER:EventType<MouseEvent> = "rollOver";
 
 	/**
-		Indicates whether the Alt key is active(`true`) or inactive
+		Indicates whether the Alt key is active (`true`) or inactive
 		(`false`). Supported for Windows only. On other operating
 		systems, this property is always set to `false`.
 	**/
 	public var altKey:Bool;
 
 	/**
-		Indicates whether the primary mouse button is pressed(`true`)
-		or not(`false`).
+		Indicates whether the primary mouse button is pressed (`true`)
+		or not (`false`).
 	**/
 	public var buttonDown:Bool;
 
@@ -500,7 +500,7 @@ class MouseEvent extends Event
 
 	/**
 		On Windows or Linux, indicates whether the Ctrl key is active
-		(`true`) or inactive(`false`). On Macintosh,
+		(`true`) or inactive (`false`). On Macintosh,
 		indicates whether either the Control key or the Command key is activated.
 	**/
 	public var ctrlKey:Bool;
@@ -558,7 +558,7 @@ class MouseEvent extends Event
 	public var relatedObject:InteractiveObject;
 
 	/**
-		Indicates whether the Shift key is active(`true`) or inactive
+		Indicates whether the Shift key is active (`true`) or inactive
 		(`false`).
 	**/
 	public var shiftKey:Bool;

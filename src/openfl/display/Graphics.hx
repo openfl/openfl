@@ -1330,10 +1330,10 @@ import js.html.CanvasRenderingContext2D;
 		drawing a path to specify different styles for different line segments
 		within the path.
 
-		**Note: **Calls to the `clear()` method set the line
+		**Note:** Calls to the `clear()` method set the line
 		style back to `undefined`.
 
-		**Note: **Flash Lite 4 supports only the first three parameters
+		**Note:** Flash Lite 4 supports only the first three parameters
 		(`thickness`, `color`, and `alpha`).
 
 		@param thickness    An integer that indicates the thickness of the line in

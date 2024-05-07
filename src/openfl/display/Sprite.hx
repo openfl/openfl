@@ -208,9 +208,9 @@ class Sprite extends DisplayObjectContainer
 		plane defined by the three-dimensional parent object.
 
 		@param lockCenter Specifies whether the draggable sprite is locked to the
-						  center of the pointer position(`true`), or
+						  center of the pointer position (`true`), or
 						  locked to the point where the user first clicked the
-						  sprite(`false`).
+						  sprite (`false`).
 		@param bounds     Value relative to the coordinates of the Sprite's parent
 						  that specify a constraint rectangle for the Sprite.
 	**/

@@ -97,7 +97,7 @@ import sys.io.Process;
 {
 	/**
 		Specifies whether access to the user's camera and microphone has been
-		administratively prohibited(`true`) or allowed
+		administratively prohibited (`true`) or allowed
 		(`false`). The server string is `AVD`.
 
 		For content in Adobe AIR™, this property applies only to content in
@@ -116,8 +116,8 @@ import sys.io.Process;
 	public static var cpuArchitecture(get, never):String;
 
 	/**
-		Specifies whether the system supports(`true`) or does not
-		support(`false`) communication with accessibility aids. The
+		Specifies whether the system supports (`true`) or does not
+		support (`false`) communication with accessibility aids. The
 		server string is `ACC`.
 	**/
 	public static var hasAccessibility(default, null) = false;
@@ -129,42 +129,42 @@ import sys.io.Process;
 	public static var hasAudio(default, null) = true;
 
 	/**
-		Specifies whether the system can(`true`) or cannot
+		Specifies whether the system can (`true`) or cannot
 		(`false`) encode an audio stream, such as that coming from a
 		microphone. The server string is `AE`.
 	**/
 	public static var hasAudioEncoder(default, null) = false;
 
 	/**
-		Specifies whether the system supports(`true`) or does not
-		support(`false`) embedded video. The server string is
+		Specifies whether the system supports (`true`) or does not
+		support (`false`) embedded video. The server string is
 		`EV`.
 	**/
 	public static var hasEmbeddedVideo(default, null) = false;
 
 	/**
-		Specifies whether the system does(`true`) or does not
-		(`false`) have an input method editor(IME) installed. The
+		Specifies whether the system does (`true`) or does not
+		(`false`) have an input method editor (IME) installed. The
 		server string is `IME`.
 	**/
 	public static var hasIME(default, null) = false;
 
 	/**
-		Specifies whether the system does(`true`) or does not
+		Specifies whether the system does (`true`) or does not
 		(`false`) have an MP3 decoder. The server string is
 		`MP3`.
 	**/
 	public static var hasMP3(default, null) = false;
 
 	/**
-		Specifies whether the system does(`true`) or does not
+		Specifies whether the system does (`true`) or does not
 		(`false`) support printing. The server string is
 		`PR`.
 	**/
 	public static var hasPrinting(default, null) = #if html5 true #else false #end;
 
 	/**
-		Specifies whether the system does(`true`) or does not
+		Specifies whether the system does (`true`) or does not
 		(`false`) support the development of screen broadcast
 		applications to be run through Flash Media Server. The server string is
 		`SB`.
@@ -172,7 +172,7 @@ import sys.io.Process;
 	public static var hasScreenBroadcast(default, null) = false;
 
 	/**
-		Specifies whether the system does(`true`) or does not
+		Specifies whether the system does (`true`) or does not
 		(`false`) support the playback of screen broadcast applications
 		that are being run through Flash Media Server. The server string is
 		`SP`.
@@ -180,14 +180,14 @@ import sys.io.Process;
 	public static var hasScreenPlayback(default, null) = false;
 
 	/**
-		Specifies whether the system can(`true`) or cannot
+		Specifies whether the system can (`true`) or cannot
 		(`false`) play streaming audio. The server string is
 		`SA`.
 	**/
 	public static var hasStreamingAudio(default, null) = false;
 
 	/**
-		Specifies whether the system can(`true`) or cannot
+		Specifies whether the system can (`true`) or cannot
 		(`false`) play streaming video. The server string is
 		`SV`.
 	**/
@@ -195,13 +195,13 @@ import sys.io.Process;
 
 	/**
 		Specifies whether the system supports native SSL sockets through
-		NetConnection(`true`) or does not(`false`). The
+		NetConnection (`true`) or does not (`false`). The
 		server string is `TLS`.
 	**/
 	public static var hasTLS(default, null) = true;
 
 	/**
-		Specifies whether the system can(`true`) or cannot
+		Specifies whether the system can (`true`) or cannot
 		(`false`) encode a video stream, such as that coming from a web
 		camera. The server string is `VE`.
 	**/
@@ -218,7 +218,7 @@ import sys.io.Process;
 
 	/**
 		Specifies whether the Flash runtime is embedded in a PDF file that is open
-		in Acrobat 9.0 or higher(`true`) or not(`false`).
+		in Acrobat 9.0 or higher (`true`) or not (`false`).
 	**/
 	public static var isEmbeddedInAcrobat(default, null) = false;
 
@@ -271,7 +271,7 @@ import sys.io.Process;
 
 	/**
 		Specifies whether read access to the user's hard disk has been
-		administratively prohibited(`true`) or allowed
+		administratively prohibited (`true`) or allowed
 		(`false`). For content in Adobe AIR, this property applies only
 		to content in security sandboxes other than the application security
 		sandbox.(Content in the application security sandbox can always read from

@@ -402,7 +402,7 @@ import openfl.geom.Rectangle;
 								  vary by device and operating system. This
 								  event type is generated after such a mapping
 								  occurs but before the processing of an input
-								  method editor(IME). IMEs are used to enter
+								  method editor (IME). IMEs are used to enter
 								  characters, such as Chinese ideographs, that
 								  the standard QWERTY keyboard is ill-equipped
 								  to produce. This event occurs before the
@@ -435,7 +435,7 @@ import openfl.geom.Rectangle;
 								  vary by device and operating system. This
 								  event type is generated after such a mapping
 								  occurs but before the processing of an input
-								  method editor(IME). IMEs are used to enter
+								  method editor (IME). IMEs are used to enter
 								  characters, such as Chinese ideographs, that
 								  the standard QWERTY keyboard is ill-equipped
 								  to produce. This event occurs after a

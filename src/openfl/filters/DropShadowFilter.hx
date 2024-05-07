@@ -11,7 +11,6 @@ import openfl.geom.Rectangle;
 import lime._internal.graphics.ImageDataUtil; // TODO
 
 #end
-
 /**
 	The DropShadowFilter class lets you add a drop shadow to display objects.
 	The shadow algorithm is based on the same box filter that the blur filter
@@ -122,7 +121,7 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 	public var inner(get, set):Bool;
 
 	/**
-		Applies a knockout effect(`true`), which effectively makes the
+		Applies a knockout effect (`true`), which effectively makes the
 		object's fill transparent and reveals the background color of the
 		document. The default is `false`(no knockout).
 	**/
@@ -251,7 +250,7 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 						  A value of `true` specifies an inner shadow.
 						  A value of `false` specifies an outer shadow
 						 (a shadow around the outer edges of the object).
-		@param knockout   Applies a knockout effect(`true`), which
+		@param knockout   Applies a knockout effect (`true`), which
 						  effectively makes the object's fill transparent and
 						  reveals the background color of the document.
 		@param hideObject Indicates whether or not the object is hidden. A value
@@ -290,8 +289,7 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 		return new DropShadowFilter(__distance, __angle, __color, __alpha, __blurX, __blurY, __strength, __quality, __inner, __knockout, __hideObject);
 	}
 
-	@:noCompletion private override function __applyFilter(bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle,
-			destPoint:Point):BitmapData
+	@:noCompletion private override function __applyFilter(bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData
 	{
 		// TODO: Support knockout, inner
 

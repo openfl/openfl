@@ -514,7 +514,7 @@ class TextField extends InteractiveObject
 		text rather than a partial line. Even if a line uses multiple fonts, the
 		height of the line adjusts to fit the largest font in use.
 
-		**Note: **The `scrollH` property is zero-based, not
+		**Note:** The `scrollH` property is zero-based, not
 		1-based like the `scrollV` vertical scrolling property.
 	**/
 	public var scrollH(get, set):Int;
@@ -2742,13 +2742,13 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function set_htmlText(value:String):String
 	{
-		if(value == null)
+		if (value == null)
 		{
 			var error = new TypeError("Error #2007: Parameter text must be non-null.");
 			error.errorID = 2007;
 			throw error;
 		}
-		
+
 		if (!__isHTML || __text != value)
 		{
 			__dirty = true;
@@ -3027,13 +3027,13 @@ class TextField extends InteractiveObject
 
 	@:noCompletion private function set_text(value:String):String
 	{
-		if(value == null)
+		if (value == null)
 		{
 			var error = new TypeError("Error #2007: Parameter text must be non-null.");
 			error.errorID = 2007;
 			throw error;
 		}
-		
+
 		if (__styleSheet != null)
 		{
 			return set_htmlText(value);
