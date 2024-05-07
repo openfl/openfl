@@ -294,7 +294,9 @@ class TextEngine
 		var textHeight = textHeight * 1.185; // measurement isn't always accurate, add padding
 		#end
 
-		textBounds.setTo(Math.max(x - 2, 0), Math.max(y - 2, 0), Math.min(textWidth + 4, bounds.width + 4), Math.min(textHeight + 4, bounds.height + 4));
+		// don't add 4 to bounds.width and bounds.height here because the + 4
+		// is already included from a previous calculation
+		textBounds.setTo(Math.max(x - 2, 0), Math.max(y - 2, 0), Math.min(textWidth + 4, bounds.width), Math.min(textHeight + 4, bounds.height));
 	}
 
 	private static function getDefaultFont(name:String, bold:Bool, italic:Bool):Font
