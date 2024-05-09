@@ -756,7 +756,14 @@ class OpenGLRenderer extends DisplayObjectRenderer
 
 		if (__defaultRenderTarget == null)
 		{
-			__scissorRectangle.setTo(__offsetX, __offsetY, __displayWidth, __displayHeight);
+			if (__context3D.__backBufferWantsBestResolution)
+			{
+				__scissorRectangle.setTo(__offsetX / __pixelRatio, __offsetY / __pixelRatio, __displayWidth / __pixelRatio, __displayHeight / __pixelRatio);
+			}
+			else
+			{
+				__scissorRectangle.setTo(__offsetX, __offsetY, __displayWidth, __displayHeight);
+			}
 			__context3D.setScissorRectangle(__scissorRectangle);
 
 			__upscaled = (__worldTransform.a != 1 || __worldTransform.d != 1);
@@ -816,7 +823,14 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		}
 		else
 		{
-			__scissorRectangle.setTo(__offsetX, __offsetY, __displayWidth, __displayHeight);
+			if (__context3D.__backBufferWantsBestResolution)
+			{
+				__scissorRectangle.setTo(__offsetX / __pixelRatio, __offsetY / __pixelRatio, __displayWidth / __pixelRatio, __displayHeight / __pixelRatio);
+			}
+			else
+			{
+				__scissorRectangle.setTo(__offsetX, __offsetY, __displayWidth, __displayHeight);
+			}
 			__context3D.setScissorRectangle(__scissorRectangle);
 			// __gl.viewport (__offsetX, __offsetY, __displayWidth, __displayHeight);
 
