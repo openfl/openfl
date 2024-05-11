@@ -199,7 +199,7 @@ package openfl.media;
 		while (i-- > 0)
 		{
 			var channel = __soundChannels[i];
-			if (channel.__source.buffer == buffer)
+			if (channel.__audioSource.buffer == buffer)
 			{
 				channel.stop();
 			}
