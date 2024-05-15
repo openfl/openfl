@@ -130,12 +130,11 @@ class ServerSocket extends EventDispatcher
 							match.
 		@throws RangeError    This error occurs when localPort is less than 0 or greater than 65535.
 		@throws ArgumentError This error occurs when localAddress is not a syntactically well-formed IP address.
-		@throws IOError 	  When the socket cannot be bound, such as when:
-
-							  the underlying network socket (IP and port) is already in bound by another object or process.
-							  the application is running under a user account that does not have the privileges necessary to bind to the port. Privilege issues typically occur when attempting to bind to well known ports (localPort < 1024)
-							  this ServerSocket object is already bound. (Call close() before binding to a different socket.)
-							  when localAddress is not a valid local address.
+		@throws IOError When the socket cannot be bound, such as when:
+				- the underlying network socket (IP and port) is already in bound by another object or process.
+				- the application is running under a user account that does not have the privileges necessary to bind to the port. Privilege issues typically occur when attempting to bind to well known ports (localPort < 1024)
+				- this ServerSocket object is already bound. (Call close() before binding to a different socket.)
+				- when localAddress is not a valid local address.
 	**/
 	public function bind(localPort:Int = 0, localAddress:String = "0.0.0.0"):Void
 	{
@@ -206,8 +205,8 @@ class ServerSocket extends EventDispatcher
 
 		@throws RangeError	There is insufficient data available to read.
 		@throws IOError		This error occurs if the socket is not open or bound.
-							This error also occurs if the call to listen() fails for any
-							other reason.
+					This error also occurs if the call to listen() fails for any
+					other reason.
 	**/
 	public function listen(backlog:Int = 0):Void
 	{
