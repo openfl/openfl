@@ -1,7 +1,5 @@
 package openfl.utils;
 
-import haxe.Constraints.IMap;
-import haxe.ds.ObjectMap;
 import haxe.io.Bytes;
 import haxe.io.BytesData;
 import haxe.io.BytesInput;
@@ -12,22 +10,20 @@ import haxe.Serializer;
 import haxe.Unserializer;
 import openfl.errors.EOFError;
 import openfl.net.ObjectEncoding;
+import openfl.utils._internal.format.amf.AMFReader;
+import openfl.utils._internal.format.amf.AMFTools;
+import openfl.utils._internal.format.amf.AMFWriter;
+import openfl.utils._internal.format.amf.AMFValue;
+import openfl.utils._internal.format.amf3.AMF3Reader;
+import openfl.utils._internal.format.amf3.AMF3Tools;
+import openfl.utils._internal.format.amf3.AMF3Value;
+import openfl.utils._internal.format.amf3.AMF3Writer;
 #if lime
 import lime.system.System;
 import lime.utils.ArrayBuffer;
 import lime.utils.BytePointer;
 import lime.utils.Bytes as LimeBytes;
 import lime.utils.DataPointer;
-#end
-#if format
-import format.amf.Reader as AMFReader;
-import format.amf.Tools as AMFTools;
-import format.amf.Writer as AMFWriter;
-import format.amf.Value as AMFValue;
-import format.amf3.Reader as AMF3Reader;
-import format.amf3.Tools as AMF3Tools;
-import format.amf3.Value as AMF3Value;
-import format.amf3.Writer as AMF3Writer;
 #end
 
 /**
@@ -1148,6 +1144,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	@:noCompletion private var __length(get, set):Int;
 	#end
 
+	@:noCompletion private var __parentAMF3Reader:AMF3Reader;
+
 	#if openfljs
 	@:noCompletion private static function __init__()
 	{
@@ -1169,6 +1167,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 			}
 		});
 	}
+
 	private function openfljs_get_length():Int
 	{
 		return __length;
@@ -1394,21 +1393,19 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	{
 		switch (objectEncoding)
 		{
-			#if format
 			case AMF0:
 				var input = new BytesInput(this, position);
 				var reader = new AMFReader(input);
-				var data = unwrapAMFValue(reader.read());
+				var data = AMFTools.unwrapValue(reader.read());
 				position = input.position;
 				return data;
 
 			case AMF3:
 				var input = new BytesInput(this, position);
-				var reader = new AMF3Reader(input);
-				var data = unwrapAMF3Value(reader.read());
+				var reader = new AMF3Reader(input, __parentAMF3Reader);
+				var data = AMF3Tools.unwrapValue(reader.read(), reader);
 				position = input.position;
 				return data;
-			#end
 
 			case HXSF:
 				var data = readUTF();
@@ -1422,88 +1419,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 				return null;
 		}
 	}
-
-	#if format
-	private static function unwrapAMFValue(val:AMFValue):Dynamic
-	{
-		switch (val)
-		{
-			case ANumber(f):
-				return f;
-			case ABool(b):
-				return b;
-			case AString(s):
-				return s;
-			case ADate(d):
-				return d;
-			case AUndefined:
-				return null;
-			case ANull:
-				return null;
-			case AArray(vals):
-				return vals.map(unwrapAMFValue);
-
-			case AObject(vmap):
-				// AMF0 has no distinction between Object/Map. Most likely we want an anonymous object here.
-				var obj = {};
-				for (name in vmap.keys())
-				{
-					Reflect.setField(obj, name, unwrapAMFValue(vmap.get(name)));
-				}
-				return obj;
-		};
-	}
-
-	private static function unwrapAMF3Value(val:AMF3Value):Dynamic
-	{
-		return switch (val)
-		{
-			case ANumber(f): return f;
-			case AInt(n): return n;
-			case ABool(b): return b;
-			case AString(s): return s;
-			case ADate(d): return d;
-			case AXml(xml): return xml;
-			case AUndefined: return null;
-			case ANull: return null;
-			case AArray(vals): return vals.map(unwrapAMF3Value);
-			case AVector(vals): return vals.map(unwrapAMF3Value);
-			case ABytes(b): return ByteArray.fromBytes(b);
-
-			case AObject(vmap):
-				var obj = {};
-				for (name in vmap.keys())
-				{
-					Reflect.setField(obj, name, unwrapAMF3Value(vmap[name]));
-				}
-				return obj;
-
-			case AMap(vmap):
-				var map:IMap<Dynamic, Dynamic> = null;
-				for (key in vmap.keys())
-				{
-					// Get the map type from the type of the first key.
-					if (map == null)
-					{
-						map = switch (key)
-						{
-							case AString(_): new Map<String, Dynamic>();
-							case AInt(_): new Map<Int, Dynamic>();
-							default: new ObjectMap<Dynamic, Dynamic>();
-						}
-					}
-					map.set(unwrapAMF3Value(key), unwrapAMF3Value(vmap[key]));
-				}
-
-				// Default to StringMap if the map is empty.
-				if (map == null)
-				{
-					map = new Map<String, Dynamic>();
-				}
-				return map;
-		}
-	}
-	#end
 
 	public function readShort():Int
 	{
@@ -1711,7 +1626,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	{
 		switch (objectEncoding)
 		{
-			#if format
 			case AMF0:
 				var value = AMFTools.encode(object);
 				var output = new BytesOutput();
@@ -1722,7 +1636,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 			case AMF3:
 				var output = new BytesOutput();
 				var writer = new AMF3Writer(output);
-				
+
 				if (object is ByteArrayData)
 				{
 					writer.write(ABytes(object));
@@ -1734,7 +1648,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 				}
 
 				writeBytes(output.getBytes());
-			#end
 
 			case HXSF:
 				var value = Serializer.run(object);

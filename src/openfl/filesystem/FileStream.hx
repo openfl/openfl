@@ -19,6 +19,12 @@ import openfl.events.IOErrorEvent;
 import openfl.net.ObjectEncoding;
 import openfl.events.OutputProgressEvent;
 import openfl.events.ProgressEvent;
+import openfl.utils._internal.format.amf.AMFReader;
+import openfl.utils._internal.format.amf.AMFWriter;
+import openfl.utils._internal.format.amf.AMFTools;
+import openfl.utils._internal.format.amf3.AMF3Reader;
+import openfl.utils._internal.format.amf3.AMF3Writer;
+import openfl.utils._internal.format.amf3.AMF3Tools;
 import openfl.utils.ByteArray;
 import openfl.utils.Endian;
 import openfl.utils.IDataInput;
@@ -33,14 +39,6 @@ import sys.thread.Mutex;
 import lime.system.ThreadPool;
 #else
 import lime.system.BackgroundWorker;
-#end
-#if format
-import format.amf.Reader as AMFReader;
-import format.amf.Writer as AMFWriter;
-import format.amf.Tools as AMFTools;
-import format.amf3.Reader as AMF3Reader;
-import format.amf3.Writer as AMF3Writer;
-import format.amf3.Tools as AMF3Tools;
 #end
 
 @:noCompletion private typedef HaxeFile = sys.io.File;
@@ -736,14 +734,13 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		switch (objectEncoding)
 		{
-			#if format
 			case AMF0:
 				var bytes:Bytes = Bytes.alloc(bytesAvailable);
 				__input.readBytes(bytes, 0, bytesAvailable);
 
 				var input = new BytesInput(bytes, 0);
 				var reader = new AMFReader(input);
-				var data = ByteArrayData.unwrapAMFValue(reader.read());
+				var data = AMFTools.unwrapValue(reader.read());
 				__positionDirty = true;
 				return data;
 
@@ -753,10 +750,9 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 				var input = new BytesInput(bytes, 0);
 				var reader = new AMF3Reader(input);
-				var data = ByteArrayData.unwrapAMF3Value(reader.read());
+				var data = AMF3Tools.unwrapValue(reader.read(), reader);
 				__positionDirty = true;
 				return data;
-			#end
 
 			case HXSF:
 				var data = readUTF();
@@ -1519,7 +1515,6 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 	{
 		switch (objectEncoding)
 		{
-			#if format
 			case AMF0:
 				var value = AMFTools.encode(object);
 				var output:BytesOutput = new BytesOutput();
@@ -1535,7 +1530,6 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 				writer.write(value);
 				var bytes:Bytes = output.getBytes();
 				__output.writeBytes(bytes, 0, bytes.length);
-			#end
 
 			case HXSF:
 				var value = Serializer.run(object);
