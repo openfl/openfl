@@ -17,9 +17,15 @@ import openfl.utils.IDataInput;
 @:access(openfl.utils._internal.format.amf3.AMF3Reader)
 class AMF3ReaderInput implements IDataInput
 {
+	#if !flash
 	public var bytesAvailable(get, never):UInt;
 	public var endian(get, set):Endian;
 	public var objectEncoding:ObjectEncoding;
+	#else
+	@:flash.property public var bytesAvailable(get, never):UInt;
+	@:flash.property public var endian(get, set):Endian;
+	@:flash.property public var objectEncoding(get, set):ObjectEncoding;
+	#end
 
 	private var i:Input;
 	private var r:AMF3Reader;
@@ -152,4 +158,16 @@ class AMF3ReaderInput implements IDataInput
 	{
 		return value;
 	}
+
+	#if flash
+	private function get_objectEncoding():ObjectEncoding
+	{
+		return ObjectEncoding.AMF3;
+	}
+
+	private function set_objectEncoding(value:ObjectEncoding):ObjectEncoding
+	{
+		return value;
+	}
+	#end
 }
