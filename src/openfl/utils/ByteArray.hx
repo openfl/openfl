@@ -1637,7 +1637,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 				var output = new BytesOutput();
 				var writer = new AMF3Writer(output);
 
-				if (object is ByteArrayData)
+				if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (object, ByteArrayData))
 				{
 					writer.write(ABytes(object));
 				}
