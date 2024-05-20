@@ -106,156 +106,153 @@ class CanvasGraphics
 
 	@SuppressWarnings("checkstyle:Dynamic")
 	private static function createGradientPattern(type:GradientType, colors:Array<Int>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix,
-		spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float):
-	#if (js && html5) CanvasPattern #else Void #end
-		{
-			#if (js && html5)
-				var gradientFill:CanvasGradient = null,
-					point:Point = null,
-					point2:Point = null,
-					releaseMatrix = false,
-					ratio:Float = 0.0;
+			spreadMethod:SpreadMethod, interpolationMethod:InterpolationMethod, focalPointRatio:Float):#if (js && html5) CanvasPattern #else Void #end
+	{
+		#if (js && html5)
+		var gradientFill:CanvasGradient = null,
+			point:Point = null,
+			point2:Point = null,
+			releaseMatrix = false,
+			ratio:Float = 0.0;
 
-				if (matrix == null)
+		if (matrix == null)
+		{
+			matrix = Matrix.__pool.get();
+			matrix.identity();
+			releaseMatrix = true;
+		}
+
+		switch (type)
+		{
+			case RADIAL:
+				var radius = 819.2;
+				focalPointRatio = focalPointRatio > 1.0 ? 1.0 : focalPointRatio < -1.0 ? -1.0 : focalPointRatio;
+				gradientFill = context.createRadialGradient(radius * focalPointRatio, 0, 0, 0, 0, radius);
+
+				pendingMatrix = matrix.clone();
+				inversePendingMatrix = matrix.clone();
+				inversePendingMatrix.invert();
+
+				for (i in 0...colors.length)
 				{
-					matrix = Matrix.__pool.get();
-					matrix.identity();
-					releaseMatrix = true;
+					ratio = ratios[i] / 0xFF;
+					if (ratio < 0) ratio = 0;
+					if (ratio > 1) ratio = 1;
+
+					gradientFill.addColorStop(ratio, getRGBA(colors[i], alphas[i]));
 				}
 
-				switch (type)
+			case LINEAR:
+				var gradientScale:Float = spreadMethod == PAD ? 1.0 : 25.0;
+				var dx = 0.5 * (gradientScale - 1.0) * 1638.4;
+				var canvas:CanvasElement = cast Browser.document.createElement("canvas");
+				var context2 = canvas.getContext("2d");
+
+				var dimensions:Dynamic = getDimensions(matrix);
+
+				canvas.width = context.canvas.width;
+				canvas.height = context.canvas.height;
+				gradientFill = context.createLinearGradient(-819.2 - dx, 0, 819.2 + dx, 0);
+				if (spreadMethod == PAD)
 				{
-					case RADIAL:
-						var radius = 819.2;
-						focalPointRatio = focalPointRatio>1.0 ? 1.0:focalPointRatio< - 1.0 ? -1.0:focalPointRatio;
-						gradientFill = context.createRadialGradient(radius * focalPointRatio, 0, 0, 0, 0, radius);
+					for (i in 0...colors.length)
+					{
+						ratio = ratios[i] / 0xFF;
+						if (ratio < 0) ratio = 0;
+						if (ratio > 1) ratio = 1;
 
-						pendingMatrix = matrix.clone();
-						inversePendingMatrix = matrix.clone();
-						inversePendingMatrix.invert();
-
+						gradientFill.addColorStop(ratio, getRGBA(colors[i], alphas[i]));
+					}
+				}
+				else if (spreadMethod == REFLECT)
+				{
+					var t:Float = 0;
+					var step:Float = 1 / 25;
+					var a:Int;
+					while (t < 1)
+					{
 						for (i in 0...colors.length)
 						{
 							ratio = ratios[i] / 0xFF;
-							if (ratio<0) ratio = 0;
-							if (ratio>1) ratio = 1;
+							ratio = t + ratio * step;
+							if (ratio < 0) ratio = 0;
+							if (ratio > 1) ratio = 1;
+
+							gradientFill.addColorStop(ratio, getRGBA(colors[i], alphas[i]));
+						}
+						t += step;
+						a = colors.length - 1;
+						while (a >= 0)
+						{
+							ratio = ratios[a] / 0xFF;
+							ratio = t + (1.0 - ratio) * step;
+							if (ratio < 0) ratio = 0;
+							if (ratio > 1) ratio = 1;
+							gradientFill.addColorStop(ratio, getRGBA(colors[a], alphas[a]));
+							a--;
+						}
+						t += step;
+					}
+				}
+				else if (spreadMethod == REPEAT)
+				{
+					var t:Float = 0;
+					var step:Float = 1 / 25;
+					var a:Int;
+					while (t < 1)
+					{
+						for (i in 0...colors.length)
+						{
+							ratio = ratios[i] / 0xFF;
+							ratio = t + ratio * step;
+							if (ratio < 0) ratio = 0;
+							if (ratio > 1) ratio = 1 - 0.001;
 
 							gradientFill.addColorStop(ratio, getRGBA(colors[i], alphas[i]));
 						}
 
-						case LINEAR:
-							var gradientScale:Float = spreadMethod == PAD ? 1.0:25.0;
-							var dx = 0.5 * (gradientScale - 1.0) * 1638.4;
-							var canvas:CanvasElement = cast Browser.document.createElement("canvas");
-							var context2 = canvas.getContext("2d");
+						ratio = t + 0.001;
+						if (ratio < 0) ratio = 0;
+						if (ratio > 1) ratio = 1;
+						gradientFill.addColorStop(ratio - 0.001, getRGBA(colors[colors.length - 1], alphas[alphas.length - 1]));
+						gradientFill.addColorStop(ratio, getRGBA(colors[0], alphas[0]));
 
-							var dimensions:Dynamic = getDimensions(matrix);
-
-							canvas.width = context.canvas.width;
-							canvas.height = context.canvas.height;
-							gradientFill = context.createLinearGradient(-819.2 - dx, 0, 819.2 + dx, 0);
-							if (spreadMethod == PAD)
-							{
-								for (i in 0...colors.length)
-								{
-									ratio = ratios[i] / 0xFF;
-									if (ratio<0) ratio = 0;
-									if (ratio>1) ratio = 1;
-
-									gradientFill.addColorStop(ratio, getRGBA(colors[i], alphas[i]));
-								}
-							}
-							else
-							if (spreadMethod == REFLECT)
-							{
-								var t:Float = 0;
-								var step:Float = 1 / 25;
-								var a:Int;
-								while (t<1)
-								{
-									for (i in 0...colors.length)
-									{
-										ratio = ratios[i] / 0xFF;
-										ratio = t + ratio * step;
-										if (ratio<0) ratio = 0;
-										if (ratio>1) ratio = 1;
-
-										gradientFill.addColorStop(ratio, getRGBA(colors[i], alphas[i]));
-									}
-									t += step;
-									a = colors.length - 1;
-									while (a>=0)
-									{
-										ratio = ratios[a] / 0xFF;
-										ratio = t + (1.0 - ratio) * step;
-										if (ratio<0) ratio = 0;
-										if (ratio>1) ratio = 1;
-										gradientFill.addColorStop(ratio, getRGBA(colors[a], alphas[a]));
-										a--;
-									}
-									t += step;
-								}
-							}
-							else
-							if (spreadMethod == REPEAT)
-							{
-								var t:Float = 0;
-								var step:Float = 1 / 25;
-								var a:Int;
-								while (t<1)
-								{
-									for (i in 0...colors.length)
-									{
-										ratio = ratios[i] / 0xFF;
-										ratio = t + ratio * step;
-										if (ratio<0) ratio = 0;
-										if (ratio>1) ratio = 1 - 0.001;
-
-										gradientFill.addColorStop(ratio, getRGBA(colors[i], alphas[i]));
-									}
-
-									ratio = t + 0.001;
-									if (ratio<0) ratio = 0;
-									if (ratio>1) ratio = 1;
-									gradientFill.addColorStop(ratio - 0.001, getRGBA(colors[colors.length - 1], alphas[alphas.length - 1]));
-									gradientFill.addColorStop(ratio, getRGBA(colors[0], alphas[0]));
-
-									t += step;
-								}
-							}
-
-							pendingMatrix = new Matrix();
-							pendingMatrix.tx = matrix.tx - dimensions.width / 2;
-							pendingMatrix.ty = matrix.ty - dimensions.height / 2;
-
-							inversePendingMatrix = pendingMatrix.clone();
-							inversePendingMatrix.invert();
-
-							var path:Path2D = cast new Path2D();
-							path.rect(0, 0, canvas.width, canvas.height);
-							path.closePath();
-							var gradientMatrix:DOMMatrix = new DOMMatrix([matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx, matrix.ty]);
-							var inverseMatrix = cast gradientMatrix.inverse();
-							var untransformedPath:Path2D = cast new Path2D();
-							untransformedPath.addPath(path, inverseMatrix);
-							context2.fillStyle = gradientFill;
-							context2.setTransform(gradientMatrix);
-							context2.fill(untransformedPath);
-							return cast context.createPattern(canvas, 'no-repeat');
+						t += step;
+					}
 				}
 
-				if (point != null) Point.__pool.release(point);
-				if (point2 != null) Point.__pool.release(point2);
-				if (releaseMatrix) Matrix.__pool.release(matrix);
+				pendingMatrix = new Matrix();
+				pendingMatrix.tx = matrix.tx - dimensions.width / 2;
+				pendingMatrix.ty = matrix.ty - dimensions.height / 2;
 
-				return cast(gradientFill);
-			#end
+				inversePendingMatrix = pendingMatrix.clone();
+				inversePendingMatrix.invert();
+
+				var path:Path2D = cast new Path2D();
+				path.rect(0, 0, canvas.width, canvas.height);
+				path.closePath();
+				var gradientMatrix:DOMMatrix = new DOMMatrix([matrix.a, matrix.b, matrix.c, matrix.d, matrix.tx, matrix.ty]);
+				var inverseMatrix = cast gradientMatrix.inverse();
+				var untransformedPath:Path2D = cast new Path2D();
+				untransformedPath.addPath(path, inverseMatrix);
+				context2.fillStyle = gradientFill;
+				context2.setTransform(gradientMatrix);
+				context2.fill(untransformedPath);
+				return cast context.createPattern(canvas, 'no-repeat');
 		}
+
+		if (point != null) Point.__pool.release(point);
+		if (point2 != null) Point.__pool.release(point2);
+		if (releaseMatrix) Matrix.__pool.release(matrix);
+
+		return cast(gradientFill);
+		#end
+	}
 
 	private static function getRGBA(color:UInt, alpha:Float):String
 	{
-		var r:UInt = (color & 0xFF0000)>>>16;
-		var g:UInt = (color & 0x00FF00)>>>8;
+		var r:UInt = (color & 0xFF0000) >>> 16;
+		var g:UInt = (color & 0x00FF00) >>> 8;
 		var b:UInt = (color & 0x0000FF);
 
 		return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
@@ -274,8 +271,8 @@ class CanvasGraphics
 			w = h = 819.2;
 		}
 		return {
-			width:w,
-			height:h
+			width: w,
+			height: h
 		};
 	}
 

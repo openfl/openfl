@@ -1,7 +1,6 @@
 package openfl.ui;
 
 #if !flash
-
 #if !openfljs
 /**
 	The MultitouchInputMode class provides values for the

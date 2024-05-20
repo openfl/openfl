@@ -17,8 +17,8 @@ import haxe.ds.IntMap;
 @:access(openfl.display.NativeMenuItem)
 class NativeMenu extends EventDispatcher
 {
-	private static var __hasContextMenuListener:Bool = false;	
-	
+	private static var __hasContextMenuListener:Bool = false;
+
 	public static var isSupported(get, never):Bool;
 
 	private static inline function get_isSupported():Bool
@@ -33,13 +33,12 @@ class NativeMenu extends EventDispatcher
 	public var items(get, set):Array<NativeMenuItem>;
 	public var numItems(get, never):Int;
 	public var parent(get, never):NativeMenu;
-	
+
 	public var name:String = "";
-	
+
 	private var __items:Array<NativeMenuItem>;
 	private var __parent:NativeMenu;
 	private var __contextMenuData:ContextMenuData;
-	
 
 	public function new()
 	{
@@ -47,7 +46,7 @@ class NativeMenu extends EventDispatcher
 		__items = [];
 		__contextMenuData = new ContextMenuData();
 	}
-	
+
 	private function get_parent():NativeMenu
 	{
 		return __parent;
@@ -60,7 +59,7 @@ class NativeMenu extends EventDispatcher
 		__contextMenuData.items.push(item.__contextMenuItemData);
 
 		__update();
-				
+
 		return item;
 	}
 
@@ -68,23 +67,23 @@ class NativeMenu extends EventDispatcher
 	{
 		item.__setMenu(this);
 		__items.insert(index, item);
-		__contextMenuData.items.insert(index, item.__contextMenuItemData);		
-		
+		__contextMenuData.items.insert(index, item.__contextMenuItemData);
+
 		__update();
-		
+
 		return item;
 	}
 
 	public function addSubmenu(submenu:NativeMenu, label:String):NativeMenuItem
 	{
-		var item:NativeMenuItem = new NativeMenuItem(label);		
+		var item:NativeMenuItem = new NativeMenuItem(label);
 		item.submenu = submenu;
-		
+
 		item.__setMenu(this);
 		__items.push(item);
 
 		__update();
-		
+
 		return item;
 	}
 
@@ -93,12 +92,11 @@ class NativeMenu extends EventDispatcher
 		var item:NativeMenuItem = new NativeMenuItem(label);
 		item.submenu = submenu;
 		item.__setMenu(this);
-		
-		
+
 		__items.insert(index, item);
-		
+
 		__update();
-		
+
 		return item;
 	}
 
@@ -147,7 +145,7 @@ class NativeMenu extends EventDispatcher
 	public function removeAllItems():Void
 	{
 		__contextMenuData.removeAllItems();
-		
+
 		__update();
 	}
 
@@ -157,7 +155,7 @@ class NativeMenu extends EventDispatcher
 		__contextMenuData.removeItem(item.__contextMenuItemData);
 
 		__update();
-		
+
 		return item;
 	}
 
@@ -165,25 +163,28 @@ class NativeMenu extends EventDispatcher
 	{
 		var item:NativeMenuItem = __items.splice(index, 1)[0];
 		item.__setMenu(null);
-		
+
 		__contextMenuData.items.splice(index, 1);
-		
+
 		__update();
-		
+
 		return item;
 	}
 
 	public function setItemIndex(item:NativeMenuItem, index:Int):Void
 	{
 		var currentItemIndex:Int = __items.indexOf(item);
-		
-		if (currentItemIndex == -1){
+
+		if (currentItemIndex == -1)
+		{
 			__items.insert(index, item);
-		} else {
+		}
+		else
+		{
 			__items.splice(currentItemIndex, 1);
 			__items.insert(index, item);
 		}
-		
+
 		__update();
 	}
 
@@ -196,40 +197,49 @@ class NativeMenu extends EventDispatcher
 	{
 		__items = value;
 		__update();
-		
+
 		return value;
 	}
-	
+
 	private function get_numItems():Int
 	{
 		return __items.length;
 	}
-	
-	private function __update():Void{
-		if (__parent != null){
+
+	private function __update():Void
+	{
+		if (__parent != null)
+		{
 			__parent.__update();
-		} else {
-			for (window in NativeApplication.nativeApplication.openedWindows){
-				if (window.menu == this){
+		}
+		else
+		{
+			for (window in NativeApplication.nativeApplication.openedWindows)
+			{
+				if (window.menu == this)
+				{
 					__redrawNativeWindowMenu(window);
 					break;
 				}
-			}			
+			}
 		}
 	}
-	
-	private function __redrawNativeWindowMenu(window:NativeWindow):Void{
+
+	private function __redrawNativeWindowMenu(window:NativeWindow):Void
+	{
 		window.menu = this;
 	}
-	
-	private function __setupNativeListener(hWnd:Int):Void{
-		if (!__hasContextMenuListener){				
+
+	private function __setupNativeListener(hWnd:Int):Void
+	{
+		if (!__hasContextMenuListener)
+		{
 			WinMenuUtil.addContextMenuListener(hWnd, __onMenuItemSelect);
-			
+
 			__hasContextMenuListener = true;
 		}
-	}	
-	
+	}
+
 	private static var __callbacks:IntMap<Function> = new IntMap();
 
 	private static function __onMenuItemSelect(id:UInt):Void
@@ -240,7 +250,4 @@ class NativeMenu extends EventDispatcher
 			callback();
 		}
 	}
-	
-	
-	
 }

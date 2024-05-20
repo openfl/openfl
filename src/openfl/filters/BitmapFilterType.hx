@@ -1,7 +1,6 @@
 package openfl.filters;
 
 #if !flash
-
 #if !openfljs
 /**
 	The BitmapFilterType class contains values to set the type of a

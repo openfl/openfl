@@ -1,4 +1,5 @@
 package openfl.display;
+
 #if (!flash && sys && (!flash_doc_gen || air_doc_gen))
 import lime.system.DisplayMode;
 
@@ -11,15 +12,15 @@ class ScreenMode
 		The screen height of the ScreenMode in pixels.
 	**/
 	public var height(get, null):Int;
-	
+
 	/**
 		The screen refresh rate of the ScreenMode in hertz.
 	**/
 	public var refreshRate(get, null):Int;
-	
+
 	/**
 		The screen width of the ScreenMode in pixels.
-	*/
+	 */
 	public var width(get, null):Int;
 
 	private function get_height():Int

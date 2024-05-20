@@ -70,7 +70,7 @@ class CanvasTextField
 						cursorOffsetX += textField.defaultTextFormat.indent / 2;
 						cursorOffsetX += textField.defaultTextFormat.blockIndent / 2;
 					case START:
-					// not supported?
+						// not supported?
 					case JUSTIFY:
 						cursorOffsetX += textField.defaultTextFormat.leftMargin;
 						cursorOffsetX += textField.defaultTextFormat.indent;

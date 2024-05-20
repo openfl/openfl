@@ -4,12 +4,7 @@ package src._internal.native.window;
  * ...
  * @author Christopher Speciale
  */
-class LinWindowUtil 
+class LinWindowUtil
 {
-
-	public function new() 
-	{
-		
-	}
-	
+	public function new() {}
 }

@@ -1,7 +1,6 @@
 package openfl.text;
 
 #if !flash
-
 #if !openfljs
 /**
 	The FontStyle class provides values for the TextRenderer class.

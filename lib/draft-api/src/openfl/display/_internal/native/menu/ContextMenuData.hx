@@ -1,16 +1,17 @@
 package _internal.native.menu;
+
 import openfl.utils.Object;
 
-abstract ContextMenuData (Dynamic)
-{	
+abstract ContextMenuData(Dynamic)
+{
 	public var items(get, never):Array<ContextMenuItemData>;
 
 	public inline function new()
 	{
 		var menu:Dynamic = {};
 		menu.items = [];
-		
-		this = menu;		
+
+		this = menu;
 	}
 
 	public inline function addItem(item:ContextMenuItemData):ContextMenuItemData
@@ -99,11 +100,12 @@ abstract ContextMenuData (Dynamic)
 abstract ContextMenuItemData(Dynamic)
 {
 	private static var __idSpace:UInt = 0;
-	
-	private static function __getId():UInt{
+
+	private static function __getId():UInt
+	{
 		return __idSpace++;
 	}
-	
+
 	public var checked(get, set):Bool;
 	public var enabled(get, set):Bool;
 	public var isSeparator(get, set):Bool;
@@ -247,4 +249,3 @@ abstract ContextMenuItemData(Dynamic)
 		return this.submenu = value;
 	}
 }
-

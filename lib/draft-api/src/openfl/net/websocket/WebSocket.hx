@@ -1,4 +1,5 @@
 package openfl.net._internal.websocket;
+
 import openfl.utils.Function;
 import openfl.utils.Object;
 import crossbyte.crypto.Random;
@@ -22,21 +23,20 @@ import haxe.io.Output;
  */
 class WebSocket
 {
-
 	public static inline var CLOSED:Int = 3;
 	public static inline var CLOSING:Int = 2;
 	public static inline var CONNECTING:Int = 0;
 	public static inline var OPEN:Int = 1;
 
-	//Max payload size in bytes
+	// Max payload size in bytes
 	public static var MAX_PAYLOAD:Int = 65536;
 
-	//The mask pool size. A socket should have its own unique mask and each connection will
-	//create and return a mask to the pool if it exceeds this size, but it is a good practice
-	//match your max expected connections. The Default value is 64.
+	// The mask pool size. A socket should have its own unique mask and each connection will
+	// create and return a mask to the pool if it exceeds this size, but it is a good practice
+	// match your max expected connections. The Default value is 64.
 	public static var MASK_POOL_SIZE:Int = 64;
 
-	//The default ping interval. Set to 0 to disable pings.
+	// The default ping interval. Set to 0 to disable pings.
 	public static var PING_INTERVAL:Int = 60000;
 
 	private static var __maskTable:StringMap<Int> = new StringMap();
@@ -53,10 +53,22 @@ class WebSocket
 	public var binaryType:BinaryType = ARRAYBUFFER;
 	public var bufferdAmount(default, null):Int = 0;
 	public var extensions(default, null):String = "";
-	public var onclose:Function = (e:WebsocketEvent)-> {trace("close"); };
-	public var onerror:Function = (e:WebsocketEvent)-> {trace("onerror");};
-	public var onmessage:Function = (e:WebsocketEvent)-> {trace("onmessage");};
-	public var onopen:Function = (e:WebsocketEvent)-> {trace("open");};
+	public var onclose:Function = (e:WebsocketEvent) ->
+	{
+		trace("close");
+	};
+	public var onerror:Function = (e:WebsocketEvent) ->
+	{
+		trace("onerror");
+	};
+	public var onmessage:Function = (e:WebsocketEvent) ->
+	{
+		trace("onmessage");
+	};
+	public var onopen:Function = (e:WebsocketEvent) ->
+	{
+		trace("open");
+	};
 	public var protocol(default, null):String;
 	public var readyState(default, null):Int = CONNECTING;
 	public var url(default, null):String;
@@ -92,7 +104,6 @@ class WebSocket
 
 	public function new(url:String, ?protocols:Array<String>, ?origin:String)
 	{
-
 		__key = Base64.encode(Random.getSecureRandomBytes(16));
 
 		__mask = __getMask();
@@ -107,14 +118,14 @@ class WebSocket
 		if (__isClient == null)
 		{
 			this.url = url;
-			//benchmark the two for the fastest regular expression
-			//var regex:EReg = ~/^(\w+):\/\/([^\/:]+)(?::(\d+))?([^#]*)(?:#.*)?$/;
+			// benchmark the two for the fastest regular expression
+			// var regex:EReg = ~/^(\w+):\/\/([^\/:]+)(?::(\d+))?([^#]*)(?:#.*)?$/;
 
 			var regex:EReg = ~/^(\w+):\/\/([^:\/]+)(?::(\d+))?\/?(.*)$/;
 
 			if (regex.match(url))
 			{
-				//the URI is well-formed
+				// the URI is well-formed
 				__scheme = regex.matched(1);
 				__host = regex.matched(2);
 				var port:Null<Int> = Std.parseInt(regex.matched(3));
@@ -150,7 +161,6 @@ class WebSocket
 			}
 			__initSocket();
 		}
-
 	}
 
 	private function __initSocket(?socket:FlexSocket):Void
@@ -165,14 +175,16 @@ class WebSocket
 		if (socket == null)
 		{
 			__socket = new FlexSocket(__secure);
-			if (__secure){
+			if (__secure)
+			{
 				__socket.verifyCert = false;
 			}
 			__socket.output.bigEndian = true;
 			__connect();
 			CrossByte.current.addEventListener(Event.TICK, __onTickConnect);
 		}
-		else {
+		else
+		{
 			__socket = socket;
 			__openConnection(null);
 		}
@@ -180,7 +192,8 @@ class WebSocket
 
 	private function __connect():Void
 	{
-		try{
+		try
+		{
 			__socket.setBlocking(false);
 			__socket.setFastSend(true);
 			__socket.connect(__host, __port);
@@ -216,8 +229,8 @@ class WebSocket
 		while (__connected)
 		{
 			try
-			{				
-				var nBytes:Int =  __socket.input.readBytes(__buffer, currentBytes, 1024);
+			{
+				var nBytes:Int = __socket.input.readBytes(__buffer, currentBytes, 1024);
 				currentBytes += nBytes;
 				totalBytes += nBytes;
 				if (currentBytes > 3072)
@@ -238,14 +251,14 @@ class WebSocket
 
 					hasData = true;
 				}
-				if (e!=Error.Blocked #if HXCPP_DEBUGGER && !e.match(Error.Custom(Blocked))#end)
+				if (e != Error.Blocked #if HXCPP_DEBUGGER && !e.match(Error.Custom(Blocked)) #end)
+				{
+					if (e.match(Error.Custom("ssl network error")))
 					{
-						if (e.match(Error.Custom("ssl network error"))){
-							//break;
-						}
-						doClose = true;
-						
+						// break;
 					}
+					doClose = true;
+				}
 				break;
 			}
 			catch (e:Dynamic)
@@ -317,7 +330,6 @@ class WebSocket
 	{
 		if (readyState == OPEN)
 		{
-
 			while (__input.bytesAvailable > 0)
 			{
 				try
@@ -347,24 +359,24 @@ class WebSocket
 					}
 					else if (payloadLength == 127)
 					{
-						//only an extra 4 bytes
+						// only an extra 4 bytes
 						lengthBytes = 12;
 						payloadLength = __input.readUnsignedInt();
 					}
 
 					if (payloadLength > __input.bytesAvailable)
 					{
-						//If our frame is incomplete, we rewind the buffer position so the rest of
-						//it can be written in order.
-						//maybe we should create a state system here so that we dont need to re-read
-						//frames that were once partial
+						// If our frame is incomplete, we rewind the buffer position so the rest of
+						// it can be written in order.
+						// maybe we should create a state system here so that we dont need to re-read
+						// frames that were once partial
 						__input.position -= lengthBytes;
 						break;
 					}
 
 					if (payloadLength > MAX_PAYLOAD)
 					{
-						throw ("Payload too large");
+						throw("Payload too large");
 					}
 
 					// Parse masking key if necessary
@@ -386,7 +398,7 @@ class WebSocket
 							__input.readBytes(payload, 0, payloadLength);
 							for (i in 0...payloadLength)
 							{
-								//Is the arrayaccess slower than manually positioning and calling readByte()?
+								// Is the arrayaccess slower than manually positioning and calling readByte()?
 								payload[i] ^= maskBytes[i & 0x03]; // use bitwise AND instead of modulo
 							}
 						}
@@ -394,26 +406,26 @@ class WebSocket
 						{
 							__input.readBytes(payload, 0, payloadLength);
 						}
-					}	
-					//trace(payload.toString());
-					var messageEvent:WebsocketEvent = new WebsocketEvent(WebsocketEvent.MESSAGE, this, opCode == WebSocketOpcode.BINARY ? payload : payload.readUTFBytes(payload.length));
+					}
+					// trace(payload.toString());
+					var messageEvent:WebsocketEvent = new WebsocketEvent(WebsocketEvent.MESSAGE, this,
+						opCode == WebSocketOpcode.BINARY ? payload : payload.readUTFBytes(payload.length));
 					onmessage(messageEvent);
 				}
 				catch (e:Error)
 				{
 					// Handle errors here
-					//TODO: some kind of error handling here
+					// TODO: some kind of error handling here
 				}
 			}
 		}
-
 		else if (readyState == CONNECTING)
 		{
 			var headerData:String = __input.readUTFBytes(__input.length);
 
 			if (headerData.indexOf(CRLFCRLF) > -1)
 			{
-				//received entire header
+				// received entire header
 				if (__handshakeBuffer.length > 0)
 				{
 					headerData = __handshakeBuffer + headerData;
@@ -445,7 +457,7 @@ class WebSocket
 
 					if (__validateResponseHandshake(headers))
 					{
-						//handshake complete, is ready
+						// handshake complete, is ready
 						readyState = OPEN;
 						onopen(new WebsocketEvent(WebsocketEvent.OPEN, this));
 						if (__heartbeatDelay > 0)
@@ -456,22 +468,20 @@ class WebSocket
 					else
 					{
 						__close(1002);
-
 					}
 				}
 
-				//is it the client handshake or server response?
-
+				// is it the client handshake or server response?
 			}
 			else
 			{
-				//received partial header, buffer it and wait.
+				// received partial header, buffer it and wait.
 				__handshakeBuffer += headerData;
 			}
 		}
 
-		//rewind the input buffer? maybe a a state system is more appropriate here
-		//so we dont have to do the work twice in case of a patial frame.
+		// rewind the input buffer? maybe a a state system is more appropriate here
+		// so we dont have to do the work twice in case of a patial frame.
 		if (__input.length != __input.position)
 		{
 			var len:Int = __input.length - __input.position;
@@ -483,10 +493,10 @@ class WebSocket
 			__input = input;
 			__input.position = 0;
 		}
-		else {
+		else
+		{
 			__input.clear();
 		}
-
 	}
 
 	private function __generateResponseHandshake(headers:StringMap<String>):Bytes
@@ -509,7 +519,7 @@ class WebSocket
 		return Base64.encode(Sha1.make(Bytes.ofString(key + magic)));
 	}
 
-	private function __parseHeaders (lines:Array<String>):StringMap<String>
+	private function __parseHeaders(lines:Array<String>):StringMap<String>
 	{
 		var headers:StringMap<String> = new StringMap();
 
@@ -566,7 +576,6 @@ class WebSocket
 		var expected:String = __generateWebSocketAccept(__key);
 		if (headers.get("Sec-WebSocket-Accept") != expected)
 		{
-
 			// The server sent an invalid response, close the connection with code 1002 (protocol error)
 			return false;
 		}
@@ -580,8 +589,8 @@ class WebSocket
 		{
 			__initSSLHandshake();
 		}
-		else {
-
+		else
+		{
 			__openConnection(__onTickConnect);
 		}
 	}
@@ -611,16 +620,16 @@ class WebSocket
 	private function __onTickSSLHandshake(e:Event):Void
 	{
 		var doClose:Bool = false;
-		try {
+		try
+		{
 			__socket.handshake();
 		}
 		catch (e:Error)
 		{
-			if (e==Error.Blocked #if HXCPP_DEBUGGER || e.match(Error.Custom(Blocked))#end)
-				{
-					doClose = true;
-				}
-
+			if (e == Error.Blocked #if HXCPP_DEBUGGER || e.match(Error.Custom(Blocked)) #end)
+			{
+				doClose = true;
+			}
 		}
 		catch (e:Dynamic)
 		{
@@ -634,10 +643,10 @@ class WebSocket
 				__close(1015);
 			}
 		}
-		else {
+		else
+		{
 			__openConnection(__onTickSSLHandshake);
 		}
-
 	}
 
 	private function __onError(errorMessage:String):Void
@@ -649,6 +658,7 @@ class WebSocket
 	{
 		onmessage(new WebsocketEvent(WebsocketEvent.MESSAGE, this, data));
 	}
+
 	public function close(?code:Int, ?reason:String):Void
 	{
 		if (__socket == null) return;
@@ -678,10 +688,12 @@ class WebSocket
 			__connected = false;
 			CrossByte.current.removeEventListener(Event.TICK, __onTickProcess);
 		}
-		else {
+		else
+		{
 			CrossByte.current.removeEventListener(Event.TICK, __onTickConnect);
 
-			if (__secure){
+			if (__secure)
+			{
 				CrossByte.current.removeEventListener(Event.TICK, __onTickSSLHandshake);
 			}
 		}
@@ -715,13 +727,12 @@ class WebSocket
 
 	public function sendString(data:String):Void
 	{
-
 		__prepareMessage(Bytes.ofString(data), WebSocketOpcode.TEXT);
 	}
 
-	private function __prepareMessage(data:ByteArray, opcode: Int):Void
+	private function __prepareMessage(data:ByteArray, opcode:Int):Void
 	{
-		//handles fragmentation of message into multiple frames
+		// handles fragmentation of message into multiple frames
 		if (data.length > MAX_PAYLOAD)
 		{
 			while (data.position != data.length)
@@ -753,10 +764,10 @@ class WebSocket
 				__sendFrame(__fragmentBuffer, fragmentOpcode, fin);
 			}
 		}
-		else {
+		else
+		{
 			__sendFrame(data, opcode, true);
 		}
-
 	}
 
 	private static function __constructMaskPool():Array<ByteArray>
@@ -776,7 +787,6 @@ class WebSocket
 
 		if (__maskTable.exists(maskBytes.toString()))
 		{
-
 			while (__maskTable.exists(maskBytes.toString()))
 			{
 				maskBytes = Random.getSecureRandomBytes(4);
@@ -785,7 +795,6 @@ class WebSocket
 		}
 
 		return maskBytes;
-
 	}
 
 	private function __getMask():ByteArray
@@ -799,22 +808,23 @@ class WebSocket
 		__maskPool.push(maskBytes);
 	}
 
-	private inline function __sendFrame(payload: ByteArray, opcode: Int, isFinal:Bool): Void
+	private inline function __sendFrame(payload:ByteArray, opcode:Int, isFinal:Bool):Void
 	{
 		// Write the frame header
 		var fin:Int = isFinal ? WebSocketHeaderMask.FIN : WebSocketOpcode.CONTINUATION;
 		__output.writeByte(fin | opcode);
-		var length: Int = payload.length;
+		var length:Int = payload.length;
 
 		if (__isClient == false)
 		{
 			__writePayloadLength(length);
 			__output.writeBytes(payload);
 		}
-		else{
+		else
+		{
 			__writePayloadLength(length, WebSocketHeaderMask.MASK);
 
-			//Reset the maskedPayload ByteArray
+			// Reset the maskedPayload ByteArray
 			__maskedPayload.length = payload.length;
 			__maskedPayload.position = 0;
 			// Mask the payload using a bulk XOR operation
@@ -864,6 +874,7 @@ class WebSocket
 			__output.writeByte(maskFlag);
 		}
 	}
+
 	private static var __pingPongBuffer:Bytes = Bytes.alloc(2);
 
 	public function ping():Void
@@ -871,7 +882,6 @@ class WebSocket
 		__pingPongBuffer.set(0, WebSocketOpcode.PING);
 		__socket.output.writeBytes(__pingPongBuffer, 0, 2);
 		__socket.output.flush();
-
 	}
 
 	private function __pong():Void
@@ -879,7 +889,6 @@ class WebSocket
 		__pingPongBuffer.set(0, WebSocketOpcode.PONG);
 		__socket.output.writeBytes(__pingPongBuffer, 0, 2);
 		__socket.output.flush();
-
 	}
 
 	@:access(crossbyte._internal.websocket)
@@ -901,25 +910,25 @@ enum abstract BinaryType(String) to String from String
 enum abstract WebSocketHeaderMask(Int) from Int to Int
 {
 	public static inline var FIN:Int = 0x80;
-		public static inline var RSV1:Int = 0x40;
-		public static inline var RSV2:Int = 0x20;
-		public static inline var RSV3:Int = 0x10;
-		public static inline var MASK:Int = 0x80;
-	}
+	public static inline var RSV1:Int = 0x40;
+	public static inline var RSV2:Int = 0x20;
+	public static inline var RSV3:Int = 0x10;
+	public static inline var MASK:Int = 0x80;
+}
 
-	enum abstract WebSocketOpcode(Int) from Int to Int
+enum abstract WebSocketOpcode(Int) from Int to Int
 {
 	public static inline var CONTINUATION:Int = 0x00;
-		public static inline var TEXT:Int = 0x01;
-		public static inline var BINARY:Int = 0x02;
-		public static inline var CLOSE:Int = 0x08;
-		public static inline var PING:Int = 0x09;
-		public static inline var PONG:Int = 0x0A;
-	}
+	public static inline var TEXT:Int = 0x01;
+	public static inline var BINARY:Int = 0x02;
+	public static inline var CLOSE:Int = 0x08;
+	public static inline var PING:Int = 0x09;
+	public static inline var PONG:Int = 0x0A;
+}
 
-	@:forward
-	@:enum(WebSocketOpcode.TEXT, WebSocketOpcode.BINARY)
-	abstract TextOrBinary(WebSocketOpcode) to Int {}
+@:forward
+@:enum(WebSocketOpcode.TEXT, WebSocketOpcode.BINARY)
+abstract TextOrBinary(WebSocketOpcode) to Int {}
 
 @:private @:noCompletion class AcceptedWebSocket extends WebSocket
 {

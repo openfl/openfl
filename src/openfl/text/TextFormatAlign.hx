@@ -1,7 +1,6 @@
 package openfl.text;
 
 #if !flash
-
 #if !openfljs
 /**
 	The TextFormatAlign class provides values for text alignment in the

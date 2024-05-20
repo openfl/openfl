@@ -1,4 +1,5 @@
 package openfl.display;
+
 #if (!flash && sys && (!flash_doc_gen || air_doc_gen))
 import openfl.events.EventDispatcher;
 import lime.system.System;
@@ -38,14 +39,14 @@ class Screen extends EventDispatcher
 		the desktop bounds, not the screen's visible bounds.
 	**/
 	public var bounds(get, never):Rectangle;
-	
+
 	/**
 		The array of the currently available screens.
 
 		Modifying the returned array has no effect on the available screens.
 	**/
 	public static var screens(get, never):Array<Screen>;
-	
+
 	/**
 		The primary display.
 	**/
@@ -53,33 +54,33 @@ class Screen extends EventDispatcher
 
 	/**
 		The current screen mode of the Screen object.
-	**/	
+	**/
 	public var mode(get, null):ScreenMode;
-	
+
 	/**
 		The array of ScreenMode objects of the Screen object.
 	**/
 	public var modes(get, null):Array<ScreenMode>;
-	
+
 	/**
 		The bounds of the area on this screen in which windows can be visible.
 
 		The visibleBounds of a screen excludes the task bar (and other docked desk bars) on Windows, 
 		and excludes the menu bar and, depending on system settings, the dock on Mac OS X. On some Linux 
 		configurations, it is not possible to determine the visible bounds. 
-		
+
 		In these cases, the visibleBounds property returns the same value as the screenBounds property.
 	**/
-	public var visibleBounds(get, null):Rectangle;	
-	
+	public var visibleBounds(get, null):Rectangle;
+
 	@:noCompletion private var __displayIndex:Int;
-	
+
 	private function new(index:Int)
 	{
 		super();
 		__displayIndex = index;
-	}	
-	
+	}
+
 	/**
 		Returns the (possibly empty) set of screens that intersect the provided
 		rectangle.
@@ -87,7 +88,7 @@ class Screen extends EventDispatcher
 	public static function getScreensForRectangle(rect:Rectangle):Array<Screen>
 	{
 		var result:Array<Screen> = [];
-		
+
 		for (i in 0...System.numDisplays)
 		{
 			var screen = new Screen(i);
@@ -96,7 +97,7 @@ class Screen extends EventDispatcher
 				result.push(screen);
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -128,29 +129,28 @@ class Screen extends EventDispatcher
 		var display = System.getDisplay(__displayIndex);
 		return new ScreenMode(display.currentMode);
 	}
-	
+
 	@:noCompletion private function get_bounds():Rectangle
 	{
 		var display = System.getDisplay(__displayIndex);
 		var displayBounds = display.bounds;
-		
+
 		return new Rectangle(displayBounds.x, displayBounds.y, displayBounds.width, displayBounds.height);
 	}
 
 	@:noCompletion private static function get_screens():Array<Screen>
 	{
 		var result:Array<Screen> = [];
-		
+
 		for (i in 0...System.numDisplays)
 		{
 			var screen = new Screen(i);
 			result.push(screen);
 		}
-		
+
 		return result;
 	}
 
-	
 	@:noCompletion private static function get_mainScreen():Screen
 	{
 		return new Screen(0);

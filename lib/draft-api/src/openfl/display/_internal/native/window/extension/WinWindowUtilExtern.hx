@@ -1,4 +1,5 @@
 package _internal.native.window.extension;
+
 import haxe.Constraints.Function;
 
 /**
@@ -6,9 +7,9 @@ import haxe.Constraints.Function;
  * @author Christopher Speciale
  */
 @:include('./WinWindowUtilExtern.cpp')
-extern class WinWindowUtilExtern 
+extern class WinWindowUtilExtern
 {
-	@:native('windowUtil_getHWNDByName') private static function __getHWNDByName(value:String):Int;	
+	@:native('windowUtil_getHWNDByName') private static function __getHWNDByName(value:String):Int;
 	@:native('windowUtil_setTransparencyMask') private static function __setTransparencyMask(id:Int, colorMask:Int):Bool;
 	@:native('windowUtil_removeTransparencyMask') private static function __removeTransparencyMask(id:Int):Bool;
 	@:native('windowUtil_setBlurBehindWindow') private static function __setBlurBehindWindow(id:Int, value:Bool):Bool;

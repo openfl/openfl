@@ -2,7 +2,6 @@ package openfl.events;
 
 #if !flash
 // import openfl.utils.ObjectPool;
-
 /**
 	An IOErrorEvent object is dispatched when an error causes input or output
 	operations to fail.

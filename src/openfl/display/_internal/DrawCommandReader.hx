@@ -88,8 +88,7 @@ class DrawCommandReader
 				oPos += 4; // vertices, indices, uvtData, culling
 
 			case END_FILL:
-
-			// no parameters
+				// no parameters
 
 			case LINE_BITMAP_STYLE:
 				oPos += 2; // bitmap, matrix
@@ -120,8 +119,7 @@ class DrawCommandReader
 				oPos += 1; // matrix
 
 			case WINDING_EVEN_ODD, WINDING_NON_ZERO:
-
-			// no parameters
+				// no parameters
 
 			default:
 		}

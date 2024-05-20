@@ -751,8 +751,7 @@ class RegisterMap
 					Log.info("Missing switch patten: RegisterUsage.UNUSED");
 
 				case RegisterUsage.SAMPLER_2D_ALPHA:
-
-				// trace ("Missing switch patten: RegisterUsage.SAMPLER_2D_ALPHA");
+					// trace ("Missing switch patten: RegisterUsage.SAMPLER_2D_ALPHA");
 
 				case RegisterUsage.SAMPLER_CUBE_ALPHA:
 			}

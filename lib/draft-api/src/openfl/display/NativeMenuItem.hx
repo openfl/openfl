@@ -1,10 +1,10 @@
 package openfl.display;
+
 import _internal.native.menu.ContextMenuData.ContextMenuItemData;
 import openfl.events.Event;
 import openfl.events.EventType;
 import openfl.utils.Object;
 import openfl.events.EventDispatcher;
-
 
 /**
  * ...
@@ -49,7 +49,7 @@ class NativeMenuItem extends EventDispatcher
 
 	public function clone():NativeMenuItem
 	{
-		//TODO: clone has to recursively clone children, these hold references.
+		// TODO: clone has to recursively clone children, these hold references.
 		var item:NativeMenuItem = Type.createEmptyInstance(NativeMenuItem);
 		item.__contextMenuItemData = __contextMenuItemData.clone();
 		item.data = data;
@@ -173,12 +173,14 @@ class NativeMenuItem extends EventDispatcher
 		return value;
 	}
 
-	private function __dispatchSelectEvent():Void{
+	private function __dispatchSelectEvent():Void
+	{
 		dispatchEvent(new Event(Event.SELECT));
-	}	
-	
-	override public function addEventListener<T>(type:EventType<T>, listener:T->Void, useCapture:Bool = false, priority:Int = 0, useWeakReference:Bool = false):Void
-	{ 
+	}
+
+	override public function addEventListener<T>(type:EventType<T>, listener:T->Void, useCapture:Bool = false, priority:Int = 0,
+			useWeakReference:Bool = false):Void
+	{
 		super.addEventListener(type, listener, useCapture, priority, useWeakReference);
 
 		var menuId:UInt = Reflect.field(__contextMenuItemData, "_id");

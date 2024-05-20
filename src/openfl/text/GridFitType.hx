@@ -1,7 +1,6 @@
 package openfl.text;
 
 #if !flash
-
 #if !openfljs
 /**
 	The GridFitType class defines values for grid fitting in the TextField

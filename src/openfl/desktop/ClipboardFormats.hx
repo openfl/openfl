@@ -1,7 +1,6 @@
 package openfl.desktop;
 
 #if !flash
-
 #if !openfljs
 /**
 	The ClipboardFormats class defines constants for the names of the standard

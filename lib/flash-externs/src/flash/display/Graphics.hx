@@ -24,8 +24,7 @@ import openfl.Vector;
 		this.__beginFill(color, alpha);
 	}
 	@:native("beginGradientFill") @:noCompletion private function __beginGradientFill(type:GradientType, colors:Array<UInt>, alphas:Array<Float>,
-		ratios:Array<Int>, matrix:Matrix = null, ?spreadMethod:SpreadMethod, ?interpolationMethod:InterpolationMethod,
-		focalPointRatio:Null<Float> = null):Void;
+		ratios:Array<Int>, matrix:Matrix = null, ?spreadMethod:SpreadMethod, ?interpolationMethod:InterpolationMethod, focalPointRatio:Null<Float> = null):Void;
 	public inline function beginGradientFill(type:GradientType, colors:Array<UInt>, alphas:Array<Float>, ratios:Array<Int>, matrix:Matrix = null,
 			?spreadMethod:SpreadMethod, ?interpolationMethod:InterpolationMethod, focalPointRatio:Null<Float> = null):Void
 	{

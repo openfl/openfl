@@ -1,4 +1,5 @@
 package openfl.net;
+
 import openfl.net._internal.websocket.FlexSocket;
 import openfl.net._internal.websocket.WebSocket as InternalWS;
 import openfl.net._internal.websocket.WebsocketEvent;
@@ -14,14 +15,13 @@ import haxe.Serializer;
 import haxe.Timer;
 import haxe.Unserializer;
 import haxe.io.Error;
+
 /**
  * ...
  * @author Christopher Speciale
  */
-
 class WebSocket extends Socket
 {
-
 	public static function toWebSocket(socket:FlexSocket, server:ServerWebSocket):WebSocket
 	{
 		var webSocket:WebSocket = new WebSocket();
@@ -30,13 +30,13 @@ class WebSocket extends Socket
 		webSocket.__init();
 
 		webSocket.__server = server;
-		
+
 		return webSocket;
 	}
 
 	private var __webSocket:openfl.net._internal.websocket.WebSocket;
 	private var __server:ServerWebSocket;
-	
+
 	public function new(host:String = null, port:Int = 0)
 	{
 		super(host, port);
@@ -56,7 +56,7 @@ class WebSocket extends Socket
 
 		if (port < 0 || port > 65535)
 		{
-			throw new SecurityError("Invalid socket port number specified."); 
+			throw new SecurityError("Invalid socket port number specified.");
 		}
 
 		__timestamp = Timer.stamp();
@@ -89,25 +89,25 @@ class WebSocket extends Socket
 
 		if (__output.length > 0)
 		{
-			//try
-			//{		
-				__webSocket.sendBytes(__output);
-				__output.clear();
-			//}
-			//catch (e:Dynamic)
-			//{
-				//switch (e)
-				//{
-					//case Error.Blocked:
-					//case Error.Custom(Error.Blocked):
-					//default:
-						//throw new IOError("Operation attempted on invalid socket.");
-				//}
-				//
-			//}
+			// try
+			// {
+			__webSocket.sendBytes(__output);
+			__output.clear();
+			// }
+			// catch (e:Dynamic)
+			// {
+			// switch (e)
+			// {
+			// case Error.Blocked:
+			// case Error.Custom(Error.Blocked):
+			// default:
+			// throw new IOError("Operation attempted on invalid socket.");
+			// }
+			//
+			// }
 		}
 	}
-	
+
 	/**
 		Reads a Boolean value from the socket. After reading a single byte,
 		the method returns `true` if the byte is nonzero, and `false`
@@ -377,7 +377,7 @@ class WebSocket extends Socket
 
 		return __input.readUTFBytes(length);
 	}
-	
+
 	/**
 		Writes a Boolean value to the socket. This method writes a single
 		byte, with either a value of 1 (`true`) or 0 (`false`).
@@ -512,7 +512,7 @@ class WebSocket extends Socket
 
 		__output.writeUTFBytes(value);
 	}
-	
+
 	/**
 		Write an object to the socket in AMF serialized format.
 		@param object The object to be serialized.
@@ -520,12 +520,12 @@ class WebSocket extends Socket
 						not open.
 	**/
 	override public function writeObject(object:Dynamic):Void
-	{		
+	{
 		if (__webSocket == null)
 		{
 			throw new IOError("Operation attempted on invalid socket.");
 		}
-		
+
 		if (objectEncoding == HXSF)
 		{
 			__output.writeUTF(Serializer.run(object));
@@ -631,17 +631,17 @@ class WebSocket extends Socket
 		}
 
 		/*if ((msg.data is String))
-		{
-			__input.position = __input.length;
-			var cachePosition = __input.position;
-			__input.writeUTFBytes(msg.data);
-			__input.position = cachePosition;
-		}
-		else
-		{*/
-			var newData:ByteArray = msg.data;
-			newData.readBytes(__input, __input.length);
-		//}
+			{
+				__input.position = __input.length;
+				var cachePosition = __input.position;
+				__input.writeUTFBytes(msg.data);
+				__input.position = cachePosition;
+			}
+			else
+			{ */
+		var newData:ByteArray = msg.data;
+		newData.readBytes(__input, __input.length);
+		// }
 
 		if (__input.bytesAvailable > 0)
 		{
@@ -653,14 +653,14 @@ class WebSocket extends Socket
 	{
 		__connected = true;
 		dispatchEvent(new Event(Event.CONNECT));
-		
-		if (__server != null){
+
+		if (__server != null)
+		{
 			__server.dispatchEvent(new ServerSocketConnectEvent(ServerSocketConnectEvent.CONNECT, this));
 			__server = null;
 		}
-		
 	}
-	
+
 	private function __init():Void
 	{
 		__output = new ByteArray();
@@ -668,12 +668,11 @@ class WebSocket extends Socket
 
 		__input = new ByteArray();
 		__input.endian = __endian;
-		
+
 		__webSocket.binaryType = "arraybuffer";
 		__webSocket.onopen = socket_onOpen;
 		__webSocket.onmessage = socket_onMessage;
 		__webSocket.onclose = socket_onClose;
 		__webSocket.onerror = socket_onError;
 	}
-
 }

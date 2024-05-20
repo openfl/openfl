@@ -11,7 +11,6 @@ import openfl.geom.Rectangle;
 import lime._internal.graphics.ImageDataUtil; // TODO
 
 #end
-
 /**
 	The GlowFilter class lets you apply a glow effect to display objects. You
 	have several options for the style of the glow, including inner or outer
@@ -254,8 +253,7 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 		return new GlowFilter(__color, __alpha, __blurX, __blurY, __strength, __quality, __inner, __knockout);
 	}
 
-	@:noCompletion private override function __applyFilter(bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle,
-			destPoint:Point):BitmapData
+	@:noCompletion private override function __applyFilter(bitmapData:BitmapData, sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point):BitmapData
 	{
 		// TODO: Support knockout, inner
 
