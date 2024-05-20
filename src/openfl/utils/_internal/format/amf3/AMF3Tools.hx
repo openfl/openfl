@@ -29,6 +29,7 @@ package openfl.utils._internal.format.amf3;
 
 import openfl.utils._internal.format.amf3.AMF3Array;
 import openfl.utils._internal.format.amf3.AMF3Value;
+import openfl.utils.ByteArray;
 import haxe.ds.ObjectMap;
 import haxe.ds.Vector;
 import haxe.Constraints.IMap;
