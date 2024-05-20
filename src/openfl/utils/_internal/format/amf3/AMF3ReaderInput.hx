@@ -22,11 +22,16 @@ class AMF3ReaderInput implements IDataInput
 	public var endian(get, set):Endian;
 	public var objectEncoding:ObjectEncoding;
 	#else
+	#if (haxe_ver < 4.3)
+	public var bytesAvailable(default, never):UInt;
+	public var endian:Endian;
+	public var objectEncoding:ObjectEncoding;
+	#else
 	@:flash.property public var bytesAvailable(get, never):UInt;
 	@:flash.property public var endian(get, set):Endian;
 	@:flash.property public var objectEncoding(get, set):ObjectEncoding;
 	#end
-
+	#end
 	private var i:Input;
 	private var r:AMF3Reader;
 
@@ -34,6 +39,11 @@ class AMF3ReaderInput implements IDataInput
 	{
 		this.i = r.i;
 		this.r = r;
+
+		#if flash
+		endian = i.bigEndian ? BIG_ENDIAN : LITTLE_ENDIAN;
+		#end
+
 		objectEncoding = ObjectEncoding.AMF3;
 	}
 
