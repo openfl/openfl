@@ -310,15 +310,19 @@ class AMF3Tools
 					}
 				}
 
-				if (isExternalizable && obj != null && parent != null)
+				if (obj == null) obj = {};
+
+				if (isExternalizable)
 				{
-					var input = new AMF3ReaderInput(parent);
-					Reflect.callMethod(obj, Reflect.field(obj, "readExternal"), [input]);
+					if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (obj, IExternalizable) && parent != null)
+					{
+						var externalizable:IExternalizable = cast obj;
+						var input = new AMF3ReaderInput(parent);
+						externalizable.readExternal(input);
+					}
 				}
 				else
 				{
-					if (obj == null) obj = {};
-
 					for (name in fields.keys())
 					{
 						Reflect.setProperty(obj, name, unwrapValue(fields[name], parent));
