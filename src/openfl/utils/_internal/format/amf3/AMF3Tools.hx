@@ -50,7 +50,7 @@ class AMF3Tools
 				{
 					h.set(f, encode(Reflect.field(o, f)));
 				}
-				AObject(h, null, null);
+				AObject(h, null, null, false);
 			case TClass(c):
 				switch (c)
 				{
@@ -101,7 +101,7 @@ class AMF3Tools
 							h.set(f, encode(Reflect.getProperty(o, f)));
 							i++;
 						}
-						AObject(h, i, Type.getClassName(_class));
+						AObject(h, i, Type.getClassName(_class), false);
 				}
 			default:
 				throw "Can't encode " + Std.string(o);
@@ -121,7 +121,7 @@ class AMF3Tools
 			case ADate(_): date(a);
 			case AArray(_, _): array(a);
 			case AVector(_): vector(a);
-			case AObject(_, _, _): object(a);
+			case AObject(_, _, _, _): object(a);
 			case AXml(_): xml(a);
 			case ABytes(_): bytes(a);
 			case AMap(_): map(a);
@@ -221,16 +221,15 @@ class AMF3Tools
 
 	public static function object(a:AMF3Value)
 	{
+		// TODO: Merge with unwrapValue?
+		// This should instantiate, and should work recursively
 		if (a == null) return null;
 		return switch (a)
 		{
-			case AObject(o, _, className):
+			case AObject(o, _, className, isExternalizable):
 				var m = new Map();
 				for (f in o.keys())
 					m.set(f, decode(o.get(f)));
-				trace("TODO: WHY RETURN A MAP?");
-				trace(m);
-				trace(className);
 				m;
 			default: null;
 		}
@@ -297,7 +296,7 @@ class AMF3Tools
 				#end
 				return ba;
 
-			case AObject(fields, _, className):
+			case AObject(fields, _, className, isExternalizable):
 				var obj:Dynamic = null;
 
 				if (className != null && className != "")
@@ -311,11 +310,19 @@ class AMF3Tools
 					}
 				}
 
-				if (obj == null) obj = {};
-
-				for (name in fields.keys())
+				if (isExternalizable && obj != null && parent != null)
 				{
-					Reflect.setProperty(obj, name, unwrapValue(fields[name], parent));
+					var input = new AMF3ReaderInput(parent);
+					Reflect.callMethod(obj, Reflect.field(obj, "readExternal"), [input]);
+				}
+				else
+				{
+					if (obj == null) obj = {};
+
+					for (name in fields.keys())
+					{
+						Reflect.setProperty(obj, name, unwrapValue(fields[name], parent));
+					}
 				}
 
 				return obj;

@@ -136,7 +136,7 @@ class AMF3Reader
 
 		var h = new Map();
 
-		var ret = AObject(h, null, className != null ? AMF3Tools.decode(className) : null);
+		var ret = AObject(h, null, className != null ? AMF3Tools.decode(className) : null, isExternalizable);
 
 		// save new object in reference table
 		complexObjectsTable.push(ret);
@@ -157,22 +157,6 @@ class AMF3Reader
 					if (s == "") break;
 					h.set(s, read());
 				}
-			}
-		}
-		else
-		{
-			// create class instance and call `readExternal()` to deserialize
-			var input = new AMF3ReaderInput(this);
-			var className = AMF3Tools.decode(className);
-
-			var cls = openfl.Lib.getClassByAlias(className);
-			if (cls == null) cls = Type.resolveClass(className);
-
-			if (cls != null)
-			{
-				var instance = Type.createInstance(cls, []);
-				var field = Reflect.field(instance, "readExternal");
-				Reflect.callMethod(instance, field, [input]);
 			}
 		}
 

@@ -38,7 +38,7 @@ enum AMF3Value
 	ANumber(f:Float);
 	AString(s:String);
 	ADate(d:Date);
-	AObject(fields:Map<String, AMF3Value>, ?size:Int, ?classname:String);
+	AObject(fields:Map<String, AMF3Value>, ?size:Int, ?classname:String, ?isExternalizable:Bool);
 	AArray(values:Array<AMF3Value>, ?extra:Map<String, AMF3Value>);
 	AVector(values:Vector<AMF3Value>, ?classname:String);
 	AXml(x:Xml);
