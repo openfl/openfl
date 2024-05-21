@@ -84,7 +84,7 @@ class AMF3Tools
 					#if !haxe4
 					case cast HaxeVector:
 						var o:HaxeVector<Dynamic> = o;
-						var a = new Vector<AMF3Value>(o.length);
+						var a = new HaxeVector<AMF3Value>(o.length);
 						for (i in 0...o.length)
 							a[i] = encode(o[i]);
 						AVector(a, false, null);
@@ -234,7 +234,7 @@ class AMF3Tools
 				}
 				else
 				{
-					var v = new Vector<Dynamic>(a.length, fixed);
+					var v = new Vector<{}>(a.length, fixed);
 					for (i in 0...a.length)
 					{
 						v[i] = decode(a[i]);
