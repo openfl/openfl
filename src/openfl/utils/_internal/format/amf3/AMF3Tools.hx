@@ -322,7 +322,7 @@ class AMF3Tools
 					{
 						v[i] = unwrapValue(a[i], parent);
 					}
-					return cast v;
+					return v;
 				}
 				else if (className == "Float")
 				{
@@ -331,7 +331,7 @@ class AMF3Tools
 					{
 						v[i] = unwrapValue(a[i], parent);
 					}
-					return cast v;
+					return v;
 				}
 				else
 				{
@@ -340,7 +340,7 @@ class AMF3Tools
 					{
 						v[i] = unwrapValue(a[i], parent);
 					}
-					return cast v;
+					return v;
 				}
 			case ABytes(b):
 				var ba = ByteArray.fromBytes(b);
