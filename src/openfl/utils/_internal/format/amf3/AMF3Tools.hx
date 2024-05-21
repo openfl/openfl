@@ -31,8 +31,9 @@ import openfl.utils._internal.format.amf3.AMF3Array;
 import openfl.utils._internal.format.amf3.AMF3Value;
 import openfl.utils.ByteArray;
 import haxe.ds.ObjectMap;
-import haxe.ds.Vector;
+import haxe.ds.Vector as HaxeVector;
 import haxe.Constraints.IMap;
+import openfl.Vector;
 
 class AMF3Tools
 {
@@ -81,12 +82,12 @@ class AMF3Tools
 						AArray(a, m);
 						// TODO: Handle native array types?
 					#if !haxe4
-					case cast Vector:
-						var o:Vector<Dynamic> = o;
+					case cast HaxeVector:
+						var o:HaxeVector<Dynamic> = o;
 						var a = new Vector<AMF3Value>(o.length);
 						for (i in 0...o.length)
 							a[i] = encode(o[i]);
-						AVector(a, null);
+						AVector(a, false, null);
 					#end
 					case cast haxe.io.Bytes:
 						ABytes(o);
@@ -205,16 +206,42 @@ class AMF3Tools
 		}
 	}
 
-	public static function vector(a:AMF3Value)
+	public static function vector(a:AMF3Value):Vector<Dynamic>
 	{
 		if (a == null) return null;
 		return switch (a)
 		{
-			case AVector(a, _):
-				var v = new Vector<Dynamic>(a.length);
-				for (i in 0...a.length)
-					v[i] = decode(a[i]);
-				v;
+			case AVector(a, fixed, className):
+				// Vector is a multi-type abstract in OpenFL
+				// Int, Float, Bool, Function, Object
+				if (className == "Int")
+				{
+					var v = new Vector<Int>(a.length, fixed);
+					for (i in 0...a.length)
+					{
+						v[i] = decode(a[i]);
+					}
+					return cast v;
+				}
+				else if (className == "Float")
+				{
+					var v = new Vector<Float>(a.length, fixed);
+					for (i in 0...a.length)
+					{
+						v[i] = decode(a[i]);
+					}
+					return cast v;
+				}
+				else
+				{
+					var v = new Vector<Dynamic>(a.length, fixed);
+					for (i in 0...a.length)
+					{
+						v[i] = decode(a[i]);
+					}
+					return cast v;
+				}
+
 			default: null;
 		}
 	}
@@ -285,10 +312,36 @@ class AMF3Tools
 				{
 					return unwrapValue(v, parent);
 				});
-			case AVector(vals): return vals.map(function(v)
+			case AVector(a, fixed, className):
+				// Vector is a multi-type abstract in OpenFL
+				// Int, Float, Bool, Function, Object
+				if (className == "Int")
 				{
-					return unwrapValue(v, parent);
-				});
+					var v = new Vector<Int>(a.length, fixed);
+					for (i in 0...a.length)
+					{
+						v[i] = unwrapValue(a[i], parent);
+					}
+					return cast v;
+				}
+				else if (className == "Float")
+				{
+					var v = new Vector<Float>(a.length, fixed);
+					for (i in 0...a.length)
+					{
+						v[i] = unwrapValue(a[i], parent);
+					}
+					return cast v;
+				}
+				else
+				{
+					var v = new Vector<Dynamic>(a.length, fixed);
+					for (i in 0...a.length)
+					{
+						v[i] = unwrapValue(a[i], parent);
+					}
+					return cast v;
+				}
 			case ABytes(b):
 				var ba = ByteArray.fromBytes(b);
 				#if (!display && !flash)

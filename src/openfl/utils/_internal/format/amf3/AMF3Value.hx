@@ -40,7 +40,7 @@ enum AMF3Value
 	ADate(d:Date);
 	AObject(fields:Map<String, AMF3Value>, ?size:Int, ?classname:String, ?isExternalizable:Bool);
 	AArray(values:Array<AMF3Value>, ?extra:Map<String, AMF3Value>);
-	AVector(values:Vector<AMF3Value>, ?classname:String);
+	AVector(values:Vector<AMF3Value>, ?fixed:Bool, ?classname:String);
 	AXml(x:Xml);
 	ABytes(b:haxe.io.Bytes);
 	AMap(m:Map<AMF3Value, AMF3Value>);

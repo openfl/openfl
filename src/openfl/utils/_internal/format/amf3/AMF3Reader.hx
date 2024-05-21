@@ -221,17 +221,14 @@ class AMF3Reader
 		}
 		var len = header >> 1;
 		var fixed = i.readByte() != 0;
-		var a:EitherType<Vector<AMF3Value>, Array<AMF3Value>>;
-		if (fixed) a = new Vector(len);
-		else
-			a = new Array();
+		var a = new Vector<AMF3Value>(len);
 
 		for (r in 0...len)
 		{
 			a[r] = AInt(i.readInt32());
 		}
 
-		var ret = fixed ? AVector(a, "Int") : AArray(a);
+		var ret = AVector(a, fixed, "Int");
 
 		complexObjectsTable.push(ret);
 
@@ -248,17 +245,14 @@ class AMF3Reader
 		}
 		var len = header >> 1;
 		var fixed = i.readByte() != 0;
-		var a:EitherType<Vector<AMF3Value>, Array<AMF3Value>>;
-		if (fixed) a = new Vector(len);
-		else
-			a = new Array();
+		var a = new Vector<AMF3Value>(len);
 
 		for (r in 0...len)
 		{
 			a[r] = ANumber(i.readDouble());
 		}
 
-		var ret = fixed ? AVector(a, "Number") : AArray(a);
+		var ret = AVector(a, fixed, "Float");
 
 		complexObjectsTable.push(ret);
 
@@ -276,21 +270,9 @@ class AMF3Reader
 		var len = header >> 1;
 		var fixed = i.readByte() != 0;
 		var objectTypeName = AMF3Tools.decode(readString());
-		// trace("readObjectVector name:" + objectTypeName); // TODO make registered class feature or use Type.resolveClass?
-		var VC = Type.resolveClass(objectTypeName);
-		// trace("VC:" + VC); // TODO make registered class feature or use Type.resolveClass?
-		var a:EitherType<Vector<AMF3Value>, Array<AMF3Value>>;
-		var ret;
-		if (fixed)
-		{
-			a = new Vector(len);
-			ret = AVector(a, objectTypeName);
-		}
-		else
-		{
-			a = new Array();
-			ret = AArray(a);
-		}
+
+		var a = new Vector<AMF3Value>(len);
+		var ret = AVector(a, fixed, objectTypeName);
 
 		complexObjectsTable.push(ret);
 
