@@ -993,7 +993,14 @@ class File extends FileReference
 			__fileWorker = null;
 			dispatchEvent(event);
 		});
-		__fileWorker.doWork.add(function(m:Dynamic)
+
+		#if (lime >= "8.2.0")
+		// This is a silly break in an API
+		__fileWorker.run(
+		#else
+		__fileWorker.doWork.add(
+		#end
+		function(m:Dynamic)
 		{
 			try
 			{
@@ -1017,7 +1024,9 @@ class File extends FileReference
 			__fileWorker.sendComplete(new Event(Event.COMPLETE));
 		});
 
+		#if (lime < "8.2.0")
 		__fileWorker.run();
+		#end
 	}
 
 	/**
@@ -1120,7 +1129,14 @@ class File extends FileReference
 			__fileWorker = null;
 			dispatchEvent(event);
 		});
-		__fileWorker.doWork.add(function(m:Dynamic)
+
+		#if (lime >= "8.2.0")
+		// This is a silly break in an API
+		__fileWorker.run(
+		#else
+		__fileWorker.doWork.add(
+		#end
+		function(m:Dynamic)
 		{
 			try
 			{
@@ -1144,7 +1160,9 @@ class File extends FileReference
 			__fileWorker.sendComplete(new Event(Event.COMPLETE));
 		});
 
+		#if (lime < "8.2.0")
 		__fileWorker.run();
+		#end
 	}
 
 	/**
@@ -1195,7 +1213,14 @@ class File extends FileReference
 			__fileWorker = null;
 			dispatchEvent(event);
 		});
-		__fileWorker.doWork.add(function(m:Dynamic)
+
+		#if (lime >= "8.2.0")
+		// This is a silly break in an API
+		__fileWorker.run(
+		#else
+		__fileWorker.doWork.add(
+		#end
+		function(m:Dynamic)
 		{
 			try
 			{
@@ -1219,7 +1244,9 @@ class File extends FileReference
 			__fileWorker.sendComplete(new Event(Event.COMPLETE));
 		});
 
+		#if (lime < "8.2.0")
 		__fileWorker.run();
+		#end
 	}
 
 	/**
@@ -1309,7 +1336,14 @@ class File extends FileReference
 			__fileWorker = null;
 			dispatchEvent(event);
 		});
-		__fileWorker.doWork.add(function(m:Dynamic)
+
+		#if (lime >= "8.2.0")
+		// This is a silly break in an API
+		__fileWorker.run(
+		#else
+		__fileWorker.doWork.add(
+		#end
+		function(m:Dynamic)
 		{
 			var directories:Array<String> = null;
 			try
@@ -1339,7 +1373,9 @@ class File extends FileReference
 			__fileWorker.sendComplete(new FileListEvent(FileListEvent.DIRECTORY_LISTING, files));
 		});
 
+		#if (lime < "8.2.0")
 		__fileWorker.run();
+		#end
 	}
 
 	/**
@@ -1584,7 +1620,14 @@ class File extends FileReference
 			__fileWorker = null;
 			dispatchEvent(event);
 		});
-		__fileWorker.doWork.add(function(m:Dynamic)
+
+		#if (lime >= "8.2.0")
+		// This is a silly break in an API
+		__fileWorker.run(
+		#else
+		__fileWorker.doWork.add(
+		#end
+		function(m:Dynamic)
 		{
 			try
 			{
@@ -1608,7 +1651,9 @@ class File extends FileReference
 			__fileWorker.sendComplete(new Event(Event.COMPLETE));
 		});
 
+		#if (lime < "8.2.0")
 		__fileWorker.run();
+		#end
 	}
 
 	/**
