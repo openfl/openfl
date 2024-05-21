@@ -335,7 +335,7 @@ class AMF3Tools
 				}
 				else
 				{
-					var v = new Vector<Dynamic>(a.length, fixed);
+					var v = new Vector<{}>(a.length, fixed);
 					for (i in 0...a.length)
 					{
 						v[i] = unwrapValue(a[i], parent);
