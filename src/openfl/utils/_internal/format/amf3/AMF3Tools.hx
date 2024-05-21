@@ -294,6 +294,7 @@ class AMF3Tools
 				#if (!display && !flash)
 				@:privateAccess (ba : ByteArrayData).__parentAMF3Reader = parent;
 				#end
+				ba.endian = BIG_ENDIAN;
 				return ba;
 
 			case AObject(fields, _, className, isExternalizable):
