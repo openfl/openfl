@@ -106,7 +106,7 @@ class Build extends Script
 	{
 		if (System.hostPlatform == WINDOWS)
 		{
-			return "Windows";
+			return System.hostArchitecture == X64 ? "Windows64" : "Windows";
 		}
 		else if (System.hostPlatform == MAC)
 		{
