@@ -248,6 +248,7 @@ class CanvasGraphics
 
 		if (graphics.__commands.length == 0 || bounds == null || bounds.width <= 0 || bounds.height <= 0)
 		{
+			CanvasGraphics.graphics = null;
 			return false;
 		}
 		else
@@ -331,6 +332,7 @@ class CanvasGraphics
 							data.destroy();
 							graphics.__canvas = cacheCanvas;
 							graphics.__context = cacheContext;
+							CanvasGraphics.graphics = null;
 							return true;
 						}
 
@@ -341,6 +343,7 @@ class CanvasGraphics
 							data.destroy();
 							graphics.__canvas = cacheCanvas;
 							graphics.__context = cacheContext;
+							CanvasGraphics.graphics = null;
 							return true;
 						}
 
@@ -355,6 +358,7 @@ class CanvasGraphics
 							data.destroy();
 							graphics.__canvas = cacheCanvas;
 							graphics.__context = cacheContext;
+							CanvasGraphics.graphics = null;
 							return true;
 						}
 
@@ -365,6 +369,7 @@ class CanvasGraphics
 							data.destroy();
 							graphics.__canvas = cacheCanvas;
 							graphics.__context = cacheContext;
+							CanvasGraphics.graphics = null;
 							return true;
 						}
 
@@ -452,6 +457,7 @@ class CanvasGraphics
 
 			graphics.__canvas = cacheCanvas;
 			graphics.__context = cacheContext;
+			CanvasGraphics.graphics = null;
 			return hitTest;
 		}
 		#end
@@ -1460,6 +1466,7 @@ class CanvasGraphics
 
 			graphics.__softwareDirty = false;
 			graphics.__dirty = false;
+			CanvasGraphics.graphics = null;
 		}
 		#end
 	}
