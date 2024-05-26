@@ -82,6 +82,8 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 
 	@:noCompletion private var __group:TileContainer;
 	@:noCompletion private var __tileset:Tileset;
+	@:noCompletion private var __renderWorldAlpha:Float = 1;
+	@:noCompletion private var __numTiles:Int = 0;
 	#if !flash
 	@:noCompletion private var __buffer:Context3DBuffer;
 	@:noCompletion private var __bufferDirty:Bool;
