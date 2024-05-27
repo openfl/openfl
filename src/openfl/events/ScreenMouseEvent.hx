@@ -155,7 +155,7 @@ class ScreenMouseEvent extends MouseEvent
 	public function new(type:String, bubbles:Bool = false, cancelable:Bool = false, screenX:Float = 0, screenY:Float = 0, ctrlKey:Bool = false,
 			altKey:Bool = false, shiftKey:Bool = false, buttonDown:Bool = false, commandKey:Bool = false, controlKey:Bool = false)
 	{
-		super(type, bubbles, cancelable, screenX, screenY, null, ctrlKey, altKey, shiftKey, buttonDown, 0, commandKey, controlKey, 0);
+		super(type, bubbles, cancelable, screenX, screenY, 0, 0, null, ctrlKey, altKey, shiftKey, buttonDown, 0, commandKey, controlKey, 0);
 		this.screenX = screenX;
 		this.screenY = screenY;
 	}

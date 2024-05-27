@@ -513,7 +513,40 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	**/
 	public var fullScreenWidth(get, never):UInt;
 
-	// @:noCompletion @:dox(hide) @:require(flash11_2) public var mouseLock:Bool;
+	#if desktop
+	/**
+		Set to true to enable mouse locking. Enabling mouse locking turns off
+		the cursor, and allows mouse movement with no bounds. You can only
+		enable mouse locking in full-screen mode for desktop applications.
+		Setting it on applications not in full-screen mode, or for applications
+		on mobile devices, throws an exception.
+
+		Mouse locking is disabled automatically and the mouse cursor is made
+		visible again when:
+
+		 - The user exits full-screen mode by using the Esc key (all platforms),
+		   Control-W (Windows), Command-W (Mac), or Alt-F4 (Windows).
+		 - The application window loses focus.
+		 - Any settings UI is visible, including all privacy dialog boxes.
+		 - A native dialog box is shown, such as a file upload dialog box.
+
+		When exiting full screen mode, this property is automatically set to `false`.
+
+		Events associated with mouse movement, such as the `MOUSE_MOVE` event, use the
+		`MouseEvent` class to represent the event object. When mouse locking is disabled,
+		use the `MouseEvent.localX` and `MouseEvent.localY` properties to determine the
+		location of the mouse. When mouse locking is enabled, use the `MouseEvent.movementX`
+		and `MouseEvent.movementY` properties to determine the location of the mouse.
+		The `movementX` and `movementY` properties contain changes in the position of
+		the mouse since the last event, instead of absolute coordinates of the mouse location.
+
+		**Note:** When the application is in full-screen mode, mouse event listeners
+		attached to display objects other than the Stage are not dispatched.
+		Therefore, to receive mouse deltas and any other mouse events when `mouseLock`
+		is `true`, attach the mouse event listeners to the Stage object.
+	**/
+	public var mouseLock(get, set):Bool;
+	#end
 
 	/**
 		A value from the StageQuality class that specifies which rendering quality
@@ -911,6 +944,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	#if lime
 	@:noCompletion private var __primaryTouch:Touch;
 	#end
+	#if desktop
+	@:noCompletion private var __mouseLock:Bool;
+	@:noCompletion private var __movementX:Float;
+	@:noCompletion private var __movementY:Float;
+	#end
 
 	#if openfljs
 	@:noCompletion private static function __init__()
@@ -948,7 +986,13 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			"scaleMode": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_scaleMode (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_scaleMode (v); }")
-			},
+			}
+			#if (desktop),
+			"mouseLock": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_mouseLock (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_mouseLock (v); }")
+			}
+			#end
 		});
 	}
 	#end
@@ -1092,6 +1136,10 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		this.application = window.application;
 		this.window = window;
 		this.color = color;
+		#end
+
+		#if desktop
+		__mouseLock = window.mouseLock;
 		#end
 
 		__contentsScaleFactor = window.scale;
@@ -1570,14 +1618,52 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					#if openfl_pool_events
 					var clickEvent = MouseEvent.__pool.get();
 					clickEvent.type = MouseEvent.CLICK;
+					#if desktop
+					if (window.mouseLock)
+					{
+						clickEvent.stageX = 0;
+						clickEvent.stageY = 0;
+						clickEvent.localX = 0;
+						clickEvent.localY = 0;
+						// Click is not initiated through the mouse, so attaching movement data
+						// Doesn't make sense
+						clickEvent.movementX = 0;
+						clickEvent.movementY = 0;
+					}
+					else
+					{
+						clickEvent.stageX = __mouseX;
+						clickEvent.stageY = __mouseY;
+						var local = sprite.__globalToLocal(targetPoint, localPoint);
+						clickEvent.localX = local.x;
+						clickEvent.localY = local.y;
+						clickEvent.movementX = 0;
+						clickEvent.movementY = 0;
+					}
+					#else
 					clickEvent.stageX = __mouseX;
 					clickEvent.stageY = __mouseY;
 					var local = sprite.__globalToLocal(targetPoint, localPoint);
 					clickEvent.localX = local.x;
 					clickEvent.localY = local.y;
+					clickEvent.movementX = 0;
+					clickEvent.movementY = 0;
+					#end
 					clickEvent.target = sprite;
 					#else
-					var clickEvent = MouseEvent.__create(MouseEvent.CLICK, 0, 0, __mouseX, __mouseY, sprite.__globalToLocal(targetPoint, localPoint), sprite);
+					var clickEvent:MouseEvent;
+					#if desktop
+					if (window.mouseLock)
+					{
+						clickEvent = MouseEvent.__create(MouseEvent.CLICK, 0, 0, 0, 0, new Point(0, 0), 0, 0, sprite);
+					}
+					else
+					{
+						clickEvent = MouseEvent.__create(MouseEvent.CLICK, 0, 0, __mouseX, __mouseY, sprite.__globalToLocal(targetPoint, localPoint), 0, 0, sprite);
+					}
+					#else
+					clickEvent = MouseEvent.__create(MouseEvent.CLICK, 0, 0, __mouseX, __mouseY, sprite.__globalToLocal(targetPoint, localPoint), 0, 0, sprite);
+					#end
 					#end
 
 					__dispatchStack(clickEvent, stack);
@@ -1985,7 +2071,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 	@:noCompletion private function __onLimeMouseMoveRelative(window:Window, x:Float, y:Float):Void
 	{
-		// if (this.window == null || this.window != window) return;
+		if (this.window == null || this.window != window) return;
+		#if desktop
+		__movementX = x;
+		__movementY = y;
+		#end
 	}
 
 	@:noCompletion private function __onLimeMouseUp(window:Window, x:Float, y:Float, button:Int):Void
@@ -2304,6 +2394,11 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 	@:noCompletion private function __onLimeWindowClose(window:Window):Void
 	{
+		#if desktop
+		__mouseLock = false;
+		window.mouseLock = false;
+		#end
+
 		if (this.window == window)
 		{
 			this.window = null;
@@ -2386,6 +2481,13 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		#if !desktop
 		focus = __cacheFocus;
 		#end
+
+		#if desktop
+		if (__mouseLock)
+		{
+			window.mouseLock = true;
+		}
+		#end
 	}
 
 	@:noCompletion private function __onLimeWindowFocusOut(window:Window):Void
@@ -2409,6 +2511,13 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		Event.__pool.release(event);
 		#end
 
+		#if desktop
+		if (__mouseLock)
+		{
+			window.mouseLock = false;
+		}
+		#end
+
 		var currentFocus = focus;
 		focus = null;
 		__cacheFocus = currentFocus;
@@ -2424,6 +2533,13 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		if (this.window == null || this.window != window) return;
 
 		__resize();
+
+		#if desktop
+		if (__mouseLock) // Was fullscreen before with mouse locking enabled.
+		{
+			window.mouseLock = true;
+		}
+		#end
 
 		if (!__wasFullscreen)
 		{
@@ -2481,6 +2597,13 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		{
 			__forceRender = false;
 		}, 500);
+		#end
+
+		#if desktop
+		if (__mouseLock && !window.fullscreen && window.mouseLock) // User just existed fullscreen
+		{
+			window.mouseLock = false; // The resize is expected to be temporary, don't set __mouseLock.
+		}
 		#end
 
 		if (__wasFullscreen && !window.fullscreen)
@@ -2596,14 +2719,48 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 						#if openfl_pool_events
 						event = MouseEvent.__pool.get();
 						event.type = MouseEvent.RELEASE_OUTSIDE;
+						#if desktop
+						if (__mouseLock)
+						{
+							event.stageX = 0;
+							event.stageY = 0;
+							event.localX = 0;
+							event.localY = 0;
+							event.movementX = __movementX;
+							event.movementY = __movementY;
+						}
+						else
+						{
+							event.stageX = __mouseX;
+							event.stageY = __mouseY;
+							event.localX = __mouseX;
+							event.localY = __mouseY;
+							event.movementX = 0;
+							event.movementY = 0;
+						}
+						#else
 						event.stageX = __mouseX;
 						event.stageY = __mouseY;
 						event.localX = __mouseX;
 						event.localY = __mouseY;
+						event.movementX = 0;
+						event.movementY = 0;
+						#end
 						event.target = this;
 						event.clickCount = 0;
 						#else
-						event = MouseEvent.__create(MouseEvent.RELEASE_OUTSIDE, 1, 0, __mouseX, __mouseY, new Point(__mouseX, __mouseY), this);
+						#if desktop
+						if (__mouseLock)
+						{
+							event = MouseEvent.__create(MouseEvent.RELEASE_OUTSIDE, 1, 0, 0, 0, new Point(0, 0), __movementX, __movementY, this);
+						}
+						else
+						{
+							event = MouseEvent.__create(MouseEvent.RELEASE_OUTSIDE, 1, 0, __mouseX, __mouseY, new Point(__mouseX, __mouseY), 0, 0, this);
+						}
+						#else
+						event = MouseEvent.__create(MouseEvent.RELEASE_OUTSIDE, 1, 0, __mouseX, __mouseY, new Point(__mouseX, __mouseY), 0, 0, this);
+						#end
 						#end
 
 						__mouseDownLeft.dispatchEvent(event);
@@ -2645,15 +2802,50 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		#if openfl_pool_events
 		event = MouseEvent.__pool.get();
 		event.type = type;
+		#if desktop
+		if (window.mouseLock)
+		{
+			event.stageX = 0;
+			event.stageY = 0;
+			event.localX = 0;
+			event.localY = 0;
+			event.movementX = __movementX;
+			event.movementY = __movementY;
+		}
+		else
+		{
+			event.stageX = __mouseX;
+			event.stageY = __mouseY;
+			var local = target.__globalToLocal(targetPoint, localPoint);
+			event.localX = local.x;
+			event.localY = local.y;
+			event.movementX = 0;
+			event.movementY = 0;
+		}
+		#else
 		event.stageX = __mouseX;
 		event.stageY = __mouseY;
 		var local = target.__globalToLocal(targetPoint, localPoint);
 		event.localX = local.x;
 		event.localY = local.y;
+		event.movementX = 0;
+		event.movementY = 0;
+		#end
 		event.target = target;
 		event.clickCount = clickCount;
 		#else
-		event = MouseEvent.__create(type, button, clickCount, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), target);
+		#if desktop
+		if (window.mouseLock)
+		{
+			event = MouseEvent.__create(type, button, clickCount, 0, 0, new Point(0, 0), __movementX, __movementY, target);
+		}
+		else
+		{
+			event = MouseEvent.__create(type, button, clickCount, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), 0, 0, target);
+		}
+		#else
+		event = MouseEvent.__create(type, button, clickCount, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), 0, 0, target);
+		#end
 		#end
 
 		__dispatchStack(event, stack);
@@ -2672,15 +2864,50 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			#if openfl_pool_events
 			event = MouseEvent.__pool.get();
 			event.type = clickType;
+			#if desktop
+			if (window.mouseLock)
+			{
+				event.stageX = 0;
+				event.stageY = 0;
+				event.localX = 0;
+				event.localY = 0;
+				event.movementX = __movementX;
+				event.movementY = __movementY;
+			}
+			else
+			{
+				event.stageX = __mouseX;
+				event.stageY = __mouseY;
+				var local = target.__globalToLocal(targetPoint, localPoint);
+				event.localX = local.x;
+				event.localY = local.y;
+				event.movementX = 0;
+				event.movementY = 0;
+			}
+			#else
 			event.stageX = __mouseX;
 			event.stageY = __mouseY;
 			var local = target.__globalToLocal(targetPoint, localPoint);
 			event.localX = local.x;
 			event.localY = local.y;
+			event.movementX = 0;
+			event.movementY = 0;
+			#end
 			event.target = target;
 			event.clickCount = 0;
 			#else
-			event = MouseEvent.__create(clickType, button, 0, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), target);
+			#if desktop
+			if (window.mouseLock)
+			{
+				event = MouseEvent.__create(clickType, button, 0, 0, 0, new Point(0, 0), __movementX, __movementY, target);
+			}
+			else
+			{
+				event = MouseEvent.__create(clickType, button, 0, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), 0, 0, target);
+			}
+			#else
+			event = MouseEvent.__create(clickType, button, 0, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), 0, 0, target);
+			#end
 			#end
 
 			__dispatchStack(event, stack);
@@ -2702,16 +2929,50 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					#if openfl_pool_events
 					event = MouseEvent.__pool.get();
 					event.type = MouseEvent.DOUBLE_CLICK;
+					#if desktop
+					if (window.mouseLock)
+					{
+						event.stageX = 0;
+						event.stageY = 0;
+						event.localX = 0;
+						event.localY = 0;
+						event.movementX = __movementX;
+						event.movementY = __movementY;
+					}
+					else
+					{
+						event.stageX = __mouseX;
+						event.stageY = __mouseY;
+						var local = target.__globalToLocal(targetPoint, localPoint);
+						event.localX = local.x;
+						event.localY = local.y;
+						event.movementX = 0;
+						event.movementY = 0;
+					}
+					#else
 					event.stageX = __mouseX;
 					event.stageY = __mouseY;
 					var local = target.__globalToLocal(targetPoint, localPoint);
 					event.localX = local.x;
 					event.localY = local.y;
+					event.movementX = 0;
+					event.movementY = 0;
+					#end
 					event.target = target;
 					event.clickCount = 0;
 					#else
-					event = MouseEvent.__create(MouseEvent.DOUBLE_CLICK, button, 0, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint),
-						target);
+					#if desktop
+					if (window.mouseLock)
+					{
+						event = MouseEvent.__create(MouseEvent.DOUBLE_CLICK, button, 0, 0, 0, new Point(0, 0), __movementX, __movementY, target);
+					}
+					else
+					{
+						event = MouseEvent.__create(MouseEvent.DOUBLE_CLICK, button, 0, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), 0, 0, target);
+					}
+					#else
+					event = MouseEvent.__create(MouseEvent.DOUBLE_CLICK, button, 0, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), 0, 0, target);
+					#end
 					#end
 
 					__dispatchStack(event, stack);
@@ -2773,16 +3034,50 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				#if openfl_pool_events
 				event = MouseEvent.__pool.get();
 				event.type = MouseEvent.MOUSE_OUT;
+				#if desktop
+				if (window.mouseLock)
+				{
+					event.stageX = 0;
+					event.stageY = 0;
+					event.localX = 0;
+					event.localY = 0;
+					event.movementX = __movementX;
+					event.movementY = __movementY;
+				}
+				else
+				{
+					event.stageX = __mouseX;
+					event.stageY = __mouseY;
+					var local = __mouseOverTarget.__globalToLocal(targetPoint, localPoint);
+					event.localX = local.x;
+					event.localY = local.y;
+					event.movementX = 0;
+					event.movementY = 0;
+				}
+				#else
 				event.stageX = __mouseX;
 				event.stageY = __mouseY;
 				var local = __mouseOverTarget.__globalToLocal(targetPoint, localPoint);
 				event.localX = local.x;
 				event.localY = local.y;
+				event.movementX = 0;
+				event.movementY = 0;
+				#end
 				event.target = __mouseOverTarget;
 				event.clickCount = 0;
 				#else
-				event = MouseEvent.__create(MouseEvent.MOUSE_OUT, button, 0, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
-					cast __mouseOverTarget);
+				#if desktop
+				if (window.mouseLock)
+				{
+					event = MouseEvent.__create(MouseEvent.MOUSE_OUT, button, 0, 0, 0, new Point(0, 0), __movementX, __movementY, cast __mouseOverTarget);
+				}
+				else
+				{
+					event = MouseEvent.__create(MouseEvent.MOUSE_OUT, button, 0, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), 0, 0, cast __mouseOverTarget);
+				}
+				#else
+				event = MouseEvent.__create(MouseEvent.MOUSE_OUT, button, 0, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), 0, 0, cast __mouseOverTarget);
+				#end
 				#end
 
 				__dispatchStack(event, __mouseOutStack);
@@ -2809,16 +3104,50 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				#if openfl_pool_events
 				event = MouseEvent.__pool.get();
 				event.type = MouseEvent.ROLL_OUT;
+				#if desktop
+				if (window.mouseLock)
+				{
+					event.stageX = 0;
+					event.stageY = 0;
+					event.localX = 0;
+					event.localY = 0;
+					event.movementX = __movementX;
+					event.movementY = __movementY;
+				}
+				else
+				{
+					event.stageX = __mouseX;
+					event.stageY = __mouseY;
+					var local = __mouseOverTarget.__globalToLocal(targetPoint, localPoint);
+					event.localX = local.x;
+					event.localY = local.y;
+					event.movementX = 0;
+					event.movementY = 0;
+				}
+				#else
 				event.stageX = __mouseX;
 				event.stageY = __mouseY;
 				var local = __mouseOverTarget.__globalToLocal(targetPoint, localPoint);
 				event.localX = local.x;
 				event.localY = local.y;
+				event.movementX = 0;
+				event.movementY = 0;
+				#end
 				event.target = item;
 				event.clickCount = 0;
 				#else
-				event = MouseEvent.__create(MouseEvent.ROLL_OUT, button, 0, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint),
-					cast item);
+				#if desktop
+				if (window.mouseLock)
+				{
+					event = MouseEvent.__create(MouseEvent.ROLL_OUT, button, 0, 0, 0, new Point(0, 0), __movementX, __movementY, cast item);
+				}
+				else
+				{
+					event = MouseEvent.__create(MouseEvent.ROLL_OUT, button, 0, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint), 0, 0, cast item);
+				}
+				#else
+				event = MouseEvent.__create(MouseEvent.ROLL_OUT, button, 0, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint), 0, 0, cast item);
+				#end
 				#end
 				event.bubbles = false;
 
@@ -2848,17 +3177,51 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 					#if openfl_pool_events
 					var mouseEvent = MouseEvent.__pool.get();
 					mouseEvent.type = MouseEvent.ROLL_OVER;
-					mouseEvent.stageX = __mouseX;
-					mouseEvent.stageY = __mouseY;
+					#if desktop
+					if (window.mouseLock)
+					{
+						event.stageX = 0;
+						event.stageY = 0;
+						event.localX = 0;
+						event.localY = 0;
+						event.movementX = __movementX;
+						event.movementY = __movementY;
+					}
+					else
+					{
+						event.stageX = __mouseX;
+						event.stageY = __mouseY;
+						var local = __mouseOverTarget.__globalToLocal(targetPoint, localPoint);
+						event.localX = local.x;
+						event.localY = local.y;
+						event.movementX = 0;
+						event.movementY = 0;
+					}
+					#else
+					event.stageX = __mouseX;
+					event.stageY = __mouseY;
 					var local = __mouseOverTarget.__globalToLocal(targetPoint, localPoint);
-					mouseEvent.localX = local.x;
-					mouseEvent.localY = local.y;
+					event.localX = local.x;
+					event.localY = local.y;
+					event.movementX = 0;
+					event.movementY = 0;
+					#end
 					mouseEvent.target = item;
 					event = mouseEvent;
 					event.clickCount = 0;
 					#else
-					event = MouseEvent.__create(MouseEvent.ROLL_OVER, button, 0, __mouseX, __mouseY,
-						__mouseOverTarget.__globalToLocal(targetPoint, localPoint), cast item);
+					#if desktop
+					if (window.mouseLock)
+					{
+						event = MouseEvent.__create(MouseEvent.ROLL_OVER, button, 0, 0, 0, new Point(0, 0), __movementX, __movementY, cast item);
+					}
+					else
+					{
+						event = MouseEvent.__create(MouseEvent.ROLL_OVER, button, 0, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint), 0, 0, cast item);
+					}
+					#else
+					event = MouseEvent.__create(MouseEvent.ROLL_OVER, button, 0, __mouseX, __mouseY, __mouseOverTarget.__globalToLocal(targetPoint, localPoint), 0, 0, cast item);
+					#end
 					#end
 					event.bubbles = false;
 
@@ -2888,16 +3251,51 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				#if openfl_pool_events
 				var mouseEvent = MouseEvent.__pool.get();
 				mouseEvent.type = MouseEvent.MOUSE_OVER;
-				mouseEvent.stageX = __mouseX;
-				mouseEvent.stageY = __mouseY;
+				#if desktop
+				if (window.mouseLock)
+				{
+					event.stageX = 0;
+					event.stageY = 0;
+					event.localX = 0;
+					event.localY = 0;
+					event.movementX = __movementX;
+					event.movementY = __movementY;
+				}
+				else
+				{
+					event.stageX = __mouseX;
+					event.stageY = __mouseY;
+					var local = target.__globalToLocal(targetPoint, localPoint);
+					event.localX = local.x;
+					event.localY = local.y;
+					event.movementX = 0;
+					event.movementY = 0;
+				}
+				#else
+				event.stageX = __mouseX;
+				event.stageY = __mouseY;
 				var local = target.__globalToLocal(targetPoint, localPoint);
-				mouseEvent.localX = local.x;
-				mouseEvent.localY = local.y;
+				event.localX = local.x;
+				event.localY = local.y;
+				event.movementX = 0;
+				event.movementY = 0;
+				#end
 				mouseEvent.target = target;
 				event = mouseEvent;
 				event.clickCount = 0;
 				#else
-				event = MouseEvent.__create(MouseEvent.MOUSE_OVER, button, 0, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), cast target);
+				#if desktop
+				if (window.mouseLock)
+				{
+					event = MouseEvent.__create(MouseEvent.MOUSE_OVER, button, 0, 0, 0, new Point(0, 0), __movementX, __movementY,  cast target);
+				}
+				else
+				{
+					event = MouseEvent.__create(MouseEvent.MOUSE_OVER, button, 0, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), 0, 0, cast target);
+				}
+				#else
+				event = MouseEvent.__create(MouseEvent.MOUSE_OVER, button, 0, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint), 0, 0, cast target);
+				#end
 				#end
 
 				__dispatchStack(event, stack);
@@ -2977,7 +3375,19 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		__displayMatrix.__transformInversePoint(targetPoint);
 		var delta = Std.int(deltaY);
 
-		var event = MouseEvent.__create(MouseEvent.MOUSE_WHEEL, 0, 0, __mouseX, __mouseY, target.__globalToLocal(targetPoint, targetPoint), target, delta);
+		var event:MouseEvent;
+		#if desktop
+		if (window.mouseLock)
+		{
+			event = MouseEvent.__create(MouseEvent.MOUSE_WHEEL, 0, 0, 0, 0, new Point(0, 0), 0, 0, target, delta);
+		}
+		else
+		{
+			event = MouseEvent.__create(MouseEvent.MOUSE_WHEEL, 0, 0, __mouseX, __mouseY, target.__globalToLocal(targetPoint, targetPoint), 0, 0, target, delta);
+		}
+		#else
+		event = MouseEvent.__create(MouseEvent.MOUSE_WHEEL, 0, 0, __mouseX, __mouseY, target.__globalToLocal(targetPoint, targetPoint), 0, 0, target, delta);
+		#end
 		event.cancelable = true;
 		__dispatchStack(event, stack);
 		if (event.isDefaultPrevented()) window.onMouseWheel.cancel();
@@ -3640,6 +4050,22 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 	{
 		return this.height;
 	}
+
+	#if desktop
+	@:noCompletion private function get_mouseLock():Bool
+	{
+		return window.mouseLock;
+	}
+
+	@:noCompletion private function set_mouseLock(value:Bool):Bool
+	{
+		if (value && !window.fullscreen)
+		{
+			throw new IllegalOperationError("Property can not be set in non full screen mode.");
+		}
+		return __mouseLock = window.mouseLock = value;
+	}
+	#end
 
 	@:noCompletion private override function get_mouseX():Float
 	{
