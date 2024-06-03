@@ -258,7 +258,7 @@ class Sprite extends DisplayObjectContainer
 
 	@:noCompletion private override function __setStageReference(stage:Stage):Void
 	{
-		if (this.stage != null && this.stage.__dragObject == this)
+		if (stage == null && this.stage != null && this.stage.__dragObject == this)
 		{
 			stopDrag();
 		}
