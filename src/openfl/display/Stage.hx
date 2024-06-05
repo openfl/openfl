@@ -2694,44 +2694,56 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			MouseEvent.__pool.release(event);
 			#end
 
-			if (type == MouseEvent.MOUSE_UP && target.doubleClickEnabled)
+			if (type == MouseEvent.MOUSE_UP)
 			{
-				var currentTime = Lib.getTimer();
-				if (currentTime - __lastClickTime < 500 && target == __lastClickTarget)
+				if (target.doubleClickEnabled)
 				{
-					#if openfl_pool_events
-					event = MouseEvent.__pool.get();
-					event.type = MouseEvent.DOUBLE_CLICK;
-					event.stageX = __mouseX;
-					event.stageY = __mouseY;
-					var local = target.__globalToLocal(targetPoint, localPoint);
-					event.localX = local.x;
-					event.localY = local.y;
-					event.target = target;
-					event.clickCount = 0;
-					#else
-					event = MouseEvent.__create(MouseEvent.DOUBLE_CLICK, button, 0, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint),
-						target);
-					#end
-
-					__dispatchStack(event, stack);
-
-					if (event.__updateAfterEventFlag)
+					var currentTime = Lib.getTimer();
+					if (currentTime - __lastClickTime < 500 && target == __lastClickTarget)
 					{
-						__renderAfterEvent();
+						#if openfl_pool_events
+						event = MouseEvent.__pool.get();
+						event.type = MouseEvent.DOUBLE_CLICK;
+						event.stageX = __mouseX;
+						event.stageY = __mouseY;
+						var local = target.__globalToLocal(targetPoint, localPoint);
+						event.localX = local.x;
+						event.localY = local.y;
+						event.target = target;
+						event.clickCount = 0;
+						#else
+						event = MouseEvent.__create(MouseEvent.DOUBLE_CLICK, button, 0, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint),
+							target);
+						#end
+
+						__dispatchStack(event, stack);
+
+						if (event.__updateAfterEventFlag)
+						{
+							__renderAfterEvent();
+						}
+
+						#if openfl_pool_events
+						MouseEvent.__pool.release(event);
+						#end
+
+						__lastClickTime = 0;
+						__lastClickTarget = null;
 					}
-
-					#if openfl_pool_events
-					MouseEvent.__pool.release(event);
-					#end
-
-					__lastClickTime = 0;
-					__lastClickTarget = null;
+					else
+					{
+						// it's been too long since the previous click,
+						// or the target has changed since the previous click
+						__lastClickTarget = target;
+						__lastClickTime = currentTime;
+					}
 				}
 				else
 				{
-					__lastClickTarget = target;
-					__lastClickTime = currentTime;
+					// if the current target can't be double-clicked, clear the
+					// old value so that it doesn't become a memory leak
+					__lastClickTarget = null;
+					__lastClickTime = 0;
 				}
 			}
 		}
