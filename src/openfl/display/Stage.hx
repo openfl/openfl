@@ -3554,7 +3554,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 	@:noCompletion private function set_focus(value:InteractiveObject):InteractiveObject
 	{
-		if (value != __focus)
+		if (value != __focus || (value == null && __cacheFocus != null))
 		{
 			var oldFocus = __focus;
 			__focus = value;
