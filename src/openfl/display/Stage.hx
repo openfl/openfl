@@ -2569,6 +2569,13 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				}
 
 				__mouseDownLeft = target;
+				if (__lastClickTarget != target)
+				{
+					// the target has changed since the previous click
+					// so we can't double-click the old target anymore
+					__lastClickTarget = null;
+					__lastClickTime = 0;
+				}
 				MouseEvent.__buttonDown = true;
 				supportsClickCount = true;
 
