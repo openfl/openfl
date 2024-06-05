@@ -74,7 +74,7 @@ class PerspectiveProjection
 		point (0,0). The default projection transformation center is in the middle of the stage, which means the
 		three-dimensional display objects disappear toward the center of the stage as they move backwards in the z axis.
 	**/
-	public var projectionCenter:Point; // FIXME: does this do anything at all?
+	public var projectionCenter:Point;
 
 	@:noCompletion private var __fieldOfView:Float;
 	@:noCompletion private var matrix3D:Matrix3D;
@@ -118,6 +118,8 @@ class PerspectiveProjection
 		var _mp = matrix3D.rawData;
 		_mp[0] = focalLength;
 		_mp[5] = focalLength;
+		_mp[12] = ((projectionCenter.x * 2) / Lib.current.stage.stageWidth) - 1;
+		_mp[13] = ((projectionCenter.y * 2) / Lib.current.stage.stageHeight) - 1;
 		_mp[11] = 1.0;
 		_mp[15] = 0;
 
