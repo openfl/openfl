@@ -470,20 +470,10 @@ class ShaderMacro
 		switch (glVersion)
 		{
 			default:
-				// We don't know this GLSL version, so don't do anything.
+				// Don't make any changes to undefined versions.
 				return source;
 
-			case "100":
-				return source;
-			case "110":
-				return source;
-			case "120":
-				return source;
-			case "130":
-				return source;
-			case "140":
-				return source;
-			case "150":
+			case "100", "110", "120", "130", "140", "150":
 				return source;
 
 			case "300 es":
@@ -502,41 +492,20 @@ class ShaderMacro
 				result = glFragColorKeyword.replace(result, "fragColor");
 				return result;
 
-			case "310 es":
+			case "310 es", "320 es":
 				var result = processGLSLText(source, "300 es", isFragment);
-				return result;
-
-			case "320 es":
-				var result = processGLSLText(source, "310 es", isFragment);
 				return result;
 
 			case "330":
 				#if desktop
-				var result = processGLSLText(source, "320 es", isFragment);
+				var result = processGLSLText(source, "300 es", isFragment);
 				#else
 				var result = source;
 				#end
 				return result;
-			case "400":
+
+			case "400", "410", "420", "430", "440", "450", "460":
 				var result = processGLSLText(source, "330", isFragment);
-				return result;
-			case "410":
-				var result = processGLSLText(source, "400", isFragment);
-				return result;
-			case "420":
-				var result = processGLSLText(source, "410", isFragment);
-				return result;
-			case "430":
-				var result = processGLSLText(source, "420", isFragment);
-				return result;
-			case "440":
-				var result = processGLSLText(source, "430", isFragment);
-				return result;
-			case "450":
-				var result = processGLSLText(source, "440", isFragment);
-				return result;
-			case "460":
-				var result = processGLSLText(source, "450", isFragment);
 				return result;
 		}
 	}
@@ -554,17 +523,10 @@ class ShaderMacro
 			case "300 es": "out vec4 fragColor;\n";
 			#end
 
-			case "310 es": buildGLSLHeaders("300 es");
-			case "320 es": buildGLSLHeaders("310 es");
-			case "330": buildGLSLHeaders("320 es");
-			case "400": buildGLSLHeaders("330");
-			case "410": buildGLSLHeaders("400");
-			case "420": buildGLSLHeaders("410");
-			case "430": buildGLSLHeaders("420");
-			case "440": buildGLSLHeaders("430");
-			case "450": buildGLSLHeaders("440");
-			case "460": buildGLSLHeaders("450");
+			case "310 es", "320 es", "330", "400", "410", "420", "430", "440", "450", "460":
+				buildGLSLHeaders("300 es");
 
+			// Don't add any default headers to undefined versions
 			default: "";
 		};
 	}
@@ -577,23 +539,12 @@ class ShaderMacro
 
 		switch (glVersion)
 		{
+			// Don't add any extensions to undefined versions
 			default:
 				return glExtensions;
 
-			case "100":
-				return glExtensions;
-			case "110":
-				return glExtensions;
-			case "120":
-				return glExtensions;
-			case "130":
-				return glExtensions;
-			case "140":
-				return glExtensions;
-			case "150":
-				return glExtensions;
-
-			case "300 es":
+			#if desktop
+			case "300 es", "310 es", "320 es", "330":
 				var hasSeparateShaderObjects = false;
 				for (extension in glExtensions)
 				{
@@ -601,7 +552,6 @@ class ShaderMacro
 					if (extension.name == "GL_EXT_separate_shader_objects") hasSeparateShaderObjects = true;
 				}
 
-				#if desktop
 				if (!hasSeparateShaderObjects)
 				{
 					#if linux
@@ -610,35 +560,8 @@ class ShaderMacro
 					return glExtensions.concat([{name: "GL_ARB_separate_shader_objects", behavior: "require"}]);
 					#end
 				}
-				#end
 				return glExtensions;
-
-			case "310 es":
-				var result = buildGLSLExtensions(glExtensions, "300 es", isFragment);
-				return result;
-
-			case "320 es":
-				var result = buildGLSLExtensions(glExtensions, "310 es", isFragment);
-				return result;
-
-			case "330":
-				var result = buildGLSLExtensions(glExtensions, "320 es", isFragment);
-				return result;
-
-			case "400":
-				return glExtensions;
-			case "410":
-				return glExtensions;
-			case "420":
-				return glExtensions;
-			case "430":
-				return glExtensions;
-			case "440":
-				return glExtensions;
-			case "450":
-				return glExtensions;
-			case "460":
-				return glExtensions;
+			#end
 		}
 	}
 
