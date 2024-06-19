@@ -19,6 +19,7 @@ class HTMLParser
 	private static var __regexBlockIndent:EReg = ~/blockindent\s?=\s?("([^"]+)"|'([^']+)')/i;
 	private static var __regexClass:EReg = ~/class\s?=\s?("([^"]+)"|'([^']+)')/i;
 	private static var __regexColor:EReg = ~/color\s?=\s?("#([^"]+)"|'#([^']+)')/i;
+	private static var __regexEntityApos:EReg = ~/&apos;/g;
 	private static var __regexEntities:Array<EReg> = [~/&quot;/g, ~/&apos;/g, ~/&amp;/g, ~/&lt;/g, ~/&gt;/g, ~/&nbsp;/g];
 	private static var __regexCharEntity:EReg = ~/&#(?:([0-9]+)|(x[0-9a-fA-F]+));/g;
 	private static var __regexFace:EReg = ~/face\s?=\s?("([^"]+)"|'([^']+)')/i;
@@ -74,7 +75,7 @@ class HTMLParser
 
 		if (segments.length == 1)
 		{
-			value = StringTools.htmlUnescape(__regexHTMLTag.replace(value, ""));
+			value = __htmlUnescape(__regexHTMLTag.replace(value, ""));
 
 			if (textFormatRanges.length > 1)
 			{
@@ -138,7 +139,7 @@ class HTMLParser
 
 					if (start < segment.length)
 					{
-						sub = StringTools.htmlUnescape(segment.substr(start));
+						sub = __htmlUnescape(segment.substr(start));
 						textFormatRanges.push(new TextFormatRange(format, value.length, value.length + sub.length));
 						value += sub;
 						noLineBreak = false;
@@ -280,7 +281,7 @@ class HTMLParser
 
 						if (start < segment.length)
 						{
-							sub = StringTools.htmlUnescape(segment.substring(start));
+							sub = __htmlUnescape(segment.substring(start));
 							textFormatRanges.push(new TextFormatRange(format, value.length, value.length + sub.length));
 							value += sub;
 							noLineBreak = false;
@@ -288,7 +289,7 @@ class HTMLParser
 					}
 					else
 					{
-						sub = StringTools.htmlUnescape(segment);
+						sub = __htmlUnescape(segment);
 						textFormatRanges.push(new TextFormatRange(format, value.length, value.length + sub.length));
 						value += sub;
 						noLineBreak = false;
@@ -308,6 +309,13 @@ class HTMLParser
 	private static function __getAttributeMatch(regex:EReg):String
 	{
 		return regex.matched(2) != null ? regex.matched(2) : regex.matched(3);
+	}
+
+	@:noCompletion private static function __htmlUnescape(s:String):String
+	{
+		// for some reason, StringTools.htmlUnescape uses &#039; instead of &apos;
+		s = __regexEntityApos.replace(s, "'");
+		return StringTools.htmlUnescape(s);
 	}
 }
 #end
