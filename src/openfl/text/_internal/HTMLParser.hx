@@ -20,7 +20,7 @@ class HTMLParser
 	private static var __regexClass:EReg = ~/class\s?=\s?("([^"]+)"|'([^']+)')/i;
 	private static var __regexColor:EReg = ~/color\s?=\s?("#([^"]+)"|'#([^']+)')/i;
 	private static var __regexEntityApos:EReg = ~/&apos;/g;
-	private static var __regexEntities:Array<EReg> = [~/&quot;/g, ~/&apos;/g, ~/&amp;/g, ~/&lt;/g, ~/&gt;/g, ~/&nbsp;/g];
+	private static var __regexEntityNbsp:EReg = ~/&nbsp;/g;
 	private static var __regexCharEntity:EReg = ~/&#(?:([0-9]+)|(x[0-9a-fA-F]+));/g;
 	private static var __regexFace:EReg = ~/face\s?=\s?("([^"]+)"|'([^']+)')/i;
 	private static var __regexHTMLTag:EReg = ~/<.*?>/g;
@@ -43,7 +43,8 @@ class HTMLParser
 			value = __regexBreakTag.replace(value, "");
 		}
 
-		value = __regexEntities[5].replace(value, " ");
+		// it's not documented, but &nbsp; is supported by Flash
+		value = __regexEntityNbsp.replace(value, " ");
 
 		value = __regexCharEntity.map(value, function(ereg)
 		{
