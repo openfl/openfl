@@ -574,11 +574,11 @@ class FileReference extends EventDispatcher
 		__path = null;
 
 		#if desktop
-		var filter = null;
+		var filter:String = null;
 
 		if (typeFilter != null)
 		{
-			var filters = [];
+			var filters:Array<String> = [];
 
 			for (type in typeFilter)
 			{
@@ -596,10 +596,10 @@ class FileReference extends EventDispatcher
 		return true;
 		#end
 		#elseif (js && html5)
-		var filter = null;
+		var filter:String = null;
 		if (typeFilter != null)
 		{
-			var filters = [];
+			var filters:Array<String> = [];
 			for (type in typeFilter)
 			{
 				filters.push(StringTools.replace(StringTools.replace(type.extension, "*.", "."), ";", ","));
@@ -856,7 +856,7 @@ class FileReference extends EventDispatcher
 		saveFileDialog.browse(SAVE, defaultFileName != null ? Path.extension(defaultFileName) : null, defaultFileName);
 		#end
 
-		#if(js && html5)
+		#if (js && html5)
 		__pendingDownload = true;
 		__pendingDefaultFileName = defaultFileName;
 		#end
@@ -1485,7 +1485,7 @@ class FileReference extends EventDispatcher
 			__data = new ByteArray();
 			__data.writeUTFBytes(Std.string(__urlLoader.data));
 		}
-		
+
 		#if (desktop && sys)
 		if (__path != null)
 		{
@@ -1496,18 +1496,19 @@ class FileReference extends EventDispatcher
 		}
 		#end
 
-		#if(js && html5)
-		#if(lime && !macro)
-		if(__pendingDownload){
-			//Maybe just use an achor element and save the data as a blob with js instead of invoking lime?
+		#if (js && html5)
+		#if (lime && !macro)
+		if (__pendingDownload)
+		{
+			// Maybe just use an achor element and save the data as a blob with js instead of invoking lime?
 			var saveFileDialog = new FileDialog();
 			saveFileDialog.save(__data, __pendingDefaultFileName != null ? Path.extension(__pendingDefaultFileName) : null, __pendingDefaultFileName);
 			__pendingDownload = false;
 			__pendingDefaultFileName = null;
-		}		
+		}
 		#end
 		#end
-			
+
 		dispatchEvent(event);
 	}
 
@@ -1539,13 +1540,14 @@ class FileReference extends EventDispatcher
 
 	@:noCompletion private function urlLoader_onIOError(event:IOErrorEvent):Void
 	{
-		#if(js && html5)
-		if(__pendingDownload){
+		#if (js && html5)
+		if (__pendingDownload)
+		{
 			__pendingDownload = false;
 			__pendingDefaultFileName = null;
-		}		
+		}
 		#end
-			
+
 		dispatchEvent(event);
 	}
 

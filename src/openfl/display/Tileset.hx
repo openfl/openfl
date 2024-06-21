@@ -176,7 +176,7 @@ class Tileset
 	**/
 	public function getRectID(rect:Rectangle):Null<Int>
 	{
-		var tileData;
+		var tileData:TileData;
 
 		for (i in 0...__data.length)
 		{

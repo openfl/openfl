@@ -255,7 +255,7 @@ class ServerSocket extends EventDispatcher
 
 	@:noCompletion private function this_onEnterFrame(e:Event):Void
 	{
-		var sysSocket = null;
+		var sysSocket:sys.net.Socket = null;
 
 		try
 		{

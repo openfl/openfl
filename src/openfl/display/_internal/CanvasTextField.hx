@@ -200,7 +200,7 @@ class CanvasTextField
 						scrollY -= textEngine.lineHeights[i];
 					}
 
-					var advance;
+					var advance:Float;
 
 					for (group in textEngine.layoutGroups)
 					{

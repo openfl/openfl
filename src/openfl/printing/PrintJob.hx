@@ -340,7 +340,7 @@ class PrintJob
 
 			var div:DivElement;
 			var image:Image;
-			var bitmapData;
+			var bitmapData:BitmapData;
 
 			for (i in 0...__bitmapData.length)
 			{

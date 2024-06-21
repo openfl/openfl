@@ -1568,7 +1568,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 		if (transformDirty)
 		{
-			var list = [];
+			var list:Array<DisplayObject> = [];
 			var current = this;
 
 			if (parent == null)

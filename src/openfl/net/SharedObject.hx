@@ -680,7 +680,7 @@ class SharedObject extends EventDispatcher
 
 		if (!__sharedObjects.exists(id))
 		{
-			var encodedData = null;
+			var encodedData:String = null;
 
 			try
 			{

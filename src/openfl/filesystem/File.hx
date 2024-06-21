@@ -1813,7 +1813,7 @@ class File extends FileReference
 	@:noCompletion private function __getFilterTypes(typeFilter:Array<FileFilter>):String
 	{
 		var filterString:String = null;
-		var filters = [];
+		var filters:Array<String> = [];
 
 		if (typeFilter != null)
 		{

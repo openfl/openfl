@@ -1124,7 +1124,7 @@ class CairoGraphics
 
 	private static function quadraticCurveTo(cx:Float, cy:Float, x:Float, y:Float):Void
 	{
-		var current = null;
+		var current:Vector2 = null;
 
 		if (!cairo.hasCurrentPoint)
 		{

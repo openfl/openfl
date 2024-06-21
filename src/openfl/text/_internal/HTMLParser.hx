@@ -95,10 +95,9 @@ class HTMLParser
 			textFormatRanges.splice(0, textFormatRanges.length);
 
 			value = "";
-			var segment;
 
 			var formatStack = [textFormat.clone()];
-			var tagStack = [];
+			var tagStack:Array<String> = [];
 			var sub:String;
 			var noLineBreak = false;
 
@@ -266,7 +265,7 @@ class HTMLParser
 								if (__regexTabStops.match(segment))
 								{
 									var values = __getAttributeMatch(__regexTabStops).split(" ");
-									var tabStops = [];
+									var tabStops:Array<Int> = [];
 
 									for (stop in values)
 									{
