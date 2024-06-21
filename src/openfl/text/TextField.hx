@@ -1607,6 +1607,14 @@ class TextField extends InteractiveObject
 		__setRenderDirty();
 	}
 
+	@:noCompletion private override function __setStageReference(stage:Stage):Void
+	{
+		// call __stopTextInput() before this.stage is set to null to ensure
+		// that all window listeners are removed to avoid a memory leak
+		__stopTextInput();
+		super.__setStageReference(stage);
+	}
+
 	@:noCompletion private override function __allowMouseFocus():Bool
 	{
 		// mouse focus is still allowed when tabEnabled is false
