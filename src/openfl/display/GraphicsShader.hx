@@ -8,7 +8,6 @@ import openfl.utils.ByteArray;
 #end
 class GraphicsShader extends Shader
 {
-	@:glVersion("120")
 	@:glVertexHeader("attribute float openfl_Alpha;
 		attribute vec4 openfl_ColorMultiplier;
 		attribute vec4 openfl_ColorOffset;
