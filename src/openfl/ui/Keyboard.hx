@@ -811,8 +811,25 @@ import lime.ui.KeyCode;
 	}
 	#end
 
-	@:noCompletion private static function __getCharCode(key:Int, shift:Bool = false):Int
+	@:noCompletion private static function __getCharCode(key:Int, shift:Bool = false, capLock:Bool = false):Int
 	{
+		if (capLock)
+		{
+			if (!shift)
+			{
+				if (key >= Keyboard.A && key <= Keyboard.Z)
+				{
+					return key;
+				}
+			}
+			else
+			{
+				if (key >= Keyboard.A && key <= Keyboard.Z)
+				{
+					return key + 32;
+				}
+			}
+		}
 		if (!shift)
 		{
 			switch (key)
@@ -858,7 +875,7 @@ import lime.ui.KeyCode;
 
 			if (key >= Keyboard.A && key <= Keyboard.Z)
 			{
-				return key - Keyboard.A + 97;
+				return key + 32;
 			}
 		}
 		else
@@ -911,7 +928,7 @@ import lime.ui.KeyCode;
 
 			if (key >= Keyboard.A && key <= Keyboard.Z)
 			{
-				return key - Keyboard.A + 65;
+				return key;
 			}
 		}
 

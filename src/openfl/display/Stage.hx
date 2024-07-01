@@ -1555,7 +1555,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		{
 			var keyLocation = Keyboard.__getKeyLocation(keyCode);
 			var keyCode = Keyboard.__convertKeyCode(keyCode);
-			var charCode = Keyboard.__getCharCode(keyCode, modifier.shiftKey);
+			var charCode = Keyboard.__getCharCode(keyCode, modifier.shiftKey, modifier.capsLock);
 
 			if (type == KeyboardEvent.KEY_UP && (keyCode == Keyboard.SPACE || keyCode == Keyboard.ENTER) && (__focus is Sprite))
 			{
