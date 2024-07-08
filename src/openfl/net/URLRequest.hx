@@ -207,15 +207,24 @@ import haxe.macro.Compiler;
 	public var idleTimeout:Float;
 
 	/**
-		Specifies whether the HTTP protocol stack should manage cookies for this request.
-		When `true`, cookies are added to the request and response cookies are remembered.
-		If `false`, cookies are not added to the request and response cookies are not
-		remembered, but users can manage cookies themselves by direct header manipulation.
-		**Note:** On Windows, you cannot add cookies to a URL request manually when
-		`manageCookies` is set to `true`. On other operating systems, adding cookies to a
-		request is permitted irrespective of whether `manageCookies` is set to `true` or
-		`false`. When permitted, you can add cookies to a request manually by adding a
-		URLRequestHeader object containing the cookie data to the `requestHeaders` array.
+		Specifies whether the HTTP protocol stack should manage cookies for this
+		request. When `true`, cookies are added to the request and response
+		cookies are remembered. If `false`, cookies are not added to the request
+		and response cookies are not remembered, but users can manage cookies
+		themselves by direct header manipulation.
+
+		**Note:** In OpenFL's HTML5 target, the 'Cookie' request header
+		cannot be added programatically, due to web browser security
+		restrictions. See
+		[MDN: Forbidden Request Headers](https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name)
+		for details.
+
+		**Note:** On Windows, you cannot add cookies to a URL request manually
+		when `manageCookies` is set to `true`. On other operating systems,
+		adding cookies to a request is permitted irrespective of whether
+		`manageCookies` is set to `true` or `false`. When permitted, you can add
+		cookies to a request manually by adding a URLRequestHeader object
+		containing the cookie data to the `requestHeaders` array.
 
 		On Mac OS, cookies are shared with Safari. To clear cookies on Mac OS:
 

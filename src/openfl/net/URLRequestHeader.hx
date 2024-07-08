@@ -6,6 +6,11 @@ package openfl.net;
 	consists of a name/value pair. URLRequestHeader objects are used in the
 	`requestHeaders` property of the URLRequest class.
 
+	In OpenFL's HTML5 target, a number of request headers cannot be used, due
+	to web browser security restrictions. See
+	[MDN: Forbidden Request Headers](https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name)
+	for details.
+
 	In Adobe<sup>®</sup> AIR<sup>®</sup>, content in the application
 	security sandbox (such as content installed with the AIR application) can
 	use any request headers, without error. However, for content running in
