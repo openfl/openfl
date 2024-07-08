@@ -699,6 +699,9 @@ class TextField extends InteractiveObject
 	**/
 	public var wordWrap(get, set):Bool;
 
+	@:noCompletion private var __wordSelection:Bool;
+	@:noCompletion private var __lineSelection:Bool;
+	@:noCompletion private var __specialSelectionInitialIndex:Int;
 	@:noCompletion private var __bounds:Rectangle;
 	@:noCompletion private var __caretIndex:Int;
 	@:noCompletion private var __cursorTimer:Timer;
@@ -846,6 +849,7 @@ class TextField extends InteractiveObject
 	{
 		super();
 
+		__wordSelection = false;
 		__drawableType = TEXT_FIELD;
 		__caretIndex = -1;
 		__selectionIndex = -1;
@@ -857,8 +861,6 @@ class TextField extends InteractiveObject
 		__offsetY = 0;
 		__mouseWheelEnabled = true;
 		__text = "";
-
-		doubleClickEnabled = true;
 
 		if (__defaultTextFormat == null)
 		{
@@ -877,8 +879,6 @@ class TextField extends InteractiveObject
 		addEventListener(FocusEvent.FOCUS_OUT, this_onFocusOut);
 		addEventListener(KeyboardEvent.KEY_DOWN, this_onKeyDown);
 		addEventListener(MouseEvent.MOUSE_WHEEL, this_onMouseWheel);
-
-		addEventListener(MouseEvent.DOUBLE_CLICK, this_onDoubleClick);
 	}
 
 	/**
@@ -2008,6 +2008,62 @@ class TextField extends InteractiveObject
 		}
 
 		return group.endIndex;
+	}
+
+	@:noCompletion private function __getPositionByIdentifier(x:Float, y:Float, line:Bool):Int
+	{
+		var position = __getPosition(x, y);
+		var delimiters = if (line) "\n" else " .,;:!?()[]{}<>/\\|-=+*&^%$#@~`'\"";
+		var char = __text.charAt(position);
+		if (__specialSelectionInitialIndex <= position)
+		{
+			while (delimiters.indexOf(char) == -1 && position < __text.length)
+			{
+				position++;
+				char = __text.charAt(position);
+			}
+		}
+		else
+		{
+			while (delimiters.indexOf(char) == -1 && position > 0)
+			{
+				position--;
+				char = __text.charAt(position);
+			}
+			//we dont want to include the delimiter
+			if (position == 0) return position;
+			position++;
+		}
+
+		return position;
+	}
+
+	@:noCompletion private function __getOppositeIdentifierBound(charIndex:Int, line:Bool):Int
+	{
+		var position = charIndex;
+		var delimiters = if (line) "\n" else " .,;:!?()[]{}<>/\\|-=+*&^%$#@~`'\"";
+		var char = __text.charAt(position);
+
+		if (position <= __caretIndex)
+		{
+			while (delimiters.indexOf(char) == -1 && position > 0)
+				{
+					position--;
+					char = __text.charAt(position);
+				}
+				if (position == 0) return position;
+			position++;
+		}
+		else
+		{
+			while (delimiters.indexOf(char) == -1 && position < __text.length)
+			{
+				position++;
+				char = __text.charAt(position);
+			}
+		}
+
+		return position;
 	}
 
 	@:noCompletion private override function __hitTest(x:Float, y:Float, shapeFlag:Bool, stack:Array<DisplayObject>, interactiveOnly:Bool,
@@ -3214,11 +3270,16 @@ class TextField extends InteractiveObject
 		{
 			__updateLayout();
 
-			var position = __getPosition(mouseX + scrollH, mouseY);
+			var position = if (__lineSelection) __getPositionByIdentifier(mouseX + scrollH, mouseY, true) else if (__wordSelection) __getPositionByIdentifier(mouseX + scrollH, mouseY, false) else  __getPosition(mouseX + scrollH, mouseY);
 
 			if (position != __caretIndex)
 			{
 				__caretIndex = position;
+				if (__wordSelection || __lineSelection)
+				{
+					// on __wordSelection, __lineSelection is false, and vice versa, so the following behaves correctly:
+					__selectionIndex = __getOppositeIdentifierBound(__specialSelectionInitialIndex, __lineSelection);
+				}
 
 				var setDirty = true;
 
@@ -3257,7 +3318,7 @@ class TextField extends InteractiveObject
 			__getWorldTransform();
 			__updateLayout();
 
-			var upPos:Int = __getPosition(mouseX + scrollH, mouseY);
+			var upPos:Int = if (__lineSelection) __getPositionByIdentifier(mouseX + scrollH, mouseY, true) else if (__wordSelection) __getPositionByIdentifier(mouseX + scrollH, mouseY, false) else __getPosition(mouseX + scrollH, mouseY);
 			var leftPos:Int;
 			var rightPos:Int;
 
@@ -3266,6 +3327,8 @@ class TextField extends InteractiveObject
 
 			__selectionIndex = leftPos;
 			__caretIndex = rightPos;
+
+			__wordSelection = __lineSelection = false;
 
 			if (__inputEnabled)
 			{
@@ -3340,10 +3403,35 @@ class TextField extends InteractiveObject
 	{
 		if (!selectable && type != INPUT) return;
 
-		__updateLayout();
+		//decide wether this click is for selecting text by character, word or line - single/double/triple click
+		__lineSelection = event.clickCount == 3;
+		__wordSelection = event.clickCount == 2;
 
-		__caretIndex = __getPosition(mouseX + scrollH, mouseY);
-		__selectionIndex = __caretIndex;
+		if (__lineSelection)
+		{
+			var prevCaretIndex = __caretIndex;
+			__caretIndex = __getPositionByIdentifier(event.stageX + scrollH, event.stageY, true);
+			__selectionIndex = __getOppositeIdentifierBound(prevCaretIndex, true);
+			setSelection(__caretIndex, __selectionIndex);
+		}
+		else if (__wordSelection)
+		{
+			var prevCaretIndex = __caretIndex;
+			__caretIndex = __getPositionByIdentifier(event.stageX + scrollH, event.stageY, false);
+			__selectionIndex = __getOppositeIdentifierBound(prevCaretIndex, false);
+			__specialSelectionInitialIndex = prevCaretIndex;
+			setSelection(__caretIndex, __selectionIndex);
+		}
+		else
+		{
+			__caretIndex = __getPosition(mouseX + scrollH, mouseY);
+			__selectionIndex = __caretIndex;
+			setSelection(__caretIndex, __selectionIndex);
+		}
+
+		__updateLayout();
+		//If we start word selection only when the mouse moves, we can't fully select the first word on a double click
+		//and there would be a delay before the first word is selected
 
 		if (!DisplayObject.__supportDOM)
 		{
@@ -3370,60 +3458,11 @@ class TextField extends InteractiveObject
 		}
 	}
 
-	@:noCompletion private function this_onDoubleClick(event:MouseEvent):Void
-	{
-		if (selectable)
-		{
-			__updateLayout();
-
-			var delimiters:Array<String> = ['\n', '.', '!', '?', ',', ' ', ';', ':', '(', ')', '-', '_', '/'];
-
-			var txtStr:String = __text;
-			var leftPos:Int = -1;
-			var rightPos:Int = txtStr.length;
-			var pos:Int = 0;
-			var startPos:Int = Std.int(Math.max(__caretIndex, 1));
-			if (txtStr.length > 0 && __caretIndex >= 0 && rightPos >= __caretIndex)
-			{
-				for (c in delimiters)
-				{
-					pos = txtStr.lastIndexOf(c, startPos - 1);
-					if (pos > leftPos) leftPos = pos + 1;
-
-					pos = txtStr.indexOf(c, startPos);
-					if (pos < rightPos && pos != -1) rightPos = pos;
-				}
-
-				if (leftPos != rightPos)
-				{
-					setSelection(leftPos, rightPos);
-
-					var setDirty:Bool = true;
-					#if openfl_html5
-					if (DisplayObject.__supportDOM)
-					{
-						if (__renderedOnCanvasWhileOnDOM)
-						{
-							__forceCachedBitmapUpdate = true;
-						}
-						setDirty = false;
-					}
-					#end
-					if (setDirty)
-					{
-						__dirty = true;
-						__setRenderDirty();
-					}
-				}
-			}
-		}
-	}
-
 	#if lime
 	@:noCompletion private function window_onKeyDown(key:KeyCode, modifier:KeyModifier):Void
 	{
 		inline function isModifierPressed()
-			return #if mac modifier.metaKey #elseif js(modifier.metaKey || modifier.ctrlKey) #else (modifier.ctrlKey && !modifier.altKey) #end;
+			return #if mac modifier.metaKey #elseif js (modifier.metaKey || modifier.ctrlKey) #else (modifier.ctrlKey && !modifier.altKey) #end;
 
 		switch (key)
 		{
