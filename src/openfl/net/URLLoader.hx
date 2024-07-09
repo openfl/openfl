@@ -409,6 +409,7 @@ class URLLoader extends EventDispatcher
 		#if (lime >= "8.0.0")
 		__httpRequest.manageCookies = request.manageCookies;
 		#end
+		__httpRequest.withCredentials = request.withCredentials;
 
 		// TODO: Better user agent?
 		var userAgent = request.userAgent;

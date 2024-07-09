@@ -243,6 +243,14 @@ import haxe.macro.Compiler;
 	public var manageCookies:Bool;
 
 	/**
+		Specifies whether cross-site `Access-Control` requests should be made
+		using credentials such as cookies, authentication headers or TLS client
+		certificates. Setting `withCredentials` has no effect on same-origin
+		requests, and it has no effect on targets not running in web browsers.
+	**/
+	public var withCredentials:Bool = false;
+
+	/**
 		Controls the HTTP form submission method.
 
 		For SWF content running in Flash Player(in the browser), this property
