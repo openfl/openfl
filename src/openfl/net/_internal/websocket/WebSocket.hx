@@ -805,7 +805,7 @@ class WebSocket {
 		#if cpp
 		// Add process ID to the seed for additional entropy
 		seed += cpp.NativeSys.sys_get_pid();
-		#elseif hl | neko
+		#elseif (hl || neko)
 		seed += Sys.cpuTime();
 		#end
 
@@ -819,7 +819,11 @@ class WebSocket {
 		for (i in 0...length)
 		{
 			@:privateAccess
+			#if cpp
 			var randomByte:Int = Std.random(256) ^ hashBytes.b[i % hashBytes.length];
+			#else
+			var randomByte = Std.random(256) ^ hashBytes.get(i % hashBytes.length);
+			#end
 			rngBytes.set(i, randomByte);
 		}
 		return rngBytes;
