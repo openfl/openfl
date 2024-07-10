@@ -1,4 +1,5 @@
 package openfl.net._internal.websocket;
+#if sys
 import haxe.extern.EitherType;
 import haxe.io.Input;
 import haxe.io.Output;
@@ -203,8 +204,6 @@ abstract FlexSocket(EitherType<Socket, SSLSocket>) from Socket to Socket from SS
 	
 	private inline function write(content:String):Void{
 		(this:Socket).write(content);
-	}
-	
-	
-	
+	}	
 }
+#end

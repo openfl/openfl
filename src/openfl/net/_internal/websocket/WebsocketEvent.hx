@@ -1,5 +1,5 @@
 package openfl.net._internal.websocket;
-
+#if sys
 class WebsocketEvent 
 {
 	public static var OPEN:String = "open";
@@ -41,3 +41,4 @@ class WebsocketEvent
 	}
 	
 }
+#end

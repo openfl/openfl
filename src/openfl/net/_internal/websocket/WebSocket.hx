@@ -1,5 +1,5 @@
 package openfl.net._internal.websocket;
-
+#if sys
 import haxe.crypto.Md5;
 import haxe.Int64;
 import openfl.display.Stage;
@@ -866,3 +866,4 @@ inline function fromAcceptedSocket(socket:FlexSocket):WebSocket {
 
 	return acceptedSocket;
 }
+#end
