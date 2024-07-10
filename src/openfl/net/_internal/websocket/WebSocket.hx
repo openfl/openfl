@@ -7,7 +7,6 @@ import openfl.utils.Function;
 import openfl.Lib;
 import openfl.events.Event;
 import openfl.utils.ByteArray;
-import openfl.utils.Timer;
 import haxe.crypto.Base64;
 import haxe.crypto.Sha1;
 import haxe.ds.StringMap;
@@ -16,8 +15,7 @@ import haxe.io.Error;
 import haxe.io.Output;
 
 /**
- * ...
- * @author Christopher Speciale
+ * Internal Websocket implementation based on RFC4648 Specification.
  */
 class WebSocket {
 	public static inline var CLOSED:Int = 3;
@@ -63,8 +61,7 @@ class WebSocket {
 
 	private var __socket:FlexSocket;
 	private var __buffer:Bytes;
-	// TODO: Use frame buffer for partial frames
-	// private var __frameBuffer:ByteArray;
+
 	private var __inputPosition:Int = 0;
 	private var __input:ByteArray;
 	private var __incomingMessageBuffer:ByteArray;
@@ -326,7 +323,23 @@ class WebSocket {
 						break;
 					}
 					lengthBytes = 10;
-					var i64Val:Int64 = __input.readInt64();
+					
+					//TODO:Implement 64 bit read and write to ByteArray
+					var high:Int = 0;
+					var low:Int = 0;
+
+					if (__input.endian == LITTLE_ENDIAN) {
+						low = __input.readUnsignedInt();
+						high = __input.readUnsignedInt();
+					} else {
+						high = __input.readUnsignedInt();
+						low = __input.readUnsignedInt();
+					}
+
+					var i64Val:Int64 = Int64.make(high, low);
+		
+		
+					//var i64Val:Int64 = __input.readInt64();
 					payloadLength = Int64.toInt(i64Val);
 				}
 
@@ -591,7 +604,7 @@ class WebSocket {
 			__socket.close();
 
 			if (__heartbeatID > 0) {
-				Timer.clearInterval(__heartbeatID);
+				Lib.clearInterval(__heartbeatID);
 			}
 
 			readyState = CLOSED;
@@ -612,7 +625,7 @@ class WebSocket {
 	}
 
 	private function __initHeartbeat():Void {
-		__heartbeatID = Timer.setInterval(__heartbeatInterval, __heartbeatDelay);
+		__heartbeatID = Lib.setInterval(__heartbeatInterval, __heartbeatDelay);
 	}
 
 	private function __heartbeatInterval() {
@@ -835,7 +848,7 @@ enum abstract WebSocketOpcode(Int) from Int to Int {
 	public static inline var PONG:Int = 0x0A;
 }
 
-@:private @:noCompletion class AcceptedWebSocket extends WebSocket {
+@:noCompletion class AcceptedWebSocket extends WebSocket {
 	private function new() {
 		__isClient = false;
 		super(null, null, null);

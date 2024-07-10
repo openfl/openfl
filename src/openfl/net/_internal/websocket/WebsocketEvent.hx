@@ -1,9 +1,5 @@
 package openfl.net._internal.websocket;
 
-/**
- * ...
- * @author Christopher Speciale
- */
 class WebsocketEvent 
 {
 	public static var OPEN:String = "open";
