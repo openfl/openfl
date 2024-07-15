@@ -6,6 +6,7 @@ import openfl.errors.IOError;
 import openfl.events.Event;
 import openfl.events.EventDispatcher;
 import openfl.events.IOErrorEvent;
+import openfl.events.ProgressEvent;
 import openfl.net.URLRequest;
 import openfl.utils.ByteArray;
 import openfl.utils.Future;
@@ -500,25 +501,36 @@ class Sound extends EventDispatcher
 		__urlLoading = true;
 
 		#if lime
+		dispatchEvent(new Event(Event.OPEN));
+
 		#if (js && html5)
 		var defaultLibrary = lime.utils.Assets.getLibrary("default"); // TODO: Improve this
 
 		if (defaultLibrary != null && defaultLibrary.cachedAudioBuffers.exists(url))
 		{
-			AudioBuffer_onURLLoad(defaultLibrary.cachedAudioBuffers.get(url));
+			var audioBuffer = defaultLibrary.cachedAudioBuffers.get(url);
+			var byteLength = (audioBuffer != null && audioBuffer.data != null) ? audioBuffer.data.byteLength : 0;
+			AudioBuffer_onURLProgress(byteLength, byteLength);
+			AudioBuffer_onURLLoad(audioBuffer);
 		}
 		else
 		{
-			AudioBuffer.loadFromFile(url).onComplete(AudioBuffer_onURLLoad).onError(function(_)
+			AudioBuffer.loadFromFile(url)
+				.onProgress(AudioBuffer_onURLProgress)
+				.onComplete(AudioBuffer_onURLLoad)
+				.onError(function(_)
+				{
+					AudioBuffer_onURLLoad(null);
+				});
+		}
+		#else
+		AudioBuffer.loadFromFile(url)
+			.onProgress(AudioBuffer_onURLProgress)
+			.onComplete(AudioBuffer_onURLLoad)
+			.onError(function(_)
 			{
 				AudioBuffer_onURLLoad(null);
 			});
-		}
-		#else
-		AudioBuffer.loadFromFile(url).onComplete(AudioBuffer_onURLLoad).onError(function(_)
-		{
-			AudioBuffer_onURLLoad(null);
-		});
 		#end
 		#end
 	}
@@ -556,6 +568,8 @@ class Sound extends EventDispatcher
 		}
 		else
 		{
+			dispatchEvent(new Event(Event.OPEN));
+			dispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS, false, false, bytes.length, bytes.length));
 			dispatchEvent(new Event(Event.COMPLETE));
 		}
 		#else
@@ -655,6 +669,8 @@ class Sound extends EventDispatcher
 
 		__buffer = audioBuffer;
 
+		dispatchEvent(new Event(Event.OPEN));
+		dispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS, false, false, bytes.length, bytes.length));
 		dispatchEvent(new Event(Event.COMPLETE));
 		#else
 		dispatchEvent(new IOErrorEvent(IOErrorEvent.IO_ERROR));
@@ -816,6 +832,14 @@ class Sound extends EventDispatcher
 		}
 		__pendingSoundChannel = null;
 		__pendingAudioSource = null;
+	}
+
+	@:noCompletion private function AudioBuffer_onURLProgress(bytesLoaded:Int, bytesTotal:Int)
+	{
+		var progressEvent = new ProgressEvent(ProgressEvent.PROGRESS);
+		progressEvent.bytesLoaded = bytesLoaded;
+		progressEvent.bytesTotal = bytesTotal;
+		dispatchEvent(progressEvent);
 	}
 	#end
 }
