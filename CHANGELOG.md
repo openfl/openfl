@@ -1,3 +1,21 @@
+9.3.4 (??/??/2024)
+------------------
+
+* Fixed `close()` method on `Sound` failing to stop `SoundChannel`
+* Fixed memory leak in `TextField` if removed from stage while focused
+* Fixed memory leak in `Stage` when tracking double-click events
+* Fixed memory leak in `Stage` when setting `focus` property to `null`
+* Fixed missing translation of `&apos;` when parsing `htmlText` on `TextField`
+* Fixed missing automatic `stopDrag()` when object is removed from stage after `startDrag()`
+* Fixed missing exception when attempting to add a display object as a child of itself
+* Fixed calculation of `scrollRect` and Stage 3D scissor rect bounds when rendering
+* Fixed `download()` method on `FileReference` when targeting HTML5
+* Fixed `Socket` failing to detect closure from remote host
+* Fixed value of `clickCount` on `MouseEvent`
+* Fixed unspecified behavior from `null` key in `ObjectPool`
+* Fixed many local variable types inferred incorrectly as `Dynamic` instead of something more specific
+
+
 9.3.3 (03/13/2024)
 ------------------
 
