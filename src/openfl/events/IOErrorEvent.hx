@@ -7,7 +7,7 @@ package openfl.events;
 	operations to fail.
 
 	You can check for error events that do not have any listeners by using
-	the debugger version of Flash Player or the AIR Debug Launcher(ADL). The
+	the debugger version of Flash Player or the AIR Debug Launcher (ADL). The
 	string defined by the `text` parameter of the IOErrorEvent
 	constructor is displayed.
 **/

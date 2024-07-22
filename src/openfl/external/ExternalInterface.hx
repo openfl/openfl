@@ -38,11 +38,11 @@ import openfl.utils._internal.Lib;
 
 	**Note for Flash Player applications:** In Flash Player 10 and later
 	running in a browser, using this class programmatically to open a pop-up
-	window may not be successful. Various browsers(and browser configurations)
+	window may not be successful. Various browsers (and browser configurations)
 	may block pop-up windows at any time; it is not possible to guarantee any
 	pop-up window will appear. However, for the best chance of success, use
 	this class to open a pop-up window only in code that executes as a direct
-	result of a user action(for example, in an event handler for a mouse click
+	result of a user action (for example, in an event handler for a mouse click
 	or key-press event.)
 
 	From ActionScript, you can do the following on the HTML page:
@@ -192,7 +192,7 @@ import openfl.utils._internal.Lib;
 
 		**Note:** For _local_ content running in a browser, calls to
 		the `ExternalInterface.call()` method are permitted only if the
-		SWF file and the containing web page(if there is one) are in the
+		SWF file and the containing web page (if there is one) are in the
 		local-trusted security sandbox. Also, you can prevent a SWF file from
 		using this method by setting the `allowNetworking` parameter of
 		the `object` and `embed` tags in the HTML page that
@@ -202,16 +202,16 @@ import openfl.utils._internal.Lib;
 		**Note for Flash Player applications:** In Flash Player 10 and Flash
 		Player 9 Update 5, some web browsers restrict this method if a pop-up
 		blocker is enabled. In this scenario, you can only call this method
-		successfully in response to a user event(for example, in an event handler
+		successfully in response to a user event (for example, in an event handler
 		for a mouse click or keypress event).
 
 		@param functionName The alphanumeric name of the function to call in the
 							container. Using a non-alphanumeric function name
-							causes a runtime error(error 2155). You can use a
+							causes a runtime error (error 2155). You can use a
 							`try..catch` block to handle the error.
 		@return The response received from the container. If the call failed —
 				for example, if there is no such function in the container, the
-				interface is not available, a recursion occurred(with a Netscape
+				interface is not available, a recursion occurred (with a Netscape
 				or Opera browser), or there is a security issue —
 				`null` is returned and an error is thrown.
 		@throws Error         The container does not support outgoing calls.

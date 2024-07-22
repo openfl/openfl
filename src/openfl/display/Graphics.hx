@@ -135,7 +135,7 @@ import js.html.CanvasRenderingContext2D;
 
 		@param bitmap A transparent or opaque bitmap image that contains the bits
 					  to be displayed.
-		@param matrix A matrix object(of the openfl.geom.Matrix class), which you
+		@param matrix A matrix object (of the openfl.geom.Matrix class), which you
 					  can use to define transformations on the bitmap. For
 					  example, you can use the following matrix to rotate a bitmap
 					  by 45 degrees(pi/4 radians):
@@ -150,7 +150,7 @@ import js.html.CanvasRenderingContext2D;
 					  repeat, and the edges of the bitmap are used for any fill
 					  area that extends beyond the bitmap.
 
-					  For example, consider the following bitmap(a 20 x
+					  For example, consider the following bitmap (a 20 x
 					  20-pixel checkerboard pattern):
 
 					  ![20 by 20 pixel checkerboard](/images/movieClip_beginBitmapFill_repeat_1.jpg)
@@ -618,12 +618,12 @@ import js.html.CanvasRenderingContext2D;
 
 		@param x      The _x_ location of the top-left of the bounding-box of
 					  the ellipse relative to the registration point of the parent
-					  display object(in pixels).
+					  display object (in pixels).
 		@param y      The _y_ location of the top left of the bounding-box of
 					  the ellipse relative to the registration point of the parent
-					  display object(in pixels).
-		@param width  The width of the ellipse(in pixels).
-		@param height The height of the ellipse(in pixels).
+					  display object (in pixels).
+		@param width  The width of the ellipse (in pixels).
+		@param height The height of the ellipse (in pixels).
 
 		@see [Drawing shapes using built-in methods](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/drawing-shapes-using-built-in-methods.html)
 	**/
@@ -767,7 +767,7 @@ import js.html.CanvasRenderingContext2D;
 			* A sub-path of less than 3 points is not rendered.(But note that the
 			stroke rendering will still occur, consistent with the rules for strokes
 			below.)
-			* A sub-path that isn't closed(the end point is not equal to the
+			* A sub-path that isn't closed (the end point is not equal to the
 			begin point) is implicitly closed.
 		* When a stroke is applied to rendering a path:
 			* The sub-paths can be composed of any number of points.
@@ -955,11 +955,11 @@ import js.html.CanvasRenderingContext2D;
 		method.
 
 		@param x      A number indicating the horizontal position relative to the
-					  registration point of the parent display object(in pixels).
+					  registration point of the parent display object (in pixels).
 		@param y      A number indicating the vertical position relative to the
-					  registration point of the parent display object(in pixels).
-		@param width  The width of the rectangle(in pixels).
-		@param height The height of the rectangle(in pixels).
+					  registration point of the parent display object (in pixels).
+		@param width  The width of the rectangle (in pixels).
+		@param height The height of the rectangle (in pixels).
 		@throws ArgumentError If the `width` or `height`
 							  parameters are not a number
 							 (`Number.NaN`).
@@ -994,8 +994,8 @@ import js.html.CanvasRenderingContext2D;
 		@param y             A number indicating the vertical position relative to
 							 the registration point of the parent display object
 							(in pixels).
-		@param width         The width of the round rectangle(in pixels).
-		@param height        The height of the round rectangle(in pixels).
+		@param width         The width of the round rectangle (in pixels).
+		@param height        The height of the round rectangle (in pixels).
 		@param ellipseWidth  The width of the ellipse used to draw the rounded
 							 corners(in pixels).
 		@param ellipseHeight The height of the ellipse used to draw the rounded
@@ -1349,7 +1349,7 @@ import js.html.CanvasRenderingContext2D;
 						   (black). Optional.
 		@param alpha        A number that indicates the alpha value of the color
 							of the line; valid values are 0 to 1. If a value is
-							not indicated, the default is 1(solid). If the value
+							not indicated, the default is 1 (solid). If the value
 							is less than 0, the default is 0. If the value is
 							greater than 1, the default is 1.
 		@param pixelHinting (Not supported in Flash Lite 4) A Boolean value that
@@ -1415,9 +1415,9 @@ import js.html.CanvasRenderingContext2D;
 							For example, the following illustrations show the
 							different `capsStyle` settings. For each
 							setting, the illustration shows a blue line with a
-							thickness of 30(for which the `capsStyle`
+							thickness of 30 (for which the `capsStyle`
 							applies), and a superimposed black line with a
-							thickness of 1(for which no `capsStyle`
+							thickness of 1 (for which no `capsStyle`
 							applies):
 
 							![NONE, ROUND, and SQUARE](/images/linecap.jpg)
@@ -1433,9 +1433,9 @@ import js.html.CanvasRenderingContext2D;
 							For example, the following illustrations show the
 							different `joints` settings. For each
 							setting, the illustration shows an angled blue line
-							with a thickness of 30(for which the
+							with a thickness of 30 (for which the
 							`jointStyle` applies), and a superimposed
-							angled black line with a thickness of 1(for which no
+							angled black line with a thickness of 1 (for which no
 							`jointStyle` applies):
 
 							![MITER, ROUND, and BEVEL](/images/linejoin.jpg)
@@ -1446,7 +1446,7 @@ import js.html.CanvasRenderingContext2D;
 							of the miter.
 		@param miterLimit  (Not supported in Flash Lite 4) A number that
 							indicates the limit at which a miter is cut off. Valid
-							values range from 1 to 255(and values outside that
+							values range from 1 to 255 (and values outside that
 							range are rounded to 1 or 255). This value is only
 							used if the `jointStyle` is set to
 							`"miter"`. The `miterLimit`
@@ -1520,9 +1520,9 @@ import js.html.CanvasRenderingContext2D;
 		method fails and the current drawing position is not changed.
 
 		@param x A number that indicates the horizontal position relative to the
-				 registration point of the parent display object(in pixels).
+				 registration point of the parent display object (in pixels).
 		@param y A number that indicates the vertical position relative to the
-				 registration point of the parent display object(in pixels).
+				 registration point of the parent display object (in pixels).
 
 		@see [Drawing lines and curves](https://books.openfl.org/openfl-developers-guide/using-the-drawing-api/drawing-lines-and-curves.html)
 	**/
@@ -1555,9 +1555,9 @@ import js.html.CanvasRenderingContext2D;
 		drawing position is not changed.
 
 		@param x A number that indicates the horizontal position relative to the
-				 registration point of the parent display object(in pixels).
+				 registration point of the parent display object (in pixels).
 		@param y A number that indicates the vertical position relative to the
-				 registration point of the parent display object(in pixels).
+				 registration point of the parent display object (in pixels).
 	**/
 	public function moveTo(x:Float, y:Float):Void
 	{

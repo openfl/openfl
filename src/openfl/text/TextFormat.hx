@@ -71,7 +71,7 @@ class TextFormat
 		an entire block of text; that is, to all lines of the text. In contrast,
 		normal indentation(`TextFormat.indent`) affects only the first
 		line of each paragraph. If this property is `null`, the
-		TextFormat object does not specify block indentation(block indentation is
+		TextFormat object does not specify block indentation (block indentation is
 		0).
 	**/
 	public var blockIndent:Null<Int>;
@@ -173,7 +173,7 @@ class TextFormat
 	/**
 		Specifies custom tab stops as an array of non-negative integers. Each tab
 		stop is specified in pixels. If custom tab stops are not specified
-		(`null`), the default tab stop is 4(average character width).
+		(`null`), the default tab stop is 4 (average character width).
 	**/
 	public var tabStops:Array<Int>;
 

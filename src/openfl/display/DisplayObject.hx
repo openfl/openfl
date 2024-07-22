@@ -69,11 +69,11 @@ import js.html.CSSStyleDeclaration;
 	`activate` and `deactivate`.
 
 	Some properties previously used in the ActionScript 1.0 and 2.0
-	MovieClip, TextField, and Button classes(such as `_alpha`,
+	MovieClip, TextField, and Button classes (such as `_alpha`,
 	`_height`, `_name`, `_width`,
 	`_x`, `_y`, and others) have equivalents in the
 	OpenFL DisplayObject class that are renamed so that they no
-	longer begin with the underscore(_) character.
+	longer begin with the underscore (_) character.
 
 	For more information, see the "Display Programming" chapter of the
 	_OpenFL Developer's Guide_.
@@ -347,12 +347,12 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		is 8,191 pixels wide, it can only be 2,048 pixels high.) In Flash Player 9
 		and earlier, the limitation is is 2880 pixels in height and 2,880 pixels
 		in width.
-		*  The bitmap fails to allocate(out of memory error).
+		*  The bitmap fails to allocate (out of memory error).
 
 		The `cacheAsBitmap` property is best used with movie clips
 		that have mostly static content and that do not scale and rotate
 		frequently. With such movie clips, `cacheAsBitmap` can lead to
-		performance increases when the movie clip is translated(when its _x_
+		performance increases when the movie clip is translated (when its _x_
 		and _y_ position is changed).
 
 		@see [Caching display objects](https://books.openfl.org/openfl-developers-guide/display-programming/manipulating-display-objects/caching-display-objects.html)
@@ -471,7 +471,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 		@throws ArgumentError When `filters` includes a ShaderFilter
 							  and the shader output type is not compatible with
-							  this operation(the shader must specify a
+							  this operation (the shader must specify a
 							  `pixel4` output).
 		@throws ArgumentError When `filters` includes a ShaderFilter
 							  and the shader doesn't specify any image input or
@@ -527,7 +527,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		`mask` to `null` to remove the mask.
 
 		To be able to scale a mask object, it must be on the display list. To
-		be able to drag a mask Sprite object(by calling its
+		be able to drag a mask Sprite object (by calling its
 		`startDrag()` method), it must be on the display list. To call
 		the `startDrag()` method for a mask sprite based on a
 		`mouseDown` event being dispatched by the sprite, set the
@@ -591,11 +591,11 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	/**
 		Specifies whether the display object is opaque with a certain background
 		color. A transparent bitmap contains alpha channel data and is drawn
-		transparently. An opaque bitmap has no alpha channel(and renders faster
+		transparently. An opaque bitmap has no alpha channel (and renders faster
 		than a transparent bitmap). If the bitmap is opaque, you specify its own
 		background color to use.
 
-		If set to a number value, the surface is opaque(not transparent) with
+		If set to a number value, the surface is opaque (not transparent) with
 		the RGB background color that the number specifies. If set to
 		`null`(the default value), the display object has a
 		transparent background.
@@ -653,7 +653,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 
 		For example, if you create a new Sprite object by calling the
 		`Sprite()` constructor method, its `root` property
-		is `null` until you add it to the display list(or to a display
+		is `null` until you add it to the display list (or to a display
 		object container that is off the display list but that is a child of the
 		top-most display object in a SWF file).
 
@@ -848,7 +848,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		The Stage of the display object. A Flash runtime application has only one
 		Stage object. For example, you can create and load multiple display
 		objects into the display list, and the `stage` property of each
-		display object refers to the same Stage object(even if the display object
+		display object refers to the same Stage object (even if the display object
 		belongs to a loaded SWF file).
 
 		If a display object is not added to the display list, its
@@ -1272,8 +1272,8 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 
 	/**
-		Converts the `point` object from the Stage(global) coordinates
-		to the display object's(local) coordinates.
+		Converts the `point` object from the Stage (global) coordinates
+		to the display object's (local) coordinates.
 
 		To use this method, first create an instance of the Point class. The
 		_x_ and _y_ values that you assign represent global coordinates
@@ -1321,7 +1321,7 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 		point specified by the `x` and `y` parameters. The
 		`x` and `y` parameters specify a point in the
 		coordinate space of the Stage, not the display object container that
-		contains the display object(unless that display object container is the
+		contains the display object (unless that display object container is the
 		Stage).
 
 		@param x         The _x_ coordinate to test against this object.
@@ -1354,13 +1354,13 @@ class DisplayObject extends EventDispatcher implements IBitmapDrawable #if (open
 	}
 
 	/**
-		Converts the `point` object from the display object's(local)
-		coordinates to the Stage(global) coordinates.
+		Converts the `point` object from the display object's (local)
+		coordinates to the Stage (global) coordinates.
 
 		This method allows you to convert any given _x_ and _y_
 		coordinates from values that are relative to the origin(0,0) of a
-		specific display object(local coordinates) to values that are relative to
-		the origin of the Stage(global coordinates).
+		specific display object (local coordinates) to values that are relative to
+		the origin of the Stage (global coordinates).
 
 		To use this method, first create an instance of the Point class. The
 		_x_ and _y_ values that you assign represent local coordinates

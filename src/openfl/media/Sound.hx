@@ -292,7 +292,7 @@ class Sound extends EventDispatcher
 
 		@param stream  The URL that points to an external MP3 file.
 		@param context An optional SoundLoader context object, which can define
-					   the buffer time(the minimum number of milliseconds of MP3
+					   the buffer time (the minimum number of milliseconds of MP3
 					   data to hold in the Sound object's buffer) and can specify
 					   whether the application should check for a cross-domain
 					   policy file prior to loading the sound.
@@ -448,7 +448,7 @@ class Sound extends EventDispatcher
 		content.
 
 		 In Flash Player 10 and later, if you use a multipart Content-Type(for
-		example "multipart/form-data") that contains an upload(indicated by a
+		example "multipart/form-data") that contains an upload (indicated by a
 		"filename" parameter in a "content-disposition" header within the POST
 		body), the POST operation is subject to the security rules applied to
 		uploads:
@@ -475,7 +475,7 @@ class Sound extends EventDispatcher
 
 		@param stream  A URL that points to an external MP3 file.
 		@param context An optional SoundLoader context object, which can define
-					   the buffer time(the minimum number of milliseconds of MP3
+					   the buffer time (the minimum number of milliseconds of MP3
 					   data to hold in the Sound object's buffer) and can specify
 					   whether the application should check for a cross-domain
 					   policy file prior to loading the sound.
@@ -485,7 +485,7 @@ class Sound extends EventDispatcher
 							  You should only set the `digest` property
 							  of a URLRequest object when calling the
 							  `URLLoader.load()` method when loading a
-							  SWZ file(an Adobe platform component).
+							  SWZ file (an Adobe platform component).
 		@throws SecurityError Local untrusted files may not communicate with the
 							  Internet. You can work around this by reclassifying
 							  this file as local-with-networking or trusted.

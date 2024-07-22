@@ -29,7 +29,7 @@ package openfl.display;
 	/**
 		With this setting used as the `scaleMode` parameter of the
 		`lineStyle()` method, the thickness of the line always scales
-		when the object is scaled(the default).
+		when the object is scaled (the default).
 	**/
 	public var NORMAL = 2;
 

@@ -131,7 +131,7 @@ import openfl.geom.Rectangle;
 								  object.
 	@event gesturePan             Dispatched when the user moves a point of
 								  contact over the InteractiveObject instance
-								  on a touch-enabled device(such as moving a
+								  on a touch-enabled device (such as moving a
 								  finger from left to right over a display
 								  object on a mobile phone or tablet with a
 								  touch screen). Some devices might also
@@ -148,7 +148,7 @@ import openfl.geom.Rectangle;
 								  current environment supports it. Choose how
 								  you want to handle the user interaction. Use
 								  the openfl.ui.Multitouch class to manage touch
-								  event handling(enable touch gesture event
+								  event handling (enable touch gesture event
 								  handling, simple touch point event handling,
 								  or disable touch events so only mouse events
 								  are dispatched). If you choose to handle the
@@ -168,7 +168,7 @@ import openfl.geom.Rectangle;
 								  environment compatibility information.
 	@event gesturePressAndTap     Dispatched when the user creates a point of
 								  contact with an InteractiveObject instance,
-								  then taps on a touch-enabled device(such as
+								  then taps on a touch-enabled device (such as
 								  placing several fingers over a display object
 								  to open a menu and then taps one finger to
 								  select a menu item on a mobile phone or
@@ -187,7 +187,7 @@ import openfl.geom.Rectangle;
 								  supports it. Choose how you want to handle
 								  the user interaction. Use the
 								  openfl.ui.Multitouch class to manage touch
-								  event handling(enable touch gesture event
+								  event handling (enable touch gesture event
 								  handling, simple touch point event handling,
 								  or disable touch events so only mouse events
 								  are dispatched). If you choose to handle the
@@ -213,7 +213,7 @@ import openfl.geom.Rectangle;
 								  point of contact(the "tap").
 	@event gestureRotate          Dispatched when the user performs a rotation
 								  gesture at a point of contact with an
-								  InteractiveObject instance(such as touching
+								  InteractiveObject instance (such as touching
 								  two fingers and rotating them over a display
 								  object on a mobile phone or tablet with a
 								  touch screen). Two-finger rotation is a
@@ -234,7 +234,7 @@ import openfl.geom.Rectangle;
 								  supports it. Choose how you want to handle
 								  the user interaction. Use the
 								  openfl.ui.Multitouch class to manage touch
-								  event handling(enable touch gesture event
+								  event handling (enable touch gesture event
 								  handling, simple touch point event handling,
 								  or disable touch events so only mouse events
 								  are dispatched). If you choose to handle the
@@ -263,7 +263,7 @@ import openfl.geom.Rectangle;
 								  environment compatibility information.
 	@event gestureSwipe           Dispatched when the user performs a swipe
 								  gesture at a point of contact with an
-								  InteractiveObject instance(such as touching
+								  InteractiveObject instance (such as touching
 								  three fingers to a screen and then moving
 								  them in parallel over a display object on a
 								  mobile phone or tablet with a touch screen).
@@ -311,7 +311,7 @@ import openfl.geom.Rectangle;
 								  three-finger swipe.
 	@event gestureTwoFingerTap    Dispatched when the user presses two points
 								  of contact over the same InteractiveObject
-								  instance on a touch-enabled device(such as
+								  instance on a touch-enabled device (such as
 								  presses and releases two fingers over a
 								  display object on a mobile phone or tablet
 								  with a touch screen). Some devices might also
@@ -347,7 +347,7 @@ import openfl.geom.Rectangle;
 								  environment compatibility information.
 	@event gestureZoom            Dispatched when the user performs a zoom
 								  gesture at a point of contact with an
-								  InteractiveObject instance(such as touching
+								  InteractiveObject instance (such as touching
 								  two fingers to a screen and then quickly
 								  spreading the fingers apart over a display
 								  object on a mobile phone or tablet with a
@@ -368,7 +368,7 @@ import openfl.geom.Rectangle;
 								  current environment supports it. Choose how
 								  you want to handle the user interaction. Use
 								  the openfl.ui.Multitouch class to manage touch
-								  event handling(enable touch gesture event
+								  event handling (enable touch gesture event
 								  handling, simple touch point event handling,
 								  or disable touch events so only mouse events
 								  are dispatched). If you choose to handle the
@@ -766,11 +766,11 @@ import openfl.geom.Rectangle;
 								  characters of text. Various text input
 								  methods can generate this event, including
 								  standard keyboards, input method editors
-								 (IMEs), voice or speech recognition systems,
+								  (IMEs), voice or speech recognition systems,
 								  and even the act of pasting plain text with
 								  no formatting or style information.
 	@event touchBegin             Dispatched when the user first contacts a
-								  touch-enabled device(such as touches a
+								  touch-enabled device (such as touches a
 								  finger to a mobile phone or tablet with a
 								  touch screen). Some devices might also
 								  interpret this contact as a
@@ -784,7 +784,7 @@ import openfl.geom.Rectangle;
 								  current environment supports it. Choose how
 								  you want to handle the user interaction. Use
 								  the openfl.ui.Multitouch class to manage touch
-								  event handling(enable touch gesture event
+								  event handling (enable touch gesture event
 								  handling, simple touch point event handling,
 								  or disable touch events so only mouse events
 								  are dispatched). If you choose to handle the
@@ -803,7 +803,7 @@ import openfl.geom.Rectangle;
 								  **Note:** See the Multitouch class for
 								  environment compatibility information.
 	@event touchEnd               Dispatched when the user removes contact with
-								  a touch-enabled device(such as lifts a
+								  a touch-enabled device (such as lifts a
 								  finger off a mobile phone or tablet with a
 								  touch screen). Some devices might also
 								  interpret this contact as a
@@ -835,7 +835,7 @@ import openfl.geom.Rectangle;
 								  **Note:** See the Multitouch class for
 								  environment compatibility information.
 	@event touchMove              Dispatched when the user moves the point of
-								  contact with a touch-enabled device(such as
+								  contact with a touch-enabled device (such as
 								  drags a finger across a mobile phone or
 								  tablet with a touch screen). Some devices
 								  might also interpret this contact as a
@@ -849,7 +849,7 @@ import openfl.geom.Rectangle;
 								  current environment supports it. Choose how
 								  you want to handle the user interaction. Use
 								  the openfl.ui.Multitouch class to manage touch
-								  event handling(enable touch gesture event
+								  event handling (enable touch gesture event
 								  handling, simple touch point event handling,
 								  or disable touch events so only mouse events
 								  are dispatched). If you choose to handle the
@@ -869,7 +869,7 @@ import openfl.geom.Rectangle;
 								  environment compatibility information.
 	@event touchOut               Dispatched when the user moves the point of
 								  contact away from InteractiveObject instance
-								  on a touch-enabled device(such as drags a
+								  on a touch-enabled device (such as drags a
 								  finger from one display object to another on
 								  a mobile phone or tablet with a touch
 								  screen). Some devices might also interpret
@@ -903,7 +903,7 @@ import openfl.geom.Rectangle;
 								  environment compatibility information.
 	@event touchOver              Dispatched when the user moves the point of
 								  contact over an InteractiveObject instance on
-								  a touch-enabled device(such as drags a
+								  a touch-enabled device (such as drags a
 								  finger from a point outside a display object
 								  to a point over a display object on a mobile
 								  phone or tablet with a touch screen). Some
@@ -918,7 +918,7 @@ import openfl.geom.Rectangle;
 								  current environment supports it. Choose how
 								  you want to handle the user interaction. Use
 								  the openfl.ui.Multitouch class to manage touch
-								  event handling(enable touch gesture event
+								  event handling (enable touch gesture event
 								  handling, simple touch point event handling,
 								  or disable touch events so only mouse events
 								  are dispatched). If you choose to handle the
@@ -938,7 +938,7 @@ import openfl.geom.Rectangle;
 								  environment compatibility information.
 	@event touchRollOut           Dispatched when the user moves the point of
 								  contact away from an InteractiveObject
-								  instance on a touch-enabled device(such as
+								  instance on a touch-enabled device (such as
 								  drags a finger from over a display object to
 								  a point outside the display object on a
 								  mobile phone or tablet with a touch screen).
@@ -953,7 +953,7 @@ import openfl.geom.Rectangle;
 								  the current environment supports it. Choose
 								  how you want to handle the user interaction.
 								  Use the openfl.ui.Multitouch class to manage
-								  touch event handling(enable touch gesture
+								  touch event handling (enable touch gesture
 								  event handling, simple touch point event
 								  handling, or disable touch events so only
 								  mouse events are dispatched). If you choose
@@ -973,7 +973,7 @@ import openfl.geom.Rectangle;
 								  environment compatibility information.
 	@event touchRollOver          Dispatched when the user moves the point of
 								  contact over an InteractiveObject instance on
-								  a touch-enabled device(such as drags a
+								  a touch-enabled device (such as drags a
 								  finger from a point outside a display object
 								  to a point over a display object on a mobile
 								  phone or tablet with a touch screen). Some
@@ -988,7 +988,7 @@ import openfl.geom.Rectangle;
 								  the current environment supports it. Choose
 								  how you want to handle the user interaction.
 								  Use the openfl.ui.Multitouch class to manage
-								  touch event handling(enable touch gesture
+								  touch event handling (enable touch gesture
 								  event handling, simple touch point event
 								  handling, or disable touch events so only
 								  mouse events are dispatched). If you choose
@@ -1009,7 +1009,7 @@ import openfl.geom.Rectangle;
 	@event touchTap               Dispatched when the user lifts the point of
 								  contact over the same InteractiveObject
 								  instance on which the contact was initiated
-								  on a touch-enabled device(such as presses
+								  on a touch-enabled device (such as presses
 								  and releases a finger from a single point
 								  over a display object on a mobile phone or
 								  tablet with a touch screen). Some devices
@@ -1086,7 +1086,7 @@ class InteractiveObject extends DisplayObject
 		default any InteractiveObject instance that is on the display list
 		receives mouse events or other user input events. If
 		`mouseEnabled` is set to `false`, the instance does
-		not receive any mouse events(or other user input events like keyboard
+		not receive any mouse events (or other user input events like keyboard
 		events). Any children of this instance on the display list are not
 		affected. To change the `mouseEnabled` behavior for all
 		children of an object on the display list, use
@@ -1099,7 +1099,7 @@ class InteractiveObject extends DisplayObject
 	public var mouseEnabled:Bool;
 
 	/**
-		Specifies whether a virtual keyboard(an on-screen, software keyboard)
+		Specifies whether a virtual keyboard (an on-screen, software keyboard)
 		should display when this InteractiveObject instance receives focus.
 
 		By default, the value is `false` and focusing an

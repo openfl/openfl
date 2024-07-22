@@ -38,7 +38,7 @@ package openfl.net;
 
 		_Note:_ For content running in Adobe AIR, when using the
 		`navigateToURL()` function, the runtime treats a URLRequest
-		that uses the POST method(one that has its `method` property
+		that uses the POST method (one that has its `method` property
 		set to `URLRequestMethod.POST`) as using the GET method.
 	**/
 	public var POST = "POST";

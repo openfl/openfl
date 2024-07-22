@@ -157,7 +157,7 @@ class URLLoader extends EventDispatcher
 
 		@param request A URLRequest object specifying the URL to download. If this
 					   parameter is omitted, no load operation begins. If
-					   specified, the load operation begins immediately(see the
+					   specified, the load operation begins immediately (see the
 					   `load` entry for more information).
 	**/
 	public function new(request:URLRequest = null)
@@ -215,7 +215,7 @@ class URLLoader extends EventDispatcher
 		Developer's Guide_.
 
 		 In Flash Player 10 and later, if you use a multipart Content-Type(for
-		example "multipart/form-data") that contains an upload(indicated by a
+		example "multipart/form-data") that contains an upload (indicated by a
 		"filename" parameter in a "content-disposition" header within the POST
 		body), the POST operation is subject to the security rules applied to
 		uploads:

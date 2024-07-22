@@ -24,7 +24,7 @@ package openfl.net;
 	security sandbox, the following request headers cannot be used, and the
 	restricted terms are not case-sensitive(for example, `Get`,
 	`get`, and `GET` are all not allowed). Also,
-	hyphenated terms apply if an underscore character is used(for example,
+	hyphenated terms apply if an underscore character is used (for example,
 	both `Content-Length` and `Content_Length` are not
 	allowed):
 
@@ -49,7 +49,7 @@ package openfl.net;
 	`x-flash-version`.
 
 	URLRequestHeader objects are restricted in length. If the cumulative
-	length of a URLRequestHeader object(the length of the `name`
+	length of a URLRequestHeader object (the length of the `name`
 	property plus the `value` property) or an array of
 	URLRequestHeader objects used in the `URLRequest.requestHeaders`
 	property exceeds the acceptable length, an exception is thrown.
@@ -84,7 +84,7 @@ package openfl.net;
 @:final class URLRequestHeader
 {
 	/**
-		An HTTP request header name(such as `Content-Type` or
+		An HTTP request header name (such as `Content-Type` or
 		`SOAPAction`).
 	**/
 	public var name:String;
@@ -100,7 +100,7 @@ package openfl.net;
 		request header. URLRequestHeader objects are used in the
 		`requestHeaders` property of the URLRequest class.
 
-		@param name  An HTTP request header name(such as
+		@param name  An HTTP request header name (such as
 					 `Content-Type` or `SOAPAction`).
 		@param value The value associated with the `name` property
 					(such as `text/plain`).

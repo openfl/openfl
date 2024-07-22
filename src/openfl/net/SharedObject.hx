@@ -418,7 +418,7 @@ class SharedObject extends EventDispatcher
 		`minDiskSpace`. If Flash asks the user to allot disk space for
 		the shared object, it asks for 500 bytes. After the user allots the
 		requested amount of space, Flash won't have to ask for more space on
-		future attempts to flush the object(as long as its size doesn't exceed
+		future attempts to flush the object (as long as its size doesn't exceed
 		500 bytes).
 
 		After the user responds to the dialog box, this method is called again.
@@ -446,7 +446,7 @@ class SharedObject extends EventDispatcher
 					  local information storage for objects from this domain.
 
 					  **Note:** Local content can always write shared
-					  objects from third-party domains(domains other than the
+					  objects from third-party domains (domains other than the
 					  domain in the current browser address bar) to disk, even if
 					  writing of third-party shared objects to disk is
 					  disallowed.
@@ -570,9 +570,9 @@ class SharedObject extends EventDispatcher
 		 2. Access to the network only.
 		 3. Access to both the network and the local filesystem.
 
-		Local files with access to the local filesystem(level 1 or 3) store
+		Local files with access to the local filesystem (level 1 or 3) store
 		their shared objects in one location. Local files without access to the
-		local filesystem(level 2) store their shared objects in another
+		local filesystem (level 2) store their shared objects in another
 		location.
 
 		You can prevent a SWF file from using this method by setting the
@@ -626,7 +626,7 @@ class SharedObject extends EventDispatcher
 						 `secure` parameter:
 		@return A reference to a shared object that is persistent locally and is
 				available only to the current client. If Flash Player can't create
-				or find the shared object(for example, if `localPath`
+				or find the shared object (for example, if `localPath`
 				was specified but no such directory exists), this method throws an
 				exception.
 		@throws Error Flash Player cannot create the shared object for whatever

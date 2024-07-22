@@ -8,7 +8,7 @@ package openfl.errors;
 	Examples of illegal operation error exceptions include:
 
 	* A base class, such as DisplayObjectContainer, provides more
-	functionality than a Stage can support(such as masks)
+	functionality than a Stage can support (such as masks)
 	* Certain accessibility methods are called when the player is compiled
 	without accessibility support
 	* The mms.cfg setting prohibits a FileReference action
