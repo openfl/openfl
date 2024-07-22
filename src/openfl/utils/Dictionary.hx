@@ -588,11 +588,12 @@ abstract Dictionary<K, V>(Dynamic)
 
 	public inline function each():Iterator<V>
 	{
-		var values = [];
+		var values:Array<V> = [];
 
 		for (field in Reflect.fields(this))
 		{
-			values.push(Reflect.field(this, field));
+			var value:V = Reflect.field(this, field);
+			values.push(value);
 		}
 
 		return values.iterator();

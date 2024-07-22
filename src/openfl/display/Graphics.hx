@@ -1794,7 +1794,8 @@ import js.html.CanvasRenderingContext2D;
 	@:noCompletion private function __readGraphicsData(graphicsData:Vector<IGraphicsData>):Void
 	{
 		var data = new DrawCommandReader(__commands);
-		var path = null, stroke;
+		var path:GraphicsPath = null;
+		var stroke:GraphicsStroke;
 
 		for (type in __commands.types)
 		{

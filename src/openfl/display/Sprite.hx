@@ -263,6 +263,15 @@ class Sprite extends DisplayObjectContainer
 		}
 	}
 
+	@:noCompletion private override function __setStageReference(stage:Stage):Void
+	{
+		if (this.stage != stage && this.stage != null && this.stage.__dragObject == this)
+		{
+			stopDrag();
+		}
+		super.__setStageReference(stage);
+	}
+
 	#if false
 	/**
 		Ends the `startTouchDrag()` method, for use with touch-enabled

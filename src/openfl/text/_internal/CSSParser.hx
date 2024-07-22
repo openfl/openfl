@@ -121,7 +121,7 @@ class CSSParser
 	 */
 	public function findCorrespondingRule(rules:Array<StringMap<Dynamic>>, directive:String, value:Dynamic = null):StringMap<Dynamic>
 	{
-		var ret = null;
+		var ret:StringMap<Dynamic> = null;
 		for (i in 0...rules.length)
 		{
 			if (rules[i].get("directive") == directive)
@@ -433,7 +433,7 @@ class CSSParser
 	 */
 	public function getImports(objectArray:Array<StringMap<Dynamic>>):Array<Dynamic>
 	{
-		var imps = [];
+		var imps:Array<Dynamic> = [];
 		for (i in 0...objectArray.length)
 		{
 			if (objectArray[i].get("type") == 'imports')

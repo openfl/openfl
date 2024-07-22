@@ -346,6 +346,7 @@ class Sound extends EventDispatcher
 		#if lime
 		if (__buffer != null)
 		{
+			SoundMixer.__unregisterSoundChannelByBuffer(__buffer);
 			__buffer.dispose();
 			__buffer = null;
 		}

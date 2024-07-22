@@ -1466,7 +1466,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		var ch1 = readUnsignedByte();
 		var ch2 = readUnsignedByte();
 
-		var value;
+		var value:Int;
 
 		if (endian == LITTLE_ENDIAN)
 		{

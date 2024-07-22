@@ -1023,7 +1023,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		#if commonjs
 		if (windowAttributes == null) windowAttributes = {};
-		var app = null;
+		var app:OpenFLApplication = null;
 
 		if (!Math.isNaN(width))
 		{
@@ -1731,7 +1731,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 						}
 					}
 
-					var focusEvent = null;
+					var focusEvent:FocusEvent = null;
 
 					if (focus != null)
 					{
@@ -2542,7 +2542,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		__mouseX = targetPoint.x;
 		__mouseY = targetPoint.y;
 
-		var stack = [];
+		var stack:Array<DisplayObject> = [];
 		var target:InteractiveObject = null;
 
 		if (__hitTest(__mouseX, __mouseY, true, stack, true, this))
@@ -2557,7 +2557,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 		if (target == null) target = this;
 
-		var clickType = null;
+		var clickType:String = null;
 		var supportsClickCount = false;
 
 		switch (type)
@@ -2596,6 +2596,13 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				}
 
 				__mouseDownLeft = target;
+				if (__lastClickTarget != target)
+				{
+					// the target has changed since the previous click
+					// so we can't double-click the old target anymore
+					__lastClickTarget = null;
+					__lastClickTime = 0;
+				}
 				MouseEvent.__buttonDown = true;
 				supportsClickCount = true;
 
@@ -2721,51 +2728,63 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			MouseEvent.__pool.release(event);
 			#end
 
-			if (type == MouseEvent.MOUSE_UP && target.doubleClickEnabled)
+			if (type == MouseEvent.MOUSE_UP)
 			{
-				var currentTime = Lib.getTimer();
-				if (currentTime - __lastClickTime < 500 && target == __lastClickTarget)
+				if (target.doubleClickEnabled)
 				{
-					#if openfl_pool_events
-					event = MouseEvent.__pool.get();
-					event.type = MouseEvent.DOUBLE_CLICK;
-					event.stageX = __mouseX;
-					event.stageY = __mouseY;
-					var local = target.__globalToLocal(targetPoint, localPoint);
-					event.localX = local.x;
-					event.localY = local.y;
-					event.target = target;
-					event.clickCount = 0;
-					#else
-					event = MouseEvent.__create(MouseEvent.DOUBLE_CLICK, button, 0, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint),
-						target);
-					#end
-
-					__dispatchStack(event, stack);
-
-					if (event.__updateAfterEventFlag)
+					var currentTime = Lib.getTimer();
+					if (currentTime - __lastClickTime < 500 && target == __lastClickTarget)
 					{
-						__renderAfterEvent();
+						#if openfl_pool_events
+						event = MouseEvent.__pool.get();
+						event.type = MouseEvent.DOUBLE_CLICK;
+						event.stageX = __mouseX;
+						event.stageY = __mouseY;
+						var local = target.__globalToLocal(targetPoint, localPoint);
+						event.localX = local.x;
+						event.localY = local.y;
+						event.target = target;
+						event.clickCount = 0;
+						#else
+						event = MouseEvent.__create(MouseEvent.DOUBLE_CLICK, button, 0, __mouseX, __mouseY, target.__globalToLocal(targetPoint, localPoint),
+							target);
+						#end
+
+						__dispatchStack(event, stack);
+
+						if (event.__updateAfterEventFlag)
+						{
+							__renderAfterEvent();
+						}
+
+						#if openfl_pool_events
+						MouseEvent.__pool.release(event);
+						#end
+
+						__lastClickTime = 0;
+						__lastClickTarget = null;
 					}
-
-					#if openfl_pool_events
-					MouseEvent.__pool.release(event);
-					#end
-
-					__lastClickTime = 0;
-					__lastClickTarget = null;
+					else
+					{
+						// it's been too long since the previous click,
+						// or the target has changed since the previous click
+						__lastClickTarget = target;
+						__lastClickTime = currentTime;
+					}
 				}
 				else
 				{
-					__lastClickTarget = target;
-					__lastClickTime = currentTime;
+					// if the current target can't be double-clicked, clear the
+					// old value so that it doesn't become a memory leak
+					__lastClickTarget = null;
+					__lastClickTime = 0;
 				}
 			}
 		}
 
 		if (Mouse.__cursor == MouseCursor.AUTO && !Mouse.__hidden)
 		{
-			var cursor = null;
+			var cursor:MouseCursor = null;
 
 			if (__mouseDownLeft != null)
 			{
@@ -2791,7 +2810,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			}
 		}
 
-		var event;
+		var event:MouseEvent;
 
 		if (target != __mouseOverTarget)
 		{
@@ -2947,7 +2966,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		{
 			__drag(targetPoint);
 
-			var dropTarget = null;
+			var dropTarget:DisplayObject = null;
 
 			if (__mouseOverTarget == __dragObject)
 			{
@@ -2957,7 +2976,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 				__dragObject.mouseEnabled = false;
 				__dragObject.mouseChildren = false;
 
-				var stack = [];
+				var stack:Array<DisplayObject> = [];
 
 				if (__hitTest(__mouseX, __mouseY, true, stack, true, this))
 				{
@@ -2985,7 +3004,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		var x = __mouseX;
 		var y = __mouseY;
 
-		var stack = [];
+		var stack:Array<DisplayObject> = [];
 		var target:InteractiveObject = null;
 
 		if (__hitTest(__mouseX, __mouseY, true, stack, true, this))
@@ -3028,7 +3047,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		var touchX = targetPoint.x;
 		var touchY = targetPoint.y;
 
-		var stack = [];
+		var stack:Array<DisplayObject> = [];
 		var target:InteractiveObject = null;
 
 		if (__hitTest(touchX, touchY, false, stack, true, this))
@@ -3058,7 +3077,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			__touchData.set(touchId, touchData);
 		}
 
-		var touchType = null;
+		var touchType:String = null;
 		var releaseTouchData:Bool = false;
 
 		switch (type)
@@ -3608,7 +3627,7 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 
 	@:noCompletion private function set_focus(value:InteractiveObject):InteractiveObject
 	{
-		if (value != __focus)
+		if (value != __focus || (value == null && __cacheFocus != null))
 		{
 			var oldFocus = __focus;
 			__focus = value;

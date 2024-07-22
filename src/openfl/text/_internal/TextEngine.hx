@@ -310,7 +310,7 @@ class TextEngine
 
 			function processFontList(list:Array<String>):Font
 			{
-				var font = null;
+				var font:Font = null;
 				for (path in list)
 				{
 					font = findFont(path);
@@ -531,8 +531,7 @@ class TextEngine
 		#if (js && html5)
 		return findFontVariant(format);
 		#elseif lime_cffi
-		var instance = null;
-		var fontList = null;
+		var instance:Font = null;
 
 		if (format != null && format.font != null)
 		{
@@ -769,7 +768,7 @@ class TextEngine
 
 		var rangeIndex = -1;
 		var formatRange:TextFormatRange = null;
-		var font = null;
+		var font:Font = null;
 
 		var currentFormat = TextField.__defaultTextFormat.clone();
 
@@ -787,7 +786,7 @@ class TextEngine
 		var rightMargin = 0;
 		var firstLineOfParagraph = true;
 
-		var tabStops = null; // TODO: maybe there's a better init value (not sure what this actually is)
+		// var tabStops = null; // TODO: maybe there's a better init value (not sure what this actually is)
 
 		var layoutGroup:TextLayoutGroup = null, positions = null;
 		var widthValue = 0.0, heightValue = 0, maxHeightValue = 0;
@@ -819,7 +818,7 @@ class TextEngine
 			#if (js && html5)
 			function html5Positions():Array<Float>
 			{
-				var positions = [];
+				var positions:Array<Float> = [];
 
 				if (__useIntAdvances == null)
 				{
@@ -831,7 +830,7 @@ class TextEngine
 					// slower, but more accurate if browser returns Int measurements
 
 					var previousWidth = 0.0;
-					var width;
+					var width:Float;
 
 					for (i in startIndex...endIndex)
 					{
@@ -847,7 +846,7 @@ class TextEngine
 				{
 					for (i in startIndex...endIndex)
 					{
-						var advance;
+						var advance:Float;
 
 						if (i < text.length - 1)
 						{
@@ -1253,7 +1252,7 @@ class TextEngine
 
 			var remainingPositions = positions;
 			var i, bufferCount, placeIndex, positionWidth;
-			var currentPosition;
+			var currentPosition:#if (js && html5) Float #else GlyphPosition #end;
 
 			var tempWidth = getPositionsWidth(remainingPositions);
 			i = remainingPositions.length - 1;
@@ -1360,7 +1359,7 @@ class TextEngine
 		setParagraphMetrics();
 		setLineMetrics();
 
-		var wrap;
+		var wrap:Bool;
 		var maxLoops = text.length +
 			1; // Do an extra iteration to ensure a LayoutGroup is created in case the last line is empty (multiline or trailing line break).
 		// TODO: check if the +1 is still needed, since the extra layout group is handled separately

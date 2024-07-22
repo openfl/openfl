@@ -1701,7 +1701,7 @@ class Matrix3D
 
 		identity();
 
-		var scale = [];
+		var scale:Array<Float> = [];
 		scale[0] = scale[1] = scale[2] = components[2].x;
 		scale[4] = scale[5] = scale[6] = components[2].y;
 		scale[8] = scale[9] = scale[10] = components[2].z;

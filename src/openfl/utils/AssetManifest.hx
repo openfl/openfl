@@ -129,7 +129,7 @@ class AssetManifest #if lime extends LimeAssetManifest #end
 	#if lime
 	@:noCompletion private static function __fromLimeManifest(limeManifest:LimeAssetManifest):AssetManifest
 	{
-		var manifest = null;
+		var manifest:AssetManifest = null;
 		if (limeManifest != null)
 		{
 			manifest = new AssetManifest();

@@ -72,7 +72,7 @@ class ObjectPool<T>
 
 	public function get():T
 	{
-		var object = null;
+		var object:T = null;
 
 		if (inactiveObjects > 0)
 		{
@@ -169,7 +169,7 @@ class ObjectPool<T>
 
 	@:noCompletion private inline function __getInactive():T
 	{
-		var object = null;
+		var object:T = null;
 
 		if (__inactiveObject0 != null)
 		{
@@ -264,7 +264,7 @@ class ObjectPool<T>
 			}
 			else if (value > current)
 			{
-				var object;
+				var object:T;
 
 				for (i in 0...(value - current))
 				{

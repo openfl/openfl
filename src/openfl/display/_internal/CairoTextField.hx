@@ -286,7 +286,7 @@ class CairoTextField
 
 					cairo.translate(0, 0);
 
-					var glyphs = [];
+					var glyphs:Array<CairoGlyph> = [];
 					var x:Float = group.offsetX + scrollX - bounds.x;
 					var y:Float = group.offsetY + group.ascent + scrollY - bounds.y;
 
@@ -382,7 +382,7 @@ class CairoTextField
 
 								// TODO: draw only once
 
-								var selectedGylphs = [];
+								var selectedGylphs:Array<CairoGlyph> = [];
 
 								selectionStart -= group.startIndex;
 								selectionEnd -= group.startIndex;

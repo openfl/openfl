@@ -364,8 +364,8 @@ class BitmapData implements IBitmapDrawable
 		var needSecondBitmapData = filter.__needSecondBitmapData;
 		var needCopyOfOriginal = filter.__preserveObject;
 
-		var bitmapData2 = null;
-		var bitmapData3 = null;
+		var bitmapData2:BitmapData = null;
+		var bitmapData3:BitmapData = null;
 
 		if (needSecondBitmapData)
 		{
@@ -410,7 +410,7 @@ class BitmapData implements IBitmapDrawable
 	public function clone():BitmapData
 	{
 		#if lime
-		var bitmapData;
+		var bitmapData:BitmapData;
 
 		if (!__isValid)
 		{
@@ -518,7 +518,7 @@ class BitmapData implements IBitmapDrawable
 			}
 		}
 
-		var bitmapData = null;
+		var bitmapData:BitmapData = null;
 		var foundDifference,
 			pixel:ARGB,
 			otherPixel:ARGB,
@@ -909,7 +909,7 @@ class BitmapData implements IBitmapDrawable
 			transform.concat(matrix);
 		}
 
-		var clipMatrix = null;
+		var clipMatrix:Matrix = null;
 
 		if (clipRect != null)
 		{
@@ -2476,7 +2476,7 @@ class BitmapData implements IBitmapDrawable
 			{
 				var pixels = getPixels(secondRectangle);
 				var length = Std.int(pixels.length / 4);
-				var pixel;
+				var pixel:UInt;
 
 				for (i in 0...length)
 				{

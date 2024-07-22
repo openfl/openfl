@@ -578,11 +578,11 @@ class FileReference extends EventDispatcher
 		__path = null;
 
 		#if desktop
-		var filter = null;
+		var filter:String = null;
 
 		if (typeFilter != null)
 		{
-			var filters = [];
+			var filters:Array<String> = [];
 
 			for (type in typeFilter)
 			{
@@ -600,10 +600,10 @@ class FileReference extends EventDispatcher
 		return true;
 		#end
 		#elseif (js && html5)
-		var filter = null;
+		var filter:String = null;
 		if (typeFilter != null)
 		{
-			var filters = [];
+			var filters:Array<String> = [];
 			for (type in typeFilter)
 			{
 				filters.push(StringTools.replace(StringTools.replace(type.extension, "*.", "."), ";", ","));

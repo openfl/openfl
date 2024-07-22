@@ -831,7 +831,7 @@ class Event
 	**/
 	public function formatToString(className:String, p1:String = null, p2:String = null, p3:String = null, p4:String = null, p5:String = null):String
 	{
-		var parameters = [];
+		var parameters:Array<String> = [];
 		if (p1 != null) parameters.push(p1);
 		if (p2 != null) parameters.push(p2);
 		if (p3 != null) parameters.push(p3);

@@ -253,7 +253,7 @@ class DisplayObjectRenderer extends EventDispatcher
 			|| (renderer.__type != OPENGL && !colorTransform.__isDefault(true) #if openfl_force_gl_cacheasbitmap_for_scale9grid
 				|| (renderer.__type == OPENGL && displayObject.scale9Grid != null) #end))
 		{
-			var rect = null;
+			var rect:Rectangle = null;
 
 			var needRender = (displayObject.__cacheBitmap == null
 				|| (displayObject.__renderDirty && (force || (displayObject.__children != null && displayObject.__children.length > 0)))
@@ -594,8 +594,8 @@ class DisplayObjectRenderer extends EventDispatcher
 						}
 
 						var bitmap = displayObject.__cacheBitmapData;
-						var bitmap2 = null;
-						var bitmap3 = null;
+						var bitmap2:BitmapData = null;
+						var bitmap3:BitmapData = null;
 
 						// if (needSecondBitmapData) {
 						if (displayObject.__cacheBitmapData2 == null
@@ -721,8 +721,8 @@ class DisplayObjectRenderer extends EventDispatcher
 						}
 
 						var bitmap = displayObject.__cacheBitmapData;
-						var bitmap2 = null;
-						var bitmap3 = null;
+						var bitmap2:BitmapData = null;
+						var bitmap3:BitmapData = null;
 
 						if (needSecondBitmapData)
 						{

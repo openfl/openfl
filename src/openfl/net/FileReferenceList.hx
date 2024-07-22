@@ -136,11 +136,11 @@ class FileReferenceList extends EventDispatcher
 	public function browse(typeFilter:Array<FileFilter> = null):Bool
 	{
 		#if desktop
-		var filter = null;
+		var filter:String = null;
 
 		if (typeFilter != null)
 		{
-			var filters = [];
+			var filters:Array<String> = [];
 
 			for (type in typeFilter)
 			{

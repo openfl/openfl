@@ -209,6 +209,12 @@ class DisplayObjectContainer extends InteractiveObject
 			error.errorID = 2007;
 			throw error;
 		}
+		else if (child == this)
+		{
+			var error = new ArgumentError("Error #2024: An object cannot be added as a child of itself.");
+			error.errorID = 2024;
+			throw error;
+		}
 		#if ((haxe_ver >= "3.4.0") || !cpp)
 		else if (child.stage == child)
 		{
