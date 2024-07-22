@@ -1,4 +1,7 @@
-9.3.4 (??/??/2024)
+Changelog
+=========
+
+9.3.4 (07/22/2024)
 ------------------
 
 * Fixed `close()` method on `Sound` failing to stop `SoundChannel`
