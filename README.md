@@ -2,7 +2,7 @@
 
 
 <br />
-<p align="center"><img src="assets/openfl.png"/></p>
+<h1 align="center"><img src="assets/openfl.png" alt="OpenFL"/></h1>
 
 
 Introduction
