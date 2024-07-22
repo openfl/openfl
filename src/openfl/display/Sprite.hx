@@ -14,7 +14,7 @@ import openfl.utils.AssetLibrary;
 	A Sprite object is similar to a movie clip, but does not have a
 	timeline. Sprite is an appropriate base class for objects that do not
 	require timelines. For example, Sprite would be a logical base class for
-	user interface(UI) components that typically do not use the timeline.
+	user interface (UI) components that typically do not use the timeline.
 
 	The Sprite class is new in OpenFL (compared to ActionScript 2.0). It
 	provides an alternative
@@ -113,7 +113,7 @@ class Sprite extends DisplayObjectContainer
 	#end
 
 	/**
-		A Boolean value that indicates whether the pointing hand(hand cursor)
+		A Boolean value that indicates whether the pointing hand (hand cursor)
 		appears when the pointer rolls over a sprite in which the
 		`buttonMode` property is set to `true`. The default
 		value of the `useHandCursor` property is `true`. If

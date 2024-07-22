@@ -16,7 +16,7 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 	The shadow algorithm is based on the same box filter that the blur filter
 	uses. You have several options for the style of the drop shadow, including
 	inner or outer shadow and knockout mode. You can apply the filter to any
-	display object(that is, objects that inherit from the DisplayObject
+	display object (that is, objects that inherit from the DisplayObject
 	class), such as MovieClip, SimpleButton, TextField, and Video objects, as
 	well as to BitmapData objects.
 
@@ -115,7 +115,7 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 	/**
 		Indicates whether or not the shadow is an inner shadow. The value
 		`true` indicates an inner shadow. The default is
-		`false`, an outer shadow(a shadow around the outer edges of
+		`false`, an outer shadow (a shadow around the outer edges of
 		the object).
 	**/
 	public var inner(get, set):Bool;
@@ -222,7 +222,7 @@ import lime._internal.graphics.ImageDataUtil; // TODO
 		Creates a new DropShadowFilter instance with the specified parameters.
 
 		@param distance   Offset distance for the shadow, in pixels.
-		@param angle      Angle of the shadow, 0 to 360 degrees(floating point).
+		@param angle      Angle of the shadow, 0 to 360 degrees (floating point).
 		@param color      Color of the shadow, in hexadecimal format
 						  _0xRRGGBB_. The default value is 0x000000.
 		@param alpha      Alpha transparency value for the shadow color. Valid

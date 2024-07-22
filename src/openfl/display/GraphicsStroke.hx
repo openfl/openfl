@@ -30,8 +30,8 @@ import openfl.display._internal.GraphicsDataType;
 
 		For example, the following illustrations show the different
 		`capsStyle` settings. For each setting, the illustration shows
-		a blue line with a thickness of 30(for which the `capsStyle`
-		applies), and a superimposed black line with a thickness of 1(for which
+		a blue line with a thickness of 30 (for which the `capsStyle`
+		applies), and a superimposed black line with a thickness of 1 (for which
 		no `capsStyle` applies):
 	**/
 	public var caps:CapsStyle;
@@ -50,9 +50,9 @@ import openfl.display._internal.GraphicsDataType;
 
 		For example, the following illustrations show the different
 		`joints` settings. For each setting, the illustration shows an
-		angled blue line with a thickness of 30(for which the
+		angled blue line with a thickness of 30 (for which the
 		`jointStyle` applies), and a superimposed angled black line
-		with a thickness of 1(for which no `jointStyle` applies):
+		with a thickness of 1 (for which no `jointStyle` applies):
 
 		**Note:** For `joints` set to
 		`JointStyle.MITER`, you can use the `miterLimit`
@@ -62,7 +62,7 @@ import openfl.display._internal.GraphicsDataType;
 
 	/**
 		Indicates the limit at which a miter is cut off. Valid values range from 1
-		to 255(and values outside that range are rounded to 1 or 255). This value
+		to 255 (and values outside that range are rounded to 1 or 255). This value
 		is only used if the `jointStyle` is set to
 		`"miter"`. The `miterLimit` value represents the
 		length that a miter can extend beyond the point at which the lines meet to
@@ -91,7 +91,7 @@ import openfl.display._internal.GraphicsDataType;
 		For example, the following illustrations show how Flash Player renders two
 		rounded rectangles that are identical, except that the
 		`pixelHinting` parameter used in the `lineStyle()`
-		method is set differently(the images are scaled by 200%, to emphasize the
+		method is set differently (the images are scaled by 200%, to emphasize the
 		difference):
 	**/
 	public var pixelHinting:Bool;
@@ -100,7 +100,7 @@ import openfl.display._internal.GraphicsDataType;
 		Specifies the stroke thickness scaling. Valid values are:
 
 		* `LineScaleMode.NORMAL` - Always scale the line thickness
-		when the object is scaled(the default).
+		when the object is scaled (the default).
 		* `LineScaleMode.NONE` - Never scale the line thickness.
 
 		* `LineScaleMode.VERTICAL` - Do not scale the line
@@ -189,9 +189,9 @@ import openfl.display._internal.GraphicsDataType;
 							For example, the following illustrations show the
 							different `capsStyle` settings. For each
 							setting, the illustration shows a blue line with a
-							thickness of 30(for which the `capsStyle`
+							thickness of 30 (for which the `capsStyle`
 							applies), and a superimposed black line with a
-							thickness of 1(for which no `capsStyle`
+							thickness of 1 (for which no `capsStyle`
 							applies):
 		@param joints       A value from the JointStyle class that specifies the
 							type of joint appearance used at angles. Valid values
@@ -203,9 +203,9 @@ import openfl.display._internal.GraphicsDataType;
 							For example, the following illustrations show the
 							different `joints` settings. For each
 							setting, the illustration shows an angled blue line
-							with a thickness of 30(for which the
+							with a thickness of 30 (for which the
 							`jointStyle` applies), and a superimposed
-							angled black line with a thickness of 1(for which no
+							angled black line with a thickness of 1 (for which no
 							`jointStyle` applies):
 
 							**Note:** For `joints` set to

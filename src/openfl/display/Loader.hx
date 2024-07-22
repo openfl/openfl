@@ -51,7 +51,7 @@ import lime.utils.AssetManifest;
 	`System.allowDomain()` or the
 	`System.allowInsecureDomain()` method in the loaded content
 	file.
-	* If the loaded content is an AVM1 SWF file(written using ActionScript
+	* If the loaded content is an AVM1 SWF file (written using ActionScript
 	1.0 or 2.0), it cannot be cross-scripted by an AVM2 SWF file (written using
 	ActionScript 3.0). However, you can communicate between the two SWF files
 	by using the LocalConnection class.
@@ -73,9 +73,9 @@ import lime.utils.AssetManifest;
 	For more information related to security, see the Flash Player Developer
 	Center Topic: [Security](http://www.adobe.com/go/devnet_security_en).
 
-	When loading a SWF file from an untrusted source(such as a domain other
+	When loading a SWF file from an untrusted source (such as a domain other
 	than that of the Loader object's root SWF file), you may want to define a
-	mask for the Loader object, to prevent the loaded content(which is a child
+	mask for the Loader object, to prevent the loaded content (which is a child
 	of the Loader object) from drawing to portions of the Stage outside of that
 	mask, as shown in the following code:
 
@@ -152,7 +152,7 @@ class Loader extends DisplayObjectContainer
 		Creates a Loader object that you can use to load files, such as SWF, JPEG,
 		GIF, or PNG files. Call the `load()` method to load the asset
 		as a child of the Loader instance. You can then add the Loader object to
-		the display list(for instance, by using the `addChild()`
+		the display list (for instance, by using the `addChild()`
 		method of a DisplayObjectContainer instance). The asset appears on the
 		Stage as it loads.
 
@@ -261,7 +261,7 @@ class Loader extends DisplayObjectContainer
 		which is described in the Loader class description.
 
 		In Flash Player 10 and later, if you use a multipart Content-Type(for
-		example "multipart/form-data") that contains an upload(indicated by a
+		example "multipart/form-data") that contains an upload (indicated by a
 		"filename" parameter in a "content-disposition" header within the POST
 		body), the POST operation is subject to the security rules applied to
 		uploads:
@@ -309,7 +309,7 @@ class Loader extends DisplayObjectContainer
 									  `digest` property of a URLRequest
 									  object when calling the
 									  `URLLoader.load()` method when
-									  loading a SWZ file(an Adobe platform
+									  loading a SWZ file (an Adobe platform
 									  component).
 		@throws IllegalOperationError If the `requestedContentParent`
 									  property of the `context`
@@ -323,7 +323,7 @@ class Loader extends DisplayObjectContainer
 									  `SecurityDomain.currentDomain`.
 									  This reflects the fact that you can only
 									  place the loaded media in its natural
-									  security sandbox or your own(the latter
+									  security sandbox or your own (the latter
 									  requires a policy file).
 		@throws SecurityError         Local SWF files may not set
 									  LoaderContext.securityDomain to anything

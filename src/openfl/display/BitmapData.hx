@@ -246,8 +246,8 @@ class BitmapData implements IBitmapDrawable
 
 		@param	width		The width of the bitmap image in pixels.
 		@param	height		The height of the bitmap image in pixels.
-		@param	transparent		Specifies whether the bitmap image supports per-pixel transparency. The default value is `true`(transparent). To create a fully transparent bitmap, set the value of the `transparent` parameter to `true` and the value of the `fillColor` parameter to 0x00000000(or to 0). Setting the `transparent` property to `false` can result in minor improvements in rendering performance.
-		@param	fillColor		A 32-bit ARGB color value that you use to fill the bitmap image area. The default value is 0xFFFFFFFF(solid white).
+		@param	transparent		Specifies whether the bitmap image supports per-pixel transparency. The default value is `true`(transparent). To create a fully transparent bitmap, set the value of the `transparent` parameter to `true` and the value of the `fillColor` parameter to 0x00000000 (or to 0). Setting the `transparent` property to `false` can result in minor improvements in rendering performance.
+		@param	fillColor		A 32-bit ARGB color value that you use to fill the bitmap image area. The default value is 0xFFFFFFFF (solid white).
 	**/
 	public function new(width:Int, height:Int, transparent:Bool = true, fillColor:UInt = 0xFFFFFFFF)
 	{
@@ -352,7 +352,7 @@ class BitmapData implements IBitmapDrawable
 
 		@param	sourceBitmapData		The input bitmap image to use. The source image can be a different BitmapData object or it can refer to the current BitmapData instance.
 		@param	sourceRect		A rectangle that defines the area of the source image to use as input.
-		@param	destPoint		The point within the destination image(the current BitmapData instance) that corresponds to the upper-left corner of the source rectangle.
+		@param	destPoint		The point within the destination image (the current BitmapData instance) that corresponds to the upper-left corner of the source rectangle.
 		@param	filter		The filter object that you use to perform the filtering operation.
 	**/
 	public function applyFilter(sourceBitmapData:BitmapData, sourceRect:Rectangle, destPoint:Point, filter:BitmapFilter):Void
@@ -815,7 +815,7 @@ class BitmapData implements IBitmapDrawable
 		The source display object does not use any of its applied
 		transformations for this call. It is treated as it exists in the library
 		or file, with no matrix transform, no color transform, and no blend mode.
-		To draw a display object(such as a movie clip) by using its own transform
+		To draw a display object (such as a movie clip) by using its own transform
 		properties, you can copy its `transform` property object to the
 		`transform` property of the Bitmap object that uses the
 		BitmapData object.
@@ -869,7 +869,7 @@ class BitmapData implements IBitmapDrawable
 							  BitmapData or DisplayObject object.
 		@throws ArgumentError The source is null or not a valid IBitmapDrawable
 							  object.
-		@throws SecurityError The `source` object and(in the case of a
+		@throws SecurityError The `source` object and (in the case of a
 							  Sprite or MovieClip object) all of its child objects
 							  do not come from the same domain as the caller, or
 							  are not in a content that is accessible to the
@@ -2049,9 +2049,9 @@ class BitmapData implements IBitmapDrawable
 
 	/**
 		Determines a rectangular region that either fully encloses all pixels of a
-		specified color within the bitmap image(if the `findColor`
+		specified color within the bitmap image (if the `findColor`
 		parameter is set to `true`) or fully encloses all pixels that
-		do not include the specified color(if the `findColor`
+		do not include the specified color (if the `findColor`
 		parameter is set to `false`).
 
 		For example, if you have a source image and you want to determine the
@@ -2170,7 +2170,7 @@ class BitmapData implements IBitmapDrawable
 
 	/**
 		Generates a byte array from a rectangular region of pixel data. Writes an
-		unsigned integer(a 32-bit unmultiplied pixel value) for each pixel into
+		unsigned integer (a 32-bit unmultiplied pixel value) for each pixel into
 		the byte array.
 
 		@param rect A rectangular area in the current BitmapData object.
@@ -2296,7 +2296,7 @@ class BitmapData implements IBitmapDrawable
 
 	/**
 		Generates a vector array from a rectangular region of pixel data. Returns
-		a Vector object of unsigned integers(a 32-bit unmultiplied pixel value)
+		a Vector object of unsigned integers (a 32-bit unmultiplied pixel value)
 		for the specified rectangle.
 		@param rect A rectangular area in the current BitmapData object.
 		@return A Vector representing the given Rectangle.
@@ -2638,9 +2638,9 @@ class BitmapData implements IBitmapDrawable
 							  a true random-number generation function, so it
 							  creates the same results each time from the same
 							  random seed.
-		@param low            The lowest value to generate for each channel(0 to
+		@param low            The lowest value to generate for each channel (0 to
 							  255).
-		@param high           The highest value to generate for each channel(0 to
+		@param high           The highest value to generate for each channel (0 to
 							  255).
 		@param channelOptions A number that can be a combination of any of the
 							  four color channel values
@@ -2790,7 +2790,7 @@ class BitmapData implements IBitmapDrawable
 		Generates a Perlin noise image.
 
 		The Perlin noise generation algorithm interpolates and combines
-		individual random noise functions(called octaves) into a single function
+		individual random noise functions (called octaves) into a single function
 		that generates more natural-seeming random noise. Like musical octaves,
 		each octave function is twice the frequency of the one before it. Perlin
 		noise has been described as a "fractal sum of noise" because it combines

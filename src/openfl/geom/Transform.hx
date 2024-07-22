@@ -7,7 +7,7 @@ import openfl.display.DisplayObject;
 	The Transform class provides access to color adjustment properties and two-
 	or three-dimensional transformation objects that can be applied to a
 	display object. During the transformation, the color or the orientation and
-	position of a display object is adjusted(offset) from the current values
+	position of a display object is adjusted (offset) from the current values
 	or coordinates to new values or coordinates. The Transform class also
 	collects data about color and two-dimensional matrix transformations that
 	are applied to a display object and all of its parent objects. You can

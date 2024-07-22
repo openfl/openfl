@@ -244,8 +244,8 @@ class Rectangle
 		Determines whether the specified point is contained within the rectangular
 		region defined by this Rectangle object.
 
-		@param x The _x_ coordinate(horizontal position) of the point.
-		@param y The _y_ coordinate(vertical position) of the point.
+		@param x The _x_ coordinate (horizontal position) of the point.
+		@param y The _y_ coordinate (vertical position) of the point.
 		@return A value of `true` if the Rectangle object contains the
 				specified point; otherwise `false`.
 	**/

@@ -175,7 +175,7 @@ class EventDispatcher implements IEventDispatcher
 								for a listener that is a nested inner function,
 								the function will be garbage-collected and no
 								longer persistent. If you create references to the
-								inner function(save it in another variable) then
+								inner function (save it in another variable) then
 								it is not garbage-collected and stays
 								persistent.
 

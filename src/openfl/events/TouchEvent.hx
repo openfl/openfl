@@ -8,13 +8,13 @@ import openfl.utils.ByteArray;
 
 /**
 	The TouchEvent class lets you handle events on devices that detect user
-	contact with the device(such as a finger on a touch screen). When a user
+	contact with the device (such as a finger on a touch screen). When a user
 	interacts with a device such as a mobile phone or tablet with a touch
 	screen, the user typically touches the screen with his or her fingers or a
 	pointing device. You can develop applications that respond to basic touch
 	events(such as a single finger tap) with the TouchEvent class. Create
 	event listeners using the event types defined in this class. For user
-	interaction with multiple points of contact(such as several fingers moving
+	interaction with multiple points of contact (such as several fingers moving
 	across a touch screen at the same time) use the related GestureEvent,
 	PressAndTapGestureEvent, and TransformGestureEvent classes. And, use the
 	properties and methods of these classes to construct event handlers that
@@ -406,7 +406,7 @@ class TouchEvent extends Event
 	public var stageY:Float;
 
 	/**
-		A unique identification number(as an int) assigned to the touch point.
+		A unique identification number (as an int) assigned to the touch point.
 	**/
 	public var touchPointID:Int;
 
@@ -433,7 +433,7 @@ class TouchEvent extends Event
 								   flow.
 		@param cancelable          Determines whether the Event object can be
 								   canceled.
-		@param touchPointID        A unique identification number(as an int)
+		@param touchPointID        A unique identification number (as an int)
 								   assigned to the touch point.
 		@param isPrimaryTouchPoint Indicates whether the first point of contact is
 								   mapped to mouse events.

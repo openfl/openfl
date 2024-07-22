@@ -54,12 +54,12 @@ import js.html.DivElement;
 
 	OpenFL provides several ways to format your text at runtime. The
 	TextFormat class lets you set character and paragraph formatting for
-	TextField objects. You can apply Cascading Style Sheets(CSS) styles to
+	TextField objects. You can apply Cascading Style Sheets (CSS) styles to
 	text fields by using the `TextField.styleSheet` property and the
 	StyleSheet class. You can use CSS to style built-in HTML tags, define new
 	formatting tags, or apply styles. You can assign HTML formatted text, which
 	optionally uses CSS styles, directly to a text field. HTML text that you
-	assign to a text field can contain embedded media(movie clips, SWF files,
+	assign to a text field can contain embedded media (movie clips, SWF files,
 	GIF files, PNG files, and JPEG files). The text wraps around the embedded
 	media in the same way that a web browser wraps text around media embedded
 	in an HTML document.
@@ -152,7 +152,7 @@ class TextField extends InteractiveObject
 	/**
 		The type of anti-aliasing used for this text field. Use
 		`openfl.text.AntiAliasType` constants for this property. You can
-		control this setting only if the font is embedded(with the
+		control this setting only if the font is embedded (with the
 		`embedFonts` property set to `true`). The default
 		setting is `openfl.text.AntiAliasType.NORMAL`.
 
@@ -183,7 +183,7 @@ class TextField extends InteractiveObject
 		`TextFieldAutoSize.RIGHT`, the text is treated as
 		right-justified text, meaning that the right margin of the text field
 		remains fixed and any resizing of a single line of the text field is on
-		the left margin. If the text includes a line break(for example,
+		the left margin. If the text includes a line break (for example,
 		`"\n" or "\r")`, the bottom is also resized to fit the next
 		line of text. If `wordWrap` is also set to `true`,
 		only the bottom of the text field is resized and the left side remains
@@ -193,7 +193,7 @@ class TextField extends InteractiveObject
 		`TextFieldAutoSize.CENTER`, the text is treated as
 		center-justified text, meaning that any resizing of a single line of the
 		text field is equally distributed to both the right and left margins. If
-		the text includes a line break(for example, `"\n"` or
+		the text includes a line break (for example, `"\n"` or
 		`"\r"`), the bottom is also resized to fit the next line of
 		text. If `wordWrap` is also set to `true`, only the
 		bottom of the text field is resized and the left and right sides remain
@@ -253,9 +253,9 @@ class TextField extends InteractiveObject
 	public var bottomScrollV(get, never):Int;
 
 	/**
-		The index of the insertion point(caret) position. If no insertion point
+		The index of the insertion point (caret) position. If no insertion point
 		is displayed, the value is the position the insertion point would be if
-		you restored focus to the field(typically where the insertion point last
+		you restored focus to the field (typically where the insertion point last
 		was, or 0 if the field has not had focus).
 
 		Selection span indexes are zero-based(for example, the first position
@@ -435,7 +435,7 @@ class TextField extends InteractiveObject
 		`true`, the text field is multiline; if the value is
 		`false`, the text field is a single-line text field. In a field
 		of type `TextFieldType.INPUT`, the `multiline` value
-		determines whether the `Enter` key creates a new line(a value
+		determines whether the `Enter` key creates a new line (a value
 		of `false`, and the `Enter` key is ignored). If you
 		paste text into a `TextField` with a `multiline`
 		value of `false`, newlines are stripped out of the text.
@@ -492,7 +492,7 @@ class TextField extends InteractiveObject
 
 		You can use the `\u` escape sequence to construct
 		`restrict` strings. The following code includes only the
-		characters from ASCII 32(space) to ASCII 126(tilde).
+		characters from ASCII 32 (space) to ASCII 126 (tilde).
 		`my_txt.restrict = "\u0020-\u007E";`
 
 		@default null
@@ -526,7 +526,7 @@ class TextField extends InteractiveObject
 
 		The units of vertical scrolling are lines, whereas the units of
 		horizontal scrolling are pixels. If the first line displayed is the first
-		line in the text field, scrollV is set to 1(not 0). Horizontal scrolling
+		line in the text field, scrollV is set to 1 (not 0). Horizontal scrolling
 		is measured in pixels because most fonts are proportionally spaced; that
 		is, the characters can have different widths. Flash performs vertical
 		scrolling by line because users usually want to see a complete line of
@@ -938,7 +938,7 @@ class TextField extends InteractiveObject
 
 		@param x The _x_ coordinate of the character.
 		@param y The _y_ coordinate of the character.
-		@return The zero-based index value of the character(for example, the
+		@return The zero-based index value of the character (for example, the
 				first position is 0, the second position is 1, and so on). Returns
 				-1 if the point is not over any character.
 	**/
@@ -1037,7 +1037,7 @@ class TextField extends InteractiveObject
 
 		@param x The _x_ coordinate of the line.
 		@param y The _y_ coordinate of the line.
-		@return The zero-based index value of the line(for example, the first
+		@return The zero-based index value of the line (for example, the first
 				line is 0, the second line is 1, and so on). Returns -1 if the
 				point is not over any line.
 	**/
@@ -1156,7 +1156,7 @@ class TextField extends InteractiveObject
 		Returns the character index of the first character in the line that the
 		`lineIndex` parameter specifies.
 
-		@param lineIndex The zero-based index value of the line(for example, the
+		@param lineIndex The zero-based index value of the line (for example, the
 						 first line is 0, the second line is 1, and so on).
 		@return The zero-based index value of the first character in the line.
 		@throws RangeError The line number specified is out of range.
@@ -1182,7 +1182,7 @@ class TextField extends InteractiveObject
 		Returns the text of the line specified by the `lineIndex`
 		parameter.
 
-		@param lineIndex The zero-based index value of the line(for example, the
+		@param lineIndex The zero-based index value of the line (for example, the
 						 first line is 0, the second line is 1, and so on).
 		@return The text string contained in the specified line.
 		@throws RangeError The line number specified is out of range.
@@ -2038,7 +2038,7 @@ class TextField extends InteractiveObject
 				position--;
 				char = __text.charAt(position);
 			}
-			//we dont want to include the delimiter
+			// we dont want to include the delimiter
 			if (position == 0) return position;
 			position++;
 		}
@@ -2055,11 +2055,11 @@ class TextField extends InteractiveObject
 		if (position <= __caretIndex)
 		{
 			while (delimiters.indexOf(char) == -1 && position > 0)
-				{
-					position--;
-					char = __text.charAt(position);
-				}
-				if (position == 0) return position;
+			{
+				position--;
+				char = __text.charAt(position);
+			}
+			if (position == 0) return position;
 			position++;
 		}
 		else
@@ -3278,7 +3278,8 @@ class TextField extends InteractiveObject
 		{
 			__updateLayout();
 
-			var position = if (__lineSelection) __getPositionByIdentifier(mouseX + scrollH, mouseY, true) else if (__wordSelection) __getPositionByIdentifier(mouseX + scrollH, mouseY, false) else  __getPosition(mouseX + scrollH, mouseY);
+			var position = if (__lineSelection) __getPositionByIdentifier(mouseX + scrollH, mouseY,
+				true) else if (__wordSelection) __getPositionByIdentifier(mouseX + scrollH, mouseY, false) else __getPosition(mouseX + scrollH, mouseY);
 
 			if (position != __caretIndex)
 			{
@@ -3326,7 +3327,8 @@ class TextField extends InteractiveObject
 			__getWorldTransform();
 			__updateLayout();
 
-			var upPos:Int = if (__lineSelection) __getPositionByIdentifier(mouseX + scrollH, mouseY, true) else if (__wordSelection) __getPositionByIdentifier(mouseX + scrollH, mouseY, false) else __getPosition(mouseX + scrollH, mouseY);
+			var upPos:Int = if (__lineSelection) __getPositionByIdentifier(mouseX + scrollH, mouseY,
+				true) else if (__wordSelection) __getPositionByIdentifier(mouseX + scrollH, mouseY, false) else __getPosition(mouseX + scrollH, mouseY);
 			var leftPos:Int;
 			var rightPos:Int;
 
@@ -3411,7 +3413,7 @@ class TextField extends InteractiveObject
 	{
 		if (!selectable && type != INPUT) return;
 
-		//decide wether this click is for selecting text by character, word or line - single/double/triple click
+		// decide wether this click is for selecting text by character, word or line - single/double/triple click
 		__lineSelection = event.clickCount == 3;
 		__wordSelection = event.clickCount == 2;
 
@@ -3438,8 +3440,8 @@ class TextField extends InteractiveObject
 		}
 
 		__updateLayout();
-		//If we start word selection only when the mouse moves, we can't fully select the first word on a double click
-		//and there would be a delay before the first word is selected
+		// If we start word selection only when the mouse moves, we can't fully select the first word on a double click
+		// and there would be a delay before the first word is selected
 
 		if (!DisplayObject.__supportDOM)
 		{
@@ -3470,7 +3472,7 @@ class TextField extends InteractiveObject
 	@:noCompletion private function window_onKeyDown(key:KeyCode, modifier:KeyModifier):Void
 	{
 		inline function isModifierPressed()
-			return #if mac modifier.metaKey #elseif js (modifier.metaKey || modifier.ctrlKey) #else (modifier.ctrlKey && !modifier.altKey) #end;
+			return #if mac modifier.metaKey #elseif js(modifier.metaKey || modifier.ctrlKey) #else (modifier.ctrlKey && !modifier.altKey) #end;
 
 		switch (key)
 		{

@@ -61,7 +61,7 @@ class DisplayObjectContainer extends InteractiveObject
 		`true`.
 
 		This property is useful when you create a button with an instance of
-		the Sprite class(instead of using the SimpleButton class). When you use a
+		the Sprite class (instead of using the SimpleButton class). When you use a
 		Sprite instance to create a button, you can choose to decorate the button
 		by using the `addChild()` method to add additional Sprite
 		instances. This process can cause unexpected behavior with mouse events
@@ -133,7 +133,7 @@ class DisplayObjectContainer extends InteractiveObject
 
 	/**
 		Adds a child DisplayObject instance to this DisplayObjectContainer
-		instance. The child is added to the front(top) of all other children in
+		instance. The child is added to the front (top) of all other children in
 		this DisplayObjectContainer instance.(To add a child to a specific index
 		position, use the `addChildAt()` method.)
 
@@ -156,7 +156,7 @@ class DisplayObjectContainer extends InteractiveObject
 		@return The DisplayObject instance that you pass in the `child`
 				parameter.
 		@throws ArgumentError Throws if the child is the same as the parent. Also
-							  throws if the caller is a child(or grandchild etc.)
+							  throws if the caller is a child (or grandchild etc.)
 							  of the child being added.
 		@event added Dispatched when a display object is added to the display
 					 list.
@@ -171,7 +171,7 @@ class DisplayObjectContainer extends InteractiveObject
 	/**
 		Adds a child DisplayObject instance to this DisplayObjectContainer
 		instance. The child is added at the index position specified. An index of
-		0 represents the back(bottom) of the display list for this
+		0 represents the back (bottom) of the display list for this
 		DisplayObjectContainer object.
 
 		For example, the following example shows three display objects, labeled
@@ -192,7 +192,7 @@ class DisplayObjectContainer extends InteractiveObject
 		@return The DisplayObject instance that you pass in the `child`
 				parameter.
 		@throws ArgumentError Throws if the child is the same as the parent. Also
-							  throws if the caller is a child(or grandchild etc.)
+							  throws if the caller is a child (or grandchild etc.)
 							  of the child being added.
 		@throws RangeError    Throws if the index position does not exist in the
 							  child list.

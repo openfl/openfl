@@ -43,7 +43,7 @@ import lime.utils.Int16Array;
 @:final @:keep class SoundChannel extends EventDispatcher
 {
 	/**
-		The current amplitude(volume) of the left channel, from 0(silent) to 1
+		The current amplitude (volume) of the left channel, from 0 (silent) to 1
 		(full amplitude).
 	**/
 	public var leftPeak(default, null):Float;
@@ -64,7 +64,7 @@ import lime.utils.Int16Array;
 	public var position(get, set):Float;
 
 	/**
-		The current amplitude(volume) of the right channel, from 0(silent) to 1
+		The current amplitude (volume) of the right channel, from 0 (silent) to 1
 		(full amplitude).
 	**/
 	public var rightPeak(default, null):Float;

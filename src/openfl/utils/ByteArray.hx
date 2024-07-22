@@ -191,7 +191,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	/**
 		Compresses the byte array. The entire byte array is compressed. For
 		content running in Adobe AIR, you can specify a compression algorithm by
-		passing a value(defined in the CompressionAlgorithm class) as the
+		passing a value (defined in the CompressionAlgorithm class) as the
 		`algorithm` parameter. Flash Player supports only the default
 		algorithm, zlib.
 
@@ -209,7 +209,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		formats, such as zlib, gzip, some zip implementations, and others. When
 		data is compressed using one of those compression formats, in addition to
 		storing the compressed version of the original data, the compression
-		format data(for example, the .zip file) includes metadata information.
+		format data (for example, the .zip file) includes metadata information.
 		Some examples of the types of metadata included in various file formats
 		are file name, file modification date/time, original file size, optional
 		comments, checksum data, and more.
@@ -218,7 +218,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		the resulting ByteArray is structured in a specific format. Certain bytes
 		contain metadata about the compressed data, while other bytes contain the
 		actual compressed version of the original ByteArray data. As defined by
-		the zlib compressed data format specification, those bytes(that is, the
+		the zlib compressed data format specification, those bytes (that is, the
 		portion containing the compressed version of the original data) are
 		compressed using the deflate algorithm. Consequently those bytes are
 		identical to the result of calling `compress(<ph
@@ -503,7 +503,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		by `offset`.
 
 		@param bytes  The ByteArray object to read data into.
-		@param offset The offset(position) in `bytes` at which the
+		@param offset The offset (position) in `bytes` at which the
 					  read data should be written.
 		@param length The number of bytes to read. The default value of 0 causes
 					  all available data to be read.
@@ -560,7 +560,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	{
 		return this.readInt();
 	}
-	
+
 	/**
 		Reads a signed 64-bit integer from the byte stream.
 		The returned value is in the range −9223372036854775808 to 9223372036854775807.
@@ -813,7 +813,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	/**
 		Decompresses the byte array. For content running in Adobe AIR, you can
-		specify a compression algorithm by passing a value(defined in the
+		specify a compression algorithm by passing a value (defined in the
 		CompressionAlgorithm class) as the `algorithm` parameter. The
 		byte array must have been compressed using the same algorithm. Flash
 		Player supports only the default algorithm, zlib.
@@ -943,7 +943,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	{
 		this.writeInt(value);
 	}
-	
+
 	/**
 		Writes a 64-bit signed integer to the byte stream.
 		@param value An integer to write to the byte stream.
@@ -952,7 +952,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	{
 		this.writeInt64(value);
 	}
-
 
 	/**
 		Writes a multibyte string to the byte stream using the specified character
@@ -1405,25 +1404,30 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 			return (ch1 << 24) | (ch2 << 16) | (ch3 << 8) | ch4;
 		}
 	}
-	
-	public function readInt64():Int64 {
-        if (position + 8 > length) {
-            throw new EOFError();
-        }
 
-        var high:Int;
-        var low:Int;
+	public function readInt64():Int64
+	{
+		if (position + 8 > length)
+		{
+			throw new EOFError();
+		}
 
-        if (endian == LITTLE_ENDIAN) {
-            low = readUnsignedInt();
-            high = readUnsignedInt();
-        } else {
-            high = readUnsignedInt();
-            low = readUnsignedInt();
-        }
+		var high:Int;
+		var low:Int;
 
-        return Int64.make(high, low);
-    }
+		if (endian == LITTLE_ENDIAN)
+		{
+			low = readUnsignedInt();
+			high = readUnsignedInt();
+		}
+		else
+		{
+			high = readUnsignedInt();
+			low = readUnsignedInt();
+		}
+
+		return Int64.make(high, low);
+	}
 
 	public function readMultiByte(length:Int, charSet:String):String
 	{
@@ -1657,7 +1661,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 			set(position++, value & 0xFF);
 		}
 	}
-	
+
 	public function writeInt64(value:Int64):Void
 	{
 		if (endian == LITTLE_ENDIAN)
@@ -1665,7 +1669,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 			writeUnsignedInt(value.low);
 			writeUnsignedInt(value.high);
 		}
-		else {
+		else
+		{
 			writeUnsignedInt(value.high);
 			writeUnsignedInt(value.low);
 		}
@@ -1951,7 +1956,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	/**
 		Compresses the byte array. The entire byte array is compressed. For
 		content running in Adobe AIR, you can specify a compression algorithm by
-		passing a value(defined in the CompressionAlgorithm class) as the
+		passing a value (defined in the CompressionAlgorithm class) as the
 		`algorithm` parameter. Flash Player supports only the default
 		algorithm, zlib.
 
@@ -1969,7 +1974,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		formats, such as zlib, gzip, some zip implementations, and others. When
 		data is compressed using one of those compression formats, in addition to
 		storing the compressed version of the original data, the compression
-		format data(for example, the .zip file) includes metadata information.
+		format data (for example, the .zip file) includes metadata information.
 		Some examples of the types of metadata included in various file formats
 		are file name, file modification date/time, original file size, optional
 		comments, checksum data, and more.
@@ -1978,7 +1983,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		the resulting ByteArray is structured in a specific format. Certain bytes
 		contain metadata about the compressed data, while other bytes contain the
 		actual compressed version of the original ByteArray data. As defined by
-		the zlib compressed data format specification, those bytes(that is, the
+		the zlib compressed data format specification, those bytes (that is, the
 		portion containing the compressed version of the original data) are
 		compressed using the deflate algorithm. Consequently those bytes are
 		identical to the result of calling `compress(<ph
@@ -2081,7 +2086,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		by `offset`.
 
 		@param bytes  The ByteArray object to read data into.
-		@param offset The offset(position) in `bytes` at which the
+		@param offset The offset (position) in `bytes` at which the
 					  read data should be written.
 		@param length The number of bytes to read. The default value of 0 causes
 					  all available data to be read.
@@ -2118,32 +2123,37 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		@throws EOFError There is not sufficient data available to read.
 	**/
 	public function readInt():Int;
-	
+
 	/**
 		Reads a signed 64-bit integer from the byte stream.
 		The returned value is in the range −9223372036854775808 to 9223372036854775807.
 		@return A 64-bit signed integer between −9223372036854775808 to 9223372036854775807.
 		@throws EOFError There is not sufficient data available to read.
 	**/
-	public function readInt64():Int64 {
-        if (position + 8 > length) {
-            throw new EOFError();
-        }
+	public function readInt64():Int64
+	{
+		if (position + 8 > length)
+		{
+			throw new EOFError();
+		}
 
-        var high:Int;
-        var low:Int;
+		var high:Int;
+		var low:Int;
 
-        if (endian == LITTLE_ENDIAN) {
-            low = readUnsignedInt();
-            high = readUnsignedInt();
-        } else {
-            high = readUnsignedInt();
-            low = readUnsignedInt();
-        }
+		if (endian == LITTLE_ENDIAN)
+		{
+			low = readUnsignedInt();
+			high = readUnsignedInt();
+		}
+		else
+		{
+			high = readUnsignedInt();
+			low = readUnsignedInt();
+		}
 
-        return Int64.make(high, low);
-    }
-	
+		return Int64.make(high, low);
+	}
+
 	/**
 		Reads a multibyte string of specified length from the byte stream using
 		the specified character set.
@@ -2251,7 +2261,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	/**
 		Decompresses the byte array. For content running in Adobe AIR, you can
-		specify a compression algorithm by passing a value(defined in the
+		specify a compression algorithm by passing a value (defined in the
 		CompressionAlgorithm class) as the `algorithm` parameter. The
 		byte array must have been compressed using the same algorithm. Flash
 		Player supports only the default algorithm, zlib.
@@ -2344,7 +2354,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		@param value An integer to write to the byte stream.
 	**/
 	public function writeInt(value:Int):Void;
-	
+
 	/**
 		Writes a 64-bit signed integer to the byte stream.
 		@param value An integer to write to the byte stream.
@@ -2356,12 +2366,13 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 			writeUnsignedInt(value.low);
 			writeUnsignedInt(value.high);
 		}
-		else {
+		else
+		{
 			writeUnsignedInt(value.high);
 			writeUnsignedInt(value.low);
 		}
 	}
-	
+
 	/**
 		Writes a multibyte string to the byte stream using the specified character
 		set.

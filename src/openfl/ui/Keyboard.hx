@@ -383,7 +383,7 @@ import lime.ui.KeyCode;
 	public static inline var TAB:Int = 9;
 
 	/**
-		Constant associated with the key code value for the Alternate(Option) key
+		Constant associated with the key code value for the Alternate (Option) key
 		(18).
 	**/
 	public static inline var ALTERNATE:Int = 18;
@@ -394,7 +394,7 @@ import lime.ui.KeyCode;
 	public static inline var ENTER:Int = 13;
 
 	/**
-		Constant associated with the Mac command key(15). This constant is
+		Constant associated with the Mac command key (15). This constant is
 		currently only used for setting menu key equivalents.
 	**/
 	public static inline var COMMAND:Int = 15;

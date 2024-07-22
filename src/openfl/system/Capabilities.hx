@@ -276,7 +276,7 @@ import sys.io.Process;
 		to content in security sandboxes other than the application security
 		sandbox.(Content in the application security sandbox can always read from
 		the file system.) If this property is `true`, Flash Player
-		cannot read files(including the first file that Flash Player launches
+		cannot read files (including the first file that Flash Player launches
 		with) from the user's hard disk. If this property is `true`,
 		AIR content outside of the application security sandbox cannot read files
 		from the user's hard disk. For example, attempts to read a file on the
