@@ -27,7 +27,9 @@
 
 package openfl.utils._internal.format.amf3;
 
-import haxe.ds.Vector;
+import openfl.Vector;
+import openfl.utils.ByteArray;
+import openfl.utils.IExternalizable;
 
 enum AMF3Value
 {
@@ -38,10 +40,13 @@ enum AMF3Value
 	ANumber(f:Float);
 	AString(s:String);
 	ADate(d:Date);
-	AObject(fields:Map<String, AMF3Value>, ?size:Int, ?classname:String, ?isExternalizable:Bool);
+	AObject(fields:Map<String, AMF3Value>, ?size:Int, ?className:String);
+	AExternal(o:IExternalizable);
 	AArray(values:Array<AMF3Value>, ?extra:Map<String, AMF3Value>);
-	AVector(values:Vector<AMF3Value>, ?fixed:Bool, ?classname:String);
+	AIntVector(v:Vector<Int>);
+	AFloatVector(v:Vector<Float>);
+	AObjectVector(v:Vector<AMF3Value>, ?type:String);
 	AXml(x:Xml);
-	ABytes(b:haxe.io.Bytes);
+	AByteArray(ba:ByteArray);
 	AMap(m:Map<AMF3Value, AMF3Value>);
 }

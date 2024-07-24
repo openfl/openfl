@@ -28,8 +28,9 @@
 package openfl.utils._internal.format.amf3;
 
 import haxe.extern.EitherType;
-import haxe.ds.Vector;
+import haxe.io.Bytes;
 import openfl.utils._internal.format.amf3.AMF3Value;
+import openfl.utils.ByteArray;
 
 typedef Traits =
 {
@@ -134,15 +135,31 @@ class AMF3Reader
 			throw "Invalid object traits";
 		}
 
-		var h = new Map();
+		var ret = null;
 
-		var ret = AObject(h, null, className != null ? AMF3Tools.decode(className) : null, isExternalizable);
-
-		// save new object in reference table
-		complexObjectsTable.push(ret);
-
-		if (!isExternalizable)
+		if (isExternalizable)
 		{
+			trace("isExternalizable amf3reader");
+			var o = AMF3Tools.object(AObject(null, null, AMF3Tools.decode(className)));
+
+			if (o != null && #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (o, IExternalizable))
+			{
+				var external:IExternalizable = cast o;
+				external.readExternal(new AMF3ReaderInput(this));
+
+				ret = AExternal(external);
+			}
+			else
+			{
+				ret = ANull;
+			}
+		}
+		else
+		{
+			var h = new Map();
+
+			ret = AObject(h, null, className != null ? AMF3Tools.decode(className) : null);
+
 			// parse sealed member values
 			for (j in 0...sealedMemberNames.length)
 				h.set(sealedMemberNames[j], read());
@@ -159,6 +176,9 @@ class AMF3Reader
 				}
 			}
 		}
+
+		// save new object in reference table
+		complexObjectsTable.push(ret);
 
 		return ret;
 	}
@@ -221,21 +241,22 @@ class AMF3Reader
 		}
 		var len = header >> 1;
 		var fixed = i.readByte() != 0;
-		var a = new Vector<AMF3Value>(len);
+		var v = new Vector<Int>(len);
+		v.fixed = fixed;
 
 		for (r in 0...len)
 		{
-			a[r] = AInt(i.readInt32());
+			v[r] = i.readInt32();
 		}
 
-		var ret = AVector(a, fixed, "Int");
+		var ret = AIntVector(v);
 
 		complexObjectsTable.push(ret);
 
 		return ret;
 	}
 
-	function readDoubleVector()
+	function readFloatVector()
 	{
 		var header:Int = readInt();
 		if (header & 1 == 0)
@@ -245,14 +266,15 @@ class AMF3Reader
 		}
 		var len = header >> 1;
 		var fixed = i.readByte() != 0;
-		var a = new Vector<AMF3Value>(len);
+		var v = new Vector<Float>(len);
+		v.fixed = fixed;
 
 		for (r in 0...len)
 		{
-			a[r] = ANumber(i.readDouble());
+			v[r] = i.readDouble();
 		}
 
-		var ret = AVector(a, fixed, "Float");
+		var ret = AFloatVector(v);
 
 		complexObjectsTable.push(ret);
 
@@ -269,22 +291,24 @@ class AMF3Reader
 		}
 		var len = header >> 1;
 		var fixed = i.readByte() != 0;
-		var objectTypeName = AMF3Tools.decode(readString());
+		var type = AMF3Tools.decode(readString());
 
-		var a = new Vector<AMF3Value>(len);
-		var ret = AVector(a, fixed, objectTypeName);
+		var v = new Vector<AMF3Value>(len);
+		v.fixed = fixed;
+
+		var ret = AObjectVector(v, type);
 
 		complexObjectsTable.push(ret);
 
 		for (r in 0...len)
 		{
-			a[r] = read();
+			v[r] = read();
 		}
 
 		return ret;
 	}
 
-	function readBytes()
+	function readByteArray()
 	{
 		var n = readInt(); // get header
 		if (n & 1 == 0)
@@ -293,10 +317,15 @@ class AMF3Reader
 			return complexObjectsTable[n >> 1];
 		}
 		n >>= 1; // the rest of the header is the bytearray byte-length
-		var b = haxe.io.Bytes.alloc(n);
+		var b = Bytes.alloc(n);
 		for (j in 0...n)
 			b.set(j, i.readByte());
-		var ret = ABytes(b);
+		var ba = ByteArray.fromBytes(b);
+		ba.endian = BIG_ENDIAN;
+		#if (!display && !flash)
+		@:privateAccess (ba : ByteArrayData).__amf3Reader = this;
+		#end
+		var ret = AByteArray(ba);
 		complexObjectsTable.push(ret);
 		return ret;
 	}
@@ -450,11 +479,11 @@ class AMF3Reader
 			case 0x0b:
 				readXml();
 			case 0x0c:
-				readBytes(); // ByteArray
+				readByteArray();
 			case 0x0d, 0x0e:
 				readIntVector(); // int or uint vector
 			case 0x0f:
-				readDoubleVector();
+				readFloatVector();
 			case 0x10:
 				readObjectVector();
 			case 0x11:
