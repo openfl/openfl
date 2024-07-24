@@ -33,6 +33,7 @@ import openfl.utils.ByteArray;
 import haxe.ds.ObjectMap;
 import haxe.ds.Vector as HaxeVector;
 import haxe.Constraints.IMap;
+import openfl.Lib;
 import openfl.Vector;
 
 class AMF3Tools
@@ -51,7 +52,7 @@ class AMF3Tools
 				{
 					h.set(f, encode(Reflect.field(o, f)));
 				}
-				AObject(h, null, null, false);
+				AObject(h, null, null);
 			case TClass(c):
 				switch (c)
 				{
@@ -80,30 +81,53 @@ class AMF3Tools
 						for (k in o.extra)
 							m[k] = encode(o.extra[k]);
 						AArray(a, m);
-						// TODO: Handle native array types?
-					#if !haxe4
-					case cast HaxeVector:
-						var o:HaxeVector<Dynamic> = o;
-						var a = new HaxeVector<AMF3Value>(o.length);
-						for (i in 0...o.length)
-							a[i] = encode(o[i]);
-						AVector(a, false, null);
-					#end
+					// TODO: Handle native array types?
+					// #if !haxe4
+					// case cast HaxeVector:
+					// 	var o:HaxeVector<Dynamic> = o;
+					// 	var a = new HaxeVector<AMF3Value>(o.length);
+					// 	for (i in 0...o.length)
+					// 		a[i] = encode(o[i]);
+					// 	AVector(a, false, null);
+					// #end
 					case cast haxe.io.Bytes:
-						ABytes(o);
+						AByteArray(ByteArray.fromBytes(o));
+					case cast ByteArrayData:
+						AByteArray(o);
 					case cast Date:
 						ADate(o);
 					case _:
-						var h = new Map();
-						var i = 0;
-						var _class = Type.getClass(o);
-						for (f in Type.getInstanceFields(_class))
+						/*if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (o, Vector))
+							{
+								// // case cast openfl.Vector.IntVector:
+								// // 	AIntVector(o);
+								// // case cast(@:privateAccess openfl.Vector.FloatVector):
+								// // 	AFloatVector(o);
+								// case cast IntVector:
+								var o:Vector<Dynamic> = o;
+								var v = new Vector<AMF3Value>();
+								for (val in o)
+									v.push(encode(val));
+								AObjectVector(v);
+							}
+							else */
+						if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (o, IExternalizable))
 						{
-							h.set(f, encode(Reflect.getProperty(o, f)));
-							i++;
+							AExternal(o);
 						}
-						AObject(h, i, Type.getClassName(_class), false);
+						else
+						{
+							// var h = new Map();
+							// var className = Type.getClassName(c);
+							// for (f in Reflect.fields(o))
+							// {
+							// 	h.set(f, encode(Reflect.field(o, f)));
+							// }
+							// AObject(h, null, className);
+							ANull;
+						}
 				}
+			case TFunction: ANull;
 			default:
 				throw "Can't encode " + Std.string(o);
 		}
@@ -121,10 +145,13 @@ class AMF3Tools
 			case AString(_): string(a);
 			case ADate(_): date(a);
 			case AArray(_, _): array(a);
-			case AVector(_): vector(a);
-			case AObject(_, _, _, _): object(a);
+			case AIntVector(_): intVector(a);
+			case AFloatVector(_): floatVector(a);
+			case AObjectVector(_): objectVector(a);
+			case AObject(_, _, _): object(a);
+			case AExternal(_): external(a);
 			case AXml(_): xml(a);
-			case ABytes(_): bytes(a);
+			case AByteArray(_): byteArray(a);
 			case AMap(_): map(a);
 		}
 	}
@@ -189,7 +216,24 @@ class AMF3Tools
 		}
 	}
 
-	public static function array(a:AMF3Value):AMF3Array
+	// public static function array(a:AMF3Value):AMF3Array
+	// {
+	// 	if (a == null) return null;
+	// 	return switch (a)
+	// 	{
+	// 		case AArray(a, m):
+	// 			var b = [];
+	// 			for (f in a)
+	// 				b.push(decode(f));
+	// 			var c = new Map<String, Dynamic>();
+	// 			for (mk in m.keys())
+	// 				c[mk] = decode(m[mk]);
+	// 			new AMF3Array(b, c);
+	// 		default: null;
+	// 	}
+	// }
+
+	public static function array(a:AMF3Value):Array<Dynamic>
 	{
 		if (a == null) return null;
 		return switch (a)
@@ -198,66 +242,87 @@ class AMF3Tools
 				var b = [];
 				for (f in a)
 					b.push(decode(f));
-				var c = new Map<String, Dynamic>();
-				for (mk in m.keys())
-					c[mk] = decode(m[mk]);
-				new AMF3Array(b, c);
+				b;
 			default: null;
 		}
 	}
 
-	public static function vector(a:AMF3Value):Vector<Dynamic>
+	public static function intVector(a:AMF3Value):Vector<Int>
 	{
 		if (a == null) return null;
 		return switch (a)
 		{
-			case AVector(a, fixed, className):
-				// Vector is a multi-type abstract in OpenFL
-				// Int, Float, Bool, Function, Object
-				if (className == "Int")
-				{
-					var v = new Vector<Int>(a.length, fixed);
-					for (i in 0...a.length)
-					{
-						v[i] = decode(a[i]);
-					}
-					return cast v;
-				}
-				else if (className == "Float")
-				{
-					var v = new Vector<Float>(a.length, fixed);
-					for (i in 0...a.length)
-					{
-						v[i] = decode(a[i]);
-					}
-					return cast v;
-				}
-				else
-				{
-					var v = new Vector<{}>(a.length, fixed);
-					for (i in 0...a.length)
-					{
-						v[i] = decode(a[i]);
-					}
-					return cast v;
-				}
+			case AIntVector(v): v;
+			default: null;
+		}
+	}
 
+	public static function floatVector(a:AMF3Value):Vector<Float>
+	{
+		if (a == null) return null;
+		return switch (a)
+		{
+			case AFloatVector(v): v;
+			default: null;
+		}
+	}
+
+	public static function objectVector(a:AMF3Value):Vector<{}>
+	{
+		if (a == null) return null;
+		return switch (a)
+		{
+			case AObjectVector(v, type):
+				var ret = new Vector<{}>(v.length, v.fixed);
+				for (i in 0...v.length)
+				{
+					ret[i] = decode(v[i]);
+				}
+				ret;
 			default: null;
 		}
 	}
 
 	public static function object(a:AMF3Value)
 	{
-		// TODO: Merge with unwrapValue?
-		// This should instantiate, and should work recursively
 		if (a == null) return null;
 		return switch (a)
 		{
-			case AObject(o, _, className, isExternalizable):
-				var m = new Map();
-				for (f in o.keys())
-					m.set(f, decode(o.get(f)));
-				m;
+			case AObject(f, _, className):
+				var o = null;
+				if (className != null && className != "")
+				{
+					var cls = Lib.getClassByAlias(className);
+					if (cls == null) cls = Type.resolveClass(className);
+
+					if (cls != null)
+					{
+						o = Type.createInstance(cls, []);
+					}
+				}
+				else
+				{
+					o = {};
+				}
+
+				if (o != null && f != null)
+				{
+					for (name in f.keys())
+					{
+						Reflect.setProperty(o, name, decode(f[name]));
+					}
+				}
+				o;
+			default: null;
+		}
+	}
+
+	public static function external(a:AMF3Value)
+	{
+		if (a == null) return null;
+		return switch (a)
+		{
+			case AExternal(e): e;
 			default: null;
 		}
 	}
@@ -272,12 +337,12 @@ class AMF3Tools
 		}
 	}
 
-	public static function bytes(a:AMF3Value)
+	public static function byteArray(a:AMF3Value)
 	{
 		if (a == null) return null;
 		return switch (a)
 		{
-			case ABytes(b): b;
+			case AByteArray(b): b;
 			default: null;
 		}
 	}
@@ -288,126 +353,11 @@ class AMF3Tools
 		return switch (a)
 		{
 			case AMap(m):
-				var p = new Map<AMF3Value, AMF3Value>();
+				var p = new Map<Dynamic, Dynamic>();
 				for (f in m.keys())
 					p.set(decode(f), decode(m.get(f)));
 				p;
 			default: null;
-		}
-	}
-
-	public static function unwrapValue(val:AMF3Value, parent:AMF3Reader = null):Dynamic
-	{
-		return switch (val)
-		{
-			case ANumber(f): return f;
-			case AInt(n): return n;
-			case ABool(b): return b;
-			case AString(s): return s;
-			case ADate(d): return d;
-			case AXml(xml): return xml;
-			case AUndefined: return null;
-			case ANull: return null;
-			case AArray(vals): return vals.map(function(v)
-				{
-					return unwrapValue(v, parent);
-				});
-			case AVector(a, fixed, className):
-				// Vector is a multi-type abstract in OpenFL
-				// Int, Float, Bool, Function, Object
-				if (className == "Int")
-				{
-					var v = new Vector<Int>(a.length, fixed);
-					for (i in 0...a.length)
-					{
-						v[i] = unwrapValue(a[i], parent);
-					}
-					return v;
-				}
-				else if (className == "Float")
-				{
-					var v = new Vector<Float>(a.length, fixed);
-					for (i in 0...a.length)
-					{
-						v[i] = unwrapValue(a[i], parent);
-					}
-					return v;
-				}
-				else
-				{
-					var v = new Vector<{}>(a.length, fixed);
-					for (i in 0...a.length)
-					{
-						v[i] = unwrapValue(a[i], parent);
-					}
-					return v;
-				}
-			case ABytes(b):
-				var ba = ByteArray.fromBytes(b);
-				#if (!display && !flash)
-				@:privateAccess (ba : ByteArrayData).__parentAMF3Reader = parent;
-				#end
-				ba.endian = BIG_ENDIAN;
-				return ba;
-
-			case AObject(fields, _, className, isExternalizable):
-				var obj:Dynamic = null;
-
-				if (className != null && className != "")
-				{
-					var cls = openfl.Lib.getClassByAlias(className);
-					if (cls == null) cls = Type.resolveClass(className);
-
-					if (cls != null)
-					{
-						obj = Type.createInstance(cls, []);
-					}
-				}
-
-				if (obj == null) obj = {};
-
-				if (isExternalizable)
-				{
-					if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (obj, IExternalizable) && parent != null)
-					{
-						var externalizable:IExternalizable = cast obj;
-						var input = new AMF3ReaderInput(parent);
-						externalizable.readExternal(input);
-					}
-				}
-				else
-				{
-					for (name in fields.keys())
-					{
-						Reflect.setProperty(obj, name, unwrapValue(fields[name], parent));
-					}
-				}
-
-				return obj;
-
-			case AMap(vmap):
-				var map:IMap<Dynamic, Dynamic> = null;
-				for (key in vmap.keys())
-				{
-					// Get the map type from the type of the first key.
-					if (map == null)
-					{
-						map = switch (key)
-						{
-							case AString(_): new Map<String, Dynamic>();
-							case AInt(_): new Map<Int, Dynamic>();
-							default: new ObjectMap<Dynamic, Dynamic>();
-						}
-					}
-					map.set(unwrapValue(key, parent), unwrapValue(vmap[key], parent));
-				}
-
-				// Default to StringMap if the map is empty.
-				if (map == null)
-				{
-					map = new Map<String, Dynamic>();
-				}
-				return map;
 		}
 	}
 }
