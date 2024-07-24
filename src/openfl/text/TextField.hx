@@ -2030,7 +2030,7 @@ class TextField extends InteractiveObject
 				position--;
 				char = __text.charAt(position);
 			}
-			//we dont want to include the delimiter
+			// we dont want to include the delimiter
 			if (position == 0) return position;
 			position++;
 		}
@@ -2047,11 +2047,11 @@ class TextField extends InteractiveObject
 		if (position <= __caretIndex)
 		{
 			while (delimiters.indexOf(char) == -1 && position > 0)
-				{
-					position--;
-					char = __text.charAt(position);
-				}
-				if (position == 0) return position;
+			{
+				position--;
+				char = __text.charAt(position);
+			}
+			if (position == 0) return position;
 			position++;
 		}
 		else
@@ -3270,7 +3270,8 @@ class TextField extends InteractiveObject
 		{
 			__updateLayout();
 
-			var position = if (__lineSelection) __getPositionByIdentifier(mouseX + scrollH, mouseY, true) else if (__wordSelection) __getPositionByIdentifier(mouseX + scrollH, mouseY, false) else  __getPosition(mouseX + scrollH, mouseY);
+			var position = if (__lineSelection) __getPositionByIdentifier(mouseX + scrollH, mouseY,
+				true) else if (__wordSelection) __getPositionByIdentifier(mouseX + scrollH, mouseY, false) else __getPosition(mouseX + scrollH, mouseY);
 
 			if (position != __caretIndex)
 			{
@@ -3318,7 +3319,8 @@ class TextField extends InteractiveObject
 			__getWorldTransform();
 			__updateLayout();
 
-			var upPos:Int = if (__lineSelection) __getPositionByIdentifier(mouseX + scrollH, mouseY, true) else if (__wordSelection) __getPositionByIdentifier(mouseX + scrollH, mouseY, false) else __getPosition(mouseX + scrollH, mouseY);
+			var upPos:Int = if (__lineSelection) __getPositionByIdentifier(mouseX + scrollH, mouseY,
+				true) else if (__wordSelection) __getPositionByIdentifier(mouseX + scrollH, mouseY, false) else __getPosition(mouseX + scrollH, mouseY);
 			var leftPos:Int;
 			var rightPos:Int;
 
@@ -3403,7 +3405,7 @@ class TextField extends InteractiveObject
 	{
 		if (!selectable && type != INPUT) return;
 
-		//decide wether this click is for selecting text by character, word or line - single/double/triple click
+		// decide wether this click is for selecting text by character, word or line - single/double/triple click
 		__lineSelection = event.clickCount == 3;
 		__wordSelection = event.clickCount == 2;
 
@@ -3430,8 +3432,8 @@ class TextField extends InteractiveObject
 		}
 
 		__updateLayout();
-		//If we start word selection only when the mouse moves, we can't fully select the first word on a double click
-		//and there would be a delay before the first word is selected
+		// If we start word selection only when the mouse moves, we can't fully select the first word on a double click
+		// and there would be a delay before the first word is selected
 
 		if (!DisplayObject.__supportDOM)
 		{
@@ -3462,7 +3464,7 @@ class TextField extends InteractiveObject
 	@:noCompletion private function window_onKeyDown(key:KeyCode, modifier:KeyModifier):Void
 	{
 		inline function isModifierPressed()
-			return #if mac modifier.metaKey #elseif js (modifier.metaKey || modifier.ctrlKey) #else (modifier.ctrlKey && !modifier.altKey) #end;
+			return #if mac modifier.metaKey #elseif js(modifier.metaKey || modifier.ctrlKey) #else (modifier.ctrlKey && !modifier.altKey) #end;
 
 		switch (key)
 		{
