@@ -767,7 +767,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 				var input = new BytesInput(bytes, 0);
 				var reader = new AMF3Reader(input);
-				var data = AMF3Tools.unwrapValue(reader.read(), reader);
+				var data = AMF3Tools.decode(reader.read());
 				__positionDirty = true;
 				return data;
 

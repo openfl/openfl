@@ -93,7 +93,7 @@ class AMF3ReaderInput implements IDataInput
 
 			case AMF3:
 				var reader = new AMF3Reader(i, r);
-				var data = AMF3Tools.unwrapValue(reader.read(), reader);
+				var data = AMF3Tools.decode(reader.read());
 				return data;
 
 			default:

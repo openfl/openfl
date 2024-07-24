@@ -1154,6 +1154,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	**/
 	@:noCompletion private var __allocated:Int;
 
+	@:noCompletion private var __amf3Reader:AMF3Reader;
+
 	/**
 		An alias for `length`, except guaranteed not to have side effects. This
 		matters in openfljs mode, where setting `length` calls`__resize()`, but
@@ -1164,8 +1166,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	#else
 	@:noCompletion private var __length(get, set):Int;
 	#end
-
-	@:noCompletion private var __parentAMF3Reader:AMF3Reader;
 
 	#if openfljs
 	@:noCompletion private static function __init__()
@@ -1447,8 +1447,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 			case AMF3:
 				var input = new BytesInput(this, position);
-				var reader = new AMF3Reader(input, __parentAMF3Reader);
-				var data = AMF3Tools.unwrapValue(reader.read(), reader);
+				var reader = new AMF3Reader(input, __amf3Reader);
+				var data = AMF3Tools.decode(reader.read());
 				position = input.position;
 				return data;
 
@@ -1698,7 +1698,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 				if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (object, ByteArrayData))
 				{
-					writer.write(ABytes(object));
+					writer.write(AByteArray(object));
 				}
 				else
 				{
