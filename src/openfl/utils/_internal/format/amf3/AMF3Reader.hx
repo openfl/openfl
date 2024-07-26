@@ -139,7 +139,6 @@ class AMF3Reader
 
 		if (isExternalizable)
 		{
-			trace("isExternalizable amf3reader");
 			var o = AMF3Tools.object(AObject(null, null, AMF3Tools.decode(className)));
 
 			if (o != null && #if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (o, IExternalizable))
