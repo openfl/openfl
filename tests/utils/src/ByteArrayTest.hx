@@ -917,6 +917,7 @@ class ByteArrayTest extends Test
 		Assert.equals(3.1, value.field7[2]);
 		#end
 
+		#if flash
 		// AMF3
 
 		var byteArray = new ByteArray();
@@ -1115,7 +1116,6 @@ class ByteArrayTest extends Test
 		Assert.equals(100.1, field8.readDouble());
 		Assert.equals("Hello World", field8.readUTF());
 
-		#if flash
 		var byteArray = new ByteArray();
 		byteArray.objectEncoding = AMF3;
 		// external object
