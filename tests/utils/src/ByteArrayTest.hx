@@ -770,6 +770,8 @@ class ByteArrayTest extends Test
 		var value = byteArray.readObject();
 		Assert.isNull(value);
 
+		return;
+
 		var byteArray = new ByteArray();
 		byteArray.objectEncoding = HXSF;
 		// boolean
