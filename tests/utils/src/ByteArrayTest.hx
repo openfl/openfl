@@ -1,5 +1,9 @@
 package;
 
+import openfl.utils.IDataOutput;
+import openfl.utils.IDataInput;
+import openfl.utils.IExternalizable;
+import openfl.utils.Object;
 import haxe.Int64;
 import openfl.net.ObjectEncoding;
 import openfl.utils.ByteArray;
@@ -682,12 +686,14 @@ class ByteArrayTest extends Test
 			}
 		}
 	}
+
 	/*static private function serializeByteArray(ba:ByteArray):String {
 		var str:String = "";
 		for (n in 0 ... ba.length) str += ba[n] + ",";
 		return str.substr(0, str.length - 1);
 	}*/
 	// #if (cpp || neko)
+
 	/*#if (cpp)
 		public function test_testCompressUncompressLzma() {
 
@@ -753,4 +759,396 @@ class ByteArrayTest extends Test
 		Assert.equals(111, data.readUnsignedByte());
 
 	}*/
+	public function test_testReadWriteObject()
+	{
+		// Haxe Serialization
+		var byteArray = new ByteArray();
+		byteArray.objectEncoding = HXSF;
+		// null
+		byteArray.writeObject(null);
+		byteArray.position = 0;
+		var value = byteArray.readObject();
+		Assert.isNull(value);
+
+		var byteArray = new ByteArray();
+		byteArray.objectEncoding = HXSF;
+		// boolean
+		byteArray.writeObject(true);
+		byteArray.position = 0;
+		var value = byteArray.readObject();
+		Assert.isTrue(value);
+
+		var byteArray = new ByteArray();
+		byteArray.objectEncoding = HXSF;
+		// int
+		byteArray.writeObject(100);
+		byteArray.position = 0;
+		var value = byteArray.readObject();
+		Assert.equals(100, value);
+
+		var byteArray = new ByteArray();
+		byteArray.objectEncoding = HXSF;
+		// float
+		byteArray.writeObject(100.1);
+		byteArray.position = 0;
+		var value = byteArray.readObject();
+		Assert.equals(100.1, value);
+
+		var byteArray = new ByteArray();
+		byteArray.objectEncoding = HXSF;
+		// string
+		byteArray.writeObject("Hello World");
+		byteArray.position = 0;
+		var value = byteArray.readObject();
+		Assert.equals("Hello World", value);
+
+		var byteArray = new ByteArray();
+		byteArray.objectEncoding = HXSF;
+		// int array
+		byteArray.writeObject([1, 2, 3]);
+		byteArray.position = 0;
+		var value:Array<Int> = byteArray.readObject();
+		Assert.equals(3, value.length);
+		Assert.equals(1, value[0]);
+		Assert.equals(2, value[1]);
+		Assert.equals(3, value[2]);
+
+		var byteArray = new ByteArray();
+		byteArray.objectEncoding = HXSF;
+		// float array
+		byteArray.writeObject([1.1, 2.1, 3.1]);
+		byteArray.position = 0;
+		var value:Array<Float> = byteArray.readObject();
+		Assert.equals(3, value.length);
+		Assert.equals(1.1, value[0]);
+		Assert.equals(2.1, value[1]);
+		Assert.equals(3.1, value[2]);
+
+		var byteArray = new ByteArray();
+		byteArray.objectEncoding = HXSF;
+		// object with null
+		byteArray.writeObject({field: null});
+		byteArray.position = 0;
+		var value:Object = byteArray.readObject();
+		Assert.isNull(value.field);
+
+		var byteArray = new ByteArray();
+		byteArray.objectEncoding = HXSF;
+		// object with boolean
+		byteArray.writeObject({field: true});
+		byteArray.position = 0;
+		var value:Object = byteArray.readObject();
+		Assert.isTrue(value.field);
+
+		var byteArray = new ByteArray();
+		byteArray.objectEncoding = HXSF;
+		// object with int
+		byteArray.writeObject({field: 100});
+		byteArray.position = 0;
+		var value:Object = byteArray.readObject();
+		Assert.equals(100, value.field);
+
+		var byteArray = new ByteArray();
+		byteArray.objectEncoding = HXSF;
+		// object with float
+		byteArray.writeObject({field: 100.1});
+		byteArray.position = 0;
+		var value:Object = byteArray.readObject();
+		Assert.equals(100.1, value.field);
+
+		var byteArray = new ByteArray();
+		byteArray.objectEncoding = HXSF;
+		// object with string
+		byteArray.writeObject({field: "Hello World"});
+		byteArray.position = 0;
+		var value:Object = byteArray.readObject();
+		Assert.equals("Hello World", value.field);
+
+		var byteArray = new ByteArray();
+		byteArray.objectEncoding = HXSF;
+		// object with int array
+		byteArray.writeObject({field: [1, 2, 3]});
+		byteArray.position = 0;
+		var value:Object = byteArray.readObject();
+		Assert.equals(3, value.field.length);
+		Assert.equals(1, value.field[0]);
+		Assert.equals(2, value.field[1]);
+		Assert.equals(3, value.field[2]);
+
+		var byteArray = new ByteArray();
+		byteArray.objectEncoding = HXSF;
+		// object with float array
+		byteArray.writeObject({field: [1.1, 2.1, 3.1]});
+		byteArray.position = 0;
+		var value:Object = byteArray.readObject();
+		var field:Array<Float> = value.field;
+		Assert.equals(3, field.length);
+		Assert.equals(1.1, field[0]);
+		Assert.equals(2.1, field[1]);
+		Assert.equals(3.1, field[2]);
+
+		var byteArray = new ByteArray();
+		byteArray.objectEncoding = HXSF;
+		// object with fields
+		byteArray.writeObject({
+			field1: null,
+			field2: true,
+			field3: 100,
+			field4: 100.1,
+			field5: "Hello World",
+			field6: [1, 2, 3],
+			field7: [1.1, 2.1, 3.1]
+		});
+		byteArray.position = 0;
+		var value:Object = byteArray.readObject();
+		Assert.isNull(value.field1);
+		Assert.isTrue(value.field2);
+		Assert.equals(100, value.field3);
+		Assert.equals(100.1, value.field4);
+		Assert.equals("Hello World", value.field5);
+		Assert.equals(3, value.field6.length);
+		Assert.equals(1, value.field6[0]);
+		Assert.equals(2, value.field6[1]);
+		Assert.equals(3, value.field6[2]);
+		Assert.equals(3, value.field7.length);
+		Assert.equals(1.1, value.field7[0]);
+		Assert.equals(2.1, value.field7[1]);
+		Assert.equals(3.1, value.field7[2]);
+
+		// AMF3
+
+		var byteArray = new ByteArray();
+		byteArray.objectEncoding = AMF3;
+		// null
+		byteArray.writeObject(null);
+		byteArray.position = 0;
+		var value = byteArray.readObject();
+		Assert.isNull(value);
+
+		var byteArray = new ByteArray();
+		byteArray.objectEncoding = AMF3;
+		// boolean
+		byteArray.writeObject(true);
+		byteArray.position = 0;
+		var value = byteArray.readObject();
+		Assert.isTrue(value);
+
+		var byteArray = new ByteArray();
+		byteArray.objectEncoding = AMF3;
+		// int
+		byteArray.writeObject(100);
+		byteArray.position = 0;
+		var value = byteArray.readObject();
+		Assert.equals(100, value);
+
+		var byteArray = new ByteArray();
+		byteArray.objectEncoding = AMF3;
+		// float
+		byteArray.writeObject(100.1);
+		byteArray.position = 0;
+		var value = byteArray.readObject();
+		Assert.equals(100.1, value);
+
+		var byteArray = new ByteArray();
+		byteArray.objectEncoding = AMF3;
+		// string
+		byteArray.writeObject("Hello World");
+		byteArray.position = 0;
+		var value = byteArray.readObject();
+		Assert.equals("Hello World", value);
+
+		var byteArray = new ByteArray();
+		byteArray.objectEncoding = AMF3;
+		// int array
+		byteArray.writeObject([1, 2, 3]);
+		byteArray.position = 0;
+		var value:Array<Int> = byteArray.readObject();
+		Assert.equals(3, value.length);
+		Assert.equals(1, value[0]);
+		Assert.equals(2, value[1]);
+		Assert.equals(3, value[2]);
+
+		var byteArray = new ByteArray();
+		byteArray.objectEncoding = AMF3;
+		// float array
+		byteArray.writeObject([1.1, 2.1, 3.1]);
+		byteArray.position = 0;
+		var value:Array<Float> = byteArray.readObject();
+		Assert.equals(3, value.length);
+		Assert.equals(1.1, value[0]);
+		Assert.equals(2.1, value[1]);
+		Assert.equals(3.1, value[2]);
+
+		var byteArray = new ByteArray();
+		byteArray.objectEncoding = AMF3;
+		// bytearray
+		var byteArray2 = new ByteArray();
+		byteArray2.endian = LITTLE_ENDIAN;
+		byteArray2.writeBoolean(true);
+		byteArray2.writeUnsignedInt(100);
+		byteArray2.writeDouble(100.1);
+		byteArray2.writeUTF("Hello World");
+		byteArray.writeObject(byteArray2);
+		byteArray.position = 0;
+		var value:ByteArray = byteArray.readObject();
+		value.endian = LITTLE_ENDIAN; // can match endianness before/after
+		Assert.equals(true, value.readBoolean());
+		Assert.equals(100, value.readUnsignedInt());
+		Assert.equals(100.1, value.readDouble());
+		Assert.equals("Hello World", value.readUTF());
+
+		var byteArray = new ByteArray();
+		byteArray.objectEncoding = AMF3;
+		// object with null
+		byteArray.writeObject({field: null});
+		byteArray.position = 0;
+		var value:Object = byteArray.readObject();
+		Assert.isNull(value.field);
+
+		var byteArray = new ByteArray();
+		byteArray.objectEncoding = AMF3;
+		// object with boolean
+		byteArray.writeObject({field: true});
+		byteArray.position = 0;
+		var value:Object = byteArray.readObject();
+		Assert.isTrue(value.field);
+
+		var byteArray = new ByteArray();
+		byteArray.objectEncoding = AMF3;
+		// object with int
+		byteArray.writeObject({field: 100});
+		byteArray.position = 0;
+		var value:Object = byteArray.readObject();
+		Assert.equals(100, value.field);
+
+		var byteArray = new ByteArray();
+		byteArray.objectEncoding = AMF3;
+		// object with float
+		byteArray.writeObject({field: 100.1});
+		byteArray.position = 0;
+		var value:Object = byteArray.readObject();
+		Assert.equals(100.1, value.field);
+
+		var byteArray = new ByteArray();
+		byteArray.objectEncoding = AMF3;
+		// object with string
+		byteArray.writeObject({field: "Hello World"});
+		byteArray.position = 0;
+		var value:Object = byteArray.readObject();
+		Assert.equals("Hello World", value.field);
+
+		var byteArray = new ByteArray();
+		byteArray.objectEncoding = AMF3;
+		// object with int array
+		byteArray.writeObject({field: [1, 2, 3]});
+		byteArray.position = 0;
+		var value:Object = byteArray.readObject();
+		Assert.equals(3, value.field.length);
+		Assert.equals(1, value.field[0]);
+		Assert.equals(2, value.field[1]);
+		Assert.equals(3, value.field[2]);
+
+		var byteArray = new ByteArray();
+		byteArray.objectEncoding = AMF3;
+		// object with float array
+		byteArray.writeObject({field: [1.1, 2.1, 3.1]});
+		byteArray.position = 0;
+		var value:Object = byteArray.readObject();
+		Assert.equals(3, value.field.length);
+		Assert.equals(1.1, value.field[0]);
+		Assert.equals(2.1, value.field[1]);
+		Assert.equals(3.1, value.field[2]);
+
+		var byteArray = new ByteArray();
+		byteArray.objectEncoding = AMF3;
+		// object with bytearray
+		var byteArray2 = new ByteArray();
+		byteArray2.endian = BIG_ENDIAN;
+		byteArray2.writeBoolean(true);
+		byteArray2.writeDouble(100.1);
+		byteArray2.writeUTF("Hello World");
+		byteArray.writeObject({field: byteArray2});
+		byteArray.position = 0;
+		var value:Object = byteArray.readObject(); // will return BIG_ENDIAN
+		var field:ByteArray = value.field;
+		Assert.equals(true, field.readBoolean());
+		Assert.equals(100.1, field.readDouble());
+		Assert.equals("Hello World", field.readUTF());
+
+		var byteArray = new ByteArray();
+		byteArray.objectEncoding = AMF3;
+		// object with fields
+		var byteArray2 = new ByteArray();
+		byteArray2.endian = BIG_ENDIAN;
+		byteArray2.writeBoolean(true);
+		byteArray2.writeDouble(100.1);
+		byteArray2.writeUTF("Hello World");
+		byteArray.writeObject({
+			field1: null,
+			field2: true,
+			field3: 100,
+			field4: 100.1,
+			field5: "Hello World",
+			field6: [1, 2, 3],
+			field7: [1.1, 2.1, 3.1],
+			field8: byteArray2
+		});
+		byteArray.position = 0;
+		var value:Object = byteArray.readObject();
+		Assert.isNull(value.field1);
+		Assert.isTrue(value.field2);
+		Assert.equals(100, value.field3);
+		Assert.equals(100.1, value.field4);
+		Assert.equals("Hello World", value.field5);
+		Assert.equals(3, value.field6.length);
+		Assert.equals(1, value.field6[0]);
+		Assert.equals(2, value.field6[1]);
+		Assert.equals(3, value.field6[2]);
+		Assert.equals(3, value.field7.length);
+		Assert.equals(1.1, value.field7[0]);
+		Assert.equals(2.1, value.field7[1]);
+		Assert.equals(3.1, value.field7[2]);
+		var field8:ByteArray = value.field8;
+		Assert.equals(true, field8.readBoolean());
+		Assert.equals(100.1, field8.readDouble());
+		Assert.equals("Hello World", field8.readUTF());
+
+		var byteArray = new ByteArray();
+		byteArray.objectEncoding = AMF3;
+		// external object
+		openfl.Lib.registerClassAlias("TestExternal", TestExternal);
+		var testExternal = new TestExternal();
+		testExternal.bool = true;
+		testExternal.double = 100.1;
+		testExternal.string = "Hello World";
+		byteArray.writeObject(testExternal);
+		byteArray.position = 0;
+		var testExternal2:TestExternal = byteArray.readObject();
+		Assert.equals(true, testExternal.bool);
+		Assert.equals(100.1, testExternal.double);
+		Assert.equals("Hello World", testExternal.string);
+	}
+}
+
+private class TestExternal implements IExternalizable
+{
+	public var bool:Bool;
+	public var double:Float;
+	public var string:String;
+
+	public function new() {}
+
+	public function readExternal(input:IDataInput)
+	{
+		bool = input.readBoolean();
+		double = input.readDouble();
+		string = input.readUTF();
+	}
+
+	public function writeExternal(output:IDataOutput)
+	{
+		output.writeBoolean(bool);
+		output.writeDouble(double);
+		output.writeUTF(string);
+	}
 }

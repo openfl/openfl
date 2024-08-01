@@ -1,5 +1,6 @@
 package openfl;
 
+import openfl.utils.Dictionary;
 import haxe.Constraints.Function;
 import haxe.PosInfos;
 import haxe.Timer;
@@ -32,6 +33,7 @@ class Lib
 	@:noCompletion private static var __sentWarnings:Map<String, Bool> = new Map();
 	@:noCompletion private static var __timers:Map<UInt, Timer> = new Map();
 	@:noCompletion private static var __registeredClassAliases:Map<String, Class<Dynamic>> = new Map();
+	@:noCompletion private static var __registeredClasses:Dictionary<Class<Dynamic>, String> = new Dictionary();
 	#if 0
 	private static var __unusedImports:Array<Class<Dynamic>> = [SWFLibrary, SWFLiteLibrary];
 	#end
@@ -752,6 +754,7 @@ class Lib
 			throw new TypeError("Parameter aliasName must be non-null");
 		}
 		__registeredClassAliases.set(aliasName, classObject);
+		__registeredClasses.set(classObject, aliasName);
 		#end
 	}
 
