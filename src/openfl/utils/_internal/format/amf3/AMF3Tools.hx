@@ -352,14 +352,37 @@ class AMF3Tools
 
 	public static function map(a:AMF3Value)
 	{
+		// TODO: Remove map type?
 		if (a == null) return null;
 		return switch (a)
 		{
 			case AMap(m):
-				var p = new Dictionary<Dynamic, Dynamic>();
 				for (f in m.keys())
-					p.set(decode(f), decode(m.get(f)));
-				p;
+				{
+					if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (f, Int))
+					{
+						var p = new Map<Int, Dynamic>();
+						for (f in m.keys())
+							p.set(decode(f), decode(m.get(f)));
+						p;
+					}
+					else if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (f, String))
+					{
+						var p = new Map<String, Dynamic>();
+						for (f in m.keys())
+							p.set(decode(f), decode(m.get(f)));
+						p;
+					}
+					else
+					{
+						var p = new Map<{}, Dynamic>();
+						for (f in m.keys())
+							p.set(decode(f), decode(m.get(f)));
+						p;
+					}
+					break;
+				}
+				new Map<{}, Dynamic>();
 			default: null;
 		}
 	}
