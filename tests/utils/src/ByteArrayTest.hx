@@ -759,10 +759,9 @@ class ByteArrayTest extends Test
 		Assert.equals(111, data.readUnsignedByte());
 
 	}*/
-	public function test_testReadWriteObject()
+	#if !flash
+	public function test_testReadWriteObject_HXSF()
 	{
-		#if !flash
-		// Haxe Serialization
 		var byteArray = new ByteArray();
 		byteArray.objectEncoding = HXSF;
 		// null
@@ -915,10 +914,12 @@ class ByteArrayTest extends Test
 		Assert.equals(1.1, value.field7[0]);
 		Assert.equals(2.1, value.field7[1]);
 		Assert.equals(3.1, value.field7[2]);
-		#end
+	}
 
-		// AMF3
-
+	// TODO: Enable on Flash
+	#if !flash
+	public function test_testReadWriteObject_AMF3()
+	{
 		var byteArray = new ByteArray();
 		byteArray.objectEncoding = AMF3;
 		// null
@@ -1115,7 +1116,6 @@ class ByteArrayTest extends Test
 		Assert.equals(100.1, field8.readDouble());
 		Assert.equals("Hello World", field8.readUTF());
 
-		#if flash
 		var byteArray = new ByteArray();
 		byteArray.objectEncoding = AMF3;
 		// external object
@@ -1130,8 +1130,8 @@ class ByteArrayTest extends Test
 		Assert.equals(true, testExternal.bool);
 		Assert.equals(100.1, testExternal.double);
 		Assert.equals("Hello World", testExternal.string);
-		#end
 	}
+	#end
 }
 
 private class TestExternal implements IExternalizable
