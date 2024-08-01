@@ -28,7 +28,9 @@
 package openfl.utils._internal.format.amf3;
 
 import openfl.utils._internal.format.amf3.AMF3Value;
+import openfl.Lib;
 
+@:access(openfl.Lib)
 class AMF3Writer
 {
 	var o:haxe.io.Output;
@@ -193,13 +195,25 @@ class AMF3Writer
 
 	public function writeExternal(external:IExternalizable)
 	{
-		o.writeByte(0x0b);
 		var isExternal = true;
 		var isDynamic = false;
 		var traitsCount = 0;
 		writeUInt(3 | (isExternal ? 4 : 0) | (isDynamic ? 8 : 0) | (traitsCount << 4));
-		// TODO: More efficient approach?
+		var cls = Type.getClass(external);
+		var className = null;
+		if (Lib.__registeredClasses.exists(cls))
+		{
+			className = Lib.__registeredClasses[cls];
+		}
+		// TODO: Write as anonymous object if not registered as alias
+		if (className == null)
+		{
+			className = Type.getClassName(cls);
+		}
+		writeString(className);
+		// TODO: Write directly to output stream
 		var ba = new ByteArray();
+		ba.endian = BIG_ENDIAN;
 		external.writeExternal(ba);
 		o.writeBytes(ba, 0, ba.length);
 	}
