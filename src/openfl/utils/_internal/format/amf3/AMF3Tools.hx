@@ -135,6 +135,8 @@ class AMF3Tools
 
 	public static function decode(a:AMF3Value):Dynamic
 	{
+		if (a == null) return null;
+
 		return switch (a)
 		{
 			case AUndefined: undefined(a);
