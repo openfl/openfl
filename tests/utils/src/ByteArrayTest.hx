@@ -761,6 +761,7 @@ class ByteArrayTest extends Test
 	}*/
 	public function test_testReadWriteObject()
 	{
+		#if !flash
 		// Haxe Serialization
 		var byteArray = new ByteArray();
 		byteArray.objectEncoding = HXSF;
@@ -769,8 +770,6 @@ class ByteArrayTest extends Test
 		byteArray.position = 0;
 		var value = byteArray.readObject();
 		Assert.isNull(value);
-
-		return;
 
 		var byteArray = new ByteArray();
 		byteArray.objectEncoding = HXSF;
@@ -916,6 +915,7 @@ class ByteArrayTest extends Test
 		Assert.equals(1.1, value.field7[0]);
 		Assert.equals(2.1, value.field7[1]);
 		Assert.equals(3.1, value.field7[2]);
+		#end
 
 		// AMF3
 
