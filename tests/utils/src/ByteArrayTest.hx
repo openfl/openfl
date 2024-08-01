@@ -761,6 +761,7 @@ class ByteArrayTest extends Test
 	}*/
 	public function test_testReadWriteObject()
 	{
+		#if !flash
 		// Haxe Serialization
 		var byteArray = new ByteArray();
 		byteArray.objectEncoding = HXSF;
@@ -914,6 +915,7 @@ class ByteArrayTest extends Test
 		Assert.equals(1.1, value.field7[0]);
 		Assert.equals(2.1, value.field7[1]);
 		Assert.equals(3.1, value.field7[2]);
+		#end
 
 		// AMF3
 
@@ -1113,6 +1115,7 @@ class ByteArrayTest extends Test
 		Assert.equals(100.1, field8.readDouble());
 		Assert.equals("Hello World", field8.readUTF());
 
+		#if flash
 		var byteArray = new ByteArray();
 		byteArray.objectEncoding = AMF3;
 		// external object
@@ -1127,6 +1130,7 @@ class ByteArrayTest extends Test
 		Assert.equals(true, testExternal.bool);
 		Assert.equals(100.1, testExternal.double);
 		Assert.equals("Hello World", testExternal.string);
+		#end
 	}
 }
 
