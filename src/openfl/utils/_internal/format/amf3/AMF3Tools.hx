@@ -30,6 +30,7 @@ package openfl.utils._internal.format.amf3;
 import openfl.utils._internal.format.amf3.AMF3Array;
 import openfl.utils._internal.format.amf3.AMF3Value;
 import openfl.utils.ByteArray;
+import openfl.utils.Dictionary;
 import haxe.ds.ObjectMap;
 import haxe.ds.Vector as HaxeVector;
 import haxe.Constraints.IMap;
@@ -355,7 +356,7 @@ class AMF3Tools
 		return switch (a)
 		{
 			case AMap(m):
-				var p = new Map<Dynamic, Dynamic>();
+				var p = new Dictionary<Dynamic, Dynamic>();
 				for (f in m.keys())
 					p.set(decode(f), decode(m.get(f)));
 				p;
