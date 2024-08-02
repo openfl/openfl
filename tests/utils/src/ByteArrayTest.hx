@@ -915,6 +915,7 @@ class ByteArrayTest extends Test
 		Assert.equals(2.1, value.field7[1]);
 		Assert.equals(3.1, value.field7[2]);
 	}
+	#end
 
 	// TODO: Enable on Flash
 	#if !flash
