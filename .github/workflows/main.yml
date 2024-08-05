@@ -156,7 +156,7 @@ jobs:
           haxelib run hxp test -Dtarget=hl -Duse-lime-tools --install-hxp-alias
 
   unit-test-hashlink-latest:
-    runs-on: macos-13
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
         with:
