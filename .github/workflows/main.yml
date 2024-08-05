@@ -42,7 +42,7 @@ jobs:
   unit-test-neko:
     strategy:
       matrix:
-        haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.1]
+        haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.1, latest]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
