@@ -42,7 +42,7 @@ jobs:
   unit-test-neko:
     strategy:
       matrix:
-        haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.1]
+        haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.1, 4.3.5]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -119,11 +119,60 @@ jobs:
         run: |
           haxelib run hxp test -Dtarget=hl -Duse-lime-tools --install-hxp-alias
 
+  unit-test-hashlink-4_3_5:
+    runs-on: macos-12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: 4.3.5
+
+      - name: Set HAXEPATH
+        run: |
+          echo "HAXEPATH=$HAXE_STD_PATH/.." >> $GITHUB_ENV
+
+      - name: Install Haxe dependencies
+        run: |
+          haxelib install hxcpp --quiet
+          haxelib install format --quiet
+          haxelib install hxp --quiet
+          haxelib install utest --quiet
+
+      - name: Print Haxe Version
+        run: haxe -version
+
+      - name: Install dependencies with Homebrew
+        run: |
+          brew update
+          brew install mbedtls
+        
+      - name: Setup environment
+        run: |
+          haxelib dev openfl ${{ github.workspace }}
+
+      - name: Setup Lime dev
+        run: |
+          haxelib git lime https://github.com/openfl/lime
+          haxelib run lime rebuild tools
+          haxelib run lime rebuild hl
+
+      - name: Install command aliases
+        run: |
+          haxelib run lime setup -alias -y
+          haxelib run openfl setup -alias -y
+
+      - name: Run tests on Hashlink
+        run: |
+          haxelib run hxp test -Dtarget=hl -Duse-lime-tools --install-hxp-alias
+
   unit-test-air:
     strategy:
       matrix:
         # until Lime 8.0.3 is release, we can't test Haxe 3.4.7 with AIR
-        haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.1]
+        haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.1, 4.3.5]
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -241,7 +290,7 @@ jobs:
     needs: package-haxelib
     strategy:
       matrix:
-        haxe-version: [3.4.7, 4.0.5, 4.1.5, 4.2.5, 4.3.1]
+        haxe-version: [3.4.7, 4.0.5, 4.1.5, 4.2.5, 4.3.1, latest]
     runs-on: ubuntu-20.04
     steps:
 

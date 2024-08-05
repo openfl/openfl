@@ -191,7 +191,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	/**
 		Compresses the byte array. The entire byte array is compressed. For
 		content running in Adobe AIR, you can specify a compression algorithm by
-		passing a value (defined in the CompressionAlgorithm class) as the
+		passing a value  (defined in the CompressionAlgorithm class) as the
 		`algorithm` parameter. Flash Player supports only the default
 		algorithm, zlib.
 
@@ -2130,7 +2130,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		@return A 64-bit signed integer between −9223372036854775808 to 9223372036854775807.
 		@throws EOFError There is not sufficient data available to read.
 	**/
-	public function readInt64():Int64
+	public inline function readInt64():Int64
 	{
 		if (position + 8 > length)
 		{
@@ -2359,7 +2359,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		Writes a 64-bit signed integer to the byte stream.
 		@param value An integer to write to the byte stream.
 	**/
-	public function writeInt64(value:Int64):Void
+	public inline function writeInt64(value:Int64):Void
 	{
 		if (endian == LITTLE_ENDIAN)
 		{

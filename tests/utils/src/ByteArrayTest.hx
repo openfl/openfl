@@ -4,6 +4,10 @@ import openfl.utils.IDataOutput;
 import openfl.utils.IDataInput;
 import openfl.utils.IExternalizable;
 import openfl.utils.Object;
+import openfl.utils.IDataOutput;
+import openfl.utils.IDataInput;
+import openfl.utils.IExternalizable;
+import openfl.utils.Object;
 import haxe.Int64;
 import openfl.net.ObjectEncoding;
 import openfl.utils.ByteArray;
@@ -693,7 +697,6 @@ class ByteArrayTest extends Test
 		return str.substr(0, str.length - 1);
 	}*/
 	// #if (cpp || neko)
-
 	/*#if (cpp)
 		public function test_testCompressUncompressLzma() {
 
@@ -759,9 +762,9 @@ class ByteArrayTest extends Test
 		Assert.equals(111, data.readUnsignedByte());
 
 	}*/
-	public function test_testReadWriteObject()
+	#if !flash
+	public function test_testReadWriteObject_HXSF()
 	{
-		// Haxe Serialization
 		var byteArray = new ByteArray();
 		byteArray.objectEncoding = HXSF;
 		// null
@@ -914,9 +917,13 @@ class ByteArrayTest extends Test
 		Assert.equals(1.1, value.field7[0]);
 		Assert.equals(2.1, value.field7[1]);
 		Assert.equals(3.1, value.field7[2]);
+	}
+	#end
 
-		// AMF3
-
+	// TODO: Enable on Flash
+	#if !flash
+	public function test_testReadWriteObject_AMF3()
+	{
 		var byteArray = new ByteArray();
 		byteArray.objectEncoding = AMF3;
 		// null
@@ -1128,6 +1135,7 @@ class ByteArrayTest extends Test
 		Assert.equals(100.1, testExternal.double);
 		Assert.equals("Hello World", testExternal.string);
 	}
+	#end
 }
 
 private class TestExternal implements IExternalizable
