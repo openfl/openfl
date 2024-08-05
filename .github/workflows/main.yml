@@ -117,7 +117,7 @@ jobs:
   unit-test-hashlink:
     strategy:
       matrix:
-        haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.1, 4.3.5]
+        haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.1]
     # AL init fails on both windows and ubuntu
     # macos-14 is arm64, which setup-haxe doesn't support yet
     runs-on: macos-13
@@ -155,7 +155,7 @@ jobs:
         run: |
           haxelib run hxp test -Dtarget=hl -Duse-lime-tools --install-hxp-alias
 
-  unit-test-hashlink-latest:
+  unit-test-hashlink-4_3_5:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
