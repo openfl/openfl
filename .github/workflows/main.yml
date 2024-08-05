@@ -179,7 +179,12 @@ jobs:
 
       - name: Print Haxe Version
         run: haxe -version
-  
+
+      - name: Install dependencies with Homebrew
+        run: |
+          brew update
+          brew install mbedtls
+        
       - name: Setup environment
         run: |
           haxelib dev openfl ${{ github.workspace }}
@@ -187,8 +192,6 @@ jobs:
       - name: Setup Lime dev
         run: |
           haxelib git lime https://github.com/openfl/lime
-          haxelib install format
-          haxelib install hxp
           haxelib run lime rebuild tools
           haxelib run lime rebuild hl
 
