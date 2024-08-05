@@ -42,7 +42,7 @@ jobs:
   unit-test-neko:
     strategy:
       matrix:
-        haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.1]
+        haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.1, 4.3.5]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -117,7 +117,7 @@ jobs:
   unit-test-hashlink:
     strategy:
       matrix:
-        haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.1, 4.3.4]
+        haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.1, 4.3.5]
     # AL init fails on both windows and ubuntu
     # macos-14 is arm64, which setup-haxe doesn't support yet
     runs-on: macos-13
@@ -195,7 +195,7 @@ jobs:
     strategy:
       matrix:
         # until Lime 8.0.3 is release, we can't test Haxe 3.4.7 with AIR
-        haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.1]
+        haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.1, 4.3.5]
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
