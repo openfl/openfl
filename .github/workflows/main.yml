@@ -189,8 +189,8 @@ jobs:
           haxelib git lime https://github.com/openfl/lime
           haxelib install format
           haxelib install hxp
-          haxelib rebuild tools
-          haxelib rebuild hl
+          haxelib run lime rebuild tools
+          haxelib run lime rebuild hl
 
       - name: Install command aliases
         run: |
