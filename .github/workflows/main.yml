@@ -164,7 +164,7 @@ jobs:
 
       - uses: krdlab/setup-haxe@master
         with:
-          haxe-version: latest
+          haxe-version: 4.3.5
 
       - name: Set HAXEPATH
         run: |
