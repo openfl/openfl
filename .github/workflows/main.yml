@@ -186,8 +186,11 @@ jobs:
 
       - name: Setup Lime dev
         run: |
-          git clone https://github.com/openfl/lime.git
-          haxelib dev lime lime
+          haxelib git lime https://github.com/openfl/lime
+          haxelib install format
+          haxelib install hxp
+          haxelib rebuild tools
+          haxelib rebuild hl
 
       - name: Install command aliases
         run: |
