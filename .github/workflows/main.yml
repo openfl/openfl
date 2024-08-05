@@ -175,12 +175,19 @@ jobs:
           haxelib install hxcpp --quiet
           haxelib install format --quiet
           haxelib install hxp --quiet
-          haxelib install lime --quiet
           haxelib install utest --quiet
 
+      - name: Print Haxe Version
+        run: haxe -version
+  
       - name: Setup environment
         run: |
           haxelib dev openfl ${{ github.workspace }}
+
+      - name: Setup Lime dev
+        run: |
+          git clone https://github.com/openfl/lime.git
+          haxelib dev lime lime
 
       - name: Install command aliases
         run: |
