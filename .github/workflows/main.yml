@@ -78,6 +78,43 @@ jobs:
         run: |
           haxelib run hxp test -Dtarget=neko -Duse-lime-tools --install-hxp-alias
 
+          
+  unit-test-neko-haxe-latest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: latest
+
+      - name: Set HAXEPATH
+        run: |
+          echo "HAXEPATH=$HAXE_STD_PATH/.." >> $GITHUB_ENV
+
+      - name: Install Haxe dependencies
+        run: |
+          haxelib install hxcpp --quiet
+          haxelib install format --quiet
+          haxelib install hxp --quiet
+          haxelib install lime --quiet
+          haxelib install utest --quiet
+
+      - name: Setup environment
+        run: |
+          haxelib dev openfl ${{ github.workspace }}
+
+      - name: Install command aliases
+        run: |
+          haxelib run lime setup -alias -y
+          haxelib run openfl setup -alias -y
+
+      - name: Run tests on Neko
+        run: |
+          haxelib run hxp test -Dtarget=neko -Duse-lime-tools --install-hxp-alias
+          
   unit-test-hashlink:
     strategy:
       matrix:
@@ -167,6 +204,56 @@ jobs:
       - name: Run tests on Hashlink
         run: |
           haxelib run hxp test -Dtarget=hl -Duse-lime-tools --install-hxp-alias
+
+  unit-test-hashlink-latest:
+    runs-on: macos-12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      - uses: krdlab/setup-haxe@master
+        with:
+          haxe-version: 4.3.5
+
+      - name: Set HAXEPATH
+        run: |
+          echo "HAXEPATH=$HAXE_STD_PATH/.." >> $GITHUB_ENV
+
+      - name: Install Haxe dependencies
+        run: |
+          haxelib install hxcpp --quiet
+          haxelib install format --quiet
+          haxelib install hxp --quiet
+          haxelib install utest --quiet
+
+      - name: Print Haxe Version
+        run: haxe -version
+
+      - name: Install dependencies with Homebrew
+        run: |
+          brew update
+          brew install mbedtls
+        
+      - name: Setup environment
+        run: |
+          haxelib dev openfl ${{ github.workspace }}
+
+      - name: Setup Lime dev
+        run: |
+          haxelib git lime https://github.com/openfl/lime
+          haxelib run lime rebuild tools
+          haxelib run lime rebuild hl
+
+      - name: Install command aliases
+        run: |
+          haxelib run lime setup -alias -y
+          haxelib run openfl setup -alias -y
+
+      - name: Run tests on Hashlink
+        run: |
+          haxelib run hxp test -Dtarget=hl -Duse-lime-tools --install-hxp-alias
+
 
   unit-test-air:
     strategy:
