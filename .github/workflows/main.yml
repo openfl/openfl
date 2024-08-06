@@ -259,7 +259,7 @@ jobs:
     strategy:
       matrix:
         # until Lime 8.0.3 is release, we can't test Haxe 3.4.7 with AIR
-        haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.1, 4.3.5]
+        haxe-version: [4.0.5, 4.1.5, 4.2.5, 4.3.1, 4.3.5, latest]
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -422,7 +422,7 @@ jobs:
           lime build BunnyMark neko -release -verbose -nocolor
           lime build PiratePig neko -release -verbose -nocolor
 
-  html5-samples:
+  html5-samples-haxe4:
     needs: package-haxelib
     runs-on: windows-latest
     steps:
@@ -441,6 +441,65 @@ jobs:
           haxelib install actuate --quiet
           haxelib install genes --quiet
           haxelib git openfl-samples https://github.com/openfl/openfl-samples --quiet
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: openfl-haxelib
+          path: openfl-haxelib
+
+      - name: Prepare openfl
+        run: |
+          haxelib dev openfl openfl-haxelib
+          haxelib run lime setup -alias -y
+          haxelib run openfl setup -alias -y
+
+      - name: Create OpenFL samples
+        run: |
+          openfl create DisplayingABitmap -verbose -nocolor
+          openfl create SimpleTilemap -verbose -nocolor
+          openfl create PlayingSound -verbose -nocolor
+          openfl create BunnyMark -verbose -nocolor
+          openfl create PiratePig -verbose -nocolor
+
+      - name: Build OpenFL samples
+        run: |
+          lime build DisplayingABitmap html5 -release -verbose -nocolor
+          lime build SimpleTilemap html5 -release -verbose -nocolor
+          lime build PlayingSound html5 -release -verbose -nocolor
+          lime build BunnyMark html5 -release -verbose -nocolor
+          lime build PiratePig html5 -release -verbose -nocolor
+
+      - name: Build OpenFL samples with Genes
+        run: |
+          lime build DisplayingABitmap html5 -clean -release -verbose -nocolor --haxelib=genes
+          lime build SimpleTilemap html5 -clean -release -verbose -nocolor --haxelib=genes
+          lime build PlayingSound html5 -clean -release -verbose -nocolor --haxelib=genes
+          lime build BunnyMark html5 -clean  -release -verbose -nocolor --haxelib=genes
+          lime build PiratePig html5 -clean -release -verbose -nocolor --haxelib=genes
+
+
+  html5-samples-haxe5:
+    needs: package-haxelib
+    runs-on: windows-latest
+    steps:
+
+      - uses: krdlab/setup-haxe@v1
+        with:
+          haxe-version: latest
+
+      - name: Set HAXEPATH
+        run: |
+          echo "HAXEPATH=$Env:HAXE_STD_PATH\.." >> $Env:GITHUB_ENV
+
+      - name: Install Haxe dependencies
+        run: |
+          haxelib install lime --quiet
+          haxelib install actuate --quiet
+          haxelib install genes --quiet
+          haxelib git openfl-samples https://github.com/openfl/openfl-samples --quiet
+
+      - name: Print Haxe Version
+        run: haxe -version
 
       - uses: actions/download-artifact@v4
         with:
