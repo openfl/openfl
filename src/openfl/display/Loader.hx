@@ -1,24 +1,20 @@
 package openfl.display;
 
 #if !flash
-import haxe.io.Path;
+import openfl.display._internal.AssetManifestLoader;
+import openfl.display._internal.BitmapDataLoader;
+import openfl.display._internal.ScriptLoader;
 import openfl.errors.Error;
 import openfl.events.Event;
 import openfl.events.IOErrorEvent;
 import openfl.events.ProgressEvent;
 import openfl.events.UncaughtErrorEvents;
-import openfl.net.URLLoader;
-import openfl.net.URLLoaderDataFormat;
 import openfl.net.URLRequest;
-import openfl.net.URLRequestMethod;
 import openfl.system.LoaderContext;
 import openfl.utils.Assets;
 import openfl.utils.AssetLibrary;
 import openfl.utils.ByteArray;
-#if lime
-import lime.utils.AssetLibrary as LimeAssetLibrary;
-import lime.utils.AssetManifest;
-#end
+import openfl.utils.Future;
 
 /**
 	The Loader class is used to load SWF files or image (JPG, PNG, or GIF)
@@ -89,6 +85,8 @@ import lime.utils.AssetManifest;
 @:access(openfl.events.Event)
 class Loader extends DisplayObjectContainer
 {
+	@:noCompletion private static var __registeredLoaders:Array<IDisplayObjectLoader>;
+
 	/**
 		Contains the root display object of the SWF file or image(JPG, PNG, or
 		GIF) file that was loaded by using the `load()` or
@@ -145,8 +143,21 @@ class Loader extends DisplayObjectContainer
 	public var uncaughtErrorEvents(default, null):UncaughtErrorEvents;
 
 	@:noCompletion private var __library:AssetLibrary;
-	@:noCompletion private var __path:String;
 	@:noCompletion private var __unloaded:Bool;
+
+	@:noCompletion private static function __init__()
+	{
+		var loaders = [new BitmapDataLoader(), new ScriptLoader(), new AssetManifestLoader()];
+
+		if (__registeredLoaders == null)
+		{
+			__registeredLoaders = loaders;
+		}
+		else
+		{
+			__registeredLoaders = loaders.concat(__registeredLoaders);
+		}
+	}
 
 	/**
 		Creates a Loader object that you can use to load files, such as SWF, JPEG,
@@ -399,37 +410,37 @@ class Loader extends DisplayObjectContainer
 		if (request.contentType == null || request.contentType == "")
 		{
 			var extension = "";
-			__path = request.url;
+			var path = request.url;
 
-			var queryIndex = __path.indexOf("?");
+			var queryIndex = path.indexOf("?");
 			if (queryIndex > -1)
 			{
-				__path = __path.substring(0, queryIndex);
+				path = path.substring(0, queryIndex);
 			}
 
-			while (StringTools.endsWith(__path, "/"))
+			while (StringTools.endsWith(path, "/"))
 			{
-				__path = __path.substring(0, __path.length - 1);
+				path = path.substring(0, path.length - 1);
 			}
 
-			if (StringTools.endsWith(__path, ".bundle"))
+			if (StringTools.endsWith(path, ".bundle"))
 			{
-				__path += "/library.json";
+				path += "/library.json";
 
 				if (queryIndex > -1)
 				{
-					request.url = __path + request.url.substring(queryIndex);
+					request.url = path + request.url.substring(queryIndex);
 				}
 				else
 				{
-					request.url = __path;
+					request.url = path;
 				}
 			}
 
-			var extIndex = __path.lastIndexOf(".");
+			var extIndex = path.lastIndexOf(".");
 			if (extIndex > -1)
 			{
-				extension = __path.substring(extIndex + 1);
+				extension = path.substring(extIndex + 1);
 			}
 
 			contentLoaderInfo.contentType = switch (extension)
@@ -449,34 +460,28 @@ class Loader extends DisplayObjectContainer
 			contentLoaderInfo.contentType = request.contentType;
 		}
 
-		#if (js && html5)
-		if (contentLoaderInfo.contentType.indexOf("image/") > -1
-			&& request.method == URLRequestMethod.GET
-			&& (request.requestHeaders == null || request.requestHeaders.length == 0)
-			&& request.userAgent == null)
-		{
-			BitmapData.loadFromFile(request.url)
-				.onComplete(BitmapData_onLoad)
-				.onError(BitmapData_onError)
-				.onProgress(BitmapData_onProgress);
-			return;
-		}
-		#end
+		var future:Future<DisplayObject> = null;
+		var i = __registeredLoaders.length;
+		var loader:IDisplayObjectLoader = null;
 
-		var loader = new URLLoader();
-		loader.dataFormat = URLLoaderDataFormat.BINARY;
-
-		if (contentLoaderInfo.contentType.indexOf("/json") > -1
-			|| contentLoaderInfo.contentType.indexOf("/javascript") > -1
-			|| contentLoaderInfo.contentType.indexOf("/ecmascript") > -1)
+		while (i > 0)
 		{
-			loader.dataFormat = TEXT;
+			i--;
+			loader = __registeredLoaders[i];
+			future = loader.load(request, context, contentLoaderInfo);
+			if (future != null) break;
 		}
 
-		loader.addEventListener(Event.COMPLETE, loader_onComplete);
-		loader.addEventListener(IOErrorEvent.IO_ERROR, loader_onError);
-		loader.addEventListener(ProgressEvent.PROGRESS, loader_onProgress);
-		loader.load(request);
+		if (future != null)
+		{
+			future.onComplete(Loader_onComplete);
+			future.onProgress(Loader_onProgress);
+			future.onError(Loader_onError);
+		}
+		else
+		{
+			__dispatchError("No DisplayObject loader found");
+		}
 	}
 
 	/**
@@ -565,7 +570,43 @@ class Loader extends DisplayObjectContainer
 	**/
 	public function loadBytes(buffer:ByteArray, context:LoaderContext = null):Void
 	{
-		BitmapData.loadFromBytes(buffer).onComplete(BitmapData_onLoad).onError(BitmapData_onError);
+		var future:Future<DisplayObject> = null;
+		var i = __registeredLoaders.length;
+		var loader:IDisplayObjectLoader = null;
+
+		while (i > 0)
+		{
+			i--;
+			loader = __registeredLoaders[i];
+			future = loader.loadBytes(buffer, context, contentLoaderInfo);
+			if (future != null) break;
+		}
+
+		if (future != null)
+		{
+			future.onComplete(Loader_onComplete);
+			future.onProgress(Loader_onProgress);
+			future.onError(Loader_onError);
+		}
+		else
+		{
+			__dispatchError("No DisplayObject loader found");
+		}
+	}
+
+	/**
+		Registers an IDisplayObjectLoader which customizes the loading behavior of
+		supported URL requests. Each loader is called in chronological order, starting
+		with the most recently registered.
+
+		Only one IDisplayObjectLoader is used across multiple requests.
+	**/
+	public static function registerLoader(loader:IDisplayObjectLoader):Void
+	{
+		if (loader == null) return;
+		if (__registeredLoaders == null) __registeredLoaders = [];
+		__registeredLoaders.remove(loader);
+		__registeredLoaders.push(loader);
 	}
 
 	public override function removeChild(child:DisplayObject):DisplayObject
@@ -702,142 +743,59 @@ class Loader extends DisplayObjectContainer
 		}
 	}
 
-	@:noCompletion private function __dispatchError(text:String):Void
+	@:noCompletion private function __dispatchError(error:Dynamic):Void
 	{
-		var event = new IOErrorEvent(IOErrorEvent.IO_ERROR);
-		event.text = text;
-		contentLoaderInfo.dispatchEvent(event);
-	}
-
-	@:noCompletion private function __setContent(content:DisplayObject, width:Int, height:Int):Void
-	{
-		this.content = content;
-
-		contentLoaderInfo.content = content;
-		contentLoaderInfo.width = width;
-		contentLoaderInfo.height = height;
-
-		if (content != null)
+		if (error is Event)
 		{
-			super.addChildAt(content, 0);
+			contentLoaderInfo.dispatchEvent(cast error);
+		}
+		else
+		{
+			var event = new IOErrorEvent(IOErrorEvent.IO_ERROR);
+			event.text = Std.string(error);
+			contentLoaderInfo.dispatchEvent(event);
 		}
 	}
 
 	// Event Handlers
 
-	@SuppressWarnings("checkstyle:Dynamic")
-	@:noCompletion private function BitmapData_onError(error:Dynamic):Void
+	@:noCompletion private function Loader_onComplete(content:DisplayObject):Void
 	{
 		// TODO: Dispatch HTTPStatusEvent
 
-		__dispatchError(Std.string(error));
-	}
-
-	@:noCompletion private function BitmapData_onLoad(bitmapData:BitmapData):Void
-	{
-		// TODO: Dispatch HTTPStatusEvent
-
-		if (bitmapData == null)
+		if (content == null)
 		{
 			__dispatchError("Unknown error");
 			return;
 		}
 
-		__setContent(new Bitmap(bitmapData), bitmapData.width, bitmapData.height);
+		this.content = content;
+		contentLoaderInfo.content = content;
+
+		if (contentLoaderInfo.width == -1 || contentLoaderInfo.height == -1)
+		{
+			contentLoaderInfo.width = Std.int(content.width);
+			contentLoaderInfo.height = Std.int(content.height);
+		}
+
+		super.addChildAt(content, 0);
 
 		contentLoaderInfo.dispatchEvent(new Event(Event.COMPLETE));
 	}
 
-	@:noCompletion private function BitmapData_onProgress(bytesLoaded:Int, bytesTotal:Int):Void
+	@SuppressWarnings("checkstyle:Dynamic")
+	@:noCompletion private function Loader_onError(error:Dynamic):Void
+	{
+		// TODO: Dispatch HTTPStatusEvent
+
+		__dispatchError(error);
+	}
+
+	@:noCompletion private function Loader_onProgress(bytesLoaded:Int, bytesTotal:Int):Void
 	{
 		var event = new ProgressEvent(ProgressEvent.PROGRESS);
 		event.bytesLoaded = bytesLoaded;
 		event.bytesTotal = bytesTotal;
-		contentLoaderInfo.dispatchEvent(event);
-	}
-
-	@:noCompletion private function loader_onComplete(event:Event):Void
-	{
-		// TODO: Dispatch HTTPStatusEvent
-
-		var loader:URLLoader = cast event.target;
-
-		#if lime
-		if (contentLoaderInfo.contentType != null && contentLoaderInfo.contentType.indexOf("/json") > -1)
-		{
-			var manifest = AssetManifest.parse(loader.data, Path.directory(__path));
-
-			if (manifest == null)
-			{
-				__dispatchError("Cannot parse asset manifest");
-				return;
-			}
-
-			var library = LimeAssetLibrary.fromManifest(manifest);
-
-			if (library == null)
-			{
-				__dispatchError("Cannot open library");
-				return;
-			}
-
-			if ((library is AssetLibrary))
-			{
-				library.load().onComplete(function(_)
-				{
-					__library = cast library;
-					Assets.registerLibrary(contentLoaderInfo.url, __library);
-
-					if (manifest.name != null && !Assets.hasLibrary(manifest.name))
-					{
-						Assets.registerLibrary(manifest.name, __library);
-					}
-
-					var clip = __library.getMovieClip("");
-					__setContent(clip, Std.int(clip.width), Std.int(clip.height));
-
-					contentLoaderInfo.dispatchEvent(new Event(Event.COMPLETE));
-				}).onError(function(e)
-				{
-						__dispatchError(e);
-				});
-			}
-		}
-		else
-		#end
-		if (contentLoaderInfo.contentType != null
-			&& (contentLoaderInfo.contentType.indexOf("/javascript") > -1 || contentLoaderInfo.contentType.indexOf("/ecmascript") > -1))
-		{
-			__setContent(new Sprite(), 0, 0);
-
-			#if (js && html5)
-			// var script:ScriptElement = cast Browser.document.createElement ("script");
-			// script.innerHTML = loader.data;
-			// Browser.document.head.appendChild (script);
-
-			untyped #if haxe4 js.Syntax.code #else __js__ #end ("eval")("(function () {" + loader.data + "})()");
-			#end
-
-			contentLoaderInfo.dispatchEvent(new Event(Event.COMPLETE));
-		}
-		else
-		{
-			contentLoaderInfo.bytes = loader.data;
-			BitmapData.loadFromBytes(loader.data).onComplete(BitmapData_onLoad).onError(BitmapData_onError);
-		}
-	}
-
-	@:noCompletion private function loader_onError(event:IOErrorEvent):Void
-	{
-		// TODO: Dispatch HTTPStatusEvent
-
-		event.target = contentLoaderInfo;
-		contentLoaderInfo.dispatchEvent(event);
-	}
-
-	@:noCompletion private function loader_onProgress(event:ProgressEvent):Void
-	{
-		event.target = contentLoaderInfo;
 		contentLoaderInfo.dispatchEvent(event);
 	}
 }
