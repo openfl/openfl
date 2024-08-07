@@ -477,7 +477,6 @@ jobs:
           lime build BunnyMark html5 -clean  -release -verbose -nocolor --haxelib=genes
           lime build PiratePig html5 -clean -release -verbose -nocolor --haxelib=genes
 
-
   html5-samples-haxe5:
     needs: package-haxelib
     runs-on: windows-latest
@@ -630,7 +629,7 @@ jobs:
 
   notify:
     runs-on: ubuntu-latest
-    needs: [package-haxelib, docs, unit-test-neko-haxe3, unit-test-neko, unit-test-hashlink, unit-test-air, html5-samples, flash-samples, neko-samples, hashlink-samples]
+    needs: [package-haxelib, docs, unit-test-neko-haxe3, unit-test-neko, unit-test-hashlink, unit-test-air, html5-samples-haxe4, flash-samples, neko-samples, hashlink-samples]
     if: ${{ github.repository == 'openfl/openfl' && github.event_name != 'pull_request' }}
     steps:
       - name: Notify Discord
