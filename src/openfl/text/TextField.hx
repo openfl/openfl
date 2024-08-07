@@ -699,6 +699,12 @@ class TextField extends InteractiveObject
 	**/
 	public var wordWrap(get, set):Bool;
 
+	/**
+		The character to be displayed when displayAsPassword is set to true.
+		The default value is `*`.
+	**/
+	public var passwordChar(get, set):String;
+
 	@:noCompletion private var __wordSelection:Bool;
 	@:noCompletion private var __lineSelection:Bool;
 	@:noCompletion private var __specialSelectionInitialIndex:Int;
@@ -707,6 +713,7 @@ class TextField extends InteractiveObject
 	@:noCompletion private var __cursorTimer:Timer;
 	@:noCompletion private var __dirty:Bool;
 	@:noCompletion private var __displayAsPassword:Bool;
+	@:noCompletion private var __passwordChar:String;
 	@:noCompletion private var __domRender:Bool;
 	@:noCompletion private var __inputEnabled:Bool;
 	@:noCompletion private var __isHTML:Bool;
@@ -764,6 +771,10 @@ class TextField extends InteractiveObject
 			"displayAsPassword": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_displayAsPassword (); }"),
 				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_displayAsPassword (v); }")
+			},
+			"passwordChar": {
+				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_passwordChar (); }"),
+				set: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function (v) { return this.set_passwordChar (v); }")
 			},
 			"embedFonts": {
 				get: untyped #if haxe4 js.Syntax.code #else __js__ #end ("function () { return this.get_embedFonts (); }"),
@@ -854,6 +865,7 @@ class TextField extends InteractiveObject
 		__caretIndex = -1;
 		__selectionIndex = -1;
 		__displayAsPassword = false;
+		__passwordChar = "*";
 		__graphics = new Graphics(this);
 		__textEngine = new TextEngine(this);
 		__layoutDirty = true;
@@ -2583,7 +2595,7 @@ class TextField extends InteractiveObject
 
 			for (i in 0...length)
 			{
-				mask += "*";
+				mask += __passwordChar;
 			}
 
 			__textEngine.text = mask;
@@ -3244,6 +3256,23 @@ class TextField extends InteractiveObject
 		}
 
 		return __textEngine.wordWrap = value;
+	}
+
+	@:noCompletion private function get_passwordChar():String
+	{
+		return __passwordChar;
+	}
+
+	@:noCompletion private function set_passwordChar(value:String):String
+	{
+		if (value != __passwordChar)
+		{
+			__passwordChar = value;
+			__setRenderDirty();
+			__updateText(__text);
+		}
+
+		return value;
 	}
 
 	@:noCompletion private override function get_x():Float
