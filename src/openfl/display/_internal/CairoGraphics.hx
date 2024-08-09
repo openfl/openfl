@@ -692,13 +692,35 @@ class CairoGraphics
 					}
 
 					cairo.moveTo(positionX - offsetX, positionY - offsetY);
-					strokePattern = createImagePattern(c.bitmap, c.matrix, c.repeat, c.smooth);
+
+					if (c.bitmap.readable)
+					{
+						strokePattern = createImagePattern(c.bitmap, c.matrix, c.repeat, c.smooth);
+					}
+					else
+					{
+						// if it's hardware-only BitmapData, fall back to
+						// drawing solid black because we have no software
+						// pixels to work with
+						strokePattern = CairoPattern.createRGB(0, 0, 0);
+					}
 
 					hasStroke = true;
 
 				case BEGIN_BITMAP_FILL:
 					var c = data.readBeginBitmapFill();
-					fillPattern = createImagePattern(c.bitmap, c.matrix, c.repeat, c.smooth);
+
+					if (c.bitmap.readable)
+					{
+						fillPattern = createImagePattern(c.bitmap, c.matrix, c.repeat, c.smooth);
+					}
+					else
+					{
+						// if it's hardware-only BitmapData, fall back to
+						// drawing solid black because we have no software
+						// pixels to work with
+						fillPattern = CairoPattern.createRGB(0, 0, 0);
+					}
 
 					bitmapFill = c.bitmap;
 					bitmapRepeat = c.repeat;

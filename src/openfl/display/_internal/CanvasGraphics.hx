@@ -819,14 +819,34 @@ class CanvasGraphics
 					}
 
 					context.moveTo(positionX - offsetX, positionY - offsetY);
-					context.strokeStyle = createBitmapFill(c.bitmap, c.repeat, c.smooth);
+					if (c.bitmap.readable)
+					{
+						context.strokeStyle = createBitmapFill(c.bitmap, c.repeat, c.smooth);
+					}
+					else
+					{
+						// if it's hardware-only BitmapData, fall back to
+						// drawing solid black because we have no software
+						// pixels to work with
+						context.strokeStyle = "#" + StringTools.hex(0, 6);
+					}
 
 					hasStroke = true;
 
 				case BEGIN_BITMAP_FILL:
 					var c = data.readBeginBitmapFill();
 					bitmapFill = c.bitmap;
-					context.fillStyle = createBitmapFill(c.bitmap, c.repeat, c.smooth);
+					if (c.bitmap.readable)
+					{
+						context.fillStyle = createBitmapFill(c.bitmap, c.repeat, c.smooth);
+					}
+					else
+					{
+						// if it's hardware-only BitmapData, fall back to
+						// drawing solid black because we have no software
+						// pixels to work with
+						context.fillStyle = "#" + StringTools.hex(0, 6);
+					}
 					hasFill = true;
 
 					if (c.matrix != null)
@@ -977,7 +997,7 @@ class CanvasGraphics
 
 						context.setTransform(tileTransform.a, tileTransform.b, tileTransform.c, tileTransform.d, tileTransform.tx, tileTransform.ty);
 
-						if (bitmapFill != null)
+						if (bitmapFill != null && bitmapFill.readable)
 						{
 							context.drawImage(bitmapFill.image.src, tileRect.x, tileRect.y, tileRect.width, tileRect.height, 0, 0, tileRect.width,
 								tileRect.height);
@@ -1141,7 +1161,7 @@ class CanvasGraphics
 					var c = data.readDrawRect();
 					optimizationUsed = false;
 
-					if (bitmapFill != null && !hitTesting)
+					if (bitmapFill != null && bitmapFill.readable && !hitTesting)
 					{
 						st = 0;
 						sr = 0;
@@ -1184,7 +1204,10 @@ class CanvasGraphics
 						if (canOptimizeMatrix && st >= 0 && sl >= 0 && sr <= bitmapFill.width && sb <= bitmapFill.height)
 						{
 							optimizationUsed = true;
-							if (!hitTesting) context.drawImage(bitmapFill.image.src, sl, st, sr - sl, sb - st, c.x - offsetX, c.y - offsetY, c.width, c.height);
+							if (!hitTesting)
+							{
+								context.drawImage(bitmapFill.image.src, sl, st, sr - sl, sb - st, c.x - offsetX, c.y - offsetY, c.width, c.height);
+							}
 						}
 					}
 
