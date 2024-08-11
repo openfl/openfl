@@ -45,7 +45,7 @@ class CairoTilemap
 		rect.setTo(0, 0, tilemap.__width, tilemap.__height);
 		renderer.__pushMaskRect(rect, tilemap.__renderTransform);
 
-		renderTileContainer(tilemap.__group, renderer, tilemap.__renderTransform, tilemap.__tileset, (renderer.__allowSmoothing && tilemap.smoothing),
+		renderTileContainer(tilemap, tilemap.__group, renderer, tilemap.__renderTransform, tilemap.__tileset, (renderer.__allowSmoothing && tilemap.smoothing),
 			tilemap.tileAlphaEnabled, alpha, tilemap.tileBlendModeEnabled, tilemap.__worldBlendMode, null, null, null, rect,
 			#if lime new Matrix3() #else null #end);
 
@@ -56,10 +56,10 @@ class CairoTilemap
 	}
 
 	@SuppressWarnings("checkstyle:Dynamic")
-	private static function renderTileContainer(group:TileContainer, renderer:CairoRenderer, parentTransform:Matrix, defaultTileset:Tileset, smooth:Bool,
+	private static function renderTileContainer(tilemap:Tilemap, group:TileContainer, renderer:CairoRenderer, parentTransform:Matrix, defaultTileset:Tileset, smooth:Bool,
 			alphaEnabled:Bool, worldAlpha:Float, blendModeEnabled:Bool, defaultBlendMode:BlendMode, cacheBitmapData:BitmapData,
 			surface:#if lime CairoSurface #else Dynamic #end, pattern:#if lime CairoPattern #else Dynamic #end, rect:Rectangle,
-			matrix:#if lime Matrix3 #else Dynamic #end):Void
+			matrix:#if lime Matrix3 #else Dynamic #end, containerX:Float = 0.0, containerY:Float = 0.0):Void
 	{
 		#if lime
 		var cairo = renderer.cairo;
@@ -77,17 +77,54 @@ class CairoTilemap
 			tileData,
 			tileRect,
 			bitmapData;
+		var actualTileX, actualTileY, tileWidth, tileHeight;
+
+		var tilemapWidth = tilemap.__width / Math.abs(tilemap.__scaleX);
+		var tilemapHeight = tilemap.__height / Math.abs(tilemap.__scaleY);
 
 		for (tile in tiles)
 		{
+			id = tile.id;
+			tileset = tile.tileset != null ? tile.tileset : defaultTileset;
+			alpha = tile.alpha * worldAlpha;
+			visible = tile.visible;
+
+			if(tile.__length == 0 && !tile.offscreenRendering)
+			{
+				if (id == -1)
+				{
+					tileRect = tile.__rect;
+					if (tileRect == null || tileRect.width <= 0 || tileRect.height <= 0)
+					{
+						continue;
+					}
+
+					tileWidth = tileRect.width;
+					tileHeight = tileRect.height;
+				}else{
+					tileData = tileset.__data[id];
+					if (tileData == null)
+					{
+						continue;
+					}
+
+					tileWidth = tileData.width;
+					tileHeight = tileData.height;
+				}
+
+				actualTileX = containerX + tile.x;
+				actualTileY = containerY + tile.y;
+
+				if(actualTileX + tileWidth < 0 || actualTileX > tilemapWidth || actualTileY + tileHeight < 0 || actualTileY > tilemapHeight)
+				{
+					continue;
+				}
+			}
+
 			tileTransform.setTo(1, 0, 0, 1, -tile.originX, -tile.originY);
 			tileTransform.concat(tile.matrix);
 			tileTransform.concat(parentTransform);
 
-			tileset = tile.tileset != null ? tile.tileset : defaultTileset;
-
-			alpha = tile.alpha * worldAlpha;
-			visible = tile.visible;
 			if (!visible || alpha <= 0) continue;
 
 			if (!alphaEnabled) alpha = 1;
@@ -99,14 +136,12 @@ class CairoTilemap
 
 			if (tile.__length > 0)
 			{
-				renderTileContainer(cast tile, renderer, tileTransform, tileset, smooth, alphaEnabled, alpha, blendModeEnabled, blendMode, cacheBitmapData,
-					surface, pattern, rect, matrix);
+				renderTileContainer(tilemap, cast tile, renderer, tileTransform, tileset, smooth, alphaEnabled, alpha, blendModeEnabled, blendMode, cacheBitmapData,
+					surface, pattern, rect, matrix, containerX + tile.x, containerY + tile.y);
 			}
 			else
 			{
 				if (tileset == null) continue;
-
-				id = tile.id;
 
 				if (id == -1)
 				{

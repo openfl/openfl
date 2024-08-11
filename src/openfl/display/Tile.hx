@@ -53,6 +53,13 @@ class Tile
 	@:beta public var colorTransform(get, set):ColorTransform;
 
 	/**
+		Disabling this property disables the rendering of off-screen tile.
+
+		This property is supported in all renderers except the dom.
+	**/
+	public var offscreenRendering(default, default):Bool;
+
+	/**
 		An additional field for custom user-data
 	**/
 	@SuppressWarnings("checkstyle:Dynamic") public var data:Dynamic;
@@ -192,6 +199,7 @@ class Tile
 	@:noCompletion private var __alpha:Float;
 	@:noCompletion private var __blendMode:BlendMode;
 	@:noCompletion private var __colorTransform:ColorTransform;
+	@:noCompletion private var __render:Bool;
 	@:noCompletion private var __dirty:Bool;
 	@:noCompletion private var __id:Int;
 	@:noCompletion private var __length:Int;
@@ -295,6 +303,7 @@ class Tile
 		if (scaleY != 1) this.scaleY = scaleY;
 		if (rotation != 0) this.rotation = rotation;
 
+		offscreenRendering = true;
 		__dirty = true;
 		__length = 0;
 		__originX = originX;
