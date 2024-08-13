@@ -767,7 +767,7 @@ class BitmapData implements IBitmapDrawable
 		__framebuffer = null;
 		__framebufferContext = null;
 
-		if (!__hasSharedTexture)
+		if (!__hasSharedTexture && __texture != null)
 		{
 			__texture.dispose();
 		}
