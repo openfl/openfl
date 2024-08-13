@@ -202,6 +202,7 @@ class BitmapData implements IBitmapDrawable
 	// @:noCompletion private var __vertexBufferColorTransform:ColorTransform;
 	// @:noCompletion private var __vertexBufferAlpha:Float;
 	@:noCompletion private var __framebuffer:GLFramebuffer;
+	@:noCompletion private var __hasSharedTexture:Bool;
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __framebufferContext:#if lime RenderContext #else Dynamic #end;
 	@:noCompletion private var __indexBuffer:IndexBuffer3D;
 	@SuppressWarnings("checkstyle:Dynamic") @:noCompletion private var __indexBufferContext:#if lime RenderContext #else Dynamic #end;
@@ -431,6 +432,8 @@ class BitmapData implements IBitmapDrawable
 			bitmapData.__texture = __texture;
 			bitmapData.__textureContext = __textureContext;
 			bitmapData.__isValid = true;
+
+			__hasSharedTexture = true;
 		}
 		else
 		{
@@ -763,6 +766,12 @@ class BitmapData implements IBitmapDrawable
 		__vertexBuffer = null;
 		__framebuffer = null;
 		__framebufferContext = null;
+
+		if (!__hasSharedTexture)
+		{
+			__texture.dispose();
+		}
+
 		__texture = null;
 		__textureContext = null;
 
@@ -1368,6 +1377,7 @@ class BitmapData implements IBitmapDrawable
 		if (texture == null) return null;
 
 		var bitmapData = new BitmapData(texture.__width, texture.__height, true, 0);
+		bitmapData.__hasSharedTexture = true;
 		bitmapData.readable = false;
 		bitmapData.__texture = texture;
 		bitmapData.__textureContext = texture.__textureContext;
@@ -2290,6 +2300,8 @@ class BitmapData implements IBitmapDrawable
 			image = null;
 		}
 		#end
+
+		__hasSharedTexture = true;
 
 		return __texture;
 	}
