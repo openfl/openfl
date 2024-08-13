@@ -821,6 +821,12 @@ class Sound extends EventDispatcher
 		else
 		{
 			__buffer = buffer;
+			var byteLength = 1;
+			if (__buffer.data != null)
+			{
+				byteLength = __buffer.data.length;
+			}
+			dispatchEvent(new ProgressEvent(ProgressEvent.PROGRESS, false, false, byteLength, byteLength));
 			dispatchEvent(new Event(Event.COMPLETE));
 			if (__pendingSoundChannel != null)
 			{
