@@ -321,7 +321,7 @@ class DatagramSocket extends EventDispatcher
 
 	override public function addEventListener<T>(type:EventType<T>, listener:T->Void, priority:Int = 0):Void
 	{		
-		var dataEvent:String = DatagramSocketDataEvent.DATA;
+		var dataEvent:EventType<DatagramSocketDataEvent> = DatagramSocketDataEvent.DATA;
 		
 		if (type == dataEvent && !this.hasEventListener(dataEvent))
 		{
