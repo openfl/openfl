@@ -8,6 +8,7 @@ import openfl.errors.IOError;
 import openfl.errors.RangeError;
 import openfl.errors.Error as OFLError;
 import openfl.events.Event;
+import openfl.events.EventType;
 import openfl.events.EventDispatcher;
 import openfl.events.ServerSocketConnectEvent;
 import openfl.net.Socket as OFLSocket;
@@ -277,7 +278,7 @@ class ServerSocket extends EventDispatcher
 		}
 	}
 
-	override public function addEventListener(type:String, listener:Dynamic->Void, useCapture:Bool = false, priority:Int = 0,
+	override public function addEventListener<T>(type:EventType<T>, listener:Dynamic->Void, useCapture:Bool = false, priority:Int = 0,
 			useWeakReference:Bool = false):Void
 	{
 		super.addEventListener(type, listener, useCapture, priority, useWeakReference);
@@ -288,7 +289,7 @@ class ServerSocket extends EventDispatcher
 		}
 	}
 
-	override public function removeEventListener(type:String, listener:Dynamic->Void, useCapture:Bool = false):Void
+	override public function removeEventListener<T>(type:EventType<T>, listener:Dynamic->Void, useCapture:Bool = false):Void
 	{
 		super.removeEventListener(type, listener, useCapture);
 
