@@ -320,9 +320,9 @@ class DatagramSocket extends EventDispatcher
 		}
 	}
 
-	override public function addEventListener<T>(type:EventType<T>, listener:T->Void, priority:Int = 0):Void
-	{		
-		var dataEvent:EventType<DatagramSocketDataEvent> = DatagramSocketDataEvent.DATA;
+	override public function addEventListener<T>(type:EventType<T>, listener:Dynamic->Void, useCapture:Bool = false, priority:Int = 0, useWeakReference:Bool = false):Void
+	{	
+		var dataEvent:String = DatagramSocketDataEvent.DATA;
 		
 		if (type == dataEvent && !this.hasEventListener(dataEvent))
 		{
@@ -333,7 +333,7 @@ class DatagramSocket extends EventDispatcher
 		}
 	}
 
-	override public function removeEventListener(type:String, listener:Dynamic->Void, useCapture:Bool = false):Void
+	override public function removeEventListener<T>(type:EventType<T>, listener:Dynamic->Void, useCapture:Bool = false):Void
 	{
 		super.removeEventListener(type, listener, useCapture);
 		if (type == DatagramSocketDataEvent.DATA)
