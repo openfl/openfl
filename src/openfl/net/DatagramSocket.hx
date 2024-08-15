@@ -9,6 +9,7 @@ import openfl.errors.IllegalOperationError;
 import openfl.errors.RangeError;
 import openfl.events.DatagramSocketDataEvent;
 import openfl.events.Event;
+import openfl.events.EventType;
 import openfl.events.EventDispatcher;
 #if !js
 import openfl.utils.ByteArray;
@@ -326,7 +327,7 @@ class DatagramSocket extends EventDispatcher
 		if (type == dataEvent && !this.hasEventListener(dataEvent))
 		{
 			super.addEventListener(type, listener);
-			CrossByte.current.addEventListener(Event.TICK, __onTickUpdate);			
+			Lib.current.addEventListener(Event.ENTER_FRAME, __onFrameUpdate);			
 		} else {
 			super.addEventListener(type, listener);
 		}
