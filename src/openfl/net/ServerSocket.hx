@@ -283,7 +283,7 @@ class ServerSocket extends EventDispatcher
 	{
 		var connectEvent:String = Event.CONNECT;
 		
-		if (type == connectEvent && this.hasEventListener(connectEvent))
+		if (type == connectEvent && !this.hasEventListener(connectEvent))
 		{
 			super.addEventListener(type, listener, useCapture, priority, useWeakReference);
 			Lib.current.addEventListener(Event.ENTER_FRAME, this_onEnterFrame);
