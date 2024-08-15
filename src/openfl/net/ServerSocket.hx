@@ -281,11 +281,14 @@ class ServerSocket extends EventDispatcher
 	override public function addEventListener<T>(type:EventType<T>, listener:Dynamic->Void, useCapture:Bool = false, priority:Int = 0,
 			useWeakReference:Bool = false):Void
 	{
-		super.addEventListener(type, listener, useCapture, priority, useWeakReference);
-
-		if (type == Event.CONNECT)
+		var connectEvent:String = Event.CONNECT;
+		
+		if (type == connectEvent && this.hasEventListener(connectEvent))
 		{
+			super.addEventListener(type, listener, useCapture, priority, useWeakReference);
 			Lib.current.addEventListener(Event.ENTER_FRAME, this_onEnterFrame);
+		} else {
+			super.addEventListener(type, listener, useCapture, priority, useWeakReference);
 		}
 	}
 
