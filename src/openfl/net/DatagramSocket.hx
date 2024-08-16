@@ -387,11 +387,12 @@ class DatagramSocket extends EventDispatcher
 
 	@:noCompletion private function get_localAddress():String
 	{
-		if (bound)
-		{
-			return __udpSocket.host().host.toString();
-		}
-		return null;
+		var host = __udpSocket.host();
+	
+		if (host == null){
+			return null;
+		}		
+		return host.host.host;
 	}
 
 	@:noCompletion private function get_localPort():Int
@@ -405,11 +406,12 @@ class DatagramSocket extends EventDispatcher
 
 	@:noCompletion private function get_remoteAddress():String
 	{
-		if (connected)
-		{
-			return __udpSocket.peer().host.toString();
-		}
-		return null;
+		var host = __udpSocket.peer();
+	
+		if (host == null){
+			return "";
+		}	
+		return host.host.host;
 	}
 
 	@:noCompletion private function get_remotePort():Int
