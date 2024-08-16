@@ -386,13 +386,23 @@ class DatagramSocket extends EventDispatcher
 	}
 
 	@:noCompletion private function get_localAddress():String
-	{
+	{	
+		#if neko
+		try
+		{
+			return __udpSocket.host().host.host;
+		} catch(e:Dynamic)
+		{
+			return null;
+		}
+		#else
 		var host = __udpSocket.host();
 	
 		if (host == null){
 			return null;
 		}		
 		return host.host.host;
+		#end
 	}
 
 	@:noCompletion private function get_localPort():Int
@@ -406,12 +416,22 @@ class DatagramSocket extends EventDispatcher
 
 	@:noCompletion private function get_remoteAddress():String
 	{
+		#if neko
+		try
+		{
+			return __udpSocket.peer().host.host;
+		} catch(e:Dynamic)
+		{
+			return null;
+		}
+		#else			
 		var host = __udpSocket.peer();
 	
 		if (host == null){
 			return "";
 		}	
 		return host.host.host;
+		#end
 	}
 
 	@:noCompletion private function get_remotePort():Int
