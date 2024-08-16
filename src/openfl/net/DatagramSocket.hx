@@ -326,7 +326,7 @@ class DatagramSocket extends EventDispatcher
 			useWeakReference:Bool = false):Void
 	{
 		var dataEvent:String = DatagramSocketDataEvent.DATA;
-		super.addEventListener(type, listener, useCapture, priority, weakReference);
+		super.addEventListener(type, listener, useCapture, priority, useWeakReference);
 
 		if (type == dataEvent && !this.hasEventListener(dataEvent))
 		{
