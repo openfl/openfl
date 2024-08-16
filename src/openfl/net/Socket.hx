@@ -1285,22 +1285,38 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	#if sys
 	@:noCompletion private function get_localAddress():String
 	{
-		return __socket.host().host.host;
+		if(__connected)
+		{
+			return __socket.host().host.host;
+		}
+		return null;
 	}
 
 	@:noCompletion private function get_localPort():Int
-	{
-		return __socket.host().port;
+	{	
+		if(__connected)
+		{
+			return __socket.host().port;
+		}
+		return 0;
 	}
 
 	@:noCompletion private function get_remoteAddress():String
-	{
-		return __socket.peer().host.host;
+	{	
+		if(__connected)
+		{
+			return __socket.peer().host.host;
+		}
+		return null;
 	}
 
 	@:noCompletion private function get_remotePort():Int
-	{
-		return __socket.peer().port;
+	{	
+		if(__connected)
+		{
+			return __socket.peer().port;
+		}
+		return 0;
 	}
 	#end
 }
