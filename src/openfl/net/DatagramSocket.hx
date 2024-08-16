@@ -162,6 +162,7 @@ class DatagramSocket extends EventDispatcher
 				case "Unresolved host":
 					throw new ArgumentError("One of the parameters is invalid");
 			}
+			dispatchEvent(new Event(Event.CLOSE));
 		}
 	}
 
@@ -184,6 +185,8 @@ class DatagramSocket extends EventDispatcher
 		__isReceiving = false;
 		bound = false;
 		Lib.current.removeEventListener(Event.ENTER_FRAME, __onFrameUpdate);
+		
+		dispatchEvent(new Event(Event.CLOSE));
 	}
 
 	/**
