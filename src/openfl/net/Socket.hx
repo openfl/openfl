@@ -300,7 +300,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 
 		__buffer = Bytes.alloc(4096);
 
-		if (port > 0 && port < 65535)
+		if (host != null && port > 0 && port < 65535)
 		{
 			connect(host, port);
 		}
