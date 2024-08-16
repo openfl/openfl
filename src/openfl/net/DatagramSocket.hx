@@ -184,7 +184,7 @@ class DatagramSocket extends EventDispatcher
 		__isReceiving = false;
 		bound = false;
 		Lib.current.removeEventListener(Event.ENTER_FRAME, __onFrameUpdate);
-		
+
 		dispatchEvent(new Event(Event.CLOSE));
 	}
 
@@ -322,16 +322,15 @@ class DatagramSocket extends EventDispatcher
 		}
 	}
 
-	override public function addEventListener<T>(type:EventType<T>, listener:Dynamic->Void, useCapture:Bool = false, priority:Int = 0, useWeakReference:Bool = false):Void
-	{	
+	override public function addEventListener<T>(type:EventType<T>, listener:Dynamic->Void, useCapture:Bool = false, priority:Int = 0,
+			useWeakReference:Bool = false):Void
+	{
 		var dataEvent:String = DatagramSocketDataEvent.DATA;
-		
+		super.addEventListener(type, listener, useCapture, priority, weakReference);
+
 		if (type == dataEvent && !this.hasEventListener(dataEvent))
 		{
-			super.addEventListener(type, listener);
-			Lib.current.addEventListener(Event.ENTER_FRAME, __onFrameUpdate);			
-		} else {
-			super.addEventListener(type, listener);
+			Lib.current.addEventListener(Event.ENTER_FRAME, __onFrameUpdate);
 		}
 	}
 
@@ -388,21 +387,23 @@ class DatagramSocket extends EventDispatcher
 	}
 
 	@:noCompletion private function get_localAddress():String
-	{	
+	{
 		#if neko
 		try
 		{
 			return __udpSocket.host().host.host;
-		} catch(e:Dynamic)
+		}
+		catch (e:Dynamic)
 		{
 			return null;
 		}
 		#else
 		var host = __udpSocket.host();
-	
-		if (host == null){
+
+		if (host == null)
+		{
 			return null;
-		}		
+		}
 		return host.host.host;
 		#end
 	}
@@ -422,16 +423,18 @@ class DatagramSocket extends EventDispatcher
 		try
 		{
 			return __udpSocket.peer().host.host;
-		} catch(e:Dynamic)
+		}
+		catch (e:Dynamic)
 		{
 			return null;
 		}
-		#else			
+		#else
 		var host = __udpSocket.peer();
-	
-		if (host == null){
+
+		if (host == null)
+		{
 			return "";
-		}	
+		}
 		return host.host.host;
 		#end
 	}

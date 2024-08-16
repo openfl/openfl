@@ -172,7 +172,8 @@ class ServerSocket extends EventDispatcher
 	**/
 	public function close():Void
 	{
-		if(!__closed){
+		if (!__closed)
+		{
 			try
 			{
 				__serverSocket.close();
@@ -284,13 +285,11 @@ class ServerSocket extends EventDispatcher
 			useWeakReference:Bool = false):Void
 	{
 		var connectEvent:String = Event.CONNECT;
-		
-		if (type == connectEvent && !this.hasEventListener(connectEvent) && __closed == false)
+		super.addEventListener(type, listener, useCapture, priority, useWeakReference);
+
+		if (type == connectEvent && this.hasEventListener(connectEvent))
 		{
-			super.addEventListener(type, listener, useCapture, priority, useWeakReference);
 			Lib.current.addEventListener(Event.ENTER_FRAME, this_onEnterFrame);
-		} else {
-			super.addEventListener(type, listener, useCapture, priority, useWeakReference);
 		}
 	}
 
