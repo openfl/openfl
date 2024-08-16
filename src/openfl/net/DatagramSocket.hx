@@ -158,11 +158,10 @@ class DatagramSocket extends EventDispatcher
 			switch (e)
 			{
 				case "Bind failed":
-					throw new IOError("Operation attempted on invalid socket.");
+					dispatchEvent(new Event(Event.CLOSE));
 				case "Unresolved host":
 					throw new ArgumentError("One of the parameters is invalid");
 			}
-			dispatchEvent(new Event(Event.CLOSE));
 		}
 	}
 
