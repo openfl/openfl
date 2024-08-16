@@ -1285,7 +1285,7 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	#if sys
 	@:noCompletion private function get_localAddress():String
 	{
-		if(__connected)
+		if (__connected)
 		{
 			return __socket.host().host.host;
 		}
@@ -1293,8 +1293,8 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	}
 
 	@:noCompletion private function get_localPort():Int
-	{	
-		if(__connected)
+	{
+		if (__connected)
 		{
 			return __socket.host().port;
 		}
@@ -1302,8 +1302,8 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	}
 
 	@:noCompletion private function get_remoteAddress():String
-	{	
-		if(__connected)
+	{
+		if (__connected)
 		{
 			return __socket.peer().host.host;
 		}
@@ -1311,8 +1311,8 @@ class Socket extends EventDispatcher implements IDataInput implements IDataOutpu
 	}
 
 	@:noCompletion private function get_remotePort():Int
-	{	
-		if(__connected)
+	{
+		if (__connected)
 		{
 			return __socket.peer().port;
 		}
