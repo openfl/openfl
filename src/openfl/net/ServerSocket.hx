@@ -145,10 +145,11 @@ class ServerSocket extends EventDispatcher
 		}
 		try
 		{
-			this.localAddress = localAddress;
-			this.localPort = localPort;
 			var host:Host = new Host(localAddress);
 			__serverSocket.bind(host, localPort);
+			
+			this.localAddress = localAddress;
+			this.localPort = localPort == 0 ? __serverSocket.host().port : localPort;
 			bound = true;
 		}
 		catch (e:Dynamic)
