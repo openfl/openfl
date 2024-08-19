@@ -89,22 +89,9 @@ class Context3DTilemap
 		var roundPixels = renderer.__roundPixels;
 
 		var tiles = group.__tiles;
-		var length = group.__length;
+		var length = group.__length;		
 
-		function getLength(_group:TileContainer):Int
-		{
-			var _tiles = _group.__tiles;
-			var totalLength = 0;
-			for (tile in _tiles)
-			{
-				if (tile.__length > 0) totalLength += getLength(cast tile);
-				else
-					totalLength++;
-			}
-			return totalLength;
-		}
-
-		if (isTopLevel) resizeBuffer(tilemap, numTiles + getLength(group));
+		if (isTopLevel) resizeBuffer(tilemap, numTiles + getRecursiveLength(group));
 
 		// Todo: Merge recursive length lookup with for tiles loop to avoid iterating over tiles twice
 		// resizeBuffer(tilemap, numTiles + length);
@@ -393,6 +380,21 @@ class Context3DTilemap
 
 		lastUsedBitmapData = currentBitmapData;
 		lastUsedShader = currentShader;
+	}
+
+	private static function getRecursiveLength(tileContainer:TileContainer):Int
+	{		
+			var tiles = tileContainer.__tiles;
+			var totalLength = 0;
+		
+			for (tile in tiles)
+			{
+				if (tile.__length > 0) totalLength += getRecursiveLength(cast tile);
+				else
+					totalLength++;
+			}
+			return totalLength;
+		}
 	}
 
 	public static function render(tilemap:Tilemap, renderer:OpenGLRenderer):Void
