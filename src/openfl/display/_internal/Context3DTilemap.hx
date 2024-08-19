@@ -384,17 +384,16 @@ class Context3DTilemap
 
 	private static function getRecursiveLength(tileContainer:TileContainer):Int
 	{		
-			var tiles = tileContainer.__tiles;
-			var totalLength = 0;
+		var tiles = tileContainer.__tiles;
+		var totalLength = 0;
 		
-			for (tile in tiles)
-			{
-				if (tile.__length > 0) totalLength += getRecursiveLength(cast tile);
-				else
-					totalLength++;
-			}
-			return totalLength;
+		for (tile in tiles)
+		{
+			if (tile.__length > 0) totalLength += getRecursiveLength(cast tile);
+			else
+				totalLength++;
 		}
+		return totalLength;
 	}
 
 	public static function render(tilemap:Tilemap, renderer:OpenGLRenderer):Void
