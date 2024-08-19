@@ -647,28 +647,28 @@ class CanvasGraphics
 
 		var data = new DrawCommandReader(commands);
 
-		var x,
-			y,
-			width,
-			height,
-			kappa = .5522848,
-			ox,
-			oy,
-			xe,
-			ye,
-			xm,
-			ym,
-			r,
-			g,
-			b;
-		var optimizationUsed,
-			canOptimizeMatrix,
-			st:Float,
-			sr:Float,
-			sb:Float,
-			sl:Float,
-			stl = null,
-			sbr = null;
+		var x:Float;
+		var y:Float;
+		var width:Float;
+		var height:Float;
+		var kappa = 0.5522848;
+		var ox:Float;
+		var oy:Float;
+		var xe:Float;
+		var ye:Float;
+		var xm:Float;
+		var ym:Float;
+		var r:Int;
+		var g:Int;
+		var b:Int;
+		var optimizationUsed:Bool;
+		var canOptimizeMatrix:Bool;
+		var st:Float;
+		var sr:Float;
+		var sb:Float;
+		var sl:Float;
+		var stl:Point = null;
+		var sbr:Point = null;
 
 		for (type in commands.types)
 		{
@@ -946,7 +946,8 @@ class CanvasGraphics
 					// var roundPixels = renderer.__roundPixels;
 					var alpha = CanvasGraphics.worldAlpha;
 
-					var ri, ti;
+					var ri:Int;
+					var ti:Int;
 
 					context.save(); // TODO: Restore transform without save/restore
 
@@ -1625,7 +1626,17 @@ class CanvasGraphics
 
 			var data = new DrawCommandReader(graphics.__commands);
 
-			var x, y, width, height, kappa = .5522848, ox, oy, xe, ye, xm, ym;
+			var x:Float;
+			var y:Float;
+			var width:Float;
+			var height:Float;
+			var kappa = 0.5522848;
+			var ox:Float;
+			var oy:Float;
+			var xe:Float;
+			var ye:Float;
+			var xm:Float;
+			var ym:Float;
 
 			for (type in graphics.__commands.types)
 			{

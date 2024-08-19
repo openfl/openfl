@@ -549,7 +549,8 @@ import js.html.CanvasRenderingContext2D;
 		__inflateBounds(__positionX - __strokePadding, __positionY - __strokePadding);
 		__inflateBounds(__positionX + __strokePadding, __positionY + __strokePadding);
 
-		var ix, iy;
+		var ix:Float;
+		var iy:Float;
 
 		if ((controlX < anchorX && controlX > __positionX) || (controlX > anchorX && controlX < __positionX))
 		{
@@ -884,7 +885,8 @@ import js.html.CanvasRenderingContext2D;
 		var maxX = Math.NEGATIVE_INFINITY;
 		var maxY = Math.NEGATIVE_INFINITY;
 
-		var ri, ti;
+		var ri:Int;
+		var ti:Int;
 
 		for (i in 0...length)
 		{
@@ -1115,7 +1117,8 @@ import js.html.CanvasRenderingContext2D;
 			culling = NONE;
 		}
 
-		var x, y;
+		var x:Float;
+		var y:Float;
 		var minX = Math.POSITIVE_INFINITY;
 		var minY = Math.POSITIVE_INFINITY;
 		var maxX = Math.NEGATIVE_INFINITY;
@@ -1973,7 +1976,8 @@ import js.html.CanvasRenderingContext2D;
 			scaleY = maxTextureHeight / __bounds.height;
 		}
 
-		var inverseA, inverseD;
+		var inverseA:Float;
+		var inverseD:Float;
 
 		if (__owner.__worldScale9Grid != null)
 		{

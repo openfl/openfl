@@ -7,6 +7,7 @@ import openfl.display.CairoRenderer;
 import openfl.display.TileContainer;
 import openfl.display.Tilemap;
 import openfl.display.Tileset;
+import openfl.display.Tileset.TileData;
 import openfl.geom.Matrix;
 import openfl.geom.Rectangle;
 #if lime
@@ -68,15 +69,14 @@ class CairoTilemap
 
 		var tiles = group.__tiles;
 
-		var tile,
-			tileset,
-			alpha,
-			visible,
-			blendMode = null,
-			id,
-			tileData,
-			tileRect,
-			bitmapData;
+		var tileset:Tileset;
+		var alpha:Float;
+		var visible:Bool;
+		var blendMode:BlendMode = null;
+		var id:Int;
+		var tileData:TileData;
+		var tileRect:Rectangle;
+		var bitmapData:BitmapData;
 
 		for (tile in tiles)
 		{

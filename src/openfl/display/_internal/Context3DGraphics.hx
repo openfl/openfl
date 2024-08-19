@@ -135,14 +135,25 @@ class Context3DGraphics
 							graphics.__quadBuffer.resize(quadBufferPosition + length, dataPerVertex);
 						}
 
-						var vertexOffset, alpha = 1.0, tileData, id;
-						var bitmapWidth,
-							bitmapHeight,
-							tileWidth:Float,
-							tileHeight:Float;
-						var uvX, uvY, uvWidth, uvHeight;
-						var x, y, x2, y2, x3, y3, x4, y4;
-						var ri, ti;
+						var vertexOffset:Int;
+						var bitmapWidth:Int;
+						var bitmapHeight:Int;
+						var tileWidth:Float;
+						var tileHeight:Float;
+						var uvX:Float;
+						var uvY:Float;
+						var uvWidth:Float;
+						var uvHeight:Float;
+						var x:Float;
+						var y:Float;
+						var x2:Float;
+						var y2:Float;
+						var x3:Float;
+						var y3:Float;
+						var x4:Float;
+						var y4:Float;
+						var ri:Int;
+						var ti:Int;
 
 						var vertexBufferData = graphics.__quadBuffer.vertexBufferData;
 
@@ -161,8 +172,6 @@ class Context3DGraphics
 						bitmapWidth = bitmap.width;
 						bitmapHeight = bitmap.height;
 						#end
-
-						var sourceRect = bitmap.rect;
 
 						for (i in 0...length)
 						{
@@ -267,7 +276,10 @@ class Context3DGraphics
 
 					// var indexBufferData = graphics.__triangleIndexBufferData;
 					var vertexBufferData = hasUVTData ? graphics.__vertexBufferDataUVT : graphics.__vertexBufferData;
-					var offset, vertOffset, uvOffset, t;
+					var offset:Int;
+					var vertOffset:Int;
+					var uvOffset:Int;
+					var t:Float;
 
 					for (i in 0...length)
 					{

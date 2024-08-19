@@ -502,20 +502,20 @@ class CairoGraphics
 
 		var data = new DrawCommandReader(commands);
 
-		var x,
-			y,
-			width,
-			height,
-			kappa = .5522848,
-			ox,
-			oy,
-			xe,
-			ye,
-			xm,
-			ym,
-			r,
-			g,
-			b;
+		var x:Float;
+		var y:Float;
+		var width:Float;
+		var height:Float;
+		var kappa = 0.5522848;
+		var ox:Float;
+		var oy:Float;
+		var xe:Float;
+		var ye:Float;
+		var xm:Float;
+		var ym:Float;
+		var r:Float;
+		var g:Float;
+		var b:Float;
 
 		for (type in commands.types)
 		{
@@ -817,7 +817,8 @@ class CairoGraphics
 					// var roundPixels = renderer.__roundPixels;
 					var alpha = CairoGraphics.worldAlpha;
 
-					var ri, ti;
+					var ri:Int;
+					var ti:Int;
 
 					for (i in 0...length)
 					{
@@ -1488,7 +1489,17 @@ class CairoGraphics
 
 			var data = new DrawCommandReader(graphics.__commands);
 
-			var x, y, width, height, kappa = .5522848, ox, oy, xe, ye, xm, ym;
+			var x:Float;
+			var y:Float;
+			var width:Float;
+			var height:Float;
+			var kappa = 0.5522848;
+			var ox:Float;
+			var oy:Float;
+			var xe:Float;
+			var ye:Float;
+			var xm:Float;
+			var ym:Float;
 
 			for (type in graphics.__commands.types)
 			{

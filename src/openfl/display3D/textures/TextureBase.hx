@@ -381,7 +381,8 @@ class TextureBase extends EventDispatcher
 	@:noCompletion private function __uploadFromImage(image:Image):Void
 	{
 		var gl = __context.gl;
-		var internalFormat, format;
+		var internalFormat:Int;
+		var format:Int;
 
 		if (__textureTarget != gl.TEXTURE_2D) return;
 

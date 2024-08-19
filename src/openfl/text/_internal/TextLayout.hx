@@ -8,6 +8,8 @@ import lime.text.harfbuzz.HBBuffer;
 import lime.text.harfbuzz.HBBufferClusterLevel;
 import lime.text.harfbuzz.HBDirection;
 import lime.text.harfbuzz.HBFTFont;
+import lime.text.harfbuzz.HBGlyphInfo;
+import lime.text.harfbuzz.HBGlyphPosition;
 import lime.text.harfbuzz.HBLanguage;
 import lime.text.harfbuzz.HBScript;
 import lime.text.harfbuzz.HB;
@@ -161,7 +163,8 @@ class TextLayout
 
 			if (_info != null && _positions != null)
 			{
-				var info, position;
+				var info:HBGlyphInfo;
+				var position:HBGlyphPosition;
 				var lastCluster = -1;
 
 				var length = Std.int(Math.min(_info.length, _positions.length));
