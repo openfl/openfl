@@ -142,6 +142,18 @@ class BitmapData implements IBitmapDrawable
 	@:noCompletion private static var __tempVector:Vector2 = new Vector2();
 	#end
 
+	#if openfl_experimental_multitexture
+	/**
+	 	Reserved for tilemap multiTexture rendering.
+	**/
+	private var tilemapMultiTextureArrayIndex:Int;
+
+	/**
+	 	Reserved for tilemap multiTexture rendering.
+	**/
+	private var tilemapMultiTextureId:Int;
+	#end
+
 	/**
 		The height of the bitmap image in pixels.
 	**/
