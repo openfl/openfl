@@ -410,7 +410,7 @@ class Context3DTilemap
 		if(multiTextureEnabled && currentBitmapData != null && currentShader == renderer.__defaultDisplayShader)
 		{
 			var batchIndex:Int = currentBitmapData.tilemapMultiTextureArrayIndex;
-			if(tempMultiTextureShaders[batchIndex] != null)
+			if(tempMultiTextureShaders[batchIndex] == null)
 			{
 				var multiTextureShader = new MultiTextureShader(multiTextureSize);
 
