@@ -62,6 +62,14 @@ class Tilemap extends #if !flash DisplayObject #else Bitmap implements IDisplayO
 	**/
 	public var tileColorTransformEnabled:Bool;
 
+	#if openfl_experimental_multitexture
+	/**
+		Enable or disable support for the multiTexture of tilemap.
+		Enabling this feature will reduce the number of draw calls.
+	**/
+	public var multiTextureEnabled:Bool;
+	#end
+
 	/**
 		Optionally define a default Tileset to be used for all contained tiles. Tile
 		instances that do not have their `tileset` property defined will use this value.

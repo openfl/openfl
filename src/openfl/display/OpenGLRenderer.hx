@@ -309,6 +309,26 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		}
 	}
 
+	#if openfl_experimental_multitexture
+	/**
+		Applies render texture id to the active shader
+	**/
+	public function applyTextureId(id:Float):Void
+	{
+		if (__currentShaderBuffer != null)
+		{
+			__currentShaderBuffer.addFloatOverride("openfl_TextureId", [id]);
+		}
+		else if (__currentShader != null)
+		{
+			if (__currentShader.__textureId != null) {
+				__currentShader.__textureId.__useArray = true;
+				__currentShader.__textureId.value = [id];
+			}
+		}
+	}
+	#end
+
 	/**
 		Converts an OpenFL two-dimensional matrix to a compatible 3D matrix for use with
 		OpenGL rendering. Repeated calls to this method will return the same object with
@@ -476,6 +496,9 @@ class OpenGLRenderer extends DisplayObjectRenderer
 			if (__currentShader.__hasColorTransform != null) __currentShader.__hasColorTransform.value = null;
 			if (__currentShader.__position != null) __currentShader.__position.value = null;
 			if (__currentShader.__matrix != null) __currentShader.__matrix.value = null;
+			#if openfl_experimental_multitexture
+			if (__currentShader.__textureId != null) __currentShader.__textureId.value = null;
+			#end
 			__currentShader.__clearUseArray();
 		}
 	}

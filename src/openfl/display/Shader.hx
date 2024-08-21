@@ -216,6 +216,9 @@ class Shader
 	@:noCompletion private var __bitmap:ShaderInput<BitmapData>;
 	@:noCompletion private var __colorMultiplier:ShaderParameter<Float>;
 	@:noCompletion private var __colorOffset:ShaderParameter<Float>;
+	#if openfl_experimental_multitexture
+	@:noCompletion private var __textureId:ShaderParameter<Float>;
+	#end
 	@:noCompletion private var __context:Context3D;
 	@:noCompletion private var __data:ShaderData;
 	@:noCompletion private var __glFragmentSource:String;
@@ -717,6 +720,9 @@ class Shader
 								case "openfl_Position": __position = parameter;
 								case "openfl_TextureCoord": __textureCoord = parameter;
 								case "openfl_TextureSize": __textureSize = parameter;
+								#if openfl_experimental_multitexture
+								case "openfl_TextureId": __textureId = parameter;
+								#end
 								default:
 							}
 						}
