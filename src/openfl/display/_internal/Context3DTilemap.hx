@@ -161,17 +161,30 @@ class Context3DTilemap
 			if(multiTextureEnabled)
 			{
 				var filter:Context3DTextureFilter = (tilemap.smoothing && renderer.__allowSmoothing) ? LINEAR : NEAREST;
-				for(i in 0...multiTextureBitmapDataArray.length)
+				var shaderCount:Int = Math.ceil(multiTextureBitmapDataArray.length / multiTextureSize);
+				for(shaderIndex in 0...shaderCount)
 				{
-					var samplerIndex:Int = i % multiTextureSize;
-					var bitmapData:BitmapData = multiTextureBitmapDataArray[i];
-					var shader = multiTextureShaders[bitmapData.tilemapMultiTextureArrayIndex];
-					if(shader == null)
-						continue;
+					var shader = multiTextureShaders[shaderIndex];
 
-					var bitmapDataInput:ShaderInput<BitmapData> = cast Reflect.getProperty(@:privateAccess shader.__data, "uSampler" + samplerIndex);
-					bitmapDataInput.input = bitmapData;
-					bitmapDataInput.filter = filter;
+					// MultiTextureShader not available, create and use next frame!
+					if(shader == null)
+					{
+						if(tempMultiTextureShaders[shaderIndex] == null)
+						{
+							tempMultiTextureShaders[shaderIndex] = new MultiTextureShader(multiTextureSize);
+						}
+						continue;
+					}
+
+					var multiTextureBitmapDataStartIndex:Int = shaderIndex * multiTextureSize;
+					var samplerCount:Int = Std.int(Math.min(multiTextureBitmapDataArray.length - multiTextureBitmapDataStartIndex, multiTextureSize));
+					for(samplerIndex in 0...samplerCount)
+					{
+						var bitmapData:BitmapData = multiTextureBitmapDataArray[multiTextureBitmapDataStartIndex + samplerIndex];
+						var bitmapDataInput:ShaderInput<BitmapData> = cast Reflect.getProperty(@:privateAccess shader.__data, "uSampler" + samplerIndex);
+						bitmapDataInput.input = bitmapData;
+						bitmapDataInput.filter = filter;
+					}
 				}
 			}
 			#end
@@ -207,7 +220,7 @@ class Context3DTilemap
 		// TODO: Why do compute this in every recursive?
 		var alphaPosition:Int = 4;
 		#if openfl_experimental_multitexture
-		var textureIdPosition:Int = alphaPosition + ((tilemap.tileAlphaEnabled && tilemap.multiTextureEnabled) ? 1 : 0);
+		var textureIdPosition:Int = alphaPosition + (tilemap.tileAlphaEnabled && tilemap.multiTextureEnabled ? 1 : 0);
 		var ctPosition:Int = textureIdPosition + (colorTransformEnabled ? 1 : 0);
 		#else
 		var ctPosition:Int = tilemap.tileAlphaEnabled ? 5 : 4;
@@ -405,20 +418,6 @@ class Context3DTilemap
 		{
 			currentShader = renderer.__defaultDisplayShader;
 		}
-
-		#if openfl_experimental_multitexture
-		if(multiTextureEnabled && currentBitmapData != null && currentShader == renderer.__defaultDisplayShader)
-		{
-			var batchIndex:Int = currentBitmapData.tilemapMultiTextureArrayIndex;
-			if(tempMultiTextureShaders[batchIndex] == null)
-			{
-				var multiTextureShader = new MultiTextureShader(multiTextureSize);
-
-				// Using the shader in the frame where it was created will cause issues, put it in a temporary array to use it in the next frame!
-				tempMultiTextureShaders[batchIndex] = multiTextureShader;
-			}
-		}
-		#end
 
 		if (bufferPosition > lastFlushedPosition && currentBitmapData != null && currentShader != null)
 		{
@@ -671,9 +670,11 @@ class Context3DTilemap
 			shader = tile.shader != null ? tile.shader : defaultShader;
 
 			#if openfl_experimental_multitexture
-			if(multiTextureEnabled && shader == tilemap.__worldShader && tileset != null && multiTextureShaders.length > tileset.bitmapData.tilemapMultiTextureArrayIndex)
-			{
-				shader = multiTextureShaders[tileset.bitmapData.tilemapMultiTextureArrayIndex];
+			if (multiTextureEnabled && shader == tilemap.__worldShader && tileset != null) {
+				var shaderIndex:Int = tileset.bitmapData.tilemapMultiTextureArrayIndex;
+				if (multiTextureShaders.length > shaderIndex) {
+					shader = multiTextureShaders[shaderIndex];
+				}
 			}
 			#end
 
