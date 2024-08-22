@@ -160,6 +160,7 @@ class AMF3Writer
 
 		for (r in 0...v.length)
 		{
+			// TODO: Properly write each object, omitting the class type for each
 			write(v[r]);
 		}
 	}

@@ -151,7 +151,7 @@ class AMF3Tools
 			case AArray(_, _): array(a);
 			case AIntVector(_): intVector(a);
 			case AFloatVector(_): floatVector(a);
-			case AObjectVector(_): objectVector(a);
+			case AObjectVector(_, _): objectVector(a);
 			case AObject(_, _, _): object(a);
 			case AExternal(_): external(a);
 			case AXml(_): xml(a);
