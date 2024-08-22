@@ -130,6 +130,11 @@ jobs:
         with:
           haxe-version: 4.3.6
 
+      - uses: joshtynjala/setup-adobe-air-action@v2
+        with:
+          air-version: "33.1"
+          accept-license: true
+
       - name: Set HAXEPATH
         run: |
           echo "HAXEPATH=$HAXE_STD_PATH/.." >> $GITHUB_ENV
@@ -158,6 +163,7 @@ jobs:
           haxelib git lime https://github.com/openfl/lime
           haxelib run lime rebuild tools
           haxelib run lime rebuild hl
+          haxelib run lime config AIR_SDK ${{ env.AIR_HOME }}
 
       - name: Install command aliases
         run: |
@@ -171,6 +177,10 @@ jobs:
       - name: Run tests on Hashlink
         run: |
           haxelib run hxp test -Dtarget=hl -Duse-lime-tools --install-hxp-alias
+
+      - name: Run tests on Adobe AIR
+        run: |
+          haxelib run hxp test -Dtarget=air -Duse-lime-tools --install-hxp-alias
 
   unit-test-air:
     strategy:
