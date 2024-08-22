@@ -12,6 +12,7 @@ class Build extends Script
 		hxml.cp("../../src");
 		hxml.lib("utest");
 		hxml.lib("lime");
+		hxml.define("openfl");
 		hxml.define("openfl-unit-testing");
 
 		var target = defines.get("target");
