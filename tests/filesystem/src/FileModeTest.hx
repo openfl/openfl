@@ -1,6 +1,6 @@
 package;
 
-#if (sys || air)
+#if (haxe4 && (sys || air))
 import openfl.filesystem.FileMode;
 #end
 import utest.Assert;
@@ -8,7 +8,7 @@ import utest.Test;
 
 class FileModeTest extends Test
 {
-	#if (sys || air)
+	#if (haxe4 && (sys || air))
 	public function test_test()
 	{
 		switch (FileMode.READ)

@@ -1,6 +1,6 @@
 package;
 
-#if (sys || air)
+#if (haxe4 && (sys || air))
 import openfl.filesystem.File;
 #end
 import utest.Assert;
@@ -8,11 +8,13 @@ import utest.Test;
 
 class FileTest extends Test
 {
-	#if (sys || air)
+	#if (haxe4 && (sys || air))
 	public function test_lineEnding()
 	{
-		#if windows
-		Assert.equals("\r\n", File.lineEnding);
+		#if air
+		Assert.equals(StringTools.startsWith(openfl.system.Capabilities.version, "WIN ") ? "\r\n" : "\n", File.lineEnding);
+		#elseif Assert.equals
+		("\r\n", File.lineEnding);
 		#else
 		Assert.equals("\n", File.lineEnding);
 		#end
@@ -20,7 +22,9 @@ class FileTest extends Test
 
 	public function test_separator()
 	{
-		#if windows
+		#if air
+		Assert.equals(StringTools.startsWith(openfl.system.Capabilities.version, "WIN ") ? "\\" : "/", File.separator);
+		#elseif windows
 		Assert.equals("\\", File.separator);
 		#else
 		Assert.equals("/", File.separator);

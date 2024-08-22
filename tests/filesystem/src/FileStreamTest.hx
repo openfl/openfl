@@ -1,6 +1,6 @@
 package;
 
-#if (sys || air)
+#if (haxe4 && (sys || air))
 import openfl.filesystem.File;
 import openfl.filesystem.FileStream;
 #end
@@ -9,7 +9,7 @@ import utest.Test;
 
 class FileStreamTest extends Test
 {
-	#if (sys || air)
+	#if (haxe4 && (sys || air))
 	private var fileToDelete:File;
 
 	public function teardown()
