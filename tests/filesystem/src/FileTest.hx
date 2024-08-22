@@ -30,5 +30,10 @@ class FileTest extends Test
 		Assert.equals("/", File.separator);
 		#end
 	}
+	#else
+	public function test_test()
+	{
+		Assert.pass();
+	}
 	#end
 }

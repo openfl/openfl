@@ -17,5 +17,10 @@ class FileModeTest extends Test
 				Assert.isTrue(true);
 		}
 	}
+	#else
+	public function test_test()
+	{
+		Assert.pass();
+	}
 	#end
 }

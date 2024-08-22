@@ -66,5 +66,10 @@ class FileStreamTest extends Test
 
 		Assert.equals(contentsToWrite, contentsRead);
 	}
+	#else
+	public function test_test()
+	{
+		Assert.pass();
+	}
 	#end
 }
