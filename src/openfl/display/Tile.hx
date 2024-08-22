@@ -30,6 +30,18 @@ import openfl.geom.Rectangle;
 @:access(openfl.geom.Rectangle)
 class Tile
 {
+	#if openfl_experimental_multitexture
+	/**
+	 	Reserved for multiTexture rendering.
+	**/
+	private var multiTextureId:Int = 0;
+
+	/**
+	 	Reserved for multiTexture rendering.
+	**/
+	private var multiTextureShaderIndex:Int = 0;
+	#end
+
 	/**
 		Indicates the alpha transparency value of the object specified. Valid
 		values are 0 (fully transparent) to 1 (fully opaque). The default value is 1.
