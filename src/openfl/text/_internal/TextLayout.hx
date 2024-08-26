@@ -71,6 +71,7 @@ class TextLayout
 	private var __font:Font;
 	@SuppressWarnings("checkstyle:Dynamic") private var __hbBuffer:#if lime HBBuffer #else Dynamic #end;
 	@SuppressWarnings("checkstyle:Dynamic") private var __hbFont:#if lime HBFTFont #else Dynamic #end;
+	private var __hbFontSize:Int = -1;
 
 	public function new(text:String = "", font:Font = null, size:Int = 12, direction:TextDirection = LEFT_TO_RIGHT, script:TextScript = COMMON,
 			language:String = "en")
@@ -113,12 +114,13 @@ class TextLayout
 				// __buffer.endian = (System.endianness == BIG_ENDIAN ? "bigEndian" : "littleEndian");
 			}
 
-			if (__font != font)
+			if (__font != font || __hbFontSize != size)
 			{
 				__font = font;
 				// 	hb_font_destroy ((hb_font_t*)mHBFont);
 				@:privateAccess font.__setSize(size);
 				__hbFont = new HBFTFont(font);
+				__hbFontSize = size;
 
 				if (autoHint)
 				{
