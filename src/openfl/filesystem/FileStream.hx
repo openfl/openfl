@@ -35,11 +35,7 @@ import sys.io.FileInput;
 import sys.io.FileOutput;
 import sys.io.FileSeek;
 import sys.thread.Mutex;
-#if (lime >= "8.2.0")
-import lime.system.ThreadPool;
-#else
 import lime.system.BackgroundWorker;
-#end
 
 @:noCompletion private typedef HaxeFile = sys.io.File;
 
@@ -167,7 +163,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 	@:noCompletion private var __output:FileOutput;
 	@:noCompletion private var __fileMode:FileMode;
 	@:noCompletion private var __file:File;
-	@:noCompletion private var __fileStreamWorker:#if (lime >= "8.2.0") ThreadPool #else BackgroundWorker #end;
+	@:noCompletion private var __fileStreamWorker:BackgroundWorker;
 	@:noCompletion private var __isOpen:Bool;
 	@:noCompletion private var __isWrite:Bool;
 	@:noCompletion private var __isAsync:Bool;
@@ -362,7 +358,7 @@ class FileStream extends EventDispatcher implements IDataInput implements IDataO
 
 		__fileStreamMutex = new Mutex();
 
-		__fileStreamWorker = #if (lime >= "8.2.0") new ThreadPool() #else new BackgroundWorker() #end;
+		__fileStreamWorker = new BackgroundWorker();
 
 		__fileStreamWorker.onProgress.add(function(e:Event)
 		{

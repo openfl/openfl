@@ -172,11 +172,9 @@ class FileReferenceList extends EventDispatcher
 
 	@:noCompletion private function fileDialog_onSelectMultiple(paths:Array<String>):Void
 	{
-		var fileReference, fileInfo;
-
 		for (path in paths)
 		{
-			fileReference = new FileReference();
+			var fileReference = new FileReference();
 
 			#if sys
 			var fileInfo = FileSystem.stat(path);

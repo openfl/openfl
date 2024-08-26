@@ -2844,7 +2844,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 			}
 		}
 
-		var item, i = 0;
+		var item:DisplayObject;
+		var i = 0;
 		while (i < __rollOutStack.length)
 		{
 			item = __rollOutStack[i];
@@ -3144,7 +3145,8 @@ class Stage extends DisplayObjectContainer #if lime implements IModule #end
 		}
 
 		var touchOutStack = touchData.rollOutStack;
-		var item, i = 0;
+		var item:DisplayObject;
+		var i = 0;
 		while (i < touchOutStack.length)
 		{
 			item = touchOutStack[i];

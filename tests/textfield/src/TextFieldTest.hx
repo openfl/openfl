@@ -726,4 +726,30 @@ class TextFieldTest extends Test
 		Assert.equals(5, textField.selectionBeginIndex);
 		Assert.equals(5, textField.selectionEndIndex);
 	}
+
+	#if lime_tools
+	public function test_autoSizeWithChangedFontSize()
+	{
+		var tf = new TextField();
+		tf.autoSize = LEFT;
+		tf.defaultTextFormat = new TextFormat("_sans", 18, 0xff0000);
+		tf.text = "hello";
+		var originalWidth = tf.width;
+		var originalHeight = tf.height;
+		tf.defaultTextFormat = new TextFormat("_sans", 24, 0xff0000);
+		tf.text = "hello";
+		var largerWidth = tf.width;
+		var largerHeight = tf.height;
+		// the font size increased, so the width and height should too
+		Assert.isTrue(largerWidth > originalWidth);
+		Assert.isTrue(largerHeight > originalHeight);
+		tf.defaultTextFormat = new TextFormat("_sans", 12, 0xff0000);
+		tf.text = "hello";
+		var smallerWidth = tf.width;
+		var smallerHeight = tf.height;
+		// the font size decreased, so the width and height should too
+		Assert.isTrue(smallerWidth < originalWidth);
+		Assert.isTrue(smallerHeight < originalHeight);
+	}
+	#end
 }

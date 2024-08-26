@@ -8,6 +8,8 @@ import lime.text.harfbuzz.HBBuffer;
 import lime.text.harfbuzz.HBBufferClusterLevel;
 import lime.text.harfbuzz.HBDirection;
 import lime.text.harfbuzz.HBFTFont;
+import lime.text.harfbuzz.HBGlyphInfo;
+import lime.text.harfbuzz.HBGlyphPosition;
 import lime.text.harfbuzz.HBLanguage;
 import lime.text.harfbuzz.HBScript;
 import lime.text.harfbuzz.HB;
@@ -69,6 +71,7 @@ class TextLayout
 	private var __font:Font;
 	@SuppressWarnings("checkstyle:Dynamic") private var __hbBuffer:#if lime HBBuffer #else Dynamic #end;
 	@SuppressWarnings("checkstyle:Dynamic") private var __hbFont:#if lime HBFTFont #else Dynamic #end;
+	private var __hbFontSize:Int = -1;
 
 	public function new(text:String = "", font:Font = null, size:Int = 12, direction:TextDirection = LEFT_TO_RIGHT, script:TextScript = COMMON,
 			language:String = "en")
@@ -111,12 +114,15 @@ class TextLayout
 				// __buffer.endian = (System.endianness == BIG_ENDIAN ? "bigEndian" : "littleEndian");
 			}
 
-			if (__font != font)
+			// if the Font has changed, or the size used when creating the
+			// HBFTFont has changed, we need to create a new HBFTFont
+			if (__font != font || __hbFontSize != size)
 			{
 				__font = font;
 				// 	hb_font_destroy ((hb_font_t*)mHBFont);
 				@:privateAccess font.__setSize(size);
 				__hbFont = new HBFTFont(font);
+				__hbFontSize = size;
 
 				if (autoHint)
 				{
@@ -128,6 +134,10 @@ class TextLayout
 			}
 			else
 			{
+				// a Font may be shared by multiple TextLayouts, each rendering
+				// with different sizes, so the size may have been changed by
+				// another TextLayout since this method was last called. we can
+				// simply restore our size, though.
 				@:privateAccess font.__setSize(size);
 			}
 
@@ -161,7 +171,8 @@ class TextLayout
 
 			if (_info != null && _positions != null)
 			{
-				var info, position;
+				var info:HBGlyphInfo;
+				var position:HBGlyphPosition;
 				var lastCluster = -1;
 
 				var length = Std.int(Math.min(_info.length, _positions.length));

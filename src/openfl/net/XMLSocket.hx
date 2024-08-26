@@ -269,7 +269,8 @@ class XMLSocket extends EventDispatcher
 	{
 		#if !js
 		var bytesAvailable = __socket.bytesAvailable;
-		var byte, data;
+		var byte:Int;
+		var data:String;
 
 		for (i in 0...bytesAvailable)
 		{

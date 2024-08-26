@@ -1952,7 +1952,8 @@ class TextField extends InteractiveObject
 		if (!precise && y > __textEngine.textHeight) y = __textEngine.textHeight;
 
 		var firstGroup = true;
-		var group, nextGroup;
+		var group:TextLayoutGroup;
+		var nextGroup:TextLayoutGroup;
 
 		for (i in 0...__textEngine.layoutGroups.length)
 		{

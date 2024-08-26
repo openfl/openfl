@@ -8,6 +8,7 @@ import openfl.errors.IOError;
 import openfl.errors.RangeError;
 import openfl.errors.Error as OFLError;
 import openfl.events.Event;
+import openfl.events.EventType;
 import openfl.events.EventDispatcher;
 import openfl.events.ServerSocketConnectEvent;
 import openfl.net.Socket as OFLSocket;
@@ -144,10 +145,11 @@ class ServerSocket extends EventDispatcher
 		}
 		try
 		{
-			this.localAddress = localAddress;
-			this.localPort = localPort;
 			var host:Host = new Host(localAddress);
 			__serverSocket.bind(host, localPort);
+			
+			this.localAddress = localAddress;
+			this.localPort = localPort == 0 ? __serverSocket.host().port : localPort;
 			bound = true;
 		}
 		catch (e:Dynamic)
@@ -171,18 +173,21 @@ class ServerSocket extends EventDispatcher
 	**/
 	public function close():Void
 	{
-		try
+		if (!__closed)
 		{
-			__serverSocket.close();
+			try
+			{
+				__serverSocket.close();
+			}
+			catch (e:Dynamic)
+			{
+				throw new OFLError("Operation attempted on invalid socket.");
+			}
+			listening = false;
+			bound = false;
+			__closed = true;
+			Lib.current.removeEventListener(Event.ENTER_FRAME, this_onEnterFrame);
 		}
-		catch (e:Dynamic)
-		{
-			throw new OFLError("Operation attempted on invalid socket.");
-		}
-		listening = false;
-		bound = false;
-		__closed = true;
-		Lib.current.removeEventListener(Event.ENTER_FRAME, this_onEnterFrame);
 	}
 
 	/**
@@ -277,18 +282,19 @@ class ServerSocket extends EventDispatcher
 		}
 	}
 
-	override public function addEventListener(type:String, listener:Dynamic->Void, useCapture:Bool = false, priority:Int = 0,
+	override public function addEventListener<T>(type:EventType<T>, listener:Dynamic->Void, useCapture:Bool = false, priority:Int = 0,
 			useWeakReference:Bool = false):Void
 	{
+		var connectEvent:String = Event.CONNECT;
 		super.addEventListener(type, listener, useCapture, priority, useWeakReference);
 
-		if (type == Event.CONNECT)
+		if (type == connectEvent && this.hasEventListener(connectEvent))
 		{
 			Lib.current.addEventListener(Event.ENTER_FRAME, this_onEnterFrame);
 		}
 	}
 
-	override public function removeEventListener(type:String, listener:Dynamic->Void, useCapture:Bool = false):Void
+	override public function removeEventListener<T>(type:EventType<T>, listener:Dynamic->Void, useCapture:Bool = false):Void
 	{
 		super.removeEventListener(type, listener, useCapture);
 

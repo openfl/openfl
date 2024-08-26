@@ -9,6 +9,7 @@ import openfl.display.Shader;
 import openfl.display.TileContainer;
 import openfl.display.Tilemap;
 import openfl.display.Tileset;
+import openfl.display.Tileset.TileData;
 import openfl.display3D.Context3D;
 import openfl.geom.ColorTransform;
 import openfl.geom.Matrix;
@@ -89,37 +90,36 @@ class Context3DTilemap
 		var roundPixels = renderer.__roundPixels;
 
 		var tiles = group.__tiles;
-		var length = group.__length;
+		var length = group.__length;		
 
-		function getLength(_group:TileContainer):Int
-		{
-			var _tiles = _group.__tiles;
-			var totalLength = 0;
-			for (tile in _tiles)
-			{
-				if (tile.__length > 0) totalLength += getLength(cast tile);
-				else
-					totalLength++;
-			}
-			return totalLength;
-		}
-
-		if (isTopLevel) resizeBuffer(tilemap, numTiles + getLength(group));
+		if (isTopLevel) resizeBuffer(tilemap, numTiles + getRecursiveLength(group));
 
 		// Todo: Merge recursive length lookup with for tiles loop to avoid iterating over tiles twice
 		// resizeBuffer(tilemap, numTiles + length);
 
-		var tile,
-			tileset,
-			alpha,
-			visible,
-			colorTransform = null,
-			id,
-			tileData,
-			tileRect,
-			bitmapData;
-		var tileWidth, tileHeight, uvX, uvY, uvHeight, uvWidth, vertexOffset;
-		var x, y, x2, y2, x3, y3, x4, y4;
+		var tileset:Tileset;
+		var alpha:Float;
+		var visible:Bool;
+		var colorTransform:ColorTransform = null;
+		var id:Int;
+		var tileData:TileData;
+		var tileRect:Rectangle;
+		var bitmapData:BitmapData;
+		var tileWidth:Float;
+		var tileHeight:Float;
+		var uvX:Float;
+		var uvY:Float;
+		var uvHeight:Float;
+		var uvWidth:Float;
+		var vertexOffset:Int;
+		var x:Float;
+		var y:Float;
+		var x2:Float;
+		var y2:Float;
+		var x3:Float;
+		var y3:Float;
+		var x4:Float;
+		var y4:Float;
 
 		var alphaPosition = 4;
 		var ctPosition = alphaEnabled ? 5 : 4;
@@ -395,6 +395,20 @@ class Context3DTilemap
 		lastUsedShader = currentShader;
 	}
 
+	private static function getRecursiveLength(tileContainer:TileContainer):Int
+	{		
+		var tiles = tileContainer.__tiles;
+		var totalLength = 0;
+		
+		for (tile in tiles)
+		{
+			if (tile.__length > 0) totalLength += getRecursiveLength(cast tile);
+			else
+				totalLength++;
+		}
+		return totalLength;
+	}
+
 	public static function render(tilemap:Tilemap, renderer:OpenGLRenderer):Void
 	{
 		if (!tilemap.__renderable || tilemap.__worldAlpha <= 0) return;
@@ -476,16 +490,15 @@ class Context3DTilemap
 	{
 		var tiles = group.__tiles;
 
-		var tile,
-			tileset,
-			alpha,
-			visible,
-			blendMode = null,
-			id,
-			tileData,
-			tileRect,
-			shader:Shader,
-			bitmapData;
+		var tileset:Tileset;
+		var alpha:Float;
+		var visible:Bool;
+		var blendMode:BlendMode = null;
+		var id:Int;
+		var tileData:TileData;
+		var tileRect:Rectangle;
+		var shader:Shader;
+		var bitmapData:BitmapData;
 
 		for (tile in tiles)
 		{

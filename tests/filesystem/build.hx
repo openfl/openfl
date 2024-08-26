@@ -48,7 +48,7 @@ class Build extends Script
 		switch (target)
 		{
 			case "hl":
-				System.recursiveCopy("assets", "bin/hl");
+				System.recursiveCopy("assets", "bin/hl/assets");
 				var hdllPath = NDLL.getLibraryPath(new NDLL("lime", new Haxelib("lime")), getHashLinkPlatformDirectoryName(true));
 				hdllPath = hdllPath.substr(0, hdllPath.length - Path.extension(hdllPath).length) + "hdll";
 				System.copyFile(hdllPath, "bin/hl/lime.hdll");
@@ -61,17 +61,17 @@ class Build extends Script
 				}
 				System.runCommand("bin/hl", "./hl", ["Test.hl"]);
 			case "neko":
-				System.recursiveCopy("assets", "bin/neko");
+				System.recursiveCopy("assets", "bin/neko/assets");
 				var ndllPath = NDLL.getLibraryPath(new NDLL("lime", new Haxelib("lime")), getPlatformDirectoryName());
 				System.copyFile(ndllPath, "bin/neko/lime.ndll");
 				var nekoPath = "neko";
 				System.runCommand("bin/neko", nekoPath, ["Test.n"]);
 			case "cpp":
-				System.recursiveCopy("assets", "bin/cpp");
+				System.recursiveCopy("assets", "bin/cpp/assets");
 				System.runCommand("bin/cpp", "./Tests");
 			case "swf":
+				System.recursiveCopy("assets", "bin/swf/assets");
 				System.copyFile("../application.xml", "bin/swf/application.xml");
-				System.recursiveCopy("assets", "bin/swf");
 				var airSdkPath = StringTools.trim(System.runProcess(".", "haxelib", ["run", "lime", "config", "AIR_SDK"]));
 				var adlPath = Path.join([airSdkPath, "bin/adl"]);
 				System.runCommand("bin/swf", adlPath, ["-nodebug", "application.xml"]);

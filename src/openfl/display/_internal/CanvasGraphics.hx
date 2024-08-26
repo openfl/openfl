@@ -647,28 +647,28 @@ class CanvasGraphics
 
 		var data = new DrawCommandReader(commands);
 
-		var x,
-			y,
-			width,
-			height,
-			kappa = .5522848,
-			ox,
-			oy,
-			xe,
-			ye,
-			xm,
-			ym,
-			r,
-			g,
-			b;
-		var optimizationUsed,
-			canOptimizeMatrix,
-			st:Float,
-			sr:Float,
-			sb:Float,
-			sl:Float,
-			stl = null,
-			sbr = null;
+		var x:Float;
+		var y:Float;
+		var width:Float;
+		var height:Float;
+		var kappa = 0.5522848;
+		var ox:Float;
+		var oy:Float;
+		var xe:Float;
+		var ye:Float;
+		var xm:Float;
+		var ym:Float;
+		var r:Int;
+		var g:Int;
+		var b:Int;
+		var optimizationUsed:Bool;
+		var canOptimizeMatrix:Bool;
+		var st:Float;
+		var sr:Float;
+		var sb:Float;
+		var sl:Float;
+		var stl:Point = null;
+		var sbr:Point = null;
 
 		for (type in commands.types)
 		{
@@ -819,14 +819,34 @@ class CanvasGraphics
 					}
 
 					context.moveTo(positionX - offsetX, positionY - offsetY);
-					context.strokeStyle = createBitmapFill(c.bitmap, c.repeat, c.smooth);
+					if (c.bitmap.readable)
+					{
+						context.strokeStyle = createBitmapFill(c.bitmap, c.repeat, c.smooth);
+					}
+					else
+					{
+						// if it's hardware-only BitmapData, fall back to
+						// drawing solid black because we have no software
+						// pixels to work with
+						context.strokeStyle = "#" + StringTools.hex(0, 6);
+					}
 
 					hasStroke = true;
 
 				case BEGIN_BITMAP_FILL:
 					var c = data.readBeginBitmapFill();
 					bitmapFill = c.bitmap;
-					context.fillStyle = createBitmapFill(c.bitmap, c.repeat, c.smooth);
+					if (c.bitmap.readable)
+					{
+						context.fillStyle = createBitmapFill(c.bitmap, c.repeat, c.smooth);
+					}
+					else
+					{
+						// if it's hardware-only BitmapData, fall back to
+						// drawing solid black because we have no software
+						// pixels to work with
+						context.fillStyle = "#" + StringTools.hex(0, 6);
+					}
 					hasFill = true;
 
 					if (c.matrix != null)
@@ -926,7 +946,8 @@ class CanvasGraphics
 					// var roundPixels = renderer.__roundPixels;
 					var alpha = CanvasGraphics.worldAlpha;
 
-					var ri, ti;
+					var ri:Int;
+					var ti:Int;
 
 					context.save(); // TODO: Restore transform without save/restore
 
@@ -977,7 +998,7 @@ class CanvasGraphics
 
 						context.setTransform(tileTransform.a, tileTransform.b, tileTransform.c, tileTransform.d, tileTransform.tx, tileTransform.ty);
 
-						if (bitmapFill != null)
+						if (bitmapFill != null && bitmapFill.readable)
 						{
 							context.drawImage(bitmapFill.image.src, tileRect.x, tileRect.y, tileRect.width, tileRect.height, 0, 0, tileRect.width,
 								tileRect.height);
@@ -1141,7 +1162,7 @@ class CanvasGraphics
 					var c = data.readDrawRect();
 					optimizationUsed = false;
 
-					if (bitmapFill != null && !hitTesting)
+					if (bitmapFill != null && bitmapFill.readable && !hitTesting)
 					{
 						st = 0;
 						sr = 0;
@@ -1184,7 +1205,10 @@ class CanvasGraphics
 						if (canOptimizeMatrix && st >= 0 && sl >= 0 && sr <= bitmapFill.width && sb <= bitmapFill.height)
 						{
 							optimizationUsed = true;
-							if (!hitTesting) context.drawImage(bitmapFill.image.src, sl, st, sr - sl, sb - st, c.x - offsetX, c.y - offsetY, c.width, c.height);
+							if (!hitTesting)
+							{
+								context.drawImage(bitmapFill.image.src, sl, st, sr - sl, sb - st, c.x - offsetX, c.y - offsetY, c.width, c.height);
+							}
 						}
 					}
 
@@ -1602,7 +1626,17 @@ class CanvasGraphics
 
 			var data = new DrawCommandReader(graphics.__commands);
 
-			var x, y, width, height, kappa = .5522848, ox, oy, xe, ye, xm, ym;
+			var x:Float;
+			var y:Float;
+			var width:Float;
+			var height:Float;
+			var kappa = 0.5522848;
+			var ox:Float;
+			var oy:Float;
+			var xe:Float;
+			var ye:Float;
+			var xm:Float;
+			var ym:Float;
 
 			for (type in graphics.__commands.types)
 			{
