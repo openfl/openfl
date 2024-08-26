@@ -114,6 +114,8 @@ class TextLayout
 				// __buffer.endian = (System.endianness == BIG_ENDIAN ? "bigEndian" : "littleEndian");
 			}
 
+			// if the Font has changed, or the size used when creating the
+			// HBFTFont has changed, we need to create a new HBFTFont
 			if (__font != font || __hbFontSize != size)
 			{
 				__font = font;
@@ -132,6 +134,10 @@ class TextLayout
 			}
 			else
 			{
+				// a Font may be shared by multiple TextLayouts, each rendering
+				// with different sizes, so the size may have been changed by
+				// another TextLayout since this method was last called. we can
+				// simply restore our size, though.
 				@:privateAccess font.__setSize(size);
 			}
 
