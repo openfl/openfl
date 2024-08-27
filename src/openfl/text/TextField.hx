@@ -3317,9 +3317,9 @@ class TextField extends InteractiveObject
 	{
 		var stage:Stage = cast event.currentTarget;
 
-		stage.removeEventListener(Event.ENTER_FRAME, this_onEnterFrame);
-		stage.removeEventListener(MouseEvent.MOUSE_MOVE, stage_onMouseMove);
-		stage.removeEventListener(MouseEvent.MOUSE_UP, stage_onMouseUp);
+		stage.removeEventListener(Event.ENTER_FRAME, this_onEnterFrame, true);
+		stage.removeEventListener(MouseEvent.MOUSE_MOVE, stage_onMouseMove, true);
+		stage.removeEventListener(MouseEvent.MOUSE_UP, stage_onMouseUp, true);
 
 		if (this.stage != stage) return;
 
@@ -3455,10 +3455,10 @@ class TextField extends InteractiveObject
 		if (stage == null) return;
 		#if !notextselectscroll
 		// Todo: Add flag and implementation for flash scrolling behavior.
-		stage.addEventListener(Event.ENTER_FRAME, this_onEnterFrame);
+		stage.addEventListener(Event.ENTER_FRAME, this_onEnterFrame, true);
 		#end
-		stage.addEventListener(MouseEvent.MOUSE_MOVE, stage_onMouseMove);
-		stage.addEventListener(MouseEvent.MOUSE_UP, stage_onMouseUp);
+		stage.addEventListener(MouseEvent.MOUSE_MOVE, stage_onMouseMove, true);
+		stage.addEventListener(MouseEvent.MOUSE_UP, stage_onMouseUp, true);
 	}
 
 	@:noCompletion private function this_onMouseWheel(event:MouseEvent):Void
