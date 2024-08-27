@@ -1456,6 +1456,10 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 				var data = readUTF();
 				return Unserializer.run(data);
 
+			case HXSF32:
+				var data = readUTF32();
+				return Unserializer.run(data);
+
 			case JSON:
 				var data = readUTF();
 				return Json.parse(data);
@@ -1539,6 +1543,12 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	public function readUTF():String
 	{
 		var bytesCount = readUnsignedShort();
+		return readUTFBytes(bytesCount);
+	}
+
+	public function readUTF32():String
+	{
+		var bytesCount = readUnsignedInt();
 		return readUTFBytes(bytesCount);
 	}
 
@@ -1712,6 +1722,10 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 				var value = Serializer.run(object);
 				writeUTF(value);
 
+			case HXSF32:
+				var value = Serializer.run(object);
+				writeUTF32(value);
+
 			case JSON:
 				var value = Json.stringify(object);
 				writeUTF(value);
@@ -1747,6 +1761,14 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		var bytes = Bytes.ofString(value);
 
 		writeShort(bytes.length);
+		writeBytes(bytes);
+	}
+
+	public function writeUTF32(value:String):Void
+	{
+		var bytes = Bytes.ofString(value);
+
+		writeUnsignedInt(bytes.length);
 		writeBytes(bytes);
 	}
 
@@ -2209,6 +2231,15 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	public function readUTF():String;
 
 	/**
+		Reads a UTF-8 string from the byte stream. The string is assumed to be
+		prefixed with an unsigned integer indicating the length in bytes.
+
+		@return UTF-8 encoded string.
+		@throws EOFError There is not sufficient data available to read.
+	**/
+	public function readUTF32():String;
+
+	/**
 		Reads a sequence of UTF-8 bytes specified by the `length`
 		parameter from the byte stream and returns a string.
 
@@ -2412,6 +2443,16 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		@throws RangeError If the length is larger than 65535.
 	**/
 	public function writeUTF(value:String):Void;
+
+	/**
+		Writes a UTF-8 string to the byte stream. The length of the UTF-8 string
+		in bytes is written first, as a 32-bit integer, followed by the bytes
+		representing the characters of the string.
+
+		@param value The string value to be written.
+		@throws RangeError If the length is larger than 4294967295.
+	**/
+	public function writeUTF32(value:String):Void;
 
 	/**
 		Writes a UTF-8 string to the byte stream. Similar to the
