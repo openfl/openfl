@@ -77,9 +77,17 @@ package openfl.net;
 
 	/**
 		Specifies that objects are serialized using the
-		Haxe Serialization Format.
+		Haxe Serialization Format. Prepends written Objects 
+		with a 16-bit length header.
 	**/
 	public var HXSF = 10;
+
+	/**
+		Specifies that objects are serialized using the
+		Haxe Serialization Format. Prepends written Objects
+		with a 32-bit length header.
+	**/
+	public var HXSF32 = 11;
 
 	/**
 		Specifies that objects are serialized using
