@@ -325,6 +325,19 @@ class CanvasTextField
 							context.stroke();
 							context.closePath();
 						}
+
+						if (group.format.strikethrough)
+						{
+							context.beginPath();
+							context.strokeStyle = color;
+							context.lineWidth = 1;
+							var x = group.offsetX + scrollX - bounds.x;
+							var y = Math.ceil(group.offsetY + scrollY + 2.0 * group.ascent / 3.0 - bounds.y);
+							context.moveTo(x, y);
+							context.lineTo(x + group.width, y);
+							context.stroke();
+							context.closePath();
+						}
 					}
 				}
 				else

@@ -19,8 +19,8 @@ package openfl.text;
 	formatting BEFORE you add text to the `TextField`, and the
 	`setTextFormat()` method to add formatting AFTER you add text to the
 	`TextField`. The TextFormat properties are `null` by default because if
-	you don't provide values for the properties, Flash Player uses its own
-	default formatting. The default formatting that Flash Player uses for each
+	you don't provide values for the properties, OpenFL uses its own
+	default formatting. The default formatting that OpenFL uses for each
 	property (if property's value is `null`) is as follows:
 
 	| | |
@@ -42,6 +42,7 @@ package openfl.text;
 	| tabStops = [] (empty array) | |
 	| target = "" (empty string) | |
 	| underline = false | |
+	| strikethrough = false | |
 	| url = "" (empty string) | |
 
 	The default formatting for each property is also described in each
@@ -171,6 +172,16 @@ class TextFormat
 	public var size:Null<Int>;
 
 	/**
+		Indicates whether the text that uses this text format is striked out
+		(`true`) or not (`false`). This underlining is similar to that produced
+		by the `<S>` tag. The default value is `null`, which indicates that
+		strikethrough is not used.
+
+		The `strikethrough` property is ignored in Flash Player and AIR targets.
+	**/
+	public var strikethrough:Null<Bool>;
+
+	/**
 		Specifies custom tab stops as an array of non-negative integers. Each tab
 		stop is specified in pixels. If custom tab stops are not specified
 		(`null`), the default tab stop is 4 (average character width).
@@ -291,6 +302,8 @@ class TextFormat
 		newFormat.letterSpacing = letterSpacing;
 		newFormat.tabStops = tabStops;
 
+		newFormat.strikethrough = strikethrough;
+
 		newFormat.__ascent = __ascent;
 		newFormat.__descent = __descent;
 
@@ -319,6 +332,8 @@ class TextFormat
 		if (format.kerning != null) kerning = format.kerning;
 		if (format.letterSpacing != null) letterSpacing = format.letterSpacing;
 		if (format.tabStops != null) tabStops = format.tabStops;
+
+		if (format.strikethrough != null) strikethrough = format.strikethrough;
 
 		if (format.__ascent != null) __ascent = format.__ascent;
 		if (format.__descent != null) __descent = format.__descent;
