@@ -1202,7 +1202,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function new(length:Int = 0)
 	{
-		var bytes = Bytes.alloc(length);
+		var bytes:Bytes = Bytes.alloc(length);
 
 		#if sys
 		if (length > 0)
@@ -1238,9 +1238,9 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		#if js
 		if (__allocated > __length)
 		{
-			var cacheLength = __length;
+			var cacheLength:Int = __length;
 			__length = __allocated;
-			var data = Bytes.alloc(cacheLength);
+			var data:Bytes = Bytes.alloc(cacheLength);
 			data.blit(0, this, 0, cacheLength);
 			__setData(data);
 			__length = cacheLength;
@@ -1280,7 +1280,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public static function fromBytes(bytes:Bytes):ByteArrayData
 	{
-		var result = new ByteArrayData();
+		var result:ByteArrayData = new ByteArrayData();
 		result.__fromBytes(bytes);
 		return result;
 	}
@@ -1317,7 +1317,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function readByte():Int
 	{
-		var value = readUnsignedByte();
+		var value:Int = readUnsignedByte();
 
 		if (value & 0x80 != 0)
 		{
@@ -1362,8 +1362,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		}
 		else
 		{
-			var ch1 = readInt();
-			var ch2 = readInt();
+			var ch1:Int = readInt();
+			var ch2:Int = readInt();
 
 			return FPHelper.i64ToDouble(ch2, ch1);
 		}
@@ -1390,10 +1390,10 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function readInt():Int
 	{
-		var ch1 = readUnsignedByte();
-		var ch2 = readUnsignedByte();
-		var ch3 = readUnsignedByte();
-		var ch4 = readUnsignedByte();
+		var ch1:Int = readUnsignedByte();
+		var ch2:Int = readUnsignedByte();
+		var ch3:Int = readUnsignedByte();
+		var ch4:Int = readUnsignedByte();
 
 		if (endian == LITTLE_ENDIAN)
 		{
@@ -1439,8 +1439,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		switch (objectEncoding)
 		{
 			case AMF0:
-				var input = new BytesInput(this, position);
-				var reader = new AMFReader(input);
+				var input:BytesInput = new BytesInput(this, position);
+				var reader:AMFReader = new AMFReader(input);
 				var data = AMFTools.unwrapValue(reader.read());
 				position = input.position;
 				return data;
@@ -1453,15 +1453,15 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 				return data;
 
 			case HXSF:
-				var data = readUTF();
+				var data:String = readUTF();
 				return Unserializer.run(data);
 
 			case HXSF32:
-				var data = readUTF32();
+				var data:String = readUTF32();
 				return Unserializer.run(data);
 
 			case JSON:
-				var data = readUTF();
+				var data:String = readUTF();
 				return Json.parse(data);
 
 			default:
@@ -1471,8 +1471,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function readShort():Int
 	{
-		var ch1 = readUnsignedByte();
-		var ch2 = readUnsignedByte();
+		var ch1:Int = readUnsignedByte();
+		var ch2:Int = readUnsignedByte();
 
 		var value:Int;
 
@@ -1510,10 +1510,10 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function readUnsignedInt():Int
 	{
-		var ch1 = readUnsignedByte();
-		var ch2 = readUnsignedByte();
-		var ch3 = readUnsignedByte();
-		var ch4 = readUnsignedByte();
+		var ch1:Int = readUnsignedByte();
+		var ch2:Int = readUnsignedByte();
+		var ch3:Int = readUnsignedByte();
+		var ch4:Int = readUnsignedByte();
 
 		if (endian == LITTLE_ENDIAN)
 		{
@@ -1527,8 +1527,8 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function readUnsignedShort():Int
 	{
-		var ch1 = readUnsignedByte();
-		var ch2 = readUnsignedByte();
+		var ch1:Int = readUnsignedByte();
+		var ch2:Int = readUnsignedByte();
 
 		if (endian == LITTLE_ENDIAN)
 		{
@@ -1542,13 +1542,13 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function readUTF():String
 	{
-		var bytesCount = readUnsignedShort();
+		var bytesCount:Int = readUnsignedShort();
 		return readUTFBytes(bytesCount);
 	}
 
 	public function readUTF32():String
 	{
-		var bytesCount = readUnsignedInt();
+		var bytesCount:Int = readUnsignedInt();
 		return readUTFBytes(bytesCount);
 	}
 
@@ -1570,9 +1570,9 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		#if js
 		if (__allocated > __length)
 		{
-			var cacheLength = __length;
+			var cacheLength:Int = __length;
 			__length = __allocated;
-			var data = Bytes.alloc(cacheLength);
+			var data:Bytes = Bytes.alloc(cacheLength);
 			data.blit(0, this, 0, cacheLength);
 			__setData(data);
 			__length = cacheLength;
@@ -1623,7 +1623,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function writeDouble(value:Float):Void
 	{
-		var int64 = FPHelper.doubleToI64(value);
+		var int64:Int64 = FPHelper.doubleToI64(value);
 
 		if (endian == LITTLE_ENDIAN)
 		{
@@ -1647,7 +1647,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		}
 		else
 		{
-			var int = FPHelper.floatToI32(value);
+			var int:Int = FPHelper.floatToI32(value);
 			writeInt(int);
 		}
 	}
@@ -1697,14 +1697,14 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		{
 			case AMF0:
 				var value = AMFTools.encode(object);
-				var output = new BytesOutput();
-				var writer = new AMFWriter(output);
+				var output:BytesOutput = new BytesOutput();
+				var writer:AMFWriter = new AMFWriter(output);
 				writer.write(value);
 				writeBytes(output.getBytes());
 
 			case AMF3:
-				var output = new BytesOutput();
-				var writer = new AMF3Writer(output);
+				var output:BytesOutput = new BytesOutput();
+				var writer:AMFWriter = new AMF3Writer(output);
 
 				if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (object, ByteArrayData))
 				{
@@ -1719,15 +1719,15 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 				writeBytes(output.getBytes());
 
 			case HXSF:
-				var value = Serializer.run(object);
+				var value:String = Serializer.run(object);
 				writeUTF(value);
 
 			case HXSF32:
-				var value = Serializer.run(object);
+				var value:String = Serializer.run(object);
 				writeUTF32(value);
 
 			case JSON:
-				var value = Json.stringify(object);
+				var value:String = Json.stringify(object);
 				writeUTF(value);
 
 			default:
@@ -1758,7 +1758,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function writeUTF(value:String):Void
 	{
-		var bytes = Bytes.ofString(value);
+		var bytes:Bytes = Bytes.ofString(value);
 
 		writeShort(bytes.length);
 		writeBytes(bytes);
@@ -1766,7 +1766,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function writeUTF32(value:String):Void
 	{
-		var bytes = Bytes.ofString(value);
+		var bytes:Bytes = Bytes.ofString(value);
 
 		writeUnsignedInt(bytes.length);
 		writeBytes(bytes);
@@ -1774,7 +1774,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 	public function writeUTFBytes(value:String):Void
 	{
-		var bytes = Bytes.ofString(value);
+		var bytes:Bytes = Bytes.ofString(value);
 		writeBytes(bytes);
 	}
 
@@ -1788,14 +1788,14 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	{
 		if (size > __allocated)
 		{
-			var bytes = Bytes.alloc(((size + 1) * 3) >> 1);
+			var bytes:Bytes = Bytes.alloc(((size + 1) * 3) >> 1);
 			#if sys
 			bytes.fill(__allocated, size - __allocated, 0);
 			#end
 
 			if (__allocated > 0)
 			{
-				var cacheLength = __length;
+				var cacheLength:Int = __length;
 				__length = __allocated;
 				bytes.blit(0, this, 0, __allocated);
 				__length = cacheLength;
@@ -1815,7 +1815,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		#if eval
 		// TODO: Not quite correct, but this will probably
 		// not be called while in a macro
-		var count = bytes.length < __length ? bytes.length : __length;
+		var count:Int = bytes.length < __length ? bytes.length : __length;
 		for (i in 0...count)
 			set(i, bytes.get(i));
 		#else
