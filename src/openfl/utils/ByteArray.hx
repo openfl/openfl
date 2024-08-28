@@ -1457,12 +1457,16 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 				var data:String = readUTF();
 				return Unserializer.run(data);
 
-			case HXSF32:
-				var data:String = readUTF32();
+			case LARGE_HXSF:
+				var data:String = readLargeUTF();
 				return Unserializer.run(data);
 
 			case JSON:
 				var data:String = readUTF();
+				return Json.parse(data);
+
+			case LARGE_JSON:
+				var data:String = readLargeUTF();
 				return Json.parse(data);
 
 			default:
@@ -1547,7 +1551,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		return readUTFBytes(bytesCount);
 	}
 
-	public function readUTF32():String
+	public function readLargeUTF():String
 	{
 		var bytesCount:Int = readUnsignedInt();
 		return readUTFBytes(bytesCount);
@@ -1723,13 +1727,17 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 				var value:String = Serializer.run(object);
 				writeUTF(value);
 
-			case HXSF32:
+			case LARGE_HXSF:
 				var value:String = Serializer.run(object);
-				writeUTF32(value);
+				writeLargeUTF(value);
 
 			case JSON:
 				var value:String = Json.stringify(object);
 				writeUTF(value);
+
+			case LARGE_JSON:
+				var value:String = Json.stringify(object);
+				writeLargeUTF(value);
 
 			default:
 				return;
@@ -1770,7 +1778,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		writeBytes(bytes);
 	}
 
-	public function writeUTF32(value:String):Void
+	public function writeLargeUTF(value:String):Void
 	{
 		var bytes:Bytes = Bytes.ofString(value);
 
