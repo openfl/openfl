@@ -77,23 +77,34 @@ package openfl.net;
 
 	/**
 		Specifies that objects are serialized using the
-		Haxe Serialization Format. Prepends written Objects 
-		with a 16-bit length header.
+		Haxe Serialization Format (HXSF). Serialized objects 
+		in this format are prefixed with a 16-bit length 
+		header, which limits the maximum data size to 65,535 bytes.
 	**/
 	public var HXSF = 10;
 
 	/**
 		Specifies that objects are serialized using the
-		Haxe Serialization Format. Prepends written Objects
-		with a 32-bit length header.
+		Haxe Serialization Format (HXSF). Serialized objects
+		in this format are prefixed with a 32-bit length header.
 	**/
-	public var HXSF32 = 11;
+	public var LARGE_HXSF = 11;
 
 	/**
 		Specifies that objects are serialized using
-		JavaScript Object Notation.
-	**/
+		JavaScript Object Notation (JSON). Serialized objects 
+		in this format are prefixed with a 16-bit length 
+		header, which limits the maximum data size to 65,535 bytes.
+	**/ 
 	public var JSON = 12;
+
+	/**
+		Specifies that objects are serialized using
+		JavaScript Object Notation (JSON). Serialized objects 
+		in this format are prefixed with a 32-bit length 
+		header.
+	**/ 
+	public var LARGE_JSON = 13;
 
 	/**
 		Specifies the default format for the current target and runtime.
