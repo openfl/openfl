@@ -1761,8 +1761,9 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	{
 		var bytes:Bytes = Bytes.ofString(value);
 
-		if(bytes.length > 65535){
-			throw new RangeError("Length is out of range")
+		if (bytes.length > 65535)
+		{
+			throw new RangeError("Length is out of range");
 		}
 
 		writeShort(bytes.length);
@@ -1772,9 +1773,10 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	public function writeUTF32(value:String):Void
 	{
 		var bytes:Bytes = Bytes.ofString(value);
-		
-		if(bytes.length > 4294967295){
-			throw new RangeError("Length is out of range")
+
+		if (bytes.length > 4294967295)
+		{
+			throw new RangeError("Length is out of range");
 		}
 
 		writeUnsignedInt(bytes.length);
