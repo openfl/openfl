@@ -218,7 +218,9 @@ class ApplicationMain
 							stage.addChild(current);
 						}
 
+						#if !no_openfl_entry_point
 						new DocumentClass(cast current);
+						#end
 					};
 				}
 				else
