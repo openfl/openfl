@@ -1704,7 +1704,7 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 
 			case AMF3:
 				var output:BytesOutput = new BytesOutput();
-				var writer:AMFWriter = new AMF3Writer(output);
+				var writer:AMF3Writer = new AMF3Writer(output);
 
 				if (#if (haxe_ver >= 4.2) Std.isOfType #else Std.is #end (object, ByteArrayData))
 				{
@@ -1760,6 +1760,10 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	{
 		var bytes:Bytes = Bytes.ofString(value);
 
+		if(bytes.length > 65535){
+			throw new RangeError("Length is out of range")
+		}
+
 		writeShort(bytes.length);
 		writeBytes(bytes);
 	}
@@ -1767,6 +1771,10 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	public function writeUTF32(value:String):Void
 	{
 		var bytes:Bytes = Bytes.ofString(value);
+		
+		if(bytes.length > 4294967295){
+			throw new RangeError("Length is out of range")
+		}
 
 		writeUnsignedInt(bytes.length);
 		writeBytes(bytes);
