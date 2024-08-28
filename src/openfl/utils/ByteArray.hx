@@ -1774,11 +1774,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 	{
 		var bytes:Bytes = Bytes.ofString(value);
 
-		if (bytes.length > 4294967295)
-		{
-			throw new RangeError("Length is out of range");
-		}
-
 		writeUnsignedInt(bytes.length);
 		writeBytes(bytes);
 	}
@@ -2461,7 +2456,6 @@ abstract ByteArray(ByteArrayData) from ByteArrayData to ByteArrayData
 		representing the characters of the string.
 
 		@param value The string value to be written.
-		@throws RangeError If the length is larger than 4294967295.
 	**/
 	public function writeUTF32(value:String):Void;
 
