@@ -63,6 +63,7 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	@:noCompletion private static var __hasColorTransformValue:Array<Bool> = [false];
 	@:noCompletion private static var __scissorRectangle:Rectangle = new Rectangle();
 	@:noCompletion private static var __textureSizeValue:Array<Float> = [0, 0];
+	@:noCompletion private static var __currentBlendMode:Map<Context3D, BlendMode> = new Map<Context3D, BlendMode>();
 
 	/**
 		The current OpenGL render context
@@ -752,6 +753,10 @@ class OpenGLRenderer extends DisplayObjectRenderer
 		__context3D.setScissorRectangle(null);
 
 		__blendMode = null;
+		if (__defaultRenderTarget == null)
+		{
+			OpenGLRenderer.__currentBlendMode.remove(__context3D);
+		}
 		__setBlendMode(NORMAL);
 
 		if (__defaultRenderTarget == null)
@@ -1021,7 +1026,12 @@ class OpenGLRenderer extends DisplayObjectRenderer
 	@:noCompletion private override function __setBlendMode(value:BlendMode):Void
 	{
 		if (__overrideBlendMode != null) value = __overrideBlendMode;
-		if (__blendMode == value) return;
+		if (OpenGLRenderer.__currentBlendMode.get(__context3D) == value)
+		{
+			__blendMode = value;
+			return;
+		}
+		OpenGLRenderer.__currentBlendMode.set(__context3D, value);
 
 		__blendMode = value;
 
