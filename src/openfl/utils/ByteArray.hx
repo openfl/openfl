@@ -10,6 +10,7 @@ import haxe.Json;
 import haxe.Serializer;
 import haxe.Unserializer;
 import openfl.errors.EOFError;
+import openfl.errors.RangeError;
 import openfl.net.ObjectEncoding;
 import openfl.utils._internal.format.amf.AMFReader;
 import openfl.utils._internal.format.amf.AMFTools;
